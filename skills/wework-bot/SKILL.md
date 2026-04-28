@@ -24,7 +24,7 @@ description: 发送企业微信机器人消息，用于 generate-document、impl
 |------|--------|------|
 | `token` | `API_X_TOKEN` | `https://api.effiy.cn` 的 `X-Token` |
 | `apiUrl` | `https://api.effiy.cn/wework/send-message` | 发送消息 API |
-| `config` | `WEWORK_BOT_CONFIG` 或 `.claude/skills/wework-bot/config.local.json`（存在时自动加载） | 多机器人路由配置 JSON |
+| `config` | `WEWORK_BOT_CONFIG`；未设置时合并 `config.json` + `config.local.json` | 多机器人路由配置 JSON |
 | `agent` | 无 | agent 名称，用于从配置中选择机器人 |
 | `robot` | 配置默认值 | 机器人名称，优先级高于 `agent` |
 | `webhookUrl` | `WEWORK_WEBHOOK_URL` | 完整企业微信机器人 webhook |
@@ -361,7 +361,16 @@ node .claude/skills/wework-bot/scripts/send-message.js \
 
 ## 多机器人路由
 
-本项目已配置好 `config.local.json`（已加入 `.gitignore`，不会提交），并把默认机器人 `general` 配置为用户指定的默认 `webhook_url`。脚本会优先读取 `WEWORK_BOT_CONFIG`；若未设置且本地配置文件存在，会自动加载 `.claude/skills/wework-bot/config.local.json`。
+本项目采用双层配置结构：
+- `config.json`：默认配置（已提交到仓库）
+- `config.local.json`：本地覆盖配置（已加入 `.gitignore`，不会提交）
+
+合并规则：
+- `default_robot`：优先使用 `config.local.json` 的值
+- `robots`：合并两个配置，同名机器人以 `config.local.json` 为准
+- `agents`：合并两个配置，同名 agent 以 `config.local.json` 为准
+
+脚本会优先读取 `WEWORK_BOT_CONFIG`；若未设置，会自动合并 `config.json` + `config.local.json`。
 
 **必须预设的环境变量（只需设置一次）：**
 
@@ -371,20 +380,13 @@ export API_X_TOKEN=12345678
 
 `WEWORK_BOT_CONFIG` 可选；只有需要切换到其他配置文件时才设置。建议把 `API_X_TOKEN` 写入 shell 配置文件（`~/.zshrc` 或 `~/.bashrc`）使其永久生效。
 
-若需在新机器上使用，参考 `config.example.json` 重新填写真实密钥后另存为 `config.local.json`：
-
-```bash
-cp .claude/skills/wework-bot/config.example.json .claude/skills/wework-bot/config.local.json
-# 编辑 config.local.json，把 webhook_key_env 改为 webhook_url / webhook_key 并填入本地真实值
-```
-
 配置优先级：
 
 1. 命令行 `--webhook-url` / `--webhook-key`
 2. 环境变量 `WEWORK_WEBHOOK_URL` / `WEWORK_WEBHOOK_KEY`
 3. 命令行 `--robot`
 4. 命令行 `--agent` 映射到配置中的机器人
-5. 配置中的 `default_robot`
+5. 配置中的 `default_robot`（`config.local.json` 优先）
 
 ## 安全约束
 
@@ -397,5 +399,6 @@ cp .claude/skills/wework-bot/config.example.json .claude/skills/wework-bot/confi
 
 - `README.md`：快速使用说明
 - `rules/message-contract.md`：消息格式、安全和调用契约
-- `config.example.json`：多机器人与 agent 路由示例
+- `config.json`：默认配置（已提交）
+- `config.local.json`：本地覆盖配置（不提交）
 - `scripts/send-message.js`：实际发送脚本

@@ -1,0 +1,36 @@
+{
+  "default_robot": "general",
+  "api_url": "https://api.effiy.cn/wework/send-message",
+  "api_token_env": "API_X_TOKEN",
+  "robots": {
+    "general": {
+      "webhook_key_env": "WEWORK_WEBHOOK_KEY"
+    },
+    "docs": {
+      "webhook_key_env": "WEWORK_WEBHOOK_KEY_DOCS"
+    },
+    "code": {
+      "webhook_key_env": "WEWORK_WEBHOOK_KEY_CODE"
+    },
+    "security": {
+      "webhook_key_env": "WEWORK_WEBHOOK_KEY_SECURITY"
+    }
+  },
+  "agents": {
+    "generate-document": "docs",
+    "import-docs": "docs",
+    "wework-bot": "general",
+    "implement-code": "code",
+    "planner": "general",
+    "architect": "general",
+    "code-reviewer": "general",
+    "security-reviewer": "security",
+    "doc-reviewer": "docs",
+    "doc-updater": "docs",
+    "docs-lookup": "docs",
+    "e2e-tester": "code",
+    "impl-reporter": "code",
+    "message-pusher": "general",
+    "test-page-builder": "code"
+  }
+}

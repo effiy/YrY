@@ -5,15 +5,18 @@ const https = require('https');
 const { execSync } = require('child_process');
 
 const args = process.argv.slice(2);
-const DEFAULT_CONFIG = '.claude/skills/wework-bot/config.local.json';
+const DEFAULT_CONFIG_LOCAL = '.claude/skills/wework-bot/config.local.json';
+const DEFAULT_CONFIG_BASE = '.claude/skills/wework-bot/config.json';
 /** 未传 --duration 且正文无该行时，仍输出本行，便于与 Cursor 会话核对，禁止留空。 */
 const DEFAULT_SESSION_DURATION = '未在本地记录，请从 Cursor 会话起止时间核对';
 /** 未传 --token-usage 且正文无该行时，仍输出本行；真实 Token 以 Cursor 用量为准。 */
 const DEFAULT_TOKEN_USAGE = '未在本地记录，请从 Cursor 用量面板核对';
+const DEFAULT_API_URL = 'https://api.effiy.cn/wework/send-message';
+
 const options = {
   token: process.env.API_X_TOKEN || null,
-  apiUrl: process.env.WEWORK_BOT_API_URL || 'https://api.effiy.cn/wework/send-message',
-  config: process.env.WEWORK_BOT_CONFIG || (fs.existsSync(DEFAULT_CONFIG) ? DEFAULT_CONFIG : null),
+  apiUrl: process.env.WEWORK_BOT_API_URL || null,
+  config: process.env.WEWORK_BOT_CONFIG || null,
   agent: null,
   robot: null,
   webhookUrl: process.env.WEWORK_WEBHOOK_URL || null,
@@ -61,6 +64,9 @@ const options = {
   noAutoGit: process.env.WEWORK_BOT_NO_AUTO_GIT === '1',
   dryRun: false
 };
+
+// 全局配置对象
+let globalConfig = null;
 
 function readValue(index, flag) {
   const value = args[index + 1];
@@ -173,8 +179,7 @@ for (let i = 0; i < args.length; i++) {
   } else if (arg === '--gate-name') {
     options.gateName = readValue(i, arg);
     i++;
-  } else if (arg === '--gate-result') {
-    options.gateResult = readValue(i, arg);
+  } else if (arg === '--gate-result') {options.gateResult = readValue(i, arg);
     i++;
   } else if (arg === '--sync-result') {
     options.syncResult = readValue(i, arg);
@@ -229,13 +234,13 @@ WeWork Bot - Send rich monitoring or alert messages
 Usage: node .claude/skills/wework-bot/scripts/send-message.js [options]
 
 Routing & Auth:
-  --token, -t          X-Token authentication (default from API_X_TOKEN env var)
-  --api-url, -a        API endpoint (default from WEWORK_BOT_API_URL or https://api.effiy.cn/wework/send-message)
-  --config             Robot routing config JSON (default from WEWORK_BOT_CONFIG or config.local.json when present)
+  --token, -t          X-Token authentication (default from API_X_TOKEN env var or config)
+  --api-url, -a        API endpoint (default from WEWORK_BOT_API_URL or config)
+  --config             Robot routing config JSON (default from WEWORK_BOT_CONFIG; if not set, merges config.json + config.local.json)
   --agent              Agent name; resolves robot from config agents map
   --robot, -r          Robot name; resolves webhook from config robots map
-  --webhook-url, -w    Full WeWork webhook URL (default from WEWORK_WEBHOOK_URL)
-  --webhook-key, -k    WeWork webhook key; builds the standard qyapi webhook URL (default from WEWORK_WEBHOOK_KEY)
+  --webhook-url, -w    Full WeWork webhook URL (default from WEWORK_WEBHOOK_URL or config)
+  --webhook-key, -k    WeWork webhook key; builds the standard qyapi webhook URL (default from WEWORK_WEBHOOK_KEY or config)
 
 Content:
   --content, -c        Message body (one-line conclusion or full multi-line elevator block)
@@ -303,16 +308,65 @@ function readJson(filePath) {
   }
 }
 
+function readJsonIfExists(filePath) {
+  try {
+    if (fs.existsSync(filePath)) {
+      return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    }
+  } catch (error) {
+    console.error(`Error: failed to read config ${filePath}: ${error.message}`);
+    process.exit(1);
+  }
+  return null;
+}
+
+function mergeConfig(base, local) {
+  if (!local) return base;
+  if (!base) return local;
+  const merged = { ...base };
+  if (local.default_robot) merged.default_robot = local.default_robot;
+  if (local.robots) merged.robots = { ...base.robots, ...local.robots };
+  if (local.agents) merged.agents = { ...base.agents, ...local.agents };
+  if (local.api_url) merged.api_url = local.api_url;
+  if (local.api_token) merged.api_token = local.api_token;
+  if (local.api_token_env) merged.api_token_env = local.api_token_env;
+  return merged;
+}
+
 function envValue(name) {
   return name ? process.env[name] : null;
 }
 
 function applyRobotConfig() {
-  if (!options.config) {
+  let config = null;
+
+  if (options.config) {
+    config = readJson(options.config);
+  } else {
+    const baseConfig = readJsonIfExists(DEFAULT_CONFIG_BASE);
+    const localConfig = readJsonIfExists(DEFAULT_CONFIG_LOCAL);
+    config = mergeConfig(baseConfig, localConfig);
+  }
+
+  if (!config) {
     return;
   }
 
-  const config = readJson(options.config);
+  globalConfig = config;
+
+  // 从全局配置获取 API token（如果还没有设置）
+  if (!options.token && config.api_token) {
+    options.token = config.api_token;
+  }
+  if (!options.token && config.api_token_env) {
+    options.token = envValue(config.api_token_env);
+  }
+
+  // 从全局配置获取 API URL（如果还没有设置）
+  if (!options.apiUrl && config.api_url) {
+    options.apiUrl = config.api_url;
+  }
+
   const hasWebhookOverride = Boolean(options.webhookUrl || options.webhookKey);
   const robotName = options.robot || (options.agent && config.agents ? config.agents[options.agent] : null) || config.default_robot;
 
@@ -323,7 +377,7 @@ function applyRobotConfig() {
 
   const robot = config.robots && config.robots[robotName];
   if (!robot) {
-    console.error(`Error: robot "${robotName}" is not defined in ${options.config}`);
+    console.error(`Error: robot "${robotName}" is not defined in config`);
     process.exit(1);
   }
 
@@ -333,12 +387,25 @@ function applyRobotConfig() {
     options.webhookKey = robot.webhook_key || envValue(robot.webhook_key_env);
   }
 
-  if (robot.api_url && !process.env.WEWORK_BOT_API_URL) {
+  if (robot.api_url && !options.apiUrl) {
     options.apiUrl = robot.api_url;
+  }
+
+  if (robot.api_token && !options.token) {
+    options.token = robot.api_token;
+  }
+
+  if (robot.api_token_env && !options.token) {
+    options.token = envValue(robot.api_token_env);
   }
 }
 
 applyRobotConfig();
+
+// 设置默认值（如果还是没有配置）
+if (!options.apiUrl) {
+  options.apiUrl = DEFAULT_API_URL;
+}
 
 function safeExec(command) {
   try {
@@ -363,7 +430,7 @@ function autoDetectGit() {
 autoDetectGit();
 
 if (!options.token) {
-  console.error('Error: --token is required or set API_X_TOKEN environment variable');
+  console.error('Error: --token is required, or set API_X_TOKEN environment variable, or configure in config.json/config.local.json');
   process.exit(1);
 }
 
@@ -627,7 +694,7 @@ if (charLength(description) > 100) {
 }
 
 if (options.improvementHints && charLength(options.improvementHints) > 500) {
-  console.error(`Error: --improvement-hints should be 500 characters or fewer (current: ${charLength(options.improvementHints)})`);
+  console.error(`Error: --improvement-hints should be 500 characters or fewer (current: ${charLength(description)})`);
   process.exit(1);
 }
 
@@ -638,7 +705,7 @@ if (!options.webhookUrl && options.webhookKey) {
 }
 
 if (!options.webhookUrl) {
-  console.error('Error: --webhook-url or --webhook-key is required, or set WEWORK_WEBHOOK_URL / WEWORK_WEBHOOK_KEY');
+  console.error('Error: --webhook-url or --webhook-key is required, or set WEWORK_WEBHOOK_URL / WEWORK_WEBHOOK_KEY, or configure in config.json/config.local.json');
   process.exit(1);
 }
 
