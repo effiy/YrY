@@ -5,7 +5,6 @@ const https = require('https');
 const { execSync } = require('child_process');
 
 const args = process.argv.slice(2);
-const DEFAULT_CONFIG_LOCAL = '.claude/skills/wework-bot/config.local.json';
 const DEFAULT_CONFIG_BASE = '.claude/skills/wework-bot/config.json';
 /** 未传 --duration 且正文无该行时，仍输出本行，便于与 Cursor 会话核对，禁止留空。 */
 const DEFAULT_SESSION_DURATION = '未在本地记录，请从 Cursor 会话起止时间核对';
@@ -81,11 +80,15 @@ function readValue(index, flag) {
   return value;
 }
 
+function blockSecretCliFlag(flag) {
+  console.error(`Error: ${flag} 已禁用。出于安全原因，仅允许使用系统环境变量提供凭证（API_X_TOKEN / WEWORK_WEBHOOK_URL 或 WEWORK_WEBHOOK_KEY*）。`);
+  process.exit(1);
+}
+
 for (let i = 0; i < args.length; i++) {
   const arg = args[i];
   if (arg === '--token' || arg === '-t') {
-    options.token = readValue(i, arg);
-    i++;
+    blockSecretCliFlag(arg);
   } else if (arg === '--api-url' || arg === '-a') {
     options.apiUrl = readValue(i, arg);
     i++;
@@ -99,11 +102,9 @@ for (let i = 0; i < args.length; i++) {
     options.robot = readValue(i, arg);
     i++;
   } else if (arg === '--webhook-url' || arg === '-w') {
-    options.webhookUrl = readValue(i, arg);
-    i++;
+    blockSecretCliFlag(arg);
   } else if (arg === '--webhook-key' || arg === '-k') {
-    options.webhookKey = readValue(i, arg);
-    i++;
+    blockSecretCliFlag(arg);
   } else if (arg === '--content' || arg === '-c') {
     options.content = readValue(i, arg);
     i++;
@@ -234,13 +235,13 @@ WeWork Bot - Send rich monitoring or alert messages
 Usage: node .claude/skills/wework-bot/scripts/send-message.js [options]
 
 Routing & Auth:
-  --token, -t          X-Token authentication (default from API_X_TOKEN env var or config)
+  --token, -t          [disabled] use API_X_TOKEN environment variable only
   --api-url, -a        API endpoint (default from WEWORK_BOT_API_URL or config)
-  --config             Robot routing config JSON (default from WEWORK_BOT_CONFIG; if not set, merges config.json + config.local.json)
+  --config             Robot routing config JSON (default from WEWORK_BOT_CONFIG; if not set, reads config.json only)
   --agent              Agent name; resolves robot from config agents map
   --robot, -r          Robot name; resolves webhook from config robots map
-  --webhook-url, -w    Full WeWork webhook URL (default from WEWORK_WEBHOOK_URL or config)
-  --webhook-key, -k    WeWork webhook key; builds the standard qyapi webhook URL (default from WEWORK_WEBHOOK_KEY or config)
+  --webhook-url, -w    [disabled] use WEWORK_WEBHOOK_URL environment variable only
+  --webhook-key, -k    [disabled] use WEWORK_WEBHOOK_KEY / WEWORK_WEBHOOK_KEY_* environment variable only
 
 Content:
   --content, -c        Message body (one-line conclusion or full multi-line elevator block)
@@ -320,19 +321,6 @@ function readJsonIfExists(filePath) {
   return null;
 }
 
-function mergeConfig(base, local) {
-  if (!local) return base;
-  if (!base) return local;
-  const merged = { ...base };
-  if (local.default_robot) merged.default_robot = local.default_robot;
-  if (local.robots) merged.robots = { ...base.robots, ...local.robots };
-  if (local.agents) merged.agents = { ...base.agents, ...local.agents };
-  if (local.api_url) merged.api_url = local.api_url;
-  if (local.api_token) merged.api_token = local.api_token;
-  if (local.api_token_env) merged.api_token_env = local.api_token_env;
-  return merged;
-}
-
 function envValue(name) {
   return name ? process.env[name] : null;
 }
@@ -344,8 +332,7 @@ function applyRobotConfig() {
     config = readJson(options.config);
   } else {
     const baseConfig = readJsonIfExists(DEFAULT_CONFIG_BASE);
-    const localConfig = readJsonIfExists(DEFAULT_CONFIG_LOCAL);
-    config = mergeConfig(baseConfig, localConfig);
+    config = baseConfig;
   }
 
   if (!config) {
@@ -354,20 +341,11 @@ function applyRobotConfig() {
 
   globalConfig = config;
 
-  // 从全局配置获取 API token（如果还没有设置）
-  if (!options.token && config.api_token) {
-    options.token = config.api_token;
-  }
-  if (!options.token && config.api_token_env) {
-    options.token = envValue(config.api_token_env);
-  }
-
   // 从全局配置获取 API URL（如果还没有设置）
   if (!options.apiUrl && config.api_url) {
     options.apiUrl = config.api_url;
   }
 
-  const hasWebhookOverride = Boolean(options.webhookUrl || options.webhookKey);
   const robotName = options.robot || (options.agent && config.agents ? config.agents[options.agent] : null) || config.default_robot;
 
   if (!robotName) {
@@ -382,21 +360,12 @@ function applyRobotConfig() {
   }
 
   options.robot = robotName;
-  if (!hasWebhookOverride) {
-    options.webhookUrl = robot.webhook_url || envValue(robot.webhook_url_env);
-    options.webhookKey = robot.webhook_key || envValue(robot.webhook_key_env);
-  }
+  // 仅允许从系统环境变量读取 webhook：robot 配置只能提供 *_env 字段
+  options.webhookUrl = options.webhookUrl || envValue(robot.webhook_url_env);
+  options.webhookKey = options.webhookKey || envValue(robot.webhook_key_env);
 
   if (robot.api_url && !options.apiUrl) {
     options.apiUrl = robot.api_url;
-  }
-
-  if (robot.api_token && !options.token) {
-    options.token = robot.api_token;
-  }
-
-  if (robot.api_token_env && !options.token) {
-    options.token = envValue(robot.api_token_env);
   }
 }
 
@@ -430,7 +399,7 @@ function autoDetectGit() {
 autoDetectGit();
 
 if (!options.token) {
-  console.error('Error: --token is required, or set API_X_TOKEN environment variable, or configure in config.json/config.local.json');
+  console.error('Error: missing API_X_TOKEN environment variable');
   process.exit(1);
 }
 
@@ -705,7 +674,7 @@ if (!options.webhookUrl && options.webhookKey) {
 }
 
 if (!options.webhookUrl) {
-  console.error('Error: --webhook-url or --webhook-key is required, or set WEWORK_WEBHOOK_URL / WEWORK_WEBHOOK_KEY, or configure in config.json/config.local.json');
+  console.error('Error: missing WEWORK_WEBHOOK_URL or WEWORK_WEBHOOK_KEY (or WEWORK_WEBHOOK_KEY_* for routed robots) environment variable');
   process.exit(1);
 }
 

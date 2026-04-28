@@ -20,18 +20,16 @@ POST https://api.effiy.cn/wework/send-message
 认证：
 
 - Header 使用 `X-Token`
-- `X-Token` 来自 `--token` 或 `API_X_TOKEN`
+- `X-Token` **仅来自系统环境变量** `API_X_TOKEN`（不接受命令行参数或本地配置兜底）
 
 ## webhook 配置
 
 支持五种方式，优先级从高到低：
 
-1. `--webhook-url`：完整 webhook URL
-2. `--webhook-key`：只传 key，脚本自动拼接标准 webhook
-3. `WEWORK_WEBHOOK_URL` / `WEWORK_WEBHOOK_KEY`：全局环境兜底机器人
-4. `--robot` + `--config`：从配置文件的 `robots` 中选择机器人
-5. `--agent` + `--config`：从配置文件的 `agents` 映射到机器人
-6. 配置文件中的 `default_robot`：未传 `--config` 时，脚本会在存在本地文件时自动加载 `.claude/skills/wework-bot/config.local.json`
+1. `WEWORK_WEBHOOK_URL` / `WEWORK_WEBHOOK_KEY`：全局环境兜底机器人
+2. `--robot` + `--config`：从配置文件的 `robots` 中选择机器人（配置只提供 *_env 字段）
+3. `--agent` + `--config`：从配置文件的 `agents` 映射到机器人
+4. 配置文件中的 `default_robot`
 
 ```text
 https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=<key>
@@ -67,13 +65,11 @@ https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=<key>
 
 | 字段 | 说明 |
 |------|------|
-| `webhook_url` | 完整 webhook，不推荐提交真实值 |
 | `webhook_url_env` | 从环境变量读取完整 webhook |
-| `webhook_key` | webhook key，不推荐提交真实值 |
 | `webhook_key_env` | 从环境变量读取 webhook key |
 | `api_url` | 可选，覆盖默认发送 API |
 
-推荐只提交 `config.example.json`，真实配置放在未提交的 `config.local.json` 或环境变量中。默认机器人需要完整 URL 时使用 `webhook_url` 字段；需要按环境隔离时使用 `webhook_url_env` 或 `webhook_key_env`。
+推荐只提交 `config.json`（或示例配置），真实凭证只放在系统环境变量中。配置文件不得包含 `webhook_url` / `webhook_key` / token 等任何明文密钥。
 
 ## 消息格式
 
@@ -314,7 +310,7 @@ https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=<key>
 ## 安全约束
 
 - 不得提交真实 `X-Token`、完整 webhook URL 或 webhook key。
-- 不得提交包含真实机器人密钥的 `config.local.json`。
+- 不得把任何密钥写入仓库文件（含 `config.json`、示例配置或脚本参数）。
 - 日志和最终回复必须脱敏。
 - 缺少 token 或 webhook 时必须停止，不尝试匿名发送。
 - 使用 `--dry-run` 验证参数时不得实际发送消息。

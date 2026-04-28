@@ -24,7 +24,7 @@ description: 发送企业微信机器人消息，用于 generate-document、impl
 |------|--------|------|
 | `token` | `API_X_TOKEN` | `https://api.effiy.cn` 的 `X-Token` |
 | `apiUrl` | `https://api.effiy.cn/wework/send-message` | 发送消息 API |
-| `config` | `WEWORK_BOT_CONFIG`；未设置时合并 `config.json` + `config.local.json` | 多机器人路由配置 JSON |
+| `config` | `WEWORK_BOT_CONFIG`；未设置时读取 `config.json` | 多机器人路由配置 JSON（仅用于路由与 env 名称映射，不承载任何明文密钥） |
 | `agent` | 无 | agent 名称，用于从配置中选择机器人 |
 | `robot` | 配置默认值 | 机器人名称，优先级高于 `agent` |
 | `webhookUrl` | `WEWORK_WEBHOOK_URL` | 完整企业微信机器人 webhook |
@@ -97,8 +97,8 @@ description: 发送企业微信机器人消息，用于 generate-document、impl
 2. **补齐业务度量与会话成本**：完成通知、阻断通知、门禁异常通知**必须**出现 `⏱️ 用时`（本次会话耗时）与 `🪙 会话用量`（本次会话 Token/用量，与 Cursor 可核对）。须尽量再补齐 `🤝 AI 调用`、`🔗 调用链`、`📐 实施总结图表`、`🧩 MCP 明细`、`🧾 待办与风险`、`🗂️ 状态回写`、`📁 测试路径`、`🧫 测试统计`、`🔁 修复轮次`、`📦 产物`、`☁️ 文档同步`、`🌿 分支`、`🔖 提交` 等；其中前四项与 `06_实施总结.md` 的「AI 调用记录」及 §1/§2 Mermaid 图一致。脚本会自动检测 git 分支和 commit，并在未手写/未传 `--duration` / `--token-usage` 时**仍注入**上述两行（缺省为可核对说明，避免空项）。其余字段由调用方传入（可在命令行使用 `--diagram-summary`、`--mcp-breakdown`、`--backlog`、`--status-rewrite`）。
 2.1 **会话起止时间强制**：任意 wework-bot 推送（含阶段通知、完成/阻断/门禁异常）**必须**包含 `🟢 开始时间` 与 `🔴 结束时间` 两行。推荐不手填，由 `send-message.js` 从 `.claude/session-time.json` 自动读取；若本地未启用 hooks 或文件缺失，脚本会注入缺省说明以保证字段不缺失（并提示从 Cursor 会话历史核对）。
 3. **补齐元信息**：每条消息必须包含 `🤖 模型`、`🧰 工具`、`🕒 最后更新` 三行；脚本会在缺失时自动补齐。长流程类推送在元信息前还应已有 `⏱️ 用时` 与 `🪙 会话用量`（见上条）。
-4. **选择机器人**：优先使用显式 `webhookUrl` / `webhookKey`；其次使用环境变量；否则按 `robot` 或 `agent` 从配置中解析；未指定时走配置中的 `default_robot`。
-5. **校验凭据**：`X-Token` 和 webhook 必须来自参数或环境变量，不得写入仓库。
+4. **选择机器人**：从环境变量读取 webhook（`WEWORK_WEBHOOK_URL` / `WEWORK_WEBHOOK_KEY*`）；必要时按 `robot` 或 `agent` 从配置中解析应读取的环境变量名；未指定时走配置中的 `default_robot`。
+5. **校验凭据**：`X-Token` 与 webhook **仅允许来自系统环境变量**，不得写入仓库或本地配置文件。
 6. **发送消息**：调用 `scripts/send-message.js`。
 7. **汇总结果**：记录 HTTP 状态码、响应摘要、机器人路由、消息时间和脱敏凭据摘要；失败时返回错误原因。若该消息用于门禁失败、门禁失效或流程阻断，发送失败也必须写入实施总结或兜底运行记录。
 
@@ -112,8 +112,7 @@ description: 发送企业微信机器人消息，用于 generate-document、impl
 使用完整 webhook：
 
 ```bash
-API_X_TOKEN=*** node .claude/skills/wework-bot/scripts/send-message.js \
-  --webhook-url "$WEWORK_WEBHOOK_URL" \
+API_X_TOKEN=*** WEWORK_WEBHOOK_URL=*** node .claude/skills/wework-bot/scripts/send-message.js \
   --content "implement-code 阶段 6 冒烟测试通过" \
   --description "真实页面冒烟测试已通过，关键用户路径可继续进入收尾。" \
   --flow implement-code \
@@ -136,8 +135,7 @@ API_X_TOKEN=*** WEWORK_WEBHOOK_KEY=*** node .claude/skills/wework-bot/scripts/se
 按 agent 路由：
 
 ```bash
-API_X_TOKEN=*** WEWORK_BOT_CONFIG=.claude/skills/wework-bot/config.local.json \
-  node .claude/skills/wework-bot/scripts/send-message.js \
+API_X_TOKEN=*** WEWORK_WEBHOOK_KEY_CODE=*** node .claude/skills/wework-bot/scripts/send-message.js \
   --agent code-reviewer \
   --content "code-reviewer 发现 P0 问题，需要人工处理" \
   --description "代码审查发现阻断项，需要人工确认修复策略。"
@@ -147,8 +145,6 @@ API_X_TOKEN=*** WEWORK_BOT_CONFIG=.claude/skills/wework-bot/config.local.json \
 
 ```bash
 node .claude/skills/wework-bot/scripts/send-message.js \
-  --token "***" \
-  --webhook-key "***" \
   --content "预警测试" \
   --description "验证企业微信机器人路由和消息格式，不实际发送。" \
   --dry-run
@@ -361,16 +357,7 @@ node .claude/skills/wework-bot/scripts/send-message.js \
 
 ## 多机器人路由
 
-本项目采用双层配置结构：
-- `config.json`：默认配置（已提交到仓库）
-- `config.local.json`：本地覆盖配置（已加入 `.gitignore`，不会提交）
-
-合并规则：
-- `default_robot`：优先使用 `config.local.json` 的值
-- `robots`：合并两个配置，同名机器人以 `config.local.json` 为准
-- `agents`：合并两个配置，同名 agent 以 `config.local.json` 为准
-
-脚本会优先读取 `WEWORK_BOT_CONFIG`；若未设置，会自动合并 `config.json` + `config.local.json`。
+脚本会优先读取 `WEWORK_BOT_CONFIG`；若未设置，会读取仓库内默认 `config.json`。配置文件仅允许保存机器人/agent 的**路由关系**与**环境变量名映射**（如 `webhook_key_env`），不得保存任何明文密钥或完整 webhook。
 
 **必须预设的环境变量（只需设置一次）：**
 
@@ -382,16 +369,15 @@ export API_X_TOKEN=12345678
 
 配置优先级：
 
-1. 命令行 `--webhook-url` / `--webhook-key`
-2. 环境变量 `WEWORK_WEBHOOK_URL` / `WEWORK_WEBHOOK_KEY`
-3. 命令行 `--robot`
-4. 命令行 `--agent` 映射到配置中的机器人
-5. 配置中的 `default_robot`（`config.local.json` 优先）
+1. 环境变量 `WEWORK_WEBHOOK_URL` / `WEWORK_WEBHOOK_KEY`
+2. 命令行 `--robot`
+3. 命令行 `--agent` 映射到配置中的机器人
+4. 配置中的 `default_robot`
 
 ## 安全约束
 
 - 不得提交真实 `X-Token`、webhook URL 或 webhook key。
-- 不得提交 `config.local.json` 这类包含真实机器人密钥的配置文件。
+- 不得把任何密钥写入仓库文件（含配置文件或脚本参数）。
 - 回复用户时只展示脱敏摘要，不展示完整密钥。
 - `generate-document` 和 `implement-code` 流程结束时的完成通知属于**强制执行**，不受"默认不自动发送"约束；其余场景默认不自动发送，除非用户明确要求或调用方 skill 的流程规则要求通知。
 
@@ -400,5 +386,4 @@ export API_X_TOKEN=12345678
 - `README.md`：快速使用说明
 - `rules/message-contract.md`：消息格式、安全和调用契约
 - `config.json`：默认配置（已提交）
-- `config.local.json`：本地覆盖配置（不提交）
 - `scripts/send-message.js`：实际发送脚本

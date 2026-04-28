@@ -109,7 +109,8 @@ function determineConfig() {
     } else if (arg === '--exts' || arg === '-e') {
       config.exts = args[++i].split(',').map(e => e.trim().toLowerCase());
     } else if (arg === '--token' || arg === '-t') {
-      config.token = args[++i];
+      console.error('Error: --token 已禁用。出于安全原因，仅允许使用系统环境变量 API_X_TOKEN。');
+      process.exit(1);
     } else if (arg === '--api-url' || arg === '-a') {
       config.apiUrl = args[++i];
     } else if (arg === '--prefix' || arg === '-p') {
@@ -162,7 +163,7 @@ Usage:
 Options:
   --dir, -d     Directory to import (default: auto-detect)
   --exts, -e    File extensions (comma-separated, default: auto-detect)
-  --token, -t   X-Token authentication (default from API_X_TOKEN env var, import only)
+  --token, -t   [disabled] use API_X_TOKEN environment variable only
   --api-url, -a API base URL (default: https://api.effiy.cn)
   --prefix, -p  Path prefix (comma-separated, e.g. Projects,YiWeb)
   --help, -h    Show this help message
@@ -356,7 +357,7 @@ async function main() {
   }
 
   if (!config.token) {
-    console.error('Error: --token is required or set API_X_TOKEN environment variable');
+    console.error('Error: missing API_X_TOKEN environment variable');
     process.exit(1);
   }
 

@@ -51,7 +51,7 @@
 5. `skills/wework-bot/scripts/send-message.js`
 6. 长流程推送正文策划与反幻觉核对：`agents/message-pusher.md`（先 Plan 后写稿，再调 `send-message.js`）
 
-本地默认机器人配置在未提交的 `skills/wework-bot/config.local.json` 中；脚本会在该文件存在时自动加载，作为 `generate-document`、`import-docs` 和长流程阻断通知的默认推送通道。
+默认机器人路由配置位于 `skills/wework-bot/config.json`。出于安全原因，`wework-bot` 发送所需的 `API_X_TOKEN` 与 webhook 相关凭证**仅允许**来自系统环境变量（不从任何本地配置文件自动加载明文密钥）。
 
 ### 技能与代理分工
 

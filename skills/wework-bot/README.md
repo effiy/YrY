@@ -5,17 +5,14 @@
 
 ## 快速开始
 
-本项目已配置好：
-- `config.json`：默认配置（已提交）
-- `config.local.json`：本地覆盖配置（未提交，优先级更高）
-
-默认机器人 `general` 已在 `config.local.json` 中配置本地默认 webhook。只需预设 API token 即可直接使用：
+本项目已配置好 `config.json`（默认路由配置，已提交）。出于安全原因，本技能**只允许**从系统环境变量读取凭证（`API_X_TOKEN` 与 `WEWORK_WEBHOOK_URL/WEWORK_WEBHOOK_KEY*`），不会从本地配置文件读取明文 webhook 或 token。
 
 ```bash
 export API_X_TOKEN=12345678
+export WEWORK_WEBHOOK_KEY=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
 
-发送消息（自动加载 `config.local.json` 中的默认机器人）：
+发送消息：
 
 ```bash
 node .claude/skills/wework-bot/scripts/send-message.js \
@@ -109,13 +106,13 @@ node .claude/skills/wework-bot/scripts/send-message.js \
 
 ## 常用参数
 
-- `--token, -t`：API X-Token，默认读取 `API_X_TOKEN`
+- `--token, -t`：**已禁用**（请使用 `API_X_TOKEN` 环境变量）
 - `--api-url, -a`：发送 API，默认 `https://api.effiy.cn/wework/send-message`
-- `--config`：机器人路由配置，默认读取 `WEWORK_BOT_CONFIG`；未设置时自动合并 `config.json` + `config.local.json`
+- `--config`：机器人路由配置，默认读取 `WEWORK_BOT_CONFIG`；未设置时读取 `config.json`
 - `--agent`：agent 名称，从配置中解析机器人
 - `--robot, -r`：机器人名称，优先级高于 `--agent`
-- `--webhook-url, -w`：完整企业微信机器人 webhook
-- `--webhook-key, -k`：企业微信机器人 key，自动拼接标准 webhook
+- `--webhook-url, -w`：**已禁用**（请使用 `WEWORK_WEBHOOK_URL` 环境变量）
+- `--webhook-key, -k`：**已禁用**（请使用 `WEWORK_WEBHOOK_KEY` / `WEWORK_WEBHOOK_KEY_*` 环境变量）
 - `--content, -c`：消息正文
 - `--description, -d`：消息描述，必填，100 字以内；也可写在正文的 `📝 描述：...` 行
 - `--content-file, -f`：从文件读取消息正文
@@ -190,19 +187,4 @@ node .claude/skills/wework-bot/scripts/send-message.js \
 
 ## 配置说明
 
-配置采用双层结构：
-- `config.json`：默认配置（已提交到仓库）
-- `config.local.json`：本地覆盖配置（不提交，优先级更高）
-
-合并规则：
-- `default_robot`：优先使用 `config.local.json` 的值
-- `robots`：合并两个配置，同名机器人以 `config.local.json` 为准
-- `agents`：合并两个配置，同名 agent 以 `config.local.json` 为准
-
-若使用本仓库已有 `config.local.json`，通常只需要设置 `API_X_TOKEN`：
-
-```bash
-export API_X_TOKEN=***
-```
-
-如需自定义配置，编辑 `config.local.json` 即可。不要提交包含真实 webhook key 的本地配置。
+配置文件仅用于“路由关系 + 环境变量名映射”（如 `agents` 映射到机器人、机器人使用哪个 `WEWORK_WEBHOOK_KEY_*`）。**禁止**在配置文件里保存 `webhook_url`、`webhook_key` 或任何 token 明文。
