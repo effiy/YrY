@@ -20,10 +20,10 @@ user_invocable: true
 ## 核心原则
 
 1. **文档驱动**：实施决策必须能回溯到文档或代码来源
-2. **Agent 实干**：关键阶段必须调用 agent 并采纳其输出
+2. **Agent 实干**：关键阶段必须调用 agent 并采纳其必答问题回答
 3. **项目适配**：实施顺序和约束按 `rules/code-implementation.md`（每个项目已定制）
 4. **影响链闭合**：代码变更前后必须做全项目影响分析
-5. **默认自动决策**：尽量不打断用户，缺失信息写"待确认"并继续推进；所有 agent 必答问题自动作答，不确定时输出建议方案继续
+5. **默认自动决策**：尽量不打断，缺失信息写"待确认"并继续推进
 
 ## 何时使用
 
@@ -39,7 +39,7 @@ user_invocable: true
 
 ## list 功能
 
-`/implement-code list` — 列举 `docs/` 下可用功能目录。空结果时建议先运行 `generate-document`。
+`/implement-code list` — 列举 `docs/` 下可用功能目录（排除 `99_agent-runs`）。空结果时建议先运行 `generate-document`。
 
 ## Git 分支约定
 
@@ -67,29 +67,26 @@ P1/P2 文档（缺失不阻断）：
 ### 阶段 1：预检 + 影响分析
 
 - 解析 `{功能名}`，预检 P0 文档是否齐全
-- **读取项目基础文件作为动态上下文**：`CLAUDE.md`（技术栈+架构约束）、`README.md`（快速开始）、`docs/architecture.md`（架构约定+编码规范）、`docs/auth.md`（鉴权自检规则）、`docs/security.md`（安全自检规则）、`docs/FAQ.md`（常见故障排查）
-- 根据文档类型和关键词检索适用规范（Glob 定位 + Read 确认适用性）
+- **必须调用 `spec-retriever`**：检索适用规范，读取记忆文件获取历史检索经验
 - **必须调用 `impact-analyst`**：
-  - 先读取 `../../shared/document-contracts.md` 影响分析契约
+  - 先读取 `../../shared/impact-analysis-contract.md`
   - 先读取 `.claude/agents/memory/impact-analyst.md`
-  - 必答问题自动作答，执行全项目影响链闭合分析
+  - 执行全项目影响链闭合分析（上游依赖、反向依赖、传递依赖、导出链、注册链）
   - 影响链分析结果**必须采纳**，确认设计文档改动点与真实代码一致
-- **必须调用 `architect`**：确认架构方案与项目架构约定一致，必答问题自动作答
+- **必须调用 `architect`**：确认架构方案与项目架构约定一致
 - MCP 增强：`code-analyzer-mcp`（依赖分析）、`doc-index-mcp`（文档检索）、`git-workflow-mcp`（分支创建）
 - 退出条件：P0 文档齐全 + 影响链闭合 + 架构确认
 
 ### 阶段 2：代码实施
 
-- 按 `rules/code-implementation.md` 的实施顺序逐模块编码，实施决策基于阶段 1 读取的项目基础文件动态推断
-- **编码前对照 `docs/auth.md` 自检规则**：若本次实施涉及鉴权代码，按 auth.md 的 P0 自检项逐条核对
-- **编码前对照 `docs/security.md` 自检规则**：若本次实施涉及安全相关代码，按 security.md 的 P0 自检项逐条核对
+- 按 `rules/code-implementation.md` 的实施顺序逐模块编码
 - 每模块完成后**必须调用 `code-reviewer`** 审查：
   - P0 问题必须立即修复
   - P1/P2 记录但不阻断当前模块
 - 每模块完成后自检：
   1. 消除 P0 语法错误
   2. 确认项目架构约束（见 `code-implementation.md`）
-  3. 确认 data-testid 覆盖 + 项目架构约定满足
+  3. 确认 data-testid 覆盖 + createBaseView 调用完整
   4. 全项目范围影响链回归验证
 - MCP 增强：`code-analyzer-mcp`（架构检查）、`git-workflow-mcp`（变更影响分析）
 - 退出条件：所有模块实现完成 + 逐模块验证记录齐全
@@ -97,12 +94,14 @@ P1/P2 文档（缺失不阻断）：
 ### 阶段 3：验证 + 审查
 
 - **必须调用 `code-reviewer`**：全量代码审查（架构一致性 + 编码规范 + 安全 + 边界处理）
-- **动态项目专项审查**：基于阶段 1 读取的项目基础文件动态推断项目特有审查点
+- **项目特有 agent 必须调用**：
+  - YiPet：`extension-tester`（manifest.json、content_scripts、权限）
+  - shennong-ui：`auth-reviewer`（SSO 配置、鉴权流程、v-permission）
+  - YiPot：审查 Tauri IPC 封装 + allowlist 最小化
+  - YiWeb：审查 CDN 组件注册 + createBaseView 调用
+  - YiAi：审查异步安全 + 服务层分离
+  - YiH5：审查事件监听器清理 + CustomEvent 通信
 - 验证 P0 检查项（来自 `05_动态检查清单`）
-- **验证前必须进入 plan 模式进行动态自检规划**：
-  - 读取 `05_动态检查清单.md`，根据当前实施内容逐项评估适用性和优先级
-  - 识别本次实施特有的验证要点，动态调整验证清单
-  - 产出动态验证计划后再执行正式验证
 - MCP 增强：`code-analyzer-mcp`（死代码检测）
 - 退出条件：无 P0 代码审查问题 + P0 检查项全部通过
 
@@ -110,22 +109,22 @@ P1/P2 文档（缺失不阻断）：
 
 - 生成 `06_实施总结.md`（结构见 `rules/process-summary.md`）
 - 回写 `01/02/03/04/05/07` 的实施状态
-- P0/P1/P2 统计和可复用知识追加到 `.claude/agents/memory/` 对应记忆文件
-- **必须执行 `import-docs`**：文档同步到 YiAi / YiDocs
-- **必须调用 `message-pusher`**：基于本次真实执行数据动态生成推送文案（AI 调用链、起止时间、用量、改进建议、下一步），不得直接套用静态模板
-- **必须执行 `wework-bot`**：采用 `message-pusher` 生成的文案发送完成通知
-- 退出条件：总结写入完成 + 状态回写完成
+- **必须调用 `quality-tracker`**：P0/P1/P2 统计追加到记忆文件
+- **必须调用 `knowledge-curator`**：策展可复用知识到记忆文件
+- **必须执行 `import-docs` 文档同步 + `wework-bot` 完成通知**：严格按 `../wework-bot/SKILL.md` 的「生动总结格式规范」发送通知，通知内容必须包含 `⏱️ 用时`、`🪙 会话用量`、`🤖 模型`、`🧰 工具`、`🕒 最后更新时间`（精确到秒）
+- 退出条件：总结写入完成 + 状态回写完成 + 通知发送完成
 
 ## Agent 调用契约
 
-所有 agent 必答问题均自动作答、不打断用户。不确定时输出建议方案或"待确认"继续推进。
-
-| Agent | 触发阶段 | 自动作答要点 | 采纳规则 |
-|-------|---------|-------------|---------|
-| `impact-analyst` | 1 | 自动执行全项目影响链闭合分析 | 影响链分析结果必须采纳，确认改动点与真实代码一致 |
-| `architect` | 1 | 基于设计文档+项目代码自动确认架构方案 | 架构方案必须与项目约定一致 |
-| `code-reviewer` | 2（每模块）+ 3（全量） | 自动审查架构一致性+编码规范+安全+边界 | P0 必须修复；P1/P2 记录不阻断 |
-| `message-pusher` | 4（必须） | 基于本次执行数据动态生成生动总结推送文案 | 推送文案必须采用其输出 |
+| Agent | 触发阶段 | 必答问题 | 采纳规则 |
+|-------|---------|---------|---------|
+| `spec-retriever` | 1 | 无特定必答问题 | 返回规范列表用于后续步骤 |
+| `impact-analyst` | 1 | 见 `.claude/agents/impact-analyst.md` | 影响链分析结果必须采纳，确认改动点与真实代码一致 |
+| `architect` | 1 | 5 个必答问题见 `.claude/agents/architect.md` | 架构方案必须与项目约定一致 |
+| `code-reviewer` | 2（每模块）+ 3（全量） | 见 `.claude/agents/code-reviewer.md` | P0 必须修复；P1/P2 记录不阻断 |
+| 项目特有 agent | 3 | 见各项目 agent 定义 | P0 必须修复 |
+| `quality-tracker` | 4 | 无特定必答问题 | 统计追加到记忆文件 |
+| `knowledge-curator` | 4 | 无特定必答问题 | 知识提取到记忆文件 |
 
 ## 停止条件
 
@@ -140,20 +139,23 @@ P1/P2 文档（缺失不阻断）：
 1. 记录阻断原因和已产生产物
 2. 生成阻断版 `06_实施总结.md`
 3. 回写阻断状态到 `01/02/03/04/05/07`
-4. **必须执行 `import-docs` + `wework-bot`** 阻断通知
+4. 建议执行 `import-docs` + `wework-bot` 阻断通知
 
 ## 相关技能与代理
 
 | 名称 | 调用阶段 | 用途 |
 |------|---------|------|
+| `spec-retriever` | 1 | 智能规范检索 |
 | `impact-analyst` | 1 | 全项目影响链分析 |
 | `architect` | 1 | 架构确认 |
 | `code-reviewer` | 2, 3 | 逐模块 + 全量代码审查 |
 | `test-page-builder` | 2（前端项目） | 测试原型页 |
 | `security-reviewer` | 3（涉及鉴权/安全） | 安全审查 |
-| `import-docs` | 4（必须） | 文档同步 |
-| `message-pusher` | 4（必须） | 基于本次执行数据动态生成生动总结推送文案 |
-| `wework-bot` | 4（必须） | 采用 message-pusher 文案发送完成/阻断通知 |
+| 项目特有 agent | 3 | 项目专项审查 |
+| `quality-tracker` | 4 | 质量趋势统计 |
+| `knowledge-curator` | 4 | 知识策展 |
+| `import-docs` | 4（可选） | 文档同步 |
+| `wework-bot` | 4（可选） | 完成/阻断通知 |
 
 ## 支持文件结构
 

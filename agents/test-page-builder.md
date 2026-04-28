@@ -71,6 +71,9 @@ data-testid 清单：
 - 若场景信息不足以确定 UI 元素，输出"需补充：<缺失内容>"，不猜测。
 - 每个场景生成独立文件，不合并多个场景到同一页面。
 
-## 记忆
+## 记忆协议
 
-记忆文件：`.claude/agents/memory/test-page-builder.md`。每次调用后追加 1-3 条关键发现。
+- **记忆文件**：`.claude/agents/memory/test-page-builder.md`
+- **读取策略**：调用前读取记忆文件，获取历史构建模式（如常用 data-testid 命名、桩行为模式）
+- **写入策略**：调用后追加关键发现（1-3 条：testid 命名经验、桩行为设计模式、外部依赖模拟经验）
+- **跨查阅**：可读取 `knowledge.md` 获取跨 agent 共性知识
