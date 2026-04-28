@@ -8,7 +8,7 @@
 本项目已配置好未提交的 `config.local.json`，默认机器人 `general` 已使用本地默认 webhook。只需预设 API token 即可直接使用：
 
 ```bash
-export API_X_TOKEN=12345678
+export API_X_TOKEN=XXXXXXXXXX
 ```
 
 发送消息（自动加载 `config.local.json` 中的默认机器人）：

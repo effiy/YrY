@@ -36,9 +36,6 @@ triggers:
 - 选择器优先 `data-testid`
 - 若场景信息不足以推断断言，输出"需补充：<缺失内容>"
 
-## 记忆协议
+## 记忆
 
-- **记忆文件**：`.claude/agents/memory/e2e-tester.md`
-- **读取策略**：调用前读取记忆文件
-- **写入策略**：调用后追加关键发现（1-3 条）
-- **跨查阅**：可读取 `knowledge.md` 获取跨 agent 共性知识
+记忆文件：`.claude/agents/memory/e2e-tester.md`。每次调用后追加 1-3 条关键发现。
