@@ -48,6 +48,15 @@
 
 ---
 
+## 使用加强（执行门禁）
+
+- 对话出现「发群 / 企微通知 / wework-bot」任一意图时，评测默认要求一次真实发送，不接受“仅草稿未发”收尾。
+- `generate-document` / `implement-code` 的完成通知必须校验 `☁️ 文档同步` 来自**本轮刚执行**的 `import-docs` 统计。
+- 若发送失败，结果中必须给出可核对失败原因（token / webhook / 网关响应）与恢复动作，不可仅写“稍后重试”。
+- 阻断、门禁失败、流程异常中断三类场景均属于强制通知范围，摘要段应直接可读结论与下一步。
+
+---
+
 ## 与 Agent 的配合
 
 推送长文案策划可先对齐 `.claude/agents/message-pusher.md`，再调用脚本；详见 [agents/message-pusher.md](../agents/message-pusher.md)。
