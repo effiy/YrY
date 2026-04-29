@@ -248,7 +248,7 @@
 
 ### 9.2 校验方式（推荐）
 
-使用仓库脚本快速校验（仅校验“结构与必答覆盖”，不校验业务真伪）：
+使用仓库脚本快速校验（仅校验“结构与必答覆盖”，不校验内容真伪）：
 
 ```bash
 node scripts/validate-agent-output.js --agent spec-retriever --text "<粘贴 agent 输出>"

@@ -13,6 +13,7 @@ entry_count: 3
 **上下文**：执行 /generate-document init 命令
 
 **可复用知识**：
+
 1. init 命令的标准流程：
    - 步骤1：解析+规范检索（调用 spec-retriever）
    - 步骤2：上游Grounding+影响分析（读取项目代码）
@@ -35,13 +36,14 @@ entry_count: 3
 
 ---
 
-### 条目2：YiPet 项目架构特点
+### 条目2：示例项目架构特点（去业务化）
 
 **时间**：2026-04-29
 
-**上下文**：扫描 YiPet 项目代码
+**上下文**：扫描某个 Chrome 扩展类项目代码（与具体业务无关）
 
 **可复用知识**：
+
 1. 技术栈：
    - Chrome Extension Manifest V3
    - Vanilla JavaScript（零构建，直接加载运行）
@@ -53,14 +55,14 @@ entry_count: 3
    - chrome.storage.local（数据持久化）
 
 2. 架构模式：
-   - IIFE 模块封装，挂载到 window.PetManager 命名空间
-   - 配置中心模式（core/config.js 暴露 PET_CONFIG）
+   - IIFE 模块封装，挂载到 `window.AppManager`（或类似全局命名空间）
+   - 配置中心模式（如 `core/config.js` 暴露 `APP_CONFIG`）
    - Hooks 工厂模式（createStore + useComputed + useMethods）
    - 零构建架构（无需 npm install，直接加载源码）
 
 3. 目录结构：
    - core/：核心模块（config、utils、api、constants、bootstrap）
-   - modules/：功能模块（pet、faq、mermaid、extension、chat、screenshot、session）
+   - modules/：功能模块（如 faq、mermaid、extension、chat、screenshot、session 等）
    - libs/：第三方库（vue.global.js、marked.min.js、turndown.js、mermaid.min.js、md5.js）
    - assets/：静态资源（styles、icons、images）
 
@@ -75,6 +77,7 @@ entry_count: 3
 **上下文**：本次 /generate-document init 执行后的反思
 
 **可复用知识**：
+
 1. 环境检查前置：
    - 建议在开始生成前先检查 API_X_TOKEN、wework-bot 配置
    - 提前告知用户需要配置的内容，避免最后才发现无法完成同步和通知

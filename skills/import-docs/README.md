@@ -39,7 +39,7 @@ node .claude/import-docs.js --dir docs --prefix Projects,YourNamespace
 - `--dir, -d`：导入目录（默认：自动检测）
 - `--exts, -e`：扩展名（默认：自动检测）
 - `--token, -t`：已禁用；`X-Token` 仅从系统环境变量 `API_X_TOKEN` 读取
-- `--api-url, -a`：API 地址，默认 `https://api.effiy.cn`
+- `--api-url, -a`：API 地址，默认 `https://api.example.com`
 - `--prefix, -p`：远端路径前缀，逗号分隔
 
 特殊规则：

@@ -70,5 +70,5 @@
 node scripts/validate-agent-output.js --agent spec-retriever --file /path/to/output.txt
 ```
 
-该脚本只校验“契约结构与必答问题覆盖”，不校验业务内容真伪；真伪仍由 `shared/evidence-and-uncertainty.md` 与上游证据链约束。
+该脚本只校验“契约结构与必答问题覆盖”，不校验内容真伪；真伪仍由 `shared/evidence-and-uncertainty.md` 与上游证据链约束。
 

@@ -2,7 +2,7 @@
 
 /**
  * 企业微信推送 CLI：正文由调用方（如 agent / message-pusher）写好，本脚本只负责
- * 路由、webhook 解析与请求 api.effiy.cn。
+ * 路由、webhook 解析与请求通知网关（可配置）。
  */
 
 const fs = require('fs');
@@ -17,7 +17,7 @@ const SCRIPT_DIR = path.dirname(__filename);
 const PROJECT_ROOT = path.resolve(SCRIPT_DIR, '../../../..');
 const CLAUDE_ROOT = path.join(PROJECT_ROOT, '.claude');
 const DEFAULT_CONFIG_BASE = path.join(CLAUDE_ROOT, 'skills/wework-bot/config.json');
-const DEFAULT_API_URL = 'https://api.effiy.cn/wework/send-message';
+const DEFAULT_API_URL = 'https://api.example.com/wework/send-message';
 
 /** X-Token 仅从系统环境变量 `API_X_TOKEN` 读取，不接受配置文件或其它来源。 */
 function readApiXTokenFromEnv() {
@@ -52,16 +52,16 @@ function bodyIndicatesFailure(body) {
  * @param {string} token
  * @param {number} bodyByteLength
  */
-function buildEffiySendMessageHeaders(token, bodyByteLength) {
+function buildSendMessageHeaders(token, bodyByteLength) {
   return {
     Accept: 'application/json',
     'Accept-Language': 'en,zh-CN;q=0.9,zh;q=0.8',
     'Cache-Control': 'no-cache',
     Connection: 'keep-alive',
     'Content-Type': 'application/json',
-    Origin: 'https://effiy.cn',
+    Origin: 'https://example.com',
     Pragma: 'no-cache',
-    Referer: 'https://effiy.cn/',
+    Referer: 'https://example.com/',
     'Sec-Fetch-Dest': 'empty',
     'Sec-Fetch-Mode': 'cors',
     'Sec-Fetch-Site': 'same-site',
@@ -385,7 +385,7 @@ function request(apiUrl, token, data) {
       port: url.port || 443,
       path: url.pathname + url.search,
       method: 'POST',
-      headers: buildEffiySendMessageHeaders(token, bodyLen)
+      headers: buildSendMessageHeaders(token, bodyLen)
     };
 
     const req = https.request(requestOptions, (res) => {
@@ -411,7 +411,7 @@ function request(apiUrl, token, data) {
 }
 
 (async function main() {
-  /** effiy API：请求体字段名为 `webhook_url`（完整企业微信 webhook URL）。 */
+  /** 网关 API：请求体字段名为 `webhook_url`（完整 webhook URL）。 */
   const payload = {
     webhook_url: options.webhookUrl,
     content: options.content
@@ -424,10 +424,10 @@ function request(apiUrl, token, data) {
     console.log('Response:', typeof result.body === 'string' ? result.body : JSON.stringify(result.body));
 
     const httpFail = result.statusCode < 200 || result.statusCode >= 300;
-    const bizFail = bodyIndicatesFailure(result.body) === true;
-    if (httpFail || bizFail) {
-      if (!httpFail && bizFail) {
-        console.error('Error: API returned HTTP success but business failure (check errcode/code/message in response)');
+    const contentFail = bodyIndicatesFailure(result.body) === true;
+    if (httpFail || contentFail) {
+      if (!httpFail && contentFail) {
+        console.error('Error: API returned HTTP success but content-level failure (check errcode/code/message in response)');
       }
       process.exit(1);
     }

@@ -5,7 +5,7 @@
 默认请求：
 
 ```text
-POST https://api.effiy.cn/wework/send-message
+POST <WEWORK_BOT_API_URL>
 ```
 
 请求体：
@@ -22,7 +22,7 @@ POST https://api.effiy.cn/wework/send-message
 - Header 使用 `X-Token`
 - `X-Token` **仅来自系统环境变量** `API_X_TOKEN`（不接受命令行参数或本地配置兜底）
 
-客户端请求须携带与浏览器访问 `effiy.cn` 一致的 Origin/Referer；脚本使用与 Chrome 一致的 `User-Agent`、`Sec-Fetch-*`、`sec-ch-ua` 等头，避免网关拒绝非浏览器 UA。实现上与浏览器侧 `curl 'https://api.effiy.cn/wework/send-message' ...` 的请求头对齐，并使用 keep-alive Agent。
+客户端请求须携带与目标站点一致的 Origin/Referer；脚本使用与 Chrome 一致的 `User-Agent`、`Sec-Fetch-*`、`sec-ch-ua` 等头，避免网关拒绝非浏览器 UA。实现上与浏览器侧请求头对齐，并使用 keep-alive Agent。
 
 ## webhook 配置
 
@@ -42,7 +42,7 @@ https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=<key>
 ```json
 {
   "default_robot": "general",
-  "api_url": "https://api.effiy.cn/wework/send-message",
+  "api_url": "<WEWORK_BOT_API_URL>",
   "robots": {
     "general": {
       "webhook_url": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=<key>"
@@ -87,7 +87,7 @@ https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=<key>
 4. **`📎 证据：`** 摘要里 **一行为主**（主路径或最关键一条）；路径罗列放入明细段。
 5. **`💡 改进建议`**：仅在确有 actionable 项时追加，**≤120 字、≤2 条**，禁止空话（如泛泛「加强测试」）。
 
-电梯法则：**摘要段**须让人在约 10 秒内读懂「发生了什么、业务影响、要不要处理」。每条信息独占一行；禁止把结论与下一步塞进同一行。
+电梯法则：**摘要段**须让人在约 10 秒内读懂「发生了什么、影响是什么、要不要处理」。每条信息独占一行；禁止把结论与下一步塞进同一行。
 
 描述：`📝 描述：` 仍 ≤100 字。
 

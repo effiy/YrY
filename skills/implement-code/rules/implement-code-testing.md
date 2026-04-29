@@ -1,7 +1,7 @@
 # implement-code 测试门禁（真源）
 
 > **适用范围**：`implement-code` 全流程中与「编码前验证」「编码后验证」相关的强制步骤。  
-> **CDN SPA / UI 细节**：交互方式、`data-testid`、目录骨架仍以 [`e2e-testing.md`](./e2e-testing.md)、[`test-page.md`](./test-page.md) 为准；本文件定义 **何时做、做到什么算通过、证据是什么**。
+> **UI 细节**：交互方式、`data-testid`、目录骨架仍以 [`e2e-testing.md`](./e2e-testing.md)、[`test-page.md`](./test-page.md) 为准；本文件定义 **何时做、做到什么算通过、证据是什么**。
 
 ---
 
@@ -50,7 +50,7 @@
 
 | 形态 | Gate A 典型做法 |
 |------|------------------|
-| CDN / 静态 SPA | 本地起服务打开入口页 → 主按钮/主流程一步可走通 → checklist + 可选截图 |
+| 静态网页/前端页面 | 本地起服务打开入口页 → 主按钮/主流程一步可走通 → checklist + 可选截图 |
 | 浏览器扩展 | 加载未打包扩展 → content/popup 一侧可见路径走通 → 证据路径写明 |
 | Node / CLI | `node script.js` 或约定命令对主参数跑通 → 日志落 `tests/` 或实施记录 |
 
@@ -87,6 +87,6 @@
 
 ## 5. 禁止事项
 
-- 未完成 Gate A 即修改业务源码（测试骨架与原型页除外，且须在 `tests/` 约定路径内）。
+- 未完成 Gate A 即修改项目源码（测试骨架与原型页除外，且须在 `tests/` 约定路径内）。
 - Gate B 仅以「代码审查代替执行」或编造执行结果。
 - 将测试产物放在 `tests/` 以外却宣称满足门禁（见 [`artifact-contracts.md`](./artifact-contracts.md) §2）。

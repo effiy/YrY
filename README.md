@@ -15,7 +15,7 @@
 
 ## 真源规则
 
-1. `commands/*.md` 只保留一句话入口说明，不承载业务规则。
+1. `commands/*.md` 只保留一句话入口说明，不承载领域规则。
 2. `skills/<name>/SKILL.md` 是该 skill 的行为真源。
 3. `skills/<name>/README.md` 仅用于快速开始、导航和索引，不重复完整规则。
 4. `skills/<name>/rules/*.md` 定义结构契约。

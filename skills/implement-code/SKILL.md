@@ -128,7 +128,7 @@ P1/P2 文档（缺失不阻断）：
 - 每模块完成后自检：
   1. 消除 P0 语法错误
   2. 确认项目架构约束（见 `code-implementation.md`）
-  3. 确认 data-testid 覆盖 + createBaseView 调用完整
+  3. 确认 data-testid 覆盖 + 入口初始化/集成方式完整
   4. 全项目范围影响链回归验证
 - MCP 增强：`code-analyzer-mcp`（架构检查）、`git-workflow-mcp`（变更影响分析）
 - 退出条件：所有模块实现完成 + 逐模块验证记录齐全
@@ -137,7 +137,7 @@ P1/P2 文档（缺失不阻断）：
 
 - **必须调用 `code-reviewer`**：全量代码审查（架构一致性 + 编码规范 + 安全 + 边界处理）
 - **必须执行 Gate B（AI 自动主流程冒烟）并通过**：覆盖主路径全链路，失败则不得进入阶段 4（见 `rules/implement-code-testing.md`、`rules/verification-gate.md` §8）
-- **项目特有 agent 必须调用**：以 `.claude/agents/` 中与当前技术栈匹配的专项定义为准（如浏览器扩展测试、鉴权审查、桌面 IPC、CDN SPA 视图入口与组件注册等）；仓库未配置专项 agent 时，以 `code-reviewer` 与项目 checklist 覆盖等价关注点。
+- **项目特有 agent 必须调用**：以 `.claude/agents/` 中与当前技术栈匹配的专项定义为准（如浏览器扩展测试、鉴权审查、桌面 IPC、视图入口与组件注册等）；仓库未配置专项 agent 时，以 `code-reviewer` 与项目 checklist 覆盖等价关注点。
 - 验证 P0 检查项（来自 `05_动态检查清单`）
 - MCP 增强：`code-analyzer-mcp`（死代码检测）
 - 退出条件：无 P0 代码审查问题 + P0 检查项全部通过

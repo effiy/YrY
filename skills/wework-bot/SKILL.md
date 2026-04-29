@@ -32,7 +32,7 @@ description: 发送企业微信机器人消息，用于 generate-document、impl
 
 webhook 仅在 `config.json`（或 robot 级 `webhook_*_env`）中配置，**无** CLI 传入。
 
-### 正文里的业务字段（由 agent 写入，不由脚本拼装）
+### 正文里的内容字段（由 agent 写入，不由脚本拼装）
 
 结论、描述、范围、门禁、度量、`⏱️ 会话`（合并耗时与用量）、明细段的模型 / 工具 / 分支等均在 **message-pusher**（或其它 agent）生成的正文中体现；分层规则见 `rules/message-contract.md`。
 

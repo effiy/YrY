@@ -100,7 +100,7 @@ function determineConfig() {
     dir: null,
     exts: null,
     token: readApiXTokenFromEnv(),
-    apiUrl: 'https://api.effiy.cn',
+    apiUrl: 'https://api.example.com',
     prefix: []
   };
 
@@ -172,7 +172,7 @@ Options:
   --dir, -d     Directory to import (default: auto-detect)
   --exts, -e    File extensions (comma-separated, default: auto-detect)
   --token, -t   [disabled] use API_X_TOKEN environment variable only
-  --api-url, -a API base URL (default: https://api.effiy.cn)
+  --api-url, -a API base URL (default: https://api.example.com)
   --prefix, -p  Path prefix (comma-separated, e.g. Projects,YourNamespace)
   --help, -h    Show this help message
 `);
@@ -294,7 +294,7 @@ async function importFile(fullPath, baseDir, projectRoot, apiUrl, token, existin
     parameters: {
       cname: 'sessions',
       data: {
-        url: `aicr-session://${now}-${random}`,
+        url: `app-session://${now}-${random}`,
         title,
         file_path: targetPath,
         messages: [],
