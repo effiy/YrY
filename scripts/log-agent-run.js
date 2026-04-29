@@ -26,13 +26,18 @@ const path = require('path');
 
 const STATUS_VALUES = new Set(['success', 'failure']);
 
-function usage() {
-  console.error(`用法:
+function printHelp(stream) {
+  const out = stream || process.stdout;
+  out.write(`用法:
   node scripts/log-agent-run.js --agent <agent-name> --status <success|failure> \\
     --skill <skill-name> --stage <stage-id> \\
     [--doc_type <文档类型>] [--feature <功能名或摘要>] \\
     [--notes "<一行摘要>"] [--error "<失败原因>"] [--evidence "<证据路径或命令>"]
 `);
+}
+
+function usage() {
+  printHelp(process.stderr);
   process.exit(2);
 }
 
@@ -50,7 +55,11 @@ function parseArgs(argv) {
   };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--agent') out.agent = argv[++i];
+    if (a === '--help' || a === '-h') {
+      printHelp();
+      process.exit(0);
+    }
+    else if (a === '--agent') out.agent = argv[++i];
     else if (a === '--status') out.status = argv[++i];
     else if (a === '--skill') out.skill = argv[++i];
     else if (a === '--stage') out.stage = argv[++i];

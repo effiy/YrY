@@ -38,8 +38,8 @@
 ## 扩展命令
 
 - `init`：初始化或再初始化项目基础文件。生成/更新 10 个根目录基础文件（`CLAUDE.md`、`README.md`、`docs/architecture.md` 等）+ `docs/项目初始化/` 下 01-07 全文档编号集（含 `06_实施总结`）。反复执行时按「re-init 更新策略」刷新事实类内容、保留人工补充、冲突处标注待确认。规则见 `rules/项目基础文件.md` §「可重复运行（re-init）更新策略」。
-- `weekly`：生成/更新周报单文档，规则见 `rules/周报.md`，落盘到 `docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>/周报.md`（自然周周一至周日，例：`2026-04-27~2026-05-03/周报.md`）；同一自然周内反复调用覆盖更新。结束时仍强制执行 `import-docs`→`wework-bot`。
-- `from-weekly <周报路径>`：从周报「后期规划与改进优先级总表」拆解为多个 `docs/<功能名>/` 全文档集；映射表见 `docs/99_agent-runs/*_from-weekly.md`，全部完成后**一次** `import-docs` + **一条**汇总通知（详见 `SKILL.md`）。
+- `weekly [日期]`：生成/更新周报单文档。可传自然周内任意日期（如 `2026-04-29`），也可传自然周起止范围（如 `2026-04-27~2026-05-03`），脚本会自动归算到对应自然周。规则见 `rules/周报.md`，落盘到 `docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>/周报.md`；同一自然周内反复调用覆盖更新。结束时仍强制执行 `import-docs`→`wework-bot`。
+- `from-weekly <周报路径>`：从周报「后期规划与改进优先级总表」拆解为多个 `docs/<功能名>/` 全文档集；映射表见 `docs/99_agent-runs/<YYYYMMDD-HHMMSS>_from-weekly.md`，全部完成后**一次** `import-docs` + **一条**汇总通知（详见 `SKILL.md`）。
 
 ## 命令与幂等性一览
 

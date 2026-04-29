@@ -29,7 +29,7 @@ triggers:
 在手动扫描前，**必须先调用** `scripts/collect-weekly-kpi.js` 获取自动汇总的 KPI、Git 统计、关键节点与编排日志：
 
 ```bash
-node scripts/collect-weekly-kpi.js --week <YYYY-MM-DD> --with-logs --output /tmp/weekly-kpi-<range>.md
+node scripts/collect-weekly-kpi.js --week <YYYY-MM-DD> --with-logs --output /tmp/weekly-kpi.md
 ```
 
 - 若脚本输出正常，以其为**主数据源**，后续手动扫描仅作补充与校验

@@ -18,14 +18,19 @@
 const fs = require('fs');
 const path = require('path');
 
-function usage() {
-  console.error(`用法:
+function printHelp(stream) {
+  const out = stream || process.stdout;
+  out.write(`用法:
   node scripts/validate-agent-output.js --agent <agent-name> (--text "<raw>" | --file <path>)
 
 示例:
   node scripts/validate-agent-output.js --agent spec-retriever --file /tmp/out.txt
   node scripts/validate-agent-output.js --agent architect --text "$(cat /tmp/out.txt)"
 `);
+}
+
+function usage() {
+  printHelp(process.stderr);
   process.exit(2);
 }
 
@@ -33,7 +38,11 @@ function parseArgs(argv) {
   const out = { agent: null, text: null, file: null };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--agent') out.agent = argv[++i];
+    if (a === '--help' || a === '-h') {
+      printHelp();
+      process.exit(0);
+    }
+    else if (a === '--agent') out.agent = argv[++i];
     else if (a === '--text') out.text = argv[++i] || '';
     else if (a === '--file') out.file = argv[++i];
     else usage();
@@ -125,7 +134,7 @@ function validateByAgent(agentName, json) {
     fail('required_answers 未覆盖或未回答', JSON.stringify(bad, null, 2));
   }
 
-  // agent 特定门禁（仅校验“结构存在性”，不校验内容真伪）
+  // agent 特定门禁（仅校验”结构存在性”，不校验内容真伪）
   if (agentName === 'spec-retriever') {
     const rs = json?.artifacts?.required_specs;
     if (!Array.isArray(rs) || rs.length === 0) {
@@ -162,6 +171,39 @@ function validateByAgent(agentName, json) {
       fail(
         'architect 需在 artifacts 标注 modules/interface_spec/dataflow/architecture 为 true，且提供 conformance 字符串'
       );
+    }
+  }
+
+  if (agentName === 'code-reviewer') {
+    const issues = json?.artifacts?.issues;
+    const ok =
+      issues &&
+      typeof issues === 'object' &&
+      Array.isArray(issues.p0) &&
+      Array.isArray(issues.p1) &&
+      Array.isArray(issues.p2);
+    if (!ok) {
+      fail('code-reviewer 需在 artifacts.issues 提供 p0/p1/p2 数组');
+    }
+  }
+
+  if (agentName === 'mermaid-expert') {
+    const blocks = json?.artifacts?.blocks;
+    const ok = Array.isArray(blocks) && blocks.length > 0 && blocks.every((b) => typeof b?.path === 'string');
+    if (!ok) {
+      fail('mermaid-expert 需在 artifacts.blocks 提供非空数组，且每项含 path 字段');
+    }
+  }
+
+  if (agentName === 'planner') {
+    const ok =
+      json?.artifacts &&
+      json.artifacts.scenarios === true &&
+      json.artifacts.risks === true &&
+      json.artifacts.strategy === true &&
+      json.artifacts.dependencies === true;
+    if (!ok) {
+      fail('planner 需在 artifacts 标注 scenarios/risks/strategy/dependencies 为 true');
     }
   }
 }

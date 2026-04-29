@@ -31,8 +31,9 @@ const { getNaturalWeekRange } = require('./lib/natural-week.js');
 const DOCS_DIR = path.resolve('docs');
 const KPI_FILES = ['05_动态检查清单.md', '06_实施总结.md', '07_项目报告.md'];
 
-function usage() {
-  console.error(`用法:
+function printHelp(stream) {
+  const out = stream || process.stdout;
+  out.write(`用法:
   node scripts/collect-weekly-kpi.js [--week <YYYY-MM-DD>] [--json] [--output <path>]
 
 选项:
@@ -47,6 +48,10 @@ function usage() {
   node scripts/collect-weekly-kpi.js
   node scripts/collect-weekly-kpi.js --week 2026-04-29 --json --output /tmp/kpi.json
 `);
+}
+
+function usage() {
+  printHelp(process.stderr);
   process.exit(2);
 }
 
@@ -54,7 +59,11 @@ function parseArgs(argv) {
   const out = { week: null, json: false, output: null, gitOnly: false, docsOnly: false, withLogs: false };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--week') out.week = argv[++i];
+    if (a === '--help' || a === '-h') {
+      printHelp();
+      process.exit(0);
+    }
+    else if (a === '--week') out.week = argv[++i];
     else if (a === '--json') out.json = true;
     else if (a === '--output') out.output = argv[++i];
     else if (a === '--git-only') out.gitOnly = true;
@@ -214,27 +223,24 @@ function collectGitStats(weekRange) {
     '0'
   );
 
-  // 变更文件数（本周第一个提交 ~ HEAD 的累计 diff）
-  const firstCommit = safeExec(
-    `git rev-list --since="${sinceIso}" --until="${untilIso}" --reverse HEAD | head -1`,
-    ''
-  );
+  // 使用 --shortstat 累加本周每个提交的 diff 统计，避免包含本周之前的变更
   let filesChanged = 0;
   let insertions = 0;
   let deletions = 0;
-  if (firstCommit) {
-    const parent = safeExec(`git rev-parse --verify "${firstCommit.trim()}^" 2>/dev/null || echo ""`, '').trim();
-    const diffStat = safeExec(
-      parent
-        ? `git diff --stat "${parent}"..HEAD`
-        : `git diff --stat --root "${firstCommit.trim()}"..HEAD`,
-      ''
-    );
-    const summaryMatch = diffStat.match(/(\d+) files? changed(?:, (\d+) insertions?\(\+\))?(?:, (\d+) deletions?\(-\))?/);
-    if (summaryMatch) {
-      filesChanged = parseInt(summaryMatch[1], 10) || 0;
-      insertions = parseInt(summaryMatch[2], 10) || 0;
-      deletions = parseInt(summaryMatch[3], 10) || 0;
+
+  const shortStatLines = safeExec(
+    `git log --since="${sinceIso}" --until="${untilIso}" --shortstat --format=''`,
+    ''
+  )
+    .split('\n')
+    .filter(Boolean);
+
+  for (const line of shortStatLines) {
+    const m = line.match(/(\d+) files? changed(?:, (\d+) insertions?\(\+\))?(?:, (\d+) deletions?\(-\))?/);
+    if (m) {
+      filesChanged += parseInt(m[1], 10) || 0;
+      insertions += parseInt(m[2], 10) || 0;
+      deletions += parseInt(m[3], 10) || 0;
     }
   }
 
@@ -394,19 +400,26 @@ function main() {
   if (args.withLogs) {
     const logsScript = path.join(__dirname, 'collect-weekly-logs.js');
     const weekArg = args.week ? `--week ${args.week}` : '';
-    const logsOutput = safeExec(`node "${logsScript}" ${weekArg}`, '');
+    let logsOutput;
+    try {
+      logsOutput = execSync(`node "${logsScript}" ${weekArg}`, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] }).trim();
+    } catch (err) {
+      console.error(`警告: collect-weekly-logs.js 执行失败: ${err.message}`);
+      logsOutput = '';
+    }
+    if (!logsOutput) {
+      console.error('警告: collect-weekly-logs.js 输出为空，可能本周日志文件不存在或解析失败');
+    }
     if (args.json) {
-      // Merge JSON: parse both, merge, stringify
       try {
         const kpiObj = JSON.parse(output);
-        const logsObj = JSON.parse(logsOutput || '{}');
+        const logsObj = logsOutput ? JSON.parse(logsOutput) : {};
         output = JSON.stringify({ ...kpiObj, logs: logsObj }, null, 2);
       } catch {
-        // fallback: concatenate as text
-        output = output + '\n\n/* --- logs --- */\n\n' + logsOutput;
+        output = output + '\n\n/* --- logs --- */\n\n' + (logsOutput || '{}');
       }
     } else {
-      output = output + '\n\n---\n\n' + logsOutput;
+      output = output + '\n\n---\n\n' + (logsOutput || '> 本周无编排日志数据');
     }
   }
 

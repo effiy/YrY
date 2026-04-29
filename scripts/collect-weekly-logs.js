@@ -27,8 +27,9 @@ const fs = require('fs');
 const path = require('path');
 const { getNaturalWeekRange } = require('./lib/natural-week.js');
 
-function usage() {
-  console.error(`用法:
+function printHelp(stream) {
+  const out = stream || process.stdout;
+  out.write(`用法:
   node scripts/collect-weekly-logs.js [--week <YYYY-MM-DD>] [--json] [--output <path>]
 
 选项:
@@ -42,6 +43,10 @@ function usage() {
   node scripts/collect-weekly-logs.js
   node scripts/collect-weekly-logs.js --week 2026-04-29 --json --output /tmp/logs.json
 `);
+}
+
+function usage() {
+  printHelp(process.stderr);
   process.exit(2);
 }
 
@@ -49,7 +54,11 @@ function parseArgs(argv) {
   const out = { week: null, json: false, output: null, keyOnly: false, logsOnly: false };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--week') out.week = argv[++i];
+    if (a === '--help' || a === '-h') {
+      printHelp();
+      process.exit(0);
+    }
+    else if (a === '--week') out.week = argv[++i];
     else if (a === '--json') out.json = true;
     else if (a === '--output') out.output = argv[++i];
     else if (a === '--key-only') out.keyOnly = true;
@@ -125,22 +134,31 @@ function parseLogs(text) {
   const lines = text.split(/\r?\n/);
   const entries = [];
   let current = null;
+  let inSummary = false;
+  let inEval = false;
 
   for (const line of lines) {
-    // 匹配二级标题: ## `ISO` · kind · name
-    const h2 = line.match(/^##\s+`([^`]+)`\s+·\s+([^·]+)\s+·\s+(.+)$/);
-    if (h2) {
+    // 匹配三级标题: ### `ISO` · `category`[ · **badge**]
+    // category 格式: skill:kind/name，例如 generate-document:agent/spec-retriever
+    const h = line.match(/^###\s+`([^`]+)`\s+·\s+`([^`]+)`(?:\s+·\s+(.+))?$/);
+    if (h) {
       if (current) entries.push(current);
+      const category = h[2].trim();
+      const kindMatch = category.match(/^[^:]+:\s*([^/]+)\/(.+)$/);
       current = {
-        timestamp: h2[1],
-        kind: h2[2].trim(),
-        name: h2[3].trim(),
+        timestamp: h[1],
+        category,
+        kind: kindMatch ? kindMatch[1].trim() : 'other',
+        name: kindMatch ? kindMatch[2].trim() : category,
+        badge: h[3] ? h[3].replace(/\*/g, '').trim() : '',
         scenario: null,
         case: null,
         tags: [],
         lesson: null,
         summary: [],
       };
+      inSummary = false;
+      inEval = false;
       continue;
     }
     if (!current) continue;
@@ -151,30 +169,46 @@ function parseLogs(text) {
       continue;
     }
 
-    const caseMatch = line.match(/^\*\*case\*\*：\s*(\S+)/);
-    if (caseMatch) {
-      current.case = caseMatch[1];
+    // 进入对话与交互摘要区域
+    if (line.match(/^\*\*对话与交互摘要\*\*/)) {
+      inSummary = true;
+      inEval = false;
       continue;
     }
 
-    const tagsMatch = line.match(/^\*\*tags\*\*：\s*(.+)$/);
-    if (tagsMatch) {
-      current.tags = tagsMatch[1].split(/[,，]/).map((t) => t.trim()).filter(Boolean);
+    // 进入评测标注区域
+    if (line.match(/^\*\*评测标注\*\*/)) {
+      inSummary = false;
+      inEval = true;
       continue;
     }
 
-    const lessonMatch = line.match(/^\*\*lesson\*\*：\s*(.+)$/);
-    if (lessonMatch) {
-      current.lesson = lessonMatch[1].trim();
-      continue;
+    // 跳过空行和分隔线
+    if (line.match(/^---+$/)) continue;
+
+    // 在评测标注区域内解析 case/tags/lesson
+    if (inEval) {
+      const caseMatch = line.match(/^\s*-\s*\*\*分级\*\*：\s*(\S+)/);
+      if (caseMatch) {
+        current.case = caseMatch[1];
+        continue;
+      }
+      const tagsMatch = line.match(/^\s*-\s*\*\*标签\*\*：\s*(.+)$/);
+      if (tagsMatch) {
+        current.tags = tagsMatch[1].split(/[·,，]/).map((t) => t.trim().replace(/^`|`$/g, '')).filter(Boolean);
+        continue;
+      }
+      const lessonMatch = line.match(/^\s*-\s*\*\*后续改进\*\*：\s*(.+)$/);
+      if (lessonMatch) {
+        current.lesson = lessonMatch[1].trim();
+        continue;
+      }
     }
 
-    // 跳过已知标签行
-    if (line.match(/^\*\*(对话与交互摘要|scenario|case|tags|lesson)\*\*/)) continue;
-
-    // 收集 summary（非空行）
-    if (line.trim() && !line.match(/^---+$/) && !line.match(/^#+/)) {
-      current.summary.push(line.trim());
+    // 收集 summary（去掉开头的 > 引用标记）
+    if (inSummary) {
+      const bodyLine = line.replace(/^\s*>\s?/, '');
+      current.summary.push(bodyLine);
     }
   }
 

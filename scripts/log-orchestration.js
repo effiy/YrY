@@ -25,8 +25,9 @@ const KIND_VALUES = new Set([
 
 const CASE_VALUES = new Set(['good', 'bad', 'neutral']);
 
-function usage() {
-  console.error(`用法:
+function printHelp(stream) {
+  const out = stream || process.stdout;
+  out.write(`用法:
   node .claude/scripts/log-orchestration.js --skill <generate-document|implement-code> \\
     --kind <skill|agent|mcp|memory|shared|other> [--name <标识>] \\
     [--scenario "<操作场景>"] \\
@@ -46,6 +47,10 @@ function usage() {
     --case good --tags "evidence-ok,stage-contract-met" \\
     --text "返回适用规范列表：rules/需求文档.md ..."
 `);
+}
+
+function usage() {
+  printHelp(process.stderr);
   process.exit(2);
 }
 
@@ -62,7 +67,11 @@ function parseArgs(argv) {
   };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--skill') out.skill = argv[++i];
+    if (a === '--help' || a === '-h') {
+      printHelp();
+      process.exit(0);
+    }
+    else if (a === '--skill') out.skill = argv[++i];
     else if (a === '--kind') out.kind = argv[++i];
     else if (a === '--name') out.name = argv[++i] || '';
     else if (a === '--text') out.text = argv[++i] || '';

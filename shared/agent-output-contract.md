@@ -7,6 +7,9 @@
 - `agents/spec-retriever.md`
 - `agents/impact-analyst.md`
 - `agents/architect.md`
+- `agents/code-reviewer.md`
+- `agents/mermaid-expert.md`
+- `agents/planner.md`
 
 若其他 agent 也要纳入门禁，可按本文件扩展。
 
