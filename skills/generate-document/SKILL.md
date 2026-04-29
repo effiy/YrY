@@ -175,7 +175,7 @@ node .claude/scripts/log-orchestration.js --skill generate-document \
 ### 步骤 5：保存 + 知识策展
 
 - 保存 `docs/<功能名>/` 下 01-05, 07（06 不创建）
-- **init 命令例外**：保存 8 个项目基础文件 + `docs/项目初始化/` 下 01-07（含 06\_实施总结）
+- **init 命令例外**：保存 10 个项目基础文件 + `docs/项目初始化/` 下 01-07（含 06\_实施总结）
 - **必须调用 `knowledge-curator`**：策展本次任务的可复用知识到 `.claude/agents/memory/knowledge.md`
 
 ### 步骤 6：文档同步与通知（强制，所有命令适用）

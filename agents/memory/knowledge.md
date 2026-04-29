@@ -22,7 +22,7 @@ entry_count: 3
    - 步骤6：文档同步+通知（执行 import-docs、调用 wework-bot）
 
 2. init 命令的交付物：
-   - 8 个项目基础文件（CLAUDE.md、README.md、docs/architecture.md、docs/changelog.md、docs/devops.md、docs/FAQ.md、docs/auth.md、docs/security.md）
+   - 10 个项目基础文件（CLAUDE.md、README.md、docs/architecture.md、docs/changelog.md、docs/devops.md、docs/network.md、docs/state-management.md、docs/FAQ.md、docs/auth.md、docs/security.md）
    - docs/项目初始化/ 下的 7 个全文档编号集（01-07）
 
 3. 防幻觉要点：

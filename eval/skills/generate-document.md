@@ -23,7 +23,7 @@
 
 **示例输入（对话）**
 
-- 「`/generate-document init`：按 SKILL 落盘 8 个基础文件 + `docs/项目初始化/` 01–07，类型通知填项目初始化。」
+- 「`/generate-document init`：按 SKILL 落盘 10 个基础文件 + `docs/项目初始化/` 01–07，类型通知填项目初始化。」
 - 「`/generate-document weekly 2026-04-29`：周报落在 `docs/周报/2026-04-27~2026-05-03/周报.md`（自然周周一至周日），仍要先 import-docs 再企微通知。」
 
 ---
