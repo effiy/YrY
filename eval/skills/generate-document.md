@@ -1,6 +1,6 @@
 # generate-document 评测示例
 
-真源：`.claude/skills/generate-document/SKILL.md`、`rules/orchestration.md`、`rules/*.md`；编排会话日志：`.claude/scripts/log-orchestration.js` → **`docs/logs/<YYYY-MM-DD>_generate-document.md`**（Markdown）；收尾链路：`import-docs`、`wework-bot`（见 [wework-bot.md](./wework-bot.md)）。
+真源：`.claude/skills/generate-document/SKILL.md`、`rules/orchestration.md`、`rules/*.md`；编排会话日志：`.claude/scripts/log-orchestration.js` → **`docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>/logs.md`**（Markdown）；收尾链路：`import-docs`、`wework-bot`（见 [wework-bot.md](./wework-bot.md)）。
 
 **评测约束**：须对照 SKILL 中的阶段契约：**spec-retriever → impact-analyst → architect / planner → 文档生成（含 Mermaid 时必须先 `mermaid-expert`）与自检 → knowledge-curator → 步骤 6 先 `import-docs` 再 `wework-bot`**；不得以颠倒顺序、未调用必选 Agent、或“仅描述未执行收尾脚本”作为通过状态。涉及 `.claude` 内 skill、agent、MCP、memory/shared 的交互，预期每轮完成后写入 **`docs/logs`**：**操作场景**（与本评测文档「示例输入（对话）」同类句式）+ **对话与交互摘要**（可核对）。
 
@@ -24,7 +24,7 @@
 **示例输入（对话）**
 
 - 「`/generate-document init`：按 SKILL 落盘 8 个基础文件 + `docs/项目初始化/` 01–07，类型通知填项目初始化。」
-- 「`/generate-document weekly 2026-04-29`：周报落在 `docs/周报/2026-04-27~2026-05-03_周报.md`（自然周周一至周日），仍要先 import-docs 再企微通知。」
+- 「`/generate-document weekly 2026-04-29`：周报落在 `docs/周报/2026-04-27~2026-05-03/周报.md`（自然周周一至周日），仍要先 import-docs 再企微通知。」
 
 ---
 
@@ -44,14 +44,14 @@
 
 **示例输入（对话）**
 
-- 「`/generate-document from-weekly docs/周报/2026-04-27~2026-05-03_周报.md`：按表格行拆功能目录，并写 `docs/99_agent-runs/*_from-weekly.md` 映射表。」
+- 「`/generate-document from-weekly docs/周报/2026-04-27~2026-05-03/周报.md`：按表格行拆功能目录，并写 `docs/99_agent-runs/*_from-weekly.md` 映射表。」
 - 「优先处理类型为规划与项目的行；系统类单独成 `系统改进-…` 目录。」
 
 ---
 
 ## 编排会话日志（可观测）
 
-评测时可抽查当日 `docs/logs/*_generate-document.md`：是否存在与 **skill/agent/MCP** 交互对应的 Markdown 小节（三级标题内含 ISO 时间与 kind/name），且 **对话与交互摘要** 非空、可与本会话的用法对齐。可选抽查 **`--case good|bad`** 与 **`docs/logs/CASE-STANDARD.md`** 是否一致（分级、标签、后续改进是否支撑复盘）。
+评测时可抽查当周 `docs/周报/<自然周>/logs.md`：是否存在与 **skill/agent/MCP** 交互对应的 Markdown 小节（三级标题内含 ISO 时间与 kind/name），且 **对话与交互摘要** 非空、可与本会话的用法对齐。可选抽查 **`--case good|bad`** 与 **`docs/logs/CASE-STANDARD.md`** 是否一致（分级、标签、后续改进是否支撑复盘）。
 
 ---
 

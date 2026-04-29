@@ -1,12 +1,13 @@
 'use strict';
 
 /**
- * 将「关键节点」以 Markdown 追加写入 `docs/key-nodes/<YYYY-MM-DD>.md`。
+ * 将「关键节点」以 Markdown 追加写入 `docs/周报/<自然周范围>/key-notes.md`。
  * 供 `log-key-node.js` CLI 与需程序化落盘的脚本（如 send-message）复用。
  */
 
 const fsp = require('fs').promises;
 const path = require('path');
+const { getNaturalWeekRange } = require('./natural-week.js');
 
 /**
  * @param {string} body
@@ -28,9 +29,9 @@ function escapeHeadingFragment(title) {
 
 /**
  * @param {string} filePath
- * @param {string} day YYYY-MM-DD
+ * @param {string} weekRange YYYY-MM-DD~YYYY-MM-DD
  */
-async function ensurePreamble(filePath, day) {
+async function ensurePreamble(filePath, weekRange) {
   try {
     const st = await fsp.stat(filePath);
     if (st.size > 0) return;
@@ -39,12 +40,12 @@ async function ensurePreamble(filePath, day) {
   }
   const preamble = `---
 log_type: key-node
-date: ${day}
+week: ${weekRange}
 ---
 
-# 关键节点 · ${day}
+# 关键节点 · ${weekRange}
 
-本文件由 \`node .claude/scripts/log-key-node.js\` 或由编排脚本追加写入，记录 **里程碑 / 门禁 / 对外通知** 等可扫描节点（与 \`docs/logs/\` 编排会话明细互为补充）。
+本文件由 \`node .claude/scripts/log-key-node.js\` 或编排脚本追加写入，记录里程碑 / 门禁 / 对外通知等可扫描节点。
 
 ---
 
@@ -72,12 +73,12 @@ async function appendKeyNodeRecord(repoRoot, opts) {
     throw new Error('appendKeyNodeRecord: body is required');
   }
 
-  const day = new Date().toISOString().slice(0, 10);
-  const dir = path.join(repoRoot, 'docs', 'key-nodes');
+  const week = getNaturalWeekRange(new Date());
+  const dir = path.join(repoRoot, 'docs', '周报', week.range);
   await fsp.mkdir(dir, { recursive: true });
-  const filePath = path.join(dir, `${day}.md`);
+  const filePath = path.join(dir, 'key-notes.md');
 
-  await ensurePreamble(filePath, day);
+  await ensurePreamble(filePath, week.range);
 
   const iso = new Date().toISOString();
   const categoryRaw = opts.category != null && String(opts.category).trim() !== '' ? String(opts.category).trim() : 'general';

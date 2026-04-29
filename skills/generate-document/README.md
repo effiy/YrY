@@ -40,7 +40,7 @@
 
 ## 扩展命令
 
-- `weekly`：生成周报单文档，规则见 `rules/周报.md`，落盘到 `docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>_周报.md`（自然周周一至周日，例：`2026-04-27~2026-05-03`）；结束时仍强制执行 `import-docs`→`wework-bot`。
+- `weekly`：生成周报单文档，规则见 `rules/周报.md`，落盘到 `docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>/周报.md`（自然周周一至周日，例：`2026-04-27~2026-05-03/周报.md`）；结束时仍强制执行 `import-docs`→`wework-bot`。
 - `from-weekly <周报路径>`：从周报「后期规划与改进优先级总表」拆解为多个 `docs/<功能名>/` 全文档集；映射表见 `docs/99_agent-runs/*_from-weekly.md`，全部完成后**一次** `import-docs` + **一条**汇总通知（详见 `SKILL.md`）。
 
 ## 目录导航

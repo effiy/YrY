@@ -5,7 +5,6 @@
  * 路由、webhook 解析与请求 api.effiy.cn。
  */
 
-const crypto = require('crypto');
 const fs = require('fs');
 const https = require('https');
 const path = require('path');
@@ -154,8 +153,8 @@ Usage: node .claude/skills/wework-bot/scripts/send-message.js [options]
   API_X_TOKEN           必填，网关 X-Token
   WEWORK_BOT_API_URL    可选，覆盖默认 ${DEFAULT_API_URL}
   WEWORK_BOT_CONFIG     可选，路由 JSON 路径（默认仓库 skills/wework-bot/config.json）
-  WEWORK_BOT_SKIP_MESSAGE_LOG  可选，设为 1 或 true 时不写入仓库 docs/messages 归档
-  WEWORK_BOT_SKIP_KEY_NODE_LOG   可选，设为 1 或 true 时不写入仓库 docs/key-nodes 关键节点
+  WEWORK_BOT_SKIP_MESSAGE_LOG  可选，设为 1 或 true 时不写入仓库 docs/周报/<自然周>/messages.md 归档
+  WEWORK_BOT_SKIP_KEY_NODE_LOG   可选，设为 1 或 true 时不写入仓库 docs/周报/<自然周>/key-notes.md 关键节点
 
 选项:
   --config <path>       路由配置文件
@@ -321,32 +320,6 @@ try {
 }
 
 /**
- * UTC 时间戳，用于 `docs/messages` 归档文件名：紧凑、按字典序即按时间序，且不包含路径非法字符。
- * 形如 `20260429T123045_123Z`（等价 ISO 8601 basic：`YYYYMMDD` + `T` + `HHmmss` + `_` + 毫秒 + `Z`）。
- * @param {Date} [d]
- * @returns {string}
- */
-function formatUtcStampForFilename(d = new Date()) {
-  const p = (n) => String(n).padStart(2, '0');
-  const y = d.getUTCFullYear();
-  const mo = p(d.getUTCMonth() + 1);
-  const da = p(d.getUTCDate());
-  const h = p(d.getUTCHours());
-  const mi = p(d.getUTCMinutes());
-  const s = p(d.getUTCSeconds());
-  const ms = String(d.getUTCMilliseconds()).padStart(3, '0');
-  return `${y}${mo}${da}T${h}${mi}${s}_${ms}Z`;
-}
-
-/**
- * 归档文件名防碰撞后缀（8 hex，与同一时间戳并存概率可忽略）。
- * @returns {string}
- */
-function randomArchiveSuffix() {
-  return crypto.randomBytes(4).toString('hex');
-}
-
-/**
  * @param {string} s
  * @returns {string}
  */
@@ -357,7 +330,7 @@ function sanitizeFilenameSegment(s) {
 }
 
 /**
- * 推送成功后归档正文到 `docs/messages/`（不落 webhook URL）。
+ * 推送成功后归档正文到 `docs/周报/<自然周>/messages.md`（不落 webhook URL）。
  * 可通过环境变量 `WEWORK_BOT_SKIP_MESSAGE_LOG=1` 跳过。
  *
  * @param {{ agent: string|null, robot: string|null, content: string }} opts
@@ -367,27 +340,38 @@ function writeMessageArchive(opts, result) {
   if (process.env.WEWORK_BOT_SKIP_MESSAGE_LOG === '1' || process.env.WEWORK_BOT_SKIP_MESSAGE_LOG === 'true') {
     return;
   }
-  const dir = path.join(PROJECT_ROOT, 'docs', 'messages');
+  const { getNaturalWeekRange } = require(path.join(CLAUDE_ROOT, 'scripts', 'lib', 'natural-week.js'));
+  const week = getNaturalWeekRange(new Date());
+  const dir = path.join(PROJECT_ROOT, 'docs', '周报', week.range);
   fs.mkdirSync(dir, { recursive: true });
+  const filePath = path.join(dir, 'messages.md');
+  if (!fs.existsSync(filePath) || fs.statSync(filePath).size === 0) {
+    const preamble = [
+      '---',
+      `week: ${week.range}`,
+      'log_type: messages',
+      '---',
+      '',
+      `# 消息归档 · ${week.range}`,
+      '',
+      '---',
+      '',
+    ].join('\n');
+    fs.writeFileSync(filePath, preamble, 'utf-8');
+  }
   const agentSeg = sanitizeFilenameSegment(opts.agent);
   const robotSeg = sanitizeFilenameSegment(opts.robot);
-  const uniq = randomArchiveSuffix();
-  const fileName = `${formatUtcStampForFilename()}_${agentSeg}_${robotSeg}_${uniq}.md`;
-  const filePath = path.join(dir, fileName);
-  const metaLines = [
+  const block = [
+    `## ${new Date().toISOString()} · ${agentSeg} · ${robotSeg}`,
+    '',
+    `- HTTP: ${result.statusCode ?? 'null'}`,
+    '',
+    opts.content,
+    '',
     '---',
-    `recordedAt: "${new Date().toISOString()}"`,
-    opts.agent != null && opts.agent !== ''
-      ? `agent: "${String(opts.agent).replace(/"/g, '\\"')}"`
-      : 'agent: null',
-    opts.robot != null && opts.robot !== ''
-      ? `robot: "${String(opts.robot).replace(/"/g, '\\"')}"`
-      : 'robot: null',
-    `httpStatus: ${result.statusCode ?? 'null'}`,
-    '---',
-    ''
-  ];
-  fs.writeFileSync(filePath, metaLines.join('\n') + opts.content, 'utf-8');
+    '',
+  ].join('\n');
+  fs.appendFileSync(filePath, block, 'utf-8');
 }
 
 function request(apiUrl, token, data) {
@@ -454,7 +438,7 @@ function request(apiUrl, token, data) {
         result
       );
     } catch (archiveErr) {
-      console.warn('Warning: failed to write docs/messages archive:', archiveErr.message);
+      console.warn('Warning: failed to write weekly messages archive:', archiveErr.message);
     }
 
     try {
@@ -475,7 +459,7 @@ function request(apiUrl, token, data) {
         });
       }
     } catch (knErr) {
-      console.warn('Warning: failed to write docs/key-nodes record:', knErr.message);
+      console.warn('Warning: failed to write weekly key-notes record:', knErr.message);
     }
   } catch (error) {
     console.error('Error:', error.message);

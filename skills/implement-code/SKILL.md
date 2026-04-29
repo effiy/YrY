@@ -24,7 +24,7 @@ user_invocable: true
 
 ## 编排会话日志（强制）
 
-每次执行本技能时，在会话内**每完成一轮**与下列资源的交互后，必须追加写入仓库根目录 **`docs/logs/<YYYY-MM-DD>_implement-code.md`**（**Markdown**，非 `.log`）：
+每次执行本技能时，在会话内**每完成一轮**与下列资源的交互后，必须追加写入仓库根目录 **`docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>/logs.md`**（**Markdown**，非 `.log`）：
 
 - `.claude/skills/` 下的技能（如 `import-docs`、`wework-bot`、`e2e-testing`）
 - `.claude/agents/` 下的 Agent（如 `spec-retriever`、`impact-analyst`、`code-reviewer`）

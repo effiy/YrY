@@ -222,7 +222,7 @@
 
 ## 7. 编排会话日志（强制）
 
-与本编排相关的 **skill / agent / MCP / memory / shared** 交互，在对应步骤完成后必须追加写入 **`docs/logs/<YYYY-MM-DD>_generate-document.md`**（Markdown）。
+与本编排相关的 **skill / agent / MCP / memory / shared** 交互，在对应步骤完成后必须追加写入 **`docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>/logs.md`**（Markdown）。
 
 1. **触发时机**：每次完成对 `.claude` 内某一 skill、agent、MCP 的一轮调用（含读完记忆文件后的下游采纳），立即追加一条记录。
 2. **工具**：`node .claude/scripts/log-orchestration.js`（参数见 `../SKILL.md`「编排会话日志」）。
@@ -233,4 +233,4 @@
 
 ## 8. 关键节点记录（推荐）
 
-阶段切换、门禁结论、对外通知结果等 **一眼可扫描** 的里程碑，推荐追加写入 **`docs/key-nodes/<YYYY-MM-DD>.md`**（Markdown）：`node .claude/scripts/log-key-node.js`（说明见 `docs/key-nodes/README.md`）。与「编排会话日志」互补，**不可替代**上文第 7 节的强制要求。
+阶段切换、门禁结论、对外通知结果等 **一眼可扫描** 的里程碑，推荐追加写入 **`docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>/key-notes.md`**（Markdown）：`node .claude/scripts/log-key-node.js`。与「编排会话日志」互补，**不可替代**上文第 7 节的强制要求。

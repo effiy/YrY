@@ -16,7 +16,7 @@ user_invocable: true
 
 ## 编排会话日志（强制）
 
-每次执行本技能时，在会话内**每完成一轮**与下列资源的交互后，必须追加写入仓库根目录 **`docs/logs/<YYYY-MM-DD>_generate-document.md`**（**Markdown**，非 `.log`）：
+每次执行本技能时，在会话内**每完成一轮**与下列资源的交互后，必须追加写入仓库根目录 **`docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>/logs.md`**（**Markdown**，非 `.log`）：
 
 - `.claude/skills/` 下的技能（如 `import-docs`、`wework-bot`、`find-skills`）
 - `.claude/agents/` 下的 Agent（如 `spec-retriever`、`impact-analyst`、`architect`）
@@ -51,9 +51,9 @@ node .claude/scripts/log-orchestration.js --skill generate-document \
 
 - 调用方式：
   - `/generate-document weekly`：生成本周周报（自动取当前自然周）
-  - `/generate-document weekly 2026-04-29`：按给定日期归入其自然周；文件名形如 `docs/周报/2026-04-27~2026-05-03_周报.md`
+  - `/generate-document weekly 2026-04-29`：按给定日期归入其自然周；文件名形如 `docs/周报/2026-04-27~2026-05-03/周报.md`
   - `/generate-document weekly 2026-04-27~2026-05-03`：按自然周起止（周一至周日）；不满足则按自然周重算
-- 落盘路径：`docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>_周报.md`（自然周起止日期，例：`2026-04-27~2026-05-03`）
+- 落盘路径：`docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>/周报.md`（自然周起止日期，例：`2026-04-27~2026-05-03`）
 - 生成规则：必须严格按 `rules/周报.md` 输出（事实不足写“待补充”，禁止虚构）
 - 收尾规则：同样必须执行“步骤 6：文档同步与通知”（先 `import-docs`，再 `wework-bot`）
 
@@ -63,7 +63,7 @@ node .claude/scripts/log-orchestration.js --skill generate-document \
 
 ### 调用方式
 
-- `/generate-document from-weekly docs/周报/2026-04-27~2026-05-03_周报.md`
+- `/generate-document from-weekly docs/周报/2026-04-27~2026-05-03/周报.md`
 - `/generate-document from-weekly <仓库内相对路径或绝对路径>`
 
 可选意图（由用户在对话中说明，未说明则按默认策略执行）：

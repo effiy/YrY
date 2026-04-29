@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
 /**
- * 关键节点记录：Markdown 追加写入仓库根目录 `docs/key-nodes/<YYYY-MM-DD>.md`。
- * 与 `docs/logs/` 编排会话日志互补：此处侧重 **里程碑 / 门禁 / 对外通知** 等可一眼扫描的节点。
+ * 关键节点记录：Markdown 追加写入仓库根目录
+ * `docs/周报/<YYYY-MM-DD~YYYY-MM-DD>/key-notes.md`。
+ * 与 logs.md 互补：此处侧重里程碑 / 门禁 / 对外通知等可一眼扫描的节点。
  */
 
 const path = require('path');
@@ -39,8 +40,8 @@ function printHelp(stream) {
 
   未提供 --text 时从 stdin 读取说明（保留换行）。
 
-  日志目录：<仓库根>/docs/key-nodes/
-  文件名：<YYYY-MM-DD>.md（按日追加）
+  日志目录：<仓库根>/docs/周报/<自然周起止日期>/
+  文件名：key-notes.md（按周追加）
 
 示例:
   node .claude/scripts/log-key-node.js --title "阶段 4 审查通过" \\

@@ -2,7 +2,8 @@
 
 /**
  * 将 generate-document / implement-code 编排过程中与 .claude 内 skill、agent、MCP 等的交互
- * 以 Markdown 格式追加写入仓库根目录 `docs/logs/<YYYY-MM-DD>_<skill>.md`。
+ * 以 Markdown 格式追加写入仓库根目录
+ * `docs/周报/<YYYY-MM-DD~YYYY-MM-DD>/logs.md`。
  * 每条记录包含「操作场景」与「对话与交互摘要」；可选 --case / --tags / --lesson
  * 标注 good case / bad case，供 docs/logs/CASE-STANDARD.md 与后续改进 skills、rules、agents。
  * 用法见各技能 SKILL.md「编排会话日志」。
@@ -10,6 +11,7 @@
 
 const fsp = require('fs').promises;
 const path = require('path');
+const { getNaturalWeekRange } = require('./lib/natural-week.js');
 
 const SKILL_VALUES = new Set(['generate-document', 'implement-code']);
 const KIND_VALUES = new Set([
@@ -35,9 +37,8 @@ function usage() {
 
   未提供 --text 时从 stdin 读取正文（保留换行，用作对话与交互摘要）。
   good/bad 标准见 docs/logs/CASE-STANDARD.md。
-
-  日志目录：<仓库根>/docs/logs/
-  文件名：<YYYY-MM-DD>_<skill>.md
+  日志目录：<仓库根>/docs/周报/<自然周起止日期>/
+  文件名：logs.md（按周追加）
 
 示例:
   node .claude/scripts/log-orchestration.js --skill generate-document --kind agent --name spec-retriever \\
@@ -150,7 +151,7 @@ function headingCaseBadge(caseNorm) {
   return '';
 }
 
-async function ensureMarkdownPreamble(logFile, skill, day) {
+async function ensureMarkdownPreamble(logFile, weekRange) {
   let needHeader = true;
   try {
     const st = await fsp.stat(logFile);
@@ -160,24 +161,15 @@ async function ensureMarkdownPreamble(logFile, skill, day) {
   }
   if (!needHeader) return;
 
-  const evalFile =
-    skill === 'implement-code'
-      ? 'implement-code.md'
-      : 'generate-document.md';
-
   const preamble = `---
-skill: ${skill}
 log_type: orchestration
-date: ${day}
+week: ${weekRange}
 ---
 
-# 编排会话日志 · \`${skill}\` · ${day}
+# 编排会话日志 · ${weekRange}
 
-本文件由 \`node .claude/scripts/log-orchestration.js\` 追加写入，用于记录**本会话中如何编排使用** \`.claude\` 内 skill / agent / MCP / memory / shared。
-
-每条记录含 **操作场景**（贴近 [\`eval/skills/${evalFile}\`](../../eval/skills/${evalFile}) 中的用户故事式用法）与 **对话与交互摘要**（可核对摘要、派发要点、采纳结论）。
-
-**评测**：对照 [\`eval/skills/${evalFile}\`](../../eval/skills/${evalFile}) 的阶段契约；**good / bad case 判定**见 [\`CASE-STANDARD.md\`](./CASE-STANDARD.md)。可对关键步骤追加 \`--case good|bad\`、\`--tags\`、\`--lesson\` 以便后续改进编排。
+本文件由 \`node .claude/scripts/log-orchestration.js\` 追加写入，记录本周编排交互摘要。
+每条记录含操作场景、交互摘要与可选评测标注（good/bad case 参考 \`docs/logs/CASE-STANDARD.md\`）。
 
 ---
 
@@ -206,14 +198,12 @@ async function main() {
 
   // 脚本位于 .claude/scripts/，项目根为上一级目录
   const repoRoot = path.resolve(__dirname, '../..');
-  const logsDir = path.join(repoRoot, 'docs', 'logs');
+  const week = getNaturalWeekRange(new Date());
+  const logsDir = path.join(repoRoot, 'docs', '周报', week.range);
   await fsp.mkdir(logsDir, { recursive: true });
+  const logFile = path.join(logsDir, 'logs.md');
 
-  const day = new Date().toISOString().slice(0, 10);
-  const safeSkill = args.skill.replace(/[^\w-]/g, '_');
-  const logFile = path.join(logsDir, `${day}_${safeSkill}.md`);
-
-  await ensureMarkdownPreamble(logFile, args.skill, day);
+  await ensureMarkdownPreamble(logFile, week.range);
 
   const caseNorm = normalizeCaseArg(args.case);
   const tagsArr = parseTags(args.tags);
@@ -226,7 +216,7 @@ async function main() {
   }
 
   const iso = new Date().toISOString();
-  const category = args.name ? `${args.kind}/${args.name}` : args.kind;
+  const category = args.name ? `${args.skill}:${args.kind}/${args.name}` : `${args.skill}:${args.kind}`;
   const scenario =
     args.scenario != null && String(args.scenario).trim() !== ''
       ? String(args.scenario).trim()
