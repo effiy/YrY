@@ -33,12 +33,12 @@ API_X_TOKEN=*** node .claude/skills/wework-bot/scripts/send-message.js \
 
 ## 文件职责
 
-| 文件                        | 职责                         |
-| --------------------------- | ---------------------------- |
-| `SKILL.md`                  | 何时使用、输入参数、工作流程 |
-| `rules/message-contract.md` | 消息格式、安全和调用契约     |
-| `config.example.json`       | 多机器人与 agent 路由示例    |
-| `scripts/send-message.js`   | CLI 实现                     |
+| 文件                          | 职责                                              |
+| ----------------------------- | ------------------------------------------------- |
+| `SKILL.md`                    | 何时使用、输入参数、工作流程                      |
+| `rules/message-contract.md`   | 消息格式、安全和调用契约                          |
+| `config.example.json`         | 多机器人与 agent 路由示例                         |
+| `scripts/send-message.js`     | CLI 实现                                          |
 | `tests/send-message.test.mjs` | `send-message.js` 回归测试（`node:test`，零依赖） |
 
 ## 测试

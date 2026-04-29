@@ -3,6 +3,7 @@
 本目录用于记录 **agent 调用的成功/失败运行数据**，服务于后续编排与契约优化（例如：失败原因聚类、哪些阶段最容易漂移、重试是否有效）。
 
 > 说明：
+>
 > - `agents/memory/` 仍用于“经验/决策记忆”（按 `shared/agent-memory-protocol.md` 的 1-3 条目追加）。
 > - `.claude/agents/memory/` **仅**记录“运行记录与统计”，避免污染经验记忆的条目质量。
 
@@ -26,4 +27,3 @@ node scripts/log-agent-run.js --agent impact-analyst --status failure \
   --skill generate-document --stage stage-2 --doc_type 设计文档 --feature "Foo-摘要" \
   --error "missing required_answers.Q3" --evidence "scripts/validate-agent-output.js"
 ```
-

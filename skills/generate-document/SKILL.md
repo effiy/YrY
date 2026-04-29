@@ -85,8 +85,10 @@ node scripts/log-orchestration.js --skill generate-document \
 
 1. **解析表格**：逐行提取可执行条目；跳过空行、无「改进项」摘要的占位符。
 2. **梳理为需求**：为每条（或合并后的每条）生成 **`{功能名}`** 与 **一句话用户故事**（用于目录名与 `01_需求文档` 立意）：
-  - **命名**：`docs/<功能名>/` 须符合 `shared/path-conventions.md`（简洁、与仓库现有目录不冲突）；系统类改进可用前缀如 `系统改进-xxx`，避免与具体功能混淆。
-   - **溯源**：在后续生成的 `01_需求文档.md` / `02_需求任务.md` 中明确写入来源周报路径与表格行号（或 `#` 列），满足可追溯。
+
+- **命名**：`docs/<功能名>/` 须符合 `shared/path-conventions.md`（简洁、与仓库现有目录不冲突）；系统类改进可用前缀如 `系统改进-xxx`，避免与具体功能混淆。
+- **溯源**：在后续生成的 `01_需求文档.md` / `02_需求任务.md` 中明确写入来源周报路径与表格行号（或 `#` 列），满足可追溯。
+
 3. **产出映射表（强制落盘）**：在仓库根目录 `docs/99_agent-runs/<YYYYMMDD-HHMMSS>_from-weekly.md` 写入 Markdown，包含：周报路径、提取到的行摘要、`{功能名}` 列表与执行顺序（默认按表格 `#` 升序；若矩阵显示「优先做」象限与表格顺序冲突，以表格序号为主并在文件中说明）。
 4. **零条目**：若无法解析出任何可落地条目，不得编造；按「人工介入门槛」写入 `docs/99_agent-runs/` 并 **必须调用 `wework-bot`** 阻断说明；结束。
 
@@ -103,9 +105,9 @@ node scripts/log-orchestration.js --skill generate-document \
 
 ### 与「weekly」的区别
 
-| 命令 | 产出 |
-|------|------|
-| `weekly` | 单文件周报（`docs/周报/…`） |
+| 命令          | 产出                                                 |
+| ------------- | ---------------------------------------------------- |
+| `weekly`      | 单文件周报（`docs/周报/…`）                          |
 | `from-weekly` | 基于已有周报，生成**多个** `docs/<功能名>/` 全文档集 |
 
 ## 何时使用
@@ -202,17 +204,17 @@ node scripts/log-orchestration.js --skill generate-document \
 
 ## Agent 调用契约
 
-| Agent               | 触发步骤                 | 必答问题                                     | 采纳规则                                 |
-| ------------------- | ------------------------ | -------------------------------------------- | ---------------------------------------- |
-| `spec-retriever`    | 1                        | 无特定必答问题，但必须返回适用规范列表       | 规范列表必须用于后续步骤的规范加载       |
-| `impact-analyst`    | 2（仅需求任务/设计文档） | 见 `agents/impact-analyst.md`                | 影响链分析结果必须写入文档对应章节       |
-| `architect`         | 3（仅设计文档）          | 5 个必答问题见 `agents/architect.md`         | 模块划分、接口规范必须采纳到架构设计章节 |
-| `planner`           | 3（仅设计文档）          | 见 `agents/planner.md`                       | 实施策略与风险清单必须采纳到设计文档     |
-| `mermaid-expert`    | 4（含 Mermaid 图源的文档定稿前） | 见 `agents/mermaid-expert.md`        | 修复后的代码块必须写回文件；无图则跳过 |
-| `code-reviewer`     | 4（设计文档生成后）      | 见 `agents/code-reviewer.md`                 | P0 问题必须修复；P1/P2 记录不阻断        |
-| `quality-tracker`   | 4                        | 无特定必答问题                               | P0/P1/P2 统计追加到记忆文件              |
-| `knowledge-curator` | 5                        | 无特定必答问题                               | 可复用知识提取到记忆文件                 |
-| `docs-lookup`       | 2-3                      | 见 `agents/docs-lookup.md`                   | 返回内容作为候选输入                     |
+| Agent               | 触发步骤                         | 必答问题                               | 采纳规则                                 |
+| ------------------- | -------------------------------- | -------------------------------------- | ---------------------------------------- |
+| `spec-retriever`    | 1                                | 无特定必答问题，但必须返回适用规范列表 | 规范列表必须用于后续步骤的规范加载       |
+| `impact-analyst`    | 2（仅需求任务/设计文档）         | 见 `agents/impact-analyst.md`          | 影响链分析结果必须写入文档对应章节       |
+| `architect`         | 3（仅设计文档）                  | 5 个必答问题见 `agents/architect.md`   | 模块划分、接口规范必须采纳到架构设计章节 |
+| `planner`           | 3（仅设计文档）                  | 见 `agents/planner.md`                 | 实施策略与风险清单必须采纳到设计文档     |
+| `mermaid-expert`    | 4（含 Mermaid 图源的文档定稿前） | 见 `agents/mermaid-expert.md`          | 修复后的代码块必须写回文件；无图则跳过   |
+| `code-reviewer`     | 4（设计文档生成后）              | 见 `agents/code-reviewer.md`           | P0 问题必须修复；P1/P2 记录不阻断        |
+| `quality-tracker`   | 4                                | 无特定必答问题                         | P0/P1/P2 统计追加到记忆文件              |
+| `knowledge-curator` | 5                                | 无特定必答问题                         | 可复用知识提取到记忆文件                 |
+| `docs-lookup`       | 2-3                              | 见 `agents/docs-lookup.md`             | 返回内容作为候选输入                     |
 
 ### 契约门禁（强制）
 

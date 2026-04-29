@@ -181,20 +181,20 @@ P1/P2 文档（缺失不阻断）：
 
 ## 相关技能与代理
 
-| 名称                | 调用阶段           | 用途                   |
-| ------------------- | ------------------ | ---------------------- |
-| `spec-retriever`    | 1                  | 智能规范检索           |
-| `impact-analyst`    | 1                  | 全项目影响链分析       |
-| `architect`         | 1                  | 架构确认               |
-| `code-reviewer`     | 2, 3               | 逐模块 + 全量代码审查  |
-| `e2e-testing`         | 1（按需）          | 场景级 E2E 策略与用例骨架（产出须满足 Gate A/B） |
-| `test-page-builder` | 2（前端项目）      | 测试原型页             |
-| `security-reviewer` | 3（涉及鉴权/安全） | 安全审查               |
-| 项目特有 agent      | 3                  | 项目专项审查           |
-| `quality-tracker`   | 4                  | 质量趋势统计           |
-| `knowledge-curator` | 4                  | 知识策展               |
-| `import-docs`       | 4（强制）          | 文档同步               |
-| `wework-bot`        | 4（强制）          | 完成/阻断/门禁异常通知 |
+| 名称                | 调用阶段           | 用途                                             |
+| ------------------- | ------------------ | ------------------------------------------------ |
+| `spec-retriever`    | 1                  | 智能规范检索                                     |
+| `impact-analyst`    | 1                  | 全项目影响链分析                                 |
+| `architect`         | 1                  | 架构确认                                         |
+| `code-reviewer`     | 2, 3               | 逐模块 + 全量代码审查                            |
+| `e2e-testing`       | 1（按需）          | 场景级 E2E 策略与用例骨架（产出须满足 Gate A/B） |
+| `test-page-builder` | 2（前端项目）      | 测试原型页                                       |
+| `security-reviewer` | 3（涉及鉴权/安全） | 安全审查                                         |
+| 项目特有 agent      | 3                  | 项目专项审查                                     |
+| `quality-tracker`   | 4                  | 质量趋势统计                                     |
+| `knowledge-curator` | 4                  | 知识策展                                         |
+| `import-docs`       | 4（强制）          | 文档同步                                         |
+| `wework-bot`        | 4（强制）          | 完成/阻断/门禁异常通知                           |
 
 ## 支持文件结构
 

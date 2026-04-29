@@ -4,14 +4,14 @@
 
 ## 目录职责
 
-| 目录 | 作用 | 是否为稳定入口 |
-|------|------|---------------|
-| `commands/` | Slash Command 包装层，只负责转调 skill | 是 |
-| `skills/` | 可被直接调用的技能定义，`SKILL.md` 是技能真源 | 是 |
-| `agents/` | 专家代理定义，负责角色、输入输出和必答问题 | 是 |
-| `eval/` | 评测示例：`eval/skills/`、`eval/agents/`（首期 wework-bot + message-pusher），非真源 | 否 |
-| `scripts/` | 编排会话日志等辅助脚本（如 `log-orchestration.js`），由技能文档引用，非 Slash 入口 | 否 |
-| `shared/` | 共享解释性文档，统一约定、路径和边界说明 | 否 |
+| 目录        | 作用                                                                                 | 是否为稳定入口 |
+| ----------- | ------------------------------------------------------------------------------------ | -------------- |
+| `commands/` | Slash Command 包装层，只负责转调 skill                                               | 是             |
+| `skills/`   | 可被直接调用的技能定义，`SKILL.md` 是技能真源                                        | 是             |
+| `agents/`   | 专家代理定义，负责角色、输入输出和必答问题                                           | 是             |
+| `eval/`     | 评测示例：`eval/skills/`、`eval/agents/`（首期 wework-bot + message-pusher），非真源 | 否             |
+| `scripts/`  | 编排会话日志等辅助脚本（如 `log-orchestration.js`），由技能文档引用，非 Slash 入口   | 否             |
+| `shared/`   | 共享解释性文档，统一约定、路径和边界说明                                             | 否             |
 
 ## 真源规则
 

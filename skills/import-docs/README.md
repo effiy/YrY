@@ -28,18 +28,18 @@ node .claude/import-docs.js --dir docs --prefix Projects,YourNamespace
 
 ## 文件职责
 
-| 文件 | 职责 |
-|------|------|
-| `SKILL.md` | 何时使用、输入参数、工作流程 |
+| 文件                       | 职责                           |
+| -------------------------- | ------------------------------ |
+| `SKILL.md`                 | 何时使用、输入参数、工作流程   |
 | `rules/import-contract.md` | 导入路径、覆盖、去重和安全约束 |
-| `scripts/import-docs.js` | CLI 实现 |
+| `scripts/import-docs.js`   | CLI 实现                       |
 
 ## 常用参数
 
 - `--dir, -d`：导入目录（默认：自动检测）
 - `--exts, -e`：扩展名（默认：自动检测）
 - `--token, -t`：已禁用；`X-Token` 仅从系统环境变量 `API_X_TOKEN` 读取
-- `--api-url, -a`：API 地址，默认 `https://api.example.com`
+- `--api-url, -a`：API 地址，默认 `https://api.effiy.cn`
 - `--prefix, -p`：远端路径前缀，逗号分隔
 
 特殊规则：

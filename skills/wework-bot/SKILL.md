@@ -20,15 +20,15 @@ description: 发送企业微信机器人消息，用于 generate-document、impl
 
 ### `send-message.js` CLI（脚本只做路由与 HTTP 发送）
 
-| 环境变量 / 参数 | 说明 |
-|----------------|------|
-| `API_X_TOKEN` | 必填，网关 `X-Token` |
-| `WEWORK_BOT_API_URL` | 可选，覆盖默认 API |
-| `WEWORK_BOT_CONFIG` | 可选，路由 JSON 路径（默认仓库内 `skills/wework-bot/config.json`） |
-| `--agent` | 按 `config.agents` 映射到 robot（推荐） |
-| `--robot` | 直接指定 robot 名（少用） |
-| `--content` / `-c` | 完整正文字符串 |
-| `--content-file` / `-f` | 从 UTF-8 文件读取完整正文（推荐长文案） |
+| 环境变量 / 参数         | 说明                                                               |
+| ----------------------- | ------------------------------------------------------------------ |
+| `API_X_TOKEN`           | 必填，网关 `X-Token`                                               |
+| `WEWORK_BOT_API_URL`    | 可选，覆盖默认 API                                                 |
+| `WEWORK_BOT_CONFIG`     | 可选，路由 JSON 路径（默认仓库内 `skills/wework-bot/config.json`） |
+| `--agent`               | 按 `config.agents` 映射到 robot（推荐）                            |
+| `--robot`               | 直接指定 robot 名（少用）                                          |
+| `--content` / `-c`      | 完整正文字符串                                                     |
+| `--content-file` / `-f` | 从 UTF-8 文件读取完整正文（推荐长文案）                            |
 
 webhook 仅在 `config.json`（或 robot 级 `webhook_*_env`）中配置，**无** CLI 传入。
 
