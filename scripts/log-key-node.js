@@ -101,7 +101,7 @@ async function main() {
     process.exit(1);
   }
 
-  const repoRoot = path.resolve(__dirname, '..');
+  const repoRoot = path.resolve(__dirname, '../..');
 
   await appendKeyNodeRecord(repoRoot, {
     title: args.title,

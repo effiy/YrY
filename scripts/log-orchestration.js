@@ -204,8 +204,8 @@ async function main() {
     process.exit(1);
   }
 
-  // 脚本位于 .claude/scripts/，仓库根为 .claude/
-  const repoRoot = path.resolve(__dirname, '..');
+  // 脚本位于 .claude/scripts/，项目根为上一级目录
+  const repoRoot = path.resolve(__dirname, '../..');
   const logsDir = path.join(repoRoot, 'docs', 'logs');
   await fsp.mkdir(logsDir, { recursive: true });
 

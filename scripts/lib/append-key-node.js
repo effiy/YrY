@@ -53,7 +53,7 @@ date: ${day}
 }
 
 /**
- * @param {string} repoRoot 仓库根（\`.claude/\`）
+ * @param {string} repoRoot 项目根（仓库根）
  * @param {{
  *   title: string,
  *   body: string,

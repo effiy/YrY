@@ -14,8 +14,9 @@ const httpsKeepAliveAgent = new https.Agent({ keepAlive: true, maxSockets: 8 });
 
 const args = process.argv.slice(2);
 const SCRIPT_DIR = path.dirname(__filename);
-const REPO_ROOT = path.resolve(SCRIPT_DIR, '../../..');
-const DEFAULT_CONFIG_BASE = path.join(REPO_ROOT, 'skills/wework-bot/config.json');
+const PROJECT_ROOT = path.resolve(SCRIPT_DIR, '../../../..');
+const CLAUDE_ROOT = path.join(PROJECT_ROOT, '.claude');
+const DEFAULT_CONFIG_BASE = path.join(CLAUDE_ROOT, 'skills/wework-bot/config.json');
 const DEFAULT_API_URL = 'https://api.effiy.cn/wework/send-message';
 
 /** X-Token 仅从系统环境变量 `API_X_TOKEN` 读取，不接受配置文件或其它来源。 */
@@ -350,7 +351,7 @@ function writeMessageArchive(opts, result) {
   if (process.env.WEWORK_BOT_SKIP_MESSAGE_LOG === '1' || process.env.WEWORK_BOT_SKIP_MESSAGE_LOG === 'true') {
     return;
   }
-  const dir = path.join(REPO_ROOT, 'docs', 'messages');
+  const dir = path.join(PROJECT_ROOT, 'docs', 'messages');
   fs.mkdirSync(dir, { recursive: true });
   const agentSeg = sanitizeFilenameSegment(opts.agent);
   const robotSeg = sanitizeFilenameSegment(opts.robot);
@@ -445,8 +446,8 @@ function request(apiUrl, token, data) {
         process.env.WEWORK_BOT_SKIP_KEY_NODE_LOG !== '1' &&
         process.env.WEWORK_BOT_SKIP_KEY_NODE_LOG !== 'true'
       ) {
-        const { appendKeyNodeRecord } = require(path.join(REPO_ROOT, 'scripts', 'lib', 'append-key-node.js'));
-        await appendKeyNodeRecord(REPO_ROOT, {
+        const { appendKeyNodeRecord } = require(path.join(CLAUDE_ROOT, 'scripts', 'lib', 'append-key-node.js'));
+        await appendKeyNodeRecord(PROJECT_ROOT, {
           title: '企业微信推送成功',
           category: 'notify',
           skill: 'wework-bot',
