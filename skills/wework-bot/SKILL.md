@@ -1,6 +1,6 @@
 ---
 name: wework-bot
-description: 发送企业微信机器人消息，用于 generate-document、implement-code 或其他长流程的监控预警、阶段通知和动态观测。用户提到企业微信机器人、wework、webhook、预警、监控通知或 send-message 时使用。
+description: 发送企业微信/WeCom 群机器人消息（群通知/告警/阶段推送），用于 generate-document、implement-code 或其他长流程的监控预警、阶段通知和动态观测。用户提到“企微群里发通知/推送到群”“企业微信机器人/WeCom/wework”“webhook”“告警/监控通知”“send-message.js/机器人配置”时使用。
 ---
 
 # wework-bot
@@ -11,10 +11,21 @@ description: 发送企业微信机器人消息，用于 generate-document、impl
 
 ## 何时使用
 
-- `generate-document` 生成文档开始、完成、阻断或自检失败时需要通知
-- `implement-code` 阶段门禁、代码实施、冒烟测试、阻断总结需要动态观测
-- 用户明确要求发送企业微信机器人消息
-- 需要把长流程状态推送到外部群聊
+### 强触发（用户常见说法）
+
+- 用户明确要求把信息**发到企业微信群/企微机器人/群通知**：如“发一条企微群通知”“把这段发到群里”“推送到企业微信”“机器人发消息”
+- 用户提到企业微信机器人/WeCom/wework、webhook、robot key/url、群告警、监控通知、阶段通知、send-message/send-message.js
+- 长流程外部观测：需要把阶段状态/阻断原因/门禁异常/验证结论推送到外部群聊
+
+### 链路强制触发（由上游技能驱动）
+
+- `generate-document` 与 `implement-code` 的完成/阻断/门禁异常都必须通知
+- 与上述流程联动时，顺序必须是：**先 `import-docs`，再 `wework-bot`**，并把 `☁️ 文档同步` 写成刚执行的真实统计
+
+### 不应触发（避免误用）
+
+- 用户只是要你**写一份通知文案草稿**但明确说“先别发/不需要实际发送”（此时只产出文案，不运行脚本）
+- 用户目标是“同步 docs 到远端文档库”（应走 `import-docs`；本技能只负责消息推送）
 
 ## 输入
 
