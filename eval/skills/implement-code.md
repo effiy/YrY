@@ -2,7 +2,7 @@
 
 真源：`.claude/skills/implement-code/SKILL.md`、`rules/orchestration.md`、`rules/code-implementation.md` 等；编排会话日志：`.claude/scripts/log-orchestration.js` → **`docs/logs/<YYYY-MM-DD>_implement-code.md`**（Markdown）；收尾：**先 `import-docs` 再 `wework-bot`**（见 [wework-bot.md](./wework-bot.md)）。
 
-**评测约束**：须对照 SKILL：**Git 分支 `feat/<功能名>`（若为 git 仓库）**；P0 文档不齐须阻断并生成阻断版总结；阶段内必选 **spec-retriever、impact-analyst、architect** 及代码阶段的 **code-reviewer** 等契约；结束必须 **import-docs + wework-bot** 两步齐备。涉及 `.claude` 内 skill、agent、MCP、memory/shared 的交互，预期每轮完成后写入 **`docs/logs`**：**操作场景** + **对话与交互摘要**（格式见 SKILL「编排会话日志」）。
+**评测约束**：须对照 SKILL：**若为 git 仓库，全过程必须在 `feat/<功能名>` 上实施（与 `{功能名}` 一致），首个改动前完成分支就绪**（见 `rules/orchestration.md` §2.5）；P0 文档不齐须阻断并生成阻断版总结；阶段内必选 **spec-retriever、impact-analyst、architect** 及代码阶段的 **code-reviewer** 等契约；结束必须 **import-docs + wework-bot** 两步齐备。涉及 `.claude` 内 skill、agent、MCP、memory/shared 的交互，预期每轮完成后写入 **`docs/logs`**：**操作场景** + **对话与交互摘要**（格式见 SKILL「编排会话日志」）。
 
 ---
 
@@ -19,12 +19,12 @@
 
 ## 用户故事 B：list 与分支
 
-**故事**：作为使用者，希望 `/implement-code list` 能列举 `docs/` 下功能目录；进入实施时创建 `feat/<功能名>`。
+**故事**：作为使用者，希望 `/implement-code list` 能列举 `docs/` 下功能目录；进入实施时**必须**在 **`feat/<功能名>`** 上工作（与所选功能同名），不得在错误分支改代码。
 
 **示例输入（对话）**
 
 - 「先 list 看有哪些功能文档再选一个 implement-code。」
-- 「确认当前分支是 feat/xxx 再开始改代码。」
+- 「先 `git switch -c feat/<功能名>` 或切换到已有 `feat/<功能名>`，再动任何代码。」
 
 ---
 
