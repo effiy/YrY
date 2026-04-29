@@ -128,6 +128,7 @@ node .claude/scripts/log-orchestration.js --skill generate-document \
 - **必须先执行 `import-docs` 文档同步**：
   - 功能文档：`node .claude/skills/import-docs/scripts/import-docs.js --dir docs --exts md`
   - init 命令：同样执行 `docs` 目录标准导入（覆盖新生成的项目基础文件和 `docs/项目初始化/`）
+  - 默认直接使用系统环境变量 `API_X_TOKEN`；仅在变量缺失时提示用户补充，并记录“本轮未执行同步，可后续手动执行”
   - 记录真实结果：创建 N、覆盖 N、失败 N，供 wework-bot 使用
   - 导入失败不阻断：记录失败摘要，继续通知
 - **必须调用 `wework-bot` 发送完成通知**：
@@ -138,7 +139,7 @@ node .claude/scripts/log-orchestration.js --skill generate-document \
     - `🤖 模型`
     - `🧰 工具`
     - `🕒 最后更新时间`（精确到秒）
-    - `☁️ 文档同步`（必须使用 import-docs 真实结果，不得虚构）
+    - `☁️ 文档同步`（仅在已执行 import-docs 时填写真实结果；未执行时可省略该行并在正文说明原因）
   - init 命令的通知模板：使用「generate-document 完成（成功）」或「含 P0 失败」，`📋 类型` 填「项目初始化」
 - **执行顺序强制**：先 import-docs，再 wework-bot，禁止颠倒
 
