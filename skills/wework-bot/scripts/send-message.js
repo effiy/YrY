@@ -152,6 +152,7 @@ Usage: node .claude/skills/wework-bot/scripts/send-message.js [options]
   API_X_TOKEN           必填，网关 X-Token
   WEWORK_BOT_API_URL    可选，覆盖默认 ${DEFAULT_API_URL}
   WEWORK_BOT_CONFIG     可选，路由 JSON 路径（默认仓库 skills/wework-bot/config.json）
+  WEWORK_BOT_SKIP_MESSAGE_LOG  可选，设为 1 或 true 时不写入仓库 docs/messages 归档
 
 选项:
   --config <path>       路由配置文件
@@ -316,6 +317,61 @@ try {
   process.exit(1);
 }
 
+/**
+ * UTC 时间戳，用于归档文件名（不含非法字符）。
+ * @param {Date} [d]
+ * @returns {string}
+ */
+function formatUtcStampForFilename(d = new Date()) {
+  const p = (n) => String(n).padStart(2, '0');
+  const ms = String(d.getUTCMilliseconds()).padStart(3, '0');
+  return `${d.getUTCFullYear()}-${p(d.getUTCMonth() + 1)}-${p(d.getUTCDate())}_${p(d.getUTCHours())}${p(d.getUTCMinutes())}${p(d.getUTCSeconds())}_${ms}Z`;
+}
+
+/**
+ * @param {string} s
+ * @returns {string}
+ */
+function sanitizeFilenameSegment(s) {
+  if (s == null || s === '') return 'unknown';
+  const t = String(s).replace(/[^\w\u4e00-\u9fff.-]+/g, '_');
+  return t.slice(0, 120) || 'unknown';
+}
+
+/**
+ * 推送成功后归档正文到 `docs/messages/`（不落 webhook URL）。
+ * 可通过环境变量 `WEWORK_BOT_SKIP_MESSAGE_LOG=1` 跳过。
+ *
+ * @param {{ agent: string|null, robot: string|null, content: string }} opts
+ * @param {{ statusCode?: number, body: unknown }} result
+ */
+function writeMessageArchive(opts, result) {
+  if (process.env.WEWORK_BOT_SKIP_MESSAGE_LOG === '1' || process.env.WEWORK_BOT_SKIP_MESSAGE_LOG === 'true') {
+    return;
+  }
+  const dir = path.join(REPO_ROOT, 'docs', 'messages');
+  fs.mkdirSync(dir, { recursive: true });
+  const agentSeg = sanitizeFilenameSegment(opts.agent);
+  const robotSeg = sanitizeFilenameSegment(opts.robot);
+  const uniq = `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+  const fileName = `${formatUtcStampForFilename()}_${uniq}_${agentSeg}_${robotSeg}.md`;
+  const filePath = path.join(dir, fileName);
+  const metaLines = [
+    '---',
+    `recordedAt: "${new Date().toISOString()}"`,
+    opts.agent != null && opts.agent !== ''
+      ? `agent: "${String(opts.agent).replace(/"/g, '\\"')}"`
+      : 'agent: null',
+    opts.robot != null && opts.robot !== ''
+      ? `robot: "${String(opts.robot).replace(/"/g, '\\"')}"`
+      : 'robot: null',
+    `httpStatus: ${result.statusCode ?? 'null'}`,
+    '---',
+    ''
+  ];
+  fs.writeFileSync(filePath, metaLines.join('\n') + opts.content, 'utf-8');
+}
+
 function request(apiUrl, token, data) {
   return new Promise((resolve, reject) => {
     const url = new URL(apiUrl);
@@ -372,6 +428,15 @@ function request(apiUrl, token, data) {
         console.error('Error: API returned HTTP success but business failure (check errcode/code/message in response)');
       }
       process.exit(1);
+    }
+
+    try {
+      writeMessageArchive(
+        { agent: options.agent, robot: options.robot, content: options.content },
+        result
+      );
+    } catch (archiveErr) {
+      console.warn('Warning: failed to write docs/messages archive:', archiveErr.message);
     }
   } catch (error) {
     console.error('Error:', error.message);
