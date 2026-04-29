@@ -153,6 +153,7 @@ Usage: node .claude/skills/wework-bot/scripts/send-message.js [options]
   WEWORK_BOT_API_URL    可选，覆盖默认 ${DEFAULT_API_URL}
   WEWORK_BOT_CONFIG     可选，路由 JSON 路径（默认仓库 skills/wework-bot/config.json）
   WEWORK_BOT_SKIP_MESSAGE_LOG  可选，设为 1 或 true 时不写入仓库 docs/messages 归档
+  WEWORK_BOT_SKIP_KEY_NODE_LOG   可选，设为 1 或 true 时不写入仓库 docs/key-nodes 关键节点
 
 选项:
   --config <path>       路由配置文件
@@ -437,6 +438,27 @@ function request(apiUrl, token, data) {
       );
     } catch (archiveErr) {
       console.warn('Warning: failed to write docs/messages archive:', archiveErr.message);
+    }
+
+    try {
+      if (
+        process.env.WEWORK_BOT_SKIP_KEY_NODE_LOG !== '1' &&
+        process.env.WEWORK_BOT_SKIP_KEY_NODE_LOG !== 'true'
+      ) {
+        const { appendKeyNodeRecord } = require(path.join(REPO_ROOT, 'scripts', 'lib', 'append-key-node.js'));
+        await appendKeyNodeRecord(REPO_ROOT, {
+          title: '企业微信推送成功',
+          category: 'notify',
+          skill: 'wework-bot',
+          body: [
+            `agent：${options.agent ?? '（未指定）'}`,
+            `robot：${options.robot ?? '（未知）'}`,
+            `HTTP：${result.statusCode}`
+          ].join('\n')
+        });
+      }
+    } catch (knErr) {
+      console.warn('Warning: failed to write docs/key-nodes record:', knErr.message);
     }
   } catch (error) {
     console.error('Error:', error.message);

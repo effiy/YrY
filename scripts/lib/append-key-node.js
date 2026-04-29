@@ -1,0 +1,102 @@
+'use strict';
+
+/**
+ * 将「关键节点」以 Markdown 追加写入 `docs/key-nodes/<YYYY-MM-DD>.md`。
+ * 供 `log-key-node.js` CLI 与需程序化落盘的脚本（如 send-message）复用。
+ */
+
+const fsp = require('fs').promises;
+const path = require('path');
+
+/**
+ * @param {string} body
+ */
+function formatSummaryBody(body) {
+  return body.split('\n').map((line) => `> ${line}`).join('\n');
+}
+
+/**
+ * @param {string} title
+ */
+function escapeHeadingFragment(title) {
+  return String(title)
+    .replace(/\r?\n/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/`/g, "'");
+}
+
+/**
+ * @param {string} filePath
+ * @param {string} day YYYY-MM-DD
+ */
+async function ensurePreamble(filePath, day) {
+  try {
+    const st = await fsp.stat(filePath);
+    if (st.size > 0) return;
+  } catch {
+    // 新建
+  }
+  const preamble = `---
+log_type: key-node
+date: ${day}
+---
+
+# 关键节点 · ${day}
+
+本文件由 \`node .claude/scripts/log-key-node.js\` 或由编排脚本追加写入，记录 **里程碑 / 门禁 / 对外通知** 等可扫描节点（与 \`docs/logs/\` 编排会话明细互为补充）。
+
+---
+
+`;
+  await fsp.writeFile(filePath, preamble, 'utf8');
+}
+
+/**
+ * @param {string} repoRoot 仓库根（\`.claude/\`）
+ * @param {{
+ *   title: string,
+ *   body: string,
+ *   category?: string|null,
+ *   skill?: string|null
+ * }} opts
+ * @returns {Promise<void>}
+ */
+async function appendKeyNodeRecord(repoRoot, opts) {
+  const title = opts.title != null ? String(opts.title).trim() : '';
+  if (!title) {
+    throw new Error('appendKeyNodeRecord: title is required');
+  }
+  const body = opts.body != null ? String(opts.body).trim() : '';
+  if (!body) {
+    throw new Error('appendKeyNodeRecord: body is required');
+  }
+
+  const day = new Date().toISOString().slice(0, 10);
+  const dir = path.join(repoRoot, 'docs', 'key-nodes');
+  await fsp.mkdir(dir, { recursive: true });
+  const filePath = path.join(dir, `${day}.md`);
+
+  await ensurePreamble(filePath, day);
+
+  const iso = new Date().toISOString();
+  const categoryRaw = opts.category != null && String(opts.category).trim() !== '' ? String(opts.category).trim() : 'general';
+  const cat = categoryRaw.replace(/[^\w\u4e00-\u9fff./-]/g, '_');
+  const skillRaw = opts.skill != null ? String(opts.skill).trim() : '';
+  const skillLine = skillRaw !== '' ? `**关联技能**：\`${skillRaw}\`\n\n` : '';
+
+  const safeTitle = escapeHeadingFragment(title);
+  const block = `### \`${iso}\` · \`${cat}\` · ${safeTitle}
+
+${skillLine}**说明**
+
+${formatSummaryBody(body)}
+
+---
+
+`;
+
+  await fsp.appendFile(filePath, block, 'utf8');
+}
+
+module.exports = { appendKeyNodeRecord };

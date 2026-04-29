@@ -24,3 +24,10 @@
 标题行可对 **good case** / **bad case** 显示标记（`\`--case good|bad\``），便于 `rg 'good case|bad case' docs/logs` 筛选。
 
 历史遗留的 **`.log`** 单行格式若仍存在可保留归档；新记录一律使用 **`.md`**。
+
+## 相关目录（同为 Markdown）
+
+| 目录 | 用途 |
+|------|------|
+| [`docs/key-nodes/`](../key-nodes/README.md) | **关键节点**（里程碑 / 门禁 / 通知结果等短记录，`log-key-node.js`） |
+| [`docs/messages/`](../messages/) | 企业微信推送正文快照（`send-message.js` 成功归档） |

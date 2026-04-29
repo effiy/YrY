@@ -218,3 +218,9 @@
 2. **工具**：`node .claude/scripts/log-orchestration.js`（参数见 `../SKILL.md`「编排会话日志」）。
 3. **记录结构**：每条含 **操作场景** 与 **对话与交互摘要**；可选 **`--case good|bad`**、`--tags`、`--lesson` 标注 good/bad case（见 `docs/logs/CASE-STANDARD.md`）。禁止空占位。
 4. **阻断与兜底**：即使中途阻断，对已发生的交互仍须补齐日志后再结束。
+
+---
+
+## 8. 关键节点记录（推荐）
+
+阶段切换、门禁结论、对外通知结果等 **一眼可扫描** 的里程碑，推荐追加写入 **`docs/key-nodes/<YYYY-MM-DD>.md`**（Markdown）：`node .claude/scripts/log-key-node.js`（说明见 `docs/key-nodes/README.md`）。与「编排会话日志」互补，**不可替代**上文第 7 节的强制要求。
