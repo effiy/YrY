@@ -38,6 +38,17 @@
 
 ---
 
+## 用户故事 D：从周报拆解多套全文档（from-weekly）
+
+**故事**：作为维护者，希望指定一份已有周报，将其「四、后期规划与改进优先级总表」中的条目梳理为需求，并生成多个 `docs/<功能名>/` 全文档集；全部完成后只做一次 import-docs 与一条汇总企微通知。
+
+**示例输入（对话）**
+
+- 「`/generate-document from-weekly docs/周报/2026-04-27~2026-05-03_周报.md`：按表格行拆功能目录，并写 `docs/99_agent-runs/*_from-weekly.md` 映射表。」
+- 「优先处理类型为规划与项目的行；系统类单独成 `系统改进-…` 目录。」
+
+---
+
 ## 编排会话日志（可观测）
 
 评测时可抽查当日 `docs/logs/*_generate-document.md`：是否存在与 **skill/agent/MCP** 交互对应的 Markdown 小节（三级标题内含 ISO 时间与 kind/name），且 **对话与交互摘要** 非空、可与本会话的用法对齐。可选抽查 **`--case good|bad`** 与 **`docs/logs/CASE-STANDARD.md`** 是否一致（分级、标签、后续改进是否支撑复盘）。
