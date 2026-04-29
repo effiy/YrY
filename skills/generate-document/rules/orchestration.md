@@ -225,7 +225,7 @@
 与本编排相关的 **skill / agent / MCP / memory / shared** 交互，在对应步骤完成后必须追加写入 **`docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>/logs.md`**（Markdown）。
 
 1. **触发时机**：每次完成对 `.claude` 内某一 skill、agent、MCP 的一轮调用（含读完记忆文件后的下游采纳），立即追加一条记录。
-2. **工具**：`node .claude/scripts/log-orchestration.js`（参数见 `../SKILL.md`「编排会话日志」）。
+2. **工具**：`node scripts/log-orchestration.js`（参数见 `../SKILL.md`「编排会话日志」）。
 3. **记录结构**：每条含 **操作场景** 与 **对话与交互摘要**；可选 **`--case good|bad`**、`--tags`、`--lesson` 标注 good/bad case（见 `docs/logs/CASE-STANDARD.md`）。禁止空占位。
 4. **阻断与兜底**：即使中途阻断，对已发生的交互仍须补齐日志后再结束。
 
@@ -233,4 +233,44 @@
 
 ## 8. 关键节点记录（推荐）
 
-阶段切换、门禁结论、对外通知结果等 **一眼可扫描** 的里程碑，推荐追加写入 **`docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>/key-notes.md`**（Markdown）：`node .claude/scripts/log-key-node.js`。与「编排会话日志」互补，**不可替代**上文第 7 节的强制要求。
+阶段切换、门禁结论、对外通知结果等 **一眼可扫描** 的里程碑，推荐追加写入 **`docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>/key-notes.md`**（Markdown）：`node scripts/log-key-node.js`。与「编排会话日志」互补，**不可替代**上文第 7 节的强制要求。
+
+---
+
+## 9. Agent 调用门禁（强制：先校验再进入下一阶段）
+
+> 目标：让 `spec-retriever`、`impact-analyst`、`architect` 等在主流程中**严格按契约执行**，避免“漏答必答问题 / 关键产物缺失 / 输出结构漂移”污染下游阶段。
+
+### 9.1 统一要求：输出必须带 JSON 契约附录
+
+- 所有被本流程强制调用的 agent，其输出末尾必须附加 JSON fenced code block（见 `shared/agent-output-contract.md`）。
+- 调用方在采纳前必须对该 JSON 附录做门禁校验（结构、必答覆盖、关键产物存在性）。
+
+### 9.2 校验方式（推荐）
+
+使用仓库脚本快速校验（仅校验“结构与必答覆盖”，不校验业务真伪）：
+
+```bash
+node scripts/validate-agent-output.js --agent spec-retriever --text "<粘贴 agent 输出>"
+node scripts/validate-agent-output.js --agent impact-analyst --text "<粘贴 agent 输出>"
+node scripts/validate-agent-output.js --agent architect --text "<粘贴 agent 输出>"
+```
+
+### 9.3 失败处理策略（强制）
+
+当门禁校验失败时，必须按以下策略处理（禁止直接跳过进入下一阶段）：
+
+1. **第一次失败：补缺口重试**
+   - 只要求 agent **补齐缺失项**（缺失必答问题、缺失字段、缺失产物存在性标注）
+   - 禁止要求 agent “重写整份输出”（避免引入新漂移）
+2. **第二次失败：按 agent 调用失败处理**
+   - 进入本文件第 4 节「阻断点」的处置路径（记录证据、落盘、同步与通知）
+   - 或按对应阶段的降级策略（若有）执行，并在产物中明确标注“契约校验失败→降级”的原因与影响
+
+### 9.4 阶段绑定（强制）
+
+- **阶段 1** 退出前：必须完成 `spec-retriever` 的门禁校验通过
+- **阶段 2** 退出前：必须完成 `impact-analyst` 的门禁校验通过
+- **阶段 3** 退出前：必须完成 `architect` 的门禁校验通过
+
+若某阶段的 agent 输出未通过门禁，则该阶段不得标记完成，不得进入下一阶段（除非走阻断/降级流程并记录恢复点）。

@@ -65,9 +65,41 @@ triggers:
   - <经验摘要>（来源：记忆文件）
 ```
 
+## 输出契约附录（强制，供门禁校验）
+
+为使调用方能做“必答问题覆盖”与“产物结构存在性”门禁，你的输出末尾必须追加一段 **JSON fenced code block**（不替代上面的可读输出，只做附录），字段规范见 `shared/agent-output-contract.md`。
+
+最小示例（字段需与本次任务一致）：
+
+```json
+{
+  "agent": "spec-retriever",
+  "contract_version": "1.0",
+  "task": {
+    "skill": "generate-document",
+    "stage": "stage-1",
+    "doc_type": "需求文档",
+    "feature": "N/A"
+  },
+  "required_answers": [
+    { "id": "Q1", "answered": true, "evidence": [] },
+    { "id": "Q2", "answered": true, "evidence": [] },
+    { "id": "Q3", "answered": true, "evidence": [] },
+    { "id": "Q4", "answered": true, "evidence": [] }
+  ],
+  "artifacts": {
+    "required_specs": ["skills/generate-document/rules/通用文档.md"],
+    "optional_specs": [],
+    "conflicts": []
+  },
+  "warnings": [],
+  "notes": "一行摘要"
+}
+```
+
 ## 记忆协议
 
-- **记忆文件**：`.claude/agents/memory/spec-retriever.md`
+- **记忆文件**：`agents/memory/spec-retriever.md`
 - **读取策略**：调用前读取记忆文件，获取历史规范加载经验（如哪些规范组合最常用、哪些关键词对应哪些可选规范）
 - **写入策略**：调用后追加本次加载经验（1-2 条：关键词→规范映射、冲突发现）
 - **跨查阅**：可读取 `knowledge.md` 获取跨 agent 共性知识

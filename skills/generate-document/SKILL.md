@@ -28,7 +28,7 @@ user_invocable: true
 **命令**（在仓库根目录执行）：
 
 ```bash
-node .claude/scripts/log-orchestration.js --skill generate-document \
+node scripts/log-orchestration.js --skill generate-document \
   --kind <skill|agent|mcp|memory|shared|other> [--name <标识>] \
   [--scenario "<操作场景：一句描述用户意图与本步角色>"] \
   [--case <good|bad|neutral>] [--tags "<tag1,tag2>"] [--lesson "<后续改进一句>"] \
@@ -132,7 +132,7 @@ node .claude/scripts/log-orchestration.js --skill generate-document \
 
 - 从用户输入提取 `{功能名}`，按默认决策矩阵自动补齐
 - **必须调用 `spec-retriever`**：根据文档类型和关键词智能检索适用的 `rules/`、`shared/`、`checklists/` 规范集合，替代全量盲读
-- `spec-retriever` 先读取 `.claude/agents/memory/spec-retriever.md` 获取历史检索经验
+- `spec-retriever` 先读取 `agents/memory/spec-retriever.md` 获取历史检索经验
 - 产出：功能名、规范集、上游文档清单
 
 ### 步骤 2：上游 Grounding + 影响分析
@@ -140,7 +140,7 @@ node .claude/scripts/log-orchestration.js --skill generate-document \
 - 按依赖顺序读取前一阶段文档（01→02→03）；设计文档同时阅读相关源码
 - **必须调用 `impact-analyst`**（仅需求任务和设计文档）：
   - 先读取 `../../shared/impact-analysis-contract.md`
-  - 先读取 `.claude/agents/memory/impact-analyst.md` 获取历史分析经验
+  - 先读取 `agents/memory/impact-analyst.md` 获取历史分析经验
   - 执行全项目影响链闭合分析，产出四个部分：搜索词与改动点清单、改动点影响链、依赖闭合摘要、未覆盖风险
   - **影响链分析结果必须写入**需求任务第 6 章 / 设计文档第 5 章
 - 产出：事实-来源映射表、影响链闭合
@@ -148,7 +148,7 @@ node .claude/scripts/log-orchestration.js --skill generate-document \
 ### 步骤 3：专家生成
 
 - **必须调用 `architect`**（设计文档生成前）：
-  - 先读取 `.claude/agents/memory/architect.md` 获取历史架构决策
+  - 先读取 `agents/memory/architect.md` 获取历史架构决策
   - 回答 5 个必答问题后，其模块划分、接口规范、数据流方案**必须采纳到**设计文档架构设计章节
 - **必须调用 `planner`**（设计文档生成前）：
   - 回答必答问题后，其实施策略与风险清单**必须采纳到**设计文档
@@ -162,21 +162,21 @@ node .claude/scripts/log-orchestration.js --skill generate-document \
 - 无据可依的章节标注"待补充"
 - 版本信息头部填写实际值（大模型名称、AI 工具名称）
 - **凡在本次步骤中写入或修改了含 Mermaid 图源代码块的 Markdown（含周报、项目初始化等任意产出路径），在该文件进入下一门禁前必须先调用 `mermaid-expert`**：
-  - 调用前读取 `.claude/agents/memory/mermaid-expert.md`
+  - 调用前读取 `agents/memory/mermaid-expert.md`
   - 按代理契约输出修复后的完整代码块并**写回同一文件**；禁止跳过仅口头宣称「已检查」
   - 无 Mermaid 块的文档可跳过本代理
 - **设计文档生成后必须调用 `code-reviewer` 审查架构一致性**（在含图文档已通过 `mermaid-expert` 之后）：
   - P0 问题必须修复后再保存
   - P1/P2 问题记录但不阻断
 - 自检：加载 `checklists/<类型>.md`，P0 全部通过才保存为通过状态；未通过最多自修复 1 轮，仍不通过也必须保存并标注
-- **必须调用 `quality-tracker`**：将本次 P0/P1/P2 统计追加到 `.claude/agents/memory/quality-tracker.md`
+- **必须调用 `quality-tracker`**：将本次 P0/P1/P2 统计追加到 `agents/memory/quality-tracker.md`
 - 产出：全文档编号集
 
 ### 步骤 5：保存 + 知识策展
 
 - 保存 `docs/<功能名>/` 下 01-05, 07（06 不创建）
 - **init 命令例外**：保存 10 个项目基础文件 + `docs/项目初始化/` 下 01-07（含 06\_实施总结）
-- **必须调用 `knowledge-curator`**：策展本次任务的可复用知识到 `.claude/agents/memory/knowledge.md`
+- **必须调用 `knowledge-curator`**：策展本次任务的可复用知识到 `agents/memory/knowledge.md`
 
 ### 步骤 6：文档同步与通知（强制，所有命令适用）
 
@@ -205,14 +205,31 @@ node .claude/scripts/log-orchestration.js --skill generate-document \
 | Agent               | 触发步骤                 | 必答问题                                     | 采纳规则                                 |
 | ------------------- | ------------------------ | -------------------------------------------- | ---------------------------------------- |
 | `spec-retriever`    | 1                        | 无特定必答问题，但必须返回适用规范列表       | 规范列表必须用于后续步骤的规范加载       |
-| `impact-analyst`    | 2（仅需求任务/设计文档） | 见 `.claude/agents/impact-analyst.md`        | 影响链分析结果必须写入文档对应章节       |
-| `architect`         | 3（仅设计文档）          | 5 个必答问题见 `.claude/agents/architect.md` | 模块划分、接口规范必须采纳到架构设计章节 |
-| `planner`           | 3（仅设计文档）          | 见 `.claude/agents/planner.md`               | 实施策略与风险清单必须采纳到设计文档     |
-| `mermaid-expert`    | 4（含 Mermaid 图源的文档定稿前） | 见 `.claude/agents/mermaid-expert.md` | 修复后的代码块必须写回文件；无图则跳过 |
-| `code-reviewer`     | 4（设计文档生成后）      | 见 `.claude/agents/code-reviewer.md`         | P0 问题必须修复；P1/P2 记录不阻断        |
+| `impact-analyst`    | 2（仅需求任务/设计文档） | 见 `agents/impact-analyst.md`                | 影响链分析结果必须写入文档对应章节       |
+| `architect`         | 3（仅设计文档）          | 5 个必答问题见 `agents/architect.md`         | 模块划分、接口规范必须采纳到架构设计章节 |
+| `planner`           | 3（仅设计文档）          | 见 `agents/planner.md`                       | 实施策略与风险清单必须采纳到设计文档     |
+| `mermaid-expert`    | 4（含 Mermaid 图源的文档定稿前） | 见 `agents/mermaid-expert.md`        | 修复后的代码块必须写回文件；无图则跳过 |
+| `code-reviewer`     | 4（设计文档生成后）      | 见 `agents/code-reviewer.md`                 | P0 问题必须修复；P1/P2 记录不阻断        |
 | `quality-tracker`   | 4                        | 无特定必答问题                               | P0/P1/P2 统计追加到记忆文件              |
 | `knowledge-curator` | 5                        | 无特定必答问题                               | 可复用知识提取到记忆文件                 |
-| `docs-lookup`       | 2-3                      | 见 `.claude/agents/docs-lookup.md`           | 返回内容作为候选输入                     |
+| `docs-lookup`       | 2-3                      | 见 `agents/docs-lookup.md`                   | 返回内容作为候选输入                     |
+
+### 契约门禁（强制）
+
+为确保 `spec-retriever`、`impact-analyst`、`architect` 等**严格按契约执行**：
+
+- agent 输出末尾必须附加 JSON 契约附录块（见 `shared/agent-output-contract.md`）
+- 采纳前必须先校验（至少校验必答覆盖与产物存在性）；校验失败不得进入下一阶段
+- 推荐用脚本：
+
+```bash
+node scripts/validate-agent-output.js --agent spec-retriever --text "<粘贴 agent 输出>"
+```
+
+校验失败处理：
+
+- 第一次：只补齐缺失项重试（禁止重写整份输出）
+- 第二次：视为 agent 调用失败，按 `rules/orchestration.md` 的阻断/降级策略执行并记录恢复点
 
 ## 人工介入门槛
 

@@ -102,7 +102,8 @@ async function main() {
     process.exit(1);
   }
 
-  const repoRoot = path.resolve(__dirname, '../..');
+  // 本仓库中 scripts/ 位于仓库根目录下：<repo>/scripts
+  const repoRoot = path.resolve(__dirname, '..');
 
   await appendKeyNodeRecord(repoRoot, {
     title: args.title,

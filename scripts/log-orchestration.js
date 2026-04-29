@@ -196,8 +196,8 @@ async function main() {
     process.exit(1);
   }
 
-  // 脚本位于 .claude/scripts/，项目根为上一级目录
-  const repoRoot = path.resolve(__dirname, '../..');
+  // 本仓库中 scripts/ 位于仓库根目录下：<repo>/scripts
+  const repoRoot = path.resolve(__dirname, '..');
   const week = getNaturalWeekRange(new Date());
   const logsDir = path.join(repoRoot, 'docs', '周报', week.range);
   await fsp.mkdir(logsDir, { recursive: true });
