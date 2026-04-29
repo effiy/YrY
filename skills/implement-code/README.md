@@ -9,14 +9,16 @@
    先看何时使用、输入前提、8 阶段总览、门禁与停止条件（含原则 12：场景—检查项覆盖预检）。  
 3. `./rules/orchestration.md`  
    看阶段契约、文档预检、Grounding、**§3.4 02↔05 覆盖**、skill/agent 分派、MCP 探针与降级。
-4. 按阶段进入对应规则文件：
-   - 阶段 1：`./rules/e2e-testing.md` + `./rules/test-page.md`
+4. `./rules/implement-code-testing.md`  
+   **Gate A（编码前 MVP）与 Gate B（编码后冒烟）** 的定义、证据标准、与 TDD/自动化关系（执行 implement-code 前应先掌握）。
+5. 按阶段进入对应规则文件：
+   - 阶段 1：`./rules/implement-code-testing.md` + `./rules/e2e-testing.md` + `./rules/test-page.md`
    - 阶段 2 / 6：`./rules/verification-gate.md`
    - 阶段 3 / 4：`./rules/code-implementation.md`
    - 阶段 7 / 中途停止：`./rules/process-summary.md`
-5. `./rules/artifact-contracts.md`  
+6. `./rules/artifact-contracts.md`  
    看文档集路径、测试产物路径、回写目标和状态字段的统一约定；阶段 7 完成或阻断时必须按这里回写 `01/02/03/04/05/07` 的实施状态。  
-6. `../../shared/impact-analysis-contract.md`  
+7. `../../shared/impact-analysis-contract.md`  
    看全项目影响链分析的范围、上游依赖、反向依赖、传递依赖、依赖闭合和 P0 门禁。
 
 ## 真源分工
@@ -27,7 +29,8 @@
 | `README.md` | 导航入口：先读什么、按阶段看什么 |
 | `rules/orchestration.md` | 阶段契约与编排细则 |
 | `rules/artifact-contracts.md` | 产物路径、文件命名、回写目标 |
-| `rules/e2e-testing.md` | 测试文件、Mock、MCP 验证细则 |
+| `rules/implement-code-testing.md` | Gate A/B 准入、证据、阻断条件（测试门禁真源） |
+| `rules/e2e-testing.md` | E2E 目录、`data-testid`、Mock、Playwright 偏好 |
 | `rules/test-page.md` | 原型测试页面结构规范 |
 | `rules/verification-gate.md` | 阶段 2 / 6 门禁与修复循环 |
 | `rules/code-implementation.md` | 阶段 3 / 4 编码约束、影响分析与自检 |

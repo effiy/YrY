@@ -5,6 +5,7 @@
  * 路由、webhook 解析与请求 api.effiy.cn。
  */
 
+const crypto = require('crypto');
 const fs = require('fs');
 const https = require('https');
 const path = require('path');
@@ -320,14 +321,29 @@ try {
 }
 
 /**
- * UTC 时间戳，用于归档文件名（不含非法字符）。
+ * UTC 时间戳，用于 `docs/messages` 归档文件名：紧凑、按字典序即按时间序，且不包含路径非法字符。
+ * 形如 `20260429T123045_123Z`（等价 ISO 8601 basic：`YYYYMMDD` + `T` + `HHmmss` + `_` + 毫秒 + `Z`）。
  * @param {Date} [d]
  * @returns {string}
  */
 function formatUtcStampForFilename(d = new Date()) {
   const p = (n) => String(n).padStart(2, '0');
+  const y = d.getUTCFullYear();
+  const mo = p(d.getUTCMonth() + 1);
+  const da = p(d.getUTCDate());
+  const h = p(d.getUTCHours());
+  const mi = p(d.getUTCMinutes());
+  const s = p(d.getUTCSeconds());
   const ms = String(d.getUTCMilliseconds()).padStart(3, '0');
-  return `${d.getUTCFullYear()}-${p(d.getUTCMonth() + 1)}-${p(d.getUTCDate())}_${p(d.getUTCHours())}${p(d.getUTCMinutes())}${p(d.getUTCSeconds())}_${ms}Z`;
+  return `${y}${mo}${da}T${h}${mi}${s}_${ms}Z`;
+}
+
+/**
+ * 归档文件名防碰撞后缀（8 hex，与同一时间戳并存概率可忽略）。
+ * @returns {string}
+ */
+function randomArchiveSuffix() {
+  return crypto.randomBytes(4).toString('hex');
 }
 
 /**
@@ -355,8 +371,8 @@ function writeMessageArchive(opts, result) {
   fs.mkdirSync(dir, { recursive: true });
   const agentSeg = sanitizeFilenameSegment(opts.agent);
   const robotSeg = sanitizeFilenameSegment(opts.robot);
-  const uniq = `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
-  const fileName = `${formatUtcStampForFilename()}_${uniq}_${agentSeg}_${robotSeg}.md`;
+  const uniq = randomArchiveSuffix();
+  const fileName = `${formatUtcStampForFilename()}_${agentSeg}_${robotSeg}_${uniq}.md`;
   const filePath = path.join(dir, fileName);
   const metaLines = [
     '---',

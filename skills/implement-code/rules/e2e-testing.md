@@ -1,6 +1,7 @@
 # E2E 测试规范
 
-> CDN SPA 测试策略：手动浏览器验证 + createBaseView 集成检查。
+> CDN SPA 测试策略：手动浏览器验证 + createBaseView 集成检查。  
+> **`implement-code` 准入与证据标准**（编码前 Gate A / 编码后 Gate B）以 **[`implement-code-testing.md`](./implement-code-testing.md)** 为真源；本文件约定目录结构、`data-testid`、Mock 与自动化偏好。
 
 ---
 
@@ -32,6 +33,13 @@
 | AI 自动主流程冒烟（强制） | 由 AI 自动串联主流程步骤执行端到端冒烟，输出通过/失败与证据路径 |
 
 若已安装 Playwright，应优先用于 AI 自动主流程冒烟；未安装时，需通过可脚本化命令 + 可复核日志完成等价自动化执行，不得以“手工点点看”替代。
+
+### 2.1 与 [`implement-code-testing.md`](./implement-code-testing.md) 的对照
+
+| 门禁 | 本文件承载的细节 | `implement-code-testing` 定义的底线 |
+|------|------------------|-------------------------------------|
+| Gate A（编码前） | checklist 路径、`tests/e2e/` 布局、原型页与 `data-testid` | 真实入口、主路径 MVP、可追溯证据；无证据不得编码 |
+| Gate B（编码后） | Playwright / 静态检查优先顺序 | AI 必须真实执行；失败阻断交付 |
 
 ---
 

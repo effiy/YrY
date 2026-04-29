@@ -32,10 +32,10 @@ triggers:
 1. 读取自身记忆文件 `.claude/agents/memory/spec-retriever.md`，获取历史规范加载经验
 2. 根据任务类型确定基础规范集合：
    - generate-document → `rules/通用文档.md` + `rules/<文档类型>.md` + `checklists/<文档类型>.md`
-   - implement-code → `rules/orchestration.md` + `rules/code-implementation.md` + `rules/artifact-contracts.md`
+   - implement-code → `rules/orchestration.md` + `rules/implement-code-testing.md` + `rules/code-implementation.md` + `rules/artifact-contracts.md`
 3. 根据关键词扩展可选规范：
    - 涉及代码 → `rules/编码规范.md` + `rules/代码结构.md`
-   - 涉及 E2E → `rules/e2e-testing.md` + `rules/test-page.md`
+   - 涉及 E2E → `rules/implement-code-testing.md` + `rules/e2e-testing.md` + `rules/test-page.md`
    - 涉及验证 → `rules/verification-gate.md`
    - 涉及安全 → 附加 `security-reviewer` agent 规范
 4. 加载共享规范：
