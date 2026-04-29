@@ -22,13 +22,14 @@ POST https://api.effiy.cn/wework/send-message
 - Header 使用 `X-Token`
 - `X-Token` **仅来自系统环境变量** `API_X_TOKEN`（不接受命令行参数或本地配置兜底）
 
+客户端请求须携带与浏览器访问 `effiy.cn` 一致的 Origin/Referer；脚本使用与 Chrome 一致的 `User-Agent`、`Sec-Fetch-*`、`sec-ch-ua` 等头，避免网关拒绝非浏览器 UA。实现上与浏览器侧 `curl 'https://api.effiy.cn/wework/send-message' ...` 的请求头对齐，并使用 keep-alive Agent。
+
 ## webhook 配置
 
 优先级从高到低：
 
 1. `--robot`（若提供），否则 `--agent` 映射到 robot，否则使用 `default_robot`
-2. `config.json` 中选中 robot 的 webhook（优先 `webhook_*_env` 映射到本地环境变量名；其次明文 `webhook_url` / `webhook_key`；顶层同名字段可作兜底）
-3. （兜底）全局环境变量 `WEWORK_WEBHOOK_URL` / `WEWORK_WEBHOOK_KEY`
+2. `config.json` 中选中 robot 的 `webhook_url` 或 `webhook_key`（顶层同名字段可作兜底）
 
 ```text
 https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=<key>
@@ -41,21 +42,19 @@ https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=<key>
 ```json
 {
   "default_robot": "general",
+  "api_url": "https://api.effiy.cn/wework/send-message",
   "robots": {
     "general": {
-      "webhook_key_env": "WEWORK_WEBHOOK_KEY_GENERAL"
+      "webhook_url": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=<key>"
     },
     "security": {
-      "webhook_key_env": "WEWORK_WEBHOOK_KEY_SECURITY"
+      "webhook_url": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=<另一 key>"
     }
   },
   "agents": {
-    "generate-document": "docs",
-    "import-docs": "docs",
-    "wework-bot": "general",
-    "implement-code": "code",
+    "generate-document": "general",
     "security-reviewer": "security",
-    "code-reviewer": "general"
+    "implement-code": "general"
   }
 }
 ```
@@ -64,11 +63,11 @@ https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=<key>
 
 | 字段 | 说明 |
 |------|------|
-| `webhook_url_env` | 从环境变量读取完整 webhook |
-| `webhook_key_env` | 从环境变量读取 webhook key |
+| `webhook_url` | **推荐**：完整企业微信 webhook URL（与 API 请求体字段同名） |
+| `webhook_key` | 可选：仅 key；脚本会拼接为 `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=...` |
 | `api_url` | 可选，覆盖默认发送 API |
 
-推荐仓库内提交的路由配置使用 `webhook_*_env` 映射到本地环境变量；如需使用明文 `webhook_url` / `webhook_key`，请确保文件不入库或使用 `.gitignore` 本地覆盖。
+仓库默认配置使用明文 **`webhook_url`** 与单一 `general` 路由；若需多群分流，可增设多个 robot 并在 `agents` 中映射。
 
 `X-Token` 仍只来自环境变量 `API_X_TOKEN`，不得写入配置文件。
 
@@ -97,20 +96,20 @@ https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=<key>
 业务度量要求（适用于完成、阻断、门禁异常通知）：
 
 - 必须根据本次执行的真实情况补齐 `🤝 AI 调用` / `🔗 调用链`，二者数据应与 `06_实施总结.md` 中的「AI 调用记录」「§1 AI 调用流程图 / §2 AI 调用时序图」一致
-- 若已生成 `06_实施总结.md`，应补齐 `📐 实施总结图表`（§1 节点数、§2 参与者数或等价摘要）、`🧩 MCP 明细`（各 browser_* 次数或汇总）、`🧾 待办与风险`（P1/P2 与 §9 对应）、`🗂️ 状态回写`（`01/02/.../07` 与 §5.5 结论）；可通过 `send-message.js` 的 `--diagram-summary`、`--mcp-breakdown`、`--backlog`、`--status-rewrite` 传入
+- 若已生成 `06_实施总结.md`，应补齐 `📐 实施总结图表`（§1 节点数、§2 参与者数或等价摘要）、`🧩 MCP 明细`（各 browser_* 次数或汇总）、`🧾 待办与风险`（P1/P2 与 §9 对应）、`🗂️ 状态回写`（`01/02/.../07` 与 §5.5 结论）；上述内容须在 **message-pusher 写好的正文** 中出现
 - 必须基于 `artifact-contracts.md §2.2 测试路径门禁扫描命令` 真实结果填写 `📁 测试路径`，未执行扫描时不得发送
 - 凡是涉及到测试文件的产物，必须在数字中区分 `tests/` 内与 `tests/` 外（`tests/` 外应为 0）
 - `📦 产物` / `🧫 测试统计` / `🔁 修复轮次` / `📈 指标` 数字必须来自实际命令、MCP 操作或 git diff
 - `📂 报告` 行必须指向实际生成的报告路径（固定为 `docs/<功能名>/06_实施总结.md` 或兜底 `docs/99_agent-runs/`）
 
-元信息要求：每条推送必须包含 `🤖 模型：...`、`🧰 工具：...`、`🕒 最后更新：YYYY-MM-DD HH:mm:ss` 三行。时间必须精确到秒；若调用方未传入，发送脚本必须使用本地当前时间自动补齐。`🌿 分支` / `🔖 提交` 由脚本自动从 git 检测，可通过 `--no-auto-git` 关闭。
+元信息要求：每条推送必须包含 `🤖 模型：...`、`🧰 工具：...`、`🕒 最后更新：YYYY-MM-DD HH:mm:ss` 三行。时间必须精确到秒；`🌿 分支` / `🔖 提交` 可由 message-pusher 根据当前会话上下文写入。
 
-**会话成本（必含）**：`⏱️ 用时`（本次会话耗时）与 `🪙 会话用量`（本次会话 Token/用量）必须在长流程完成、阻断、门禁异常及建议含度量的阶段通知中出现；若正文未写且未传 `--duration` / `--token-usage`，`send-message.js` 会注入可核对用的缺省说明行，**禁止**留空。
+**会话成本（必含）**：`⏱️ 用时`（本次会话耗时）与 `🪙 会话用量`（本次会话 Token/用量）必须在长流程完成、阻断、门禁异常及建议含度量的阶段通知中出现；若无可靠数据，须在正文中写明可核对说明句，**禁止**留空，`send-message.js` **不会**代为注入。
 
 会话与复盘（长流程完成/阻断类推送须**可核对**）：
 
-- `⏱️ 用时` / `🟢 开始时间`：与本次会话/执行真实起止一致；未记时可使用脚本缺省句或写「未记录」，**禁止**猜测秒数冒充精确值。
-- `🪙 会话用量`：须与账单、导出或可核对日志一致；无法取得时使用脚本缺省句或「未提供，请自行核对」，**禁止**编造。
+- `⏱️ 用时` / `🟢 开始时间`：与本次会话/执行真实起止一致；未记时可在正文中写缺省说明或「未记录」，**禁止**猜测秒数冒充精确值。
+- `🪙 会话用量`：须与账单、导出或可核对日志一致；无法取得时在正文中写明「未提供，请自行核对」等可核对说明，**禁止**编造。
 - `💡 改进建议`：只写与**本次已发生**问题相关的可执行项（如证据链缺口、可自动化步骤），≤500 字；避免空泛「加强测试」类套话。
 
 正文转义：`content` 中不得向用户展示字面量 `\n`（反斜杠加字母 n）。多行正文应使用真实换行（`--content-file` 推荐），或由 `send-message.js` 在加载后对误写 `\\n` / `\\t` 做归一化。
@@ -294,5 +293,4 @@ https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=<key>
 - 不得把任何密钥写入仓库文件（含 `config.json`、示例配置或脚本参数）。
 - 日志和最终回复必须脱敏。
 - 缺少 token 或 webhook 时必须停止，不尝试匿名发送。
-- 使用 `--dry-run` 验证参数时不得实际发送消息。
 - 若门禁异常通知发送失败，必须在实施总结或 `docs/99_agent-runs/` 兜底记录中写明发送失败原因、脱敏路由、模型、工具和最后更新时间。
