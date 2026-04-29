@@ -10,6 +10,7 @@
 | `skills/` | 可被直接调用的技能定义，`SKILL.md` 是技能真源 | 是 |
 | `agents/` | 专家代理定义，负责角色、输入输出和必答问题 | 是 |
 | `eval/` | 评测示例：`eval/skills/`、`eval/agents/`（首期 wework-bot + message-pusher），非真源 | 否 |
+| `scripts/` | 编排会话日志等辅助脚本（如 `log-orchestration.js`），由技能文档引用，非 Slash 入口 | 否 |
 | `shared/` | 共享解释性文档，统一约定、路径和边界说明 | 否 |
 
 ## 真源规则
@@ -48,11 +49,11 @@
 1. `skills/wework-bot/SKILL.md`
 2. `skills/wework-bot/README.md`
 3. `skills/wework-bot/rules/message-contract.md`
-4. `skills/wework-bot/config.example.json`
+4. `skills/wework-bot/config.example.json`（路由与 webhook 结构示例；本地可把 `config.json` 复制自此并填入真实地址）
 5. `skills/wework-bot/scripts/send-message.js`
 6. 长流程推送正文策划与反幻觉核对：`agents/message-pusher.md`（先 Plan 后写稿，再调 `send-message.js`）
 
-默认机器人路由配置位于 `skills/wework-bot/config.json`。出于安全原因，`wework-bot` 发送所需的 `API_X_TOKEN` 与 webhook 相关凭证**仅允许**来自系统环境变量（不从任何本地配置文件自动加载明文密钥）。
+仓库内 `skills/wework-bot/config.json` 仅保留占位 webhook；本地开发请复制 `config.example.json` 为 `config.json` 并填入真实地址，或通过环境变量 `WEWORK_BOT_CONFIG` 指向私有路径。`API_X_TOKEN` **仅**来自环境变量（不从配置文件读取）。
 
 ### 技能与代理分工
 
