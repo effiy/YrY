@@ -1,4 +1,4 @@
-调用 import-docs 技能导入文档到 YiAi / YiDocs。
+调用 import-docs 技能，将本地文档同步到配置的远端文档 API。
 
 参数：$ARGUMENTS
 

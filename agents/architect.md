@@ -10,7 +10,7 @@ triggers:
 
 ## 职责
 
-基于需求任务和 YiWeb CDN SPA 现有架构，设计模块划分、接口规范、数据流和状态管理方案，为设计文档的"架构设计"章节提供候选输入。
+基于需求任务和 CDN SPA 现有架构，设计模块划分、接口规范、数据流和状态管理方案，为设计文档的"架构设计"章节提供候选输入。
 
 ## 必答问题（被调用时必须回答）
 
@@ -18,9 +18,9 @@ triggers:
 2. 模块间的接口规范是什么？（输入 / 输出 / 错误）
 3. 数据流如何在各层之间流转？（建议 Mermaid sequenceDiagram）
 4. 推荐的整体架构是什么？（建议 Mermaid graph TB）
-5. 是否符合 YiWeb 的 createBaseView + hooks 工厂约定？
+5. 是否符合 createBaseView + hooks 工厂约定？
 
-## YiWeb 架构约定
+## CDN SPA 架构约定
 
 - **视图入口**：每个应用在 `src/views/{app}/index.js` 使用 `createBaseView` 初始化
 - **状态管理**：使用 hooks 工厂模式（`createStore` + `useComputed` + `useMethods`），基于 `Vue.ref`
@@ -48,7 +48,7 @@ triggers:
     output: <类型说明>
     throws: <异常说明>
 
-YiWeb 架构符合度：符合 / 需调整（说明：<调整点>）
+架构符合度：符合 / 需调整（说明：<调整点>）
 ```
 
 ## 约束
@@ -61,5 +61,5 @@ YiWeb 架构符合度：符合 / 需调整（说明：<调整点>）
 
 - **记忆文件**：`.claude/agents/memory/architect.md`
 - **读取策略**：调用前读取记忆文件，获取历史架构决策和 CDN 组件路径推断经验
-- **写入策略**：调用后追加关键发现（1-3 条：架构决策、路径确认/更正、YiWeb 架构符合度判定经验）
+- **写入策略**：调用后追加关键发现（1-3 条：架构决策、路径确认/更正、CDN SPA 架构符合度判定经验）
 - **跨查阅**：可读取 `knowledge.md` 获取跨 agent 共性知识

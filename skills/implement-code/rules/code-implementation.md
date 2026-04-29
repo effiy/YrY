@@ -20,7 +20,7 @@
 
 ---
 
-## 2. YiWeb 项目专项约束
+## 2. CDN SPA 项目专项约束
 
 ### 2.1 createBaseView 工厂模式
 

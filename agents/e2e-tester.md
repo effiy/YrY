@@ -32,7 +32,7 @@ triggers:
 
 ## 约束
 
-- YiWeb 未安装 Playwright，验证通过手动浏览器操作
+- 默认未安装 Playwright 时，验证通过手动浏览器操作
 - 选择器优先 `data-testid`
 - 若场景信息不足以推断断言，输出"需补充：<缺失内容>"
 

@@ -1,6 +1,6 @@
 # generate-document 快速索引
 
-`generate-document` 是 YiWeb 的文档生成主 skill。行为真源在 `SKILL.md`，本文件只保留快速开始、目录索引和常用入口。
+`generate-document` 是文档生成主 skill。行为真源在 `SKILL.md`，本文件只保留快速开始、目录索引和常用入口。
 
 ## 快速开始
 

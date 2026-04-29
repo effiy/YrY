@@ -11,7 +11,7 @@ triggers:
 
 ## 职责
 
-审查代码文件或片段是否符合 YiWeb CDN SPA 项目规范，输出 P0/P1/P2 分级问题列表，为项目报告和文档审查提供候选输入。
+审查代码文件或片段是否符合 CDN SPA 项目规范，输出 P0/P1/P2 分级问题列表，为项目报告和文档审查提供候选输入。
 
 本 agent 只提供专家视角与候选问题，不定义完整审查流程；正式输入输出格式以 `../skills/code-review/SKILL.md` 为准，边界说明见 `../shared/agent-skill-boundaries.md`。
 
@@ -24,7 +24,7 @@ triggers:
 
 ## 审查维度
 
-- **YiWeb 架构**：createBaseView 调用规范、hooks 工厂模式、CDN 组件注册（对照 `../skills/generate-document/rules/代码结构.md`）
+- **CDN SPA 架构**：createBaseView 调用规范、hooks 工厂模式、CDN 组件注册（对照 `../skills/generate-document/rules/代码结构.md`）
 - **CDN 组件规范**：barrel export、registerGlobalComponent 调用、HTML/CSS/JS 三文件结构
 - **编码规范**：命名、注释、格式（对照 `../skills/generate-document/rules/编码规范.md`）
 - **安全**：XSS、CSRF、敏感字段暴露

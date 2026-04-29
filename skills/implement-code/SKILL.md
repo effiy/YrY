@@ -104,13 +104,7 @@ P1/P2 文档（缺失不阻断）：
 ### 阶段 3：验证 + 审查
 
 - **必须调用 `code-reviewer`**：全量代码审查（架构一致性 + 编码规范 + 安全 + 边界处理）
-- **项目特有 agent 必须调用**：
-  - YiPet：`extension-tester`（manifest.json、content_scripts、权限）
-  - shennong-ui：`auth-reviewer`（SSO 配置、鉴权流程、v-permission）
-  - YiPot：审查 Tauri IPC 封装 + allowlist 最小化
-  - YiWeb：审查 CDN 组件注册 + createBaseView 调用
-  - YiAi：审查异步安全 + 服务层分离
-  - YiH5：审查事件监听器清理 + CustomEvent 通信
+- **项目特有 agent 必须调用**：以 `.claude/agents/` 中与当前技术栈匹配的专项定义为准（如浏览器扩展测试、鉴权审查、桌面 IPC、CDN SPA 视图入口与组件注册等）；仓库未配置专项 agent 时，以 `code-reviewer` 与项目 checklist 覆盖等价关注点。
 - 验证 P0 检查项（来自 `05_动态检查清单`）
 - MCP 增强：`code-analyzer-mcp`（死代码检测）
 - 退出条件：无 P0 代码审查问题 + P0 检查项全部通过

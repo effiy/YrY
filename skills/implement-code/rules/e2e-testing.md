@@ -1,6 +1,6 @@
 # E2E 测试规范
 
-> YiWeb CDN SPA 测试策略：手动浏览器验证 + createBaseView 集成检查。
+> CDN SPA 测试策略：手动浏览器验证 + createBaseView 集成检查。
 
 ---
 
@@ -19,7 +19,7 @@
 
 ## 2. 验证方式
 
-YiWeb 验证方式：
+推荐验证方式：
 
 | 方式 | 用途 |
 |------|------|

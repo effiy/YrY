@@ -3,28 +3,48 @@
 const fs = require('fs');
 const https = require('https');
 const { execSync } = require('child_process');
+const path = require('path');
 
 const args = process.argv.slice(2);
-const DEFAULT_CONFIG_BASE = '.claude/skills/wework-bot/config.json';
-/** 未传 --duration 且正文无该行时，仍输出本行，便于与 Cursor 会话核对，禁止留空。 */
-const DEFAULT_SESSION_DURATION = '未在本地记录，请从 Cursor 会话起止时间核对';
-/** 未传 --token-usage 且正文无该行时，仍输出本行；真实 Token 以 Cursor 用量为准。 */
-const DEFAULT_TOKEN_USAGE = '未在本地记录，请从 Cursor 用量面板核对';
+const SCRIPT_DIR = path.dirname(__filename);
+const REPO_ROOT = path.resolve(SCRIPT_DIR, '../../..');
+const DEFAULT_CONFIG_BASE = path.join(REPO_ROOT, 'skills/wework-bot/config.json');
+/** 未传 --duration 且正文无该行时，仍输出本行，便于与会话记录核对，禁止留空。 */
+const DEFAULT_SESSION_DURATION = '未在本地记录，请自行核对会话耗时';
+/** 未传 --token-usage 且正文无该行时仍输出本行；请以 `--token-usage` 或 AGENT_SESSION_TOKEN_USAGE 传入可核对用量。 */
+const DEFAULT_TOKEN_USAGE = '未在本地记录，请自行核对会话用量（`--token-usage` / AGENT_SESSION_TOKEN_USAGE）';
+/** 未提供 AI 调用链时，仍输出本行，禁止留空或编造。 */
+const DEFAULT_CALL_CHAIN = '未提供，请从会话记录补齐 AI 调用链';
+/** 未提供功能描述时，仍输出本行，禁止留空或编造。 */
+const DEFAULT_FEATURE_DESCRIPTION = '未提供，请补齐功能描述';
+/** 未提供开始时间时，仍输出本行，禁止留空或编造。 */
+const DEFAULT_STARTED_AT = '未在本地记录，请自行核对开始时间';
 const DEFAULT_API_URL = 'https://api.effiy.cn/wework/send-message';
 
+/** X-Token 仅从系统环境变量 `API_X_TOKEN` 读取，不接受配置文件或其它来源。 */
+function readApiXTokenFromEnv() {
+  const v = process.env.API_X_TOKEN;
+  if (v == null || v === '') return null;
+  const t = String(v).trim();
+  return t || null;
+}
+
 const options = {
-  token: process.env.API_X_TOKEN || null,
+  token: readApiXTokenFromEnv(),
   apiUrl: process.env.WEWORK_BOT_API_URL || null,
   config: process.env.WEWORK_BOT_CONFIG || null,
   agent: null,
   robot: null,
-  webhookUrl: process.env.WEWORK_WEBHOOK_URL || null,
-  webhookKey: process.env.WEWORK_WEBHOOK_KEY || null,
+  // webhook 优先来自 config.json（见 applyRobotConfig）；此处保留 env 兜底能力，但不抢占配置优先级
+  webhookUrl: null,
+  webhookKey: null,
   content: null,
   description: null,
   contentFile: null,
   flow: null,
   feature: null,
+  projectName: process.env.PROJECT_NAME || null,
+  featureDescription: process.env.FEATURE_DESCRIPTION || null,
   stage: null,
   status: null,
   impact: null,
@@ -33,6 +53,7 @@ const options = {
   conclusion: null,
   duration: null,
   startedAt: null,
+  endedAt: null,
   aiCalls: null,
   callChain: null,
   testPaths: null,
@@ -67,6 +88,9 @@ const options = {
 // 全局配置对象
 let globalConfig = null;
 
+/** 缓存 contextLines，避免 ensureElevatorFormat / ensureContext 重复构建 */
+let cachedContextLines = null;
+
 function readValue(index, flag) {
   const value = args[index + 1];
   if (value === undefined || value === null) {
@@ -81,7 +105,7 @@ function readValue(index, flag) {
 }
 
 function blockSecretCliFlag(flag) {
-  console.error(`Error: ${flag} 已禁用。出于安全原因，仅允许使用系统环境变量提供凭证（API_X_TOKEN / WEWORK_WEBHOOK_URL 或 WEWORK_WEBHOOK_KEY*）。`);
+  console.error(`Error: ${flag} 已禁用。出于安全原因，禁止通过命令行传入 webhook key/url；请使用 config.json（优先）或 WEWORK_WEBHOOK_URL / WEWORK_WEBHOOK_KEY*（兜底）。`);
   process.exit(1);
 }
 
@@ -120,6 +144,16 @@ for (let i = 0; i < args.length; i++) {
   } else if (arg === '--feature') {
     options.feature = readValue(i, arg);
     i++;
+  } else if (arg === '--project-name') {
+    options.projectName = readValue(i, arg);
+    i++;
+  } else if (arg === '--feature-description') {
+    options.featureDescription = readValue(i, arg);
+    i++;
+  } else if (arg === '--project-description') {
+    console.warn('Warning: --project-description 已弃用，请改用 --feature-description（功能描述）。');
+    options.featureDescription = readValue(i, arg);
+    i++;
   } else if (arg === '--stage') {
     options.stage = readValue(i, arg);
     i++;
@@ -143,6 +177,9 @@ for (let i = 0; i < args.length; i++) {
     i++;
   } else if (arg === '--started-at') {
     options.startedAt = readValue(i, arg);
+    i++;
+  } else if (arg === '--ended-at') {
+    options.endedAt = readValue(i, arg);
     i++;
   } else if (arg === '--ai-calls') {
     options.aiCalls = readValue(i, arg);
@@ -180,7 +217,8 @@ for (let i = 0; i < args.length; i++) {
   } else if (arg === '--gate-name') {
     options.gateName = readValue(i, arg);
     i++;
-  } else if (arg === '--gate-result') {options.gateResult = readValue(i, arg);
+  } else if (arg === '--gate-result') {
+    options.gateResult = readValue(i, arg);
     i++;
   } else if (arg === '--sync-result') {
     options.syncResult = readValue(i, arg);
@@ -239,9 +277,9 @@ Routing & Auth:
   --api-url, -a        API endpoint (default from WEWORK_BOT_API_URL or config)
   --config             Robot routing config JSON (default from WEWORK_BOT_CONFIG; if not set, reads config.json only)
   --agent              Agent name; resolves robot from config agents map
-  --robot, -r          Robot name; resolves webhook from config robots map
-  --webhook-url, -w    [disabled] use WEWORK_WEBHOOK_URL environment variable only
-  --webhook-key, -k    [disabled] use WEWORK_WEBHOOK_KEY / WEWORK_WEBHOOK_KEY_* environment variable only
+  --robot, -r          [deprecated] Robot name; resolves webhook from config robots map (prefer --agent)
+  --webhook-url, -w    [disabled] configure webhook in config.json (fallback WEWORK_WEBHOOK_URL)
+  --webhook-key, -k    [disabled] configure webhook key in config.json (fallback WEWORK_WEBHOOK_KEY / WEWORK_WEBHOOK_KEY_*)
 
 Content:
   --content, -c        Message body (one-line conclusion or full multi-line elevator block)
@@ -252,6 +290,8 @@ Content:
 Context:
   --flow               Flow name, e.g. implement-code or generate-document
   --feature            Feature name or document path
+  --project-name       Project name (default from config/env, fallback to repo folder name)
+  --feature-description Feature short description (missing → injected placeholder line)
   --stage              Current stage name
   --status             Current status, e.g. started / passed / blocked / failed
   --impact             User-visible impact or delivery scope
@@ -261,6 +301,7 @@ Context:
 Rich metrics:
   --duration           Elapsed this session, e.g. "12m 34s" or "01:23:45" (omitted + missing in body → default "未在本地记录…" line is injected)
   --started-at         Run started at, format YYYY-MM-DD HH:mm:ss
+  --ended-at           Run ended at, format YYYY-MM-DD HH:mm:ss (omitted → auto current local time)
   --ai-calls           AI call summary, e.g. "skills 7 / agents 4 / mcp 23 / tools 86"
   --call-chain         Compact AI call chain, e.g. "find-skills→find-agents→...→wework-bot"
   --test-paths         Test path gate result, e.g. "tests/ 内 12 spec / 5 page / 3 fixture，无逸出"
@@ -291,13 +332,18 @@ Metadata:
   --model              Model name appended to message metadata (default from AGENT_MODEL or "Claude Sonnet 4.6")
   --tools              Tool summary appended to message metadata (default from AGENT_TOOLS or "Cursor Agent / Playwright-MCP / Shell / wework-bot")
   --updated-at         Last update time, precise to seconds (default local current time)
-  --token-usage        This session's token/usage, e.g. "输入 12k / 输出 3.2k / 合计 15.2k（来源：Cursor 用量）" (or AGENT_SESSION_TOKEN_USAGE; omitted + missing in body → default line)
+  --token-usage        This session's token/usage, e.g. "输入 12k / 输出 3.2k / 合计 15.2k（来源：账单导出）" (or AGENT_SESSION_TOKEN_USAGE; omitted + missing in body → default line)
   --improvement-hints  Factual session improvement tips, semicolon-separated, ≤280 chars recommended (or AGENT_SESSION_IMPROVEMENT_HINTS)
   --dry-run            Print sanitized request summary without sending
   --help, -h           Show this help message
 `);
     process.exit(0);
   }
+}
+
+function resolveUserPath(inputPath) {
+  if (!inputPath) return inputPath;
+  return path.isAbsolute(inputPath) ? inputPath : path.resolve(process.cwd(), inputPath);
 }
 
 function readJson(filePath) {
@@ -329,7 +375,7 @@ function applyRobotConfig() {
   let config = null;
 
   if (options.config) {
-    config = readJson(options.config);
+    config = readJson(resolveUserPath(options.config));
   } else {
     const baseConfig = readJsonIfExists(DEFAULT_CONFIG_BASE);
     config = baseConfig;
@@ -341,9 +387,21 @@ function applyRobotConfig() {
 
   globalConfig = config;
 
+  // 从配置补齐项目元信息（若未显式传入）
+  if (!options.projectName && config.project_name) {
+    options.projectName = config.project_name;
+  }
+  if (!options.featureDescription && config.feature_description) {
+    options.featureDescription = config.feature_description;
+  }
+
   // 从全局配置获取 API URL（如果还没有设置）
   if (!options.apiUrl && config.api_url) {
     options.apiUrl = config.api_url;
+  }
+
+  if (options.robot) {
+    console.warn('Warning: --robot is deprecated; prefer --agent for automatic routing.');
   }
 
   const robotName = options.robot || (options.agent && config.agents ? config.agents[options.agent] : null) || config.default_robot;
@@ -360,9 +418,20 @@ function applyRobotConfig() {
   }
 
   options.robot = robotName;
-  // 仅允许从系统环境变量读取 webhook：robot 配置只能提供 *_env 字段
-  options.webhookUrl = options.webhookUrl || envValue(robot.webhook_url_env);
-  options.webhookKey = options.webhookKey || envValue(robot.webhook_key_env);
+  // webhook：优先 config.json（*_env 映射到具体 env），其次明文 webhook_url/webhook_key；最后才兜底全局环境变量
+  const resolvedWebhookUrl =
+    envValue(robot.webhook_url_env) ||
+    robot.webhook_url ||
+    envValue(config.webhook_url_env) ||
+    config.webhook_url;
+  const resolvedWebhookKey =
+    envValue(robot.webhook_key_env) ||
+    robot.webhook_key ||
+    envValue(config.webhook_key_env) ||
+    config.webhook_key;
+
+  options.webhookUrl = resolvedWebhookUrl || process.env.WEWORK_WEBHOOK_URL || null;
+  options.webhookKey = resolvedWebhookKey || process.env.WEWORK_WEBHOOK_KEY || null;
 
   if (robot.api_url && !options.apiUrl) {
     options.apiUrl = robot.api_url;
@@ -370,6 +439,9 @@ function applyRobotConfig() {
 }
 
 applyRobotConfig();
+
+// X-Token 始终仅来自系统环境变量（config.json 不得承载 API_X_TOKEN）
+options.token = readApiXTokenFromEnv();
 
 // 设置默认值（如果还是没有配置）
 if (!options.apiUrl) {
@@ -416,7 +488,12 @@ function normalizeMessageText(text) {
 }
 
 if (options.contentFile) {
-  options.content = fs.readFileSync(options.contentFile, 'utf-8');
+  try {
+    options.content = fs.readFileSync(resolveUserPath(options.contentFile), 'utf-8');
+  } catch (error) {
+    console.error(`Error: failed to read --content-file: ${error.message}`);
+    process.exit(1);
+  }
 }
 
 if (options.content) {
@@ -460,8 +537,28 @@ function buildLine(emoji, label, value) {
   return `${emoji} ${label}：${value}`;
 }
 
-function contextLines() {
+function resolvedProjectName() {
+  return options.projectName || (globalConfig && globalConfig.project_name) || path.basename(process.cwd());
+}
+
+function resolvedFeatureForProjectLine() {
+  return options.feature || options.flow || options.agent || '未指定';
+}
+
+function getContextLines() {
+  if (cachedContextLines) return cachedContextLines;
+  cachedContextLines = buildContextLines();
+  return cachedContextLines;
+}
+
+function buildContextLines() {
   const lines = [];
+  const projectFeatureLine = buildLine('🏷️', '项目名-功能', `${resolvedProjectName()}-${resolvedFeatureForProjectLine()}`);
+  const featureDescriptionLine = buildLine(
+    '🧾',
+    '功能描述',
+    options.featureDescription || (globalConfig && globalConfig.feature_description) || DEFAULT_FEATURE_DESCRIPTION
+  );
   const flowLine = buildLine('🛠️', '流程', options.flow);
   const featureLine = buildLine('📌', '功能', options.feature);
   const stageLine = buildLine('📍', '阶段', options.stage);
@@ -480,7 +577,7 @@ function contextLines() {
   const mcpDetailLine = buildLine('🧩', 'MCP 明细', options.mcpBreakdown);
   const backlogLine = buildLine('🧾', '待办与风险', options.backlog);
   const statusRewriteLine = buildLine('🗂️', '状态回写', options.statusRewrite);
-  const callChainLine = buildLine('🔗', '调用链', options.callChain);
+  const callChainLine = buildLine('🔗', '调用链', options.callChain || DEFAULT_CALL_CHAIN);
   const aiCallsLine = buildLine('🤝', 'AI 调用', options.aiCalls);
   const testPathsLine = buildLine('📁', '测试路径', options.testPaths);
   const testStatsLine = buildLine('🧫', '测试统计', options.testStats);
@@ -492,11 +589,14 @@ function contextLines() {
   const commitLine = buildLine('🔖', '提交', options.commit);
   const durationLine = buildLine('⏱️', '用时', options.duration || DEFAULT_SESSION_DURATION);
   const tokenUsageLine = buildLine('🪙', '会话用量', options.tokenUsage || DEFAULT_TOKEN_USAGE);
-  const startedLine = buildLine('🟢', '开始时间', options.startedAt);
+  const startedLine = buildLine('🟢', '开始时间', options.startedAt || DEFAULT_STARTED_AT);
+  const endedLine = buildLine('🔴', '结束时间', options.endedAt || formatLocalTimestamp(new Date()));
   const improvementLine = buildLine('💡', '改进建议', options.improvementHints);
   const recoverLine = buildLine('🧭', '恢复点', options.recover);
 
   return [
+    projectFeatureLine,
+    featureDescriptionLine,
     flowLine,
     featureLine,
     stageLine,
@@ -526,13 +626,14 @@ function contextLines() {
     durationLine,
     tokenUsageLine,
     startedLine,
+    endedLine,
     improvementLine,
     recoverLine
   ].filter(Boolean);
 }
 
 function ensureContext(content) {
-  const lines = contextLines().filter((line) => {
+  const lines = getContextLines().filter((line) => {
     const colonIndex = line.indexOf('：');
     if (colonIndex === -1) return true;
     const label = line.slice(0, colonIndex + 1);
@@ -598,7 +699,7 @@ function ensureElevatorFormat(content, description) {
     '━━━━━━━━━━━━━━━━━',
     `🎯 结论：${conclusion}`,
     `📝 描述：${description}`,
-    ...contextLines(),
+    ...getContextLines(),
     `👉 下一步：${options.nextStep || '请按结论处理，必要时查看对应文档或日志。'}`
   ].join('\n');
 }
@@ -621,6 +722,21 @@ function formatLocalTimestamp(date) {
     ':',
     pad(date.getSeconds())
   ].join('');
+}
+
+function readSessionTimeIfExists() {
+  const cwdPath = path.join(process.cwd(), '.claude', 'session-time.json');
+  const repoPath = path.join(REPO_ROOT, '.claude', 'session-time.json');
+  const filePath = fs.existsSync(cwdPath) ? cwdPath : repoPath;
+  try {
+    if (!fs.existsSync(filePath)) return null;
+    const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    const startedAt = raw.startedAt || raw.started_at || raw.start || raw.started || null;
+    const endedAt = raw.endedAt || raw.ended_at || raw.end || raw.ended || null;
+    return { startedAt, endedAt };
+  } catch (error) {
+    return null;
+  }
 }
 
 function hasMetadataLine(content, label) {
@@ -663,10 +779,23 @@ if (charLength(description) > 100) {
 }
 
 if (options.improvementHints && charLength(options.improvementHints) > 500) {
-  console.error(`Error: --improvement-hints should be 500 characters or fewer (current: ${charLength(description)})`);
+  console.error(`Error: --improvement-hints should be 500 characters or fewer (current: ${charLength(options.improvementHints)})`);
   process.exit(1);
 }
 
+// 尽量补齐会话起止时间：优先 CLI，其次读取 .claude/session-time.json，最后兜底（开始时间用可核对缺省句，结束时间用当前时刻）
+if (!options.startedAt || !options.endedAt) {
+  const sessionTime = readSessionTimeIfExists();
+  if (sessionTime) {
+    if (!options.startedAt && sessionTime.startedAt) options.startedAt = sessionTime.startedAt;
+    if (!options.endedAt && sessionTime.endedAt) options.endedAt = sessionTime.endedAt;
+  }
+}
+if (!options.endedAt) {
+  options.endedAt = formatLocalTimestamp(new Date());
+}
+
+cachedContextLines = null;
 options.content = ensureMetadata(ensureElevatorFormat(options.content, description));
 
 if (!options.webhookUrl && options.webhookKey) {
@@ -674,7 +803,14 @@ if (!options.webhookUrl && options.webhookKey) {
 }
 
 if (!options.webhookUrl) {
-  console.error('Error: missing WEWORK_WEBHOOK_URL or WEWORK_WEBHOOK_KEY (or WEWORK_WEBHOOK_KEY_* for routed robots) environment variable');
+  console.error('Error: missing webhook configuration (config.json webhook mapping/webhook fields, or fallback WEWORK_WEBHOOK_URL / WEWORK_WEBHOOK_KEY)');
+  process.exit(1);
+}
+
+try {
+  new URL(options.webhookUrl);
+} catch (error) {
+  console.error(`Error: invalid webhook_url after resolution: ${options.webhookUrl}`);
   process.exit(1);
 }
 
@@ -701,7 +837,7 @@ function request(apiUrl, token, data) {
         Origin: 'https://effiy.cn',
         Pragma: 'no-cache',
         Referer: 'https://effiy.cn/',
-        'User-Agent': 'YiWeb-wework-bot/1.0',
+        'User-Agent': 'claude-wework-bot/1.0',
         'X-Token': token,
         'Content-Length': Buffer.byteLength(postData)
       }
@@ -757,6 +893,7 @@ function request(apiUrl, token, data) {
     console.log('Conclusion:', options.conclusion || '(not set)');
     console.log('Duration:', options.duration || '(not set)');
     console.log('Started at:', options.startedAt || '(not set)');
+    console.log('Ended at:', options.endedAt || '(not set)');
     console.log('AI calls:', options.aiCalls || '(not set)');
     console.log('Call chain:', options.callChain || '(not set)');
     console.log('Test paths:', options.testPaths || '(not set)');

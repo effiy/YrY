@@ -1,6 +1,6 @@
 # `.claude` 目录说明
 
-`.claude` 是 YiWeb 项目的 Claude / Cursor 协作层，承载命令入口、技能定义、专家代理和共享规范。
+`.claude` 目录承载本仓库的 Claude / Cursor 协作层：命令入口、技能定义、专家代理和共享规范。
 
 ## 目录职责
 
@@ -9,6 +9,7 @@
 | `commands/` | Slash Command 包装层，只负责转调 skill | 是 |
 | `skills/` | 可被直接调用的技能定义，`SKILL.md` 是技能真源 | 是 |
 | `agents/` | 专家代理定义，负责角色、输入输出和必答问题 | 是 |
+| `eval/` | 评测示例：`eval/skills/`、`eval/agents/`（首期 wework-bot + message-pusher），非真源 | 否 |
 | `shared/` | 共享解释性文档，统一约定、路径和边界说明 | 否 |
 
 ## 真源规则
@@ -61,6 +62,6 @@
 
 ## 维护约定
 
-- 不要改动 `.claude/skills/`、`.claude/agents/`、`.claude/commands/` 的顶层命名约定。
+- 不要改动 `.claude/skills/`、`.claude/agents/`、`.claude/commands/` 的顶层命名约定；评测示例按 `.claude/eval/skills/<skill>.md`、`eval/agents/<agent>.md` 增补（首期见 `eval/skills/wework-bot.md`）。
 - 若新增共享规范，优先放在 `shared/`，避免把说明性内容散落到多个 skill/agent。
 - 若更新路径约定，必须同步检查 `README.md`、`rules/`、`templates/`、`checklists/` 中的链接。

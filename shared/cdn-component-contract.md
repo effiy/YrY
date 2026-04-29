@@ -1,6 +1,6 @@
 # CDN 组件开发契约
 
-> 本文件定义 YiWeb CDN SPA 的共享组件开发规范，作为 `architect`、`code-reviewer` 和 `implement-code` 的共享解释层。
+> 本文件定义 CDN SPA 的共享组件开发规范，作为 `architect`、`code-reviewer` 和 `implement-code` 的共享解释层。
 
 ## 1. 什么放 CDN，什么放 src/views
 

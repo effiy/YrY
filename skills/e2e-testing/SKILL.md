@@ -41,11 +41,11 @@ Mock 依赖：<需要 mock 的接口/模块，或"无">
 测试数据：<建议的测试数据构造方式>
 ```
 
-## YiWeb 项目约定
+## CDN SPA 约定（适用时）
 
 - 选择器优先级：`data-testid` > 语义标签（`button[type=submit]`）> 文本内容
 - 测试文件位置：`tests/e2e/<功能名>.spec.js`
-- 基础 URL：YiWeb 为 CDN SPA 无构建工具，需手动启动本地静态服务器或使用 `index.html` 文件路径
+- 基础 URL：无构建链路的 CDN SPA 需手动启动本地静态服务器或使用 `index.html` 文件路径
 
 ## 使用规则
 

@@ -1,6 +1,6 @@
 # 验证门禁规范
 
-> YiWeb CDN SPA 验证决策逻辑。通过手动浏览器验证 + createBaseView 集成检查。
+> CDN SPA（静态托管、无构建链路）验证决策逻辑。通过手动浏览器验证 + createBaseView 集成检查。
 
 ---
 

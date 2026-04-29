@@ -81,6 +81,14 @@ async function findFiles(dir, exts) {
   return results;
 }
 
+/** X-Token 仅从系统环境变量 `API_X_TOKEN` 读取，不接受配置文件或其它来源。 */
+function readApiXTokenFromEnv() {
+  const v = process.env.API_X_TOKEN;
+  if (v == null || v === '') return null;
+  const t = String(v).trim();
+  return t || null;
+}
+
 /**
  * 确定导入配置
  * @returns {object} 配置对象
@@ -91,7 +99,7 @@ function determineConfig() {
     command: 'import',
     dir: null,
     exts: null,
-    token: process.env.API_X_TOKEN || null,
+    token: readApiXTokenFromEnv(),
     apiUrl: 'https://api.effiy.cn',
     prefix: []
   };
@@ -153,7 +161,7 @@ function determineConfig() {
 
 function printHelp() {
   console.log(`
-YiDocs Import - Import documentation files to YiAi
+Document import — sync local files to remote documentation API
 
 Usage:
   node .claude/skills/import-docs/scripts/import-docs.js import [options]
@@ -165,7 +173,7 @@ Options:
   --exts, -e    File extensions (comma-separated, default: auto-detect)
   --token, -t   [disabled] use API_X_TOKEN environment variable only
   --api-url, -a API base URL (default: https://api.effiy.cn)
-  --prefix, -p  Path prefix (comma-separated, e.g. Projects,YiWeb)
+  --prefix, -p  Path prefix (comma-separated, e.g. Projects,YourNamespace)
   --help, -h    Show this help message
 `);
 }
@@ -327,7 +335,7 @@ async function main() {
   const explicitDir = process.argv.includes('--dir') || process.argv.includes('-d');
   const mode = config.exts.length === 0 ? 'all files' : config.exts.join(', ');
 
-  console.log('=== YiDocs Import ===');
+  console.log('=== Document import ===');
   console.log('Command:', config.command);
   console.log('Directory:', config.dir);
   console.log('Mode:', mode);

@@ -1,6 +1,6 @@
 # implement-code 快速索引
 
-`implement-code` 是 YiWeb 的代码实施主 skill。它负责按阶段编排实施流程，不再在主 `SKILL.md` 中重复承载所有细节规则。
+`implement-code` 是代码实施主 skill。它负责按阶段编排实施流程，不再在主 `SKILL.md` 中重复承载所有细节规则。
 
 ## 阅读顺序
 

@@ -1,10 +1,9 @@
 {
   "default_robot": "general",
   "api_url": "https://api.effiy.cn/wework/send-message",
-  "api_token_env": "API_X_TOKEN",
   "robots": {
     "general": {
-      "webhook_key_env": "WEWORK_WEBHOOK_KEY"
+      "webhook_key": "80bcaa68-6511-4766-bfb3-510291371090"
     },
     "docs": {
       "webhook_key_env": "WEWORK_WEBHOOK_KEY_DOCS"

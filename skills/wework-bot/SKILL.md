@@ -7,7 +7,7 @@ description: 发送企业微信机器人消息，用于 generate-document、impl
 
 ## 定位
 
-`wework-bot` 是 YiWeb 的企业微信机器人通知技能。它负责把阶段状态、阻断原因、验证结果或人工介入请求发送到企业微信群机器人，并支持按 agent 路由到不同机器人。
+`wework-bot` 是企业微信机器人通知技能。它负责把阶段状态、阻断原因、验证结果或人工介入请求发送到企业微信群机器人，并支持按 agent 路由到不同机器人。
 
 ## 何时使用
 
@@ -22,13 +22,13 @@ description: 发送企业微信机器人消息，用于 generate-document、impl
 
 | 参数 | 默认值 | 说明 |
 |------|--------|------|
-| `token` | `API_X_TOKEN` | `https://api.effiy.cn` 的 `X-Token` |
+| `token` | 仅 `API_X_TOKEN` | `https://api.effiy.cn` 的 `X-Token`，**只**从系统环境变量读取 |
 | `apiUrl` | `https://api.effiy.cn/wework/send-message` | 发送消息 API |
-| `config` | `WEWORK_BOT_CONFIG`；未设置时读取 `config.json` | 多机器人路由配置 JSON（仅用于路由与 env 名称映射，不承载任何明文密钥） |
+| `config` | `WEWORK_BOT_CONFIG`；未设置时读取 `config.json` | 多机器人路由配置 JSON（优先解析 webhook；可用 `webhook_*_env` 映射到具体环境变量名） |
 | `agent` | 无 | agent 名称，用于从配置中选择机器人 |
 | `robot` | 配置默认值 | 机器人名称，优先级高于 `agent` |
-| `webhookUrl` | `WEWORK_WEBHOOK_URL` | 完整企业微信机器人 webhook |
-| `webhookKey` | `WEWORK_WEBHOOK_KEY` | 企业微信机器人 key，可自动拼接 webhook |
+| `webhookUrl` | `config.json` →（兜底）`WEWORK_WEBHOOK_URL` | 完整企业微信机器人 webhook |
+| `webhookKey` | `config.json` →（兜底）`WEWORK_WEBHOOK_KEY` | 企业微信机器人 key，可自动拼接 webhook |
 
 ### 内容与描述
 
@@ -62,7 +62,7 @@ description: 发送企业微信机器人消息，用于 generate-document、impl
 
 | 参数 | 默认值 | 写入字段 | 说明 |
 |------|--------|---------|------|
-| `duration` | 无（脚本可写入缺省说明） | `⏱️ 用时` | **必含**：本次会话耗时；如 `12m 34s` 或 `01:23:45`；未记时/未传参时脚本注入「未在本地记录，请从 Cursor 会话起止时间核对」 |
+| `duration` | 无（脚本可写入缺省说明） | `⏱️ 用时` | **必含**：本次会话耗时；如 `12m 34s` 或 `01:23:45`；未记时/未传参时脚本注入「未在本地记录，请自行核对会话耗时」 |
 | `startedAt` | 无（可自动读取 `.claude/session-time.json`） | `🟢 开始时间` | **必含**：任务开始时间，`YYYY-MM-DD HH:mm:ss`；未传且未自动检测到时脚本注入缺省说明 |
 | `endedAt` | 无（可自动读取 `.claude/session-time.json`） | `🔴 结束时间` | **必含**：任务结束时间，`YYYY-MM-DD HH:mm:ss`；未传且未自动检测到时脚本注入缺省说明 |
 | `aiCalls` | 无 | `🤝 AI 调用` | AI 调用统计，如 `skills 7 / agents 4 / mcp 23 / tools 86` |
@@ -72,7 +72,7 @@ description: 发送企业微信机器人消息，用于 generate-document、impl
 | `retries` | 无 | `🔁 修复轮次` | 自修复轮次，如 `阶段2: 1 轮 / 阶段6: 0 轮` |
 | `artifacts` | 无 | `📦 产物` | 产物统计，如 `代码 8 / 测试 12 / 文档 6` |
 | `metrics` | 无 | `📈 指标` | 其它度量，如 `lint 0 / 影响链命中 23` |
-| `syncResult` | 无 | `☁️ 文档同步` | `import-docs` 真实结果，如 `docs → YiAi（创建 6，覆盖 0，失败 0）` |
+| `syncResult` | 无 | `☁️ 文档同步` | `import-docs` 真实结果，如 `docs → 远端（创建 6，覆盖 0，失败 0）` |
 | `branch` | `git rev-parse --abbrev-ref HEAD`（自动检测） | `🌿 分支` | Git 分支名，未自动检测到时为空 |
 | `commit` | `git rev-parse --short HEAD`（自动检测） | `🔖 提交` | Git short commit，未自动检测到时为空 |
 | `diagramSummary` | 无 | `📐 实施总结图表` | `06_实施总结.md` §1/§2：流程图节点数、时序图参与者数等，与总结可对照 |
@@ -87,18 +87,18 @@ description: 发送企业微信机器人消息，用于 generate-document、impl
 | `model` | `AGENT_MODEL` / `CURSOR_AGENT_MODEL` / `Claude Sonnet 4.6` | `🤖 模型` | 本次执行使用的模型名称 |
 | `tools` | `AGENT_TOOLS` / `Cursor Agent / Playwright-MCP / Shell / wework-bot` | `🧰 工具` | 本次执行涉及的主要工具 |
 | `updatedAt` | 本地当前时间 | `🕒 最后更新` | `YYYY-MM-DD HH:mm:ss`，精确到秒 |
-| `tokenUsage` | `AGENT_SESSION_TOKEN_USAGE` / `--token-usage`（未传时脚本可写入缺省说明） | `🪙 会话用量` | **必含**：本次会话 **Token 或用量摘要**（以 Cursor 用量面板为准）；未传时脚本注入「未在本地记录，请从 Cursor 用量面板核对」——有真实值时应改为 `--token-usage` 或环境变量，**禁止**编造 |
+| `tokenUsage` | `AGENT_SESSION_TOKEN_USAGE` / `--token-usage`（未传时脚本可写入缺省说明） | `🪙 会话用量` | **必含**：本次会话 **Token 或用量摘要**（须来自可核对来源）；未传时脚本注入缺省说明——有真实值时应改为 `--token-usage` 或环境变量，**禁止**编造 |
 | `improvementHints` | `AGENT_SESSION_IMPROVEMENT_HINTS` / `--improvement-hints` | `💡 改进建议` | 基于**本次已发生事实**的 2～4 条可执行建议，**禁止**臆造指标或原因 |
 | `noAutoGit` | `WEWORK_BOT_NO_AUTO_GIT=1` | — | 关闭 git 分支 / commit 自动检测（沙箱安全） |
 
 ## 工作流程
 
 1. **组装消息**：按电梯法则组织内容：先给一句话结论，再给 100 字以内描述、流程、功能、阶段、状态、影响、证据和下一步；每条信息独占一行，并使用匹配状态的表情符号。
-2. **补齐业务度量与会话成本**：完成通知、阻断通知、门禁异常通知**必须**出现 `⏱️ 用时`（本次会话耗时）与 `🪙 会话用量`（本次会话 Token/用量，与 Cursor 可核对）。须尽量再补齐 `🤝 AI 调用`、`🔗 调用链`、`📐 实施总结图表`、`🧩 MCP 明细`、`🧾 待办与风险`、`🗂️ 状态回写`、`📁 测试路径`、`🧫 测试统计`、`🔁 修复轮次`、`📦 产物`、`☁️ 文档同步`、`🌿 分支`、`🔖 提交` 等；其中前四项与 `06_实施总结.md` 的「AI 调用记录」及 §1/§2 Mermaid 图一致。脚本会自动检测 git 分支和 commit，并在未手写/未传 `--duration` / `--token-usage` 时**仍注入**上述两行（缺省为可核对说明，避免空项）。其余字段由调用方传入（可在命令行使用 `--diagram-summary`、`--mcp-breakdown`、`--backlog`、`--status-rewrite`）。
-2.1 **会话起止时间强制**：任意 wework-bot 推送（含阶段通知、完成/阻断/门禁异常）**必须**包含 `🟢 开始时间` 与 `🔴 结束时间` 两行。推荐不手填，由 `send-message.js` 从 `.claude/session-time.json` 自动读取；若本地未启用 hooks 或文件缺失，脚本会注入缺省说明以保证字段不缺失（并提示从 Cursor 会话历史核对）。
+2. **补齐业务度量与会话成本**：完成通知、阻断通知、门禁异常通知**必须**出现 `⏱️ 用时`（本次会话耗时）与 `🪙 会话用量`（本次会话 Token/用量，须可核对）。须尽量再补齐 `🤝 AI 调用`、`🔗 调用链`、`📐 实施总结图表`、`🧩 MCP 明细`、`🧾 待办与风险`、`🗂️ 状态回写`、`📁 测试路径`、`🧫 测试统计`、`🔁 修复轮次`、`📦 产物`、`☁️ 文档同步`、`🌿 分支`、`🔖 提交` 等；其中前四项与 `06_实施总结.md` 的「AI 调用记录」及 §1/§2 Mermaid 图一致。脚本会自动检测 git 分支和 commit，并在未手写/未传 `--duration` / `--token-usage` 时**仍注入**上述两行（缺省为可核对说明，避免空项）。其余字段由调用方传入（可在命令行使用 `--diagram-summary`、`--mcp-breakdown`、`--backlog`、`--status-rewrite`）。
+2.1 **会话起止时间强制**：任意 wework-bot 推送（含阶段通知、完成/阻断/门禁异常）**必须**包含 `🟢 开始时间` 与 `🔴 结束时间` 两行。推荐不手填，由 `send-message.js` 从 `.claude/session-time.json` 自动读取；若本地未启用 hooks 或文件缺失，脚本会注入缺省说明以保证字段不缺失（并提示自行核对会话记录）。
 3. **补齐元信息**：每条消息必须包含 `🤖 模型`、`🧰 工具`、`🕒 最后更新` 三行；脚本会在缺失时自动补齐。长流程类推送在元信息前还应已有 `⏱️ 用时` 与 `🪙 会话用量`（见上条）。
-4. **选择机器人**：从环境变量读取 webhook（`WEWORK_WEBHOOK_URL` / `WEWORK_WEBHOOK_KEY*`）；必要时按 `robot` 或 `agent` 从配置中解析应读取的环境变量名；未指定时走配置中的 `default_robot`。
-5. **校验凭据**：`X-Token` 与 webhook **仅允许来自系统环境变量**，不得写入仓库或本地配置文件。
+4. **选择机器人**：优先按 `config.json` 解析 webhook（`webhook_url` / `webhook_key` 或通过 `webhook_*_env` 映射）；必要时按 `robot` 或 `agent` 选择机器人；未指定时走配置中的 `default_robot`。仅在配置缺失时兜底使用全局环境变量 `WEWORK_WEBHOOK_URL` / `WEWORK_WEBHOOK_KEY*`。
+5. **校验凭据**：`X-Token` **仅允许来自系统环境变量** `API_X_TOKEN`。webhook **优先来自 `config.json` 解析结果**（含映射到的 env）；必要时才允许兜底全局环境变量。
 6. **发送消息**：调用 `scripts/send-message.js`。
 7. **汇总结果**：记录 HTTP 状态码、响应摘要、机器人路由、消息时间和脱敏凭据摘要；失败时返回错误原因。若该消息用于门禁失败、门禁失效或流程阻断，发送失败也必须写入实施总结或兜底运行记录。
 
@@ -112,7 +112,8 @@ description: 发送企业微信机器人消息，用于 generate-document、impl
 使用完整 webhook：
 
 ```bash
-API_X_TOKEN=*** WEWORK_WEBHOOK_URL=*** node .claude/skills/wework-bot/scripts/send-message.js \
+API_X_TOKEN=*** node .claude/skills/wework-bot/scripts/send-message.js \
+  --agent implement-code \
   --content "implement-code 阶段 6 冒烟测试通过" \
   --description "真实页面冒烟测试已通过，关键用户路径可继续进入收尾。" \
   --flow implement-code \
@@ -127,7 +128,8 @@ API_X_TOKEN=*** WEWORK_WEBHOOK_URL=*** node .claude/skills/wework-bot/scripts/se
 使用 webhook key：
 
 ```bash
-API_X_TOKEN=*** WEWORK_WEBHOOK_KEY=*** node .claude/skills/wework-bot/scripts/send-message.js \
+API_X_TOKEN=*** node .claude/skills/wework-bot/scripts/send-message.js \
+  --agent generate-document \
   --content "generate-document 已生成全文档" \
   --description "全文档已保存，等待导入结果写入完成通知。"
 ```
@@ -135,7 +137,7 @@ API_X_TOKEN=*** WEWORK_WEBHOOK_KEY=*** node .claude/skills/wework-bot/scripts/se
 按 agent 路由：
 
 ```bash
-API_X_TOKEN=*** WEWORK_WEBHOOK_KEY_CODE=*** node .claude/skills/wework-bot/scripts/send-message.js \
+API_X_TOKEN=*** node .claude/skills/wework-bot/scripts/send-message.js \
   --agent code-reviewer \
   --content "code-reviewer 发现 P0 问题，需要人工处理" \
   --description "代码审查发现阻断项，需要人工确认修复策略。"
@@ -150,148 +152,9 @@ node .claude/skills/wework-bot/scripts/send-message.js \
   --dry-run
 ```
 
-## 生动总结格式规范（generate-document / implement-code 完成通知）
+## 推送正文来源（不提供固定模板）
 
-> `generate-document` 和 `implement-code` 每次执行结束，**必须**调用本技能发送一条生动总结，禁止省略或合并到其他消息中。
-> 消息必须符合电梯法则：**10 秒内读懂结论、影响和下一步**。
->
-> **执行顺序（严格遵守）：**
-> 1. **先执行** `import-docs` 文档同步（`docs` 标准导入），获取实际的「创建 N、覆盖 N」数字
-> 2. **再发送** wework-bot 通知，把上一步的实际数字填入 `☁️ 文档同步` 行
->
-> 禁止在 `import-docs` 执行前发送通知，否则 `☁️ 文档同步` 行数字无法填写真实值。
-
-### generate-document 完成（成功）
-
-```
-📄 文档生成完成
-━━━━━━━━━━━━━━━━━
-🎯 结论：文档已生成并完成同步
-✅ 流程：generate-document
-📌 功能：<功能名>
-📝 描述：<100字以内描述>
-📋 类型：<文档类型>（需求文档 / 设计文档 / 全文档…）
-🔍 P0 自检：通过 <N> / 共 <N> 项
-🌐 影响：<文档覆盖范围 / 可进入的下一流程>
-📎 证据：<生成文件路径 / 自检摘要>
-🤝 AI 调用：skills <N> / agents <N> / mcp <N> / tools <N>
-🔗 调用链：<find-skills→find-agents→...→wework-bot>
-📦 产物：<新生成 N 份 / 更新 M 份 / 类型分布>
-☁️ 文档同步：docs → YiAi（创建 N，覆盖 N，失败 N）
-⏱️ 用时：<本次会话总耗时，如 12m 34s>
-🪙 会话用量：<输入/输出/合计 Token 或用量摘要，与 Cursor 用量一致；见脚本缺省说明>
-🌿 分支：<git-branch>
-🔖 提交：<short-sha>
-🤖 模型：<模型名>
-🧰 工具：<主要工具清单>
-🕒 最后更新：<YYYY-MM-DD HH:mm:ss>
-👉 下一步：可进入评审或实施准备
-```
-
-### generate-document 完成（含 P0 失败）
-
-```
-⚠️ 文档生成完成（含 P0 失败项）
-━━━━━━━━━━━━━━━━━
-🎯 结论：文档已保存，但存在需处理的 P0 问题
-📄 流程：generate-document
-📌 功能：<功能名>
-📝 描述：<100字以内描述>
-📋 类型：<文档类型>
-❌ P0 自检：失败 <N> 项
-❌ 原因：<简短失败原因摘要，≤ 2 条>
-🌐 影响：<受影响文档 / 无法进入的后续流程>
-📎 证据：<失败检查项 / 生成文件路径 / 错误摘要>
-🤝 AI 调用：skills <N> / agents <N> / mcp <N> / tools <N>
-🔗 调用链：<find-skills→...→wework-bot>
-📦 产物：<生成 N 份 / 失败 M 份>
-☁️ 文档同步：docs → YiAi（创建 N，覆盖 N，失败 N）
-⏱️ 用时：<本次会话总耗时>
-🪙 会话用量：<Token 或用量摘要；与 Cursor 一致>
-🌿 分支：<git-branch>
-🔖 提交：<short-sha>
-🧭 恢复点：先修复 P0 失败项，再重新运行 `/generate-document <功能名>`
-🤖 模型：<模型名>
-🧰 工具：<主要工具清单>
-🕒 最后更新：<YYYY-MM-DD HH:mm:ss>
-👉 下一步：优先修复 P0 后再进入实施
-```
-
-### implement-code 完成（成功）
-
-```
-🚀 代码实施完成
-━━━━━━━━━━━━━━━━━
-🎯 结论：代码实施已完成，关键门禁全部通过
-✅ 流程：implement-code
-📌 功能：<功能名>
-📝 描述：<100字以内描述>
-📊 阶段：0 → 8（全部通过）
-🧪 P0 检查项：全部通过（共 <N> 项）
-🌐 影响：<已交付的用户价值 / 受影响模块 / 发布影响>
-📎 证据：<测试命令 / 报告路径 / MCP 操作摘要>
-🤝 AI 调用：skills <N> / agents <N> / mcp <N> / tools <N>
-🔗 调用链：<find-skills→find-agents→test-page-builder→e2e-testing→playwright-mcp×N→code-review→impl-reporter→import-docs→wework-bot>
-📁 测试路径：tests/ 内 <N> spec / <N> page / <N> fixture，无逸出
-🧫 测试统计：spec <N> / case <N> / 通过 <N> / 失败 <N>
-🔁 修复轮次：阶段2: <N> 轮 / 阶段6: <N> 轮
-📈 指标：lint 0 / 影响链命中 <N>
-📦 产物：代码 <N> 个，测试 <N> 个（均在 tests/），文档 <N> 个
-📐 实施总结图表：§1 流程图 <N> 节点 / §2 时序图 <K> 参与者（与总结文件一致）
-🧩 MCP 明细：nav <N> / snap <N> / click <N> / fill <N> / eval <N>（按实际）
-🧾 待办与风险：P1 <N> 项 / P2 <N> 项（详见 06_实施总结 §9；无则写「无」）
-🗂️ 状态回写：01/02/03/04/05/07 已更新（含 05 最终回写与 §5.5 复查）
-📂 报告：docs/<功能名>/06_实施总结.md
-☁️ 文档同步：docs → YiAi（创建 N，覆盖 N，失败 N）
-⏱️ 用时：<Hh Mm Ss>（本次会话起止或累计耗时）
-🪙 会话用量：<Token 或用量摘要>
-🟢 开始时间：<YYYY-MM-DD HH:mm:ss>
-🔴 结束时间：<YYYY-MM-DD HH:mm:ss>
-🌿 分支：<git-branch>
-🔖 提交：<short-sha>
-🤖 模型：<模型名>
-🧰 工具：<主要工具清单>
-🕒 最后更新：<YYYY-MM-DD HH:mm:ss>
-👉 下一步：可进入提交、评审或发布准备
-```
-
-### implement-code 阻断
-
-```
-⛔ 代码实施阻断
-━━━━━━━━━━━━━━━━━
-🎯 结论：代码实施已阻断，需要人工处理
-🛠️ 流程：implement-code
-📌 功能：<功能名>
-📝 描述：<100字以内描述>
-🔍 阻断阶段：阶段 <N>（<阶段名>）
-❌ 原因：<简短阻断原因，≤ 2 条>
-🧪 P0 状态：已通过 <N> / 共 <N> 项
-🌐 影响：<当前无法交付的范围 / 已完成但不可发布的范围>
-📎 证据：<失败命令 / 报告路径 / MCP 调用序列 / 错误摘要>
-🤝 AI 调用：skills <N> / agents <N> / mcp <N> / tools <N>（已执行）
-🔗 调用链：<已执行的调用链，标注阻断节点>
-📁 测试路径：tests/ 内 <N> spec / <N> page，无逸出（或：发现 <N> 个逸出文件已迁移）
-🔁 修复轮次：阶段<N>: <已尝试 N> 轮（已达上限）
-📦 产物：代码 <N> 个，测试 <N> 个（均在 tests/，已落地但未过当前门禁）
-📐 实施总结图表：§1 / §2 已写入（节点/参与者数 <N>/<K>）
-🧩 MCP 明细：截至阻断前的 MCP 调用摘要
-🧾 待办与风险：阻断项 + P1/P2（见 §9）
-🗂️ 状态回写：01/02/03/04/05/07 已标记阻断或跳过原因
-📂 报告：docs/<功能名>/06_实施总结.md
-☁️ 文档同步：docs → YiAi（创建 N，覆盖 N，失败 N）
-⏱️ 用时：<Hh Mm Ss>（本次会话已耗费时间）
-🪙 会话用量：<Token 或用量摘要>
-🟢 开始时间：<YYYY-MM-DD HH:mm:ss>
-🔴 结束时间：<YYYY-MM-DD HH:mm:ss>
-🌿 分支：<git-branch>
-🔖 提交：<short-sha>
-🧭 恢复点：从阶段 <N> 重新开始，先处理 <具体动作>
-🤖 模型：<模型名>
-🧰 工具：<主要工具清单>
-🕒 最后更新：<YYYY-MM-DD HH:mm:ss>
-👉 下一步：按阻断原因补齐输入或修复门禁
-```
+wework-bot 不再在 `SKILL.md` 内提供固定消息模板。推送正文统一由 `.claude/agents/message-pusher.md`（`message-pusher`）基于本次事实来源先整理生成，再交由 `scripts/send-message.js` 负责路由、必填字段补齐/校验与发送。
 
 **格式强制要求：**
 
@@ -357,27 +220,26 @@ node .claude/skills/wework-bot/scripts/send-message.js \
 
 ## 多机器人路由
 
-脚本会优先读取 `WEWORK_BOT_CONFIG`；若未设置，会读取仓库内默认 `config.json`。配置文件仅允许保存机器人/agent 的**路由关系**与**环境变量名映射**（如 `webhook_key_env`），不得保存任何明文密钥或完整 webhook。
+脚本会优先读取 `WEWORK_BOT_CONFIG`；若未设置，会读取仓库内默认 `config.json`。配置文件保存机器人/agent **路由关系**，并提供 webhook 解析入口：`webhook_url` / `webhook_key` 或通过 `webhook_*_env` 映射到本地环境变量名。
 
 **必须预设的环境变量（只需设置一次）：**
 
 ```bash
-export API_X_TOKEN=12345678
+export API_X_TOKEN=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
 
 `WEWORK_BOT_CONFIG` 可选；只有需要切换到其他配置文件时才设置。建议把 `API_X_TOKEN` 写入 shell 配置文件（`~/.zshrc` 或 `~/.bashrc`）使其永久生效。
 
 配置优先级：
 
-1. 环境变量 `WEWORK_WEBHOOK_URL` / `WEWORK_WEBHOOK_KEY`
-2. 命令行 `--robot`
-3. 命令行 `--agent` 映射到配置中的机器人
-4. 配置中的 `default_robot`
+1. 选定 robot（命令行 `--robot`，否则 `--agent` 映射，否则 `default_robot`）
+2. `config.json` 中该 robot 的 webhook（优先 `webhook_*_env` 映射，其次明文 `webhook_url` / `webhook_key`；顶层同名字段可作兜底）
+3. （兜底）全局环境变量 `WEWORK_WEBHOOK_URL` / `WEWORK_WEBHOOK_KEY`
 
 ## 安全约束
 
 - 不得提交真实 `X-Token`、webhook URL 或 webhook key。
-- 不得把任何密钥写入仓库文件（含配置文件或脚本参数）。
+- 仓库中的路由配置优先使用 `webhook_*_env` 映射；如需明文 `webhook_url` / `webhook_key`，使用本地不入库覆盖（例如 `.gitignore`）。
 - 回复用户时只展示脱敏摘要，不展示完整密钥。
 - `generate-document` 和 `implement-code` 流程结束时的完成通知属于**强制执行**，不受"默认不自动发送"约束；其余场景默认不自动发送，除非用户明确要求或调用方 skill 的流程规则要求通知。
 
