@@ -161,7 +161,11 @@ node .claude/scripts/log-orchestration.js --skill generate-document \
 - 每条技术断言必须在文中关联来源（上游文档链接或代码路径）
 - 无据可依的章节标注"待补充"
 - 版本信息头部填写实际值（大模型名称、AI 工具名称）
-- **设计文档生成后必须调用 `code-reviewer` 审查架构一致性**：
+- **凡在本次步骤中写入或修改了含 Mermaid 图源代码块的 Markdown（含周报、项目初始化等任意产出路径），在该文件进入下一门禁前必须先调用 `mermaid-expert`**：
+  - 调用前读取 `.claude/agents/memory/mermaid-expert.md`
+  - 按代理契约输出修复后的完整代码块并**写回同一文件**；禁止跳过仅口头宣称「已检查」
+  - 无 Mermaid 块的文档可跳过本代理
+- **设计文档生成后必须调用 `code-reviewer` 审查架构一致性**（在含图文档已通过 `mermaid-expert` 之后）：
   - P0 问题必须修复后再保存
   - P1/P2 问题记录但不阻断
 - 自检：加载 `checklists/<类型>.md`，P0 全部通过才保存为通过状态；未通过最多自修复 1 轮，仍不通过也必须保存并标注
@@ -204,6 +208,7 @@ node .claude/scripts/log-orchestration.js --skill generate-document \
 | `impact-analyst`    | 2（仅需求任务/设计文档） | 见 `.claude/agents/impact-analyst.md`        | 影响链分析结果必须写入文档对应章节       |
 | `architect`         | 3（仅设计文档）          | 5 个必答问题见 `.claude/agents/architect.md` | 模块划分、接口规范必须采纳到架构设计章节 |
 | `planner`           | 3（仅设计文档）          | 见 `.claude/agents/planner.md`               | 实施策略与风险清单必须采纳到设计文档     |
+| `mermaid-expert`    | 4（含 Mermaid 图源的文档定稿前） | 见 `.claude/agents/mermaid-expert.md` | 修复后的代码块必须写回文件；无图则跳过 |
 | `code-reviewer`     | 4（设计文档生成后）      | 见 `.claude/agents/code-reviewer.md`         | P0 问题必须修复；P1/P2 记录不阻断        |
 | `quality-tracker`   | 4                        | 无特定必答问题                               | P0/P1/P2 统计追加到记忆文件              |
 | `knowledge-curator` | 5                        | 无特定必答问题                               | 可复用知识提取到记忆文件                 |
