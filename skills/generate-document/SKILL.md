@@ -51,8 +51,9 @@ node .claude/scripts/log-orchestration.js --skill generate-document \
 
 - 调用方式：
   - `/generate-document weekly`：生成本周周报（自动取当前自然周）
-  - `/generate-document weekly 2026-W18`：生成指定周（ISO week，`YYYY-Www`）
-- 落盘路径：`docs/周报/<YYYY-Www>_周报.md`
+  - `/generate-document weekly 2026-04-28`：按给定日期所在自然周生成周报
+  - `/generate-document weekly 2026-04-28~2026-05-04`：按起止日期生成（会校验并规范到周一~周日）
+- 落盘路径：`docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>_周报.md`（自然周起止日期）
 - 生成规则：必须严格按 `rules/周报.md` 输出（事实不足写“待补充”，禁止虚构）
 - 收尾规则：同样必须执行“步骤 6：文档同步与通知”（先 `import-docs`，再 `wework-bot`）
 
