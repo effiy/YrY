@@ -1,8 +1,8 @@
 # generate-document 评测示例
 
-真源：`.claude/skills/generate-document/SKILL.md`、`rules/orchestration.md`、`rules/*.md`；编排会话日志：`.claude/scripts/log-orchestration.js` → `docs/logs/<YYYY-MM-DD>_generate-document.log`；收尾链路：`import-docs`、`wework-bot`（见 [wework-bot.md](./wework-bot.md)）。
+真源：`.claude/skills/generate-document/SKILL.md`、`rules/orchestration.md`、`rules/*.md`；编排会话日志：`.claude/scripts/log-orchestration.js` → **`docs/logs/<YYYY-MM-DD>_generate-document.md`**（Markdown）；收尾链路：`import-docs`、`wework-bot`（见 [wework-bot.md](./wework-bot.md)）。
 
-**评测约束**：须对照 SKILL 中的阶段契约：**spec-retriever → impact-analyst → architect / planner → 文档生成与自检 → knowledge-curator → 步骤 6 先 `import-docs` 再 `wework-bot`**；不得以颠倒顺序或未调用必选 Agent 作为通过状态。涉及 `.claude` 内 skill、agent、MCP、memory/shared 的交互，预期每轮完成后写入 **`docs/logs`** 一行（格式见 SKILL「编排会话日志」）。
+**评测约束**：须对照 SKILL 中的阶段契约：**spec-retriever → impact-analyst → architect / planner → 文档生成与自检 → knowledge-curator → 步骤 6 先 `import-docs` 再 `wework-bot`**；不得以颠倒顺序或未调用必选 Agent 作为通过状态。涉及 `.claude` 内 skill、agent、MCP、memory/shared 的交互，预期每轮完成后写入 **`docs/logs`**：**操作场景**（与本评测文档「示例输入（对话）」同类句式）+ **对话与交互摘要**（可核对）。
 
 ---
 
@@ -40,7 +40,7 @@
 
 ## 编排会话日志（可观测）
 
-评测时可抽查当日 `docs/logs/*_generate-document.log`：是否存在与 **skill/agent/MCP** 交互对应的 `ISO-agent/name：` 或 `skill/name：` 行，且正文非空占位。
+评测时可抽查当日 `docs/logs/*_generate-document.md`：是否存在与 **skill/agent/MCP** 交互对应的 Markdown 小节（三级标题内含 ISO 时间与 kind/name），且 **对话与交互摘要** 非空、可与本会话的用法对齐。可选抽查 **`--case good|bad`** 与 **`docs/logs/CASE-STANDARD.md`** 是否一致（分级、标签、后续改进是否支撑复盘）。
 
 ---
 

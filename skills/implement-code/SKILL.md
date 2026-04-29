@@ -18,22 +18,26 @@ user_invocable: true
 
 ## 编排会话日志（强制）
 
-每次执行本技能时，在会话内**每完成一轮**与下列资源的交互后，必须追加写入仓库根目录 `docs/logs/<YYYY-MM-DD>_implement-code.log`：
+每次执行本技能时，在会话内**每完成一轮**与下列资源的交互后，必须追加写入仓库根目录 **`docs/logs/<YYYY-MM-DD>_implement-code.md`**（**Markdown**，非 `.log`）：
 
 - `.claude/skills/` 下的技能（如 `import-docs`、`wework-bot`、`e2e-testing`）
 - `.claude/agents/` 下的 Agent（如 `spec-retriever`、`impact-analyst`、`code-reviewer`）
 - MCP 工具（记录工具标识与调用要点）
 - 为驱动步骤而显式读取并依赖结论的 `shared/`、`agents/memory/` 契约（`--kind memory` 或 `shared`）
 
-**命令**（在仓库根目录执行；`--text` 为单行摘要，可截断但必须可核对）：
+**记录内容**：每条为一个小节，包含 **操作场景**（可参考 [`eval/skills/implement-code.md`](../../eval/skills/implement-code.md) 的用户故事句式）与 **对话与交互摘要**。可选用 **`--case good|bad`**、**`--tags`**、**`--lesson`**，标准见 [`docs/logs/CASE-STANDARD.md`](../../docs/logs/CASE-STANDARD.md)。
+
+**命令**（在仓库根目录执行）：
 
 ```bash
 node .claude/scripts/log-orchestration.js --skill implement-code \
   --kind <skill|agent|mcp|memory|shared|other> [--name <标识>] \
-  --text "<与该资源的对话要点：输入摘要、结论、采纳项>"
+  [--scenario "<操作场景>"] \
+  [--case <good|bad|neutral>] [--tags "<tag1,tag2>"] [--lesson "<后续改进一句>"] \
+  [--text "<单行摘要>"]
 ```
 
-未提供 `--text` 时从 stdin 读入正文。脚本写入行格式：`<ISO时间>-<kind[/name]>：<正文>`。详见 `rules/orchestration.md`「编排会话日志」。
+未提供 `--text` 时从 stdin 读入正文（**保留换行**）。详见 `rules/orchestration.md`「编排会话日志」。
 
 ## 定位
 

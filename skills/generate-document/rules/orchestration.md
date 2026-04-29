@@ -212,9 +212,9 @@
 
 ## 7. 编排会话日志（强制）
 
-与本编排相关的 **skill / agent / MCP / memory / shared** 交互，在对应步骤完成后必须追加写入 **`docs/logs/<YYYY-MM-DD>_generate-document.log`**。
+与本编排相关的 **skill / agent / MCP / memory / shared** 交互，在对应步骤完成后必须追加写入 **`docs/logs/<YYYY-MM-DD>_generate-document.md`**（Markdown）。
 
-1. **触发时机**：每次完成对 `.claude` 内某一 skill、agent、MCP 的一轮调用（含读完记忆文件后的下游采纳），立即记录一行。
+1. **触发时机**：每次完成对 `.claude` 内某一 skill、agent、MCP 的一轮调用（含读完记忆文件后的下游采纳），立即追加一条记录。
 2. **工具**：`node .claude/scripts/log-orchestration.js`（参数见 `../SKILL.md`「编排会话日志」）。
-3. **正文内容**：对话中与该资源相关的可核对摘要（派发指令摘要、必答要点、返回结论、写入文档的采纳项）；禁止空日志占位。
+3. **记录结构**：每条含 **操作场景** 与 **对话与交互摘要**；可选 **`--case good|bad`**、`--tags`、`--lesson` 标注 good/bad case（见 `docs/logs/CASE-STANDARD.md`）。禁止空占位。
 4. **阻断与兜底**：即使中途阻断，对已发生的交互仍须补齐日志后再结束。

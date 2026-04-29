@@ -60,7 +60,7 @@ cd .claude/skills/wework-bot && node --test tests/send-message.test.mjs
 
 ## 消息要求（不提供固定模板）
 
-必含字段、度量与格式约束由 **`message-pusher`**（或等价 agent）在正文中落实；详见 `SKILL.md` 与 `rules/message-contract.md`。`send-message.js` **不对正文做自动补齐或校验**（仅做 `\n`/`\t` 字面量归一化）。
+必含字段与 **摘要 / 明细（管理层优先）** 分层规则由 **`message-pusher`** 在正文中落实；详见 `SKILL.md` 与 `rules/message-contract.md`。`send-message.js` **不对正文做自动补齐或校验**（仅做 `\n`/`\t` 字面量归一化）。
 
 ## 配置说明
 
