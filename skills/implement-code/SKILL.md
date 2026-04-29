@@ -16,6 +16,25 @@ user_invocable: true
 
 **需要人工介入时必须推送 wework-bot：**任何“阻断 / 门禁异常 / 需要人工介入”都必须发送 wework-bot 通知，确保接收者可在群内直接看到原因、证据与恢复点。
 
+## 编排会话日志（强制）
+
+每次执行本技能时，在会话内**每完成一轮**与下列资源的交互后，必须追加写入仓库根目录 `docs/logs/<YYYY-MM-DD>_implement-code.log`：
+
+- `.claude/skills/` 下的技能（如 `import-docs`、`wework-bot`、`e2e-testing`）
+- `.claude/agents/` 下的 Agent（如 `spec-retriever`、`impact-analyst`、`code-reviewer`）
+- MCP 工具（记录工具标识与调用要点）
+- 为驱动步骤而显式读取并依赖结论的 `shared/`、`agents/memory/` 契约（`--kind memory` 或 `shared`）
+
+**命令**（在仓库根目录执行；`--text` 为单行摘要，可截断但必须可核对）：
+
+```bash
+node .claude/scripts/log-orchestration.js --skill implement-code \
+  --kind <skill|agent|mcp|memory|shared|other> [--name <标识>] \
+  --text "<与该资源的对话要点：输入摘要、结论、采纳项>"
+```
+
+未提供 `--text` 时从 stdin 读入正文。脚本写入行格式：`<ISO时间>-<kind[/name]>：<正文>`。详见 `rules/orchestration.md`「编排会话日志」。
+
 ## 定位
 
 `implement-code` 是代码实施编排器，负责 4 件事：
@@ -43,7 +62,7 @@ user_invocable: true
 
 ## 何时不使用
 
-- 缺少 P0 文档（02_需求任务 + 03_设计文档 + 05_动态检查清单）
+- 缺少 P0 文档（02*需求任务 + 03*设计文档 + 05\_动态检查清单）
 - 用户仍在做需求澄清或文档生成
 - 只是零碎代码修补
 
@@ -59,17 +78,17 @@ user_invocable: true
 
 P0 文档（缺失即阻断）：
 
-| 文件 | 用途 |
-|------|------|
-| `02_需求任务.md` | 用户故事、场景、前置条件 |
-| `03_设计文档.md` | 模块、接口、实现约束 |
-| `05_动态检查清单.md` | 全部待验证检查项 |
+| 文件                 | 用途                     |
+| -------------------- | ------------------------ |
+| `02_需求任务.md`     | 用户故事、场景、前置条件 |
+| `03_设计文档.md`     | 模块、接口、实现约束     |
+| `05_动态检查清单.md` | 全部待验证检查项         |
 
 P1/P2 文档（缺失不阻断）：
 
-| 文件 | 用途 |
-|------|------|
-| `01_需求文档.md` | 背景与目标 |
+| 文件             | 用途        |
+| ---------------- | ----------- |
+| `01_需求文档.md` | 背景与目标  |
 | `04_使用文档.md` | UI 文案补充 |
 
 ## 4 阶段工作流
@@ -120,15 +139,15 @@ P1/P2 文档（缺失不阻断）：
 
 ## Agent 调用契约
 
-| Agent | 触发阶段 | 必答问题 | 采纳规则 |
-|-------|---------|---------|---------|
-| `spec-retriever` | 1 | 无特定必答问题 | 返回规范列表用于后续步骤 |
-| `impact-analyst` | 1 | 见 `.claude/agents/impact-analyst.md` | 影响链分析结果必须采纳，确认改动点与真实代码一致 |
-| `architect` | 1 | 5 个必答问题见 `.claude/agents/architect.md` | 架构方案必须与项目约定一致 |
-| `code-reviewer` | 2（每模块）+ 3（全量） | 见 `.claude/agents/code-reviewer.md` | P0 必须修复；P1/P2 记录不阻断 |
-| 项目特有 agent | 3 | 见各项目 agent 定义 | P0 必须修复 |
-| `quality-tracker` | 4 | 无特定必答问题 | 统计追加到记忆文件 |
-| `knowledge-curator` | 4 | 无特定必答问题 | 知识提取到记忆文件 |
+| Agent               | 触发阶段               | 必答问题                                     | 采纳规则                                         |
+| ------------------- | ---------------------- | -------------------------------------------- | ------------------------------------------------ |
+| `spec-retriever`    | 1                      | 无特定必答问题                               | 返回规范列表用于后续步骤                         |
+| `impact-analyst`    | 1                      | 见 `.claude/agents/impact-analyst.md`        | 影响链分析结果必须采纳，确认改动点与真实代码一致 |
+| `architect`         | 1                      | 5 个必答问题见 `.claude/agents/architect.md` | 架构方案必须与项目约定一致                       |
+| `code-reviewer`     | 2（每模块）+ 3（全量） | 见 `.claude/agents/code-reviewer.md`         | P0 必须修复；P1/P2 记录不阻断                    |
+| 项目特有 agent      | 3                      | 见各项目 agent 定义                          | P0 必须修复                                      |
+| `quality-tracker`   | 4                      | 无特定必答问题                               | 统计追加到记忆文件                               |
+| `knowledge-curator` | 4                      | 无特定必答问题                               | 知识提取到记忆文件                               |
 
 ## 停止条件
 
@@ -140,6 +159,7 @@ P1/P2 文档（缺失不阻断）：
 - 所有模块阻断且无法继续
 
 停止时：
+
 1. 记录阻断原因和已产生产物
 2. 生成阻断版 `06_实施总结.md`
 3. 回写阻断状态到 `01/02/03/04/05/07`
@@ -147,19 +167,19 @@ P1/P2 文档（缺失不阻断）：
 
 ## 相关技能与代理
 
-| 名称 | 调用阶段 | 用途 |
-|------|---------|------|
-| `spec-retriever` | 1 | 智能规范检索 |
-| `impact-analyst` | 1 | 全项目影响链分析 |
-| `architect` | 1 | 架构确认 |
-| `code-reviewer` | 2, 3 | 逐模块 + 全量代码审查 |
-| `test-page-builder` | 2（前端项目） | 测试原型页 |
-| `security-reviewer` | 3（涉及鉴权/安全） | 安全审查 |
-| 项目特有 agent | 3 | 项目专项审查 |
-| `quality-tracker` | 4 | 质量趋势统计 |
-| `knowledge-curator` | 4 | 知识策展 |
-| `import-docs` | 4（强制） | 文档同步 |
-| `wework-bot` | 4（强制） | 完成/阻断/门禁异常通知 |
+| 名称                | 调用阶段           | 用途                   |
+| ------------------- | ------------------ | ---------------------- |
+| `spec-retriever`    | 1                  | 智能规范检索           |
+| `impact-analyst`    | 1                  | 全项目影响链分析       |
+| `architect`         | 1                  | 架构确认               |
+| `code-reviewer`     | 2, 3               | 逐模块 + 全量代码审查  |
+| `test-page-builder` | 2（前端项目）      | 测试原型页             |
+| `security-reviewer` | 3（涉及鉴权/安全） | 安全审查               |
+| 项目特有 agent      | 3                  | 项目专项审查           |
+| `quality-tracker`   | 4                  | 质量趋势统计           |
+| `knowledge-curator` | 4                  | 知识策展               |
+| `import-docs`       | 4（强制）          | 文档同步               |
+| `wework-bot`        | 4（强制）          | 完成/阻断/门禁异常通知 |
 
 ## 支持文件结构
 

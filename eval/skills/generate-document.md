@@ -1,0 +1,52 @@
+# generate-document 评测示例
+
+真源：`.claude/skills/generate-document/SKILL.md`、`rules/orchestration.md`、`rules/*.md`；编排会话日志：`.claude/scripts/log-orchestration.js` → `docs/logs/<YYYY-MM-DD>_generate-document.log`；收尾链路：`import-docs`、`wework-bot`（见 [wework-bot.md](./wework-bot.md)）。
+
+**评测约束**：须对照 SKILL 中的阶段契约：**spec-retriever → impact-analyst → architect / planner → 文档生成与自检 → knowledge-curator → 步骤 6 先 `import-docs` 再 `wework-bot`**；不得以颠倒顺序或未调用必选 Agent 作为通过状态。涉及 `.claude` 内 skill、agent、MCP、memory/shared 的交互，预期每轮完成后写入 **`docs/logs`** 一行（格式见 SKILL「编排会话日志」）。
+
+---
+
+## 用户故事 A：全文档编号集交付
+
+**故事**：作为审核者，希望在 `docs/<功能名>/` 下得到 01–05、07 完整文档集，且设计文档 / 动态检查清单为规范驱动、非模板填空。
+
+**示例输入（对话）**
+
+- 「按 generate-document 为「某某功能」生成全文档集；设计文档必须采纳 architect / planner 必答结论。」
+- 「生成前先跑 spec-retriever，再按依赖读 01→02→03；影响链写进需求任务第 6 章 / 设计第 5 章。」
+
+---
+
+## 用户故事 B：init 与周报
+
+**故事**：作为维护者，希望在 `init` 或 `weekly` 命令下行为与 SKILL「命令扩展」一致，且收尾仍执行步骤 6（import-docs + wework-bot）。
+
+**示例输入（对话）**
+
+- 「`/generate-document init`：按 SKILL 落盘 8 个基础文件 + `docs/项目初始化/` 01–07，类型通知填项目初始化。」
+- 「`/generate-document weekly 2026-W18`：周报落在 `docs/周报/`，仍要先 import-docs 再企微通知。」
+
+---
+
+## 用户故事 C：阻断与兜底记录
+
+**故事**：作为跟进者，希望在无法解析功能名或前置阻断时，有明确的 `docs/99_agent-runs/` 或编排约定中的兜底路径，且阻断通知仍含必填字段。
+
+**示例输入（对话）**
+
+- 「功能名解析失败：先写 `docs/99_agent-runs/` 记录再提示用户；阻断也要 wework-bot。」
+
+---
+
+## 编排会话日志（可观测）
+
+评测时可抽查当日 `docs/logs/*_generate-document.log`：是否存在与 **skill/agent/MCP** 交互对应的 `ISO-agent/name：` 或 `skill/name：` 行，且正文非空占位。
+
+---
+
+## 与 eval 的关联
+
+- 文档导入脚本评测：[import-docs.md](./import-docs.md)
+- 企微真发与 import-docs 顺序：[wework-bot.md](./wework-bot.md)
+- 写稿 agent：[message-pusher.md](../agents/message-pusher.md)
+- 实施代码编排对照：[implement-code.md](./implement-code.md)

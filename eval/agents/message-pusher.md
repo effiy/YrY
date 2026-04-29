@@ -1,24 +1,65 @@
 # message-pusher 评测示例（配合 wework-bot）
 
-真源：`.claude/agents/message-pusher.md`。
+真源：`.claude/agents/message-pusher.md`；契约与脚本：`.claude/skills/wework-bot/rules/message-contract.md`、`.claude/skills/wework-bot/scripts/send-message.js`。
 
-**评测约束**：示例的预期链路以 **`send-message.js` 真发**收尾（见 [skills/wework-bot.md](../skills/wework-bot.md)）；message-pusher 只负责对稿，不得以「仅草稿」代替群内推送。
-
----
-
-## 用户故事
-
-**故事**：在调用 `send-message.js` 之前，先把结论、描述、度量与证据对齐会话事实，避免占位符与幻觉数字进入企业微信群。
+**评测定位**：本页聚焦 **写稿与事实对齐**（Plan → 反幻觉 → 分行正文 → 交付参数/文件）。端到端「群里收到一条真推送」仍以 [skills/wework-bot.md](../skills/wework-bot.md) 为准；二者常串联评测——message-pusher 先对稿，`send-message.js` 再真发。
 
 ---
 
-## 示例输入（对话）
+## 评测约束
+
+1. **收尾链路**：用户明确要求「推到群」时，预期链路须以 **`send-message.js` 真实调用**收尾（无演练模式）；不得以「仅草稿、未发送」作为整条评测的通过状态——详见 wework-bot 评测约束。
+2. **message-pusher 本分**：在真发之前，须体现 **先 Plan 后写稿**；结论、描述、度量、证据与 **会话维度**（起止时间、`⏱️`、`🪙 会话用量` 等）可从真源核对或明确标注「须自行核对」，**禁止占位符与臆造数字**进入最终推送载荷。
+
+---
+
+## 成功判据（可观测）
+
+评测 message-pusher 时，至少满足下列多数项（按场景取舍）：
+
+| 维度 | 预期 |
+|------|------|
+| 流程类型 | 能说明本次推送属于完成 / 阻断 / 门禁 / 阶段之一，并指向对应证据路径（文档、终端、日志等） |
+| 事实来源 | 列出或可回溯事实清单；缺项标为「需核对」而非编造 |
+| 会话度量 | 完成/阻断/门禁类涉及时长与用量时，四个维度（起止、耗时、Token）有交代或与脚本/`session-time.json` 注入策略一致 |
+| 正文形态 | 分行、`emoji 标签：值` 可读；`📝 描述` ≤100 字（契约）；无不恰当的字面 `\n` 串 |
+| 交付物 | 给出可用的 `--content-file` 草案与建议参数，或可执行的命令片段（占位符由用户在本地替换） |
+| 边界 | 未宣称代替用户执行 `send-message.js`；无 token 时仅交付文案与说明 |
+
+---
+
+## 用户故事 A：阻断 / 门禁通知（先对齐再推）
+
+**故事**：在调用 `send-message.js` 之前，先把阻断或门禁结论、描述、度量与会话用量写成可对账草稿，避免占位符与幻觉数字进入企业微信群。
+
+**示例输入（对话）**
 
 - 「按 message-pusher：先把这条阻断通知的 🎯 结论 / 📝 描述 / ⏱️ / 🪙 会话用量列成草稿，核对数字与来源后 **再执行 wework-bot 真发到群**。」
-- 「完成通知要带上 📐 实施总结图表、🧩 MCP 明细：先从 06 统计再写稿，**写完立刻跑 send-message 正式推送**。」
+- 「门禁未通过：先用 message-pusher 对齐事实（🔍 门禁、📎 证据、🧭 恢复点），**再真跑 send-message**。」
+
+---
+
+## 用户故事 B：长流程收尾（统计先于写稿）
+
+**故事**：完成类通知若含实施总结、MCP 明细等，须先从统计与日志对齐再写稿；写完后仍须 **正式推送**（与 wework-bot 评测一致）。
+
+**示例输入（对话）**
+
+- 「完成通知要带上 📐 实施总结图表、🧩 MCP 明细：先从 `docs/<功能>/06_实施总结.md` 等真源统计再写稿，**写完立刻跑 send-message 正式推送**。」
+- 「`☁️ 文档同步` 数字必须与刚跑完的 import-docs 输出一致；message-pusher 对稿后 **同一套正文走 send-message 真发**。」
+
+---
+
+## 负例（应判不达标）
+
+- 正文或命令里出现明显占位（如随意 Token 整数、未发生的路径）且未标注「未提供 / 须核对」。
+- 完成/阻断/门禁场景下 **整段省略** 耗时与会话用量相关交代且无合理说明。
+- 将「大约」「估计」当作精确统计写入可推送正文。
+- 用户已要求发群，但助手仅以「草稿好了」结束且未引导或执行 `send-message.js`（端到端评测时）。
 
 ---
 
 ## 与 eval 的关联
 
-- Skill 侧示例： [skills/wework-bot.md](../skills/wework-bot.md)
+- Skill 侧示例与真发约束：[skills/wework-bot.md](../skills/wework-bot.md)
+- Agent 必答问题与记忆协议：见真源 `.claude/agents/message-pusher.md`

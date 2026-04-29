@@ -52,6 +52,8 @@
 
 推送长文案策划可先对齐 `.claude/agents/message-pusher.md`，再调用脚本；详见 [agents/message-pusher.md](../agents/message-pusher.md)。
 
+完成通知里的 **`☁️ 文档同步`** 须与 **刚执行完的 import-docs** 输出一致；脚本侧评测见 [skills/import-docs.md](./import-docs.md)。
+
 ---
 
 ## CLI 意图示例（供评测「命令是否拼对」）
