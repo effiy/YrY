@@ -11,7 +11,7 @@
 
 const fsp = require('fs').promises;
 const path = require('path');
-const { getNaturalWeekRange } = require('./lib/natural-week.js');
+const { getNaturalWeekRange } = require('./natural-week.js');
 
 const SKILL_VALUES = new Set(['generate-document', 'implement-code']);
 const KIND_VALUES = new Set([

@@ -7,7 +7,7 @@
  */
 
 const path = require('path');
-const { appendKeyNodeRecord } = require('./lib/append-key-node.js');
+const { appendKeyNodeRecord } = require('./append-key-node.js');
 
 async function readStdin() {
   const chunks = [];

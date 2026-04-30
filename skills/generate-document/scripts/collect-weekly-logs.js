@@ -25,7 +25,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getNaturalWeekRange } = require('./lib/natural-week.js');
+const { getNaturalWeekRange } = require('./natural-week.js');
 
 function printHelp(stream) {
   const out = stream || process.stdout;

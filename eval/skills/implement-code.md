@@ -1,6 +1,6 @@
 # implement-code 评测示例
 
-真源：`.claude/skills/implement-code/SKILL.md`、`rules/orchestration.md`、`rules/code-implementation.md` 等；编排会话日志：`.claude/scripts/log-orchestration.js` → **`docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>/logs.md`**（Markdown）；收尾：**先 `import-docs` 再 `wework-bot`**（见 [wework-bot.md](./wework-bot.md)）。
+真源：`.claude/skills/implement-code/SKILL.md`、`rules/orchestration.md`、`rules/code-implementation.md` 等；编排会话日志：`.claude/skills/generate-document/scripts/log-orchestration.js` → **`docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>/logs.md`**（Markdown）；收尾：**先 `import-docs` 再 `wework-bot`**（见 [wework-bot.md](./wework-bot.md)）。
 
 **评测约束**：须对照 SKILL：**若为 git 仓库，全过程必须在 `feat/<功能名>` 上实施（与 `{功能名}` 一致），首个改动前完成分支就绪**（见 `rules/orchestration.md` §2.5）；P0 文档不齐须阻断并生成阻断版总结；阶段内必选 **spec-retriever、impact-analyst、architect** 及代码阶段的 **code-reviewer** 等契约；结束必须 **import-docs + wework-bot** 两步齐备，且不得以“只产生命令/草稿未真实执行”作为通过状态。涉及 `.claude` 内 skill、agent、MCP、memory/shared 的交互，预期每轮完成后写入 **`docs/logs`**：**操作场景** + **对话与交互摘要**（格式见 SKILL「编排会话日志」）。
 

@@ -1,6 +1,6 @@
 # generate-document 评测示例
 
-真源：`.claude/skills/generate-document/SKILL.md`、`rules/orchestration.md`、`rules/*.md`；编排会话日志：`.claude/scripts/log-orchestration.js` → **`docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>/logs.md`**（Markdown）；收尾链路：`import-docs`、`wework-bot`（见 [wework-bot.md](./wework-bot.md)）。
+真源：`.claude/skills/generate-document/SKILL.md`、`rules/orchestration.md`、`rules/*.md`；编排会话日志：`.claude/skills/generate-document/scripts/log-orchestration.js` → **`docs/周报/<YYYY-MM-DD>~<YYYY-MM-DD>/logs.md`**（Markdown）；收尾链路：`import-docs`、`wework-bot`（见 [wework-bot.md](./wework-bot.md)）。
 
 **评测约束**：须对照 SKILL 中的阶段契约：**spec-retriever → impact-analyst → architect / planner → 文档生成（含 Mermaid 时必须先 `mermaid-expert`）与自检 → knowledge-curator → 步骤 6 先 `import-docs` 再 `wework-bot`**；不得以颠倒顺序、未调用必选 Agent、或“仅描述未执行收尾脚本”作为通过状态。涉及 `.claude` 内 skill、agent、MCP、memory/shared 的交互，预期每轮完成后写入 **`docs/logs`**：**操作场景**（与本评测文档「示例输入（对话）」同类句式）+ **对话与交互摘要**（可核对）。
 

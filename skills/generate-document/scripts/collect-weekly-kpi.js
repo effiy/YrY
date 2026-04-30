@@ -26,7 +26,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
-const { getNaturalWeekRange } = require('./lib/natural-week.js');
+const { getNaturalWeekRange } = require('./natural-week.js');
 
 const DOCS_DIR = path.resolve('docs');
 const KPI_FILES = ['05_动态检查清单.md', '06_实施总结.md', '07_项目报告.md'];
