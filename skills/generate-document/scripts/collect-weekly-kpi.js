@@ -205,8 +205,11 @@ function scanAllFeatures() {
     return { features: [], note: 'docs/ 下无功能目录' };
   }
 
-  const features = featureDirs.map(scanFeatureKPI);
-  return { features, note: `扫描到 ${features.length} 个功能目录` };
+  const features = featureDirs.map(scanFeatureKPI).filter((f) => f.hasData);
+  if (features.length === 0) {
+    return { features: [], note: 'docs/ 下无含 KPI 数据的功能目录（05/06/07 文件均不存在）' };
+  }
+  return { features, note: `扫描到 ${features.length} 个含 KPI 数据的功能目录` };
 }
 
 // ---------- Git 统计 ----------
