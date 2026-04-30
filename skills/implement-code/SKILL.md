@@ -54,7 +54,7 @@ user_invocable: true
 - `.claude/skills/` 下的技能（如 `import-docs`、`wework-bot`、`e2e-testing`）
 - `.claude/agents/` 下的 Agent（如 `spec-retriever`、`impact-analyst`、`code-reviewer`）
 - MCP 工具（记录工具标识与调用要点）
-- 为驱动步骤而显式读取并依赖结论的 `shared/`、`agents/memory/` 契约（`--kind memory` 或 `shared`）
+- 为驱动步骤而显式读取并依赖结论的 `shared/` 契约（`--kind shared`）
 
 **记录内容**：每条为一个小节，包含 **操作场景**（可参考 [`eval/skills/implement-code.md`](../../eval/skills/implement-code.md) 的用户故事句式）与 **对话与交互摘要**。可选用 **`--case good|bad`**、**`--tags`**、**`--lesson`**，标准见 [`docs/logs/CASE-STANDARD.md`](../../docs/logs/CASE-STANDARD.md)。
 
@@ -62,7 +62,7 @@ user_invocable: true
 
 ```bash
 node .claude/scripts/log-orchestration.js --skill implement-code \
-  --kind <skill|agent|mcp|memory|shared|other> [--name <标识>] \
+  --kind <skill|agent|mcp|shared|other> [--name <标识>] \
   [--scenario "<操作场景>"] \
   [--case <good|bad|neutral>] [--tags "<tag1,tag2>"] [--lesson "<后续改进一句>"] \
   [--text "<单行摘要>"]
@@ -136,7 +136,6 @@ P1/P2 文档（缺失不阻断）：
 - **必须调用 `spec-retriever`**：检索适用规范，读取记忆文件获取历史检索经验
 - **必须调用 `impact-analyst`**：
   - 先读取 `../../shared/impact-analysis-contract.md`
-  - 先读取 `.claude/agents/memory/impact-analyst.md`
   - 执行全项目影响链闭合分析（上游依赖、反向依赖、传递依赖、导出链、注册链）
   - 影响链分析结果**必须采纳**，确认设计文档改动点与真实代码一致
 - **必须调用 `architect`**：确认架构方案与项目架构约定一致
@@ -171,8 +170,8 @@ P1/P2 文档（缺失不阻断）：
 
 - 生成 `06_实施总结.md`（结构见 `rules/process-summary.md`）
 - 回写 `01/02/03/04/05/07` 的实施状态
-- **必须调用 `quality-tracker`**：P0/P1/P2 统计追加到记忆文件
-- **必须调用 `knowledge-curator`**：策展可复用知识到记忆文件
+- **必须调用 `quality-tracker`**：统计本次 P0/P1/P2 数据
+- **必须调用 `knowledge-curator`**：整理本次可复用知识
 - **必须执行 `import-docs` 文档同步 + `wework-bot` 通知推送**（完成/阻断/门禁异常）：严格按 `../wework-bot/SKILL.md` 的「生动总结格式规范」发送通知，通知内容必须包含 `⏱️ 用时`、`🪙 会话用量`、`🤖 模型`、`🧰 工具`、`🕒 最后更新时间`（精确到秒）；默认直接读取系统环境变量 `API_X_TOKEN` 执行同步，仅在变量缺失时提示；`☁️ 文档同步` 仅在已执行 import-docs 时填写真实结果（创建/覆盖/失败），不得虚构。
 - 退出条件：总结写入完成 + 状态回写完成 + 通知发送完成
 

@@ -29,8 +29,7 @@ triggers:
 
 ## 工作步骤
 
-1. 读取自身记忆文件 `.claude/agents/memory/spec-retriever.md`，获取历史规范加载经验
-2. 根据任务类型确定基础规范集合：
+1. 根据任务类型确定基础规范集合：
    - generate-document → `rules/通用文档.md` + `rules/<文档类型>.md` + `checklists/<文档类型>.md`
    - implement-code → `rules/orchestration.md` + `rules/implement-code-testing.md` + `rules/code-implementation.md` + `rules/artifact-contracts.md`
 3. 根据关键词扩展可选规范：
@@ -44,10 +43,8 @@ triggers:
    - `shared/document-contracts.md`（generate-document 时）
    - `shared/agent-skill-boundaries.md`（涉及 agent 分派时）
    - `shared/mcp-fallback-contract.md`（涉及 MCP 调用时）
-   - `shared/agent-memory-protocol.md`（涉及记忆读写时）
 5. 检查规范间是否有冲突或重叠
 6. 输出精确的规范文件列表
-7. 将本次加载经验追加到记忆文件
 
 ## 输出格式
 
@@ -61,8 +58,6 @@ triggers:
 规范冲突/重叠标注：
   - <文件A> §<章节> 与 <文件B> §<章节>：<冲突描述> — 以 <优先级更高的文件> 为准
 
-历史经验参考：
-  - <经验摘要>（来源：记忆文件）
 ```
 
 ## 输出契约附录（强制，供门禁校验）
@@ -96,13 +91,6 @@ triggers:
   "notes": "一行摘要"
 }
 ```
-
-## 记忆协议
-
-- **记忆文件**：`agents/memory/spec-retriever.md`
-- **读取策略**：调用前读取记忆文件，获取历史规范加载经验（如哪些规范组合最常用、哪些关键词对应哪些可选规范）
-- **写入策略**：调用后追加本次加载经验（1-2 条：关键词→规范映射、冲突发现）
-- **跨查阅**：可读取 `knowledge.md` 获取跨 agent 共性知识
 
 ## 约束
 

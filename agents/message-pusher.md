@@ -54,9 +54,3 @@ triggers:
 - 不编造 import-docs 的创建/覆盖数；须与上一步 `import-docs` 输出一致。
 - 与 `wework-bot/SKILL.md` 及 `rules/message-contract.md` 一致。
 
-## 记忆协议
-
-- **记忆文件**：`.claude/agents/memory/message-pusher.md`
-- **读取策略**：调用前读取记忆文件，获取历史推送经验（如常见文案模式、数字来源核对经验）
-- **写入策略**：调用后追加关键发现（1-3 条：文案撰写经验、数字核对经验、模板匹配经验）
-- **跨查阅**：可读取 `knowledge.md` 获取跨 agent 共性知识

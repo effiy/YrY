@@ -47,8 +47,7 @@ node scripts/collect-weekly-kpi.js --week <YYYY-MM-DD> --with-logs --output /tmp
    - **同时读取关键节点（key-notes）**：将里程碑/门禁/通知类节点纳入「进展与亮点」或「问题与根因」
    - **同时读取编排会话日志（logs）**：将 skill/agent/MCP 交互中的 bad case 或阻断事件纳入根因分析
    - 每条附证据路径
-5. **读取系统状态**：读取 `.claude/agents/memory/` 下所有记忆文件
-6. **推断自改进**：从 agent 记忆 + 编排日志中的 bad case/lesson 推断 skills/agents/rules/shared 改进；从项目基础文件和 FAQ 推断项目改进
+5. **推断自改进**：从编排日志中的 bad case/lesson 推断 skills/agents/rules/shared 改进；从项目基础文件和 FAQ 推断项目改进
 7. **排列后期规划**：按 KPI 优先级排列下五步（或合并后的规划表），每步绑定量化目标、验证方式与风险
 8. **输出候选数据**：将所有推断结果以结构化格式输出，供周报生成使用
 
@@ -57,7 +56,6 @@ node scripts/collect-weekly-kpi.js --week <YYYY-MM-DD> --with-logs --output /tmp
 - **`scripts/collect-weekly-kpi.js --with-logs` 输出**（必填优先）：自动汇总的 KPI 数据、Git 统计、关键节点、编排会话日志；作为后续推断的主数据源
 - **docs/ 周报目录下日志**（已由脚本覆盖，可选复核）：`docs/周报/<周>/key-notes.md`、`docs/周报/<周>/logs.md`
 - **docs/ 下全文档集**（补充校验）：对脚本存疑的功能，手动读取对应 `<功能名>/` 目录的 01-07 文件
-- **.claude/ 记忆文件**（必填）：所有 agent 记忆文件
 - **项目基础文件**（必填）：CLAUDE.md、README.md、docs/architecture.md、docs/FAQ.md
 - **git 日志**（已由脚本覆盖，可选复核）：仅在脚本异常时手动运行 `git log`
 
@@ -98,10 +96,6 @@ KPI 候选（按功能目录）：
   架构: <改进项> — 证据: <05_动态检查清单>
   代码: <改进项> — 证据: <06_实施总结>
 ```
-
-## 记忆
-
-记忆文件：`.claude/agents/memory/weekly-analyzer.md`。每次调用后追加 1-2 条关键发现。
 
 ## 约束
 

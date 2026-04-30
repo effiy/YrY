@@ -46,7 +46,7 @@ user_invocable: true
 - `.claude/skills/` 下的技能（如 `import-docs`、`wework-bot`、`find-skills`）
 - `.claude/agents/` 下的 Agent（如 `spec-retriever`、`impact-analyst`、`architect`）
 - MCP 工具（记录工具标识与调用要点）
-- 为驱动步骤而显式读取并依赖结论的 `shared/`、`agents/memory/` 契约（`--kind memory` 或 `shared`）
+- 为驱动步骤而显式读取并依赖结论的 `shared/` 契约（`--kind shared`）
 
 **记录内容**：每条为一个小节，包含 **操作场景**（本步在对话中如何使用编排——可参考 [`eval/skills/generate-document.md`](../../eval/skills/generate-document.md) 的用户故事句式）与 **对话与交互摘要**（输入要点、返回结论、采纳项；可核对）。可对典型交互追加 **`--case good|bad`**、**`--tags`**、**`--lesson`**，供 [`docs/logs/CASE-STANDARD.md`](../../docs/logs/CASE-STANDARD.md) 沉淀 good/bad case，便于后续改进编排。
 
@@ -54,7 +54,7 @@ user_invocable: true
 
 ```bash
 node scripts/log-orchestration.js --skill generate-document \
-  --kind <skill|agent|mcp|memory|shared|other> [--name <标识>] \
+  --kind <skill|agent|mcp|shared|other> [--name <标识>] \
   [--scenario "<操作场景：一句描述用户意图与本步角色>"] \
   [--case <good|bad|neutral>] [--tags "<tag1,tag2>"] [--lesson "<后续改进一句>"] \
   [--text "<单行摘要>"]
@@ -232,7 +232,6 @@ node scripts/log-orchestration.js --skill generate-document \
     3. 对比用户输入与既有 `01_需求文档.md`，识别**差异域**：新增/修改/删除的用户故事、验收标准、功能点
     4. 产出**更新影响表**：标记哪些下游文件（02/03/04/05/07）需要重写、哪些仅需刷新元数据
 - **必须调用 `spec-retriever`**：根据文档类型和关键词智能检索适用的 `rules/`、`shared/`、`checklists/` 规范集合，替代全量盲读
-- `spec-retriever` 先读取 `agents/memory/spec-retriever.md` 获取历史检索经验
 - 产出：功能名、规范集、上游文档清单、**既有文档存在性、更新影响表（更新模式）**
 
 ### 步骤 2：上游 Grounding + 影响分析
@@ -240,7 +239,6 @@ node scripts/log-orchestration.js --skill generate-document \
 - 按依赖顺序读取前一阶段文档（01→02→03）；设计文档同时阅读相关源码
 - **必须调用 `impact-analyst`**（仅需求任务和设计文档）：
   - 先读取 `../../shared/impact-analysis-contract.md`
-  - 先读取 `agents/memory/impact-analyst.md` 获取历史分析经验
   - 执行全项目影响链闭合分析，产出四个部分：搜索词与改动点清单、改动点影响链、依赖闭合摘要、未覆盖风险
   - **影响链分析结果必须写入**需求任务第 6 章 / 设计文档第 5 章
 - 产出：事实-来源映射表、影响链闭合
@@ -248,7 +246,6 @@ node scripts/log-orchestration.js --skill generate-document \
 ### 步骤 3：专家生成
 
 - **必须调用 `architect`**（设计文档生成前）：
-  - 先读取 `agents/memory/architect.md` 获取历史架构决策
   - 回答 5 个必答问题后，其模块划分、接口规范、数据流方案**必须采纳到**设计文档架构设计章节
 - **必须调用 `planner`**（设计文档生成前）：
   - 回答必答问题后，其实施策略与风险清单**必须采纳到**设计文档
@@ -290,14 +287,13 @@ node scripts/log-orchestration.js --skill generate-document \
 - 无据可依的章节标注"待补充"
 - 版本信息头部填写实际值（大模型名称、AI 工具名称）
 - **凡在本次步骤中写入或修改了含 Mermaid 图源代码块的 Markdown（含周报、项目初始化等任意产出路径），在该文件进入下一门禁前必须先调用 `mermaid-expert`**：
-  - 调用前读取 `agents/memory/mermaid-expert.md`
   - 按代理契约输出修复后的完整代码块并**写回同一文件**；禁止跳过仅口头宣称「已检查」
   - 无 Mermaid 块的文档可跳过本代理
 - **设计文档生成后必须调用 `code-reviewer` 审查架构一致性**（在含图文档已通过 `mermaid-expert` 之后）：
   - P0 问题必须修复后再保存
   - P1/P2 问题记录但不阻断
 - 自检：加载 `checklists/<类型>.md`，P0 全部通过才保存为通过状态；未通过最多自修复 1 轮，仍不通过也必须保存并标注
-- **必须调用 `quality-tracker`**：将本次 P0/P1/P2 统计追加到 `agents/memory/quality-tracker.md`
+- **必须调用 `quality-tracker`**：统计本次 P0/P1/P2 数据
 - 产出：全文档编号集（新建）或增量更新后的全文档编号集（更新）
 
 ### 步骤 5：保存 + 知识策展
@@ -329,7 +325,7 @@ node scripts/log-orchestration.js --skill generate-document \
 
 #### 知识策展（两种模式均适用）
 
-- **必须调用 `knowledge-curator`**：策展本次任务的可复用知识到 `agents/memory/knowledge.md`
+- **必须调用 `knowledge-curator`**：整理本次任务的可复用知识
 - 更新模式下，优先追加「更新触发原因与级联影响」作为可复用经验
 
 ### 步骤 6：文档同步与通知（强制，所有命令适用）
