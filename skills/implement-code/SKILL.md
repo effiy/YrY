@@ -48,7 +48,7 @@ P1/P2 文档（缺失不阻断）：`01_需求文档.md`（背景与目标）、
 ### 阶段 1：预检 + 影响分析
 
 - 解析 `{功能名}`；git 仓库先就绪 `feat/<功能名>` 分支，再预检 P0 文档
-- **必须调用** `spec-retriever`（检索规范）→ `impact-analyst`（全项目影响链闭合分析，结果必须采纳）→ `architect`（架构确认）
+- **必须调用** `codes-retriever`（检索代码上下文）→ `code-impact-analyzer`（全项目代码影响链闭合分析，结果必须采纳）→ `doc-impact-analyzer`（文档影响追踪：反向依赖、交叉引用、示例代码时效）→ `codes-builder`（架构确认与实施策略验证）
 - 退出：P0 文档齐全 + 影响链闭合 + 架构确认
 
 ### 阶段 2：代码实施
@@ -70,7 +70,7 @@ P1/P2 文档（缺失不阻断）：`01_需求文档.md`（背景与目标）、
 
 - 生成 `06_实施总结.md`（结构见 `rules/process-summary.md`）
 - 回写 `01/02/03/04/05/07` 的实施状态
-- 调用 `quality-tracker`（统计 P0/P1/P2）→ `knowledge-curator`（提取可复用知识）
+- 调用 `doc-quality-tracker`（统计 P0/P1/P2 + 趋势分析 + 薄弱维度诊断 + 可操作建议）→ `docs-builder`（提取可复用知识，消费 `code-impl-reporter` 输出）
 - 执行 `import-docs` + `wework-bot`（通知含用时/会话用量/模型/工具/最后更新时间）
 - 退出：总结写入完成 + 状态回写完成 + 通知发送完成
 
@@ -78,13 +78,15 @@ P1/P2 文档（缺失不阻断）：`01_需求文档.md`（背景与目标）、
 
 | Agent | 触发阶段 | 采纳规则 |
 |-------|---------|---------|
-| `spec-retriever` | 1 | 返回规范列表用于后续步骤 |
-| `impact-analyst` | 1 | 影响链分析结果必须采纳 |
-| `architect` | 1 | 架构方案必须与项目约定一致 |
+| `codes-retriever` | 1 | 返回代码上下文列表用于后续步骤 |
+| `code-impact-analyzer` | 1/3/4 | 代码影响链分析结果必须采纳 |
+| `doc-impact-analyzer` | 1/3/4 | 文档影响追踪结果必须采纳（反向依赖、交叉引用、示例代码同步任务） |
+| `codes-builder` | 1 | 架构方案与实施策略必须与项目约定一致 |
 | `code-reviewer` | 2（每模块）+ 3（全量） | P0 必须修复；P1/P2 记录不阻断 |
 | 项目特有 agent | 3 | P0 必须修复 |
-| `quality-tracker` | 4 | 统计追加到记忆文件 |
-| `knowledge-curator` | 4 | 知识提取到记忆文件 |
+| `doc-quality-tracker` | 4 | 统计追加到记忆文件；趋势分析和薄弱维度识别须采纳 |
+| `docs-builder` | 4 | 知识提取到记忆文件；须消费 `code-impl-reporter` 输出 |
+| `code-impl-reporter` | 4 | 实施总结写入 `06_实施总结.md` |
 
 ## 停止条件
 
