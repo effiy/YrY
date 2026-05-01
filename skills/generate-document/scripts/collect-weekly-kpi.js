@@ -16,6 +16,7 @@
  *   --git-only      仅输出 Git 统计，跳过 docs/ 扫描
  *   --docs-only     仅输出 docs/ KPI 汇总，跳过 Git 统计
  *   --with-logs     同时输出关键节点与编排日志汇总（调用 collect-weekly-logs.js）
+ *   --with-memory   同时输出 execution memory 统计（本周新增记录数、高频问题模式 Top3）
  *
  * 退出码：
  *   0 成功
@@ -43,6 +44,7 @@ function printHelp(stream) {
   --git-only      仅输出 Git 统计
   --docs-only     仅输出 docs/ KPI 汇总
   --with-logs     同时输出关键节点与编排日志汇总
+  --with-memory   同时输出 execution memory 统计
 
 示例:
   node scripts/collect-weekly-kpi.js
@@ -56,7 +58,7 @@ function usage() {
 }
 
 function parseArgs(argv) {
-  const out = { week: null, json: false, output: null, gitOnly: false, docsOnly: false, withLogs: false };
+  const out = { week: null, json: false, output: null, gitOnly: false, docsOnly: false, withLogs: false, withMemory: false };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--help' || a === '-h') {
@@ -69,6 +71,7 @@ function parseArgs(argv) {
     else if (a === '--git-only') out.gitOnly = true;
     else if (a === '--docs-only') out.docsOnly = true;
     else if (a === '--with-logs') out.withLogs = true;
+    else if (a === '--with-memory') out.withMemory = true;
     else usage();
   }
   return out;
@@ -272,9 +275,23 @@ function collectGitStats(weekRange) {
   };
 }
 
+function collectMemoryStats(weekRange) {
+  const memoryScript = path.join(__dirname, 'execution-memory.js');
+  const weekArg = `--week ${weekRange.start}`;
+  try {
+    const out = execSync(`node "${memoryScript}" stats ${weekArg} --json`, {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'ignore'],
+    }).trim();
+    return JSON.parse(out);
+  } catch {
+    return null;
+  }
+}
+
 // ---------- 输出格式化 ----------
 
-function formatMarkdown(featureResult, gitResult) {
+function formatMarkdown(featureResult, gitResult, memoryResult) {
   const { features, note } = featureResult;
   const lines = [];
 
@@ -348,10 +365,26 @@ function formatMarkdown(featureResult, gitResult) {
     }
   }
 
+  // Execution memory 统计
+  if (memoryResult) {
+    lines.push('## Execution Memory 统计');
+    lines.push('');
+    lines.push(`- **本周新增记录数**: ${memoryResult.total || 0}`);
+    lines.push(`- **阻断次数**: ${memoryResult.blocked || 0}`);
+    lines.push(`- **变更级别分布**: T1=${memoryResult.changeLevels?.T1 || 0}, T2=${memoryResult.changeLevels?.T2 || 0}, T3=${memoryResult.changeLevels?.T3 || 0}`);
+    if (memoryResult.topDocTypeIssues && memoryResult.topDocTypeIssues.length > 0) {
+      lines.push('- **高频问题模式 Top3**:');
+      memoryResult.topDocTypeIssues.slice(0, 3).forEach(([k, v]) => {
+        lines.push(`  - ${k}: ${v} 次`);
+      });
+    }
+    lines.push('');
+  }
+
   return lines.join('\n');
 }
 
-function formatJson(featureResult, gitResult) {
+function formatJson(featureResult, gitResult, memoryResult) {
   return JSON.stringify(
     {
       weekRange: gitResult.weekRange,
@@ -365,6 +398,7 @@ function formatJson(featureResult, gitResult) {
       },
       features: featureResult.features,
       note: featureResult.note,
+      memory: memoryResult,
     },
     null,
     2
@@ -390,6 +424,7 @@ function main() {
 
   let featureResult = { features: [], note: '跳过 docs/ 扫描' };
   let gitResult = { weekRange, commitCount: 0, filesChanged: 0, insertions: 0, deletions: 0, authors: [] };
+  let memoryResult = null;
 
   if (!args.gitOnly) {
     featureResult = scanAllFeatures();
@@ -397,8 +432,11 @@ function main() {
   if (!args.docsOnly) {
     gitResult = collectGitStats(weekRange);
   }
+  if (args.withMemory) {
+    memoryResult = collectMemoryStats(weekRange);
+  }
 
-  let output = args.json ? formatJson(featureResult, gitResult) : formatMarkdown(featureResult, gitResult);
+  let output = args.json ? formatJson(featureResult, gitResult, memoryResult) : formatMarkdown(featureResult, gitResult, memoryResult);
 
   if (args.withLogs) {
     const logsScript = path.join(__dirname, 'collect-weekly-logs.js');

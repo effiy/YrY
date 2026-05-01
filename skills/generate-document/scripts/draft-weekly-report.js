@@ -81,6 +81,43 @@ function runCollectLogs(week) {
   }
 }
 
+function runSelfImprove(weekRange) {
+  const script = path.join(SCRIPT_DIR, 'self-improve.js');
+  const since = weekRange.start;
+  try {
+    const out = execSync(`node "${script}" --since ${since} --json`, {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'ignore'],
+    }).trim();
+    const data = JSON.parse(out);
+    if (!data.proposals || data.proposals.length === 0) {
+      return '\n---\n\n## 系统自改进提案\n\n> 当前 execution memory 无记录，待积累数据后自动生成改进提案。';
+    }
+    const lines = [];
+    lines.push('---');
+    lines.push('');
+    lines.push('## 系统自改进提案');
+    lines.push('');
+    lines.push(`> **数据来源**: execution-memory（${data.record_count} 条记录）+ 编排日志 + 关键节点`);
+    lines.push(`> **分析周期**: ${data.since} 至今`);
+    lines.push('');
+    lines.push('| 优先级 | 类型 | 问题来源 | 改进描述 | 目标文件 | 验证方式 | 时间维度 | 专业深度 |');
+    lines.push('|--------|------|----------|----------|----------|----------|----------|----------|');
+    data.proposals.forEach((p) => {
+      const desc = p.description.replace(/\|/g, '\\|').replace(/\n/g, ' ');
+      const source = p.problem_source.replace(/\|/g, '\\|');
+      const target = p.target_file.replace(/\|/g, '\\|');
+      const val = p.validation.replace(/\|/g, '\\|');
+      lines.push(`| ${p.priority} | ${p.type} | ${source} | ${desc} | ${target} | ${val} | ${p.time_dimension} | ${p.depth} |`);
+    });
+    lines.push('');
+    lines.push('> **执行建议**：按优先级从高到低审阅提案，人工确认后手动修改目标文件，下轮 delivery 中观察验证指标变化。');
+    return lines.join('\n');
+  } catch {
+    return '\n---\n\n## 系统自改进提案\n\n> self-improve 引擎运行失败，待排查后手动触发。';
+  }
+}
+
 function analyzeGitCommits(weekRange) {
   const since = `${weekRange.start}T00:00:00`;
   const until = `${weekRange.end}T23:59:59`;
@@ -410,7 +447,13 @@ function main() {
   const gitAnalysis = analyzeGitCommits(weekRange);
 
   // 4. 生成周报草稿
-  const report = generateReport(weekRange, kpiData, logsData, gitAnalysis);
+  let report = generateReport(weekRange, kpiData, logsData, gitAnalysis);
+
+  // 5. 触发自我改进引擎并追加到周报
+  const selfImproveOutput = runSelfImprove(weekRange);
+  if (selfImproveOutput) {
+    report += '\n\n' + selfImproveOutput;
+  }
 
   if (args.output) {
     const dir = path.dirname(args.output);

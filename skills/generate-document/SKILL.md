@@ -21,6 +21,7 @@ description: |
 7. **中断与完成必须通知** — 流程结束必须先 `import-docs` 再 `wework-bot`，不得省略、颠倒或静默降级
 8. **自检闭环** — P0 全部通过才保存为通过状态；最多自修复 1 轮；仍不通过也必须保存，顶部标注未通过项
 9. **一次执行到底** — 默认不中断，缺失信息写"待确认"继续推进；仅命中阻断门槛才打断，打断后按原则 #7 收尾
+10. **持续进化** — 每次执行沉淀记忆，每周扫描改进，规则与检查单随证据进化。`execution-memory` 记录真实执行数据，`self-improve` 引擎从数据中提取改进提案，人类审阅后手动采纳
 
 ### 阻断门槛与降级
 
@@ -52,11 +53,13 @@ description: |
 
 ---
 
-## 5 步工作流
+## 5+1 步工作流
 
 > 详细步骤见 [workflow.md](./rules/workflow.md)
 
 示例：`/generate-document 用户登录-支持手机号验证码登录`
+
+工作流含 **Step 0（智能规划）+ 步骤 1-5**。Step 0 基于 `execution-memory` 历史数据生成自适应执行计划，为后续步骤提供预判输入。
 
 ---
 
@@ -73,6 +76,8 @@ description: |
 > 详细规范见 [weekly.md](./rules/weekly.md)
 
 示例：`/generate-document weekly` 或 `/generate-document weekly 2026-04-29`
+
+周报生成完成后自动触发 `self-improve.js`，输出"系统自改进提案"并追加到周报中。
 
 ---
 

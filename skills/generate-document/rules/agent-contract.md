@@ -11,6 +11,7 @@ paths:
 
 | Agent | 功能文档 | init | weekly | from-weekly |
 |-------|---------|------|--------|-------------|
+| `doc-planner` | ✅步骤0 | — | — | ✅步骤0 |
 | `docs-retriever` | ✅步骤1 | ✅步骤1 | — | ✅步骤1 |
 | `doc-impact-analyzer` | ✅步骤2 | — | — | ✅步骤2 |
 | `codes-builder` | ✅步骤3 | ✅步骤3 | — | ✅步骤3 |
@@ -20,11 +21,15 @@ paths:
 | `doc-markdown-tester` | ✅步骤4 | ✅步骤4 | ✅步骤4 | ✅步骤4 |
 | `doc-quality-tracker` | ✅步骤4 | ✅步骤4 | ✅步骤4 | ✅步骤4 |
 | `docs-builder` | ✅步骤5 | ✅步骤5 | ✅步骤5 | ✅步骤5 |
+| `execution-memory`* | ✅阶段5后 | ✅阶段5后 | — | ✅阶段5后 |
+
+> `execution-memory` 为"伪 agent"（脚本调用），无 JSON 契约要求，但须按规范写入结构化数据。
 
 ## 2. 逐 Agent 契约
 
 | Agent | 阶段 | 职责 | 采纳规则 | 跳过条件 |
 |-------|------|------|----------|----------|
+| `doc-planner` | 0 | 基于 execution memory 生成自适应执行计划 | 建议变更级别和 agent 策略须作为后续步骤参考输入 | execution memory 不存在或为空时可跳过（须标注） |
 | `docs-retriever` | 1 | 检索 rules/shared/checklists 规范 | 返回列表必须用于后续加载 | 空列表可继续（标注"未返回"），但不得跳过调用 |
 | `doc-impact-analyzer` | 2(仅02/03) | 全项目影响链闭合 | 结果写入02第6章/03第5章 | 不闭合时写「未覆盖风险」标注"待人工确认" |
 | `codes-builder` | 3(仅03) | 架构设计与代码结构分析 | 结论须采纳到设计文档 | **不得跳过**；失败走阻断流程 |
@@ -37,10 +42,12 @@ paths:
 
 ## 3. 调用顺序约束
 
-1. `doc-mermaid-expert` 必在 `doc-reviewer` 前
-2. `doc-impact-analyzer` 必在 `codes-builder`/`doc-architect` 前
-3. `codes-builder` 和 `doc-architect` 可并行
-4. 阶段绑定严格执行
+1. `doc-planner` 必在 `docs-retriever` 之前（步骤 0 在步骤 1 前）
+2. `doc-mermaid-expert` 必在 `doc-reviewer` 前
+3. `doc-impact-analyzer` 必在 `codes-builder`/`doc-architect` 前
+4. `codes-builder` 和 `doc-architect` 可并行
+5. `execution-memory` 写入必在 `docs-builder` 之后、`import-docs` 之前
+6. 阶段绑定严格执行
 
 ## 4. 门禁校验
 
@@ -60,3 +67,5 @@ paths:
 | Skill/Agent 边界 | `../../shared/agent-skill-boundaries.md` |
 | 阶段绑定与门禁 | `rules/orchestration.md §6` |
 | 各 Agent 必答问题 | `../../agents/<name>.md` |
+| 执行记忆格式 | `scripts/execution-memory.js` 数据结构注释 |
+| 自我改进输出 | `scripts/self-improve.js` 提案格式 |

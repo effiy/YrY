@@ -25,12 +25,13 @@ paths:
 
 | 阶段 | 名称 | 目标 | 解锁条件 |
 |------|------|------|----------|
+| 0 | 自适应规划 | 调用 `doc-planner` 生成执行计划 | execution memory 已读取，计划已输出（或已标注"跳过"） |
 | 1 | 解析 + 规范检索 | 解析功能名，调用 `docs-retriever` | 功能名/init 可定位，规范列表已返回 |
 | 2 | 上游 Grounding + 影响分析 | 读取上游文档，`doc-impact-analyzer` 影响链闭合（init：扫描项目代码和配置） | 事实-来源映射完整，影响链写入文档 |
 | 3 | 专家生成 | `codes-builder` + `doc-architect`（init：推断架构模式） | 模块划分、接口规范确认 |
 | 4 | 逐文档生成 + 自检 | 按规范生成文档；三层审查门禁 + `doc-quality-tracker` | 01-05, 07 生成，门禁通过 |
-| 5 | 保存 + 知识策展 | 保存文档，`docs-builder` 策展知识 | 文档已保存到 `docs/<功能名>/` |
-| 6 | 文档同步与通知 | **先 `import-docs` 再 `wework-bot`**（强制适用所有命令） | import-docs 已记录真实结果，wework-bot 已按模板发送或记录失败 |
+| 5 | 保存 + 知识策展 + 记忆沉淀 | 保存文档，`docs-builder` 策展知识，**`execution-memory.js` 写入本次记录** | 文档已保存，执行记忆已追加 |
+| 6 | 文档同步与通知 + 自我改进 | **先 `import-docs` 再 `wework-bot`**；`weekly` 命令完成后触发 `self-improve.js` | import-docs 已记录真实结果，wework-bot 已发送，weekly 含自改进提案 |
 
 ### 2.2 更新模式（按变更级别跳转）
 
@@ -48,6 +49,7 @@ paths:
 - T3 变更：与新建模式一致，全量执行
 - **级别判定不可降级**：若用户输入明确涉及功能边界变化，必须按 T3 处理，不得为省时间而降级
 - **规范复用**：更新模式下若文档类型未变，阶段 1 可复用上轮 `docs-retriever` 返回的规范集，仅需补充新增规范
+- **智能精简（基于 planner）**：若 `doc-planner` 历史数据显示同类功能从未触发阶段 2/3 的阻断或影响链问题，且本轮变更明确为 T1/T2，可在编排日志中标注"快速模式"，精简阶段 2-3 的调用范围，但阶段 4 审查不得精简
 
 ## 3. 阻断点
 
@@ -101,3 +103,23 @@ node skills/implement-code/scripts/validate-agent-output.js --agent <agent名> -
 1. 每次 skill/agent/MCP/memory/shared 交互后立即追加日志
 2. 工具：`node scripts/log-orchestration.js`（参数见 `orchestration-logging.md §1.3`）
 3. 阻断兜底：对已发生交互仍须补齐日志后再结束
+
+## 8. 执行记忆（阶段 5 强制）
+
+每次功能文档执行完毕后，阶段 5 保存文档后须调用 `execution-memory.js` 写入本次记录：
+
+```bash
+node skills/generate-document/scripts/execution-memory.js write /tmp/session-<feature>.json
+```
+
+记录内容须包含：功能指纹、实际变更级别、调用 agent 列表、质量问题（P0/P1/P2）、bad cases、是否阻断。
+
+## 9. 自我改进触发（weekly 命令）
+
+`weekly` 命令在阶段 6 完成后，须自动触发 `self-improve.js`：
+
+```bash
+node skills/generate-document/scripts/self-improve.js --since <本周一起始日期> --output docs/周报/<周>/self-improve-proposal.md
+```
+
+输出追加到周报末尾作为"系统自改进提案"小节。

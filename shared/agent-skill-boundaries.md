@@ -16,13 +16,14 @@
 | `e2e-testing` / `code-e2e-tester` | 定义 E2E 测试方案的生成方法和产物结构 | 作为 E2E 专家回答场景级测试问题 |
 | `find-skills` | 发现当前仓库内真实存在的 skill | 不适用 |
 | `find-agents` | 发现当前仓库内真实存在的 agent，并给出组合建议 | 不适用 |
-| `generate-document` | 负责文档生成主流程与规则装配 | 可按场景调用多个 agent 作为候选输入 |
+| `generate-document` | 负责文档生成主流程与规则装配（含 Step 0 自适应规划） | 可按场景调用多个 agent 作为候选输入 |
 | `implement-code` | 负责代码实施主流程与门禁规则 | 可按场景调用多个 agent 作为候选输入 |
 
 ## generate-document 代理清单
 
 | Agent | 阶段 | 职责 |
 |-------|------|------|
+| `doc-planner` | 0 | 自适应规划：基于 execution memory 历史数据生成执行计划，预判变更级别与风险 |
 | `docs-retriever` | 1 | 规范检索：根据文档类型和关键词返回适用的 rules/、shared/、checklists/ 规范集合 |
 | `doc-impact-analyzer` | 2 | 影响链分析：全项目搜索与依赖闭合分析，输出四表（搜索词清单、影响链、闭合摘要、未覆盖风险），覆盖代码+文档双面影响 |
 | `doc-architect` | 3 | 文档架构设计：回答 5 个必答问题，输出与项目约定一致的模块划分、接口规范、数据流方案 |
