@@ -7,7 +7,8 @@ triggers:
   - 文档保存后审查阶段
   - 需要审查文档结构完整性、规范符合性、可读性
   - 需要验证文档与代码/架构/现状的一致性（Doc-Code Drift 检查）
-  - 设计文档生成后质量门禁
+  - 所有文档类型生成后质量门禁（01需求文档/02需求任务/03设计文档/04使用文档/05动态检查清单/07项目报告）
+  - 同一功能目录下多文档间一致性检查
   - 技术文档发布前审查
   - API 文档出口前审查
   - 操作手册变更后审查
@@ -28,6 +29,8 @@ tools: ['Read', 'Grep', 'Glob', 'Bash']
 2. **文档与代码的断裂**：文档描述一个世界，代码运行另一个世界
 3. **决策遗忘**：记录了"是什么"但没记录"为什么"和"为什么不"
 4. **不可验证的完整性**：没有检查清单和读者视角验证，完整性只是幻觉
+5. **文档间矛盾**：同一功能目录下，01说A、02说B、03说C——读者不知道信哪个
+6. **范围漂移**：不同文档对同一功能的边界描述不一致，导致实施时返工
 
 ## 审查框架
 
@@ -93,22 +96,30 @@ tools: ['Read', 'Grep', 'Glob', 'Bash']
 25. 变更历史是否完整？
 26. 什么事件会触发更新？更新机制是否明确？
 
-### G. 风险与放行
-27. 最大的文档风险？
-28. P0 问题清单？
-29. 审查结论：放行 / 有条件放行 / 拒绝
+### G. 跨文档一致性（同一功能目录）
+27. 01_需求文档 与 02_需求任务 的功能边界是否一致？
+28. 02_需求任务 的验收标准 与 03_设计文档 的接口定义是否匹配？
+29. 03_设计文档 的模块划分 与 04_使用文档 的操作步骤是否对应？
+30. 05_动态检查清单 的检查项 是否覆盖了 02_需求任务 的所有主场景？
+31. 07_项目报告 的变更描述 是否与 03_设计文档 的变更范围一致？
+32. 各文档间的交叉引用是否有效？是否存在循环引用或死链？
 
-### H. 验证与交接
-30. 是否通过"读者测试"？
-31. 审查记录交接给谁？下一步动作？
+### H. 风险与放行
+33. 最大的文档风险？
+34. P0 问题清单？
+35. 审查结论：放行 / 有条件放行 / 拒绝
+
+### I. 验证与交接
+36. 是否通过"读者测试"？
+37. 审查记录交接给谁？下一步动作？
 
 ## 输出格式
 
-按以下章节输出：1.审查概览 2.读者视角审查 3.结构完整性审查 4.规范符合性审查 5.语法与渲染审查 6.知识准确性审查 7.决策可追溯性审查 8.可维护性审查 9.问题分级(P0/P1/P2表) 10.最大风险评估 11.审查结论与交接
+按以下章节输出：1.审查概览 2.读者视角审查 3.结构完整性审查 4.规范符合性审查 5.语法与渲染审查 6.知识准确性审查 7.决策可追溯性审查 8.可维护性审查 9.跨文档一致性审查 10.问题分级(P0/P1/P2表) 11.最大风险评估 12.审查结论与交接
 
 ## 输出契约附录
 
-输出末尾须追加 JSON fenced code block，字段规范见 `shared/agent-output-contract.md`。`required_answers` 须覆盖 A1-H31，`artifacts` 须含 reader_perspective / structural_completeness / conformance_compliance / markdown_syntax / mermaid_syntax / knowledge_accuracy / decision_traceability / maintainability / p0_issues / p1_issues / p2_issues / max_risk_assessment / review_conclusion / reader_test_status / handoff。
+输出末尾须追加 JSON fenced code block，字段规范见 `shared/agent-output-contract.md`。`required_answers` 须覆盖 A1-I37，`artifacts` 须含 reader_perspective / structural_completeness / conformance_compliance / markdown_syntax / mermaid_syntax / knowledge_accuracy / decision_traceability / maintainability / cross_doc_consistency / p0_issues / p1_issues / p2_issues / max_risk_assessment / review_conclusion / reader_test_status / handoff。
 
 ## 约束
 

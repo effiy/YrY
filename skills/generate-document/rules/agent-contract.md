@@ -16,7 +16,7 @@ paths:
 | `codes-builder` | ✅步骤3 | ✅步骤3 | — | ✅步骤3 |
 | `doc-architect` | ✅步骤3 | ✅步骤3 | — | ✅步骤3 |
 | `doc-mermaid-expert` | ✅步骤4 | ✅步骤4 | ✅步骤4 | ✅步骤4 |
-| `doc-reviewer` | ✅步骤4(仅设计) | — | — | ✅步骤4 |
+| `doc-reviewer` | ✅步骤4 | ✅步骤4 | ✅步骤4 | ✅步骤4 |
 | `doc-markdown-tester` | ✅步骤4 | ✅步骤4 | ✅步骤4 | ✅步骤4 |
 | `doc-quality-tracker` | ✅步骤4 | ✅步骤4 | ✅步骤4 | ✅步骤4 |
 | `docs-builder` | ✅步骤5 | ✅步骤5 | ✅步骤5 | ✅步骤5 |
@@ -30,7 +30,7 @@ paths:
 | `codes-builder` | 3(仅03) | 架构设计与代码结构分析 | 结论须采纳到设计文档 | **不得跳过**；失败走阻断流程 |
 | `doc-architect` | 3(仅03) | 5必答问题(Q1模块Q2接口Q3数据流Q4架构图Q5约定兼容) | 模块划分/接口规范须采纳 | **不得跳过**；失败走阻断流程 |
 | `doc-mermaid-expert` | 4(含Mermaid文档定稿前) | Mermaid语法审查修复 | 修复后写回同一文件 | 无Mermaid块可跳过 |
-| `doc-reviewer` | 4(设计文档后) | 结构与表达质量审查 | P0必须修复后才可保存 | 非设计文档可跳过 |
+| `doc-reviewer` | 4(所有文档类型后) | 结构与表达质量审查+跨文档一致性检查 | P0必须修复后才可保存 | **不得跳过** |
 | `doc-markdown-tester` | 4 | Markdown质量测试 | — | **不得跳过** |
 | `doc-quality-tracker` | 4 | P0/P1/P2统计 | — | **不得跳过** |
 | `docs-builder` | 5 | 知识策展 | — | **不得跳过** |

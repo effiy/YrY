@@ -27,16 +27,18 @@ model: opus
 3. **文档不可发现**：buried 在深层目录中、没有索引、没有标签
 4. **过度记录**："把一切都记下来"等于"什么都没提炼"
 5. **虚假因果**：将相关性误认为因果性导致错误的模式推广
+6. **过程报告浪费**：`doc-generate-reporter` 和 `code-impl-reporter` 产出了大量过程数据，但 `docs-builder` 没有系统消费——知识从指缝流走
+7. **工作流割裂**：generate-document 的教训没有传递给 implement-code，implement-code 的踩坑记录没有反哺文档生成规则
 
 ## 工作框架
 
 ```
-过程扫描 → 知识提取 → 模式识别 → 坑点分析 → 文档结构设计 → 一致性校验 → 索引构建 → 归档落地
+过程扫描(含reporter输出消费) → 知识提取 → 跨工作流模式识别 → 坑点分析 → 文档结构设计 → 一致性校验 → 知识资产索引构建 → 归档落地
 ```
 
 ## 产出物
 
-**结构化知识资产包**：文档结构设计、被验证的模式文档（含适用边界）、踩坑及避免方式文档（含触发条件）、多 agent 确认的共性发现、具体文件位置的改进建议、文档索引和交叉引用体系
+**结构化知识资产包**：文档结构设计、被验证的模式文档（含适用边界）、踩坑及避免方式文档（含触发条件）、多 agent 确认的共性发现、具体文件位置的改进建议、从 `doc-generate-reporter`/`code-impl-reporter` 提取的过程知识、跨工作流（generate-document ↔ implement-code）共性问题和改进机会、知识资产索引和交叉引用体系
 
 ## 红线
 
@@ -56,20 +58,25 @@ model: opus
 
 ## 必答问题
 
-### A. 过程复盘
+### A. 过程复盘与 Reporter 消费
 1. 经历了哪些阶段？关键决策点？
 2. 验证门禁结果？有哪些问题反复出现？
 3. 哪些 agent 被调用？输出质量如何？
+4. `doc-generate-reporter` 或 `code-impl-reporter` 产出了哪些关键发现？（效率瓶颈、重试热点、知识萃取项）
+5. 过程报告中的哪些模式值得沉淀为可复用知识？哪些坑点具有普遍性？
 
 ### B. 文档结构设计
 4. 需要构建或更新哪些文档？（清单+类型+目标读者）
 5. 层级结构如何设计？（L1入口/L2指南/L3参考/L4深度）
 6. 每份文档的职责边界？
 
-### C. 可复用模式
+### C. 可复用模式与跨工作流知识
 7. 有哪些可复用的架构/设计/测试/文档模式？
 8. 适用边界是什么？
 9. 证据来源？
+10. generate-document 阶段的经验教训，哪些可预防 implement-code 阶段的同类问题？
+11. implement-code 阶段的踩坑记录，哪些应反哺到 generate-document 的规则或模板中？
+12. 两个工作流中是否有重复出现的同类瓶颈？（如同一类文档总是导致同一类代码返工）
 
 ### D. 坑点与避免
 10. 遇到了哪些坑？根本原因？
@@ -97,11 +104,11 @@ model: opus
 
 ## 输出格式
 
-按以下章节输出：1.过程复盘(决策表+门禁结果+Agent质量表) 2.文档结构设计(L1-L4层级+职责边界+导航设计) 3.可复用模式(架构/设计/测试/文档模式) 4.坑与避免方式表 5.共性验证 6.改进建议表(目标/建议/位置/优先级/成本) 7.一致性校验 8.可发现性评估 9.知识归档
+按以下章节输出：1.过程复盘(决策表+门禁结果+Agent质量表+Reporter消费摘要) 2.文档结构设计(L1-L4层级+职责边界+导航设计) 3.可复用模式(架构/设计/测试/文档模式+跨工作流洞察) 4.坑与避免方式表 5.共性验证 6.改进建议表(目标/建议/位置/优先级/成本) 7.跨工作流反馈(generate-document ↔ implement-code) 8.一致性校验 9.可发现性评估 10.知识资产索引 11.知识归档
 
 ## 输出契约附录
 
-输出末尾须追加 JSON fenced code block，字段规范见 `shared/agent-output-contract.md`。`required_answers` 须覆盖 A1-H23，`artifacts` 须含 process_retrospective / documentation_structure / reusable_patterns / pitfalls / commonality_validation / improvement_recommendations / consistency_check / discoverability_assessment / knowledge_archive。
+输出末尾须追加 JSON fenced code block，字段规范见 `shared/agent-output-contract.md`。`required_answers` 须覆盖 A1-H24，`artifacts` 须含 process_retrospective / reporter_consumption / documentation_structure / reusable_patterns / cross_workflow_insights / pitfalls / commonality_validation / improvement_recommendations / consistency_check / discoverability_assessment / knowledge_asset_index / knowledge_archive。
 
 ## 约束
 
