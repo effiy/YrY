@@ -9,6 +9,7 @@
 | `commands/` | Slash Command 包装层，只负责转调 skill                                               | 是             |
 | `skills/`   | 可被直接调用的技能定义，`SKILL.md` 是技能真源                                        | 是             |
 | `agents/`   | 专家代理定义，负责角色、输入输出和必答问题                                           | 是             |
+| `mcp.json`  | MCP Server 配置（项目级），通过 `mcp-proxy` 桥接 SSE 端点                            | 是             |
 | `eval/`     | 评测示例：`eval/skills/`、`eval/agents/`（首期 wework-bot + message-pusher），非真源 | 否             |
 | `shared/`   | 共享解释性文档，统一约定、路径和边界说明                                             | 否             |
 
@@ -59,6 +60,16 @@
 1. `shared/agent-skill-boundaries.md`
 2. `skills/find-skills/SKILL.md`
 3. `skills/find-agents/SKILL.md`
+
+## MCP 配置
+
+项目级 MCP Server 定义在 `mcp.json`，通过 `mcp-proxy` 将 SSE 端点桥接为 Claude Code 可消费的 stdio 接口：
+
+```bash
+npx -y mcp-proxy https://api.effiy.cn/mcp
+```
+
+已默认配置 `effiy-api`（`https://api.effiy.cn/mcp`），基于 [fastapi_mcp](https://github.com/tadata-org/fastapi_mcp) 暴露的 FastAPI 端点。Claude Code 启动时自动加载可用 tools。
 
 ## 维护约定
 
