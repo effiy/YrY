@@ -3,16 +3,17 @@
 /**
  * execution-memory
  *
- * 执行记忆系统：记录每次 generate-document 功能文档执行的完整上下文与结果，
- * 供 doc-planner 查询历史相似案例，供 self-improve.js 分析改进模式。
+ * Execution memory system: records the full context and result of each generate-document
+ * feature document execution, for doc-planner to query historical similar cases,
+ * and for self-improve.js to analyze improvement patterns.
  *
- * 用法：
+ * Usage:
  *   node scripts/execution-memory.js write <json-file>
  *   node scripts/execution-memory.js query [--feature <name>] [--keyword <k>] [--limit <n>]
  *   node scripts/execution-memory.js stats [--week <YYYY-MM-DD>]
  *   node scripts/execution-memory.js ls [--limit <n>]
  *
- * 存储位置：docs/.memory/execution-memory.jsonl（追加写入，每行一个 JSON 对象）
+ * Storage location: docs/.memory/execution-memory.jsonl (append-only, one JSON object per line)
  */
 
 const fs = require('fs');
@@ -24,22 +25,22 @@ const MEMORY_DIR = path.resolve('docs', '.memory');
 const MEMORY_FILE = path.join(MEMORY_DIR, 'execution-memory.jsonl');
 
 function printHelp() {
-  console.log(`用法:
-  node scripts/execution-memory.js write <json-file>       写入单条记录
-  node scripts/execution-memory.js query [options]          查询历史记录
-  node scripts/execution-memory.js stats [options]          统计高频模式
-  node scripts/execution-memory.js ls [options]             列出最近记录
+  console.log(`Usage:
+  node scripts/execution-memory.js write <json-file>       Write a single record
+  node scripts/execution-memory.js query [options]          Query historical records
+  node scripts/execution-memory.js stats [options]          Stats on high-frequency patterns
+  node scripts/execution-memory.js ls [options]             List recent records
 
-选项:
-  --feature <name>   按功能名匹配
-  --keyword <k>      按关键词匹配（指纹、描述、bad case lesson）
-  --limit <n>        返回条数上限（默认 10）
-  --week <date>      按自然周过滤（YYYY-MM-DD）
-  --json             输出 JSON（默认 Markdown）
+Options:
+  --feature <name>   Match by feature name
+  --keyword <k>      Match by keyword (fingerprint, description, bad case lesson)
+  --limit <n>        Max results to return (default 10)
+  --week <date>      Filter by natural week (YYYY-MM-DD)
+  --json             Output JSON (default Markdown)
 
-示例:
+Examples:
   node scripts/execution-memory.js write /tmp/session.json
-  node scripts/execution-memory.js query --feature "用户登录" --limit 5
+  node scripts/execution-memory.js query --feature "User Login" --limit 5
   node scripts/execution-memory.js stats --week 2026-04-29 --json
 `);
 }
@@ -47,7 +48,7 @@ function printHelp() {
 function parseArgs(argv) {
   const out = { command: null, file: null, feature: null, keyword: null, limit: 10, week: null, json: false };
   const args = argv.slice(2);
-  if (args.length === 0) { printHelp(); process.exit(0); }
+  if (args.length === 0 || args[0] === '--help' || args[0] === '-h') { printHelp(); process.exit(0); }
   out.command = args[0];
   for (let i = 1; i < args.length; i++) {
     const a = args[i];
@@ -128,7 +129,7 @@ function scoreRelevance(record, featureName, keyword) {
 }
 
 async function cmdWrite(filePath) {
-  if (!filePath) { console.error('Error: write 命令需要 json-file 参数'); process.exit(1); }
+  if (!filePath) { console.error('Error: write command requires json-file argument'); process.exit(1); }
   const raw = await fsp.readFile(filePath, 'utf8');
   const record = JSON.parse(raw);
   if (!record.session_id) record.session_id = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -136,7 +137,7 @@ async function cmdWrite(filePath) {
   await ensureMemoryFile();
   const line = JSON.stringify(record);
   await fsp.appendFile(MEMORY_FILE, line + '\n', 'utf8');
-  console.log(`✓ 已写入执行记忆（session_id: ${record.session_id}）`);
+  console.log(`✓ Execution memory written (session_id: ${record.session_id})`);
 }
 
 async function cmdQuery(opts) {
@@ -150,25 +151,25 @@ async function cmdQuery(opts) {
     return;
   }
 
-  console.log(`# 执行记忆查询结果（共 ${filtered.length} 条）\n`);
+  console.log(`# Execution Memory Query Results (${filtered.length} records)\n`);
   if (filtered.length === 0) {
-    console.log('> 无匹配记录。');
+    console.log('> No matching records.');
     return;
   }
   filtered.forEach((r, i) => {
-    console.log(`## ${i + 1}. ${r.feature || '未命名'} · ${r.actual_change_level || '?'} · ${r.timestamp ? r.timestamp.slice(0, 10) : '未知日期'}`);
+    console.log(`## ${i + 1}. ${r.feature || 'Unnamed'} · ${r.actual_change_level || '?'} · ${r.timestamp ? r.timestamp.slice(0, 10) : 'Unknown date'}`);
     console.log(`- **session_id**: ${r.session_id}`);
-    console.log(`- **描述**: ${r.description || '无'}`);
-    console.log(`- **指纹**: ${(r.feature_fingerprint || []).join(', ') || '无'}`);
-    console.log(`- **变更级别**: 计划=${r.planned_change_level || '?'} / 实际=${r.actual_change_level || '?'}`);
-    console.log(`- **调用 agent**: ${(r.agents_called || []).join(', ') || '无'}`);
+    console.log(`- **Description**: ${r.description || 'None'}`);
+    console.log(`- **Fingerprint**: ${(r.feature_fingerprint || []).join(', ') || 'None'}`);
+    console.log(`- **Change level**: planned=${r.planned_change_level || '?'} / actual=${r.actual_change_level || '?'}`);
+    console.log(`- **Agents called**: ${(r.agents_called || []).join(', ') || 'None'}`);
     const p0 = r.quality_issues?.P0?.length || 0;
     const p1 = r.quality_issues?.P1?.length || 0;
     const p2 = r.quality_issues?.P2?.length || 0;
-    console.log(`- **质量问题**: P0=${p0} / P1=${p1} / P2=${p2}`);
-    if (r.was_blocked) console.log(`- **阻断**: ${r.block_reason || '未说明'}`);
+    console.log(`- **Quality issues**: P0=${p0} / P1=${p1} / P2=${p2}`);
+    if (r.was_blocked) console.log(`- **Blocked**: ${r.block_reason || 'Not specified'}`);
     if ((r.bad_cases || []).length > 0) {
-      console.log(`- **bad cases**:`);
+      console.log(`- **Bad cases**:`);
       r.bad_cases.forEach(b => console.log(`  - ${b.agent}: ${b.lesson}`));
     }
     console.log('');
@@ -217,18 +218,18 @@ async function cmdStats(opts) {
     return;
   }
 
-  console.log(`# 执行记忆统计${opts.week ? ' · ' + getNaturalWeekRange(new Date(opts.week)).range : ''}\n`);
-  console.log(`- **总记录数**: ${total}`);
-  console.log(`- **阻断次数**: ${blocked}`);
-  console.log(`- **变更级别分布**: T1=${changeLevels.T1}, T2=${changeLevels.T2}, T3=${changeLevels.T3}`);
-  console.log(`\n## Agent 调用频率`);
+  console.log(`# Execution Memory Statistics${opts.week ? ' · ' + getNaturalWeekRange(new Date(opts.week)).range : ''}\n`);
+  console.log(`- **Total records**: ${total}`);
+  console.log(`- **Blocked count**: ${blocked}`);
+  console.log(`- **Change level distribution**: T1=${changeLevels.T1}, T2=${changeLevels.T2}, T3=${changeLevels.T3}`);
+  console.log(`\n## Agent Invocation Frequency`);
   Object.entries(agentFreq).sort((a, b) => b[1] - a[1]).forEach(([a, c]) => console.log(`- ${a}: ${c}`));
-  console.log(`\n## 高频质量问题（文档类型::章节）`);
-  topDocTypeIssues.forEach(([k, c]) => console.log(`- ${k}: ${c} 次`));
-  console.log(`\n## 高频章节问题（章节::问题描述）`);
-  topSectionIssues.forEach(([k, c]) => console.log(`- ${k}: ${c} 次`));
-  console.log(`\n## 高频 bad case lessons（agent::lesson）`);
-  topLessons.forEach(([k, c]) => console.log(`- ${k}: ${c} 次`));
+  console.log(`\n## High-Frequency Quality Issues (doc type::section)`);
+  topDocTypeIssues.forEach(([k, c]) => console.log(`- ${k}: ${c} times`));
+  console.log(`\n## High-Frequency Section Issues (section::issue description)`);
+  topSectionIssues.forEach(([k, c]) => console.log(`- ${k}: ${c} times`));
+  console.log(`\n## High-Frequency Bad Case Lessons (agent::lesson)`);
+  topLessons.forEach(([k, c]) => console.log(`- ${k}: ${c} times`));
 }
 
 async function cmdLs(opts) {
@@ -238,11 +239,11 @@ async function cmdLs(opts) {
     console.log(JSON.stringify(filtered, null, 2));
     return;
   }
-  console.log(`# 最近 ${filtered.length} 条执行记忆\n`);
+  console.log(`# Recent ${filtered.length} Execution Memory Records\n`);
   filtered.forEach((r, i) => {
     const p0 = r.quality_issues?.P0?.length || 0;
-    const flag = r.was_blocked ? '❌阻断' : (p0 > 0 ? '⚠️P0' : '✅');
-    console.log(`${i + 1}. [${flag}] ${r.feature || '未命名'} · ${r.actual_change_level || '?'} · ${r.timestamp ? r.timestamp.slice(0, 10) : '?'}`);
+    const flag = r.was_blocked ? '❌ Blocked' : (p0 > 0 ? '⚠️ P0' : '✅');
+    console.log(`${i + 1}. [${flag}] ${r.feature || 'Unnamed'} · ${r.actual_change_level || '?'} · ${r.timestamp ? r.timestamp.slice(0, 10) : '?'}`);
   });
 }
 
@@ -254,7 +255,7 @@ async function main() {
     case 'stats': await cmdStats(opts); break;
     case 'ls': await cmdLs(opts); break;
     default:
-      console.error(`Error: 未知命令 ${opts.command}`);
+      console.error(`Error: unknown command ${opts.command}`);
       printHelp();
       process.exit(1);
   }

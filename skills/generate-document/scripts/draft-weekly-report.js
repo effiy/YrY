@@ -3,15 +3,15 @@
 /**
  * draft-weekly-report
  *
- * 目标：整合 collect-weekly-kpi.js 输出与 weekly-analyzer 分析框架，
- * 生成半自动化周报草稿 markdown，减少手动整理工作量。
+ * Goal: integrate collect-weekly-kpi.js output with the weekly-analyzer framework,
+ * generating a semi-automated weekly report draft markdown, reducing manual collation effort.
  *
- * 用法：
+ * Usage:
  *   node scripts/draft-weekly-report.js [--week <YYYY-MM-DD>] [--output <path>]
  *
- * 选项：
- *   --week <date>   指定日期，自动归到其所在自然周（默认今天）
- *   --output <path> 保存到文件（默认 stdout）
+ * Options:
+ *   --week <date>   Specify a date, automatically mapped to its natural week (default: today)
+ *   --output <path> Save to file (default: stdout)
  */
 
 const fs = require('fs');
@@ -26,16 +26,16 @@ function parseArgs(argv) {
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--help' || a === '-h') {
-      console.log(`用法:
+      console.log(`Usage:
   node scripts/draft-weekly-report.js [--week <YYYY-MM-DD>] [--output <path>]
 
-选项:
-  --week <date>   指定日期，自动归到其所在自然周（默认今天）
-  --output <path> 保存到文件（默认 stdout）
+Options:
+  --week <date>   Specify a date, automatically mapped to its natural week (default: today)
+  --output <path> Save to file (default: stdout)
 
-示例:
+Examples:
   node scripts/draft-weekly-report.js
-  node scripts/draft-weekly-report.js --week 2026-04-29 --output docs/周报/2026-04-27~2026-05-03/周报.md
+  node scripts/draft-weekly-report.js --week 2026-04-29 --output docs/weekly/2026-04-27~2026-05-03/weekly-report.md
 `);
       process.exit(0);
     } else if (a === '--week') out.week = argv[++i];
@@ -62,7 +62,7 @@ function runCollectKPI(week) {
     }).trim();
     return JSON.parse(out);
   } catch (err) {
-    console.error(`警告: collect-weekly-kpi.js 执行失败: ${err.message}`);
+    console.error(`Warning: collect-weekly-kpi.js execution failed: ${err.message}`);
     return null;
   }
 }
@@ -91,18 +91,18 @@ function runSelfImprove(weekRange) {
     }).trim();
     const data = JSON.parse(out);
     if (!data.proposals || data.proposals.length === 0) {
-      return '\n---\n\n## 系统自改进提案\n\n> 当前 execution memory 无记录，待积累数据后自动生成改进提案。';
+      return '\n---\n\n## System Self-Improvement Proposals\n\n> No execution memory records yet; improvement proposals will auto-generate once data accumulates.';
     }
     const lines = [];
     lines.push('---');
     lines.push('');
-    lines.push('## 系统自改进提案');
+    lines.push('## System Self-Improvement Proposals');
     lines.push('');
-    lines.push(`> **数据来源**: execution-memory（${data.record_count} 条记录）+ 编排日志 + 关键节点`);
-    lines.push(`> **分析周期**: ${data.since} 至今`);
+    lines.push(`> **Data source**: execution-memory (${data.record_count} records) + orchestration logs + key nodes`);
+    lines.push(`> **Analysis period**: ${data.since} to present`);
     lines.push('');
-    lines.push('| 优先级 | 类型 | 问题来源 | 改进描述 | 目标文件 | 验证方式 | 时间维度 | 专业深度 |');
-    lines.push('|--------|------|----------|----------|----------|----------|----------|----------|');
+    lines.push('| Priority | Type | Problem Source | Improvement Description | Target File | Validation Method | Time Horizon | Depth |');
+    lines.push('|----------|------|----------------|-------------------------|-------------|-------------------|--------------|-------|');
     data.proposals.forEach((p) => {
       const desc = p.description.replace(/\|/g, '\\|').replace(/\n/g, ' ');
       const source = p.problem_source.replace(/\|/g, '\\|');
@@ -111,10 +111,10 @@ function runSelfImprove(weekRange) {
       lines.push(`| ${p.priority} | ${p.type} | ${source} | ${desc} | ${target} | ${val} | ${p.time_dimension} | ${p.depth} |`);
     });
     lines.push('');
-    lines.push('> **执行建议**：按优先级从高到低审阅提案，人工确认后手动修改目标文件，下轮 delivery 中观察验证指标变化。');
+    lines.push('> **Execution recommendation**: Review proposals from high to low priority, confirm manually before editing target files, then observe validation metrics in the next delivery round.');
     return lines.join('\n');
   } catch {
-    return '\n---\n\n## 系统自改进提案\n\n> self-improve 引擎运行失败，待排查后手动触发。';
+    return '\n---\n\n## System Self-Improvement Proposals\n\n> Self-improve engine failed; investigate and trigger manually.';
   }
 }
 
@@ -122,7 +122,7 @@ function analyzeGitCommits(weekRange) {
   const since = `${weekRange.start}T00:00:00`;
   const until = `${weekRange.end}T23:59:59`;
 
-  // 按类型分类提交
+  // Categorize commits by type
   const featCommits = safeExec(
     `git log --since="${since}" --until="${until}" --oneline --grep="^feat" | head -20`,
     ''
@@ -136,7 +136,7 @@ function analyzeGitCommits(weekRange) {
     ''
   );
 
-  // 变更最多的文件
+  // Most changed files
   const topFiles = safeExec(
     `git log --since="${since}" --until="${until}" --name-only --pretty=format: | grep -v '^$' | sort | uniq -c | sort -rn | head -10`,
     ''
@@ -153,42 +153,42 @@ function analyzeGitCommits(weekRange) {
 function generateHighlights(gitAnalysis, kpiData) {
   const highlights = [];
 
-  // 从 feat commits 提取亮点
+  // Extract highlights from feat commits
   gitAnalysis.featList.slice(0, 3).forEach((line) => {
     const msg = line.replace(/^\S+\s+/, '');
-    if (msg) highlights.push(`新增功能/能力：${msg}`);
+    if (msg) highlights.push(`New feature / capability: ${msg}`);
   });
 
-  // 从 refactor commits 提取亮点
+  // Extract highlights from refactor commits
   gitAnalysis.refactorList.slice(0, 2).forEach((line) => {
     const msg = line.replace(/^\S+\s+/, '');
-    if (msg) highlights.push(`架构/规则优化：${msg}`);
+    if (msg) highlights.push(`Architecture / rule optimization: ${msg}`);
   });
 
-  // 从 Git 统计提取亮点
+  // Extract highlights from Git stats
   if (kpiData?.git) {
     const g = kpiData.git;
     if (g.commitCount > 20) {
-      highlights.push(`高频迭代：本周 ${g.commitCount} 次提交，${g.filesChanged} 个文件变更`);
+      highlights.push(`High-frequency iteration: ${g.commitCount} commits this week, ${g.filesChanged} files changed`);
     }
     if (g.authors.length > 1) {
-      highlights.push(`多人协作：${g.authors.length} 位贡献者参与开发`);
+      highlights.push(`Multi-person collaboration: ${g.authors.length} contributors`);
     }
   }
 
-  return highlights.length > 0 ? highlights : ['本周工作主要集中在规则优化和文档迭代'];
+  return highlights.length > 0 ? highlights : ['This week focused on rule optimization and document iteration'];
 }
 
 function generateProblems(gitAnalysis, kpiData) {
   const problems = [];
 
-  // 从 fix commits 提取问题
+  // Extract problems from fix commits
   gitAnalysis.fixList.slice(0, 3).forEach((line) => {
     const msg = line.replace(/^\S+\s+/, '');
-    if (msg) problems.push(`修复问题：${msg}`);
+    if (msg) problems.push(`Fixed issue: ${msg}`);
   });
 
-  // 从 KPI 数据提取问题
+  // Extract problems from KPI data
   if (kpiData?.features) {
     const weakFeatures = kpiData.features.filter((f) => {
       return (f.deliveryRate !== null && f.deliveryRate < 80) ||
@@ -196,22 +196,22 @@ function generateProblems(gitAnalysis, kpiData) {
              (f.fixRounds !== null && f.fixRounds > 2);
     });
     weakFeatures.forEach((f) => {
-      problems.push(`功能「${f.featureName}」KPI 薄弱：交付${f.deliveryRate ?? '—'}%/P0${f.p0Rate ?? '—'}%/轮次${f.fixRounds ?? '—'}`);
+      problems.push(`Feature "${f.featureName}" KPI weak: delivery ${f.deliveryRate ?? '—'}%/P0 ${f.p0Rate ?? '—'}%/rounds ${f.fixRounds ?? '—'}`);
     });
   }
 
-  // 如果无功能目录
+  // No feature directories
   if (kpiData?.features?.length === 0) {
-    problems.push('本周无功能级交付，工作集中在协作层规则迭代，KPI 无法按功能维度统计');
+    problems.push('No feature-level delivery this week; work focused on collaborative rule iteration, KPI cannot be measured by feature dimension');
   }
 
-  return problems.length > 0 ? problems : ['本周未发现明显问题'];
+  return problems.length > 0 ? problems : ['No significant issues found this week'];
 }
 
 function generatePlanning(kpiData, gitAnalysis) {
   const plans = [];
 
-  // 基于薄弱 KPI 生成规划
+  // Generate plans based on weak KPI
   if (kpiData?.features) {
     const weakest = kpiData.features
       .filter((f) => f.deliveryRate !== null || f.p0Rate !== null)
@@ -223,40 +223,40 @@ function generatePlanning(kpiData, gitAnalysis) {
 
     if (weakest) {
       plans.push({
-        type: '项目',
-        source: `薄弱KPI：${weakest.featureName}`,
-        desc: `提升「${weakest.featureName}」交付质量，目标交付率≥80%、P0通过率≥90%`,
-        standard: '用户故事驱动开发，从需求到验收的闭环验证',
-        verify: `交付率≥80%且P0通过率≥90%，证据路径：${weakest.evidencePaths.join(', ')}`,
-        time: '下周',
-        depth: '质量保障',
+        type: 'Project',
+        source: `Weak KPI: ${weakest.featureName}`,
+        desc: `Improve "${weakest.featureName}" delivery quality, target delivery rate ≥80%, P0 pass rate ≥90%`,
+        standard: 'User-story-driven development, closed-loop validation from requirement to acceptance',
+        verify: `Delivery rate ≥80% and P0 pass rate ≥90%, evidence paths: ${weakest.evidencePaths.join(', ')}`,
+        time: 'Next week',
+        depth: 'Quality assurance',
       });
     }
   }
 
-  // 基于 commit 分布生成规划
+  // Generate plans based on commit distribution
   if (gitAnalysis.featList.length === 0 && gitAnalysis.refactorList.length > 10) {
     plans.push({
-      type: '系统',
-      source: '工作节奏失衡',
-      desc: '将大粒度任务拆分为每日可完成的子任务，建立稳定迭代节奏',
-      standard: '每日站会节奏，小批量频繁提交',
-      verify: '本周内每日至少1个有意义提交，提交时间分布均匀',
-      time: '本周',
-      depth: '团队协作',
+      type: 'System',
+      source: 'Work rhythm imbalance',
+      desc: 'Break large tasks into daily-completable subtasks, establish a stable iteration rhythm',
+      standard: 'Daily standup rhythm, small batches frequent commits',
+      verify: 'At least 1 meaningful commit per day this week, evenly distributed commit times',
+      time: 'This week',
+      depth: 'Team collaboration',
     });
   }
 
-  // 基于无功能目录生成规划
+  // No feature directories
   if (!kpiData?.features || kpiData.features.length === 0) {
     plans.push({
-      type: '系统',
-      source: '无功能级交付',
-      desc: '为 generate-document / implement-code 各选一个最小功能场景，产出完整文档集作为试点',
-      standard: '用户故事驱动开发，验证规则有效性',
-      verify: '产出至少1个完整功能目录（01-07），并完成代码实施',
-      time: '下周',
-      depth: '流程效率',
+      type: 'System',
+      source: 'No feature-level delivery',
+      desc: 'Select one minimal feature scenario each for generate-document and implement-code, produce a complete document set as pilot',
+      standard: 'User-story-driven development, validate rule effectiveness',
+      verify: 'Produce at least 1 complete feature directory (01-07) and complete code implementation',
+      time: 'Next week',
+      depth: 'Process efficiency',
     });
   }
 
@@ -267,32 +267,32 @@ function generateReport(weekRange, kpiData, logsData, gitAnalysis) {
   const lines = [];
   const today = new Date().toISOString().split('T')[0];
 
-  lines.push(`# 周报 ${weekRange.range}`);
+  lines.push(`# Weekly Report ${weekRange.range}`);
   lines.push('');
-  lines.push(`> **版本**: v1.0  `);
-  lines.push(`> **维护者**: Claude  `);
-  lines.push(`> **覆盖周期**: ${weekRange.start}（周一）~ ${weekRange.end}（周日）  `);
-  lines.push(`> **生成时间**: ${today}`);
+  lines.push(`> **Version**: v1.0  `);
+  lines.push(`> **Maintainer**: Claude  `);
+  lines.push(`> **Coverage period**: ${weekRange.start} (Mon) ~ ${weekRange.end} (Sun)  `);
+  lines.push(`> **Generated at**: ${today}`);
   lines.push('');
 
-  // 关联功能目录
-  lines.push('## 关联功能目录');
+  // Related feature directories
+  lines.push('## Related Feature Directories');
   lines.push('');
   if (kpiData?.features && kpiData.features.length > 0) {
     kpiData.features.forEach((f) => {
       lines.push(`- \`docs/${f.featureName}/\``);
     });
   } else {
-    lines.push('> 本周无活跃功能目录（`docs/` 下无功能文档集）');
+    lines.push('> No active feature directories this week (no feature document sets under `docs/`)');
   }
   lines.push('');
 
-  // KPI 量化总表
-  lines.push('## KPI 量化总表');
+  // KPI quantitative summary
+  lines.push('## KPI Quantitative Summary');
   lines.push('');
   if (kpiData?.features && kpiData.features.length > 0) {
-    lines.push(`| 功能目录 | 交付完成率 | P0通过率 | 防幻觉率 | 修复轮次 | 规则覆盖率 | 维度综合 |`);
-    lines.push(`|---------|-----------|---------|---------|---------|-----------|---------|`);
+    lines.push(`| Feature Directory | Delivery Rate | P0 Pass Rate | Anti-Hallucination | Fix Rounds | Rule Coverage | Overall |`);
+    lines.push(`|-------------------|---------------|--------------|--------------------|------------|---------------|---------|`);
     for (const f of kpiData.features) {
       const dr = f.deliveryRate !== null ? `${f.deliveryRate}%` : '—';
       const p0 = f.p0Rate !== null ? `${f.p0Rate}%` : '—';
@@ -312,111 +312,111 @@ function generateReport(weekRange, kpiData, logsData, gitAnalysis) {
       lines.push(`| ${f.featureName} | ${dr} | ${p0} | ${ah} | ${fr} | ${rc} | ${overall} |`);
     }
     lines.push('');
-    lines.push('**判定说明**：交付≥80%✅ | P0≥90%✅ | 轮次≤2✅');
+    lines.push('**Criteria**: delivery ≥80% ✅ | P0 ≥90% ✅ | rounds ≤2 ✅');
   } else {
-    lines.push('> 本周无功能级交付，不适用标准功能维度 KPI。');
+    lines.push('> No feature-level delivery this week; standard feature-dimension KPI not applicable.');
   }
   lines.push('');
 
-  // Git 统计
+  // Git statistics
   if (kpiData?.git) {
     const g = kpiData.git;
-    lines.push('### Git 统计');
+    lines.push('### Git Statistics');
     lines.push('');
-    lines.push(`| 指标 | 数值 |`);
-    lines.push(`|------|------|`);
-    lines.push(`| 提交数 | ${g.commitCount} |`);
-    lines.push(`| 变更文件数 | ${g.filesChanged} |`);
-    lines.push(`| 新增行数 | ${g.insertions} |`);
-    lines.push(`| 删除行数 | ${g.deletions} |`);
+    lines.push(`| Metric | Value |`);
+    lines.push(`|--------|-------|`);
+    lines.push(`| Commits | ${g.commitCount} |`);
+    lines.push(`| Files changed | ${g.filesChanged} |`);
+    lines.push(`| Insertions | ${g.insertions} |`);
+    lines.push(`| Deletions | ${g.deletions} |`);
     lines.push('');
     if (g.authors.length > 0) {
-      lines.push('**提交者分布**: ' + g.authors.map((a) => `${a.name}(${a.commits})`).join(', '));
+      lines.push('**Contributor distribution**: ' + g.authors.map((a) => `${a.name}(${a.commits})`).join(', '));
       lines.push('');
     }
   }
 
-  // 本周复盘
-  lines.push('## 本周复盘');
+  // This week retrospective
+  lines.push('## This Week Retrospective');
   lines.push('');
 
   const highlights = generateHighlights(gitAnalysis, kpiData);
-  lines.push('### 进展亮点');
+  lines.push('### Progress Highlights');
   lines.push('');
   highlights.forEach((h, i) => lines.push(`${i + 1}. ${h}`));
   lines.push('');
 
   const problems = generateProblems(gitAnalysis, kpiData);
-  lines.push('### 问题根因');
+  lines.push('### Root Cause Analysis');
   lines.push('');
-  lines.push('| 现象 | 推断 | 证据路径 |');
-  lines.push('|------|------|---------|');
+  lines.push('| Symptom | Inference | Evidence Path |');
+  lines.push('|---------|-----------|---------------|');
   problems.forEach((p) => {
-    lines.push(`| ${p} | 待补充 | git log / collect-weekly-kpi.js 输出 |`);
+    lines.push(`| ${p} | TBD | git log / collect-weekly-kpi.js output |`);
   });
-  if (problems.length === 0 || problems[0] === '本周未发现明显问题') {
-    lines.push('| 本周无显著问题 | — | — |');
+  if (problems.length === 0 || problems[0] === 'No significant issues found this week') {
+    lines.push('| No significant issues this week | — | — |');
   }
   lines.push('');
 
-  // KPI→复盘→规划链路
-  lines.push('## KPI→复盘→规划链路全景图');
+  // KPI → retrospective → planning chain
+  lines.push('## KPI → Retrospective → Planning Chain Overview');
   lines.push('');
   lines.push('```mermaid');
   lines.push('flowchart LR');
-  lines.push('    A["KPI分析"] --> B["复盘根因"] --> C["后期规划"]');
+  lines.push('    A["KPI Analysis"] --> B["Retrospective Root Cause"] --> C["Future Planning"]');
   lines.push('```');
   lines.push('');
 
-  // 后期规划与改进
-  lines.push('## 后期规划与改进');
+  // Future planning and improvements
+  lines.push('## Future Planning and Improvements');
   lines.push('');
-  lines.push('**原则**：以需求为导向，参考业内标准但不套用复杂方法论。');
+  lines.push('**Principle**: Demand-driven, reference industry standards but do not apply complex methodologies blindly.');
   lines.push('');
 
   const plans = generatePlanning(kpiData, gitAnalysis);
   if (plans.length > 0) {
-    lines.push('### 改进优先级总表');
+    lines.push('### Improvement Priority Summary');
     lines.push('');
-    lines.push(`| 类型 | 问题来源 | 改进描述 | 参考标准 | 验证方式 | 时间维度 | 专业深度 |`);
-    lines.push(`|------|---------|---------|---------|---------|---------|---------|`);
+    lines.push(`| Type | Problem Source | Improvement Description | Reference Standard | Validation Method | Time Horizon | Depth |`);
+    lines.push(`|------|----------------|-------------------------|--------------------|-------------------|--------------|-------|`);
     plans.forEach((p) => {
       lines.push(`| ${p.type} | ${p.source} | ${p.desc} | ${p.standard} | ${p.verify} | ${p.time} | ${p.depth} |`);
     });
     lines.push('');
   } else {
-    lines.push('> 本周数据不足以生成具体改进项，待补充。');
+    lines.push('> Insufficient data to generate specific improvement items this week; TBD.');
     lines.push('');
   }
 
-  // 工作流程标准化审视（占位）
-  lines.push('### 工作流程标准化审视');
+  // Workflow standardization review (placeholder)
+  lines.push('### Workflow Standardization Review');
   lines.push('');
-  lines.push('1. **重复劳动识别**：待补充');
-  lines.push('2. **决策标准缺失**：待补充');
-  lines.push('3. **信息孤岛**：待补充');
-  lines.push('4. **反馈闭环**：待补充');
-  lines.push('');
-
-  // 系统架构演进思考（占位）
-  lines.push('### 系统架构演进思考');
-  lines.push('');
-  lines.push('> 仅当本周有架构相关交付时填写。');
+  lines.push('1. **Repetitive labor identification**: TBD');
+  lines.push('2. **Decision criteria gaps**: TBD');
+  lines.push('3. **Information silos**: TBD');
+  lines.push('4. **Feedback loop**: TBD');
   lines.push('');
 
-  // AI 链路质量统计表（占位）
-  lines.push('## AI 链路质量统计表');
+  // System architecture evolution (placeholder)
+  lines.push('### System Architecture Evolution');
   lines.push('');
-  lines.push(`| 维度 | 数值 | 备注 |`);
-  lines.push(`|------|------|------|`);
-  lines.push(`| Agent 调用次数 | 待补充 | |`);
-  lines.push(`| 文档生成轮次 | 待补充 | |`);
-  lines.push(`| P0 问题数 | 待补充 | |`);
-  lines.push(`| 修复轮次 | 待补充 | |`);
+  lines.push('> Fill only when there is architecture-related delivery this week.');
   lines.push('');
 
-  // 防幻觉声明
-  lines.push('> **防幻觉声明**：KPI 数值来自 `collect-weekly-kpi.js` 自动提取；Git 统计数据来自 `git log`；复盘亮点和问题基于 commit 分类自动推断；规划建议基于薄弱 KPI 自动生成。手动补充部分已标注"待补充"。');
+  // AI chain quality statistics (placeholder)
+  lines.push('## AI Chain Quality Statistics');
+  lines.push('');
+  lines.push(`| Dimension | Value | Notes |`);
+  lines.push(`|-----------|-------|-------|`);
+  lines.push(`| Agent invocations | TBD | |`);
+  lines.push(`| Document generation rounds | TBD | |`);
+  lines.push(`| P0 issues | TBD | |`);
+  lines.push(`| Fix rounds | TBD | |`);
+  lines.push('');
+
+  // Anti-hallucination disclaimer
+  lines.push('> **Anti-Hallucination Disclaimer**: KPI values are auto-extracted by `collect-weekly-kpi.js`; Git stats come from `git log`; retrospective highlights and problems are auto-inferred from commit categorization; planning suggestions are auto-generated from weak KPIs. Manual supplement items are marked "TBD".');
   lines.push('');
 
   return lines.join('\n');
@@ -429,7 +429,7 @@ function main() {
   if (args.week) {
     const d = new Date(args.week);
     if (isNaN(d.getTime())) {
-      console.error(`错误: 无效日期 "${args.week}"`);
+      console.error(`Error: invalid date "${args.week}"`);
       process.exit(2);
     }
     baseDate = d;
@@ -437,19 +437,19 @@ function main() {
 
   const weekRange = getNaturalWeekRange(baseDate);
 
-  // 1. 收集 KPI 数据
+  // 1. Collect KPI data
   const kpiData = runCollectKPI(args.week);
 
-  // 2. 收集日志数据（可选）
+  // 2. Collect log data (optional)
   const logsData = runCollectLogs(args.week);
 
-  // 3. 分析 Git commits
+  // 3. Analyze Git commits
   const gitAnalysis = analyzeGitCommits(weekRange);
 
-  // 4. 生成周报草稿
+  // 4. Generate weekly report draft
   let report = generateReport(weekRange, kpiData, logsData, gitAnalysis);
 
-  // 5. 触发自我改进引擎并追加到周报
+  // 5. Trigger self-improvement engine and append to report
   const selfImproveOutput = runSelfImprove(weekRange);
   if (selfImproveOutput) {
     report += '\n\n' + selfImproveOutput;
@@ -461,7 +461,7 @@ function main() {
       fs.mkdirSync(dir, { recursive: true });
     }
     fs.writeFileSync(args.output, report, 'utf8');
-    console.error(`周报草稿已保存至: ${args.output}`);
+    console.error(`Weekly report draft saved to: ${args.output}`);
   } else {
     console.log(report);
   }

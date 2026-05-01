@@ -3,17 +3,17 @@
 /**
  * self-improve
  *
- * 自我改进引擎：分析 execution memory + 编排日志 + 关键节点，
- * 识别重复失败模式、checklist 缺口、agent 效能问题、规则摩擦点，
- * 输出结构化改进提案 Markdown。
+ * Self-improvement engine: analyzes execution memory + orchestration logs + key nodes,
+ * identifies recurring failure modes, checklist gaps, agent effectiveness issues, rule friction points,
+ * outputs structured improvement proposal Markdown.
  *
- * 用法：
+ * Usage:
  *   node scripts/self-improve.js [--since <YYYY-MM-DD>] [--output <path>] [--json]
  *
- * 选项：
- *   --since <date>   分析起始日期（默认本周一）
- *   --output <path>  保存到文件（默认 stdout）
- *   --json           输出 JSON（默认 Markdown）
+ * Options:
+ *   --since <date>   Analysis start date (default: this Monday)
+ *   --output <path>  Save to file (default: stdout)
+ *   --json           Output JSON (default: Markdown)
  */
 
 const fs = require('fs');
@@ -26,17 +26,17 @@ const SCRIPT_DIR = path.dirname(__filename);
 const MEMORY_FILE = path.resolve('docs', '.memory', 'execution-memory.jsonl');
 
 function printHelp() {
-  console.log(`用法:
+  console.log(`Usage:
   node scripts/self-improve.js [--since <YYYY-MM-DD>] [--output <path>] [--json]
 
-选项:
-  --since <date>   分析起始日期（默认本周一）
-  --output <path>  保存到文件（默认 stdout）
-  --json           输出 JSON（默认 Markdown）
+Options:
+  --since <date>   Analysis start date (default: this Monday)
+  --output <path>  Save to file (default: stdout)
+  --json           Output JSON (default: Markdown)
 
-示例:
+Examples:
   node scripts/self-improve.js
-  node scripts/self-improve.js --since 2026-04-27 --output docs/周报/2026-04-27~2026-05-03/self-improve-proposal.md
+  node scripts/self-improve.js --since 2026-04-27 --output docs/weekly/2026-04-27~2026-05-03/self-improve-proposal.md
 `);
 }
 
@@ -74,7 +74,7 @@ async function readExecutionMemory(sinceDate) {
 }
 
 async function readWeeklyLogs(weekRange) {
-  const logsDir = path.resolve('docs', '周报', weekRange);
+  const logsDir = path.resolve('docs', 'weekly', weekRange);
   const logsPath = path.join(logsDir, 'logs.md');
   const keysPath = path.join(logsDir, 'key-notes.md');
   const logs = { logs: '', keys: '' };
@@ -94,13 +94,13 @@ function analyzePatterns(records) {
   };
 
   records.forEach(r => {
-    // 变更级别预判准确度
+    // Change level prediction accuracy
     if (r.planned_change_level && r.actual_change_level) {
       patterns.changeLevelAccuracy.total++;
       if (r.planned_change_level === r.actual_change_level) patterns.changeLevelAccuracy.correct++;
     }
 
-    // 质量问题模式
+    // Quality issue patterns
     ['P0', 'P1'].forEach(lv => {
       (r.quality_issues?.[lv] || []).forEach(q => {
         const docKey = `${q.doc_type || 'unknown'}::${q.section || 'unknown'}`;
@@ -111,13 +111,13 @@ function analyzePatterns(records) {
       });
     });
 
-    // Agent bad case 频率
+    // Agent bad case frequency
     (r.bad_cases || []).forEach(b => {
       const key = b.agent;
       patterns.agentBadCaseFreq[key] = (patterns.agentBadCaseFreq[key] || 0) + 1;
     });
 
-    // 高风险功能（P0多或阻断）
+    // High-risk features (many P0s or blocked)
     const p0Count = r.quality_issues?.P0?.length || 0;
     if (p0Count >= 2 || r.was_blocked) {
       patterns.highRiskFeatures.push({ feature: r.feature, p0: p0Count, blocked: r.was_blocked, reason: r.block_reason });
@@ -130,7 +130,7 @@ function analyzePatterns(records) {
 function generateProposals(patterns, records, sinceDate, weekRange) {
   const proposals = [];
 
-  // 1. Checklist 缺口提案
+  // 1. Checklist gap proposals
   const topDocIssues = Object.entries(patterns.recurringDocTypeIssues)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5);
@@ -142,20 +142,20 @@ function generateProposals(patterns, records, sinceDate, weekRange) {
       ).map(r => r.feature);
       proposals.push({
         type: 'checklist',
-        priority: score >= 6 ? '高' : '中',
+        priority: score >= 6 ? 'High' : 'Medium',
         target_file: `skills/generate-document/checklists/${docType.replace(/\.md$/, '')}.md`,
-        problem_source: `${docType} 的 ${section} 反复出现质量问题`,
-        description: `在 ${section} 章节增加专项 P0 检查项，防止重复出现同类缺陷`,
-        reference_standard: '缺陷预防：将高频失败点固化为检查单，是业内质量保障的基础实践',
-        validation: `后续 3 次同类功能交付中，该章节 P0 问题降为 0`,
-        time_dimension: '下周',
-        depth: '质量保障',
+        problem_source: `${docType} ${section} recurring quality issues`,
+        description: `Add dedicated P0 checklist items in ${section} to prevent recurring defects`,
+        reference_standard: 'Defect prevention: solidifying high-frequency failure points into checklists is a foundational quality assurance practice',
+        validation: `In the next 3 similar feature deliveries, P0 issues in this section drop to 0`,
+        time_dimension: 'Next week',
+        depth: 'Quality assurance',
         evidence: [...new Set(evidence)].slice(0, 3),
       });
     });
   }
 
-  // 2. Agent 效能提案
+  // 2. Agent effectiveness proposals
   const topBadAgents = Object.entries(patterns.agentBadCaseFreq)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 3);
@@ -166,73 +166,73 @@ function generateProposals(patterns, records, sinceDate, weekRange) {
       ))].slice(0, 3);
       proposals.push({
         type: 'agent',
-        priority: count >= 3 ? '高' : '中',
+        priority: count >= 3 ? 'High' : 'Medium',
         target_file: `agents/${agent}.md`,
-        problem_source: `${agent} 产生 ${count} 次 bad case`,
-        description: `在 ${agent} 的约束或必答问题中增加对以下问题的专项审查：${lessons.join('；')}`,
-        reference_standard: '专家角色持续进化：根据历史错误模式更新审查维度，是高质量 agent 设计的关键',
-        validation: `该 agent 后续 5 次调用中 bad case 率下降 50%`,
-        time_dimension: '本月',
-        depth: '质量保障',
+        problem_source: `${agent} produced ${count} bad cases`,
+        description: `Add dedicated review dimensions in ${agent} constraints or required answers for: ${lessons.join('; ')}`,
+        reference_standard: 'Expert role continuous evolution: updating review dimensions based on historical error patterns is key to high-quality agent design',
+        validation: `Bad case rate for this agent drops 50% over the next 5 invocations`,
+        time_dimension: 'This month',
+        depth: 'Quality assurance',
         evidence: lessons,
       });
     });
   }
 
-  // 3. 变更级别预判提案
+  // 3. Change level prediction proposals
   if (patterns.changeLevelAccuracy.total >= 3) {
     const rate = patterns.changeLevelAccuracy.correct / patterns.changeLevelAccuracy.total;
     if (rate < 0.7) {
       proposals.push({
         type: 'rule',
-        priority: '高',
+        priority: 'High',
         target_file: 'skills/generate-document/rules/workflow.md',
-        problem_source: `变更级别预判准确率仅 ${(rate * 100).toFixed(0)}%（${patterns.changeLevelAccuracy.correct}/${patterns.changeLevelAccuracy.total}）`,
-        description: '强化 Step 0（doc-planner）的变更级别判定依据，增加与历史相似案例的对比维度',
-        reference_standard: '基于案例的推理（CBR）：用历史数据辅助分类决策，减少主观判断偏差',
-        validation: '预判准确率提升至 80% 以上',
-        time_dimension: '本月',
-        depth: '流程效率',
-        evidence: [`准确率 ${(rate * 100).toFixed(0)}%`],
+        problem_source: `Change level prediction accuracy only ${(rate * 100).toFixed(0)}% (${patterns.changeLevelAccuracy.correct}/${patterns.changeLevelAccuracy.total})`,
+        description: 'Strengthen Step 0 (doc-planner) change level determination criteria, add historical similar case comparison dimensions',
+        reference_standard: 'Case-based reasoning (CBR): using historical data to assist classification decisions reduces subjective judgment bias',
+        validation: 'Prediction accuracy improves to above 80%',
+        time_dimension: 'This month',
+        depth: 'Process efficiency',
+        evidence: [`Accuracy ${(rate * 100).toFixed(0)}%`],
       });
     }
   }
 
-  // 4. 高风险功能预警提案
+  // 4. High-risk feature early warning proposals
   if (patterns.highRiskFeatures.length > 0) {
     const domains = [...new Set(patterns.highRiskFeatures.map(f => f.feature))];
     proposals.push({
       type: 'system',
-      priority: '中',
+      priority: 'Medium',
       target_file: 'skills/generate-document/scripts/execution-memory.js',
-      problem_source: `${patterns.highRiskFeatures.length} 个功能出现多次 P0 或阻断`,
-      description: '为 execution-memory 增加高风险功能自动标记机制，在 doc-planner 查询时优先提示',
-      reference_standard: '风险驱动测试：对历史高风险模块增加审查强度，是质量保障的常见做法',
-      validation: '高风险功能后续交付的 P0 问题数下降 50%',
-      time_dimension: '下周',
-      depth: '流程效率',
+      problem_source: `${patterns.highRiskFeatures.length} features had multiple P0 issues or were blocked`,
+      description: 'Add automatic high-risk feature tagging to execution-memory, prioritize warnings when doc-planner queries',
+      reference_standard: 'Risk-driven testing: increasing review intensity for historically high-risk modules is a common quality assurance practice',
+      validation: 'P0 issue count for high-risk features drops 50% in subsequent deliveries',
+      time_dimension: 'Next week',
+      depth: 'Process efficiency',
       evidence: domains.slice(0, 3),
     });
   }
 
-  // 5. 若记录为空，提示初始化
+  // 5. If no records, prompt initialization
   if (records.length === 0) {
     proposals.push({
       type: 'system',
-      priority: '高',
+      priority: 'High',
       target_file: 'skills/generate-document/scripts/execution-memory.js',
-      problem_source: 'execution memory 为空，无法执行改进分析',
-      description: '随着功能文档持续交付，execution memory 将自动积累数据，self-improve 引擎将在有数据后输出有效提案',
-      reference_standard: '数据驱动改进：改进引擎依赖真实执行数据，空数据时提示正常',
-      validation: '完成 3 次以上功能文档交付后重新运行',
-      time_dimension: '下周',
-      depth: '流程效率',
+      problem_source: 'Execution memory is empty, cannot perform improvement analysis',
+      description: 'As feature documents are continuously delivered, execution memory will automatically accumulate data; the self-improve engine will output valid proposals once data is available',
+      reference_standard: 'Data-driven improvement: the improvement engine depends on real execution data; empty data prompt is normal',
+      validation: 'Re-run after completing 3+ feature document deliveries',
+      time_dimension: 'Next week',
+      depth: 'Process efficiency',
       evidence: [],
     });
   }
 
-  // 排序：高优先在前，同优先按类型稳定排序
-  const order = { '高': 0, '中': 1, '低': 2 };
+  // Sort: high priority first, same priority stable by type
+  const order = { 'High': 0, 'Medium': 1, 'Low': 2 };
   proposals.sort((a, b) => (order[a.priority] || 2) - (order[b.priority] || 2));
 
   return proposals;
@@ -240,43 +240,43 @@ function generateProposals(patterns, records, sinceDate, weekRange) {
 
 function formatMarkdown(proposals, records, sinceDate, weekRange) {
   const lines = [];
-  lines.push('# 系统自改进提案');
+  lines.push('# System Self-Improvement Proposals');
   lines.push('');
-  lines.push(`> **分析周期**: ${sinceDate} 至今`);
-  lines.push(`> **数据来源**: execution-memory（${records.length} 条记录）+ 编排日志 + 关键节点`);
-  lines.push(`> **生成时间**: ${new Date().toISOString()}`);
+  lines.push(`> **Analysis period**: ${sinceDate} to present`);
+  lines.push(`> **Data sources**: execution-memory (${records.length} records) + orchestration logs + key nodes`);
+  lines.push(`> **Generated at**: ${new Date().toISOString()}`);
   lines.push('');
 
   if (records.length === 0) {
-    lines.push('> 当前 execution memory 无记录。随着功能文档交付积累，本引擎将自动识别改进机会。');
+    lines.push('> No execution memory records yet. As feature documents accumulate, this engine will automatically identify improvement opportunities.');
     lines.push('');
   }
 
-  lines.push('## 问题模式摘要');
+  lines.push('## Problem Pattern Summary');
   lines.push('');
 
   const docIssues = Object.entries(analyzePatterns(records).recurringDocTypeIssues)
     .sort((a, b) => b[1] - a[1]).slice(0, 5);
   if (docIssues.length > 0) {
-    lines.push('### 高频文档质量问题');
-    docIssues.forEach(([k, v]) => lines.push(`- ${k}: 加权 ${v} 次`));
+    lines.push('### High-Frequency Document Quality Issues');
+    docIssues.forEach(([k, v]) => lines.push(`- ${k}: weighted ${v} times`));
     lines.push('');
   }
 
   const agentBad = Object.entries(analyzePatterns(records).agentBadCaseFreq)
     .sort((a, b) => b[1] - a[1]).slice(0, 5);
   if (agentBad.length > 0) {
-    lines.push('### 高频 Agent Bad Case');
-    agentBad.forEach(([k, v]) => lines.push(`- ${k}: ${v} 次`));
+    lines.push('### High-Frequency Agent Bad Cases');
+    agentBad.forEach(([k, v]) => lines.push(`- ${k}: ${v} times`));
     lines.push('');
   }
 
   lines.push('---');
   lines.push('');
-  lines.push('## 改进提案总表');
+  lines.push('## Improvement Proposal Summary');
   lines.push('');
-  lines.push('| 优先级 | 类型 | 问题来源 | 改进描述 | 目标文件 | 参考标准 | 验证方式 | 时间维度 | 专业深度 |');
-  lines.push('|--------|------|----------|----------|----------|----------|----------|----------|----------|');
+  lines.push('| Priority | Type | Problem Source | Improvement Description | Target File | Reference Standard | Validation Method | Time Horizon | Depth |');
+  lines.push('|----------|------|----------------|-------------------------|-------------|--------------------|-------------------|--------------|-------|');
 
   proposals.forEach(p => {
     const desc = p.description.replace(/\|/g, '\\|').replace(/\n/g, ' ');
@@ -288,32 +288,32 @@ function formatMarkdown(proposals, records, sinceDate, weekRange) {
   });
 
   lines.push('');
-  lines.push('## 详细提案');
+  lines.push('## Detailed Proposals');
   lines.push('');
 
   proposals.forEach((p, i) => {
     lines.push(`### ${i + 1}. [${p.priority}] ${p.type} — ${p.problem_source}`);
     lines.push('');
-    lines.push(`- **目标文件**: ${p.target_file}`);
-    lines.push(`- **改进描述**: ${p.description}`);
-    lines.push(`- **参考标准**: ${p.reference_standard}`);
-    lines.push(`- **验证方式**: ${p.validation}`);
-    lines.push(`- **时间维度**: ${p.time_dimension}`);
-    lines.push(`- **专业深度**: ${p.depth}`);
+    lines.push(`- **Target file**: ${p.target_file}`);
+    lines.push(`- **Improvement description**: ${p.description}`);
+    lines.push(`- **Reference standard**: ${p.reference_standard}`);
+    lines.push(`- **Validation method**: ${p.validation}`);
+    lines.push(`- **Time horizon**: ${p.time_dimension}`);
+    lines.push(`- **Depth**: ${p.depth}`);
     if (p.evidence && p.evidence.length > 0) {
-      lines.push(`- **证据**: ${p.evidence.join('，')}`);
+      lines.push(`- **Evidence**: ${p.evidence.join(', ')}`);
     }
     lines.push('');
   });
 
   lines.push('---');
   lines.push('');
-  lines.push('## 执行建议');
+  lines.push('## Execution Recommendations');
   lines.push('');
-  lines.push('1. 按优先级从高到低审阅提案');
-  lines.push('2. 每条提案须人工确认后手动修改目标文件（self-improve 引擎不自动覆盖）');
-  lines.push('3. 修改完成后在下轮 generate-document 中观察验证指标变化');
-  lines.push('4. 每周运行 `/generate-document weekly` 时本提案将自动更新');
+  lines.push('1. Review proposals from high to low priority');
+  lines.push('2. Each proposal must be manually confirmed before editing the target file (self-improve engine does not auto-overwrite)');
+  lines.push('3. After modification, observe validation metric changes in the next generate-document round');
+  lines.push('4. This proposal auto-updates when running `/generate-document weekly` each week');
   lines.push('');
 
   return lines.join('\n');
@@ -327,10 +327,10 @@ async function main() {
   const records = await readExecutionMemory(since);
   const logs = await readWeeklyLogs(week.range);
 
-  // 将 logs 中的 bad case 和 lessons 也纳入分析（简单提取）
+  // Also incorporate bad cases and lessons from logs (simple extraction)
   const logBadCases = [];
   if (logs.logs) {
-    const badMatches = logs.logs.matchAll(/bad case[\s\S]*?后续改进[：:]\s*(.+?)(?=\n|$)/gi);
+    const badMatches = logs.logs.matchAll(/bad case[\s\S]*?Follow-up[：:]\s*(.+?)(?=\n|$)/gi);
     for (const m of badMatches) {
       logBadCases.push(m[1].trim());
     }
@@ -344,7 +344,7 @@ async function main() {
     const text = JSON.stringify(out, null, 2);
     if (opts.output) {
       await fsp.writeFile(opts.output, text, 'utf8');
-      console.log(`✓ 已保存到 ${opts.output}`);
+      console.log(`✓ Saved to ${opts.output}`);
     } else {
       console.log(text);
     }
@@ -355,7 +355,7 @@ async function main() {
   if (opts.output) {
     await fsp.mkdir(path.dirname(opts.output), { recursive: true });
     await fsp.writeFile(opts.output, md, 'utf8');
-    console.log(`✓ 已保存到 ${opts.output}`);
+    console.log(`✓ Saved to ${opts.output}`);
   } else {
     console.log(md);
   }

@@ -1,125 +1,125 @@
 ---
 paths:
   - "skills/generate-document/rules/orchestration.md"
-  - "docs/*/01_需求文档.md"
-  - "docs/*/02_需求任务.md"
-  - "docs/*/03_设计文档.md"
-  - "docs/*/04_使用文档.md"
-  - "docs/*/05_动态检查清单.md"
-  - "docs/*/07_项目报告.md"
+  - "docs/*/01_requirement-document.md"
+  - "docs/*/02_requirement-tasks.md"
+  - "docs/*/03_design-document.md"
+  - "docs/*/04_usage-document.md"
+  - "docs/*/05_dynamic-checklist.md"
+  - "docs/*/07_project-report.md"
 ---
 
-# 编排与阶段契约规范
+# Orchestration and Stage Contract Specification
 
-> 核心原则、中断门槛、错误降级以 `../SKILL.md` 9 条核心原则为准；本文件只承载**阶段状态机**与**阶段专属行为**。Agent 契约见 `agent-contract.md`；日志见 `orchestration-logging.md`。
+> Core principles, interruption thresholds, and error degradation follow `../SKILL.md` 9 core principles; this file only carries **stage state machine** and **stage-specific behavior**. Agent contracts see `agent-contract.md`; logs see `orchestration-logging.md`.
 
-## 1. 重要约束（P0）
+## 1. Important Constraints (P0)
 
-- **本技能只负责文档生成，不修改代码内容**
-- **尽可能一次执行到底**：仅触发 SKILL.md 原则 #9 门槛时中断
-- **需人工介入时必须 `wework-bot` 推送**：不得口头告知
+- **This skill is only responsible for document generation, not modifying code content**
+- **Execute to completion in one go whenever possible**: Only interrupt when SKILL.md principle #9 threshold is triggered
+- **When human intervention is required, must push via `wework-bot`**: Do not verbally inform
 
-## 2. 阶段状态机
+## 2. Stage State Machine
 
-### 2.1 新建模式
+### 2.1 New Mode
 
-| 阶段 | 名称 | 目标 | 解锁条件 |
-|------|------|------|----------|
-| 0 | 自适应规划 | 调用 `doc-planner` 生成执行计划 | execution memory 已读取，计划已输出（或已标注"跳过"） |
-| 1 | 解析 + 规范检索 | 解析功能名，调用 `docs-retriever` | 功能名/init 可定位，规范列表已返回 |
-| 2 | 上游 Grounding + 影响分析 | 读取上游文档，`doc-impact-analyzer` 影响链闭合（init：扫描项目代码和配置） | 事实-来源映射完整，影响链写入文档 |
-| 3 | 专家生成 | `codes-builder` + `doc-architect`（init：推断架构模式） | 模块划分、接口规范确认 |
-| 4 | 逐文档生成 + 自检 | 按规范生成文档；三层审查门禁 + `doc-quality-tracker` | 01-05, 07 生成，门禁通过 |
-| 5 | 保存 + 知识策展 + 记忆沉淀 | 保存文档，`docs-builder` 策展知识，**`execution-memory.js` 写入本次记录** | 文档已保存，执行记忆已追加 |
-| 6 | 文档同步与通知 + 自我改进 | **先 `import-docs` 再 `wework-bot`**；`weekly` 命令完成后触发 `self-improve.js` | import-docs 已记录真实结果，wework-bot 已发送，weekly 含自改进提案 |
+| Stage | Name | Goal | Unlock Condition |
+|-------|------|------|------------------|
+| 0 | Adaptive Planning | Invoke `doc-planner` to generate execution plan | Execution memory has been read, plan has been output (or annotated "skipped") |
+| 1 | Parsing + Specification Retrieval | Parse feature name, invoke `docs-retriever` | Feature name / init can be located, specification list has been returned |
+| 2 | Upstream Grounding + Impact Analysis | Read upstream documents, `doc-impact-analyzer` impact chain closure (init: scan project code and config) | Fact-source mapping complete, impact chain written into document |
+| 3 | Expert Generation | `codes-builder` + `doc-architect` (init: infer architecture pattern) | Module division, interface specifications confirmed |
+| 4 | Per-Document Generation + Self-Check | Generate documents according to specifications; three-layer review gate + `doc-quality-tracker` | 01-05, 07 generated, gate passed |
+| 5 | Save + Knowledge Curation + Memory Persistence | Save documents, `docs-builder` curate knowledge, **`execution-memory.js` write this session's record** | Documents saved, execution memory appended |
+| 6 | Document Sync and Notification + Self-Improvement | **`import-docs` first, then `wework-bot`**; `weekly` command completion triggers `self-improve.js` | import-docs recorded real result, wework-bot sent, weekly contains self-improvement proposal |
 
-### 2.2 更新模式（按变更级别跳转）
+### 2.2 Update Mode (Jump by Change Level)
 
-更新模式基于步骤1判定的变更级别（T1/T2/T3）决定阶段执行策略：
+Update mode determines stage execution strategy based on the change level (T1/T2/T3) determined in Step 1:
 
-| 变更级别 | 阶段 1 | 阶段 2 | 阶段 3 | 阶段 4 | 阶段 5 |
-|---------|--------|--------|--------|--------|--------|
-| **T1 微小** | 探测差异 + 规范复用 | **跳过**（复用上轮影响分析） | **跳过**（架构未变） | 重写目标文档变更章节 | 增量策展 |
-| **T2 局部** | 探测差异 + 规范复用 | **精简**（仅分析变更点的影响） | **精简**（仅调整受影响模块） | 重写目标文档 + 同步下游对应条目 | 增量策展 |
-| **T3 范围** | 探测差异 + 规范检索 | 全量影响分析 | 全量专家生成 | 全量级联刷新 | 全量策展 |
+| Change Level | Stage 1 | Stage 2 | Stage 3 | Stage 4 | Stage 5 |
+|--------------|---------|---------|---------|---------|---------|
+| **T1 Minor** | Detect diff + reuse specs | **Skip** (reuse last impact analysis) | **Skip** (architecture unchanged) | Rewrite changed chapters of target document | Incremental curation |
+| **T2 Partial** | Detect diff + reuse specs | **Trimmed** (only analyze impact of change points) | **Trimmed** (only adjust affected modules) | Rewrite target document + sync downstream corresponding entries | Incremental curation |
+| **T3 Scope** | Detect diff + spec retrieval | Full impact analysis | Full expert generation | Full cascade refresh | Full curation |
 
-**更新模式跳转规则**：
-- T1 变更：阶段 2-3 直接标记为"复用/跳过"，不得重新调用 `doc-impact-analyzer`/`codes-builder`/`doc-architect`
-- T2 变更：阶段 2-3 仅分析变更点的局部影响，不得做全项目重扫
-- T3 变更：与新建模式一致，全量执行
-- **级别判定不可降级**：若用户输入明确涉及功能边界变化，必须按 T3 处理，不得为省时间而降级
-- **规范复用**：更新模式下若文档类型未变，阶段 1 可复用上轮 `docs-retriever` 返回的规范集，仅需补充新增规范
-- **智能精简（基于 planner）**：若 `doc-planner` 历史数据显示同类功能从未触发阶段 2/3 的阻断或影响链问题，且本轮变更明确为 T1/T2，可在编排日志中标注"快速模式"，精简阶段 2-3 的调用范围，但阶段 4 审查不得精简
+**Update mode jump rules**:
+- T1 change: Stages 2-3 directly marked as "reuse/skip", must not re-invoke `doc-impact-analyzer` / `codes-builder` / `doc-architect`
+- T2 change: Stages 2-3 only analyze local impact of change points, must not do full-project rescan
+- T3 change: Same as new mode, full execution
+- **Level determination must not be downgraded**: If user input clearly involves feature boundary changes, must handle as T3, must not downgrade to save time
+- **Specification reuse**: In update mode, if document type is unchanged, Stage 1 may reuse the specification set returned by last `docs-retriever`, only supplementing new specifications
+- **Smart trimming (based on planner)**: If `doc-planner` historical data shows that similar features have never triggered stage 2/3 blocking or impact chain issues, and this round's change is clearly T1/T2, may annotate "fast mode" in orchestration logs, trimming stages 2-3 invocation scope, but stage 4 review must not be trimmed
 
-## 3. 阻断点
+## 3. Blocking Points
 
-- 功能名无法解析
-- 规范检索失败且无法降级
-- 影响链未闭环的阻断性依赖
-- Agent 调用失败且无备用方案
-- 文档 P0 失败且无法自修复
+- Feature name cannot be parsed
+- Specification retrieval fails and cannot be degraded
+- Impact chain has unclosed blocking dependency
+- Agent invocation fails and no fallback exists
+- Document P0 failure and cannot self-repair
 
-停止时按 SKILL.md 原则 #9 处理：落盘 → 同步 → 通知 → 兜底。
+When stopping, handle per SKILL.md principle #9: disk write → sync → notify → fallback.
 
-## 4. wework-bot 通知差异
+## 4. wework-bot Notification Differences
 
-> 强制要求见 SKILL.md 原则 #7/#9。
+> Mandatory requirements see SKILL.md principles #7/#9.
 
-- **init 成功**：`📋 类型` 填「项目初始化」
-- **更新模式**：`🎯 结论` 体现「更新（T1/T2/T3）」；`📦 产物` 注明「更新 N / 保持 N / 重写章节 M」；T1更新须注明"仅变更章节"，T2须注明"局部同步"
+- **init success**: `📋 Type` fill "Project Initialization"
+- **Update mode**: `🎯 Conclusion` reflect "Update (T1/T2/T3)"; `📦 Artifacts` note "Update N / Keep N / Rewrite chapter M"; T1 update must note "only changed chapters", T2 must note "partial sync"
 
-## 5. Skill / Agent 分派
+## 5. Skill / Agent Dispatch
 
-> Agent 契约详情见 `agent-contract.md`。
+> Agent contract details see `agent-contract.md`.
 
-| 类型 | 名称 | 用途 |
-|------|------|------|
-| Skill | `import-docs` / `wework-bot` | 阶段 6 同步与通知 |
-| Agent | `docs-retriever` | 阶段 1 规范检索 |
-| Agent | `doc-impact-analyzer` | 阶段 2 影响链分析 |
-| Agent | `codes-builder` / `doc-architect` | 阶段 3 架构设计 |
-| Agent | `doc-mermaid-expert` / `doc-reviewer` / `doc-markdown-tester` / `doc-quality-tracker` | 阶段 4 审查与统计 |
-| Agent | `docs-builder` | 阶段 5 知识策展 |
+| Type | Name | Purpose |
+|------|------|---------|
+| Skill | `import-docs` / `wework-bot` | Stage 6 sync and notification |
+| Agent | `docs-retriever` | Stage 1 specification retrieval |
+| Agent | `doc-impact-analyzer` | Stage 2 impact chain analysis |
+| Agent | `codes-builder` / `doc-architect` | Stage 3 architecture design |
+| Agent | `doc-mermaid-expert` / `doc-reviewer` / `doc-markdown-tester` / `doc-quality-tracker` | Stage 4 review and statistics |
+| Agent | `docs-builder` | Stage 5 knowledge curation |
 
-## 6. Agent 调用门禁
+## 6. Agent Invocation Gate
 
-> SKILL.md 原则 #4 定义统一要求。本节补充阶段绑定。
+> SKILL.md principle #4 defines unified requirements. This section supplements stage binding.
 
-- **阶段 1 退出前**：`docs-retriever` 校验通过
-- **阶段 2 退出前**：`doc-impact-analyzer` 校验通过
-- **阶段 3 退出前**：`doc-architect` 校验通过
+- **Before Stage 1 exit**: `docs-retriever` validation passed
+- **Before Stage 2 exit**: `doc-impact-analyzer` validation passed
+- **Before Stage 3 exit**: `doc-architect` validation passed
 
-未通过不得标记完成、不得进入下一阶段（阻断/降级流程除外）。
+Must not mark complete or enter next stage if not passed (blocking/degradation flow excepted).
 
-校验脚本：
+Validation script:
 ```bash
-node skills/implement-code/scripts/validate-agent-output.js --agent <agent名> --text "<输出>"
+node skills/implement-code/scripts/validate-agent-output.js --agent <agent-name> --text "<output>"
 ```
 
-## 7. 编排会话日志
+## 7. Orchestration Session Logs
 
-> 详细见 `orchestration-logging.md`。
+> See `orchestration-logging.md` for details.
 
-1. 每次 skill/agent/MCP/memory/shared 交互后立即追加日志
-2. 工具：`node scripts/log-orchestration.js`（参数见 `orchestration-logging.md §1.3`）
-3. 阻断兜底：对已发生交互仍须补齐日志后再结束
+1. Append log immediately after every skill/agent/MCP/memory/shared interaction
+2. Tool: `node scripts/log-orchestration.js` (parameters see `orchestration-logging.md` §1.3)
+3. Blocking fallback: Still must complete logs for occurred interactions before ending
 
-## 8. 执行记忆（阶段 5 强制）
+## 8. Execution Memory (Stage 5 Mandatory)
 
-每次功能文档执行完毕后，阶段 5 保存文档后须调用 `execution-memory.js` 写入本次记录：
+After each feature document execution completes, after saving documents in stage 5 must invoke `execution-memory.js` to write this session's record:
 
 ```bash
 node skills/generate-document/scripts/execution-memory.js write /tmp/session-<feature>.json
 ```
 
-记录内容须包含：功能指纹、实际变更级别、调用 agent 列表、质量问题（P0/P1/P2）、bad cases、是否阻断。
+Record content must include: feature fingerprint, actual change level, invoked agent list, quality issues (P0/P1/P2), bad cases, whether blocked.
 
-## 9. 自我改进触发（weekly 命令）
+## 9. Self-Improvement Trigger (weekly Command)
 
-`weekly` 命令在阶段 6 完成后，须自动触发 `self-improve.js`：
+`weekly` command after stage 6 completes, must automatically trigger `self-improve.js`:
 
 ```bash
-node skills/generate-document/scripts/self-improve.js --since <本周一起始日期> --output docs/周报/<周>/self-improve-proposal.md
+node skills/generate-document/scripts/self-improve.js --since <this Monday's date> --output docs/weekly/<week>/self-improve-proposal.md
 ```
 
-输出追加到周报末尾作为"系统自改进提案"小节。
+Output appended to the end of weekly report as "System Self-Improvement Proposal" section.

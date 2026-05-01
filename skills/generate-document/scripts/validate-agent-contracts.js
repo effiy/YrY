@@ -3,20 +3,20 @@
 /**
  * validate-agent-contracts
  *
- * 目标：轻量级契约校验，验证 skill 文件引用的 agent 名字是否：
- *   1. 在 agents/ 目录存在对应的 .md 文件
- *   2. 在 shared/agent-skill-boundaries.md 中被列出
+ * Goal: lightweight contract validation, verifying whether agent names referenced in skill files:
+ *   1. Have a corresponding .md file in the agents/ directory
+ *   2. Are listed in shared/agent-skill-boundaries.md
  *
- * 用法：
+ * Usage:
  *   node scripts/validate-agent-contracts.js [--fix] [--strict]
  *
- * 选项：
- *   --fix     仅输出建议修复的 agent 名映射表
- *   --strict  将 boundaries 缺失也视为错误（默认仅警告）
+ * Options:
+ *   --fix     Only output suggested agent name mapping table
+ *   --strict  Treat boundaries missing as error (default: warning only)
  *
- * 退出码：
- *   0 无问题
- *   1 发现 orphaned agent 引用
+ * Exit codes:
+ *   0 no issues
+ *   1 orphaned agent references found
  */
 
 const fs = require('fs');
@@ -29,7 +29,7 @@ const SKILLS_DIR = path.join(PROJECT_ROOT, 'skills');
 
 const BOUNDARIES_FILE = path.join(SHARED_DIR, 'agent-skill-boundaries.md');
 
-// 已知不是 agent 的 skill/system 标识符（避免误报）
+// Known non-agent skill/system identifiers (avoid false positives)
 const KNOWN_NON_AGENTS = new Set([
   'generate-document', 'implement-code', 'import-docs', 'wework-bot',
   'code-review', 'e2e-testing', 'find-agents', 'find-skills',
@@ -43,47 +43,49 @@ const KNOWN_NON_AGENTS = new Set([
   'workflow', 'process-summary', 'artifact-contracts', 'verification-gate',
   'code-implementation', 'implement-code-testing', 'e2e-testing-md',
   'test-page', 'natural-week',
-  // 常见编程关键字/变量名
+  'document-pipeline', 'code-pipeline', 'default-pipeline',
+  'execution-memory', 'self-improve', 'security', 'performance',
+  // Common programming keywords/variable names
   'const', 'let', 'var', 'function', 'return', 'if', 'else', 'for', 'while',
   'async', 'await', 'try', 'catch', 'throw', 'new', 'this', 'true', 'false',
   'null', 'undefined', 'typeof', 'instanceof', 'import', 'export', 'default',
   'from', 'as', 'class', 'extends', 'super', 'static', 'get', 'set',
   'is', 'has', 'can', 'should', 'will', 'do', 'did', 'are', 'was', 'were',
   'not', 'and', 'or', 'but', 'with', 'without', 'into', 'onto', 'upon',
-  // 常见技术术语
+  // Common technical terms
   'node', 'npm', 'npx', 'git', 'bash', 'python', 'uv', 'pip', 'pip3',
   'docker', 'kubectl', 'helm', 'terraform', 'ansible',
   'main', 'master', 'develop', 'staging', 'production', 'prod',
   'docs', 'skills', 'agents', 'shared', 'commands', 'eval', 'scripts',
   'src', 'dist', 'build', 'public', 'assets', 'config',
-  // HTML/CSS/测试属性
+  // HTML/CSS/test attributes
   'data-testid', 'aria-label', 'aria-hidden', 'role', 'class', 'id',
   'type', 'name', 'value', 'placeholder', 'disabled', 'readonly',
   'style', 'href', 'src', 'alt', 'title', 'target', 'rel',
   'ref', 'reactive', 'computed', 'watch', 'emits', 'props', 'slots',
   'window', 'document', 'console', 'localstorage', 'sessionstorage',
-  // 常见操作动词
+  // Common action verbs
   'load', 'save', 'create', 'update', 'delete', 'handle', 'toggle',
   'reset', 'submit', 'fetch', 'send', 'receive', 'parse', 'stringify',
   'format', 'validate', 'sanitize', 'encode', 'decode', 'encrypt', 'decrypt',
   'compress', 'decompress', 'upload', 'download', 'render', 'mount',
-  // CLI/配置术语
+  // CLI/config terms
   'command', 'option', 'flag', 'arg', 'args', 'env', 'ext', 'exts',
   'prefix', 'suffix', 'path', 'dir', 'file', 'filename', 'content',
   'list', 'item', 'items', 'entry', 'entries', 'key', 'keys', 'value', 'values',
   'session', 'sessions', 'token', 'tokens', 'header', 'headers',
   'body', 'query', 'params', 'param', 'route', 'router', 'middleware',
-  // 状态/结果词
+  // Status/result words
   'success', 'error', 'failed', 'pending', 'overwritten', 'created',
   'updated', 'deleted', 'skipped', 'ignored', 'included', 'excluded',
-  // 其他常见误报
+  // Other common false positives
   'stage', 'gate', 'notify', 'memory', 'skill', 'agent', 'mcp', 'other',
   'kind', 'case', 'good', 'bad', 'neutral', 'lesson', 'text',
   'scenario', 'operation', 'operations', 'tags', 'description',
   'triggers', 'tools', 'user', 'story', 'model', 'api', 'url', 'uri',
   'json', 'yaml', 'yml', 'xml', 'csv', 'html', 'css', 'js', 'ts', 'md',
   'playwright', 'filesystem', 'browser', 'server', 'client',
-  // CSS / testid 类名（常见误报）
+  // CSS / testid class names (common false positives)
   'toolbar-container', 'toolbar-download-btn', 'toolbar-filename-input',
   'toolbar-result', 'toolbar-error-msg', 'testid',
 ]);
@@ -93,14 +95,14 @@ function parseArgs(argv) {
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--help' || a === '-h') {
-      console.log(`用法:
+      console.log(`Usage:
   node scripts/validate-agent-contracts.js [--fix] [--strict]
 
-选项:
-  --fix     仅输出建议修复的 agent 名映射表
-  --strict  将 boundaries 缺失也视为错误（默认仅警告）
+Options:
+  --fix     Only output suggested agent name mapping table
+  --strict  Treat boundaries missing as error (default warning only)
 
-示例:
+Examples:
   node scripts/validate-agent-contracts.js
   node scripts/validate-agent-contracts.js --strict
 `);
@@ -125,7 +127,7 @@ function extractAgentsFromBoundaries() {
   if (!fs.existsSync(BOUNDARIES_FILE)) return agents;
 
   const text = fs.readFileSync(BOUNDARIES_FILE, 'utf8');
-  // 匹配表格中的 `agent-name` 和 YAML frontmatter 中的 name
+  // Match `agent-name` in tables and name in YAML frontmatter
   const tableMatches = text.match(/`([a-z][a-z0-9-]*)`/g) || [];
   tableMatches.forEach((m) => {
     const name = m.slice(1, -1);
@@ -142,10 +144,10 @@ function extractAgentRefsFromFile(filePath) {
   const text = fs.readFileSync(filePath, 'utf8');
   const lines = text.split('\n');
 
-  // 匹配 Markdown 中的 agent 引用：
-  // 1. 反引号包裹：`agent-name`
-  // 2. 表格中的 agent 名
-  // 3. 技能契约中的 agent 引用
+  // Match agent references in Markdown:
+  // 1. Backtick-wrapped: `agent-name`
+  // 2. Agent names in tables
+  // 3. Agent references in skill contracts
   const agentPattern = /`([a-z][a-z0-9-]*)`/g;
 
   lines.forEach((line, idx) => {
@@ -153,7 +155,7 @@ function extractAgentRefsFromFile(filePath) {
     while ((m = agentPattern.exec(line)) !== null) {
       const name = m[1];
       if (KNOWN_NON_AGENTS.has(name)) continue;
-      // 过滤掉一些常见的非 agent 引用（如文件路径、命令名）
+      // Filter common non-agent references (file paths, command names)
       if (name.match(/^(node|npm|npx|git|bash|python|uv|pip)$/)) continue;
       if (name.match(/^(docs|skills|agents|shared|commands|eval)$/)) continue;
       refs.push({ name, line: idx + 1, text: line.trim() });
@@ -194,9 +196,9 @@ function main() {
   const skillFiles = findSkillFiles();
 
   if (args.fix) {
-    // 输出建议的 agent 名映射表
-    console.log('# 建议的 Agent 名映射修复\n');
-    console.log('| 文件中出现的名字 | 建议改为 | 原因 |');
+    // Output suggested agent name mapping table
+    console.log('# Suggested Agent Name Mapping Fixes\n');
+    console.log('| Name in file | Suggested change | Reason |');
     console.log('|---|---|---|');
 
     const knownMappings = {
@@ -211,7 +213,7 @@ function main() {
     };
 
     for (const [oldName, newName] of Object.entries(knownMappings)) {
-      console.log(`| \`${oldName}\` | \`${newName}\` | 与实际 agent 文件名不一致 |`);
+      console.log(`| \`${oldName}\` | \`${newName}\` | Inconsistent with actual agent file name |`);
     }
     return;
   }
@@ -219,18 +221,18 @@ function main() {
   const issues = [];
   const warnings = [];
 
-  // 1. 检查 boundaries 中列出的 agent 是否有对应文件
+  // 1. Check whether agents listed in boundaries have corresponding files
   for (const name of boundariesAgents) {
     if (!agentFiles.has(name)) {
       issues.push({
         type: 'boundaries-orphan',
-        message: `agent-skill-boundaries.md 引用 \`${name}\`，但 agents/${name}.md 不存在`,
+        message: `agent-skill-boundaries.md references \`${name}\`, but agents/${name}.md does not exist`,
         file: 'shared/agent-skill-boundaries.md',
       });
     }
   }
 
-  // 2. 检查 skill 文件中引用的 agent
+  // 2. Check agent references in skill files
   for (const skillFile of skillFiles) {
     const refs = extractAgentRefsFromFile(skillFile);
     const seen = new Set();
@@ -241,31 +243,31 @@ function main() {
 
       const relPath = path.relative(PROJECT_ROOT, skillFile);
 
-      // 检查是否有对应文件
+      // Check for corresponding file
       if (!agentFiles.has(ref.name)) {
-        // 可能是已知的旧名字
+        // May be a known legacy name
         if (['spec-retriever', 'impact-analyst', 'architect', 'planner', 'quality-tracker', 'knowledge-curator'].includes(ref.name)) {
           issues.push({
             type: 'orphan-legacy',
-            message: `\`${ref.name}\` 是旧名字，与实际 agent 文件不一致`,
+            message: `\`${ref.name}\` is a legacy name, inconsistent with actual agent file`,
             file: relPath,
             line: ref.line,
           });
         } else {
           issues.push({
             type: 'orphan-unknown',
-            message: `引用 \`${ref.name}\`，但 agents/${ref.name}.md 不存在`,
+            message: `References \`${ref.name}\`, but agents/${ref.name}.md does not exist`,
             file: relPath,
             line: ref.line,
           });
         }
       }
 
-      // 检查是否在 boundaries 中
+      // Check whether listed in boundaries
       if (!boundariesAgents.has(ref.name) && agentFiles.has(ref.name)) {
         warnings.push({
           type: 'boundaries-missing',
-          message: `引用 \`${ref.name}\`，但在 agent-skill-boundaries.md 中未列出`,
+          message: `References \`${ref.name}\`, but not listed in agent-skill-boundaries.md`,
           file: relPath,
           line: ref.line,
         });
@@ -273,20 +275,20 @@ function main() {
     }
   }
 
-  // 3. 输出结果
-  console.log('# Agent 契约校验报告\n');
-  console.log(`扫描文件: ${skillFiles.length} 个 skill/rule 文件`);
-  console.log(`agents/ 目录: ${agentFiles.size} 个 agent 文件`);
-  console.log(`boundaries 登记: ${boundariesAgents.size} 个 agent`);
+  // 3. Output results
+  console.log('# Agent Contract Validation Report\n');
+  console.log(`Scanned files: ${skillFiles.length} skill/rule files`);
+  console.log(`agents/ directory: ${agentFiles.size} agent files`);
+  console.log(`boundaries registered: ${boundariesAgents.size} agents`);
   console.log('');
 
   if (issues.length === 0 && warnings.length === 0) {
-    console.log('✅ 所有 agent 引用一致，无问题。\n');
+    console.log('✅ All agent references consistent, no issues.\n');
     process.exit(0);
   }
 
   if (issues.length > 0) {
-    console.log(`## ❌ 错误 (${issues.length})\n`);
+    console.log(`## ❌ Errors (${issues.length})\n`);
     for (const issue of issues) {
       const loc = issue.line ? `${issue.file}:${issue.line}` : issue.file;
       console.log(`- [${issue.type}] ${loc} — ${issue.message}`);
@@ -295,7 +297,7 @@ function main() {
   }
 
   if (warnings.length > 0) {
-    console.log(`## ⚠️ 警告 (${warnings.length})\n`);
+    console.log(`## ⚠️ Warnings (${warnings.length})\n`);
     for (const warn of warnings) {
       console.log(`- [${warn.type}] ${warn.file}:${warn.line} — ${warn.message}`);
     }
@@ -303,7 +305,7 @@ function main() {
   }
 
   if (issues.some((i) => i.type === 'orphan-legacy')) {
-    console.log('💡 提示：使用 `--fix` 查看建议的 agent 名映射修复表。\n');
+    console.log('💡 Tip: Use `--fix` to view suggested agent name mapping fix table.\n');
   }
 
   if (args.strict && warnings.length > 0) {
