@@ -110,7 +110,7 @@ Update: Overwrite affected files; patch version `+1`, breaking changes allow maj
 
 ### import-docs
 
-`node .claude/skills/import-docs/scripts/import-docs.js --dir docs --exts md`
+`node skills/import-docs/scripts/import-docs.js --dir docs --exts md`
 Record real result for wework-bot use. When `API_X_TOKEN` is missing, record "Sync not executed this round".
 
 ### wework-bot

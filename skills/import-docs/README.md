@@ -8,16 +8,16 @@
 
 ```bash
 # 自动检测模式
-API_X_TOKEN=*** node .claude/skills/import-docs/scripts/import-docs.js
+API_X_TOKEN=*** node skills/import-docs/scripts/import-docs.js
 
 # 指定目录
-API_X_TOKEN=*** node .claude/skills/import-docs/scripts/import-docs.js --dir docs --exts md
+API_X_TOKEN=*** node skills/import-docs/scripts/import-docs.js --dir docs --exts md
 ```
 
 ## 列举 docs 文件（不需要 token）
 
 ```bash
-node .claude/skills/import-docs/scripts/import-docs.js list
+node skills/import-docs/scripts/import-docs.js list
 ```
 
 ## 常用参数
