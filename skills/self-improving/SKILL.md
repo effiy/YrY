@@ -1,104 +1,103 @@
 ---
 name: self-improving
 description: |
-  Agent harness performance system. Measures, aggregates, and drives
-  closed-loop improvement for the generate-document and implement-code
-  pipelines. Harvests per-document Workflow Standardization Review and
-  System Architecture Evolution Thinking, then feeds consolidated
-  performance intelligence into the weekly report.
+  Performance measurement and aggregation for the build-feature pipeline.
+  Collects per-document Workflow Standardization Review and
+  System Architecture Evolution Thinking, producing consolidated
+  data consumed by reporter during weekly report generation.
 user_invocable: true
 lifecycle: default-pipeline
-agents:
-  required:
-    - weekly-analyzer
-  optional: []
 contracts:
-  output: shared/agent-output-contract.md
+  output: shared/contracts.md
 ---
 
 # self-improving
 
-## Positioning
+```mermaid
+graph TD
+    A[Feature doc generated] --> B[/self-improving collect]
+    B --> C[Scan §Workflow Review + §Arch Evolution]
+    C --> D[Write cache JSONL]
+    D --> E{Aggregate trigger?}
+    E -->|Weekly| F[/self-improving weekly]
+    F --> G[Generate aggregate report]
+    G --> H[reporter consumes for weekly]
+```
 
-`self-improving` is the **agent harness performance system** for the documentation and implementation pipeline. It treats every feature delivery as a performance sample, harvesting standardized reflection sections to measure process friction, architectural drift, and feedback-loop health across the entire agent ecosystem.
+## 定位
 
-It does not generate primary artifacts; it **measures** how well the harness produces them, **aggregates** performance signals into trends, and **drives** closed-loop improvement through the weekly report.
+`self-improving` 是 `build-feature` 统一流水线的 **agent 调度性能系统**。它将每一次功能交付视为性能样本，收集标准化反思章节来衡量流程摩擦、架构漂移和反馈循环健康状况，覆盖整个 agent 生态系统。
 
-### When to use
+它不生成主产物；它**衡量**调度系统产出这些产物的效率，**聚合**性能信号形成趋势，并通过周报**驱动**闭环改进。
 
-- After any `generate-document` or `implement-code` run, to persist per-document reflection data.
-- During `/generate-document weekly`, to aggregate reflection data into the weekly report §5.2 and §5.3.
-- Manually via `/self-improving collect` to refresh the aggregation cache.
+### 何时使用
 
-### When NOT to use
+- 在任意 `build-feature`（document 或 code mode）运行之后，持久化单文档反思数据。
+- 在周报生成期间，将反思数据聚合到周报工作流审查和架构演进章节中。
+- 手动通过 `/self-improving collect` 刷新聚合缓存。
 
-- When no feature documents exist yet (empty harvest is normal, but the skill will report it).
-- As a substitute for `weekly-analyzer` (this skill supplies *inputs* to the analyzer, it does not replace it).
+### 何时不使用
 
-## Commands
+- 当尚不存在任何功能文档时（空收获属于正常情况，但 skill 会报告）。
 
-### Collect per-document reflections
+## 命令
+
+### 收集单文档反思
 
 ```
 /self-improving collect
 ```
 
-Scans `docs/<feature-name>/*.md` for `Workflow Standardization Review` and `System Architecture Evolution Thinking` sections, writes consolidated cache to `docs/.memory/self-improvement-cache.jsonl`.
+扫描 `docs/<feature-name>/*.md` 中的 `Workflow Standardization Review` 和 `System Architecture Evolution Thinking` 章节，将合并后的缓存写入 `docs/.memory/self-improvement-cache.jsonl`。
 
-### Generate weekly aggregation
+### 生成周度聚合
 
 ```
 /self-improving weekly <YYYY-MM-DD>
 ```
 
-Reads the cache, filters by the specified natural week, and produces `docs/weekly/<week-range>/self-improvement-aggregate.md`. This file is consumed by `weekly-analyzer` when composing the weekly report.
+读取缓存，按指定自然周过滤，产出 `docs/weekly/<week-range>/self-improvement-aggregate.md`。此文件由 `reporter` agent 在编制周报时消费。
 
-## Input Artifacts
+## 输入产物
 
-- `docs/<feature-name>/01_requirement-document.md`
-- `docs/<feature-name>/02_requirement-tasks.md`
-- `docs/<feature-name>/03_design-document.md`
-- `docs/<feature-name>/04_usage-document.md`
-- `docs/<feature-name>/05_dynamic-checklist.md`
-- `docs/<feature-name>/06_process-summary.md`
-- `docs/<feature-name>/07_project-report.md`
+- `docs/<feature-name>.md` — 包含 §1–§4 + 后记的故事中心功能文档
 
-## Output Artifacts
+## 输出产物
 
-| Artifact | Path | Purpose |
+| 产物 | 路径 | 用途 |
 |----------|------|---------|
-| Cache | `docs/.memory/self-improvement-cache.jsonl` | Append-only line-delimited JSON of extracted sections |
-| Weekly aggregate | `docs/weekly/<week>/self-improvement-aggregate.md` | Markdown tables ready for injection into weekly report |
+| 缓存 | `docs/.memory/self-improvement-cache.jsonl` | 追加式行分隔 JSON，存储提取出的章节内容 |
+| 周度聚合 | `docs/weekly/<week>/self-improvement-aggregate.md` | Markdown 表格，可直接注入周报 |
 
-## Delta Rules
+## 增量规则
 
-### 1. Harvest contract enforcement
+### 1. 收集契约执行
 
-Every document produced by `generate-document` or `implement-code` MUST contain the two standardized reflection sections. If a document is missing them, `self-improving` logs a P1 gap and appends a stub reminder to the cache.
+每份由 `build-feature`（document 或 code mode）产生的文档必须包含两个标准化反思章节。若文档缺失这些章节，`self-improving` 记录 P1 缺口并向缓存追加存根提醒。
 
-### 2. Aggregation logic
+### 2. 聚合逻辑
 
-- **Workflow Standardization Review**: Count "Yes/No/Partial" answers per question across all features; surface repeated manual operations and missing decision criteria.
-- **System Architecture Evolution Thinking**: Extract bottleneck type (performance / maintainability / scalability / security / none) and evolution-node descriptions; flag features that share the same bottleneck.
+- **工作流标准化复盘**：统计每项问题跨所有功能的"Yes/No/Partial"答案；暴露重复的手动操作和缺失的决策标准。
+- **系统架构演进思考**：提取瓶颈类型（性能 / 可维护性 / 可扩展性 / 安全性 / 无 / N/A）和演进节点描述；标记共享同一瓶颈的功能。
 
-### 3. Weekly hand-off
+### 3. 周度交接
 
-`weekly-analyzer` MUST read `self-improvement-aggregate.md` before writing weekly report §5.2 and §5.3. The analyzer may interpret and prioritize, but it must not fabricate data that contradicts the aggregate.
+`reporter` agent 在编写周报工作流审查和架构演进章节之前必须读取 `self-improvement-aggregate.md`。reporter 可以解读和排序优先级，但不得编造与聚合数据矛盾的内容。
 
-## Stop Conditions
+## 停止条件
 
-- No feature directories under `docs/`: output empty aggregate with note "no active user story cases this week".
-- Cache corruption: rebuild from full scan instead of incremental append.
+- `docs/` 下无功能目录：输出空聚合并注释"本周无活跃用户故事用例"。
+- 缓存损坏：从全量扫描重建而非增量追加。
 
-## Supporting Files
+## 支持文件
 
 ```
-.claude/skills/self-improving/
-├── SKILL.md                    # Entry + manifest (this file)
-├── README.md                   # Quick start
+skills/self-improving/
+├── SKILL.md                    # 入口 + 清单（本文件）
+├── README.md                   # 快速开始
 ├── rules/
-│   ├── collection-contract.md  # Per-document section format + extraction rules
-│   └── weekly-integration.md   # How aggregate feeds into weekly-report.md
+│   ├── collection-contract.md  # 单文档章节格式 + 提取规则
+│   └── weekly-integration.md   # 聚合数据如何输入 weekly-report.md
 └── scripts/
     └── collect-self-improvement.js
 ```

@@ -3,7 +3,7 @@
 /**
  * collect-self-improvement
  *
- * Scans docs/<feature>/*.md for Workflow Standardization Review and
+ * Scans docs/<feature>.md for Workflow Standardization Review and
  * System Architecture Evolution Thinking sections, aggregates them,
  * and writes a weekly Markdown report.
  *
@@ -84,12 +84,8 @@ async function findFeatureDocs() {
   try {
     const entries = await fsp.readdir(DOCS_DIR, { withFileTypes: true });
     for (const entry of entries) {
-      if (entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'weekly' && entry.name !== '99_agent-runs') {
-        const featureDir = path.join(DOCS_DIR, entry.name);
-        const files = (await fsp.readdir(featureDir))
-          .filter(f => f.endsWith('.md'))
-          .map(f => path.join(featureDir, f));
-        features.push({ feature: entry.name, files });
+      if (entry.isFile() && entry.name.endsWith('.md') && !entry.name.startsWith('.')) {
+        features.push({ feature: path.basename(entry.name, '.md'), files: [path.join(DOCS_DIR, entry.name)] });
       }
     }
   } catch {
@@ -121,30 +117,30 @@ function extractSection(text, startRegex, endRegex) {
 
 function extractAnswer(block, questionNumber) {
   if (!block) return { answer: 'missing', evidence: 'missing' };
-  const qRegex = new RegExp(`^${questionNumber}\\.\\\\s*\\*\\*(.+?)\\*\\*`, 'im');
+  const qRegex = new RegExp(`^${questionNumber}\\.\\s*\\*\\*(.+?)\\*\\*`, 'im');
   const qMatch = block.match(qRegex);
   if (!qMatch) return { answer: 'missing', evidence: 'missing' };
 
-  const answerMatch = block.match(/Answer:\\s*(Yes|No|Partial|N\\/A)/i);
-  const evidenceMatch = block.match(/Evidence:\\s*(.+?)(?=\\n\\s*(?:\\d+\\.|## )|$)/is);
+  const answerMatch = block.match(/Answer:\s*(Yes|No|Partial|N\/A)/i);
+  const evidenceMatch = block.match(/Evidence:\s*(.+?)(?=\n\s*(?:\d+\.|## )|$)/is);
 
   return {
     answer: answerMatch ? answerMatch[1].trim() : 'missing',
-    evidence: evidenceMatch ? evidenceMatch[1].trim().replace(/\\s+/g, ' ') : 'missing'
+    evidence: evidenceMatch ? evidenceMatch[1].trim().replace(/\s+/g, ' ') : 'missing'
   };
 }
 
 function extractArchitecture(block) {
   if (!block) return { bottleneck: 'missing', evolution_node: 'missing', risk_rollback: 'missing' };
 
-  const bottleneckMatch = block.match(/\\*\\*A1[.\\s]*Current architecture bottleneck.*?\\n\\s*(?:-\\s*)?(.+?)(?=\\n\\s*(?:-\\s*\\*\\*A2|## )|$)/is);
-  const evolutionMatch = block.match(/\\*\\*A2[.\\s]*Next natural evolution node.*?\\n\\s*(?:-\\s*)?(.+?)(?=\\n\\s*(?:-\\s*\\*\\*A3|## )|$)/is);
-  const riskMatch = block.match(/\\*\\*A3[.\\s]*Risks and rollback plans.*?\\n\\s*(?:-\\s*)?(.+?)(?=\\n\\s*(?:## )|$)/is);
+  const bottleneckMatch = block.match(/\*\*A1[.\s]*Current architecture bottleneck.*?\n\s*(?:-\s*)?(.+?)(?=\n\s*(?:-\s*\*\*A2|## )|$)/is);
+  const evolutionMatch = block.match(/\*\*A2[.\s]*Next natural evolution node.*?\n\s*(?:-\s*)?(.+?)(?=\n\s*(?:-\s*\*\*A3|## )|$)/is);
+  const riskMatch = block.match(/\*\*A3[.\s]*Risks and rollback plans.*?\n\s*(?:-\s*)?(.+?)(?=\n\s*(?:## )|$)/is);
 
   return {
-    bottleneck: bottleneckMatch ? bottleneckMatch[1].trim().replace(/\\s+/g, ' ') : 'missing',
-    evolution_node: evolutionMatch ? evolutionMatch[1].trim().replace(/\\s+/g, ' ') : 'missing',
-    risk_rollback: riskMatch ? riskMatch[1].trim().replace(/\\s+/g, ' ') : 'missing'
+    bottleneck: bottleneckMatch ? bottleneckMatch[1].trim().replace(/\s+/g, ' ') : 'missing',
+    evolution_node: evolutionMatch ? evolutionMatch[1].trim().replace(/\s+/g, ' ') : 'missing',
+    risk_rollback: riskMatch ? riskMatch[1].trim().replace(/\s+/g, ' ') : 'missing'
   };
 }
 
@@ -155,14 +151,14 @@ async function processDocument(feature, filePath) {
 
   const wfBlock = extractSection(
     text,
-    /^##\\s+Workflow Standardization Review\\s*$/i,
-    /^(##\\s+System Architecture Evolution Thinking|##\\s+)\\s*$/i
+    /^##\s+Workflow Standardization Review\s*$/i,
+    /^(##\s+System Architecture Evolution Thinking|##\s+)\s*$/i
   );
 
   const archBlock = extractSection(
     text,
-    /^##\\s+System Architecture Evolution Thinking\\s*$/i,
-    /^##\\s+\\s*$/i
+    /^##\s+System Architecture Evolution Thinking\s*$/i,
+    /^##\s+\s*$/i
   );
 
   const hasWf = !!wfBlock && wfBlock.trim().length > 0;
@@ -173,7 +169,7 @@ async function processDocument(feature, filePath) {
     const missing = [];
     if (!hasWf) missing.push('Workflow Standardization Review');
     if (!hasArch) missing.push('System Architecture Evolution Thinking');
-    console.error(`P1 gap: missing ${missing.join(' and ')} in docs/${feature}/${doc}`);
+    console.error(`P1 gap: missing ${missing.join(' and ')} in docs/${feature}.md`);
   }
 
   const record = {
