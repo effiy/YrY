@@ -12,10 +12,10 @@ user_story: |
   both code and documents so that defects are intercepted before release, every
   verification is evidence-based, and quality trends drive continuous improvement.
 triggers:
-  - implement-code C1 (test-first: E2E test design + UI prototype)
-  - implement-code C2 (code review per module)
-  - implement-code C3 (full code review + smoke test)
-  - generate-document D4 (markdown QA + mermaid review + doc review + quality tracking)
+  - build-feature C1 (test-first: E2E test design + UI prototype)
+  - build-feature C2 (code review per module)
+  - build-feature C3 (full code review + smoke test)
+  - build-feature D4 (markdown QA + mermaid review + doc review + quality tracking)
   - Pre-commit quality gate
   - Post-save document review
 tools: ['Read', 'Write', 'Edit', 'Grep', 'Glob', 'Bash']

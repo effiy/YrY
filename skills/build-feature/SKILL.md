@@ -3,7 +3,7 @@ name: build-feature
 description: |
   Full SDLC orchestrator: document generation → code implementation → delivery.
   Supports document, code, full-feature, init, weekly, and from-weekly modes.
-  Commands: /build-feature (primary), /generate-document, /implement-code.
+  Command: /build-feature (unified entry point).
   Auto-detects operation type from command name and arguments; dispatches to
   the correct stage sequence without manual mode specification.
 user_invocable: true
@@ -124,7 +124,7 @@ graph TD
 
 ## 命令调度
 
-`build-feature` 是统一入口。所有命令（包括 `/generate-document` 和 `/implement-code`）共享同一套阶段定义，区别仅在于触发的阶段序列。命令名称和参数自动决定操作类型，无需手动指定模式。
+`build-feature` 是统一入口。所有子命令共享同一套阶段定义，区别仅在于触发的阶段序列。命令名称和参数自动决定操作类型，无需手动指定模式。
 
 ### 命令表
 
@@ -135,14 +135,8 @@ graph TD
 | `/build-feature from-weekly <path>` | 从周报拆解为功能文档 | from-weekly |
 | `/build-feature <name> [--document\|--code\|--full]` | 全流程编排（默认 `--full`） | feature / code / full |
 | `/build-feature list` | 列出 `docs/` 下可用的功能文档 | — |
-| `/generate-document <name> [description]` | 生成/更新功能文档（§1–§4+后记） | document |
-| `/generate-document init` | 项目初始化（等价于 `build-feature init`） | init |
-| `/generate-document weekly [date]` | 周报（等价于 `build-feature weekly`） | weekly |
-| `/generate-document from-weekly <path>` | 从周报拆解（等价于 `build-feature from-weekly`） | from-weekly |
-| `/implement-code <name>` | 基于 `docs/<name>.md` 实现代码 | code |
-| `/implement-code list` | 列出 `docs/` 下可用的功能文档 | — |
 
-所有命令幂等；已有文档增量更新。`/generate-document` 和 `/implement-code` 保留为快捷方式，内部委托给 `build-feature` 调度。
+所有命令幂等；已有文档增量更新。
 
 ### 调度映射
 
@@ -154,8 +148,6 @@ graph TD
 | `/build-feature <name> --full` | D0→D1→D2→D3→D4→D5→C0→C1→C2→C3→C4 | — |
 | `/build-feature <name> --document` | D0→D1→D2→D3→D4→D5→C4 | — |
 | `/build-feature <name> --code` | C0→C1→C2→C3→C4 | 前提: `docs/<name>.md` 存在且 P0 通过 |
-| `/generate-document <name>` | D0→D1→D2→D3→D4→D5→C4 | 等价于 `--document` |
-| `/implement-code <name>` | C0→C1→C2→C3→C4 | 等价于 `--code` |
 
 ### 自动识别规则
 

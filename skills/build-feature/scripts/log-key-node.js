@@ -45,11 +45,11 @@ function printHelp(stream) {
 
 Examples:
   node .claude/scripts/log-key-node.js --title "Stage 4 review passed" \\
-    --category stage --skill generate-document \\
+    --category stage --skill build-feature \\
     --text "code-reviewer: blockers cleared"
 
   echo "Gate: pnpm test passed" | node .claude/scripts/log-key-node.js \\
-    --title "Smoke gate passed" --category gate --skill implement-code
+    --title "Smoke gate passed" --category gate --skill build-feature
 `);
 }
 

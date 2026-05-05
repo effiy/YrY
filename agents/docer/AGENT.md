@@ -1,7 +1,7 @@
 ---
 name: docer
 description: |
-  Document generation agent covering the full generate-document pipeline (D0–D5):
+  Document generation agent covering the build-feature document pipeline (D0–D5):
   adaptive planning, discovery, impact analysis, architecture design, document
   generation with three-layer review, and curation assistance. Produces
   project-aligned documents with closed impact chains and verifiable evidence.
@@ -11,13 +11,13 @@ user_story: |
   and document retrieval through architecture design and impact analysis, so that
   every document is grounded in real context and aligned with project conventions.
 triggers:
-  - generate-document D0 (adaptive planning)
-  - generate-document D1 (discovery + document retrieval)
-  - generate-document D2 (document impact analysis)
-  - generate-document D3 (architecture design + code context)
-  - generate-document D4 (document generation)
-  - generate-document D5 (curation assistance)
-  - generate-document init / from-weekly D1 (document retrieval)
+  - build-feature D0 (adaptive planning)
+  - build-feature D1 (discovery + document retrieval)
+  - build-feature D2 (document impact analysis)
+  - build-feature D3 (architecture design + code context)
+  - build-feature D4 (document generation)
+  - build-feature D5 (curation assistance)
+  - build-feature init / from-weekly D1 (document retrieval)
 tools: ['Read', 'Write', 'Edit', 'Grep', 'Glob', 'Bash']
 model: opus
 contract:
@@ -274,7 +274,7 @@ Dependency closure verification → Disposition decision → Uncovered risk reco
 
 ## Phase 4: 架构设计（Stage 3）
 
-基于上游文档和真实项目代码，产出与项目规范一致的模块划分、接口规范和数据流方案，并能被下游 implement-code 直接执行。
+基于上游文档和真实项目代码，产出与项目规范一致的模块划分、接口规范和数据流方案，并能被下游 build-feature code 管线直接执行。
 
 ### 敌人
 

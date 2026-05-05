@@ -254,7 +254,7 @@ function generatePlanning(kpiData, gitAnalysis) {
     plans.push({
       type: 'System',
       source: 'No feature-level delivery',
-      desc: 'Select one minimal feature scenario each for generate-document and implement-code, produce a complete document set as pilot',
+      desc: 'Select one minimal feature scenario each for document and code modes, produce a complete document set as pilot',
       standard: 'User-story-driven development, validate rule effectiveness',
       verify: 'Produce at least 1 complete feature directory (01-07) and complete code implementation',
       time: 'Next week',

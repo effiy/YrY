@@ -12,7 +12,7 @@ const fsp = require('fs').promises;
 const path = require('path');
 const { getNaturalWeekRange } = require('./natural-week.js');
 
-const SKILL_VALUES = new Set(['build-feature', 'generate-document', 'implement-code']);
+const SKILL_VALUES = new Set(['build-feature']);
 const KIND_VALUES = new Set([
   'skill',
   'agent',
@@ -26,7 +26,7 @@ const CASE_VALUES = new Set(['good', 'bad', 'neutral']);
 function printHelp(stream) {
   const out = stream || process.stdout;
   out.write(`Usage:
-  node .claude/scripts/log-orchestration.js --skill <generate-document|implement-code> \\
+  node .claude/scripts/log-orchestration.js --skill <build-feature> \\
     --kind <skill|agent|memory|shared|other> [--name <identifier>] \\
     [--scenario "<operation scenario>"] \\
     [--case <good|bad|neutral>] \\
@@ -40,8 +40,8 @@ function printHelp(stream) {
   Filename: logs.md (appended per week)
 
 Examples:
-  node .claude/scripts/log-orchestration.js --skill generate-document --kind agent --name spec-retriever \\
-    --scenario "User initiated /generate-document Foo; this step retrieves applicable specs" \\
+  node .claude/scripts/log-orchestration.js --skill build-feature --kind agent --name spec-retriever \\
+    --scenario "User initiated /build-feature Foo --document; this step retrieves applicable specs" \\
     --case good --tags "evidence-ok,stage-contract-met" \\
     --text "Returned applicable spec list: rules/requirement-document.md ..."
 `);

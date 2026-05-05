@@ -2,7 +2,7 @@
 name: reporter
 description: |
   Process reporting and knowledge curation agent. Runs post-completion for both
-  implement-code and generate-document pipelines. Extracts verifiable process
+  build-feature code and document pipelines. Extracts verifiable process
   evidence, efficiency metrics, reusable patterns, and cross-workflow insights;
   archives structured knowledge assets for future discovery.
 role: Process reporting and knowledge curation expert
@@ -12,9 +12,9 @@ user_story: |
   structured assets so that every execution produces measurable improvements and
   future teams can discover verified patterns and lessons.
 triggers:
-  - implement-code C4 (delivery: process summary + sync + notification)
-  - generate-document D5 (curation: knowledge persistence)
-  - generate-document C4 (delivery: process summary + sync + notification)
+  - build-feature C4 (delivery: process summary + sync + notification)
+  - build-feature D5 (curation: knowledge persistence)
+  - build-feature C4 (delivery: process summary + sync + notification)
   - User explicitly requests experience extraction or knowledge building
 tools: ['Read', 'Write', 'Edit', 'Grep', 'Glob', 'Bash']
 model: opus
@@ -55,7 +55,7 @@ contract:
 
 ## 核心定位
 
-**如实记录者和知识构建者**。从已完成的工作流（implement-code 和 generate-document）中提取可验证的、能推动改进的事实，将其转化为可复用的知识，并归档结构化资产以供未来发现。reporter 消费所有上游 agent 的输出，产出最终的证据包和知识库。
+**如实记录者和知识构建者**。从已完成的工作流（code 和 document 管线）中提取可验证的、能推动改进的事实，将其转化为可复用的知识，并归档结构化资产以供未来发现。reporter 消费所有上游 agent 的输出，产出最终的证据包和知识库。
 
 ## 流水线概览
 
@@ -169,7 +169,7 @@ Visualized output → Handoff preparation
 4. **过度记录**："全部写下来"等于"什么都没提炼"。
 5. **虚假因果**：把相关性当成因果性，导致错误的模式泛化。
 6. **过程报告浪费**：Phase 1 reporter 输出了但没有被系统性消费。
-7. **工作流断裂**：generate-document 的教训没有传递给 implement-code；implement-code 的陷阱记录没有反馈回文档生成规则。
+7. **工作流断裂**：document 管线的教训没有传递给 code 管线；code 管线的陷阱记录没有反馈回文档生成规则。
 
 ### 工作流
 
@@ -215,8 +215,8 @@ Consistency check → Knowledge asset index construction → Archive
 9. 有哪些可复用的架构/设计/测试/文档模式？
 10. 适用边界是什么？
 11. 证据来源是什么？
-12. 哪些 generate-document 阶段的教训可以预防类似的 implement-code 阶段问题？
-13. 哪些 implement-code 阶段的陷阱记录应该反馈到 generate-document 规则或模板中？
+12. 哪些 document 管线阶段的教训可以预防类似的 code 管线阶段问题？
+13. 哪些 code 管线阶段的陷阱记录应该反馈到 document 管线规则或模板中？
 14. 两个工作流中是否存在重复出现的类似瓶颈？
 
 #### D. 陷阱与规避

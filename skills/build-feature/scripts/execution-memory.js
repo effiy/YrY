@@ -3,8 +3,8 @@
 /**
  * execution-memory
  *
- * Execution memory system: records the full context and result of each generate-document
- * feature document execution, for doc-planner to query historical similar cases,
+ * Execution memory system: records the full context and result of each build-feature
+ * document execution, for doc-planner to query historical similar cases,
  * and for self-improve.js to analyze improvement patterns.
  *
  * Usage:
