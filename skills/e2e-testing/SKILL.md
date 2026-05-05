@@ -4,7 +4,7 @@ description: |
   Design E2E test schemes for UI user flow scenarios, recommending manual browser
   verification + data-testid strategy. Used when dynamic checklists or requirement
   tasks contain UI operation scenarios. When combined with build-feature code mode, output
-  must satisfy Gate A/B (see ../build-feature/rules/tester.md).
+  must satisfy Gate A/B (see ../../agents/tester/AGENT.md).
 user_invocable: true
 lifecycle: default-pipeline
 ---
@@ -33,7 +33,7 @@ graph LR
 
 - **编码前（Gate A）— 测试优先**：交付物必须支持"真实入口上的主路径 MVP"——例如可操作的 `tests/e2e/<feature>/…-checklist.md` 步骤、推荐的 `data-testid` 列表，并与 `02`/`05` 中的 P0 场景一致。**代码实现开始前，测试方案和验收标准必须就绪。**
 - **编码后（Gate B）**：用例骨架必须可由 AI 自动化执行；若场景缺少充分断言，明确写"前置信息不足：…"而非编造通过条件。
-- **真源**：准入基准（什么算证据、什么算阻断）由 **`../build-feature/rules/tester.md`** 定义；本 skill 不重新定义 Gate A/B。
+- **真源**：准入基准（什么算证据、什么算阻断）由 **`../../agents/tester/AGENT.md`** 定义；本 skill 不重新定义 Gate A/B。
 
 ## 输入
 

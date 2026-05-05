@@ -50,15 +50,15 @@ graph LR
 ## 工作流程
 
 1. 参数解析：从用户请求中提取目录、扩展名、前缀
-2. 枚举候选（可选）：`node scripts/import-docs.js list`
+2. 枚举候选（可选）：`node skills/import-docs/scripts/import-docs.js list`
 3. 安全检查：回复中不展示 token
-4. 执行导入：`node scripts/import-docs.js --dir docs --exts md`
+4. 执行导入：`node skills/import-docs/scripts/import-docs.js --dir docs --exts md`
 5. 结果汇总：已找到文件数、新建 / 覆盖 / 失败计数
 6. 返回通知摘要：`☁️ 文档同步：docs → 远端（新建 N，覆盖 N，失败 N）`
 
 ## 标准 docs 导入（由上游 skills 调用）
 
-标准命令：`node scripts/import-docs.js --dir docs --exts md`
+标准命令：`node skills/import-docs/scripts/import-docs.js --dir docs --exts md`
 
 - 目录存在 → 执行导入，结果写入 wework-bot 通知
 - 目录不存在 → 跳过，通知写入 `docs 不存在，跳过导入`

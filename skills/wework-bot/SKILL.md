@@ -50,7 +50,7 @@ Webhook 仅在 `config.json` 中配置，无 CLI 参数。
 1. 组装消息：按电梯演讲和契约编写完整正文
 2. 选择机器人：`config.json` 通过 `--agent` 或 `--robot` 解析 webhook；未指定时使用 `default_robot`
 3. 验证凭据：`API_X_TOKEN` + 来自 config 的 webhook
-4. 发送：`node scripts/send-message.js --agent … --content-file …`
+4. 发送：`node skills/wework-bot/scripts/send-message.js --agent … --content-file …`
 5. 汇总结果：根据 HTTP 状态码判断成功/失败
 
 ## 推送文案与反幻觉
