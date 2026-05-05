@@ -270,6 +270,35 @@ Consistency check → Knowledge asset index construction → Archive
 - **Reporter 消费强制**：Phase 1 输出必须在知识策展前逐节消费。
 - **交接就绪**：产出必须能被下游周报生成流程直接消费。
 
+## 规范附录
+
+### §4 Project Report 子节结构
+
+Verification Summary → Delivery Summary → 变更文件列表 → 前后对比 → AI 调用流程图 → AI 调用时序图 → 状态回写记录 → 遗留问题与后续 → 通知记录
+
+### 状态回写值
+
+⏳ 未验证 | 🏃 原型已验证 | ✅ 冒烟通过 | ❌ 失败 | ⚠️ 需人工确认
+
+### 阻断版总结
+
+简化结构：阻断摘要 + 已产出产物 + 阻断详情 + 建议恢复操作。保存到同一章节。
+
+### 交付顺序（强制）
+
+`import-docs` → `wework-bot`。不可跳过、不可重排。通知失败时写入 §4 或 `docs/99_agent-runs/`。
+
+### 周报结构
+
+头部（版本+周期）→ KPI 量化汇总表 → 本周回顾（亮点+根因+证据）→ 全景图（Mermaid）→ 后续规划与改进
+
+### 禁止事项
+
+- 向流程图中添加未实际调用的节点
+- 遗漏变更列表中的文件
+- 编造未发生的失败或改进建议
+- 阻断时不生成总结直接终止
+
 ## Output Contract Appendix
 
 在输出末尾附加一个 JSON fenced code block。字段规范见：`shared/contracts.md`。

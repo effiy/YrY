@@ -3,16 +3,11 @@
 /**
  * validate-agent-contracts
  *
- * Goal: lightweight contract validation, verifying whether agent names referenced in skill files:
- *   1. Have a corresponding .md file in the agents/ directory
- *   2. Are listed in shared/agent-skill-boundaries.md
+ * Goal: lightweight contract validation — verify agent names referenced in skill files
+ *   have corresponding files in the agents/ directory.
  *
  * Usage:
- *   node scripts/validate-agent-contracts.js [--fix] [--strict]
- *
- * Options:
- *   --fix     Only output suggested agent name mapping table
- *   --strict  Treat boundaries missing as error (default: warning only)
+ *   node scripts/validate-agent-contracts.js [--fix]
  *
  * Exit codes:
  *   0 no issues
@@ -24,10 +19,7 @@ const path = require('path');
 
 const PROJECT_ROOT = path.resolve(__dirname, '../../..');
 const AGENTS_DIR = path.join(PROJECT_ROOT, 'agents');
-const SHARED_DIR = path.join(PROJECT_ROOT, 'shared');
 const SKILLS_DIR = path.join(PROJECT_ROOT, 'skills');
-
-const BOUNDARIES_FILE = path.join(SHARED_DIR, 'agent-skill-boundaries.md');
 
 // Known non-agent skill/system identifiers (avoid false positives)
 const KNOWN_NON_AGENTS = new Set([
@@ -37,13 +29,13 @@ const KNOWN_NON_AGENTS = new Set([
   'weekly-analyzer', 'doc-generate-reporter', 'code-impl-reporter',
   'message-pusher', 'impact-analysis-contract',
   'agent-output-contract', 'document-contracts', 'evidence-and-uncertainty',
-  'path-conventions', 'component-contract', 'behavioral-guidelines',
-  'mermaid-expert', 'spec-retriever', 'agent-skill-boundaries',
+  'path-conventions', 'component-contract',
+  'mermaid-expert', 'spec-retriever',
   'orchestration-logging', 'orchestration', 'agent-contract',
   'workflow', 'process-summary', 'artifact-contracts', 'verification-gate',
   'code-implementation', 'e2e-testing-md',
   'test-page', 'natural-week',
-  'document-pipeline', 'code-pipeline', 'default-pipeline',
+  'document', 'code', 'full', 'document-pipeline', 'code-pipeline', 'default-pipeline',
   'execution-memory', 'self-improve', 'security', 'performance',
   // Common programming keywords/variable names
   'const', 'let', 'var', 'function', 'return', 'if', 'else', 'for', 'while',
@@ -91,24 +83,22 @@ const KNOWN_NON_AGENTS = new Set([
 ]);
 
 function parseArgs(argv) {
-  const out = { fix: false, strict: false };
+  const out = { fix: false };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--help' || a === '-h') {
       console.log(`Usage:
-  node scripts/validate-agent-contracts.js [--fix] [--strict]
+  node scripts/validate-agent-contracts.js [--fix]
 
 Options:
-  --fix     Only output suggested agent name mapping table
-  --strict  Treat boundaries missing as error (default warning only)
+  --fix  Only output suggested agent name mapping table
 
 Examples:
   node scripts/validate-agent-contracts.js
-  node scripts/validate-agent-contracts.js --strict
+  node scripts/validate-agent-contracts.js --fix
 `);
       process.exit(0);
     } else if (a === '--fix') out.fix = true;
-    else if (a === '--strict') out.strict = true;
   }
   return out;
 }
@@ -116,25 +106,10 @@ Examples:
 function listAgentFiles() {
   if (!fs.existsSync(AGENTS_DIR)) return new Set();
   return new Set(
-    fs.readdirSync(AGENTS_DIR)
-      .filter((f) => f.endsWith('.md'))
-      .map((f) => f.replace(/\.md$/, ''))
+    fs.readdirSync(AGENTS_DIR, { withFileTypes: true })
+      .filter((e) => e.isDirectory() && fs.existsSync(path.join(AGENTS_DIR, e.name, 'AGENT.md')))
+      .map((e) => e.name)
   );
-}
-
-function extractAgentsFromBoundaries() {
-  const agents = new Set();
-  if (!fs.existsSync(BOUNDARIES_FILE)) return agents;
-
-  const text = fs.readFileSync(BOUNDARIES_FILE, 'utf8');
-  // Match `agent-name` in tables and name in YAML frontmatter
-  const tableMatches = text.match(/`([a-z][a-z0-9-]*)`/g) || [];
-  tableMatches.forEach((m) => {
-    const name = m.slice(1, -1);
-    if (!KNOWN_NON_AGENTS.has(name)) agents.add(name);
-  });
-
-  return agents;
 }
 
 function extractAgentRefsFromFile(filePath) {
@@ -192,11 +167,9 @@ function main() {
   const args = parseArgs(process.argv);
 
   const agentFiles = listAgentFiles();
-  const boundariesAgents = extractAgentsFromBoundaries();
   const skillFiles = findSkillFiles();
 
   if (args.fix) {
-    // Output suggested agent name mapping table
     console.log('# Suggested Agent Name Mapping Fixes\n');
     console.log('| Name in file | Suggested change | Reason |');
     console.log('|---|---|---|');
@@ -219,20 +192,8 @@ function main() {
   }
 
   const issues = [];
-  const warnings = [];
 
-  // 1. Check whether agents listed in boundaries have corresponding files
-  for (const name of boundariesAgents) {
-    if (!agentFiles.has(name)) {
-      issues.push({
-        type: 'boundaries-orphan',
-        message: `agent-skill-boundaries.md references \`${name}\`, but agents/${name}.md does not exist`,
-        file: 'shared/agent-skill-boundaries.md',
-      });
-    }
-  }
-
-  // 2. Check agent references in skill files
+  // Check agent references in skill files have corresponding agent files
   for (const skillFile of skillFiles) {
     const refs = extractAgentRefsFromFile(skillFile);
     const seen = new Set();
@@ -243,9 +204,7 @@ function main() {
 
       const relPath = path.relative(PROJECT_ROOT, skillFile);
 
-      // Check for corresponding file
       if (!agentFiles.has(ref.name)) {
-        // May be a known legacy name
         if (['spec-retriever', 'impact-analyst', 'architect', 'planner', 'quality-tracker', 'knowledge-curator'].includes(ref.name)) {
           issues.push({
             type: 'orphan-legacy',
@@ -262,59 +221,32 @@ function main() {
           });
         }
       }
-
-      // Check whether listed in boundaries
-      if (!boundariesAgents.has(ref.name) && agentFiles.has(ref.name)) {
-        warnings.push({
-          type: 'boundaries-missing',
-          message: `References \`${ref.name}\`, but not listed in agent-skill-boundaries.md`,
-          file: relPath,
-          line: ref.line,
-        });
-      }
     }
   }
 
-  // 3. Output results
+  // Output results
   console.log('# Agent Contract Validation Report\n');
   console.log(`Scanned files: ${skillFiles.length} skill/rule files`);
   console.log(`agents/ directory: ${agentFiles.size} agent files`);
-  console.log(`boundaries registered: ${boundariesAgents.size} agents`);
   console.log('');
 
-  if (issues.length === 0 && warnings.length === 0) {
+  if (issues.length === 0) {
     console.log('✅ All agent references consistent, no issues.\n');
     process.exit(0);
   }
 
-  if (issues.length > 0) {
-    console.log(`## ❌ Errors (${issues.length})\n`);
-    for (const issue of issues) {
-      const loc = issue.line ? `${issue.file}:${issue.line}` : issue.file;
-      console.log(`- [${issue.type}] ${loc} — ${issue.message}`);
-    }
-    console.log('');
+  console.log(`## ❌ Errors (${issues.length})\n`);
+  for (const issue of issues) {
+    const loc = issue.line ? `${issue.file}:${issue.line}` : issue.file;
+    console.log(`- [${issue.type}] ${loc} — ${issue.message}`);
   }
-
-  if (warnings.length > 0) {
-    console.log(`## ⚠️ Warnings (${warnings.length})\n`);
-    for (const warn of warnings) {
-      console.log(`- [${warn.type}] ${warn.file}:${warn.line} — ${warn.message}`);
-    }
-    console.log('');
-  }
+  console.log('');
 
   if (issues.some((i) => i.type === 'orphan-legacy')) {
     console.log('💡 Tip: Use `--fix` to view suggested agent name mapping fix table.\n');
   }
 
-  if (args.strict && warnings.length > 0) {
-    process.exit(1);
-  }
-
-  if (issues.length > 0) {
-    process.exit(1);
-  }
+  process.exit(1);
 }
 
 main();

@@ -136,7 +136,7 @@ node skills/build-feature/scripts/validate-agent-output.js --agent <name> --file
 
 ### 3.2 搜索范围
 
-**包含**：源代码（src/、components、Store、composables、services、utils、styles）、测试（tests/）、文档（docs/）、.claude/ 规则、配置与构建（package.json、routing、CI、aliases）、项目根目录的运行/构建文件。
+**包含**：源代码（src/、components、Store、composables、services、utils、styles）、测试（tests/）、文档（docs/）、agents/ 规则、skills/ 规则、配置与构建（package.json、routing、CI、aliases）、项目根目录的运行/构建文件。
 
 **排除**：node_modules/、dist/、build/、.git/、锁文件、二进制资源。
 
@@ -185,3 +185,47 @@ node skills/build-feature/scripts/validate-agent-output.js --agent <name> --file
 - 在分析导出链、注册链、测试、文档、配置之前，不得修改 Store/事件/路由/全局组件/构建配置
 - 当存在未处理的"同步修改"或"阻塞"项时，写出阻塞原因或待处理列表
 - 实现后未使用实际 diff 进行回归搜索，不得进入最终总结
+
+---
+
+## 第 4 部分：约定与术语
+
+### 信源优先级
+
+1. `SKILL.md`
+2. `shared/contracts.md`
+3. `agents/<name>/AGENT.md`
+4. `templates/*.md`
+5. `README.md`
+
+Template 不得覆盖 Spec。
+
+### 术语
+
+- **Spec**：定义章节结构、必需字段和禁止项的强约束
+- **Template**：仅提供起始骨架的弱约束
+- **Gate**：P0=阻塞, P1=建议修复, P2=可选优化
+- **Grounding**：所有技术事实必须可追溯到上游文档或代码
+- **全项目影响链分析**：搜索上游、反向、传递依赖、导出链、注册链、测试、文档、配置及外部依赖
+
+### Gate 分类法
+
+| Gate ID | 含义 | 提供方 |
+|---------|------|--------|
+| `execution-memory-ready` | 执行记忆已读取 | docer |
+| `specs-loaded` | 规范已识别 | coder, docer |
+| `impact-chain-closed` | 影响链已闭合 | coder, docer |
+| `architecture-validated` | 架构已验证 | coder, docer |
+| `p0-clear` | 零 P0 问题 | tester |
+| `diagram-valid` | Mermaid 语法正确 | tester |
+| `markdown-valid` | Markdown 结构正确 | tester |
+| `quality-tracked` | P0/P1/P2 已统计 | tester |
+| `knowledge-persisted` | 知识已沉淀 | reporter |
+| `report-generated` | 报告已生成 | reporter |
+| `smoke-passed` | 冒烟测试通过 | tester |
+| `doc-impact-closed` | 文档影响已闭合 | docer |
+| `prototype-valid` | 原型有效 | tester |
+
+### 回退路径
+
+当 skill 无法写入目标产物时：`docs/99_agent-runs/<YYYYMMDD-HHMMSS>_<skill-name>.md`

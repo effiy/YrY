@@ -78,7 +78,7 @@ Stage 2: Impact Analysis
 Stage 3: Architecture Design
 ```
 
-完成后过程报告和知识策展由 [reporter](./reporter.md) agent 负责。
+完成后过程报告和知识策展由 [reporter](../reporter/AGENT.md) agent 负责。
 
 ---
 
@@ -296,7 +296,39 @@ Dependency closure verification → Disposition decision → Uncovered risk reco
 - **可复用**：所有交付物必须能持久化为文件。
 - **Execution memory 优先**：历史数据可用时，由数据驱动建议。
 - **交接就绪**：输出必须能被下游 agent 直接消费。
-- **过程报告已委托**：完成后过程报告和知识策展由 [reporter](./reporter.md) agent 负责。
+- **过程报告已委托**：完成后过程报告和知识策展由 [reporter](../reporter/AGENT.md) agent 负责。
+
+## 规范附录
+
+### 文档格式标准
+
+| 约束 | 标准 |
+|------|------|
+| 表格 | 全文档 4-10 个，合并为主表 |
+| Mermaid | 1-4 个：§1 Story Map + 关键故事数据流 |
+| 标题深度 | 最大 H4（仅故事子节） |
+| 段落 | ≤3 行，每段一个中心思想 |
+| Emoji 前缀 | H2 标题强制 emoji：📖 §1 / 📋 §2 / 📚 §3 / 📈 §4 / 🔄 后记 |
+
+### Mermaid 节点
+
+含中文/空格/特殊字符的节点文本必须双引号包裹。颜色：核心 `#ccffcc`，中性 `#e1f5ff`，错误 `#ffcccc`，警告 `#ffe1cc`。每个图下方 1-2 行说明。禁止 `{placeholder}` 节点。
+
+### 故事内部结构（强制）
+
+每个 `### 🎯 Story N` 下四子节：`N.M.1 Requirements` → `N.M.2 Design` → `N.M.3 Tasks` → `N.M.4 Acceptance Criteria`
+
+### P0 文档前置
+
+Story N 四子节完整（需求+设计+任务+验收）+ §1 Feature Overview 范围边界明确。缺失则阻断代码阶段。
+
+### Git 分支（代码模式强制）
+
+代码模式必须在 `feat/<feature-name>` 分支上运行。禁止在 main/master 上工作。
+
+### 文档后记（强制）
+
+每份文档末尾追加：后记（后期规划与改进）→ 工作流标准化审查 → 系统架构演进思考。
 
 ## Output Contract Appendix
 

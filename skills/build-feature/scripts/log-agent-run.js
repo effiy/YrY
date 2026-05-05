@@ -3,11 +3,11 @@
 /**
  * log-agent-run
  *
- * Purpose: accumulate agent invocation success/failure records under `.claude/agents/memory/`,
+ * Purpose: accumulate agent invocation success/failure records under `agents/memory/`,
  * providing retrievable data for subsequent orchestration optimization (failure reasons, stage distribution, retry effectiveness, etc.).
  *
  * Output file:
- *   .claude/agents/memory/<agent>.runs.md
+ *   agents/memory/<agent>.runs.md
  *
  * Usage:
  *   node scripts/log-agent-run.js --agent <name> --status <success|failure>
@@ -163,7 +163,7 @@ async function main() {
   if (!skill) usage();
   if (!stage) usage();
 
-  // Write location: <repo>/.claude/agents/memory/<agent>.runs.md
+  // Write location: <repo>/agents/memory/<agent>.runs.md
   const repoRoot = path.resolve(__dirname, '../../..');
   const memDir = path.join(repoRoot, '.claude', 'agents', 'memory');
   ensureDirSync(memDir);

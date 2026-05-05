@@ -82,7 +82,10 @@ function runCollectLogs(week) {
 }
 
 function runSelfImprove(weekRange) {
-  const script = path.join(SCRIPT_DIR, 'self-improve.js');
+  const script = path.join(REPO_ROOT, 'skills', 'self-improving', 'scripts', 'self-improve.js');
+  if (!fs.existsSync(script)) {
+    return '\n---\n\n## System Self-Improvement Proposals\n\n> Self-improvement engine not available. Run `node skills/build-feature/scripts/execution-memory.js stats` for manual analysis.';
+  }
   const since = weekRange.start;
   try {
     const out = execSync(`node "${script}" --since ${since} --json`, {
@@ -98,20 +101,19 @@ function runSelfImprove(weekRange) {
     lines.push('');
     lines.push('## System Self-Improvement Proposals');
     lines.push('');
-    lines.push(`> **Data source**: execution-memory (${data.record_count} records) + orchestration logs + key nodes`);
+    lines.push(`> **Data source**: execution-memory (${data.record_count} records)`);
     lines.push(`> **Analysis period**: ${data.since} to present`);
     lines.push('');
-    lines.push('| Priority | Type | Problem Source | Improvement Description | Target File | Validation Method | Time Horizon | Depth |');
-    lines.push('|----------|------|----------------|-------------------------|-------------|-------------------|--------------|-------|');
+    lines.push('| Priority | Type | Problem Source | Improvement Description | Target File | Validation Method | Time Horizon |');
+    lines.push('|----------|------|----------------|-------------------------|-------------|-------------------|--------------|');
     data.proposals.forEach((p) => {
       const desc = p.description.replace(/\|/g, '\\|').replace(/\n/g, ' ');
       const source = p.problem_source.replace(/\|/g, '\\|');
       const target = p.target_file.replace(/\|/g, '\\|');
       const val = p.validation.replace(/\|/g, '\\|');
-      lines.push(`| ${p.priority} | ${p.type} | ${source} | ${desc} | ${target} | ${val} | ${p.time_dimension} | ${p.depth} |`);
+      lines.push(`| ${p.priority} | ${p.type} | ${source} | ${desc} | ${target} | ${val} | ${p.time_dimension} |`);
     });
     lines.push('');
-    lines.push('> **Execution recommendation**: Review proposals from high to low priority, confirm manually before editing target files, then observe validation metrics in the next delivery round.');
     return lines.join('\n');
   } catch {
     return '\n---\n\n## System Self-Improvement Proposals\n\n> Self-improve engine failed; investigate and trigger manually.';

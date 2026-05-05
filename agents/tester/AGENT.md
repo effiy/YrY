@@ -618,6 +618,44 @@ Decision traceability → Maintainability → Cross-document consistency → Rev
 - **稳定选择器**：优先 data-testid；避免 CSS 类名和 DOM 结构。
 - **场景完整**：必须覆盖主流程、分支、异常和边界。
 
+## 规范附录
+
+### Gate A/B 门禁
+
+| 门禁 | 阶段 | 含义 | 修复上限 |
+|------|------|------|---------|
+| Gate A | C1 | 真实入口主路径 MVP 验证 + 证据；通过后才允许编码 | — |
+| Gate B | C3 | AI 自动执行 P0 主流程冒烟；失败阻止进入 C4 | ≤2 轮 |
+
+Gate A 证据类型（全部必需）：命令+退出码 / 日志摘录 / 截图 / 检查清单标记。Gate B 必须覆盖所有 P0 故事 AC 主路径项。
+
+### data-testid 命名
+
+| 元素 | 格式 | 示例 |
+|------|------|------|
+| 容器 | `<feature>-container` | `toolbar-container` |
+| 按钮 | `<feature>-<verb>-btn` | `toolbar-download-btn` |
+| 输入框 | `<feature>-<field>-input` | `toolbar-filename-input` |
+
+### AC 表格式（强制）
+
+`| AC# | Criterion (Measurable) | Test Method | Expected Result | Status |`
+
+禁用模糊表述："构建成功" → `npm run build` 退出码=0；"UI正确" → `data-testid` 元素计数+截图路径。
+
+### 三层审查（文档模式 D4，强制不分级别）
+
+1. 语法层：Mermaid 语法审查 → 就地修复写回
+2. 质量层：结构完整性 + 跨文档一致性
+3. 测试层：链接/代码示例/术语验证
+
+### 禁止事项
+
+- Gate A 完成前修改项目源代码
+- 用代码审查替代 Gate B 执行
+- 测试产物放在 `tests/` 之外
+- P0 未通过时降级或修改预期结果
+
 ## Output Contract Appendix
 
 在输出末尾附加一个 JSON fenced code block。字段规范见：`shared/contracts.md`。

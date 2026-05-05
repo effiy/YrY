@@ -37,8 +37,8 @@ pipeline:
     - id: "D4"
       name: document-generation
       title: Document Generation & Three-Layer Review
-      agents: [docer, tester, designer]
-      gates: [p0-clear, diagram-valid, markdown-valid, quality-tracked, ix-validated]
+      agents: [docer, tester]
+      gates: [p0-clear, diagram-valid, markdown-valid, quality-tracked]
       modes: [document, full]
     - id: "D5"
       name: curation
@@ -55,14 +55,14 @@ pipeline:
     - id: "C1"
       name: test-first
       title: Test-First Gate A
-      agents: [tester, designer]
-      gates: [p0-clear, ix-validated]
+      agents: [tester]
+      gates: [p0-clear]
       modes: [code, full]
     - id: "C2"
       name: code-implementation
       title: Code Implementation & Per-Module Review
-      agents: [coder, tester, designer]
-      gates: [p0-clear, ix-validated]
+      agents: [coder, tester]
+      gates: [p0-clear]
       modes: [code, full]
     - id: "C3"
       name: code-validation
@@ -83,7 +83,6 @@ agents:
     - docer
     - tester
     - reporter
-    - designer
   optional: []
 contracts:
   output: shared/contracts.md
@@ -238,7 +237,7 @@ graph TD
 
 ### 1. 文档后记（所有模式）
 
-每份生成的文档末尾必须追加后记、工作流标准化审查和系统架构演进思考三个章节。格式详见 `skills/self-improving/rules/collection-contract.md`。
+每份生成的文档末尾必须追加后记、工作流标准化审查和系统架构演进思考三个章节。格式详见 `agents/reporter/AGENT.md` 规范附录。
 
 ### 2. 更新模式快捷路径
 
@@ -271,11 +270,9 @@ graph TD
 
 从实施中提取可复用模式和陷阱记录。写入执行记忆：`node skills/build-feature/scripts/execution-memory.js write`
 
-### 8. 周报自我改进触发
+### 8. 周报后处理
 
-`weekly` 命令在交付后触发：
-1. 执行记忆分析：`node skills/build-feature/scripts/self-improve.js`
-2. 每文档反思聚合：调用 `self-improving` 技能收集标准化章节
+`weekly` 命令在交付后触发执行记忆分析和改进建议生成。
 
 ---
 
@@ -309,7 +306,7 @@ graph TD
 | H8 | 所有模块被阻断 | 否 |
 | H9 | `API_X_TOKEN` 缺失 | 是（跳过同步，仍发送通知） |
 
-停止时：持久化 → 同步（H9 跳过）→ 通知 → 回退。阻断总结格式见 `rules/reporter.md`。
+停止时：持久化 → 同步（H9 跳过）→ 通知 → 回退。阻断总结格式见 `agents/reporter/AGENT.md` 规范附录。
 
 ---
 
@@ -317,30 +314,22 @@ graph TD
 
 ```
 skills/build-feature/
-├── SKILL.md           # 入口 + 清单（本文件）
-├── README.md          # 快速开始 + 命令速查
-├── checklists/        # 按类型的 P0/P1/P2 检查清单
-│   ├── coder.md
-│   ├── docer.md       # 含跨检查清单一致性表
-│   ├── tester.md
-│   └── reporter.md
-├── rules/             # 按角色的规范：coder / docer / tester / reporter
-│   ├── coder.md       # 编码 + 设计文档 + 影响分析 + 阶段状态机
-│   ├── docer.md       # 格式标准 + emoji 体系 + 文档编排 + 检查清单索引
-│   ├── tester.md      # Gate A/B + 动态检查清单 + 三层审查
-│   ├── reporter.md    # 过程总结 + 项目/周报 + 日志 + 交付
-│   └── metrics.md     # 可量化质量指标与评分
+├── SKILL.md           # 入口（本文件）
+├── README.md          # 命令速查
+├── rules/metrics.md   # 可量化质量指标
+├── commands/
+│   ├── generate-document.md
+│   └── implement-code.md
 ├── templates/
-│   ├── feature-document.md          # 完整模板（§1-§4 + 后记）
-│   └── feature-document-minimal.md  # 轻量模板（T1/T2 更新）
-└── scripts/           # 编排工具脚本
+│   ├── feature-document.md
+│   └── feature-document-minimal.md
+└── scripts/           # 编排工具
     ├── validate-agent-output.js
     ├── validate-agent-contracts.js
     ├── log-orchestration.js
     ├── log-key-node.js
     ├── log-agent-run.js
     ├── execution-memory.js
-    ├── self-improve.js
     ├── collect-weekly-kpi.js
     ├── collect-weekly-logs.js
     ├── draft-weekly-report.js
