@@ -23,7 +23,7 @@ const SKILLS_DIR = path.join(PROJECT_ROOT, 'skills');
 
 // Known non-agent skill/system identifiers (avoid false positives)
 const KNOWN_NON_AGENTS = new Set([
-  'build-feature', 'import-docs', 'wework-bot',
+  'rui', 'import-docs', 'wework-bot',
   'code-review', 'e2e-testing',
   'search-first', 'verification-loop', 'weekly', 'init', 'from-weekly',
   'weekly-analyzer', 'doc-generate-reporter', 'code-impl-reporter',

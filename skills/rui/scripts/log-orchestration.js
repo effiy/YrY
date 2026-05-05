@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Append build-feature orchestration interactions with .claude skills, agents, etc.
+ * Append rui orchestration interactions with .claude skills, agents, etc.
  * as Markdown to repo root `docs/weekly/<YYYY-MM-DD~YYYY-MM-DD>/logs.md`.
  * Each record contains "operation scenario" and "dialogue and interaction summary"; optional --case / --tags / --lesson
  * to mark good case / bad case, for docs/logs/CASE-STANDARD.md and subsequent improvements to skills, rules, agents.
@@ -12,7 +12,7 @@ const fsp = require('fs').promises;
 const path = require('path');
 const { getNaturalWeekRange } = require('./natural-week.js');
 
-const SKILL_VALUES = new Set(['build-feature']);
+const SKILL_VALUES = new Set(['rui']);
 const KIND_VALUES = new Set([
   'skill',
   'agent',
@@ -26,7 +26,7 @@ const CASE_VALUES = new Set(['good', 'bad', 'neutral']);
 function printHelp(stream) {
   const out = stream || process.stdout;
   out.write(`Usage:
-  node .claude/scripts/log-orchestration.js --skill <build-feature> \\
+  node .claude/scripts/log-orchestration.js --skill <rui> \\
     --kind <skill|agent|memory|shared|other> [--name <identifier>] \\
     [--scenario "<operation scenario>"] \\
     [--case <good|bad|neutral>] \\
@@ -40,8 +40,8 @@ function printHelp(stream) {
   Filename: logs.md (appended per week)
 
 Examples:
-  node .claude/scripts/log-orchestration.js --skill build-feature --kind agent --name spec-retriever \\
-    --scenario "User initiated /build-feature Foo --document; this step retrieves applicable specs" \\
+  node .claude/scripts/log-orchestration.js --skill rui --kind agent --name spec-retriever \\
+    --scenario "User initiated /rui Foo --document; this step retrieves applicable specs" \\
     --case good --tags "evidence-ok,stage-contract-met" \\
     --text "Returned applicable spec list: rules/requirement-document.md ..."
 `);

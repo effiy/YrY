@@ -3,7 +3,7 @@ name: e2e-testing
 description: |
   Design E2E test schemes for UI user flow scenarios, recommending manual browser
   verification + data-testid strategy. Used when dynamic checklists or requirement
-  tasks contain UI operation scenarios. When combined with build-feature code mode, output
+  tasks contain UI operation scenarios. When combined with rui code mode, output
   must satisfy Gate A/B (see ../../agents/tester/AGENT.md).
 user_invocable: true
 lifecycle: default-pipeline
@@ -25,11 +25,11 @@ graph LR
 
 将需求任务中的主要操作场景转化为可执行的 E2E 测试方案，输出测试策略、用例骨架和验证要点。
 
-**测试优先原则**：本 skill 强调"代码实现之前先有测试方案"。在 `build-feature` code mode 进入阶段 2（代码实现）之前，必须先产出可行的测试策略和验收标准；每一行代码实现都必须对应已定义的测试验证点。
+**测试优先原则**：本 skill 强调"代码实现之前先有测试方案"。在 `rui` code mode 进入阶段 2（代码实现）之前，必须先产出可行的测试策略和验收标准；每一行代码实现都必须对应已定义的测试验证点。
 
-本 skill 定义测试方案方法和输出格式。测试方案由 `tester` agent 在 `build-feature` 流水线 C1 阶段执行。
+本 skill 定义测试方案方法和输出格式。测试方案由 `tester` agent 在 `rui` 流水线 C1 阶段执行。
 
-### 与 build-feature code mode 联用时的附加约束
+### 与 rui code mode 联用时的附加约束
 
 - **编码前（Gate A）— 测试优先**：交付物必须支持"真实入口上的主路径 MVP"——例如可操作的 `tests/e2e/<feature>/…-checklist.md` 步骤、推荐的 `data-testid` 列表，并与 `02`/`05` 中的 P0 场景一致。**代码实现开始前，测试方案和验收标准必须就绪。**
 - **编码后（Gate B）**：用例骨架必须可由 AI 自动化执行；若场景缺少充分断言，明确写"前置信息不足：…"而非编造通过条件。

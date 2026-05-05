@@ -84,7 +84,7 @@ function runCollectLogs(week) {
 function runSelfImprove(weekRange) {
   const script = path.join(REPO_ROOT, 'skills', 'self-improving', 'scripts', 'self-improve.js');
   if (!fs.existsSync(script)) {
-    return '\n---\n\n## System Self-Improvement Proposals\n\n> Self-improvement engine not available. Run `node skills/build-feature/scripts/execution-memory.js stats` for manual analysis.';
+    return '\n---\n\n## System Self-Improvement Proposals\n\n> Self-improvement engine not available. Run `node skills/rui/scripts/execution-memory.js stats` for manual analysis.';
   }
   const since = weekRange.start;
   try {

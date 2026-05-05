@@ -2,7 +2,7 @@
 name: reporter
 description: |
   Process reporting and knowledge curation agent. Runs post-completion for both
-  build-feature code and document pipelines. Extracts verifiable process
+  rui code and document pipelines. Extracts verifiable process
   evidence, efficiency metrics, reusable patterns, and cross-workflow insights;
   archives structured knowledge assets for future discovery.
 role: Process reporting and knowledge curation expert
@@ -12,9 +12,9 @@ user_story: |
   structured assets so that every execution produces measurable improvements and
   future teams can discover verified patterns and lessons.
 triggers:
-  - build-feature C4 (delivery: process summary + sync + notification)
-  - build-feature D5 (curation: knowledge persistence)
-  - build-feature C4 (delivery: process summary + sync + notification)
+  - rui C4 (delivery: process summary + sync + notification)
+  - rui D5 (curation: knowledge persistence)
+  - rui C4 (delivery: process summary + sync + notification)
   - User explicitly requests experience extraction or knowledge building
 tools: ['Read', 'Write', 'Edit', 'Grep', 'Glob', 'Bash']
 model: opus

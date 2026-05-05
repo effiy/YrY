@@ -1,13 +1,13 @@
 ---
-name: build-feature
+name: rui
 description: |
   Full SDLC orchestrator: document generation → code implementation → delivery.
   Supports document, code, full-feature, init, weekly, and from-weekly modes.
-  Command: /build-feature (unified entry point).
+  Command: /rui (unified entry point).
   Auto-detects operation type from command name and arguments; dispatches to
   the correct stage sequence without manual mode specification.
 user_invocable: true
-lifecycle: build-feature-pipeline
+lifecycle: rui-pipeline
 pipeline:
   stages:
     - id: "D0"
@@ -92,7 +92,7 @@ contracts:
   evidence: shared/contracts.md
 ---
 
-# build-feature
+# rui
 
 ```mermaid
 graph TD
@@ -117,24 +117,24 @@ graph TD
 
 全 SDLC 编排器：文档生成 → 代码实现 → 交付。所有命令均以 `import-docs` → `wework-bot` 收尾。
 
-`build-feature` 作为统一入口，自动识别操作类型（功能文档 / 代码实现 / 初始化 / 周报 / 拆解），无需用户手动区分命令命名空间。
+`rui` 作为统一入口，自动识别操作类型（功能文档 / 代码实现 / 初始化 / 周报 / 拆解），无需用户手动区分命令命名空间。
 
 **何时使用**: 功能文档、代码实现、端到端特性交付、周报、项目初始化、周报拆解。
 **何时不用**: 需求仍在澄清、简单补丁、单文件小修。
 
 ## 命令调度
 
-`build-feature` 是统一入口。所有子命令共享同一套阶段定义，区别仅在于触发的阶段序列。命令名称和参数自动决定操作类型，无需手动指定模式。
+`rui` 是统一入口。所有子命令共享同一套阶段定义，区别仅在于触发的阶段序列。命令名称和参数自动决定操作类型，无需手动指定模式。
 
 ### 命令表
 
 | 命令 | 用途 | 操作类型 |
 |------|------|---------|
-| `/build-feature init` | 项目初始化（自动识别新仓库） | init |
-| `/build-feature weekly [date]` | 生成周报（KPI 采集 + 执行记忆分析） | weekly |
-| `/build-feature from-weekly <path>` | 从周报拆解为功能文档 | from-weekly |
-| `/build-feature <name> [--document\|--code\|--full]` | 全流程编排（默认 `--full`） | feature / code / full |
-| `/build-feature list` | 列出 `docs/` 下可用的功能文档 | — |
+| `/rui init` | 项目初始化（自动识别新仓库） | init |
+| `/rui weekly [date]` | 生成周报（KPI 采集 + 执行记忆分析） | weekly |
+| `/rui from-weekly <path>` | 从周报拆解为功能文档 | from-weekly |
+| `/rui <name> [--document\|--code\|--full]` | 全流程编排（默认 `--full`） | feature / code / full |
+| `/rui list` | 列出 `docs/` 下可用的功能文档 | — |
 
 所有命令幂等；已有文档增量更新。
 
@@ -142,16 +142,16 @@ graph TD
 
 | 命令 | 触发阶段 | 裁剪说明 |
 |------|---------|---------|
-| `/build-feature init` | D1→D4→D5→C4 | 跳过 D0（无历史），D2/D3 裁剪 |
-| `/build-feature weekly [date]` | D1→D2→D3→D4→D5→C4 | 使用周报模板（§4+附录结构） |
-| `/build-feature from-weekly <path>` | D1→D2→D4→D5→C4 | 拆解为功能文档，D3 裁剪 |
-| `/build-feature <name> --full` | D0→D1→D2→D3→D4→D5→C0→C1→C2→C3→C4 | — |
-| `/build-feature <name> --document` | D0→D1→D2→D3→D4→D5→C4 | — |
-| `/build-feature <name> --code` | C0→C1→C2→C3→C4 | 前提: `docs/<name>.md` 存在且 P0 通过 |
+| `/rui init` | D1→D4→D5→C4 | 跳过 D0（无历史），D2/D3 裁剪 |
+| `/rui weekly [date]` | D1→D2→D3→D4→D5→C4 | 使用周报模板（§4+附录结构） |
+| `/rui from-weekly <path>` | D1→D2→D4→D5→C4 | 拆解为功能文档，D3 裁剪 |
+| `/rui <name> --full` | D0→D1→D2→D3→D4→D5→C0→C1→C2→C3→C4 | — |
+| `/rui <name> --document` | D0→D1→D2→D3→D4→D5→C4 | — |
+| `/rui <name> --code` | C0→C1→C2→C3→C4 | 前提: `docs/<name>.md` 存在且 P0 通过 |
 
 ### 自动识别规则
 
-`build-feature` 根据命令名称和参数自动判断操作类型，无需用户手动指定模式：
+`rui` 根据命令名称和参数自动判断操作类型，无需用户手动指定模式：
 
 | 触发条件 | 识别为 | 阶段序列 |
 |---------|--------|---------|
@@ -174,7 +174,7 @@ graph TD
 - **保留 D4**：按模板生成最小化功能文档
 - **保留 D5**：`git commit` 持久化
 
-模板：`skills/build-feature/templates/feature-document.md`，填充为项目基线结构。
+模板：`skills/rui/templates/feature-document.md`，填充为项目基线结构。
 
 #### weekly — 周报
 
@@ -272,7 +272,7 @@ C3 完成后基于实际 diff 重新验证。方法见 [`shared/contracts.md`](.
 
 从实施中提取可复用模式和陷阱，写入执行记忆：
 ```
-node skills/build-feature/scripts/execution-memory.js write
+node skills/rui/scripts/execution-memory.js write
 ```
 
 ## 阻断条件

@@ -12,7 +12,7 @@ graph TD
     S -->|open chain| B[Block → declare stop reason]
 ```
 
-`build-feature` 的共享契约。定义 agent 输出格式、事实/证据标准以及全项目影响分析方法。
+`rui` 的共享契约。定义 agent 输出格式、事实/证据标准以及全项目影响分析方法。
 
 ---
 
@@ -22,7 +22,7 @@ Agent 调用时附加的机器可验证 JSON 附录约定。
 
 ### 1. 适用范围
 
-所有被 `build-feature` 调用的 agent。
+所有被 `rui` 调用的 agent。
 
 `tester` 和 `reporter` agent 的 `required_answers` 数组可以为空 `[]`，但 `artifacts` 仍必须指示关键产物的存在。
 
@@ -35,16 +35,16 @@ Agent 调用时附加的机器可验证 JSON 附录约定。
   "agent": "docer",
   "contract_version": "1.0",
   "task": {
-    "skill": "build-feature",
+    "skill": "rui",
     "stage": "stage-1",
     "doc_type": "requirement-document",
     "feature": "Foo-item-filter"
   },
   "required_answers": [
-    { "id": "Q1", "answered": true, "evidence": ["skills/build-feature/rules/docer.md"] }
+    { "id": "Q1", "answered": true, "evidence": ["skills/rui/rules/docer.md"] }
   ],
   "artifacts": {
-    "required_specs": ["skills/build-feature/rules/docer.md"],
+    "required_specs": ["skills/rui/rules/docer.md"],
     "optional_specs": []
   },
   "warnings": [],
@@ -55,7 +55,7 @@ Agent 调用时附加的机器可验证 JSON 附录约定。
 **字段说明**：
 - **agent**：必须等于 agent 的 `name`
 - **contract_version**：固定为 `"1.0"`
-- **task.skill**：`build-feature`
+- **task.skill**：`rui`
 - **task.stage**：skill 规则中定义的阶段标识符
 - **task.doc_type**：目标文档类型；不适用时填写 `"N/A"`
 - **required_answers**：agent 所需的全部应答项；每项的 `answered` 必须为 `true`
@@ -75,7 +75,7 @@ Agent 调用时附加的机器可验证 JSON 附录约定。
 ### 4. 验证脚本
 
 ```bash
-node skills/build-feature/scripts/validate-agent-output.js --agent <name> --file /path/to/output.txt
+node skills/rui/scripts/validate-agent-output.js --agent <name> --file /path/to/output.txt
 ```
 
 仅验证契约结构和 required-answers 覆盖情况；真实性由下方第 2 部分约束。
@@ -122,7 +122,7 @@ node skills/build-feature/scripts/validate-agent-output.js --agent <name> --file
 
 ## 第 3 部分：全项目影响分析
 
-`build-feature` 的共享影响分析方法（document + code mode）。
+`rui` 的共享影响分析方法（document + code mode）。
 
 ### 3.1 核心原则
 

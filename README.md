@@ -5,7 +5,7 @@ Claude / Cursor 协作层：技能、代理与共享契约。
 ```mermaid
 graph TD
     subgraph 入口层
-        SKILL[skills/build-feature/<br/>主流水线编排器]
+        SKILL[skills/rui/<br/>主流水线编排器]
     end
 
     subgraph 执行层
@@ -51,7 +51,7 @@ graph LR
 
 1. [`CLAUDE.md`](CLAUDE.md) — 哲学与行为准则
 2. [`shared/contracts.md`](shared/contracts.md) — Agent/skill 共享约束
-3. [`skills/build-feature/SKILL.md`](skills/build-feature/SKILL.md) — 主流水线编排器
+3. [`skills/rui/SKILL.md`](skills/rui/SKILL.md) — 主流水线编排器
 
 ## 验证
 

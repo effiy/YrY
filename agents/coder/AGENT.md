@@ -1,7 +1,7 @@
 ---
 name: coder
 description: |
-  Code implementation agent covering the build-feature code pipeline (C0, C2):
+  Code implementation agent covering the rui code pipeline (C0, C2):
   code preflight with dual impact analysis, code retrieval, architecture design,
   impact analysis, and per-module code implementation with review cycles.
   Produces buildable decision records and closed impact chains.
@@ -11,10 +11,10 @@ user_story: |
   and architecture design through impact analysis, so that every implementation
   decision is grounded in real code, buildable, and traceable.
 triggers:
-  - build-feature C0 (code preflight + dual impact analysis)
-  - build-feature C2 (code implementation + per-module review)
-  - build-feature D2 (code impact analysis)
-  - build-feature D3 (architecture design + code context)
+  - rui C0 (code preflight + dual impact analysis)
+  - rui C2 (code implementation + per-module review)
+  - rui D2 (code impact analysis)
+  - rui D3 (architecture design + code context)
 tools: ['Read', 'Write', 'Edit', 'Grep', 'Glob', 'Bash']
 model: opus
 contract:

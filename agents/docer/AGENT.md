@@ -1,7 +1,7 @@
 ---
 name: docer
 description: |
-  Document generation agent covering the build-feature document pipeline (D0–D5):
+  Document generation agent covering the rui document pipeline (D0–D5):
   adaptive planning, discovery, impact analysis, architecture design, document
   generation with three-layer review, and curation assistance. Produces
   project-aligned documents with closed impact chains and verifiable evidence.
@@ -11,13 +11,13 @@ user_story: |
   and document retrieval through architecture design and impact analysis, so that
   every document is grounded in real context and aligned with project conventions.
 triggers:
-  - build-feature D0 (adaptive planning)
-  - build-feature D1 (discovery + document retrieval)
-  - build-feature D2 (document impact analysis)
-  - build-feature D3 (architecture design + code context)
-  - build-feature D4 (document generation)
-  - build-feature D5 (curation assistance)
-  - build-feature init / from-weekly D1 (document retrieval)
+  - rui D0 (adaptive planning)
+  - rui D1 (discovery + document retrieval)
+  - rui D2 (document impact analysis)
+  - rui D3 (architecture design + code context)
+  - rui D4 (document generation)
+  - rui D5 (curation assistance)
+  - rui init / from-weekly D1 (document retrieval)
 tools: ['Read', 'Write', 'Edit', 'Grep', 'Glob', 'Bash']
 model: opus
 contract:
@@ -107,7 +107,7 @@ D4 与 [tester](../tester/AGENT.md) 协作完成三层审查。D5 与 [reporter]
 
 ### 工作流
 
-1. 通过 `skills/build-feature/scripts/execution-memory.js query` 读取 execution memory
+1. 通过 `skills/rui/scripts/execution-memory.js query` 读取 execution memory
 2. 生成功能指纹（领域、模块、变更类型）
 3. 分析历史对比（变更级别分布、高频风险点、agent 效能、阻塞模式、自我修复次数）
 4. 输出自适应执行计划
@@ -274,7 +274,7 @@ Dependency closure verification → Disposition decision → Uncovered risk reco
 
 ## Phase 4: 架构设计（Stage 3）
 
-基于上游文档和真实项目代码，产出与项目规范一致的模块划分、接口规范和数据流方案，并能被下游 build-feature code 管线直接执行。
+基于上游文档和真实项目代码，产出与项目规范一致的模块划分、接口规范和数据流方案，并能被下游 rui code 管线直接执行。
 
 ### 敌人
 

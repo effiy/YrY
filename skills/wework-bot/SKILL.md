@@ -1,7 +1,7 @@
 ---
 name: wework-bot
 description: |
-  Send WeChat Work (WeCom) bot messages. Mandatory upon build-feature
+  Send WeChat Work (WeCom) bot messages. Mandatory upon rui
   completion, block, or gate failure.
 user_invocable: true
 lifecycle: default-pipeline
@@ -28,7 +28,7 @@ graph LR
 
 - 用户请求向企业微信群/机器人发送信息
 - 长流程需要外部可观测性（阶段状态/阻断/门禁失败/验证结论）
-- **流水线强制步骤**：`build-feature` 完成/阻断/门禁失败必须通知，顺序：先 `import-docs`，再 `wework-bot`
+- **流水线强制步骤**：`rui` 完成/阻断/门禁失败必须通知，顺序：先 `import-docs`，再 `wework-bot`
 - 不触发的情况：用户仅写草稿但明确不发送；目标是同步文档（使用 `import-docs`）
 
 ## 输入
@@ -70,7 +70,7 @@ Webhook 仅在 `config.json` 中配置，无 CLI 参数。
 
 ```bash
 API_X_TOKEN=*** node skills/wework-bot/scripts/send-message.js \
-  --agent build-feature \
+  --agent rui \
   -f ./tmp/wework-body.md
 ```
 

@@ -139,7 +139,7 @@ function parseLogs(text) {
 
   for (const line of lines) {
     // Match level-3 heading: ### `ISO` · `category`[ · **badge**]
-    // category format: skill:kind/name, e.g. build-feature:agent/spec-retriever
+    // category format: skill:kind/name, e.g. rui:agent/spec-retriever
     const h = line.match(/^###\s+`([^`]+)`\s+·\s+`([^`]+)`(?:\s+·\s+(.+))?$/);
     if (h) {
       if (current) entries.push(current);

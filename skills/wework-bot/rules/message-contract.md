@@ -34,7 +34,7 @@ graph LR
     "security": { "webhook_url": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=<另一key>" }
   },
   "agents": {
-    "build-feature": "general",
+    "rui": "general",
     "tester": "general"
   }
 }
@@ -84,9 +84,9 @@ graph LR
 
 ## 观测点
 
-**build-feature (document mode)**：开始生成 / P0 自检失败 / 缺参写入 `99_agent-runs` / `import-docs` 同步完成
+**rui (document mode)**：开始生成 / P0 自检失败 / 缺参写入 `99_agent-runs` / `import-docs` 同步完成
 
-**build-feature (code mode)**：阶段 0/2/4/6/7 完成 / 任意阻断需人工介入 / 门禁未执行/无证据/被跳过
+**rui (code mode)**：阶段 0/2/4/6/7 完成 / 任意阻断需人工介入 / 门禁未执行/无证据/被跳过
 
 **import-docs**：导入完成产生汇总 / 导入失败但主流程继续
 

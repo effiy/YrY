@@ -3,7 +3,7 @@
 /**
  * execution-memory
  *
- * Execution memory system: records the full context and result of each build-feature
+ * Execution memory system: records the full context and result of each rui
  * document execution, for doc-planner to query historical similar cases,
  * and for self-improve.js to analyze improvement patterns.
  *

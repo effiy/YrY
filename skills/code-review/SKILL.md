@@ -26,7 +26,7 @@ graph TD
 
 对指定的代码文件或代码片段执行规范性审查，输出 P0/P1/P2 分级问题列表。
 
-本 skill 定义审查方法、维度和输出格式。审查由 `tester` agent 在 `build-feature` 流水线 C2 阶段执行。
+本 skill 定义审查方法、维度和输出格式。审查由 `tester` agent 在 `rui` 流水线 C2 阶段执行。
 
 ## 输入
 

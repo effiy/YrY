@@ -11,7 +11,7 @@
  *
  * Usage:
  *   node scripts/log-agent-run.js --agent <name> --status <success|failure>
- *     --skill <build-feature|other> --stage <stage-id>
+ *     --skill <rui|other> --stage <stage-id>
  *     [--doc_type <doc type>] [--feature <feature name or summary>]
  *     [--notes "<one-line summary>"] [--error "<failure reason>"] [--evidence "<evidence path or command>"]
  *

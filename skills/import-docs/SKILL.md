@@ -2,7 +2,7 @@
 name: import-docs
 description: |
   Batch synchronize local documents to remote document API. Mandatory step upon
-  build-feature completion.
+  rui completion.
 user_invocable: true
 lifecycle: default-pipeline
 ---
@@ -27,7 +27,7 @@ graph LR
 ## 何时使用
 
 - 用户请求将文档同步/上传/发布/导入到远端
-- `build-feature` 完成时的强制步骤
+- `rui` 完成时的强制步骤
 - 不触发的情况：仅本地 Markdown 生成/修改且用户明确不需要同步；目标仅为群通知（使用 `wework-bot`）
 
 ## 输入
