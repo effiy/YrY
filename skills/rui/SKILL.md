@@ -84,10 +84,21 @@ graph TD
 
 | 阶段 | 做什么 | 关键产出 |
 |------|--------|---------|
-| C0 Preflight | 双边影响分析（代码+文档），验证 P0 完整 | 锚定报告 |
+| C0 Preflight | 双边影响分析 + 分支隔离检查，验证 P0 完整 | 锚定报告 + 功能分支 |
 | C1 Test-First | Gate A：测试方案+原型，编码前就绪 | 测试方案 + 原型 |
-| C2 Implementation | 逐模块编码，每模块后审查 → 修 P0 → 自检 | 实现代码 + 审查记录 |
+| C2 Implementation | 逐模块编码（功能分支上），每模块后审查 → 修 P0 → 自检 | 实现代码 + 审查记录 |
 | C3 Validation | Gate B：冒烟测试 + 影响链回归 → 回写 §4 | 冒烟证据 + AC 更新 |
+
+### C0 分支隔离
+
+编码前强制创建功能分支，禁止在主干直接提交：
+
+1. **状态检查**: 确认当前分支为 `main`/`master`，工作区干净（`git status` 无未提交变更）。
+2. **分支命名**: `feat/<name>`（新功能）、`fix/<name>`（修复）、`docs/<name>`（文档）。
+3. **切换执行**: `git checkout -b <branch-name>`，后续 C1–C3 全部在此分支进行。
+4. **交付合并**: C4 阶段 commit → push → 合并回主干（优先 PR/MR，单分支仓库可本地 `git merge --no-ff`）。
+
+> 单文件修补（typo、配置值修改）可豁免，但仍建议独立分支。
 
 ### C1 测试方案 (Gate A)
 
@@ -134,7 +145,8 @@ graph TD
 2. **测试先行**: Gate A 阻断 C2；Gate B >2 轮修复阻断 C4。单行 CSS 不需要 Gate A。
 3. **逐模块审查**: C2 每模块后审查，P0 清零前进下一模块。
 4. **双边影响分析**: C0 同时分析代码和文档影响；C3 基于实际 diff 回归验证。
-5. **知识沉淀**: D5 写执行记忆: `node skills/rui/scripts/execution-memory.js write`。
+5. **分支隔离**: C0 创建功能分支，C2 全部编码在分支上完成，C4 合并回主干。
+6. **知识沉淀**: D5 写执行记忆: `node skills/rui/scripts/execution-memory.js write`。
 
 ## 阻断条件
 
@@ -149,6 +161,7 @@ graph TD
 | H7 | Gate B 未通过（>2 轮修复） | 否 | C3→C4 |
 | H8 | 所有模块被阻断 | 否 | C2 |
 | H9 | `API_X_TOKEN` 缺失 | 是（跳过同步，仍发通知） | C4 |
+| H10 | 当前在 main/master 且需编码，未创建功能分支 | 否 | C0 |
 
 阻断后: 持久化 → 同步（H9 跳过）→ 通知 → 回退。
 

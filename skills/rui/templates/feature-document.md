@@ -8,7 +8,7 @@ graph TD
     S4 --> PS["Postscript"]
 ```
 
-> | v{version} | {YYYY-MM-DD} | {模型} | {工具} | 🌿 {branch} | ⏱️ {HH:mm}–{HH:mm} | 📎 [CLAUDE.md](../CLAUDE.md) |
+> | v{version} | {YYYY-MM-DD} | {模型} | {工具} | 🌿 {branch}（功能分支） | ⏱️ {HH:mm}–{HH:mm} | 📎 [CLAUDE.md](../CLAUDE.md) |
 
 [📖 §1](#1-feature-overview) | [📋 §2](#2-user-stories) | [📚 §3](#3-usage) | [📈 §4](#4-project-report) | [🔄 后记](#post-mortem)
 
@@ -136,8 +136,19 @@ sequenceDiagram
 
 | Step | Action | Command / Path | Expected Result |
 |------|--------|---------------|-----------------|
-| 1 | {操作} | `{命令}` | {预期结果} |
+| 1 | 创建功能分支 | `git checkout -b feat/{特性名称}` | 已切换到新分支 |
 | 2 | {操作} | `{命令}` | {预期结果} |
+| 3 | {操作} | `{命令}` | {预期结果} |
+
+### 分支策略
+
+此功能在独立分支上开发，编码全部在功能分支完成，验证通过后合并回主干。
+
+| 阶段 | 分支状态 | 操作 |
+|------|---------|------|
+| 文档阶段 | `feat/{特性名称}` | 文档生成与审查 |
+| 编码阶段 | `feat/{特性名称}` | 逐模块实现与审查 |
+| 交付阶段 | 合并回 `main` | `git merge --no-ff` 或 PR/MR |
 
 ### ❓ FAQ
 
@@ -165,10 +176,12 @@ sequenceDiagram
 | Stories Delivered | {N}/{N} | §2 Verification Summary |
 | Gate A (Test-First) | ✅/❌ | {证据路径} |
 | Gate B (Smoke Test) | ✅/❌ | {证据路径} |
+| Feature Branch | `feat/{特性名称}` | `git branch --show-current` |
+| Merged to Main | ✅/❌ | `git log --oneline main` |
 
 ---
 
-## 🔄 后记：后期规划与改进
+## 后期规划与改进
 
 ### 🔍 工作流标准化审查
 
