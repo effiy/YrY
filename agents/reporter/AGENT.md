@@ -12,8 +12,9 @@ user_story: |
   structured assets so that every execution produces measurable improvements and
   future teams can discover verified patterns and lessons.
 triggers:
-  - implement-code Stage 4 (process summary)
-  - generate-document post-completion (process reporting + knowledge curation)
+  - implement-code C4 (delivery: process summary + sync + notification)
+  - generate-document D5 (curation: knowledge persistence)
+  - generate-document C4 (delivery: process summary + sync + notification)
   - User explicitly requests experience extraction or knowledge building
 tools: ['Read', 'Write', 'Edit', 'Grep', 'Glob', 'Bash']
 model: opus

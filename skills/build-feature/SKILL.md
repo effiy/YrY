@@ -95,15 +95,21 @@ contracts:
 ```mermaid
 graph TD
     subgraph "Document Pipeline [document / full]"
-        D0[adaptive-planning] --> D1[discovery] --> D2[impact-analysis] --> D3[architecture] --> D4[document-gen] --> D5[curation]
+        D0[adaptive-planning] -.->|optional| D1[discovery]
+        D1 --> D2[impact-analysis] --> D3[architecture] --> D4[document-gen] --> D5[curation]
     end
     subgraph "Code Pipeline [code / full]"
         C0[code-preflight] --> C1[test-first] --> C2[implementation] --> C3[validation]
     end
-    D5 -->|full| C0
-    D5 -->|document| C4[delivery]
-    C3 -->|code / full| C4
+    D5 -->|full mode| C0
+    D5 -->|document mode| C4
+    C3 -->|code / full mode| C4
+
+    style D0 fill:#e1f5ff,stroke-dasharray:5
+    style C4 fill:#ccffcc
 ```
+
+> D0 为可选自适应规划（`init` 跳过）。C4 delivery 为共享出口，document/code/full 三条路径汇聚于此。
 
 ## 定位
 
@@ -127,6 +133,17 @@ graph TD
 
 所有命令幂等；已有文档增量更新。
 
+### 命令 → 阶段映射
+
+| 命令 | 触发的阶段 |
+|------|-----------|
+| `/generate-document <name>` | D0→D1→D2→D3→D4→D5→C4 |
+| `/generate-document init` | D1→D4→D5→C4（跳过 D0 执行记忆，D2/D3 裁剪） |
+| `/generate-document weekly` | D1→D2→D3→D4→D5→C4（周报模板） |
+| `/generate-document from-weekly <path>` | D1→D2→D4→D5→C4（拆解为功能文档，D3 裁剪） |
+| `/implement-code <name>` | C0→C1→C2→C3→C4 |
+| `/build-feature <name> --full` | D0→D1→D2→D3→D4→D5→C0→C1→C2→C3→C4 |
+
 ## 模式与管线
 
 | 模式 | 活跃阶段 | 前置条件 |
@@ -137,23 +154,23 @@ graph TD
 
 ### 文档管线 (D0–D5)
 
-| 阶段 | 做什么 | 关键产出 |
-|------|--------|---------|
-| D0 Adaptive Planning | 读取执行记忆，确定变更级别 (T1/T2/T3) | 执行计划 |
-| D1 Discovery | 检索相关规范与已有文档 | 规范列表 |
-| D2 Impact Analysis | 全项目影响链分析，参见 [`shared/contracts.md`](../../shared/contracts.md#第-3-部分全项目影响分析) | 闭合影响链 |
-| D3 Architecture | 模块划分、接口规范、数据流设计 | 架构设计 |
-| D4 Document Generation | 按模板生成 §1–§4+后记，三层审查 | 完整功能文档 |
-| D5 Curation | `git` 持久化 + 执行记忆回写 | 已保存文档 |
+| 阶段 | 输入 | 做什么 | 关键产出 |
+|------|------|--------|---------|
+| D0 Adaptive Planning | 用户命令 | 读取执行记忆，确定变更级别 (T1/T2/T3) | 执行计划 |
+| D1 Discovery | 特性名称 + 执行计划 | 检索相关规范与已有文档 | 规范列表 + grounding 记录 |
+| D2 Impact Analysis | 规范列表 | 全项目影响链分析，参见 [`shared/contracts.md`](../../shared/contracts.md#第-3-部分全项目影响分析) | 闭合影响链 |
+| D3 Architecture | 闭合影响链 | 模块划分、接口规范、数据流设计 | 架构设计 |
+| D4 Document Generation | 架构设计 + 上游产物 | 按模板生成 §1–§4+后记，三层审查 | 完整功能文档 |
+| D5 Curation | 完整文档 | `git` 持久化 + 执行记忆回写 | 已保存文档 |
 
 ### 代码管线 (C0–C3)
 
-| 阶段 | 做什么 | 关键产出 |
-|------|--------|---------|
-| C0 Preflight | 双边影响分析（代码 + 文档），验证文档 P0 完整 | 锚定报告 |
-| C1 Test-First | Gate A：基于 §2 场景产出测试计划与原型页 | 测试方案 + 原型 |
-| C2 Implementation | 逐模块编码，每模块后调 [`code-review`](../code-review/SKILL.md) → 修复 P0 → 自检 | 实现代码 + 审查记录 |
-| C3 Validation | Gate B：冒烟测试 + 影响链回归 → 回写 §4 与各故事 AC | 冒烟证据 + AC 更新 |
+| 阶段 | 输入 | 做什么 | 关键产出 |
+|------|------|--------|---------|
+| C0 Preflight | `docs/<feature>.md` | 双边影响分析（代码 + 文档），验证文档 P0 完整 | 锚定报告 |
+| C1 Test-First | 锚定报告 + §2 场景 | Gate A：基于 §2 场景产出测试计划与原型页 | 测试方案 + 原型 |
+| C2 Implementation | 测试方案 + 架构设计 | 逐模块编码，每模块后调 [`code-review`](../code-review/SKILL.md) → 修复 P0 → 自检 | 实现代码 + 审查记录 |
+| C3 Validation | 实现代码 | Gate B：冒烟测试 + 影响链回归 → 回写 §4 与各故事 AC | 冒烟证据 + AC 更新 |
 
 ### 文档章节结构
 

@@ -12,10 +12,10 @@ user_story: |
   both code and documents so that defects are intercepted before release, every
   verification is evidence-based, and quality trends drive continuous improvement.
 triggers:
-  - implement-code Stage 2 (UI prototype + E2E test scheme + code review)
-  - implement-code Stage 3 (full code review)
-  - generate-document Stage 2 (document prototype)
-  - generate-document Stage 4 (markdown test + mermaid review + doc review + quality tracking)
+  - implement-code C1 (test-first: E2E test design + UI prototype)
+  - implement-code C2 (code review per module)
+  - implement-code C3 (full code review + smoke test)
+  - generate-document D4 (markdown QA + mermaid review + doc review + quality tracking)
   - Pre-commit quality gate
   - Post-save document review
 tools: ['Read', 'Write', 'Edit', 'Grep', 'Glob', 'Bash']
@@ -90,25 +90,36 @@ contract:
 
 ## 核心定位
 
-**端到端质量保证 agent**。覆盖代码和文档的测试、验证和审查。从原型验证（Fail Fast）到 E2E 测试设计、代码和文档审查，再到质量指标追踪。每个质量决策必须基于证据、分级（P0=阻塞发布, P1=建议修复, P2=可选优化），且可直接执行。
+**端到端质量保证 agent**。覆盖代码管线（C1→C2→C3）和文档管线（D4）的测试、验证和审查。从 E2E 测试设计和原型验证（Gate A）到逐模块代码审查，再到 Gate B 冒烟测试和质量指标追踪。每个质量决策必须基于证据、分级（P0=阻塞发布, P1=建议修复, P2=可选优化），且可直接执行。
 
 ## 流水线概览
 
 ```mermaid
 graph TD
-    P1[Phase 1: E2E Test Design] --> P2[Phase 2: UI Prototype Validation]
-    P2 --> P3[Phase 3: Code Review]
-    P3 --> P4[Phase 4: Doc Prototype Validation]
-    P4 --> P5[Phase 5: Mermaid Review]
-    P5 --> P6[Phase 6: Markdown QA]
-    P6 --> P7[Phase 7: Doc Review]
-    P7 --> P8[Phase 8: Quality Metrics Tracking]
+    subgraph "Code Pipeline"
+        C1[C1: Test-First] --> P1[Phase 1: E2E Test Design]
+        C1 --> P2[Phase 2: UI Prototype]
+        C2[C2: Implementation] --> P3[Phase 3: Code Review]
+        C3[C3: Validation] --> P3
+        C3 --> P8[Phase 8: Quality Tracking]
+    end
+    subgraph "Document Pipeline"
+        D4[D4: Document Generation] --> P4[Phase 4: Doc Prototype]
+        D4 --> P5[Phase 5: Mermaid Review]
+        D4 --> P6[Phase 6: Markdown QA]
+        D4 --> P7[Phase 7: Doc Review]
+        D4 --> P8
+    end
 ```
 
-```
-Prototype Validation → E2E Test Design → Code Review → Document Review →
-Markdown/Mermaid QA → Quality Metrics Tracking
-```
+### 阶段-Phase 映射
+
+| 管线阶段 | Phase | 做什么 |
+|---------|-------|--------|
+| C1 test-first | P1 + P2 | E2E 测试方案 + UI 原型验证（Gate A） |
+| C2 implementation | P3 | 逐模块代码审查 |
+| C3 validation | P3 + P8 | 全量代码审查 + Gate B 冒烟测试 + 质量统计 |
+| D4 document-gen | P4 + P5 + P6 + P7 + P8 | 文档原型 + Mermaid 审查 + Markdown QA + 文档审查 + 质量统计 |
 
 ---
 
