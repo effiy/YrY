@@ -55,7 +55,7 @@ Webhook 仅在 `config.json` 中配置，无 CLI 参数。
 
 ## 推送文案与反幻觉
 
-- 需要系统事实核查时参照 `shared/contracts.md` 中的证据标准
+- 需要系统事实核查时参照 [`agents/AGENT.md`](../../agents/AGENT.md#证据标准反幻觉) 中的证据标准
 - 正文转义：字面量 `\n` 应使用 `--content-file` 或脚本 `normalizeMessageText` 规范化
 
 ## 消息格式（单一真源）
@@ -93,3 +93,17 @@ API_X_TOKEN=*** node skills/wework-bot/scripts/send-message.js \
 - `rules/message-contract.md`：消息格式、安全、调用契约
 - `config.json`：默认配置（已提交）
 - `scripts/send-message.js`：发送脚本
+
+## 消息格式细节
+
+**两层结构**: 摘要段（分隔线上，≤600 字）+ 明细段（分隔线下）。
+
+**摘要必含**: `🎯 结论` + `📝 描述`(≤100 字) + `📌 范围` + `👉 下一步`。完成/阻断/门禁类追加 `🌐 影响` + `📎 证据` + `⏱️ 会话`(合并耗时+用量)。
+
+**阻断类追加**: `❌ 原因`(≤2 条) + `🧭 恢复点`。门禁类追加 `🔍 门禁` + `📊 结果`。
+
+**格式约束**: 分隔线至多两条；数字须来自执行结果，禁止占位符；全文 ≤2000 字；正文不得出现字面量 `\n`。
+
+**API 契约**: `POST <WEWORK_BOT_API_URL>`，体 `{"webhook_url": "...", "content": "..."}`，Header `X-Token` = `API_X_TOKEN`（仅环境变量）。
+
+**安全**: 不得提交 token、webhook URL 或 key。日志和回复必须脱敏。

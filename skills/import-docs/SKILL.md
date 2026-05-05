@@ -74,5 +74,14 @@ graph LR
 
 ## 支持文件
 
-- `rules/import-contract.md`：路径生成、去重、安全约束
 - `scripts/import-docs.js`：CLI 实现
+
+## 实现细节
+
+**路径生成**: 远端路径 = `<prefix...>/<仓库名>/<导入目录名>/<相对路径>`，空格替换为 `_`，分隔符统一为 `/`。
+
+**文件遍历**: 目录在 git 仓库内时使用 `git ls-files --cached --others --exclude-standard`（遵循 `.gitignore`），否则回退到文件系统遍历。始终忽略 `.git`，不跟随符号链接。
+
+**去重**: 导入前查询已有 `file_path`，存在则覆盖（`overwritten`），不存在则创建（`created`）。
+
+**失败处理**: 单文件失败记录错误并继续；最终 `failed > 0` 时非零退出；空目录或无匹配文件正常退出。`API_X_TOKEN` 缺失时停止，不尝试匿名导入。

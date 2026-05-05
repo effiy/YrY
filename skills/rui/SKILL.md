@@ -1,95 +1,9 @@
 ---
 name: rui
-description: |
-  Full SDLC orchestrator: document generation → code implementation → delivery.
-  Supports document, code, full-feature, init, weekly, and from-weekly modes.
-  Command: /rui (unified entry point).
-  Auto-detects operation type from command name and arguments; dispatches to
-  the correct stage sequence without manual mode specification.
+description: Full SDLC orchestrator: document → code → delivery. Command: /rui.
 user_invocable: true
-lifecycle: rui-pipeline
-pipeline:
-  stages:
-    - id: "D0"
-      name: adaptive-planning
-      title: Adaptive Planning
-      agents: [docer]
-      gates: [execution-memory-ready]
-      optional: true
-      modes: [document, full]
-    - id: "D1"
-      name: discovery
-      title: Discovery & Spec Retrieval
-      agents: [docer]
-      gates: [specs-loaded]
-      modes: [document, full]
-    - id: "D2"
-      name: document-impact-analysis
-      title: Document Impact Analysis
-      agents: [docer, coder]
-      gates: [impact-chain-closed]
-      modes: [document, full]
-    - id: "D3"
-      name: architecture-design
-      title: Architecture Design & Validation
-      agents: [docer, coder]
-      gates: [architecture-validated]
-      parallel: true
-      modes: [document, full]
-    - id: "D4"
-      name: document-generation
-      title: Document Generation & Three-Layer Review
-      agents: [docer, tester]
-      gates: [p0-clear, diagram-valid, markdown-valid, quality-tracked]
-      modes: [document, full]
-    - id: "D5"
-      name: curation
-      title: Knowledge Curation & Persistence
-      agents: [reporter, docer]
-      gates: [knowledge-persisted]
-      modes: [document, full]
-    - id: "C0"
-      name: code-preflight
-      title: Code Preflight & Dual Impact Analysis
-      agents: [coder, docer]
-      gates: [specs-loaded, impact-chain-closed, doc-impact-closed, architecture-validated]
-      modes: [code, full]
-    - id: "C1"
-      name: test-first
-      title: Test-First Gate A
-      agents: [tester]
-      gates: [p0-clear]
-      modes: [code, full]
-    - id: "C2"
-      name: code-implementation
-      title: Code Implementation & Per-Module Review
-      agents: [coder, tester]
-      gates: [p0-clear]
-      modes: [code, full]
-    - id: "C3"
-      name: code-validation
-      title: Code Validation & Gate B Smoke Test
-      agents: [tester]
-      gates: [smoke-passed, p0-clear]
-      modes: [code, full]
-    - id: "C4"
-      name: delivery
-      title: Process Summary, Sync & Notification
-      agents: [reporter, tester]
-      skills: [import-docs, wework-bot]
-      gates: [quality-tracked, knowledge-persisted, report-generated]
-      modes: [document, code, full]
 agents:
-  required:
-    - coder
-    - docer
-    - tester
-    - reporter
-  optional: []
-contracts:
-  output: shared/contracts.md
-  impact: shared/contracts.md
-  evidence: shared/contracts.md
+  required: [coder, docer, tester, reporter]
 ---
 
 # rui
@@ -211,7 +125,7 @@ graph TD
 |------|------|--------|---------|
 | D0 Adaptive Planning | 用户命令 | 读取执行记忆，确定变更级别 (T1/T2/T3) | 执行计划 |
 | D1 Discovery | 特性名称 + 执行计划 | 检索相关规范与已有文档 | 规范列表 + grounding 记录 |
-| D2 Impact Analysis | 规范列表 | 全项目影响链分析，参见 [`shared/contracts.md`](../../shared/contracts.md#第-3-部分全项目影响分析) | 闭合影响链 |
+| D2 Impact Analysis | 规范列表 | 全项目影响链分析，参见 [`agents/AGENT.md`](../../agents/AGENT.md#全项目影响分析) | 闭合影响链 |
 | D3 Architecture | 闭合影响链 | 模块划分、接口规范、数据流设计 | 架构设计 |
 | D4 Document Generation | 架构设计 + 上游产物 | 按模板生成 §1–§4+后记，三层审查 | 完整功能文档 |
 | D5 Curation | 完整文档 | `git` 持久化 + 执行记忆回写 | 已保存文档 |
@@ -266,7 +180,7 @@ C0 阶段同时分析：
 - **代码影响**: 类型变更、测试覆盖、构建配置
 - **文档影响**: 反向依赖、交叉引用、代码示例新鲜度
 
-C3 完成后基于实际 diff 重新验证。方法见 [`shared/contracts.md`](../../shared/contracts.md#第-3-部分全项目影响分析)。
+C3 完成后基于实际 diff 重新验证。方法见 [`agents/AGENT.md`](../../agents/AGENT.md#全项目影响分析)。
 
 ### 5. 知识沉淀 (D5)
 
@@ -293,7 +207,6 @@ node skills/rui/scripts/execution-memory.js write
 
 ## 参考
 
-- **阶段成功标准 + 质量指标**: [`rules/metrics.md`](rules/metrics.md)
-- **Agent 输出契约 + 证据标准 + 影响分析方法**: [`shared/contracts.md`](../../shared/contracts.md)
+- **Agent 定义 + 证据标准 + 影响分析**: [`agents/AGENT.md`](../../agents/AGENT.md)
 - **文档模板**: [`templates/feature-document.md`](templates/feature-document.md)
 - **脚本**: [`scripts/`](scripts/)
