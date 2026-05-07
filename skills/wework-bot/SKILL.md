@@ -36,6 +36,7 @@ graph LR
 | 参数 | 描述 |
 |-----------|-------------|
 | `API_X_TOKEN` | 必填，仅从系统环境变量读取 |
+| `WEWORK_BOT_WEBHOOK_URL` | 必填，企业微信 Webhook 完整 URL（含 key），仅从系统环境变量读取 |
 | `WEWORK_BOT_API_URL` | 可选，覆盖默认 API |
 | `WEWORK_BOT_CONFIG` | 可选，路由 JSON 路径（默认为仓库内 `config.json`） |
 | `--agent` | 通过 `config.agents` 映射到机器人（推荐） |
@@ -50,12 +51,12 @@ Webhook 仅在 `config.json` 中配置，无 CLI 参数。
 1. 组装消息：按电梯演讲和契约编写完整正文
 2. 选择机器人：`config.json` 通过 `--agent` 或 `--robot` 解析 webhook；未指定时使用 `default_robot`
 3. 验证凭据：`API_X_TOKEN` + 来自 config 的 webhook
-4. 发送：`node skills/wework-bot/scripts/send-message.js --agent … --content-file …`
+4. 发送：`node .claude/skills/wework-bot/scripts/send-message.js --agent … --content-file …`
 5. 汇总结果：根据 HTTP 状态码判断成功/失败
 
 ## 推送文案与反幻觉
 
-- 需要系统事实核查时参照 [`agents/AGENT.md`](../../agents/AGENT.md#证据标准反幻觉) 中的证据标准
+- 需要系统事实核查时参照 [`.claude/agents/AGENT.md`](../../agents/AGENT.md#证据标准反幻觉) 中的证据标准
 - 正文转义：字面量 `\n` 应使用 `--content-file` 或脚本 `normalizeMessageText` 规范化
 
 ## 消息格式（单一真源）

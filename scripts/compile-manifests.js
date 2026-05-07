@@ -10,9 +10,10 @@
 const fs = require('fs');
 const path = require('path');
 
-const PROJECT_ROOT = path.resolve(__dirname, '..');
-const SKILLS_DIR = path.join(PROJECT_ROOT, 'skills');
-const AGENTS_DIR = path.join(PROJECT_ROOT, 'agents');
+const CLAUDE_ROOT = path.resolve(__dirname, '..');
+const PROJECT_ROOT = path.resolve(__dirname, '../..');
+const SKILLS_DIR = path.join(CLAUDE_ROOT, 'skills');
+const AGENTS_DIR = path.join(CLAUDE_ROOT, 'agents');
 
 function extractFrontmatter(text) {
   const match = text.match(/^---\s*\n([\s\S]*?)\n---\s*\n/);
@@ -83,7 +84,7 @@ function parseYaml(raw) {
 function listManifests(dir, filename, type) {
   if (!fs.existsSync(dir)) return [];
   const results = [];
-  // Check for single-file case (e.g., agents/AGENT.md)
+  // Check for single-file case (e.g., docs/agents.md)
   const flatPath = path.join(dir, filename);
   if (fs.existsSync(flatPath) && fs.statSync(flatPath).isFile()) {
     const text = fs.readFileSync(flatPath, 'utf8');
@@ -127,7 +128,7 @@ function validateAgent(agent) {
   const issues = [];
   const fm = agent.frontmatter || {};
   if (fm._parseError) { issues.push(`parse-error: ${fm._parseError}`); return issues; }
-  // Single-file agents (e.g., agents/AGENT.md) don't have per-agent frontmatter
+  // Single file agents (e.g., docs/agents.md) don't have per-agent frontmatter
   if (!fm.name) return issues;
   if (!fm.description) issues.push('missing: description');
   if (fm.name !== agent.name) issues.push(`name mismatch: "${fm.name}" != "${agent.name}"`);

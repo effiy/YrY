@@ -11,10 +11,10 @@ lifecycle: default-pipeline
 
 ```mermaid
 graph LR
-    A[import-docs] --> B{Auto-detect}
-    B -->|.claude/| C[All files]
-    B -->|other| D[.md only]
-    C --> E[import-docs.js]
+    A[import-docs] --> B{Mode?}
+    B -->|--workspace| W[Scan docs + .claude dirs]
+    B -->|single| D[Single dir]
+    W --> E[import-docs.js]
     D --> E
     E --> F[Result: new / overwrite / fail]
     F --> G[Feed stats to wework-bot]
@@ -34,6 +34,7 @@ graph LR
 
 | 参数 | 默认值 | 描述 |
 |-----------|---------|-------------|
+| `--workspace` / `-w` | — | 扫描工作区：docs/*.md + 根 .claude/* + 各项目 .claude/* |
 | `--dir` | 自动检测 | 导入目录 |
 | `--exts` | 自动检测 | 逗号分隔的扩展名 |
 | `--token` | 仅 `API_X_TOKEN` | **已禁用** CLI 参数，仅从系统环境变量读取 |
@@ -43,25 +44,27 @@ graph LR
 
 ## 自动检测规则
 
+- `--workspace` 模式：自动扫描 `docs/`（仅 .md）+ 根 `.claude/`（所有文件）+ 各子项目 `.claude/`（所有文件）+ 各子项目 `docs/`（仅 .md）
 - 在 `.claude` 下 → 导入 `.claude` 目录，所有文件
 - 其他情况 → 导入项目根目录，仅 `.md` 文件
 - 当 `--dir` 指向 `.claude` / `.cursor` 时，`exts` 默认为空（导入所有文件）
+- 始终忽略 `.git` 和 `node_modules`
 
 ## 工作流程
 
 1. 参数解析：从用户请求中提取目录、扩展名、前缀
-2. 枚举候选（可选）：`node skills/import-docs/scripts/import-docs.js list`
+2. 枚举候选（可选）：`node .claude/skills/import-docs/scripts/import-docs.js list`
 3. 安全检查：回复中不展示 token
-4. 执行导入：`node skills/import-docs/scripts/import-docs.js --dir docs --exts md`
+4. 执行导入：`node .claude/skills/import-docs/scripts/import-docs.js --dir docs --exts md`
 5. 结果汇总：已找到文件数、新建 / 覆盖 / 失败计数
 6. 返回通知摘要：`☁️ 文档同步：docs → 远端（新建 N，覆盖 N，失败 N）`
 
 ## 标准 docs 导入（由上游 skills 调用）
 
-标准命令：`node skills/import-docs/scripts/import-docs.js --dir docs --exts md`
+标准命令：`node .claude/skills/import-docs/scripts/import-docs.js --workspace`
 
-- 目录存在 → 执行导入，结果写入 wework-bot 通知
-- 目录不存在 → 跳过，通知写入 `docs 不存在，跳过导入`
+- `--workspace` 扫描 docs/*.md + 根 .claude/* + 各项目 .claude/* + 各项目 docs/*.md
+- 目录不存在 → 跳过，通知写入目录不存在
 - 导入失败 → 不阻断主流程，注明失败数量
 - `API_X_TOKEN` 缺失 → 记录"`API_X_TOKEN` 未检测到，可稍后手动同步"
 
@@ -70,7 +73,7 @@ graph LR
 - 除非用户指定 `--dir` / `--exts`，否则默认自动检测
 - 不得将 token 写入仓库文件、日志或文档
 - 脚本会覆盖远端同路径文件
-- 始终忽略 `.git`，不跟随符号链接
+- 始终忽略 `.git` 和 `node_modules`，不跟随符号链接
 
 ## 支持文件
 
@@ -78,7 +81,7 @@ graph LR
 
 ## 实现细节
 
-**路径生成**: 远端路径 = `<prefix...>/<仓库名>/<导入目录名>/<相对路径>`，空格替换为 `_`，分隔符统一为 `/`。
+**路径生成**: 远端路径 = `<prefix>/<仓库名>/<相对 workspace 根的路径>`，空格替换为 `_`，分隔符统一为 `/`。远程目录结构与本地完全一致。
 
 **文件遍历**: 目录在 git 仓库内时使用 `git ls-files --cached --others --exclude-standard`（遵循 `.gitignore`），否则回退到文件系统遍历。始终忽略 `.git`，不跟随符号链接。
 

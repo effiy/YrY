@@ -163,9 +163,9 @@ async function main() {
   if (!skill) usage();
   if (!stage) usage();
 
-  // Write location: <repo>/agents/memory/<agent>.runs.md
-  const repoRoot = path.resolve(__dirname, '../../..');
-  const memDir = path.join(repoRoot, '.claude', 'agents', 'memory');
+  // Write location: <repo>/docs/agents/memory/<agent>.runs.md
+  const repoRoot = path.resolve(__dirname, '../../../..');
+  const memDir = path.join(repoRoot, 'docs', 'agents', 'memory');
   ensureDirSync(memDir);
   const filePath = path.join(memDir, `${agent}.runs.md`);
 

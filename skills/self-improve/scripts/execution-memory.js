@@ -21,7 +21,7 @@ const fsp = fs.promises;
 const path = require('path');
 const { getNaturalWeekRange } = require('./natural-week.js');
 
-const REPO_ROOT = path.resolve(__dirname, '../../..');
+const REPO_ROOT = path.resolve(__dirname, '../../../..');
 const MEMORY_DIR = path.join(REPO_ROOT, 'docs', '.memory');
 const MEMORY_FILE = path.join(MEMORY_DIR, 'execution-memory.jsonl');
 
@@ -31,23 +31,26 @@ function printHelp() {
   node scripts/execution-memory.js query [options]          Query historical records
   node scripts/execution-memory.js stats [options]          Stats on high-frequency patterns
   node scripts/execution-memory.js ls [options]             List recent records
+  node scripts/execution-memory.js trends [options]         Trend analysis by 2-week windows
 
 Options:
   --feature <name>   Match by feature name
   --keyword <k>      Match by keyword (fingerprint, description, bad case lesson)
   --limit <n>        Max results to return (default 10)
   --week <date>      Filter by natural week (YYYY-MM-DD)
+  --weeks <n>        Number of weeks for trends (default 8)
   --json             Output JSON (default Markdown)
 
 Examples:
   node scripts/execution-memory.js write /tmp/session.json
   node scripts/execution-memory.js query --feature "User Login" --limit 5
   node scripts/execution-memory.js stats --week 2026-04-29 --json
+  node scripts/execution-memory.js trends --weeks 8 --json
 `);
 }
 
 function parseArgs(argv) {
-  const out = { command: null, file: null, feature: null, keyword: null, limit: 10, week: null, json: false };
+  const out = { command: null, file: null, feature: null, keyword: null, limit: 10, week: null, weeks: 8, json: false };
   const args = argv.slice(2);
   if (args.length === 0 || args[0] === '--help' || args[0] === '-h') { printHelp(); process.exit(0); }
   out.command = args[0];
@@ -58,6 +61,7 @@ function parseArgs(argv) {
     else if (a === '--keyword') out.keyword = args[++i];
     else if (a === '--limit') out.limit = parseInt(args[++i], 10) || 10;
     else if (a === '--week') out.week = args[++i];
+    else if (a === '--weeks') out.weeks = parseInt(args[++i], 10) || 8;
     else if (a === '--json') out.json = true;
     else if (!out.file && !a.startsWith('-')) out.file = a;
   }
@@ -248,6 +252,122 @@ async function cmdLs(opts) {
   });
 }
 
+async function cmdTrends(opts) {
+  const records = await readAllRecords();
+  const weeks = opts.weeks || 8;
+
+  const since = new Date();
+  since.setDate(since.getDate() - weeks * 7);
+  const sinceStr = since.toISOString().split('T')[0];
+
+  const recentRecords = records.filter(r => {
+    const ts = r.timestamp || 0;
+    return new Date(ts) >= new Date(sinceStr);
+  });
+
+  // 2-week window bucketing using natural-week boundaries
+  const windowSize = 14;
+  const windows = [];
+  for (let i = 0; i < weeks * 7; i += windowSize) {
+    const winStart = new Date(since);
+    winStart.setDate(winStart.getDate() + i);
+    const winEnd = new Date(winStart);
+    winEnd.setDate(winEnd.getDate() + windowSize - 1);
+    const winStartStr = winStart.toISOString().split('T')[0];
+    const winEndStr = winEnd.toISOString().split('T')[0];
+
+    const winRecords = recentRecords.filter(r => {
+      const ts = r.timestamp || 0;
+      const d = new Date(ts);
+      return d >= new Date(winStartStr) && d <= new Date(winEndStr);
+    });
+
+    const total = winRecords.length;
+    const blocked = winRecords.filter(r => r.was_blocked).length;
+    const blockedRate = total > 0 ? blocked / total : null;
+
+    let p0Count = 0;
+    const changeLevels = { T1: 0, T2: 0, T3: 0 };
+    winRecords.forEach(r => {
+      p0Count += r.quality_issues?.P0?.length || 0;
+      if (r.actual_change_level) changeLevels[r.actual_change_level] = (changeLevels[r.actual_change_level] || 0) + 1;
+    });
+    const p0Rate = total > 0 ? p0Count / total : null;
+
+    windows.push({
+      label: `${winStartStr}~${winEndStr}`,
+      total,
+      blockedRate,
+      p0Rate,
+      changeLevels,
+    });
+  }
+
+  // Compute deltas and detect degrading signals
+  const degradingSignals = [];
+  for (let i = 2; i < windows.length; i++) {
+    const w0 = windows[i - 2];
+    const w1 = windows[i - 1];
+    const w2 = windows[i];
+    if (w0.blockedRate === null || w1.blockedRate === null || w2.blockedRate === null) continue;
+    if (w1.blockedRate > w0.blockedRate && w2.blockedRate > w1.blockedRate) {
+      degradingSignals.push({ dimension: 'blocked', window: w2.label });
+    }
+    if (w0.p0Rate === null || w1.p0Rate === null || w2.p0Rate === null) continue;
+    if (w1.p0Rate > w0.p0Rate && w2.p0Rate > w1.p0Rate) {
+      degradingSignals.push({ dimension: 'p0', window: w2.label });
+    }
+  }
+
+  // Compute trend arrows
+  for (let i = 1; i < windows.length; i++) {
+    const prev = windows[i - 1];
+    const curr = windows[i];
+    if (prev.blockedRate !== null && curr.blockedRate !== null) {
+      curr.blockedDelta = curr.blockedRate - prev.blockedRate;
+    }
+    if (prev.p0Rate !== null && curr.p0Rate !== null) {
+      curr.p0Delta = curr.p0Rate - prev.p0Rate;
+    }
+  }
+
+  const trendResult = {
+    period: `${sinceStr} ~ now`,
+    windows,
+    degradingSignals,
+  };
+
+  if (opts.json) {
+    console.log(JSON.stringify(trendResult, null, 2));
+    return;
+  }
+
+  console.log(`# Execution Memory Trends (${trendResult.period})\n`);
+  console.log(`| Window | Records | Blocked | P0 Rate | T1 | T2 | T3 | Trend |`);
+  console.log(`|--------|---------|---------|---------|----|----|-----|--------|`);
+  for (const w of windows) {
+    const blockedStr = w.blockedRate !== null ? `${(w.blockedRate * 100).toFixed(0)}%` : 'N/A';
+    const p0Str = w.p0Rate !== null ? `${(w.p0Rate * 100).toFixed(0)}%` : 'N/A';
+    let trendArrow = '—';
+    if (w.blockedDelta !== undefined) {
+      if (w.blockedDelta < 0 && (w.p0Delta === undefined || w.p0Delta < 0)) trendArrow = '↑ improving';
+      else if (w.blockedDelta > 0 && (w.p0Delta === undefined || w.p0Delta > 0)) trendArrow = '↓ degrading';
+      else trendArrow = '= mixed';
+    }
+    const isDegrading = degradingSignals.some(s => s.window === w.label);
+    const flag = isDegrading ? '⚠️' : '';
+    console.log(`| ${w.label} | ${w.total} | ${blockedStr} | ${p0Str} | ${w.changeLevels.T1} | ${w.changeLevels.T2} | ${w.changeLevels.T3} | ${trendArrow} ${flag} |`);
+  }
+
+  if (degradingSignals.length > 0) {
+    console.log(`\n## Degrading Signals\n`);
+    degradingSignals.forEach(s => {
+      console.log(`- ⚠️ ${s.dimension} rate rising for 2 consecutive windows (detected at ${s.window})`);
+    });
+  }
+  console.log();
+}
+
 async function main() {
   const opts = parseArgs(process.argv);
   switch (opts.command) {
@@ -255,6 +375,7 @@ async function main() {
     case 'query': await cmdQuery(opts); break;
     case 'stats': await cmdStats(opts); break;
     case 'ls': await cmdLs(opts); break;
+    case 'trends': await cmdTrends(opts); break;
     default:
       console.error(`Error: unknown command ${opts.command}`);
       printHelp();

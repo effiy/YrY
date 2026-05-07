@@ -4,16 +4,18 @@
 
 **模型有能力判断。** 所有规则都是这句话的注脚。
 
-涌现、简化、消失不是三条独立原则，而是一个思想的三层展开：
+涌现、简化、消失、校准、释义不是五条独立原则，而是一个思想的五层展开：
 - **涌现**（为什么）— 信任模型的上下文判断。检查清单不能替代思考。
 - **简化**（做什么）— 删除直到剩下必要。每个文件、每条规则必须证明存在价值。
 - **消失**（怎么做）— 好的框架不可见。让正确的事变得容易，而非让每件事都经过流程。
+- **校准**（凭什么）— 验证是唯一真相源。没跑过就是没做过。
+- **释义**（为谁）— 输出要对人可懂。说人话，不做沉默的专家。
 
-三层递进：信任判断 → 减少噪音 → 自动化隐退。
+五层递进：信任判断 → 减少噪音 → 自动化隐退 → 现实校准 → 说人话。
 
 ---
 
-## 三个原则
+## 五个原则
 
 ### 1. 涌现 — 护栏，不是铁轨
 
@@ -48,12 +50,58 @@
 
 > 反模式：单行 bug 修复启动全流水线。
 
+### 4. 校准 — 跑了才算
+
+没验证的判断等于没做的判断。"应该没问题"是最危险的话。
+
+> 反模式：改完不跑，"目测没问题"。
+
+### 5. 释义 — 说人话
+
+够懂才算够好。正确但不易懂的输出，对人是无用输出。
+
+> 反模式：扔一段代码就走，没一行解释为什么。
+
 ---
 
 ## 系统能力
 
-- **Memory**: 用户偏好、项目上下文、反馈记录存于 `~/.claude/projects/-home-claude-YrY/memory/`。启动时读取 MEMORY.md 索引。记忆是快照——引用前验证时效。
+- **Memory**: 用户偏好、项目上下文、反馈记录存于 `~/.claude/projects/` 下对应项目目录。启动时读取 MEMORY.md 索引。记忆是快照——引用前验证时效。
 - **Skills**: 可用技能见系统提示 `<skills>` 块。用户输入 `/<name>` 或任务匹配技能描述时直接调用，不猜测名称。
+
+---
+
+## 项目结构
+
+```
+.claude/
+├── CLAUDE.md              # 本文件：哲学 + 原则 + 准则
+├── agents/AGENT.md        # Agent 身份与决策边界（阶段详表见 SKILL.md）
+├── scripts/compile-manifests.js  # Skill/Agent 清单校验
+└── skills/
+    ├── rui/               # SDLC 编排器
+    │   ├── SKILL.md       # 全流程定义（D0-D5, C0-C3）+ 命令体系
+    │   ├── templates/feature-document.md  # 故事板模板
+    │   └── scripts/       # log-agent-run, rui-state
+    ├── self-improve/      # 自改进（架构反思、工流诊断、提案、评测）
+    │   ├── SKILL.md       # S0-S5 全链路定义
+    │   └── scripts/       # self-improve, execution-memory, natural-week
+    ├── wework-bot/        # 企业微信通知
+    │   ├── SKILL.md
+    │   ├── config.json
+    │   ├── rules/message-contract.md  # 消息格式契约
+    │   └── scripts/send-message.js
+    └── import-docs/       # 文档同步
+        ├── SKILL.md
+        └── scripts/import-docs.js
+
+docs/                      # 运行时文档（SKILL.md 引用）
+├── .pm/board.md           # PM 故事看板
+├── .improvement/proposals.jsonl  # 改进提案
+├── .memory/execution-memory.jsonl  # 执行记忆
+├── shared/contracts.md    # 跨项目契约
+└── storyboards/           # 故事板文档
+```
 
 ---
 
