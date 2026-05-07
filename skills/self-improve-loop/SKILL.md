@@ -20,7 +20,7 @@ flowchart LR
     end
     LP --> GEN[生成报告<br/>改进清单 + 架构演进]
     GEN --> SB["追加到 storyboards<br/>§L 自我改进循环"]
-    SB --> STATE[更新 .loop-state.json]
+    SB --> DONE[完成]
 ```
 
 ---
@@ -158,5 +158,4 @@ node skills/rui/scripts/loop.js status [--json]
 
 - **入口**: rui C4 交付步骤 1，所有命令（init/doc/code/full）完成后自动触发
 - **脚本**: `skills/rui/scripts/loop.js`（主）、`self-improve.js`（数据采集）、`execution-memory.js`（趋势）
-- **状态**: `.claude/.loop-state.json`（运行历史，保留最近 20 次）
 - **降级**: H11 — 采集/生成失败时跳过，不阻断后续 import-docs 和 wework-bot

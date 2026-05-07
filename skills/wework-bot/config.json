@@ -6,5 +6,7 @@
       "webhook_url": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=80bcaa68-6511-4766-bfb3-510291371090"
     }
   },
-  "agents": {}
+  "agents": {
+    "rui": "general"
+  }
 }

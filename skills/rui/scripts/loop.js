@@ -21,8 +21,6 @@ const REPO_ROOT = path.resolve(__dirname, '../../../..');
 const SELF_IMPROVE = path.join(REPO_ROOT, '.claude/skills/rui/scripts/self-improve.js');
 const EXEC_MEMORY = path.join(REPO_ROOT, '.claude/skills/rui/scripts/execution-memory.js');
 const STORYBOARDS_DIR = path.join(REPO_ROOT, 'docs', 'storyboards');
-const STATE_FILE = path.join(REPO_ROOT, '.claude', '.loop-state.json');
-
 function sh(cmd) {
   try {
     return execSync(cmd, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'], cwd: REPO_ROOT }).trim();
@@ -93,27 +91,27 @@ function generate(data) {
   const items = [];
 
   for (const p of data.openP0) {
-    items.push({ priority: 'P0', type: p.type || '未分类', item: p.title, evidence: p.evidence || p.problem_source || '—' });
+    items.push({ priority: 'P0', task: p.title, rationale: p.evidence || p.problem_source || '—' });
   }
   for (const s of data.degradingSignals) {
-    items.push({ priority: 'P1', type: '退化信号', item: `${s.dimension} rate rising`, evidence: s.window });
+    items.push({ priority: 'P1', task: `修复 ${s.dimension} 退化趋势`, rationale: `连续窗口上升 (${s.window})` });
   }
   for (const p of data.openP1.slice(0, 3)) {
-    items.push({ priority: 'P1', type: p.type || '未分类', item: p.title, evidence: p.evidence || p.problem_source || '—' });
+    items.push({ priority: 'P1', task: p.title, rationale: p.evidence || p.problem_source || '—' });
   }
   for (const f of data.largeFiles.slice(0, 3)) {
-    items.push({ priority: 'P2', type: '大文件', item: `\`${f.file}\` (${f.lines} lines)`, evidence: 'snapshot' });
+    items.push({ priority: 'P2', task: `拆分 \`${f.file}\` (${f.lines} lines)`, rationale: '文件过大，降低耦合度' });
   }
 
   if (items.length === 0) {
     lines.push('> 无待改进项');
     lines.push('');
   } else {
-    lines.push('| # | Priority | Type | Item | Evidence |');
-    lines.push('|---|----------|------|------|----------|');
+    lines.push('| # | Priority | Task | Rationale | Status |');
+    lines.push('|---|----------|------|-----------|--------|');
     for (const item of items) {
       itemNum++;
-      lines.push(`| ${itemNum} | ${item.priority} | ${item.type} | ${item.item} | ${item.evidence} |`);
+      lines.push(`| ${itemNum} | ${item.priority} | ${item.task} | ${item.rationale} | pending |`);
     }
     lines.push('');
   }
@@ -127,51 +125,51 @@ function generate(data) {
 
   // Near-term: P0 proposals + degrading signals
   for (const p of data.openP0) {
-    tasks.push({ horizon: '近期', task: p.title, rationale: p.evidence || 'P0 开放提案', status: 'pending' });
+    tasks.push({ priority: 'P0', task: p.title, rationale: p.evidence || 'P0 开放提案', status: 'pending' });
   }
   for (const s of data.degradingSignals) {
-    tasks.push({ horizon: '近期', task: `修复 ${s.dimension} 退化趋势`, rationale: `连续窗口上升 (${s.window})`, status: 'pending' });
+    tasks.push({ priority: 'P1', task: `修复 ${s.dimension} 退化趋势`, rationale: `连续窗口上升 (${s.window})`, status: 'pending' });
   }
 
   // Mid-term: large file splits, degraded proposals
   if (data.largeFiles.length > 0) {
-    tasks.push({ horizon: '中期', task: `拆分 ${data.largeFiles.length} 个大文件 (>300行)`, rationale: '降低耦合度，提升内聚性', status: 'pending' });
+    tasks.push({ priority: 'P2', task: `拆分 ${data.largeFiles.length} 个大文件 (>300行)`, rationale: '降低耦合度，提升内聚性', status: 'pending' });
   }
   if (data.degraded > 0) {
-    tasks.push({ horizon: '中期', task: `处理 ${data.degraded} 个退化提案`, rationale: '已评估为 degraded', status: 'pending' });
+    tasks.push({ priority: 'P2', task: `处理 ${data.degraded} 个退化提案`, rationale: '已评估为 degraded', status: 'pending' });
   }
   if (data.hotspots.length > 0) {
     const top = data.hotspots[0];
-    tasks.push({ horizon: '中期', task: `解耦依赖热点: ${top.target}`, rationale: `Fan-in: ${top.fanIn}`, status: 'pending' });
+    tasks.push({ priority: 'P2', task: `解耦依赖热点: ${top.target}`, rationale: `Fan-in: ${top.fanIn}`, status: 'pending' });
   }
 
   // Long-term
   if (data.closureRate !== undefined && data.closureRate < 0.5) {
-    tasks.push({ horizon: '远期', task: `提升提案闭合率 (当前 ${(data.closureRate * 100).toFixed(0)}%)`, rationale: '改进引擎效果跟踪', status: 'pending' });
+    tasks.push({ priority: 'P3', task: `提升提案闭合率 (当前 ${(data.closureRate * 100).toFixed(0)}%)`, rationale: '改进引擎效果跟踪', status: 'pending' });
   }
   if (data.health?.composite !== null && data.health?.composite < 70) {
     const dims = Object.entries(data.health?.dimensions || {}).filter(([, v]) => v !== null && v < 70).map(([k]) => k);
     if (dims.length > 0) {
-      tasks.push({ horizon: '远期', task: `提升健康维度: ${dims.join(', ')}`, rationale: `当前综合评分 ${data.health.composite}/100`, status: 'pending' });
+      tasks.push({ priority: 'P3', task: `提升健康维度: ${dims.join(', ')}`, rationale: `当前综合评分 ${data.health.composite}/100`, status: 'pending' });
     }
   }
 
   // Already resolved (from eval)
   const resolvedCount = data.improved || 0;
   if (resolvedCount > 0) {
-    tasks.push({ horizon: '已完成', task: `${resolvedCount} 个提案验证改善`, rationale: 'eval_result=improved', status: 'done' });
+    tasks.push({ priority: 'done', task: `${resolvedCount} 个提案验证改善`, rationale: 'eval_result=improved', status: 'done' });
   }
 
   if (tasks.length === 0) {
     lines.push('> 无演进任务');
     lines.push('');
   } else {
-    lines.push('| # | Horizon | Task | Rationale | Status |');
-    lines.push('|---|---------|------|-----------|--------|');
+    lines.push('| # | Priority | Task | Rationale | Status |');
+    lines.push('|---|----------|------|-----------|--------|');
     for (const t of tasks) {
       taskNum++;
       const status = t.status === 'done' ? 'done' : 'pending';
-      lines.push(`| ${taskNum} | ${t.horizon} | ${t.task} | ${t.rationale} | ${status} |`);
+      lines.push(`| ${taskNum} | ${t.priority} | ${t.task} | ${t.rationale} | ${status} |`);
     }
     lines.push('');
   }
@@ -215,24 +213,11 @@ async function findStoryboards() {
   }
 }
 
-// ── State ──
-
-async function loadState() {
-  try {
-    return JSON.parse(await fsp.readFile(STATE_FILE, 'utf8'));
-  } catch { return { runs: [] }; }
-}
-
-async function saveState(state) {
-  await fsp.writeFile(STATE_FILE, JSON.stringify(state, null, 2), 'utf8');
-}
-
 // ── Commands ──
 
 async function cmdRun(opts) {
   const data = collect();
   const report = generate(data);
-  const state = await loadState();
 
   let files = [];
   if (opts.storyboard) {
@@ -248,14 +233,6 @@ async function cmdRun(opts) {
       if (ok) appended++;
     }
   }
-
-  // Update state
-  state.lastRun = now();
-  state.health = data.health?.composite;
-  state.openProposals = data.totalOpen;
-  state.runs.push({ timestamp: now(), health: data.health?.composite, open: data.totalOpen, appended });
-  if (state.runs.length > 20) state.runs = state.runs.slice(-20);
-  await saveState(state);
 
   if (opts.json) {
     console.log(JSON.stringify({
@@ -285,17 +262,21 @@ async function cmdReport(opts) {
 }
 
 async function cmdStatus(opts) {
-  const state = await loadState();
+  const data = collect();
   if (opts.json) {
-    console.log(JSON.stringify(state, null, 2));
+    console.log(JSON.stringify({
+      health: data.health?.composite,
+      openProposals: data.totalOpen,
+      improvements: data.openP0.length + data.openP1.length,
+      degraded: data.degraded,
+      largeFiles: data.largeFiles.length,
+    }, null, 2));
   } else {
     console.log(`# Self-Improve Loop Status`);
-    console.log(`- Last run: ${state.lastRun || 'never'}`);
-    console.log(`- Total runs: ${state.runs.length}`);
-    if (state.lastRun) {
-      console.log(`- Health: ${state.health ?? 'N/A'}/100`);
-      console.log(`- Open proposals: ${state.openProposals ?? 'N/A'}`);
-    }
+    console.log(`- Health: ${data.health?.composite ?? 'N/A'}/100`);
+    console.log(`- Open proposals: ${data.totalOpen}`);
+    console.log(`- Improvements: ${data.openP0.length + data.openP1.length}`);
+    console.log(`- Degraded: ${data.degraded}`);
   }
 }
 

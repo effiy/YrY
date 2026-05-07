@@ -9,7 +9,6 @@ graph LR
     SUB -->|代码| coder
     SUB -->|文档| docer
     SUB -->|验证| tester
-    SUB -->|UI设计| designer
     SUB -->|报告| reporter
     pm -->|安全审查| security
 
@@ -17,7 +16,7 @@ graph LR
         coder --> tester --> reporter
     end
     subgraph "Document Pipeline"
-        docer --> designer --> tester --> reporter
+        docer --> tester --> reporter
     end
     subgraph "Security Gate"
         security -->|C2审查| coder
@@ -60,7 +59,7 @@ graph LR
 | 故事类型 | pm委派 | 协作agents |
 |----------|--------|------------|
 | 功能开发 | 子项目PM | coder → tester → reporter |
-| UI 改造 | 子项目PM | designer → coder → tester → reporter |
+| UI 改造 | 子项目PM | coder → tester → reporter |
 | 文档更新 | 子项目PM | docer → tester → reporter |
 | 安全修复 | 根pm直管 | security → coder → tester |
 | 架构演进 | 根pm直管 | coder → tester → reporter |
@@ -131,20 +130,6 @@ graph LR
 阶段详表见 SKILL.md tester 相关段。
 
 ---
-
-## designer — UI 设计师
-
-**触发**: 子项目PM调度，rui D4 / C1，故事涉及 UI 改造
-
-| 做 | 不做 |
-|---|------|
-| §1.1 UI交互流 + §3 UI设计规范 | 不在非 UI 故事上强制注入设计 |
-| 交互状态矩阵（正常/加载/空/错误/禁用） | 遗漏错误态 = P0 |
-| 确保与项目设计系统对齐 | 无设计系统时建立基础规范，不跳过 |
-| 可访问性：键盘导航、对比度、ARIA | WCAG 2.1 AA 不合规 = P0 |
-
-**注入条件**: §1.1 有用户界面操作、§3 有新增/修改 UI 组件、§4 有前端实现任务。不涉及 UI 时可跳过。
-阶段详表见 SKILL.md designer 相关段。
 
 ---
 

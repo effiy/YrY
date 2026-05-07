@@ -4,7 +4,7 @@ description: Story-driven SDLC orchestrator: story → document → code → del
 user_invocable: true
 lifecycle: default-pipeline
 agents:
-  required: [pm, coder, docer, tester, designer, reporter, security]
+  required: [pm, coder, docer, tester, reporter, security]
 ---
 
 # rui
@@ -55,7 +55,7 @@ flowchart TD
 | D5 策展 | git commit | git log 有 commit |
 | D7 基线 | CLAUDE.md + README.md + design-system.md | 三文件存在 |
 | 就绪检查 | 全部 ✅ | 7 项通过 |
-| self-improve-loop | 采集数据 → 生成改进清单 + 架构演进 → 追加到 storyboards | .loop-state.json 更新 |
+| self-improve-loop | 采集数据 → 生成改进清单 + 架构演进 → 追加到 storyboards | storyboards §L 更新 |
 
 ### doc
 
@@ -92,24 +92,28 @@ rui — 故事驱动 SDLC 编排器
 
 ### 自动执行（无参数）
 
-`/rui` 无参数时扫描 storyboards 自动执行未完成任务：
+`/rui` 无参数时扫描 storyboards 中 **改进清单** 和 **系统架构演进任务** 表格，自动执行 Status 为 `pending` 的任务：
 
 ```mermaid
 flowchart TD
-    EMPTY["/rui (无参数)"] --> PENDING["rui-state.js find-pending --json"]
-    PENDING --> CHECK{action?}
+    EMPTY["/rui (无参数)"] --> SCAN["扫描所有 storyboards<br/>解析 改进清单 + 系统架构演进任务 表格"]
+    SCAN --> CHECK{action?}
     CHECK -->|resume| RESUME["恢复阻断/进行中会话<br/>从断点继续执行"]
-    CHECK -->|code| CODE["自动执行 /rui code <name><br/>文档已完成，开始编码"]
-    CHECK -->|doc| DOC["自动执行 /rui doc <name><br/>已有故事需补充文档"]
-    CHECK -->|none| HELP["显示帮助<br/>无未完成任务或故事板"]
+    CHECK -->|task| EXEC["取最高优先级 pending 任务<br/>执行 /rui code <name>"]
+    CHECK -->|none| HELP["显示帮助<br/>无 pending 任务"]
+    EXEC --> UPDATE["完成后更新 Status<br/>done (feat/&lt;branch&gt;)"]
+    UPDATE --> C4["C4 交付"]
 ```
 
 **优先级**:
 1. 阻断/进行中会话恢复（rui-state.json）
-2. storyboard 已完成文档但无代码（`§4 Tasks` 存在，无 feat/ 分支）
-3. storyboard `§L` 有 pending 状态任务
-4. storyboard `§6`/`§7` 有未处理改进项
-5. 以上皆无 → 显示帮助
+2. 改进清单 P0 pending 任务
+3. 系统架构演进任务 P0 pending 任务
+4. 改进清单 P1/P2 pending 任务
+5. 系统架构演进任务 P1/P2 pending 任务
+6. 以上皆无 → 显示帮助
+
+**Status 更新**: 任务完成后，将对应行 Status 列更新为 `done (feat/<branch-name>)`。改进清单和系统架构演进任务的 Status 值统一：`pending` | `done (feat/<branch>)`。
 
 自动执行使用与显式命令相同的管线，完成后触发 C4 交付（self-improve-loop → import-docs → wework-bot）。
 
@@ -154,13 +158,13 @@ flowchart TD
 ```mermaid
 sequenceDiagram
     participant PM as pm
-    participant DS as coder/docer/designer
+    participant DS as coder/docer
     participant TS as tester/security
     participant RP as reporter
 
     PM->>PM: §1 Story 骨架
     par 并行注入专业视角
-        DS->>DS: coder §3, designer §1.1+§3, docer §2
+        DS->>DS: coder §3, docer §2
         TS->>TS: tester §1.1+§5, security §3+§4
     end
     PM->>PM: 汇总 §4 Tasks
@@ -175,7 +179,6 @@ sequenceDiagram
 | coder | §3 Design + §4 实现任务 | 始终 |
 | tester | §1.1 用户操作 + §5 AC | 始终 |
 | reporter | §4 依赖映射 + 交付物细化 | 始终 |
-| designer | §1.1 UI交互流 + §3 UI设计规范 | 涉及 UI 改造 |
 | security | §3 安全约束 + §4 安全任务 | 涉及用户输入/外部API/认证/持久化 |
 
 #### 增量裁剪
@@ -308,9 +311,9 @@ node skills/wework-bot/scripts/send-message.js --agent rui -f <tmpfile>
 | 章节 | 负责人 | 内容 |
 |------|--------|------|
 | §1 Story | pm | 角色场景、价值、范围边界、依赖 |
-| §1.1 User Operations | tester + designer | 用户操作 + UI交互流程 |
+| §1.1 User Operations | tester | 用户操作 + UI交互流程 |
 | §2 Requirements | docer | 功能点、输入输出、错误行为、业务规则 |
-| §3 Design | coder + designer + security | 技术设计 + UI规范 + 安全约束 |
+| §3 Design | coder + security | 技术设计 + 安全约束 |
 | §4 Tasks | pm + all | 任务拆解、依赖、交付物 |
 | §5 Acceptance Criteria | tester | 验收标准、测试方法、预期结果 |
 | §6 .claude 改进清单 | pm | skill/agent/rule/script/config 改进项（D4/D5 静态分析） |
@@ -331,7 +334,6 @@ node skills/wework-bot/scripts/send-message.js --agent rui -f <tmpfile>
 | 4 | 子项目 README.md 存在且非空 | `wc -l` |
 | 5 | 前端子项目 design-system.md 存在且非空 | `wc -l` |
 | 6 | proposals.jsonl 无已解决但仍 open 的提案 | grep |
-| 7 | UI 故事有 designer 注入内容 | grep |
 
 ---
 
