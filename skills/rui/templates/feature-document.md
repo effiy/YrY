@@ -124,7 +124,6 @@ sequenceDiagram
 | # | Threat | Trust Boundary | Mitigation | Priority |
 |---|--------|---------------|-----------|----------|
 | S1 | {威胁描述} | {信任边界：用户输入/外部API/内部服务} | {缓解措施} | P0/P1/P2 |
-| S2 | {威胁描述} | {信任边界} | {缓解措施} | P0/P1/P2 |
 
 > security 仅在故事涉及用户输入、外部 API、认证/授权、数据持久化、第三方集成时注入。不涉及安全面时删除此节。
 
@@ -152,7 +151,7 @@ graph LR
     T3 --> T6[Gate B]
 ```
 
-> pm 为主体拆解，各 agent 注入专业任务。非安全面故事省略 T4（security 任务）。Gate A 阻断 C2，Gate B >2 轮修复阻断 C4。
+> pm 为主体拆解，各 agent 注入专业任务。非安全面故事省略 T4。Gate A 阻断 C2，Gate B >2 轮修复阻断 C4。
 
 ---
 
@@ -165,7 +164,7 @@ graph LR
 | AC3 | {可度量的验收条件} | `{命令/操作}` | {可验证的预期结果} | Gate B |
 | AC4 | {可度量的验收条件} | `{命令/操作}` | {可验证的预期结果} | Gate B |
 
-> 每个 AC 必须可度量、可验证。Gate A 在 C1 验证（测试方案阶段），Gate B 在 C3 验证（冒烟测试阶段）。
+> 每个 AC 必须可度量、可验证。Gate A 在 C1 验证，Gate B 在 C3 验证。
 
 ---
 
@@ -182,45 +181,14 @@ graph LR
 | Metric | Value |
 |--------|-------|
 | Stories | {N} |
-| Security Stories | {N}（security 注入）|
+| Security Stories | {N} |
 | Gate A Items | {N} |
 | Gate B Items | {N} |
 | Evidence Level | A:{N} · B:{N} · C:{N} |
 
-### 工作流审查
-
-| # | Question | Answer | Evidence |
-|---|----------|--------|----------|
-| 1 | 重复劳动？ | Yes / No | {具体操作} |
-| 2 | 设计规范是否对齐 design-system.md？ | Yes / No / N/A | {对照结果} |
-| 3 | 业务规则是否可追溯到 AC？ | Yes / No | {R# → AC#} |
-
-### 技术债识别
-
-| # | Type | Location | Evidence | Priority |
-|---|------|----------|----------|----------|
-| 1 | 大文件(>300行) | {路径} | A | P1/P2 |
-| 2 | 硬编码模式 | {路径:行号} | A | P0/P1 |
-| 3 | 重复代码(≥3处) | {路径列表} | A | P1/P2 |
-| 4 | 硬编码样式(非Token) | {路径:行号} | A | P1/P2 |
-
-### 改进提案
-
-| Priority | Type | Title | Current → Target | Time Horizon |
-|----------|------|-------|------------------|--------------|
-| P0/P1/P2 | 架构/工流/规则/技术债/UI一致性 | {标题} | {现状} → {目标} | {下次init/下周/下月} |
-
 ### 后续故事
 
 - 作为{角色}，我想要{功能}，以便{价值}。→ [{story-name}](./{story-name}.md#story-N)
-
-### 子项目演进路线
-
-| Phase | Story | Subproject | Depends | Priority |
-|-------|-------|-----------|---------|----------|
-| 近期 | {后续故事描述} | {子项目} | {依赖} | P1 |
-| 中期 | {后续故事描述} | {子项目} | {依赖} | P2 |
-| 远期 | {后续故事描述} | {子项目} | {依赖} | P2 |
 
 ### .claude 改进清单
 

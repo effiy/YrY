@@ -21,106 +21,41 @@ flowchart TD
     ROUTE -->|code &lt;name&gt;| CODE["C0→C3 代码管线"]
     ROUTE -->|&lt;name&gt;| FULL["D0→D5 → C0→C3 端到端"]
 
-    INIT --> LP["self-improve-loop<br/>S3-S5 evaluate → loop → storyboards"]
-    DOC --> LP
-    CODE --> LP
-    FULL --> LP
-
-    LP --> C4["C4 交付"]
-    C4 --> ID["import-docs --workspace"]
-    C4 --> WW["wework-bot"]
+    INIT --> C4["C4: self-improve-loop → import-docs → wework-bot"]
+    DOC --> C4
+    CODE --> C4
+    FULL --> C4
 ```
 
 ---
 
 ## 命令
 
-| 命令 | 意图 | 流程 |
-|------|------|------|
-| `/rui` | 自动执行未完成任务 | `find-pending` 扫描 storyboards → 阻断恢复 → 未完成故事 → 无任务时显示帮助 |
-| `/rui init` | 初始化项目 | S0→S5 → D1→D4→D5→D7 → 就绪检查 → self-improve-loop → C4 |
-| `/rui doc <name>` | 写文档 | D0→D1→D2→D3→D4→D5 → self-improve-loop → C4 |
-| `/rui code <name>` | 写代码 | C0→C1→C2→C3 → self-improve-loop → C4 |
-| `/rui <name>` | 端到端 | D0→D5 → C0→C3 → self-improve-loop → C4 |
-
-### init
-
-初始化项目：自改进全量 → 发现 → 基线文档 → 子项目基线 → 就绪检查 → self-improve-loop。已有文档时增量更新。
-
-| 阶段 | 产出 | 验证 |
-|------|------|------|
-| S0→S5 自改进 | proposals.jsonl + health score | proposals.jsonl 存在 |
-| D1 发现 | 项目全景 + 故事清单 | storyboards/ 非空 |
-| D4 生成 | 基线故事板 | storyboards/ 非空 |
-| D5 策展 | git commit | git log 有 commit |
-| D7 基线 | CLAUDE.md + README.md + design-system.md | 三文件存在 |
-| 就绪检查 | 全部 ✅ | 7 项通过 |
-| self-improve-loop | 采集数据 → 生成改进清单 + 架构演进 → 追加到 storyboards | storyboards §L 更新 |
-
-### doc
-
-写文档：规划 → 发现 → 影响分析 → 架构 → 生成 → 策展 → self-improve-loop。故事板已有时增量更新。
-
-### code
-
-写代码：预检 → 测试先行 → 实现 → 验证 → self-improve-loop。需有对应故事板（`docs/storyboards/<name>.md`），否则阻断。
-
-### help
-
-**`/rui help`** — 概览：
-
-```
-rui — 故事驱动 SDLC 编排器
-
-用法: /rui <command> [name]
-
-命令:
-  (无参数)          自动执行 storyboards 中未完成的任务
-  init              初始化项目
-  doc <name>        写文档（D0→D5 → self-improve-loop）
-  code <name>       写代码（C0→C3 → self-improve-loop）
-  <name>            端到端（D0→D5→C0→C3 → self-improve-loop）
-
-示例:
-  /rui init
-  /rui doc user-login
-  /rui code user-login
-  /rui user-login
-```
-
-**`/rui help <command>`** — 详情：流程 / 适用 / 前置 / 阻断 / 示例。`/rui help help` 额外显示参数 `[command]`。
+| 命令 | 流程 |
+|------|------|
+| `/rui` | 扫描 storyboards 中 pending 任务 → 阻断恢复 → 自动执行 → C4 |
+| `/rui init` | S0→S5 → D1→D4→D5→D7 → 就绪检查 → C4 |
+| `/rui doc <name>` | D0→D5 → C4 |
+| `/rui code <name>` | C0→C3 → C4（需已存在 `docs/storyboards/<name>.md`） |
+| `/rui <name>` | D0→D5 → C0→C3 → C4 |
 
 ### 自动执行（无参数）
 
-`/rui` 无参数时扫描 storyboards 中 **改进清单** 和 **系统架构演进任务** 表格，自动执行 Status 为 `pending` 的任务：
+扫描所有 storyboards 中 §6/§7 表格的 pending 任务，按优先级执行：
 
-```mermaid
-flowchart TD
-    EMPTY["/rui (无参数)"] --> SCAN["扫描所有 storyboards<br/>解析 改进清单 + 系统架构演进任务 表格"]
-    SCAN --> CHECK{action?}
-    CHECK -->|resume| RESUME["恢复阻断/进行中会话<br/>从断点继续执行"]
-    CHECK -->|task| EXEC["取最高优先级 pending 任务<br/>执行 /rui code <name>"]
-    CHECK -->|none| HELP["显示帮助<br/>无 pending 任务"]
-    EXEC --> UPDATE["完成后更新 Status<br/>done (feat/&lt;branch&gt;)"]
-    UPDATE --> C4["C4 交付"]
-```
-
-**优先级**:
 1. 阻断/进行中会话恢复（rui-state.json）
-2. 改进清单 P0 pending 任务
-3. 系统架构演进任务 P0 pending 任务
-4. 改进清单 P1/P2 pending 任务
-5. 系统架构演进任务 P1/P2 pending 任务
+2. 改进清单 P0 pending
+3. 系统架构演进 P0 pending
+4. 改进清单 P1/P2 pending
+5. 系统架构演进 P1/P2 pending
 6. 以上皆无 → 显示帮助
 
-**Status 更新**: 任务完成后，将对应行 Status 列更新为 `done (feat/<branch-name>)`。改进清单和系统架构演进任务的 Status 值统一：`pending` | `done (feat/<branch>)`。
-
-自动执行使用与显式命令相同的管线，完成后触发 C4 交付（self-improve-loop → import-docs → wework-bot）。
+完成后更新 Status 为 `done (feat/<branch>)`，触发 C4。
 
 ### 交互确认
 
 - **需确认**: `init`、`/rui <name>`
-- **直接执行**: `/rui`（无参数，自动执行未完成任务）、`doc`、`code`
+- **直接执行**: `/rui`（无参数）、`doc`、`code`
 
 ---
 
@@ -128,7 +63,7 @@ flowchart TD
 
 ### 文档管线 D0–D5
 
-以故事为原子单位驱动，D1–D5 逐故事循环，7 agent 按故事内容注入。
+以故事为原子单位驱动，D1–D5 逐故事循环。
 
 ```mermaid
 flowchart TD
@@ -146,36 +81,19 @@ flowchart TD
 | 阶段 | 做什么 | 关键产出 |
 |------|--------|---------|
 | D0 自适应规划 | 读取执行记忆，判定 T1/T2/T3 变更级别 | 执行计划 |
-| D1 发现 | 检索规范与已有文档；技术选型时并行搜索；扫描 UI 设计资产；提炼故事列表 | 规范列表 + 故事列表 |
+| D1 发现 | 检索规范与已有文档，提炼故事列表 | 规范列表 + 故事列表 |
 | D2 影响分析 | 逐故事全项目影响链分析，闭合所有依赖 | 闭合影响链 |
 | D3 架构设计 | 逐故事模块划分、接口规范、数据流设计 | 架构设计 |
 | D4 文档生成 | 逐故事 7 agent 协作编写 | 故事板文档 × N |
-| D5 策展 | 逐故事 git commit + 执行记忆回写 + 后记（§6 §7）；完成后触发 self-improve-loop | 已保存文档 + loop 报告 |
+| D5 策展 | git commit + 执行记忆回写 + 后记（§6 §7） | 已保存文档 |
 | D7 子项目基线 | 仅 init：生成 CLAUDE.md + README.md + design-system.md | 三文件 × N |
 
-#### D4 Agent 协作
-
-```mermaid
-sequenceDiagram
-    participant PM as pm
-    participant DS as coder/docer
-    participant TS as tester/security
-    participant RP as reporter
-
-    PM->>PM: §1 Story 骨架
-    par 并行注入专业视角
-        DS->>DS: coder §3, docer §2
-        TS->>TS: tester §1.1+§5, security §3+§4
-    end
-    PM->>PM: 汇总 §4 Tasks
-    RP->>PM: 依赖映射 + 交付物细化
-    TS->>PM: 三层审查
-```
+#### Agent 分工
 
 | Agent | 负责章节 | 注入条件 |
 |-------|---------|---------|
 | pm | §1 Story + §4 Tasks | 始终 |
-| docer | §2 Requirements + §3 概要 | 始终 |
+| docer | §2 Requirements | 始终 |
 | coder | §3 Design + §4 实现任务 | 始终 |
 | tester | §1.1 用户操作 + §5 AC | 始终 |
 | reporter | §4 依赖映射 + 交付物细化 | 始终 |
@@ -200,8 +118,7 @@ flowchart TD
     FIX1 --> GA
     C2 --> C3["C3 验证<br/>冒烟 + 影响链回归"]
     C3 --> GB{Gate B}
-    GB -->|PASS| LP[self-improve-loop]
-    LP --> C4[C4 交付]
+    GB -->|PASS| C4[C4 交付]
     GB -->|FAIL ≤2 轮| FIX2[修复]
     FIX2 --> GB
     GB -->|>2 轮| BLOCK[阻断: H7]
@@ -209,63 +126,33 @@ flowchart TD
 
 | 阶段 | 做什么 | 规则 |
 |------|--------|------|
-| C0 预检 | 双边影响分析 + 分支隔离（从 main/master 拉取 `feat/<name>` / `docs/<name>`） | H10: 必须从主分支创建功能分支 |
+| C0 预检 | 双边影响分析 + 分支隔离（从 main/master 拉取 `feat/<name>` / `docs/<name>`） | H10: 必须从主分支创建 |
 | C1 测试先行 | Gate A：测试方案+原型，单行 CSS 可跳过 | H6: Gate A 未过不得编码 |
 | C2 实现 | 逐模块编码，每模块后审查：P0 必须修 / P1 建议修 / P2 可选 | P0 未清零不进下一模块 |
 | C3 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行 | H7: >2 轮修复阻断 C4 |
 
-### 自改进 S0–S5（内建，全自动）
+### 自改进 S0–S5
 
 静默运行，不阻断主流程。脚本位于 `skills/rui/scripts/`。
 
-```mermaid
-flowchart LR
-    S0["S0 状态采集<br/>memory + git + 代码扫描"] --> S1["S1 架构反思<br/>六维推演"]
-    S1 --> S2["S2 工流诊断<br/>五维瓶颈分析"]
-    S2 --> S3["S3 改进提案<br/>≤3 发现 ≤5 提案"]
-    S3 --> S4["S4 持久化<br/>proposals.jsonl + 后记"]
-    S4 --> S5["S5 效果评估<br/>evaluate + retro + loop"]
-    S5 -.->|闭环| S0
-```
-
-| rui 阶段 | 触发 | 脚本 |
+| rui 阶段 | 触发 | 操作 |
 |---------|------|------|
-| init | S0→S5 全量 | `self-improve.js snapshot/health` → `execution-memory.js stats/trends` |
-| D2 / C0 | S1 架构反思 | 基于影响链做六维推演，产出 s1_metrics |
-| D5 / C3 | S2 工流诊断 | `execution-memory.js trends`，产出 s2_metrics |
-| C4 | self-improve-loop | `self-improve.js evaluate/retro` → `loop.js run --all` |
+| init | S0→S5 全量 | 健康评分 + 快照 + 趋势 + 提案 |
+| D2 / C0 | S1 架构反思 | 六维推演，产出 s1_metrics |
+| D5 / C3 | S2 工流诊断 | 趋势分析，产出 s2_metrics |
+| C4 | self-improve-loop | evaluate + retro → `loop.js run --all` |
 
-**proposals.jsonl**: `docs/.improvement/proposals.jsonl`（append-only），含 id/date/priority/type/title/evidence/s1_metrics/s2_metrics/status/eval_result。
+数据存储: `docs/.improvement/proposals.jsonl`（append-only）。
 
 ### C4 交付
 
-```mermaid
-flowchart LR
-    A[rui 完成/阻断] --> B["self-improve-loop<br/>evaluate → loop → storyboards"]
-    B --> C["import-docs --workspace"]
-    C --> D["wework-bot"]
-```
+| Step | 操作 | 失败处理 |
+|------|------|---------|
+| 1 | `self-improve.js evaluate` → `loop.js run --all` | 不阻断（H11 降级） |
+| 2 | `import-docs.js --workspace` | H9: token 缺失时跳过 |
+| 3 | wework-bot 通知 | 不可跳过 |
 
-| Step | Skill | 操作 | 失败处理 |
-|------|-------|------|---------|
-| 1 | self-improve-loop | `self-improve.js evaluate` → `loop.js run --all` | 失败不阻断 |
-| 2 | import-docs | `import-docs.js --workspace [--exclude <dirs>]` | H9: token 缺失时跳过 |
-| 3 | wework-bot | ① `rui-state.js next-step` 取 `👉 下一步` ② `send-message.js` | 不可跳过 |
-
-**C4 消息组装**（wework-bot 前必须）：
-
-```
-# 1. 状态持久化（已由 D5/C3 完成，阻断时 save --blocked）
-node skills/rui/scripts/rui-state.js save --command <cmd> --name <name> --stage C4 [--blocked]
-
-# 2. 取下一步提示 → 填入消息正文的 👉 下一步 字段
-node skills/rui/scripts/rui-state.js next-step
-
-# 3. 组装纯文本消息（emoji 前缀分行，禁用 markdown）→ 写入临时文件 → 发送
-node skills/wework-bot/scripts/send-message.js --agent rui -f <tmpfile>
-```
-
-消息格式示例（纯文本，emoji 前缀，`———` 分隔摘要/明细）：
+消息格式（纯文本，emoji 前缀，`———` 分隔）：
 
 ```
 🎯 结论: 完成 user-login 文档管线 D0→D5
@@ -280,13 +167,7 @@ node skills/wework-bot/scripts/send-message.js --agent rui -f <tmpfile>
 变更文件: docs/storyboards/user-login.md (新增, 285行)
 ```
 
-完成或阻断后，同时向用户输出下一步提示（CLI 直接 echo）。
-
-导入范围（workspace 自动检测）：
-- 根 `.claude/`（全部，排除 .git）→ 远端路径 `<workspace>/.claude/...`
-- 根 `docs/`（.md）→ 远端路径 `<workspace>/docs/...`
-- 子项目 `.claude/` + `docs/` + `CLAUDE.md` + `README.md` → 远端路径 `<子项目>/...`（以子项目名为一级目录）
-- 排除：`--exclude` 指定跳过的子项目（逗号分隔）
+完成或阻断后同时向用户输出下一步提示。字段要求见 wework-bot SKILL.md。
 
 ---
 
@@ -316,11 +197,11 @@ node skills/wework-bot/scripts/send-message.js --agent rui -f <tmpfile>
 | §3 Design | coder + security | 技术设计 + 安全约束 |
 | §4 Tasks | pm + all | 任务拆解、依赖、交付物 |
 | §5 Acceptance Criteria | tester | 验收标准、测试方法、预期结果 |
-| §6 .claude 改进清单 | pm | skill/agent/rule/script/config 改进项（D4/D5 静态分析） |
-| §7 系统架构演进任务 | pm | 近期/中期/远期演进路线（D3/D5 结构规划） |
-| §L 自我改进循环 | self-improve-loop | 数据驱动的改进清单 + 架构演进（每次 rui 完成时自动追加） |
+| §6 .claude 改进清单 | pm | skill/agent/rule/script/config 改进（D4/D5 静态分析） |
+| §7 系统架构演进任务 | pm | 近期/中期/远期演进（D3/D5 结构规划） |
+| §L 自我改进循环 | self-improve-loop | 数据驱动改进清单 + 架构演进（每次 rui 完成追加） |
 
-> §6 §7 由 pm 在文档生成阶段写入，提供结构性改进方向。§L 由 self-improve-loop 在每次 rui 完成时自动追加，提供运行时健康趋势和自动化建议——两者互补。
+> §6 §7 由 pm 在文档生成阶段写入（结构性）。§L 由 self-improve-loop 在每次 rui 完成时自动追加（数据驱动）。两者互补。
 
 ≤10 故事/板，依赖用 `[story-name](./story-name.md)` 声明，超出拆分 `<name>-2.md`。
 
@@ -337,24 +218,15 @@ node skills/wework-bot/scripts/send-message.js --agent rui -f <tmpfile>
 
 ---
 
-## 故事驱动规则
-
-故事是跨子项目任务调度的原子单位：用户可感知 → AC 可验证 → 跨项目可拆解。pm 从 AC 拆解任务 → 按子项目分配 → 标注依赖和 agent → 写入对应 storyboard。self-improve-loop 在每次 rui 完成后采集健康数据，生成改进清单和架构演进任务追加到所有故事板，闭合改进反馈环。
-
----
-
 ## 核心规则
 
 1. **增量更新**: 已有文档按 T1/T2/T3 裁剪
 2. **测试先行**: Gate A 阻断 C2；Gate B >2 轮修复阻断 C4
 3. **逐模块审查**: C2 每模块后审查，P0 清零前进
 4. **双边影响**: C0 同时分析代码和文档影响
-5. **分支隔离**: C0 从 main/master 拉取功能分支，C4 合并回主干
-6. **知识沉淀**: D5 写执行记忆 + `rui-state.json`
+5. **分支隔离**: C0 从 main/master 拉取功能分支
+6. **知识沉淀**: D5 写执行记忆 + rui-state.json
 7. **C4 必触发**: self-improve-loop → import-docs → wework-bot
-8. **自改进内建**: D2/C0→S1, D5/C3→S2, C4→self-improve-loop
-9. **故事看板持久化**: 故事和任务状态写入对应 storyboard
-10. **交互确认**: init 和全流程需确认，doc/code 直接执行
 
 ## 阻断
 
@@ -370,19 +242,19 @@ node skills/wework-bot/scripts/send-message.js --agent rui -f <tmpfile>
 | H8 | 所有模块被阻断 | 否 | C2 |
 | H9 | `API_X_TOKEN` 缺失 | 是 | C4 |
 | H10 | 功能分支未从 main/master 创建 | 否 | C0 |
-| H11 | self-improve-loop 数据采集失败 | 是（降级） | self-improve-loop |
+| H11 | self-improve-loop 数据采集失败 | 是 | self-improve-loop |
 
-阻断后: `rui-state.js save --blocked` → `rui-state.js next-step` → 持久化 → 同步（H9/H11 跳过）→ 通知。
+阻断后: `rui-state.js save --blocked` → `next-step` → 持久化 → 同步（H9/H11 跳过）→ 通知。
 
 ---
 
 ## 集成点
 
-- **自改进循环**: [`self-improve-loop`](../self-improve-loop/SKILL.md)
-- **文档同步**: `node .claude/skills/import-docs/scripts/import-docs.js --workspace [--exclude <dirs>]`
+- **自改进**: `node skills/rui/scripts/self-improve.js <cmd>`
+- **自改进循环**: `node skills/rui/scripts/loop.js run --all`
+- **执行记忆**: `node skills/rui/scripts/execution-memory.js`
+- **断点**: `node skills/rui/scripts/rui-state.js <save|load|clear>`
+- **文档同步**: `node skills/import-docs/scripts/import-docs.js --workspace`
 - **通知**: `wework-bot`
-- **自改进**: `node .claude/skills/rui/scripts/self-improve.js <cmd>`
-- **执行记忆**: `node .claude/skills/rui/scripts/execution-memory.js`
-- **断点**: `node .claude/skills/rui/scripts/rui-state.js <save|load|clear>`
 - **Agent**: [`.claude/agents/AGENT.md`](../../agents/AGENT.md)
 - **模板**: [`templates/feature-document.md`](templates/feature-document.md)
