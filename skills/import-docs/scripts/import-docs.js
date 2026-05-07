@@ -16,11 +16,11 @@ const execFileAsync = util.promisify(execFile);
  */
 function findProjectRoot(startDir) {
   let currentDir = path.resolve(startDir);
-  let foundGitRoot = null;
+  let gitRoot = null;
   while (true) {
     try {
       fs.accessSync(path.join(currentDir, '.git'));
-      foundGitRoot = currentDir;
+      gitRoot = currentDir;
     } catch {
       // 没找到，继续
     }
@@ -28,7 +28,12 @@ function findProjectRoot(startDir) {
     if (parentDir === currentDir) break;
     currentDir = parentDir;
   }
-  if (foundGitRoot) return foundGitRoot;
+
+  if (gitRoot) {
+    // .claude 仓库模式：workspace 根为父目录
+    if (path.basename(gitRoot) === '.claude') return path.dirname(gitRoot);
+    return gitRoot;
+  }
 
   // 无 .git 时检测 workspace 特征
   let candidate = path.resolve(startDir);
@@ -130,10 +135,10 @@ function readApiXTokenFromEnv() {
 }
 
 /**
- * 查找工作区内所有待导入目录
- * 规则：docs/ 下所有 .md + 每个项目 .claude/ 下所有文件
+ * 查找工作区内所有待导入目标
+ * 规则：根 .claude/（除 .git）+ docs/（.md）；子项目 .claude/（除 .git）+ docs/（.md）+ CLAUDE.md + README.md
  * @param {string} projectRoot - 工作区根目录
- * @returns {Array<{dir: string, exts: string[], label: string}>}
+ * @returns {Array<{dir: string, exts: string[], label: string, names?: string[]}>}
  */
 function findWorkspaceTargets(projectRoot) {
   const targets = [];
@@ -142,31 +147,37 @@ function findWorkspaceTargets(projectRoot) {
     .map(e => e.name)
     .sort();
 
-  // 1. workspace docs/ — only .md
-  const docsDir = path.join(projectRoot, 'docs');
-  if (fs.existsSync(docsDir)) {
-    targets.push({ dir: docsDir, exts: ['md'], label: 'docs' });
-  }
-
-  // 2. root .claude/ — all files
+  // Root .claude/ — all files except .git
   const rootClaudeDir = path.join(projectRoot, '.claude');
   if (fs.existsSync(rootClaudeDir)) {
     targets.push({ dir: rootClaudeDir, exts: [], label: '.claude' });
   }
 
-  // 3. each subproject .claude/ — all files
+  // Root docs/ — .md files
+  const docsDir = path.join(projectRoot, 'docs');
+  if (fs.existsSync(docsDir)) {
+    targets.push({ dir: docsDir, exts: ['md'], label: 'docs' });
+  }
+
+  // Sub-projects: .claude/, docs/, CLAUDE.md, README.md
   for (const name of subprojects) {
-    const claudeDir = path.join(projectRoot, name, '.claude');
+    const projDir = path.join(projectRoot, name);
+
+    const claudeDir = path.join(projDir, '.claude');
     if (fs.existsSync(claudeDir)) {
       targets.push({ dir: claudeDir, exts: [], label: `${name}/.claude` });
     }
-  }
 
-  // 4. each subproject docs/ — .md files
-  for (const name of subprojects) {
-    const docsDir = path.join(projectRoot, name, 'docs');
-    if (fs.existsSync(docsDir)) {
-      targets.push({ dir: docsDir, exts: ['md'], label: `${name}/docs` });
+    const projDocsDir = path.join(projDir, 'docs');
+    if (fs.existsSync(projDocsDir)) {
+      targets.push({ dir: projDocsDir, exts: ['md'], label: `${name}/docs` });
+    }
+
+    for (const fileName of ['CLAUDE.md', 'README.md']) {
+      const filePath = path.join(projDir, fileName);
+      if (fs.existsSync(filePath)) {
+        targets.push({ dir: projDir, exts: [], names: [fileName], label: `${name}/${fileName}` });
+      }
     }
   }
 
@@ -263,7 +274,7 @@ Usage:
   node .claude/skills/import-docs/scripts/import-docs.js [options]   # defaults to import
 
 Options:
-  --workspace, -w  Scan workspace: docs/*.md + root .claude/* + each project .claude/*
+  --workspace, -w  Scan root .claude/ + docs/ + each subproject .claude/ + docs/ + CLAUDE.md + README.md
   --dir, -d        Single directory to import (default: auto-detect)
   --exts, -e       File extensions (comma-separated, default: auto-detect)
   --token, -t      [disabled] use API_X_TOKEN environment variable only
@@ -438,17 +449,23 @@ async function main() {
   }
   console.log(`Targets: ${validTargets.length}`);
   for (const t of validTargets) {
-    const extLabel = t.exts.length === 0 ? 'all' : t.exts.join(',');
-    console.log(`  - ${t.label} (${extLabel})`);
+    const filterLabel = t.names ? t.names.join(',') : (t.exts.length === 0 ? 'all' : t.exts.join(','));
+    console.log(`  - ${t.label} (${filterLabel})`);
   }
   console.log();
 
   // Collect all files across targets
   const allFiles = [];
   for (const target of validTargets) {
-    const files = await findFiles(target.dir, target.exts, config.projectRoot);
-    for (const file of files) {
-      allFiles.push({ fullPath: file, target });
+    if (target.names) {
+      for (const name of target.names) {
+        allFiles.push({ fullPath: path.join(target.dir, name), target });
+      }
+    } else {
+      const files = await findFiles(target.dir, target.exts, config.projectRoot);
+      for (const file of files) {
+        allFiles.push({ fullPath: file, target });
+      }
     }
   }
 
@@ -461,8 +478,12 @@ async function main() {
 
   if (config.command === 'list') {
     for (const { fullPath, target } of allFiles) {
-      const relativePath = path.relative(target.dir, fullPath).split(path.sep).join('/');
-      console.log(`- ${target.label}/${relativePath}`);
+      if (target.names) {
+        console.log(`- ${target.label}`);
+      } else {
+        const relativePath = path.relative(target.dir, fullPath).split(path.sep).join('/');
+        console.log(`- ${target.label}/${relativePath}`);
+      }
     }
     return;
   }
@@ -481,8 +502,12 @@ async function main() {
 
   for (let i = 0; i < allFiles.length; i++) {
     const { fullPath, target } = allFiles[i];
-    const relativePath = path.relative(target.dir, fullPath);
-    console.log(`[${i + 1}/${allFiles.length}] [${target.label}] ${relativePath}`);
+    if (target.names) {
+      console.log(`[${i + 1}/${allFiles.length}] [${target.label}]`);
+    } else {
+      const relativePath = path.relative(target.dir, fullPath);
+      console.log(`[${i + 1}/${allFiles.length}] [${target.label}] ${relativePath}`);
+    }
 
     try {
       const result = await importFile(fullPath, config.projectRoot, config.apiUrl, config.token, existingSet, config.prefix);

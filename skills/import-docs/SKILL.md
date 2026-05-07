@@ -34,7 +34,7 @@ graph LR
 
 | 参数 | 默认值 | 描述 |
 |-----------|---------|-------------|
-| `--workspace` / `-w` | — | 扫描工作区：docs/*.md + 根 .claude/* + 各项目 .claude/* |
+| `--workspace` / `-w` | — | 扫描工作区：根 .claude/ + docs/ + 各子项目 .claude/ + docs/ + CLAUDE.md + README.md |
 | `--dir` | 自动检测 | 导入目录 |
 | `--exts` | 自动检测 | 逗号分隔的扩展名 |
 | `--token` | 仅 `API_X_TOKEN` | **已禁用** CLI 参数，仅从系统环境变量读取 |
@@ -44,7 +44,7 @@ graph LR
 
 ## 自动检测规则
 
-- `--workspace` 模式：自动扫描 `docs/`（仅 .md）+ 根 `.claude/`（所有文件）+ 各子项目 `.claude/`（所有文件）+ 各子项目 `docs/`（仅 .md）
+- `--workspace` 模式：根目录导入 `.claude/`（除 .git 外所有文件）+ `docs/`（仅 .md）；子项目以子项目目录为一级目录，导入 `.claude/`（除 .git 外所有文件）+ `docs/`（仅 .md）+ `CLAUDE.md` + `README.md`
 - 在 `.claude` 下 → 导入 `.claude` 目录，所有文件
 - 其他情况 → 导入项目根目录，仅 `.md` 文件
 - 当 `--dir` 指向 `.claude` / `.cursor` 时，`exts` 默认为空（导入所有文件）
@@ -63,7 +63,7 @@ graph LR
 
 标准命令：`node .claude/skills/import-docs/scripts/import-docs.js --workspace`
 
-- `--workspace` 扫描 docs/*.md + 根 .claude/* + 各项目 .claude/* + 各项目 docs/*.md
+- `--workspace` 扫描根 `.claude/` + `docs/` + 各子项目 `.claude/` + `docs/` + `CLAUDE.md` + `README.md`
 - 目录不存在 → 跳过，通知写入目录不存在
 - 导入失败 → 不阻断主流程，注明失败数量
 - `API_X_TOKEN` 缺失 → 记录"`API_X_TOKEN` 未检测到，可稍后手动同步"
