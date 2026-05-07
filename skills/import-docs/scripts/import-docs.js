@@ -143,7 +143,7 @@ function readApiXTokenFromEnv() {
 function findWorkspaceTargets(projectRoot) {
   const targets = [];
   const subprojects = fs.readdirSync(projectRoot, { withFileTypes: true })
-    .filter(e => e.isDirectory() && !e.name.startsWith('.') && !e.name.startsWith('_'))
+    .filter(e => e.isDirectory() && !e.name.startsWith('.') && !e.name.startsWith('_') && e.name !== 'docs')
     .map(e => e.name)
     .sort();
 

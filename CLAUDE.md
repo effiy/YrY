@@ -76,31 +76,27 @@
 ```
 .claude/
 ├── CLAUDE.md              # 本文件：哲学 + 原则 + 准则
-├── agents/AGENT.md        # Agent 身份与决策边界（阶段详表见 SKILL.md）
-├── scripts/compile-manifests.js  # Skill/Agent 清单校验
+├── agents/AGENT.md        # Agent 身份与决策边界（阶段详表见 rui/SKILL.md）
 └── skills/
-    ├── rui/               # SDLC 编排器
+    ├── rui/               # SDLC 编排器（内建自改进 S0-S5，集成 self-improve-loop）
     │   ├── SKILL.md       # 全流程定义（D0-D5, C0-C3）+ 命令体系
     │   ├── templates/feature-document.md  # 故事板模板
-    │   └── scripts/       # log-agent-run, rui-state
-    ├── self-improve/      # 自改进（架构反思、工流诊断、提案、评测）
-    │   ├── SKILL.md       # S0-S5 全链路定义
-    │   └── scripts/       # self-improve, execution-memory, natural-week
+    │   └── scripts/       # self-improve, execution-memory, loop, rui-state, natural-week
+    ├── self-improve-loop/ # 多轮自我改进（改进清单 + 架构演进 → storyboards）
+    │   └── SKILL.md
     ├── wework-bot/        # 企业微信通知
     │   ├── SKILL.md
     │   ├── config.json
-    │   ├── rules/message-contract.md  # 消息格式契约
     │   └── scripts/send-message.js
     └── import-docs/       # 文档同步
         ├── SKILL.md
         └── scripts/import-docs.js
 
 docs/                      # 运行时文档（SKILL.md 引用）
-├── .pm/board.md           # PM 故事看板
 ├── .improvement/proposals.jsonl  # 改进提案
 ├── .memory/execution-memory.jsonl  # 执行记忆
 ├── shared/contracts.md    # 跨项目契约
-└── storyboards/           # 故事板文档
+└── storyboards/           # 故事板文档（唯一真相源）
 ```
 
 ---

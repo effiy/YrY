@@ -1,0 +1,19 @@
+{
+  "runs": [
+    {
+      "timestamp": "2026-05-07 07:26:46",
+      "health": 65,
+      "open": 2,
+      "appended": 6
+    },
+    {
+      "timestamp": "2026-05-07 07:26:55",
+      "health": 65,
+      "open": 2,
+      "appended": 6
+    }
+  ],
+  "lastRun": "2026-05-07 07:26:55",
+  "health": 65,
+  "openProposals": 2
+}

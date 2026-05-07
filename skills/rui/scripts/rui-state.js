@@ -87,7 +87,7 @@ async function cmdLoad(opts) {
     console.log(`- Timestamp: ${state.timestamp}`);
     if (state.blocked) {
       console.log(`- Block Reason: ${state.block_reason}`);
-      console.log(`\n→ Run \`/rui continue\` to resume from ${state.current_stage}`);
+      console.log(`\n→ Re-run the same /rui command to resume from ${state.current_stage}`);
     }
   } catch {
     if (opts.json) {
