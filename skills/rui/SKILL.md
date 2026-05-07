@@ -14,6 +14,8 @@ agents:
 ```mermaid
 flowchart TD
     USER["/rui &lt;command&gt; &lt;name&gt;"] --> ROUTE{command}
+    ROUTE -->|无参数| FIND["find-pending → 扫描 storyboards 未执行任务 → 自动执行"]
+    ROUTE -->|help| HELP["显示帮助"]
     ROUTE -->|init| INIT["S0→S5 自改进 → D1→D4→D5→D7 → 就绪检查"]
     ROUTE -->|doc &lt;name&gt;| DOC["D0→D5 文档管线"]
     ROUTE -->|code &lt;name&gt;| CODE["C0→C3 代码管线"]
@@ -35,10 +37,11 @@ flowchart TD
 
 | 命令 | 意图 | 流程 |
 |------|------|------|
+| `/rui` | 自动执行未完成任务 | `find-pending` 扫描 storyboards → 阻断恢复 → 未完成故事 → 无任务时显示帮助 |
 | `/rui init` | 初始化项目 | S0→S5 → D1→D4→D5→D7 → 就绪检查 → self-improve-loop → C4 |
 | `/rui doc <name>` | 写文档 | D0→D1→D2→D3→D4→D5 → self-improve-loop → C4 |
 | `/rui code <name>` | 写代码 | C0→C1→C2→C3 → self-improve-loop → C4 |
-| `/rui <name>` | 端到端（默认） | D0→D5 → C0→C3 → self-improve-loop → C4 |
+| `/rui <name>` | 端到端 | D0→D5 → C0→C3 → self-improve-loop → C4 |
 
 ### init
 
@@ -72,6 +75,7 @@ rui — 故事驱动 SDLC 编排器
 用法: /rui <command> [name]
 
 命令:
+  (无参数)          自动执行 storyboards 中未完成的任务
   init              初始化项目
   doc <name>        写文档（D0→D5 → self-improve-loop）
   code <name>       写代码（C0→C3 → self-improve-loop）
@@ -86,10 +90,33 @@ rui — 故事驱动 SDLC 编排器
 
 **`/rui help <command>`** — 详情：流程 / 适用 / 前置 / 阻断 / 示例。`/rui help help` 额外显示参数 `[command]`。
 
+### 自动执行（无参数）
+
+`/rui` 无参数时扫描 storyboards 自动执行未完成任务：
+
+```mermaid
+flowchart TD
+    EMPTY["/rui (无参数)"] --> PENDING["rui-state.js find-pending --json"]
+    PENDING --> CHECK{action?}
+    CHECK -->|resume| RESUME["恢复阻断/进行中会话<br/>从断点继续执行"]
+    CHECK -->|code| CODE["自动执行 /rui code <name><br/>文档已完成，开始编码"]
+    CHECK -->|doc| DOC["自动执行 /rui doc <name><br/>已有故事需补充文档"]
+    CHECK -->|none| HELP["显示帮助<br/>无未完成任务或故事板"]
+```
+
+**优先级**:
+1. 阻断/进行中会话恢复（rui-state.json）
+2. storyboard 已完成文档但无代码（`§4 Tasks` 存在，无 feat/ 分支）
+3. storyboard `§L` 有 pending 状态任务
+4. storyboard `§6`/`§7` 有未处理改进项
+5. 以上皆无 → 显示帮助
+
+自动执行使用与显式命令相同的管线，完成后触发 C4 交付（self-improve-loop → import-docs → wework-bot）。
+
 ### 交互确认
 
 - **需确认**: `init`、`/rui <name>`
-- **直接执行**: `doc`、`code`
+- **直接执行**: `/rui`（无参数，自动执行未完成任务）、`doc`、`code`
 
 ---
 
@@ -179,7 +206,7 @@ flowchart TD
 
 | 阶段 | 做什么 | 规则 |
 |------|--------|------|
-| C0 预检 | 双边影响分析 + 分支隔离（`feat/<name>` / `docs/<name>`） | H10: 必须在功能分支 |
+| C0 预检 | 双边影响分析 + 分支隔离（从 main/master 拉取 `feat/<name>` / `docs/<name>`） | H10: 必须从主分支创建功能分支 |
 | C1 测试先行 | Gate A：测试方案+原型，单行 CSS 可跳过 | H6: Gate A 未过不得编码 |
 | C2 实现 | 逐模块编码，每模块后审查：P0 必须修 / P1 建议修 / P2 可选 | P0 未清零不进下一模块 |
 | C3 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行 | H7: >2 轮修复阻断 C4 |
@@ -219,10 +246,44 @@ flowchart LR
 | Step | Skill | 操作 | 失败处理 |
 |------|-------|------|---------|
 | 1 | self-improve-loop | `self-improve.js evaluate` → `loop.js run --all` | 失败不阻断 |
-| 2 | import-docs | `import-docs.js --workspace` | H9: token 缺失时跳过 |
-| 3 | wework-bot | `send-message.js` | 不可跳过 |
+| 2 | import-docs | `import-docs.js --workspace [--exclude <dirs>]` | H9: token 缺失时跳过 |
+| 3 | wework-bot | ① `rui-state.js next-step` 取 `👉 下一步` ② `send-message.js` | 不可跳过 |
 
-导入范围（workspace 自动检测）：根 `.claude/`（全部，排除 .git） + 根 `docs/`（.md） + 子项目 `.claude/` + `docs/` + `CLAUDE.md` + `README.md`。
+**C4 消息组装**（wework-bot 前必须）：
+
+```
+# 1. 状态持久化（已由 D5/C3 完成，阻断时 save --blocked）
+node skills/rui/scripts/rui-state.js save --command <cmd> --name <name> --stage C4 [--blocked]
+
+# 2. 取下一步提示 → 填入消息正文的 👉 下一步 字段
+node skills/rui/scripts/rui-state.js next-step
+
+# 3. 组装纯文本消息（emoji 前缀分行，禁用 markdown）→ 写入临时文件 → 发送
+node skills/wework-bot/scripts/send-message.js --agent rui -f <tmpfile>
+```
+
+消息格式示例（纯文本，emoji 前缀，`———` 分隔摘要/明细）：
+
+```
+🎯 结论: 完成 user-login 文档管线 D0→D5
+📝 描述: 为登录模块生成故事板，覆盖密码登录、短信验证码、OAuth 三种场景
+📌 范围: auth/
+👉 下一步: 运行 /rui code user-login 开始编码实现
+🌐 影响: docs/storyboards/user-login.md
+📎 证据: git log --oneline -1
+⏱️ 会话: D0→D5 全流程 3.2min | 3 agents 参与
+
+———
+变更文件: docs/storyboards/user-login.md (新增, 285行)
+```
+
+完成或阻断后，同时向用户输出下一步提示（CLI 直接 echo）。
+
+导入范围（workspace 自动检测）：
+- 根 `.claude/`（全部，排除 .git）→ 远端路径 `<workspace>/.claude/...`
+- 根 `docs/`（.md）→ 远端路径 `<workspace>/docs/...`
+- 子项目 `.claude/` + `docs/` + `CLAUDE.md` + `README.md` → 远端路径 `<子项目>/...`（以子项目名为一级目录）
+- 排除：`--exclude` 指定跳过的子项目（逗号分隔）
 
 ---
 
@@ -265,7 +326,7 @@ flowchart LR
 | # | 检查项 | 验证 |
 |---|-------|------|
 | 1 | proposals.jsonl 存在 | `test -f` |
-| 2 | 子项目 storyboards/ 目录存在 | `test -d` |
+| 2 | docs/storyboards/ 目录存在 | `test -d` |
 | 3 | 子项目 CLAUDE.md 存在且非空 | `wc -l` |
 | 4 | 子项目 README.md 存在且非空 | `wc -l` |
 | 5 | 前端子项目 design-system.md 存在且非空 | `wc -l` |
@@ -286,7 +347,7 @@ flowchart LR
 2. **测试先行**: Gate A 阻断 C2；Gate B >2 轮修复阻断 C4
 3. **逐模块审查**: C2 每模块后审查，P0 清零前进
 4. **双边影响**: C0 同时分析代码和文档影响
-5. **分支隔离**: C0 创建功能分支，C4 合并回主干
+5. **分支隔离**: C0 从 main/master 拉取功能分支，C4 合并回主干
 6. **知识沉淀**: D5 写执行记忆 + `rui-state.json`
 7. **C4 必触发**: self-improve-loop → import-docs → wework-bot
 8. **自改进内建**: D2/C0→S1, D5/C3→S2, C4→self-improve-loop
@@ -306,17 +367,17 @@ flowchart LR
 | H7 | Gate B >2 轮修复未通过 | 否 | C3→C4 |
 | H8 | 所有模块被阻断 | 否 | C2 |
 | H9 | `API_X_TOKEN` 缺失 | 是 | C4 |
-| H10 | main/master 上未创建功能分支 | 否 | C0 |
+| H10 | 功能分支未从 main/master 创建 | 否 | C0 |
 | H11 | self-improve-loop 数据采集失败 | 是（降级） | self-improve-loop |
 
-阻断后: `rui-state.js save --blocked` → 持久化 → 同步（H9/H11 跳过）→ 通知。
+阻断后: `rui-state.js save --blocked` → `rui-state.js next-step` → 持久化 → 同步（H9/H11 跳过）→ 通知。
 
 ---
 
 ## 集成点
 
 - **自改进循环**: [`self-improve-loop`](../self-improve-loop/SKILL.md)
-- **文档同步**: `node .claude/skills/import-docs/scripts/import-docs.js --workspace`
+- **文档同步**: `node .claude/skills/import-docs/scripts/import-docs.js --workspace [--exclude <dirs>]`
 - **通知**: `wework-bot`
 - **自改进**: `node .claude/skills/rui/scripts/self-improve.js <cmd>`
 - **执行记忆**: `node .claude/skills/rui/scripts/execution-memory.js`

@@ -81,7 +81,7 @@ async function findFiles(dir, exts, projectRoot) {
         maxBuffer: 50 * 1024 * 1024
       });
       const dirRelPosix = dirRel.split(path.sep).join('/');
-      return stdout
+      const gitFiles = stdout
         .split('\n')
         .filter(Boolean)
         .filter(file => dirRelPosix === '' || file === dirRelPosix || file.startsWith(dirRelPosix + '/'))
@@ -90,7 +90,12 @@ async function findFiles(dir, exts, projectRoot) {
           const ext = path.extname(file).slice(1).toLowerCase();
           return exts.includes(ext);
         })
-        .map(file => path.join(projectRoot, file));
+        .map(file => path.join(projectRoot, file))
+        .filter(fullPath => {
+          try { return fs.statSync(fullPath).isFile(); } catch { return false; }
+        });
+      if (gitFiles.length > 0) return gitFiles;
+      // git ls-files returned nothing for this dir (e.g. nested .git repos) — fall through to filesystem traversal
     } catch {
       // 回退到文件系统遍历
     }
@@ -140,43 +145,45 @@ function readApiXTokenFromEnv() {
  * @param {string} projectRoot - 工作区根目录
  * @returns {Array<{dir: string, exts: string[], label: string, names?: string[]}>}
  */
-function findWorkspaceTargets(projectRoot) {
+function findWorkspaceTargets(projectRoot, excludeDirs) {
   const targets = [];
+  const excludeSet = new Set(excludeDirs || []);
   const subprojects = fs.readdirSync(projectRoot, { withFileTypes: true })
-    .filter(e => e.isDirectory() && !e.name.startsWith('.') && !e.name.startsWith('_') && e.name !== 'docs')
+    .filter(e => e.isDirectory() && !e.name.startsWith('.') && !e.name.startsWith('_') && e.name !== 'docs' && !excludeSet.has(e.name))
     .map(e => e.name)
     .sort();
 
-  // Root .claude/ — all files except .git
+  // Root .claude/ — all files except .git; basePath = projectRoot
   const rootClaudeDir = path.join(projectRoot, '.claude');
   if (fs.existsSync(rootClaudeDir)) {
-    targets.push({ dir: rootClaudeDir, exts: [], label: '.claude' });
+    targets.push({ dir: rootClaudeDir, exts: [], label: '.claude', basePath: projectRoot });
   }
 
-  // Root docs/ — .md files
+  // Root docs/ — .md files; basePath = projectRoot
   const docsDir = path.join(projectRoot, 'docs');
   if (fs.existsSync(docsDir)) {
-    targets.push({ dir: docsDir, exts: ['md'], label: 'docs' });
+    targets.push({ dir: docsDir, exts: ['md'], label: 'docs', basePath: projectRoot });
   }
 
-  // Sub-projects: .claude/, docs/, CLAUDE.md, README.md
+  // Sub-projects: .claude/, docs/, CLAUDE.md, README.md; basePath = projDir
+  // so remote paths use the sub-project name as the first directory level
   for (const name of subprojects) {
     const projDir = path.join(projectRoot, name);
 
     const claudeDir = path.join(projDir, '.claude');
     if (fs.existsSync(claudeDir)) {
-      targets.push({ dir: claudeDir, exts: [], label: `${name}/.claude` });
+      targets.push({ dir: claudeDir, exts: [], label: `${name}/.claude`, basePath: projDir });
     }
 
     const projDocsDir = path.join(projDir, 'docs');
     if (fs.existsSync(projDocsDir)) {
-      targets.push({ dir: projDocsDir, exts: ['md'], label: `${name}/docs` });
+      targets.push({ dir: projDocsDir, exts: ['md'], label: `${name}/docs`, basePath: projDir });
     }
 
     for (const fileName of ['CLAUDE.md', 'README.md']) {
       const filePath = path.join(projDir, fileName);
       if (fs.existsSync(filePath)) {
-        targets.push({ dir: projDir, exts: [], names: [fileName], label: `${name}/${fileName}` });
+        targets.push({ dir: projDir, exts: [], names: [fileName], label: `${name}/${fileName}`, basePath: projDir });
       }
     }
   }
@@ -197,7 +204,8 @@ function determineConfig() {
     token: readApiXTokenFromEnv(),
     apiUrl: 'https://api.effiy.cn',
     prefix: [],
-    workspace: false
+    workspace: false,
+    exclude: []
   };
 
   let argStartIndex = 0;
@@ -221,6 +229,8 @@ function determineConfig() {
       config.prefix = args[++i].split(',').map(p => p.trim()).filter(Boolean);
     } else if (arg === '--workspace' || arg === '-w') {
       config.workspace = true;
+    } else if (arg === '--exclude' || arg === '-x') {
+      config.exclude = args[++i].split(',').map(e => e.trim()).filter(Boolean);
     } else if (arg === '--help' || arg === '-h') {
       printHelp();
       process.exit(0);
@@ -232,7 +242,7 @@ function determineConfig() {
 
   if (config.workspace) {
     // workspace mode: scan all targets, ignore dir/exts
-    config.targets = findWorkspaceTargets(projectRoot);
+    config.targets = findWorkspaceTargets(projectRoot, config.exclude);
   } else {
     const inClaudeDir = isInClaudeDir(cwd, projectRoot);
 
@@ -258,7 +268,7 @@ function determineConfig() {
         config.exts = config.exts || ['md'];
       }
     }
-    config.targets = [{ dir: config.dir, exts: config.exts || [], label: path.basename(config.dir) }];
+    config.targets = [{ dir: config.dir, exts: config.exts || [], label: path.basename(config.dir), basePath: projectRoot }];
   }
 
   return { ...config, projectRoot };
@@ -275,6 +285,7 @@ Usage:
 
 Options:
   --workspace, -w  Scan root .claude/ + docs/ + each subproject .claude/ + docs/ + CLAUDE.md + README.md
+  --exclude, -x    Comma-separated subproject names to exclude (workspace mode only)
   --dir, -d        Single directory to import (default: auto-detect)
   --exts, -e       File extensions (comma-separated, default: auto-detect)
   --token, -t      [disabled] use API_X_TOKEN environment variable only
@@ -353,20 +364,20 @@ async function getExistingSessions(apiUrl, token) {
   return { sessions, existingSet };
 }
 
-async function importFile(fullPath, projectRoot, apiUrl, token, existingSet, prefix) {
-  const relativeFromRoot = path.relative(projectRoot, fullPath)
+async function importFile(fullPath, basePath, apiUrl, token, existingSet, prefix) {
+  const relativePath = path.relative(basePath, fullPath)
     .split(path.sep)
     .map(part => part.replace(/\s+/g, '_'))
     .join('/');
 
-  const rootDirName = path.basename(projectRoot).replace(/\s+/g, '_');
+  const baseDirName = path.basename(basePath).replace(/\s+/g, '_');
 
   const targetPathParts = [];
   if (prefix.length > 0) {
     targetPathParts.push(...prefix.map(part => part.replace(/\s+/g, '_')));
   }
-  targetPathParts.push(rootDirName);
-  targetPathParts.push(relativeFromRoot);
+  targetPathParts.push(baseDirName);
+  targetPathParts.push(relativePath);
 
   const targetPath = targetPathParts.join('/');
   const allParts = targetPath.split('/');
@@ -502,15 +513,11 @@ async function main() {
 
   for (let i = 0; i < allFiles.length; i++) {
     const { fullPath, target } = allFiles[i];
-    if (target.names) {
-      console.log(`[${i + 1}/${allFiles.length}] [${target.label}]`);
-    } else {
-      const relativePath = path.relative(target.dir, fullPath);
-      console.log(`[${i + 1}/${allFiles.length}] [${target.label}] ${relativePath}`);
-    }
+    const relativePath = target.names ? target.label : path.relative(target.dir, fullPath);
+    console.log(`[${i + 1}/${allFiles.length}] [${target.label}] ${relativePath}`);
 
     try {
-      const result = await importFile(fullPath, config.projectRoot, config.apiUrl, config.token, existingSet, config.prefix);
+      const result = await importFile(fullPath, target.basePath, config.apiUrl, config.token, existingSet, config.prefix);
       if (result.status === 'ok') {
         console.log(`  ✓ ${result.path} (created)`);
         stats.ok++;
