@@ -62,25 +62,13 @@ flowchart TD
 
 | 阶段 | 做什么 | 关键产出 |
 |------|--------|---------|
-| 自改进 | 健康评分 + 快照 + 趋势 + 提案 | `docs/.improvement/proposals.jsonl` |
-| 发现 | 检索规范 + 提炼故事列表 | `docs/故事任务面板/<name>`（故事目录列表） |
-| 生成 | 逐故事 7 agent 协作，写入故事目录 | `docs/故事任务面板/<name>/`（故事板文件） |
-| 策展 | git commit + 执行记忆回写 | `docs/.memory/execution-memory.jsonl` |
-| 项目基线 | 生成 CLAUDE.md + README.md | `CLAUDE.md` + `README.md` |
-| 就绪检查 | 5 项检查，失败则修复重检 | 就绪状态 |
-| 交付 | self-improve-loop → import-docs → wework-bot | wework-bot 通知 |
-
-### Agent 分工
-
-| Agent | 负责阶段 | 注入条件 |
-|-------|---------|---------|
-| pm | 发现（故事提炼） + §1 Story + §4 Tasks + 基线（CLAUDE.md/README.md 结构） | 始终 |
-| docer | §2 Requirements + README.md 主体 | 始终 |
-| coder | §3 Design + §4 实现任务 + CLAUDE.md 技术章节 | 始终 |
-| tester | §1.1 用户操作 + §5 AC + 就绪检查（#3 #4） | 始终 |
-| reporter | §4 依赖映射 + 交付物细化 + 就绪检查（#1 #2 #5） | 始终 |
-| security | §3 安全约束 + §4 安全任务 + 就绪检查安全项 | 涉及用户输入/外部API/认证/持久化 |
-| self-improve | 自改进（健康评分+快照+趋势+提案） + §L 自我改进循环 | 始终（静默，不阻断主流程） |
+| 自改进 | 健康评分 + 快照 + 趋势 + 提案<br>self-improve | `docs/.improvement/proposals.jsonl` |
+| 发现 | 检索规范 + 提炼故事列表<br>pm | `docs/故事任务面板/<name>`（故事目录列表） |
+| 生成 | 逐故事 7 agent 协作，写入故事目录<br>pm, docer, coder, tester, reporter, security | `docs/故事任务面板/<name>/`（故事板文件） |
+| 策展 | git commit + 执行记忆回写<br>pm, reporter | `docs/.memory/execution-memory.jsonl` |
+| 项目基线 | 生成 CLAUDE.md + README.md<br>pm, docer, coder | `CLAUDE.md` + `README.md` |
+| 就绪检查 | 5 项检查，失败则修复重检<br>tester, reporter, security | 就绪状态 |
+| 交付 | self-improve-loop → import-docs → wework-bot<br>self-improve | wework-bot 通知 |
 
 ### 增量裁剪
 
@@ -142,24 +130,13 @@ flowchart TD
 
 | 阶段 | 做什么 | 关键产出 |
 |------|--------|---------|
-| 自适应规划 | 读取执行记忆，判定 T1/T2/T3 变更级别 | `docs/.memory/rui-state.json` |
-| 发现 | 检索规范与已有文档，提炼故事列表 | `docs/故事任务面板/<name>/`（故事目录） |
-| 影响分析 | 逐故事全项目影响链分析，闭合所有依赖 | `docs/故事任务面板/<name>/故事任务.md`（§3 影响链） |
-| 架构设计 | 逐故事模块划分、接口规范、数据流设计 | `docs/shared/architecture.md` + 故事板 §3 |
-| 文档生成 | 逐故事 7 agent 协作编写 | `docs/故事任务面板/<name>/故事任务.md`（完整） |
-| 策展 | git commit + 执行记忆回写 + 后记（§6 §7） | `docs/.memory/execution-memory.jsonl` |
-| 项目基线 | 仅 init：生成 CLAUDE.md + README.md | `CLAUDE.md` + `README.md` |
-
-### Agent 分工
-
-| Agent | 负责章节 | 注入条件 |
-|-------|---------|---------|
-| pm | §1 Story + §4 Tasks | 始终 |
-| docer | §2 Requirements | 始终 |
-| coder | §3 Design + §4 实现任务 | 始终 |
-| tester | §1.1 用户操作 + §5 AC | 始终 |
-| reporter | §4 依赖映射 + 交付物细化 | 始终 |
-| security | §3 安全约束 + §4 安全任务 | 涉及用户输入/外部API/认证/持久化 |
+| 自适应规划 | 读取执行记忆，判定 T1/T2/T3 变更级别<br>pm | `docs/.memory/rui-state.json` |
+| 发现 | 检索规范与已有文档，提炼故事列表<br>pm | `docs/故事任务面板/<name>/`（故事目录） |
+| 影响分析 | 逐故事全项目影响链分析，闭合所有依赖<br>coder, reporter | `docs/故事任务面板/<name>/故事任务.md`（§3 影响链） |
+| 架构设计 | 逐故事模块划分、接口规范、数据流设计<br>coder, security | `docs/shared/architecture.md` + 故事板 §3 |
+| 文档生成 | 逐故事 agent 协作<br>pm (§1,§4), docer (§2), coder (§3), tester (§1.1,§5), reporter (§4 依赖), security (§3 安全) | `docs/故事任务面板/<name>/故事任务.md`（完整） |
+| 策展 | git commit + 执行记忆回写 + 后记（§6 §7）<br>pm, reporter | `docs/.memory/execution-memory.jsonl` |
+| 项目基线 | 仅 init：生成 CLAUDE.md + README.md<br>pm, docer, coder | `CLAUDE.md` + `README.md` |
 
 ### 增量裁剪
 
@@ -190,12 +167,12 @@ flowchart TD
     GB -->|>2 轮| BLOCK[阻断: H7]
 ```
 
-| 阶段 | 做什么 | 规则 |
-|------|--------|------|
-| 预检 | 双边影响分析 + 分支隔离（从 main/master 拉取 `feat/<name>` / `docs/<name>`） | H10: 必须从主分支创建 |
-| 测试先行 | Gate A：测试方案+原型，单行 CSS 可跳过 | H6: Gate A 未过不得编码 |
-| 实现 | 逐模块编码，每模块后审查：P0 必须修 / P1 建议修 / P2 可选 | P0 未清零不进下一模块 |
-| 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行 | H7: >2 轮修复阻断交付 |
+| 阶段 | 做什么 | 关键产出 |
+|------|--------|---------|
+| 预检 | 双边影响分析 + 分支隔离（从 main/master 拉取 `feat/<name>` / `docs/<name>`）<br>必须从主分支创建<br>coder, reporter | `feat/<name>` 分支 + 影响链闭合记录 |
+| 测试先行 | Gate A：测试方案+原型，单行 CSS 可跳过<br>Gate A 未过不得编码<br>tester | 测试方案 + 测试文件 |
+| 实现 | 逐模块编码，每模块后审查：P0 必须修 / P1 建议修 / P2 可选<br>P0 未清零不进下一模块<br>coder, security, tester | 源代码（按故事任务 §4 任务列表） |
+| 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行<br>超过 2 轮修复阻断交付<br>tester, reporter | 冒烟通过记录 |
 
 ---
 
