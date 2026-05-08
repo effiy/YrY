@@ -15,15 +15,15 @@ agents:
 flowchart TD
     USER["/rui &lt;command&gt; &lt;name&gt;"] --> ROUTE{command}
     ROUTE -->|help| HELP["显示帮助"]
-    ROUTE -->|init| INIT["S0→S5 自改进 → D1→D4→D5→D7 → 就绪检查"]
-    ROUTE -->|doc &lt;name&gt;| DOC["D0→D5 文档管线"]
-    ROUTE -->|code &lt;name&gt;| CODE["C0→C3 代码管线"]
-    ROUTE -->|&lt;name&gt;| FULL["D0→D5 → C0→C3 端到端"]
+    ROUTE -->|init| INIT["自改进 → 发现→生成→策展→基线 → 就绪检查"]
+    ROUTE -->|doc &lt;name&gt;| DOC["自适应规划→策展 文档管线"]
+    ROUTE -->|code &lt;name&gt;| CODE["预检→验证 代码管线"]
+    ROUTE -->|&lt;name&gt;| FULL["文档管线 → 代码管线 端到端"]
 
-    INIT --> C4["C4: self-improve-loop → import-docs → wework-bot"]
-    DOC --> C4
-    CODE --> C4
-    FULL --> C4
+    INIT --> DELIVER["交付: self-improve-loop → import-docs → wework-bot"]
+    DOC --> DELIVER
+    CODE --> DELIVER
+    FULL --> DELIVER
 ```
 
 ---
@@ -32,10 +32,10 @@ flowchart TD
 
 | 命令 | 流程 |
 |------|------|
-| `/rui init` | S0→S5 → D1→D4→D5→D7 → 就绪检查 → C4 |
-| `/rui doc <name>` | D0→D5 → C4 |
-| `/rui code <name>` | C0→C3 → C4（需已存在 `docs/storyboards/<name>.md`） |
-| `/rui <name>` | D0→D5 → C0→C3 → C4 |
+| `/rui init` | 自改进 → 发现→生成→策展→基线 → 就绪检查 → 交付 |
+| `/rui doc <name>` | 自适应规划→策展 → 交付 |
+| `/rui code <name>` | 预检→验证 → 交付（需已存在 `docs/storyboards/<name>.md`） |
+| `/rui <name>` | 自适应规划→策展 → 预检→验证 → 交付 |
 
 ### 交互确认
 
@@ -46,32 +46,32 @@ flowchart TD
 
 ## 管线
 
-### 文档管线 D0–D5
+### 文档管线
 
-以故事为原子单位驱动，D1–D5 逐故事循环。
+以故事为原子单位驱动，发现→策展逐故事循环。
 
 ```mermaid
 flowchart TD
-    D0[自适应规划] --> D1[发现]
-    D1 --> STORIES{故事列表}
+    PLAN[自适应规划] --> DISCOVER[发现]
+    DISCOVER --> STORIES{故事列表}
     STORIES -->|逐故事| LOOP["故事循环"]
-    LOOP --> D2[影响分析]
-    D2 --> D3[架构设计]
-    D3 --> D4[文档生成]
-    D4 --> D5[策展]
-    D5 -->|下一故事| LOOP
-    D5 -->|全部完成| D7[子项目基线]
+    LOOP --> IMPACT[影响分析]
+    IMPACT --> ARCH[架构设计]
+    ARCH --> DOCGEN[文档生成]
+    DOCGEN --> CURATE[策展]
+    CURATE -->|下一故事| LOOP
+    CURATE -->|全部完成| BASELINE[子项目基线]
 ```
 
 | 阶段 | 做什么 | 关键产出 |
 |------|--------|---------|
-| D0 自适应规划 | 读取执行记忆，判定 T1/T2/T3 变更级别 | 执行计划 |
-| D1 发现 | 检索规范与已有文档，提炼故事列表 | 规范列表 + 故事列表 |
-| D2 影响分析 | 逐故事全项目影响链分析，闭合所有依赖 | 闭合影响链 |
-| D3 架构设计 | 逐故事模块划分、接口规范、数据流设计 | 架构设计 |
-| D4 文档生成 | 逐故事 7 agent 协作编写 | 故事板文档 × N |
-| D5 策展 | git commit + 执行记忆回写 + 后记（§6 §7） | 已保存文档 |
-| D7 子项目基线 | 仅 init：生成 CLAUDE.md + README.md + design-system.md | 三文件 × N |
+| 自适应规划 | 读取执行记忆，判定 T1/T2/T3 变更级别 | 执行计划 |
+| 发现 | 检索规范与已有文档，提炼故事列表 | 规范列表 + 故事列表 |
+| 影响分析 | 逐故事全项目影响链分析，闭合所有依赖 | 闭合影响链 |
+| 架构设计 | 逐故事模块划分、接口规范、数据流设计 | 架构设计 |
+| 文档生成 | 逐故事 7 agent 协作编写 | 故事板文档 × N |
+| 策展 | git commit + 执行记忆回写 + 后记（§6 §7） | 已保存文档 |
+| 子项目基线 | 仅 init：生成 CLAUDE.md + README.md + design-system.md | 三文件 × N |
 
 #### Agent 分工
 
@@ -86,24 +86,24 @@ flowchart TD
 
 #### 增量裁剪
 
-| 级别 | 触发条件 | D2 | D3 | D4 |
-|------|---------|----|----|-----|
+| 级别 | 触发条件 | 影响分析 | 架构设计 | 文档生成 |
+|------|---------|---------|---------|---------|
 | T1 微观 | 措辞、格式修正 | 跳过 | 跳过 | 仅变更章节 |
 | T2 局部 | 增删故事/接口变更 | 裁剪 | 裁剪 | 重写目标+下游 |
 | T3 范围 | 范围边界变化、跨故事重构 | 完整重跑 | 完整重跑 | 全级联刷新 |
 
-### 代码管线 C0–C3
+### 代码管线
 
 ```mermaid
 flowchart TD
-    C0["C0 预检<br/>影响分析 + 分支隔离"] --> C1["C1 测试先行<br/>测试方案 + 原型"]
-    C1 --> GA{Gate A}
-    GA -->|PASS| C2["C2 实现<br/>逐模块编码 + P0 审查"]
+    PRECHECK["预检<br/>影响分析 + 分支隔离"] --> TESTFIRST["测试先行<br/>测试方案 + 原型"]
+    TESTFIRST --> GA{Gate A}
+    GA -->|PASS| IMPL["实现<br/>逐模块编码 + P0 审查"]
     GA -->|FAIL| FIX1[修复]
     FIX1 --> GA
-    C2 --> C3["C3 验证<br/>冒烟 + 影响链回归"]
-    C3 --> GB{Gate B}
-    GB -->|PASS| C4[C4 交付]
+    IMPL --> VERIFY["验证<br/>冒烟 + 影响链回归"]
+    VERIFY --> GB{Gate B}
+    GB -->|PASS| DELIVER[交付]
     GB -->|FAIL ≤2 轮| FIX2[修复]
     FIX2 --> GB
     GB -->|>2 轮| BLOCK[阻断: H7]
@@ -111,25 +111,25 @@ flowchart TD
 
 | 阶段 | 做什么 | 规则 |
 |------|--------|------|
-| C0 预检 | 双边影响分析 + 分支隔离（从 main/master 拉取 `feat/<name>` / `docs/<name>`） | H10: 必须从主分支创建 |
-| C1 测试先行 | Gate A：测试方案+原型，单行 CSS 可跳过 | H6: Gate A 未过不得编码 |
-| C2 实现 | 逐模块编码，每模块后审查：P0 必须修 / P1 建议修 / P2 可选 | P0 未清零不进下一模块 |
-| C3 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行 | H7: >2 轮修复阻断 C4 |
+| 预检 | 双边影响分析 + 分支隔离（从 main/master 拉取 `feat/<name>` / `docs/<name>`） | H10: 必须从主分支创建 |
+| 测试先行 | Gate A：测试方案+原型，单行 CSS 可跳过 | H6: Gate A 未过不得编码 |
+| 实现 | 逐模块编码，每模块后审查：P0 必须修 / P1 建议修 / P2 可选 | P0 未清零不进下一模块 |
+| 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行 | H7: >2 轮修复阻断交付 |
 
-### 自改进 S0–S5
+### 自改进管线
 
 静默运行，不阻断主流程。脚本位于 `skills/rui/scripts/`。
 
 | rui 阶段 | 触发 | 操作 |
 |---------|------|------|
-| init | S0→S5 全量 | 健康评分 + 快照 + 趋势 + 提案 |
-| D2 / C0 | S1 架构反思 | 六维推演，产出 s1_metrics |
-| D5 / C3 | S2 工流诊断 | 趋势分析，产出 s2_metrics |
-| C4 | self-improve-loop | evaluate + retro → `loop.js run --all` |
+| init | 全量运行 | 健康评分 + 快照 + 趋势 + 提案 |
+| 影响分析 / 预检 | 架构反思 | 六维推演，产出架构指标 |
+| 策展 / 验证 | 工流诊断 | 趋势分析，产出工流指标 |
+| 交付 | self-improve-loop | 效果评估 + 回顾 → `loop.js run --all` |
 
 数据存储: `docs/.improvement/proposals.jsonl`（append-only）。
 
-### C4 交付
+### 交付
 
 | Step | 操作 | 失败处理 |
 |------|------|---------|
@@ -140,13 +140,13 @@ flowchart TD
 消息格式（纯文本，emoji 前缀，`———` 分隔）：
 
 ```
-🎯 结论: 完成 user-login 文档管线 D0→D5
+🎯 结论: 完成 user-login 文档管线
 📝 描述: 为登录模块生成故事板，覆盖密码登录、短信验证码、OAuth 三种场景
 📌 范围: auth/
 👉 下一步: 运行 /rui code user-login 开始编码实现
 🌐 影响: docs/storyboards/user-login.md
 📎 证据: git log --oneline -1
-⏱️ 会话: D0→D5 全流程 3.2min | 3 agents 参与
+⏱️ 会话: 自适应规划→策展 全流程 3.2min | 3 agents 参与
 
 ———
 变更文件: docs/storyboards/user-login.md (新增, 285行)
@@ -182,8 +182,8 @@ flowchart TD
 | §3 Design | coder + security | 技术设计 + 安全约束 |
 | §4 Tasks | pm + all | 任务拆解、依赖、交付物 |
 | §5 Acceptance Criteria | tester | 验收标准、测试方法、预期结果 |
-| §6 .claude 改进清单 | pm | skill/agent/rule/script/config 改进（D4/D5 静态分析） |
-| §7 系统架构演进任务 | pm | 近期/中期/远期演进（D3/D5 结构规划） |
+| §6 .claude 改进清单 | pm | skill/agent/rule/script/config 改进（文档生成/策展阶段静态分析） |
+| §7 系统架构演进任务 | pm | 近期/中期/远期演进（架构设计/策展阶段结构规划） |
 | §L 自我改进循环 | self-improve-loop | 数据驱动改进清单 + 架构演进（每次 rui 完成追加） |
 
 > §6 §7 由 pm 在文档生成阶段写入（结构性）。§L 由 self-improve-loop 在每次 rui 完成时自动追加（数据驱动）。两者互补。
@@ -206,27 +206,27 @@ flowchart TD
 ## 核心规则
 
 1. **增量更新**: 已有文档按 T1/T2/T3 裁剪
-2. **测试先行**: Gate A 阻断 C2；Gate B >2 轮修复阻断 C4
-3. **逐模块审查**: C2 每模块后审查，P0 清零前进
-4. **双边影响**: C0 同时分析代码和文档影响
-5. **分支隔离**: C0 从 main/master 拉取功能分支
-6. **知识沉淀**: D5 写执行记忆 + rui-state.json
-7. **C4 必触发**: self-improve-loop → import-docs → wework-bot
+2. **测试先行**: Gate A 阻断实现；Gate B >2 轮修复阻断交付
+3. **逐模块审查**: 实现阶段每模块后审查，P0 清零前进
+4. **双边影响**: 预检阶段同时分析代码和文档影响
+5. **分支隔离**: 预检阶段从 main/master 拉取功能分支
+6. **知识沉淀**: 策展阶段写执行记忆 + rui-state.json
+7. **交付必触发**: self-improve-loop → import-docs → wework-bot
 
 ## 阻断
 
 | # | 场景 | 降级 | 阶段 |
 |---|------|------|------|
-| H1 | 功能名称无法解析 | 否 | D0 |
-| H2 | P0 章节缺少上游来源 | 否 | D4, C0 |
-| H3 | 影响链无法闭合 | 否 | D2, C0 |
-| H4 | 文档 P0 不通过且无法自修复 | 否 | D4 |
-| H5 | 代码审查 P0 无法修复 | 否 | C2 |
-| H6 | Gate A 未完成但已编码 | 否 | C1→C2 |
-| H7 | Gate B >2 轮修复未通过 | 否 | C3→C4 |
-| H8 | 所有模块被阻断 | 否 | C2 |
-| H9 | `API_X_TOKEN` 缺失 | 是 | C4 |
-| H10 | 功能分支未从 main/master 创建 | 否 | C0 |
+| H1 | 功能名称无法解析 | 否 | 自适应规划 |
+| H2 | P0 章节缺少上游来源 | 否 | 文档生成, 预检 |
+| H3 | 影响链无法闭合 | 否 | 影响分析, 预检 |
+| H4 | 文档 P0 不通过且无法自修复 | 否 | 文档生成 |
+| H5 | 代码审查 P0 无法修复 | 否 | 实现 |
+| H6 | Gate A 未完成但已编码 | 否 | 测试先行→实现 |
+| H7 | Gate B >2 轮修复未通过 | 否 | 验证→交付 |
+| H8 | 所有模块被阻断 | 否 | 实现 |
+| H9 | `API_X_TOKEN` 缺失 | 是 | 交付 |
+| H10 | 功能分支未从 main/master 创建 | 否 | 预检 |
 | H11 | self-improve-loop 数据采集失败 | 是 | self-improve-loop |
 
 阻断后: `rui-state.js save --blocked` → `next-step` → 持久化 → 同步（H9/H11 跳过）→ 通知。

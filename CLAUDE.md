@@ -53,8 +53,8 @@
 ├── CLAUDE.md              # 本文件：哲学 + 原则 + 准则
 ├── agents/AGENT.md        # Agent 身份与决策边界（阶段详表见 rui/SKILL.md）
 └── skills/
-    ├── rui/               # SDLC 编排器（内建自改进 S0-S5 + C4 交付）
-    │   ├── SKILL.md       # 全流程定义（D0-D5, C0-C3）+ 命令体系
+    ├── rui/               # SDLC 编排器（内建自改进管线 + 交付）
+    │   ├── SKILL.md       # 全流程定义（文档管线 + 代码管线）+ 命令体系
     │   ├── templates/故事任务模板.md  # 故事任务模板
     │   └── scripts/       # self-improve, execution-memory, loop, rui-state, natural-week
     ├── wework-bot/        # 企业微信通知

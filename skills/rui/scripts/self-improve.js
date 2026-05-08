@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
 /**
- * self-improve — S0 状态采集 + S5 效果回顾 for 自改进管线
+ * self-improve — 状态采集 + 效果回顾 for 自改进管线
  *
  * Commands:
- *   snapshot  — S0 状态采集 (memory, git, deps, large files)
+ *   snapshot  — 状态采集 (memory, git, deps, large files)
  *   proposals — List/filter proposals
  *   resolve   — Mark proposal done/superseded
- *   evaluate  — S5: evaluate proposal effectiveness (before/after metrics)
- *   retro     — S5: retrospective report (trends + proposal closure)
- *   health    — S0: composite health score (0-100)
+ *   evaluate  — 效果评估: evaluate proposal effectiveness (before/after metrics)
+ *   retro     — 回顾报告: retrospective report (trends + proposal closure)
+ *   health    — 健康评分: composite health score (0-100)
  *   feedback  — Record user feedback on a proposal
  *
  * Storage: docs/.improvement/proposals.jsonl
@@ -36,7 +36,7 @@ function safeExec(cmd, defaultVal = '') {
   }
 }
 
-// ---------- S0: State Collection ----------
+// ---------- 状态采集: State Collection ----------
 
 function collectMemoryStats() {
   const script = path.join(__dirname, 'execution-memory.js');
@@ -258,7 +258,7 @@ async function resolveProposal(proposalId, resolvedBy, status = 'done') {
   console.log(`Proposal ${proposalId} marked as ${status}`);
 }
 
-// ---------- S5: Evaluate ----------
+// ---------- 效果评估: Evaluate ----------
 
 async function cmdEvaluate(opts) {
   const proposals = await readProposals();
@@ -395,7 +395,7 @@ async function cmdEvaluate(opts) {
   }
 }
 
-// ---------- S5: Retro ----------
+// ---------- 回顾报告: Retro ----------
 
 async function cmdRetro(opts) {
   const weeks = opts.weeks || 8;
@@ -521,7 +521,7 @@ async function cmdRetro(opts) {
   }
 }
 
-// ---------- S0: Health Score ----------
+// ---------- 健康评分: Health Score ----------
 
 async function cmdHealth(opts) {
   const memoryStats = collectMemoryStats();
@@ -751,8 +751,8 @@ async function cmdProposals(statusFilter, triggerFilter, jsonOutput) {
     if (p.evidence) console.log(`   Evidence: ${p.evidence}`);
     if (p.current_state) console.log(`   Current: ${p.current_state}`);
     if (p.target_state) console.log(`   Target: ${p.target_state}`);
-    if (p.s1_metrics) console.log(`   S1: coupling=${p.s1_metrics.coupling_hotspots} cohesion=${p.s1_metrics.cohesion_risks} boundary=${p.s1_metrics.boundary_gaps}`);
-    if (p.s2_metrics) console.log(`   S2: blocked_rate=${p.s2_metrics.blocked_rate} avg_p0_rounds=${p.s2_metrics.avg_p0_rounds}`);
+    if (p.s1_metrics) console.log(`   架构: coupling=${p.s1_metrics.coupling_hotspots} cohesion=${p.s1_metrics.cohesion_risks} boundary=${p.s1_metrics.boundary_gaps}`);
+    if (p.s2_metrics) console.log(`   工流: blocked_rate=${p.s2_metrics.blocked_rate} avg_p0_rounds=${p.s2_metrics.avg_p0_rounds}`);
     if (p.resolved_by) console.log(`   Resolved by: ${p.resolved_by}`);
     if (p.eval_result) console.log(`   Eval: ${p.eval_result} (${p.eval_date || 'N/A'})`);
     if ((p.feedback || []).length > 0) {
@@ -784,13 +784,13 @@ function printHelp() {
   node scripts/self-improve.js feedback <proposal-id> --rating <helpful|neutral|harmful> [--note "..."]
 
 Commands:
-  snapshot    Collect project state snapshot (S0)
-  proposals   List improvement proposals (S4 output)
-  resolve     Mark a proposal as done/superseded
-  evaluate    Evaluate proposal effectiveness (S5)
-  retro       Retrospective report (S5)
-  health      Project health score (S0)
-  feedback    Record user feedback on a proposal
+  snapshot    状态采集: collect project state snapshot
+  proposals   提案管理: list improvement proposals
+  resolve     提案结项: mark a proposal as done/superseded
+  evaluate    效果评估: evaluate proposal effectiveness
+  retro       回顾报告: retrospective report
+  health      健康评分: project health score
+  feedback    用户反馈: record user feedback on a proposal
 `);
 }
 

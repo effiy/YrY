@@ -66,13 +66,13 @@ Webhook 仅在 `config.json` 中配置，无 CLI 参数。
 ### 格式示例
 
 ```
-🎯 结论: 完成 user-login 文档管线 D0→D5
+🎯 结论: 完成 user-login 文档管线
 📝 描述: 为登录模块生成故事板，覆盖密码登录、短信验证码、OAuth 三种场景
 📌 范围: auth/
 👉 下一步: 运行 /rui code user-login 开始编码实现
 🌐 影响: docs/storyboards/user-login.md
 📎 证据: git log --oneline -1
-⏱️ 会话: D0→D5 全流程 3.2min | 3 agents 参与
+⏱️ 会话: 自适应规划→策展 全流程 3.2min | 3 agents 参与
 ```
 
 ### 摘要段必含字段

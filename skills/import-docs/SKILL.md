@@ -9,7 +9,7 @@ lifecycle: default-pipeline
 
 # import-docs
 
-将 workspace 内的 `.claude/`、`docs/`、`CLAUDE.md`、`README.md` 批量同步到远端文档 API。rui C4 交付步骤 2。
+将 workspace 内的 `.claude/`、`docs/`、`CLAUDE.md`、`README.md` 批量同步到远端文档 API。rui 交付步骤 2。
 
 ```mermaid
 flowchart TD
@@ -19,12 +19,12 @@ flowchart TD
     ROOT --> R1[".claude/ 全部文件（除 .git）"]
     ROOT --> R2["docs/ 仅 .md"]
 
-    SUB --> S1[".claude/ 全部文件（除 .git）"]
-    SUB --> S2["docs/ 仅 .md"]
-    SUB --> S3["CLAUDE.md"]
-    SUB --> S4["README.md"]
+    SUB --> CFG[".claude/ 全部文件（除 .git）"]
+    SUB --> DOCS["docs/ 仅 .md"]
+    SUB --> CLAUDE["CLAUDE.md"]
+    SUB --> README["README.md"]
 
-    R1 & R2 & S1 & S2 & S3 & S4 --> LIST["收集文件列表"]
+    R1 & R2 & CFG & DOCS & CLAUDE & README --> LIST["收集文件列表"]
     LIST --> IMPORT["逐文件 POST /write-file"]
     IMPORT --> DEDUP{远端已有?}
     DEDUP -->|是| OW["覆盖（overwritten）"]
@@ -59,7 +59,7 @@ flowchart TD
 
 ```mermaid
 sequenceDiagram
-    participant RUI as rui C4
+    participant RUI as rui 交付
     participant CMD as import-docs.js
     participant API as 远端 API
     participant WW as wework-bot
