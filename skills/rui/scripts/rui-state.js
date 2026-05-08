@@ -29,7 +29,6 @@ function parseArgs(argv) {
   node scripts/rui-state.js load [--json]
   node scripts/rui-state.js clear
   node scripts/rui-state.js next-step
-  node scripts/rui-state.js find-pending [--json]
 `);
     process.exit(0);
   }
@@ -194,123 +193,6 @@ async function findStoryboards() {
   }
 }
 
-async function cmdFindPending(opts) {
-  const state = await readState();
-  const storyboards = await findStoryboards();
-
-  // 1. Blocked session → resume
-  if (state && state.blocked) {
-    const out = {
-      action: 'resume',
-      command: state.command,
-      name: state.name,
-      stage: state.current_stage,
-      reason: state.block_reason || '未指定',
-      storyboard: state.storyboard,
-    };
-    if (opts.json) console.log(JSON.stringify(out));
-    else console.log(`${out.action} ${out.name} (${out.stage}) — 阻断: ${out.reason}`);
-    return;
-  }
-
-  // 2. In-progress session → resume from last stage
-  if (state && !state.blocked) {
-    const out = {
-      action: 'resume',
-      command: state.command,
-      name: state.name,
-      stage: state.current_stage,
-      reason: '会话进行中',
-      storyboard: state.storyboard,
-    };
-    if (opts.json) console.log(JSON.stringify(out));
-    else console.log(`${out.action} ${out.name} (${out.stage})`);
-    return;
-  }
-
-  // 3. No session — scan storyboards for pending tasks
-  const pendingStories = [];
-  const STORYBOARDS_DIR = path.join(REPO_ROOT, 'docs', 'storyboards');
-
-  for (const sb of storyboards) {
-    const filePath = path.join(STORYBOARDS_DIR, sb);
-    try {
-      const content = await fsp.readFile(filePath, 'utf8');
-      const name = sb.replace('.md', '');
-
-      // Check for §L pending tasks (status = pending in tables)
-      const hasSelfImproveSection = content.includes('## 自我改进循环');
-      const hasPendingTasks = hasSelfImproveSection &&
-        /\|\s*\d+\s*\|[^|]*\|[^|]*\|[^|]*\|\s*pending\s*\|/im.test(content);
-
-      // Check for §4 Tasks (story has tasks but may be unexecuted)
-      const hasTaskSection = /###\s+§4\s+Tasks/.test(content);
-
-      // Check for §6 improvement items (non-empty table rows)
-      const hasImprovements = /###\s+\.claude\s+改进清单/.test(content) &&
-        /\|\s*\d+\s*\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|/m.test(content);
-
-      // Check for §7 architecture tasks
-      const hasArchTasks = /###\s+系统架构演进任务/.test(content) &&
-        /\|\s*\d+\s*\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|/m.test(content);
-
-      // Check git: has this story been branched for code?
-      const hasCodeBranch = sh(`git branch --list "feat/${name}"`) !== '';
-
-      // Story has doc (storyboard exists) but no code branch → needs code
-      if (!hasCodeBranch && hasTaskSection) {
-        pendingStories.push({ name, action: 'code', trigger: 'storyboard_done_no_code', priority: 1 });
-        continue;
-      }
-
-      // Story has pending §L tasks → needs attention
-      if (hasPendingTasks) {
-        pendingStories.push({ name, action: 'code', trigger: 'pending_self_improve', priority: 2 });
-        continue;
-      }
-
-      // Story has pending improvements or arch tasks
-      if (hasImprovements || hasArchTasks) {
-        pendingStories.push({ name, action: 'code', trigger: 'pending_improvements', priority: 3 });
-      }
-    } catch { /* skip unreadable */ }
-  }
-
-  // 4. No pending stories
-  if (pendingStories.length === 0) {
-    if (storyboards.length > 0) {
-      const names = storyboards.map(s => path.basename(s, '.md'));
-      const out = { action: 'none', reason: '所有故事已处理完毕', storyboards: names };
-      if (opts.json) console.log(JSON.stringify(out));
-      else console.log('none — 所有故事已处理完毕');
-    } else {
-      const out = { action: 'none', reason: '无故事板，运行 /rui init 初始化' };
-      if (opts.json) console.log(JSON.stringify(out));
-      else console.log('none — 无故事板');
-    }
-    return;
-  }
-
-  // 5. Return highest-priority pending story
-  pendingStories.sort((a, b) => a.priority - b.priority || a.name.localeCompare(b.name));
-  const next = pendingStories[0];
-  const out = {
-    action: next.action,
-    name: next.name,
-    trigger: next.trigger,
-    storyboard: `docs/storyboards/${next.name}.md`,
-    remaining: pendingStories.slice(1).map(s => s.name),
-  };
-  if (opts.json) console.log(JSON.stringify(out));
-  else console.log(`${out.action} ${out.name} (${out.trigger}) — 剩余: ${out.remaining.length}`);
-}
-
-function sh(cmd) {
-  try {
-    return require('child_process').execSync(cmd, { encoding: 'utf8', cwd: REPO_ROOT }).trim();
-  } catch { return ''; }
-}
-
 async function main() {
   const opts = parseArgs(process.argv);
   switch (opts.action) {
@@ -318,7 +200,6 @@ async function main() {
     case 'load': await cmdLoad(opts); break;
     case 'clear': await cmdClear(); break;
     case 'next-step': await cmdNextStep(); break;
-    case 'find-pending': await cmdFindPending(opts); break;
     default:
       console.error(`Unknown action: ${opts.action}`);
       process.exit(1);

@@ -14,7 +14,6 @@ agents:
 ```mermaid
 flowchart TD
     USER["/rui &lt;command&gt; &lt;name&gt;"] --> ROUTE{command}
-    ROUTE -->|无参数| FIND["find-pending → 扫描 storyboards 未执行任务 → 自动执行"]
     ROUTE -->|help| HELP["显示帮助"]
     ROUTE -->|init| INIT["S0→S5 自改进 → D1→D4→D5→D7 → 就绪检查"]
     ROUTE -->|doc &lt;name&gt;| DOC["D0→D5 文档管线"]
@@ -33,29 +32,15 @@ flowchart TD
 
 | 命令 | 流程 |
 |------|------|
-| `/rui` | 扫描 storyboards 中 pending 任务 → 阻断恢复 → 自动执行 → C4 |
 | `/rui init` | S0→S5 → D1→D4→D5→D7 → 就绪检查 → C4 |
 | `/rui doc <name>` | D0→D5 → C4 |
 | `/rui code <name>` | C0→C3 → C4（需已存在 `docs/storyboards/<name>.md`） |
 | `/rui <name>` | D0→D5 → C0→C3 → C4 |
 
-### 自动执行（无参数）
-
-扫描所有 storyboards 中 §6/§7 表格的 pending 任务，按优先级执行：
-
-1. 阻断/进行中会话恢复（rui-state.json）
-2. 改进清单 P0 pending
-3. 系统架构演进 P0 pending
-4. 改进清单 P1/P2 pending
-5. 系统架构演进 P1/P2 pending
-6. 以上皆无 → 显示帮助
-
-完成后更新 Status 为 `done (feat/<branch>)`，触发 C4。
-
 ### 交互确认
 
 - **需确认**: `init`、`/rui <name>`
-- **直接执行**: `/rui`（无参数）、`doc`、`code`
+- **直接执行**: `doc`、`code`
 
 ---
 
@@ -257,4 +242,4 @@ flowchart TD
 - **文档同步**: `node skills/import-docs/scripts/import-docs.js --workspace`
 - **通知**: `wework-bot`
 - **Agent**: [`.claude/agents/AGENT.md`](../../agents/AGENT.md)
-- **模板**: [`templates/feature-document.md`](templates/feature-document.md)
+- **模板**: [`templates/故事任务模板.md`](templates/故事任务模板.md)
