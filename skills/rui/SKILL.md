@@ -33,7 +33,7 @@ flowchart TD
 |------|------|
 | `/rui init` | 自改进 → 发现→生成→策展→基线 → 就绪检查 → 交付 |
 | `/rui doc <name>` | 自适应规划→策展 → 交付 |
-| `/rui code <name>` | 预检→验证 → 交付（需已存在 `docs/storyboards/<name>.md`） |
+| `/rui code <name>` | 预检→验证 → 交付（需已存在 `docs/故事任务面板/<name>.md`） |
 | `/rui <name>` | 自适应规划→策展 → 预检→验证 → 交付 |
 
 ---
@@ -78,16 +78,16 @@ flowchart TD
 | # | 检查项 | 验证 |
 |---|-------|------|
 | 1 | proposals.jsonl 存在 | `test -f` |
-| 2 | docs/storyboards/ 目录存在 | `test -d` |
-| 3 | 子项目 CLAUDE.md 存在且非空 | `wc -l` |
-| 4 | 子项目 README.md 存在且非空 | `wc -l` |
+| 2 | docs/故事任务面板/ 目录存在 | `test -d` |
+| 3 | 项目 CLAUDE.md 存在且非空 | `wc -l` |
+| 4 | 项目 README.md 存在且非空 | `wc -l` |
 | 5 | proposals.jsonl 无已解决但仍 open 的提案 | grep |
 
 ---
 
 ## /rui code \<name\>
 
-预检→验证 → 交付（需已存在 `docs/storyboards/<name>.md`）
+预检→验证 → 交付（需已存在 `docs/故事任务面板/<name>.md`）
 
 ```mermaid
 flowchart TD
@@ -188,12 +188,12 @@ flowchart TD
 📝 描述: 为登录模块生成故事板，覆盖密码登录、短信验证码、OAuth 三种场景
 📌 范围: auth/
 👉 下一步: 运行 /rui code user-login 开始编码实现
-🌐 影响: docs/storyboards/user-login.md
+🌐 影响: docs/故事任务面板/user-login.md
 📎 证据: git log --oneline -1
 ⏱️ 会话: 自适应规划→策展 全流程 3.2min | 3 agents 参与
 
 ———
-变更文件: docs/storyboards/user-login.md (新增, 285行)
+变更文件: docs/故事任务面板/user-login.md (新增, 285行)
 ```
 
 完成或阻断后同时向用户输出下一步提示。字段要求见 wework-bot SKILL.md。
@@ -212,7 +212,7 @@ flowchart TD
     ├── shared/
     │   ├── architecture.md
     │   └── contracts.md
-    └── storyboards/
+    └── 故事任务面板/
         └── <name>.md    ← 唯一真相源
 ```
 
