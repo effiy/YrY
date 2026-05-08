@@ -208,7 +208,7 @@ flowchart TD
 | 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行 → 三报告产出<br>三报告相互引用闭合，各报告评审清单全部 ✅ 方可通过 Gate B<br>超过 2 轮修复阻断（H7）<br>coder（后端/前端实施报告）, tester（测试用例报告）, reporter（审阅） | 后端实施报告.md、前端实施报告.md、测试用例报告.md |
 | 自改进 | self-improve-loop：效果评估 + 基线配置复盘 + 回顾 → `loop.js run --all`<br>产出自改进复盘.md<br>pm, reporter, self-improve | 自改进复盘.md |
 
-**最终产出保证：** 故事目录下 8 份文档齐全——故事任务.md（前置） + 后端技术评审.md + 前端技术评审.md + 测试用例评审.md + 后端实施报告.md + 前端实施报告.md + 测试用例报告.md + 自改进复盘.md。
+**最终产出保证：** 故事目录下 8 份文档 + 数据存储齐全——故事任务.md（前置） + 后端技术评审.md + 前端技术评审.md + 测试用例评审.md + 后端实施报告.md + 前端实施报告.md + 测试用例报告.md + 自改进复盘.md + `.improvement/proposals.jsonl` + `.memory/`（execution-memory.jsonl + rui-state.json）。
 
 ### 验证与报告产出
 
@@ -289,7 +289,7 @@ flowchart LR
 
 从需求输入（文本 / @文件 / URL）拆分故事，逐故事走完文档管线（自适应规划→影响分析→架构设计→文档生成→策展）和代码管线（预检→验证→自改进），中间不中断，完成或阻断后输出下一步提示。
 
-等同于 `/rui doc <requirement>` + 每个故事 `/rui code <name>` 的全自动串联。
+等同于 `/rui doc <requirement>` + 每个故事 `/rui code <name>` 的全自动串联。每个故事目录产出 8 份文档 + `.improvement/proposals.jsonl` + `.memory/`。
 
 ---
 
