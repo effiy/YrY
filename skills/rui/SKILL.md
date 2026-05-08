@@ -48,7 +48,7 @@ flowchart TD
     INIT --> DISCOVER["发现<br/>检索规范 + 提炼故事列表"]
     DISCOVER --> GENERATE["生成<br/>逐故事 7 agent 协作"]
     GENERATE --> CURATE["策展<br/>git commit + 执行记忆回写"]
-    CURATE --> BASELINE["子项目基线<br/>CLAUDE.md + README.md + design-system.md"]
+    CURATE --> BASELINE["项目基线<br/>CLAUDE.md + README.md"]
     BASELINE --> CHECK{"就绪检查"}
     CHECK -->|6/6 PASS| DELIVER["交付"]
     CHECK -->|FAIL| FIX["修复缺失项"]
@@ -71,7 +71,7 @@ flowchart TD
 
 数据存储: `~/.claude/projects/-<workspace>/` 下对应项目目录，append-only。
 
-**子项目基线：** 生成 `CLAUDE.md` + `README.md` + `design-system.md`（三文件 × N 子项目）。
+**项目基线：** 生成 `CLAUDE.md` + `README.md`（双文件 × N 子项目）。
 
 ### 就绪检查
 
@@ -81,8 +81,7 @@ flowchart TD
 | 2 | docs/storyboards/ 目录存在 | `test -d` |
 | 3 | 子项目 CLAUDE.md 存在且非空 | `wc -l` |
 | 4 | 子项目 README.md 存在且非空 | `wc -l` |
-| 5 | 前端子项目 design-system.md 存在且非空 | `wc -l` |
-| 6 | proposals.jsonl 无已解决但仍 open 的提案 | grep |
+| 5 | proposals.jsonl 无已解决但仍 open 的提案 | grep |
 
 ---
 
@@ -130,7 +129,7 @@ flowchart TD
     ARCH --> DOCGEN[文档生成]
     DOCGEN --> CURATE[策展]
     CURATE -->|下一故事| LOOP
-    CURATE -->|全部完成| BASELINE[子项目基线]
+    CURATE -->|全部完成| BASELINE[项目基线]
 ```
 
 | 阶段 | 做什么 | 关键产出 |
@@ -141,7 +140,7 @@ flowchart TD
 | 架构设计 | 逐故事模块划分、接口规范、数据流设计 | 架构设计 |
 | 文档生成 | 逐故事 7 agent 协作编写 | 故事板文档 × N |
 | 策展 | git commit + 执行记忆回写 + 后记（§6 §7） | 已保存文档 |
-| 子项目基线 | 仅 init：生成 CLAUDE.md + README.md + design-system.md | 三文件 × N |
+| 项目基线 | 仅 init：生成 CLAUDE.md + README.md | 双文件 × N |
 
 ### Agent 分工
 
