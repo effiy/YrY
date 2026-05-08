@@ -24,6 +24,32 @@ graph LR
 
 企业微信机器人通知 skill：将阶段状态、阻断原因和验证结果推送到企业微信群机器人，支持按 agent 路由到不同机器人。
 
+## 项目集成
+
+wework-bot 是 **YrY** 项目交付管线的最后一环，强制在 `rui` 编排器完成/阻断/门禁失败时触发。
+
+### 在 rui 管线中的位置
+
+```
+rui 管线完成 → 自改进 → import-docs → wework-bot
+                                  ↑
+                            文档同步完成后才发通知
+```
+
+### 触发关系
+
+| 触发方 | 场景 | 通知内容 |
+|--------|------|---------|
+| `rui` 编排器 | 全流程完成 | 完成通知（含耗时、agent 用量、产出文件） |
+| `rui` 编排器 | 阻断 | 阻断通知（含阻断原因、恢复点） |
+| `rui` 编排器 | 门禁失败 | 门禁失败通知（含门禁名、实际结果） |
+| `rui` 编排器 | 会话中断 | 中断通知（含中断原因、恢复点） |
+| 用户直接调用 | 自定义消息 | 自由格式 |
+
+### Agent 路由
+
+当前 config 将所有 `rui` agent 路由到 `general` 机器人。扩展时在 `config.json` 的 `agents` 字段新增映射即可。
+
 ## 何时使用
 
 - 用户请求向企业微信群/机器人发送信息
@@ -63,7 +89,9 @@ Webhook 仅在 `config.json` 中配置，无 CLI 参数。
 
 纯文本分行，emoji 前缀标识字段。禁止 markdown 语法（`#` `**` `-` `>` 等）。两层结构：摘要段 + 明细段，中间 `———` 分隔。
 
-### 格式示例
+### 场景模板
+
+**完成通知**
 
 ```
 🎯 结论: 完成 user-login 文档管线
@@ -73,6 +101,57 @@ Webhook 仅在 `config.json` 中配置，无 CLI 参数。
 🌐 影响: docs/storyboards/user-login.md
 📎 证据: git log --oneline -1
 ⏱️ 会话: 自适应规划→策展 全流程 3.2min | 3 agents 参与
+```
+
+**阻断通知**
+
+```
+🎯 结论: user-login 文档管线阻断 — 需求描述不完整
+📝 描述: 缺少 OAuth 场景的第三方配置信息，无法生成完整故事板
+📌 范围: auth/oauth
+❌ 原因: 未提供 OAuth provider 的 client_id 和 redirect_uri
+🧭 恢复点: 补充 OAuth 配置后重新运行 /rui doc user-login
+🌐 影响: docs/storyboards/user-login.md 仅生成 2/3 场景
+📎 证据: grep -r "oauth" docs/storyboards/user-login.md | wc -l → 0
+⏱️ 会话: 自适应规划→策展 阻断 1.2min | 2 agents 参与
+```
+
+**门禁失败**
+
+```
+🎯 结论: implement-code 门禁失败 — 类型检查未通过
+📝 描述: 3 个文件存在类型错误，阻塞代码管线进入实施阶段
+📌 范围: src/components/Login/
+🔍 门禁: tsc --noEmit
+📊 结果: 3 errors — LoginForm.tsx:42, useAuth.ts:18, validators.ts:7
+🌐 影响: 无法进入实施阶段，阻塞后续验证和部署
+📎 证据: npx tsc --noEmit 2>&1 | head -20
+⏱️ 会话: 预检门禁 0.3min | 1 agent 参与
+```
+
+**进度更新（非强制，按需）**
+
+```
+📢 状态: implement-code 阶段 2/4 — 核心模块实施中
+📝 描述: 已完成 auth 模块编码，正在进行 api 层集成
+📌 范围: src/{auth,api}/
+✅ 已完成: auth 模块 3 文件 | 单元测试 12/12 通过
+🔄 进行中: api 层 4 文件 | 预计 5min
+⏳ 待处理: 集成测试、文档更新
+👉 下一步: api 层完成后进入验证阶段
+⏱️ 已用: 8.5min | 3 agents 参与
+```
+
+**警告/异常（非强制，按需）**
+
+```
+⚠️ 警告: api 层集成发现非预期依赖
+📝 描述: useAuth hook 引用了未在文档中声明的 legacy session 模块
+📌 范围: src/hooks/useAuth.ts
+⚠️ 风险: 可能引入未迁移的旧代码，与文档设计不一致
+💡 建议: 确认是否纳入本次范围，或标记为技术债
+📎 证据: grep -r "legacySession" src/hooks/useAuth.ts
+⏱️ 时间: 实施阶段 12min 时触发
 ```
 
 ### 摘要段必含字段
@@ -92,6 +171,49 @@ Webhook 仅在 `config.json` 中配置，无 CLI 参数。
 ### 明细段
 
 摘要段后空一行，`———` 分隔线后再空一行，放详细上下文：变更文件列表、代码片段、完整错误日志等。
+
+示例：
+
+```
+🎯 结论: 完成 user-login 文档管线
+📝 描述: 为登录模块生成故事板
+📌 范围: auth/
+👉 下一步: 运行 /rui code user-login
+🌐 影响: docs/storyboards/user-login.md
+📎 证据: git log --oneline -1
+⏱️ 会话: 全流程 3.2min | 3 agents
+
+———
+
+变更文件:
+  M docs/storyboards/user-login.md      (+240 lines)
+  A docs/contracts/user-login-api.yaml  (+85 lines)
+
+验证结果:
+  ✓ 故事板完整性检查通过
+  ✓ API 契约格式校验通过
+```
+
+### 消息内容质量指南
+
+**好的消息：**
+
+- 结论先行，读完第一行就知道发生了什么
+- 数字具体（"3 文件" 而非 "若干文件"）
+- 下一步可执行（"/rui code user-login" 而非 "继续开发"）
+- 证据可复现（粘贴命令即可重跑验证）
+
+**差的消息：**
+
+- 结论模糊（"有些问题需要处理"）
+- 数字占位（"生成了 N 个文件"）
+- 下一步空洞（"请检查并修复"）
+- 证据缺失（"测试通过了" 但没说跑了什么）
+
+**内容瘦身：**
+- 已完成/通过的事项不放明细段，摘要段的结论已说明
+- 错误日志只保留前 20 行关键信息，不堆砌完整堆栈
+- 文件列表超过 10 个时，只列变更类型统计（"M 5 files, A 3 files"）
 
 ### 格式约束
 

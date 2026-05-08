@@ -9,22 +9,14 @@ lifecycle: default-pipeline
 
 # import-docs
 
-将 workspace 内的 `.claude/`、`docs/`、`CLAUDE.md`、`README.md` 批量同步到远端文档 API。rui 交付步骤 2。
+将 workspace 内所有 `.md` 文档（排除 `.git`、`node_modules`）批量同步到远端文档 API。rui 交付步骤 2。
 
 ```mermaid
 flowchart TD
-    CMD["import-docs --workspace"] --> ROOT[根目录]
-    CMD --> SUB[子项目]
-
-    ROOT --> R1[".claude/ 全部文件（除 .git）"]
-    ROOT --> R2["docs/ 仅 .md"]
-
-    SUB --> CFG[".claude/ 全部文件（除 .git）"]
-    SUB --> DOCS["docs/ 仅 .md"]
-    SUB --> CLAUDE["CLAUDE.md"]
-    SUB --> README["README.md"]
-
-    R1 & R2 & CFG & DOCS & CLAUDE & README --> LIST["收集文件列表"]
+    CMD["import-docs --workspace"] --> SCAN["递归扫描项目目录"]
+    SCAN --> FILTER["仅 .md 文件"]
+    FILTER --> EXCLUDE["排除 .git / node_modules"]
+    EXCLUDE --> LIST["收集文件列表"]
     LIST --> IMPORT["逐文件 POST /write-file"]
     IMPORT --> DEDUP{远端已有?}
     DEDUP -->|是| OW["覆盖（overwritten）"]
@@ -34,24 +26,13 @@ flowchart TD
 
 ---
 
-## 工作区扫描规则
+## 扫描规则
 
-`--workspace` 模式自动检测 workspace 根目录（向上查找 `.git` 或 `.claude/` + 子项目特征），扫描以下目标：
+`--workspace` 模式自动检测 workspace 根目录（向上查找 `.git` 或 `.claude/`），递归扫描项目目录下所有 `.md` 文件。
 
-| 层级 | 目标 | 范围 | 远端路径 | 说明 |
-|------|------|------|---------|------|
-| 根 | `.claude/` | 全部文件 | `<workspace>/<相对路径>` | 除 `.git` 目录 |
-| 根 | `docs/` | 仅 `.md` | `<workspace>/<相对路径>` | 故事板、共享文档等 |
-| 子项目 | `.claude/` | 全部文件 | `<子项目>/<相对路径>` | 子项目级 .claude 配置，除 `.git` |
-| 子项目 | `docs/` | 仅 `.md` | `<子项目>/<相对路径>` | 子项目级文档 |
-| 子项目 | `CLAUDE.md` | 单文件 | `<子项目>/CLAUDE.md` | 子项目 AI 指令 |
-| 子项目 | `README.md` | 单文件 | `<子项目>/README.md` | 子项目说明 |
-
-> 子项目以自身目录名为远端第一级路径，不嵌套在 workspace 名之下。
-
-**子项目判定**: 根目录下一级子目录，排除 `.` 开头（如 `.claude`、`.git`）、`_` 开头（如 `_archive`）、以及 `docs`（根文档目录）。
-
-**远端路径**: `<prefix>/<workspace名>/<相对路径>`，空格替换为 `_`，目录结构与本地一致。
+- **包含**: 项目根目录及所有子目录中的 `.md` 文件
+- **排除**: `.git`、`node_modules` 目录（不遍历）
+- **远端路径**: `<prefix>/<workspace名>/<相对路径>`，空格替换为 `_`，目录结构与本地一致
 
 ---
 
@@ -65,8 +46,7 @@ sequenceDiagram
     participant WW as wework-bot
 
     RUI->>CMD: --workspace
-    CMD->>CMD: findWorkspaceTargets()
-    CMD->>CMD: 枚举文件（git ls-files 优先）
+    CMD->>CMD: 递归扫描 .md（排除 .git/node_modules）
     CMD->>API: 查询已有 sessions
     API-->>CMD: existing file_path set
     loop 逐文件
@@ -113,9 +93,7 @@ node skills/import-docs/scripts/import-docs.js list --workspace
 
 ## 自动检测（非 workspace 模式）
 
-- 当前目录在 `.claude` 下 → 导入 `.claude`，全部文件
-- 其他情况 → 导入项目根目录，仅 `.md`
-- `--dir` 指向 `.claude` / `.cursor` 时 → 全部文件
+- 默认导入当前目录下所有 `.md` 文件
 - 始终忽略 `.git` 和 `node_modules`，不跟随符号链接
 
 ---

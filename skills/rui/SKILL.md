@@ -4,7 +4,7 @@ description: Story-driven SDLC orchestrator: story → document → code → del
 user_invocable: true
 lifecycle: default-pipeline
 agents:
-  required: [pm, coder, tester, reporter, security]
+  required: [pm, coder, tester, reporter, security, self-improve]
 ---
 
 # rui
@@ -13,14 +13,14 @@ agents:
 
 ```mermaid
 flowchart TD
-    USER["/rui &lt;command&gt; &lt;name&gt;"] --> ROUTE{command}
-    ROUTE -->|init| INIT["自改进 → 发现 → 基线 → 就绪检查"]
-    ROUTE -->|doc &lt;name&gt;| DOC["自适应规划→策展 文档管线"]
-    ROUTE -->|code &lt;name&gt;| CODE["预检→验证 代码管线"]
+    USER["/rui &lt;command&gt; &lt;input&gt;"] --> ROUTE{command}
+    ROUTE -->|init| INIT["基线 → 基线注入→Agent&Rule&Template → 就绪检查"]
+    ROUTE -->|doc &lt;requirement&gt;| SPLIT["需求拆分 → 逐故事: 自适应规划→文档生成"]
+    ROUTE -->|code &lt;name&gt;| CODE["预检→验证→自改进 代码管线"]
     ROUTE -->|&lt;name&gt;| FULL["文档管线 → 代码管线 端到端"]
 
-    INIT --> DELIVER["交付: self-improve-loop → import-docs → wework-bot"]
-    DOC --> DELIVER
+    INIT --> DELIVER["交付: import-docs → wework-bot"]
+    SPLIT --> DELIVER
     CODE --> DELIVER
     FULL --> DELIVER
 ```
@@ -31,24 +31,35 @@ flowchart TD
 
 | 命令 | 流程 |
 |------|------|
-| `/rui init` | 自改进 → 基线 → 就绪检查 → 交付（不生成故事，仅建立项目骨架） |
-| `/rui doc <name>` | 自适应规划→策展 → 交付 |
-| `/rui code <name>` | 预检→验证 → 交付（需已存在 `docs/故事任务面板/<name>/故事任务.md`） |
-| `/rui <name>` | 自适应规划→策展 → 预检→验证 → 交付 |
+| `/rui init` | 基线 → 基线注入→Agent&Rule&Template → 就绪检查 → 交付（不生成故事，仅建立项目骨架） |
+| `/rui doc <requirement>` | 需求拆分 → 逐故事: 自适应规划→影响分析→架构设计→文档生成 → 交付 |
+| `/rui code <name>` | 预检→验证 → 自改进 → 交付（需已存在 `docs/故事任务面板/<name>/故事任务.md`） |
+| `/rui <name>` | 自适应规划→策展 → 预检→验证 → 自改进 → 交付 |
+
+`<requirement>` 可以是：
+- 需求描述文本（如 `用户登录功能，支持密码和OAuth`）
+- `@` 引用的本地文件路径（如 `@docs/req/login.md`）
+- 需求文档 URL（如 `https://example.com/req.md`）
+
+rui 自动将需求拆分为多个故事，每个故事独立创建目录。故事目录名使用**方便建立 git 分支命名的英文简洁描述**（如 `user-login`、`oauth-bindding`、`sms-verify`）。
 
 ---
 
 ## 核心规则
 
-0. **单故事操作**: 每次调用仅操作一个故事，禁止批量操作多个故事，确保每个故事独立、最小可用、可测试、可交付
+0. **逐故事操作**: 需求拆分可创建多个故事目录，但每个故事独立走完文档管线后再处理下一个，确保每个故事独立、最小可用、可测试、可交付
 1. **增量更新**: 已有文档按 T1/T2/T3 裁剪
 2. **测试先行**: Gate A 阻断实现；Gate B >2 轮修复阻断交付
 3. **逐模块审查**: 实现阶段每模块后审查，P0 清零前进
 4. **双边影响**: 预检阶段同时分析代码和文档影响
-5. **分支隔离**: 预检阶段从 main/master 拉取功能分支
+5. **分支隔离**: 预检阶段从 main 拉取 feat/<name> 分支
 6. **知识沉淀**: 策展阶段写执行记忆 + rui-state.json
 7. **交付必触发**: import-docs → wework-bot
 8. **产出内聚**: 关键产出只允许是对应故事目录（`docs/故事任务面板/<name>/`）下的文件内容，不得在故事目录外生成文档、报告或其他产出物
+
+---
+
+**项目基线：** 生成 `CLAUDE.md` + `README.md`（双文件 × N 子项目）。
 
 ---
 
@@ -58,86 +69,103 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    INIT["/rui init"] --> SELF["自改进<br/>健康评分 + 快照 + 趋势 + 提案"]
-    INIT --> BASELINE["项目基线<br/>CLAUDE.md + README.md"]
-    BASELINE --> CHECK{"就绪检查"}
+    INIT["/rui init"] --> BASELINE["项目基线<br/>CLAUDE.md + README.md"]
+    BASELINE --> INJECT["基线注入<br/>从 CLAUDE.md + README.md 提取项目约定"]
+    INJECT --> AGENTS["Agent & Rule & Template & MCP<br/>agents/ + rules/ + templates/ + .mcp.json"]
+    AGENTS --> CHECK{"就绪检查"}
     CHECK -->|PASS| DELIVER["交付"]
     CHECK -->|FAIL| FIX["修复缺失项"]
     FIX --> CHECK
-    SELF -.->|静默运行| DELIVER
 ```
 
 | 阶段 | 做什么 | 关键产出 |
 |------|--------|---------|
-| 自改进 | 健康评分 + 快照 + 趋势 + 提案<br>self-improve | 改进提案（proposals.jsonl） |
-| 项目基线 | 生成 CLAUDE.md + README.md + 样例故事目录<br>pm, coder | CLAUDE.md、README.md、user-login/ |
-| 就绪检查 | 5 项检查 + self-improve-loop，失败则修复重检<br>tester, reporter, security, self-improve | 5 项检查全部通过 + 自改进复盘.md |
-| 交付 | import-docs → wework-bot<br>self-improve | — |
+| 项目基线 | 生成 CLAUDE.md + README.md<br>pm, coder | CLAUDE.md、README.md |
+| 基线注入 | 从 CLAUDE.md + README.md 提取项目约定，注入下游生成<br>pm | 项目约定摘要（技术栈、编码规范、禁止事项、目录结构、关键文件） |
+| Agent & Rule & Template & MCP | 基于项目约定生成/更新 agents/、rules/、templates/、.mcp.json<br>pm | AGENT.md、pm.md/coder.md/tester.md/security.md/reporter.md（含项目特定规则）、rules/（code-pipeline.md、doc-generation.md、gate-rules.md、self-improve.md）、templates/（故事任务模板.md、后端技术评审模板.md、前端技术评审模板.md、测试用例评审模板.md、后端实施报告模板.md、前端实施报告模板.md、测试用例报告模板.md、自改进复盘模板.md）、.mcp.json |
+| 就绪检查 | 8 项检查，失败则修复重检<br>tester, reporter, security | 8 项检查全部通过 |
+| 交付 | import-docs → wework-bot | — |
 
-完成 init 后，逐个故事执行 `/rui <name>`（或 `/rui doc <name>` → `/rui code <name>`）。
+### 基线注入
 
-### 增量裁剪
+从项目基线 CLAUDE.md + README.md 提取以下项目约定，作为 Agent、Rule、Template、MCP 生成的输入：
 
-init 重入时按变更级别裁剪，避免不必要的全量重建。
+| 提取项 | 来源 | 注入目标 |
+|--------|------|---------|
+| 技术栈与版本 | README.md 技术栈表 | coder.md（技术约束）、security.md（第三方审查范围） |
+| 编码规范 | CLAUDE.md 编码规范 | coder.md（实现规则）、tester.md（测试规范） |
+| 禁止事项 | CLAUDE.md 禁止事项 | rules/code-pipeline.md（硬性约束）、coder.md（审查标准） |
+| 目录结构 | CLAUDE.md + README.md | rules/ 的 paths 声明、AGENT.md 影响分析范围 |
+| 关键文件 | CLAUDE.md 关键文件 | coder.md（入口文件感知）、security.md（安全边界） |
+| 构建与运行 | README.md 快速开始 | coder.md（开发流程）、tester.md（测试环境） |
+| 核心架构 | README.md 核心架构 | coder.md（架构模式约束）、tester.md（测试隔离策略） |
 
-| 级别 | 触发条件 | 基线 |
-|------|---------|------|
-| T1 微观 | 故事板微调、措辞修正、就绪检查单项修复 | 跳过 |
-| T2 局部 | 增删故事、故事目录结构变更 | 更新 |
-| T3 范围 | 项目范围变更、跨故事重构、首次运行 | 完整重生成 |
-
-> 自改进与就绪检查始终运行，不受裁剪级别影响。
->
-> **样例生成**: T3 首次运行时，项目基线阶段生成 `docs/故事任务面板/user-login/` 完整样例目录。该目录含完整故事板（故事任务.md）、改进提案（proposals.jsonl）和执行记忆（execution-memory.jsonl + rui-state.json），作为新故事的参考模板。T1/T2 重入时样例目录保持不变。
-
-### 自改进管线
-
-静默运行，不阻断主流程。脚本位于 `skills/rui/scripts/`。
-
-| rui 阶段 | 触发 | 操作 |
-|---------|------|------|
-| init | 全量运行 | 健康评分 + 快照 + 趋势 + 提案 |
-| 影响分析 / 预检 | 架构反思 | 六维推演，产出架构指标 |
-| 策展 / 验证 | 工流诊断 | 趋势分析，产出工流指标 |
-| 策展 / 验证 / 就绪检查 | self-improve-loop | 效果评估 + 回顾 → `loop.js run --all` |
-
-数据存储: `docs/故事任务面板/<name>/.improvement/proposals.jsonl` + `docs/故事任务面板/<name>/.memory/`，append-only。
-
-**项目基线：** 生成 `CLAUDE.md` + `README.md`（双文件 × N 子项目）。
+**注入原则**：项目约定只在对应 agent/rule 中出现一次，不重复 CLAUDE.md 原文，而是转化为可执行规则。例如 CLAUDE.md 说"禁止在 content script 中使用 ES modules"，coder.md 写为"所有 content script 必须使用 IIFE + script 标签加载，禁止 import/export 语法"。
 
 ### 就绪检查
 
 | # | 检查项 | 验证 |
 |---|-------|------|
-| 1 | 至少一个故事目录含 .improvement/proposals.jsonl | `test -f` |
-| 2 | docs/故事任务面板/ 目录存在 | `test -d` |
-| 3 | 项目 CLAUDE.md 存在且非空 | `wc -l` |
-| 4 | 项目 README.md 存在且非空 | `wc -l` |
-| 5 | proposals.jsonl 无已解决但仍 open 的提案 | grep |
+| 1 | docs/故事任务面板/ 目录存在 | `test -d` |
+| 2 | 项目 CLAUDE.md 存在且非空 | `wc -l` |
+| 3 | 项目 README.md 存在且非空 | `wc -l` |
+| 4 | .claude/agents/AGENT.md 存在且非空 | `wc -l` |
+| 5 | 基线 agent（pm/coder/tester/security/reporter）.md 全部存在 | `test -f` |
+| 6 | .mcp.json 存在且为有效 JSON | `node -e` |
+| 7 | .claude/rules/ 目录存在且含至少一条规则 | `ls` |
+| 8 | .claude/skills/rui/templates/ 目录存在且含至少一个模板 | `ls` |
+
+完成 init 后，使用 `/rui doc <requirement>` 拆分需求为故事，再逐个故事执行 `/rui code <name>` 或 `/rui <name>`。
 
 ---
 
-## /rui doc \<name\>
+## /rui doc \<requirement\>
 
-自适应规划→策展 → 交付。仅操作单个故事 `<name>`。
+从需求描述/文档拆分故事，逐故事执行自适应规划→影响分析→架构设计→文档生成 → 交付。不执行策展和项目基线。
+
+### 需求输入
+
+`<requirement>` 支持三种格式：
+- **文本描述**: 直接输入需求文字，rui 分析并拆分为故事
+- **@文件引用**: 使用 `@path/to/file.md` 引用本地需求文档
+- **URL**: 提供需求文档的在线地址，rui 抓取后分析
+
+### 故事拆分规则
+
+1. 分析需求，识别独立功能单元
+2. 每个功能单元对应一个故事目录
+3. 故事目录名使用**英文简洁描述**，便于 git 分支命名（如 `user-login`、`chat-export`、`screenshot-capture`）
+4. 拆分后逐故事走完文档管线，不并行
+
+```mermaid
+flowchart TD
+    INPUT["需求输入<br/>文本 / @文件 / URL"] --> PARSE["需求解析"]
+    PARSE --> SPLIT["故事拆分<br/>每个故事 = 一个功能单元"]
+    SPLIT --> STORY1["故事 1: 自适应规划→文档生成"]
+    SPLIT --> STORY2["故事 2: 自适应规划→文档生成"]
+    SPLIT --> STORYN["故事 N: 自适应规划→文档生成"]
+    STORY1 --> DONE1["完成: docs/故事任务面板/story-1/"]
+    STORY2 --> DONE2["完成: docs/故事任务面板/story-2/"]
+    STORYN --> DONEN["完成: docs/故事任务面板/story-n/"]
+```
+
+每个故事内部流程：
 
 ```mermaid
 flowchart TD
     PLAN[自适应规划] --> IMPACT[影响分析]
     IMPACT --> ARCH[架构设计]
     ARCH --> DOCGEN[文档生成]
-    DOCGEN --> CURATE[策展]
-    CURATE --> BASELINE[项目基线]
 ```
 
 | 阶段 | 做什么 | 关键产出 |
 |------|--------|---------|
+| 需求解析 | 读取需求输入（文本/@文件/URL），提取功能需求<br>pm | 需求摘要 |
+| 故事拆分 | 将需求拆分为独立功能单元，每个单元创建故事目录（英文简洁命名）<br>pm | 故事目录列表 `docs/故事任务面板/<story-name>/` |
 | 自适应规划 | 读取执行记忆，判定 T1/T2/T3 变更级别<br>pm | rui-state.json |
 | 影响分析 | 单个故事全项目影响链分析，闭合所有依赖<br>coder, reporter | 故事任务.md（§3 影响链） |
-| 架构设计 | 单个故事模块划分、接口规范、数据流设计<br>coder, security | 后端技术评审.md、前端技术评审.md |
+| 架构设计 | 单个故事模块划分、接口规范、数据流设计、测试用例规划<br>coder, security, tester | 后端技术评审.md、前端技术评审.md、测试用例评审.md |
 | 文档生成 | agent 协作<br>pm (§1,§2,§4), coder (§3), tester (§1.1,§5), reporter (§4 依赖), security (§3 安全) | 故事任务.md（完整） |
-| 策展 | git commit + 执行记忆回写 + 后记（§6 §7）+ self-improve-loop<br>pm, reporter, self-improve | execution-memory.jsonl + 自改进复盘.md |
-| 项目基线 | 仅 init：生成 CLAUDE.md + README.md<br>pm, coder | CLAUDE.md、README.md |
 
 ### 增量裁剪
 
@@ -151,7 +179,7 @@ flowchart TD
 
 ## /rui code \<name\>
 
-预检→验证 → 交付（需已存在 `docs/故事任务面板/<name>/故事任务.md`）
+预检→验证 → 自改进 → 交付（需已存在 `docs/故事任务面板/<name>/故事任务.md`）
 
 ```mermaid
 flowchart TD
@@ -162,26 +190,54 @@ flowchart TD
     FIX1 --> GA
     IMPL --> VERIFY["验证<br/>冒烟 + 影响链回归"]
     VERIFY --> GB{Gate B}
-    GB -->|PASS| DELIVER[交付]
+    GB -->|PASS| SELF["自改进<br/>self-improve-loop"]
     GB -->|FAIL ≤2 轮| FIX2[修复]
     FIX2 --> GB
     GB -->|>2 轮| BLOCK[阻断: H7]
+    SELF --> DELIVER[交付]
 ```
 
 | 阶段 | 做什么 | 关键产出 |
 |------|--------|---------|
-| 预检 | 双边影响分析 + 分支隔离（从 main/master 拉取 `feat/<name>` / `docs/<name>`）<br>必须从主分支创建<br>coder, reporter | 功能分支 + 双边影响链闭合 |
+| 预检 | 双边影响分析 + 分支隔离（从 main 拉取 `feat/<name>`）<br>必须从 main 分支创建<br>coder, reporter | 功能分支 + 双边影响链闭合 |
 | 测试先行 | Gate A：测试方案+原型，单行 CSS 可跳过<br>Gate A 未过不得编码<br>tester | 测试用例评审.md |
 | 实现 | 逐模块编码，每模块后审查：P0 必须修 / P1 建议修 / P2 可选<br>P0 未清零不进下一模块<br>coder, security, tester | 源代码（按 §4 任务列表）+ P0 清零 |
-| 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行 + self-improve-loop<br>超过 2 轮修复阻断交付<br>tester, reporter, self-improve | 后端实施报告.md、前端实施报告.md、测试用例报告.md、自改进复盘.md |
+| 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行<br>超过 2 轮修复阻断交付<br>tester, reporter | 后端实施报告.md、前端实施报告.md、测试用例报告.md |
+| 自改进 | self-improve-loop：效果评估 + 基线配置复盘 + 回顾 → `loop.js run --all`<br>产出自改进复盘.md<br>pm, reporter, self-improve | 自改进复盘.md |
+
+### 自改进管线
+
+代码管线完成后单次执行，不阻断主流程。脚本位于 `skills/rui/scripts/`。
+
+```mermaid
+flowchart LR
+    CODE_DONE["代码管线完成"] --> SI["自改进管线"]
+    SI --> ARCH["六维推演 → 架构指标"]
+    SI --> FLOW["趋势分析 → 工流指标"]
+    SI --> LOOP["效果评估 + 回顾"]
+
+    ARCH --> STORE[("proposals.jsonl<br/>.memory/")]
+    FLOW --> STORE
+    LOOP -->|loop.js run --all| STORE
+```
+
+| 操作 | 脚本 | 产出 |
+|------|------|------|
+| 架构反思 | `self-improve.js` | 六维推演，架构指标 |
+| 工流诊断 | `self-improve.js` | 趋势分析，工流指标 |
+| 效果评估 + 回顾 | `loop.js run --all` | 自改进复盘.md |
+
+数据存储: `docs/故事任务面板/<name>/.improvement/proposals.jsonl` + `docs/故事任务面板/<name>/.memory/`，append-only。
 
 ---
 
 ## /rui \<name\>（端到端）
 
-自适应规划→策展 → 预检→验证 → 交付
+对已存在的故事目录，执行自适应规划→影响分析→架构设计→文档生成→策展 → 预检→验证 → 自改进 → 交付。
 
-组合执行文档管线（见 [/rui doc](#rui-doc-name)）和代码管线（见 [/rui code](#rui-code-name)），中间不中断，完成或阻断后输出下一步提示。
+组合执行文档管线（含策展，见 [/rui doc](#rui-doc-requirement)）和代码管线（见 [/rui code](#rui-code-name)），中间不中断，完成或阻断后输出下一步提示。
+
+新需求先用 `/rui doc <requirement>` 拆分为故事目录，再对每个故事执行 `/rui <name>`。
 
 ---
 
@@ -218,9 +274,6 @@ flowchart TD
 ```
 <workspace-root>/
 └── docs/
-    ├── shared/
-    │   ├── architecture.md
-    │   └── contracts.md
     └── 故事任务面板/
         └── <name>/              ← 故事目录（简写，便于分支管理）
             ├── 故事任务.md      ← 唯一真相源
@@ -238,7 +291,6 @@ flowchart TD
                 └── rui-state.json
 ```
 
-> **样例参考**: `docs/故事任务面板/user-login/` 为最佳实践样例，含 2 个完整 Story（P0 + P1），覆盖所有章节和边界情况。
 
 ### 故事板章节
 
@@ -260,13 +312,13 @@ flowchart TD
 
 | 文件 | 负责人 | 内容 | 产出阶段 |
 |------|--------|------|---------|
-| 后端技术评审.md | coder + security | 后端技术方案评审，覆盖架构、接口、数据模型、安全约束 | 文档生成（架构设计后） |
-| 前端技术评审.md | coder | 前端技术方案评审，覆盖组件树、状态管理、路由、交互细节 | 文档生成（架构设计后） |
-| 测试用例评审.md | tester | 测试用例完整性评审，覆盖功能、边界、异常、回归用例 | 测试先行 |
+| 后端技术评审.md | coder + security | 后端技术方案评审，覆盖 Service Worker、消息通道、API 接口、存储模型、安全约束 | 文档生成（架构设计后） |
+| 前端技术评审.md | coder | 前端技术方案评审，覆盖组件树、Hooks 状态管理、交互细节、样式隔离、加载顺序 | 文档生成（架构设计后） |
+| 测试用例评审.md | tester | 测试用例完整性评审，覆盖功能、边界、异常、回归用例 | 文档生成（架构设计后） |
 | 后端实施报告.md | coder | 后端实现总结，覆盖实际接口、偏差记录、P0 审查结果 | 验证 |
 | 前端实施报告.md | coder | 前端实现总结，覆盖实际组件、偏差记录、P0 审查结果 | 验证 |
 | 测试用例报告.md | tester | 测试执行报告，覆盖冒烟结果、回归结果、已知问题 | 验证 |
-| 自改进复盘.md | pm + reporter | 本次故事全过程复盘，覆盖执行记忆回望、改进项、经验沉淀 | 交付 |
+| 自改进复盘.md | pm + reporter | 本次故事全过程复盘，覆盖执行记忆回望、基线配置复盘、改进项、经验沉淀 | 自改进 |
 
 ---
 
@@ -274,17 +326,17 @@ flowchart TD
 
 | # | 场景 | 降级 | 阶段 |
 |---|------|------|------|
-| H1 | 功能名称无法解析 | 否 | 自适应规划 |
+| H1 | 需求无法解析（空输入/文件不存在/URL不可达） | 否 | 需求解析 |
 | H2 | P0 章节缺少上游来源 | 否 | 文档生成, 预检 |
 | H3 | 影响链无法闭合 | 否 | 影响分析, 预检 |
 | H4 | 文档 P0 不通过且无法自修复 | 否 | 文档生成 |
 | H5 | 代码审查 P0 无法修复 | 否 | 实现 |
 | H6 | Gate A 未完成但已编码 | 否 | 测试先行→实现 |
-| H7 | Gate B >2 轮修复未通过 | 否 | 验证→交付 |
+| H7 | Gate B >2 轮修复未通过 | 否 | 验证 |
 | H8 | 所有模块被阻断 | 否 | 实现 |
 | H9 | `API_X_TOKEN` 缺失 | 是 | 交付 |
-| H10 | 功能分支未从 main/master 创建 | 否 | 预检 |
-| H11 | self-improve-loop 数据采集失败 | 是 | self-improve-loop |
+| H10 | 功能分支未从 main 创建 | 否 | 预检 |
+| H11 | self-improve-loop 数据采集失败 | 是 | 自改进 |
 
 阻断后: `rui-state.js save --blocked` → `next-step` → 持久化 → 同步（H9/H11 跳过）→ 通知。
 
@@ -299,4 +351,5 @@ flowchart TD
 - **文档同步**: `node skills/import-docs/scripts/import-docs.js --workspace`
 - **通知**: `wework-bot`
 - **Agent**: [`.claude/agents/AGENT.md`](../../agents/AGENT.md)
-- **模板**: [`templates/故事任务模板.md`](templates/故事任务模板.md)
+- **模板**: [`templates/故事任务模板.md`](templates/故事任务模板.md) · [`templates/后端技术评审模板.md`](templates/后端技术评审模板.md) · [`templates/前端技术评审模板.md`](templates/前端技术评审模板.md) · [`templates/测试用例评审模板.md`](templates/测试用例评审模板.md) · [`templates/后端实施报告模板.md`](templates/后端实施报告模板.md) · [`templates/前端实施报告模板.md`](templates/前端实施报告模板.md) · [`templates/测试用例报告模板.md`](templates/测试用例报告模板.md) · [`templates/自改进复盘模板.md`](templates/自改进复盘模板.md)
+- **规则**: [`rules/doc-generation.md`](rules/doc-generation.md) · [`rules/code-pipeline.md`](rules/code-pipeline.md) · [`rules/gate-rules.md`](rules/gate-rules.md) · [`rules/self-improve.md`](rules/self-improve.md)
