@@ -9,15 +9,15 @@ agents:
 
 # rui
 
-故事驱动 SDLC 编排器。每次调用仅操作一个故事，禁止批量操作多个故事，确保生成的故事最小可用。
+故事驱动 SDLC 编排器。需求拆分产生多个故事时逐故事串行处理，每个故事独立走完管线，确保最小可用、可测试、可交付。
 
 ```mermaid
 flowchart TD
     USER["/rui &lt;command&gt; &lt;input&gt;"] --> ROUTE{command}
     ROUTE -->|init| INIT["基线 → 基线注入→Agent&Rule&Template → 就绪检查"]
     ROUTE -->|doc &lt;requirement&gt;| SPLIT["需求拆分 → 逐故事: 自适应规划→文档生成"]
-    ROUTE -->|code &lt;name&gt;| CODE["预检→验证→自改进 代码管线"]
-    ROUTE -->|&lt;name&gt;| FULL["文档管线 → 代码管线 端到端"]
+    ROUTE -->|code &lt;name&gt;| CODE["预检（含文档补齐）→ 验证 → 自改进 代码管线"]
+    ROUTE -->|&lt;requirement&gt;| FULL["需求拆分 → 逐故事: 文档管线 → 代码管线 端到端"]
     ROUTE -->|list| LIST["扫描故事任务面板 → 输出未完成故事列表"]
 
     INIT --> DELIVER["交付: import-docs → wework-bot"]
@@ -35,8 +35,8 @@ flowchart TD
 |------|------|
 | `/rui init` | 基线 → 基线注入→Agent&Rule&Template → 就绪检查 → 交付（不生成故事，仅建立项目骨架） |
 | `/rui doc <requirement>` | 需求拆分 → 逐故事: 自适应规划→影响分析→架构设计→文档生成 → 交付 |
-| `/rui code <name>` | 预检→验证 → 自改进 → 交付（需已存在 `docs/故事任务面板/<name>/故事任务.md`） |
-| `/rui <name>` | 自适应规划→策展 → 预检→验证 → 自改进 → 交付 |
+| `/rui code <name>` | 预检（含文档补齐）→ 测试先行 → 实现 → 验证 → 自改进 → 交付（故事任务.md 必须存在，缺失的技术评审自动补齐，最终产出故事目录全 8 份文档） |
+| `/rui <requirement>` | 需求拆分 → 逐故事: 文档管线 → 代码管线 端到端 |
 | `/rui list` | 扫描故事任务面板，列出所有未完成故事及其进度状态 |
 
 `<requirement>` 可以是：
@@ -182,11 +182,11 @@ flowchart TD
 
 ## /rui code \<name\>
 
-预检→验证 → 自改进 → 交付（需已存在 `docs/故事任务面板/<name>/故事任务.md`）
+预检（含文档补齐）→ 测试先行 → 实现 → 验证 → 自改进 → 交付。故事任务.md 必须存在；缺失的后端/前端/测试用例技术评审在预检阶段自动补齐，确保最终产出故事目录全 8 份文档。
 
 ```mermaid
 flowchart TD
-    PRECHECK["预检<br/>影响分析 + 分支隔离"] --> TESTFIRST["测试先行<br/>测试方案 + 原型"]
+    PRECHECK["预检<br/>影响分析 + 分支隔离 + 文档补齐"] --> TESTFIRST["测试先行<br/>测试方案 + 原型"]
     TESTFIRST --> GA{Gate A}
     GA -->|PASS| IMPL["实现<br/>逐模块编码 + P0 审查"]
     GA -->|FAIL| FIX1[修复]
@@ -202,11 +202,13 @@ flowchart TD
 
 | 阶段 | 做什么 | 关键产出 |
 |------|--------|---------|
-| 预检 | 双边影响分析 + 分支隔离（从 main 拉取 `feat/<name>`）<br>必须从 main 分支创建<br>coder, reporter | 功能分支 + 双边影响链闭合 |
-| 测试先行 | Gate A：测试方案+原型，单行 CSS 可跳过<br>Gate A 未过不得编码<br>tester | 测试用例评审.md |
+| 预检 | 双边影响分析 + 分支隔离（从 main 拉取 `feat/<name>`）+ **文档补齐**（缺失的后端/前端/测试用例技术评审自动生成，保证故事目录全 8 份文档）<br>必须从 main 分支创建<br>coder, pm, reporter | 功能分支 + 双边影响链闭合 + 补齐的技术评审 |
+| 测试先行 | Gate A：测试方案+原型，单行 CSS 可跳过<br>Gate A 未过不得编码<br>tester | 测试用例评审.md（若预检已补齐则跳过） |
 | 实现 | 逐模块编码，每模块后审查：P0 必须修 / P1 建议修 / P2 可选<br>P0 未清零不进下一模块<br>coder, security, tester | 源代码（按 §4 任务列表）+ P0 清零 |
 | 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行 → 三报告产出<br>三报告相互引用闭合，各报告评审清单全部 ✅ 方可通过 Gate B<br>超过 2 轮修复阻断（H7）<br>coder（后端/前端实施报告）, tester（测试用例报告）, reporter（审阅） | 后端实施报告.md、前端实施报告.md、测试用例报告.md |
 | 自改进 | self-improve-loop：效果评估 + 基线配置复盘 + 回顾 → `loop.js run --all`<br>产出自改进复盘.md<br>pm, reporter, self-improve | 自改进复盘.md |
+
+**最终产出保证：** 故事目录下 8 份文档齐全——故事任务.md（前置） + 后端技术评审.md + 前端技术评审.md + 测试用例评审.md + 后端实施报告.md + 前端实施报告.md + 测试用例报告.md + 自改进复盘.md。
 
 ### 验证与报告产出
 
@@ -283,13 +285,11 @@ flowchart LR
 
 ---
 
-## /rui \<name\>（端到端）
+## /rui \<requirement\>（端到端）
 
-对已存在的故事目录，执行自适应规划→影响分析→架构设计→文档生成→策展 → 预检→验证 → 自改进 → 交付。
+从需求输入（文本 / @文件 / URL）拆分故事，逐故事走完文档管线（自适应规划→影响分析→架构设计→文档生成→策展）和代码管线（预检→验证→自改进），中间不中断，完成或阻断后输出下一步提示。
 
-组合执行文档管线（含策展，见 [/rui doc](#rui-doc-requirement)）和代码管线（见 [/rui code](#rui-code-name)），中间不中断，完成或阻断后输出下一步提示。
-
-新需求先用 `/rui doc <requirement>` 拆分为故事目录，再对每个故事执行 `/rui <name>`。
+等同于 `/rui doc <requirement>` + 每个故事 `/rui code <name>` 的全自动串联。
 
 ---
 
