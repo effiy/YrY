@@ -9,12 +9,12 @@ agents:
 
 # rui
 
-故事驱动 SDLC 编排器。每个需求提炼为故事，拆解为子项目任务调度执行。
+故事驱动 SDLC 编排器。每次调用仅操作一个故事，禁止批量操作多个故事，确保生成的故事最小可用。
 
 ```mermaid
 flowchart TD
     USER["/rui &lt;command&gt; &lt;name&gt;"] --> ROUTE{command}
-    ROUTE -->|init| INIT["自改进 → 发现→生成→策展→基线 → 就绪检查"]
+    ROUTE -->|init| INIT["自改进 → 发现 → 基线 → 就绪检查"]
     ROUTE -->|doc &lt;name&gt;| DOC["自适应规划→策展 文档管线"]
     ROUTE -->|code &lt;name&gt;| CODE["预检→验证 代码管线"]
     ROUTE -->|&lt;name&gt;| FULL["文档管线 → 代码管线 端到端"]
@@ -31,7 +31,7 @@ flowchart TD
 
 | 命令 | 流程 |
 |------|------|
-| `/rui init` | 自改进 → 发现→生成→策展（逐故事循环）→ 基线 → 就绪检查 → 交付 |
+| `/rui init` | 自改进 → 发现 → 基线 → 就绪检查 → 交付（不生成故事，仅建立项目骨架） |
 | `/rui doc <name>` | 自适应规划→策展 → 交付 |
 | `/rui code <name>` | 预检→验证 → 交付（需已存在 `docs/故事任务面板/<name>/故事任务.md`） |
 | `/rui <name>` | 自适应规划→策展 → 预检→验证 → 交付 |
@@ -40,23 +40,18 @@ flowchart TD
 
 ## /rui init
 
-以故事为原子单位驱动，发现→策展逐故事循环。
+发现故事列表 + 建立项目基线，不逐故事生成。每个故事通过 `/rui <name>` 单独操作。
 
 ```mermaid
 flowchart TD
     INIT["/rui init"] --> SELF["自改进<br/>健康评分 + 快照 + 趋势 + 提案"]
     INIT --> DISCOVER["发现<br/>检索规范 + 提炼故事列表"]
-    DISCOVER --> STORIES{故事列表}
-    STORIES -->|逐故事| GENERATE["生成<br/>7 agent 协作 → 故事板"]
-    GENERATE --> CURATE["策展<br/>git commit + 执行记忆回写"]
-    CURATE -->|下一故事| GENERATE
-    CURATE -->|全部完成| BASELINE["项目基线<br/>CLAUDE.md + README.md"]
+    DISCOVER --> BASELINE["项目基线<br/>CLAUDE.md + README.md"]
     BASELINE --> CHECK{"就绪检查"}
     CHECK -->|PASS| DELIVER["交付"]
     CHECK -->|FAIL| FIX["修复缺失项"]
     FIX --> CHECK
-    SELF -.->|静默运行| GENERATE
-    SELF -.->|静默运行| CURATE
+    SELF -.->|静默运行| DISCOVER
     SELF -.->|静默运行| DELIVER
 ```
 
@@ -64,21 +59,21 @@ flowchart TD
 |------|--------|---------|
 | 自改进 | 健康评分 + 快照 + 趋势 + 提案<br>self-improve | 改进提案（proposals.jsonl） |
 | 发现 | 检索规范 + 提炼故事列表<br>pm | 故事目录 |
-| 生成 | 逐故事 6 agent 协作，写入故事目录<br>pm, coder, tester, reporter, security | 故事任务.md、后端技术评审.md、前端技术评审.md |
-| 策展 | git commit + 执行记忆回写<br>pm, reporter | 执行记忆（execution-memory.jsonl） |
 | 项目基线 | 生成 CLAUDE.md + README.md<br>pm, coder | CLAUDE.md、README.md |
 | 就绪检查 | 5 项检查，失败则修复重检<br>tester, reporter, security | 5 项检查全部通过 |
 | 交付 | self-improve-loop → import-docs → wework-bot<br>self-improve | 自改进复盘.md |
+
+完成 init 后，逐个故事执行 `/rui <name>`（或 `/rui doc <name>` → `/rui code <name>`）。
 
 ### 增量裁剪
 
 init 重入时按变更级别裁剪，避免不必要的全量重建。
 
-| 级别 | 触发条件 | 发现 | 生成 | 基线 |
-|------|---------|------|------|------|
-| T1 微观 | 故事板微调、措辞修正、就绪检查单项修复 | 跳过 | 仅变更故事 | 跳过 |
-| T2 局部 | 增删故事、故事目录结构变更 | 重跑 | 重写目标故事 + 下游引用 | 更新 |
-| T3 范围 | 项目范围变更、跨故事重构、首次运行 | 完整重跑 | 全级联刷新 | 完整重生成 |
+| 级别 | 触发条件 | 发现 | 基线 |
+|------|---------|------|------|
+| T1 微观 | 故事板微调、措辞修正、就绪检查单项修复 | 跳过 | 跳过 |
+| T2 局部 | 增删故事、故事目录结构变更 | 重跑 | 更新 |
+| T3 范围 | 项目范围变更、跨故事重构、首次运行 | 完整重跑 | 完整重生成 |
 
 > 自改进与就绪检查始终运行，不受裁剪级别影响。
 
@@ -93,7 +88,7 @@ init 重入时按变更级别裁剪，避免不必要的全量重建。
 | 策展 / 验证 | 工流诊断 | 趋势分析，产出工流指标 |
 | 交付 | self-improve-loop | 效果评估 + 回顾 → `loop.js run --all` |
 
-数据存储: `docs/.improvement/proposals.jsonl` + `docs/.memory/`，append-only。
+数据存储: `docs/故事任务面板/<name>/.improvement/proposals.jsonl` + `docs/故事任务面板/<name>/.memory/`，append-only。
 
 **项目基线：** 生成 `CLAUDE.md` + `README.md`（双文件 × N 子项目）。
 
@@ -101,7 +96,7 @@ init 重入时按变更级别裁剪，避免不必要的全量重建。
 
 | # | 检查项 | 验证 |
 |---|-------|------|
-| 1 | proposals.jsonl 存在 | `test -f` |
+| 1 | 至少一个故事目录含 .improvement/proposals.jsonl | `test -f` |
 | 2 | docs/故事任务面板/ 目录存在 | `test -d` |
 | 3 | 项目 CLAUDE.md 存在且非空 | `wc -l` |
 | 4 | 项目 README.md 存在且非空 | `wc -l` |
@@ -111,30 +106,23 @@ init 重入时按变更级别裁剪，避免不必要的全量重建。
 
 ## /rui doc \<name\>
 
-自适应规划→策展 → 交付
-
-以故事为原子单位驱动，发现→策展逐故事循环。
+自适应规划→策展 → 交付。仅操作单个故事 `<name>`。
 
 ```mermaid
 flowchart TD
-    PLAN[自适应规划] --> DISCOVER[发现]
-    DISCOVER --> STORIES{故事列表}
-    STORIES -->|逐故事| LOOP["故事循环"]
-    LOOP --> IMPACT[影响分析]
+    PLAN[自适应规划] --> IMPACT[影响分析]
     IMPACT --> ARCH[架构设计]
     ARCH --> DOCGEN[文档生成]
     DOCGEN --> CURATE[策展]
-    CURATE -->|下一故事| LOOP
-    CURATE -->|全部完成| BASELINE[项目基线]
+    CURATE --> BASELINE[项目基线]
 ```
 
 | 阶段 | 做什么 | 关键产出 |
 |------|--------|---------|
 | 自适应规划 | 读取执行记忆，判定 T1/T2/T3 变更级别<br>pm | rui-state.json |
-| 发现 | 检索规范与已有文档，提炼故事列表<br>pm | 故事目录 |
-| 影响分析 | 逐故事全项目影响链分析，闭合所有依赖<br>coder, reporter | 故事任务.md（§3 影响链） |
-| 架构设计 | 逐故事模块划分、接口规范、数据流设计<br>coder, security | 后端技术评审.md、前端技术评审.md |
-| 文档生成 | 逐故事 agent 协作<br>pm (§1,§2,§4), coder (§3), tester (§1.1,§5), reporter (§4 依赖), security (§3 安全) | 故事任务.md（完整） |
+| 影响分析 | 单个故事全项目影响链分析，闭合所有依赖<br>coder, reporter | 故事任务.md（§3 影响链） |
+| 架构设计 | 单个故事模块划分、接口规范、数据流设计<br>coder, security | 后端技术评审.md、前端技术评审.md |
+| 文档生成 | agent 协作<br>pm (§1,§2,§4), coder (§3), tester (§1.1,§5), reporter (§4 依赖), security (§3 安全) | 故事任务.md（完整） |
 | 策展 | git commit + 执行记忆回写 + 后记（§6 §7）<br>pm, reporter | execution-memory.jsonl |
 | 项目基线 | 仅 init：生成 CLAUDE.md + README.md<br>pm, coder | CLAUDE.md、README.md |
 
@@ -218,10 +206,6 @@ flowchart TD
 ```
 <workspace-root>/
 └── docs/
-    ├── .improvement/proposals.jsonl
-    ├── .memory/
-    │   ├── execution-memory.jsonl
-    │   └── rui-state.json
     ├── shared/
     │   ├── architecture.md
     │   └── contracts.md
@@ -234,7 +218,12 @@ flowchart TD
             ├── 后端实施报告.md
             ├── 前端实施报告.md
             ├── 测试用例报告.md
-            └── 自改进复盘.md
+            ├── 自改进复盘.md
+            ├── .improvement/
+            │   └── proposals.jsonl
+            └── .memory/
+                ├── execution-memory.jsonl
+                └── rui-state.json
 ```
 
 ### 故事板章节
@@ -269,6 +258,7 @@ flowchart TD
 
 ## 核心规则
 
+0. **单故事操作**: 每次调用仅操作一个故事，禁止批量操作多个故事，确保每个故事独立、最小可用、可测试、可交付
 1. **增量更新**: 已有文档按 T1/T2/T3 裁剪
 2. **测试先行**: Gate A 阻断实现；Gate B >2 轮修复阻断交付
 3. **逐模块审查**: 实现阶段每模块后审查，P0 清零前进
