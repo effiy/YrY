@@ -1,14 +1,13 @@
 # Agents
 
-根 pm 是产品决策者——决定做什么和不做什么。子项目 PM 承接决策并驱动执行。
+根 pm 决定做什么和不做什么，并驱动执行。
 
 ```mermaid
 graph LR
-    pm -->|决策: 做什么/不做什么| SUB["子项目PM"]
+    pm -->|决策: 做什么/不做什么| coder
+    pm -->|决策: 做什么/不做什么| tester
+    pm -->|决策: 做什么/不做什么| reporter
     pm -->|系统性问题| S_REFLECT["反思管线"]
-    SUB -->|代码| coder
-    SUB -->|验证| tester
-    SUB -->|报告| reporter
     pm -->|安全审查| security
     pm -->|自改进| self_improve["self-improve"]
 
@@ -28,9 +27,9 @@ graph LR
 | Agent | 文件 | 触发 |
 |-------|------|------|
 | pm | [pm.md](pm.md) | rui 全流程入口，反思钩子，架构漂移信号，自适应规划→策展 / init 基线注入→配置生成 |
-| coder | [coder.md](coder.md) | 子项目PM 调度，rui 预检/实现/影响分析/架构设计，rui fix |
-| tester | [tester.md](tester.md) | 子项目PM 调度，rui 测试先行/实现/验证/文档生成，rui fix，rui check |
-| reporter | [reporter.md](reporter.md) | 子项目PM 调度，rui 交付/策展 |
+| coder | [coder.md](coder.md) | pm 调度，rui 预检/实现/影响分析/架构设计，rui fix |
+| tester | [tester.md](tester.md) | pm 调度，rui 测试先行/实现/验证/文档生成，rui fix，rui check |
+| reporter | [reporter.md](reporter.md) | pm 调度，rui 交付/策展 |
 | security | [security.md](security.md) | pm 安全审查委派，rui 预检/实现/验证 |
 | self-improve | [self-improve.md](self-improve.md) | rui 自改进阶段，loop.js run --all |
 
