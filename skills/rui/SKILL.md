@@ -42,6 +42,22 @@ flowchart TD
 
 自改进 → 发现→生成→策展→基线 → 就绪检查 → 交付
 
+```mermaid
+flowchart TD
+    INIT["/rui init"] --> SELF["自改进<br/>健康评分 + 快照 + 趋势 + 提案"]
+    INIT --> DISCOVER["发现<br/>检索规范 + 提炼故事列表"]
+    DISCOVER --> GENERATE["生成<br/>逐故事 7 agent 协作"]
+    GENERATE --> CURATE["策展<br/>git commit + 执行记忆回写"]
+    CURATE --> BASELINE["子项目基线<br/>CLAUDE.md + README.md + design-system.md"]
+    BASELINE --> CHECK{"就绪检查"}
+    CHECK -->|6/6 PASS| DELIVER["交付"]
+    CHECK -->|FAIL| FIX["修复缺失项"]
+    FIX --> CHECK
+    SELF -.->|静默运行| GENERATE
+    SELF -.->|静默运行| CURATE
+    SELF -.->|静默运行| DELIVER
+```
+
 ### 自改进管线
 
 静默运行，不阻断主流程。脚本位于 `skills/rui/scripts/`。
