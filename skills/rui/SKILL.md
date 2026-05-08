@@ -4,7 +4,7 @@ description: Story-driven SDLC orchestrator: story → document → code → del
 user_invocable: true
 lifecycle: default-pipeline
 agents:
-  required: [pm, coder, docer, tester, reporter, security]
+  required: [pm, coder, tester, reporter, security]
 ---
 
 # rui
@@ -64,9 +64,9 @@ flowchart TD
 |------|--------|---------|
 | 自改进 | 健康评分 + 快照 + 趋势 + 提案<br>self-improve | 改进提案（proposals.jsonl） |
 | 发现 | 检索规范 + 提炼故事列表<br>pm | 故事目录 |
-| 生成 | 逐故事 7 agent 协作，写入故事目录<br>pm, docer, coder, tester, reporter, security | 故事任务.md、后端技术评审.md、前端技术评审.md |
+| 生成 | 逐故事 6 agent 协作，写入故事目录<br>pm, coder, tester, reporter, security | 故事任务.md、后端技术评审.md、前端技术评审.md |
 | 策展 | git commit + 执行记忆回写<br>pm, reporter | 执行记忆（execution-memory.jsonl） |
-| 项目基线 | 生成 CLAUDE.md + README.md<br>pm, docer, coder | CLAUDE.md、README.md |
+| 项目基线 | 生成 CLAUDE.md + README.md<br>pm, coder | CLAUDE.md、README.md |
 | 就绪检查 | 5 项检查，失败则修复重检<br>tester, reporter, security | 5 项检查全部通过 |
 | 交付 | self-improve-loop → import-docs → wework-bot<br>self-improve | 自改进复盘.md |
 
@@ -134,9 +134,9 @@ flowchart TD
 | 发现 | 检索规范与已有文档，提炼故事列表<br>pm | 故事目录 |
 | 影响分析 | 逐故事全项目影响链分析，闭合所有依赖<br>coder, reporter | 故事任务.md（§3 影响链） |
 | 架构设计 | 逐故事模块划分、接口规范、数据流设计<br>coder, security | 后端技术评审.md、前端技术评审.md |
-| 文档生成 | 逐故事 agent 协作<br>pm (§1,§4), docer (§2), coder (§3), tester (§1.1,§5), reporter (§4 依赖), security (§3 安全) | 故事任务.md（完整） |
+| 文档生成 | 逐故事 agent 协作<br>pm (§1,§2,§4), coder (§3), tester (§1.1,§5), reporter (§4 依赖), security (§3 安全) | 故事任务.md（完整） |
 | 策展 | git commit + 执行记忆回写 + 后记（§6 §7）<br>pm, reporter | execution-memory.jsonl |
-| 项目基线 | 仅 init：生成 CLAUDE.md + README.md<br>pm, docer, coder | CLAUDE.md、README.md |
+| 项目基线 | 仅 init：生成 CLAUDE.md + README.md<br>pm, coder | CLAUDE.md、README.md |
 
 ### 增量裁剪
 
@@ -243,7 +243,7 @@ flowchart TD
 |------|--------|------|
 | §1 Story | pm | 角色场景、价值、范围边界、依赖 |
 | §1.1 User Operations | tester | 用户操作 + UI交互流程 |
-| §2 Requirements | docer | 功能点、输入输出、错误行为、业务规则 |
+| §2 Requirements | pm | 功能点、输入输出、错误行为、业务规则 |
 | §3 Design | coder + security | 技术设计 + 安全约束 |
 | §4 Tasks | pm + all | 任务拆解、依赖、交付物 |
 | §5 Acceptance Criteria | tester | 验收标准、测试方法、预期结果 |

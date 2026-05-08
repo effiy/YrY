@@ -7,16 +7,12 @@ graph LR
     pm -->|决策: 做什么/不做什么| SUB["子项目PM"]
     pm -->|系统性问题| S_REFLECT["反思管线"]
     SUB -->|代码| coder
-    SUB -->|文档| docer
     SUB -->|验证| tester
     SUB -->|报告| reporter
     pm -->|安全审查| security
 
     subgraph "Story Pipeline"
         coder --> tester --> reporter
-    end
-    subgraph "Document Pipeline"
-        docer --> tester --> reporter
     end
     subgraph "Security Gate"
         security -->|实现审查| coder
@@ -26,9 +22,8 @@ graph LR
 
 | Agent | 文件 | 触发 |
 |-------|------|------|
-| pm | [pm.md](pm.md) | rui 全流程入口，反思钩子，架构漂移信号 |
+| pm | [pm.md](pm.md) | rui 全流程入口，反思钩子，架构漂移信号，自适应规划→策展 / init |
 | coder | [coder.md](coder.md) | 子项目PM 调度，rui 预检/实现/影响分析/架构设计，rui fix |
-| docer | [docer.md](docer.md) | 子项目PM 调度，rui 自适应规划→策展 / init |
 | tester | [tester.md](tester.md) | 子项目PM 调度，rui 测试先行/实现/验证/文档生成，rui fix，rui check |
 | reporter | [reporter.md](reporter.md) | 子项目PM 调度，rui 交付/策展 |
 | security | [security.md](security.md) | pm 安全审查委派，rui 预检/实现/验证 |
