@@ -25,39 +25,14 @@ const REPO_ROOT = path.resolve(__dirname, '../../../..');
 const MEMORY_DIR = path.join(REPO_ROOT, 'docs', '.memory');
 const MEMORY_FILE = path.join(MEMORY_DIR, 'execution-memory.jsonl');
 
-function printHelp() {
-  console.log(`Usage:
-  node scripts/execution-memory.js write <json-file>       Write a single record
-  node scripts/execution-memory.js query [options]          Query historical records
-  node scripts/execution-memory.js stats [options]          Stats on high-frequency patterns
-  node scripts/execution-memory.js ls [options]             List recent records
-  node scripts/execution-memory.js trends [options]         Trend analysis by 2-week windows
-
-Options:
-  --feature <name>   Match by feature name
-  --keyword <k>      Match by keyword (fingerprint, description, bad case lesson)
-  --limit <n>        Max results to return (default 10)
-  --week <date>      Filter by natural week (YYYY-MM-DD)
-  --weeks <n>        Number of weeks for trends (default 8)
-  --json             Output JSON (default Markdown)
-
-Examples:
-  node scripts/execution-memory.js write /tmp/session.json
-  node scripts/execution-memory.js query --feature "User Login" --limit 5
-  node scripts/execution-memory.js stats --week 2026-04-29 --json
-  node scripts/execution-memory.js trends --weeks 8 --json
-`);
-}
 
 function parseArgs(argv) {
   const out = { command: null, file: null, feature: null, keyword: null, limit: 10, week: null, weeks: 8, json: false };
   const args = argv.slice(2);
-  if (args.length === 0 || args[0] === '--help' || args[0] === '-h') { printHelp(); process.exit(0); }
   out.command = args[0];
   for (let i = 1; i < args.length; i++) {
     const a = args[i];
-    if (a === '--help' || a === '-h') { printHelp(); process.exit(0); }
-    else if (a === '--feature') out.feature = args[++i];
+    if (a === '--feature') out.feature = args[++i];
     else if (a === '--keyword') out.keyword = args[++i];
     else if (a === '--limit') out.limit = parseInt(args[++i], 10) || 10;
     else if (a === '--week') out.week = args[++i];
@@ -378,7 +353,6 @@ async function main() {
     case 'trends': await cmdTrends(opts); break;
     default:
       console.error(`Error: unknown command ${opts.command}`);
-      printHelp();
       process.exit(1);
   }
 }

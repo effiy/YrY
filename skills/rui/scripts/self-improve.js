@@ -773,33 +773,8 @@ async function cmdResolve(proposalId, resolvedBy) {
 
 // ---------- Main ----------
 
-function printHelp() {
-  console.log(`Usage:
-  node scripts/self-improve.js snapshot [--json] [--output <path>]
-  node scripts/self-improve.js proposals [--status open|done|superseded] [--trigger init|document|code|full|from] [--json]
-  node scripts/self-improve.js resolve <proposal-id> [--resolved-by "<description>"]
-  node scripts/self-improve.js evaluate [--proposal <id>] [--since <date>] [--json]
-  node scripts/self-improve.js retro [--weeks <n>] [--json]
-  node scripts/self-improve.js health [--json]
-  node scripts/self-improve.js feedback <proposal-id> --rating <helpful|neutral|harmful> [--note "..."]
-
-Commands:
-  snapshot    状态采集: collect project state snapshot
-  proposals   提案管理: list improvement proposals
-  resolve     提案结项: mark a proposal as done/superseded
-  evaluate    效果评估: evaluate proposal effectiveness
-  retro       回顾报告: retrospective report
-  health      健康评分: project health score
-  feedback    用户反馈: record user feedback on a proposal
-`);
-}
-
 async function main() {
   const args = process.argv.slice(2);
-  if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
-    printHelp();
-    process.exit(0);
-  }
 
   const command = args[0];
   const jsonOutput = args.includes('--json');
@@ -856,7 +831,6 @@ async function main() {
       break;
     default:
       console.error(`Unknown command: ${command}`);
-      printHelp();
       process.exit(1);
   }
 }

@@ -14,7 +14,6 @@ agents:
 ```mermaid
 flowchart TD
     USER["/rui &lt;command&gt; &lt;name&gt;"] --> ROUTE{command}
-    ROUTE -->|help| HELP["显示帮助"]
     ROUTE -->|init| INIT["自改进 → 发现→生成→策展→基线 → 就绪检查"]
     ROUTE -->|doc &lt;name&gt;| DOC["自适应规划→策展 文档管线"]
     ROUTE -->|code &lt;name&gt;| CODE["预检→验证 代码管线"]
@@ -28,7 +27,7 @@ flowchart TD
 
 ---
 
-## 命令
+## 命令概览
 
 | 命令 | 流程 |
 |------|------|
@@ -37,16 +36,47 @@ flowchart TD
 | `/rui code <name>` | 预检→验证 → 交付（需已存在 `docs/storyboards/<name>.md`） |
 | `/rui <name>` | 自适应规划→策展 → 预检→验证 → 交付 |
 
-### 交互确认
+---
 
-- **需确认**: `init`、`/rui <name>`
-- **直接执行**: `doc`、`code`
+## /rui init
+
+自改进 → 发现→生成→策展→基线 → 就绪检查 → 交付
+
+### 自改进管线
+
+静默运行，不阻断主流程。脚本位于 `skills/rui/scripts/`。
+
+| rui 阶段 | 触发 | 操作 |
+|---------|------|------|
+| init | 全量运行 | 健康评分 + 快照 + 趋势 + 提案 |
+| 影响分析 / 预检 | 架构反思 | 六维推演，产出架构指标 |
+| 策展 / 验证 | 工流诊断 | 趋势分析，产出工流指标 |
+| 交付 | self-improve-loop | 效果评估 + 回顾 → `loop.js run --all` |
+
+数据存储: `docs/.improvement/proposals.jsonl`（append-only）。
+
+### 文档管线（全量）
+
+执行完整文档管线（见 [/rui doc](#rui-doc-name)），并对每个子项目额外生成基线文件。
+
+**子项目基线：** 生成 `CLAUDE.md` + `README.md` + `design-system.md`（三文件 × N 子项目）。
+
+### 就绪检查
+
+| # | 检查项 | 验证 |
+|---|-------|------|
+| 1 | proposals.jsonl 存在 | `test -f` |
+| 2 | docs/storyboards/ 目录存在 | `test -d` |
+| 3 | 子项目 CLAUDE.md 存在且非空 | `wc -l` |
+| 4 | 子项目 README.md 存在且非空 | `wc -l` |
+| 5 | 前端子项目 design-system.md 存在且非空 | `wc -l` |
+| 6 | proposals.jsonl 无已解决但仍 open 的提案 | grep |
 
 ---
 
-## 管线
+## /rui doc \<name\>
 
-### 文档管线
+自适应规划→策展 → 交付
 
 以故事为原子单位驱动，发现→策展逐故事循环。
 
@@ -73,7 +103,7 @@ flowchart TD
 | 策展 | git commit + 执行记忆回写 + 后记（§6 §7） | 已保存文档 |
 | 子项目基线 | 仅 init：生成 CLAUDE.md + README.md + design-system.md | 三文件 × N |
 
-#### Agent 分工
+### Agent 分工
 
 | Agent | 负责章节 | 注入条件 |
 |-------|---------|---------|
@@ -84,7 +114,7 @@ flowchart TD
 | reporter | §4 依赖映射 + 交付物细化 | 始终 |
 | security | §3 安全约束 + §4 安全任务 | 涉及用户输入/外部API/认证/持久化 |
 
-#### 增量裁剪
+### 增量裁剪
 
 | 级别 | 触发条件 | 影响分析 | 架构设计 | 文档生成 |
 |------|---------|---------|---------|---------|
@@ -92,7 +122,11 @@ flowchart TD
 | T2 局部 | 增删故事/接口变更 | 裁剪 | 裁剪 | 重写目标+下游 |
 | T3 范围 | 范围边界变化、跨故事重构 | 完整重跑 | 完整重跑 | 全级联刷新 |
 
-### 代码管线
+---
+
+## /rui code \<name\>
+
+预检→验证 → 交付（需已存在 `docs/storyboards/<name>.md`）
 
 ```mermaid
 flowchart TD
@@ -116,20 +150,19 @@ flowchart TD
 | 实现 | 逐模块编码，每模块后审查：P0 必须修 / P1 建议修 / P2 可选 | P0 未清零不进下一模块 |
 | 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行 | H7: >2 轮修复阻断交付 |
 
-### 自改进管线
+---
 
-静默运行，不阻断主流程。脚本位于 `skills/rui/scripts/`。
+## /rui \<name\>（端到端）
 
-| rui 阶段 | 触发 | 操作 |
-|---------|------|------|
-| init | 全量运行 | 健康评分 + 快照 + 趋势 + 提案 |
-| 影响分析 / 预检 | 架构反思 | 六维推演，产出架构指标 |
-| 策展 / 验证 | 工流诊断 | 趋势分析，产出工流指标 |
-| 交付 | self-improve-loop | 效果评估 + 回顾 → `loop.js run --all` |
+自适应规划→策展 → 预检→验证 → 交付
 
-数据存储: `docs/.improvement/proposals.jsonl`（append-only）。
+组合执行文档管线（见 [/rui doc](#rui-doc-name)）和代码管线（见 [/rui code](#rui-code-name)），中间不中断，完成或阻断后输出下一步提示。
 
-### 交付
+---
+
+## 交付
+
+所有命令的末端，按序执行：
 
 | Step | 操作 | 失败处理 |
 |------|------|---------|
@@ -190,17 +223,6 @@ flowchart TD
 
 ≤10 故事/板，依赖用 `[story-name](./story-name.md)` 声明，超出拆分 `<name>-2.md`。
 
-### init 就绪检查
-
-| # | 检查项 | 验证 |
-|---|-------|------|
-| 1 | proposals.jsonl 存在 | `test -f` |
-| 2 | docs/storyboards/ 目录存在 | `test -d` |
-| 3 | 子项目 CLAUDE.md 存在且非空 | `wc -l` |
-| 4 | 子项目 README.md 存在且非空 | `wc -l` |
-| 5 | 前端子项目 design-system.md 存在且非空 | `wc -l` |
-| 6 | proposals.jsonl 无已解决但仍 open 的提案 | grep |
-
 ---
 
 ## 核心规则
@@ -212,6 +234,8 @@ flowchart TD
 5. **分支隔离**: 预检阶段从 main/master 拉取功能分支
 6. **知识沉淀**: 策展阶段写执行记忆 + rui-state.json
 7. **交付必触发**: self-improve-loop → import-docs → wework-bot
+
+---
 
 ## 阻断
 

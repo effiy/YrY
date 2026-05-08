@@ -291,14 +291,6 @@ async function main() {
     if (args[i] === '--storyboard') opts.storyboard = path.resolve(args[++i]);
     else if (args[i] === '--all') opts.all = true;
     else if (args[i] === '--json') opts.json = true;
-    else if (args[i] === '--help' || args[i] === '-h') {
-      console.log(`Usage:
-  node scripts/loop.js run --storyboard <path>    Append to a specific storyboard
-  node scripts/loop.js run --all                  Append to all storyboards
-  node scripts/loop.js report [--json]            Output report to stdout
-  node scripts/loop.js status [--json]            Show run history`);
-      process.exit(0);
-    }
   }
 
   if (cmd === 'run') await cmdRun(opts);

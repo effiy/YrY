@@ -23,15 +23,6 @@ const STATE_FILE = path.join(MEMORY_DIR, 'rui-state.json');
 function parseArgs(argv) {
   const out = { command: null, name: null, stage: null, blocked: false, reason: '', json: false };
   const args = argv.slice(2);
-  if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
-    console.log(`Usage:
-  node scripts/rui-state.js save --command <cmd> --name <name> --stage <stage> [--blocked] [--reason <text>]
-  node scripts/rui-state.js load [--json]
-  node scripts/rui-state.js clear
-  node scripts/rui-state.js next-step
-`);
-    process.exit(0);
-  }
   out.action = args[0];
   for (let i = 1; i < args.length; i++) {
     const a = args[i];
