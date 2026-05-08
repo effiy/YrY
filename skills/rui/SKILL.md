@@ -18,11 +18,13 @@ flowchart TD
     ROUTE -->|doc &lt;requirement&gt;| SPLIT["需求拆分 → 逐故事: 自适应规划→文档生成"]
     ROUTE -->|code &lt;name&gt;| CODE["预检→验证→自改进 代码管线"]
     ROUTE -->|&lt;name&gt;| FULL["文档管线 → 代码管线 端到端"]
+    ROUTE -->|list| LIST["扫描故事任务面板 → 输出未完成故事列表"]
 
     INIT --> DELIVER["交付: import-docs → wework-bot"]
     SPLIT --> DELIVER
     CODE --> DELIVER
     FULL --> DELIVER
+    LIST --> DELIVER
 ```
 
 ---
@@ -35,6 +37,7 @@ flowchart TD
 | `/rui doc <requirement>` | 需求拆分 → 逐故事: 自适应规划→影响分析→架构设计→文档生成 → 交付 |
 | `/rui code <name>` | 预检→验证 → 自改进 → 交付（需已存在 `docs/故事任务面板/<name>/故事任务.md`） |
 | `/rui <name>` | 自适应规划→策展 → 预检→验证 → 自改进 → 交付 |
+| `/rui list` | 扫描故事任务面板，列出所有未完成故事及其进度状态 |
 
 `<requirement>` 可以是：
 - 需求描述文本（如 `用户登录功能，支持密码和OAuth`）
@@ -290,6 +293,35 @@ flowchart LR
 
 ---
 
+## /rui list
+
+列出所有未完成的故事任务及其进度状态。不执行任何管线，纯查询操作。
+
+扫描 `docs/故事任务面板/` 下所有故事目录，检查每个故事的产出文件完整性，输出进度表格。
+
+| 故事 | 状态 | 缺失产出 |
+|------|------|---------|
+| user-login | 文档完成，待编码 | 后端实施报告、前端实施报告、测试用例报告 |
+| oauth-bindding | 文档进行中 | 后端技术评审、前端技术评审、测试用例评审 |
+| chat-export | 未开始 | 故事任务.md、全部技术评审 |
+
+**状态判定规则**（按优先级，取最低阶段的未完成状态）：
+
+| 状态 | 判定条件 |
+|------|---------|
+| 未开始 | `故事任务.md` 不存在 |
+| 文档进行中 | `故事任务.md` 存在，但技术评审（后端/前端/测试用例）任一缺失 |
+| 文档完成 | `故事任务.md` + 三份技术评审齐全，实施报告缺失 |
+| 代码进行中 | 文档齐全，但三份实施报告任一缺失 |
+| 代码完成 | 三份实施报告齐全 |
+| 阻断 | `.memory/rui-state.json` 中 `blocked: true` |
+
+仅当存在至少一个未完成故事时输出表格；若全部代码完成，输出简要完成提示。存在阻断状态的故事时，额外输出阻断原因。
+
+实现：`node skills/rui/scripts/list.js`
+
+---
+
 ## 交付
 
 所有命令的末端，按序执行：
@@ -397,6 +429,7 @@ flowchart LR
 - **自改进循环**: `node skills/rui/scripts/loop.js run --all`
 - **执行记忆**: `node skills/rui/scripts/execution-memory.js`
 - **断点**: `node skills/rui/scripts/rui-state.js <save|load|clear>`
+- **列表**: `node skills/rui/scripts/list.js`
 - **文档同步**: `node skills/import-docs/scripts/import-docs.js --workspace`
 - **通知**: `wework-bot`
 - **Agent**: [`.claude/agents/AGENT.md`](../../agents/AGENT.md)
