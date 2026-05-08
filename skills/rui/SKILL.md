@@ -59,7 +59,7 @@ flowchart TD
 |------|--------|---------|
 | 自改进 | 健康评分 + 快照 + 趋势 + 提案<br>self-improve | 改进提案（proposals.jsonl） |
 | 发现 | 检索规范 + 提炼故事列表<br>pm | 故事目录 |
-| 项目基线 | 生成 CLAUDE.md + README.md<br>pm, coder | CLAUDE.md、README.md |
+| 项目基线 | 生成 CLAUDE.md + README.md + 样例故事目录<br>pm, coder | CLAUDE.md、README.md、user-login/ |
 | 就绪检查 | 5 项检查，失败则修复重检<br>tester, reporter, security | 5 项检查全部通过 |
 | 交付 | self-improve-loop → import-docs → wework-bot<br>self-improve | 自改进复盘.md |
 
@@ -76,6 +76,8 @@ init 重入时按变更级别裁剪，避免不必要的全量重建。
 | T3 范围 | 项目范围变更、跨故事重构、首次运行 | 完整重跑 | 完整重生成 |
 
 > 自改进与就绪检查始终运行，不受裁剪级别影响。
+>
+> **样例生成**: T3 首次运行时，项目基线阶段生成 `docs/故事任务面板/user-login/` 完整样例目录。该目录含完整故事板（故事任务.md）、改进提案（proposals.jsonl）和执行记忆（execution-memory.jsonl + rui-state.json），作为新故事的参考模板。T1/T2 重入时样例目录保持不变。
 
 ### 自改进管线
 
@@ -225,6 +227,8 @@ flowchart TD
                 ├── execution-memory.jsonl
                 └── rui-state.json
 ```
+
+> **样例参考**: `docs/故事任务面板/user-login/` 为最佳实践样例，含 2 个完整 Story（P0 + P1），覆盖所有章节和边界情况。
 
 ### 故事板章节
 
