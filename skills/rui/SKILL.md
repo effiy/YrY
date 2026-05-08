@@ -69,11 +69,7 @@ flowchart TD
 | 策展 / 验证 | 工流诊断 | 趋势分析，产出工流指标 |
 | 交付 | self-improve-loop | 效果评估 + 回顾 → `loop.js run --all` |
 
-数据存储: `docs/.improvement/proposals.jsonl`（append-only）。
-
-### 文档管线（全量）
-
-执行完整文档管线（见 [/rui doc](#rui-doc-name)），并对每个子项目额外生成基线文件。
+数据存储: `~/.claude/projects/-<workspace>/` 下对应项目目录，append-only。
 
 **子项目基线：** 生成 `CLAUDE.md` + `README.md` + `design-system.md`（三文件 × N 子项目）。
 
@@ -87,6 +83,34 @@ flowchart TD
 | 4 | 子项目 README.md 存在且非空 | `wc -l` |
 | 5 | 前端子项目 design-system.md 存在且非空 | `wc -l` |
 | 6 | proposals.jsonl 无已解决但仍 open 的提案 | grep |
+
+---
+
+## /rui code \<name\>
+
+预检→验证 → 交付（需已存在 `docs/storyboards/<name>.md`）
+
+```mermaid
+flowchart TD
+    PRECHECK["预检<br/>影响分析 + 分支隔离"] --> TESTFIRST["测试先行<br/>测试方案 + 原型"]
+    TESTFIRST --> GA{Gate A}
+    GA -->|PASS| IMPL["实现<br/>逐模块编码 + P0 审查"]
+    GA -->|FAIL| FIX1[修复]
+    FIX1 --> GA
+    IMPL --> VERIFY["验证<br/>冒烟 + 影响链回归"]
+    VERIFY --> GB{Gate B}
+    GB -->|PASS| DELIVER[交付]
+    GB -->|FAIL ≤2 轮| FIX2[修复]
+    FIX2 --> GB
+    GB -->|>2 轮| BLOCK[阻断: H7]
+```
+
+| 阶段 | 做什么 | 规则 |
+|------|--------|------|
+| 预检 | 双边影响分析 + 分支隔离（从 main/master 拉取 `feat/<name>` / `docs/<name>`） | H10: 必须从主分支创建 |
+| 测试先行 | Gate A：测试方案+原型，单行 CSS 可跳过 | H6: Gate A 未过不得编码 |
+| 实现 | 逐模块编码，每模块后审查：P0 必须修 / P1 建议修 / P2 可选 | P0 未清零不进下一模块 |
+| 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行 | H7: >2 轮修复阻断交付 |
 
 ---
 
@@ -137,34 +161,6 @@ flowchart TD
 | T1 微观 | 措辞、格式修正 | 跳过 | 跳过 | 仅变更章节 |
 | T2 局部 | 增删故事/接口变更 | 裁剪 | 裁剪 | 重写目标+下游 |
 | T3 范围 | 范围边界变化、跨故事重构 | 完整重跑 | 完整重跑 | 全级联刷新 |
-
----
-
-## /rui code \<name\>
-
-预检→验证 → 交付（需已存在 `docs/storyboards/<name>.md`）
-
-```mermaid
-flowchart TD
-    PRECHECK["预检<br/>影响分析 + 分支隔离"] --> TESTFIRST["测试先行<br/>测试方案 + 原型"]
-    TESTFIRST --> GA{Gate A}
-    GA -->|PASS| IMPL["实现<br/>逐模块编码 + P0 审查"]
-    GA -->|FAIL| FIX1[修复]
-    FIX1 --> GA
-    IMPL --> VERIFY["验证<br/>冒烟 + 影响链回归"]
-    VERIFY --> GB{Gate B}
-    GB -->|PASS| DELIVER[交付]
-    GB -->|FAIL ≤2 轮| FIX2[修复]
-    FIX2 --> GB
-    GB -->|>2 轮| BLOCK[阻断: H7]
-```
-
-| 阶段 | 做什么 | 规则 |
-|------|--------|------|
-| 预检 | 双边影响分析 + 分支隔离（从 main/master 拉取 `feat/<name>` / `docs/<name>`） | H10: 必须从主分支创建 |
-| 测试先行 | Gate A：测试方案+原型，单行 CSS 可跳过 | H6: Gate A 未过不得编码 |
-| 实现 | 逐模块编码，每模块后审查：P0 必须修 / P1 建议修 / P2 可选 | P0 未清零不进下一模块 |
-| 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行 | H7: >2 轮修复阻断交付 |
 
 ---
 
