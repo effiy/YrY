@@ -47,7 +47,7 @@ flowchart TD
 4. **双边影响**: 预检阶段同时分析代码和文档影响
 5. **分支隔离**: 预检阶段从 main/master 拉取功能分支
 6. **知识沉淀**: 策展阶段写执行记忆 + rui-state.json
-7. **交付必触发**: self-improve-loop → import-docs → wework-bot
+7. **交付必触发**: import-docs → wework-bot
 8. **产出内聚**: 关键产出只允许是对应故事目录（`docs/故事任务面板/<name>/`）下的文件内容，不得在故事目录外生成文档、报告或其他产出物
 
 ---
@@ -71,8 +71,8 @@ flowchart TD
 |------|--------|---------|
 | 自改进 | 健康评分 + 快照 + 趋势 + 提案<br>self-improve | 改进提案（proposals.jsonl） |
 | 项目基线 | 生成 CLAUDE.md + README.md + 样例故事目录<br>pm, coder | CLAUDE.md、README.md、user-login/ |
-| 就绪检查 | 5 项检查，失败则修复重检<br>tester, reporter, security | 5 项检查全部通过 |
-| 交付 | self-improve-loop → import-docs → wework-bot<br>self-improve | 自改进复盘.md |
+| 就绪检查 | 5 项检查 + self-improve-loop，失败则修复重检<br>tester, reporter, security, self-improve | 5 项检查全部通过 + 自改进复盘.md |
+| 交付 | import-docs → wework-bot<br>self-improve | — |
 
 完成 init 后，逐个故事执行 `/rui <name>`（或 `/rui doc <name>` → `/rui code <name>`）。
 
@@ -99,7 +99,7 @@ init 重入时按变更级别裁剪，避免不必要的全量重建。
 | init | 全量运行 | 健康评分 + 快照 + 趋势 + 提案 |
 | 影响分析 / 预检 | 架构反思 | 六维推演，产出架构指标 |
 | 策展 / 验证 | 工流诊断 | 趋势分析，产出工流指标 |
-| 交付 | self-improve-loop | 效果评估 + 回顾 → `loop.js run --all` |
+| 策展 / 验证 / 就绪检查 | self-improve-loop | 效果评估 + 回顾 → `loop.js run --all` |
 
 数据存储: `docs/故事任务面板/<name>/.improvement/proposals.jsonl` + `docs/故事任务面板/<name>/.memory/`，append-only。
 
@@ -136,7 +136,7 @@ flowchart TD
 | 影响分析 | 单个故事全项目影响链分析，闭合所有依赖<br>coder, reporter | 故事任务.md（§3 影响链） |
 | 架构设计 | 单个故事模块划分、接口规范、数据流设计<br>coder, security | 后端技术评审.md、前端技术评审.md |
 | 文档生成 | agent 协作<br>pm (§1,§2,§4), coder (§3), tester (§1.1,§5), reporter (§4 依赖), security (§3 安全) | 故事任务.md（完整） |
-| 策展 | git commit + 执行记忆回写 + 后记（§6 §7）<br>pm, reporter | execution-memory.jsonl |
+| 策展 | git commit + 执行记忆回写 + 后记（§6 §7）+ self-improve-loop<br>pm, reporter, self-improve | execution-memory.jsonl + 自改进复盘.md |
 | 项目基线 | 仅 init：生成 CLAUDE.md + README.md<br>pm, coder | CLAUDE.md、README.md |
 
 ### 增量裁剪
@@ -173,7 +173,7 @@ flowchart TD
 | 预检 | 双边影响分析 + 分支隔离（从 main/master 拉取 `feat/<name>` / `docs/<name>`）<br>必须从主分支创建<br>coder, reporter | 功能分支 + 双边影响链闭合 |
 | 测试先行 | Gate A：测试方案+原型，单行 CSS 可跳过<br>Gate A 未过不得编码<br>tester | 测试用例评审.md |
 | 实现 | 逐模块编码，每模块后审查：P0 必须修 / P1 建议修 / P2 可选<br>P0 未清零不进下一模块<br>coder, security, tester | 源代码（按 §4 任务列表）+ P0 清零 |
-| 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行<br>超过 2 轮修复阻断交付<br>tester, reporter | 后端实施报告.md、前端实施报告.md、测试用例报告.md |
+| 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行 + self-improve-loop<br>超过 2 轮修复阻断交付<br>tester, reporter, self-improve | 后端实施报告.md、前端实施报告.md、测试用例报告.md、自改进复盘.md |
 
 ---
 
@@ -191,9 +191,8 @@ flowchart TD
 
 | Step | 操作 | 失败处理 |
 |------|------|---------|
-| 1 | `self-improve.js evaluate` → `loop.js run --all` | 不阻断（H11 降级） |
-| 2 | `import-docs.js --workspace` | H9: token 缺失时跳过 |
-| 3 | wework-bot 通知 | 不可跳过 |
+| 1 | `import-docs.js --workspace` | H9: token 缺失时跳过 |
+| 2 | wework-bot 通知 | 不可跳过 |
 
 消息格式（纯文本，emoji 前缀，`———` 分隔）：
 
