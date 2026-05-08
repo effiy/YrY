@@ -63,12 +63,12 @@ flowchart TD
 | 阶段 | 做什么 | 关键产出 |
 |------|--------|---------|
 | 自改进 | 健康评分 + 快照 + 趋势 + 提案<br>self-improve | 改进提案（proposals.jsonl） |
-| 发现 | 检索规范 + 提炼故事列表<br>pm | 故事目录骨架 |
-| 生成 | 逐故事 7 agent 协作，写入故事目录<br>pm, docer, coder, tester, reporter, security | 完整故事板（故事任务.md + 7 附属文件） |
+| 发现 | 检索规范 + 提炼故事列表<br>pm | 故事目录 |
+| 生成 | 逐故事 7 agent 协作，写入故事目录<br>pm, docer, coder, tester, reporter, security | 故事任务.md、后端技术评审.md、前端技术评审.md |
 | 策展 | git commit + 执行记忆回写<br>pm, reporter | 执行记忆（execution-memory.jsonl） |
-| 项目基线 | 生成 CLAUDE.md + README.md<br>pm, docer, coder | 项目基线（CLAUDE.md + README.md） |
+| 项目基线 | 生成 CLAUDE.md + README.md<br>pm, docer, coder | CLAUDE.md、README.md |
 | 就绪检查 | 5 项检查，失败则修复重检<br>tester, reporter, security | 5 项检查全部通过 |
-| 交付 | self-improve-loop → import-docs → wework-bot<br>self-improve | 企业微信通知 |
+| 交付 | self-improve-loop → import-docs → wework-bot<br>self-improve | 自改进复盘.md |
 
 ### 增量裁剪
 
@@ -130,13 +130,13 @@ flowchart TD
 
 | 阶段 | 做什么 | 关键产出 |
 |------|--------|---------|
-| 自适应规划 | 读取执行记忆，判定 T1/T2/T3 变更级别<br>pm | rui 状态快照（rui-state.json） |
+| 自适应规划 | 读取执行记忆，判定 T1/T2/T3 变更级别<br>pm | rui-state.json |
 | 发现 | 检索规范与已有文档，提炼故事列表<br>pm | 故事目录 |
-| 影响分析 | 逐故事全项目影响链分析，闭合所有依赖<br>coder, reporter | 影响链闭合记录（故事任务 §3） |
-| 架构设计 | 逐故事模块划分、接口规范、数据流设计<br>coder, security | 共享架构 + 故事板 §3 |
-| 文档生成 | 逐故事 agent 协作<br>pm (§1,§4), docer (§2), coder (§3), tester (§1.1,§5), reporter (§4 依赖), security (§3 安全) | 完整故事板（故事任务.md） |
-| 策展 | git commit + 执行记忆回写 + 后记（§6 §7）<br>pm, reporter | 执行记忆 + §6 §7 后记 |
-| 项目基线 | 仅 init：生成 CLAUDE.md + README.md<br>pm, docer, coder | 项目基线（CLAUDE.md + README.md） |
+| 影响分析 | 逐故事全项目影响链分析，闭合所有依赖<br>coder, reporter | 故事任务.md（§3 影响链） |
+| 架构设计 | 逐故事模块划分、接口规范、数据流设计<br>coder, security | 后端技术评审.md、前端技术评审.md |
+| 文档生成 | 逐故事 agent 协作<br>pm (§1,§4), docer (§2), coder (§3), tester (§1.1,§5), reporter (§4 依赖), security (§3 安全) | 故事任务.md（完整） |
+| 策展 | git commit + 执行记忆回写 + 后记（§6 §7）<br>pm, reporter | execution-memory.jsonl |
+| 项目基线 | 仅 init：生成 CLAUDE.md + README.md<br>pm, docer, coder | CLAUDE.md、README.md |
 
 ### 增量裁剪
 
@@ -170,9 +170,9 @@ flowchart TD
 | 阶段 | 做什么 | 关键产出 |
 |------|--------|---------|
 | 预检 | 双边影响分析 + 分支隔离（从 main/master 拉取 `feat/<name>` / `docs/<name>`）<br>必须从主分支创建<br>coder, reporter | 功能分支 + 双边影响链闭合 |
-| 测试先行 | Gate A：测试方案+原型，单行 CSS 可跳过<br>Gate A 未过不得编码<br>tester | 测试方案 + 测试文件（Gate A 通过） |
+| 测试先行 | Gate A：测试方案+原型，单行 CSS 可跳过<br>Gate A 未过不得编码<br>tester | 测试用例评审.md |
 | 实现 | 逐模块编码，每模块后审查：P0 必须修 / P1 建议修 / P2 可选<br>P0 未清零不进下一模块<br>coder, security, tester | 源代码（按 §4 任务列表）+ P0 清零 |
-| 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行<br>超过 2 轮修复阻断交付<br>tester, reporter | 冒烟通过 + 回归报告（Gate B 通过） |
+| 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行<br>超过 2 轮修复阻断交付<br>tester, reporter | 后端实施报告.md、前端实施报告.md、测试用例报告.md |
 
 ---
 
