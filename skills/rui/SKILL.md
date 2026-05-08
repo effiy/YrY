@@ -31,26 +31,28 @@ flowchart TD
 
 | 命令 | 流程 |
 |------|------|
-| `/rui init` | 自改进 → 发现→生成→策展→基线 → 就绪检查 → 交付 |
+| `/rui init` | 自改进 → 发现→生成→策展（逐故事循环）→ 基线 → 就绪检查 → 交付 |
 | `/rui doc <name>` | 自适应规划→策展 → 交付 |
-| `/rui code <name>` | 预检→验证 → 交付（需已存在 `docs/故事任务面板/<name>.md`） |
+| `/rui code <name>` | 预检→验证 → 交付（需已存在 `docs/故事任务面板/<name>/故事任务.md`） |
 | `/rui <name>` | 自适应规划→策展 → 预检→验证 → 交付 |
 
 ---
 
 ## /rui init
 
-自改进 → 发现→生成→策展→基线 → 就绪检查 → 交付
+以故事为原子单位驱动，发现→策展逐故事循环。
 
 ```mermaid
 flowchart TD
     INIT["/rui init"] --> SELF["自改进<br/>健康评分 + 快照 + 趋势 + 提案"]
     INIT --> DISCOVER["发现<br/>检索规范 + 提炼故事列表"]
-    DISCOVER --> GENERATE["生成<br/>逐故事 7 agent 协作"]
+    DISCOVER --> STORIES{故事列表}
+    STORIES -->|逐故事| GENERATE["生成<br/>7 agent 协作 → 故事板"]
     GENERATE --> CURATE["策展<br/>git commit + 执行记忆回写"]
-    CURATE --> BASELINE["项目基线<br/>CLAUDE.md + README.md"]
+    CURATE -->|下一故事| GENERATE
+    CURATE -->|全部完成| BASELINE["项目基线<br/>CLAUDE.md + README.md"]
     BASELINE --> CHECK{"就绪检查"}
-    CHECK -->|6/6 PASS| DELIVER["交付"]
+    CHECK -->|PASS| DELIVER["交付"]
     CHECK -->|FAIL| FIX["修复缺失项"]
     FIX --> CHECK
     SELF -.->|静默运行| GENERATE
@@ -60,13 +62,13 @@ flowchart TD
 
 | 阶段 | 做什么 | 关键产出 |
 |------|--------|---------|
-| 自改进 | 健康评分 + 快照 + 趋势 + 提案 | 自改进数据 |
-| 发现 | 检索规范 + 提炼故事列表 | 规范列表 + 故事列表 |
-| 生成 | 逐故事 7 agent 协作 | 故事板文档 × N |
-| 策展 | git commit + 执行记忆回写 | 已保存文档 |
-| 项目基线 | 生成 CLAUDE.md + README.md | 双文件 × N |
-| 就绪检查 | 5 项检查，失败则修复重检 | PASS/FAIL + 修复 |
-| 交付 | self-improve-loop → import-docs → wework-bot | 通知 |
+| 自改进 | 健康评分 + 快照 + 趋势 + 提案 | `docs/.improvement/proposals.jsonl` |
+| 发现 | 检索规范 + 提炼故事列表 | `docs/故事任务面板/<name>`（故事目录列表） |
+| 生成 | 逐故事 7 agent 协作，写入故事目录 | `docs/故事任务面板/<name>/`（故事板文件） |
+| 策展 | git commit + 执行记忆回写 | `docs/.memory/execution-memory.jsonl` |
+| 项目基线 | 生成 CLAUDE.md + README.md | `CLAUDE.md` + `README.md` |
+| 就绪检查 | 5 项检查，失败则修复重检 | 就绪状态 |
+| 交付 | self-improve-loop → import-docs → wework-bot | wework-bot 通知 |
 
 ### 自改进管线
 
@@ -79,7 +81,7 @@ flowchart TD
 | 策展 / 验证 | 工流诊断 | 趋势分析，产出工流指标 |
 | 交付 | self-improve-loop | 效果评估 + 回顾 → `loop.js run --all` |
 
-数据存储: `~/.claude/projects/-<workspace>/` 下对应项目目录，append-only。
+数据存储: `docs/.improvement/proposals.jsonl` + `docs/.memory/`，append-only。
 
 **项目基线：** 生成 `CLAUDE.md` + `README.md`（双文件 × N 子项目）。
 
@@ -147,7 +149,7 @@ flowchart TD
 
 ## /rui code \<name\>
 
-预检→验证 → 交付（需已存在 `docs/故事任务面板/<name>.md`）
+预检→验证 → 交付（需已存在 `docs/故事任务面板/<name>/故事任务.md`）
 
 ```mermaid
 flowchart TD
@@ -198,12 +200,12 @@ flowchart TD
 📝 描述: 为登录模块生成故事板，覆盖密码登录、短信验证码、OAuth 三种场景
 📌 范围: auth/
 👉 下一步: 运行 /rui code user-login 开始编码实现
-🌐 影响: docs/故事任务面板/user-login.md
+🌐 影响: docs/故事任务面板/user-login/故事任务.md
 📎 证据: git log --oneline -1
 ⏱️ 会话: 自适应规划→策展 全流程 3.2min | 3 agents 参与
 
 ———
-变更文件: docs/故事任务面板/user-login.md (新增, 285行)
+变更文件: docs/故事任务面板/user-login/故事任务.md (新增, 285行)
 ```
 
 完成或阻断后同时向用户输出下一步提示。字段要求见 wework-bot SKILL.md。
@@ -223,7 +225,8 @@ flowchart TD
     │   ├── architecture.md
     │   └── contracts.md
     └── 故事任务面板/
-        └── <name>.md    ← 唯一真相源
+        └── <name>/              ← 故事目录（简写，便于分支管理）
+            └── 故事任务.md      ← 唯一真相源
 ```
 
 ### 故事板章节
