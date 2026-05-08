@@ -31,7 +31,7 @@ flowchart TD
 
 | 命令 | 流程 |
 |------|------|
-| `/rui init` | 自改进 → 发现 → 基线 → 就绪检查 → 交付（不生成故事，仅建立项目骨架） |
+| `/rui init` | 自改进 → 基线 → 就绪检查 → 交付（不生成故事，仅建立项目骨架） |
 | `/rui doc <name>` | 自适应规划→策展 → 交付 |
 | `/rui code <name>` | 预检→验证 → 交付（需已存在 `docs/故事任务面板/<name>/故事任务.md`） |
 | `/rui <name>` | 自适应规划→策展 → 预检→验证 → 交付 |
@@ -54,25 +54,22 @@ flowchart TD
 
 ## /rui init
 
-发现故事列表 + 建立项目基线，不逐故事生成。每个故事通过 `/rui <name>` 单独操作。
+建立项目基线，不逐故事生成。每个故事通过 `/rui <name>` 单独操作。
 
 ```mermaid
 flowchart TD
     INIT["/rui init"] --> SELF["自改进<br/>健康评分 + 快照 + 趋势 + 提案"]
-    INIT --> DISCOVER["发现<br/>检索规范 + 提炼故事列表"]
-    DISCOVER --> BASELINE["项目基线<br/>CLAUDE.md + README.md"]
+    INIT --> BASELINE["项目基线<br/>CLAUDE.md + README.md"]
     BASELINE --> CHECK{"就绪检查"}
     CHECK -->|PASS| DELIVER["交付"]
     CHECK -->|FAIL| FIX["修复缺失项"]
     FIX --> CHECK
-    SELF -.->|静默运行| DISCOVER
     SELF -.->|静默运行| DELIVER
 ```
 
 | 阶段 | 做什么 | 关键产出 |
 |------|--------|---------|
 | 自改进 | 健康评分 + 快照 + 趋势 + 提案<br>self-improve | 改进提案（proposals.jsonl） |
-| 发现 | 检索规范 + 提炼故事列表<br>pm | 故事目录 |
 | 项目基线 | 生成 CLAUDE.md + README.md + 样例故事目录<br>pm, coder | CLAUDE.md、README.md、user-login/ |
 | 就绪检查 | 5 项检查，失败则修复重检<br>tester, reporter, security | 5 项检查全部通过 |
 | 交付 | self-improve-loop → import-docs → wework-bot<br>self-improve | 自改进复盘.md |
@@ -83,11 +80,11 @@ flowchart TD
 
 init 重入时按变更级别裁剪，避免不必要的全量重建。
 
-| 级别 | 触发条件 | 发现 | 基线 |
-|------|---------|------|------|
-| T1 微观 | 故事板微调、措辞修正、就绪检查单项修复 | 跳过 | 跳过 |
-| T2 局部 | 增删故事、故事目录结构变更 | 重跑 | 更新 |
-| T3 范围 | 项目范围变更、跨故事重构、首次运行 | 完整重跑 | 完整重生成 |
+| 级别 | 触发条件 | 基线 |
+|------|---------|------|
+| T1 微观 | 故事板微调、措辞修正、就绪检查单项修复 | 跳过 |
+| T2 局部 | 增删故事、故事目录结构变更 | 更新 |
+| T3 范围 | 项目范围变更、跨故事重构、首次运行 | 完整重生成 |
 
 > 自改进与就绪检查始终运行，不受裁剪级别影响。
 >
