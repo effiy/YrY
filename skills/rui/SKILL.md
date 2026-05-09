@@ -15,6 +15,7 @@ agents:
 flowchart TD
     USER["/rui &lt;command&gt; &lt;input&gt;"] --> ROUTE{command}
     ROUTE -->|init| INIT["基线 → 基线注入 → Agent&Rule&Template&MCP → 就绪检查"]
+    ROUTE -->|"init --all"| INIT_ALL["基线 → ... → 就绪检查 → 项目模块分析 → 逐模块端到端"]
     ROUTE -->|doc &lt;requirement&gt;| SPLIT["需求拆分 → 逐故事串行: 自适应规划→影响分析→架构设计→文档生成"]
     ROUTE -->|"update &lt;name&gt; [context]"| UPDATE["存在性检查 → 版本/结构检测 → 结构补齐 → 上下文解析 → 变更分级 → 增量更新"]
     ROUTE -->|code &lt;name&gt;| CODE["预检→测试先行→实现→验证→自改进"]
@@ -24,6 +25,7 @@ flowchart TD
     ROUTE -->|empty| SUGGEST["扫描项目与故事状态 → 推荐 5~10 条任务提示"]
 
     INIT --> DELIVER["交付: wework-bot 追加日志 → import-docs → wework-bot 发送"]
+    INIT_ALL --> DELIVER
     SPLIT --> DELIVER
     CODE --> DELIVER
     FULL --> DELIVER
@@ -40,6 +42,7 @@ flowchart TD
 | 命令 | 流程 |
 |------|------|
 | `/rui init` | 基线 → 基线注入 → Agent&Rule&Template&MCP → 就绪检查 → 交付（不生成故事，仅建立项目骨架） |
+| `/rui init --all` | 基线 → ... → 就绪检查 → 项目模块分析 → 逐模块 `/rui <requirement>` 端到端 → 交付（全项目故事覆盖） |
 | `/rui doc <requirement>` | 需求拆分 → 逐故事串行: 自适应规划→影响分析→架构设计→文档生成 → 交付 |
 | `/rui update <name> [context]` | 存在性检查 → 版本/结构检测 → 结构补齐 → 上下文解析 → 变更分级 → 增量更新 → 交付（老故事流程升级 + 内容优化/补充/重写） |
 | `/rui code <name>` | 预检（含文档补齐）→ 测试先行 → 实现 → 验证 → 自改进 → 交付（01-故事任务.md 必须存在，缺失的技术评审自动补齐，最终产出故事目录全 8 份文档） |
@@ -86,9 +89,13 @@ flowchart TD
     BASELINE --> INJECT["基线注入<br/>从 CLAUDE.md + README.md 提取项目约定"]
     INJECT --> AGENTS["Agent & Rule & Template & MCP<br/>agents/ + rules/ + templates/ + .mcp.json"]
     AGENTS --> CHECK{"就绪检查"}
-    CHECK -->|PASS| DELIVER["交付"]
+    CHECK -->|PASS| ROUTE_ALL{"--all?"}
     CHECK -->|FAIL| FIX["修复缺失项"]
     FIX --> CHECK
+    ROUTE_ALL -->|否| DELIVER["交付"]
+    ROUTE_ALL -->|是| MODULE["项目模块分析<br/>扫描项目结构 → 识别独立功能模块"]
+    MODULE --> PER_MODULE["逐模块: /rui &lt;requirement&gt; 端到端<br/>故事拆分 → 文档管线 → 代码管线"]
+    PER_MODULE --> DELIVER
 ```
 
 | 阶段 | 做什么 | 关键产出 |
@@ -97,6 +104,8 @@ flowchart TD
 | 基线注入 | 从 CLAUDE.md + README.md 提取项目约定，注入下游生成<br>pm | 项目约定摘要（技术栈、编码规范、禁止事项、目录结构、关键文件） |
 | Agent & Rule & Template & MCP | 基于项目约定生成/更新 agents/、rules/、templates/、.mcp.json<br>pm | AGENT.md、pm.md/coder.md/tester.md/security.md/reporter.md（含项目特定规则）、rules/（code-pipeline.md、doc-generation.md、gate-rules.md、self-improve.md）、templates/（故事任务模板.md、后端技术评审模板.md、前端技术评审模板.md、测试用例评审模板.md、后端实施报告模板.md、前端实施报告模板.md、测试用例报告模板.md、自改进复盘模板.md）、.mcp.json |
 | 就绪检查 | 8 项检查，失败则修复重检<br>tester, reporter, security | 8 项检查全部通过 |
+| 项目模块分析（仅 `--all`） | 扫描项目结构、CLAUDE.md、README.md、源码目录，识别独立功能模块，每个模块生成需求描述<br>pm | 模块清单 + 每个模块的需求摘要 |
+| 逐模块端到端（仅 `--all`） | 每个模块依次执行 `/rui <requirement>` 端到端：故事拆分 → 逐故事: 文档管线 → 代码管线 → 交付<br>pm, coder, tester, security, reporter, self-improve | 每个故事目录全 8 份文档 + .improvement/ + .memory/ |
 | 交付 | import-docs → wework-bot | — |
 
 ### 基线注入
@@ -127,6 +136,90 @@ flowchart TD
 | 6 | .mcp.json 存在且为有效 JSON | `node -e` |
 | 7 | .claude/rules/ 目录存在且含至少一条规则 | `ls` |
 | 8 | .claude/skills/rui/templates/ 目录存在且含至少一个模板 | `ls` |
+
+### --all 模式
+
+`--all` 标志在就绪检查通过后，自动对全项目进行模块分析和端到端故事生成。适合项目初始化后一次性建立所有模块的故事目录和全文档。
+
+```mermaid
+flowchart TD
+    READY["就绪检查 PASS"] --> SCAN["项目模块分析<br/>pm 扫描项目结构"]
+    SCAN --> IDENTIFY["识别独立功能模块"]
+    IDENTIFY --> M1["模块 1: /rui &lt;req&gt; 端到端<br/>故事拆分 → 逐故事: 文档管线 → 代码管线"]
+    M1 --> D1["✓ 模块 1 全部故事交付"]
+    D1 --> M2["模块 2: /rui &lt;req&gt; 端到端"]
+    M2 --> D2["✓ 模块 2 全部故事交付"]
+    D2 --> MN["..."]
+    MN --> DONE["全项目故事覆盖完成"]
+```
+
+#### 项目模块分析
+
+pm 扫描以下信息源，识别项目中的独立功能模块：
+
+| 扫描源 | 提取内容 |
+|--------|---------|
+| 项目目录结构 | 源码子目录（如 `src/components/`、`src/utils/`、`src/pages/`），每个独立目录簇为一个候选模块 |
+| CLAUDE.md | 项目架构描述、关键文件列表、核心模块说明 |
+| README.md | 核心架构图、技术栈、功能特性列表 |
+| 现有代码文件 | 入口文件、路由定义、模块导出，反向推导功能边界 |
+| Git 历史 | 最近提交涉及的功能区域，辅助判断模块活跃度和边界 |
+
+**模块识别规则**：
+
+1. 每个模块必须是一个独立的功能单元，有清晰的边界和职责
+2. 模块之间低耦合，可独立开发和测试
+3. 模块名使用英文简洁描述（如 `auth-system`、`data-export`、`ui-components`）
+4. 优先识别有用户可感知价值的模块（面向用户的功能），其次为基础设施模块
+5. 每个模块生成一段需求描述（2-5 句话），作为该模块 `/rui <requirement>` 的输入
+
+**模块清单输出**：
+
+```
+📦 项目模块分析（共 N 个模块）
+
+1. auth-system: 用户认证系统，支持密码登录、OAuth、短信验证码
+   源码: src/auth/, src/middleware/auth.ts
+   
+2. data-export: 数据导出功能，支持 CSV/PDF 格式导出
+   源码: src/export/, src/utils/format.ts
+
+3. notification: 消息通知系统，站内信 + 企微推送
+   源码: src/notification/, src/bot/
+
+...
+```
+
+#### 逐模块端到端
+
+每个模块依次执行完整端到端管线，等同于 `/rui <requirement>`：
+
+```mermaid
+flowchart LR
+    REQ["模块需求描述"] --> SPLIT["故事拆分"]
+    SPLIT --> S1["故事 1: 文档管线 → 代码管线"]
+    S1 --> S2["故事 2: 文档管线 → 代码管线"]
+    S2 --> SN["..."]
+    SN --> DONE_M["模块完成"]
+```
+
+单个故事内部流程（与 `/rui <requirement>` 端到端一致）：
+
+| 阶段 | 内容 |
+|------|------|
+| 需求解析 | 解析模块需求描述文本 |
+| 故事拆分 | 拆分为独立故事，每个故事创建目录（英文简洁命名） |
+| 文档管线 | 自适应规划 → 影响分析 → 架构设计 → 文档生成（产出 01~04 + §6 §7） |
+| 代码管线 | 预检（含文档补齐）→ 测试先行 → 实现 → 验证 → 自改进（产出 05~08 + .improvement/ + .memory/） |
+| 交付 | wework-bot 追加日志 → import-docs → wework-bot 发送 |
+
+**执行约束**：
+- 模块间串行：前一个模块的全部故事完成后再处理下一个模块
+- 模块内逐故事串行：每个故事独立走完文档+代码管线后再处理下一个故事
+- 每个故事最终产出 8 份文档 + `.improvement/proposals.jsonl` + `.memory/` 数据存储
+- 阻断规则与 `/rui <requirement>` 端到端一致（H1~H12）
+
+**阻断后行为**：当前故事/模块阻断时，记录阻断原因，继续处理下一个模块。全部模块处理完毕后，汇总阻断清单供人工介入。
 
 完成 init 后，使用 `/rui doc <requirement>` 拆分需求为故事，再逐个故事执行 `/rui code <name>` 或 `/rui <name>`。
 
