@@ -10,7 +10,7 @@ lifecycle: default-pipeline
 ```mermaid
 flowchart TD
     USER["/rui-docs &lt;command&gt;"] --> ROUTE{command}
-    ROUTE -->|sync| SYNC["fetch 远端 → diff → 合并本地 docs/"]
+    ROUTE -->|sync| SYNC["删除本地 → 从远端拉取最新 docs/"]
     ROUTE -->|retro| RETRO["分析 docs/ 结构 → 生成复盘文档"]
     ROUTE -->|empty| RECOMMEND["扫描 docs/ 状态 → 推荐任务"]
 ```
@@ -21,7 +21,7 @@ flowchart TD
 
 | 命令 | 流程 |
 |------|------|
-| `/rui-docs sync` | 从远端 API 拉取最新文档，diff 对比后合并到本地 `docs/` |
+| `/rui-docs sync` | 删除本地 `docs/`，从远端 API 拉取最新文档全覆盖 |
 | `/rui-docs retro` | 分析 `docs/` 结构健康度，生成复盘文档到 `docs/自改进故事面板/` |
 | `/rui-docs`（空输入） | 扫描 docs/ 状态 → 推荐可执行任务 |
 
@@ -29,28 +29,23 @@ flowchart TD
 
 ## /rui-docs sync
 
-从远端文档 API 拉取最新内容，与本地 `docs/` 做 diff 对比，逐文件确认后合并。为避免覆盖本地未推送内容，先 diff 再逐文件决策。
+删除本地 `docs/` 全部内容，从远端 API 拉取最新文件全覆盖写入。
 
 ```mermaid
 flowchart LR
-    FETCH["fetch 远端 docs/ 文件列表"] --> DIFF["逐文件 diff 远端 vs 本地"]
-    DIFF --> RESOLVE{冲突?}
-    RESOLVE -->|远端新| PULL["拉取 → 本地"]
-    RESOLVE -->|本地新| PUSH["提示: import-docs 推送"]
-    RESOLVE -->|冲突| CONFLICT["展示 diff → 用户裁决"]
-    RESOLVE -->|一致| SKIP["跳过"]
-    PULL & PUSH & CONFLICT & SKIP --> STATS["汇总: 新增 N / 冲突 N / 跳过 N"]
+    FETCH["删除本地 docs/"] --> PULL["fetch 远端文件列表"]
+    PULL --> WRITE["逐文件拉取 → 写入本地"]
+    WRITE --> STATS["汇总: 拉取 N 个文件"]
 ```
 
 | Step | 操作 | 命令 |
 |------|------|------|
-| 1 | 获取远端文件列表 | `node skills/rui-docs/scripts/sync.js fetch` |
-| 2 | 逐文件 diff | `node skills/rui-docs/scripts/sync.js diff` |
-| 3 | 应用合并 | `node skills/rui-docs/scripts/sync.js apply` |
+| 1 | 删除本地 docs/ | `rm -rf docs/` |
+| 2 | 拉取远端文件列表并写入 | `node skills/rui-docs/scripts/sync.js` |
 
-> **前置条件**：`API_X_TOKEN` 已设置。依赖远端 API（`https://api.effiy.cn`）的 `/read-file` 接口。
+> **前置条件**：`API_X_TOKEN` 已设置。依赖远端 API（`https://api.effiy.cn`）的 `/list-files` 和 `/read-file` 接口。
 >
-> sync 是增量合并，不会删除本地文件。远端有而本地无的才新增，冲突文件需用户手动裁决。
+> sync 是全量覆盖，会删除本地所有 docs/ 文件再拉取远端内容。
 
 ---
 
@@ -146,7 +141,7 @@ flowchart LR
 1. **操作范围仅限 `docs/`**：不得触及 `.claude/`、代码文件或其他目录
 2. **分支隔离**：禁止直接修改 `docs/` 下内容，所有改动必须从 main 拉取 `feat/<name>` 分支进行
 3. **禁止自动合并**：功能分支不得自动合并到 main，合并操作一律由开发者手动执行
-4. **sync 增量合并**：远端拉取是增量合并，不删除本地文件；冲突文件需用户裁决
+4. **sync 全覆盖**：删除本地 docs/ 后从远端全量拉取，远端即真相
 5. **retro 纯本地分析**：不连接远端，仅分析本地 `docs/` 结构
 6. **retro 输出到根项目**：文档写入 `<project>/docs/自改进故事面板/<project>-docs-<date>.md`
 7. **空输入只推荐不执行**：扫描状态后推荐任务，不触发管线
@@ -159,7 +154,7 @@ flowchart LR
 ## 安全约束
 
 - `API_X_TOKEN` 仅从系统环境变量读取，不接受 CLI 参数或配置文件
-- sync 操作需用户确认，不自动覆盖本地修改
+- sync 操作为全量覆盖，操作前会提示用户确认
 - 远端地址为 `https://api.effiy.cn`，不可配置为其他地址
 
 ---
