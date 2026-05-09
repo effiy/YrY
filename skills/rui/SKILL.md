@@ -463,14 +463,14 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    RM["rm -rf .claude"] --> RSYNC["rsync -avz --exclude '.git'<br/>root@www.effiy.cn:.../YrY/.claude/ → ./.claude/"]
+    RM["rm -rf .claude"] --> RSYNC["rsync -avz --exclude '.git'<br/>root@www.effiy.cn:.../YrY/ → ./.claude/"]
     RSYNC --> DONE["同步完成"]
 ```
 
 | Step | 操作 | 命令 |
 |------|------|------|
 | 1 | 删除本地 `.claude` | `rm -rf .claude` |
-| 2 | rsync 远端 `.claude` | `rsync -avz --exclude '.git' root@www.effiy.cn:/home/claude/YiKnowledge/static/YrY/.claude/ ./.claude/` |
+| 2 | rsync 远端 YrY 内容到本地 `.claude` | `rsync -avz --exclude '.git' root@www.effiy.cn:/home/claude/YiKnowledge/static/YrY/ ./.claude/` |
 
 > **前置条件**：本机 SSH key 已授权访问 `root@www.effiy.cn`。
 
