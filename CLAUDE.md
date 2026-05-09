@@ -41,8 +41,9 @@
 
 ## 系统能力
 
+- **rui 编排器**: `/rui` 命令体系驱动故事 SDLC 全流程——需求拆分 → 文档管线 → 代码管线 → 自改进 → 交付。6 个 Agent（pm/coder/tester/reporter/security/self-improve）协同，每故事独立走完管线，产出 8 份文档。
 - **Memory**: 用户偏好、项目上下文、反馈记录存于 `~/.claude/projects/` 下对应项目目录。启动时读取 MEMORY.md 索引。记忆是快照——引用前验证时效。
-- **Skills**: 可用技能见系统提示 `<skills>` 块。用户输入 `/<name>` 或任务匹配技能描述时直接调用，不猜测名称。
+- **Skills**: 可用技能见系统提示 `<skills>` 块。用户输入 `/<name>` 或任务匹配技能描述时直接调用，不猜测名称。项目内置 `rui`（编排器）、`wework-bot`（企微通知）、`import-docs`（文档同步）三个 skill。
 
 ---
 
@@ -50,34 +51,43 @@
 
 ```
 YrY/
-├── CLAUDE.md              # 本文件：哲学 + 原则 + 准则
-├── README.md              # 项目说明
-├── agents/                # Agent 身份与决策边界
-│   ├── AGENT.md           # Agent 总览
-│   ├── pm.md              # 产品决策者
-│   ├── coder.md           # 编码实现
-│   ├── tester.md          # 测试验证
-│   ├── reporter.md        # 报告交付
-│   ├── security.md        # 安全审查
-│   └── self-improve.md    # 自改进
-├── rules/                 # 规则库
-│   ├── code-pipeline.md   # 代码管线规则
-│   ├── doc-generation.md  # 文档生成规则
-│   ├── gate-rules.md      # 门禁规则
-│   └── self-improve.md    # 自改进规则
-└── skills/                # 技能定义
-    ├── rui/               # SDLC 编排器
-    │   ├── SKILL.md       # 全流程定义 + 命令体系
-    │   ├── templates/     # 故事任务/技术评审/实施报告/自改进复盘模板
-    │   └── scripts/       # self-improve, execution-memory, loop, rui-state, natural-week, list
-    ├── wework-bot/        # 企业微信通知
-    │   ├── SKILL.md
-    │   ├── config.json
-    │   └── scripts/send-message.js
-    └── import-docs/       # 文档同步
-        ├── SKILL.md
-        └── scripts/import-docs.js
+├── CLAUDE.md              # 本文件：哲学 + 原则 + 行为准则
+├── README.md              # 项目说明 + 命令参考 + 管线详解
+├── agents/                # Agent 身份与决策边界（6 个角色分工）
+│   ├── AGENT.md           # Agent 总览 + 证据标准 + 影响分析规范
+│   ├── pm.md              # 产品决策者 — 决定做什么/不做什么，委派执行
+│   ├── coder.md           # 编码实现 — 逐模块审查，P0 清零前进
+│   ├── tester.md          # 测试验证 — 测试先行，Gate A/B 把守
+│   ├── reporter.md        # 报告交付 — 过程报告 + 知识策展
+│   ├── security.md        # 安全审查 — 威胁建模 + 约束注入
+│   └── self-improve.md    # 自改进 — 数据驱动提案 + 效果评估
+├── rules/                 # 规则库（4 条规则，Agent 共享约束）
+│   ├── code-pipeline.md   # 14 条：分支隔离、逐模块审查、禁止自动合并等
+│   ├── doc-generation.md  # 5 条：版本信息、证据标准、增量裁剪等
+│   ├── gate-rules.md      # Gate A/B 门禁 + P0 审查标准
+│   └── self-improve.md    # 5 条：数据驱动、H11 降级、append-only 等
+└── skills/                # 技能定义（3 个 skill）
+    ├── rui/               # SDLC 编排器 — 全流程定义 + 命令体系
+    │   ├── SKILL.md       # 完整管线文档（init/doc/code/update/list/sync）
+    │   ├── templates/     # 8 份模板（故事任务 + 技术评审×3 + 实施报告×3 + 复盘）
+    │   └── scripts/       # 6 个脚本（self-improve, execution-memory, loop, rui-state, natural-week, list）
+    ├── wework-bot/        # 企业微信通知 — 管线末端强制推送
+    └── import-docs/       # 文档远程同步 — 管线强制步骤
 ```
+
+---
+
+## 快速开始
+
+```bash
+/rui init                  # 建立项目基线
+/rui doc "需求描述"         # 拆分需求为故事，走文档管线
+/rui code <story-name>     # 实现故事，走代码管线
+/rui <requirement>         # 端到端（文档 + 代码全自动）
+/rui                       # 无参数获取任务推荐
+```
+
+详见 [README.md](README.md)。
 
 ---
 
