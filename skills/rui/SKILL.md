@@ -14,11 +14,11 @@ agents:
 ```mermaid
 flowchart TD
     USER["/rui &lt;command&gt; &lt;input&gt;"] --> ROUTE{command}
-    ROUTE -->|init| INIT["基线 → 基线注入→Agent&Rule&Template → 就绪检查"]
-    ROUTE -->|doc &lt;requirement&gt;| SPLIT["需求拆分 → 逐故事: 自适应规划→文档生成"]
-    ROUTE -->|update <name> [context]| UPDATE["存在性检查 → 上下文解析 → 变更分级 → 增量更新"]
-    ROUTE -->|code &lt;name&gt;| CODE["预检（含文档补齐）→ 验证 → 自改进 代码管线"]
-    ROUTE -->|&lt;requirement&gt;| FULL["需求拆分 → 逐故事: 文档管线 → 代码管线 端到端"]
+    ROUTE -->|init| INIT["基线 → 基线注入 → Agent&Rule&Template&MCP → 就绪检查"]
+    ROUTE -->|doc &lt;requirement&gt;| SPLIT["需求拆分 → 逐故事串行: 自适应规划→影响分析→架构设计→文档生成"]
+    ROUTE -->|"update &lt;name&gt; [context]"| UPDATE["存在性检查 → 上下文解析 → 变更分级 → 增量更新"]
+    ROUTE -->|code &lt;name&gt;| CODE["预检→测试先行→实现→验证→自改进"]
+    ROUTE -->|&lt;requirement&gt;| FULL["需求拆分 → 逐故事串行: 文档管线 → 代码管线 端到端"]
     ROUTE -->|list| LIST["扫描故事任务面板 → 输出未完成故事列表"]
     ROUTE -->|empty| SUGGEST["扫描项目与故事状态 → 推荐 5~10 条任务提示"]
 
@@ -37,11 +37,11 @@ flowchart TD
 
 | 命令 | 流程 |
 |------|------|
-| `/rui init` | 基线 → 基线注入→Agent&Rule&Template → 就绪检查 → 交付（不生成故事，仅建立项目骨架） |
-| `/rui doc <requirement>` | 需求拆分 → 逐故事: 自适应规划→影响分析→架构设计→文档生成 → 交付 |
+| `/rui init` | 基线 → 基线注入 → Agent&Rule&Template&MCP → 就绪检查 → 交付（不生成故事，仅建立项目骨架） |
+| `/rui doc <requirement>` | 需求拆分 → 逐故事串行: 自适应规划→影响分析→架构设计→文档生成 → 交付 |
 | `/rui update <name> [context]` | 存在性检查 → 上下文解析 → 变更分级 → 增量更新 → 交付（优化/补充/重写已有故事文档，如 mock→真实接口） |
 | `/rui code <name>` | 预检（含文档补齐）→ 测试先行 → 实现 → 验证 → 自改进 → 交付（01-故事任务.md 必须存在，缺失的技术评审自动补齐，最终产出故事目录全 8 份文档） |
-| `/rui <requirement>` | 需求拆分 → 逐故事: 文档管线 → 代码管线 端到端 |
+| `/rui <requirement>` | 需求拆分 → 逐故事串行: 文档管线 → 代码管线 端到端 → 交付 |
 | `/rui list` | 扫描故事任务面板，列出所有未完成故事及其进度状态 |
 | `/rui`（空输入） | 扫描项目与故事状态 → 推荐 5~10 条任务提示 |
 
@@ -151,12 +151,12 @@ flowchart TD
 flowchart TD
     INPUT["需求输入<br/>文本 / @文件 / URL"] --> PARSE["需求解析"]
     PARSE --> SPLIT["故事拆分<br/>每个故事 = 一个功能单元"]
-    SPLIT --> STORY1["故事 1: 自适应规划→文档生成"]
-    SPLIT --> STORY2["故事 2: 自适应规划→文档生成"]
-    SPLIT --> STORYN["故事 N: 自适应规划→文档生成"]
-    STORY1 --> DONE1["完成: docs/故事任务面板/story-1/"]
-    STORY2 --> DONE2["完成: docs/故事任务面板/story-2/"]
-    STORYN --> DONEN["完成: docs/故事任务面板/story-n/"]
+    SPLIT --> STORY1["故事 1: 自适应规划→影响分析→架构设计→文档生成"]
+    STORY1 --> DONE1["✓ 故事 1 完成"]
+    DONE1 --> STORY2["故事 2: 自适应规划→影响分析→架构设计→文档生成"]
+    STORY2 --> DONE2["✓ 故事 2 完成"]
+    DONE2 --> STORYN["..."]
+    STORYN --> DONEN["✓ 故事 N 完成<br/>全部故事文档管线完成"]
 ```
 
 每个故事内部流程：
@@ -347,7 +347,19 @@ flowchart LR
 
 ## /rui \<requirement\>（端到端）
 
-从需求输入（文本 / @文件 / URL）拆分故事，逐故事走完文档管线（自适应规划→影响分析→架构设计→文档生成→策展）和代码管线（预检→验证→自改进），中间不中断，完成或阻断后输出下一步提示。
+从需求输入（文本 / @文件 / URL）拆分故事，逐故事串行走完文档管线（自适应规划→影响分析→架构设计→文档生成）和代码管线（预检→测试先行→实现→验证→自改进），中间不中断，完成或阻断后输出下一步提示。
+
+```mermaid
+flowchart TD
+    INPUT["需求输入<br/>文本 / @文件 / URL"] --> PARSE["需求解析"]
+    PARSE --> SPLIT["故事拆分<br/>每个故事 = 一个功能单元"]
+    SPLIT --> S1["故事 1<br/>文档管线 → 代码管线 → 交付"]
+    S1 --> S1D["✓ 故事 1 交付"]
+    S1D --> S2["故事 2<br/>文档管线 → 代码管线 → 交付"]
+    S2 --> S2D["✓ 故事 2 交付"]
+    S2D --> SN["..."]
+    SN --> SND["✓ 故事 N 交付<br/>全部故事端到端完成"]
+```
 
 等同于 `/rui doc <requirement>` + 每个故事 `/rui code <name>` 的全自动串联。每个故事目录产出 8 份文档 + `.improvement/proposals.jsonl` + `.memory/`。
 
