@@ -72,51 +72,52 @@ flowchart LR
 
 ## /rui-claude（空输入）
 
-当 `/rui-claude` 无参数时，扫描根项目下**所有子项目**的 `.claude/` 状态，每个子项目独立分析，推荐 5~10 条可执行任务。
+当 `/rui-claude` 无参数时，扫描已有 `.claude/` 的所有子项目，推荐 5~10 条可执行任务。
 
-### 扫描规则
+### 推荐生成规则
 
-扫描 `${REPO_ROOT}/` 下所有一级子目录（排除 `docs/`、`effiy.cn/` 等非项目目录），每个子项目独立采集：
+扫描根项目 `${REPO_ROOT}/` 下所有存在 `.claude/` 的子目录，综合生成推荐：
 
 | 扫描源 | 提取信息 |
 |--------|---------|
-| `<project>/.claude/` 是否存在 | 判定是否需要首次同步 |
-| `<project>/.claude/agents/`、`rules/`、`templates/`、`skills/` | 各子目录文件数、缺失项 |
-| `<project>/.claude/CLAUDE.md`、`.mcp.json` | 关键根文件存在性 |
-| `docs/自改进故事面板/<project>-*.md` | 各项目已有复盘文档及最新日期 |
+| `<project>/.claude/agents/` | Agent 数量、角色覆盖 |
+| `<project>/.claude/rules/` | 规则文件数、约束覆盖 |
+| `<project>/.claude/templates/` | 模板文件数 |
+| `<project>/.claude/skills/` | 技能文件数 |
+| `<project>/.claude/CLAUDE.md` | 存在性、行数 |
+| `<project>/.claude/.mcp.json` | 是否存在 |
+| `docs/自改进故事面板/<project>-*.md` | 复盘历史 |
 
 ### 推荐分类
 
-| 类型 | 触发条件 | 推荐命令 |
-|------|---------|---------|
-| 首次同步 | `.claude/` 不存在 | `cd <project> && /rui-claude sync` |
-| 配置复盘 | `.claude/` 存在且无复盘记录 | `cd <project> && /rui-claude retro` |
-| 增量复盘 | `.claude/` 存在但复盘过期（>7 天） | `cd <project> && /rui-claude retro` |
-| 结构补齐 | 缺少关键子目录或文件（如 agents/、CLAUDE.md） | 指出缺失项，建议 sync |
-| 健康巡检 | 配置完整且有近期复盘 | 标记为健康，跳过 |
+| 类型 | 说明 | 示例 |
+|------|------|------|
+| 首次复盘 | 有 .claude/ 但无复盘记录 | `cd <project> && /rui-claude retro` |
+| 增量复盘 | 复盘过期 >7 天 | `cd <project> && /rui-claude retro` |
+| 配置补齐 | agents/templates 为空或 CLAUDE.md 缺失 | `cd <project> && /rui-claude sync` |
+| 结构优化 | 某子目录文件数异常（过多/过少） | 手动审查并精简 |
+| 定期巡检 | 近期有复盘、配置完整 | 标记为健康 |
 
 ### 输出格式
 
-各子项目独立推荐，按优先级排列：
-
 ```
-🧭 rui-claude 任务推荐（共扫描 N 个项目）
+🧭 rui-claude 任务推荐（共 N 条）
 
-## <project-1>
-   ✅ .claude/ 存在 | agents: 6 | rules: 4 | retro: 2026-05-09
-   → 健康，无需操作
+<project-1>:
+1. [首次复盘] cd <project-1> && /rui-claude retro
+   理由: .claude/ 存在但无复盘记录 | 来源: docs/自改进故事面板/
 
-## <project-2>
-   ⚠️ .claude/ 存在 | agents: 0 | rules: 2 | retro: 无
-   1. [结构补齐] agents/ 为空，建议 cd <project-2> && /rui-claude sync
-   2. [配置复盘] 无复盘记录，建议 cd <project-2> && /rui-claude retro
+<project-2>:
+2. [增量复盘] cd <project-2> && /rui-claude retro
+   理由: 上次复盘 12 天前 | 来源: docs/自改进故事面板/<project-2>-2026-04-27.md
 
-## <project-3>
-   ❌ .claude/ 不存在
-   1. [首次同步] cd <project-3> && /rui-claude sync
+3. [配置补齐] cd <project-2> && /rui-claude sync
+   理由: templates/ 为空 | 来源: .claude/ 结构检查
+
+...
 ```
 
-> 每个子项目的 `.claude` 互相独立，复盘文档以 `<project>-<date>.md` 区分。
+> 按项目分组，每个子项目的 `.claude` 互相独立推荐。
 
 ---
 
