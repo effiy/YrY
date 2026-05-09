@@ -9,14 +9,14 @@ lifecycle: default-pipeline
 
 # import-docs
 
-将 workspace 内所有 `.md` 文档（排除 `.git`、`node_modules`）批量同步到远端文档 API。rui 交付步骤 2。
+将 workspace 内所有文档批量同步到远端文档 API（`.claude` 目录下导入全部文件，其余目录仅 `.md` 文件）。排除 `.git`、`node_modules`。rui 交付步骤 2。
 
 ```mermaid
 flowchart TD
     CMD["import-docs --workspace"] --> SCAN["递归扫描项目目录"]
-    SCAN --> FILTER["仅 .md 文件"]
-    FILTER --> EXCLUDE["排除 .git / node_modules"]
-    EXCLUDE --> LIST["收集文件列表"]
+    SCAN --> EXCLUDE["排除 .git / node_modules"]
+    EXCLUDE --> FILTER[".claude 内: 全部文件 | 其余: 仅 .md"]
+    FILTER --> LIST["收集文件列表"]
     LIST --> IMPORT["逐文件 POST /write-file"]
     IMPORT --> DEDUP{远端已有?}
     DEDUP -->|是| OW["覆盖（overwritten）"]
@@ -30,7 +30,9 @@ flowchart TD
 
 `--workspace` 模式自动检测 workspace 根目录（向上查找 `.git` 或 `.claude/`），递归扫描项目目录下所有 `.md` 文件。
 
-- **包含**: 项目根目录及所有子目录中的 `.md` 文件（文件系统遍历，不受 `.gitignore` 限制）
+- **包含**:
+  - 项目根目录及所有子目录中的 `.md` 文件（文件系统遍历，不受 `.gitignore` 限制）
+  - `.claude` 目录下的**全部文件**（不限扩展名），递归包含所有子目录
 - **排除**: `.git`、`node_modules` 目录（不遍历）
 - **远端路径**: `<prefix>/<workspace名>/<相对路径>`，空格替换为 `_`，目录结构与本地一致
 
@@ -46,7 +48,7 @@ sequenceDiagram
     participant WW as wework-bot
 
     RUI->>CMD: --workspace
-    CMD->>CMD: 递归扫描 .md（排除 .git/node_modules）
+    CMD->>CMD: 递归扫描（.claude 内全部文件 / 其余仅 .md）
     CMD->>API: 查询已有 sessions
     API-->>CMD: existing file_path set
     loop 逐文件

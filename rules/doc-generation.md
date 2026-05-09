@@ -6,6 +6,7 @@ paths:
 
 # Document Generation Rules
 
+0. 版本信息: 所有文档必须在开头填充版本行（v版本号 | 日期 | 模型 | 分支），模板占位符（v{version}、{YYYY-MM-DD}、{模型}、{branch}等）不得保留到产出文件
 1. 产出内聚: 关键产出只允许在对应故事目录下，不得在故事目录外生成文档
 2. 证据标准: 写入 docs/ 的陈述必须可验证（Level A/B）或标注未知（Level C），无支撑视为幻觉（Level D 禁止）
 3. 增量裁剪:

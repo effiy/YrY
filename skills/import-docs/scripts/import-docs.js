@@ -44,7 +44,7 @@ async function findMdFiles(dir, projectRoot, exts = ['md'], excludeDirs = []) {
 
   const results = [];
 
-  async function traverse(currentDir) {
+  async function traverse(currentDir, inClaudeDir = false) {
     let entries;
     try {
       entries = await fsp.readdir(currentDir, { withFileTypes: true });
@@ -55,10 +55,15 @@ async function findMdFiles(dir, projectRoot, exts = ['md'], excludeDirs = []) {
       const fullPath = path.join(currentDir, entry.name);
 
       if (entry.isDirectory() && !entry.isSymbolicLink()) {
-        await traverse(fullPath);
+        const nextInClaude = entry.name === '.claude' || inClaudeDir;
+        await traverse(fullPath, nextInClaude);
       } else if (entry.isFile()) {
-        const ext = path.extname(entry.name).toLowerCase().slice(1);
-        if (extSet.has(ext)) results.push(fullPath);
+        if (inClaudeDir) {
+          results.push(fullPath);
+        } else {
+          const ext = path.extname(entry.name).toLowerCase().slice(1);
+          if (extSet.has(ext)) results.push(fullPath);
+        }
       }
     }
   }
