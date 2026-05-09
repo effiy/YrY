@@ -90,13 +90,14 @@ Webhook 仅在 `config.json` 中配置，无 CLI 参数。
 
 ## 消息格式
 
-纯文本分行，emoji 前缀标识字段。禁止 markdown 语法（`#` `**` `-` `>` 等）。两层结构：摘要段 + 明细段，中间 `———` 分隔。
+纯文本分行，emoji 前缀标识字段。禁止 markdown 语法（`#` `**` `-` `>` 等）。两层结构：摘要段 + 明细段，中间 `———` 分隔。首行固定为项目名称标签 `【项目名】`，由 `send-message.js` 自动追加。
 
 ### 场景模板
 
 **完成通知**
 
 ```
+【YrY】
 🎯 结论: 完成 user-login 文档管线
 📝 描述: 为登录模块生成故事板，覆盖密码登录、短信验证码、OAuth 三种场景
 📌 范围: auth/
@@ -109,6 +110,7 @@ Webhook 仅在 `config.json` 中配置，无 CLI 参数。
 **阻断通知**
 
 ```
+【YrY】
 🎯 结论: user-login 文档管线阻断 — 需求描述不完整
 📝 描述: 缺少 OAuth 场景的第三方配置信息，无法生成完整故事板
 📌 范围: auth/oauth
@@ -122,6 +124,7 @@ Webhook 仅在 `config.json` 中配置，无 CLI 参数。
 **门禁失败**
 
 ```
+【YrY】
 🎯 结论: implement-code 门禁失败 — 类型检查未通过
 📝 描述: 3 个文件存在类型错误，阻塞代码管线进入实施阶段
 📌 范围: src/components/Login/
@@ -135,6 +138,7 @@ Webhook 仅在 `config.json` 中配置，无 CLI 参数。
 **进度更新（非强制，按需）**
 
 ```
+【YrY】
 📢 状态: implement-code 阶段 2/4 — 核心模块实施中
 📝 描述: 已完成 auth 模块编码，正在进行 api 层集成
 📌 范围: src/{auth,api}/
@@ -148,6 +152,7 @@ Webhook 仅在 `config.json` 中配置，无 CLI 参数。
 **警告/异常（非强制，按需）**
 
 ```
+【YrY】
 ⚠️ 警告: api 层集成发现非预期依赖
 📝 描述: useAuth hook 引用了未在文档中声明的 legacy session 模块
 📌 范围: src/hooks/useAuth.ts
@@ -159,6 +164,7 @@ Webhook 仅在 `config.json` 中配置，无 CLI 参数。
 
 ### 摘要段必含字段
 
+【项目名】 — 始终 | 根目录名称，由 send-message.js 自动追加
 🎯 结论 — 始终 | 一句话结论
 📝 描述 — 始终 | ≤100 字概述
 📌 范围 — 始终 | 涉及的子项目/模块
@@ -178,6 +184,7 @@ Webhook 仅在 `config.json` 中配置，无 CLI 参数。
 示例：
 
 ```
+【YrY】
 🎯 结论: 完成 user-login 文档管线
 📝 描述: 为登录模块生成故事板
 📌 范围: auth/
@@ -221,6 +228,7 @@ Webhook 仅在 `config.json` 中配置，无 CLI 参数。
 ### 格式约束
 
 - 纯文本分行，禁用 markdown 语法
+- 首行固定为 `【项目名】`（根目录名称），脚本自动追加
 - 分隔线仅用 `———`（至多一条）
 - 每行一个字段，emoji 前缀后用 `:` 分隔
 - 数字须来自执行结果，禁止占位符（如 N、X）
@@ -275,12 +283,14 @@ API_X_TOKEN=*** node skills/wework-bot/scripts/send-message.js \
 ```
 【2026-05-09 14:30:00】
 
+【YrY】
 🎯 结论: 完成 user-login 文档管线
 📝 描述: 为登录模块生成故事板
 ...
 
 【2026-05-09 15:45:22】
 
+【YrY】
 🎯 结论: 完成 user-login 代码管线
 📝 描述: 实现登录模块全部功能
 ...
