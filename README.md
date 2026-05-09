@@ -21,13 +21,10 @@ YrY/
 │   ├── doc-generation.md
 │   ├── gate-rules.md
 │   └── self-improve.md
-├── skills/                # 技能定义与脚本
-│   ├── rui/               # SDLC 编排器
-│   ├── wework-bot/        # 企业微信通知
-│   └── import-docs/       # 文档同步
-└── docs/
-    ├── shared/            # 共享文档（架构、契约）
-    └── 故事任务面板/       # 故事目录
+└── skills/                # 技能定义与脚本
+    ├── rui/               # SDLC 编排器
+    ├── wework-bot/        # 企业微信通知
+    └── import-docs/       # 文档同步
 ```
 
 ## 核心工作流
