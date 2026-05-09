@@ -94,30 +94,28 @@ function copyDir(src, dst, dryRun, results) {
     const d = path.join(dst, e.name);
     if (e.isDirectory()) {
       copyDir(s, d, dryRun, results);
+    } else if (fs.existsSync(d)) {
+      results.skipped.push({ path: d, reason: '已存在' });
+    } else if (dryRun) {
+      results.copied.push({ path: d, action: '将复制' });
     } else {
-      if (dryRun) {
-        if (!fs.existsSync(d)) results.copied.push({ path: d, action: '将复制' });
-        else results.skipped.push({ path: d, reason: '已存在' });
-      } else {
-        ensureDir(path.dirname(d));
-        fs.copyFileSync(s, d);
-        results.copied.push({ path: d, action: '复制' });
-      }
+      ensureDir(path.dirname(d));
+      fs.copyFileSync(s, d);
+      results.copied.push({ path: d, action: '复制' });
     }
   }
 }
 
 function syncSkillDir(srcSkill, dstSkill, dryRun, results) {
   if (!fs.existsSync(srcSkill)) return;
-  if (fs.existsSync(dstSkill)) {
-    results.skipped.push({ path: dstSkill, reason: '已存在' });
-    return;
+  // Always delegate to copyDir for granular per-file syncing — it skips existing files
+  if (!fs.existsSync(dstSkill)) {
+    if (dryRun) {
+      results.copied.push({ path: dstSkill, action: '将创建目录并复制所有文件' });
+      return;
+    }
   }
-  if (dryRun) {
-    results.copied.push({ path: dstSkill, action: '将复制整个目录' });
-  } else {
-    copyDir(srcSkill, dstSkill, false, results);
-  }
+  copyDir(srcSkill, dstSkill, dryRun, results);
 }
 
 // ---- 检查基础设施 ----
