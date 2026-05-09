@@ -16,15 +16,19 @@ flowchart TD
     USER["/rui &lt;command&gt; &lt;input&gt;"] --> ROUTE{command}
     ROUTE -->|init| INIT["基线 → 基线注入→Agent&Rule&Template → 就绪检查"]
     ROUTE -->|doc &lt;requirement&gt;| SPLIT["需求拆分 → 逐故事: 自适应规划→文档生成"]
+    ROUTE -->|update <name> [context]| UPDATE["存在性检查 → 上下文解析 → 变更分级 → 增量更新"]
     ROUTE -->|code &lt;name&gt;| CODE["预检（含文档补齐）→ 验证 → 自改进 代码管线"]
     ROUTE -->|&lt;requirement&gt;| FULL["需求拆分 → 逐故事: 文档管线 → 代码管线 端到端"]
     ROUTE -->|list| LIST["扫描故事任务面板 → 输出未完成故事列表"]
+    ROUTE -->|empty| SUGGEST["扫描项目与故事状态 → 推荐 5~10 条任务提示"]
 
     INIT --> DELIVER["交付: wework-bot 追加日志 → import-docs → wework-bot 发送"]
     SPLIT --> DELIVER
     CODE --> DELIVER
     FULL --> DELIVER
     LIST --> DELIVER
+    UPDATE --> DELIVER
+    SUGGEST --> DELIVER
 ```
 
 ---
@@ -35,9 +39,11 @@ flowchart TD
 |------|------|
 | `/rui init` | 基线 → 基线注入→Agent&Rule&Template → 就绪检查 → 交付（不生成故事，仅建立项目骨架） |
 | `/rui doc <requirement>` | 需求拆分 → 逐故事: 自适应规划→影响分析→架构设计→文档生成 → 交付 |
+| `/rui update <name> [context]` | 存在性检查 → 上下文解析 → 变更分级 → 增量更新 → 交付（优化/补充/重写已有故事文档，如 mock→真实接口） |
 | `/rui code <name>` | 预检（含文档补齐）→ 测试先行 → 实现 → 验证 → 自改进 → 交付（01-故事任务.md 必须存在，缺失的技术评审自动补齐，最终产出故事目录全 8 份文档） |
 | `/rui <requirement>` | 需求拆分 → 逐故事: 文档管线 → 代码管线 端到端 |
 | `/rui list` | 扫描故事任务面板，列出所有未完成故事及其进度状态 |
+| `/rui`（空输入） | 扫描项目与故事状态 → 推荐 5~10 条任务提示 |
 
 `<requirement>` 可以是：
 - 需求描述文本（如 `用户登录功能，支持密码和OAuth`）
@@ -181,6 +187,59 @@ flowchart TD
 
 ---
 
+## /rui update \<name\> [context]
+
+对已有故事任务进行优化、补充或重写。典型场景：前端先用 mock 实现，后续补充后端接口信息；需求变更导致设计调整；技术方案优化。
+
+```mermaid
+flowchart TD
+    CHECK["存在性检查<br/>验证故事目录 + 01-故事任务.md"] --> PARSE["上下文解析<br/>分析补充信息，判定影响范围"]
+    PARSE --> CLASSIFY{"变更分级<br/>T1 / T2 / T3"}
+    CLASSIFY -->|T1 微观| T1["仅变更目标章节"]
+    CLASSIFY -->|T2 局部| T2["影响分析 → 更新受影响文档 + 下游"]
+    CLASSIFY -->|T3 范围| T3["完整重跑文档管线"]
+    T1 --> DELIVER_U["交付"]
+    T2 --> DELIVER_U
+    T3 --> DELIVER_U
+```
+
+| 阶段 | 做什么 | 关键产出 |
+|------|--------|---------|
+| 存在性检查 | 验证 `docs/故事任务面板/<name>/` 目录和 `01-故事任务.md` 存在<br>不存在则阻断（同 H1） | — |
+| 上下文解析 | 解析 `[context]` 补充信息，对照现有文档判定影响范围<br>pm, coder | 影响范围清单 |
+| 变更分级 | 按 T1/T2/T3 判定变更级别 | rui-state.json（更新） |
+| 增量更新 | 按级别更新受影响文档，T3 完整重跑文档管线<br>pm, coder, tester, security | 更新的故事文档 |
+
+### 变更分级规则
+
+| 级别 | 触发示例 | 更新范围 |
+|------|---------|---------|
+| T1 微观 | 措辞修正、错别字、格式调整 | 仅变更章节 |
+| T2 局部 | mock→真实接口替换、组件新增/删除、API 字段变更、测试用例补充 | 影响分析 → 更新受影响文档 + 下游引用 |
+| T3 范围 | 故事边界变化、数据模型重构、跨故事接口变更 | 完整重跑文档管线（自适应规划→影响分析→架构设计→文档生成） |
+
+### 上下文解析规则
+
+`[context]` 为空时，pm 扫描当前故事文档，基于已有内容给出优化建议方向：
+- 对比 01-故事任务.md §3 Design 与实际代码（如有），标记偏差
+- 检查技术评审之间的交叉引用一致性
+- 扫描 TODO/FIXME/HACK 标记
+
+### 示例
+
+```bash
+# 补充后端接口信息，替换前端 mock
+/rui update user-login "后端接口已就绪：POST /api/auth/login → {token, user}，需替换 src/mocks/auth.ts"
+
+# 需求微调，新增字段
+/rui update user-login "登录表单增加「记住我」复选框，影响 LoginForm 组件和 auth store"
+
+# 无上下文时自动分析优化方向
+/rui update user-login
+```
+
+---
+
 ## /rui code \<name\>
 
 预检（含文档补齐）→ 测试先行 → 实现 → 验证 → 自改进 → 交付。01-故事任务.md 必须存在；缺失的后端/前端/测试用例技术评审在预检阶段自动补齐，确保最终产出故事目录全 8 份文档。
@@ -320,6 +379,173 @@ flowchart LR
 仅当存在至少一个未完成故事时输出表格；若全部代码完成，输出简要完成提示。存在阻断状态的故事时，额外输出阻断原因。
 
 实现：`node skills/rui/scripts/list.js`
+
+---
+
+## /rui（空输入）
+
+当 `/rui` 无任何参数或输入为空时，不执行管线，而是扫描项目状态和已有故事进度，推荐 5~10 条可执行的任务提示。
+
+### 推荐生成规则
+
+pm 扫描以下信息源，综合生成推荐：
+
+| 扫描源 | 提取信息 |
+|--------|---------|
+| `docs/故事任务面板/` | 已有故事及其进度状态（调用 list 判定逻辑） |
+| `CLAUDE.md` + `README.md` | 项目技术栈、编码规范、禁止事项 |
+| Git log（最近 10 条） | 近期活跃的故事和改动方向 |
+| `.memory/` 下的 rui-state.json | 阻断状态、变更级别记录 |
+| 各故事目录下的 `01-故事任务.md` §6 §7 §L | 改进清单、架构演进任务、自改进建议 |
+
+### 推荐分类
+
+每条推荐标注类型和理由来源：
+
+| 类型 | 说明 | 示例 |
+|------|------|------|
+| 文档补充 | 技术评审缺失或章节不完整 | `rui update <name>` 补齐后端技术评审的 API 错误码表 |
+| 代码实现 | 文档齐全待编码 | `rui code <name>` |
+| 优化改进 | §6/§L 中积压的改进项 | `rui update <name> "优化登录表单验证逻辑"` |
+| 端到端 | 全新需求可启动完整管线 | `rui <requirement>` |
+| 架构演进 | §7 中规划的架构任务 | `rui update <name> "拆分 auth 模块为独立 service"` |
+
+### 输出格式
+
+```
+🧭 rui 任务推荐（共 N 条）
+
+1. [类型] /rui code user-login
+   理由: 文档齐全（8/8），P0 审查待执行 | 来源: list 扫描
+
+2. [类型] /rui update chat-export "补充导出进度回调接口"
+   理由: §6 改进清单积压 | 来源: 01-故事任务.md §6
+
+...
+```
+
+若项目尚无任何故事（`docs/故事任务面板/` 为空或不存在），则推荐从 `/rui init` 或 `/rui doc <requirement>` 开始，并根据 CLAUDE.md/README.md 推测 2~3 个可能的需求方向作为示例。
+
+---
+
+## 数据契约
+
+三个数据文件支撑 rui 的记忆与改进引擎。每个故事独立存储，全局聚合用于跨故事分析。
+
+### 存储路径
+
+```
+docs/故事任务面板/<name>/
+├── .improvement/
+│   └── proposals.jsonl         ← 改进提案（per-story + 全局同步）
+└── .memory/
+    ├── execution-memory.jsonl  ← 执行记忆（per-story + 全局同步）
+    └── rui-state.json          ← 管线状态（per-story + 全局同步）
+
+docs/                           ← 全局聚合（跨故事查询）
+├── .improvement/
+│   ├── proposals.jsonl
+│   └── .last-health.json
+└── .memory/
+    ├── execution-memory.jsonl
+    └── rui-state.json
+```
+
+写入规则：指定 `--name` 时双写（per-story + 全局）；未指定时仅写全局（向后兼容）。跨故事分析（`stats`/`trends`/`health`/`retro`）读取全局路径。
+
+### execution-memory.jsonl
+
+追加写入，每行一个 JSON 对象。记录每次 rui 执行的完整上下文。
+
+| 字段 | 类型 | 描述 |
+|------|------|------|
+| session_id | string | 唯一会话标识 |
+| timestamp | ISO 8601 | 记录时间 |
+| story_name | string | 所属故事（`--name` 时写入） |
+| feature | string | 故事/功能名称 |
+| description | string | 执行描述 |
+| planned_change_level | T1\|T2\|T3 | 计划变更级别 |
+| actual_change_level | T1\|T2\|T3 | 实际变更级别 |
+| phase_transitions | array | `[{from, to, timestamp, duration_ms}]` 阶段转换时间线 |
+| update_context | string\|null | update 命令的补充上下文 |
+| agents_called | string[] | 调用的 agent 列表 |
+| quality_issues | object | `{P0:[{doc_type, section, issue}], P1, P2}` 质量问题 |
+| bad_cases | array | `[{agent, lesson}]` 教训记录 |
+| was_blocked | boolean | 是否触发阻断 |
+| block_reason | string | 阻断原因 |
+
+**消费方**：`/rui update` 查询历史相似案例指导增量更新；`/rui`（空输入）扫描近期 P0 问题生成改进建议；`self-improve.js trends` 分析退化趋势。
+
+### rui-state.json
+
+单对象 JSON 文件。记录当前管线状态和变更历史。
+
+| 字段 | 类型 | 描述 |
+|------|------|------|
+| session_id | string | 当前会话标识 |
+| command | string | 触发命令（init/doc/update/code/full） |
+| name / story_name | string | 故事名称 |
+| current_stage | string | 当前所处阶段 |
+| blocked | boolean | 是否阻断 |
+| block_reason | string\|null | 阻断原因 |
+| timestamp | ISO 8601 | 最后更新时间 |
+| storyboard | string | 故事任务文件路径 |
+| pipeline_progress | object | `{"自适应规划":"completed", "影响分析":"completed", ...}` 每阶段状态：completed / in_progress / blocked / not_started |
+| change_history | array | `[{timestamp, from_stage, to_stage, trigger}]` 阶段变更时间线 |
+| related_proposals | string[] | 关联的 proposal ID 列表 |
+
+**消费方**：`/rui list` 读取 pipeline_progress 判定故事进度；`/rui`（空输入）读取 blocked 阶段推荐恢复命令；`rui-state.js next-step` 基于完成阶段推荐下一步。
+
+### proposals.jsonl
+
+追加写入，每行一个 JSON 对象。记录自改进引擎生成的改进提案。
+
+| 字段 | 类型 | 描述 |
+|------|------|------|
+| id | string | 唯一提案标识 |
+| date | YYYY-MM-DD | 创建日期 |
+| title | string | 提案标题 |
+| type | string | 提案类型（refactor/perf/security/quality/process） |
+| priority | P0\|P1\|P2\|P3 | 优先级 |
+| status | open\|done\|superseded | 状态 |
+| trigger_op | string | 触发操作 |
+| story_name | string\|null | 所属故事 |
+| source_phase | string\|null | 生成此提案的管线阶段 |
+| actionable_command | string\|null | 可执行 rui 命令，如 `/rui update user-login "..."` |
+| linked_memory_ids | string[] | 关联的 execution-memory session_id |
+| problem_source | string | 问题来源 |
+| evidence | string | 证据描述 |
+| current_state | string | 当前状态描述 |
+| target_state | string | 目标状态描述 |
+| s1_metrics | object | 六维架构指标 |
+| s2_metrics | object | 工流趋势指标 |
+| feedback | array | `[{rating, note, date}]` 用户反馈 |
+| eval_result | improved\|degraded\|neutral\|pending\|null | 效果评估结果 |
+
+**消费方**：`/rui`（空输入）读取 open 状态提案生成「优化改进」「架构演进」类推荐；`/rui update` 查找关联提案辅助上下文解析；`loop.js run` 读取提案生成 §L 自改进循环章节。
+
+### 数据流
+
+```mermaid
+flowchart LR
+    RUI["/rui 命令执行"] --> EM["execution-memory.jsonl<br/>记录执行上下文"]
+    RUI --> STATE["rui-state.json<br/>更新管线进度"]
+    
+    EM --> SI["self-improve.js<br/>趋势分析 + 效果评估"]
+    STATE --> SI
+    
+    SI --> PROPOSAL["proposals.jsonl<br/>生成改进提案"]
+    
+    PROPOSAL --> SUGGEST["/rui（空输入）<br/>读取提案 + 状态 → 推荐任务"]
+    EM --> SUGGEST
+    STATE --> SUGGEST
+    
+    PROPOSAL --> UPDATE["/rui update<br/>查询历史案例 → 增量更新"]
+    EM --> UPDATE
+    
+    PROPOSAL --> LOOP["loop.js run<br/>生成 §L 自改进循环"]
+    EM --> LOOP
+```
 
 ---
 

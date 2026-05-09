@@ -8,12 +8,14 @@
  * and for self-improve.js to analyze improvement patterns.
  *
  * Usage:
- *   node scripts/execution-memory.js write <json-file>
- *   node scripts/execution-memory.js query [--feature <name>] [--keyword <k>] [--limit <n>]
+ *   node scripts/execution-memory.js write <json-file> [--name <story-name>]
+ *   node scripts/execution-memory.js query [--feature <name>] [--keyword <k>] [--limit <n>] [--name <story-name>]
  *   node scripts/execution-memory.js stats [--week <YYYY-MM-DD>]
  *   node scripts/execution-memory.js ls [--limit <n>]
  *
- * Storage location: docs/.memory/execution-memory.jsonl (append-only, one JSON object per line)
+ * Storage:
+ *   Global: docs/.memory/execution-memory.jsonl (cross-story analysis)
+ *   Per-story: docs/故事任务面板/<name>/.memory/execution-memory.jsonl (when --name provided)
  */
 
 const fs = require('fs');
@@ -21,18 +23,22 @@ const fsp = fs.promises;
 const path = require('path');
 const { getNaturalWeekRange } = require('./natural-week.js');
 
-const REPO_ROOT = path.resolve(__dirname, '../../../..');
+const REPO_ROOT = path.resolve(__dirname, '../../..');
 const MEMORY_DIR = path.join(REPO_ROOT, 'docs', '.memory');
 const MEMORY_FILE = path.join(MEMORY_DIR, 'execution-memory.jsonl');
+const STORIES_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
+function storyMemoryDir(name) { return path.join(STORIES_DIR, name, '.memory'); }
+function storyMemoryFile(name) { return path.join(storyMemoryDir(name), 'execution-memory.jsonl'); }
 
 function parseArgs(argv) {
-  const out = { command: null, file: null, feature: null, keyword: null, limit: 10, week: null, weeks: 8, json: false };
+  const out = { command: null, file: null, feature: null, keyword: null, limit: 10, week: null, weeks: 8, json: false, name: null };
   const args = argv.slice(2);
   out.command = args[0];
   for (let i = 1; i < args.length; i++) {
     const a = args[i];
     if (a === '--feature') out.feature = args[++i];
+    else if (a === '--name') out.name = args[++i];
     else if (a === '--keyword') out.keyword = args[++i];
     else if (a === '--limit') out.limit = parseInt(args[++i], 10) || 10;
     else if (a === '--week') out.week = args[++i];
@@ -59,6 +65,11 @@ async function readAllRecords() {
   return lines.map(l => {
     try { return JSON.parse(l); } catch { return null; }
   }).filter(Boolean);
+}
+
+function matchName(record, name) {
+  if (!name) return true;
+  return (record.story_name || '').toLowerCase() === name.toLowerCase();
 }
 
 function matchFeature(record, featureName) {
@@ -108,21 +119,38 @@ function scoreRelevance(record, featureName, keyword) {
   return score;
 }
 
-async function cmdWrite(filePath) {
+async function cmdWrite(filePath, opts) {
   if (!filePath) { console.error('Error: write command requires json-file argument'); process.exit(1); }
   const raw = await fsp.readFile(filePath, 'utf8');
   const record = JSON.parse(raw);
   if (!record.session_id) record.session_id = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
   if (!record.timestamp) record.timestamp = new Date().toISOString();
-  await ensureMemoryFile();
+
+  // Enriched schema defaults
+  if (!record.story_name && opts.name) record.story_name = opts.name;
+  if (!record.phase_transitions) record.phase_transitions = [];
+  if (!record.update_context) record.update_context = null;
+
   const line = JSON.stringify(record);
+
+  // Always write to global
+  await ensureMemoryFile();
   await fsp.appendFile(MEMORY_FILE, line + '\n', 'utf8');
-  console.log(`✓ Execution memory written (session_id: ${record.session_id})`);
+
+  // Dual-write to per-story if --name provided
+  if (opts.name) {
+    const dir = storyMemoryDir(opts.name);
+    const file = storyMemoryFile(opts.name);
+    await fsp.mkdir(dir, { recursive: true });
+    await fsp.appendFile(file, line + '\n', 'utf8');
+  }
+
+  console.log(`✓ Execution memory written (session_id: ${record.session_id}${opts.name ? ', story: ' + opts.name : ''})`);
 }
 
 async function cmdQuery(opts) {
   const records = await readAllRecords();
-  let filtered = records.filter(r => matchFeature(r, opts.feature) && matchKeyword(r, opts.keyword) && matchWeek(r, opts.week));
+  let filtered = records.filter(r => matchFeature(r, opts.feature) && matchKeyword(r, opts.keyword) && matchWeek(r, opts.week) && matchName(r, opts.name));
   filtered.sort((a, b) => scoreRelevance(b, opts.feature, opts.keyword) - scoreRelevance(a, opts.feature, opts.keyword));
   filtered = filtered.slice(0, opts.limit);
 
@@ -351,7 +379,7 @@ async function cmdTrends(opts) {
 async function main() {
   const opts = parseArgs(process.argv);
   switch (opts.command) {
-    case 'write': await cmdWrite(opts.file); break;
+    case 'write': await cmdWrite(opts.file, opts); break;
     case 'query': await cmdQuery(opts); break;
     case 'stats': await cmdStats(opts); break;
     case 'ls': await cmdLs(opts); break;

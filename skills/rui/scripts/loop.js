@@ -17,7 +17,7 @@ const fsp = fs.promises;
 const path = require('path');
 const { execSync } = require('child_process');
 
-const REPO_ROOT = path.resolve(__dirname, '../../../..');
+const REPO_ROOT = path.resolve(__dirname, '../../..');
 const SELF_IMPROVE = path.join(__dirname, 'self-improve.js');
 const EXEC_MEMORY = path.join(__dirname, 'execution-memory.js');
 const STORYBOARDS_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');

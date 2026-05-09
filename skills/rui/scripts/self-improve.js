@@ -21,10 +21,14 @@ const path = require('path');
 const { execSync } = require('child_process');
 const { getNaturalWeekRange } = require('./natural-week.js');
 
-const REPO_ROOT = path.resolve(__dirname, '../../../..');
+const REPO_ROOT = path.resolve(__dirname, '../../..');
 const IMPROVEMENT_DIR = path.join(REPO_ROOT, 'docs', '.improvement');
 const PROPOSALS_FILE = path.join(IMPROVEMENT_DIR, 'proposals.jsonl');
 const HEALTH_CACHE_FILE = path.join(IMPROVEMENT_DIR, '.last-health.json');
+const STORIES_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
+
+function storyImprovementDir(name) { return path.join(STORIES_DIR, name, '.improvement'); }
+function storyProposalsFile(name) { return path.join(storyImprovementDir(name), 'proposals.jsonl'); }
 
 const RATING_VALUES = new Set(['helpful', 'neutral', 'harmful']);
 
@@ -228,7 +232,7 @@ async function writeProposals(proposals) {
   await fsp.writeFile(PROPOSALS_FILE, proposals.map(p => JSON.stringify(p)).join('\n') + '\n', 'utf8');
 }
 
-async function writeProposal(proposal) {
+async function writeProposal(proposal, opts) {
   await ensureProposalsFile();
   if (!proposal.id) {
     const hash = Math.random().toString(36).slice(2, 8);
@@ -239,7 +243,26 @@ async function writeProposal(proposal) {
   if (!proposal.trigger_op) proposal.trigger_op = 'init';
   if (!proposal.feedback) proposal.feedback = [];
   if (!proposal.eval_result) proposal.eval_result = null;
-  await fsp.appendFile(PROPOSALS_FILE, JSON.stringify(proposal) + '\n', 'utf8');
+  // Enriched fields
+  if (!proposal.story_name && opts && opts.name) proposal.story_name = opts.name;
+  if (!proposal.source_phase) proposal.source_phase = null;
+  if (!proposal.actionable_command) proposal.actionable_command = null;
+  if (!proposal.linked_memory_ids) proposal.linked_memory_ids = [];
+
+  const line = JSON.stringify(proposal);
+
+  // Always write to global
+  await fsp.appendFile(PROPOSALS_FILE, line + '\n', 'utf8');
+
+  // Dual-write to per-story if --name provided
+  const name = (opts && opts.name) || proposal.story_name;
+  if (name) {
+    const dir = storyImprovementDir(name);
+    const file = storyProposalsFile(name);
+    await fsp.mkdir(dir, { recursive: true });
+    await fsp.appendFile(file, line + '\n', 'utf8');
+  }
+
   return proposal.id;
 }
 
@@ -723,7 +746,7 @@ function cmdSnapshot(jsonOutput) {
   }
 }
 
-async function cmdProposals(statusFilter, triggerFilter, jsonOutput) {
+async function cmdProposals(statusFilter, triggerFilter, jsonOutput, nameFilter) {
   const proposals = await readProposals();
   let filtered = proposals;
   if (statusFilter) {
@@ -731,6 +754,9 @@ async function cmdProposals(statusFilter, triggerFilter, jsonOutput) {
   }
   if (triggerFilter) {
     filtered = filtered.filter(p => p.trigger_op === triggerFilter);
+  }
+  if (nameFilter) {
+    filtered = filtered.filter(p => (p.story_name || '') === nameFilter);
   }
 
   if (jsonOutput) {
@@ -748,15 +774,17 @@ async function cmdProposals(statusFilter, triggerFilter, jsonOutput) {
     const badge = p.status === 'open' ? '🟡' : p.status === 'done' ? '✅' : '⏭️';
     const evalBadge = p.eval_result === 'improved' ? '📈' : p.eval_result === 'degraded' ? '📉' : p.eval_result === 'neutral' ? '➡️' : p.eval_result === 'pending' ? '⏳' : '';
     console.log(`${i + 1}. ${badge} ${evalBadge} [${p.priority}] ${p.title}`);
-    console.log(`   Type: ${p.type} | Source: ${p.problem_source || 'N/A'}`);
+    console.log(`   Type: ${p.type} | Source: ${p.problem_source || 'N/A'}${p.story_name ? ' | Story: ' + p.story_name : ''}${p.source_phase ? ' | Phase: ' + p.source_phase : ''}`);
     console.log(`   ID: ${p.id} | Date: ${p.date} | Status: ${p.status}`);
     if (p.evidence) console.log(`   Evidence: ${p.evidence}`);
+    if (p.actionable_command) console.log(`   Command: \`${p.actionable_command}\``);
     if (p.current_state) console.log(`   Current: ${p.current_state}`);
     if (p.target_state) console.log(`   Target: ${p.target_state}`);
     if (p.s1_metrics) console.log(`   架构: coupling=${p.s1_metrics.coupling_hotspots} cohesion=${p.s1_metrics.cohesion_risks} boundary=${p.s1_metrics.boundary_gaps}`);
     if (p.s2_metrics) console.log(`   工流: blocked_rate=${p.s2_metrics.blocked_rate} avg_p0_rounds=${p.s2_metrics.avg_p0_rounds}`);
     if (p.resolved_by) console.log(`   Resolved by: ${p.resolved_by}`);
     if (p.eval_result) console.log(`   Eval: ${p.eval_result} (${p.eval_date || 'N/A'})`);
+    if ((p.linked_memory_ids || []).length > 0) console.log(`   Linked memories: ${p.linked_memory_ids.join(', ')}`);
     if ((p.feedback || []).length > 0) {
       const fSummary = p.feedback.map(f => `${f.rating}`).join(',');
       console.log(`   Feedback: ${fSummary}`);
@@ -798,6 +826,10 @@ async function main() {
   const note = noteIdx !== -1 ? args[noteIdx + 1] : null;
   const resolvedByIdx = args.indexOf('--resolved-by');
   const resolvedBy = resolvedByIdx !== -1 ? args[resolvedByIdx + 1] : null;
+  const nameIdx = args.indexOf('--name');
+  const nameFilter = nameIdx !== -1 ? args[nameIdx + 1] : null;
+
+  const opts = { name: nameFilter };
 
   switch (command) {
     case 'snapshot':
@@ -814,7 +846,7 @@ async function main() {
       }
       break;
     case 'proposals':
-      await cmdProposals(statusFilter, triggerFilter, jsonOutput);
+      await cmdProposals(statusFilter, triggerFilter, jsonOutput, nameFilter);
       break;
     case 'resolve':
       await cmdResolve(args[1], resolvedBy);
