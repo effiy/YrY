@@ -70,8 +70,11 @@ sequenceDiagram
 # workspace 模式（rui 默认调用）
 node skills/import-docs/scripts/import-docs.js --workspace
 
-# 单目录模式
-node skills/import-docs/scripts/import-docs.js --dir <path> [--exts md,json]
+# 单目录 + 自定义扩展名
+node skills/import-docs/scripts/import-docs.js --dir <path> --exts md,json,yaml
+
+# 排除特定子目录
+node skills/import-docs/scripts/import-docs.js --workspace --exclude tmp,build
 
 # 仅枚举（不导入）
 node skills/import-docs/scripts/import-docs.js list --workspace
@@ -80,9 +83,9 @@ node skills/import-docs/scripts/import-docs.js list --workspace
 | 参数 | 默认值 | 描述 |
 |------|--------|------|
 | `--workspace` / `-w` | — | 按工作区扫描规则导入 |
-| `--exclude` / `-x` | — | 排除的子项目（逗号分隔，仅 workspace 模式） |
 | `--dir` / `-d` | 自动检测 | 单目录导入 |
-| `--exts` / `-e` | 自动检测 | 扩展名过滤（逗号分隔） |
+| `--exts` / `-e` | `md` | 扩展名过滤（逗号分隔，不含点） |
+| `--exclude` / `-x` | — | 排除的子目录（逗号分隔，workspace 和单目录模式均可用） |
 | `--prefix` / `-p` | 空 | 远端路径前缀 |
 | `--api-url` / `-a` | `https://api.effiy.cn` | API 地址 |
 | `command` | `import` | `import` 导入；`list` 仅枚举 |

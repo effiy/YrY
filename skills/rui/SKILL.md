@@ -434,6 +434,6 @@ flowchart LR
 - **列表**: `node skills/rui/scripts/list.js`
 - **文档同步**: `node skills/import-docs/scripts/import-docs.js --workspace`
 - **通知**: `wework-bot`
-- **Agent**: [`.claude/agents/AGENT.md`](../../agents/AGENT.md)
+- **Agent**: [`agents/AGENT.md`](../../agents/AGENT.md)
 - **模板**: [`templates/故事任务模板.md`](templates/故事任务模板.md) · [`templates/后端技术评审模板.md`](templates/后端技术评审模板.md) · [`templates/前端技术评审模板.md`](templates/前端技术评审模板.md) · [`templates/测试用例评审模板.md`](templates/测试用例评审模板.md) · [`templates/后端实施报告模板.md`](templates/后端实施报告模板.md) · [`templates/前端实施报告模板.md`](templates/前端实施报告模板.md) · [`templates/测试用例报告模板.md`](templates/测试用例报告模板.md) · [`templates/自改进复盘模板.md`](templates/自改进复盘模板.md)
 - **规则**: [`rules/doc-generation.md`](rules/doc-generation.md) · [`rules/code-pipeline.md`](rules/code-pipeline.md) · [`rules/gate-rules.md`](rules/gate-rules.md) · [`rules/self-improve.md`](rules/self-improve.md)

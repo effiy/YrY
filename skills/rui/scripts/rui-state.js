@@ -54,7 +54,7 @@ async function cmdSave(opts) {
     blocked: opts.blocked,
     block_reason: opts.blocked ? (opts.reason || 'Not specified') : null,
     timestamp: new Date().toISOString(),
-    storyboard: `docs/storyboards/${opts.name}.md`,
+    storyboard: `docs/故事任务面板/${opts.name}/故事任务.md`,
   };
 
   await ensureDir();
@@ -114,7 +114,7 @@ async function cmdNextStep() {
   // No state at all
   if (!state) {
     if (storyboards.length > 0) {
-      const names = storyboards.map(s => path.basename(s, '.md'));
+      const names = storyboards;
       console.log(`运行 \`/rui <name>\` 开始端到端流程。已有故事板: ${names.join(', ')}`);
     } else {
       console.log('运行 `/rui init` 初始化项目，或 `/rui <name>` 开始第一个端到端流程。');
@@ -126,20 +126,13 @@ async function cmdNextStep() {
   const { command, name } = state;
 
   if (command === 'init') {
-    // After init completes: suggest next story to doc/code
-    if (storyboards.length > 0) {
-      const names = storyboards.map(s => path.basename(s, '.md'));
-      console.log(`运行 \`/rui doc ${names[0].replace('.md', '')}\` 开始编写文档。已有故事板: ${names.join(', ')}`);
-    } else {
-      console.log('运行 `/rui <name>` 开始第一个端到端流程。');
-    }
+    // After init: project baseline established, suggest creating stories
+    console.log('运行 `/rui doc <requirement>` 拆分需求为故事。');
   } else if (command === 'doc') {
     console.log(`运行 \`/rui code ${name}\` 开始编码实现。`);
   } else if (command === 'code') {
     // After code completes: check if more stories need code
-    const remaining = storyboards
-      .map(s => path.basename(s, '.md'))
-      .filter(n => n !== name);
+    const remaining = storyboards.filter(n => n !== name);
 
     if (remaining.length > 0) {
       console.log(`运行 \`/rui code ${remaining[0]}\` 继续下一个故事。剩余故事: ${remaining.join(', ')}`);
@@ -149,7 +142,7 @@ async function cmdNextStep() {
   } else {
     // Full pipeline (端到端)
     if (storyboards.length > 0) {
-      const names = storyboards.map(s => path.basename(s, '.md'));
+      const names = storyboards;
       const remaining = names.filter(n => n !== name);
       if (remaining.length > 0) {
         console.log(`运行 \`/rui ${remaining[0]}\` 继续下一个故事。剩余故事: ${remaining.join(', ')}`);
@@ -172,11 +165,11 @@ async function readState() {
 }
 
 async function findStoryboards() {
-  const dir = path.join(REPO_ROOT, 'docs', 'storyboards');
+  const dir = path.join(REPO_ROOT, 'docs', '故事任务面板');
   try {
     const entries = await fsp.readdir(dir, { withFileTypes: true });
     return entries
-      .filter(e => e.isFile() && e.name.endsWith('.md'))
+      .filter(e => e.isDirectory() && !e.name.startsWith('.'))
       .map(e => e.name)
       .sort();
   } catch {

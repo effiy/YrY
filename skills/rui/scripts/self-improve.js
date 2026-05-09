@@ -545,12 +545,12 @@ async function cmdHealth(opts) {
   let qualityScore = null;
   if (memoryStats) {
     const total = memoryStats.total || 0;
-    const p0Count = memoryStats.changeLevels ? 0 : 0; // P0 from quality_issues not in stats
-    // Use blocked + quality_issues from stats
+    const p0 = (memoryStats.qualityIssues?.P0 || 0);
     if (total > 0) {
-      // Approximate: if blocked rate is 0 and no P0 issues reported, score = 100
-      const blockedRate = (memoryStats.blocked || 0) / total;
-      qualityScore = Math.round(Math.max(0, 100 - blockedRate * 100));
+      const p0Rate = p0 / total;
+      qualityScore = Math.round(Math.max(0, 100 - p0Rate * 200));
+    } else {
+      qualityScore = 100;
     }
   }
 
@@ -561,7 +561,9 @@ async function cmdHealth(opts) {
     const blocked = memoryStats.blocked || 0;
     if (total > 0) {
       const blockedRate = blocked / total;
-      blockedScore = Math.round(Math.max(0, 100 - blockedRate * 100));
+      blockedScore = Math.round(Math.max(0, 100 - blockedRate * 200));
+    } else {
+      blockedScore = 100;
     }
   }
 

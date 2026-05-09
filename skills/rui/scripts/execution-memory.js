@@ -167,6 +167,7 @@ async function cmdStats(opts) {
   const docTypeIssues = {};
   const sectionIssues = {};
   const lessonFreq = {};
+  let p0Count = 0, p1Count = 0, p2Count = 0;
 
   filtered.forEach(r => {
     if (r.actual_change_level) changeLevels[r.actual_change_level] = (changeLevels[r.actual_change_level] || 0) + 1;
@@ -183,6 +184,9 @@ async function cmdStats(opts) {
         sectionIssues[key] = (sectionIssues[key] || 0) + 1;
       });
     });
+    p0Count += (r.quality_issues?.P0 || []).length;
+    p1Count += (r.quality_issues?.P1 || []).length;
+    p2Count += (r.quality_issues?.P2 || []).length;
     (r.bad_cases || []).forEach(b => {
       const key = `${b.agent}::${b.lesson}`;
       lessonFreq[key] = (lessonFreq[key] || 0) + 1;
@@ -194,13 +198,14 @@ async function cmdStats(opts) {
   const topLessons = Object.entries(lessonFreq).sort((a, b) => b[1] - a[1]).slice(0, 5);
 
   if (opts.json) {
-    console.log(JSON.stringify({ total, blocked, changeLevels, agentFreq, topDocTypeIssues, topSectionIssues, topLessons }, null, 2));
+    console.log(JSON.stringify({ total, blocked, changeLevels, qualityIssues: { P0: p0Count, P1: p1Count, P2: p2Count }, agentFreq, topDocTypeIssues, topSectionIssues, topLessons }, null, 2));
     return;
   }
 
   console.log(`# Execution Memory Statistics${opts.week ? ' · ' + getNaturalWeekRange(new Date(opts.week)).range : ''}\n`);
   console.log(`- **Total records**: ${total}`);
   console.log(`- **Blocked count**: ${blocked}`);
+  console.log(`- **Quality issues**: P0=${p0Count}, P1=${p1Count}, P2=${p2Count}`);
   console.log(`- **Change level distribution**: T1=${changeLevels.T1}, T2=${changeLevels.T2}, T3=${changeLevels.T3}`);
   console.log(`\n## Agent Invocation Frequency`);
   Object.entries(agentFreq).sort((a, b) => b[1] - a[1]).forEach(([a, c]) => console.log(`- ${a}: ${c}`));

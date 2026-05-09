@@ -18,9 +18,9 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const REPO_ROOT = path.resolve(__dirname, '../../../..');
-const SELF_IMPROVE = path.join(REPO_ROOT, '.claude/skills/rui/scripts/self-improve.js');
-const EXEC_MEMORY = path.join(REPO_ROOT, '.claude/skills/rui/scripts/execution-memory.js');
-const STORYBOARDS_DIR = path.join(REPO_ROOT, 'docs', 'storyboards');
+const SELF_IMPROVE = path.join(__dirname, 'self-improve.js');
+const EXEC_MEMORY = path.join(__dirname, 'execution-memory.js');
+const STORYBOARDS_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 function sh(cmd) {
   try {
     return execSync(cmd, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'], cwd: REPO_ROOT }).trim();
@@ -205,9 +205,14 @@ async function appendToStoryboard(filePath, data) {
 async function findStoryboards() {
   try {
     const entries = await fsp.readdir(STORYBOARDS_DIR, { withFileTypes: true });
-    return entries
-      .filter(e => e.isFile() && e.name.endsWith('.md'))
-      .map(e => path.join(STORYBOARDS_DIR, e.name));
+    const results = [];
+    for (const e of entries) {
+      if (e.isDirectory() && !e.name.startsWith('.')) {
+        const storyFile = path.join(STORYBOARDS_DIR, e.name, '故事任务.md');
+        try { await fsp.access(storyFile); results.push(storyFile); } catch {}
+      }
+    }
+    return results;
   } catch {
     return [];
   }
