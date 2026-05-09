@@ -21,7 +21,6 @@ flowchart TD
     ROUTE -->|code &lt;name&gt;| CODE["预检→测试先行→实现→验证→自改进"]
     ROUTE -->|&lt;requirement&gt;| FULL["需求拆分 → 逐故事串行: 文档管线 → 代码管线 端到端"]
     ROUTE -->|list| LIST["扫描故事任务面板 → 输出未完成故事列表"]
-    ROUTE -->|"claude-sync"| SYNC["删除本地 .claude → rsync 远端 .claude 到本地"]
     ROUTE -->|empty| SUGGEST["扫描项目与故事状态 → 推荐 5~10 条任务提示"]
 
     INIT --> DELIVER["交付: wework-bot 追加日志 → import-docs → wework-bot 发送"]
@@ -31,7 +30,6 @@ flowchart TD
     FULL --> DELIVER
     LIST --> DELIVER
     UPDATE --> DELIVER
-    SYNC --> DELIVER
     SUGGEST --> DELIVER
 ```
 
@@ -48,8 +46,9 @@ flowchart TD
 | `/rui code <name>` | 预检（含文档补齐）→ 测试先行 → 实现 → 验证 → 自改进 → 交付（01-故事任务.md 必须存在，缺失的技术评审自动补齐，最终产出故事目录全 8 份文档） |
 | `/rui <requirement>` | 需求拆分 → 逐故事串行: 文档管线 → 代码管线 端到端 → 交付 |
 | `/rui list` | 扫描故事任务面板，列出所有未完成故事及其进度状态 |
-| `/rui claude-sync` | 删除本地 `.claude` 目录，从远端 rsync 拉取最新 `.claude` 配置 |
 | `/rui`（空输入） | 扫描项目与故事状态 → 推荐 5~10 条任务提示 |
+
+> `.claude` 配置管理请使用 [`/rui-claude`](../rui-claude/SKILL.md) 技能（sync / diff）。
 
 `<requirement>` 可以是：
 - 需求描述文本（如 `用户登录功能，支持密码和OAuth`）
@@ -594,25 +593,6 @@ flowchart TD
 
 ---
 
-## /rui claude-sync
-
-从远端服务器同步最新 `.claude` 配置到本地项目。覆盖式更新：先删除本地 `.claude` 目录，再 rsync 拉取。
-
-```mermaid
-flowchart LR
-    RM["rm -rf .claude"] --> RSYNC["rsync -avz --exclude '.git'<br/>root@www.effiy.cn:.../YrY/ → ./.claude/"]
-    RSYNC --> DONE["同步完成"]
-```
-
-| Step | 操作 | 命令 |
-|------|------|------|
-| 1 | 删除本地 `.claude` | `rm -rf .claude` |
-| 2 | rsync 远端 YrY 内容到本地 `.claude` | `rsync -avz --exclude '.git' root@www.effiy.cn:/home/claude/YiKnowledge/static/YrY/ ./.claude/` |
-
-> **前置条件**：本机 SSH key 已授权访问 `root@www.effiy.cn`。
-
----
-
 ## /rui（空输入）
 
 当 `/rui` 无任何参数或输入为空时，不执行管线，而是扫描项目状态和已有故事进度，推荐 5~10 条可执行的任务提示。
@@ -924,6 +904,7 @@ flowchart LR
 - **--all 状态**: `node skills/rui/scripts/rui-state.js all-init|all-module-done|all-module-blocked|all-status`
 - **文档同步**: `Skill(import-docs, --workspace)`（rui 自动触发）
 - **通知**: `Skill(wework-bot, --name <story-name>)`（rui 自动触发）
+- **.claude 管理**: `Skill(rui-claude, sync|diff)`（独立技能）
 - **Agent**: [`agents/AGENT.md`](../../agents/AGENT.md)
 - **模板**: [`templates/故事任务模板.md`](templates/故事任务模板.md) · [`templates/后端技术评审模板.md`](templates/后端技术评审模板.md) · [`templates/前端技术评审模板.md`](templates/前端技术评审模板.md) · [`templates/测试用例评审模板.md`](templates/测试用例评审模板.md) · [`templates/后端实施报告模板.md`](templates/后端实施报告模板.md) · [`templates/前端实施报告模板.md`](templates/前端实施报告模板.md) · [`templates/测试用例报告模板.md`](templates/测试用例报告模板.md) · [`templates/自改进复盘模板.md`](templates/自改进复盘模板.md)
 - **规则**: [`rules/doc-generation.md`](rules/doc-generation.md) · [`rules/code-pipeline.md`](rules/code-pipeline.md) · [`rules/gate-rules.md`](rules/gate-rules.md) · [`rules/self-improve.md`](rules/self-improve.md)
