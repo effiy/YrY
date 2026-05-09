@@ -93,8 +93,13 @@ flowchart TD
     CHECK -->|FAIL| FIX["修复缺失项"]
     FIX --> CHECK
     ROUTE_ALL -->|否| DELIVER["交付"]
-    ROUTE_ALL -->|是| MODULE["项目模块分析<br/>扫描项目结构 → 识别独立功能模块"]
-    MODULE --> PER_MODULE["逐模块: /rui &lt;requirement&gt; 端到端<br/>故事拆分 → 文档管线 → 代码管线"]
+    ROUTE_ALL -->|是| PREFLIGHT["--all 前置校验<br/>构建脚本 + 依赖 + 关键目录"]
+    PREFLIGHT --> RESUME_CHECK{"all-modules.json<br/>存在且有未完成模块?"}
+    RESUME_CHECK -->|是| RESUME["断点续传<br/>加载已有模块清单 → 跳到第一个未完成模块"]
+    RESUME_CHECK -->|否| MODULE["项目模块分析<br/>扫描项目结构 → 识别独立功能模块"]
+    MODULE --> PERSIST["持久化模块清单<br/>all-init → all-modules.json"]
+    PERSIST --> PER_MODULE["逐模块: /rui &lt;requirement&gt; 端到端<br/>故事拆分 → 文档管线 → 代码管线"]
+    RESUME --> PER_MODULE
     PER_MODULE --> DELIVER
 ```
 
@@ -104,8 +109,10 @@ flowchart TD
 | 基线注入 | 从 CLAUDE.md + README.md 提取项目约定，注入下游生成<br>pm | 项目约定摘要（技术栈、编码规范、禁止事项、目录结构、关键文件） |
 | Agent & Rule & Template & MCP | 基于项目约定生成/更新 agents/、rules/、templates/、.mcp.json<br>pm | AGENT.md、pm.md/coder.md/tester.md/security.md/reporter.md（含项目特定规则）、rules/（code-pipeline.md、doc-generation.md、gate-rules.md、self-improve.md）、templates/（故事任务模板.md、后端技术评审模板.md、前端技术评审模板.md、测试用例评审模板.md、后端实施报告模板.md、前端实施报告模板.md、测试用例报告模板.md、自改进复盘模板.md）、.mcp.json |
 | 就绪检查 | 8 项检查，失败则修复重检<br>tester, reporter, security | 8 项检查全部通过 |
-| 项目模块分析（仅 `--all`） | 扫描项目结构、CLAUDE.md、README.md、源码目录，识别独立功能模块，每个模块生成需求描述<br>pm | 模块清单 + 每个模块的需求摘要 |
-| 逐模块端到端（仅 `--all`） | 每个模块依次执行 `/rui <requirement>` 端到端：故事拆分 → 逐故事: 文档管线 → 代码管线 → 交付<br>pm, coder, tester, security, reporter, self-improve | 每个故事目录全 8 份文档 + .improvement/ + .memory/ |
+| --all 前置校验（仅 `--all`） | 检查构建脚本可用性、关键依赖安装状态、源码目录存在性<br>pm | 前置校验通过（阻断则不进入模块分析） |
+| 断点续传检查（仅 `--all`） | 检查 `docs/.memory/all-modules.json` 是否存在且有未完成模块。存在则跳过模块分析，直接从第一个 pending/in_progress 模块继续<br>pm | 续传：输出已完成摘要 + 剩余模块列表 |
+| 项目模块分析（仅 `--all`，首次运行） | 扫描项目结构、CLAUDE.md、README.md、源码目录，识别独立功能模块，每个模块生成需求描述。完成后调用 `all-init` 持久化<br>pm | 模块清单 + all-modules.json |
+| 逐模块端到端（仅 `--all`） | 每个模块依次执行 `/rui <requirement>` 端到端：故事拆分 → 逐故事: 文档管线 → 代码管线 → 交付。每模块完成后调用 `all-module-done`，阻断时调用 `all-module-blocked`<br>pm, coder, tester, security, reporter, self-improve | 每个故事目录全 8 份文档 + .improvement/ + .memory/ |
 | 交付 | import-docs → wework-bot | — |
 
 ### 基线注入
@@ -143,14 +150,20 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    READY["就绪检查 PASS"] --> SCAN["项目模块分析<br/>pm 扫描项目结构"]
+    READY["就绪检查 PASS"] --> RESUME_CHECK{"all-modules.json<br/>存在且有未完成模块?"}
+    RESUME_CHECK -->|是| RESUME["断点续传<br/>加载已有模块清单 → 跳到第一个未完成模块"]
+    RESUME_CHECK -->|否| SCAN["项目模块分析<br/>pm 扫描项目结构"]
     SCAN --> IDENTIFY["识别独立功能模块"]
-    IDENTIFY --> M1["模块 1: /rui &lt;req&gt; 端到端<br/>故事拆分 → 逐故事: 文档管线 → 代码管线"]
-    M1 --> D1["✓ 模块 1 全部故事交付"]
+    IDENTIFY --> PERSIST["持久化<br/>all-init → all-modules.json"]
+    PERSIST --> M1["模块 1: /rui &lt;req&gt; 端到端<br/>故事拆分 → 逐故事: 文档管线 → 代码管线"]
+    RESUME --> SKIP_DONE["跳过已完成/已阻断模块"]
+    SKIP_DONE --> M1_NEXT["从第一个 pending 模块继续<br/>逐模块: /rui &lt;req&gt; 端到端"]
+    M1 --> D1["✓ 模块 1 交付 → all-module-done"]
     D1 --> M2["模块 2: /rui &lt;req&gt; 端到端"]
-    M2 --> D2["✓ 模块 2 全部故事交付"]
+    M2 --> D2["✓ 模块 2 交付 → all-module-done"]
     D2 --> MN["..."]
     MN --> DONE["全项目故事覆盖完成"]
+    M1_NEXT --> D1
 ```
 
 #### 项目模块分析
@@ -173,7 +186,38 @@ pm 扫描以下信息源，识别项目中的独立功能模块：
 4. 优先识别有用户可感知价值的模块（面向用户的功能），其次为基础设施模块
 5. 每个模块生成一段需求描述（2-5 句话），作为该模块 `/rui <requirement>` 的输入
 
-**模块清单输出**：
+#### 状态持久化
+
+`--all` 模式的模块分析结果持久化到 `docs/.memory/all-modules.json`，支持断点续传和进度追踪。
+
+| 操作 | 脚本命令 | 说明 |
+|------|---------|------|
+| 初始化 | `node skills/rui/scripts/rui-state.js all-init [--file <path>] [--force]` | 写入模块清单 JSON（stdin 或 --file 输入），生成 session_id 和时间戳。若已存在未完成运行则警告退出，--force 覆盖 |
+| 模块完成 | `node skills/rui/scripts/rui-state.js all-module-done --name <module> [--stories <csv>]` | 标记模块为 completed，记录关联故事名。全部模块终端态时自动设置 top-level status |
+| 模块阻断 | `node skills/rui/scripts/rui-state.js all-module-blocked --name <module> --reason <text>` | 标记模块为 blocked，记录阻断原因，top-level status → blocked |
+| 进度查看 | `node skills/rui/scripts/rui-state.js all-status [--json]` | 输出模块进度表（markdown table）或完整 JSON |
+
+**执行约束**：
+- pm 完成模块分析后，调用 `all-init` 持久化模块清单
+- 每个模块端到端完成后，调用 `all-module-done` 记录（含故事名列表）
+- 模块被阻断时，调用 `all-module-blocked` 记录原因，继续处理下一个模块
+- 全部模块处理完毕后，汇总阻断清单供人工介入
+
+#### 断点续传
+
+`rui init --all` 支持中断后恢复：
+
+1. 重新运行 `rui init --all` 时，就绪检查通过后首先检查 `docs/.memory/all-modules.json` 是否存在
+2. 如果文件存在且 status 为 `in_progress` 或 `blocked` 且有未完成模块：
+   - pm 输出已完成的模块摘要和剩余模块列表
+   - 从第一个 `pending` 或 `in_progress` 状态的模块继续处理
+   - 已完成（`completed`）和已阻断（`blocked`）的模块跳过
+3. 如果所有模块已完成或已阻断，输出汇总并跳过逐模块处理，直接进入交付阶段
+4. 如果文件不存在，执行完整模块分析流程（同首次运行）
+
+#### 模块清单输出
+
+模块清单同时持久化到 `docs/.memory/all-modules.json`。执行 `node skills/rui/scripts/rui-state.js all-status` 查看进度。
 
 ```
 📦 项目模块分析（共 N 个模块）
@@ -683,6 +727,34 @@ docs/                           ← 全局聚合（跨故事查询）
 
 **消费方**：`/rui list` 读取 pipeline_progress 判定故事进度；`/rui`（空输入）读取 blocked 阶段推荐恢复命令；`rui-state.js next-step` 基于完成阶段推荐下一步。
 
+### all-modules.json
+
+单对象 JSON 文件。记录 `--all` 模式的模块级进度。
+
+| 字段 | 类型 | 描述 |
+|------|------|------|
+| session_id | string | 当前 `--all` 会话标识 |
+| started_at | ISO 8601 | `--all` 启动时间 |
+| updated_at | ISO 8601 | 最后更新时间 |
+| status | string | 整体状态：`in_progress` / `completed` / `blocked` / `abandoned` |
+| modules | array | 模块列表 |
+
+**modules 数组元素**：
+
+| 字段 | 类型 | 描述 |
+|------|------|------|
+| name | string | 模块英文名（如 `auth-system`） |
+| description | string | 模块功能描述（2-5 句） |
+| source_dirs | string[] | 模块涉及的源码目录/文件路径 |
+| order | number | 模块处理顺序 |
+| status | string | 模块状态：`pending` / `in_progress` / `completed` / `blocked` |
+| block_reason | string\|null | 阻断原因（仅 blocked 状态） |
+| stories_created | string[] | 该模块生成的故事目录名列表 |
+| started_at | ISO 8601\|null | 模块开始处理时间 |
+| completed_at | ISO 8601\|null | 模块完成时间 |
+
+**消费方**：`rui init --all` 检查文件决定是否断点续传；`rui-state.js all-status` 输出进度表；`/rui`（空输入）读取模块进度生成推荐。
+
 ### proposals.jsonl
 
 追加写入，每行一个 JSON 对象。记录自改进引擎生成的改进提案。
@@ -849,6 +921,7 @@ flowchart LR
 - **执行记忆**: `node skills/rui/scripts/execution-memory.js`
 - **断点**: `node skills/rui/scripts/rui-state.js <save|load|clear>`
 - **列表**: `node skills/rui/scripts/list.js`
+- **--all 状态**: `node skills/rui/scripts/rui-state.js all-init|all-module-done|all-module-blocked|all-status`
 - **文档同步**: `Skill(import-docs, --workspace)`（rui 自动触发）
 - **通知**: `Skill(wework-bot, --name <story-name>)`（rui 自动触发）
 - **Agent**: [`agents/AGENT.md`](../../agents/AGENT.md)
