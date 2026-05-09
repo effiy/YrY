@@ -1,8 +1,9 @@
 ---
 name: import-docs
 description: |
-  Batch synchronize local documents to remote document API. Mandatory step upon
-  rui completion.
+  Batch synchronize local documents to remote document API. Auto-invoked by rui
+  via Skill tool at the end of every pipeline — mandatory step, not user-facing
+  unless called directly.
 user_invocable: true
 lifecycle: default-pipeline
 ---
@@ -23,6 +24,19 @@ flowchart TD
     DEDUP -->|否| NEW["新建（created）"]
     OW & NEW --> STATS["汇总: 新建 N / 覆盖 N / 失败 N"]
 ```
+
+---
+
+## rui 自动触发
+
+import-docs 是 rui 管线交付阶段的强制步骤（Step 2/3），由 rui 通过 `Skill(import-docs, --workspace)` 自动调用，不等待用户指令。
+
+| 触发方 | 场景 | 调用方式 |
+|--------|------|---------|
+| `rui` 编排器 | 每条命令末端（init/doc/update/code/full/list/空输入） | `Skill(import-docs, --workspace)` |
+| 用户直接调用 | 手动同步文档 | `/import-docs --workspace` |
+
+> H9 降级：API_X_TOKEN 缺失时 rui 跳过此步骤，不阻断管线。
 
 ---
 

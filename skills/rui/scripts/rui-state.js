@@ -33,7 +33,7 @@ function storyMemoryDir(name) { return path.join(STORIES_DIR, name, '.memory'); 
 function storyStateFile(name) { return path.join(storyMemoryDir(name), 'rui-state.json'); }
 
 const ALL_PHASES = ['自适应规划', '影响分析', '架构设计', '文档生成', '预检', '测试先行', '实现', '验证', '自改进'];
-const UPDATE_PHASES = ['存在性检查', '上下文解析', '变更分级', '增量更新'];
+const UPDATE_PHASES = ['存在性检查', '版本/结构检测', '结构补齐', '上下文解析', '变更分级', '增量更新'];
 
 function parseArgs(argv) {
   const out = { command: null, name: null, stage: null, blocked: false, reason: '', json: false, prevStage: null, trigger: null };
