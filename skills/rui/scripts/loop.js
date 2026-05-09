@@ -208,7 +208,7 @@ async function findStoryboards() {
     const results = [];
     for (const e of entries) {
       if (e.isDirectory() && !e.name.startsWith('.')) {
-        const storyFile = path.join(STORYBOARDS_DIR, e.name, '故事任务.md');
+        const storyFile = path.join(STORYBOARDS_DIR, e.name, '01-故事任务.md');
         try { await fsp.access(storyFile); results.push(storyFile); } catch {}
       }
     }

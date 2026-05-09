@@ -54,7 +54,7 @@ async function cmdSave(opts) {
     blocked: opts.blocked,
     block_reason: opts.blocked ? (opts.reason || 'Not specified') : null,
     timestamp: new Date().toISOString(),
-    storyboard: `docs/故事任务面板/${opts.name}/故事任务.md`,
+    storyboard: `docs/故事任务面板/${opts.name}/01-故事任务.md`,
   };
 
   await ensureDir();

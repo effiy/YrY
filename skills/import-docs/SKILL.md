@@ -30,7 +30,7 @@ flowchart TD
 
 `--workspace` 模式自动检测 workspace 根目录（向上查找 `.git` 或 `.claude/`），递归扫描项目目录下所有 `.md` 文件。
 
-- **包含**: 项目根目录及所有子目录中的 `.md` 文件
+- **包含**: 项目根目录及所有子目录中的 `.md` 文件（文件系统遍历，不受 `.gitignore` 限制）
 - **排除**: `.git`、`node_modules` 目录（不遍历）
 - **远端路径**: `<prefix>/<workspace名>/<相对路径>`，空格替换为 `_`，目录结构与本地一致
 
@@ -108,7 +108,7 @@ node skills/import-docs/scripts/import-docs.js list --workspace
 - `failed > 0` → 非零退出
 - `API_X_TOKEN` 缺失 → 停止，不尝试匿名导入（H9 降级）
 - 不得将 token 写入仓库、日志或文档
-- 文件遍历优先 `git ls-files`（遵循 `.gitignore`），回退到文件系统遍历
+- 文件遍历使用文件系统遍历，不受 `.gitignore` 限制
 
 ---
 

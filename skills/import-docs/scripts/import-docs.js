@@ -5,9 +5,6 @@ const fsp = fs.promises;
 const path = require('path');
 const https = require('https');
 const http = require('http');
-const util = require('util');
-const { execFile } = require('child_process');
-const execFileAsync = util.promisify(execFile);
 
 /**
  * 从起始目录向上查找项目根目录
@@ -33,42 +30,17 @@ function findProjectRoot(startDir) {
 }
 
 /**
- * 递归查找文件，优先使用 git ls-files，回退到文件系统遍历
+ * 递归查找文件，使用文件系统遍历（不受 .gitignore 限制）
  * @param {string} dir - 起始目录
- * @param {string} projectRoot - git 仓库根目录
+ * @param {string} projectRoot - 项目根目录
  * @param {string[]} exts - 文件扩展名列表 (不含点，如 ['md', 'json'])
  * @param {string[]} excludeDirs - 额外排除目录
  * @returns {Promise<string[]>} 文件路径列表
  */
 async function findMdFiles(dir, projectRoot, exts = ['md'], excludeDirs = []) {
-  const dirRel = path.relative(projectRoot, dir);
-  const canUseGit = projectRoot && !dirRel.startsWith('..') && !path.isAbsolute(dirRel);
   const extSet = new Set(exts.map(e => e.toLowerCase()));
   const defaultExcludes = new Set(['.git', 'node_modules']);
   excludeDirs.forEach(d => defaultExcludes.add(d));
-
-  if (canUseGit) {
-    try {
-      await fsp.access(path.join(projectRoot, '.git'));
-      const { stdout } = await execFileAsync('git', ['-c', 'core.quotePath=false', '-C', projectRoot, 'ls-files', '--cached', '--others', '--exclude-standard'], {
-        maxBuffer: 50 * 1024 * 1024
-      });
-      const dirRelPosix = dirRel.split(path.sep).join('/');
-      const gitFiles = stdout
-        .split('\n')
-        .filter(Boolean)
-        .filter(file => dirRelPosix === '' || file === dirRelPosix || file.startsWith(dirRelPosix + '/'))
-        .filter(file => extSet.has(path.extname(file).toLowerCase().slice(1)))
-        .filter(file => !file.split('/').some(part => defaultExcludes.has(part)))
-        .map(file => path.join(projectRoot, file))
-        .filter(fullPath => {
-          try { return fs.statSync(fullPath).isFile(); } catch { return false; }
-        });
-      if (gitFiles.length > 0) return gitFiles;
-    } catch {
-      // 回退到文件系统遍历
-    }
-  }
 
   const results = [];
 

@@ -20,7 +20,7 @@ flowchart TD
     ROUTE -->|&lt;requirement&gt;| FULL["需求拆分 → 逐故事: 文档管线 → 代码管线 端到端"]
     ROUTE -->|list| LIST["扫描故事任务面板 → 输出未完成故事列表"]
 
-    INIT --> DELIVER["交付: import-docs → wework-bot"]
+    INIT --> DELIVER["交付: wework-bot 追加日志 → import-docs → wework-bot 发送"]
     SPLIT --> DELIVER
     CODE --> DELIVER
     FULL --> DELIVER
@@ -35,7 +35,7 @@ flowchart TD
 |------|------|
 | `/rui init` | 基线 → 基线注入→Agent&Rule&Template → 就绪检查 → 交付（不生成故事，仅建立项目骨架） |
 | `/rui doc <requirement>` | 需求拆分 → 逐故事: 自适应规划→影响分析→架构设计→文档生成 → 交付 |
-| `/rui code <name>` | 预检（含文档补齐）→ 测试先行 → 实现 → 验证 → 自改进 → 交付（故事任务.md 必须存在，缺失的技术评审自动补齐，最终产出故事目录全 8 份文档） |
+| `/rui code <name>` | 预检（含文档补齐）→ 测试先行 → 实现 → 验证 → 自改进 → 交付（01-故事任务.md 必须存在，缺失的技术评审自动补齐，最终产出故事目录全 8 份文档） |
 | `/rui <requirement>` | 需求拆分 → 逐故事: 文档管线 → 代码管线 端到端 |
 | `/rui list` | 扫描故事任务面板，列出所有未完成故事及其进度状态 |
 
@@ -167,9 +167,9 @@ flowchart TD
 | 需求解析 | 读取需求输入（文本/@文件/URL），提取功能需求<br>pm | 需求摘要 |
 | 故事拆分 | 将需求拆分为独立功能单元，每个单元创建故事目录（英文简洁命名）<br>pm | 故事目录列表 `docs/故事任务面板/<story-name>/` |
 | 自适应规划 | 读取执行记忆，判定 T1/T2/T3 变更级别<br>pm | rui-state.json |
-| 影响分析 | 单个故事全项目影响链分析，闭合所有依赖<br>coder, reporter | 故事任务.md（§3 影响链） |
-| 架构设计 | 单个故事模块划分、接口规范、数据流设计、测试用例规划<br>coder, security, tester | 后端技术评审.md、前端技术评审.md、测试用例评审.md |
-| 文档生成 | agent 协作<br>pm (§1,§2,§4), coder (§3), tester (§1.1,§5), reporter (§4 依赖), security (§3 安全) | 故事任务.md（完整） |
+| 影响分析 | 单个故事全项目影响链分析，闭合所有依赖<br>coder, reporter | 01-故事任务.md（§3 影响链） |
+| 架构设计 | 单个故事模块划分、接口规范、数据流设计、测试用例规划<br>coder, security, tester | 02-后端技术评审.md、03-前端技术评审.md、04-测试用例评审.md |
+| 文档生成 | agent 协作<br>pm (§1,§2,§4), coder (§3), tester (§1.1,§5), reporter (§4 依赖), security (§3 安全) | 01-故事任务.md（完整） |
 
 ### 增量裁剪
 
@@ -183,7 +183,7 @@ flowchart TD
 
 ## /rui code \<name\>
 
-预检（含文档补齐）→ 测试先行 → 实现 → 验证 → 自改进 → 交付。故事任务.md 必须存在；缺失的后端/前端/测试用例技术评审在预检阶段自动补齐，确保最终产出故事目录全 8 份文档。
+预检（含文档补齐）→ 测试先行 → 实现 → 验证 → 自改进 → 交付。01-故事任务.md 必须存在；缺失的后端/前端/测试用例技术评审在预检阶段自动补齐，确保最终产出故事目录全 8 份文档。
 
 ```mermaid
 flowchart TD
@@ -204,12 +204,12 @@ flowchart TD
 | 阶段 | 做什么 | 关键产出 |
 |------|--------|---------|
 | 预检 | 双边影响分析 + 分支隔离（从 main 拉取 `feat/<name>`）+ **文档补齐**（缺失的后端/前端/测试用例技术评审自动生成，保证故事目录全 8 份文档）<br>必须从 main 分支创建<br>coder, pm, reporter | 功能分支 + 双边影响链闭合 + 补齐的技术评审 |
-| 测试先行 | Gate A：测试方案+原型，单行 CSS 可跳过<br>Gate A 未过不得编码<br>tester | 测试用例评审.md（若预检已补齐则跳过） |
+| 测试先行 | Gate A：测试方案+原型，单行 CSS 可跳过<br>Gate A 未过不得编码<br>tester | 04-测试用例评审.md（若预检已补齐则跳过） |
 | 实现 | 逐模块编码，每模块后审查：P0 必须修 / P1 建议修 / P2 可选<br>P0 未清零不进下一模块<br>coder, security, tester | 源代码（按 §4 任务列表）+ P0 清零 |
-| 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行 → 三报告产出<br>三报告相互引用闭合，各报告评审清单全部 ✅ 方可通过 Gate B<br>超过 2 轮修复阻断（H7）<br>coder（后端/前端实施报告）, tester（测试用例报告）, reporter（审阅） | 后端实施报告.md、前端实施报告.md、测试用例报告.md |
-| 自改进 | self-improve-loop：效果评估 + 基线配置复盘 + 回顾 → `loop.js run --all`<br>产出自改进复盘.md<br>pm, reporter, self-improve | 自改进复盘.md |
+| 验证 | Gate B：环境快照 → 静态预检 → 对齐 → 单次执行 → 三报告产出<br>三报告相互引用闭合，各报告评审清单全部 ✅ 方可通过 Gate B<br>超过 2 轮修复阻断（H7）<br>coder（后端/前端实施报告）, tester（测试用例报告）, reporter（审阅） | 05-后端实施报告.md、06-前端实施报告.md、07-测试用例报告.md |
+| 自改进 | self-improve-loop：效果评估 + 基线配置复盘 + 回顾 → `loop.js run --all`<br>产出08-自改进复盘.md<br>pm, reporter, self-improve | 08-自改进复盘.md |
 
-**最终产出保证：** 故事目录下 8 份文档 + 数据存储齐全——故事任务.md（前置） + 后端技术评审.md + 前端技术评审.md + 测试用例评审.md + 后端实施报告.md + 前端实施报告.md + 测试用例报告.md + 自改进复盘.md + `.improvement/proposals.jsonl` + `.memory/`（execution-memory.jsonl + rui-state.json）。
+**最终产出保证：** 故事目录下 8 份文档 + 数据存储齐全——01-故事任务.md（前置） + 02-后端技术评审.md + 03-前端技术评审.md + 04-测试用例评审.md + 05-后端实施报告.md + 06-前端实施报告.md + 07-测试用例报告.md + 08-自改进复盘.md + `.improvement/proposals.jsonl` + `.memory/`（execution-memory.jsonl + rui-state.json）。
 
 ### 验证与报告产出
 
@@ -220,9 +220,9 @@ flowchart TD
     ENV["环境快照<br/>git commit + 浏览器版本 + 数据状态"] --> STATIC["静态预检<br/>代码 vs 技术评审逐项比对"]
     STATIC --> ALIGN["对齐<br/>偏差归因：需求变更/技术限制/优化"]
     ALIGN --> EXEC["单次执行<br/>冒烟 + 回归 + Extension 专项"]
-    EXEC --> RPT_BACKEND["后端实施报告.md<br/>coder"]
-    EXEC --> RPT_FRONTEND["前端实施报告.md<br/>coder"]
-    EXEC --> RPT_TEST["测试用例报告.md<br/>tester"]
+    EXEC --> RPT_BACKEND["05-后端实施报告.md<br/>coder"]
+    EXEC --> RPT_FRONTEND["06-前端实施报告.md<br/>coder"]
+    EXEC --> RPT_TEST["07-测试用例报告.md<br/>tester"]
     RPT_BACKEND --> CROSS{"交叉验证<br/>三报告相互引用闭合"}
     RPT_FRONTEND --> CROSS
     RPT_TEST --> CROSS
@@ -231,30 +231,30 @@ flowchart TD
     FIX --> EXEC
 ```
 
-#### 后端实施报告.md
+#### 05-后端实施报告.md
 
 | 维度 | 要求 |
 |------|------|
 | 负责人 | coder |
-| 输入 | 后端技术评审.md（接口清单、消息通道、数据模型、安全约束）、实际代码、P0 审查记录 |
+| 输入 | 02-后端技术评审.md（接口清单、消息通道、数据模型、安全约束）、实际代码、P0 审查记录 |
 | 核心章节 | §1 实施总结（交付文件 + 实际接口 + 消息通道比对）、§2 偏差记录（评审 vs 实际，P0 偏差须含风险评估）、§3 P0 审查结果（逐模块清零表 + 安全缓解对照）、§4 存储变更（迁移验证）、§5 性能观察、§6 评审清单（7 项全 ✅） |
 | 完成标准 | 评审清单 7 项全部 ✅；所有交付文件与 §4 任务列表一一对应；P0 偏差均已说明原因和风险；无硬编码密钥或敏感信息 |
 
-#### 前端实施报告.md
+#### 06-前端实施报告.md
 
 | 维度 | 要求 |
 |------|------|
 | 负责人 | coder |
-| 输入 | 前端技术评审.md（组件表、Hooks 模式、样式隔离、加载顺序）、实际代码、P0 审查记录 |
+| 输入 | 03-前端技术评审.md（组件表、Hooks 模式、样式隔离、加载顺序）、实际代码、P0 审查记录 |
 | 核心章节 | §1 实施总结（交付文件 + 实际组件 + 状态管理比对）、§2 偏差记录（评审 vs 实际，P0 偏差须含风险评估）、§3 P0 审查结果（逐模块清零表）、§4 样式与隔离（作用域前缀验证）、§5 依赖与加载（manifest.json 变更 + 加载顺序验证）、§6 评审清单（9 项全 ✅） |
 | 完成标准 | 评审清单 9 项全部 ✅；组件 IIFE 封装、命名空间正确；样式使用作用域前缀无宿主污染；manifest.json 按依赖顺序排列；无 ES module 语法 |
 
-#### 测试用例报告.md
+#### 07-测试用例报告.md
 
 | 维度 | 要求 |
 |------|------|
 | 负责人 | tester |
-| 输入 | 测试用例评审.md（用例清单）、故事任务.md §3（影响链回归范围）、后端实施报告.md、前端实施报告.md |
+| 输入 | 04-测试用例评审.md（用例清单）、01-故事任务.md §3（影响链回归范围）、05-后端实施报告.md、06-前端实施报告.md |
 | 核心章节 | §1 测试环境（含 git commit hash）、§2 冒烟测试（P0 正常 + 关键边界，含通过率汇总）、§3 回归测试（范围与 §3 影响链一致）、§4 Extension 专项（SW 休眠/消息通道/存储迁移）、§5 已知问题（P0 阻断交付，>2 轮修复触发 H7）、§6 Gate B 评估、§7 评审清单（6 项全 ✅） |
 | 完成标准 | 评审清单 6 项全部 ✅；P0 用例通过率 100%；P1 用例通过率 ≥80%；P0 已知问题为 0；修复轮次 ≤2；回归范围与影响链闭合 |
 
@@ -280,7 +280,7 @@ flowchart LR
 |------|------|------|
 | 架构反思 | `self-improve.js` | 六维推演，架构指标 |
 | 工流诊断 | `self-improve.js` | 趋势分析，工流指标 |
-| 效果评估 + 回顾 | `loop.js run --all` | 自改进复盘.md |
+| 效果评估 + 回顾 | `loop.js run --all` | 08-自改进复盘.md |
 
 数据存储: `docs/故事任务面板/<name>/.improvement/proposals.jsonl` + `docs/故事任务面板/<name>/.memory/`，append-only。
 
@@ -304,15 +304,15 @@ flowchart LR
 |------|------|---------|
 | user-login | 文档完成，待编码 | 后端实施报告、前端实施报告、测试用例报告 |
 | oauth-bindding | 文档进行中 | 后端技术评审、前端技术评审、测试用例评审 |
-| chat-export | 未开始 | 故事任务.md、全部技术评审 |
+| chat-export | 未开始 | 01-故事任务.md、全部技术评审 |
 
 **状态判定规则**（按优先级，取最低阶段的未完成状态）：
 
 | 状态 | 判定条件 |
 |------|---------|
-| 未开始 | `故事任务.md` 不存在 |
-| 文档进行中 | `故事任务.md` 存在，但技术评审（后端/前端/测试用例）任一缺失 |
-| 文档完成 | `故事任务.md` + 三份技术评审齐全，实施报告缺失 |
+| 未开始 | `01-故事任务.md` 不存在 |
+| 文档进行中 | `01-故事任务.md` 存在，但技术评审（后端/前端/测试用例）任一缺失 |
+| 文档完成 | `01-故事任务.md` + 三份技术评审齐全，实施报告缺失 |
 | 代码进行中 | 文档齐全，但三份实施报告任一缺失 |
 | 代码完成 | 三份实施报告齐全 |
 | 阻断 | `.memory/rui-state.json` 中 `blocked: true` |
@@ -329,8 +329,9 @@ flowchart LR
 
 | Step | 操作 | 失败处理 |
 |------|------|---------|
-| 1 | `import-docs.js --workspace` | H9: token 缺失时跳过 |
-| 2 | wework-bot 通知 | 不可跳过 |
+| 1 | wework-bot 追加消息日志（`--no-send`） | 不可跳过 |
+| 2 | `import-docs.js --workspace` | H9: token 缺失时跳过 |
+| 3 | wework-bot 发送消息 | 不可跳过 |
 
 消息格式（纯文本，emoji 前缀，`———` 分隔）：
 
@@ -339,12 +340,12 @@ flowchart LR
 📝 描述: 为登录模块生成故事板，覆盖密码登录、短信验证码、OAuth 三种场景
 📌 范围: auth/
 👉 下一步: 运行 /rui code user-login 开始编码实现
-🌐 影响: docs/故事任务面板/user-login/故事任务.md
+🌐 影响: docs/故事任务面板/user-login/01-故事任务.md
 📎 证据: git log --oneline -1
 ⏱️ 会话: 自适应规划→策展 全流程 3.2min | 3 agents 参与
 
 ———
-变更文件: docs/故事任务面板/user-login/故事任务.md (新增, 285行)
+变更文件: docs/故事任务面板/user-login/01-故事任务.md (新增, 285行)
 ```
 
 完成或阻断后同时向用户输出下一步提示。字段要求见 wework-bot SKILL.md。
@@ -358,14 +359,15 @@ flowchart LR
 └── docs/
     └── 故事任务面板/
         └── <name>/              ← 故事目录（简写，便于分支管理）
-            ├── 故事任务.md      ← 唯一真相源
-            ├── 后端技术评审.md
-            ├── 前端技术评审.md
-            ├── 测试用例评审.md
-            ├── 后端实施报告.md
-            ├── 前端实施报告.md
-            ├── 测试用例报告.md
-            ├── 自改进复盘.md
+            ├── 01-故事任务.md      ← 唯一真相源
+            ├── 02-后端技术评审.md
+            ├── 03-前端技术评审.md
+            ├── 04-测试用例评审.md
+            ├── 05-后端实施报告.md
+            ├── 06-前端实施报告.md
+            ├── 07-测试用例报告.md
+            ├── 08-自改进复盘.md
+            ├── 09-消息通知列表.md
             ├── .improvement/
             │   └── proposals.jsonl
             └── .memory/
@@ -394,13 +396,13 @@ flowchart LR
 
 | 文件 | 负责人 | 内容 | 产出阶段 |
 |------|--------|------|---------|
-| 后端技术评审.md | coder + security | 后端技术方案评审，覆盖 Service Worker、消息通道、API 接口、存储模型、安全约束 | 文档生成（架构设计后） |
-| 前端技术评审.md | coder | 前端技术方案评审，覆盖组件树、Hooks 状态管理、交互细节、样式隔离、加载顺序 | 文档生成（架构设计后） |
-| 测试用例评审.md | tester | 测试用例完整性评审，覆盖功能、边界、异常、回归用例 | 文档生成（架构设计后） |
-| 后端实施报告.md | coder | 后端实现总结：交付文件清单 → 实际接口 vs 评审比对 → 消息通道比对 → 偏差记录（P0 含风险评估）→ 逐模块 P0 审查清零 → 安全缓解对照 → 存储变更与迁移验证 → 性能观察 → 7 项评审清单 | 验证 |
-| 前端实施报告.md | coder | 前端实现总结：交付文件清单 → 实际组件 vs 评审比对 → 状态管理比对 → 偏差记录（P0 含风险评估）→ 逐模块 P0 审查清零 → 样式隔离验证 → manifest.json 变更 + 加载顺序验证 → 9 项评审清单 | 验证 |
-| 测试用例报告.md | tester | 测试执行报告：环境快照（含 commit hash）→ 冒烟测试 + P0/P1 通过率 → 影响链回归 → Extension 专项验证 → 已知问题（P0 阻断，>2 轮 H7）→ Gate B 评估 → 6 项评审清单。引用后端/前端实施报告，交叉验证覆盖所有交付物 | 验证 |
-| 自改进复盘.md | pm + reporter | 本次故事全过程复盘，覆盖执行记忆回望、基线配置复盘、改进项、经验沉淀 | 自改进 |
+| 02-后端技术评审.md | coder + security | 后端技术方案评审，覆盖 Service Worker、消息通道、API 接口、存储模型、安全约束 | 文档生成（架构设计后） |
+| 03-前端技术评审.md | coder | 前端技术方案评审，覆盖组件树、Hooks 状态管理、交互细节、样式隔离、加载顺序 | 文档生成（架构设计后） |
+| 04-测试用例评审.md | tester | 测试用例完整性评审，覆盖功能、边界、异常、回归用例 | 文档生成（架构设计后） |
+| 05-后端实施报告.md | coder | 后端实现总结：交付文件清单 → 实际接口 vs 评审比对 → 消息通道比对 → 偏差记录（P0 含风险评估）→ 逐模块 P0 审查清零 → 安全缓解对照 → 存储变更与迁移验证 → 性能观察 → 7 项评审清单 | 验证 |
+| 06-前端实施报告.md | coder | 前端实现总结：交付文件清单 → 实际组件 vs 评审比对 → 状态管理比对 → 偏差记录（P0 含风险评估）→ 逐模块 P0 审查清零 → 样式隔离验证 → manifest.json 变更 + 加载顺序验证 → 9 项评审清单 | 验证 |
+| 07-测试用例报告.md | tester | 测试执行报告：环境快照（含 commit hash）→ 冒烟测试 + P0/P1 通过率 → 影响链回归 → Extension 专项验证 → 已知问题（P0 阻断，>2 轮 H7）→ Gate B 评估 → 6 项评审清单。引用后端/前端实施报告，交叉验证覆盖所有交付物 | 验证 |
+| 08-自改进复盘.md | pm + reporter | 本次故事全过程复盘，覆盖执行记忆回望、基线配置复盘、改进项、经验沉淀 | 自改进 |
 
 ---
 
@@ -433,7 +435,7 @@ flowchart LR
 - **断点**: `node skills/rui/scripts/rui-state.js <save|load|clear>`
 - **列表**: `node skills/rui/scripts/list.js`
 - **文档同步**: `node skills/import-docs/scripts/import-docs.js --workspace`
-- **通知**: `wework-bot`
+- **通知**: `wework-bot --name <story-name>`
 - **Agent**: [`agents/AGENT.md`](../../agents/AGENT.md)
 - **模板**: [`templates/故事任务模板.md`](templates/故事任务模板.md) · [`templates/后端技术评审模板.md`](templates/后端技术评审模板.md) · [`templates/前端技术评审模板.md`](templates/前端技术评审模板.md) · [`templates/测试用例评审模板.md`](templates/测试用例评审模板.md) · [`templates/后端实施报告模板.md`](templates/后端实施报告模板.md) · [`templates/前端实施报告模板.md`](templates/前端实施报告模板.md) · [`templates/测试用例报告模板.md`](templates/测试用例报告模板.md) · [`templates/自改进复盘模板.md`](templates/自改进复盘模板.md)
 - **规则**: [`rules/doc-generation.md`](rules/doc-generation.md) · [`rules/code-pipeline.md`](rules/code-pipeline.md) · [`rules/gate-rules.md`](rules/gate-rules.md) · [`rules/self-improve.md`](rules/self-improve.md)

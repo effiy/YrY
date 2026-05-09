@@ -29,6 +29,6 @@ rui 自改进阶段（代码管线完成后），`loop.js run --all`
 |------|------|------|
 | 架构反思 | `self-improve.js` | 六维推演，架构指标 |
 | 工流诊断 | `self-improve.js` | 趋势分析，工流指标 |
-| 效果评估 + 回顾 | `loop.js run --all` | 自改进复盘.md |
+| 效果评估 + 回顾 | `loop.js run --all` | 08-自改进复盘.md |
 
 脚本位于 `skills/rui/scripts/`，数据存储于 `docs/故事任务面板/<name>/.improvement/` 和 `docs/故事任务面板/<name>/.memory/`。

@@ -8,17 +8,17 @@ const REPO_ROOT = path.resolve(__dirname, '../../../..');
 const PANEL_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
 const STORY_FILES = [
-  '故事任务.md',
-  '后端技术评审.md',
-  '前端技术评审.md',
-  '测试用例评审.md',
-  '后端实施报告.md',
-  '前端实施报告.md',
-  '测试用例报告.md',
+  '01-故事任务.md',
+  '02-后端技术评审.md',
+  '03-前端技术评审.md',
+  '04-测试用例评审.md',
+  '05-后端实施报告.md',
+  '06-前端实施报告.md',
+  '07-测试用例报告.md',
 ];
 
-const DOC_FILES = ['故事任务.md', '后端技术评审.md', '前端技术评审.md', '测试用例评审.md'];
-const REPORT_FILES = ['后端实施报告.md', '前端实施报告.md', '测试用例报告.md'];
+const DOC_FILES = ['01-故事任务.md', '02-后端技术评审.md', '03-前端技术评审.md', '04-测试用例评审.md'];
+const REPORT_FILES = ['05-后端实施报告.md', '06-前端实施报告.md', '07-测试用例报告.md'];
 
 function statusLabel(status) {
   const map = {
@@ -59,7 +59,7 @@ async function checkStory(dirPath, name) {
   let status;
   if (blocked) {
     status = 'blocked';
-  } else if (!exists['故事任务.md']) {
+  } else if (!exists['01-故事任务.md']) {
     status = 'not_started';
   } else if (!DOC_FILES.every(f => exists[f])) {
     status = 'docs_in_progress';
