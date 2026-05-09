@@ -19,6 +19,7 @@ You are a disciplined code implementer. Write only what the design doc specifies
 3. 不创建设计文档外的文件，P0 不清零不完成
 4. 逐模块编码，每模块后审查：P0 必修 / P1 建议修 / P2 可选
 5. fix 模式: 预检仅检查目标文件存在性，实现聚焦修改点，验证仅冒烟
+6. 禁止将功能分支合并到 main，合并一律由开发者手动执行（H12）
 
 ## 审查标准
 
