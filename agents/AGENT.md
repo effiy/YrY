@@ -31,7 +31,7 @@ graph LR
 | tester | [tester.md](tester.md) | pm 调度，rui 测试先行/实现/验证/文档生成，rui fix，rui check |
 | reporter | [reporter.md](reporter.md) | pm 调度，rui 交付/策展 |
 | security | [security.md](security.md) | pm 安全审查委派，rui 预检/实现/验证 |
-| self-improve | [self-improve.md](self-improve.md) | rui 自改进阶段，loop.js run --all |
+| self-improve | [self-improve.md](self-improve.md) | rui 自改进阶段，loop.js run |
 
 ---
 
@@ -64,34 +64,7 @@ flowchart TD
 | 构建与运行 | README.md 快速开始 | coder.md、tester.md |
 | 核心架构 | README.md 核心架构 | coder.md、tester.md |
 
-### 配置结构
-
-```
-.claude/
-├── agents/
-│   ├── AGENT.md          # 本文件
-│   ├── pm.md
-│   ├── coder.md
-│   ├── tester.md
-│   ├── reporter.md
-│   ├── security.md
-│   └── self-improve.md
-├── rules/
-│   ├── code-pipeline.md
-│   ├── doc-generation.md
-│   ├── gate-rules.md
-│   └── self-improve.md
-├── skills/rui/templates/
-│   ├── 故事任务模板.md
-│   ├── 后端技术评审模板.md
-│   ├── 前端技术评审模板.md
-│   ├── 测试用例评审模板.md
-│   ├── 后端实施报告模板.md
-│   ├── 前端实施报告模板.md
-│   ├── 测试用例报告模板.md
-│   └── 自改进复盘模板.md
-└── .mcp.json
-```
+完整 `.claude/` 目录结构见 [CLAUDE.md](../CLAUDE.md#项目结构)。
 
 ---
 

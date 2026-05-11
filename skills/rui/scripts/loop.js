@@ -5,7 +5,6 @@
  *
  * Usage:
  *   node scripts/loop.js run --storyboard <path>     Append to a storyboard file
- *   node scripts/loop.js run --all                   Append to all storyboards
  *   node scripts/loop.js status [--json]
  *   node scripts/loop.js report [--json]             Output report to stdout only
  *
@@ -202,34 +201,13 @@ async function appendToStoryboard(filePath, data) {
   return true;
 }
 
-async function findStoryboards() {
-  try {
-    const entries = await fsp.readdir(STORYBOARDS_DIR, { withFileTypes: true });
-    const results = [];
-    for (const e of entries) {
-      if (e.isDirectory() && !e.name.startsWith('.')) {
-        const storyFile = path.join(STORYBOARDS_DIR, e.name, '01-故事任务.md');
-        try { await fsp.access(storyFile); results.push(storyFile); } catch {}
-      }
-    }
-    return results;
-  } catch {
-    return [];
-  }
-}
-
 // ── Commands ──
 
 async function cmdRun(opts) {
   const data = collect();
   const report = generate(data);
 
-  let files = [];
-  if (opts.storyboard) {
-    files = [opts.storyboard];
-  } else if (opts.all) {
-    files = await findStoryboards();
-  }
+  const files = opts.storyboard ? [opts.storyboard] : [];
 
   let appended = 0;
   if (files.length > 0) {
@@ -290,11 +268,10 @@ async function cmdStatus(opts) {
 async function main() {
   const args = process.argv.slice(2);
   const cmd = args[0];
-  const opts = { storyboard: null, all: false, json: false };
+  const opts = { storyboard: null, json: false };
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--storyboard') opts.storyboard = path.resolve(args[++i]);
-    else if (args[i] === '--all') opts.all = true;
     else if (args[i] === '--json') opts.json = true;
   }
 
@@ -302,7 +279,7 @@ async function main() {
   else if (cmd === 'report') await cmdReport(opts);
   else if (cmd === 'status') await cmdStatus(opts);
   else {
-    console.error(`Usage: node scripts/loop.js <run|report|status> [--storyboard <path>|--all] [--json]`);
+    console.error(`Usage: node scripts/loop.js <run|report|status> [--storyboard <path>] [--json]`);
     process.exit(1);
   }
 }

@@ -1,285 +1,75 @@
 ---
 name: rui-claude
-description: Manage .claude configuration — sync from remote and analyze local config health.
+description: Manage ALL .claude/ directories across the repo — sync from remote, analyze health, and recommend tasks.
 user_invocable: true
 lifecycle: default-pipeline
 ---
 
 # rui-claude
 
-```mermaid
-flowchart TD
-    USER["/rui-claude &lt;command&gt;"] --> ROUTE{command}
-    ROUTE -->|sync| SYNC["rm -rf .claude → rsync 远端 → 本地 .claude"]
-    ROUTE -->|retro| RETRO["分析 .claude 结构 → 生成复盘文档"]
-    ROUTE -->|fix| FIX["检查 .claude → 补齐基础设施 / --project 从根同步 / --all 批量同步"]
-    ROUTE -->|empty| RECOMMEND["扫描 .claude 状态 → 推荐任务"]
-```
-
----
+作用范围：当前项目的 `.claude/` 目录。sync / retro 均以 `.claude/` 为操作边界。
 
 ## 命令概览
 
 | 命令 | 流程 |
 |------|------|
-| `/rui-claude sync` | 删除本地 `.claude` → 从远端 rsync 拉取最新配置 |
-| `/rui-claude retro` | 分析 `.claude` 结构健康度，生成复盘文档到 `docs/自改进故事面板/` |
-| `/rui-claude fix` | 无参数：补齐基础设施。`--project <name>`：单项目同步。`--all`：全部子项目批量同步 |
-| `/rui-claude`（空输入） | 扫描 .claude 状态 → 推荐可执行任务 |
+| `/rui-claude sync` | `rm -rf .claude` → rsync 远端配置到本地 |
+| `/rui-claude retro` | 分析 .claude/ 结构健康度 → 复盘文档写入 `docs/自改进故事面板/<project>-<date>.md` |
+| `/rui-claude history` | 查看操作历史（list 最近20条 / stats 按命令统计） |
+| `/rui-claude <requirement>` | 需求解析 → 故事拆分 → 逐故事 doc+code 管线 → 交付（仅限 .claude/ 内变更） |
+| `/rui-claude` (空输入) | 扫描 .claude/ 健康 → 推荐 5~10 条任务 |
 
----
+## sync
 
-## /rui-claude sync
+覆盖式更新：
+1. `rm -rf .claude`
+2. `rsync -avz --exclude '.git' root@www.effiy.cn:/home/claude/YiKnowledge/static/${PROJECT}/.claude/ ./.claude/`
 
-从远端服务器同步最新 `.claude` 配置到本地项目。覆盖式更新：先删除本地 `.claude` 目录，再 rsync 拉取。
+`${PROJECT}` = `basename "$PWD"`。前置条件：本机 SSH key 已授权 `root@www.effiy.cn`。
+完成后自动 `node skills/rui-claude/scripts/history.js record --command sync --outcome <result>`。
 
-```mermaid
-flowchart LR
-    RM["rm -rf .claude"] --> RSYNC["rsync 远端 .claude/ → 本地 .claude/"]
-    RSYNC --> DONE["同步完成"]
-```
+## retro
 
-| Step | 操作 | 命令 |
-|------|------|------|
-| 1 | 删除本地 `.claude` | `rm -rf .claude` |
-| 2 | rsync 远端到本地 `.claude` | `rsync -avz --exclude '.git' root@www.effiy.cn:/home/claude/YiKnowledge/static/${PROJECT}/.claude/ ./.claude/` |
+`node skills/rui-claude/scripts/retro.js` 采集 agents/rules/templates/skills 统计 → 生成三节复盘文档（§1 配置结构 §2 健康度 §3 改进项） → 写入 `docs/自改进故事面板/<project>-<date>.md`。
 
-> **前置条件**：本机 SSH key 已授权访问 `root@www.effiy.cn`。
->
-> `${PROJECT}` 为当前项目根目录名（`basename "$PWD"`），如 `YrY`。执行时自动替换。
+参数：`--name <story>` 关联故事，`--json` 输出 JSON 到 stdout。
+复盘聚焦 .claude/ 配置本身，纯本地分析，不连远端。
+完成后自动 `history.js record --command retro`。
 
----
+## history
 
-## /rui-claude retro
+自动记录 + 查询。每次 sync/retro/<requirement> 完成后自动调用 `history.js record`。
 
-分析当前项目 `.claude/` 目录结构，生成配置复盘文档。
+记录字段：session_id, timestamp, command, args, project, outcome, duration_ms, summary。
+存储：`.claude/.history/rui-claude-history.jsonl`（append-only，不入库不同步）。
 
-```mermaid
-flowchart LR
-    COLLECT["采集 .claude 结构统计"] --> GEN["生成复盘文档"]
-    GEN --> SAVE["写入 docs/自改进故事面板/"]
-```
+查询：`history.js list [--limit N] [--json]` / `history.js stats [--json]`。
 
-| Step | 操作 | 命令 |
-|------|------|------|
-| 1 | 采集 .claude/ 目录结构 | `node skills/rui-claude/scripts/retro.js` 遍历 agents/rules/templates/skills 统计 |
-| 2 | 生成复盘文档 | 按 §1 配置结构 §2 健康度 §3 改进项 三段结构输出 md |
-| 3 | 保存文档 | 写入 `${REPO_ROOT}/docs/自改进故事面板/${PROJECT}-${date}.md` |
+## \<requirement\> — .claude 配置变更端到端
 
-> **参数：** `--name <story>` 关联故事名，`--json` 输出 JSON 到 stdout。
->
-> 复盘聚焦 `.claude` 配置本身，不涉及执行记忆或项目代码分析。
+从需求出发，拆分故事，逐故事走文档管线+代码管线。**所有文件变更限制在 `.claude/` 目录内。**
 
----
+需求输入：文本 / @文件 / URL。故事目录以 `claude-` 为前缀（如 `claude-security-agent`）。
 
-## /rui-claude fix
+适用需求：新增 agent/rule/skill、修改 template、更新 CLAUDE.md、MCP 配置、脚本变更、组合变更。
 
-检查 `.claude/` 目录缺失项。**无参数时**补齐基础设施文件，跳过业务相关文件。**`--project <name>` 时**从根 `.claude/` 同步 skills/、rules/、agents/、templates/ 到子项目。
+管线阶段（与 `/rui <requirement>` 一致）：自适应规划→影响分析→架构设计→文档生成→预检→测试先行→实现→验证→自改进→交付。
 
-```mermaid
-flowchart LR
-    PARSE{参数} -->|无参数| CHECK["扫描 .claude/"] --> CLASSIFY{文件类型}
-    CLASSIFY -->|"基础设施 (.mcp.json / settings.json / settings.local.json / templates/)"| FIX["自动生成骨架"]
-    CLASSIFY -->|"业务相关 (CLAUDE.md / agents/ / rules/ / skills/)"| SKIP["跳过，报告缺失"]
-    FIX & SKIP --> REPORT["汇总: 补齐 N / 跳过 M / 禁止补齐 K"]
-    PARSE -->|--project name| SYNC["从根 .claude/ 同步缺失内容 → 单个子项目"]
-    SYNC --> REPORT2["汇总: 同步 N / 跳过 M / 禁止同步 K"]
-    PARSE -->|--all| ALL["扫描所有子项目 → 逐个同步"]
-    ALL --> REPORT3["汇总: N 个项目 — 同步 X / 跳过 Y / 禁止 Z"]
-```
+**约束**：仅修改 `.claude/` 内文件；必须从 main 创建 `feat/<name>` 分支（H13）；禁止自动合并（H12）；故事文档 `docs/故事任务面板/` 除外。
 
-### 无参数（本地补齐）
+## 空输入
 
-| Step | 操作 | 命令 |
-|------|------|------|
-| 1 | 检查并补齐基础设施 | `node skills/rui-claude/scripts/fix.js` |
-| 2 | 输出补齐报告 | 补齐/跳过/禁止 三类统计 |
-
-| 类型 | 文件/目录 | 操作 | 原因 |
-|------|----------|------|------|
-| 基础设施 | `.mcp.json` | 写入 `{"mcpServers": {}}` | MCP 配置骨架，与业务无关 |
-| 基础设施 | `settings.json` | 写入 `{"permissions": {}}` | 权限配置骨架，与业务无关 |
-| 基础设施 | `settings.local.json` | 写入 `{}` | 本地覆盖骨架，与业务无关 |
-| 基础设施 | `templates/` | 创建空目录 | 目录结构，与业务无关 |
-
-禁止补齐：`CLAUDE.md`、`agents/*.md`、`rules/*.md`、`skills/` 仅报告缺失，不可自动生成空壳。
-
-> **参数：** `--dry-run` 仅检查不写入，`--json` 输出 JSON。
-
-### --project `<name>`（从根同步到子项目）
-
-从根 `.claude/` 同步缺失的 skills/、rules/、agents/、templates/ 到指定子项目。
-
-| Step | 操作 | 命令 |
-|------|------|------|
-| 1 | 补齐子项目基础设施（同无参数模式） | `node skills/rui-claude/scripts/fix.js --project <name>` |
-| 2 | 从根 `.claude/skills/` 同步缺失的 skill 目录 | 完整复制缺失目录 |
-| 3 | 从根 `.claude/rules/`、`.claude/agents/` 同步缺失文件 | 单文件复制 |
-| 4 | 从根 `.claude/templates/` 同步模板内容 | 递归复制 |
-| 5 | 输出同步报告 | 同步/跳过/禁止 三类统计 |
-
-| 同步项 | 操作 | 原因 |
-|--------|------|------|
-| `skills/<name>/` | 缺失则整目录复制 | 共享 Skill 定义 |
-| `rules/*.md` | 缺失则复制单文件 | 共享管线规则 |
-| `agents/*.md` | 缺失则复制单文件 | 共享 Agent 定义 |
-| `templates/**` | 缺失则递归复制 | 共享模板 |
-| `CLAUDE.md` | **禁止同步** | 项目哲学/原则特定于项目 |
-| `README.md` | **禁止同步** | 项目说明特定于项目 |
-| `.git` | **禁止同步** | Git 内部数据 |
-| `docs/` | **禁止同步** | 项目特定文档 |
-
-> 已存在的 skill 目录不被覆盖。仅同步缺失项（"补齐"语义）。
-
-### 输出示例
-
-**无参数：**
-```
-🔧 rui-claude fix: YiAi
-
-已补齐（2 项）：
-  ✅ 创建: .mcp.json
-  ✅ 创建: settings.json
-
-跳过（1 项）：
-  ⏭️  templates/ — 已存在
-
-禁止补齐 — 业务相关内容（6 项）：
-  🚫 CLAUDE.md — 文件缺失
-  🚫 agents/AGENT.md — 文件缺失
-  ...
-```
-
-**--project 模式：**
-```
-🔧 rui-claude fix --project YiAi
-
-源: /path/to/static/.claude
-目标: /path/to/static/YiAi/.claude
-
-基础设施（2 项）：
-  ✅ 创建: .mcp.json
-  ✅ 创建: settings.json
-
-从根同步（8 项）：
-  ✅ 复制: skills/rui-claude/SKILL.md
-  ✅ 复制: skills/rui-docs/SKILL.md
-  ✅ 复制: rules/rui-claude.md
-  ✅ 复制: rules/rui-docs.md
-  ...
-
-跳过（14 项）：
-  ⏭️  skills/rui — 已存在
-  ⏭️  agents/pm.md — 已存在
-  ...
-
-禁止同步（2 项）：
-  🚫 CLAUDE.md — 项目特定文件，禁止自动同步
-  🚫 .git — 项目特定文件，禁止自动同步
-```
-
-### --all（批量同步所有子项目）
-
-从根 `.claude/` 批量同步所有子项目。自动发现 `REPO_ROOT` 下所有含 `.claude/` 的子目录，逐个执行 `syncFromRoot`。
-
-| Step | 操作 |
-|------|------|
-| 1 | 扫描 `REPO_ROOT` 下所有含 `.claude/` 的子目录 |
-| 2 | 对每个子项目执行完整同步（同 `--project` 流程） |
-| 3 | 输出汇总报告 |
-
-**输出示例：**
-```
-🔧 rui-claude fix --all
-
-  Arter: 跳过 18 / 禁止 1
-  Blog: 同步 12 / 跳过 14 / 禁止 2
-  Duck: 同步 12 / 跳过 14 / 禁止 2
-  News: 同步 12 / 跳过 14 / 禁止 2
-  YiAi: 跳过 18 / 禁止 2
-  YiPet: 同步 12 / 跳过 14 / 禁止 1
-  YiPot: 同步 12 / 跳过 14 / 禁止 2
-  YiWeb: 同步 4 / 跳过 18 / 禁止 2
-
-合计: 8 个项目 — 同步 64 / 跳过 124 / 禁止 14
-```
-
-> `--all` 与 `--project` 互斥。支持 `--dry-run` 和 `--json` 参数。
-
----
-
-## /rui-claude（空输入）
-
-当 `/rui-claude` 无参数时，扫描已有 `.claude/` 的所有子项目，推荐 5~10 条可执行任务。
-
-### 推荐生成规则
-
-扫描根项目 `${REPO_ROOT}/` 下所有存在 `.claude/` 的子目录，综合生成推荐：
-
-| 扫描源 | 提取信息 |
-|--------|---------|
-| `<project>/.claude/agents/` | Agent 数量、角色覆盖 |
-| `<project>/.claude/rules/` | 规则文件数、约束覆盖 |
-| `<project>/.claude/templates/` | 模板文件数 |
-| `<project>/.claude/skills/` | 技能文件数 |
-| `<project>/.claude/CLAUDE.md` | 存在性、行数 |
-| `<project>/.claude/.mcp.json` | 是否存在 |
-| `docs/自改进故事面板/<project>-*.md` | 复盘历史 |
-
-### 推荐分类
-
-| 类型 | 说明 | 示例 |
-|------|------|------|
-| 首次复盘 | 有 .claude/ 但无复盘记录 | `cd <project> && /rui-claude retro` |
-| 增量复盘 | 复盘过期 >7 天 | `cd <project> && /rui-claude retro` |
-| 基础设施补齐 | .mcp.json / settings.json 缺失 | `cd <project> && /rui-claude fix` |
-| 配置补齐 | agents/rules/skills 为空或 CLAUDE.md 缺失 | `cd <project> && /rui-claude sync` |
-| 结构优化 | 某子目录文件数异常（过多/过少） | 手动审查并精简 |
-| 定期巡检 | 近期有复盘、配置完整 | 标记为健康 |
-
-### 输出格式
-
-```
-🧭 rui-claude 任务推荐（共 N 条）
-
-<project-1>:
-1. [首次复盘] cd <project-1> && /rui-claude retro
-   理由: .claude/ 存在但无复盘记录 | 来源: docs/自改进故事面板/
-
-<project-2>:
-2. [增量复盘] cd <project-2> && /rui-claude retro
-   理由: 上次复盘 12 天前 | 来源: docs/自改进故事面板/<project-2>-2026-04-27.md
-
-3. [基础设施补齐] cd <project-2> && /rui-claude fix
-   理由: .mcp.json 缺失 | 来源: .claude/ 结构检查
-
-4. [配置补齐] cd <project-2> && /rui-claude sync
-   理由: agents/ 为空 | 来源: .claude/ 结构检查
-
-...
-```
-
-> 按项目分组，每个子项目的 `.claude` 互相独立推荐。
-
----
+扫描 agents/ rules/ templates/ skills/ CLAUDE.md .mcp.json + 复盘历史 + 故事目录 → 推荐分类：首次复盘/增量复盘(>7天)/配置补齐/全文档补齐/结构优化/定期巡检。
 
 ## 核心规则
 
-1. **操作范围仅限 `.claude/`**：不得触及 `.claude/` 以外文件
-2. **分支隔离**：禁止直接修改 `.claude/` 下内容，所有改动必须从 main 拉取 `feat/<name>` 分支进行
-3. **禁止自动合并**：功能分支不得自动合并到 main，合并操作一律由开发者手动执行
-4. **sync 覆盖式更新**：先删除本地 `.claude` 再 rsync，执行前需确认
-5. **retro 纯本地分析**：不连接远端，仅分析本地 `.claude/` 结构
-6. **retro 输出到根项目**：文档写入 `docs/自改进故事面板/<project>-<date>.md`
-7. **fix 补齐范围**：无参数只补齐基础设施；`--project` 从根同步单子项目；`--all` 批量同步全部子项目
-8. **空输入只推荐不执行**：扫描状态后推荐任务，不触发管线
-9. **不管理凭据**：SSH key 由系统管理员配置
+1. 操作范围仅限 `.claude/`，不得触及外部文件
+2. 分支隔离：对 `.claude/` 的任何代码修改必须通过 rui code 管线，必须在 `feat/<name>` 分支（H13）
+3. 禁止自动合并（H12）
+4. sync 覆盖式更新，执行前确认意图
+5. retro 纯本地分析，不连远端
+6. 空输入只推荐不执行
+7. 不管理凭据（SSH key 由系统管理员配置）
+8. 禁止自动 commit/push
 
-详见 [`rules/rui-claude.md`](../../rules/rui-claude.md)。
-
----
-
-## 安全约束
-
-- SSH key 授权由系统管理员配置，本 skill 不管理凭据
-- 远端地址中 `${PROJECT}` 为当前项目根目录名，执行时自动解析
+详见 [rules/rui-claude.md](../../rules/rui-claude.md)。
