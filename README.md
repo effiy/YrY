@@ -4,8 +4,6 @@
 
 ## 系统能力
 
-> **口诀：编配管，技忆扩。**
-
 ```mermaid
 flowchart LR
     R[rui<br/>编排引擎] --> C[rui-claude<br/>配置管理]
