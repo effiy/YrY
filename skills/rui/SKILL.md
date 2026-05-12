@@ -84,24 +84,28 @@ README.md ──→ 能力/结构/命令 ──→ rules/ 注入  ──→ 2. R
 7. **源码修改唯一入口** — 对源代码的任何修改必须通过 `/rui code` 管线(`no-checkout`)
 8. **只读代码** — `/rui doc --from-code` 和 `/rui code --from-doc` 仅生成文档，禁止改源码
 9. **产出内聚** — 关键产出仅限于故事目录 `docs/故事任务面板/<project>-<name>/` 内
-10. **import-docs 三检查点** — 文档生成后 / 验证后 / 交付时。`no-token` 仅 API_X_TOKEN 缺失时跳过
+10. **交付管线强制** — 三步交付管线 (wework-bot 追加日志 → import-docs 同步 → wework-bot 发送) 每步必须执行并标记 (`delivery-gate.js mark`)。Stop hook 自动检查未完成管线阻断停止。
 11. **知识沉淀** — 执行记忆写 execution-memory.jsonl + rui-state.json
 
 ## 交付流程
 
-所有命令末端自动触发：
+每个 `/rui` 命令末端 **必须** 按序执行三步交付管线，不得跳过：
 
-| Step | 操作 | 失败处理 |
-|------|------|---------|
-| 1 | `Skill(wework-bot, --no-send --project <project> --name <name>)` 追加日志 | 不可跳过 |
-| 2 | `Skill(import-docs, --workspace)` 交付时最终全量同步 | `no-token` 降级 |
-| 3 | `Skill(wework-bot, --project <project> --name <name>)` 发送通知 | 不可跳过 |
+| Step | 操作 | 失败处理 | 验证 |
+|------|------|---------|------|
+| 1 | `Skill(wework-bot, --no-send --project <project> --name <name>)` 追加日志 | 不可跳过 | `delivery-gate.js mark --step log_appended` |
+| 2 | `Skill(import-docs, --workspace)` 交付时最终全量同步 | `no-token` 降级 | `delivery-gate.js mark --step docs_synced` |
+| 3 | `Skill(wework-bot, --project <project> --name <name>)` 发送通知 | 不可跳过 | `delivery-gate.js mark --step notification_sent` |
+
+每步完成后必须调用 `node skills/rui/scripts/delivery-gate.js mark --name <name> --step <step>` 记录状态。
+
+**Stop hook 强制检查**: 会话结束时若检测到近期 rui 活动但交付管线未完成，hook 阻断停止并提示缺失步骤。
 
 ## 集成
 
-- **脚本**: `skills/rui/scripts/` — rui-state.js / execution-memory.js / self-improve.js / list.js / loop.js / natural-week.js
+- **脚本**: `skills/rui/scripts/` — rui-state.js / execution-memory.js / self-improve.js / list.js / loop.js / natural-week.js / delivery-gate.js
 - **Skill**: `import-docs --workspace` (三检查点同步) / `wework-bot --name <name>` (交付)
 - **数据**: `docs/故事任务面板/<project>-<name>/.improvement/proposals.jsonl` + `.memory/`(execution-memory.jsonl + rui-state.json) — 详见 [data.md](data.md)
 - **文档**: 全文档基线 + 补充文档 — 详见 [docs.md](docs.md)
-- **规则**: [rules/](../../rules/) — code-pipeline / gate-rules / doc-generation / import-docs / self-improve
+- **规则**: [rules/](../../rules/) — code-pipeline / gate-rules / doc-generation / import-docs / delivery-gate / self-improve
 - **Agent**: [agents/](../../agents/) — pm / coder / tester / reporter / security / self-improve

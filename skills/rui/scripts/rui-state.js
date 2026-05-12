@@ -118,6 +118,11 @@ async function cmdSave(opts) {
     });
   }
 
+  // Preserve delivery_pipeline from existing state, or init fresh
+  const deliveryPipeline = (existing && existing.delivery_pipeline)
+    ? existing.delivery_pipeline
+    : { log_appended: false, docs_synced: false, notification_sent: false, last_step_at: null, last_step: null };
+
   const state = {
     session_id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     command: opts.command,
@@ -129,6 +134,7 @@ async function cmdSave(opts) {
     timestamp: now,
     storyboard: `docs/故事任务面板/${opts.name}/01-故事任务.md`,
     pipeline_progress: pipelineProgress,
+    delivery_pipeline: deliveryPipeline,
     change_history: changeHistory,
     related_proposals: (existing && existing.related_proposals) ? existing.related_proposals : [],
   };

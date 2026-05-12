@@ -17,6 +17,20 @@
     "AskUserQuestion": { "allow": true },
     "NotebookEdit": { "allow": true }
   },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node skills/rui/scripts/delivery-gate.js check-all --json --recent-hours 1",
+            "timeout": 15,
+            "statusMessage": "检查交付管线状态..."
+          }
+        ]
+      }
+    ]
+  },
   "_doc": "Claude Code 项目级配置。permissions 控制工具调用授权——格式：{ \"tool_name\": { \"allow\": true } }。全局/用户级配置见 ~/.claude/settings.json。",
   "_note": "Bash 允许全项目命令（SDLC 管线依赖大量自动化）。如需收紧，可在 settings.local.json 中覆盖。"
 }

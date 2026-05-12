@@ -18,7 +18,7 @@ docs/故事任务面板/<project>-<name>/
 
 ## rui-state.json
 
-单对象 JSON，记录当前管线状态。字段: `session_id`, `command`, `name`, `current_stage`, `blocked`, `block_reason`, `timestamp`, `storyboard`, `pipeline_progress`({"阶段":"completed|in_progress|blocked|not_started"}), `change_history`([{timestamp,from_stage,to_stage,trigger}]), `related_proposals`(string[]).
+单对象 JSON，记录当前管线状态。字段: `session_id`, `command`, `name`, `current_stage`, `blocked`, `block_reason`, `timestamp`, `storyboard`, `pipeline_progress`({"阶段":"completed|in_progress|blocked|not_started"}), `delivery_pipeline`({log_appended, docs_synced, notification_sent, last_step_at, last_step}), `change_history`([{timestamp,from_stage,to_stage,trigger}]), `related_proposals`(string[]).
 
 阻断恢复：重跑同一 `/rui` 命令从 `current_stage` 继续。
 
