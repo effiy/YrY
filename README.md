@@ -61,8 +61,7 @@ static/
 ## 安装
 
 ```bash
-/plugin marketplace add effiy/YrY
-/plugin install YrY@effiy/YrY
+/plugin install effiy/YrY
 ```
 
 ## 快速开始

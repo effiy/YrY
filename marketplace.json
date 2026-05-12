@@ -1,7 +1,7 @@
 {
   "plugins": {
     "YrY": {
-      "source": "."
+      "source": "https://github.com/effiy/YrY/tree/main"
     }
   }
 }
