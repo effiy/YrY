@@ -23,7 +23,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node skills/rui/scripts/delivery-gate.js check-all --json --recent-hours 1",
+            "command": "node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/delivery-gate.js check-all --json --recent-hours 1",
             "timeout": 15,
             "statusMessage": "检查交付管线状态..."
           }

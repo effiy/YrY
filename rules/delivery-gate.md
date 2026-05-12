@@ -1,7 +1,7 @@
 ---
 paths:
   - "docs/故事任务面板/**/.memory/rui-state.json"
-  - "skills/rui/scripts/delivery-gate.js"
+  - "~/.claude/plugins/marketplaces/yry/skills/rui/scripts/delivery-gate.js"
 ---
 
 # Delivery Gate Rules

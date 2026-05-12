@@ -17,7 +17,7 @@ lifecycle: default-pipeline
 | `/rui-claude retro` | 分析 .claude/ 结构健康度 → 复盘文档写入 `docs/自改进故事面板/<project>-<date>.md` |
 | `/rui-claude history` | 查看操作历史：`list [--limit N]` / `stats [--json]`。存储于 `.claude/.history/rui-claude-history.jsonl` |
 | `/rui-claude <req>` | 需求解析→故事拆分→逐故事 doc+code 管线→交付。管线与 `/rui <req>` 一致，**所有文件变更限制在 `.claude/` 内** |
-| `/rui-claude` | 调用 `node skills/rui/scripts/recommend.js --json` → 推荐 5~10 条 .claude/ 相关任务 |
+| `/rui-claude` | 调用 `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/recommend.js --json` → 推荐 5~10 条 .claude/ 相关任务 |
 
 ## sync
 
@@ -25,7 +25,7 @@ lifecycle: default-pipeline
 
 ## retro
 
-`node skills/rui-claude/scripts/retro.js` 采集 agents/rules/templates/skills 统计 → 三节复盘（§1 配置结构 §2 健康度 §3 改进项）。参数：`--name <story>` / `--json`。纯本地分析，不连远端。
+`node ~/.claude/plugins/marketplaces/yry/skills/rui-claude/scripts/retro.js` 采集 agents/rules/templates/skills 统计 → 三节复盘（§1 配置结构 §2 健康度 §3 改进项）。参数：`--name <story>` / `--json`。纯本地分析，不连远端。
 
 ## history
 

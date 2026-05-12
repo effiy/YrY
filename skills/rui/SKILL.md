@@ -24,15 +24,15 @@ agents:
 
 | 命令 | 流程 | 行为细节 |
 |------|------|---------|
-| `/rui init` | 基线 → 基线注入 → 就绪检查(8项) → 交付 | `node skills/rui/scripts/init.js`; `--dry-run` 预览, `--json` 结构化输出 |
+| `/rui init` | 基线 → 基线注入 → 就绪检查(8项) → 交付 | `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/init.js`; `--dry-run` 预览, `--json` 结构化输出 |
 | `/rui doc <req>` | 必须使用分支隔离；需求拆分 → 逐故事: 自适应规划→影响分析→架构设计→文档生成 | 文档生成后同步；故事目录 `<project>-<name>`（name 部分 kebab-case）；禁止改源码 |
 | `/rui code <name>` | 必须使用分支隔离；预检→Gate A(测试先行)→逐模块实现→Gate B(验证)→自改进→交付 | 单行 CSS 可跳过 Gate A；>2轮修复 `gate-b-limit` 阻断；验证后同步 |
 | `/rui <req>` | 必须使用分支隔离；doc + code 全自动串联，逐故事端到端 | — |
 | `/rui update <name> [ctx]` | 必须使用分支隔离；结构检测(12项)→结构补齐→变更分级(T1/T2/T3)→增量更新→预检→code | 补齐标注"由 rui update 结构补齐"；已有文档按级别裁剪 |
 | `/rui code --from-doc <name>` | 必须使用分支隔离；读取故事任务文档+探索源码(只读)→生成缺失的技术评审与报告文档 | 已有文档不覆盖，全部存在则退出；禁止改源码 |
 | `/rui doc --from-code [req]` | 从源码反推故事→生成全文档基线(只读)；req 为空时 pm 按项目类型探索：前端→组件发现→组件全文档，后端→接口发现→接口全文档，全栈→两端独立推荐 | 禁止改源码 |
-| `/rui list` | 扫描故事面板 → 进度表; 调用 `node skills/rui/scripts/list.js` | 按文件完整性判定: 未开始/文档中/代码中/完成/阻断 |
-| `/rui` | 调用 `node skills/rui/scripts/recommend.js --json` → 推荐 5~20 条任务 | 综合故事状态+健康度+提案+Git+同步状态；发现未纳入故事面板的源码模块并推荐创建新故事目录；分析已有故事的文档缺口并推荐补充 |
+| `/rui list` | 扫描故事面板 → 进度表; 调用 `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/list.js` | 按文件完整性判定: 未开始/文档中/代码中/完成/阻断 |
+| `/rui` | 调用 `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/recommend.js --json` → 推荐 5~20 条任务 | 综合故事状态+健康度+提案+Git+同步状态；发现未纳入故事面板的源码模块并推荐创建新故事目录；分析已有故事的文档缺口并推荐补充 |
 
 `<requirement>` 支持：文本 / `@` 引用本地文件 / URL。`--from-code` 时 req 可选，为空时 pm 自主扫描源码识别可文档化模块并输出推荐列表。故事目录格式 `<project>-<name>`（project 为项目标识，name 为 kebab-case，如 `YiWeb-user-login`）。
 
@@ -97,13 +97,13 @@ README.md ──→ 能力/结构/命令 ──→ .claude/rules/  ──→ 2. 
 | 2 | `Skill(import-docs, --workspace)` 交付时最终全量同步 | `no-token` 降级 | `delivery-gate.js mark --step docs_synced` |
 | 3 | `Skill(wework-bot, --project <project> --name <name>)` 发送通知 | 不可跳过 | `delivery-gate.js mark --step notification_sent` |
 
-每步完成后必须调用 `node skills/rui/scripts/delivery-gate.js mark --name <name> --step <step>` 记录状态。
+每步完成后必须调用 `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/delivery-gate.js mark --name <name> --step <step>` 记录状态。
 
 **Stop hook 强制检查**: 会话结束时若检测到近期 rui 活动但交付管线未完成，hook 阻断停止并提示缺失步骤。
 
 ## 集成
 
-- **脚本**: `skills/rui/scripts/` — rui-state.js / execution-memory.js / self-improve.js / list.js / loop.js / natural-week.js / delivery-gate.js
+- **脚本**: `~/.claude/plugins/marketplaces/yry/skills/rui/scripts/` — rui-state.js / execution-memory.js / self-improve.js / list.js / loop.js / natural-week.js / delivery-gate.js
 - **Skill**: `import-docs --workspace` (三检查点同步) / `wework-bot --name <name>` (交付)
 - **数据**: `docs/故事任务面板/<project>-<name>/.improvement/proposals.jsonl` + `.memory/`(execution-memory.jsonl + rui-state.json) — 详见 [data.md](data.md)
 - **文档**: 全文档基线 + 补充文档 — 详见 [docs.md](docs.md)

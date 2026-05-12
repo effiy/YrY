@@ -66,7 +66,7 @@ flowchart TD
 
 ### 就绪检查 (8 项)
 
-`node skills/rui/scripts/init.js` 执行。全部通过方可进入 `/rui doc` 或 `/rui code`。
+`node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/init.js` 执行。全部通过方可进入 `/rui doc` 或 `/rui code`。
 
 | # | 检查项 | 验证内容 | 失败阻断 |
 |---|--------|---------|---------|

@@ -2,7 +2,7 @@
 paths:
   - "docs/故事任务面板/**/.improvement/**"
   - "docs/故事任务面板/**/.memory/**"
-  - ".claude/skills/rui/scripts/**"
+  - "~/.claude/plugins/marketplaces/yry/skills/rui/**"
 ---
 
 # Self-Improve Rules

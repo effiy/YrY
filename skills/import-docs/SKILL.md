@@ -36,16 +36,16 @@ lifecycle: default-pipeline
 
 ```bash
 # workspace 模式（rui 默认调用）
-node skills/import-docs/scripts/import-docs.js --workspace
+node ~/.claude/plugins/marketplaces/yry/skills/import-docs/scripts/import-docs.js --workspace
 
 # 单目录 + 自定义扩展名
-node skills/import-docs/scripts/import-docs.js --dir <path> --exts md,json,yaml
+node ~/.claude/plugins/marketplaces/yry/skills/import-docs/scripts/import-docs.js --dir <path> --exts md,json,yaml
 
 # 排除子目录
-node skills/import-docs/scripts/import-docs.js --workspace --exclude tmp,build
+node ~/.claude/plugins/marketplaces/yry/skills/import-docs/scripts/import-docs.js --workspace --exclude tmp,build
 
 # 仅枚举不导入
-node skills/import-docs/scripts/import-docs.js list --workspace
+node ~/.claude/plugins/marketplaces/yry/skills/import-docs/scripts/import-docs.js list --workspace
 ```
 
 | 参数 | 默认值 | 描述 |
@@ -73,4 +73,4 @@ node skills/import-docs/scripts/import-docs.js list --workspace
 
 ## 空输入
 
-无参数时调用 `node skills/import-docs/scripts/import-docs.js list --workspace` + 检测 `API_X_TOKEN` / 远端可达性 → 推荐任务（凭据缺失/首次同步/增量同步/全量补齐/定期巡检），不执行导入。
+无参数时调用 `node ~/.claude/plugins/marketplaces/yry/skills/import-docs/scripts/import-docs.js list --workspace` + 检测 `API_X_TOKEN` / 远端可达性 → 推荐任务（凭据缺失/首次同步/增量同步/全量补齐/定期巡检），不执行导入。
