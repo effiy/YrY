@@ -7,6 +7,7 @@ const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
 const { execSync } = require('child_process');
+const C = require('./constants.js');
 
 const REPO_ROOT = process.cwd();
 const SELF_IMPROVE = path.join(__dirname, 'self-improve.js');
@@ -26,9 +27,9 @@ function shJson(cmd) {
 
 function collect() {
   const health = shJson(`node "${SELF_IMPROVE}" health --json`);
-  const trends = shJson(`node "${EXEC_MEMORY}" trends --weeks 8 --json`);
+  const trends = shJson(`node "${EXEC_MEMORY}" trends --weeks ${C.DEFAULT_RETRO_WEEKS} --json`);
   const proposals = shJson(`node "${SELF_IMPROVE}" proposals --json`) || [];
-  const retro = shJson(`node "${SELF_IMPROVE}" retro --weeks 8 --json`);
+  const retro = shJson(`node "${SELF_IMPROVE}" retro --weeks ${C.DEFAULT_RETRO_WEEKS} --json`);
   const snapshot = shJson(`node "${SELF_IMPROVE}" snapshot --json`);
 
   const openProposals = proposals.filter(p => p.status === 'open');
@@ -82,10 +83,10 @@ function generate(data) {
   for (const s of data.degradingSignals) {
     items.push({ priority: 'P1', task: `修复 ${s.dimension} 退化趋势`, rationale: `连续窗口上升 (${s.window})` });
   }
-  for (const p of data.openP1.slice(0, 3)) {
+  for (const p of data.openP1.slice(0, C.MAX_OPEN_P1_RECS)) {
     items.push({ priority: 'P1', task: p.title, rationale: p.evidence || p.problem_source || '—' });
   }
-  for (const f of data.largeFiles.slice(0, 3)) {
+  for (const f of data.largeFiles.slice(0, C.MAX_OPEN_P1_RECS)) {
     items.push({ priority: 'P2', task: `拆分 \`${f.file}\` (${f.lines} lines)`, rationale: '文件过大，降低耦合度' });
   }
 
@@ -118,7 +119,7 @@ function generate(data) {
 
   // Mid-term: large file splits, degraded proposals
   if (data.largeFiles.length > 0) {
-    tasks.push({ priority: 'P2', task: `拆分 ${data.largeFiles.length} 个大文件 (>300行)`, rationale: '降低耦合度，提升内聚性', status: 'pending' });
+    tasks.push({ priority: 'P2', task: `拆分 ${data.largeFiles.length} 个大文件 (>${C.LARGE_FILE_LINE_THRESHOLD}行)`, rationale: '降低耦合度，提升内聚性', status: 'pending' });
   }
   if (data.degraded > 0) {
     tasks.push({ priority: 'P2', task: `处理 ${data.degraded} 个退化提案`, rationale: '已评估为 degraded', status: 'pending' });
@@ -129,11 +130,11 @@ function generate(data) {
   }
 
   // Long-term
-  if (data.closureRate !== undefined && data.closureRate < 0.5) {
+  if (data.closureRate !== undefined && data.closureRate < C.CLOSURE_RATE_LOW_THRESHOLD) {
     tasks.push({ priority: 'P3', task: `提升提案闭合率 (当前 ${(data.closureRate * 100).toFixed(0)}%)`, rationale: '改进引擎效果跟踪', status: 'pending' });
   }
-  if (data.health?.composite !== null && data.health?.composite < 70) {
-    const dims = Object.entries(data.health?.dimensions || {}).filter(([, v]) => v !== null && v < 70).map(([k]) => k);
+  if (data.health?.composite !== null && data.health?.composite < C.HEALTH_DIM_LOW_THRESHOLD) {
+    const dims = Object.entries(data.health?.dimensions || {}).filter(([, v]) => v !== null && v < C.HEALTH_DIM_LOW_THRESHOLD).map(([k]) => k);
     if (dims.length > 0) {
       tasks.push({ priority: 'P3', task: `提升健康维度: ${dims.join(', ')}`, rationale: `当前综合评分 ${data.health.composite}/100`, status: 'pending' });
     }

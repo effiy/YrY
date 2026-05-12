@@ -7,6 +7,7 @@ const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
 const { execSync } = require('child_process');
+const C = require('./constants.js');
 
 const REPO_ROOT = process.cwd();
 const PANEL_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
@@ -49,13 +50,10 @@ function detectProjectType() {
   let frontendScore = 0, backendScore = 0;
 
   // Frontend signals
-  const frontendPatterns = [
-    { ext: '.vue', weight: 3 }, { ext: '.jsx', weight: 2 }, { ext: '.tsx', weight: 2 },
-    { ext: '.svelte', weight: 3 }, { ext: '.scss', weight: 1 }, { ext: '.less', weight: 1 },
-  ];
+  const frontendPatterns = Object.entries(C.FRONTEND_EXTENSION_WEIGHTS).map(([ext, weight]) => ({ ext, weight }));
   for (const { ext, weight } of frontendPatterns) {
     const count = parseInt(sh(`find . -name "*${ext}" -not -path "*/node_modules/*" -not -path "*/.git/*" | wc -l`, '0'), 10) || 0;
-    if (count > 0) { frontendScore += weight * Math.min(count, 20); indicators.push(`${count} ${ext} 文件`); }
+    if (count > 0) { frontendScore += weight * Math.min(count, C.MAX_FILE_COUNT_FOR_SCORING); indicators.push(`${count} ${ext} 文件`); }
   }
 
   // Check package.json for frontend frameworks
@@ -65,31 +63,28 @@ function detectProjectType() {
     const feFrameworks = ['react', 'vue', 'svelte', 'angular', 'next', 'nuxt', 'vite', 'webpack'];
     const beFrameworks = ['express', 'koa', 'fastify', 'hapi', 'nestjs', 'next'];
     for (const fw of feFrameworks) {
-      if (deps[fw]) { frontendScore += 3; indicators.push(`依赖: ${fw}`); }
+      if (deps[fw]) { frontendScore += C.FRAMEWORK_DEPENDENCY_WEIGHT; indicators.push(`依赖: ${fw}`); }
     }
     for (const fw of beFrameworks) {
-      if (deps[fw]) { backendScore += 3; indicators.push(`依赖: ${fw}`); }
+      if (deps[fw]) { backendScore += C.FRAMEWORK_DEPENDENCY_WEIGHT; indicators.push(`依赖: ${fw}`); }
     }
   } catch {}
 
   // Backend signals
-  const backendPatterns = [
-    { ext: '.go', weight: 3 }, { ext: '.py', weight: 2 }, { ext: '.java', weight: 2 },
-    { ext: '.rs', weight: 2 }, { ext: '.sql', weight: 1 }, { ext: '.proto', weight: 2 },
-  ];
+  const backendPatterns = Object.entries(C.BACKEND_EXTENSION_WEIGHTS).map(([ext, weight]) => ({ ext, weight }));
   for (const { ext, weight } of backendPatterns) {
     const count = parseInt(sh(`find . -name "*${ext}" -not -path "*/node_modules/*" -not -path "*/.git/*" | wc -l`, '0'), 10) || 0;
-    if (count > 0) { backendScore += weight * Math.min(count, 20); indicators.push(`${count} ${ext} 文件`); }
+    if (count > 0) { backendScore += weight * Math.min(count, C.MAX_FILE_COUNT_FOR_SCORING); indicators.push(`${count} ${ext} 文件`); }
   }
 
   // Check for API/server patterns
-  const apiFiles = sh('find . -type f \\( -name "*.js" -o -name "*.ts" -o -name "*.py" -o -name "*.go" \\) -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/skills/*" -not -path "*/agents/*" -not -path "*/rules/*" | head -20', '');
+  const apiFiles = sh(`find . -type f \\( -name "*.js" -o -name "*.ts" -o -name "*.py" -o -name "*.go" \\) -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/skills/*" -not -path "*/agents/*" -not -path "*/rules/*" | head -${C.API_PATTERN_SCAN_MAX_FILES}`, '');
   if (apiFiles) {
     for (const line of apiFiles.split('\n').filter(Boolean)) {
       try {
-        const content = fs.readFileSync(path.join(REPO_ROOT, line), 'utf8').slice(0, 2000);
+        const content = fs.readFileSync(path.join(REPO_ROOT, line), 'utf8').slice(0, C.API_PATTERN_SCAN_CONTENT_BYTES);
         if (/\b(router\.|app\.(get|post|put|delete|patch)|@app\.route|@router\.|func\s+\w+.*http\.|class\s+\w+Controller|@RestController|@RequestMapping)\b/.test(content)) {
-          backendScore += 2; indicators.push(`API 模式: ${path.basename(line)}`); break;
+          backendScore += C.API_PATTERN_WEIGHT; indicators.push(`API 模式: ${path.basename(line)}`); break;
         }
       } catch {}
     }
@@ -410,7 +405,7 @@ function generate(stories, git, sync, data, projectType) {
 
   // P0 — open P0 proposals
   const openP0 = (data.proposals || []).filter(p => p.status === 'open' && p.priority === 'P0');
-  for (const p of openP0.slice(0, 3)) {
+  for (const p of openP0.slice(0, C.MAX_OPEN_P0_RECS)) {
     recs.push({
       priority: 'P0', category: 'proposal',
       action: p.title,
@@ -423,7 +418,7 @@ function generate(stories, git, sync, data, projectType) {
 
   // P0 — degrading trends
   const degradingSignals = data.trends?.degradingSignals || [];
-  for (const s of degradingSignals.slice(0, 2)) {
+  for (const s of degradingSignals.slice(0, C.MAX_DEGRADING_SIGNAL_RECS)) {
     recs.push({
       priority: 'P0', category: 'health',
       action: `修复 ${s.dimension} 退化趋势`,
@@ -653,7 +648,7 @@ function generate(stories, git, sync, data, projectType) {
 
   // P2 — open P1 proposals
   const openP1 = (data.proposals || []).filter(p => p.status === 'open' && p.priority === 'P1');
-  for (const p of openP1.slice(0, 3)) {
+  for (const p of openP1.slice(0, C.MAX_OPEN_P1_RECS)) {
     recs.push({
       priority: 'P2', category: 'proposal',
       action: p.title,
@@ -666,7 +661,7 @@ function generate(stories, git, sync, data, projectType) {
 
   // P2 — large files
   const largeFiles = data.snapshot?.cohesionRisks || [];
-  for (const f of largeFiles.slice(0, 2)) {
+  for (const f of largeFiles.slice(0, C.MAX_LARGE_FILE_RECS)) {
     recs.push({
       priority: 'P2', category: 'improvement',
       action: `拆分大文件: ${f.file}`,
@@ -689,13 +684,13 @@ function generate(stories, git, sync, data, projectType) {
 
   // P3 — health dimensions < 70
   const dims = Object.entries(data.health?.dimensions || {})
-    .filter(([, v]) => v !== null && v < 70)
+    .filter(([, v]) => v !== null && v < C.HEALTH_DIM_LOW_THRESHOLD)
     .map(([k, v]) => ({ dim: k, score: v }));
-  for (const d of dims.slice(0, 2)) {
+  for (const d of dims.slice(0, C.MAX_LOW_HEALTH_DIM_RECS)) {
     recs.push({
       priority: 'P3', category: 'health',
       action: `提升 ${d.dim} 健康度 (当前 ${d.score})`,
-      rationale: '项目健康维度低于 70',
+      rationale: `项目健康维度低于 ${C.HEALTH_DIM_LOW_THRESHOLD}`,
       actionable_command: '/rui',
       formula: { role: 'Self-Improve', rule: '观察→诊断→改进', check: 'health-dim' },
     });
@@ -706,11 +701,11 @@ function generate(stories, git, sync, data, projectType) {
   const openCount = proposals.filter(p => p.status === 'open').length;
   const doneCount = proposals.filter(p => p.status === 'done').length;
   const totalActive = openCount + doneCount;
-  if (totalActive > 3 && openCount > doneCount * 2) {
+  if (totalActive > C.PROPOSAL_BACKLOG_MIN_ACTIVE && openCount > doneCount * C.PROPOSAL_BACKLOG_RATIO) {
     recs.push({
       priority: 'P3', category: 'improvement',
       action: `处理积压提案 (${openCount} 开放, ${doneCount} 完成)`,
-      rationale: '提案积压超过 2:1',
+      rationale: `提案积压超过 ${C.PROPOSAL_BACKLOG_RATIO}:1`,
       actionable_command: '/rui',
       formula: { role: 'Self-Improve', rule: '观察→诊断→改进', check: 'backlog' },
     });
@@ -857,7 +852,7 @@ async function main() {
   const args = process.argv.slice(2);
   const jsonMode = args.includes('--json');
   const limitIdx = args.indexOf('--limit');
-  const limit = limitIdx !== -1 ? Math.max(1, parseInt(args[limitIdx + 1], 10) || 10) : 10;
+  const limit = limitIdx !== -1 ? Math.max(1, parseInt(args[limitIdx + 1], 10) || C.DEFAULT_RECOMMENDATION_LIMIT) : C.DEFAULT_RECOMMENDATION_LIMIT;
 
   // Collect
   const projectType = detectProjectType();

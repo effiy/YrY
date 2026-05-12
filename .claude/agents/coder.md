@@ -8,6 +8,10 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 
 You are a disciplined code implementer. Write only what the design doc specifies. Every module gets reviewed before moving on.
 
+
+<!-- project-type-injected -->
+> **项目类型**: 元项目(配置/插件) · **Coder 公式**: `模块 → 接口 → 数据流` · **关注**: 规则完整性与集成契约
+
 ## 触发
 
 子项目 PM 调度，rui 预检/实现/影响分析/架构设计，rui fix

@@ -8,6 +8,7 @@ const fsp = fs.promises;
 const path = require('path');
 const { execSync } = require('child_process');
 const { getNaturalWeekRange } = require('./natural-week.js');
+const C = require('./constants.js');
 
 const REPO_ROOT = process.cwd();
 const STORIES_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
@@ -58,7 +59,7 @@ function collectGitHeatmap(weeks = 4) {
   }
 
   const fileChanges = safeExec(
-    `git log --since="${sinceIso}" --name-only --pretty=format: | grep -v '^$' | sort | uniq -c | sort -rn | head -20`,
+    `git log --since="${sinceIso}" --name-only --pretty=format: | grep -v '^$' | sort | uniq -c | sort -rn | head -${C.GIT_HEATMAP_TOP_N}`,
     ''
   ).split('\n').filter(Boolean).map(line => {
     const m = line.match(/^\s*(\d+)\s+(.+)$/);
@@ -97,11 +98,11 @@ function collectDependencyMatrix() {
     const files = safeExec(
       `grep -rn --include="*.js" --include="*.jsx" --include="*.ts" --include="*.py" ` +
       `--exclude-dir=node_modules --exclude-dir=dist --exclude-dir=.git --exclude-dir=libs ` +
-      `-l '' . | head -50`,
+      `-l '' . | head -${C.DEPENDENCY_SCAN_MAX_FILES}`,
       ''
     ).split('\n').filter(Boolean);
 
-    for (const file of files.slice(0, 30)) {
+    for (const file of files.slice(0, C.DEPENDENCY_ANALYSIS_MAX_FILES)) {
       try {
         const content = fs.readFileSync(file, 'utf8');
         let match;
@@ -119,7 +120,7 @@ function collectDependencyMatrix() {
 
   const hotspots = Object.entries(fanIn)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 10)
+    .slice(0, C.DEPENDENCY_HOTSPOTS_TOP_N)
     .map(([target, count]) => ({ target, fanIn: count }));
 
   return { totalDeps: deps.length, hotspots };
@@ -129,12 +130,12 @@ function collectLargeFiles() {
   const result = safeExec(
     `find . -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.py" | ` +
     `grep -v node_modules | grep -v dist | grep -v .git | grep -v libs | ` +
-    `xargs wc -l 2>/dev/null | sort -rn | head -15`,
+    `xargs wc -l 2>/dev/null | sort -rn | head -${C.LARGE_FILES_TOP_N}`,
     ''
   ).split('\n').filter(Boolean).map(line => {
     const m = line.match(/^\s*(\d+)\s+(.+)$/);
     return m ? { file: m[2], lines: parseInt(m[1], 10) } : null;
-  }).filter(Boolean).filter(f => f.lines >= 300);
+  }).filter(Boolean).filter(f => f.lines >= C.LARGE_FILE_LINE_THRESHOLD);
 
   return result;
 }
@@ -297,11 +298,11 @@ async function cmdEvaluate(opts) {
     if (!resolveDate) continue;
 
     const beforeStart = new Date(resolveDate);
-    beforeStart.setDate(beforeStart.getDate() - 28);
+    beforeStart.setDate(beforeStart.getDate() - C.EVAL_WINDOW_DAYS);
     const beforeEnd = new Date(resolveDate);
     const afterStart = new Date(resolveDate);
     const afterEnd = new Date(resolveDate);
-    afterEnd.setDate(afterEnd.getDate() + 28);
+    afterEnd.setDate(afterEnd.getDate() + C.EVAL_WINDOW_DAYS);
     const todayStr = new Date().toISOString().split('T')[0];
     const afterEndStr = afterEnd.toISOString().split('T')[0];
     const effectiveAfterEnd = afterEndStr > todayStr ? todayStr : afterEndStr;
@@ -345,8 +346,8 @@ async function cmdEvaluate(opts) {
 
     const totalBefore = beforeMetrics.total;
     const totalAfter = afterMetrics.total;
-    const confidence = (totalBefore >= 5 && totalAfter >= 5) ? 'high'
-      : (totalBefore >= 3 && totalAfter >= 3) ? 'medium' : 'low';
+    const confidence = (totalBefore >= C.HIGH_CONFIDENCE_MIN_RECORDS && totalAfter >= C.HIGH_CONFIDENCE_MIN_RECORDS) ? 'high'
+      : (totalBefore >= C.MEDIUM_CONFIDENCE_MIN_RECORDS && totalAfter >= C.MEDIUM_CONFIDENCE_MIN_RECORDS) ? 'medium' : 'low';
 
     const evalResult = {
       proposal_id: prop.id,
@@ -413,7 +414,7 @@ async function cmdEvaluate(opts) {
 }
 
 async function cmdRetro(opts) {
-  const weeks = opts.weeks || 8;
+  const weeks = opts.weeks || C.DEFAULT_RETRO_WEEKS;
   const records = readMemoryRecords();
   const proposals = await readProposals();
 
@@ -424,7 +425,7 @@ async function cmdRetro(opts) {
   const recentRecords = filterRecordsByDateRange(records, sinceStr, new Date().toISOString().split('T')[0]);
 
   const windows = [];
-  const windowSize = 14;
+  const windowSize = C.RETRO_WINDOW_SIZE_DAYS;
   for (let i = 0; i < weeks * 7; i += windowSize) {
     const winStart = new Date(since);
     winStart.setDate(winStart.getDate() + i);
@@ -546,7 +547,7 @@ async function cmdHealth(opts) {
     const total = t1 + t2 + t3;
     if (total > 0) {
       const t1Ratio = t1 / total;
-      stabilityScore = Math.round(Math.min(100, t1Ratio / 0.7 * 100));
+      stabilityScore = Math.round(Math.min(100, t1Ratio / C.HEALTH_STABILITY_BENCHMARK * 100));
     }
   }
 
@@ -557,7 +558,7 @@ async function cmdHealth(opts) {
     const p0 = (memoryStats.qualityIssues?.P0 || 0);
     if (total > 0) {
       const p0Rate = p0 / total;
-      qualityScore = Math.round(Math.max(0, 100 - p0Rate * 200));
+      qualityScore = Math.round(Math.max(0, 100 - p0Rate * C.HEALTH_P0_PENALTY_FACTOR));
     } else {
       qualityScore = 100;
     }
@@ -570,7 +571,7 @@ async function cmdHealth(opts) {
     const blocked = memoryStats.blocked || 0;
     if (total > 0) {
       const blockedRate = blocked / total;
-      blockedScore = Math.round(Math.max(0, 100 - blockedRate * 200));
+      blockedScore = Math.round(Math.max(0, 100 - blockedRate * C.HEALTH_BLOCKED_PENALTY_FACTOR));
     } else {
       blockedScore = 100;
     }
@@ -582,10 +583,10 @@ async function cmdHealth(opts) {
   let closureScore = (openCount + doneCount) > 0 ? Math.round(doneCount / (openCount + doneCount) * 100) : 100;
 
   // 5. Cohesion score (large files)
-  let cohesionScore = largeFiles.length === 0 ? 100 : Math.round(Math.max(0, 100 - largeFiles.length * 15));
+  let cohesionScore = largeFiles.length === 0 ? 100 : Math.round(Math.max(0, 100 - largeFiles.length * C.HEALTH_COHESION_PENALTY_PER_FILE));
 
   // Composite
-  const weights = { stability: 0.20, quality: 0.25, blocked: 0.20, closure: 0.20, cohesion: 0.15 };
+  const weights = C.HEALTH_WEIGHTS;
   const scores = { stability: stabilityScore, quality: qualityScore, blocked: blockedScore, closure: closureScore, cohesion: cohesionScore };
 
   let composite = 0;
@@ -695,7 +696,7 @@ function cmdSnapshot(jsonOutput) {
     console.log();
 
     if (largeFiles.length > 0) {
-      console.log(`## Cohesion Risks (Files >300 lines)`);
+      console.log(`## Cohesion Risks (Files >${C.LARGE_FILE_LINE_THRESHOLD} lines)`);
       console.log(`| File | Lines |`);
       console.log(`|------|-------|`);
       largeFiles.forEach(f => console.log(`| ${f.file} | ${f.lines} |`));
@@ -811,7 +812,7 @@ async function main() {
       await cmdEvaluate({ proposal: proposalFilter, since: sinceFilter, json: jsonOutput });
       break;
     case 'retro':
-      await cmdRetro({ weeks: weeks || 8, json: jsonOutput });
+      await cmdRetro({ weeks: weeks || C.DEFAULT_RETRO_WEEKS, json: jsonOutput });
       break;
     case 'health':
       await cmdHealth({ json: jsonOutput });

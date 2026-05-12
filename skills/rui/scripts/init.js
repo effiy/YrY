@@ -6,6 +6,7 @@
 const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
+const C = require('./constants.js');
 
 const REPO_ROOT = process.cwd();
 const CLAUDE_DIR = path.join(REPO_ROOT, '.claude');
@@ -57,7 +58,7 @@ const CHECKS = {
       if (!fs.existsSync(overviewPath)) missing.push(overview);
       else {
         const content = fs.readFileSync(overviewPath, 'utf8');
-        if (content.trim().length < 100) missing.push(`${overview}(内容过短)`);
+        if (content.trim().length < C.MIN_AGENT_CONTENT_LENGTH) missing.push(`${overview}(内容过短)`);
       }
 
       // Role agents need valid frontmatter
@@ -101,7 +102,7 @@ const CHECKS = {
         if (!fs.existsSync(fp)) missing.push(f);
         else {
           const content = fs.readFileSync(fp, 'utf8');
-          if (content.trim().length < 100) missing.push(`${f}(内容过短)`);
+          if (content.trim().length < C.MIN_TEMPLATE_CONTENT_LENGTH) missing.push(`${f}(内容过短)`);
         }
       }
       return { ok: missing.length === 0, missing, detail: missing.length === 0 ? '全部 8 个模板文件存在' : `缺失/异常: ${missing.join(', ')}` };
@@ -195,7 +196,7 @@ function extractBaseline() {
       const principleMatches = principlesSection[1].matchAll(/\*\*(\S+)\s*[—\-].*?\*\*\s*(.+?)(?=\n|$)/g);
       for (const m of principleMatches) {
         const desc = m[2].trim();
-        if (desc.length > 2) baseline.philosophy[m[1]] = desc;
+        if (desc.length > C.MIN_PHILOSOPHY_DESC_LENGTH) baseline.philosophy[m[1]] = desc;
       }
     }
 
@@ -205,7 +206,7 @@ function extractBaseline() {
       const guidelineMatches = execSection[1].matchAll(/\*\*(\S+)。\*\*\s*(.+?)(?=\n|$)/g);
       for (const m of guidelineMatches) {
         const desc = m[2].trim();
-        if (desc.length > 2) baseline.philosophy[m[1]] = desc;
+        if (desc.length > C.MIN_PHILOSOPHY_DESC_LENGTH) baseline.philosophy[m[1]] = desc;
       }
     }
 
@@ -284,25 +285,19 @@ function detectProjectType() {
   let frontendScore = 0, backendScore = 0;
   const indicators = [];
 
-  const frontendPatterns = [
-    { ext: '.vue', weight: 3 }, { ext: '.jsx', weight: 2 }, { ext: '.tsx', weight: 2 },
-    { ext: '.svelte', weight: 3 }, { ext: '.scss', weight: 1 }, { ext: '.less', weight: 1 },
-  ];
+  const frontendPatterns = Object.entries(C.FRONTEND_EXTENSION_WEIGHTS).map(([ext, weight]) => ({ ext, weight }));
   for (const { ext, weight } of frontendPatterns) {
     try {
       const files = fs.readdirSync(REPO_ROOT, { recursive: true }).filter(f => f.endsWith(ext) && !f.includes('node_modules') && !f.includes('.git'));
-      if (files.length > 0) { frontendScore += weight * Math.min(files.length, 20); indicators.push(`${ext}`); }
+      if (files.length > 0) { frontendScore += weight * Math.min(files.length, C.MAX_FILE_COUNT_FOR_SCORING); indicators.push(`${ext}`); }
     } catch {}
   }
 
-  const backendPatterns = [
-    { ext: '.go', weight: 3 }, { ext: '.py', weight: 2 }, { ext: '.java', weight: 2 },
-    { ext: '.rs', weight: 2 }, { ext: '.sql', weight: 1 }, { ext: '.proto', weight: 2 },
-  ];
+  const backendPatterns = Object.entries(C.BACKEND_EXTENSION_WEIGHTS).map(([ext, weight]) => ({ ext, weight }));
   for (const { ext, weight } of backendPatterns) {
     try {
       const files = fs.readdirSync(REPO_ROOT, { recursive: true }).filter(f => f.endsWith(ext) && !f.includes('node_modules') && !f.includes('.git'));
-      if (files.length > 0) { backendScore += weight * Math.min(files.length, 20); indicators.push(`${ext}`); }
+      if (files.length > 0) { backendScore += weight * Math.min(files.length, C.MAX_FILE_COUNT_FOR_SCORING); indicators.push(`${ext}`); }
     } catch {}
   }
 
@@ -485,7 +480,67 @@ function injectBaseline(baseline, dryRun) {
     else results.skipped.push({ path: path.relative(REPO_ROOT, localSettingsPath), reason: r.reason });
   }
 
+  // ── Project-type-aware customization ──
+
+  // Generate project-profile.json with detected type and conventions
+  const coderFormula = getCoderFormula(baseline.projectType.type);
+  const profilePath = path.join(CLAUDE_DIR, 'project-profile.json');
+  const profile = {
+    project: baseline.project,
+    type: baseline.projectType.type,
+    type_label: labelForType(baseline.projectType.type),
+    tech_signals: baseline.projectType.indicators,
+    coder_formula: coderFormula,
+    story_defaults: getStoryDefaults(baseline.projectType.type),
+    generated_at: new Date().toISOString(),
+    _doc: 'rui init 自动检测的项目画像。story 生成时以此为基准选择目录骨架和 Coder 公式。',
+  };
+
+  if (dryRun) {
+    results.created.push({ path: path.relative(REPO_ROOT, profilePath), action: 'will-create', source: 'auto-generated' });
+  } else {
+    const r = writeJson(profilePath, profile);
+    if (r.action === 'create') results.created.push({ path: path.relative(REPO_ROOT, profilePath), action: 'created', source: 'auto-generated' });
+    else results.skipped.push({ path: path.relative(REPO_ROOT, profilePath), reason: r.reason });
+  }
+
+  // Post-process coder.md with project-type-specific formula
+  const coderDest = path.join(CLAUDE_DIR, 'agents', 'coder.md');
+  if (fs.existsSync(coderDest) && !dryRun) {
+    try {
+      let coderContent = fs.readFileSync(coderDest, 'utf8');
+      if (!coderContent.includes('<!-- project-type-injected -->')) {
+        const injection = `\n<!-- project-type-injected -->\n> **项目类型**: ${profile.type_label} · **Coder 公式**: \`${coderFormula.text}\` · **关注**: ${coderFormula.focus}\n`;
+        coderContent = coderContent.replace(/(## 触发)/, injection + '\n$1');
+        fs.writeFileSync(coderDest, coderContent, 'utf8');
+        results.created.push({ path: path.relative(REPO_ROOT, coderDest), action: 'injected', source: `项目类型公式: ${coderFormula.text}` });
+      }
+    } catch (e) {
+      results.skipped.push({ path: path.relative(REPO_ROOT, coderDest), reason: `注入失败: ${e.message}` });
+    }
+  }
+
   return results;
+}
+
+function getCoderFormula(type) {
+  const formulas = {
+    frontend: { text: '组件树 → Props/Events/Expose → 状态流', variant: '组件化', focus: '组件接口契约与状态管理' },
+    backend: { text: '模块 → 接口 → 数据流', variant: '领域模型', focus: '领域模型完整性与API契约' },
+    fullstack: { text: '模块 → 接口 → 数据流 + 组件树 → Props/Events → 状态流', variant: '前后端分离', focus: '前后端契约对齐与数据流完整性' },
+    meta: { text: '模块 → 接口 → 数据流', variant: '配置/插件', focus: '规则完整性与集成契约' },
+  };
+  return formulas[type] || formulas.meta;
+}
+
+function getStoryDefaults(type) {
+  const defaults = {
+    frontend: { skeleton: 'frontend-only', required_files: ['01', '03', '04', '06', '07', '08'], skip_files: ['02', '05'] },
+    backend: { skeleton: 'backend-only', required_files: ['01', '02', '04', '05', '07', '08'], skip_files: ['03', '06'] },
+    fullstack: { skeleton: 'fullstack', required_files: ['01', '02', '03', '04', '05', '06', '07', '08'], skip_files: [] },
+    meta: { skeleton: 'fullstack', required_files: ['01', '02', '03', '04', '05', '06', '07', '08'], skip_files: [] },
+  };
+  return defaults[type] || defaults.meta;
 }
 
 // ── Phase 3: 8-item readiness check ─────────────────────────────
