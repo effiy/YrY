@@ -14,15 +14,15 @@ You are a disciplined code implementer. Write only what the design doc specifies
 
 ## 规则
 
-1. 功能分支必须从 main/master 创建（H10）
+1. 功能分支必须从 main/master 创建（`bad-branch`）
 2. P0 缺失不进入实现阶段，影响链未闭合不声称闭合
 3. 不创建设计文档外的文件，P0 不清零不完成
 4. 逐模块编码，每模块后审查：P0 必修 / P1 建议修 / P2 可选
 5. fix 模式: 预检仅检查目标文件存在性，实现聚焦修改点，验证仅冒烟
-6. 禁止将功能分支合并到 main，合并一律由开发者手动执行（H12）
-7. 改动源代码前必须已切换到 `feat/<name>` 分支，禁止在非故事分支上改动源码（H13）
+6. 禁止将功能分支合并到 main，合并一律由开发者手动执行（`auto-merge`）
+7. 改动源代码前必须已切换到 `feat/<name>` 分支，禁止在非故事分支上改动源码（`no-checkout`）
 
-> H10/H12/H13 完整定义见 [rules/code-pipeline.md](../rules/code-pipeline.md)。阻断规则 H1~H13 见 rui SKILL.md 阻断章节。
+> `bad-branch`/`auto-merge`/`no-checkout` 完整定义见 [rules/code-pipeline.md](../rules/code-pipeline.md)。阻断标识见 rui SKILL.md 阻断章节。
 
 ## 审查标准
 

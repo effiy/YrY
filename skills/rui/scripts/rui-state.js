@@ -1,15 +1,13 @@
 #!/usr/bin/env node
 
 // node scripts/rui-state.js <save|load|clear|next-step> [...]
-// Storage: docs/.memory/rui-state.json (global) + docs/故事任务面板/<name>/.memory/ (per-story)
+// Storage: docs/故事任务面板/<name>/.memory/ (per-story)
 
 const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
 
 const REPO_ROOT = path.resolve(__dirname, '../../..');
-const MEMORY_DIR = path.join(REPO_ROOT, 'docs', '.memory');
-const STATE_FILE = path.join(MEMORY_DIR, 'rui-state.json');
 const STORIES_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
 function storyMemoryDir(name) { return path.join(STORIES_DIR, name, '.memory'); }
@@ -36,12 +34,9 @@ function parseArgs(argv) {
   return out;
 }
 
-async function ensureDir() {
-  await fsp.mkdir(MEMORY_DIR, { recursive: true });
-}
-
 async function readExistingState(name) {
-  const file = name ? storyStateFile(name) : STATE_FILE;
+  if (!name) return null;
+  const file = storyStateFile(name);
   try {
     const raw = await fsp.readFile(file, 'utf8');
     return JSON.parse(raw);
@@ -121,11 +116,6 @@ async function cmdSave(opts) {
 
   const json = JSON.stringify(state, null, 2);
 
-  // Always write to global
-  await ensureDir();
-  await fsp.writeFile(STATE_FILE, json, 'utf8');
-
-  // Dual-write to per-story
   const sDir = storyMemoryDir(opts.name);
   await fsp.mkdir(sDir, { recursive: true });
   await fsp.writeFile(storyStateFile(opts.name), json, 'utf8');
@@ -134,7 +124,11 @@ async function cmdSave(opts) {
 }
 
 async function cmdLoad(opts) {
-  const file = opts.name ? storyStateFile(opts.name) : STATE_FILE;
+  if (!opts.name) {
+    console.error('load requires --name');
+    process.exit(1);
+  }
+  const file = storyStateFile(opts.name);
   try {
     const raw = await fsp.readFile(file, 'utf8');
     const state = JSON.parse(raw);
@@ -145,7 +139,7 @@ async function cmdLoad(opts) {
     }
 
     const statusBadge = state.blocked ? 'BLOCKED' : 'IN PROGRESS';
-    console.log(`# rui State: ${statusBadge}${opts.name ? ' · ' + opts.name : ''}`);
+    console.log(`# rui State: ${statusBadge} · ${opts.name}`);
     console.log(`- Command: ${state.command}`);
     console.log(`- Name: ${state.name}`);
     console.log(`- Stage: ${state.current_stage}`);
@@ -163,118 +157,59 @@ async function cmdLoad(opts) {
     if (opts.json) {
       console.log('null');
     } else {
-      console.log(`> No active rui session found${opts.name ? ' for ' + opts.name : ''}.`);
+      console.log(`> No active rui session found for ${opts.name}.`);
     }
   }
 }
 
 async function cmdClear(opts) {
-  const files = [];
-  if (opts.name) {
-    files.push(storyStateFile(opts.name));
-  } else {
-    files.push(STATE_FILE);
+  if (!opts.name) {
+    console.error('clear requires --name');
+    process.exit(1);
   }
-  let cleared = 0;
-  for (const f of files) {
-    try { await fsp.unlink(f); cleared++; } catch {}
+  const file = storyStateFile(opts.name);
+  try { await fsp.unlink(file); console.log('State cleared.'); } catch {
+    console.log('> No state file to clear.');
   }
-  if (cleared > 0) console.log('State cleared.');
-  else console.log('> No state file to clear.');
 }
 
 async function cmdNextStep() {
-  const state = await readState();
   const storyboards = await findStoryboards();
 
-  // Blocked → resume with pipeline context
-  if (state && state.blocked) {
-    const stageInfo = state.current_stage ? ` (从 ${state.current_stage} 恢复)` : '';
-    const pp = state.pipeline_progress;
-    if (pp) {
-      const blockedPhases = Object.entries(pp).filter(([, s]) => s === 'blocked').map(([p]) => p);
-      if (blockedPhases.length > 0) {
-        console.log(`阻断阶段: ${blockedPhases.join(', ')}`);
-      }
-    }
-    console.log(`重新运行 \`/rui ${state.command} ${state.name}\`${stageInfo}。阻断原因: ${state.block_reason || '未指定'}`);
+  if (storyboards.length === 0) {
+    console.log('运行 `/rui init` 初始化项目，或 `/rui doc <requirement>` 开始第一个故事。');
     return;
   }
 
-  // No state at all
-  if (!state) {
-    if (storyboards.length > 0) {
-      const names = storyboards;
-      // Check each storyboard's per-story state for richer suggestion
-      const storyDetails = [];
-      for (const n of names) {
-        const ps = await readExistingState(n);
-        if (ps && ps.pipeline_progress) {
-          const inProgress = Object.entries(ps.pipeline_progress).find(([, s]) => s === 'in_progress');
-          const blocked = Object.entries(ps.pipeline_progress).find(([, s]) => s === 'blocked');
-          if (blocked) storyDetails.push(`${n}(阻断@${blocked[0]})`);
-          else if (inProgress) storyDetails.push(`${n}(${inProgress[0]})`);
-          else storyDetails.push(`${n}(文档完成)`);
-        } else {
-          storyDetails.push(n);
-        }
+  // Scan per-story states for blocked/in-progress/completed
+  const storyDetails = [];
+  let blockedStory = null;
+  for (const n of storyboards) {
+    const ps = await readExistingState(n);
+    if (ps && ps.pipeline_progress) {
+      const inProgress = Object.entries(ps.pipeline_progress).find(([, s]) => s === 'in_progress');
+      const blocked = Object.entries(ps.pipeline_progress).find(([, s]) => s === 'blocked');
+      if (blocked) {
+        storyDetails.push(`${n}(阻断@${blocked[0]})`);
+        if (!blockedStory) blockedStory = ps;
+      } else if (inProgress) {
+        storyDetails.push(`${n}(${inProgress[0]})`);
+      } else {
+        storyDetails.push(`${n}(文档完成)`);
       }
-      console.log(`运行 \`/rui <name>\` 开始端到端流程。已有故事板: ${storyDetails.join(', ')}`);
     } else {
-      console.log('运行 `/rui init` 初始化项目，或 `/rui doc <requirement>` 开始第一个故事。');
+      storyDetails.push(n);
     }
+  }
+
+  if (blockedStory) {
+    const stageInfo = blockedStory.current_stage ? ` (从 ${blockedStory.current_stage} 恢复)` : '';
+    console.log(`重新运行 \`/rui ${blockedStory.command} ${blockedStory.name}\`${stageInfo}。阻断原因: ${blockedStory.block_reason || '未指定'}`);
+    console.log(`所有故事: ${storyDetails.join(', ')}`);
     return;
   }
 
-  // Not blocked, normal completion — enriched with pipeline_progress
-  const { command, name } = state;
-  const pp = state.pipeline_progress;
-
-  if (command === 'init') {
-    console.log('运行 `/rui doc <requirement>` 拆分需求为故事。');
-  } else if (command === 'doc') {
-    console.log(`运行 \`/rui code ${name}\` 开始编码实现。`);
-  } else if (command === 'update') {
-    // After update (doc pipeline + code pipeline fully delivered)
-    if (storyboards.length > 0) {
-      const remaining = storyboards.filter(n => n !== name);
-      if (remaining.length > 0) {
-        console.log(`故事 ${name} 已交付。运行 \`/rui ${remaining[0]}\` 继续下一个故事。剩余: ${remaining.join(', ')}`);
-      } else {
-        console.log(`故事 ${name} 已交付。所有故事已处理完毕，运行 \`/rui list\` 或 \`/rui\` 查看全局状态。`);
-      }
-    } else {
-      console.log(`故事 ${name} 已交付。运行 \`/rui list\` 查看全局进度。`);
-    }
-  } else if (command === 'code') {
-    const remaining = storyboards.filter(n => n !== name);
-    if (remaining.length > 0) {
-      console.log(`运行 \`/rui code ${remaining[0]}\` 继续下一个故事。剩余故事: ${remaining.join(', ')}`);
-    } else {
-      console.log('所有故事已处理完毕。运行 `/rui init` 进行健康检查，或创建新故事。');
-    }
-  } else {
-    // Full pipeline (端到端)
-    if (storyboards.length > 0) {
-      const remaining = storyboards.filter(n => n !== name);
-      if (remaining.length > 0) {
-        console.log(`运行 \`/rui ${remaining[0]}\` 继续下一个故事。剩余故事: ${remaining.join(', ')}`);
-      } else {
-        console.log('所有故事已处理完毕。');
-      }
-    } else {
-      console.log('运行 `/rui <name>` 开始下一个端到端流程。');
-    }
-  }
-}
-
-async function readState() {
-  try {
-    const raw = await fsp.readFile(STATE_FILE, 'utf8');
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
+  console.log(`运行 \`/rui <name>\` 开始端到端流程。已有故事板: ${storyDetails.join(', ')}`);
 }
 
 async function findStoryboards() {

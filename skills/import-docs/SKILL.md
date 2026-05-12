@@ -23,11 +23,11 @@ lifecycle: default-pipeline
 
 | 检查点 | 时机 | 范围 |
 |--------|------|------|
-| CP1 | 文档生成后（01-08 基线产出） | 当前故事目录.md + .claude/ 全部 |
-| CP2 | 验证后（05-07 报告产出） | 同上 |
-| CP3 | 交付阶段（最终全量） | 全项目.md + .claude/ 全部 |
+| 文档生成后 | 全文档基线产出 | 当前故事目录.md + .claude/ 全部 |
+| 验证后 | 实施与测试报告产出 | 同上 |
+| 交付时 | 最终全量 | 全项目.md + .claude/ 全部 |
 
-H9 降级：仅 `API_X_TOKEN` 缺失时跳过。网络超时、远端不可达记录告警但不阻断管线。
+`no-token` 降级：仅 `API_X_TOKEN` 缺失时跳过。网络超时、远端不可达记录告警但不阻断管线。
 
 ## 命令
 
@@ -64,7 +64,7 @@ node skills/import-docs/scripts/import-docs.js list --workspace
 
 - 目录不存在 → 跳过
 - 单文件失败 → 记录错误，继续处理
-- `API_X_TOKEN` 缺失 → 停止（H9 降级）
+- `API_X_TOKEN` 缺失 → 停止（`no-token` 降级）
 - 禁止 token 写入仓库、日志或文档
 - 文件遍历不受 `.gitignore` 限制
 

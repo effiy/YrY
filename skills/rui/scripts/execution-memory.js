@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // node scripts/execution-memory.js <write|query|stats|ls|trends> [...]
-// Storage: docs/.memory/execution-memory.jsonl (global) + docs/故事任务面板/<name>/.memory/ (per-story)
+// Storage: docs/故事任务面板/<name>/.memory/ (per-story)
 
 const fs = require('fs');
 const fsp = fs.promises;
@@ -9,8 +9,6 @@ const path = require('path');
 const { getNaturalWeekRange } = require('./natural-week.js');
 
 const REPO_ROOT = path.resolve(__dirname, '../../..');
-const MEMORY_DIR = path.join(REPO_ROOT, 'docs', '.memory');
-const MEMORY_FILE = path.join(MEMORY_DIR, 'execution-memory.jsonl');
 const STORIES_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
 function storyMemoryDir(name) { return path.join(STORIES_DIR, name, '.memory'); }
@@ -34,22 +32,24 @@ function parseArgs(argv) {
   return out;
 }
 
-async function ensureMemoryFile() {
-  await fsp.mkdir(MEMORY_DIR, { recursive: true });
-  try {
-    await fsp.access(MEMORY_FILE);
-  } catch {
-    await fsp.writeFile(MEMORY_FILE, '', 'utf8');
-  }
-}
-
 async function readAllRecords() {
-  await ensureMemoryFile();
-  const text = await fsp.readFile(MEMORY_FILE, 'utf8');
-  const lines = text.split('\n').filter(l => l.trim() !== '');
-  return lines.map(l => {
-    try { return JSON.parse(l); } catch { return null; }
-  }).filter(Boolean);
+  // Aggregate from all per-story .memory/ directories
+  const records = [];
+  try {
+    const entries = await fsp.readdir(STORIES_DIR, { withFileTypes: true });
+    for (const entry of entries) {
+      if (!entry.isDirectory() || entry.name.startsWith('.')) continue;
+      const memFile = storyMemoryFile(entry.name);
+      try {
+        const text = await fsp.readFile(memFile, 'utf8');
+        const lines = text.split('\n').filter(l => l.trim() !== '');
+        for (const line of lines) {
+          try { records.push(JSON.parse(line)); } catch { /* skip */ }
+        }
+      } catch { /* story has no memory yet */ }
+    }
+  } catch { /* no stories dir */ }
+  return records;
 }
 
 function matchName(record, name) {
@@ -118,19 +118,17 @@ async function cmdWrite(filePath, opts) {
 
   const line = JSON.stringify(record);
 
-  // Always write to global
-  await ensureMemoryFile();
-  await fsp.appendFile(MEMORY_FILE, line + '\n', 'utf8');
-
-  // Dual-write to per-story if --name provided
-  if (opts.name) {
-    const dir = storyMemoryDir(opts.name);
-    const file = storyMemoryFile(opts.name);
-    await fsp.mkdir(dir, { recursive: true });
-    await fsp.appendFile(file, line + '\n', 'utf8');
+  if (!opts.name) {
+    console.error('Error: --name is required for write');
+    process.exit(1);
   }
 
-  console.log(`✓ Execution memory written (session_id: ${record.session_id}${opts.name ? ', story: ' + opts.name : ''})`);
+  const dir = storyMemoryDir(opts.name);
+  const file = storyMemoryFile(opts.name);
+  await fsp.mkdir(dir, { recursive: true });
+  await fsp.appendFile(file, line + '\n', 'utf8');
+
+  console.log(`✓ Execution memory written (session_id: ${record.session_id}, story: ${opts.name})`);
 }
 
 async function cmdQuery(opts) {

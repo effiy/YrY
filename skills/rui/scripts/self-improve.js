@@ -10,9 +10,6 @@ const { execSync } = require('child_process');
 const { getNaturalWeekRange } = require('./natural-week.js');
 
 const REPO_ROOT = path.resolve(__dirname, '../../..');
-const IMPROVEMENT_DIR = path.join(REPO_ROOT, 'docs', '.improvement');
-const PROPOSALS_FILE = path.join(IMPROVEMENT_DIR, 'proposals.jsonl');
-const HEALTH_CACHE_FILE = path.join(IMPROVEMENT_DIR, '.last-health.json');
 const STORIES_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
 function storyImprovementDir(name) { return path.join(STORIES_DIR, name, '.improvement'); }
@@ -194,28 +191,40 @@ function computeMetrics(records) {
   };
 }
 
-async function ensureProposalsFile() {
-  await fsp.mkdir(IMPROVEMENT_DIR, { recursive: true });
-  try { await fsp.access(PROPOSALS_FILE); } catch {
-    await fsp.writeFile(PROPOSALS_FILE, '', 'utf8');
-  }
-}
-
 async function readProposals() {
-  await ensureProposalsFile();
-  const text = await fsp.readFile(PROPOSALS_FILE, 'utf8');
-  return text.split('\n').filter(l => l.trim()).map(l => {
-    try { return JSON.parse(l); } catch { return null; }
-  }).filter(Boolean);
+  // Aggregate from all per-story .improvement/ directories
+  const proposals = [];
+  try {
+    const entries = await fsp.readdir(STORIES_DIR, { withFileTypes: true });
+    for (const entry of entries) {
+      if (!entry.isDirectory() || entry.name.startsWith('.')) continue;
+      const file = storyProposalsFile(entry.name);
+      try {
+        const text = await fsp.readFile(file, 'utf8');
+        const lines = text.split('\n').filter(l => l.trim());
+        for (const line of lines) {
+          try { proposals.push(JSON.parse(line)); } catch { /* skip */ }
+        }
+      } catch { /* story has no proposals yet */ }
+    }
+  } catch { /* no stories dir */ }
+  return proposals;
 }
 
-async function writeProposals(proposals) {
-  await ensureProposalsFile();
-  await fsp.writeFile(PROPOSALS_FILE, proposals.map(p => JSON.stringify(p)).join('\n') + '\n', 'utf8');
+async function writeProposals(proposals, name) {
+  if (!name) throw new Error('--name required for writeProposals');
+  const dir = storyImprovementDir(name);
+  const file = storyProposalsFile(name);
+  await fsp.mkdir(dir, { recursive: true });
+  await fsp.writeFile(file, proposals.map(p => JSON.stringify(p)).join('\n') + '\n', 'utf8');
 }
 
 async function writeProposal(proposal, opts) {
-  await ensureProposalsFile();
+  const name = (opts && opts.name) || proposal.story_name;
+  if (!name) {
+    console.error('Error: --name or proposal.story_name required');
+    process.exit(1);
+  }
   if (!proposal.id) {
     const hash = Math.random().toString(36).slice(2, 8);
     proposal.id = `${Date.now()}-${hash}`;
@@ -225,25 +234,17 @@ async function writeProposal(proposal, opts) {
   if (!proposal.trigger_op) proposal.trigger_op = 'init';
   if (!proposal.feedback) proposal.feedback = [];
   if (!proposal.eval_result) proposal.eval_result = null;
-  // Enriched fields
-  if (!proposal.story_name && opts && opts.name) proposal.story_name = opts.name;
+  if (!proposal.story_name) proposal.story_name = name;
   if (!proposal.source_phase) proposal.source_phase = null;
   if (!proposal.actionable_command) proposal.actionable_command = null;
   if (!proposal.linked_memory_ids) proposal.linked_memory_ids = [];
 
   const line = JSON.stringify(proposal);
 
-  // Always write to global
-  await fsp.appendFile(PROPOSALS_FILE, line + '\n', 'utf8');
-
-  // Dual-write to per-story if --name provided
-  const name = (opts && opts.name) || proposal.story_name;
-  if (name) {
-    const dir = storyImprovementDir(name);
-    const file = storyProposalsFile(name);
-    await fsp.mkdir(dir, { recursive: true });
-    await fsp.appendFile(file, line + '\n', 'utf8');
-  }
+  const dir = storyImprovementDir(name);
+  const file = storyProposalsFile(name);
+  await fsp.mkdir(dir, { recursive: true });
+  await fsp.appendFile(file, line + '\n', 'utf8');
 
   return proposal.id;
 }
@@ -255,11 +256,16 @@ async function resolveProposal(proposalId, resolvedBy, status = 'done') {
     console.error(`Proposal ${proposalId} not found`);
     process.exit(1);
   }
+  const name = proposals[idx].story_name;
+  if (!name) {
+    console.error(`Proposal ${proposalId} has no story_name`);
+    process.exit(1);
+  }
   proposals[idx].status = status;
   proposals[idx].resolvedDate = new Date().toISOString().split('T')[0];
   proposals[idx].resolved_by = resolvedBy || 'N/A';
   proposals[idx].eval_result = 'pending';
-  await writeProposals(proposals);
+  await writeProposals(proposals, name);
   console.log(`Proposal ${proposalId} marked as ${status}`);
 }
 
@@ -370,7 +376,16 @@ async function cmdEvaluate(opts) {
     }
   }
 
-  await writeProposals(proposals);
+  // Write back per-story
+  const byStory = {};
+  for (const p of proposals) {
+    const sn = p.story_name || '_unknown';
+    if (!byStory[sn]) byStory[sn] = [];
+    byStory[sn].push(p);
+  }
+  for (const [sn, ps] of Object.entries(byStory)) {
+    await writeProposals(ps, sn);
+  }
 
   if (opts.json) {
     console.log(JSON.stringify(results, null, 2));
@@ -583,33 +598,15 @@ async function cmdHealth(opts) {
   }
   composite = totalWeight > 0 ? Math.round(composite / totalWeight) : null;
 
-  let lastHealth = null;
-  try {
-    const raw = await fsp.readFile(HEALTH_CACHE_FILE, 'utf8');
-    lastHealth = JSON.parse(raw);
-  } catch { /* no previous score */ }
-
-  const healthResult = {
-    timestamp: new Date().toISOString(),
-    composite,
-    dimensions: scores,
-    last: lastHealth ? { composite: lastHealth.composite, date: lastHealth.timestamp } : null,
-    delta: lastHealth && composite !== null && lastHealth.composite !== null ? composite - lastHealth.composite : null,
-  };
-
-  await fsp.mkdir(IMPROVEMENT_DIR, { recursive: true });
-  await fsp.writeFile(HEALTH_CACHE_FILE, JSON.stringify(healthResult), 'utf8');
-
   if (opts.json) {
-    console.log(JSON.stringify(healthResult, null, 2));
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), composite, dimensions: scores }, null, 2));
     return;
   }
 
   console.log(`# Project Health Score\n`);
-  console.log(`> Generated at: ${healthResult.timestamp}\n`);
+  console.log(`> Generated at: ${new Date().toISOString()}\n`);
   if (composite !== null) {
-    const deltaStr = healthResult.delta !== null ? ` (${healthResult.delta > 0 ? '+' : ''}${healthResult.delta})` : '';
-    console.log(`**Composite: ${composite}/100**${deltaStr}\n`);
+    console.log(`**Composite: ${composite}/100**\n`);
   }
 
   console.log(`| Dimension | Score | Weight | Full Score |`);
@@ -620,10 +617,6 @@ async function cmdHealth(opts) {
     console.log(`| ${dim} | ${s !== null ? s : 'N/A'} | ${(weight * 100).toFixed(0)}% | ${full !== null ? full : 'N/A'} |`);
   }
   console.log();
-
-  if (lastHealth) {
-    console.log(`> Previous score: ${lastHealth.composite || 'N/A'} (at ${lastHealth.timestamp})\n`);
-  }
 }
 
 async function cmdFeedback(proposalId, rating, note) {

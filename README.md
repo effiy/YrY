@@ -4,13 +4,31 @@
 
 ## 系统能力
 
-**rui 编排器：** `/rui` 命令体系驱动故事 SDLC 全流程——需求拆分 → 文档管线 → 代码管线 → 交付。6 个 Agent（pm/coder/tester/reporter/security/self-improve）协同，每故事独立走完管线，Gate A/B 强制验证，产出 8 份文档。
+> **口诀：编驱配管，记偏技扩。**
+
+```mermaid
+flowchart LR
+    R[rui<br/>编排引擎] --> C[rui-claude<br/>配置管理]
+    R --> M[Memory<br/>偏好记忆]
+    R --> S[Skills<br/>能力扩展]
+    C -->|sync/retro| M
+    S -->|/name 调用| R
+```
+
+**rui 编排器：** `/rui` 命令体系驱动故事 SDLC 全流程——需求拆分 → 文档管线 → 代码管线 → 交付。6 Agent（pm/coder/tester/reporter/security/self-improve）协同，Gate A/B 强制验证，每故事 8 份文档。
 
 **rui-claude 配置管理：** `/rui-claude` 管理 `.claude/` 目录——sync 远端同步、retro 健康复盘、history 操作历史、`<requirement>` 端到端配置变更交付。
 
-**Memory：** 用户偏好、项目上下文、反馈记录存于 `~/.claude/projects/` 下对应项目目录。启动时读取 MEMORY.md 索引。记忆是指针索引，非内容——引用前验证时效。
+**Memory：** 偏好、上下文、反馈存于 `~/.claude/projects/`。启动时读 MEMORY.md 索引。记忆是指针，非内容——引用前验证时效。
 
-**Skills：** 用户输入 `/<name>` 或任务匹配时直接调用。项目内置 `rui`、`rui-claude`、`wework-bot`、`import-docs`。系统内置 `init`、`review`、`security-review`、`simplify`、`loop` 等辅助 skill，见 `<skills>` 块完整列表。
+**Skills：** `/<name>` 或任务匹配时调用。项目内置 `rui`、`rui-claude`、`wework-bot`、`import-docs`。系统内置见 `<skills>` 块。
+
+| 能力 | 入口 | 核心机制 | 产出 |
+|------|------|----------|------|
+| rui 编排 | `/rui` | 6 Agent + Gate A/B | 8 文档/故事 |
+| rui-claude | `/rui-claude` | sync / retro / history | .claude/ 变更 |
+| Memory | 自动 | MEMORY.md 索引 | 跨会话偏好 |
+| Skills | `/<name>` | 关键词匹配 | 能力扩展 |
 
 ## 项目结构
 
@@ -47,7 +65,9 @@ static/
 ```bash
 /rui init                  # 建立项目基线（CLAUDE.md + README.md + .claude/）
 /rui doc "需求描述"         # 拆分需求为故事，走文档管线
+/rui doc --from-code <req>  # 从现有代码逆向推导需求，生成 01-08 全文档
 /rui code <story-name>     # 实现故事，走代码管线
+/rui code --from-doc <name> # 从已有 01 文档补全缺失的 02-08 文档
 /rui <requirement>         # 端到端（文档 + 代码全自动）
 /rui                       # 无参数获取任务推荐
 

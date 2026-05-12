@@ -17,7 +17,7 @@ lifecycle: default-pipeline
 |------|------|
 | `--agent <name>` | 通过 config.agents 路由（推荐） |
 | `--robot <name>` | 直接指定机器人 |
-| `--name, -n <story>` | 故事名，发送前追加到 `docs/故事任务面板/<name>/09-消息通知列表.md` |
+| `--name, -n <story>` | 故事名，发送前追加到 `docs/故事任务面板/<name>/00-消息通知列表.md` |
 | `--content, -c <text>` | 消息正文 |
 | `--content-file, -f <path>` | 从文件读正文 |
 | `--no-send` | 仅追加日志，不发送 HTTP |
@@ -65,7 +65,7 @@ Webhook 路由在 `config.json` 中配置，不通过 CLI 传入。
 
 ## 消息通知列表
 
-指定 `--name` 时，发送前追加到 `docs/故事任务面板/<name>/09-消息通知列表.md`。每条消息以 `【yyyy-mm-dd hh:mm:ss】` 分割线分隔。目录不存在时自动创建，文件为追加模式。
+指定 `--name` 时，发送前追加到 `docs/故事任务面板/<name>/00-消息通知列表.md`。每条消息以 `【yyyy-mm-dd hh:mm:ss】` 分割线分隔。目录不存在时自动创建，文件为追加模式。
 
 ## API 契约
 
@@ -83,4 +83,4 @@ Body: { "webhook_url": "<from config>", "content": "<message>" }
 
 ## 空输入
 
-无参数时扫描 config.json / 环境变量 / `09-消息通知列表.md` → 推荐任务（配置缺失/测试验证/通知补齐/定期巡检），不发送消息。
+无参数时扫描 config.json / 环境变量 / `00-消息通知列表.md` → 推荐任务（配置缺失/测试验证/通知补齐/定期巡检），不发送消息。

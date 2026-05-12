@@ -169,7 +169,7 @@ Usage: node .claude/skills/wework-bot/scripts/send-message.js [options]
   --robot, -r <name>    直接指定机器人名（慎用，优先 --agent）
   --content, -c <text>   完整正文（单行或多行转义）
   --content-file, -f <path>  从 UTF-8 文件读取正文（推荐长文案）
-  --name, -n <name>      故事名称，用于追加消息到 docs/故事任务面板/<name>/09-消息通知列表.md
+  --name, -n <name>      故事名称，用于追加消息到 docs/故事任务面板/<name>/00-消息通知列表.md
   --no-send            仅追加消息日志，不实际发送
   --api-url, -a <url>   覆盖发送 API
   --help, -h
@@ -303,7 +303,7 @@ function formatTimestamp() {
 
 function appendToStoryNotificationLog(name, content) {
   const storyDir = path.join(PROJECT_ROOT, 'docs', '故事任务面板', name);
-  const logFile = path.join(storyDir, '09-消息通知列表.md');
+  const logFile = path.join(storyDir, '00-消息通知列表.md');
   fs.mkdirSync(storyDir, { recursive: true });
   const timestamp = formatTimestamp();
   const entry = `\n${timestamp}\n\n${content}\n`;
