@@ -344,6 +344,143 @@ function healthSnapshot() {
   return { health, trends, proposals, snapshot };
 }
 
+// ── Source module discovery ──────────────────────────────────
+
+function discoverSourceModules(projectType) {
+  const modules = [];
+  const pt = projectType.type;
+
+  if (pt === 'frontend' || pt === 'fullstack') {
+    // Discover frontend component directories
+    const feExts = ['.vue', '.jsx', '.tsx'];
+    for (const ext of feExts) {
+      const files = sh(`find . -name "*${ext}" -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null`, '');
+      if (!files) continue;
+      const dirs = new Set();
+      for (const f of files.split('\n').filter(Boolean)) {
+        const dir = path.dirname(f).replace(/^\.\//, '');
+        if (dir !== '.') dirs.add(dir);
+      }
+      for (const d of dirs) {
+        const name = d.replace(/\//g, '-').replace(/^src-|^components-|^pages-/, '');
+        const existing = modules.find(m => m.name === name);
+        if (existing) { existing.fileCount++; continue; }
+        modules.push({ name, path: d, type: 'frontend-component', fileCount: 1 });
+      }
+    }
+  }
+
+  if (pt === 'backend' || pt === 'fullstack') {
+    // Discover backend API modules
+    const beFiles = sh(`find . -type f \\( -name "*.js" -o -name "*.ts" -o -name "*.py" -o -name "*.go" \\) -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/skills/*" -not -path "*/agents/*" -not -path "*/rules/*" 2>/dev/null`, '');
+    if (beFiles) {
+      const dirs = new Set();
+      for (const f of beFiles.split('\n').filter(Boolean)) {
+        try {
+          const content = fs.readFileSync(path.join(REPO_ROOT, f), 'utf8').slice(0, 2000);
+          if (/\b(router\.|app\.(get|post|put|delete|patch)|@app\.route|@router\.|func\s+\w+.*http\.|class\s+\w+Controller|@RestController|@RequestMapping)\b/.test(content)) {
+            const dir = path.dirname(f).replace(/^\.\//, '');
+            if (dir !== '.') dirs.add(dir);
+          }
+        } catch {}
+      }
+      for (const d of dirs) {
+        const name = d.replace(/\//g, '-');
+        modules.push({ name, path: d, type: 'backend-module', fileCount: 1 });
+      }
+    }
+  }
+
+  if (pt === 'meta' || (pt === 'unknown' && modules.length === 0)) {
+    // Discover skills, agents, rules as modules
+    try {
+      const skillDirs = fs.readdirSync(path.join(REPO_ROOT, 'skills'), { withFileTypes: true })
+        .filter(e => e.isDirectory() && !e.name.startsWith('.'))
+        .map(e => e.name);
+      for (const s of skillDirs) {
+        modules.push({ name: s, path: `skills/${s}`, type: 'skill', fileCount: 1 });
+      }
+    } catch {}
+    if (fs.existsSync(path.join(REPO_ROOT, 'agents'))) {
+      try {
+        const agentFiles = fs.readdirSync(path.join(REPO_ROOT, 'agents'), { withFileTypes: true })
+          .filter(e => e.isFile() && e.name.endsWith('.md'))
+          .map(e => e.name.replace(/\.md$/, ''));
+        modules.push({ name: 'agents', path: 'agents/', type: 'agent-group', fileCount: agentFiles.length });
+      } catch {}
+    }
+    if (fs.existsSync(path.join(REPO_ROOT, 'rules'))) {
+      try {
+        const ruleFiles = fs.readdirSync(path.join(REPO_ROOT, 'rules'), { withFileTypes: true })
+          .filter(e => e.isFile() && e.name.endsWith('.md'))
+          .map(e => e.name.replace(/\.md$/, ''));
+        modules.push({ name: 'rules', path: 'rules/', type: 'rule-group', fileCount: ruleFiles.length });
+      } catch {}
+    }
+  }
+
+  return modules;
+}
+
+function findUndocumentedModules(modules, stories) {
+  // Build set of covered names from existing stories (use story slug part)
+  const covered = new Set();
+  for (const s of stories) {
+    if (s.malformed) continue;
+    const info = parseStoryDirName(s.name);
+    if (info.valid) {
+      covered.add(info.story);
+      covered.add(info.project);  // project name also covered
+    }
+    // Also check if any module name is substring of story name
+    covered.add(s.name);
+  }
+
+  const undocumented = [];
+  for (const m of modules) {
+    // Check if module is covered by any existing story
+    let isCovered = false;
+    for (const c of covered) {
+      if (m.name === c || c.includes(m.name) || m.name.includes(c)) {
+        isCovered = true;
+        break;
+      }
+    }
+    if (!isCovered) {
+      undocumented.push(m);
+    }
+  }
+  return undocumented;
+}
+
+function analyzeDocumentGaps(stories) {
+  const gaps = [];
+  for (const s of stories) {
+    if (s.malformed || s.status === 'code_done') continue;
+    if (s.missing && s.missing.length > 0) {
+      const criticalMissing = s.missing.filter(f =>
+        f === '01-故事任务.md' || f === '02-后端技术评审.md' || f === '03-前端技术评审.md' || f === '04-测试用例评审.md'
+      );
+      const reportMissing = s.missing.filter(f =>
+        f === '05-后端实施报告.md' || f === '06-前端实施报告.md' || f === '07-测试用例报告.md'
+      );
+      const retroMissing = s.missing.includes('08-自改进复盘.md');
+
+      if (criticalMissing.length > 0 || reportMissing.length > 0 || retroMissing) {
+        gaps.push({
+          story: s.name,
+          status: s.status,
+          criticalMissing,
+          reportMissing,
+          retroMissing,
+          totalMissing: s.missing.length,
+        });
+      }
+    }
+  }
+  return gaps;
+}
+
 // ── Recommendation generation ─────────────────────────────────
 
 function generate(stories, git, sync, data, projectType) {
@@ -631,6 +768,58 @@ function generate(stories, git, sync, data, projectType) {
     });
   }
 
+  // ── P1: undocumented source modules → new story directories ──
+  const modules = discoverSourceModules(projectType);
+  const undocumented = findUndocumentedModules(modules, stories);
+  for (const m of undocumented.slice(0, 5)) {
+    const projectName = sh('git remote get-url origin 2>/dev/null | sed "s/.*\\/\\([^/]*\\)\\.git/\\1/" | head -1', '') || path.basename(REPO_ROOT);
+    const storyName = `${projectName}-${m.name}`;
+    const typeLabel = { 'skill': 'Skill 模块', 'agent-group': 'Agent 模块', 'rule-group': '规则模块', 'frontend-component': '前端组件', 'backend-module': '后端模块' }[m.type] || '源码模块';
+    recs.push({
+      priority: 'P1', category: 'new-story',
+      action: `[PM] 为${typeLabel}创建故事: ${m.name}`,
+      rationale: `${m.path} 缺少故事文档覆盖（${m.fileCount} 个文件未纳入故事面板）`,
+      actionable_command: `/rui doc --from-code ${storyName}`,
+      story_name: storyName,
+      formula: { role: 'PM', rule: '作为[角色]我想要[动作]以便[价值]', check: 'new-story-dir' },
+    });
+  }
+
+  // ── P2: document gaps in existing stories ──
+  const docGaps = analyzeDocumentGaps(stories);
+  for (const dg of docGaps.slice(0, 5)) {
+    if (dg.criticalMissing.length > 0) {
+      recs.push({
+        priority: 'P1', category: 'doc-gap',
+        action: `[Reporter] 补全 ${dg.story} 关键文档: ${dg.criticalMissing.join(', ')}`,
+        rationale: `缺少 ${dg.criticalMissing.length} 份关键文档，基线不完整`,
+        actionable_command: `/rui doc ${dg.story}`,
+        story_name: dg.story,
+        formula: { role: 'Reporter', rule: '事实→偏差→影响', check: 'doc-gap-critical' },
+      });
+    }
+    if (dg.reportMissing.length > 0 && dg.criticalMissing.length === 0) {
+      recs.push({
+        priority: 'P2', category: 'doc-gap',
+        action: `[Report] 补全 ${dg.story} 实施报告: ${dg.reportMissing.join(', ')}`,
+        rationale: `已通过文档基线，缺少 ${dg.reportMissing.length} 份实施报告`,
+        actionable_command: `/rui code --from-doc ${dg.story}`,
+        story_name: dg.story,
+        formula: { role: 'Reporter', rule: '事实→偏差→影响', check: 'doc-gap-report' },
+      });
+    }
+    if (dg.retroMissing && dg.criticalMissing.length === 0 && dg.reportMissing.length === 0) {
+      recs.push({
+        priority: 'P2', category: 'doc-gap',
+        action: `[Self-Improve] 补充 ${dg.story} 复盘文档`,
+        rationale: '自改进复盘(08-自改进复盘.md)缺失，知识无法沉淀',
+        actionable_command: `/rui code ${dg.story}`,
+        story_name: dg.story,
+        formula: { role: 'Self-Improve', rule: '观察→诊断→改进', check: 'doc-gap-retro' },
+      });
+    }
+  }
+
   // ── P2: Reporter 公式 ──
   for (const s of stories.filter(s => s.status === 'code_in_progress')) {
     const formulas = s._formulas;
@@ -878,8 +1067,8 @@ async function main() {
   const catOrder = {
     'pm-scope': 0, 'pm-exclusions': 1, naming: 2, 'tester-ac': 3,
     story: 4, security: 5, 'coder-fe': 6, 'coder-be': 6,
-    health: 7, proposal: 8, git: 9, sync: 10,
-    reporter: 11, improvement: 12, init: 13,
+    'new-story': 7, 'doc-gap': 8, health: 9, proposal: 10, git: 11, sync: 12,
+    reporter: 13, improvement: 14, init: 15,
   };
   const priOrder = { P0: 0, P1: 1, P2: 2, P3: 3 };
   recs.sort((a, b) =>
