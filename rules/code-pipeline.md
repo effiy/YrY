@@ -22,5 +22,5 @@ paths:
 12. 三报告交叉引用闭合，各报告评审清单全部 ✅ 方可通过 Gate B
 13. 自改进必须产出08-自改进复盘.md（`no-metrics` 降级不阻断，但不可跳过）
 14. 禁止将功能分支自动合并到 main，合并操作一律由开发者手动执行（`auto-merge`）
-15. 改动源代码前必须已切换到对应 `feat/<name>` 分支（`git checkout feat/<name>`），禁止在非故事分支上改动源代码（`no-checkout`）
+15. 改动源代码前必须已切换到对应 `feat/<project>-<name>` 分支（`git checkout feat/<project>-<name>`），禁止在非故事分支上改动源代码（`no-checkout`）
 16. 源码修改必须通过 `/rui code` 管线（预检→测试先行→实现→验证→自改进）进行，禁止通过其他任何方式直接修改源代码文件。

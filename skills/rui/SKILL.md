@@ -63,11 +63,11 @@ agents:
 2. **增量更新** — 已有文档按 T1(措辞/格式)/T2(增删故事/接口变更)/T3(边界变化/跨故事重构) 裁剪
 3. **测试先行** — Gate A 阻断实现；Gate B >2 轮修复阻断交付(`gate-b-limit`)
 4. **逐模块审查** — 每模块后审查，P0 清零前进
-5. **分支隔离** — 预检阶段必须从 main 创建 `feat/<name>` 分支并 checkout；各分支独立禁止派生(`bad-branch` / `no-checkout`)
+5. **分支隔离** — 预检阶段必须从 main 创建 `feat/<project>-<name>` 分支并 checkout；各分支独立禁止派生(`bad-branch` / `no-checkout`)
 6. **禁止自动合并** — 任何阶段不得将功能分支合并到 main(`auto-merge`)
 7. **源码修改唯一入口** — 对源代码的任何修改必须通过 `/rui code` 管线(`no-checkout`)
 8. **只读代码** — `/rui doc --from-code` 和 `/rui code --from-doc` 仅生成文档，禁止改源码
-9. **产出内聚** — 关键产出仅限于故事目录 `docs/故事任务面板/<name>/` 内
+9. **产出内聚** — 关键产出仅限于故事目录 `docs/故事任务面板/<project>-<name>/` 内
 10. **import-docs 三检查点** — 文档生成后 / 验证后 / 交付时。`no-token` 仅 API_X_TOKEN 缺失时跳过
 11. **知识沉淀** — 执行记忆写 execution-memory.jsonl + rui-state.json
 
@@ -85,7 +85,7 @@ agents:
 
 - **脚本**: `skills/rui/scripts/` — rui-state.js / execution-memory.js / self-improve.js / list.js / loop.js / natural-week.js
 - **Skill**: `import-docs --workspace` (三检查点同步) / `wework-bot --name <name>` (交付)
-- **数据**: `docs/故事任务面板/<name>/.improvement/proposals.jsonl` + `.memory/`(execution-memory.jsonl + rui-state.json) — 详见 [data.md](data.md)
+- **数据**: `docs/故事任务面板/<project>-<name>/.improvement/proposals.jsonl` + `.memory/`(execution-memory.jsonl + rui-state.json) — 详见 [data.md](data.md)
 - **文档**: 全文档基线 + 补充文档 — 详见 [docs.md](docs.md)
 - **规则**: [rules/](../../rules/) — code-pipeline / gate-rules / doc-generation / import-docs / self-improve
 - **Agent**: [agents/](../../agents/) — pm / coder / tester / reporter / security / self-improve

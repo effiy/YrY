@@ -34,7 +34,7 @@ lifecycle: default-pipeline
 ## 核心规则
 
 1. 操作范围仅限 `.claude/`，不得触及外部文件
-2. 对 `.claude/` 的代码修改必须通过 rui code 管线，必须在 `feat/<name>` 分支(`no-checkout`)
+2. 对 `.claude/` 的代码修改必须通过 rui code 管线，必须在 `feat/<project>-<name>` 分支(`no-checkout`)
 3. 禁止自动合并(`auto-merge`)
 4. sync 覆盖式更新，执行前确认意图
 5. retro 纯本地分析

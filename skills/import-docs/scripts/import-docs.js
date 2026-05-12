@@ -152,19 +152,17 @@ async function getExistingSessions(apiUrl, token) {
   return { sessions, existingSet };
 }
 
-async function importFile(fullPath, basePath, apiUrl, token, existingSet, prefix) {
+async function importFile(fullPath, basePath, labelName, apiUrl, token, existingSet, prefix) {
   const relativePath = path.relative(basePath, fullPath)
     .split(path.sep)
     .map(part => part.replace(/\s+/g, '_'))
     .join('/');
 
-  const baseDirName = path.basename(basePath).replace(/\s+/g, '_');
-
   const targetPathParts = [];
   if (prefix.length > 0) {
     targetPathParts.push(...prefix.map(part => part.replace(/\s+/g, '_')));
   }
-  targetPathParts.push(baseDirName);
+  targetPathParts.push(labelName);
   targetPathParts.push(relativePath);
 
   const targetPath = targetPathParts.join('/');
@@ -329,6 +327,8 @@ async function main() {
   console.log(`Found ${existingSet.size} existing sessions with file_path`);
   console.log();
 
+  const storyPanelDir = path.join(projectRoot, 'docs', '故事任务面板');
+
   const stats = { ok: 0, overwritten: 0, failed: 0 };
 
   for (let i = 0; i < files.length; i++) {
@@ -336,8 +336,14 @@ async function main() {
     const relativePath = path.relative(projectRoot, fullPath).split(path.sep).join('/');
     console.log(`[${i + 1}/${files.length}] ${relativePath}`);
 
+    const isStoryPanel = fullPath.startsWith(storyPanelDir + path.sep);
+    const basePath = isStoryPanel ? storyPanelDir : projectRoot;
+    const labelName = isStoryPanel
+      ? '故事任务面板'
+      : path.basename(projectRoot).replace(/\s+/g, '_');
+
     try {
-      const result = await importFile(fullPath, projectRoot, config.apiUrl, config.token, existingSet, config.prefix);
+      const result = await importFile(fullPath, basePath, labelName, config.apiUrl, config.token, existingSet, config.prefix);
       if (result.status === 'ok') {
         console.log(`  ✓ ${result.path} (created)`);
         stats.ok++;
