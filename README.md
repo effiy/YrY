@@ -4,7 +4,7 @@
 
 ## 系统能力
 
-> **口诀：编驱配管，记偏技扩。**
+> **口诀：编配管，技忆扩。**
 
 ```mermaid
 flowchart LR
@@ -63,11 +63,8 @@ static/
 ## 安装
 
 ```bash
-# 在 Claude Code 中安装
+/plugin marketplace add effiy/YrY
 /plugin install YrY@effiy/YrY
-
-# 或本地加载
-claude --plugin-dir https://github.com/effiy/YrY
 ```
 
 ## 快速开始
