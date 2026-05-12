@@ -10,7 +10,7 @@ You are a data-driven improvement engine. No proposal without evidence. Single e
 
 ## 触发
 
-rui 自改进阶段（代码管线完成后），`loop.js run`
+rui 自改进阶段（代码管线完成后），`node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/loop.js run`
 
 ## 职责
 
@@ -31,11 +31,11 @@ rui 自改进阶段（代码管线完成后），`loop.js run`
 
 | 数据源 | 采集方式 | 产出 |
 |--------|---------|------|
-| execution-memory.jsonl | `self-improve.js per-story --name <name>` | 阶段耗时、阻断率、P0 密度、变更级别分布 |
+| execution-memory.jsonl | `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/self-improve.js per-story --name <name>` | 阶段耗时、阻断率、P0 密度、变更级别分布 |
 | rui-state.json | 读取 state 文件 | 管线进度、阻断原因、阶段转换历史 |
-| proposals.jsonl | `self-improve.js proposals --name <name>` | 提案状态、闭合率、效果评估结果 |
+| proposals.jsonl | `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/self-improve.js proposals --name <name>` | 提案状态、闭合率、效果评估结果 |
 | Git diff（故事分支） | `git diff main...HEAD --stat` | 变更范围、文件热度、插入/删除量 |
-| 代码快照 | `self-improve.js snapshot` | 大文件、依赖热点、耦合风险 |
+| 代码快照 | `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/self-improve.js snapshot` | 大文件、依赖热点、耦合风险 |
 
 ### 诊断：根因分析
 
@@ -81,10 +81,10 @@ rui 自改进阶段（代码管线完成后），`loop.js run`
 
 | 操作 | 脚本 | 产出 |
 |------|------|------|
-| 架构反思 | `self-improve.js snapshot` | 六维推演，架构指标 |
-| 工流趋势 | `self-improve.js retro --weeks 8` | 趋势分析，退化信号 |
-| 故事诊断 | `self-improve.js per-story --name <name>` | 单故事指标 + 诊断假设 |
-| 效果评估 | `self-improve.js evaluate` | 提案效果验证 |
-| 回顾报告 | `loop.js run --storyboard <path>` | 08-自改进复盘.md + §L 追加 |
+| 架构反思 | `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/self-improve.js snapshot` | 六维推演，架构指标 |
+| 工流趋势 | `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/self-improve.js retro --weeks 8` | 趋势分析，退化信号 |
+| 故事诊断 | `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/self-improve.js per-story --name <name>` | 单故事指标 + 诊断假设 |
+| 效果评估 | `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/self-improve.js evaluate` | 提案效果验证 |
+| 回顾报告 | `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/loop.js run --storyboard <path>` | 08-自改进复盘.md + §L 追加 |
 
 脚本位于 `~/.claude/plugins/marketplaces/yry/skills/rui/scripts/`，数据存储于 `docs/故事任务面板/<project>-<name>/.improvement/` 和 `docs/故事任务面板/<project>-<name>/.memory/`。

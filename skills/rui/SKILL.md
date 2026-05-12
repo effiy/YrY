@@ -69,7 +69,7 @@ README.md ──→ 能力/结构/命令 ──→ .claude/rules/  ──→ 2. 
 | `auto-merge` | 功能分支被自动合并到 main | 否 | 预检→交付 |
 | `no-checkout` | 未切换到故事分支即改动源码 | 否 | 预检→实现 |
 
-阻断后: `rui-state.js save --blocked` → `next-step` → 持久化 → 通知(`no-token`/`no-metrics` 跳过)。
+阻断后: `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/rui-state.js save --blocked` → `next-step` → 持久化 → 通知(`no-token`/`no-metrics` 跳过)。
 
 详见 [rules/gate-rules.md](../../rules/gate-rules.md) · [rules/code-pipeline.md](../../rules/code-pipeline.md)。
 
@@ -84,7 +84,7 @@ README.md ──→ 能力/结构/命令 ──→ .claude/rules/  ──→ 2. 
 7. **源码修改唯一入口** — 对源代码的任何修改必须通过 `/rui code` 管线(`no-checkout`)
 8. **只读代码** — `/rui doc --from-code` 和 `/rui code --from-doc` 仅生成文档，禁止改源码
 9. **产出内聚** — 关键产出仅限于故事目录 `docs/故事任务面板/<project>-<name>/` 内
-10. **交付管线强制** — 三步交付管线 (wework-bot 追加日志 → import-docs 同步 → wework-bot 发送) 每步必须执行并标记 (`delivery-gate.js mark`)。Stop hook 自动检查未完成管线阻断停止。
+10. **交付管线强制** — 三步交付管线 (wework-bot 追加日志 → import-docs 同步 → wework-bot 发送) 每步必须执行并标记 (`node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/delivery-gate.js mark`)。Stop hook 自动检查未完成管线阻断停止。
 11. **知识沉淀** — 执行记忆写 execution-memory.jsonl + rui-state.json
 
 ## 交付流程
@@ -93,9 +93,9 @@ README.md ──→ 能力/结构/命令 ──→ .claude/rules/  ──→ 2. 
 
 | Step | 操作 | 失败处理 | 验证 |
 |------|------|---------|------|
-| 1 | `Skill(wework-bot, --no-send --project <project> --name <name>)` 追加日志 | 不可跳过 | `delivery-gate.js mark --step log_appended` |
-| 2 | `Skill(import-docs, --workspace)` 交付时最终全量同步 | `no-token` 降级 | `delivery-gate.js mark --step docs_synced` |
-| 3 | `Skill(wework-bot, --project <project> --name <name>)` 发送通知 | 不可跳过 | `delivery-gate.js mark --step notification_sent` |
+| 1 | `Skill(wework-bot, --no-send --project <project> --name <name>)` 追加日志 | 不可跳过 | `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/delivery-gate.js mark --step log_appended` |
+| 2 | `Skill(import-docs, --workspace)` 交付时最终全量同步 | `no-token` 降级 | `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/delivery-gate.js mark --step docs_synced` |
+| 3 | `Skill(wework-bot, --project <project> --name <name>)` 发送通知 | 不可跳过 | `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/delivery-gate.js mark --step notification_sent` |
 
 每步完成后必须调用 `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/delivery-gate.js mark --name <name> --step <step>` 记录状态。
 

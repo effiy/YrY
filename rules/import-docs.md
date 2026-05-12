@@ -6,7 +6,7 @@ paths:
 
 # Import-Docs Rules
 
-1. **多检查点强制同步**: import-docs 在管线中至少三个检查点独立执行，每个检查点完成后必须调用 `delivery-gate.js mark --step docs_synced`：
+1. **多检查点强制同步**: import-docs 在管线中至少三个检查点独立执行，每个检查点完成后必须调用 `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/delivery-gate.js mark --step docs_synced`：
    - 文档生成后：全文档基线产出即同步
    - 验证后：实施与测试报告产出即同步
    - 交付时：全项目全量最终同步

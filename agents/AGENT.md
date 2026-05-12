@@ -31,7 +31,7 @@ graph LR
 | tester | [tester.md](tester.md) | pm 调度，rui 测试先行/实现/验证/文档生成，rui fix，rui check |
 | reporter | [reporter.md](reporter.md) | pm 调度，rui 交付/策展 |
 | security | [security.md](security.md) | pm 安全审查委派，rui 预检/实现/验证 |
-| self-improve | [self-improve.md](self-improve.md) | rui 自改进阶段，loop.js run |
+| self-improve | [self-improve.md](self-improve.md) | rui 自改进阶段，`node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/loop.js run` |
 
 ---
 

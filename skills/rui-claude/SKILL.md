@@ -29,7 +29,7 @@ lifecycle: default-pipeline
 
 ## history
 
-每次 sync/retro/\<requirement\> 完成后自动调用 `history.js record`。存储 `.claude/.history/rui-claude-history.jsonl`（append-only，不入库不同步）。
+每次 sync/retro/\<requirement\> 完成后自动调用 `node ~/.claude/plugins/marketplaces/yry/skills/rui-claude/scripts/history.js record`。存储 `.claude/.history/rui-claude-history.jsonl`（append-only，不入库不同步）。
 
 ## 核心规则
 
