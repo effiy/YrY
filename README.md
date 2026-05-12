@@ -60,6 +60,16 @@ static/
     └── import-docs/       # 文档远程同步：SKILL.md + scripts/
 ```
 
+## 安装
+
+```bash
+# 在 Claude Code 中安装
+/plugin install YrY@effiy/YrY
+
+# 或本地加载
+claude --plugin-dir https://github.com/effiy/YrY
+```
+
 ## 快速开始
 
 ```bash

@@ -8,7 +8,7 @@ const fsp = fs.promises;
 const path = require('path');
 const { getNaturalWeekRange } = require('./natural-week.js');
 
-const REPO_ROOT = path.resolve(__dirname, '../../..');
+const REPO_ROOT = process.cwd();
 const STORIES_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
 function storyMemoryDir(name) { return path.join(STORIES_DIR, name, '.memory'); }

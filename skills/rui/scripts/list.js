@@ -4,7 +4,7 @@ const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
 
-const REPO_ROOT = path.resolve(__dirname, '../../..');
+const REPO_ROOT = process.cwd();
 const PANEL_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
 const STORY_FILES = [

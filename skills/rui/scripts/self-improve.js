@@ -9,7 +9,7 @@ const path = require('path');
 const { execSync } = require('child_process');
 const { getNaturalWeekRange } = require('./natural-week.js');
 
-const REPO_ROOT = path.resolve(__dirname, '../../..');
+const REPO_ROOT = process.cwd();
 const STORIES_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
 function storyImprovementDir(name) { return path.join(STORIES_DIR, name, '.improvement'); }
