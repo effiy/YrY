@@ -1,19 +1,7 @@
 #!/usr/bin/env node
 
-/**
- * self-improve — 状态采集 + 效果回顾 for 自改进管线
- *
- * Commands:
- *   snapshot  — 状态采集 (memory, git, deps, large files)
- *   proposals — List/filter proposals
- *   resolve   — Mark proposal done/superseded
- *   evaluate  — 效果评估: evaluate proposal effectiveness (before/after metrics)
- *   retro     — 回顾报告: retrospective report (trends + proposal closure)
- *   health    — 健康评分: composite health score (0-100)
- *   feedback  — Record user feedback on a proposal
- *
- * Storage: docs/.improvement/proposals.jsonl
- */
+// node scripts/self-improve.js <snapshot|proposals|resolve|evaluate|retro|health|feedback> [...]
+// Storage: docs/.improvement/proposals.jsonl
 
 const fs = require('fs');
 const fsp = fs.promises;
@@ -39,8 +27,6 @@ function safeExec(cmd, defaultVal = '') {
     return defaultVal;
   }
 }
-
-// ---------- 状态采集: State Collection ----------
 
 function collectMemoryStats() {
   const script = path.join(__dirname, 'execution-memory.js');
@@ -156,8 +142,6 @@ function collectLargeFiles() {
   return result;
 }
 
-// ---------- Memory Data Access ----------
-
 function readMemoryRecords() {
   const script = path.join(__dirname, 'execution-memory.js');
   try {
@@ -209,8 +193,6 @@ function computeMetrics(records) {
     badCases: records.flatMap(r => (r.bad_cases || []).map(b => `${b.agent}::${b.lesson}`)),
   };
 }
-
-// ---------- Proposals Management ----------
 
 async function ensureProposalsFile() {
   await fsp.mkdir(IMPROVEMENT_DIR, { recursive: true });
@@ -281,8 +263,6 @@ async function resolveProposal(proposalId, resolvedBy, status = 'done') {
   console.log(`Proposal ${proposalId} marked as ${status}`);
 }
 
-// ---------- 效果评估: Evaluate ----------
-
 async function cmdEvaluate(opts) {
   const proposals = await readProposals();
   let targets = proposals.filter(p => p.status === 'done');
@@ -339,7 +319,6 @@ async function cmdEvaluate(opts) {
       continue;
     }
 
-    // Determine verdict
     const blockedImproved = afterMetrics.blockedRate <= beforeMetrics.blockedRate;
     const p0Improved = afterMetrics.p0Rate <= beforeMetrics.p0Rate;
     const relatedBadCases = (prop.related_bad_cases || []);
@@ -418,8 +397,6 @@ async function cmdEvaluate(opts) {
   }
 }
 
-// ---------- 回顾报告: Retro ----------
-
 async function cmdRetro(opts) {
   const weeks = opts.weeks || 8;
   const records = readMemoryRecords();
@@ -431,7 +408,6 @@ async function cmdRetro(opts) {
 
   const recentRecords = filterRecordsByDateRange(records, sinceStr, new Date().toISOString().split('T')[0]);
 
-  // 2-week window bucketing
   const windows = [];
   const windowSize = 14;
   for (let i = 0; i < weeks * 7; i += windowSize) {
@@ -448,7 +424,6 @@ async function cmdRetro(opts) {
     });
   }
 
-  // Proposal stats
   const openCount = proposals.filter(p => p.status === 'open').length;
   const doneCount = proposals.filter(p => p.status === 'done').length;
   const supersededCount = proposals.filter(p => p.status === 'superseded').length;
@@ -459,7 +434,6 @@ async function cmdRetro(opts) {
     evalResults[p.eval_result] = (evalResults[p.eval_result] || 0) + 1;
   });
 
-  // Feedback stats
   const feedbackStats = { helpful: 0, neutral: 0, harmful: 0 };
   proposals.forEach(p => {
     (p.feedback || []).forEach(f => {
@@ -467,7 +441,6 @@ async function cmdRetro(opts) {
     });
   });
 
-  // Detect degrading signals
   const degradingSignals = [];
   for (let i = 1; i < windows.length; i++) {
     const prev = windows[i - 1].metrics;
@@ -544,8 +517,6 @@ async function cmdRetro(opts) {
   }
 }
 
-// ---------- 健康评分: Health Score ----------
-
 async function cmdHealth(opts) {
   const memoryStats = collectMemoryStats();
   const largeFiles = collectLargeFiles();
@@ -612,7 +583,6 @@ async function cmdHealth(opts) {
   }
   composite = totalWeight > 0 ? Math.round(composite / totalWeight) : null;
 
-  // Compare with last health score
   let lastHealth = null;
   try {
     const raw = await fsp.readFile(HEALTH_CACHE_FILE, 'utf8');
@@ -627,7 +597,6 @@ async function cmdHealth(opts) {
     delta: lastHealth && composite !== null && lastHealth.composite !== null ? composite - lastHealth.composite : null,
   };
 
-  // Save current health
   await fsp.mkdir(IMPROVEMENT_DIR, { recursive: true });
   await fsp.writeFile(HEALTH_CACHE_FILE, JSON.stringify(healthResult), 'utf8');
 
@@ -657,8 +626,6 @@ async function cmdHealth(opts) {
   }
 }
 
-// ---------- Feedback ----------
-
 async function cmdFeedback(proposalId, rating, note) {
   if (!proposalId) {
     console.error('Usage: node self-improve.js feedback <proposal-id> --rating <helpful|neutral|harmful> [--note "..."]');
@@ -686,8 +653,6 @@ async function cmdFeedback(proposalId, rating, note) {
   await writeProposals(proposals);
   console.log(`Feedback recorded for ${proposalId}: ${rating}${note ? ` — "${note}"` : ''}`);
 }
-
-// ---------- Existing Commands ----------
 
 function cmdSnapshot(jsonOutput) {
   const memory = collectMemoryStats();
@@ -800,8 +765,6 @@ async function cmdResolve(proposalId, resolvedBy) {
   }
   await resolveProposal(proposalId, resolvedBy);
 }
-
-// ---------- Main ----------
 
 async function main() {
   const args = process.argv.slice(2);

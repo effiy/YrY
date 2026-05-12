@@ -22,17 +22,17 @@ docs/故事任务面板/<name>/
 
 ## 故事板章节
 
-| 章节 | 负责人 | 内容 |
-|------|--------|------|
-| §1 Story | pm | 角色场景、价值、范围边界、依赖 |
-| §1.1 User Operations | tester | 用户操作 + UI交互流程 |
-| §2 Requirements | pm | 功能点、输入输出、错误行为、业务规则 |
-| §3 Design | coder + security | 设计概述 + 决策表 |
-| §4 Tasks | pm + all | 任务拆解、依赖、交付物 |
-| §5 Acceptance Criteria | tester | 验收标准、测试方法、预期结果 |
-| §6 .claude 改进清单 | pm | skill/agent/rule/script/config 改进(文档生成/策展阶段静态分析) |
-| §7 系统架构演进任务 | pm | 近期/中期/远期演进(架构设计/策展阶段结构规划) |
-| §L 自我改进循环 | self-improve-loop | 数据驱动改进清单(每次 rui 完成追加) |
+| 章节 | 负责人 | 公式 | 内容 |
+|------|--------|------|------|
+| §1 Story | pm | 作为...我想要...以便... | 角色场景、价值、范围边界、依赖 |
+| §1.1 User Operations | tester | Given→When→Then | 用户操作 + UI交互流程 |
+| §2 Requirements | pm | 输入→输出→错误行为 | 功能点、业务规则、数据约束 |
+| §3 Design | coder + security | 模块→接口→数据流 / 威胁→信任边界→缓解 | 设计概述 + 决策表 |
+| §4 Tasks | pm + all | — | 任务拆解、依赖、交付物 |
+| §5 Acceptance Criteria | tester | Given→When→Then | 验收标准、测试方法、预期结果 |
+| §6 .claude 改进清单 | pm | 观察→诊断→改进 | skill/agent/rule/script/config 改进 |
+| §7 系统架构演进任务 | pm | 观察→诊断→改进 | 近期/中期/远期演进 |
+| §L 自我改进循环 | self-improve | 观察→诊断→改进 | 数据驱动改进清单(每次 rui 完成追加) |
 
 ## 补充文档规则
 

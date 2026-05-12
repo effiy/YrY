@@ -1,22 +1,7 @@
 #!/usr/bin/env node
 
-/**
- * execution-memory
- *
- * Execution memory system: records the full context and result of each rui
- * document execution, for doc-planner to query historical similar cases,
- * and for self-improve.js to analyze improvement patterns.
- *
- * Usage:
- *   node scripts/execution-memory.js write <json-file> [--name <story-name>]
- *   node scripts/execution-memory.js query [--feature <name>] [--keyword <k>] [--limit <n>] [--name <story-name>]
- *   node scripts/execution-memory.js stats [--week <YYYY-MM-DD>]
- *   node scripts/execution-memory.js ls [--limit <n>]
- *
- * Storage:
- *   Global: docs/.memory/execution-memory.jsonl (cross-story analysis)
- *   Per-story: docs/故事任务面板/<name>/.memory/execution-memory.jsonl (when --name provided)
- */
+// node scripts/execution-memory.js <write|query|stats|ls|trends> [...]
+// Storage: docs/.memory/execution-memory.jsonl (global) + docs/故事任务面板/<name>/.memory/ (per-story)
 
 const fs = require('fs');
 const fsp = fs.promises;
@@ -327,7 +312,6 @@ async function cmdTrends(opts) {
     }
   }
 
-  // Compute trend arrows
   for (let i = 1; i < windows.length; i++) {
     const prev = windows[i - 1];
     const curr = windows[i];

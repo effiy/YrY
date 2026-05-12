@@ -1,23 +1,7 @@
 #!/usr/bin/env node
 
-/**
- * rui-state — 断点续传状态管理
- *
- * Usage:
- *   node scripts/rui-state.js save --command <cmd> --name <story-name> --stage <stage> [--blocked] [--reason <text>] [--prev-stage <stage>] [--trigger <trigger>]
- *   node scripts/rui-state.js load [--name <story-name>] [--json]
- *   node scripts/rui-state.js clear [--name <story-name>]
- *   node scripts/rui-state.js next-step
- *
- * Storage:
- *   Global: docs/.memory/rui-state.json (session state + next-step context)
- *   Per-story: docs/故事任务面板/<name>/.memory/rui-state.json (pipeline progress + change history)
- * Schema:
- *   session_id, command, name, story_name, current_stage, blocked, block_reason, timestamp, storyboard
- *   pipeline_progress: { phase: "completed"|"in_progress"|"blocked"|"not_started" }
- *   change_history: [{ timestamp, from_stage, to_stage, trigger }]
- *   related_proposals: string[]
- */
+// node scripts/rui-state.js <save|load|clear|next-step> [...]
+// Storage: docs/.memory/rui-state.json (global) + docs/故事任务面板/<name>/.memory/ (per-story)
 
 const fs = require('fs');
 const fsp = fs.promises;
@@ -90,7 +74,6 @@ async function cmdSave(opts) {
   const existing = await readExistingState(opts.name);
   const now = new Date().toISOString();
 
-  // Build pipeline_progress
   let pipelineProgress;
   if (existing && existing.pipeline_progress) {
     pipelineProgress = existing.pipeline_progress;

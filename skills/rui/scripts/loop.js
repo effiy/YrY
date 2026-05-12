@@ -1,15 +1,7 @@
 #!/usr/bin/env node
 
-/**
- * self-improve-loop — multi-round improvement orchestrator
- *
- * Usage:
- *   node scripts/loop.js run --storyboard <path>     Append to a storyboard file
- *   node scripts/loop.js status [--json]
- *   node scripts/loop.js report [--json]             Output report to stdout only
- *
- * Output is appended to docs/storyboards/<name>.md after the existing content.
- */
+// node scripts/loop.js <run|report|status> [--storyboard <path>] [--json]
+// Appends self-improve loop output to storyboard files.
 
 const fs = require('fs');
 const fsp = fs.promises;
@@ -31,8 +23,6 @@ function shJson(cmd) {
   if (!out) return null;
   try { return JSON.parse(out); } catch { return null; }
 }
-
-// ── Data collection ──
 
 function collect() {
   const health = shJson(`node "${SELF_IMPROVE}" health --json`);
@@ -67,8 +57,6 @@ function collect() {
   };
 }
 
-// ── Report generator (compact, for appending to storyboards) ──
-
 function now() {
   return new Date().toISOString().replace('T', ' ').slice(0, 19);
 }
@@ -82,7 +70,6 @@ function generate(data) {
   lines.push(`> 运行时间: ${now()} · 健康评分: **${data.health?.composite ?? 'N/A'}/100** · 开放提案: ${data.totalOpen}`);
   lines.push('');
 
-  // ── 改进清单 ──
   lines.push('### 改进清单');
   lines.push('');
 
@@ -115,7 +102,6 @@ function generate(data) {
     lines.push('');
   }
 
-  // ── 系统架构演进任务 ──
   lines.push('### 系统架构演进任务');
   lines.push('');
 
@@ -176,8 +162,6 @@ function generate(data) {
   return lines.join('\n');
 }
 
-// ── Storyboard operations ──
-
 const SECTION_MARKER = '## 自我改进循环';
 
 function stripExistingLoopSection(content) {
@@ -200,8 +184,6 @@ async function appendToStoryboard(filePath, data) {
   await fsp.writeFile(filePath, content.trimEnd() + '\n\n' + report + '\n', 'utf8');
   return true;
 }
-
-// ── Commands ──
 
 async function cmdRun(opts) {
   const data = collect();
@@ -262,8 +244,6 @@ async function cmdStatus(opts) {
     console.log(`- Degraded: ${data.degraded}`);
   }
 }
-
-// ── Main ──
 
 async function main() {
   const args = process.argv.slice(2);

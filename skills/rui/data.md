@@ -96,8 +96,8 @@ docs/                           ← 全局聚合
 ## 数据流
 
 ```
-/rui 执行 → execution-memory.jsonl (记录) + rui-state.json (进度)
-  → self-improve.js (趋势+效果评估)
-    → proposals.jsonl (改进提案)
+/rui 执行 → execution-memory.jsonl (Reporter: 事实记录) + rui-state.json (PM: 进度追踪)
+  → self-improve.js (Self-Improve: 观察→诊断→改进)
+    → proposals.jsonl (Self-Improve: 改进提案)
       → /rui(空输入) 推荐 / /rui update 上下文 / loop.js run §L
 ```
