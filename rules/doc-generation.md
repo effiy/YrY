@@ -1,7 +1,7 @@
 ---
 paths:
   - "docs/故事任务面板/**/*.md"
-  - ".claude/skills/rui/templates/**/*"
+  - ".claude/templates/**/*"
 ---
 
 # Document Generation Rules

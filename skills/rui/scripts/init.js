@@ -358,7 +358,6 @@ function injectBaseline(baseline, dryRun) {
     path.join(CLAUDE_DIR, 'agents'),
     path.join(CLAUDE_DIR, 'rules'),
     path.join(CLAUDE_DIR, 'templates'),
-    path.join(CLAUDE_DIR, 'skills', 'rui', 'templates'),
     path.join(CLAUDE_DIR, '.history'),
   ];
 
@@ -415,23 +414,6 @@ function injectBaseline(baseline, dryRun) {
     for (const f of templateFiles) {
       const src = path.join(templatesSrc, f);
       const dest = path.join(templatesDest, f);
-      if (dryRun) {
-        results.created.push({ path: path.relative(REPO_ROOT, dest), action: 'will-copy', source: `skills/rui/templates/${f}` });
-      } else {
-        const r = copyFile(src, dest);
-        if (r.action === 'create') results.created.push({ path: path.relative(REPO_ROOT, dest), action: 'copied', source: `skills/rui/templates/${f}` });
-        else results.skipped.push({ path: path.relative(REPO_ROOT, dest), reason: r.reason });
-      }
-    }
-  }
-
-  // Also copy templates to .claude/skills/rui/templates/
-  const skillsTemplatesDest = path.join(CLAUDE_DIR, 'skills', 'rui', 'templates');
-  if (fs.existsSync(templatesSrc)) {
-    const templateFiles = fs.readdirSync(templatesSrc).filter(f => f.endsWith('.md'));
-    for (const f of templateFiles) {
-      const src = path.join(templatesSrc, f);
-      const dest = path.join(skillsTemplatesDest, f);
       if (dryRun) {
         results.created.push({ path: path.relative(REPO_ROOT, dest), action: 'will-copy', source: `skills/rui/templates/${f}` });
       } else {

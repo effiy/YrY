@@ -55,7 +55,6 @@ static/
 │   ├── agents/            # Agent 文件副本
 │   ├── rules/             # 规则文件副本
 │   ├── templates/         # 8 份模板副本
-│   ├── skills/rui/templates/
 │   ├── settings.json      # 项目权限
 │   ├── settings.local.json
 │   ├── .mcp.json
