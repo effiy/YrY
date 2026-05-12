@@ -9,7 +9,7 @@
   },
   "plugins": [
     {
-      "name": "rui",
+      "name": "yry",
       "source": {
         "source": "github",
         "repo": "effiy/YrY"
