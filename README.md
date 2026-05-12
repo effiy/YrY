@@ -61,8 +61,12 @@ static/
 ## 安装
 
 ```bash
-/plugin install effiy/YrY
+# 添加 marketplace 并安装插件
+/plugin marketplace add https://github.com/effiy/YrY
+/plugin install yry@yry
 ```
+
+> 或在本项目目录下直接运行 `/plugin` 以本地模式加载。
 
 ## 快速开始
 
