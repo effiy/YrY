@@ -61,12 +61,10 @@ static/
 │   ├── .mcp.json
 │   └── .history/
 └── skills/                # 技能定义（4 个 skill）
-    ├── rui/               # SDLC 编排器：SKILL.md + data.md + docs.md
-    │   ├── templates/     # 8 份模板（01-08 基线文档）
-    │   └── scripts/       # 7 个脚本（含 init.js）
-    ├── rui-claude/        # .claude 配置管理：SKILL.md + scripts/
-    ├── wework-bot/        # 企业微信通知：SKILL.md + config.json + scripts/
-    └── import-docs/       # 文档远程同步：SKILL.md + scripts/
+    ├── rui/               # SDLC 编排器：SKILL.md + data.md + docs.md + templates/
+    ├── rui-claude/        # .claude 配置管理：SKILL.md
+    ├── wework-bot/        # 企业微信通知：SKILL.md + config.json
+    └── import-docs/       # 文档远程同步：SKILL.md
 ```
 
 ## 安装
@@ -74,10 +72,14 @@ static/
 ```bash
 # 添加 marketplace 并安装插件
 /plugin marketplace add https://github.com/effiy/YrY
-/plugin install rui@yry
+/plugin install yry@yry
 ```
 
 > 或在本项目目录下直接运行 `/plugin` 以本地模式加载。
+
+当前版本：**1.3.0**
+
+脚本位于 `~/.claude/plugins/marketplaces/yry/skills/<skill>/scripts/`，各 skill 独立维护。
 
 ## 快速开始
 
