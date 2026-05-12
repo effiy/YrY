@@ -320,22 +320,32 @@ function formatTimestamp() {
   return `【${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}】`;
 }
 
-function extractProject(name) {
-  // name = <project>-<story-slug>. Project may contain hyphens (e.g. YiWeb-ClaudeCode-story).
-  // We split on last occurrence that looks like a story slug (lowercase kebab after a hyphen).
-  // Strategy: find the last `-` where the part after it starts with a lowercase letter.
+function parseStoryDirName(name) {
   const parts = name.split('-');
+  if (parts.length < 2) return { valid: false, project: null, story: name, reason: '缺少项目前缀（格式: <project>-<name>）' };
   for (let i = 1; i < parts.length; i++) {
-    const maybeStoryStart = parts[i];
-    if (maybeStoryStart && /^[a-z]/.test(maybeStoryStart)) {
-      return parts.slice(0, i).join('-');
+    if (parts[i] && /^[a-z]/.test(parts[i])) {
+      return { valid: true, project: parts.slice(0, i).join('-'), story: parts.slice(i).join('-'), reason: null };
     }
   }
-  // Fallback: everything before the last `-`
+  return { valid: false, project: null, story: name, reason: '无法识别项目前缀（故事部分应以小写字母开头）' };
+}
+
+function extractProject(name) {
+  const parsed = parseStoryDirName(name);
+  if (parsed.valid) return parsed.project;
+  // Fallback: everything before the last `-`, or repo root basename
+  const parts = name.split('-');
   return parts.length > 1 ? parts.slice(0, -1).join('-') : path.basename(PROJECT_ROOT);
 }
 
 function appendToStoryNotificationLog(name, content) {
+  // Validate directory name convention — warn but don't block notification logging
+  const nameInfo = parseStoryDirName(name);
+  if (!nameInfo.valid) {
+    console.error(`Warning: 故事目录名 "${name}" 不符合 <project>-<name> 规范 — ${nameInfo.reason}`);
+  }
+
   const storyDir = path.join(PROJECT_ROOT, 'docs', '故事任务面板', name);
   fs.mkdirSync(storyDir, { recursive: true });
   const logFile = path.join(storyDir, '00-消息通知列表.md');

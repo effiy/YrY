@@ -25,7 +25,7 @@ agents:
 | 命令 | 流程 | 行为细节 |
 |------|------|---------|
 | `/rui init` | 基线 → 基线注入 → 就绪检查(8项) → 交付 | 从 CLAUDE.md+README.md 提取项目约定注入 agents/rules/templates/MCP |
-| `/rui doc <req>` | 必须使用分支隔离；需求拆分 → 逐故事: 自适应规划→影响分析→架构设计→文档生成 | 文档生成后同步；故事目录 kebab-case；禁止改源码 |
+| `/rui doc <req>` | 必须使用分支隔离；需求拆分 → 逐故事: 自适应规划→影响分析→架构设计→文档生成 | 文档生成后同步；故事目录 `<project>-<name>`（name 部分 kebab-case）；禁止改源码 |
 | `/rui code <name>` | 必须使用分支隔离；预检→Gate A(测试先行)→逐模块实现→Gate B(验证)→自改进→交付 | 单行 CSS 可跳过 Gate A；>2轮修复 `gate-b-limit` 阻断；验证后同步 |
 | `/rui <req>` | 必须使用分支隔离；doc + code 全自动串联，逐故事端到端 | — |
 | `/rui update <name> [ctx]` | 必须使用分支隔离；结构检测(12项)→结构补齐→变更分级(T1/T2/T3)→增量更新→预检→code | 补齐标注"由 rui update 结构补齐"；已有文档按级别裁剪 |
@@ -34,7 +34,7 @@ agents:
 | `/rui list` | 扫描故事面板 → 进度表; 调用 `node skills/rui/scripts/list.js` | 按文件完整性判定: 未开始/文档中/代码中/完成/阻断 |
 | `/rui` | 调用 `node skills/rui/scripts/recommend.js --json` → 推荐 5~10 条任务 | 综合故事状态+健康度+提案+Git+同步状态，按 P0→P3 排序 |
 
-`<requirement>` 支持：文本 / `@` 引用本地文件 / URL。`--from-code` 时 req 可选，为空时 pm 自主扫描源码识别可文档化模块并输出推荐列表。故事目录使用 kebab-case（如 `user-login`）。
+`<requirement>` 支持：文本 / `@` 引用本地文件 / URL。`--from-code` 时 req 可选，为空时 pm 自主扫描源码识别可文档化模块并输出推荐列表。故事目录格式 `<project>-<name>`（project 为项目标识，name 为 kebab-case，如 `YiWeb-user-login`）。
 
 ## 阻断规则
 
