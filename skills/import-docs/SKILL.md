@@ -73,4 +73,4 @@ node skills/import-docs/scripts/import-docs.js list --workspace
 
 ## 空输入
 
-无参数时扫描 `API_X_TOKEN` / `docs/故事任务面板/` / `.claude/` 文件树 / 远端 API 可达性 → 推荐任务（凭据缺失/首次同步/增量同步/全量补齐/定期巡检），不执行导入。
+无参数时调用 `node skills/import-docs/scripts/import-docs.js list --workspace` + 检测 `API_X_TOKEN` / 远端可达性 → 推荐任务（凭据缺失/首次同步/增量同步/全量补齐/定期巡检），不执行导入。

@@ -107,8 +107,33 @@ async function main() {
     results.push(r);
   }
 
+  // Enrich with recommended actions
+  for (const r of results) {
+    if (r.status === 'blocked') {
+      r.recommended_action = '恢复阻断后继续';
+      r.actionable_command = `/rui code ${r.name}`;
+    } else if (r.status === 'not_started') {
+      r.recommended_action = '从文档管线开始';
+      r.actionable_command = `/rui doc ${r.name}`;
+    } else if (r.status === 'docs_in_progress') {
+      r.recommended_action = '补全缺失文档';
+      r.actionable_command = `/rui doc ${r.name}`;
+    } else if (r.status === 'docs_done') {
+      r.recommended_action = '进入代码管线';
+      r.actionable_command = `/rui code ${r.name}`;
+    } else if (r.status === 'code_in_progress') {
+      r.recommended_action = '完成实现与验证';
+      r.actionable_command = `/rui code ${r.name}`;
+    } else {
+      r.recommended_action = '已完成';
+      r.actionable_command = null;
+    }
+  }
+
   if (jsonMode) {
-    console.log(JSON.stringify(results, null, 2));
+    const active = results.filter(r => r.status !== 'code_done');
+    const next = active.length > 0 ? active[0].name : null;
+    console.log(JSON.stringify({ stories: results, next }, null, 2));
     process.exit(0);
   }
 
@@ -120,14 +145,14 @@ async function main() {
   }
 
   // Output table
-  console.log('| 故事 | 状态 | 缺失产出 |');
-  console.log('|------|------|---------|');
+  console.log('| 故事 | 状态 | 缺失产出 | 推荐行动 |');
+  console.log('|------|------|---------|---------|');
   for (const r of incomplete) {
     const missing = r.missing.length > 0 ? r.missing.join('、') : '—';
     const status = r.status === 'blocked'
       ? `${statusLabel(r.status)}: ${r.blockReason || '未指定原因'}`
       : statusLabel(r.status);
-    console.log(`| ${r.name} | ${status} | ${missing} |`);
+    console.log(`| ${r.name} | ${status} | ${missing} | ${r.recommended_action} |`);
   }
 
   // Summary
@@ -136,7 +161,9 @@ async function main() {
     counts[r.status] = (counts[r.status] || 0) + 1;
   }
   const parts = Object.entries(counts).map(([k, v]) => `${statusLabel(k)} ${v} 个`);
+  const next = incomplete[0];
   console.log(`\n${incomplete.length} 个未完成故事（${parts.join('，')}）。`);
+  if (next) console.log(`推荐下一个: \`${next.actionable_command}\` — ${next.name}`);
 }
 
 main().catch(err => { console.error(err); process.exit(1); });

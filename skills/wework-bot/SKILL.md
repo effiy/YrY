@@ -83,4 +83,4 @@ Body: { "webhook_url": "<from config>", "content": "<message>" }
 
 ## 空输入
 
-无参数时扫描 config.json / 环境变量 / `00-消息通知列表.md` → 推荐任务（配置缺失/测试验证/通知补齐/定期巡检），不发送消息。
+无参数时检测 `API_X_TOKEN` / `WEWORK_BOT_WEBHOOK_URL` / config.json / 故事面板 `00-消息通知列表.md` → 推荐任务（配置缺失/测试验证/通知补齐/定期巡检），不发送消息。

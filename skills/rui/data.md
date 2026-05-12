@@ -34,5 +34,5 @@ docs/故事任务面板/<project>-<name>/
 /rui 执行 → execution-memory.jsonl + rui-state.json
   → self-improve.js (观察→诊断→改进)
     → proposals.jsonl
-      → /rui(空输入) 推荐 / /rui update 上下文 / loop.js §L
+      → recommend.js 推荐 / /rui update 上下文 / loop.js §L
 ```

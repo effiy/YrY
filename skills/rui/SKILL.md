@@ -31,8 +31,8 @@ agents:
 | `/rui update <name> [ctx]` | 必须使用分支隔离；结构检测(12项)→结构补齐→变更分级(T1/T2/T3)→增量更新→预检→code | 补齐标注"由 rui update 结构补齐"；已有文档按级别裁剪 |
 | `/rui code --from-doc <name>` | 必须使用分支隔离；读取故事任务文档+探索源码(只读)→生成缺失的技术评审与报告文档 | 已有文档不覆盖，全部存在则退出；禁止改源码 |
 | `/rui doc --from-code [req]` | 从源码反推故事→生成全文档基线(只读)；req 为空时 pm 自主探索源码推荐可生成故事 | 禁止改源码 |
-| `/rui list` | 扫描故事面板 → 进度表 | 按文件完整性判定: 未开始/文档中/代码中/完成/阻断 |
-| `/rui` | 扫描项目+故事状态 → 推荐 5~10 条任务 | — |
+| `/rui list` | 扫描故事面板 → 进度表; 调用 `node skills/rui/scripts/list.js` | 按文件完整性判定: 未开始/文档中/代码中/完成/阻断 |
+| `/rui` | 调用 `node skills/rui/scripts/recommend.js --json` → 推荐 5~10 条任务 | 综合故事状态+健康度+提案+Git+同步状态，按 P0→P3 排序 |
 
 `<requirement>` 支持：文本 / `@` 引用本地文件 / URL。`--from-code` 时 req 可选，为空时 pm 自主扫描源码识别可文档化模块并输出推荐列表。故事目录使用 kebab-case（如 `user-login`）。
 
