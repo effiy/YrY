@@ -47,14 +47,14 @@ const CHECKS = {
   'agents/': {
     order: 3,
     description: '7 个 Agent 文件（AGENT.md + 6 角色定义）',
-    file: path.join(REPO_ROOT, 'agents'),
+    file: path.join(CLAUDE_DIR, 'agents'),
     validate() {
       const overview = 'AGENT.md';
       const roles = ['pm.md', 'coder.md', 'tester.md', 'reporter.md', 'security.md', 'self-improve.md'];
       const missing = [];
 
       // AGENT.md is overview — just needs to exist with content
-      const overviewPath = path.join(REPO_ROOT, 'agents', overview);
+      const overviewPath = path.join(CLAUDE_DIR, 'agents', overview);
       if (!fs.existsSync(overviewPath)) missing.push(overview);
       else {
         const content = fs.readFileSync(overviewPath, 'utf8');
@@ -63,7 +63,7 @@ const CHECKS = {
 
       // Role agents need valid frontmatter
       for (const f of roles) {
-        const fp = path.join(REPO_ROOT, 'agents', f);
+        const fp = path.join(CLAUDE_DIR, 'agents', f);
         if (!fs.existsSync(fp)) missing.push(f);
         else {
           const content = fs.readFileSync(fp, 'utf8');
@@ -76,12 +76,12 @@ const CHECKS = {
   'rules/': {
     order: 4,
     description: '6 个规则文件（code-pipeline + doc-generation + gate-rules + import-docs + rui-claude + self-improve）',
-    file: path.join(REPO_ROOT, 'rules'),
+    file: path.join(CLAUDE_DIR, 'rules'),
     validate() {
       const required = ['code-pipeline.md', 'doc-generation.md', 'gate-rules.md', 'import-docs.md', 'rui-claude.md', 'self-improve.md'];
       const missing = [];
       for (const f of required) {
-        if (!fs.existsSync(path.join(REPO_ROOT, 'rules', f))) missing.push(f);
+        if (!fs.existsSync(path.join(CLAUDE_DIR, 'rules', f))) missing.push(f);
       }
       return { ok: missing.length === 0, missing, detail: missing.length === 0 ? '全部 6 个规则文件存在' : `缺失: ${missing.join(', ')}` };
     },
@@ -89,7 +89,7 @@ const CHECKS = {
   'templates/': {
     order: 5,
     description: '8 个基线文档模板（01-故事任务 ~ 08-自改进复盘）',
-    file: path.join(REPO_ROOT, 'skills', 'rui', 'templates'),
+    file: path.join(CLAUDE_DIR, 'templates'),
     validate() {
       const required = [
         '01-故事任务模板.md', '02-后端技术评审模板.md', '03-前端技术评审模板.md',
@@ -98,7 +98,7 @@ const CHECKS = {
       ];
       const missing = [];
       for (const f of required) {
-        const fp = path.join(REPO_ROOT, 'skills', 'rui', 'templates', f);
+        const fp = path.join(CLAUDE_DIR, 'templates', f);
         if (!fs.existsSync(fp)) missing.push(f);
         else {
           const content = fs.readFileSync(fp, 'utf8');

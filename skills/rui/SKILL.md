@@ -40,12 +40,12 @@ agents:
 
 ```
 基线提取                        基线注入                      就绪检查(8项)
-CLAUDE.md ──→ 哲学/原则/准则 ──→ agents/ 注入 ──→ 1. CLAUDE.md 哲学完整
-README.md ──→ 能力/结构/命令 ──→ rules/ 注入  ──→ 2. README.md 系统文档
-              项目类型检测      → templates/   ──→ 3. agents/ 7文件有效
-                                → .mcp.json    ──→ 4. rules/ 6文件存在
-                                → settings.*   ──→ 5. templates/ 8模板存在
-                                                ──→ 6. .mcp.json 有效JSON
+CLAUDE.md ──→ 哲学/原则/准则 ──→ .claude/agents/ ──→ 1. CLAUDE.md 哲学完整
+README.md ──→ 能力/结构/命令 ──→ .claude/rules/  ──→ 2. README.md 系统文档
+              项目类型检测      → .claude/templates/ ──→ 3. .claude/agents/ 7文件有效
+                                → .claude/.mcp.json  ──→ 4. .claude/rules/ 6文件存在
+                                → .claude/settings.* ──→ 5. .claude/templates/ 8模板存在
+                                                ──→ 6. .claude/.mcp.json 有效JSON
                                                 ──→ 7. settings.json 权限配置
                                                 ──→ 8. .claude/ 目录完整
 ```
