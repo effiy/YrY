@@ -15,9 +15,17 @@ const httpsKeepAliveAgent = new https.Agent({ keepAlive: true, maxSockets: 8 });
 const args = process.argv.slice(2);
 const SCRIPT_DIR = path.dirname(__filename);
 const PROJECT_ROOT = process.cwd();
-const CLAUDE_ROOT = path.join(PROJECT_ROOT, '.claude');
-const DEFAULT_CONFIG_BASE = path.join(CLAUDE_ROOT, 'skills/wework-bot/config.json');
+// Config search order: .claude/ (post-sync) → repo root (default)
+const REPO_CONFIG_BASE = path.join(PROJECT_ROOT, 'skills', 'wework-bot', 'config.json');
+const CLAUDE_CONFIG_BASE = path.join(PROJECT_ROOT, '.claude', 'skills', 'wework-bot', 'config.json');
 const DEFAULT_API_URL = 'https://api.effiy.cn/wework/send-message';
+
+function resolveConfigPath(explicitPath) {
+  if (explicitPath) return resolveUserPath(explicitPath);
+  if (fs.existsSync(CLAUDE_CONFIG_BASE)) return CLAUDE_CONFIG_BASE;
+  if (fs.existsSync(REPO_CONFIG_BASE)) return REPO_CONFIG_BASE;
+  return REPO_CONFIG_BASE; // fallback, will fail with clear error
+}
 
 /** X-Token 仅从系统环境变量 `API_X_TOKEN` 读取，不接受配置文件或其它来源。 */
 function readApiXTokenFromEnv() {
@@ -97,7 +105,8 @@ const options = {
   content: null,
   contentFile: null,
   name: null,
-  noSend: false
+  noSend: false,
+  project: null
 };
 
 function readValue(index, flag) {
@@ -149,6 +158,9 @@ for (let i = 0; i < args.length; i++) {
   } else if (arg === '--name' || arg === '-n') {
     options.name = readValue(i, arg);
     i++;
+  } else if (arg === '--project' || arg === '-p') {
+    options.project = readValue(i, arg);
+    i++;
   } else if (arg === '--no-send') {
     options.noSend = true;
   } else if (arg === '--help' || arg === '-h') {
@@ -169,8 +181,8 @@ Usage: node .claude/skills/wework-bot/scripts/send-message.js [options]
   --robot, -r <name>    直接指定机器人名（慎用，优先 --agent）
   --content, -c <text>   完整正文（单行或多行转义）
   --content-file, -f <path>  从 UTF-8 文件读取正文（推荐长文案）
-  --name, -n <name>      故事名称，用于追加消息到 docs/故事任务面板/<name>/00-消息通知列表.md
-  --no-send            仅追加消息日志，不实际发送
+		  --project, -p <name>   项目名称（用于消息首行【项目名】，优先于自动推断）
+		  --name, -n <name>      故事目录名（含项目前缀，如 YiWeb-user-login）
   --api-url, -a <url>   覆盖发送 API
   --help, -h
 
@@ -216,11 +228,18 @@ function applyRobotConfig() {
   if (options.config) {
     config = readJson(resolveUserPath(options.config));
   } else {
-    config = readJsonIfExists(DEFAULT_CONFIG_BASE);
+    // Search order: explicit --config → .claude/ (post-sync) → repo root (default)
+    if (fs.existsSync(CLAUDE_CONFIG_BASE)) {
+      config = readJsonIfExists(CLAUDE_CONFIG_BASE);
+    }
+    if (!config) {
+      config = readJsonIfExists(REPO_CONFIG_BASE);
+    }
   }
 
   if (!config) {
-    return;
+    console.error('Error: no wework-bot config found. Place config at skills/wework-bot/config.json or .claude/skills/wework-bot/config.json');
+    process.exit(1);
   }
 
   if (!options.apiUrl && config.api_url) {
@@ -301,10 +320,25 @@ function formatTimestamp() {
   return `【${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}】`;
 }
 
+function extractProject(name) {
+  // name = <project>-<story-slug>. Project may contain hyphens (e.g. YiWeb-ClaudeCode-story).
+  // We split on last occurrence that looks like a story slug (lowercase kebab after a hyphen).
+  // Strategy: find the last `-` where the part after it starts with a lowercase letter.
+  const parts = name.split('-');
+  for (let i = 1; i < parts.length; i++) {
+    const maybeStoryStart = parts[i];
+    if (maybeStoryStart && /^[a-z]/.test(maybeStoryStart)) {
+      return parts.slice(0, i).join('-');
+    }
+  }
+  // Fallback: everything before the last `-`
+  return parts.length > 1 ? parts.slice(0, -1).join('-') : path.basename(PROJECT_ROOT);
+}
+
 function appendToStoryNotificationLog(name, content) {
   const storyDir = path.join(PROJECT_ROOT, 'docs', '故事任务面板', name);
-  const logFile = path.join(storyDir, '00-消息通知列表.md');
   fs.mkdirSync(storyDir, { recursive: true });
+  const logFile = path.join(storyDir, '00-消息通知列表.md');
   const timestamp = formatTimestamp();
   const entry = `\n${timestamp}\n\n${content}\n`;
   fs.appendFileSync(logFile, entry, 'utf-8');
@@ -330,8 +364,10 @@ if (!options.content || !String(options.content).trim()) {
 
 options.content = String(options.content).trimEnd();
 
-// Prepend project name (root directory name) to every message
-const projectName = path.basename(PROJECT_ROOT);
+// Project name for message header: --project > extracted from --name > repo root basename
+const projectName = options.project
+  || (options.name ? extractProject(options.name) : null)
+  || path.basename(PROJECT_ROOT);
 options.content = `【${projectName}】\n${options.content}`;
 
 if (options.name) {

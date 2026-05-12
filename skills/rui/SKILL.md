@@ -77,9 +77,9 @@ agents:
 
 | Step | 操作 | 失败处理 |
 |------|------|---------|
-| 1 | `Skill(wework-bot, --no-send --name <name>)` 追加日志 | 不可跳过 |
+| 1 | `Skill(wework-bot, --no-send --project <project> --name <name>)` 追加日志 | 不可跳过 |
 | 2 | `Skill(import-docs, --workspace)` 交付时最终全量同步 | `no-token` 降级 |
-| 3 | `Skill(wework-bot, --name <name>)` 发送通知 | 不可跳过 |
+| 3 | `Skill(wework-bot, --project <project> --name <name>)` 发送通知 | 不可跳过 |
 
 ## 集成
 

@@ -19,6 +19,17 @@ const STORY_FILES = [
 const DOC_FILES = ['01-故事任务.md', '02-后端技术评审.md', '03-前端技术评审.md', '04-测试用例评审.md'];
 const REPORT_FILES = ['05-后端实施报告.md', '06-前端实施报告.md', '07-测试用例报告.md'];
 
+function parseStoryDirName(name) {
+  const parts = name.split('-');
+  if (parts.length < 2) return { valid: false, project: null, reason: '缺少项目前缀（格式: <project>-<name>）' };
+  for (let i = 1; i < parts.length; i++) {
+    if (parts[i] && /^[a-z]/.test(parts[i])) {
+      return { valid: true, project: parts.slice(0, i).join('-'), reason: null };
+    }
+  }
+  return { valid: false, project: null, reason: '无法识别项目前缀（故事部分应以小写字母开头）' };
+}
+
 function sh(cmd, fallback = '') {
   try {
     return execSync(cmd, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'], cwd: REPO_ROOT }).trim();
@@ -66,7 +77,8 @@ async function scanStories() {
 
     const missing = STORY_FILES.filter(f => !exists[f]);
 
-    stories.push({ name: entry.name, status, missing, blockReason, exists });
+    const nameInfo = parseStoryDirName(entry.name);
+    stories.push({ name: entry.name, status, missing, blockReason, exists, malformed: !nameInfo.valid, malformed_reason: nameInfo.reason, project: nameInfo.project });
   }
 
   stories.sort((a, b) => a.name.localeCompare(b.name));
@@ -139,6 +151,17 @@ function healthSnapshot() {
 
 function generate(stories, git, sync, data) {
   const recs = [];
+
+  // P0 — malformed story directory names (missing project prefix)
+  for (const s of stories.filter(s => s.malformed)) {
+    recs.push({
+      priority: 'P0', category: 'naming',
+      action: `重命名故事目录: ${s.name}`,
+      rationale: s.malformed_reason || '目录名缺少项目前缀',
+      actionable_command: `mv docs/故事任务面板/${s.name} docs/故事任务面板/<project>-${s.name}`,
+      story_name: s.name,
+    });
+  }
 
   // P0 — blocked stories
   for (const s of stories.filter(s => s.status === 'blocked')) {
@@ -336,8 +359,11 @@ function printHuman(recs, stories, git, sync, data, limit) {
     ? stories.map(s => `${s.name}(${STATUS_LABEL[s.status]})`).join(' ')
     : '无故事';
 
+  const malformedStories = stories.filter(s => s.malformed);
+
   console.log('# 推荐任务\n');
   console.log(`> 健康: ${healthScore ?? 'N/A'}/100 · 故事: ${storySummary} · 分支: ${git.branch}${git.hasUncommitted ? ' (有未提交修改)' : ''}`);
+  if (malformedStories.length > 0) console.log(`> ⚠️ ${malformedStories.length} 个故事目录缺少项目前缀（${malformedStories.map(s => s.name).join(', ')}）`);
   if (sync.hasToken) console.log(`> 同步: ${sync.panelFileCount} 面板 + ${sync.claudeFileCount} .claude 文件 · API ${sync.reachable ? '可达' : '不可达'}`);
   console.log();
 
@@ -373,7 +399,7 @@ function printJson(recs, stories, git, sync, data, limit) {
     context: {
       health: data.health?.composite ?? null,
       story_count: stories.length,
-      stories: stories.map(s => ({ name: s.name, status: s.status, missing: s.missing })),
+      stories: stories.map(s => ({ name: s.name, status: s.status, missing: s.missing, malformed: s.malformed || false, project: s.project || null })),
       branch: git.branch,
       is_main: git.isMain,
       has_uncommitted: git.hasUncommitted,
@@ -409,8 +435,8 @@ async function main() {
   let recs = generate(stories, git, sync, data);
   recs = validate(recs);
 
-  // Sort: P0 → P1 → P2 → P3, then by category priority (story > health > proposal > git > sync > improvement > init)
-  const catOrder = { story: 0, health: 1, proposal: 2, git: 3, sync: 4, improvement: 5, init: 6 };
+  // Sort: P0 → P1 → P2 → P3, then by category priority (naming > story > health > proposal > git > sync > improvement > init)
+  const catOrder = { naming: 0, story: 1, health: 2, proposal: 3, git: 4, sync: 5, improvement: 6, init: 7 };
   const priOrder = { P0: 0, P1: 1, P2: 2, P3: 3 };
   recs.sort((a, b) =>
     priOrder[a.priority] - priOrder[b.priority] ||
