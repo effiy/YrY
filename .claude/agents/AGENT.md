@@ -64,24 +64,7 @@ flowchart TD
 | 构建与运行 | README.md 快速开始 | coder.md、tester.md |
 | 核心架构 | README.md 核心架构 | coder.md、tester.md |
 
-### 就绪检查 (8 项)
-
-`node skills/rui/scripts/init.js` 执行。全部通过方可进入 `/rui doc` 或 `/rui code`。
-
-| # | 检查项 | 验证内容 | 失败阻断 |
-|---|--------|---------|---------|
-| 1 | CLAUDE.md | 三公理 + 六原则 + 七准则 + 退化对策 | 是 |
-| 2 | README.md | 系统能力 + 项目结构 + 快速开始 + /rui init 入口 | 是 |
-| 3 | agents/ | AGENT.md 概览 + 6 角色文件（含有效 frontmatter） | 是 |
-| 4 | rules/ | 6 规则文件（code-pipeline / doc-generation / gate-rules / import-docs / rui-claude / self-improve） | 是 |
-| 5 | templates/ | 8 基线文档模板（01~08）内容非空 | 是 |
-| 6 | .mcp.json | 有效 JSON + mcpServers 字段 | 否 |
-| 7 | settings.json | 有效 JSON + permissions 非空 | 是 |
-| 8 | .claude/ | agents/ + rules/ + templates/ + settings.json + .mcp.json + settings.local.json | 是 |
-
-阻断项未通过时 `/rui` 全管线不可用。`.mcp.json` 可降级（MCP 服务非必需）。
-
-完整 `.claude/` 目录结构见 [README.md](../README.md#项目结构)。
+完整 `.claude/` 目录结构见 [CLAUDE.md](../CLAUDE.md#项目结构)。
 
 ---
 

@@ -1,0 +1,27 @@
+---
+paths:
+  - "core/**/*.js"
+  - "modules/**/*.js"
+  - "assets/**/*.css"
+  - "manifest.json"
+---
+
+# Code Pipeline Rules
+
+1. 功能分支必须从 main/master 创建，各分支互相独立、禁止从其他功能分支派生，保持纯净版（仅含本故事变更），不满足则阻断（`bad-branch`）
+2. Gate A 未通过不得编码（`skip-gate-a`）。测试方案+原型就绪，单行 CSS 变更可跳过
+3. 逐模块编码，每模块后审查：P0=阻塞发布 / P1=建议修 / P2=可选，P0 未清零不进下一模块
+4. 影响链未闭合不声称闭合（`chain-broken`）
+5. 不创建设计文档外的文件
+6. fix 模式: 预检仅检查目标文件存在性，实现聚焦修改点，验证仅冒烟
+7. 禁止在 content script 中使用 ES modules
+8. 禁止修改第三方库源码，通过适配器模式封装
+9. 禁止硬编码 API 密钥，使用配置管理
+10. 测试先行必须产出04-测试用例评审.md，缺失则 Gate A 不通过
+11. Gate B 验证: 环境快照→静态预检→对齐→单次执行→产出实施与测试三报告，缺一不通过。修复≤2轮，超过阻断(`gate-b-limit`)
+12. 三报告交叉引用闭合，各报告评审清单全部 ✅ 方可通过 Gate B
+13. 自改进必须产出08-自改进复盘.md（`no-metrics` 降级不阻断，但不可跳过）
+14. 禁止将功能分支自动合并到 main，合并操作一律由开发者手动执行（`auto-merge`）
+15. 改动源代码前必须已切换到对应 `feat/<project>-<name>` 分支（`git checkout feat/<project>-<name>`），禁止在非故事分支上改动源代码（`no-checkout`）
+16. 源码修改必须通过 `/rui code` 管线（预检→测试先行→实现→验证→自改进）进行，禁止通过其他任何方式直接修改源代码文件。
+17. 故事目录名必须包含项目前缀：`docs/故事任务面板/<project>-<name>/`（`<project>` 为项目标识，`<name>` 为 kebab-case 故事名）。缺失项目前缀的目录由 `list.js` 和 `recommend.js` 告警。

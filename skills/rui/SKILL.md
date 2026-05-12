@@ -24,7 +24,7 @@ agents:
 
 | 命令 | 流程 | 行为细节 |
 |------|------|---------|
-| `/rui init` | 基线 → 基线注入 → 就绪检查(8项) → 交付 | 从 CLAUDE.md+README.md 提取项目约定注入 agents/rules/templates/MCP |
+| `/rui init` | 基线 → 基线注入 → 就绪检查(8项) → 交付 | `node skills/rui/scripts/init.js`; `--dry-run` 预览, `--json` 结构化输出 |
 | `/rui doc <req>` | 必须使用分支隔离；需求拆分 → 逐故事: 自适应规划→影响分析→架构设计→文档生成 | 文档生成后同步；故事目录 `<project>-<name>`（name 部分 kebab-case）；禁止改源码 |
 | `/rui code <name>` | 必须使用分支隔离；预检→Gate A(测试先行)→逐模块实现→Gate B(验证)→自改进→交付 | 单行 CSS 可跳过 Gate A；>2轮修复 `gate-b-limit` 阻断；验证后同步 |
 | `/rui <req>` | 必须使用分支隔离；doc + code 全自动串联，逐故事端到端 | — |
@@ -35,6 +35,22 @@ agents:
 | `/rui` | 调用 `node skills/rui/scripts/recommend.js --json` → 推荐 5~10 条任务 | 综合故事状态+健康度+提案+Git+同步状态，按 P0→P3 排序 |
 
 `<requirement>` 支持：文本 / `@` 引用本地文件 / URL。`--from-code` 时 req 可选，为空时 pm 自主扫描源码识别可文档化模块并输出推荐列表。故事目录格式 `<project>-<name>`（project 为项目标识，name 为 kebab-case，如 `YiWeb-user-login`）。
+
+### init 管线
+
+```
+基线提取                        基线注入                      就绪检查(8项)
+CLAUDE.md ──→ 哲学/原则/准则 ──→ agents/ 注入 ──→ 1. CLAUDE.md 哲学完整
+README.md ──→ 能力/结构/命令 ──→ rules/ 注入  ──→ 2. README.md 系统文档
+              项目类型检测      → templates/   ──→ 3. agents/ 7文件有效
+                                → .mcp.json    ──→ 4. rules/ 6文件存在
+                                → settings.*   ──→ 5. templates/ 8模板存在
+                                                ──→ 6. .mcp.json 有效JSON
+                                                ──→ 7. settings.json 权限配置
+                                                ──→ 8. .claude/ 目录完整
+```
+
+就绪检查 8/8 通过后项目可开始 `/rui doc` 或 `/rui code`。未通过项需修复后重新运行 init。
 
 ## 阻断规则
 

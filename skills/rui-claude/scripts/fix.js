@@ -30,7 +30,7 @@ const INFRA_FILES = {
   }, null, 2) + '\n',
 };
 
-const INFRA_DIRS = ['templates'];
+const INFRA_DIRS = ['templates', 'agents', 'rules', '.history'];
 
 // ---- 工具函数 ----
 

@@ -1,0 +1,4 @@
+{
+  "_doc": "本地覆盖配置（不入库、不同步）。优先级高于 settings.json。常用场景：个人 API key、本地路径、调试开关。",
+  "permissions": {}
+}

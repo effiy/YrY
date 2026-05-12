@@ -34,6 +34,8 @@ flowchart LR
 static/
 ├── CLAUDE.md              # 哲学：公理 → 推导 → 推论
 ├── README.md              # 本文件：系统能力 + 项目结构 + 快速开始
+├── .mcp.json              # MCP 服务配置
+├── settings.json          # 项目级 Claude Code 权限配置
 ├── agents/                # Agent 身份与决策边界（7 个角色）
 │   ├── AGENT.md           # 总览 + 证据标准 + 影响分析规范
 │   ├── pm.md              # 产品决策：做什么/不做什么
@@ -49,10 +51,19 @@ static/
 │   ├── import-docs.md     # 文档同步：多检查点强制同步
 │   ├── rui-claude.md      # rui-claude：操作范围、分支隔离等
 │   └── self-improve.md    # 自改进：数据驱动、H11 降级等
+├── .claude/               # rui init 生成（同步至远端）
+│   ├── agents/            # Agent 文件副本
+│   ├── rules/             # 规则文件副本
+│   ├── templates/         # 8 份模板副本
+│   ├── skills/rui/templates/
+│   ├── settings.json      # 项目权限
+│   ├── settings.local.json
+│   ├── .mcp.json
+│   └── .history/
 └── skills/                # 技能定义（4 个 skill）
     ├── rui/               # SDLC 编排器：SKILL.md + data.md + docs.md
     │   ├── templates/     # 8 份模板（01-08 基线文档）
-    │   └── scripts/       # 6 个脚本
+    │   └── scripts/       # 7 个脚本（含 init.js）
     ├── rui-claude/        # .claude 配置管理：SKILL.md + scripts/
     ├── wework-bot/        # 企业微信通知：SKILL.md + config.json + scripts/
     └── import-docs/       # 文档远程同步：SKILL.md + scripts/
