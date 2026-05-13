@@ -8,18 +8,19 @@ const fsp = fs.promises;
 const path = require('path');
 
 const REPO_ROOT = process.cwd();
-const STORIES_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
+const C = require('./constants.js');
 
-// Resolve {project}-{story} name to filesystem path {project}/{story}
-function resolveStoryPath(name) {
-  const idx = name.indexOf('-');
-  if (idx < 1) return { project: null, story: name, dir: path.join(STORIES_DIR, name) };
-  const project = name.slice(0, idx);
-  const story = name.slice(idx + 1);
-  return { project, story, dir: path.join(STORIES_DIR, project, story) };
+function resolveTarget(nameOrPath) {
+  try {
+    return C.resolveDocPath(nameOrPath, REPO_ROOT);
+  } catch { return null; }
 }
 
-function storyMemoryDir(name) { return path.join(resolveStoryPath(name).dir, '.memory'); }
+function storyMemoryDir(name) {
+  const doc = C.resolveDocPath(name, REPO_ROOT);
+  if (!doc.valid) throw new Error(`Invalid path: ${doc.reason}`);
+  return path.join(doc.fullPath, '.memory');
+}
 function storyStateFile(name) { return path.join(storyMemoryDir(name), 'rui-state.json'); }
 
 const ALL_PHASES = ['自适应规划', '影响分析', '架构设计', '文档生成', '预检', '测试先行', '实现', '验证', '自改进'];
@@ -75,10 +76,12 @@ async function cmdSave(opts) {
     process.exit(1);
   }
 
-  const nameInfo = resolveStoryPath(opts.name);
-  if (!nameInfo.project) {
-    console.error(`Error: 故事目录名 "${opts.name}" 不符合命名规范 — 缺少项目前缀`);
-    console.error(`请使用 <project>-<name> 格式（如 YiWeb-${opts.name}）`);
+  const docInfo = C.resolveDocPath(opts.name, REPO_ROOT);
+  if (!docInfo.valid) {
+    console.error(`Error: "${opts.name}" 解析失败 — ${docInfo.reason}`);
+    if (!opts.name.includes('/')) {
+      console.error(`请使用 <project>-<name> 格式（如 YiWeb-${opts.name}），或提供 docs/ 下的目录路径`);
+    }
     process.exit(1);
   }
 
@@ -93,8 +96,9 @@ async function cmdSave(opts) {
     } else {
       pipelineProgress[opts.stage] = 'in_progress';
       // Mark previous phases as completed
+      const phases = getPhasesForCommand(opts.command);
       let found = false;
-      for (const phase of ALL_PHASES) {
+      for (const phase of phases) {
         if (phase === opts.stage) { found = true; continue; }
         if (!found) pipelineProgress[phase] = 'completed';
       }
@@ -129,7 +133,7 @@ async function cmdSave(opts) {
     blocked: opts.blocked,
     block_reason: opts.blocked ? (opts.reason || 'Not specified') : null,
     timestamp: now,
-    storyboard: `docs/故事任务面板/${nameInfo.project}/${nameInfo.story}/01-故事任务.md`,
+    storyboard: docInfo.storyboard,
     pipeline_progress: pipelineProgress,
     delivery_pipeline: deliveryPipeline,
     change_history: changeHistory,
@@ -235,21 +239,26 @@ async function cmdNextStep() {
 }
 
 async function findStoryboards() {
-  const dir = path.join(REPO_ROOT, 'docs', '故事任务面板');
   const names = [];
-  try {
-    const projectDirs = await fsp.readdir(dir, { withFileTypes: true });
-    for (const proj of projectDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'))) {
-      const projPath = path.join(dir, proj.name);
-      try {
-        const storyDirs = await fsp.readdir(projPath, { withFileTypes: true });
-        for (const story of storyDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'))) {
-          names.push(`${proj.name}-${story.name}`);
-        }
-      } catch { /* skip */ }
-    }
-  } catch {
-    return [];
+  for (const docTypeDir of C.VALID_DOC_TYPE_DIRS) {
+    const typeDir = path.join(REPO_ROOT, 'docs', docTypeDir);
+    try {
+      const projectDirs = await fsp.readdir(typeDir, { withFileTypes: true });
+      for (const proj of projectDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'))) {
+        const projPath = path.join(typeDir, proj.name);
+        try {
+          const resourceDirs = await fsp.readdir(projPath, { withFileTypes: true });
+          for (const resource of resourceDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'))) {
+            // Use path format for non-story types, story-name format for stories
+            if (docTypeDir === '故事任务面板') {
+              names.push(`${proj.name}-${resource.name}`);
+            } else {
+              names.push(`${docTypeDir}/${proj.name}/${resource.name}`);
+            }
+          }
+        } catch { /* skip */ }
+      }
+    } catch { /* skip */ }
   }
   return names.sort();
 }

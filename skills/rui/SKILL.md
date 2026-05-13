@@ -28,7 +28,7 @@ agents:
 | `/rui doc <req>` | 必须使用分支隔离；需求拆分 → 逐故事: 自适应规划→影响分析→架构设计→文档生成 | 文档生成后同步；故事目录 `<project>-<name>`（name 部分 kebab-case）；禁止改源码 |
 | `/rui code <name>` | 必须使用分支隔离；预检→Gate A(测试先行)→逐模块实现→Gate B(验证)→自改进→交付 | 单行 CSS 可跳过 Gate A；>2轮修复 `gate-b-limit` 阻断；验证后同步 |
 | `/rui <req>` | 必须使用分支隔离；doc + code 全自动串联，逐故事端到端 | — |
-| `/rui update <name> [ctx]` | 必须使用分支隔离；结构检测(12项)→结构补齐→变更分级(T1/T2/T3)→增量更新→预检→code | 补齐标注"由 rui update 结构补齐"；已有文档按级别裁剪 |
+| `/rui update <name-or-path> [ctx]` | 必须使用分支隔离；存在性检查→结构检测(按文档类型自适应)→结构补齐→上下文解析→变更分级(T1/T2/T3)→增量更新→预检→code | 补齐标注"由 rui update 结构补齐"；已有文档按级别裁剪；`<name-or-path>` 支持故事名 `{project}-{name}`（→故事任务面板）和目录路径 `组件文档/{project}/{name}` / `接口文档/{project}/{name}` / `页面文档/{project}/{name}` / `领域模型/{project}/{name}`；非故事参考文档跳过代码阶段 |
 | `/rui code --from-doc <name>` | 必须使用分支隔离；读取故事任务文档+探索源码(只读)→生成缺失的技术评审与报告文档 | 已有文档不覆盖，全部存在则退出；禁止改源码 |
 | `/rui doc --from-code [req]` | 从源码反推故事→生成全文档基线(只读)；req 为空时 pm 按项目类型探索：前端→组件发现→组件全文档，后端→接口发现→接口全文档，全栈→两端独立推荐 | 禁止改源码 |
 | `/rui list` | 扫描故事面板 → 进度表; 调用 `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/list.js` | 按文件完整性判定: 未开始/文档中/代码中/完成/阻断 |

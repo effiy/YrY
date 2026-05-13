@@ -80,6 +80,153 @@ const MAX_LARGE_FILE_RECS = 2;                      // Max large file items in r
 const MAX_LOW_HEALTH_DIM_RECS = 2;                  // Max low health dimension items
 const PROPOSAL_BACKLOG_MIN_ACTIVE = 3;              // Min active proposals to check for backlog
 
+// ── Document type definitions ──────────────────────────────────────
+
+const DOC_TYPE_STORY = 'story';
+const DOC_TYPE_COMPONENT = 'component-doc';
+const DOC_TYPE_API = 'api-doc';
+const DOC_TYPE_PAGE = 'page-doc';
+const DOC_TYPE_DOMAIN = 'domain-doc';
+
+const DOC_DIR_TYPES = {
+  '故事任务面板': {
+    type: DOC_TYPE_STORY,
+    label: '故事任务文档',
+    expectedFiles: [],  // story files vary by project type; checked separately
+    hasCodePhases: true,
+  },
+  '组件文档': {
+    type: DOC_TYPE_COMPONENT,
+    label: '组件参考文档',
+    expectedFiles: ['00-索引.md', '01-组件概述.md', '02-状态与依赖.md', '03-样式与交互.md', '04-操作场景.md'],
+    hasCodePhases: false,
+  },
+  '接口文档': {
+    type: DOC_TYPE_API,
+    label: '接口参考文档',
+    expectedFiles: ['00-索引.md', '01-接口概述.md', '02-数据模型.md', '03-中间件与安全.md', '04-操作场景.md'],
+    hasCodePhases: false,
+  },
+  '页面文档': {
+    type: DOC_TYPE_PAGE,
+    label: '页面参考文档',
+    expectedFiles: ['00-索引.md', '01-页面概述.md', '02-组件编排.md', '03-交互流程.md', '04-操作场景.md'],
+    hasCodePhases: false,
+  },
+  '领域模型': {
+    type: DOC_TYPE_DOMAIN,
+    label: '领域参考文档',
+    expectedFiles: ['00-索引.md', '01-领域概述.md', '02-实体模型.md', '03-领域服务.md', '04-操作场景.md'],
+    hasCodePhases: false,
+  },
+};
+
+const VALID_DOC_TYPE_DIRS = Object.keys(DOC_DIR_TYPES);
+
+/**
+ * Resolve a name-or-path input to a canonical doc descriptor.
+ *
+ * Rules:
+ *  - If input contains '/': treat as a path under docs/. Strip leading/trailing
+ *    slashes, prepend 'docs/' if missing, then split into
+ *    docs/{docTypeDir}/{project}/{resourceName}/.
+ *  - If input has no '/' (backward compat): parse as {project}-{name} story name,
+ *    map to docs/故事任务面板/{project}/{name}/.
+ *
+ * @param {string} nameOrPath
+ * @param {string} repoRoot  absolute path to repo root (default process.cwd())
+ * @returns {{ valid: boolean, reason: string|null, dirType: string, docTypeDir: string,
+ *             docPath: string, fullPath: string, project: string, resourceName: string,
+ *             storyboard: string|null, hasCodePhases: boolean }}
+ */
+function resolveDocPath(nameOrPath, repoRoot) {
+  const fs = require('fs');
+  const path = require('path');
+  const root = repoRoot || process.cwd();
+
+  // ── Path format (contains '/') ──
+  if (nameOrPath.includes('/')) {
+    let rel = nameOrPath.replace(/^\.?\//, '').replace(/\/+$/, '');
+    if (!rel.startsWith('docs/')) rel = 'docs/' + rel;
+    const segments = rel.split('/');
+    // segments: ['docs', docTypeDir, project, resourceName]
+    if (segments.length < 4) {
+      return { valid: false, reason: `路径深度不足，需要 docs/{文档类}/{project}/{name}（当前: ${rel}）`, dirType: null, docTypeDir: null, docPath: null, fullPath: null, project: null, resourceName: null, storyboard: null, hasCodePhases: false };
+    }
+    const docTypeDir = segments[1];
+    const project = segments[2];
+    const resourceName = segments.slice(3).join('/');
+    if (!VALID_DOC_TYPE_DIRS.includes(docTypeDir)) {
+      return { valid: false, reason: `未知文档类 "${docTypeDir}"，有效值: ${VALID_DOC_TYPE_DIRS.join(', ')}`, dirType: null, docTypeDir: null, docPath: null, fullPath: null, project: null, resourceName: null, storyboard: null, hasCodePhases: false };
+    }
+    const docPath = `docs/${docTypeDir}/${project}/${resourceName}/`;
+    const fullPath = path.join(root, docPath);
+
+    // Verify directory exists
+    let exists = false;
+    try { exists = fs.statSync(fullPath).isDirectory(); } catch {}
+    if (!exists) {
+      return { valid: false, reason: `目录不存在: ${docPath}`, dirType: null, docTypeDir: null, docPath, fullPath, project, resourceName, storyboard: null, hasCodePhases: false };
+    }
+
+    const dirCfg = DOC_DIR_TYPES[docTypeDir];
+    const storyboard = dirCfg.type === DOC_TYPE_STORY
+      ? `${docPath}01-故事任务.md`
+      : (dirCfg.expectedFiles.length > 0 ? `${docPath}${dirCfg.expectedFiles[0]}` : null);
+
+    return {
+      valid: true, reason: null,
+      dirType: dirCfg.type,
+      docTypeDir,
+      docPath, fullPath,
+      project, resourceName,
+      storyboard,
+      hasCodePhases: dirCfg.hasCodePhases,
+    };
+  }
+
+  // ── Name format (no '/') — backward compatible story name ──
+  // parse as {project}-{name}
+  const parts = nameOrPath.split('-');
+  if (parts.length < 2) {
+    return { valid: false, reason: `缺少项目前缀（格式: <project>-<name> 或 docs/...路径）`, dirType: null, docTypeDir: null, docPath: null, fullPath: null, project: null, resourceName: null, storyboard: null, hasCodePhases: false };
+  }
+  let project = null;
+  let story = nameOrPath;
+  for (let i = 1; i < parts.length; i++) {
+    if (parts[i] && /^[a-z]/.test(parts[i])) {
+      project = parts.slice(0, i).join('-');
+      story = parts.slice(i).join('-');
+      break;
+    }
+  }
+  if (!project) {
+    return { valid: false, reason: '无法识别项目前缀（故事部分应以小写字母开头）', dirType: null, docTypeDir: null, docPath: null, fullPath: null, project: null, resourceName: null, storyboard: null, hasCodePhases: false };
+  }
+
+  const docTypeDir = '故事任务面板';
+  const docPath = `docs/${docTypeDir}/${project}/${story}/`;
+  const fullPath = path.join(root, docPath);
+  const storyboard = `${docPath}01-故事任务.md`;
+
+  return {
+    valid: true, reason: null,
+    dirType: DOC_TYPE_STORY,
+    docTypeDir,
+    docPath, fullPath,
+    project, resourceName: story,
+    storyboard,
+    hasCodePhases: true,
+  };
+}
+
+function expectedFiles(dirType) {
+  for (const cfg of Object.values(DOC_DIR_TYPES)) {
+    if (cfg.type === dirType) return cfg.expectedFiles;
+  }
+  return [];
+}
+
 module.exports = {
   // Content validation
   MIN_AGENT_CONTENT_LENGTH,
@@ -139,4 +286,15 @@ module.exports = {
   MAX_LARGE_FILE_RECS,
   MAX_LOW_HEALTH_DIM_RECS,
   PROPOSAL_BACKLOG_MIN_ACTIVE,
+
+  // Document type system
+  DOC_TYPE_STORY,
+  DOC_TYPE_COMPONENT,
+  DOC_TYPE_API,
+  DOC_TYPE_PAGE,
+  DOC_TYPE_DOMAIN,
+  DOC_DIR_TYPES,
+  VALID_DOC_TYPE_DIRS,
+  resolveDocPath,
+  expectedFiles,
 };

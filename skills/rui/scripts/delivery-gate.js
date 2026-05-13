@@ -9,7 +9,7 @@ const fsp = fs.promises;
 const path = require('path');
 
 const REPO_ROOT = process.cwd();
-const STORIES_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
+const C = require('./constants.js');
 
 const DELIVERY_STEPS = ['log_appended', 'docs_synced', 'notification_sent'];
 const STEP_LABELS = {
@@ -18,15 +18,11 @@ const STEP_LABELS = {
   notification_sent: 'wework-bot 发送通知',
 };
 
-function resolveStoryPath(name) {
-  const idx = name.indexOf('-');
-  if (idx < 1) return { project: null, story: name, dir: path.join(STORIES_DIR, name) };
-  const project = name.slice(0, idx);
-  const story = name.slice(idx + 1);
-  return { project, story, dir: path.join(STORIES_DIR, project, story) };
+function storyMemoryDir(name) {
+  const doc = C.resolveDocPath(name, REPO_ROOT);
+  if (!doc.valid) throw new Error(`Invalid path: ${doc.reason}`);
+  return path.join(doc.fullPath, '.memory');
 }
-
-function storyMemoryDir(name) { return path.join(resolveStoryPath(name).dir, '.memory'); }
 function storyStateFile(name) { return path.join(storyMemoryDir(name), 'rui-state.json'); }
 
 function parseArgs(argv) {
@@ -72,18 +68,25 @@ function missingSteps(dp) {
 
 async function findStories() {
   const names = [];
-  try {
-    const projectDirs = await fsp.readdir(STORIES_DIR, { withFileTypes: true });
-    for (const proj of projectDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'))) {
-      const projPath = path.join(STORIES_DIR, proj.name);
-      try {
-        const storyDirs = await fsp.readdir(projPath, { withFileTypes: true });
-        for (const story of storyDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'))) {
-          names.push(`${proj.name}-${story.name}`);
-        }
-      } catch { /* skip */ }
-    }
-  } catch { return []; }
+  for (const docTypeDir of C.VALID_DOC_TYPE_DIRS) {
+    const typeDir = path.join(REPO_ROOT, 'docs', docTypeDir);
+    try {
+      const projectDirs = await fsp.readdir(typeDir, { withFileTypes: true });
+      for (const proj of projectDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'))) {
+        const projPath = path.join(typeDir, proj.name);
+        try {
+          const resourceDirs = await fsp.readdir(projPath, { withFileTypes: true });
+          for (const resource of resourceDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'))) {
+            if (docTypeDir === '故事任务面板') {
+              names.push(`${proj.name}-${resource.name}`);
+            } else {
+              names.push(`${docTypeDir}/${proj.name}/${resource.name}`);
+            }
+          }
+        } catch { /* skip */ }
+      }
+    } catch { /* skip */ }
+  }
   return names.sort();
 }
 

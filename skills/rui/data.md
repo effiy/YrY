@@ -1,16 +1,18 @@
 # 数据契约
 
-每个故事独立存储执行记忆和改进提案。
+每个文档目录独立存储执行记忆和改进提案。五类文档（故事任务面板、组件文档、接口文档、页面文档、领域模型）均按 `docs/{文档类}/{project}/{name}/` 组织。
 
 ## 存储路径
 
 ```
-docs/故事任务面板/{project}/{name}/
+docs/{文档类}/{project}/{name}/
 ├── .improvement/proposals.jsonl
 └── .memory/
     ├── execution-memory.jsonl
     └── rui-state.json
 ```
+
+`/rui update` 接受两种输入格式：故事名 `{project}-{name}`（→ `docs/故事任务面板/{project}/{name}/`）或目录路径 `{文档类}/{project}/{name}`。
 
 ## execution-memory.jsonl
 
@@ -34,5 +36,5 @@ docs/故事任务面板/{project}/{name}/
 /rui 执行 → execution-memory.jsonl + rui-state.json
   → self-improve.js (观察→诊断→改进)
     → proposals.jsonl
-      → recommend.js 推荐 / /rui update 上下文 / loop.js §L
+      → recommend.js 推荐 / /rui update <name-or-path> 上下文 / loop.js §L
 ```
