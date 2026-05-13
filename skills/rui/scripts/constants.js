@@ -295,12 +295,158 @@ function shJson(cmd, cwd) {
   try { return JSON.parse(out); } catch { return null; }
 }
 
+/**
+ * Detect project type by scanning file extensions, package.json frameworks,
+ * API/server patterns, and meta-project signals. Single source of truth used by
+ * both init.js (baseline injection) and recommend.js (recommendations).
+ *
+ * @param {string} [repoRoot] absolute path to repo root (default process.cwd())
+ * @returns {{
+ *   type: 'frontend'|'backend'|'fullstack'|'meta'|'unknown',
+ *   coderFormula: { text: string, variant: string, focus: string },
+ *   frontendScore: number, backendScore: number, indicators: string[]
+ * }}
+ */
+function detectProjectType(repoRoot) {
+  const fs = require('fs');
+  const path = require('path');
+  const root = repoRoot || process.cwd();
+  const indicators = [];
+  let frontendScore = 0, backendScore = 0;
+
+  // File-extension signals (shell find — fast, ignores node_modules/.git)
+  for (const [ext, weight] of Object.entries(FRONTEND_EXTENSION_WEIGHTS)) {
+    const count = parseInt(sh(`find . -name "*${ext}" -not -path "*/node_modules/*" -not -path "*/.git/*" | wc -l`, '0', root), 10) || 0;
+    if (count > 0) {
+      frontendScore += weight * Math.min(count, MAX_FILE_COUNT_FOR_SCORING);
+      indicators.push(`${count} ${ext} 文件`);
+    }
+  }
+  for (const [ext, weight] of Object.entries(BACKEND_EXTENSION_WEIGHTS)) {
+    const count = parseInt(sh(`find . -name "*${ext}" -not -path "*/node_modules/*" -not -path "*/.git/*" | wc -l`, '0', root), 10) || 0;
+    if (count > 0) {
+      backendScore += weight * Math.min(count, MAX_FILE_COUNT_FOR_SCORING);
+      indicators.push(`${count} ${ext} 文件`);
+    }
+  }
+
+  // Framework signals from package.json
+  try {
+    const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+    const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+    const feFrameworks = ['react', 'vue', 'svelte', 'angular', 'next', 'nuxt', 'vite', 'webpack'];
+    const beFrameworks = ['express', 'koa', 'fastify', 'hapi', 'nestjs'];
+    for (const fw of feFrameworks) {
+      if (deps[fw]) { frontendScore += FRAMEWORK_DEPENDENCY_WEIGHT; indicators.push(`依赖: ${fw}`); }
+    }
+    for (const fw of beFrameworks) {
+      if (deps[fw]) { backendScore += FRAMEWORK_DEPENDENCY_WEIGHT; indicators.push(`依赖: ${fw}`); }
+    }
+  } catch { /* no package.json */ }
+
+  // API/server pattern signal (scan first N source files)
+  const apiFiles = sh(
+    `find . -type f \\( -name "*.js" -o -name "*.ts" -o -name "*.py" -o -name "*.go" \\) -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/skills/*" -not -path "*/agents/*" -not -path "*/rules/*" | head -${API_PATTERN_SCAN_MAX_FILES}`,
+    '', root
+  );
+  if (apiFiles) {
+    for (const line of apiFiles.split('\n').filter(Boolean)) {
+      try {
+        const content = fs.readFileSync(path.join(root, line), 'utf8').slice(0, API_PATTERN_SCAN_CONTENT_BYTES);
+        if (/\b(router\.|app\.(get|post|put|delete|patch)|@app\.route|@router\.|func\s+\w+.*http\.|class\s+\w+Controller|@RestController|@RequestMapping)\b/.test(content)) {
+          backendScore += API_PATTERN_WEIGHT;
+          indicators.push(`API 模式: ${path.basename(line)}`);
+          break;
+        }
+      } catch { /* skip */ }
+    }
+  }
+
+  // Meta-project signals (Claude Code plugin layout)
+  const isMeta = fs.existsSync(path.join(root, '.claude-plugin', 'plugin.json')) ||
+    (fs.existsSync(path.join(root, 'agents')) && fs.existsSync(path.join(root, 'skills')) && !apiFiles);
+
+  let type;
+  if (frontendScore > backendScore && frontendScore > 0) type = 'frontend';
+  else if (backendScore > frontendScore && backendScore > 0) type = 'backend';
+  else if (frontendScore > 0 && backendScore > 0) type = 'fullstack';
+  else if (isMeta) type = 'meta';
+  else type = 'unknown';
+
+  return { type, coderFormula: getCoderFormula(type), frontendScore, backendScore, indicators };
+}
+
+/**
+ * Coder formula by project type.
+ * @param {'frontend'|'backend'|'fullstack'|'meta'|'unknown'} type
+ * @returns {{ text: string, variant: string, focus: string }}
+ */
+function getCoderFormula(type) {
+  const formulas = {
+    frontend: { text: '组件树 → Props/Events/Expose → 状态流', variant: '组件化', focus: '组件接口契约与状态管理' },
+    backend: { text: '模块 → 接口 → 数据流', variant: '领域模型', focus: '领域模型完整性与API契约' },
+    fullstack: { text: '模块 → 接口 → 数据流 + 组件树 → Props/Events → 状态流', variant: '前后端分离', focus: '前后端契约对齐与数据流完整性' },
+    meta: { text: '模块 → 接口 → 数据流', variant: '插件/配置', focus: '规则完整性与集成契约' },
+    unknown: { text: '模块 → 接口 → 数据流', variant: '通用', focus: '模块划分与接口定义' },
+  };
+  return formulas[type] || formulas.unknown;
+}
+
+/**
+ * Human-readable label for a project type.
+ * @param {string} type
+ * @returns {string}
+ */
+function labelForType(type) {
+  return { frontend: '前端', backend: '后端', fullstack: '全栈', meta: '元项目(插件/配置)', unknown: '未知' }[type] || '未知';
+}
+
+/**
+ * Discover all doc names across all VALID_DOC_TYPE_DIRS by scanning two levels:
+ * docs/<type>/<project>/<resource>. Story dirs return as "<project>-<resource>"
+ * (legacy convention), other types return as "<typeDir>/<project>/<resource>".
+ *
+ * Async to keep parity with rui-state / delivery-gate callers.
+ * @param {string} [repoRoot] defaults to process.cwd()
+ * @returns {Promise<string[]>} sorted list of names
+ */
+async function findAllDocNames(repoRoot) {
+  const fsp = require('fs').promises;
+  const path = require('path');
+  const root = repoRoot || process.cwd();
+  const names = [];
+  for (const docTypeDir of VALID_DOC_TYPE_DIRS) {
+    const typeDir = path.join(root, 'docs', docTypeDir);
+    let projectDirs = [];
+    try { projectDirs = await fsp.readdir(typeDir, { withFileTypes: true }); } catch { continue; }
+    for (const proj of projectDirs) {
+      if (!proj.isDirectory() || proj.name.startsWith('.')) continue;
+      const projPath = path.join(typeDir, proj.name);
+      let resourceDirs = [];
+      try { resourceDirs = await fsp.readdir(projPath, { withFileTypes: true }); } catch { continue; }
+      for (const resource of resourceDirs) {
+        if (!resource.isDirectory() || resource.name.startsWith('.')) continue;
+        if (docTypeDir === '故事任务面板') {
+          names.push(`${proj.name}-${resource.name}`);
+        } else {
+          names.push(`${docTypeDir}/${proj.name}/${resource.name}`);
+        }
+      }
+    }
+  }
+  return names.sort();
+}
+
 module.exports = {
   // Shared utilities
   parseStoryDirName,
   resolveStoryPath,
   sh,
   shJson,
+  findAllDocNames,
+  detectProjectType,
+  getCoderFormula,
+  labelForType,
 
   // Content validation
   MIN_AGENT_CONTENT_LENGTH,

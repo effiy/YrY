@@ -6,24 +6,16 @@
 const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
-const { execSync } = require('child_process');
 const C = require('./constants.js');
 
 const REPO_ROOT = process.cwd();
 const SELF_IMPROVE = path.join(__dirname, 'self-improve.js');
 const EXEC_MEMORY = path.join(__dirname, 'execution-memory.js');
 const STORYBOARDS_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
-function sh(cmd) {
-  try {
-    return execSync(cmd, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'], cwd: REPO_ROOT }).trim();
-  } catch { return ''; }
-}
 
-function shJson(cmd) {
-  const out = sh(cmd);
-  if (!out) return null;
-  try { return JSON.parse(out); } catch { return null; }
-}
+// Use shared shell helpers from constants.js to avoid drift.
+const sh = (cmd) => C.sh(cmd, '', REPO_ROOT);
+const shJson = (cmd) => C.shJson(cmd, REPO_ROOT);
 
 function collect() {
   const health = shJson(`node "${SELF_IMPROVE}" health --json`);

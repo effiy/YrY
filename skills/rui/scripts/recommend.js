@@ -11,7 +11,7 @@ const C = require('./constants.js');
 const REPO_ROOT = process.cwd();
 const PANEL_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
-const { resolveStoryPath, parseStoryDirName, sh, shJson } = C;
+const { resolveStoryPath, parseStoryDirName, sh, shJson, detectProjectType } = C;
 
 const STORY_FILES = [
   '01-故事任务.md', '02-后端技术评审.md', '03-前端技术评审.md',
@@ -22,76 +22,7 @@ const DOC_FILES = ['01-故事任务.md', '02-后端技术评审.md', '03-前端�
 const REPORT_FILES = ['05-后端实施报告.md', '06-前端实施报告.md', '07-测试用例报告.md'];
 
 // ── Project type detection ─────────────────────────────────────
-
-function detectProjectType() {
-  const indicators = [];
-  let frontendScore = 0, backendScore = 0;
-
-  // Frontend signals
-  const frontendPatterns = Object.entries(C.FRONTEND_EXTENSION_WEIGHTS).map(([ext, weight]) => ({ ext, weight }));
-  for (const { ext, weight } of frontendPatterns) {
-    const count = parseInt(sh(`find . -name "*${ext}" -not -path "*/node_modules/*" -not -path "*/.git/*" | wc -l`, '0'), 10) || 0;
-    if (count > 0) { frontendScore += weight * Math.min(count, C.MAX_FILE_COUNT_FOR_SCORING); indicators.push(`${count} ${ext} 文件`); }
-  }
-
-  // Check package.json for frontend frameworks
-  try {
-    const pkg = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'package.json'), 'utf8'));
-    const deps = { ...pkg.dependencies, ...pkg.devDependencies };
-    const feFrameworks = ['react', 'vue', 'svelte', 'angular', 'next', 'nuxt', 'vite', 'webpack'];
-    const beFrameworks = ['express', 'koa', 'fastify', 'hapi', 'nestjs', 'next'];
-    for (const fw of feFrameworks) {
-      if (deps[fw]) { frontendScore += C.FRAMEWORK_DEPENDENCY_WEIGHT; indicators.push(`依赖: ${fw}`); }
-    }
-    for (const fw of beFrameworks) {
-      if (deps[fw]) { backendScore += C.FRAMEWORK_DEPENDENCY_WEIGHT; indicators.push(`依赖: ${fw}`); }
-    }
-  } catch {}
-
-  // Backend signals
-  const backendPatterns = Object.entries(C.BACKEND_EXTENSION_WEIGHTS).map(([ext, weight]) => ({ ext, weight }));
-  for (const { ext, weight } of backendPatterns) {
-    const count = parseInt(sh(`find . -name "*${ext}" -not -path "*/node_modules/*" -not -path "*/.git/*" | wc -l`, '0'), 10) || 0;
-    if (count > 0) { backendScore += weight * Math.min(count, C.MAX_FILE_COUNT_FOR_SCORING); indicators.push(`${count} ${ext} 文件`); }
-  }
-
-  // Check for API/server patterns
-  const apiFiles = sh(`find . -type f \\( -name "*.js" -o -name "*.ts" -o -name "*.py" -o -name "*.go" \\) -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/skills/*" -not -path "*/agents/*" -not -path "*/rules/*" | head -${C.API_PATTERN_SCAN_MAX_FILES}`, '');
-  if (apiFiles) {
-    for (const line of apiFiles.split('\n').filter(Boolean)) {
-      try {
-        const content = fs.readFileSync(path.join(REPO_ROOT, line), 'utf8').slice(0, C.API_PATTERN_SCAN_CONTENT_BYTES);
-        if (/\b(router\.|app\.(get|post|put|delete|patch)|@app\.route|@router\.|func\s+\w+.*http\.|class\s+\w+Controller|@RestController|@RequestMapping)\b/.test(content)) {
-          backendScore += C.API_PATTERN_WEIGHT; indicators.push(`API 模式: ${path.basename(line)}`); break;
-        }
-      } catch {}
-    }
-  }
-
-  // Meta-project signals (Claude Code plugin)
-  const isMeta = fs.existsSync(path.join(REPO_ROOT, '.claude-plugin', 'plugin.json')) ||
-    (fs.existsSync(path.join(REPO_ROOT, 'agents')) && fs.existsSync(path.join(REPO_ROOT, 'skills')) && !apiFiles);
-
-  let type, coderFormula;
-  if (frontendScore > backendScore && frontendScore > 0) {
-    type = 'frontend';
-    coderFormula = { text: '组件树 → Props/Events/Expose → 状态流', variant: '组件化', focus: '组件接口契约与状态管理' };
-  } else if (backendScore > frontendScore && backendScore > 0) {
-    type = 'backend';
-    coderFormula = { text: '模块 → 接口 → 数据流', variant: '领域模型', focus: '领域模型完整性与API契约' };
-  } else if (frontendScore > 0 && backendScore > 0) {
-    type = 'fullstack';
-    coderFormula = { text: '模块 → 接口 → 数据流 + 组件树 → Props/Events → 状态流', variant: '前后端分离', focus: '前后端契约对齐与数据流完整性' };
-  } else if (isMeta) {
-    type = 'meta';
-    coderFormula = { text: '模块 → 接口 → 数据流', variant: '插件/配置', focus: '规则完整性与集成契约' };
-  } else {
-    type = 'unknown';
-    coderFormula = { text: '模块 → 接口 → 数据流', variant: '通用', focus: '模块划分与接口定义' };
-  }
-
-  return { type, coderFormula, frontendScore, backendScore, indicators };
-}
+// Delegates to constants.detectProjectType (shared with init.js).
 
 // ── Role formula analysis ──────────────────────────────────────
 
@@ -929,7 +860,7 @@ function printHuman(recs, stories, git, sync, data, projectType, limit) {
 
   const malformedStories = stories.filter(s => s.malformed);
 
-  const ptLabel = { frontend: '前端', backend: '后端', fullstack: '全栈', meta: '元项目(插件)', unknown: '未知' }[projectType.type] || '未知';
+  const ptLabel = C.labelForType(projectType.type);
   const ptFormula = projectType.coderFormula;
 
   console.log('# 推荐任务\n');
@@ -1031,7 +962,7 @@ async function main() {
   const limit = limitIdx !== -1 ? Math.max(1, parseInt(args[limitIdx + 1], 10) || C.DEFAULT_RECOMMENDATION_LIMIT) : C.DEFAULT_RECOMMENDATION_LIMIT;
 
   // Collect
-  const projectType = detectProjectType();
+  const projectType = detectProjectType(REPO_ROOT);
   const stories = await scanStories();
   const git = gitState();
   const sync = syncStatus();

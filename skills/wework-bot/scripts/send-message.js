@@ -340,6 +340,15 @@ function extractProject(name) {
 }
 
 function resolveStoryPath(name) {
+  const parsed = parseStoryDirName(name);
+  if (parsed.valid) {
+    return {
+      project: parsed.project,
+      story: parsed.story,
+      dir: path.join(PROJECT_ROOT, 'docs', '故事任务面板', parsed.project, parsed.story),
+    };
+  }
+  // Fallback: first-dash split (for malformed names — caller already warned)
   const idx = name.indexOf('-');
   if (idx < 1) return { project: null, story: name, dir: path.join(PROJECT_ROOT, 'docs', '故事任务面板', name) };
   const project = name.slice(0, idx);

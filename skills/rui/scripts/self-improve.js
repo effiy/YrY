@@ -6,7 +6,6 @@
 const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
-const { execSync } = require('child_process');
 const { getNaturalWeekRange } = require('./natural-week.js');
 const C = require('./constants.js');
 
@@ -20,18 +19,11 @@ function storyProposalsFile(name) { return path.join(storyImprovementDir(name), 
 
 const RATING_VALUES = new Set(['helpful', 'neutral', 'harmful']);
 
-const { sh } = C;
+const { sh, shJson } = C;
 
 function collectMemoryStats() {
   const script = path.join(__dirname, 'execution-memory.js');
-  try {
-    const out = execSync(`node "${script}" stats --json`, {
-      encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'],
-    }).trim();
-    return JSON.parse(out);
-  } catch {
-    return null;
-  }
+  return shJson(`node "${script}" stats --json`);
 }
 
 function collectGitHeatmap(weeks = 4) {
@@ -138,14 +130,7 @@ function collectLargeFiles() {
 
 function readMemoryRecords() {
   const script = path.join(__dirname, 'execution-memory.js');
-  try {
-    const out = execSync(`node "${script}" ls --limit 9999 --json`, {
-      encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'],
-    }).trim();
-    return JSON.parse(out);
-  } catch {
-    return [];
-  }
+  return shJson(`node "${script}" ls --limit 9999 --json`) || [];
 }
 
 function filterRecordsByDateRange(records, startDate, endDate) {

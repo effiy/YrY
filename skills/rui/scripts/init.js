@@ -400,7 +400,7 @@ function extractBaseline() {
   }
 
   // Detect project type
-  baseline.projectType = detectProjectType();
+  baseline.projectType = C.detectProjectType(REPO_ROOT);
 
   // Build injection targets (enhanced with project-specific data)
   baseline.injectionTargets = {
@@ -435,32 +435,8 @@ function extractBaseline() {
 }
 
 function detectProjectType() {
-  let frontendScore = 0, backendScore = 0;
-  const indicators = [];
-
-  const frontendPatterns = Object.entries(C.FRONTEND_EXTENSION_WEIGHTS).map(([ext, weight]) => ({ ext, weight }));
-  for (const { ext, weight } of frontendPatterns) {
-    try {
-      const files = fs.readdirSync(REPO_ROOT, { recursive: true }).filter(f => f.endsWith(ext) && !f.includes('node_modules') && !f.includes('.git'));
-      if (files.length > 0) { frontendScore += weight * Math.min(files.length, C.MAX_FILE_COUNT_FOR_SCORING); indicators.push(`${ext}`); }
-    } catch {}
-  }
-
-  const backendPatterns = Object.entries(C.BACKEND_EXTENSION_WEIGHTS).map(([ext, weight]) => ({ ext, weight }));
-  for (const { ext, weight } of backendPatterns) {
-    try {
-      const files = fs.readdirSync(REPO_ROOT, { recursive: true }).filter(f => f.endsWith(ext) && !f.includes('node_modules') && !f.includes('.git'));
-      if (files.length > 0) { backendScore += weight * Math.min(files.length, C.MAX_FILE_COUNT_FOR_SCORING); indicators.push(`${ext}`); }
-    } catch {}
-  }
-
-  let type;
-  if (frontendScore > backendScore && frontendScore > 0) type = 'frontend';
-  else if (backendScore > frontendScore && backendScore > 0) type = 'backend';
-  else if (frontendScore > 0 && backendScore > 0) type = 'fullstack';
-  else type = 'meta';
-
-  return { type, frontendScore, backendScore, indicators };
+  // Delegate to shared implementation in constants.js for consistency with recommend.js
+  return C.detectProjectType(REPO_ROOT);
 }
 
 // ── Directory & file creation ────────────────────────────────────
@@ -1032,13 +1008,8 @@ function buildPipelineInjection(baseline) {
 }
 
 function getCoderFormula(type) {
-  const formulas = {
-    frontend: { text: '组件树 → Props/Events/Expose → 状态流', variant: '组件化', focus: '组件接口契约与状态管理' },
-    backend: { text: '模块 → 接口 → 数据流', variant: '领域模型', focus: '领域模型完整性与API契约' },
-    fullstack: { text: '模块 → 接口 → 数据流 + 组件树 → Props/Events → 状态流', variant: '前后端分离', focus: '前后端契约对齐与数据流完整性' },
-    meta: { text: '模块 → 接口 → 数据流', variant: '配置/插件', focus: '规则完整性与集成契约' },
-  };
-  return formulas[type] || formulas.meta;
+  // Delegate to shared implementation in constants.js
+  return C.getCoderFormula(type);
 }
 
 function getStoryDefaults(type) {
@@ -1273,7 +1244,8 @@ function printJson(baseline, injectResults, checkResults) {
 }
 
 function labelForType(type) {
-  return { frontend: '前端', backend: '后端', fullstack: '全栈', meta: '元项目(配置/插件)' }[type] || '未知';
+  // Delegate to shared implementation in constants.js
+  return C.labelForType(type);
 }
 
 // ── Main ────────────────────────────────────────────────────────

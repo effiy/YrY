@@ -43,22 +43,28 @@ function collectStats() {
     stats[sub] = { files: entries.length, lines, names: entries };
   }
 
-  // templates: 实际路径在 skills/rui/templates/
+  // templates: init 注入到 .claude/templates/
   {
-    const tdir = path.join(CLAUDE_DIR, 'skills', 'rui', 'templates');
+    const tdir = path.join(CLAUDE_DIR, 'templates');
     if (fs.existsSync(tdir)) {
-      const entries = fs.readdirSync(tdir).filter(f => {
-        try { return fs.statSync(path.join(tdir, f)).isFile(); } catch { return false; }
-      });
+      // Recursively walk template subdirs (5 doc types × N files)
+      const entries = [];
+      try {
+        for (const f of fs.readdirSync(tdir, { recursive: true })) {
+          const fp = path.join(tdir, f);
+          try { if (fs.statSync(fp).isFile()) entries.push(f); } catch {}
+        }
+      } catch {}
       let lines = 0;
       for (const f of entries) {
         try { lines += fs.readFileSync(path.join(tdir, f), 'utf8').split('\n').length; } catch {}
       }
-      stats.templates = { files: entries.length, lines, names: entries };
+      stats.templates = { files: entries.length, lines, names: entries.sort() };
     }
   }
 
-  // skills: 递归扫描子目录（skill 定义在 skills/<name>/ 下）
+  // skills: 仓库内的 skills/ 而非 .claude/skills/（该目录历史上不存在），
+  // 仅在存在时统计，否则保留默认 0。
   {
     const sdir = path.join(CLAUDE_DIR, 'skills');
     if (fs.existsSync(sdir)) {
@@ -68,12 +74,12 @@ function collectStats() {
       });
       for (const sd of skillDirs) {
         const ssub = path.join(sdir, sd);
-        const files = fs.readdirSync(ssub, { recursive: true }).filter(f => {
-          try { return fs.statSync(path.join(ssub, f)).isFile(); } catch { return false; }
-        });
+        let files = [];
+        try { files = fs.readdirSync(ssub, { recursive: true }); } catch {}
         for (const f of files) {
-          if (f.includes('templates/')) continue; // 模板已在独立区统计
-          entries.push(`${sd}/${f}`);
+          if (typeof f !== 'string') continue;
+          if (f.includes('templates/') || f.includes('templates' + path.sep)) continue;
+          try { if (fs.statSync(path.join(ssub, f)).isFile()) entries.push(`${sd}/${f}`); } catch {}
         }
       }
       let lines = 0;

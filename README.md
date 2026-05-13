@@ -31,7 +31,7 @@ flowchart LR
 ## 项目结构
 
 ```
-static/
+YrY/
 ├── CLAUDE.md              # 哲学：公理 → 推导 → 推论
 ├── README.md              # 本文件：系统能力 + 项目结构 + 快速开始
 ├── .mcp.json              # MCP 服务配置
@@ -76,7 +76,7 @@ static/
 
 > 或在本项目目录下直接运行 `/plugin` 以本地模式加载。
 
-当前版本：**1.11.0**
+当前版本：**1.13.0**
 
 脚本位于 `~/.claude/plugins/marketplaces/yry/skills/<skill>/scripts/`，各 skill 独立维护。
 

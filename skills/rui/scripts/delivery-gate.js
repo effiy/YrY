@@ -67,27 +67,7 @@ function missingSteps(dp) {
 }
 
 async function findStories() {
-  const names = [];
-  for (const docTypeDir of C.VALID_DOC_TYPE_DIRS) {
-    const typeDir = path.join(REPO_ROOT, 'docs', docTypeDir);
-    try {
-      const projectDirs = await fsp.readdir(typeDir, { withFileTypes: true });
-      for (const proj of projectDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'))) {
-        const projPath = path.join(typeDir, proj.name);
-        try {
-          const resourceDirs = await fsp.readdir(projPath, { withFileTypes: true });
-          for (const resource of resourceDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'))) {
-            if (docTypeDir === '故事任务面板') {
-              names.push(`${proj.name}-${resource.name}`);
-            } else {
-              names.push(`${docTypeDir}/${proj.name}/${resource.name}`);
-            }
-          }
-        } catch { /* skip */ }
-      }
-    } catch { /* skip */ }
-  }
-  return names.sort();
+  return C.findAllDocNames(REPO_ROOT);
 }
 
 // ── check ──
