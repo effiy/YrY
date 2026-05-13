@@ -327,7 +327,18 @@ async function main() {
   console.log(`Found ${existingSet.size} existing sessions with file_path`);
   console.log();
 
-  const storyPanelDir = path.join(projectRoot, 'docs', '故事任务面板');
+  // 一级目录标签：这些 docs 子目录作为远端一级目录，不嵌套在项目名下
+  const topLevelDirs = ['故事任务面板', '组件文档', '接口文档', '页面文档', '领域模型'].map(d => ({
+    name: d,
+    dir: path.join(projectRoot, 'docs', d)
+  }));
+
+  function resolveLabel(fullPath) {
+    for (const d of topLevelDirs) {
+      if (fullPath.startsWith(d.dir + path.sep)) return d;
+    }
+    return null;
+  }
 
   const stats = { ok: 0, overwritten: 0, failed: 0 };
 
@@ -336,11 +347,9 @@ async function main() {
     const relativePath = path.relative(projectRoot, fullPath).split(path.sep).join('/');
     console.log(`[${i + 1}/${files.length}] ${relativePath}`);
 
-    const isStoryPanel = fullPath.startsWith(storyPanelDir + path.sep);
-    const basePath = isStoryPanel ? storyPanelDir : projectRoot;
-    const labelName = isStoryPanel
-      ? '故事任务面板'
-      : path.basename(projectRoot).replace(/\s+/g, '_');
+    const label = resolveLabel(fullPath);
+    const basePath = label ? label.dir : projectRoot;
+    const labelName = label ? label.name : path.basename(projectRoot).replace(/\s+/g, '_');
 
     try {
       const result = await importFile(fullPath, basePath, labelName, config.apiUrl, config.token, existingSet, config.prefix);
