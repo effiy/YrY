@@ -7,17 +7,12 @@ const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
 const { getNaturalWeekRange } = require('./natural-week.js');
+const C = require('./constants.js');
 
 const REPO_ROOT = process.cwd();
 const STORIES_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
-function resolveStoryPath(name) {
-  const idx = name.indexOf('-');
-  if (idx < 1) return { project: null, story: name, dir: path.join(STORIES_DIR, name) };
-  const project = name.slice(0, idx);
-  const story = name.slice(idx + 1);
-  return { project, story, dir: path.join(STORIES_DIR, project, story) };
-}
+const { resolveStoryPath } = C;
 
 function storyMemoryDir(name) { return path.join(resolveStoryPath(name).dir, '.memory'); }
 function storyMemoryFile(name) { return path.join(storyMemoryDir(name), 'execution-memory.jsonl'); }

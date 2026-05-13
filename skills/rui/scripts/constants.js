@@ -227,7 +227,81 @@ function expectedFiles(dirType) {
   return [];
 }
 
+// ── Shared utility functions ─────────────────────────────────────
+
+/**
+ * Parse a story directory name into project + story parts.
+ * Convention: <Project>-<story-slug> where story slug starts with lowercase.
+ * @param {string} name - e.g. "YiWeb-user-login"
+ * @returns {{ valid: boolean, project: string|null, story: string, reason: string|null }}
+ */
+function parseStoryDirName(name) {
+  const parts = name.split('-');
+  if (parts.length < 2) return { valid: false, project: null, story: name, reason: '缺少项目前缀（格式: <project>-<name>）' };
+  for (let i = 1; i < parts.length; i++) {
+    if (parts[i] && /^[a-z]/.test(parts[i])) {
+      return { valid: true, project: parts.slice(0, i).join('-'), story: parts.slice(i).join('-'), reason: null };
+    }
+  }
+  return { valid: false, project: null, story: name, reason: '无法识别项目前缀（故事部分应以小写字母开头）' };
+}
+
+/**
+ * Resolve a story name to its filesystem path under docs/故事任务面板/.
+ * Uses simple first-dash split (legacy compat). For smarter resolution use resolveDocPath.
+ * @param {string} name - e.g. "YiWeb-user-login"
+ * @param {string} [repoRoot] - defaults to process.cwd()
+ * @returns {{ project: string|null, story: string, dir: string }}
+ */
+function resolveStoryPath(name, repoRoot) {
+  const path = require('path');
+  const root = repoRoot || process.cwd();
+  const storiesDir = path.join(root, 'docs', '故事任务面板');
+  const parsed = parseStoryDirName(name);
+  if (parsed.valid && parsed.project) {
+    return { project: parsed.project, story: parsed.story, dir: path.join(storiesDir, parsed.project, parsed.story) };
+  }
+  // Fallback: first dash split
+  const idx = name.indexOf('-');
+  if (idx < 1) return { project: null, story: name, dir: path.join(storiesDir, name) };
+  const project = name.slice(0, idx);
+  const story = name.slice(idx + 1);
+  return { project, story, dir: path.join(storiesDir, project, story) };
+}
+
+/**
+ * Shell exec helper — runs a command and returns trimmed stdout, or fallback on error.
+ * @param {string} cmd
+ * @param {string} [fallback='']
+ * @param {string} [cwd]
+ * @returns {string}
+ */
+function sh(cmd, fallback = '', cwd) {
+  const { execSync } = require('child_process');
+  try {
+    return execSync(cmd, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'], cwd: cwd || process.cwd() }).trim();
+  } catch { return fallback; }
+}
+
+/**
+ * Shell exec helper that parses JSON output.
+ * @param {string} cmd
+ * @param {string} [cwd]
+ * @returns {any|null}
+ */
+function shJson(cmd, cwd) {
+  const out = sh(cmd, '', cwd);
+  if (!out) return null;
+  try { return JSON.parse(out); } catch { return null; }
+}
+
 module.exports = {
+  // Shared utilities
+  parseStoryDirName,
+  resolveStoryPath,
+  sh,
+  shJson,
+
   // Content validation
   MIN_AGENT_CONTENT_LENGTH,
   MIN_TEMPLATE_CONTENT_LENGTH,

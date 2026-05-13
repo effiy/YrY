@@ -20,9 +20,9 @@ docs/{文档类}/{project}/{name}/
 
 ## rui-state.json
 
-单对象 JSON，记录当前管线状态。字段: `session_id`, `command`, `name`, `current_stage`, `blocked`, `block_reason`, `timestamp`, `storyboard`, `pipeline_progress`({"阶段":"completed|in_progress|blocked|not_started"}), `delivery_pipeline`({log_appended, docs_synced, notification_sent, last_step_at, last_step}), `change_history`([{timestamp,from_stage,to_stage,trigger}]), `related_proposals`(string[]).
+单对象 JSON，记录当前管线状态。字段: `session_id`, `command`, `name`, `current_stage`, `blocked`, `block_reason`, `timestamp`, `storyboard`, `pipeline_progress`({"阶段":"completed|in_progress|blocked|not_started|skipped"}), `delivery_pipeline`({log_appended, docs_synced, notification_sent, last_step_at, last_step}), `change_history`([{timestamp,from_stage,to_stage,trigger}]), `related_proposals`(string[]), `no_code`(boolean, 当 `--no-code` 时为 true，代码阶段标记为 skipped).
 
-阻断恢复：重跑同一 `/rui` 命令从 `current_stage` 继续。
+阻断恢复：重跑同一 `/rui` 命令从 `current_stage` 继续。`--no-code` 模式下代码阶段（预检→测试先行→实现→验证）全部标记为 `skipped`，直接进入交付。
 
 ## proposals.jsonl
 

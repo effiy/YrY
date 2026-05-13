@@ -13,26 +13,14 @@ const C = require('./constants.js');
 const REPO_ROOT = process.cwd();
 const STORIES_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
-function resolveStoryPath(name) {
-  const idx = name.indexOf('-');
-  if (idx < 1) return { project: null, story: name, dir: path.join(STORIES_DIR, name) };
-  const project = name.slice(0, idx);
-  const story = name.slice(idx + 1);
-  return { project, story, dir: path.join(STORIES_DIR, project, story) };
-}
+const { resolveStoryPath } = C;
 
 function storyImprovementDir(name) { return path.join(resolveStoryPath(name).dir, '.improvement'); }
 function storyProposalsFile(name) { return path.join(storyImprovementDir(name), 'proposals.jsonl'); }
 
 const RATING_VALUES = new Set(['helpful', 'neutral', 'harmful']);
 
-function safeExec(cmd, defaultVal = '') {
-  try {
-    return execSync(cmd, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'] }).trim();
-  } catch {
-    return defaultVal;
-  }
-}
+const { sh } = C;
 
 function collectMemoryStats() {
   const script = path.join(__dirname, 'execution-memory.js');
@@ -51,7 +39,7 @@ function collectGitHeatmap(weeks = 4) {
   since.setDate(since.getDate() - weeks * 7);
   const sinceIso = since.toISOString().split('T')[0];
 
-  const shortStatLines = safeExec(
+  const shortStatLines = sh(
     `git log --since="${sinceIso}" --shortstat --format=""`,
     ''
   ).split('\n').filter(Boolean);
@@ -66,7 +54,7 @@ function collectGitHeatmap(weeks = 4) {
     }
   }
 
-  const fileChanges = safeExec(
+  const fileChanges = sh(
     `git log --since="${sinceIso}" --name-only --pretty=format: | grep -v '^$' | sort | uniq -c | sort -rn | head -${C.GIT_HEATMAP_TOP_N}`,
     ''
   ).split('\n').filter(Boolean).map(line => {
@@ -74,10 +62,10 @@ function collectGitHeatmap(weeks = 4) {
     return m ? { file: m[2], changes: parseInt(m[1], 10) } : null;
   }).filter(Boolean);
 
-  const featCount = safeExec(`git log --since="${sinceIso}" --oneline --grep="^feat" | wc -l`, '0');
-  const fixCount = safeExec(`git log --since="${sinceIso}" --oneline --grep="^fix" | wc -l`, '0');
-  const refactorCount = safeExec(`git log --since="${sinceIso}" --oneline --grep="^refactor" | wc -l`, '0');
-  const docsCount = safeExec(`git log --since="${sinceIso}" --oneline --grep="^docs" | wc -l`, '0');
+  const featCount = sh(`git log --since="${sinceIso}" --oneline --grep="^feat" | wc -l`, '0');
+  const fixCount = sh(`git log --since="${sinceIso}" --oneline --grep="^fix" | wc -l`, '0');
+  const refactorCount = sh(`git log --since="${sinceIso}" --oneline --grep="^refactor" | wc -l`, '0');
+  const docsCount = sh(`git log --since="${sinceIso}" --oneline --grep="^docs" | wc -l`, '0');
 
   return {
     period: `${sinceIso} ~ now`,
@@ -103,7 +91,7 @@ function collectDependencyMatrix() {
 
   const deps = [];
   for (const p of patterns) {
-    const files = safeExec(
+    const files = sh(
       `grep -rn --include="*.js" --include="*.jsx" --include="*.ts" --include="*.py" ` +
       `--exclude-dir=node_modules --exclude-dir=dist --exclude-dir=.git --exclude-dir=libs ` +
       `-l '' . | head -${C.DEPENDENCY_SCAN_MAX_FILES}`,
@@ -135,7 +123,7 @@ function collectDependencyMatrix() {
 }
 
 function collectLargeFiles() {
-  const result = safeExec(
+  const result = sh(
     `find . -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.py" | ` +
     `grep -v node_modules | grep -v dist | grep -v .git | grep -v libs | ` +
     `xargs wc -l 2>/dev/null | sort -rn | head -${C.LARGE_FILES_TOP_N}`,

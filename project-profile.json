@@ -1,0 +1,22 @@
+{
+  "_doc": "项目画像模板。rui init 自动检测并生成项目特有的 project-profile.json 到 .claude/ 目录。此文件为插件默认值，不含项目特有信息。",
+  "project_type": null,
+  "display_type": null,
+  "project_name": null,
+  "coder_formula": null,
+  "tech_stack": {},
+  "build_system": null,
+  "story_defaults": {
+    "project": null,
+    "branch_prefix": "feat/",
+    "doc_root": "docs/故事任务面板/",
+    "module_pattern": null,
+    "component_namespace": null
+  },
+  "architecture": {
+    "entry_points": [],
+    "core_modules": [],
+    "feature_modules": []
+  },
+  "constraints": {}
+}

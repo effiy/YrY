@@ -1,6 +1,6 @@
 {
-  "session_id": "1778579100527-s2tu2h",
-  "timestamp": "2026-05-12T09:45:00.527Z",
+  "session_id": "1778657347105-0v1dsr",
+  "timestamp": "2026-05-13T07:29:07.105Z",
   "story_name": "rui-init",
   "feature": "项目初始化",
   "description": "rui init 基线注入完成。项目类型: meta。8 项检查全部通过。",
@@ -10,7 +10,7 @@
     {
       "from": null,
       "to": "基线注入",
-      "timestamp": "2026-05-12T09:45:00.527Z",
+      "timestamp": "2026-05-13T07:29:07.105Z",
       "duration_ms": 0
     }
   ],

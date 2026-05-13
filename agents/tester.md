@@ -9,21 +9,21 @@ tools: Read, Grep, Glob, Bash
 
 # tester — 质量保证
 
-You are a quality gatekeeper. Tests come first — no code ships without coverage.
+Tests come first — no code ships without coverage.
 
 ## 触发
 
-子项目 PM 调度，rui 测试先行/实现/验证/文档生成，rui fix，rui check
+pm 调度，rui 测试先行/实现/验证/文档生成，rui fix，rui check
 
 ## 规则
 
 1. 测试命名: "should [预期] when [条件]"
 2. Mock 外部依赖（API、DOM、chrome.*），不 mock 内部模块
 3. afterEach 清理副作用（DOM 变更、定时器、事件监听）
-4. §1.1 每个故事至少一条主操作流
+4. 每个故事至少一条主操作流
 5. P0=阻塞发布，P1=建议修复，P2=可选优化
 6. 无测试覆盖不通过
-7. fix 模式: 仅对修改的函数/模块写测试，验证阶段仅冒烟验证修改点
+7. fix 模式: 仅对修改的函数/模块写测试，验证仅冒烟
 
 ## 审查标准
 
@@ -37,4 +37,8 @@ You are a quality gatekeeper. Tests come first — no code ships without coverag
 
 环境快照 → 静态预检 → 对齐 → 单次执行
 
-阶段详表见 SKILL.md tester 相关段。
+## 项目上下文
+
+> 由 `rui init` 从项目基线文件提取并注入。
+> 包含：测试命令、构建命令、编码规范。
+> 未注入时参考 project-profile.json。

@@ -76,7 +76,7 @@ static/
 
 > 或在本项目目录下直接运行 `/plugin` 以本地模式加载。
 
-当前版本：**1.6.0**
+当前版本：**1.11.0**
 
 脚本位于 `~/.claude/plugins/marketplaces/yry/skills/<skill>/scripts/`，各 skill 独立维护。
 

@@ -6,19 +6,12 @@
 const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
-const { execSync } = require('child_process');
 const C = require('./constants.js');
 
 const REPO_ROOT = process.cwd();
 const PANEL_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
-function resolveStoryPath(name) {
-  const idx = name.indexOf('-');
-  if (idx < 1) return { project: null, story: name, dir: path.join(PANEL_DIR, name) };
-  const project = name.slice(0, idx);
-  const story = name.slice(idx + 1);
-  return { project, story, dir: path.join(PANEL_DIR, project, story) };
-}
+const { resolveStoryPath, parseStoryDirName, sh, shJson } = C;
 
 const STORY_FILES = [
   '01-故事任务.md', '02-后端技术评审.md', '03-前端技术评审.md',
@@ -27,29 +20,6 @@ const STORY_FILES = [
 ];
 const DOC_FILES = ['01-故事任务.md', '02-后端技术评审.md', '03-前端技术评审.md', '04-测试用例评审.md'];
 const REPORT_FILES = ['05-后端实施报告.md', '06-前端实施报告.md', '07-测试用例报告.md'];
-
-function parseStoryDirName(name) {
-  const parts = name.split('-');
-  if (parts.length < 2) return { valid: false, project: null, reason: '缺少项目前缀（格式: <project>-<name>）' };
-  for (let i = 1; i < parts.length; i++) {
-    if (parts[i] && /^[a-z]/.test(parts[i])) {
-      return { valid: true, project: parts.slice(0, i).join('-'), story: parts.slice(i).join('-'), reason: null };
-    }
-  }
-  return { valid: false, project: null, reason: '无法识别项目前缀（故事部分应以小写字母开头）' };
-}
-
-function sh(cmd, fallback = '') {
-  try {
-    return execSync(cmd, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'], cwd: REPO_ROOT }).trim();
-  } catch { return fallback; }
-}
-
-function shJson(cmd) {
-  const out = sh(cmd);
-  if (!out) return null;
-  try { return JSON.parse(out); } catch { return null; }
-}
 
 // ── Project type detection ─────────────────────────────────────
 
