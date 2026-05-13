@@ -339,6 +339,14 @@ function extractProject(name) {
   return parts.length > 1 ? parts.slice(0, -1).join('-') : path.basename(PROJECT_ROOT);
 }
 
+function resolveStoryPath(name) {
+  const idx = name.indexOf('-');
+  if (idx < 1) return { project: null, story: name, dir: path.join(PROJECT_ROOT, 'docs', '故事任务面板', name) };
+  const project = name.slice(0, idx);
+  const story = name.slice(idx + 1);
+  return { project, story, dir: path.join(PROJECT_ROOT, 'docs', '故事任务面板', project, story) };
+}
+
 function appendToStoryNotificationLog(name, content) {
   // Validate directory name convention — warn but don't block notification logging
   const nameInfo = parseStoryDirName(name);
@@ -346,7 +354,8 @@ function appendToStoryNotificationLog(name, content) {
     console.error(`Warning: 故事目录名 "${name}" 不符合 <project>-<name> 规范 — ${nameInfo.reason}`);
   }
 
-  const storyDir = path.join(PROJECT_ROOT, 'docs', '故事任务面板', name);
+  const resolved = resolveStoryPath(name);
+  const storyDir = resolved.dir;
   fs.mkdirSync(storyDir, { recursive: true });
   const logFile = path.join(storyDir, '00-消息通知列表.md');
   const timestamp = formatTimestamp();

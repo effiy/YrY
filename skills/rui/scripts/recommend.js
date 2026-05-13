@@ -12,6 +12,14 @@ const C = require('./constants.js');
 const REPO_ROOT = process.cwd();
 const PANEL_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
+function resolveStoryPath(name) {
+  const idx = name.indexOf('-');
+  if (idx < 1) return { project: null, story: name, dir: path.join(PANEL_DIR, name) };
+  const project = name.slice(0, idx);
+  const story = name.slice(idx + 1);
+  return { project, story, dir: path.join(PANEL_DIR, project, story) };
+}
+
 const STORY_FILES = [
   '01-故事任务.md', '02-后端技术评审.md', '03-前端技术评审.md',
   '04-测试用例评审.md', '05-后端实施报告.md', '06-前端实施报告.md',
@@ -243,39 +251,48 @@ function analyzeStoryFormulas(storyDir) {
 
 async function scanStories() {
   const stories = [];
-  let entries = [];
+  let projectDirs = [];
   try {
-    entries = await fsp.readdir(PANEL_DIR, { withFileTypes: true });
-    entries = entries.filter(e => e.isDirectory() && !e.name.startsWith('.'));
+    projectDirs = await fsp.readdir(PANEL_DIR, { withFileTypes: true });
+    projectDirs = projectDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'));
   } catch { return stories; }
 
-  for (const entry of entries) {
-    const dirPath = path.join(PANEL_DIR, entry.name);
-    const exists = {};
-    for (const f of STORY_FILES) {
-      try { await fsp.access(path.join(dirPath, f), fs.constants.F_OK); exists[f] = true; }
-      catch { exists[f] = false; }
-    }
-
-    let blocked = false, blockReason = '';
+  for (const proj of projectDirs) {
+    const projPath = path.join(PANEL_DIR, proj.name);
+    let storyDirs = [];
     try {
-      const stateRaw = await fsp.readFile(path.join(dirPath, '.memory', 'rui-state.json'), 'utf8');
-      const state = JSON.parse(stateRaw);
-      if (state.blocked) { blocked = true; blockReason = state.block_reason || ''; }
-    } catch {}
+      storyDirs = await fsp.readdir(projPath, { withFileTypes: true });
+      storyDirs = storyDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'));
+    } catch { continue; }
 
-    let status;
-    if (blocked) status = 'blocked';
-    else if (!exists['01-故事任务.md']) status = 'not_started';
-    else if (!DOC_FILES.every(f => exists[f])) status = 'docs_in_progress';
-    else if (!REPORT_FILES.every(f => exists[f]))
-      status = REPORT_FILES.some(f => exists[f]) ? 'code_in_progress' : 'docs_done';
-    else status = 'code_done';
+    for (const story of storyDirs) {
+      const fullName = `${proj.name}-${story.name}`;
+      const dirPath = path.join(projPath, story.name);
+      const exists = {};
+      for (const f of STORY_FILES) {
+        try { await fsp.access(path.join(dirPath, f), fs.constants.F_OK); exists[f] = true; }
+        catch { exists[f] = false; }
+      }
 
-    const missing = STORY_FILES.filter(f => !exists[f]);
+      let blocked = false, blockReason = '';
+      try {
+        const stateRaw = await fsp.readFile(path.join(dirPath, '.memory', 'rui-state.json'), 'utf8');
+        const state = JSON.parse(stateRaw);
+        if (state.blocked) { blocked = true; blockReason = state.block_reason || ''; }
+      } catch {}
 
-    const nameInfo = parseStoryDirName(entry.name);
-    stories.push({ name: entry.name, status, missing, blockReason, exists, malformed: !nameInfo.valid, malformed_reason: nameInfo.reason, project: nameInfo.project });
+      let status;
+      if (blocked) status = 'blocked';
+      else if (!exists['01-故事任务.md']) status = 'not_started';
+      else if (!DOC_FILES.every(f => exists[f])) status = 'docs_in_progress';
+      else if (!REPORT_FILES.every(f => exists[f]))
+        status = REPORT_FILES.some(f => exists[f]) ? 'code_in_progress' : 'docs_done';
+      else status = 'code_done';
+
+      const missing = STORY_FILES.filter(f => !exists[f]);
+
+      stories.push({ name: fullName, status, missing, blockReason, exists, malformed: false, malformed_reason: null, project: proj.name });
+    }
   }
 
   stories.sort((a, b) => a.name.localeCompare(b.name));
@@ -427,8 +444,8 @@ function findUndocumentedModules(modules, stories) {
   const covered = new Set();
   for (const s of stories) {
     if (s.malformed) continue;
-    const info = parseStoryDirName(s.name);
-    if (info.valid) {
+    const info = resolveStoryPath(s.name);
+    if (info.project) {
       covered.add(info.story);
       covered.add(info.project);  // project name also covered
     }
@@ -520,11 +537,11 @@ function generate(stories, git, sync, data, projectType) {
   for (const s of stories.filter(s => s.malformed)) {
     recs.push({
       priority: 'P0', category: 'naming',
-      action: `重命名故事目录: ${s.name}`,
-      rationale: s.malformed_reason || '目录名缺少项目前缀',
-      actionable_command: `mv docs/故事任务面板/${s.name} docs/故事任务面板/<project>-${s.name}`,
+      action: `迁移故事目录到项目子目录: ${s.name}`,
+      rationale: s.malformed_reason || '目录缺少项目前缀',
+      actionable_command: `mkdir -p docs/故事任务面板/<project> && mv docs/故事任务面板/${s.name} docs/故事任务面板/<project>/<story>`,
       story_name: s.name,
-      formula: { role: 'PM', rule: '项目前缀约定: <project>-<name>', check: 'naming' },
+      formula: { role: 'PM', rule: '项目子目录约定: {project}/{name}', check: 'naming' },
     });
   }
 
@@ -595,7 +612,7 @@ function generate(stories, git, sync, data, projectType) {
 
   // ── P1: Coder 公式 — 项目类型感知的设计检查 ──
   for (const s of stories.filter(s => s.status === 'docs_in_progress' || s.status === 'docs_done' || s.status === 'code_in_progress')) {
-    const storyDir = path.join(PANEL_DIR, s.name);
+    const storyDir = resolveStoryPath(s.name).dir;
     const feReview = path.join(storyDir, '03-前端技术评审.md');
     const beReview = path.join(storyDir, '02-后端技术评审.md');
 
@@ -1053,7 +1070,7 @@ async function main() {
   // Analyze each story through role formulas
   for (const s of stories) {
     if (!s.malformed) {
-      const storyDir = path.join(PANEL_DIR, s.name);
+      const storyDir = resolveStoryPath(s.name).dir;
       s._formulas = analyzeStoryFormulas(storyDir);
     }
   }

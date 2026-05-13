@@ -103,37 +103,63 @@ async function checkStory(dirPath, name) {
   return { name, status, missing, blockReason, malformed: !nameInfo.valid, malformed_reason: nameInfo.reason, project: nameInfo.project };
 }
 
+// Scan two levels: project dirs → story dirs
+async function scanStories() {
+  const stories = [];
+  let projectDirs = [];
+  try {
+    const entries = await fsp.readdir(PANEL_DIR, { withFileTypes: true });
+    projectDirs = entries.filter(e => e.isDirectory()).map(e => e.name).sort();
+  } catch {
+    return stories; // panel dir doesn't exist
+  }
+
+  for (const proj of projectDirs) {
+    const projPath = path.join(PANEL_DIR, proj);
+    let storyDirs = [];
+    try {
+      const entries = await fsp.readdir(projPath, { withFileTypes: true });
+      storyDirs = entries.filter(e => e.isDirectory()).map(e => e.name).sort();
+    } catch {
+      continue;
+    }
+
+    for (const story of storyDirs) {
+      const fullName = `${proj}-${story}`;
+      const dirPath = path.join(projPath, story);
+      stories.push({ project: proj, story, fullName, dirPath });
+    }
+  }
+
+  return stories;
+}
+
 async function main() {
   const jsonMode = process.argv.includes('--json');
 
-  let dirs = [];
-  try {
-    const entries = await fsp.readdir(PANEL_DIR, { withFileTypes: true });
-    dirs = entries.filter(e => e.isDirectory()).map(e => e.name).sort();
-  } catch {
-    if (jsonMode) { console.log('[]'); process.exit(0); }
-    console.log('docs/故事任务面板/ 目录不存在。运行 `/rui doc <requirement>` 创建故事。');
-    process.exit(0);
-  }
+  const storyEntries = await scanStories();
 
-  if (dirs.length === 0) {
+  if (storyEntries.length === 0) {
     if (jsonMode) { console.log('[]'); process.exit(0); }
-    console.log('暂无故事任务。运行 `/rui doc <requirement>` 创建故事。');
+    const panelExists = await fsp.access(PANEL_DIR).then(() => true).catch(() => false);
+    if (!panelExists) {
+      console.log('docs/故事任务面板/ 目录不存在。运行 `/rui doc <requirement>` 创建故事。');
+    } else {
+      console.log('暂无故事任务。运行 `/rui doc <requirement>` 创建故事。');
+    }
     process.exit(0);
   }
 
   const results = [];
-  for (const dir of dirs) {
-    const r = await checkStory(path.join(PANEL_DIR, dir), dir);
+  for (const entry of storyEntries) {
+    const r = await checkStory(entry.dirPath, entry.fullName);
+    r.project = entry.project;
     results.push(r);
   }
 
   // Enrich with recommended actions
   for (const r of results) {
-    if (r.malformed) {
-      r.recommended_action = '重命名为 <project>-<name> 格式';
-      r.actionable_command = `mv docs/故事任务面板/${r.name} docs/故事任务面板/<project>-${r.name}`;
-    } else if (r.status === 'blocked') {
+    if (r.status === 'blocked') {
       r.recommended_action = '恢复阻断后继续';
       r.actionable_command = `/rui code ${r.name}`;
     } else if (r.status === 'not_started') {
@@ -154,20 +180,10 @@ async function main() {
     }
   }
 
-  // Warn about malformed directory names
-  const malformed = results.filter(r => r.malformed);
-  if (malformed.length > 0 && !jsonMode) {
-    console.log('⚠️ 以下故事目录缺少项目前缀，不符合 <project>-<name> 规范：');
-    for (const m of malformed) {
-      console.log(`  - ${m.name} — ${m.malformed_reason}`);
-    }
-    console.log();
-  }
-
   if (jsonMode) {
     const active = results.filter(r => r.status !== 'code_done');
     const next = active.length > 0 ? active[0].name : null;
-    console.log(JSON.stringify({ stories: results, malformed: malformed.map(m => m.name), next }, null, 2));
+    console.log(JSON.stringify({ stories: results, next }, null, 2));
     process.exit(0);
   }
 
@@ -186,9 +202,9 @@ async function main() {
     let status = r.status === 'blocked'
       ? `${statusLabel(r.status)}: ${r.blockReason || '未指定原因'}`
       : statusLabel(r.status);
-    if (r.malformed) status = `⚠️ 命名不合规 | ${status}`;
     const proj = r.project || '—';
-    console.log(`| ${r.name} | ${proj} | ${status} | ${missing} | ${r.recommended_action} |`);
+    const displayName = r.project ? `${r.project}/${r.name.replace(r.project + '-', '')}` : r.name;
+    console.log(`| ${displayName} | ${proj} | ${status} | ${missing} | ${r.recommended_action} |`);
   }
 
   // Summary
@@ -196,9 +212,8 @@ async function main() {
   for (const r of incomplete) {
     counts[r.status] = (counts[r.status] || 0) + 1;
   }
-  if (malformed.length > 0) counts['malformed'] = malformed.length;
-  const parts = Object.entries(counts).map(([k, v]) => `${k === 'malformed' ? '命名不合规' : statusLabel(k)} ${v} 个`);
-  const next = incomplete.find(r => !r.malformed) || incomplete[0];
+  const parts = Object.entries(counts).map(([k, v]) => `${statusLabel(k)} ${v} 个`);
+  const next = incomplete[0];
   console.log(`\n${incomplete.length} 个未完成故事（${parts.join('，')}）。`);
   if (next) console.log(`推荐下一个: \`${next.actionable_command}\` — ${next.name}`);
 }

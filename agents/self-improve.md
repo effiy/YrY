@@ -87,4 +87,4 @@ rui 自改进阶段（代码管线完成后），`node ~/.claude/plugins/marketp
 | 效果评估 | `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/self-improve.js evaluate` | 提案效果验证 |
 | 回顾报告 | `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/loop.js run --storyboard <path>` | 08-自改进复盘.md + §L 追加 |
 
-脚本位于 `~/.claude/plugins/marketplaces/yry/skills/rui/scripts/`，数据存储于 `docs/故事任务面板/<project>-<name>/.improvement/` 和 `docs/故事任务面板/<project>-<name>/.memory/`。
+脚本位于 `~/.claude/plugins/marketplaces/yry/skills/rui/scripts/`，数据存储于 `docs/故事任务面板/{project}/{name}/.improvement/` 和 `docs/故事任务面板/{project}/{name}/.memory/`。

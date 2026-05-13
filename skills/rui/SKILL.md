@@ -83,7 +83,7 @@ README.md ──→ 能力/结构/命令 ──→ .claude/rules/  ──→ 2. 
 6. **禁止自动合并** — 任何阶段不得将功能分支合并到 main(`auto-merge`)
 7. **源码修改唯一入口** — 对源代码的任何修改必须通过 `/rui code` 管线(`no-checkout`)
 8. **只读代码** — `/rui doc --from-code` 和 `/rui code --from-doc` 仅生成文档，禁止改源码
-9. **产出内聚** — 关键产出仅限于故事目录 `docs/故事任务面板/<project>-<name>/` 内
+9. **产出内聚** — 关键产出仅限于故事目录 `docs/故事任务面板/{project}/{name}/` 内
 10. **交付管线强制** — 三步交付管线 (wework-bot 追加日志 → import-docs 同步 → wework-bot 发送) 每步必须执行并标记 (`node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/delivery-gate.js mark`)。Stop hook 自动检查未完成管线阻断停止。
 11. **知识沉淀** — 执行记忆写 execution-memory.jsonl + rui-state.json
 
@@ -105,7 +105,7 @@ README.md ──→ 能力/结构/命令 ──→ .claude/rules/  ──→ 2. 
 
 - **脚本**: `~/.claude/plugins/marketplaces/yry/skills/rui/scripts/` — rui-state.js / execution-memory.js / self-improve.js / list.js / loop.js / natural-week.js / delivery-gate.js
 - **Skill**: `import-docs --workspace` (三检查点同步) / `wework-bot --name <name>` (交付)
-- **数据**: `docs/故事任务面板/<project>-<name>/.improvement/proposals.jsonl` + `.memory/`(execution-memory.jsonl + rui-state.json) — 详见 [data.md](data.md)
+- **数据**: `docs/故事任务面板/{project}/{name}/.improvement/proposals.jsonl` + `.memory/`(execution-memory.jsonl + rui-state.json) — 详见 [data.md](data.md)
 - **文档**: 全文档基线 + 补充文档 — 详见 [docs.md](docs.md)
 - **规则**: [rules/](../../rules/) — code-pipeline / gate-rules / doc-generation / import-docs / delivery-gate / self-improve
 - **Agent**: [agents/](../../agents/) — pm / coder / tester / reporter / security / self-improve

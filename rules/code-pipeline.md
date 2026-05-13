@@ -24,8 +24,10 @@ paths:
 14. 禁止将功能分支自动合并到 main，合并操作一律由开发者手动执行（`auto-merge`）
 15. 改动源代码前必须已切换到对应 `feat/<project>-<name>` 分支（`git checkout feat/<project>-<name>`），禁止在非故事分支上改动源代码（`no-checkout`）
 16. 源码修改必须通过 `/rui code` 管线（预检→测试先行→实现→验证→自改进）进行，禁止通过其他任何方式直接修改源代码文件。
-17. **项目名前缀强制**: 所有 rui 产出目录名必须包含项目前缀，无例外:
-   - 故事目录: `docs/故事任务面板/<project>-<name>/`（`<project>` 为大驼峰，`<name>` 为 kebab-case）
+17. **项目名前缀强制**: 所有 rui 产出必须按项目独立子目录组织:
+   - 故事目录: `docs/故事任务面板/<project>/<name>/`（`<project>` 为大驼峰，`<name>` 为 kebab-case）
    - 组件文档: `docs/组件文档/<project>/<component-name>/`（`<component-name>` 为 kebab-case）
    - 接口文档: `docs/接口文档/<project>/<resource-name>/`（`<resource-name>` 为 kebab-case）
-   缺失前缀的目录视为命名违规（`no-project-prefix`），PM 不得创建，预检阶段阻断。
+   - 页面文档: `docs/页面文档/<project>/<page-name>/`（`<page-name>` 为 kebab-case）
+   - 领域模型: `docs/领域模型/<project>/<domain-name>/`（`<domain-name>` 为 kebab-case）
+   缺失项目级目录视为命名违规（`no-project-prefix`），PM 不得创建，预检阶段阻断。

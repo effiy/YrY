@@ -13,7 +13,15 @@ const C = require('./constants.js');
 const REPO_ROOT = process.cwd();
 const STORIES_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
-function storyImprovementDir(name) { return path.join(STORIES_DIR, name, '.improvement'); }
+function resolveStoryPath(name) {
+  const idx = name.indexOf('-');
+  if (idx < 1) return { project: null, story: name, dir: path.join(STORIES_DIR, name) };
+  const project = name.slice(0, idx);
+  const story = name.slice(idx + 1);
+  return { project, story, dir: path.join(STORIES_DIR, project, story) };
+}
+
+function storyImprovementDir(name) { return path.join(resolveStoryPath(name).dir, '.improvement'); }
 function storyProposalsFile(name) { return path.join(storyImprovementDir(name), 'proposals.jsonl'); }
 
 const RATING_VALUES = new Set(['helpful', 'neutral', 'harmful']);

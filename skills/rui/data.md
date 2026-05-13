@@ -5,7 +5,7 @@
 ## 存储路径
 
 ```
-docs/故事任务面板/<project>-<name>/
+docs/故事任务面板/{project}/{name}/
 ├── .improvement/proposals.jsonl
 └── .memory/
     ├── execution-memory.jsonl

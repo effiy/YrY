@@ -18,7 +18,7 @@ lifecycle: default-pipeline
 | `--agent <name>` | 通过 config.agents 路由（推荐） |
 | `--robot <name>` | 直接指定机器人 |
 | `--project, -p <name>` | 项目名称，用于消息首行【项目名】，未指定时从 `--name` 自动推断 |
-| `--name, -n <story>` | 故事目录名（含项目前缀，如 `YiWeb-user-login`），用于追加到 `docs/故事任务面板/<name>/00-消息通知列表.md` |
+| `--name, -n <story>` | 故事全名（`{project}-{name}` 格式，如 `YiWeb-user-login`），脚本分解为路径 `docs/故事任务面板/{project}/{name}/00-消息通知列表.md` |
 | `--content, -c <text>` | 消息正文 |
 | `--content-file, -f <path>` | 从文件读正文 |
 | `--no-send` | 仅追加日志，不发送 HTTP |
@@ -55,18 +55,18 @@ Webhook 路由在 `config.json` 中配置，不通过 CLI 传入。
 📝 描述: 为登录模块生成故事板，覆盖密码登录、短信验证码、OAuth 三种场景
 📌 范围: auth/
 👉 下一步: 运行 /rui code YiWeb-user-login 开始编码实现
-🌐 影响: docs/故事任务面板/YiWeb-user-login/01-故事任务.md
+🌐 影响: docs/故事任务面板/YiWeb/user-login/01-故事任务.md
 📎 证据: git log --oneline -1
 ⏱️ 会话: 自适应规划→策展 全流程 3.2min | 3 agents 参与
 
 ———
 
-变更文件: docs/故事任务面板/YiWeb-user-login/01-故事任务.md (新增, 285行)
+变更文件: docs/故事任务面板/YiWeb/user-login/01-故事任务.md (新增, 285行)
 ```
 
 ## 消息通知列表
 
-指定 `--name` 时，发送前追加到 `docs/故事任务面板/<name>/00-消息通知列表.md`（`<name>` 已是含项目前缀的完整目录名）。每条消息以 `【yyyy-mm-dd hh:mm:ss】` 分割线分隔。目录不存在时自动创建，文件为追加模式。
+指定 `--name` 时，发送前追加到 `docs/故事任务面板/{project}/{name}/00-消息通知列表.md`（`{project}` 和 `{name}` 从 `--name` 参数的 `{project}-{name}` 格式分解得到）。每条消息以 `【yyyy-mm-dd hh:mm:ss】` 分割线分隔。目录不存在时自动创建，文件为追加模式。
 
 ## API 契约
 

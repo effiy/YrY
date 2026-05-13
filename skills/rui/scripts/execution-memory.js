@@ -11,7 +11,15 @@ const { getNaturalWeekRange } = require('./natural-week.js');
 const REPO_ROOT = process.cwd();
 const STORIES_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
-function storyMemoryDir(name) { return path.join(STORIES_DIR, name, '.memory'); }
+function resolveStoryPath(name) {
+  const idx = name.indexOf('-');
+  if (idx < 1) return { project: null, story: name, dir: path.join(STORIES_DIR, name) };
+  const project = name.slice(0, idx);
+  const story = name.slice(idx + 1);
+  return { project, story, dir: path.join(STORIES_DIR, project, story) };
+}
+
+function storyMemoryDir(name) { return path.join(resolveStoryPath(name).dir, '.memory'); }
 function storyMemoryFile(name) { return path.join(storyMemoryDir(name), 'execution-memory.jsonl'); }
 
 function parseArgs(argv) {
@@ -33,20 +41,28 @@ function parseArgs(argv) {
 }
 
 async function readAllRecords() {
-  // Aggregate from all per-story .memory/ directories
+  // Aggregate from all per-story .memory/ directories (two-level scan)
   const records = [];
   try {
-    const entries = await fsp.readdir(STORIES_DIR, { withFileTypes: true });
-    for (const entry of entries) {
-      if (!entry.isDirectory() || entry.name.startsWith('.')) continue;
-      const memFile = storyMemoryFile(entry.name);
+    const projectDirs = await fsp.readdir(STORIES_DIR, { withFileTypes: true });
+    for (const proj of projectDirs) {
+      if (!proj.isDirectory() || proj.name.startsWith('.')) continue;
+      const projPath = path.join(STORIES_DIR, proj.name);
       try {
-        const text = await fsp.readFile(memFile, 'utf8');
-        const lines = text.split('\n').filter(l => l.trim() !== '');
-        for (const line of lines) {
-          try { records.push(JSON.parse(line)); } catch { /* skip */ }
+        const storyDirs = await fsp.readdir(projPath, { withFileTypes: true });
+        for (const story of storyDirs) {
+          if (!story.isDirectory() || story.name.startsWith('.')) continue;
+          const fullName = `${proj.name}-${story.name}`;
+          const memFile = storyMemoryFile(fullName);
+          try {
+            const text = await fsp.readFile(memFile, 'utf8');
+            const lines = text.split('\n').filter(l => l.trim() !== '');
+            for (const line of lines) {
+              try { records.push(JSON.parse(line)); } catch { /* skip */ }
+            }
+          } catch { /* story has no memory yet */ }
         }
-      } catch { /* story has no memory yet */ }
+      } catch { /* skip project */ }
     }
   } catch { /* no stories dir */ }
   return records;

@@ -10,19 +10,16 @@ const path = require('path');
 const REPO_ROOT = process.cwd();
 const STORIES_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
-// Validate story directory name: must have project prefix (<project>-<story-slug>).
-function parseStoryDirName(name) {
-  const parts = name.split('-');
-  if (parts.length < 2) return { valid: false, project: null, story: name, reason: '缺少项目前缀（格式: <project>-<name>）' };
-  for (let i = 1; i < parts.length; i++) {
-    if (parts[i] && /^[a-z]/.test(parts[i])) {
-      return { valid: true, project: parts.slice(0, i).join('-'), story: parts.slice(i).join('-'), reason: null };
-    }
-  }
-  return { valid: false, project: null, story: name, reason: '无法识别项目前缀（故事部分应以小写字母开头）' };
+// Resolve {project}-{story} name to filesystem path {project}/{story}
+function resolveStoryPath(name) {
+  const idx = name.indexOf('-');
+  if (idx < 1) return { project: null, story: name, dir: path.join(STORIES_DIR, name) };
+  const project = name.slice(0, idx);
+  const story = name.slice(idx + 1);
+  return { project, story, dir: path.join(STORIES_DIR, project, story) };
 }
 
-function storyMemoryDir(name) { return path.join(STORIES_DIR, name, '.memory'); }
+function storyMemoryDir(name) { return path.join(resolveStoryPath(name).dir, '.memory'); }
 function storyStateFile(name) { return path.join(storyMemoryDir(name), 'rui-state.json'); }
 
 const ALL_PHASES = ['自适应规划', '影响分析', '架构设计', '文档生成', '预检', '测试先行', '实现', '验证', '自改进'];
@@ -78,9 +75,9 @@ async function cmdSave(opts) {
     process.exit(1);
   }
 
-  const nameInfo = parseStoryDirName(opts.name);
-  if (!nameInfo.valid) {
-    console.error(`Error: 故事目录名 "${opts.name}" 不符合命名规范 — ${nameInfo.reason}`);
+  const nameInfo = resolveStoryPath(opts.name);
+  if (!nameInfo.project) {
+    console.error(`Error: 故事目录名 "${opts.name}" 不符合命名规范 — 缺少项目前缀`);
     console.error(`请使用 <project>-<name> 格式（如 YiWeb-${opts.name}）`);
     process.exit(1);
   }
@@ -132,7 +129,7 @@ async function cmdSave(opts) {
     blocked: opts.blocked,
     block_reason: opts.blocked ? (opts.reason || 'Not specified') : null,
     timestamp: now,
-    storyboard: `docs/故事任务面板/${opts.name}/01-故事任务.md`,
+    storyboard: `docs/故事任务面板/${nameInfo.project}/${nameInfo.story}/01-故事任务.md`,
     pipeline_progress: pipelineProgress,
     delivery_pipeline: deliveryPipeline,
     change_history: changeHistory,
@@ -239,15 +236,22 @@ async function cmdNextStep() {
 
 async function findStoryboards() {
   const dir = path.join(REPO_ROOT, 'docs', '故事任务面板');
+  const names = [];
   try {
-    const entries = await fsp.readdir(dir, { withFileTypes: true });
-    return entries
-      .filter(e => e.isDirectory() && !e.name.startsWith('.'))
-      .map(e => e.name)
-      .sort();
+    const projectDirs = await fsp.readdir(dir, { withFileTypes: true });
+    for (const proj of projectDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'))) {
+      const projPath = path.join(dir, proj.name);
+      try {
+        const storyDirs = await fsp.readdir(projPath, { withFileTypes: true });
+        for (const story of storyDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'))) {
+          names.push(`${proj.name}-${story.name}`);
+        }
+      } catch { /* skip */ }
+    }
   } catch {
     return [];
   }
+  return names.sort();
 }
 
 async function main() {

@@ -18,7 +18,15 @@ const STEP_LABELS = {
   notification_sent: 'wework-bot 发送通知',
 };
 
-function storyMemoryDir(name) { return path.join(STORIES_DIR, name, '.memory'); }
+function resolveStoryPath(name) {
+  const idx = name.indexOf('-');
+  if (idx < 1) return { project: null, story: name, dir: path.join(STORIES_DIR, name) };
+  const project = name.slice(0, idx);
+  const story = name.slice(idx + 1);
+  return { project, story, dir: path.join(STORIES_DIR, project, story) };
+}
+
+function storyMemoryDir(name) { return path.join(resolveStoryPath(name).dir, '.memory'); }
 function storyStateFile(name) { return path.join(storyMemoryDir(name), 'rui-state.json'); }
 
 function parseArgs(argv) {
@@ -63,13 +71,20 @@ function missingSteps(dp) {
 }
 
 async function findStories() {
+  const names = [];
   try {
-    const entries = await fsp.readdir(STORIES_DIR, { withFileTypes: true });
-    return entries
-      .filter(e => e.isDirectory() && !e.name.startsWith('.'))
-      .map(e => e.name)
-      .sort();
+    const projectDirs = await fsp.readdir(STORIES_DIR, { withFileTypes: true });
+    for (const proj of projectDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'))) {
+      const projPath = path.join(STORIES_DIR, proj.name);
+      try {
+        const storyDirs = await fsp.readdir(projPath, { withFileTypes: true });
+        for (const story of storyDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'))) {
+          names.push(`${proj.name}-${story.name}`);
+        }
+      } catch { /* skip */ }
+    }
   } catch { return []; }
+  return names.sort();
 }
 
 // ── check ──
