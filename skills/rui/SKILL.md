@@ -19,9 +19,9 @@ agents:
 
 | 命令 | 用途 | 关键行为 |
 |------|------|---------|
-| `/rui init` | 建立项目基线 | 提取 CLAUDE.md/README.md/package.json 特征 → 注入 `.claude/`，8/8 就绪检查 |
-| `/rui doc <req>` | 拆需求为故事 + 生成 01–04 | 必须分支隔离；禁止改源码；多故事逐个串行 |
-| `/rui code <name>` | 实现故事 + 生成 05–08 | Gate A 测试先行；Gate B 验证闭合 |
+| `/rui init [--force\|--dry-run]` | 建立项目基线 | 提取 CLAUDE.md/README.md/package.json → 互补注入 `.claude/`，8/8 就绪检查 |
+| `/rui doc <req>` | 拆需求为故事 + 生成文档基线（故事任务 → 评审三件） | 必须分支隔离；禁止改源码；多故事逐个串行 |
+| `/rui code <name>` | 实现故事 + 生成验证报告（实施 / 测试 / 自改进复盘） | Gate A 测试先行；Gate B 验证闭合 |
 | `/rui <req>` | 端到端 | doc + code 全自动串联 |
 | `/rui update <name-or-path> [ctx] [--no-code]` | 增量更新 | T1/T2/T3 裁剪；`--no-code` 仅文档 |
 | `/rui code --from-doc <name>` | 从文档反推 | 只读源码补全缺失文档；不覆盖已有 |
@@ -84,15 +84,76 @@ flowchart LR
 
 ## init 简述
 
-| 提取来源 | 注入目标（去重后互补注入） |
-|---------|--------------------------|
-| CLAUDE.md | 哲学/原则/准则 → `.claude/agents/` |
-| README.md | 系统能力/项目结构 → `.claude/rules/` |
-| package.json | 技术栈/脚本/类型 → `coder.md` 项目上下文 + `project-profile.json` |
+> **口诀：提基线、互补注、查八项。** 提取项目特有信号，与插件公共内容做归一化去重，仅追加「基线补充」章节，不重复写公共概念。
 
-8 项就绪检查：CLAUDE.md / README.md / `.claude/agents/`(7) / `.claude/rules/`(6) / `formulas.md` / `.mcp.json` / `settings.json` / `.claude/` 目录完整。
+```mermaid
+flowchart LR
+    P1[提取基线<br/>三源汇聚] --> P2[互补注入<br/>四目标增量] --> P3[就绪检查<br/>8 项门禁] --> P4[记忆<br/>.init-memory]
+    P3 -.失败.-> Fix[exit 1<br/>修复后重跑]
+    P3 -.通过.-> Ready[基线就绪]
+```
 
-注入采用归一化文本匹配的去重策略：插件文件已覆盖的内容标注「无需补充」，仅追加项目特有的「基线补充」章节。
+### 1. 提取基线（三源汇聚）
+
+| 源 | 抽取字段 | 用法 |
+|----|---------|------|
+| `CLAUDE.md` | 三公理 / 六原则 / 七准则 / 编码规范 / 禁止事项 / 关键文件 / 安全约束 | 哲学锚点 + 项目特有约束 |
+| `README.md` | 项目描述 / 系统能力 / 项目结构 / 技术栈 / 核心模块 / 构建命令 / 测试命令 / 部署信息 | 系统视图 + 命令词典 |
+| `package.json` | dependencies / devDependencies / scripts / 已识别框架版本 | 真实依赖 + 自动补充命令 |
+
+类型识别由 `constants.detectProjectType` 复用源码扫描（扩展名权重 / 框架依赖 / API 模式签名 / 元项目信号）→ `frontend` / `backend` / `fullstack` / `meta` / `unknown`。结果写入 `.claude/project-profile.json`，含 `coder_formula` 与 `story_defaults`（决定每故事必选/可选文件骨架）。
+
+### 2. 互补注入（四目标增量）
+
+注入采用**归一化去重**：先把目标文件正文做大小写折叠 + 空白压缩 + Markdown 字符剥离，再按字符串包含 + 4 词关键短语命中判定 → 已覆盖项标注「无需补充」，**仅追加项目特有的「基线补充」章节**。
+
+| 注入目标 | 标记锚点 | 注入小节（按需） |
+|---------|---------|----------------|
+| `.claude/agents/coder.md` | `<!-- project-type-injected -->` | 项目+类型+Coder 公式摘要 / 技术栈 / 编码规范 / 禁止事项 / 关键文件 / 核心模块 / 构建命令 |
+| `.claude/agents/tester.md` | `<!-- project-baseline-injected -->` | 测试命令 / 构建命令 / 编码规范（测试需遵循） |
+| `.claude/agents/security.md` | `<!-- project-baseline-injected -->` | 安全约束 / 技术栈（审查范围）/ 安全敏感依赖（jsonwebtoken / bcrypt / helmet / passport / oauth …）/ 部署环境（攻击面） |
+| `.claude/rules/code-pipeline.md` | `<!-- project-baseline-injected -->` | 构建+测试命令（Gate B 验证用）/ 禁止事项 |
+
+注入写入位置统一在 `## 触发` 之前（agents）或文末（rules），便于 `--force` 时定位旧内容并整段替换。
+
+公共物料**整文件复制**而非注入（每次 init 同步最新）：
+- `agents/AGENT.md` + 6 角色（pm / coder / tester / reporter / security / self-improve）
+- `rules/` 全部规则（code-pipeline / doc-generation / gate-rules / delivery-gate / self-improve / import-docs / rui-claude / no-magic-number）
+- `skills/rui/formulas.md` → `.claude/formulas.md`
+- `skills/rui/coder.md` → `.claude/coder.md`
+- `.mcp.json` / `settings.json` → `.claude/`
+- `settings.local.json`（首次生成空模板）+ `.claude/.gitignore`（排除本地文件）
+
+### 3. 就绪检查（8 项门禁）
+
+每项做**结构 + 内容**双重校验，任一未通过 `exit 1`：
+
+| # | 检查项 | 通过条件 |
+|---|--------|--------|
+| 1 | `CLAUDE.md` | 三公理 + 守底线原则 + 思在前准则 + 退化对策 全部命中 |
+| 2 | `README.md` | 系统能力 + 项目结构 + 快速开始 + `/rui init` 命令存在 |
+| 3 | `.claude/agents/` | `AGENT.md`（≥100 字）+ 6 角色 frontmatter 合法 |
+| 4 | `.claude/rules/` | 6 个核心规则文件齐备 |
+| 5 | `.claude/formulas.md` | F.meta + F.story.01–08 + F.supp.\* 全部模式命中 |
+| 6 | `.claude/.mcp.json` | JSON 合法 + 含 `mcpServers` 字段 |
+| 7 | `.claude/settings.json` | JSON 合法 + `permissions` 非空 |
+| 8 | `.claude/` 目录 | `agents/` + `rules/` + `formulas.md` + `coder.md` + `settings.json` + `.mcp.json` + `settings.local.json` 全部存在 |
+
+### 4. 选项
+
+| 选项 | 行为 |
+|------|------|
+| `--dry-run` | 仅扫描+报告，不写文件；显示 `will-create` / `will-copy` 标识 |
+| `--force` | 覆盖整文件，识别既有注入锚点并整段替换；适用于基线文件升级后刷新 |
+| `--json` | 机器可读输出（基线快照 + 注入清单 + 检查结果 + 推荐下一步） |
+
+### 5. 产物
+
+| 路径 | 用途 |
+|------|------|
+| `.claude/project-profile.json` | 项目画像（类型/Coder 公式/故事骨架默认值），后续 `/rui doc` 据此选骨架 |
+| `.claude/.gitignore` | 排除 `settings.local.json` + `.history/` |
+| `docs/故事任务面板/.init-memory.json` | init 单次执行的记忆条目（与 execution-memory.jsonl 同 schema），便于复盘 |
 
 ## 集成
 
@@ -100,6 +161,6 @@ flowchart LR
 |------|------|
 | 脚本 | `~/.claude/plugins/marketplaces/yry/skills/rui/scripts/`：init · list · recommend · rui-state · execution-memory · self-improve · delivery-gate · loop · natural-week · constants |
 | Skills | `import-docs --workspace`（同步） · `wework-bot --name <name>`（通知） |
-| 规则 | [code-pipeline](../../rules/code-pipeline.md) · [gate-rules](../../rules/gate-rules.md) · [doc-generation](../../rules/doc-generation.md) · [delivery-gate](../../rules/delivery-gate.md) · [self-improve](../../rules/self-improve.md) · [import-docs](../../rules/import-docs.md) |
+| 规则 | [code-pipeline](../../rules/code-pipeline.md) · [gate-rules](../../rules/gate-rules.md) · [doc-generation](../../rules/doc-generation.md) · [delivery-gate](../../rules/delivery-gate.md) · [self-improve](../../rules/self-improve.md) · [import-docs](../../rules/import-docs.md) · [rui-claude](../../rules/rui-claude.md) · [no-magic-number](../../rules/no-magic-number.md) |
 | 角色 | [pm](../../agents/pm.md) · [coder](../../agents/coder.md) · [tester](../../agents/tester.md) · [reporter](../../agents/reporter.md) · [security](../../agents/security.md) · [self-improve](../../agents/self-improve.md) |
 | 文档 | [formulas.md](./formulas.md) — 故事文档公式（F.story.\* + F.supp.\*） · [coder.md](./coder.md) — 目录生命周期 + 参考文档公式（F.ref.\*） + 数据契约（`.memory/` + `.improvement/`） |

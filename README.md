@@ -43,7 +43,7 @@ flowchart TB
 
 | 能力 | 入口 | 一句话 | 关键机制 |
 |------|------|--------|---------|
-| **rui** | `/rui [doc\|code\|update] <args>` | 故事驱动的 SDLC 端到端编排 | pm·coder·tester·reporter·security·self-improve 6 Agent 协同；Gate A 测试先行 + Gate B 验证闭合；每故事 01–08 共 8 份文档 |
+| **rui** | `/rui [doc\|code\|update] <args>` | 故事驱动的 SDLC 端到端编排 | pm·coder·tester·reporter·security·self-improve 6 Agent 协同；Gate A 测试先行 + Gate B 验证闭合；每故事八份主线文档（故事任务 / 评审三件 / 实施报告两件 / 测试报告 / 自改进复盘） |
 | **rui-claude** | `/rui-claude [sync\|retro\|history]` | `.claude/` 配置的生命周期管理 | 所有变更限定在 `.claude/` 范围；sync 拉取远端、retro 健康复盘、history 操作回溯、`<req>` 端到端 |
 | **Memory** | 自动加载 | 跨会话沉淀的偏好与上下文 | 启动时读 `MEMORY.md` 索引；记忆是指针不是内容，引用前必须验证时效 |
 | **Skills** | `/<name>` 或任务匹配 | 可插拔的能力扩展 | 项目 4 项: rui · rui-claude · wework-bot · import-docs；系统内置见 `<skills>` 块 |
@@ -72,16 +72,16 @@ flowchart TB
 ### 2. 故事驱动开发（推荐）
 
 ```bash
-/rui doc "需求描述"           # 拆需求为故事，走文档管线（01–04 文档）
-/rui code <story-name>       # 实现故事，走代码管线（05–08 报告）
+/rui doc "需求描述"           # 拆需求为故事，走文档管线（故事任务 + 评审三件）
+/rui code <story-name>       # 实现故事，走代码管线（实施报告 + 测试报告 + 自改进复盘）
 /rui <requirement>           # 端到端：文档 + 代码全自动串联
 ```
 
 ### 3. 反向工程（已有代码或文档）
 
 ```bash
-/rui doc --from-code <req>   # 从源码反推故事，生成 01–08 全文档
-/rui code --from-doc <name>  # 从已有 01 文档补全 02–08
+/rui doc --from-code <req>   # 从源码反推故事，生成全套八份主线文档
+/rui code --from-doc <name>  # 从已有故事任务（01-故事任务.md）补全后续七份
 /rui update <name> [ctx]     # 增量更新已有故事的文档与实现
 ```
 
