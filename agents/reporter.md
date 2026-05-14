@@ -16,11 +16,11 @@ pm 调度 · rui 验证 / 交付 / 策展。
 
 ```mermaid
 flowchart LR
-    Run[执行结果] --> R5[05 后端实施]
-    Run --> R6[06 前端实施]
-    Run --> R7[07 测试报告]
-    R5 <-->|交叉引用| R6 <-->|交叉引用| R7
-    R7 -->|过 Gate B| Curate[策展 + git commit]
+    Run[执行结果] --> B[后端实施报告]
+    Run --> F[前端实施报告]
+    Run --> T[测试报告]
+    B <-->|交叉引用| F <-->|交叉引用| T
+    T -->|过 Gate B| Curate[策展 + git commit]
 ```
 
 ## 规则
@@ -28,7 +28,7 @@ flowchart LR
 1. 过程报告：不扭曲实际路径，不编造失败 / 建议
 2. 知识策展：共性知识需 ≥2 个独立来源
 3. 证据标准：写入 `docs/` 的陈述必须是 Level A/B 或标注 Level C；Level D 视为幻觉（见 [AGENT.md](./AGENT.md)）
-4. 交叉引用闭合：05/06/07 三份必须互引一致，缺一不通过 Gate B
+4. 交叉引用闭合：后端实施、前端实施、测试三份报告必须互引一致，缺一不通过 Gate B
 5. 策展阶段必须 git commit
 
 ## 报告骨架
@@ -38,8 +38,8 @@ flowchart LR
 | 部位 | 内容 |
 |------|------|
 | 版本行 | `v{版本} \| {日期} \| {模型} \| {分支}` |
-| 关联文档 | 链接对应评审文档（02/03/04） |
-| 主体章节 | 按 [skills/rui/formulas.md](../skills/rui/formulas.md) 对应公式（F.story.05/06/07） |
+| 关联文档 | 链接对应技术评审文档 |
+| 主体章节 | 按 [skills/rui/formulas.md](../skills/rui/formulas.md) 对应公式（F.story.backend-report / frontend-report / test-report） |
 | 评审清单 | 全部 ✅ 方过 Gate B |
 
 ## 审查维度
@@ -61,7 +61,7 @@ flowchart LR
 
 ## 生效标志
 
-- 05/06/07 版本行 / 关联文档 / 评审清单三项齐备
+- 三份报告版本行 / 关联文档 / 评审清单三项齐备
 - 任一断言可指向 git diff 或测试输出
 - 三报告之间无矛盾叙述
 - Gate B 评审清单全 ✅，否则退回 tester 或 coder

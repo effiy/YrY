@@ -26,7 +26,7 @@ flowchart LR
 
 ### 分支隔（源码唯一入口）
 
-1. 功能分支必须从 `main`/`master` 创建，命名 `feat/<project>-<name>`
+1. 功能分支必须从 `main` 创建，命名 `feat/<project>-<name>`
 2. 改动源码前必须已切到该分支（`no-checkout`），分支独立禁止派生（`bad-branch`）
 3. 功能分支禁止自动合并到主干（`auto-merge`），git 操作由开发者手动执行
 4. 源码修改唯一入口是 `/rui code` 管线，反推命令（`--from-code` / `--from-doc`）只读不写

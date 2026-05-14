@@ -461,6 +461,26 @@ function request(apiUrl, token, data) {
   });
 }
 
+/** 指数退避重试：网络错误与 5xx 重试，4xx 不重试。maxRetries=3，退避 1s/2s/4s。 */
+async function requestWithRetry(apiUrl, token, data, maxRetries = 3) {
+  let lastError;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const result = await request(apiUrl, token, data);
+      const is5xx = result.statusCode >= 500 && result.statusCode < 600;
+      if (!is5xx) return result;
+      lastError = new Error(`HTTP ${result.statusCode}`);
+    } catch (err) {
+      lastError = err;
+    }
+    if (attempt < maxRetries) {
+      const delay = 1000 * Math.pow(2, attempt);
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+  throw lastError;
+}
+
 (async function main() {
   /** 网关 API：请求体字段名为 `webhook_url`（完整 webhook URL）。 */
   const payload = {
@@ -469,7 +489,7 @@ function request(apiUrl, token, data) {
   };
 
   try {
-    const result = await request(options.apiUrl, options.token, payload);
+    const result = await requestWithRetry(options.apiUrl, options.token, payload);
     console.log('=== WeWork Bot Result ===');
     console.log('Status:', result.statusCode);
     console.log('Response:', typeof result.body === 'string' ? result.body : JSON.stringify(result.body));

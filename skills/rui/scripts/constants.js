@@ -339,8 +339,7 @@ function detectProjectType(repoRoot) {
   }
 
   // Meta-project signals (Claude Code plugin layout)
-  const isMeta = fs.existsSync(path.join(root, '.claude-plugin', 'plugin.json')) ||
-    (fs.existsSync(path.join(root, 'agents')) && fs.existsSync(path.join(root, 'skills')) && !apiFiles);
+  const isMeta = fs.existsSync(path.join(root, 'agents')) && fs.existsSync(path.join(root, 'skills')) && !apiFiles;
 
   let type;
   if (frontendScore > backendScore && frontendScore > 0) type = 'frontend';

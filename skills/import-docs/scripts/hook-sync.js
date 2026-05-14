@@ -2,8 +2,9 @@
 
 /**
  * import-docs Stop hook 适配器
- * 
- * 运行 import-docs --workspace，成功后自动标记 docs_synced。
+ *
+ * 运行 import-docs --workspace，成功后自动标记 docs_synced，
+ * 并将同步摘要写入 .delivery-sync-summary.tmp 供 wework-bot 读取。
  * 降级：API_X_TOKEN 缺失时仍标记（no-token 降级），不阻断。
  */
 
@@ -14,6 +15,7 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const PROJECT_ROOT = process.cwd();
+const SUMMARY_FILE = path.join(PROJECT_ROOT, '.delivery-sync-summary.tmp');
 
 function findActiveStory() {
   const panelDir = path.join(PROJECT_ROOT, 'docs', '故事任务面板');
@@ -51,6 +53,26 @@ function findActiveStory() {
   return latest;
 }
 
+function parseStats(stdout) {
+  const m = stdout.match(/Done:\s*(\d+)\s*created,\s*(\d+)\s*overwritten,\s*(\d+)\s*failed/);
+  if (!m) return null;
+  return { created: parseInt(m[1], 10), overwritten: parseInt(m[2], 10), failed: parseInt(m[3], 10) };
+}
+
+function writeSummary(story, result, stats) {
+  const summary = {
+    story,
+    syncedAt: new Date().toISOString(),
+    result,
+    stats: stats || { created: 0, overwritten: 0, failed: 0 },
+  };
+  fs.writeFileSync(SUMMARY_FILE, JSON.stringify(summary, null, 2), 'utf8');
+}
+
+function clearSummary() {
+  try { fs.unlinkSync(SUMMARY_FILE); } catch { /* ignore */ }
+}
+
 function main() {
   const active = findActiveStory();
   if (!active) {
@@ -62,15 +84,23 @@ function main() {
   }
 
   const hasToken = !!process.env.API_X_TOKEN;
+  let syncOutput = '';
+  let syncOk = false;
 
   if (hasToken) {
     try {
-      execSync('node skills/import-docs/scripts/import-docs.js --workspace', { cwd: PROJECT_ROOT, stdio: 'inherit', timeout: 60000 });
+      syncOutput = execSync('node skills/import-docs/scripts/import-docs.js --workspace', { cwd: PROJECT_ROOT, stdio: 'pipe', encoding: 'utf8', timeout: 60000 });
+      console.log(syncOutput);
+      syncOk = true;
     } catch (err) {
       console.error(`import-docs hook: 同步失败 — ${err.message}`);
+      syncOutput = err.stdout || '';
       // 网络失败不阻断，仍标记（下次覆盖重试）
     }
   }
+
+  const stats = parseStats(syncOutput);
+  writeSummary(active.name, syncOk ? 'success' : 'failed', stats);
 
   // 标记 docs_synced（no-token 降级也标记）
   try {

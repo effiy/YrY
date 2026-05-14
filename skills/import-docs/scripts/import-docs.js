@@ -72,6 +72,23 @@ async function findMdFiles(dir, projectRoot, exts = ['md'], excludeDirs = []) {
   return results;
 }
 
+/** 有限并发执行异步任务池。 */
+async function asyncPool(concurrency, iterable, iteratorFn) {
+  const ret = [];
+  const executing = new Set();
+  for (const item of iterable) {
+    const p = Promise.resolve().then(() => iteratorFn(item));
+    ret.push(p);
+    executing.add(p);
+    const clean = () => executing.delete(p);
+    p.then(clean).catch(clean);
+    if (executing.size >= concurrency) {
+      await Promise.race(executing);
+    }
+  }
+  return Promise.all(ret);
+}
+
 /** X-Token 仅从系统环境变量 `API_X_TOKEN` 读取，不接受配置文件或其它来源。 */
 function readApiXTokenFromEnv() {
   const v = process.env.API_X_TOKEN;
@@ -341,11 +358,12 @@ async function main() {
   }
 
   const stats = { ok: 0, overwritten: 0, failed: 0 };
+  const total = files.length;
+  const concurrency = 4;
 
-  for (let i = 0; i < files.length; i++) {
-    const fullPath = files[i];
+  await asyncPool(concurrency, files.entries(), async ([idx, fullPath]) => {
     const relativePath = path.relative(projectRoot, fullPath).split(path.sep).join('/');
-    console.log(`[${i + 1}/${files.length}] ${relativePath}`);
+    console.log(`[${idx + 1}/${total}] ${relativePath}`);
 
     const label = resolveLabel(fullPath);
     const basePath = label ? label.dir : projectRoot;
@@ -364,7 +382,7 @@ async function main() {
       console.log(`  ✗ ${relativePath} - ${error.message}`);
       stats.failed++;
     }
-  }
+  });
 
   console.log();
   console.log(`Done: ${stats.ok} created, ${stats.overwritten} overwritten, ${stats.failed} failed`);

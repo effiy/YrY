@@ -108,7 +108,7 @@ async function scanStories() {
 
 function gitState() {
   const branch = sh('git branch --show-current');
-  const isMain = branch === 'main' || branch === 'master';
+  const isMain = branch === 'main';
   const hasUncommitted = sh('git status --porcelain') !== '';
   const unpushedCommits = sh('git log @{u}..HEAD --oneline 2>/dev/null');
   const unpushedCount = unpushedCommits ? unpushedCommits.split('\n').filter(Boolean).length : 0;
@@ -137,7 +137,6 @@ function syncStatus() {
   return {
     hasToken, reachable,
     panelFileCount: countFiles(path.join(REPO_ROOT, 'docs', '故事任务面板'), '*.md'),
-    claudeFileCount: countFiles(path.join(REPO_ROOT, '.claude'), null),
   };
 }
 
@@ -877,7 +876,7 @@ function L5_hygiene(ctx) {
     out.push(makeCandidate({
       layer: 'L5.hygiene', priority: 'P1', category: 'sync',
       action: '远端 API 不可达',
-      rationale: `${sync.panelFileCount} 个故事面板文件 + ${sync.claudeFileCount} 个 .claude 文件待同步`,
+      rationale: `${sync.panelFileCount} 个故事面板文件待同步`,
       command: 'node skills/import-docs/scripts/import-docs.js --workspace',
       formula: { role: 'Reporter', rule: '知识沉淀: 文档同步', check: 'sync' },
       factors: { urgency: 0.5, impact: 0.5, fit: 0.7, cost: 0.2 },
@@ -885,11 +884,11 @@ function L5_hygiene(ctx) {
     }));
   }
 
-  if (!sync.hasToken && (sync.panelFileCount > 0 || sync.claudeFileCount > 0)) {
+  if (!sync.hasToken && sync.panelFileCount > 0) {
     out.push(makeCandidate({
       layer: 'L5.hygiene', priority: 'P1', category: 'sync',
       action: '配置 API_X_TOKEN 环境变量',
-      rationale: `${sync.panelFileCount + sync.claudeFileCount} 个文件待同步`,
+      rationale: `${sync.panelFileCount} 个文件待同步`,
       command: 'export API_X_TOKEN=<token>',
       formula: { role: 'Reporter', rule: '知识沉淀: 配置同步凭证', check: 'token' },
       factors: { urgency: 0.4, impact: 0.5, fit: 0.7, cost: 0.1 },
@@ -959,7 +958,7 @@ function printHuman(recs, ctx, limit, explain) {
   console.log('# 推荐任务\n');
   console.log(`> 项目: **${projectName}** · 类型: **${ptLabel}** · Coder公式: \`${projectType.coderFormula.text}\``);
   console.log(`> 健康: ${healthScore ?? 'N/A'}/100 · 故事: ${storySummary} · 分支: ${git.branch}${git.hasUncommitted ? ' (有未提交修改)' : ''}`);
-  if (sync.hasToken) console.log(`> 同步: ${sync.panelFileCount} 面板 + ${sync.claudeFileCount} .claude 文件 · API ${sync.reachable ? '可达' : '不可达'}`);
+  if (sync.hasToken) console.log(`> 同步: ${sync.panelFileCount} 面板文件 · API ${sync.reachable ? '可达' : '不可达'}`);
   console.log();
 
   const limited = recs.slice(0, limit);
@@ -1029,7 +1028,7 @@ function printJson(recs, ctx, limit) {
       has_uncommitted: git.hasUncommitted,
       sync: {
         has_token: sync.hasToken, api_reachable: sync.reachable,
-        panel_files: sync.panelFileCount, claude_files: sync.claudeFileCount,
+        panel_files: sync.panelFileCount,
       },
       open_proposals: (data.proposals || []).filter(p => p.status === 'open').length,
       degrading_signals: (data.trends?.degradingSignals || []).length,

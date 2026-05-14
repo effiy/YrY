@@ -66,12 +66,12 @@ flowchart LR
 | `no-token` | `API_X_TOKEN` 缺失 | 交付 | 是 |
 | `no-metrics` | self-improve 数据采集失败 | 自改进 | 是 |
 
-阻断后：`node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/rui-state.js save --blocked` → 持久化 → 通知（`no-token` / `no-metrics` 跳过）。重跑同命令从 `current_stage` 续。
+阻断后：`node skills/rui/scripts/rui-state.js save --blocked` → 持久化 → 通知（`no-token` / `no-metrics` 跳过）。重跑同命令从 `current_stage` 续。
 
 ## 核心约束
 
 1. **逐故事串行** — 多故事按拆分顺序处理，互不交叉
-2. **分支隔离** — `feat/<project>-<name>` 从 main/master 创建；不可派生、不可自动合并
+2. **分支隔离** — `feat/<project>-<name>` 从 main 创建；不可派生、不可自动合并
 3. **源码改动唯一入口** — 只能走 `/rui code` 管线（`no-checkout`）
 4. **测试先行** — Gate A 阻断实现；Gate B >2 轮阻断交付
 5. **逐模块审查** — 每模块后审查，P0 清零再前进
@@ -83,13 +83,13 @@ flowchart LR
 
 ## init 简述
 
-> **口诀：探—生—验。** 三步：探（扫描项目六类信号）→ 生（按 profile 生成 CLAUDE.md / README.md / 架构故事）→ 验（3 项就绪检查）。
+> **口诀：探—生—验。** 三步：探（扫描项目六类信号）→ 生（按 profile 生成 README.md / 故事面板目录）→ 验（就绪检查）。
 >
-> **核心设计**：init 只负责项目基线三件套（CLAUDE.md · README.md · 架构故事目录），可重复运行，每次全量重生。
+> **核心设计**：init 只负责项目基线（README.md · docs/故事任务面板/ 目录），可重复运行，每次全量重生。
 
 ```mermaid
 flowchart LR
-    P1[detect<br/>六类信号扫描]:::s --> P2[generate<br/>三件套全量重生]:::s --> P3[verify<br/>3 项就绪检查]:::s --> P4[记忆<br/>.init-memory]
+    P1[detect<br/>六类信号扫描]:::s --> P2[generate<br/>基线全量重生]:::s --> P3[verify<br/>就绪检查]:::s --> P4[记忆<br/>.init-memory]
     P3 -.失败.-> Fix[exit 1<br/>修复后重跑]
     P3 -.通过.-> Ready[基线就绪]
     classDef s fill:#e3f2fd,stroke:#1565c0;
@@ -115,9 +115,7 @@ flowchart LR
 
 | 产物 | 裁剪依据 | 项目耦合点 |
 |------|---------|-----------|
-| `CLAUDE.md` | 全部信号 | 项目约束表 + 不可妥协底线（按安全面/架构生成） |
 | `README.md` | 全部信号 | 项目画像 + 能力描述 + 结构表 |
-| `docs/故事任务面板/架构故事/*.md` | 项目类型 + 架构 | 系统概述 + 架构决策 + 模块关系 |
 
 ### 3. verify — 3 项就绪检查（验证层）
 
@@ -125,9 +123,8 @@ flowchart LR
 
 | # | 检查项 | 通过条件 |
 |---|--------|--------|
-| 1 | `CLAUDE.md` | 三公理 + 项目约束（含项目名） |
-| 2 | `README.md` | 快速开始 + 项目名 |
-| 3 | 架构故事 | `docs/故事任务面板/架构故事/01-系统概述.md` 含项目名 |
+| 1 | `README.md` | 项目名 |
+| 2 | 故事面板 | `docs/故事任务面板/` 目录存在 |
 
 ### 4. 选项
 
@@ -140,16 +137,14 @@ flowchart LR
 
 | 路径 | 用途 | 重复运行 |
 |------|------|---------|
-| `CLAUDE.md` | 哲学基础 + 项目约束 | 全量重生 |
 | `README.md` | 系统视图 + 项目画像 | 全量重生 |
-| `docs/故事任务面板/架构故事/*.md` | 架构全景文档 | 全量重生 |
 | `docs/故事任务面板/.init-memory.json` | 执行记录 | 每次覆盖 |
 
 ## 集成
 
 | 类别 | 内容 |
 |------|------|
-| 脚本 | `~/.claude/plugins/marketplaces/yry/skills/rui/scripts/`：init · list · recommend · rui-state · execution-memory · self-improve · delivery-gate · loop · natural-week · constants |
+| 脚本 | `skills/rui/scripts/`：init · list · recommend · rui-state · execution-memory · self-improve · delivery-gate · loop · natural-week · constants |
 | Hooks | `settings.json` Stop hooks：hook-log（追加日志）→ hook-sync（文档同步）→ hook-notify（企微通知）→ delivery-gate check-all（闭合检查） |
 | 规则 | [code-pipeline](../../rules/code-pipeline.md) · [delivery-gate](../../rules/delivery-gate.md) · [doc-generation](../../rules/doc-generation.md) · [self-improve](../../rules/self-improve.md) · [rui-claude](../../rules/rui-claude.md) |
 | 角色 | [pm](../../agents/pm.md) · [coder](../../agents/coder.md) · [tester](../../agents/tester.md) · [reporter](../../agents/reporter.md) · [security](../../agents/security.md) · [self-improve](../../agents/self-improve.md) |

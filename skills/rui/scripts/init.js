@@ -7,7 +7,7 @@
 //   2. generate()  按 profile 生成产物（生成层）
 //   3. verify()    就绪检查（验证层）
 //
-// 设计哲学（CLAUDE.md）
+// 设计哲学
 //   - 信模型：产物由 profile 驱动，不硬编码假设
 //   - 惜注意：模板外置（init-templates.js），本文件只有流程
 //   - 验现实：verify() 失败即 exit 1
@@ -161,9 +161,7 @@ function detectArchitecture(root, manifest) {
     const pkg = JSON.parse(tryRead(path.join(root, 'package.json')) || '{}');
     if (pkg.workspaces) { result.pattern = 'monorepo'; result.signals.push('package.json workspaces'); }
   } catch {}
-  if (fs.existsSync(path.join(root, '.claude-plugin/plugin.json'))) {
-    result.pattern = 'plugin'; result.signals.push('插件清单文件');
-  }
+
   const dc = tryRead(path.join(root, 'docker-compose.yml')) || tryRead(path.join(root, 'docker-compose.yaml'));
   if (dc && (dc.match(/^\s+\w+:$/gm) || []).length > 2) {
     result.pattern = 'microservice'; result.signals.push('docker-compose 多服务');
@@ -195,7 +193,6 @@ function extractManifest(root) {
   if (exists('Cargo.toml')) { add(out.buildCommands, 'cargo build'); add(out.testCommands, 'cargo test'); out.ecosystems.push('rust'); }
   if (exists('go.mod')) { add(out.buildCommands, 'go build ./...'); add(out.testCommands, 'go test ./...'); out.ecosystems.push('go'); }
   if (exists('pom.xml') || exists('build.gradle') || exists('build.gradle.kts')) out.ecosystems.push('java');
-  if (exists('.claude-plugin/plugin.json')) out.ecosystems.push('meta');
 
   return out;
 }
@@ -215,17 +212,7 @@ function generate(profile, opts) {
   else { ensureDir(storyDir); result.dirs.push({ path: 'docs/故事任务面板', action: 'ensured' }); }
 
   // 产物生成
-  write(path.join(REPO_ROOT, 'CLAUDE.md'), T.claudeMd(p), opts, result, 'CLAUDE.md');
   write(path.join(REPO_ROOT, 'README.md'), T.readmeMd(p), opts, result, 'README.md');
-
-  // 架构故事目录（多文档）
-  const archDir = path.join(storyDir, '架构故事');
-  if (dryRun) result.dirs.push({ path: 'docs/故事任务面板/架构故事', action: 'will-create' });
-  else { ensureDir(archDir); result.dirs.push({ path: 'docs/故事任务面板/架构故事', action: 'ensured' }); }
-
-  for (const [fileName, content] of Object.entries(T.architectureStoryFiles(p))) {
-    write(path.join(archDir, fileName), content, opts, result, `架构故事/${fileName}`);
-  }
 
   return result;
 }
@@ -236,9 +223,8 @@ function generate(profile, opts) {
 
 function verify(profile) {
   const checks = [
-    { id: 'CLAUDE.md', validate: () => fileContains(path.join(REPO_ROOT, 'CLAUDE.md'), [/信模型/, /惜注意/, /验现实/, /rui:project-start/, new RegExp(profile.project)]) },
-    { id: 'README.md', validate: () => fileContains(path.join(REPO_ROOT, 'README.md'), [/快速开始/, new RegExp(profile.project)]) },
-    { id: '架构故事', validate: () => fileContains(path.join(REPO_ROOT, 'docs', '故事任务面板', '架构故事', '01-系统概述.md'), [new RegExp(profile.project)]) },
+    { id: 'README.md', validate: () => fileContains(path.join(REPO_ROOT, 'README.md'), [new RegExp(profile.project)]) },
+    { id: '故事面板目录', validate: () => ({ ok: fs.existsSync(path.join(REPO_ROOT, 'docs', '故事任务面板')), detail: fs.existsSync(path.join(REPO_ROOT, 'docs', '故事任务面板')) ? '✓' : '目录不存在' }) },
   ];
 
   const results = checks.map(c => ({ id: c.id, ...c.validate() }));
@@ -361,8 +347,8 @@ function printHelp() {
 流程: detect → generate → verify
 
 探测: 项目类型 · 安全面 · 测试框架 · CI · 架构模式
-产物: CLAUDE.md · README.md · 架构故事目录
-验证: 所有产物存在且含项目上下文
+产物: README.md · docs/故事任务面板/ 目录
+验证: 产物存在且含项目上下文
 
 可重复运行，每次全量重生。
 `);

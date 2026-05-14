@@ -2,10 +2,10 @@
 
 /**
  * wework-bot Stop hook 适配器 — 步骤 1: 追加日志（--no-send）
- * 
+ *
  * 从 rui-state.json 获取当前故事信息，构建通知消息并追加到
  * 00-消息通知列表.md，但不发送 HTTP。
- * 
+ *
  * 降级：无活跃故事时静默退出（exit 0），不阻断。
  */
 
@@ -16,6 +16,7 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const PROJECT_ROOT = process.cwd();
+const SUMMARY_FILE = path.join(PROJECT_ROOT, '.delivery-sync-summary.tmp');
 
 function findActiveStory() {
   const panelDir = path.join(PROJECT_ROOT, 'docs', '故事任务面板');
@@ -58,33 +59,77 @@ function findActiveStory() {
   return latest;
 }
 
+function computeSessionDuration(state) {
+  const history = state.change_history || [];
+  if (history.length < 2) return null;
+  const start = new Date(history[0].timestamp);
+  const end = new Date(history[history.length - 1].timestamp);
+  const minutes = Math.round((end - start) / 60000 * 10) / 10;
+  return minutes;
+}
+
+function computeProgress(state) {
+  const pp = state.pipeline_progress || {};
+  const phases = Object.values(pp);
+  if (phases.length === 0) return null;
+  const completed = phases.filter(s => s === 'completed').length;
+  const blocked = phases.filter(s => s === 'blocked').length;
+  return { total: phases.length, completed, blocked, current: state.current_stage };
+}
+
+function readSyncSummary() {
+  try {
+    if (!fs.existsSync(SUMMARY_FILE)) return null;
+    const raw = fs.readFileSync(SUMMARY_FILE, 'utf8');
+    return JSON.parse(raw);
+  } catch { return null; }
+}
+
 function buildMessage(info) {
   const { state, project, story } = info;
   const stage = state.current_stage || '未知';
   const blocked = state.blocked;
+  const duration = computeSessionDuration(state);
+  const progress = computeProgress(state);
+  const syncSummary = readSyncSummary();
+
+  const lines = [];
 
   if (blocked) {
-    return [
-      `🎯 结论: 阻断 ${info.name}`,
-      `📝 描述: 管线在 ${stage} 阶段被阻断`,
-      `📌 范围: docs/故事任务面板/${project}/${story}/`,
-      `❌ 原因: ${state.block_reason || '见 rui-state.json'}`,
-      `🧭 恢复点: ${stage}`,
-      `🌐 影响: 需人工介入`,
-      `📎 证据: .memory/rui-state.json`,
-      `⏱️ 会话: ${stage}`,
-    ].join('\n');
+    lines.push(`🎯 结论: 阻断 ${info.name}`);
+    lines.push(`📝 描述: 管线在 ${stage} 阶段被阻断`);
+    lines.push(`📌 范围: docs/故事任务面板/${project}/${story}/`);
+    lines.push(`❌ 原因: ${state.block_reason || '见 rui-state.json'}`);
+    lines.push(`🧭 恢复点: ${stage}`);
+    lines.push(`🌐 影响: 需人工介入`);
+  } else {
+    lines.push(`🎯 结论: 完成 ${info.name} ${stage} 阶段`);
+    lines.push(`📝 描述: 管线执行完毕`);
+    lines.push(`📌 范围: docs/故事任务面板/${project}/${story}/`);
+    lines.push(`👉 下一步: 见 delivery-gate 状态`);
+    lines.push(`🌐 影响: docs/故事任务面板/${project}/${story}/`);
   }
 
-  return [
-    `🎯 结论: 完成 ${info.name} ${stage} 阶段`,
-    `📝 描述: 管线执行完毕`,
-    `📌 范围: docs/故事任务面板/${project}/${story}/`,
-    `👉 下一步: 见 delivery-gate 状态`,
-    `🌐 影响: docs/故事任务面板/${project}/${story}/`,
-    `📎 证据: .memory/rui-state.json`,
-    `⏱️ 会话: ${stage}`,
-  ].join('\n');
+  if (progress) {
+    const pct = Math.round((progress.completed / progress.total) * 100);
+    lines.push(`📊 进度: ${progress.completed}/${progress.total} (${pct}%) · 当前: ${progress.current}`);
+  }
+  if (duration != null) {
+    lines.push(`⏱️ 会话: ${duration}min`);
+  }
+  lines.push(`📎 证据: .memory/rui-state.json`);
+
+  const details = [];
+  if (syncSummary) {
+    const { result, stats } = syncSummary;
+    const emoji = result === 'success' ? '✅' : '⚠️';
+    details.push(`${emoji} 文档同步: ${result} · ${stats.created} 新建 / ${stats.overwritten} 覆盖 / ${stats.failed} 失败`);
+  }
+
+  if (details.length > 0) {
+    return lines.join('\n') + '\n\n———\n\n' + details.join('\n');
+  }
+  return lines.join('\n');
 }
 
 function main() {
