@@ -1,17 +1,22 @@
 # 数据契约
 
-> **定位**：每个文档目录的 `.memory/` 与 `.improvement/` 字段定义。脚本由 `~/.claude/plugins/marketplaces/yry/skills/rui/scripts/` 管理，人工不编辑。
+> **口诀：脚本写、字段定、不手编。** 每个文档目录的 `.memory/` 与 `.improvement/` 由脚本管理，字段由本文件唯一定义。
 
-五类文档（故事任务面板 / 组件文档 / 接口文档 / 页面文档 / 领域模型）均按 `docs/<文档类>/<Project>/<name>/` 组织，附属目录结构相同。
+脚本位于 `~/.claude/plugins/marketplaces/yry/skills/rui/scripts/`，人工不编辑这些文件。
+
+哲学源自 [CLAUDE.md](../../CLAUDE.md)「先可见，后规则」——执行记忆与状态本身就是事实，规则在它们之上。配套：[docs.md](./docs.md) 目录与生命周期、[formulas.md](./formulas.md) 文档结构。
 
 ## 存储路径
 
+五类文档（故事任务面板 / 组件文档 / 接口文档 / 页面文档 / 领域模型）均按 `docs/<文档类>/<Project>/<name>/` 组织，附属目录结构相同：
+
 ```
 docs/<文档类>/<Project>/<name>/
-├── .improvement/proposals.jsonl
+├── .improvement/
+│   └── proposals.jsonl              ← self-improve 追加
 └── .memory/
-    ├── execution-memory.jsonl
-    └── rui-state.json
+    ├── execution-memory.jsonl       ← 每次阶段变更追加
+    └── rui-state.json               ← 当前状态覆盖写
 ```
 
 `/rui update` 接受两种输入：故事名 `<Project>-<name>`（→ `docs/故事任务面板/<Project>/<name>/`），或目录路径 `<文档类>/<Project>/<name>`。
@@ -56,7 +61,7 @@ docs/<文档类>/<Project>/<name>/
 | `related_proposals` | string[] | 关联提案 ID |
 | `no_code` | bool | `--no-code` 模式标记 |
 
-**恢复策略**：重跑同 `/rui` 命令从 `current_stage` 续。`--no-code` 模式下代码阶段（预检→测试先行→实现→验证）全部标记 `skipped`，直接进入交付。
+**恢复策略**：重跑同 `/rui` 命令从 `current_stage` 续。`--no-code` 模式下代码阶段（预检 → 测试先行 → 实现 → 验证）全部标记 `skipped`，直接进入交付。
 
 ## proposals.jsonl
 
@@ -87,10 +92,19 @@ self-improve 引擎追加写入。
 
 ```mermaid
 flowchart LR
-    A[/rui 执行/] --> B[execution-memory.jsonl + rui-state.json]
+    A[/rui 执行/] --> B[execution-memory.jsonl<br/>+ rui-state.json]
     B --> C[self-improve.js<br/>观察→诊断→改进]
     C --> D[proposals.jsonl]
-    D --> E1[recommend.js 推荐]
-    D --> E2[/rui update 上下文]
-    D --> E3[loop.js §L 追加]
+    D --> E1[recommend.js<br/>推荐排序]
+    D --> E2[/rui update<br/>上下文]
+    D --> E3[loop.js §L<br/>追加]
 ```
+
+## 写入规则
+
+| 规则 | 说明 |
+|------|------|
+| append-only | `execution-memory.jsonl` 与 `proposals.jsonl` 仅追加，不重写 |
+| 覆盖写 | `rui-state.json` 每次阶段变更覆盖整个文件 |
+| 不手编 | 三个文件均由脚本管理，人工编辑会破坏字段一致性 |
+| 不入库审查 | 附属目录是元数据，不进入文档审查清单 |
