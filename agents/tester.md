@@ -67,7 +67,7 @@ flowchart LR
 
 ## 项目上下文
 
-由 `rui init` 注入：测试命令、构建命令、编码规范。未注入时回退 [project-profile.json](../project-profile.json)。
+由 `rui init` 写入 [`.claude/project-profile.json`](../project-profile.json)：测试命令、构建命令、技术栈。agent 启动时自读。
 
 ## 生效标志
 

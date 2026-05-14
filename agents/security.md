@@ -64,7 +64,7 @@ flowchart LR
 
 ## 项目上下文
 
-由 `rui init` 注入：安全约束、技术栈、安全敏感依赖、部署环境。未注入时回退 [project-profile.json](../project-profile.json)。
+由 `rui init` 写入 [`.claude/project-profile.json`](../project-profile.json)：技术栈、依赖（含安全敏感包）、生态信号。agent 启动时自读；项目特有的安全约束写在 `CLAUDE.md` 安全章节。
 
 ## 生效标志
 

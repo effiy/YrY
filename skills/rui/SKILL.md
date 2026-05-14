@@ -19,7 +19,7 @@ agents:
 
 | 命令 | 用途 | 关键行为 |
 |------|------|---------|
-| `/rui init [--force\|--dry-run]` | 建立项目基线 | 提取 CLAUDE.md / README.md / 项目清单（manifest）→ 互补注入 `.claude/`，8/8 就绪检查 |
+| `/rui init [--force\|--dry-run]` | 建立项目基线 | detect → materialize → verify；项目特有信息全部写入 `.claude/project-profile.json`；5/5 就绪检查 |
 | `/rui doc <req>` | 拆需求为故事 + 生成文档基线（故事任务 → 评审三件） | 必须分支隔离；禁止改源码；多故事逐个串行 |
 | `/rui code <name>` | 实现故事 + 生成验证报告（实施 / 测试 / 自改进复盘） | Gate A 测试先行；Gate B 验证闭合 |
 | `/rui <req>` | 端到端 | doc + code 全自动串联 |
@@ -43,9 +43,8 @@ flowchart LR
 | 阶段细则 | 出处 |
 |---------|------|
 | 影响分析 / 证据等级 | [agents/AGENT.md](../../agents/AGENT.md) |
-| 分支隔离 / P0 审查 | [rules/code-pipeline.md](../../rules/code-pipeline.md) |
-| Gate A / Gate B | [rules/gate-rules.md](../../rules/gate-rules.md) |
-| 三步交付管线 | [rules/delivery-gate.md](../../rules/delivery-gate.md) |
+| 分支隔离 / Gate A/B / P0 审查 | [rules/code-pipeline.md](../../rules/code-pipeline.md) |
+| 三步交付管线 / 文档同步 | [rules/delivery-gate.md](../../rules/delivery-gate.md) |
 | 诊断 D0–D7 / 评估 E1–E4 | [rules/self-improve.md](../../rules/self-improve.md) |
 | 文档生成强制约束 | [rules/doc-generation.md](../../rules/doc-generation.md) |
 | Agent 交接契约 | [agents/](../../agents/) 各角色文件 |
@@ -84,100 +83,82 @@ flowchart LR
 
 ## init 简述
 
-> **口诀：提基线、互补注、查八项。** 提取项目特有信号，与插件公共内容做归一化去重，仅追加「基线补充」章节，不重复写公共概念。
+> **口诀：探—物—验。** 三步：探（扫描出 profile）→ 物（复制公共物料）→ 验（5 项就绪检查）。项目特有信息一律写入 `project-profile.json`，agent 启动时自读，不再做"项目薄壳"或"rules 基线注入"。
 
 ```mermaid
 flowchart LR
-    P1[提取基线<br/>三源汇聚] --> P2[互补注入<br/>四目标增量] --> P3[就绪检查<br/>8 项门禁] --> P4[记忆<br/>.init-memory]
+    P1[detect<br/>扫描项目]:::s --> P2[materialize<br/>复制公共物料]:::s --> P3[verify<br/>5 项就绪检查]:::s --> P4[记忆<br/>.init-memory]
     P3 -.失败.-> Fix[exit 1<br/>修复后重跑]
     P3 -.通过.-> Ready[基线就绪]
+    classDef s fill:#e3f2fd,stroke:#1565c0;
 ```
 
-### 1. 提取基线（三源汇聚）
+### 1. detect — 扫描项目（事实层）
 
-| 源 | 抽取字段 | 用法 |
-|----|---------|------|
-| `CLAUDE.md` | 三公理 / 六原则 / 七准则 / 编码规范 / 禁止事项 / 关键文件 / 安全约束 | 哲学锚点 + 项目特有约束 |
-| `README.md` | 项目描述 / 系统能力 / 项目结构 / 技术栈 / 核心模块 / 构建命令 / 测试命令 / 部署信息 | 系统视图 + 命令词典 |
-| 项目清单（manifest） | dependencies / scripts / 已识别框架版本（按生态） | 真实依赖 + 自动补充命令 |
+三类信号汇聚成 `project-profile.json`：
 
-第三源按**生态优先级**择一或并存抽取（按文件存在性命中即生效，多生态项目并存抽取并合并）：
+| 信号 | 来源 | 用途 |
+|------|------|------|
+| 项目名 | 仓库目录名 | `branch_prefix` / `doc_root` 锚点 |
+| 项目类型 | `constants.detectProjectType` | `frontend` / `backend` / `fullstack` / `meta` / `unknown` 决定 Coder 公式与故事骨架 |
+| 项目清单（manifest） | 按生态择一或并存 | 依赖列表 + 构建/测试命令 + 框架版本 |
 
-| 生态 | 清单文件 | 依赖字段 | 命令字段 |
-|------|---------|---------|---------|
-| Node | `package.json` | `dependencies` / `devDependencies` | `scripts.build/test/lint/dev` → `npm run *` |
-| Python | `pyproject.toml` / `requirements.txt` / `Pipfile` | `[project.dependencies]` / `[tool.poetry.dependencies]` / 行清单 | `[tool.poetry.scripts]` / 约定 `pytest` / `python -m build` |
-| Rust | `Cargo.toml` | `[dependencies]` / `[dev-dependencies]` | `cargo build` / `cargo test` |
-| Go | `go.mod` | `require` 块 | `go build ./...` / `go test ./...` |
-| Java | `pom.xml` / `build.gradle(.kts)` | `<dependencies>` / `dependencies {}` | `mvn package` / `mvn test` 或 `./gradlew build/test` |
-| Ruby | `Gemfile` | `gem` 行 | `bundle exec rake` / `rspec` |
-| PHP | `composer.json` | `require` / `require-dev` | `composer.scripts` |
-| 元项目 | `.claude-plugin/plugin.json` | 插件元数据 | 无（脚本入口由 `skills/*/scripts/` 决定） |
+第三类按生态文件存在性命中即抽取（多生态合并）：
 
-无清单命中时第三源缺省，仅以前两源建立基线（`baseline.dependencies = {}`，构建/测试命令需 README 提供）。
+| 生态 | 清单文件 | 提取 |
+|------|---------|------|
+| Node | `package.json` | deps + `scripts.build/test/lint/dev` → `npm run *` |
+| Python | `pyproject.toml` / `requirements.txt` | deps + `pytest` / `python -m build` |
+| Rust | `Cargo.toml` | deps + `cargo build/test` |
+| Go | `go.mod` | requires + `go build/test ./...` |
+| Java | `pom.xml` / `build.gradle(.kts)` | artifactId + `mvn` 或 `./gradlew` |
+| Ruby / PHP | `Gemfile` / `composer.json` | gem / require |
+| 元项目 | `.claude-plugin/plugin.json` | 标记 `meta` 生态 |
 
-类型识别由 `constants.detectProjectType` 复用源码扫描（扩展名权重 / 框架依赖 / API 模式签名 / 元项目信号）→ `frontend` / `backend` / `fullstack` / `meta` / `unknown`。结果写入 `.claude/project-profile.json`，含 `coder_formula` 与 `story_defaults`（决定每故事必选/可选文件骨架）。
+`CLAUDE.md` / `README.md` 不再做"提取注入"——它们是 agent 直接读的活文档。
 
-### 2. 项目薄壳生成（agents）+ 互补注入（rules）
+### 2. materialize — 复制公共物料（基线层）
 
-`.claude/agents/*.md` 改为「项目薄壳」生成模式：
+**整文件复制**（每次 init 同步最新）。`--force` 覆盖已有，否则跳过。
 
-- **frontmatter 原样保留** — Claude Code 加载 agent 必需的 `name/description/tools` 字段不动。
-- **角色契约外链** — body 用 Markdown 链接指向插件原文（GitHub + 本地 marketplace 缓存路径），不复制大段角色定义文本。
-- **项目档案构成主体** — 由 `rui init` 提取的项目档案（项目名 / 类型 / Coder 公式 / 技术栈 / 编码规范 / 禁止事项 / 关键文件 / 核心模块 / 构建命令 / 测试命令 / 安全约束 / 敏感依赖 / 部署信息）按角色裁剪后逐节填入，缺失项以 `> 待项目基线补充` 占位提醒人工补全。
-- **项目侧生效标志** — 每个角色尾部追加项目自定的 `## 项目侧生效标志`，直接引用本档案中的章节名，下游可验证。
-- **既有内容保护** — 已存在且**不含** `<!-- rui-init: project-agent-shell -->` 标记的文件视为用户自定义，未加 `--force` 不覆盖。
+| 来源 | 目标 |
+|------|------|
+| `agents/*.md`（7 个） | `.claude/agents/` |
+| `rules/*.md`（6 个） | `.claude/rules/` |
+| `skills/rui/formulas.md` | `.claude/formulas.md` |
+| `skills/rui/coder.md` | `.claude/coder.md` |
+| `.mcp.json` / `settings.json` | `.claude/` |
+| 自动生成 | `.claude/project-profile.json`（每次刷新）/ `settings.local.json`（首次空模板）/ `.gitignore` |
 
-| 文件 | 项目侧主体内容 |
-|------|--------------|
-| `.claude/agents/AGENT.md` | 项目角色画像表 + 项目档案概览 |
-| `.claude/agents/pm.md` | 项目名 / 类型 / 故事骨架 / 文档根 / 分支前缀 / 项目描述 |
-| `.claude/agents/coder.md` | 技术栈 / 编码规范 / 禁止事项 / 关键文件 / 核心模块 / 构建命令 |
-| `.claude/agents/tester.md` | 测试命令 / 构建命令（验证前置）/ 编码规范（测试需遵循）|
-| `.claude/agents/security.md` | 安全约束 / 技术栈（审查范围）/ 安全敏感依赖 / 部署环境（攻击面）|
-| `.claude/agents/reporter.md` | 项目文档路径表（故事面板 / 评审 / 报告 / 记忆 / 提案）|
-| `.claude/agents/self-improve.md` | 项目基线锚点 + 项目数据源路径 |
+**关键设计**：项目特有信息（技术栈、构建命令、安全约束等）全部进 `project-profile.json`，不再切片注入到每个 agent。agent 在执行时按需读取 profile，避免"薄壳生成 / 注入合并 / 标记保护"三重复杂度。
 
-`.claude/rules/code-pipeline.md` 仍走「互补注入」（`<!-- project-baseline-injected -->` 锚点 + `## 基线补充` 章节追加）：rules 是跨 agent 共用约束，整文件复制 + 项目特有命令叠加更合适。注入做归一化去重（小写折叠 / 空白压缩 / Markdown 字符剥离），已覆盖项不重复写。
+### 3. verify — 5 项就绪检查（验证层）
 
-公共物料**整文件复制**（每次 init 同步最新）：
-
-- `rules/` 全部规则（code-pipeline / doc-generation / gate-rules / delivery-gate / self-improve / import-docs / rui-claude / no-magic-number）
-- `skills/rui/formulas.md` → `.claude/formulas.md`
-- `skills/rui/coder.md` → `.claude/coder.md`
-- `.mcp.json` / `settings.json` → `.claude/`
-- `settings.local.json`（首次生成空模板）+ `.claude/.gitignore`（排除本地文件）
-
-### 3. 就绪检查（8 项门禁）
-
-每项做**结构 + 内容**双重校验，任一未通过 `exit 1`：
+任一失败 `exit 1`：
 
 | # | 检查项 | 通过条件 |
 |---|--------|--------|
-| 1 | `CLAUDE.md` | 三公理 + 守底线原则 + 思在前准则 + 退化对策 全部命中 |
-| 2 | `README.md` | 系统能力 + 项目结构 + 快速开始 + `/rui init` 命令存在 |
-| 3 | `.claude/agents/` | `AGENT.md`（≥100 字）+ 6 角色 frontmatter 合法 |
-| 4 | `.claude/rules/` | 6 个核心规则文件齐备 |
-| 5 | `.claude/formulas.md` | F.meta + F.story.01–08 + F.supp.\* 全部模式命中 |
-| 6 | `.claude/.mcp.json` | JSON 合法 + 含 `mcpServers` 字段 |
-| 7 | `.claude/settings.json` | JSON 合法 + `permissions` 非空 |
-| 8 | `.claude/` 目录 | `agents/` + `rules/` + `formulas.md` + `coder.md` + `settings.json` + `.mcp.json` + `settings.local.json` 全部存在 |
+| 1 | `CLAUDE.md` | 三公理 + 退化对策 关键节点全部命中 |
+| 2 | `README.md` | 系统能力 + 项目结构 + 快速开始 + `/rui init` 存在 |
+| 3 | `.claude/agents/` | 7 个 Agent 文件存在；`AGENT.md` 内容长度达标，6 角色 frontmatter 合法 |
+| 4 | `.claude/rules/` | 6 个规则文件齐备 |
+| 5 | `.claude/` 配置层 | `project-profile.json`（含 project/type/coder_formula）+ `formulas.md`（含 F.story.01/08/F.supp./F.meta）+ `coder.md` + `.mcp.json`（含 mcpServers）+ `settings.json`（含 permissions）+ `settings.local.json` |
 
 ### 4. 选项
 
 | 选项 | 行为 |
 |------|------|
-| `--dry-run` | 仅扫描+报告，不写文件；显示 `will-create` / `will-copy` 标识 |
-| `--force` | 重新生成项目薄壳（覆盖 `<!-- rui-init: project-agent-shell -->` 标记的文件）+ 整文件覆盖公共物料 + 重新执行 rules 注入；不会覆盖未带薄壳标记的用户自定义 agent |
-| `--json` | 机器可读输出（基线快照 + 注入清单 + 检查结果 + 推荐下一步） |
+| `--dry-run` | 仅扫描+报告，不写文件；动作以 `◇` 前缀标识 |
+| `--force` | 整文件覆盖 `.claude/` 下已有物料；不影响 `settings.local.json`（用户本地） |
+| `--json` | 机器可读输出（`{ profile, materialize, verify, dry_run }`） |
 
 ### 5. 产物
 
 | 路径 | 用途 |
 |------|------|
-| `.claude/project-profile.json` | 项目画像（类型/Coder 公式/故事骨架默认值），后续 `/rui doc` 据此选骨架 |
+| `.claude/project-profile.json` | 项目画像（类型 / Coder 公式 / 故事骨架默认值 / 依赖与命令）。**手动编辑无效，下次 init 覆盖** |
 | `.claude/.gitignore` | 排除 `settings.local.json` + `.history/` |
-| `docs/故事任务面板/.init-memory.json` | init 单次执行的记忆条目（与 execution-memory.jsonl 同 schema），便于复盘 |
+| `docs/故事任务面板/.init-memory.json` | 本次 init 的执行记录（时间戳 + 项目类型 + 检查结果） |
 
 ## 集成
 
@@ -185,6 +166,6 @@ flowchart LR
 |------|------|
 | 脚本 | `~/.claude/plugins/marketplaces/yry/skills/rui/scripts/`：init · list · recommend · rui-state · execution-memory · self-improve · delivery-gate · loop · natural-week · constants |
 | Skills | `import-docs --workspace`（同步） · `wework-bot --name <name>`（通知） |
-| 规则 | [code-pipeline](../../rules/code-pipeline.md) · [gate-rules](../../rules/gate-rules.md) · [doc-generation](../../rules/doc-generation.md) · [delivery-gate](../../rules/delivery-gate.md) · [self-improve](../../rules/self-improve.md) · [import-docs](../../rules/import-docs.md) · [rui-claude](../../rules/rui-claude.md) · [no-magic-number](../../rules/no-magic-number.md) |
+| 规则 | [code-pipeline](../../rules/code-pipeline.md) · [delivery-gate](../../rules/delivery-gate.md) · [doc-generation](../../rules/doc-generation.md) · [self-improve](../../rules/self-improve.md) · [rui-claude](../../rules/rui-claude.md) · [no-magic-number](../../rules/no-magic-number.md) |
 | 角色 | [pm](../../agents/pm.md) · [coder](../../agents/coder.md) · [tester](../../agents/tester.md) · [reporter](../../agents/reporter.md) · [security](../../agents/security.md) · [self-improve](../../agents/self-improve.md) |
 | 文档 | [formulas.md](./formulas.md) — 故事文档公式（F.story.\* + F.supp.\*） · [coder.md](./coder.md) — 目录生命周期 + 参考文档公式（F.ref.\*） + 数据契约（`.memory/` + `.improvement/`） |

@@ -158,7 +158,7 @@ function generateDoc(stats, opts) {
   if (stats.agents.files === 0) checks.push(['agents/ 为空', '⚠️', '需 AGENT.md 定义 Agent 身份']);
   else checks.push(['agents/ 已配置', '✅', '']);
 
-  if (stats.rules.files === 0) checks.push(['rules/ 为空', '⚠️', '至少需 gate-rules.md']);
+  if (stats.rules.files === 0) checks.push(['rules/ 为空', '⚠️', '至少需 code-pipeline.md']);
   else checks.push(['rules/ 已配置', '✅', '']);
 
   const hasClaudeMd = stats.rootFiles.some(f => f.name === 'CLAUDE.md');

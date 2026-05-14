@@ -109,9 +109,9 @@ flowchart TB
 | 目录 | 职责 | 文件数 | 详细 |
 |------|------|--------|------|
 | `agents/` | 6 个角色身份 + 1 份总览 | 7 | pm · coder · tester · reporter · security · self-improve · AGENT |
-| `rules/` | 跨场景共享约束 | 6 | code-pipeline · doc-generation · gate-rules · import-docs · rui-claude · self-improve |
+| `rules/` | 跨场景共享约束 | 6 | code-pipeline · delivery-gate · doc-generation · self-improve · rui-claude · no-magic-number |
 | `skills/` | 可调用能力 | 4 | rui · rui-claude · wework-bot · import-docs |
-| `.claude/` | `rui init` 生成的项目副本 | 自动 | agents/rules/formulas 副本 + settings + .mcp.json + .history |
+| `.claude/` | `rui init` 生成的项目副本 | 自动 | agents/rules/formulas/coder 副本 + project-profile + settings + .mcp.json + .history |
 
 <details>
 <summary>展开完整目录树</summary>
@@ -131,20 +131,20 @@ YrY/
 │   ├── security.md        # 安全审查：威胁建模 + 约束注入
 │   └── self-improve.md    # 自改进：数据驱动 + 效果评估
 ├── rules/
-│   ├── code-pipeline.md   # 分支隔离、逐模块审查
-│   ├── doc-generation.md  # 版本信息、证据标准、增量裁剪
-│   ├── gate-rules.md      # Gate A/B + P0 审查标准
-│   ├── import-docs.md     # 多检查点强制同步
-│   ├── rui-claude.md      # 操作范围、分支隔离
-│   └── self-improve.md    # 数据驱动、H11 降级
+│   ├── code-pipeline.md   # 分支隔离 + Gate A/B + 逐模块审查
+│   ├── delivery-gate.md   # 三步交付（追加日志 / 同步 / 通知）+ Stop hook
+│   ├── doc-generation.md  # 版本信息 + 证据等级 + 增量裁剪
+│   ├── self-improve.md    # 诊断 D0–D7 + 评估 E1–E4
+│   ├── rui-claude.md      # 操作范围限定 .claude/
+│   └── no-magic-number.md # 数字必须绑定语义
 ├── skills/
 │   ├── rui/               # SDLC 编排器：SKILL.md + formulas.md + coder.md
 │   ├── rui-claude/        # .claude 配置管理：SKILL.md
 │   ├── wework-bot/        # 企业微信通知：SKILL.md + config.json
 │   └── import-docs/       # 文档远程同步：SKILL.md
 └── .claude/               # rui init 生成（同步至远端）
-    ├── agents/  rules/  formulas.md
-    ├── settings.json  settings.local.json  .mcp.json
+    ├── agents/  rules/  formulas.md  coder.md
+    ├── project-profile.json  settings.json  settings.local.json  .mcp.json
     └── .history/
 ```
 
@@ -153,7 +153,7 @@ YrY/
 ## 进一步
 
 - **了解哲学** — [CLAUDE.md](./CLAUDE.md)：三条公理（信模型、惜注意、验现实）和七条执行准则
-- **规则细节** — [rules/](./rules/)：code-pipeline、gate-rules、doc-generation 等共享约束
+- **规则细节** — [rules/](./rules/)：code-pipeline、delivery-gate、doc-generation 等共享约束
 - **角色边界** — [agents/](./agents/)：每个 Agent 的决策范围与不该做的事
 - **Skill 内幕** — [skills/rui/SKILL.md](./skills/rui/SKILL.md)：rui 命令的完整管线说明
 - **故事文档公式** — [skills/rui/formulas.md](./skills/rui/formulas.md)：故事主线（F.story.\*）+ 补充文档（F.supp.\*）结构公式
