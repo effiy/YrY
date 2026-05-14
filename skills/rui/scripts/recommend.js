@@ -1,7 +1,20 @@
 #!/usr/bin/env node
 
-// node scripts/recommend.js [--json] [--limit N]
-// Unified recommendation engine: story status + health + proposals + git + sync
+// node scripts/recommend.js [--json] [--limit N] [--explain]
+//
+// Chained recommendation pipeline. Six layers; each consumes the previous
+// layer's context and emits scored candidates with a visible reasoning chain.
+//
+//   L0 ContextBuild   project profile + stories + git + sync + health + modules
+//   L1 Gates          blockers, malformed names, branch hazards (must fix)
+//   L2 StoryFlow      per-story SDLC progression (PM→Tester→Coder→Security→Reporter)
+//   L3 Coverage       undocumented source modules + doc gaps (breadth)
+//   L4 HealthSignals  proposals + degrading trends + cohesion + low-health dims
+//   L5 Hygiene        sync + branch hygiene + advisory
+//
+// Score = priority_weight × (1 + urgency + impact + project_fit) − cost_penalty.
+// Hierarchical suppression collapses role-level signals into the owning story
+// task so 5 noisy items become 1 rich one.
 
 const fs = require('fs');
 const fsp = fs.promises;
@@ -11,159 +24,49 @@ const C = require('./constants.js');
 const REPO_ROOT = process.cwd();
 const PANEL_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
-const { resolveStoryPath, parseStoryDirName, sh, shJson, detectProjectType } = C;
+const { resolveStoryPath, sh, shJson, detectProjectType } = C;
+
+// ── File catalogues ───────────────────────────────────────────
 
 const STORY_FILES = [
   '01-故事任务.md', '02-后端技术评审.md', '03-前端技术评审.md',
   '04-测试用例评审.md', '05-后端实施报告.md', '06-前端实施报告.md',
   '07-测试用例报告.md', '08-自改进复盘.md',
 ];
-const DOC_FILES = ['01-故事任务.md', '02-后端技术评审.md', '03-前端技术评审.md', '04-测试用例评审.md'];
-const REPORT_FILES = ['05-后端实施报告.md', '06-前端实施报告.md', '07-测试用例报告.md'];
+const DOC_FILES   = STORY_FILES.slice(0, 4);
+const REPORT_FILES = STORY_FILES.slice(4, 7);
 
-// ── Project type detection ─────────────────────────────────────
-// Delegates to constants.detectProjectType (shared with init.js).
+// Priority weights drive coarse ordering; finer factors break ties.
+const PRIORITY_WEIGHT = { P0: 1000, P1: 100, P2: 10, P3: 1 };
+const STATUS_LABEL = {
+  blocked: '阻断', docs_in_progress: '文档中', docs_done: '文档完成',
+  code_in_progress: '代码中', code_done: '完成', not_started: '未开始',
+};
 
-// ── Role formula analysis ──────────────────────────────────────
+// Status urgency contributes to scoring: stories closer to "stuck" rank higher.
+const STATUS_URGENCY = {
+  blocked: 0.9, not_started: 0.1, docs_in_progress: 0.6,
+  docs_done: 0.7, code_in_progress: 0.8, code_done: 0.0,
+};
 
-function analyzeStoryFormulas(storyDir) {
-  const results = { pm: null, tester: null, coder: null, security: null, reporter: null };
-
-  // PM formula: 作为 [角色] 我想要 [动作] 以便 [价值] + scope boundaries
-  try {
-    const storyFile = path.join(storyDir, '01-故事任务.md');
-    if (fs.existsSync(storyFile)) {
-      const content = fs.readFileSync(storyFile, 'utf8');
-      const hasRole = /\|\s*作为\s*\|[^|]*[^\s|][^|]*\|/.test(content);
-      const hasAction = /\|\s*我想要\s*\|[^|]*[^\s|][^|]*\|/.test(content);
-      const hasValue = /\|\s*以便\s*\|[^|]*[^\s|][^|]*\|/.test(content);
-      const hasScopeOut = /范围外/.test(content) && /\|\s*范围外\s*\|[^|]*[^\s|][^|]*\|/.test(content);
-      const hasPriority = /\|\s*优先级\s*\|[^|]*(P0|P1|P2)[^|]*\|/.test(content);
-      const hasScopeBoundary = /\|\s*范围边界\s*\|[^|]*[^\s|][^|]*\|/.test(content);
-
-      const gaps = [];
-      if (!hasRole) gaps.push('缺少"作为"角色定义');
-      if (!hasAction) gaps.push('缺少"我想要"动作描述');
-      if (!hasValue) gaps.push('缺少"以便"价值说明');
-      if (!hasScopeBoundary) gaps.push('缺少范围边界（包含/不包含）');
-      if (!hasScopeOut) gaps.push('缺少"范围外"明确排除项');
-      if (!hasPriority) gaps.push('缺少优先级标注');
-
-      results.pm = {
-        ok: gaps.length === 0,
-        gaps,
-        hasScopeBoundary: hasRole && hasAction && hasValue && hasScopeBoundary,
-        hasExclusions: hasScopeOut,
-        detail: gaps.length === 0 ? 'PM公式完整，产品边界清晰' : gaps.join('; '),
-      };
-    } else {
-      results.pm = { ok: false, gaps: ['故事任务文档(01-故事任务.md)不存在'], detail: '缺少故事定义' };
-    }
-  } catch (e) {
-    results.pm = { ok: false, gaps: [e.message], detail: '读取故事文档失败' };
-  }
-
-  // Tester formula: Given [前置] When [操作] Then [预期]
-  try {
-    const storyFile = path.join(storyDir, '01-故事任务.md');
-    if (fs.existsSync(storyFile)) {
-      const content = fs.readFileSync(storyFile, 'utf8');
-      const acSection = content.match(/###\s*§5\s+Acceptance Criteria[\s\S]*?(?=---|\n##|$)/i);
-      const hasGivenWhenThen = /\|\s*AC\d+\s*\|[^|]*Given[^|]*\|[^|]*When[^|]*\|[^|]*Then[^|]*\|/i.test(content);
-      const hasAC = /AC\d+/.test(content);
-      const hasGateAB = /Gate\s*A/.test(content) && /Gate\s*B/.test(content);
-
-      const gaps = [];
-      if (!hasAC) gaps.push('缺少验收标准(AC)');
-      if (!hasGivenWhenThen) gaps.push('AC未使用Given/When/Then格式');
-      if (!hasGateAB) gaps.push('未标注Gate A/Gate B门禁');
-
-      results.tester = {
-        ok: gaps.length === 0,
-        gaps,
-        hasVerifiableAC: hasGivenWhenThen,
-        detail: gaps.length === 0 ? 'Tester公式完整，AC可独立验证' : gaps.join('; '),
-      };
-    } else {
-      results.tester = { ok: false, gaps: ['故事文档不存在'], detail: '无法分析AC' };
-    }
-  } catch (e) {
-    results.tester = { ok: false, gaps: [e.message], detail: 'AC分析失败' };
-  }
-
-  // Security formula: 威胁 → 信任边界 → 缓解
-  try {
-    const beReview = path.join(storyDir, '02-后端技术评审.md');
-    const feReview = path.join(storyDir, '03-前端技术评审.md');
-    let secContent = '';
-    if (fs.existsSync(beReview)) secContent += fs.readFileSync(beReview, 'utf8');
-    if (fs.existsSync(feReview)) secContent += fs.readFileSync(feReview, 'utf8');
-
-    const hasThreat = /威胁/.test(secContent) && /\|\s*\d+\s*\|[^|]*[^\s|][^|]*\|/m.test(secContent);
-    const hasTrustBoundary = /信任边界/.test(secContent);
-    const hasMitigation = /缓解/.test(secContent) && /\|\s*[^\n|]*\|\s*(P0|P1|P2)\s*\|/m.test(secContent);
-
-    const gaps = [];
-    if (!hasThreat) gaps.push('缺少威胁识别');
-    if (!hasTrustBoundary) gaps.push('缺少信任边界标注');
-    if (!hasMitigation) gaps.push('缺少缓解措施');
-
-    results.security = {
-      ok: gaps.length === 0,
-      gaps,
-      detail: gaps.length === 0 ? 'Security公式完整，威胁有明确对策' : gaps.join('; '),
-    };
-  } catch (e) {
-    results.security = { ok: false, gaps: [e.message], detail: '安全分析失败' };
-  }
-
-  // Reporter formula: 事实 → 偏差 → 影响 (checked in reports)
-  try {
-    const reportFiles = ['05-后端实施报告.md', '06-前端实施报告.md', '07-测试用例报告.md'];
-    let hasReport = false, hasFactDeviation = false;
-
-    for (const rf of reportFiles) {
-      const rp = path.join(storyDir, rf);
-      if (fs.existsSync(rp)) {
-        hasReport = true;
-        const content = fs.readFileSync(rp, 'utf8');
-        if (/事实/.test(content) && /偏差/.test(content) && /影响/.test(content)) {
-          hasFactDeviation = true;
-          break;
-        }
-      }
-    }
-
-    if (!hasReport) {
-      results.reporter = { ok: true, gaps: [], detail: '报告尚未生成，待实施后检验' };
-    } else if (!hasFactDeviation) {
-      results.reporter = { ok: false, gaps: ['实施报告未遵循事实→偏差→影响公式'], detail: '报告缺少公式结构' };
-    } else {
-      results.reporter = { ok: true, gaps: [], detail: 'Reporter公式完整' };
-    }
-  } catch (e) {
-    results.reporter = { ok: false, gaps: [e.message], detail: '报告分析失败' };
-  }
-
-  return results;
-}
-
-// ── Story status ──────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════
+// L0 — Context build
+// ════════════════════════════════════════════════════════════════
 
 async function scanStories() {
   const stories = [];
   let projectDirs = [];
   try {
-    projectDirs = await fsp.readdir(PANEL_DIR, { withFileTypes: true });
-    projectDirs = projectDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'));
+    projectDirs = (await fsp.readdir(PANEL_DIR, { withFileTypes: true }))
+      .filter(e => e.isDirectory() && !e.name.startsWith('.'));
   } catch { return stories; }
 
   for (const proj of projectDirs) {
     const projPath = path.join(PANEL_DIR, proj.name);
     let storyDirs = [];
     try {
-      storyDirs = await fsp.readdir(projPath, { withFileTypes: true });
-      storyDirs = storyDirs.filter(e => e.isDirectory() && !e.name.startsWith('.'));
+      storyDirs = (await fsp.readdir(projPath, { withFileTypes: true }))
+        .filter(e => e.isDirectory() && !e.name.startsWith('.'));
     } catch { continue; }
 
     for (const story of storyDirs) {
@@ -175,11 +78,11 @@ async function scanStories() {
         catch { exists[f] = false; }
       }
 
-      let blocked = false, blockReason = '';
+      let blocked = false, blockReason = '', currentStage = null;
       try {
-        const stateRaw = await fsp.readFile(path.join(dirPath, '.memory', 'rui-state.json'), 'utf8');
-        const state = JSON.parse(stateRaw);
+        const state = JSON.parse(await fsp.readFile(path.join(dirPath, '.memory', 'rui-state.json'), 'utf8'));
         if (state.blocked) { blocked = true; blockReason = state.block_reason || ''; }
+        currentStage = state.current_stage || null;
       } catch {}
 
       let status;
@@ -190,17 +93,18 @@ async function scanStories() {
         status = REPORT_FILES.some(f => exists[f]) ? 'code_in_progress' : 'docs_done';
       else status = 'code_done';
 
-      const missing = STORY_FILES.filter(f => !exists[f]);
-
-      stories.push({ name: fullName, status, missing, blockReason, exists, malformed: false, malformed_reason: null, project: proj.name });
+      stories.push({
+        name: fullName, project: proj.name, story: story.name, dir: dirPath,
+        status, blockReason, currentStage, exists,
+        missing: STORY_FILES.filter(f => !exists[f]),
+        malformed: false, malformed_reason: null,
+      });
     }
   }
 
   stories.sort((a, b) => a.name.localeCompare(b.name));
   return stories;
 }
-
-// ── Git state ─────────────────────────────────────────────────
 
 function gitState() {
   const branch = sh('git branch --show-current');
@@ -210,86 +114,188 @@ function gitState() {
   const unpushedCount = unpushedCommits ? unpushedCommits.split('\n').filter(Boolean).length : 0;
   const recentBranches = sh('git branch --sort=-committerdate | head -10', '')
     .split('\n').map(b => b.replace(/^\*?\s+/, '').trim()).filter(Boolean);
-
   return { branch, isMain, hasUncommitted, unpushedCount, recentBranches };
 }
-
-// ── Import-docs sync status ───────────────────────────────────
 
 function syncStatus() {
   const hasToken = !!process.env.API_X_TOKEN;
   const apiUrl = 'https://api.effiy.cn';
   let reachable = null;
   if (hasToken) {
-    try {
-      const out = sh(`curl -s -o /dev/null -w "%{http_code}" --connect-timeout 5 "${apiUrl}/"`);
-      reachable = out === '200' || out === '301' || out === '302';
-    } catch { reachable = false; }
+    const out = sh(`curl -s -o /dev/null -w "%{http_code}" --connect-timeout 5 "${apiUrl}/"`);
+    reachable = ['200', '301', '302'].includes(out);
   }
-
-  let panelFileCount = 0, claudeFileCount = 0, totalMdCount = 0;
-  try {
-    const panelDir = path.join(REPO_ROOT, 'docs', '故事任务面板');
-    if (fs.existsSync(panelDir)) {
-      panelFileCount = sh(`find "${panelDir}" -name "*.md" -type f | wc -l`, '0').trim();
-      panelFileCount = parseInt(panelFileCount, 10) || 0;
-    }
-  } catch {}
-  try {
-    const claudeDir = path.join(REPO_ROOT, '.claude');
-    if (fs.existsSync(claudeDir)) {
-      claudeFileCount = sh(`find "${claudeDir}" -type f | wc -l`, '0').trim();
-      claudeFileCount = parseInt(claudeFileCount, 10) || 0;
-    }
-  } catch {}
-  try {
-    totalMdCount = parseInt(sh('find . -name "*.md" -not -path "./node_modules/*" -not -path "./.git/*" | wc -l', '0').trim(), 10) || 0;
-  } catch {}
-
-  return { hasToken, reachable, panelFileCount, claudeFileCount, totalMdCount };
+  const countFiles = (dir, pattern) => {
+    try {
+      if (!fs.existsSync(dir)) return 0;
+      const cmd = pattern
+        ? `find "${dir}" -name "${pattern}" -type f | wc -l`
+        : `find "${dir}" -type f | wc -l`;
+      return parseInt(sh(cmd, '0').trim(), 10) || 0;
+    } catch { return 0; }
+  };
+  return {
+    hasToken, reachable,
+    panelFileCount: countFiles(path.join(REPO_ROOT, 'docs', '故事任务面板'), '*.md'),
+    claudeFileCount: countFiles(path.join(REPO_ROOT, '.claude'), null),
+  };
 }
-
-// ── Health ────────────────────────────────────────────────────
 
 function healthSnapshot() {
   const selfImprove = path.join(__dirname, 'self-improve.js');
   const execMemory = path.join(__dirname, 'execution-memory.js');
-  const health = shJson(`node "${selfImprove}" health --json`);
-  const trends = shJson(`node "${execMemory}" trends --weeks 8 --json`);
-  const proposals = shJson(`node "${selfImprove}" proposals --json`) || [];
-  const snapshot = shJson(`node "${selfImprove}" snapshot --json`);
-
-  return { health, trends, proposals, snapshot };
+  return {
+    health: shJson(`node "${selfImprove}" health --json`),
+    trends: shJson(`node "${execMemory}" trends --weeks 8 --json`),
+    proposals: shJson(`node "${selfImprove}" proposals --json`) || [],
+    snapshot: shJson(`node "${selfImprove}" snapshot --json`),
+  };
 }
 
-// ── Source module discovery ──────────────────────────────────
+// ── Per-story formula analysis (with project-fit awareness) ───
+
+function analyzeStoryFormulas(storyDir, projectType) {
+  const out = { pm: null, tester: null, coder: null, security: null, reporter: null };
+  const pt = projectType.type;
+
+  const readIf = (rel) => {
+    const p = path.join(storyDir, rel);
+    try { return fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : null; } catch { return null; }
+  };
+
+  // PM: scope + boundaries
+  const story = readIf('01-故事任务.md');
+  if (!story) {
+    out.pm = { ok: false, gaps: ['故事任务文档(01-故事任务.md)不存在'], severity: 'P0' };
+    out.tester = { ok: false, gaps: ['故事文档不存在'], severity: 'P0' };
+  } else {
+    const has = (re) => re.test(story);
+    const checks = {
+      role:     has(/\|\s*作为\s*\|[^|]*\S[^|]*\|/),
+      action:   has(/\|\s*我想要\s*\|[^|]*\S[^|]*\|/),
+      value:    has(/\|\s*以便\s*\|[^|]*\S[^|]*\|/),
+      boundary: has(/\|\s*范围边界\s*\|[^|]*\S[^|]*\|/),
+      excluded: /范围外/.test(story) && has(/\|\s*范围外\s*\|[^|]*\S[^|]*\|/),
+      priority: has(/\|\s*优先级\s*\|[^|]*(P0|P1|P2)[^|]*\|/),
+    };
+    const pmGaps = [];
+    if (!checks.role)     pmGaps.push('缺少"作为"角色定义');
+    if (!checks.action)   pmGaps.push('缺少"我想要"动作描述');
+    if (!checks.value)    pmGaps.push('缺少"以便"价值说明');
+    if (!checks.boundary) pmGaps.push('缺少范围边界（包含/不包含）');
+    if (!checks.excluded) pmGaps.push('缺少"范围外"明确排除项');
+    if (!checks.priority) pmGaps.push('缺少优先级标注');
+    out.pm = {
+      ok: pmGaps.length === 0,
+      gaps: pmGaps,
+      hasScopeBoundary: checks.role && checks.action && checks.value && checks.boundary,
+      hasExclusions: checks.excluded,
+      severity: pmGaps.length === 0 ? null : 'P0',
+    };
+
+    // Tester: AC in Given/When/Then form
+    const hasAC = /AC\d+/.test(story);
+    const hasGWT = /\|\s*AC\d+\s*\|[^|]*Given[^|]*\|[^|]*When[^|]*\|[^|]*Then[^|]*\|/i.test(story);
+    const hasGates = /Gate\s*A/.test(story) && /Gate\s*B/.test(story);
+    const tGaps = [];
+    if (!hasAC)    tGaps.push('缺少验收标准(AC)');
+    if (!hasGWT)   tGaps.push('AC未使用Given/When/Then格式');
+    if (!hasGates) tGaps.push('未标注Gate A/Gate B门禁');
+    out.tester = {
+      ok: tGaps.length === 0,
+      gaps: tGaps,
+      hasVerifiableAC: hasGWT,
+      severity: tGaps.length === 0 ? null : 'P0',
+    };
+  }
+
+  // Coder: project-aware (only check BE for backend/fullstack/meta, only check FE for frontend/fullstack)
+  const beReview = readIf('02-后端技术评审.md');
+  const feReview = readIf('03-前端技术评审.md');
+  const coderChecks = {};
+
+  if (['backend', 'fullstack', 'meta'].includes(pt) && beReview) {
+    const hasAPI    = /\|\s*\{接口名\}\s*\|/.test(beReview) || /`\/api\/[^`]*`/.test(beReview);
+    const hasModel  = /数据模型/.test(beReview) && /\|\s*`[^`]+`\s*\|[^|]*\|[^|]*\|[^|]*(高|中|低)[^|]*\|[^|]*(高|中|低)/.test(beReview);
+    const hasDomain = /领域/.test(beReview) || /服务架构/.test(beReview);
+    const hasChan   = /通信通道/.test(beReview);
+    coderChecks.be = { hasAPI, hasModel, hasDomain, hasChan, present: true };
+  } else if (['backend', 'fullstack', 'meta'].includes(pt)) {
+    coderChecks.be = { present: false };
+  }
+
+  if (['frontend', 'fullstack'].includes(pt) && feReview) {
+    const hasInterface = /\|\s*`[^`]+`\s*\|[^|]*`[^`]*:[^`]*`\s*\|[^|]*`[^`]*\([^)]*\)`\s*\|[^|]*`[^`]*\([^)]*\)`\s*\|/.test(feReview);
+    const hasState     = /状态流/.test(feReview) || /数据流\s*\|/.test(feReview);
+    const hasIsolation = /样式隔离/.test(feReview) || /Scoped/.test(feReview) || /Shadow DOM/.test(feReview) || /CSS Modules/i.test(feReview);
+    coderChecks.fe = { hasInterface, hasState, hasIsolation, present: true };
+  } else if (['frontend', 'fullstack'].includes(pt)) {
+    coderChecks.fe = { present: false };
+  }
+  out.coder = coderChecks;
+
+  // Security: 威胁→信任边界→缓解 across BE+FE
+  const sec = (beReview || '') + (feReview || '');
+  const hasThreat = /威胁/.test(sec) && /\|\s*\d+\s*\|[^|]*\S[^|]*\|/m.test(sec);
+  const hasTrust  = /信任边界/.test(sec);
+  const hasMit    = /缓解/.test(sec) && /\|\s*[^\n|]*\|\s*(P0|P1|P2)\s*\|/m.test(sec);
+  const sGaps = [];
+  if (sec) {
+    if (!hasThreat) sGaps.push('缺少威胁识别');
+    if (!hasTrust)  sGaps.push('缺少信任边界标注');
+    if (!hasMit)    sGaps.push('缺少缓解措施');
+  }
+  out.security = {
+    ok: sec ? sGaps.length === 0 : true,
+    gaps: sGaps,
+    needsReview: !!sec,
+    severity: sGaps.length === 0 ? null : 'P1',
+  };
+
+  // Reporter: 事实→偏差→影响 in any present report
+  let hasReport = false, reporterOk = true;
+  for (const rf of REPORT_FILES) {
+    const c = readIf(rf);
+    if (c) {
+      hasReport = true;
+      if (!(/事实/.test(c) && /偏差/.test(c) && /影响/.test(c))) reporterOk = false;
+    }
+  }
+  out.reporter = {
+    ok: !hasReport || reporterOk,
+    gaps: hasReport && !reporterOk ? ['报告未遵循事实→偏差→影响公式'] : [],
+    hasReports: hasReport,
+    severity: !hasReport || reporterOk ? null : 'P2',
+  };
+
+  return out;
+}
+
+// ── Source-module discovery (for L3 coverage) ─────────────────
 
 function discoverSourceModules(projectType) {
   const modules = [];
   const pt = projectType.type;
 
   if (pt === 'frontend' || pt === 'fullstack') {
-    // Discover frontend component directories
-    const feExts = ['.vue', '.jsx', '.tsx'];
-    for (const ext of feExts) {
+    for (const ext of ['.vue', '.jsx', '.tsx']) {
       const files = sh(`find . -name "*${ext}" -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null`, '');
       if (!files) continue;
-      const dirs = new Set();
+      const dirs = new Map();
       for (const f of files.split('\n').filter(Boolean)) {
         const dir = path.dirname(f).replace(/^\.\//, '');
-        if (dir !== '.') dirs.add(dir);
+        if (dir !== '.') dirs.set(dir, (dirs.get(dir) || 0) + 1);
       }
-      for (const d of dirs) {
+      for (const [d, count] of dirs) {
         const name = d.replace(/\//g, '-').replace(/^src-|^components-|^pages-/, '');
         const existing = modules.find(m => m.name === name);
-        if (existing) { existing.fileCount++; continue; }
-        modules.push({ name, path: d, type: 'frontend-component', fileCount: 1 });
+        if (existing) existing.fileCount += count;
+        else modules.push({ name, path: d, type: 'frontend-component', fileCount: count });
       }
     }
   }
 
   if (pt === 'backend' || pt === 'fullstack') {
-    // Discover backend API modules
     const beFiles = sh(`find . -type f \\( -name "*.js" -o -name "*.ts" -o -name "*.py" -o -name "*.go" \\) -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/skills/*" -not -path "*/agents/*" -not -path "*/rules/*" 2>/dev/null`, '');
     if (beFiles) {
       const dirs = new Set();
@@ -302,38 +308,25 @@ function discoverSourceModules(projectType) {
           }
         } catch {}
       }
-      for (const d of dirs) {
-        const name = d.replace(/\//g, '-');
-        modules.push({ name, path: d, type: 'backend-module', fileCount: 1 });
-      }
+      for (const d of dirs) modules.push({ name: d.replace(/\//g, '-'), path: d, type: 'backend-module', fileCount: 1 });
     }
   }
 
   if (pt === 'meta' || (pt === 'unknown' && modules.length === 0)) {
-    // Discover skills, agents, rules as modules
     try {
       const skillDirs = fs.readdirSync(path.join(REPO_ROOT, 'skills'), { withFileTypes: true })
-        .filter(e => e.isDirectory() && !e.name.startsWith('.'))
-        .map(e => e.name);
-      for (const s of skillDirs) {
-        modules.push({ name: s, path: `skills/${s}`, type: 'skill', fileCount: 1 });
-      }
+        .filter(e => e.isDirectory() && !e.name.startsWith('.'));
+      for (const s of skillDirs) modules.push({ name: s.name, path: `skills/${s.name}`, type: 'skill', fileCount: 1 });
     } catch {}
     if (fs.existsSync(path.join(REPO_ROOT, 'agents'))) {
-      try {
-        const agentFiles = fs.readdirSync(path.join(REPO_ROOT, 'agents'), { withFileTypes: true })
-          .filter(e => e.isFile() && e.name.endsWith('.md'))
-          .map(e => e.name.replace(/\.md$/, ''));
-        modules.push({ name: 'agents', path: 'agents/', type: 'agent-group', fileCount: agentFiles.length });
-      } catch {}
+      const c = fs.readdirSync(path.join(REPO_ROOT, 'agents'), { withFileTypes: true })
+        .filter(e => e.isFile() && e.name.endsWith('.md')).length;
+      modules.push({ name: 'agents', path: 'agents/', type: 'agent-group', fileCount: c });
     }
     if (fs.existsSync(path.join(REPO_ROOT, 'rules'))) {
-      try {
-        const ruleFiles = fs.readdirSync(path.join(REPO_ROOT, 'rules'), { withFileTypes: true })
-          .filter(e => e.isFile() && e.name.endsWith('.md'))
-          .map(e => e.name.replace(/\.md$/, ''));
-        modules.push({ name: 'rules', path: 'rules/', type: 'rule-group', fileCount: ruleFiles.length });
-      } catch {}
+      const c = fs.readdirSync(path.join(REPO_ROOT, 'rules'), { withFileTypes: true })
+        .filter(e => e.isFile() && e.name.endsWith('.md')).length;
+      modules.push({ name: 'rules', path: 'rules/', type: 'rule-group', fileCount: c });
     }
   }
 
@@ -341,664 +334,745 @@ function discoverSourceModules(projectType) {
 }
 
 function findUndocumentedModules(modules, stories) {
-  // Build set of covered names from existing stories (use story slug part)
   const covered = new Set();
   for (const s of stories) {
     if (s.malformed) continue;
-    const info = resolveStoryPath(s.name);
-    if (info.project) {
-      covered.add(info.story);
-      covered.add(info.project);  // project name also covered
-    }
-    // Also check if any module name is substring of story name
+    covered.add(s.story);
+    covered.add(s.project);
     covered.add(s.name);
   }
-
-  const undocumented = [];
-  for (const m of modules) {
-    // Check if module is covered by any existing story
-    let isCovered = false;
+  return modules.filter(m => {
     for (const c of covered) {
-      if (m.name === c || c.includes(m.name) || m.name.includes(c)) {
-        isCovered = true;
-        break;
-      }
+      if (m.name === c || c.includes(m.name) || m.name.includes(c)) return false;
     }
-    if (!isCovered) {
-      undocumented.push(m);
-    }
-  }
-  return undocumented;
+    return true;
+  });
 }
 
-function analyzeDocumentGaps(stories) {
-  const gaps = [];
+function projectName() {
+  const url = sh('git remote get-url origin 2>/dev/null', '');
+  if (url) {
+    const m = url.match(/[\/:]([^\/]+?)(?:\.git)?$/);
+    if (m) return m[1];
+  }
+  return path.basename(REPO_ROOT);
+}
+
+// ── Build full context (single source for all layers) ─────────
+
+async function buildContext() {
+  const projectType = detectProjectType(REPO_ROOT);
+  const stories = await scanStories();
   for (const s of stories) {
-    if (s.malformed || s.status === 'code_done') continue;
-    if (s.missing && s.missing.length > 0) {
-      const criticalMissing = s.missing.filter(f =>
-        f === '01-故事任务.md' || f === '02-后端技术评审.md' || f === '03-前端技术评审.md' || f === '04-测试用例评审.md'
-      );
-      const reportMissing = s.missing.filter(f =>
-        f === '05-后端实施报告.md' || f === '06-前端实施报告.md' || f === '07-测试用例报告.md'
-      );
-      const retroMissing = s.missing.includes('08-自改进复盘.md');
-
-      if (criticalMissing.length > 0 || reportMissing.length > 0 || retroMissing) {
-        gaps.push({
-          story: s.name,
-          status: s.status,
-          criticalMissing,
-          reportMissing,
-          retroMissing,
-          totalMissing: s.missing.length,
-        });
-      }
-    }
+    if (!s.malformed) s.formulas = analyzeStoryFormulas(s.dir, projectType);
   }
-  return gaps;
+  return {
+    projectType,
+    projectName: projectName(),
+    stories,
+    git: gitState(),
+    sync: syncStatus(),
+    data: healthSnapshot(),
+    modules: discoverSourceModules(projectType),
+  };
 }
 
-// ── Recommendation generation ─────────────────────────────────
+// ════════════════════════════════════════════════════════════════
+// Candidate factory + scoring
+// ════════════════════════════════════════════════════════════════
 
-function generate(stories, git, sync, data, projectType) {
-  const recs = [];
-  const pt = projectType;
+function makeCandidate({
+  layer, priority, category, action, rationale, command, story_name = null,
+  formula = null, factors = {}, reasoning = [], sub_signals = [], dedup_key = null,
+}) {
+  return {
+    priority, category, action, rationale,
+    actionable_command: command,
+    story_name,
+    formula,
+    layer,
+    factors,
+    reasoning_chain: reasoning,
+    sub_signals,
+    dedup_key: dedup_key || `${layer}|${category}|${story_name || ''}|${action}`,
+  };
+}
 
-  // ── P0: PM 公式 — 产品视角：做什么、不做什么 ──
-  // PM formula drives priority: scope definition comes first, before all other analysis
-  for (const s of stories.filter(s => !s.malformed && s.status !== 'blocked' && s.status !== 'code_done')) {
-    const formulas = s._formulas;
-    if (!formulas || !formulas.pm) continue;
+// Multi-factor score: weighted priority, then bonuses for urgency/impact/fit, minus cost.
+function scoreCandidate(cand, ctx) {
+  const base = PRIORITY_WEIGHT[cand.priority] || 1;
+  const urgency = clamp01(cand.factors.urgency ?? 0);
+  const impact  = clamp01(cand.factors.impact  ?? 0);
+  const fit     = clamp01(cand.factors.fit     ?? 0.5);
+  const cost    = clamp01(cand.factors.cost    ?? 0.3);
 
-    if (!formulas.pm.hasScopeBoundary) {
-      recs.push({
-        priority: 'P0', category: 'pm-scope',
-        action: `[PM] 定义产品边界: ${s.name}`,
-        rationale: `PM公式 (作为/我想要/以便): ${formulas.pm.detail}`,
-        actionable_command: `/rui doc ${s.name}`,
-        story_name: s.name,
-        formula: { role: 'PM', rule: '作为[角色]我想要[动作]以便[价值] + 范围边界', check: 'scope-boundary' },
-      });
-    }
+  // Bonus multiplier in [1.0, 2.0]; cost penalty up to 30% of base.
+  const score = base * (1 + urgency * 0.5 + impact * 0.3 + (fit - 0.5) * 0.4) - base * 0.3 * cost;
+  cand.score = Math.round(score * 100) / 100;
+  return cand;
+}
 
-    if (formulas.pm.hasScopeBoundary && !formulas.pm.hasExclusions) {
-      recs.push({
-        priority: 'P0', category: 'pm-exclusions',
-        action: `[PM] 明确不做什么: ${s.name}`,
-        rationale: '产品边界已定义但缺少"范围外"排除项 — 范围蔓延风险',
-        actionable_command: `/rui doc ${s.name}`,
-        story_name: s.name,
-        formula: { role: 'PM', rule: '作为[角色]我想要[动作]以便[价值] + 范围外', check: 'exclusions' },
-      });
-    }
-  }
+const clamp01 = (n) => Math.max(0, Math.min(1, n));
 
-  // P0 — malformed story directory names
+// ════════════════════════════════════════════════════════════════
+// L1 — Gates (blockers, malformed, branch hazards)
+// ════════════════════════════════════════════════════════════════
+
+function L1_gates(ctx) {
+  const out = [];
+  const { stories, git, data } = ctx;
+
+  // Malformed directory names — structural blocker
   for (const s of stories.filter(s => s.malformed)) {
-    recs.push({
-      priority: 'P0', category: 'naming',
+    out.push(makeCandidate({
+      layer: 'L1.gates', priority: 'P0', category: 'naming',
       action: `迁移故事目录到项目子目录: ${s.name}`,
       rationale: s.malformed_reason || '目录缺少项目前缀',
-      actionable_command: `mkdir -p docs/故事任务面板/<project> && mv docs/故事任务面板/${s.name} docs/故事任务面板/<project>/<story>`,
+      command: `mkdir -p docs/故事任务面板/<project> && mv docs/故事任务面板/${s.name} docs/故事任务面板/<project>/<story>`,
       story_name: s.name,
       formula: { role: 'PM', rule: '项目子目录约定: {project}/{name}', check: 'naming' },
-    });
+      factors: { urgency: 0.8, impact: 0.7, fit: 1.0, cost: 0.2 },
+      reasoning: ['L0: 检测到故事目录命名异常', 'L1.gates: 后续工具链依赖目录结构 → P0 阻断'],
+    }));
   }
 
-  // P0 — blocked stories
+  // Blocked stories — recover first, before anything else on that story
   for (const s of stories.filter(s => s.status === 'blocked')) {
-    recs.push({
-      priority: 'P0', category: 'story',
-      action: `恢复阻断: ${s.name}`,
+    out.push(makeCandidate({
+      layer: 'L1.gates', priority: 'P0', category: 'story-blocked',
+      action: `恢复阻断: ${s.name}${s.currentStage ? ` (从 ${s.currentStage})` : ''}`,
       rationale: s.blockReason || '阻塞原因未记录',
-      actionable_command: `/rui code ${s.name}`,
+      command: `/rui code ${s.name}`,
       story_name: s.name,
       formula: { role: 'PM', rule: '阻断优先处理', check: 'blocked' },
-    });
+      factors: { urgency: 1.0, impact: 0.9, fit: 1.0, cost: 0.4 },
+      reasoning: [`L0: rui-state.json 标记 blocked=true`, `L1.gates: 阻断阻止管线推进 → P0`],
+    }));
   }
 
-  // P0 — open P0 proposals
+  // Open P0 proposals from self-improve
   const openP0 = (data.proposals || []).filter(p => p.status === 'open' && p.priority === 'P0');
   for (const p of openP0.slice(0, C.MAX_OPEN_P0_RECS)) {
-    recs.push({
-      priority: 'P0', category: 'proposal',
+    out.push(makeCandidate({
+      layer: 'L1.gates', priority: 'P0', category: 'proposal',
       action: p.title,
       rationale: p.evidence || p.problem_source || 'P0 改进提案',
-      actionable_command: p.actionable_command || '/rui',
+      command: p.actionable_command || '/rui',
       story_name: p.story_name || null,
-      formula: { role: 'Self-Improve', rule: '观察→诊断→改进', check: 'proposal' },
-    });
+      formula: { role: 'Self-Improve', rule: '观察→诊断→改进', check: 'proposal-p0' },
+      factors: { urgency: 0.85, impact: 0.7, fit: 0.7, cost: 0.3 },
+      reasoning: [`L0: 读取 proposals.jsonl`, `L1.gates: P0 提案视为质量阻断`],
+    }));
   }
 
-  // P0 — degrading trends
-  const degradingSignals = data.trends?.degradingSignals || [];
-  for (const s of degradingSignals.slice(0, C.MAX_DEGRADING_SIGNAL_RECS)) {
-    recs.push({
-      priority: 'P0', category: 'health',
+  // Degrading trends — early warning of systemic regression
+  const degrading = data.trends?.degradingSignals || [];
+  for (const s of degrading.slice(0, C.MAX_DEGRADING_SIGNAL_RECS)) {
+    out.push(makeCandidate({
+      layer: 'L1.gates', priority: 'P0', category: 'health-degrading',
       action: `修复 ${s.dimension} 退化趋势`,
       rationale: `连续窗口上升 (${s.window})`,
-      actionable_command: '/rui',
+      command: '/rui',
       formula: { role: 'Self-Improve', rule: '观察→诊断→改进', check: 'degrading' },
-    });
+      factors: { urgency: 0.9, impact: 0.8, fit: 0.6, cost: 0.5 },
+      reasoning: [`L0: trends 检测到 ${s.dimension} 上升`, `L1.gates: 系统性退化优先`],
+    }));
   }
 
-  // P0 — uncommitted changes on a story branch
+  // Uncommitted changes on a story branch (audit trail risk)
   if (git.hasUncommitted && !git.isMain) {
-    recs.push({
-      priority: 'P0', category: 'git',
+    out.push(makeCandidate({
+      layer: 'L1.gates', priority: 'P0', category: 'git',
       action: '提交或暂存未完成的变更',
       rationale: `分支 ${git.branch} 上有未提交的修改`,
-      actionable_command: 'git status',
+      command: 'git status',
       formula: { role: 'Reporter', rule: '事实→偏差→影响: 未提交=不可追溯', check: 'uncommitted' },
-    });
+      factors: { urgency: 0.7, impact: 0.5, fit: 0.8, cost: 0.1 },
+      reasoning: [`L0: git status 非空且分支非 main`, `L1.gates: 未提交变更影响可追溯性`],
+    }));
   }
 
-  // ── P0: Tester 公式 — AC 可独立验证 ──
-  for (const s of stories.filter(s => !s.malformed && s.status !== 'blocked' && s.status !== 'code_done')) {
-    const formulas = s._formulas;
-    if (!formulas || !formulas.tester || formulas.tester.ok) continue;
+  return out;
+}
 
-    if (!formulas.tester.hasVerifiableAC) {
-      recs.push({
-        priority: 'P0', category: 'tester-ac',
+// ════════════════════════════════════════════════════════════════
+// L2 — Story flow (per-story SDLC progression)
+// ════════════════════════════════════════════════════════════════
+//
+// For every active story we walk its SDLC in order and stop at the first
+// missing step. The story-level recommendation is the headline; subordinate
+// formula gaps become sub_signals attached to it (preventing flat noise).
+
+function L2_storyFlow(ctx) {
+  const out = [];
+  const { stories, projectType } = ctx;
+
+  for (const s of stories) {
+    if (s.malformed || s.status === 'blocked' || s.status === 'code_done') continue;
+
+    const f = s.formulas;
+    if (!f) continue;
+
+    const subSignals = [];
+    let headlineEmitted = false;
+
+    // Stage 1: PM scope (gate for everything else on this story)
+    if (f.pm && !f.pm.ok) {
+      const pmGap = !f.pm.hasScopeBoundary ? 'pm-scope' : (!f.pm.hasExclusions ? 'pm-exclusions' : 'pm-priority');
+      const action = !f.pm.hasScopeBoundary
+        ? `[PM] 定义产品边界: ${s.name}`
+        : (!f.pm.hasExclusions
+          ? `[PM] 明确不做什么: ${s.name}`
+          : `[PM] 完整化故事字段: ${s.name}`);
+      out.push(makeCandidate({
+        layer: 'L2.story', priority: 'P0', category: pmGap,
+        action,
+        rationale: `PM公式 (作为/我想要/以便): ${f.pm.gaps.join('; ')}`,
+        command: `/rui doc ${s.name}`,
+        story_name: s.name,
+        formula: { role: 'PM', rule: '作为[角色]我想要[动作]以便[价值] + 范围边界', check: pmGap },
+        factors: {
+          urgency: STATUS_URGENCY[s.status] ?? 0.5,
+          impact: 0.9,  // gates all downstream work
+          fit: 1.0,
+          cost: 0.4,
+        },
+        reasoning: [
+          `L0: 故事 ${s.name} 状态=${s.status}`,
+          `L2.story: PM 范围未定义 → 阻断后续 SDLC 阶段`,
+        ],
+        dedup_key: `story:${s.name}`,
+      }));
+      headlineEmitted = true;
+      continue;  // PM gate not passed → skip rest of stages for this story
+    }
+
+    // Stage 2: Tester AC (gates implementation)
+    if (f.tester && !f.tester.ok && !f.tester.hasVerifiableAC) {
+      out.push(makeCandidate({
+        layer: 'L2.story', priority: 'P0', category: 'tester-ac',
         action: `[Tester] 验收标准需 Given/When/Then: ${s.name}`,
-        rationale: `Tester公式: ${formulas.tester.detail}`,
-        actionable_command: `/rui doc ${s.name}`,
+        rationale: `Tester公式: ${f.tester.gaps.join('; ')}`,
+        command: `/rui doc ${s.name}`,
         story_name: s.name,
         formula: { role: 'Tester', rule: 'Given[前置]When[操作]Then[预期]', check: 'ac-format' },
-      });
+        factors: { urgency: STATUS_URGENCY[s.status], impact: 0.85, fit: 1.0, cost: 0.3 },
+        reasoning: [
+          `L0: 故事 ${s.name} 状态=${s.status}`,
+          `L2.story: PM 已通过`,
+          `L2.story: AC 缺少 G/W/T 形式 → 实施无法验证`,
+        ],
+        dedup_key: `story:${s.name}`,
+      }));
+      headlineEmitted = true;
+      continue;
     }
-  }
 
-  // ── P1: Coder 公式 — 项目类型感知的设计检查 ──
-  for (const s of stories.filter(s => s.status === 'docs_in_progress' || s.status === 'docs_done' || s.status === 'code_in_progress')) {
-    const storyDir = resolveStoryPath(s.name).dir;
-    const feReview = path.join(storyDir, '03-前端技术评审.md');
-    const beReview = path.join(storyDir, '02-后端技术评审.md');
-
-    if (pt.type === 'frontend' || pt.type === 'fullstack') {
-      if (fs.existsSync(feReview)) {
-        try {
-          const feContent = fs.readFileSync(feReview, 'utf8');
-          const hasComponentInterface = /\|\s*`[^`]+`\s*\|[^|]*`[^`]*:[^`]*`\s*\|[^|]*`[^`]*\([^)]*\)`\s*\|[^|]*`[^`]*\([^)]*\)`\s*\|/.test(feContent);
-          const hasStateFlow = /状态流/.test(feContent) || /数据流\s*\|/.test(feContent);
-          const hasStyleIsolation = /样式隔离/.test(feContent) || /Scoped/.test(feContent) || /Shadow DOM/.test(feContent);
-
-          if (!hasComponentInterface) {
-            recs.push({
-              priority: 'P1', category: 'coder-fe',
-              action: `[Coder] 定义组件接口 (Props→Events→Expose): ${s.name}`,
-              rationale: `前端项目需${pt.coderFormula.variant}设计 — 缺少组件契约定义`,
-              actionable_command: `/rui doc ${s.name}`,
-              story_name: s.name,
-              formula: { role: 'Coder', rule: pt.coderFormula.text, check: 'component-interface' },
-            });
-          }
-          if (!hasStateFlow && hasComponentInterface) {
-            recs.push({
-              priority: 'P2', category: 'coder-fe',
-              action: `[Coder] 追踪状态流向: ${s.name}`,
-              rationale: `前端${pt.coderFormula.variant} — 状态流未定义，组件间数据传递不可验证`,
-              actionable_command: `/rui doc ${s.name}`,
-              story_name: s.name,
-              formula: { role: 'Coder', rule: '组件树→Props/Events→状态流', check: 'state-flow' },
-            });
-          }
-          if (!hasStyleIsolation) {
-            recs.push({
-              priority: 'P2', category: 'coder-fe',
-              action: `[Coder] 定义样式隔离策略: ${s.name}`,
-              rationale: '前端组件化 — 未定义样式隔离方案，存在全局污染风险',
-              actionable_command: `/rui doc ${s.name}`,
-              story_name: s.name,
-              formula: { role: 'Coder', rule: '样式隔离：Scoped/Shadow DOM/CSS Modules', check: 'style-isolation' },
-            });
-          }
-        } catch {}
+    // Stage 3: status-driven headline (docs / code)
+    if (s.status === 'docs_in_progress') {
+      // collect downstream formula sub-signals as context
+      collectFormulaGaps(f, projectType, subSignals, true);
+      out.push(makeCandidate({
+        layer: 'L2.story', priority: 'P1', category: 'story',
+        action: `完成文档: ${s.name}`,
+        rationale: `缺失: ${s.missing.slice(0, 3).join('、')}`,
+        command: `/rui doc ${s.name}`,
+        story_name: s.name,
+        formula: { role: 'PM', rule: '故事=场景+边界', check: 'docs-incomplete' },
+        factors: {
+          urgency: STATUS_URGENCY[s.status],
+          impact: 0.7 + (subSignals.length * 0.05),
+          fit: 1.0, cost: 0.5,
+        },
+        reasoning: [
+          `L0: 故事 ${s.name} 缺 ${s.missing.length} 份文档`,
+          `L2.story: PM/Tester 已通过 → 进入文档生成`,
+          subSignals.length ? `L2.story: 同时存在 ${subSignals.length} 处角色公式缺口（已合并为子信号）` : null,
+        ].filter(Boolean),
+        sub_signals: subSignals,
+        dedup_key: `story:${s.name}`,
+      }));
+      headlineEmitted = true;
+    }
+    else if (s.status === 'docs_done') {
+      // Pre-code: surface security / coder gaps if present, else just "start coding"
+      collectFormulaGaps(f, projectType, subSignals, false);
+      const sevP1 = subSignals.filter(x => x.severity === 'P1').length;
+      out.push(makeCandidate({
+        layer: 'L2.story', priority: 'P1', category: 'story',
+        action: `开始编码: ${s.name}`,
+        rationale: sevP1 > 0
+          ? `文档已完成；${sevP1} 处架构/安全提示需在编码前确认`
+          : '文档已完成，缺少实施与测试报告',
+        command: `/rui code ${s.name}`,
+        story_name: s.name,
+        formula: { role: 'Coder', rule: projectType.coderFormula.text, check: 'code-ready' },
+        factors: {
+          urgency: STATUS_URGENCY[s.status],
+          impact: 0.85,
+          fit: 1.0, cost: 0.6,
+        },
+        reasoning: [
+          `L0: 文档基线齐全`,
+          `L2.story: 项目类型=${projectType.type} → 应用 ${projectType.coderFormula.variant} Coder 公式`,
+          sevP1 ? `L2.story: 编码前 ${sevP1} 项 P1 待解决（见 sub_signals）` : null,
+        ].filter(Boolean),
+        sub_signals: subSignals,
+        dedup_key: `story:${s.name}`,
+      }));
+      headlineEmitted = true;
+    }
+    else if (s.status === 'code_in_progress') {
+      // surface reporter gaps as sub-signals
+      if (f.reporter && !f.reporter.ok) {
+        subSignals.push({
+          role: 'Reporter', severity: 'P2',
+          summary: f.reporter.gaps.join('; '),
+          check: 'report-format',
+        });
       }
+      out.push(makeCandidate({
+        layer: 'L2.story', priority: 'P1', category: 'story',
+        action: `完成实现: ${s.name}`,
+        rationale: `缺失报告: ${s.missing.slice(0, 3).join('、')}`,
+        command: `/rui code ${s.name}`,
+        story_name: s.name,
+        formula: { role: 'Reporter', rule: '事实→偏差→影响', check: 'report-missing' },
+        factors: {
+          urgency: STATUS_URGENCY[s.status],
+          impact: 0.8,
+          fit: 1.0, cost: 0.5,
+        },
+        reasoning: [
+          `L0: 已有 ${REPORT_FILES.filter(f => s.exists[f]).length} 份报告，缺 ${s.missing.length} 份`,
+          `L2.story: 编码已开始 → 应进入 Gate B 验证`,
+        ],
+        sub_signals: subSignals,
+        dedup_key: `story:${s.name}`,
+      }));
+      headlineEmitted = true;
     }
 
-    if (pt.type === 'backend' || pt.type === 'fullstack') {
-      if (fs.existsSync(beReview)) {
-        try {
-          const beContent = fs.readFileSync(beReview, 'utf8');
-          const hasAPIContract = /\|\s*\{接口名\}\s*\|/.test(beContent) && /`\/api\/[^`]*`/.test(beContent);
-          const hasDataModel = /数据模型/.test(beContent) && /\|\s*`[^`]+`\s*\|[^|]*\|[^|]*\|[^|]*(高|中|低)[^|]*\|[^|]*(高|中|低)/.test(beContent);
-          const hasDomainModel = /领域/.test(beContent) || /服务架构/.test(beContent);
-          const hasChannelDesign = /通信通道/.test(beContent);
-
-          if (!hasDomainModel) {
-            recs.push({
-              priority: 'P1', category: 'coder-be',
-              action: `[Coder] 定义领域模型: ${s.name}`,
-              rationale: `后端项目需${pt.coderFormula.variant}设计 — 缺少服务架构与领域划分`,
-              actionable_command: `/rui doc ${s.name}`,
-              story_name: s.name,
-              formula: { role: 'Coder', rule: pt.coderFormula.text, check: 'domain-model' },
-            });
-          }
-          if (!hasAPIContract && hasDomainModel) {
-            recs.push({
-              priority: 'P1', category: 'coder-be',
-              action: `[Coder] 定义API契约 (输入→处理→输出): ${s.name}`,
-              rationale: '后端领域模型 — 缺少API接口契约，模块边界不明确',
-              actionable_command: `/rui doc ${s.name}`,
-              story_name: s.name,
-              formula: { role: 'Coder', rule: '模块→接口→数据流: 输入→处理→输出', check: 'api-contract' },
-            });
-          }
-          if (!hasDataModel) {
-            recs.push({
-              priority: 'P2', category: 'coder-be',
-              action: `[Coder] 定义数据模型与迁移策略: ${s.name}`,
-              rationale: '后端项目 — 缺少存储结构与数据迁移方案',
-              actionable_command: `/rui doc ${s.name}`,
-              story_name: s.name,
-              formula: { role: 'Coder', rule: '数据模型: 存储结构→迁移策略→向后兼容', check: 'data-model' },
-            });
-          }
-          if (!hasChannelDesign) {
-            recs.push({
-              priority: 'P2', category: 'coder-be',
-              action: `[Coder] 设计通信通道: ${s.name}`,
-              rationale: '后端项目 — 服务间通信通道未定义',
-              actionable_command: `/rui doc ${s.name}`,
-              story_name: s.name,
-              formula: { role: 'Coder', rule: '通信通道: 协议→序列化→超时→重试', check: 'channel-design' },
-            });
-          }
-        } catch {}
-      }
+    // Stage 4: not_started → kick off doc
+    if (s.status === 'not_started' && !headlineEmitted) {
+      out.push(makeCandidate({
+        layer: 'L2.story', priority: 'P1', category: 'story',
+        action: `启动文档: ${s.name}`,
+        rationale: '故事目录已创建但 01-故事任务.md 尚未生成',
+        command: `/rui doc ${s.name}`,
+        story_name: s.name,
+        formula: { role: 'PM', rule: '故事=场景+边界', check: 'kickoff' },
+        factors: { urgency: 0.4, impact: 0.6, fit: 1.0, cost: 0.4 },
+        reasoning: [`L0: 故事目录存在但无 01 文档`, `L2.story: 进入自适应规划`],
+        dedup_key: `story:${s.name}`,
+      }));
     }
   }
 
-  // ── P1: Security 公式 ──
-  for (const s of stories.filter(s => s.status === 'docs_in_progress' || s.status === 'docs_done' || s.status === 'code_in_progress')) {
-    const formulas = s._formulas;
-    if (!formulas || !formulas.security || formulas.security.ok) continue;
+  return out;
+}
 
-    recs.push({
-      priority: 'P1', category: 'security',
-      action: `[Security] 识别威胁与缓解措施: ${s.name}`,
-      rationale: `Security公式 (威胁→信任边界→缓解): ${formulas.security.detail}`,
-      actionable_command: `/rui doc ${s.name}`,
-      story_name: s.name,
-      formula: { role: 'Security', rule: '威胁→信任边界→缓解', check: 'threat-model' },
-    });
+// Helper: harvest project-fit-aware Coder/Security/Reporter gaps as sub-signals.
+// `whileDocs`: true → include all roles; false (post-doc) → skip Coder structural items.
+function collectFormulaGaps(f, projectType, sub, whileDocs) {
+  const pt = projectType.type;
+  if (whileDocs && f.coder) {
+    if (f.coder.fe?.present) {
+      const fe = f.coder.fe;
+      if (!fe.hasInterface) sub.push({ role: 'Coder', severity: 'P1', summary: '前端组件缺少 Props/Events/Expose 契约', check: 'component-interface' });
+      if (fe.hasInterface && !fe.hasState) sub.push({ role: 'Coder', severity: 'P2', summary: '前端缺少状态流定义', check: 'state-flow' });
+      if (!fe.hasIsolation) sub.push({ role: 'Coder', severity: 'P2', summary: '前端缺少样式隔离策略', check: 'style-isolation' });
+    }
+    if (f.coder.be?.present) {
+      const be = f.coder.be;
+      if (!be.hasDomain) sub.push({ role: 'Coder', severity: 'P1', summary: '后端缺少领域/服务架构', check: 'domain-model' });
+      if (be.hasDomain && !be.hasAPI) sub.push({ role: 'Coder', severity: 'P1', summary: '后端缺少 API 契约', check: 'api-contract' });
+      if (!be.hasModel) sub.push({ role: 'Coder', severity: 'P2', summary: '后端缺少数据模型与迁移策略', check: 'data-model' });
+      if (!be.hasChan)  sub.push({ role: 'Coder', severity: 'P2', summary: '后端缺少通信通道设计', check: 'channel-design' });
+    }
+    if (['frontend', 'fullstack'].includes(pt) && f.coder.fe && !f.coder.fe.present) {
+      sub.push({ role: 'Coder', severity: 'P1', summary: '前端技术评审 (03) 缺失', check: 'fe-review-missing' });
+    }
+    if (['backend', 'fullstack', 'meta'].includes(pt) && f.coder.be && !f.coder.be.present) {
+      sub.push({ role: 'Coder', severity: 'P1', summary: '后端技术评审 (02) 缺失', check: 'be-review-missing' });
+    }
   }
-
-  // P1 — docs done, ready for code
-  for (const s of stories.filter(s => s.status === 'docs_done')) {
-    recs.push({
-      priority: 'P1', category: 'story',
-      action: `开始编码: ${s.name}`,
-      rationale: '文档已完成，缺少实施与测试报告',
-      actionable_command: `/rui code ${s.name}`,
-      story_name: s.name,
-      formula: { role: 'Coder', rule: pt.coderFormula.text, check: 'code-ready' },
-    });
+  if (f.security && f.security.needsReview && !f.security.ok) {
+    sub.push({ role: 'Security', severity: 'P1', summary: f.security.gaps.join('; '), check: 'threat-model' });
   }
+}
 
-  // P1 — docs in progress
-  for (const s of stories.filter(s => s.status === 'docs_in_progress')) {
-    recs.push({
-      priority: 'P1', category: 'story',
-      action: `完成文档: ${s.name}`,
-      rationale: `缺失: ${s.missing.slice(0, 3).join('、')}`,
-      actionable_command: `/rui doc ${s.name}`,
-      story_name: s.name,
-      formula: { role: 'PM', rule: '故事=场景+边界', check: 'docs-incomplete' },
-    });
-  }
+// ════════════════════════════════════════════════════════════════
+// L3 — Coverage (undocumented modules + cross-story doc gaps)
+// ════════════════════════════════════════════════════════════════
 
-  // P1 — code in progress
-  for (const s of stories.filter(s => s.status === 'code_in_progress')) {
-    recs.push({
-      priority: 'P1', category: 'story',
-      action: `完成实现: ${s.name}`,
-      rationale: `缺失报告: ${s.missing.slice(0, 3).join('、')}`,
-      actionable_command: `/rui code ${s.name}`,
-      story_name: s.name,
-      formula: { role: 'Reporter', rule: '事实→偏差→影响', check: 'report-missing' },
-    });
-  }
+function L3_coverage(ctx) {
+  const out = [];
+  const { modules, stories, projectName } = ctx;
 
-  // P1 — sync needed
-  if (sync.hasToken && sync.panelFileCount > 0 && !sync.reachable) {
-    recs.push({
-      priority: 'P1', category: 'sync',
-      action: '远端 API 不可达',
-      rationale: `${sync.panelFileCount} 个故事面板文件 + ${sync.claudeFileCount} 个 .claude 文件待同步`,
-      actionable_command: '/import-docs --workspace',
-      formula: { role: 'Reporter', rule: '知识沉淀: 文档同步', check: 'sync' },
-    });
-  }
-
-  // P1 — no API token
-  if (!sync.hasToken && (sync.panelFileCount > 0 || sync.claudeFileCount > 0)) {
-    recs.push({
-      priority: 'P1', category: 'sync',
-      action: '配置 API_X_TOKEN 环境变量',
-      rationale: `${sync.panelFileCount + sync.claudeFileCount} 个文件待同步`,
-      actionable_command: 'export API_X_TOKEN=<token>',
-      formula: { role: 'Reporter', rule: '知识沉淀: 配置同步凭证', check: 'token' },
-    });
-  }
-
-  // ── P1: undocumented source modules → new story directories ──
-  const modules = discoverSourceModules(projectType);
+  // Undocumented source modules → recommend new story creation
   const undocumented = findUndocumentedModules(modules, stories);
   for (const m of undocumented.slice(0, 5)) {
-    const projectName = sh('git remote get-url origin 2>/dev/null | sed "s/.*\\/\\([^/]*\\)\\.git/\\1/" | head -1', '') || path.basename(REPO_ROOT);
     const storyName = `${projectName}-${m.name}`;
-    const typeLabel = { 'skill': 'Skill 模块', 'agent-group': 'Agent 模块', 'rule-group': '规则模块', 'frontend-component': '前端组件', 'backend-module': '后端模块' }[m.type] || '源码模块';
-    recs.push({
-      priority: 'P1', category: 'new-story',
+    const typeLabel = {
+      skill: 'Skill 模块', 'agent-group': 'Agent 模块', 'rule-group': '规则模块',
+      'frontend-component': '前端组件', 'backend-module': '后端模块',
+    }[m.type] || '源码模块';
+    out.push(makeCandidate({
+      layer: 'L3.coverage', priority: 'P1', category: 'new-story',
       action: `[PM] 为${typeLabel}创建故事: ${m.name}`,
       rationale: `${m.path} 缺少故事文档覆盖（${m.fileCount} 个文件未纳入故事面板）`,
-      actionable_command: `/rui doc --from-code ${storyName}`,
+      command: `/rui doc --from-code ${storyName}`,
       story_name: storyName,
       formula: { role: 'PM', rule: '作为[角色]我想要[动作]以便[价值]', check: 'new-story-dir' },
-    });
+      factors: {
+        urgency: 0.3,                                  // breadth, not urgency
+        impact: clamp01(0.4 + m.fileCount * 0.05),     // more files → more impact
+        fit: 0.9,
+        cost: 0.6,
+      },
+      reasoning: [
+        `L0: 发现源码模块 ${m.path} (${m.fileCount} 文件)`,
+        `L3.coverage: 未匹配任何已存在故事目录`,
+      ],
+    }));
   }
 
-  // ── P2: document gaps in existing stories ──
-  const docGaps = analyzeDocumentGaps(stories);
-  for (const dg of docGaps.slice(0, 5)) {
-    if (dg.criticalMissing.length > 0) {
-      recs.push({
-        priority: 'P1', category: 'doc-gap',
-        action: `[Reporter] 补全 ${dg.story} 关键文档: ${dg.criticalMissing.join(', ')}`,
-        rationale: `缺少 ${dg.criticalMissing.length} 份关键文档，基线不完整`,
-        actionable_command: `/rui doc ${dg.story}`,
-        story_name: dg.story,
-        formula: { role: 'Reporter', rule: '事实→偏差→影响', check: 'doc-gap-critical' },
-      });
+  // Doc gaps in existing stories (only fire when NOT already headlined by L2)
+  for (const s of stories) {
+    if (s.malformed || s.status === 'blocked' || s.status === 'code_done') continue;
+    const critical = s.missing.filter(f => DOC_FILES.includes(f));
+    const reportMiss = s.missing.filter(f => REPORT_FILES.includes(f));
+    const retroMiss = s.missing.includes('08-自改进复盘.md');
+
+    // Critical doc gaps are already covered by L2 docs_in_progress headline.
+    // Only emit standalone for retro/report gaps when story is otherwise complete.
+    if (critical.length === 0 && reportMiss.length > 0 && s.status === 'code_in_progress') {
+      // L2 already emits a code-in-progress headline; skip
+      continue;
     }
-    if (dg.reportMissing.length > 0 && dg.criticalMissing.length === 0) {
-      recs.push({
-        priority: 'P2', category: 'doc-gap',
-        action: `[Report] 补全 ${dg.story} 实施报告: ${dg.reportMissing.join(', ')}`,
-        rationale: `已通过文档基线，缺少 ${dg.reportMissing.length} 份实施报告`,
-        actionable_command: `/rui code --from-doc ${dg.story}`,
-        story_name: dg.story,
-        formula: { role: 'Reporter', rule: '事实→偏差→影响', check: 'doc-gap-report' },
-      });
-    }
-    if (dg.retroMissing && dg.criticalMissing.length === 0 && dg.reportMissing.length === 0) {
-      recs.push({
-        priority: 'P2', category: 'doc-gap',
-        action: `[Self-Improve] 补充 ${dg.story} 复盘文档`,
+    if (critical.length === 0 && reportMiss.length === 0 && retroMiss) {
+      out.push(makeCandidate({
+        layer: 'L3.coverage', priority: 'P2', category: 'doc-gap',
+        action: `[Self-Improve] 补充 ${s.name} 复盘文档`,
         rationale: '自改进复盘(08-自改进复盘.md)缺失，知识无法沉淀',
-        actionable_command: `/rui code ${dg.story}`,
-        story_name: dg.story,
+        command: `/rui code ${s.name}`,
+        story_name: s.name,
         formula: { role: 'Self-Improve', rule: '观察→诊断→改进', check: 'doc-gap-retro' },
-      });
+        factors: { urgency: 0.2, impact: 0.5, fit: 0.8, cost: 0.3 },
+        reasoning: [
+          `L0: 故事 ${s.name} 仅缺 08-自改进复盘.md`,
+          `L3.coverage: 知识沉淀缺口`,
+        ],
+        dedup_key: `story:${s.name}`,
+      }));
     }
   }
 
-  // ── P2: Reporter 公式 ──
-  for (const s of stories.filter(s => s.status === 'code_in_progress')) {
-    const formulas = s._formulas;
-    if (!formulas || !formulas.reporter || formulas.reporter.ok) continue;
-
-    recs.push({
-      priority: 'P2', category: 'reporter',
-      action: `[Reporter] 报告需遵循事实→偏差→影响: ${s.name}`,
-      rationale: formulas.reporter.detail,
-      actionable_command: `/rui code ${s.name}`,
-      story_name: s.name,
-      formula: { role: 'Reporter', rule: '事实→偏差→影响', check: 'report-format' },
-    });
-  }
-
-  // P2 — open P1 proposals
-  const openP1 = (data.proposals || []).filter(p => p.status === 'open' && p.priority === 'P1');
-  for (const p of openP1.slice(0, C.MAX_OPEN_P1_RECS)) {
-    recs.push({
-      priority: 'P2', category: 'proposal',
-      action: p.title,
-      rationale: p.evidence || p.problem_source || 'P1 改进提案',
-      actionable_command: p.actionable_command || '/rui',
-      story_name: p.story_name || null,
-      formula: { role: 'Self-Improve', rule: '观察→诊断→改进', check: 'proposal' },
-    });
-  }
-
-  // P2 — large files
-  const largeFiles = data.snapshot?.cohesionRisks || [];
-  for (const f of largeFiles.slice(0, C.MAX_LARGE_FILE_RECS)) {
-    recs.push({
-      priority: 'P2', category: 'improvement',
-      action: `拆分大文件: ${f.file}`,
-      rationale: `${f.lines} 行，降低耦合度`,
-      actionable_command: `/rui code ${path.basename(f.file, path.extname(f.file))}`,
-      formula: { role: 'Coder', rule: pt.coderFormula.text, check: 'cohesion' },
-    });
-  }
-
-  // P2 — new stories from git changes
-  if (git.recentBranches.length > 0 && stories.length === 0) {
-    recs.push({
-      priority: 'P2', category: 'init',
+  // Bootstrap: empty repo with git history
+  if (stories.length === 0 && ctx.git.recentBranches.length > 0) {
+    out.push(makeCandidate({
+      layer: 'L3.coverage', priority: 'P2', category: 'init',
       action: '创建首个故事任务',
       rationale: '项目无故事面板记录，建议从近期变更反向生成',
-      actionable_command: '/rui doc --from-code',
+      command: '/rui doc --from-code',
       formula: { role: 'PM', rule: '作为[角色]我想要[动作]以便[价值]', check: 'init-story' },
-    });
+      factors: { urgency: 0.5, impact: 0.7, fit: 0.9, cost: 0.6 },
+      reasoning: [`L0: 故事面板空但 git 有 ${ctx.git.recentBranches.length} 个最近分支`, `L3.coverage: 反推首个故事`],
+    }));
   }
 
-  // P3 — health dimensions < 70
+  return out;
+}
+
+// ════════════════════════════════════════════════════════════════
+// L4 — Health signals (P1 proposals, cohesion, low dims)
+// ════════════════════════════════════════════════════════════════
+
+function L4_healthSignals(ctx) {
+  const out = [];
+  const { data, projectType } = ctx;
+
+  // Open P1 proposals (P0s already in L1)
+  const openP1 = (data.proposals || []).filter(p => p.status === 'open' && p.priority === 'P1');
+  for (const p of openP1.slice(0, C.MAX_OPEN_P1_RECS)) {
+    out.push(makeCandidate({
+      layer: 'L4.health', priority: 'P2', category: 'proposal',
+      action: p.title,
+      rationale: p.evidence || p.problem_source || 'P1 改进提案',
+      command: p.actionable_command || '/rui',
+      story_name: p.story_name || null,
+      formula: { role: 'Self-Improve', rule: '观察→诊断→改进', check: 'proposal-p1' },
+      factors: { urgency: 0.5, impact: 0.5, fit: 0.7, cost: 0.4 },
+      reasoning: [`L0: 读取 proposals.jsonl`, `L4.health: P1 提案非阻断但应排程`],
+    }));
+  }
+
+  // Large files (cohesion risk) — only if not part of an active story
+  const large = data.snapshot?.cohesionRisks || [];
+  for (const f of large.slice(0, C.MAX_LARGE_FILE_RECS)) {
+    out.push(makeCandidate({
+      layer: 'L4.health', priority: 'P2', category: 'improvement',
+      action: `拆分大文件: ${f.file}`,
+      rationale: `${f.lines} 行，降低耦合度`,
+      command: `/rui code ${path.basename(f.file, path.extname(f.file))}`,
+      formula: { role: 'Coder', rule: projectType.coderFormula.text, check: 'cohesion' },
+      factors: {
+        urgency: 0.2,
+        impact: clamp01(f.lines / 1500),    // bigger file = more impact
+        fit: 0.6, cost: 0.7,
+      },
+      reasoning: [
+        `L0: snapshot cohesionRisks 包含 ${f.file} (${f.lines} 行)`,
+        `L4.health: 阈值 ${C.LARGE_FILE_LINE_THRESHOLD} 行触发拆分建议`,
+      ],
+    }));
+  }
+
+  // Low health dimensions
   const dims = Object.entries(data.health?.dimensions || {})
     .filter(([, v]) => v !== null && v < C.HEALTH_DIM_LOW_THRESHOLD)
     .map(([k, v]) => ({ dim: k, score: v }));
   for (const d of dims.slice(0, C.MAX_LOW_HEALTH_DIM_RECS)) {
-    recs.push({
-      priority: 'P3', category: 'health',
+    out.push(makeCandidate({
+      layer: 'L4.health', priority: 'P3', category: 'health',
       action: `提升 ${d.dim} 健康度 (当前 ${d.score})`,
       rationale: `项目健康维度低于 ${C.HEALTH_DIM_LOW_THRESHOLD}`,
-      actionable_command: '/rui',
+      command: '/rui',
       formula: { role: 'Self-Improve', rule: '观察→诊断→改进', check: 'health-dim' },
-    });
+      factors: { urgency: 0.3, impact: clamp01((C.HEALTH_DIM_LOW_THRESHOLD - d.score) / 70), fit: 0.6, cost: 0.5 },
+      reasoning: [`L0: health.dimensions.${d.dim}=${d.score}`, `L4.health: 低于 ${C.HEALTH_DIM_LOW_THRESHOLD} 阈值`],
+    }));
   }
 
-  // P3 — low proposal closure
+  // Proposal backlog
   const proposals = data.proposals || [];
   const openCount = proposals.filter(p => p.status === 'open').length;
   const doneCount = proposals.filter(p => p.status === 'done').length;
   const totalActive = openCount + doneCount;
   if (totalActive > C.PROPOSAL_BACKLOG_MIN_ACTIVE && openCount > doneCount * C.PROPOSAL_BACKLOG_RATIO) {
-    recs.push({
-      priority: 'P3', category: 'improvement',
+    out.push(makeCandidate({
+      layer: 'L4.health', priority: 'P3', category: 'improvement',
       action: `处理积压提案 (${openCount} 开放, ${doneCount} 完成)`,
       rationale: `提案积压超过 ${C.PROPOSAL_BACKLOG_RATIO}:1`,
-      actionable_command: '/rui',
+      command: '/rui',
       formula: { role: 'Self-Improve', rule: '观察→诊断→改进', check: 'backlog' },
-    });
+      factors: { urgency: 0.3, impact: 0.4, fit: 0.5, cost: 0.6 },
+      reasoning: [`L0: open=${openCount} done=${doneCount}`, `L4.health: 积压比 ${(openCount / Math.max(1, doneCount)).toFixed(1)}`],
+    }));
   }
 
-  // P3 — on main with changes
+  return out;
+}
+
+// ════════════════════════════════════════════════════════════════
+// L5 — Hygiene (sync, branch hygiene)
+// ════════════════════════════════════════════════════════════════
+
+function L5_hygiene(ctx) {
+  const out = [];
+  const { sync, git } = ctx;
+
+  if (sync.hasToken && sync.panelFileCount > 0 && !sync.reachable) {
+    out.push(makeCandidate({
+      layer: 'L5.hygiene', priority: 'P1', category: 'sync',
+      action: '远端 API 不可达',
+      rationale: `${sync.panelFileCount} 个故事面板文件 + ${sync.claudeFileCount} 个 .claude 文件待同步`,
+      command: '/import-docs --workspace',
+      formula: { role: 'Reporter', rule: '知识沉淀: 文档同步', check: 'sync' },
+      factors: { urgency: 0.5, impact: 0.5, fit: 0.7, cost: 0.2 },
+      reasoning: [`L0: API 健康检查失败`, `L5.hygiene: 文档无法外部访问`],
+    }));
+  }
+
+  if (!sync.hasToken && (sync.panelFileCount > 0 || sync.claudeFileCount > 0)) {
+    out.push(makeCandidate({
+      layer: 'L5.hygiene', priority: 'P1', category: 'sync',
+      action: '配置 API_X_TOKEN 环境变量',
+      rationale: `${sync.panelFileCount + sync.claudeFileCount} 个文件待同步`,
+      command: 'export API_X_TOKEN=<token>',
+      formula: { role: 'Reporter', rule: '知识沉淀: 配置同步凭证', check: 'token' },
+      factors: { urgency: 0.4, impact: 0.5, fit: 0.7, cost: 0.1 },
+      reasoning: [`L0: 未检测到 API_X_TOKEN`, `L5.hygiene: 同步降级 (no-token)`],
+    }));
+  }
+
   if (git.isMain && git.hasUncommitted) {
-    recs.push({
-      priority: 'P3', category: 'git',
+    out.push(makeCandidate({
+      layer: 'L5.hygiene', priority: 'P3', category: 'git',
       action: '切换到功能分支工作',
       rationale: '当前在 main 分支且有未提交修改',
-      actionable_command: 'git checkout -b feat/<project>-<name>',
+      command: 'git checkout -b feat/<project>-<name>',
       formula: { role: 'Coder', rule: '分支隔离: feat/<project>-<name>', check: 'branch' },
-    });
+      factors: { urgency: 0.3, impact: 0.4, fit: 0.7, cost: 0.1 },
+      reasoning: [`L0: branch=${git.branch} uncommitted=true`, `L5.hygiene: 违反分支隔离规则`],
+    }));
   }
 
-  return recs;
+  return out;
 }
 
-// ── Validation ────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════
+// Suppression — collapse implied / duplicate items
+// ════════════════════════════════════════════════════════════════
 
-function validate(recs) {
+function suppress(candidates) {
+  // 1. Hierarchical: if a story-level item exists, lower-priority items with the
+  //    same story_name and dedup_key=story:<name> are absorbed into it.
+  const byStoryHeadline = new Map();
+  for (const c of candidates) {
+    if (c.dedup_key && c.dedup_key.startsWith('story:')) {
+      const existing = byStoryHeadline.get(c.dedup_key);
+      if (!existing || (PRIORITY_WEIGHT[c.priority] > PRIORITY_WEIGHT[existing.priority])) {
+        byStoryHeadline.set(c.dedup_key, c);
+      }
+    }
+  }
+
   const seen = new Set();
-  return recs.filter(r => {
-    const key = `${r.priority}|${r.category}|${r.action}`;
-    if (seen.has(key)) return false;
+  const out = [];
+  for (const c of candidates) {
+    if (c.dedup_key && c.dedup_key.startsWith('story:')) {
+      const head = byStoryHeadline.get(c.dedup_key);
+      if (head !== c) continue;  // suppressed by headline
+    }
+    const key = `${c.priority}|${c.category}|${c.action}`;
+    if (seen.has(key)) continue;
     seen.add(key);
-    return true;
-  });
+    out.push(c);
+  }
+  return out;
 }
 
-// ── Output ────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════
+// Output
+// ════════════════════════════════════════════════════════════════
 
-const STATUS_LABEL = {
-  blocked: '阻断', docs_in_progress: '文档中', docs_done: '文档完成',
-  code_in_progress: '代码中', code_done: '完成', not_started: '未开始',
-};
-
-function printHuman(recs, stories, git, sync, data, projectType, limit) {
-  // Header
+function printHuman(recs, ctx, limit, explain) {
+  const { stories, git, sync, data, projectType, projectName } = ctx;
   const healthScore = data.health?.composite;
   const storySummary = stories.length > 0
     ? stories.map(s => `${s.name}(${STATUS_LABEL[s.status]})`).join(' ')
     : '无故事';
-
-  const malformedStories = stories.filter(s => s.malformed);
-
   const ptLabel = C.labelForType(projectType.type);
-  const ptFormula = projectType.coderFormula;
 
   console.log('# 推荐任务\n');
-  console.log(`> 项目类型: **${ptLabel}** · Coder公式: \`${ptFormula.text}\` · 关注: ${ptFormula.focus}`);
+  console.log(`> 项目: **${projectName}** · 类型: **${ptLabel}** · Coder公式: \`${projectType.coderFormula.text}\``);
   console.log(`> 健康: ${healthScore ?? 'N/A'}/100 · 故事: ${storySummary} · 分支: ${git.branch}${git.hasUncommitted ? ' (有未提交修改)' : ''}`);
-  if (malformedStories.length > 0) console.log(`> ⚠️ ${malformedStories.length} 个故事目录缺少项目前缀（${malformedStories.map(s => s.name).join(', ')}）`);
   if (sync.hasToken) console.log(`> 同步: ${sync.panelFileCount} 面板 + ${sync.claudeFileCount} .claude 文件 · API ${sync.reachable ? '可达' : '不可达'}`);
-
-  // Show formula gaps per story
-  for (const s of stories) {
-    if (s._formulas) {
-      const gaps = [];
-      for (const [role, result] of Object.entries(s._formulas)) {
-        if (result && !result.ok) gaps.push(`${role}: ${result.gaps.join(', ')}`);
-      }
-      if (gaps.length > 0) console.log(`> 📋 ${s.name} 公式缺口: ${gaps.join(' | ')}`);
-    }
-  }
   console.log();
 
-  // Recommendations table
   const limited = recs.slice(0, limit);
   if (limited.length === 0) {
     console.log('> 无推荐任务。项目状态良好。');
     return;
   }
 
-  console.log(`| # | 优先级 | 公式(角色) | 类别 | 行动 | 理由 | 命令 |`);
-  console.log(`|---|--------|-----------|------|------|------|------|`);
+  // Headline table (priority + score visible so users see why ordering changed)
+  console.log(`| # | 优先级 | 评分 | 层 | 角色 | 行动 | 命令 |`);
+  console.log(`|---|--------|------|----|------|------|------|`);
   limited.forEach((r, i) => {
     const cmd = r.actionable_command ? `\`${r.actionable_command}\`` : '—';
-    const formulaLabel = r.formula ? `${r.formula.role}` : '—';
-    console.log(`| ${i + 1} | ${r.priority} | ${formulaLabel} | ${r.category} | ${r.action} | ${r.rationale} | ${cmd} |`);
+    const role = r.formula?.role || '—';
+    console.log(`| ${i + 1} | ${r.priority} | ${r.score} | ${r.layer} | ${role} | ${r.action} | ${cmd} |`);
   });
   console.log();
 
-  // Summary stats
+  // Per-item detail blocks (rationale + reasoning chain + sub-signals)
+  for (let i = 0; i < limited.length; i++) {
+    const r = limited[i];
+    console.log(`### ${i + 1}. ${r.action}`);
+    console.log(`- 理由: ${r.rationale}`);
+    if (explain) {
+      console.log(`- 推理链:`);
+      r.reasoning_chain.forEach(line => console.log(`  - ${line}`));
+      const f = r.factors;
+      console.log(`- 评分因子: 紧迫=${f.urgency?.toFixed?.(2) ?? f.urgency} · 影响=${f.impact?.toFixed?.(2) ?? f.impact} · 项目契合=${f.fit?.toFixed?.(2) ?? f.fit} · 成本=${f.cost?.toFixed?.(2) ?? f.cost}`);
+    }
+    if (r.sub_signals && r.sub_signals.length > 0) {
+      console.log(`- 子信号 (${r.sub_signals.length}):`);
+      r.sub_signals.forEach(ss => console.log(`  - [${ss.severity}] ${ss.role}: ${ss.summary}`));
+    }
+    console.log();
+  }
+
+  // Footer summary
   const byPriority = {};
-  const byFormula = {};
+  const byLayer = {};
   for (const r of limited) {
     byPriority[r.priority] = (byPriority[r.priority] || 0) + 1;
-    if (r.formula) byFormula[r.formula.role] = (byFormula[r.formula.role] || 0) + 1;
+    byLayer[r.layer] = (byLayer[r.layer] || 0) + 1;
   }
-  const parts = Object.entries(byPriority)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([p, c]) => `${p}: ${c}`);
-  const formulaParts = Object.entries(byFormula)
-    .sort(([, a], [, b]) => b - a)
-    .map(([r, c]) => `${r}×${c}`);
-  console.log(`${limited.length} 条推荐 (${parts.join(', ')}) · 角色分布: ${formulaParts.join(' ')}。`);
+  const pParts = Object.entries(byPriority).sort(([a], [b]) => a.localeCompare(b)).map(([p, c]) => `${p}: ${c}`);
+  const lParts = Object.entries(byLayer).sort(([a], [b]) => a.localeCompare(b)).map(([l, c]) => `${l}×${c}`);
+  console.log(`${limited.length}/${recs.length} 条推荐 (${pParts.join(', ')}) · 分层: ${lParts.join(' ')}。`);
 }
 
-function printJson(recs, stories, git, sync, data, projectType, limit) {
-  const output = {
+function printJson(recs, ctx, limit) {
+  const { stories, git, sync, data, projectType, projectName } = ctx;
+  console.log(JSON.stringify({
     timestamp: new Date().toISOString(),
+    project_name: projectName,
     project_type: projectType,
+    pipeline: ['L1.gates', 'L2.story', 'L3.coverage', 'L4.health', 'L5.hygiene'],
     context: {
       health: data.health?.composite ?? null,
+      health_dimensions: data.health?.dimensions || null,
       story_count: stories.length,
       stories: stories.map(s => ({
         name: s.name, status: s.status, missing: s.missing,
         malformed: s.malformed || false, project: s.project || null,
-        formulas: s._formulas || null,
+        formulas: s.formulas || null,
       })),
       branch: git.branch,
       is_main: git.isMain,
       has_uncommitted: git.hasUncommitted,
       sync: {
-        has_token: sync.hasToken,
-        api_reachable: sync.reachable,
-        panel_files: sync.panelFileCount,
-        claude_files: sync.claudeFileCount,
+        has_token: sync.hasToken, api_reachable: sync.reachable,
+        panel_files: sync.panelFileCount, claude_files: sync.claudeFileCount,
       },
       open_proposals: (data.proposals || []).filter(p => p.status === 'open').length,
       degrading_signals: (data.trends?.degradingSignals || []).length,
-      formula_summary: stories.reduce((acc, s) => {
-        if (s._formulas) {
-          for (const [role, result] of Object.entries(s._formulas)) {
-            if (result && !result.ok) {
-              if (!acc[role]) acc[role] = [];
-              acc[role].push({ story: s.name, gaps: result.gaps });
-            }
-          }
-        }
-        return acc;
-      }, {}),
     },
+    total_candidates: recs.length,
+    returned: Math.min(recs.length, limit),
     recommendations: recs.slice(0, limit),
-  };
-  console.log(JSON.stringify(output, null, 2));
+  }, null, 2));
 }
 
-// ── Main ──────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════
+// Main
+// ════════════════════════════════════════════════════════════════
 
 async function main() {
   const args = process.argv.slice(2);
   const jsonMode = args.includes('--json');
+  const explain = args.includes('--explain');
   const limitIdx = args.indexOf('--limit');
-  const limit = limitIdx !== -1 ? Math.max(1, parseInt(args[limitIdx + 1], 10) || C.DEFAULT_RECOMMENDATION_LIMIT) : C.DEFAULT_RECOMMENDATION_LIMIT;
+  const limit = limitIdx !== -1
+    ? Math.max(1, parseInt(args[limitIdx + 1], 10) || C.DEFAULT_RECOMMENDATION_LIMIT)
+    : C.DEFAULT_RECOMMENDATION_LIMIT;
 
-  // Collect
-  const projectType = detectProjectType(REPO_ROOT);
-  const stories = await scanStories();
-  const git = gitState();
-  const sync = syncStatus();
-  const data = healthSnapshot();
+  // L0: build immutable context
+  const ctx = await buildContext();
 
-  // Analyze each story through role formulas
-  for (const s of stories) {
-    if (!s.malformed) {
-      const storyDir = resolveStoryPath(s.name).dir;
-      s._formulas = analyzeStoryFormulas(storyDir);
-    }
-  }
+  // L1 → L5: chain layers; each is a pure function of ctx (and earlier outputs
+  // could be threaded in if needed). Currently each layer reads ctx independently
+  // and produces candidates; suppression collapses cross-layer overlaps.
+  const candidates = [
+    ...L1_gates(ctx),
+    ...L2_storyFlow(ctx),
+    ...L3_coverage(ctx),
+    ...L4_healthSignals(ctx),
+    ...L5_hygiene(ctx),
+  ];
 
-  // Generate & validate
-  let recs = generate(stories, git, sync, data, projectType);
-  recs = validate(recs);
+  // Score every candidate, then suppress hierarchically/duplicates.
+  for (const c of candidates) scoreCandidate(c, ctx);
+  const ranked = suppress(candidates).sort((a, b) => b.score - a.score);
 
-  // Sort: P0 → P1 → P2 → P3, then by category priority
-  // PM scope first, then naming, then Tester AC, then story status, then Coder design, etc.
-  const catOrder = {
-    'pm-scope': 0, 'pm-exclusions': 1, naming: 2, 'tester-ac': 3,
-    story: 4, security: 5, 'coder-fe': 6, 'coder-be': 6,
-    'new-story': 7, 'doc-gap': 8, health: 9, proposal: 10, git: 11, sync: 12,
-    reporter: 13, improvement: 14, init: 15,
-  };
-  const priOrder = { P0: 0, P1: 1, P2: 2, P3: 3 };
-  recs.sort((a, b) =>
-    priOrder[a.priority] - priOrder[b.priority] ||
-    (catOrder[a.category] ?? 9) - (catOrder[b.category] ?? 9)
-  );
-
-  if (jsonMode) {
-    printJson(recs, stories, git, sync, data, projectType, limit);
-  } else {
-    printHuman(recs, stories, git, sync, data, projectType, limit);
-  }
+  if (jsonMode) printJson(ranked, ctx, limit);
+  else printHuman(ranked, ctx, limit, explain);
 }
 
 main().catch(err => { console.error(err); process.exit(1); });

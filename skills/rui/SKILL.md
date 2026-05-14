@@ -32,7 +32,7 @@ agents:
 | `/rui code --from-doc <name>` | 必须使用分支隔离；读取故事任务文档+探索源码(只读)→生成缺失的技术评审与报告文档 | 已有文档不覆盖，全部存在则退出；禁止改源码 |
 | `/rui doc --from-code [req]` | 从源码反推故事→生成全文档基线(只读)；req 为空时 pm 按项目类型探索：前端→组件发现→组件全文档，后端→接口发现→接口全文档，全栈→两端独立推荐 | 禁止改源码 |
 | `/rui list` | 扫描故事面板 → 进度表; 调用 `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/list.js` | 按文件完整性判定: 未开始/文档中/代码中/完成/阻断 |
-| `/rui` | 调用 `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/recommend.js --json` → 推荐 5~20 条任务 | 综合故事状态+健康度+提案+Git+同步状态；发现未纳入故事面板的源码模块并推荐创建新故事目录；分析已有故事的文档缺口并推荐补充 |
+| `/rui` | 调用 `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/recommend.js --json` → 推荐 5~20 条任务 | 链式管线 L1→L5（Gates → StoryFlow → Coverage → HealthSignals → Hygiene），按 priority×urgency×impact×fit−cost 综合评分排序；故事级 headline 自动吸收同故事的角色级子信号，避免噪音 |
 
 `<requirement>` 支持：文本 / `@` 引用本地文件 / URL。`--from-code` 时 req 可选，为空时 pm 自主扫描源码识别可文档化模块并输出推荐列表。故事目录格式 `<project>-<name>`（project 为项目标识，name 为 kebab-case，如 `YiWeb-user-login`）。
 
