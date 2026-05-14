@@ -80,6 +80,7 @@ flowchart LR
 8. **交付强制** — 三步管线按序标记（`delivery-gate.js mark`），Stop hook 检查未闭合即阻断
 9. **公式驱动** — 文档由 [formulas.md](./formulas.md) 规约，文件名带编号前缀（00–08）
 10. **知识沉淀** — 写入 `.memory/execution-memory.jsonl` + `.memory/rui-state.json`；提案写入 `.improvement/proposals.jsonl`
+11. **同步通知必触发** — 每次 rui 命令（除 list/推荐）末端必须触发 import-docs 文档同步 + wework-bot 通知，未触发 = 管线未闭合
 
 ### 故事目录文件编号速查
 
@@ -168,6 +169,56 @@ flowchart LR
 | `README.md` | 系统视图 + 项目画像 | 全量重生 |
 | `docs/故事任务面板/<project>/.skeleton/*.md` | 故事骨架模板 | 全量重生 |
 | `docs/故事任务面板/.init-memory.json` | 执行记录 | 每次覆盖 |
+
+## 强制集成：import-docs + wework-bot
+
+> **口诀：用 rui 必触发，无例外。**
+
+**每次** `/rui` 命令执行（含 `doc` / `code` / `update` / `init` / 端到端），管线末端 **必须** 触发 import-docs 和 wework-bot。这不是可选步骤，是管线完整性的一部分。
+
+### 触发时机
+
+| rui 命令 | import-docs | wework-bot | 备注 |
+|----------|:-----------:|:----------:|------|
+| `/rui init` | ✓ | ✓ | verify 通过后立即触发 |
+| `/rui doc <req>` | ✓ | ✓ | 文档生成完成后 |
+| `/rui code <name>` | ✓ | ✓ | Gate B 通过后 |
+| `/rui <req>` | ✓ | ✓ | 端到端末端 |
+| `/rui update` | ✓ | ✓ | 更新完成后 |
+| `/rui code --from-doc` | ✓ | ✓ | 反推完成后 |
+| `/rui doc --from-code` | ✓ | ✓ | 反推完成后 |
+| `/rui list` | ✗ | ✗ | 只读，不触发 |
+| `/rui`（推荐） | ✗ | ✗ | 只读，不触发 |
+
+### 触发顺序（不可跳序）
+
+```
+管线完成 → 1. hook-log（追加日志）→ 2. import-docs（文档同步）→ 3. wework-bot（发送通知）→ delivery-gate mark
+```
+
+### 阻断条件
+
+- 未触发 import-docs 或 wework-bot → 管线视为 **未闭合**，delivery-gate 阻断
+- `no-token` 降级：仅 `API_X_TOKEN` 缺失时跳过实际推送，但仍需调用脚本并标记
+- 网络失败：记录告警不阻断，标记仍写
+
+### 执行方式
+
+```bash
+# 1. 追加日志
+node skills/wework-bot/scripts/hook-log.js
+
+# 2. 文档同步（必须）
+node skills/import-docs/scripts/hook-sync.js
+
+# 3. 发送通知（必须）
+node skills/wework-bot/scripts/hook-notify.js
+
+# 4. 闭合检查
+node skills/rui/scripts/delivery-gate.js check-all --json --recent-hours 1
+```
+
+**违反此规则等同于管线未完成。**
 
 ## 集成
 
