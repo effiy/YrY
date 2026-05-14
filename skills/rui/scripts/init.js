@@ -357,22 +357,475 @@ function extractManifest(root) {
 }
 
 
+// ── 按项目类型决定文档目录 ─────────────────────────────────────
+function resolveDocDirsForType(type) {
+  const dirs = ['故事任务面板'];  // 所有项目都有故事面板
+  if (type === 'frontend' || type === 'fullstack') {
+    dirs.push('组件文档', '页面文档');
+  }
+  if (type === 'backend' || type === 'fullstack' || type === 'meta') {
+    dirs.push('接口文档', '领域模型');
+  }
+  return dirs;
+}
+
+// ── 扫描源码生成文档骨架 ───────────────────────────────────────
+// 根据项目类型扫描源码，发现核心模块/组件/接口，生成初始文档目录和索引文件。
+// 设计原则：只生成有实际源码支撑的文档（Level A 证据），不凭空创建。
+function generateDocScaffolds(profile) {
+  const p = profile;
+  const scaffolds = [];
+  const projectName = p.project;
+
+  // 前端：扫描组件目录
+  if (p.type === 'frontend' || p.type === 'fullstack') {
+    const components = discoverFrontendComponents(REPO_ROOT);
+    for (const comp of components) {
+      scaffolds.push({
+        docTypeDir: '组件文档',
+        project: projectName,
+        name: comp.name,
+        docPath: `docs/组件文档/${projectName}/${comp.name}/`,
+        indexContent: generateComponentIndex(comp, projectName),
+      });
+    }
+
+    const pages = discoverFrontendPages(REPO_ROOT);
+    for (const page of pages) {
+      scaffolds.push({
+        docTypeDir: '页面文档',
+        project: projectName,
+        name: page.name,
+        docPath: `docs/页面文档/${projectName}/${page.name}/`,
+        indexContent: generatePageIndex(page, projectName),
+      });
+    }
+  }
+
+  // 后端：扫描 API 路由和领域模块
+  if (p.type === 'backend' || p.type === 'fullstack') {
+    const apis = discoverBackendAPIs(REPO_ROOT);
+    for (const api of apis) {
+      scaffolds.push({
+        docTypeDir: '接口文档',
+        project: projectName,
+        name: api.name,
+        docPath: `docs/接口文档/${projectName}/${api.name}/`,
+        indexContent: generateAPIIndex(api, projectName),
+      });
+    }
+
+    const domains = discoverDomainModules(REPO_ROOT);
+    for (const domain of domains) {
+      scaffolds.push({
+        docTypeDir: '领域模型',
+        project: projectName,
+        name: domain.name,
+        docPath: `docs/领域模型/${projectName}/${domain.name}/`,
+        indexContent: generateDomainIndex(domain, projectName),
+      });
+    }
+  }
+
+  // 元项目：扫描 skills/agents/rules 作为领域模块
+  if (p.type === 'meta') {
+    const metaModules = discoverMetaModules(REPO_ROOT);
+    for (const mod of metaModules) {
+      scaffolds.push({
+        docTypeDir: mod.docType === 'api' ? '接口文档' : '领域模型',
+        project: projectName,
+        name: mod.name,
+        docPath: `docs/${mod.docType === 'api' ? '接口文档' : '领域模型'}/${projectName}/${mod.name}/`,
+        indexContent: mod.docType === 'api'
+          ? generateAPIIndex(mod, projectName)
+          : generateDomainIndex(mod, projectName),
+      });
+    }
+  }
+
+  return scaffolds;
+}
+
+// ── 前端组件发现 ───────────────────────────────────────────────
+function discoverFrontendComponents(root) {
+  const components = [];
+  // 扫描 src/components 或 components 目录下的顶层组件目录
+  const componentDirs = [
+    'src/components', 'components', 'src/ui', 'packages',
+  ];
+  for (const dir of componentDirs) {
+    const fullDir = path.join(root, dir);
+    if (!fs.existsSync(fullDir)) continue;
+    try {
+      const entries = fs.readdirSync(fullDir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (!entry.isDirectory() || entry.name.startsWith('.') || entry.name === 'node_modules') continue;
+        // 检查目录下是否有组件文件
+        const subFiles = C.sh(`find "${path.join(fullDir, entry.name)}" -maxdepth 2 -type f \\( -name "*.vue" -o -name "*.jsx" -o -name "*.tsx" \\) | head -5`, '', root);
+        if (subFiles) {
+          const fileCount = subFiles.split('\n').filter(Boolean).length;
+          components.push({
+            name: toKebabCase(entry.name),
+            path: `${dir}/${entry.name}`,
+            fileCount,
+            files: subFiles.split('\n').filter(Boolean).map(f => path.relative(root, f)),
+          });
+        }
+      }
+    } catch { /* skip */ }
+  }
+
+  // 如果没有组件目录结构，扫描独立的 .vue/.tsx 文件作为顶层组件
+  if (components.length === 0) {
+    const topFiles = C.sh(
+      `find . -maxdepth 3 -type f \\( -name "*.vue" -o -name "*.tsx" -o -name "*.jsx" \\) -not -path "*/node_modules/*" -not -path "*/.git/*" | head -20`,
+      '', root
+    );
+    if (topFiles) {
+      const dirMap = new Map();
+      for (const f of topFiles.split('\n').filter(Boolean)) {
+        const dir = path.dirname(f).replace(/^\.\//, '');
+        if (!dirMap.has(dir)) dirMap.set(dir, []);
+        dirMap.get(dir).push(f);
+      }
+      for (const [dir, files] of dirMap) {
+        if (files.length >= 2) {  // 至少 2 个组件文件才值得建文档
+          const name = toKebabCase(path.basename(dir));
+          if (name && name !== '.' && name !== 'src') {
+            components.push({ name, path: dir, fileCount: files.length, files });
+          }
+        }
+      }
+    }
+  }
+
+  return components.slice(0, 10);  // 限制数量，避免过多
+}
+
+// ── 前端页面发现 ───────────────────────────────────────────────
+function discoverFrontendPages(root) {
+  const pages = [];
+  const pageDirs = ['src/pages', 'src/views', 'pages', 'views', 'src/routes'];
+  for (const dir of pageDirs) {
+    const fullDir = path.join(root, dir);
+    if (!fs.existsSync(fullDir)) continue;
+    try {
+      const entries = fs.readdirSync(fullDir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (!entry.isDirectory() || entry.name.startsWith('.') || entry.name.startsWith('_')) continue;
+        pages.push({
+          name: toKebabCase(entry.name),
+          path: `${dir}/${entry.name}`,
+          route: `/${toKebabCase(entry.name)}`,
+        });
+      }
+    } catch { /* skip */ }
+  }
+  return pages.slice(0, 10);
+}
+
+// ── 后端 API 发现 ──────────────────────────────────────────────
+function discoverBackendAPIs(root) {
+  const apis = [];
+  // 扫描路由/控制器文件
+  const routeFiles = C.sh(
+    `find . -type f \\( -name "*router*" -o -name "*route*" -o -name "*controller*" -o -name "*Controller*" -o -name "*api*" \\) \\( -name "*.js" -o -name "*.ts" -o -name "*.py" -o -name "*.go" -o -name "*.java" \\) -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/dist/*" -not -path "*/skills/*" | head -20`,
+    '', root
+  );
+  if (!routeFiles) return apis;
+
+  const seen = new Set();
+  for (const file of routeFiles.split('\n').filter(Boolean)) {
+    try {
+      const content = fs.readFileSync(path.join(root, file), 'utf8').slice(0, 3000);
+      // 提取路由前缀
+      const routeMatches = content.matchAll(/(?:router\.|app\.(?:get|post|put|delete|patch)|@(?:app\.route|RequestMapping|GetMapping|PostMapping))\s*\(\s*['"`]([^'"`]+)['"`]/g);
+      for (const m of routeMatches) {
+        const routePath = m[1].split('/').filter(Boolean)[0];  // 取第一段作为资源名
+        if (routePath && !seen.has(routePath)) {
+          seen.add(routePath);
+          apis.push({
+            name: toKebabCase(routePath),
+            path: file.replace(/^\.\//, ''),
+            basePath: `/${routePath}`,
+          });
+        }
+      }
+    } catch { /* skip */ }
+  }
+
+  // 如果没有从路由文件发现，按目录结构推断
+  if (apis.length === 0) {
+    const apiDirs = ['src/api', 'api', 'src/routes', 'routes', 'src/controllers', 'controllers'];
+    for (const dir of apiDirs) {
+      const fullDir = path.join(root, dir);
+      if (!fs.existsSync(fullDir)) continue;
+      try {
+        const entries = fs.readdirSync(fullDir, { withFileTypes: true });
+        for (const entry of entries) {
+          if (entry.name.startsWith('.') || entry.name === 'index.js' || entry.name === 'index.ts') continue;
+          const name = toKebabCase(entry.name.replace(/\.(js|ts|py|go|java)$/, '').replace(/Controller$|Router$|Route$/i, ''));
+          if (name && !seen.has(name)) {
+            seen.add(name);
+            apis.push({ name, path: `${dir}/${entry.name}`, basePath: `/${name}` });
+          }
+        }
+      } catch { /* skip */ }
+    }
+  }
+
+  return apis.slice(0, 10);
+}
+
+// ── 领域模块发现 ───────────────────────────────────────────────
+function discoverDomainModules(root) {
+  const domains = [];
+  // 扫描 src/domain, src/models, src/services, src/modules 等
+  const domainDirs = [
+    'src/domain', 'src/models', 'src/services', 'src/modules',
+    'domain', 'models', 'services', 'modules',
+    'internal', 'pkg',
+  ];
+  for (const dir of domainDirs) {
+    const fullDir = path.join(root, dir);
+    if (!fs.existsSync(fullDir)) continue;
+    try {
+      const entries = fs.readdirSync(fullDir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (!entry.isDirectory() || entry.name.startsWith('.')) continue;
+        domains.push({
+          name: toKebabCase(entry.name),
+          path: `${dir}/${entry.name}`,
+          type: dir.includes('model') ? 'entity' : (dir.includes('service') ? 'service' : 'aggregate'),
+        });
+      }
+    } catch { /* skip */ }
+  }
+  return domains.slice(0, 10);
+}
+
+// ── 元项目模块发现 ─────────────────────────────────────────────
+function discoverMetaModules(root) {
+  const modules = [];
+  // Skills → 领域模型
+  const skillsDir = path.join(root, 'skills');
+  if (fs.existsSync(skillsDir)) {
+    try {
+      const entries = fs.readdirSync(skillsDir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (!entry.isDirectory() || entry.name.startsWith('.')) continue;
+        modules.push({
+          name: entry.name,
+          path: `skills/${entry.name}`,
+          docType: 'domain',
+          type: 'skill',
+          description: `Skill: ${entry.name}`,
+        });
+      }
+    } catch { /* skip */ }
+  }
+
+  // scripts 目录中有对外接口的脚本 → 接口文档
+  const scriptsDir = path.join(root, 'skills', 'rui', 'scripts');
+  if (fs.existsSync(scriptsDir)) {
+    // 将核心脚本组合为一个接口文档
+    modules.push({
+      name: 'rui-scripts',
+      path: 'skills/rui/scripts',
+      docType: 'api',
+      basePath: '/rui',
+      description: 'rui 核心脚本接口',
+    });
+  }
+
+  return modules;
+}
+
+// ── 索引文件生成器 ─────────────────────────────────────────────
+
+function generateComponentIndex(comp, projectName) {
+  return `# ${comp.name}
+
+> | v0.1.0 | ${new Date().toISOString().split('T')[0]} | rui init | 🌿 main |
+
+## 身份卡片
+
+| 字段 | 值 |
+|------|-----|
+| 组件名 | ${comp.name} |
+| 文件路径 | \`${comp.path}\` |
+| 一句话职责 | > 待补充 |
+| 项目 | ${projectName} |
+| 文件数 | ${comp.fileCount} |
+
+## 阅读路径
+
+| 角色 | 路径 | 预计时间 |
+|------|------|---------|
+| 调用方 | 索引 → 01 §2 接口契约 → 04 正常场景 | 5 min |
+| 维护者 | 索引 → 01 → 02 → 03 | 15 min |
+| 测试者 | 索引 → 04 全场景 → 01 §2 必填可选 | 8 min |
+
+## 文件清单
+
+| 文件 | 定位 | 状态 |
+|------|------|------|
+| 01-组件概述.md | API 参考手册（查阅型） | > 待生成 |
+| 02-状态与依赖.md | 架构蓝图（理解型） | > 待生成 |
+| 03-样式与交互.md | 视觉规范（审查型） | > 待生成 |
+| 04-操作场景.md | 用户手册（验证型） | > 待生成 |
+
+## 关联资源
+
+- 源码: [\`${comp.path}\`](../../../${comp.path})
+`;
+}
+
+function generatePageIndex(page, projectName) {
+  return `# ${page.name}
+
+> | v0.1.0 | ${new Date().toISOString().split('T')[0]} | rui init | 🌿 main |
+
+## 身份卡片
+
+| 字段 | 值 |
+|------|-----|
+| 页面名 | ${page.name} |
+| 路由 | \`${page.route}\` |
+| 一句话职责 | > 待补充 |
+| 项目 | ${projectName} |
+| 文件路径 | \`${page.path}\` |
+
+## 阅读路径
+
+| 角色 | 路径 | 预计时间 |
+|------|------|---------|
+| 前端开发 | 索引 → 01 §1 → 02 §1 组件树 → 02 §3 通信 | 10 min |
+| 测试者 | 索引 → 04 全场景 | 8 min |
+| 设计师 | 索引 → 03 交互流程 | 5 min |
+
+## 文件清单
+
+| 文件 | 定位 | 状态 |
+|------|------|------|
+| 01-页面概述.md | API 参考手册（查阅型） | > 待生成 |
+| 02-组件编排.md | 架构蓝图（理解型） | > 待生成 |
+| 03-交互流程.md | 视觉规范（审查型） | > 待生成 |
+| 04-操作场景.md | 用户手册（验证型） | > 待生成 |
+
+## 关联资源
+
+- 源码: [\`${page.path}\`](../../../${page.path})
+`;
+}
+
+function generateAPIIndex(api, projectName) {
+  return `# ${api.name}
+
+> | v0.1.0 | ${new Date().toISOString().split('T')[0]} | rui init | 🌿 main |
+
+## 身份卡片
+
+| 字段 | 值 |
+|------|-----|
+| 资源名 | ${api.name} |
+| Base URL | \`${api.basePath || '/'}\` |
+| 一句话职责 | > 待补充 |
+| 项目 | ${projectName} |
+| 源码路径 | \`${api.path}\` |
+
+## 阅读路径
+
+| 角色 | 路径 | 预计时间 |
+|------|------|---------|
+| 前端调用方 | 索引 → 01 §2 端点清单 → 04 调用场景 | 5 min |
+| 后端维护者 | 索引 → 01 → 02 → 03 | 15 min |
+| SRE | 索引 → 03 §6 错误码 → 04 §5 性能约束 | 5 min |
+
+## 文件清单
+
+| 文件 | 定位 | 状态 |
+|------|------|------|
+| 01-接口概述.md | API 参考手册（查阅型） | > 待生成 |
+| 02-数据模型.md | 数据字典（理解型） | > 待生成 |
+| 03-中间件与安全.md | 安全白皮书（审查型） | > 待生成 |
+| 04-操作场景.md | 集成手册（验证型） | > 待生成 |
+
+## 关联资源
+
+- 源码: [\`${api.path}\`](../../../${api.path})
+`;
+}
+
+function generateDomainIndex(domain, projectName) {
+  return `# ${domain.name}
+
+> | v0.1.0 | ${new Date().toISOString().split('T')[0]} | rui init | 🌿 main |
+
+## 身份卡片
+
+| 字段 | 值 |
+|------|-----|
+| 领域名 | ${domain.name} |
+| 一句话职责 | > 待补充 |
+| 项目 | ${projectName} |
+| 源码路径 | \`${domain.path}\` |
+| 模块类型 | ${domain.type || 'aggregate'} |
+
+## 阅读路径
+
+| 角色 | 路径 | 预计时间 |
+|------|------|---------|
+| 后端开发 | 索引 → 01 §2 限界上下文 → 03 §2 领域事件 | 10 min |
+| 架构师 | 索引 → 01 → 02 → 03 | 20 min |
+| 测试者 | 索引 → 04 全场景 | 8 min |
+
+## 文件清单
+
+| 文件 | 定位 | 状态 |
+|------|------|------|
+| 01-领域概述.md | 领域参考（查阅型） | > 待生成 |
+| 02-实体模型.md | 数据字典（理解型） | > 待生成 |
+| 03-领域服务.md | 服务白皮书（审查型） | > 待生成 |
+| 04-操作场景.md | 操作手册（验证型） | > 待生成 |
+
+## 关联资源
+
+- 源码: [\`${domain.path}\`](../../../${domain.path})
+`;
+}
+
+// ── 工具：kebab-case 转换 ──────────────────────────────────────
+function toKebabCase(str) {
+  return str
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
+    .replace(/[_\s]+/g, '-')
+    .replace(/[^a-zA-Z0-9\-]/g, '')
+    .toLowerCase()
+    .replace(/^-+|-+$/g, '');
+}
+
+
 // ── 2. generate ────────────────────────────────────────────────
 // 按项目情况生成/裁剪全部产物。每次运行都根据最新 profile 重生。
-// 产物：CLAUDE.md / README.md / agents/ / rules/ / skills 配置 / project-profile.json
+// 产物：CLAUDE.md / README.md / agents/ / rules/ / skills 配置 / project-profile.json / docs 核心目录
 
 function generate(profile, opts) {
   const { dryRun = false } = opts;
   const result = { created: [], skipped: [], dirs: [] };
 
+  // 按项目类型决定需要的文档目录
+  const docDirs = resolveDocDirsForType(profile.type);
+
   // 创建目录结构
-  for (const d of [
+  const coreDirs = [
     CLAUDE_DIR,
     path.join(CLAUDE_DIR, 'agents'),
     path.join(CLAUDE_DIR, 'rules'),
     path.join(CLAUDE_DIR, '.history'),
-    path.join(REPO_ROOT, 'docs', '故事任务面板'),
-  ]) {
+    ...docDirs.map(d => path.join(REPO_ROOT, 'docs', d)),
+  ];
+  for (const d of coreDirs) {
     if (dryRun) result.dirs.push({ path: rel(d), action: 'will-create' });
     else { ensureDir(d); result.dirs.push({ path: rel(d), action: 'ensured' }); }
   }
@@ -416,6 +869,23 @@ function generate(profile, opts) {
   const gitignore = path.join(CLAUDE_DIR, '.gitignore');
   if (!fs.existsSync(gitignore)) {
     writeFile(gitignore, 'settings.local.json\n.history/\n', opts, result, '.gitignore');
+  }
+
+  // 10. 核心文档目录骨架 — 按项目类型扫描源码，生成初始文档索引
+  const docScaffolds = generateDocScaffolds(profile);
+  for (const scaffold of docScaffolds) {
+    const scaffoldDir = path.join(REPO_ROOT, scaffold.docPath);
+    if (dryRun) {
+      result.dirs.push({ path: scaffold.docPath, action: 'will-create' });
+    } else {
+      ensureDir(scaffoldDir);
+      result.dirs.push({ path: scaffold.docPath, action: 'ensured' });
+    }
+    // 生成索引文件（已存在不覆盖，保护手动编辑）
+    const indexFile = path.join(scaffoldDir, '00-索引.md');
+    if (!fs.existsSync(indexFile)) {
+      writeFile(indexFile, scaffold.indexContent, opts, result, `docs/${scaffold.docTypeDir}/${scaffold.project}/${scaffold.name}/00-索引`);
+    }
   }
 
   return result;
@@ -1701,6 +2171,22 @@ function verify(profile) {
           : { ok: false, detail: fails.join('; ') };
       },
     },
+    {
+      id: 'docs/ 文档目录',
+      description: `核心文档目录（按 ${profile.type_label} 裁剪）`,
+      validate() {
+        const expectedDirs = resolveDocDirsForType(profile.type);
+        const missing = [];
+        for (const dir of expectedDirs) {
+          const fullDir = path.join(REPO_ROOT, 'docs', dir);
+          if (!fs.existsSync(fullDir)) missing.push(dir);
+        }
+        if (missing.length > 0) {
+          return { ok: false, detail: `缺失目录: ${missing.join(', ')}`, missing };
+        }
+        return { ok: true, detail: `${expectedDirs.length} 个文档目录就绪（${expectedDirs.join(' · ')}）` };
+      },
+    },
   ];
 
   const results = checks.map(c => ({ id: c.id, description: c.description, ...c.validate() }));
@@ -1770,6 +2256,7 @@ function writeInitMemory(profile, verifyResult) {
     security_surface: profile.security_surface.signals,
     test_framework: profile.test_framework.framework,
     architecture: profile.architecture.pattern,
+    doc_dirs: resolveDocDirsForType(profile.type),
     verify: { ok: verifyResult.ok, passed: verifyResult.passed, total: verifyResult.total },
   }, null, 2) + '\n', 'utf8');
 }
@@ -1818,6 +2305,7 @@ function printReport(profile, gen, ver, opts) {
   if (profile.test_framework.framework) console.log(`测试: ${profile.test_framework.framework} · \`${profile.test_framework.runner_command}\``);
   if (profile.ci_config.provider) console.log(`CI/CD: ${profile.ci_config.provider}`);
   if (profile.tech_signals.length) console.log(`信号: ${profile.tech_signals.slice(0, 5).join(' · ')}${profile.tech_signals.length > 5 ? ' ...' : ''}`);
+  console.log(`文档目录: ${resolveDocDirsForType(profile.type).join(' · ')}`);
   console.log('');
 
   const counts = { created: 0, overwritten: 0 };
@@ -1826,11 +2314,26 @@ function printReport(profile, gen, ver, opts) {
     else if (item.action.includes('overwrit')) counts.overwritten++;
   }
 
-  console.log(`## 产物 (${counts.created} 创建 · ${counts.overwritten} 更新)`);
+  // 统计文档骨架
+  const docScaffoldCount = gen.created.filter(i => i.path.startsWith('docs/') && i.path.includes('00-索引')).length;
+
+  console.log(`## 产物 (${counts.created} 创建 · ${counts.overwritten} 更新${docScaffoldCount > 0 ? ` · ${docScaffoldCount} 文档骨架` : ''})`);
   for (const item of gen.created) {
     console.log(`  ${actionGlyph(item.action)} ${item.path}  ← ${item.source}`);
   }
   console.log('');
+
+  // 显示文档目录结构
+  if (gen.dirs.length > 0) {
+    const docDirs = gen.dirs.filter(d => d.path.startsWith('docs/'));
+    if (docDirs.length > 0) {
+      console.log(`## 文档目录 (${docDirs.length} 个)`);
+      for (const d of docDirs) {
+        console.log(`  ${d.action === 'will-create' ? '◇' : '✓'} ${d.path}`);
+      }
+      console.log('');
+    }
+  }
 
   console.log(`## 就绪检查 (${ver.passed}/${ver.total})`);
   for (const c of ver.checks) {
@@ -1841,6 +2344,7 @@ function printReport(profile, gen, ver, opts) {
   if (ver.ok) {
     console.log('✓ 基线就绪（全部产物已按项目情况生成）。下一步:');
     console.log('  /rui doc <需求>          # 拆故事 + 文档管线');
+    console.log('  /rui doc --from-code     # 从源码反推参考文档');
     console.log('  /rui                     # 任务推荐\n');
   } else if (!opts.dryRun) {
     console.log('✗ 就绪检查未通过，修复后重跑 `/rui init`。\n');
@@ -1885,6 +2389,19 @@ function printHelp() {
   .claude/settings.json          项目权限（按生态配置）
   .claude/.mcp.json              MCP 配置
   docs/故事任务面板/             故事产出根目录
+
+文档目录（按项目类型自动创建 + 源码扫描生成骨架）:
+  docs/故事任务面板/             所有项目
+  docs/组件文档/                 前端/全栈项目（扫描 src/components 等）
+  docs/页面文档/                 前端/全栈项目（扫描 src/pages 等）
+  docs/接口文档/                 后端/全栈/元项目（扫描路由/控制器）
+  docs/领域模型/                 后端/全栈/元项目（扫描 domain/models/services）
+
+文档骨架生成规则:
+  - 只为有实际源码支撑的模块生成（Level A 证据）
+  - 每个发现的模块生成 00-索引.md（导航入口）
+  - 索引文件已存在不覆盖（保护手动编辑）
+  - 每类最多生成 10 个骨架（避免噪音）
 
 可重复运行：每次根据最新项目情况更新和裁剪全部产物。
 `);

@@ -83,13 +83,13 @@ flowchart LR
 
 ## init 简述
 
-> **口诀：探—生—验。** 三步：探（扫描项目六类信号）→ 生（按项目情况生成/裁剪全部产物）→ 验（6 项就绪检查含耦合一致性）。
+> **口诀：探—生—验。** 三步：探（扫描项目六类信号）→ 生（按项目情况生成/裁剪全部产物 + 核心文档骨架）→ 验（7 项就绪检查含耦合一致性 + 文档目录）。
 >
-> **核心设计**：所有产物（CLAUDE.md / README.md / agents / rules / formulas / coder 手册）均由 init 根据项目实际情况生成和裁剪。可重复运行，每次根据最新项目情况更新全部内容。
+> **核心设计**：所有产物（CLAUDE.md / README.md / agents / rules / formulas / coder 手册 / 文档目录骨架）均由 init 根据项目实际情况生成和裁剪。可重复运行，每次根据最新项目情况更新全部内容。
 
 ```mermaid
 flowchart LR
-    P1[detect<br/>六类信号扫描]:::s --> P2[generate<br/>按项目情况生成/裁剪]:::s --> P3[verify<br/>6 项就绪检查]:::s --> P4[记忆<br/>.init-memory]
+    P1[detect<br/>六类信号扫描]:::s --> P2[generate<br/>产物+文档骨架]:::s --> P3[verify<br/>7 项就绪检查]:::s --> P4[记忆<br/>.init-memory]
     P3 -.失败.-> Fix[exit 1<br/>修复后重跑]
     P3 -.通过.-> Ready[基线就绪]
     classDef s fill:#e3f2fd,stroke:#1565c0;
@@ -123,8 +123,26 @@ flowchart LR
 | `.claude/coder.md` | 项目类型 | 目录结构/骨架/公式按项目裁剪 |
 | `.claude/settings.json` | 生态 | 权限按生态配置 |
 | `.claude/project-profile.json` | 事实层 | 每次覆盖 |
+| `docs/` 文档目录 | 项目类型 + 源码扫描 | 按类型创建目录 + 扫描源码生成骨架索引 |
 
-### 3. verify — 6 项就绪检查（验证层）
+#### 文档目录生成规则
+
+按项目类型自动创建对应的文档目录，并扫描源码发现核心模块生成初始骨架：
+
+| 项目类型 | 文档目录 | 扫描目标 |
+|---------|---------|---------|
+| 前端 | 故事任务面板 + 组件文档 + 页面文档 | src/components · src/pages · src/views |
+| 后端 | 故事任务面板 + 接口文档 + 领域模型 | 路由/控制器 · src/domain · src/models · src/services |
+| 全栈 | 全部五类 | 前端 + 后端扫描目标 |
+| 元项目 | 故事任务面板 + 接口文档 + 领域模型 | skills/ · agents/ · rules/ · scripts/ |
+
+骨架生成原则：
+- 只为有实际源码支撑的模块生成（Level A 证据）
+- 每个发现的模块生成 `00-索引.md`（导航入口）
+- 索引文件已存在不覆盖（保护手动编辑）
+- 每类最多 10 个骨架（避免噪音）
+
+### 3. verify — 7 项就绪检查（验证层）
 
 任一失败 `exit 1`：
 
@@ -136,6 +154,7 @@ flowchart LR
 | 4 | `.claude/rules/` | 6 个规则文件齐备 + 含项目名 |
 | 5 | `.claude/` 配置层 | profile（含新字段）+ formulas + coder + settings |
 | 6 | 项目耦合一致性 | 所有产物与 profile 类型/公式/裁剪一致 |
+| 7 | `docs/` 文档目录 | 按项目类型应有的文档目录全部存在 |
 
 ### 4. 选项
 
@@ -159,6 +178,7 @@ flowchart LR
 | `.claude/settings.json` | 项目权限（按生态配置） | 全量重生 |
 | `.claude/settings.local.json` | 本地覆盖（首次空模板） | 不覆盖 |
 | `docs/故事任务面板/.init-memory.json` | 执行记录 | 每次覆盖 |
+| `docs/{文档类}/{project}/{name}/00-索引.md` | 文档骨架索引 | 首次创建，不覆盖 |
 
 ## 集成
 

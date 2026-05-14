@@ -3,22 +3,5 @@
   "permissions": {
     "allow": [],
     "deny": []
-  },
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/skills/import-docs/scripts/import-docs.js\" --workspace 2>&1 | tail -5"
-          },
-          {
-            "type": "prompt",
-            "prompt": "检查本次会话是否使用了 /rui 命令（doc/code/init/update/list 等任何子命令）。如果使用了，返回 {\"ok\": false, \"reason\": \"请调用 wework-bot 发送本次 rui 执行结果通知：node skills/wework-bot/scripts/send-message.js --agent rui --content '<按 SKILL.md 场景格式生成消息>'\"} 。如果未使用 /rui，返回 {\"ok\": true}。"
-          }
-        ]
-      }
-    ]
   }
 }
