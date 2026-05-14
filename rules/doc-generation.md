@@ -6,7 +6,7 @@ paths:
 
 # Document Generation Rules
 
-> **口诀：版头齐、目录清、证据足、产出聚、裁剪准。** 五条强制约束，缺一即偏差。完整文档规范见 [skills/rui/docs.md](../skills/rui/docs.md)，结构公式见 [skills/rui/formulas.md](../skills/rui/formulas.md)。
+> **口诀：版头齐、目录清、证据足、产出聚、裁剪准。** 五条强制约束，缺一即偏差。故事文档公式见 [skills/rui/formulas.md](../skills/rui/formulas.md)，目录生命周期 / 参考文档公式 / 数据契约见 [skills/rui/coder.md](../skills/rui/coder.md)。
 
 ## 1. 版头齐（格式）
 
@@ -80,7 +80,7 @@ paths:
   - 02 = 架构蓝图 / 数据字典（理解型）
   - 03 = 视觉规范 / 安全白皮书（审查型）
   - 04 = 用户手册 / 集成手册（验证型）
-- 详细章节见 [formulas.md](../skills/rui/formulas.md) F.ref.\* 块
+- 详细章节见 [coder.md §参考文档公式](../skills/rui/coder.md#参考文档公式) F.ref.\* 块
 
 ## 策展
 

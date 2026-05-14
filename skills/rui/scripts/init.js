@@ -88,14 +88,14 @@ const CHECKS = {
   },
   'formulas.md': {
     order: 5,
-    description: '文档结构公式（5 类文档：故事任务面板 + 组件文档 + 接口文档 + 页面文档 + 领域模型）',
+    description: '故事文档公式（F.story.01–08 主线 + F.supp.10–16 补充）',
     file: path.join(CLAUDE_DIR, 'formulas.md'),
     validate(content) {
       const required = [
         { label: 'F.meta 通用元素', pattern: /F\.meta/ },
-        { label: 'F.story 故事公式', pattern: /F\.story\.01/ },
-        { label: 'F.ref 参考文档公式', pattern: /F\.ref\.(component|api|page|domain)/ },
-        { label: '5 类文档覆盖', pattern: /组件文档[\s\S]*接口文档[\s\S]*页面文档[\s\S]*领域模型/ },
+        { label: 'F.story 故事主线公式', pattern: /F\.story\.01/ },
+        { label: 'F.supp 补充文档公式', pattern: /F\.supp\./ },
+        { label: '8 份故事主线覆盖', pattern: /F\.story\.01[\s\S]*F\.story\.02[\s\S]*F\.story\.03[\s\S]*F\.story\.04[\s\S]*F\.story\.05[\s\S]*F\.story\.06[\s\S]*F\.story\.07[\s\S]*F\.story\.08/ },
       ];
       return checkPatterns(content, required);
     },
@@ -132,11 +132,11 @@ const CHECKS = {
   },
   '.claude/': {
     order: 8,
-    description: '.claude/ 目录结构完整（agents/ + rules/ + formulas.md + settings.json + .mcp.json + settings.local.json）',
+    description: '.claude/ 目录结构完整（agents/ + rules/ + formulas.md + coder.md + settings.json + .mcp.json + settings.local.json）',
     file: CLAUDE_DIR,
     validate() {
       const required = [
-        'agents/', 'rules/', 'formulas.md',
+        'agents/', 'rules/', 'formulas.md', 'coder.md',
         'settings.json', '.mcp.json', 'settings.local.json',
       ];
       const missing = [];
@@ -508,6 +508,22 @@ function injectBaseline(baseline, dryRun, force = false) {
         results.created.push({ path: path.relative(REPO_ROOT, formulasDest), action: r.action === 'overwrite' ? 'overwritten' : 'copied', source: 'skills/rui/formulas.md' });
       } else {
         results.skipped.push({ path: path.relative(REPO_ROOT, formulasDest), reason: r.reason });
+      }
+    }
+  }
+
+  // Copy coder.md (目录生命周期 + 参考文档公式 + 数据契约)
+  const coderDocSrc = path.join(REPO_ROOT, 'skills', 'rui', 'coder.md');
+  const coderDocDest = path.join(CLAUDE_DIR, 'coder.md');
+  if (fs.existsSync(coderDocSrc)) {
+    if (dryRun) {
+      results.created.push({ path: path.relative(REPO_ROOT, coderDocDest), action: force ? 'will-overwrite' : 'will-copy', source: 'skills/rui/coder.md' });
+    } else {
+      const r = copyFile(coderDocSrc, coderDocDest, force);
+      if (r.action === 'create' || r.action === 'overwrite') {
+        results.created.push({ path: path.relative(REPO_ROOT, coderDocDest), action: r.action === 'overwrite' ? 'overwritten' : 'copied', source: 'skills/rui/coder.md' });
+      } else {
+        results.skipped.push({ path: path.relative(REPO_ROOT, coderDocDest), reason: r.reason });
       }
     }
   }

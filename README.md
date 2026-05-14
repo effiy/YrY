@@ -138,7 +138,7 @@ YrY/
 │   ├── rui-claude.md      # 操作范围、分支隔离
 │   └── self-improve.md    # 数据驱动、H11 降级
 ├── skills/
-│   ├── rui/               # SDLC 编排器：SKILL.md + data.md + docs.md + formulas.md
+│   ├── rui/               # SDLC 编排器：SKILL.md + formulas.md + coder.md
 │   ├── rui-claude/        # .claude 配置管理：SKILL.md
 │   ├── wework-bot/        # 企业微信通知：SKILL.md + config.json
 │   └── import-docs/       # 文档远程同步：SKILL.md
@@ -156,4 +156,5 @@ YrY/
 - **规则细节** — [rules/](./rules/)：code-pipeline、gate-rules、doc-generation 等共享约束
 - **角色边界** — [agents/](./agents/)：每个 Agent 的决策范围与不该做的事
 - **Skill 内幕** — [skills/rui/SKILL.md](./skills/rui/SKILL.md)：rui 命令的完整管线说明
-- **文档公式** — [skills/rui/formulas.md](./skills/rui/formulas.md)：5 类文档结构公式（替代旧版 templates/）
+- **故事文档公式** — [skills/rui/formulas.md](./skills/rui/formulas.md)：故事主线（F.story.\*）+ 补充文档（F.supp.\*）结构公式
+- **Coder 工作手册** — [skills/rui/coder.md](./skills/rui/coder.md)：目录生命周期 + 参考文档公式（F.ref.\*）+ 数据契约
