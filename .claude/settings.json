@@ -1,7 +1,0 @@
-{
-  "_doc": "YrY 项目权限配置。rui init 生成。",
-  "permissions": {
-    "allow": [],
-    "deny": []
-  }
-}
