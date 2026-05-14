@@ -1,0 +1,66 @@
+{
+  "project": "YrY",
+  "type": "meta",
+  "type_label": "元项目(插件/配置)",
+  "tech_signals": [],
+  "coder_formula": {
+    "text": "模块 → 接口 → 数据流",
+    "variant": "插件/配置",
+    "focus": "规则完整性与集成契约"
+  },
+  "story_defaults": {
+    "skeleton": "fullstack",
+    "required_files": [
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08"
+    ],
+    "skip_files": []
+  },
+  "manifest": {
+    "ecosystems": [
+      "meta"
+    ],
+    "tech_stack": [],
+    "dependencies": {
+      "production": [],
+      "dev": []
+    },
+    "build_commands": [],
+    "test_commands": []
+  },
+  "security_surface": {
+    "user_input": false,
+    "api_exposure": false,
+    "data_storage": false,
+    "auth": true,
+    "third_party": true,
+    "signals": [
+      "认证授权",
+      "第三方调用"
+    ]
+  },
+  "test_framework": {
+    "framework": null,
+    "config_file": null,
+    "runner_command": null
+  },
+  "ci_config": {
+    "provider": null,
+    "config_file": null,
+    "has_deploy": false
+  },
+  "architecture": {
+    "pattern": "plugin",
+    "signals": [
+      "插件清单文件"
+    ]
+  },
+  "generated_at": "2026-05-14T08:34:42.945Z",
+  "_doc": "rui init 生成的项目画像。所有产物据此裁剪。手动编辑无效——下次 init 会覆盖。"
+}

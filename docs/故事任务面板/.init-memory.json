@@ -1,10 +1,17 @@
 {
-  "timestamp": "2026-05-14T05:34:24.508Z",
+  "timestamp": "2026-05-14T08:34:42.952Z",
   "project": "YrY",
   "type": "meta",
+  "type_label": "元项目(插件/配置)",
+  "security_surface": [
+    "认证授权",
+    "第三方调用"
+  ],
+  "test_framework": null,
+  "architecture": "plugin",
   "verify": {
     "ok": true,
-    "passed": 5,
-    "total": 5
+    "passed": 6,
+    "total": 6
   }
 }

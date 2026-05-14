@@ -83,11 +83,13 @@ flowchart LR
 
 ## init 简述
 
-> **口诀：探—物—验。** 三步：探（扫描出 profile）→ 物（复制公共物料）→ 验（5 项就绪检查）。项目特有信息一律写入 `project-profile.json`，agent 启动时自读，不再做"项目薄壳"或"rules 基线注入"。
+> **口诀：探—生—验。** 三步：探（扫描项目六类信号）→ 生（按项目情况生成/裁剪全部产物）→ 验（6 项就绪检查含耦合一致性）。
+>
+> **核心设计**：所有产物（CLAUDE.md / README.md / agents / rules / formulas / coder 手册）均由 init 根据项目实际情况生成和裁剪。可重复运行，每次根据最新项目情况更新全部内容。
 
 ```mermaid
 flowchart LR
-    P1[detect<br/>扫描项目]:::s --> P2[materialize<br/>复制公共物料]:::s --> P3[verify<br/>5 项就绪检查]:::s --> P4[记忆<br/>.init-memory]
+    P1[detect<br/>六类信号扫描]:::s --> P2[generate<br/>按项目情况生成/裁剪]:::s --> P3[verify<br/>6 项就绪检查]:::s --> P4[记忆<br/>.init-memory]
     P3 -.失败.-> Fix[exit 1<br/>修复后重跑]
     P3 -.通过.-> Ready[基线就绪]
     classDef s fill:#e3f2fd,stroke:#1565c0;
@@ -95,70 +97,68 @@ flowchart LR
 
 ### 1. detect — 扫描项目（事实层）
 
-三类信号汇聚成 `project-profile.json`：
+六类信号汇聚成 `project-profile.json`：
 
 | 信号 | 来源 | 用途 |
 |------|------|------|
-| 项目名 | 仓库目录名 | `branch_prefix` / `doc_root` 锚点 |
-| 项目类型 | `constants.detectProjectType` | `frontend` / `backend` / `fullstack` / `meta` / `unknown` 决定 Coder 公式与故事骨架 |
-| 项目清单（manifest） | 按生态择一或并存 | 依赖列表 + 构建/测试命令 + 框架版本 |
+| 项目身份 | 仓库目录名 | 分支前缀 / 文档路径锚点 |
+| 项目类型 | `constants.detectProjectType` | frontend/backend/fullstack/meta/unknown → 决定裁剪策略 |
+| 项目清单 | 按生态文件抽取 | 依赖 + 构建/测试命令 + 框架版本 |
+| 安全面 | 源码关键词扫描 | 用户输入/API/存储/认证/第三方 → 裁剪 security agent |
+| 测试框架 | 依赖 + 配置文件 | vitest/jest/pytest/go-test/cargo-test → 裁剪 tester |
+| CI 配置 | 工作流文件 | github-actions/gitlab-ci/jenkins → 裁剪 delivery-gate |
+| 架构模式 | 项目结构 | single/monorepo/microservice/plugin → 裁剪底线约束 |
 
-第三类按生态文件存在性命中即抽取（多生态合并）：
+### 2. generate — 按项目情况生成/裁剪（生成层）
 
-| 生态 | 清单文件 | 提取 |
-|------|---------|------|
-| Node | `package.json` | deps + `scripts.build/test/lint/dev` → `npm run *` |
-| Python | `pyproject.toml` / `requirements.txt` | deps + `pytest` / `python -m build` |
-| Rust | `Cargo.toml` | deps + `cargo build/test` |
-| Go | `go.mod` | requires + `go build/test ./...` |
-| Java | `pom.xml` / `build.gradle(.kts)` | artifactId + `mvn` 或 `./gradlew` |
-| Ruby / PHP | `Gemfile` / `composer.json` | gem / require |
-| 元项目 | `.claude-plugin/plugin.json` | 标记 `meta` 生态 |
+**每次运行全量重生**（非复制，是按 profile 生成）。所有产物高度耦合项目实际情况。
 
-`CLAUDE.md` / `README.md` 不再做"提取注入"——它们是 agent 直接读的活文档。
+| 产物 | 裁剪依据 | 项目耦合点 |
+|------|---------|-----------|
+| `CLAUDE.md` | 全部信号 | 项目约束表 + 不可妥协底线（按安全面/架构生成） |
+| `README.md` | 全部信号 | 项目画像 + 能力描述 + 结构表 |
+| `.claude/agents/*.md` | 项目类型 + 安全面 | 项目名/公式/命令/安全面写入每个 agent |
+| `.claude/rules/*.md` | 项目类型 | Gate/管线/文档类型按项目裁剪 |
+| `.claude/formulas.md` | 项目类型 | 跳过不适用的文件公式（前端跳 02/05，后端跳 03/06） |
+| `.claude/coder.md` | 项目类型 | 目录结构/骨架/公式按项目裁剪 |
+| `.claude/settings.json` | 生态 | 权限按生态配置 |
+| `.claude/project-profile.json` | 事实层 | 每次覆盖 |
 
-### 2. materialize — 复制公共物料（基线层）
-
-**整文件复制**（每次 init 同步最新）。`--force` 覆盖已有，否则跳过。
-
-| 来源 | 目标 |
-|------|------|
-| `agents/*.md`（7 个） | `.claude/agents/` |
-| `rules/*.md`（6 个） | `.claude/rules/` |
-| `skills/rui/formulas.md` | `.claude/formulas.md` |
-| `skills/rui/coder.md` | `.claude/coder.md` |
-| `.mcp.json` / `settings.json` | `.claude/` |
-| 自动生成 | `.claude/project-profile.json`（每次刷新）/ `settings.local.json`（首次空模板）/ `.gitignore` |
-
-**关键设计**：项目特有信息（技术栈、构建命令、安全约束等）全部进 `project-profile.json`，不再切片注入到每个 agent。agent 在执行时按需读取 profile，避免"薄壳生成 / 注入合并 / 标记保护"三重复杂度。
-
-### 3. verify — 5 项就绪检查（验证层）
+### 3. verify — 6 项就绪检查（验证层）
 
 任一失败 `exit 1`：
 
 | # | 检查项 | 通过条件 |
 |---|--------|--------|
-| 1 | `CLAUDE.md` | 三公理 + 退化对策 关键节点全部命中 |
-| 2 | `README.md` | 系统能力 + 项目结构 + 快速开始 + `/rui init` 存在 |
-| 3 | `.claude/agents/` | 7 个 Agent 文件存在；`AGENT.md` 内容长度达标，6 角色 frontmatter 合法 |
-| 4 | `.claude/rules/` | 6 个规则文件齐备 |
-| 5 | `.claude/` 配置层 | `project-profile.json`（含 project/type/coder_formula）+ `formulas.md`（含 F.story.01/08/F.supp./F.meta）+ `coder.md` + `.mcp.json`（含 mcpServers）+ `settings.json`（含 permissions）+ `settings.local.json` |
+| 1 | `CLAUDE.md` | 三公理 + 退化对策 + 项目约束（含项目名） |
+| 2 | `README.md` | 系统能力 + 项目结构 + 快速开始 + 项目画像 |
+| 3 | `.claude/agents/` | 7 个 Agent 文件合法 + 含项目上下文 |
+| 4 | `.claude/rules/` | 6 个规则文件齐备 + 含项目名 |
+| 5 | `.claude/` 配置层 | profile（含新字段）+ formulas + coder + settings |
+| 6 | 项目耦合一致性 | 所有产物与 profile 类型/公式/裁剪一致 |
 
 ### 4. 选项
 
 | 选项 | 行为 |
 |------|------|
 | `--dry-run` | 仅扫描+报告，不写文件；动作以 `◇` 前缀标识 |
-| `--force` | 整文件覆盖 `.claude/` 下已有物料；不影响 `settings.local.json`（用户本地） |
-| `--json` | 机器可读输出（`{ profile, materialize, verify, dry_run }`） |
+| `--force` | 保留兼容（默认已全量重生） |
+| `--json` | 机器可读输出（`{ profile, generate, verify, dry_run }`） |
 
 ### 5. 产物
 
-| 路径 | 用途 |
-|------|------|
-| `.claude/project-profile.json` | 项目画像（类型 / Coder 公式 / 故事骨架默认值 / 依赖与命令）。**手动编辑无效，下次 init 覆盖** |
-| `.claude/.gitignore` | 排除 `settings.local.json` + `.history/` |
-| `docs/故事任务面板/.init-memory.json` | 本次 init 的执行记录（时间戳 + 项目类型 + 检查结果） |
+| 路径 | 用途 | 重复运行 |
+|------|------|---------|
+| `CLAUDE.md` | 哲学基础 + 项目约束 | 全量重生 |
+| `README.md` | 系统视图 + 项目画像 | 全量重生 |
+| `.claude/project-profile.json` | 项目画像（六类信号） | 每次覆盖 |
+| `.claude/agents/*.md` | 7 个角色（按项目裁剪） | 全量重生 |
+| `.claude/rules/*.md` | 6 个规则（按项目裁剪） | 全量重生 |
+| `.claude/formulas.md` | 故事文档公式（按项目裁剪） | 全量重生 |
+| `.claude/coder.md` | coder 工作手册（按项目裁剪） | 全量重生 |
+| `.claude/settings.json` | 项目权限（按生态配置） | 全量重生 |
+| `.claude/settings.local.json` | 本地覆盖（首次空模板） | 不覆盖 |
+| `docs/故事任务面板/.init-memory.json` | 执行记录 | 每次覆盖 |
 
 ## 集成
 
