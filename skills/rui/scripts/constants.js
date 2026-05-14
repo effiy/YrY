@@ -129,7 +129,7 @@ const VALID_DOC_TYPE_DIRS = Object.keys(DOC_DIR_TYPES);
  *  - If input contains '/': treat as a path under docs/. Strip leading/trailing
  *    slashes, prepend 'docs/' if missing, then split into
  *    docs/{docTypeDir}/{project}/{resourceName}/.
- *  - If input has no '/' (backward compat): parse as {project}-{name} story name,
+ *  - If input has no '/': parse as {project}-{name} story name shorthand,
  *    map to docs/故事任务面板/{project}/{name}/.
  *
  * @param {string} nameOrPath
@@ -184,7 +184,7 @@ function resolveDocPath(nameOrPath, repoRoot) {
     };
   }
 
-  // ── Name format (no '/') — backward compatible story name ──
+  // ── Name format (no '/') — story name shorthand ──
   // parse as {project}-{name}
   const parts = nameOrPath.split('-');
   if (parts.length < 2) {
@@ -243,29 +243,6 @@ function parseStoryDirName(name) {
     }
   }
   return { valid: false, project: null, story: name, reason: '无法识别项目前缀（故事部分应以小写字母开头）' };
-}
-
-/**
- * Resolve a story name to its filesystem path under docs/故事任务面板/.
- * Uses simple first-dash split (legacy compat). For smarter resolution use resolveDocPath.
- * @param {string} name - e.g. "YiWeb-user-login"
- * @param {string} [repoRoot] - defaults to process.cwd()
- * @returns {{ project: string|null, story: string, dir: string }}
- */
-function resolveStoryPath(name, repoRoot) {
-  const path = require('path');
-  const root = repoRoot || process.cwd();
-  const storiesDir = path.join(root, 'docs', '故事任务面板');
-  const parsed = parseStoryDirName(name);
-  if (parsed.valid && parsed.project) {
-    return { project: parsed.project, story: parsed.story, dir: path.join(storiesDir, parsed.project, parsed.story) };
-  }
-  // Fallback: first dash split
-  const idx = name.indexOf('-');
-  if (idx < 1) return { project: null, story: name, dir: path.join(storiesDir, name) };
-  const project = name.slice(0, idx);
-  const story = name.slice(idx + 1);
-  return { project, story, dir: path.join(storiesDir, project, story) };
 }
 
 /**
@@ -403,7 +380,7 @@ function labelForType(type) {
 /**
  * Discover all doc names across all VALID_DOC_TYPE_DIRS by scanning two levels:
  * docs/<type>/<project>/<resource>. Story dirs return as "<project>-<resource>"
- * (legacy convention), other types return as "<typeDir>/<project>/<resource>".
+ * (dash-joined shorthand), other types return as "<typeDir>/<project>/<resource>".
  *
  * Async to keep parity with rui-state / delivery-gate callers.
  * @param {string} [repoRoot] defaults to process.cwd()
@@ -439,7 +416,6 @@ async function findAllDocNames(repoRoot) {
 module.exports = {
   // Shared utilities
   parseStoryDirName,
-  resolveStoryPath,
   sh,
   shJson,
   findAllDocNames,

@@ -19,7 +19,7 @@ agents:
 
 | 命令 | 用途 | 关键行为 |
 |------|------|---------|
-| `/rui init [--force\|--dry-run]` | 建立项目基线 | detect → materialize → verify；项目信息写入 `CLAUDE.md` 项目约束章节；就绪检查 |
+| `/rui init [--dry-run]` | 建立项目基线 | detect → generate → verify；项目信息写入 `CLAUDE.md` 项目约束章节；就绪检查 |
 | `/rui doc <req>` | 拆需求为故事 + 生成文档基线（故事任务 → 评审三件） | 必须分支隔离；禁止改源码；多故事逐个串行 |
 | `/rui code <name>` | 实现故事 + 生成验证报告（实施 / 测试 / 自改进复盘） | Gate A 测试先行；Gate B 验证闭合 |
 | `/rui <req>` | 端到端 | doc + code 全自动串联 |
@@ -83,13 +83,13 @@ flowchart LR
 
 ## init 简述
 
-> **口诀：探—生—验。** 三步：探（扫描项目六类信号）→ 生（按项目情况生成/裁剪全部产物 + 核心文档骨架）→ 验（7 项就绪检查含耦合一致性 + 文档目录）。
+> **口诀：探—生—验。** 三步：探（扫描项目六类信号）→ 生（按 profile 生成 CLAUDE.md / README.md / 架构故事）→ 验（3 项就绪检查）。
 >
-> **核心设计**：所有产物（CLAUDE.md / README.md / agents / rules / formulas / coder 手册 / 文档目录骨架）均由 init 根据项目实际情况生成和裁剪。可重复运行，每次根据最新项目情况更新全部内容。
+> **核心设计**：init 只负责项目基线三件套（CLAUDE.md · README.md · 架构故事目录），可重复运行，每次全量重生。
 
 ```mermaid
 flowchart LR
-    P1[detect<br/>六类信号扫描]:::s --> P2[generate<br/>产物+文档骨架]:::s --> P3[verify<br/>7 项就绪检查]:::s --> P4[记忆<br/>.init-memory]
+    P1[detect<br/>六类信号扫描]:::s --> P2[generate<br/>三件套全量重生]:::s --> P3[verify<br/>3 项就绪检查]:::s --> P4[记忆<br/>.init-memory]
     P3 -.失败.-> Fix[exit 1<br/>修复后重跑]
     P3 -.通过.-> Ready[基线就绪]
     classDef s fill:#e3f2fd,stroke:#1565c0;
@@ -97,70 +97,43 @@ flowchart LR
 
 ### 1. detect — 扫描项目（事实层）
 
-六类信号汇聚为内存 profile 对象，驱动所有产物生成：
+六类信号汇聚为内存 profile 对象，驱动产物生成：
 
 | 信号 | 来源 | 用途 |
 |------|------|------|
 | 项目身份 | 仓库目录名 | 分支前缀 / 文档路径锚点 |
 | 项目类型 | `constants.detectProjectType` | frontend/backend/fullstack/meta/unknown → 决定裁剪策略 |
 | 项目清单 | 按生态文件抽取 | 依赖 + 构建/测试命令 + 框架版本 |
-| 安全面 | 源码关键词扫描 | 用户输入/API/存储/认证/第三方 → 裁剪 security agent |
-| 测试框架 | 依赖 + 配置文件 | vitest/jest/pytest/go-test/cargo-test → 裁剪 tester |
-| CI 配置 | 工作流文件 | github-actions/gitlab-ci/jenkins → 裁剪 delivery-gate |
-| 架构模式 | 项目结构 | single/monorepo/microservice/plugin → 裁剪底线约束 |
+| 安全面 | 源码关键词扫描 | 用户输入/API/存储/认证/第三方 |
+| 测试框架 | 依赖 + 配置文件 | vitest/jest/pytest/go-test/cargo-test |
+| CI 配置 | 工作流文件 | github-actions/gitlab-ci/jenkins |
+| 架构模式 | 项目结构 | single/monorepo/microservice/plugin |
 
-### 2. generate — 按项目情况生成/裁剪（生成层）
+### 2. generate — 全量重生（生成层）
 
-**每次运行全量重生**（非复制，是按 profile 生成）。所有产物高度耦合项目实际情况。
+**每次运行全量重生**（非复制，是按 profile 生成）。产物高度耦合项目实际情况。
 
 | 产物 | 裁剪依据 | 项目耦合点 |
 |------|---------|-----------|
 | `CLAUDE.md` | 全部信号 | 项目约束表 + 不可妥协底线（按安全面/架构生成） |
 | `README.md` | 全部信号 | 项目画像 + 能力描述 + 结构表 |
-| `.claude/agents/*.md` | 项目类型 + 安全面 | 项目名/公式/命令/安全面写入每个 agent |
-| `.claude/rules/*.md` | 项目类型 | Gate/管线/文档类型按项目裁剪 |
-| `.claude/formulas.md` | 项目类型 | 跳过不适用的文件公式（前端跳 02/05，后端跳 03/06） |
-| `.claude/coder.md` | 项目类型 | 目录结构/骨架/公式按项目裁剪 |
-| `.claude/settings.json` | 生态 | 权限按生态配置 |
-| `docs/` 文档目录 | 项目类型 + 源码扫描 | 按类型创建目录 + 扫描源码生成骨架索引 |
+| `docs/故事任务面板/架构故事/*.md` | 项目类型 + 架构 | 系统概述 + 架构决策 + 模块关系 |
 
-#### 文档目录生成规则
-
-按项目类型自动创建对应的文档目录，并扫描源码发现核心模块生成初始骨架：
-
-| 项目类型 | 文档目录 | 扫描目标 |
-|---------|---------|---------|
-| 前端 | 故事任务面板 + 组件文档 + 页面文档 | src/components · src/pages · src/views |
-| 后端 | 故事任务面板 + 接口文档 + 领域模型 | 路由/控制器 · src/domain · src/models · src/services |
-| 全栈 | 全部五类 | 前端 + 后端扫描目标 |
-| 元项目 | 故事任务面板 + 接口文档 + 领域模型 | skills/ · agents/ · rules/ · scripts/ |
-
-骨架生成原则：
-- 只为有实际源码支撑的模块生成（Level A 证据）
-- 每个发现的模块生成 `00-索引.md`（导航入口）
-- 索引文件已存在不覆盖（保护手动编辑）
-- 每类最多 10 个骨架（避免噪音）
-
-### 3. verify — 7 项就绪检查（验证层）
+### 3. verify — 3 项就绪检查（验证层）
 
 任一失败 `exit 1`：
 
 | # | 检查项 | 通过条件 |
 |---|--------|--------|
-| 1 | `CLAUDE.md` | 三公理 + 退化对策 + 项目约束（含项目名） |
-| 2 | `README.md` | 系统能力 + 项目结构 + 快速开始 + 项目画像 |
-| 3 | `.claude/agents/` | 7 个 Agent 文件合法 + 含项目上下文 |
-| 4 | `.claude/rules/` | 5 个规则文件齐备 + 含项目名 |
-| 5 | `.claude/` 配置层 | formulas + coder + settings |
-| 6 | 项目耦合一致性 | 所有产物与 CLAUDE.md 项目约束一致 |
-| 7 | `docs/` 文档目录 | 按项目类型应有的文档目录全部存在 |
+| 1 | `CLAUDE.md` | 三公理 + 项目约束（含项目名） |
+| 2 | `README.md` | 快速开始 + 项目名 |
+| 3 | 架构故事 | `docs/故事任务面板/架构故事/01-系统概述.md` 含项目名 |
 
 ### 4. 选项
 
 | 选项 | 行为 |
 |------|------|
 | `--dry-run` | 仅扫描+报告，不写文件；动作以 `◇` 前缀标识 |
-| `--force` | 保留兼容（默认已全量重生） |
 | `--json` | 机器可读输出（`{ profile, generate, verify, dry_run }`） |
 
 ### 5. 产物
@@ -169,14 +142,8 @@ flowchart LR
 |------|------|---------|
 | `CLAUDE.md` | 哲学基础 + 项目约束 | 全量重生 |
 | `README.md` | 系统视图 + 项目画像 | 全量重生 |
-| `.claude/agents/*.md` | 7 个角色（按项目裁剪） | 全量重生 |
-| `.claude/rules/*.md` | 5 个规则（按项目裁剪） | 全量重生 |
-| `.claude/formulas.md` | 故事文档公式（按项目裁剪） | 全量重生 |
-| `.claude/coder.md` | coder 工作手册（按项目裁剪） | 全量重生 |
-| `.claude/settings.json` | 项目权限（按生态配置） | 全量重生 |
-| `.claude/settings.local.json` | 本地覆盖（首次空模板） | 不覆盖 |
+| `docs/故事任务面板/架构故事/*.md` | 架构全景文档 | 全量重生 |
 | `docs/故事任务面板/.init-memory.json` | 执行记录 | 每次覆盖 |
-| `docs/{文档类}/{project}/{name}/00-索引.md` | 文档骨架索引 | 首次创建，不覆盖 |
 
 ## 集成
 

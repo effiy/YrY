@@ -12,9 +12,13 @@ const C = require('./constants.js');
 const REPO_ROOT = process.cwd();
 const STORIES_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
-const { resolveStoryPath } = C;
+const { resolveDocPath } = C;
 
-function storyMemoryDir(name) { return path.join(resolveStoryPath(name).dir, '.memory'); }
+function storyMemoryDir(name) {
+  const doc = resolveDocPath(name, REPO_ROOT);
+  if (!doc.valid) throw new Error(`Invalid path: ${doc.reason}`);
+  return path.join(doc.fullPath, '.memory');
+}
 function storyMemoryFile(name) { return path.join(storyMemoryDir(name), 'execution-memory.jsonl'); }
 
 function parseArgs(argv) {

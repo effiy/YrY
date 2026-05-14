@@ -24,7 +24,7 @@ const C = require('./constants.js');
 const REPO_ROOT = process.cwd();
 const PANEL_DIR = path.join(REPO_ROOT, 'docs', '故事任务面板');
 
-const { resolveStoryPath, sh, shJson, detectProjectType } = C;
+const { sh, shJson, detectProjectType } = C;
 
 // ── File catalogues ───────────────────────────────────────────
 

@@ -38,7 +38,7 @@ flowchart TB
 ## 快速开始
 
 ```bash
-/rui init                    # 建立项目基线（生成全部产物）
+/rui init                    # 建立项目基线（CLAUDE.md + README.md + 架构故事）
 /rui doc "需求描述"           # 拆需求为故事
 /rui code <story-name>       # 实现故事
 /rui                         # 任务推荐
@@ -48,13 +48,13 @@ flowchart TB
 
 | 目录/文件 | 职责 | 生成方式 |
 |-----------|------|---------|
-| `CLAUDE.md` | 哲学基础 + 项目约束 | rui init 生成 |
-| `README.md` | 系统视图 | rui init 生成 |
-| `.claude/agents/` | 7 个角色（按 元项目(插件/配置) 裁剪） | rui init 生成 |
-| `.claude/rules/` | 5 个规则（按 元项目(插件/配置) 裁剪） | rui init 生成 |
-| `.claude/formulas.md` | 故事文档公式 | rui init 生成 |
-| `.claude/coder.md` | coder 工作手册 | rui init 生成 |
+| `CLAUDE.md` | 哲学基础 + 项目约束 | rui init 全量重生 |
+| `README.md` | 系统视图 + 项目画像 | rui init 全量重生 |
+| `docs/故事任务面板/架构故事/` | 系统架构全景文档 | rui init 全量重生 |
 | `docs/故事任务面板/` | 故事产出 | rui doc/code 生成 |
+| `agents/` | 角色契约 | 手动维护 |
+| `rules/` | 跨场景约束 | 手动维护 |
+| `skills/` | 技能定义 + 脚本 | 手动维护 |
 
 ## 项目画像
 
@@ -72,7 +72,8 @@ flowchart TB
 ## 进一步
 
 - **了解哲学** — [CLAUDE.md](./CLAUDE.md)
-- **规则细节** — `.claude/rules/`
-- **角色边界** — `.claude/agents/`
-- **文档公式** — `.claude/formulas.md`
-- **Coder 手册** — `.claude/coder.md`
+- **规则细节** — [rules/](./rules/)
+- **角色边界** — [agents/](./agents/)
+- **技能定义** — [skills/](./skills/)
+- **文档公式** — [skills/rui/formulas.md](./skills/rui/formulas.md)
+- **Coder 手册** — [skills/rui/coder.md](./skills/rui/coder.md)

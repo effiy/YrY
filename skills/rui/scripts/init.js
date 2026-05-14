@@ -12,7 +12,7 @@
 //   - 惜注意：模板外置（init-templates.js），本文件只有流程
 //   - 验现实：verify() 失败即 exit 1
 //
-// 用法: node init.js [--dry-run] [--force] [--json] [--help]
+// 用法: node init.js [--dry-run] [--json] [--help]
 
 'use strict';
 
@@ -204,10 +204,6 @@ function extractManifest(root) {
 // 2. GENERATE — 按 profile 生成产物
 // ═══════════════════════════════════════════════════════════════
 
-function resolveDocDirsForType() {
-  return ['故事任务面板'];
-}
-
 function generate(profile, opts) {
   const { dryRun = false } = opts;
   const result = { created: [], skipped: [], dirs: [] };
@@ -220,7 +216,7 @@ function generate(profile, opts) {
 
   // 产物生成
   write(path.join(REPO_ROOT, 'CLAUDE.md'), T.claudeMd(p), opts, result, 'CLAUDE.md');
-  write(path.join(REPO_ROOT, 'README.md'), T.readmeMd(p, { agentCount: 6 }), opts, result, 'README.md');
+  write(path.join(REPO_ROOT, 'README.md'), T.readmeMd(p), opts, result, 'README.md');
 
   // 架构故事目录（多文档）
   const archDir = path.join(storyDir, '架构故事');
@@ -257,12 +253,11 @@ function verify(profile) {
 async function main() {
   const args   = process.argv.slice(2);
   const dryRun = args.includes('--dry-run');
-  const force  = args.includes('--force');
   const json   = args.includes('--json');
   if (args.includes('--help') || args.includes('-h')) { printHelp(); return; }
 
   const profile     = detect();
-  const genResult   = generate(profile, { dryRun, force });
+  const genResult   = generate(profile, { dryRun });
   const verifyResult = verify(profile);
 
   if (!dryRun) writeInitMemory(profile, verifyResult);
@@ -361,15 +356,15 @@ function printReport(profile, gen, ver, opts) {
 function printHelp() {
   console.log(`rui init — 建立项目基线
 
-用法: node init.js [--dry-run] [--force] [--json] [--help]
+用法: node init.js [--dry-run] [--json] [--help]
 
 流程: detect → generate → verify
 
 探测: 项目类型 · 安全面 · 测试框架 · CI · 架构模式
-产物: CLAUDE.md · README.md · agents/ · rules/ · formulas · coder · 核心文档
+产物: CLAUDE.md · README.md · 架构故事目录
 验证: 所有产物存在且含项目上下文
 
-可重复运行。
+可重复运行，每次全量重生。
 `);
 }
 

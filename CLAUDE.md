@@ -63,7 +63,7 @@ flowchart LR
 <!-- rui:project-start -->
 ## 项目约束
 
-> 以下由 `rui init` 根据项目画像自动生成。每次 `rui init` 运行时更新。
+> 以下由 `rui init` 根据项目画像自动生成。每次 `rui init` 全量重生。
 
 | 维度 | 约束 | 来源 |
 |------|------|------|
