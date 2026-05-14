@@ -22,12 +22,14 @@ flowchart TB
     Cmd1 --> R["rui<br/>故事 SDLC 编排"]:::core
     Cmd2 --> C["rui-claude<br/>.claude 配置管理"]:::core
 
-    R --- Agents["6 Agents · Gate A/B<br/>故事骨架: fullstack"]
+    R --- Panel["docs/故事任务面板/<br/>每故事独立目录"]:::panel
+    Panel --- Agents["6 Agents · Gate A/B<br/>故事骨架: fullstack"]
     C --- Scope[".claude/ 范围内<br/>sync / retro / history"]
 
     classDef user fill:#fff3e0,stroke:#e65100;
     classDef cmd fill:#e3f2fd,stroke:#1976d2,color:#0d47a1;
     classDef core fill:#f3e5f5,stroke:#6a1b9a;
+    classDef panel fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 能力 | 入口 | 一句话 |
@@ -38,7 +40,7 @@ flowchart TB
 ## 快速开始
 
 ```bash
-/rui init                    # 建立项目基线（CLAUDE.md + README.md + 架构故事）
+/rui init                    # 建立项目基线（CLAUDE.md + README.md + 故事面板目录）
 /rui doc "需求描述"           # 拆需求为故事
 /rui code <story-name>       # 实现故事
 /rui                         # 任务推荐
@@ -50,11 +52,31 @@ flowchart TB
 |-----------|------|---------|
 | `CLAUDE.md` | 哲学基础 + 项目约束 | rui init 全量重生 |
 | `README.md` | 系统视图 + 项目画像 | rui init 全量重生 |
-| `docs/故事任务面板/架构故事/` | 系统架构全景文档 | rui init 全量重生 |
-| `docs/故事任务面板/` | 故事产出 | rui doc/code 生成 |
+| `docs/故事任务面板/<Project>/<name>/` | 故事产出（每故事独立目录） | rui doc/code 生成 |
 | `agents/` | 角色契约 | 手动维护 |
 | `rules/` | 跨场景约束 | 手动维护 |
 | `skills/` | 技能定义 + 脚本 | 手动维护 |
+
+### 故事目录结构（单个故事）
+
+```
+docs/故事任务面板/<Project>/<name>/
+├── 01-故事任务.md              ← 唯一真相源（pm）
+├── 02-后端技术评审.md          ← 后端/全栈项目（coder + security）
+├── 03-前端技术评审.md          ← 前端/全栈项目（coder）
+├── 04-测试用例评审.md          ← 必选（tester）
+├── 05-后端实施报告.md          ← 验证阶段（coder）
+├── 06-前端实施报告.md          ← 验证阶段（coder）
+├── 07-测试用例报告.md          ← 验证阶段（tester）
+├── 08-自改进复盘.md            ← 必选（pm + reporter）
+├── 00-消息通知列表.md          ← 自动追加（hook）
+├── {领域专题}.md               ← 按需（pm 决策）
+├── .memory/
+│   ├── execution-memory.jsonl  ← 执行记忆（追加）
+│   └── rui-state.json          ← 管线状态（覆盖）
+└── .improvement/
+    └── proposals.jsonl          ← 自改进提案（追加）
+```
 
 ## 项目画像
 

@@ -20,8 +20,8 @@ agents:
 | 命令 | 用途 | 关键行为 |
 |------|------|---------|
 | `/rui init [--dry-run]` | 建立项目基线 | detect → generate → verify；项目信息写入 `CLAUDE.md` 项目约束章节；就绪检查 |
-| `/rui doc <req>` | 拆需求为故事 + 生成文档基线（故事任务 → 评审三件） | 必须分支隔离；禁止改源码；多故事逐个串行 |
-| `/rui code <name>` | 实现故事 + 生成验证报告（实施 / 测试 / 自改进复盘） | Gate A 测试先行；Gate B 验证闭合 |
+| `/rui doc <req>` | 拆需求为故事 + 生成文档基线（01-故事任务 → 02/03/04-评审） | 必须分支隔离；禁止改源码；多故事逐个串行 |
+| `/rui code <name>` | 实现故事 + 生成验证报告（05/06-实施 / 07-测试 / 08-自改进复盘） | Gate A 测试先行；Gate B 验证闭合 |
 | `/rui <req>` | 端到端 | doc + code 全自动串联 |
 | `/rui update <name-or-path> [ctx] [--no-code]` | 增量更新 | T1/T2/T3 裁剪；`--no-code` 仅文档 |
 | `/rui code --from-doc <name>` | 从文档反推 | 只读源码补全缺失文档；不覆盖已有 |
@@ -76,10 +76,24 @@ flowchart LR
 4. **测试先行** — Gate A 阻断实现；Gate B >2 轮阻断交付
 5. **逐模块审查** — 每模块后审查，P0 清零再前进
 6. **只读反推** — `--from-code` / `--from-doc` 禁止改源码
-7. **产出内聚** — 关键产出限定在故事目录或对应参考文档目录
+7. **产出内聚** — 关键产出限定在故事目录 `docs/故事任务面板/<Project>/<name>/`
 8. **交付强制** — 三步管线按序标记（`delivery-gate.js mark`），Stop hook 检查未闭合即阻断
-9. **公式驱动** — 文档由 [formulas.md](./formulas.md) 规约，不再依赖模板目录
+9. **公式驱动** — 文档由 [formulas.md](./formulas.md) 规约，文件名带编号前缀（00–08）
 10. **知识沉淀** — 写入 `.memory/execution-memory.jsonl` + `.memory/rui-state.json`；提案写入 `.improvement/proposals.jsonl`
+
+### 故事目录文件编号速查
+
+| 编号 | 文件 | 阶段 | 必选 |
+|------|------|------|:---:|
+| 00 | 消息通知列表.md | 交付 | 自动 |
+| 01 | 故事任务.md | 文档生成 | ✓ |
+| 02 | 后端技术评审.md | 文档生成 | 后端/全栈 |
+| 03 | 前端技术评审.md | 文档生成 | 前端/全栈 |
+| 04 | 测试用例评审.md | 文档生成 | ✓ |
+| 05 | 后端实施报告.md | 验证 | 后端/全栈 |
+| 06 | 前端实施报告.md | 验证 | 前端/全栈 |
+| 07 | 测试用例报告.md | 验证 | ✓ |
+| 08 | 自改进复盘.md | 自改进 | ✓ |
 
 ## init 简述
 
@@ -102,7 +116,7 @@ flowchart LR
 | 信号 | 来源 | 用途 |
 |------|------|------|
 | 项目身份 | 仓库目录名 | 分支前缀 / 文档路径锚点 |
-| 项目类型 | `constants.detectProjectType` | frontend/backend/fullstack/meta/unknown → 决定裁剪策略 |
+| 项目类型 | `constants.detectProjectType` | frontend/backend/fullstack/meta/unknown → 决定故事骨架裁剪 |
 | 项目清单 | 按生态文件抽取 | 依赖 + 构建/测试命令 + 框架版本 |
 | 安全面 | 源码关键词扫描 | 用户输入/API/存储/认证/第三方 |
 | 测试框架 | 依赖 + 配置文件 | vitest/jest/pytest/go-test/cargo-test |
@@ -115,15 +129,15 @@ flowchart LR
 
 | 产物 | 裁剪依据 | 项目耦合点 |
 |------|---------|-----------|
-| `README.md` | 全部信号 | 项目画像 + 能力描述 + 结构表 |
+| `README.md` | 全部信号 | 项目画像 + 故事目录骨架（按项目类型裁剪） + 结构表 |
 
-### 3. verify — 3 项就绪检查（验证层）
+### 3. verify — 2 项就绪检查（验证层）
 
 任一失败 `exit 1`：
 
 | # | 检查项 | 通过条件 |
 |---|--------|--------|
-| 1 | `README.md` | 项目名 |
+| 1 | `README.md` | 含项目名 |
 | 2 | 故事面板 | `docs/故事任务面板/` 目录存在 |
 
 ### 4. 选项
