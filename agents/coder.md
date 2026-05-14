@@ -56,7 +56,7 @@ flowchart LR
 
 ## 项目上下文
 
-由 `rui init` 写入 [`.claude/project-profile.json`](../project-profile.json)：项目类型、Coder 公式、技术栈、构建命令、依赖列表。agent 启动时自读 profile 获取项目特有信息。
+由 `rui init` 写入 `CLAUDE.md` 项目约束章节：项目类型、Coder 公式、技术栈、构建命令、依赖列表。agent 启动时自读获取项目特有信息。
 
 ## 生效标志
 

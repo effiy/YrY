@@ -51,8 +51,7 @@ flowchart TB
 | `CLAUDE.md` | 哲学基础 + 项目约束 | rui init 生成 |
 | `README.md` | 系统视图 | rui init 生成 |
 | `.claude/agents/` | 7 个角色（按 元项目(插件/配置) 裁剪） | rui init 生成 |
-| `.claude/rules/` | 6 个规则（按 元项目(插件/配置) 裁剪） | rui init 生成 |
-| `.claude/project-profile.json` | 项目画像（事实层） | rui init 生成 |
+| `.claude/rules/` | 5 个规则（按 元项目(插件/配置) 裁剪） | rui init 生成 |
 | `.claude/formulas.md` | 故事文档公式 | rui init 生成 |
 | `.claude/coder.md` | coder 工作手册 | rui init 生成 |
 | `docs/故事任务面板/` | 故事产出 | rui doc/code 生成 |

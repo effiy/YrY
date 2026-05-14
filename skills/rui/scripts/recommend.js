@@ -878,7 +878,7 @@ function L5_hygiene(ctx) {
       layer: 'L5.hygiene', priority: 'P1', category: 'sync',
       action: '远端 API 不可达',
       rationale: `${sync.panelFileCount} 个故事面板文件 + ${sync.claudeFileCount} 个 .claude 文件待同步`,
-      command: '/import-docs --workspace',
+      command: 'node skills/import-docs/scripts/import-docs.js --workspace',
       formula: { role: 'Reporter', rule: '知识沉淀: 文档同步', check: 'sync' },
       factors: { urgency: 0.5, impact: 0.5, fit: 0.7, cost: 0.2 },
       reasoning: [`L0: API 健康检查失败`, `L5.hygiene: 文档无法外部访问`],

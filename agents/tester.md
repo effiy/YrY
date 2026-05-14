@@ -67,7 +67,7 @@ flowchart LR
 
 ## 项目上下文
 
-由 `rui init` 写入 [`.claude/project-profile.json`](../project-profile.json)：测试命令、构建命令、技术栈。agent 启动时自读。
+由 `rui init` 写入 `CLAUDE.md` 项目约束章节：测试命令、构建命令、技术栈。agent 启动时自读。
 
 ## 生效标志
 

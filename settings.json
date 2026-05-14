@@ -23,7 +23,25 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/delivery-gate.js check-all --json --recent-hours 1",
+            "command": "node skills/wework-bot/scripts/hook-log.js",
+            "timeout": 15,
+            "statusMessage": "追加通知日志..."
+          },
+          {
+            "type": "command",
+            "command": "node skills/import-docs/scripts/hook-sync.js",
+            "timeout": 60,
+            "statusMessage": "同步文档到远端..."
+          },
+          {
+            "type": "command",
+            "command": "node skills/wework-bot/scripts/hook-notify.js",
+            "timeout": 30,
+            "statusMessage": "发送企微通知..."
+          },
+          {
+            "type": "command",
+            "command": "node skills/rui/scripts/delivery-gate.js check-all --json --recent-hours 1",
             "timeout": 15,
             "statusMessage": "检查交付管线状态..."
           }

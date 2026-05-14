@@ -10,7 +10,7 @@ paths:
 
 ```mermaid
 flowchart LR
-    Base[基线<br/>CLAUDE.md / project-profile.json / rules / agents] -.判定基准.-> Diag
+    Base[基线<br/>CLAUDE.md / rules / agents] -.判定基准.-> Diag
     Snap[snapshot 数据] --> Diag[诊断 D0–D7] --> Prop[proposals.jsonl]
     Prop --> Eval[效果评估 E1–E4]
 ```
@@ -31,7 +31,7 @@ flowchart LR
 
 ### 诊断基准
 
-6. 诊断以基线文件为判定基准（CLAUDE.md / `.claude/project-profile.json` / `rules/` / `agents/`）
+6. 诊断以基线文件为判定基准（CLAUDE.md / `rules/` / `agents/`）
 7. 每条假设必须引用基线文件作为依据
 
 ### 诊断规则 D0–D7

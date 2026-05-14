@@ -5,7 +5,7 @@
 // 用法: node init.js [--dry-run] [--force] [--json] [--help]
 //
 // 三段式（口诀：探—生—验）
-//   1. detect()    扫描项目 → 生成 project-profile.json（事实层）
+//   1. detect()    扫描项目 → 生成 profile 对象（事实层，内存中）
 //   2. generate()  按项目情况生成/裁剪全部产物（生成层）
 //   3. verify()    就绪检查（验证层）
 //
@@ -28,7 +28,7 @@ const CLAUDE_DIR = path.join(REPO_ROOT, '.claude');
 
 // ── 产物清单 ────────────────────────────────────────────────────
 const AGENT_FILES = ['AGENT.md', 'pm.md', 'coder.md', 'tester.md', 'reporter.md', 'security.md', 'self-improve.md'];
-const RULE_FILES  = ['code-pipeline.md', 'delivery-gate.md', 'doc-generation.md', 'rui-claude.md', 'self-improve.md', 'no-magic-number.md'];
+const RULE_FILES  = ['code-pipeline.md', 'delivery-gate.md', 'doc-generation.md', 'rui-claude.md', 'self-improve.md'];
 
 // ── 1. detect ──────────────────────────────────────────────────
 // 扫描项目，产出 profile。六类信号：
@@ -68,7 +68,6 @@ function detect() {
     ci_config:        ciConfig,
     architecture:     arch,
     generated_at:     new Date().toISOString(),
-    _doc: 'rui init 生成的项目画像。所有产物据此裁剪。手动编辑无效——下次 init 会覆盖。',
   };
 }
 
@@ -808,7 +807,7 @@ function toKebabCase(str) {
 
 // ── 2. generate ────────────────────────────────────────────────
 // 按项目情况生成/裁剪全部产物。每次运行都根据最新 profile 重生。
-// 产物：CLAUDE.md / README.md / agents/ / rules/ / skills 配置 / project-profile.json / docs 核心目录
+// 产物：CLAUDE.md / README.md / agents/ / rules/ / skills 配置 / docs 核心目录
 
 function generate(profile, opts) {
   const { dryRun = false } = opts;
@@ -830,10 +829,7 @@ function generate(profile, opts) {
     else { ensureDir(d); result.dirs.push({ path: rel(d), action: 'ensured' }); }
   }
 
-  // 1. project-profile.json — 事实层，每次覆盖
-  writeFile(path.join(CLAUDE_DIR, 'project-profile.json'), JSON.stringify(profile, null, 2) + '\n', opts, result, '项目画像');
-
-  // 2. CLAUDE.md — 哲学骨架 + 项目约束章节
+  // 1. CLAUDE.md — 哲学骨架 + 项目约束章节
   writeFile(path.join(REPO_ROOT, 'CLAUDE.md'), generateClaudeMd(profile), opts, result, 'CLAUDE.md 基线');
 
   // 3. README.md — 系统视图（按项目情况生成）
@@ -1098,7 +1094,6 @@ flowchart TB
 | \`README.md\` | 系统视图 | rui init 生成 |
 | \`.claude/agents/\` | ${AGENT_FILES.length} 个角色（按 ${p.type_label} 裁剪） | rui init 生成 |
 | \`.claude/rules/\` | ${RULE_FILES.length} 个规则（按 ${p.type_label} 裁剪） | rui init 生成 |
-| \`.claude/project-profile.json\` | 项目画像（事实层） | rui init 生成 |
 | \`.claude/formulas.md\` | 故事文档公式 | rui init 生成 |
 | \`.claude/coder.md\` | coder 工作手册 | rui init 生成 |
 | \`docs/故事任务面板/\` | 故事产出 | rui doc/code 生成 |
@@ -1485,7 +1480,7 @@ tools: Read, Grep, Glob, Bash
 ## 项目上下文
 
 - **项目**: ${p.project} · ${p.type_label}
-- **基线文件**: CLAUDE.md / project-profile.json / rules/ / agents/
+- **基线文件**: CLAUDE.md / rules/ / agents/
 - **测试命令**: \`${p.test_framework.runner_command || '无'}\`
 
 ## 诊断规则 D0–D7
@@ -1527,7 +1522,6 @@ function generateRules(profile) {
   rules['doc-generation.md'] = generateDocGenerationRule(p);
   rules['self-improve.md'] = generateSelfImproveRule(p);
   rules['rui-claude.md'] = generateRuiClaudeRule(p);
-  rules['no-magic-number.md'] = generateNoMagicNumberRule(p);
 
   return rules;
 }
@@ -1766,33 +1760,6 @@ ${p.project} 的 \`/rui-claude\` 命令。
 3. retro 健康复盘
 4. history 操作回溯
 5. 不修改 \`.claude/\` 范围外的文件
-`;
-}
-
-function generateNoMagicNumberRule(p) {
-  return `---
-paths:
-  - "**/*.md"
----
-
-# no-magic-number
-
-> **口诀：数字不说话，语义在说话。** 文档里裸编号若被用作判定条件，必须先绑定语义。
-
-## 适用
-
-${p.project} 仓库内所有 \`*.md\` 文档。
-
-## 规则
-
-1. **判定与状态**：禁止裸数字充当条件/状态值
-2. **编号区间与清单**：可保留（如"8 份主线 01–08"）
-3. **缩写规则**：裸编号缩写需先绑定完整文件名
-4. **命名层与判定层分离**：判定用职责名不用编号前缀
-
-## 校验
-
-遮住所有编号还能读懂？读不懂 = 违反。
 `;
 }
 
@@ -2129,10 +2096,9 @@ function verify(profile) {
     },
     {
       id: '.claude/ 配置层',
-      description: 'profile + formulas + coder + settings',
+      description: 'formulas + coder + settings',
       validate() {
         const items = [
-          ['project-profile.json', validJsonWith('project', 'type', 'coder_formula', 'security_surface', 'test_framework')],
           ['formulas.md', containsAll('F.story.01', 'F.story.08', profile.project)],
           ['coder.md', content => content.includes(profile.project) && content.includes(profile.coder_formula.text) ? { ok: true } : { ok: false, detail: '缺项目信息' }],
           ['settings.json', validJsonWith('permissions')],
@@ -2381,7 +2347,6 @@ function printHelp() {
 产物（全部按项目情况裁剪）:
   CLAUDE.md                      哲学基础 + 项目约束
   README.md                      系统视图 + 项目画像
-  .claude/project-profile.json   项目画像（事实层）
   .claude/agents/                角色文件（按项目类型裁剪）
   .claude/rules/                 规则文件（按项目类型裁剪）
   .claude/formulas.md            故事文档公式（按项目类型裁剪）

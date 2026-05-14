@@ -24,7 +24,7 @@ flowchart LR
 
 ## 观察：数据源
 
-先加载基线（CLAUDE.md / project-profile.json / rules/ / agents/）建立判定基准，再采集执行数据：
+先加载基线（CLAUDE.md / rules/ / agents/）建立判定基准，再采集执行数据：
 
 | 数据源 | 产出 |
 |--------|------|

@@ -28,9 +28,9 @@ flowchart LR
 
 | # | 操作 | 标记 |
 |---|------|------|
-| 1 | `Skill(wework-bot, --no-send)` 追加日志 | `log_appended` |
-| 2 | `Skill(import-docs, --workspace)` 同步 | `docs_synced` |
-| 3 | `Skill(wework-bot)` 发送通知 | `notification_sent` |
+| 1 | `wework-bot --no-send` 追加日志 | `log_appended` |
+| 2 | `import-docs --workspace` 同步 | `docs_synced` |
+| 3 | `wework-bot` 发送通知 | `notification_sent` |
 
 每步完成后必须调用 `delivery-gate.js mark --step <step>` 写入 `rui-state.json`。
 

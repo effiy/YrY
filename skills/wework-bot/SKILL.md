@@ -9,7 +9,7 @@ lifecycle: default-pipeline
 
 # wework-bot
 
-企业微信机器人通知。rui 管线末端强制步骤：自改进 → wework-bot 追加日志 → import-docs → wework-bot 发送。
+企业微信机器人通知。rui 管线末端强制步骤：自改进 → 追加日志 → 文档同步 → 发送通知。由 `.kiro/hooks/` 编排触发。
 
 ## 参数
 

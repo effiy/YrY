@@ -19,7 +19,7 @@ agents:
 
 | 命令 | 用途 | 关键行为 |
 |------|------|---------|
-| `/rui init [--force\|--dry-run]` | 建立项目基线 | detect → materialize → verify；项目特有信息全部写入 `.claude/project-profile.json`；5/5 就绪检查 |
+| `/rui init [--force\|--dry-run]` | 建立项目基线 | detect → materialize → verify；项目信息写入 `CLAUDE.md` 项目约束章节；就绪检查 |
 | `/rui doc <req>` | 拆需求为故事 + 生成文档基线（故事任务 → 评审三件） | 必须分支隔离；禁止改源码；多故事逐个串行 |
 | `/rui code <name>` | 实现故事 + 生成验证报告（实施 / 测试 / 自改进复盘） | Gate A 测试先行；Gate B 验证闭合 |
 | `/rui <req>` | 端到端 | doc + code 全自动串联 |
@@ -97,7 +97,7 @@ flowchart LR
 
 ### 1. detect — 扫描项目（事实层）
 
-六类信号汇聚成 `project-profile.json`：
+六类信号汇聚为内存 profile 对象，驱动所有产物生成：
 
 | 信号 | 来源 | 用途 |
 |------|------|------|
@@ -122,7 +122,6 @@ flowchart LR
 | `.claude/formulas.md` | 项目类型 | 跳过不适用的文件公式（前端跳 02/05，后端跳 03/06） |
 | `.claude/coder.md` | 项目类型 | 目录结构/骨架/公式按项目裁剪 |
 | `.claude/settings.json` | 生态 | 权限按生态配置 |
-| `.claude/project-profile.json` | 事实层 | 每次覆盖 |
 | `docs/` 文档目录 | 项目类型 + 源码扫描 | 按类型创建目录 + 扫描源码生成骨架索引 |
 
 #### 文档目录生成规则
@@ -151,9 +150,9 @@ flowchart LR
 | 1 | `CLAUDE.md` | 三公理 + 退化对策 + 项目约束（含项目名） |
 | 2 | `README.md` | 系统能力 + 项目结构 + 快速开始 + 项目画像 |
 | 3 | `.claude/agents/` | 7 个 Agent 文件合法 + 含项目上下文 |
-| 4 | `.claude/rules/` | 6 个规则文件齐备 + 含项目名 |
-| 5 | `.claude/` 配置层 | profile（含新字段）+ formulas + coder + settings |
-| 6 | 项目耦合一致性 | 所有产物与 profile 类型/公式/裁剪一致 |
+| 4 | `.claude/rules/` | 5 个规则文件齐备 + 含项目名 |
+| 5 | `.claude/` 配置层 | formulas + coder + settings |
+| 6 | 项目耦合一致性 | 所有产物与 CLAUDE.md 项目约束一致 |
 | 7 | `docs/` 文档目录 | 按项目类型应有的文档目录全部存在 |
 
 ### 4. 选项
@@ -170,9 +169,8 @@ flowchart LR
 |------|------|---------|
 | `CLAUDE.md` | 哲学基础 + 项目约束 | 全量重生 |
 | `README.md` | 系统视图 + 项目画像 | 全量重生 |
-| `.claude/project-profile.json` | 项目画像（六类信号） | 每次覆盖 |
 | `.claude/agents/*.md` | 7 个角色（按项目裁剪） | 全量重生 |
-| `.claude/rules/*.md` | 6 个规则（按项目裁剪） | 全量重生 |
+| `.claude/rules/*.md` | 5 个规则（按项目裁剪） | 全量重生 |
 | `.claude/formulas.md` | 故事文档公式（按项目裁剪） | 全量重生 |
 | `.claude/coder.md` | coder 工作手册（按项目裁剪） | 全量重生 |
 | `.claude/settings.json` | 项目权限（按生态配置） | 全量重生 |
@@ -185,7 +183,7 @@ flowchart LR
 | 类别 | 内容 |
 |------|------|
 | 脚本 | `~/.claude/plugins/marketplaces/yry/skills/rui/scripts/`：init · list · recommend · rui-state · execution-memory · self-improve · delivery-gate · loop · natural-week · constants |
-| Skills | `import-docs --workspace`（同步） · `wework-bot --name <name>`（通知） |
-| 规则 | [code-pipeline](../../rules/code-pipeline.md) · [delivery-gate](../../rules/delivery-gate.md) · [doc-generation](../../rules/doc-generation.md) · [self-improve](../../rules/self-improve.md) · [rui-claude](../../rules/rui-claude.md) · [no-magic-number](../../rules/no-magic-number.md) |
+| Hooks | `settings.json` Stop hooks：hook-log（追加日志）→ hook-sync（文档同步）→ hook-notify（企微通知）→ delivery-gate check-all（闭合检查） |
+| 规则 | [code-pipeline](../../rules/code-pipeline.md) · [delivery-gate](../../rules/delivery-gate.md) · [doc-generation](../../rules/doc-generation.md) · [self-improve](../../rules/self-improve.md) · [rui-claude](../../rules/rui-claude.md) |
 | 角色 | [pm](../../agents/pm.md) · [coder](../../agents/coder.md) · [tester](../../agents/tester.md) · [reporter](../../agents/reporter.md) · [security](../../agents/security.md) · [self-improve](../../agents/self-improve.md) |
 | 文档 | [formulas.md](./formulas.md) — 故事文档公式（F.story.\* + F.supp.\*） · [coder.md](./coder.md) — 目录生命周期 + 参考文档公式（F.ref.\*） + 数据契约（`.memory/` + `.improvement/`） |

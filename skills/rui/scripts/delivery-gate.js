@@ -226,9 +226,9 @@ async function cmdCheckAll(opts) {
       '🚨 交付管线未完成，请先执行以下步骤再结束会话：',
       ...recentIncomplete.map(i => {
         const parts = [`故事: ${i.story}`];
-        if (i.missing.includes('log_appended')) parts.push('  Skill(wework-bot, --no-send --name ' + i.story + ')');
-        if (i.missing.includes('docs_synced')) parts.push('  Skill(import-docs, --workspace)');
-        if (i.missing.includes('notification_sent')) parts.push('  Skill(wework-bot, --name ' + i.story + ')');
+        if (i.missing.includes('log_appended')) parts.push('  node skills/wework-bot/scripts/send-message.js --no-send --name ' + i.story + ' --agent rui --content <消息>');
+        if (i.missing.includes('docs_synced')) parts.push('  node skills/import-docs/scripts/import-docs.js --workspace');
+        if (i.missing.includes('notification_sent')) parts.push('  node skills/wework-bot/scripts/send-message.js --name ' + i.story + ' --agent rui --content <消息>');
         return parts.join('\n');
       }),
     ].join('\n\n');
