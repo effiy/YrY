@@ -36,6 +36,8 @@ function findProjectRoot(startDir) {
  * @param {string[]} exts - 文件扩展名列表 (不含点，如 ['md', 'json'])
  * @param {string[]} excludeDirs - 额外排除目录
  * @returns {Promise<string[]>} 文件路径列表
+ *
+ * 特殊规则：.claude/ 目录下的所有文件全部导入（不限扩展名），其余目录按 exts 过滤。
  */
 async function findMdFiles(dir, projectRoot, exts = ['md'], excludeDirs = []) {
   const extSet = new Set(exts.map(e => e.toLowerCase()));
@@ -43,6 +45,11 @@ async function findMdFiles(dir, projectRoot, exts = ['md'], excludeDirs = []) {
   excludeDirs.forEach(d => defaultExcludes.add(d));
 
   const results = [];
+
+  function isUnderClaude(fullPath) {
+    const rel = path.relative(projectRoot, fullPath);
+    return rel.startsWith('.claude' + path.sep) || rel === '.claude';
+  }
 
   async function traverse(currentDir) {
     let entries;
@@ -57,8 +64,13 @@ async function findMdFiles(dir, projectRoot, exts = ['md'], excludeDirs = []) {
       if (entry.isDirectory() && !entry.isSymbolicLink()) {
         await traverse(fullPath);
       } else if (entry.isFile()) {
-        const ext = path.extname(entry.name).toLowerCase().slice(1);
-        if (extSet.has(ext)) results.push(fullPath);
+        const underClaude = isUnderClaude(fullPath);
+        if (underClaude) {
+          results.push(fullPath);
+        } else {
+          const ext = path.extname(entry.name).toLowerCase().slice(1);
+          if (extSet.has(ext)) results.push(fullPath);
+        }
       }
     }
   }
@@ -315,11 +327,17 @@ async function main() {
   const files = await findMdFiles(scanDir, projectRoot, config.exts, config.excludeDirs);
 
   if (files.length === 0) {
-    console.log(`No .${config.exts.join('/.')} files found`);
+    console.log('No files found');
     return;
   }
 
-  console.log(`Found ${files.length} .md files`);
+  const claudeFiles = files.filter(f => {
+    const rel = path.relative(projectRoot, f);
+    return rel.startsWith('.claude' + path.sep) || rel === '.claude';
+  });
+  const regularFiles = files.filter(f => !claudeFiles.includes(f));
+
+  console.log(`Found ${files.length} files` + (claudeFiles.length ? ` (${regularFiles.length} regular · ${claudeFiles.length} from .claude/)` : ''));
 
   if (config.command === 'list') {
     for (const file of files.sort()) {

@@ -124,19 +124,29 @@ ${claudeMdProjectSection(p)}
 function storySkeletonDocs(p) {
   const docs = [];
   const required = p.story_defaults.required_files;
+  const secItems = p.security_surface.signals.length ? p.security_surface.signals.map(s => `- ${s}`).join('\n') : '- 未检测到显著安全面';
+  const techStack = p.manifest.tech_stack.length ? p.manifest.tech_stack.join(' · ') : '未识别';
+  const deps = [...(p.manifest.dependencies.production || []), ...(p.manifest.dependencies.dev || [])].slice(0, 15).join(' · ') || '无';
+  const arch = p.architecture.pattern;
+  const buildCmd = p.manifest.build_commands.length ? p.manifest.build_commands.join(' · ') : '无构建命令';
+  const testCmd = p.manifest.test_commands.length ? p.manifest.test_commands.join(' · ') : '无测试命令';
+  const testFw = p.test_framework.framework || '未配置';
 
   if (required.includes('01')) {
     docs.push({ filename: '01-故事任务.md', content: `# 故事任务
 
 > 由 pm agent 填充。此文件为故事唯一真相源。
 
+**项目:** ${p.project} | **类型:** ${p.type_label} | **架构:** ${arch}
+**技术栈:** ${techStack}
+
 ## 需求概述
 
-<!-- 需求描述 -->
+<!-- 在此描述本故事要解决的具体需求 -->
 
-## 验收标准
+## 验收标准 (AC)
 
-<!-- AC 列表 -->
+<!-- AC 列表，每条可独立验证 -->
 
 ## 影响分析
 
@@ -145,6 +155,11 @@ function storySkeletonDocs(p) {
 ## 任务拆分
 
 <!-- 子任务列表 -->
+
+## 约束与风险
+
+${p.security_surface.signals.length ? `- 安全面: ${p.security_surface.signals.join(' · ')}` : ''}
+- 底线: 认证不可绕过 · 密钥不落盘${p.security_surface.user_input ? ' · 输入必校验' : ''}${p.security_surface.data_storage ? ' · 数据不裸存' : ''}
 ` });
   }
 
@@ -153,17 +168,32 @@ function storySkeletonDocs(p) {
 
 > 由 coder + security agent 填充。
 
+**项目:** ${p.project} | **架构:** ${arch}
+**技术栈:** ${techStack}
+**依赖快照:** ${deps}
+
 ## 架构决策
 
 <!-- 模块划分 / 接口设计 / 数据模型 -->
 
 ## 安全评审
 
-<!-- 安全面分析 + 缓解措施 -->
+**已检测安全面:**
+${secItems}
+
+<!-- 补充缓解措施 -->
 
 ## 依赖变更
 
-<!-- 新增/升级依赖 -->
+**当前依赖:** ${deps}
+
+<!-- 新增/升级/移除依赖 -->
+
+## 构建与测试
+
+- 构建: ${buildCmd}
+- 测试框架: ${testFw}
+- 测试命令: ${testCmd}
 ` });
   }
 
@@ -171,6 +201,9 @@ function storySkeletonDocs(p) {
     docs.push({ filename: '03-前端技术评审.md', content: `# 前端技术评审
 
 > 由 coder agent 填充。
+
+**项目:** ${p.project} | **架构:** ${arch}
+**技术栈:** ${techStack}
 
 ## 组件设计
 
@@ -183,6 +216,15 @@ function storySkeletonDocs(p) {
 ## 交互规格
 
 <!-- 关键交互流程 -->
+
+## 依赖与工具
+
+**当前依赖:** ${deps}
+
+## 安全注意事项
+
+${p.security_surface.user_input ? '- 用户输入需校验（XSS/注入）' : '- 无用户输入面'}
+${p.security_surface.third_party ? '- 第三方调用需处理错误/超时' : ''}
 ` });
   }
 
@@ -190,6 +232,9 @@ function storySkeletonDocs(p) {
     docs.push({ filename: '04-测试用例评审.md', content: `# 测试用例评审
 
 > 由 tester agent 填充。Gate A 前置条件。
+
+**项目:** ${p.project} | **测试框架:** ${testFw}
+**测试命令:** ${testCmd}
 
 ## 测试策略
 
@@ -202,6 +247,10 @@ function storySkeletonDocs(p) {
 ## 边界条件
 
 <!-- 边界 + 异常场景 -->
+
+## 已知安全面
+
+${secItems}
 ` });
   }
 
@@ -210,11 +259,17 @@ function storySkeletonDocs(p) {
 
 > 验证阶段产出。Gate B 输入。
 
+**项目:** ${p.project} | **架构:** ${arch}
+**技术栈:** ${techStack}
+
 ## 实施摘要
 
 <!-- 变更文件 + 行数统计 -->
 
 ## 测试结果
+
+- 框架: ${testFw}
+- 命令: ${testCmd}
 
 <!-- 测试通过率 + 覆盖率 -->
 
@@ -228,6 +283,9 @@ function storySkeletonDocs(p) {
     docs.push({ filename: '06-前端实施报告.md', content: `# 前端实施报告
 
 > 验证阶段产出。Gate B 输入。
+
+**项目:** ${p.project} | **架构:** ${arch}
+**技术栈:** ${techStack}
 
 ## 实施摘要
 
@@ -248,6 +306,8 @@ function storySkeletonDocs(p) {
 
 > 由 tester agent 填充。Gate B 输入。
 
+**项目:** ${p.project} | **测试框架:** ${testFw}
+
 ## 执行结果
 
 <!-- 通过/失败/跳过 统计 -->
@@ -267,6 +327,8 @@ function storySkeletonDocs(p) {
 
 > 由 pm + reporter agent 填充。
 
+**项目:** ${p.project} | **类型:** ${p.type_label} | **架构:** ${arch}
+
 ## 执行数据
 
 <!-- 耗时 / 轮次 / 阻断 -->
@@ -278,6 +340,13 @@ function storySkeletonDocs(p) {
 ## 改进提案
 
 <!-- 提案列表 -->
+
+## 项目画像快照
+
+- 技术栈: ${techStack}
+- 安全面: ${p.security_surface.signals.join(' · ') || '无'}
+- 测试: ${testFw}
+- CI/CD: ${p.ci_config.provider || '未配置'}
 ` });
   }
 
@@ -365,6 +434,24 @@ ${skeletonLines.join('\n')}
 `;
 }
 
+// ── wework-bot config.json ─────────────────────────────────────
+
+function weworkBotConfig(p) {
+  return JSON.stringify({
+    default_robot: 'general',
+    api_url: 'https://api.effiy.cn/wework/send-message',
+    robots: {
+      general: {
+        webhook_url: 'YOUR_WEBHOOK_URL_HERE'
+      }
+    },
+    agents: {
+      rui: 'general'
+    },
+    _comment: '由 rui init 生成。请替换 YOUR_WEBHOOK_URL_HERE 为实际的企业微信机器人 webhook URL。'
+  }, null, 2) + '\n';
+}
+
 // ── Exports ────────────────────────────────────────────────────
 
-module.exports = { readmeMd, claudeMdProjectSection, claudeMdFull, storySkeletonDocs };
+module.exports = { readmeMd, claudeMdProjectSection, claudeMdFull, storySkeletonDocs, weworkBotConfig };

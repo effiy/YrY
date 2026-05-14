@@ -251,6 +251,52 @@ function generate(profile, opts) {
     write(docPath, doc.content, opts, result, `骨架/${doc.filename}`);
   }
 
+  // ── .claude/ 目录结构 ──
+  const pluginRoot = findPluginRoot();
+  const claudeDir = path.join(REPO_ROOT, '.claude');
+
+  // agents
+  const agentsSrc = path.join(pluginRoot, 'agents');
+  const agentsDst = path.join(claudeDir, 'agents');
+  if (fs.existsSync(agentsSrc)) {
+    copyDir(agentsSrc, agentsDst, opts, result, 'agents');
+  }
+
+  // rules
+  const rulesSrc = path.join(pluginRoot, 'rules');
+  const rulesDst = path.join(claudeDir, 'rules');
+  if (fs.existsSync(rulesSrc)) {
+    copyDir(rulesSrc, rulesDst, opts, result, 'rules');
+  }
+
+  // skills config
+  const weworkConfigPath = path.join(claudeDir, 'skills', 'wework-bot', 'config.json');
+  write(weworkConfigPath, T.weworkBotConfig(p), opts, result, 'skills/wework-bot/config.json');
+
+  // skills/rui/ formulas & coder (referenced by agents/rules)
+  const ruiSkillSrc = path.join(pluginRoot, 'skills', 'rui');
+  const ruiSkillDst = path.join(claudeDir, 'skills', 'rui');
+  for (const fname of ['formulas.md', 'coder.md']) {
+    const src = path.join(ruiSkillSrc, fname);
+    const dst = path.join(ruiSkillDst, fname);
+    if (fs.existsSync(src)) {
+      write(dst, fs.readFileSync(src, 'utf8'), opts, result, `skills/rui/${fname}`);
+    }
+  }
+
+  // memory & history dirs
+  const memoryDir = path.join(claudeDir, 'memory');
+  const historyDir = path.join(claudeDir, '.history');
+  if (dryRun) {
+    result.dirs.push({ path: '.claude/memory', action: 'will-create' });
+    result.dirs.push({ path: '.claude/.history', action: 'will-create' });
+  } else {
+    ensureDir(memoryDir);
+    ensureDir(historyDir);
+    result.dirs.push({ path: '.claude/memory', action: 'ensured' });
+    result.dirs.push({ path: '.claude/.history', action: 'ensured' });
+  }
+
   return result;
 }
 
@@ -271,6 +317,24 @@ function verify(profile) {
       return files.length >= expected
         ? { ok: true, detail: `✓ ${files.length} 文件` }
         : { ok: false, detail: `${files.length}/${expected} 文件` };
+    }},
+    { id: '.claude/agents', validate: () => {
+      const dir = path.join(REPO_ROOT, '.claude', 'agents');
+      if (!fs.existsSync(dir)) return { ok: false, detail: '目录不存在' };
+      const files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));
+      return files.length >= 4 ? { ok: true, detail: `✓ ${files.length} 个 agent` } : { ok: false, detail: `${files.length} 个 agent` };
+    }},
+    { id: '.claude/rules', validate: () => {
+      const dir = path.join(REPO_ROOT, '.claude', 'rules');
+      if (!fs.existsSync(dir)) return { ok: false, detail: '目录不存在' };
+      const files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));
+      return files.length >= 3 ? { ok: true, detail: `✓ ${files.length} 个规则` } : { ok: false, detail: `${files.length} 个规则` };
+    }},
+    { id: '.claude/skills', validate: () => {
+      const cfg = path.join(REPO_ROOT, '.claude', 'skills', 'wework-bot', 'config.json');
+      return fs.existsSync(cfg)
+        ? { ok: true, detail: '✓ wework-bot 配置' }
+        : { ok: false, detail: 'wework-bot/config.json 不存在' };
     }},
   ];
 
@@ -384,6 +448,34 @@ function rel(p) { return path.relative(REPO_ROOT, p) || '.'; }
 function ensureDir(d) { if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true }); }
 function tryRead(fp) { try { return fs.readFileSync(fp, 'utf8'); } catch { return ''; } }
 
+function findPluginRoot() {
+  let currentDir = __dirname;
+  while (true) {
+    if (fs.existsSync(path.join(currentDir, '.claude-plugin')) ||
+        fs.existsSync(path.join(currentDir, 'plugin.json'))) {
+      return currentDir;
+    }
+    const parentDir = path.dirname(currentDir);
+    if (parentDir === currentDir) break;
+    currentDir = parentDir;
+  }
+  return path.resolve(__dirname, '..', '..', '..');
+}
+
+function copyDir(src, dst, opts, result, labelPrefix) {
+  if (!fs.existsSync(src)) return;
+  ensureDir(dst);
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const srcPath = path.join(src, entry.name);
+    const dstPath = path.join(dst, entry.name);
+    if (entry.isDirectory()) {
+      copyDir(srcPath, dstPath, opts, result, labelPrefix);
+    } else {
+      write(dstPath, fs.readFileSync(srcPath, 'utf8'), opts, result, `${labelPrefix}/${entry.name}`);
+    }
+  }
+}
+
 function write(fp, content, opts, result, label) {
   const exists = fs.existsSync(fp);
   if (opts.dryRun) { result.created.push({ path: rel(fp), action: exists ? 'will-overwrite' : 'will-create', source: label }); return; }
@@ -440,10 +532,10 @@ function printReport(profile, gen, ver, opts) {
   }
   console.log('');
 
-  const docDirs = gen.dirs.filter(d => d.path.startsWith('docs/'));
-  if (docDirs.length > 0) {
-    console.log(`## 文档目录 (${docDirs.length} 个)`);
-    for (const d of docDirs) console.log(`  ${d.action === 'will-create' ? '◇' : '✓'} ${d.path}`);
+  const allDirs = gen.dirs;
+  if (allDirs.length > 0) {
+    console.log(`## 目录 (${allDirs.length} 个)`);
+    for (const d of allDirs) console.log(`  ${d.action === 'will-create' ? '◇' : '✓'} ${d.path}`);
     console.log('');
   }
 
@@ -469,7 +561,7 @@ function printHelp() {
 流程: detect → generate → verify → trigger
 
 探测: 项目类型 · 安全面 · 测试框架 · CI · 架构模式
-产物: CLAUDE.md(项目约束) · README.md · docs/故事任务面板/ 目录 · 骨架文档
+产物: CLAUDE.md(项目约束) · README.md · docs/故事任务面板/ · .claude/(agents/rules/skills) · 骨架文档
 触发: import-docs(文档同步) · wework-bot(初始化通知)
 验证: 产物存在且含项目上下文
 
