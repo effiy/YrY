@@ -97,15 +97,15 @@ flowchart LR
 
 ## init 简述
 
-> **口诀：探—生—验。** 三步：探（扫描项目六类信号）→ 生（按 profile 生成 README.md / 故事面板目录）→ 验（就绪检查）。
+> **口诀：探—生—验—触。** 四步：探（扫描项目六类信号）→ 生（按 profile 生成 CLAUDE.md / README.md / 故事骨架文档）→ 验（就绪检查）→ 触（import-docs 同步 + wework-bot 通知）。
 >
-> **核心设计**：init 只负责项目基线（README.md · docs/故事任务面板/ 目录），可重复运行，每次全量重生。
+> **核心设计**：init 负责项目基线（CLAUDE.md 项目约束 · README.md · docs/故事任务面板/ 目录 + 骨架文档），可重复运行，每次全量重生。完成后主动触发文档同步和通知。
 
 ```mermaid
 flowchart LR
-    P1[detect<br/>六类信号扫描]:::s --> P2[generate<br/>基线全量重生]:::s --> P3[verify<br/>就绪检查]:::s --> P4[记忆<br/>.init-memory]
+    P1[detect<br/>六类信号扫描]:::s --> P2[generate<br/>基线全量重生]:::s --> P3[verify<br/>就绪检查]:::s --> P4[trigger<br/>同步+通知]:::s --> P5[记忆<br/>.init-memory]
     P3 -.失败.-> Fix[exit 1<br/>修复后重跑]
-    P3 -.通过.-> Ready[基线就绪]
+    P4 -.通过.-> Ready[基线就绪]
     classDef s fill:#e3f2fd,stroke:#1565c0;
 ```
 
@@ -129,29 +129,44 @@ flowchart LR
 
 | 产物 | 裁剪依据 | 项目耦合点 |
 |------|---------|-----------|
+| `CLAUDE.md` | 安全面 + 类型 | 项目约束段（`rui:project-start/end` 标记内替换） |
 | `README.md` | 全部信号 | 项目画像 + 故事目录骨架（按项目类型裁剪） + 结构表 |
+| `docs/故事任务面板/<project>/.skeleton/` | 项目类型 | 按类型裁剪的全套骨架文档（01-08 + 00） |
 
-### 3. verify — 2 项就绪检查（验证层）
+### 3. verify — 4 项就绪检查（验证层）
 
 任一失败 `exit 1`：
 
 | # | 检查项 | 通过条件 |
 |---|--------|--------|
-| 1 | `README.md` | 含项目名 |
-| 2 | 故事面板 | `docs/故事任务面板/` 目录存在 |
+| 1 | `CLAUDE.md` | 含 `rui:project-start` 标记 + 项目名 |
+| 2 | `README.md` | 含项目名 |
+| 3 | 故事面板 | `docs/故事任务面板/` 目录存在 |
+| 4 | 骨架文档 | `.skeleton/` 下文件数 ≥ 必选文件数 |
 
-### 4. 选项
+### 4. trigger — 主动触发（集成层）
+
+验证通过后主动触发：
+
+| 触发 | 条件 | 降级 |
+|------|------|------|
+| `import-docs --workspace` | `API_X_TOKEN` 存在 | 缺 token 跳过，网络失败告警不阻断 |
+| `wework-bot --agent rui` | `API_X_TOKEN` + `WEWORK_BOT_WEBHOOK_URL` 存在 | 缺凭据跳过 |
+
+### 5. 选项
 
 | 选项 | 行为 |
 |------|------|
-| `--dry-run` | 仅扫描+报告，不写文件；动作以 `◇` 前缀标识 |
+| `--dry-run` | 仅扫描+报告，不写文件，不触发同步/通知；动作以 `◇` 前缀标识 |
 | `--json` | 机器可读输出（`{ profile, generate, verify, dry_run }`） |
 
-### 5. 产物
+### 6. 产物
 
 | 路径 | 用途 | 重复运行 |
 |------|------|---------|
+| `CLAUDE.md` | 项目约束（`rui:project-start/end` 段） | 段内全量替换 |
 | `README.md` | 系统视图 + 项目画像 | 全量重生 |
+| `docs/故事任务面板/<project>/.skeleton/*.md` | 故事骨架模板 | 全量重生 |
 | `docs/故事任务面板/.init-memory.json` | 执行记录 | 每次覆盖 |
 
 ## 集成

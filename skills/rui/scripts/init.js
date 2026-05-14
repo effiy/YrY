@@ -208,11 +208,48 @@ function generate(profile, opts) {
 
   // 目录结构
   const storyDir = path.join(REPO_ROOT, 'docs', '故事任务面板');
-  if (dryRun) result.dirs.push({ path: 'docs/故事任务面板', action: 'will-create' });
-  else { ensureDir(storyDir); result.dirs.push({ path: 'docs/故事任务面板', action: 'ensured' }); }
+  const skeletonDir = path.join(storyDir, p.project, '.skeleton');
+  if (dryRun) {
+    result.dirs.push({ path: 'docs/故事任务面板', action: 'will-create' });
+    result.dirs.push({ path: `docs/故事任务面板/${p.project}/.skeleton`, action: 'will-create' });
+  } else {
+    ensureDir(storyDir);
+    ensureDir(skeletonDir);
+    result.dirs.push({ path: 'docs/故事任务面板', action: 'ensured' });
+    result.dirs.push({ path: `docs/故事任务面板/${p.project}/.skeleton`, action: 'ensured' });
+  }
 
-  // 产物生成
+  // ── CLAUDE.md 生成/更新 ──
+  const claudePath = path.join(REPO_ROOT, 'CLAUDE.md');
+  if (fs.existsSync(claudePath)) {
+    // 已有 CLAUDE.md → 只替换 project-start/end 段
+    const existing = fs.readFileSync(claudePath, 'utf8');
+    const startMarker = '<!-- rui:project-start -->';
+    const endMarker = '<!-- rui:project-end -->';
+    const startIdx = existing.indexOf(startMarker);
+    const endIdx = existing.indexOf(endMarker);
+    if (startIdx !== -1 && endIdx !== -1) {
+      const newContent = existing.slice(0, startIdx) + T.claudeMdProjectSection(p) + existing.slice(endIdx + endMarker.length);
+      write(claudePath, newContent, opts, result, 'CLAUDE.md (项目约束段)');
+    } else {
+      // 无标记 → 在文件末尾追加
+      const section = '\n' + T.claudeMdProjectSection(p) + '\n';
+      write(claudePath, existing + section, opts, result, 'CLAUDE.md (追加项目约束)');
+    }
+  } else {
+    // 无 CLAUDE.md → 全量生成
+    write(claudePath, T.claudeMdFull(p), opts, result, 'CLAUDE.md (全量生成)');
+  }
+
+  // ── README.md ──
   write(path.join(REPO_ROOT, 'README.md'), T.readmeMd(p), opts, result, 'README.md');
+
+  // ── 故事目录骨架文档 ──
+  const skeletonDocs = T.storySkeletonDocs(p);
+  for (const doc of skeletonDocs) {
+    const docPath = path.join(skeletonDir, doc.filename);
+    write(docPath, doc.content, opts, result, `骨架/${doc.filename}`);
+  }
 
   return result;
 }
@@ -223,8 +260,18 @@ function generate(profile, opts) {
 
 function verify(profile) {
   const checks = [
+    { id: 'CLAUDE.md', validate: () => fileContains(path.join(REPO_ROOT, 'CLAUDE.md'), ['rui:project-start', profile.project]) },
     { id: 'README.md', validate: () => fileContains(path.join(REPO_ROOT, 'README.md'), [profile.project]) },
     { id: '故事面板目录', validate: () => ({ ok: fs.existsSync(path.join(REPO_ROOT, 'docs', '故事任务面板')), detail: fs.existsSync(path.join(REPO_ROOT, 'docs', '故事任务面板')) ? '✓' : '目录不存在' }) },
+    { id: '骨架文档', validate: () => {
+      const skDir = path.join(REPO_ROOT, 'docs', '故事任务面板', profile.project, '.skeleton');
+      if (!fs.existsSync(skDir)) return { ok: false, detail: '骨架目录不存在' };
+      const files = fs.readdirSync(skDir).filter(f => f.endsWith('.md'));
+      const expected = profile.story_defaults.required_files.length + 1; // +1 for 00
+      return files.length >= expected
+        ? { ok: true, detail: `✓ ${files.length} 文件` }
+        : { ok: false, detail: `${files.length}/${expected} 文件` };
+    }},
   ];
 
   const results = checks.map(c => ({ id: c.id, ...c.validate() }));
@@ -248,6 +295,16 @@ async function main() {
 
   if (!dryRun) writeInitMemory(profile, verifyResult);
 
+  // ── 触发 import-docs 同步 ──
+  if (!dryRun && verifyResult.ok) {
+    triggerImportDocs();
+  }
+
+  // ── 触发 wework-bot 通知 ──
+  if (!dryRun && verifyResult.ok) {
+    triggerWeworkNotify(profile);
+  }
+
   if (json) {
     console.log(JSON.stringify({ profile, generate: genResult, verify: verifyResult, dry_run: dryRun }, null, 2));
   } else {
@@ -255,6 +312,68 @@ async function main() {
   }
 
   if (!dryRun && !verifyResult.ok) process.exit(1);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 4. TRIGGERS — init 完成后触发 import-docs / wework-bot
+// ═══════════════════════════════════════════════════════════════
+
+function triggerImportDocs() {
+  const { execSync } = require('child_process');
+  const scriptPath = path.join(REPO_ROOT, 'skills', 'import-docs', 'scripts', 'import-docs.js');
+  if (!fs.existsSync(scriptPath)) return;
+
+  try {
+    execSync(`node "${scriptPath}" --workspace`, {
+      cwd: REPO_ROOT,
+      stdio: 'pipe',
+      encoding: 'utf8',
+      timeout: 60000,
+      env: { ...process.env },
+    });
+    console.log('  ✓ import-docs: 文档已同步到远端');
+  } catch (err) {
+    if (!process.env.API_X_TOKEN) {
+      console.log('  ◇ import-docs: 跳过（API_X_TOKEN 未设置）');
+    } else {
+      console.log(`  ⚠ import-docs: 同步失败 — ${err.message.split('\n')[0]}`);
+    }
+  }
+}
+
+function triggerWeworkNotify(profile) {
+  const { execSync } = require('child_process');
+  const scriptPath = path.join(REPO_ROOT, 'skills', 'wework-bot', 'scripts', 'send-message.js');
+  if (!fs.existsSync(scriptPath)) return;
+  if (!process.env.API_X_TOKEN || !process.env.WEWORK_BOT_WEBHOOK_URL) {
+    console.log('  ◇ wework-bot: 跳过（凭据未设置）');
+    return;
+  }
+
+  const message = [
+    `🎯 结论: ${profile.project} 项目基线初始化完成`,
+    `📝 描述: rui init 探测项目画像并生成基线文档`,
+    `📌 范围: CLAUDE.md · README.md · docs/故事任务面板/`,
+    `👉 下一步: /rui doc <需求> 拆故事`,
+    `🌐 影响: 项目约束已写入 CLAUDE.md`,
+    `📎 证据: docs/故事任务面板/.init-memory.json`,
+  ].join('\n');
+
+  const tmpFile = path.join(REPO_ROOT, '.init-notify-content.tmp');
+  try {
+    fs.writeFileSync(tmpFile, message, 'utf8');
+    execSync(`node "${scriptPath}" --agent rui --project "${profile.project}" --content-file "${tmpFile}"`, {
+      cwd: REPO_ROOT,
+      stdio: 'pipe',
+      timeout: 30000,
+      env: { ...process.env },
+    });
+    console.log('  ✓ wework-bot: 初始化通知已发送');
+  } catch (err) {
+    console.log(`  ⚠ wework-bot: 通知失败 — ${err.message.split('\n')[0]}`);
+  } finally {
+    try { fs.unlinkSync(tmpFile); } catch { /* ignore */ }
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -347,10 +466,11 @@ function printHelp() {
 
 用法: node init.js [--dry-run] [--json] [--help]
 
-流程: detect → generate → verify
+流程: detect → generate → verify → trigger
 
 探测: 项目类型 · 安全面 · 测试框架 · CI · 架构模式
-产物: README.md · docs/故事任务面板/ 目录
+产物: CLAUDE.md(项目约束) · README.md · docs/故事任务面板/ 目录 · 骨架文档
+触发: import-docs(文档同步) · wework-bot(初始化通知)
 验证: 产物存在且含项目上下文
 
 可重复运行，每次全量重生。
