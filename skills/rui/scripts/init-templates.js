@@ -828,154 +828,184 @@ ${skeleton}
 `;
 }
 
-// ── Core Docs ──────────────────────────────────────────────────
+// ── Config ─────────────────────────────────────────────────────
 
-function architectureStory(p) {
+function architectureStoryFiles(p) {
   const date = new Date().toISOString().split('T')[0];
   const techStack = p.manifest.tech_stack.length > 0 ? p.manifest.tech_stack.join(' · ') : p.type_label;
+  const ecosystems = p.manifest.ecosystems.join(' · ') || '未识别';
+  const files = {};
 
-  const topologies = {
-    frontend: `\`\`\`mermaid
-flowchart TB
-    User([用户]) --> UI[UI 层] --> State[状态管理] --> API[API 调用层] --> External([外部服务])
-\`\`\``,
-    backend: `\`\`\`mermaid
-flowchart TB
-    Client([客户端]) --> Router[路由层] --> Service[服务层] --> Repo[数据访问层] --> DB[(存储)]
-\`\`\``,
-    fullstack: `\`\`\`mermaid
-flowchart TB
-    User([用户]) --> FE[前端] --> |API 契约| BE[后端] --> Store[(存储)]
-\`\`\``,
-  };
-  const topology = topologies[p.type] || `\`\`\`mermaid
-flowchart TB
-    Entry([入口]) --> Core[核心模块] --> Ext[扩展/插件]
-\`\`\``;
-
-  return `# ${p.project} 架构故事
+  // 01 — 系统概述
+  files['01-系统概述.md'] = `# 系统概述
 
 > | v0.1.0 | ${date} | rui init | 🌿 main |
 
 ## 一句话
 
-${p.project} 是一个 ${p.type_label} 项目（${p.architecture.pattern}），技术栈 ${techStack}。
+${p.project} 是一个 ${p.type_label} 项目（${p.architecture.pattern}），技术栈 ${techStack}，生态 ${ecosystems}。
 
-## 系统拓扑
+## 项目画像
 
-${topology}
+| 维度 | 内容 | 来源 |
+|------|------|------|
+| 项目类型 | ${p.type_label} | 源码扫描 |
+| 架构模式 | ${p.architecture.pattern} | ${p.architecture.signals.join('；') || '默认'} |
+| 技术栈 | ${techStack} | 清单文件 |
+| 生态 | ${ecosystems} | 清单文件 |
+| 构建 | ${p.manifest.build_commands.join(' · ') || '无'} | 清单文件 |
+| 测试 | ${p.test_framework.framework || '未配置'} · \`${p.test_framework.runner_command || '无'}\` | 配置文件 |
+| CI/CD | ${p.ci_config.provider || '未配置'} | ${p.ci_config.config_file || '—'} |
+| 安全面 | ${p.security_surface.signals.join(' · ') || '无显著安全面'} | 源码扫描 |
+| Coder 公式 | ${p.coder_formula.text} | 类型推断 |
+`;
 
-## 模块全景
+  // 02 — 系统拓扑
+  const topologies = {
+    frontend: `\`\`\`mermaid
+flowchart TB
+    User([用户]) --> UI[UI 层<br/>组件树] --> State[状态管理] --> API[API 调用层] --> External([外部服务])
+\`\`\``,
+    backend: `\`\`\`mermaid
+flowchart TB
+    Client([客户端]) --> Router[路由层] --> Controller[控制器] --> Service[服务层] --> Repo[数据访问层] --> DB[(存储)]
+\`\`\``,
+    fullstack: `\`\`\`mermaid
+flowchart TB
+    User([用户]) --> FE[前端<br/>组件 + 状态] -->|API 契约| BE[后端<br/>路由 + 服务] --> Store[(存储)]
+    BE --> Ext([第三方])
+\`\`\``,
+    meta: `\`\`\`mermaid
+flowchart TB
+    Entry([入口命令]) --> Core[核心模块<br/>Skills] --> Scripts[脚本层]
+    Core --> Config[配置层<br/>Agents + Rules]
+    Scripts --> Output([产物输出])
+\`\`\``,
+  };
 
-| 维度 | 内容 |
-|------|------|
-| 项目类型 | ${p.type_label} |
-| 架构模式 | ${p.architecture.pattern} |
-| 技术栈 | ${techStack} |
-| 构建 | ${p.manifest.build_commands.join(' · ') || '无'} |
-| 测试 | ${p.test_framework.framework || '未配置'} |
-| 安全面 | ${p.security_surface.signals.join(' · ') || '无显著安全面'} |
+  let moduleTable = '';
+  if (p.type === 'meta') {
+    moduleTable = `\n## 模块清单\n\n| 模块 | 职责 | 路径 |\n|------|------|------|\n| skills/rui | 故事 SDLC 编排核心 | \`skills/rui/\` |\n| skills/rui-claude | .claude 配置管理 | \`skills/rui-claude/\` |\n| agents | Agent 角色定义 | \`agents/\` |\n| rules | 规则定义 | \`rules/\` |\n`;
+  }
 
-## 演进方向
+  files['02-系统拓扑.md'] = `# 系统拓扑
 
-> 待补充。随故事推进，在此记录架构演进决策。
+> | v0.1.0 | ${date} | rui init | 🌿 main |
+
+## 架构图
+
+${topologies[p.type] || topologies.meta}
+${moduleTable}`;
+
+  // 03 — 数据流
+  const dataFlows = {
+    frontend: `## 主数据流
+
+\`\`\`
+用户操作 → 组件事件 → 状态变更 → API 请求 → 响应渲染
+\`\`\`
+
+### 状态流向
+
+1. 用户在 UI 层触发事件
+2. 事件处理器更新本地/全局状态
+3. 状态变更触发视图重渲染
+4. 需要持久化时发起 API 请求
+5. 响应数据回写状态，驱动 UI 更新`,
+    backend: `## 主数据流
+
+\`\`\`
+请求 → 路由匹配 → 中间件链 → 控制器 → 服务逻辑 → 数据访问 → 响应
+\`\`\`
+
+### 请求生命周期
+
+1. 客户端发起 HTTP 请求
+2. 路由层匹配到对应 Handler
+3. 中间件链执行（认证、日志、限流）
+4. 控制器解析参数，调用服务层
+5. 服务层执行业务逻辑
+6. 数据访问层读写存储
+7. 响应序列化返回客户端`,
+    fullstack: `## 主数据流
+
+\`\`\`
+用户操作 → 前端状态 → API 契约 → 后端服务 → 数据存储 → 响应回传 → UI 更新
+\`\`\`
+
+### 前后端交互
+
+1. 前端组件触发用户意图
+2. 状态层决定是否需要后端数据
+3. 通过 API 契约发起请求
+4. 后端路由 → 服务 → 存储
+5. 响应按契约格式返回
+6. 前端状态更新，驱动 UI`,
+    meta: `## 主数据流
+
+\`\`\`
+入口命令 → 探测项目 → 模板渲染 → 产物写入 → 验证闭环
+\`\`\`
+
+### 执行流程
+
+1. 用户通过命令入口触发
+2. 探测器扫描项目结构，生成 profile
+3. 模板引擎根据 profile 渲染产物内容
+4. 写入器将产物落盘
+5. 验证器检查产物完整性`,
+  };
+
+  files['03-数据流.md'] = `# 数据流
+
+> | v0.1.0 | ${date} | rui init | 🌿 main |
+
+${dataFlows[p.type] || dataFlows.meta}
+`;
+
+  // 04 — 安全边界（有安全面才生成）
+  if (p.security_surface.signals.length > 0) {
+    const secRows = p.security_surface.signals.map(s => `| ${s} | 需在架构层面防护 | P0 |`).join('\n');
+    files['04-安全边界.md'] = `# 安全边界
+
+> | v0.1.0 | ${date} | rui init | 🌿 main |
+
+## 已识别安全面
+
+| 安全面 | 影响 | 防护要求 |
+|--------|------|----------|
+${secRows}
+
+## 不可妥协底线
+
+${p.security_surface.auth ? '- **认证不可绕过** — 涉及 auth/token/session，任何绕过路径为 P0\n' : ''}${p.security_surface.user_input ? '- **输入必须校验** — 用户输入点已识别，XSS/注入防护为 P0\n' : ''}${p.security_surface.data_storage ? '- **存储必须安全** — 数据持久化已识别，敏感数据加密/脱敏为 P0\n' : ''}${p.security_surface.api_exposure ? '- **API 必须鉴权** — 暴露接口已识别，未鉴权端点为 P0\n' : ''}- **密钥不落盘** — Token/密钥/凭据禁止出现在源码或配置文件
+`;
+  }
+
+  // 05 — 架构决策
+  const decisions = [];
+  decisions.push(`| ${date} | 初始化基线 | rui init | 全局 |`);
+  if (p.architecture.pattern !== 'single') decisions.push(`| ${date} | 架构模式: ${p.architecture.pattern} | ${p.architecture.signals.join('；') || '项目结构'} | 全局 |`);
+  if (p.test_framework.framework) decisions.push(`| ${date} | 测试框架: ${p.test_framework.framework} | 项目已配置 | 测试层 |`);
+  if (p.ci_config.provider) decisions.push(`| ${date} | CI/CD: ${p.ci_config.provider} | ${p.ci_config.config_file} | 部署层 |`);
+
+  files['05-架构决策.md'] = `# 架构决策记录
+
+> | v0.1.0 | ${date} | rui init | 🌿 main |
+
+## 决策日志
 
 | 时间 | 决策 | 原因 | 影响范围 |
 |------|------|------|---------|
-| ${date} | 初始化基线 | rui init | 全局 |
+${decisions.join('\n')}
+
+## 演进方向
+
+> 随故事推进，在此记录架构演进决策。
 `;
+
+  return files;
 }
-
-function coreInterfaceDoc(apis, p) {
-  const date = new Date().toISOString().split('T')[0];
-  const ranked = apis.slice(0, 5);
-  const table = ranked.map((api, i) => {
-    const pri = i < 2 ? '⭐ 高' : (i < 4 ? '◆ 中' : '○ 低');
-    return `| ${api.name} | \`${api.basePath || '/'}\` | \`${api.path}\` | ${pri} |`;
-  }).join('\n');
-
-  return `# ${p.project} 核心接口文档【推荐的】
-
-> | v0.1.0 | ${date} | rui init | 🌿 main |
-
-## 说明
-
-以下接口由源码扫描自动发现，按业务重要性排序推荐。⭐ 高优先级建议优先文档化。
-
-## 推荐接口清单
-
-| 接口名 | Base Path | 源码位置 | 推荐优先级 |
-|--------|-----------|---------|-----------|
-${table}
-
-## 下一步
-
-\`\`\`bash
-/rui doc --from-code ${ranked[0]?.name || '<接口名>'}   # 为核心接口生成详细文档
-\`\`\`
-`;
-}
-
-function coreComponentDoc(components, p) {
-  const date = new Date().toISOString().split('T')[0];
-  const ranked = components.sort((a, b) => b.fileCount - a.fileCount).slice(0, 5);
-  const table = ranked.map((comp, i) => {
-    const pri = i < 2 ? '⭐ 高' : (i < 4 ? '◆ 中' : '○ 低');
-    return `| ${comp.name} | \`${comp.path}\` | ${comp.fileCount} | ${pri} |`;
-  }).join('\n');
-
-  return `# ${p.project} 核心组件文档【推荐的】
-
-> | v0.1.0 | ${date} | rui init | 🌿 main |
-
-## 说明
-
-以下组件由源码扫描自动发现，按复杂度排序推荐。⭐ 高优先级建议优先文档化。
-
-## 推荐组件清单
-
-| 组件名 | 路径 | 文件数 | 推荐优先级 |
-|--------|------|--------|-----------|
-${table}
-
-## 下一步
-
-\`\`\`bash
-/rui doc --from-code ${ranked[0]?.name || '<组件名>'}   # 为核心组件生成详细文档
-\`\`\`
-`;
-}
-
-function coreModuleDoc(modules, p) {
-  const date = new Date().toISOString().split('T')[0];
-  const table = modules.map((mod, i) => {
-    const pri = i < 2 ? '⭐ 高' : (i < 4 ? '◆ 中' : '○ 低');
-    return `| ${mod.name} | ${mod.type || 'module'} | \`${mod.path}\` | ${pri} |`;
-  }).join('\n');
-
-  return `# ${p.project} 核心组件文档【推荐的】
-
-> | v0.1.0 | ${date} | rui init | 🌿 main |
-
-## 说明
-
-以下模块由源码扫描自动发现，按重要性排序推荐。⭐ 高优先级建议优先文档化。
-
-## 推荐模块清单
-
-| 模块名 | 类型 | 路径 | 推荐优先级 |
-|--------|------|------|-----------|
-${table}
-
-## 下一步
-
-\`\`\`bash
-/rui doc --from-code ${modules[0]?.name || '<模块名>'}   # 为核心模块生成详细文档
-\`\`\`
-`;
-}
-
-// ── Config ─────────────────────────────────────────────────────
 
 function mcpConfig() {
   return JSON.stringify({ mcpServers: {} }, null, 2) + '\n';
@@ -999,10 +1029,7 @@ module.exports = {
   rules,
   formulas,
   coderHandbook,
-  architectureStory,
-  coreInterfaceDoc,
-  coreComponentDoc,
-  coreModuleDoc,
+  architectureStoryFiles,
   mcpConfig,
   settings,
 };
