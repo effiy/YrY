@@ -56,7 +56,7 @@ flowchart LR
 
 ## 项目上下文
 
-由 `rui init` 从 CLAUDE.md / README.md / package.json 提取并注入：项目类型、Coder 公式、技术栈、编码规范、禁止事项、关键文件、核心模块、构建命令。未注入时回退到 [project-profile.json](../project-profile.json)。
+由 `rui init` 从 CLAUDE.md / README.md / 项目清单（manifest，如 package.json / pyproject.toml / Cargo.toml / go.mod / pom.xml 等按生态择一）提取并注入：项目类型、Coder 公式、技术栈、编码规范、禁止事项、关键文件、核心模块、构建命令。未注入时回退到 [project-profile.json](../project-profile.json)。
 
 ## 生效标志
 

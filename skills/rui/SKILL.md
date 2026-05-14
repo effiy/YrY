@@ -19,7 +19,7 @@ agents:
 
 | 命令 | 用途 | 关键行为 |
 |------|------|---------|
-| `/rui init [--force\|--dry-run]` | 建立项目基线 | 提取 CLAUDE.md/README.md/package.json → 互补注入 `.claude/`，8/8 就绪检查 |
+| `/rui init [--force\|--dry-run]` | 建立项目基线 | 提取 CLAUDE.md / README.md / 项目清单（manifest）→ 互补注入 `.claude/`，8/8 就绪检查 |
 | `/rui doc <req>` | 拆需求为故事 + 生成文档基线（故事任务 → 评审三件） | 必须分支隔离；禁止改源码；多故事逐个串行 |
 | `/rui code <name>` | 实现故事 + 生成验证报告（实施 / 测试 / 自改进复盘） | Gate A 测试先行；Gate B 验证闭合 |
 | `/rui <req>` | 端到端 | doc + code 全自动串联 |
@@ -99,7 +99,22 @@ flowchart LR
 |----|---------|------|
 | `CLAUDE.md` | 三公理 / 六原则 / 七准则 / 编码规范 / 禁止事项 / 关键文件 / 安全约束 | 哲学锚点 + 项目特有约束 |
 | `README.md` | 项目描述 / 系统能力 / 项目结构 / 技术栈 / 核心模块 / 构建命令 / 测试命令 / 部署信息 | 系统视图 + 命令词典 |
-| `package.json` | dependencies / devDependencies / scripts / 已识别框架版本 | 真实依赖 + 自动补充命令 |
+| 项目清单（manifest） | dependencies / scripts / 已识别框架版本（按生态） | 真实依赖 + 自动补充命令 |
+
+第三源按**生态优先级**择一或并存抽取（按文件存在性命中即生效，多生态项目并存抽取并合并）：
+
+| 生态 | 清单文件 | 依赖字段 | 命令字段 |
+|------|---------|---------|---------|
+| Node | `package.json` | `dependencies` / `devDependencies` | `scripts.build/test/lint/dev` → `npm run *` |
+| Python | `pyproject.toml` / `requirements.txt` / `Pipfile` | `[project.dependencies]` / `[tool.poetry.dependencies]` / 行清单 | `[tool.poetry.scripts]` / 约定 `pytest` / `python -m build` |
+| Rust | `Cargo.toml` | `[dependencies]` / `[dev-dependencies]` | `cargo build` / `cargo test` |
+| Go | `go.mod` | `require` 块 | `go build ./...` / `go test ./...` |
+| Java | `pom.xml` / `build.gradle(.kts)` | `<dependencies>` / `dependencies {}` | `mvn package` / `mvn test` 或 `./gradlew build/test` |
+| Ruby | `Gemfile` | `gem` 行 | `bundle exec rake` / `rspec` |
+| PHP | `composer.json` | `require` / `require-dev` | `composer.scripts` |
+| 元项目 | `.claude-plugin/plugin.json` | 插件元数据 | 无（脚本入口由 `skills/*/scripts/` 决定） |
+
+无清单命中时第三源缺省，仅以前两源建立基线（`baseline.dependencies = {}`，构建/测试命令需 README 提供）。
 
 类型识别由 `constants.detectProjectType` 复用源码扫描（扩展名权重 / 框架依赖 / API 模式签名 / 元项目信号）→ `frontend` / `backend` / `fullstack` / `meta` / `unknown`。结果写入 `.claude/project-profile.json`，含 `coder_formula` 与 `story_defaults`（决定每故事必选/可选文件骨架）。
 

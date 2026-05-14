@@ -349,31 +349,20 @@ function extractBaseline() {
     }
   }
 
-  // ── 新增：从 package.json 提取依赖和脚本 ──
-  const pkgPath = path.join(REPO_ROOT, 'package.json');
-  if (fs.existsSync(pkgPath)) {
-    try {
-      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-      baseline.dependencies = {
-        production: Object.keys(pkg.dependencies || {}),
-        dev: Object.keys(pkg.devDependencies || {}),
-      };
-      if (pkg.scripts) {
-        if (pkg.scripts.build && !baseline.buildCommands.includes(`npm run build`)) baseline.buildCommands.push(`npm run build`);
-        if (pkg.scripts.test && !baseline.testCommands.includes(`npm test`)) baseline.testCommands.push(`npm test`);
-        if (pkg.scripts.lint && !baseline.buildCommands.includes(`npm run lint`)) baseline.buildCommands.push(`npm run lint`);
-        if (pkg.scripts.dev && !baseline.buildCommands.includes(`npm run dev`)) baseline.buildCommands.push(`npm run dev`);
-      }
-      // Extract tech stack from dependencies
-      const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
-      const knownFrameworks = ['react', 'vue', 'angular', 'svelte', 'next', 'nuxt', 'express', 'koa', 'fastify', 'nestjs', 'django', 'flask', 'spring'];
-      for (const fw of knownFrameworks) {
-        if (allDeps[fw] && !baseline.techStack.includes(fw)) {
-          baseline.techStack.push(`${fw}@${allDeps[fw]}`);
-        }
-      }
-    } catch {}
+  // ── 新增：从项目清单（manifest）提取依赖和脚本，按生态优先级 ──
+  // 第三源不再钉死 package.json：按生态文件存在性派发，多生态并存时合并抽取
+  const manifest = extractManifestSignals(REPO_ROOT);
+  baseline.dependencies = manifest.dependencies;
+  for (const cmd of manifest.buildCommands) {
+    if (!baseline.buildCommands.includes(cmd)) baseline.buildCommands.push(cmd);
   }
+  for (const cmd of manifest.testCommands) {
+    if (!baseline.testCommands.includes(cmd)) baseline.testCommands.push(cmd);
+  }
+  for (const t of manifest.techStack) {
+    if (!baseline.techStack.includes(t)) baseline.techStack.push(t);
+  }
+  baseline.manifestEcosystems = manifest.ecosystems;
 
   // Detect project type
   baseline.projectType = C.detectProjectType(REPO_ROOT);
@@ -413,6 +402,144 @@ function extractBaseline() {
 function detectProjectType() {
   // Delegate to shared implementation in constants.js for consistency with recommend.js
   return C.detectProjectType(REPO_ROOT);
+}
+
+// ── Manifest extraction（第三源：按生态分派） ───────────────────
+// 项目清单（manifest）按生态文件存在性派发，多生态项目并存抽取并合并
+function extractManifestSignals(repoRoot) {
+  const out = {
+    dependencies: { production: [], dev: [] },
+    buildCommands: [],
+    testCommands: [],
+    techStack: [],
+    ecosystems: [],
+  };
+
+  const exists = (rel) => fs.existsSync(path.join(repoRoot, rel));
+  const readSafe = (rel) => {
+    try { return fs.readFileSync(path.join(repoRoot, rel), 'utf8'); } catch { return ''; }
+  };
+  const pushUniq = (arr, v) => { if (v && !arr.includes(v)) arr.push(v); };
+
+  // Node — package.json
+  if (exists('package.json')) {
+    try {
+      const pkg = JSON.parse(readSafe('package.json'));
+      const prod = Object.keys(pkg.dependencies || {});
+      const dev = Object.keys(pkg.devDependencies || {});
+      out.dependencies.production.push(...prod);
+      out.dependencies.dev.push(...dev);
+      if (pkg.scripts) {
+        if (pkg.scripts.build) pushUniq(out.buildCommands, 'npm run build');
+        if (pkg.scripts.lint)  pushUniq(out.buildCommands, 'npm run lint');
+        if (pkg.scripts.dev)   pushUniq(out.buildCommands, 'npm run dev');
+        if (pkg.scripts.test)  pushUniq(out.testCommands,  'npm test');
+      }
+      const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
+      const known = ['react','vue','angular','svelte','next','nuxt','express','koa','fastify','nestjs'];
+      for (const fw of known) if (allDeps[fw]) pushUniq(out.techStack, `${fw}@${allDeps[fw]}`);
+      out.ecosystems.push('node');
+    } catch {}
+  }
+
+  // Python — pyproject.toml / requirements.txt / Pipfile
+  if (exists('pyproject.toml')) {
+    const txt = readSafe('pyproject.toml');
+    // [project.dependencies] or [tool.poetry.dependencies] — naïve line scan
+    const depBlock = txt.match(/\[(?:project|tool\.poetry)\.dependencies\]([\s\S]*?)(?=\n\[|$)/);
+    if (depBlock) {
+      for (const m of depBlock[1].matchAll(/^\s*([a-zA-Z0-9_\-]+)\s*=/gm)) {
+        if (m[1] !== 'python') pushUniq(out.dependencies.production, m[1]);
+      }
+    }
+    pushUniq(out.buildCommands, 'python -m build');
+    pushUniq(out.testCommands, 'pytest');
+    if (/django/i.test(txt))  pushUniq(out.techStack, 'django');
+    if (/flask/i.test(txt))   pushUniq(out.techStack, 'flask');
+    if (/fastapi/i.test(txt)) pushUniq(out.techStack, 'fastapi');
+    out.ecosystems.push('python');
+  } else if (exists('requirements.txt')) {
+    for (const line of readSafe('requirements.txt').split('\n')) {
+      const m = line.match(/^\s*([a-zA-Z0-9_\-\.]+)/);
+      if (m && !line.trim().startsWith('#')) pushUniq(out.dependencies.production, m[1]);
+    }
+    pushUniq(out.testCommands, 'pytest');
+    out.ecosystems.push('python');
+  } else if (exists('Pipfile')) {
+    out.ecosystems.push('python');
+    pushUniq(out.testCommands, 'pytest');
+  }
+
+  // Rust — Cargo.toml
+  if (exists('Cargo.toml')) {
+    const txt = readSafe('Cargo.toml');
+    const dep = txt.match(/\[dependencies\]([\s\S]*?)(?=\n\[|$)/);
+    const devDep = txt.match(/\[dev-dependencies\]([\s\S]*?)(?=\n\[|$)/);
+    if (dep)    for (const m of dep[1].matchAll(/^\s*([a-zA-Z0-9_\-]+)\s*=/gm))    pushUniq(out.dependencies.production, m[1]);
+    if (devDep) for (const m of devDep[1].matchAll(/^\s*([a-zA-Z0-9_\-]+)\s*=/gm)) pushUniq(out.dependencies.dev, m[1]);
+    pushUniq(out.buildCommands, 'cargo build');
+    pushUniq(out.testCommands,  'cargo test');
+    out.ecosystems.push('rust');
+  }
+
+  // Go — go.mod
+  if (exists('go.mod')) {
+    const txt = readSafe('go.mod');
+    const req = txt.match(/require\s*\(([\s\S]*?)\)/);
+    if (req) {
+      for (const m of req[1].matchAll(/^\s*([^\s]+)\s+v[\d.]+/gm)) pushUniq(out.dependencies.production, m[1]);
+    } else {
+      for (const m of txt.matchAll(/^require\s+([^\s]+)\s+v[\d.]+/gm)) pushUniq(out.dependencies.production, m[1]);
+    }
+    pushUniq(out.buildCommands, 'go build ./...');
+    pushUniq(out.testCommands,  'go test ./...');
+    out.ecosystems.push('go');
+  }
+
+  // Java — pom.xml / build.gradle(.kts)
+  if (exists('pom.xml')) {
+    const txt = readSafe('pom.xml');
+    for (const m of txt.matchAll(/<artifactId>([^<]+)<\/artifactId>/g)) pushUniq(out.dependencies.production, m[1]);
+    pushUniq(out.buildCommands, 'mvn package');
+    pushUniq(out.testCommands,  'mvn test');
+    if (/spring-boot/i.test(txt)) pushUniq(out.techStack, 'spring-boot');
+    out.ecosystems.push('java-maven');
+  } else if (exists('build.gradle') || exists('build.gradle.kts')) {
+    const txt = readSafe(exists('build.gradle.kts') ? 'build.gradle.kts' : 'build.gradle');
+    for (const m of txt.matchAll(/(?:implementation|api|compile|testImplementation)[\s(]+["']([^"':]+:[^"':]+)/g)) {
+      pushUniq(out.dependencies.production, m[1]);
+    }
+    const wrapper = exists('gradlew') ? './gradlew' : 'gradle';
+    pushUniq(out.buildCommands, `${wrapper} build`);
+    pushUniq(out.testCommands,  `${wrapper} test`);
+    out.ecosystems.push('java-gradle');
+  }
+
+  // Ruby — Gemfile
+  if (exists('Gemfile')) {
+    const txt = readSafe('Gemfile');
+    for (const m of txt.matchAll(/^\s*gem\s+['"]([^'"]+)['"]/gm)) pushUniq(out.dependencies.production, m[1]);
+    pushUniq(out.testCommands, 'bundle exec rspec');
+    out.ecosystems.push('ruby');
+  }
+
+  // PHP — composer.json
+  if (exists('composer.json')) {
+    try {
+      const cj = JSON.parse(readSafe('composer.json'));
+      out.dependencies.production.push(...Object.keys(cj.require || {}));
+      out.dependencies.dev.push(...Object.keys(cj['require-dev'] || {}));
+      if (cj.scripts && cj.scripts.test) pushUniq(out.testCommands, 'composer test');
+      out.ecosystems.push('php');
+    } catch {}
+  }
+
+  // Meta — Claude Code plugin
+  if (exists('.claude-plugin/plugin.json')) {
+    out.ecosystems.push('meta');
+  }
+
+  return out;
 }
 
 // ── Directory & file creation ────────────────────────────────────
