@@ -192,13 +192,13 @@ flowchart LR
 | `code_done` | 所有必选文件 + 08 存在 |
 | `blocked` | rui-state.json 中 `blocked=true` |
 
-参考文档完整度（同样由 `list.js` 判定）：
+参考文档完整度（同样由 `list.js` 判定）。判定基于文件**职责**而非裸编号——见 [rules/no-magic-number.md](../../rules/no-magic-number.md)：
 
 | 状态 | 条件 |
 |------|------|
-| `complete` | 00–04 全部存在 |
-| `partial` | 00 存在，01–04 有缺失 |
-| `stale` | 00 不存在（旧格式，需迁移） |
+| `complete` | 索引 + 全部主体章节（01–04）存在 |
+| `partial` | 索引存在，主体章节有缺失 |
+| `stale` | 索引（入口）不存在（旧格式，需迁移） |
 | `empty` | 项目目录存在但无子目录 |
 
 `recommend.js` 通过 5 层链式管线评分排序：L1 阻断 → L2 故事 SDLC 推进 → L3 源码 / 文档覆盖 → L4 健康 / 提案 / 退化 → L5 同步与分支卫生。同故事多角色缺口由 headline 吸收为子信号。
