@@ -118,21 +118,30 @@ flowchart LR
 
 类型识别由 `constants.detectProjectType` 复用源码扫描（扩展名权重 / 框架依赖 / API 模式签名 / 元项目信号）→ `frontend` / `backend` / `fullstack` / `meta` / `unknown`。结果写入 `.claude/project-profile.json`，含 `coder_formula` 与 `story_defaults`（决定每故事必选/可选文件骨架）。
 
-### 2. 互补注入（四目标增量）
+### 2. 项目薄壳生成（agents）+ 互补注入（rules）
 
-注入采用**归一化去重**：先把目标文件正文做大小写折叠 + 空白压缩 + Markdown 字符剥离，再按字符串包含 + 4 词关键短语命中判定 → 已覆盖项标注「无需补充」，**仅追加项目特有的「基线补充」章节**。
+`.claude/agents/*.md` 改为「项目薄壳」生成模式：
 
-| 注入目标 | 标记锚点 | 注入小节（按需） |
-|---------|---------|----------------|
-| `.claude/agents/coder.md` | `<!-- project-type-injected -->` | 项目+类型+Coder 公式摘要 / 技术栈 / 编码规范 / 禁止事项 / 关键文件 / 核心模块 / 构建命令 |
-| `.claude/agents/tester.md` | `<!-- project-baseline-injected -->` | 测试命令 / 构建命令 / 编码规范（测试需遵循） |
-| `.claude/agents/security.md` | `<!-- project-baseline-injected -->` | 安全约束 / 技术栈（审查范围）/ 安全敏感依赖（jsonwebtoken / bcrypt / helmet / passport / oauth …）/ 部署环境（攻击面） |
-| `.claude/rules/code-pipeline.md` | `<!-- project-baseline-injected -->` | 构建+测试命令（Gate B 验证用）/ 禁止事项 |
+- **frontmatter 原样保留** — Claude Code 加载 agent 必需的 `name/description/tools` 字段不动。
+- **角色契约外链** — body 用 Markdown 链接指向插件原文（GitHub + 本地 marketplace 缓存路径），不复制大段角色定义文本。
+- **项目档案构成主体** — 由 `rui init` 提取的项目档案（项目名 / 类型 / Coder 公式 / 技术栈 / 编码规范 / 禁止事项 / 关键文件 / 核心模块 / 构建命令 / 测试命令 / 安全约束 / 敏感依赖 / 部署信息）按角色裁剪后逐节填入，缺失项以 `> 待项目基线补充` 占位提醒人工补全。
+- **项目侧生效标志** — 每个角色尾部追加项目自定的 `## 项目侧生效标志`，直接引用本档案中的章节名，下游可验证。
+- **既有内容保护** — 已存在且**不含** `<!-- rui-init: project-agent-shell -->` 标记的文件视为用户自定义，未加 `--force` 不覆盖。
 
-注入写入位置统一在 `## 触发` 之前（agents）或文末（rules），便于 `--force` 时定位旧内容并整段替换。
+| 文件 | 项目侧主体内容 |
+|------|--------------|
+| `.claude/agents/AGENT.md` | 项目角色画像表 + 项目档案概览 |
+| `.claude/agents/pm.md` | 项目名 / 类型 / 故事骨架 / 文档根 / 分支前缀 / 项目描述 |
+| `.claude/agents/coder.md` | 技术栈 / 编码规范 / 禁止事项 / 关键文件 / 核心模块 / 构建命令 |
+| `.claude/agents/tester.md` | 测试命令 / 构建命令（验证前置）/ 编码规范（测试需遵循）|
+| `.claude/agents/security.md` | 安全约束 / 技术栈（审查范围）/ 安全敏感依赖 / 部署环境（攻击面）|
+| `.claude/agents/reporter.md` | 项目文档路径表（故事面板 / 评审 / 报告 / 记忆 / 提案）|
+| `.claude/agents/self-improve.md` | 项目基线锚点 + 项目数据源路径 |
 
-公共物料**整文件复制**而非注入（每次 init 同步最新）：
-- `agents/AGENT.md` + 6 角色（pm / coder / tester / reporter / security / self-improve）
+`.claude/rules/code-pipeline.md` 仍走「互补注入」（`<!-- project-baseline-injected -->` 锚点 + `## 基线补充` 章节追加）：rules 是跨 agent 共用约束，整文件复制 + 项目特有命令叠加更合适。注入做归一化去重（小写折叠 / 空白压缩 / Markdown 字符剥离），已覆盖项不重复写。
+
+公共物料**整文件复制**（每次 init 同步最新）：
+
 - `rules/` 全部规则（code-pipeline / doc-generation / gate-rules / delivery-gate / self-improve / import-docs / rui-claude / no-magic-number）
 - `skills/rui/formulas.md` → `.claude/formulas.md`
 - `skills/rui/coder.md` → `.claude/coder.md`
@@ -159,7 +168,7 @@ flowchart LR
 | 选项 | 行为 |
 |------|------|
 | `--dry-run` | 仅扫描+报告，不写文件；显示 `will-create` / `will-copy` 标识 |
-| `--force` | 覆盖整文件，识别既有注入锚点并整段替换；适用于基线文件升级后刷新 |
+| `--force` | 重新生成项目薄壳（覆盖 `<!-- rui-init: project-agent-shell -->` 标记的文件）+ 整文件覆盖公共物料 + 重新执行 rules 注入；不会覆盖未带薄壳标记的用户自定义 agent |
 | `--json` | 机器可读输出（基线快照 + 注入清单 + 检查结果 + 推荐下一步） |
 
 ### 5. 产物

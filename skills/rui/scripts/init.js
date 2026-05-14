@@ -265,7 +265,7 @@ function extractBaseline() {
 
     // ── 新增：提取项目描述（第一段或 ## 简介） ──
     const descMatch = content.match(/^#\s+.+\n+([^#\n][^\n]+)/m);
-    if (descMatch) baseline.projectDescription = descMatch[1].trim();
+    if (descMatch) baseline.projectDescription = descMatch[1].trim().replace(/^>\s*/, '');
 
     // Extract system capabilities
     const capSection = content.match(/## 系统能力([\s\S]*?)(?=##|$)/);
@@ -587,23 +587,31 @@ function injectBaseline(baseline, dryRun, force = false) {
     }
   }
 
-  // Copy agents from project root agents/
-  const agentsSrc = path.join(REPO_ROOT, 'agents');
-  const agentsDest = path.join(CLAUDE_DIR, 'agents');
-  if (fs.existsSync(agentsSrc)) {
-    const agentFiles = fs.readdirSync(agentsSrc).filter(f => f.endsWith('.md'));
-    for (const f of agentFiles) {
-      const src = path.join(agentsSrc, f);
-      const dest = path.join(agentsDest, f);
-      if (dryRun) {
-        results.created.push({ path: path.relative(REPO_ROOT, dest), action: force ? 'will-overwrite' : 'will-copy', source: `agents/${f}` });
-      } else {
-        const r = copyFile(src, dest, force);
-        if (r.action === 'create' || r.action === 'overwrite') results.created.push({ path: path.relative(REPO_ROOT, dest), action: r.action === 'overwrite' ? 'overwritten' : 'copied', source: `agents/${f}` });
-        else results.skipped.push({ path: path.relative(REPO_ROOT, dest), reason: r.reason });
-      }
-    }
+  // ── Project-type-aware profile (must precede agent shell generation) ──
+  const coderFormula = getCoderFormula(baseline.projectType.type);
+  const profilePath = path.join(CLAUDE_DIR, 'project-profile.json');
+  const profile = {
+    project: baseline.project,
+    type: baseline.projectType.type,
+    type_label: labelForType(baseline.projectType.type),
+    tech_signals: baseline.projectType.indicators,
+    coder_formula: coderFormula,
+    story_defaults: getStoryDefaults(baseline.projectType.type),
+    generated_at: new Date().toISOString(),
+    _doc: 'rui init 自动检测的项目画像。story 生成时以此为基准选择目录骨架和 Coder 公式。',
+  };
+
+  if (dryRun) {
+    results.created.push({ path: path.relative(REPO_ROOT, profilePath), action: 'will-create', source: 'auto-generated' });
+  } else {
+    const r = writeJson(profilePath, profile);
+    if (r.action === 'create') results.created.push({ path: path.relative(REPO_ROOT, profilePath), action: 'created', source: 'auto-generated' });
+    else results.skipped.push({ path: path.relative(REPO_ROOT, profilePath), reason: r.reason });
   }
+
+  // Generate project agent shells (high cohesion: project baseline as body;
+  // low coupling: links out to plugin role contract instead of copying)
+  generateProjectAgents(baseline, profile, dryRun, force, results);
 
   // Copy rules from project root rules/
   const rulesSrc = path.join(REPO_ROOT, 'rules');
@@ -693,91 +701,9 @@ function injectBaseline(baseline, dryRun, force = false) {
     else results.skipped.push({ path: path.relative(REPO_ROOT, localSettingsPath), reason: r.reason });
   }
 
-  // ── Project-type-aware customization ──
-
-  // Generate project-profile.json with detected type and conventions
-  const coderFormula = getCoderFormula(baseline.projectType.type);
-  const profilePath = path.join(CLAUDE_DIR, 'project-profile.json');
-  const profile = {
-    project: baseline.project,
-    type: baseline.projectType.type,
-    type_label: labelForType(baseline.projectType.type),
-    tech_signals: baseline.projectType.indicators,
-    coder_formula: coderFormula,
-    story_defaults: getStoryDefaults(baseline.projectType.type),
-    generated_at: new Date().toISOString(),
-    _doc: 'rui init 自动检测的项目画像。story 生成时以此为基准选择目录骨架和 Coder 公式。',
-  };
-
-  if (dryRun) {
-    results.created.push({ path: path.relative(REPO_ROOT, profilePath), action: 'will-create', source: 'auto-generated' });
-  } else {
-    const r = writeJson(profilePath, profile);
-    if (r.action === 'create') results.created.push({ path: path.relative(REPO_ROOT, profilePath), action: 'created', source: 'auto-generated' });
-    else results.skipped.push({ path: path.relative(REPO_ROOT, profilePath), reason: r.reason });
-  }
-
-  // Post-process coder.md with project-type-specific formula
-  const coderDest = path.join(CLAUDE_DIR, 'agents', 'coder.md');
-  if (fs.existsSync(coderDest) && !dryRun) {
-    try {
-      let coderContent = fs.readFileSync(coderDest, 'utf8');
-      if (!coderContent.includes('<!-- project-type-injected -->') || force) {
-        // Remove old injection if force re-injecting
-        if (force && coderContent.includes('<!-- project-type-injected -->')) {
-          coderContent = coderContent.replace(/<!-- project-type-injected -->[\s\S]*?(?=## 触发)/, '');
-        }
-        const injection = buildCoderInjection(baseline, profile);
-        coderContent = coderContent.replace(/(## 触发)/, injection + '\n$1');
-        fs.writeFileSync(coderDest, coderContent, 'utf8');
-        results.created.push({ path: path.relative(REPO_ROOT, coderDest), action: force ? 're-injected' : 'injected', source: `项目基线注入` });
-      }
-    } catch (e) {
-      results.skipped.push({ path: path.relative(REPO_ROOT, coderDest), reason: `注入失败: ${e.message}` });
-    }
-  }
-
-  // Post-process tester.md with project-specific test commands
-  const testerDest = path.join(CLAUDE_DIR, 'agents', 'tester.md');
-  if (fs.existsSync(testerDest) && !dryRun) {
-    try {
-      let testerContent = fs.readFileSync(testerDest, 'utf8');
-      if (!testerContent.includes('<!-- project-baseline-injected -->') || force) {
-        if (force && testerContent.includes('<!-- project-baseline-injected -->')) {
-          testerContent = testerContent.replace(/<!-- project-baseline-injected -->[\s\S]*?(?=## 触发)/, '');
-        }
-        const injection = buildTesterInjection(baseline);
-        if (injection) {
-          testerContent = testerContent.replace(/(## 触发)/, injection + '\n$1');
-          fs.writeFileSync(testerDest, testerContent, 'utf8');
-          results.created.push({ path: path.relative(REPO_ROOT, testerDest), action: force ? 're-injected' : 'injected', source: '测试基线注入' });
-        }
-      }
-    } catch (e) {
-      results.skipped.push({ path: path.relative(REPO_ROOT, testerDest), reason: `注入失败: ${e.message}` });
-    }
-  }
-
-  // Post-process security.md with project-specific constraints
-  const securityDest = path.join(CLAUDE_DIR, 'agents', 'security.md');
-  if (fs.existsSync(securityDest) && !dryRun) {
-    try {
-      let secContent = fs.readFileSync(securityDest, 'utf8');
-      if (!secContent.includes('<!-- project-baseline-injected -->') || force) {
-        if (force && secContent.includes('<!-- project-baseline-injected -->')) {
-          secContent = secContent.replace(/<!-- project-baseline-injected -->[\s\S]*?(?=## 触发)/, '');
-        }
-        const injection = buildSecurityInjection(baseline);
-        if (injection) {
-          secContent = secContent.replace(/(## 触发)/, injection + '\n$1');
-          fs.writeFileSync(securityDest, secContent, 'utf8');
-          results.created.push({ path: path.relative(REPO_ROOT, securityDest), action: force ? 're-injected' : 'injected', source: '安全基线注入' });
-        }
-      }
-    } catch (e) {
-      results.skipped.push({ path: path.relative(REPO_ROOT, securityDest), reason: `注入失败: ${e.message}` });
-    }
-  }
+  // ── Post-injection: project baseline into shared rules ──
+  // (agents/* are now generated as project shells; only rules/code-pipeline.md
+  //  remains a verbatim copy that benefits from baseline injection.)
 
   // Post-process code-pipeline.md with project-specific build/test commands
   const pipelineDest = path.join(CLAUDE_DIR, 'rules', 'code-pipeline.md');
@@ -814,6 +740,323 @@ function injectBaseline(baseline, dryRun, force = false) {
   }
 
   return results;
+}
+
+// ── Project agent shell generation ──────────────────────────────
+// 设计：项目下 .claude/agents/*.md 是「薄壳」——保留插件的 frontmatter（让 Claude Code 加载），
+// 用外链指向插件契约（低耦合：不复制角色契约文档），主体是 rui init 提取的项目档案
+// （高内聚：技术栈、命令、约束都是项目特有信息）。插件升级时项目文件不被覆盖；
+// 项目档案变化时仅本机 .claude/ 重新生成。
+
+const PROJECT_AGENT_MARKER = '<!-- rui-init: project-agent-shell -->';
+const PLUGIN_AGENTS_LOCAL = '~/.claude/plugins/marketplaces/yry/agents';
+const PLUGIN_AGENTS_REMOTE = 'https://github.com/effiy/YrY/blob/main/agents';
+
+/**
+ * Split a markdown file into { frontmatter, body }.
+ * Frontmatter is the YAML block delimited by `---` at the very top.
+ */
+function splitFrontmatter(content) {
+  if (!content || !content.startsWith('---')) return { frontmatter: '', body: content || '' };
+  const end = content.indexOf('\n---', 3);
+  if (end < 0) return { frontmatter: '', body: content };
+  const fmEnd = end + 4; // include closing '---' line
+  const after = content.indexOf('\n', fmEnd);
+  return {
+    frontmatter: content.slice(0, after >= 0 ? after : fmEnd),
+    body: after >= 0 ? content.slice(after + 1) : '',
+  };
+}
+
+/**
+ * Pull a one-line "mantra" from a plugin agent body.
+ * Looks for the first `> **口诀：xxx。** ...` blockquote line.
+ */
+function extractMantra(body) {
+  if (!body) return '';
+  const m = body.match(/^>\s+\*\*([^*]+)\*\*\s*([^\n]+)/m);
+  if (!m) return '';
+  return `> **${m[1].trim()}** ${m[2].trim()}`;
+}
+
+function bullets(items, fallback = '> 待项目基线补充') {
+  if (!items || items.length === 0) return fallback;
+  return items.map((s) => `- ${s}`).join('\n');
+}
+
+function bulletsCode(items, fallback = '> 待项目基线补充') {
+  if (!items || items.length === 0) return fallback;
+  return items.map((s) => `- \`${s}\``).join('\n');
+}
+
+function bulletsKeyFiles(items, fallback = '> 待项目基线补充') {
+  if (!items || items.length === 0) return fallback;
+  return items.map((f) => `- \`${f.path}\` — ${f.desc}`).join('\n');
+}
+
+function pluginLink(file) {
+  return `[插件 agents/${file}](${PLUGIN_AGENTS_REMOTE}/${file})（本地副本：\`${PLUGIN_AGENTS_LOCAL}/${file}\`）`;
+}
+
+/**
+ * Build a project-scoped agent shell.
+ * - Preserves the plugin's frontmatter so Claude Code can load the agent.
+ * - Replaces the body with project baseline content + a link to the plugin contract.
+ *
+ * @param {string} role       - One of: AGENT, pm, coder, tester, reporter, security, self-improve
+ * @param {object} pluginSrc  - { frontmatter, body, mantra }
+ * @param {object} baseline   - extracted baseline
+ * @param {object} profile    - project-profile.json content
+ * @returns {string} markdown content
+ */
+function buildAgentShell(role, pluginSrc, baseline, profile) {
+  const file = `${role}.md`;
+  const head = [];
+  if (pluginSrc.frontmatter) {
+    head.push(pluginSrc.frontmatter);
+    head.push('');
+  }
+  head.push(PROJECT_AGENT_MARKER);
+  head.push(`<!-- 项目: ${baseline.project} · 类型: ${profile.type_label} · 生成: rui init -->`);
+  head.push('');
+
+  const sections = [];
+
+  if (role === 'AGENT') {
+    sections.push(`# Agents（项目实例 · ${baseline.project}）`);
+    sections.push('');
+    if (pluginSrc.mantra) sections.push(pluginSrc.mantra, '');
+    sections.push(`> 角色拓扑、共用底线（证据等级 / 影响分析 / 生效标志）见 ${pluginLink('AGENT.md')}。本文件只承载项目特有的角色画像。`);
+    sections.push('');
+    sections.push('## 项目角色画像');
+    sections.push('');
+    sections.push('| Agent | 项目侧主要承载 | 项目档案 |');
+    sections.push('|-------|--------------|---------|');
+    sections.push(`| pm | 故事拆分锚定项目 \`${baseline.project}\` | [pm.md](./pm.md) |`);
+    sections.push(`| coder | ${profile.type_label}（公式 \`${profile.coder_formula.text}\`） | [coder.md](./coder.md) |`);
+    sections.push('| tester | 项目构建/测试命令 + Gate A/B | [tester.md](./tester.md) |');
+    sections.push('| security | 项目安全约束 + 敏感依赖 | [security.md](./security.md) |');
+    sections.push('| reporter | 项目文档路径 + 交叉引用 | [reporter.md](./reporter.md) |');
+    sections.push('| self-improve | 项目记忆/提案数据源 | [self-improve.md](./self-improve.md) |');
+    sections.push('');
+    sections.push('## 项目档案');
+    sections.push('');
+    sections.push(`- 项目: **${baseline.project}**`);
+    sections.push(`- 类型: **${profile.type_label}**`);
+    if (baseline.projectDescription) sections.push(`- 描述: ${baseline.projectDescription}`);
+    if (baseline.techStack.length) sections.push(`- 技术栈: ${baseline.techStack.slice(0, 10).join(', ')}`);
+    if (baseline.manifestEcosystems && baseline.manifestEcosystems.length) sections.push(`- 生态: ${baseline.manifestEcosystems.join(', ')}`);
+  }
+
+  if (role === 'pm') {
+    sections.push(`# pm — 产品决策者（项目实例 · ${baseline.project}）`);
+    sections.push('');
+    if (pluginSrc.mantra) sections.push(pluginSrc.mantra, '');
+    sections.push(`> 角色契约（触发 / 决策面 / 拆故事规则 / 反推探索 / 生效标志）见 ${pluginLink('pm.md')}。本文件只承载项目档案，下游 Agent 据此对齐故事骨架。`);
+    sections.push('');
+    sections.push('## 项目档案');
+    sections.push('');
+    sections.push('| 字段 | 值 |');
+    sections.push('|------|----|');
+    sections.push(`| 项目名 | \`${baseline.project}\` |`);
+    sections.push(`| 项目类型 | ${profile.type_label} |`);
+    sections.push(`| 故事骨架 | \`${profile.story_defaults.skeleton}\` |`);
+    sections.push(`| 必备文件 | ${(profile.story_defaults.required_files || []).join(' / ') || '—'} |`);
+    sections.push(`| 跳过文件 | ${(profile.story_defaults.skip_files || []).join(' / ') || '—'} |`);
+    sections.push(`| 文档根 | \`docs/故事任务面板/${baseline.project}/<name>/\` |`);
+    sections.push(`| 分支前缀 | \`feat/${baseline.project}-<name>\` |`);
+    sections.push('');
+    if (baseline.projectDescription) {
+      sections.push('## 项目描述');
+      sections.push('');
+      sections.push(baseline.projectDescription);
+      sections.push('');
+    }
+    sections.push('## 项目侧生效标志');
+    sections.push('');
+    sections.push(`- 故事 §1 引用项目 \`${baseline.project}\` 的角色 / 入口范围`);
+    sections.push(`- §4 任务表与 ${profile.type_label} 故事骨架（${(profile.story_defaults.required_files || []).join(' / ')}）一致`);
+    sections.push('- 跨故事依赖标注的项目模块在本档案「核心模块」内可索引');
+  }
+
+  if (role === 'coder') {
+    sections.push(`# coder — 代码实现（项目实例 · ${baseline.project}）`);
+    sections.push('');
+    if (pluginSrc.mantra) sections.push(pluginSrc.mantra, '');
+    sections.push(`> 角色契约（触发 / 工作循环 / 规则 / 审查维度 / 职责边界 / 生效标志）见 ${pluginLink('coder.md')}。本文件只承载项目档案，实现期据此约束。`);
+    sections.push('');
+    sections.push('## 项目档案');
+    sections.push('');
+    sections.push('| 字段 | 值 |');
+    sections.push('|------|----|');
+    sections.push(`| 项目 | \`${baseline.project}\` |`);
+    sections.push(`| 项目类型 | ${profile.type_label} |`);
+    sections.push(`| Coder 公式 | \`${profile.coder_formula.text}\` |`);
+    sections.push(`| 关注点 | ${profile.coder_formula.focus} |`);
+    if (baseline.manifestEcosystems && baseline.manifestEcosystems.length) sections.push(`| 生态 | ${baseline.manifestEcosystems.join(', ')} |`);
+    sections.push('');
+    sections.push('## 技术栈'); sections.push(''); sections.push(bullets(baseline.techStack)); sections.push('');
+    sections.push('## 编码规范'); sections.push(''); sections.push(bullets(baseline.codingStandards)); sections.push('');
+    sections.push('## 禁止事项'); sections.push(''); sections.push(bullets(baseline.prohibitions)); sections.push('');
+    sections.push('## 关键文件'); sections.push(''); sections.push(bulletsKeyFiles(baseline.keyFiles)); sections.push('');
+    sections.push('## 核心模块'); sections.push(''); sections.push(bullets(baseline.coreModules)); sections.push('');
+    sections.push('## 构建命令'); sections.push(''); sections.push(bulletsCode(baseline.buildCommands)); sections.push('');
+    sections.push('## 项目侧生效标志');
+    sections.push('');
+    sections.push('- 05/06 偏差表逐条对照本档案「编码规范 / 禁止事项」');
+    sections.push('- 影响链 §3 二级传递只在本档案「关键文件 / 核心模块」范围内闭合');
+    sections.push(`- 实际产物路径与 ${profile.type_label} 故事骨架（${(profile.story_defaults.required_files || []).join(' / ')}）一致`);
+  }
+
+  if (role === 'tester') {
+    sections.push(`# tester — 质量保证（项目实例 · ${baseline.project}）`);
+    sections.push('');
+    if (pluginSrc.mantra) sections.push(pluginSrc.mantra, '');
+    sections.push(`> 角色契约（触发 / 双 Gate / 用例规则 / 审查维度 / 生效标志）见 ${pluginLink('tester.md')}。本文件只承载项目命令字典，Gate A/B 验证使用。`);
+    sections.push('');
+    sections.push('## 测试命令'); sections.push(''); sections.push(bulletsCode(baseline.testCommands)); sections.push('');
+    sections.push('## 构建命令（验证前置）'); sections.push(''); sections.push(bulletsCode(baseline.buildCommands)); sections.push('');
+    sections.push('## 编码规范（测试需遵循）'); sections.push(''); sections.push(bullets(baseline.codingStandards)); sections.push('');
+    sections.push('## 项目侧生效标志');
+    sections.push('');
+    sections.push('- Gate A：04 §6 列出本档案「测试命令」中的具体命令而非占位符');
+    sections.push('- Gate B：07 验证日志包含本档案至少一条「构建命令 + 测试命令」实际输出');
+  }
+
+  if (role === 'security') {
+    sections.push(`# security — 安全专家（项目实例 · ${baseline.project}）`);
+    sections.push('');
+    if (pluginSrc.mantra) sections.push(pluginSrc.mantra, '');
+    sections.push(`> 角色契约（触发 / 注入条件 / 规则 / 审查维度 / 生效标志）见 ${pluginLink('security.md')}。本文件只承载项目特有的攻击面信息。`);
+    sections.push('');
+    sections.push('## 安全约束'); sections.push(''); sections.push(bullets(baseline.securityConstraints)); sections.push('');
+    sections.push('## 技术栈（审查范围）'); sections.push(''); sections.push(bullets(baseline.techStack)); sections.push('');
+
+    const prodDeps = (baseline.dependencies && baseline.dependencies.production) || [];
+    const sensitive = ['jsonwebtoken', 'bcrypt', 'crypto', 'helmet', 'cors', 'passport', 'oauth', 'session', 'cookie'];
+    const flagged = prodDeps.filter((d) => sensitive.some((s) => d.includes(s)));
+    sections.push('## 安全敏感依赖');
+    sections.push('');
+    if (flagged.length === 0) {
+      sections.push(`> 在 ${prodDeps.length} 个生产依赖中未匹配到敏感关键词；故事注入时若引入 auth/session/crypto 类依赖需同步追加。`);
+    } else {
+      sections.push(`共 ${prodDeps.length} 个生产依赖，下列匹配敏感关键词（${sensitive.join(' / ')}）：`);
+      for (const d of flagged) sections.push(`- \`${d}\``);
+    }
+    sections.push('');
+    sections.push('## 部署环境（攻击面）'); sections.push(''); sections.push(bullets(baseline.deploymentInfo));
+    sections.push('');
+    sections.push('## 项目侧生效标志');
+    sections.push('');
+    sections.push('- 故事 §3 表头列出本档案「安全约束」中至少一条与故事场景对齐');
+    sections.push('- 触发注入条件时 §4 安全任务能映射到本档案「安全敏感依赖」或「攻击面」');
+  }
+
+  if (role === 'reporter') {
+    sections.push(`# reporter — 过程报告与知识策展（项目实例 · ${baseline.project}）`);
+    sections.push('');
+    if (pluginSrc.mantra) sections.push(pluginSrc.mantra, '');
+    sections.push(`> 角色契约（触发 / 工作面 / 报告骨架 / 审查维度 / 生效标志）见 ${pluginLink('reporter.md')}。本文件只承载项目文档路径与命名规范。`);
+    sections.push('');
+    sections.push('## 项目文档地址');
+    sections.push('');
+    sections.push('| 类别 | 路径 |');
+    sections.push('|------|------|');
+    sections.push(`| 故事面板 | \`docs/故事任务面板/${baseline.project}/<name>/\` |`);
+    sections.push(`| 评审三件 | \`02-后端评审.md\` / \`03-前端评审.md\` / \`04-测试评审.md\` |`);
+    sections.push(`| 实施报告 | \`05-后端实施报告.md\` / \`06-前端实施报告.md\` |`);
+    sections.push(`| 测试报告 | \`07-测试报告.md\` |`);
+    sections.push(`| 自改进 | \`08-自改进复盘.md\` |`);
+    sections.push(`| 记忆 | \`.memory/execution-memory.jsonl\` / \`.memory/rui-state.json\` |`);
+    sections.push(`| 提案 | \`.improvement/proposals.jsonl\` |`);
+    sections.push('');
+    sections.push('## 项目侧生效标志');
+    sections.push('');
+    sections.push(`- 三报告交叉引用使用本档案声明的相对路径，不出现绝对路径或 \`docs/<name>/\` 漏 \`${baseline.project}/\` 前缀`);
+    sections.push('- 策展 commit 信息含项目名前缀 `' + baseline.project + ':`');
+  }
+
+  if (role === 'self-improve') {
+    sections.push(`# self-improve — 自改进管线（项目实例 · ${baseline.project}）`);
+    sections.push('');
+    if (pluginSrc.mantra) sections.push(pluginSrc.mantra, '');
+    sections.push(`> 角色契约（触发 / 三段闭环 / D0–D7 诊断 / 提案矩阵 / 生效标志）见 ${pluginLink('self-improve.md')}。本文件只承载项目数据源与基线锚点。`);
+    sections.push('');
+    sections.push('## 项目基线锚点（诊断依据）');
+    sections.push('');
+    sections.push('| 锚点 | 路径 |');
+    sections.push('|------|------|');
+    sections.push('| 哲学 | [`CLAUDE.md`](../../CLAUDE.md) |');
+    sections.push('| 系统视图 | [`README.md`](../../README.md) |');
+    sections.push('| 项目画像 | [`.claude/project-profile.json`](../project-profile.json) |');
+    sections.push('| 共用规则 | [`.claude/rules/`](../rules/) |');
+    sections.push('| 角色画像 | [`.claude/agents/`](./AGENT.md) |');
+    sections.push('');
+    sections.push('## 项目数据源');
+    sections.push('');
+    sections.push(`- 记忆: \`docs/故事任务面板/${baseline.project}/<name>/.memory/execution-memory.jsonl\``);
+    sections.push(`- 状态: \`docs/故事任务面板/${baseline.project}/<name>/.memory/rui-state.json\``);
+    sections.push(`- 提案: \`docs/故事任务面板/${baseline.project}/<name>/.improvement/proposals.jsonl\``);
+    sections.push(`- init 记忆: \`docs/故事任务面板/.init-memory.json\``);
+    sections.push('');
+    sections.push('## 项目侧生效标志');
+    sections.push('');
+    sections.push('- 08 §0 基线校准表引用本档案三类锚点（CLAUDE.md / project-profile / rules）');
+    sections.push(`- 提案的「类型」字段与项目类型 \`${profile.type}\` 适配（前端不出 backend-only 提案）`);
+  }
+
+  return head.join('\n') + sections.join('\n') + '\n';
+}
+
+/**
+ * Generate all 7 project agent shells under .claude/agents/.
+ * Replaces the previous "verbatim copy + tail injection" approach.
+ */
+function generateProjectAgents(baseline, profile, dryRun, force, results) {
+  const agentsSrc = path.join(REPO_ROOT, 'agents');
+  const agentsDest = path.join(CLAUDE_DIR, 'agents');
+  const roles = ['AGENT', 'pm', 'coder', 'tester', 'reporter', 'security', 'self-improve'];
+
+  for (const role of roles) {
+    const file = `${role}.md`;
+    const srcPath = path.join(agentsSrc, file);
+    const destPath = path.join(agentsDest, file);
+    const rel = path.relative(REPO_ROOT, destPath);
+
+    if (!fs.existsSync(srcPath)) {
+      results.skipped.push({ path: rel, reason: `插件源文件不存在: agents/${file}` });
+      continue;
+    }
+
+    // Check if dest is a project-shell (regenerate ok) or user-customized (preserve)
+    const exists = fs.existsSync(destPath);
+    if (exists && !force) {
+      const existing = fs.readFileSync(destPath, 'utf8');
+      const isOurShell = existing.includes(PROJECT_AGENT_MARKER);
+      if (!isOurShell) {
+        // User-customized — never overwrite without --force
+        results.skipped.push({ path: rel, reason: '已存在且非 rui init 生成（使用 --force 覆盖）' });
+        continue;
+      }
+      // Our shell exists — skip unless --force, since baseline may have changed
+      // but user might have added project-specific notes below the shell
+      results.skipped.push({ path: rel, reason: '已存在 rui init 薄壳（--force 重新生成以同步基线）' });
+      continue;
+    }
+
+    const srcContent = fs.readFileSync(srcPath, 'utf8');
+    const fm = splitFrontmatter(srcContent);
+    const mantra = extractMantra(fm.body);
+    const shell = buildAgentShell(role, { frontmatter: fm.frontmatter, body: fm.body, mantra }, baseline, profile);
+
+    if (dryRun) {
+      results.created.push({ path: rel, action: force && exists ? 'will-overwrite' : 'will-create', source: `项目薄壳 ← agents/${file}` });
+    } else {
+      ensureDir(path.dirname(destPath));
+      fs.writeFileSync(destPath, shell, 'utf8');
+      results.created.push({ path: rel, action: force && exists ? 'regenerated' : 'generated', source: `项目薄壳 ← agents/${file}` });
+    }
+  }
 }
 
 // ── Deduplication helpers ────────────────────────────────────────
@@ -856,209 +1099,10 @@ function filterNewItems(items, existingContent) {
   return items.filter(item => !isAlreadyPresent(item, existingContent));
 }
 
-/**
- * Filter key-value items (like keyFiles with path+desc).
- * @param {Array<{path: string, desc: string}>} items
- * @param {string} existingContent
- * @returns {Array<{path: string, desc: string}>}
- */
-function filterNewKeyFiles(items, existingContent) {
-  if (!existingContent || !items || items.length === 0) return items;
-  return items.filter(f => !isAlreadyPresent(f.path, existingContent));
-}
-
 // ── Injection content builders ──────────────────────────────────
-
-function buildCoderInjection(baseline, profile) {
-  // Read existing content from the target file to avoid duplication
-  const coderDest = path.join(CLAUDE_DIR, 'agents', 'coder.md');
-  const existingContent = fs.existsSync(coderDest) ? fs.readFileSync(coderDest, 'utf8') : '';
-
-  const lines = ['<!-- project-type-injected -->'];
-
-  // Summary line — always inject (lightweight, provides quick reference)
-  lines.push(`> **项目**: ${baseline.project} · **类型**: ${profile.type_label} · **Coder 公式**: \`${profile.coder_formula.text}\` · **关注**: ${profile.coder_formula.focus}`);
-
-  // Only inject sections with genuinely new (complementary) content
-  const newTechStack = filterNewItems(baseline.techStack, existingContent);
-  if (newTechStack.length > 0) {
-    lines.push('');
-    lines.push('## 基线补充：技术栈');
-    lines.push('');
-    for (const t of newTechStack) {
-      lines.push(`- ${t}`);
-    }
-  }
-
-  const newStandards = filterNewItems(baseline.codingStandards, existingContent);
-  if (newStandards.length > 0) {
-    lines.push('');
-    lines.push('## 基线补充：编码规范');
-    lines.push('');
-    for (const s of newStandards) {
-      lines.push(`- ${s}`);
-    }
-  }
-
-  const newProhibitions = filterNewItems(baseline.prohibitions, existingContent);
-  if (newProhibitions.length > 0) {
-    lines.push('');
-    lines.push('## 基线补充：禁止事项');
-    lines.push('');
-    for (const p of newProhibitions) {
-      lines.push(`- ${p}`);
-    }
-  }
-
-  const newKeyFiles = filterNewKeyFiles(baseline.keyFiles, existingContent);
-  if (newKeyFiles.length > 0) {
-    lines.push('');
-    lines.push('## 基线补充：关键文件');
-    lines.push('');
-    for (const f of newKeyFiles) {
-      lines.push(`- \`${f.path}\` — ${f.desc}`);
-    }
-  }
-
-  const newModules = filterNewItems(baseline.coreModules, existingContent);
-  if (newModules.length > 0) {
-    lines.push('');
-    lines.push('## 基线补充：核心模块');
-    lines.push('');
-    for (const m of newModules) {
-      lines.push(`- ${m}`);
-    }
-  }
-
-  const newBuildCmds = filterNewItems(baseline.buildCommands, existingContent);
-  if (newBuildCmds.length > 0) {
-    lines.push('');
-    lines.push('## 基线补充：构建命令');
-    lines.push('');
-    for (const cmd of newBuildCmds) {
-      lines.push(`- \`${cmd}\``);
-    }
-  }
-
-  // If no complementary content was found, return minimal injection (just the summary)
-  if (lines.length <= 2) {
-    lines.push('');
-    lines.push('> 基线信息已在插件文件中完整覆盖，无需补充注入。');
-  }
-
-  lines.push('');
-  return lines.join('\n');
-}
-
-function buildTesterInjection(baseline) {
-  // Read existing content from the target file to avoid duplication
-  const testerDest = path.join(CLAUDE_DIR, 'agents', 'tester.md');
-  const existingContent = fs.existsSync(testerDest) ? fs.readFileSync(testerDest, 'utf8') : '';
-
-  const lines = ['<!-- project-baseline-injected -->'];
-  let hasContent = false;
-
-  const newTestCmds = filterNewItems(baseline.testCommands, existingContent);
-  if (newTestCmds.length > 0) {
-    lines.push('');
-    lines.push('## 基线补充：测试命令');
-    lines.push('');
-    for (const cmd of newTestCmds) {
-      lines.push(`- \`${cmd}\``);
-    }
-    hasContent = true;
-  }
-
-  const newBuildCmds = filterNewItems(baseline.buildCommands, existingContent);
-  if (newBuildCmds.length > 0) {
-    lines.push('');
-    lines.push('## 基线补充：构建命令');
-    lines.push('');
-    for (const cmd of newBuildCmds) {
-      lines.push(`- \`${cmd}\``);
-    }
-    hasContent = true;
-  }
-
-  const newStandards = filterNewItems(baseline.codingStandards, existingContent);
-  if (newStandards.length > 0) {
-    lines.push('');
-    lines.push('## 基线补充：编码规范（测试需遵循）');
-    lines.push('');
-    for (const s of newStandards) {
-      lines.push(`- ${s}`);
-    }
-    hasContent = true;
-  }
-
-  if (!hasContent) return null;
-  lines.push('');
-  return lines.join('\n');
-}
-
-function buildSecurityInjection(baseline) {
-  // Read existing content from the target file to avoid duplication
-  const securityDest = path.join(CLAUDE_DIR, 'agents', 'security.md');
-  const existingContent = fs.existsSync(securityDest) ? fs.readFileSync(securityDest, 'utf8') : '';
-
-  const lines = ['<!-- project-baseline-injected -->'];
-  let hasContent = false;
-
-  const newConstraints = filterNewItems(baseline.securityConstraints, existingContent);
-  if (newConstraints.length > 0) {
-    lines.push('');
-    lines.push('## 基线补充：安全约束');
-    lines.push('');
-    for (const c of newConstraints) {
-      lines.push(`- ${c}`);
-    }
-    hasContent = true;
-  }
-
-  const newTechStack = filterNewItems(baseline.techStack, existingContent);
-  if (newTechStack.length > 0) {
-    lines.push('');
-    lines.push('## 基线补充：技术栈（安全审查范围）');
-    lines.push('');
-    for (const t of newTechStack) {
-      lines.push(`- ${t}`);
-    }
-    hasContent = true;
-  }
-
-  const prodDeps = baseline.dependencies.production || [];
-  if (prodDeps.length > 0) {
-    // Only highlight security-sensitive deps that aren't already mentioned
-    const secSensitive = ['jsonwebtoken', 'bcrypt', 'crypto', 'helmet', 'cors', 'passport', 'oauth', 'session', 'cookie'];
-    const highlighted = prodDeps.filter(d => secSensitive.some(s => d.includes(s)));
-    const newHighlighted = filterNewItems(highlighted, existingContent);
-    if (newHighlighted.length > 0) {
-      lines.push('');
-      lines.push('## 基线补充：安全敏感依赖');
-      lines.push('');
-      lines.push(`共 ${prodDeps.length} 个生产依赖。以下为安全敏感项（未在插件文件中提及）：`);
-      for (const d of newHighlighted) {
-        lines.push(`- \`${d}\` — 安全敏感`);
-      }
-      hasContent = true;
-    }
-  }
-
-  const newDeployInfo = filterNewItems(baseline.deploymentInfo, existingContent);
-  if (newDeployInfo.length > 0) {
-    lines.push('');
-    lines.push('## 基线补充：部署环境（攻击面）');
-    lines.push('');
-    for (const d of newDeployInfo) {
-      lines.push(`- ${d}`);
-    }
-    hasContent = true;
-  }
-
-  if (!hasContent) return null;
-  lines.push('');
-  return lines.join('\n');
-}
+// 仅 rules/code-pipeline.md 的注入保留：rules 是跨 agent 共用约束，按基线补充更合适。
+// agents/* 的注入在 1.15 改为「项目薄壳」（见 buildAgentShell / generateProjectAgents），
+// 项目特有信息直接构成主体内容，不再做尾部追加。
 
 function buildPipelineInjection(baseline) {
   // Read existing content from the target file to avoid duplication
@@ -1363,12 +1407,13 @@ async function main() {
     console.log('选项:');
     console.log('  --json       JSON 格式输出');
     console.log('  --dry-run    仅检查，不写入文件');
-    console.log('  --force      强制覆盖已有文件并重新注入基线');
+    console.log('  --force      重新生成项目薄壳并覆盖公共物料');
     console.log('');
-    console.log('流程: 基线提取 → 基线注入 → 就绪检查(8项) → 交付');
+    console.log('流程: 基线提取 → 项目薄壳生成（agents）+ 公共物料复制 + rules 互补注入 → 就绪检查(8 项)');
     console.log('');
-    console.log('--force 模式：覆盖所有已有文件，重新从 CLAUDE.md/README.md 提取');
-    console.log('并注入项目特有信息到 agents/rules 文件。适用于基线文件更新后刷新。');
+    console.log('--force 模式：覆盖标记为 rui init 薄壳的 .claude/agents/*.md（不动用户自定义文件），');
+    console.log('整文件刷新 .claude/rules/、formulas.md、coder.md、配置文件，并重新执行 rules 注入。');
+    console.log('用户在生成的薄壳上手工补充的内容会被覆盖；如需保留请删除 <!-- rui-init: project-agent-shell --> 标记。');
     process.exit(0);
   }
 

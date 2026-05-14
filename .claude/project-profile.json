@@ -1,0 +1,27 @@
+{
+  "project": "YrY",
+  "type": "meta",
+  "type_label": "元项目(插件/配置)",
+  "tech_signals": [],
+  "coder_formula": {
+    "text": "模块 → 接口 → 数据流",
+    "variant": "插件/配置",
+    "focus": "规则完整性与集成契约"
+  },
+  "story_defaults": {
+    "skeleton": "fullstack",
+    "required_files": [
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08"
+    ],
+    "skip_files": []
+  },
+  "generated_at": "2026-05-14T03:46:07.492Z",
+  "_doc": "rui init 自动检测的项目画像。story 生成时以此为基准选择目录骨架和 Coder 公式。"
+}
