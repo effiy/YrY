@@ -55,10 +55,9 @@ function collectStats() {
     }
   }
 
-  // skills: 仓库内的 skills/ 而非 .claude/skills/（该目录历史上不存在），
-  // 仅在存在时统计，否则保留默认 0。
+  // skills: 仓库根目录的 skills/
   {
-    const sdir = path.join(CLAUDE_DIR, 'skills');
+    const sdir = path.join(process.cwd(), 'skills');
     if (fs.existsSync(sdir)) {
       const entries = [];
       const skillDirs = fs.readdirSync(sdir).filter(f => {

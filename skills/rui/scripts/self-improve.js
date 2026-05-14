@@ -178,20 +178,27 @@ function computeMetrics(records) {
 }
 
 async function readProposals() {
-  // Aggregate from all per-story .improvement/ directories
   const proposals = [];
   try {
-    const entries = await fsp.readdir(STORIES_DIR, { withFileTypes: true });
-    for (const entry of entries) {
-      if (!entry.isDirectory() || entry.name.startsWith('.')) continue;
-      const file = storyProposalsFile(entry.name);
+    const projectDirs = await fsp.readdir(STORIES_DIR, { withFileTypes: true });
+    for (const proj of projectDirs) {
+      if (!proj.isDirectory() || proj.name.startsWith('.')) continue;
+      const projPath = path.join(STORIES_DIR, proj.name);
       try {
-        const text = await fsp.readFile(file, 'utf8');
-        const lines = text.split('\n').filter(l => l.trim());
-        for (const line of lines) {
-          try { proposals.push(JSON.parse(line)); } catch { /* skip */ }
+        const storyDirs = await fsp.readdir(projPath, { withFileTypes: true });
+        for (const story of storyDirs) {
+          if (!story.isDirectory() || story.name.startsWith('.')) continue;
+          const fullName = `${proj.name}-${story.name}`;
+          const file = storyProposalsFile(fullName);
+          try {
+            const text = await fsp.readFile(file, 'utf8');
+            const lines = text.split('\n').filter(l => l.trim());
+            for (const line of lines) {
+              try { proposals.push(JSON.parse(line)); } catch { /* skip */ }
+            }
+          } catch { /* story has no proposals yet */ }
         }
-      } catch { /* story has no proposals yet */ }
+      } catch { /* skip project */ }
     }
   } catch { /* no stories dir */ }
   return proposals;
@@ -629,7 +636,7 @@ async function cmdFeedback(proposalId, rating, note) {
     date: new Date().toISOString().split('T')[0],
   });
 
-  await writeProposals(proposals);
+  await writeProposals(proposals, proposals[idx].story_name);
   console.log(`Feedback recorded for ${proposalId}: ${rating}${note ? ` — "${note}"` : ''}`);
 }
 
@@ -779,8 +786,11 @@ async function main() {
         const origLog = console.log;
         const captured = [];
         console.log = (...a) => captured.push(a.map(String).join(' '));
-        cmdSnapshot(jsonOutput);
-        console.log = origLog;
+        try {
+          cmdSnapshot(jsonOutput);
+        } finally {
+          console.log = origLog;
+        }
         fs.writeFileSync(outputPath, captured.join('\n'), 'utf8');
         console.error(`Saved to: ${outputPath}`);
       } else {

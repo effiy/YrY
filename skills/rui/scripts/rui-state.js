@@ -10,12 +10,6 @@ const path = require('path');
 const REPO_ROOT = process.cwd();
 const C = require('./constants.js');
 
-function resolveTarget(nameOrPath) {
-  try {
-    return C.resolveDocPath(nameOrPath, REPO_ROOT);
-  } catch { return null; }
-}
-
 function storyMemoryDir(name) {
   const doc = C.resolveDocPath(name, REPO_ROOT);
   if (!doc.valid) throw new Error(`Invalid path: ${doc.reason}`);

@@ -39,12 +39,12 @@ function findProjectRoot(startDir) {
  */
 async function findMdFiles(dir, projectRoot, exts = ['md'], excludeDirs = []) {
   const extSet = new Set(exts.map(e => e.toLowerCase()));
-  const defaultExcludes = new Set(['.git', 'node_modules']);
+  const defaultExcludes = new Set(['.git', 'node_modules', '.claude-plugin']);
   excludeDirs.forEach(d => defaultExcludes.add(d));
 
   const results = [];
 
-  async function traverse(currentDir, inClaudeDir = false) {
+  async function traverse(currentDir) {
     let entries;
     try {
       entries = await fsp.readdir(currentDir, { withFileTypes: true });
@@ -55,15 +55,10 @@ async function findMdFiles(dir, projectRoot, exts = ['md'], excludeDirs = []) {
       const fullPath = path.join(currentDir, entry.name);
 
       if (entry.isDirectory() && !entry.isSymbolicLink()) {
-        const nextInClaude = entry.name === '.claude' || inClaudeDir;
-        await traverse(fullPath, nextInClaude);
+        await traverse(fullPath);
       } else if (entry.isFile()) {
-        if (inClaudeDir) {
-          results.push(fullPath);
-        } else {
-          const ext = path.extname(entry.name).toLowerCase().slice(1);
-          if (extSet.has(ext)) results.push(fullPath);
-        }
+        const ext = path.extname(entry.name).toLowerCase().slice(1);
+        if (extSet.has(ext)) results.push(fullPath);
       }
     }
   }

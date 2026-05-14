@@ -79,7 +79,7 @@ async function cmdCheck(opts) {
   const state = await readState(opts.name);
   if (!state) {
     const result = { story: opts.name, has_state: false, delivery_complete: false, missing: DELIVERY_STEPS };
-    console.log(JSON.stringify(result));
+    console.log(JSON.stringify(result, null, opts.json ? 0 : 2));
     return;
   }
   const dp = state.delivery_pipeline || initDeliveryPipeline();

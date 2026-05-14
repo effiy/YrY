@@ -223,7 +223,7 @@ function generate(profile, opts) {
 
 function verify(profile) {
   const checks = [
-    { id: 'README.md', validate: () => fileContains(path.join(REPO_ROOT, 'README.md'), [new RegExp(profile.project)]) },
+    { id: 'README.md', validate: () => fileContains(path.join(REPO_ROOT, 'README.md'), [profile.project]) },
     { id: '故事面板目录', validate: () => ({ ok: fs.existsSync(path.join(REPO_ROOT, 'docs', '故事任务面板')), detail: fs.existsSync(path.join(REPO_ROOT, 'docs', '故事任务面板')) ? '✓' : '目录不存在' }) },
   ];
 
@@ -289,7 +289,10 @@ function writeInitMemory(profile, verifyResult) {
 function fileContains(fp, patterns) {
   if (!fs.existsSync(fp)) return { ok: false, detail: '文件不存在' };
   const c = fs.readFileSync(fp, 'utf8');
-  const missing = patterns.filter(p => !p.test(c));
+  const missing = patterns.filter(p => {
+    if (typeof p === 'string') return !c.includes(p);
+    return !p.test(c);
+  });
   return missing.length === 0 ? { ok: true, detail: '✓' } : { ok: false, detail: `缺失关键内容` };
 }
 

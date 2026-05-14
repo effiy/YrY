@@ -14,7 +14,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 
 const PROJECT_ROOT = process.cwd();
 const SUMMARY_FILE = path.join(PROJECT_ROOT, '.delivery-sync-summary.tmp');
@@ -164,13 +164,13 @@ function main() {
   const tmpFile = path.join(PROJECT_ROOT, '.delivery-notify-content.tmp');
   try {
     fs.writeFileSync(tmpFile, message, 'utf8');
-    execSync(
-      `node "${sendScript}" --agent rui --name "${active.name}" --content-file "${tmpFile}"`,
+    execFileSync(
+      'node', [sendScript, '--agent', 'rui', '--name', active.name, '--content-file', tmpFile],
       { cwd: PROJECT_ROOT, stdio: 'inherit', timeout: 30000 }
     );
     // 标记步骤完成
     const gateScript = path.join(PROJECT_ROOT, 'skills', 'rui', 'scripts', 'delivery-gate.js');
-    execSync(`node "${gateScript}" mark --name "${active.name}" --step notification_sent`, { cwd: PROJECT_ROOT, stdio: 'pipe', timeout: 5000 });
+    execFileSync('node', [gateScript, 'mark', '--name', active.name, '--step', 'notification_sent'], { cwd: PROJECT_ROOT, stdio: 'pipe', timeout: 5000 });
   } catch (err) {
     // 通知失败不阻断会话
     console.error(`wework-bot hook: 发送失败 — ${err.message}`);

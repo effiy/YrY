@@ -92,7 +92,9 @@ function buildSendMessageHeaders(token, bodyByteLength) {
  *   webhookKey: string|null,
  *   content: string|null,
  *   contentFile: string|null,
- *   name: string|null
+ *   name: string|null,
+ *   noSend: boolean,
+ *   project: string|null
  * }} */
 const options = {
   token: readApiXTokenFromEnv(),
@@ -212,8 +214,7 @@ function readJsonIfExists(filePath) {
       return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
     }
   } catch (error) {
-    console.error(`Error: failed to read config ${filePath}: ${error.message}`);
-    process.exit(1);
+    console.error(`Warning: failed to read config ${filePath}: ${error.message}`);
   }
   return null;
 }
@@ -288,8 +289,6 @@ function applyRobotConfig() {
 }
 
 applyRobotConfig();
-
-options.token = readApiXTokenFromEnv();
 
 if (!options.apiUrl) {
   options.apiUrl = DEFAULT_API_URL;
@@ -456,6 +455,7 @@ function request(apiUrl, token, data) {
     });
 
     req.on('error', reject);
+    req.setTimeout(30000, () => { req.destroy(); reject(new Error('Request timeout')); });
     req.write(postData);
     req.end();
   });

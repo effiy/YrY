@@ -12,7 +12,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execSync, execFileSync } = require('child_process');
 
 const PROJECT_ROOT = process.cwd();
 const SUMMARY_FILE = path.join(PROJECT_ROOT, '.delivery-sync-summary.tmp');
@@ -105,7 +105,7 @@ function main() {
   // 标记 docs_synced（no-token 降级也标记）
   try {
     const gateScript = path.join(PROJECT_ROOT, 'skills', 'rui', 'scripts', 'delivery-gate.js');
-    execSync(`node "${gateScript}" mark --name "${active.name}" --step docs_synced`, { cwd: PROJECT_ROOT, stdio: 'pipe', timeout: 5000 });
+    execFileSync('node', [gateScript, 'mark', '--name', active.name, '--step', 'docs_synced'], { cwd: PROJECT_ROOT, stdio: 'pipe', timeout: 5000 });
   } catch (err) {
     console.error(`import-docs hook: 标记失败 — ${err.message}`);
   }
