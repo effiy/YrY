@@ -1,8 +1,8 @@
 # coder 工作手册
 
-> **口诀：知目录、循公式、明数据。** coder 在 rui 管线里要回答三件事——**写到哪个目录**、**按哪份公式**、**附属数据怎么落**。
->
-> **配套**：故事文档公式（F.story.* / F.supp.*）见 [formulas.md](./formulas.md)；强制约束见 [rules/doc-generation.md](../../rules/doc-generation.md)；coder 角色契约见 [agents/coder.md](../../agents/coder.md)。
+> 三件事：**写到哪个目录**、**按哪份公式**、**附属数据怎么落**。
+
+故事文档公式（F.story.\* / F.supp.\*）见 [formulas.md](./formulas.md)；强制约束见 [rules/doc-generation.md](../../rules/doc-generation.md)；coder 角色契约见 [agents/coder.md](../../agents/coder.md)。
 
 ## 文档分层
 
@@ -23,7 +23,7 @@ docs/
 └── 故事任务面板/<Project>/<name>/   ← 执行：主线 + 通知 + 补充
 ```
 
-**命名规则**：`<Project>` 大驼峰（`YiWeb`），`<name>` kebab-case（`user-login`），总路径 ≤ 96 字符。CLI 输入 `<Project>-<name>`（如 `YiWeb-user-login`），脚本内分解为路径 `<Project>/<name>`。
+**命名规则**：`<Project>` 大驼峰（`YiWeb`），`<name>` kebab-case（`user-login`）。CLI 输入 `<Project>-<name>`（如 `YiWeb-user-login`），脚本内分解为路径 `<Project>/<name>`。
 
 ## 故事拆分
 
@@ -37,10 +37,10 @@ pm 收到需求后按决策树判断：
 
 | 拆分信号 | 处理 |
 |---------|------|
-| ≥2 独立角色（管理员/用户/开发者） | 按角色拆 |
-| ≥2 独立入口（Web/API/CLI/后台） | 按入口拆 |
+| 涉及多个独立角色（管理员/用户/开发者） | 按角色拆 |
+| 涉及多个独立入口（Web/API/CLI/后台） | 按入口拆 |
 | 子需求可独立交付并产生用户价值 | 拆为独立故事 |
-| 跨前后端且任一端 > 3 模块 | 前端故事 + 后端故事 |
+| 跨前后端且任一端涉及多个模块 | 前端故事 + 后端故事 |
 | 单一场景不可再分 | 不拆 |
 
 约束：每故事独立 AC；故事间依赖显式标注于 §1；逐故事串行；一个函数 / 一个 API 不构成独立故事。
@@ -70,7 +70,7 @@ pm 收到需求后按决策树判断：
 .memory/rui-state.json             ← 管线状态（覆盖）
 ```
 
-> **编号即顺序**：文件名前缀 `00`–`08` 对应管线阶段顺序，脚本按此编号判定故事状态。
+> **编号即顺序**：文件名编号前缀对应管线阶段顺序，脚本按此编号判定故事状态。
 
 字段契约见本文 [§数据契约](#数据契约)。
 
@@ -130,14 +130,14 @@ flowchart LR
 
 | 状态 | 条件 |
 |------|------|
-| `not_started` | `01-故事任务.md` 不存在 |
-| `docs_in_progress` | `01-故事任务.md` 存在，必选文档（01/02或03/04）有缺失 |
+| `not_started` | 故事任务文档不存在 |
+| `docs_in_progress` | 故事任务文档存在，技术评审或测试评审有缺失 |
 | `docs_done` | 所有必选文档文件存在 |
-| `code_in_progress` | 文档齐全 + 部分实施报告（05/06/07）存在 |
-| `code_done` | 所有必选文件 + `08-自改进复盘.md` 存在 |
+| `code_in_progress` | 文档齐全，部分实施报告存在 |
+| `code_done` | 所有必选文件及自改进复盘存在 |
 | `blocked` | `rui-state.json` 中 `blocked=true` |
 
-`recommend.js` 通过 5 层链式管线评分排序：L1 阻断 → L2 故事 SDLC 推进 → L3 源码 / 文档覆盖 → L4 健康 / 提案 / 退化 → L5 同步与分支卫生。
+`recommend.js` 按链式管线分层评分排序：阻断 → 故事推进 → 覆盖 → 健康 → 同步。
 
 ## 写作原则
 
@@ -153,7 +153,7 @@ flowchart LR
 
 ## 文档退化信号
 
-`recommend.js` 在 L3 检测以下信号，推荐对应动作：
+`recommend.js` 在覆盖分析层检测以下信号，推荐对应动作：
 
 | 信号 | 判定 | 推荐 |
 |------|------|------|
@@ -166,7 +166,7 @@ flowchart LR
 
 ## 数据契约
 
-> **口诀：脚本写、字段定、不手编。** 每个故事目录的 `.memory/` 与 `.improvement/` 由脚本管理，字段由本节唯一定义。
+> 每个故事目录的 `.memory/` 与 `.improvement/` 由脚本管理，字段由本节唯一定义。
 
 脚本位于 `skills/rui/scripts/`，人工不编辑这些文件。
 
@@ -244,11 +244,11 @@ self-improve 引擎追加写入。
 | `problem_source` / `evidence` | string | 数据证据 |
 | `current_state` / `target_state` | string | 当前 → 目标 |
 | `s1_metrics` | object | 耦合 / 内聚 / 边界 |
-| `s2_metrics` | object | 阻断率 / P0 轮次 |
+| `s2_metrics` | object | 阻断率 / 问题轮次 |
 | `feedback` | `[{rating,note,date}]` | 反馈记录 |
 | `eval_result` | improved\|degraded\|neutral\|pending | 效果评估 |
 
-效果评估需前后各 ≥3 条执行记忆才有中等置信度，规则见 [rules/self-improve.md](../../rules/self-improve.md) E1–E4。
+效果评估需前后各足够条数的执行记忆才有中等置信度，规则见 [rules/self-improve.md](../../rules/self-improve.md)。
 
 ### 数据流
 
@@ -259,7 +259,7 @@ flowchart LR
     C --> D[proposals.jsonl]
     D --> E1["recommend.js<br/>推荐排序"]
     D --> E2["/rui update<br/>上下文"]
-    D --> E3["loop.js §L<br/>追加"]
+    D --> E3["loop.js<br/>追加"]
 ```
 
 > 节点文本含 `/` 必须用 `"…"` 包裹，避免与平行四边形语法 `[/…/]` 冲突。

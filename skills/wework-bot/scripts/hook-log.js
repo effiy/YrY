@@ -135,6 +135,7 @@ function buildMessage(info) {
 function main() {
   const active = findActiveStory();
   if (!active) {
+    process.stderr.write('hook-log: 无活跃故事（docs/故事任务面板 为空或 rui-state.json 缺失/过期），跳过日志追加\n');
     process.exit(0);
   }
 

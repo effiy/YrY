@@ -2,7 +2,7 @@
 
 // rui init — 建立项目基线
 //
-// 三段式（口诀：探—生—验）
+// 三段式：探—生—验
 //   1. detect()    扫描项目 → profile（事实层）
 //   2. generate()  按 profile 生成产物（生成层）
 //   3. verify()    就绪检查（验证层）
@@ -12,7 +12,7 @@
 //   - 惜注意：模板外置（init-templates.js），本文件只有流程
 //   - 验现实：verify() 失败即 exit 1
 //
-// 用法: node init.js [--dry-run] [--json] [--help]
+// 用法: node init.js [--json] [--help]
 
 'use strict';
 
@@ -33,8 +33,7 @@ function detect() {
   const manifest = extractManifest(REPO_ROOT);
   const security = detectSecuritySurface(REPO_ROOT);
   const testFw   = detectTestFramework(REPO_ROOT, manifest);
-  const ciConfig = detectCIConfig(REPO_ROOT);
-  const arch     = detectArchitecture(REPO_ROOT, manifest);
+  const arch = detectArchitecture(REPO_ROOT, manifest);
 
   return {
     project,
@@ -52,7 +51,6 @@ function detect() {
     },
     security_surface: security,
     test_framework:   testFw,
-    ci_config:        ciConfig,
     architecture:     arch,
     generated_at:     new Date().toISOString(),
   };
@@ -129,29 +127,6 @@ function detectTestFramework(root, manifest) {
   return result;
 }
 
-function detectCIConfig(root) {
-  const result = { provider: null, config_file: null, has_deploy: false };
-  const checks = [
-    { provider: 'github-actions', paths: ['.github/workflows'] },
-    { provider: 'gitlab-ci', paths: ['.gitlab-ci.yml'] },
-    { provider: 'jenkins', paths: ['Jenkinsfile'] },
-  ];
-  for (const check of checks) {
-    for (const p of check.paths) {
-      if (fs.existsSync(path.join(root, p))) {
-        result.provider = check.provider;
-        result.config_file = p;
-        const content = fs.statSync(path.join(root, p)).isDirectory()
-          ? C.sh(`cat ${path.join(root, p)}/* 2>/dev/null | head -200`, '', root)
-          : tryRead(path.join(root, p));
-        if (/deploy|release|publish/i.test(content)) result.has_deploy = true;
-        return result;
-      }
-    }
-  }
-  return result;
-}
-
 function detectArchitecture(root, manifest) {
   const result = { pattern: 'single', signals: [] };
   if (fs.existsSync(path.join(root, 'lerna.json')) || fs.existsSync(path.join(root, 'pnpm-workspace.yaml')) || fs.existsSync(path.join(root, 'nx.json'))) {
@@ -201,23 +176,17 @@ function extractManifest(root) {
 // 2. GENERATE — 按 profile 生成产物
 // ═══════════════════════════════════════════════════════════════
 
-function generate(profile, opts) {
-  const { dryRun = false } = opts;
+function generate(profile) {
   const result = { created: [], skipped: [], dirs: [] };
   const p = profile;
 
   // 目录结构
   const storyDir = path.join(REPO_ROOT, 'docs', '故事任务面板');
   const skeletonDir = path.join(storyDir, p.project, '.skeleton');
-  if (dryRun) {
-    result.dirs.push({ path: 'docs/故事任务面板', action: 'will-create' });
-    result.dirs.push({ path: `docs/故事任务面板/${p.project}/.skeleton`, action: 'will-create' });
-  } else {
-    ensureDir(storyDir);
-    ensureDir(skeletonDir);
-    result.dirs.push({ path: 'docs/故事任务面板', action: 'ensured' });
-    result.dirs.push({ path: `docs/故事任务面板/${p.project}/.skeleton`, action: 'ensured' });
-  }
+  ensureDir(storyDir);
+  ensureDir(skeletonDir);
+  result.dirs.push({ path: 'docs/故事任务面板', action: 'ensured' });
+  result.dirs.push({ path: `docs/故事任务面板/${p.project}/.skeleton`, action: 'ensured' });
 
   // ── CLAUDE.md 生成/更新 ──
   const claudePath = path.join(REPO_ROOT, 'CLAUDE.md');
@@ -230,25 +199,25 @@ function generate(profile, opts) {
     const endIdx = existing.indexOf(endMarker);
     if (startIdx !== -1 && endIdx !== -1) {
       const newContent = existing.slice(0, startIdx) + T.claudeMdProjectSection(p) + existing.slice(endIdx + endMarker.length);
-      write(claudePath, newContent, opts, result, 'CLAUDE.md (项目约束段)');
+      write(claudePath, newContent, result, 'CLAUDE.md (项目约束段)');
     } else {
       // 无标记 → 在文件末尾追加
       const section = '\n' + T.claudeMdProjectSection(p) + '\n';
-      write(claudePath, existing + section, opts, result, 'CLAUDE.md (追加项目约束)');
+      write(claudePath, existing + section, result, 'CLAUDE.md (追加项目约束)');
     }
   } else {
     // 无 CLAUDE.md → 全量生成
-    write(claudePath, T.claudeMdFull(p), opts, result, 'CLAUDE.md (全量生成)');
+    write(claudePath, T.claudeMdFull(p), result, 'CLAUDE.md (全量生成)');
   }
 
   // ── README.md ──
-  write(path.join(REPO_ROOT, 'README.md'), T.readmeMd(p), opts, result, 'README.md');
+  write(path.join(REPO_ROOT, 'README.md'), T.readmeMd(p), result, 'README.md');
 
   // ── 故事目录骨架文档 ──
   const skeletonDocs = T.storySkeletonDocs(p);
   for (const doc of skeletonDocs) {
     const docPath = path.join(skeletonDir, doc.filename);
-    write(docPath, doc.content, opts, result, `骨架/${doc.filename}`);
+    write(docPath, doc.content, result, `骨架/${doc.filename}`);
   }
 
   // ── .claude/ 目录结构 ──
@@ -259,19 +228,19 @@ function generate(profile, opts) {
   const agentsSrc = path.join(pluginRoot, 'agents');
   const agentsDst = path.join(claudeDir, 'agents');
   if (fs.existsSync(agentsSrc)) {
-    copyDir(agentsSrc, agentsDst, opts, result, 'agents');
+    copyDir(agentsSrc, agentsDst, result, 'agents');
   }
 
   // rules
   const rulesSrc = path.join(pluginRoot, 'rules');
   const rulesDst = path.join(claudeDir, 'rules');
   if (fs.existsSync(rulesSrc)) {
-    copyDir(rulesSrc, rulesDst, opts, result, 'rules');
+    copyDir(rulesSrc, rulesDst, result, 'rules');
   }
 
   // skills config
   const weworkConfigPath = path.join(claudeDir, 'skills', 'wework-bot', 'config.json');
-  write(weworkConfigPath, T.weworkBotConfig(p), opts, result, 'skills/wework-bot/config.json');
+  write(weworkConfigPath, T.weworkBotConfig(p), result, 'skills/wework-bot/config.json');
 
   // skills/rui/ formulas & coder (referenced by agents/rules)
   const ruiSkillSrc = path.join(pluginRoot, 'skills', 'rui');
@@ -280,22 +249,17 @@ function generate(profile, opts) {
     const src = path.join(ruiSkillSrc, fname);
     const dst = path.join(ruiSkillDst, fname);
     if (fs.existsSync(src)) {
-      write(dst, fs.readFileSync(src, 'utf8'), opts, result, `skills/rui/${fname}`);
+      write(dst, fs.readFileSync(src, 'utf8'), result, `skills/rui/${fname}`);
     }
   }
 
   // memory & history dirs
   const memoryDir = path.join(claudeDir, 'memory');
   const historyDir = path.join(claudeDir, '.history');
-  if (dryRun) {
-    result.dirs.push({ path: '.claude/memory', action: 'will-create' });
-    result.dirs.push({ path: '.claude/.history', action: 'will-create' });
-  } else {
-    ensureDir(memoryDir);
-    ensureDir(historyDir);
-    result.dirs.push({ path: '.claude/memory', action: 'ensured' });
-    result.dirs.push({ path: '.claude/.history', action: 'ensured' });
-  }
+  ensureDir(memoryDir);
+  ensureDir(historyDir);
+  result.dirs.push({ path: '.claude/memory', action: 'ensured' });
+  result.dirs.push({ path: '.claude/.history', action: 'ensured' });
 
   return result;
 }
@@ -349,33 +313,27 @@ function verify(profile) {
 
 async function main() {
   const args   = process.argv.slice(2);
-  const dryRun = args.includes('--dry-run');
   const json   = args.includes('--json');
   if (args.includes('--help') || args.includes('-h')) { printHelp(); return; }
 
   const profile     = detect();
-  const genResult   = generate(profile, { dryRun });
+  const genResult   = generate(profile);
   const verifyResult = verify(profile);
 
-  if (!dryRun) writeInitMemory(profile, verifyResult);
+  writeInitMemory(profile, verifyResult);
 
-  // ── 触发 import-docs 同步 ──
-  if (!dryRun && verifyResult.ok) {
+  if (verifyResult.ok) {
     triggerImportDocs();
-  }
-
-  // ── 触发 wework-bot 通知 ──
-  if (!dryRun && verifyResult.ok) {
     triggerWeworkNotify(profile);
   }
 
   if (json) {
-    console.log(JSON.stringify({ profile, generate: genResult, verify: verifyResult, dry_run: dryRun }, null, 2));
+    console.log(JSON.stringify({ profile, generate: genResult, verify: verifyResult }, null, 2));
   } else {
-    printReport(profile, genResult, verifyResult, { dryRun });
+    printReport(profile, genResult, verifyResult);
   }
 
-  if (!dryRun && !verifyResult.ok) process.exit(1);
+  if (!verifyResult.ok) process.exit(1);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -462,23 +420,22 @@ function findPluginRoot() {
   return path.resolve(__dirname, '..', '..', '..');
 }
 
-function copyDir(src, dst, opts, result, labelPrefix) {
+function copyDir(src, dst, result, labelPrefix) {
   if (!fs.existsSync(src)) return;
   ensureDir(dst);
   for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
     const srcPath = path.join(src, entry.name);
     const dstPath = path.join(dst, entry.name);
     if (entry.isDirectory()) {
-      copyDir(srcPath, dstPath, opts, result, labelPrefix);
+      copyDir(srcPath, dstPath, result, labelPrefix);
     } else {
-      write(dstPath, fs.readFileSync(srcPath, 'utf8'), opts, result, `${labelPrefix}/${entry.name}`);
+      write(dstPath, fs.readFileSync(srcPath, 'utf8'), result, `${labelPrefix}/${entry.name}`);
     }
   }
 }
 
-function write(fp, content, opts, result, label) {
+function write(fp, content, result, label) {
   const exists = fs.existsSync(fp);
-  if (opts.dryRun) { result.created.push({ path: rel(fp), action: exists ? 'will-overwrite' : 'will-create', source: label }); return; }
   ensureDir(path.dirname(fp));
   fs.writeFileSync(fp, content, 'utf8');
   result.created.push({ path: rel(fp), action: exists ? 'overwritten' : 'created', source: label });
@@ -511,8 +468,8 @@ function fileContains(fp, patterns) {
 // OUTPUT
 // ═══════════════════════════════════════════════════════════════
 
-function printReport(profile, gen, ver, opts) {
-  console.log(`\n# rui init ${opts.dryRun ? '(dry-run)' : ''}\n`);
+function printReport(profile, gen, ver) {
+  console.log(`\n# rui init\n`);
   console.log(`项目: ${profile.project} · 类型: ${profile.type_label} · 架构: ${profile.architecture.pattern}`);
   console.log(`公式: ${profile.coder_formula.text}`);
   if (profile.manifest.ecosystems.length) console.log(`生态: ${profile.manifest.ecosystems.join(', ')}`);
@@ -548,7 +505,7 @@ function printReport(profile, gen, ver, opts) {
     console.log('  /rui doc <需求>    # 拆故事');
     console.log('  /rui code <name>   # 实现');
     console.log('  /rui               # 推荐\n');
-  } else if (!opts.dryRun) {
+  } else {
     console.log('✗ 就绪检查未通过，修复后重跑 `/rui init`。\n');
   }
 }
@@ -556,11 +513,11 @@ function printReport(profile, gen, ver, opts) {
 function printHelp() {
   console.log(`rui init — 建立项目基线
 
-用法: node init.js [--dry-run] [--json] [--help]
+用法: node init.js [--json] [--help]
 
 流程: detect → generate → verify → trigger
 
-探测: 项目类型 · 安全面 · 测试框架 · CI · 架构模式
+探测: 项目类型 · 安全面 · 测试框架 · 架构模式
 产物: CLAUDE.md(项目约束) · README.md · docs/故事任务面板/ · .claude/(agents/rules/skills) · 骨架文档
 触发: import-docs(文档同步) · wework-bot(初始化通知)
 验证: 产物存在且含项目上下文

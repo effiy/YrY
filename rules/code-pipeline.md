@@ -5,7 +5,7 @@ paths:
 
 # code-pipeline
 
-> **口诀：分支隔、测先行、模块清、闭环验。** 源码改动只走 `/rui code`，分支独立、测试在前、逐模块清零、Gate B 收口。
+> 源码改动只走 `/rui code`，分支独立、测试在前、逐模块清零、Gate B 收口。
 
 ```mermaid
 flowchart LR

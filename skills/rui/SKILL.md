@@ -9,23 +9,21 @@ agents:
 
 # rui
 
-> 故事驱动 SDLC 编排器。每条命令最终落到「故事任务面板」目录，每个故事独立串行走完管线。
-
-**口诀**：拆故事 → 文档基线 → 测试先行 → 实现 → 验证 → 复盘 → 交付。
-
-哲学源自 [CLAUDE.md](../../CLAUDE.md)。本文件只定义命令面与编排骨架，细节分散在：[rules/](../../rules/) 跨场景约束 · [agents/](../../agents/) 角色契约 · [formulas.md](./formulas.md) 故事文档公式 · [coder.md](./coder.md) 目录与生命周期 + 参考文档公式 + 数据契约。
+> 故事驱动 SDLC 编排器：拆故事 → 文档基线 → 测试先行 → 实现 → 验证 → 复盘 → 交付。每条命令最终落到「故事任务面板」目录，每个故事独立串行走完管线。
+>
+> 哲学源自 [CLAUDE.md](../../CLAUDE.md)。本文件只定义命令面与编排骨架，细节分散在：[rules/](../../rules/) 跨场景约束 · [agents/](../../agents/) 角色契约 · [formulas.md](./formulas.md) 故事文档公式 · [coder.md](./coder.md) 目录与生命周期 + 参考文档公式 + 数据契约。
 
 ## 命令面
 
 | 命令 | 用途 | 关键行为 |
 |------|------|---------|
-| `/rui init [--dry-run]` | 建立项目基线 | detect → generate → verify；项目信息写入 `CLAUDE.md` 项目约束章节；就绪检查 |
-| `/rui doc <req>` | 拆需求为故事 + 生成文档基线（01-故事任务 → 02/03/04-评审） | 必须分支隔离；禁止改源码；多故事逐个串行 |
+| `/rui init` | 建立项目基线 | detect → generate → verify；生成 CLAUDE.md · README.md · `.claude/` · 故事面板目录及骨架文档 |
+| `/rui doc <req>` | 拆需求为故事 + 生成文档基线 | pm 拆故事 → coder 按项目类型补齐设计文档；分支隔离；禁止改源码；多故事逐个串行 |
 | `/rui code <name>` | 实现故事 + 生成验证报告（05/06-实施 / 07-测试 / 08-自改进复盘） | Gate A 测试先行；Gate B 验证闭合 |
 | `/rui <req>` | 端到端 | doc + code 全自动串联 |
 | `/rui update <name-or-path> [ctx] [--no-code]` | 增量更新 | T1/T2/T3 裁剪；`--no-code` 仅文档 |
 | `/rui code --from-doc <name>` | 从文档反推 | 只读源码补全缺失文档；不覆盖已有 |
-| `/rui doc --from-code [req]` | 从源码反推 | req 空时 pm 自主探索（前端/后端/全栈） |
+| `/rui doc --from-code [req]` | 从源码反推（推荐） | req 空：pm 探索推荐列表；req 有值：直接反推故事文档 |
 | `/rui list` | 进度全景 | 按文件存在性判定状态 |
 | `/rui` | 任务推荐 | 5 层链式管线评分排序 |
 
@@ -98,13 +96,13 @@ flowchart LR
 
 ## init 简述
 
-> **口诀：探—生—验—触。** 四步：探（扫描项目六类信号）→ 生（按 profile 生成 CLAUDE.md / README.md / 故事骨架文档）→ 验（就绪检查）→ 触（import-docs 同步 + wework-bot 通知）。
+> 四步：探（扫描项目五类信号）→ 生（按 profile 生成 CLAUDE.md / README.md / `.claude/` / 故事骨架文档）→ 验（7 项就绪检查）→ 触（import-docs 同步 + wework-bot 通知）。
 >
-> **核心设计**：init 负责项目基线（CLAUDE.md 项目约束 · README.md · docs/故事任务面板/ 目录 + 骨架文档），可重复运行，每次全量重生。完成后主动触发文档同步和通知。
+> **核心设计**：init 负责项目基线（CLAUDE.md 项目约束 · README.md · `.claude/` · `docs/故事任务面板/` 目录 + 骨架文档），可重复运行，每次全量重生。完成后主动触发文档同步和通知。
 
 ```mermaid
 flowchart LR
-    P1[detect<br/>六类信号扫描]:::s --> P2[generate<br/>基线全量重生]:::s --> P3[verify<br/>就绪检查]:::s --> P4[trigger<br/>同步+通知]:::s --> P5[记忆<br/>.init-memory]
+    P1[detect<br/>五类信号扫描]:::s --> P2[generate<br/>基线全量重生]:::s --> P3[verify<br/>就绪检查]:::s --> P4[trigger<br/>同步+通知]:::s --> P5[记忆<br/>.init-memory]
     P3 -.失败.-> Fix[exit 1<br/>修复后重跑]
     P4 -.通过.-> Ready[基线就绪]
     classDef s fill:#e3f2fd,stroke:#1565c0;
@@ -112,7 +110,7 @@ flowchart LR
 
 ### 1. detect — 扫描项目（事实层）
 
-六类信号汇聚为内存 profile 对象，驱动产物生成：
+五类信号汇聚为内存 profile 对象，驱动产物生成：
 
 | 信号 | 来源 | 用途 |
 |------|------|------|
@@ -121,7 +119,6 @@ flowchart LR
 | 项目清单 | 按生态文件抽取 | 依赖 + 构建/测试命令 + 框架版本 |
 | 安全面 | 源码关键词扫描 | 用户输入/API/存储/认证/第三方 |
 | 测试框架 | 依赖 + 配置文件 | vitest/jest/pytest/go-test/cargo-test |
-| CI 配置 | 工作流文件 | github-actions/gitlab-ci/jenkins |
 | 架构模式 | 项目结构 | single/monorepo/microservice/plugin |
 
 ### 2. generate — 全量重生（生成层）
@@ -131,10 +128,11 @@ flowchart LR
 | 产物 | 裁剪依据 | 项目耦合点 |
 |------|---------|-----------|
 | `CLAUDE.md` | 安全面 + 类型 | 项目约束段（`rui:project-start/end` 标记内替换） |
-| `README.md` | 全部信号 | 项目画像 + 故事目录骨架（按项目类型裁剪） + 结构表 |
-| `docs/故事任务面板/<project>/.skeleton/` | 项目类型 | 按类型裁剪的全套骨架文档（01-08 + 00） |
+| `README.md` | 全部信号 | 项目画像 + 命令流 mermaid + 快速开始 + 结构表 |
+| `.claude/` | 类型 + 安全面 | agents（6 角色契约）/ rules（5 跨场景约束）/ skills config |
+| `docs/故事任务面板/<project>/.skeleton/` | 项目类型 | 按类型裁剪的全套骨架文档（01-08 + 00），含项目快照（图 → 结构化文本 → 表格） |
 
-### 3. verify — 4 项就绪检查（验证层）
+### 3. verify — 7 项就绪检查（验证层）
 
 任一失败 `exit 1`：
 
@@ -144,6 +142,9 @@ flowchart LR
 | 2 | `README.md` | 含项目名 |
 | 3 | 故事面板 | `docs/故事任务面板/` 目录存在 |
 | 4 | 骨架文档 | `.skeleton/` 下文件数 ≥ 必选文件数 |
+| 5 | `.claude/agents` | 目录存在且 ≥ 4 个 agent 文件 |
+| 6 | `.claude/rules` | 目录存在且 ≥ 3 个规则文件 |
+| 7 | `.claude/skills` | wework-bot config.json 存在 |
 
 ### 4. trigger — 主动触发（集成层）
 
@@ -154,25 +155,193 @@ flowchart LR
 | `import-docs --workspace` | `API_X_TOKEN` 存在 | 缺 token 跳过，网络失败告警不阻断 |
 | `wework-bot --agent rui` | `API_X_TOKEN` + `WEWORK_BOT_WEBHOOK_URL` 存在 | 缺凭据跳过 |
 
-### 5. 选项
-
-| 选项 | 行为 |
-|------|------|
-| `--dry-run` | 仅扫描+报告，不写文件，不触发同步/通知；动作以 `◇` 前缀标识 |
-| `--json` | 机器可读输出（`{ profile, generate, verify, dry_run }`） |
-
-### 6. 产物
+### 5. 产物
 
 | 路径 | 用途 | 重复运行 |
 |------|------|---------|
 | `CLAUDE.md` | 项目约束（`rui:project-start/end` 段） | 段内全量替换 |
-| `README.md` | 系统视图 + 项目画像 | 全量重生 |
-| `docs/故事任务面板/<project>/.skeleton/*.md` | 故事骨架模板 | 全量重生 |
+| `README.md` | 系统视图 + 命令流 + 项目画像 | 全量重生 |
+| `.claude/` | agents/rules/skills 配置 | 全量重生 |
+| `docs/故事任务面板/<project>/.skeleton/*.md` | 故事骨架模板（含项目快照） | 全量重生 |
 | `docs/故事任务面板/.init-memory.json` | 执行记录 | 每次覆盖 |
 
-## 强制集成：import-docs + wework-bot
+## doc 简述
 
-> **口诀：用 rui 必触发，无例外。**
+> 三步：拆（pm 解析需求拆为故事）→ 补（coder 按项目类型补齐设计文档）→ 触（import-docs 同步 + wework-bot 通知）。
+>
+> **核心设计**：pm 将需求文本 / `@` 文件 / URL 解析为结构化故事，影响分析后拆分任务并排优先级。随后指派 coder 按项目类型补齐设计文档：前端补 03-前端技术评审，后端补 02-后端技术评审，全栈两者均补。全程禁止改源码，多故事逐个串行处理。
+
+```mermaid
+flowchart LR
+    A[需求输入<br/>文本/@文件/URL]:::s --> B[pm 拆故事<br/>影响分析+优先级]:::s
+    B --> C[coder 补齐文档<br/>02/03 按项目类型]:::s
+    C --> D[branch<br/>feat/&lt;Project&gt;-&lt;name&gt;]:::s
+    D --> E[trigger<br/>同步+通知]:::s
+    classDef s fill:#e3f2fd,stroke:#1565c0;
+```
+
+### 产出
+
+| 文件 | 条件 |
+|------|------|
+| 01-故事任务.md | 必创建 |
+| 02-后端技术评审.md | 后端 / 全栈 |
+| 03-前端技术评审.md | 前端 / 全栈 |
+| 04-测试用例评审.md | 必创建 |
+
+### 约束
+
+- **只读** — 文档生成阶段禁止改源码
+- **分支隔离** — 自动创建 `feat/<Project>-<name>` 分支
+- **逐故事串行** — 多故事按拆分顺序处理，互不交叉
+
+## code 简述
+
+> 四步：Gate A（测试先行）→ 实现（逐模块 P0 清零）→ Gate B（验证闭合）→ 自改进（D0–D7 诊断 + 交付）。
+>
+> **核心设计**：源码改动唯一入口。测试方案未就绪不得编码；逐模块审查 P0 清零再前进；修复 ≤ 2 轮；三步交付管线收口（import-docs + wework-bot）。
+
+```mermaid
+flowchart LR
+    A[分支隔离<br/>feat/&lt;Project&gt;-&lt;name&gt;]:::s --> B[Gate A<br/>测试先行]:::s
+    B --> C[逐模块实现<br/>P0 清零再前进]:::s
+    C --> D[Gate B<br/>验证 ≤2 轮]:::s
+    D --> E[自改进<br/>D0–D7 诊断]:::s
+    E --> F[交付<br/>同步+通知]:::s
+    C -.P0 未清.-> C
+    D -.>2 轮.-> X[gate-b-limit 阻断]:::bad
+    classDef s fill:#e3f2fd,stroke:#1565c0;
+    classDef bad fill:#ffebee,stroke:#c62828;
+```
+
+### 产出
+
+| 文件 | 条件 | 阶段 |
+|------|------|------|
+| 05-后端实施报告.md | 后端 / 全栈 | 验证 |
+| 06-前端实施报告.md | 前端 / 全栈 | 验证 |
+| 07-测试用例报告.md | 必创建 | 验证 |
+| 08-自改进复盘.md | 必创建 | 自改进 |
+
+### 约束
+
+- **源码唯一入口** — 只能走 `/rui code` 改源码
+- **Gate A 阻断** — `04-测试用例评审.md` 不存在即阻断编码
+- **Gate B 限轮** — 修复 > 2 轮阻断交付
+- **逐模块 P0** — P0 不清零不进下一模块
+
+## 端到端简述
+
+> doc + code 全自动串联。`/rui <req>` 等价于 `/rui doc <req>` → `/rui code <name>`，无中断一气呵成，末端触发 import-docs + wework-bot。
+
+```mermaid
+flowchart LR
+    R[需求]:::s --> D[doc<br/>拆故事+文档]:::s --> C[code<br/>实现+验证]:::s --> F[交付]:::s
+    classDef s fill:#e3f2fd,stroke:#1565c0;
+```
+
+## update 简述
+
+> 增量更新，按变更范围 T1/T2/T3 自动裁剪管线。`--no-code` 仅文档不改源码。
+
+```mermaid
+flowchart LR
+    I[变更输入]:::s --> T{范围判定}:::s
+    T -->|T1 措辞/格式| U1[跳过分析+设计<br/>仅刷新变更章节]:::s
+    T -->|T2 增删/接口变更| U2[裁剪分析+设计<br/>刷新目标+下游]:::s
+    T -->|T3 边界/重构| U3[完整重跑<br/>全级联刷新]:::s
+    classDef s fill:#e3f2fd,stroke:#1565c0;
+```
+
+| 级别 | 范围 | 影响分析 | 架构设计 | 文档刷新 |
+|------|------|---------|---------|---------|
+| T1 | 措辞 / 格式 | 跳过 | 跳过 | 仅变更章节 |
+| T2 | 增删故事 / 接口变更 | 裁剪 | 裁剪 | 目标 + 下游 |
+| T3 | 边界变化 / 跨故事重构 | 完整重跑 | 完整重跑 | 全级联刷新 |
+
+## code --from-doc 简述
+
+> 从已有文档反推，只读源码补全缺失文档，不覆盖已有。
+
+```mermaid
+flowchart LR
+    A[读取已有文档]:::s --> B[只读源码分析]:::s
+    B --> C[补全缺失文档]:::s
+    C --> D[trigger<br/>同步+通知]:::s
+    classDef s fill:#e3f2fd,stroke:#1565c0;
+```
+
+- **只读** — 禁止改源码
+- **不覆盖** — 已有文档不覆盖，仅补缺失
+- **分支隔离** — 自动创建 `feat/<Project>-<name>` 分支
+
+## doc --from-code 简述
+
+> 三步：探（req 空时扫描项目源码输出推荐列表）/ 生（反推源码生成故事文档基线）/ 触（import-docs 同步 + wework-bot 通知）。
+>
+> **核心设计**：面向存量代码库的文档生成入口。req 空时 pm 自主探索，靠推荐引路；req 有值时 pm 直接从源码反推完整故事文档。全程只读，输出内聚于 `docs/故事任务面板/<Project>/<name>/`。**已有代码库优先使用此模式补全文档**。
+
+```mermaid
+flowchart LR
+    E1[detect<br/>req 空：扫描源码]:::s --> E2[recommend<br/>推荐列表]:::s --> E3[user-select<br/>等用户选择]:::s
+    E3 --> G[generate<br/>反推故事文档]:::s
+    R[req 有值<br/>直接反推]:::s --> C[conflict-check<br/>冲突检测]:::s --> G
+    G --> T[trigger<br/>同步+通知]:::s
+    classDef s fill:#e3f2fd,stroke:#1565c0;
+```
+
+### 1. 探索模式（req 为空）— 推荐引路
+
+pm 按项目类型差异化扫描源码，输出推荐列表：
+
+| 项目类型 | 扫描目标 | 排序 | 命名 |
+|---------|---------|------|------|
+| 前端 | `.vue`/`.jsx`/`.tsx`/`.svelte` 的 Props/Events/Expose | 核心业务无文档 > 普通无文档 > 过时文档 | `<project>-<component>-doc` |
+| 后端 | 路由/控制器 → HTTP 方法/路径/schema | 核心 API 无文档 > 普通无文档 > 过时文档 | `<project>-<resource>-api` |
+| 全栈 | 两端独立扫描 | 分别输出 | — |
+
+每候选含：覆盖范围 · 源码证据 · 优先级。用户选择后进入生成阶段。
+
+### 2. 反推模式（req 有值）— 直接生成
+
+1. **解析** — `<Project>-<name>` → `docs/故事任务面板/<Project>/<name>/`
+2. **冲突检测** — 目标目录已存在时提醒走 `/rui update`，不覆盖已有文档
+3. **源码定位** — 按 req 匹配源文件；前端匹配组件名 → `.vue`/`.jsx`/`.tsx`；后端匹配路由/控制器名
+4. **只读提取** — 结构概览（mermaid）→ 接口契约 → 依赖链 → 状态管理 → 安全考量
+5. **文档生成** — 按项目类型生成故事文档基线，所有内容证据 Level B + 源码路径；缺口标 `> 待补充`
+
+| 项目类型 | 反推来源 | 重点关注 | 输出 |
+|---------|---------|---------|------|
+| 前端 | `.vue`/`.jsx`/`.tsx` 源码 + 路由 + 状态管理 | 组件树 → Props/Events → 数据流 | 01 + 03 + 04 |
+| 后端 | 路由/控制器/服务/数据模型源码 | API 契约 → 数据模型 → 中间件链 | 01 + 02 + 04 |
+| 全栈 | 两端分别 | 前后端契约对齐 | 01 + 02 + 03 + 04 |
+
+### 3. trigger — 主动触发
+
+生成完成后主动触发：
+
+| 触发 | 条件 | 降级 |
+|------|------|------|
+| `import-docs --workspace` | `API_X_TOKEN` 存在 | 缺 token 跳过，网络失败告警不阻断 |
+| `wework-bot --agent rui` | `API_X_TOKEN` + `WEWORK_BOT_WEBHOOK_URL` 存在 | 缺凭据跳过 |
+
+### 4. 约束
+
+- **只读** — 禁止改源码（`--from-code` 违反即 `bad-branch`）
+- **分支隔离** — 自动创建 `feat/<Project>-<name>` 分支
+- **证据 Level B** — 全部内容源自源码分析，标注源文件路径
+- **P0 标记** — 反推文档的 P0 章节标「待确认」，需开发 review
+- **冲突保护** — 目标目录已存在时拒绝覆盖，引导 `/rui update`
+
+## list 简述
+
+> 只读。扫描 `docs/故事任务面板/` 按文件存在性判定每个故事的状态（文档就绪 / 实现中 / 验证 / 交付 / 阻断），输出进度全景表。不触发 import-docs / wework-bot。
+
+## 推荐简述
+
+> 只读。5 层链式管线评分（L0 时间 / L1 依赖 / L2 风险 / L3 覆盖 / L4 质量），加权排序后推荐下一步最优任务。不触发 import-docs / wework-bot。
+
+## 强制集成：import-docs + wework-bot
 
 **每次** `/rui` 命令执行（含 `doc` / `code` / `update` / `init` / 端到端），管线末端 **必须** 触发 import-docs 和 wework-bot。这不是可选步骤，是管线完整性的一部分。
 

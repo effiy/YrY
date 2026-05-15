@@ -147,13 +147,12 @@ function buildMessage(info) {
 function main() {
   const active = findActiveStory();
   if (!active) {
-    // 无活跃故事，静默退出
+    process.stderr.write('hook-notify: 无活跃故事（docs/故事任务面板 为空或 rui-state.json 缺失/过期），跳过通知\n');
     process.exit(0);
   }
 
-  // 检查凭据
-  if (!process.env.API_X_TOKEN || !process.env.WEWORK_BOT_WEBHOOK_URL) {
-    // 降级：缺凭据不阻断
+  // 检查凭据（webhook 由 send-message.js 从 config.json 解析，此处仅检查 API_X_TOKEN）
+  if (!process.env.API_X_TOKEN) {
     process.exit(0);
   }
 

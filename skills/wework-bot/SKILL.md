@@ -23,9 +23,8 @@ lifecycle: default-pipeline
 | `--content-file, -f <path>` | 从文件读正文 |
 | `--no-send` | 仅追加日志，不发送 HTTP |
 
-环境变量：`API_X_TOKEN`(必填), `WEWORK_BOT_WEBHOOK_URL`(必填), `WEWORK_BOT_API_URL`(可选), `WEWORK_BOT_CONFIG`(可选)。
-
-Webhook 路由在 `config.json` 中配置，不通过 CLI 传入。
+环境变量：`API_X_TOKEN`（必填）；webhook URL 由 `send-message.js` 从 `config.json` 解析，无需单独设置环境变量。
+`WEWORK_BOT_API_URL`、`WEWORK_BOT_CONFIG` 可选。
 
 ## 消息格式
 
@@ -80,8 +79,8 @@ Body: { "webhook_url": "<from config>", "content": "<message>" }
 
 - 禁止提交 token、webhook URL 到仓库
 - 日志和回复必须脱敏
-- 凭据仅从环境变量读取，不接受 CLI 参数或配置文件
+- API_X_TOKEN 仅从环境变量读取；webhook URL 从 config.json 解析
 
 ## 空输入
 
-无参数时检测 `API_X_TOKEN` / `WEWORK_BOT_WEBHOOK_URL` / config.json / 故事面板 `00-消息通知列表.md` → 推荐任务（配置缺失/测试验证/通知补齐/定期巡检），不发送消息。
+无参数时检测 `API_X_TOKEN` / config.json / 故事面板 `00-消息通知列表.md` → 推荐任务（配置缺失/测试验证/通知补齐/定期巡检），不发送消息。

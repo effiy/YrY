@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // node scripts/rui-state.js <save|load|clear|next-step> [...]
-// Storage: docs/故事任务面板/<name>/.memory/ (per-story)
+// Storage: docs/故事任务面板/<Project>/<name>/.memory/ (per-story)
 
 const fs = require('fs');
 const fsp = fs.promises;

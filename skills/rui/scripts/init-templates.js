@@ -14,18 +14,6 @@
  * 如果 CLAUDE.md 不存在，生成完整文件（含基础信念 + 项目约束）。
  */
 function claudeMdProjectSection(p) {
-  const techList = p.manifest.tech_stack.length > 0 ? p.manifest.tech_stack.join(' · ') : `${p.type_label}项目`;
-  const buildCmd = p.manifest.build_commands.length > 0 ? p.manifest.build_commands.join(' · ') : '无构建命令';
-  const testFw = p.test_framework.framework || '未检测到测试框架';
-  const secSignals = p.security_surface.signals.length > 0 ? p.security_surface.signals.join(' · ') : '无显著安全面';
-  const ciProvider = p.ci_config.provider || '未配置';
-  const ecoList = p.manifest.ecosystems.join(' · ') || '未识别';
-  const storyReq = p.story_defaults.required_files.map(n => {
-    const names = { '01': '故事任务', '02': '后端评审', '03': '前端评审', '04': '测试评审', '05': '后端实施', '06': '前端实施', '07': '测试报告', '08': '自改进' };
-    return `${n}-${names[n] || n}`;
-  }).join('/');
-
-  // 底线规则：根据安全面动态生成
   const bottomLines = [];
   if (p.security_surface.auth) {
     bottomLines.push('- **认证不可绕过** — 涉及 auth/token/session，任何绕过路径为 P0');
@@ -40,20 +28,6 @@ function claudeMdProjectSection(p) {
 
   return `<!-- rui:project-start -->
 ## 项目约束
-
-> 以下由 \`rui init\` 根据项目画像自动生成。每次 \`rui init\` 全量重生。
-
-| 维度 | 约束 | 来源 |
-|------|------|------|
-| 项目 | ${p.project} · ${p.type_label} · ${p.architecture.pattern} | 目录扫描 |
-| 技术栈 | ${techList} | 类型推断 |
-| 构建 | ${buildCmd} | — |
-| 测试 | ${testFw} | — |
-| 安全面 | ${secSignals} | 源码扫描 |
-| CI/CD | ${ciProvider} | — |
-| 生态 | ${ecoList} | 清单文件 |
-| Coder 公式 | ${p.coder_formula.text} | 类型推断 |
-| 故事骨架 | ${p.story_defaults.skeleton}（必选: ${storyReq}）| 类型推断 |
 
 ### 项目不可妥协底线
 
@@ -71,36 +45,51 @@ function claudeMdFull(p) {
 
 ## 基础信念
 
-> **口诀：信模型，惜注意，验现实。**
+\`\`\`mermaid
+flowchart LR
+    A[信模型<br/>模型能判断] --> B[惜注意<br/>注意力稀缺]
+    B --> C[验现实<br/>运行即证]
+    C -.反馈修正.-> A
+\`\`\`
 
 **信模型 — 模型有能力判断。** 上下文中的模型能做出合理决策。检查清单不能替代思考。
 
-**惜注意 — 上下文有限且退化。** 注意力是稀缺资源。不必要的信息挤掉必要的信息。
+**惜注意 — 上下文有限且退化。** 注意力是稀缺资源。不必要的信息挤掉必要的信息。退化三因：外部不可达、渐进漂移、人机偏差。
 
 **验现实 — 现实是唯一裁判。** 没验证等于没做。"应该没问题"不可证伪。
 
-> 公理冲突时优先级：**验现实 > 信模型 > 惜注意**。
+> 公理冲突时优先级：**验现实 > 信模型 > 惜注意**。先确保事实，再相信判断，最后省注意力。
 
 ## 工作原则
 
-> **口诀：守底线，留核心，退一步，验为实，说清楚，称轻重。**
+每条原则都在缓解某条公理的张力。
 
-| 原则 | 服务公理 | 一句话 |
-|------|---------|--------|
-| **涌现** 守底线 | 信模型 | 只定不可妥协的底线，其余交给上下文 |
-| **简化** 留核心 | 惜注意 | 删至必要——最可靠的模块是没有模块 |
-| **消失** 退一步 | 惜注意 | 流程复杂度 ≤ 任务复杂度 |
-| **校准** 验为实 | 验现实 | 没运行过的结论不作数 |
-| **释义** 说清楚 | 惜注意 | 人看不懂，正确也没意义 |
-| **对等** 称轻重 | 全部 | 投入与改动量、风险等级匹配 |
+| 原则 | 服务公理 | 一句话 | 反例（违反就改） |
+|------|---------|--------|----------------|
+| **涌现** 守底线 | 信模型 | 只定不可妥协的底线，其余交给上下文 | 把"风格偏好"写进硬规则 |
+| **简化** 留核心 | 惜注意 | 删至必要——最可靠的模块是没有模块 | 增加抽象层却没第二个调用方 |
+| **消失** 退一步 | 惜注意 | 流程复杂度 ≤ 任务复杂度 | 用户感觉"在走流程"而非"在解决问题" |
+| **校准** 验为实 | 验现实 | 没运行过的结论不作数 | 凭代码"看起来对"就提交 |
+| **释义** 说清楚 | 惜注意 | 人看不懂，正确也没意义 | 一段话三层从句解释一件事 |
+| **对等** 称轻重 | 全部 | 投入与改动量、风险等级匹配 | 改注释和重写核心循环走同套流程 |
 
 ## 执行准则
 
-> **口诀：思在前，码从简，改必准，测先行，毕则告，图为首，自定验。**
+**思先于码。** 陈述假设，呈现权衡。不确定就停，问。
+
+**最少代码。** 只解决这个问题。不请自来的功能、单次抽象、不可能场景的错误处理——不写。
+
+**精确修改。** 只动必须动的。改动不留残余。每行改动可追溯到请求。
+
+**目标驱动。** 先写失败测试再通过。"看起来没问题"等于没做。
+
+**完成通知。** 做完或卡住都同步状态。沉默比失败更危险。**rui 管线必须触发 import-docs 文档同步 + wework-bot 通知，未触发等于未完成。**
+
+**表达优先：图 → 结构化文本 → 表。**
+
+**生效标志由各 agent 自定义。**
 
 ## 退化对策
-
-> **口诀：先可见，后规则。**
 
 类型、合约、运行结果是可见的——它们自己就在说话。规则是最后手段，因为规则本身也消耗注意力。
 
@@ -121,6 +110,41 @@ ${claudeMdProjectSection(p)}
  * @param {object} p - profile
  * @returns {Array<{filename: string, content: string}>}
  */
+function projectSnapshot(p) {
+  const secList = p.security_surface.signals.length ? p.security_surface.signals.join(' · ') : '无显著安全面';
+  const ecoList = p.manifest.ecosystems.length ? p.manifest.ecosystems.join(' · ') : '未识别';
+  return `## 项目快照
+
+\`\`\`mermaid
+flowchart LR
+    P[${p.project}]:::project --> T[${p.type_label}]:::type
+    T --> A[${p.architecture.pattern}]:::arch
+    A --> S[安全面<br/>${secList}]:::sec
+    A --> E[${ecoList}]:::eco
+    classDef project fill:#e3f2fd,stroke:#1565c0;
+    classDef type fill:#fff3e0,stroke:#e65100;
+    classDef arch fill:#e8f5e9,stroke:#2e7d32;
+    classDef sec fill:#ffebee,stroke:#c62828;
+    classDef eco fill:#f3e5f5,stroke:#6a1b9a;
+\`\`\`
+
+**${p.project}** 是一个 ${p.type_label} 项目（${p.architecture.pattern} 架构），基于 ${ecoList} 生态构建。安全面涉及 ${secList}。
+
+| 维度 | 值 |
+|------|-----|
+| 项目 | ${p.project} |
+| 类型 | ${p.type_label} |
+| 架构 | ${p.architecture.pattern} |
+| 技术栈 | ${p.manifest.tech_stack.join(' · ') || '未识别'} |
+| 生态 | ${ecoList} |
+| 构建 | ${p.manifest.build_commands.join(' · ') || '无'} |
+| 测试框架 | ${p.test_framework.framework || '未配置'} |
+| 测试命令 | ${p.manifest.test_commands.join(' · ') || '无'} |
+| 安全面 | ${secList} |
+| Coder 公式 | ${p.coder_formula.text} |
+`;
+}
+
 function storySkeletonDocs(p) {
   const docs = [];
   const required = p.story_defaults.required_files;
@@ -131,15 +155,14 @@ function storySkeletonDocs(p) {
   const buildCmd = p.manifest.build_commands.length ? p.manifest.build_commands.join(' · ') : '无构建命令';
   const testCmd = p.manifest.test_commands.length ? p.manifest.test_commands.join(' · ') : '无测试命令';
   const testFw = p.test_framework.framework || '未配置';
+  const snap = projectSnapshot(p);
 
   if (required.includes('01')) {
     docs.push({ filename: '01-故事任务.md', content: `# 故事任务
 
 > 由 pm agent 填充。此文件为故事唯一真相源。
 
-**项目:** ${p.project} | **类型:** ${p.type_label} | **架构:** ${arch}
-**技术栈:** ${techStack}
-
+${snap}
 ## 需求概述
 
 <!-- 在此描述本故事要解决的具体需求 -->
@@ -168,10 +191,7 @@ ${p.security_surface.signals.length ? `- 安全面: ${p.security_surface.signals
 
 > 由 coder + security agent 填充。
 
-**项目:** ${p.project} | **架构:** ${arch}
-**技术栈:** ${techStack}
-**依赖快照:** ${deps}
-
+${snap}
 ## 架构决策
 
 <!-- 模块划分 / 接口设计 / 数据模型 -->
@@ -202,9 +222,7 @@ ${secItems}
 
 > 由 coder agent 填充。
 
-**项目:** ${p.project} | **架构:** ${arch}
-**技术栈:** ${techStack}
-
+${snap}
 ## 组件设计
 
 <!-- 组件树 / Props / Events / Expose -->
@@ -233,9 +251,7 @@ ${p.security_surface.third_party ? '- 第三方调用需处理错误/超时' : '
 
 > 由 tester agent 填充。Gate A 前置条件。
 
-**项目:** ${p.project} | **测试框架:** ${testFw}
-**测试命令:** ${testCmd}
-
+${snap}
 ## 测试策略
 
 <!-- 测试层级 + 覆盖目标 -->
@@ -259,9 +275,7 @@ ${secItems}
 
 > 验证阶段产出。Gate B 输入。
 
-**项目:** ${p.project} | **架构:** ${arch}
-**技术栈:** ${techStack}
-
+${snap}
 ## 实施摘要
 
 <!-- 变更文件 + 行数统计 -->
@@ -284,9 +298,7 @@ ${secItems}
 
 > 验证阶段产出。Gate B 输入。
 
-**项目:** ${p.project} | **架构:** ${arch}
-**技术栈:** ${techStack}
-
+${snap}
 ## 实施摘要
 
 <!-- 变更组件 + 页面 -->
@@ -306,8 +318,7 @@ ${secItems}
 
 > 由 tester agent 填充。Gate B 输入。
 
-**项目:** ${p.project} | **测试框架:** ${testFw}
-
+${snap}
 ## 执行结果
 
 <!-- 通过/失败/跳过 统计 -->
@@ -327,8 +338,7 @@ ${secItems}
 
 > 由 pm + reporter agent 填充。
 
-**项目:** ${p.project} | **类型:** ${p.type_label} | **架构:** ${arch}
-
+${snap}
 ## 执行数据
 
 <!-- 耗时 / 轮次 / 阻断 -->
@@ -340,13 +350,6 @@ ${secItems}
 ## 改进提案
 
 <!-- 提案列表 -->
-
-## 项目画像快照
-
-- 技术栈: ${techStack}
-- 安全面: ${p.security_surface.signals.join(' · ') || '无'}
-- 测试: ${testFw}
-- CI/CD: ${p.ci_config.provider || '未配置'}
 ` });
   }
 
@@ -363,9 +366,12 @@ ${secItems}
 // ── README.md ──────────────────────────────────────────────────
 
 function readmeMd(p) {
-  const techList = p.manifest.tech_stack.length > 0 ? p.manifest.tech_stack.join(' · ') : p.type_label;
+  const techList = p.manifest.tech_stack.length > 0 ? p.manifest.tech_stack.join(' · ') : '未识别';
   const ecoList = p.manifest.ecosystems.join(' · ') || '未识别';
   const capDesc = { frontend: '前端组件驱动开发', backend: '后端领域驱动开发', fullstack: '全栈端到端开发', meta: '插件/配置系统开发' }[p.type] || '通用软件开发';
+  const secList = p.security_surface.signals.join(' · ') || '无显著安全面';
+  const testFw = p.test_framework.framework || '未配置';
+  const buildCmd = p.manifest.build_commands.join(' · ') || '无';
 
   // Story skeleton based on project type
   const skeletonLines = [];
@@ -393,44 +399,147 @@ function readmeMd(p) {
 
 > ${capDesc}，${p.coder_formula.focus}。
 
-- **项目类型** — ${p.type_label}（${p.architecture.pattern}）
-- **技术栈** — ${techList}
-- **生态** — ${ecoList}
+\`\`\`mermaid
+flowchart LR
+    Init[rui init<br/>建立基线]:::cmd --> Doc[rui doc<br/>拆故事+文档]:::cmd
+    Doc --> Code[rui code<br/>实现+验证]:::cmd
+    Code --> Done[交付<br/>同步+通知]:::gate
+    Init --> List[rui list<br/>进度全景]:::cmd
+    Code --> Update[rui update<br/>增量更新]:::cmd
+    Claude[/rui-claude<br/>管理 .claude/]:::claude --> Doc
+    classDef cmd fill:#e3f2fd,stroke:#1565c0;
+    classDef gate fill:#e8f5e9,stroke:#2e7d32;
+    classDef claude fill:#f3e5f5,stroke:#6a1b9a;
+\`\`\`
+
+**${p.project}** 是一个 ${p.type_label} 项目（${p.architecture.pattern} 架构），基于 ${ecoList} 生态构建。安全面涉及 ${secList}。
+
+| 维度 | 值 |
+|------|-----|
+| 项目类型 | ${p.type_label} |
+| 架构 | ${p.architecture.pattern} |
+| 管线 | 需求解析 → 文档生成 → Gate A 测试先行 → 实现 → Gate B 验证 → 自改进 → 交付 |
+| Coder 公式 | ${p.coder_formula.text} |
+| 安全面 | ${secList} |
+| 不可妥协底线 | 认证不可绕过 · 密钥不落盘 · 输入必校验 |
 
 ## 快速开始
 
-\`\`\`bash
-/rui init                    # 建立项目基线（README.md + 故事面板目录）
-/rui doc "需求描述"           # 拆需求为故事
-/rui code <story-name>       # 实现故事
-/rui                         # 任务推荐
+\`\`\`mermaid
+flowchart LR
+    A[1. rui init] --> B[2. rui doc] --> C[3. rui code] --> D[4. 交付]
+    A -.已有基线.-> B
+    B -.已有文档.-> C
+    E[5. rui-claude<br/>管理 .claude/]:::claude -.端到端.-> B
+    classDef claude fill:#f3e5f5,stroke:#6a1b9a;
 \`\`\`
+
+### 1. 建立基线
+
+\`\`\`bash
+/rui init
+\`\`\`
+
+扫描项目五类信号（类型 · 清单 · 安全面 · 测试框架 · 架构），按 profile 全量生成 CLAUDE.md 项目约束段、README.md、\`.claude/\`（agents/rules/skills）、故事面板目录及骨架文档。可重复运行。
+
+\`\`\`bash
+### 2. 拆需求为故事
+
+\`\`\`bash
+/rui doc "用户登录页面需要支持手机号+验证码登录"
+/rui doc @requirements.md    # 从文件读取
+/rui doc https://...         # 从 URL 读取
+\`\`\`
+
+pm agent 解析需求 → 自适应规划 → 影响分析 → 架构设计，生成故事文档基线（01-故事任务 · 04-测试用例评审）。随后指派 coder 按项目类型补齐设计文档：前端项目仅补 03-前端技术评审，后端项目仅补 02-后端技术评审，全栈项目两者均补。自动创建 \`feat/<Project>-<name>\` 分支隔离。
+
+\`\`\`bash
+/rui doc --from-code [name]   # 从源码反推文档（推荐存量项目首选）
+\`\`\`
+
+### 3. 实现故事
+
+\`\`\`bash
+/rui code YiWeb-user-login
+\`\`\`
+
+Gate A 测试先行 → 逐模块编码（P0 清零方进下一模块）→ Gate B 验证（修复 ≤2 轮）→ 自改进复盘。三步交付管线按序触发文档同步 + 通知。
+
+\`\`\`bash
+/rui code --from-doc YiWeb-user-login  # 从已有文档补全缺失文档（只读源码）
+/rui update YiWeb-user-login           # 增量更新（T1/T2/T3 裁剪）
+/rui update YiWeb-user-login --no-code # 仅文档，不改源码
+\`\`\`
+
+### 4. 查看与推荐
+
+\`\`\`bash
+/rui list                    # 进度全景，按文件存在性判定状态
+/rui                         # 5 层链式管线评分排序，推荐下一步任务
+\`\`\`
+
+### 5. 管理 .claude/ 配置
+
+\`\`\`bash
+/rui-claude sync              # 从远端同步 .claude/（覆盖式更新）
+/rui-claude retro             # 复盘分析本地 .claude/ 结构
+/rui-claude history           # 查看同步历史
+/rui-claude <需求>            # 修改 .claude/，走全管线端到端（doc → code → 交付）
+\`\`\`
+
+\`/rui-claude\` 操作仅限 \`.claude/\` 目录，禁止自动 commit/push，git 操作由开发者手动执行。\`<需求>\` 走完整 SDLC：pm 拆故事 → coder 补齐设计文档 → Gate A 测试先行 → 实现 → Gate B 验证 → 自改进 → 交付。
+
+### 常用组合
+
+| 场景 | 命令 |
+|------|------|
+| 全新项目起步 | \`/rui init\` → \`/rui doc <需求>\` → \`/rui code <name>\` |
+| 已有基线，新需求 | \`/rui <需求>\`（端到端 doc + code 全自动串联） |
+| 补文档（推荐） | \`/rui doc --from-code\` → 选 → 生；或 \`/rui doc --from-code <name>\` 直推 |
+| 补代码 | \`/rui code --from-doc <name>\` |
+| 小改动了 | \`/rui update <name> "修改描述"\` |
+| 同步 .claude/ | \`/rui-claude sync\` |
+| 复盘 .claude/ | \`/rui-claude retro\` |
+| 看进度 | \`/rui list\` |
+| 不知道做什么 | \`/rui\` |
 
 ## 项目结构
 
-| 目录/文件 | 职责 | 生成方式 |
-|-----------|------|---------|
-| \`README.md\` | 系统视图 + 项目画像 | rui init 全量重生 |
-| \`docs/故事任务面板/\` | 故事产出（每故事独立目录） | rui doc/code 生成 |
+\`\`\`mermaid
+flowchart TD
+    Root[${p.project}/] --> Skills[skills/rui/<br/>命令面+公式+脚本]
+    Root --> Agents[agents/<br/>6 角色契约]
+    Root --> Rules[rules/<br/>5 跨场景约束]
+    Root --> Docs[docs/故事任务面板/<br/>故事产出目录]
+    Skills --> Formulas[formulas.md<br/>文档公式 F.story.*]
+    Skills --> Coder[coder.md<br/>目录+数据契约]
+    Skills --> Scripts[scripts/<br/>init·list·recommend·state·...]
+\`\`\`
 
-### 故事目录骨架（${p.story_defaults.skeleton}）
+| 目录 | 内容 |
+|------|------|
+| \`skills/rui/\` | 命令面定义、文档公式、目录/数据契约、执行脚本 |
+| \`agents/\` | pm · coder · tester · reporter · security · self-improve 角色契约 |
+| \`rules/\` | code-pipeline · delivery-gate · doc-generation · self-improve · rui-claude |
+| \`docs/故事任务面板/\` | 故事产出目录，每个故事独立子目录，含主线文档 + 附属数据 |
+
+### 故事目录骨架
 
 \`\`\`
 docs/故事任务面板/<Project>/<name>/
 ${skeletonLines.join('\n')}
 \`\`\`
 
-## 项目画像
+## 管线一览
 
-| 维度 | 值 |
-|------|-----|
-| 类型 | ${p.type_label} |
-| 架构 | ${p.architecture.pattern} |
-| Coder 公式 | ${p.coder_formula.text} |
-| 安全面 | ${p.security_surface.signals.join(' · ') || '无显著安全面'} |
-| 测试 | ${p.test_framework.framework || '未配置'} |
-| CI/CD | ${p.ci_config.provider || '未配置'} |
-| 构建 | ${p.manifest.build_commands.join(' · ') || '无'} |
+\`\`\`mermaid
+flowchart LR
+    A[需求解析] --> B[自适应规划] --> C[影响分析] --> D[架构设计] --> E[文档生成]
+    E --> F[预检<br/>分支隔离] --> G[Gate A<br/>测试先行] --> H[实现] --> I[Gate B<br/>验证] --> J[自改进] --> K[交付]
+    K --> K1[追加日志] --> K2[文档同步] --> K3[发送通知]
+\`\`\`
+
+每阶段产出对应编号文件（01–08），完成后三步交付管线按序触发 import-docs 文档同步 + wework-bot 通知。
 `;
 }
 
@@ -454,4 +563,4 @@ function weworkBotConfig(p) {
 
 // ── Exports ────────────────────────────────────────────────────
 
-module.exports = { readmeMd, claudeMdProjectSection, claudeMdFull, storySkeletonDocs, weworkBotConfig };
+module.exports = { projectSnapshot, readmeMd, claudeMdProjectSection, claudeMdFull, storySkeletonDocs, weworkBotConfig };

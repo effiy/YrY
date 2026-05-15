@@ -6,7 +6,7 @@ paths:
 
 # delivery-gate
 
-> **口诀：标记即证据，用 rui 必触发。** 每个 `/rui` 末端三步交付按序执行，每步必标记。未标记 = 未执行。import-docs 和 wework-bot 是 rui 管线的强制组成部分，不可省略。
+> 每个 `/rui` 末端三步交付按序执行，每步必标记。未标记 = 未执行。import-docs 和 wework-bot 是 rui 管线的强制组成部分，不可省略。
 
 ```mermaid
 flowchart LR

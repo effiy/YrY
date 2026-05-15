@@ -5,7 +5,7 @@ paths:
 
 # rui-claude
 
-> **口诀：限范围、走管线、不自推。** 操作仅限 `.claude/`，变更走 rui code 管线，git 由开发者手动操作。
+> 操作仅限 `.claude/`，变更走 rui code 管线，git 由开发者手动操作。
 
 ```mermaid
 flowchart LR

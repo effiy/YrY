@@ -6,7 +6,7 @@ paths:
 
 # self-improve
 
-> **口诀：有据才发、对基线断、单次不阻。** 无 snapshot 不出提案，诊断以基线为锚，单次执行不阻断主流程。
+> 无 snapshot 不出提案，诊断以基线为锚，单次执行不阻断主流程。
 
 ```mermaid
 flowchart LR

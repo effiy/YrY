@@ -1,6 +1,6 @@
 # Agents
 
-> **口诀：指人、给据、收口。** 每条决策必有人负责，每个结论必有证据，每个变更必收闭环。
+> 每条决策必有人负责，每个结论必有证据，每个变更必收闭环。
 
 哲学源头 [CLAUDE.md](../CLAUDE.md)：信模型、惜注意、验现实。本文件是角色总览与共用底线，专项契约见各 agent 文件。
 
@@ -21,14 +21,14 @@ flowchart LR
     classDef side fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
-| Agent | 口诀 | 一句话 | 触发 |
+| Agent | 一句话 | 触发 |
 |-------|------|--------|------|
-| [pm](./pm.md) | 拆·排·收 | 决定做/不做/延期，串起所有 Agent | rui 入口、自适应规划、反思钩子、init |
-| [coder](./coder.md) | 分·清·追 | 逐模块实现，P0 清零方过模块 | rui 预检/实现/影响分析 |
-| [tester](./tester.md) | 先·覆·断 | 测试先行，Gate A 阻编码、Gate B 阻交付 | rui 测试先行/验证 |
-| [reporter](./reporter.md) | 记·引·串 | 写发生过的事，三报告交叉闭合 | rui 验证/交付/策展 |
-| [security](./security.md) | 建·注·卡 | 威胁建模 → 写入 §3 → P0 卡发布 | pm 安全审查委派 |
-| [self-improve](./self-improve.md) | 采·断·出 | 采数据 → 出诊断 → 写提案 | rui 自改进阶段 |
+| [pm](./pm.md) | 决定做/不做/延期，串起所有 Agent | rui 入口、自适应规划、反思钩子、init |
+| [coder](./coder.md) | 逐模块实现，P0 清零方过模块 | rui 预检/实现/影响分析 |
+| [tester](./tester.md) | 测试先行，Gate A 阻编码、Gate B 阻交付 | rui 测试先行/验证 |
+| [reporter](./reporter.md) | 写发生过的事，三报告交叉闭合 | rui 验证/交付/策展 |
+| [security](./security.md) | 威胁建模 → 写入 §3 → P0 卡发布 | pm 安全审查委派 |
+| [self-improve](./self-improve.md) | 采数据 → 出诊断 → 写提案 | rui 自改进阶段 |
 
 ---
 
