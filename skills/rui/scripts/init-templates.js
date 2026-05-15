@@ -71,8 +71,6 @@ function _effectiveSignals(p) {
  */
 function claudeMdFull(p) {
   const archCtx = _archContext(p);
-  const degrad = _degradationSignals(p);
-  const effSig = _effectiveSignals(p);
   const techStack = p.manifest.tech_stack.length ? p.manifest.tech_stack.join(' · ') : '未识别';
   const buildCmd = p.manifest.build_commands.length ? p.manifest.build_commands.join(' · ') : '无构建命令';
   const testCmd = p.manifest.test_commands.length ? p.manifest.test_commands.join(' · ') : '无测试命令';
@@ -80,11 +78,10 @@ function claudeMdFull(p) {
   const testRun = p.test_framework.runner_command || testCmd;
   const ecoList = p.manifest.ecosystems.length ? p.manifest.ecosystems.join(' · ') : '未识别';
   const secList = p.security_surface.signals.length ? p.security_surface.signals.join(' · ') : '无显著安全面';
-  const bottomCount = [p.security_surface.auth, true, p.security_surface.user_input, p.security_surface.data_storage].filter(Boolean).length;
 
   return `# CLAUDE.md
 
-> **${p.project}** — ${p.type_label} ${p.architecture.pattern} 项目。${p.coder_formula.focus}。
+> **${p.project}** — ${p.type_label} · ${p.architecture.pattern} 架构。
 > 三公理推导一切——基础信念是 why，工作原则是设计约束，执行准则是日常动作。
 
 ## 基础信念
@@ -119,7 +116,7 @@ flowchart LR
 
 ## 项目画像
 
-**${p.project}** 是一个 ${p.type_label} 项目（${p.architecture.pattern} 架构），基于 ${ecoList} 生态。
+**${p.project}** 是一个 ${p.type_label}（${p.architecture.pattern} 架构），基于 ${ecoList} 生态。
 
 | 维度 | 值 |
 |------|-----|
@@ -130,9 +127,6 @@ flowchart LR
 | 测试框架 | ${testFw} |
 | 测试命令 | ${testRun} |
 | 安全面 | ${secList} |
-| Coder 公式 | ${p.coder_formula.text} |
-
-> ${p.coder_formula.text} — ${p.coder_formula.focus}。
 
 ## 执行准则
 
@@ -144,25 +138,11 @@ flowchart LR
 
 **目标驱动。** 先写失败测试再通过。"看起来没问题"等于没做。运行 \`${testRun}\` 验证。
 
-**完成通知。** 做完或卡住都同步状态。沉默比失败更危险。**rui 管线必须触发 import-docs 文档同步 + wework-bot 通知，未触发等于未完成。**
+**完成通知。** 做完或卡住都同步状态。沉默比失败更危险。
 
 **表达优先：图 → 结构化文本 → 表。**
 
-**生效标志：${effSig}**
-
-## 退化对策
-
-类型、合约、运行结果是可见的——它们自己就在说话。${degrad} 规则本身消耗注意力，优先让类型系统、测试用例和构建命令自己说话。
-
 ${claudeMdProjectSection(p)}
-
-以上是针对 **${p.project}** 的不可妥协底线，由 \`rui init\` 从安全面探测结果生成，每次 \`rui init\` 全量重生。
-
-## 自约束
-
-- **更短优先。** 本文件的准则与对策针对 **${p.project}** 的实际技术栈和架构定制，不应长于其指导的任何模块文件。
-- **预算上限。** 公理 3 条 / 原则 6 条 / 准则 7 条——这是上限，不是下限。项目安全底线 ${bottomCount} 条，由 rui init 探测决定。
-- **增长触发审视。** 如果本文件增长，说明 **${p.project}** 的某条推导失效了，或某层在做下一层的事。重新运行 \`/rui init\` 全量重生。
 `;
 }
 
@@ -431,32 +411,32 @@ ${snap}
 function readmeMd(p) {
   const techStack = p.manifest.tech_stack.length > 0 ? p.manifest.tech_stack : ['待补充'];
   const ecoList = p.manifest.ecosystems.length ? p.manifest.ecosystems.join(' · ') : '待补充';
-  const capDesc = { frontend: '前端应用', backend: '后端服务', fullstack: '全栈应用', meta: 'Claude Code 插件/配置' }[p.type] || '软件项目';
+  const capDesc = { frontend: '前端应用', backend: '后端服务', fullstack: '全栈应用', meta: '项目' }[p.type] || '软件项目';
   const secList = p.security_surface.signals.length ? p.security_surface.signals.join(' · ') : '无显著安全面';
   const testFw = p.test_framework.framework || '待配置';
   const testCmd = p.manifest.test_commands[0] || p.test_framework.runner_command || '待配置';
   const buildCmd = p.manifest.build_commands[0] || '待配置';
-  const installCmd = ecoList.includes('node') ? 'npm install' : (ecoList.includes('python') ? 'pip install -r requirements.txt' : '见构建文档');
+  const installCmd = ecoList.includes('node') ? 'npm install' : (ecoList.includes('python') ? 'pip install -r requirements.txt' : (ecoList.includes('go') ? 'go mod download' : '见构建文档'));
   const runCmdHint = ecoList.includes('node') ? 'npm start / npm run dev' : (ecoList.includes('python') ? 'python main.py / uvicorn ...' : (ecoList.includes('go') ? 'go run .' : '见运行文档'));
   const deps = [...(p.manifest.dependencies.production || []), ...(p.manifest.dependencies.dev || [])];
   const keyDeps = deps.slice(0, 8);
+  const bottomLines = [p.security_surface.auth ? '认证不可绕过' : null, '密钥不落盘', p.security_surface.user_input ? '输入必校验' : null, p.security_surface.data_storage ? '数据不裸存' : null].filter(Boolean);
 
   return `# ${p.project}
 
-> ${capDesc} · ${p.coder_formula.focus}。
+> ${capDesc} · ${p.architecture.pattern} 架构 · ${ecoList}
 
 ## 项目概览
 
-**${p.project}** 是一个 ${p.type_label}（${p.architecture.pattern} 架构），基于 ${ecoList} 生态构建。
-${p.coder_formula.focus === '规则完整性与集成契约' ? '本项目管理 Claude Code 的 agents/rules/skills 配置，提供 SDLC 管线编排（故事 → 文档 → 代码 → 交付），集成企微通知与文档同步。' : `本项目遵循「${p.coder_formula.text}」的模块化组织方式，覆盖 ${secList} 等安全面。`}
+**${p.project}** 是一个基于 ${ecoList} 生态的 ${p.type_label}。${p.coder_formula.focus}。
 
 | 属性 | 值 |
 |------|-----|
 | 类型 | ${p.type_label} |
 | 架构 | ${p.architecture.pattern} |
-| 生态 | ${ecoList} |
-| 管线 | /rui init → /rui doc → /rui code → 交付 |
-| 安全底线 | ${['认证不可绕过', '密钥不落盘', '输入必校验'].filter((_, i) => [p.security_surface.auth, true, p.security_surface.user_input][i]).join(' · ') || '认证不可绕过 · 密钥不落盘'} |
+| 运行时 | ${ecoList} |
+| 安全面 | ${secList} |
+| 安全底线 | ${bottomLines.join(' · ')} |
 
 ## 技术栈
 
@@ -476,13 +456,8 @@ ${p.project}/
 ├── src/                        # 源代码
 ├── tests/                      # 测试文件
 ├── docs/                       # 项目文档
-│   └── 故事任务面板/            # SDLC 故事产出（每故事独立子目录）
-├── .claude/                    # Claude Code 配置
-│   ├── agents/                 # 6 角色契约（pm · coder · tester · reporter · security · self-improve）
-│   ├── rules/                  # 跨场景约束（管线 · 交付门 · 文档生成 · 自改进）
-│   ├── skills/                 # 技能定义（rui · rui-claude · wework-bot · import-docs）
-│   └── settings.json           # 权限 + Stop hooks（文档同步 · 企微通知）
-├── CLAUDE.md                   # AI 协作指令（基础信念 · 工作原则 · 项目约束）
+├── scripts/                    # 构建/部署脚本
+├── CLAUDE.md                   # AI 协作指令
 └── README.md                   # 本文件
 \`\`\`
 
@@ -501,35 +476,6 @@ ${testCmd}
 # 4. 启动
 ${runCmdHint}
 \`\`\`
-
-> **SDLC 管线命令**（详见 [CLAUDE.md](./CLAUDE.md)）：
-> \`/rui init\` 建立基线 → \`/rui doc <需求>\` 拆故事 → \`/rui code <name>\` 实现交付。
-> \`/rui list\` 查看进度，\`/rui\` 获取推荐。
-
-## 核心模块
-
-### 管线编排 — \`skills/rui/\`
-${p.type === 'meta' ? '命令面定义（SKILL.md）、文档公式（formulas.md）、目录/数据契约（coder.md）及 init · list · recommend · state · loop 等执行脚本。' : 'SDLC 管线入口，驱动 pm 拆故事 → coder 实现 → tester 验证 → reporter 报告 → 自改进复盘。'}
-
-### 角色系统 — \`agents/\`
-${p.type === 'meta' ? '6 个角色的行为契约：pm（决策）、coder（实现）、tester（质量）、reporter（报告）、security（安全）、self-improve（改进）。' : 'pm 决策调度，coder 逐模块实现（P0 清零），tester Gate A/B 双重卡点，security 威胁建模，reporter 交叉闭合报告。'}
-
-### 交付管线 — \`rules/\` + hooks
-${p.type === 'meta' ? 'code-pipeline（分支隔离 + 测试先行）、delivery-gate（三步交付）、doc-generation（文档模板）、self-improve（复盘改进）、rui-claude（配置管理）。' : '分支隔离 → Gate A 测试先行 → 逐模块实现 → Gate B 验证 → 自改进复盘。Stop hooks 按序触发：通知日志 → 文档同步 → 企微通知 → 交付门检。'}
-
-### 集成服务 — \`skills/import-docs/\` · \`skills/wework-bot/\`
-${p.type === 'meta' ? 'import-docs 批量同步文档到远端 API；wework-bot 通过企微机器人发送管线通知。' : '自动同步故事文档到远端，企微机器人推送管线状态通知。'}
-
-## SDLC 管线
-
-\`\`\`mermaid
-flowchart LR
-    A[需求解析] --> B[自适应规划] --> C[影响分析] --> D[架构设计] --> E[文档基线]
-    E --> F[Gate A<br/>测试先行] --> G[逐模块实现<br/>P0 清零] --> H[Gate B<br/>验证闭合] --> I[自改进] --> J[交付]
-    J --> K1[文档同步] --> K2[企微通知]
-\`\`\`
-
-每阶段产出对应编号文件（01–08 故事文档），交付时自动触发 import-docs 同步 + wework-bot 通知。完整命令参考见 [CLAUDE.md](./CLAUDE.md)。
 `;
 }
 
