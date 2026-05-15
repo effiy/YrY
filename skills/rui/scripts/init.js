@@ -209,14 +209,19 @@ function generate(profile, opts = {}) {
   // ── wework-bot config ──
   const pluginRoot = findPluginRoot();
   const claudeDir = path.join(REPO_ROOT, '.claude');
-
   const weworkConfigPath = path.join(claudeDir, 'skills', 'wework-bot', 'config.json');
-  const pluginWeworkConfigPath = path.join(pluginRoot, 'skills', 'wework-bot', 'config.json');
-  let weworkPluginCfg = null;
-  if (fs.existsSync(pluginWeworkConfigPath)) {
-    try { weworkPluginCfg = JSON.parse(fs.readFileSync(pluginWeworkConfigPath, 'utf8')); } catch {}
+
+  if (fs.existsSync(weworkConfigPath)) {
+    // 项目已有配置，保留不覆盖
+    result.created.push({ path: rel(weworkConfigPath), action: 'kept', source: 'wework-bot/config.json (项目已有)' });
+  } else {
+    const pluginWeworkConfigPath = path.join(pluginRoot, 'skills', 'wework-bot', 'config.json');
+    let weworkPluginCfg = null;
+    if (fs.existsSync(pluginWeworkConfigPath)) {
+      try { weworkPluginCfg = JSON.parse(fs.readFileSync(pluginWeworkConfigPath, 'utf8')); } catch {}
+    }
+    write(weworkConfigPath, T.weworkBotConfig(p, weworkPluginCfg), result, 'skills/wework-bot/config.json');
   }
-  write(weworkConfigPath, T.weworkBotConfig(p, weworkPluginCfg), result, 'skills/wework-bot/config.json');
 
   return result;
 }
@@ -416,7 +421,7 @@ function printReport(profile, gen, ver) {
   }
   console.log(`## 产物 (${counts.created} 创建 · ${counts.overwritten} 更新)`);
   for (const item of gen.created) {
-    const g = item.action.includes('will-') ? '◇' : item.action.includes('overwrit') ? '↻' : '+';
+    const g = item.action.includes('will-') ? '◇' : item.action === 'kept' ? '=' : item.action.includes('overwrit') ? '↻' : '+';
     console.log(`  ${g} ${item.path}  ← ${item.source}`);
   }
   console.log('');
