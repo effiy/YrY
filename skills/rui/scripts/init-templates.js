@@ -35,13 +35,57 @@ ${bottomLines.join('\n')}
 <!-- rui:project-end -->`;
 }
 
+// ── 项目上下文 helpers ──────────────────────────────────────────
+
+function _degradationSignals(p) {
+  const map = {
+    frontend: '关注组件接口漂移（Props/Events/Expose 变更未同步）、状态管理退化（store 散落）、视觉回归。',
+    backend: '关注 API 契约漂移（接口签名变更未同步文档）、数据模型与 schema 不匹配、中间件链断裂。',
+    fullstack: '关注前后端契约不对齐（接口签名/字段名/错误码不一致）、数据流断裂（前端期望与后端返回不匹配）。',
+    meta: '关注规则冲突（多规则重叠覆盖同一场景）、配置漂移（远端与本地不一致）。',
+  };
+  return map[p.type] || '关注模块边界模糊、接口隐式耦合。';
+}
+
+function _archContext(p) {
+  const map = {
+    monorepo: '跨包子项目影响先分析再动手。',
+    microservice: '服务间契约先对齐再动手。',
+  };
+  return map[p.architecture?.pattern] || '模块边界先明确再动手。';
+}
+
+function _effectiveSignals(p) {
+  const map = {
+    frontend: '组件接口无漂移（Props/Events/Expose 变更已同步评审），视觉回归已截图对比。',
+    backend: 'API 契约无断裂（接口签名/错误码/数据模型与评审对齐）。',
+    fullstack: '前后端契约对齐（接口签名一致，数据流闭合），组件接口无漂移。',
+    meta: '配置漂移已检测（远端与本地 diff 可复核），规则冲突已排查。',
+  };
+  return map[p.type] || '接口契约与评审对齐，测试覆盖闭合，交付管线全部触发。';
+}
+
 /**
  * 生成完整 CLAUDE.md（当文件不存在时使用）。
+ * 以插件 CLAUDE.md 为哲学框架，针对项目 profile 重写执行准则、退化对策、自约束。
  */
 function claudeMdFull(p) {
+  const archCtx = _archContext(p);
+  const degrad = _degradationSignals(p);
+  const effSig = _effectiveSignals(p);
+  const techStack = p.manifest.tech_stack.length ? p.manifest.tech_stack.join(' · ') : '未识别';
+  const buildCmd = p.manifest.build_commands.length ? p.manifest.build_commands.join(' · ') : '无构建命令';
+  const testCmd = p.manifest.test_commands.length ? p.manifest.test_commands.join(' · ') : '无测试命令';
+  const testFw = p.test_framework.framework || '未配置';
+  const testRun = p.test_framework.runner_command || testCmd;
+  const ecoList = p.manifest.ecosystems.length ? p.manifest.ecosystems.join(' · ') : '未识别';
+  const secList = p.security_surface.signals.length ? p.security_surface.signals.join(' · ') : '无显著安全面';
+  const bottomCount = [p.security_surface.auth, true, p.security_surface.user_input, p.security_surface.data_storage].filter(Boolean).length;
+
   return `# CLAUDE.md
 
-> 三公理推导一切——基础信念是 why，工作原则是设计约束，执行准则是日常动作。读完此文件，应能说出每个动作背后的那条公理。
+> **${p.project}** — ${p.type_label} ${p.architecture.pattern} 项目。${p.coder_formula.focus}。
+> 三公理推导一切——基础信念是 why，工作原则是设计约束，执行准则是日常动作。
 
 ## 基础信念
 
@@ -73,33 +117,52 @@ flowchart LR
 | **释义** 说清楚 | 惜注意 | 人看不懂，正确也没意义 | 一段话三层从句解释一件事 |
 | **对等** 称轻重 | 全部 | 投入与改动量、风险等级匹配 | 改注释和重写核心循环走同套流程 |
 
+## 项目画像
+
+**${p.project}** 是一个 ${p.type_label} 项目（${p.architecture.pattern} 架构），基于 ${ecoList} 生态。
+
+| 维度 | 值 |
+|------|-----|
+| 类型 | ${p.type_label} |
+| 架构 | ${p.architecture.pattern} |
+| 技术栈 | ${techStack} |
+| 构建 | ${buildCmd} |
+| 测试框架 | ${testFw} |
+| 测试命令 | ${testRun} |
+| 安全面 | ${secList} |
+| Coder 公式 | ${p.coder_formula.text} |
+
+> ${p.coder_formula.text} — ${p.coder_formula.focus}。
+
 ## 执行准则
 
-**思先于码。** 陈述假设，呈现权衡。不确定就停，问。
+**思先于码。** 陈述假设，呈现权衡。不确定就停，问。${archCtx}
 
-**最少代码。** 只解决这个问题。不请自来的功能、单次抽象、不可能场景的错误处理——不写。
+**最少代码。** 只解决这个问题。不请自来的功能、单次抽象、不可能场景的错误处理——不写。现有依赖已覆盖项目基础设施，避免引入新依赖除非有明确需求。
 
-**精确修改。** 只动必须动的。改动不留残余。每行改动可追溯到请求。
+**精确修改。** 只动必须动的。改动不留残余。每行改动可追溯到请求。验证：\`${buildCmd}\` 通过，\`${testRun}\` 通过。
 
-**目标驱动。** 先写失败测试再通过。"看起来没问题"等于没做。
+**目标驱动。** 先写失败测试再通过。"看起来没问题"等于没做。运行 \`${testRun}\` 验证。
 
 **完成通知。** 做完或卡住都同步状态。沉默比失败更危险。**rui 管线必须触发 import-docs 文档同步 + wework-bot 通知，未触发等于未完成。**
 
 **表达优先：图 → 结构化文本 → 表。**
 
-**生效标志由各 agent 自定义。**
+**生效标志：${effSig}**
 
 ## 退化对策
 
-类型、合约、运行结果是可见的——它们自己就在说话。规则是最后手段，因为规则本身也消耗注意力。
+类型、合约、运行结果是可见的——它们自己就在说话。${degrad} 规则本身消耗注意力，优先让类型系统、测试用例和构建命令自己说话。
 
 ${claudeMdProjectSection(p)}
 
+以上是针对 **${p.project}** 的不可妥协底线，由 \`rui init\` 从安全面探测结果生成，每次 \`rui init\` 全量重生。
+
 ## 自约束
 
-- **更短优先。** 本文件应比它指导的任何文件更短。
-- **预算上限。** 公理数量 / 原则数量 / 准则数量——这是上限，不是下限。
-- **增长触发审视。** 如果它增长了，说明某条推导失效了，或某层在做下一层的事。
+- **更短优先。** 本文件的准则与对策针对 **${p.project}** 的实际技术栈和架构定制，不应长于其指导的任何模块文件。
+- **预算上限。** 公理 3 条 / 原则 6 条 / 准则 7 条——这是上限，不是下限。项目安全底线 ${bottomCount} 条，由 rui init 探测决定。
+- **增长触发审视。** 如果本文件增长，说明 **${p.project}** 的某条推导失效了，或某层在做下一层的事。重新运行 \`/rui init\` 全量重生。
 `;
 }
 
@@ -545,20 +608,28 @@ flowchart LR
 
 // ── wework-bot config.json ─────────────────────────────────────
 
-function weworkBotConfig(p) {
-  return JSON.stringify({
-    default_robot: 'general',
-    api_url: 'https://api.effiy.cn/wework/send-message',
-    robots: {
-      general: {
-        webhook_url: 'YOUR_WEBHOOK_URL_HERE'
-      }
-    },
-    agents: {
-      rui: 'general'
-    },
-    _comment: '由 rui init 生成。请替换 YOUR_WEBHOOK_URL_HERE 为实际的企业微信机器人 webhook URL。'
-  }, null, 2) + '\n';
+function weworkBotConfig(p, pluginCfg) {
+  // 从插件配置读取默认值，项目未配置时自动回退到插件通知
+  const apiUrl = (pluginCfg && pluginCfg.api_url) || 'https://api.effiy.cn/wework/send-message';
+  const webhookUrl = (pluginCfg && pluginCfg.robots && pluginCfg.robots.general && pluginCfg.robots.general.webhook_url) || 'YOUR_WEBHOOK_URL_HERE';
+  const defaultRobot = (pluginCfg && pluginCfg.default_robot) || 'general';
+  const agents = (pluginCfg && pluginCfg.agents) || { rui: 'general' };
+  const robots = (pluginCfg && pluginCfg.robots) || { general: { webhook_url: 'YOUR_WEBHOOK_URL_HERE' } };
+
+  const cfg = {
+    default_robot: defaultRobot,
+    api_url: apiUrl,
+    robots,
+    agents,
+  };
+
+  if (webhookUrl === 'YOUR_WEBHOOK_URL_HERE') {
+    cfg._comment = '由 rui init 生成。请替换 YOUR_WEBHOOK_URL_HERE 为实际的企业微信机器人 webhook URL。未配置时将回退到插件通知。';
+  } else {
+    cfg._comment = '由 rui init 生成。当前使用插件默认通知配置，如需变更请修改 webhook_url。';
+  }
+
+  return JSON.stringify(cfg, null, 2) + '\n';
 }
 
 // ── Exports ────────────────────────────────────────────────────

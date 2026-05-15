@@ -1,6 +1,6 @@
 # YrY
 
-> rui 故事驱动 SDLC 编排器 — 插件/配置元项目。
+> 插件/配置系统开发，规则完整性与集成契约。
 
 ```mermaid
 flowchart LR
@@ -15,7 +15,7 @@ flowchart LR
     classDef claude fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
-**YrY** 是 rui SDLC 编排器的元项目，定义命令面、角色契约、管线规则、文档公式与执行脚本。每条需求从故事拆分到代码交付全自动串行，产物内聚于 `docs/故事任务面板/`。
+**YrY** 是一个 元项目(插件/配置) 项目（single 架构），基于 未识别 生态构建。安全面涉及 认证授权 · 第三方调用 · 用户输入。
 
 | 维度 | 值 |
 |------|-----|
@@ -45,6 +45,7 @@ flowchart LR
 
 扫描项目五类信号（类型 · 清单 · 安全面 · 测试框架 · 架构），按 profile 全量生成 CLAUDE.md 项目约束段、README.md、`.claude/`（agents/rules/skills）、故事面板目录及骨架文档。可重复运行。
 
+```bash
 ### 2. 拆需求为故事
 
 ```bash
@@ -120,7 +121,7 @@ flowchart TD
 
 | 目录 | 内容 |
 |------|------|
-| `skills/rui/` | 命令面定义（SKILL.md）、文档公式（formulas.md）、目录/数据契约（coder.md）、执行脚本 |
+| `skills/rui/` | 命令面定义、文档公式、目录/数据契约、执行脚本 |
 | `agents/` | pm · coder · tester · reporter · security · self-improve 角色契约 |
 | `rules/` | code-pipeline · delivery-gate · doc-generation · self-improve · rui-claude |
 | `docs/故事任务面板/` | 故事产出目录，每个故事独立子目录，含主线文档 + 附属数据 |
@@ -130,11 +131,9 @@ flowchart TD
 ```
 docs/故事任务面板/<Project>/<name>/
 ├── 01-故事任务.md              ← 唯一真相源（pm）
-├── 02-后端技术评审.md          ← coder + security（后端/全栈）
-├── 03-前端技术评审.md          ← coder（前端/全栈）
+├── 02-后端技术评审.md          ← coder + security
 ├── 04-测试用例评审.md          ← tester
-├── 05-后端实施报告.md          ← 验证阶段（后端/全栈）
-├── 06-前端实施报告.md          ← 验证阶段（前端/全栈）
+├── 05-后端实施报告.md          ← 验证阶段
 ├── 07-测试用例报告.md          ← tester
 ├── 08-自改进复盘.md            ← pm + reporter
 ├── 00-消息通知列表.md          ← 自动（hook）

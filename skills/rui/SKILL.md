@@ -96,21 +96,45 @@ flowchart LR
 
 ## init 简述
 
-> 四步：探（扫描项目五类信号）→ 生（按 profile 生成 CLAUDE.md / README.md / `.claude/` / 故事骨架文档）→ 验（7 项就绪检查）→ 触（import-docs 同步 + wework-bot 通知）。
+> 五步：探（脚本探测五类信号）→ 察（大模型深度探索项目）→ 生（大模型生成 CLAUDE.md / README.md / 骨架文档）→ 搭（脚本机械性搭建 agents/rules/skills）→ 验（7 项就绪检查）→ 触（import-docs 同步 + wework-bot 通知）。
 >
-> **核心设计**：init 负责项目基线（CLAUDE.md 项目约束 · README.md · `.claude/` · `docs/故事任务面板/` 目录 + 骨架文档），可重复运行，每次全量重生。完成后主动触发文档同步和通知。
+> **核心设计**：init 负责项目基线。**所有内容文件（CLAUDE.md、README.md、骨架文档）全部由大模型通过深度项目探索生成**，JS 脚本默认不做任何内容生成，只负责探测信号和机械性搭建（目录创建、agents/rules 从插件复制、skills 配置、验证、触发）。`--template` 标志可启用 JS 模板回退。可重复运行，每次全量重生。
 
 ```mermaid
 flowchart LR
-    P1[detect<br/>五类信号扫描]:::s --> P2[generate<br/>基线全量重生]:::s --> P3[verify<br/>就绪检查]:::s --> P4[trigger<br/>同步+通知]:::s --> P5[记忆<br/>.init-memory]
-    P3 -.失败.-> Fix[exit 1<br/>修复后重跑]
-    P4 -.通过.-> Ready[基线就绪]
+    P1[detect<br/>脚本探测五类信号]:::s --> P2[explore<br/>大模型深度探索项目]:::llm --> P3[generate<br/>大模型生成全部内容]:::llm --> P4[setup<br/>脚本机械搭建]:::s --> P5[verify<br/>就绪检查]:::s --> P6[trigger<br/>同步+通知]:::s --> P7[记忆<br/>.init-memory]
+    P5 -.失败.-> Fix[exit 1<br/>修复后重跑]
+    P6 -.通过.-> Ready[基线就绪]
     classDef s fill:#e3f2fd,stroke:#1565c0;
+    classDef llm fill:#fff3e0,stroke:#e65100;
 ```
 
-### 1. detect — 扫描项目（事实层）
+### 执行流程
 
-五类信号汇聚为内存 profile 对象，驱动产物生成：
+```
+1. node init.js --profile-only  → 获取 profile JSON（项目类型/技术栈/安全面/测试框架/架构）
+2. 大模型深度探索项目           → 阅读关键源码、理解架构模式、识别代码规范、发现安全面
+3. 大模型生成全部内容文件       → CLAUDE.md · README.md · docs/故事任务面板/<project>/.skeleton/*.md
+4. node init.js                 → 默认行为：机械性搭建（目录 · agents/rules 复制 · skills 配置 · 验证 · 触发同步+通知）
+```
+
+`node init.js` 默认只做机械性搭建，跳过所有内容生成。如需 JS 模板回退：`node init.js --template`。
+
+### 重复运行：增量改进
+
+`rui init` 可重复运行。再次运行时，大模型必须：
+
+1. **读取已有文件** — 检查 CLAUDE.md、README.md、骨架文档是否已存在
+2. **保留人工定制** — 用户手动修改的内容不覆盖（特别是项目约束段外的自定义内容）
+3. **增量更新** — 只改变了的部分：profile 信号变了 → 更新项目画像表；安全面变了 → 更新约束段；新依赖 → 更新技术栈
+4. **优化改进** — 已有内容可读性差 → 优化表达；格式不统一 → 统一格式；过时信息 → 刷新
+5. **CLA.md 标记内替换** — CLAUDE.md 的 `<!-- rui:project-start -->` / `<!-- rui:project-end -->` 段每次全量替换，段外内容保留
+
+**判断是否首次运行**：如果 CLAUDE.md 不含 `rui:project-start` 标记 → 首次，全量生成；含标记 → 重复，增量改进。
+
+### 1. detect — 脚本探测（事实层）
+
+运行 `node skills/rui/scripts/init.js --profile-only` 获取 profile JSON。五类信号：
 
 | 信号 | 来源 | 用途 |
 |------|------|------|
@@ -121,18 +145,47 @@ flowchart LR
 | 测试框架 | 依赖 + 配置文件 | vitest/jest/pytest/go-test/cargo-test |
 | 架构模式 | 项目结构 | single/monorepo/microservice/plugin |
 
-### 2. generate — 全量重生（生成层）
+### 2. explore — 大模型深度探索（理解层）
 
-**每次运行全量重生**（非复制，是按 profile 生成）。产物高度耦合项目实际情况。
+拿到 profile 后，**大模型必须深度探索项目**，不能仅凭 profile 字段生成内容。探索要点：
 
-| 产物 | 裁剪依据 | 项目耦合点 |
-|------|---------|-----------|
-| `CLAUDE.md` | 安全面 + 类型 | 项目约束段（`rui:project-start/end` 标记内替换） |
-| `README.md` | 全部信号 | 项目画像 + 命令流 mermaid + 快速开始 + 结构表 |
-| `.claude/` | 类型 + 安全面 | agents（6 角色契约）/ rules（5 跨场景约束）/ skills config |
-| `docs/故事任务面板/<project>/.skeleton/` | 项目类型 | 按类型裁剪的全套骨架文档（01-08 + 00），含项目快照（图 → 结构化文本 → 表格） |
+- **目录结构**：理解项目组织方式、模块划分、关键目录职责
+- **核心源码**：阅读代表性文件（入口、核心业务、路由、数据模型），理解代码风格和模式
+- **架构模式**：验证 profile 的架构判断，补充具体细节（如 monorepo 的子包职责）
+- **技术栈细节**：确认框架版本、关键依赖、状态管理方案、路由方案
+- **代码规范**：从现有代码推断命名规范、文件组织约定、注释风格
+- **安全面**：验证 profile 的安全面探测，补充遗漏的风险面
 
-### 3. verify — 7 项就绪检查（验证层）
+### 3. generate — 大模型生成内容（生成层）
+
+基于 profile + 深度探索发现，**大模型直接编写文件**（非模板替换）：
+
+| 产物 | 生成要求 | 关键约束 |
+|------|---------|---------|
+| `CLAUDE.md` | 以插件 CLAUDE.md 为哲学框架，针对项目实际情况重写。含基础信念（通用）、工作原则（通用）、项目画像（项目特定）、执行准则（引用实际技术栈/命令）、退化对策（按项目类型）、项目约束（安全底线，含 `rui:project-start/end` 标记）、自约束 | 必须含 `<!-- rui:project-start -->` 和 `<!-- rui:project-end -->` 标记；项目画像表含技术栈/构建命令/测试命令/安全面/Coder公式 |
+| `README.md` | 项目画像 + 命令流 mermaid + 快速开始 + 项目结构 + 管线一览。根据项目类型定制化编写 | 含项目名、技术栈、快速开始命令 |
+| `docs/故事任务面板/<project>/.skeleton/*.md` | 按项目类型裁剪的骨架文档（01-08 + 00），每份含项目快照（mermaid 图 + 结构化表格）。文件名带编号前缀 | 必选文件按项目类型：frontend 含 01/03/04/06/07/08；backend 含 01/02/04/05/07/08；fullstack 全含 |
+
+**生成原则**：
+- CLAUDE.md 以插件 CLAUDE.md 为指导框架（公理/原则保留），但执行准则、退化对策、自约束全部根据项目实际重写
+- README.md 用 mermaid 图 → 结构化表格 → 命令示例表达
+- 骨架文档用 `> 待填充` 标记空白章节，项目快照段填入实际探测数据
+
+### 4. setup — 脚本机械搭建（搭建层）
+
+大模型生成内容文件后，运行 `node skills/rui/scripts/init.js`（默认行为，无需额外标志）完成：
+
+| 操作 | 说明 |
+|------|------|
+| 目录创建 | `docs/故事任务面板/` · `.skeleton/` · `.claude/memory/` · `.claude/.history/` |
+| agents 复制 | 从插件复制 6 角色契约到 `.claude/agents/` |
+| rules 复制 | 从插件复制 5 跨场景约束到 `.claude/rules/` |
+| skills 配置 | 生成 `wework-bot/config.json` · 复制 `formulas.md` · `coder.md` |
+| 验证 | 7 项就绪检查 |
+| 触发 | import-docs 文档同步 + wework-bot 通知 |
+| 记忆 | 写入 `.init-memory.json` |
+
+### 5. verify — 7 项就绪检查（验证层）
 
 任一失败 `exit 1`：
 
@@ -146,7 +199,7 @@ flowchart LR
 | 6 | `.claude/rules` | 目录存在且 ≥ 3 个规则文件 |
 | 7 | `.claude/skills` | wework-bot config.json 存在 |
 
-### 4. trigger — 主动触发（集成层）
+### 6. trigger — 主动触发（集成层）
 
 验证通过后主动触发：
 
@@ -155,15 +208,15 @@ flowchart LR
 | `import-docs --workspace` | `API_X_TOKEN` 存在 | 缺 token 跳过，网络失败告警不阻断 |
 | `wework-bot --agent rui` | `API_X_TOKEN` + `WEWORK_BOT_WEBHOOK_URL` 存在 | 缺凭据跳过 |
 
-### 5. 产物
+### 7. 产物
 
-| 路径 | 用途 | 重复运行 |
-|------|------|---------|
-| `CLAUDE.md` | 项目约束（`rui:project-start/end` 段） | 段内全量替换 |
-| `README.md` | 系统视图 + 命令流 + 项目画像 | 全量重生 |
-| `.claude/` | agents/rules/skills 配置 | 全量重生 |
-| `docs/故事任务面板/<project>/.skeleton/*.md` | 故事骨架模板（含项目快照） | 全量重生 |
-| `docs/故事任务面板/.init-memory.json` | 执行记录 | 每次覆盖 |
+| 路径 | 用途 | 生成方式 | 重复运行 |
+|------|------|---------|---------|
+| `CLAUDE.md` | 项目约束 + 执行准则 + 退化对策 | 大模型 | 全量重生 |
+| `README.md` | 系统视图 + 命令流 + 项目画像 | 大模型 | 全量重生 |
+| `.claude/` | agents/rules/skills 配置 | 脚本复制 | 全量重生 |
+| `docs/故事任务面板/<project>/.skeleton/*.md` | 故事骨架模板（含项目快照） | 大模型 | 全量重生 |
+| `docs/故事任务面板/.init-memory.json` | 执行记录 | 脚本 | 每次覆盖 |
 
 ## doc 简述
 

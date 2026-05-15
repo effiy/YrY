@@ -176,9 +176,10 @@ function extractManifest(root) {
 // 2. GENERATE — 按 profile 生成产物
 // ═══════════════════════════════════════════════════════════════
 
-function generate(profile) {
+function generate(profile, opts = {}) {
   const result = { created: [], skipped: [], dirs: [] };
   const p = profile;
+  const skipContent = opts.skipContent === true;
 
   // 目录结构
   const storyDir = path.join(REPO_ROOT, 'docs', '故事任务面板');
@@ -189,35 +190,41 @@ function generate(profile) {
   result.dirs.push({ path: `docs/故事任务面板/${p.project}/.skeleton`, action: 'ensured' });
 
   // ── CLAUDE.md 生成/更新 ──
-  const claudePath = path.join(REPO_ROOT, 'CLAUDE.md');
-  if (fs.existsSync(claudePath)) {
-    // 已有 CLAUDE.md → 只替换 project-start/end 段
-    const existing = fs.readFileSync(claudePath, 'utf8');
-    const startMarker = '<!-- rui:project-start -->';
-    const endMarker = '<!-- rui:project-end -->';
-    const startIdx = existing.indexOf(startMarker);
-    const endIdx = existing.indexOf(endMarker);
-    if (startIdx !== -1 && endIdx !== -1) {
-      const newContent = existing.slice(0, startIdx) + T.claudeMdProjectSection(p) + existing.slice(endIdx + endMarker.length);
-      write(claudePath, newContent, result, 'CLAUDE.md (项目约束段)');
-    } else {
-      // 无标记 → 在文件末尾追加
-      const section = '\n' + T.claudeMdProjectSection(p) + '\n';
-      write(claudePath, existing + section, result, 'CLAUDE.md (追加项目约束)');
-    }
+  if (skipContent) {
+    result.skipped.push({ path: 'CLAUDE.md', reason: '默认由大模型生成（--template 启用 JS 模板）' });
+    result.skipped.push({ path: 'README.md', reason: '默认由大模型生成（--template 启用 JS 模板）' });
+    result.skipped.push({ path: `docs/故事任务面板/${p.project}/.skeleton/*.md`, reason: '默认由大模型生成（--template 启用 JS 模板）' });
   } else {
-    // 无 CLAUDE.md → 全量生成
-    write(claudePath, T.claudeMdFull(p), result, 'CLAUDE.md (全量生成)');
-  }
+    const claudePath = path.join(REPO_ROOT, 'CLAUDE.md');
+    if (fs.existsSync(claudePath)) {
+      // 已有 CLAUDE.md → 只替换 project-start/end 段
+      const existing = fs.readFileSync(claudePath, 'utf8');
+      const startMarker = '<!-- rui:project-start -->';
+      const endMarker = '<!-- rui:project-end -->';
+      const startIdx = existing.indexOf(startMarker);
+      const endIdx = existing.indexOf(endMarker);
+      if (startIdx !== -1 && endIdx !== -1) {
+        const newContent = existing.slice(0, startIdx) + T.claudeMdProjectSection(p) + existing.slice(endIdx + endMarker.length);
+        write(claudePath, newContent, result, 'CLAUDE.md (项目约束段)');
+      } else {
+        // 无标记 → 在文件末尾追加
+        const section = '\n' + T.claudeMdProjectSection(p) + '\n';
+        write(claudePath, existing + section, result, 'CLAUDE.md (追加项目约束)');
+      }
+    } else {
+      // 无 CLAUDE.md → 全量生成
+      write(claudePath, T.claudeMdFull(p), result, 'CLAUDE.md (全量生成)');
+    }
 
-  // ── README.md ──
-  write(path.join(REPO_ROOT, 'README.md'), T.readmeMd(p), result, 'README.md');
+    // ── README.md ──
+    write(path.join(REPO_ROOT, 'README.md'), T.readmeMd(p), result, 'README.md');
 
-  // ── 故事目录骨架文档 ──
-  const skeletonDocs = T.storySkeletonDocs(p);
-  for (const doc of skeletonDocs) {
-    const docPath = path.join(skeletonDir, doc.filename);
-    write(docPath, doc.content, result, `骨架/${doc.filename}`);
+    // ── 故事目录骨架文档 ──
+    const skeletonDocs = T.storySkeletonDocs(p);
+    for (const doc of skeletonDocs) {
+      const docPath = path.join(skeletonDir, doc.filename);
+      write(docPath, doc.content, result, `骨架/${doc.filename}`);
+    }
   }
 
   // ── .claude/ 目录结构 ──
@@ -238,9 +245,18 @@ function generate(profile) {
     copyDir(rulesSrc, rulesDst, result, 'rules');
   }
 
-  // skills config
+  // skills config — 优先使用项目已有配置，回退到插件配置
   const weworkConfigPath = path.join(claudeDir, 'skills', 'wework-bot', 'config.json');
-  write(weworkConfigPath, T.weworkBotConfig(p), result, 'skills/wework-bot/config.json');
+  const pluginWeworkConfigPath = path.join(pluginRoot, 'skills', 'wework-bot', 'config.json');
+  let weworkPluginCfg = null;
+  if (fs.existsSync(pluginWeworkConfigPath)) {
+    try { weworkPluginCfg = JSON.parse(fs.readFileSync(pluginWeworkConfigPath, 'utf8')); } catch {}
+  }
+  // 如果项目已有配置（非模板生成），保留；否则使用插件配置作为默认值
+  if (fs.existsSync(weworkConfigPath) && !skipContent) {
+    // 已有配置且本次会用模板生成 → 保留（不覆盖已配置的值）
+  }
+  write(weworkConfigPath, T.weworkBotConfig(p, weworkPluginCfg), result, 'skills/wework-bot/config.json');
 
   // skills/rui/ formulas & coder (referenced by agents/rules)
   const ruiSkillSrc = path.join(pluginRoot, 'skills', 'rui');
@@ -312,12 +328,22 @@ function verify(profile) {
 // ═══════════════════════════════════════════════════════════════
 
 async function main() {
-  const args   = process.argv.slice(2);
-  const json   = args.includes('--json');
+  const args        = process.argv.slice(2);
+  const json        = args.includes('--json');
+  const profileOnly = args.includes('--profile-only');
+  const useTemplate = args.includes('--template');
   if (args.includes('--help') || args.includes('-h')) { printHelp(); return; }
 
-  const profile     = detect();
-  const genResult   = generate(profile);
+  const profile = detect();
+
+  // --profile-only: 仅探测，输出 profile JSON 后退出
+  if (profileOnly) {
+    console.log(JSON.stringify(profile, null, 2));
+    return;
+  }
+
+  // 默认：skipContent=true，内容由大模型生成。--template 启用 JS 模板生成。
+  const genResult   = generate(profile, { skipContent: !useTemplate });
   const verifyResult = verify(profile);
 
   writeInitMemory(profile, verifyResult);
@@ -496,6 +522,12 @@ function printReport(profile, gen, ver) {
     console.log('');
   }
 
+  if (gen.skipped.length > 0) {
+    console.log(`## 跳过 (${gen.skipped.length} 项，由大模型生成)`);
+    for (const s of gen.skipped) console.log(`  ◇ ${s.path} — ${s.reason}`);
+    console.log('');
+  }
+
   console.log(`## 就绪检查 (${ver.passed}/${ver.total})`);
   for (const c of ver.checks) console.log(`  ${c.ok ? '✅' : '❌'} ${c.id} — ${c.detail}`);
   console.log('');
@@ -513,16 +545,17 @@ function printReport(profile, gen, ver) {
 function printHelp() {
   console.log(`rui init — 建立项目基线
 
-用法: node init.js [--json] [--help]
+用法: node init.js [--json] [--profile-only] [--template] [--help]
 
-流程: detect → generate → verify → trigger
+默认行为: 只做机械性搭建（目录 · agents/rules 复制 · skills 配置 · 验证 · 触发同步+通知）。
+CLAUDE.md、README.md、骨架文档等所有内容均由大模型通过深度项目探索生成。
 
-探测: 项目类型 · 安全面 · 测试框架 · 架构模式
-产物: CLAUDE.md(项目约束) · README.md · docs/故事任务面板/ · .claude/(agents/rules/skills) · 骨架文档
-触发: import-docs(文档同步) · wework-bot(初始化通知)
-验证: 产物存在且含项目上下文
+选项:
+  --json          以 JSON 格式输出
+  --profile-only  仅探测项目画像，输出 profile JSON 后退出（不生成任何文件）
+  --template      启用 JS 模板生成内容（回退模式；默认关闭，内容由大模型生成）
 
-可重复运行，每次全量重生。
+流程: detect → [大模型探索+生成] → setup → verify → trigger
 `);
 }
 

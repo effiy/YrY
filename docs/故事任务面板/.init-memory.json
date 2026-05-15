@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-05-15T06:04:29.373Z",
+  "project": "YrY",
+  "type": "meta",
+  "type_label": "元项目(插件/配置)",
+  "security_surface": [
+    "认证授权",
+    "第三方调用",
+    "用户输入"
+  ],
+  "test_framework": null,
+  "architecture": "single",
+  "verify": {
+    "ok": false,
+    "passed": 6,
+    "total": 7
+  }
+}
