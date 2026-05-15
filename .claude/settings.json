@@ -1,0 +1,53 @@
+{
+  "permissions": {
+    "Read": { "allow": true },
+    "Edit": { "allow": true },
+    "Write": { "allow": true },
+    "Grep": { "allow": true },
+    "Glob": { "allow": true },
+    "Bash": { "allow": true },
+    "WebFetch": { "allow": true },
+    "WebSearch": { "allow": true },
+    "Skill": { "allow": true },
+    "TaskCreate": { "allow": true },
+    "TaskUpdate": { "allow": true },
+    "TaskList": { "allow": true },
+    "TaskGet": { "allow": true },
+    "Agent": { "allow": true },
+    "AskUserQuestion": { "allow": true },
+    "NotebookEdit": { "allow": true }
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node skills/wework-bot/scripts/hook-log.js",
+            "timeout": 15,
+            "statusMessage": "追加通知日志..."
+          },
+          {
+            "type": "command",
+            "command": "node skills/import-docs/scripts/hook-sync.js",
+            "timeout": 60,
+            "statusMessage": "同步文档到远端..."
+          },
+          {
+            "type": "command",
+            "command": "node skills/wework-bot/scripts/hook-notify.js",
+            "timeout": 30,
+            "statusMessage": "发送企微通知..."
+          },
+          {
+            "type": "command",
+            "command": "node skills/rui/scripts/delivery-gate.js check-all --json --recent-hours 1",
+            "timeout": 15,
+            "statusMessage": "检查交付管线状态..."
+          }
+        ]
+      }
+    ]
+  },
+  "_note": "由 rui init 生成。hooks.Stop 按序执行：通知日志 → 文档同步 → 企微通知 → 交付门检。"
+}

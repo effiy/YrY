@@ -173,9 +173,10 @@ Usage: node .claude/skills/wework-bot/scripts/send-message.js [options]
 
 环境变量:
   API_X_TOKEN           必填，网关 X-Token
-  WEWORK_BOT_WEBHOOK_URL 必填，企业微信 Webhook 完整 URL（含 key）
   WEWORK_BOT_API_URL    可选，覆盖默认 ${DEFAULT_API_URL}
   WEWORK_BOT_CONFIG     可选，路由 JSON 路径（默认仓库 skills/wework-bot/config.json）
+
+  Webhook 在 config.json → robots 中配置，不通过环境变量传入。
   
 选项:
   --config <path>       路由配置文件

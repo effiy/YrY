@@ -269,6 +269,36 @@ function generate(profile, opts = {}) {
     }
   }
 
+  // settings.json → .claude/settings.json（迁移 hooks + permissions）
+  const pluginSettingsPath = path.join(pluginRoot, 'settings.json');
+  const claudeSettingsPath = path.join(claudeDir, 'settings.json');
+  if (fs.existsSync(pluginSettingsPath)) {
+    write(claudeSettingsPath, fs.readFileSync(pluginSettingsPath, 'utf8'), result, '.claude/settings.json');
+  } else if (!fs.existsSync(claudeSettingsPath)) {
+    const minimalSettings = JSON.stringify({
+      permissions: {
+        Read: { allow: true }, Edit: { allow: true }, Write: { allow: true },
+        Grep: { allow: true }, Glob: { allow: true }, Bash: { allow: true },
+        WebFetch: { allow: true }, WebSearch: { allow: true }, Skill: { allow: true },
+        TaskCreate: { allow: true }, TaskUpdate: { allow: true }, TaskList: { allow: true },
+        TaskGet: { allow: true }, Agent: { allow: true }, AskUserQuestion: { allow: true },
+        NotebookEdit: { allow: true }
+      },
+      hooks: {
+        Stop: [{
+          hooks: [
+            { type: 'command', command: 'node skills/wework-bot/scripts/hook-log.js', timeout: 15, statusMessage: '追加通知日志...' },
+            { type: 'command', command: 'node skills/import-docs/scripts/hook-sync.js', timeout: 60, statusMessage: '同步文档到远端...' },
+            { type: 'command', command: 'node skills/wework-bot/scripts/hook-notify.js', timeout: 30, statusMessage: '发送企微通知...' },
+            { type: 'command', command: 'node skills/rui/scripts/delivery-gate.js check-all --json --recent-hours 1', timeout: 15, statusMessage: '检查交付管线状态...' }
+          ]
+        }]
+      },
+      _note: '由 rui init 生成。hooks.Stop 按序执行：通知日志 → 文档同步 → 企微通知 → 交付门检。'
+    }, null, 2) + '\n';
+    write(claudeSettingsPath, minimalSettings, result, '.claude/settings.json');
+  }
+
   // memory & history dirs
   const memoryDir = path.join(claudeDir, 'memory');
   const historyDir = path.join(claudeDir, '.history');
@@ -309,6 +339,16 @@ function verify(profile) {
       if (!fs.existsSync(dir)) return { ok: false, detail: '目录不存在' };
       const files = fs.readdirSync(dir).filter(f => f.endsWith('.md'));
       return files.length >= 3 ? { ok: true, detail: `✓ ${files.length} 个规则` } : { ok: false, detail: `${files.length} 个规则` };
+    }},
+    { id: '.claude/settings.json', validate: () => {
+      const cfg = path.join(REPO_ROOT, '.claude', 'settings.json');
+      if (!fs.existsSync(cfg)) return { ok: false, detail: '文件不存在，Stop hooks 未激活' };
+      try {
+        const parsed = JSON.parse(fs.readFileSync(cfg, 'utf8'));
+        const hooks = parsed && parsed.hooks && parsed.hooks.Stop;
+        if (!hooks || !Array.isArray(hooks) || hooks.length === 0) return { ok: false, detail: 'Stop hooks 未配置' };
+        return { ok: true, detail: `✓ ${hooks.length} 组 Stop hooks` };
+      } catch { return { ok: false, detail: 'JSON 解析失败' }; }
     }},
     { id: '.claude/skills', validate: () => {
       const cfg = path.join(REPO_ROOT, '.claude', 'skills', 'wework-bot', 'config.json');
@@ -393,8 +433,8 @@ function triggerWeworkNotify(profile) {
   const { execSync } = require('child_process');
   const scriptPath = path.join(REPO_ROOT, 'skills', 'wework-bot', 'scripts', 'send-message.js');
   if (!fs.existsSync(scriptPath)) return;
-  if (!process.env.API_X_TOKEN || !process.env.WEWORK_BOT_WEBHOOK_URL) {
-    console.log('  ◇ wework-bot: 跳过（凭据未设置）');
+  if (!process.env.API_X_TOKEN) {
+    console.log('  ◇ wework-bot: 跳过（API_X_TOKEN 未设置）');
     return;
   }
 
