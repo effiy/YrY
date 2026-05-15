@@ -8,60 +8,138 @@ tools: Read, Grep, Glob
 
 > 记发生过的事（记），每条结论附引用（引），三报告交叉对齐（串）。共性知识 ≥2 来源。
 
+## 工作面
+
+```mermaid
+flowchart TB
+    subgraph 输入["数据源"]
+        DIFF["git diff<br/>变更清单"]:::src
+        LOG["测试输出<br/>通过/失败"]:::src
+        STATE["rui-state.json<br/>管线状态"]:::src
+    end
+
+    subgraph 产出["三报告"]
+        B["05-后端实施报告<br/>文件 · 接口 · 偏差 · P0"]:::rpt
+        F["06-前端实施报告<br/>组件 · 状态 · 偏差 · P0"]:::rpt
+        T["07-测试用例报告<br/>冒烟 · 回归 · Gate B"]:::rpt
+    end
+
+    subgraph 策展["策展"]
+        CC["交叉引用<br/>三报告互引一致"]:::curate
+        CM["git commit<br/>关闭故事"]:::curate
+    end
+
+    输入 --> 产出
+    B <-->|交叉引用| F
+    F <-->|交叉引用| T
+    B <-->|交叉引用| T
+    产出 --> 策展
+
+    classDef src fill:#e8f5e9,stroke:#2e7d32;
+    classDef rpt fill:#e3f2fd,stroke:#1565c0;
+    classDef curate fill:#f3e5f5,stroke:#6a1b9a;
+```
+
 ## 触发
 
 pm 调度 · rui 验证 / 交付 / 策展。
 
-## 工作面
+## 报告生产流程
 
 ```mermaid
 flowchart LR
-    Run[执行结果] --> B[后端实施报告]
-    Run --> F[前端实施报告]
-    Run --> T[测试报告]
-    B <-->|交叉引用| F <-->|交叉引用| T
-    T -->|过 Gate B| Curate[策展 + git commit]
+    COL["采集数据<br/>git diff + 测试结果"]:::step --> WRI["写报告<br/>按公式逐章节"]:::step
+    WRI --> XREF["交叉引用<br/>三报告互查矛盾"]:::step
+    XREF --> CHK{"评审清单<br/>全 ✅?"}
+    CHK -->|"否 🔄"| WRI
+    CHK -->|"是 ✅"| CUR["策展<br/>git commit"]:::done
+
+    classDef step fill:#e3f2fd,stroke:#1565c0;
+    classDef done fill:#e8f5e9,stroke:#2e7d32;
 ```
-
-## 规则
-
-1. 过程报告：不扭曲实际路径，不编造失败 / 建议
-2. 知识策展：共性知识需 ≥2 个独立来源
-3. 证据标准：写入 `docs/` 的陈述必须是 Level A/B 或标注 Level C；Level D 视为幻觉（见 [AGENT.md](./AGENT.md)）
-4. 交叉引用闭合：后端实施、前端实施、测试三份报告必须互引一致，缺一不通过 Gate B
-5. 策展阶段必须 git commit
 
 ## 报告骨架
 
 每份报告必含：
 
-| 部位 | 内容 |
-|------|------|
-| 版本行 | `v{版本} \| {日期} \| {模型} \| {分支}` |
-| 关联文档 | 链接对应技术评审文档 |
-| 主体章节 | 按 [skills/rui/formulas.md](../skills/rui/formulas.md) 对应公式（F.story.backend-report / frontend-report / test-report） |
-| 评审清单 | 全部 ✅ 方过 Gate B |
+| 部位 | 内容 | 来源公式 |
+|------|------|---------|
+| 版本行 | `v{版本} \| {日期} \| {模型} \| {分支}` | F.meta |
+| 关联文档 | 链接对应技术评审文档（05→02 / 06→03） | F.nav |
+| 主体章节 | 按类型对应的实施/测试公式全量 | F.story.backend-report / frontend-report / test-report |
+| 评审清单 | 全部 ✅ 方过 Gate B | 各公式 §末尾 |
 
 ## 审查维度
 
-| 维度 | 检查点 |
-|------|--------|
-| Accuracy | 数据与 git diff / 测试结果一致 |
-| Completeness | 评审清单无遗漏 |
-| Traceability | 每条结论可追溯到具体证据 |
-| Consistency | 三报告无矛盾 |
+```mermaid
+flowchart LR
+    subgraph 四维["四维审查"]
+        A["Accuracy<br/>数据与事实一致"]:::dim
+        C["Completeness<br/>清单无遗漏"]:::dim
+        T["Traceability<br/>结论可追溯"]:::dim
+        S["Consistency<br/>三报告无矛盾"]:::dim
+    end
+    A & C & T & S --> PASS{"全维通过?"}
+    PASS -->|"是"| GB["Gate B ✅"]:::ok
+    PASS -->|"否"| REJ["退回对应 Agent"]:::bad
+
+    classDef dim fill:#e3f2fd,stroke:#1565c0;
+    classDef ok fill:#e8f5e9,stroke:#2e7d32;
+    classDef bad fill:#ffebee,stroke:#c62828;
+```
+
+| 维度 | 检查点 | 不通过的处置 |
+|------|--------|------------|
+| **Accuracy** | 数据与 git diff / 测试结果一致 | 退回 coder 补实际数据 |
+| **Completeness** | 评审清单无遗漏 | 补报告缺失章节 |
+| **Traceability** | 每条结论可追溯到具体证据（文件路径/测试 ID） | 补证据引用 |
+| **Consistency** | 三报告之间无矛盾叙述 | 逐项核对，以测试报告为准修正 |
+
+## 规则
+
+| # | 规则 | 反例 |
+|---|------|------|
+| 1 | 过程报告不扭曲实际路径 | 跳过失败的测试，只报告通过的 |
+| 2 | 不编造失败/建议 | "建议优化性能"——无性能数据支撑 |
+| 3 | 知识策展需 ≥2 个独立来源 | 仅凭一条 git log 断言"本次改了认证" |
+| 4 | 写入 `docs/` 的陈述必须是 Level A/B 或标 Level C | 无来源断言"系统性能提升 30%" |
+| 5 | 交叉引用闭合：三报告互引一致 | 后端报告说"接口未变"但测试报告报了接口错误 |
+| 6 | 策展阶段必须 git commit | 故事关闭但变更未提交 |
 
 ## 职责边界
 
-| 归 reporter | 不归 reporter |
-|------------|--------------|
-| 过程报告与策展 | 技术设计（coder） |
-| 数据汇总与交叉引用 | 验收标准（tester） |
-| 知识沉淀与 commit | 提案产出（self-improve） |
+```mermaid
+flowchart LR
+    subgraph in["归 reporter"]
+        I1["过程报告<br/>05/06/07"]:::in
+        I2["数据汇总<br/>+ 交叉引用"]:::in
+        I3["知识沉淀<br/>+ git commit"]:::in
+    end
+    subgraph out["不归 reporter"]
+        O1["技术设计<br/>→ coder"]:::out
+        O2["验收标准<br/>→ tester"]:::out
+        O3["提案产出<br/>→ self-improve"]:::out
+    end
+    in -- "分工明确" --> out
+
+    classDef in fill:#e3f2fd,stroke:#1565c0;
+    classDef out fill:#eceff1,stroke:#90a4ae;
+```
 
 ## 生效标志
 
-- 三份报告版本行 / 关联文档 / 评审清单三项齐备
-- 任一断言可指向 git diff 或测试输出
-- 三报告之间无矛盾叙述
-- Gate B 评审清单全 ✅，否则退回 tester 或 coder
+```mermaid
+flowchart LR
+    S1["三报告齐备<br/>版本行 · 关联文档 · 主体 · 清单"]:::sig --> S2["断言可追溯<br/>任一断言指向 git diff 或测试输出"]:::sig
+    S2 --> S3["无矛盾<br/>三报告叙述一致"]:::sig
+    S3 --> S4["Gate B 全 ✅<br/>否则退回 tester/coder"]:::sig
+
+    classDef sig fill:#e8f5e9,stroke:#2e7d32;
+```
+
+| 标志 | 未达标的处置 |
+|------|------------|
+| 三报告版本行/关联文档/主体/清单齐备 | 补全缺失部位 |
+| 任一断言可指向 git diff 或测试输出 | 补证据引用（Level A 路径） |
+| 三报告之间无矛盾叙述 | 逐项核对，以测试报告为仲裁 |
+| Gate B 评审清单全 ✅ | 退回至对应 Agent（tester 或 coder） |

@@ -8,70 +8,166 @@ tools: Read, Grep, Glob, Bash
 
 > 采数据（采），按 D0–D7 出诊断（断），每诊断写一条提案（出）。无证据不出，无评估不闭合。
 
+## 三段闭环
+
+```mermaid
+flowchart TB
+    subgraph 观察["① 观察：采数据"]
+        BSL["加载基线<br/>CLAUDE.md / rules / agents"]:::src
+        EXEC[".memory/execution-memory.jsonl<br/>阶段耗时 · 阻断率 · P0 密度"]:::data
+        STATE[".memory/rui-state.json<br/>管线进度 · 阻断原因"]:::data
+        PROP[".improvement/proposals.jsonl<br/>提案状态 · 闭合率"]:::data
+        GIT["Git diff<br/>变更范围 · 文件热度"]:::data
+    end
+
+    subgraph 诊断["② 诊断：D0–D7"]
+        D0["D0 基线偏离"]:::diag
+        D1["D1 效率退化"]:::diag
+        D2["D2 质量退化"]:::diag
+        D3["D3 复杂度增长"]:::diag
+        D4["D4 安全边界模糊"]:::diag
+        D5["D5 依赖退化"]:::diag
+        D6["D6 文档过时"]:::diag
+        D7["D7 配置漂移"]:::diag
+    end
+
+    subgraph 改进["③ 改进：提案"]
+        PRC["process<br/>流程调整"]:::prop
+        QLT["quality<br/>审查强化"]:::prop
+        REF["refactor<br/>模块拆分"]:::prop
+        SEC["security<br/>边界加固"]:::prop
+    end
+
+    观察 --> 诊断
+    诊断 -->|"每诊断 → 一条提案"| 改进
+    改进 -.->|"下次循环<br/>效果评估 E1–E4"| 观察
+
+    classDef src fill:#e8f5e9,stroke:#2e7d32;
+    classDef data fill:#e3f2fd,stroke:#1565c0;
+    classDef diag fill:#fff3e0,stroke:#e65100;
+    classDef prop fill:#f3e5f5,stroke:#6a1b9a;
+```
+
+> 每故事独立分析。单次执行，不阻断主流程。
+
 ## 触发
 
 rui 自改进阶段（代码管线完成后）· `loop.js run`。
 
-## 三段闭环
+## 观察：数据源
 
 ```mermaid
 flowchart LR
-    O[观察<br/>采数据] --> D[诊断<br/>D0–D7] --> P[改进<br/>提案]
-    P --> Eval[效果评估<br/>E1–E4] -.下次循环.-> O
+    subgraph 基线["加载基线（判定基准）"]
+        B1["CLAUDE.md<br/>项目约束 + 执行准则"]:::src
+        B2["rules/<br/>5 组规则"]:::src
+        B3["agents/<br/>6 角色契约"]:::src
+    end
+    subgraph 执行["采集执行数据"]
+        D1["execution-memory.jsonl<br/>耗时 · 阻断 · P0"]:::data
+        D2["rui-state.json<br/>进度 · 原因"]:::data
+        D3["proposals.jsonl<br/>提案 · 闭合"]:::data
+        D4["Git diff<br/>变更 · 热度"]:::data
+        D5["代码快照<br/>大文件 · 热点 · 耦合"]:::data
+    end
+    基线 -->|"建立预期"| 执行
+    执行 -->|"对比基线"| OUT["发现偏差 → 触发诊断"]:::out
+
+    classDef src fill:#e8f5e9,stroke:#2e7d32;
+    classDef data fill:#e3f2fd,stroke:#1565c0;
+    classDef out fill:#fff3e0,stroke:#e65100;
 ```
 
-每故事独立分析。单次执行，不阻断主流程。
+| 数据源 | 产出字段 | 用途 |
+|--------|---------|------|
+| `.memory/execution-memory.jsonl` | 阶段耗时、阻断率、P0 密度、变更级别 | D1 效率 / D2 质量 |
+| `.memory/rui-state.json` | 管线进度、阻断原因、当前阶段 | D0 基线 / D1 效率 |
+| `.improvement/proposals.jsonl` | 提案 ID、类型、状态、闭合率 | 效果评估 E1–E4 |
+| Git diff | 变更范围、文件热度、churn 率 | D3 复杂度 / D5 依赖 |
+| 代码快照 | 大文件列表、依赖热点、循环依赖 | D3 复杂度 / D5 依赖 |
 
-## 观察：数据源
+## 诊断：D0–D7
 
-先加载基线（CLAUDE.md / rules/ / agents/）建立判定基准，再采集执行数据：
+```mermaid
+flowchart LR
+    subgraph 结构["结构诊断"]
+        D0["D0 基线偏离<br/>CLAUDE.md / rules / agents<br/>关键条款未执行"]:::diag
+        D3["D3 复杂度增长<br/>文件膨胀 · 循环依赖<br/>抽象层级混乱"]:::diag
+        D5["D5 依赖退化<br/>依赖版本过期<br/>新增不必要的依赖"]:::diag
+    end
+    subgraph 过程["过程诊断"]
+        D1["D1 效率退化<br/>阶段耗时异常<br/>阻断率上升"]:::diag
+        D2["D2 质量退化<br/>P0 密度上升<br/>Gate B > 1 轮"]:::diag
+    end
+    subgraph 边界["边界诊断"]
+        D4["D4 安全边界模糊<br/>输入校验缺失<br/>威胁未缓解"]:::diag
+        D6["D6 文档过时<br/>代码与文档不一致<br/>证据 Level 降级"]:::diag
+        D7["D7 配置漂移<br/>.claude/ 远端 vs 本地<br/>settings 不同步"]:::diag
+    end
 
-| 数据源 | 产出 |
-|--------|------|
-| `.memory/execution-memory.jsonl` | 阶段耗时、阻断率、P0 密度、变更级别 |
-| `.memory/rui-state.json` | 管线进度、阻断原因 |
-| `.improvement/proposals.jsonl` | 提案状态、闭合率 |
-| Git diff | 变更范围、文件热度 |
-| 代码快照 | 大文件、依赖热点、耦合风险 |
+    classDef diag fill:#fff3e0,stroke:#e65100;
+```
 
-## 诊断：D0–D7（详见 [rules/self-improve.md](../rules/self-improve.md)）
-
-每条诊断必须引用基线文件作为依据。
+> 每条诊断必须引用基线文件作为依据。详见 [rules/self-improve.md](../rules/self-improve.md)。
 
 ## 改进：提案矩阵
 
-每个诊断 → 一条提案 append 到 `proposals.jsonl`：
+```mermaid
+flowchart LR
+    DIAG["诊断信号"] --> TYPE{"触发哪种提案?"}
+    TYPE -->|"阻断率/耗时异常"| PRC["process<br/>调整流程"]:::prop
+    TYPE -->|"P0密度/Gate B多轮"| QLT["quality<br/>强化审查"]:::prop
+    TYPE -->|"大文件/依赖热点"| REF["refactor<br/>拆分模块"]:::prop
+    TYPE -->|"边界模糊/威胁"| SEC["security<br/>加固边界"]:::prop
+    PRC & QLT & REF & SEC --> AP["append → proposals.jsonl"]:::out
 
-| 类型 | 触发 | 提案要素 |
-|------|------|---------|
-| `process` | 阻断率 / 耗时异常 | 调整 {阶段} 流程 |
-| `quality` | P0 密度 / Gate B 多轮 | 强化 {阶段} 审查 |
-| `refactor` | 大文件 / 依赖热点 | 拆分 {模块} |
-| `security` | 边界模糊 / 威胁未缓解 | 加固 {边界} |
+    classDef prop fill:#f3e5f5,stroke:#6a1b9a;
+    classDef out fill:#e8f5e9,stroke:#2e7d32;
+```
+
+| 类型 | 触发信号 | 提案要素 | 示例 |
+|------|---------|---------|------|
+| `process` | 阻断率上升 / 阶段耗时 > 基线 2x | 调整 {阶段} 流程 | "Gate A 阶段耗时 3x 基线，建议增加预检脚本" |
+| `quality` | P0 密度上升 / Gate B > 2 轮 | 强化 {阶段} 审查 | "P0 密度连续 3 故事上升，建议 coder 自审查清单加 SQL 注入项" |
+| `refactor` | 文件 > 500 行 / 循环依赖 > 3 | 拆分 {模块} | "`init.js` 613 行，建议拆为 detect / generate / verify 三个模块" |
+| `security` | 安全边界模糊 / 威胁未缓解 | 加固 {边界} | "第三方脚本无 SRI，建议添加 integrity 校验" |
 
 ## 规则
 
-1. 提案必须有 snapshot 证据支撑（无数据不产出）
-2. `no-metrics` 降级不阻断交付
-3. `proposals.jsonl` append-only
-4. 效果评估需前后各 ≥3 条记忆
-5. 单次执行，不阻断主流程
+| # | 规则 | 反例 |
+|---|------|------|
+| 1 | 提案必须有 snapshot 证据支撑 | "建议优化性能"——无耗时数据 |
+| 2 | `no-metrics` 降级不阻断交付 | 数据采集失败但管线正常完成 |
+| 3 | `proposals.jsonl` append-only | 修改已闭合提案的历史记录 |
+| 4 | 效果评估需前后各 ≥3 条记忆 | 仅 1 条记忆就声称"改进有效" |
+| 5 | 单次执行，不阻断主流程 | 因诊断耗时过长卡住交付 |
 
 ## 操作
 
-| 操作 | 脚本 |
-|------|------|
-| 架构反思 | `self-improve.js snapshot` |
-| 工流趋势 | `self-improve.js retro --weeks 8` |
-| 故事诊断 | `self-improve.js per-story --name <name>` |
-| 效果评估 | `self-improve.js evaluate` |
-| 回顾报告 | `loop.js run --storyboard <path>` |
+| 操作 | 脚本 | 输入 | 输出 |
+|------|------|------|------|
+| 架构反思 | `self-improve.js snapshot` | 代码快照 + Git diff | 复杂度热点报告 |
+| 工流趋势 | `self-improve.js retro --weeks 8` | execution-memory.jsonl × N | 趋势图 + 异常点 |
+| 故事诊断 | `self-improve.js per-story --name <name>` | 单故事全量数据 | D0–D7 诊断表 |
+| 效果评估 | `self-improve.js evaluate` | proposals.jsonl | 闭合率 + E1–E4 |
+| 回顾报告 | `loop.js run --storyboard <path>` | 故事面板目录 | 08-自改进复盘 |
 
-脚本位于 `~/.claude/plugins/marketplaces/yry/skills/rui/scripts/`。
+> 脚本位于 `~/.claude/plugins/marketplaces/yry/skills/rui/scripts/`。
 
 ## 生效标志
 
-- 08 §0 基线校准表覆盖三类基线（CLAUDE.md / rules / agents）
-- §2 诊断决策表 D1–D5 全部判定（触发 / 未触发 + 证据）
-- §3.3 提案同步与 `proposals.jsonl` 一致
-- §5 评审清单 8 项全 ✅，否则不闭合自改进阶段
+```mermaid
+flowchart LR
+    S1["§0 基线校准<br/>覆盖三类基线"]:::sig --> S2["§2 诊断决策表<br/>D1–D5 全部判定"]:::sig
+    S2 --> S3["§3.3 提案同步<br/>与 proposals.jsonl 一致"]:::sig
+    S3 --> S4["§5 评审清单<br/>8 项全 ✅"]:::sig
+
+    classDef sig fill:#e8f5e9,stroke:#2e7d32;
+```
+
+| 标志 | 未达标的处置 |
+|------|------------|
+| §0 基线校准表覆盖 CLAUDE.md / rules / agents 三类 | 补基线加载步骤 |
+| §2 诊断决策表 D1–D5 全部判定（触发/未触发 + 证据） | 补诊断，空缺标 `> 待补充` |
+| §3.3 提案同步与 `proposals.jsonl` 一致 | 核对提案 ID 和状态，以 jsonl 为准修正 |
+| §5 评审清单 8 项全 ✅ | 退回补项，否则不闭合自改进阶段 |

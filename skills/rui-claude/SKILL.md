@@ -9,36 +9,177 @@ lifecycle: default-pipeline
 
 作用范围：当前项目的 `.claude/` 目录。sync / retro 均以 `.claude/` 为操作边界。
 
-## 命令
+## 命令族全景
 
-| 命令 | 流程 |
+```mermaid
+flowchart TB
+    ENTRY["/rui-claude"]:::src --> Q1{"子命令?"}
+
+    Q1 -->|"sync"| SYNC["覆盖式同步<br/>rm -rf → rsync"]:::cmd
+    Q1 -->|"retro"| RETRO["健康度分析<br/>三节复盘"]:::cmd
+    Q1 -->|"history"| HIST["操作历史<br/>list / stats"]:::cmd
+    Q1 -->|"&lt;req&gt;"| REQ["需求管线<br/>doc + code → 交付"]:::cmd
+    Q1 -->|"空输入"| LIST["推荐任务<br/>5~10 条"]:::cmd
+
+    SYNC --> S_OUT[".claude/ 全量覆盖"]:::out
+    RETRO --> R_OUT["docs/自改进故事面板/<br/>&lt;project&gt;-&lt;date&gt;.md"]:::out
+    HIST --> H_OUT[".claude/.history/<br/>rui-claude-history.jsonl"]:::out
+    REQ --> PIPE["rui code 管线<br/>仅限 .claude/ 内"]:::pipe
+    LIST --> L_OUT["推荐列表"]:::out
+
+    classDef src fill:#e8f5e9,stroke:#2e7d32;
+    classDef cmd fill:#e3f2fd,stroke:#1565c0;
+    classDef out fill:#f3e5f5,stroke:#6a1b9a;
+    classDef pipe fill:#fff3e0,stroke:#e65100;
+```
+
+| 命令 | 流程 | 产出 |
+|------|------|------|
+| `/rui-claude sync` | `rm -rf .claude` → rsync 远端配置到本地 | `.claude/` 全量覆盖 |
+| `/rui-claude retro` | 分析 .claude/ 结构健康度 → 三节复盘 | `docs/自改进故事面板/<project>-<date>.md` |
+| `/rui-claude history` | 查看操作历史：`list [--limit N]` / `stats [--json]` | 终端输出 |
+| `/rui-claude <req>` | 需求解析→故事拆分→逐故事 doc+code 管线→交付 | `.claude/` 内文件变更 |
+| `/rui-claude` | 调用 recommend.js → 推荐 5~10 条任务 | 推荐列表 |
+
+## 操作边界
+
+```mermaid
+flowchart LR
+    subgraph 允许["✅ 操作范围"]
+        IN[".claude/"]:::ok
+    end
+    subgraph 禁止["❌ 不可触及"]
+        OUT1["业务源码"]:::block
+        OUT2["外部配置"]:::block
+    end
+    允许 -.->|"硬边界"| 禁止
+
+    classDef ok fill:#e8f5e9,stroke:#2e7d32;
+    classDef block fill:#ffebee,stroke:#c62828;
+```
+
+## sync — 覆盖式同步
+
+```mermaid
+flowchart LR
+    TRIGGER["/rui-claude sync"]:::src --> CHECK{"确认用户意图?"}
+    CHECK -->|"否"| ABORT["中止"]:::abort
+    CHECK -->|"是"| WIPE["rm -rf .claude/"]:::warn
+    WIPE --> RSYNC["rsync -avz --exclude '.git'<br/>root@www.effiy.cn:${PROJECT}/.claude/ → ./.claude/"]:::op
+    RSYNC --> DONE["完成<br/>自动记录 history"]:::done
+
+    classDef src fill:#e8f5e9,stroke:#2e7d32;
+    classDef abort fill:#eceff1,stroke:#90a4ae;
+    classDef warn fill:#fff3e0,stroke:#e65100;
+    classDef op fill:#e3f2fd,stroke:#1565c0;
+    classDef done fill:#f3e5f5,stroke:#6a1b9a;
+```
+
+| 项目 | 说明 |
 |------|------|
-| `/rui-claude sync` | `rm -rf .claude` → rsync 远端配置到本地。前置：本机 SSH key 已授权 `root@www.effiy.cn` |
-| `/rui-claude retro` | 分析 .claude/ 结构健康度 → 复盘文档写入 `docs/自改进故事面板/<project>-<date>.md` |
-| `/rui-claude history` | 查看操作历史：`list [--limit N]` / `stats [--json]`。存储于 `.claude/.history/rui-claude-history.jsonl` |
-| `/rui-claude <req>` | 需求解析→故事拆分→逐故事 doc+code 管线→交付。管线与 `/rui <req>` 一致，**所有文件变更限制在 `.claude/` 内** |
-| `/rui-claude` | 调用 `node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/recommend.js --json` → 推荐 5~10 条 .claude/ 相关任务 |
+| 前置条件 | 本机 SSH key 已授权 `root@www.effiy.cn` |
+| 行为 | 覆盖式更新，整目录 rm -rf → rsync |
+| `${PROJECT}` | `basename "$PWD"` |
+| 完成后 | 自动记录 history |
 
-## sync
+## retro — 健康度分析
 
-覆盖式更新：`rsync -avz --exclude '.git' root@www.effiy.cn:/home/claude/YiKnowledge/static/${PROJECT}/.claude/ ./.claude/`。`${PROJECT}` = `basename "$PWD"`。完成后自动记录 history。
+```mermaid
+flowchart LR
+    TRIGGER["/rui-claude retro"]:::src --> COLLECT["采集统计<br/>agents/ · rules/ · formulas.md · skills/"]:::op
+    COLLECT --> WRITE["三节复盘"]:::op
+    WRITE --> S1["§1 配置结构"]:::section
+    WRITE --> S2["§2 健康度"]:::section
+    WRITE --> S3["§3 改进项"]:::section
+    S1 & S2 & S3 --> OUT["写入复盘文档"]:::out
 
-## retro
+    COLLECT -.->|"不连接"| REMOTE["远端"]:::no
 
-`node ~/.claude/plugins/marketplaces/yry/skills/rui-claude/scripts/retro.js` 采集 agents/rules/formulas.md/skills 统计 → 三节复盘（§1 配置结构 §2 健康度 §3 改进项）。参数：`--name <story>` / `--json`。纯本地分析，不连远端。
+    classDef src fill:#e8f5e9,stroke:#2e7d32;
+    classDef op fill:#e3f2fd,stroke:#1565c0;
+    classDef section fill:#f3e5f5,stroke:#6a1b9a;
+    classDef out fill:#e8f5e9,stroke:#2e7d32;
+    classDef no fill:#eceff1,stroke:#90a4ae;
+```
 
-## history
+| 项目 | 说明 |
+|------|------|
+| 脚本 | `node ~/.claude/plugins/marketplaces/yry/skills/rui-claude/scripts/retro.js` |
+| 参数 | `--name <story>` / `--json` |
+| 网络 | 纯本地分析，不连远端 |
+| 产出 | `docs/自改进故事面板/<project>-<date>.md` |
 
-每次 sync/retro/\<requirement\> 完成后自动调用 `node ~/.claude/plugins/marketplaces/yry/skills/rui-claude/scripts/history.js record`。存储 `.claude/.history/rui-claude-history.jsonl`（append-only，不入库不同步）。
+## history — 操作历史
+
+```mermaid
+flowchart LR
+    CMD["sync / retro / &lt;req&gt; 完成"]:::src --> AUTO["自动调用 history.js record"]:::op
+    AUTO --> APPEND["追加写入"]:::store
+    APPEND --> FILE[".claude/.history/<br/>rui-claude-history.jsonl"]:::file
+
+    FILE -.->|"约束"| C1["append-only"]:::rule
+    FILE -.->|"约束"| C2["不入库"]:::rule
+    FILE -.->|"约束"| C3["不同步"]:::rule
+
+    classDef src fill:#e8f5e9,stroke:#2e7d32;
+    classDef op fill:#e3f2fd,stroke:#1565c0;
+    classDef store fill:#fff3e0,stroke:#e65100;
+    classDef file fill:#f3e5f5,stroke:#6a1b9a;
+    classDef rule fill:#ffebee,stroke:#c62828;
+```
+
+| 子命令 | 说明 |
+|--------|------|
+| `list [--limit N]` | 列出最近 N 条操作记录 |
+| `stats [--json]` | 操作统计摘要 |
 
 ## 核心规则
 
-1. 操作范围仅限 `.claude/`，不得触及外部文件
-2. 对 `.claude/` 的代码修改必须通过 rui code 管线，必须在 `feat/<project>-<name>` 分支(`no-checkout`)
-3. 禁止自动合并(`auto-merge`)
-4. sync 覆盖式更新，执行前确认意图
-5. retro 纯本地分析
-6. 空输入只推荐不执行
-7. 禁止自动 commit/push
+```mermaid
+flowchart LR
+    subgraph 边界["操作边界"]
+        R1["仅限 .claude/"]:::rule
+        R7["禁止自动 commit/push"]:::rule
+    end
+    subgraph 管线["管线约束"]
+        R2["走 rui code 管线"]:::rule
+        R3["feat 分支隔离"]:::rule
+        R4["禁止 auto-merge"]:::rule
+    end
+    subgraph 行为["行为约束"]
+        R5["sync 前确认意图"]:::rule
+        R6["空输入只推荐不执行"]:::rule
+    end
+
+    classDef rule fill:#e3f2fd,stroke:#1565c0;
+```
+
+| # | 规则 | 违反标识 |
+|---|------|---------|
+| 1 | 操作范围仅限 `.claude/`，不得触及外部文件 | — |
+| 2 | 对 `.claude/` 的代码修改必须通过 rui code 管线 | `skip-gate-a` |
+| 3 | 必须在 `feat/<project>-<name>` 分支 | `no-checkout` |
+| 4 | 禁止自动合并 | `auto-merge` |
+| 5 | sync 覆盖式更新，执行前确认意图 | — |
+| 6 | 空输入只推荐不执行 | — |
+| 7 | 禁止自动 commit/push | — |
 
 详见 [rules/rui-claude.md](../../rules/rui-claude.md)。
+
+## 生效标志
+
+```mermaid
+flowchart LR
+    S1["操作边界<br/>仅 .claude/ 内"]:::sig --> S2["sync 确认<br/>意图确认后覆盖"]:::sig
+    S2 --> S3["管线完整<br/>变更走 rui code"]:::sig
+    S3 --> S4["history 记录<br/>append-only 不入库"]:::sig
+
+    classDef sig fill:#e8f5e9,stroke:#2e7d32;
+```
+
+| 标志 | 未达标的处置 |
+|------|------------|
+| 操作仅限 `.claude/` 目录 | 撤销外部变更 |
+| sync 前确认用户意图 | 补确认后重新执行 |
+| 变更走 rui code 管线 | 切分支重走管线 |
+| history 仅本地不入库 | 从 git 暂存区移除 history 文件 |

@@ -8,66 +8,226 @@ paths:
 
 > 每个 `/rui` 末端三步交付按序执行，每步必标记。未标记 = 未执行。import-docs 和 wework-bot 是 rui 管线的强制组成部分，不可省略。
 
+## 交付全景
+
 ```mermaid
-flowchart LR
-    Done[管线完成] --> S1[1. 追加日志] --> M1[mark log_appended]
-    M1 --> S2[2. 文档同步] --> M2[mark docs_synced]
-    M2 --> S3[3. 发送通知] --> M3[mark notification_sent]
-    M3 --> Closed[闭环]
-    Done -.>1h 未闭合.-> Stop[Stop hook 阻断]:::bad
-    classDef bad fill:#ffebee,stroke:#c62828;
+flowchart TB
+    DONE["管线完成"]:::src --> S1["① 追加日志<br/>wework-bot --no-send"]:::step
+    S1 --> M1["mark log_appended"]:::mark
+    M1 --> S2["② 文档同步<br/>import-docs --workspace"]:::step
+    S2 --> M2["mark docs_synced"]:::mark
+    M2 --> S3["③ 发送通知<br/>wework-bot"]:::step
+    S3 --> M3["mark notification_sent"]:::mark
+    M3 --> CLOSED["闭环 ✅"]:::done
+
+    DONE -.->|"1h 内未闭合"| STOP["Stop hook 阻断<br/>delivery-incomplete 🚫"]:::block
+
+    classDef src fill:#e8f5e9,stroke:#2e7d32;
+    classDef step fill:#e3f2fd,stroke:#1565c0;
+    classDef mark fill:#f3e5f5,stroke:#6a1b9a;
+    classDef done fill:#e8f5e9,stroke:#2e7d32;
+    classDef block fill:#ffebee,stroke:#c62828;
 ```
+
+| 步骤 | 操作 | 标记 | 降级条件 |
+|------|------|------|---------|
+| ① 追加日志 | `wework-bot --no-send` 写入日志 | `log_appended` | — |
+| ② 文档同步 | `import-docs --workspace` 推送 | `docs_synced` | `no-token`（缺 API_X_TOKEN） |
+| ③ 发送通知 | `wework-bot` 推送企微 | `notification_sent` | — |
 
 ## 适用
 
-每个 `/rui` 命令的末端，包含 `/rui doc` / `/rui code` / `/rui <req>` / `/rui-claude <req>`。`/rui list` / `/rui` 推荐不触发交付。
+每个 `/rui` 命令的末端，包含 `/rui doc` / `/rui code` / `/rui <req>` / `/rui-claude <req>`。
 
-## 规则
+```mermaid
+flowchart LR
+    subgraph 触发["触发交付"]
+        T1["/rui doc"]:::yes
+        T2["/rui code"]:::yes
+        T3["/rui &lt;req&gt;"]:::yes
+        T4["/rui-claude &lt;req&gt;"]:::yes
+    end
+    subgraph 不触发["不触发交付"]
+        N1["/rui list"]:::no
+        N2["/rui（推荐）"]:::no
+    end
 
-### 三步管线（按序，必须标记）
+    classDef yes fill:#e8f5e9,stroke:#2e7d32;
+    classDef no fill:#eceff1,stroke:#90a4ae;
+```
 
-| # | 操作 | 标记 |
+## ① 追加日志
+
+```mermaid
+flowchart LR
+    CALL["调用 wework-bot<br/>--no-send"]:::step --> LOG["写入执行日志<br/>00-消息通知列表"]:::out
+    LOG --> MARK["delivery-gate.js mark<br/>--step log_appended"]:::mark
+    MARK --> NEXT["进入步骤 ②"]:::next
+
+    classDef step fill:#e3f2fd,stroke:#1565c0;
+    classDef out fill:#f3e5f5,stroke:#6a1b9a;
+    classDef mark fill:#fff3e0,stroke:#e65100;
+    classDef next fill:#e8f5e9,stroke:#2e7d32;
+```
+
+## ② 文档同步
+
+```mermaid
+flowchart TD
+    SYNC["import-docs --workspace"]:::step --> Q1{"API_X_TOKEN<br/>存在?"}
+    Q1 -->|"是"| PUSH["推送 *.md + .claude/<br/>排除 .git / node_modules"]:::push
+    Q1 -->|"否"| NOOP["降级：跳过推送<br/>仍标记 docs_synced"]:::warn
+    PUSH --> Q2{"网络?"}
+    Q2 -->|"超时"| WARN["记录告警不阻断<br/>下次覆盖重试"]:::warn
+    Q2 -->|"成功"| MARK["mark docs_synced"]:::mark
+
+    classDef step fill:#e3f2fd,stroke:#1565c0;
+    classDef push fill:#e8f5e9,stroke:#2e7d32;
+    classDef warn fill:#fff3e0,stroke:#e65100;
+    classDef mark fill:#f3e5f5,stroke:#6a1b9a;
+```
+
+```
+同步范围:
+  ✅ 全部 *.md
+  ✅ .claude/ 目录
+  ❌ .git
+  ❌ node_modules
+
+凭据约束:
+  ✅ API_X_TOKEN 仅从环境变量读取
+  ❌ 禁止写入任何文件
+```
+
+| # | 规则 |
+|---|------|
+| 5 | 同步范围：全部 `*.md` + `.claude/` 目录，排除 `.git` 和 `node_modules` |
+| 6 | `API_X_TOKEN` 仅从环境变量读取，禁止写入任何文件 |
+| 7 | 缺 `API_X_TOKEN` → `no-token` 降级，跳过推送但仍需标记 `docs_synced` |
+| 8 | 网络超时记录告警不阻断，下次覆盖重试 |
+
+## ③ 发送通知
+
+```mermaid
+flowchart LR
+    CALL["调用 wework-bot"]:::step --> NAME["--name = &lt;project&gt;-&lt;name&gt;<br/>或 .claude/"]:::param
+    NAME --> CH{"管线状态?"}
+    CH -->|"成功"| OK["报告完成"]:::ok
+    CH -->|"失败/阻断"| FAIL["报告阻断状态"]:::warn
+    OK & FAIL --> MARK["mark notification_sent"]:::mark
+
+    classDef step fill:#e3f2fd,stroke:#1565c0;
+    classDef param fill:#f3e5f5,stroke:#6a1b9a;
+    classDef ok fill:#e8f5e9,stroke:#2e7d32;
+    classDef warn fill:#fff3e0,stroke:#e65100;
+    classDef mark fill:#f3e5f5,stroke:#6a1b9a;
+```
+
+| # | 规则 |
+|---|------|
+| 9 | 通知名（`--name`）= `<project>-<name>` 或 `.claude/`，由 wework-bot 决定通道 |
+
+## 核心约束
+
+```mermaid
+flowchart LR
+    subgraph 必须["每次 rui 必须触发"]
+        M1["import-docs"]:::must
+        M2["wework-bot"]:::must
+    end
+    subgraph 禁止["不可跳过"]
+        X1["管线失败也需通知"]:::block
+        X2["阻断也需通知"]:::block
+        X3["no-token 也需调用脚本"]:::block
+    end
+    必须 --> 禁止
+
+    classDef must fill:#e3f2fd,stroke:#1565c0;
+    classDef block fill:#ffebee,stroke:#c62828;
+```
+
+| # | 规则 | 反例 |
 |---|------|------|
-| 1 | `wework-bot --no-send` 追加日志 | `log_appended` |
-| 2 | `import-docs --workspace` 同步 | `docs_synced` |
-| 3 | `wework-bot` 发送通知 | `notification_sent` |
+| — | 这是管线完整性的硬性要求，不是建议 | "本次改动很小，跳过通知" |
+| — | 即使管线中途失败/阻断，仍需触发通知（报告阻断状态） | 阻断后直接退出，未调 wework-bot |
+| — | `no-token` 降级时：调用脚本 + 标记，跳过实际网络请求 | 因缺 token 跳过整个步骤 |
+| — | 跳过触发 = 违反核心约束 = 管线未闭合 | `--dry-run` 外跳步 |
 
-每步完成后必须调用 `delivery-gate.js mark --step <step>` 写入 `rui-state.json`。
+## 标记规则
 
-1. **标记即证据**：未标记视为未执行，"看起来调用了"不等于"已标记"
-2. **顺序强制**：三步严格按序，跳序即视为未闭合
-3. **Stop hook**：1 小时内有 rui 活动且管线未闭合 → 阻断停止
-4. **恢复**：按提示执行缺失步骤并标记，闭合后自动放行
+```mermaid
+flowchart TD
+    EXEC["步骤执行完成"] --> CALL["调用 delivery-gate.js mark<br/>--step &lt;step&gt;"]:::api
+    CALL --> WRITE["写入 rui-state.json"]:::state
+    WRITE --> NEXT["进入下一步骤"]:::next
+    CALL -.->|"未调用"| VIOL["未标记 = 未执行 🚫"]:::block
 
-### 文档同步（步骤 2 细则）
+    classDef api fill:#e3f2fd,stroke:#1565c0;
+    classDef state fill:#f3e5f5,stroke:#6a1b9a;
+    classDef next fill:#e8f5e9,stroke:#2e7d32;
+    classDef block fill:#ffebee,stroke:#c62828;
+```
 
-5. 同步范围：全部 `*.md` + `.claude/` 目录，排除 `.git` 和 `node_modules`
-6. `API_X_TOKEN` 仅从环境变量读取，**禁止写入任何文件**
-7. 缺 `API_X_TOKEN` → `no-token` 降级，跳过推送但仍需标记 `docs_synced`（降级完成）
-8. 网络超时记录告警不阻断，下次覆盖重试
-
-### 通知（步骤 3 细则）
-
-9. 通知名（`--name`）= `<project>-<name>` 或 `.claude/`，由 wework-bot 决定通道
+| # | 规则 | 反例 |
+|---|------|------|
+| 1 | 标记即证据：未标记视为未执行 | "看起来调用了"不等于"已标记" |
+| 2 | 顺序强制：三步严格按序，跳序即视为未闭合 | 先发通知再补日志 |
+| 3 | Stop hook：1 小时内有 rui 活动且管线未闭合 → 阻断停止 | 执行完 3 小时后才标记 |
+| 4 | 恢复：按提示执行缺失步骤并标记，闭合后自动放行 | — |
 
 ## 例外
 
-- `--dry-run`：不执行三步管线，不要求标记
-- 仅文档变更（`--no-code`）：仍走完三步
-- `no-token`：仅 `API_X_TOKEN` 缺失合法跳过 push，标记仍写
+```mermaid
+flowchart TD
+    Q1{"执行模式?"}
+    Q1 -->|"--dry-run"| E1["不执行三步管线<br/>不要求标记"]:::ex
+    Q1 -->|"--no-code"| E2["仍走完三步<br/>无例外"]:::normal
+    Q1 -->|"no-token"| E3["跳过 push<br/>仍写标记"]:::warn
+    Q1 -->|"正常"| E4["完整三步"]:::normal
+
+    classDef ex fill:#e8f5e9,stroke:#2e7d32;
+    classDef normal fill:#e3f2fd,stroke:#1565c0;
+    classDef warn fill:#fff3e0,stroke:#e65100;
+```
+
+| 场景 | 三步管线 | 标记要求 |
+|------|---------|---------|
+| `--dry-run` | 不执行 | 不要求 |
+| 仅文档变更（`--no-code`） | 完整执行 | 必须标记 |
+| `no-token`（API_X_TOKEN 缺失） | 跳过推送，其余完整 | 必须标记（含 `docs_synced`） |
 
 ## 阻断标识
 
-| 标识 | 触发 | 降级 |
-|------|------|------|
-| `delivery-incomplete` | 三步未全部标记，距上次活动 < 1h | 否 |
-| `no-token` | `API_X_TOKEN` 缺失 | 是 |
+```mermaid
+flowchart LR
+    B1["delivery-incomplete<br/>三步未全标记"]:::block
+    B2["no-token<br/>API_X_TOKEN 缺失"]:::warn
 
-## 强制约束
+    classDef block fill:#ffebee,stroke:#c62828;
+    classDef warn fill:#fff3e0,stroke:#e65100;
+```
 
-> **每次使用 rui 技能都必须触发 import-docs 和 wework-bot，无例外。**
+| 标识 | 触发条件 | 阻断? | 恢复方式 |
+|------|---------|-------|---------|
+| `delivery-incomplete` | 三步未全部标记，距上次 rui 活动 < 1h | ✅ 阻断 | 补执行缺失步骤并标记 |
+| `no-token` | `API_X_TOKEN` 环境变量缺失 | ⚠️ 降级不阻断 | 设置环境变量后恢复推送 |
 
-- 这是管线完整性的硬性要求，不是建议
-- 即使管线中途失败/阻断，仍需触发通知（报告阻断状态）
-- `no-token` 降级时：调用脚本 + 标记，跳过实际网络请求
-- 跳过触发 = 违反核心约束 #11 = 管线未闭合
+## 生效标志
+
+```mermaid
+flowchart LR
+    S1["三步标记齐全<br/>log_appended · docs_synced · notification_sent"]:::sig --> S2["标记顺序正确<br/>① → ② → ③ 无跳序"]:::sig
+    S2 --> S3["import-docs 已触发<br/>含 no-token 降级"]:::sig
+    S3 --> S4["wework-bot 已触发<br/>含阻断状态报告"]:::sig
+    S4 --> S5["rui-state.json<br/>delivery 字段闭合"]:::sig
+
+    classDef sig fill:#e8f5e9,stroke:#2e7d32;
+```
+
+| 标志 | 未达标的处置 |
+|------|------------|
+| 三步标记齐全 | 补执行缺失步骤，写入标记 |
+| 标记顺序正确（① → ② → ③） | 清除错序标记，从断点重新执行 |
+| import-docs 已触发 | 调用 import-docs --workspace 并标记 |
+| wework-bot 已触发 | 调用 wework-bot 并标记 |
+| rui-state.json delivery 字段闭合 | 核对标记字段，补全后 closure 锁定 |
