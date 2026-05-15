@@ -17,7 +17,7 @@ agents:
 
 | 命令 | 用途 | 关键行为 |
 |------|------|---------|
-| `/rui init` | 建立项目基线 | detect → generate → verify；生成 CLAUDE.md · README.md · `.claude/` · 故事面板目录及骨架文档 |
+| `/rui init` | 建立项目基线 | detect → generate → verify；生成 CLAUDE.md · README.md · `.claude/` · 故事面板目录 |
 | `/rui doc <req>` | 拆需求为故事 + 生成文档基线 | pm 拆故事 → coder 按项目类型补齐设计文档；分支隔离；禁止改源码；多故事逐个串行 |
 | `/rui code <name>` | 实现故事 + 生成验证报告（05/06-实施 / 07-测试 / 08-自改进复盘） | Gate A 测试先行；Gate B 验证闭合 |
 | `/rui <req>` | 端到端 | doc + code 全自动串联 |
@@ -96,9 +96,9 @@ flowchart LR
 
 ## init 简述
 
-> 五步：探（脚本探测五类信号）→ 察（大模型深度探索项目）→ 生（大模型生成 CLAUDE.md / README.md / 骨架文档）→ 搭（脚本机械性搭建 agents/rules/skills）→ 验（7 项就绪检查）→ 触（import-docs 同步 + wework-bot 通知）。
+> 五步：探（脚本探测五类信号）→ 察（大模型深度探索项目）→ 生（大模型生成 CLAUDE.md / README.md）→ 搭（脚本机械性搭建 wework-bot 配置）→ 验（4 项就绪检查）→ 触（import-docs 同步 + wework-bot 通知）。
 >
-> **核心设计**：init 负责项目基线。**所有内容文件（CLAUDE.md、README.md、骨架文档）全部由大模型通过深度项目探索生成**，JS 脚本默认不做任何内容生成，只负责探测信号和机械性搭建（目录创建、agents/rules 从插件复制、skills 配置、验证、触发）。`--template` 标志可启用 JS 模板回退。可重复运行，每次全量重生。
+> **核心设计**：init 负责项目基线。**所有内容文件（CLAUDE.md、README.md）全部由大模型通过深度项目探索生成**，JS 脚本默认不做任何内容生成，只负责探测信号和机械性搭建（目录创建、skills 配置、验证、触发）。`--template` 标志可启用 JS 模板回退。可重复运行，每次全量重生。
 
 ```mermaid
 flowchart LR
@@ -114,8 +114,8 @@ flowchart LR
 ```
 1. node init.js --profile-only  → 获取 profile JSON（项目类型/技术栈/安全面/测试框架/架构）
 2. 大模型深度探索项目           → 阅读关键源码、理解架构模式、识别代码规范、发现安全面
-3. 大模型生成全部内容文件       → CLAUDE.md · README.md · docs/故事任务面板/<project>/.skeleton/*.md
-4. node init.js                 → 默认行为：机械性搭建（目录 · agents/rules 复制 · skills 配置 · 验证 · 触发同步+通知）
+3. 大模型生成全部内容文件       → CLAUDE.md · README.md
+4. node init.js                 → 默认行为：机械性搭建（目录 · wework-bot 配置 · 验证 · 触发同步+通知）
 ```
 
 `node init.js` 默认只做机械性搭建，跳过所有内容生成。如需 JS 模板回退：`node init.js --template`。
@@ -124,7 +124,7 @@ flowchart LR
 
 `rui init` 可重复运行。再次运行时，大模型必须：
 
-1. **读取已有文件** — 检查 CLAUDE.md、README.md、骨架文档是否已存在
+1. **读取已有文件** — 检查 CLAUDE.md、README.md 是否已存在
 2. **保留人工定制** — 用户手动修改的内容不覆盖（特别是项目约束段外的自定义内容）
 3. **增量更新** — 只改变了的部分：profile 信号变了 → 更新项目画像表；安全面变了 → 更新约束段；新依赖 → 更新技术栈
 4. **优化改进** — 已有内容可读性差 → 优化表达；格式不统一 → 统一格式；过时信息 → 刷新
@@ -139,7 +139,7 @@ flowchart LR
 | 信号 | 来源 | 用途 |
 |------|------|------|
 | 项目身份 | 仓库目录名 | 分支前缀 / 文档路径锚点 |
-| 项目类型 | `constants.detectProjectType` | frontend/backend/fullstack/meta/unknown → 决定故事骨架裁剪 |
+| 项目类型 | `constants.detectProjectType` | frontend/backend/fullstack/meta/unknown |
 | 项目清单 | 按生态文件抽取 | 依赖 + 构建/测试命令 + 框架版本 |
 | 安全面 | 源码关键词扫描 | 用户输入/API/存储/认证/第三方 |
 | 测试框架 | 依赖 + 配置文件 | vitest/jest/pytest/go-test/cargo-test |
@@ -164,28 +164,23 @@ flowchart LR
 |------|---------|---------|
 | `CLAUDE.md` | 以插件 CLAUDE.md 为哲学框架，针对项目实际情况重写。含基础信念（通用）、工作原则（通用）、项目画像（项目特定）、执行准则（引用实际技术栈/命令）、退化对策（按项目类型）、项目约束（安全底线，含 `rui:project-start/end` 标记）、自约束 | 必须含 `<!-- rui:project-start -->` 和 `<!-- rui:project-end -->` 标记；项目画像表含技术栈/构建命令/测试命令/安全面/Coder公式 |
 | `README.md` | 项目画像 + 命令流 mermaid + 快速开始 + 项目结构 + 管线一览。根据项目类型定制化编写 | 含项目名、技术栈、快速开始命令 |
-| `docs/故事任务面板/<project>/.skeleton/*.md` | 按项目类型裁剪的骨架文档（01-08 + 00），每份含项目快照（mermaid 图 + 结构化表格）。文件名带编号前缀 | 必选文件按项目类型：frontend 含 01/03/04/06/07/08；backend 含 01/02/04/05/07/08；fullstack 全含 |
 
 **生成原则**：
 - CLAUDE.md 以插件 CLAUDE.md 为指导框架（公理/原则保留），但执行准则、退化对策、自约束全部根据项目实际重写
 - README.md 用 mermaid 图 → 结构化表格 → 命令示例表达
-- 骨架文档用 `> 待填充` 标记空白章节，项目快照段填入实际探测数据
-
 ### 4. setup — 脚本机械搭建（搭建层）
 
 大模型生成内容文件后，运行 `node skills/rui/scripts/init.js`（默认行为，无需额外标志）完成：
 
 | 操作 | 说明 |
 |------|------|
-| 目录创建 | `docs/故事任务面板/` · `.skeleton/` · `.claude/memory/` · `.claude/.history/` |
-| agents 复制 | 从插件复制 6 角色契约到 `.claude/agents/` |
-| rules 复制 | 从插件复制 5 跨场景约束到 `.claude/rules/` |
-| skills 配置 | 生成 `wework-bot/config.json` · 复制 `formulas.md` · `coder.md` |
-| 验证 | 7 项就绪检查 |
+| 目录创建 | `docs/故事任务面板/` |
+| wework-bot 配置 | 生成 `wework-bot/config.json` |
+| 验证 | 4 项就绪检查 |
 | 触发 | import-docs 文档同步 + wework-bot 通知 |
 | 记忆 | 写入 `.init-memory.json` |
 
-### 5. verify — 7 项就绪检查（验证层）
+### 5. verify — 4 项就绪检查（验证层）
 
 任一失败 `exit 1`：
 
@@ -194,10 +189,7 @@ flowchart LR
 | 1 | `CLAUDE.md` | 含 `rui:project-start` 标记 + 项目名 |
 | 2 | `README.md` | 含项目名 |
 | 3 | 故事面板 | `docs/故事任务面板/` 目录存在 |
-| 4 | 骨架文档 | `.skeleton/` 下文件数 ≥ 必选文件数 |
-| 5 | `.claude/agents` | 目录存在且 ≥ 4 个 agent 文件 |
-| 6 | `.claude/rules` | 目录存在且 ≥ 3 个规则文件 |
-| 7 | `.claude/skills` | wework-bot config.json 存在 |
+| 4 | wework-bot 配置 | `wework-bot/config.json` 存在 |
 
 ### 6. trigger — 主动触发（集成层）
 
@@ -214,8 +206,7 @@ flowchart LR
 |------|------|---------|---------|
 | `CLAUDE.md` | 项目约束 + 执行准则 + 退化对策 | 大模型 | 全量重生 |
 | `README.md` | 系统视图 + 命令流 + 项目画像 | 大模型 | 全量重生 |
-| `.claude/` | agents/rules/skills 配置 | 脚本复制 | 全量重生 |
-| `docs/故事任务面板/<project>/.skeleton/*.md` | 故事骨架模板（含项目快照） | 大模型 | 全量重生 |
+| `.claude/skills/wework-bot/config.json` | 企微通知配置 | 脚本生成 | 每次覆盖 |
 | `docs/故事任务面板/.init-memory.json` | 执行记录 | 脚本 | 每次覆盖 |
 
 ## doc 简述
