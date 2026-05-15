@@ -287,10 +287,10 @@ function generate(profile, opts = {}) {
       hooks: {
         Stop: [{
           hooks: [
-            { type: 'command', command: 'node skills/wework-bot/scripts/hook-log.js', timeout: 15, statusMessage: '追加通知日志...' },
-            { type: 'command', command: 'node skills/import-docs/scripts/hook-sync.js', timeout: 60, statusMessage: '同步文档到远端...' },
-            { type: 'command', command: 'node skills/wework-bot/scripts/hook-notify.js', timeout: 30, statusMessage: '发送企微通知...' },
-            { type: 'command', command: 'node skills/rui/scripts/delivery-gate.js check-all --json --recent-hours 1', timeout: 15, statusMessage: '检查交付管线状态...' }
+            { type: 'command', command: 'node ~/.claude/plugins/marketplaces/yry/skills/wework-bot/scripts/hook-log.js', timeout: 15, statusMessage: '追加通知日志...' },
+            { type: 'command', command: 'node ~/.claude/plugins/marketplaces/yry/skills/import-docs/scripts/hook-sync.js', timeout: 60, statusMessage: '同步文档到远端...' },
+            { type: 'command', command: 'node ~/.claude/plugins/marketplaces/yry/skills/wework-bot/scripts/hook-notify.js', timeout: 30, statusMessage: '发送企微通知...' },
+            { type: 'command', command: 'node ~/.claude/plugins/marketplaces/yry/skills/rui/scripts/delivery-gate.js check-all --json --recent-hours 1', timeout: 15, statusMessage: '检查交付管线状态...' }
           ]
         }]
       },
@@ -408,7 +408,7 @@ async function main() {
 
 function triggerImportDocs() {
   const { execSync } = require('child_process');
-  const scriptPath = path.join(REPO_ROOT, 'skills', 'import-docs', 'scripts', 'import-docs.js');
+  const scriptPath = path.join(process.env.HOME, '.claude', 'plugins', 'marketplaces', 'yry', 'skills', 'import-docs', 'scripts', 'import-docs.js');
   if (!fs.existsSync(scriptPath)) return;
 
   try {
@@ -431,7 +431,7 @@ function triggerImportDocs() {
 
 function triggerWeworkNotify(profile) {
   const { execSync } = require('child_process');
-  const scriptPath = path.join(REPO_ROOT, 'skills', 'wework-bot', 'scripts', 'send-message.js');
+  const scriptPath = path.join(process.env.HOME, '.claude', 'plugins', 'marketplaces', 'yry', 'skills', 'wework-bot', 'scripts', 'send-message.js');
   if (!fs.existsSync(scriptPath)) return;
   if (!process.env.API_X_TOKEN) {
     console.log('  ◇ wework-bot: 跳过（API_X_TOKEN 未设置）');
