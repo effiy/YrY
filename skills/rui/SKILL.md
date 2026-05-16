@@ -78,7 +78,7 @@ flowchart LR
 8. **交付强制** — 三步管线按序在 `rui-state.json` 的 `delivery_pipeline` 中标记，Stop hook 检查未闭合即阻断
 9. **公式驱动** — 文档由 [formulas.md](./formulas.md) 规约，文件名带编号前缀（00–08）
 10. **知识沉淀** — 写入 `.memory/execution-memory.jsonl` + `.memory/rui-state.json`；提案写入 `.improvement/proposals.jsonl`
-11. **同步通知必触发** — 每次 rui 命令（除 list/推荐）末端必须触发 import-docs 文档同步 + wework-bot 通知，未触发 = 管线未闭合
+11. **同步通知必触发** — 每次 rui 命令（除 list/推荐）末端必须三步依序触发 hook-log + import-docs + wework-bot。**任一缺失 = 管线未闭合 = delivery-incomplete 阻断。阻断状态也必须触发通知。**
 
 ### 故事目录文件编号速查
 
@@ -242,6 +242,18 @@ flowchart LR
 | 03-前端技术评审.md | 前端 / 全栈 |
 | 04-测试用例评审.md | 必创建 |
 
+### trigger（强制）
+
+> ⚠️ **管线未触发 import-docs + wework-bot = 管线未闭合。缺失即阻断。**
+
+| 步骤 | 触发 | 条件 | 降级 |
+|------|------|------|------|
+| 1 | hook-log → `00-消息通知列表` | 自动 | — |
+| 2 | `import-docs --workspace` | `API_X_TOKEN` 存在 | `no-token` 跳过推送仍写标记 |
+| 3 | `wework-bot --agent rui` | `API_X_TOKEN` + webhook URL | 缺凭据跳过 |
+
+详见 [强制集成](#强制集成import-docs--wework-bot)。
+
 ### 约束
 
 - **只读** — 文档生成阶段禁止改源码
@@ -276,6 +288,18 @@ flowchart LR
 | 07-测试用例报告.md | 必创建 | 验证 |
 | 08-自改进复盘.md | 必创建 | 自改进 |
 
+### trigger（强制）
+
+> ⚠️ **管线未触发 import-docs + wework-bot = 管线未闭合。缺失即阻断。**
+
+| 步骤 | 触发 | 条件 | 降级 |
+|------|------|------|------|
+| 1 | hook-log → `00-消息通知列表` | 自动 | — |
+| 2 | `import-docs --workspace` | `API_X_TOKEN` 存在 | `no-token` 跳过推送仍写标记 |
+| 3 | `wework-bot --agent rui` | `API_X_TOKEN` + webhook URL | 缺凭据跳过 |
+
+详见 [强制集成](#强制集成import-docs--wework-bot)。
+
 ### 约束
 
 - **源码唯一入口** — 只能走 `/rui code` 改源码
@@ -285,13 +309,15 @@ flowchart LR
 
 ## 端到端简述
 
-> doc + code 全自动串联。`/rui <req>` 等价于 `/rui doc <req>` → `/rui code <name>`，无中断一气呵成，末端触发 import-docs + wework-bot。
+> doc + code 全自动串联。`/rui <req>` 等价于 `/rui doc <req>` → `/rui code <name>`，无中断一气呵成。
 
 ```mermaid
 flowchart LR
-    R[需求]:::s --> D[doc<br/>拆故事+文档]:::s --> C[code<br/>实现+验证]:::s --> F[交付]:::s
+    R[需求]:::s --> D[doc<br/>拆故事+文档]:::s --> C[code<br/>实现+验证]:::s --> F[交付<br/>import-docs<br/>+ wework-bot]:::s
     classDef s fill:#e3f2fd,stroke:#1565c0;
 ```
+
+> ⚠️ 末端强制触发 import-docs + wework-bot。缺失 = 管线未闭合。
 
 ## update 简述
 
@@ -312,6 +338,18 @@ flowchart LR
 | T2 | 增删故事 / 接口变更 | 裁剪 | 裁剪 | 目标 + 下游 |
 | T3 | 边界变化 / 跨故事重构 | 完整重跑 | 完整重跑 | 全级联刷新 |
 
+### trigger（强制）
+
+> ⚠️ **管线未触发 import-docs + wework-bot = 管线未闭合。缺失即阻断。**
+
+| 步骤 | 触发 | 条件 | 降级 |
+|------|------|------|------|
+| 1 | hook-log → `00-消息通知列表` | 自动 | — |
+| 2 | `import-docs --workspace` | `API_X_TOKEN` 存在 | `no-token` 跳过推送仍写标记 |
+| 3 | `wework-bot --agent rui` | `API_X_TOKEN` + webhook URL | 缺凭据跳过 |
+
+详见 [强制集成](#强制集成import-docs--wework-bot)。
+
 ## code --from-doc 简述
 
 > 从已有文档反推，只读源码补全缺失文档，不覆盖已有。
@@ -327,6 +365,18 @@ flowchart LR
 - **只读** — 禁止改源码
 - **不覆盖** — 已有文档不覆盖，仅补缺失
 - **分支隔离** — 自动创建 `feat/<Project>-<name>` 分支
+
+### trigger（强制）
+
+> ⚠️ **管线未触发 import-docs + wework-bot = 管线未闭合。缺失即阻断。**
+
+| 步骤 | 触发 | 条件 | 降级 |
+|------|------|------|------|
+| 1 | hook-log → `00-消息通知列表` | 自动 | — |
+| 2 | `import-docs --workspace` | `API_X_TOKEN` 存在 | `no-token` 跳过推送仍写标记 |
+| 3 | `wework-bot --agent rui` | `API_X_TOKEN` + webhook URL | 缺凭据跳过 |
+
+详见 [强制集成](#强制集成import-docs--wework-bot)。
 
 ## doc --from-code 简述
 
@@ -396,46 +446,53 @@ pm 按项目类型差异化扫描源码，输出推荐列表：
 
 ## 强制集成：import-docs + wework-bot
 
-**每次** `/rui` 命令执行（含 `doc` / `code` / `update` / `init` / 端到端），管线末端 **必须** 触发 import-docs 和 wework-bot。这不是可选步骤，是管线完整性的一部分。
+> 🚫 **这不是建议，是管线完整性的硬性要求。未触发 = 管线未闭合 = delivery-gate 阻断。**
+>
+> 每个命令段含 `### trigger（强制）` 子部分，执行时必须逐步骤完成，不得跳过或调序。
+
+**每次** `/rui` 命令执行（含 `doc` / `code` / `update` / `init` / `--from-doc` / `--from-code` / 端到端），管线末端 **必须** 触发 import-docs 和 wework-bot。**即使管线中途阻断或失败，也必须触发通知（报告阻断状态）。**
 
 ### 触发时机
 
-| rui 命令 | import-docs | wework-bot | 备注 |
+| rui 命令 | import-docs | wework-bot | 未触发的后果 |
 |----------|:-----------:|:----------:|------|
-| `/rui init` | ✓ | ✓ | verify 通过后立即触发 |
-| `/rui doc <req>` | ✓ | ✓ | 文档生成完成后 |
-| `/rui code <name>` | ✓ | ✓ | Gate B 通过后 |
-| `/rui <req>` | ✓ | ✓ | 端到端末端 |
-| `/rui update` | ✓ | ✓ | 更新完成后 |
-| `/rui code --from-doc` | ✓ | ✓ | 反推完成后 |
-| `/rui doc --from-code` | ✓ | ✓ | 反推完成后 |
-| `/rui list` | ✗ | ✗ | 只读，不触发 |
-| `/rui`（推荐） | ✗ | ✗ | 只读，不触发 |
+| `/rui init` | ✓ | ✓ | `delivery-incomplete` 阻断 |
+| `/rui doc <req>` | ✓ | ✓ | `delivery-incomplete` 阻断 |
+| `/rui code <name>` | ✓ | ✓ | `delivery-incomplete` 阻断 |
+| `/rui <req>` | ✓ | ✓ | `delivery-incomplete` 阻断 |
+| `/rui update` | ✓ | ✓ | `delivery-incomplete` 阻断 |
+| `/rui code --from-doc` | ✓ | ✓ | `delivery-incomplete` 阻断 |
+| `/rui doc --from-code` | ✓ | ✓ | `delivery-incomplete` 阻断 |
+| `/rui list` | ✗ | ✗ | — 只读，不触发 |
+| `/rui`（推荐） | ✗ | ✗ | — 只读，不触发 |
 
 ### 触发顺序（不可跳序）
 
 ```
-管线完成 → 1. hook-log（追加日志）→ 2. import-docs（文档同步）→ 3. wework-bot（发送通知）→ delivery-gate mark
+管线完成/阻断 → 1. hook-log（追加日志）→ 2. import-docs（文档同步）→ 3. wework-bot（发送通知）→ delivery-gate mark
 ```
+
+> 跳序视为未闭合。必须先写日志再同步再通知。
 
 ### 阻断条件
 
-- 未触发 import-docs 或 wework-bot → 管线视为 **未闭合**，delivery-gate 阻断
+- 未触发 import-docs 或 wework-bot → 管线视为 **未闭合**，delivery-gate 阻断（`delivery-incomplete`）
 - `no-token` 降级：仅 `API_X_TOKEN` 缺失时跳过实际推送，但仍写入 `delivery_pipeline` 标记
 - 网络失败：记录告警不阻断，标记仍写
+- **阻断状态也需触发**：管线中途阻断时，仍走三步流程，通知内容报告阻断原因和恢复点
 
 ### 执行方式
 
 每个步骤都对应技能里的纯规约，按下表依次执行：
 
-| # | 步骤 | 规约出处 | 标记字段 |
-|---|------|---------|---------|
-| 1 | 追加日志 | [wework-bot — hook-log](../wework-bot/SKILL.md#hook-log追加日志不发送) | `delivery_pipeline.log_appended` |
-| 2 | 文档同步 | [import-docs — hook 触发器](../import-docs/SKILL.md#hook-触发器) | `delivery_pipeline.docs_synced` |
-| 3 | 发送通知 | [wework-bot — hook-notify](../wework-bot/SKILL.md#hook-notify实际发送) | `delivery_pipeline.notification_sent` |
-| 4 | 闭合检查 | [delivery-gate](../../rules/delivery-gate.md) | 任一未标记 → 阻断 |
+| # | 步骤 | 规约出处 | 标记字段 | 不可跳过 |
+|---|------|---------|---------|:--:|
+| 1 | 追加日志 | [wework-bot — hook-log](../wework-bot/SKILL.md#hook-log追加日志不发送) | `delivery_pipeline.log_appended` | ✓ |
+| 2 | 文档同步 | [import-docs — hook 触发器](../import-docs/SKILL.md#hook-触发器) | `delivery_pipeline.docs_synced` | ✓ |
+| 3 | 发送通知 | [wework-bot — hook-notify](../wework-bot/SKILL.md#hook-notify实际发送) | `delivery_pipeline.notification_sent` | ✓ |
+| 4 | 闭合检查 | [delivery-gate](../../rules/delivery-gate.md) | 任一未标记 → 阻断 | ✓ |
 
-**违反此规则等同于管线未完成。**
+**违反此规则等同于管线未完成。无例外。**
 
 ## 集成
 

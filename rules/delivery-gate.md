@@ -37,15 +37,18 @@ flowchart TB
 
 ## 适用
 
-每个 `/rui` 命令的末端，包含 `/rui doc` / `/rui code` / `/rui <req>` / `/rui-claude <req>`。
+每个 `/rui` 命令的末端（含 `init` / `doc` / `code` / `update` / `--from-doc` / `--from-code` / 端到端）。**唯一的例外是 `list` 和推荐（纯只读）。**
 
 ```mermaid
 flowchart LR
-    subgraph 触发["触发交付"]
-        T1["/rui doc"]:::yes
-        T2["/rui code"]:::yes
-        T3["/rui &lt;req&gt;"]:::yes
-        T4["/rui-claude &lt;req&gt;"]:::yes
+    subgraph 触发["触发交付（强制）"]
+        T1["/rui init"]:::yes
+        T2["/rui doc"]:::yes
+        T3["/rui code"]:::yes
+        T4["/rui &lt;req&gt;"]:::yes
+        T5["/rui update"]:::yes
+        T6["/rui --from-doc"]:::yes
+        T7["/rui --from-code"]:::yes
     end
     subgraph 不触发["不触发交付"]
         N1["/rui list"]:::no
