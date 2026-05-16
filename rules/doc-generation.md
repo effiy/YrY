@@ -6,45 +6,49 @@ paths:
 
 # doc-generation
 
-> 文档生成的五条强制约束。图先文后；编号即顺序；不可提前创建。
+> 文档生成的六条强制约束。表达优先：图 → 结构化文本 → 表。编号即顺序；不可提前创建。
 
 故事文档公式见 [formulas.md](../skills/rui/formulas.md)；目录与数据契约见 [coder.md](../skills/rui/coder.md)。
 
-## 五约束全景
+## 六约束全景
 
 ```mermaid
 flowchart TB
     subgraph C1["① 版头齐"]
         H1["F.meta 版本头"]:::c
         H2["F.nav 导航块"]:::c
-        H3["图先文后"]:::c
     end
-    subgraph C2["② 目录清"]
+    subgraph C2["② 表达优先"]
+        G1["图 → 结构化文本 → 表"]:::c
+        G2["架构/流程/关系优先 mermaid"]:::c
+    end
+    subgraph C3["③ 目录清"]
         D1["命名 + 路径约束"]:::c
     end
-    subgraph C3["③ 证据足"]
+    subgraph C4["④ 证据足"]
         E1["Level A/B 写入"]:::c
         E2["C 标注 / D 禁止"]:::c
     end
-    subgraph C4["④ 产出聚"]
+    subgraph C5["⑤ 产出聚"]
         O1["管线阶段 → 文件创建"]:::c
     end
-    subgraph C5["⑤ 裁剪准"]
+    subgraph C6["⑥ 裁剪准"]
         T1["T1/T2/T3 增量分级"]:::c
     end
 
-    C1 --> C2 --> C3 --> C4 --> C5
+    C1 --> C2 --> C3 --> C4 --> C5 --> C6
 
     classDef c fill:#e3f2fd,stroke:#1565c0;
 ```
 
 | 约束 | 一句话 | 违反示例 |
 |------|--------|---------|
-| ① 版头齐 | 每文档必含版本行 + 导航块，图先于文 | 无 F.meta 版本头直接开写 |
-| ② 目录清 | 故事文档按 `<Project>/<name>/` 独立子目录 | 文档散落在项目根目录 |
-| ③ 证据足 | Level A/B 写入，C 标注待补充，D 禁止出现 | "应该有个 UserService" |
-| ④ 产出聚 | 文件按管线阶段创建，不可提前 | 编码前已写好实施报告 |
-| ⑤ 裁剪准 | 增量更新按 T1/T2/T3 自动裁剪管线 | T1 措辞修正跑完整管线 |
+| ① 版头齐 | 每文档必含版本行 + 导航块 | 无 F.meta 版本头直接开写 |
+| ② 表达优先 | 图 → 结构化文本 → 表，架构/流程/关系优先 mermaid | 大段文字描述架构，无图 |
+| ③ 目录清 | 故事文档按 `<Project>/<name>/` 独立子目录 | 文档散落在项目根目录 |
+| ④ 证据足 | Level A/B 写入，C 标注待补充，D 禁止出现 | "应该有个 UserService" |
+| ⑤ 产出聚 | 文件按管线阶段创建，不可提前 | 编码前已写好实施报告 |
+| ⑥ 裁剪准 | 增量更新按 T1/T2/T3 自动裁剪管线 | T1 措辞修正跑完整管线 |
 
 ## 适用
 
@@ -57,12 +61,10 @@ flowchart LR
     subgraph 必含["每文档必含"]
         META["F.meta<br/>版本行：v{版本} | {日期} | {模型} | {分支}"]:::must
         NAV["F.nav<br/>导航块：关联文档链接"]:::must
-        GRAPH["图先文后<br/>架构/流程/关系优先 mermaid"]:::must
     end
     META --> DOC["文档开头"]:::out
     NAV --> DOC
     NAV --> TAIL["主体章节末尾"]:::out
-    GRAPH --> BODY["主体内容"]:::out
 
     classDef must fill:#e3f2fd,stroke:#1565c0;
     classDef out fill:#e8f5e9,stroke:#2e7d32;
@@ -72,9 +74,38 @@ flowchart LR
 |---|------|------|
 | 1 | 版本行必填，占位符 `{...}` 留空即偏差 | `v{版本} \| {日期}` — 未替换占位符 |
 | 2 | 主体章节首尾含导航块（F.nav），索引文件除外 | 文章末尾无关联文档链接 |
-| 3 | 先图后文——架构/流程/关系优先 mermaid，文字补充细节 | 大段文字描述架构，无图 |
 
-## ② 目录清
+## ② 表达优先
+
+```mermaid
+flowchart LR
+    subgraph 优先级["表达优先级（不可降级）"]
+        A["① 图<br/>mermaid / 流程图<br/>架构 / 流程 / 关系"]:::first
+        B["② 结构化文本<br/>列表 / 层级 / 关键点<br/>补充图中无法容纳的细节"]:::second
+        C["③ 表<br/>数据对照 / 矩阵<br/>精确数值与映射"]:::third
+    end
+    A --> B --> C
+
+    subgraph 反例["降级违规"]
+        X1["架构用大段文字 → 应改用 mermaid"]:::bad
+        X2["对比信息用列表 → 应改用表格"]:::bad
+        X3["以无图文档为出发点 → 应先画图"]:::bad
+    end
+
+    classDef first fill:#e8f5e9,stroke:#2e7d32;
+    classDef second fill:#e3f2fd,stroke:#1565c0;
+    classDef third fill:#f3e5f5,stroke:#6a1b9a;
+    classDef bad fill:#ffebee,stroke:#c62828;
+```
+
+| # | 规则 | 反例 |
+|---|------|------|
+| 3 | **图优先** — 架构、流程、组件关系、数据流必须先以 mermaid 图呈现，文字仅补充图中无法容纳的细节 | 一份技术评审无任何 mermaid 图 |
+| 4 | **表优于列表** — 需要对照、比较、映射的信息优先用表格，纯枚举或步骤用列表 | 接口参数用文字列表逐行描述而非表格 |
+| 5 | **禁止文替图** — 能用图表达的信息，不得仅用文字。文档以图为骨架，文字为血肉 | "系统由 A、B、C 三个模块组成，A 调用 B，B 调用 C…" — 无图 |
+| 6 | **图先于文** — 每个章节的 mermaid 图位于该章节文字之前，读者先看结构再读细节 | 先写三段背景，末尾附一个小图 |
+
+## ③ 目录清
 
 ```mermaid
 flowchart LR
@@ -100,17 +131,17 @@ flowchart LR
 | CLI 输入 | `<Project>-<name>`，`-` 分隔 |
 | 缺项目级目录 | 阻断 |
 
-## ③ 证据足
+## ④ 证据足
 
 证据等级定义见 [agents/AGENT.md](../agents/AGENT.md#证据等级)（A 已验证 · B 可推导 · C 待补充 · D 禁止）。文档生成阶段遵循同等级规则。
 
 | # | 规则 | 反例 |
 |---|------|------|
-| 4 | Level A/B 可直接写入；C 标注 `> 待补充`；D 禁止出现 | 无来源断言"系统性能提升 30%" |
-| 5 | 不编造未验证的模块名/接口/路径/文件名 | "新增 `/api/v2/users` 接口" — 无源码证据 |
-| 6 | 跨文档引用先指向索引文件，再按需深入章节 | 直接链到某个章节，跳过索引 |
+| 7 | Level A/B 可直接写入；C 标注 `> 待补充`；D 禁止出现 | 无来源断言"系统性能提升 30%" |
+| 8 | 不编造未验证的模块名/接口/路径/文件名 | "新增 `/api/v2/users` 接口" — 无源码证据 |
+| 9 | 跨文档引用先指向索引文件，再按需深入章节 | 直接链到某个章节，跳过索引 |
 
-## ④ 产出聚
+## ⑤ 产出聚
 
 ```mermaid
 flowchart LR
@@ -142,7 +173,7 @@ flowchart LR
 | 自改进 | 08 | 必创建 |
 | 交付 | 00 | 自动追加 |
 
-## ⑤ 裁剪准
+## ⑥ 裁剪准
 
 ```mermaid
 flowchart TD
@@ -214,9 +245,9 @@ flowchart LR
 
 | # | 规则 | 说明 |
 |---|------|------|
-| 7 | 策展阶段必须 git commit | 故事关闭但变更未提交 → 违规 |
-| 8a | `--from-code` req 空：探索模式，pm 扫描源码推荐列表 | 用户选择后生成文档 |
-| 8b | `--from-code` req 有值：反推模式，证据 Level B | 标注源码路径，缺口标 `> 待补充` |
+| 10 | 策展阶段必须 git commit | 故事关闭但变更未提交 → 违规 |
+| 11a | `--from-code` req 空：探索模式，pm 扫描源码推荐列表 | 用户选择后生成文档 |
+| 11b | `--from-code` req 有值：反推模式，证据 Level B | 标注源码路径，缺口标 `> 待补充` |
 
 ## 例外
 
@@ -229,17 +260,19 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    S1["版头齐<br/>版本行 + 导航块 + 图先文后"]:::sig --> S2["目录清<br/>&lt;Project&gt;/&lt;name&gt;/ 合规"]:::sig
-    S2 --> S3["证据足<br/>无 Level D 内容"]:::sig
-    S3 --> S4["产出聚<br/>文件按阶段创建"]:::sig
-    S4 --> S5["策展完成<br/>git commit 已提交"]:::sig
+    S1["版头齐<br/>版本行 + 导航块"]:::sig --> S2["表达优先<br/>图 → 结构化文本 → 表"]:::sig
+    S2 --> S3["目录清<br/>&lt;Project&gt;/&lt;name&gt;/ 合规"]:::sig
+    S3 --> S4["证据足<br/>无 Level D 内容"]:::sig
+    S4 --> S5["产出聚<br/>文件按阶段创建"]:::sig
+    S5 --> S6["策展完成<br/>git commit 已提交"]:::sig
 
     classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 标志 | 未达标的处置 |
 |------|------------|
-| 版头齐：版本行 + 导航块 + 图先文后 | 补 F.meta / F.nav，文字改 mermaid 图 |
+| 版头齐：版本行 + 导航块 | 补 F.meta / F.nav |
+| 表达优先：图 → 结构化文本 → 表，架构/流程/关系有 mermaid | 文字改图，列表改表，补齐缺失的 mermaid |
 | 目录清：`<Project>/<name>/` 合规 | 移动文件到正确目录 |
 | 证据足：无 Level D 内容 | 删 D 级内容，补 C 标注或查证升级 |
 | 产出聚：文件按阶段创建，不提前 | 删除提前创建的文件 |
