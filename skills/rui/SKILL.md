@@ -96,9 +96,9 @@ flowchart LR
 
 ## init 简述
 
-> 五步：探（探测五类信号）→ 察（深度探索项目）→ 生（生成 CLAUDE.md / README.md）→ 搭（机械性搭建 wework-bot 配置）→ 验（4 项就绪检查）→ 触（import-docs 同步 + wework-bot 通知）。
+> 五步：探（探测五类信号）→ 察（深度探索项目）→ 生（生成 CLAUDE.md / README.md / CONTEXT.md）→ 搭（机械性搭建 wework-bot 配置）→ 验（5 项就绪检查）→ 触（import-docs 同步 + wework-bot 通知）。
 >
-> **核心设计**：init 负责项目基线。**所有内容文件（CLAUDE.md、README.md）全部由大模型通过深度项目探索生成**，本规约不依赖任何脚本，完全由调用方按本节描述顺序执行。可重复运行，每次全量重生。
+> **核心设计**：init 负责项目基线。**所有内容文件（CLAUDE.md、README.md、CONTEXT.md）全部由大模型通过深度项目探索生成**，本规约不依赖任何脚本，完全由调用方按本节描述顺序执行。可重复运行，每次全量重生。
 
 ```mermaid
 flowchart LR
@@ -114,9 +114,9 @@ flowchart LR
 ```
 1. detect    → 探测五类信号，输出 profile（项目类型/技术栈/安全面/测试框架/架构）
 2. explore   → 阅读关键源码、理解架构模式、识别代码规范、发现安全面
-3. generate  → 编写 CLAUDE.md 与 README.md
+3. generate  → 编写 CLAUDE.md · README.md · CONTEXT.md
 4. setup     → 创建目录、生成 wework-bot/config.json、写 .init-memory.json
-5. verify    → 执行 4 项就绪检查，任一失败即终止
+5. verify    → 执行 5 项就绪检查，任一失败即终止
 6. trigger   → 触发 import-docs（workspace 全量）+ wework-bot 通知
 ```
 
@@ -176,10 +176,12 @@ flowchart LR
 |------|---------|---------|
 | `CLAUDE.md` | 项目画像（项目特定）、执行准则（引用实际技术栈/命令）、退化对策（按项目类型）、项目约束（安全底线，含 `rui:project-start/end` 标记）、自约束 | 必须含 `<!-- rui:project-start -->` 和 `<!-- rui:project-end -->` 标记；项目画像表含技术栈 / 构建命令 / 测试命令 / 安全面 / Coder 公式 |
 | `README.md` | 项目画像 + 命令流 mermaid + 快速开始 + 项目结构 + 管线一览。根据项目类型定制化编写 | 含项目名、技术栈、快速开始命令 |
+| `CONTEXT.md` | 项目领域语言词汇表：术语定义、关系、示例对话、歧义标记。根据项目实际领域编写 | 格式见 [CONTEXT-FORMAT](https://github.com/mattpocock/skills/blob/main/skills/engineering/grill-with-docs/CONTEXT-FORMAT.md)；每个术语含 Avoid 别名 |
 
 **生成原则**：
 - CLAUDE.md 含项目画像、执行准则、退化对策、项目约束、自约束，全部根据项目实际编写
 - README.md 用 mermaid 图 → 结构化表格 → 命令示例表达
+- CONTEXT.md 用领域术语定义 + 关系 + 示例对话 + 歧义标记，格式参照 [CONTEXT-FORMAT](https://github.com/mattpocock/skills/blob/main/skills/engineering/grill-with-docs/CONTEXT-FORMAT.md)
 
 ### 4. setup — 机械搭建（搭建层）
 
@@ -189,7 +191,7 @@ flowchart LR
 | wework-bot 配置 | 生成 `.claude/skills/wework-bot/config.json`（schema 见 [wework-bot SKILL.md](../wework-bot/SKILL.md#配置文件)） |
 | 记忆 | 写入 `docs/故事任务面板/.init-memory.json` 记录本次执行 |
 
-### 5. verify — 4 项就绪检查（验证层）
+### 5. verify — 5 项就绪检查（验证层）
 
 任一失败即终止：
 
@@ -197,8 +199,9 @@ flowchart LR
 |---|--------|--------|
 | 1 | `CLAUDE.md` | 含 `rui:project-start` 标记 + 项目名 |
 | 2 | `README.md` | 含项目名 |
-| 3 | 故事面板 | `docs/故事任务面板/` 目录存在 |
-| 4 | wework-bot 配置 | `.claude/skills/wework-bot/config.json` 存在 |
+| 3 | `CONTEXT.md` | 含项目名 + 至少 3 个领域术语定义 |
+| 4 | 故事面板 | `docs/故事任务面板/` 目录存在 |
+| 5 | wework-bot 配置 | `.claude/skills/wework-bot/config.json` 存在 |
 
 ### 6. trigger — 主动触发（集成层）
 
@@ -215,6 +218,7 @@ flowchart LR
 |------|------|---------|
 | `CLAUDE.md` | 项目约束 + 执行准则 + 退化对策 | `rui:project-*` 标记内全量重生，段外保留 |
 | `README.md` | 系统视图 + 命令流 + 项目画像 | 全量重生 |
+| `CONTEXT.md` | 领域语言词汇表 | 首次全量生成，重复运行增量补充术语 |
 | `.claude/skills/wework-bot/config.json` | 企微通知配置 | 每次覆盖 |
 | `docs/故事任务面板/.init-memory.json` | 执行记录 | 每次覆盖 |
 
@@ -223,6 +227,8 @@ flowchart LR
 > 三步：拆（pm 解析需求拆为故事）→ 补（coder 按项目类型补齐设计文档）→ 触（import-docs 同步 + wework-bot 通知）。
 >
 > **核心设计**：pm 将需求文本 / `@` 文件 / URL 解析为结构化故事，影响分析后拆分任务并排优先级。随后指派 coder 按项目类型补齐设计文档：前端补 03-前端技术评审，后端补 02-后端技术评审，全栈两者均补。全程禁止改源码，多故事逐个串行处理。
+>
+> pm 解读需求时应用**烧烤纪律**（挑战模糊术语、走完决策树每个分支、用 [CONTEXT.md](../../../CONTEXT.md) 领域词汇命名概念、术语解析后即时更新 CONTEXT.md）。不确定性 > 2 项时不推进到影响分析。设计决策满足 ADR 三条件（难逆转 / 缺上下文会奇怪 / 真实权衡）时写入 `docs/adr/`。
 
 ```mermaid
 flowchart LR

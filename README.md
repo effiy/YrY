@@ -77,7 +77,7 @@ flowchart LR
 | `doc-generation` | 文档产出 | 目录命名 · 骨架模板 · 附属数据存放 |
 | `self-improve` | 复盘改进 | 数据采集 → 诊断 → 提案，`no-metrics` 降级不阻断 |
 | `rui-claude` | .claude/ 管理 | 仅限 `.claude/` · 禁自动 commit/push |
-| `supporting-techniques` | 技术支撑 | 根因追溯 · 纵深防御 · 条件等待 · 验证门禁 |
+| `supporting-techniques` | 技术支撑 | 根因追溯 · 纵深防御 · 条件等待 · 验证门禁 · 反馈回路 · 深度模块 · 垂直切片 |
 
 详见 [`rules/`](./rules/)。
 
@@ -89,8 +89,12 @@ flowchart LR
 | `rui-claude` | `/rui-claude sync` · `retro` · `history` | .claude/ 配置远端同步与复盘 |
 | `import-docs` | 自动（hook 触发） | 批量同步故事文档到远端 API |
 | `wework-bot` | 自动（hook 触发） | 企微机器人推送管线状态通知 |
+| `diagnose` | `/diagnose` | 结构化调试：反馈回路→复现→假设→instrument→修复→复盘 |
+| `improve-codebase-architecture` | `/improve-codebase-architecture` | 发现深模块机会，消除浅模块，改善 AI 可导航性 |
+| `handoff` | `/handoff` | 压缩会话为交接文档，供下游 Agent 继续 |
 
 详见 [`skills/`](./skills/)。
+
 
 ## 目录结构
 
@@ -110,14 +114,23 @@ YrY/
 │   ├── doc-generation.md       #   文档生成规范
 │   ├── self-improve.md         #   自改进流程
 │   ├── rui-claude.md           #   .claude/ 管理约束
-│   └── supporting-techniques.md #   根因追溯 · 纵深防御 · 条件等待 · 验证门禁
-├── skills/                     # 4 项技能规约
+│   └── supporting-techniques.md #   根因追溯 · 纵深防御 · 条件等待 · 验证门禁 · 反馈回路 · 深度模块 · 垂直切片
+├── skills/                     # 7 项技能规约
+│   ├── engineering/            #   工程技能
+│   │   ├── diagnose/           #     结构化调试
+│   │   └── improve-codebase-architecture/  # 架构深化
+│   ├── productivity/           #   生产力工具
+│   │   └── handoff/            #     会话交接
 │   ├── rui/                    #   SDLC 编排（SKILL.md · formulas.md · coder.md）
 │   ├── rui-claude/             #   .claude/ 配置管理
 │   ├── import-docs/            #   文档远端同步
 │   └── wework-bot/             #   企微通知
-├── docs/故事任务面板/           # 故事产出目录
-│   └── <Project>/<name>/        #   每故事独立子目录 · 00–08 编号文档
+├── docs/
+│   ├── adr/                    #   架构决策记录
+│   │   └── 0001-story-driven-pipeline-with-file-numbered-docs.md
+│   └── 故事任务面板/           #   故事产出目录
+│       └── <Project>/<name>/    #   每故事独立子目录 · 00–08 编号文档
+├── CONTEXT.md                  # 领域语言词汇表
 ├── .claude-plugin/             # 插件注册信息
 ├── CLAUDE.md                   # AI 协作指令
 └── README.md                   # 本文件

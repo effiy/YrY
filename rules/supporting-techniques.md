@@ -193,6 +193,55 @@ await new Promise(r => setTimeout(r, 200));   // 再等定时行为
 ❌ 信任 Agent 报告
 ```
 
+## ⑤ 反馈回路
+
+**Iron Law: `NO DIAGNOSIS WITHOUT A FEEDBACK LOOP FIRST`**
+
+修复 bug 前，先构建快速、确定、可自动运行的通过/失败信号。有回路 = bug 90% 已定位。没有回路 = 猜。
+
+### 回路构建顺序
+
+```
+1. 失败测试  2. curl/HTTP 脚本  3. CLI + fixture
+4. Headless 浏览器  5. 回放 trace  6. One-off harness
+7. Fuzz 循环  8. 二分 harness  9. 差分循环  10. HITL 脚本
+```
+
+### 迭代回路
+
+- 更快？（缓存 setup、跳过无关 init）
+- 信号更锐利？（assert 具体症状）
+- 更确定？（固定时间、pin RNG、隔离文件系统）
+
+2 秒确定回路是调试超能力。30 秒抖动回路 ≈ 没有。
+
+### 无回路 = 停
+
+不要进入假设阶段。列出你试了什么，问用户要环境/捕获件/临时生产 instrumentation。详见 [skills/engineering/diagnose/SKILL.md](../skills/engineering/diagnose/SKILL.md)。
+
+## ⑥ 深度模块
+
+**Iron Law: `NO ABSTRACTION WITHOUT A SECOND CALLER`**
+
+| 概念 | 定义 | 测试 |
+|------|------|------|
+| 深模块 | 小接口藏大量行为 = 高杠杆 | 删除测试：删除它，复杂度回到 N 个调用方 |
+| 浅模块 | 接口几乎和实现一样复杂 | 删除测试：删除它，复杂度消失——透传 |
+| 接缝 | 不改原地就能改行为的地方 | 一个适配器 = 假设接缝。两个 = 真接缝。 |
+
+重构时优先深化浅模块。详见 [skills/engineering/improve-codebase-architecture/SKILL.md](../skills/engineering/improve-codebase-architecture/SKILL.md)。
+
+## ⑦ 垂直切片
+
+**Iron Law: `ONE TEST → ONE IMPLEMENTATION PER CYCLE`**
+
+```
+❌ 水平：RED(test1,test2,test3) → GREEN(impl1,impl2,impl3)
+✅ 垂直：RED(test1) → GREEN(impl1), RED(test2) → GREEN(impl2), ...
+```
+
+先写全量测试再实现 = 测想象行为。一次一个测试 → 刚写完代码，你知道什么是重要行为。
+
 ## 集成
 
 | 技术 | 本项目适用阶段 | 相关规则 |
@@ -201,5 +250,8 @@ await new Promise(r => setTimeout(r, 200));   // 再等定时行为
 | 纵深防御 | P0 修复后 · 安全约束落地 | security.md · code-pipeline.md |
 | 条件等待 | 测试用例编写 · 环境专项 | tester.md · code-pipeline.md |
 | 验证门禁 | Gate A · Gate B · 交付标记 | delivery-gate.md · AGENT.md |
+| 反馈回路 | 诊断 · 调试 · 排查 | diagnose SKILL.md |
+| 深度模块 | 架构设计 · 逐模块实现 · 自改进 | improve-codebase-architecture SKILL.md |
+| 垂直切片 | Gate A 测试先行 · TDD 循环 | code-pipeline.md · tdd 参考 |
 
-> 以上技术源自 superpowers 的 real-world impact 数据：系统化排查 15-30min vs 猜测 2-3h；首次修复率 95% vs 40%；新 bug 引入近零 vs 常见。
+> 以上技术源自 superpowers 和 mattpocock/skills 的实战验证：系统化排查 15-30min vs 猜测 2-3h；首次修复率 95% vs 40%；深模块使 AI 导航效率提升 > 3×。
