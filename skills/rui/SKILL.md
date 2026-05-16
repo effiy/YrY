@@ -288,22 +288,31 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    E1[detect<br/>req 空：扫描源码]:::s --> E2[recommend<br/>推荐列表]:::s --> E3[用户选择]:::s
-    E3 --> G[generate<br/>反推故事文档]:::s
-    R[req 有值<br/>直接反推]:::s --> C[冲突检测]:::s --> G
-    G --> T[trigger]:::s
+    E0["detect<br/>项目类型判定"]:::tool --> E1["node skills/rui/recommend.mjs<br/>数据采集"]:::tool
+    E1 --> E2["PM 5层评分<br/>见 recommend-criteria.md"]:::llm
+    E2 --> E3["结构化推荐输出<br/>象限图 + 排序表 + 详述"]:::llm
+    E3 --> E4["用户选择"]:::user
+    E4 --> G["generate<br/>反推故事文档"]:::s
+    R["req 有值<br/>直接反推"]:::s --> C["冲突检测"]:::s --> G
+    G --> T["trigger"]:::s
+
+    classDef tool fill:#e8f5e9,stroke:#2e7d32;
+    classDef llm fill:#fff3e0,stroke:#e65100;
+    classDef user fill:#f3e5f5,stroke:#6a1b9a;
     classDef s fill:#e3f2fd,stroke:#1565c0;
 ```
 
 ### req 为空 — 推荐引路
 
-pm 按项目类型差异化扫描源码输出推荐列表：
+5 步推荐管线，数据驱动 + 框架评分：
 
-- **前端** → 扫描 `.vue`/`.jsx`/`.tsx` 的 Props/Events/Expose，按无文档程度排序，命名 `<project>-<component>-doc`
-- **后端** → 扫描路由/控制器 HTTP 方法/路径/schema，命名 `<project>-<resource>-api`
-- **全栈** → 两端独立扫描，分别输出
+1. **detect** — 判定项目类型（frontend / backend / fullstack / unknown）
+2. **scan** — `node skills/rui/recommend.mjs --root . --type <detected> --format json`
+3. **evaluate** — PM 按 [recommend-criteria.md](./recommend-criteria.md) 的 5 层框架评分排序，输出 P0→P3
+4. **present** — 结构化推荐输出：象限图 → 排序表 → 每候选详述（覆盖范围·源码证据·预计产出·可执行命令）
+5. **wait** — 等待用户选择后进入生成阶段
 
-每候选含覆盖范围 · 源码证据 · 优先级。用户选择后进入生成。
+> 不可跳过第 2 步凭感觉推荐。详细评分框架见 [recommend-criteria.md](./recommend-criteria.md)。
 
 ### req 有值 — 直接生成
 
@@ -457,3 +466,4 @@ pm 按项目类型差异化扫描源码输出推荐列表：
 | 规则 | [code-pipeline](../../rules/code-pipeline.md) · [delivery-gate](../../rules/delivery-gate.md) · [doc-generation](../../rules/doc-generation.md) · [self-improve](../../rules/self-improve.md) · [rui-claude](../../rules/rui-claude.md) |
 | 角色 | [pm](../../agents/pm.md) · [coder](../../agents/coder.md) · [tester](../../agents/tester.md) · [reporter](../../agents/reporter.md) · [security](../../agents/security.md) · [self-improve](../../agents/self-improve.md) |
 | 文档 | [formulas.md](./formulas.md) · [coder.md](./coder.md) · [import-docs SKILL](../import-docs/SKILL.md) · [wework-bot SKILL](../wework-bot/SKILL.md) |
+| 推荐 | [recommend-criteria.md](./recommend-criteria.md) · [recommend.mjs](./recommend.mjs) |

@@ -229,6 +229,57 @@ async function uploadAll(files, apiUrl, existingPaths, root, workspaceName, pref
   return { created, overwritten, failed, errors };
 }
 
+// --- empty input: recommend ------------------------------------------------
+function hasArgs(opts) {
+  return opts.scanRoot === "workspace" || opts.scanDir !== null;
+}
+
+async function recommendMode(root, workspaceName, opts, apiUrl) {
+  const files = await scanFiles(root, opts.exts, opts.exclude);
+
+  console.log("# import-docs 状态检测与推荐\n");
+
+  // API_X_TOKEN 检测
+  if (!API_X_TOKEN) {
+    console.log("⚠️  API_X_TOKEN: 缺失");
+    console.log("   → 推荐: 配置 token 后执行 `/import-docs workspace=true` 全量导入\n");
+  } else {
+    console.log("✅ API_X_TOKEN: 已配置");
+  }
+
+  // 远端可达性检测
+  if (API_X_TOKEN) {
+    try {
+      const existingPaths = await querySessions(apiUrl);
+      console.log(`✅ 远端可达: ${existingPaths.size} 个已有 session\n`);
+    } catch (err) {
+      console.log(`⚠️  远端不可达: ${err.message}`);
+      console.log("   → 推荐: 检查网络或 API 地址后重试\n");
+    }
+  }
+
+  // 文件清单预览
+  console.log(`📋 待同步文件: ${files.length} 个`);
+  if (files.length > 0) {
+    const preview = files.slice(0, 10);
+    for (const f of preview) {
+      const rp = resolveRemotePath(f, root, workspaceName, opts.prefix);
+      console.log(`   ${relative(root, f)} → ${rp}`);
+    }
+    if (files.length > 10) console.log(`   ... 等 ${files.length - 10} 个文件`);
+  }
+
+  // 推荐任务
+  console.log("\n## 推荐任务\n");
+  if (!API_X_TOKEN) {
+    console.log("1. [凭据缺失] 设置 API_X_TOKEN 环境变量");
+  }
+  console.log("2. [全量导入] `/import-docs workspace=true` 扫描并上传全部文件");
+  console.log("3. [增量同步] `/import-docs workspace=true exclude=...` 跳过指定目录");
+  console.log("4. [预览检查] `/import-docs workspace=true mode=list` 仅列出不上传");
+  console.log("5. [定期巡检] 定期运行空输入检查 token / 远端可达性 / 文件差异");
+}
+
 // --- main ------------------------------------------------------------------
 async function main() {
   const opts = parseArgs();
@@ -242,10 +293,17 @@ async function main() {
 
   if (!existsSync(root)) {
     console.error(`[import-docs] scan root not found: ${root}`);
-    process.exit(0); // 不阻断
+    process.exit(0);
   }
 
   const workspaceName = root.split(sep).pop() || "workspace";
+
+  // 空输入 → 推荐模式
+  if (!hasArgs(opts)) {
+    console.error(`[import-docs] scan root: ${root} (recommend mode)`);
+    await recommendMode(root, workspaceName, opts, apiUrl);
+    return;
+  }
 
   console.error(`[import-docs] scan root: ${root}`);
   console.error(`[import-docs] workspace: ${workspaceName}`);

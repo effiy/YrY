@@ -97,9 +97,11 @@ flowchart TD
 ```mermaid
 flowchart LR
     subgraph explore["探索模式（req 为空）"]
-        E1["扫描源码"]:::exp --> E2["输出推荐列表"]:::exp
-        E2 --> E3["等用户选择"]:::exp
-        E3 --> E4["生成文档"]:::exp
+        E0["detect 项目类型"]:::tool --> E1["node skills/rui/recommend.mjs"]:::tool
+        E1 --> E2["PM 按 5 层评分排序"]:::llm
+        E2 --> E3["结构化推荐输出"]:::llm
+        E3 --> E4["等用户选择"]:::exp
+        E4 --> E5["生成文档"]:::exp
     end
     subgraph direct["反推模式（req 有值）"]
         D1["解析 Project-name"]:::dir --> D2["冲突检测"]:::dir
@@ -109,19 +111,23 @@ flowchart LR
     end
     explore -.->|"用户选定后"| direct
 
+    classDef tool fill:#e8f5e9,stroke:#2e7d32;
+    classDef llm fill:#fff3e0,stroke:#e65100;
     classDef exp fill:#e3f2fd,stroke:#1565c0;
     classDef dir fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 ### 探索模式
 
-| 项目类型 | 扫描目标 | 排序规则 | 命名格式 |
-|---------|---------|---------|---------|
-| 前端 | `.vue`/`.jsx`/`.tsx`/`.svelte` 的 Props/Events/Expose | 核心业务无文档 > 普通无文档 > 过时文档 | `<project>-<component>-doc` |
-| 后端 | 路由/控制器 → HTTP 方法/路径/schema | 核心 API 无文档 > 普通无文档 > 过时文档 | `<project>-<resource>-api` |
-| 全栈 | 两端独立扫描 | 分别排序 | — |
+> 数据采集由 `node skills/rui/recommend.mjs` 完成，评分由 PM 按 [recommend-criteria.md](../skills/rui/recommend-criteria.md) 的 5 层框架执行。
 
-> 每候选必含：覆盖范围、源码证据（Level A 路径列表）、优先级。
+| 项目类型 | 扫描命令 | 排序依据 | 命名格式 |
+|---------|---------|---------|---------|
+| 前端 | `node skills/rui/recommend.mjs --root . --type frontend` | [5层评分](../skills/rui/recommend-criteria.md) → P0→P3 | `<project>-<component>-doc` |
+| 后端 | `node skills/rui/recommend.mjs --root . --type backend` | 同上 | `<project>-<resource>-api` |
+| 全栈 | `node skills/rui/recommend.mjs --root . --type fullstack` | 两端分别排序 | — |
+
+> 每候选必含：覆盖范围、源码证据（Level A 路径 + 签名摘要）、优先级（P0-P3 + 分类依据）、预计产出（文档编号列表）、可执行命令（`/rui doc --from-code <name>`）。
 
 ### 反推模式
 
@@ -147,6 +153,7 @@ flowchart LR
 | 2 | 不编造未验证的模块名/接口/路径 | "应该有个 UserService"——无源码证据 |
 | 3 | 策展阶段必须 git commit | 故事关闭但变更未提交 |
 | 4 | 目录命名见 [doc-generation.md](../rules/doc-generation.md) | 自创目录结构 |
+| 5 | 探索模式必须先运行 `recommend.mjs`，不可跳过脚本凭感觉推荐 | "这个项目我熟悉，直接推荐就行" |
 
 ## 生效标志
 
