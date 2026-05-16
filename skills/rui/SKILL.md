@@ -344,9 +344,9 @@ pm 按项目类型差异化扫描源码输出推荐列表：
 
 | # | 步骤 | 规约出处 | 标记字段 |
 |---|------|---------|---------|
-| 1 | hook-log | [wework-bot — hook-log](../wework-bot/SKILL.md#hook-log追加日志不发送) | `delivery_pipeline.log_appended` |
+| 1 | hook-log | [wework-bot — hook-log](../wework-bot/SKILL.md#①-hook-log追加日志不发送) | `delivery_pipeline.log_appended` |
 | 2 | import-docs | [import-docs — hook 触发器](../import-docs/SKILL.md#hook-触发器) | `delivery_pipeline.docs_synced` |
-| 3 | wework-bot | [wework-bot — hook-notify](../wework-bot/SKILL.md#hook-notify实际发送) | `delivery_pipeline.notification_sent` |
+| 3 | wework-bot | [wework-bot — hook-notify](../wework-bot/SKILL.md#③-hook-notify实际发送) | `delivery_pipeline.notification_sent` |
 
 ### 降级
 
@@ -389,7 +389,7 @@ pm 按项目类型差异化扫描源码输出推荐列表：
 
 ### Red Flags
 
-以下任一出现 = 停止，回到 [铁律](../../CLAUDE.md#基础信念)：
+以下任一出现 = 停止，回到 [铁律](../../CLAUDE.md#铁律)：
 - "这个 bug 很简单，直接修就行"
 - "修复超过 3 次了但这次肯定对"
 - "多个修复一起上省时间"

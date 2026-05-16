@@ -255,3 +255,22 @@ flowchart TD
 - "公式" 与"模板" 不同——公式是规约(描述 what)，模板是具体文件(描述 how)。本系统只用公式，不依赖模板文件
 
 > 项目约束见 [CLAUDE.md](./CLAUDE.md#项目约束)。
+
+## 外部参考
+
+> 自改进时可参考以下生态资源，汲取设计理念与执行模式。
+
+### 方法论与执行纪律
+
+- **[obra/superpowers](https://github.com/obra/superpowers)** — 完整的 AI agent 软件开发方法论，以可组合 skills 为基础，含 spec-driven 开发、验证门禁、行为纪律。本项目的行为纪律和验证门禁受其启发。
+- **[gsd-build/get-shit-done](https://github.com/gsd-build/get-shit-done/tree/main)** — 轻量级元提示与上下文工程系统，专注解决"上下文退化"问题。spec-driven 开发模式与本项目的文档管线互补。
+- **[mattpocock/skills](https://github.com/mattpocock/skills)** — 真实工程场景下的 Agent skills 集合，强调"不是 vibe coding"。skill 设计模式和职责边界可参考。
+
+### 记忆与上下文
+
+- **[thedotmack/claude-mem](https://github.com/thedotmack/claude-mem)** — 跨会话持久化记忆引擎，AI 压缩 + 相似检索自动注入。其记忆管理模式可对比本项目的 `.memory/` 执行记忆体系。
+- **[affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code/blob/main/README.zh-CN.md)** — Agent harness 性能优化全集，含 skills、记忆、安全、研究优先开发。技能组织方式和安全约束思路可参考。
+
+### UI/UX 设计
+
+- **[nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)** — 跨平台专业 UI/UX 设计 skill，含 161 条推理规则和 67 种 UI 风格。前端故事涉及 UI 改造时可用作设计参考。
