@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "故事驱动的 SDLC 编排系统——需求拆分→文档管线→代码管线→交付",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   "plugins": [
     {
