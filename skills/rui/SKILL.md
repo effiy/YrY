@@ -96,9 +96,9 @@ flowchart LR
 
 ## init 简述
 
-> 五步：探（探测五类信号）→ 察（深度探索项目）→ 生（生成 CLAUDE.md / README.md / CONTEXT.md）→ 搭（机械性搭建 wework-bot 配置）→ 验（5 项就绪检查）→ 触（import-docs 同步 + wework-bot 通知）。
+> 五步：探（探测五类信号）→ 察（深度探索项目）→ 生（生成 CLAUDE.md / README.md，领域语言在 README.md 内）→ 搭（机械性搭建 wework-bot 配置）→ 验（5 项就绪检查）→ 触（import-docs 同步 + wework-bot 通知）。
 >
-> **核心设计**：init 负责项目基线。**所有内容文件（CLAUDE.md、README.md、CONTEXT.md）全部由大模型通过深度项目探索生成**，本规约不依赖任何脚本，完全由调用方按本节描述顺序执行。可重复运行，每次全量重生。
+> **核心设计**：init 负责项目基线。**所有内容文件（CLAUDE.md、README.md）全部由大模型通过深度项目探索生成**，本规约不依赖任何脚本，完全由调用方按本节描述顺序执行。可重复运行，每次全量重生。
 
 ```mermaid
 flowchart LR
@@ -114,7 +114,7 @@ flowchart LR
 ```
 1. detect    → 探测五类信号，输出 profile（项目类型/技术栈/安全面/测试框架/架构）
 2. explore   → 阅读关键源码、理解架构模式、识别代码规范、发现安全面
-3. generate  → 编写 CLAUDE.md · README.md · CONTEXT.md
+3. generate  → 编写 CLAUDE.md · README.md（含领域语言）
 4. setup     → 创建目录、生成 wework-bot/config.json、写 .init-memory.json
 5. verify    → 执行 5 项就绪检查，任一失败即终止
 6. trigger   → 触发 import-docs（workspace 全量）+ wework-bot 通知
@@ -176,12 +176,12 @@ flowchart LR
 |------|---------|---------|
 | `CLAUDE.md` | 项目画像（项目特定）、执行准则（引用实际技术栈/命令）、退化对策（按项目类型）、项目约束（安全底线，含 `rui:project-start/end` 标记）、自约束 | 必须含 `<!-- rui:project-start -->` 和 `<!-- rui:project-end -->` 标记；项目画像表含技术栈 / 构建命令 / 测试命令 / 安全面 / Coder 公式 |
 | `README.md` | 项目画像 + 命令流 mermaid + 快速开始 + 项目结构 + 管线一览。根据项目类型定制化编写 | 含项目名、技术栈、快速开始命令 |
-| `CONTEXT.md` | 项目领域语言词汇表：术语定义、关系、示例对话、歧义标记。根据项目实际领域编写 | 格式见 [CONTEXT-FORMAT](https://github.com/mattpocock/skills/blob/main/skills/engineering/grill-with-docs/CONTEXT-FORMAT.md)；每个术语含 Avoid 别名 |
+| `README.md` 领域语言段 | 项目领域语言词汇表：术语定义、关系、示例对话、歧义标记。根据项目实际领域编写，作为 README.md 的 `## 领域语言` 章节 | 格式参照 [CONTEXT-FORMAT](https://github.com/mattpocock/skills/blob/main/skills/engineering/grill-with-docs/CONTEXT-FORMAT.md)；每个术语含 Avoid 别名 |
 
 **生成原则**：
 - CLAUDE.md 含项目画像、执行准则、退化对策、项目约束、自约束，全部根据项目实际编写
 - README.md 用 mermaid 图 → 结构化表格 → 命令示例表达
-- CONTEXT.md 用领域术语定义 + 关系 + 示例对话 + 歧义标记，格式参照 [CONTEXT-FORMAT](https://github.com/mattpocock/skills/blob/main/skills/engineering/grill-with-docs/CONTEXT-FORMAT.md)
+- README.md 必含 `## 领域语言` 章节，用领域术语定义 + 关系 + 示例对话 + 歧义标记，格式参照 [CONTEXT-FORMAT](https://github.com/mattpocock/skills/blob/main/skills/engineering/grill-with-docs/CONTEXT-FORMAT.md)
 
 ### 4. setup — 机械搭建（搭建层）
 
@@ -199,7 +199,7 @@ flowchart LR
 |---|--------|--------|
 | 1 | `CLAUDE.md` | 含 `rui:project-start` 标记 + 项目名 |
 | 2 | `README.md` | 含项目名 |
-| 3 | `CONTEXT.md` | 含项目名 + 至少 3 个领域术语定义 |
+| 3 | `README.md` 领域语言段 | 含 `## 领域语言` 标题 + 至少 3 个领域术语定义 |
 | 4 | 故事面板 | `docs/故事任务面板/` 目录存在 |
 | 5 | wework-bot 配置 | `.claude/skills/wework-bot/config.json` 存在 |
 
@@ -218,7 +218,7 @@ flowchart LR
 |------|------|---------|
 | `CLAUDE.md` | 项目约束 + 执行准则 + 退化对策 | `rui:project-*` 标记内全量重生，段外保留 |
 | `README.md` | 系统视图 + 命令流 + 项目画像 | 全量重生 |
-| `CONTEXT.md` | 领域语言词汇表 | 首次全量生成，重复运行增量补充术语 |
+| `README.md` 领域语言段 | 领域语言词汇表 | README.md 的 `## 领域语言` 章节，首次全量生成，重复运行增量补充术语 |
 | `.claude/skills/wework-bot/config.json` | 企微通知配置 | 每次覆盖 |
 | `docs/故事任务面板/.init-memory.json` | 执行记录 | 每次覆盖 |
 
@@ -228,7 +228,7 @@ flowchart LR
 >
 > **核心设计**：pm 将需求文本 / `@` 文件 / URL 解析为结构化故事，影响分析后拆分任务并排优先级。随后指派 coder 按项目类型补齐设计文档：前端补 03-前端技术评审，后端补 02-后端技术评审，全栈两者均补。全程禁止改源码，多故事逐个串行处理。
 >
-> pm 解读需求时应用**烧烤纪律**（挑战模糊术语、走完决策树每个分支、用 [CONTEXT.md](../../../CONTEXT.md) 领域词汇命名概念、术语解析后即时更新 CONTEXT.md）。不确定性 > 2 项时不推进到影响分析。设计决策满足 ADR 三条件（难逆转 / 缺上下文会奇怪 / 真实权衡）时写入 `docs/adr/`。
+> pm 解读需求时应用**烧烤纪律**（挑战模糊术语、走完决策树每个分支、用项目领域语言词汇命名概念、术语解析后即时更新 README.md 领域语言段）。不确定性 > 2 项时不推进到影响分析。设计决策满足 ADR 三条件（难逆转 / 缺上下文会奇怪 / 真实权衡）时写入 `docs/adr/`。
 
 ```mermaid
 flowchart LR
@@ -449,6 +449,147 @@ pm 按项目类型差异化扫描源码，输出推荐列表：
 ## 推荐简述
 
 > 只读。5 层链式管线评分（L0 时间 / L1 依赖 / L2 风险 / L3 覆盖 / L4 质量），加权排序后推荐下一步最优任务。不触发 import-docs / wework-bot。
+
+## 诊断纪律
+
+> 结构化调试纪律。难 bug 不靠猜——靠反馈回路。适用：code 阶段 bug 修复、Gate B 验证失败、自改进 D0–D7 根因分析。
+
+### Phase 1 — 构建反馈回路
+
+**这就是方法本身。** 有快速、确定、可自运行的通过/失败信号，二分和假设测试才有效。没有回路，盯代码没用。
+
+构建方式（大致按序）：
+1. **失败测试** — 在触及 bug 的接缝写：单元、集成、e2e
+2. **curl / HTTP 脚本** — 对运行中的 dev server 发请求
+3. **CLI + fixture** — 用 fixture 输入，diff stdout 与已知正确快照
+4. **Headless 浏览器** — Playwright/Puppeteer 驱动 UI，assert DOM/console/network
+5. **回放 trace** — 保存真实网络请求/payload 到磁盘，隔离重放
+6. **One-off harness** — 启动系统最小子集，用一个函数调用触发 bug 路径
+7. **Property / fuzz** — 跑 1000 次随机输入找失败模式
+8. **二分 harness** — 自动化「在状态 X 启动、检查」让 `git bisect run` 可用
+9. **差分循环** — 同一输入跑 old-version vs new-version，diff 输出
+10. **HITL bash 脚本** — 最后手段，用脚本驱动人类操作保持结构化
+
+**迭代回路**：更快？信号更清晰？更确定？2 秒确定回路是调试超能力。
+
+**非确定 bug**：目标不是干净复现，而是更高的复现率。循环触发 100 次、并行化、加压力、注入 sleep。50% flake 可调试；1% 不可——一直提升比例。
+
+**无回路不进入 Phase 2。** 明确列出试过什么。问用户要：(a) 复现环境 (b) 捕获件（HAR、log dump、core dump、录屏）(c) 临时生产 instrumentation 权限。
+
+### Phase 2 — 复现
+
+确认：
+- [ ] 失败模式是用户描述的——不是碰巧相近的其他 bug
+- [ ] 可多轮复现（非确定 bug 复现率足以调试）
+- [ ] 精确症状已捕获（错误消息、输出、timing）
+
+### Phase 3 — 假设
+
+生成 **3–5 个排好序的可证伪假设**。单假设会锚定在第一个看似合理的想法上。
+
+格式：「如果 X 是原因，改变 Y 会让 bug 消失 / 改变 Z 会让它恶化。」写不出预测 = 直觉——丢弃。
+
+**排序后给用户看。** 领域知识可瞬间重排。用户 AFK 则按排序继续。
+
+### Phase 4 — Instrument
+
+一次改一个变量，每次对应 Phase 3 的特定预测。
+
+工具优先级：debugger/REPL > 目标日志（在能区分假设的边界打） > 标签日志（`[DEBUG-xxx]` 前缀，清理时一个 grep） > 性能分支（先建基线测量再二分，再修复）。
+
+### Phase 5 — 修复 + 回归测试
+
+修复前先写回归测试——仅当存在正确接缝（测试能锻炼真实 bug 模式）。不存在正确接缝本身就是发现，写入自改进复盘。
+
+1. 最小复现转为失败测试 → 2. 看它失败 → 3. 应用修复 → 4. 看它通过 → 5. 重跑 Phase 1 回路。
+
+### Phase 6 — 清理 + 复盘
+
+声明完成前必做：
+- [ ] 原始复现不再复现（重跑 Phase 1 回路）
+- [ ] 回归测试通过（或接缝缺失已记录）
+- [ ] 所有 `[DEBUG-...]` instrumentation 已删除（grep 前缀）
+- [ ] One-off 原型已删除或移到明确标记的 debug 位置
+- [ ] 被证明正确的假设写在 commit/PR 消息里
+
+**问：什么能预防这个 bug？** 架构变更建议写入自改进复盘。
+
+### Red Flags
+
+以下任一出现 = 停止，回到 [CLAUDE.md 铁律](../../CLAUDE.md#基础信念)：
+- "这个 bug 很简单，直接修就行"
+- "修复超过 3 次了但这次肯定对"
+- "多个修复一起上省时间"
+- "不需要最小复现，我理解根源了"
+- "先修 bug 再写测试"
+- "我凭直觉修就行，不需要反馈回路"
+
+## 架构深化
+
+> 发现架构摩擦，把浅模块转为深模块。适用：code 阶段重构、自改进提案、Gate B 设计对齐检查。
+
+### 词汇
+
+- **模块** — 有接口与实现的任何东西（函数、class、包、切片）
+- **接口** — 调用者需知的一切：类型、不变式、错误模式、顺序、配置。不止类型签名
+- **深度** — 接口后面的行为量 / 接口复杂度。深 = 高杠杆。浅 = 接口几乎与实现一样复杂
+- **接缝** — 接口所在之处；不改原地就能改变行为的地方
+- **删除测试** — 想象删除这个模块：复杂度消失 = 透传；回到 N 个调用方 = 它在赚位置
+
+### 流程
+
+**1. 探索** — 读涉及区域的 ADR。有机走代码库，注意摩擦：来回跳转的小模块、接口≈实现的浅模块、紧耦合泄漏、未测试区域。对可疑浅模块应用删除测试。
+
+**2. 呈现候选** — 每个候选含：涉及文件、当前摩擦、方案、收益（局部性+杠杆+测试改善）。ADR 冲撞仅在摩擦足够大时标出。问用户："这些里面哪个想深入？"
+
+**3. 烧烤循环** — 用户选定后走设计树。副作用：新概念补入领域语言、拒绝理由可提议为 ADR。
+
+### 接口设计
+
+对替代接口评估：形状（类型签名+不变式+错误模式）、调用者代价、实现深度、哪些测试存活、一致性。核心要求：从调用者角度看，不变式最小最不难理解。
+
+### Red Flags
+
+- "加个抽象层就解决问题了" — 没有第二个调用方 = 浅模块
+- "我会同时重构这几个模块" — 一次一个模块，观察效果
+- "不需要查领域语言，我知道领域叫什么"
+
+## 交接纪律
+
+> 会话上下文压缩为交接文档，供 Agent 间继续。适用：pm→coder→tester 管线交接、工作中途暂停、超出上下文窗口前。
+
+### 格式
+
+```markdown
+# Handoff: {简短描述}
+
+## Goal
+{≤ 3 句：做什么、为谁、为什么}
+
+## Done
+- [x] `path/file.ts:42` — {做了什么} ({验证结果})
+
+## Now
+{当前状态：进行中/卡住/等待}
+
+## Key findings
+- {非显而易见的约束/决定/冲突}
+
+## Next
+- [ ] {具体下一步}
+
+## Context
+- 分支: `{branch}`
+- Commit: `{hash}`
+- 相关文件: `path/a`, `path/b`
+```
+
+### 约束
+
+- **不超过 1 页**（约 60 行）——交接，不是完整文档
+- **具体到文件/行号**——不说 "改过 auth 模块"，说 "`src/auth/login.ts:42` 添加了 rate-limit 中间件"
+- **不含 spec**——交接描述实际状态，不是理想状态
+- **可验证**——每个声称附验证命令或文件路径
 
 ## 强制集成：import-docs + wework-bot
 
