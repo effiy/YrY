@@ -1,0 +1,41 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Dependencies (when scaffolded under examples)
+node_modules/
+
+# Test / build artifacts
+coverage/
+dist/
+build/
+.cache/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Story panel runtime metadata (managed by rui pipeline, not for review)
+docs/故事任务面板/**/.memory/
+docs/故事任务面板/**/.improvement/
+docs/故事任务面板/.init-memory.json
+
+# rui-claude history (local-only, never tracked)
+.claude/.history/
+
+# wework-bot resolved config (may contain webhook URL)
+.claude/skills/wework-bot/config.local.json
