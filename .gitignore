@@ -38,4 +38,7 @@ docs/故事任务面板/.init-memory.json
 .claude/.history/
 
 # wework-bot resolved config (may contain webhook URL)
-.claude/skills/wework-bot/config.local.json
+skills/wework-bot/config.local.json
+
+# Claude Code local settings (may contain secrets)
+.claude/settings.local.json

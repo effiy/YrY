@@ -44,7 +44,7 @@ flowchart TB
 ```mermaid
 flowchart LR
     subgraph 路由["机器人路由（二选一）"]
-        AGENT["agent=&lt;name&gt;<br/>通过 config.agents 路由"]:::param
+        AGENT["agent=&lt;name&gt;<br/>通过内置 agents 映射路由"]:::param
         ROBOT["robot=&lt;name&gt;<br/>直接指定机器人"]:::param
     end
     subgraph 内容["消息内容（二选一）"]
@@ -64,19 +64,19 @@ flowchart LR
 
 | 参数 | 描述 | 默认 / 推断 |
 |------|------|---------|
-| `agent=<name>` | 通过 `config.agents` 路由（推荐） | — |
+| `agent=<name>` | 通过内置 agents 映射路由（推荐） | — |
 | `robot=<name>` | 直接指定机器人 | — |
 | `project=<name>` | 项目名，作为消息首行 `【项目名】` | 从 `name` 推断；无 `name` 时取 `basename(项目根)` |
 | `name=<Project-story>` | 故事全名，分解为 `<Project>/<story>/` 日志路径 | — |
 | `content=<text>` | 消息正文 | — |
 | `contentFile=<path>` | 从文件读正文（相对路径基于项目根） | — |
-| `apiUrl=<url>` | 通知网关地址 | `WEWORK_BOT_API_URL` 或 `config.api_url` 或 `https://api.effiy.cn/wework/send-message` |
+| `apiUrl=<url>` | 通知网关地址 | `WEWORK_BOT_API_URL` 或默认 `https://api.effiy.cn/wework/send-message` |
 | `noSend=true` | 仅追加日志，不发送 HTTP | `false` |
 
 | 环境变量 | 说明 |
 |---------|------|
 | `API_X_TOKEN` | 必填，仅从环境变量读取 |
-| `WEWORK_BOT_API_URL` | 可选，覆盖 `config.json` 的 `api_url` |
+| `WEWORK_BOT_API_URL` | 可选，覆盖默认 `api_url` |
 | `<robot>.webhook_url_env` 指定的变量 | 优先于 `webhook_url` 字面量 |
 
 ### 故事名解析
@@ -90,35 +90,20 @@ name = "<Project>-<story>"   # 以首个 - 切分
 
 `name` 不含 `-` 时，`project` 与 `story` 同名（仍按上式生成路径）。
 
-### 配置文件
+### 内置配置
 
-按以下顺序定位 `config.json`：
+以下配置已内嵌于技能文档，无需外部 `config.json`：
 
-```
-1. .claude/skills/wework-bot/config.json
-2. skills/wework-bot/config.json
-```
+| 配置项 | 默认值 | 覆盖方式 |
+|--------|--------|---------|
+| `api_url` | `https://api.effiy.cn/wework/send-message` | `WEWORK_BOT_API_URL` 环境变量或 `apiUrl` 参数 |
+| `default_robot` | `general` | `robot` 参数 |
+| `agents.rui` | `general` | `robot` 参数 |
+| `robots.general.webhook_url` | （空） | 环境变量注入 |
 
-最小 schema：
-
-```json
-{
-  "default_robot": "general",
-  "api_url": "https://api.effiy.cn/wework/send-message",
-  "robots": {
-    "<robot>": {
-      "webhook_url": "<plain url, optional>",
-      "webhook_url_env": "<env var name, optional>"
-    }
-  },
-  "agents": {
-    "<agent>": "<robot>"
-  }
-}
-```
-
-机器人优先级：`robot` 参数 > `agents[agent]` > `config.default_robot`。
-webhook URL 优先级：`robots[robot].webhook_url_env` 对应的环境变量 > `robots[robot].webhook_url` > `config.webhook_url`。
+机器人解析优先级：`robot` 参数 > `agents[agent]` > `default_robot`（`general`）。
+webhook URL 解析优先级：环境变量 > `robots[robot].webhook_url` > 默认空值。
+真实 webhook URL 应通过环境变量注入，禁止写入文档或提交仓库。
 
 ## 消息格式
 
@@ -249,8 +234,8 @@ Body:
 
 | 要素 | 来源 |
 |------|------|
-| `apiUrl` | 参数 > `WEWORK_BOT_API_URL` 环境变量 > `config.api_url` > `https://api.effiy.cn/wework/send-message` |
-| webhook URL | `robots[robot].webhook_url_env` 对应环境变量 > `robots[robot].webhook_url` > `config.webhook_url` |
+| `apiUrl` | 参数 > `WEWORK_BOT_API_URL` 环境变量 > `https://api.effiy.cn/wework/send-message` |
+| webhook URL | 环境变量 > `robots[robot].webhook_url` > 默认空值 |
 | `API_X_TOKEN` | 仅环境变量 |
 | `content` | `content` 参数 > `contentFile` 文件内容（必须二选一） |
 
@@ -265,7 +250,7 @@ flowchart LR
     end
     subgraph 必须["✅ 必须"]
         C1["API_X_TOKEN 仅从环境变量"]:::ok
-        C2["webhook URL 从 config.json 或环境变量"]:::ok
+        C2["webhook URL 从环境变量"]:::ok
     end
 
     classDef block fill:#ffebee,stroke:#c62828;
@@ -277,8 +262,8 @@ flowchart LR
 | 1 | 禁止提交 token、webhook URL 到仓库 | ✅ |
 | 2 | 日志和回复必须脱敏（不回显 token、webhook URL） | ✅ |
 | 3 | `API_X_TOKEN` 仅从环境变量读取 | ✅ |
-| 4 | webhook URL 仅从 `config.json` 或环境变量解析 | — |
-| 5 | `config.json` 中真实 webhook 应留空，由环境变量 `webhook_url_env` 注入 | — |
+| 4 | webhook URL 仅从环境变量解析 | — |
+| 5 | 真实 webhook URL 禁止写入文档，由环境变量注入 | — |
 
 ## hook 触发器
 
@@ -364,7 +349,7 @@ flowchart LR
 flowchart TD
     EMPTY["无参数 / 空输入"]:::src --> CHECK["检测三项"]:::op
     CHECK --> T1["API_X_TOKEN 是否存在?"]:::check
-    CHECK --> T2["config.json 是否配置?"]:::check
+    CHECK --> T2["内置配置是否就绪?"]:::check
     CHECK --> T3["00-消息通知列表.md 是否存在?"]:::check
 
     T1 & T2 & T3 --> RECOMMEND["推荐任务"]:::out
@@ -383,7 +368,7 @@ flowchart TD
     classDef rec fill:#fff3e0,stroke:#e65100;
 ```
 
-无参数时不发送消息，仅检测 `API_X_TOKEN` / `config.json` / 故事面板 `00-消息通知列表.md` 并输出推荐任务。
+无参数时不发送消息，仅检测 `API_X_TOKEN` / 内置配置 / 故事面板 `00-消息通知列表.md` 并输出推荐任务。
 
 ## 生效标志
 
