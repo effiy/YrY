@@ -22,12 +22,13 @@ flowchart LR
 
 ## 铁律
 
-> 违反字母即是违反精神。以下三条不可妥协：
+> 违反字母即是违反精神。以下四条不可妥协：
 
 ```
 NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE  ← 验现实
 NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST           ← 验现实
 NO P0 LEFT UNCLEARED BEFORE NEXT MODULE                   ← 信模型
+EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 ```
 
 | 铁律 | 源于 | 含义 | 违反信号 |
@@ -35,6 +36,7 @@ NO P0 LEFT UNCLEARED BEFORE NEXT MODULE                   ← 信模型
 | **验先于称** | 验现实 | 未运行验证命令不得声称完成/通过/修复 | "上次通过了"、"应该没问题" |
 | **溯先于修** | 验现实 | 未找到根因不得提出修复方案 | "先试一个修复看看" |
 | **清先于进** | 信模型 | 模块 P0 未清零不得进入下一模块 | "P0 太难修，标 P1 吧" |
+| **表达优先** | 惜注意 | rui 生成文档必须图 → 结构化文本 → 表，不可降级 | 无图文档、架构用大段文字描述 |
 
 <!-- rui:project-start -->
 ## 项目约束

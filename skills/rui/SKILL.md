@@ -101,6 +101,7 @@ flowchart LR
 8. **公式驱动** — 文档由 [formulas.md](./formulas.md) 规约，文件名带编号前缀（00–08）
 9. **知识沉淀** — 写入 `09-交互日志.md` + `.memory/execution-memory.jsonl` + `.memory/rui-state.json`；提案写入 `.improvement/proposals.jsonl`
 10. **交付强制** — 三步按序触发（hook-log → import-docs → wework-bot），详见 [强制集成](#强制集成)
+11. **表达优先** — 文档内容必须 图 → 结构化文本 → 表，架构/流程/关系优先 mermaid，不可降级
 
 ## 故事文档编号
 
@@ -108,6 +109,7 @@ flowchart LR
 |------|------|------|:---:|
 | 00 | 消息通知列表.md | 交付 | 自动 |
 | 01 | 故事任务.md | 文档生成 | ✓ |
+| — | 用户主要使用场景.md | 文档生成 | ✓ |
 | 02 | 后端技术评审.md | 文档生成 | 后端/全栈 |
 | 03 | 前端技术评审.md | 文档生成 | 前端/全栈 |
 | 04 | 测试用例评审.md | 文档生成 | ✓ |

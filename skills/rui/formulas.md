@@ -10,9 +10,10 @@ flowchart TB
         F.evidence["F.evidence<br/>证据等级"]
     end
 
-    subgraph 主线["故事主线（8 份编号文档）"]
+    subgraph 主线["故事主线（编号文档 + 必选）"]
         subgraph 生成["文档生成阶段"]
             F01["F.story.task<br/>01-故事任务"]
+            F_US["F.story.user-scenarios<br/>用户主要使用场景"]
             F02["F.story.backend-review<br/>02-后端技术评审"]
             F03["F.story.frontend-review<br/>03-前端技术评审"]
             F04["F.story.test-review<br/>04-测试用例评审"]
@@ -38,7 +39,7 @@ flowchart TB
     classDef story fill:#e3f2fd,stroke:#1565c0;
     classDef supp fill:#fff3e0,stroke:#e65100;
     class F.meta,F.nav,F.evidence gen;
-    class F01,F02,F03,F04,F05,F06,F07,F08 story;
+    class F01,F_US,F02,F03,F04,F05,F06,F07,F08 story;
     class FS supp;
 ```
 
@@ -61,7 +62,8 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    01["01-故事任务"] --> 02["02-后端技术评审"]
+    01["01-故事任务"] --> US["用户主要使用场景"]
+    US --> 02["02-后端技术评审"]
     02 --> 03["03-前端技术评审"]
     03 --> 04["04-测试用例评审"]
     04 --> 05["05-后端实施报告"]
@@ -77,7 +79,8 @@ flowchart LR
 
 | 场景 | 前驱 `←` | 后继 `→` |
 |------|----------|---------|
-| 链首（01） | 省略 | 下一编号文件 |
+| 链首（01） | 省略 | 用户主要使用场景 |
+| 用户主要使用场景 | 01-故事任务 | 下一编号文件 |
 | 链中 | 上一编号文件 | 下一编号文件 |
 | 链尾（00） | 上一编号文件 | 省略 |
 | 邻接文件不适用当前类型 | 跳过，取再上一 | 跳过，取再下一 |
@@ -86,9 +89,9 @@ flowchart LR
 
 | 类型 | 跳过文件 | 链路变化 |
 |------|---------|---------|
-| 纯前端 | 02、05 | 03 前驱变 01；04 后继从 05 变 06 |
+| 纯前端 | 02、05 | 用户场景后继 03；03 前驱变用户场景；04 后继从 05 变 06 |
 | 纯后端 | 03、06 | 02 后继变 04；05 后继从 06 变 07 |
-| 全栈 | — | 完整 01→00 链路 |
+| 全栈 | — | 完整 01→用户场景→00 链路 |
 
 ### F.evidence — 证据等级
 
@@ -107,6 +110,7 @@ flowchart LR
 flowchart LR
     subgraph 阶段一["📄 文档生成"]
         F01["01<br/>故事任务"]
+        F_US["用户主要<br/>使用场景"]
         F02["02<br/>后端评审"]
         F03["03<br/>前端评审"]
         F04["04<br/>测试评审"]
@@ -124,7 +128,7 @@ flowchart LR
     classDef p1 fill:#e3f2fd,stroke:#1565c0;
     classDef p2 fill:#e8f5e9,stroke:#2e7d32;
     classDef p3 fill:#fff3e0,stroke:#e65100;
-    class F01,F02,F03,F04 p1;
+    class F01,F_US,F02,F03,F04 p1;
     class F05,F06,F07 p2;
     class F08 p3;
 ```
@@ -153,6 +157,22 @@ flowchart LR
 | §6 改进清单 | pm | skill/agent/rule/script/config 改进项 | 可选 |
 | §7 架构演进 | pm | 近期/中期/远期 | 可选 |
 | §L 自改进循环 | self-improve | 每次完成追加 | 可选 |
+
+### 用户主要使用场景 — F.story.user-scenarios `meta + nav + 全景 + 详述×N + 覆盖矩阵 + 清单`
+
+```mermaid
+flowchart LR
+    S1["§1 场景全景"] --> S2["§2 场景详述 ×N"]
+    S2 --> S3["§3 场景覆盖矩阵"]
+    S3 --> S4["§4 评审清单"]
+```
+
+| 章节 | 负责人 | 表头/字段 | 约束 |
+|------|--------|----------|------|
+| §1 场景全景 | pm | mermaid flowchart 展示所有用户场景与模块关系 | 必填，每个故事 ≥ 2 个场景 |
+| §2 场景详述 | pm | 每场景：场景名 + `角色 \| 触发条件 \| 核心目标`；mermaid flowchart 操作流 + `# \| 步骤 \| 输入 \| 系统响应 \| 异常分支` | 每场景必含流程图 |
+| §3 场景覆盖矩阵 | pm | `场景 \| FP# \| 覆盖 \| 备注`，与 01-故事任务 §2 对齐 | 必填 |
+| §4 评审清单 | pm | 场景 ≥ 2 / 每场景有图 / FP 全覆盖 / 异常分支明确 | 必填 |
 
 ### 02 — F.story.backend-review `meta + nav + 架构 + API + 数据 + 安全 + 性能 + 清单`
 

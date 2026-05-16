@@ -24,6 +24,7 @@ flowchart LR
         B4["08-自改进复盘.md"]:::must
         B5["00-消息通知列表.md"]:::must
         B6["09-交互日志.md"]:::must
+        B7["用户主要使用场景.md"]:::must
     end
     subgraph 后端["纯后端 / 全栈"]
         C1["02-后端技术评审.md"]:::be
@@ -55,6 +56,7 @@ flowchart LR
 | 08-自改进复盘.md | ✓ | ✓ | ✓ | ✓ | pm + reporter | 自改进 |
 | 00-消息通知列表.md | 自动 | ✓ | ✓ | ✓ | wework-bot hook | 交付 |
 | 09-交互日志.md | ✓ | ✓ | ✓ | ✓ | rui 管线 | 全阶段 |
+| 用户主要使用场景.md | ✓ | ✓ | ✓ | ✓ | pm | 文档生成 |
 | {专题}.md | 按需 | — | — | — | pm 决策 | 文档生成 |
 
 补充文档按需触发，决策树见 [rules/doc-generation.md](../../rules/doc-generation.md#补充文档)，公式见 [formulas.md](./formulas.md#补充文档公式)。
@@ -78,7 +80,7 @@ flowchart TB
     B --> C["影响分析"]:::phase
     C --> D["架构设计"]:::phase
     D --> E["文档生成"]:::phase
-    E -->|"创建"| E1["01 故事任务<br/>02/03 技术评审<br/>04 测试评审<br/>补充文档"]:::create
+    E -->|"创建"| E1["01 故事任务<br/>02/03 技术评审<br/>04 测试评审<br/>用户主要使用场景<br/>补充文档"]:::create
     E --> F["预检"]:::phase
     F --> G["Gate A"]:::gate
     G --> H["实现"]:::phase
