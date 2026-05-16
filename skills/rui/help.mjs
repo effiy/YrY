@@ -35,6 +35,11 @@ ${bold("# rui — 故事驱动 SDLC 编排器")}
 
 ${dim("需求 → 文档 → 代码 → 交付 | 6 Agent 协同 | Gate A/B 门禁验证")}
 
+${hdr("用法")}
+${item("/rui --help", "显示此帮助信息")}
+${item("/rui -h", "同上")}
+${item("/rui help", "同上")}
+
 ${section("写入命令（末端自动交付）", [
   ["/rui init", "建立项目基线：detect→explore→generate→setup→verify"],
   ["/rui <需求>", "端到端管线：自动串联 doc→code，一气呵成"],
@@ -91,6 +96,10 @@ ${section("阻断标识速览", [
   ["bad-branch / no-checkout / skip-gate-a", "预检→实现阶段"],
   ["code-p0 / gate-b-limit", "实现→验证阶段"],
   ["auto-merge / no-token / no-metrics", "交付阶段"],
+])}
+
+${section("全局选项", [
+  ["--help, -h, help", "显示此帮助信息"],
 ])}
 
 ${dim("详细说明: skills/rui/SKILL.md | 公式: skills/rui/formulas.md | 管线: rules/code-pipeline.md")}

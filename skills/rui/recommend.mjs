@@ -26,15 +26,7 @@ function parseArgs() {
 
   for (const arg of args) {
     if (arg === "--help" || arg === "-h") {
-      console.log(`Usage: node recommend.mjs [options]
-
-Options:
-  --root=<path>          Project root directory to scan (required)
-  --type=auto|frontend|backend|fullstack
-                         Project type (default: auto)
-  --format=json|jsonl    Output format (default: json)
-`);
-      process.exit(0);
+      showHelp();
     }
     const eq = arg.indexOf("=");
     if (eq === -1) continue;
@@ -48,6 +40,68 @@ Options:
   }
 
   return { root, ...opts };
+}
+
+function showHelp() {
+  const { bold, underline, dim } = (() => {
+    const e = { bold: (s) => `\x1b[1m${s}\x1b[22m`, underline: (s) => `\x1b[4m${s}\x1b[24m`, dim: (s) => `\x1b[2m${s}\x1b[22m` };
+    if (!process.stdout.isTTY) return { bold: (s) => s, underline: (s) => s, dim: (s) => s };
+    return e;
+  })();
+
+  const INDENT = "  ";
+
+  function hdr(text) {
+    return `\n${bold(underline(text))}\n`;
+  }
+
+  function item(cmd, desc) {
+    const left = `${INDENT}${cmd}`;
+    const pad = Math.max(2, 28 - left.length);
+    return `${left}${" ".repeat(pad)}${desc}`;
+  }
+
+  function section(title, entries) {
+    return hdr(title) + entries.map(([c, d]) => item(c, d)).join("\n");
+  }
+
+  const help = `
+${bold("# recommend — 源码分析器，收集客观指标用于文档推荐")}
+
+${dim("扫描源码 → 提取签名 → 依赖分析 → git 指标 → 文档覆盖度 → 外部参考")}
+
+${section("参数", [
+  ["--root=<path>", "项目根目录 (必填)"],
+  ["--type=auto|frontend|backend|fullstack", "项目类型 (默认: auto)"],
+  ["--format=json|jsonl", "输出格式 (默认: json)"],
+])}
+
+${section("示例", [
+  ["# 自动检测项目类型", ""],
+  ["--root=/path/to/project", "扫描源码 → 输出 JSON 推荐列表"],
+  ["", ""],
+  ["# 指定项目类型", ""],
+  ["--root=. --type=frontend", "限定前端文件扫描"],
+  ["--root=. --type=backend", "限定后端文件扫描"],
+  ["", ""],
+  ["# JSONL 输出", ""],
+  ["--root=. --format=jsonl", "每行一个 story candidate"],
+])}
+
+${section("输出", [
+  ["storyName / command", "故事名 + 推荐命令"],
+  ["sourceFiles / coverage", "源码文件 + 文档覆盖度"],
+  ["metrics", "行数 · 签名 · 依赖数"],
+  ["git", "最后修改 · 作者数 · 近期变更"],
+  ["security", "用户输入 · 认证 · API 调用信号"],
+  ["externalRefs", "匹配的生态系统参考资源"],
+])}
+
+${dim("被调用: skills/rui/SKILL.md §doc-from-code | 输出: PM agent 评分排序")}
+`;
+
+  console.log(help);
+  process.exit(0);
 }
 
 // --- detect project type ---------------------------------------------------

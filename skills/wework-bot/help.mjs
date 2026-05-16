@@ -33,6 +33,11 @@ ${bold("# wework-bot — 企业微信机器人通知")}
 
 ${dim("消息发送 · 日志追加 · 管线收口 | rui 强制集成步骤")}
 
+${hdr("用法")}
+${item("/wework-bot --help", "显示此帮助信息")}
+${item("/wework-bot -h", "同上")}
+${item("/wework-bot help", "同上")}
+
 ${section("调用形态", [
   ["agent=<name>", "通过内置 agents 映射路由 (推荐)"],
   ["robot=<name>", "直接指定机器人"],
@@ -83,6 +88,10 @@ ${section("安全底线", [
   ["API_X_TOKEN", "仅从环境变量，禁止提交仓库"],
   ["webhook URL", "由环境变量注入，禁止写入文档"],
   ["日志脱敏", "token/webhook URL 不回显"],
+])}
+
+${section("全局选项", [
+  ["--help, -h, help", "显示此帮助信息"],
 ])}
 
 ${dim("详细说明: skills/wework-bot/SKILL.md | 集成: skills/rui/SKILL.md §强制集成")}

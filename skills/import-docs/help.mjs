@@ -29,6 +29,11 @@ ${bold("# import-docs — 文档批量同步到远端")}
 
 ${dim("扫描 · 过滤 · 路径映射 · 上传 | rui 管线强制集成")}
 
+${hdr("用法")}
+${item("/import-docs --help", "显示此帮助信息")}
+${item("/import-docs -h", "同上")}
+${item("/import-docs help", "同上")}
+
 ${section("调用形态", [
   ["workspace=true", "项目根全量扫描 + 上传 (最常用)"],
   ["dir=<absolute path>", "指定目录扫描 + 上传"],
@@ -88,6 +93,10 @@ ${section("降级与容错", [
   ["单文件失败", "记录错误并继续，最终退出码 1"],
   ["网络超时/不可达", "记录告警不阻断"],
   ["扫描根不存在", "跳过整次同步"],
+])}
+
+${section("全局选项", [
+  ["--help, -h, help", "显示此帮助信息"],
 ])}
 
 ${dim("详细说明: skills/import-docs/SKILL.md | 集成: skills/rui/SKILL.md §强制集成")}

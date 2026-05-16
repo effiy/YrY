@@ -29,6 +29,11 @@ ${bold("# rui-claude — .claude/ 目录管理")}
 
 ${dim("同步远端配置 · 健康度分析 · 操作历史 | 操作边界仅限 .claude/")}
 
+${hdr("用法")}
+${item("/rui-claude --help", "显示此帮助信息")}
+${item("/rui-claude -h", "同上")}
+${item("/rui-claude help", "同上")}
+
 ${section("命令", [
   ["/rui-claude sync", "覆盖式同步：rm -rf .claude/ → rsync 远端"],
   ["/rui-claude retro", "健康度分析：三节复盘 (配置结构/健康度/改进项)"],
@@ -70,6 +75,10 @@ ${section("核心规则", [
   ["feat 分支隔离", "禁止在 main 直接修改"],
   ["sync 前确认意图", "覆盖式操作需用户确认"],
   ["空输入只推荐", "不执行任何变更"],
+])}
+
+${section("全局选项", [
+  ["--help, -h, help", "显示此帮助信息"],
 ])}
 
 ${dim("详细说明: skills/rui-claude/SKILL.md | 规则: rules/rui-claude.md")}

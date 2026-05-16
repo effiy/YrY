@@ -23,18 +23,7 @@ function parseArgs() {
 
   for (const arg of args) {
     if (arg === "--help" || arg === "-h") {
-      console.log(`Usage: node sync.mjs [options]
-
-Options:
-  workspace=true         Full workspace scan from project root
-  dir=<path>             Scan specific directory (absolute path)
-  exts=md,json,yaml      File extensions to include (default: md)
-  exclude=tmp,build      Additional directories to exclude
-  prefix=a,b             Remote path prefix segments
-  apiUrl=<url>           Override API base URL
-  mode=list              List files only, skip upload
-`);
-      process.exit(0);
+      showHelp();
     }
     const eq = arg.indexOf("=");
     if (eq === -1) continue;
@@ -52,6 +41,76 @@ Options:
   }
 
   return { scanRoot, scanDir, ...opts };
+}
+
+function showHelp() {
+  const { bold, underline, dim } = (() => {
+    const e = { bold: (s) => `\x1b[1m${s}\x1b[22m`, underline: (s) => `\x1b[4m${s}\x1b[24m`, dim: (s) => `\x1b[2m${s}\x1b[22m` };
+    if (!process.stdout.isTTY) return { bold: (s) => s, underline: (s) => s, dim: (s) => s };
+    return e;
+  })();
+
+  const INDENT = "  ";
+
+  function hdr(text) {
+    return `\n${bold(underline(text))}\n`;
+  }
+
+  function item(cmd, desc) {
+    const left = `${INDENT}${cmd}`;
+    const pad = Math.max(2, 28 - left.length);
+    return `${left}${" ".repeat(pad)}${desc}`;
+  }
+
+  function section(title, entries) {
+    return hdr(title) + entries.map(([c, d]) => item(c, d)).join("\n");
+  }
+
+  const help = `
+${bold("# import-docs sync — 文档批量同步到远端")}
+
+${dim("扫描 · 过滤 · 路径映射 · 上传 | 扫描项目文件并同步到远端 API")}
+
+${section("参数", [
+  ["workspace=true", "项目根全量扫描 + 上传 (最常用)"],
+  ["dir=<path>", "指定目录扫描 (绝对路径)"],
+  ["exts=md,json,yaml", "文件扩展名 (默认: md)"],
+  ["exclude=tmp,build", "追加排除目录"],
+  ["prefix=a,b", "远端路径前缀"],
+  ["apiUrl=<url>", "覆盖 API 地址"],
+  ["mode=list", "仅列出文件，跳过上传"],
+])}
+
+${section("示例", [
+  ["# 全量同步", ""],
+  ["workspace=true", "扫描项目根 → 上传全部 .md 文件"],
+  ["", ""],
+  ["# 同步指定目录", ""],
+  ["dir=/path/to/docs exts=md,json", "仅同步该目录下的 md/json 文件"],
+  ["", ""],
+  ["# 预览不上传", ""],
+  ["workspace=true mode=list", "列出待上传文件清单"],
+  ["", ""],
+  ["# 带远端前缀", ""],
+  ["workspace=true prefix=docs,api-v2", "远端路径追加 docs/api-v2/"],
+])}
+
+${section("环境变量", [
+  ["API_X_TOKEN", "鉴权令牌 (必填 · 缺失时静默降级)"],
+  ["IMPORT_DOCS_API_URL", "覆盖默认 API 地址"],
+])}
+
+${section("扫描规则", [
+  [".claude/ 目录", "全量纳入 · 不限扩展名"],
+  ["其他目录", "仅匹配 --exts 的文件"],
+  ["默认排除", ".git · node_modules · .claude-plugin"],
+])}
+
+${dim("详细: skills/import-docs/SKILL.md | 同步: node skills/import-docs/sync.mjs")}
+`;
+
+  console.log(help);
+  process.exit(0);
 }
 
 // --- project root ----------------------------------------------------------
