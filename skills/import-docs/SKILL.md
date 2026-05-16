@@ -3,15 +3,18 @@ name: import-docs
 description: |
   Batch synchronize local documents to the remote document API. Auto-invoked by
   rui at the end of every pipeline — mandatory step, not user-facing unless
-  called directly. This skill is specification-only; the implementing agent
-  carries out each step using the available tooling.
+  called directly. Executable: node skills/import-docs/sync.mjs [options].
 user_invocable: true
 lifecycle: default-pipeline
 ---
 
 # import-docs
 
-将 workspace 内文档批量同步到远端 API。本技能不附带可执行脚本，所有行为由调用方按本规约执行（直接调用远端 HTTP API 或委托现有工具）。
+> **--help / -h**：执行 `node skills/import-docs/help.mjs` 输出完整帮助（含场景示例）。用户输入 `/import-docs --help` 或 `/import-docs -h` 或 `/import-docs help` 时，跳过管线逻辑，直接运行脚本并将输出展示给用户。
+>
+> **可执行入口**：`node skills/import-docs/sync.mjs [options]` — 扫描 + 上传一体化。`--help` 查看选项。rui 交付管线步骤 ② 通过此脚本触发。
+
+将 workspace 内文档批量同步到远端 API。行为规约（扫描/过滤/路径映射/API 契约）见下文，脚本是本规约的可执行实现。
 
 ## 工作流全景
 
@@ -241,7 +244,7 @@ flowchart TD
 flowchart LR
     PIPE["管线完成"]:::s --> CHK{"API_X_TOKEN?"}
     CHK -->|"缺失"| SKIP["静默跳过<br/>不阻断"]:::warn
-    CHK -->|"存在"| RUN["workspace 全量同步"]:::op
+    CHK -->|"存在"| RUN["node skills/import-docs/sync.mjs<br/>workspace 全量同步"]:::op
     RUN --> MARK["写 docs_synced 标记"]:::out
 
     classDef s fill:#e3f2fd,stroke:#1565c0;
@@ -250,10 +253,10 @@ flowchart LR
     classDef out fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
-| 触发 | 输入 | 降级 |
+| 触发 | 动作 | 降级 |
 |------|------|------|
-| rui 末端三步管线（步骤 ②） | 无 | `API_X_TOKEN` 缺失 → 静默跳过；网络失败 → 记录不阻断 |
-| 直接调用 | `workspace=true` 等 | 同上 |
+| rui 末端三步管线（步骤 ②） | `node skills/import-docs/sync.mjs` | `API_X_TOKEN` 缺失 → 静默跳过；网络失败 → 记录不阻断 |
+| 直接调用 | `node skills/import-docs/sync.mjs workspace=true` 等 | 同上 |
 
 ## 空输入
 

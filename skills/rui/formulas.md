@@ -439,9 +439,41 @@ flowchart TD
 | 文件 | 生成方 | 方式 |
 |------|--------|------|
 | `00-消息通知列表.md` | wework-bot hook | 列表追加，含时间戳+类型+payload |
+| `09-交互日志.md` | rui 管线 | 追加写入 · 按会话+时间戳分段 · 含全部人机交互内容 |
 | `.memory/execution-memory.jsonl` | rui 管线 | 追加 JSONL，字段见 [coder.md](./coder.md) |
 | `.memory/rui-state.json` | rui 管线 | 单对象覆盖写 |
 | `.improvement/proposals.jsonl` | self-improve 引擎 | 追加 JSONL |
+
+### F.story.interaction-log — 交互日志
+
+> `需求解析` 阶段创建，此后每次人机交互轮次追加一条记录。append-only。
+
+```markdown
+> 交互日志 · 追加写入 · rui 管线自动维护
+
+## 会话 <session_id> — {YYYY-MM-DD}
+
+### {HH:mm:ss} | turn-{N} | {agent}
+
+**👤 用户**:
+{用户输入全文}
+
+**🤖 助手**:
+{助手响应/执行动作摘要}
+
+**📋 关键决策**:
+- {本轮决策、产出文件、阻断等}
+
+---
+```
+
+| 约束 | 规则 |
+|------|------|
+| 会话头 | 每 session 开始时写入 `## 会话 <id> — <date>` |
+| turn 编号 | 从 1 开始递增，单会话内连续 |
+| 全阶段覆盖 | 需求解析 · 规划 · 影响分析 · 架构设计 · 文档生成 · 预检 · Gate A · 实现 · 验证 · Gate B · 自改进 · 交付 |
+| 追加触发 | 每次人机交互轮次结束后立即追加 |
+| 目录不存在 | 递归创建 |
 
 ---
 

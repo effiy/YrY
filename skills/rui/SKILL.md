@@ -11,6 +11,8 @@ agents:
 
 > 故事驱动 SDLC 编排器：拆故事 → 文档基线 → 测试先行 → 实现 → 验证 → 复盘 → 交付。
 >
+> **--help / -h**：执行 `node skills/rui/help.mjs` 输出完整帮助（含场景示例）。用户输入 `/rui --help` 或 `/rui -h` 或 `/rui help` 时，跳过管线逻辑，直接运行脚本并将输出展示给用户。
+>
 > 哲学源自 [CLAUDE.md](../../CLAUDE.md)。本文件定义命令面与编排骨架，细节分散在：[rules/](../../rules/) · [agents/](../../agents/) · [formulas.md](./formulas.md) · [coder.md](./coder.md)。
 
 ## 选哪条命令
@@ -97,7 +99,7 @@ flowchart LR
 6. **只读反推** — `--from-code` / `--from-doc` 禁止改源码
 7. **产出内聚** — 关键产出限定在 `docs/故事任务面板/<Project>/<name>/`
 8. **公式驱动** — 文档由 [formulas.md](./formulas.md) 规约，文件名带编号前缀（00–08）
-9. **知识沉淀** — 写入 `.memory/execution-memory.jsonl` + `.memory/rui-state.json`；提案写入 `.improvement/proposals.jsonl`
+9. **知识沉淀** — 写入 `09-交互日志.md` + `.memory/execution-memory.jsonl` + `.memory/rui-state.json`；提案写入 `.improvement/proposals.jsonl`
 10. **交付强制** — 三步按序触发（hook-log → import-docs → wework-bot），详见 [强制集成](#强制集成)
 
 ## 故事文档编号
@@ -113,6 +115,7 @@ flowchart LR
 | 06 | 前端实施报告.md | 验证 | 前端/全栈 |
 | 07 | 测试用例报告.md | 验证 | ✓ |
 | 08 | 自改进复盘.md | 自改进 | ✓ |
+| 09 | 交互日志.md | 全阶段 | ✓ |
 
 ## init
 
@@ -339,13 +342,13 @@ pm 按项目类型差异化扫描源码输出推荐列表：
 ### 执行顺序（不可跳序）
 
 ```
-管线完成/阻断 → 1. hook-log（追加日志）→ 2. import-docs（文档同步）→ 3. wework-bot（发送通知）
+管线完成/阻断 → 1. hook-log（追加日志）→ 2. `node skills/import-docs/sync.mjs`（文档同步）→ 3. wework-bot（发送通知）
 ```
 
 | # | 步骤 | 规约出处 | 标记字段 |
 |---|------|---------|---------|
 | 1 | hook-log | [wework-bot — hook-log](../wework-bot/SKILL.md#①-hook-log追加日志不发送) | `delivery_pipeline.log_appended` |
-| 2 | import-docs | [import-docs — hook 触发器](../import-docs/SKILL.md#hook-触发器) | `delivery_pipeline.docs_synced` |
+| 2 | `node skills/import-docs/sync.mjs` | [import-docs — hook 触发器](../import-docs/SKILL.md#hook-触发器) | `delivery_pipeline.docs_synced` |
 | 3 | wework-bot | [wework-bot — hook-notify](../wework-bot/SKILL.md#③-hook-notify实际发送) | `delivery_pipeline.notification_sent` |
 
 ### 降级
@@ -447,7 +450,7 @@ pm 按项目类型差异化扫描源码输出推荐列表：
 
 | 类别 | 内容 |
 |------|------|
-| 数据契约 | `.memory/rui-state.json`（覆盖写）· `.memory/execution-memory.jsonl`（追加）· `.improvement/proposals.jsonl`（追加）— 字段见 [coder.md §数据契约](./coder.md) |
+| 数据契约 | `09-交互日志.md`（追加）· `.memory/rui-state.json`（覆盖写）· `.memory/execution-memory.jsonl`（追加）· `.improvement/proposals.jsonl`（追加）— 字段见 [coder.md §数据契约](./coder.md) |
 | Hooks | Stop hooks 调用：hook-log → import-docs → hook-notify → delivery-gate |
 | 规则 | [code-pipeline](../../rules/code-pipeline.md) · [delivery-gate](../../rules/delivery-gate.md) · [doc-generation](../../rules/doc-generation.md) · [self-improve](../../rules/self-improve.md) · [rui-claude](../../rules/rui-claude.md) |
 | 角色 | [pm](../../agents/pm.md) · [coder](../../agents/coder.md) · [tester](../../agents/tester.md) · [reporter](../../agents/reporter.md) · [security](../../agents/security.md) · [self-improve](../../agents/self-improve.md) |

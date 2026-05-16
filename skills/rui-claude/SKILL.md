@@ -7,6 +7,8 @@ lifecycle: default-pipeline
 
 # rui-claude
 
+> **--help / -h**：执行 `node skills/rui-claude/help.mjs` 输出完整帮助（含场景示例）。用户输入 `/rui-claude --help` 或 `/rui-claude -h` 或 `/rui-claude help` 时，跳过管线逻辑，直接运行脚本并将输出展示给用户。
+
 作用范围：当前项目的 `.claude/` 目录。sync / retro 均以 `.claude/` 为操作边界。
 
 ## 命令族全景

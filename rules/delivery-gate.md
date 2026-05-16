@@ -30,7 +30,7 @@ paths:
 flowchart TB
     DONE["管线完成"]:::src --> S1["① 追加日志<br/>wework-bot --no-send"]:::step
     S1 --> M1["mark log_appended"]:::mark
-    M1 --> S2["② 文档同步<br/>import-docs --workspace"]:::step
+    M1 --> S2["② 文档同步<br/>node skills/import-docs/sync.mjs"]:::step
     S2 --> M2["mark docs_synced"]:::mark
     M2 --> S3["③ 发送通知<br/>wework-bot"]:::step
     S3 --> M3["mark notification_sent"]:::mark
@@ -48,7 +48,7 @@ flowchart TB
 | 步骤 | 操作 | 标记 | 降级条件 |
 |------|------|------|---------|
 | ① 追加日志 | `wework-bot --no-send` 写入日志 | `log_appended` | — |
-| ② 文档同步 | `import-docs --workspace` 推送 | `docs_synced` | `no-token`（缺 API_X_TOKEN） |
+| ② 文档同步 | `node skills/import-docs/sync.mjs` 推送 | `docs_synced` | `no-token`（缺 API_X_TOKEN） |
 | ③ 发送通知 | `wework-bot` 推送企微 | `notification_sent` | — |
 
 ## 适用
@@ -93,7 +93,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    SYNC["import-docs --workspace"]:::step --> Q1{"API_X_TOKEN<br/>存在?"}
+    SYNC["node skills/import-docs/sync.mjs"]:::step --> Q1{"API_X_TOKEN<br/>存在?"}
     Q1 -->|"是"| PUSH["推送 *.md + .claude/<br/>排除 .git / node_modules"]:::push
     Q1 -->|"否"| NOOP["降级：跳过推送<br/>仍标记 docs_synced"]:::warn
     PUSH --> Q2{"网络?"}
@@ -247,6 +247,6 @@ flowchart LR
 |------|------------|
 | 三步标记齐全 | 补执行缺失步骤，写入标记 |
 | 标记顺序正确（① → ② → ③） | 清除错序标记，从断点重新执行 |
-| import-docs 已触发 | 调用 import-docs --workspace 并标记 |
+| import-docs 已触发 | 调用 `node skills/import-docs/sync.mjs` 并标记 |
 | wework-bot 已触发 | 调用 wework-bot 并标记 |
 | rui-state.json delivery 字段闭合 | 核对标记字段，补全后 closure 锁定 |

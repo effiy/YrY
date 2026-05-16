@@ -11,6 +11,8 @@ lifecycle: default-pipeline
 
 # wework-bot
 
+> **--help / -h**：执行 `node skills/wework-bot/help.mjs` 输出完整帮助（含场景示例）。用户输入 `/wework-bot --help` 或 `/wework-bot -h` 或 `/wework-bot help` 时，跳过管线逻辑，直接运行脚本并将输出展示给用户。
+
 企业微信机器人通知。**每次使用 rui 技能都必须触发 wework-bot，这是管线完整性的硬性要求。** rui 管线末端强制步骤：自改进 → 追加日志 → 文档同步 → 发送通知。本技能不附带可执行脚本，所有行为按本规约执行。
 
 ## 工作流全景
