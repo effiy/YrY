@@ -1,411 +1,232 @@
 #!/usr/bin/env node
 
+/**
+ * import-docs — 将本地文档批量同步到远端 API
+ *
+ * 用法:
+ *   node import-docs.js --workspace          # 全量同步
+ *   node import-docs.js list --workspace     # 仅列出文件
+ *   node import-docs.js --dir <path>         # 指定目录
+ */
+
+'use strict';
+
 const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
 const https = require('https');
 const http = require('http');
 
-/**
- * 从起始目录向上查找项目根目录
- * 优先检测 .git，否则检测 .claude/ 目录
- * @param {string} startDir - 起始目录
- * @returns {string} 项目根目录
- */
+// ── 项目根目录探测 ─────────────────────────────────────────────
+
 function findProjectRoot(startDir) {
-  let currentDir = path.resolve(startDir);
+  let dir = path.resolve(startDir);
   while (true) {
-    if (fs.existsSync(path.join(currentDir, '.git'))) {
-      if (path.basename(currentDir) === '.claude') return path.dirname(currentDir);
-      return currentDir;
-    }
-    if (fs.existsSync(path.join(currentDir, '.claude'))) {
-      return currentDir;
-    }
-    const parentDir = path.dirname(currentDir);
-    if (parentDir === currentDir) break;
-    currentDir = parentDir;
+    if (fs.existsSync(path.join(dir, '.git'))) return dir;
+    if (fs.existsSync(path.join(dir, '.claude'))) return dir;
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
   }
   return path.resolve(startDir);
 }
 
-/**
- * 递归查找文件，使用文件系统遍历（不受 .gitignore 限制）
- * @param {string} dir - 起始目录
- * @param {string} projectRoot - 项目根目录
- * @param {string[]} exts - 文件扩展名列表 (不含点，如 ['md', 'json'])
- * @param {string[]} excludeDirs - 额外排除目录
- * @returns {Promise<string[]>} 文件路径列表
- *
- * 特殊规则：.claude/ 目录下的所有文件全部导入（不限扩展名），其余目录按 exts 过滤。
- */
-async function findMdFiles(dir, projectRoot, exts = ['md'], excludeDirs = []) {
-  const extSet = new Set(exts.map(e => e.toLowerCase()));
-  const defaultExcludes = new Set(['.git', 'node_modules', '.claude-plugin']);
-  excludeDirs.forEach(d => defaultExcludes.add(d));
+// ── 文件扫描 ───────────────────────────────────────────────────
 
+async function scanFiles(dir, projectRoot, exts, excludeDirs) {
+  const extSet = new Set(exts);
+  const excludes = new Set(['.git', 'node_modules', '.claude-plugin', ...excludeDirs]);
   const results = [];
 
-  function isUnderClaude(fullPath) {
-    const rel = path.relative(projectRoot, fullPath);
-    return rel.startsWith('.claude' + path.sep) || rel === '.claude';
-  }
-
-  async function traverse(currentDir) {
+  async function walk(current) {
     let entries;
-    try {
-      entries = await fsp.readdir(currentDir, { withFileTypes: true });
-    } catch { return; }
+    try { entries = await fsp.readdir(current, { withFileTypes: true }); } catch { return; }
 
     for (const entry of entries) {
-      if (defaultExcludes.has(entry.name)) continue;
-      const fullPath = path.join(currentDir, entry.name);
+      if (excludes.has(entry.name)) continue;
+      const full = path.join(current, entry.name);
 
-      if (entry.isDirectory() && !entry.isSymbolicLink()) {
-        await traverse(fullPath);
+      if (entry.isDirectory()) {
+        await walk(full);
       } else if (entry.isFile()) {
-        const underClaude = isUnderClaude(fullPath);
-        if (underClaude) {
-          results.push(fullPath);
-        } else {
-          const ext = path.extname(entry.name).toLowerCase().slice(1);
-          if (extSet.has(ext)) results.push(fullPath);
+        const rel = path.relative(projectRoot, full);
+        const underClaude = rel.startsWith('.claude' + path.sep);
+        if (underClaude || extSet.has(path.extname(entry.name).slice(1).toLowerCase())) {
+          results.push(full);
         }
       }
     }
   }
 
-  await traverse(dir);
+  await walk(dir);
   return results;
 }
 
-/** 有限并发执行异步任务池。 */
-async function asyncPool(concurrency, iterable, iteratorFn) {
-  const ret = [];
-  const executing = new Set();
-  for (const item of iterable) {
-    const p = Promise.resolve().then(() => iteratorFn(item));
-    ret.push(p);
-    executing.add(p);
-    const clean = () => executing.delete(p);
-    p.then(clean).catch(clean);
-    if (executing.size >= concurrency) {
-      await Promise.race(executing);
-    }
-  }
-  return Promise.all(ret);
-}
-
-/** X-Token 仅从系统环境变量 `API_X_TOKEN` 读取，不接受配置文件或其它来源。 */
-function readApiXTokenFromEnv() {
-  const v = process.env.API_X_TOKEN;
-  if (v == null || v === '') return null;
-  const t = String(v).trim();
-  return t || null;
-}
+// ── HTTP 请求 ──────────────────────────────────────────────────
 
 function request(apiUrl, endpoint, method, token, data) {
   return new Promise((resolve, reject) => {
     const url = new URL(endpoint, apiUrl);
     const mod = url.protocol === 'https:' ? https : http;
-    const postData = data ? JSON.stringify(data) : null;
-
-    const requestOptions = {
+    const body = data ? JSON.stringify(data) : null;
+    const opts = {
       hostname: url.hostname,
       port: url.port || (url.protocol === 'https:' ? 443 : 80),
       path: url.pathname + url.search,
       method,
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      }
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     };
+    if (token) opts.headers['X-Token'] = token;
+    if (body) opts.headers['Content-Length'] = Buffer.byteLength(body);
 
-    if (token) {
-      requestOptions.headers['X-Token'] = token;
-    }
-
-    if (postData) {
-      requestOptions.headers['Content-Length'] = Buffer.byteLength(postData);
-    }
-
-    const req = mod.request(requestOptions, (res) => {
+    const req = mod.request(opts, (res) => {
       const chunks = [];
-      res.on('data', (chunk) => chunks.push(chunk));
+      res.on('data', (c) => chunks.push(c));
       res.on('end', () => {
-        const body = Buffer.concat(chunks);
-        if (body.length === 0) {
-          resolve(res.statusCode >= 200 && res.statusCode < 300 ? {} : null);
-          return;
-        }
-        try {
-          resolve(JSON.parse(body.toString('utf-8')));
-        } catch {
-          resolve(body.toString('utf-8'));
-        }
+        const raw = Buffer.concat(chunks).toString('utf-8');
+        try { resolve(JSON.parse(raw)); } catch { resolve(raw); }
       });
     });
-
     req.on('error', reject);
-    req.setTimeout(30000, () => { req.destroy(); reject(new Error('Request timeout')); });
-
-    if (postData) req.write(postData);
+    req.setTimeout(30000, () => { req.destroy(); reject(new Error('timeout')); });
+    if (body) req.write(body);
     req.end();
   });
 }
 
-async function getExistingSessions(apiUrl, token) {
-  const result = await request(apiUrl, '/', 'POST', token, {
-    module_name: 'services.database.data_service',
-    method_name: 'query_documents',
-    parameters: {
-      cname: 'sessions',
-      limit: 10000
-    }
-  });
+// ── 远端路径解析 ───────────────────────────────────────────────
 
-  const sessions = result?.data?.list || [];
-  const existingSet = new Set();
+function resolveRemotePath(fullPath, projectRoot, prefix) {
+  const rel = path.relative(projectRoot, fullPath).split(path.sep).map(p => p.replace(/\s+/g, '_')).join('/');
 
-  for (const session of sessions) {
-    if (session.file_path) {
-      existingSet.add(session.file_path);
-    }
+  // docs/故事任务面板/ 下的文件以「故事任务面板」为一级标签
+  const storyPanel = 'docs/故事任务面板/';
+  if (rel.startsWith(storyPanel.replace(/\//g, path.sep === '\\' ? '\\' : '/')) || rel.startsWith('docs/故事任务面板/')) {
+    const sub = rel.slice(storyPanel.length);
+    return [...prefix, '故事任务面板', sub].filter(Boolean).join('/');
   }
 
-  return { sessions, existingSet };
+  const label = path.basename(projectRoot).replace(/\s+/g, '_');
+  return [...prefix, label, rel].filter(Boolean).join('/');
 }
 
-async function importFile(fullPath, basePath, labelName, apiUrl, token, existingSet, prefix) {
-  const relativePath = path.relative(basePath, fullPath)
-    .split(path.sep)
-    .map(part => part.replace(/\s+/g, '_'))
-    .join('/');
+// ── 上传单文件 ─────────────────────────────────────────────────
 
-  const targetPathParts = [];
-  if (prefix.length > 0) {
-    targetPathParts.push(...prefix.map(part => part.replace(/\s+/g, '_')));
-  }
-  targetPathParts.push(labelName);
-  targetPathParts.push(relativePath);
-
-  const targetPath = targetPathParts.join('/');
-  const allParts = targetPath.split('/');
-  const title = allParts[allParts.length - 1];
-  const tags = allParts.slice(0, -1);
-  const isDuplicate = existingSet.has(targetPath);
+async function uploadFile(fullPath, projectRoot, apiUrl, token, existingPaths, prefix) {
+  const remotePath = resolveRemotePath(fullPath, projectRoot, prefix);
   const content = await fsp.readFile(fullPath, 'utf-8');
 
   await request(apiUrl, '/write-file', 'POST', token, {
-    target_file: targetPath,
+    target_file: remotePath,
     content,
-    is_base64: false
+    is_base64: false,
   });
 
-  if (isDuplicate) {
-    return { status: 'overwritten', path: targetPath };
-  }
+  if (existingPaths.has(remotePath)) return { status: 'overwritten', path: remotePath };
 
+  // 创建 session
   const now = Date.now();
-  const random = Math.random().toString(36).slice(2, 11);
+  const parts = remotePath.split('/');
   await request(apiUrl, '/', 'POST', token, {
     module_name: 'services.database.data_service',
     method_name: 'create_document',
     parameters: {
       cname: 'sessions',
       data: {
-        url: `app-session://${now}-${random}`,
-        title,
-        file_path: targetPath,
+        url: `app-session://${now}-${Math.random().toString(36).slice(2, 9)}`,
+        title: parts[parts.length - 1],
+        file_path: remotePath,
         messages: [],
-        tags,
+        tags: parts.slice(0, -1),
         isFavorite: false,
         createdAt: now,
         updatedAt: now,
-        lastAccessTime: now
-      }
-    }
+        lastAccessTime: now,
+      },
+    },
   });
 
-  existingSet.add(targetPath);
-  return { status: 'ok', path: targetPath };
+  existingPaths.add(remotePath);
+  return { status: 'created', path: remotePath };
 }
 
-function printHelp() {
-  console.log(`
-import-docs — sync local files to remote documentation API
+// ── 查询已有 sessions ──────────────────────────────────────────
 
-Usage:
-  node skills/import-docs/scripts/import-docs.js import [options]
-  node skills/import-docs/scripts/import-docs.js list [options]
-  node skills/import-docs/scripts/import-docs.js [options]   # defaults to import
-
-Options:
-  --workspace, -w  Recursively scan project (excludes .git, node_modules)
-  --dir, -d        Directory to scan (default: auto-detect project root)
-  --exts, -e       File extensions (comma-separated, default: md)
-  --exclude, -x    Extra dirs to exclude (comma-separated)
-  --api-url, -a    API base URL (default: https://api.effiy.cn)
-  --prefix, -p     Path prefix (comma-separated, e.g. Projects,YourNamespace)
-  --help, -h       Show this help message
-
-Environment:
-  API_X_TOKEN      Required for import. Set via system environment variable.
-`);
+async function getExistingPaths(apiUrl, token) {
+  const result = await request(apiUrl, '/', 'POST', token, {
+    module_name: 'services.database.data_service',
+    method_name: 'query_documents',
+    parameters: { cname: 'sessions', limit: 10000 },
+  });
+  const list = result?.data?.list || [];
+  return new Set(list.map(s => s.file_path).filter(Boolean));
 }
+
+// ── 并发池 ─────────────────────────────────────────────────────
+
+async function pool(concurrency, items, fn) {
+  const executing = new Set();
+  for (const item of items) {
+    const p = fn(item).then(() => executing.delete(p));
+    executing.add(p);
+    if (executing.size >= concurrency) await Promise.race(executing);
+  }
+  await Promise.all(executing);
+}
+
+// ── CLI ────────────────────────────────────────────────────────
 
 async function main() {
   const args = process.argv.slice(2);
   let command = 'import';
-  let argStartIndex = 0;
+  let idx = 0;
 
-  if (args[0] && !args[0].startsWith('-')) {
-    command = args[0];
-    argStartIndex = 1;
+  if (args[0] && !args[0].startsWith('-')) { command = args[0]; idx = 1; }
+
+  const config = { dir: null, exts: ['md'], excludeDirs: [], prefix: [], workspace: false, apiUrl: 'https://api.effiy.cn' };
+
+  for (let i = idx; i < args.length; i++) {
+    const a = args[i];
+    if (a === '--workspace' || a === '-w') config.workspace = true;
+    else if (a === '--dir' || a === '-d') config.dir = path.resolve(args[++i]);
+    else if (a === '--exts' || a === '-e') config.exts = args[++i].split(',').map(e => e.trim().replace(/^\./, ''));
+    else if (a === '--exclude' || a === '-x') config.excludeDirs = args[++i].split(',').map(d => d.trim());
+    else if (a === '--prefix' || a === '-p') config.prefix = args[++i].split(',').map(p => p.trim());
+    else if (a === '--api-url' || a === '-a') config.apiUrl = args[++i];
   }
 
-  if (!['import', 'list'].includes(command)) {
-    console.error(`Error: unsupported command "${command}". Use "import" or "list".`);
-    process.exit(1);
-  }
-
-  const config = {
-    command,
-    dir: null,
-    token: readApiXTokenFromEnv(),
-    apiUrl: 'https://api.effiy.cn',
-    prefix: [],
-    exts: ['md'],
-    excludeDirs: [],
-    workspace: false
-  };
-
-  for (let i = argStartIndex; i < args.length; i++) {
-    const arg = args[i];
-    if (arg === '--dir' || arg === '-d') {
-      config.dir = path.resolve(args[++i]);
-    } else if (arg === '--token' || arg === '-t') {
-      console.error('Error: --token 已禁用。出于安全原因，仅允许使用系统环境变量 API_X_TOKEN。');
-      process.exit(1);
-    } else if (arg === '--api-url' || arg === '-a') {
-      config.apiUrl = args[++i];
-    } else if (arg === '--prefix' || arg === '-p') {
-      config.prefix = args[++i].split(',').map(p => p.trim()).filter(Boolean);
-    } else if (arg === '--exts' || arg === '-e') {
-      config.exts = args[++i].split(',').map(e => e.trim().replace(/^\./, '').toLowerCase()).filter(Boolean);
-      if (config.exts.length === 0) config.exts = ['md'];
-    } else if (arg === '--exclude' || arg === '-x') {
-      config.excludeDirs = args[++i].split(',').map(d => d.trim()).filter(Boolean);
-    } else if (arg === '--workspace' || arg === '-w') {
-      config.workspace = true;
-    } else if (arg === '--help' || arg === '-h') {
-      printHelp();
-      process.exit(0);
-    }
-  }
-
-  const cwd = process.cwd();
-  const projectRoot = findProjectRoot(cwd);
+  const projectRoot = findProjectRoot(process.cwd());
   const scanDir = config.dir || projectRoot;
+  const files = await scanFiles(scanDir, projectRoot, config.exts, config.excludeDirs);
 
-  console.log('=== Document import ===');
-  console.log('Command:', config.command);
-  console.log('Mode:', config.workspace ? 'workspace' : 'single');
-  console.log('Scan dir:', scanDir);
-  console.log('Extensions:', config.exts.join(', '));
-  if (config.excludeDirs.length > 0) {
-    console.log('Excluded dirs:', config.excludeDirs.join(', '));
-  }
-  if (config.command === 'import') {
-    console.log('API:', config.apiUrl);
-    if (config.prefix.length > 0) {
-      console.log('Prefix:', config.prefix.join('/'));
-    }
-  }
-  console.log();
+  console.log(`Scan: ${files.length} files in ${path.relative(process.cwd(), scanDir) || '.'}`);
 
-  const files = await findMdFiles(scanDir, projectRoot, config.exts, config.excludeDirs);
+  if (files.length === 0) return;
 
-  if (files.length === 0) {
-    console.log('No files found');
+  if (command === 'list') {
+    files.sort().forEach(f => console.log(`  ${path.relative(projectRoot, f)}`));
     return;
   }
 
-  const claudeFiles = files.filter(f => {
-    const rel = path.relative(projectRoot, f);
-    return rel.startsWith('.claude' + path.sep) || rel === '.claude';
-  });
-  const regularFiles = files.filter(f => !claudeFiles.includes(f));
+  const token = (process.env.API_X_TOKEN || '').trim();
+  if (!token) { console.error('Error: API_X_TOKEN not set'); process.exit(1); }
 
-  console.log(`Found ${files.length} files` + (claudeFiles.length ? ` (${regularFiles.length} regular · ${claudeFiles.length} from .claude/)` : ''));
+  const existingPaths = await getExistingPaths(config.apiUrl, token);
+  const stats = { created: 0, overwritten: 0, failed: 0 };
 
-  if (config.command === 'list') {
-    for (const file of files.sort()) {
-      const relativePath = path.relative(projectRoot, file).split(path.sep).join('/');
-      console.log(`- ${relativePath}`);
-    }
-    return;
-  }
-
-  if (!config.token) {
-    console.error('Error: missing API_X_TOKEN environment variable');
-    process.exit(1);
-  }
-
-  console.log('Querying existing sessions...');
-  const { existingSet } = await getExistingSessions(config.apiUrl, config.token);
-  console.log(`Found ${existingSet.size} existing sessions with file_path`);
-  console.log();
-
-  // 一级目录标签：这些 docs 子目录作为远端一级目录，不嵌套在项目名下
-  const topLevelDirs = ['故事任务面板', '组件文档', '接口文档', '页面文档', '领域模型'].map(d => ({
-    name: d,
-    dir: path.join(projectRoot, 'docs', d)
-  }));
-
-  function resolveLabel(fullPath) {
-    for (const d of topLevelDirs) {
-      if (fullPath.startsWith(d.dir + path.sep)) return d;
-    }
-    return null;
-  }
-
-  const stats = { ok: 0, overwritten: 0, failed: 0 };
-  const total = files.length;
-  const concurrency = 4;
-
-  await asyncPool(concurrency, files.entries(), async ([idx, fullPath]) => {
-    const relativePath = path.relative(projectRoot, fullPath).split(path.sep).join('/');
-    console.log(`[${idx + 1}/${total}] ${relativePath}`);
-
-    const label = resolveLabel(fullPath);
-    const basePath = label ? label.dir : projectRoot;
-    const labelName = label ? label.name : path.basename(projectRoot).replace(/\s+/g, '_');
-
+  await pool(4, files, async (file) => {
     try {
-      const result = await importFile(fullPath, basePath, labelName, config.apiUrl, config.token, existingSet, config.prefix);
-      if (result.status === 'ok') {
-        console.log(`  ✓ ${result.path} (created)`);
-        stats.ok++;
-      } else if (result.status === 'overwritten') {
-        console.log(`  ✓ ${result.path} (file overwritten, session exists)`);
-        stats.overwritten++;
-      }
-    } catch (error) {
-      console.log(`  ✗ ${relativePath} - ${error.message}`);
+      const r = await uploadFile(file, projectRoot, config.apiUrl, token, existingPaths, config.prefix);
+      stats[r.status]++;
+      console.log(`  ✓ ${r.path} (${r.status})`);
+    } catch (err) {
       stats.failed++;
+      console.log(`  ✗ ${path.relative(projectRoot, file)} — ${err.message}`);
     }
   });
 
-  console.log();
-  console.log(`Done: ${stats.ok} created, ${stats.overwritten} overwritten, ${stats.failed} failed`);
-
-  if (stats.failed > 0) {
-    process.exit(1);
-  }
+  console.log(`\nDone: ${stats.created} created, ${stats.overwritten} overwritten, ${stats.failed} failed`);
+  if (stats.failed > 0) process.exit(1);
 }
 
-main().catch(error => {
-  console.error('Error:', error.message);
-  process.exit(1);
-});
+main().catch(err => { console.error('Error:', err.message); process.exit(1); });
