@@ -102,27 +102,7 @@ flowchart LR
 
 ## ③ 证据足
 
-```mermaid
-flowchart TD
-    CLAIM["陈述 / 断言"] --> Q1{"来源可验证?"}
-    Q1 -->|"是，已验证"| A["Level A<br/>直接写入 ✅"]:::a
-    Q1 -->|"是，可推导"| B["Level B<br/>可写入，附推导路径 ✅"]:::b
-    Q1 -->|"否"| Q2{"可通过验证补证?"}
-    Q2 -->|"是"| C["Level C<br/>写入但标注「> 待补充」⚠️"]:::c
-    Q2 -->|"否"| D["Level D<br/>禁止出现 🚫"]:::d
-
-    classDef a fill:#e8f5e9,stroke:#2e7d32;
-    classDef b fill:#e3f2fd,stroke:#1565c0;
-    classDef c fill:#fff3e0,stroke:#e65100;
-    classDef d fill:#ffebee,stroke:#c62828;
-```
-
-| 等级 | 含义 | 处置 | 示例 |
-|------|------|------|------|
-| **A** | 已验证 | 直接写入 | git diff 确认的变更路径 |
-| **B** | 可推导 | 写入，附推导路径 | 从源码结构推导的模块边界 |
-| **C** | 未验证 | 写入，标注 `> 待补充` | 推测的性能指标 |
-| **D** | 幻觉 | 禁止出现 | "应该有个 UserService" |
+证据等级定义见 [agents/AGENT.md](../agents/AGENT.md#证据等级)（A 已验证 · B 可推导 · C 待补充 · D 禁止）。文档生成阶段遵循同等级规则。
 
 | # | 规则 | 反例 |
 |---|------|------|

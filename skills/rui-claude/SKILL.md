@@ -65,7 +65,7 @@ flowchart LR
     TRIGGER["/rui-claude sync"]:::src --> CHECK{"确认用户意图?"}
     CHECK -->|"否"| ABORT["中止"]:::abort
     CHECK -->|"是"| WIPE["rm -rf .claude/"]:::warn
-    WIPE --> RSYNC["rsync -avz --exclude '.git'<br/>root@www.effiy.cn:${PROJECT}/.claude/ → ./.claude/"]:::op
+    WIPE --> RSYNC["rsync -avz --exclude '.git'<br/>root@www.effiy.cn:/home/claude/YiKnowledge/static/${PROJECT}/.claude/ → ./.claude/"]:::op
     RSYNC --> DONE["完成<br/>自动记录 history"]:::done
 
     classDef src fill:#e8f5e9,stroke:#2e7d32;
