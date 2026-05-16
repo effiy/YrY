@@ -9,25 +9,43 @@ agents:
 
 # rui
 
-> 故事驱动 SDLC 编排器：拆故事 → 文档基线 → 测试先行 → 实现 → 验证 → 复盘 → 交付。每条命令最终落到「故事任务面板」目录，每个故事独立串行走完管线。
+> 故事驱动 SDLC 编排器：拆故事 → 文档基线 → 测试先行 → 实现 → 验证 → 复盘 → 交付。
 >
-> 哲学源自 [CLAUDE.md](../../CLAUDE.md)。本文件只定义命令面与编排骨架，细节分散在：[rules/](../../rules/) 跨场景约束 · [agents/](../../agents/) 角色契约 · [formulas.md](./formulas.md) 故事文档公式 · [coder.md](./coder.md) 目录与生命周期 + 参考文档公式 + 数据契约。
+> 哲学源自 [CLAUDE.md](../../CLAUDE.md)。本文件定义命令面与编排骨架，细节分散在：[rules/](../../rules/) · [agents/](../../agents/) · [formulas.md](./formulas.md) · [coder.md](./coder.md)。
 
-## 命令面
+## 选哪条命令
 
-| 命令 | 用途 | 关键行为 |
-|------|------|---------|
-| `/rui init` | 建立项目基线 | detect → generate → verify；生成 CLAUDE.md · README.md · `.claude/` · 故事面板目录 |
-| `/rui doc <req>` | 拆需求为故事 + 生成文档基线 | pm 拆故事 → coder 按项目类型补齐设计文档；分支隔离；禁止改源码；多故事逐个串行 |
-| `/rui code <name>` | 实现故事 + 生成验证报告（05/06-实施 / 07-测试 / 08-自改进复盘） | Gate A 测试先行；Gate B 验证闭合 |
-| `/rui <req>` | 端到端 | doc + code 全自动串联 |
-| `/rui update <name-or-path> [ctx] [--no-code]` | 增量更新 | T1/T2/T3 裁剪；`--no-code` 仅文档 |
-| `/rui code --from-doc <name>` | 从文档反推 | 只读源码补全缺失文档；不覆盖已有 |
-| `/rui doc --from-code [req]` | 从源码反推（推荐） | req 空：pm 探索推荐列表；req 有值：直接反推故事文档 |
-| `/rui list` | 进度全景 | 按文件存在性判定状态 |
-| `/rui` | 任务推荐 | 5 层链式管线评分排序 |
+```mermaid
+flowchart TD
+    Q1{"业务故事<br/>还是 .claude/ 配置?"}
+    Q1 -->|".claude/ 配置"| RC["/rui-claude"]
+    Q1 -->|"业务故事"| Q2{"已有故事吗?"}
+    Q2 -->|"新仓库"| INIT["/rui init"]
+    Q2 -->|"有需求"| E2E["/rui <需求>"]
+    Q2 -->|"有源码缺文档"| FC["/rui doc --from-code"]
+    Q2 -->|"已拆缺文档"| DOC["/rui doc <需求>"]
+    Q2 -->|"文档齐缺实现"| CODE["/rui code <name>"]
+    Q2 -->|"代码改完补文档"| FD["/rui code --from-doc"]
+    Q2 -->|"小修小补"| UPD["/rui update"]
+    Q2 -->|"看进度"| LIST["/rui list 或 /rui"]
+```
 
-`<req>` 支持文本 / `@` 引用本地文件 / URL。CLI `--name` 用 `<Project>-<name>` 格式（如 `YiWeb-user-login`），脚本内分解为路径 `<Project>/<name>`。
+`<req>` 支持文本 / `@` 引用本地文件 / URL。`--name` 用 `<Project>-<name>` 格式（如 `YiWeb-user-login`）。
+
+### 写入命令（末端自动交付三步）
+
+- `/rui init` — 建立项目基线：detect → explore → generate → setup → verify → trigger
+- `/rui <需求>` — 端到端：doc + code 自动串联，逐故事串行
+- `/rui doc <需求>` — 拆需求为故事 + 生成文档基线（01/02/03/04），禁止改源码
+- `/rui code <name>` — 实现故事：Gate A → 逐模块 → Gate B → 自改进 → 交付
+- `/rui update <name> [ctx] [--no-code]` — 增量更新：T1/T2/T3 自动裁剪
+- `/rui code --from-doc <name>` — 从文档反推：只读源码补全缺失文档，不覆盖已有
+- `/rui doc --from-code [req]` — 从源码反推：req 空时 pm 扫描推荐列表；req 有值时直接反推
+
+### 只读命令（不触发 hook）
+
+- `/rui` — 任务推荐：5 层链式管线评分排序
+- `/rui list` — 进度全景：按文件存在性判定状态
 
 ## 管线一览
 
@@ -38,49 +56,51 @@ flowchart LR
     K --> K1[追加日志] --> K2[文档同步] --> K3[发送通知]
 ```
 
-| 阶段细则 | 出处 |
-|---------|------|
-| 影响分析 / 证据等级 | [agents/AGENT.md](../../agents/AGENT.md) |
-| 分支隔离 / Gate A/B / P0 审查 | [rules/code-pipeline.md](../../rules/code-pipeline.md) |
-| 三步交付管线 / 文档同步 | [rules/delivery-gate.md](../../rules/delivery-gate.md) |
-| 诊断 D0–D7 / 评估 E1–E4 | [rules/self-improve.md](../../rules/self-improve.md) |
-| 文档生成强制约束 | [rules/doc-generation.md](../../rules/doc-generation.md) |
-| Agent 交接契约 | [agents/](../../agents/) 各角色文件 |
+- 影响分析 / 证据等级 → [agents/AGENT.md](../../agents/AGENT.md)
+- 分支隔离 / Gate A/B / P0 审查 → [rules/code-pipeline.md](../../rules/code-pipeline.md)
+- 交付三步 / 文档同步 → [rules/delivery-gate.md](../../rules/delivery-gate.md)
+- 诊断 D0–D7 / 评估 E1–E4 → [rules/self-improve.md](../../rules/self-improve.md)
+- 文档生成约束 → [rules/doc-generation.md](../../rules/doc-generation.md)
+- Agent 交接 → [agents/](../../agents/) 各角色
 
 ## 阻断标识
 
-| 标识 | 触发 | 阶段 | 降级 |
-|------|------|------|------|
-| `no-parse` | 需求无法解析 | 需求解析 | 否 |
-| `no-source` | P0 章节缺上游来源 | 文档生成 / 预检 | 否 |
-| `chain-broken` | 影响链未闭合 | 影响分析 / 预检 | 否 |
-| `doc-p0` | 文档 P0 不通过且无法自修复 | 文档生成 | 否 |
-| `code-p0` | 代码 P0 无法修复 | 实现 | 否 |
-| `skip-gate-a` | Gate A 未通过即编码 | 测试先行→实现 | 否 |
-| `gate-b-limit` | Gate B >2 轮 | 验证 | 否 |
-| `bad-branch` | 分支未从 main 创建或混入非本故事代码 | 预检 | 否 |
-| `no-checkout` | 未切换故事分支即改源码 | 预检→实现 | 否 |
-| `auto-merge` | 功能分支被自动合并到 main | 预检→交付 | 否 |
-| `no-token` | `API_X_TOKEN` 缺失 | 交付 | 是 |
-| `no-metrics` | self-improve 数据采集失败 | 自改进 | 是 |
+阻断后写 `.memory/rui-state.json`（`blocked=true` + `block_reason=<标识>`），重跑同命令从 `current_stage` 续。
 
-阻断后：在 `.memory/rui-state.json` 中写入 `blocked=true` 与 `block_reason=<标识>` 后持久化，并按交付管线触发通知（`no-token` / `no-metrics` 跳过推送但仍写标记）。重跑同命令从 `current_stage` 续。
+**需求→文档阶段**
+- `no-parse` — 需求无法解析
+- `no-source` — P0 章节缺上游来源
+- `chain-broken` — 影响链未闭合
+- `doc-p0` — 文档 P0 不通过且无法自修复
+
+**预检→实现阶段**
+- `bad-branch` — 分支未从 main 创建或混入非本故事代码
+- `no-checkout` — 未切换故事分支即改源码
+- `skip-gate-a` — Gate A 未通过即编码
+
+**实现→验证阶段**
+- `code-p0` — 代码 P0 无法修复
+- `gate-b-limit` — Gate B >2 轮
+
+**交付阶段**
+- `auto-merge` — 功能分支被自动合并到 main
+- `no-token`（降级）— `API_X_TOKEN` 缺失
+- `no-metrics`（降级）— self-improve 数据采集失败
 
 ## 核心约束
 
 1. **逐故事串行** — 多故事按拆分顺序处理，互不交叉
-2. **分支隔离** — `feat/<project>-<name>` 从 main 创建；不可派生、不可自动合并
-3. **源码改动唯一入口** — 只能走 `/rui code` 管线（`no-checkout`）
+2. **分支隔离** — `feat/<project>-<name>` 从 main 创建；禁止派生、自动合并
+3. **源码唯一入口** — 只能走 `/rui code` 改源码
 4. **测试先行** — Gate A 阻断实现；Gate B >2 轮阻断交付
-5. **逐模块审查** — 每模块后审查，P0 清零再前进
+5. **逐模块 P0 清零** — 每模块审查后 P0 清零再前进
 6. **只读反推** — `--from-code` / `--from-doc` 禁止改源码
-7. **产出内聚** — 关键产出限定在故事目录 `docs/故事任务面板/<Project>/<name>/`
-8. **交付强制** — 三步管线按序在 `rui-state.json` 的 `delivery_pipeline` 中标记，Stop hook 检查未闭合即阻断
-9. **公式驱动** — 文档由 [formulas.md](./formulas.md) 规约，文件名带编号前缀（00–08）
-10. **知识沉淀** — 写入 `.memory/execution-memory.jsonl` + `.memory/rui-state.json`；提案写入 `.improvement/proposals.jsonl`
-11. **同步通知必触发** — 每次 rui 命令（除 list/推荐）末端必须三步依序触发 hook-log + import-docs + wework-bot。**任一缺失 = 管线未闭合 = delivery-incomplete 阻断。阻断状态也必须触发通知。**
+7. **产出内聚** — 关键产出限定在 `docs/故事任务面板/<Project>/<name>/`
+8. **公式驱动** — 文档由 [formulas.md](./formulas.md) 规约，文件名带编号前缀（00–08）
+9. **知识沉淀** — 写入 `.memory/execution-memory.jsonl` + `.memory/rui-state.json`；提案写入 `.improvement/proposals.jsonl`
+10. **交付强制** — 三步按序触发（hook-log → import-docs → wework-bot），详见 [强制集成](#强制集成)
 
-### 故事目录文件编号速查
+## 故事文档编号
 
 | 编号 | 文件 | 阶段 | 必选 |
 |------|------|------|:---:|
@@ -94,238 +114,133 @@ flowchart LR
 | 07 | 测试用例报告.md | 验证 | ✓ |
 | 08 | 自改进复盘.md | 自改进 | ✓ |
 
-## init 简述
+## init
 
-> 五步：探（探测五类信号）→ 察（深度探索项目）→ 生（生成 CLAUDE.md / README.md，领域语言在 README.md 内）→ 搭（机械性搭建 wework-bot 配置）→ 验（5 项就绪检查）→ 触（import-docs 同步 + wework-bot 通知）。
->
-> **核心设计**：init 负责项目基线。**所有内容文件（CLAUDE.md、README.md）全部由大模型通过深度项目探索生成**，本规约不依赖任何脚本，完全由调用方按本节描述顺序执行。可重复运行，每次全量重生。
+> 五步：探 → 察 → 生 → 搭 → 验 → 触。可重复运行，每次全量重生。CLAUDE.md 的 `<!-- rui:project-start -->` / `<!-- rui:project-end -->` 标记段每次覆盖，段外保留。
 
 ```mermaid
 flowchart LR
-    P1[detect<br/>探测五类信号]:::s --> P2[explore<br/>深度探索项目]:::llm --> P3[generate<br/>生成全部内容]:::llm --> P4[setup<br/>机械搭建]:::s --> P5[verify<br/>就绪检查]:::s --> P6[trigger<br/>同步+通知]:::s --> P7[记忆<br/>.init-memory]
-    P5 -.失败.-> Fix[终止<br/>修复后重跑]
-    P6 -.通过.-> Ready[基线就绪]
+    P1[detect]:::s --> P2[explore]:::llm --> P3[generate]:::llm --> P4[setup]:::s --> P5[verify]:::s --> P6[trigger]:::s --> P7[.init-memory]
+    P5 -.失败.-> Fix[终止·修复重跑]
     classDef s fill:#e3f2fd,stroke:#1565c0;
     classDef llm fill:#fff3e0,stroke:#e65100;
 ```
 
-### 执行流程
+### 1. detect — 探测信号
 
+抽取 profile 为后续阶段提供事实基线：
+
+- **项目身份** — 仓库目录名 → 分支前缀 / 文档路径锚点
+- **项目类型** — 关键目录与配置文件 → frontend / backend / fullstack / meta / unknown（判定见下图）
+- **项目清单** — 按生态文件抽取依赖 + 构建/测试命令 + 框架版本
+- **安全面** — 源码关键词扫描：用户输入 / API / 存储 / 认证 / 第三方
+- **测试框架** — 依赖 + 配置文件 → vitest / jest / pytest / go-test / cargo-test
+- **架构模式** — 项目结构 → single / monorepo / microservice / plugin
+
+```mermaid
+flowchart TD
+    A[package.json?] -->|含 react/vue/svelte/next/nuxt| F[frontend]
+    A -->|含 express/koa/fastify/nest| B[backend]
+    A -->|前端依赖 + server/api 目录| FS[fullstack]
+    A -->|.claude-plugin/plugin.json 或仅 skills/| M[meta]
+    A -->|均不命中| U[unknown]
+    A -->|无 package.json| NE[非 Node 生态]
+    NE -->|pyproject.toml / go.mod / Cargo.toml 等| NE2[按生态清单文件判定]
 ```
-1. detect    → 探测五类信号，输出 profile（项目类型/技术栈/安全面/测试框架/架构）
-2. explore   → 阅读关键源码、理解架构模式、识别代码规范、发现安全面
-3. generate  → 编写 CLAUDE.md · README.md（含领域语言）
-4. setup     → 创建目录、生成 wework-bot/config.json、写 .init-memory.json
-5. verify    → 执行 5 项就绪检查，任一失败即终止
-6. trigger   → 触发 import-docs（workspace 全量）+ wework-bot 通知
-```
 
-### 重复运行：增量改进
+### 2. explore — 深度探索
 
-`rui init` 可重复运行。再次运行时，大模型必须：
+阅读核心源码，理解架构模式、代码规范、安全面。验证并补充 profile 判断。
 
-1. **读取已有文件** — 检查 CLAUDE.md、README.md 是否已存在
-2. **保留人工定制** — 用户手动修改的内容不覆盖（特别是项目约束段外的自定义内容）
-3. **增量更新** — 只改变了的部分：profile 信号变了 → 更新项目画像表；安全面变了 → 更新约束段；新依赖 → 更新技术栈
-4. **优化改进** — 已有内容可读性差 → 优化表达；格式不统一 → 统一格式；过时信息 → 刷新
-5. **CLAUDE.md 标记内替换** — `<!-- rui:project-start -->` / `<!-- rui:project-end -->` 段每次全量替换，段外内容保留
+### 3. generate — 生成内容
 
-**判断是否首次运行**：CLAUDE.md 不含 `rui:project-start` 标记 → 首次，全量生成；含标记 → 重复，增量改进。
+基于 profile + 探索发现直接编写文件：
 
-### 1. detect — 探测信号（事实层）
+- `CLAUDE.md` — 项目画像 + 执行准则 + 退化对策 + 项目约束（含 `rui:project-start/end` 标记）+ 自约束
+- `README.md` — 系统视图 + 命令流 + 快速开始 + 项目结构 + [领域语言段](../../README.md#领域语言)（术语定义 + 关系 + 示例对话 + 歧义标记，格式参照 [CONTEXT-FORMAT](https://github.com/mattpocock/skills/blob/main/skills/engineering/grill-with-docs/CONTEXT-FORMAT.md)）
 
-按下表抽取 profile，输出为后续 explore / generate 阶段提供事实基线：
+### 4. setup — 机械搭建
 
-| 信号 | 来源 | 用途 |
-|------|------|------|
-| 项目身份 | 仓库目录名 | 分支前缀 / 文档路径锚点 |
-| 项目类型 | 关键目录与配置文件 | frontend / backend / fullstack / meta / unknown |
-| 项目清单 | 按生态文件抽取 | 依赖 + 构建/测试命令 + 框架版本 |
-| 安全面 | 源码关键词扫描 | 用户输入 / API / 存储 / 认证 / 第三方 |
-| 测试框架 | 依赖 + 配置文件 | vitest / jest / pytest / go-test / cargo-test |
-| 架构模式 | 项目结构 | single / monorepo / microservice / plugin |
+- 创建 `docs/故事任务面板/`
+- 生成 `.claude/skills/wework-bot/config.json`（schema 见 [wework-bot SKILL.md](../wework-bot/SKILL.md#内置配置)）
+- 写入 `docs/故事任务面板/.init-memory.json`
 
-#### 项目类型判定
-
-| 信号 | 判定 |
-|------|------|
-| 含 `package.json` 且依赖 `react` / `vue` / `svelte` / `next` / `nuxt` | frontend |
-| 含 `package.json` 且依赖 `express` / `koa` / `fastify` / `nest` 等 | backend |
-| 含前端依赖且检测到 `server/` `api/` 子目录 | fullstack |
-| 含 `.claude-plugin/plugin.json` 或仅 `skills/` | meta |
-| 上述均不命中 | unknown |
-
-非 Node 生态（Python / Go / Rust / Java / Ruby / PHP）按各自的清单文件（`pyproject.toml` / `go.mod` / `Cargo.toml` 等）补充判定。
-
-### 2. explore — 深度探索（理解层）
-
-拿到 profile 后，**必须深度探索项目**，不能仅凭 profile 字段生成内容。探索要点：
-
-- **目录结构**：理解项目组织方式、模块划分、关键目录职责
-- **核心源码**：阅读代表性文件（入口、核心业务、路由、数据模型），理解代码风格和模式
-- **架构模式**：验证 profile 的架构判断，补充具体细节（如 monorepo 的子包职责）
-- **技术栈细节**：确认框架版本、关键依赖、状态管理方案、路由方案
-- **代码规范**：从现有代码推断命名规范、文件组织约定、注释风格
-- **安全面**：验证 profile 的安全面探测，补充遗漏的风险面
-
-### 3. generate — 生成内容（生成层）
-
-基于 profile + 深度探索发现，**直接编写文件**（非模板替换）：
-
-| 产物 | 生成要求 | 关键约束 |
-|------|---------|---------|
-| `CLAUDE.md` | 项目画像（项目特定）、执行准则（引用实际技术栈/命令）、退化对策（按项目类型）、项目约束（安全底线，含 `rui:project-start/end` 标记）、自约束 | 必须含 `<!-- rui:project-start -->` 和 `<!-- rui:project-end -->` 标记；项目画像表含技术栈 / 构建命令 / 测试命令 / 安全面 / Coder 公式 |
-| `README.md` | 项目画像 + 命令流 mermaid + 快速开始 + 项目结构 + 管线一览。根据项目类型定制化编写 | 含项目名、技术栈、快速开始命令 |
-| `README.md` 领域语言段 | 项目领域语言词汇表：术语定义、关系、示例对话、歧义标记。根据项目实际领域编写，作为 README.md 的 `## 领域语言` 章节 | 格式参照 [CONTEXT-FORMAT](https://github.com/mattpocock/skills/blob/main/skills/engineering/grill-with-docs/CONTEXT-FORMAT.md)；每个术语含 Avoid 别名 |
-
-**生成原则**：
-- CLAUDE.md 含项目画像、执行准则、退化对策、项目约束、自约束，全部根据项目实际编写
-- README.md 用 mermaid 图 → 结构化表格 → 命令示例表达
-- README.md 必含 `## 领域语言` 章节，用领域术语定义 + 关系 + 示例对话 + 歧义标记，格式参照 [CONTEXT-FORMAT](https://github.com/mattpocock/skills/blob/main/skills/engineering/grill-with-docs/CONTEXT-FORMAT.md)
-
-### 4. setup — 机械搭建（搭建层）
-
-| 操作 | 说明 |
-|------|------|
-| 目录创建 | `docs/故事任务面板/` |
-| wework-bot 配置 | 生成 `.claude/skills/wework-bot/config.json`（schema 见 [wework-bot SKILL.md](../wework-bot/SKILL.md#配置文件)） |
-| 记忆 | 写入 `docs/故事任务面板/.init-memory.json` 记录本次执行 |
-
-### 5. verify — 5 项就绪检查（验证层）
+### 5. verify — 5 项就绪检查
 
 任一失败即终止：
 
-| # | 检查项 | 通过条件 |
-|---|--------|--------|
-| 1 | `CLAUDE.md` | 含 `rui:project-start` 标记 + 项目名 |
-| 2 | `README.md` | 含项目名 |
-| 3 | `README.md` 领域语言段 | 含 `## 领域语言` 标题 + 至少 3 个领域术语定义 |
-| 4 | 故事面板 | `docs/故事任务面板/` 目录存在 |
-| 5 | wework-bot 配置 | `.claude/skills/wework-bot/config.json` 存在 |
+- CLAUDE.md 含 `rui:project-start` 标记 + 项目名
+- README.md 含项目名
+- README.md 含 `## 领域语言` 标题 + ≥3 个术语定义
+- `docs/故事任务面板/` 目录存在
+- `.claude/skills/wework-bot/config.json` 存在
 
-### 6. trigger — 主动触发（集成层）
+### 6. trigger
 
-验证通过后主动触发：
+验证通过后触发 import-docs（workspace 全量）+ wework-bot 通知。缺 token 跳过，网络失败告警不阻断。
 
-| 触发 | 条件 | 降级 |
-|------|------|------|
-| import-docs（workspace 全量） | `API_X_TOKEN` 存在 | 缺 token 跳过，网络失败告警不阻断 |
-| wework-bot（agent=rui） | `API_X_TOKEN` + 已解析的 webhook URL 存在 | 缺凭据跳过 |
+### 产物
 
-### 7. 产物
+- `CLAUDE.md` — `rui:project-*` 标记内全量重生，段外保留
+- `README.md` — 全量重生，领域语言段重复运行时增量补充
+- `.claude/skills/wework-bot/config.json` — 每次覆盖
+- `docs/故事任务面板/.init-memory.json` — 每次覆盖
 
-| 路径 | 用途 | 重复运行 |
-|------|------|---------|
-| `CLAUDE.md` | 项目约束 + 执行准则 + 退化对策 | `rui:project-*` 标记内全量重生，段外保留 |
-| `README.md` | 系统视图 + 命令流 + 项目画像 | 全量重生 |
-| `README.md` 领域语言段 | 领域语言词汇表 | README.md 的 `## 领域语言` 章节，首次全量生成，重复运行增量补充术语 |
-| `.claude/skills/wework-bot/config.json` | 企微通知配置 | 每次覆盖 |
-| `docs/故事任务面板/.init-memory.json` | 执行记录 | 每次覆盖 |
+## doc
 
-## doc 简述
-
-> 三步：拆（pm 解析需求拆为故事）→ 补（coder 按项目类型补齐设计文档）→ 触（import-docs 同步 + wework-bot 通知）。
->
-> **核心设计**：pm 将需求文本 / `@` 文件 / URL 解析为结构化故事，影响分析后拆分任务并排优先级。随后指派 coder 按项目类型补齐设计文档：前端补 03-前端技术评审，后端补 02-后端技术评审，全栈两者均补。全程禁止改源码，多故事逐个串行处理。
->
-> pm 解读需求时应用**烧烤纪律**（挑战模糊术语、走完决策树每个分支、用项目领域语言词汇命名概念、术语解析后即时更新 README.md 领域语言段）。不确定性 > 2 项时不推进到影响分析。设计决策满足 ADR 三条件（难逆转 / 缺上下文会奇怪 / 真实权衡）时写入 `docs/adr/`。
+> pm 拆需求为故事 → coder 按项目类型补齐设计文档。全程只读源码，多故事串行。pm 应用烧烤纪律：挑战模糊术语、走完决策树、用领域语言命名、不确定 > 2 项不推进。
 
 ```mermaid
 flowchart LR
-    A[需求输入<br/>文本/@文件/URL]:::s --> B[pm 拆故事<br/>影响分析+优先级]:::s
+    A[需求输入]:::s --> B[pm 拆故事<br/>影响分析+优先级]:::s
     B --> C[coder 补齐文档<br/>02/03 按项目类型]:::s
-    C --> D[branch<br/>feat/&lt;Project&gt;-&lt;name&gt;]:::s
+    C --> D[feat/&lt;Project&gt;-&lt;name&gt;]:::s
     D --> E[trigger<br/>同步+通知]:::s
     classDef s fill:#e3f2fd,stroke:#1565c0;
 ```
 
-### 产出
+**产出**：01-故事任务.md（必创建）· 02-后端技术评审.md（后端/全栈）· 03-前端技术评审.md（前端/全栈）· 04-测试用例评审.md（必创建）
 
-| 文件 | 条件 |
-|------|------|
-| 01-故事任务.md | 必创建 |
-| 02-后端技术评审.md | 后端 / 全栈 |
-| 03-前端技术评审.md | 前端 / 全栈 |
-| 04-测试用例评审.md | 必创建 |
+**约束**：只读 · 分支隔离 · 逐故事串行
 
-### trigger（强制）
+**末端触发** [强制集成](#强制集成)。
 
-> ⚠️ **管线未触发 import-docs + wework-bot = 管线未闭合。缺失即阻断。**
+## code
 
-| 步骤 | 触发 | 条件 | 降级 |
-|------|------|------|------|
-| 1 | hook-log → `00-消息通知列表` | 自动 | — |
-| 2 | `import-docs --workspace` | `API_X_TOKEN` 存在 | `no-token` 跳过推送仍写标记 |
-| 3 | `wework-bot --agent rui` | `API_X_TOKEN` + webhook URL | 缺凭据跳过 |
-
-详见 [强制集成](#强制集成import-docs--wework-bot)。
-
-### 约束
-
-- **只读** — 文档生成阶段禁止改源码
-- **分支隔离** — 自动创建 `feat/<Project>-<name>` 分支
-- **逐故事串行** — 多故事按拆分顺序处理，互不交叉
-
-## code 简述
-
-> 四步：Gate A（测试先行）→ 实现（逐模块 P0 清零）→ Gate B（验证闭合）→ 自改进（D0–D7 诊断 + 交付）。
->
-> **核心设计**：源码改动唯一入口。测试方案未就绪不得编码；逐模块审查 P0 清零再前进；修复 ≤ 2 轮；三步交付管线收口（import-docs + wework-bot）。
+> 源码改动唯一入口。Gate A 测试先行 → 逐模块 P0 清零 → Gate B ≤2 轮 → 自改进 D0–D7 → 交付。
 
 ```mermaid
 flowchart LR
-    A[分支隔离<br/>feat/&lt;Project&gt;-&lt;name&gt;]:::s --> B[Gate A<br/>测试先行]:::s
+    A[feat/&lt;Project&gt;-&lt;name&gt;]:::s --> B[Gate A<br/>测试先行]:::s
     B --> C[逐模块实现<br/>P0 清零再前进]:::s
     C --> D[Gate B<br/>验证 ≤2 轮]:::s
-    D --> E[自改进<br/>D0–D7 诊断]:::s
-    E --> F[交付<br/>同步+通知]:::s
+    D --> E[自改进<br/>D0–D7]:::s
+    E --> F[交付]:::s
     C -.P0 未清.-> C
-    D -.>2 轮.-> X[gate-b-limit 阻断]:::bad
+    D -.>2 轮.-> X[gate-b-limit]:::bad
     classDef s fill:#e3f2fd,stroke:#1565c0;
     classDef bad fill:#ffebee,stroke:#c62828;
 ```
 
-### 产出
+**产出**：05-后端实施报告.md（后端/全栈）· 06-前端实施报告.md（前端/全栈）· 07-测试用例报告.md（必创建）· 08-自改进复盘.md（必创建）
 
-| 文件 | 条件 | 阶段 |
-|------|------|------|
-| 05-后端实施报告.md | 后端 / 全栈 | 验证 |
-| 06-前端实施报告.md | 前端 / 全栈 | 验证 |
-| 07-测试用例报告.md | 必创建 | 验证 |
-| 08-自改进复盘.md | 必创建 | 自改进 |
+**约束**：源码唯一入口 · Gate A `04-测试用例评审.md` 不存在即阻断 · Gate B >2 轮阻断 · P0 不清零不进下一模块
 
-### trigger（强制）
+**末端触发** [强制集成](#强制集成)。
 
-> ⚠️ **管线未触发 import-docs + wework-bot = 管线未闭合。缺失即阻断。**
+## 端到端
 
-| 步骤 | 触发 | 条件 | 降级 |
-|------|------|------|------|
-| 1 | hook-log → `00-消息通知列表` | 自动 | — |
-| 2 | `import-docs --workspace` | `API_X_TOKEN` 存在 | `no-token` 跳过推送仍写标记 |
-| 3 | `wework-bot --agent rui` | `API_X_TOKEN` + webhook URL | 缺凭据跳过 |
-
-详见 [强制集成](#强制集成import-docs--wework-bot)。
-
-### 约束
-
-- **源码唯一入口** — 只能走 `/rui code` 改源码
-- **Gate A 阻断** — `04-测试用例评审.md` 不存在即阻断编码
-- **Gate B 限轮** — 修复 > 2 轮阻断交付
-- **逐模块 P0** — P0 不清零不进下一模块
-
-## 端到端简述
-
-> doc + code 全自动串联。`/rui <req>` 等价于 `/rui doc <req>` → `/rui code <name>`，无中断一气呵成。
+> `/rui <req>` = `/rui doc <req>` → `/rui code <name>`，无中断一气呵成。
 
 ```mermaid
 flowchart LR
-    R[需求]:::s --> D[doc<br/>拆故事+文档]:::s --> C[code<br/>实现+验证]:::s --> F[交付<br/>import-docs<br/>+ wework-bot]:::s
+    R[需求]:::s --> D[doc<br/>拆故事+文档]:::s --> C[code<br/>实现+验证]:::s --> F[交付]:::s
     classDef s fill:#e3f2fd,stroke:#1565c0;
 ```
 
-> ⚠️ 末端强制触发 import-docs + wework-bot。缺失 = 管线未闭合。
+**末端触发** [强制集成](#强制集成)。
 
-## update 简述
+## update
 
 > 增量更新，按变更范围 T1/T2/T3 自动裁剪管线。`--no-code` 仅文档不改源码。
 
@@ -344,19 +259,9 @@ flowchart LR
 | T2 | 增删故事 / 接口变更 | 裁剪 | 裁剪 | 目标 + 下游 |
 | T3 | 边界变化 / 跨故事重构 | 完整重跑 | 完整重跑 | 全级联刷新 |
 
-### trigger（强制）
+**末端触发** [强制集成](#强制集成)。
 
-> ⚠️ **管线未触发 import-docs + wework-bot = 管线未闭合。缺失即阻断。**
-
-| 步骤 | 触发 | 条件 | 降级 |
-|------|------|------|------|
-| 1 | hook-log → `00-消息通知列表` | 自动 | — |
-| 2 | `import-docs --workspace` | `API_X_TOKEN` 存在 | `no-token` 跳过推送仍写标记 |
-| 3 | `wework-bot --agent rui` | `API_X_TOKEN` + webhook URL | 缺凭据跳过 |
-
-详见 [强制集成](#强制集成import-docs--wework-bot)。
-
-## code --from-doc 简述
+## code --from-doc
 
 > 从已有文档反推，只读源码补全缺失文档，不覆盖已有。
 
@@ -364,201 +269,150 @@ flowchart LR
 flowchart LR
     A[读取已有文档]:::s --> B[只读源码分析]:::s
     B --> C[补全缺失文档]:::s
-    C --> D[trigger<br/>同步+通知]:::s
+    C --> D[trigger]:::s
     classDef s fill:#e3f2fd,stroke:#1565c0;
 ```
 
-- **只读** — 禁止改源码
-- **不覆盖** — 已有文档不覆盖，仅补缺失
-- **分支隔离** — 自动创建 `feat/<Project>-<name>` 分支
+**约束**：只读 · 不覆盖已有 · 分支隔离
 
-### trigger（强制）
+**末端触发** [强制集成](#强制集成)。
 
-> ⚠️ **管线未触发 import-docs + wework-bot = 管线未闭合。缺失即阻断。**
+## doc --from-code
 
-| 步骤 | 触发 | 条件 | 降级 |
-|------|------|------|------|
-| 1 | hook-log → `00-消息通知列表` | 自动 | — |
-| 2 | `import-docs --workspace` | `API_X_TOKEN` 存在 | `no-token` 跳过推送仍写标记 |
-| 3 | `wework-bot --agent rui` | `API_X_TOKEN` + webhook URL | 缺凭据跳过 |
-
-详见 [强制集成](#强制集成import-docs--wework-bot)。
-
-## doc --from-code 简述
-
-> 三步：探（req 空时扫描项目源码输出推荐列表）/ 生（反推源码生成故事文档基线）/ 触（import-docs 同步 + wework-bot 通知）。
->
-> **核心设计**：面向存量代码库的文档生成入口。req 空时 pm 自主探索，靠推荐引路；req 有值时 pm 直接从源码反推完整故事文档。全程只读，输出内聚于 `docs/故事任务面板/<Project>/<name>/`。**已有代码库优先使用此模式补全文档**。
+> 存量代码库的文档生成入口。req 空时 pm 扫描推荐列表；req 有值时从源码反推完整故事文档。全程只读，证据 Level B + 源码路径。
 
 ```mermaid
 flowchart LR
-    E1[detect<br/>req 空：扫描源码]:::s --> E2[recommend<br/>推荐列表]:::s --> E3[user-select<br/>等用户选择]:::s
+    E1[detect<br/>req 空：扫描源码]:::s --> E2[recommend<br/>推荐列表]:::s --> E3[用户选择]:::s
     E3 --> G[generate<br/>反推故事文档]:::s
-    R[req 有值<br/>直接反推]:::s --> C[conflict-check<br/>冲突检测]:::s --> G
-    G --> T[trigger<br/>同步+通知]:::s
+    R[req 有值<br/>直接反推]:::s --> C[冲突检测]:::s --> G
+    G --> T[trigger]:::s
     classDef s fill:#e3f2fd,stroke:#1565c0;
 ```
 
-### 1. 探索模式（req 为空）— 推荐引路
+### req 为空 — 推荐引路
 
-pm 按项目类型差异化扫描源码，输出推荐列表：
+pm 按项目类型差异化扫描源码输出推荐列表：
 
-| 项目类型 | 扫描目标 | 排序 | 命名 |
-|---------|---------|------|------|
-| 前端 | `.vue`/`.jsx`/`.tsx`/`.svelte` 的 Props/Events/Expose | 核心业务无文档 > 普通无文档 > 过时文档 | `<project>-<component>-doc` |
-| 后端 | 路由/控制器 → HTTP 方法/路径/schema | 核心 API 无文档 > 普通无文档 > 过时文档 | `<project>-<resource>-api` |
-| 全栈 | 两端独立扫描 | 分别输出 | — |
+- **前端** → 扫描 `.vue`/`.jsx`/`.tsx` 的 Props/Events/Expose，按无文档程度排序，命名 `<project>-<component>-doc`
+- **后端** → 扫描路由/控制器 HTTP 方法/路径/schema，命名 `<project>-<resource>-api`
+- **全栈** → 两端独立扫描，分别输出
 
-每候选含：覆盖范围 · 源码证据 · 优先级。用户选择后进入生成阶段。
+每候选含覆盖范围 · 源码证据 · 优先级。用户选择后进入生成。
 
-### 2. 反推模式（req 有值）— 直接生成
+### req 有值 — 直接生成
 
-1. **解析** — `<Project>-<name>` → `docs/故事任务面板/<Project>/<name>/`
-2. **冲突检测** — 目标目录已存在时提醒走 `/rui update`，不覆盖已有文档
-3. **源码定位** — 按 req 匹配源文件；前端匹配组件名 → `.vue`/`.jsx`/`.tsx`；后端匹配路由/控制器名
-4. **只读提取** — 结构概览（mermaid）→ 接口契约 → 依赖链 → 状态管理 → 安全考量
-5. **文档生成** — 按项目类型生成故事文档基线，所有内容证据 Level B + 源码路径；缺口标 `> 待补充`
+1. 解析 `<Project>-<name>` → 目标目录
+2. 冲突检测：目标目录已存在时拒绝覆盖，引导 `/rui update`
+3. 源码定位：按 req 匹配源文件
+4. 只读提取：结构概览 → 接口契约 → 依赖链 → 状态管理 → 安全考量
+5. 文档生成：按项目类型生成基线，Level B + 源码路径，缺口标「待补充」
 
-| 项目类型 | 反推来源 | 重点关注 | 输出 |
-|---------|---------|---------|------|
-| 前端 | `.vue`/`.jsx`/`.tsx` 源码 + 路由 + 状态管理 | 组件树 → Props/Events → 数据流 | 01 + 03 + 04 |
-| 后端 | 路由/控制器/服务/数据模型源码 | API 契约 → 数据模型 → 中间件链 | 01 + 02 + 04 |
-| 全栈 | 两端分别 | 前后端契约对齐 | 01 + 02 + 03 + 04 |
+| 项目类型 | 反推来源 | 输出 |
+|---------|---------|------|
+| 前端 | `.vue`/`.jsx`/`.tsx` + 路由 + 状态管理 | 01 + 03 + 04 |
+| 后端 | 路由/控制器/服务/数据模型 | 01 + 02 + 04 |
+| 全栈 | 两端分别，契约对齐 | 01 + 02 + 03 + 04 |
 
-### 3. trigger — 主动触发
+### 约束
 
-生成完成后主动触发：
+- 只读 · 分支隔离 · 证据 Level B · 冲突保护
 
-| 触发 | 条件 | 降级 |
-|------|------|------|
-| `import-docs --workspace` | `API_X_TOKEN` 存在 | 缺 token 跳过，网络失败告警不阻断 |
-| `wework-bot --agent rui` | `API_X_TOKEN` + `WEWORK_BOT_WEBHOOK_URL` 存在 | 缺凭据跳过 |
+**末端触发** [强制集成](#强制集成)。
 
-### 4. 约束
+## list / 推荐
 
-- **只读** — 禁止改源码（`--from-code` 违反即 `bad-branch`）
-- **分支隔离** — 自动创建 `feat/<Project>-<name>` 分支
-- **证据 Level B** — 全部内容源自源码分析，标注源文件路径
-- **P0 标记** — 反推文档的 P0 章节标「待确认」，需开发 review
-- **冲突保护** — 目标目录已存在时拒绝覆盖，引导 `/rui update`
+均为只读，不触发 import-docs / wework-bot。
 
-## list 简述
+- **list** — 扫描 `docs/故事任务面板/` 按文件存在性判定状态（文档就绪 / 实现中 / 验证 / 交付 / 阻断），输出进度全景
+- **推荐** — 5 层链式管线评分（L0 时间 / L1 依赖 / L2 风险 / L3 覆盖 / L4 质量），加权排序推荐下一步任务
 
-> 只读。扫描 `docs/故事任务面板/` 按文件存在性判定每个故事的状态（文档就绪 / 实现中 / 验证 / 交付 / 阻断），输出进度全景表。不触发 import-docs / wework-bot。
+## 强制集成
 
-## 推荐简述
+> import-docs + wework-bot 三步收口。每次写入命令末端必须按序触发。
 
-> 只读。5 层链式管线评分（L0 时间 / L1 依赖 / L2 风险 / L3 覆盖 / L4 质量），加权排序后推荐下一步最优任务。不触发 import-docs / wework-bot。
+### 触发时机
+
+**触发**：`init` / `doc` / `code` / `<req>` / `update` / `code --from-doc` / `doc --from-code`  
+**不触发**：`list` / `/rui`（推荐）
+
+### 执行顺序（不可跳序）
+
+```
+管线完成/阻断 → 1. hook-log（追加日志）→ 2. import-docs（文档同步）→ 3. wework-bot（发送通知）
+```
+
+| # | 步骤 | 规约出处 | 标记字段 |
+|---|------|---------|---------|
+| 1 | hook-log | [wework-bot — hook-log](../wework-bot/SKILL.md#hook-log追加日志不发送) | `delivery_pipeline.log_appended` |
+| 2 | import-docs | [import-docs — hook 触发器](../import-docs/SKILL.md#hook-触发器) | `delivery_pipeline.docs_synced` |
+| 3 | wework-bot | [wework-bot — hook-notify](../wework-bot/SKILL.md#hook-notify实际发送) | `delivery_pipeline.notification_sent` |
+
+### 降级
+
+- `no-token`：`API_X_TOKEN` 缺失时跳过推送，仍写 `delivery_pipeline` 标记
+- 网络失败：告警不阻断，标记仍写
 
 ## 诊断纪律
 
-> 结构化调试纪律。难 bug 不靠猜——靠反馈回路。适用：code 阶段 bug 修复、Gate B 验证失败、自改进 D0–D7 根因分析。
+> 结构化调试纪律。难 bug 不靠猜——靠反馈回路。
 
 ### Phase 1 — 构建反馈回路
 
-**这就是方法本身。** 有快速、确定、可自运行的通过/失败信号，二分和假设测试才有效。没有回路，盯代码没用。
+**这就是方法本身。** 有快速、确定、可自运行的通过/失败信号，二分和假设测试才有效。
 
-构建方式（大致按序）：
-1. **失败测试** — 在触及 bug 的接缝写：单元、集成、e2e
+构建方式（按优先级）：
+1. **失败测试** — 在触及 bug 的接缝写
 2. **curl / HTTP 脚本** — 对运行中的 dev server 发请求
-3. **CLI + fixture** — 用 fixture 输入，diff stdout 与已知正确快照
-4. **Headless 浏览器** — Playwright/Puppeteer 驱动 UI，assert DOM/console/network
-5. **回放 trace** — 保存真实网络请求/payload 到磁盘，隔离重放
-6. **One-off harness** — 启动系统最小子集，用一个函数调用触发 bug 路径
-7. **Property / fuzz** — 跑 1000 次随机输入找失败模式
+3. **CLI + fixture** — fixture 输入，diff stdout 与正确快照
+4. **Headless 浏览器** — Playwright/Puppeteer 驱动 UI
+5. **回放 trace** — 保存真实网络请求/payload 到磁盘
+6. **One-off harness** — 启动系统最小子集，一个函数调用触发 bug
+7. **Property / fuzz** — 1000 次随机输入找失败模式
 8. **二分 harness** — 自动化「在状态 X 启动、检查」让 `git bisect run` 可用
-9. **差分循环** — 同一输入跑 old-version vs new-version，diff 输出
-10. **HITL bash 脚本** — 最后手段，用脚本驱动人类操作保持结构化
+9. **差分循环** — 同一输入 old vs new，diff 输出
+10. **HITL bash 脚本** — 最后手段
 
-**迭代回路**：更快？信号更清晰？更确定？2 秒确定回路是调试超能力。
+**迭代回路**：更快？信号更清晰？更确定？2 秒确定回路是调试超能力。30 秒抖动回路等于没有。
 
-**非确定 bug**：目标不是干净复现，而是更高的复现率。循环触发 100 次、并行化、加压力、注入 sleep。50% flake 可调试；1% 不可——一直提升比例。
+**非确定 bug**：目标不是干净复现而是更高复现率。循环触发 100 次、并行化、加压力、注入 sleep。
 
-**无回路不进入 Phase 2。** 明确列出试过什么。问用户要：(a) 复现环境 (b) 捕获件（HAR、log dump、core dump、录屏）(c) 临时生产 instrumentation 权限。
+**无回路不进入 Phase 2。**
 
-### Phase 2 — 复现
+### Phase 2–6
 
-确认：
-- [ ] 失败模式是用户描述的——不是碰巧相近的其他 bug
-- [ ] 可多轮复现（非确定 bug 复现率足以调试）
-- [ ] 精确症状已捕获（错误消息、输出、timing）
-
-### Phase 3 — 假设
-
-生成 **3–5 个排好序的可证伪假设**。单假设会锚定在第一个看似合理的想法上。
-
-格式：「如果 X 是原因，改变 Y 会让 bug 消失 / 改变 Z 会让它恶化。」写不出预测 = 直觉——丢弃。
-
-**排序后给用户看。** 领域知识可瞬间重排。用户 AFK 则按排序继续。
-
-### Phase 4 — Instrument
-
-一次改一个变量，每次对应 Phase 3 的特定预测。
-
-工具优先级：debugger/REPL > 目标日志（在能区分假设的边界打） > 标签日志（`[DEBUG-xxx]` 前缀，清理时一个 grep） > 性能分支（先建基线测量再二分，再修复）。
-
-### Phase 5 — 修复 + 回归测试
-
-修复前先写回归测试——仅当存在正确接缝（测试能锻炼真实 bug 模式）。不存在正确接缝本身就是发现，写入自改进复盘。
-
-1. 最小复现转为失败测试 → 2. 看它失败 → 3. 应用修复 → 4. 看它通过 → 5. 重跑 Phase 1 回路。
-
-### Phase 6 — 清理 + 复盘
-
-声明完成前必做：
-- [ ] 原始复现不再复现（重跑 Phase 1 回路）
-- [ ] 回归测试通过（或接缝缺失已记录）
-- [ ] 所有 `[DEBUG-...]` instrumentation 已删除（grep 前缀）
-- [ ] One-off 原型已删除或移到明确标记的 debug 位置
-- [ ] 被证明正确的假设写在 commit/PR 消息里
-
-**问：什么能预防这个 bug？** 架构变更建议写入自改进复盘。
+- **复现** — 确认失败模式是用户描述的，可多轮复现，精确症状已捕获
+- **假设** — 生成 3–5 个排好序的可证伪假设。写不出预测 = 直觉——丢弃
+- **Instrument** — 一次改一个变量。debugger/REPL > 目标日志 > 标签日志 > 性能分支
+- **修复 + 回归** — 先写回归测试 → 看它失败 → 应用修复 → 看它通过 → 重跑 Phase 1 回路
+- **清理 + 复盘** — 原始复现不再复现 · 回归测试通过 · `[DEBUG-...]` 已删除 · One-off 原型已移除
 
 ### Red Flags
 
-以下任一出现 = 停止，回到 [CLAUDE.md 铁律](../../CLAUDE.md#基础信念)：
+以下任一出现 = 停止，回到 [铁律](../../CLAUDE.md#基础信念)：
 - "这个 bug 很简单，直接修就行"
 - "修复超过 3 次了但这次肯定对"
 - "多个修复一起上省时间"
 - "不需要最小复现，我理解根源了"
 - "先修 bug 再写测试"
-- "我凭直觉修就行，不需要反馈回路"
 
 ## 架构深化
 
-> 发现架构摩擦，把浅模块转为深模块。适用：code 阶段重构、自改进提案、Gate B 设计对齐检查。
+> 发现架构摩擦，把浅模块转为深模块。
 
-### 词汇
+- **模块** — 有接口与实现的任何东西（函数 / class / 包 / 切片）
+- **接口** — 调用者需知的一切：类型、不变式、错误模式、顺序。不止类型签名
+- **深度** — 接口后的行为量 / 接口复杂度。深 = 高杠杆。浅 = 接口≈实现
+- **接缝** — 接口所在之处；不改原地就能改行为的地方
+- **删除测试** — 想象删除它：复杂度消失 = 透传；回到 N 个调用方 = 它在赚位置
 
-- **模块** — 有接口与实现的任何东西（函数、class、包、切片）
-- **接口** — 调用者需知的一切：类型、不变式、错误模式、顺序、配置。不止类型签名
-- **深度** — 接口后面的行为量 / 接口复杂度。深 = 高杠杆。浅 = 接口几乎与实现一样复杂
-- **接缝** — 接口所在之处；不改原地就能改变行为的地方
-- **删除测试** — 想象删除这个模块：复杂度消失 = 透传；回到 N 个调用方 = 它在赚位置
+**流程**：探索（读 ADR，注意摩擦）→ 呈现候选（涉及文件 + 方案 + 收益）→ 用户选定后走设计树。
 
-### 流程
-
-**1. 探索** — 读涉及区域的 ADR。有机走代码库，注意摩擦：来回跳转的小模块、接口≈实现的浅模块、紧耦合泄漏、未测试区域。对可疑浅模块应用删除测试。
-
-**2. 呈现候选** — 每个候选含：涉及文件、当前摩擦、方案、收益（局部性+杠杆+测试改善）。ADR 冲撞仅在摩擦足够大时标出。问用户："这些里面哪个想深入？"
-
-**3. 烧烤循环** — 用户选定后走设计树。副作用：新概念补入领域语言、拒绝理由可提议为 ADR。
-
-### 接口设计
-
-对替代接口评估：形状（类型签名+不变式+错误模式）、调用者代价、实现深度、哪些测试存活、一致性。核心要求：从调用者角度看，不变式最小最不难理解。
-
-### Red Flags
-
-- "加个抽象层就解决问题了" — 没有第二个调用方 = 浅模块
-- "我会同时重构这几个模块" — 一次一个模块，观察效果
-- "不需要查领域语言，我知道领域叫什么"
+**Red Flags**："加个抽象层就行"（无第二调用方 = 浅模块）· "同时重构几个模块"（一次一个）
 
 ## 交接纪律
 
-> 会话上下文压缩为交接文档，供 Agent 间继续。适用：pm→coder→tester 管线交接、工作中途暂停、超出上下文窗口前。
-
-### 格式
+> 会话上下文压缩为交接文档，供 Agent 间继续。
 
 ```markdown
 # Handoff: {简短描述}
@@ -584,69 +438,17 @@ pm 按项目类型差异化扫描源码，输出推荐列表：
 - 相关文件: `path/a`, `path/b`
 ```
 
-### 约束
-
-- **不超过 1 页**（约 60 行）——交接，不是完整文档
-- **具体到文件/行号**——不说 "改过 auth 模块"，说 "`src/auth/login.ts:42` 添加了 rate-limit 中间件"
-- **不含 spec**——交接描述实际状态，不是理想状态
-- **可验证**——每个声称附验证命令或文件路径
-
-## 强制集成：import-docs + wework-bot
-
-> 🚫 **这不是建议，是管线完整性的硬性要求。未触发 = 管线未闭合 = delivery-gate 阻断。**
->
-> 每个命令段含 `### trigger（强制）` 子部分，执行时必须逐步骤完成，不得跳过或调序。
-
-**每次** `/rui` 命令执行（含 `doc` / `code` / `update` / `init` / `--from-doc` / `--from-code` / 端到端），管线末端 **必须** 触发 import-docs 和 wework-bot。**即使管线中途阻断或失败，也必须触发通知（报告阻断状态）。**
-
-### 触发时机
-
-| rui 命令 | import-docs | wework-bot | 未触发的后果 |
-|----------|:-----------:|:----------:|------|
-| `/rui init` | ✓ | ✓ | `delivery-incomplete` 阻断 |
-| `/rui doc <req>` | ✓ | ✓ | `delivery-incomplete` 阻断 |
-| `/rui code <name>` | ✓ | ✓ | `delivery-incomplete` 阻断 |
-| `/rui <req>` | ✓ | ✓ | `delivery-incomplete` 阻断 |
-| `/rui update` | ✓ | ✓ | `delivery-incomplete` 阻断 |
-| `/rui code --from-doc` | ✓ | ✓ | `delivery-incomplete` 阻断 |
-| `/rui doc --from-code` | ✓ | ✓ | `delivery-incomplete` 阻断 |
-| `/rui list` | ✗ | ✗ | — 只读，不触发 |
-| `/rui`（推荐） | ✗ | ✗ | — 只读，不触发 |
-
-### 触发顺序（不可跳序）
-
-```
-管线完成/阻断 → 1. hook-log（追加日志）→ 2. import-docs（文档同步）→ 3. wework-bot（发送通知）→ delivery-gate mark
-```
-
-> 跳序视为未闭合。必须先写日志再同步再通知。
-
-### 阻断条件
-
-- 未触发 import-docs 或 wework-bot → 管线视为 **未闭合**，delivery-gate 阻断（`delivery-incomplete`）
-- `no-token` 降级：仅 `API_X_TOKEN` 缺失时跳过实际推送，但仍写入 `delivery_pipeline` 标记
-- 网络失败：记录告警不阻断，标记仍写
-- **阻断状态也需触发**：管线中途阻断时，仍走三步流程，通知内容报告阻断原因和恢复点
-
-### 执行方式
-
-每个步骤都对应技能里的纯规约，按下表依次执行：
-
-| # | 步骤 | 规约出处 | 标记字段 | 不可跳过 |
-|---|------|---------|---------|:--:|
-| 1 | 追加日志 | [wework-bot — hook-log](../wework-bot/SKILL.md#hook-log追加日志不发送) | `delivery_pipeline.log_appended` | ✓ |
-| 2 | 文档同步 | [import-docs — hook 触发器](../import-docs/SKILL.md#hook-触发器) | `delivery_pipeline.docs_synced` | ✓ |
-| 3 | 发送通知 | [wework-bot — hook-notify](../wework-bot/SKILL.md#hook-notify实际发送) | `delivery_pipeline.notification_sent` | ✓ |
-| 4 | 闭合检查 | [delivery-gate](../../rules/delivery-gate.md) | 任一未标记 → 阻断 | ✓ |
-
-**违反此规则等同于管线未完成。无例外。**
+- **≤ 1 页**（约 60 行）
+- **具体到文件/行号** — 不说 "改过 auth 模块"，说 "`src/auth/login.ts:42` 添加了 rate-limit 中间件"
+- **不含 spec** — 描述实际状态，不是理想状态
+- **可验证** — 每个声称附验证命令或文件路径
 
 ## 集成
 
 | 类别 | 内容 |
 |------|------|
 | 数据契约 | `.memory/rui-state.json`（覆盖写）· `.memory/execution-memory.jsonl`（追加）· `.improvement/proposals.jsonl`（追加）— 字段见 [coder.md §数据契约](./coder.md) |
-| Hooks | Stop hooks（用户级 `~/.claude/settings.json` 或本机覆盖配置）调用：hook-log（追加日志）→ import-docs（文档同步）→ hook-notify（企微通知）→ delivery-gate（闭合检查） |
+| Hooks | Stop hooks 调用：hook-log → import-docs → hook-notify → delivery-gate |
 | 规则 | [code-pipeline](../../rules/code-pipeline.md) · [delivery-gate](../../rules/delivery-gate.md) · [doc-generation](../../rules/doc-generation.md) · [self-improve](../../rules/self-improve.md) · [rui-claude](../../rules/rui-claude.md) |
 | 角色 | [pm](../../agents/pm.md) · [coder](../../agents/coder.md) · [tester](../../agents/tester.md) · [reporter](../../agents/reporter.md) · [security](../../agents/security.md) · [self-improve](../../agents/self-improve.md) |
-| 文档 | [formulas.md](./formulas.md) — 故事文档公式（F.story.\* + F.supp.\*） · [coder.md](./coder.md) — 目录生命周期 + 数据契约（`.memory/` + `.improvement/`） · [import-docs SKILL](../import-docs/SKILL.md) · [wework-bot SKILL](../wework-bot/SKILL.md) |
+| 文档 | [formulas.md](./formulas.md) · [coder.md](./coder.md) · [import-docs SKILL](../import-docs/SKILL.md) · [wework-bot SKILL](../wework-bot/SKILL.md) |
