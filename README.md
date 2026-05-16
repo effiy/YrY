@@ -183,18 +183,33 @@ YrY/
 
 ## 命令速览
 
-| 场景 | 命令 |
-|------|------|
-| 建立基线 | `/rui init` |
-| 拆需求 | `/rui doc <需求>` |
-| 实现故事 | `/rui code <name>` |
-| 端到端 | `/rui <需求>` |
-| 增量更新 | `/rui update <name>` |
-| 从源码反推 | `/rui doc --from-code` |
-| 进度全景 | `/rui list` |
-| 任务推荐 | `/rui` |
-| 同步 .claude/ | `/rui-claude sync` |
-| 配置复盘 | `/rui-claude retro` |
+### /rui — SDLC 主线
+
+| 场景 | 命令 | 说明 |
+|------|------|------|
+| 任务推荐 | `/rui` | 5 层管线评分，只读 |
+| 建立基线 | `/rui init` | 探测 → 生成 → 验证 |
+| 拆需求 | `/rui doc <需求>` | 需求 → 故事文档基线 |
+| 从源码反推 | `/rui doc --from-code [需求]` | 无需求时 PM 探索推荐 |
+| 实现故事 | `/rui code <name>` | Gate A → 逐模块 → Gate B → 交付 |
+| 从文档补码 | `/rui code --from-doc <name>` | 只读源码，补全缺失文档 |
+| 端到端 | `/rui <需求>` | doc + code 自动串联 |
+| 增量更新 | `/rui update <name> [ctx]` | T1/T2/T3 裁剪 |
+| 仅更文档 | `/rui update <name> --no-code` | 更新文档，不动源码 |
+| 进度全景 | `/rui list` | 扫描故事面板，只读 |
+
+### /rui-claude — 配置管理
+
+| 场景 | 命令 | 说明 |
+|------|------|------|
+| 任务推荐 | `/rui-claude` | 推荐 5~10 条 .claude/ 相关任务 |
+| 需求管线 | `/rui-claude <需求>` | 需求 → 故事，仅限 .claude/ 目录 |
+| 远端同步 | `/rui-claude sync` | 覆盖同步 .claude/，自动记 history |
+| 健康复盘 | `/rui-claude retro` | 分析 .claude/ 结构健康度 |
+| 操作历史 | `/rui-claude history` | 查看最近操作记录 |
+| 历史统计 | `/rui-claude history stats` | 操作统计摘要 |
+
+> 管线完成后自动触发三步 Hook：追加日志 → 文档同步 → 企微通知。
 
 ## 不可妥协底线
 
