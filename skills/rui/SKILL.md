@@ -290,7 +290,7 @@ flowchart LR
 flowchart LR
     E0["detect<br/>项目类型判定"]:::tool --> E1["node skills/rui/recommend.mjs<br/>数据采集"]:::tool
     E1 --> E2["PM 5层评分<br/>见 recommend-criteria.md"]:::llm
-    E2 --> E3["结构化推荐输出<br/>象限图 + 排序表 + 详述"]:::llm
+    E2 --> E3["故事任务推荐输出<br/>象限图 + 排序表 + 详述卡"]:::llm
     E3 --> E4["用户选择"]:::user
     E4 --> G["generate<br/>反推故事文档"]:::s
     R["req 有值<br/>直接反推"]:::s --> C["冲突检测"]:::s --> G
@@ -309,7 +309,7 @@ flowchart LR
 1. **detect** — 判定项目类型（frontend / backend / fullstack / unknown）
 2. **scan** — `node skills/rui/recommend.mjs --root . --type <detected> --format json`
 3. **evaluate** — PM 按 [recommend-criteria.md](./recommend-criteria.md) 的 5 层框架评分排序，输出 P0→P3
-4. **present** — 结构化推荐输出：象限图 → 排序表 → 每候选详述（覆盖范围·源码证据·预计产出·可执行命令）
+4. **present** — 输出故事任务推荐：象限图 → 排序表 → 每故事任务详述卡（覆盖范围·源码证据·预计产出·可执行命令）
 5. **wait** — 等待用户选择后进入生成阶段
 
 > 不可跳过第 2 步凭感觉推荐。详细评分框架见 [recommend-criteria.md](./recommend-criteria.md)。

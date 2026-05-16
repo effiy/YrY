@@ -99,7 +99,7 @@ flowchart LR
     subgraph explore["探索模式（req 为空）"]
         E0["detect 项目类型"]:::tool --> E1["node skills/rui/recommend.mjs"]:::tool
         E1 --> E2["PM 按 5 层评分排序"]:::llm
-        E2 --> E3["结构化推荐输出"]:::llm
+        E2 --> E3["故事任务推荐输出"]:::llm
         E3 --> E4["等用户选择"]:::exp
         E4 --> E5["生成文档"]:::exp
     end
@@ -127,7 +127,7 @@ flowchart LR
 | 后端 | `node skills/rui/recommend.mjs --root . --type backend` | 同上 | `<project>-<resource>-api` |
 | 全栈 | `node skills/rui/recommend.mjs --root . --type fullstack` | 两端分别排序 | — |
 
-> 每候选必含：覆盖范围、源码证据（Level A 路径 + 签名摘要）、优先级（P0-P3 + 分类依据）、预计产出（文档编号列表）、可执行命令（`/rui doc --from-code <name>`）。
+> 每故事任务候选必含：覆盖范围（sourceFiles）、源码证据（Level A 路径 + 签名摘要）、优先级（P0-P3 + 分类依据）、预计产出（文档编号列表）、可执行命令（`command` 字段）。
 
 ### 反推模式
 

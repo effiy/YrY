@@ -373,6 +373,76 @@ function gitMetrics(root, file) {
   }
 }
 
+// --- external refs: map module characteristics to ecosystem references -------
+const EXTERNAL_REFS = {
+  methodology: [
+    { name: "superpowers", url: "https://github.com/obra/superpowers",
+      desc: "AI agent 软件开发方法论：spec-driven、验证门禁、行为纪律", tags: ["spec", "gate", "discipline", "security"] },
+    { name: "get-shit-done", url: "https://github.com/gsd-build/get-shit-done/tree/main",
+      desc: "轻量级元提示与上下文工程，专注上下文退化问题", tags: ["context", "spec", "architecture"] },
+    { name: "mattpocock-skills", url: "https://github.com/mattpocock/skills",
+      desc: "真实工程场景 Agent skills，非 vibe coding", tags: ["component", "engineering", "frontend"] },
+  ],
+  memory: [
+    { name: "claude-mem", url: "https://github.com/thedotmack/claude-mem",
+      desc: "跨会话持久化记忆引擎，AI 压缩 + 相似检索", tags: ["memory", "state", "context"] },
+    { name: "everything-claude-code", url: "https://github.com/affaan-m/everything-claude-code",
+      desc: "Agent harness 性能优化全集：skills、记忆、安全", tags: ["memory", "perf", "security", "organization"] },
+  ],
+  ux: [
+    { name: "ui-ux-pro-max", url: "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+      desc: "跨平台专业 UI/UX 设计，161 推理规则 67 UI 风格", tags: ["ui", "design", "component", "frontend"] },
+  ],
+};
+
+function externalRefs(story) {
+  const refs = [];
+  const tags = new Set();
+
+  // Frontend / UI modules
+  if (story.type === "frontend" || story.type === "fullstack") {
+    tags.add("frontend"); tags.add("component"); tags.add("ui");
+  }
+  // Backend / API modules
+  if (story.type === "backend" || story.type === "fullstack") {
+    tags.add("spec"); tags.add("architecture");
+  }
+  // Security signals
+  if (story.security.hasAuth) { tags.add("security"); tags.add("gate"); tags.add("discipline"); }
+  if (story.security.hasUserInput) { tags.add("security"); }
+  // Hub modules (architecture importance)
+  if (story.metrics.importedByCount >= 3) { tags.add("architecture"); tags.add("context"); }
+  // Large modules
+  if (story.metrics.lines > 200) { tags.add("engineering"); }
+  // State-related (heuristic: files named store/state/model)
+  const statePattern = /\b(store|state|model|context|memory|reducer|atom)\b/i;
+  if (story.sourceFiles.some(f => statePattern.test(f))) {
+    tags.add("state"); tags.add("memory");
+  }
+
+  for (const [category, entries] of Object.entries(EXTERNAL_REFS)) {
+    for (const entry of entries) {
+      const matchCount = entry.tags.filter(t => tags.has(t)).length;
+      if (matchCount >= 2) {
+        refs.push({ category, name: entry.name, url: entry.url, desc: entry.desc, relevance: "high" });
+      } else if (matchCount === 1) {
+        refs.push({ category, name: entry.name, url: entry.url, desc: entry.desc, relevance: "normal" });
+      }
+    }
+  }
+
+  // Deduplicate, prefer high relevance
+  const seen = new Map();
+  for (const r of refs) {
+    const existing = seen.get(r.name);
+    if (!existing || (r.relevance === "high" && existing.relevance !== "high")) {
+      seen.set(r.name, r);
+    }
+  }
+
+  return [...seen.values()];
+}
+
 // --- security: keyword-based signal detection ------------------------------
 function securitySignals(content, fileType) {
   const hasUserInput = /v-model|form|input|req\.body|req\.query|req\.params|request\.form|request\.json|read_from_stdin|scanf|gets/i.test(content);
@@ -400,21 +470,16 @@ async function collect(root, files, project, projectType) {
     const signatures = extractSignatures(file, type);
     const importedByList = (importedBy.get(file) || []).map(f => relative(root, f));
     const git = gitMetrics(root, file);
-    const doc = docStatus(root, project, name);
+    const doc = docStatus(root, project, name + "-doc");
     const lines = countLines(content);
     const sec = securitySignals(content, type);
+    const relFile = relative(root, file);
 
     results.push({
-      file: relative(root, file),
-      project,
+      file: relFile,
       name,
       type,
-      metrics: {
-        lines,
-        signatures,
-        importedByCount: importedByList.length,
-        importedBy: importedByList.slice(0, 10), // top 10 for readability
-      },
+      metrics: { lines, signatures, importedByCount: importedByList.length, importedBy: importedByList.slice(0, 10) },
       git,
       doc,
       security: sec,
@@ -422,6 +487,127 @@ async function collect(root, files, project, projectType) {
   }
 
   return results;
+}
+
+// --- group: merge related files into story candidates -----------------------
+function groupIntoStories(fileResults, project, projectType) {
+  const stories = [];
+  const used = new Set();
+
+  for (const f of fileResults) {
+    if (used.has(f.file)) continue;
+
+    // Collect related files: same dir + have import relationship
+    const dir = dirname(f.file);
+    const related = [f];
+    used.add(f.file);
+
+    if (f.metrics.importedByCount > 0) {
+      for (const importer of f.metrics.importedBy) {
+        if (used.has(importer)) continue;
+        // Same directory → likely part of same feature
+        if (dirname(importer) === dir) {
+          const match = fileResults.find(r => r.file === importer);
+          if (match) {
+            // Check bidirectional relationship
+            const importerImportsThis = match.metrics.importedBy.some(
+              ib => fileResults.find(r => r.file === ib)?.file === f.file
+            ) || match.metrics.importedBy.includes(f.file);
+            // Also check: does the importer import anything that imports f?
+            const hasSharedConsumer = match.metrics.importedBy.some(
+              ib => f.metrics.importedBy.includes(ib)
+            );
+            if (importerImportsThis || hasSharedConsumer) {
+              related.push(match);
+              used.add(importer);
+            }
+          }
+        }
+      }
+    }
+
+    stories.push(buildStoryCandidate(related, project, projectType));
+  }
+
+  return stories;
+}
+
+function buildStoryCandidate(group, project, projectType) {
+  const primary = group.reduce((a, b) =>
+    a.metrics.importedByCount >= b.metrics.importedByCount ? a : b
+  );
+
+  // Story name: primary file's kebab name + "-doc"
+  const storyName = primary.name + "-doc";
+  const allSignatures = [...new Set(group.flatMap(f => f.metrics.signatures))];
+  const allImportedBy = [...new Set(group.flatMap(f => f.metrics.importedBy))];
+  const totalLines = group.reduce((s, f) => s + f.metrics.lines, 0);
+
+  // Expected docs based on project type
+  const expectedDocs = projectType === "frontend" ? ["01", "03", "04"] :
+    projectType === "backend" ? ["01", "02", "04"] :
+    ["01", "02", "03", "04"];
+
+  // Coverage description
+  const primarySig = allSignatures.length > 0 ? allSignatures.slice(0, 3).join("; ") : "";
+  const fileCount = group.length > 1 ? ` +${group.length - 1} 关联` : "";
+  const coverageDesc = primarySig
+    ? `${primary.file}${fileCount} — ${primarySig}`
+    : `${primary.file}${fileCount}`;
+
+  // Security: OR across group
+  const security = {
+    hasUserInput: group.some(f => f.security.hasUserInput),
+    hasAuth: group.some(f => f.security.hasAuth),
+    hasApiCall: group.some(f => f.security.hasApiCall),
+  };
+
+  // Git: most recent lastModified, sum churn
+  const sortedByDate = group.filter(f => f.git.lastModified).sort((a, b) =>
+    b.git.lastModified.localeCompare(a.git.lastModified)
+  );
+  const git = {
+    lastModified: sortedByDate[0]?.git.lastModified || null,
+    authorCount: Math.max(...group.map(f => f.git.authorCount)),
+    recentChurn: group.reduce((s, f) => s + f.git.recentChurn, 0),
+  };
+
+  // Doc: use primary file's doc status
+  const doc = primary.doc;
+
+  // Assemble story object first for external refs
+  const story = { type: projectType === "fullstack" ? primary.type : projectType, security, metrics: { lines: totalLines, importedByCount: allImportedBy.length }, sourceFiles: group.map(f => f.file) };
+  const refs = externalRefs(story);
+
+  return {
+    externalRefs: refs,
+    storyName,
+    command: `/rui doc --from-code ${project}-${storyName}`,
+    storyType: "doc-from-code",
+    project,
+    type: projectType === "fullstack" ? primary.type : projectType,
+    sourceFiles: group.map(f => f.file),
+    primaryFile: primary.file,
+    coverage: {
+      description: coverageDesc,
+      expectedDocs,
+      expectedDir: doc.expectedDir,
+    },
+    metrics: {
+      lines: totalLines,
+      fileCount: group.length,
+      signatures: allSignatures.slice(0, 10),
+      importedByCount: allImportedBy.length,
+      importedBy: allImportedBy.slice(0, 10),
+    },
+    git,
+    doc: {
+      status: doc.status,
+      exists: doc.exists,
+      existingFiles: doc.existingFiles,
+    },
+    security,
+  };
 }
 
 // --- format output ---------------------------------------------------------
@@ -433,6 +619,14 @@ function formatOutput(results, format) {
   } else {
     process.stdout.write(JSON.stringify(results, null, 2) + "\n");
   }
+}
+
+// --- summary stats ---------------------------------------------------------
+function printSummary(stories) {
+  const totalFiles = stories.reduce((s, st) => s + st.metrics.fileCount, 0);
+  const noDocs = stories.filter(s => s.doc.status === "no_docs").length;
+  const rate = stories.length > 0 ? Math.round(noDocs / stories.length * 100) : 0;
+  console.error(`[recommend] ${stories.length} story candidates, ${totalFiles} source files, no-docs rate ${rate}%`);
 }
 
 // --- main ------------------------------------------------------------------
@@ -460,8 +654,10 @@ async function main() {
   const files = await scanFiles(root, projectType);
   console.error(`[recommend] found ${files.length} source files`);
 
-  const results = await collect(root, files, project, projectType);
-  formatOutput(results, args.format);
+  const fileResults = await collect(root, files, project, projectType);
+  const stories = groupIntoStories(fileResults, project, projectType);
+  printSummary(stories);
+  formatOutput(stories, args.format);
 }
 
 main().catch(err => {
