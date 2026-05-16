@@ -2,7 +2,7 @@
 
 > 故事驱动的 SDLC 编排系统 — 需求拆分 → 文档管线 → 代码管线 → 交付。
 
-**YrY** 是 Claude Code 的元插件项目，将软件交付流程固化为 6 个 Agent 协同、5 组规则约束、4 项技能支撑的自动化管线。项目自身的协作指令见 [CLAUDE.md](./CLAUDE.md)。
+**YrY** 是 Claude Code 的元插件项目，将软件交付流程固化为 6 个 Agent 协同、6 组规则约束、4 项技能支撑的自动化管线。项目自身的协作指令见 [CLAUDE.md](./CLAUDE.md)。
 
 ## 系统全景
 
@@ -77,6 +77,7 @@ flowchart LR
 | `doc-generation` | 文档产出 | 目录命名 · 骨架模板 · 附属数据存放 |
 | `self-improve` | 复盘改进 | 数据采集 → 诊断 → 提案，`no-metrics` 降级不阻断 |
 | `rui-claude` | .claude/ 管理 | 仅限 `.claude/` · 禁自动 commit/push |
+| `supporting-techniques` | 技术支撑 | 根因追溯 · 纵深防御 · 条件等待 · 验证门禁 |
 
 详见 [`rules/`](./rules/)。
 
@@ -103,12 +104,13 @@ YrY/
 │   ├── reporter.md             #   过程记录
 │   ├── security.md             #   威胁建模
 │   └── self-improve.md         #   持续改进
-├── rules/                      # 5 组跨场景约束规则
+├── rules/                      # 6 组跨场景约束规则
 │   ├── code-pipeline.md        #   分支隔离 · Gate A/B
 │   ├── delivery-gate.md        #   三步 hook
 │   ├── doc-generation.md       #   文档生成规范
 │   ├── self-improve.md         #   自改进流程
-│   └── rui-claude.md           #   .claude/ 管理约束
+│   ├── rui-claude.md           #   .claude/ 管理约束
+│   └── supporting-techniques.md #   根因追溯 · 纵深防御 · 条件等待 · 验证门禁
 ├── skills/                     # 4 项技能规约
 │   ├── rui/                    #   SDLC 编排（SKILL.md · formulas.md · coder.md）
 │   ├── rui-claude/             #   .claude/ 配置管理
