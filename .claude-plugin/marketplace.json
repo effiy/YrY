@@ -1,28 +1,49 @@
 {
   "name": "yry",
+  "version": "1.0.0",
   "owner": {
-    "name": "YrY"
+    "name": "Yi",
+    "url": "https://github.com/effiy"
   },
-  "metadata": {
-    "description": "故事驱动的 SDLC 编排系统——需求拆分→文档管线→代码管线→交付",
-    "version": "2.1.4"
-  },
+  "description": "YrY 插件市场 — 故事驱动 SDLC 编排生态",
   "plugins": [
     {
-      "name": "yry",
+      "name": "rui",
+      "version": "1.0.0",
+      "description": "故事驱动 SDLC 编排插件。提供 /rui 命令体系，6 Agent 协同，Gate A/B 验证，每故事 8 份文档，管线末端强制同步与通知。",
       "source": {
-        "source": "github",
-        "repo": "effiy/YrY"
+        "type": "github",
+        "repo": "effiy/YrY",
+        "branch": "main"
       },
-      "description": "故事驱动的 SDLC 编排系统。提供 /rui、/rui-claude 命令体系，6 Agent 协同，Gate A/B 强制验证，每故事 8 份文档。",
-      "version": "2.1.4",
       "author": {
-        "name": "YrY"
+        "name": "Yi",
+        "url": "https://github.com/effiy"
       },
-      "category": "ai",
-      "keywords": ["sdlc", "orchestration", "story-driven", "agent", "pipeline"],
+      "category": "sdlc",
+      "keywords": [
+        "sdlc",
+        "orchestration",
+        "story-driven",
+        "agent",
+        "pipeline",
+        "gate",
+        "documentation",
+        "wework"
+      ],
       "license": "MIT",
-      "repository": "https://github.com/effiy/YrY"
+      "commands": [
+        "/rui",
+        "/rui init",
+        "/rui doc",
+        "/rui code",
+        "/rui list",
+        "/rui update",
+        "/rui-claude",
+        "/rui-claude sync",
+        "/rui-claude retro",
+        "/rui-claude history"
+      ]
     }
   ]
 }
