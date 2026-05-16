@@ -61,7 +61,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     CALL["调用 wework-bot<br/>--no-send"]:::step --> LOG["写入执行日志<br/>00-消息通知列表"]:::out
-    LOG --> MARK["delivery-gate.js mark<br/>--step log_appended"]:::mark
+    LOG --> MARK["在 rui-state.json<br/>delivery_pipeline.log_appended<br/>= true"]:::mark
     MARK --> NEXT["进入步骤 ②"]:::next
 
     classDef step fill:#e3f2fd,stroke:#1565c0;
@@ -157,10 +157,10 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    EXEC["步骤执行完成"] --> CALL["调用 delivery-gate.js mark<br/>--step &lt;step&gt;"]:::api
-    CALL --> WRITE["写入 rui-state.json"]:::state
+    EXEC["步骤执行完成"] --> CALL["写入 rui-state.json<br/>delivery_pipeline.&lt;step&gt; = true<br/>last_step = &lt;step&gt;<br/>last_step_at = now"]:::api
+    CALL --> WRITE["持久化 rui-state.json"]:::state
     WRITE --> NEXT["进入下一步骤"]:::next
-    CALL -.->|"未调用"| VIOL["未标记 = 未执行 🚫"]:::block
+    CALL -.->|"未写入"| VIOL["未标记 = 未执行 🚫"]:::block
 
     classDef api fill:#e3f2fd,stroke:#1565c0;
     classDef state fill:#f3e5f5,stroke:#6a1b9a;

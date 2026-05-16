@@ -154,7 +154,7 @@ flowchart LR
 | 诊断组 | 触发信号 | 提案类型 | 示例 |
 |--------|---------|---------|------|
 | D0 / D6 / D7 | 基线偏离 / 文档过时 / 配置漂移 | `process` | "Gate A 阶段耗时 3x 基线，建议增加预检脚本" |
-| D1 / D5 | 阻断率上升 / 阶段耗时异常 | `refactor` | "`init.js` 613 行，建议拆为 detect/generate/verify" |
+| D1 / D5 | 阻断率上升 / 阶段耗时异常 | `refactor` | "某规约文件 613 行，建议拆为 detect/generate/verify 三段独立小节" |
 | D2 / D4 | P0 密度上升 / Gate B 多轮 | `quality` | "P0 密度连续 3 故事上升，建议 coder 自审查加 SQL 注入项" |
 | D3 | T3 占比高 / 需求边界模糊 | `security` | "第三方脚本无 SRI，建议添加 integrity 校验" |
 

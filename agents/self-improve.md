@@ -52,7 +52,7 @@ flowchart TB
 
 ## 触发
 
-rui 自改进阶段（代码管线完成后）· `loop.js run`。
+rui 自改进阶段（代码管线完成后）。每个故事走完 Gate B 自动进入本阶段，产出 08-自改进复盘并向 `proposals.jsonl` 追加诊断结果。
 
 ## 观察：数据源
 
@@ -129,7 +129,7 @@ flowchart LR
 |------|---------|---------|------|
 | `process` | 阻断率上升 / 阶段耗时 > 基线 2x | 调整 {阶段} 流程 | "Gate A 阶段耗时 3x 基线，建议增加预检脚本" |
 | `quality` | P0 密度上升 / Gate B > 2 轮 | 强化 {阶段} 审查 | "P0 密度连续 3 故事上升，建议 coder 自审查清单加 SQL 注入项" |
-| `refactor` | 文件 > 500 行 / 循环依赖 > 3 | 拆分 {模块} | "`init.js` 613 行，建议拆为 detect / generate / verify 三个模块" |
+| `refactor` | 文件 > 500 行 / 循环依赖 > 3 | 拆分 {模块} | "某规约文件 600 行，建议拆为 detect / generate / verify 三段独立小节" |
 | `security` | 安全边界模糊 / 威胁未缓解 | 加固 {边界} | "第三方脚本无 SRI，建议添加 integrity 校验" |
 
 ## 规则
@@ -144,15 +144,15 @@ flowchart LR
 
 ## 操作
 
-| 操作 | 脚本 | 输入 | 输出 |
-|------|------|------|------|
-| 架构反思 | `self-improve.js snapshot` | 代码快照 + Git diff | 复杂度热点报告 |
-| 工流趋势 | `self-improve.js retro --weeks 8` | execution-memory.jsonl × N | 趋势图 + 异常点 |
-| 故事诊断 | `self-improve.js per-story --name <name>` | 单故事全量数据 | D0–D7 诊断表 |
-| 效果评估 | `self-improve.js evaluate` | proposals.jsonl | 闭合率 + E1–E4 |
-| 回顾报告 | `loop.js run --storyboard <path>` | 故事面板目录 | 08-自改进复盘 |
+| 操作 | 触发方式 | 输入 | 输出 |
+|------|---------|------|------|
+| 架构反思 | self-improve 阶段 snapshot 子流程 | 代码快照 + Git diff | 复杂度热点报告（写入 08-自改进复盘 §2 诊断） |
+| 工流趋势 | retro 子流程（默认窗口 8 周） | `execution-memory.jsonl` × N | 趋势图 + 异常点（08-自改进复盘 §1.3） |
+| 故事诊断 | per-story 子流程 | 单故事全量数据 | D0–D7 诊断表（08-自改进复盘 §2） |
+| 效果评估 | evaluate 子流程 | `proposals.jsonl` | 闭合率 + E1–E4（08-自改进复盘 §3.3） |
+| 回顾报告 | rui 自改进阶段 | 故事面板目录 | 08-自改进复盘.md |
 
-> 脚本位于 `~/.claude/plugins/marketplaces/yry/skills/rui/scripts/`。
+> 所有子流程均为本规约约束的逻辑步骤，由 rui 管线自改进阶段直接执行，不依赖外部脚本。
 
 ## 生效标志
 

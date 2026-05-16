@@ -439,9 +439,9 @@ flowchart TD
 | 文件 | 生成方 | 方式 |
 |------|--------|------|
 | `00-消息通知列表.md` | wework-bot hook | 列表追加，含时间戳+类型+payload |
-| `.memory/execution-memory.jsonl` | rui-state.js | 追加 JSONL，字段见 [coder.md](./coder.md) |
-| `.memory/rui-state.json` | rui-state.js | 单对象覆盖写 |
-| `.improvement/proposals.jsonl` | self-improve.js | 追加 JSONL |
+| `.memory/execution-memory.jsonl` | rui 管线 | 追加 JSONL，字段见 [coder.md](./coder.md) |
+| `.memory/rui-state.json` | rui 管线 | 单对象覆盖写 |
+| `.improvement/proposals.jsonl` | self-improve 引擎 | 追加 JSONL |
 
 ---
 

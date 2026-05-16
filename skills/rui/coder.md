@@ -27,7 +27,7 @@ docs/
 └── 故事任务面板/<Project>/<name>/   ← 执行：主线 + 通知 + 补充
 ```
 
-**命名规则**：`<Project>` 大驼峰（`YiWeb`），`<name>` kebab-case（`user-login`）。CLI 输入 `<Project>-<name>`（如 `YiWeb-user-login`），脚本内分解为路径 `<Project>/<name>`。
+**命名规则**：`<Project>` 大驼峰（`YiWeb`），`<name>` kebab-case（`user-login`）。CLI 输入 `<Project>-<name>`（如 `YiWeb-user-login`），rui 管线内分解为路径 `<Project>/<name>`。
 
 ## 故事拆分
 
@@ -105,7 +105,7 @@ flowchart LR
 | 00-消息通知列表.md | 自动 | ✓ | ✓ | ✓ | wework-notify hook | 交付 |
 | {领域专题}.md | 按需 | — | — | — | pm 决策 | 文档生成 |
 
-附属（脚本管理，不入库审查）：
+附属（rui 管线维护，不入库审查）：
 
 ```
 .improvement/proposals.jsonl       ← 自改进提案（追加）
@@ -113,7 +113,7 @@ flowchart LR
 .memory/rui-state.json             ← 管线状态（覆盖）
 ```
 
-> **编号即顺序**：文件名编号前缀对应管线阶段顺序。01 是唯一真相源，技术评审（02/03/04）在文档生成阶段创建，实施与测试报告（05/06/07）在验证阶段创建——不可提前。附属目录由脚本管理，人工不编辑。
+> **编号即顺序**：文件名编号前缀对应管线阶段顺序。01 是唯一真相源，技术评审（02/03/04）在文档生成阶段创建，实施与测试报告（05/06/07）在验证阶段创建——不可提前。附属目录由 rui 管线维护，人工不编辑。
 
 ## 补充文档决策
 
@@ -222,7 +222,7 @@ flowchart LR
 | `code_done` | 所有必选文件及自改进复盘存在 |
 | `blocked` | `rui-state.json` 中 `blocked=true` |
 
-`list.js` 按文件存在性判定；`recommend.js` 按链式管线分层评分排序：阻断 → 故事推进 → 覆盖 → 健康 → 同步。
+完整度判定按文件存在性进行；任务推荐按链式管线分层评分排序：阻断 → 故事推进 → 覆盖 → 健康 → 同步。
 
 ## 写作原则
 
@@ -253,7 +253,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    subgraph 检测["recommend.js 检测"]
+    subgraph 检测["退化信号检测"]
         S1["源码变更未同步<br/>git diff 显示引用的文件已变更"]:::sig
         S2["引用断裂<br/>文档路径/接口不存在"]:::sig
         S3["版本过旧<br/>文档版本 < 当前故事版本"]:::sig
@@ -274,11 +274,11 @@ flowchart LR
 
 ## 数据契约
 
-> 每个故事目录的 `.memory/` 与 `.improvement/` 由脚本管理，字段由本节唯一定义。
+> 每个故事目录的 `.memory/` 与 `.improvement/` 由 rui 管线维护，字段由本节唯一定义。
 
 ```mermaid
 flowchart LR
-    subgraph 管理["脚本管理（人工不编辑）"]
+    subgraph 管理["rui 管线维护（人工不编辑）"]
         M1["execution-memory.jsonl<br/>追加写入"]:::data
         M2["rui-state.json<br/>覆盖写入"]:::data
         M3["proposals.jsonl<br/>追加写入"]:::data
@@ -301,11 +301,11 @@ docs/故事任务面板/<Project>/<name>/
 ```mermaid
 flowchart LR
     A["/rui 执行"]:::src --> B["execution-memory.jsonl<br/>+ rui-state.json"]:::store
-    B --> C["self-improve.js<br/>观察 → 诊断 → 改进"]:::op
+    B --> C["self-improve 引擎<br/>观察 → 诊断 → 改进"]:::op
     C --> D["proposals.jsonl"]:::store
-    D --> E1["recommend.js<br/>推荐排序"]:::use
+    D --> E1["任务推荐<br/>排序"]:::use
     D --> E2["/rui update<br/>上下文"]:::use
-    D --> E3["loop.js<br/>追加"]:::use
+    D --> E3["08-自改进复盘<br/>追加"]:::use
 
     classDef src fill:#e8f5e9,stroke:#2e7d32;
     classDef store fill:#e3f2fd,stroke:#1565c0;
@@ -338,7 +338,7 @@ flowchart LR
 |------|------|
 | append-only | `execution-memory.jsonl` 与 `proposals.jsonl` 仅追加，不重写 |
 | 覆盖写 | `rui-state.json` 每次阶段变更覆盖整个文件 |
-| 不手编 | 三个文件均由脚本管理，人工编辑会破坏字段一致性 |
+| 不手编 | 三个文件均由 rui 管线维护，人工编辑会破坏字段一致性 |
 | 不入库审查 | 附属目录是元数据，不进入文档审查清单 |
 
 ### execution-memory.jsonl
@@ -414,7 +414,7 @@ self-improve 引擎追加写入。
 flowchart LR
     S1["目录合规<br/>&lt;Project&gt;/&lt;name&gt;/"]:::sig --> S2["文档齐全<br/>按项目类型必选到位"]:::sig
     S2 --> S3["导航完整<br/>首尾导航块 + 跨文档引用"]:::sig
-    S3 --> S4["数据契约<br/>三文件脚本管理"]:::sig
+    S3 --> S4["数据契约<br/>三文件 rui 管线维护"]:::sig
     S4 --> S5["完整度判定<br/>状态机精确"]:::sig
 
     classDef sig fill:#e8f5e9,stroke:#2e7d32;
@@ -425,5 +425,5 @@ flowchart LR
 | 目录 `<Project>/<name>/` 命名合规 | 移动文件到正确目录 |
 | 按项目类型必选文档齐全 | 补创建缺失文档 |
 | 首尾导航块 + 跨文档引用完整 | 补 F.nav 导航块 |
-| 数据契约三文件由脚本管理 | 撤销人工编辑，以脚本为准 |
+| 数据契约三文件由 rui 管线维护 | 撤销人工编辑，以管线写入为准 |
 | 完整度状态机判定精确 | 核对 rui-state.json，修正状态 |

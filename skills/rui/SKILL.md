@@ -64,7 +64,7 @@ flowchart LR
 | `no-token` | `API_X_TOKEN` 缺失 | 交付 | 是 |
 | `no-metrics` | self-improve 数据采集失败 | 自改进 | 是 |
 
-阻断后：`node skills/rui/scripts/rui-state.js save --blocked` → 持久化 → 通知（`no-token` / `no-metrics` 跳过）。重跑同命令从 `current_stage` 续。
+阻断后：在 `.memory/rui-state.json` 中写入 `blocked=true` 与 `block_reason=<标识>` 后持久化，并按交付管线触发通知（`no-token` / `no-metrics` 跳过推送但仍写标记）。重跑同命令从 `current_stage` 续。
 
 ## 核心约束
 
@@ -75,7 +75,7 @@ flowchart LR
 5. **逐模块审查** — 每模块后审查，P0 清零再前进
 6. **只读反推** — `--from-code` / `--from-doc` 禁止改源码
 7. **产出内聚** — 关键产出限定在故事目录 `docs/故事任务面板/<Project>/<name>/`
-8. **交付强制** — 三步管线按序标记（`delivery-gate.js mark`），Stop hook 检查未闭合即阻断
+8. **交付强制** — 三步管线按序在 `rui-state.json` 的 `delivery_pipeline` 中标记，Stop hook 检查未闭合即阻断
 9. **公式驱动** — 文档由 [formulas.md](./formulas.md) 规约，文件名带编号前缀（00–08）
 10. **知识沉淀** — 写入 `.memory/execution-memory.jsonl` + `.memory/rui-state.json`；提案写入 `.improvement/proposals.jsonl`
 11. **同步通知必触发** — 每次 rui 命令（除 list/推荐）末端必须触发 import-docs 文档同步 + wework-bot 通知，未触发 = 管线未闭合
@@ -96,14 +96,14 @@ flowchart LR
 
 ## init 简述
 
-> 五步：探（脚本探测五类信号）→ 察（大模型深度探索项目）→ 生（大模型生成 CLAUDE.md / README.md）→ 搭（脚本机械性搭建 wework-bot 配置）→ 验（4 项就绪检查）→ 触（import-docs 同步 + wework-bot 通知）。
+> 五步：探（探测五类信号）→ 察（深度探索项目）→ 生（生成 CLAUDE.md / README.md）→ 搭（机械性搭建 wework-bot 配置）→ 验（4 项就绪检查）→ 触（import-docs 同步 + wework-bot 通知）。
 >
-> **核心设计**：init 负责项目基线。**所有内容文件（CLAUDE.md、README.md）全部由大模型通过深度项目探索生成**，JS 脚本默认不做任何内容生成，只负责探测信号和机械性搭建（目录创建、skills 配置、验证、触发）。`--template` 标志可启用 JS 模板回退。可重复运行，每次全量重生。
+> **核心设计**：init 负责项目基线。**所有内容文件（CLAUDE.md、README.md）全部由大模型通过深度项目探索生成**，本规约不依赖任何脚本，完全由调用方按本节描述顺序执行。可重复运行，每次全量重生。
 
 ```mermaid
 flowchart LR
-    P1[detect<br/>脚本探测五类信号]:::s --> P2[explore<br/>大模型深度探索项目]:::llm --> P3[generate<br/>大模型生成全部内容]:::llm --> P4[setup<br/>脚本机械搭建]:::s --> P5[verify<br/>就绪检查]:::s --> P6[trigger<br/>同步+通知]:::s --> P7[记忆<br/>.init-memory]
-    P5 -.失败.-> Fix[exit 1<br/>修复后重跑]
+    P1[detect<br/>探测五类信号]:::s --> P2[explore<br/>深度探索项目]:::llm --> P3[generate<br/>生成全部内容]:::llm --> P4[setup<br/>机械搭建]:::s --> P5[verify<br/>就绪检查]:::s --> P6[trigger<br/>同步+通知]:::s --> P7[记忆<br/>.init-memory]
+    P5 -.失败.-> Fix[终止<br/>修复后重跑]
     P6 -.通过.-> Ready[基线就绪]
     classDef s fill:#e3f2fd,stroke:#1565c0;
     classDef llm fill:#fff3e0,stroke:#e65100;
@@ -112,13 +112,13 @@ flowchart LR
 ### 执行流程
 
 ```
-1. node init.js --profile-only  → 获取 profile JSON（项目类型/技术栈/安全面/测试框架/架构）
-2. 大模型深度探索项目           → 阅读关键源码、理解架构模式、识别代码规范、发现安全面
-3. 大模型生成全部内容文件       → CLAUDE.md · README.md
-4. node init.js                 → 默认行为：机械性搭建（目录 · wework-bot 配置 · 验证 · 触发同步+通知）
+1. detect    → 探测五类信号，输出 profile（项目类型/技术栈/安全面/测试框架/架构）
+2. explore   → 阅读关键源码、理解架构模式、识别代码规范、发现安全面
+3. generate  → 编写 CLAUDE.md 与 README.md
+4. setup     → 创建目录、生成 wework-bot/config.json、写 .init-memory.json
+5. verify    → 执行 4 项就绪检查，任一失败即终止
+6. trigger   → 触发 import-docs（workspace 全量）+ wework-bot 通知
 ```
-
-`node init.js` 默认只做机械性搭建，跳过所有内容生成。如需 JS 模板回退：`node init.js --template`。
 
 ### 重复运行：增量改进
 
@@ -128,26 +128,38 @@ flowchart LR
 2. **保留人工定制** — 用户手动修改的内容不覆盖（特别是项目约束段外的自定义内容）
 3. **增量更新** — 只改变了的部分：profile 信号变了 → 更新项目画像表；安全面变了 → 更新约束段；新依赖 → 更新技术栈
 4. **优化改进** — 已有内容可读性差 → 优化表达；格式不统一 → 统一格式；过时信息 → 刷新
-5. **CLA.md 标记内替换** — CLAUDE.md 的 `<!-- rui:project-start -->` / `<!-- rui:project-end -->` 段每次全量替换，段外内容保留
+5. **CLAUDE.md 标记内替换** — `<!-- rui:project-start -->` / `<!-- rui:project-end -->` 段每次全量替换，段外内容保留
 
-**判断是否首次运行**：如果 CLAUDE.md 不含 `rui:project-start` 标记 → 首次，全量生成；含标记 → 重复，增量改进。
+**判断是否首次运行**：CLAUDE.md 不含 `rui:project-start` 标记 → 首次，全量生成；含标记 → 重复，增量改进。
 
-### 1. detect — 脚本探测（事实层）
+### 1. detect — 探测信号（事实层）
 
-运行 `node skills/rui/scripts/init.js --profile-only` 获取 profile JSON。五类信号：
+按下表抽取 profile，输出为后续 explore / generate 阶段提供事实基线：
 
 | 信号 | 来源 | 用途 |
 |------|------|------|
 | 项目身份 | 仓库目录名 | 分支前缀 / 文档路径锚点 |
-| 项目类型 | `constants.detectProjectType` | frontend/backend/fullstack/meta/unknown |
+| 项目类型 | 关键目录与配置文件 | frontend / backend / fullstack / meta / unknown |
 | 项目清单 | 按生态文件抽取 | 依赖 + 构建/测试命令 + 框架版本 |
-| 安全面 | 源码关键词扫描 | 用户输入/API/存储/认证/第三方 |
-| 测试框架 | 依赖 + 配置文件 | vitest/jest/pytest/go-test/cargo-test |
-| 架构模式 | 项目结构 | single/monorepo/microservice/plugin |
+| 安全面 | 源码关键词扫描 | 用户输入 / API / 存储 / 认证 / 第三方 |
+| 测试框架 | 依赖 + 配置文件 | vitest / jest / pytest / go-test / cargo-test |
+| 架构模式 | 项目结构 | single / monorepo / microservice / plugin |
 
-### 2. explore — 大模型深度探索（理解层）
+#### 项目类型判定
 
-拿到 profile 后，**大模型必须深度探索项目**，不能仅凭 profile 字段生成内容。探索要点：
+| 信号 | 判定 |
+|------|------|
+| 含 `package.json` 且依赖 `react` / `vue` / `svelte` / `next` / `nuxt` | frontend |
+| 含 `package.json` 且依赖 `express` / `koa` / `fastify` / `nest` 等 | backend |
+| 含前端依赖且检测到 `server/` `api/` 子目录 | fullstack |
+| 含 `.claude-plugin/plugin.json` 或仅 `skills/` | meta |
+| 上述均不命中 | unknown |
+
+非 Node 生态（Python / Go / Rust / Java / Ruby / PHP）按各自的清单文件（`pyproject.toml` / `go.mod` / `Cargo.toml` 等）补充判定。
+
+### 2. explore — 深度探索（理解层）
+
+拿到 profile 后，**必须深度探索项目**，不能仅凭 profile 字段生成内容。探索要点：
 
 - **目录结构**：理解项目组织方式、模块划分、关键目录职责
 - **核心源码**：阅读代表性文件（入口、核心业务、路由、数据模型），理解代码风格和模式
@@ -156,40 +168,37 @@ flowchart LR
 - **代码规范**：从现有代码推断命名规范、文件组织约定、注释风格
 - **安全面**：验证 profile 的安全面探测，补充遗漏的风险面
 
-### 3. generate — 大模型生成内容（生成层）
+### 3. generate — 生成内容（生成层）
 
-基于 profile + 深度探索发现，**大模型直接编写文件**（非模板替换）：
+基于 profile + 深度探索发现，**直接编写文件**（非模板替换）：
 
 | 产物 | 生成要求 | 关键约束 |
 |------|---------|---------|
-| `CLAUDE.md` | 以插件 CLAUDE.md 为哲学框架，针对项目实际情况重写。含基础信念（通用）、工作原则（通用）、项目画像（项目特定）、执行准则（引用实际技术栈/命令）、退化对策（按项目类型）、项目约束（安全底线，含 `rui:project-start/end` 标记）、自约束 | 必须含 `<!-- rui:project-start -->` 和 `<!-- rui:project-end -->` 标记；项目画像表含技术栈/构建命令/测试命令/安全面/Coder公式 |
+| `CLAUDE.md` | 以插件 CLAUDE.md 为哲学框架，针对项目实际情况重写。含基础信念（通用）、工作原则（通用）、项目画像（项目特定）、执行准则（引用实际技术栈/命令）、退化对策（按项目类型）、项目约束（安全底线，含 `rui:project-start/end` 标记）、自约束 | 必须含 `<!-- rui:project-start -->` 和 `<!-- rui:project-end -->` 标记；项目画像表含技术栈 / 构建命令 / 测试命令 / 安全面 / Coder 公式 |
 | `README.md` | 项目画像 + 命令流 mermaid + 快速开始 + 项目结构 + 管线一览。根据项目类型定制化编写 | 含项目名、技术栈、快速开始命令 |
 
 **生成原则**：
-- CLAUDE.md 以插件 CLAUDE.md 为指导框架（公理/原则保留），但执行准则、退化对策、自约束全部根据项目实际重写
+- CLAUDE.md 以插件 CLAUDE.md 为指导框架（公理 / 原则保留），但执行准则、退化对策、自约束全部根据项目实际重写
 - README.md 用 mermaid 图 → 结构化表格 → 命令示例表达
-### 4. setup — 脚本机械搭建（搭建层）
 
-大模型生成内容文件后，运行 `node skills/rui/scripts/init.js`（默认行为，无需额外标志）完成：
+### 4. setup — 机械搭建（搭建层）
 
 | 操作 | 说明 |
 |------|------|
 | 目录创建 | `docs/故事任务面板/` |
-| wework-bot 配置 | 生成 `wework-bot/config.json` |
-| 验证 | 4 项就绪检查 |
-| 触发 | import-docs 文档同步 + wework-bot 通知 |
-| 记忆 | 写入 `.init-memory.json` |
+| wework-bot 配置 | 生成 `.claude/skills/wework-bot/config.json`（schema 见 [wework-bot SKILL.md](../wework-bot/SKILL.md#配置文件)） |
+| 记忆 | 写入 `docs/故事任务面板/.init-memory.json` 记录本次执行 |
 
 ### 5. verify — 4 项就绪检查（验证层）
 
-任一失败 `exit 1`：
+任一失败即终止：
 
 | # | 检查项 | 通过条件 |
 |---|--------|--------|
 | 1 | `CLAUDE.md` | 含 `rui:project-start` 标记 + 项目名 |
 | 2 | `README.md` | 含项目名 |
 | 3 | 故事面板 | `docs/故事任务面板/` 目录存在 |
-| 4 | wework-bot 配置 | `wework-bot/config.json` 存在 |
+| 4 | wework-bot 配置 | `.claude/skills/wework-bot/config.json` 存在 |
 
 ### 6. trigger — 主动触发（集成层）
 
@@ -197,17 +206,17 @@ flowchart LR
 
 | 触发 | 条件 | 降级 |
 |------|------|------|
-| `import-docs --workspace` | `API_X_TOKEN` 存在 | 缺 token 跳过，网络失败告警不阻断 |
-| `wework-bot --agent rui` | `API_X_TOKEN` + `WEWORK_BOT_WEBHOOK_URL` 存在 | 缺凭据跳过 |
+| import-docs（workspace 全量） | `API_X_TOKEN` 存在 | 缺 token 跳过，网络失败告警不阻断 |
+| wework-bot（agent=rui） | `API_X_TOKEN` + 已解析的 webhook URL 存在 | 缺凭据跳过 |
 
 ### 7. 产物
 
-| 路径 | 用途 | 生成方式 | 重复运行 |
-|------|------|---------|---------|
-| `CLAUDE.md` | 项目约束 + 执行准则 + 退化对策 | 大模型 | 全量重生 |
-| `README.md` | 系统视图 + 命令流 + 项目画像 | 大模型 | 全量重生 |
-| `.claude/skills/wework-bot/config.json` | 企微通知配置 | 脚本生成 | 每次覆盖 |
-| `docs/故事任务面板/.init-memory.json` | 执行记录 | 脚本 | 每次覆盖 |
+| 路径 | 用途 | 重复运行 |
+|------|------|---------|
+| `CLAUDE.md` | 项目约束 + 执行准则 + 退化对策 | `rui:project-*` 标记内全量重生，段外保留 |
+| `README.md` | 系统视图 + 命令流 + 项目画像 | 全量重生 |
+| `.claude/skills/wework-bot/config.json` | 企微通知配置 | 每次覆盖 |
+| `docs/故事任务面板/.init-memory.json` | 执行记录 | 每次覆盖 |
 
 ## doc 简述
 
@@ -412,24 +421,19 @@ pm 按项目类型差异化扫描源码，输出推荐列表：
 ### 阻断条件
 
 - 未触发 import-docs 或 wework-bot → 管线视为 **未闭合**，delivery-gate 阻断
-- `no-token` 降级：仅 `API_X_TOKEN` 缺失时跳过实际推送，但仍需调用脚本并标记
+- `no-token` 降级：仅 `API_X_TOKEN` 缺失时跳过实际推送，但仍写入 `delivery_pipeline` 标记
 - 网络失败：记录告警不阻断，标记仍写
 
 ### 执行方式
 
-```bash
-# 1. 追加日志
-node skills/wework-bot/scripts/hook-log.js
+每个步骤都对应技能里的纯规约，按下表依次执行：
 
-# 2. 文档同步（必须）
-node skills/import-docs/scripts/hook-sync.js
-
-# 3. 发送通知（必须）
-node skills/wework-bot/scripts/hook-notify.js
-
-# 4. 闭合检查
-node skills/rui/scripts/delivery-gate.js check-all --json --recent-hours 1
-```
+| # | 步骤 | 规约出处 | 标记字段 |
+|---|------|---------|---------|
+| 1 | 追加日志 | [wework-bot — hook-log](../wework-bot/SKILL.md#hook-log追加日志不发送) | `delivery_pipeline.log_appended` |
+| 2 | 文档同步 | [import-docs — hook 触发器](../import-docs/SKILL.md#hook-触发器) | `delivery_pipeline.docs_synced` |
+| 3 | 发送通知 | [wework-bot — hook-notify](../wework-bot/SKILL.md#hook-notify实际发送) | `delivery_pipeline.notification_sent` |
+| 4 | 闭合检查 | [delivery-gate](../../rules/delivery-gate.md) | 任一未标记 → 阻断 |
 
 **违反此规则等同于管线未完成。**
 
@@ -437,8 +441,8 @@ node skills/rui/scripts/delivery-gate.js check-all --json --recent-hours 1
 
 | 类别 | 内容 |
 |------|------|
-| 脚本 | `skills/rui/scripts/`：init · list · recommend · rui-state · execution-memory · self-improve · delivery-gate · loop · natural-week · constants |
-| Hooks | Stop hooks（用户级 `~/.claude/settings.json` 或本机覆盖配置）：hook-log（追加日志）→ hook-sync（文档同步）→ hook-notify（企微通知）→ delivery-gate check-all（闭合检查） |
+| 数据契约 | `.memory/rui-state.json`（覆盖写）· `.memory/execution-memory.jsonl`（追加）· `.improvement/proposals.jsonl`（追加）— 字段见 [coder.md §数据契约](./coder.md) |
+| Hooks | Stop hooks（用户级 `~/.claude/settings.json` 或本机覆盖配置）调用：hook-log（追加日志）→ import-docs（文档同步）→ hook-notify（企微通知）→ delivery-gate（闭合检查） |
 | 规则 | [code-pipeline](../../rules/code-pipeline.md) · [delivery-gate](../../rules/delivery-gate.md) · [doc-generation](../../rules/doc-generation.md) · [self-improve](../../rules/self-improve.md) · [rui-claude](../../rules/rui-claude.md) |
 | 角色 | [pm](../../agents/pm.md) · [coder](../../agents/coder.md) · [tester](../../agents/tester.md) · [reporter](../../agents/reporter.md) · [security](../../agents/security.md) · [self-improve](../../agents/self-improve.md) |
-| 文档 | [formulas.md](./formulas.md) — 故事文档公式（F.story.\* + F.supp.\*） · [coder.md](./coder.md) — 目录生命周期 + 参考文档公式（F.ref.\*） + 数据契约（`.memory/` + `.improvement/`） |
+| 文档 | [formulas.md](./formulas.md) — 故事文档公式（F.story.\* + F.supp.\*） · [coder.md](./coder.md) — 目录生命周期 + 数据契约（`.memory/` + `.improvement/`） · [import-docs SKILL](../import-docs/SKILL.md) · [wework-bot SKILL](../wework-bot/SKILL.md) |

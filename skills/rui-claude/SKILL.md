@@ -39,7 +39,7 @@ flowchart TB
 | `/rui-claude retro` | 分析 .claude/ 结构健康度 → 三节复盘 | `docs/自改进故事面板/<project>-<date>.md` |
 | `/rui-claude history` | 查看操作历史：`list [--limit N]` / `stats [--json]` | 终端输出 |
 | `/rui-claude <req>` | 需求解析→故事拆分→逐故事 doc+code 管线→交付 | `.claude/` 内文件变更 |
-| `/rui-claude` | 调用 recommend.js → 推荐 5~10 条任务 | 推荐列表 |
+| `/rui-claude` | 按 5 层管线评分推荐 5~10 条任务 | 推荐列表 |
 
 ## 操作边界
 
@@ -104,16 +104,16 @@ flowchart LR
 
 | 项目 | 说明 |
 |------|------|
-| 脚本 | `node ~/.claude/plugins/marketplaces/yry/skills/rui-claude/scripts/retro.js` |
-| 参数 | `--name <story>` / `--json` |
+| 触发方式 | `/rui-claude retro [--name <story>] [--json]` |
+| 输入 | 本地 `.claude/` 目录的 `agents/` · `rules/` · `skills/` · `formulas.md` 等结构 |
 | 网络 | 纯本地分析，不连远端 |
-| 产出 | `docs/自改进故事面板/<project>-<date>.md` |
+| 产出 | `docs/自改进故事面板/<project>-<date>.md`（三节：§1 配置结构 · §2 健康度 · §3 改进项） |
 
 ## history — 操作历史
 
 ```mermaid
 flowchart LR
-    CMD["sync / retro / &lt;req&gt; 完成"]:::src --> AUTO["自动调用 history.js record"]:::op
+    CMD["sync / retro / &lt;req&gt; 完成"]:::src --> AUTO["自动追加历史条目"]:::op
     AUTO --> APPEND["追加写入"]:::store
     APPEND --> FILE[".claude/.history/<br/>rui-claude-history.jsonl"]:::file
 

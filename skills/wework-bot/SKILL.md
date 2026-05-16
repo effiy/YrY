@@ -1,26 +1,28 @@
 ---
 name: wework-bot
 description: |
-  Send WeChat Work (WeCom) bot messages. Mandatory upon rui
-  completion, block, or gate failure.
+  Send WeChat Work (WeCom) bot messages and append matching entries to the
+  story panel notification log. Mandatory upon rui completion, block, or gate
+  failure. This skill is specification-only; the implementing agent carries
+  out each step using the available tooling.
 user_invocable: true
 lifecycle: default-pipeline
 ---
 
 # wework-bot
 
-企业微信机器人通知。**每次使用 rui 技能都必须触发 wework-bot，这是管线完整性的硬性要求。** rui 管线末端强制步骤：自改进 → 追加日志 → 文档同步 → 发送通知。
+企业微信机器人通知。**每次使用 rui 技能都必须触发 wework-bot，这是管线完整性的硬性要求。** rui 管线末端强制步骤：自改进 → 追加日志 → 文档同步 → 发送通知。本技能不附带可执行脚本，所有行为按本规约执行。
 
 ## 工作流全景
 
 ```mermaid
 flowchart TB
-    RUI["rui 管线完成/阻断/失败"]:::src --> LOG["① 追加日志<br/>--no-send → 00-消息通知列表"]:::step
+    RUI["rui 管线完成 / 阻断 / 失败"]:::src --> LOG["① 追加日志<br/>等价 send --no-send → 00-消息通知列表"]:::step
     LOG --> SYNC["② import-docs 同步"]:::step
-    SYNC --> SEND["③ 发送通知<br/>POST 企微"]:::step
+    SYNC --> SEND["③ 发送通知<br/>send → 企微 webhook"]:::step
     SEND --> DONE["闭环"]:::done
 
-    LOG -.->|"失败/阻断"| SEND
+    LOG -.->|"失败 / 阻断"| SEND
 
     classDef src fill:#e8f5e9,stroke:#2e7d32;
     classDef step fill:#e3f2fd,stroke:#1565c0;
@@ -29,48 +31,94 @@ flowchart TB
 
 | 步骤 | 操作 | 说明 |
 |------|------|------|
-| ① 追加日志 | wework-bot --no-send | 写入 00-消息通知列表.md，不发 HTTP |
-| ② 文档同步 | import-docs --workspace | 推送变更到远端 |
-| ③ 发送通知 | wework-bot | POST 企微 webhook |
+| ① 追加日志 | `send --no-send` 等价行为 | 写入 `00-消息通知列表.md`，不发 HTTP |
+| ② 文档同步 | `import-docs` workspace 全量同步 | 推送变更到远端 |
+| ③ 发送通知 | `send` 等价行为 | POST 企微 webhook |
 
-## 参数
+## 调用形态
+
+> 本技能没有可执行入口，调用方按下表传入参数，执行规约定义的发送/日志流程。
+
+### 路由 / 内容 / 标识 / 模式
 
 ```mermaid
 flowchart LR
     subgraph 路由["机器人路由（二选一）"]
-        AGENT["--agent &lt;name&gt;<br/>通过 config.agents 路由"]:::param
-        ROBOT["--robot &lt;name&gt;<br/>直接指定机器人"]:::param
+        AGENT["agent=&lt;name&gt;<br/>通过 config.agents 路由"]:::param
+        ROBOT["robot=&lt;name&gt;<br/>直接指定机器人"]:::param
     end
     subgraph 内容["消息内容（二选一）"]
-        TEXT["--content, -c &lt;text&gt;<br/>直接指定正文"]:::param
-        FILE["--content-file, -f &lt;path&gt;<br/>从文件读正文"]:::param
+        TEXT["content=&lt;text&gt;<br/>直接指定正文"]:::param
+        FILE["contentFile=&lt;path&gt;<br/>从文件读正文"]:::param
     end
     subgraph 标识["故事标识"]
-        NAME["--name, -n &lt;story&gt;<br/>{project}-{name} 格式"]:::param
-        PROJ["--project, -p &lt;name&gt;<br/>未指定时从 --name 推断"]:::param
+        NAME["name=&lt;Project&gt;-&lt;story&gt;<br/>分解为日志路径"]:::param
+        PROJ["project=&lt;name&gt;<br/>未指定时从 name 推断"]:::param
     end
     subgraph 模式["发送模式"]
-        NOSEND["--no-send<br/>仅追加日志，不发 HTTP"]:::param
+        NOSEND["noSend=true<br/>仅追加日志，不发 HTTP"]:::param
     end
 
     classDef param fill:#e3f2fd,stroke:#1565c0;
 ```
 
-| 参数 | 描述 | 默认/推断 |
+| 参数 | 描述 | 默认 / 推断 |
 |------|------|---------|
-| `--agent <name>` | 通过 config.agents 路由（推荐） | — |
-| `--robot <name>` | 直接指定机器人 | — |
-| `--project, -p <name>` | 项目名称，消息首行【项目名】 | 从 `--name` 自动推断 |
-| `--name, -n <story>` | 故事全名 `{project}-{name}`，分解为日志路径 | — |
-| `--content, -c <text>` | 消息正文 | — |
-| `--content-file, -f <path>` | 从文件读正文 | — |
-| `--no-send` | 仅追加日志，不发送 HTTP | false |
+| `agent=<name>` | 通过 `config.agents` 路由（推荐） | — |
+| `robot=<name>` | 直接指定机器人 | — |
+| `project=<name>` | 项目名，作为消息首行 `【项目名】` | 从 `name` 推断；无 `name` 时取 `basename(项目根)` |
+| `name=<Project-story>` | 故事全名，分解为 `<Project>/<story>/` 日志路径 | — |
+| `content=<text>` | 消息正文 | — |
+| `contentFile=<path>` | 从文件读正文（相对路径基于项目根） | — |
+| `apiUrl=<url>` | 通知网关地址 | `WEWORK_BOT_API_URL` 或 `config.api_url` 或 `https://api.effiy.cn/wework/send-message` |
+| `noSend=true` | 仅追加日志，不发送 HTTP | `false` |
 
 | 环境变量 | 说明 |
 |---------|------|
 | `API_X_TOKEN` | 必填，仅从环境变量读取 |
-| `WEWORK_BOT_API_URL` | 可选，webhook URL 由 config.json 解析 |
-| `WEWORK_BOT_CONFIG` | 可选 |
+| `WEWORK_BOT_API_URL` | 可选，覆盖 `config.json` 的 `api_url` |
+| `<robot>.webhook_url_env` 指定的变量 | 优先于 `webhook_url` 字面量 |
+
+### 故事名解析
+
+```
+name = "<Project>-<story>"   # 以首个 - 切分
+  → project = name 首段
+  → story   = name 余段
+  → 日志路径 = docs/故事任务面板/<Project>/<story>/00-消息通知列表.md
+```
+
+`name` 不含 `-` 时，`project` 与 `story` 同名（仍按上式生成路径）。
+
+### 配置文件
+
+按以下顺序定位 `config.json`：
+
+```
+1. .claude/skills/wework-bot/config.json
+2. skills/wework-bot/config.json
+```
+
+最小 schema：
+
+```json
+{
+  "default_robot": "general",
+  "api_url": "https://api.effiy.cn/wework/send-message",
+  "robots": {
+    "<robot>": {
+      "webhook_url": "<plain url, optional>",
+      "webhook_url_env": "<env var name, optional>"
+    }
+  },
+  "agents": {
+    "<agent>": "<robot>"
+  }
+}
+```
+
+机器人优先级：`robot` 参数 > `agents[agent]` > `config.default_robot`。
+webhook URL 优先级：`robots[robot].webhook_url_env` 对应的环境变量 > `robots[robot].webhook_url` > `config.webhook_url`。
 
 ## 消息格式
 
@@ -126,6 +174,7 @@ flowchart LR
 | 3 | 数字来自执行结果，禁止占位符 | `⏱️ 会话: {duration}` |
 | 4 | 全文 ≤ 2000 字 | 超长错误日志全量粘贴 |
 | 5 | 明细段：错误日志前 20 行，文件 > 10 个时只列统计 | 50 个文件逐行列出 |
+| 6 | 首行 `【项目名】` 由发送方自动追加，正文不再重复 | 正文也以 `【项目名】` 开头 |
 
 ### 示例
 
@@ -148,11 +197,11 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    SEND["wework-bot<br/>--name &lt;project&gt;-&lt;name&gt;"]:::src --> PARSE["分解路径<br/>{project}/{name}/"]:::op
+    SEND["wework-bot<br/>name=&lt;Project&gt;-&lt;story&gt;"]:::src --> PARSE["分解路径<br/>&lt;Project&gt;/&lt;story&gt;/"]:::op
     PARSE --> APPEND["追加写入"]:::op
-    APPEND --> FILE["docs/故事任务面板/<br/>{project}/{name}/<br/>00-消息通知列表.md"]:::file
+    APPEND --> FILE["docs/故事任务面板/<br/>&lt;Project&gt;/&lt;story&gt;/<br/>00-消息通知列表.md"]:::file
 
-    APPEND -.->|"目录不存在"| MKDIR["自动创建"]:::util
+    APPEND -.->|"目录不存在"| MKDIR["递归创建"]:::util
 
     classDef src fill:#e8f5e9,stroke:#2e7d32;
     classDef op fill:#e3f2fd,stroke:#1565c0;
@@ -162,17 +211,19 @@ flowchart LR
 
 | 项目 | 说明 |
 |------|------|
-| 触发条件 | 指定 `--name` 时 |
+| 触发条件 | 指定了 `name` 时（无 `name` 时跳过日志） |
 | 写入模式 | 追加（append） |
-| 分割线 | `【yyyy-mm-dd hh:mm:ss】` |
-| 目录处理 | 不存在时自动创建 |
+| 时间戳 | `【YYYY-MM-DD HH:mm:ss】` 单独一行作为分隔 |
+| 条目格式 | 时间戳行 + 空行 + 完整正文（含首行 `【项目名】`） + 末尾换行 |
+| 目录处理 | 不存在时递归创建 |
+| `noSend=true` | 仍执行日志写入 |
 
 ## API 契约
 
 ```mermaid
 flowchart LR
-    SCRIPT["send-message.js"]:::src --> TOKEN["Header: X-Token<br/>&lt;API_X_TOKEN&gt;"]:::auth
-    TOKEN --> POST["POST &lt;WEWORK_BOT_API_URL&gt;"]:::api
+    CALLER["发送方"]:::src --> TOKEN["Header: X-Token<br/>&lt;API_X_TOKEN&gt;"]:::auth
+    TOKEN --> POST["POST &lt;apiUrl&gt;"]:::api
     POST --> BODY["Body: webhook_url + content"]:::body
     BODY --> WEWORK["企微机器人"]:::out
 
@@ -184,16 +235,24 @@ flowchart LR
 ```
 
 ```
-POST <WEWORK_BOT_API_URL>
-Headers: X-Token: <API_X_TOKEN>
-Body: { "webhook_url": "<from config>", "content": "<message>" }
+POST <apiUrl>
+Headers:
+  Content-Type: application/json
+  X-Token: <API_X_TOKEN>
+Body:
+  { "webhook_url": "<resolved>", "content": "<message>" }
+
+超时: 30s
+成功: HTTP 200–299
+失败: 非 2xx → 报告错误，调用方决定是否阻断
 ```
 
 | 要素 | 来源 |
 |------|------|
-| webhook URL | `config.json` 解析 |
-| API_X_TOKEN | 环境变量 |
-| content | `--content` / `--content-file` |
+| `apiUrl` | 参数 > `WEWORK_BOT_API_URL` 环境变量 > `config.api_url` > `https://api.effiy.cn/wework/send-message` |
+| webhook URL | `robots[robot].webhook_url_env` 对应环境变量 > `robots[robot].webhook_url` > `config.webhook_url` |
+| `API_X_TOKEN` | 仅环境变量 |
+| `content` | `content` 参数 > `contentFile` 文件内容（必须二选一） |
 
 ## 安全
 
@@ -206,7 +265,7 @@ flowchart LR
     end
     subgraph 必须["✅ 必须"]
         C1["API_X_TOKEN 仅从环境变量"]:::ok
-        C2["webhook URL 从 config.json"]:::ok
+        C2["webhook URL 从 config.json 或环境变量"]:::ok
     end
 
     classDef block fill:#ffebee,stroke:#c62828;
@@ -216,23 +275,102 @@ flowchart LR
 | # | 规则 | P0? |
 |---|------|:---:|
 | 1 | 禁止提交 token、webhook URL 到仓库 | ✅ |
-| 2 | 日志和回复必须脱敏 | ✅ |
-| 3 | API_X_TOKEN 仅从环境变量读取 | ✅ |
-| 4 | webhook URL 从 config.json 解析 | — |
+| 2 | 日志和回复必须脱敏（不回显 token、webhook URL） | ✅ |
+| 3 | `API_X_TOKEN` 仅从环境变量读取 | ✅ |
+| 4 | webhook URL 仅从 `config.json` 或环境变量解析 | — |
+| 5 | `config.json` 中真实 webhook 应留空，由环境变量 `webhook_url_env` 注入 | — |
+
+## hook 触发器
+
+> rui 管线末端依次触发以下两个等价行为，覆盖三步交付的 ① 与 ③。
+
+### ① hook-log（追加日志，不发送）
+
+```mermaid
+flowchart LR
+    PIPE["管线完成"]:::s --> SCAN["扫描 docs/故事任务面板/<br/>找最近 1h 内活跃故事"]:::op
+    SCAN --> Q{"找到?"}
+    Q -->|"否"| SKIP["静默跳过"]:::warn
+    Q -->|"是"| BUILD["按 rui-state.json<br/>构建消息"]:::op
+    BUILD --> APPEND["执行 send（noSend=true）<br/>写入 00-消息通知列表"]:::out
+
+    classDef s fill:#e3f2fd,stroke:#1565c0;
+    classDef op fill:#e3f2fd,stroke:#1565c0;
+    classDef warn fill:#fff3e0,stroke:#e65100;
+    classDef out fill:#f3e5f5,stroke:#6a1b9a;
+```
+
+| 步骤 | 行为 |
+|------|------|
+| 活跃故事识别 | 遍历 `docs/故事任务面板/<Project>/<story>/.memory/rui-state.json`，挑选 `timestamp` 在最近 1 小时内且最新的一条 |
+| 无活跃故事 | 静默跳过，退出码 0 |
+| 消息构建 | 见下文「自动消息模板」 |
+| 发送 | 等价 `send agent=rui name=<Project>-<story> noSend=true content=...` |
+| 失败 | 记录到 stderr，不阻断 |
+
+### ③ hook-notify（实际发送）
+
+```mermaid
+flowchart LR
+    PIPE["log + sync 完成"]:::s --> CHK1{"API_X_TOKEN?"}
+    CHK1 -->|"缺失"| SKIP1["静默跳过"]:::warn
+    CHK1 -->|"存在"| SCAN["同 hook-log 找活跃故事"]:::op
+    SCAN --> Q{"找到?"}
+    Q -->|"否"| SKIP2["静默跳过"]:::warn
+    Q -->|"是"| SEND["执行 send（noSend=false）"]:::out
+
+    classDef s fill:#e3f2fd,stroke:#1565c0;
+    classDef op fill:#e3f2fd,stroke:#1565c0;
+    classDef warn fill:#fff3e0,stroke:#e65100;
+    classDef out fill:#f3e5f5,stroke:#6a1b9a;
+```
+
+| 触发 | 行为 |
+|------|------|
+| `API_X_TOKEN` 缺失 | 静默跳过，退出码 0 |
+| 活跃故事缺失 | 静默跳过，退出码 0 |
+| 网络失败 | 报告错误，但不阻断管线（`delivery-gate` 仍标记 `notification_sent`） |
+
+### 自动消息模板
+
+> hook 自动构建，正文不含 `【项目名】`，由 send 步骤自动拼接首行。
+
+完成（`state.blocked = false`）:
+
+```
+🎯 结论: 完成 <Project>-<story> <current_stage> 阶段
+📝 描述: 管线执行完毕
+📌 范围: docs/故事任务面板/<Project>/<story>/
+👉 下一步: 继续下一阶段
+🌐 影响: docs/故事任务面板/<Project>/<story>/
+📎 证据: .memory/rui-state.json
+```
+
+阻断（`state.blocked = true`）:
+
+```
+🎯 结论: 阻断 <Project>-<story>
+📝 描述: 管线在 <current_stage> 阶段被阻断
+📌 范围: docs/故事任务面板/<Project>/<story>/
+❌ 原因: <state.block_reason 或 "见 rui-state.json">
+🧭 恢复点: <current_stage>
+🌐 影响: docs/故事任务面板/<Project>/<story>/
+📎 证据: .memory/rui-state.json
+```
 
 ## 空输入
 
 ```mermaid
 flowchart TD
-    EMPTY["无参数调用"]:::src --> CHECK["检测三项"]:::op
-    CHECK --> T1["API_X_TOKEN<br/>是否存在?"]:::check
-    CHECK --> T2["config.json<br/>是否配置?"]:::check
-    CHECK --> T3["00-消息通知列表.md<br/>是否存在?"]:::check
+    EMPTY["无参数 / 空输入"]:::src --> CHECK["检测三项"]:::op
+    CHECK --> T1["API_X_TOKEN 是否存在?"]:::check
+    CHECK --> T2["config.json 是否配置?"]:::check
+    CHECK --> T3["00-消息通知列表.md 是否存在?"]:::check
 
     T1 & T2 & T3 --> RECOMMEND["推荐任务"]:::out
 
     subgraph 推荐["推荐场景"]
-        R1["配置缺失 → 检查 token/config"]:::rec
+        R1["配置缺失 → 检查 token / config"]:::rec
         R2["测试验证 → 发送测试消息"]:::rec
         R3["通知补齐 → 补充遗漏通知"]:::rec
         R4["定期巡检 → 检查通知完整性"]:::rec
@@ -245,14 +383,14 @@ flowchart TD
     classDef rec fill:#fff3e0,stroke:#e65100;
 ```
 
-无参数时检测 `API_X_TOKEN` / config.json / 故事面板 `00-消息通知列表.md` → 推荐任务，不发送消息。
+无参数时不发送消息，仅检测 `API_X_TOKEN` / `config.json` / 故事面板 `00-消息通知列表.md` 并输出推荐任务。
 
 ## 生效标志
 
 ```mermaid
 flowchart LR
-    S1["场景字段齐全<br/>完成/阻断/门禁 必含项到位"]:::sig --> S2["格式合规<br/>纯文本 · emoji:值 · ≤2000字"]:::sig
-    S2 --> S3["安全底线<br/>token/webhook 不入库"]:::sig
+    S1["场景字段齐全<br/>完成 / 阻断 / 门禁 必含项到位"]:::sig --> S2["格式合规<br/>纯文本 · emoji:值 · ≤2000字"]:::sig
+    S2 --> S3["安全底线<br/>token / webhook 不入库"]:::sig
     S3 --> S4["日志完整<br/>00-消息通知列表 已追加"]:::sig
 
     classDef sig fill:#e8f5e9,stroke:#2e7d32;
@@ -262,5 +400,5 @@ flowchart LR
 |------|------------|
 | 场景字段齐全 | 补齐缺失字段，重新发送 |
 | 格式合规（纯文本 · emoji:值 · ≤2000字） | 修正格式，重新发送 |
-| token/webhook 不入库 | 从 git 历史清除，轮换凭据 |
-| 00-消息通知列表 已追加 | 补写日志条目 |
+| token / webhook 不入库 | 从 git 历史清除，轮换凭据 |
+| `00-消息通知列表` 已追加 | 补写日志条目 |
