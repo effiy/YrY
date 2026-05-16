@@ -230,7 +230,7 @@ quadrantChart
 **覆盖范围**：`src/components/LoginPanel.vue` + `src/stores/auth.ts`（状态管理）+ `src/api/auth.ts`（API 调用）
 **源码证据**：[A] `src/components/LoginPanel.vue:1-342` — Props: modelValue, disabled, size, mode; Events: submit, cancel, forgot-password
 **文档现状**：无文档 — `docs/故事任务面板/YiWeb/login-panel-doc/` 不存在
-**预计产出**：01-故事任务 · 03-前端技术评审 · 04-测试用例评审
+**预计产出**：01-故事任务 · 02-用户使用场景 · 04-前端技术评审 · 05-测试用例评审
 **外部参考**：
   - [superpowers](https://github.com/obra/superpowers) — 安全模块参考其验证门禁与行为纪律
   - [ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) — 登录表单 UI 设计参考其推理规则

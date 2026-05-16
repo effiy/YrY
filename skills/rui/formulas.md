@@ -13,18 +13,18 @@ flowchart TB
     subgraph 主线["故事主线（编号文档 + 必选）"]
         subgraph 生成["文档生成阶段"]
             F01["F.story.task<br/>01-故事任务"]
-            F_US["F.story.user-scenarios<br/>用户主要使用场景"]
-            F02["F.story.backend-review<br/>02-后端技术评审"]
-            F03["F.story.frontend-review<br/>03-前端技术评审"]
-            F04["F.story.test-review<br/>04-测试用例评审"]
+            F02["F.story.user-scenarios<br/>02-用户使用场景"]
+            F03["F.story.backend-review<br/>03-后端技术评审"]
+            F04["F.story.frontend-review<br/>04-前端技术评审"]
+            F05["F.story.test-review<br/>05-测试用例评审"]
         end
         subgraph 验证["验证阶段"]
-            F05["F.story.backend-report<br/>05-后端实施报告"]
-            F06["F.story.frontend-report<br/>06-前端实施报告"]
-            F07["F.story.test-report<br/>07-测试用例报告"]
+            F06["F.story.backend-report<br/>06-后端实施报告"]
+            F07["F.story.frontend-report<br/>07-前端实施报告"]
+            F08["F.story.test-report<br/>08-测试用例报告"]
         end
         subgraph 改进["改进阶段"]
-            F08["F.story.retrospective<br/>08-自改进复盘"]
+            F09["F.story.retrospective<br/>09-自改进复盘"]
         end
     end
 
@@ -39,7 +39,7 @@ flowchart TB
     classDef story fill:#e3f2fd,stroke:#1565c0;
     classDef supp fill:#fff3e0,stroke:#e65100;
     class F.meta,F.nav,F.evidence gen;
-    class F01,F_US,F02,F03,F04,F05,F06,F07,F08 story;
+    class F01,F02,F03,F04,F05,F06,F07,F08,F09 story;
     class FS supp;
 ```
 
@@ -62,15 +62,15 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    01["01-故事任务"] --> US["用户主要使用场景"]
-    US --> 02["02-后端技术评审"]
-    02 --> 03["03-前端技术评审"]
-    03 --> 04["04-测试用例评审"]
-    04 --> 05["05-后端实施报告"]
-    05 --> 06["06-前端实施报告"]
-    06 --> 07["07-测试用例报告"]
-    07 --> 08["08-自改进复盘"]
-    08 --> 00["00-消息通知列表"]
+    01["01-故事任务"] --> 02["02-用户使用场景"]
+    02 --> 03["03-后端技术评审"]
+    03 --> 04["04-前端技术评审"]
+    04 --> 05["05-测试用例评审"]
+    05 --> 06["06-后端实施报告"]
+    06 --> 07["07-前端实施报告"]
+    07 --> 08["08-测试用例报告"]
+    08 --> 09["09-自改进复盘"]
+    09 --> 00["00-消息通知列表"]
 ```
 
 **标记格式**：`> **导航**: [← {标题}](./{文件}.md) · [{标题} →](./{文件}.md)`
@@ -79,8 +79,8 @@ flowchart LR
 
 | 场景 | 前驱 `←` | 后继 `→` |
 |------|----------|---------|
-| 链首（01） | 省略 | 用户主要使用场景 |
-| 用户主要使用场景 | 01-故事任务 | 下一编号文件 |
+| 链首（01） | 省略 | 02-用户使用场景 |
+| 02-用户使用场景 | 01-故事任务 | 下一编号文件 |
 | 链中 | 上一编号文件 | 下一编号文件 |
 | 链尾（00） | 上一编号文件 | 省略 |
 | 邻接文件不适用当前类型 | 跳过，取再上一 | 跳过，取再下一 |
@@ -89,8 +89,8 @@ flowchart LR
 
 | 类型 | 跳过文件 | 链路变化 |
 |------|---------|---------|
-| 纯前端 | 02、05 | 用户场景后继 03；03 前驱变用户场景；04 后继从 05 变 06 |
-| 纯后端 | 03、06 | 02 后继变 04；05 后继从 06 变 07 |
+| 纯前端 | 03、06 | 用户场景后继 04；04 前驱变用户场景；05 后继从 06 变 07 |
+| 纯后端 | 04、07 | 03 后继变 05；06 后继从 07 变 08 |
 | 全栈 | — | 完整 01→用户场景→00 链路 |
 
 ### F.evidence — 证据等级
@@ -110,30 +110,32 @@ flowchart LR
 flowchart LR
     subgraph 阶段一["📄 文档生成"]
         F01["01<br/>故事任务"]
-        F_US["用户主要<br/>使用场景"]
-        F02["02<br/>后端评审"]
-        F03["03<br/>前端评审"]
-        F04["04<br/>测试评审"]
+        F02["02<br/>用户使用场景"]
+        F03["03<br/>后端评审"]
+        F04["04<br/>前端评审"]
+        F05["05<br/>测试评审"]
     end
     subgraph 阶段二["🔍 验证"]
-        F05["05<br/>后端报告"]
-        F06["06<br/>前端报告"]
-        F07["07<br/>测试报告"]
+        F06["06<br/>后端报告"]
+        F07["07<br/>前端报告"]
+        F08["08<br/>测试报告"]
     end
     subgraph 阶段三["📈 改进"]
-        F08["08<br/>自改进复盘"]
+        F09["09<br/>自改进复盘"]
     end
     阶段一 --> 阶段二 --> 阶段三
 
     classDef p1 fill:#e3f2fd,stroke:#1565c0;
     classDef p2 fill:#e8f5e9,stroke:#2e7d32;
     classDef p3 fill:#fff3e0,stroke:#e65100;
-    class F01,F_US,F02,F03,F04 p1;
-    class F05,F06,F07 p2;
-    class F08 p3;
+    class F01,F02,F03,F04,F05 p1;
+    class F06,F07,F08 p2;
+    class F09 p3;
 ```
 
 ### 01 — F.story.task `meta + 角色公式速查 + Story×N`
+
+> **外部参考** — 描述故事前浏览 [外部参考](../../../README.md#外部参考)，汲取故事拆分模式、AC 设计方法、场景描述技巧。粒度不确定或场景覆盖不全时，回查模式参照。
 
 **角色公式速查**（固定文案，置顶）：
 
@@ -158,7 +160,9 @@ flowchart LR
 | §7 架构演进 | pm | 近期/中期/远期 | 可选 |
 | §L 自改进循环 | self-improve | 每次完成追加 | 可选 |
 
-### 用户主要使用场景 — F.story.user-scenarios `meta + nav + 全景 + 详述×N + 覆盖矩阵 + 清单`
+### 02 — F.story.user-scenarios `meta + nav + 全景 + 详述×N + 覆盖矩阵 + 清单`
+
+> **外部参考** — §2 场景详述涉及 UI 交互时，参考 [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) 的推理规则与交互模式。场景粒度与覆盖度可参考 [obra/superpowers](https://github.com/obra/superpowers) 的 spec-driven 模式。
 
 ```mermaid
 flowchart LR
@@ -174,7 +178,7 @@ flowchart LR
 | §3 场景覆盖矩阵 | pm | `场景 \| FP# \| 覆盖 \| 备注`，与 01-故事任务 §2 对齐 | 必填 |
 | §4 评审清单 | pm | 场景 ≥ 2 / 每场景有图 / FP 全覆盖 / 异常分支明确 | 必填 |
 
-### 02 — F.story.backend-review `meta + nav + 架构 + API + 数据 + 安全 + 性能 + 清单`
+### 03 — F.story.backend-review `meta + nav + 架构 + API + 数据 + 安全 + 性能 + 清单`
 
 ```mermaid
 flowchart LR
@@ -194,7 +198,7 @@ flowchart LR
 | §5 性能与限制 | `维度 \| 约束 \| 应对` |
 | §6 评审清单 | 权限最小化 / 通信对齐 / 存储兼容 / API 鉴权 / 无硬编码密钥 / 无误用长连接 / 输入校验完整 |
 
-### 03 — F.story.frontend-review `meta + nav + 组件 + 状态 + 交互 + 样式 + DOM + 依赖 + 清单`
+### 04 — F.story.frontend-review `meta + nav + 组件 + 状态 + 交互 + 样式 + DOM + 依赖 + 清单`
 
 ```mermaid
 flowchart LR
@@ -216,7 +220,7 @@ flowchart LR
 | §6 依赖与加载 | 6.1 加载顺序 fenced 块 + `新增文件 \| 插入位置 \| 依赖上游`；6.2 命名空间 `文件 \| 注册到 \| 类型` |
 | §7 评审清单 | 组件命名空间 / 资源注册 / 状态约定 / 样式隔离 / 事件清理 / 加载顺序 / 模块语法 / 样式文件注册 |
 
-### 04 — F.story.test-review `meta + nav + Tester公式 + 范围 + 用例×4 + 环境 + 清单 + Gate A`
+### 05 — F.story.test-review `meta + nav + Tester公式 + 范围 + 用例×4 + 环境 + 清单 + Gate A`
 
 ```mermaid
 flowchart LR
@@ -236,7 +240,7 @@ flowchart LR
 | §5 评审清单 | 每功能点多类覆盖 / Gate A 覆盖 / 回归与影响链一致 / 异常含恢复行为 / 环境专项覆盖 / 无外部依赖占比合理 / 影响链每点有回归 |
 | §6 Gate A 交接 | `信号 \| 内容`：通过状态 / P0 用例 ID / 实现约束 / 验证命令 |
 
-### 05 — F.story.backend-report `meta + nav + Reporter公式 + 总结 + 偏差 + P0 + 存储 + 性能 + 清单`
+### 06 — F.story.backend-report `meta + nav + Reporter公式 + 总结 + 偏差 + P0 + 存储 + 性能 + 清单`
 
 ```mermaid
 flowchart LR
@@ -256,18 +260,18 @@ flowchart LR
 | §5 性能观察 | `维度 \| 观察 \| 与评审预期` |
 | §6 评审清单 | 文件与任务对应 / 接口与评审一致 / 偏差有因有据 / P0 清零 / 存储已验证 / 性能可观察 |
 
-### 06 — F.story.frontend-report `meta + nav + Reporter公式 + 总结 + 偏差 + P0 + 样式 + 依赖 + 清单`
+### 07 — F.story.frontend-report `meta + nav + Reporter公式 + 总结 + 偏差 + P0 + 样式 + 依赖 + 清单`
 
 | 章节 | 表头/内容 |
 |------|----------|
 | §1 实施总结 | 1.1 交付文件；1.2 实际组件 `组件 \| 注册路径 \| 与评审偏差 \| 说明`；1.3 状态管理 `Store/State \| 与评审偏差 \| 说明` |
-| §2 偏差记录 | 同 05-后端实施报告 §2 |
+| §2 偏差记录 | 同 06-后端实施报告 §2 |
 | §3 P0 审查 | `模块 \| 文件 \| P0 数量 \| 清零 \| 审查时间` |
 | §4 样式与隔离 | `文件 \| 隔离方式 \| 与评审偏差` |
 | §5 依赖与加载 | 5.1 注册表变更 `变更类型 \| 具体变更`；5.2 加载顺序验证 fenced 块 |
 | §6 评审清单 | 组件注册正确 / 状态与评审一致 / 样式隔离生效 / 加载顺序合规 / P0 清零 |
 
-### 07 — F.story.test-report `meta + nav + Reporter公式 + 环境 + 冒烟 + 回归 + 专项 + 已知 + Gate B + 清单`
+### 08 — F.story.test-report `meta + nav + Reporter公式 + 环境 + 冒烟 + 回归 + 专项 + 已知 + Gate B + 清单`
 
 ```mermaid
 flowchart LR
@@ -289,7 +293,7 @@ flowchart LR
 | §6 Gate B 评估 | `指标 \| 要求 \| 实际 \| 结果`：P0 全部通过 / P1 高通过率 / P0 已知清零 / 修复轮次可控 |
 | §7 评审清单 | Gate B 指标全部达标 / 冒烟+回归+专项闭合 / 已知问题有跟踪 / 环境快照可复现 |
 
-### 08 — F.story.retrospective `meta + nav + Self-Improve公式 + 基线 + 观察 + 诊断 + 改进 + 经验 + 清单`
+### 09 — F.story.retrospective `meta + nav + Self-Improve公式 + 基线 + 观察 + 诊断 + 改进 + 经验 + 清单`
 
 ```mermaid
 flowchart LR
@@ -459,7 +463,7 @@ flowchart TD
 | 文件 | 生成方 | 方式 |
 |------|--------|------|
 | `00-消息通知列表.md` | wework-bot hook | 列表追加，含时间戳+类型+payload |
-| `09-交互日志.md` | rui 管线 | 追加写入 · 按会话+时间戳分段 · 含全部人机交互内容 |
+| `10-交互日志.md` | rui 管线 | 追加写入 · 按会话+时间戳分段 · 含全部人机交互内容 |
 | `.memory/execution-memory.jsonl` | rui 管线 | 追加 JSONL，字段见 [coder.md](./coder.md) |
 | `.memory/rui-state.json` | rui 管线 | 单对象覆盖写 |
 | `.improvement/proposals.jsonl` | self-improve 引擎 | 追加 JSONL |

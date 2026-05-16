@@ -213,7 +213,7 @@ flowchart TD
 
 **故事任务面板** — `docs/故事任务面板/<Project>/<name>/` 目录。每个故事的所有产物内聚在此。 _Avoid_: output directory, doc folder
 
-**Gate A** — 编码前的强制性阻断点。`04-测试用例评审.md` 不存在或未就绪→编码不得开始。单行 CSS/文案为唯一例外。 _Avoid_: test gate, pre-code check
+**Gate A** — 编码前的强制性阻断点。`05-测试用例评审.md` 不存在或未就绪→编码不得开始。单行 CSS/文案为唯一例外。 _Avoid_: test gate, pre-code check
 
 **Gate B** — 编码后的闭合验证。五步检查（环境快照→静态预检→设计对齐→单次执行→三报告）。修复 > 2 轮→阻断。 _Avoid_: verification gate, post-code check
 
@@ -258,19 +258,21 @@ flowchart TD
 
 ## 外部参考
 
-> 自改进时可参考以下生态资源，汲取设计理念与执行模式。
+> pm 拆故事与描述故事时，应主动查阅以下生态资源汲取模式与理念，提升故事描述质量。
+> 自改进与架构深化时同样适用。每项标注适用阶段。
 
-### 方法论与执行纪律
+### 故事描述 — 模式与方法论
 
-- **[obra/superpowers](https://github.com/obra/superpowers)** — 完整的 AI agent 软件开发方法论，以可组合 skills 为基础，含 spec-driven 开发、验证门禁、行为纪律。本项目的行为纪律和验证门禁受其启发。
-- **[gsd-build/get-shit-done](https://github.com/gsd-build/get-shit-done/tree/main)** — 轻量级元提示与上下文工程系统，专注解决"上下文退化"问题。spec-driven 开发模式与本项目的文档管线互补。
-- **[mattpocock/skills](https://github.com/mattpocock/skills)** — 真实工程场景下的 Agent skills 集合，强调"不是 vibe coding"。skill 设计模式和职责边界可参考。
+- **[obra/superpowers](https://github.com/obra/superpowers)** — AI agent 软件开发方法论：可组合 skills、spec-driven 开发、验证门禁、行为纪律。**适用：故事拆分模式、AC 设计、验证策略。** 本项目行为纪律和验证门禁受其启发。
+- **[gsd-build/get-shit-done](https://github.com/gsd-build/get-shit-done/tree/main)** — 元提示与上下文工程系统，专注"上下文退化"问题。**适用：故事描述粒度控制、上下文边界设计。** spec-driven 模式与本项目文档管线互补。
+- **[mattpocock/skills](https://github.com/mattpocock/skills)** — 真实工程场景 Agent skills 集合，强调"不是 vibe coding"。**适用：skill 职责边界设计、故事内任务拆分模式。**
+- **[nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)** — 跨平台 UI/UX 设计 skill，含 161 条推理规则和 67 种 UI 风格。**适用：前端故事用户场景描述、交互设计参考。**
 
-### 记忆与上下文
+### 实现与架构 — 执行模式
 
-- **[thedotmack/claude-mem](https://github.com/thedotmack/claude-mem)** — 跨会话持久化记忆引擎，AI 压缩 + 相似检索自动注入。其记忆管理模式可对比本项目的 `.memory/` 执行记忆体系。
-- **[affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code/blob/main/README.zh-CN.md)** — Agent harness 性能优化全集，含 skills、记忆、安全、研究优先开发。技能组织方式和安全约束思路可参考。
+- **[thedotmack/claude-mem](https://github.com/thedotmack/claude-mem)** — 跨会话持久化记忆引擎，AI 压缩 + 相似检索自动注入。**适用：执行记忆体系设计、跨故事知识沉淀。**
+- **[affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code/blob/main/README.zh-CN.md)** — Agent harness 性能优化全集，含 skills、记忆、安全、研究优先开发。**适用：技能组织方式、安全约束思路。**
 
-### UI/UX 设计
+### 设计参考 — UI/UX
 
-- **[nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)** — 跨平台专业 UI/UX 设计 skill，含 161 条推理规则和 67 种 UI 风格。前端故事涉及 UI 改造时可用作设计参考。
+> 前端故事的用户场景详述与页面设计补充文档，以 nextlevelbuilder/ui-ux-pro-max-skill 为权威参考（见上方故事描述）。

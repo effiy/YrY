@@ -12,7 +12,8 @@ tools: Read, Grep, Glob, Bash
 
 ```mermaid
 flowchart TB
-    REQ["需求输入<br/>文本 / @文件 / URL"]:::src --> SPLIT["故事拆分<br/>按角色/入口/交付价值"]:::pm
+    REQ["需求输入<br/>文本 / @文件 / URL"]:::src --> REF["查阅外部参考<br/>模式与方法论"]:::ref
+    REF --> SPLIT["故事拆分<br/>按角色/入口/交付价值"]:::pm
     SPLIT --> PRI["优先级排序<br/>P0/P1/P2"]:::pm
     PRI --> SEQ["串行顺序<br/>依赖显式标注"]:::pm
     SEQ --> DEL["Agent 委派<br/>coder · tester · security"]:::pm
@@ -21,9 +22,12 @@ flowchart TB
     AC -->|"是 ✅"| CLOSE["关闭故事<br/>git commit"]:::done
 
     classDef src fill:#e8f5e9,stroke:#2e7d32;
+    classDef ref fill:#f3e5f5,stroke:#6a1b9a;
     classDef pm fill:#fff3e0,stroke:#e65100;
     classDef done fill:#f3e5f5,stroke:#6a1b9a;
 ```
+
+> **查阅外部参考** — 拆故事前先浏览 [外部参考](../../README.md#外部参考)，从生态资源中汲取故事拆分模式、AC 设计方法、场景描述技巧。不确定故事粒度或用户场景覆盖时，主动回到外部参考寻找模式参照。
 
 ## 触发
 
@@ -154,6 +158,7 @@ flowchart LR
 | 3 | 策展阶段必须 git commit | 故事关闭但变更未提交 |
 | 4 | 目录命名见 [doc-generation.md](../rules/doc-generation.md) | 自创目录结构 |
 | 5 | 探索模式必须先运行 `recommend.mjs`，不可跳过脚本凭感觉推荐 | "这个项目我熟悉，直接推荐就行" |
+| 6 | 故事描述前查阅 [外部参考](../../README.md#外部参考)，汲取模式与方法论 | 不查外部参考凭直觉拆故事，粒度失当或场景遗漏 |
 
 ## 生效标志
 

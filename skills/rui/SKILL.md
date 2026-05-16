@@ -99,7 +99,7 @@ flowchart LR
 6. **只读反推** — `--from-code` / `--from-doc` 禁止改源码
 7. **产出内聚** — 关键产出限定在 `docs/故事任务面板/<Project>/<name>/`
 8. **公式驱动** — 文档由 [formulas.md](./formulas.md) 规约，文件名带编号前缀（00–08）
-9. **知识沉淀** — 写入 `09-交互日志.md` + `.memory/execution-memory.jsonl` + `.memory/rui-state.json`；提案写入 `.improvement/proposals.jsonl`
+9. **知识沉淀** — 写入 `10-交互日志.md` + `.memory/execution-memory.jsonl` + `.memory/rui-state.json`；提案写入 `.improvement/proposals.jsonl`
 10. **交付强制** — 三步按序触发（hook-log → import-docs → wework-bot），详见 [强制集成](#强制集成)
 11. **表达优先** — 文档内容必须 图 → 结构化文本 → 表，架构/流程/关系优先 mermaid，不可降级
 
@@ -109,15 +109,15 @@ flowchart LR
 |------|------|------|:---:|
 | 00 | 消息通知列表.md | 交付 | 自动 |
 | 01 | 故事任务.md | 文档生成 | ✓ |
-| — | 用户主要使用场景.md | 文档生成 | ✓ |
-| 02 | 后端技术评审.md | 文档生成 | 后端/全栈 |
-| 03 | 前端技术评审.md | 文档生成 | 前端/全栈 |
-| 04 | 测试用例评审.md | 文档生成 | ✓ |
-| 05 | 后端实施报告.md | 验证 | 后端/全栈 |
-| 06 | 前端实施报告.md | 验证 | 前端/全栈 |
-| 07 | 测试用例报告.md | 验证 | ✓ |
-| 08 | 自改进复盘.md | 自改进 | ✓ |
-| 09 | 交互日志.md | 全阶段 | ✓ |
+| 02 | 用户使用场景.md | 文档生成 | ✓ |
+| 03 | 后端技术评审.md | 文档生成 | 后端/全栈 |
+| 04 | 前端技术评审.md | 文档生成 | 前端/全栈 |
+| 05 | 测试用例评审.md | 文档生成 | ✓ |
+| 06 | 后端实施报告.md | 验证 | 后端/全栈 |
+| 07 | 前端实施报告.md | 验证 | 前端/全栈 |
+| 08 | 测试用例报告.md | 验证 | ✓ |
+| 09 | 自改进复盘.md | 自改进 | ✓ |
+| 10 | 交互日志.md | 全阶段 | ✓ |
 
 ## init
 
@@ -204,7 +204,7 @@ flowchart LR
     classDef s fill:#e3f2fd,stroke:#1565c0;
 ```
 
-**产出**：01-故事任务.md（必创建）· 02-后端技术评审.md（后端/全栈）· 03-前端技术评审.md（前端/全栈）· 04-测试用例评审.md（必创建）
+**产出**：01-故事任务.md（必创建）· 02-用户使用场景.md（必创建）· 03-后端技术评审.md（后端/全栈）· 04-前端技术评审.md（前端/全栈）· 05-测试用例评审.md（必创建）
 
 **约束**：只读 · 分支隔离 · 逐故事串行
 
@@ -227,9 +227,9 @@ flowchart LR
     classDef bad fill:#ffebee,stroke:#c62828;
 ```
 
-**产出**：05-后端实施报告.md（后端/全栈）· 06-前端实施报告.md（前端/全栈）· 07-测试用例报告.md（必创建）· 08-自改进复盘.md（必创建）
+**产出**：06-后端实施报告.md（后端/全栈）· 07-前端实施报告.md（前端/全栈）· 08-测试用例报告.md（必创建）· 09-自改进复盘.md（必创建）
 
-**约束**：源码唯一入口 · Gate A `04-测试用例评审.md` 不存在即阻断 · Gate B >2 轮阻断 · P0 不清零不进下一模块
+**约束**：源码唯一入口 · Gate A `05-测试用例评审.md` 不存在即阻断 · Gate B >2 轮阻断 · P0 不清零不进下一模块
 
 **末端触发** [强制集成](#强制集成)。
 
@@ -324,9 +324,9 @@ flowchart LR
 
 | 项目类型 | 反推来源 | 输出 |
 |---------|---------|------|
-| 前端 | `.vue`/`.jsx`/`.tsx` + 路由 + 状态管理 | 01 + 03 + 04 |
-| 后端 | 路由/控制器/服务/数据模型 | 01 + 02 + 04 |
-| 全栈 | 两端分别，契约对齐 | 01 + 02 + 03 + 04 |
+| 前端 | `.vue`/`.jsx`/`.tsx` + 路由 + 状态管理 | 01 + 02 + 04 + 05 |
+| 后端 | 路由/控制器/服务/数据模型 | 01 + 02 + 03 + 05 |
+| 全栈 | 两端分别，契约对齐 | 01 + 02 + 03 + 04 + 05 |
 
 ### 约束
 
@@ -461,7 +461,7 @@ flowchart LR
 
 | 类别 | 内容 |
 |------|------|
-| 数据契约 | `09-交互日志.md`（追加）· `.memory/rui-state.json`（覆盖写）· `.memory/execution-memory.jsonl`（追加）· `.improvement/proposals.jsonl`（追加）— 字段见 [coder.md §数据契约](./coder.md) |
+| 数据契约 | `10-交互日志.md`（追加）· `.memory/rui-state.json`（覆盖写）· `.memory/execution-memory.jsonl`（追加）· `.improvement/proposals.jsonl`（追加）— 字段见 [coder.md §数据契约](./coder.md) |
 | Hooks | Stop hooks 调用：hook-log → import-docs → hook-notify → delivery-gate |
 | 规则 | [code-pipeline](../../rules/code-pipeline.md) · [delivery-gate](../../rules/delivery-gate.md) · [doc-generation](../../rules/doc-generation.md) · [self-improve](../../rules/self-improve.md) · [rui-claude](../../rules/rui-claude.md) |
 | 角色 | [pm](../../agents/pm.md) · [coder](../../agents/coder.md) · [tester](../../agents/tester.md) · [reporter](../../agents/reporter.md) · [security](../../agents/security.md) · [self-improve](../../agents/self-improve.md) |

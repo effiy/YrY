@@ -19,9 +19,9 @@ flowchart TB
     end
 
     subgraph 产出["三报告"]
-        B["05-后端实施报告<br/>文件 · 接口 · 偏差 · P0"]:::rpt
-        F["06-前端实施报告<br/>组件 · 状态 · 偏差 · P0"]:::rpt
-        T["07-测试用例报告<br/>冒烟 · 回归 · Gate B"]:::rpt
+        B["06-后端实施报告<br/>文件 · 接口 · 偏差 · P0"]:::rpt
+        F["07-前端实施报告<br/>组件 · 状态 · 偏差 · P0"]:::rpt
+        T["08-测试用例报告<br/>冒烟 · 回归 · Gate B"]:::rpt
     end
 
     subgraph 策展["策展"]
@@ -65,7 +65,7 @@ flowchart LR
 | 部位 | 内容 | 来源公式 |
 |------|------|---------|
 | 版本行 | `v{版本} \| {日期} \| {模型} \| {分支}` | F.meta |
-| 关联文档 | 链接对应技术评审文档（05→02 / 06→03） | F.nav |
+| 关联文档 | 链接对应技术评审文档（05→03 / 07→04） | F.nav |
 | 主体章节 | 按类型对应的实施/测试公式全量 | F.story.backend-report / frontend-report / test-report |
 | 评审清单 | 全部 ✅ 方过 Gate B | 各公式 §末尾 |
 
@@ -111,7 +111,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph in["归 reporter"]
-        I1["过程报告<br/>05/06/07"]:::in
+        I1["过程报告<br/>06/07/08"]:::in
         I2["数据汇总<br/>+ 交叉引用"]:::in
         I3["知识沉淀<br/>+ git commit"]:::in
     end
