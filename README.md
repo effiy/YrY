@@ -1,6 +1,6 @@
 # YrY
 
-> 故事驱动的 SDLC 编排系统 — 需求拆分 → 文档管线 → 代码管线 → 交付。
+> 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。
 
 ## 系统全景
 
@@ -50,20 +50,64 @@ flowchart LR
     K --> K1[追加日志] --> K2[文档同步] --> K3[企微通知]
 ```
 
-每阶段产出对应编号文档（01–08），交付时三步 hook 按序执行。
-详见 [rules/code-pipeline.md](./rules/code-pipeline.md)、[rules/delivery-gate.md](./rules/delivery-gate.md)。
+每阶段产出对应编号文档（01–08），交付时三步 hook 按序执行。详见 [rules/code-pipeline.md](./rules/code-pipeline.md)、[rules/delivery-gate.md](./rules/delivery-gate.md)。
+
+## 命令
+
+只读命令不触发末端 hook，写入命令末端自动执行交付三步。
+
+```mermaid
+flowchart TD
+    Q1{"改的是业务故事<br>还是 .claude/ 配置?"}
+    Q1 -->|"业务故事"| Q2{"已有故事吗?"}
+    Q1 -->|".claude/ 配置"| RC["/rui-claude"]
+    Q2 -->|"无·仓库新搭"| INIT["/rui init"]
+    Q2 -->|"无·已有需求"| E2E["/rui <需求>"]
+    Q2 -->|"无·已有源码"| FC["/rui doc --from-code"]
+    Q2 -->|"已拆只缺文档"| DOC["/rui doc <需求>"]
+    Q2 -->|"文档齐缺实现"| CODE["/rui code <name>"]
+    Q2 -->|"代码改完想补文档"| FD["/rui code --from-doc"]
+    Q2 -->|"小修小补"| UPD["/rui update"]
+    Q2 -->|"只想看进度"| LIST["/rui list 或 /rui"]
+```
+
+### /rui — 业务故事 SDLC
+
+| 命令 | 类型 | 作用 |
+|------|------|------|
+| `/rui` | 只读 | 5 层管线评分排序，推荐下一步任务 |
+| `/rui list` | 只读 | 进度全景，按文件存在性判定状态 |
+| `/rui init` | 写入 | 建立基线：detect → explore → generate → setup → verify → trigger |
+| `/rui <需求>` | 写入 | 端到端：doc + code 自动串联，逐故事串行 |
+| `/rui doc <需求>` | 写入 | 拆需求出文档：生成 01/02/03/04，不改源码 |
+| `/rui code <name>` | 写入 | 实现故事：Gate A → 逐模块 → Gate B → 复盘 → 交付 |
+| `/rui update <name> [ctx]` | 写入 | 增量更新：T1/T2/T3 自动裁剪 |
+| `/rui doc --from-code [req]` | 只读 | 从源码反推文档：补缺失不覆盖 |
+| `/rui code --from-doc <name>` | 只读 | 从文档反推码：禁止改源码 |
+
+### /rui-claude — .claude/ 配置管理
+
+| 命令 | 类型 | 作用 |
+|------|------|------|
+| `/rui-claude` | 只读 | 任务推荐 |
+| `/rui-claude history [--limit N]` | 只读 | 操作历史 |
+| `/rui-claude retro [--name <story>]` | 写入 | 健康复盘 |
+| `/rui-claude sync` | 写入 | 远端同步：先 `rm -rf .claude/` 再 rsync |
+| `/rui-claude <req>` | 写入 | 需求管线 |
+
+> ⚠️ `sync` 执行前必须确认意图。详见 [rules/rui-claude.md](./rules/rui-claude.md)。
 
 ## Agent 角色
 
 ```mermaid
 flowchart LR
-    PM[pm<br/>决策中枢] -->|拆故事| CODER[coder<br/>代码实现]
-    CODER -->|逐模块| TESTER[tester<br/>质量卡点]
+    PM[pm<br>决策中枢] -->|拆故事| CODER[coder<br>代码实现]
+    CODER -->|逐模块| TESTER[tester<br>质量卡点]
     TESTER -->|Gate A·阻编码| CODER
-    TESTER -->|Gate B·阻交付| REPORTER[reporter<br/>过程记录]
+    TESTER -->|Gate B·阻交付| REPORTER[reporter<br>过程记录]
     REPORTER -->|三报告| PM
-    SECURITY[security<br/>威胁建模] -.约束.-> CODER
-    SI[self-improve<br/>持续改进] -.提案.-> PM
+    SECURITY[security<br>威胁建模] -.约束.-> CODER
+    SI[self-improve<br>持续改进] -.提案.-> PM
 ```
 
 - **pm** — 决策中枢：决定做/不做/延期，串起全部 Agent
@@ -111,53 +155,6 @@ flowchart LR
 - **wework-bot** — 自动（hook 触发）：企微机器人推送管线状态通知
 
 详见 [`skills/`](./skills/)。
-
-## 命令
-
-只读命令（`list`、推荐）不触发末端 hook，其余写入命令末端自动执行交付三步。
-
-```mermaid
-flowchart TD
-    Q1{"改的是业务故事<br/>还是 .claude/ 配置?"}
-    Q1 -->|"业务故事"| Q2{"已有故事吗?"}
-    Q1 -->|".claude/ 配置"| RC["/rui-claude"]
-    Q2 -->|"无·仓库新搭"| INIT["/rui init"]
-    Q2 -->|"无·已有需求"| E2E["/rui <需求>"]
-    Q2 -->|"无·已有源码"| FC["/rui doc --from-code"]
-    Q2 -->|"已拆只缺文档"| DOC["/rui doc <需求>"]
-    Q2 -->|"文档齐缺实现"| CODE["/rui code <name>"]
-    Q2 -->|"代码改完想补文档"| FD["/rui code --from-doc"]
-    Q2 -->|"小修小补"| UPD["/rui update"]
-    Q2 -->|"只想看进度"| LIST["/rui list 或 /rui"]
-```
-
-### /rui — 业务故事 SDLC
-
-**只读**
-- `/rui` — 任务推荐：5 层管线评分排序
-- `/rui list` — 进度全景：按文件存在性判定状态
-
-**写入**（末端自动交付三步）
-- `/rui init` — 建立基线：detect → explore → generate → setup → verify → trigger
-- `/rui <需求>` — 端到端：doc + code 自动串联，逐故事串行
-- `/rui doc <需求>` — 拆需求出文档：拆故事 + 生成 01/02/03/04，不改源码
-- `/rui code <name>` — 实现故事：Gate A → 逐模块 → Gate B → 复盘 → 交付
-- `/rui update <name> [ctx]` — 增量更新：T1/T2/T3 自动裁剪
-- `/rui doc --from-code [req]` — 从源码反推文档：只读，补缺失不覆盖
-- `/rui code --from-doc <name>` — 从文档反推码：只读，禁止改源码
-
-### /rui-claude — .claude/ 配置管理
-
-**只读**
-- `/rui-claude` — 任务推荐
-- `/rui-claude history [--limit N]` — 操作历史
-
-**写入**
-- `/rui-claude retro [--name <story>]` — 健康复盘
-- `/rui-claude sync` — 远端同步 ⚠️ 先 `rm -rf .claude/` 再 rsync
-- `/rui-claude <req>` — 需求管线
-
-> ⚠️ `sync` 执行前必须确认意图。详见 [rules/rui-claude.md](./rules/rui-claude.md)。
 
 ## 目录结构
 
@@ -207,86 +204,65 @@ flowchart TD
     MEM -->|记录| PIPE
 ```
 
-**管线** — 端到端 SDLC 流程，从需求解析到交付，每阶段有明确的进入/退出条件。 _Avoid_: workflow, process, 流程
-
-**故事** — 管线中单一、独立、可完成的作业单元。一个需求可拆为多个故事串行通过管线，各产出一组编号文档 (01–08)。 _Avoid_: task, ticket, issue
-
-**故事任务面板** — `docs/故事任务面板/<Project>/<name>/` 目录。每个故事的所有产物内聚在此。 _Avoid_: output directory, doc folder
-
-**Gate A** — 编码前的强制性阻断点。`05-测试用例评审.md` 不存在或未就绪→编码不得开始。单行 CSS/文案为唯一例外。 _Avoid_: test gate, pre-code check
-
-**Gate B** — 编码后的闭合验证。五步检查（环境快照→静态预检→设计对齐→单次执行→三报告）。修复 > 2 轮→阻断。 _Avoid_: verification gate, post-code check
-
-**P0 / P1 / P2** — P0 = 阻塞发布必修项；P1 = 当轮修复项；P2 = 记录不阻断项。P0 不清零不进下一模块。 _Avoid_: critical / major / minor
-
-**阻断** — 管线在当前阶段停止，状态写入 `.memory/rui-state.json`。阻断≠失败，重跑同命令从中断点续。 _Avoid_: stop, halt, fail
-
-**铁律** — 三条不可妥协的规则：(1) 验先于称 (2) 溯先于修 (3) 清先于进。 _Avoid_: rule, constraint
-
-**影响链** — 变更点的完整传递依赖图。五步闭合：列变更→选搜索词→全项目搜索→二级传递→标注处置。未闭合 = `chain-broken` 阻断。 _Avoid_: dependency graph, impact analysis
-
-**分支隔离** — 功能分支 `feat/<Project>-<name>` 从 main 创建。源码改动唯一入口为 `/rui code`。 _Avoid_: feature branch
-
-**反推** — 只读模式。`--from-code` 从源码反推文档；`--from-doc` 从文档反推源码补充。 _Avoid_: reverse engineering, backfill
-
-**证据等级** — A=已验证(附路径) B=可推导(附推导链) C=未验证(标「待补充」) D=幻觉(视为错误)。 _Avoid_: confidence level
-
-**Agent** — 六大协作角色：pm coder tester reporter security self-improve。每角色有交接信号和验证方式。 _Avoid_: bot, worker, role
-
-**公式** — 结构化文档产出规范。分为通用元素 (F.meta/F.nav/F.evidence)、故事主线 (F.story.*)、补充文档 (F.supp.*)。 _Avoid_: template, format
-
-**交付三步** — 管线末端强制序列：hook-log → import-docs → wework-bot。任一缺失 = 管线未闭合。 _Avoid_: delivery pipeline, post-steps
-
-**自改进** — D0–D7 诊断循环。采集执行数据→六维评估→生成改进提案→提案闭合。 _Avoid_: retrospective, post-mortem
-
-**执行记忆** — `.memory/execution-memory.jsonl`（追加）+ `.memory/rui-state.json`（覆盖写）。 _Avoid_: state, log
-
-**项目类型** — frontend / backend / fullstack / meta / unknown。决定文档生成矩阵（前端补 03/06，后端补 02/05，全栈全部补）。 _Avoid_: stack type
-
-**需求** — `/rui` 的输入：纯文本、`@` 文件引用、或 URL。pm 解析后拆为一组故事。 _Avoid_: input, spec, feature request
-
-**插件** — YrY 本身是 Claude Code 插件，用自身管线管理自身演进。 _Avoid_: extension, addon
-
-### 已知歧义
-
-- "流程" 曾被同时用于指**管线**(机制)和**交付三步**(收口动作)——管线是全过程，交付三步是末端收口
-- "阻断" 与"降级"易混淆——阻断 = 管线停止需修复重跑；降级 = 记录标记但不停止前进
-- "故事" 与"任务"曾混用——故事是管线单元，任务是故事内部 §4 的工作拆分
-- "公式" 与"模板" 不同——公式是规约(描述 what)，模板是具体文件(描述 how)。本系统只用公式，不依赖模板文件
+| 术语 | 含义 | Avoid |
+|------|------|-------|
+| **管线** | 端到端 SDLC 流程，需求→交付，每阶段有进入/退出条件。区别于"交付三步"（仅末端收口动作）。 | workflow, process, 流程 |
+| **故事** | 管线中单一、独立、可完成的作业单元。一个需求可拆为多个故事串行通过管线，各产出一组 01–08 文档。故事内 §4 的工作拆分称"任务"，非管线单元。 | task, ticket, issue |
+| **故事任务面板** | `docs/故事任务面板/<Project>/<name>/` 目录。每个故事的所有产物内聚在此。 | output directory, doc folder |
+| **Gate A** | 编码前的强制性阻断点。`05-测试用例评审.md` 不存在或未就绪→编码不得开始。单行 CSS/文案为唯一例外。 | test gate, pre-code check |
+| **Gate B** | 编码后的闭合验证。五步检查（环境快照→静态预检→设计对齐→单次执行→三报告）。修复 > 2 轮→阻断。 | verification gate, post-code check |
+| **P0 / P1 / P2** | P0 = 阻塞发布必修项；P1 = 当轮修复项；P2 = 记录不阻断项。P0 不清零不进下一模块。 | critical / major / minor |
+| **阻断** | 管线在当前阶段停止，状态写入 `.memory/rui-state.json`。阻断≠失败，重跑同命令从中断点续。区别于"降级"（记录标记但不停止前进）。 | stop, halt, fail |
+| **铁律** | 三条不可妥协的规则：验先于称、溯先于修、清先于进。 | rule, constraint |
+| **影响链** | 变更点的完整传递依赖图。五步闭合：列变更→选搜索词→全项目搜索→二级传递→标注处置。未闭合 = `chain-broken` 阻断。 | dependency graph, impact analysis |
+| **分支隔离** | 功能分支 `feat/<Project>-<name>` 从 main 创建。源码改动唯一入口为 `/rui code`。 | feature branch |
+| **反推** | 只读模式。`--from-code` 从源码反推文档；`--from-doc` 从文档反推源码补充。 | reverse engineering, backfill |
+| **证据等级** | A=已验证(附路径) B=可推导(附推导链) C=未验证(标"待补充") D=幻觉(视为错误)。 | confidence level |
+| **Agent** | 六大协作角色：pm coder tester reporter security self-improve。每角色有交接信号和验证方式。 | bot, worker, role |
+| **公式** | 结构化文档产出规范。分为通用元素 (F.meta/F.nav/F.evidence)、故事主线 (F.story.*)、补充文档 (F.supp.*)。区别于"模板"——公式是规约 (what)，模板是文件 (how)；本系统只用公式。 | template, format |
+| **交付三步** | 管线末端强制序列：hook-log → import-docs → wework-bot。任一缺失 = 管线未闭合。 | delivery pipeline, post-steps |
+| **自改进** | D0–D7 诊断循环。采集执行数据→六维评估→生成改进提案→提案闭合。 | retrospective, post-mortem |
+| **执行记忆** | `.memory/execution-memory.jsonl`（追加）+ `.memory/rui-state.json`（覆盖写）。 | state, log |
+| **项目类型** | frontend / backend / fullstack / meta / unknown。决定文档生成矩阵（前端补 03/06，后端补 02/05，全栈全部补）。 | stack type |
+| **需求** | `/rui` 的输入：纯文本、`@` 文件引用、或 URL。pm 解析后拆为一组故事。 | input, spec, feature request |
+| **插件** | YrY 本身是 Claude Code 插件，用自身管线管理自身演进。 | extension, addon |
 
 > 项目约束见 [CLAUDE.md](./CLAUDE.md#项目约束)。
 
 ## 外部参考
 
-> pm 拆故事与描述故事时，应主动查阅以下生态资源汲取模式与理念，提升故事描述质量。
-> 自改进与架构深化时同样适用。每项标注适用阶段。
+> pm 拆故事、架构设计、自改进时，应主动查阅以下资源汲取模式与理念。
 
 ### 故事描述 — 模式与方法论
 
-- **[obra/superpowers](https://github.com/obra/superpowers)** — AI agent 软件开发方法论：可组合 skills、spec-driven 开发、验证门禁、行为纪律。**适用：故事拆分模式、AC 设计、验证策略。** 本项目行为纪律和验证门禁受其启发。
-- **[gsd-build/get-shit-done](https://github.com/gsd-build/get-shit-done/tree/main)** — 元提示与上下文工程系统，专注"上下文退化"问题。**适用：故事描述粒度控制、上下文边界设计。** spec-driven 模式与本项目文档管线互补。
-- **[mattpocock/skills](https://github.com/mattpocock/skills)** — 真实工程场景 Agent skills 集合，强调"不是 vibe coding"。**适用：skill 职责边界设计、故事内任务拆分模式。**
-- **[nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)** — 跨平台 UI/UX 设计 skill，含 161 条推理规则和 67 种 UI 风格。**适用：前端故事用户场景描述、交互设计参考。**
+| 资源 | 用途 |
+|------|------|
+| [obra/superpowers](https://github.com/obra/superpowers) | AI agent 软件开发方法论：可组合 skills、spec-driven 开发、验证门禁、行为纪律。本项目行为纪律和验证门禁受其启发。 |
+| [gsd-build/get-shit-done](https://github.com/gsd-build/get-shit-done/tree/main) | 元提示与上下文工程，专注"上下文退化"问题。spec-driven 模式与本项目文档管线互补。 |
+| [mattpocock/skills](https://github.com/mattpocock/skills) | 真实工程场景 Agent skills 集合，强调"不是 vibe coding"。 |
+| [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | 跨平台 UI/UX 设计 skill，含 161 条推理规则和 67 种 UI 风格。前端故事用户场景与交互设计权威参考。 |
+| [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) | Andrej Karpathy 对 LLM 编码陷阱的观察提炼为 CLAUDE.md，改进 Claude Code 行为。故事拆分与 Agent 纪律参考。 |
 
 ### 实现与架构 — 执行模式
 
-- **[thedotmack/claude-mem](https://github.com/thedotmack/claude-mem)** — 跨会话持久化记忆引擎，AI 压缩 + 相似检索自动注入。**适用：执行记忆体系设计、跨故事知识沉淀。**
-- **[affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code/blob/main/README.zh-CN.md)** — Agent harness 性能优化全集，含 skills、记忆、安全、研究优先开发。**适用：技能组织方式、安全约束思路。**
+| 资源 | 用途 |
+|------|------|
+| [thedotmack/claude-mem](https://github.com/thedotmack/claude-mem) | 跨会话持久化记忆引擎，AI 压缩 + 相似检索自动注入。执行记忆体系设计参考。 |
+| [affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code/blob/main/README.zh-CN.md) | Agent harness 性能优化全集，含 skills、记忆、安全、hook 实践、研究优先开发。 |
+| [rohitg00/agentmemory](https://github.com/rohitg00/agentmemory) | 基于真实世界基准的 AI 编码 Agent 持久化记忆方案。执行记忆体系设计参考。 |
+| [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) | 自改进 AI Agent：从经验中创建 skill、使用中自我优化、跨会话记忆搜索、内置 cron 调度。自改进 Agent 架构参考。 |
 
-### 设计参考 — UI/UX
+### 工具与平台
 
-> 前端故事的用户场景详述与页面设计补充文档，以 nextlevelbuilder/ui-ux-pro-max-skill 为权威参考（见上方故事描述）。
+| 资源 | 用途 |
+|------|------|
+| [Claude Code 官方文档](https://code.claude.com/docs/en/overview) | CLI 完整功能参考，含 hooks、MCP、skills、IDE 集成、权限系统。技能设计时确认 harness 能力边界。 |
 
-### 工具与平台 — AI 开发基础设施
+### 趋势与发现
 
-- **[Claude Code 官方文档](https://code.claude.com/docs/en/overview)** — Claude Code CLI 完整功能参考，含 hooks、MCP、skills、IDE 集成、权限系统。**适用：技能设计时确认 harness 能力边界、hook 触发机制查阅。**
-- **[everything-claude-code](https://github.com/affaan-m/everything-claude-code/blob/main/README.zh-CN.md)** — Agent harness 性能优化全集（已在上方实现与架构中引用，此处强调 hook 与安全实践）。
-
-### 发现与洞察 — 趋势与权威开源源
-
-> pm 拆故事、架构设计、自改进时，应主动参考以下平台跟踪技术趋势与高质量开源项目，确保方案不落后于社区实践。
-
-- **[GitHub Top-Starred](https://github.com/search?q=stars%3A%3E100000&type=repositories&s=stars&o=desc)** — GitHub 十万星以上顶级项目列表。**适用：技术选型时参考社区验证的高质量开源项目、架构模式借鉴。**
-- **[GitHub Trending](https://github.com/trending)** — GitHub 每日/每周热门仓库。**适用：感知社区当前关注方向、发现新兴工具与框架。**
-- **[OSS Insight](https://ossinsight.io/)** — 开源数据分析平台，提供仓库排名、开发者画像、技术趋势洞察。**适用：技术选型数据支撑、竞品分析、生态健康度评估。**
-- **[TrendShift](https://trendshift.io/github-trending-repositories?trending-range=7)** — GitHub 仓库趋势变化追踪，按时间窗口比较 star 增长。**适用：识别快速上升的项目、捕捉技术采用信号。**
+| 资源 | 用途 |
+|------|------|
+| [GitHub Trending](https://github.com/trending) | 每日/每周热门仓库，感知社区当前关注方向、发现新兴工具。 |
+| [OSS Insight](https://ossinsight.io/) | 开源数据分析平台，仓库排名、开发者画像、技术趋势洞察。技术选型数据支撑。 |
+| [TrendShift](https://trendshift.io/github-trending-repositories?trending-range=7) | GitHub 仓库趋势变化追踪，按时间窗口比较 star 增长。识别快速上升项目。 |
+| [GitHub Top-Starred](https://github.com/search?q=stars%3A%3E100000&type=repositories&s=stars&o=desc) | 十万星以上顶级项目列表。技术选型时参考社区验证的高质量开源项目。 |
