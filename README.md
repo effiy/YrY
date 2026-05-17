@@ -251,6 +251,7 @@ flowchart TD
 | [affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code/blob/main/README.zh-CN.md) | Agent harness 性能优化全集，含 skills、记忆、安全、hook 实践、研究优先开发。 |
 | [rohitg00/agentmemory](https://github.com/rohitg00/agentmemory) | 基于真实世界基准的 AI 编码 Agent 持久化记忆方案。执行记忆体系设计参考。 |
 | [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) | 自改进 AI Agent：从经验中创建 skill、使用中自我优化、跨会话记忆搜索、内置 cron 调度。自改进 Agent 架构参考。 |
+| [donnemartin/system-design-primer](https://github.com/donnemartin/system-design-primer) | 大规模系统设计学习资源，含 Anki 抽认卡。架构设计阶段参考。 |
 
 ### 工具与平台
 
