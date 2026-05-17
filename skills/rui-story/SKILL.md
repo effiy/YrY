@@ -156,7 +156,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    PARSE["解析<br/>Project + name"]:::op --> LOCATE["定位目录<br/>docs/故事任务面板/&lt;P&gt;/&lt;n&gt;/"]:::op
+    PARSE["解析<br/>Project + name"]:::op --> LOCATE["定位目录<br/>docs/故事任务面板/&lt;n&gt;/"]:::op
     LOCATE --> ENUM["枚举文件<br/>含大小 / 修改时间"]:::op
     ENUM --> META["读取元数据<br/>.memory/rui-state.json<br/>story-type.json"]:::op
     META --> BRANCH["检查 git 分支<br/>git branch --list"]:::op
@@ -171,7 +171,7 @@ flowchart LR
 ```
 <Project>-<name> · <status badge>
 
-📂 目录: docs/故事任务面板/<Project>/<name>/
+📂 目录: docs/故事任务面板/<name>/
 📋 类型: <type>
 📄 文件: <N> 个
 
@@ -196,7 +196,7 @@ flowchart TD
     VALID -->|"否"| ERR1["报错退出"]:::bad
     VALID -->|"是"| CONFLICT{"目标目录<br/>已存在?"}
     CONFLICT -->|"是"| ERR2["拒绝覆盖<br/>引导 /rui update"]:::bad
-    CONFLICT -->|"否"| CREATE["创建目录<br/>docs/故事任务面板/&lt;P&gt;/&lt;n&gt;/"]:::op
+    CONFLICT -->|"否"| CREATE["创建目录<br/>docs/故事任务面板/&lt;n&gt;/"]:::op
     CREATE --> MEMORY["创建 .memory/<br/>写入 story-type.json"]:::op
     MEMORY --> DONE["输出创建确认"]:::out
 
@@ -241,7 +241,7 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    Q{"有 &lt;name&gt;?"} -->|"是"| SCOPED["node skills/import-docs/sync.mjs<br/>dir=docs/故事任务面板/&lt;P&gt;/&lt;n&gt;/"]:::op
+    Q{"有 &lt;name&gt;?"} -->|"是"| SCOPED["node skills/import-docs/sync.mjs<br/>dir=docs/故事任务面板/&lt;n&gt;/"]:::op
     Q -->|"否"| ALL["node skills/import-docs/sync.mjs<br/>dir=docs/故事任务面板/"]:::op
     SCOPED --> OUT["输出同步结果"]:::out
     ALL --> OUT
@@ -251,7 +251,7 @@ flowchart LR
 ```
 
 - 完全委托 import-docs，不自行实现同步逻辑
-- 限一个故事：`dir=docs/故事任务面板/<Project>/<name>/`
+- 限一个故事：`dir=docs/故事任务面板/<name>/`
 - 全量：`dir=docs/故事任务面板/`
 
 ## `/rui-story rename <old> <new>` — 重命名故事

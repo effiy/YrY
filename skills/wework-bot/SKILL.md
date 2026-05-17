@@ -69,7 +69,7 @@ flowchart LR
 | `agent=<name>` | 通过内置 agents 映射路由（推荐） | — |
 | `robot=<name>` | 直接指定机器人 | — |
 | `project=<name>` | 项目名，作为消息首行 `【项目名】` | 从 `name` 推断；无 `name` 时取 `basename(项目根)` |
-| `name=<Project-story>` | 故事全名，分解为 `<Project>/<story>/` 日志路径 | — |
+| `name=<Project-story>` | 故事全名，分解为 `<story>/` 日志路径 | — |
 | `content=<text>` | 消息正文 | — |
 | `contentFile=<path>` | 从文件读正文（相对路径基于项目根） | — |
 | `apiUrl=<url>` | 通知网关地址 | `WEWORK_BOT_API_URL` 或默认 `https://api.effiy.cn/wework/send-message` |
@@ -87,7 +87,7 @@ flowchart LR
 name = "<Project>-<story>"   # 以首个 - 切分
   → project = name 首段
   → story   = name 余段
-  → 日志路径 = docs/故事任务面板/<Project>/<story>/00-消息通知列表.md
+  → 日志路径 = docs/故事任务面板/<story>/00-消息通知列表.md
 ```
 
 `name` 不含 `-` 时，`project` 与 `story` 同名（仍按上式生成路径）。
@@ -289,7 +289,7 @@ flowchart LR
 
 | 步骤 | 行为 |
 |------|------|
-| 活跃故事识别 | 遍历 `docs/故事任务面板/<Project>/<story>/.memory/rui-state.json`，挑选 `timestamp` 在最近 1 小时内且最新的一条 |
+| 活跃故事识别 | 遍历 `docs/故事任务面板/<story>/.memory/rui-state.json`，挑选 `timestamp` 在最近 1 小时内且最新的一条 |
 | 无活跃故事 | 静默跳过，退出码 0 |
 | 消息构建 | 见下文「自动消息模板」 |
 | 发送 | 等价 `send agent=rui name=<Project>-<story> noSend=true content=...` |
@@ -327,9 +327,9 @@ flowchart LR
 ```
 🎯 结论: 完成 <Project>-<story> <current_stage> 阶段
 📝 描述: 管线执行完毕
-📌 范围: docs/故事任务面板/<Project>/<story>/
+📌 范围: docs/故事任务面板/<story>/
 👉 下一步: 继续下一阶段
-🌐 影响: docs/故事任务面板/<Project>/<story>/
+🌐 影响: docs/故事任务面板/<story>/
 📎 证据: .memory/rui-state.json
 ```
 
@@ -338,10 +338,10 @@ flowchart LR
 ```
 🎯 结论: 阻断 <Project>-<story>
 📝 描述: 管线在 <current_stage> 阶段被阻断
-📌 范围: docs/故事任务面板/<Project>/<story>/
+📌 范围: docs/故事任务面板/<story>/
 ❌ 原因: <state.block_reason 或 "见 rui-state.json">
 🧭 恢复点: <current_stage>
-🌐 影响: docs/故事任务面板/<Project>/<story>/
+🌐 影响: docs/故事任务面板/<story>/
 📎 证据: .memory/rui-state.json
 ```
 

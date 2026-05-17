@@ -164,14 +164,14 @@ flowchart LR
 ## 产出收口
 
 ```
-故事任务面板/<Project>/<Story>/
+故事任务面板/<Story>/
 ├── 01-需求与故事.md
 ├── 02-用户使用场景.md
-├── 03-后端技术评审.md          ← 后端故事
-├── 04-前端技术评审.md          ← 前端故事
+├── 03-<Project>-后端技术评审.md          ← 后端故事
+├── 04-<Project>-前端技术评审.md          ← 前端故事
 ├── 05-测试用例评审.md
-├── 06-后端实施报告.md          ← coder 产出
-├── 07-前端实施报告.md          ← coder 产出
+├── 06-<Project>-后端实施报告.md          ← coder 产出
+├── 07-<Project>-前端实施报告.md          ← coder 产出
 ├── 08-测试报告.md              ← reporter 产出
 └── 09-自改进复盘.md           ← self-improve 产出
 ```

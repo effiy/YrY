@@ -66,7 +66,7 @@ flowchart TD
     ALL & KEEP --> Q2{"目录命中排除?"}
     Q2 -->|"是"| SKIP
     Q2 -->|"否"| Q3{"路径匹配?"}
-    Q3 -->|"docs/故事任务面板/ 下"| PATH1["远端 = &lt;prefix&gt;/故事任务面板/&lt;workspace 名&gt;/&lt;故事相对路径&gt;"]:::path
+    Q3 -->|"docs/故事任务面板/ 下"| PATH1["远端 = &lt;prefix&gt;/故事任务面板/&lt;故事相对路径&gt;"]:::path
     Q3 -->|"其他"| PATH2["远端 = &lt;prefix&gt;/&lt;workspace 名&gt;/&lt;相对路径&gt;"]:::path
 
     classDef rule fill:#e3f2fd,stroke:#1565c0;
@@ -81,7 +81,7 @@ flowchart TD
 | 默认排除目录 | `.git` · `node_modules` · `.claude-plugin` |
 | 用户排除 | `--exclude a,b,c` 追加排除子目录名（精确匹配，命中即整树跳过） |
 | 路径规整 | 所有分隔符 → `/`，所有空白字符 → `_` |
-| 故事面板路径 | 路径以 `docs/故事任务面板/` 开头时，远端 = `故事任务面板/<workspace 名>/<相对路径>`，一级标签 = 故事任务面板，去掉 `docs/` |
+| 故事面板路径 | 路径以 `docs/故事任务面板/` 开头时，远端 = `故事任务面板/<相对路径>`，一级标签 = 故事任务面板，去掉 `docs/` |
 | workspace 标签 | 其他路径以项目根目录名（即 `workspace 名`）为一级标签 |
 | **硬约束** | 远端路径一级目录标签只允许 **项目目录名称** 或 **故事任务面板** 两种，禁止其他任何值；`prefix` 不得绕过此约束 |
 

@@ -45,7 +45,7 @@ flowchart TB
 |------|--------|---------|
 | ① 版头齐 | 每文档必含版本行 + 导航块 | 无 F.meta 版本头直接开写 |
 | ② 表达优先 | 图 → 结构化文本 → 表，架构/流程/关系优先 mermaid | 大段文字描述架构，无图 |
-| ③ 目录清 | 故事文档按 `<Project>/<name>/` 独立子目录 | 文档散落在项目根目录 |
+| ③ 目录清 | 故事文档按 `<name>/` 独立子目录 | 文档散落在项目根目录 |
 | ④ 证据足 | Level A/B 写入，C 标注待补充，D 禁止出现 | "应该有个 UserService" |
 | ⑤ 产出聚 | 文件按管线阶段创建，不可提前 | 编码前已写好实施报告 |
 | ⑥ 裁剪准 | 增量更新按 T1/T2/T3 自动裁剪管线 | T1 措辞修正跑完整管线 |
@@ -114,7 +114,7 @@ flowchart LR
     INPUT["CLI 输入<br/>&lt;Project&gt;-&lt;name&gt;"]:::src --> PARSE["解析"]:::op
     PARSE --> PROJ["&lt;Project&gt; 大驼峰"]:::rule
     PARSE --> NAME["&lt;name&gt; kebab-case"]:::rule
-    PROJ & NAME --> PATH["docs/故事任务面板/<br/>&lt;Project&gt;/&lt;name&gt;/"]:::out
+    PROJ & NAME --> PATH["docs/故事任务面板/<br/>&lt;name&gt;/"]:::out
 
     classDef src fill:#e8f5e9,stroke:#2e7d32;
     classDef op fill:#e3f2fd,stroke:#1565c0;
@@ -124,14 +124,14 @@ flowchart LR
 
 | 文档类 | 路径模式 | 编号规则 | 用途 |
 |--------|---------|---------|------|
-| 故事 | `docs/故事任务面板/<Project>/<name>/` | 编号前缀 + 补充 | 执行 |
+| 故事 | `docs/故事任务面板/<name>/` | 编号前缀 + 补充 | 执行 |
 
 | 约束 | 规则 |
 |------|------|
 | `<Project>` | 大驼峰（PascalCase） |
 | `<name>` | kebab-case |
 | CLI 输入 | `<Project>-<name>`，`-` 分隔 |
-| 缺项目级目录 | 阻断 |
+| 03/04/06/07 文件名 | 序号后追加 `<Project>-`，如 `03-<Project>-后端技术评审.md` |
 
 ## ④ 证据足
 
@@ -275,7 +275,7 @@ flowchart LR
 |------|------------|
 | 版头齐：版本行 + 导航块 | 补 F.meta / F.nav |
 | 表达优先：图 → 结构化文本 → 表，架构/流程/关系有 mermaid | 文字改图，列表改表，补齐缺失的 mermaid |
-| 目录清：`<Project>/<name>/` 合规 | 移动文件到正确目录 |
+| 目录清：`<name>/` 合规 | 移动文件到正确目录 |
 | 证据足：无 Level D 内容 | 删 D 级内容，补 C 标注或查证升级 |
 | 产出聚：文件按阶段创建，不提前 | 删除提前创建的文件 |
 | 策展完成：git commit 已提交 | 执行 git commit |

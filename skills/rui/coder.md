@@ -8,10 +8,10 @@
 
 ```
 docs/
-└── 故事任务面板/<Project>/<name>/   ← 执行：主线 + 通知 + 交互日志 + 补充
+└── 故事任务面板/<name>/   ← 执行：主线 + 通知 + 交互日志 + 补充
 ```
 
-**命名规则**：`<Project>` 大驼峰（`YiWeb`），`<name>` kebab-case（`user-login`）。CLI 输入 `<Project>-<name>`，rui 管线内分解为路径 `<Project>/<name>`。详见 [rules/doc-generation.md](../../rules/doc-generation.md)。
+**命名规则**：`<Project>` 大驼峰（`YiWeb`），`<name>` kebab-case（`user-login`）。CLI 输入 `<Project>-<name>`，rui 管线内分解为路径 `<name>`。详见 [rules/doc-generation.md](../../rules/doc-generation.md)。
 
 ## 故事目录骨架
 
@@ -27,12 +27,12 @@ flowchart LR
         B7["02-用户使用场景.md"]:::must
     end
     subgraph 后端["纯后端 / 全栈"]
-        C1["03-后端技术评审.md"]:::be
-        C2["06-后端实施报告.md"]:::be
+        C1["03-[Project]-后端技术评审.md"]:::be
+        C2["06-[Project]-后端实施报告.md"]:::be
     end
     subgraph 前端["纯前端 / 全栈"]
-        D1["04-前端技术评审.md"]:::fe
-        D2["07-前端实施报告.md"]:::fe
+        D1["04-[Project]-前端技术评审.md"]:::fe
+        D2["07-[Project]-前端实施报告.md"]:::fe
     end
     subgraph 补充["按需"]
         E1["{专题}.md"]:::supp
@@ -47,11 +47,11 @@ flowchart LR
 | 文件 | 必选 | 纯前端 | 纯后端 | 全栈 | 负责人 | 阶段 |
 |------|:---:|:---:|:---:|:---:|--------|------|
 | 01-故事任务.md | ✓ | ✓ | ✓ | ✓ | pm | 文档生成 |
-| 03-后端技术评审.md | | — | ✓ | ✓ | coder + security | 文档生成 |
-| 04-前端技术评审.md | | ✓ | — | ✓ | coder | 文档生成 |
+| 03-&lt;Project&gt;-后端技术评审.md | | — | ✓ | ✓ | coder + security | 文档生成 |
+| 04-&lt;Project&gt;-前端技术评审.md | | ✓ | — | ✓ | coder | 文档生成 |
 | 05-测试用例评审.md | ✓ | ✓ | ✓ | ✓ | tester | 文档生成 |
-| 06-后端实施报告.md | | — | ✓ | ✓ | coder | 验证 |
-| 07-前端实施报告.md | | ✓ | — | ✓ | coder | 验证 |
+| 06-&lt;Project&gt;-后端实施报告.md | | — | ✓ | ✓ | coder | 验证 |
+| 07-&lt;Project&gt;-前端实施报告.md | | ✓ | — | ✓ | coder | 验证 |
 | 08-测试用例报告.md | ✓ | ✓ | ✓ | ✓ | tester | 验证 |
 | 09-自改进复盘.md | ✓ | ✓ | ✓ | ✓ | pm + reporter | 自改进 |
 | 00-消息通知列表.md | 自动 | ✓ | ✓ | ✓ | wework-bot hook | 交付 |
@@ -148,7 +148,7 @@ flowchart LR
 ```
 
 ```
-docs/故事任务面板/<Project>/<name>/
+docs/故事任务面板/<name>/
 ├── 10-交互日志.md                   ← rui 管线追加写入
 ├── .improvement/
 │   └── proposals.jsonl              ← self-improve 追加
@@ -286,7 +286,7 @@ self-improve 引擎追加写入。
 
 | 标志 | 未达标的处置 |
 |------|------------|
-| 目录 `<Project>/<name>/` 命名合规 | 移动文件到正确目录 |
+| 目录 `<name>/` 命名合规 | 移动文件到正确目录 |
 | 按项目类型必选文档齐全 | 补创建缺失文档 |
 | 首尾导航块 + 跨文档引用完整 | 补 F.nav 导航块（见 [formulas.md](./formulas.md)） |
 | 数据契约四文件由 rui 管线维护 | 撤销人工编辑，以管线写入为准 |

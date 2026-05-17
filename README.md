@@ -211,7 +211,7 @@ YrY/
 ├── docs/
 │   ├── adr/                 #   架构决策记录
 │   ├── 故事任务面板/        #   故事产出目录
-│   │   └── <Project>/<name>/
+│   │   └── <name>/
 │   └── .claude-plugin/      #   插件注册信息
 ├── CLAUDE.md
 └── README.md
@@ -240,7 +240,7 @@ flowchart TD
 |------|------|-------|
 | **管线** | 端到端 SDLC 流程，需求→交付，每阶段有进入/退出条件。区别于"交付三步"（仅末端收口动作）。 | workflow, process, 流程 |
 | **故事** | 管线中单一、独立、可完成的作业单元。一个需求可拆为多个故事串行通过管线，各产出一组 01–08 文档。故事内 §4 的工作拆分称"任务"，非管线单元。 | task, ticket, issue |
-| **故事任务面板** | `docs/故事任务面板/<Project>/<name>/` 目录。每个故事的所有产物内聚在此。 | output directory, doc folder |
+| **故事任务面板** | `docs/故事任务面板/<name>/` 目录。每个故事的所有产物内聚在此。 | output directory, doc folder |
 | **Gate A** | 编码前的强制性阻断点。`05-测试用例评审.md` 不存在或未就绪→编码不得开始。单行 CSS/文案为唯一例外。 | test gate, pre-code check |
 | **Gate B** | 编码后的闭合验证。五步检查（环境快照→静态预检→设计对齐→单次执行→三报告）。修复 > 2 轮→阻断。 | verification gate, post-code check |
 | **P0 / P1 / P2** | P0 = 阻塞发布必修项；P1 = 当轮修复项；P2 = 记录不阻断项。P0 不清零不进下一模块。 | critical / major / minor |
