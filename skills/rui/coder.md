@@ -17,27 +17,30 @@ docs/
 
 ```mermaid
 flowchart LR
+    subgraph 基线["基线文档（问题+用户空间）"]
+        B1["01-故事任务.md<br/>WHAT & WHY"]:::baseline
+        B7["02-用户使用场景.md<br/>WHO & HOW"]:::baseline
+    end
     subgraph 必选["必选（所有类型）"]
-        B1["01-故事任务.md"]:::must
         B2["05-测试用例评审.md"]:::must
         B3["08-测试用例报告.md"]:::must
         B4["09-自改进复盘.md"]:::must
         B5["00-消息通知列表.md"]:::must
         B6["10-交互日志.md"]:::must
-        B7["02-用户使用场景.md"]:::must
     end
     subgraph 后端["纯后端 / 全栈"]
-        C1["03-后端技术评审.md"]:::be
-        C2["06-后端实施报告.md"]:::be
+        C1["03-{project}-后端技术评审.md"]:::be
+        C2["06-{project}-后端实施报告.md"]:::be
     end
     subgraph 前端["纯前端 / 全栈"]
-        D1["04-前端技术评审.md"]:::fe
-        D2["07-前端实施报告.md"]:::fe
+        D1["04-{project}-前端技术评审.md"]:::fe
+        D2["07-{project}-前端实施报告.md"]:::fe
     end
     subgraph 补充["按需"]
         E1["{专题}.md"]:::supp
     end
 
+    classDef baseline fill:#fff3e0,stroke:#e65100,stroke-width:2px;
     classDef must fill:#e8f5e9,stroke:#2e7d32;
     classDef be fill:#e3f2fd,stroke:#1565c0;
     classDef fe fill:#f3e5f5,stroke:#6a1b9a;
@@ -47,11 +50,11 @@ flowchart LR
 | 文件 | 必选 | 纯前端 | 纯后端 | 全栈 | 负责人 | 阶段 |
 |------|:---:|:---:|:---:|:---:|--------|------|
 | 01-故事任务.md | ✓ | ✓ | ✓ | ✓ | pm | 文档生成 |
-| 03-后端技术评审.md | | — | ✓ | ✓ | coder + security | 文档生成 |
-| 04-前端技术评审.md | | ✓ | — | ✓ | coder | 文档生成 |
+| 03-{project}-后端技术评审.md | | — | ✓ | ✓ | coder + security | 文档生成 |
+| 04-{project}-前端技术评审.md | | ✓ | — | ✓ | coder | 文档生成 |
 | 05-测试用例评审.md | ✓ | ✓ | ✓ | ✓ | tester | 文档生成 |
-| 06-后端实施报告.md | | — | ✓ | ✓ | coder | 验证 |
-| 07-前端实施报告.md | | ✓ | — | ✓ | coder | 验证 |
+| 06-{project}-后端实施报告.md | | — | ✓ | ✓ | coder | 验证 |
+| 07-{project}-前端实施报告.md | | ✓ | — | ✓ | coder | 验证 |
 | 08-测试用例报告.md | ✓ | ✓ | ✓ | ✓ | tester | 验证 |
 | 09-自改进复盘.md | ✓ | ✓ | ✓ | ✓ | pm + reporter | 自改进 |
 | 00-消息通知列表.md | 自动 | ✓ | ✓ | ✓ | wework-bot hook | 交付 |
@@ -69,7 +72,7 @@ flowchart LR
 .memory/rui-state.json             ← 管线状态（覆盖）
 ```
 
-> **编号即顺序**：文件名编号前缀对应管线阶段顺序。01 是唯一真相源，技术评审（03/04/05）在文档生成阶段创建，实施与测试报告（06/07/08）在验证阶段创建——不可提前。
+> **编号即顺序**：文件名编号前缀对应管线阶段顺序。01+02 是基线文档（问题空间+用户空间），03-05 是解决方案文档，06-08 是验证文档——不可提前创建。
 
 ## 文件创建生命周期
 
@@ -80,12 +83,12 @@ flowchart TB
     B --> C["影响分析"]:::phase
     C --> D["架构设计"]:::phase
     D --> E["文档生成"]:::phase
-    E -->|"创建"| E1["01 故事任务<br/>02 用户使用场景<br/>03/04 技术评审<br/>05 测试评审<br/>补充文档"]:::create
+    E -->|"创建"| E1["01 故事任务<br/>02 用户使用场景<br/>03/04 {project}技术评审<br/>05 测试评审<br/>补充文档"]:::create
     E --> F["预检"]:::phase
     F --> G["Gate A"]:::gate
     G --> H["实现"]:::phase
     H --> I["验证"]:::phase
-    I -->|"创建"| I1["06/07 实施报告<br/>08 测试报告"]:::create
+    I -->|"创建"| I1["06/07 {project}实施报告<br/>08 测试报告"]:::create
     I --> J["自改进"]:::phase
     J -->|"创建"| J1["09 自改进复盘"]:::create
     J --> K["交付"]:::phase

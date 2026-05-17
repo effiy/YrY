@@ -19,8 +19,8 @@ flowchart TB
     end
 
     subgraph 产出["三报告"]
-        B["06-后端实施报告<br/>文件 · 接口 · 偏差 · P0"]:::rpt
-        F["07-前端实施报告<br/>组件 · 状态 · 偏差 · P0"]:::rpt
+        B["06-{project}-后端实施报告<br/>文件 · 接口 · 偏差 · P0"]:::rpt
+        F["07-{project}-前端实施报告<br/>组件 · 状态 · 偏差 · P0"]:::rpt
         T["08-测试用例报告<br/>冒烟 · 回归 · Gate B"]:::rpt
     end
 
