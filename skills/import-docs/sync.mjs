@@ -163,7 +163,7 @@ function resolveRemotePath(localPath, root, workspaceName, prefix) {
   if (prefix.length > 0) segments.push(...prefix);
 
   // docs/故事任务面板/ 下的文件：故事任务面板为第一层标签，去除前置目录
-  // 结果: 故事任务面板/{项目目录}/{故事任务目录}/*
+  // 结果: 故事任务面板/{故事任务目录}/*
   const panelIdx = rel.indexOf("/docs/故事任务面板/");
   const isPanelRoot = rel.startsWith("docs/故事任务面板/");
   if (isPanelRoot || panelIdx !== -1) {
