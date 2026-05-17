@@ -40,7 +40,7 @@ flowchart TB
 | `/rui-claude sync` | `rm -rf .claude` → rsync 远端配置到本地 | `.claude/` 全量覆盖 |
 | `/rui-claude retro` | 分析 .claude/ 结构健康度 → 三节复盘 | `docs/自改进故事面板/<project>-<date>.md` |
 | `/rui-claude history` | 查看操作历史：`list [--limit N]` / `stats [--json]` | 终端输出 |
-| `/rui-claude <req>` | 需求解析→故事拆分→逐故事 doc+code 管线→交付 | `.claude/` 内文件变更 |
+| `/rui-claude 需求` | 需求解析→故事拆分→逐故事 doc+code 管线→交付 | `.claude/` 内文件变更 |
 | `/rui-claude` | 按 5 层管线评分推荐 5~10 条任务 | 推荐列表 |
 
 ## 操作边界

@@ -32,7 +32,7 @@ flowchart TD
     Q2 -->|"看进度"| LIST["/rui-story list 或 /rui-story"]
 ```
 
-`<req>` 支持文本 / `@` 引用本地文件 / URL。`--name` 用 `<Project>-<name>` 格式（如 `YiWeb-user-login`）。
+`需求` 支持文本 / `@` 引用本地文件 / URL。`--name` 用 `<Project>-<name>` 格式（如 `YiWeb-user-login`）。
 
 ### 写入命令（末端自动交付三步）
 
@@ -42,7 +42,7 @@ flowchart TD
 - `/rui code <name>` — 实现故事：Gate A → 逐模块 → Gate B → 自改进 → 交付
 - `/rui update <name> [ctx] [--no-code]` — 增量更新：T1/T2/T3 自动裁剪
 - `/rui code --from-doc <name>` — 从文档反推：只读源码补全缺失文档，不覆盖已有
-- `/rui doc --from-code [req]` — 从源码反推：req 空时 pm 扫描推荐列表；req 有值时直接反推
+- `/rui doc --from-code 需求` — 从源码反推：req 空时 pm 扫描推荐列表；req 有值时直接反推
 
 ### 只读命令（不触发 hook）
 
@@ -236,7 +236,7 @@ flowchart LR
 
 ## 端到端
 
-> `/rui <req>` = `/rui doc <req>` → `/rui code <name>`，无中断一气呵成。
+> `/rui 需求` = `/rui doc 需求` → `/rui code <name>`，无中断一气呵成。
 
 ```mermaid
 flowchart LR
@@ -349,7 +349,7 @@ flowchart LR
 
 ### 触发时机
 
-**触发**：`init` / `doc` / `code` / `<req>` / `update` / `code --from-doc` / `doc --from-code`  
+**触发**：`init` / `doc` / `code` / `需求` / `update` / `code --from-doc` / `doc --from-code`  
 **不触发**：`/rui`（推荐）
 
 ### 执行顺序（不可跳序）

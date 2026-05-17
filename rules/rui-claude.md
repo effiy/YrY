@@ -39,7 +39,7 @@ flowchart TB
 
 | 子命令 | 行为 | 走管线? | 产出位置 |
 |--------|------|--------|---------|
-| `<req>` | 需求驱动的 .claude/ 变更 | ✅ rui code 管线 | `.claude/` 目录内 |
+| `需求` | 需求驱动的 .claude/ 变更 | ✅ rui code 管线 | `.claude/` 目录内 |
 | `sync` | 覆盖式更新（rm -rf → rsync） | ❌ 不走管线 | `.claude/` 全量 |
 | `retro` | 复盘分析 | ❌ 独立流程 | `docs/自改进故事面板/` |
 | `history` | 自动记录历史 | ❌ 后台记录 | `.claude/.history/` |
@@ -47,7 +47,7 @@ flowchart TB
 
 ## 适用
 
-`/rui-claude` 命令族下的所有子命令（`sync` / `retro` / `history` / `<req>`）。
+`/rui-claude` 命令族下的所有子命令（`sync` / `retro` / `history` / `需求`）。
 
 ## 操作范围
 
@@ -70,7 +70,7 @@ flowchart LR
 | # | 规则 | 反例 |
 |---|------|------|
 | 1 | 仅限 `.claude/` 目录，不得触及外部文件 | 修改 `src/` 下的业务代码 |
-| 2 | `/rui-claude <req>` 修改 `.claude/` 必须通过 rui code 管线 | 直接在 main 分支改 `.claude/` 文件 |
+| 2 | `/rui-claude 需求` 修改 `.claude/` 必须通过 rui code 管线 | 直接在 main 分支改 `.claude/` 文件 |
 | 3 | 空输入不执行管线，仅推荐任务 | 空输入触发完整管线 |
 
 ## sync — 覆盖式同步
@@ -184,6 +184,6 @@ flowchart LR
 | 标志 | 未达标的处置 |
 |------|------------|
 | 操作仅限 `.claude/` 目录 | 撤销外部变更，重新在 .claude/ 内操作 |
-| `<req>` 变更走 rui code 管线 | 切回分支，重新走管线流程 |
+| `需求` 变更走 rui code 管线 | 切回分支，重新走管线流程 |
 | git 操作由开发者手动执行 | 撤销自动提交，手动重新 commit |
 | history 仅本地不入库 | 从 git 暂存区移除 history 文件 |

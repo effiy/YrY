@@ -47,7 +47,7 @@ ${section("写入命令（末端自动交付）", [
   ["/rui code <name>", "实现故事：Gate A→逐模块→Gate B→自改进→交付"],
   ["/rui update <name> [ctx]", "增量更新：T1/T2/T3 自动裁剪管线"],
   ["/rui code --from-doc <name>", "从文档反推：只读源码补全缺失文档"],
-  ["/rui doc --from-code [req]", "从源码反推：req 空时扫描推荐，有值时直接反推"],
+  ["/rui doc --from-code 需求", "从源码反推：req 空时扫描推荐，有值时直接反推"],
 ])}
 
 ${section("只读命令（不触发 hook）", [

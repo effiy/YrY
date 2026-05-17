@@ -367,6 +367,16 @@ async function main() {
   console.error(`[import-docs] scan root: ${root}`);
   console.error(`[import-docs] workspace: ${workspaceName}`);
 
+  // 硬约束：一级目录标签只能是项目目录名或"故事任务面板"
+  const allowedLabels = new Set([workspaceName, "故事任务面板"]);
+  if (opts.prefix.length > 0) {
+    const firstLabel = opts.prefix[0];
+    if (!allowedLabels.has(firstLabel)) {
+      console.error(`[import-docs] ERROR: prefix 一级标签 "${firstLabel}" 不允许，只能是 "${workspaceName}" 或 "故事任务面板"`);
+      process.exit(1);
+    }
+  }
+
   const files = await scanFiles(root, opts.exts, opts.exclude);
   console.error(`[import-docs] found ${files.length} files`);
 

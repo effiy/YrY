@@ -100,7 +100,7 @@ flowchart TD
 | `/rui doc <需求>` | 写入 | 拆需求出文档：生成 01/02/03/04，不改源码 |
 | `/rui code <name>` | 写入 | 实现故事：Gate A → 逐模块 → Gate B → 复盘 → 交付 |
 | `/rui update <name> [ctx]` | 写入 | 增量更新：T1/T2/T3 自动裁剪 |
-| `/rui doc --from-code [req]` | 只读 | 从源码反推文档：补缺失不覆盖 |
+| `/rui doc --from-code 需求` | 只读 | 从源码反推文档：补缺失不覆盖 |
 | `/rui code --from-doc <name>` | 只读 | 从文档反推码：禁止改源码 |
 
 ### /rui-story — 故事任务面板管理
@@ -123,7 +123,7 @@ flowchart TD
 | `/rui-claude history [--limit N]` | 只读 | 操作历史 |
 | `/rui-claude retro [--name <story>]` | 写入 | 健康复盘 |
 | `/rui-claude sync` | 写入 | 远端同步：先 `rm -rf .claude/` 再 rsync |
-| `/rui-claude <req>` | 写入 | 需求管线 |
+| `/rui-claude 需求` | 写入 | 需求管线 |
 
 > ⚠️ `sync` 执行前必须确认意图。详见 [rules/rui-claude.md](./rules/rui-claude.md)。
 
