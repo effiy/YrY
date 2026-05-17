@@ -54,6 +54,8 @@ flowchart TB
 
 `docs/故事任务面板/` 下的故事文档产出。参考文档公式（F.ref.\*）不受此约束。
 
+目录的创建、删除、重命名由 `/rui-story` 管理，详见 [rui-story SKILL.md](../skills/rui-story/SKILL.md)。文档内容生成由 `/rui doc` 负责。
+
 ## ① 版头齐
 
 ```mermaid

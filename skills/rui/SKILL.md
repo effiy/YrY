@@ -29,7 +29,7 @@ flowchart TD
     Q2 -->|"文档齐缺实现"| CODE["/rui code <name>"]
     Q2 -->|"代码改完补文档"| FD["/rui code --from-doc"]
     Q2 -->|"小修小补"| UPD["/rui update"]
-    Q2 -->|"看进度"| LIST["/rui list 或 /rui"]
+    Q2 -->|"看进度"| LIST["/rui-story list 或 /rui-story"]
 ```
 
 `<req>` 支持文本 / `@` 引用本地文件 / URL。`--name` 用 `<Project>-<name>` 格式（如 `YiWeb-user-login`）。
@@ -47,7 +47,8 @@ flowchart TD
 ### 只读命令（不触发 hook）
 
 - `/rui` — 任务推荐：5 层链式管线评分排序
-- `/rui list` — 进度全景：按文件存在性判定状态
+
+> 进度查询已迁移至 `/rui-story list` 和 `/rui-story`，详见 [rui-story SKILL.md](../rui-story/SKILL.md)。
 
 ## 管线一览
 
@@ -334,12 +335,13 @@ flowchart LR
 
 **末端触发** [强制集成](#强制集成)。
 
-## list / 推荐
+## 推荐
 
-均为只读，不触发 import-docs / wework-bot。
+只读，不触发 import-docs / wework-bot。
 
-- **list** — 扫描 `docs/故事任务面板/` 按文件存在性判定状态（文档就绪 / 实现中 / 验证 / 交付 / 阻断），输出进度全景
 - **推荐** — 5 层链式管线评分（L0 时间 / L1 依赖 / L2 风险 / L3 覆盖 / L4 质量），加权排序推荐下一步任务
+
+> 进度全景查询（list）已迁移至 `/rui-story list`，详见 [rui-story SKILL.md](../rui-story/SKILL.md)。
 
 ## 强制集成
 
@@ -348,7 +350,7 @@ flowchart LR
 ### 触发时机
 
 **触发**：`init` / `doc` / `code` / `<req>` / `update` / `code --from-doc` / `doc --from-code`  
-**不触发**：`list` / `/rui`（推荐）
+**不触发**：`/rui`（推荐）
 
 ### 执行顺序（不可跳序）
 

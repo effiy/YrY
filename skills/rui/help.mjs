@@ -52,8 +52,9 @@ ${section("写入命令（末端自动交付）", [
 
 ${section("只读命令（不触发 hook）", [
   ["/rui", "任务推荐：5 层链式管线评分排序"],
-  ["/rui list", "进度全景：按文件存在性判定状态"],
 ])}
+
+${line(dim("进度查询已迁移至 /rui-story list · /rui-story —— 详见 skills/rui-story/SKILL.md"))}
 
 ${section("常用场景示例", [
   ["# 新项目初始化", ""],
@@ -79,7 +80,7 @@ ${section("常用场景示例", [
   ["/rui code --from-doc YiWeb-user-login", "只读源码补全缺失的 02/03/05/06"],
   ["", ""],
   ["# 查看进度", ""],
-  ["/rui list", "扫描面板中所有故事的状态"],
+  ["/rui-story list", "扫描面板中所有故事的状态（已迁移至 rui-story）"],
   ["/rui", "获取下一步推荐任务"],
 ])}
 

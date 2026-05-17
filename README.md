@@ -6,10 +6,11 @@
 
 ```mermaid
 flowchart TD
-    CMD["/rui · /rui-claude"]
+    CMD["/rui · /rui-story · /rui-claude"]
 
-    subgraph Skills[四技能]
+    subgraph Skills[五技能]
         RUI[rui]:::skill
+        RS[rui-story]:::skill
         RC[rui-claude]:::skill
         ID[import-docs]:::skill
         WW[wework-bot]:::skill
@@ -52,6 +53,24 @@ flowchart LR
 
 每阶段产出对应编号文档（01–08），交付时三步 hook 按序执行。详见 [rules/code-pipeline.md](./rules/code-pipeline.md)、[rules/delivery-gate.md](./rules/delivery-gate.md)。
 
+## 快速开始
+
+```bash
+# 1. 建立项目基线（首次必做）
+/rui init
+
+# 2. 从源码反推文档（存量项目）
+/rui doc --from-code
+
+# 3. 端到端交付（新需求）
+/rui 用户登录功能支持手机号+验证码
+
+# 4. 查看进度
+/rui-story list
+```
+
+> init 生成 CLAUDE.md 项目约束 + README 领域语言 + 故事面板目录。存量项目用 `doc --from-code` 反推文档基线。
+
 ## 命令
 
 只读命令不触发末端 hook，写入命令末端自动执行交付三步。
@@ -68,7 +87,7 @@ flowchart TD
     Q2 -->|"文档齐缺实现"| CODE["/rui code <name>"]
     Q2 -->|"代码改完想补文档"| FD["/rui code --from-doc"]
     Q2 -->|"小修小补"| UPD["/rui update"]
-    Q2 -->|"只想看进度"| LIST["/rui list 或 /rui"]
+    Q2 -->|"只想看进度"| LIST["/rui-story list 或 /rui-story"]
 ```
 
 ### /rui — 业务故事 SDLC
@@ -76,7 +95,6 @@ flowchart TD
 | 命令 | 类型 | 作用 |
 |------|------|------|
 | `/rui` | 只读 | 5 层管线评分排序，推荐下一步任务 |
-| `/rui list` | 只读 | 进度全景，按文件存在性判定状态 |
 | `/rui init` | 写入 | 建立基线：detect → explore → generate → setup → verify → trigger |
 | `/rui <需求>` | 写入 | 端到端：doc + code 自动串联，逐故事串行 |
 | `/rui doc <需求>` | 写入 | 拆需求出文档：生成 01/02/03/04，不改源码 |
@@ -84,6 +102,18 @@ flowchart TD
 | `/rui update <name> [ctx]` | 写入 | 增量更新：T1/T2/T3 自动裁剪 |
 | `/rui doc --from-code [req]` | 只读 | 从源码反推文档：补缺失不覆盖 |
 | `/rui code --from-doc <name>` | 只读 | 从文档反推码：禁止改源码 |
+
+### /rui-story — 故事任务面板管理
+
+| 命令 | 类型 | 作用 |
+|------|------|------|
+| `/rui-story` | 只读 | 状态概览：按状态统计 + 最近活动 |
+| `/rui-story list` | 只读 | 进度全景：所有故事详细表格（从 `/rui` 迁移） |
+| `/rui-story show <Project>-<name>` | 只读 | 单故事详情：文件清单/状态/元数据 |
+| `/rui-story create <Project>-<name> [--type]` | 写入 | 创建故事目录骨架 |
+| `/rui-story delete <Project>-<name>` | 写入 | 删除故事目录（需确认） |
+| `/rui-story sync [<Project>-<name>]` | 写入 | 触发文档同步（委托 import-docs） |
+| `/rui-story rename <old> <new>` | 写入 | 重命名故事目录 |
 
 ### /rui-claude — .claude/ 配置管理
 
@@ -149,7 +179,8 @@ flowchart LR
 
 ## 技能
 
-- **rui** (`/rui init · doc · code · list · update`) — 故事驱动 SDLC 主线，含诊断纪律、架构深化、交接纪律
+- **rui** (`/rui init · doc · code · update · --from-code`) — 故事驱动 SDLC 主线，含诊断纪律、架构深化、交接纪律
+- **rui-story** (`/rui-story list · show · create · delete · sync · rename`) — 故事面板 CRUD 管理、进度查询、文档同步
 - **rui-claude** (`/rui-claude sync · retro · history`) — .claude/ 配置远端同步与复盘
 - **import-docs** — 自动（hook 触发）：批量同步故事文档到远端 API
 - **wework-bot** — 自动（hook 触发）：企微机器人推送管线状态通知
@@ -171,8 +202,9 @@ YrY/
 │   ├── doc-generation.md    #   文档生成规范
 │   ├── self-improve.md      #   自改进流程
 │   └── rui-claude.md        #   .claude/ 管理约束
-├── skills/                  # 4 项技能规约
+├── skills/                  # 5 项技能规约
 │   ├── rui/                 #   SDLC 编排
+│   ├── rui-story/           #   故事面板管理
 │   ├── rui-claude/          #   .claude/ 配置管理
 │   ├── import-docs/         #   文档远端同步
 │   └── wework-bot/          #   企微通知
@@ -251,6 +283,7 @@ flowchart TD
 | [affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code/blob/main/README.zh-CN.md) | Agent harness 性能优化全集，含 skills、记忆、安全、hook 实践、研究优先开发。 |
 | [rohitg00/agentmemory](https://github.com/rohitg00/agentmemory) | 基于真实世界基准的 AI 编码 Agent 持久化记忆方案。执行记忆体系设计参考。 |
 | [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) | 自改进 AI Agent：从经验中创建 skill、使用中自我优化、跨会话记忆搜索、内置 cron 调度。自改进 Agent 架构参考。 |
+| [ruvnet/ruflo](https://github.com/ruvnet/ruflo) | Claude Code 多 Agent 编排平台：100+ Agent 群、分布式集群智能、自学习记忆、MCP 工具集成。Agent 拓扑与插件架构参考。 |
 | [donnemartin/system-design-primer](https://github.com/donnemartin/system-design-primer) | 大规模系统设计学习资源，含 Anki 抽认卡。架构设计阶段参考。 |
 
 ### 工具与平台
