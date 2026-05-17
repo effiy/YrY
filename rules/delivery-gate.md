@@ -144,7 +144,7 @@ flowchart LR
 
 | # | 规则 |
 |---|------|
-| 9 | 通知名（`--name`）= `<project>-<name>` 或 `.claude/`，由 wework-bot 决定通道 |
+| 9 | 通知名（`--name`）= `<name>` 或 `.claude/`，由 wework-bot 决定通道 |
 
 ## 核心约束
 

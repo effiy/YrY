@@ -13,7 +13,8 @@ tools: Read, Grep, Glob, Bash
 ```mermaid
 flowchart TB
     REQ["需求输入<br/>文本 / @文件 / URL"]:::src --> REF["查阅外部参考<br/>模式与方法论"]:::ref
-    REF --> SPLIT["故事拆分<br/>按角色/入口/交付价值"]:::pm
+    REF --> RS["研究优先<br/>Read/Grep/Glob 事实基线"]:::rs
+    RS --> SPLIT["故事拆分<br/>按角色/入口/交付价值"]:::pm
     SPLIT --> PRI["优先级排序<br/>P0/P1/P2"]:::pm
     PRI --> SEQ["串行顺序<br/>依赖显式标注"]:::pm
     SEQ --> DEL["Agent 委派<br/>coder · tester · security"]:::pm
@@ -23,11 +24,23 @@ flowchart TB
 
     classDef src fill:#e8f5e9,stroke:#2e7d32;
     classDef ref fill:#f3e5f5,stroke:#6a1b9a;
+    classDef rs fill:#e3f2fd,stroke:#1565c0;
     classDef pm fill:#fff3e0,stroke:#e65100;
     classDef done fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
+| 步骤 | 动作 | 外部参考 | 产出 |
+|------|------|---------|------|
+| 1. 查阅 | 浏览外部参考，找故事拆分模式/AC 范例 | superpowers · get-shit-done · karpathy-skills | 模式参照笔记 |
+| 2. 研究 | Read/Grep/Glob 建立事实基线，不猜 | everything-claude-code | 事实基线（源码/配置/依赖） |
+| 3. 拆分 | 按决策树逐层拆分，标注依赖 | system-design-primer（大型系统） | 故事清单 + 依赖图 |
+| 4. 排序 | 按价值/风险/依赖排序，P0 先于 P1 | — | 优先级表 |
+| 5. 委派 | 每故事分配 Agent + 门禁 + AC | agents/ 契约 | §4 任务表 |
+| 6. 闭合 | AC 全部通过 → git commit | delivery-gate.md | 关闭的故事 |
+
 > **查阅外部参考** — 拆故事前先浏览 [外部参考](../../README.md#外部参考)，从生态资源中汲取故事拆分模式、AC 设计方法、场景描述技巧。不确定故事粒度或用户场景覆盖时，主动回到外部参考寻找模式参照。
+>
+> **前端故事额外约束** — 涉及 UI 改造时，pm 应参照 [ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) 的推理规则体系：交互状态覆盖（loading / empty / error / partial / overflow）、跨平台一致性、可访问性底线。UI 场景描述至少覆盖 3 种交互状态。
 
 ## 触发
 
@@ -128,7 +141,7 @@ flowchart LR
 | 项目类型 | 扫描命令 | 排序依据 | 命名格式 |
 |---------|---------|---------|---------|
 | 前端 | `node skills/rui/recommend.mjs --root . --type frontend` | [5层评分](../skills/rui/ranking.md) → P0→P3 | `<project>-<component>-doc` |
-| 后端 | `node skills/rui/recommend.mjs --root . --type backend` | 同上 | `<project>-<resource>-api` |
+| 后端 | `node skills/rui/recommend.mjs --root . --type backend` | 同上 | `<resource>-api` |
 | 全栈 | `node skills/rui/recommend.mjs --root . --type fullstack` | 两端分别排序 | — |
 
 > 每故事任务候选必含：覆盖范围（sourceFiles）、源码证据（Level A 路径 + 签名摘要）、优先级（P0-P3 + 分类依据）、预计产出（文档编号列表）、可执行命令（`command` 字段）。
@@ -137,7 +150,7 @@ flowchart LR
 
 | 步骤 | 动作 | 关键约束 |
 |------|------|---------|
-| 1. 解析 | `<Project>-<name>` → 路径 `docs/故事任务面板/<name>/` | — |
+| 1. 解析 | `<name>` → 路径 `docs/故事任务面板/<name>/` | — |
 | 2. 冲突检测 | 目标目录已存在 → 提醒走 `/rui update` | 不覆盖已有文档 |
 | 3. 源码定位 | 前端匹配组件名 → `.vue`/`.jsx`/`.tsx`；后端匹配路由/控制器名 | — |
 | 4. 只读提取 | 结构概览（mermaid）、接口契约、依赖链、状态管理、安全考量 | 全程只读 |

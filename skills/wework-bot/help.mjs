@@ -41,7 +41,7 @@ ${item("/wework-bot help", "同上")}
 ${section("调用形态", [
   ["agent=<name>", "通过内置 agents 映射路由 (推荐)"],
   ["robot=<name>", "直接指定机器人"],
-  ["name=<Project>-<story>", "故事全名，分解为日志路径"],
+  ["name=<story>", "故事名（kebab-case），直接用作日志路径"],
   ["content=<text>", "消息正文 (与 contentFile 二选一)"],
   ["contentFile=<path>", "从文件读正文"],
   ["noSend=true", "仅追加日志，不发送 HTTP"],
@@ -51,14 +51,14 @@ ${section("调用形态", [
 
 ${section("触发场景与消息模板", [
   ["# 管线完成通知", ""],
-  ["agent=rui name=YiWeb-user-login", "自动构建完成消息 → 日志 + 发送"],
+  ["agent=rui name=user-login", "自动构建完成消息 → 日志 + 发送"],
   ['content="🎯 结论: ..."', "手动构建消息内容"],
   ["", ""],
   ["# 阻断通知", ""],
-  ["agent=rui name=YiWeb-user-login", "自动读取 rui-state.json → 阻断消息"],
+  ["agent=rui name=user-login", "自动读取 rui-state.json → 阻断消息"],
   ["", ""],
   ["# 仅写日志不发消息", ""],
-  ['agent=rui name=YiWeb-user-login noSend=true', "仅追加到 00-消息通知列表.md"],
+  ['agent=rui name=user-login noSend=true', "仅追加到 00-消息通知列表.md"],
   ["", ""],
   ["# 检查状态 (空输入)", ""],
   ["/wework-bot", "检测 token / 配置 / 通知列表完整性"],

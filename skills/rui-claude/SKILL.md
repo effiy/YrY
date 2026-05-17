@@ -38,7 +38,7 @@ flowchart TB
 | 命令 | 流程 | 产出 |
 |------|------|------|
 | `/rui-claude sync` | `rm -rf .claude` → rsync 远端配置到本地 | `.claude/` 全量覆盖 |
-| `/rui-claude retro` | 分析 .claude/ 结构健康度 → 三节复盘 | `docs/自改进故事面板/<project>-<date>.md` |
+| `/rui-claude retro` | 分析 .claude/ 结构健康度 → 三节复盘 | `docs/自改进故事面板/<date>.md` |
 | `/rui-claude history` | 查看操作历史：`list [--limit N]` / `stats [--json]` | 终端输出 |
 | `/rui-claude 需求` | 需求解析→故事拆分→逐故事 doc+code 管线→交付 | `.claude/` 内文件变更 |
 | `/rui-claude` | 按 5 层管线评分推荐 5~10 条任务 | 推荐列表 |
@@ -109,7 +109,7 @@ flowchart LR
 | 触发方式 | `/rui-claude retro [--name <story>] [--json]` |
 | 输入 | 本地 `.claude/` 目录的 `agents/` · `rules/` · `skills/` · `formulas.md` 等结构 |
 | 网络 | 纯本地分析，不连远端 |
-| 产出 | `docs/自改进故事面板/<project>-<date>.md`（三节：§1 配置结构 · §2 健康度 · §3 改进项） |
+| 产出 | `docs/自改进故事面板/<date>.md`（三节：§1 配置结构 · §2 健康度 · §3 改进项） |
 
 ## history — 操作历史
 
@@ -160,7 +160,7 @@ flowchart LR
 |---|------|---------|
 | 1 | 操作范围仅限 `.claude/`，不得触及外部文件 | — |
 | 2 | 对 `.claude/` 的代码修改必须通过 rui code 管线 | `skip-gate-a` |
-| 3 | 必须在 `feat/<project>-<name>` 分支 | `no-checkout` |
+| 3 | 必须在 `feat/<name>` 分支 | `no-checkout` |
 | 4 | 禁止自动合并 | `auto-merge` |
 | 5 | sync 覆盖式更新，执行前确认意图 | — |
 | 6 | 空输入只推荐不执行 | — |

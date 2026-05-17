@@ -655,6 +655,10 @@ flowchart TD
         R4["ui-ux-pro-max<br/>UI 推理规则·交互模式"]
         R5["claude-mem<br/>持久化记忆引擎"]
         R6["everything-claude-code<br/>harness 优化全集"]
+        R7["karpathy-skills<br/>LLM编码陷阱"]
+        R8["system-design-primer<br/>大规模设计"]
+        R9["hermes-agent<br/>经验技能化"]
+        R10["ruflo<br/>多Agent协作"]
     end
 
     subgraph 应用点["文档生成应用点"]
@@ -671,6 +675,10 @@ flowchart TD
     R4 --> A2 & A3
     R5 --> A5
     R6 --> A3
+    R7 --> A1 & A2
+    R8 --> A3
+    R9 --> A5
+    R10 --> A1 & A3
 
     classDef doc fill:#e3f2fd,stroke:#1565c0;
 ```
@@ -679,17 +687,21 @@ flowchart TD
 
 | 公式 | 阶段 | 首要参考 | 其次参考 | 查阅时机 |
 |------|------|---------|---------|---------|
-| `F.story.task` | §1 Story | superpowers — 故事拆分模式 | get-shit-done — 上下文边界 | 开始撰写前 |
+| `F.story.task` | §1 Story | superpowers — 故事拆分模式 | karpathy-skills — LLM 编码陷阱规避 | 开始撰写前 |
+| `F.story.task` | §1 Story（粒度） | get-shit-done — 上下文边界 | ruflo — 多 Agent 任务拆分 | 控制粒度时 |
 | `F.story.task` | §4 Tasks | mattpocock-skills — 任务拆分 | superpowers — 行为纪律 | 拆分任务时 |
 | `F.story.task` | §5 AC | superpowers — 验证门禁 | — | 编写 AC 时 |
-| `F.story.user-scenarios` | §2 场景详述（UI） | ui-ux-pro-max — 交互规则 | superpowers — spec-driven | 描述场景前 |
-| `F.story.user-scenarios` | §2 场景详述（粒度） | get-shit-done — 上下文退化 | — | 控制粒度时 |
+| `F.story.user-scenarios` | §2 场景详述（UI） | ui-ux-pro-max — 161 推理规则 | superpowers — spec-driven | 描述场景前 |
+| `F.story.user-scenarios` | §2 场景详述（粒度） | get-shit-done — 上下文退化 | karpathy-skills — 过度具体化陷阱 | 控制粒度时 |
+| `F.story.backend-review` | §1 架构设计 | system-design-primer — 大规模设计模式 | everything-claude-code — 研究优先 | 架构设计时 |
 | `F.story.backend-review` | §4 安全约束 | superpowers — 安全纪律 | everything-claude-code — 安全思路 | 安全分析时 |
 | `F.story.frontend-review` | §1 组件架构 | mattpocock-skills — 工程 discipline | ui-ux-pro-max — 组件模式 | 设计组件时 |
 | `F.story.frontend-review` | §3 交互设计 | ui-ux-pro-max — 161 推理规则 | — | 交互设计时 |
 | `F.story.test-review` | §2 测试用例 | superpowers — 验证门禁 | — | 设计用例时 |
-| `F.story.retrospective` | §2 诊断 | claude-mem — 记忆引擎 | everything-claude-code — 性能优化 | 自改进时 |
+| `F.story.retrospective` | §2 诊断 | claude-mem — 记忆引擎 | agentmemory — 基准评估 | 自改进时 |
+| `F.story.retrospective` | §3 提案 | hermes-agent — 经验技能化 | — | 写提案时 |
 | `F.supp.page-design` | §2 视觉规格 | ui-ux-pro-max — UI 规则 | — | 页面设计时 |
+| `F.supp.integration-plan` | §2 集成方案 | ruflo — MCP 集成模式 | system-design-primer — 系统集成 | 集成设计时 |
 
 ### 应用铁律
 
@@ -697,6 +709,9 @@ flowchart TD
 |---|------|------|
 | 1 | 必须至少查阅 1 个相关外部参考再动笔 | "凭经验直接写故事，不需要看参考" |
 | 2 | 粒度不确定时回查 get-shit-done 的上下文边界设计 | 需求概述堆砌 500 字无重点 |
-| 3 | UI 交互场景必须参考 ui-ux-pro-max 的推理规则 | 登录表单的加载/空/错误态未定义 |
+| 3 | UI 交互场景必须参考 ui-ux-pro-max 的推理规则，覆盖 ≥3 种交互状态 | 登录表单的 loading / empty / error 态未定义 |
 | 4 | AC 设计必须体现 superpowers 的验证门禁模式 | AC 无 Gate A/B 映射且用例不可执行 |
 | 5 | 技术趋势类参考（GitHub Trending / OSS Insight / TrendShift）用于技术选型验证，不替代具体技术评审 | "GitHub 上这个库很火所以我们用" — 无评审直接引入 |
+| 6 | pm 拆故事前须查阅 karpathy-skills 的 LLM 编码陷阱，避免故事粒度陷阱 | 单个故事覆盖 5+ 模块，无法独立交付 |
+| 7 | 架构设计涉及大规模系统时须查阅 system-design-primer 的设计模式 | 忽略伸缩性、容错、一致性等非功能需求 |
+| 8 | 自改进提案连续触发时须查阅 hermes-agent 的经验技能化模式 | 同一提案反复追加但从不升级为规则 |

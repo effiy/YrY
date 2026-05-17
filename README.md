@@ -109,10 +109,10 @@ flowchart TD
 |------|------|------|
 | `/rui-story` | 只读 | 状态概览：按状态统计 + 最近活动 |
 | `/rui-story list` | 只读 | 进度全景：所有故事详细表格（从 `/rui` 迁移） |
-| `/rui-story show <Project>-<name>` | 只读 | 单故事详情：文件清单/状态/元数据 |
-| `/rui-story create <Project>-<name> [--type]` | 写入 | 创建故事目录骨架 |
-| `/rui-story delete <Project>-<name>` | 写入 | 删除故事目录（需确认） |
-| `/rui-story sync [<Project>-<name>]` | 写入 | 触发文档同步（委托 import-docs） |
+| `/rui-story show <name>` | 只读 | 单故事详情：文件清单/状态/元数据 |
+| `/rui-story create <name> [--type]` | 写入 | 创建故事目录骨架 |
+| `/rui-story delete <name>` | 写入 | 删除故事目录（需确认） |
+| `/rui-story sync [<name>]` | 写入 | 触发文档同步（委托 import-docs） |
 | `/rui-story rename <old> <new>` | 写入 | 重命名故事目录 |
 
 ### /rui-claude — .claude/ 配置管理
@@ -204,6 +204,9 @@ YrY/
 │   └── rui-claude.md        #   .claude/ 管理约束
 ├── skills/                  # 5 项技能规约
 │   ├── rui/                 #   SDLC 编排
+│   │   ├── formulas.md      #     故事文档公式
+│   │   ├── coder.md         #     工作手册·数据契约
+│   │   └── ranking.md       #     推荐评分框架
 │   ├── rui-story/           #   故事面板管理
 │   ├── rui-claude/          #   .claude/ 配置管理
 │   ├── import-docs/         #   文档远端同步
@@ -212,6 +215,9 @@ YrY/
 │   ├── adr/                 #   架构决策记录
 │   ├── 故事任务面板/        #   故事产出目录
 │   │   └── <name>/
+│   │       ├── 01-09.md     #     管线文档
+│   │       ├── .memory/     #     执行记忆（跨会话持久化）
+│   │       └── .improvement/ #    改进提案
 │   └── .claude-plugin/      #   插件注册信息
 ├── CLAUDE.md
 └── README.md
@@ -247,7 +253,7 @@ flowchart TD
 | **阻断** | 管线在当前阶段停止，状态写入 `.memory/rui-state.json`。阻断≠失败，重跑同命令从中断点续。区别于"降级"（记录标记但不停止前进）。 | stop, halt, fail |
 | **铁律** | 三条不可妥协的规则：验先于称、溯先于修、清先于进。 | rule, constraint |
 | **影响链** | 变更点的完整传递依赖图。五步闭合：列变更→选搜索词→全项目搜索→二级传递→标注处置。未闭合 = `chain-broken` 阻断。 | dependency graph, impact analysis |
-| **分支隔离** | 功能分支 `feat/<Project>-<name>` 从 main 创建。源码改动唯一入口为 `/rui code`。 | feature branch |
+| **分支隔离** | 功能分支 `feat/<name>` 从 main 创建。源码改动唯一入口为 `/rui code`。 | feature branch |
 | **反推** | 只读模式。`--from-code` 从源码反推文档；`--from-doc` 从文档反推源码补充。 | reverse engineering, backfill |
 | **证据等级** | A=已验证(附路径) B=可推导(附推导链) C=未验证(标"待补充") D=幻觉(视为错误)。 | confidence level |
 | **Agent** | 六大协作角色：pm coder tester reporter security self-improve。每角色有交接信号和验证方式。 | bot, worker, role |
@@ -264,39 +270,106 @@ flowchart TD
 ## 外部参考
 
 > pm 拆故事、架构设计、自改进时，应主动查阅以下资源汲取模式与理念。
+>
+> **融合原则**：从不凭感觉执行——每阶段有对应参考，每参考有明确应用场景。外链失效时，技能规约仍独立可执行（自包含原则）。
+
+### 外部参考 → 管线阶段 映射
+
+```mermaid
+flowchart LR
+    subgraph 参考["外部参考资源"]
+        R1["故事描述<br/>superpowers<br/>get-shit-done<br/>ui-ux-pro-max<br/>karpathy-skills<br/>mattpocock-skills"]:::ref
+        R2["实现与架构<br/>everything-claude-code<br/>system-design-primer<br/>ruflo<br/>hermes-agent<br/>claude-mem<br/>agentmemory"]:::ref
+        R3["工具与平台<br/>Claude Code 官方文档"]:::ref
+        R4["趋势与发现<br/>GitHub Trending<br/>OSS Insight<br/>TrendShift<br/>Top-Starred"]:::ref
+    end
+
+    subgraph 管线["管线阶段"]
+        S1["① 需求→文档<br/>pm 拆分 + coder 设计"]:::phase
+        S2["② 预检→实现<br/>Gate A + P0 清零"]:::phase
+        S3["③ 验证→自改进<br/>Gate B + D0-D7"]:::phase
+        S4["④ 交付<br/>三步收口"]:::phase
+    end
+
+    R1 --> S1
+    R2 --> S2 & S3
+    R3 --> S2 & S3
+    R4 --> S4
+
+    classDef ref fill:#f3e5f5,stroke:#6a1b9a;
+    classDef phase fill:#e3f2fd,stroke:#1565c0;
+```
+
+| 管线阶段 | 查阅的外部参考 | 汲取什么 |
+|---------|--------------|---------|
+| 需求→文档 | superpowers · get-shit-done · ui-ux-pro-max · karpathy-skills · mattpocock-skills | 故事拆分模式 · AC 设计方法 · UI 交互状态覆盖 · LLM 编码陷阱规避 · 真实工程纪律 |
+| 预检→实现 | everything-claude-code · system-design-primer · ruflo · Claude Code 文档 | 上下文质量优先 · 深模块设计 · 多 Agent 协作模式 · harness 能力边界 |
+| 验证→自改进 | claude-mem · agentmemory · hermes-agent · superpowers | 记忆压缩注入 · 基准评估 · 经验技能化 · 验证门禁 |
+| 交付 | GitHub Trending · OSS Insight · TrendShift · Top-Starred | 技术趋势验证 · 架构健康度 · 新兴工具 · 社区验证参照 |
 
 ### 故事描述 — 模式与方法论
 
-| 资源 | 用途 |
-|------|------|
-| [obra/superpowers](https://github.com/obra/superpowers) | AI agent 软件开发方法论：可组合 skills、spec-driven 开发、验证门禁、行为纪律。本项目行为纪律和验证门禁受其启发。 |
-| [gsd-build/get-shit-done](https://github.com/gsd-build/get-shit-done/tree/main) | 元提示与上下文工程，专注"上下文退化"问题。spec-driven 模式与本项目文档管线互补。 |
-| [mattpocock/skills](https://github.com/mattpocock/skills) | 真实工程场景 Agent skills 集合，强调"不是 vibe coding"。 |
-| [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | 跨平台 UI/UX 设计 skill，含 161 条推理规则和 67 种 UI 风格。前端故事用户场景与交互设计权威参考。 |
-| [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) | Andrej Karpathy 对 LLM 编码陷阱的观察提炼为 CLAUDE.md，改进 Claude Code 行为。故事拆分与 Agent 纪律参考。 |
+| 资源 | 用途 | YrY 中的体现 |
+|------|------|------------|
+| [obra/superpowers](https://github.com/obra/superpowers) | AI agent 软件开发方法论：可组合 skills、spec-driven 开发、验证门禁、行为纪律 | 行为纪律 Red Flags · 验证门禁五步法 · 94% PR 驳回率提炼的纪律 |
+| [gsd-build/get-shit-done](https://github.com/gsd-build/get-shit-done/tree/main) | 元提示与上下文工程，专注"上下文退化"问题 | 惜注意原则 · 退化三因对策 · 上下文工程四原则 |
+| [mattpocock/skills](https://github.com/mattpocock/skills) | 真实工程场景 Agent skills 集合，强调"不是 vibe coding" | CONTEXT-FORMAT 参照 · 工程纪律 · 文档写作原则 |
+| [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | 161 条推理规则 + 67 种 UI 风格，跨平台 UI/UX 设计 | 前端故事 §2 用户场景 · ≥3 交互状态覆盖 · pm 前端故事额外约束 |
+| [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) | Karpathy 对 LLM 编码陷阱的观察提炼 | Agent 纪律参考 · 故事拆分陷阱规避 · pm 决策参考 |
 
 ### 实现与架构 — 执行模式
 
-| 资源 | 用途 |
-|------|------|
-| [thedotmack/claude-mem](https://github.com/thedotmack/claude-mem) | 跨会话持久化记忆引擎，AI 压缩 + 相似检索自动注入。执行记忆体系设计参考。 |
-| [affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code/blob/main/README.zh-CN.md) | Agent harness 性能优化全集，含 skills、记忆、安全、hook 实践、研究优先开发。 |
-| [rohitg00/agentmemory](https://github.com/rohitg00/agentmemory) | 基于真实世界基准的 AI 编码 Agent 持久化记忆方案。执行记忆体系设计参考。 |
-| [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) | 自改进 AI Agent：从经验中创建 skill、使用中自我优化、跨会话记忆搜索、内置 cron 调度。自改进 Agent 架构参考。 |
-| [ruvnet/ruflo](https://github.com/ruvnet/ruflo) | Claude Code 多 Agent 编排平台：100+ Agent 群、分布式集群智能、自学习记忆、MCP 工具集成。Agent 拓扑与插件架构参考。 |
-| [donnemartin/system-design-primer](https://github.com/donnemartin/system-design-primer) | 大规模系统设计学习资源，含 Anki 抽认卡。架构设计阶段参考。 |
+| 资源 | 用途 | YrY 中的体现 |
+|------|------|------------|
+| [thedotmack/claude-mem](https://github.com/thedotmack/claude-mem) | 跨会话持久化记忆引擎，AI 压缩 + 相似检索自动注入 | 执行记忆体系 · `.memory/` 数据契约 · 跨会话记忆注入 |
+| [affaan-m/everything-claude-code](https://github.com/affaan-m/everything-claude-code/blob/main/README.zh-CN.md) | Agent harness 性能优化全集 | 研究优先开发 · 上下文质量优先 · hook 实践 |
+| [rohitg00/agentmemory](https://github.com/rohitg00/agentmemory) | 基于真实世界基准的 AI 编码 Agent 持久化记忆方案 | 基准评估 · 记忆压缩策略 · 效果评估 E1–E4 |
+| [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) | 自改进 AI Agent：从经验创建 skill、自我优化、跨会话搜索 | 经验技能化 · 提案升级规则 · 自改进闭环 |
+| [ruvnet/ruflo](https://github.com/ruvnet/ruflo) | 多 Agent 编排平台：100+ Agent 群、分布式集群智能、自学习记忆 | Agent 拓扑 · 三种协作模式 · 插件架构 |
+| [donnemartin/system-design-primer](https://github.com/donnemartin/system-design-primer) | 大规模系统设计学习资源，含 Anki 抽认卡 | 架构设计阶段 · 深模块设计 · 伸缩性考量 |
 
 ### 工具与平台
 
-| 资源 | 用途 |
-|------|------|
-| [Claude Code 官方文档](https://code.claude.com/docs/en/overview) | CLI 完整功能参考，含 hooks、MCP、skills、IDE 集成、权限系统。技能设计时确认 harness 能力边界。 |
+| 资源 | 用途 | YrY 中的体现 |
+|------|------|------------|
+| [Claude Code 官方文档](https://code.claude.com/docs/en/overview) | CLI 完整功能参考：hooks、MCP、skills、IDE 集成、权限系统 | 技能设计时确认 harness 能力边界 · hook 配置 · MCP 集成 |
 
 ### 趋势与发现
 
-| 资源 | 用途 |
-|------|------|
-| [GitHub Trending](https://github.com/trending) | 每日/每周热门仓库，感知社区当前关注方向、发现新兴工具。 |
-| [OSS Insight](https://ossinsight.io/) | 开源数据分析平台，仓库排名、开发者画像、技术趋势洞察。技术选型数据支撑。 |
-| [TrendShift](https://trendshift.io/github-trending-repositories?trending-range=7) | GitHub 仓库趋势变化追踪，按时间窗口比较 star 增长。识别快速上升项目。 |
-| [GitHub Top-Starred](https://github.com/search?q=stars%3A%3E100000&type=repositories&s=stars&o=desc) | 十万星以上顶级项目列表。技术选型时参考社区验证的高质量开源项目。 |
+| 资源 | 用途 | YrY 中的体现 |
+|------|------|------------|
+| [GitHub Trending](https://github.com/trending) | 每日/每周热门仓库，感知社区当前关注方向 | 自改进阶段 · 技术趋势验证 · 新兴工具发现 |
+| [OSS Insight](https://ossinsight.io/) | 开源数据分析平台，仓库排名、开发者画像 | 技术选型数据支撑 · 技术债量化对比 |
+| [TrendShift](https://trendshift.io/github-trending-repositories?trending-range=7) | GitHub 仓库趋势变化追踪，按时间窗口比较 star 增长 | 识别快速上升项目 · 技术方向判断 |
+| [GitHub Top-Starred](https://github.com/search?q=stars%3A%3E100000&type=repositories&s=stars&o=desc) | 十万星以上顶级项目列表 | 技术选型时参考社区验证的高质量开源项目 |
+
+### 自改进生态系统
+
+> YrY 从外部参考汲取模式，通过自改进管线沉淀为自身规则。生态系统闭环如下：
+
+```mermaid
+flowchart TB
+    subgraph 外部["外部生态"]
+        E1["superpowers<br/>行为纪律"]:::ext
+        E2["claude-mem<br/>记忆引擎"]:::ext
+        E3["hermes-agent<br/>经验技能化"]:::ext
+        E4["ruflo<br/>多Agent编排"]:::ext
+        E5["everything-claude-code<br/>研究优先"]:::ext
+        E6["ui-ux-pro-max<br/>UI推理规则"]:::ext
+    end
+
+    subgraph YrY["YrY 内化"]
+        Y1["agents/AGENT.md<br/>Red Flags + 验证门禁"]:::yry
+        Y2["rules/self-improve.md<br/>记忆压缩 + 基准评估"]:::yry
+        Y3["agents/self-improve.md<br/>提案升级规则"]:::yry
+        Y4["agents/AGENT.md<br/>三种协作模式"]:::yry
+        Y5["CLAUDE.md<br/>执行模式: 研究优先"]:::yry
+        Y6["agents/pm.md<br/>UI ≥3状态覆盖"]:::yry
+    end
+
+    外部 -->|"汲取模式"| YrY
+    YrY -->|"提案验证"| 外部
+
+    classDef ext fill:#f3e5f5,stroke:#6a1b9a;
+    classDef yry fill:#e8f5e9,stroke:#2e7d32;
+```

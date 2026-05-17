@@ -14,11 +14,13 @@ flowchart LR
 
 **信模型** — 模型有能力判断。上下文中的模型能做出合理决策。检查清单不能替代思考。
 
-**惜注意** — 上下文有限且退化。不必要的信息挤掉必要的信息。退化三因：外部不可达、渐进漂移、人机偏差。
+**惜注意** — 上下文有限且退化。不必要的信息挤掉必要的信息。退化三因：外部不可达、渐进漂移、人机偏差。上下文工程四原则：时间决定结构（先发生的先写）、相关先于完整（割舍无关细节）、可验优于可读（Grep/Glob 路径优于自然语言）、行动优于解释（代码优于注释）。
 
 **验现实** — 现实是唯一裁判。没验证等于没做。"应该没问题"不可证伪。
 
 公理冲突时优先级：**验现实 > 信模型 > 惜注意**。先确保事实，再相信判断，最后省注意力。
+
+**执行模式**：研究优先开发（research-first development）— 动手前先探。不确定时不猜，查。涉及外部依赖/API/不熟悉模块时，先 Read/Grep/Glob 建立事实基线，再行动。源自 [everything-claude-code](https://github.com/affaan-m/everything-claude-code) 的上下文质量优先原则。
 
 ## 铁律
 
@@ -45,8 +47,8 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 |------|-----|
 | 项目名 | YrY |
 | 类型 | **meta** — Claude Code 插件，纯规约驱动 |
-| 版本 | 1.2.1 |
-| 架构 | plugin — 4 技能 + 6 Agent + 5 规则 |
+| 版本 | 1.2.2 |
+| 架构 | plugin — 5 技能 + 6 Agent + 5 规则 |
 | 生态 | 无 package.json，markdown 规约 + node 辅助脚本 |
 | 自托管 | 是 — YrY 用自身管线管理自身演进 |
 
@@ -62,11 +64,31 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 
 ### 退化对策
 
-| 退化因 | 对策 |
-|--------|------|
-| 外部不可达 | 外部参考 URL 失效时，技能规约仍独立可执行 |
-| 渐进漂移 | 每轮 init 全量重生 rui 标记段；领域语言 Avoid 列标注禁用别名 |
-| 人机偏差 | 铁律 + 行为纪律 Red Flags + 验证门禁五步法 |
+```mermaid
+flowchart LR
+    subgraph 退化["退化三因"]
+        D1["外部不可达<br/>URL 失效·API 变更"]:::risk
+        D2["渐进漂移<br/>术语膨胀·文档过时"]:::risk
+        D3["人机偏差<br/>合理化·跳过流程"]:::risk
+    end
+    subgraph 对策["四层防御"]
+        L1["L1 自包含<br/>规约独立可执行"]:::def
+        L2["L2 重生机制<br/>全量覆盖标记段"]:::def
+        L3["L3 铁律+Red Flags<br/>识别合理化"]:::def
+        L4["L4 上下文工程<br/>时间决定结构"]:::def
+    end
+    退化 --> 对策
+
+    classDef risk fill:#ffebee,stroke:#c62828;
+    classDef def fill:#e8f5e9,stroke:#2e7d32;
+```
+
+| 退化因 | 对策 | 具体战术 |
+|--------|------|---------|
+| 外部不可达 | 外部参考 URL 失效时，技能规约仍独立可执行 | 规约内联关键模式摘要，不依赖外链可达性 |
+| 渐进漂移 | 每轮 init 全量重生 rui 标记段；领域语言 Avoid 列标注禁用别名 | 术语变更同步更新 Avoid 列表，防止旧名复用 |
+| 人机偏差 | 铁律 + 行为纪律 Red Flags + 验证门禁五步法 | 合理化的 8 类借口 -> 速查表对照；每个声称 -> 五步验证 |
+| 跨会话退化 | `.memory/` 执行记忆 + claude-mem 模式的 AI 压缩摘要 | 关键决策写入 `.memory/` 自动注入后续上下文 |
 
 ### 自约束
 
@@ -79,9 +101,11 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 
 | 想了解 | 去 |
 |--------|-----|
-| 管线全流程（分支隔离 · Gate A/B · 逐模块清零 · 支撑技术） | [rules/code-pipeline.md](./rules/code-pipeline.md) |
+| 管线全流程（分支隔离 · Gate A/B · 逐模块清零 · 支撑技术 · 研究优先开发） | [rules/code-pipeline.md](./rules/code-pipeline.md) |
 | 交付收口（三步 hook） | [rules/delivery-gate.md](./rules/delivery-gate.md) |
-| 文档生成约束 | [rules/doc-generation.md](./rules/doc-generation.md) |
-| 角色拓扑 · 行为纪律 · 设计原则 · 执行准则 · ADR | [agents/AGENT.md](./agents/AGENT.md) |
+| 文档生成约束 · 表达优先 | [rules/doc-generation.md](./rules/doc-generation.md) |
+| 角色拓扑 · 行为纪律 · 设计原则 · 执行准则 · ADR · 多 Agent 协作模式 | [agents/AGENT.md](./agents/AGENT.md) |
+| 自改进闭环（诊断 D0-D7 · 经验技能化 · 记忆压缩注入 · 效果评估 E1-E4） | [rules/self-improve.md](./rules/self-improve.md) · [agents/self-improve.md](./agents/self-improve.md) |
 | 领域语言（术语定义） | [领域语言](./README.md#领域语言) |
-| 外部参考（自改进生态资源） | [外部参考](./README.md#外部参考) |
+| 外部参考 → 管线阶段映射 · 自改进生态系统 | [外部参考](./README.md#外部参考) |
+| 故事文档公式 · 外部参考应用指南 | [formulas.md](./skills/rui/formulas.md) |

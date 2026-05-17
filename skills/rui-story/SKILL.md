@@ -36,13 +36,13 @@ flowchart TD
 |------|------|------|
 | `/rui-story` | 只读 | 状态概览：按状态统计 + 最近活动 |
 | `/rui-story list` | 只读 | 进度全景：所有故事详细表格（状态/文件数/最后修改/分支） |
-| `/rui-story show <Project>-<name>` | 只读 | 单故事详情：文件清单/状态/元数据/git 分支 |
-| `/rui-story create <Project>-<name> [--type]` | 写入 | 创建故事目录骨架（仅目录 + `.memory/`），不含文档 |
-| `/rui-story delete <Project>-<name>` | 写入 | 删除故事目录（需用户确认，警告 git 分支） |
-| `/rui-story sync [<Project>-<name>]` | 写入 | 触发 import-docs 同步，限一个故事或全量 |
+| `/rui-story show <name>` | 只读 | 单故事详情：文件清单/状态/元数据/git 分支 |
+| `/rui-story create <name> [--type]` | 写入 | 创建故事目录骨架（仅目录 + `.memory/`），不含文档 |
+| `/rui-story delete <name>` | 写入 | 删除故事目录（需用户确认，警告 git 分支） |
+| `/rui-story sync [<name>]` | 写入 | 触发 import-docs 同步，限一个故事或全量 |
 | `/rui-story rename <old> <new>` | 写入 | 重命名故事目录（警告 git 分支） |
 
-`<Project>-<name>`：`<Project>` = PascalCase，`<name>` = kebab-case。如 `YiWeb-user-login`。
+`<name>` 为 kebab-case（如 `user-login`）。
 
 ## 操作边界
 
@@ -145,18 +145,18 @@ flowchart LR
     classDef out fill:#e8f5e9,stroke:#2e7d32;
 ```
 
-**输出列**：`Project | Story | Status | Files | Last Modified | Type | Branch`
+**输出列**：`Story | Status | Files | Last Modified | Type | Branch`
 
 - **Files**：故事目录下 `.md` 文件数量
 - **Last Modified**：目录中最晚文件修改时间
 - **Type**：按存在文件推断（backend / frontend / fullstack / meta）
-- **Branch**：`git branch --list "feat/<Project>-<name>"` — 有则显示分支名，无则为 `—`
+- **Branch**：`git branch --list "feat/<name>"` — 有则显示分支名，无则为 `—`
 
-## `/rui-story show <Project>-<name>` — 单故事详情
+## `/rui-story show <name>` — 单故事详情
 
 ```mermaid
 flowchart LR
-    PARSE["解析<br/>Project + name"]:::op --> LOCATE["定位目录<br/>docs/故事任务面板/&lt;n&gt;/"]:::op
+    PARSE["解析 name"]:::op --> LOCATE["定位目录<br/>docs/故事任务面板/&lt;name&gt;/"]:::op
     LOCATE --> ENUM["枚举文件<br/>含大小 / 修改时间"]:::op
     ENUM --> META["读取元数据<br/>.memory/rui-state.json<br/>story-type.json"]:::op
     META --> BRANCH["检查 git 分支<br/>git branch --list"]:::op
@@ -169,7 +169,7 @@ flowchart LR
 **输出结构**：
 
 ```
-<Project>-<name> · <status badge>
+<name> · <status badge>
 
 📂 目录: docs/故事任务面板/<name>/
 📋 类型: <type>
@@ -180,7 +180,7 @@ flowchart LR
   02-用户使用场景.md      4.1 KB  2026-05-17 10:35
   ...
 
-🔀 Git 分支: feat/<Project>-<name>  (或 —)
+🔀 Git 分支: feat/<name>  (或 —)
 
 📊 元数据:
   状态: <status>
@@ -188,11 +188,11 @@ flowchart LR
   阻断原因: <block_reason 或 —>
 ```
 
-## `/rui-story create <Project>-<name> [--type]` — 创建故事
+## `/rui-story create <name> [--type]` — 创建故事
 
 ```mermaid
 flowchart TD
-    PARSE["解析 &lt;Project&gt;-&lt;name&gt;"]:::op --> VALID{"格式校验<br/>PascalCase + kebab-case?"}
+    PARSE["解析 &lt;name&gt;"]:::op --> VALID{"格式校验<br/>kebab-case?"}
     VALID -->|"否"| ERR1["报错退出"]:::bad
     VALID -->|"是"| CONFLICT{"目标目录<br/>已存在?"}
     CONFLICT -->|"是"| ERR2["拒绝覆盖<br/>引导 /rui update"]:::bad
@@ -210,7 +210,7 @@ flowchart TD
 - 目录已存在 → 拒绝覆盖，建议 `/rui update <name>`
 - 写入 `.memory/story-type.json`：`{"type":"<type>","createdAt":"<ISO timestamp>"}`
 
-## `/rui-story delete <Project>-<name>` — 删除故事
+## `/rui-story delete <name>` — 删除故事
 
 ```mermaid
 flowchart TD
@@ -223,8 +223,7 @@ flowchart TD
     WARNMSG --> CONF["请求用户确认<br/>输入 yes/no"]:::user
     CONF -->|"yes"| DEL["rm -rf 目录"]:::op
     CONF -->|"no"| CANCEL["取消"]:::out
-    DEL --> CLEAN["清理空 Project 目录"]:::op
-    CLEAN --> DONE["输出删除确认"]:::out
+    DEL --> DONE["输出删除确认"]:::out
 
     classDef op fill:#e3f2fd,stroke:#1565c0;
     classDef out fill:#e8f5e9,stroke:#2e7d32;
@@ -235,9 +234,8 @@ flowchart TD
 
 - **必须用户确认**（输入 `yes`），不默认执行
 - Git 分支**不删除**，仅警告
-- 删除后若 Project 目录为空，一并清理
 
-## `/rui-story sync [<Project>-<name>]` — 文档同步
+## `/rui-story sync [<name>]` — 文档同步
 
 ```mermaid
 flowchart LR
@@ -269,8 +267,7 @@ flowchart TD
     WARN -->|"是"| WARNMSG["⚠ 分支需手动重命名"]:::warn
     WARN -->|"否"| MV
     WARNMSG --> MV["mv old new"]:::op
-    MV --> CLEAN["清理空 Project 目录"]:::op
-    CLEAN --> DONE["输出重命名确认"]:::out
+    MV --> DONE["输出重命名确认"]:::out
 
     classDef op fill:#e3f2fd,stroke:#1565c0;
     classDef out fill:#e8f5e9,stroke:#2e7d32;
@@ -278,7 +275,7 @@ flowchart TD
     classDef warn fill:#fff3e0,stroke:#e65100;
 ```
 
-- old 和 new 均为 `<Project>-<name>` 格式
+- old 和 new 均为 kebab-case 的 `<name>` 格式
 - 仅重命名目录，不操作 git 分支
 - 同名不操作
 
@@ -292,7 +289,7 @@ flowchart LR
         R3["delete 必须用户确认"]:::rule
         R4["create 仅建目录骨架<br/>不与 /rui doc 竞争"]:::rule
         R5["sync 完全委托<br/>import-docs"]:::rule
-        R6["PascalCase + kebab-case<br/>命名硬规范"]:::rule
+        R6["kebab-case<br/>命名硬规范"]:::rule
     end
 
     classDef rule fill:#e3f2fd,stroke:#1565c0;
@@ -305,7 +302,7 @@ flowchart LR
 | 3 | delete 必须用户明确确认（输入 `yes`），不默认执行 | 补确认或取消 |
 | 4 | create 只建目录骨架，不产出 01–10 文档 | 删除误创建的文档 |
 | 5 | sync 完全委托 import-docs，不自行实现同步 | 修正命令重试 |
-| 6 | `<Project>` = PascalCase，`<name>` = kebab-case | 拒绝执行 |
+| 6 | `<name>` = kebab-case | 拒绝执行 |
 
 ## 生效标志
 

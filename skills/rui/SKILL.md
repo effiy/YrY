@@ -32,7 +32,7 @@ flowchart TD
     Q2 -->|"看进度"| LIST["/rui-story list 或 /rui-story"]
 ```
 
-`需求` 支持文本 / `@` 引用本地文件 / URL。`--name` 用 `<Project>-<name>` 格式（如 `YiWeb-user-login`）。
+`需求` 支持文本 / `@` 引用本地文件 / URL。`--name` 用 kebab-case 的 `<name>` 格式（如 `user-login`）。
 
 ### 写入命令（末端自动交付三步）
 
@@ -93,7 +93,7 @@ flowchart LR
 ## 核心约束
 
 1. **逐故事串行** — 多故事按拆分顺序处理，互不交叉
-2. **分支隔离** — `feat/<project>-<name>` 从 main 创建；禁止派生、自动合并
+2. **分支隔离** — `feat/<name>` 从 main 创建；禁止派生、自动合并
 3. **源码唯一入口** — 只能走 `/rui code` 改源码
 4. **测试先行** — Gate A 阻断实现；Gate B >2 轮阻断交付
 5. **逐模块 P0 清零** — 每模块审查后 P0 清零再前进
@@ -111,11 +111,11 @@ flowchart LR
 | 00 | 消息通知列表.md | 交付 | 自动 |
 | 01 | 故事任务.md | 文档生成 | ✓ |
 | 02 | 用户使用场景.md | 文档生成 | ✓ |
-| 03 | &lt;Project&gt;-后端技术评审.md | 文档生成 | 后端/全栈 |
-| 04 | &lt;Project&gt;-前端技术评审.md | 文档生成 | 前端/全栈 |
+| 03 | 后端技术评审.md | 文档生成 | 后端/全栈 |
+| 04 | 前端技术评审.md | 文档生成 | 前端/全栈 |
 | 05 | 测试用例评审.md | 文档生成 | ✓ |
-| 06 | &lt;Project&gt;-后端实施报告.md | 验证 | 后端/全栈 |
-| 07 | &lt;Project&gt;-前端实施报告.md | 验证 | 前端/全栈 |
+| 06 | 后端实施报告.md | 验证 | 后端/全栈 |
+| 07 | 前端实施报告.md | 验证 | 前端/全栈 |
 | 08 | 测试用例报告.md | 验证 | ✓ |
 | 09 | 自改进复盘.md | 自改进 | ✓ |
 | 10 | 交互日志.md | 全阶段 | ✓ |
@@ -200,12 +200,12 @@ flowchart TD
 flowchart LR
     A[需求输入]:::s --> B[pm 拆故事<br/>影响分析+优先级]:::s
     B --> C[coder 补齐文档<br/>02/03 按项目类型]:::s
-    C --> D[feat/&lt;Project&gt;-&lt;name&gt;]:::s
+    C --> D[feat/&lt;name&gt;]:::s
     D --> E[trigger<br/>同步+通知]:::s
     classDef s fill:#e3f2fd,stroke:#1565c0;
 ```
 
-**产出**：01-故事任务.md（必创建）· 02-用户使用场景.md（必创建）· 03-&lt;Project&gt;-后端技术评审.md（后端/全栈）· 04-&lt;Project&gt;-前端技术评审.md（前端/全栈）· 05-测试用例评审.md（必创建）
+**产出**：01-故事任务.md（必创建）· 02-用户使用场景.md（必创建）· 03-后端技术评审.md（后端/全栈）· 04-前端技术评审.md（前端/全栈）· 05-测试用例评审.md（必创建）
 
 **约束**：只读 · 分支隔离 · 逐故事串行
 
@@ -217,7 +217,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    A[feat/&lt;Project&gt;-&lt;name&gt;]:::s --> B[Gate A<br/>测试先行]:::s
+    A[feat/&lt;name&gt;]:::s --> B[Gate A<br/>测试先行]:::s
     B --> C[逐模块实现<br/>P0 清零再前进]:::s
     C --> D[Gate B<br/>验证 ≤2 轮]:::s
     D --> E[自改进<br/>D0–D7]:::s
@@ -228,7 +228,7 @@ flowchart LR
     classDef bad fill:#ffebee,stroke:#c62828;
 ```
 
-**产出**：06-&lt;Project&gt;-后端实施报告.md（后端/全栈）· 07-&lt;Project&gt;-前端实施报告.md（前端/全栈）· 08-测试用例报告.md（必创建）· 09-自改进复盘.md（必创建）
+**产出**：06-后端实施报告.md（后端/全栈）· 07-前端实施报告.md（前端/全栈）· 08-测试用例报告.md（必创建）· 09-自改进复盘.md（必创建）
 
 **约束**：源码唯一入口 · Gate A `05-测试用例评审.md` 不存在即阻断 · Gate B >2 轮阻断 · P0 不清零不进下一模块
 
@@ -317,7 +317,7 @@ flowchart LR
 
 ### req 有值 — 直接生成
 
-1. 解析 `<Project>-<name>` → 目标目录
+1. 解析 `<name>` → 目标目录
 2. 冲突检测：目标目录已存在时拒绝覆盖，引导 `/rui update`
 3. 源码定位：按 req 匹配源文件
 4. 只读提取：结构概览 → 接口契约 → 依赖链 → 状态管理 → 安全考量
@@ -475,33 +475,39 @@ flowchart LR
 > 管线的每个阶段均有对应的外部参考资源（详见 [README.md §外部参考](../../README.md#外部参考) 与 [formulas.md §外部参考应用指南](./formulas.md#外部参考应用指南)）。各 Agent 在执行前必须查阅对应参考，不可凭感觉执行。
 
 ```mermaid
-flowchart LR
+flowchart TB
     subgraph 阶段["管线阶段"]
-        S1["文档生成"]:::phase
-        S2["验证"]:::phase
-        S3["自改进"]:::phase
-        S4["交付"]:::phase
+        S1["需求→文档<br/>pm 拆分 + coder 设计"]:::phase
+        S2["预检<br/>分支隔离 + Gate A"]:::phase
+        S3["实现<br/>逐模块编码 + P0 清零"]:::phase
+        S4["验证<br/>Gate B + 三报告"]:::phase
+        S5["自改进<br/>D0-D7 诊断"]:::phase
+        S6["交付<br/>三步收口"]:::phase
     end
 
-    subgraph 参考["主要外部参考"]
-        R1["superpowers<br/>get-shit-done<br/>ui-ux-pro-max"]:::ref
-        R2["mattpocock-skills<br/>everything-claude-code"]:::ref
-        R3["claude-mem<br/>superpowers"]:::ref
-        R4["GitHub Trending<br/>OSS Insight<br/>TrendShift"]:::ref
+    subgraph 参考["外部参考融合矩阵"]
+        R1["故事描述<br/>superpowers · get-shit-done<br/>ui-ux-pro-max<br/>karpathy-skills"]:::ref
+        R2["工程纪律<br/>mattpocock-skills<br/>everything-claude-code"]:::ref
+        R3["架构与执行<br/>system-design-primer<br/>ruflo · hermes-agent"]:::ref
+        R4["记忆与改进<br/>claude-mem · agentmemory<br/>superpowers"]:::ref
+        R5["趋势与发现<br/>GitHub Trending · OSS Insight<br/>TrendShift · Top-Starred"]:::ref
     end
 
     S1 --> R1
-    S2 --> R2
+    S2 & S3 --> R2
     S3 --> R3
-    S4 --> R4
+    S4 & S5 --> R4
+    S6 --> R5
 
     classDef phase fill:#e3f2fd,stroke:#1565c0;
     classDef ref fill:#fff3e0,stroke:#e65100;
 ```
 
-| 阶段 | 核心参考 | 应用场景 |
-|------|---------|---------|
-| 文档生成 | superpowers · get-shit-done · ui-ux-pro-max | 故事拆分粒度 · AC 设计 · UI 场景描述 |
-| 验证 | mattpocock-skills · everything-claude-code | 工程纪律 · 测试门禁 · 代码审查 |
-| 自改进 | claude-mem · superpowers | 执行记忆沉淀 · 改进提案 · 偏差分析 |
-| 交付 | GitHub Trending · OSS Insight · TrendShift | 技术趋势验证 · 架构健康度评估 · 技术债发现 |
+| 阶段 | 核心参考 | 具体应用 | 谁查阅 |
+|------|---------|---------|--------|
+| 需求→文档 | superpowers · get-shit-done · ui-ux-pro-max · karpathy-skills | 故事拆分粒度 · AC 设计 · UI 交互状态覆盖（≥3 状态）· LLM 编码陷阱规避 | pm |
+| 预检 | mattpocock-skills · everything-claude-code | 工程纪律 · 测试先行门禁 · 上下文质量优先 | tester · coder |
+| 实现 | system-design-primer · ruflo · hermes-agent · everything-claude-code | 深模块设计 · 多 Agent 协作 · 研究优先开发 · 纵深防御 | coder · security |
+| 验证 | claude-mem · agentmemory · superpowers | 执行记忆沉淀 · 基准评估 · 验证门禁五步法 | tester · reporter |
+| 自改进 | claude-mem · agentmemory · hermes-agent | 记忆压缩注入 · 经验技能化 · 跨会话相似检索 | self-improve |
+| 交付 | GitHub Trending · OSS Insight · TrendShift · Top-Starred | 技术趋势验证 · 架构健康度 · 新兴工具发现 · 社区验证的高质量项目参照 | reporter |

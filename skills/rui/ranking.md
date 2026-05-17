@@ -22,7 +22,7 @@ flowchart LR
 | 字段 | 含义 |
 |------|------|
 | `storyName` | 故事标识（如 `login-panel-doc`） |
-| `command` | 可执行命令（如 `/rui doc --from-code YiWeb-login-panel-doc`） |
+| `command` | 可执行命令（如 `/rui doc --from-code login-panel-doc`） |
 | `sourceFiles` | 覆盖的源码文件列表 |
 | `coverage.expectedDocs` | 预计产出的文档编号 |
 | `doc.status` | 当前文档状态（`no_docs` / `partial` / `complete`） |
@@ -221,13 +221,13 @@ flowchart LR
 
 | # | 故事任务 | 类型 | 覆盖文件 | 优先级 | L1 | L2 | L3 | 理由 |
 |---|---------|------|---------|--------|----|----|----|------|
-| 1 | `YiWeb-login-panel-doc` | frontend | `LoginPanel.vue` + 2 关联 | P0 | Hub(4) | Auth+I | No docs | 认证组件，4 模块依赖 |
-| 2 | `YiWeb-api-auth-doc` | backend | `api/auth.ts` | P0 | Hub(3) | Auth | No docs | 认证 API，3 控制器依赖 |
-| 3 | `YiWeb-dashboard-doc` | frontend | `Dashboard.vue` | P1 | Mid(1) | — | No docs | 仪表盘页面无文档 |
+| 1 | `login-panel-doc` | frontend | `LoginPanel.vue` + 2 关联 | P0 | Hub(4) | Auth+I | No docs | 认证组件，4 模块依赖 |
+| 2 | `api-auth-doc` | backend | `api/auth.ts` | P0 | Hub(3) | Auth | No docs | 认证 API，3 控制器依赖 |
+| 3 | `dashboard-doc` | frontend | `Dashboard.vue` | P1 | Mid(1) | — | No docs | 仪表盘页面无文档 |
 
 | 列 | 说明 |
 |----|------|
-| 故事任务 | `<Project>-<name>-doc` |
+| 故事任务 | `<name>-doc` |
 | 覆盖文件 | 主要源码 + 关联文件数 |
 | L1 | Hub(N) / Mid(N) / Leaf |
 | L2 | Auth+I / Auth / Input / API / — |
@@ -237,7 +237,7 @@ flowchart LR
 ### 3. 每故事详述卡
 
 ```markdown
-### {#}. {Project}-{storyName}
+### {#}. {storyName}
 
 **故事标识**：`{storyName}`
 **覆盖范围**：{sourceFiles + 关联说明}

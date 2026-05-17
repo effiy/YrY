@@ -111,14 +111,11 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    INPUT["CLI 输入<br/>&lt;Project&gt;-&lt;name&gt;"]:::src --> PARSE["解析"]:::op
-    PARSE --> PROJ["&lt;Project&gt; 大驼峰"]:::rule
-    PARSE --> NAME["&lt;name&gt; kebab-case"]:::rule
-    PROJ & NAME --> PATH["docs/故事任务面板/<br/>&lt;name&gt;/"]:::out
+    INPUT["CLI 输入<br/>&lt;name&gt;"]:::src --> PARSE["解析 kebab-case"]:::op
+    PARSE --> PATH["docs/故事任务面板/<br/>&lt;name&gt;/"]:::out
 
     classDef src fill:#e8f5e9,stroke:#2e7d32;
     classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef rule fill:#fff3e0,stroke:#e65100;
     classDef out fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
@@ -128,10 +125,9 @@ flowchart LR
 
 | 约束 | 规则 |
 |------|------|
-| `<Project>` | 大驼峰（PascalCase） |
 | `<name>` | kebab-case |
-| CLI 输入 | `<Project>-<name>`，`-` 分隔 |
-| 03/04/06/07 文件名 | 序号后追加 `<Project>-`，如 `03-<Project>-后端技术评审.md` |
+| CLI 输入 | `<name>` |
+| 03/04/06/07 文件名 | 如 `03-后端技术评审.md` |
 
 ## ④ 证据足
 

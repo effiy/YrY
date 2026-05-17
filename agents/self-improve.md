@@ -7,8 +7,10 @@ tools: Read, Grep, Glob, Bash
 # self-improve — 自改进管线
 
 > 采数据（采），按 D0–D7 出诊断（断），每诊断写一条提案（出）。无证据不出，无评估不闭合。
+>
+> 设计参考：[claude-mem](https://github.com/thedotmack/claude-mem)（跨会话记忆引擎）、[hermes-agent](https://github.com/NousResearch/hermes-agent)（从经验创建 skill）、[agentmemory](https://github.com/rohitg00/agentmemory)（真实世界基准评估）、[ruflo](https://github.com/ruvnet/ruflo)（自学习记忆）。
 
-## 三段闭环
+## 四段闭环
 
 ```mermaid
 flowchart TB
@@ -31,24 +33,32 @@ flowchart TB
         D7["D7 配置漂移"]:::diag
     end
 
-    subgraph 改进["③ 改进：提案"]
+    subgraph 改进["③ 改进：提案 + 技能化"]
         PRC["process<br/>流程调整"]:::prop
         QLT["quality<br/>审查强化"]:::prop
         REF["refactor<br/>模块拆分"]:::prop
         SEC["security<br/>边界加固"]:::prop
+        SKL["skill<br/>经验技能化"]:::prop
+    end
+
+    subgraph 评估["④ 评估：E1–E4 + 基准"]
+        EVAL["前后对比 ≥3 条记忆<br/>闭合 or 退化判定"]:::eval
+        BENCH["基准参照<br/>阻断率 · P0 密度 · 闭合率"]:::eval
     end
 
     观察 --> 诊断
     诊断 -->|"每诊断 → 一条提案"| 改进
-    改进 -.->|"下次循环<br/>效果评估 E1–E4"| 观察
+    改进 --> 评估
+    评估 -.->|"下次循环"| 观察
 
     classDef src fill:#e8f5e9,stroke:#2e7d32;
     classDef data fill:#e3f2fd,stroke:#1565c0;
     classDef diag fill:#fff3e0,stroke:#e65100;
     classDef prop fill:#f3e5f5,stroke:#6a1b9a;
+    classDef eval fill:#e8f5e9,stroke:#2e7d32;
 ```
 
-> 每故事独立分析。单次执行，不阻断主流程。
+> 每故事独立分析。单次执行，不阻断主流程。关键改进模式：当同一提案连续 3 个故事触发 → 上升为项目级规则或 skill。
 
 ## 触发
 
@@ -110,7 +120,7 @@ flowchart LR
 
 > 每条诊断必须引用基线文件作为依据。详见 [rules/self-improve.md](../rules/self-improve.md)。
 
-## 改进：提案矩阵
+## 改进：提案矩阵 + 经验技能化
 
 ```mermaid
 flowchart LR
@@ -120,17 +130,57 @@ flowchart LR
     TYPE -->|"大文件/依赖热点"| REF["refactor<br/>拆分模块"]:::prop
     TYPE -->|"边界模糊/威胁"| SEC["security<br/>加固边界"]:::prop
     PRC & QLT & REF & SEC --> AP["append → proposals.jsonl"]:::out
+    AP --> RE{"同提案<br/>连续 ≥3 故事触发?"}
+    RE -->|"是"| SKL["skill 化<br/>写入对应规则/agent"]:::up
+    RE -->|"否"| WAIT["保持提案跟踪"]:::wait
 
     classDef prop fill:#f3e5f5,stroke:#6a1b9a;
     classDef out fill:#e8f5e9,stroke:#2e7d32;
+    classDef up fill:#fff3e0,stroke:#e65100;
+    classDef wait fill:#e3f2fd,stroke:#1565c0;
 ```
 
-| 类型 | 触发信号 | 提案要素 | 示例 |
-|------|---------|---------|------|
-| `process` | 阻断率上升 / 阶段耗时 > 基线 2x | 调整 {阶段} 流程 | "Gate A 阶段耗时 3x 基线，建议增加预检脚本" |
-| `quality` | P0 密度上升 / Gate B > 2 轮 | 强化 {阶段} 审查 | "P0 密度连续 3 故事上升，建议 coder 自审查清单加 SQL 注入项" |
-| `refactor` | 文件 > 500 行 / 循环依赖 > 3 | 拆分 {模块} | "某规约文件 600 行，建议拆为 detect / generate / verify 三段独立小节" |
-| `security` | 安全边界模糊 / 威胁未缓解 | 加固 {边界} | "第三方脚本无 SRI，建议添加 integrity 校验" |
+> 经验技能化模式源自 [hermes-agent](https://github.com/NousResearch/hermes-agent)：从执行中创建 skill、使用中自我优化、跨会话记忆搜索。当同一改进模式连续触发 → 从提案升级为项目规则。
+
+| 类型 | 触发信号 | 提案要素 | 升级条件 | 升级目标 |
+|------|---------|---------|---------|---------|
+| `process` | 阻断率上升 / 阶段耗时 > 基线 2x | 调整 {阶段} 流程 | 连续 3 故事触发 | `rules/code-pipeline.md` 或 `agents/AGENT.md` |
+| `quality` | P0 密度上升 / Gate B > 2 轮 | 强化 {阶段} 审查 | 连续 3 故事触发 | `agents/tester.md` 或 `agents/coder.md` |
+| `refactor` | 文件 > 500 行 / 循环依赖 > 3 | 拆分 {模块} | 连续 3 故事触发 | `rules/code-pipeline.md` §深度模块 |
+| `security` | 安全边界模糊 / 威胁未缓解 | 加固 {边界} | 当前故事即修 | `agents/security.md` P0 约束 |
+| `skill` | 重复操作模式 / Agent 反复犯同类错误 | 创建 {skill/rule} | 连续 2 故事触发 | `skills/` 或 `rules/` 新条目 |
+
+### 跨会话记忆注入
+
+> 源自 [claude-mem](https://github.com/thedotmack/claude-mem) 的 AI 压缩 + 相似检索模式。执行记忆自动注入后续会话上下文。
+
+```mermaid
+flowchart LR
+    subgraph 写入["每次管线执行"]
+        W1["execution-memory.jsonl<br/>追加阶段数据"]:::data
+        W2["rui-state.json<br/>覆盖当前状态"]:::data
+        W3["proposals.jsonl<br/>追加提案"]:::data
+    end
+    subgraph 压缩["自动压缩"]
+        C1["AI 摘要<br/>关键决策 + 阻断根因"]:::comp
+        C2["相似检索<br/>当前故事 vs 历史模式"]:::comp
+    end
+    subgraph 注入["下次会话注入"]
+        I1["相关历史摘要<br/>自动注入 CLAUDE.md 上下文"]:::inj
+    end
+    写入 --> 压缩 --> 注入
+
+    classDef data fill:#e3f2fd,stroke:#1565c0;
+    classDef comp fill:#fff3e0,stroke:#e65100;
+    classDef inj fill:#e8f5e9,stroke:#2e7d32;
+```
+
+| 数据类型 | 压缩策略 | 注入时机 | 过期策略 |
+|---------|---------|---------|---------|
+| 阻断事件 | 保留根因 + 解决方式摘要 | 同类型阻断再次出现时 | 12 个故事后降级为统计 |
+| P0 模式 | 保留完整模式 + 修复 diff | 相似代码变更时 | 修复上线后 6 个故事过期 |
+| 提案闭合 | 保留效果评估 + 关联 bad_case | 新提案起草时参考 | 闭合后 3 个故事归档 |
+| 阶段耗时 | 统计聚合（均值/方差/趋势） | 每故事自改进阶段 | 滚动 12 窗口 |
 
 ## 规则
 

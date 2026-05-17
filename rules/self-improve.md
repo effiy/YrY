@@ -203,12 +203,73 @@ flowchart TD
     classDef warn fill:#fff3e0,stroke:#e65100;
 ```
 
+## 经验技能化
+
+> 源自 [hermes-agent](https://github.com/NousResearch/hermes-agent) 模式：从执行经验中创建 skill，使用中自我优化。当同一改进模式反复触发 → 从一次性提案升级为持久规则。
+
+```mermaid
+flowchart TD
+    PROP["proposals.jsonl<br/>某类型提案"] --> Q1{"同类型提案<br/>连续 ≥3 故事触发?"}
+    Q1 -->|"否"| TRACK["继续跟踪<br/>下次评估再检"]:::wait
+    Q1 -->|"是"| Q2{"可泛化为<br/>通用规则?"}
+    Q2 -->|"是"| UPGRADE["写入对应 rules/ 或 agents/<br/>标记来源提案 ID"]:::up
+    Q2 -->|"否"| KEEP["保留为故事级提案<br/>标注不可泛化原因"]:::keep
+
+    classDef wait fill:#e3f2fd,stroke:#1565c0;
+    classDef up fill:#fff3e0,stroke:#e65100;
+    classDef keep fill:#e8f5e9,stroke:#2e7d32;
+```
+
+| 提案类型 | 升级条件 | 升级目标 | 示例 |
+|---------|---------|---------|------|
+| `process` | 连续 3 故事触发 | `rules/code-pipeline.md` | "Gate A 阻断原因 80% 是影响链断裂 → 升级为 P0 必检项" |
+| `quality` | 连续 3 故事触发 | `agents/tester.md` 或 `agents/coder.md` | "P0 密度上升根因是 SQL 注入 → 升级为 coder 自审查清单" |
+| `refactor` | 连续 3 故事触发 | `rules/code-pipeline.md` §深度模块 | "某文件 3 次膨胀 → 升级为模块行数上限规则" |
+| `security` | 当前故事即修 | `agents/security.md` | "新类型注入 → 升级为威胁建模新增检查项" |
+| `skill` | 连续 2 故事触发 | `skills/` 或 `rules/` 新条目 | "Agent 反复犯同类错误 → 创建专项 Red Flag 或检查规则" |
+
+## 记忆压缩与注入
+
+> 源自 [claude-mem](https://github.com/thedotmack/claude-mem) 的 AI 压缩 + 相似检索模式，结合 [agentmemory](https://github.com/rohitg00/agentmemory) 的基准评估方法。
+
+```mermaid
+flowchart LR
+    subgraph 源["记忆源"]
+        M1["execution-memory.jsonl"]:::data
+        M2["rui-state.json"]:::data
+        M3["proposals.jsonl"]:::data
+    end
+    subgraph 压缩["AI 压缩"]
+        C1["关键决策摘要<br/>阻断根因 + 解决方式"]:::comp
+        C2["P0 模式摘要<br/>完整模式 + 修复 diff"]:::comp
+        C3["统计聚合<br/>阻断率 · P0 密度 · 闭合率"]:::comp
+    end
+    subgraph 注入["上下文注入"]
+        I1["同类型阻断 → 注入历史根因"]:::inj
+        I2["相似代码变更 → 注入历史 P0"]:::inj
+        I3["新提案起草 → 注入历史效果评估"]:::inj
+    end
+    源 --> 压缩 --> 注入
+
+    classDef data fill:#e3f2fd,stroke:#1565c0;
+    classDef comp fill:#fff3e0,stroke:#e65100;
+    classDef inj fill:#e8f5e9,stroke:#2e7d32;
+```
+
+| 记忆类型 | 压缩方式 | 保留窗口 | 注入触发 |
+|---------|---------|---------|---------|
+| 阻断事件 | 根因 + 解决方式摘要 | 12 故事 | 同类型阻断复现 |
+| P0 记录 | 完整模式 + 修复 diff | 6 故事（修复后） | 相似模块变更 |
+| 提案效果 | 效果评估 + 关联 bad_case | 3 故事（闭合后归档） | 新提案起草 |
+| 阶段耗时 | 均值/方差/趋势 | 滚动 12 窗口 | 自改进阶段 |
+
 ## 例外
 
 | 场景 | 处理 |
 |------|------|
 | 数据采集失败 | `no-metrics` 标识，写降级版自改进复盘（标注无数据），不计入退化窗口 |
 | 单故事数据不足 3 条 | 跳过 E1–E4，仅生成观察记录 |
+| 经验技能化触发但目标文件已含类似规则 | 更新现有规则（标注来源提案），不重复创建 |
 
 ## 生效标志
 

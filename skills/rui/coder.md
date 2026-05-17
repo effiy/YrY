@@ -11,7 +11,7 @@ docs/
 └── 故事任务面板/<name>/   ← 执行：主线 + 通知 + 交互日志 + 补充
 ```
 
-**命名规则**：`<Project>` 大驼峰（`YiWeb`），`<name>` kebab-case（`user-login`）。CLI 输入 `<Project>-<name>`，rui 管线内分解为路径 `<name>`。详见 [rules/doc-generation.md](../../rules/doc-generation.md)。
+**命名规则**：`<name>` kebab-case（如 `user-login`）。CLI 输入 `<name>`，对应路径 `docs/故事任务面板/<name>/`。详见 [rules/doc-generation.md](../../rules/doc-generation.md)。
 
 ## 故事目录骨架
 
@@ -27,12 +27,12 @@ flowchart LR
         B7["02-用户使用场景.md"]:::must
     end
     subgraph 后端["纯后端 / 全栈"]
-        C1["03-[Project]-后端技术评审.md"]:::be
-        C2["06-[Project]-后端实施报告.md"]:::be
+        C1["03-后端技术评审.md"]:::be
+        C2["06-后端实施报告.md"]:::be
     end
     subgraph 前端["纯前端 / 全栈"]
-        D1["04-[Project]-前端技术评审.md"]:::fe
-        D2["07-[Project]-前端实施报告.md"]:::fe
+        D1["04-前端技术评审.md"]:::fe
+        D2["07-前端实施报告.md"]:::fe
     end
     subgraph 补充["按需"]
         E1["{专题}.md"]:::supp
@@ -47,11 +47,11 @@ flowchart LR
 | 文件 | 必选 | 纯前端 | 纯后端 | 全栈 | 负责人 | 阶段 |
 |------|:---:|:---:|:---:|:---:|--------|------|
 | 01-故事任务.md | ✓ | ✓ | ✓ | ✓ | pm | 文档生成 |
-| 03-&lt;Project&gt;-后端技术评审.md | | — | ✓ | ✓ | coder + security | 文档生成 |
-| 04-&lt;Project&gt;-前端技术评审.md | | ✓ | — | ✓ | coder | 文档生成 |
+| 03-后端技术评审.md | | — | ✓ | ✓ | coder + security | 文档生成 |
+| 04-前端技术评审.md | | ✓ | — | ✓ | coder | 文档生成 |
 | 05-测试用例评审.md | ✓ | ✓ | ✓ | ✓ | tester | 文档生成 |
-| 06-&lt;Project&gt;-后端实施报告.md | | — | ✓ | ✓ | coder | 验证 |
-| 07-&lt;Project&gt;-前端实施报告.md | | ✓ | — | ✓ | coder | 验证 |
+| 06-后端实施报告.md | | — | ✓ | ✓ | coder | 验证 |
+| 07-前端实施报告.md | | ✓ | — | ✓ | coder | 验证 |
 | 08-测试用例报告.md | ✓ | ✓ | ✓ | ✓ | tester | 验证 |
 | 09-自改进复盘.md | ✓ | ✓ | ✓ | ✓ | pm + reporter | 自改进 |
 | 00-消息通知列表.md | 自动 | ✓ | ✓ | ✓ | wework-bot hook | 交付 |
@@ -223,7 +223,7 @@ flowchart LR
 |------|------|------|
 | `session_id` | string | 当次 rui 会话 |
 | `timestamp` | ISO-8601 | 写入时刻 |
-| `story_name` | string | `<Project>-<name>` |
+| `story_name` | string | `<name>` |
 | `feature` / `description` | string | 变更主题 |
 | `planned_change_level` | T1\|T2\|T3 | 规划裁剪等级 |
 | `actual_change_level` | T1\|T2\|T3 | 实际裁剪等级 |
@@ -243,7 +243,7 @@ flowchart LR
 |------|------|------|
 | `session_id` | string | 当次会话 |
 | `command` | string | rui 子命令 |
-| `name` | string | `<Project>-<name>` |
+| `name` | string | `<name>` |
 | `current_stage` | string | 当前阶段 |
 | `blocked` | bool | 是否阻断 |
 | `block_reason` | string | 阻断标识 |

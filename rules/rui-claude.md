@@ -114,7 +114,7 @@ flowchart LR
 
 | # | 规则 |
 |---|------|
-| 6 | 复盘写入 `docs/自改进故事面板/<project>-<date>.md` |
+| 6 | 复盘写入 `docs/自改进故事面板/<date>.md` |
 | 7 | 仅分析本地 `.claude/` 结构，不连接远端 |
 
 ## history — 历史记录

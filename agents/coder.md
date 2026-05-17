@@ -12,7 +12,7 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 
 ```mermaid
 flowchart TB
-    BR["切分支<br/>feat/&lt;project&gt;-&lt;name&gt;"]:::setup --> RD["读设计文档<br/>01 + 02/03 + 04"]:::setup
+    BR["切分支<br/>feat/&lt;name&gt;"]:::setup --> RD["读设计文档<br/>01 + 02/03 + 04"]:::setup
     RD --> MI["影响分析<br/>列变更点 → 搜索 → 传递 → 闭合"]:::setup
 
     MI --> M1["模块 1<br/>编码"]:::impl
@@ -42,7 +42,7 @@ flowchart LR
         R2["禁止旁路直接改码"]:::rule
     end
     subgraph 分支["分支隔离"]
-        R3["feat/&lt;project&gt;-&lt;name&gt; 从 main 创建"]:::rule
+        R3["feat/&lt;name&gt; 从 main 创建"]:::rule
         R4["改码前必须已切分支"]:::rule
         R5["禁止自动合并到 main"]:::rule
     end
@@ -59,7 +59,7 @@ flowchart LR
 |---|------|---------|---------|
 | 1 | 源码改动唯一入口 `/rui code` | — | 旁路直接改码 |
 | 2 | 功能分支从 main 创建 | `bad-branch` | 分支非从 main 分出或混入非本故事代码 |
-| 3 | 改源码前已切到 `feat/<project>-<name>` | `no-checkout` | 未切分支即改源码 |
+| 3 | 改源码前已切到 `feat/<name>` | `no-checkout` | 未切分支即改源码 |
 | 4 | 禁止自动合并功能分支到 main | `auto-merge` | 功能分支被自动合并 |
 | 5 | P0 清零方进下一模块 | — | 模块完成时 P0 > 0 |
 | 6 | 影响链未闭合不声称闭合 | `chain-broken` | 声称闭合但二级传递有未标注点 |

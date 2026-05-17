@@ -84,13 +84,9 @@ flowchart LR
 ### 故事名解析
 
 ```
-name = "<Project>-<story>"   # 以首个 - 切分
-  → project = name 首段
-  → story   = name 余段
+name = "<story>"   # kebab-case 的故事名
   → 日志路径 = docs/故事任务面板/<story>/00-消息通知列表.md
 ```
-
-`name` 不含 `-` 时，`project` 与 `story` 同名（仍按上式生成路径）。
 
 ### 内置配置
 
@@ -167,26 +163,26 @@ flowchart LR
 
 ```
 【YiWeb】
-🎯 结论: 完成 YiWeb-user-login 文档管线
+🎯 结论: 完成 user-login 文档管线
 📝 描述: 为登录模块生成故事板，覆盖密码登录、短信验证码、OAuth 三种场景
 📌 范围: auth/
-👉 下一步: 运行 /rui code YiWeb-user-login 开始编码实现
-🌐 影响: docs/故事任务面板/YiWeb/user-login/01-故事任务.md
+👉 下一步: 运行 /rui code user-login 开始编码实现
+🌐 影响: docs/故事任务面板/user-login/01-故事任务.md
 📎 证据: git log --oneline -1
 ⏱️ 会话: 自适应规划→策展 全流程 3.2min | 3 agents 参与
 
 ———
 
-变更文件: docs/故事任务面板/YiWeb/user-login/01-故事任务.md (新增, 285行)
+变更文件: docs/故事任务面板/user-login/01-故事任务.md (新增, 285行)
 ```
 
 ## 消息通知列表
 
 ```mermaid
 flowchart LR
-    SEND["wework-bot<br/>name=&lt;Project&gt;-&lt;story&gt;"]:::src --> PARSE["分解路径<br/>&lt;Project&gt;/&lt;story&gt;/"]:::op
+    SEND["wework-bot<br/>name=&lt;Project&gt;-&lt;story&gt;"]:::src --> PARSE["分解路径<br/>&lt;story&gt;/"]:::op
     PARSE --> APPEND["追加写入"]:::op
-    APPEND --> FILE["docs/故事任务面板/<br/>&lt;Project&gt;/&lt;story&gt;/<br/>00-消息通知列表.md"]:::file
+    APPEND --> FILE["docs/故事任务面板/<br/>&lt;story&gt;/<br/>00-消息通知列表.md"]:::file
 
     APPEND -.->|"目录不存在"| MKDIR["递归创建"]:::util
 
@@ -292,7 +288,7 @@ flowchart LR
 | 活跃故事识别 | 遍历 `docs/故事任务面板/<story>/.memory/rui-state.json`，挑选 `timestamp` 在最近 1 小时内且最新的一条 |
 | 无活跃故事 | 静默跳过，退出码 0 |
 | 消息构建 | 见下文「自动消息模板」 |
-| 发送 | 等价 `send agent=rui name=<Project>-<story> noSend=true content=...` |
+| 发送 | 等价 `send agent=rui name=<story> noSend=true content=...` |
 | 失败 | 记录到 stderr，不阻断 |
 
 ### ③ hook-notify（实际发送）
@@ -325,7 +321,7 @@ flowchart LR
 完成（`state.blocked = false`）:
 
 ```
-🎯 结论: 完成 <Project>-<story> <current_stage> 阶段
+🎯 结论: 完成 <story> <current_stage> 阶段
 📝 描述: 管线执行完毕
 📌 范围: docs/故事任务面板/<story>/
 👉 下一步: 继续下一阶段
@@ -336,7 +332,7 @@ flowchart LR
 阻断（`state.blocked = true`）:
 
 ```
-🎯 结论: 阻断 <Project>-<story>
+🎯 结论: 阻断 <story>
 📝 描述: 管线在 <current_stage> 阶段被阻断
 📌 范围: docs/故事任务面板/<story>/
 ❌ 原因: <state.block_reason 或 "见 rui-state.json">
