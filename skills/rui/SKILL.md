@@ -289,7 +289,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     E0["detect<br/>项目类型判定"]:::tool --> E1["node skills/rui/recommend.mjs<br/>数据采集"]:::tool
-    E1 --> E2["PM 5层评分<br/>见 recommend-criteria.md"]:::llm
+    E1 --> E2["PM 5层评分<br/>见 ranking.md"]:::llm
     E2 --> E3["故事任务推荐输出<br/>象限图 + 排序表 + 详述卡"]:::llm
     E3 --> E4["用户选择"]:::user
     E4 --> G["generate<br/>反推故事文档"]:::s
@@ -308,11 +308,11 @@ flowchart LR
 
 1. **detect** — 判定项目类型（frontend / backend / fullstack / unknown）
 2. **scan** — `node skills/rui/recommend.mjs --root . --type <detected> --format json`
-3. **evaluate** — PM 按 [recommend-criteria.md](./recommend-criteria.md) 的 5 层框架评分排序，输出 P0→P3
+3. **evaluate** — PM 按 [ranking.md](./ranking.md) 的 5 层框架评分排序，输出 P0→P3
 4. **present** — 输出故事任务推荐：象限图 → 排序表 → 每故事任务详述卡（覆盖范围·源码证据·预计产出·可执行命令）
 5. **wait** — 等待用户选择后进入生成阶段
 
-> 不可跳过第 2 步凭感觉推荐。详细评分框架见 [recommend-criteria.md](./recommend-criteria.md)。
+> 不可跳过第 2 步凭感觉推荐。详细评分框架见 [ranking.md](./ranking.md)。
 
 ### req 有值 — 直接生成
 
@@ -466,4 +466,40 @@ flowchart LR
 | 规则 | [code-pipeline](../../rules/code-pipeline.md) · [delivery-gate](../../rules/delivery-gate.md) · [doc-generation](../../rules/doc-generation.md) · [self-improve](../../rules/self-improve.md) · [rui-claude](../../rules/rui-claude.md) |
 | 角色 | [pm](../../agents/pm.md) · [coder](../../agents/coder.md) · [tester](../../agents/tester.md) · [reporter](../../agents/reporter.md) · [security](../../agents/security.md) · [self-improve](../../agents/self-improve.md) |
 | 文档 | [formulas.md](./formulas.md) · [coder.md](./coder.md) · [import-docs SKILL](../import-docs/SKILL.md) · [wework-bot SKILL](../wework-bot/SKILL.md) |
-| 推荐 | [recommend-criteria.md](./recommend-criteria.md) · [recommend.mjs](./recommend.mjs) |
+| 推荐 | [ranking.md](./ranking.md) · [recommend.mjs](./recommend.mjs) |
+
+## 外部参考融合
+
+> 管线的每个阶段均有对应的外部参考资源（详见 [README.md §外部参考](../../README.md#外部参考) 与 [formulas.md §外部参考应用指南](./formulas.md#外部参考应用指南)）。各 Agent 在执行前必须查阅对应参考，不可凭感觉执行。
+
+```mermaid
+flowchart LR
+    subgraph 阶段["管线阶段"]
+        S1["文档生成"]:::phase
+        S2["验证"]:::phase
+        S3["自改进"]:::phase
+        S4["交付"]:::phase
+    end
+
+    subgraph 参考["主要外部参考"]
+        R1["superpowers<br/>get-shit-done<br/>ui-ux-pro-max"]:::ref
+        R2["mattpocock-skills<br/>everything-claude-code"]:::ref
+        R3["claude-mem<br/>superpowers"]:::ref
+        R4["GitHub Trending<br/>OSS Insight<br/>TrendShift"]:::ref
+    end
+
+    S1 --> R1
+    S2 --> R2
+    S3 --> R3
+    S4 --> R4
+
+    classDef phase fill:#e3f2fd,stroke:#1565c0;
+    classDef ref fill:#fff3e0,stroke:#e65100;
+```
+
+| 阶段 | 核心参考 | 应用场景 |
+|------|---------|---------|
+| 文档生成 | superpowers · get-shit-done · ui-ux-pro-max | 故事拆分粒度 · AC 设计 · UI 场景描述 |
+| 验证 | mattpocock-skills · everything-claude-code | 工程纪律 · 测试门禁 · 代码审查 |
+| 自改进 | claude-mem · superpowers | 执行记忆沉淀 · 改进提案 · 偏差分析 |
+| 交付 | GitHub Trending · OSS Insight · TrendShift | 技术趋势验证 · 架构健康度评估 · 技术债发现 |

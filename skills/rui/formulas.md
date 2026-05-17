@@ -135,7 +135,24 @@ flowchart LR
 
 ### 01 — F.story.task `meta + 角色公式速查 + Story×N`
 
-> **外部参考** — 描述故事前浏览 [外部参考](../../../README.md#外部参考)，汲取故事拆分模式、AC 设计方法、场景描述技巧。粒度不确定或场景覆盖不全时，回查模式参照。
+> **外部参考** — 描述故事前必须浏览 [外部参考](../../../README.md#外部参考)，汲取故事拆分模式、AC 设计方法、场景描述技巧、上下文边界控制。粒度不确定或场景覆盖不全时，回查相应模式参照。
+>
+> | 章节 | 参考资源 | 汲取要点 |
+> |------|---------|---------|
+> | §1 Story | [superpowers](https://github.com/obra/superpowers) | 故事拆分模式、spec-driven 开发、验证门禁设计 |
+> | §1 Story — 粒度控制 | [get-shit-done](https://github.com/gsd-build/get-shit-done/tree/main) | 上下文边界设计、故事描述粒度控制 |
+> | §2 Requirements | [mattpocock/skills](https://github.com/mattpocock/skills) | 工程 discipline、需求结构化表达 |
+> | §4 Tasks — 任务拆分 | [mattpocock/skills](https://github.com/mattpocock/skills) | skill 职责边界设计、任务内聚性 |
+> | §5 AC | [superpowers](https://github.com/obra/superpowers) | 验证门禁、AC 可测试性、Gate 映射 |
+> | §L 自改进 | [claude-mem](https://github.com/thedotmack/claude-mem) | 跨会话知识沉淀、执行记忆体系设计 |
+
+#### F.story.task 强制元素
+
+| # | 元素 | 位置 | 约束 |
+|---|------|------|------|
+| 1 | **需求概述** | 项目信息表之后 | 2–5 句概括故事目标与范围，必填 |
+| 2 | **主要价值** | 需求概述之后 | emoji 前缀列表，每行一条价值主张，≥ 4 条，必填 |
+| 3 | **效果示意** | 主要价值之后 | mermaid flowchart，展示当前痛点→目标状态，必填 |
 
 **角色公式速查**（固定文案，置顶）：
 
@@ -162,7 +179,14 @@ flowchart LR
 
 ### 02 — F.story.user-scenarios `meta + nav + 全景 + 详述×N + 覆盖矩阵 + 清单`
 
-> **外部参考** — §2 场景详述涉及 UI 交互时，参考 [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) 的推理规则与交互模式。场景粒度与覆盖度可参考 [obra/superpowers](https://github.com/obra/superpowers) 的 spec-driven 模式。
+> **外部参考** — §2 场景详述涉及 UI 交互时，参考 [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) 的 161 条推理规则与 67 种 UI 风格交互模式。场景粒度与覆盖度可参考 [obra/superpowers](https://github.com/obra/superpowers) 的 spec-driven 模式。上下文边界可参考 [get-shit-done](https://github.com/gsd-build/get-shit-done/tree/main) 的上下文退化对策。
+>
+> | 章节 | 参考资源 | 汲取要点 |
+> |------|---------|---------|
+> | §1 场景全景 | [get-shit-done](https://github.com/gsd-build/get-shit-done/tree/main) | 场景边界划定、上下文范围控制 |
+> | §2 场景详述（UI） | [ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | 交互推理规则、视图状态矩阵、微交互规范 |
+> | §2 场景详述（粒度） | [superpowers](https://github.com/obra/superpowers) | spec-driven 场景覆盖、缺失路径识别 |
+> | §3 覆盖矩阵 | [superpowers](https://github.com/obra/superpowers) | FP 全覆盖验证、验收标准对齐 |
 
 ```mermaid
 flowchart LR
@@ -199,6 +223,15 @@ flowchart LR
 | §6 评审清单 | 权限最小化 / 通信对齐 / 存储兼容 / API 鉴权 / 无硬编码密钥 / 无误用长连接 / 输入校验完整 |
 
 ### 04 — F.story.frontend-review `meta + nav + 组件 + 状态 + 交互 + 样式 + DOM + 依赖 + 清单`
+
+> **外部参考** — 前端组件设计、交互模式、样式方案应参考 [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) 的推理规则（视图状态矩阵、微交互规范、a11y 约束）。工程纪律参考 [mattpocock/skills](https://github.com/mattpocock/skills)（"不是 vibe coding"）。样式 Token 体系参考本项目 [superpowers](https://github.com/obra/superpowers) 的 spec-driven 验证门禁。
+>
+> | 章节 | 参考资源 | 汲取要点 |
+> |------|---------|---------|
+> | §1 组件架构 | [mattpocock/skills](https://github.com/mattpocock/skills) | 组件接口设计、Props 规约、工程 discipline |
+> | §3 交互设计 | [ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | 视图状态矩阵、微交互时长规范、操作流设计 |
+> | §4 样式方案 | [ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | Design Token 组织、响应式断点、暗色模式策略 |
+> | §6 依赖与加载 | [everything-claude-code](https://github.com/affaan-m/everything-claude-code) | 技能组织方式、模块注册与生命周期 |
 
 ```mermaid
 flowchart LR
@@ -513,6 +546,69 @@ flowchart LR
 | 操作 | 规则 |
 |------|------|
 | 生成 | 按公式逐章节产出，不依赖模板文件 |
+| 主要价值 | **每个故事文档（01–08）必须含 `### 主要价值` 节**：emoji 前缀列表，≥ 4 条价值主张，分行显示。位于文档标题/元信息之后、主体内容之前 |
+| 效果示意 | **01-故事任务必须含 `### 效果示意` 节**：mermaid flowchart 展示当前痛点→目标状态。其余文档按需添加 |
 | 裁剪 | 措辞修正→仅变更章节；接口变更→同步影响章节；边界重构→全文重生 |
-| 校验 | F.meta/F.nav 占位符必须替换；表列齐备；mermaid 可渲染 |
+| 校验 | F.meta/F.nav 占位符必须替换；表列齐备；mermaid 可渲染；主要价值节存在且 ≥ 4 条 |
 | 扩展 | 新文档类型在本文件追加公式块，保持表头规约风格一致 |
+
+---
+
+## 外部参考应用指南
+
+> 生成每份故事文档前，PM / Coder / Tester 应按以下矩阵查阅对应外部参考，不可凭感觉写文档。
+
+```mermaid
+flowchart TD
+    subgraph 参考池["外部参考池（来自 README.md）"]
+        R1["superpowers<br/>验证门禁·行为纪律"]
+        R2["get-shit-done<br/>上下文工程·粒度控制"]
+        R3["mattpocock-skills<br/>工程 discipline"]
+        R4["ui-ux-pro-max<br/>UI 推理规则·交互模式"]
+        R5["claude-mem<br/>持久化记忆引擎"]
+        R6["everything-claude-code<br/>harness 优化全集"]
+    end
+
+    subgraph 应用点["文档生成应用点"]
+        A1["01-故事任务<br/>故事拆分·AC 设计"]:::doc
+        A2["02-用户场景<br/>UI 交互·粒度控制"]:::doc
+        A3["03/04-技术评审<br/>架构·组件·安全"]:::doc
+        A4["05-测试评审<br/>用例设计·Gate A"]:::doc
+        A5["09-自改进<br/>诊断·记忆沉淀"]:::doc
+    end
+
+    R1 --> A1 & A2 & A4
+    R2 --> A1 & A2
+    R3 --> A3
+    R4 --> A2 & A3
+    R5 --> A5
+    R6 --> A3
+
+    classDef doc fill:#e3f2fd,stroke:#1565c0;
+```
+
+### 按文档类型的参考矩阵
+
+| 公式 | 阶段 | 首要参考 | 其次参考 | 查阅时机 |
+|------|------|---------|---------|---------|
+| `F.story.task` | §1 Story | superpowers — 故事拆分模式 | get-shit-done — 上下文边界 | 开始撰写前 |
+| `F.story.task` | §4 Tasks | mattpocock-skills — 任务拆分 | superpowers — 行为纪律 | 拆分任务时 |
+| `F.story.task` | §5 AC | superpowers — 验证门禁 | — | 编写 AC 时 |
+| `F.story.user-scenarios` | §2 场景详述（UI） | ui-ux-pro-max — 交互规则 | superpowers — spec-driven | 描述场景前 |
+| `F.story.user-scenarios` | §2 场景详述（粒度） | get-shit-done — 上下文退化 | — | 控制粒度时 |
+| `F.story.backend-review` | §4 安全约束 | superpowers — 安全纪律 | everything-claude-code — 安全思路 | 安全分析时 |
+| `F.story.frontend-review` | §1 组件架构 | mattpocock-skills — 工程 discipline | ui-ux-pro-max — 组件模式 | 设计组件时 |
+| `F.story.frontend-review` | §3 交互设计 | ui-ux-pro-max — 161 推理规则 | — | 交互设计时 |
+| `F.story.test-review` | §2 测试用例 | superpowers — 验证门禁 | — | 设计用例时 |
+| `F.story.retrospective` | §2 诊断 | claude-mem — 记忆引擎 | everything-claude-code — 性能优化 | 自改进时 |
+| `F.supp.page-design` | §2 视觉规格 | ui-ux-pro-max — UI 规则 | — | 页面设计时 |
+
+### 应用铁律
+
+| # | 规则 | 反例 |
+|---|------|------|
+| 1 | 必须至少查阅 1 个相关外部参考再动笔 | "凭经验直接写故事，不需要看参考" |
+| 2 | 粒度不确定时回查 get-shit-done 的上下文边界设计 | 需求概述堆砌 500 字无重点 |
+| 3 | UI 交互场景必须参考 ui-ux-pro-max 的推理规则 | 登录表单的加载/空/错误态未定义 |
+| 4 | AC 设计必须体现 superpowers 的验证门禁模式 | AC 无 Gate A/B 映射且用例不可执行 |
+| 5 | 技术趋势类参考（GitHub Trending / OSS Insight / TrendShift）用于技术选型验证，不替代具体技术评审 | "GitHub 上这个库很火所以我们用" — 无评审直接引入 |

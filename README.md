@@ -276,3 +276,17 @@ flowchart TD
 ### 设计参考 — UI/UX
 
 > 前端故事的用户场景详述与页面设计补充文档，以 nextlevelbuilder/ui-ux-pro-max-skill 为权威参考（见上方故事描述）。
+
+### 工具与平台 — AI 开发基础设施
+
+- **[Claude Code 官方文档](https://code.claude.com/docs/en/overview)** — Claude Code CLI 完整功能参考，含 hooks、MCP、skills、IDE 集成、权限系统。**适用：技能设计时确认 harness 能力边界、hook 触发机制查阅。**
+- **[everything-claude-code](https://github.com/affaan-m/everything-claude-code/blob/main/README.zh-CN.md)** — Agent harness 性能优化全集（已在上方实现与架构中引用，此处强调 hook 与安全实践）。
+
+### 发现与洞察 — 趋势与权威开源源
+
+> pm 拆故事、架构设计、自改进时，应主动参考以下平台跟踪技术趋势与高质量开源项目，确保方案不落后于社区实践。
+
+- **[GitHub Top-Starred](https://github.com/search?q=stars%3A%3E100000&type=repositories&s=stars&o=desc)** — GitHub 十万星以上顶级项目列表。**适用：技术选型时参考社区验证的高质量开源项目、架构模式借鉴。**
+- **[GitHub Trending](https://github.com/trending)** — GitHub 每日/每周热门仓库。**适用：感知社区当前关注方向、发现新兴工具与框架。**
+- **[OSS Insight](https://ossinsight.io/)** — 开源数据分析平台，提供仓库排名、开发者画像、技术趋势洞察。**适用：技术选型数据支撑、竞品分析、生态健康度评估。**
+- **[TrendShift](https://trendshift.io/github-trending-repositories?trending-range=7)** — GitHub 仓库趋势变化追踪，按时间窗口比较 star 增长。**适用：识别快速上升的项目、捕捉技术采用信号。**
