@@ -62,13 +62,13 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    START["扫描故事目录"]:::s --> CHK01{"01-故事任务.md<br/>存在?"}
+    START["扫描故事目录"]:::s --> CHK01{"{project}-01-故事任务.md<br/>存在?"}
     CHK01 -->|"否"| NS["not_started"]:::s0
     CHK01 -->|"是"| CHKDOC{"文档基线齐全?<br/>含 02 05 + 按类型 03/04"}
     CHKDOC -->|"否"| DIP["docs_in_progress"]:::s1
     CHKDOC -->|"是"| CHKIMP{"实施报告存在?<br/>06 或 07"}
     CHKIMP -->|"否"| DD["docs_done"]:::s2
-    CHKIMP -->|"是"| CHKVER{"08-测试用例报告.md<br/>存在?"}
+    CHKIMP -->|"是"| CHKVER{"{project}-08-测试用例报告.md<br/>存在?"}
     CHKVER -->|"否"| CIP["code_in_progress"]:::s3
     CHKVER -->|"是"| CHKBLK{"rui-state.json<br/>blocked=true?"}
     CHKBLK -->|"是"| BLK["blocked"]:::s5
@@ -85,7 +85,7 @@ flowchart TD
 
 | 状态 | 条件 | 含义 |
 |------|------|------|
-| `not_started` | 01-故事任务.md 不存在 | 目录空或仅有元数据 |
+| `not_started` | {project}-01-故事任务.md 不存在 | 目录空或仅有元数据 |
 | `docs_in_progress` | 01 存在，文档基线不完整 | 文档生成进行中 |
 | `docs_done` | 文档基线齐全，实施报告不存在 | 等待编码 |
 | `code_in_progress` | 06 或 07 存在，08 不存在 | 实现验证中 |
@@ -170,8 +170,8 @@ flowchart LR
 📄 文件: <N> 个
 
   文件清单:
-  01-rui-story-故事任务.md         2.3 KB  2026-05-17 10:30
-  02-rui-story-用户使用场景.md      4.1 KB  2026-05-17 10:35
+  YrY-01-故事任务.md         2.3 KB  2026-05-17 10:30
+  YrY-02-用户使用场景.md      4.1 KB  2026-05-17 10:35
   ...
 
 🔀 Git 分支: feat/<name>  (或 —)

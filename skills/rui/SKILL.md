@@ -100,7 +100,7 @@ flowchart LR
 6. **只读反推** — `--from-code` / `--from-doc` 禁止改源码
 7. **产出内聚** — 关键产出限定在 `docs/故事任务面板/<name>/`
 8. **公式驱动** — 文档由 [formulas.md](./formulas.md) 规约，01+02 为问题/用户空间基线，03-09 为解决方案/验证/改进空间，文件名带编号前缀（00–10）
-9. **知识沉淀** — 写入 `10-交互日志.md` + `.memory/execution-memory.jsonl` + `.memory/rui-state.json`；提案写入 `.improvement/proposals.jsonl`
+9. **知识沉淀** — 写入 `{project}-10-交互日志.md` + `.memory/execution-memory.jsonl` + `.memory/rui-state.json`；提案写入 `.improvement/proposals.jsonl`
 10. **交付强制** — 三步按序触发（hook-log → import-docs → wework-bot），详见 [强制集成](#强制集成)
 11. **表达优先** — 文档内容必须 图 → 结构化文本 → 表，架构/流程/关系优先 mermaid，不可降级
 
@@ -108,17 +108,17 @@ flowchart LR
 
 | 编号 | 文件 | 阶段 | 基线 | 必选 |
 |------|------|------|:---:|:---:|
-| 00 | 消息通知列表.md | 交付 | — | 自动 |
-| 01 | 故事任务.md | 文档生成 | 问题空间 | ✓ |
-| 02 | 用户使用场景.md | 文档生成 | 用户空间 | ✓ |
-| 03 | {project}-后端技术评审.md | 文档生成 | — | 后端/全栈 |
-| 04 | {project}-前端技术评审.md | 文档生成 | — | 前端/全栈 |
-| 05 | 测试用例评审.md | 文档生成 | — | ✓ |
-| 06 | {project}-后端实施报告.md | 验证 | — | 后端/全栈 |
-| 07 | {project}-前端实施报告.md | 验证 | — | 前端/全栈 |
-| 08 | 测试用例报告.md | 验证 | — | ✓ |
-| 09 | 自改进复盘.md | 自改进 | — | ✓ |
-| 10 | 交互日志.md | 全阶段 | — | ✓ |
+| 00 | {project}-00-消息通知列表.md | 交付 | — | 自动 |
+| 01 | {project}-01-故事任务.md | 文档生成 | 问题空间 | ✓ |
+| 02 | {project}-02-用户使用场景.md | 文档生成 | 用户空间 | ✓ |
+| 03 | {project}-03-后端技术评审.md | 文档生成 | — | 后端/全栈 |
+| 04 | {project}-04-前端技术评审.md | 文档生成 | — | 前端/全栈 |
+| 05 | {project}-05-测试用例评审.md | 文档生成 | — | ✓ |
+| 06 | {project}-06-后端实施报告.md | 验证 | — | 后端/全栈 |
+| 07 | {project}-07-前端实施报告.md | 验证 | — | 前端/全栈 |
+| 08 | {project}-08-测试用例报告.md | 验证 | — | ✓ |
+| 09 | {project}-09-自改进复盘.md | 自改进 | — | ✓ |
+| 10 | {project}-10-交互日志.md | 全阶段 | — | ✓ |
 
 ## init
 
@@ -205,7 +205,7 @@ flowchart LR
     classDef s fill:#e3f2fd,stroke:#1565c0;
 ```
 
-**产出**：01-故事任务.md（问题空间基线，必创建）· 02-用户使用场景.md（用户空间基线，必创建）· 03-{project}-后端技术评审.md（后端/全栈）· 04-{project}-前端技术评审.md（前端/全栈）· 05-测试用例评审.md（必创建）
+**产出**：{project}-01-故事任务.md（问题空间基线，必创建）· {project}-02-用户使用场景.md（用户空间基线，必创建）· {project}-03-后端技术评审.md（后端/全栈）· {project}-04-前端技术评审.md（前端/全栈）· {project}-05-测试用例评审.md（必创建）
 
 **约束**：只读 · 分支隔离 · 逐故事串行
 
@@ -228,9 +228,9 @@ flowchart LR
     classDef bad fill:#ffebee,stroke:#c62828;
 ```
 
-**产出**：06-{project}-后端实施报告.md（后端/全栈）· 07-{project}-前端实施报告.md（前端/全栈）· 08-测试用例报告.md（必创建）· 09-自改进复盘.md（必创建）
+**产出**：{project}-06-后端实施报告.md（后端/全栈）· {project}-07-前端实施报告.md（前端/全栈）· {project}-08-测试用例报告.md（必创建）· {project}-09-自改进复盘.md（必创建）
 
-**约束**：源码唯一入口 · Gate A `05-测试用例评审.md` 不存在即阻断 · Gate B >2 轮阻断 · P0 不清零不进下一模块
+**约束**：源码唯一入口 · Gate A `{project}-05-测试用例评审.md` 不存在即阻断 · Gate B >2 轮阻断 · P0 不清零不进下一模块
 
 **末端触发** [强制集成](#强制集成)。
 
@@ -463,7 +463,7 @@ flowchart LR
 
 | 类别 | 内容 |
 |------|------|
-| 数据契约 | `10-交互日志.md`（追加）· `.memory/rui-state.json`（覆盖写）· `.memory/execution-memory.jsonl`（追加）· `.improvement/proposals.jsonl`（追加）— 字段见 [coder.md §数据契约](./coder.md) |
+| 数据契约 | `{project}-10-交互日志.md`（追加）· `.memory/rui-state.json`（覆盖写）· `.memory/execution-memory.jsonl`（追加）· `.improvement/proposals.jsonl`（追加）— 字段见 [coder.md §数据契约](./coder.md) |
 | Hooks | Stop hooks 调用：hook-log → import-docs → hook-notify → delivery-gate |
 | 规则 | [code-pipeline](../../rules/code-pipeline.md) · [delivery-gate](../../rules/delivery-gate.md) · [doc-generation](../../rules/doc-generation.md) · [self-improve](../../rules/self-improve.md) · [rui-claude](../../rules/rui-claude.md) |
 | 角色 | [pm](../../agents/pm.md) · [coder](../../agents/coder.md) · [tester](../../agents/tester.md) · [reporter](../../agents/reporter.md) · [security](../../agents/security.md) · [self-improve](../../agents/self-improve.md) |
