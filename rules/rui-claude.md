@@ -20,7 +20,7 @@ flowchart TB
     Q1 -->|"空输入"| LIST["推荐任务列表"]:::cmd
 
     REQ --> PIPE["走 rui code 管线<br/>分支隔离 → Gate A → 编码 → Gate B"]:::pipe
-    SYNC --> OVER["rm -rf → rsync<br/>不走管线"]:::pipe
+    SYNC --> OVER["API pull → 本地覆盖<br/>不走管线"]:::pipe
     RETRO --> REPORT["写入 docs/自改进故事面板/"]:::out
     HIST --> LOG[".claude/.history/<br/>rui-claude-history.jsonl"]:::out
 
@@ -40,7 +40,7 @@ flowchart TB
 | 子命令 | 行为 | 走管线? | 产出位置 |
 |--------|------|--------|---------|
 | `需求` | 需求驱动的 .claude/ 变更 | ✅ rui code 管线 | `.claude/` 目录内 |
-| `sync` | 覆盖式更新（rm -rf → rsync） | ❌ 不走管线 | `.claude/` 全量 |
+| `sync` | 覆盖式更新（API pull → 本地覆盖） | ❌ 不走管线 | `.claude/` 全量 |
 | `retro` | 复盘分析 | ❌ 独立流程 | `docs/自改进故事面板/` |
 | `history` | 自动记录历史 | ❌ 后台记录 | `.claude/.history/` |
 | 空输入 | 推荐任务 | ❌ 不执行 | — |
@@ -79,21 +79,19 @@ flowchart LR
 flowchart LR
     TRIGGER["/rui-claude sync"]:::src --> CONFIRM{"确认用户意图?"}
     CONFIRM -->|"否"| ABORT["中止"]:::abort
-    CONFIRM -->|"是"| WIPE["rm -rf .claude/"]:::warn
-    WIPE --> COPY["rsync 远端 → 本地"]:::op
-    COPY --> DONE["同步完成"]:::done
+    CONFIRM -->|"是"| PULL["import-docs<br/>dir=.claude/ mode=pull<br/>远端 API → 逐文件覆盖"]:::op
+    PULL --> DONE["同步完成"]:::done
 
     classDef src fill:#e8f5e9,stroke:#2e7d32;
     classDef abort fill:#eceff1,stroke:#90a4ae;
-    classDef warn fill:#fff3e0,stroke:#e65100;
     classDef op fill:#e3f2fd,stroke:#1565c0;
     classDef done fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | # | 规则 | 说明 |
 |---|------|------|
-| 4 | `sync` 为覆盖式更新（rm -rf → rsync），执行前须确认用户意图 | 整目录清空不可逆 |
-| 5 | SSH 凭据由系统管理员管理，本 skill 不配置/存储/传递 | 凭据不在 `.claude/` 内 |
+| 4 | `sync` 为覆盖式更新（API pull → 本地覆盖），执行前须确认用户意图 | 覆盖操作不可逆 |
+| 5 | `API_X_TOKEN` 由环境变量传入，本 skill 不配置/存储/传递 | 凭据不在 `.claude/` 内 |
 
 ## retro — 复盘分析
 

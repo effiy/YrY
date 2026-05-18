@@ -121,7 +121,7 @@ flowchart TD
 | `/rui-claude` | 只读 | 任务推荐 |
 | `/rui-claude history [--limit N]` | 只读 | 操作历史 |
 | `/rui-claude retro [--name <story>]` | 写入 | 健康复盘 |
-| `/rui-claude sync` | 写入 | 远端同步：先 `rm -rf .claude/` 再 rsync |
+| `/rui-claude sync` | 写入 | 远端同步：API pull 覆盖本地 `.claude/` |
 | `/rui-claude 需求` | 写入 | 需求管线 |
 
 > ⚠️ `sync` 执行前必须确认意图。详见 [rules/rui-claude.md](./rules/rui-claude.md)。

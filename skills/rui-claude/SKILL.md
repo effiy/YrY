@@ -17,7 +17,7 @@ lifecycle: default-pipeline
 flowchart TB
     ENTRY["/rui-claude"]:::src --> Q1{"子命令?"}
 
-    Q1 -->|"sync"| SYNC["覆盖式同步<br/>rm -rf → rsync"]:::cmd
+    Q1 -->|"sync"| SYNC["覆盖式同步<br/>API pull → 本地覆盖"]:::cmd
     Q1 -->|"retro"| RETRO["健康度分析<br/>三节复盘"]:::cmd
     Q1 -->|"history"| HIST["操作历史<br/>list / stats"]:::cmd
     Q1 -->|"&lt;req&gt;"| REQ["需求管线<br/>doc + code → 交付"]:::cmd
@@ -37,7 +37,7 @@ flowchart TB
 
 | 命令 | 流程 | 产出 |
 |------|------|------|
-| `/rui-claude sync` | `rm -rf .claude` → rsync 远端配置到本地 | `.claude/` 全量覆盖 |
+| `/rui-claude sync` | 查询远端 API → 逐文件 pull 覆盖本地 | `.claude/` 全量覆盖 |
 | `/rui-claude retro` | 分析 .claude/ 结构健康度 → 三节复盘 | `docs/自改进故事面板/<date>.md` |
 | `/rui-claude history` | 查看操作历史：`list [--limit N]` / `stats [--json]` | 终端输出 |
 | `/rui-claude 需求` | 需求解析→故事拆分→逐故事 doc+code 管线→交付 | `.claude/` 内文件变更 |
@@ -66,22 +66,21 @@ flowchart LR
 flowchart LR
     TRIGGER["/rui-claude sync"]:::src --> CHECK{"确认用户意图?"}
     CHECK -->|"否"| ABORT["中止"]:::abort
-    CHECK -->|"是"| WIPE["rm -rf .claude/"]:::warn
-    WIPE --> RSYNC["rsync -avz --exclude '.git'<br/>root@www.effiy.cn:/home/claude/YiKnowledge/static/${PROJECT}/.claude/ → ./.claude/"]:::op
-    RSYNC --> DONE["完成<br/>自动记录 history"]:::done
+    CHECK -->|"是"| PULL["node skills/import-docs/sync.mjs<br/>dir=.claude/ mode=pull<br/>远端 API → 逐文件覆盖本地"]:::op
+    PULL --> DONE["完成<br/>自动记录 history"]:::done
 
     classDef src fill:#e8f5e9,stroke:#2e7d32;
     classDef abort fill:#eceff1,stroke:#90a4ae;
-    classDef warn fill:#fff3e0,stroke:#e65100;
     classDef op fill:#e3f2fd,stroke:#1565c0;
     classDef done fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | 项目 | 说明 |
 |------|------|
-| 前置条件 | 本机 SSH key 已授权 `root@www.effiy.cn` |
-| 行为 | 覆盖式更新，整目录 rm -rf → rsync |
-| `${PROJECT}` | `basename "$PWD"` |
+| 数据源 | 远端 API（`api.effiy.cn`），查询 sessions 集合中 `tags[0]=<workspace> && tags[1]=.claude` 的记录 |
+| 行为 | 覆盖式更新，逐文件从远端 pull 覆盖本地 `.claude/`，保留嵌套目录结构 |
+| 前置条件 | `API_X_TOKEN` 环境变量已配置 |
+| 委托 | 完全委托 `import-docs`（`dir=.claude/ mode=pull`），不自行实现同步逻辑 |
 | 完成后 | 自动记录 history |
 
 ## retro — 健康度分析
@@ -181,7 +180,7 @@ flowchart LR
     end
 
     subgraph 应用["rui-claude 应用"]
-        A1["sync — 技能组织方式"]:::app
+        A1["sync — API 远端同步"]:::app
         A2["retro — 健康度分析模式"]:::app
         A3["需求 — 安全约束思路"]:::app
         A4["趋势 — 配置演进方向"]:::app
@@ -197,7 +196,7 @@ flowchart LR
 
 | 命令 | 参考资源 | 汲取要点 |
 |------|---------|---------|
-| sync | everything-claude-code | 技能目录组织、harness 配置结构 |
+| sync | import-docs | 远端 API 查询 + 文件下载模式 |
 | retro | everything-claude-code · superpowers | 健康度指标、行为纪律审查 |
 | 需求管线 | superpowers | 安全约束、验证门禁、仅限 `.claude/` 边界 |
 | 趋势跟踪 | GitHub Trending · OSS Insight · TrendShift | `.claude/` 配置演进方向、新兴工具采纳 |

@@ -80,7 +80,7 @@ ${section("参数", [
   ["prefix=a,b", "远端路径前缀"],
   ["apiUrl=<url>", "覆盖 API 地址"],
   ["mode=list", "仅列出文件，跳过上传"],
-  ["mode=pull", "远端→本地下载 (需配合 dir=docs/故事任务面板/<name>/)"],
+  ["mode=pull", "远端→本地下载 (故事面板或 .claude/ 目录)"],
 ])}
 
 ${section("示例", [
@@ -92,6 +92,9 @@ ${section("示例", [
   ["", ""],
   ["# 从远端拉取故事文档", ""],
   ["dir=docs/故事任务面板/user-login/ mode=pull", "远端 → 本地覆盖"],
+  ["", ""],
+  ["# 从远端拉取 .claude/ 配置", ""],
+  ["dir=.claude/ mode=pull", "远端 → 本地覆盖 .claude/ 全量"],
   ["", ""],
   ["# 预览不上传", ""],
   ["workspace=true mode=list", "列出待上传文件清单"],
@@ -309,70 +312,92 @@ async function querySessionsFull(apiUrl) {
   return data?.data?.list || data?.list || [];
 }
 
-function extractStoryNameFromDir(localDir, root) {
-  // localDir: /var/www/YiAi/docs/故事任务面板/user-login
-  // → extract "user-login"
-  const rel = relative(root, localDir).split(sep).join("/");
-  const panelPrefix = "docs/故事任务面板/";
-  if (rel.startsWith(panelPrefix)) {
-    const sub = rel.slice(panelPrefix.length);
-    if (sub && sub !== ".") return sub.split("/")[0];
+function resolvePullFilter(localDir, projectRoot) {
+  const workspaceName = projectRoot.split(sep).pop() || "workspace";
+  const relDir = relative(projectRoot, localDir).split(sep).join("/");
+
+  // Story panel: docs/故事任务面板/<name>/
+  if (relDir.startsWith("docs/故事任务面板/")) {
+    const storyName = relDir.slice("docs/故事任务面板/".length).split("/")[0];
+    if (!storyName) return null;
+    return {
+      type: "story",
+      storyName,
+      filter: (s) => {
+        const tags = s.tags || [];
+        return tags[0] === "故事任务面板" && tags[1] === storyName;
+      },
+      // story files are flat in one dir — local path = localDir + basename
+      toLocal: (remotePath) => join(localDir, basename(remotePath)),
+    };
   }
+
+  // .claude/ directory
+  if (relDir === ".claude" || relDir.startsWith(".claude/")) {
+    return {
+      type: "claude",
+      filter: (s) => {
+        const tags = s.tags || [];
+        const fp = s.file_path || "";
+        return tags[0] === workspaceName && fp.startsWith(`${workspaceName}/.claude/`);
+      },
+      // preserve nested structure: strip "{workspaceName}/" prefix
+      toLocal: (remotePath) => join(projectRoot, remotePath.slice(workspaceName.length + 1)),
+    };
+  }
+
   return null;
 }
 
-async function pullFromRemote(apiUrl, localDir, root) {
-  const storyName = extractStoryNameFromDir(localDir, root);
-  if (!storyName) {
-    console.error(`[import-docs] pull mode: cannot extract story name from dir=${localDir}`);
-    return { written: 0, failed: 0, storyName: null, reason: "dir 不在 docs/故事任务面板/ 下" };
+async function pullFromRemote(apiUrl, localDir, projectRoot) {
+  const strategy = resolvePullFilter(localDir, projectRoot);
+  if (!strategy) {
+    const relDir = relative(projectRoot, localDir).split(sep).join("/");
+    console.error(`[import-docs] pull mode: unsupported dir=${relDir}`);
+    return { written: 0, failed: 0, reason: `不支持的 pull 目录: ${relDir}` };
   }
 
-  console.error(`[import-docs] pull mode: story=${storyName}`);
+  const label = strategy.type === "story" ? `story=${strategy.storyName}` : ".claude/";
+  console.error(`[import-docs] pull mode: ${label}`);
 
-  // Query full sessions to filter by tags
   let sessions;
   try {
     sessions = await querySessionsFull(apiUrl);
   } catch (err) {
     console.error(`[import-docs] failed to query remote sessions: ${err.message}`);
-    return { written: 0, failed: 0, storyName, reason: `远端查询失败: ${err.message}` };
+    return { written: 0, failed: 0, reason: `远端查询失败: ${err.message}` };
   }
 
-  // Filter sessions: tags[0]=="故事任务面板" && tags[1]==storyName
-  const storyFiles = sessions.filter(s => {
-    const tags = s.tags || s.get_tags?.() || [];
-    return tags[0] === "故事任务面板" && tags[1] === storyName;
-  });
+  const matched = sessions.filter(strategy.filter);
 
-  if (storyFiles.length === 0) {
-    console.error(`[import-docs] no remote files for story: ${storyName}`);
-    return { written: 0, failed: 0, storyName, reason: "远端无此故事" };
+  if (matched.length === 0) {
+    console.error(`[import-docs] no remote files for: ${label}`);
+    return { written: 0, failed: 0, reason: "远端无匹配文件" };
   }
 
-  console.error(`[import-docs] found ${storyFiles.length} remote files for ${storyName}`);
-
-  // Ensure local directory exists
-  if (!existsSync(localDir)) {
-    await mkdir(localDir, { recursive: true });
-  }
+  console.error(`[import-docs] found ${matched.length} remote files for ${label}`);
 
   let written = 0, failed = 0;
   const errors = [];
 
-  for (const sf of storyFiles) {
+  for (const sf of matched) {
     const remotePath = sf.file_path || sf.get_file_path?.();
     if (!remotePath) { failed++; continue; }
 
     try {
       const data = await readRemoteFile(apiUrl, remotePath);
       const content = data?.data?.content ?? data?.content ?? "";
-      const fileName = basename(remotePath);
-      const localPath = join(localDir, fileName);
+      const localPath = strategy.toLocal(remotePath);
+
+      // Ensure parent directory exists (for nested .claude/ files)
+      const parent = dirname(localPath);
+      if (!existsSync(parent)) {
+        await mkdir(parent, { recursive: true });
+      }
 
       await writeFile(localPath, content, "utf-8");
       written++;
-      console.error(`[import-docs] pulled: ${remotePath} → ${relative(root, localPath)}`);
+      console.error(`[import-docs] pulled: ${remotePath} → ${relative(projectRoot, localPath)}`);
     } catch (err) {
       failed++;
       errors.push({ remotePath, error: err.message });
@@ -381,7 +406,7 @@ async function pullFromRemote(apiUrl, localDir, root) {
   }
 
   console.error(`[import-docs] pull done — written: ${written}, failed: ${failed}`);
-  return { written, failed, storyName, errors };
+  return { written, failed, type: strategy.type, errors };
 }
 
 async function recommendPullMode(apiUrl) {

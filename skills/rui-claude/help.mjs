@@ -35,7 +35,7 @@ ${item("/rui-claude -h", "同上")}
 ${item("/rui-claude help", "同上")}
 
 ${section("命令", [
-  ["/rui-claude sync", "覆盖式同步：rm -rf .claude/ → rsync 远端"],
+  ["/rui-claude sync", "覆盖式同步：远端 API → import-docs pull 覆盖本地"],
   ["/rui-claude retro", "健康度分析：三节复盘 (配置结构/健康度/改进项)"],
   ["/rui-claude history list", "列出最近 N 条操作记录"],
   ["/rui-claude history stats", "操作统计摘要"],
@@ -45,7 +45,7 @@ ${section("命令", [
 
 ${section("常用场景示例", [
   ["# 拉取团队最新配置", ""],
-  ["/rui-claude sync", "从远端全量覆盖本地 .claude/ (会提示确认)"],
+  ["/rui-claude sync", "从远端 API 全量覆盖本地 .claude/ (会提示确认)"],
   ["", ""],
   ["# 分析配置健康度", ""],
   ["/rui-claude retro", "分析 agents/rules/skills 结构，输出复盘文档"],
