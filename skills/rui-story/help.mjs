@@ -33,7 +33,7 @@ function line(text) {
 const help = `
 ${bold("# rui-story — 故事任务面板管理")}
 
-${dim("扫描 · 查看 · 重命名 · 删除 · 同步 | 操作仅限 docs/故事任务面板/")}
+${dim("扫描 · 查看 · 同步 | 操作仅限 docs/故事任务面板/")}
 
 ${hdr("用法")}
 ${item("/rui-story --help", "显示此帮助信息")}
@@ -47,9 +47,7 @@ ${section("只读命令", [
 ])}
 
 ${section("写入命令", [
-  ["/rui-story delete <name>", "删除故事目录（需确认，警告 git 分支）"],
   ["/rui-story sync [<name>]", "从远端同步文档到本地；未指定名称时展示推荐提示"],
-  ["/rui-story rename <old> <new>", "重命名故事目录（警告 git 分支）"],
 ])}
 
 ${section("常用场景示例", [
@@ -62,26 +60,19 @@ ${section("常用场景示例", [
   ["# 查看单个故事", ""],
   ["/rui-story show user-login", "展示该故事的所有文件、状态、元数据"],
   ["", ""],
-  ["# 删除废弃故事", ""],
-  ["/rui-story delete user-login", "确认后删除目录（不删 git 分支）"],
-  ["", ""],
   ["# 从远端同步故事文档", ""],
   ["/rui-story sync user-login", "从远端同步该故事文档到本地"],
   ["/rui-story sync", "展示可同步故事推荐，等待用户选择"],
-  ["", ""],
-  ["# 重命名故事", ""],
-  ["/rui-story rename user-login auth-login", "重命名目录，警告 git 分支"],
 ])}
 
 ${section("操作边界", [
-  ["✅ docs/故事任务面板/", "目录结构管理"],
+  ["✅ docs/故事任务面板/", "查询与同步"],
   ["❌ 不可触及", "源码 · git 分支操作 · 故事文档内容生成"],
 ])}
 
 ${section("核心规则", [
-  ["仅管理目录结构", "不创建文档内容（那是 /rui doc）"],
+  ["仅查询与同步", "不创建文档内容（那是 /rui doc）"],
   ["不改源码", "不改源代码或 git 分支"],
-  ["delete 必确认", "删除操作必须用户明确确认"],
   ["kebab-case", "name 小写连字符，无 Project 前缀"],
   ["sync 委托 import-docs", "不自行实现同步逻辑"],
 ])}

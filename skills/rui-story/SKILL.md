@@ -7,7 +7,7 @@ lifecycle: default-pipeline
 
 # rui-story
 
-> 故事任务面板管理：删 · 改 · 查 · 同步。操作边界仅限 `docs/故事任务面板/`。
+> 故事任务面板管理：查 · 同步。操作边界仅限 `docs/故事任务面板/`。
 >
 > **--help / -h**：执行 `node skills/rui-story/help.mjs` 输出完整帮助（含场景示例）。用户输入 `/rui-story --help` 或 `/rui-story -h` 或 `/rui-story help` 时，跳过管线逻辑，直接运行脚本并将输出展示给用户。
 >
@@ -22,9 +22,7 @@ flowchart TD
     Q1 -->|"有"| Q2{"哪个子命令?"}
     Q2 -->|"list"| LIST["进度全景<br/>所有故事详细表格"]:::read
     Q2 -->|"show &lt;name&gt;"| SHOW["单故事详情<br/>文件清单/状态/元数据"]:::read
-    Q2 -->|"delete &lt;name&gt;"| DELETE["删除故事目录<br/>需用户确认"]:::write
     Q2 -->|"sync &lt;name&gt;?"| SYNC["文档同步<br/>委托 import-docs"]:::write
-    Q2 -->|"rename &lt;old&gt; &lt;new&gt;"| RENAME["重命名故事目录<br/>警告 git 分支"]:::write
 
     classDef entry fill:#fff3e0,stroke:#e65100;
     classDef read fill:#e8f5e9,stroke:#2e7d32;
@@ -36,9 +34,7 @@ flowchart TD
 | `/rui-story` | 只读 | 状态概览：按状态统计 + 最近活动 |
 | `/rui-story list` | 只读 | 进度全景：所有故事详细表格（状态/文件数/最后修改/分支） |
 | `/rui-story show <name>` | 只读 | 单故事详情：文件清单/状态/元数据/git 分支 |
-| `/rui-story delete <name>` | 写入 | 删除故事目录（需用户确认，警告 git 分支） |
 | `/rui-story sync [<name>]` | 写入 | 从远端同步文档到本地，需指定故事名称；未指定时展示推荐提示 |
-| `/rui-story rename <old> <new>` | 写入 | 重命名故事目录（警告 git 分支） |
 
 `<name>` 为 kebab-case（如 `user-login`）。
 
@@ -47,7 +43,7 @@ flowchart TD
 ```mermaid
 flowchart LR
     subgraph 允许["✅ 允许"]
-        A1["docs/故事任务面板/<br/>目录结构管理"]:::ok
+        A1["docs/故事任务面板/<br/>面板查询与同步"]:::ok
         A2["import-docs 同步委托"]:::ok
     end
     subgraph 禁止["❌ 禁止"]
@@ -174,8 +170,8 @@ flowchart LR
 📄 文件: <N> 个
 
   文件清单:
-  01-故事任务.md         2.3 KB  2026-05-17 10:30
-  02-用户使用场景.md      4.1 KB  2026-05-17 10:35
+  01-rui-story-故事任务.md         2.3 KB  2026-05-17 10:30
+  02-rui-story-用户使用场景.md      4.1 KB  2026-05-17 10:35
   ...
 
 🔀 Git 分支: feat/<name>  (或 —)
@@ -185,31 +181,6 @@ flowchart LR
   阶段: <current_stage>
   阻断原因: <block_reason 或 —>
 ```
-
-## `/rui-story delete <name>` — 删除故事
-
-```mermaid
-flowchart TD
-    PARSE["解析名称"]:::op --> EXIST{"目录存在?"}
-    EXIST -->|"否"| ERR["报错：不存在"]:::bad
-    EXIST -->|"是"| BRANCH["检查 git 分支<br/>git branch --list"]:::op
-    BRANCH --> WARN{"分支存在?"}
-    WARN -->|"是"| WARNMSG["⚠ 警告：分支仍保留"]:::warn
-    WARN -->|"否"| CONF
-    WARNMSG --> CONF["请求用户确认<br/>输入 yes/no"]:::user
-    CONF -->|"yes"| DEL["rm -rf 目录"]:::op
-    CONF -->|"no"| CANCEL["取消"]:::out
-    DEL --> DONE["输出删除确认"]:::out
-
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#e8f5e9,stroke:#2e7d32;
-    classDef bad fill:#ffebee,stroke:#c62828;
-    classDef warn fill:#fff3e0,stroke:#e65100;
-    classDef user fill:#f3e5f5,stroke:#6a1b9a;
-```
-
-- **必须用户确认**（输入 `yes`），不默认执行
-- Git 分支**不删除**，仅警告
 
 ## `/rui-story sync [<name>]` — 从远端同步文档
 
@@ -228,43 +199,15 @@ flowchart LR
 - 指定故事：`dir=docs/故事任务面板/<name>/` → 直接同步
 - 未指定：展示可同步故事推荐提示，等待用户选择后再同步
 
-## `/rui-story rename <old> <new>` — 重命名故事
-
-```mermaid
-flowchart TD
-    PARSE["解析 old + new"]:::op --> VALID{"格式均有效?"}
-    VALID -->|"否"| ERR1["报错退出"]:::bad
-    VALID -->|"是"| EXIST{"old 目录存在?"}
-    EXIST -->|"否"| ERR2["报错：不存在"]:::bad
-    EXIST -->|"是"| CONFLICT{"new 目录<br/>已存在?"}
-    CONFLICT -->|"是"| ERR3["拒绝覆盖"]:::bad
-    CONFLICT -->|"否"| BRANCH["检查 git 分支"]:::op
-    BRANCH --> WARN{"old 分支存在?"}
-    WARN -->|"是"| WARNMSG["⚠ 分支需手动重命名"]:::warn
-    WARN -->|"否"| MV
-    WARNMSG --> MV["mv old new"]:::op
-    MV --> DONE["输出重命名确认"]:::out
-
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#e8f5e9,stroke:#2e7d32;
-    classDef bad fill:#ffebee,stroke:#c62828;
-    classDef warn fill:#fff3e0,stroke:#e65100;
-```
-
-- old 和 new 均为 kebab-case 的 `<name>` 格式
-- 仅重命名目录，不操作 git 分支
-- 同名不操作
-
 ## 核心规则
 
 ```mermaid
 flowchart LR
-    subgraph 规则["5 条硬约束"]
-        R1["仅管理目录结构<br/>不创建文档内容"]:::rule
+    subgraph 规则["4 条硬约束"]
+        R1["仅查询与同步<br/>不创建文档内容"]:::rule
         R2["不修改源码<br/>不创建/切换 git 分支"]:::rule
-        R3["delete 必须用户确认"]:::rule
-        R4["sync 完全委托<br/>import-docs"]:::rule
-        R5["kebab-case<br/>命名硬规范"]:::rule
+        R3["sync 完全委托<br/>import-docs"]:::rule
+        R4["kebab-case<br/>命名硬规范"]:::rule
     end
 
     classDef rule fill:#e3f2fd,stroke:#1565c0;
@@ -272,29 +215,24 @@ flowchart LR
 
 | # | 规则 | 违反处置 |
 |---|------|---------|
-| 1 | 只管理故事面板目录结构，不创建故事文档内容（那是 `/rui doc`） | 撤销误创建的文件 |
+| 1 | 仅查询故事面板状态和同步文档，不创建故事文档内容（那是 `/rui doc`） | 撤销误创建的文件 |
 | 2 | 不修改源码，不创建/切换 git 分支（那是 `/rui code`） | — |
-| 3 | delete 必须用户明确确认（输入 `yes`），不默认执行 | 补确认或取消 |
-| 4 | sync 完全委托 import-docs，不自行实现同步 | 修正命令重试 |
-| 5 | `<name>` = kebab-case | 拒绝执行 |
+| 3 | sync 完全委托 import-docs，不自行实现同步 | 修正命令重试 |
+| 4 | `<name>` = kebab-case | 拒绝执行 |
 
 ## 生效标志
 
 ```mermaid
 flowchart LR
-    F1["delete 前已确认<br/>git 分支已警告"]:::sig
-    F1 --> F2["sync 正确委托<br/>import-docs"]:::sig
-    F2 --> F3["rename 后新目录存在<br/>旧目录不存在"]:::sig
-    F3 --> F4["list/show 状态<br/>判定准确"]:::sig
+    F1["sync 正确委托<br/>import-docs"]:::sig
+    F1 --> F2["list/show 状态<br/>判定准确"]:::sig
 
     classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 标志 | 未达标的处置 |
 |------|------------|
-| delete 前已确认 + git 分支已警告 | 补确认、补警告 |
 | sync 正确委托 import-docs | 修正命令参数重试 |
-| rename 后新目录存在、旧目录不存在 | 手动修正 |
 | list/show 状态判定准确 | 修正判定逻辑 |
 
 ## 与 rui 的关系
@@ -304,7 +242,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     RUI["/rui<br/>SDLC 编排"]:::rui -->|"doc 创建文档"| PANEL["docs/故事任务面板/"]:::panel
-    RS["/rui-story<br/>面板管理"]:::story -->|"管理 + 同步"| PANEL
+    RS["/rui-story<br/>面板管理"]:::story -->|"查询 + 同步"| PANEL
 
     classDef rui fill:#fff3e0,stroke:#e65100;
     classDef story fill:#e3f2fd,stroke:#1565c0;
