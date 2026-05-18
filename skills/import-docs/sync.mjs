@@ -2,8 +2,8 @@
 // import-docs sync — scan + filter + upload local documents to remote API
 // Triggered by: rui delivery gate step ②, or manual: node skills/import-docs/sync.mjs
 
-import { readFile, readdir, stat } from "node:fs/promises";
-import { join, relative, sep, dirname, resolve } from "node:path";
+import { readFile, readdir, stat, mkdir, writeFile } from "node:fs/promises";
+import { join, relative, sep, dirname, resolve, basename } from "node:path";
 import { existsSync } from "node:fs";
 
 // --- config ----------------------------------------------------------------
@@ -37,6 +37,7 @@ function parseArgs() {
       case "prefix": opts.prefix = val.split(",").map(s => s.trim()); break;
       case "apiUrl": opts.apiUrl = val; break;
       case "mode": opts.mode = val; break;
+      case "names": opts.names = val.split(",").map(s => s.trim()); break;
     }
   }
 
@@ -79,6 +80,7 @@ ${section("参数", [
   ["prefix=a,b", "远端路径前缀"],
   ["apiUrl=<url>", "覆盖 API 地址"],
   ["mode=list", "仅列出文件，跳过上传"],
+  ["mode=pull", "远端→本地下载 (需配合 dir=docs/故事任务面板/<name>/)"],
 ])}
 
 ${section("示例", [
@@ -87,6 +89,9 @@ ${section("示例", [
   ["", ""],
   ["# 同步指定目录", ""],
   ["dir=/path/to/docs exts=md,json", "仅同步该目录下的 md/json 文件"],
+  ["", ""],
+  ["# 从远端拉取故事文档", ""],
+  ["dir=docs/故事任务面板/user-login/ mode=pull", "远端 → 本地覆盖"],
   ["", ""],
   ["# 预览不上传", ""],
   ["workspace=true mode=list", "列出待上传文件清单"],
@@ -223,7 +228,7 @@ async function querySessions(apiUrl) {
   return paths;
 }
 
-async function writeFile(apiUrl, remotePath, content) {
+async function writeRemoteFile(apiUrl, remotePath, content) {
   const body = { target_file: remotePath, content, is_base64: false };
   return fetchJson(apiUrl + "/write-file", { method: "POST", body: JSON.stringify(body) });
 }
@@ -262,7 +267,7 @@ async function uploadAll(files, apiUrl, existingPaths, root, workspaceName, pref
     const remotePath = resolveRemotePath(file, root, workspaceName, prefix);
     try {
       const content = await readFile(file, "utf-8");
-      await writeFile(apiUrl, remotePath, content);
+      await writeRemoteFile(apiUrl, remotePath, content);
       if (existingPaths.has(remotePath)) { overwritten++; }
       else {
         await createSession(apiUrl, remotePath);
@@ -288,8 +293,142 @@ async function uploadAll(files, apiUrl, existingPaths, root, workspaceName, pref
   return { created, overwritten, failed, errors };
 }
 
+// --- remote read (pull mode) ------------------------------------------------
+async function readRemoteFile(apiUrl, remotePath) {
+  const body = { target_file: remotePath };
+  return fetchJson(apiUrl + "/read-file", { method: "POST", body: JSON.stringify(body) });
+}
+
+async function querySessionsFull(apiUrl) {
+  const body = {
+    module_name: "services.database.data_service",
+    method_name: "query_documents",
+    parameters: { cname: "sessions", limit: 10000 },
+  };
+  const data = await fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
+  return data?.data?.list || data?.list || [];
+}
+
+function extractStoryNameFromDir(localDir, root) {
+  // localDir: /var/www/YiAi/docs/故事任务面板/user-login
+  // → extract "user-login"
+  const rel = relative(root, localDir).split(sep).join("/");
+  const panelPrefix = "docs/故事任务面板/";
+  if (rel.startsWith(panelPrefix)) {
+    const sub = rel.slice(panelPrefix.length);
+    if (sub && sub !== ".") return sub.split("/")[0];
+  }
+  return null;
+}
+
+async function pullFromRemote(apiUrl, localDir, root) {
+  const storyName = extractStoryNameFromDir(localDir, root);
+  if (!storyName) {
+    console.error(`[import-docs] pull mode: cannot extract story name from dir=${localDir}`);
+    return { written: 0, failed: 0, storyName: null, reason: "dir 不在 docs/故事任务面板/ 下" };
+  }
+
+  console.error(`[import-docs] pull mode: story=${storyName}`);
+
+  // Query full sessions to filter by tags
+  let sessions;
+  try {
+    sessions = await querySessionsFull(apiUrl);
+  } catch (err) {
+    console.error(`[import-docs] failed to query remote sessions: ${err.message}`);
+    return { written: 0, failed: 0, storyName, reason: `远端查询失败: ${err.message}` };
+  }
+
+  // Filter sessions: tags[0]=="故事任务面板" && tags[1]==storyName
+  const storyFiles = sessions.filter(s => {
+    const tags = s.tags || s.get_tags?.() || [];
+    return tags[0] === "故事任务面板" && tags[1] === storyName;
+  });
+
+  if (storyFiles.length === 0) {
+    console.error(`[import-docs] no remote files for story: ${storyName}`);
+    return { written: 0, failed: 0, storyName, reason: "远端无此故事" };
+  }
+
+  console.error(`[import-docs] found ${storyFiles.length} remote files for ${storyName}`);
+
+  // Ensure local directory exists
+  if (!existsSync(localDir)) {
+    await mkdir(localDir, { recursive: true });
+  }
+
+  let written = 0, failed = 0;
+  const errors = [];
+
+  for (const sf of storyFiles) {
+    const remotePath = sf.file_path || sf.get_file_path?.();
+    if (!remotePath) { failed++; continue; }
+
+    try {
+      const data = await readRemoteFile(apiUrl, remotePath);
+      const content = data?.data?.content ?? data?.content ?? "";
+      const fileName = basename(remotePath);
+      const localPath = join(localDir, fileName);
+
+      await writeFile(localPath, content, "utf-8");
+      written++;
+      console.error(`[import-docs] pulled: ${remotePath} → ${relative(root, localPath)}`);
+    } catch (err) {
+      failed++;
+      errors.push({ remotePath, error: err.message });
+      console.error(`[import-docs] FAILED pull: ${remotePath} — ${err.message}`);
+    }
+  }
+
+  console.error(`[import-docs] pull done — written: ${written}, failed: ${failed}`);
+  return { written, failed, storyName, errors };
+}
+
+async function recommendPullMode(apiUrl) {
+  console.error("# import-docs pull 模式 — 远端可同步故事\n");
+
+  if (!API_X_TOKEN) {
+    console.error("⚠️  API_X_TOKEN: 缺失 — 无法查询远端");
+    return;
+  }
+
+  let sessions;
+  try {
+    sessions = await querySessionsFull(apiUrl);
+  } catch (err) {
+    console.error(`⚠️  远端不可达: ${err.message}`);
+    return;
+  }
+
+  // Group by story name from tags
+  const storyMap = new Map();
+  for (const s of sessions) {
+    const tags = s.tags || s.get_tags?.() || [];
+    if (tags[0] !== "故事任务面板" || !tags[1]) continue;
+    const name = tags[1];
+    if (!storyMap.has(name)) storyMap.set(name, []);
+    storyMap.get(name).push(s.file_path || s.get_file_path?.() || "");
+  }
+
+  if (storyMap.size === 0) {
+    console.error("远端无故事任务面板文件");
+    return;
+  }
+
+  console.error(`📋 远端故事: ${storyMap.size} 个\n`);
+  for (const [name, files] of [...storyMap.entries()].sort()) {
+    console.error(`   ${name} (${files.length} 个文件)`);
+  }
+
+  console.error("\n## 推荐命令\n");
+  for (const name of storyMap.keys()) {
+    console.error(`   node skills/import-docs/sync.mjs dir=docs/故事任务面板/${name}/ mode=pull`);
+  }
+}
+
 // --- empty input: recommend ------------------------------------------------
 function hasArgs(opts) {
+  if (opts.mode === "pull") return opts.scanDir !== null;
   return opts.scanRoot === "workspace" || opts.scanDir !== null;
 }
 
@@ -360,8 +499,24 @@ async function main() {
   // 空输入 → 推荐模式
   if (!hasArgs(opts)) {
     console.error(`[import-docs] scan root: ${root} (recommend mode)`);
-    await recommendMode(root, workspaceName, opts, apiUrl);
+    if (opts.mode === "pull") {
+      await recommendPullMode(apiUrl);
+    } else {
+      await recommendMode(root, workspaceName, opts, apiUrl);
+    }
     return;
+  }
+
+  // Pull mode: remote → local download
+  if (opts.mode === "pull") {
+    if (!API_X_TOKEN) {
+      console.error("[import-docs] no API_X_TOKEN — no-token 降级，跳过 pull");
+      return;
+    }
+    console.error(`[import-docs] pull mode: dir=${root}`);
+    const result = await pullFromRemote(apiUrl, root, findProjectRoot(process.cwd()));
+    console.error(JSON.stringify(result));
+    process.exit(result.failed > 0 ? 1 : 0);
   }
 
   console.error(`[import-docs] scan root: ${root}`);

@@ -42,11 +42,15 @@ ${section("调用形态", [
   ["prefix=a,b", "远端路径前缀"],
   ['apiUrl=https://api.example.com', "覆盖默认 API 地址"],
   ["mode=list", "仅枚举不上传，输出文件清单"],
+  ["mode=pull", "远端→本地下载 (需配合 dir=docs/故事任务面板/<name>/)"],
 ])}
 
 ${section("常用场景示例", [
   ["# 全量同步 (rui 管线末端自动触发)", ""],
   ["/import-docs workspace=true", "扫描项目根全部 .md + .claude/ → 上传"],
+  ["", ""],
+  ["# 从远端拉取故事文档 (覆盖本地)", ""],
+  ["/import-docs dir=docs/故事任务面板/user-login/ mode=pull", "远端 → 本地覆盖"],
   ["", ""],
   ["# 同步指定目录", ""],
   ["/import-docs dir=/path/to/docs", "仅同步该目录下的文件"],
