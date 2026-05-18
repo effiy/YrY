@@ -1,13 +1,13 @@
 ---
 name: rui-story
-description: Story panel CRUD and sync management. Manage stories under docs/故事任务面板/. Command: /rui-story.
+description: Story panel management and sync. Manage stories under docs/故事任务面板/. Command: /rui-story.
 user_invocable: true
 lifecycle: default-pipeline
 ---
 
 # rui-story
 
-> 故事任务面板管理：增 · 删 · 改 · 查 · 同步。操作边界仅限 `docs/故事任务面板/`。
+> 故事任务面板管理：删 · 改 · 查 · 同步。操作边界仅限 `docs/故事任务面板/`。
 >
 > **--help / -h**：执行 `node skills/rui-story/help.mjs` 输出完整帮助（含场景示例）。用户输入 `/rui-story --help` 或 `/rui-story -h` 或 `/rui-story help` 时，跳过管线逻辑，直接运行脚本并将输出展示给用户。
 >
@@ -22,7 +22,6 @@ flowchart TD
     Q1 -->|"有"| Q2{"哪个子命令?"}
     Q2 -->|"list"| LIST["进度全景<br/>所有故事详细表格"]:::read
     Q2 -->|"show &lt;name&gt;"| SHOW["单故事详情<br/>文件清单/状态/元数据"]:::read
-    Q2 -->|"create &lt;name&gt;"| CREATE["创建故事目录<br/>仅目录骨架 .memory/"]:::write
     Q2 -->|"delete &lt;name&gt;"| DELETE["删除故事目录<br/>需用户确认"]:::write
     Q2 -->|"sync &lt;name&gt;?"| SYNC["文档同步<br/>委托 import-docs"]:::write
     Q2 -->|"rename &lt;old&gt; &lt;new&gt;"| RENAME["重命名故事目录<br/>警告 git 分支"]:::write
@@ -37,9 +36,8 @@ flowchart TD
 | `/rui-story` | 只读 | 状态概览：按状态统计 + 最近活动 |
 | `/rui-story list` | 只读 | 进度全景：所有故事详细表格（状态/文件数/最后修改/分支） |
 | `/rui-story show <name>` | 只读 | 单故事详情：文件清单/状态/元数据/git 分支 |
-| `/rui-story create <name> [--type]` | 写入 | 创建故事目录骨架（仅目录 + `.memory/`），不含文档 |
 | `/rui-story delete <name>` | 写入 | 删除故事目录（需用户确认，警告 git 分支） |
-| `/rui-story sync [<name>]` | 写入 | 触发 import-docs 同步，限一个故事或全量 |
+| `/rui-story sync [<name>]` | 写入 | 从远端同步文档到本地，需指定故事名称；未指定时展示推荐提示 |
 | `/rui-story rename <old> <new>` | 写入 | 重命名故事目录（警告 git 分支） |
 
 `<name>` 为 kebab-case（如 `user-login`）。
@@ -108,7 +106,7 @@ flowchart TD
 flowchart LR
     A["扫描<br/>docs/故事任务面板/"]:::op --> B["逐目录判定状态"]:::op
     B --> C["按状态聚合计数"]:::op
-    C --> D["输出摘要表<br/>+ 最近修改的 5 个故事"]:::out
+    C --> D["输出摘要表<br/>+ 最近修改的故事列表"]:::out
 
     classDef op fill:#e3f2fd,stroke:#1565c0;
     classDef out fill:#e8f5e9,stroke:#2e7d32;
@@ -188,28 +186,6 @@ flowchart LR
   阻断原因: <block_reason 或 —>
 ```
 
-## `/rui-story create <name> [--type]` — 创建故事
-
-```mermaid
-flowchart TD
-    PARSE["解析 &lt;name&gt;"]:::op --> VALID{"格式校验<br/>kebab-case?"}
-    VALID -->|"否"| ERR1["报错退出"]:::bad
-    VALID -->|"是"| CONFLICT{"目标目录<br/>已存在?"}
-    CONFLICT -->|"是"| ERR2["拒绝覆盖<br/>引导 /rui update"]:::bad
-    CONFLICT -->|"否"| CREATE["创建目录<br/>docs/故事任务面板/&lt;n&gt;/"]:::op
-    CREATE --> MEMORY["创建 .memory/<br/>写入 story-type.json"]:::op
-    MEMORY --> DONE["输出创建确认"]:::out
-
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#e8f5e9,stroke:#2e7d32;
-    classDef bad fill:#ffebee,stroke:#c62828;
-```
-
-- `--type`：`frontend` / `backend` / `fullstack` / `meta`（默认 `meta`）
-- 仅创建目录 + `.memory/story-type.json`，**不创建任何文档**（文档由 `/rui doc` 生成）
-- 目录已存在 → 拒绝覆盖，建议 `/rui update <name>`
-- 写入 `.memory/story-type.json`：`{"type":"<type>","createdAt":"<ISO timestamp>"}`
-
 ## `/rui-story delete <name>` — 删除故事
 
 ```mermaid
@@ -235,22 +211,22 @@ flowchart TD
 - **必须用户确认**（输入 `yes`），不默认执行
 - Git 分支**不删除**，仅警告
 
-## `/rui-story sync [<name>]` — 文档同步
+## `/rui-story sync [<name>]` — 从远端同步文档
 
 ```mermaid
 flowchart LR
     Q{"有 &lt;name&gt;?"} -->|"是"| SCOPED["node skills/import-docs/sync.mjs<br/>dir=docs/故事任务面板/&lt;n&gt;/"]:::op
-    Q -->|"否"| ALL["node skills/import-docs/sync.mjs<br/>dir=docs/故事任务面板/"]:::op
+    Q -->|"否"| RECOMMEND["展示可同步故事推荐<br/>等待用户选择"]:::op
     SCOPED --> OUT["输出同步结果"]:::out
-    ALL --> OUT
+    RECOMMEND --> OUT
 
     classDef op fill:#e3f2fd,stroke:#1565c0;
     classDef out fill:#e8f5e9,stroke:#2e7d32;
 ```
 
-- 完全委托 import-docs，不自行实现同步逻辑
-- 限一个故事：`dir=docs/故事任务面板/<name>/`
-- 全量：`dir=docs/故事任务面板/`
+- 方向：从远端同步文档到本地，完全委托 import-docs，不自行实现同步逻辑
+- 指定故事：`dir=docs/故事任务面板/<name>/` → 直接同步
+- 未指定：展示可同步故事推荐提示，等待用户选择后再同步
 
 ## `/rui-story rename <old> <new>` — 重命名故事
 
@@ -283,13 +259,12 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    subgraph 规则["6 条硬约束"]
+    subgraph 规则["5 条硬约束"]
         R1["仅管理目录结构<br/>不创建文档内容"]:::rule
         R2["不修改源码<br/>不创建/切换 git 分支"]:::rule
         R3["delete 必须用户确认"]:::rule
-        R4["create 仅建目录骨架<br/>不与 /rui doc 竞争"]:::rule
-        R5["sync 完全委托<br/>import-docs"]:::rule
-        R6["kebab-case<br/>命名硬规范"]:::rule
+        R4["sync 完全委托<br/>import-docs"]:::rule
+        R5["kebab-case<br/>命名硬规范"]:::rule
     end
 
     classDef rule fill:#e3f2fd,stroke:#1565c0;
@@ -300,25 +275,23 @@ flowchart LR
 | 1 | 只管理故事面板目录结构，不创建故事文档内容（那是 `/rui doc`） | 撤销误创建的文件 |
 | 2 | 不修改源码，不创建/切换 git 分支（那是 `/rui code`） | — |
 | 3 | delete 必须用户明确确认（输入 `yes`），不默认执行 | 补确认或取消 |
-| 4 | create 只建目录骨架，不产出 01–10 文档 | 删除误创建的文档 |
-| 5 | sync 完全委托 import-docs，不自行实现同步 | 修正命令重试 |
-| 6 | `<name>` = kebab-case | 拒绝执行 |
+| 4 | sync 完全委托 import-docs，不自行实现同步 | 修正命令重试 |
+| 5 | `<name>` = kebab-case | 拒绝执行 |
 
 ## 生效标志
 
 ```mermaid
 flowchart LR
-    F1["create 仅目录<br/>无文档文件"]:::sig --> F2["delete 前已确认<br/>git 分支已警告"]:::sig
-    F2 --> F3["sync 正确委托<br/>import-docs"]:::sig
-    F3 --> F4["rename 后新目录存在<br/>旧目录不存在"]:::sig
-    F4 --> F5["list/show 状态<br/>判定准确"]:::sig
+    F1["delete 前已确认<br/>git 分支已警告"]:::sig
+    F1 --> F2["sync 正确委托<br/>import-docs"]:::sig
+    F2 --> F3["rename 后新目录存在<br/>旧目录不存在"]:::sig
+    F3 --> F4["list/show 状态<br/>判定准确"]:::sig
 
     classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 标志 | 未达标的处置 |
 |------|------------|
-| create 仅建目录，无文档文件 | 删除误创建的文件 |
 | delete 前已确认 + git 分支已警告 | 补确认、补警告 |
 | sync 正确委托 import-docs | 修正命令参数重试 |
 | rename 后新目录存在、旧目录不存在 | 手动修正 |
@@ -331,7 +304,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     RUI["/rui<br/>SDLC 编排"]:::rui -->|"doc 创建文档"| PANEL["docs/故事任务面板/"]:::panel
-    RS["/rui-story<br/>面板管理"]:::story -->|"CRUD + 同步"| PANEL
+    RS["/rui-story<br/>面板管理"]:::story -->|"管理 + 同步"| PANEL
 
     classDef rui fill:#fff3e0,stroke:#e65100;
     classDef story fill:#e3f2fd,stroke:#1565c0;

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// rui-story — Story panel CRUD and sync management help
+// rui-story — Story panel management and sync help
 // 用法: node skills/rui-story/help.mjs 或 /rui-story --help
 
 const { bold, underline, dim } = (() => {
@@ -9,6 +9,8 @@ const { bold, underline, dim } = (() => {
 })();
 
 const INDENT = "  ";
+const LEFT_COLUMN_WIDTH = 28;
+const COLUMN_MIN_PADDING = 2;
 
 function hdr(text) {
   return `\n${bold(underline(text))}\n`;
@@ -16,7 +18,7 @@ function hdr(text) {
 
 function item(cmd, desc) {
   const left = `${INDENT}${cmd}`;
-  const pad = Math.max(2, 28 - left.length);
+  const pad = Math.max(COLUMN_MIN_PADDING, LEFT_COLUMN_WIDTH - left.length);
   return `${left}${" ".repeat(pad)}${desc}`;
 }
 
@@ -31,7 +33,7 @@ function line(text) {
 const help = `
 ${bold("# rui-story — 故事任务面板管理")}
 
-${dim("扫描 · 创建 · 查看 · 重命名 · 删除 · 同步 | 操作仅限 docs/故事任务面板/")}
+${dim("扫描 · 查看 · 重命名 · 删除 · 同步 | 操作仅限 docs/故事任务面板/")}
 
 ${hdr("用法")}
 ${item("/rui-story --help", "显示此帮助信息")}
@@ -45,9 +47,8 @@ ${section("只读命令", [
 ])}
 
 ${section("写入命令", [
-  ["/rui-story create <name>", "创建故事目录骨架，可选 --type frontend|backend|fullstack|meta"],
   ["/rui-story delete <name>", "删除故事目录（需确认，警告 git 分支）"],
-  ["/rui-story sync [<name>]", "触发文档同步（委托 import-docs）"],
+  ["/rui-story sync [<name>]", "从远端同步文档到本地；未指定名称时展示推荐提示"],
   ["/rui-story rename <old> <new>", "重命名故事目录（警告 git 分支）"],
 ])}
 
@@ -61,16 +62,12 @@ ${section("常用场景示例", [
   ["# 查看单个故事", ""],
   ["/rui-story show user-login", "展示该故事的所有文件、状态、元数据"],
   ["", ""],
-  ["# 创建新故事（仅目录骨架）", ""],
-  ["/rui-story create user-login", "创建目录（默认 meta），后续用 /rui doc 生成文档"],
-  ["/rui-story create user-login --type fullstack", "指定项目类型为全栈"],
-  ["", ""],
   ["# 删除废弃故事", ""],
   ["/rui-story delete user-login", "确认后删除目录（不删 git 分支）"],
   ["", ""],
-  ["# 同步故事文档到远端", ""],
-  ["/rui-story sync user-login", "委托 import-docs 同步该故事"],
-  ["/rui-story sync", "同步全部故事面板"],
+  ["# 从远端同步故事文档", ""],
+  ["/rui-story sync user-login", "从远端同步该故事文档到本地"],
+  ["/rui-story sync", "展示可同步故事推荐，等待用户选择"],
   ["", ""],
   ["# 重命名故事", ""],
   ["/rui-story rename user-login auth-login", "重命名目录，警告 git 分支"],

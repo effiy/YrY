@@ -110,7 +110,6 @@ flowchart TD
 | `/rui-story` | 只读 | 状态概览：按状态统计 + 最近活动 |
 | `/rui-story list` | 只读 | 进度全景：所有故事详细表格（从 `/rui` 迁移） |
 | `/rui-story show <name>` | 只读 | 单故事详情：文件清单/状态/元数据 |
-| `/rui-story create <name> [--type]` | 写入 | 创建故事目录骨架 |
 | `/rui-story delete <name>` | 写入 | 删除故事目录（需确认） |
 | `/rui-story sync [<name>]` | 写入 | 触发文档同步（委托 import-docs） |
 | `/rui-story rename <old> <new>` | 写入 | 重命名故事目录 |
