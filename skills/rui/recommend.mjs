@@ -379,7 +379,7 @@ function deriveName(file, project) {
 function docStatus(root, project, name) {
   const expectedDir = join(root, DOC_BASE, name);
   const dirExists = existsSync(expectedDir);
-  const storyFile = join(expectedDir, "01-故事任务.md");
+  const storyFile = join(expectedDir, `${project}-01-故事任务.md`);
   const taskExists = existsSync(storyFile);
 
   let existingFiles = [];
