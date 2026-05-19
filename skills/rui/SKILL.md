@@ -79,6 +79,7 @@ flowchart LR
 **预检→实现阶段**
 - `bad-branch` — 分支未从 main 创建或混入非本故事代码
 - `no-checkout` — 未切换故事分支即改源码
+- `no-branch-isolation` — `git branch --show-current` 非 `feat/<name>` 时执行 Edit/Write
 - `skip-gate-a` — Gate A 未通过即编码
 
 **实现→验证阶段**
@@ -93,7 +94,7 @@ flowchart LR
 ## 核心约束
 
 1. **逐故事串行** — 多故事按拆分顺序处理，互不交叉
-2. **分支隔离** — `feat/<name>` 从 main 创建；禁止派生、自动合并
+2. **分支隔离（强制）** — 任何 Edit/Write 前必须验证当前分支为 `feat/<name>`；禁止在 main 上改码、禁止派生、禁止自动合并
 3. **源码唯一入口** — 只能走 `/rui code` 改源码
 4. **测试先行** — Gate A 阻断实现；Gate B >2 轮阻断交付
 5. **逐模块 P0 清零** — 每模块审查后 P0 清零再前进

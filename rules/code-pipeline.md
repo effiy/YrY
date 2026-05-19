@@ -21,6 +21,9 @@ paths:
 - "分支创建应该是自动的，我手动改就行"
 - "04 测试文档是空的但参考设计文档就够了"
 - "实现完成再补分支隔离"
+- "这次改动很小，直接在 main 改就行"
+- "先改代码再切分支，反正还没 commit"
+- "当前在 main 上，但只改一行不需要切分支"
 
 **以上任何一个 = 停止。** 对于 3+ 修复失败的，见下方 [支撑技术](#根因追溯) 根因追溯模式。
 
@@ -28,8 +31,9 @@ paths:
 
 ```mermaid
 flowchart TB
-    REQ["需求故事"]:::src --> BR["① 分支隔离<br/>feat/&lt;name&gt;"]:::phase
-    BR --> GA{"② Gate A<br/>测试先行"}
+    REQ["需求故事"]:::src --> BR{"① 分支隔离<br/>当前在 feat/&lt;name&gt;?"}
+    BR -->|"❌ 在 main 或非法分支"| X0["no-branch-isolation 🚫"]:::block
+    BR -->|"✅ 已切 feat 分支"| GA{"② Gate A<br/>测试先行"}
     GA -->|"❌ 04 缺失"| X1["skip-gate-a 🚫"]:::block
     GA -->|"✅ 通过"| MOD["③ 逐模块清零<br/>每模块 P0 → 下一模块"]:::phase
     MOD --> GB{"④ Gate B<br/>闭环验证"}
@@ -45,13 +49,29 @@ flowchart TB
 
 | 阶段 | 核心动作 | 阻断标识 | 例外 |
 |------|---------|---------|------|
-| ① 分支隔离 | 从 main 创建功能分支，切换后改码 | `bad-branch` / `no-checkout` / `auto-merge` | 反推命令只读不写 |
+| ① 分支隔离 | **强制门禁**：改码前必须已切到 `feat/<name>`，否则阻断 | `bad-branch` / `no-checkout` / `auto-merge` / `no-branch-isolation` | 反推命令只读不写 |
 | ② Gate A | {project}-05-测试用例评审.md 存在且就绪 | `skip-gate-a` | 单行 CSS/文案 |
 | ③ 逐模块清零 | 每模块 P0 清零后进下一模块 | `chain-broken` | — |
 | ④ Gate B | 5 步验证 + 三报告闭合，修复 ≤ 2 轮 | `gate-b-limit` | — |
 | ⑤ 自改进 | 产出 {project}-09-自改进复盘 | `no-metrics`（降级不阻断） | 数据采集失败时降级 |
 
-## ① 分支隔离
+## ① 分支隔离 — 强制门禁
+
+> **涉及修改源代码的任何操作，必须先验证当前分支为 `feat/<name>`。未通过此门禁，禁止任何 Edit/Write 操作。**
+
+```mermaid
+flowchart TB
+    START["准备改源码"]:::src --> CHECK{"git branch<br/>--show-current"}
+    CHECK -->|"feat/&lt;name&gt;"| PASS["✅ 放行<br/>可执行 Edit/Write"]:::pass
+    CHECK -->|"main 或其他"| BLOCK["🚫 no-branch-isolation<br/>阻断：禁止改码"]:::block
+    BLOCK --> FIX["切到 feat/&lt;name&gt;<br/>或从 main 创建新分支"]:::fix
+    FIX --> CHECK
+
+    classDef src fill:#e8f5e9,stroke:#2e7d32;
+    classDef pass fill:#e8f5e9,stroke:#2e7d32;
+    classDef block fill:#ffebee,stroke:#c62828;
+    classDef fix fill:#fff3e0,stroke:#e65100;
+```
 
 ```mermaid
 flowchart LR
@@ -61,6 +81,7 @@ flowchart LR
     FB -.->|"禁止"| X1["自动合并 auto-merge"]:::block
     MAIN -.->|"禁止"| X2["直接在 main 改码 no-checkout"]:::block
     FB -.->|"禁止"| X3["派生分支 bad-branch"]:::block
+    MAIN -.->|"禁止"| X4["未切分支即改码<br/>no-branch-isolation"]:::block
 
     classDef base fill:#e8f5e9,stroke:#2e7d32;
     classDef feat fill:#e3f2fd,stroke:#1565c0;
@@ -75,6 +96,12 @@ flowchart LR
 | 2 | 改动源码前必须已切到该分支 | `no-checkout` |
 | 3 | 功能分支禁止自动合并到主干，git 操作由开发者手动执行 | `auto-merge` |
 | 4 | 源码修改唯一入口是 `/rui code` 管线，反推命令只读不写 | — |
+| 5 | **任何 Edit/Write 操作源码前，必须先验证 `git branch --show-current` 输出为 `feat/<name>`** | `no-branch-isolation` |
+| 6 | 在 `main` 或非 `feat/` 前缀分支上执行 Edit/Write → 立即阻断 | `no-branch-isolation` |
+
+**门禁执行者**：coder Agent、任何执行源码修改的 Agent。  
+**验证命令**：`git branch --show-current`  
+**阻断恢复**：创建/切换到 `feat/<name>` 分支后重新执行。
 
 ## ② Gate A — 测先行
 
@@ -209,6 +236,7 @@ flowchart LR
     B1["bad-branch<br/>分支非法"]:::block
     B2["no-checkout<br/>未切换分支"]:::block
     B3["auto-merge<br/>自动合并"]:::block
+    B0["no-branch-isolation<br/>未切 feat 分支即改码"]:::block
     B4["skip-gate-a<br/>Gate A 未过"]:::block
     B5["chain-broken<br/>影响链断裂"]:::block
     B6["gate-b-limit<br/>修复超限"]:::block
@@ -223,6 +251,7 @@ flowchart LR
 | `bad-branch` | 分支非从 main 创建或混入非本故事代码 | ✅ 阻断 |
 | `no-checkout` | 未切换故事分支即改源码 | ✅ 阻断 |
 | `auto-merge` | 功能分支被自动合并到 main | ✅ 阻断 |
+| `no-branch-isolation` | `git branch --show-current` 非 `feat/<name>` 时执行 Edit/Write | ✅ 阻断 |
 | `skip-gate-a` | Gate A 未通过即编码 | ✅ 阻断 |
 | `chain-broken` | 影响链未闭合 | ✅ 阻断 |
 | `gate-b-limit` | Gate B 修复 > 2 轮 | ✅ 阻断 |
@@ -232,7 +261,8 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    S1["分支命名合规<br/>feat/&lt;name&gt;"]:::sig --> S2["Gate A 通过<br/>04 存在且就绪"]:::sig
+    S0["分支隔离通过<br/>当前为 feat/&lt;name&gt;"]:::sig --> S1["分支命名合规<br/>feat/&lt;name&gt;"]:::sig
+    S1 --> S2["Gate A 通过<br/>04 存在且就绪"]:::sig
     S2 --> S3["P0 全模块清零<br/>无 chain-broken"]:::sig
     S3 --> S4["Gate B 五步全 ✅<br/>修复 ≤ 2 轮"]:::sig
     S4 --> S5["三报告闭合<br/>无矛盾"]:::sig
@@ -242,6 +272,7 @@ flowchart LR
 
 | 标志 | 未达标的处置 |
 |------|------------|
+| 当前分支为 `feat/<name>`（`no-branch-isolation`） | 创建/切换到 `feat/<name>` 分支，禁止在 main 上改码 |
 | 分支命名合规 | 重建分支，从 main 重新拉出 |
 | Gate A 通过（04 存在且就绪） | 退回 tester 补充测试用例评审 |
 | P0 全模块清零，无 `chain-broken` | 退回 coder 修复 P0 |

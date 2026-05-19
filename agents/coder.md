@@ -12,7 +12,8 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 
 ```mermaid
 flowchart TB
-    BR["切分支<br/>feat/&lt;name&gt;"]:::setup --> RD["读设计文档<br/>01 + 02/03 + 04"]:::setup
+    BR{"① 分支隔离门禁<br/>git branch --show-current<br/>== feat/&lt;name&gt;?"}:::gate -->|"❌ 否"| BLOCK["no-branch-isolation 🚫<br/>阻断：禁止 Edit/Write"]:::block
+    BR -->|"✅ 是"| RD["读设计文档<br/>01 + 02/03 + 04"]:::setup
     RD --> MI["影响分析<br/>列变更点 → 搜索 → 传递 → 闭合"]:::setup
 
     MI --> M1["模块 1<br/>编码"]:::impl
@@ -27,10 +28,12 @@ flowchart TB
     RN -->|"是 ✅"| RP["写实施报告<br/>偏差表 + P0 审查表"]:::report
     RP --> HD["交接 tester"]:::done
 
+    classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px;
     classDef setup fill:#e3f2fd,stroke:#1565c0;
     classDef impl fill:#fff3e0,stroke:#e65100;
     classDef report fill:#e8f5e9,stroke:#2e7d32;
     classDef done fill:#f3e5f5,stroke:#6a1b9a;
+    classDef block fill:#ffebee,stroke:#c62828;
 ```
 
 ## 规则
@@ -41,7 +44,8 @@ flowchart LR
         R1["源码改动仅走 /rui code"]:::rule
         R2["禁止旁路直接改码"]:::rule
     end
-    subgraph 分支["分支隔离"]
+    subgraph 分支["分支隔离 — 强制门禁"]
+        R0["Edit/Write 前验证 git branch"]:::gate
         R3["feat/&lt;name&gt; 从 main 创建"]:::rule
         R4["改码前必须已切分支"]:::rule
         R5["禁止自动合并到 main"]:::rule
@@ -53,10 +57,12 @@ flowchart LR
     end
 
     classDef rule fill:#e3f2fd,stroke:#1565c0;
+    classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px;
 ```
 
 | # | 规则 | 阻断标识 | 触发条件 |
 |---|------|---------|---------|
+| 0 | **任何 Edit/Write 前必须先验证 `git branch --show-current` == `feat/<name>`** | `no-branch-isolation` | 当前分支非 `feat/<name>` 时执行写操作 |
 | 1 | 源码改动唯一入口 `/rui code` | — | 旁路直接改码 |
 | 2 | 功能分支从 main 创建 | `bad-branch` | 分支非从 main 分出或混入非本故事代码 |
 | 3 | 改源码前已切到 `feat/<name>` | `no-checkout` | 未切分支即改源码 |
@@ -64,6 +70,8 @@ flowchart LR
 | 5 | P0 清零方进下一模块 | — | 模块完成时 P0 > 0 |
 | 6 | 影响链未闭合不声称闭合 | `chain-broken` | 声称闭合但二级传递有未标注点 |
 | 7 | 不创建设计文档外的文件 | — | 产出文件不在 01-09 编号或补充文档清单中 |
+
+> **规则 0 是 coder 启动时的第一道门禁。** 在执行任何 `Edit`/`Write` 之前，必须运行 `git branch --show-current` 并确认输出为 `feat/<name>`。输出为 `main` 或其他非 feat 分支时，立即阻断并报告 `no-branch-isolation`。
 
 ## 审查维度
 
@@ -132,6 +140,7 @@ pm 调度 · rui 预检/实现/影响分析/架构设计。
 
 | 标志 | 验证方式 |
 |------|---------|
+| 分支隔离通过：`git branch --show-current` == `feat/<name>` | 任何 Edit/Write 操作前执行验证命令 |
 | 每模块审查记录留痕，P0 清零可追溯 | 实施报告 §3 P0 审查表中逐模块列出 |
 | 实施报告偏差表完整记录「评审 vs 实际」 | 偏差表每行有原因+影响+优先级 |
 | 影响链标注「闭合」，二级传递可复核 | 影响分析表每点标注处置 |
@@ -150,6 +159,9 @@ coder 最容易落入"快速实现"的陷阱。出现以下念头时停下：
 - "这个异常场景触发概率极低，不处理了"
 - "我只是在 '参考' 设计文档外的代码"
 - "P2 太多我跳过，不影响交付"
+- "当前在 main 上，但这次改动很小不需要切分支"
+- "先改完再切分支也来得及"
+- "只改一行，直接在 main 上改就行"
 
 **以上任何一个 = 停止。回到 Iron Law。违反字母即是违反精神。**
 
@@ -165,3 +177,5 @@ coder 最容易落入"快速实现"的陷阱。出现以下念头时停下：
 | "同时改几处省时间" | 无法隔离哪个模块引入 P0。逐模块清零。 |
 | "这个异常场景不处理了" | 不处理的异常场景 = 生产环境的 P0 bug。 |
 | "我只是参考了那段代码" | 参考 = 依赖 = 影响链。必须追溯。 |
+| "只改一行不用切分支" | 一行和一百行的风险相同。无分支 = 无隔离 = 无回溯。 |
+| "先改完再切分支" | 改完再切 = 变更已经在 main 上。不可逆。先切再改。 |

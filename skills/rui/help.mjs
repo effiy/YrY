@@ -94,7 +94,7 @@ ${section("管线阶段", [
 
 ${section("阻断标识速览", [
   ["no-parse / no-source / chain-broken", "需求→文档阶段"],
-  ["bad-branch / no-checkout / skip-gate-a", "预检→实现阶段"],
+  ["bad-branch / no-checkout / no-branch-isolation / skip-gate-a", "预检→实现阶段"],
   ["code-p0 / gate-b-limit", "实现→验证阶段"],
   ["auto-merge / no-token / no-metrics", "交付阶段"],
 ])}
