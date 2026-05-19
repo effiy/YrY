@@ -136,7 +136,7 @@ flowchart LR
 
 | 约束 | 规则 |
 |------|------|
-| `<name>` | kebab-case |
+| `<name>` | 纯语义 kebab-case（如 `user-login`），不加项目名前缀 |
 | CLI 输入 | `<name>` |
 | 03/04/06/07 文件名 | 如 `{project}-03-后端技术评审.md` |
 

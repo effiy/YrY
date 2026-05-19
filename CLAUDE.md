@@ -20,7 +20,7 @@ flowchart LR
 
 公理冲突时优先级：**验现实 > 信模型 > 惜注意**。先确保事实，再相信判断，最后省注意力。
 
-**执行模式**：研究优先开发（research-first development）— 动手前先探。不确定时不猜，查。涉及外部依赖/API/不熟悉模块时，先 Read/Grep/Glob 建立事实基线，再行动。源自 [everything-claude-code](https://github.com/affaan-m/everything-claude-code) 的上下文质量优先原则。
+**执行模式**：研究优先开发（research-first development）— 动手前先探。不确定时不猜，查。涉及外部依赖/API/不熟悉模块时，先 Read/Grep/Glob 建立事实基线，再行动。
 
 ## 铁律
 
@@ -47,7 +47,7 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 |------|-----|
 | 项目名 | YrY |
 | 类型 | **meta** — Claude Code 插件，纯规约驱动 |
-| 版本 | 1.3.2 |
+| 版本 | 1.3.4 |
 | 架构 | plugin — 5 技能 + 6 Agent + 5 规则 |
 | 生态 | 无 package.json，markdown 规约 + node 辅助脚本 |
 | 自托管 | 是 — YrY 用自身管线管理自身演进 |

@@ -11,7 +11,7 @@ docs/
 └── 故事任务面板/<name>/   ← 执行：主线 + 通知 + 交互日志 + 补充
 ```
 
-**命名规则**：`<name>` kebab-case（如 `user-login`）。CLI 输入 `<name>`，对应路径 `docs/故事任务面板/<name>/`。详见 [rules/doc-generation.md](../../rules/doc-generation.md)。
+**命名规则**：`<name>` 纯语义 kebab-case（如 `user-login`、`claude-config`），不加项目名前缀。CLI 输入 `<name>`，对应路径 `docs/故事任务面板/<name>/`。详见 [rules/doc-generation.md](../../rules/doc-generation.md)。
 
 ## 故事目录骨架
 

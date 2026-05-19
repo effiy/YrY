@@ -36,7 +36,7 @@ flowchart TD
 | `/rui-story show <name>` | 只读 | 远端 API | 单故事详情：文件清单/状态/元数据 |
 | `/rui-story sync [<name>]` | 写入 | 远端 API | 从远端拉取文档到本地；未指定名称时展示推荐提示 |
 
-`<name>` 为 kebab-case（如 `user-login`）。
+`<name>` 为纯语义 kebab-case（如 `user-login`），不加项目名前缀。
 
 ## 数据源
 
