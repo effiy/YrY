@@ -48,6 +48,8 @@ ${section("只读命令（远端 API）", [
 
 ${section("写入命令", [
   ["/rui-story sync [<name>]", "远端→本地覆盖 (委托 import-docs mode=pull)"],
+  ["/rui-story clear [<name>]", "仅本地：移除非 {project}- 前缀文件，先展示后确认"],
+  ["/rui-story remove <name>", "仅本地：删除整个故事目录，先展示后确认"],
 ])}
 
 ${section("常用场景示例", [
@@ -63,27 +65,37 @@ ${section("常用场景示例", [
   ["# 从远端同步故事文档到本地", ""],
   ["/rui-story sync user-login", "委托 import-docs 从远端拉取该故事文档"],
   ["/rui-story sync", "展示可同步故事推荐，等待用户选择"],
+  ["", ""],
+  ["# 清理混入的其他项目文件（仅本地）", ""],
+  ["/rui-story clear user-login", "扫描目录，展示双重清单（删除/保留），确认后清除非 YrY- 文件"],
+  ["/rui-story clear", "扫描所有故事目录，逐目录清理非项目前缀文件"],
+  ["", ""],
+  ["# 删除故事本地副本（仅本地）", ""],
+  ["/rui-story remove old-story", "展示目录内容，确认后删除整个本地目录（远端不受影响）"],
 ])}
 
 ${section("数据源", [
   ["默认模式", "远端 API（api.effiy.cn）"],
   ["查询操作", "零本地文件系统读取"],
-  ["sync 操作", "远端 → 本地（唯一写本地场景）"],
+  ["sync 操作", "远端 → 本地（唯一远端写本地场景）"],
+  ["clear/remove 操作", "纯本地，不触碰远端 API"],
 ])}
 
 ${section("操作边界", [
   ["✅ 远端 API 查询", "sessions 故事任务面板/ 前缀"],
   ["✅ sync 委托 import-docs", "远端 → 本地"],
+  ["✅ clear/remove 本地操作", "仅本地文件系统，不触碰远端"],
   ["❌ 查询读本地文件系统", "禁止"],
   ["❌ 不可触及", "源码 · git 分支操作 · 故事文档内容生成"],
 ])}
 
 ${section("核心规则", [
-  ["远端为默认数据源", "查询不读本地文件系统（sync 例外）"],
+  ["远端为默认数据源", "查询不读本地文件系统（sync/clear/remove 例外）"],
   ["仅查询与同步", "不创建文档内容（那是 /rui doc）"],
   ["不改源码", "不改源代码或 git 分支"],
   ["kebab-case", "name 小写连字符，无 Project 前缀"],
   ["sync 委托 import-docs", "不自行实现同步逻辑"],
+  ["clear/remove 仅本地", "不触碰远端数据，先展示后确认再执行"],
 ])}
 
 ${section("全局选项", [

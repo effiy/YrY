@@ -45,7 +45,7 @@ ${section("写入命令（末端自动交付）", [
   ["/rui <需求>", "端到端管线：自动串联 doc→code，一气呵成"],
   ["/rui doc <需求>", "拆需求为故事 + 生成文档基线 (01/用户场景/02/03/04)"],
   ["/rui code <name>", "实现故事：Gate A→逐模块→Gate B→自改进→交付"],
-  ["/rui update <name> [ctx]", "增量更新：T1/T2/T3 自动裁剪管线"],
+  ["/rui update <name> [ctx] [--no-code]", "增量更新：T1/T2/T3 自动裁剪管线"],
   ["/rui code --from-doc <name>", "从文档反推：只读源码补全缺失文档"],
   ["/rui doc --from-code 需求", "从源码反推：req 空时扫描推荐，有值时直接反推"],
 ])}
@@ -93,7 +93,7 @@ ${section("管线阶段", [
 ])}
 
 ${section("阻断标识速览", [
-  ["no-parse / no-source / chain-broken / no-doc-isolation", "需求→文档阶段"],
+  ["no-parse / no-source / chain-broken / doc-p0 / no-doc-isolation", "需求→文档阶段"],
   ["bad-branch / no-checkout / no-branch-isolation / skip-gate-a", "预检→实现阶段"],
   ["code-p0 / gate-b-limit", "实现→验证阶段"],
   ["auto-merge / no-token / no-metrics", "交付阶段"],
