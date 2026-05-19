@@ -24,6 +24,9 @@ paths:
 - "这次改动很小，直接在 main 改就行"
 - "先改代码再切分支，反正还没 commit"
 - "当前在 main 上，但只改一行不需要切分支"
+- "doc 阶段只写文档不改源码，不需要切分支"
+- "文档写入不是'源码改动'，分支隔离管不着文档"
+- "先写文档再切分支，doc 不涉及编译不会出错"
 
 **以上任何一个 = 停止。** 对于 3+ 修复失败的，见下方 [支撑技术](#根因追溯) 根因追溯模式。
 
@@ -57,7 +60,9 @@ flowchart TB
 
 ## ① 分支隔离 — 强制门禁
 
-> **涉及修改源代码的任何操作，必须先验证当前分支为 `feat/<name>`。未通过此门禁，禁止任何 Edit/Write 操作。**
+> **任何 rui 管线写入操作（doc 写文档、code 改源码、update 增删文件），必须先验证当前分支为 `feat/<name>`。未通过此门禁，禁止任何 Edit/Write 操作。**
+>
+> 唯一例外：`/rui init` 写入 CLAUDE.md / README.md 等项目级基线文件，不走故事分支。
 
 ```mermaid
 flowchart TB
@@ -220,6 +225,10 @@ flowchart LR
         E4["只读源码"]:::ex
         E5["不触发 Gate A/B"]:::ex
     end
+    subgraph init["/rui init"]
+        E6["无分支隔离"]:::ex
+        E7["写项目级基线文件"]:::ex
+    end
 
     classDef ex fill:#fff3e0,stroke:#e65100;
 ```
@@ -228,6 +237,7 @@ flowchart LR
 |------|------|------|
 | 单行 CSS/文案变更 | Gate A | 分支隔离 |
 | 反推命令（`--from-code` / `--from-doc`） | Gate A / Gate B | 分支隔离 + 只读 |
+| `/rui init` | 分支隔离 | 验证 + 触发 |
 
 ## 阻断标识汇总
 
@@ -237,6 +247,7 @@ flowchart LR
     B2["no-checkout<br/>未切换分支"]:::block
     B3["auto-merge<br/>自动合并"]:::block
     B0["no-branch-isolation<br/>未切 feat 分支即改码"]:::block
+    B8["no-doc-isolation<br/>未切 feat 分支即写文档"]:::block
     B4["skip-gate-a<br/>Gate A 未过"]:::block
     B5["chain-broken<br/>影响链断裂"]:::block
     B6["gate-b-limit<br/>修复超限"]:::block
@@ -249,9 +260,10 @@ flowchart LR
 | 标识 | 触发条件 | 阻断? |
 |------|---------|-------|
 | `bad-branch` | 分支非从 main 创建或混入非本故事代码 | ✅ 阻断 |
-| `no-checkout` | 未切换故事分支即改源码 | ✅ 阻断 |
+| `no-checkout` | 未切换故事分支即写入/改码 | ✅ 阻断 |
 | `auto-merge` | 功能分支被自动合并到 main | ✅ 阻断 |
 | `no-branch-isolation` | `git branch --show-current` 非 `feat/<name>` 时执行 Edit/Write | ✅ 阻断 |
+| `no-doc-isolation` | doc/update 阶段在非 `feat/<name>` 分支写入故事文档 | ✅ 阻断 |
 | `skip-gate-a` | Gate A 未通过即编码 | ✅ 阻断 |
 | `chain-broken` | 影响链未闭合 | ✅ 阻断 |
 | `gate-b-limit` | Gate B 修复 > 2 轮 | ✅ 阻断 |

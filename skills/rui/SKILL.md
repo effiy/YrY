@@ -76,9 +76,12 @@ flowchart LR
 - `chain-broken` — 影响链未闭合
 - `doc-p0` — 文档 P0 不通过且无法自修复
 
-**预检→实现阶段**
+**需求→文档阶段**
+- `no-doc-isolation` — doc/update 阶段在非 `feat/<name>` 分支写入故事文档
 - `bad-branch` — 分支未从 main 创建或混入非本故事代码
-- `no-checkout` — 未切换故事分支即改源码
+- `no-checkout` — 未切换故事分支即写入/改码
+
+**预检→实现阶段**
 - `no-branch-isolation` — `git branch --show-current` 非 `feat/<name>` 时执行 Edit/Write
 - `skip-gate-a` — Gate A 未通过即编码
 
@@ -94,7 +97,7 @@ flowchart LR
 ## 核心约束
 
 1. **逐故事串行** — 多故事按拆分顺序处理，互不交叉
-2. **分支隔离（强制）** — 任何 Edit/Write 前必须验证当前分支为 `feat/<name>`；禁止在 main 上改码、禁止派生、禁止自动合并
+2. **分支隔离（强制）** — 任何 Edit/Write 前必须验证当前分支为 `feat/<name>`：doc 写文档、code 改源码、update 增删文件，均需分支隔离。禁止在 main 上写文档或改码、禁止派生、禁止自动合并。唯一例外：`/rui init`（写 CLAUDE.md/README.md 等项目级基线，不走故事分支）
 3. **源码唯一入口** — 只能走 `/rui code` 改源码
 4. **测试先行** — Gate A 阻断实现；Gate B >2 轮阻断交付
 5. **逐模块 P0 清零** — 每模块审查后 P0 清零再前进
@@ -196,36 +199,44 @@ flowchart TD
 ## doc
 
 > pm 拆需求为故事 → coder 按项目类型补齐设计文档。全程只读源码，多故事串行。pm 应用烧烤纪律：挑战模糊术语、走完决策树、用领域语言命名、不确定 > 2 项不推进。
+>
+> **写故事文档也走分支隔离。** doc 阶段写入 `docs/故事任务面板/<name>/` 下的 01-05 文档，这些写入操作必须在 `feat/<name>` 分支上执行，与 code 阶段同门禁。
 
 ```mermaid
 flowchart LR
     A[需求输入]:::s --> B[pm 拆故事<br/>影响分析+优先级]:::s
-    B --> C[coder 补齐文档<br/>02/03 按项目类型]:::s
-    C --> D[feat/&lt;name&gt;]:::s
-    D --> E[trigger<br/>同步+通知]:::s
+    B --> BR{"分支隔离门禁<br/>git branch --show-current<br/>== feat/&lt;name&gt;?"}:::gate
+    BR -->|"❌ 否"| BLOCK["创建 feat/&lt;name&gt;<br/>从 main 拉出"]:::block
+    BLOCK --> BR
+    BR -->|"✅ 是"| C[coder 补齐文档<br/>02/03 按项目类型]:::s
+    C --> D[trigger<br/>同步+通知]:::s
     classDef s fill:#e3f2fd,stroke:#1565c0;
+    classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef block fill:#ffebee,stroke:#c62828;
 ```
 
 **产出**：{project}-01-故事任务.md（问题空间基线，必创建）· {project}-02-用户使用场景.md（用户空间基线，必创建）· {project}-03-后端技术评审.md（后端/全栈）· {project}-04-前端技术评审.md（前端/全栈）· {project}-05-测试用例评审.md（必创建）
 
-**约束**：只读 · 分支隔离 · 逐故事串行
+**约束**：只读源码 · 分支隔离（强制，同 code 阶段门禁） · 逐故事串行 · 在 `feat/<name>` 分支上写入文档
 
 **末端触发** [强制集成](#强制集成)。
 
 ## code
 
-> 源码改动唯一入口。Gate A 测试先行 → 逐模块 P0 清零 → Gate B ≤2 轮 → 自改进 D0–D7 → 交付。
+> 源码改动唯一入口。分支隔离强制门禁 → Gate A 测试先行 → 逐模块 P0 清零 → Gate B ≤2 轮 → 自改进 D0–D7 → 交付。
 
 ```mermaid
 flowchart LR
-    A[feat/&lt;name&gt;]:::s --> B[Gate A<br/>测试先行]:::s
-    B --> C[逐模块实现<br/>P0 清零再前进]:::s
-    C --> D[Gate B<br/>验证 ≤2 轮]:::s
-    D --> E[自改进<br/>D0–D7]:::s
-    E --> F[交付]:::s
-    C -.P0 未清.-> C
-    D -.>2 轮.-> X[gate-b-limit]:::bad
+    BR{"① 分支隔离门禁<br/>git branch --show-current<br/>== feat/&lt;name&gt;?"}:::gate -->|"❌ 否"| BLOCK["no-branch-isolation 🚫<br/>阻断：禁止 Edit/Write"]:::bad
+    BR -->|"✅ 是"| A[Gate A<br/>测试先行]:::s
+    A --> B[逐模块实现<br/>P0 清零再前进]:::s
+    B --> C[Gate B<br/>验证 ≤2 轮]:::s
+    C --> D[自改进<br/>D0–D7]:::s
+    D --> E[交付]:::s
+    B -.P0 未清.-> B
+    C -.>2 轮.-> X[gate-b-limit]:::bad
     classDef s fill:#e3f2fd,stroke:#1565c0;
+    classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px;
     classDef bad fill:#ffebee,stroke:#c62828;
 ```
 
@@ -250,14 +261,20 @@ flowchart LR
 ## update
 
 > 增量更新，按变更范围 T1/T2/T3 自动裁剪管线。`--no-code` 仅文档不改源码。
+>
+> **写入前先验证分支隔离。** 无论 T1/T2/T3，只要涉及 Edit/Write 就必须先在 `feat/<name>` 分支上。
 
 ```mermaid
 flowchart LR
-    I[变更输入]:::s --> T{范围判定}:::s
+    BR{"分支隔离门禁<br/>git branch --show-current<br/>== feat/&lt;name&gt;?"}:::gate -->|"❌ 否"| BLOCK["创建/切换到 feat/&lt;name&gt;"]:::block
+    BR -->|"✅ 是"| I[变更输入]:::s
+    I --> T{范围判定}:::s
     T -->|T1 措辞/格式| U1[跳过分析+设计<br/>仅刷新变更章节]:::s
     T -->|T2 增删/接口变更| U2[裁剪分析+设计<br/>刷新目标+下游]:::s
     T -->|T3 边界/重构| U3[完整重跑<br/>全级联刷新]:::s
     classDef s fill:#e3f2fd,stroke:#1565c0;
+    classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef block fill:#ffebee,stroke:#c62828;
 ```
 
 | 级别 | 范围 | 影响分析 | 架构设计 | 文档刷新 |
