@@ -24,6 +24,7 @@ flowchart TD
     Q2 -->|"show <name>"| SHOW["单故事详情<br/>远端查询 → 文件清单/状态/元数据"]:::read
     Q2 -->|"sync <name>?"| SYNC["文档同步<br/>远端 → 本地（委托 import-docs）"]:::write
     Q2 -->|"clear <name>?"| CLEAR["清理文件<br/>本地 → 移除非项目前缀文件"]:::danger
+    Q2 -->|"remove <name>"| REMOVE["删除故事目录<br/>本地 → 删除整个故事目录"]:::danger
 
     classDef entry fill:#fff3e0,stroke:#e65100;
     classDef read fill:#e8f5e9,stroke:#2e7d32;
@@ -38,13 +39,14 @@ flowchart TD
 | `/rui-story show <name>` | 只读 | 远端 API | 单故事详情：文件清单/状态/元数据 |
 | `/rui-story sync [<name>]` | 写入 | 远端 API | 从远端拉取文档到本地；未指定名称时展示推荐提示 |
 | `/rui-story clear [<name>]` | 写入 | 本地文件系统 | 仅保留 `{project}-` 前缀文件，其余一律删除；未指定名称时扫描所有故事目录 |
+| `/rui-story remove <name>` | 写入 | 本地文件系统 | 删除指定故事的整个本地目录；`<name>` 必填 |
 
 `<name>` 为纯语义 kebab-case（如 `user-login`），不加项目名前缀。
 
 ## 数据源
 
 > **默认且唯一模式：远端 API**。所有查询操作（概览/list/show）直接查询远端 API，不读本地文件系统。
-> `sync` 命令涉及本地写入（从远端拉取到本地）；`clear` 命令操作本地文件系统（移除非项目前缀文件）。
+> `sync` 命令涉及本地写入（从远端拉取到本地）；`clear` 和 `remove` 命令仅操作本地文件系统，不触碰远端。
 
 ```mermaid
 flowchart LR
@@ -86,6 +88,7 @@ flowchart LR
         A1["远端 API 查询<br/>故事任务面板 session"]:::ok
         A2["sync 委托 import-docs<br/>远端 → 本地"]:::ok
         A3["clear 操作本地文件系统<br/>移除非项目前缀文件"]:::ok
+        A4["remove 操作本地文件系统<br/>删除指定故事目录"]:::ok
     end
     subgraph 禁止["❌ 禁止"]
         B1["读取本地文件系统<br/>（查询操作）"]:::bad
@@ -249,6 +252,8 @@ flowchart LR
 >
 > 项目名前缀从 `CLAUDE.md` 的 `项目名` 字段读取，不可硬编码、不可推测、不可通过其他途径覆盖。
 > **破坏性操作，执行前需确认。**
+>
+> **数据边界：clear 仅操作本地文件系统（`docs/故事任务面板/`），不查询远端 API、不删除远端文档、不触发任何网络请求。远端数据不受 clear 任何影响。**
 
 ```mermaid
 flowchart LR
@@ -270,7 +275,7 @@ flowchart LR
 **执行流程**：
 
 1. **确定项目前缀** — 读取 `CLAUDE.md` 中 `项目名` 字段（如 `YrY`），拼接 `-` 得到匹配前缀（如 `YrY-`）。此项为唯一保留依据，不可覆写
-2. **确定范围** — 有 `<name>` 则扫描 `docs/故事任务面板/<name>/`；无则扫描 `docs/故事任务面板/` 下所有故事目录
+2. **确定范围（仅本地）** — 有 `<name>` 则扫描 `docs/故事任务面板/<name>/`；无则扫描 `docs/故事任务面板/` 下所有故事目录。**不发起网络请求，不查询远端 API，不触碰远端数据**
 3. **筛选文件** — 所有文件名不以 `{project}-` 开头的一律标记为待删除。仅普通文件参与筛选，目录递归进入
 4. **展示清单** — 同时列出待删除文件和保留文件两份清单（路径 + 大小），明确告知用户哪些会删、哪些会留
 5. **等待确认** — 用户明确确认后才执行删除，不可跳过，不可默认 yes
@@ -321,17 +326,88 @@ flowchart LR
 📂 保留 9 个文件 (YrY-*)，0 个空目录已清理
 ```
 
+## `/rui-story remove <name>` — 删除故事本地目录
+
+> **仅操作本地文件系统。`<name>` 必填。**
+>
+> 删除 `docs/故事任务面板/<name>/` 整个目录及其所有内容。不查询远端 API、不删除远端文档、不触发任何网络请求。
+> **破坏性操作，执行前需确认。远端数据不受 remove 任何影响。**
+
+```mermaid
+flowchart LR
+    PARSE["解析 name（必填）"]:::op --> CHECK["检查本地目录是否存在<br/>docs/故事任务面板/&lt;name&gt;/"]:::op
+    CHECK -->|"不存在"| NOTFOUND["提示目录不存在<br/>终止操作"]:::out
+    CHECK -->|"存在"| SCAN["扫描目录内容<br/>文件数 + 总大小"]:::op
+    SCAN --> SHOW["列出待删除文件清单"]:::out
+    SHOW --> CONFIRM{"用户确认?"}
+    CONFIRM -->|"是"| DEL["删除整个目录<br/>docs/故事任务面板/&lt;name&gt;/"]:::danger
+    CONFIRM -->|"否"| ABORT["取消操作"]:::out
+    DEL --> REPORT["输出删除摘要"]:::out
+
+    classDef op fill:#e3f2fd,stroke:#1565c0;
+    classDef out fill:#e8f5e9,stroke:#2e7d32;
+    classDef danger fill:#ffebee,stroke:#c62828;
+```
+
+**执行流程**：
+
+1. **解析 name（必填）** — `<name>` 为纯语义 kebab-case，不加项目名前缀。无 name 时提示用法后终止
+2. **检查本地目录** — 确认 `docs/故事任务面板/<name>/` 存在。不存在则提示并终止，**不查询远端**
+3. **扫描内容** — 统计目录内文件数、总大小，列出所有文件清单
+4. **展示清单** — 列出待删除的全部文件（路径 + 大小）+ 目录本身
+5. **等待确认** — 用户明确确认后才执行删除，不可跳过，不可默认 yes
+6. **执行删除** — `rm -rf docs/故事任务面板/<name>/`，删除整个目录及所有内容（含 `.memory/`）
+7. **输出摘要** — 已删除文件数、释放空间、删除的目录路径
+
+**与 clear 的区别**：
+
+| 维度 | `clear` | `remove` |
+|------|---------|----------|
+| 操作对象 | 目录内非 `{project}-` 前缀文件 | 整个故事目录 |
+| name 参数 | 可选 | **必填** |
+| 保留规则 | 保留 `{project}-` 前缀文件 | 不保留任何文件 |
+| 结果 | 目录可能保留（含 `{project}-` 文件） | 目录完全删除 |
+| 用例 | 清理混入的其他项目文件 | 彻底清除某故事的本地副本 |
+
+> **数据边界：remove 仅操作本地文件系统。不查询远端 API、不删除远端文档、不同步任何变更到远端。远端该故事的文档完全不受影响，后续可通过 `sync` 重新拉取。**
+
+**输出示例**：
+
+```
+🔍 检查 docs/故事任务面板/rui-story/...
+
+待删除目录:
+  docs/故事任务面板/rui-story/
+
+目录内容 (9 个文件，约 87K):
+  YrY-01-故事任务.md             (20.2K)
+  YrY-02-用户使用场景.md          (16.5K)
+  YrY-03-后端技术评审.md          (12.8K)
+  YrY-05-测试用例评审.md          (10.9K)
+  YrY-06-后端实施报告.md          (7.3K)
+  YrY-08-测试用例报告.md          (4.7K)
+  YrY-09-自改进复盘.md            (7.7K)
+  YrY-10-交互日志.md              (5.7K)
+  YrY-00-消息通知列表.md          (1.2K)
+
+⚠️  即将删除整个目录及 9 个文件，释放约 87K。此操作不可撤销。确认？(y/n)
+
+✅ 已删除 docs/故事任务面板/rui-story/，释放 87K。
+💡 远端文档不受影响，可通过 /rui-story sync rui-story 重新拉取。
+```
+
 ## 核心规则
 
 ```mermaid
 flowchart LR
-    subgraph 规则["6 条硬约束"]
+    subgraph 规则["7 条硬约束"]
         R1["远端 API 为默认数据源<br/>查询不读本地文件系统"]:::rule
         R2["仅查询与同步<br/>不创建文档内容"]:::rule
         R3["不修改源码<br/>不创建/切换 git 分支"]:::rule
         R4["sync 完全委托<br/>import-docs"]:::rule
         R5["kebab-case<br/>命名硬规范"]:::rule
         R6["clear 需确认<br/>破坏性操作先展示后确认"]:::rule
+        R7["clear/remove 仅本地<br/>不触碰远端数据"]:::rule
     end
 
     classDef rule fill:#e3f2fd,stroke:#1565c0;
@@ -344,7 +420,8 @@ flowchart LR
 | 3 | 不修改源码，不创建/切换 git 分支（那是 `/rui code`） | — |
 | 4 | sync 完全委托 import-docs，不自行实现同步 | 修正命令重试 |
 | 5 | `<name>` = kebab-case | 拒绝执行 |
-| 6 | clear 仅保留 `{project}-` 前缀文件，项目名前缀从 CLAUDE.md 读取，不可覆写；先展示双重清单（待删 + 保留），用户确认后才执行 | 终止操作 |
+| 6 | clear 仅操作本地文件系统，不触碰远端；仅保留 `{project}-` 前缀文件；先展示双重清单，用户确认后才执行 | 终止操作 |
+| 7 | remove 仅操作本地文件系统，不触碰远端；`<name>` 必填；先展示清单，用户确认后才执行删除 | 终止操作 |
 
 ## 生效标志
 
@@ -353,7 +430,7 @@ flowchart LR
     F1["list/show/概览 查询<br/>远端 API 非本地"]:::sig
     F1 --> F2["sync 正确委托<br/>import-docs"]:::sig
     F2 --> F3["状态判定准确<br/>基于远端 file_path"]:::sig
-    F3 --> F4["clear 操作安全<br/>先展示后确认再删除"]:::sig
+    F3 --> F4["clear/remove 操作安全<br/>仅本地，先展示后确认再删除"]:::sig
 
     classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
@@ -363,7 +440,8 @@ flowchart LR
 | list/show/概览查询远端 API，非本地文件系统 | 修正为远端查询 |
 | sync 正确委托 import-docs | 修正命令参数重试 |
 | 状态判定基于远端 file_path 准确 | 修正判定逻辑 |
-| clear 从 CLAUDE.md 读取项目名前缀，展示双重清单（待删+保留），确认后执行，仅 `{project}-` 文件幸存 | 修正为展示后确认 |
+| clear 从 CLAUDE.md 读取项目名前缀，展示双重清单，确认后执行，仅 `{project}-` 文件幸存 | 修正为展示后确认 |
+| remove 仅操作本地，name 必填，展示清单后确认再删除，远端数据零影响 | 修正为展示后确认 |
 
 ## 与 rui 的关系
 
