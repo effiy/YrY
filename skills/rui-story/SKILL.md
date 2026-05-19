@@ -23,10 +23,12 @@ flowchart TD
     Q2 -->|"list"| LIST["进度全景<br/>远端查询 → 所有故事详细表格"]:::read
     Q2 -->|"show <name>"| SHOW["单故事详情<br/>远端查询 → 文件清单/状态/元数据"]:::read
     Q2 -->|"sync <name>?"| SYNC["文档同步<br/>远端 → 本地（委托 import-docs）"]:::write
+    Q2 -->|"clear <name>?"| CLEAR["清理文件<br/>本地 → 移除非项目前缀文件"]:::danger
 
     classDef entry fill:#fff3e0,stroke:#e65100;
     classDef read fill:#e8f5e9,stroke:#2e7d32;
     classDef write fill:#e3f2fd,stroke:#1565c0;
+    classDef danger fill:#ffebee,stroke:#c62828;
 ```
 
 | 命令 | 类型 | 数据源 | 作用 |
@@ -35,13 +37,14 @@ flowchart TD
 | `/rui-story list` | 只读 | 远端 API | 进度全景：所有故事详细表格（状态/文件数/最后修改/分支） |
 | `/rui-story show <name>` | 只读 | 远端 API | 单故事详情：文件清单/状态/元数据 |
 | `/rui-story sync [<name>]` | 写入 | 远端 API | 从远端拉取文档到本地；未指定名称时展示推荐提示 |
+| `/rui-story clear [<name>]` | 写入 | 本地文件系统 | 清理非项目前缀文件；未指定名称时扫描所有故事目录 |
 
 `<name>` 为纯语义 kebab-case（如 `user-login`），不加项目名前缀。
 
 ## 数据源
 
 > **默认且唯一模式：远端 API**。所有查询操作（概览/list/show）直接查询远端 API，不读本地文件系统。
-> 仅 `sync` 命令涉及本地写入（从远端拉取到本地），其余命令零本地文件系统访问。
+> `sync` 命令涉及本地写入（从远端拉取到本地）；`clear` 命令操作本地文件系统（移除非项目前缀文件）。
 
 ```mermaid
 flowchart LR
@@ -82,6 +85,7 @@ flowchart LR
     subgraph 允许["✅ 允许"]
         A1["远端 API 查询<br/>故事任务面板 session"]:::ok
         A2["sync 委托 import-docs<br/>远端 → 本地"]:::ok
+        A3["clear 操作本地文件系统<br/>移除非项目前缀文件"]:::ok
     end
     subgraph 禁止["❌ 禁止"]
         B1["读取本地文件系统<br/>（查询操作）"]:::bad
@@ -239,16 +243,75 @@ flowchart LR
 - 指定故事：`dir=docs/故事任务面板/<name>/ mode=pull` → 远端下载覆盖本地
 - 未指定：展示可同步故事推荐提示，等待用户选择后再同步
 
+## `/rui-story clear [<name>]` — 清理非项目前缀文件
+
+> 扫描本地故事目录，移除以项目名（如 `YrY`）为前缀以外的文件。**破坏性操作，执行前需确认。**
+
+```mermaid
+flowchart LR
+    PARSE["解析可选的 name"]:::op --> SCAN["扫描 docs/故事任务面板/<br/>或 docs/故事任务面板/&lt;name&gt;/"]:::op
+    SCAN --> FILTER["筛选非 {project}- 前缀文件"]:::op
+    FILTER --> SHOW["列出待删除文件清单"]:::out
+    SHOW --> CONFIRM{"用户确认?"}
+    CONFIRM -->|"是"| DEL["执行删除"]:::danger
+    CONFIRM -->|"否"| ABORT["取消操作"]:::out
+    DEL --> CLEAN["清理空目录"]:::op
+    CLEAN --> REPORT["输出清理摘要"]:::out
+
+    classDef op fill:#e3f2fd,stroke:#1565c0;
+    classDef out fill:#e8f5e9,stroke:#2e7d32;
+    classDef danger fill:#ffebee,stroke:#c62828;
+```
+
+**执行流程**：
+
+1. **确定范围** — 有 `<name>` 则扫描 `docs/故事任务面板/<name>/`；无则扫描 `docs/故事任务面板/` 下所有故事目录
+2. **筛选文件** — 找出不以 `{project}-`（如 `YrY-`）开头的文件，排除目录
+3. **展示清单** — 列出所有待删除文件（路径 + 大小），输出待确认提示
+4. **等待确认** — 用户明确确认后才执行删除
+5. **执行清理** — 逐个删除文件，删除后清理空目录
+6. **输出摘要** — 已删除文件数、释放空间、剩余文件数
+
+**保留规则**：
+
+| 条件 | 处置 |
+|------|------|
+| 文件名以 `{project}-` 开头（如 `YrY-`） | 保留 |
+| 文件名不以 `{project}-` 开头 | 删除 |
+| 目录（含 `.memory/`） | 文件清空后目录为空则删除 |
+
+**输出示例**：
+
+```
+🔍 扫描 docs/故事任务面板/rui-story/...
+
+待删除文件 (8):
+  YiAi-01-故事任务.md           (3.2K)
+  YiAi-02-用户使用场景.md        (4.1K)
+  YiAi-03-后端技术评审.md        (5.8K)
+  YiAi-05-测试用例评审.md        (2.9K)
+  YiAi-06-后端实施报告.md        (6.3K)
+  YiAi-08-测试用例报告.md        (3.7K)
+  YiAi-09-自改进复盘.md          (4.5K)
+  YiAi-10-交互日志.md            (1.8K)
+
+⚠️  即将删除 8 个文件，释放约 32K。确认？(y/n)
+
+✅ 已删除 8 个文件，释放 32K。
+📂 保留 8 个文件 (YrY-*)
+```
+
 ## 核心规则
 
 ```mermaid
 flowchart LR
-    subgraph 规则["5 条硬约束"]
+    subgraph 规则["6 条硬约束"]
         R1["远端 API 为默认数据源<br/>查询不读本地文件系统"]:::rule
         R2["仅查询与同步<br/>不创建文档内容"]:::rule
         R3["不修改源码<br/>不创建/切换 git 分支"]:::rule
         R4["sync 完全委托<br/>import-docs"]:::rule
         R5["kebab-case<br/>命名硬规范"]:::rule
+        R6["clear 需确认<br/>破坏性操作先展示后确认"]:::rule
     end
 
     classDef rule fill:#e3f2fd,stroke:#1565c0;
@@ -261,6 +324,7 @@ flowchart LR
 | 3 | 不修改源码，不创建/切换 git 分支（那是 `/rui code`） | — |
 | 4 | sync 完全委托 import-docs，不自行实现同步 | 修正命令重试 |
 | 5 | `<name>` = kebab-case | 拒绝执行 |
+| 6 | clear 操作先展示待删除清单，用户确认后才执行，不可跳过 | 终止操作 |
 
 ## 生效标志
 
@@ -269,6 +333,7 @@ flowchart LR
     F1["list/show/概览 查询<br/>远端 API 非本地"]:::sig
     F1 --> F2["sync 正确委托<br/>import-docs"]:::sig
     F2 --> F3["状态判定准确<br/>基于远端 file_path"]:::sig
+    F3 --> F4["clear 操作安全<br/>先展示后确认再删除"]:::sig
 
     classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
@@ -278,6 +343,7 @@ flowchart LR
 | list/show/概览查询远端 API，非本地文件系统 | 修正为远端查询 |
 | sync 正确委托 import-docs | 修正命令参数重试 |
 | 状态判定基于远端 file_path 准确 | 修正判定逻辑 |
+| clear 操作先展示清单再确认，不可跳过确认直接删除 | 修正为展示后确认 |
 
 ## 与 rui 的关系
 
