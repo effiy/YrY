@@ -525,23 +525,135 @@ flowchart LR
 
 > 不可跳过第 2 步凭感觉推荐。详细评分框架见 [ranking.md](./ranking.md)。
 
-### req 有值 — 直接生成
+### req 有值 — 直接生成全文档基线
 
-1. 解析 `<name>` → 目标目录
-2. 冲突检测：目标目录已存在时拒绝覆盖，引导 `/rui update`
-3. 源码定位：按 req 匹配源文件
-4. 只读提取：结构概览 → 接口契约 → 依赖链 → 状态管理 → 安全考量
-5. 文档生成：按项目类型生成基线，Level B + 源码路径，缺口标「待补充」
+> 从源码反推完整 5 文档基线到 `docs/故事任务面板/<name>/`。全程只读源码，证据 Level B + 源码路径，缺口标「待补充」。
+> 多故事时按 `recommend.mjs` 输出的 storyName 顺序串行，互不交叉。
 
-| 项目类型 | 反推来源 | 输出 |
-|---------|---------|------|
-| 前端 | `.vue`/`.jsx`/`.tsx` + 路由 + 状态管理 | 故事任务 + 使用场景 + 技术评审（前端章节为主）+ 测试设计 + 安全审计 |
-| 后端 | 路由/控制器/服务/数据模型 | 故事任务 + 使用场景 + 技术评审（后端章节为主）+ 测试设计 + 安全审计 |
-| 全栈 | 两端分别，契约对齐 | 故事任务 + 使用场景 + 技术评审（全章节）+ 测试设计 + 安全审计 |
+```mermaid
+flowchart TD
+    PARSE["§1.1 解析<br/>name→目标目录"]:::s --> CONFLICT{"§1.2 冲突检测<br/>目标目录已存在?"}:::gate
+    CONFLICT -->|"是"| REJECT["拒绝覆盖<br/>引导 /rui update"]:::bad
+    CONFLICT -->|"否"| BRANCH{"§1.3 分支隔离<br/>git branch == feat/&lt;name&gt;?"}:::gate
+    BRANCH -->|"否"| SWITCH["创建/切换到 feat/&lt;name&gt;<br/>从 main 拉出"]:::block
+    BRANCH -->|"是"| SCAN["§1.4 源码定位<br/>按 name 匹配源文件集"]:::s
+    SWITCH --> SCAN
+    SCAN --> EXTRACT["§1.5 只读提取<br/>结构·接口·依赖·状态·安全"]:::s
+    EXTRACT --> GEN["§2 逐文档生成<br/>5 文档基线"]:::s
 
-### 约束
+    subgraph GENSUB["逐文档生成 — 5 文档基线"]
+        direction LR
+        D1["§2.1 pm<br/>{project}-故事任务<br/>F.story.task"]:::agent
+        D2["§2.2 pm<br/>{project}-使用场景<br/>F.story.scenarios"]:::agent
+        D3["§2.3 coder<br/>{project}-技术评审<br/>F.story.technical-review"]:::agent
+        D4["§2.4 tester<br/>{project}-测试设计<br/>F.story.test-design"]:::agent
+        D5["§2.5 security<br/>{project}-安全审计<br/>F.story.security-audit"]:::agent
+        D1 --> D2 --> D3 --> D4
+        D3 --> D5
+    end
 
-- 只读 · 分支隔离 · 证据 Level B · 冲突保护
+    GENSUB --> DELIVER["§3 交付三步<br/>hook-log→import-docs→wework-bot"]:::s
+
+    classDef s fill:#e3f2fd,stroke:#1565c0;
+    classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef bad fill:#ffebee,stroke:#c62828;
+    classDef block fill:#ffebee,stroke:#c62828;
+    classDef agent fill:#f3e5f5,stroke:#6a1b9a;
+```
+
+#### §1 前置步骤
+
+| 步骤 | 操作 | 负责人 | 输入 | 输出 | 阻断 |
+|------|------|--------|------|------|------|
+| §1.1 解析 | 解析 `<name>` 为 kebab-case 故事名，目标目录 `docs/故事任务面板/<name>/` | — | 用户输入 | 故事名 + 目标路径 | `no-parse` |
+| §1.2 冲突检测 | 检查目标目录是否已存在 | — | 目标路径 | 通过/拒绝 | 已存在则拒绝覆盖，引导 `/rui update` |
+| §1.3 分支隔离 | 验证当前分支为 `feat/<name>`，否则从 main 创建 | — | 故事名 | 分支就绪 | `no-doc-isolation` |
+| §1.4 源码定位 | 按 name 匹配源文件：`grep -r` 搜索关键字 + `recommend.mjs` 数据交叉验证 | — | 故事名 + 项目类型 | 源文件清单 + 依赖图 | `no-source` |
+| §1.5 只读提取 | 读取全部匹配源文件，提取：结构概览 · 接口/组件签名 · 依赖链 · 状态管理 · 安全信号 | — | 源文件清单 | 结构化代码事实集（供下游 Agent 消费） | `chain-broken` |
+
+**§1.4 源码定位策略**：
+
+| 项目类型 | 搜索范围 | 匹配依据 |
+|---------|---------|---------|
+| 前端 | `.vue` `.jsx` `.tsx` `.svelte` | 组件名 → 路由注册 → 状态文件 → 样式文件 |
+| 后端 | `.ts` `.js` `.py` `.go` 等 | 路由路径 → 控制器/服务 → 数据模型 → 中间件 |
+| 全栈 | 两端各自搜索 | 前端组件 + 后端接口，交叉验证契约一致性 |
+
+**§1.5 提取清单**（所有项目类型必提取）：
+
+| 维度 | 提取内容 | 证据格式 |
+|------|---------|---------|
+| 结构概览 | 目录树 + 文件职责摘要 | `> 证据: <file>:<line>` |
+| 接口/组件签名 | 函数签名 · Props/Events · API 路由+方法+请求/响应 | `> 证据: <file>:<line>` 代码片段 |
+| 依赖链 | import 图（谁依赖谁） + 外部依赖清单 | `> 证据: import 语句位置` |
+| 状态管理 | store/state/context 定义 + 流向 | `> 证据: <file>:<line>` |
+| 安全考量 | 用户输入点 · 认证链路 · API 调用 · 敏感数据 | `> 证据: <file>:<line>` |
+
+#### §2 逐文档生成
+
+> 5 文档按序生成。前文档产出为后文档输入。每文档生成后立即通过 P0 检查清单校验。
+
+```mermaid
+flowchart LR
+    FACTS["代码事实集<br/>来自 §1.5"]:::input --> D1["§2.1 故事任务<br/>pm · F.story.task"]:::doc
+    D1 --> D2["§2.2 使用场景<br/>pm · F.story.scenarios"]:::doc
+    D2 --> D3["§2.3 技术评审<br/>coder · F.story.technical-review"]:::doc
+    D3 --> D4["§2.4 测试设计<br/>tester · F.story.test-design"]:::doc
+    D3 --> D5["§2.5 安全审计<br/>security · F.story.security-audit"]:::doc
+    D4 --> CHECK["P0 检查清单<br/>5 文档全部通过"]:::gate
+    D5 --> CHECK
+
+    classDef input fill:#e8f5e9,stroke:#2e7d32;
+    classDef doc fill:#e3f2fd,stroke:#1565c0;
+    classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+```
+
+| # | 文档 | Agent | 公式 | 反推策略 | 关键约束 |
+|---|------|-------|------|---------|---------|
+| §2.1 | `{project}-故事任务.md` | pm | [F.story.task](./formulas.md#fstorytask--project-故事任务-meta--storyn) | 从代码事实集反推业务意图：接口/组件 → 用户能做什么；状态管理 → 数据流；依赖链 → 模块边界 | 语言边界：禁止代码路径/API路由/组件名/技术栈名。证据 Level B + 源码路径 |
+| §2.2 | `{project}-使用场景.md` | pm | [F.story.scenarios](./formulas.md#fstoryscenarios--project-使用场景) | 从组件交互 + API 调用链反推用户旅程：正常路径 + ≥1 空状态 + ≥1 错误恢复。每场景必含 mermaid flowchart | 语言边界：禁止技术术语/组件名/API端点/文件路径。≥ 2 场景。场景覆盖矩阵对齐故事任务 FP# |
+| §2.3 | `{project}-技术评审.md` | coder | [F.story.technical-review](./formulas.md#fstorytechnical-review--project-技术评审) | 源码直接映射到技术章节：接口签名→§2 API；数据模型→§3；组件定义→§4；状态管理→§4.2；安全信号→§7。**含效果示意 mermaid 图**（全链路请求流/组件交互） | 按项目类型裁剪章节（纯前端跳过 API/数据/后端性能，纯后端跳过组件/状态/交互/样式/DOM）。§0 基线溯源至少映射故事任务 FP# + 使用场景 |
+| §2.4 | `{project}-测试设计.md` | tester | [F.story.test-design](./formulas.md#fstorytest-design--project-测试设计) | 基于故事任务 AC + 使用场景 + 技术评审接口/组件签名生成四类用例（正常/边界/异常/回归）。每用例 Given/When/Then 可执行 | §0 基线溯源覆盖全部 AC# 和场景。Gate A 交接信号完整（P0 用例 ID + 验证命令） |
+| §2.5 | `{project}-安全审计.md` | security | [F.story.security-audit](./formulas.md#fstorysecurity-audit--project-安全审计) | 基于技术评审 §7 安全信号 + 源码安全扫描独立审计：资产识别 → STRIDE 威胁建模 → 信任边界 → 缓解措施 → 合规检查 | 独立执行，不依赖 coder 自评。STRIDE 六类全覆盖。合规 6 项全查 |
+
+**反推证据等级**：
+
+| 能确定的 | 不能确定的 |
+|---------|-----------|
+| 接口契约、组件签名、依赖关系、状态定义 → Level A（附源码路径） | 业务意图、设计决策理由、未来规划 → Level C（标注「待补充」） |
+| 安全信号（用户输入点/认证链路） → Level B（附代码模式） | 性能目标、容量规划 → Level C |
+
+**每文档生成后校验（P0 阻断）**：
+
+| # | 检查项 | 适用文档 |
+|---|--------|---------|
+| 1 | `### 主要价值` 存在且 ≥ 4 条 emoji 前缀行 | 全部 5 文档 |
+| 2 | F.meta 无 `{...}` 占位符 | 全部 5 文档 |
+| 3 | 回溯链完整（来源引用 + 变更记录） | 全部 5 文档 |
+| 4 | 故事任务 + 使用场景通过语言边界扫描（无技术术语污染） | §2.1, §2.2 |
+| 5 | 技术评审含效果示意 mermaid 图 + 基线溯源表 | §2.3 |
+| 6 | 测试设计 Gate A 交接信号完整 | §2.4 |
+| 7 | 安全审计 STRIDE 六类全覆盖 + 独立审计标记 | §2.5 |
+
+#### §3 项目类型裁剪
+
+| 类型 | 故事任务 | 使用场景 | 技术评审章节 | 测试设计 | 安全审计 |
+|------|---------|---------|-------------|---------|---------|
+| 前端 | 全量 | 全量（侧重 UI 交互） | 跳过 §2 API / §3 数据 / §8 后端性能 | 侧重 UI 状态 + 交互用例 | 侧重输入校验 + XSS/CSRF |
+| 后端 | 全量 | 全量（侧重 API 使用者旅程） | 跳过 §4 组件 / §5 交互 / §6 DOM·事件·依赖 | 侧重接口 + 数据 + 性能用例 | 侧重认证 + 注入 + 权限 |
+| 全栈 | 全量 | 全量（覆盖两端用户） | 全章节，两端契约对齐 | 两端覆盖 + 集成用例 | 全威胁面 |
+
+#### §4 约束
+
+| 约束 | 规则 | 违反 |
+|------|------|------|
+| 只读 | 全程不修改源码，仅读取分析 | P0 |
+| 分支隔离 | 文档写入必须在 `feat/<name>` 分支 | `no-doc-isolation` |
+| 证据 Level B | 每个断言附源码路径或标注「待补充」。无来源 = C 级 | `doc-p0` |
+| 冲突保护 | 目标目录已存在时拒绝覆盖 | 引导 `/rui update` |
+| 反推诚实 | 能从代码确定的写 Level A/B，不能确定的标「待补充」，不编造 | `chain-broken` |
+| 表达优先 | 每文档必须含 mermaid 图（效果示意/操作流/架构图至少其一），不可纯文本 | `doc-p0` |
+| 逐故事串行 | 多故事时按 recommend.mjs 输出顺序串行，前故事 5 文档全部完成再进下一故事 | `chain-broken` |
 
 **末端触发** [强制集成](#强制集成)。
 
