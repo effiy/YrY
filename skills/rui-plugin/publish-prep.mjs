@@ -62,7 +62,25 @@ function checkRequiredDocs() {
   return { step: 'required docs', ok: true };
 }
 
+function showHelp() {
+  const helpPath = path.join(__dirname, 'help.mjs');
+  if (fs.existsSync(helpPath)) {
+    spawnSync('node', [helpPath], { stdio: 'inherit' });
+  } else {
+    console.log('rui-plugin publish-prep — 发布准备检查');
+    console.log('用法: /rui-plugin publish-prep');
+    console.log('串联 validate + health + 必需文档检查');
+    console.log('退出: 0 = ready, 1 = blocked');
+  }
+  process.exit(0);
+}
+
 function main() {
+  const arg = process.argv[2];
+  if (arg === '--help' || arg === '-h' || arg === 'help') {
+    showHelp();
+  }
+
   console.log('Publish Readiness Check');
   console.log('======================\n');
 

@@ -67,7 +67,24 @@ function extractVersion(source) {
   }
 }
 
+function showHelp() {
+  console.log('rui-plugin validate — 版本一致性校验');
+  console.log('');
+  console.log('用法: /rui-plugin validate');
+  console.log('行为: 只读，逐项提取版本号 → 比对');
+  console.log('退出: 0 = 一致, 1 = 不一致');
+  console.log('');
+  console.log('version-sources.json 定义各版本的声明位置。');
+  console.log('详细: /rui-plugin --help 或 node skills/rui-plugin/help.mjs');
+  process.exit(0);
+}
+
 function main() {
+  const arg = process.argv[2];
+  if (arg === '--help' || arg === '-h' || arg === 'help') {
+    showHelp();
+  }
+
   if (!fs.existsSync(CONFIG_PATH)) {
     fail(`config not found: ${CONFIG_PATH}`);
   }

@@ -14,7 +14,7 @@ flowchart TD
         RC[rui-claude]:::skill
         ID[import-docs]:::skill
         WW[wework-bot]:::skill
-        TD[trends-discovery]:::skill
+        TD[rui-trends]:::skill
     end
 
     subgraph Agents[六角色]
@@ -101,7 +101,7 @@ flowchart TD
 | `/rui doc <需求>` | 写入 | 拆需求出文档：生成 01/02/03/04，不改源码 |
 | `/rui code <name>` | 写入 | 实现故事：Gate A → 逐模块 → Gate B → 复盘 → 交付 |
 | `/rui update <name> [ctx]` | 写入 | 增量更新：T1/T2/T3 自动裁剪 |
-| `/rui doc --from-code 需求` | 只读 | 从源码反推文档：补缺失不覆盖 |
+| `/rui doc --from-code 需求` | 写入 | 从源码反推完整 5 文档基线到故事目录（源码只读） |
 | `/rui code --from-doc <name>` | 只读 | 从文档反推码：禁止改源码 |
 
 ### /rui-story — 故事任务面板管理
@@ -184,7 +184,7 @@ flowchart LR
 - **rui-claude** (`/rui-claude sync · retro · history`) — .claude/ 配置远端同步与复盘
 - **import-docs** — 自动（hook 触发）：批量同步故事文档到远端 API
 - **wework-bot** — 自动（hook 触发）：企微机器人推送管线状态通知
-- **trends-discovery** — 按需：查询 GitHub Trending / OSS Insight / TrendShift / Top-Starred，输出结构化趋势报告。自改进 D5 诊断集成
+- **rui-trends** — 按需：查询 GitHub Trending / OSS Insight / TrendShift / Top-Starred，输出结构化趋势报告。自改进 D5 诊断集成
 
 详见 [`skills/`](./skills/)。
 
@@ -212,7 +212,7 @@ YrY/
 │   ├── rui-claude/          #   .claude/ 配置管理
 │   ├── import-docs/         #   文档远端同步
 │   ├── wework-bot/          #   企微通知
-│   └── trends-discovery/    #   技术趋势发现
+│   └── rui-trends/          #   技术趋势发现
 ├── libs/                    # 外部参考知识库
 │   ├── _sources.json        #   下载源清单
 │   ├── story-patterns.md    #   故事描述·模式与方法论
@@ -224,7 +224,7 @@ YrY/
 ├── docs/
 │   └── 故事任务面板/        #   故事产出目录
 │       └── <name>/
-│           ├── 01-09.md     #     管线文档
+│           ├── {project}-*.md  #     故事文档（故事任务·使用场景·技术评审等）
 │           ├── .memory/     #     执行记忆（跨会话持久化）
 │           └── .improvement/ #    改进提案
 ├── CLAUDE.md
@@ -239,7 +239,7 @@ YrY/
 flowchart TD
     REQ[需求] -->|拆为| STORY[故事]
     STORY -->|通过| PIPE[管线]
-    PIPE -->|产出| DOCS[01-09 文档]
+    PIPE -->|产出| DOCS[故事文档]
     AGENT[Agent] -->|执行| PIPE
     FORMULA[公式] -->|驱动| DOCS
     EVIDENCE[证据等级] -->|约束| DOCS
@@ -269,7 +269,7 @@ flowchart TD
 | **交付三步** | 管线末端强制序列：hook-log → import-docs → wework-bot。任一缺失 = 管线未闭合。 | delivery pipeline, post-steps |
 | **自改进** | D0–D7 诊断循环。采集执行数据→六维评估→生成改进提案→提案闭合。 | retrospective, post-mortem |
 | **执行记忆** | `.memory/execution-memory.jsonl`（追加）+ `.memory/rui-state.json`（覆盖写）。 | state, log |
-| **项目类型** | frontend / backend / fullstack / meta / unknown。决定文档生成矩阵（前端补 03/06，后端补 02/05，全栈全部补）。 | stack type |
+| **项目类型** | frontend / backend / fullstack / meta / unknown。决定技术评审章节裁剪（纯前端跳过 API/数据/后端性能，纯后端跳过组件/状态/交互/样式/DOM）。 | stack type |
 | **需求** | `/rui` 的输入：纯文本、`@` 文件引用、或 URL。pm 解析后拆为一组故事。 | input, spec, feature request |
 | **插件** | YrY 本身是 Claude Code 插件，用自身管线管理自身演进。 | extension, addon |
 

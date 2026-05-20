@@ -2,11 +2,11 @@
 // rui — Story-driven SDLC orchestrator help
 // 用法: node skills/rui/help.mjs 或 /rui --help
 
-const { bold, underline, dim, yellow, green, cyan } = (() => {
+const { bold, underline, dim, yellow, green, cyan, red } = (() => {
   const make = (code) => (s) => `\x1b[${code}m${s}\x1b[0m`;
   const e = {
     bold: make(1), underline: make(4), dim: make(2),
-    yellow: make(33), green: make(32), cyan: make(36),
+    yellow: make(33), green: make(32), cyan: make(36), red: make(31),
   };
   if (!process.stdout.isTTY) {
     for (const k of Object.keys(e)) e[k] = (s) => s;
@@ -148,27 +148,32 @@ ${item("自改进 → 交付", "D0–D7 诊断复盘 + hook-log → import-docs 
 
 ${hdr("阻断标识速查")}
 
-${item("需求→文档阶段", "no-parse · no-source · chain-broken · doc-p0 · no-doc-isolation")}
-${item("预检→实现阶段", "bad-branch · no-checkout · no-branch-isolation · skip-gate-a")}
-${item("实现→验证阶段", "code-p0 · gate-b-limit")}
-${item("交付阶段", "auto-merge · no-token（降级）· no-metrics（降级）")}
+${item("需求→文档阶段", "no-parse · no-source · chain-broken · doc-p0 · no-doc-isolation", red)}
+${item("预检→实现阶段", "bad-branch · no-checkout · no-branch-isolation · skip-gate-a", red)}
+${item("实现→验证阶段", "code-p0 · gate-b-limit", red)}
+${item("交付阶段", "auto-merge · no-token（降级）· no-metrics（降级）", yellow)}
 
 ${hdr("核心约束")}
 ${line(dim("1. 逐故事串行 — 多故事按拆分顺序处理，互不交叉"))}
 ${line(dim("2. 分支隔离 — Edit/Write 前必须验证当前分支为 feat/<name>"))}
-${line(dim("3. 源码唯一入口 — 只能走 /rui code 改源码"))}
-${line(dim("4. 测试先行 — Gate A 阻断实现；Gate B >2 轮阻断交付"))}
-${line(dim("5. 逐模块 P0 清零 — 每模块审查后 P0 清零再前进"))}
-${line(dim("6. 产出内聚 — 关键产出限定在 docs/故事任务面板/<name>/"))}
-${line(dim("7. 表达优先 — 文档内容 图 → 结构化文本 → 表"))}
+${line(dim("3. 源码唯一入口 — 只能走 /rui code 改源码，禁止跳过管线直接改码"))}
+${line(dim("4. 测试先行 — Gate A 阻断无测试实现；Gate B 超过 2 轮验证阻断交付"))}
+${line(dim("5. 逐模块 P0 清零 — 每模块安全审查后 P0 必须清零才前进下一模块"))}
+${line(dim("6. 产出内聚 — 关键产出全部限定在 docs/故事任务面板/<name>/ 目录内"))}
+${line(dim("7. 表达优先 — 文档内容优先级: 图 → 结构化文本 → 表，不可降级用大段文字"))}
 
 ${hdr("相关资源")}
 ${item("SKILL.md", "skills/rui/SKILL.md — 完整规约（命令面 + 编排骨架）", dim)}
 ${item("formulas.md", "skills/rui/formulas.md — 文档公式 + P0 检查清单", dim)}
 ${item("code-pipeline.md", "rules/code-pipeline.md — 分支隔离 · Gate A/B · 逐模块 P0", dim)}
-${item("AGENT.md", "agents/AGENT.md — 角色拓扑 · 行为纪律 · 设计原则", dim)}
+${item("AGENT.md", "agents/AGENT.md — 角色拓扑 · 行为纪律 · 设计原则 · 多 Agent 协作", dim)}
 ${item("ranking.md", "skills/rui/ranking.md — 5 层评分框架", dim)}
 ${item("rui-story", "skills/rui-story/SKILL.md — 故事面板管理", dim)}
+${item("import-docs", "skills/import-docs/SKILL.md — 文档同步", dim)}
+${item("wework-bot", "skills/wework-bot/SKILL.md — 企微通知", dim)}
+${item("self-improve.md", "rules/self-improve.md — 自改进闭环 D0–D7", dim)}
+
+${dim("YrY 版本: 1.5.4 | 架构: plugin — 6 技能 + 6 Agent + 5 规则")}
 `;
 
 console.log(help);

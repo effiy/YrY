@@ -96,11 +96,28 @@ function bumpSource(source, oldVer, newVer) {
   return { filePath, tmpPath };
 }
 
+function showHelp() {
+  const helpPath = path.join(__dirname, 'help.mjs');
+  if (fs.existsSync(helpPath)) {
+    spawnSync('node', [helpPath], { stdio: 'inherit' });
+  } else {
+    console.log('rui-plugin bump — 统一版本升级');
+    console.log('用法: /rui-plugin bump <x.y.z>');
+    console.log('前置: 工作区干净 + semver 格式');
+    console.log('退出: 0 = 成功, 1 = 格式, 2 = dirty, 3 = 写入失败');
+  }
+  process.exit(0);
+}
+
 function main() {
-  const newVer = process.argv[2];
-  if (!newVer) {
+  const arg = process.argv[2];
+  if (!arg || arg === '--help' || arg === '-h' || arg === 'help') {
+    if (arg === '--help' || arg === '-h' || arg === 'help') {
+      showHelp();
+    }
     fail(1, 'usage: node bump.mjs <version>');
   }
+  const newVer = arg;
   if (!SEMVER_RE.test(newVer)) {
     fail(1, `invalid version format "${newVer}" — expected x.y.z (e.g. 1.4.0)`);
   }

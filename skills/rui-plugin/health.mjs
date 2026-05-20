@@ -124,7 +124,23 @@ function checkRequiredDirs() {
   return results;
 }
 
+function showHelp() {
+  console.log('rui-plugin health — 插件健康分析');
+  console.log('');
+  console.log('用法: /rui-plugin health');
+  console.log('检查维度: plugin.json / marketplace.json / version 一致性 / 必需目录');
+  console.log('退出: 0 = healthy, 1 = error');
+  console.log('');
+  console.log('详细: /rui-plugin --help 或 node skills/rui-plugin/help.mjs');
+  process.exit(0);
+}
+
 function main() {
+  const arg = process.argv[2];
+  if (arg === '--help' || arg === '-h' || arg === 'help') {
+    showHelp();
+  }
+
   const allResults = [
     { dimension: 'plugin.json completeness', checks: checkPluginJson() },
     { dimension: 'marketplace.json validity', checks: checkMarketplaceJson() },

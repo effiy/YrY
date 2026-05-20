@@ -5,6 +5,7 @@
 import { readFile, readdir, stat, mkdir, writeFile } from "node:fs/promises";
 import { join, relative, sep, dirname, resolve, basename } from "node:path";
 import { existsSync } from "node:fs";
+import { execSync } from "node:child_process";
 
 // --- config ----------------------------------------------------------------
 const API_URL = process.env.IMPORT_DOCS_API_URL || "https://api.effiy.cn";
@@ -45,80 +46,37 @@ function parseArgs() {
 }
 
 function showHelp() {
-  const { bold, underline, dim } = (() => {
-    const e = { bold: (s) => `\x1b[1m${s}\x1b[22m`, underline: (s) => `\x1b[4m${s}\x1b[24m`, dim: (s) => `\x1b[2m${s}\x1b[22m` };
-    if (!process.stdout.isTTY) return { bold: (s) => s, underline: (s) => s, dim: (s) => s };
-    return e;
-  })();
-
-  const INDENT = "  ";
-
-  function hdr(text) {
-    return `\n${bold(underline(text))}\n`;
+  const helpPath = join(dirname(resolve(process.argv[1])), "help.mjs");
+  if (existsSync(helpPath)) {
+    try {
+      execSync(`node "${helpPath}"`, { stdio: "inherit" });
+    } catch {
+      fallbackHelp();
+    }
+  } else {
+    fallbackHelp();
   }
-
-  function item(cmd, desc) {
-    const left = `${INDENT}${cmd}`;
-    const pad = Math.max(2, 28 - left.length);
-    return `${left}${" ".repeat(pad)}${desc}`;
-  }
-
-  function section(title, entries) {
-    return hdr(title) + entries.map(([c, d]) => item(c, d)).join("\n");
-  }
-
-  const help = `
-${bold("# import-docs sync — 文档批量同步到远端")}
-
-${dim("扫描 · 过滤 · 路径映射 · 上传 | 扫描项目文件并同步到远端 API")}
-
-${section("参数", [
-  ["workspace=true", "项目根全量扫描 + 上传 (最常用)"],
-  ["dir=<path>", "指定目录扫描 (绝对路径)"],
-  ["exts=md,json,yaml", "文件扩展名 (默认: md)"],
-  ["exclude=tmp,build", "追加排除目录"],
-  ["prefix=a,b", "远端路径前缀"],
-  ["apiUrl=<url>", "覆盖 API 地址"],
-  ["mode=list", "仅列出文件，跳过上传"],
-  ["mode=pull", "远端→本地下载 (故事面板或 .claude/ 目录)"],
-])}
-
-${section("示例", [
-  ["# 全量同步", ""],
-  ["workspace=true", "扫描项目根 → 上传全部 .md 文件"],
-  ["", ""],
-  ["# 同步指定目录", ""],
-  ["dir=/path/to/docs exts=md,json", "仅同步该目录下的 md/json 文件"],
-  ["", ""],
-  ["# 从远端拉取故事文档", ""],
-  ["dir=docs/故事任务面板/user-login/ mode=pull", "远端 → 本地覆盖"],
-  ["", ""],
-  ["# 从远端拉取 .claude/ 配置", ""],
-  ["dir=.claude/ mode=pull", "远端 → 本地覆盖 .claude/ 全量"],
-  ["", ""],
-  ["# 预览不上传", ""],
-  ["workspace=true mode=list", "列出待上传文件清单"],
-  ["", ""],
-  ["# 带远端前缀", ""],
-  ["workspace=true prefix=docs,api-v2", "远端路径追加 docs/api-v2/"],
-])}
-
-${section("环境变量", [
-  ["API_X_TOKEN", "鉴权令牌 (必填 · 缺失时静默降级)"],
-  ["IMPORT_DOCS_API_URL", "覆盖默认 API 地址"],
-])}
-
-${section("扫描规则", [
-  [".claude/ 目录", "全量纳入 · 不限扩展名"],
-  ["其他目录", "仅匹配 --exts 的文件"],
-  ["默认排除", ".git · node_modules · .claude-plugin"],
-])}
-
-${dim("详细: skills/import-docs/SKILL.md | 同步: node skills/import-docs/sync.mjs")}
-`;
-
-  console.log(help);
   process.exit(0);
+}
+
+function fallbackHelp() {
+  console.log("import-docs sync — 文档批量同步到远端");
+  console.log("");
+  console.log("参数 (key=value):");
+  console.log("  workspace=true          项目根全量扫描 + 上传");
+  console.log("  dir=<path>              指定目录扫描 (绝对路径)");
+  console.log("  exts=md,json,yaml       文件扩展名 (默认: md)");
+  console.log("  exclude=tmp,build       追加排除目录");
+  console.log("  prefix=a,b              远端路径前缀");
+  console.log("  apiUrl=<url>            覆盖 API 地址");
+  console.log("  mode=list               仅列出，不上传");
+  console.log("  mode=pull               远端 → 本地下载");
+  console.log("");
+  console.log("环境变量:");
+  console.log("  API_X_TOKEN             鉴权令牌 (缺失时静默降级)");
+  console.log("  IMPORT_DOCS_API_URL     覆盖默认 API 地址");
+  console.log("");
+  console.log("详细: node skills/import-docs/help.mjs");
 }
 
 // --- project root ----------------------------------------------------------

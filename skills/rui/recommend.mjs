@@ -43,61 +43,91 @@ function parseArgs() {
 }
 
 function showHelp() {
-  const { bold, underline, dim } = (() => {
-    const e = { bold: (s) => `\x1b[1m${s}\x1b[22m`, underline: (s) => `\x1b[4m${s}\x1b[24m`, dim: (s) => `\x1b[2m${s}\x1b[22m` };
-    if (!process.stdout.isTTY) return { bold: (s) => s, underline: (s) => s, dim: (s) => s };
+  const helpPath = join(dirname(resolve(process.argv[1])), "help.mjs");
+  if (existsSync(helpPath)) {
+    try {
+      execSync(`node "${helpPath}"`, { stdio: "inherit" });
+      process.exit(0);
+    } catch {
+      // fall through to inline help
+    }
+  }
+  // Inline help — recommend-specific, more detailed than rui/help.mjs
+  const { bold, underline, dim, yellow, green } = (() => {
+    const make = (code) => (s) => `\x1b[${code}m${s}\x1b[0m`;
+    const e = { bold: make(1), underline: make(4), dim: make(2), yellow: make(33), green: make(32) };
+    if (!process.stdout.isTTY) { for (const k of Object.keys(e)) e[k] = (s) => s; }
     return e;
   })();
 
-  const INDENT = "  ";
-
-  function hdr(text) {
-    return `\n${bold(underline(text))}\n`;
+  const I = "  ";
+  function hdr(t) { return `\n${bold(underline(t))}\n`; }
+  function item(c, d, clr) {
+    const l = `${I}${c}`;
+    const p = Math.max(2, 32 - l.length);
+    return `${clr ? clr(l) : l}${" ".repeat(p)}${d}`;
   }
-
-  function item(cmd, desc) {
-    const left = `${INDENT}${cmd}`;
-    const pad = Math.max(2, 28 - left.length);
-    return `${left}${" ".repeat(pad)}${desc}`;
-  }
-
-  function section(title, entries) {
-    return hdr(title) + entries.map(([c, d]) => item(c, d)).join("\n");
-  }
+  function sec(t, es) { return hdr(t) + es.map(([c, d, clr]) => item(c, d, clr)).join("\n"); }
+  function line(t) { return `${I}${t}`; }
 
   const help = `
-${bold("# recommend — 源码分析器，收集客观指标用于文档推荐")}
+${bold("# recommend — 源码分析器")}
 
-${dim("扫描源码 → 提取签名 → 依赖分析 → git 指标 → 文档覆盖度 → 外部参考")}
+${dim("扫描源码 → 提取签名 → 依赖分析 → git 指标 → 文档覆盖度 → 外部参考匹配")}
+${dim("由 PM agent 在 /rui doc --from-code 探索模式中调用")}
 
-${section("参数", [
-  ["--root=<path>", "项目根目录 (必填)"],
-  ["--type=auto|frontend|backend|fullstack", "项目类型 (默认: auto)"],
-  ["--format=json|jsonl", "输出格式 (默认: json)"],
-])}
+${hdr("参数")}
+${item("--root=<path>", "项目根目录 (必填)", yellow)}
+${item("--type=auto|frontend|backend|fullstack|meta", "项目类型 (默认: auto)", yellow)}
+${item("--format=json|jsonl", "输出格式 (默认: json)", yellow)}
 
-${section("示例", [
-  ["# 自动检测项目类型", ""],
-  ["--root=/path/to/project", "扫描源码 → 输出 JSON 推荐列表"],
-  ["", ""],
-  ["# 指定项目类型", ""],
-  ["--root=. --type=frontend", "限定前端文件扫描"],
-  ["--root=. --type=backend", "限定后端文件扫描"],
-  ["", ""],
-  ["# JSONL 输出", ""],
-  ["--root=. --format=jsonl", "每行一个 story candidate"],
-])}
+${hdr("项目类型检测逻辑")}
+${item("auto", "读取 package.json → 按依赖推断 frontend/backend/fullstack/meta", dim)}
+${item("frontend", "仅扫描 .vue .jsx .tsx .svelte 文件")}
+${item("backend", "仅扫描 .ts .js .mjs .py .go .rs .java .rb .php 文件")}
+${item("fullstack", "扫描全部前后端源文件")}
 
-${section("输出", [
-  ["storyName / command", "故事名 + 推荐命令"],
-  ["sourceFiles / coverage", "源码文件 + 文档覆盖度"],
-  ["metrics", "行数 · 签名 · 依赖数"],
-  ["git", "最后修改 · 作者数 · 近期变更"],
-  ["security", "用户输入 · 认证 · API 调用信号"],
-  ["externalRefs", "匹配的生态系统参考资源"],
-])}
+${hdr("逐文件收集指标")}
+${item("metrics", "行数 · 签名提取 (Props/Events/Routes) · 被依赖数")}
+${item("git", "最后修改时间 · 作者数 · 90天变更次数 (git log)")}
+${item("doc", "检查 docs/故事任务面板/<name>/ 下的文档覆盖度")}
+${item("security", "检测: 用户输入 · 认证/Token · API 调用信号")}
+${item("externalRefs", "按模块特征匹配生态系统参考资源 (methodology/memory/ux)")}
 
-${dim("被调用: skills/rui/SKILL.md §doc-from-code | 输出: PM agent 评分排序")}
+${hdr("输出结构")}
+${line(dim("每个 story candidate 包含:"))}
+${item("storyName / command", "故事名 (kebab) + 推荐 /rui doc --from-code 命令", green)}
+${item("sourceFiles", "源文件列表 + 关联文件 (双向 import 关系)")}
+${item("coverage", "文档覆盖描述 + 期望的 8 文档基线清单")}
+${item("metrics", "总行数 · 文件数 · 签名 Top 10 · 被依赖数")}
+${item("git", "最后修改 · 作者数 · 90天变更次数")}
+${item("doc", "覆盖率状态: no_docs / partial / complete")}
+${item("security", "hasUserInput · hasAuth · hasApiCall 布尔信号")}
+${item("externalRefs", "关联的外部参考: name / url / desc / relevance (high/normal)")}
+
+${hdr("示例")}
+${item("# 自动检测类型，扫描当前项目", "", bold)}
+${item("--root=.", "输出 JSON 推荐列表到 stdout", green)}
+${item("", "")}
+${item("# 限定前端文件", "", bold)}
+${item("--root=. --type=frontend", "仅扫描 .vue/.jsx/.tsx/.svelte", green)}
+${item("", "")}
+${item("# JSONL 格式 (逐行)", "", bold)}
+${item("--root=/path/to/project --format=jsonl", "每行一个 story candidate JSON", green)}
+${item("", "")}
+${item("# 指定项目类型 + JSONL", "", bold)}
+${item("--root=. --type=backend --format=jsonl", "后端文件 + 逐行输出", green)}
+
+${hdr("管线集成")}
+${line(dim("调用方: PM agent (skills/rui/SKILL.md §doc-from-code)"))}
+${line(dim("流程: recommend 输出 JSON → PM 5 层评分 (L0–L4) → 排序 → 推荐列表"))}
+${line(dim("评分维度: L0 时间紧急度 · L1 依赖拓扑 · L2 风险信号 · L3 覆盖缺口 · L4 质量信号"))}
+${line(dim("详细: skills/rui/ranking.md"))}
+
+${hdr("相关资源")}
+${item("SKILL.md", "skills/rui/SKILL.md — rui 完整规约", dim)}
+${item("ranking.md", "skills/rui/ranking.md — 5 层评分框架", dim)}
+${item("help.mjs", "skills/rui/help.mjs — rui 编排器完整帮助", dim)}
 `;
 
   console.log(help);

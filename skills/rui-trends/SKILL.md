@@ -1,5 +1,5 @@
 ---
-name: trends-discovery
+name: rui-trends
 description: |
   Query GitHub Trending, OSS Insight, TrendShift, and Top-Starred repositories to
   discover technology trends. User-invocable or auto-invoked during the self-improve
@@ -8,9 +8,9 @@ user_invocable: true
 lifecycle: default-pipeline
 ---
 
-# trends-discovery
+# rui-trends
 
-> **--help / -h**：执行 `node skills/trends-discovery/help.mjs` 输出完整帮助（含场景示例）。用户输入 `/trends-discovery --help` 或 `/trends-discovery -h` 或 `/trends-discovery help` 时，跳过查询逻辑，直接运行脚本并将输出展示给用户。
+> **--help / -h**：执行 `node skills/rui-trends/help.mjs` 输出完整帮助（含场景示例）。用户输入 `/rui-trends --help` 或 `/rui-trends -h` 或 `/rui-trends help` 时，跳过查询逻辑，直接运行脚本并将输出展示给用户。
 
 技术趋势发现。查询 GitHub Trending、OSS Insight、TrendShift、Top-Starred 四个数据源，输出结构化趋势报告。本技能为规约驱动（specification-only），由 implementing agent 执行 WebFetch + 结构化提取 + 格式化输出。
 
@@ -30,7 +30,7 @@ flowchart LR
         DELIVERY["交付阶段<br/>技术选型验证"]:::phase
     end
 
-    数据源 -->|"/trends-discovery &lt;sub&gt;"| 管线
+    数据源 -->|"/rui-trends &lt;sub&gt;"| 管线
 
     classDef src fill:#f3e5f5,stroke:#6a1b9a;
     classDef phase fill:#e3f2fd,stroke:#1565c0;
@@ -40,12 +40,12 @@ flowchart LR
 
 | 输入 | 行为 | 场景 |
 |------|------|------|
-| `/trends-discovery` 或 `/trends-discovery status` | 状态检查：各数据源可达性 + 最近查询时间 | 探活 |
-| `/trends-discovery github-trending [--lang <L>] [--since daily\|weekly]` | 查询 GitHub Trending 当前榜单 | D5 诊断 · 新兴工具发现 |
-| `/trends-discovery oss-insight [--metric stars\|forks\|contributors] [--limit N]` | 查询 OSS Insight 仓库排名 | 技术选型数据支撑 |
-| `/trends-discovery trendshift [--range 7\|30\|90]` | 查询 TrendShift 趋势变化 | 识别快速上升项目 |
-| `/trends-discovery top-starred [--min-stars N]` | 查询 GitHub 高星项目 | 社区验证参照 |
-| `/trends-discovery all` | 依次查询全部四个数据源 | 全面趋势扫描 |
+| `/rui-trends` 或 `/rui-trends status` | 状态检查：各数据源可达性 + 最近查询时间 | 探活 |
+| `/rui-trends github-trending [--lang <L>] [--since daily\|weekly]` | 查询 GitHub Trending 当前榜单 | D5 诊断 · 新兴工具发现 |
+| `/rui-trends oss-insight [--metric stars\|forks\|contributors] [--limit N]` | 查询 OSS Insight 仓库排名 | 技术选型数据支撑 |
+| `/rui-trends trendshift [--range 7\|30\|90]` | 查询 TrendShift 趋势变化 | 识别快速上升项目 |
+| `/rui-trends top-starred [--min-stars N]` | 查询 GitHub 高星项目 | 社区验证参照 |
+| `/rui-trends all` | 依次查询全部四个数据源 | 全面趋势扫描 |
 
 ## 各子命令工作流
 
@@ -88,7 +88,7 @@ flowchart LR
 ## 输出格式规约
 
 ```markdown
-## trends-discovery 报告 — {YYYY-MM-DD HH:MM}
+## rui-trends 报告 — {YYYY-MM-DD HH:MM}
 
 > 数据源：{source_name} | URL：{url} | 查询时间：{timestamp}
 
@@ -207,13 +207,13 @@ flowchart LR
 
 ### §2.1 输出模板
 
-> 以下模板由 trends-discovery 查询结果填充，写入 `{project}-自改进复盘.md` §2.1 技术趋势验证。格式遵循 [F.story.retrospective](../../skills/rui/formulas.md) 的 §2 诊断章节约束。
+> 以下模板由 rui-trends 查询结果填充，写入 `{project}-自改进复盘.md` §2.1 技术趋势验证。格式遵循 [F.story.retrospective](../../skills/rui/formulas.md) 的 §2 诊断章节约束。
 
 ```markdown
 ### §2.1 技术趋势验证
 
 > 数据采集时间：{YYYY-MM-DD HH:MM} | 数据源：github-trending / oss-insight / trendshift / top-starred
-> 查询命令：/trends-discovery {sub} [{options}]
+> 查询命令：/rui-trends {sub} [{options}]
 
 | 数据源 | 可达? | 关键发现 | 与当前技术栈关联 | 诊断触发 |
 |--------|-------|---------|----------------|---------|
@@ -229,7 +229,7 @@ flowchart LR
 **数据源原始报告**：
 <details><summary>展开完整趋势报告</summary>
 
-{trends-discovery 原始输出}
+{rui-trends 原始输出}
 
 </details>
 ```
@@ -289,7 +289,7 @@ flowchart LR
 | 所有数据源不可达 | 输出 `> 待补充：趋势数据不可达`，标注 `no-metrics` | D5 诊断跳过，不计入退化窗口 |
 | 部分数据源不可达 | 可用源正常输出，不可达源标注 `⚠️ 不可达` | D5 置信度降级，假设标记为 `低置信度` |
 | 数据不足（仅 1 源可用） | 输出可用数据，标注 `数据不足，建议手动验证` | 跳过 E3 评估，仅生成观察记录 |
-| 自改进阶段未触发 trends-discovery | 不强制查询 | D5 诊断栏标注 `未查询趋势数据`，不视为偏差 |
+| 自改进阶段未触发 rui-trends | 不强制查询 | D5 诊断栏标注 `未查询趋势数据`，不视为偏差 |
 
 ## 降级策略
 

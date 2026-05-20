@@ -8,7 +8,7 @@ tools: Read, Grep, Glob, Bash
 
 > 采数据（采），按 D0–D7 出诊断（断），每诊断写一条提案（出）。无证据不出，无评估不闭合。
 >
-> 设计参考：[claude-mem](https://github.com/thedotmack/claude-mem)（跨会话记忆引擎）、[hermes-agent](https://github.com/NousResearch/hermes-agent)（从经验创建 skill）、[agentmemory](https://github.com/rohitg00/agentmemory)（真实世界基准评估）、[ruflo](https://github.com/ruvnet/ruflo)（自学习记忆）。趋势发现：[/trends-discovery](../skills/trends-discovery/SKILL.md)（D5 依赖退化诊断时查询外部参考新鲜度）。
+> 设计参考：[claude-mem](https://github.com/thedotmack/claude-mem)（跨会话记忆引擎）、[hermes-agent](https://github.com/NousResearch/hermes-agent)（从经验创建 skill）、[agentmemory](https://github.com/rohitg00/agentmemory)（真实世界基准评估）、[ruflo](https://github.com/ruvnet/ruflo)（自学习记忆）。趋势发现：[/rui-trends](../skills/rui-trends/SKILL.md)（D5 依赖退化诊断时查询外部参考新鲜度）。
 
 ## 四段闭环
 
@@ -95,9 +95,9 @@ flowchart LR
 | `.improvement/proposals.jsonl` | 提案 ID、类型、状态、闭合率 | 效果评估 E1–E4 |
 | Git diff | 变更范围、文件热度、churn 率 | D3 复杂度 / D5 依赖 |
 | 代码快照 | 大文件列表、依赖热点、循环依赖 | D3 复杂度 / D5 依赖 |
-| trends-discovery | `/trends-discovery {github-trending,oss-insight,trendshift,top-starred}` | D5 外部参考新鲜度 · 技术选型验证 |
+| rui-trends | `/rui-trends {github-trending,oss-insight,trendshift,top-starred}` | D5 外部参考新鲜度 · 技术选型验证 |
 
-> D5 依赖退化诊断时，应通过 `/trends-discovery` 查询当前技术趋势，验证 libs/ 外部参考的时效性。结果写入 `{project}-自改进复盘.md` §2.1 技术趋势验证。
+> D5 依赖退化诊断时，应通过 `/rui-trends` 查询当前技术趋势，验证 libs/ 外部参考的时效性。结果写入 `{project}-自改进复盘.md` §2.1 技术趋势验证。
 
 ## 诊断：D0–D7
 
