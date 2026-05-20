@@ -58,7 +58,7 @@ ${section("触发场景与消息模板", [
   ["agent=rui name=user-login", "自动读取 rui-state.json → 阻断消息"],
   ["", ""],
   ["# 仅写日志不发消息", ""],
-  ['agent=rui name=user-login noSend=true', "仅追加到 {project}-00-消息通知列表.md"],
+  ['agent=rui name=user-login noSend=true', "仅追加到 {project}-消息通知列表.md"],
   ["", ""],
   ["# 检查状态 (空输入)", ""],
   ["/wework-bot", "检测 token / 配置 / 通知列表完整性"],
@@ -79,7 +79,7 @@ ${section("消息格式约束", [
 ])}
 
 ${section("三步收口 (hook 触发器)", [
-  ["① hook-log", "追加日志到 {project}-00-消息通知列表.md (noSend=true)"],
+  ["① hook-log", "追加日志到 {project}-消息通知列表.md (noSend=true)"],
   ["② import-docs", "文档同步到远端"],
   ["③ hook-notify", "实际发送企微消息 (依赖 API_X_TOKEN)"],
 ])}

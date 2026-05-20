@@ -379,7 +379,7 @@ function deriveName(file, project) {
 function docStatus(root, project, name) {
   const expectedDir = join(root, DOC_BASE, name);
   const dirExists = existsSync(expectedDir);
-  const storyFile = join(expectedDir, `${project}-01-故事任务.md`);
+  const storyFile = join(expectedDir, `${project}-故事任务.md`);
   const taskExists = existsSync(storyFile);
 
   let existingFiles = [];
@@ -597,10 +597,8 @@ function buildStoryCandidate(group, project, projectType) {
   const allImportedBy = [...new Set(group.flatMap(f => f.metrics.importedBy))];
   const totalLines = group.reduce((s, f) => s + f.metrics.lines, 0);
 
-  // Expected docs based on project type
-  const expectedDocs = projectType === "frontend" ? ["01", "03", "04"] :
-    projectType === "backend" ? ["01", "02", "04"] :
-    ["01", "02", "03", "04"];
+  // Expected docs — unified 10-document baseline, type determines chapter cropping
+  const expectedDocs = ["故事任务", "使用场景", "技术评审", "测试设计", "安全审计", "实施报告", "测试报告", "自改进复盘"];
 
   // Coverage description
   const primarySig = allSignatures.length > 0 ? allSignatures.slice(0, 3).join("; ") : "";

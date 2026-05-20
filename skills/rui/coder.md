@@ -18,23 +18,18 @@ docs/
 ```mermaid
 flowchart LR
     subgraph 基线["基线文档（问题+用户空间）"]
-        B1["{project}-01-故事任务.md<br/>WHAT & WHY"]:::baseline
-        B7["{project}-02-用户使用场景.md<br/>WHO & HOW"]:::baseline
+        B1["{project}-故事任务.md<br/>WHAT & WHY"]:::baseline
+        B2["{project}-使用场景.md<br/>WHO & HOW"]:::baseline
     end
     subgraph 必选["必选（所有类型）"]
-        B2["{project}-05-测试用例评审.md"]:::must
-        B3["{project}-08-测试用例报告.md"]:::must
-        B4["{project}-09-自改进复盘.md"]:::must
-        B5["{project}-00-消息通知列表.md"]:::must
-        B6["{project}-10-交互日志.md"]:::must
-    end
-    subgraph 后端["纯后端 / 全栈"]
-        C1["{project}-03-后端技术评审.md"]:::be
-        C2["{project}-06-后端实施报告.md"]:::be
-    end
-    subgraph 前端["纯前端 / 全栈"]
-        D1["{project}-04-前端技术评审.md"]:::fe
-        D2["{project}-07-前端实施报告.md"]:::fe
+        C1["{project}-技术评审.md"]:::must
+        C2["{project}-测试设计.md"]:::must
+        C3["{project}-安全审计.md"]:::must
+        C4["{project}-实施报告.md"]:::must
+        C5["{project}-测试报告.md"]:::must
+        C6["{project}-自改进复盘.md"]:::must
+        C7["{project}-消息通知列表.md"]:::must
+        C8["{project}-交互日志.md"]:::must
     end
     subgraph 补充["按需"]
         E1["{专题}.md"]:::supp
@@ -42,25 +37,22 @@ flowchart LR
 
     classDef baseline fill:#fff3e0,stroke:#e65100,stroke-width:2px;
     classDef must fill:#e8f5e9,stroke:#2e7d32;
-    classDef be fill:#e3f2fd,stroke:#1565c0;
-    classDef fe fill:#f3e5f5,stroke:#6a1b9a;
     classDef supp fill:#fff3e0,stroke:#e65100;
 ```
 
-| 文件 | 必选 | 纯前端 | 纯后端 | 全栈 | 负责人 | 阶段 |
-|------|:---:|:---:|:---:|:---:|--------|------|
-| {project}-01-故事任务.md | ✓ | ✓ | ✓ | ✓ | pm | 文档生成 |
-| {project}-03-后端技术评审.md | | — | ✓ | ✓ | coder + security | 文档生成 |
-| {project}-04-前端技术评审.md | | ✓ | — | ✓ | coder | 文档生成 |
-| {project}-05-测试用例评审.md | ✓ | ✓ | ✓ | ✓ | tester | 文档生成 |
-| {project}-06-后端实施报告.md | | — | ✓ | ✓ | coder | 验证 |
-| {project}-07-前端实施报告.md | | ✓ | — | ✓ | coder | 验证 |
-| {project}-08-测试用例报告.md | ✓ | ✓ | ✓ | ✓ | tester | 验证 |
-| {project}-09-自改进复盘.md | ✓ | ✓ | ✓ | ✓ | pm + reporter | 自改进 |
-| {project}-00-消息通知列表.md | 自动 | ✓ | ✓ | ✓ | wework-bot hook | 交付 |
-| {project}-10-交互日志.md | ✓ | ✓ | ✓ | ✓ | rui 管线 | 全阶段 |
-| {project}-02-用户使用场景.md | ✓ | ✓ | ✓ | ✓ | pm | 文档生成 |
-| {专题}.md | 按需 | — | — | — | pm 决策 | 文档生成 |
+| 文件 | 必选 | 负责人 | 阶段 |
+|------|:---:|--------|------|
+| {project}-故事任务.md | ✓ | pm | 文档生成 |
+| {project}-使用场景.md | ✓ | pm | 文档生成 |
+| {project}-技术评审.md | ✓ | coder + security | 文档生成 |
+| {project}-测试设计.md | ✓ | tester | 文档生成 |
+| {project}-安全审计.md | ✓ | security | 文档生成 |
+| {project}-实施报告.md | ✓ | coder | 验证 |
+| {project}-测试报告.md | ✓ | tester | 验证 |
+| {project}-自改进复盘.md | ✓ | pm + reporter | 自改进 |
+| {project}-消息通知列表.md | 自动 | wework-bot hook | 交付 |
+| {project}-交互日志.md | ✓ | rui 管线 | 全阶段 |
+| {专题}.md | 按需 | pm 决策 | 文档生成 |
 
 补充文档按需触发，决策树见 [rules/doc-generation.md](../../rules/doc-generation.md#补充文档)，公式见 [formulas.md](./formulas.md#补充文档公式)。
 
@@ -72,28 +64,28 @@ flowchart LR
 .memory/rui-state.json             ← 管线状态（覆盖）
 ```
 
-> **编号即顺序**：文件名编号前缀对应管线阶段顺序。01+02 是基线文档（问题空间+用户空间），03-05 是解决方案文档，06-08 是验证文档——不可提前创建。
+> **文档按管线阶段顺序创建**：故事任务+使用场景是基线（问题空间+用户空间），技术评审+测试设计+安全审计是解决方案文档，实施报告+测试报告+自改进复盘是验证与改进文档——不可提前创建。
 
 ## 文件创建生命周期
 
 ```mermaid
 flowchart TB
-    A["需求解析"]:::phase --> A1["├── 创建 {project}-10-交互日志.md<br/>写入会话头"]:::log
+    A["需求解析"]:::phase --> A1["├── 创建 {project}-交互日志.md<br/>写入会话头"]:::log
     A1 --> B["规划"]:::phase
     B --> C["影响分析"]:::phase
     C --> D["架构设计"]:::phase
     D --> E["文档生成"]:::phase
-    E -->|"创建"| E1["01 故事任务<br/>02 用户使用场景<br/>03/04 {project}技术评审<br/>05 测试评审<br/>补充文档"]:::create
+    E -->|"创建"| E1["故事任务<br/>使用场景<br/>技术评审<br/>测试设计<br/>安全审计<br/>补充文档"]:::create
     E --> F["预检"]:::phase
     F --> G["Gate A"]:::gate
     G --> H["实现"]:::phase
     H --> I["验证"]:::phase
-    I -->|"创建"| I1["06/07 {project}实施报告<br/>08 测试报告"]:::create
+    I -->|"创建"| I1["实施报告<br/>测试报告"]:::create
     I --> J["自改进"]:::phase
-    J -->|"创建"| J1["09 自改进复盘"]:::create
+    J -->|"创建"| J1["自改进复盘"]:::create
     J --> K["交付"]:::phase
-    K -->|"追加"| K1["00 通知列表"]:::create
-    A1 -.->|"每阶段追加"| A2["10 交互日志<br/>全阶段追加写入"]:::log
+    K -->|"追加"| K1["消息通知列表"]:::create
+    A1 -.->|"每阶段追加"| A2["交互日志<br/>全阶段追加写入"]:::log
 
     classDef phase fill:#e3f2fd,stroke:#1565c0;
     classDef gate fill:#fff3e0,stroke:#e65100;
@@ -101,7 +93,7 @@ flowchart TB
     classDef log fill:#e8f5e9,stroke:#2e7d32;
 ```
 
-每次阶段变更：`rui-state.json` 覆盖写；过程追加到 `execution-memory.jsonl`；自改进提案追加到 `proposals.jsonl`；每次人机交互追加到 `{project}-10-交互日志.md`。
+每次阶段变更：`rui-state.json` 覆盖写；过程追加到 `execution-memory.jsonl`；自改进提案追加到 `proposals.jsonl`；每次人机交互追加到 `{project}-交互日志.md`。
 
 ## 完整度判定
 
@@ -124,10 +116,10 @@ flowchart LR
 | 状态 | 条件 |
 |------|------|
 | `not_started` | 故事任务文档不存在 |
-| `docs_in_progress` | 故事任务文档存在，技术评审或测试评审有缺失 |
-| `docs_done` | 所有必选文档文件存在（含 {project}-10-交互日志.md 已创建） |
-| `code_in_progress` | 文档齐全，部分实施报告存在 |
-| `code_done` | 所有必选文件及自改进复盘存在（含 {project}-10-交互日志.md 持续追加） |
+| `docs_in_progress` | 故事任务文档存在，技术评审/测试设计/安全审计有缺失 |
+| `docs_done` | 所有必选文档文件存在（含 {project}-交互日志.md 已创建） |
+| `code_in_progress` | 文档齐全，实施报告存在，测试报告缺失 |
+| `code_done` | 所有必选文件及自改进复盘存在（含 {project}-交互日志.md 持续追加） |
 | `blocked` | `rui-state.json` 中 `blocked=true` |
 
 完整度按文件存在性判定；任务推荐按链式管线分层评分排序：阻断 → 故事推进 → 覆盖 → 健康 → 同步。
@@ -141,7 +133,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph 管理["rui 管线维护（人工不编辑）"]
-        M0["{project}-10-交互日志.md<br/>追加写入"]:::data
+        M0["{project}-交互日志.md<br/>追加写入"]:::data
         M1["execution-memory.jsonl<br/>追加写入"]:::data
         M2["rui-state.json<br/>覆盖写入"]:::data
         M3["proposals.jsonl<br/>追加写入"]:::data
@@ -152,7 +144,7 @@ flowchart LR
 
 ```
 docs/故事任务面板/<name>/
-├── {project}-10-交互日志.md                   ← rui 管线追加写入
+├── {project}-交互日志.md                   ← rui 管线追加写入
 ├── .improvement/
 │   └── proposals.jsonl              ← self-improve 追加
 └── .memory/
@@ -169,7 +161,7 @@ flowchart LR
     C --> D["proposals.jsonl"]:::store
     D --> E1["任务推荐<br/>排序"]:::use
     D --> E2["/rui update<br/>上下文"]:::use
-    D --> E3["{project}-09-自改进复盘<br/>追加"]:::use
+    D --> E3["{project}-自改进复盘<br/>追加"]:::use
 
     classDef src fill:#e8f5e9,stroke:#2e7d32;
     classDef store fill:#e3f2fd,stroke:#1565c0;
@@ -181,12 +173,12 @@ flowchart LR
 
 | 规则 | 说明 |
 |------|------|
-| append-only | `{project}-10-交互日志.md` · `execution-memory.jsonl` · `proposals.jsonl` 仅追加，不重写 |
+| append-only | `{project}-交互日志.md` · `execution-memory.jsonl` · `proposals.jsonl` 仅追加，不重写 |
 | 覆盖写 | `rui-state.json` 每次阶段变更覆盖整个文件 |
 | 不手编 | 四个文件均由 rui 管线维护，人工编辑会破坏字段一致性 |
 | 不入库审查 | 附属目录是元数据，不进入文档审查清单 |
 
-### {project}-10-交互日志.md
+### {project}-交互日志.md
 
 追加写入，markdown 格式。`需求解析` 阶段创建文件并写入会话头，此后每次人机交互轮次追加一条记录。
 

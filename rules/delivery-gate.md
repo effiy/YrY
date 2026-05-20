@@ -79,7 +79,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    CALL["调用 wework-bot<br/>--no-send"]:::step --> LOG["写入执行日志<br/>{project}-00-消息通知列表"]:::out
+    CALL["调用 wework-bot<br/>--no-send"]:::step --> LOG["写入执行日志<br/>{project}-消息通知列表"]:::out
     LOG --> MARK["在 rui-state.json<br/>delivery_pipeline.log_appended<br/>= true"]:::mark
     MARK --> NEXT["进入步骤 ②"]:::next
 

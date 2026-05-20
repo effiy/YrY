@@ -19,7 +19,7 @@ paths:
 - "修复 3 轮了但这次肯定对"
 - "单行 CSS/文案也算 Gate A 例外吧"
 - "分支创建应该是自动的，我手动改就行"
-- "04 测试文档是空的但参考设计文档就够了"
+- "测试设计文档是空的但参考设计文档就够了"
 - "实现完成再补分支隔离"
 - "这次改动很小，直接在 main 改就行"
 - "先改代码再切分支，反正还没 commit"
@@ -41,7 +41,7 @@ flowchart TB
     GA -->|"✅ 通过"| MOD["③ 逐模块清零<br/>每模块 P0 → 下一模块"]:::phase
     MOD --> GB{"④ Gate B<br/>闭环验证"}
     GB -->|"❌ > 2 轮"| X2["gate-b-limit 🚫"]:::block
-    GB -->|"✅ 通过"| SI["⑤ 自改进<br/>{project}-09-自改进复盘"]:::phase
+    GB -->|"✅ 通过"| SI["⑤ 自改进<br/>{project}-自改进复盘"]:::phase
     SI --> DONE["交付"]:::done
 
     classDef src fill:#e8f5e9,stroke:#2e7d32;
@@ -53,10 +53,10 @@ flowchart TB
 | 阶段 | 核心动作 | 阻断标识 | 例外 |
 |------|---------|---------|------|
 | ① 分支隔离 | **强制门禁**：改码前必须已切到 `feat/<name>`，否则阻断 | `bad-branch` / `no-checkout` / `auto-merge` / `no-branch-isolation` | 反推命令只读不写 |
-| ② Gate A | {project}-05-测试用例评审.md 存在且就绪 | `skip-gate-a` | 单行 CSS/文案 |
+| ② Gate A | {project}-测试设计.md 存在且就绪 | `skip-gate-a` | 单行 CSS/文案 |
 | ③ 逐模块清零 | 每模块 P0 清零后进下一模块 | `chain-broken` | — |
 | ④ Gate B | 5 步验证 + 三报告闭合，修复 ≤ 2 轮 | `gate-b-limit` | — |
-| ⑤ 自改进 | 产出 {project}-09-自改进复盘 | `no-metrics`（降级不阻断） | 数据采集失败时降级 |
+| ⑤ 自改进 | 产出 {project}-自改进复盘 | `no-metrics`（降级不阻断） | 数据采集失败时降级 |
 
 ## ① 分支隔离 — 强制门禁
 
@@ -112,7 +112,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    ENTER["准备编码"] --> Q1{"{project}-05-测试用例评审.md<br/>存在?"}
+    ENTER["准备编码"] --> Q1{"{project}-测试设计.md<br/>存在?"}
     Q1 -->|"否"| BLOCK["skip-gate-a 🚫"]:::block
     Q1 -->|"是"| Q2{"测试方案与原型<br/>已就绪?"}
     Q2 -->|"否"| BLOCK
@@ -127,7 +127,7 @@ flowchart TD
 
 | # | 规则 | 说明 |
 |---|------|------|
-| 5 | `{project}-05-测试用例评审.md` 不存在，不得编码 | 阻断标识 `skip-gate-a` |
+| 5 | `{project}-测试设计.md` 不存在，不得编码 | 阻断标识 `skip-gate-a` |
 | 6 | 单行 CSS/文案变更可跳过 Gate A | 仍走分支隔离 |
 | 7 | 测试方案与原型未就绪视为未通过 | tester 补充后方可继续 |
 
@@ -175,7 +175,7 @@ flowchart LR
     S1["① 环境快照<br/>commit hash + 分支"]:::step --> S2["② 静态预检<br/>lint + typecheck"]:::step
     S2 --> S3["③ 设计对齐<br/>实现 vs 评审"]:::step
     S3 --> S4["④ 单次执行<br/>冒烟 + 回归 + 专项"]:::step
-    S4 --> S5["⑤ 三报告<br/>05/06/07 交叉引用闭合"]:::step
+    S4 --> S5["⑤ 三报告<br/>测试设计/实施报告/测试报告 交叉引用闭合"]:::step
     S5 --> CHK{"评审清单<br/>全 ✅?"}
     CHK -->|"否 🔄"| FIX["修复（≤2 轮）"]:::fix
     FIX --> S4
@@ -191,21 +191,22 @@ flowchart LR
 | 12 | 五步验证：环境快照 → 静态预检 → 设计对齐 → 单次执行 → 三报告 | — |
 | 13 | 三报告交叉引用闭合，评审清单全 ✅ 方过 | — |
 | 14 | 修复 ≤ 2 轮，超过阻断 | `gate-b-limit` |
-| 15 | 自改进必须产出 {project}-09-自改进复盘 | `no-metrics`（降级） |
+| 15 | 自改进必须产出 {project}-自改进复盘 | `no-metrics`（降级） |
 
 ## 产出收口
 
 ```
 故事任务面板/<Story>/
-├── {project}-01-故事任务.md
-├── {project}-02-用户使用场景.md
-├── {project}-03-后端技术评审.md          ← 后端故事
-├── {project}-04-前端技术评审.md          ← 前端故事
-├── {project}-05-测试用例评审.md
-├── {project}-06-后端实施报告.md          ← coder 产出
-├── {project}-07-前端实施报告.md          ← coder 产出
-├── {project}-08-测试用例报告.md              ← reporter 产出
-└── {project}-09-自改进复盘.md           ← self-improve 产出
+├── {project}-故事任务.md
+├── {project}-使用场景.md
+├── {project}-技术评审.md
+├── {project}-测试设计.md
+├── {project}-实施报告.md                 ← coder 产出
+├── {project}-测试报告.md                 ← reporter 产出
+├── {project}-安全审计.md                 ← security 产出
+├── {project}-自改进复盘.md               ← self-improve 产出
+├── {project}-消息通知列表.md
+└── {project}-交互日志.md
 ```
 
 | # | 规则 |
@@ -274,7 +275,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     S0["分支隔离通过<br/>当前为 feat/&lt;name&gt;"]:::sig --> S1["分支命名合规<br/>feat/&lt;name&gt;"]:::sig
-    S1 --> S2["Gate A 通过<br/>04 存在且就绪"]:::sig
+    S1 --> S2["Gate A 通过<br/>测试设计 存在且就绪"]:::sig
     S2 --> S3["P0 全模块清零<br/>无 chain-broken"]:::sig
     S3 --> S4["Gate B 五步全 ✅<br/>修复 ≤ 2 轮"]:::sig
     S4 --> S5["三报告闭合<br/>无矛盾"]:::sig
@@ -286,7 +287,7 @@ flowchart LR
 |------|------------|
 | 当前分支为 `feat/<name>`（`no-branch-isolation`） | 创建/切换到 `feat/<name>` 分支，禁止在 main 上改码 |
 | 分支命名合规 | 重建分支，从 main 重新拉出 |
-| Gate A 通过（04 存在且就绪） | 退回 tester 补充测试用例评审 |
+| Gate A 通过（测试设计 存在且就绪） | 退回 tester 补充测试设计 |
 | P0 全模块清零，无 `chain-broken` | 退回 coder 修复 P0 |
 | Gate B 五步全 ✅，修复 ≤ 2 轮 | 退回 coder 修复，超 2 轮阻断 |
 | 三报告闭合无矛盾 | 以测试报告为仲裁修正 |

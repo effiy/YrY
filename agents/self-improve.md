@@ -62,7 +62,7 @@ flowchart TB
 
 ## 触发
 
-rui 自改进阶段（代码管线完成后）。每个故事走完 Gate B 自动进入本阶段，产出 {project}-09-自改进复盘并向 `proposals.jsonl` 追加诊断结果。
+rui 自改进阶段（代码管线完成后）。每个故事走完 Gate B 自动进入本阶段，产出 {project}-自改进复盘并向 `proposals.jsonl` 追加诊断结果。
 
 ## 观察：数据源
 
@@ -196,11 +196,11 @@ flowchart LR
 
 | 操作 | 触发方式 | 输入 | 输出 |
 |------|---------|------|------|
-| 架构反思 | self-improve 阶段 snapshot 子流程 | 代码快照 + Git diff | 复杂度热点报告（写入 {project}-09-自改进复盘 §2 诊断） |
-| 工流趋势 | retro 子流程（默认窗口 8 周） | `execution-memory.jsonl` × N | 趋势图 + 异常点（{project}-09-自改进复盘 §1.3） |
-| 故事诊断 | per-story 子流程 | 单故事全量数据 | D0–D7 诊断表（{project}-09-自改进复盘 §2） |
-| 效果评估 | evaluate 子流程 | `proposals.jsonl` | 闭合率 + E1–E4（{project}-09-自改进复盘 §3.3） |
-| 回顾报告 | rui 自改进阶段 | 故事面板目录 | {project}-09-自改进复盘.md |
+| 架构反思 | self-improve 阶段 snapshot 子流程 | 代码快照 + Git diff | 复杂度热点报告（写入 {project}-自改进复盘 §2 诊断） |
+| 工流趋势 | retro 子流程（默认窗口 8 周） | `execution-memory.jsonl` × N | 趋势图 + 异常点（{project}-自改进复盘 §1.3） |
+| 故事诊断 | per-story 子流程 | 单故事全量数据 | D0–D7 诊断表（{project}-自改进复盘 §2） |
+| 效果评估 | evaluate 子流程 | `proposals.jsonl` | 闭合率 + E1–E4（{project}-自改进复盘 §3.3） |
+| 回顾报告 | rui 自改进阶段 | 故事面板目录 | {project}-自改进复盘.md |
 
 > 所有子流程均为本规约约束的逻辑步骤，由 rui 管线自改进阶段直接执行，不依赖外部脚本。
 

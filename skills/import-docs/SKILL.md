@@ -179,7 +179,18 @@ POST <apiUrl>/write-file
 }
 ```
 
-### 3. 新增 session（仅 created 路径）
+### 3. 读文件（pull 模式）
+
+```
+POST <apiUrl>/read-file
+{
+  "target_file": "<resolved remote path>"
+}
+```
+
+响应中 `data.content` 或 `content` 为文件正文。
+
+### 4. 新增 session（仅 created 路径）
 
 ```
 POST <apiUrl>/
@@ -189,7 +200,7 @@ POST <apiUrl>/
   "parameters": {
     "cname": "sessions",
     "data": {
-      "url": "app-session://<timestamp>-<random>",
+      "url": "aicr-session://<timestamp>-<random>",
       "title": "<basename>",
       "file_path": "<resolved remote path>",
       "messages": [],

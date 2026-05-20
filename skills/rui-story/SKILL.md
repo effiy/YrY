@@ -108,13 +108,13 @@ flowchart LR
 ```mermaid
 flowchart TD
     START["查询远端 sessions<br/>file_path 前缀 故事任务面板/"]:::s --> GROUP["按故事名称分组<br/>从 file_path 提取"]:::s
-    GROUP --> CHK01{"{project}-01-故事任务.md<br/>存在?"}
+    GROUP --> CHK01{"{project}-故事任务.md<br/>存在?"}
     CHK01 -->|"否"| NS["not_started"]:::s0
-    CHK01 -->|"是"| CHKDOC{"文档基线齐全?<br/>含 02 05 + 按类型 03/04"}
+    CHK01 -->|"是"| CHKDOC{"文档基线齐全?<br/>含 使用场景 + 技术评审<br/>+ 测试设计 + 安全审计"}
     CHKDOC -->|"否"| DIP["docs_in_progress"]:::s1
-    CHKDOC -->|"是"| CHKIMP{"实施报告存在?<br/>06 或 07"}
+    CHKDOC -->|"是"| CHKIMP{"{project}-实施报告.md<br/>存在?"}
     CHKIMP -->|"否"| DD["docs_done"]:::s2
-    CHKIMP -->|"是"| CHKVER{"{project}-08-测试用例报告.md<br/>存在?"}
+    CHKIMP -->|"是"| CHKVER{"{project}-测试报告.md<br/>存在?"}
     CHKVER -->|"否"| CIP["code_in_progress"]:::s3
     CHKVER -->|"是"| CHKBLK{"rui-state.json<br/>blocked=true?"}
     CHKBLK -->|"是"| BLK["blocked"]:::s5
@@ -131,14 +131,14 @@ flowchart TD
 
 | 状态 | 条件 | 含义 |
 |------|------|------|
-| `not_started` | {project}-01-故事任务.md 不存在于远端 | 目录空或仅有元数据 |
-| `docs_in_progress` | 01 存在于远端，文档基线不完整 | 文档生成进行中 |
+| `not_started` | {project}-故事任务.md 不存在于远端 | 目录空或仅有元数据 |
+| `docs_in_progress` | 故事任务存在于远端，文档基线不完整 | 文档生成进行中 |
 | `docs_done` | 远端文档基线齐全，实施报告不存在 | 等待编码 |
-| `code_in_progress` | 06 或 07 存在于远端，08 不存在 | 实现验证中 |
-| `code_done` | 08 存在于远端，未阻断 | 可交付 |
+| `code_in_progress` | 实施报告存在于远端，测试报告不存在 | 实现验证中 |
+| `code_done` | 测试报告存在于远端，未阻断 | 可交付 |
 | `blocked` | `.memory/rui-state.json` 含 `blocked=true`（本地例外） | 管线阻断 |
 
-项目类型按远端文件推断：有 03/06 = 含后端；有 04/07 = 含前端；两者均有 = fullstack；均无 = meta。
+项目类型按远端文件推断：技术评审含后端章节(API/数据) = 含后端；技术评审含前端章节(组件/交互/样式) = 含前端；两者均有 = fullstack；均无或无法判定 = meta。
 
 ## `/rui-story` — 状态概览
 
@@ -218,8 +218,8 @@ flowchart LR
 📄 文件: <N> 个
 
   文件清单:
-  YrY-01-故事任务.md         2026-05-17 10:30
-  YrY-02-用户使用场景.md      2026-05-17 10:35
+  YrY-故事任务.md         2026-05-17 10:30
+  YrY-使用场景.md      2026-05-17 10:35
   ...
 
 🔀 Git 分支: feat/<name>  (或 —)
@@ -300,25 +300,25 @@ flowchart LR
 📋 项目名前缀: YrY-（来源: CLAUDE.md）
 
 待删除文件 (8):
-  YiAi-01-故事任务.md           (3.2K)
-  YiAi-02-用户使用场景.md        (4.1K)
-  YiAi-03-后端技术评审.md        (5.8K)
-  YiAi-05-测试用例评审.md        (2.9K)
-  YiAi-06-后端实施报告.md        (6.3K)
-  YiAi-08-测试用例报告.md        (3.7K)
-  YiAi-09-自改进复盘.md          (4.5K)
-  YiAi-10-交互日志.md            (1.8K)
+  YiAi-故事任务.md           (3.2K)
+  YiAi-使用场景.md        (4.1K)
+  YiAi-技术评审.md        (5.8K)
+  YiAi-测试设计.md        (2.9K)
+  YiAi-实施报告.md        (6.3K)
+  YiAi-测试报告.md        (3.7K)
+  YiAi-自改进复盘.md          (4.5K)
+  YiAi-交互日志.md            (1.8K)
 
 保留文件 (9):
-  YrY-01-故事任务.md             (20.2K)
-  YrY-02-用户使用场景.md          (16.5K)
-  YrY-03-后端技术评审.md          (12.8K)
-  YrY-05-测试用例评审.md          (10.9K)
-  YrY-06-后端实施报告.md          (7.3K)
-  YrY-08-测试用例报告.md          (4.7K)
-  YrY-09-自改进复盘.md            (7.7K)
-  YrY-10-交互日志.md              (5.7K)
-  YrY-00-消息通知列表.md          (1.2K)
+  YrY-故事任务.md             (20.2K)
+  YrY-使用场景.md          (16.5K)
+  YrY-技术评审.md          (12.8K)
+  YrY-测试设计.md          (10.9K)
+  YrY-实施报告.md          (7.3K)
+  YrY-测试报告.md          (4.7K)
+  YrY-自改进复盘.md            (7.7K)
+  YrY-交互日志.md              (5.7K)
+  YrY-消息通知列表.md          (1.2K)
 
 ⚠️  即将删除 8 个文件，释放约 32K。确认？(y/n)
 
@@ -380,15 +380,15 @@ flowchart LR
   docs/故事任务面板/rui-story/
 
 目录内容 (9 个文件，约 87K):
-  YrY-01-故事任务.md             (20.2K)
-  YrY-02-用户使用场景.md          (16.5K)
-  YrY-03-后端技术评审.md          (12.8K)
-  YrY-05-测试用例评审.md          (10.9K)
-  YrY-06-后端实施报告.md          (7.3K)
-  YrY-08-测试用例报告.md          (4.7K)
-  YrY-09-自改进复盘.md            (7.7K)
-  YrY-10-交互日志.md              (5.7K)
-  YrY-00-消息通知列表.md          (1.2K)
+  YrY-故事任务.md             (20.2K)
+  YrY-使用场景.md          (16.5K)
+  YrY-技术评审.md          (12.8K)
+  YrY-测试设计.md          (10.9K)
+  YrY-实施报告.md          (7.3K)
+  YrY-测试报告.md          (4.7K)
+  YrY-自改进复盘.md            (7.7K)
+  YrY-交互日志.md              (5.7K)
+  YrY-消息通知列表.md          (1.2K)
 
 ⚠️  即将删除整个目录及 9 个文件，释放约 87K。此操作不可撤销。确认？(y/n)
 

@@ -216,15 +216,19 @@ async function fetchJson(url, options = {}) {
   } finally { clearTimeout(timer); }
 }
 
-async function querySessions(apiUrl) {
+async function querySessionsFull(apiUrl) {
   const body = {
     module_name: "services.database.data_service",
     method_name: "query_documents",
     parameters: { cname: "sessions", limit: 10000 },
   };
   const data = await fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
+  return data?.data?.list || data?.list || [];
+}
+
+async function querySessions(apiUrl) {
+  const list = await querySessionsFull(apiUrl);
   const paths = new Set();
-  const list = data?.data?.list || data?.list || [];
   for (const item of list) {
     if (item.file_path) paths.add(item.file_path);
   }
@@ -246,7 +250,7 @@ async function createSession(apiUrl, remotePath) {
     parameters: {
       cname: "sessions",
       data: {
-        url: `app-session://${now}-${Math.random().toString(36).slice(2, 8)}`,
+        url: `aicr-session://${now}-${Math.random().toString(36).slice(2, 8)}`,
         title: basename,
         file_path: remotePath,
         messages: [],
@@ -300,16 +304,6 @@ async function uploadAll(files, apiUrl, existingPaths, root, workspaceName, pref
 async function readRemoteFile(apiUrl, remotePath) {
   const body = { target_file: remotePath };
   return fetchJson(apiUrl + "/read-file", { method: "POST", body: JSON.stringify(body) });
-}
-
-async function querySessionsFull(apiUrl) {
-  const body = {
-    module_name: "services.database.data_service",
-    method_name: "query_documents",
-    parameters: { cname: "sessions", limit: 10000 },
-  };
-  const data = await fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
-  return data?.data?.list || data?.list || [];
 }
 
 function resolvePullFilter(localDir, projectRoot) {

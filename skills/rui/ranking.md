@@ -124,7 +124,7 @@ flowchart LR
 | 数据源 | 字段 |
 |--------|------|
 | `doc.status` | no_docs / partial / complete |
-| `doc.exists` | `{project}-01-故事任务.md` 是否存在 |
+| `doc.exists` | `{project}-故事任务.md` 是否存在 |
 | `doc.existingFiles` | 已有文档文件列表 |
 
 ```mermaid
