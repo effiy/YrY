@@ -41,3 +41,14 @@
 🌐 影响: docs/故事任务面板/rui-story/YrY-使用场景.md (更新 +539 行) / YrY-交互日志.md (更新) / YrY-消息通知列表.md (更新)
 📎 证据: git diff --stat 2 files changed, 539 insertions(+)
 ⏱️ 会话: update 单阶段 | 1 agent 参与
+
+【2026-05-20 17:45:00】
+
+【YrY】
+🎯 结论: 完成 rui-story T1 重构
+📝 描述: 将 rui-story.mjs 中所有魔法数字替换为语义化常量（QUERY_LIMIT/ERROR_MSG_MAX_LEN/STORY_DIR_OFFSET/STORY_NAME_OFFSET/格式化宽度等 18 个常量），提升代码可读性
+📌 范围: skills/rui-story/rui-story.mjs
+👉 下一步: 继续使用 /rui-story 命令，行为不变
+🌐 影响: skills/rui-story/rui-story.mjs (+46 -21)
+📎 证据: 10a473f
+⏱️ 会话: T1 重构 | 1 agent
