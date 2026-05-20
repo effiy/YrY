@@ -53,6 +53,31 @@ hermes              # start chatting!
 
 ## Getting Started
 
+```mermaid
+flowchart LR
+    subgraph inputs["Input Channels"]
+        CLI["CLI / TUI<br/>Multiline editing<br/>Slash commands"]:::in
+        MSG["Messaging Gateway<br/>Telegram, Discord, Slack<br/>WhatsApp, Signal"]:::in
+        CRON["Cron Scheduler<br/>Natural language<br/>unattended tasks"]:::in
+    end
+    subgraph core["Agent Core"]
+        LLM["LLM Providers<br/>Any model via<br/>hermes model switch"]:::core
+        TOOLS["40+ Tools<br/>Shell, browser, file,<br/>MCP, subagents"]:::core
+    end
+    subgraph learn["Learning Loop"]
+        MEM["Persistent Memory<br/>FTS5 session search<br/>Honcho user modeling"]:::learn
+        SKILL["Skill Creation<br/>Auto-create from<br/>complex tasks"]:::learn
+        NUDGE["Periodic Nudges<br/>Self-improvement<br/>during use"]:::learn
+    end
+    inputs --> core
+    core --> learn
+    learn -.->|"closed loop"| core
+
+    classDef in fill:#f3e5f5,stroke:#6a1b9a;
+    classDef core fill:#e8f5e9,stroke:#2e7d32;
+    classDef learn fill:#fff3e0,stroke:#e65100;
+```
+
 ```bash
 hermes              # Interactive CLI — start a conversation
 hermes model        # Choose your LLM provider and model

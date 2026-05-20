@@ -294,90 +294,46 @@ For the full command reference with all flags, see [`docs/COMMANDS.md`](COMMANDS
 
 ### Full Project Lifecycle
 
-```
-  ┌──────────────────────────────────────────────────┐
-  │                   NEW PROJECT                    │
-  │  /gsd-new-project                                │
-  │  Questions -> Research -> Requirements -> Roadmap│
-  └─────────────────────────┬────────────────────────┘
-                            │
-             ┌──────────────▼─────────────┐
-             │      FOR EACH PHASE:       │
-             │                            │
-             │  ┌────────────────────┐    │
-             │  │ /gsd-discuss-phase │    │  <- Lock in preferences
-             │  └──────────┬─────────┘    │
-             │             │              │
-             │  ┌──────────▼─────────┐    │
-             │  │ /gsd-ui-phase      │    │  <- Design contract (frontend)
-             │  └──────────┬─────────┘    │
-             │             │              │
-             │  ┌──────────▼─────────┐    │
-             │  │ /gsd-plan-phase    │    │  <- Research + Plan + Verify
-             │  └──────────┬─────────┘    │
-             │             │              │
-             │  ┌──────────▼─────────┐    │
-             │  │ /gsd-execute-phase │    │  <- Parallel execution
-             │  └──────────┬─────────┘    │
-             │             │              │
-             │  ┌──────────▼─────────┐    │
-             │  │ /gsd-verify-work   │    │  <- Manual UAT
-             │  └──────────┬─────────┘    │
-             │             │              │
-             │  ┌──────────▼─────────┐    │
-             │  │ /gsd-ship          │    │  <- Create PR (optional)
-             │  └──────────┬─────────┘    │
-             │             │              │
-             │     Next Phase?────────────┘
-             │             │ No
-             └─────────────┼──────────────┘
-                            │
-            ┌───────────────▼──────────────┐
-            │  /gsd-audit-milestone        │
-            │  /gsd-complete-milestone     │
-            └───────────────┬──────────────┘
-                            │
-                   Another milestone?
-                       │          │
-                      Yes         No -> Done!
-                       │
-               ┌───────▼──────────────┐
-               │  /gsd-new-milestone  │
-               └──────────────────────┘
+```mermaid
+flowchart TD
+    NP["NEW PROJECT<br/>⚡ /gsd-new-project<br/>Questions → Research →<br/>Requirements → Roadmap"]:::src --> FP{"FOR EACH PHASE"}
+    FP --> DISC["/gsd-discuss-phase<br/>Lock in preferences"]:::phase
+    DISC --> UI["/gsd-ui-phase<br/>Design contract (frontend)"]:::phase
+    UI --> PLAN["/gsd-plan-phase<br/>Research + Plan + Verify"]:::phase
+    PLAN --> EXEC["/gsd-execute-phase<br/>Parallel execution"]:::phase
+    EXEC --> VER["/gsd-verify-work<br/>Manual UAT"]:::phase
+    VER --> SHIP["/gsd-ship<br/>Create PR (optional)"]:::phase
+    SHIP --> FP
+    FP -->|"All phases done"| AUDIT["/gsd-audit-milestone<br/>/gsd-complete-milestone"]:::done
+    AUDIT --> ANOTHER{"Another milestone?"}
+    ANOTHER -->|"Yes"| NM["/gsd-new-milestone"]:::src
+    ANOTHER -->|"No"| DONE["Done!"]:::done
+
+    classDef src fill:#f3e5f5,stroke:#6a1b9a;
+    classDef phase fill:#e8f5e9,stroke:#2e7d32;
+    classDef done fill:#fff3e0,stroke:#e65100;
 ```
 
 ### Planning Agent Coordination
 
-```
-  /gsd-plan-phase N
-         │
-         ├── Phase Researcher (x4 parallel)
-         │     ├── Stack researcher
-         │     ├── Features researcher
-         │     ├── Architecture researcher
-         │     └── Pitfalls researcher
-         │           │
-         │     ┌──────▼──────┐
-         │     │ RESEARCH.md │
-         │     └──────┬──────┘
-         │            │
-         │     ┌──────▼──────┐
-         │     │   Planner   │  <- Reads PROJECT.md, REQUIREMENTS.md,
-         │     │             │     CONTEXT.md, RESEARCH.md
-         │     └──────┬──────┘
-         │            │
-         │     ┌──────▼───────────┐     ┌────────┐
-         │     │   Plan Checker   │────>│ PASS?  │
-         │     └──────────────────┘     └───┬────┘
-         │                                  │
-         │                             Yes  │  No
-         │                              │   │   │
-         │                              │   └───┘  (loop, up to 3x)
-         │                              │
-         │                        ┌─────▼──────┐
-         │                        │ PLAN files │
-         │                        └────────────┘
-         └── Done
+```mermaid
+flowchart TD
+    PLAN["⚡ /gsd-plan-phase N"]:::src --> R1["Phase Researcher x4 parallel"]:::agent
+    R1 --> RS1["Stack researcher"]:::sub
+    R1 --> RS2["Features researcher"]:::sub
+    R1 --> RS3["Architecture researcher"]:::sub
+    R1 --> RS4["Pitfalls researcher"]:::sub
+    RS1 & RS2 & RS3 & RS4 --> RM["RESEARCH.md"]:::artifact
+    RM --> PL["Planner<br/>Reads PROJECT.md, REQUIREMENTS.md,<br/>CONTEXT.md, RESEARCH.md"]:::agent
+    PL --> PC["Plan Checker"]:::agent
+    PC --> PASS{"PASS?"}
+    PASS -->|"Yes"| PF["PLAN files"]:::artifact
+    PASS -->|"No (loop ≤3x)"| PL
+
+    classDef src fill:#f3e5f5,stroke:#6a1b9a;
+    classDef agent fill:#e8f5e9,stroke:#2e7d32;
+    classDef sub fill:#e3f2fd,stroke:#1565c0;
+    classDef artifact fill:#fff3e0,stroke:#e65100;
 ```
 
 ### Validation Architecture (Nyquist Layer)
@@ -808,39 +764,43 @@ If `slopcheck` is ever unavailable or abandoned, GSD's `[ASSUMED]`-gate fallback
 
 ### Execution Wave Coordination
 
-```
-  /gsd-execute-phase N
-         │
-         ├── Analyze plan dependencies
-         │
-         ├── Wave 1 (independent plans):
-         │     ├── Executor A (fresh 200K context) -> commit
-         │     └── Executor B (fresh 200K context) -> commit
-         │
-         ├── Wave 2 (depends on Wave 1):
-         │     └── Executor C (fresh 200K context) -> commit
-         │
-         └── Verifier
-               ├── Check codebase against phase goals
-               ├── Test quality audit (disabled tests, circular patterns, assertion strength)
-               │
-               ├── PASS -> VERIFICATION.md (success)
-               └── FAIL -> Issues logged for /gsd-verify-work
+```mermaid
+flowchart TD
+    EXEC["⚡ /gsd-execute-phase N"]:::src --> ANALYZE["Analyze plan dependencies"]:::proc
+    ANALYZE --> W1["Wave 1 (independent plans)"]:::wave
+    W1 --> EA["Executor A<br/>fresh 200K context → commit"]:::agent
+    W1 --> EB["Executor B<br/>fresh 200K context → commit"]:::agent
+    EA & EB --> W2["Wave 2 (depends on Wave 1)"]:::wave
+    W2 --> EC["Executor C<br/>fresh 200K context → commit"]:::agent
+    EC --> VER["Verifier"]:::gate
+    VER --> CHK["Check codebase against<br/>phase goals"]:::proc
+    VER --> TQA["Test quality audit<br/>disabled tests, circular<br/>patterns, assertion strength"]:::proc
+    CHK & TQA --> PASS{"PASS?"}
+    PASS -->|"Yes"| VMD["VERIFICATION.md (success)"]:::done
+    PASS -->|"No"| ISSUE["Issues logged for<br/>/gsd-verify-work"]:::issue
+
+    classDef src fill:#f3e5f5,stroke:#6a1b9a;
+    classDef proc fill:#e8f5e9,stroke:#2e7d32;
+    classDef wave fill:#e3f2fd,stroke:#1565c0;
+    classDef agent fill:#c8e6c9,stroke:#388e3c;
+    classDef gate fill:#fff9c4,stroke:#f9a825;
+    classDef done fill:#c8e6c9,stroke:#388e3c;
+    classDef issue fill:#ffebee,stroke:#c62828;
 ```
 
 ### Brownfield Workflow (Existing Codebase)
 
-```
-  /gsd-map-codebase
-         │
-         ├── Stack Mapper     -> codebase/STACK.md
-         ├── Arch Mapper      -> codebase/ARCHITECTURE.md
-         ├── Convention Mapper -> codebase/CONVENTIONS.md
-         └── Concern Mapper   -> codebase/CONCERNS.md
-                │
-        ┌───────▼──────────┐
-        │ /gsd-new-project │  <- Questions focus on what you're ADDING
-        └──────────────────┘
+```mermaid
+flowchart TD
+    MAP["⚡ /gsd-map-codebase"]:::src --> SM["Stack Mapper<br/>→ codebase/STACK.md"]:::agent
+    MAP --> AM["Arch Mapper<br/>→ codebase/ARCHITECTURE.md"]:::agent
+    MAP --> CM["Convention Mapper<br/>→ codebase/CONVENTIONS.md"]:::agent
+    MAP --> CO["Concern Mapper<br/>→ codebase/CONCERNS.md"]:::agent
+    SM & AM & CM & CO --> NP["⚡ /gsd-new-project<br/>Questions focus on<br/>what you're ADDING"]:::next
+
+    classDef src fill:#f3e5f5,stroke:#6a1b9a;
+    classDef agent fill:#e8f5e9,stroke:#2e7d32;
+    classDef next fill:#fff3e0,stroke:#e65100;
 ```
 
 ---

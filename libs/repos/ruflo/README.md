@@ -1,11 +1,3 @@
-<div align="center">
-
-[![Ruflo Banner](ruflo/assets/ruflo-small.jpeg)](https://flo.ruv.io/)
-
-
-
-
-
 # Ruflo
 
 **Multi-agent AI orchestration for Claude Code**
@@ -23,12 +15,19 @@ Orchestrate 100+ specialized AI agents across machines, teams, and trust boundar
 
 One `npx ruvflo init` gives Claude Code a nervous system: agents self-organize into swarms, learn from every task, remember across sessions, and — with federation — securely talk to agents on other machines without leaking data. You keep writing code. Ruflo handles the coordination.
 
-```
-Self-Learning / Self-Optimizing Agent Architecture
+```mermaid
+flowchart LR
+    User["User"]:::src --> CLI["Ruflo CLI / MCP"]:::iface
+    CLI --> Router["Router"]:::core
+    Router --> Swarm["Swarm Coordination<br/>Queen, Topology, Consensus"]:::core
+    Swarm --> Agents["100+ Specialized Agents<br/>coder, tester, reviewer,<br/>architect, security..."]:::core
+    Agents --> Memory["Memory & Learning<br/>AgentDB, HNSW, SONA,<br/>ReasoningBank"]:::core
+    Memory --> LLM["LLM Providers<br/>Claude, GPT, Gemini,<br/>Cohere, Ollama"]:::core
+    Memory -.->|"Learning Loop<br/>Self-optimizing"| Router
 
-User --> Ruflo (CLI/MCP) --> Router --> Swarm --> Agents --> Memory --> LLM Providers
-                          ^                           |
-                          +---- Learning Loop <-------+
+    classDef src fill:#f3e5f5,stroke:#6a1b9a;
+    classDef iface fill:#e3f2fd,stroke:#1565c0;
+    classDef core fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 > **New to Ruflo?** You don't need to learn 314 MCP tools or 26 CLI commands. After `init`, just use Claude Code normally -- the hooks system automatically routes tasks, learns from successful patterns, and coordinates agents in the background.
@@ -317,28 +316,16 @@ npx claude-flow@latest plugins install @claude-flow/plugin-agent-federation
 <details>
 <summary><strong>Architecture overview</strong></summary>
 
-```
-User --> Claude Code / CLI
-          |
-          v
-    Orchestration Layer
-    (MCP Server, Router, 27 Hooks)
-          |
-          v
-    Swarm Coordination
-    (Queen, Topology, Consensus)
-          |
-          v
-    100+ Specialized Agents
-    (coder, tester, reviewer, architect, security...)
-          |
-          v
-    Memory & Learning
-    (AgentDB, HNSW, SONA, ReasoningBank)
-          |
-          v
-    LLM Providers
-    (Claude, GPT, Gemini, Cohere, Ollama)
+```mermaid
+flowchart TD
+    CC["Claude Code / CLI"]:::src --> OL["Orchestration Layer<br/>MCP Server, Router, 27 Hooks"]:::layer
+    OL --> SC["Swarm Coordination<br/>Queen, Topology, Consensus"]:::layer
+    SC --> AG["100+ Specialized Agents<br/>coder, tester, reviewer,<br/>architect, security..."]:::layer
+    AG --> ML["Memory & Learning<br/>AgentDB, HNSW, SONA,<br/>ReasoningBank"]:::layer
+    ML --> LP["LLM Providers<br/>Claude, GPT, Gemini,<br/>Cohere, Ollama"]:::layer
+
+    classDef src fill:#f3e5f5,stroke:#6a1b9a;
+    classDef layer fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 </details>

@@ -10,6 +10,33 @@ Claude Code 是 Anthropic 的 AI 编码工具，可读取代码库、编辑文�
 
 ## 文档结构（来自 sitemap.xml）
 
+```mermaid
+flowchart LR
+    subgraph docs["Claude Code 文档体系"]
+        QS["快速入门<br/>overview, quickstart,<br/>setup, desktop"]:::cat
+        PF["平台支持<br/>VS Code, JetBrains,<br/>Chrome, Web"]:::cat
+        CC["核心概念<br/>工作原理, 上下文窗口,<br/>prompt-caching, worktrees"]:::cat
+        CLI["CLI 参考<br/>命令, 工具, 交互/无头/<br/>全屏模式, 状态栏"]:::cat
+        CFG["配置<br/>settings, env-vars,<br/>model-config, 网络"]:::cat
+        SEC["权限与安全<br/>permissions, sandboxing,<br/>认证, LLM 网关"]:::cat
+        EXT["扩展系统<br/>Hooks, MCP, Skills,<br/>Plugins, Agent SDK"]:::cat
+        ADV["高级功能<br/>memory, routines,<br/>ultraplan, computer-use"]:::cat
+        CICD["CI/CD + 云<br/>GitHub Actions, GitLab,<br/>Bedrock, Vertex AI"]:::cat
+        REF["参考<br/>best-practices,<br/>troubleshooting, glossary"]:::cat
+    end
+    subgraph yry["YrY 技能设计映射"]
+        Y1["技能能力边界"]:::yry
+        Y2["Hook 配置"]:::yry
+        Y3["MCP 集成"]:::yry
+        Y4["权限系统"]:::yry
+        Y5["插件开发"]:::yry
+    end
+    EXT --> Y1 & Y2 & Y3 & Y4 & Y5
+
+    classDef cat fill:#f3e5f5,stroke:#6a1b9a;
+    classDef yry fill:#e8f5e9,stroke:#2e7d32;
+```
+
 ### 快速入门
 - [overview](https://code.claude.com/docs/en/overview) — 总览
 - [quickstart](https://code.claude.com/docs/en/quickstart) — 快速入门（CLI）

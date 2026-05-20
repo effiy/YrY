@@ -143,6 +143,20 @@ already use it in another harness.
 
 ## The Basic Workflow
 
+```mermaid
+flowchart TD
+    B["1. brainstorming<br/>Refine ideas, explore<br/>alternatives, save design"] --> W["2. using-git-worktrees<br/>Isolated workspace,<br/>verify test baseline"]
+    W --> P["3. writing-plans<br/>Bite-sized tasks<br/>2-5 min each"]
+    P --> E["4. subagent-driven-development<br/>Fresh subagent per task<br/>Two-stage review"]
+    E --> T["5. test-driven-development<br/>RED → GREEN → REFACTOR<br/>Delete code written before tests"]
+    T --> R["6. requesting-code-review<br/>Review against plan<br/>Critical issues block progress"]
+    R --> F["7. finishing-a-development-branch<br/>Verify tests, merge/PR/<br/>keep/discard, cleanup"]
+    F -.->|"next feature"| B
+
+    classDef step fill:#e8f5e9,stroke:#2e7d32;
+    class B,W,P,E,T,R,F step;
+```
+
 1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, presents design in sections for validation. Saves design document.
 
 2. **using-git-worktrees** - Activates after design approval. Creates isolated workspace on new branch, runs project setup, verifies clean test baseline.

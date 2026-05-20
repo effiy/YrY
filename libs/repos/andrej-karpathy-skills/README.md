@@ -23,6 +23,18 @@ Four principles in one file that directly address these issues:
 | **Surgical Changes** | Orthogonal edits, touching code you shouldn't |
 | **Goal-Driven Execution** | Leverage through tests-first, verifiable success criteria |
 
+```mermaid
+flowchart TD
+    T["Think Before Coding<br/>Surface assumptions,<br/>present tradeoffs,<br/>stop when confused"] --> S["Simplicity First<br/>Minimum code, no<br/>speculative features,<br/>no unused abstractions"]
+    S --> SU["Surgical Changes<br/>Touch only what you must,<br/>match existing style,<br/>don't 'improve' adjacent code"]
+    SU --> G["Goal-Driven Execution<br/>Define success criteria,<br/>loop until verified,<br/>tests-first approach"]
+    G -.->|"feedback: overcomplicated?"| S
+    G -.->|"feedback: unnecessary edits?"| SU
+
+    classDef principle fill:#e8f5e9,stroke:#2e7d32;
+    class T,S,SU,G principle;
+```
+
 ## The Four Principles in Detail
 
 ### 1. Think Before Coding

@@ -28,41 +28,20 @@ GSD is a **meta-prompting framework** that sits between the user and AI coding a
 3. **Spec-driven development** — Requirements → research → plans → execution → verification pipeline
 4. **State management** — Persistent project memory across sessions and context resets
 
-```
-┌──────────────────────────────────────────────────────┐
-│                      USER                            │
-│            /gsd-command [args]                        │
-└─────────────────────┬────────────────────────────────┘
-                      │
-┌─────────────────────▼────────────────────────────────┐
-│              COMMAND LAYER                            │
-│   commands/gsd/*.md — Prompt-based command files      │
-│   (Claude Code custom commands / Codex skills)        │
-└─────────────────────┬────────────────────────────────┘
-                      │
-┌─────────────────────▼────────────────────────────────┐
-│              WORKFLOW LAYER                           │
-│   get-shit-done/workflows/*.md — Orchestration logic  │
-│   (Reads references, spawns agents, manages state)    │
-└──────┬──────────────┬─────────────────┬──────────────┘
-       │              │                 │
-┌──────▼──────┐ ┌─────▼─────┐ ┌────────▼───────┐
-│  AGENT      │ │  AGENT    │ │  AGENT         │
-│  (fresh     │ │  (fresh   │ │  (fresh        │
-│   context)  │ │   context)│ │   context)     │
-└──────┬──────┘ └─────┬─────┘ └────────┬───────┘
-       │              │                 │
-┌──────▼──────────────▼─────────────────▼──────────────┐
-│              CLI TOOLS LAYER                          │
-│   gsd-sdk query (sdk/src/query) + gsd-tools.cjs       │
-│   Programmatic SDK bridge: GSDTools/query-runtime-bridge.ts │
-└──────────────────────┬───────────────────────────────┘
-                       │
-┌──────────────────────▼───────────────────────────────┐
-│              FILE SYSTEM (.planning/)                 │
-│   PROJECT.md | REQUIREMENTS.md | ROADMAP.md          │
-│   STATE.md | config.json | phases/ | research/       │
-└──────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    USER["USER<br/>/gsd-command [args]"]:::src --> CMD["COMMAND LAYER<br/>commands/gsd/*.md<br/>Prompt-based command files"]:::layer
+    CMD --> WF["WORKFLOW LAYER<br/>workflows/*.md<br/>Orchestration logic<br/>Reads refs, spawns agents"]:::layer
+    WF --> AG1["AGENT (fresh context)"]:::agent
+    WF --> AG2["AGENT (fresh context)"]:::agent
+    WF --> AG3["AGENT (fresh context)"]:::agent
+    AG1 & AG2 & AG3 --> CLI["CLI TOOLS LAYER<br/>gsd-sdk query + gsd-tools.cjs<br/>Programmatic SDK bridge"]:::layer
+    CLI --> FS["FILE SYSTEM (.planning/)<br/>PROJECT.md | REQUIREMENTS.md<br/>ROADMAP.md | STATE.md<br/>config.json | phases/ | research/"]:::store
+
+    classDef src fill:#f3e5f5,stroke:#6a1b9a;
+    classDef layer fill:#e8f5e9,stroke:#2e7d32;
+    classDef agent fill:#e3f2fd,stroke:#1565c0;
+    classDef store fill:#fff3e0,stroke:#e65100;
 ```
 
 ---
@@ -312,24 +291,22 @@ Node.js CLI utility (`gsd-tools.cjs`) with domain modules split across `get-shit
 
 ### Orchestrator → Agent Pattern
 
-```
-Orchestrator (workflow .md)
-    │
-    ├── Load context: gsd-sdk query init.<workflow> <phase> (or legacy gsd-tools.cjs init)
-    │   Returns JSON with: project info, config, state, phase details
-    │
-    ├── Resolve model: gsd-sdk query resolve-model <agent-name>
-    │   Returns: opus | sonnet | haiku | inherit
-    │
-    ├── Spawn Agent (Task/SubAgent call)
-    │   ├── Agent prompt (agents/*.md)
-    │   ├── Context payload (init JSON)
-    │   ├── Model assignment
-    │   └── Tool permissions
-    │
-    ├── Collect result
-    │
-    └── Update state: gsd-sdk query state.update / state.patch / state.advance-plan (or legacy gsd-tools.cjs)
+```mermaid
+flowchart TD
+    ORCH["Orchestrator (workflow .md)"]:::src --> CTX["Load context<br/>gsd-sdk query init<br/>→ JSON: project, config,<br/>state, phase details"]:::proc
+    CTX --> MODEL["Resolve model<br/>gsd-sdk query resolve-model<br/>→ opus | sonnet | haiku | inherit"]:::proc
+    MODEL --> SPAWN["Spawn Agent (Task/SubAgent)"]:::agent
+    SPAWN --> AP["Agent prompt<br/>agents/*.md"]:::sub
+    SPAWN --> CP["Context payload<br/>init JSON"]:::sub
+    SPAWN --> MA["Model assignment"]:::sub
+    SPAWN --> TP["Tool permissions"]:::sub
+    AP & CP & MA & TP --> COLLECT["Collect result"]:::proc
+    COLLECT --> UPDATE["Update state<br/>gsd-sdk query state.*"]:::proc
+
+    classDef src fill:#f3e5f5,stroke:#6a1b9a;
+    classDef proc fill:#e8f5e9,stroke:#2e7d32;
+    classDef agent fill:#e3f2fd,stroke:#1565c0;
+    classDef sub fill:#fff3e0,stroke:#e65100;
 ```
 
 ### Primary Agent Spawn Categories
@@ -357,13 +334,22 @@ Conceptual spawn-pattern taxonomy for the 21 primary agents. For the authoritati
 
 During `execute-phase`, plans are grouped into dependency waves:
 
-```
-Wave Analysis:
-  Plan 01 (no deps)      ─┐
-  Plan 02 (no deps)      ─┤── Wave 1 (parallel)
-  Plan 03 (depends: 01)  ─┤── Wave 2 (waits for Wave 1)
-  Plan 04 (depends: 02)  ─┘
-  Plan 05 (depends: 03,04) ── Wave 3 (waits for Wave 2)
+```mermaid
+flowchart TD
+    subgraph w1["Wave 1 (parallel)"]
+        P01["Plan 01<br/>no deps"]:::plan
+        P02["Plan 02<br/>no deps"]:::plan
+    end
+    subgraph w2["Wave 2 (waits for Wave 1)"]
+        P03["Plan 03<br/>depends: 01"]:::plan
+        P04["Plan 04<br/>depends: 02"]:::plan
+    end
+    subgraph w3["Wave 3 (waits for Wave 2)"]
+        P05["Plan 05<br/>depends: 03, 04"]:::plan
+    end
+    w1 --> w2 --> w3
+
+    classDef plan fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 Each executor gets:
@@ -395,69 +381,50 @@ When multiple executors run within the same wave, two mechanisms prevent conflic
 
 ### New Project Flow
 
-```
-User input (idea description)
-    │
-    ▼
-Questions (questioning.md philosophy)
-    │
-    ▼
-4x Project Researchers (parallel)
-    ├── Stack → STACK.md
-    ├── Features → FEATURES.md
-    ├── Architecture → ARCHITECTURE.md
-    └── Pitfalls → PITFALLS.md
-    │
-    ▼
-Research Synthesizer → SUMMARY.md
-    │
-    ▼
-Requirements extraction → REQUIREMENTS.md
-    │
-    ▼
-Roadmapper → ROADMAP.md
-    │
-    ▼
-User approval → STATE.md initialized
+```mermaid
+flowchart TD
+    UI["User input<br/>idea description"]:::src --> QS["Questions<br/>questioning.md philosophy"]:::proc
+    QS --> R1["4x Project Researchers (parallel)"]:::agent
+    R1 --> ST["Stack → STACK.md"]:::artifact
+    R1 --> FE["Features → FEATURES.md"]:::artifact
+    R1 --> AR["Architecture → ARCHITECTURE.md"]:::artifact
+    R1 --> PI["Pitfalls → PITFALLS.md"]:::artifact
+    ST & FE & AR & PI --> SYNTH["Research Synthesizer<br/>→ SUMMARY.md"]:::proc
+    SYNTH --> REQ["Requirements extraction<br/>→ REQUIREMENTS.md"]:::proc
+    REQ --> ROAD["Roadmapper<br/>→ ROADMAP.md"]:::proc
+    ROAD --> APPROVAL["User approval<br/>→ STATE.md initialized"]:::done
+
+    classDef src fill:#f3e5f5,stroke:#6a1b9a;
+    classDef proc fill:#e8f5e9,stroke:#2e7d32;
+    classDef agent fill:#e3f2fd,stroke:#1565c0;
+    classDef artifact fill:#fff3e0,stroke:#e65100;
+    classDef done fill:#c8e6c9,stroke:#388e3c;
 ```
 
 ### Phase Execution Flow
 
-```
-discuss-phase → CONTEXT.md (user preferences)
-    │
-    ▼
-ui-phase → UI-SPEC.md (design contract, optional)
-    │
-    ▼
-plan-phase
-    ├── Research gate (blocks if RESEARCH.md has unresolved open questions)
-    ├── Phase Researcher → RESEARCH.md
-    │       └── Package Legitimacy Gate: slopcheck on every package; [SLOP] removed,
-    │           [SUS]/[ASSUMED] flagged; Audit table written to RESEARCH.md
-    ├── Planner (with reachability check) → PLAN.md files
-    │       └── checkpoint:human-verify injected before [ASSUMED]/[SUS] installs;
-    │           T-{phase}-SC STRIDE row added for install-bearing plans
-    ├── Plan Checker → Verify loop (max 3x)
-    ├── Requirements coverage gate (REQ-IDs → plans)
-    └── Decision coverage gate (CONTEXT.md `<decisions>` → plans, BLOCKING — #2492)
-    │
-    ▼
-state planned-phase → STATE.md (Planned/Ready to execute)
-    │
-    ▼
-execute-phase (context reduction: truncated prompts, cache-friendly ordering)
-    ├── Wave analysis (dependency grouping)
-    ├── Executor per plan → code + atomic commits
-    ├── SUMMARY.md per plan
-    └── Verifier → VERIFICATION.md
-        └── Decision coverage gate (CONTEXT.md decisions → shipped artifacts, NON-BLOCKING — #2492)
-    │
-    ▼
-verify-work → UAT.md (user acceptance testing)
-    │
-    ▼
-ui-review → UI-REVIEW.md (visual audit, optional)
+```mermaid
+flowchart TD
+    DISC["discuss-phase<br/>→ CONTEXT.md<br/>(user preferences)"]:::phase --> UI["ui-phase<br/>→ UI-SPEC.md<br/>(design contract, optional)"]:::phase
+    UI --> PLAN["plan-phase"]:::phase
+    PLAN --> RG["Research gate<br/>(blocks if RESEARCH.md<br/>has unresolved questions)"]:::gate
+    RG --> PHR["Phase Researcher<br/>→ RESEARCH.md"]:::agent
+    PHR --> PLANNER["Planner (reachability check)<br/>→ PLAN.md files"]:::agent
+    PLANNER --> PC["Plan Checker<br/>Verify loop (max 3x)"]:::gate
+    PC --> REQG["Requirements coverage gate<br/>REQ-IDs → plans"]:::gate
+    REQG --> DCG["Decision coverage gate<br/>CONTEXT.md decisions → plans<br/>BLOCKING"]:::gate
+    DCG --> STATE["state planned-phase<br/>→ STATE.md"]:::proc
+    STATE --> EXEC["execute-phase<br/>(context reduction)"]:::phase
+    EXEC --> WAVE["Wave analysis<br/>(dependency grouping)"]:::proc
+    WAVE --> EXECUTOR["Executor per plan<br/>→ code + atomic commits<br/>→ SUMMARY.md per plan"]:::agent
+    EXECUTOR --> VERIFIER["Verifier<br/>→ VERIFICATION.md"]:::gate
+    VERIFIER --> VERIFY["verify-work<br/>→ UAT.md"]:::phase
+    VERIFY --> UIREV["ui-review<br/>→ UI-REVIEW.md<br/>(visual audit, optional)"]:::phase
+
+    classDef phase fill:#f3e5f5,stroke:#6a1b9a;
+    classDef gate fill:#fff9c4,stroke:#f9a825;
+    classDef agent fill:#e8f5e9,stroke:#2e7d32;
+    classDef proc fill:#e3f2fd,stroke:#1565c0;
 ```
 
 ### Context Propagation

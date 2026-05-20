@@ -1,13 +1,3 @@
-<p>
-  <a href="https://www.aihero.dev/s/skills-newsletter">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://res.cloudinary.com/total-typescript/image/upload/v1777382277/skills-repo-dark_2x.png">
-      <source media="(prefers-color-scheme: light)" srcset="https://res.cloudinary.com/total-typescript/image/upload/v1777382277/skill-repo-light_2x.png">
-      <img alt="Skills" src="https://res.cloudinary.com/total-typescript/image/upload/v1777382277/skill-repo-light_2x.png" width="369">
-    </picture>
-  </a>
-</p>
-
 # Skills For Real Engineers
 
 [![skills.sh](https://skills.sh/b/mattpocock/skills)](https://skills.sh/mattpocock/skills)
@@ -40,6 +30,29 @@ npx skills@latest add mattpocock/skills
 4. Bam - you're ready to go.
 
 ## Why These Skills Exist
+
+```mermaid
+flowchart LR
+    subgraph problems["4 Common Failure Modes"]
+        P1["#1 Misalignment<br/>Agent didn't understand<br/>what you wanted"]:::prob
+        P2["#2 Verbosity<br/>Agent uses 20 words<br/>where 1 will do"]:::prob
+        P3["#3 Code Doesn't Work<br/>No feedback loops,<br/>flying blind"]:::prob
+        P4["#4 Ball of Mud<br/>Accelerated software<br/>entropy from AI speed"]:::prob
+    end
+    subgraph fixes["Skills That Fix Them"]
+        F1["/grill-me + /grill-with-docs<br/>Grilling session for<br/>alignment before coding"]:::fix
+        F2["CONTEXT.md shared language<br/>Domain terms → concise<br/>communication"]:::fix
+        F3["/tdd + /diagnose<br/>Red-green-refactor loop<br/>+ systematic debugging"]:::fix
+        F4["/improve-codebase-architecture<br/>Deep modules, daily<br/>design investment"]:::fix
+    end
+    P1 --> F1
+    P2 --> F2
+    P3 --> F3
+    P4 --> F4
+
+    classDef prob fill:#ffebee,stroke:#c62828;
+    classDef fix fill:#e8f5e9,stroke:#2e7d32;
+```
 
 I built these skills as a way to fix common failure modes I see with Claude Code, Codex, and other coding agents.
 

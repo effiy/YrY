@@ -61,37 +61,15 @@ The flagship feature of v2.0 is the **Design System Generator** - an AI-powered 
 
 ### How Design System Generation Works
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  1. USER REQUEST                                                │
-│     "Build a landing page for my beauty spa"                    │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  2. MULTI-DOMAIN SEARCH (5 parallel searches)                   │
-│     • Product type matching (161 categories)                    │
-│     • Style recommendations (67 styles)                         │
-│     • Color palette selection (161 palettes)                    │
-│     • Landing page patterns (24 patterns)                       │
-│     • Typography pairing (57 font combinations)                 │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  3. REASONING ENGINE                                            │
-│     • Match product → UI category rules                         │
-│     • Apply style priorities (BM25 ranking)                     │
-│     • Filter anti-patterns for industry                         │
-│     • Process decision rules (JSON conditions)                  │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  4. COMPLETE DESIGN SYSTEM OUTPUT                               │
-│     Pattern + Style + Colors + Typography + Effects             │
-│     + Anti-patterns to avoid + Pre-delivery checklist           │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    UR["1. USER REQUEST<br/>'Build a landing page for my beauty spa'"]:::src --> MS["2. MULTI-DOMAIN SEARCH (5 parallel)<br/>• Product type matching (161 categories)<br/>• Style recommendations (67 styles)<br/>• Color palette selection (161 palettes)<br/>• Landing page patterns (24 patterns)<br/>• Typography pairing (57 combinations)"]:::proc
+    MS --> RE["3. REASONING ENGINE<br/>• Match product → UI category rules<br/>• Apply style priorities (BM25 ranking)<br/>• Filter anti-patterns for industry<br/>• Process decision rules (JSON conditions)"]:::proc
+    RE --> DS["4. COMPLETE DESIGN SYSTEM OUTPUT<br/>Pattern + Style + Colors + Typography<br/>+ Effects + Anti-patterns + Checklist"]:::out
+
+    classDef src fill:#f3e5f5,stroke:#6a1b9a;
+    classDef proc fill:#e8f5e9,stroke:#2e7d32;
+    classDef out fill:#fff3e0,stroke:#e65100;
 ```
 
 ### 161 Industry-Specific Reasoning Rules

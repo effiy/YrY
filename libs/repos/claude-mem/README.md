@@ -106,6 +106,29 @@ The installer handles dependencies, plugin setup, AI provider configuration, wor
 
 ## How It Works
 
+```mermaid
+flowchart LR
+    subgraph capture["Capture Phase"]
+        PT["PostToolUse Hook"]:::hook --> DD["SHA-256 Dedup<br/>5min window"]:::proc
+        DD --> PF["Privacy Filter<br/>Strip secrets/keys"]:::proc
+        PF --> ST["Store Raw<br/>Observation"]:::proc
+    end
+    subgraph process["Process Phase"]
+        ST --> CM["LLM Compress<br/>Facts + Concepts<br/>+ Narrative"]:::proc
+        CM --> VE["Vector Embed<br/>6 providers + local"]:::proc
+        VE --> IX["Index: BM25<br/>+ Vector DB"]:::proc
+    end
+    subgraph inject["Inject Phase"]
+        SS["SessionStart Hook"]:::hook --> HS["Hybrid Search<br/>BM25 + Vector"]:::proc
+        HS --> TB["Token Budget<br/>~2000 tokens"]:::proc
+        TB --> IJ["Inject into<br/>Conversation"]:::proc
+    end
+    IX -.->|"Stop/SessionEnd<br/>Summarize + Graph"| HS
+
+    classDef hook fill:#f3e5f5,stroke:#6a1b9a;
+    classDef proc fill:#e8f5e9,stroke:#2e7d32;
+```
+
 **Core Components:**
 
 1. **5 Lifecycle Hooks** - SessionStart, UserPromptSubmit, PostToolUse, Stop, SessionEnd (6 hook scripts)

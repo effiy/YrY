@@ -16,6 +16,35 @@ The hyphen and colon forms are *runtime-specific spellings of the same command*.
 
 ## Namespace Meta-Skills
 
+```mermaid
+flowchart LR
+    subgraph routers["6 Namespace Routers (~120 tokens)"]
+        NW["gsd-workflow<br/>Phase pipeline"]:::ns
+        NP["gsd-project<br/>Project lifecycle"]:::ns
+        NQ["gsd-quality<br/>Quality gates"]:::ns
+        NC["gsd-context<br/>Codebase intelligence"]:::ns
+        NM["gsd-manage<br/>Management"]:::ns
+        NI["gsd-ideate<br/>Exploration & capture"]:::ns
+    end
+    subgraph concrete["Concrete Commands (directly invocable)"]
+        PL["discuss / plan / execute<br/>verify / phase / progress"]:::cmd
+        PR["milestones / audits<br/>summary"]:::cmd
+        QA["code-review / debug<br/>audit / security / eval / ui"]:::cmd
+        CT["map / graphify / docs<br/>learnings"]:::cmd
+        MG["config / workspace<br/>workstreams / ship / inbox"]:::cmd
+        ID["explore / sketch / spike<br/>spec / capture"]:::cmd
+    end
+    NW --> PL
+    NP --> PR
+    NQ --> QA
+    NC --> CT
+    NM --> MG
+    NI --> ID
+
+    classDef ns fill:#f3e5f5,stroke:#6a1b9a;
+    classDef cmd fill:#e8f5e9,stroke:#2e7d32;
+```
+
 Six namespace routers ship as the first-stage entry points in v1.40. They keep the eager skill-listing token cost low (~120 tokens for 6 routers vs ~2,150 for a flat 86-skill listing) while the full surface remains directly invocable. The model selects a namespace, then routes to the concrete sub-skill. See [#2792](https://github.com/gsd-build/get-shit-done/issues/2792).
 
 | Command | Routes to |

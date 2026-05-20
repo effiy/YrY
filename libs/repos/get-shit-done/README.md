@@ -57,6 +57,20 @@ The system gives Claude everything it needs to do the work *and* verify it. I tr
 
 ## How It Works
 
+```mermaid
+flowchart LR
+    I["1. /gsd-new-project<br/>Questions → research<br/>→ requirements → roadmap"] --> D["2. /gsd-discuss-phase<br/>Capture implementation<br/>decisions before planning"]
+    D --> P["3. /gsd-plan-phase<br/>Research → plan<br/>→ verify, loop until<br/>plans pass"]
+    P --> E["4. /gsd-execute-phase<br/>Execute plans in<br/>parallel waves, fresh<br/>200k-token context each"]
+    E --> V["5. /gsd-verify-work<br/>Manual acceptance<br/>testing, diagnosed<br/>fix plans"]
+    V --> S["6. /gsd-ship<br/>Create PR from<br/>verified phase work"]
+    S -.->|"next phase"| D
+
+    classDef cmd fill:#e8f5e9,stroke:#2e7d32;
+    classDef artifact fill:#f3e5f5,stroke:#6a1b9a;
+    class I,D,P,E,V,S cmd;
+```
+
 The loop is six commands. Each one does exactly one thing.
 
 ### 1. Initialize

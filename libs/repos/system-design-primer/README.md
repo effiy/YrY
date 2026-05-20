@@ -61,6 +61,38 @@ Check out the sister repo [**Interactive Coding Challenges**](https://github.com
 >
 > Each section contains links to more in-depth resources.
 
+```mermaid
+flowchart LR
+    subgraph fundamentals["Fundamental Concepts"]
+        PS["Performance vs<br/>Scalability"]:::fund
+        LT["Latency vs<br/>Throughput"]:::fund
+        AC["Availability vs<br/>Consistency<br/>(CAP theorem)"]:::fund
+        CP["Consistency<br/>Patterns"]:::fund
+        AP["Availability<br/>Patterns"]:::fund
+    end
+    subgraph building["Building Blocks"]
+        DNS["DNS"]:::build
+        CDN["CDN"]:::build
+        LB["Load Balancer"]:::build
+        RS["Reverse Proxy"]:::build
+        DB["SQL / NoSQL<br/>Databases"]:::build
+        CACHE["Caching"]:::build
+        MQ["Message Queues"]:::build
+    end
+    subgraph patterns["Architecture Patterns"]
+        MONO["Monoliths vs<br/>Microservices"]:::pattern
+        CONS["Consensus<br/>(Paxos, Raft)"]:::pattern
+        DD["Domain-Driven<br/>Design"]:::pattern
+        ES["Event Sourcing<br/>& CQRS"]:::pattern
+        SH["Sharding<br/>& Partitioning"]:::pattern
+    end
+    fundamentals --> building --> patterns
+
+    classDef fund fill:#f3e5f5,stroke:#6a1b9a;
+    classDef build fill:#e8f5e9,stroke:#2e7d32;
+    classDef pattern fill:#fff3e0,stroke:#e65100;
+```
+
 
 * [System design topics: start here](#system-design-topics-start-here)
     * [Step 1: Review the scalability video lecture](#step-1-review-the-scalability-video-lecture)

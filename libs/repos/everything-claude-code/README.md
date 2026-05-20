@@ -21,32 +21,11 @@ ECC v2.0.0-rc.1 adds the public Hermes operator story on top of that reusable la
 
 ## The Guides
 
-This repo is the raw code only. The guides explain everything.
-
-<table>
-<tr>
-<td width="33%">
-<a href="https://x.com/affaanmustafa/status/2012378465664745795">
-<img src="./assets/images/guides/shorthand-guide.png" alt="The Shorthand Guide to Everything Claude Code" />
-</a>
-</td>
-<td width="33%">
-<a href="https://x.com/affaanmustafa/status/2014040193557471352">
-<img src="./assets/images/guides/longform-guide.png" alt="The Longform Guide to Everything Claude Code" />
-</a>
-</td>
-<td width="33%">
-<a href="https://x.com/affaanmustafa/status/2033263813387223421">
-<img src="./assets/images/security/security-guide-header.png" alt="The Shorthand Guide to Everything Agentic Security" />
-</a>
-</td>
-</tr>
-<tr>
-<td align="center"><b>Shorthand Guide</b><br/>Setup, foundations, philosophy. <b>Read this first.</b></td>
-<td align="center"><b>Longform Guide</b><br/>Token optimization, memory persistence, evals, parallelization.</td>
-<td align="center"><b>Security Guide</b><br/>Attack vectors, sandboxing, sanitization, CVEs, AgentShield.</td>
-</tr>
-</table>
+| Guide | What You'll Learn |
+|-------|-------------------|
+| [Shorthand Guide](https://x.com/affaanmustafa/status/2012378465664745795) | Setup, foundations, philosophy — **read this first** |
+| [Longform Guide](https://x.com/affaanmustafa/status/2014040193557471352) | Token optimization, memory persistence, evals, parallelization |
+| [Security Guide](https://x.com/affaanmustafa/status/2033263813387223421) | Attack vectors, sandboxing, sanitization, CVEs, AgentShield |
 
 | Topic | What You'll Learn |
 |-------|-------------------|
@@ -432,6 +411,28 @@ Windows PowerShell:
 ## What's Inside
 
 This repo is a **Claude Code plugin** - install it directly or copy components manually.
+
+```mermaid
+flowchart LR
+    subgraph core["Core Components"]
+        AG["agents/<br/>60 specialized<br/>subagents"]:::comp
+        SK["skills/<br/>232 workflow<br/>definitions"]:::comp
+        CM["commands/<br/>75 slash<br/>entries"]:::comp
+        RL["rules/<br/>34 always-follow<br/>guidelines"]:::comp
+        HK["hooks/<br/>Trigger-based<br/>automations"]:::comp
+        SC["scripts/<br/>Cross-platform<br/>Node.js tools"]:::comp
+    end
+    subgraph meta["Meta & Integration"]
+        CP[".claude-plugin/<br/>Plugin + marketplace<br/>manifests"]:::meta
+        MC["mcp-configs/<br/>MCP server<br/>definitions"]:::meta
+        CX[".cursor/ + .opencode/<br/>Cross-platform<br/>IDE support"]:::meta
+        CT["contexts/<br/>Dynamic system<br/>prompt injection"]:::meta
+    end
+    core --> meta
+
+    classDef comp fill:#e8f5e9,stroke:#2e7d32;
+    classDef meta fill:#f3e5f5,stroke:#6a1b9a;
+```
 
 ```
 ECC/

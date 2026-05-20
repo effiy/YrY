@@ -52,92 +52,24 @@ Full options at [Quick Start](#quick-start) below. Agent-specific wiring at [Wor
 
 agentmemory works with any agent that supports hooks, MCP, or REST API. All agents share the same memory server.
 
-<table>
-<tr>
-<td align="center" width="12.5%">
-<a href="https://claude.com/product/claude-code"><img src="https://matthiasroder.com/content/images/2026/01/Claude.png?size=120" alt="Claude Code" width="48" height="48" /></a><br/>
-<strong>Claude Code</strong><br/>
-<sub>native plugin + 12 hooks + MCP</sub>
-</td>
-<td align="center" width="12.5%">
-<a href="https://github.com/openai/codex"><img src="https://github.com/openai.png?size=120" alt="Codex CLI" width="48" height="48" /></a><br/>
-<strong>Codex CLI</strong><br/>
-<sub>native plugin + 6 hooks + MCP</sub>
-</td>
-<td align="center" width="12.5%">
-<a href="integrations/openclaw/"><img src="https://github.com/openclaw.png?size=120" alt="OpenClaw" width="48" height="48" /></a><br/>
-<strong>OpenClaw</strong><br/>
-<sub>native plugin + MCP</sub>
-</td>
-<td align="center" width="12.5%">
-<a href="integrations/hermes/"><img src="https://github.com/NousResearch.png?size=120" alt="Hermes" width="48" height="48" /></a><br/>
-<strong>Hermes</strong><br/>
-<sub>native plugin + MCP</sub>
-</td>
-<td align="center" width="12.5%">
-<a href="integrations/pi/"><img src="assets/agents/pi.svg" alt="pi" width="48" height="48" /></a><br/>
-<strong>pi</strong><br/>
-<sub>native plugin + MCP</sub>
-</td>
-<td align="center" width="12.5%">
-<a href="https://github.com/tinyhumansai/openhuman"><img src="https://raw.githubusercontent.com/tinyhumansai/openhuman/main/app/src-tauri/icons/128x128.png" alt="OpenHuman" width="48" height="48" /></a><br/>
-<strong>OpenHuman</strong><br/>
-<sub>native Memory trait backend</sub>
-</td>
-<td align="center" width="12.5%">
-<a href="https://cursor.com"><img src="https://www.freelogovectors.net/wp-content/uploads/2025/06/cursor-logo-freelogovectors.net_.png" alt="Cursor" width="48" height="48" /></a><br/>
-<strong>Cursor</strong><br/>
-<sub>MCP server</sub>
-</td>
-<td align="center" width="12.5%">
-<a href="https://github.com/google-gemini/gemini-cli"><img src="https://github.com/google-gemini.png?size=120" alt="Gemini CLI" width="48" height="48" /></a><br/>
-<strong>Gemini CLI</strong><br/>
-<sub>MCP server</sub>
-</td>
-</tr>
-<tr>
-<td align="center" width="12.5%">
-<a href="https://github.com/opencode-ai/opencode"><img src="https://github.com/opencode-ai.png?size=120" alt="OpenCode" width="48" height="48" /></a><br/>
-<strong>OpenCode</strong><br/>
-<sub>22 hooks + MCP + plugin</sub>
-</td>
-<td align="center" width="12.5%">
-<a href="https://github.com/cline/cline"><img src="https://github.com/cline.png?size=120" alt="Cline" width="48" height="48" /></a><br/>
-<strong>Cline</strong><br/>
-<sub>MCP server</sub>
-</td>
-<td align="center" width="12.5%">
-<a href="https://github.com/block/goose"><img src="https://github.com/block.png?size=120" alt="Goose" width="48" height="48" /></a><br/>
-<strong>Goose</strong><br/>
-<sub>MCP server</sub>
-</td>
-<td align="center" width="12.5%">
-<a href="https://github.com/Kilo-Org/kilocode"><img src="https://github.com/Kilo-Org.png?size=120" alt="Kilo Code" width="48" height="48" /></a><br/>
-<strong>Kilo Code</strong><br/>
-<sub>MCP server</sub>
-</td>
-<td align="center" width="12.5%">
-<a href="https://github.com/Aider-AI/aider"><img src="https://github.com/Aider-AI.png?size=120" alt="Aider" width="48" height="48" /></a><br/>
-<strong>Aider</strong><br/>
-<sub>REST API</sub>
-</td>
-<td align="center" width="12.5%">
-<a href="https://claude.ai/download"><img src="https://github.com/anthropics.png?size=120" alt="Claude Desktop" width="48" height="48" /></a><br/>
-<strong>Claude Desktop</strong><br/>
-<sub>MCP server</sub>
-</td>
-<td align="center" width="12.5%">
-<a href="https://windsurf.com"><img src="https://exafunction.github.io/public/brand/windsurf-black-symbol.svg?size=120" alt="Windsurf" width="48" height="48" /></a><br/>
-<strong>Windsurf</strong><br/>
-<sub>MCP server</sub>
-</td>
-<td align="center" width="12.5%">
-<a href="https://github.com/RooCodeInc/Roo-Code"><img src="https://github.com/RooCodeInc.png?size=120" alt="Roo Code" width="48" height="48" /></a><br/>
-<strong>Roo Code</strong><br/>
-<sub>MCP server</sub>
-</td>
-</tr>
-</table>
+| Agent | Integration |
+|-------|-------------|
+| **Claude Code** | native plugin + 12 hooks + MCP |
+| **Codex CLI** | native plugin + 6 hooks + MCP |
+| **OpenClaw** | native plugin + MCP |
+| **Hermes** | native plugin + MCP |
+| **pi** | native plugin + MCP |
+| **OpenHuman** | native Memory trait backend |
+| **Cursor** | MCP server |
+| **Gemini CLI** | MCP server |
+| **OpenCode** | 22 hooks + MCP + plugin |
+| **Cline** | MCP server |
+| **Goose** | MCP server |
+| **Kilo Code** | MCP server |
+| **Aider** | REST API |
+| **Claude Desktop** | MCP server |
+| **Windsurf** | MCP server |
+| **Roo Code** | MCP server |
 
 ---
 
@@ -626,28 +558,35 @@ Every AI coding agent ships with built-in memory — Claude Code has `MEMORY.md`
 
 ### Memory Pipeline
 
-```
-PostToolUse hook fires
-  -> SHA-256 dedup (5min window)
-  -> Privacy filter (strip secrets, API keys)
-  -> Store raw observation
-  -> LLM compress -> structured facts + concepts + narrative
-  -> Vector embedding (6 providers + local)
-  -> Index in BM25 + vector
+```mermaid
+flowchart TD
+    PT["PostToolUse Hook fires"]:::hook --> DD["SHA-256 Dedup<br/>5min window"]:::proc
+    DD --> PF["Privacy Filter<br/>Strip secrets, API keys"]:::proc
+    PF --> ST["Store Raw Observation"]:::proc
+    ST --> CM["LLM Compress → structured<br/>facts + concepts + narrative"]:::proc
+    CM --> VE["Vector Embedding<br/>6 providers + local"]:::proc
+    VE --> IX["Index: BM25 + Vector"]:::proc
+    IX --> SS["Stop / SessionEnd Hook<br/>Summarize session<br/>Knowledge graph extraction"]:::hook
+    SS --> SH["SessionStart Hook<br/>Load project profile<br/>Hybrid search → Inject"]:::hook
 
-Stop / SessionEnd hook fires
-  -> Summarize session
-  -> Knowledge graph extraction (if GRAPH_EXTRACTION_ENABLED=true)
-  -> Slot reflection (if SLOT_REFLECT_ENABLED=true)
-
-SessionStart hook fires
-  -> Load project profile (top concepts, files, patterns)
-  -> Hybrid search (BM25 + vector + graph)
-  -> Token budget (default: 2000 tokens)
-  -> Inject into conversation
+    classDef hook fill:#f3e5f5,stroke:#6a1b9a;
+    classDef proc fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 ### 4-Tier Memory Consolidation
+
+```mermaid
+flowchart TD
+    W["Working Memory<br/>Raw observations from tool use<br/><i>Short-term memory</i>"]:::tier --> E["Episodic Memory<br/>Compressed session summaries<br/><i>'What happened'</i>"]:::tier
+    E --> S["Semantic Memory<br/>Extracted facts and patterns<br/><i>'What I know'</i>"]:::tier
+    S --> P["Procedural Memory<br/>Workflows and decision patterns<br/><i>'How to do it'</i>"]:::tier
+
+    W -.->|"decay (Ebbinghaus)"| D["Frequent access<br/>→ strengthens"]:::mech
+    P -.->|"auto-evict"| C["Stale / contradictory<br/>→ detected & resolved"]:::mech
+
+    classDef tier fill:#e8f5e9,stroke:#2e7d32;
+    classDef mech fill:#fff3e0,stroke:#e65100;
+```
 
 Inspired by how human brains process memory — not unlike sleep consolidation.
 

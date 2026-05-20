@@ -6,6 +6,38 @@
 
 ## Overview
 
+```mermaid
+flowchart LR
+    subgraph pipeline["Phase Pipeline Agents"]
+        PR["project-researcher<br/>Domain ecosystem<br/>before roadmap"]:::researcher
+        PHR["phase-researcher<br/>Implementation<br/>research per phase"]:::researcher
+        UIR["ui-researcher<br/>UI design contracts<br/>for frontend phases"]:::researcher
+        AA["assumptions-analyzer<br/>Structured assumptions<br/>with evidence/confidence"]:::analyzer
+        RS["research-synthesizer<br/>Merge research into<br/>unified synthesis"]:::synthesizer
+        PLN["planner<br/>Plan artifact from<br/>research + requirements"]:::planner
+        RM["roadmapper<br/>High-level phase<br/>breakdown with labels"]:::roadmapper
+        EX["executor<br/>Execute plan tasks<br/>in parallel waves"]:::executor
+    end
+    subgraph gates["Quality Gates"]
+        PC["plan-checker<br/>Verify plan correctness<br/>before execution"]:::checker
+        IC["integration-checker<br/>Cross-phase consistency<br/>and contract validation"]:::checker
+        UIC["ui-checker<br/>Design system compliance<br/>and responsive checks"]:::checker
+        VER["verifier<br/>Post-execution verification<br/>against phase goals"]:::verifier
+        NA["nyquist-auditor<br/>Test coverage and<br/>quality metrics"]:::auditor
+    end
+    pipeline --> gates
+
+    classDef researcher fill:#e3f2fd,stroke:#1565c0;
+    classDef analyzer fill:#f3e5f5,stroke:#6a1b9a;
+    classDef synthesizer fill:#fff3e0,stroke:#e65100;
+    classDef planner fill:#e8f5e9,stroke:#2e7d32;
+    classDef roadmapper fill:#e8f5e9,stroke:#2e7d32;
+    classDef executor fill:#c8e6c9,stroke:#388e3c;
+    classDef checker fill:#fff9c4,stroke:#f9a825;
+    classDef verifier fill:#fff9c4,stroke:#f9a825;
+    classDef auditor fill:#ffebee,stroke:#c62828;
+```
+
 GSD uses a multi-agent architecture where thin orchestrators (workflow files) spawn specialized agents with fresh context windows. Each agent has a focused role, limited tool access, and produces specific artifacts.
 
 ### Agent Categories
