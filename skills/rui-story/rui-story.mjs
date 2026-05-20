@@ -12,6 +12,31 @@ const API_URL = process.env.IMPORT_DOCS_API_URL || "https://api.effiy.cn";
 const API_X_TOKEN = process.env.API_X_TOKEN || "";
 const HTTP_TIMEOUT = 30_000;
 const CONCURRENCY = 4;
+const QUERY_LIMIT = 10_000;
+const ERROR_MSG_MAX_LEN = 500;
+
+// --- story extraction constants -------------------------------------------
+const STORY_DIR_OFFSET = 1;
+// minimum parts beyond panelIdx to contain a file: [panelDir, storyDir] → 2
+const STORY_NAME_OFFSET = 2;
+
+// --- display/formatting constants -----------------------------------------
+const STATUS_COUNT_PAD = 4;
+const RECENT_STORY_COUNT = 5;
+const MIN_NAME_COL_WIDTH = 14;
+const STATUS_COL_WIDTH = 18;
+const FILES_COL_WIDTH = 5;
+const DATE_COL_WIDTH = 19;
+const TYPE_COL_WIDTH = 10;
+const LIST_COL_GAP_WIDTH = 30;
+const MIN_COL_GAP = 1;
+const FILE_LIST_NAME_PAD = 2;
+const RECOMMEND_NAME_WIDTH = 20;
+const DATE_ZERO_PAD = 2;
+
+// --- CLI argument constants ------------------------------------------------
+const NODE_ARGV_OFFSET = 2;
+const SHOW_MIN_ARGS = 2;
 
 // --- TTY helpers -----------------------------------------------------------
 const tty = process.stdout.isTTY;
@@ -24,7 +49,7 @@ const cyan = (s) => tty ? `\x1b[36m${s}\x1b[39m` : s;
 
 // --- args ------------------------------------------------------------------
 function parseArgs() {
-  const args = process.argv.slice(2);
+  const args = process.argv.slice(NODE_ARGV_OFFSET);
   if (args.length === 0) return { command: "overview" };
 
   const cmd = args[0];
@@ -38,7 +63,7 @@ function parseArgs() {
   }
 
   if (cmd === "show") {
-    if (args.length < 2) {
+    if (args.length < SHOW_MIN_ARGS) {
       console.error("rui-story: show 需要 <name> 参数");
       process.exit(0);
     }
@@ -105,7 +130,7 @@ async function fetchJson(url, options = {}) {
       },
     });
     const text = await res.text();
-    if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, 500)}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, ERROR_MSG_MAX_LEN)}`);
     try { return JSON.parse(text); }
     catch { return text; }
   } finally { clearTimeout(timer); }
@@ -115,7 +140,7 @@ async function querySessionsFull(apiUrl) {
   const body = {
     module_name: "services.database.data_service",
     method_name: "query_documents",
-    parameters: { cname: "sessions", limit: 10000 },
+    parameters: { cname: "sessions", limit: QUERY_LIMIT },
   };
   const data = await fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
   return data?.data?.list || data?.list || [];
@@ -130,8 +155,8 @@ async function readRemoteFile(apiUrl, remotePath) {
 function extractStoryName(filePath) {
   const parts = filePath.split("/");
   const panelIdx = parts.indexOf("故事任务面板");
-  if (panelIdx === -1 || panelIdx + 2 >= parts.length) return null;
-  return parts[panelIdx + 1];
+  if (panelIdx === -1 || panelIdx + STORY_NAME_OFFSET >= parts.length) return null;
+  return parts[panelIdx + STORY_DIR_OFFSET];
 }
 
 function groupSessionsByStory(sessions) {
@@ -276,7 +301,7 @@ function statusDisplay(status) {
 function formatDate(ts) {
   if (!ts) return "—";
   const d = new Date(ts);
-  const pad = (n) => String(n).padStart(2, "0");
+  const pad = (n) => String(n).padStart(DATE_ZERO_PAD, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
@@ -316,23 +341,23 @@ function printOverview(storyMap, projectPrefix, blockedMap) {
   const order = ["code_done", "code_in_progress", "docs_done", "docs_in_progress", "not_started", "blocked"];
   for (const s of order) {
     const cfg = STATUS_CONFIG[s];
-    const countStr = String(counts[s]).padStart(4);
-    console.log(`  ${cfg.colorFn(cfg.label.padEnd(18))} ${countStr}`);
+    const countStr = String(counts[s]).padStart(STATUS_COUNT_PAD);
+    console.log(`  ${cfg.colorFn(cfg.label.padEnd(STATUS_COL_WIDTH))} ${countStr}`);
   }
 
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
   console.log("────────────────────────────────");
-  console.log(`  ${"合计".padEnd(18)} ${String(total).padStart(4)} 个故事`);
+  console.log(`  ${"合计".padEnd(STATUS_COL_WIDTH)} ${String(total).padStart(STATUS_COUNT_PAD)} 个故事`);
 
   storyStatuses.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
-  const recent = storyStatuses.slice(0, 5);
+  const recent = storyStatuses.slice(0, RECENT_STORY_COUNT);
   console.log("");
   console.log("最近活动:");
   if (recent.length === 0) {
     console.log("  无");
   } else {
     for (const s of recent) {
-      const name = s.name.padEnd(18);
+      const name = s.name.padEnd(STATUS_COL_WIDTH);
       const date = formatDate(s.updatedAt);
       const st = statusDisplay(s.status);
       console.log(`  ${name} ${date}   ${st}`);
@@ -368,21 +393,21 @@ function printList(storyMap, projectPrefix, blockedMap, typeMap) {
     return;
   }
 
-  const nameW = Math.max(14, ...entries.map(e => e.name.length));
-  const statusW = 18;
-  const filesW = 5;
-  const dateW = 19;
-  const typeW = 10;
+  const nameW = Math.max(MIN_NAME_COL_WIDTH, ...entries.map(e => e.name.length));
+  const statusW = STATUS_COL_WIDTH;
+  const filesW = FILES_COL_WIDTH;
+  const dateW = DATE_COL_WIDTH;
+  const typeW = TYPE_COL_WIDTH;
 
   const pad = (s, w) => {
     const str = String(s);
     const visible = str.replace(/\x1b\[[0-9;]*m/g, "").length;
-    return str + " ".repeat(Math.max(1, w - visible));
+    return str + " ".repeat(Math.max(MIN_COL_GAP, w - visible));
   };
 
   console.log(`  ${pad("Story", nameW)} ${pad("Status", statusW)} ${pad("Files", filesW)} ${pad("Last Modified", dateW)} ${pad("Type", typeW)} Branch`);
 
-  const sepLen = nameW + statusW + filesW + dateW + typeW + 30;
+  const sepLen = nameW + statusW + filesW + dateW + typeW + LIST_COL_GAP_WIDTH;
   console.log(`  ${dim("─".repeat(sepLen))}`);
 
   for (const e of entries) {
@@ -421,7 +446,7 @@ function printShow(storyName, sessions, projectPrefix, blockedState, type) {
     console.log("    文件清单:");
     const maxLen = Math.max(...files.map(f => f.name.length));
     for (const f of files) {
-      const name = f.name.padEnd(maxLen + 2);
+      const name = f.name.padEnd(maxLen + FILE_LIST_NAME_PAD);
       const date = formatDate(f.updatedAt);
       console.log(`    ${name} ${date}`);
     }
@@ -450,7 +475,7 @@ function printRecommend(storyMap) {
   const names = [...storyMap.keys()].sort();
   for (const name of names) {
     const sessions = storyMap.get(name);
-    console.log(`  ${name.padEnd(20)} ${dim(`(${sessions.length} 个文件)`)}`);
+    console.log(`  ${name.padEnd(RECOMMEND_NAME_WIDTH)} ${dim(`(${sessions.length} 个文件)`)}`);
   }
 
   console.log("");
