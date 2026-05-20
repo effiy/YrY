@@ -515,15 +515,14 @@ async function main() {
 
   const workspaceName = root.split(sep).pop() || "workspace";
 
-  // 空输入 → 推荐模式
+  // 空输入 → 默认 workspace 全量同步；mode=pull 无 dir 时推荐
   if (!hasArgs(opts)) {
-    console.error(`[import-docs] scan root: ${root} (recommend mode)`);
     if (opts.mode === "pull") {
+      console.error(`[import-docs] scan root: ${root} (pull recommend mode)`);
       await recommendPullMode(apiUrl);
-    } else {
-      await recommendMode(root, workspaceName, opts, apiUrl);
+      return;
     }
-    return;
+    opts.scanRoot = "workspace";
   }
 
   // Pull mode: remote → local download

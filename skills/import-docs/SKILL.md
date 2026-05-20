@@ -274,22 +274,15 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    EMPTY["无参数 / 空输入"]:::src --> LIST["按 list 模式枚举<br/>+ 检测 API_X_TOKEN<br/>+ 检测远端可达性"]:::op
-    LIST --> RECOMMEND["输出推荐任务<br/>不上传"]:::out
-
-    subgraph 推荐["推荐场景"]
-        R1["凭据缺失 → 配置 token"]:::rec
-        R2["首次同步 → 全量导入"]:::rec
-        R3["增量同步 → 仅变更文件"]:::rec
-        R4["全量补齐 → 覆盖远端"]:::rec
-        R5["定期巡检 → 检查差异"]:::rec
-    end
+    EMPTY["无参数 / 空输入"]:::src --> DEFAULT["等价 workspace=true<br/>全量扫描 + 上传"]:::op
+    DEFAULT --> RESULT["逐文件 POST<br/>输出 created / overwritten / failed"]:::out
 
     classDef src fill:#e8f5e9,stroke:#2e7d32;
     classDef op fill:#e3f2fd,stroke:#1565c0;
     classDef out fill:#f3e5f5,stroke:#6a1b9a;
-    classDef rec fill:#fff3e0,stroke:#e65100;
 ```
+
+空输入默认为 `workspace=true` 全量同步，等价于 `/import-docs workspace=true`。
 
 ## 生效标志
 
