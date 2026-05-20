@@ -185,6 +185,146 @@ sequenceDiagram
 | 注入 | fetchJson() 自动附加到所有请求 |
 | 缺失处理 | 查询命令输出配置指引后退出 |
 
+### 2.4 curl 调试命令
+
+#### 通用配置
+
+```bash
+# 所有 API 请求的公共配置
+API_URL="${IMPORT_DOCS_API_URL:-https://api.effiy.cn}"
+CONTENT_TYPE="Content-Type: application/json"
+AUTH_HEADER="X-Token: ${API_X_TOKEN}"
+```
+
+| 变量 | 来源 | 默认值 |
+|------|------|--------|
+| `API_URL` | `IMPORT_DOCS_API_URL` 环境变量 | `https://api.effiy.cn` |
+| `API_X_TOKEN` | 环境变量（必填） | — |
+
+#### API 1: query_documents — 查询 sessions 全量数据
+
+**端点**: `POST ${API_URL}/`
+
+```bash
+curl -s -X POST "${API_URL}/" \
+  -H "${CONTENT_TYPE}" \
+  -H "${AUTH_HEADER}" \
+  -d '{
+    "module_name": "services.database.data_service",
+    "method_name": "query_documents",
+    "parameters": {"cname": "sessions", "limit": 10000}
+  }'
+```
+
+**常用 jq 后处理**:
+
+```bash
+# 1) 统计远端 sessions 总数
+... | jq '.data.list | length'
+
+# 2) 列出故事任务面板下的所有故事名（去重排序）
+... | jq '[.data.list[] | select(.file_path | startswith("故事任务面板/")) | (.file_path | split("/")[1])] | unique | sort | .[]'
+
+# 3) 按故事名分组统计每故事文件数
+... | jq '[.data.list[] | select(.file_path | startswith("故事任务面板/"))] | group_by(.file_path | split("/")[1]) | .[] | {story: .[0].file_path | split("/")[1], count: length}'
+
+# 4) 列出指定故事的全部文件（替换 <name>）
+... | jq '[.data.list[] | select(.file_path | startswith("故事任务面板/<name>/"))] | sort_by(.file_path) | .[] | {file: .file_path, updated_at}'
+
+# 5) 查看最近修改的 5 个故事任务面板文件
+... | jq '[.data.list[] | select(.file_path | startswith("故事任务面板/"))] | sort_by(-.updated_at) | .[0:5] | .[] | {file_path, updated_at}'
+```
+
+**响应格式兼容性** — `fetchJson()` 使用兜底解析 `data?.data?.list || data?.list || []`，curl 调试时注意响应可能有两种包裹格式：
+
+| 格式 | 数据路径 |
+|------|---------|
+| 双层包裹 | `data.data.list` |
+| 单层包裹 | `data.list` |
+
+```bash
+# 兼容两种格式的 jq 查询
+... | jq '.data.data.list // .data.list // []'
+```
+
+#### API 2: read-file — 读取远端单个文件
+
+**端点**: `POST ${API_URL}/read-file`
+
+```bash
+curl -s -X POST "${API_URL}/read-file" \
+  -H "${CONTENT_TYPE}" \
+  -H "${AUTH_HEADER}" \
+  -d '{"target_file": "故事任务面板/<name>/<Project>-技术评审.md"}'
+```
+
+**常用 jq 后处理**:
+
+```bash
+# 1) 获取文件全文并保存到本地（替换 STORY 和 FILE）
+STORY="rui-story"; FILE="YrY-技术评审.md"
+curl -s -X POST "${API_URL}/read-file" \
+  -H "${CONTENT_TYPE}" \
+  -H "${AUTH_HEADER}" \
+  -d "{\"target_file\": \"故事任务面板/${STORY}/${FILE}\"}" | \
+  jq -r '(.data.data.content // .data.content // "")' > "docs/故事任务面板/${STORY}/${FILE}"
+
+# 2) 仅获取前 500 字符预览
+... | jq '(.data.data.content // .data.content // "")[:500]'
+
+# 3) 类型推断关键词扫描（用于判定项目类型）
+... | jq -r '(.data.data.content // .data.content // "")' | \
+  grep -oE -i '\b(api|数据|后端|服务端|接口|数据库|server|backend|组件|交互|样式|前端|页面|ui|frontend)\b' | \
+  sort -u
+
+# 4) 检查文件是否存在（HTTP 200 = 存在）
+curl -s -o /dev/null -w "%{http_code}" -X POST "${API_URL}/read-file" \
+  -H "${CONTENT_TYPE}" \
+  -H "${AUTH_HEADER}" \
+  -d '{"target_file": "故事任务面板/<name>/<Project>-故事任务.md"}'
+```
+
+**响应格式兼容性** — 同 API 1，使用兜底解析 `data?.data?.content ?? data?.content ?? ""`。
+
+#### 调试工作流
+
+```mermaid
+flowchart LR
+    A["API 调试入口"] --> B{"Token 已配置?"}
+    B -->|"否"| C["export API_X_TOKEN=..."]
+    B -->|"是"| D["query_documents<br/>验证远端可达性"]
+    D --> E{"sessions 列表非空?"}
+    E -->|"否"| F["检查 API_URL 是否正确"]
+    E -->|"是"| G["read-file<br/>读取具体文件内容"]
+    G --> H["jq 后处理提取所需字段"]
+```
+
+**快速健康检查一行命令**:
+
+```bash
+# 验证远端 API 可达性 + 统计面板数据
+API_URL="${IMPORT_DOCS_API_URL:-https://api.effiy.cn}"
+curl -s -X POST "${API_URL}/" \
+  -H "Content-Type: application/json" \
+  -H "X-Token: ${API_X_TOKEN}" \
+  -d '{"module_name":"services.database.data_service","method_name":"query_documents","parameters":{"cname":"sessions","limit":10000}}' \
+  | jq '{total: (.data.data.list // .data.list // [] | length), panel: [(.data.data.list // .data.list // [])[] | select(.file_path | startswith("故事任务面板/"))] | length}'
+```
+
+#### 场景 → API 映射速查
+
+| 命令 | API 1 (query_documents) | API 2 (read-file) | 本地操作 |
+|------|:---:|:---:|:---:|
+| `/rui-story` (概览) | ✓ | — | blocked 状态读 `.memory/` |
+| `/rui-story list` | ✓ | ✓ (并发推断类型) | git branch |
+| `/rui-story show <name>` | ✓ | ✓ (推断类型) | blocked + git branch |
+| `/rui-story recommend` | ✓ | — | — |
+| `/rui-story health` | ✓ (条件) | — | CLAUDE.md + 目录 |
+| `/rui-story sync <name>` | 委托 import-docs | 委托 import-docs | 写入本地 |
+| `/rui-story clear` | — | — | ✓ (仅本地文件系统) |
+| `/rui-story remove <name>` | — | — | ✓ (仅本地文件系统) |
+| `/rui-story --help` | — | — | ✓ (本地 help.mjs) |
+
 ---
 
 ## §3 数据模型
@@ -323,4 +463,5 @@ stateDiagram-v2
 >
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
+> | 2026-05-20 | §2.4 补充 curl 调试命令（query_documents + read-file 完整示例、jq 后处理、调试工作流、场景→API 速查表） | /rui update rui-story | skills/rui-story/rui-story.mjs:93-127 |
 > | 2026-05-20 | 初始生成 | doc --from-code rui-story | skills/rui-story/rui-story.mjs + SKILL.md |

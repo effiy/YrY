@@ -60,3 +60,21 @@
 - 产出: YrY-使用场景.md（新增 ~350 行 API 流文档）
 
 ---
+
+## 会话 update-api-curl-tech-review — 2026-05-20
+
+### 2026-05-20 | turn-1 | coder
+
+**👤 用户**:
+`/rui update rui-story 补充调用api请求接口的用户操作流程文档，api 请求接口需要补充 curl 的示例`
+
+**🤖 助手**:
+执行 update (T2 scope)：T2 范围判定 → 分支隔离 → 补充技术评审 §2.4 curl 调试命令
+
+**📋 关键决策**:
+- T2 范围：YrY-使用场景.md 已有完整场景级 curl 示例，本次聚焦 YrY-技术评审.md §2 API 接口补充
+- 分支隔离通过：feat/rui-story
+- 新增 §2.4 curl 调试命令：通用配置 + API 1 query_documents 完整示例（5 个 jq 后处理）+ API 2 read-file 完整示例（4 个 jq 后处理）+ 调试工作流 mermaid + 快速健康检查一行命令 + 场景→API 映射速查表
+- 产出: YrY-技术评审.md（新增 ~100 行 curl 调试命令文档）
+
+---
