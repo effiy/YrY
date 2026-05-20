@@ -15,12 +15,18 @@
         "repo": "effiy/YrY"
       },
       "description": "故事驱动的 SDLC 编排系统。提供 /rui、/rui-claude 命令体系，6 Agent 协同，Gate A/B 强制验证，每故事 8 份文档。",
-      "version": "1.5.4",
+      "version": "1.5.5",
       "author": {
         "name": "YrY"
       },
       "category": "ai",
-      "keywords": ["sdlc", "orchestration", "story-driven", "agent", "pipeline"],
+      "keywords": [
+        "sdlc",
+        "orchestration",
+        "story-driven",
+        "agent",
+        "pipeline"
+      ],
       "license": "MIT",
       "repository": "https://github.com/effiy/YrY"
     }
