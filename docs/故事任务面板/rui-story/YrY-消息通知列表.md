@@ -1,3 +1,14 @@
+【2026-05-20 18:30:00】
+
+【YrY】
+🎯 结论: 完成 rui-story update 阶段
+📝 描述: 补充技术评审 §2.4 curl 调试命令 — query_documents + read-file 完整 curl 示例、jq 后处理模式、调试工作流图、场景→API 映射速查表
+📌 范围: docs/故事任务面板/rui-story/
+👉 下一步: 可继续
+🌐 影响: YrY-技术评审.md (+141行 §2.4) / YrY-交互日志.md (+18行)
+📎 证据: git 4c8bed6
+⏱️ 会话: update 1 turn | 1 agent
+
 【2026-05-20 18:00:00】
 
 【YrY】
