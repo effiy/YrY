@@ -173,7 +173,7 @@ ${item("import-docs", "skills/import-docs/SKILL.md — 文档同步", dim)}
 ${item("wework-bot", "skills/wework-bot/SKILL.md — 企微通知", dim)}
 ${item("self-improve.md", "rules/self-improve.md — 自改进闭环 D0–D7", dim)}
 
-${dim("YrY 版本: 1.5.5 | 架构: plugin — 6 技能 + 6 Agent + 5 规则")}
+${dim("YrY 版本: 1.5.6 | 架构: plugin — 6 技能 + 6 Agent + 5 规则")}
 `;
 
 console.log(help);

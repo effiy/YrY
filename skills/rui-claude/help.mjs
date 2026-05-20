@@ -47,7 +47,7 @@ function para(text) {
 const help = `
 ${bold("# rui-claude — .claude/ 目录管理")}
 
-${dim("同步远端配置 · 健康度分析 · 操作历史 · 需求管线 | 与 /rui-plugin 互补")}
+${dim("同步远端配置 · 健康度分析 · 操作历史 · 需求管线")}
 
 ${hdr("用法")}
 ${item("/rui-claude --help, -h, help", "显示此帮助信息")}
@@ -110,13 +110,11 @@ ${line(dim("6. retro 纯分析 — 不修改任何文件"))}
 ${hdr("管线集成")}
 ${line(dim("sync 操作通过 import-docs mode=pull 实现，不自行对接远端 API。"))}
 ${line(dim("需求管线委托 /rui code，操作目标限定在 .claude/ 目录内。"))}
-${line(dim("与 /rui-plugin（管理 .claude-plugin/）构成完整插件管理拼图。"))}
 
 ${hdr("相关资源")}
 ${item("SKILL.md", "skills/rui-claude/SKILL.md — 完整规约", dim)}
 ${item("rui-claude.md", "rules/rui-claude.md — 操作规则", dim)}
 ${item("rui", "/rui — 故事驱动 SDLC 编排器", dim)}
-${item("rui-plugin", "/rui-plugin — .claude-plugin/ 管理（互补）", dim)}
 
 ${dim("详细说明: skills/rui-claude/SKILL.md | 规则: rules/rui-claude.md")}
 `;
