@@ -40,3 +40,23 @@
 - 所有 P0 检查通过
 
 ---
+
+## 会话 update-api-flow-rui-story — 2026-05-20
+
+### 2026-05-20 | turn-1 | coder
+
+**👤 用户**:
+`/rui update rui-story 补充各个使用场景的接口数据请求流文档，并且每个接口请求下面都会有添加 curl 的命令供调试`
+
+**🤖 助手**:
+执行 update (T2 scope)：分析源码 API 调用链 → 逐场景补充接口数据请求流 → curl 调试命令 → 新增 §6 API 参考
+
+**📋 关键决策**:
+- T2 范围：在 YrY-使用场景.md 中逐场景新增「接口数据请求流」小节
+- 场景 A/B/C/G/H：含 query_documents + read-file API 文档 + curl 命令
+- 场景 D：含 import-docs 委托调用链 + curl 模拟命令
+- 场景 E/F/I：标注本地操作 + 等效验证命令
+- 新增 §6 API 参考：API 清单 + 通用配置 + 两个 API 完整规约 + 场景→API 映射 mermaid 图
+- 产出: YrY-使用场景.md（新增 ~350 行 API 流文档）
+
+---

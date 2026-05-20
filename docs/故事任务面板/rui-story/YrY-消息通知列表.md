@@ -19,3 +19,14 @@
 🌐 影响: docs/故事任务面板/rui-story/YrY-实施报告.md (新增) / YrY-测试报告.md (新增) / YrY-自改进复盘.md (新增) / YrY-交互日志.md (更新)
 📎 证据: node skills/rui-story/rui-story.mjs overview/list/show/recommend/health 全部通过
 ⏱️ 会话: update 单阶段 ~25min | 1 agent 参与
+
+【2026-05-20 19:00:00】
+
+【YrY】
+🎯 结论: 完成 rui-story update 阶段（API 数据请求流文档）
+📝 描述: 为全部 9 个使用场景补充接口数据请求流文档，每场景含 API 请求/响应规约 + curl 调试命令，新增 §6 API 参考（API 清单/通用配置/完整规约/场景→API 映射图），10 文件已同步远端
+📌 范围: docs/故事任务面板/rui-story/
+👉 下一步: 使用 curl 命令直接调试远端 API
+🌐 影响: docs/故事任务面板/rui-story/YrY-使用场景.md (更新 +539 行) / YrY-交互日志.md (更新) / YrY-消息通知列表.md (更新)
+📎 证据: git diff --stat 2 files changed, 539 insertions(+)
+⏱️ 会话: update 单阶段 | 1 agent 参与
