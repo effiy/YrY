@@ -253,7 +253,7 @@ flowchart LR
 > `recommend.mjs` 已根据模块特征自动匹配生态资源，写入 `externalRefs` 字段。
 > PM agent 在推荐时应引用相关的外部参考，帮助用户文档化时参考正确的方法论。
 >
-> 外部参考来自 [README.md §外部参考](../../README.md#外部参考)。
+> 外部参考来自 [外部参考知识库](../../libs/)。
 
 ```mermaid
 flowchart LR

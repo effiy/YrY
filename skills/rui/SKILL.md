@@ -682,7 +682,7 @@ flowchart LR
 
 ## 外部参考融合
 
-> 管线的每个阶段均有对应的外部参考资源（详见 [README.md §外部参考](../../README.md#外部参考) 与 [formulas.md §外部参考应用指南](./formulas.md#外部参考应用指南)）。各 Agent 在执行前必须查阅对应参考，不可凭感觉执行。
+> 管线的每个阶段均有对应的外部参考资源（详见 [外部参考知识库](../../libs/) 与 [formulas.md §外部参考应用指南](./formulas.md#外部参考应用指南)）。各 Agent 在执行前必须查阅对应参考，不可凭感觉执行。
 
 ```mermaid
 flowchart TB
