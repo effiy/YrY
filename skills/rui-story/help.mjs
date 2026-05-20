@@ -44,6 +44,8 @@ ${section("只读命令（远端 API）", [
   ["/rui-story", "状态概览：远端查询 → 按状态统计 + 最近活动"],
   ["/rui-story list", "进度全景：远端查询 → 所有故事详细表格"],
   ["/rui-story show <name>", "单故事详情：远端查询 → 文件清单/状态/元数据"],
+  ["/rui-story recommend", "同步推荐：列出远端可同步的故事及推荐命令"],
+  ["/rui-story health", "健康检查：检查 API、凭据、配置、数据完整性"],
 ])}
 
 ${section("写入命令", [
@@ -69,6 +71,12 @@ ${section("常用场景示例", [
   ["# 清理混入的其他项目文件（仅本地）", ""],
   ["/rui-story clear user-login", "扫描目录，展示双重清单（删除/保留），确认后清除非 YrY- 文件"],
   ["/rui-story clear", "扫描所有故事目录，逐目录清理非项目前缀文件"],
+  ["", ""],
+  ["# 获取同步推荐", ""],
+  ["/rui-story recommend", "查询远端故事面板，列出可同步的故事"],
+  ["", ""],
+  ["# 健康检查", ""],
+  ["/rui-story health", "检查 rui-story 系统健康状态（凭据/API/配置/数据）"],
   ["", ""],
   ["# 删除故事本地副本（仅本地）", ""],
   ["/rui-story remove old-story", "展示目录内容，确认后删除整个本地目录（远端不受影响）"],
@@ -96,6 +104,7 @@ ${section("核心规则", [
   ["kebab-case", "name 小写连字符，无 Project 前缀"],
   ["sync 委托 import-docs", "不自行实现同步逻辑"],
   ["clear/remove 仅本地", "不触碰远端数据，先展示后确认再执行"],
+  ["recommend/health", "确定性脚本执行，无需 agent 解读"],
 ])}
 
 ${section("全局选项", [

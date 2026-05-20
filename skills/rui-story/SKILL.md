@@ -1,6 +1,6 @@
 ---
 name: rui-story
-description: Story panel management and sync. Manage stories under docs/故事任务面板/. Command: /rui-story.
+description: Story panel management and sync. Manage stories under docs/故事任务面板/. Command: /rui-story. Executable: node skills/rui-story/rui-story.mjs [command].
 user_invocable: true
 lifecycle: default-pipeline
 ---
@@ -25,6 +25,8 @@ flowchart TD
     Q2 -->|"sync <name>?"| SYNC["文档同步<br/>远端 → 本地（委托 import-docs）"]:::write
     Q2 -->|"clear <name>?"| CLEAR["清理文件<br/>本地 → 移除非项目前缀文件"]:::danger
     Q2 -->|"remove <name>"| REMOVE["删除故事目录<br/>本地 → 删除整个故事目录"]:::danger
+    Q2 -->|"recommend"| RECOMMEND["同步推荐<br/>远端查询 → 可同步故事列表"]:::read
+    Q2 -->|"health"| HEALTH["健康检查<br/>远端 + 本地 → 系统诊断"]:::read
 
     classDef entry fill:#fff3e0,stroke:#e65100;
     classDef read fill:#e8f5e9,stroke:#2e7d32;
@@ -40,6 +42,8 @@ flowchart TD
 | `/rui-story sync [<name>]` | 写入 | 远端 API | 从远端拉取文档到本地；未指定名称时展示推荐提示 |
 | `/rui-story clear [<name>]` | 写入 | 本地文件系统 | 仅保留 `{project}-` 前缀文件，其余一律删除；未指定名称时扫描所有故事目录 |
 | `/rui-story remove <name>` | 写入 | 本地文件系统 | 删除指定故事的整个本地目录；`<name>` 必填 |
+| `/rui-story recommend` | 只读 | 远端 API | 列出远端可同步的故事及推荐 sync 命令 |
+| `/rui-story health` | 只读 | 远端 API + 本地 | 系统健康检查：凭据、API 可达性、配置、数据完整性 |
 
 `<name>` 为纯语义 kebab-case（如 `user-login`），不加项目名前缀。
 
@@ -58,11 +62,15 @@ flowchart LR
         OVERVIEW["/rui-story"]
         LIST["/rui-story list"]
         SHOW["/rui-story show"]
+        RECOMMEND["/rui-story recommend"]
+        HEALTH["/rui-story health"]
     end
 
     SESSIONS -->|"query_documents"| OVERVIEW
     SESSIONS -->|"query_documents"| LIST
     SESSIONS -->|"query_documents"| SHOW
+    SESSIONS -->|"query_documents"| RECOMMEND
+    SESSIONS -->|"query_documents + local"| HEALTH
 
     classDef api fill:#e3f2fd,stroke:#1565c0;
     classDef cmd fill:#e8f5e9,stroke:#2e7d32;
@@ -228,6 +236,89 @@ flowchart LR
   状态: <status>
   阻断原因: <block_reason 或 —>
 ```
+
+## `/rui-story recommend` — 同步推荐
+
+> 查询远端 API，列出所有可同步的故事及推荐命令。零本地文件系统读取。
+
+```mermaid
+flowchart LR
+    A["查询远端 API<br/>sessions 集合"]:::op --> B["筛选 故事任务面板/ 前缀"]:::op
+    B --> C["按故事名分组"]:::op
+    C --> D["列出故事名 + 文件数<br/>+ 推荐 sync 命令"]:::out
+
+    classDef op fill:#e3f2fd,stroke:#1565c0;
+    classDef out fill:#e8f5e9,stroke:#2e7d32;
+```
+
+**输出**：
+
+```
+远端可同步故事
+
+  rui-story       (34 个文件)
+  aicr            (7 个文件)
+  ...
+
+推荐命令
+
+  /rui-story sync rui-story
+  /rui-story sync aicr
+  ...
+```
+
+- 方向：仅查询远端，不写本地。用户根据推荐自行选择 sync 目标
+- 实现：`node skills/rui-story/rui-story.mjs recommend`
+
+## `/rui-story health` — 健康检查
+
+> 系统诊断：检查凭据、API 可达性、项目配置、远端数据完整性。
+
+```mermaid
+flowchart LR
+    A["读取 CLAUDE.md<br/>项目名"]:::op --> B["检查 API_X_TOKEN"]:::op
+    B --> C{"Token 已配置?"}
+    C -->|"是"| D["查询远端 API<br/>sessions 集合"]:::op
+    C -->|"否"| E["跳过远端检查"]:::op
+    D --> F["统计故事任务面板数据"]:::op
+    E --> G["输出诊断报告"]:::out
+    F --> G
+
+    classDef op fill:#e3f2fd,stroke:#1565c0;
+    classDef out fill:#e8f5e9,stroke:#2e7d32;
+```
+
+**检查维度**：
+
+| 维度 | 检查项 | 数据源 |
+|------|--------|--------|
+| API 凭据 | API_X_TOKEN 是否配置 | 环境变量 |
+| 远端可达性 | API 是否可达，sessions 总数 | 远端 API |
+| 故事面板数据 | 故事任务面板 sessions 数量、故事数 | 远端 API |
+| 项目配置 | CLAUDE.md 项目名解析、故事目录存在性 | 本地文件系统 |
+
+**输出**：
+
+```
+rui-story 健康检查
+══════════════════
+
+── API 凭据
+  ✅ API_X_TOKEN: 已配置
+
+── 远端可达性
+  ✅ API 可达 (effiy.cn): 查询到 158 个 sessions
+  ✅ 故事任务面板 sessions: 96 个 (10 个故事)
+
+── 项目配置
+  ✅ CLAUDE.md: 项目名 = YrY
+  ✅ 故事目录: docs/故事任务面板/ 存在
+
+Summary: 5 pass, 0 warn, 0 error
+```
+
+- 实现：`node skills/rui-story/rui-story.mjs health`
+- 非阻塞：任何检查失败不影响管线，仅报告状态
 
 ## `/rui-story sync [<name>]` — 从远端同步文档
 
@@ -400,7 +491,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    subgraph 规则["7 条硬约束"]
+    subgraph 规则["8 条硬约束"]
         R1["远端 API 为默认数据源<br/>查询不读本地文件系统"]:::rule
         R2["仅查询与同步<br/>不创建文档内容"]:::rule
         R3["不修改源码<br/>不创建/切换 git 分支"]:::rule
@@ -408,6 +499,7 @@ flowchart LR
         R5["kebab-case<br/>命名硬规范"]:::rule
         R6["clear 需确认<br/>破坏性操作先展示后确认"]:::rule
         R7["clear/remove 仅本地<br/>不触碰远端数据"]:::rule
+        R8["recommend/health<br/>确定性脚本执行"]:::rule
     end
 
     classDef rule fill:#e3f2fd,stroke:#1565c0;
@@ -422,6 +514,7 @@ flowchart LR
 | 5 | `<name>` = kebab-case | 拒绝执行 |
 | 6 | clear 仅操作本地文件系统，不触碰远端；仅保留 `{project}-` 前缀文件；先展示双重清单，用户确认后才执行 | 终止操作 |
 | 7 | remove 仅操作本地文件系统，不触碰远端；`<name>` 必填；先展示清单，用户确认后才执行删除 | 终止操作 |
+| 8 | recommend/health 由 rui-story.mjs 确定性执行，不依赖 agent 解读 SKILL.md 流程 | 修正为脚本执行 |
 
 ## 生效标志
 
@@ -431,6 +524,7 @@ flowchart LR
     F1 --> F2["sync 正确委托<br/>import-docs"]:::sig
     F2 --> F3["状态判定准确<br/>基于远端 file_path"]:::sig
     F3 --> F4["clear/remove 操作安全<br/>仅本地，先展示后确认再删除"]:::sig
+    F4 --> F5["recommend/health<br/>确定性脚本输出"]:::sig
 
     classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
@@ -442,6 +536,7 @@ flowchart LR
 | 状态判定基于远端 file_path 准确 | 修正判定逻辑 |
 | clear 从 CLAUDE.md 读取项目名前缀，展示双重清单，确认后执行，仅 `{project}-` 文件幸存 | 修正为展示后确认 |
 | remove 仅操作本地，name 必填，展示清单后确认再删除，远端数据零影响 | 修正为展示后确认 |
+| recommend/health 由 rui-story.mjs 确定性输出，不依赖 agent 手动执行 SKILL.md 流程 | 修正为脚本执行 |
 
 ## 与 rui 的关系
 
