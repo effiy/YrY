@@ -1,0 +1,17 @@
+{
+  "lastBatchFetch": "2026-05-20",
+  "sources": [
+    {"id":"superpowers","repo":"obra/superpowers","commitHash":"f2cbfbefebbfef77321e4c9abc9e949826bea9d7","localPath":"libs/repos/superpowers/"},
+    {"id":"get-shit-done","repo":"gsd-build/get-shit-done","commitHash":"e5461ad4e2a728f376f9f48462a97eb528da1d9a","localPath":"libs/repos/get-shit-done/"},
+    {"id":"mattpocock-skills","repo":"mattpocock/skills","commitHash":"d54c497aa94400a496d3f2c38be10fa5f284c5a9","localPath":"libs/repos/mattpocock-skills/"},
+    {"id":"ui-ux-pro-max-skill","repo":"nextlevelbuilder/ui-ux-pro-max-skill","commitHash":"b7e3af80f6e331f6fb456667b82b12cade7c9d35","localPath":"libs/repos/ui-ux-pro-max-skill/"},
+    {"id":"andrej-karpathy-skills","repo":"multica-ai/andrej-karpathy-skills","commitHash":"2c606141936f1eeef17fa3043a72095b4765b9c2","localPath":"libs/repos/andrej-karpathy-skills/"},
+    {"id":"claude-mem","repo":"thedotmack/claude-mem","commitHash":"37d24944af5f4afaa0de2b0bd0034bb432f2b714","localPath":"libs/repos/claude-mem/"},
+    {"id":"everything-claude-code","repo":"affaan-m/everything-claude-code","commitHash":null,"localPath":"libs/repos/everything-claude-code/"},
+    {"id":"agentmemory","repo":"rohitg00/agentmemory","commitHash":"1838f4d74c3a0accdd3764e7a8ec155cc140b831","localPath":"libs/repos/agentmemory/"},
+    {"id":"hermes-agent","repo":"NousResearch/hermes-agent","commitHash":"0c6eb96c8ff4089cb323192fbc7b3a4da933567f","localPath":"libs/repos/hermes-agent/"},
+    {"id":"ruflo","repo":"ruvnet/ruflo","commitHash":"ceae52ac398f5d2d4aa91e6dffa2ff38e83462f6","localPath":"libs/repos/ruflo/"},
+    {"id":"system-design-primer","repo":"donnemartin/system-design-primer","commitHash":"ae9bbd7b02d90b9866215de185217d33f39ab733","localPath":"libs/repos/system-design-primer/"},
+    {"id":"claude-code-docs","repo":null,"commitHash":null,"localPath":"libs/docs/claude-code/"}
+  ]
+}

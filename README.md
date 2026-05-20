@@ -8,12 +8,13 @@
 flowchart TD
     CMD["/rui · /rui-story · /rui-claude"]
 
-    subgraph Skills[五技能]
+    subgraph Skills[六技能]
         RUI[rui]:::skill
         RS[rui-story]:::skill
         RC[rui-claude]:::skill
         ID[import-docs]:::skill
         WW[wework-bot]:::skill
+        TD[trends-discovery]:::skill
     end
 
     subgraph Agents[六角色]
@@ -183,6 +184,7 @@ flowchart LR
 - **rui-claude** (`/rui-claude sync · retro · history`) — .claude/ 配置远端同步与复盘
 - **import-docs** — 自动（hook 触发）：批量同步故事文档到远端 API
 - **wework-bot** — 自动（hook 触发）：企微机器人推送管线状态通知
+- **trends-discovery** — 按需：查询 GitHub Trending / OSS Insight / TrendShift / Top-Starred，输出结构化趋势报告。自改进 D5 诊断集成
 
 详见 [`skills/`](./skills/)。
 
@@ -201,7 +203,7 @@ YrY/
 │   ├── doc-generation.md    #   文档生成规范
 │   ├── self-improve.md      #   自改进流程
 │   └── rui-claude.md        #   .claude/ 管理约束
-├── skills/                  # 5 项技能规约
+├── skills/                  # 6 项技能规约
 │   ├── rui/                 #   SDLC 编排
 │   │   ├── formulas.md      #     故事文档公式
 │   │   ├── coder.md         #     工作手册·数据契约
@@ -209,13 +211,16 @@ YrY/
 │   ├── rui-story/           #   故事面板管理
 │   ├── rui-claude/          #   .claude/ 配置管理
 │   ├── import-docs/         #   文档远端同步
-│   └── wework-bot/          #   企微通知
+│   ├── wework-bot/          #   企微通知
+│   └── trends-discovery/    #   技术趋势发现
 ├── libs/                    # 外部参考知识库
+│   ├── _sources.json        #   下载源清单
 │   ├── story-patterns.md    #   故事描述·模式与方法论
 │   ├── architecture-patterns.md # 实现与架构·执行模式
 │   ├── tools.md             #   工具与平台
 │   ├── trends.md            #   趋势与发现
-│   └── ecosystem.md         #   自改进生态系统
+│   ├── repos/               #   下载的 GitHub 仓库文档
+│   └── docs/                #   下载的 Web 文档
 ├── docs/
 │   └── 故事任务面板/        #   故事产出目录
 │       └── <name>/
@@ -281,6 +286,5 @@ flowchart TD
 | 实现与架构 — 执行模式 | 预检→实现 + 验证→自改进 | [libs/architecture-patterns.md](./libs/architecture-patterns.md) |
 | 工具与平台 | 预检→实现 + 验证→自改进 | [libs/tools.md](./libs/tools.md) |
 | 趋势与发现 | 交付 | [libs/trends.md](./libs/trends.md) |
-| 自改进生态系统（闭环图） | 全阶段 | [libs/ecosystem.md](./libs/ecosystem.md) |
 
 > 完整索引与阶段映射图见 [libs/README.md](./libs/README.md)。
