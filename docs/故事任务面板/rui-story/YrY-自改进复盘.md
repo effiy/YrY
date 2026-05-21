@@ -1,4 +1,4 @@
-> | v1.4.8 | 2026-05-20 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
+> | v1.6.4 | 2026-05-21 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 
 > **导航**: [← YrY-测试报告](./YrY-测试报告.md) · [YrY-消息通知列表 →](./YrY-消息通知列表.md)
 
@@ -103,7 +103,7 @@
 
 | # | 类别 | 优先级 | 改进动作 | 诊断来源 | 预期效果 | 状态 |
 |---|------|--------|---------|---------|---------|------|
-| 1 | script | P2 | 将格式化输出函数抽取为 `print.mjs` 模块 | D1 上下文膨胀 | rui-story.mjs 降至 ~500 行 | 待评估 |
+| 1 | script | P2 | 将格式化输出函数抽取为 `print.mjs` 模块 | D1 上下文膨胀 | rui-story.mjs 降至 ~500 行 | 部分完成 — 已抽取 hasProjectFile/statusDisplay/formatDate/latestTimestamp 4 个辅助函数，但仍在同文件中 |
 | 2 | rule | P1 | 补齐自动化测试框架 — 为 rui-story.mjs 添加确定性冒烟测试脚本 | 可测试性评级中 | 每次变更可自动验证 | 待评估 |
 | 3 | skill | P2 | 类型推断增加缓存 — 避免重复读取同一技术评审文件 | 性能观察 | list 命令减少 ~300ms | 待评估 |
 | 4 | rule | P1 | CLI 工具应从 SKILL.md 自动生成 help 文本而非维护独立 help.mjs | D1 双源维护 | 减少 SKILL.md 与 help.mjs 不一致风险 | 待评估 |
@@ -149,3 +149,4 @@
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
 > | 2026-05-20 | 初始生成 | /rui update rui-story | rui-story.mjs + SKILL.md 全流程复盘 |
+> | 2026-05-21 | T2 更新：改进 #1 状态更新（已抽取 4 辅助函数）| /rui update rui-story | rui-story.mjs 780行，辅助函数已分离 |

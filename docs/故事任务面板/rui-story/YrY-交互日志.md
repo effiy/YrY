@@ -78,3 +78,25 @@
 - 产出: YrY-技术评审.md（新增 ~100 行 curl 调试命令文档）
 
 ---
+
+## 会话 update-main-sync-rui-story — 2026-05-21
+
+### 2026-05-21 | turn-1 | coder
+
+**👤 用户**:
+`/rui update rui-story`
+
+**🤖 助手**:
+执行 update (T2 scope)：分支隔离验证 → merge main → 命令验证 → 文档刷新 → P0 检查
+
+**📋 关键决策**:
+- T2 范围：main 分支领先 feat/rui-story 1 个 commit，包含 rui-story.mjs/help.mjs/SKILL.md 变更
+- 分支隔离通过：feat/rui-story
+- Fast-forward merge main → feat/rui-story：32 文件变更（rui-plugin 移除、trends-discovery→rui-trends 重命名、CLAUDE.md 版本更新至 1.6.4）
+- rui-story.mjs 代码重构：新增 4 个辅助函数（hasProjectFile/statusDisplay/formatDate/latestTimestamp）、ANSI 常量→内联值、findPluginHelpPath 恢复、行数 730→780
+- help.mjs 重构：ANSI 常量→内联值、行数 117→101
+- SKILL.md --help 段简化
+- 全部命令验证通过：overview（71 sessions）、list、show、health（5 pass）
+- 产出: YrY-实施报告.md（行数/函数表/模块行号/偏差记录更新）、YrY-交互日志.md（本次会话追加）
+
+---

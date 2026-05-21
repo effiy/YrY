@@ -1,4 +1,4 @@
-> | v1.4.8 | 2026-05-20 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
+> | v1.6.4 | 2026-05-21 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 
 > **导航**: [← YrY-测试设计](./YrY-测试设计.md) · [← YrY-安全审计](./YrY-安全审计.md) · [YrY-测试报告 →](./YrY-测试报告.md)
 
@@ -44,9 +44,9 @@
 
 | 文件 | 变更类型 | 行数 | 对应任务 |
 |------|---------|------|---------|
-| `skills/rui-story/rui-story.mjs` | 新增 | 730 | T1–T7: 参数解析、API 查询、状态判定、类型推断、格式化输出 |
-| `skills/rui-story/SKILL.md` | 新增 | 553 | 规约定义：命令族全景、操作边界、数据源、核心规则 |
-| `skills/rui-story/help.mjs` | 新增 | 117 | T6: 帮助系统，含命令表 + 场景示例 |
+| `skills/rui-story/rui-story.mjs` | 新增 | 780 | T1–T7: 参数解析、API 查询、状态判定、类型推断、格式化输出 |
+| `skills/rui-story/SKILL.md` | 新增 | 558 | 规约定义：命令族全景、操作边界、数据源、核心规则 |
+| `skills/rui-story/help.mjs` | 新增 | 101 | T6: 帮助系统，含命令表 + 场景示例 |
 | `docs/故事任务面板/rui-story/YrY-故事任务.md` | 新增 | 273 | doc --from-code 反推生成 |
 | `docs/故事任务面板/rui-story/YrY-使用场景.md` | 新增 | 323 | doc --from-code 反推生成 |
 | `docs/故事任务面板/rui-story/YrY-技术评审.md` | 新增 | 326 | doc --from-code 反推生成 |
@@ -57,32 +57,37 @@
 
 | 函数 | 签名 | 返回 | 验证状态 | 文件路径 |
 |------|------|------|---------|---------|
-| parseArgs | () => opts | `{command, name?}` | ✅ overview/list/show/recommend/health/help 正确路由 | rui-story.mjs:26 |
-| findProjectRoot | (startDir) => string | 绝对路径 | ✅ 找到 /home/claude/YiKnowledge/static/YrY | :53 |
-| readProjectName | (projectRoot) => string\|null | "YrY" | ✅ 3 模式匹配 + fallback | :65 |
-| fetchJson | async (url, options) => any | JSON 解析结果 | ✅ X-Token 注入 + 30s 超时 | :93 |
-| querySessionsFull | async (apiUrl) => [] | sessions 数组 | ✅ 查询到 58 sessions | :114 |
-| readRemoteFile | async (apiUrl, remotePath) => any | 文件内容 | ✅ 用于类型推断 | :124 |
-| extractStoryName | (filePath) => string\|null | 故事名 | ✅ 正确提取 "rui-story" | :130 |
-| groupSessionsByStory | (sessions) => Map | Map<name, sessions[]> | ✅ 筛选 故事任务面板/ 前缀 | :137 |
-| readBlockedState | (projectRoot, storyName) => object\|null | `{blocked, block_reason}` | ✅ 读取 .memory/rui-state.json | :151 |
-| determineStatus | (fileBasenames, projectPrefix, blockedState) => string | 6 种状态之一 | ✅ "docs_done" | :174 |
-| inferType | async (apiUrl, storySessions, projectPrefix) => string | 4 种类型之一 | ✅ "全栈" | :204 |
-| inferTypesBatch | async (apiUrl, storyMap, projectPrefix) => Map | Map<name, type> | ✅ 4 worker 并发 | :229 |
-| checkGitBranch | (name) => string\|null | 分支名或 null | ✅ "feat/rui-story" | :247 |
-| printOverview | (storyMap, projectPrefix, blockedMap) => void | stdout | ✅ 6 状态统计 + 最近活动 | :292 |
-| printList | (storyMap, projectPrefix, blockedMap, typeMap) => void | stdout | ✅ 6 列表格 | :345 |
-| printShow | (storyName, sessions, projectPrefix, blockedState, type) => void | stdout | ✅ 文件清单 + 元数据 | :401 |
-| printRecommend | (storyMap) => void | stdout | ✅ 故事列表 + sync 命令 | :439 |
-| printHealth | (result) => void | stdout | ✅ pass/warn/error 统计 | :465 |
-| showHelp | async () => void | stdout | ✅ help.mjs 存在时调用 | :640 |
-| fallbackHelp | () => void | stdout | ✅ help.mjs 不存在时回退 | :653 |
+| parseArgs | () => opts | `{command, name?}` | ✅ overview/list/show/recommend/health/help 正确路由 | rui-story.mjs:61 |
+| findProjectRoot | (startDir) => string | 绝对路径 | ✅ 找到 /home/claude/YiKnowledge/static/YrY | :88 |
+| readProjectName | (projectRoot) => string\|null | "YrY" | ✅ 3 模式匹配 + fallback | :100 |
+| fetchJson | async (url, options) => any | JSON 解析结果 | ✅ X-Token 注入 + 30s 超时 | :128 |
+| querySessionsFull | async (apiUrl) => [] | sessions 数组 | ✅ 查询到 71 sessions | :149 |
+| readRemoteFile | async (apiUrl, remotePath) => any | 文件内容 | ✅ 用于类型推断 | :159 |
+| extractStoryName | (filePath) => string\|null | 故事名 | ✅ 正确提取 "rui-story" | :165 |
+| groupSessionsByStory | (sessions) => Map | Map<name, sessions[]> | ✅ 筛选 故事任务面板/ 前缀 | :172 |
+| readBlockedState | (projectRoot, storyName) => object\|null | `{blocked, block_reason}` | ✅ 读取 .memory/rui-state.json | :186 |
+| hasProjectFile | (fileBasenames, projectPrefix, docType) => boolean | 是否存在项目文件 | ✅ 用于状态判定辅助 | :203 |
+| determineStatus | (fileBasenames, projectPrefix, blockedState) => string | 6 种状态之一 | ✅ "code_done" | :209 |
+| inferType | async (apiUrl, storySessions, projectPrefix) => string | 4 种类型之一 | ✅ "全栈" | :239 |
+| inferTypesBatch | async (apiUrl, storyMap, projectPrefix) => Map | Map<name, type> | ✅ 4 worker 并发 | :264 |
+| checkGitBranch | (name) => string\|null | 分支名或 null | ✅ "feat/rui-story" | :282 |
+| statusDisplay | (status) => string | 状态中文标签 | ✅ 6 状态映射 | :306 |
+| formatDate | (ts) => string | 格式化日期 | ✅ YYYY-MM-DD HH:mm | :311 |
+| latestTimestamp | (sessions) => number | 最近时间戳 | ✅ 用于排序 | :318 |
+| printOverview | (storyMap, projectPrefix, blockedMap) => void | stdout | ✅ 6 状态统计 + 最近活动 | :327 |
+| printList | (storyMap, projectPrefix, blockedMap, typeMap) => void | stdout | ✅ 6 列表格 | :380 |
+| printShow | (storyName, sessions, projectPrefix, blockedState, type) => void | stdout | ✅ 文件清单 + 元数据 | :436 |
+| printRecommend | (storyMap) => void | stdout | ✅ 故事列表 + sync 命令 | :474 |
+| printHealth | (result) => void | stdout | ✅ pass/warn/error 统计 | :500 |
+| findPluginHelpPath | () => string\|null | help.mjs 路径 | ✅ 从插件缓存目录定位 help.mjs | :677 |
+| showHelp | async () => void | stdout | ✅ 调用 help.mjs 或 fallback | :690 |
+| fallbackHelp | () => void | stdout | ✅ help.mjs 不存在时回退 | :703 |
 
 ### 1.3 通信通道
 
 | 通道 | 方向 | 协议 | Payload | 验证状态 |
 |------|------|------|---------|---------|
-| CLI → API (query) | 出站 | HTTPS POST | `{module_name, method_name, parameters: {cname, limit}}` | ✅ 查询到 58 sessions |
+| CLI → API (query) | 出站 | HTTPS POST | `{module_name, method_name, parameters: {cname, limit}}` | ✅ 查询到 71 sessions |
 | CLI → API (read-file) | 出站 | HTTPS POST | `{target_file}` | ✅ 类型推断成功 |
 | CLI → Local FS (read) | 本地 | fs.readFileSync | CLAUDE.md, rui-state.json | ✅ 项目名正确解析 |
 | CLI → Git (branch) | 本地 | execSync | `git branch --list "feat/<name>"` | ✅ 正确匹配 feat/rui-story |
@@ -95,6 +100,7 @@
 |---|---------|---------|---------|------|--------|
 | 1 | 技术评审 §1 计划 sync/clear/remove 在 rui-story.mjs 中实现 | sync 委托 import-docs；clear/remove 由 agent 按 SKILL.md 规约执行 | sync 复用已有 import-docs 能力避免重复；clear/remove 为破坏性操作需 agent 确认流程 | 无负面影响，职责更清晰 | P1 |
 | 2 | 技术评审 §3.4 类型推断规则含 "服务" 关键词匹配后端 | 实际实现中 "服务" 匹配后端 + "界面" 匹配前端 → 可能误判为 fullstack | 中文关键词歧义：YrY 技术评审同时提及"服务端"和"界面" | rui-story 被正确判定为全栈，无实际影响 | P2 |
+| 3 | 10a473f refactor: ANSI magic numbers → semantic constants + help path simplified | 32e5bde fea: 1.6.2 重新添加 findPluginHelpPath() + homedir/readdirSync 导入 | help.mjs 需从插件缓存目录定位，无法仅用本地路径 | 恢复 findPluginHelpPath() 是功能需要，非回退 | P2 |
 
 无其他偏差。实现严格遵循技术评审 §0.2 任务规划的 T1–T7 模块划分与 §1 系统架构设计。
 
@@ -106,15 +112,15 @@
 
 | 模块 | 文件 | P0 数量 | 清零 | 审查时间 |
 |------|------|---------|------|---------|
-| 参数解析与路由 | rui-story.mjs:26–50 | 0 | ✅ | 2026-05-20 |
-| 项目配置读取 | rui-story.mjs:53–91 | 0 | ✅ | 2026-05-20 |
-| API 查询引擎 | rui-story.mjs:93–148 | 0 | ✅ | 2026-05-20 |
-| 状态判定 | rui-story.mjs:165–194 | 0 | ✅ | 2026-05-20 |
-| 类型推断 | rui-story.mjs:197–244 | 0 | ✅ | 2026-05-20 |
-| Git 分支检查 | rui-story.mjs:247–258 | 0 | ✅ | 2026-05-20 |
-| 格式化输出 | rui-story.mjs:260–513 | 0 | ✅ | 2026-05-20 |
-| 命令处理器 | rui-story.mjs:517–636 | 0 | ✅ | 2026-05-20 |
-| 帮助系统 | rui-story.mjs:640–671 + help.mjs | 0 | ✅ | 2026-05-20 |
+| 参数解析与路由 | rui-story.mjs:61–86 | 0 | ✅ | 2026-05-20 |
+| 项目配置读取 | rui-story.mjs:88–126 | 0 | ✅ | 2026-05-20 |
+| API 查询引擎 | rui-story.mjs:128–170 | 0 | ✅ | 2026-05-20 |
+| 状态判定 | rui-story.mjs:186–237 | 0 | ✅ | 2026-05-20 |
+| 类型推断 | rui-story.mjs:239–280 | 0 | ✅ | 2026-05-20 |
+| Git 分支检查 | rui-story.mjs:282–298 | 0 | ✅ | 2026-05-20 |
+| 格式化输出 | rui-story.mjs:306–548 | 0 | ✅ | 2026-05-20 |
+| 命令处理器 | rui-story.mjs:552–671 | 0 | ✅ | 2026-05-20 |
+| 帮助系统 | rui-story.mjs:677–721 + help.mjs | 0 | ✅ | 2026-05-20 |
 
 ### 3.2 安全审查
 
@@ -329,3 +335,4 @@ node skills/rui-story/rui-story.mjs show nonexistent
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
 > | 2026-05-20 | 初始生成 | /rui update rui-story | rui-story.mjs 全部命令验证通过 |
+> | 2026-05-21 | T2 更新：代码重构后刷新行数、函数表、模块行号；新增偏差 #3 | /rui update rui-story | merge main → feat/rui-story, 全部命令验证通过 |
