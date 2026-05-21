@@ -11,7 +11,12 @@ agents:
 
 > 故事驱动 SDLC 编排器：拆故事 → 文档基线 → 测试先行 → 实现 → 验证 → 复盘 → 交付。
 >
-> **--help / -h**：执行 `node skills/rui/help.mjs` 输出完整帮助（含场景示例）。用户输入 `/rui --help` 或 `/rui -h` 或 `/rui help` 时，跳过管线逻辑，直接运行脚本并将输出展示给用户。
+> **--help / -h / help — 本地脚本，零网络请求**
+>
+> 用户输入含 `--help`、`-h` 或 `help` 时，**无条件执行以下操作**：
+> 1. 运行 `node skills/rui/help.mjs`，将输出原样展示给用户
+> 2. 立即停止，不得执行任何其他逻辑
+> 3. 禁止：API 调用 · 网络请求 · 读取远端数据 · 管线处理 · Agent 调度 · import-docs · wework-bot
 >
 > 哲学源自 [CLAUDE.md](../../CLAUDE.md)。本文件定义命令面与编排骨架，细节分散在：[rules/](../../rules/) · [agents/](../../agents/) · [formulas.md](./formulas.md) · [coder.md](./coder.md)。
 

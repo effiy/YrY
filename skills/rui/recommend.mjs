@@ -17,10 +17,20 @@ const DEFAULT_EXCLUDES = new Set([
 ]);
 const DOC_BASE = "docs/故事任务面板";
 const CHURN_DAYS = 90;
+const LARGE_MODULE_LINE_THRESHOLD = 200;
+const HUB_MODULE_IMPORT_THRESHOLD = 3;
+const EXTERNAL_REF_HIGH_RELEVANCE_MIN_MATCH = 2;
+const DOC_COMPLETE_MIN_FILES = 4;
+const SIGNATURE_PREVIEW_LIMIT = 10;
+const COVERAGE_SIG_PREVIEW_COUNT = 3;
+const PERCENT_MULTIPLIER = 100;
+const NODE_ARGV_OFFSET = 2;
+const DECIMAL_RADIX = 10;
+const JSON_INDENT = 2;
 
 // --- args (mirrors sync.mjs pattern) ---------------------------------------
 function parseArgs() {
-  const args = process.argv.slice(2);
+  const args = process.argv.slice(NODE_ARGV_OFFSET);
   const opts = { type: "auto", format: "json" };
   let root = null;
 
@@ -53,22 +63,30 @@ function showHelp() {
     }
   }
   // Inline help — recommend-specific, more detailed than rui/help.mjs
+  const ANSI_BOLD = 1;
+  const ANSI_DIM = 2;
+  const ANSI_UNDERLINE = 4;
+  const ANSI_GREEN = 32;
+  const ANSI_YELLOW = 33;
+
   const { bold, underline, dim, yellow, green } = (() => {
     const make = (code) => (s) => `\x1b[${code}m${s}\x1b[0m`;
-    const e = { bold: make(1), underline: make(4), dim: make(2), yellow: make(33), green: make(32) };
+    const e = { bold: make(ANSI_BOLD), underline: make(ANSI_UNDERLINE), dim: make(ANSI_DIM), yellow: make(ANSI_YELLOW), green: make(ANSI_GREEN) };
     if (!process.stdout.isTTY) { for (const k of Object.keys(e)) e[k] = (s) => s; }
     return e;
   })();
 
-  const I = "  ";
+  const INDENT = "  ";
+  const LEFT_COLUMN_WIDTH = 32;
+  const COLUMN_MIN_PADDING = 2;
   function hdr(t) { return `\n${bold(underline(t))}\n`; }
   function item(c, d, clr) {
-    const l = `${I}${c}`;
-    const p = Math.max(2, 32 - l.length);
+    const l = `${INDENT}${c}`;
+    const p = Math.max(COLUMN_MIN_PADDING, LEFT_COLUMN_WIDTH - l.length);
     return `${clr ? clr(l) : l}${" ".repeat(p)}${d}`;
   }
   function sec(t, es) { return hdr(t) + es.map(([c, d, clr]) => item(c, d, clr)).join("\n"); }
-  function line(t) { return `${I}${t}`; }
+  function line(t) { return `${INDENT}${t}`; }
 
   const help = `
 ${bold("# recommend — 源码分析器")}
@@ -420,7 +438,7 @@ function docStatus(root, project, name) {
   }
 
   let status = "no_docs";
-  if (taskExists && existingFiles.length >= 4) status = "complete";
+  if (taskExists && existingFiles.length >= DOC_COMPLETE_MIN_FILES) status = "complete";
   else if (taskExists && existingFiles.length >= 1) status = "partial";
   else if (dirExists && existingFiles.length > 0) status = "partial";
 
@@ -444,12 +462,12 @@ function gitMetrics(root, file) {
     const authorCount = parseInt(execSync(
       `git log --format=%an -- "${rel}"`,
       { cwd: root, encoding: "utf-8", stdio: ["ignore", "pipe", "ignore"] }
-    ).trim().split("\n").filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).length, 10) || 0;
+    ).trim().split("\n").filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).length, DECIMAL_RADIX) || 0;
 
     const recentChurn = parseInt(execSync(
       `git log --since="${CHURN_DAYS} days ago" --oneline -- "${rel}" | wc -l`,
       { cwd: root, encoding: "utf-8", stdio: ["ignore", "pipe", "ignore"], shell: true }
-    ).trim(), 10) || 0;
+    ).trim(), DECIMAL_RADIX) || 0;
 
     return { lastModified: lastModified || null, authorCount, recentChurn };
   } catch {
@@ -495,9 +513,9 @@ function externalRefs(story) {
   if (story.security.hasAuth) { tags.add("security"); tags.add("gate"); tags.add("discipline"); }
   if (story.security.hasUserInput) { tags.add("security"); }
   // Hub modules (architecture importance)
-  if (story.metrics.importedByCount >= 3) { tags.add("architecture"); tags.add("context"); }
+  if (story.metrics.importedByCount >= HUB_MODULE_IMPORT_THRESHOLD) { tags.add("architecture"); tags.add("context"); }
   // Large modules
-  if (story.metrics.lines > 200) { tags.add("engineering"); }
+  if (story.metrics.lines > LARGE_MODULE_LINE_THRESHOLD) { tags.add("engineering"); }
   // State-related (heuristic: files named store/state/model)
   const statePattern = /\b(store|state|model|context|memory|reducer|atom)\b/i;
   if (story.sourceFiles.some(f => statePattern.test(f))) {
@@ -507,7 +525,7 @@ function externalRefs(story) {
   for (const [category, entries] of Object.entries(EXTERNAL_REFS)) {
     for (const entry of entries) {
       const matchCount = entry.tags.filter(t => tags.has(t)).length;
-      if (matchCount >= 2) {
+      if (matchCount >= EXTERNAL_REF_HIGH_RELEVANCE_MIN_MATCH) {
         refs.push({ category, name: entry.name, url: entry.url, desc: entry.desc, relevance: "high" });
       } else if (matchCount === 1) {
         refs.push({ category, name: entry.name, url: entry.url, desc: entry.desc, relevance: "normal" });
@@ -563,7 +581,7 @@ async function collect(root, files, project, projectType) {
       file: relFile,
       name,
       type,
-      metrics: { lines, signatures, importedByCount: importedByList.length, importedBy: importedByList.slice(0, 10) },
+      metrics: { lines, signatures, importedByCount: importedByList.length, importedBy: importedByList.slice(0, SIGNATURE_PREVIEW_LIMIT) },
       git,
       doc,
       security: sec,
@@ -631,7 +649,7 @@ function buildStoryCandidate(group, project, projectType) {
   const expectedDocs = ["故事任务", "使用场景", "技术评审", "测试设计", "安全审计", "实施报告", "测试报告", "自改进复盘"];
 
   // Coverage description
-  const primarySig = allSignatures.length > 0 ? allSignatures.slice(0, 3).join("; ") : "";
+  const primarySig = allSignatures.length > 0 ? allSignatures.slice(0, COVERAGE_SIG_PREVIEW_COUNT).join("; ") : "";
   const fileCount = group.length > 1 ? ` +${group.length - 1} 关联` : "";
   const coverageDesc = primarySig
     ? `${primary.file}${fileCount} — ${primarySig}`
@@ -678,9 +696,9 @@ function buildStoryCandidate(group, project, projectType) {
     metrics: {
       lines: totalLines,
       fileCount: group.length,
-      signatures: allSignatures.slice(0, 10),
+      signatures: allSignatures.slice(0, SIGNATURE_PREVIEW_LIMIT),
       importedByCount: allImportedBy.length,
-      importedBy: allImportedBy.slice(0, 10),
+      importedBy: allImportedBy.slice(0, SIGNATURE_PREVIEW_LIMIT),
     },
     git,
     doc: {
@@ -699,7 +717,7 @@ function formatOutput(results, format) {
       process.stdout.write(JSON.stringify(r) + "\n");
     }
   } else {
-    process.stdout.write(JSON.stringify(results, null, 2) + "\n");
+    process.stdout.write(JSON.stringify(results, null, JSON_INDENT) + "\n");
   }
 }
 
@@ -707,7 +725,7 @@ function formatOutput(results, format) {
 function printSummary(stories) {
   const totalFiles = stories.reduce((s, st) => s + st.metrics.fileCount, 0);
   const noDocs = stories.filter(s => s.doc.status === "no_docs").length;
-  const rate = stories.length > 0 ? Math.round(noDocs / stories.length * 100) : 0;
+  const rate = stories.length > 0 ? Math.round(noDocs / stories.length * PERCENT_MULTIPLIER) : 0;
   console.error(`[recommend] ${stories.length} story candidates, ${totalFiles} source files, no-docs rate ${rate}%`);
 }
 

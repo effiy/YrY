@@ -324,6 +324,8 @@ flowchart LR
 
 **表达优先：图 → 结构化文本 → 表。**
 
+**语义化数字：禁止魔法数字。** 所有数字字面量必须赋予语义化常量名。仅 `0`、`1`、`-1`（循环/索引/初始化惯用值）可豁免。`if (status === 200)` → `if (status === HTTP_OK)`、`setTimeout(fn, 3000)` → `setTimeout(fn, POLL_INTERVAL_MS)`。
+
 ## ADR（架构决策记录）
 
 > 放 `docs/adr/`。仅当三个条件全满足时创建：

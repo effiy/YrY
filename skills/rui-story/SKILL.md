@@ -9,7 +9,12 @@ lifecycle: default-pipeline
 
 > 故事任务面板管理：查 · 同步。数据源为远端 API，默认远端模式，不读本地文件系统。
 >
-> **--help / -h**：执行 `node skills/rui-story/help.mjs` 输出完整帮助（含场景示例）。用户输入 `/rui-story --help` 或 `/rui-story -h` 或 `/rui-story help` 时，跳过管线逻辑，直接运行脚本并将输出展示给用户。
+> **--help / -h / help — 本地脚本，零网络请求**
+>
+> 用户输入含 `--help`、`-h` 或 `help` 时，**无条件执行以下操作**：
+> 1. 运行 `node skills/rui-story/help.mjs`，将输出原样展示给用户
+> 2. 立即停止，不得执行任何其他逻辑
+> 3. 禁止：API 调用 · 网络请求 · 读取远端数据 · 管线处理 · 文件系统操作
 >
 > 哲学源自 [CLAUDE.md](../../CLAUDE.md)。本文件定义命令面与操作规约。
 

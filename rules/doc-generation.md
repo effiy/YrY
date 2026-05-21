@@ -8,6 +8,10 @@ paths:
 
 > 文档生成的八条强制约束。表达优先：图 → 结构化文本 → 表。编号即顺序；不可提前创建。
 
+
+[铁律](#iron-law) · [八约束全景](#eight-constraints) · [适用](#scope) · [① 版头齐](#meta-nav) · [② 表达优先](#diagram-first) · [③ 目录清](#dir-clean) · [④ 证据足](#evidence) · [⑤ 产出聚](#output-cohesion) · [⑥ 裁剪准](#precision-cut) · [⑦ 无魔数](#no-magic) · [⑧ 效果证](#proof) · [补充文档](#supplementary) · [策展](#curation) · [例外](#exceptions) · [生效标志](#effectiveness)
+
+<a id="iron-law"></a>
 ## 铁律
 
 ```
@@ -22,13 +26,15 @@ NO MAGIC NUMBERS — EVERY NUMERIC LITERAL MUST BE SEMANTICALLY NAMED
 
 故事文档公式见 [formulas.md](../skills/rui/formulas.md)；目录与数据契约见 [coder.md](../skills/rui/coder.md)。
 
+<a id="eight-constraints"></a>
 ## 八约束全景
 
 ```mermaid
 flowchart TB
     subgraph C1["① 版头齐"]
-        H1["F.meta 版本头"]:::c
-        H2["F.nav 导航块"]:::c
+        H1["F.meta 版本行"]:::c
+        H2["F.toc 标题链接跳转目录"]:::c
+        H3["F.nav 导航块"]:::c
     end
     subgraph C2["② 表达优先"]
         G1["图 → 结构化文本 → 表"]:::c
@@ -64,7 +70,7 @@ flowchart TB
 
 | 约束 | 一句话 | 违反示例 |
 |------|--------|---------|
-| ① 版头齐 | 每文档必含版本行 + 导航块 | 无 F.meta 版本头直接开写 |
+| ① 版头齐 | 每文档必含版本行 + 标题链接跳转目录 + 导航块，字段可验证，链接可闭合 | 无 F.meta 版本行 / 无 F.toc 目录 / 导航块链接指向不存在文件 |
 | ② 表达优先 | 图 → 结构化文本 → 表，架构/流程/关系优先 mermaid | 大段文字描述架构，无图 |
 | ③ 目录清 | 故事文档按 `<name>/` 独立子目录 | 文档散落在项目根目录 |
 | ④ 证据足 | Level A/B 写入，C 标注待补充，D 禁止出现 | "应该有个 UserService" |
@@ -73,33 +79,115 @@ flowchart TB
 | ⑦ 无魔数 | 硬编码数值必须语义化：代码用命名常量，文档用语义描述 | `Math.max(2, 28)` / "最近 5 个故事" |
 | ⑧ 效果证 | 技术评审必含效果示意，实施报告必含截图+可操作验证步骤（后端 curl，前端操作路径） | 实施报告只有文字无截图无验证命令 |
 
+<a id="scope"></a>
 ## 适用
 
 `docs/故事任务面板/` 下的故事文档产出。参考文档公式（F.ref.\*）不受此约束。
 
 目录的创建、删除、重命名由 `/rui-story` 管理，详见 [rui-story SKILL.md](../skills/rui-story/SKILL.md)。文档内容生成由 `/rui doc` 负责。
 
+<a id="meta-nav"></a>
 ## ① 版头齐
 
 ```mermaid
 flowchart LR
-    subgraph 必含["每文档必含"]
-        META["F.meta<br/>版本行：v{版本} | {日期} | {模型} | {分支}"]:::must
-        NAV["F.nav<br/>导航块：关联文档链接"]:::must
+    subgraph 必含["每文档必含三组件"]
+        META["F.meta<br/>版本行"]:::must
+        TOC["F.toc<br/>标题链接跳转目录"]:::must
+        NAV["F.nav<br/>导航块"]:::must
     end
-    META --> DOC["文档开头"]:::out
-    NAV --> DOC
-    NAV --> TAIL["主体章节末尾"]:::out
+    META --> DOC_TOP["文档开头<br/>紧跟 # 标题"]:::out
+    TOC --> DOC_TOP
+    NAV --> DOC_END["主体章节末尾"]:::out
 
     classDef must fill:#e3f2fd,stroke:#1565c0;
     classDef out fill:#e8f5e9,stroke:#2e7d32;
 ```
 
+三组件位序不可变：
+
+```
+# 文档标题
+> F.meta — 版本行            ← 文档开头，紧跟标题
+  F.toc — 标题链接跳转目录    ← 文档开头，紧跟 F.meta，无前缀无标签
+
+... 正文 ...
+
+> F.nav — 导航块             ← 主体章节末尾（生效标志之前）
+```
+
+### F.meta 版本行
+
+置于文档标题（`#`）之后、F.toc 之前。格式：
+
+```markdown
+> v{版本} | {YYYY-MM-DD} | {模型名} | feat/{name}
+```
+
+| 字段 | 说明 | 示例 | 必填 |
+|------|------|------|:---:|
+| `v{版本}` | 项目当前版本号 | `v1.5.8` | ✓ |
+| `{日期}` | 文档生成/更新日期，ISO 8601 | `2026-05-21` | ✓ |
+| `{模型}` | 生成该文档的模型名 | `Claude Opus 4.7` | ✓ |
+| `{分支}` | 当前 git 分支名 | `feat/user-login` | ✓ |
+
+**约束**：
+- 占位符 `{...}` 留空即偏差（`#1`）
+- 版本号必须与 `plugin.json` / `CLAUDE.md` 一致
+- 分支名必须与实际 git 分支一致，不可凭记忆填写
+
+### F.toc 标题链接跳转目录
+
+置于 F.meta 之后、正文第一个 `##` 之前。列出文档内所有 `##` 级标题链接，以 `·` 分隔单行排布，无前缀无标签。格式：
+
+```markdown
+[§1 概述](#sec1) · [§2 设计](#sec2) · [§3 测试](#sec3) · [§4 附录](#sec4)
+```
+
+| 规则 | 说明 |
+|------|------|
+| 定位 | F.meta 之后，正文首个 `##` 之前，独占一行 |
+| 覆盖 | 文档内全部 `##` 级标题，不遗漏 |
+| 锚点 | 统一使用 `<a id="..."></a>` 显式锚点（纯 ASCII kebab-case），置于目标 `##` 标题上方 |
+| 格式 | 单行，纯 `[标题](#id)` · `[标题](#id)` ...，无前缀无标签 |
+| 排列 | 按标题在文档中的出现顺序 |
+| 豁免 | `README.md` / `CLAUDE.md` 等索引文件不要求 F.toc |
+
+### F.nav 导航块
+
+置于主体章节末尾（生效标志之前）。格式：
+
+```markdown
+---
+
+> 关联文档：[上一篇](../<prev>/) · [下一篇](../<next>/) · [文档索引](../)
+> 上游基线：[{project}-故事任务.md](./{project}-故事任务.md) · [{project}-使用场景.md](./{project}-使用场景.md)
+> 生成模型：{模型名} | 生成日期：{YYYY-MM-DD}
+```
+
+| 字段 | 说明 | 必填 |
+|------|------|:---:|
+| 关联文档 | 上一篇/下一篇故事文档链接或索引链接 | ✓ |
+| 上游基线 | 本文档所依赖的上游文档（如故事任务→使用场景→技术评审的依赖链） | ✓ |
+| 生成模型 | 生成该文档的模型名（与 F.meta 一致） | ✓ |
+| 生成日期 | ISO 8601 日期（与 F.meta 一致） | ✓ |
+
+**约束**：
+- 索引文件（README.md / CLAUDE.md）不要求导航块（`#2`）
+- 基线文档（故事任务/使用场景）的导航块侧重下游链接
+- 验证文档（实施报告/测试报告/自改进复盘）的导航块侧重上游溯源
+- 链接目标必须存在，不可指向不存在的文件
+
 | # | 规则 | 反例 |
 |---|------|------|
 | 1 | 版本行必填，占位符 `{...}` 留空即偏差 | `v{版本} \| {日期}` — 未替换占位符 |
 | 2 | 主体章节首尾含导航块（F.nav），索引文件除外 | 文章末尾无关联文档链接 |
+| 3 | 版本行字段必须可验证：版本号对 `plugin.json`、分支对 `git branch` | 分支写 `feat/user-login` 但实际在 `main` |
+| 4 | 导航块上游基线链必须闭合：每个链接指向已存在的文档 | 指向 `./{project}-技术评审.md` 但该文件不存在 |
+| 5 | F.toc 必须覆盖文档内全部 `##` 级标题，无一遗漏 | 文档有 8 个 `##` 但 F.toc 只列出 5 个 |
+| 6 | F.toc 锚点必须为纯 ASCII kebab-case，使用 `<a id>` 显式标记 | 锚点含中文或 Unicode 符号导致跳转失效 |
 
+<a id="diagram-first"></a>
 ## ② 表达优先
 
 ```mermaid
@@ -130,6 +218,7 @@ flowchart LR
 | 5 | **禁止文替图** — 能用图表达的信息，不得仅用文字。文档以图为骨架，文字为血肉 | "系统由 A、B、C 三个模块组成，A 调用 B，B 调用 C…" — 无图 |
 | 6 | **图先于文** — 每个章节的 mermaid 图位于该章节文字之前，读者先看结构再读细节 | 先写三段背景，末尾附一个小图 |
 
+<a id="dir-clean"></a>
 ## ③ 目录清
 
 ```mermaid
@@ -152,6 +241,7 @@ flowchart LR
 | CLI 输入 | `<name>` |
 | 技术评审/实施报告 文件名 | 如 `{project}-技术评审.md` |
 
+<a id="evidence"></a>
 ## ④ 证据足
 
 证据等级定义见 [agents/AGENT.md](../agents/AGENT.md#证据等级)（A 已验证 · B 可推导 · C 待补充 · D 禁止）。文档生成阶段遵循同等级规则。
@@ -162,6 +252,7 @@ flowchart LR
 | 8 | 不编造未验证的模块名/接口/路径/文件名 | "新增 `/api/v2/users` 接口" — 无源码证据 |
 | 9 | 跨文档引用先指向索引文件，再按需深入章节 | 直接链到某个章节，跳过索引 |
 
+<a id="output-cohesion"></a>
 ## ⑤ 产出聚
 
 ```mermaid
@@ -194,6 +285,7 @@ flowchart LR
 | 自改进 | 自改进复盘 | 必创建 |
 | 交付 | 消息通知列表 | 自动追加 |
 
+<a id="precision-cut"></a>
 ## ⑥ 裁剪准
 
 ```mermaid
@@ -214,6 +306,7 @@ flowchart TD
 | **T2** | 增删/接口变更 | 裁剪 | 裁剪 | 目标 + 下游 |
 | **T3** | 边界变化/跨故事重构 | 完整重跑 | 完整重跑 | 全级联刷新 |
 
+<a id="no-magic"></a>
 ## ⑦ 无魔数
 
 ```mermaid
@@ -257,6 +350,7 @@ flowchart LR
 - `rules/` 下的规则文档
 - `agents/` 下的 Agent 定义
 
+<a id="proof"></a>
 ## ⑧ 效果证
 
 ```mermaid
@@ -299,6 +393,7 @@ flowchart LR
 | 实施报告（后端） | fenced code block (`bash`)，每接口一块 | 完整 curl 命令（含 URL、method、headers、body）、预期响应摘要。不可用 `localhost`，使用可配置的基础 URL 占位符 `${BASE_URL}` |
 | 实施报告（前端） | 编号操作步骤列表 | 起始页面 → 每步操作（点击/输入）→ 预期显示。步骤可被独立复现，不依赖上下文记忆 |
 
+<a id="supplementary"></a>
 ## 补充文档
 
 ```mermaid
@@ -330,6 +425,7 @@ flowchart TD
 | 新权限控制 | 权限模型.md | pm |
 | 性能敏感 | 性能基准.md | pm |
 
+<a id="curation"></a>
 ## 策展
 
 ```mermaid
@@ -355,6 +451,7 @@ flowchart LR
 | 11a | `--from-code` req 空：探索模式，pm 扫描源码推荐列表 | 用户选择后生成文档 |
 | 11b | `--from-code` req 有值：反推模式，证据 Level B | 标注源码路径，缺口标 `> 待补充` |
 
+<a id="exceptions"></a>
 ## 例外
 
 | 场景 | 处理 |
@@ -362,11 +459,12 @@ flowchart LR
 | T1 级变更 | 跳过影响分析与架构设计 |
 | 反推命令 | 只读源码，不触发 Gate A/B（见 code-pipeline.md） |
 
+<a id="effectiveness"></a>
 ## 生效标志
 
 ```mermaid
 flowchart LR
-    S1["版头齐<br/>版本行 + 导航块"]:::sig --> S2["表达优先<br/>图 → 结构化文本 → 表"]:::sig
+    S1["版头齐<br/>版本行 + F.toc + 导航块"]:::sig --> S2["表达优先<br/>图 → 结构化文本 → 表"]:::sig
     S2 --> S3["目录清<br/>&lt;name&gt;/ 合规"]:::sig
     S3 --> S4["证据足<br/>无 Level D 内容"]:::sig
     S4 --> S5["产出聚<br/>文件按阶段创建"]:::sig
@@ -379,7 +477,7 @@ flowchart LR
 
 | 标志 | 未达标的处置 |
 |------|------------|
-| 版头齐：版本行 + 导航块 | 补 F.meta / F.nav |
+| 版头齐：版本行 + F.toc + 导航块，字段可验证，链接可闭合 | 补 F.meta / F.toc / F.nav，修正不一致字段，补失效链接 |
 | 表达优先：图 → 结构化文本 → 表，架构/流程/关系有 mermaid | 文字改图，列表改表，补齐缺失的 mermaid |
 | 目录清：`<name>/` 合规 | 移动文件到正确目录 |
 | 证据足：无 Level D 内容 | 删 D 级内容，补 C 标注或查证升级 |

@@ -14,10 +14,15 @@ const DEFAULT_EXTS = ["md"];
 const DEFAULT_EXCLUDES = new Set([".git", "node_modules", ".claude-plugin"]);
 const CONCURRENCY = 4;
 const HTTP_TIMEOUT = 30_000;
+const ERROR_MSG_MAX_LEN = 500;
+const QUERY_LIMIT = 10_000;
+const PREVIEW_COUNT = 10;
+const NODE_ARGV_OFFSET = 2;
+const DECIMAL_RADIX = 10;
 
 // --- args ------------------------------------------------------------------
 function parseArgs() {
-  const args = process.argv.slice(2);
+  const args = process.argv.slice(NODE_ARGV_OFFSET);
   const opts = { exts: DEFAULT_EXTS, exclude: [], prefix: [], mode: "import" };
   let scanRoot = null;
   let scanDir = null;
@@ -168,7 +173,7 @@ async function fetchJson(url, options = {}) {
       },
     });
     const text = await res.text();
-    if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, 500)}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, ERROR_MSG_MAX_LEN)}`);
     try { return JSON.parse(text); }
     catch { return text; }
   } finally { clearTimeout(timer); }
@@ -178,7 +183,7 @@ async function querySessionsFull(apiUrl) {
   const body = {
     module_name: "services.database.data_service",
     method_name: "query_documents",
-    parameters: { cname: "sessions", limit: 10000 },
+    parameters: { cname: "sessions", limit: QUERY_LIMIT },
   };
   const data = await fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
   return data?.data?.list || data?.list || [];
@@ -436,12 +441,12 @@ async function recommendMode(root, workspaceName, opts, apiUrl) {
   // 文件清单预览
   console.log(`📋 待同步文件: ${files.length} 个`);
   if (files.length > 0) {
-    const preview = files.slice(0, 10);
+    const preview = files.slice(0, PREVIEW_COUNT);
     for (const f of preview) {
       const rp = resolveRemotePath(f, root, workspaceName, opts.prefix);
       console.log(`   ${relative(root, f)} → ${rp}`);
     }
-    if (files.length > 10) console.log(`   ... 等 ${files.length - 10} 个文件`);
+    if (files.length > PREVIEW_COUNT) console.log(`   ... 等 ${files.length - PREVIEW_COUNT} 个文件`);
   }
 
   // 推荐任务

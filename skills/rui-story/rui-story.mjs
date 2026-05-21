@@ -39,13 +39,22 @@ const NODE_ARGV_OFFSET = 2;
 const SHOW_MIN_ARGS = 2;
 
 // --- TTY helpers -----------------------------------------------------------
+const ANSI_BOLD_ON = 1;
+const ANSI_BOLD_OFF = 22;
+const ANSI_DIM_ON = 2;
+const ANSI_FG_RED = 31;
+const ANSI_FG_GREEN = 32;
+const ANSI_FG_YELLOW = 33;
+const ANSI_FG_CYAN = 36;
+const ANSI_FG_DEFAULT = 39;
+
 const tty = process.stdout.isTTY;
-const bold = (s) => tty ? `\x1b[1m${s}\x1b[22m` : s;
-const dim = (s) => tty ? `\x1b[2m${s}\x1b[22m` : s;
-const red = (s) => tty ? `\x1b[31m${s}\x1b[39m` : s;
-const green = (s) => tty ? `\x1b[32m${s}\x1b[39m` : s;
-const yellow = (s) => tty ? `\x1b[33m${s}\x1b[39m` : s;
-const cyan = (s) => tty ? `\x1b[36m${s}\x1b[39m` : s;
+const bold = (s) => tty ? `\x1b[${ANSI_BOLD_ON}m${s}\x1b[${ANSI_BOLD_OFF}m` : s;
+const dim = (s) => tty ? `\x1b[${ANSI_DIM_ON}m${s}\x1b[${ANSI_BOLD_OFF}m` : s;
+const red = (s) => tty ? `\x1b[${ANSI_FG_RED}m${s}\x1b[${ANSI_FG_DEFAULT}m` : s;
+const green = (s) => tty ? `\x1b[${ANSI_FG_GREEN}m${s}\x1b[${ANSI_FG_DEFAULT}m` : s;
+const yellow = (s) => tty ? `\x1b[${ANSI_FG_YELLOW}m${s}\x1b[${ANSI_FG_DEFAULT}m` : s;
+const cyan = (s) => tty ? `\x1b[${ANSI_FG_CYAN}m${s}\x1b[${ANSI_FG_DEFAULT}m` : s;
 
 // --- args ------------------------------------------------------------------
 function parseArgs() {
