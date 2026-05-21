@@ -1,20 +1,19 @@
 #!/usr/bin/env node
-// rui-trends — Query technology trends from GitHub/OSS Insight/TrendShift
+// rui-trends — 技术趋势发现 + 代码库健康分析
 // 用法: node skills/rui-trends/help.mjs 或 /rui-trends --help
 
 const ANSI_BOLD = 1;
 const ANSI_DIM = 2;
 const ANSI_UNDERLINE = 4;
-const ANSI_RED = 31;
-const ANSI_GREEN = 32;
 const ANSI_YELLOW = 33;
+const ANSI_GREEN = 36;
 const ANSI_CYAN = 36;
 
-const { bold, underline, dim, yellow, green, cyan, red } = (() => {
+const { bold, underline, dim, yellow, green, cyan } = (() => {
   const make = (code) => (s) => `\x1b[${code}m${s}\x1b[0m`;
   const e = {
     bold: make(ANSI_BOLD), underline: make(ANSI_UNDERLINE), dim: make(ANSI_DIM),
-    yellow: make(ANSI_YELLOW), green: make(ANSI_GREEN), cyan: make(ANSI_CYAN), red: make(ANSI_RED),
+    yellow: make(ANSI_YELLOW), green: make(ANSI_GREEN), cyan: make(ANSI_CYAN),
   };
   if (!process.stdout.isTTY) {
     for (const k of Object.keys(e)) e[k] = (s) => s;
@@ -23,113 +22,89 @@ const { bold, underline, dim, yellow, green, cyan, red } = (() => {
 })();
 
 const INDENT = "  ";
-const LEFT_COLUMN_WIDTH = 36;
+const SUB_INDENT = "    ";
+const LEFT_COLUMN_WIDTH = 44;
 const COLUMN_MIN_PADDING = 2;
 
 function hdr(text) {
-  return `\n${bold(underline(text))}\n`;
+  return `\n${bold(text)}\n`;
 }
 
 function subhdr(text) {
-  return `\n${bold(text)}`;
+  return `\n${INDENT}${bold(text)}\n`;
 }
 
 function item(cmd, desc, colorFn) {
-  const left = `${INDENT}${cmd}`;
+  const left = `${SUB_INDENT}${cmd}`;
   const pad = Math.max(COLUMN_MIN_PADDING, LEFT_COLUMN_WIDTH - left.length);
   return `${colorFn ? colorFn(left) : left}${" ".repeat(pad)}${desc}`;
 }
 
-function line(text) {
-  return `${INDENT}${text}`;
+function flag(name, desc) {
+  const firstToken = name.split(/\s/)[0];
+  const prefix = firstToken.length === 1 ? "-" : "--";
+  return item(`  ${prefix}${name}`, desc, yellow);
 }
 
-function flag(name, desc) {
-  return item(`  --${name}`, desc, yellow);
+function line(text) {
+  return `${SUB_INDENT}${text}`;
+}
+
+function scene(title) {
+  return `\n${SUB_INDENT}${bold(title)}\n`;
 }
 
 const help = `
-${bold("# rui-trends — 技术趋势发现")}
+${bold("# rui-trends — 技术趋势发现 & 代码库健康分析")}
 
-${dim("GitHub Trending · OSS Insight · TrendShift · Top-Starred | 自改进集成")}
+${dim("代码库统计 · 大文件检测 · 变更热点 · 组件审计 · 历史复盘 · GitHub Trending")}
 
 ${hdr("快速入门")}
-${item("/rui-trends github-trending --since daily", "GitHub 今日热门仓库", green)}
-${item("/rui-trends", "状态检查：各数据源可达性 + 最近查询时间", green)}
-${item("/rui-trends all", "依次查询全部四个数据源 → 综合报告", cyan)}
+${item("/rui-trends", "基础统计：总文件/模块数/技术栈概况", green)}
+${item("/rui-trends all", "一键全量扫描", cyan)}
+${item("/rui-trends --help", "显示此帮助信息", dim)}
 
 ${hdr("子命令")}
 
-${subhdr("github-trending — GitHub Trending 榜单")}
-${item("/rui-trends github-trending", "查询当前 GitHub Trending", green)}
-${flag("lang <language>", "编程语言过滤 (如 TypeScript, Python, Rust, Go)")}
-${flag("since daily|weekly", "时间窗口 (默认: daily)")}
+${subhdr("modules — 模块规模概览")}
+${item("/rui-trends modules", "各模块文件数 / 行数 / 最大文件", green)}
 
-${subhdr("oss-insight — OSS Insight 仓库排名")}
-${item("/rui-trends oss-insight", "查询 OSS Insight 仓库排名", green)}
-${flag("metric stars|forks|contributors", "排名指标 (默认: stars)")}
-${flag("limit N", "返回数量 (默认: 10)")}
+${subhdr("large-files — 大文件检测")}
+${item("/rui-trends large-files", "列出 ≥500 行的文件", green)}
+${flag("threshold N", "设置行数阈值，默认 500")}
 
-${subhdr("trendshift — TrendShift 趋势变化")}
-${item("/rui-trends trendshift", "查询 TrendShift 趋势变化", green)}
-${flag("range 7|30|90", "时间范围天数 (默认: 7)")}
+${subhdr("hotspots — Git 高频变更文件")}
+${item("/rui-trends hotspots", "近 30 天变更热点排行", green)}
+${flag("since <date>", "起始日期（如 2026-01-01）")}
+${flag("top N", "只看前 N 个文件")}
 
-${subhdr("top-starred — GitHub 高星项目")}
-${item("/rui-trends top-starred", "查询 GitHub 高星项目", green)}
-${flag("min-stars N", "最低 star 数 (默认: 100000)")}
+${subhdr("components — zk- 组件使用频次统计")}
+${item("/rui-trends components", "统计 zk- 前缀组件的引用频次", green)}
 
-${subhdr("批量 & 状态")}
-${item("/rui-trends all", "依次查询全部四个数据源", cyan)}
-${item("/rui-trends", "状态检查：各数据源可达性 + 最近查询时间", green)}
+${subhdr("review — 历史自改进复盘扫描")}
+${item("/rui-trends review", "扫描 docs/ 下历史复盘记录，对比趋势", green)}
+
+${subhdr("trending — GitHub Trending")}
+${item("/rui-trends trending", "GitHub Trending 当前热门仓库", green)}
+${flag("since daily|weekly", "时间窗口，默认 daily")}
+${flag("l <L>", "编程语言过滤（如 TypeScript, Rust, Go）")}
 
 ${hdr("使用场景")}
-${item("# 快速查看今日趋势", "", bold)}
-${item("/rui-trends github-trending --since daily", "GitHub 今日热门仓库", green)}
-${item("", "")}
-${item("# 查看特定语言趋势", "", bold)}
-${item("/rui-trends github-trending --lang Rust --since weekly", "Rust 本周趋势", green)}
-${item("", "")}
-${item("# 评估技术栈社区活跃度", "", bold)}
-${item("/rui-trends top-starred --min-stars 50000", "5万星以上项目列表", green)}
-${item("/rui-trends oss-insight --metric contributors", "贡献者活跃度排行", green)}
-${item("", "")}
-${item("# 发现快速上升项目", "", bold)}
-${item("/rui-trends trendshift --range 7", "7天内 star 增长最快项目", green)}
-${item("/rui-trends trendshift --range 90", "季度趋势变化（用于 D0 诊断）", green)}
-${item("", "")}
-${item("# 全面趋势扫描 (D5 诊断用)", "", bold)}
-${item("/rui-trends all", "依次查询四个数据源 → 综合报告", green)}
-${item("", "")}
-${item("# 查询前先探活", "", bold)}
-${item("/rui-trends", "检查各数据源可达性 + 最近查询时间", green)}
-${item("", "")}
-${item("# 对比同一技术在不同数据源的表现", "", bold)}
-${item("/rui-trends github-trending --lang TypeScript --since weekly", "Step 1: TypeScript 本周趋势", green)}
-${item("/rui-trends top-starred --min-stars 50000", "Step 2: 高星项目交叉验证", green)}
-${item("", "")}
-${item("# 季度技术栈健康度检查 (D0 基线偏离诊断)", "", bold)}
-${item("/rui-trends github-trending --lang Rust --since weekly", "Step 1: 当前技术栈社区热度", green)}
-${item("/rui-trends trendshift --range 90", "Step 2: 季度趋势变化，判断是否偏离社区方向", green)}
-${item("/rui-trends oss-insight --metric contributors --limit 20", "Step 3: 贡献者活跃度验证生态健康", green)}
-${item("", "")}
-${item("# 依赖替换评估 (D3 复杂度诊断)", "", bold)}
-${item("/rui-trends github-trending --lang Python", "查看是否有更简洁的替代方案在崛起", green)}
-${item("/rui-trends oss-insight --metric stars", "对比候选方案与现有依赖的社区认可度", green)}
-${item("", "")}
-${item("# OSS Insight 多指标对比", "", bold)}
-${item("/rui-trends oss-insight --metric forks --limit 20", "按 fork 数排名，评估社区参与度", green)}
-${item("/rui-trends oss-insight --metric contributors --limit 15", "按贡献者数排名，评估生态健康度", green)}
-${item("", "")}
-${item("# 对比日榜 vs 周榜发现加速趋势", "", bold)}
-${item("/rui-trends github-trending --since daily", "Step 1: 今日热门（捕捉突然爆发的项目）", green)}
-${item("/rui-trends github-trending --since weekly", "Step 2: 本周热门（确认持续热度而非一日行情）", green)}
-${item("", "")}
-${item("# 发现新兴中小项目", "", bold)}
-${item("/rui-trends top-starred --min-stars 10000", "降低门槛到 1 万星，发现快速增长的新项目", green)}
-${item("", "")}
-${item("# 全链路趋势诊断（自改进 D5 标准流程）", "", bold)}
-${item("/rui-trends", "Step 1: 探活 — 确认各数据源可达", green)}
-${item("/rui-trends all", "Step 2: 全扫 — 四数据源综合报告", green)}
+${scene("新接手项目")}
+${item("/rui-trends", "先看基础统计，建立全局认知", green)}
+${item("/rui-trends modules", "了解各模块规模，识别核心模块", green)}
+${item("/rui-trends large-files", "发现需要拆分的大文件", green)}
+${scene("重构前健康检查")}
+${item("/rui-trends large-files --threshold 800", "定位超过 800 行的文件", green)}
+${item("/rui-trends hotspots --since 2026-01-01", "查看年度变更热点，识别不稳定模块", green)}
+${item("/rui-trends components", "审计 zk- 组件依赖关系", green)}
+${scene("日常迭代监控")}
+${item("/rui-trends hotspots", "近 30 天变更热点，追踪修改集中区", green)}
+${item("/rui-trends hotspots --top 10", "只看变更最多的前 10 个文件", green)}
+${item("/rui-trends trending", "了解外部技术趋势，保持技术敏感度", green)}
+${scene("团队复盘")}
+${item("/rui-trends all", "生成完整健康度报告", cyan)}
+${item("/rui-trends review", "对比历史复盘记录，评估改进效果", green)}
 `;
 
 console.log(help);
