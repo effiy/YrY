@@ -1,4 +1,4 @@
-# YrY
+# YrY <sub>v1.6.4</sub>
 
 > 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。
 
@@ -106,26 +106,27 @@ flowchart TD
 
 ### /rui-story — 故事任务面板管理
 
-| 命令 | 类型 | 作用 |
-|------|------|------|
-| `/rui-story` | 只读 | 状态概览：按状态统计 + 最近活动 |
-| `/rui-story list` | 只读 | 进度全景：所有故事详细表格（从 `/rui` 迁移） |
-| `/rui-story show <name>` | 只读 | 单故事详情：文件清单/状态/元数据 |
-| `/rui-story delete <name>` | 写入 | 删除故事目录（需确认） |
-| `/rui-story sync [<name>]` | 写入 | 触发文档同步（委托 import-docs） |
-| `/rui-story rename <old> <new>` | 写入 | 重命名故事目录 |
+| 命令 | 类型 | 数据源 | 作用 |
+|------|------|--------|------|
+| `/rui-story` | 只读 | 远端 API | 状态概览：按 6 种状态统计 + 最近活动 |
+| `/rui-story list` | 只读 | 远端 API | 进度全景：所有故事详情表格（状态/文件数/类型/分支） |
+| `/rui-story show <name>` | 只读 | 远端 API | 单故事详情：文件清单/状态/元数据 |
+| `/rui-story recommend` | 只读 | 远端 API | 同步推荐：列出远端可同步故事及推荐命令 |
+| `/rui-story health` | 只读 | 远端 API + 本地 | 健康检查：凭据/API 可达性/配置/数据完整性 |
+| `/rui-story sync [<name>]` | 写入 | 远端 API | 委托 import-docs 从远端拉取文档覆盖本地 |
+| `/rui-story clear [<name>]` | 写入 | 本地文件系统 | 仅保留 `{project}-` 前缀文件，其余删除（需确认） |
+| `/rui-story remove <name>` | 写入 | 本地文件系统 | 删除指定故事整个本地目录（需确认） |
+| `/rui-story --help` | 只读 | 本地 | 完整命令用法 + 场景示例 |
 
 ### /rui-claude — .claude/ 配置管理
 
 | 命令 | 类型 | 作用 |
 |------|------|------|
-| `/rui-claude` | 只读 | 任务推荐 |
-| `/rui-claude history [--limit N]` | 只读 | 操作历史 |
-| `/rui-claude retro [--name <story>]` | 写入 | 健康复盘 |
-| `/rui-claude sync` | 写入 | 远端同步：API pull 覆盖本地 `.claude/` |
-| `/rui-claude 需求` | 写入 | 需求管线 |
-
-> ⚠️ `sync` 执行前必须确认意图。详见 [rules/rui-claude.md](./rules/rui-claude.md)。
+| `/rui-claude` | 只读 | 按 5 层管线评分推荐 5~10 条任务 |
+| `/rui-claude history [list\|stats]` | 只读 | 操作历史：list 列出最近操作，stats 统计摘要 |
+| `/rui-claude retro` | 写入 | 健康度分析：分析 .claude/ 结构产出复盘报告 |
+| `/rui-claude sync` | 写入 | 远端同步：API pull 覆盖本地 `.claude/`（需确认意图） |
+| `/rui-claude <需求>` | 写入 | 需求管线：仅限 `.claude/` 内的 doc+code→交付 |
 
 ## Agent 角色
 
@@ -180,7 +181,7 @@ flowchart LR
 ## 技能
 
 - **rui** (`/rui init · doc · code · update · --from-code`) — 故事驱动 SDLC 主线，含诊断纪律、架构深化、交接纪律
-- **rui-story** (`/rui-story list · show · create · delete · sync · rename`) — 故事面板 CRUD 管理、进度查询、文档同步
+- **rui-story** (`/rui-story list · show · recommend · health · sync · clear · remove`) — 故事面板远端查询、进度管理、文档同步、本地清理
 - **rui-claude** (`/rui-claude sync · retro · history`) — .claude/ 配置远端同步与复盘
 - **import-docs** — 自动（hook 触发）：批量同步故事文档到远端 API
 - **wework-bot** — 自动（hook 触发）：企微机器人推送管线状态通知
@@ -213,14 +214,6 @@ YrY/
 │   ├── import-docs/         #   文档远端同步
 │   ├── wework-bot/          #   企微通知
 │   └── rui-trends/          #   技术趋势发现
-├── libs/                    # 外部参考知识库
-│   ├── _sources.json        #   下载源清单
-│   ├── story-patterns.md    #   故事描述·模式与方法论
-│   ├── architecture-patterns.md # 实现与架构·执行模式
-│   ├── tools.md             #   工具与平台
-│   ├── trends.md            #   趋势与发现
-│   ├── repos/               #   下载的 GitHub 仓库文档
-│   └── docs/                #   下载的 Web 文档
 ├── docs/
 │   └── 故事任务面板/        #   故事产出目录
 │       └── <name>/
@@ -259,7 +252,7 @@ flowchart TD
 | **Gate B** | 编码后的闭合验证。五步检查（环境快照→静态预检→设计对齐→单次执行→三报告）。修复 > 2 轮→阻断。 | verification gate, post-code check |
 | **P0 / P1 / P2** | P0 = 阻塞发布必修项；P1 = 当轮修复项；P2 = 记录不阻断项。P0 不清零不进下一模块。 | critical / major / minor |
 | **阻断** | 管线在当前阶段停止，状态写入 `.memory/rui-state.json`。阻断≠失败，重跑同命令从中断点续。区别于"降级"（记录标记但不停止前进）。 | stop, halt, fail |
-| **铁律** | 三条不可妥协的规则：验先于称、溯先于修、清先于进。 | rule, constraint |
+| **铁律** | 四条不可妥协的规则：验先于称、溯先于修、清先于进、表达优先（图→文本→表）。 | rule, constraint |
 | **影响链** | 变更点的完整传递依赖图。五步闭合：列变更→选搜索词→全项目搜索→二级传递→标注处置。未闭合 = `chain-broken` 阻断。 | dependency graph, impact analysis |
 | **分支隔离** | **强制门禁**。任何 Edit/Write 前须验证 `git branch --show-current` 为 `feat/<name>`。未通过 = `no-branch-isolation` 阻断。 | feature branch |
 | **反推** | 只读模式。`--from-code` 从源码反推文档；`--from-doc` 从文档反推源码补充。 | reverse engineering, backfill |
@@ -277,14 +270,4 @@ flowchart TD
 
 ## 外部参考
 
-> pm 拆故事、架构设计、自改进时，应主动查阅外部资源汲取模式与理念。
-> 详细分类与映射见 [`libs/`](./libs/) — 按管线阶段组织，每参考有明确应用场景。外链失效时，技能规约仍独立可执行（自包含原则）。
-
-| 分类 | 管线阶段 | 文件 |
-|------|---------|------|
-| 故事描述 — 模式与方法论 | 需求→文档 | [libs/story-patterns.md](./libs/story-patterns.md) |
-| 实现与架构 — 执行模式 | 预检→实现 + 验证→自改进 | [libs/architecture-patterns.md](./libs/architecture-patterns.md) |
-| 工具与平台 | 预检→实现 + 验证→自改进 | [libs/tools.md](./libs/tools.md) |
-| 趋势与发现 | 交付 | [libs/trends.md](./libs/trends.md) |
-
-> 完整索引与阶段映射图见 [libs/README.md](./libs/README.md)。
+> 外部参考知识库已迁移为按需实时获取。技术趋势通过 `/rui-trends` 查询 GitHub Trending / OSS Insight / Top-Starred；架构模式与方法论内联于各技能规约（自包含原则）。

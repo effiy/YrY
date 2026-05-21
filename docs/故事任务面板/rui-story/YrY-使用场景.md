@@ -114,19 +114,6 @@ flowchart LR
 
 数据处理流程：`query_documents` → 筛选 `file_path` 以 `故事任务面板/` 开头的记录 → `extractStoryName()` 提取故事名分组 → `determineStatus()` 逐故事判定 6 种状态 → 按状态聚合计数 + 按 `updated_at` 排序最近 5 个活跃故事。
 
-curl 调试命令：
-
-```bash
-curl -s -X POST "https://api.effiy.cn/" \
-  -H "Content-Type: application/json" \
-  -H "X-Token: ${API_X_TOKEN}" \
-  -d '{
-    "module_name": "services.database.data_service",
-    "method_name": "query_documents",
-    "parameters": {"cname": "sessions", "limit": 10000}
-  }' | jq '.data.list[] | select(.file_path | startswith("故事任务面板/")) | {file_path, updated_at}'
-```
-
 ---
 
 ### 场景 B: 进度全景
@@ -183,29 +170,7 @@ flowchart LR
 
 数据处理流程：`query_documents` 获取全量 → 按故事分组 → 并发 `read-file` 读取每个故事的技术评审（`CONCURRENCY=4`）→ `inferType()` 关键词匹配判定 backend/frontend/fullstack/meta → `checkGitBranch()` 检查本地 `feat/<name>` 分支 → 按更新时间降序输出 6 列表格。
 
-**并发推断机制**（`rui-story.mjs:229-244`）：4 个 worker 并发消费 story queue，每个 worker 取一个故事 → 读远端技术评审 → 关键词匹配 → 写入结果 Map。任一失败默认返回 `meta`。
-
-curl 调试命令 — query_documents：
-
-```bash
-curl -s -X POST "https://api.effiy.cn/" \
-  -H "Content-Type: application/json" \
-  -H "X-Token: ${API_X_TOKEN}" \
-  -d '{
-    "module_name": "services.database.data_service",
-    "method_name": "query_documents",
-    "parameters": {"cname": "sessions", "limit": 10000}
-  }' | jq '.data.list | map(select(.file_path | startswith("故事任务面板/"))) | group_by(.file_path | split("/")[1]) | .[] | {story: .[0].file_path | split("/")[1], files: length}'
-```
-
-curl 调试命令 — read-file（替换 `<name>` 和 `<Project>` 为实际值）：
-
-```bash
-curl -s -X POST "https://api.effiy.cn/read-file" \
-  -H "Content-Type: application/json" \
-  -H "X-Token: ${API_X_TOKEN}" \
-  -d '{"target_file": "故事任务面板/<name>/<Project>-技术评审.md"}' | jq '.data.content[:200]'
-```
+**并发推断机制**：4 个 worker 并发消费 story queue，每个 worker 取一个故事 → 读远端技术评审 → 关键词匹配 → 写入结果 Map。任一失败默认返回 `meta`。
 
 ---
 
@@ -258,29 +223,6 @@ flowchart LR
 
 数据处理流程：`query_documents` 获取全量 → 筛选目标 `<name>` 的 sessions → 若故事不存在则列出所有已知故事名 → `read-file` 读取技术评审推断类型（1 次）→ `readBlockedState()` 读取本地 `.memory/rui-state.json` → `checkGitBranch()` 检查本地分支 → 输出详述卡（文件清单 + 状态 + 类型 + 阻断原因 + Git 分支）。
 
-curl 调试命令 — 查询指定故事的文件：
-
-```bash
-STORY="rui-story"
-curl -s -X POST "https://api.effiy.cn/" \
-  -H "Content-Type: application/json" \
-  -H "X-Token: ${API_X_TOKEN}" \
-  -d '{
-    "module_name": "services.database.data_service",
-    "method_name": "query_documents",
-    "parameters": {"cname": "sessions", "limit": 10000}
-  }' | jq --arg story "$STORY" '.data.list | map(select(.file_path | startswith("故事任务面板/")) | select(.file_path | split("/")[1] == $story)) | sort_by(.file_path) | .[] | {file: .file_path | split("/")[-1], updated_at}'
-```
-
-curl 调试命令 — 类型推断（读取技术评审）：
-
-```bash
-curl -s -X POST "https://api.effiy.cn/read-file" \
-  -H "Content-Type: application/json" \
-  -H "X-Token: ${API_X_TOKEN}" \
-  -d '{"target_file": "故事任务面板/rui-story/YrY-技术评审.md"}' | jq '.data.content' | grep -oE -i '\b(api|数据|后端|服务端|接口|数据库|server|backend|组件|交互|样式|前端|页面|ui|frontend)\b' | sort -u
-```
-
 ---
 
 ### 场景 D: 文档同步
@@ -326,31 +268,6 @@ sync 模式说明：
 | `mode=pull` | 远端 → 本地（下载） | `/rui-story sync <name>` |
 | `mode=push` | 本地 → 远端（上传） | `/rui doc` / `/rui code` 末端自动触发 |
 
-curl 调试命令 — 模拟 sync 的第一步（查询指定故事在远端有哪些文件）：
-
-```bash
-STORY="rui-story"
-curl -s -X POST "https://api.effiy.cn/" \
-  -H "Content-Type: application/json" \
-  -H "X-Token: ${API_X_TOKEN}" \
-  -d '{
-    "module_name": "services.database.data_service",
-    "method_name": "query_documents",
-    "parameters": {"cname": "sessions", "limit": 10000}
-  }' | jq --arg story "$STORY" '[.data.list[] | select(.file_path | startswith("故事任务面板/")) | select(.file_path | split("/")[1] == $story)] | sort_by(.file_path) | .[] | {file: .file_path, updated_at}'
-```
-
-curl 调试命令 — 模拟 sync 的第二步（读取远端单个文件内容并保存到本地）：
-
-```bash
-STORY="rui-story"
-FILE="YrY-使用场景.md"
-curl -s -X POST "https://api.effiy.cn/read-file" \
-  -H "Content-Type: application/json" \
-  -H "X-Token: ${API_X_TOKEN}" \
-  -d "{\"target_file\": \"故事任务面板/${STORY}/${FILE}\"}" | jq -r '.data.content' > "docs/故事任务面板/${STORY}/${FILE}" && echo "已保存: docs/故事任务面板/${STORY}/${FILE}"
-```
-
 ---
 
 ### 场景 E: 本地清理
@@ -383,18 +300,7 @@ flowchart LR
 | 4 | 等待确认 | 用户输入 y/n | 确认后执行或取消 | 用户拒绝 → 取消操作 |
 | 5 | 执行清理 | 确认信号 | 删除文件 + 清理空目录 | — |
 
-#### 接口数据请求流
-
-> **本地操作**: `clear` 命令仅操作本地文件系统，不涉及远端 API 调用。
-
 数据处理流程：读取 `CLAUDE.md` 获取项目名前缀 → 扫描 `docs/故事任务面板/<name>/` 目录 → 列出所有文件 → 筛选出不以 `{project}-` 前缀的文件 → 展示删除/保留双重清单 → 等待用户 `y/n` 确认 → 执行删除 + 清理空目录。
-
-验证本地文件的 curl 等效命令（检查文件前缀）：
-
-```bash
-# 列出指定故事目录下不以 "YrY-" 开头的文件
-find docs/故事任务面板/rui-story/ -maxdepth 1 -type f ! -name "YrY-*" -exec basename {} \;
-```
 
 ---
 
@@ -426,18 +332,7 @@ flowchart LR
 | 4 | 等待确认 | 用户输入 y/n | 确认后执行或取消 | 用户拒绝 → 取消 |
 | 5 | 执行删除 | 确认信号 | 删除整个目录 | — |
 
-#### 接口数据请求流
-
-> **本地操作**: `remove` 命令仅操作本地文件系统，不涉及远端 API 调用。删除后远端数据不受影响。
-
 数据处理流程：检查 `docs/故事任务面板/<name>/` 目录是否存在 → 扫描文件数和总大小 → 展示待删除清单 → 等待用户 `y/n` 确认 → 执行 `rm -rf` 删除整个目录 → 输出删除摘要并提示远端不受影响。
-
-验证本地目录的 curl 等效命令：
-
-```bash
-# 查看指定故事目录的大小和文件清单
-du -sh docs/故事任务面板/rui-story/ && find docs/故事任务面板/rui-story/ -type f | sort
-```
 
 ---
 
@@ -469,19 +364,6 @@ flowchart LR
 数据处理流程：`query_documents` 获取全量 → 筛选 `故事任务面板/` 前缀 → 按故事名分组 → 统计每故事文件数 → 按故事名字母排序输出推荐列表 + 对应的 `sync` 命令。
 
 > 与场景 A 的区别：不做状态判定和类型推断，仅按故事名展示文件数。是 `sync` 的发现前置步骤。
-
-curl 调试命令：
-
-```bash
-curl -s -X POST "https://api.effiy.cn/" \
-  -H "Content-Type: application/json" \
-  -H "X-Token: ${API_X_TOKEN}" \
-  -d '{
-    "module_name": "services.database.data_service",
-    "method_name": "query_documents",
-    "parameters": {"cname": "sessions", "limit": 10000}
-  }' | jq '[.data.list[] | select(.file_path | startswith("故事任务面板/"))] | group_by(.file_path | split("/")[1]) | .[] | {story: .[0].file_path | split("/")[1], files: length} | select(.story != null)'
-```
 
 ---
 
@@ -524,45 +406,6 @@ flowchart LR
 
 注意：当 `API_X_TOKEN` 缺失时，仅执行凭据检查和本地配置检查，跳过所有远端 API 调用。
 
-curl 调试命令 — 验证远端可达性和面板数据量：
-
-```bash
-echo "=== API 凭据检查 ==="
-[ -n "$API_X_TOKEN" ] && echo "✅ API_X_TOKEN 已配置" || echo "⚠️ API_X_TOKEN 缺失"
-
-echo ""
-echo "=== 远端可达性 ==="
-TOTAL=$(curl -s -X POST "https://api.effiy.cn/" \
-  -H "Content-Type: application/json" \
-  -H "X-Token: ${API_X_TOKEN}" \
-  -d '{
-    "module_name": "services.database.data_service",
-    "method_name": "query_documents",
-    "parameters": {"cname": "sessions", "limit": 10000}
-  }' | jq '.data.list | length')
-echo "远端 sessions 总数: $TOTAL"
-
-echo ""
-echo "=== 面板数据 ==="
-PANEL=$(curl -s -X POST "https://api.effiy.cn/" \
-  -H "Content-Type: application/json" \
-  -H "X-Token: ${API_X_TOKEN}" \
-  -d '{
-    "module_name": "services.database.data_service",
-    "method_name": "query_documents",
-    "parameters": {"cname": "sessions", "limit": 10000}
-  }' | jq '[.data.list[] | select(.file_path | startswith("故事任务面板/"))]')
-PANEL_COUNT=$(echo "$PANEL" | jq 'length')
-STORY_COUNT=$(echo "$PANEL" | jq '[.[] | .file_path | split("/")[1]] | unique | length')
-echo "故事任务面板 sessions: $PANEL_COUNT"
-echo "故事数: $STORY_COUNT"
-
-echo ""
-echo "=== 项目配置 ==="
-grep -m1 "项目名" CLAUDE.md
-[ -d "docs/故事任务面板/" ] && echo "✅ docs/故事任务面板/ 存在" || echo "⚠️ docs/故事任务面板/ 不存在"
-```
-
 ---
 
 ### 场景 I: 帮助查询
@@ -585,10 +428,6 @@ flowchart LR
 | 2 | 展示内容 | — | 命令表 + 场景示例 + 数据源说明 | — |
 
 ---
-
-#### 接口数据请求流
-
-> **本地操作**: `help` 命令仅执行本地脚本 `node skills/rui-story/help.mjs`，不涉及远端 API 调用。若 `help.mjs` 缺失则回退到 `rui-story.mjs` 内置的 `fallbackHelp()` 函数。
 
 ---
 

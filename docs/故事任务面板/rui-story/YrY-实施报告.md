@@ -61,33 +61,33 @@
 
 ### 1.2 实际模块接口
 
-| 函数 | 签名 | 返回 | 验证状态 | 文件路径 |
-|------|------|------|---------|---------|
-| parseArgs | () => opts | `{command, name?}` | ✅ overview/list/show/recommend/health/help 正确路由 | rui-story.mjs:61 |
-| findProjectRoot | (startDir) => string | 绝对路径 | ✅ 找到 /home/claude/YiKnowledge/static/YrY | :88 |
-| readProjectName | (projectRoot) => string\|null | "YrY" | ✅ 3 模式匹配 + fallback | :100 |
-| fetchJson | async (url, options) => any | JSON 解析结果 | ✅ X-Token 注入 + 30s 超时 | :128 |
-| querySessionsFull | async (apiUrl) => [] | sessions 数组 | ✅ 查询到 71 sessions | :149 |
-| readRemoteFile | async (apiUrl, remotePath) => any | 文件内容 | ✅ 用于类型推断 | :159 |
-| extractStoryName | (filePath) => string\|null | 故事名 | ✅ 正确提取 "rui-story" | :165 |
-| groupSessionsByStory | (sessions) => Map | Map<name, sessions[]> | ✅ 筛选 故事任务面板/ 前缀 | :172 |
-| readBlockedState | (projectRoot, storyName) => object\|null | `{blocked, block_reason}` | ✅ 读取 .memory/rui-state.json | :186 |
-| hasProjectFile | (fileBasenames, projectPrefix, docType) => boolean | 是否存在项目文件 | ✅ 用于状态判定辅助 | :203 |
-| determineStatus | (fileBasenames, projectPrefix, blockedState) => string | 6 种状态之一 | ✅ "code_done" | :209 |
-| inferType | async (apiUrl, storySessions, projectPrefix) => string | 4 种类型之一 | ✅ "全栈" | :239 |
-| inferTypesBatch | async (apiUrl, storyMap, projectPrefix) => Map | Map<name, type> | ✅ 4 worker 并发 | :264 |
-| checkGitBranch | (name) => string\|null | 分支名或 null | ✅ "feat/rui-story" | :282 |
-| statusDisplay | (status) => string | 状态中文标签 | ✅ 6 状态映射 | :306 |
-| formatDate | (ts) => string | 格式化日期 | ✅ YYYY-MM-DD HH:mm | :311 |
-| latestTimestamp | (sessions) => number | 最近时间戳 | ✅ 用于排序 | :318 |
-| printOverview | (storyMap, projectPrefix, blockedMap) => void | stdout | ✅ 6 状态统计 + 最近活动 | :327 |
-| printList | (storyMap, projectPrefix, blockedMap, typeMap) => void | stdout | ✅ 6 列表格 | :380 |
-| printShow | (storyName, sessions, projectPrefix, blockedState, type) => void | stdout | ✅ 文件清单 + 元数据 | :436 |
-| printRecommend | (storyMap) => void | stdout | ✅ 故事列表 + sync 命令 | :474 |
-| printHealth | (result) => void | stdout | ✅ pass/warn/error 统计 | :500 |
-| findPluginHelpPath | () => string\|null | help.mjs 路径 | ✅ 从插件缓存目录定位 help.mjs | :677 |
-| showHelp | async () => void | stdout | ✅ 调用 help.mjs 或 fallback | :690 |
-| fallbackHelp | () => void | stdout | ✅ help.mjs 不存在时回退 | :703 |
+| 函数 | 签名 | 返回 | 验证状态 |
+|------|------|------|---------|
+| parseArgs | () => opts | `{command, name?}` | ✅ overview/list/show/recommend/health/help 正确路由 |
+| findProjectRoot | (startDir) => string | 绝对路径 | ✅ 找到 /home/claude/YiKnowledge/static/YrY |
+| readProjectName | (projectRoot) => string\|null | "YrY" | ✅ 3 模式匹配 + fallback |
+| fetchJson | async (url, options) => any | JSON 解析结果 | ✅ X-Token 注入 + 30s 超时 |
+| querySessionsFull | async (apiUrl) => [] | sessions 数组 | ✅ 查询到 71 sessions |
+| readRemoteFile | async (apiUrl, remotePath) => any | 文件内容 | ✅ 用于类型推断 |
+| extractStoryName | (filePath) => string\|null | 故事名 | ✅ 正确提取 "rui-story" |
+| groupSessionsByStory | (sessions) => Map | Map<name, sessions[]> | ✅ 筛选 故事任务面板/ 前缀 |
+| readBlockedState | (projectRoot, storyName) => object\|null | `{blocked, block_reason}` | ✅ 读取 .memory/rui-state.json |
+| hasProjectFile | (fileBasenames, projectPrefix, docType) => boolean | 是否存在项目文件 | ✅ 用于状态判定辅助 |
+| determineStatus | (fileBasenames, projectPrefix, blockedState) => string | 6 种状态之一 | ✅ "code_done" |
+| inferType | async (apiUrl, storySessions, projectPrefix) => string | 4 种类型之一 | ✅ "全栈" |
+| inferTypesBatch | async (apiUrl, storyMap, projectPrefix) => Map | Map<name, type> | ✅ 4 worker 并发 |
+| checkGitBranch | (name) => string\|null | 分支名或 null | ✅ "feat/rui-story" |
+| statusDisplay | (status) => string | 状态中文标签 | ✅ 6 状态映射 |
+| formatDate | (ts) => string | 格式化日期 | ✅ YYYY-MM-DD HH:mm |
+| latestTimestamp | (sessions) => number | 最近时间戳 | ✅ 用于排序 |
+| printOverview | (storyMap, projectPrefix, blockedMap) => void | stdout | ✅ 6 状态统计 + 最近活动 |
+| printList | (storyMap, projectPrefix, blockedMap, typeMap) => void | stdout | ✅ 6 列表格 |
+| printShow | (storyName, sessions, projectPrefix, blockedState, type) => void | stdout | ✅ 文件清单 + 元数据 |
+| printRecommend | (storyMap) => void | stdout | ✅ 故事列表 + sync 命令 |
+| printHealth | (result) => void | stdout | ✅ pass/warn/error 统计 |
+| findPluginHelpPath | () => string\|null | help.mjs 路径 | ✅ 从插件缓存目录定位 help.mjs |
+| showHelp | async () => void | stdout | ✅ 调用 help.mjs 或 fallback |
+| fallbackHelp | () => void | stdout | ✅ help.mjs 不存在时回退 |
 
 ### 1.3 通信通道
 
@@ -191,32 +191,7 @@
 
 ### 6.1 终端效果截图
 
-**帮助命令**
-
-```
-# rui-story — 故事任务面板管理
-
-远端查询 · 查看 · 同步 | 数据源为远端 API，不读本地文件系统
-
-
-用法
-
-  /rui-story --help         显示此帮助信息
-
-
-只读命令（远端 API）
-  /rui-story                状态概览
-  /rui-story list           进度全景
-  /rui-story show <name>    单故事详情
-  /rui-story recommend      同步推荐
-  /rui-story health         健康检查
-
-
-写入命令
-  /rui-story sync [<name>]  远端→本地覆盖
-  /rui-story clear [<name>]  仅本地：清除非项目前缀文件
-  /rui-story remove <name>  仅本地：删除故事目录
-```
+**帮助命令** — `--help` 输出含命令表 + 场景示例 + 数据源说明，执行 `node skills/rui-story/help.mjs` 可查看完整输出。
 
 **状态概览**
 

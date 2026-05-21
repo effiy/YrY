@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 > 基础信念是 why。YrY 是故事驱动的 SDLC 编排系统，用自身管线管理自身演进。
-> [领域语言](./README.md#领域语言) · [系统全景](./README.md) · [外部参考](./libs/)
+> [领域语言](./README.md#领域语言) · [系统全景](./README.md)
 
 ## 基础信念
 
@@ -108,5 +108,4 @@ flowchart LR
 | 角色拓扑 · 行为纪律 · 设计原则 · 执行准则 · ADR · 多 Agent 协作模式 | [agents/AGENT.md](./agents/AGENT.md) |
 | 自改进闭环（诊断 D0-D7 · 经验技能化 · 记忆压缩注入 · 效果评估 E1-E4） | [rules/self-improve.md](./rules/self-improve.md) · [agents/self-improve.md](./agents/self-improve.md) |
 | 领域语言（术语定义） | [领域语言](./README.md#领域语言) |
-| 外部参考 → 管线阶段映射 · 自改进生态系统 | [外部参考](./libs/) |
 | 故事文档公式 · 外部参考应用指南 | [formulas.md](./skills/rui/formulas.md) |
