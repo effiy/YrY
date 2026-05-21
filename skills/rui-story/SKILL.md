@@ -12,7 +12,7 @@ lifecycle: default-pipeline
 > **--help / -h / help — 本地脚本，零网络请求**
 >
 > 用户输入含 `--help`、`-h` 或 `help` 时，**无条件执行以下操作**：
-> 1. 运行 `node skills/rui-story/help.mjs`，将输出原样展示给用户
+> 1. 运行 `node ~/.claude/plugins/cache/yry/yry/$(ls ~/.claude/plugins/cache/yry/yry/ 2>/dev/null | sort -V | tail -1)/skills/rui-story/help.mjs`，将输出原样展示给用户
 > 2. 立即停止，不得执行任何其他逻辑
 > 3. 禁止：API 调用 · 网络请求 · 读取远端数据 · 管线处理 · 文件系统操作
 >

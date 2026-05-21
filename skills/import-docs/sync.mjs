@@ -4,8 +4,9 @@
 
 import { readFile, readdir, stat, mkdir, writeFile } from "node:fs/promises";
 import { join, relative, sep, dirname, resolve, basename } from "node:path";
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { execSync } from "node:child_process";
+import { homedir } from "node:os";
 
 // --- config ----------------------------------------------------------------
 const API_URL = process.env.IMPORT_DOCS_API_URL || "https://api.effiy.cn";
@@ -50,9 +51,24 @@ function parseArgs() {
   return { scanRoot, scanDir, ...opts };
 }
 
+const SKILL_NAME = "import-docs";
+
+function findPluginHelpPath() {
+  const pluginRoot = join(homedir(), ".claude/plugins/cache/yry/yry");
+  if (!existsSync(pluginRoot)) return null;
+  try {
+    const versions = readdirSync(pluginRoot).filter(d => /^\d+\.\d+\.\d+$/.test(d)).sort();
+    if (versions.length === 0) return null;
+    const helpPath = join(pluginRoot, versions[versions.length - 1], "skills", SKILL_NAME, "help.mjs");
+    return existsSync(helpPath) ? helpPath : null;
+  } catch {
+    return null;
+  }
+}
+
 function showHelp() {
-  const helpPath = join(dirname(resolve(process.argv[1])), "help.mjs");
-  if (existsSync(helpPath)) {
+  const helpPath = findPluginHelpPath();
+  if (helpPath) {
     try {
       execSync(`node "${helpPath}"`, { stdio: "inherit" });
     } catch {
@@ -81,7 +97,7 @@ function fallbackHelp() {
   console.log("  API_X_TOKEN             鉴权令牌 (缺失时静默降级)");
   console.log("  IMPORT_DOCS_API_URL     覆盖默认 API 地址");
   console.log("");
-  console.log("详细: node skills/import-docs/help.mjs");
+  console.log("详细: ~/.claude/plugins/cache/yry/yry/<version>/skills/import-docs/help.mjs");
 }
 
 // --- project root ----------------------------------------------------------

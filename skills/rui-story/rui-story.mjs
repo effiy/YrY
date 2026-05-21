@@ -4,8 +4,9 @@
 // 由 SKILL.md 规约驱动；本脚本实现只读查询命令的确定性逻辑
 
 import { join, sep, dirname, resolve } from "node:path";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { execSync } from "node:child_process";
+import { homedir } from "node:os";
 
 // --- config ----------------------------------------------------------------
 const API_URL = process.env.IMPORT_DOCS_API_URL || "https://api.effiy.cn";
@@ -671,9 +672,24 @@ async function cmdHealth(apiUrl, projectRoot) {
 }
 
 // --- help delegate ---------------------------------------------------------
+const SKILL_NAME = "rui-story";
+
+function findPluginHelpPath() {
+  const pluginRoot = join(homedir(), ".claude/plugins/cache/yry/yry");
+  if (!existsSync(pluginRoot)) return null;
+  try {
+    const versions = readdirSync(pluginRoot).filter(d => /^\d+\.\d+\.\d+$/.test(d)).sort();
+    if (versions.length === 0) return null;
+    const helpPath = join(pluginRoot, versions[versions.length - 1], "skills", SKILL_NAME, "help.mjs");
+    return existsSync(helpPath) ? helpPath : null;
+  } catch {
+    return null;
+  }
+}
+
 async function showHelp() {
-  const helpPath = join(dirname(resolve(process.argv[1])), "help.mjs");
-  if (existsSync(helpPath)) {
+  const helpPath = findPluginHelpPath();
+  if (helpPath) {
     try {
       execSync(`node "${helpPath}"`, { stdio: "inherit" });
     } catch {

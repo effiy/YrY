@@ -101,7 +101,7 @@ ${item("agent=rui name=user-login noSend=true", "Step 1: 仅写日志，检查 {
 ${item("agent=rui name=user-login", "Step 2: 格式确认无误后正式发送", green)}
 ${item("", "")}
 ${item("# CI/CD 管线集成通知", "", bold)}
-${item("agent=rui name=deploy content=\"🎯 结论: v1.5.8 已部署到生产环境\"", "部署完成后自动触发通知", green)}
+${item("agent=rui name=deploy content=\"🎯 结论: v1.6.2 已部署到生产环境\"", "部署完成后自动触发通知", green)}
 ${item("", "")}
 ${item("# 多故事汇总通知", "", bold)}
 ${item("agent=rui name=sprint-review contentFile=./sprint-summary.md", "从汇总报告文件发送迭代回顾通知", green)}
