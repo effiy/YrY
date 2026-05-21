@@ -1,5 +1,7 @@
 > | v1.4.8 | 2026-05-20 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 
+[§0 基线溯源](#sec0-baseline) · [§1 资产识别](#sec1-assets) · [§2 威胁建模](#sec2-threats) · [§3 信任边界](#sec3-trust) · [§4 缓解措施](#sec4-mitigations) · [§5 合规检查](#sec5-compliance) · [§6 评审清单](#sec6-checklist)
+
 > **导航**: [← YrY-技术评审](./YrY-技术评审.md) · [← YrY-测试设计](./YrY-测试设计.md) · [YrY-实施报告 →](./YrY-实施报告.md)
 
 > **来源引用**: 从 `skills/rui-story/rui-story.mjs` 源码 + `skills/rui-story/SKILL.md` 操作边界反推。证据 Level B + 源码路径。独立安全审计，不依赖 coder 自评。
@@ -15,6 +17,8 @@
 
 ---
 
+<a id="sec0-baseline"></a>
+
 ## §0 基线溯源
 
 | 审计条目 | 覆盖技术评审章节 | 覆盖故事任务 FP# | 覆盖使用场景 | 审计结论 |
@@ -28,6 +32,8 @@
 | 输入校验 | §4.1 parseArgs | R2 | 全部场景 | 通过 — 白名单命令路由 |
 
 ---
+
+<a id="sec1-assets"></a>
 
 ## §1 资产识别
 
@@ -52,6 +58,8 @@
 
 ---
 
+<a id="sec2-threats"></a>
+
 ## §2 威胁建模
 
 | # | 威胁 | 攻击面 | 可能性 | 影响 | STRIDE 分类 |
@@ -67,6 +75,8 @@
 
 ---
 
+<a id="sec3-trust"></a>
+
 ## §3 信任边界
 
 | 边界 | 跨越方向 | 数据流 | 校验点 | 当前状态 |
@@ -79,6 +89,8 @@
 | CLI 进程 → stdout/stderr | 出站 | 格式化输出 | Token 不输出；错误信息截断至 500 字符 | 已加固 |
 
 ---
+
+<a id="sec4-mitigations"></a>
 
 ## §4 缓解措施
 
@@ -95,6 +107,8 @@
 
 ---
 
+<a id="sec5-compliance"></a>
+
 ## §5 合规检查
 
 | # | 检查项 | 要求 | 当前状态 | 偏差说明 |
@@ -107,6 +121,8 @@
 | 6 | 审计日志完整 | 操作有追踪 | ⚠️ 命令行操作无审计日志 | clear/remove 由 agent 执行，SKILL.md 流程含确认记录 |
 
 ---
+
+<a id="sec6-checklist"></a>
 
 ## §6 评审清单
 

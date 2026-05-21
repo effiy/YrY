@@ -1,5 +1,7 @@
 > | v1.4.8 | 2026-05-20 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 
+[§0 基线溯源](#sec0-baseline) · [§1 测试环境](#sec1-env) · [§2 冒烟测试](#sec2-smoke) · [§3 回归测试](#sec3-regression) · [§4 环境专项](#sec4-env-special) · [§5 已知问题](#sec5-issues) · [§6 Gate B 评估](#sec6-gateb) · [§7 评审清单](#sec7-checklist)
+
 > **导航**: [← YrY-实施报告](./YrY-实施报告.md) · [YrY-自改进复盘 →](./YrY-自改进复盘.md)
 
 > **来源引用**: 基于 `YrY-测试设计.md` 用例执行验证。证据 Level A + 实际命令输出。
@@ -14,6 +16,8 @@
 - 📊 Gate B 指标达标 — P0 通过率 100%，无已知 P0 问题
 
 ---
+
+<a id="sec0-baseline"></a>
 
 ## §0 基线溯源
 
@@ -34,6 +38,8 @@
 
 ---
 
+<a id="sec1-env"></a>
+
 ## §1 测试环境
 
 | 维度 | 配置 |
@@ -46,6 +52,8 @@
 | 环境快照 | commit bb91867 (feat: next) |
 
 ---
+
+<a id="sec2-smoke"></a>
 
 ## §2 冒烟测试
 
@@ -75,6 +83,8 @@
 
 ---
 
+<a id="sec3-regression"></a>
+
 ## §3 回归测试
 
 | ID | Given | When | Then | 结果 | 关联模块 |
@@ -83,6 +93,8 @@
 | TC-R02 | help.mjs 存在 | 执行 `--help` | help.mjs 输出正常 | ✅ | showHelp() |
 
 ---
+
+<a id="sec4-env-special"></a>
 
 ## §4 环境专项
 
@@ -95,6 +107,8 @@
 
 ---
 
+<a id="sec5-issues"></a>
+
 ## §5 已知问题
 
 无已知 P0 问题。
@@ -104,6 +118,8 @@
 | 1 | TC-B03 | 故事名含空格 | `show "my story"` | 首个 token "my" 被当作 name，查询不存在 | P2 | 已接受 — kebab-case 约束由用户遵守 |
 
 ---
+
+<a id="sec6-gateb"></a>
 
 ## §6 Gate B 评估
 
@@ -115,6 +131,8 @@
 | 修复轮次可控 | Gate B ≤ 2 轮 | 1 轮通过 | ✅ |
 
 ---
+
+<a id="sec7-checklist"></a>
 
 ## §7 评审清单
 

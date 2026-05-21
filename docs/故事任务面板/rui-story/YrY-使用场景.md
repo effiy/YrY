@@ -1,5 +1,7 @@
 > | v1.4.8 | 2026-05-20 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 
+[§1 场景全景](#sec1-scenarios) · [§2 场景详述](#sec2-details) · [§3 场景覆盖矩阵](#sec3-matrix) · [§4 评审清单](#sec4-checklist) · [§5 体验基线](#sec5-experience) · [§6 API 参考](#sec6-api)
+
 > **导航**: [← YrY-故事任务](./YrY-故事任务.md) · [YrY-技术评审 →](./YrY-技术评审.md)
 
 > **来源引用**: 从 `skills/rui-story/SKILL.md` 命令族全景 + `rui-story.mjs` 命令处理器反推。证据 Level B + 源码路径。
@@ -20,6 +22,8 @@
 - 📊 从概览到详情的渐进式信息披露 — 概览 → 列表 → 单故事详情
 
 ---
+
+<a id="sec1-scenarios"></a>
 
 ## §1 场景全景
 
@@ -42,6 +46,8 @@ flowchart TD
 ```
 
 ---
+
+<a id="sec2-details"></a>
 
 ## §2 场景详述
 
@@ -586,6 +592,8 @@ flowchart LR
 
 ---
 
+<a id="sec3-matrix"></a>
+
 ## §3 场景覆盖矩阵
 
 | 场景 | FP# | AC# | 实现文档(技术评审) | 测试文档(测试设计) | 覆盖状态 | 备注 |
@@ -602,6 +610,8 @@ flowchart LR
 
 ---
 
+<a id="sec4-checklist"></a>
+
 ## §4 评审清单
 
 | # | 检查项 | 状态 |
@@ -615,6 +625,8 @@ flowchart LR
 | 7 | 覆盖矩阵下游文档齐全 | ✅ 技术评审 + 测试设计 |
 
 ---
+
+<a id="sec5-experience"></a>
 
 ## §5 体验基线
 
@@ -630,6 +642,8 @@ flowchart LR
 ---
 
 ---
+
+<a id="sec6-api"></a>
 
 ## §6 API 参考
 

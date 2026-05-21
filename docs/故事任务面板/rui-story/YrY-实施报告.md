@@ -1,5 +1,7 @@
 > | v1.6.4 | 2026-05-21 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 
+[§0 基线溯源](#sec0-baseline) · [§1 实施总结](#sec1-summary) · [§2 偏差记录](#sec2-deviations) · [§3 P0 审查](#sec3-p0) · [§4 数据结构](#sec4-data) · [§5 性能观察](#sec5-performance) · [§6 效果验证](#sec6-verification) · [§7 可操作验证](#sec7-ops) · [§8 评审清单](#sec8-checklist)
+
 > **导航**: [← YrY-测试设计](./YrY-测试设计.md) · [← YrY-安全审计](./YrY-安全审计.md) · [YrY-测试报告 →](./YrY-测试报告.md)
 
 > **来源引用**: 基于 `skills/rui-story/SKILL.md` 规约实现，源码 `skills/rui-story/rui-story.mjs` + `skills/rui-story/help.mjs`。证据 Level A + 验证命令输出。
@@ -14,6 +16,8 @@
 - 📊 远端优先架构 — 查询零本地读取，状态判定基于远端 file_path，类型并发推断
 
 ---
+
+<a id="sec0-baseline"></a>
 
 ## §0 基线溯源
 
@@ -37,6 +41,8 @@
 | 新用户 — 无障碍上手 | --help 含命令表 + 场景示例 + 数据源说明 | ✅ | — |
 
 ---
+
+<a id="sec1-summary"></a>
 
 ## §1 实施总结
 
@@ -94,6 +100,8 @@
 
 ---
 
+<a id="sec2-deviations"></a>
+
 ## §2 偏差记录
 
 | # | 评审设计 | 实际实现 | 偏差原因 | 影响 | 优先级 |
@@ -105,6 +113,8 @@
 无其他偏差。实现严格遵循技术评审 §0.2 任务规划的 T1–T7 模块划分与 §1 系统架构设计。
 
 ---
+
+<a id="sec3-p0"></a>
 
 ## §3 P0 审查
 
@@ -135,6 +145,8 @@
 
 ---
 
+<a id="sec4-data"></a>
+
 ## §4 数据结构
 
 ### 4.1 核心数据结构
@@ -157,6 +169,8 @@
 
 ---
 
+<a id="sec5-performance"></a>
+
 ## §5 性能观察
 
 | 维度 | 约束 | 实际观察 | 与评审预期 |
@@ -170,6 +184,8 @@
 | 非 TTY 纯文本 | !isTTY | 非 TTY 环境输出纯文本 | ✅ 符合 |
 
 ---
+
+<a id="sec6-verification"></a>
 
 ## §6 效果验证
 
@@ -285,6 +301,8 @@ flowchart LR
 
 ---
 
+<a id="sec7-ops"></a>
+
 ## §7 可操作验证
 
 ### 7.1 CLI 命令验证
@@ -313,6 +331,8 @@ node skills/rui-story/rui-story.mjs show nonexistent
 ```
 
 ---
+
+<a id="sec8-checklist"></a>
 
 ## §8 评审清单
 

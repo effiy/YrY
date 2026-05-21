@@ -1,5 +1,7 @@
 > | v1.4.8 | 2026-05-20 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 
+[§0 基线溯源](#sec0-baseline) · [§1 测试范围](#sec1-scope) · [§2 测试用例](#sec2-cases) · [§3 环境专项](#sec3-env) · [§4 测试环境](#sec4-setup) · [§5 评审清单](#sec5-checklist) · [§6 Gate A 交接](#sec6-gatea)
+
 > **导航**: [← YrY-技术评审](./YrY-技术评审.md) · [YrY-安全审计 →](./YrY-安全审计.md)
 
 > **来源引用**: 从 `skills/rui-story/SKILL.md` 命令族 + `rui-story.mjs` 命令处理器反推。证据 Level B + 源码路径。
@@ -14,6 +16,8 @@
 - 📊 Gate A 交接信号明确 — P0 用例 ID + 验证命令 + 实现约束
 
 ---
+
+<a id="sec0-baseline"></a>
 
 ## §0 基线溯源
 
@@ -38,6 +42,8 @@
 | TC-R01 | — | 项目名解析 fallback | 回归 | 待验证 |
 
 ---
+
+<a id="sec1-scope"></a>
 
 ## §1 测试范围
 
@@ -72,6 +78,8 @@
 | help.mjs 脚本存在性 | help.mjs 被删除 | TC-R02 | 待验证 |
 
 ---
+
+<a id="sec2-cases"></a>
 
 ## §2 测试用例
 
@@ -119,6 +127,8 @@
 
 ---
 
+<a id="sec3-env"></a>
+
 ## §3 环境专项
 
 | ID | 场景 | Given | When | Then | 优先级 |
@@ -129,6 +139,8 @@
 | TC-X04 | git 命令失败 | git 不可用或仓库损坏 | 执行 `/rui-story list` | checkGitBranch 返回 null，显示"—" | P1 |
 
 ---
+
+<a id="sec4-setup"></a>
 
 ## §4 测试环境
 
@@ -141,6 +153,8 @@
 | 分支 | feat/rui-story |
 
 ---
+
+<a id="sec5-checklist"></a>
 
 ## §5 评审清单
 
@@ -155,6 +169,8 @@
 | 7 | 基线溯源闭合 | ✅ §0 每 TC 映射 AC# 和场景 |
 
 ---
+
+<a id="sec6-gatea"></a>
 
 ## §6 Gate A 交接
 

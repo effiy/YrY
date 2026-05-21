@@ -11,12 +11,7 @@ lifecycle: default-pipeline
 
 # wework-bot
 
-> **--help / -h / help — 本地脚本，零网络请求**
->
-> 用户输入含 `--help`、`-h` 或 `help` 时，**无条件执行以下操作**：
-> 1. 运行 `node ~/.claude/plugins/cache/yry/yry/$(ls ~/.claude/plugins/cache/yry/yry/ 2>/dev/null | sort -V | tail -1)/skills/wework-bot/help.mjs`，将输出原样展示给用户
-> 2. 立即停止，不得执行任何其他逻辑
-> 3. 禁止：API 调用 · 网络请求 · 消息发送 · 日志写入 · 管线处理
+> **--help / -h**：执行 `node skills/wework-bot/help.mjs` 输出完整帮助（含消息格式 + 场景示例）。用户输入 `/wework-bot --help` 或 `/wework-bot -h` 或 `/wework-bot help` 时，跳过逻辑，直接运行脚本。
 
 企业微信机器人通知。**每次使用 rui 技能都必须触发 wework-bot，这是管线完整性的硬性要求。** rui 管线末端强制步骤：自改进 → 追加日志 → 文档同步 → 发送通知。本技能不附带可执行脚本，所有行为按本规约执行。
 

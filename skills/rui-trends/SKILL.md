@@ -10,12 +10,7 @@ lifecycle: default-pipeline
 
 # rui-trends
 
-> **--help / -h / help — 本地脚本，零网络请求**
->
-> 用户输入含 `--help`、`-h` 或 `help` 时，**无条件执行以下操作**：
-> 1. 运行 `node ~/.claude/plugins/cache/yry/yry/$(ls ~/.claude/plugins/cache/yry/yry/ 2>/dev/null | sort -V | tail -1)/skills/rui-trends/help.mjs`，将输出原样展示给用户
-> 2. 立即停止，不得执行任何其他逻辑
-> 3. 禁止：API 调用 · 网络请求 · WebFetch · 数据源查询 · 管线处理
+> **--help / -h**：执行 `node skills/rui-trends/help.mjs` 输出完整帮助（含数据源全景 + 场景示例）。用户输入 `/rui-trends --help` 或 `/rui-trends -h` 或 `/rui-trends help` 时，跳过逻辑，直接运行脚本。
 
 技术趋势发现。查询 GitHub Trending、OSS Insight、TrendShift、Top-Starred 四个数据源，输出结构化趋势报告。本技能为规约驱动（specification-only），由 implementing agent 执行 WebFetch + 结构化提取 + 格式化输出。
 

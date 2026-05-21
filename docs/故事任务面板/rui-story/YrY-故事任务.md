@@ -1,5 +1,7 @@
 > | v1.4.8 | 2026-05-20 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 
+[§1 Story](#sec1-story) · [§2 Requirements](#sec2-requirements) · [§3 成功标准](#sec3-success) · [§4 范围边界](#sec4-scope) · [§5 AC](#sec5-ac) · [§6 风险与假设](#sec6-risks) · [§7 跨文档索引](#sec7-index) · [§L 自改进循环](#secL-improve)
+
 > **导航**: [YrY-使用场景 →](./YrY-使用场景.md)
 
 > **来源引用**: 从 `skills/rui-story/` 源码反推生成，证据 Level B + 源码路径。`doc --from-code rui-story`
@@ -41,6 +43,8 @@ flowchart TD
 - 🔀 与 rui 管线分离 — 面板管理独立于 SDLC 编排，list 命令从 rui 迁移至 rui-story
 
 ---
+
+<a id="sec1-story"></a>
 
 ## §1 Story
 
@@ -122,6 +126,8 @@ flowchart TD
 
 ---
 
+<a id="sec2-requirements"></a>
+
 ## §2 Requirements
 
 ### 功能点
@@ -169,6 +175,8 @@ flowchart TD
 
 ---
 
+<a id="sec3-success"></a>
+
 ## §3 成功标准
 
 | SC# | 描述 | 度量方式 | 目标值 | 优先级 | 关联 FP# |
@@ -183,6 +191,8 @@ flowchart TD
 | SC8 | Token 缺失时给出清晰指引而非报错 | 无 Token 执行查询命令 | 输出配置方法提示 | P0 | FP1 |
 
 ---
+
+<a id="sec4-scope"></a>
 
 ## §4 范围边界
 
@@ -209,6 +219,8 @@ flowchart TD
 
 ---
 
+<a id="sec5-ac"></a>
+
 ## §5 AC
 
 | AC# | Given | When | Then | 门禁 |
@@ -228,6 +240,8 @@ flowchart TD
 
 ---
 
+<a id="sec6-risks"></a>
+
 ## §6 风险与假设
 
 | # | 风险/假设 | 类型 | 可能性 | 影响 | 缓解/验证策略 | 关联 FP# |
@@ -246,6 +260,8 @@ flowchart TD
 
 ---
 
+<a id="sec7-index"></a>
+
 ## §7 跨文档索引
 
 | 本文档章节 | 基线内容 | 下游文档编号 | 预期覆盖 | 状态 |
@@ -259,6 +275,8 @@ flowchart TD
 | §6 风险 1–8 | 风险项 | 05-安全审计 §2 | 威胁建模覆盖 | 待生成 |
 
 ---
+
+<a id="secL-improve"></a>
 
 ## §L 自改进循环
 

@@ -10,12 +10,7 @@ lifecycle: default-pipeline
 
 # import-docs
 
-> **--help / -h / help — 本地脚本，零网络请求**
->
-> 用户输入含 `--help`、`-h` 或 `help` 时，**无条件执行以下操作**：
-> 1. 运行 `node ~/.claude/plugins/cache/yry/yry/$(ls ~/.claude/plugins/cache/yry/yry/ 2>/dev/null | sort -V | tail -1)/skills/import-docs/help.mjs`，将输出原样展示给用户
-> 2. 立即停止，不得执行任何其他逻辑
-> 3. 禁止：API 调用 · 网络请求 · 读取远端数据 · 扫描上传 · 管线处理
+> **--help / -h**：执行 `node skills/import-docs/help.mjs` 输出完整帮助（含场景示例）。用户输入 `/import-docs --help` 或 `/import-docs -h` 或 `/import-docs help` 时，跳过逻辑，直接运行脚本。
 >
 > **可执行入口**：`node skills/import-docs/sync.mjs [options]` — 扫描 + 上传一体化。`--help` 查看选项。rui 交付管线步骤 ② 通过此脚本触发。
 

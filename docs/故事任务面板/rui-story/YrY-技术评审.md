@@ -1,5 +1,7 @@
 > | v1.4.8 | 2026-05-20 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 
+[§0 设计决策与任务规划](#sec0-design) · [§1 系统架构](#sec1-architecture) · [§2 API 接口](#sec2-api) · [§3 数据模型](#sec3-data) · [§4 模块与状态](#sec4-modules) · [§7 安全约束](#sec7-security) · [§8 性能与限制](#sec8-performance) · [§9 评审清单](#sec9-checklist)
+
 > **导航**: [← YrY-使用场景](./YrY-使用场景.md) · [YrY-测试设计 →](./YrY-测试设计.md) · [YrY-安全审计 →](./YrY-安全审计.md)
 
 > **来源引用**: 从 `skills/rui-story/rui-story.mjs` + `skills/rui-story/SKILL.md` 源码反推。证据 Level B + 源码路径。
@@ -14,6 +16,8 @@
 - 📊 确定性脚本执行 — 命令行参数解析 → 分支路由 → 格式化输出，无 AI 介入
 
 ---
+
+<a id="sec0-design"></a>
 
 ## §0 设计决策与任务规划
 
@@ -66,6 +70,8 @@ flowchart LR
 | T7 | 错误处理与降级 | S | T1 | Token 缺失提示 + API 不可达处理 | 优雅退出不出错 | FP1 |
 
 ---
+
+<a id="sec1-architecture"></a>
 
 ## §1 系统架构
 
@@ -148,6 +154,8 @@ sequenceDiagram
 | CLI → Git (branch) | 本地 | execSync | `git branch --list "feat/<name>"` | 异常 → null |
 
 ---
+
+<a id="sec2-api"></a>
 
 ## §2 API 接口
 
@@ -327,6 +335,8 @@ curl -s -X POST "${API_URL}/" \
 
 ---
 
+<a id="sec3-data"></a>
+
 ## §3 数据模型
 
 ### 3.1 远端 Session 结构
@@ -367,6 +377,8 @@ curl -s -X POST "${API_URL}/" \
 | 均不含或无法读取 | meta |
 
 ---
+
+<a id="sec4-modules"></a>
 
 ## §4 模块与状态
 
@@ -418,6 +430,8 @@ stateDiagram-v2
 
 ---
 
+<a id="sec7-security"></a>
+
 ## §7 安全约束
 
 | # | 威胁 | 信任边界 | 缓解措施 | 优先级 |
@@ -431,6 +445,8 @@ stateDiagram-v2
 
 ---
 
+<a id="sec8-performance"></a>
+
 ## §8 性能与限制
 
 | 维度 | 约束 | 应对 |
@@ -443,6 +459,8 @@ stateDiagram-v2
 | TTY 检测 | process.stdout.isTTY | 非 TTY 环境输出纯文本 |
 
 ---
+
+<a id="sec9-checklist"></a>
 
 ## §9 评审清单
 

@@ -11,12 +11,7 @@ agents:
 
 > 故事驱动 SDLC 编排器：拆故事 → 文档基线 → 测试先行 → 实现 → 验证 → 复盘 → 交付。
 >
-> **--help / -h / help — 本地脚本，零网络请求**
->
-> 用户输入含 `--help`、`-h` 或 `help` 时，**无条件执行以下操作**：
-> 1. 运行 `node ~/.claude/plugins/cache/yry/yry/$(ls ~/.claude/plugins/cache/yry/yry/ 2>/dev/null | sort -V | tail -1)/skills/rui/help.mjs`，将输出原样展示给用户
-> 2. 立即停止，不得执行任何其他逻辑
-> 3. 禁止：API 调用 · 网络请求 · 读取远端数据 · 管线处理 · Agent 调度 · import-docs · wework-bot
+> **--help / -h**：执行 `node skills/rui/help.mjs` 输出完整帮助（含命令族全景 + 管线一览）。用户输入 `/rui --help` 或 `/rui -h` 或 `/rui help` 时，跳过管线逻辑，直接运行脚本。
 >
 > 哲学源自 [CLAUDE.md](../../CLAUDE.md)。本文件定义命令面与编排骨架，细节分散在：[rules/](../../rules/) · [agents/](../../agents/) · [formulas.md](./formulas.md) · [coder.md](./coder.md)。
 
@@ -31,6 +26,7 @@ flowchart TD
     Q2 -->|"有需求"| E2E["/rui <需求>"]
     Q2 -->|"有源码缺文档"| FC["/rui doc --from-code"]
     Q2 -->|"已拆缺文档"| DOC["/rui doc <需求>"]
+    Q2 -->|"有部分文档"| LOC["/rui doc --from-local <name>"]
     Q2 -->|"文档齐缺实现"| CODE["/rui code <name>"]
     Q2 -->|"代码改完补文档"| FD["/rui code --from-doc"]
     Q2 -->|"小修小补"| UPD["/rui update"]
@@ -48,6 +44,7 @@ flowchart TD
 - `/rui update <name> [ctx] [--no-code]` — 增量更新：T1/T2/T3 自动裁剪
 - `/rui code --from-doc <name>` — 从文档反推：只读源码补全缺失文档（实施报告/测试报告/自改进复盘），不覆盖已有
 - `/rui doc --from-code 需求` — 从源码反推：req 空时 pm 扫描推荐列表；req 有值时直接反推生成完整文档基线
+- `/rui doc --from-local <name>` — 从已有本地文档补全缺失文档基线（只读已有，生成缺失，不覆盖）
 
 ### 只读命令（不触发 hook）
 
@@ -662,6 +659,151 @@ flowchart LR
 
 **末端触发** [强制集成](#强制集成)。
 
+## doc --from-local
+
+> 从已有本地故事文档补全缺失文档基线。扫描 `docs/故事任务面板/<name>/` 下的已有文档，按依赖链生成缺失文档。全程只读已有，不覆盖，证据 Level A + 文档路径。
+>
+> **前置条件**：至少 1 份基线文档（故事任务/使用场景/技术评审之一）存在。零文档时引导 `/rui doc` 或 `--from-code`。
+
+```mermaid
+flowchart TD
+    SURVEY["§1 Survey<br/>扫描已有文档<br/>识别缺失"]:::s --> MIN{"§1.1 最少基线<br/>≥1 文档存在?"}:::gate
+    MIN -->|"否"| REFUSE["拒绝<br/>引导 /rui doc --from-code 或 /rui doc <需求>"]:::bad
+    MIN -->|"是"| ALL{"§1.2 齐全检查<br/>6 文档全部存在?"}:::gate
+    ALL -->|"是"| SKIP["无需生成<br/>引导 /rui update <name>"]:::warn
+    ALL -->|"否，有缺失"| BRANCH{"§1.3 分支隔离<br/>git branch == feat/&lt;name&gt;?"}:::gate
+    BRANCH -->|"否"| SWITCH["创建/切换到 feat/&lt;name&gt;<br/>从 main 拉出"]:::block
+    BRANCH -->|"是"| READ["§2 读取本地上下文<br/>全部已有文档 → 结构化事实集"]:::s
+    SWITCH --> READ
+    READ --> PRIORITY["§3 优先级排序<br/>按依赖链确定生成顺序<br/>上游缺失优先"]:::s
+    PRIORITY --> GEN["§4 逐文档生成<br/>仅生成缺失文档"]:::s
+    
+    subgraph GENSUB["逐文档生成 — 缺失文档（按依赖链串行）"]
+        direction LR
+        D1["§4.1 pm<br/>{project}-故事任务<br/>F.story.task"]:::agent
+        D2["§4.2 pm<br/>{project}-使用场景<br/>F.story.scenarios"]:::agent
+        D3["§4.3 coder<br/>{project}-技术评审<br/>F.story.technical-review"]:::agent
+        D4["§4.4 tester<br/>{project}-测试设计<br/>F.story.test-design"]:::agent
+        D5["§4.5 security<br/>{project}-安全审计<br/>F.story.security-audit"]:::agent
+        D6["§4.6 self-improve<br/>{project}-自改进复盘<br/>F.story.retrospective"]:::agent
+        D1 --> D2 --> D3 --> D4
+        D3 --> D5
+        D4 & D5 --> D6
+    end
+
+    GENSUB --> CHECK["§5 P0 检查<br/>逐文档校验"]:::s
+    CHECK -->|"P0 未通过"| RETRY{"自修复 ≤ 2 轮?"}:::gate
+    RETRY -->|"是"| GEN
+    RETRY -->|"否"| BLOCK_DOC["doc-p0 🚫<br/>阻断"]:::bad
+    CHECK -->|"通过"| DELIVER["§6 交付三步<br/>hook-log → import-docs → wework-bot"]:::s
+
+    classDef s fill:#e3f2fd,stroke:#1565c0;
+    classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef bad fill:#ffebee,stroke:#c62828;
+    classDef warn fill:#fff8e1,stroke:#f57f17;
+    classDef block fill:#ffebee,stroke:#c62828;
+    classDef agent fill:#f3e5f5,stroke:#6a1b9a;
+```
+
+### §1 Survey — 扫描已有，识别缺失
+
+| 步骤 | 操作 | 阻断标识 |
+|------|------|---------|
+| §1.0 解析 | 解析 `<name>` 为 kebab-case，目标路径 `docs/故事任务面板/<name>/` | `no-parse` |
+| §1.1 存在检查 | 验证目标目录存在 | `no-story` |
+| §1.2 扫描 | 列出已有 `{project}-*.md` 文件，构建已有集和缺失集 | — |
+| §1.3 基线检查 | 至少 1 份基线文档（故事任务/使用场景/技术评审）存在 | `no-baseline` |
+| §1.4 齐全检查 | 6 文档全在时无需生成 | `doc-full` |
+| §1.5 分支隔离 | `git branch --show-current` == `feat/<name>` | `no-doc-isolation` |
+
+| 场景 | 阻断 | 引导 |
+|------|------|------|
+| 目录不存在 | `no-story` | 使用 `/rui doc <需求>` 或 `/rui doc --from-code` |
+| 目录空（0 文档）| `no-doc` | 同上 |
+| 仅交互日志/消息通知列表 | `no-doc` | 同上 |
+| 无基线文档（仅测试设计/安全审计/自改进复盘存在）| `no-baseline` | 使用 `/rui doc --from-code` — 这些文档不足以反推故事任务 |
+| 6 文档全在 | `doc-full` | 使用 `/rui update <name>` |
+
+### §2 Read — 读取本地上下文
+
+读取目标目录全部已有文档，构建结构化事实集：
+
+| 维度 | 来源文档 | 提取内容 |
+|------|---------|---------|
+| 业务基线 | {project}-故事任务.md | Story#、FP#、AC#、SC#、风险 |
+| 用户基线 | {project}-使用场景.md | 场景、操作流、覆盖矩阵 |
+| 技术设计 | {project}-技术评审.md | 架构、API、数据模型、组件、状态 |
+| 测试计划 | {project}-测试设计.md | 测试范围、用例、Gate A 交接 |
+| 安全审计 | {project}-安全审计.md | 资产、威胁、信任边界、缓解措施 |
+| 过程历史 | {project}-交互日志.md | 执行决策、阶段耗时、阻断事件 |
+
+### §3 Prioritize — 按依赖链排序
+
+仅缺失文档进入生成管线，按依赖链排序：
+
+1. **故事任务**（缺失时）— 所有文档的上游基线
+2. **使用场景**（缺失时）— 依赖故事任务
+3. **技术评审**（缺失时）— 依赖故事任务 + 使用场景
+4. **测试设计**（缺失时）— 依赖故事任务 + 使用场景 + 技术评审（与安全审计并行）
+5. **安全审计**（缺失时）— 依赖技术评审（与测试设计并行）
+6. **自改进复盘**（缺失时）— 依赖全部以上文档
+
+**上游缺失、下游存在的特殊策略**：
+
+| 场景 | 策略 |
+|------|------|
+| 故事任务缺失，使用场景存在 | pm 从用户旅程反推 WHAT，可执行 |
+| 故事任务+使用场景缺失，技术评审存在 | pm 从架构反推业务意图，不确定项标 Level C |
+| 仅测试设计或安全审计存在 | 阻断 `no-baseline` — 业务上下文不足 |
+
+### §4 Generate — 逐文档生成
+
+| # | 文档 | Agent | 公式 | 反推策略 |
+|---|------|-------|------|---------|
+| §4.1 | {project}-故事任务.md | pm | [F.story.task](./formulas.md#fstorytask--project-故事任务-meta--storyn) | 从下游文档反推业务意图。语言边界强制。证据 Level A + 文档路径。 |
+| §4.2 | {project}-使用场景.md | pm | [F.story.scenarios](./formulas.md#fstoryscenarios--project-使用场景) | 从 FP# 反推用户旅程。≥2 场景，每场景含 mermaid flowchart + 正常/空/错误路径。 |
+| §4.3 | {project}-技术评审.md | coder | [F.story.technical-review](./formulas.md#fstorytechnical-review--project-技术评审) | 从双基线反推架构。按项目类型裁剪章节。含基线溯源表 + 效果示意 mermaid。 |
+| §4.4 | {project}-测试设计.md | tester | [F.story.test-design](./formulas.md#fstorytest-design--project-测试设计) | 从 AC# + 场景反推用例。四类全覆盖。Gate A 交接信号完整。 |
+| §4.5 | {project}-安全审计.md | security | [F.story.security-audit](./formulas.md#fstorysecurity-audit--project-安全审计) | 从技术评审独立审计。STRIDE 六类全覆盖。不依赖 coder 自评。 |
+| §4.6 | {project}-自改进复盘.md | self-improve | [F.story.retrospective](./formulas.md#fstoryretrospective--project-自改进复盘) | 从全部已有+已生成文档 + 交互日志提取观察与诊断。执行层数据标 Level C。 |
+
+### 范围边界
+
+**范围内（6 文档，可从本地文档上下文生成）**：
+
+| 文件 | 阶段 | Agent |
+|------|------|-------|
+| {project}-故事任务.md | 文档生成 | pm |
+| {project}-使用场景.md | 文档生成 | pm |
+| {project}-技术评审.md | 文档生成 | coder |
+| {project}-测试设计.md | 文档生成 | tester |
+| {project}-安全审计.md | 文档生成 | security |
+| {project}-自改进复盘.md | 自改进 | self-improve |
+
+**范围外（4 文档，需代码执行或自动生成）**：
+
+| 文件 | 排除原因 | 替代方案 |
+|------|---------|---------|
+| {project}-实施报告.md | 需代码执行（截图、curl 命令、模块 P0 审查数据）| `/rui code <name>` |
+| {project}-测试报告.md | 需测试执行（通过/失败计数、环境快照）| `/rui code <name>` |
+| {project}-消息通知列表.md | wework-bot 自动追加 | 自动 |
+| {project}-交互日志.md | rui 管线自动维护 | 自动 |
+
+### §5 约束
+
+| 约束 | 规则 | 违反 |
+|------|------|------|
+| 只读已有 | 已有文档不改一字，git diff 仅新文件 | P0 |
+| 不覆盖 | 缺失文档才生成，已有跳过 | P0 |
+| 分支隔离 | 文档写入必须在 `feat/<name>` 分支 | `no-doc-isolation` |
+| 反推诚实 | 能从文档确定的写 Level A/B，不能确定的标「待补充」| `chain-broken` |
+| 项目范围 | 仅生成 `{project}` 前缀的文档，禁止跨项目内容 | `doc-p0` |
+| 表达优先 | 每文档含 mermaid 图，不可纯文本 | `doc-p0` |
+| 逐文档串行 | 按依赖链顺序，前文档完成再进下一文档 | `chain-broken` |
+| P0 自修复 | 每文档 ≤2 轮自修复，超时阻断 | `doc-p0` |
+
+**末端触发** [强制集成](#强制集成)。
+
 ## 推荐
 
 只读，不触发 import-docs / wework-bot。
@@ -676,7 +818,7 @@ flowchart LR
 
 ### 触发时机
 
-**触发**：`init` / `doc` / `code` / `需求` / `update` / `code --from-doc` / `doc --from-code`  
+**触发**：`init` / `doc` / `code` / `需求` / `update` / `code --from-doc` / `doc --from-code` / `doc --from-local`  
 **不触发**：`/rui`（推荐）
 
 ### 执行顺序（不可跳序）

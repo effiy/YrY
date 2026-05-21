@@ -7,12 +7,7 @@ lifecycle: default-pipeline
 
 # rui-claude
 
-> **--help / -h / help — 本地脚本，零网络请求**
->
-> 用户输入含 `--help`、`-h` 或 `help` 时，**无条件执行以下操作**：
-> 1. 运行 `node ~/.claude/plugins/cache/yry/yry/$(ls ~/.claude/plugins/cache/yry/yry/ 2>/dev/null | sort -V | tail -1)/skills/rui-claude/help.mjs`，将输出原样展示给用户
-> 2. 立即停止，不得执行任何其他逻辑
-> 3. 禁止：API 调用 · 网络请求 · 读取远端数据 · sync/retro/管线处理 · Agent 调度
+> **--help / -h**：执行 `node skills/rui-claude/help.mjs` 输出完整帮助（含命令族全景 + 使用场景）。用户输入 `/rui-claude --help` 或 `/rui-claude -h` 或 `/rui-claude help` 时，跳过逻辑，直接运行脚本。
 
 作用范围：当前项目的 `.claude/` 目录。sync / retro 均以 `.claude/` 为操作边界。
 
