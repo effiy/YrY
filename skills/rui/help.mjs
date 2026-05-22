@@ -78,6 +78,15 @@ ${subhdr("增量更新")}
 ${item("/rui update <name> [ctx] [--no-code]", "增量更新（T1/T2/T3 自动裁剪）", cyan)}
 ${flag("no-code", "仅刷新文档不改源码")}
 
+${subhdr("自改进闭环")}
+${item("/rui yry [--depth N]", "全自主自改进闭环：扫描→诊断→实现→验证→版本升级", cyan)}
+${flag("depth N", "最大闭环次数（默认 3）。≤0 时仅扫描诊断不执行")}
+
+${subhdr("版本管理")}
+${item("/rui version --up", "版本升级：自主判定 → 更新文件 → git commit → merge main → push + tag", cyan)}
+${item("/rui version --rollback <name> [--to <version>]", "版本回退：基于 git 版本链回退故事文档（需确认）", cyan)}
+${flag("to <version>", "目标版本号或 commit hash。省略时展示可用版本列表")}
+
 ${subhdr("项目初始化")}
 ${item("/rui init", "建立项目基线：CLAUDE.md + README + 故事面板", cyan)}
 ${item("/rui", "任务推荐（只读，不触发交付）", cyan)}

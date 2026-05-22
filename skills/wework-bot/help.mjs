@@ -69,6 +69,9 @@ ${item("send.mjs --help", "显示此帮助", cyan)}
 ${subhdr("参数")}
 ${item("--story=<name>", "故事名（kebab-case），必填", cyan)}
 ${item("--project=<name>", "项目名，默认从 CLAUDE.md 读取", yellow)}
+${item("--skill=<name>", "🤖 技能标识: rui | rui-story | rui-claude | wework-bot | import-docs", cyan)}
+${item("--command=<text>", "📋 命令: 用户执行的具体命令（含参数）", cyan)}
+
 ${item("--status=<s>", "通知类型: complete | blocked | gate-fail（默认 complete）", cyan)}
 ${item("--conclusion=<text>", "🎯 结论", yellow)}
 ${item("--description=<text>", "📝 描述", yellow)}

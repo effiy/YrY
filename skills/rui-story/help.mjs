@@ -79,6 +79,11 @@ ${item("/rui-story collect story --story=<name>", "单故事指标：阻断率 /
 ${item("/rui-story collect all --window=12", "跨故事指标汇总：所有故事聚合统计 + 滚动窗口", cyan)}
 ${item("/rui-story collect anomalies --threshold=2.0", "异常检测：D0-D7 诊断阈值对比（阻断率/P0密度/T3占比/阶段耗时）", cyan)}
 
+
+${subhdr("合并拆分")}
+${item("/rui-story merge [<name>]", "合并远端与本地故事（最小可用原则）；自动 MINOR 版本升级", yellow)}
+${item("/rui-story split <name>", "拆分大故事为独立子故事；父升级子初始 1.0.0", yellow)}
+
 ${subhdr("写入命令")}
 ${item("/rui-story sync [<name>]", "远端→本地覆盖（委托 import-docs mode=pull）", yellow)}
 ${item("/rui-story clear [<name>]", "仅本地：移除非项目前缀文件，先展示后确认", yellow)}
