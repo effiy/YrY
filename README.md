@@ -124,8 +124,6 @@ flowchart TD
 | `/rui-story status check` | 只读 | 本地状态机 | 验证状态转移合法性：`--from=<s> --to=<s>` |
 | `/rui-story status transition` | 写入 | 本地 rui-state.json | 执行状态转移并记录审计日志 |
 | `/rui-story status dashboard` | 只读 | 本地文件系统 | 跨故事聚合仪表板（本地 rui-state.json） |
-| `/rui-story merge [<name>]` | 写入 | 远端 API + 本地 | 合并远端与本地故事任务（最小可用原则）；自动升级版本号 |
-| `/rui-story split <name>` | 写入 | 本地文件系统 | 拆分大故事为独立子故事；父升级子初始 |
 | `/rui-story --help` | 只读 | 本地 | 完整命令用法 + 场景示例 |
 
 ### /rui-claude — .claude/ 配置管理
@@ -191,7 +189,7 @@ flowchart LR
 ## 技能
 
 - **rui** (`/rui init · doc · code · update · yry · version --up · --rollback · --from-code`) — 故事驱动 SDLC 主线，含诊断纪律、架构深化、交接纪律、版本管理
-- **rui-story** (`/rui-story list · show · recommend · health · sync · clear · remove · status · merge · split`) — 故事面板远端查询、进度管理、文档同步、本地清理、状态转移、合并拆分
+- **rui-story** (`/rui-story list · show · recommend · health · sync · clear · remove · status  (merge/split 由 yry 自动执行)`) — 故事面板远端查询、进度管理、文档同步、本地清理、状态转移、合并拆分
 - **rui-claude** (`/rui-claude sync · retro · history`) — .claude/ 配置远端同步与复盘
 - **import-docs** — 自动（hook 触发）：批量同步故事文档到远端 API
 - **wework-bot** — 自动（hook 触发）：企微机器人推送管线状态通知

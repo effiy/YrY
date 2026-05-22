@@ -497,8 +497,14 @@ flowchart LR
 ```mermaid
 flowchart TD
     START["/rui yry [--depth N]"]:::entry --> INIT["初始化 depth 计数器<br/>max=N（默认 3）<br/>round=0"]:::s
-    INIT --> SCAN["§1 全量扫描<br/>扫描所有故事 rui-state.json<br/>+ execution-memory.jsonl"]:::s
-    SCAN --> DIAG["§2 诊断排序<br/>D0-D7 模式匹配 →<br/>按优先级+影响面排序"]:::s
+    INIT --> SCAN["§1 全量扫描<br/>扫描所有故事 rui-state.json<br/>+ execution-memory.jsonl<br/>+ 故事任务面板内容"]:::s
+    SCAN --> MERGE_CHECK{"§1.1 可合并<br/>重复故事?"}
+    MERGE_CHECK -->|"是"| AUTO_MERGE["自动合并<br/>最小可用原则<br/>bump MINOR"]:::op
+    MERGE_CHECK -->|"否"| SPLIT_CHECK{"§1.2 需拆分<br/>过大故事?"}
+    SPLIT_CHECK -->|"是"| AUTO_SPLIT["自动拆分<br/>按 Story# 边界<br/>父 MINOR 子 init"]:::op
+    AUTO_MERGE --> DIAG
+    SPLIT_CHECK -->|"否"| DIAG["§2 诊断排序<br/>D0-D7 模式匹配 →<br/>按优先级+影响面排序"]:::s
+    AUTO_SPLIT --> DIAG
     DIAG --> CHECK{"有改进空间?"}
     CHECK -->|"否"| DONE["输出健康声明<br/>所有故事已达最优"]:::out
     CHECK -->|"是"| PICK["§3 选取最优<br/>选取最高优先级改进项"]:::s
@@ -517,7 +523,19 @@ flowchart TD
     classDef entry fill:#fff3e0,stroke:#e65100;
     classDef s fill:#e3f2fd,stroke:#1565c0;
     classDef out fill:#e8f5e9,stroke:#2e7d32;
+    classDef op fill:#f3e5f5,stroke:#6a1b9a;
 ```
+
+### §1.1–1.2 自动合并与拆分
+
+> yry 在扫描阶段自动检测可合并的重复故事和需拆分的大故事，全自动执行，无需手动干预。
+
+| 检测 | 条件 | 行为 |
+|------|------|------|
+| 自动合并 | 远端+本地存在内容重叠 ≥ 70% 的故事 | 按最小可用原则合并（保留信息量最大版本），bump MINOR |
+| 自动拆分 | 故事含 ≥ 8 个 Story# 或 ≥ 15 个 FP# | 按 Story# 独立性拆分边界，父 bump MINOR，子 init 1.0.0 |
+
+**不再提供手动 `/rui-story merge` / `/rui-story split` 命令。**
 
 ### 版本管理
 
