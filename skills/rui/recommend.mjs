@@ -492,6 +492,21 @@ function countLines(content) {
   return content.split("\n").length;
 }
 
+// --- security signals -------------------------------------------------------
+function securitySignals(content, _type) {
+  if (!content) return { hasUserInput: false, hasAuth: false, hasApiCall: false };
+  const patterns = {
+    hasUserInput: /readline|prompt|stdin|input|form|req\.body|req\.query|req\.params|process\.argv|process\.env|userInput/i,
+    hasAuth: /auth|token|session|login|password|credential|oauth|jwt|api.*key|bearer/i,
+    hasApiCall: /fetch|axios|http\.request|http\.get|https\.request|curl|api\.|\.post\(|\.get\(|\.put\(|\.delete\(/i,
+  };
+  return {
+    hasUserInput: patterns.hasUserInput.test(content),
+    hasAuth: patterns.hasAuth.test(content),
+    hasApiCall: patterns.hasApiCall.test(content),
+  };
+}
+
 // --- collect: assemble per-file metrics ------------------------------------
 async function collect(root, files, project, projectType) {
   const { importedBy } = buildDependencyGraph(files);
