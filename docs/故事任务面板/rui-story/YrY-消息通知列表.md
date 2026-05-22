@@ -23,7 +23,7 @@
 【2026-05-20 18:00:00】
 
 【YrY】
-🎯 结论: 完成 rui-story 设计 阶段
+🎯 结论: 完成 rui-story docs_done 阶段
 📝 描述: doc --from-code 从 skills/rui-story/ 源码反推生成 5 份基线文档（故事任务/使用场景/技术评审/测试设计/安全审计），P0 全部通过，已同步远端
 📌 范围: docs/故事任务面板/rui-story/
 👉 下一步: 运行 /rui code rui-story 进入实现阶段

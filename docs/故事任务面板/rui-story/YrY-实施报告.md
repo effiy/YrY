@@ -73,11 +73,11 @@
 | groupSessionsByStory | (sessions) => Map | Map<name, sessions[]> | ✅ 筛选 故事任务面板/ 前缀 |
 | readBlockedState | (projectRoot, storyName) => object\|null | `{blocked, block_reason}` | ✅ 读取 .memory/rui-state.json |
 | hasProjectFile | (fileBasenames, projectPrefix, docType) => boolean | 是否存在项目文件 | ✅ 用于状态判定辅助 |
-| determineStatus | (fileBasenames, projectPrefix, blockedState) => string | 6 种状态之一 | ✅ "报告" |
+| determineStatus | (fileBasenames, projectPrefix, blockedState) => string | 6 种状态之一 | ✅ "code_done" |
 | inferType | async (apiUrl, storySessions, projectPrefix) => string | 4 种类型之一 | ✅ "全栈" |
 | inferTypesBatch | async (apiUrl, storyMap, projectPrefix) => Map | Map<name, type> | ✅ 4 worker 并发 |
 | checkGitBranch | (name) => string\|null | 分支名或 null | ✅ "feat/rui-story" |
-| statusDisplay | (status) => string | 状态中文标签 | ✅ 6 状态映射（任务/设计/实施/测试/报告/改进） |
+| statusDisplay | (status) => string | 状态中文标签 | ✅ 6 状态映射 |
 | formatDate | (ts) => string | 格式化日期 | ✅ YYYY-MM-DD HH:mm |
 | latestTimestamp | (sessions) => number | 最近时间戳 | ✅ 用于排序 |
 | printOverview | (storyMap, projectPrefix, blockedMap) => void | stdout | ✅ 6 状态统计 + 最近活动 |
@@ -157,7 +157,7 @@
 | storyMap | `Map<string, Session[]>` | 按故事名分组的 sessions | 一致 |
 | blockedMap | `Map<string, {blocked, block_reason}>` | 阻断状态缓存 | 一致 |
 | typeMap | `Map<string, "backend"\|"frontend"\|"fullstack"\|"meta">` | 类型推断结果 | 一致 |
-| STATUS_CONFIG | `Record<string, {label, colorFn}>` | 6 状态配置（任务/设计/实施/测试/报告/改进） | 一致 |
+| STATUS_CONFIG | `Record<string, {label, colorFn}>` | 6 状态配置（含 TTY 颜色） | 一致 |
 | TYPE_LABELS | `Record<string, string>` | 类型枚举→中文标签 | 一致 |
 
 ### 4.2 本地数据读取
@@ -198,17 +198,17 @@
 ```
 故事任务面板 · 状态概览
 ────────────────────────────────
-  改进             0
-  报告             0
-  测试             0
-  实施             1
-  设计             0
-  任务             0
+  code_done             0
+  code_in_progress      0
+  docs_done             1
+  docs_in_progress      0
+  not_started           0
+  blocked               0
 ────────────────────────────────
   合计                    1 个故事
 
 最近活动:
-  rui-story          2026-05-20 17:20   实施
+  rui-story          2026-05-20 17:20   docs_done
 ```
 
 **进度全景**
@@ -218,7 +218,7 @@
 
   Story          Status             Files  Last Modified       Type       Branch
   ────────────────────────────────────────────────────────────────────────────────────────────────
-  rui-story      实施          7     2026-05-20 17:20    全栈         feat/rui-story
+  rui-story      docs_done          7     2026-05-20 17:20    全栈         feat/rui-story
 ```
 
 **健康检查**

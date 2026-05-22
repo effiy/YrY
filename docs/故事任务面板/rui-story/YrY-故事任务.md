@@ -1,8 +1,8 @@
-> | v1.5.0 | 2026-05-22 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
+> | v1.4.8 | 2026-05-20 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 
 > **导航**: [YrY-使用场景 →](./YrY-使用场景.md)
 
-> **来源引用**: 从 `skills/rui-story/` 源码反推生成，证据 Level B + 源码路径。`doc --from-code rui-story`。2026-05-22 通过 /rui update 增量追加状态管理和指标采集功能。
+> **来源引用**: 从 `skills/rui-story/` 源码反推生成，证据 Level B + 源码路径。`doc --from-code rui-story`
 
 [§1 Story](#sec1-story) · [§2 Requirements](#sec2-requirements) · [§3 成功标准](#sec3-success) · [§4 范围边界](#sec4-scope) · [§5 AC](#sec5-ac) · [§6 风险与假设](#sec6-risks) · [§7 跨文档索引](#sec7-index) · [§L 自改进循环](#secL-improve)
 
@@ -16,7 +16,7 @@
 
 ### 需求概述
 
-为 YrY 故事驱动 SDLC 编排系统提供故事任务面板管理能力。用户可通过 `/rui-story` 命令族查询远端故事面板状态、查看单故事详情、从远端同步文档到本地、清理非项目文件、执行状态转移与审计、采集执行指标与异常检测。数据源默认为远端 API（api.effiy.cn），查询操作零本地文件系统读取，写入操作（sync/clear/remove/status transition）有明确的数据边界。
+为 YrY 故事驱动 SDLC 编排系统提供故事任务面板管理能力。用户可通过 `/rui-story` 命令族查询远端故事面板状态、查看单故事详情、从远端同步文档到本地、清理非项目文件。数据源默认为远端 API（api.effiy.cn），查询操作零本地文件系统读取，写入操作（sync/clear/remove）有明确的数据边界。
 
 ### 效果示意
 
@@ -27,9 +27,7 @@ flowchart TD
     M1 --> M2["里程碑 2<br/>状态判定与类型推断<br/>6 状态 + 4 类型"]:::milestone
     M2 --> M3["里程碑 3<br/>只读命令族<br/>概览/list/show/recommend/health"]:::milestone
     M3 --> M4["里程碑 4<br/>写入命令族<br/>sync/clear/remove<br/>明确数据边界"]:::milestone
-    M4 --> M5["里程碑 5<br/>状态管理命令族<br/>check/transition/dashboard"]:::milestone
-    M5 --> M6["里程碑 6<br/>指标采集命令族<br/>story/all/anomalies"]:::milestone
-    M6 --> GOAL["目标状态<br/>故事面板管理完整可独立运作<br/>远端查询·本地清理·状态转移·指标采集"]:::goal
+    M4 --> GOAL["目标状态<br/>故事面板管理完整可独立运作<br/>远端查询·本地清理·状态准确"]:::goal
 
     classDef pain fill:#ffebee,stroke:#c62828;
     classDef milestone fill:#fff3e0,stroke:#e65100;
@@ -43,9 +41,6 @@ flowchart TD
 - ⚡ 确定性脚本执行 — recommend/health 由 rui-story.mjs 确定性输出，不依赖 agent 解读
 - 📊 状态自动判定 — 基于远端 file_path 存在性自动判定 6 种故事状态，含 blocked 本地例外
 - 🔀 与 rui 管线分离 — 面板管理独立于 SDLC 编排，list 命令从 rui 迁移至 rui-story
-- 🔄 状态转移管理 — status check 验证转移合法性，status transition 执行转移并记录审计日志
-- 📈 跨故事仪表板 — status dashboard 聚合所有故事的状态机快照，一目了然
-- 📊 执行指标采集 — collect story/all 采集单故事或全局指标，collect anomalies 检测 D0-D7 异常
 
 ---
 
@@ -131,60 +126,6 @@ flowchart TD
 
 ---
 
-### Story 4: 状态转移管理
-
-| 字段 | 内容 |
-|------|------|
-| 作为 | 管线执行者 |
-| 我想要 | 通过命令行验证和执行故事状态转移，并记录审计日志 |
-| 以便 | 状态转移有合法性校验、可追溯、可审计 |
-| 优先级 | P0 |
-| 范围边界 | 读本地 rui-state.json 状态机定义，写 rui-state.json 和审计日志 |
-| 依赖 | .memory/rui-state.json 存在，状态机定义完整 |
-
-#### 范围外
-
-- 不涉及远端 API 查询
-- 不修改源码
-- 不自动触发状态转移（由管线显式调用）
-
-##### §1.1 User Operations
-
-| # | 操作 | 触发条件 | 操作步骤 | 预期结果 |
-|---|------|---------|---------|---------|
-| 1 | 验证转移合法性 | 用户执行 `/rui-story status check --from=<s> --to=<s>` | 读取状态机定义 → 检查转移是否在允许列表中 | 输出合法/非法 + 原因 |
-| 2 | 执行状态转移 | 用户执行 `/rui-story status transition --from=<s> --to=<s> [--reason=<r>]` | 验证转移合法性 → 更新 rui-state.json → 追加审计日志 | 状态更新成功 + 审计记录已写入 |
-| 3 | 查看跨故事仪表板 | 用户执行 `/rui-story status dashboard` | 扫描所有故事目录 → 读取各自的 rui-state.json → 聚合展示 | 输出所有故事的状态、阻断原因、最后更新时间 |
-
----
-
-### Story 5: 执行指标采集
-
-| 字段 | 内容 |
-|------|------|
-| 作为 | 项目维护者 |
-| 我想要 | 采集单故事或全局的执行指标，并自动检测异常 |
-| 以便 | 量化管线健康度，及时发现退化信号 |
-| 优先级 | P1 |
-| 范围边界 | 读本地 .memory/ 执行记忆文件，不修改任何数据 |
-| 依赖 | .memory/execution-memory.jsonl 存在 |
-
-#### 范围外
-
-- 不涉及远端 API 查询
-- 不修改执行记忆数据
-- 不创建改进提案（那是 self-improve 的职责）
-
-##### §1.1 User Operations
-
-| # | 操作 | 触发条件 | 操作步骤 | 预期结果 |
-|---|------|---------|---------|---------|
-| 1 | 单故事指标 | 用户执行 `/rui-story collect story <name>` | 读取 .memory/execution-memory.jsonl → 按 story 筛选 → 计算指标 | 输出阶段耗时/轮次/P0 数量等指标 |
-| 2 | 全局指标汇总 | 用户执行 `/rui-story collect all` | 扫描所有故事 .memory/ → 聚合计算 | 输出跨故事汇总指标 |
-| 3 | 异常检测 | 用户执行 `/rui-story collect anomalies` | 读取全部执行记忆 → D0-D7 模式匹配 → 排序输出 | 输出异常列表含诊断级别和证据 |
-
----
-
 <a id="sec2-requirements"></a>
 
 ## §2 Requirements
@@ -194,7 +135,7 @@ flowchart TD
 | FP# | 描述 | 输入 | 输出 | 错误行为 | 优先级 |
 |-----|------|------|------|---------|--------|
 | FP1 | 远端会话查询 — 查询 sessions 集合并筛选故事任务面板数据 | API URL + Token | 按故事分组的 session 列表 | API 不可达时优雅退出并提示 | P0 |
-| FP2 | 故事状态判定 — 基于远端 file_path 存在性判定 6 种状态（任务/设计/实施/测试/报告/改进） | file_path 集合 + 项目前缀 | 状态标签 | 无法判定时默认为 任务 | P0 |
+| FP2 | 故事状态判定 — 基于远端 file_path 存在性判定 6 种状态 | file_path 集合 + 项目前缀 + 本地 blocked 状态 | 状态标签 | 无法判定时默认为 not_started | P0 |
 | FP3 | 项目类型推断 — 从远端技术评审内容推断前端/后端/全栈/元 | 技术评审文档内容 | 类型枚举 | 无法读取或解析时默认 meta | P1 |
 | FP4 | 状态概览输出 — 按状态聚合计数 + 最近活动列表 | 故事状态映射 | 格式化概览文本 | 无数据时显示空状态提示 | P0 |
 | FP5 | 进度全景表格 — 所有故事详情表格含状态/文件数/最后修改/类型/分支 | 故事状态映射 + 类型映射 | 格式化表格 | 无数据时显示空状态提示 | P0 |
@@ -205,14 +146,6 @@ flowchart TD
 | FP10 | 本地清理 — 仅保留 `{project}-` 前缀文件，其余删除 | 故事名(可选) + 项目前缀 | 清理后的目录 | 无匹配文件时不执行任何操作 | P0 |
 | FP11 | 目录删除 — 删除整个故事本地目录 | 故事名(必填) | 已删除的目录 | 目录不存在时提示终止 | P1 |
 | FP12 | 帮助输出 — 显示完整命令用法与场景示例 | — | 格式化帮助文本 | help.mjs 不存在时回退到内置帮助 | P1 |
-| FP13 | 状态转移合法性校验 — 验证 from→to 转移是否在状态机允许列表中 | 状态枚举 from, to | 合法/非法 + 原因 | 状态枚举不存在时提示合法值 | P0 |
-| FP14 | 状态转移执行 — 更新 rui-state.json 并追加审计日志 | from, to, reason, story_name | 更新后的 rui-state.json + 审计记录 | 转移非法时阻断并提示 | P0 |
-| FP15 | 跨故事仪表板 — 扫描所有故事目录聚合状态机快照 | 故事任务面板目录 | 聚合仪表板输出 | 无故事时显示空状态提示 | P1 |
-| FP16 | 单故事指标采集 — 读取 execution-memory.jsonl 计算阶段耗时/轮次/P0 数量 | story_name | 指标输出 | execution-memory.jsonl 不存在时提示 | P1 |
-| FP17 | 全局指标汇总 — 扫描所有故事聚合计算跨故事指标 | — | 汇总指标输出 | 无数据时显示空状态提示 | P1 |
-| FP18 | 异常检测 — D0-D7 模式匹配全部执行记忆 | — | 异常列表含诊断级别和证据 | 无异常时输出健康声明 | P1 |
-| FP19 | 审计日志追加 — status transition 时写入审计记录 | from, to, reason, timestamp | .memory/audit-log.jsonl 追加 | 写入失败时阻断转移 | P0 |
-| FP20 | 状态机定义 — 加载并校验状态转移规则 | 状态机配置 | 合法转移列表 | 状态机定义缺失或格式错误时阻断 | P0 |
 
 ### 业务规则
 
@@ -226,10 +159,6 @@ flowchart TD
 | R6 | clear 仅保留 `{project}-` 前缀文件，先展示后确认 | 用户交互流程验证 | B |
 | R7 | remove 仅操作本地文件系统，name 必填，先展示后确认 | 用户交互流程验证 | B |
 | R8 | recommend/health 由 rui-story.mjs 确定性执行 | 命令输出一致性验证 | B |
-| R9 | status transition 必须先通过 check 验证合法性 | 代码审查：transition 逻辑含 check 调用 | B |
-| R10 | 每次 status transition 必须追加审计日志（时间戳/from/to/reason） | 审计日志完整性验证 | B |
-| R11 | collect 仅读取 .memory/ 执行记忆，不修改任何数据 | 代码审查：无文件写入操作 | B |
-| R12 | collect anomalies 基于 D0-D7 诊断框架模式匹配 | 异常输出与 D0-D7 标签一致性验证 | B |
 
 ### 数据约束
 
@@ -239,14 +168,10 @@ flowchart TD
 | API URL | string | 有效 HTTPS URL，默认 `https://api.effiy.cn` | 环境变量 IMPORT_DOCS_API_URL |
 | API Token | string | 非空字符串 | 环境变量 API_X_TOKEN |
 | 项目前缀 | string | `{项目名}-`，从 CLAUDE.md 读取 | readProjectName() |
-| 状态枚举 | enum | 任务 / 设计 / 实施 / 测试 / 报告 / 改进 | determineStatus() |
+| 状态枚举 | enum | not_started / docs_in_progress / docs_done / code_in_progress / code_done / blocked | determineStatus() |
 | 类型枚举 | enum | backend / frontend / fullstack / meta | inferType() |
 | HTTP 超时 | number | 30,000ms | HTTP_TIMEOUT 常量 |
 | 并发数 | number | 4 | CONCURRENCY 常量 |
-| 状态转移列表 | enum[] | 合法转移规则集 | 状态机定义 |
-| 审计日志格式 | JSONL | `{timestamp, story, from, to, reason, operator}` | .memory/audit-log.jsonl |
-| D0-D7 标签 | enum | D0/D1/D2/D3/D4/D5/D6/D7 | self-improve 诊断框架 |
-| 指标维度 | enum | 阶段耗时/轮次/P0数量/阻断次数/Agent数量 | execution-memory.jsonl 字段 |
 
 ---
 
@@ -264,12 +189,6 @@ flowchart TD
 | SC6 | 用户可通过健康检查了解系统状态 | `/rui-story health` 执行 | 覆盖凭据/API/配置/数据 4 个维度 | P1 | FP8 |
 | SC7 | 用户可通过帮助系统快速上手 | `/rui-story --help` 执行 | 含命令表 + 场景示例 | P1 | FP12 |
 | SC8 | Token 缺失时给出清晰指引而非报错 | 无 Token 执行查询命令 | 输出配置方法提示 | P0 | FP1 |
-| SC9 | 用户可验证状态转移合法性 | `/rui-story status check --from=设计 --to=实施` | 输出合法/非法 + 原因 | P0 | FP13, FP20 |
-| SC10 | 用户可执行状态转移并留下审计记录 | `/rui-story status transition --from=设计 --to=实施 --reason="文档基线完成"` | 状态更新 + 审计日志已写入 | P0 | FP14, FP19 |
-| SC11 | 用户可查看跨故事状态聚合视图 | `/rui-story status dashboard` | 所有故事的状态/阻断/更新时间一览 | P1 | FP15 |
-| SC12 | 用户可采集单故事执行指标 | `/rui-story collect story rui-story` | 阶段耗时/轮次/P0 数量等指标 | P1 | FP16 |
-| SC13 | 用户可查看全局执行指标汇总 | `/rui-story collect all` | 跨故事汇总指标 | P1 | FP17 |
-| SC14 | 系统可自动检测 D0-D7 异常模式 | `/rui-story collect anomalies` | 异常列表含诊断级别 | P1 | FP18 |
 
 ---
 
@@ -287,9 +206,6 @@ flowchart TD
 | 4 | 文档同步（sync） | FP9 | 委托 import-docs，mode=pull |
 | 5 | 本地清理（clear/remove） | FP10, FP11 | 仅操作本地文件系统，不触碰远端 |
 | 6 | 帮助系统 | FP12 | help.mjs 确定性输出 |
-| 7 | 状态转移管理（check/transition） | FP13, FP14, FP19, FP20 | 验证转移合法性 → 执行 → 审计日志 |
-| 8 | 跨故事仪表板（dashboard） | FP15 | 聚合所有故事状态机快照 |
-| 9 | 指标采集（story/all/anomalies） | FP16–FP18 | 仅读 .memory/，不修改数据 |
 
 ### 范围外
 
@@ -300,8 +216,6 @@ flowchart TD
 | 3 | git 分支创建与切换 | 那是 /rui code 的职责 | git checkout -b feat/<name> |
 | 4 | 远端文档删除 | 远端数据由 import-docs 管理 | — |
 | 5 | 故事进度变更（如标记完成） | 那是 rui 管线的职责 | 管线末端自动更新状态 |
-| 6 | 自动状态转移 | 状态转移由管线显式调用 `/rui-story status transition` | 管线各阶段结束时触发 |
-| 7 | 改进提案创建 | 那是 self-improve agent 的职责 | 使用 `/rui` 自改进管线 |
 
 ---
 
@@ -323,14 +237,6 @@ flowchart TD
 | AC10 | 用户需要帮助 | 用户执行 `/rui-story --help` | 输出完整帮助含场景示例 | Gate A |
 | AC11 | 远端有可同步故事 | 用户执行 `/rui-story recommend` | 输出故事列表 + 推荐 sync 命令 | Gate A |
 | AC12 | 系统环境正常 | 用户执行 `/rui-story health` | 输出含凭据/API/配置/数据 4 维度的诊断报告 | Gate A |
-| AC13 | 转移合法 | 用户执行 `/rui-story status check --from=设计 --to=实施` | 输出"合法" | Gate A |
-| AC14 | 转移非法 | 用户执行 `/rui-story status check --from=任务 --to=报告` | 输出"非法" + 原因（跨阶段跳转） | Gate A |
-| AC15 | 执行状态转移 | 用户执行 `/rui-story status transition --from=设计 --to=实施 --reason="基线就绪"` | rui-state.json 更新 + audit-log.jsonl 追加记录 | Gate A |
-| AC16 | 状态转移非法阻断 | 用户执行非法转移 | 阻断并提示合法转移列表 | Gate A |
-| AC17 | 仪表板有数据 | 故事目录含 ≥1 个 rui-state.json | 输出所有故事状态聚合视图 | Gate A |
-| AC18 | 单故事指标 | .memory/execution-memory.jsonl 存在 | 输出阶段耗时/轮次/P0 数量 | Gate A |
-| AC19 | 异常检测有结果 | 执行记忆含 D0-D7 模式 | 输出异常列表含诊断级别 | Gate A |
-| AC20 | 异常检测无结果 | 执行记忆无异常模式 | 输出健康声明 | Gate A |
 
 ---
 
@@ -351,13 +257,6 @@ flowchart TD
 | 9 | API_X_TOKEN 始终可用 | 假设 | — | — | health 命令可验证凭据状态 | FP1 |
 | 10 | 远端 sessions 的 file_path 以 `故事任务面板/` 为前缀 | 假设 | — | — | groupSessionsByStory 按此前缀筛选 | FP1 |
 | 11 | CLAUDE.md 项目名可被确定性解析 | 假设 | — | — | 3 种解析模式 + fallback | FP2 |
-| 12 | 状态机定义缺失或损坏导致转移校验失败 | 风险 | L | H | status check 加载时校验状态机完整性，损坏时阻断 | FP20 |
-| 13 | 并发状态转移导致 rui-state.json 竞态 | 风险 | L | M | transition 写入前重新读取验证当前状态 | FP14 |
-| 14 | 审计日志文件过大影响写入性能 | 风险 | L | L | JSONL 追加模式性能稳定；必要时日志轮转 | FP19 |
-| 15 | 执行记忆数据量增长导致 collect all 响应变慢 | 风险 | M | L | 按 story 分文件存储，collect all 并发读取 | FP17 |
-| 16 | D0-D7 模式库不完整导致异常漏检 | 风险 | M | M | 模式库与 self-improve 诊断框架保持同步 | FP18 |
-| 17 | rui-state.json 状态机定义与 rui-story 状态判定逻辑一致 | 假设 | — | — | 共用 determineStatus() 逻辑 | FP20 |
-| 18 | 执行记忆 execution-memory.jsonl 按规范格式写入 | 假设 | — | — | rui 管线的数据契约约束 | FP16 |
 
 ---
 
@@ -373,13 +272,7 @@ flowchart TD
 | §2 FP9–FP11 | 同步/清理/删除功能点 | 测试设计 §2 | 测试用例覆盖 |
 | §2 R1–R8 | 业务规则 | 安全审计 §5 | 合规检查 |
 | §5 AC1–AC12 | 验收标准 | 测试设计 §0 §2 | 测试用例逐一覆盖 |
-| §1 Story 4 | 状态转移管理需求 | 技术评审 §1 §4 | 架构设计 + 状态机 |
-| §1 Story 5 | 指标采集需求 | 技术评审 §1 §8 | 架构设计 + 性能考量 |
-| §2 FP13–FP20 | 状态转移/指标/异常检测功能点 | 测试设计 §2 | 测试用例覆盖 |
-| §2 R9–R12 | 状态转移审计/指标只读规则 | 安全审计 §5 | 合规检查 |
-| §5 AC13–AC20 | 状态转移/指标采集验收标准 | 测试设计 §0 §2 | 测试用例逐一覆盖 |
 | §6 风险 1–8 | 风险项 | 安全审计 §2 | 威胁建模覆盖 |
-| §6 风险 12–16 | 状态机/审计/异常检测风险 | 安全审计 §2 §4 | 威胁建模 + 缓解措施 |
 
 ---
 
@@ -389,27 +282,6 @@ flowchart TD
 
 > 首次管线执行后通过 `/rui update` 追加，详见 [YrY-自改进复盘](./YrY-自改进复盘.md)。
 
-### 状态闭环模型
-
-> rui 技能所有操作均记录为故事任务，形成状态闭环：
-
-```mermaid
-flowchart LR
-    任务 --> 设计 --> 实施 --> 测试 --> 报告 --> 改进 --> 新任务
-    新任务 --> 设计
-```
-
-| 状态 | 触发条件 | 下一状态 |
-|------|---------|---------|
-| 任务 | 需求拆分完成，故事任务文档生成 | 设计 |
-| 设计 | 文档基线齐全（使用场景+技术评审+测试设计+安全审计） | 实施 |
-| 实施 | 实施报告生成，代码实现完成 | 测试 |
-| 测试 | 测试报告生成，Gate B 通过 | 报告 |
-| 报告 | 自改进复盘完成 | 改进 |
-| 改进 | 改进提案流转，新需求识别 | 新任务 |
-
-> 状态转移通过 `/rui-story status transition --from=<s> --to=<s>` 执行，每次转移追加审计日志。
-
 ---
 
 > **变更记录**
@@ -417,4 +289,3 @@ flowchart LR
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
 > | 2026-05-20 | 初始生成 | doc --from-code rui-story | skills/rui-story/SKILL.md + rui-story.mjs |
-> | 2026-05-22 | 追加 Story 4 状态转移管理 + Story 5 指标采集；新增 FP13–FP20、R9–R12、SC9–SC14、AC13–AC20；追加状态闭环模型 | /rui update rui-story | skills/rui-story/SKILL.md §状态转移管理 §指标采集 |
