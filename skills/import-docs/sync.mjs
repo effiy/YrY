@@ -149,14 +149,11 @@ function resolveRemotePath(localPath, root, workspaceName, prefix) {
   const segments = [];
   if (prefix.length > 0) segments.push(...prefix);
 
-  // docs/故事任务面板/ 下的文件：故事任务面板为第一层标签，去除前置目录
-  // 结果: 故事任务面板/{故事任务目录}/*
-  const panelIdx = rel.indexOf("/docs/故事任务面板/");
-  const isPanelRoot = rel.startsWith("docs/故事任务面板/");
-  if (isPanelRoot || panelIdx !== -1) {
-    const storyRel = isPanelRoot
-      ? rel.slice("docs/故事任务面板/".length)
-      : rel.slice(panelIdx + "/docs/故事任务面板/".length);
+  // docs/ 下的所有文件：故事任务面板为第一层标签
+  // 结果: 故事任务面板/{子路径}/*
+  const docsIdx = rel.indexOf("docs/");
+  if (docsIdx !== -1) {
+    const storyRel = rel.slice(docsIdx + "docs/".length);
     segments.push("故事任务面板");
     segments.push(storyRel);
   } else {
