@@ -11,19 +11,47 @@
 
 ```mermaid
 flowchart LR
-    INFRA{"L-1 基建检查<br/>项目基建完整?"}:::gate -->|"不完整"| INFRA_REC["优先推荐基建故事<br/>错误码·状态·日志·配置"]:::infra
+    SYNC["§0 面板同步<br/>远端+本地故事面板<br/>冲突检测 + 覆盖分析"]:::sync --> INFRA{"L-1 基建检查<br/>项目基建完整?"}:::gate
+    INFRA -->|"不完整"| INFRA_REC["优先推荐基建故事<br/>错误码·状态·日志·配置"]:::infra
     INFRA -->|"完整"| SCAN["node skills/rui/recommend.mjs<br/>扫描源码 → 故事候选"]:::tool
     SCAN --> EVAL["PM 按 5 层评分<br/>每层评估一个故事任务"]:::llm
-    EVAL --> SORT["P0 → P3 排序<br/>同级按 L1→L2→L4→L0"]:::llm
+    EVAL --> CONFLICT{"已有故事冲突?"}
+    CONFLICT -->|"是"| MARK["标注冲突警告<br/>建议 merge / update"]:::warn
+    CONFLICT -->|"否"| SORT["P0 → P3 排序<br/>同级按 L1→L2→L4→L0"]:::llm
+    MARK --> SORT
     SORT --> PRESENT["结构化推荐输出<br/>象限图 + 排序表 + 详述卡"]:::llm
 
     classDef tool fill:#e8f5e9,stroke:#2e7d32;
     classDef llm fill:#fff3e0,stroke:#e65100;
     classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px;
     classDef infra fill:#ffebee,stroke:#c62828;
+    classDef sync fill:#e3f2fd,stroke:#1565c0;
+    classDef warn fill:#fff3e0,stroke:#e65100;
 ```
 
+> **§0 面板同步**先于所有评分执行。推荐前必须了解当前故事面板全貌，避免重复推荐和冲突。
+>
 > **L-1 基建检查**先于 L0–L4 执行。基建不完整时优先推荐基建补齐任务，不进入后续评分。
+
+### §0 面板同步 — 推荐前置步骤
+
+> 推荐前必须同步远端 + 扫描本地的故事任务面板内容，确保推荐避免覆盖和冲突。
+
+| 步骤 | 操作 | 说明 |
+|------|------|------|
+| §0.1 远端同步 | `node skills/import-docs/sync.mjs dir=docs/故事任务面板/ mode=pull` | 拉取远端最新故事面板内容 |
+| §0.2 本地扫描 | 遍历 `docs/故事任务面板/` 下所有故事目录 | 读取每个故事的 rui-state.json + 故事任务文档 |
+| §0.3 覆盖分析 | 对比推荐候选 vs 已有故事 | 识别内容重叠（≥50% FP# 重叠即冲突） |
+| §0.4 冲突标注 | 对冲突候选标注 `⚠ 已有相似故事` | 冲突故事优先建议 `/rui update` 或 yry auto-merge |
+
+**冲突判定规则**：
+
+| 场景 | 判定 | 推荐行为 |
+|------|------|---------|
+| 候选与已有故事 FP# 重叠 ≥ 70% | 严重冲突 | **跳过推荐**，建议 `/rui update <已有故事>` |
+| 候选与已有故事 FP# 重叠 50–69% | 部分冲突 | 推荐但标注 `⚠ 已有相似故事: <name>` |
+| 候选与已有故事 FP# 重叠 < 50% | 无冲突 | 正常推荐 |
+| 候选的故事目录已存在 | 重复创建 | **跳过推荐**，引导 `/rui doc --from-local` |
 
 每个故事候选来自 `recommend.mjs` 输出的一条记录：
 
