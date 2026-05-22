@@ -5,19 +5,25 @@
 >
 > 哲学：[信模型](../../CLAUDE.md) — agent 是决策者，数据和框架提供支撑。
 
-[推荐管线](#推荐管线) · [5 层链式管线评分](#5-层链式管线评分) · [优先级分类](#优先级分类) · [推荐输出格式](#推荐输出格式) · [Red Flags](#red-flags)
+[推荐管线](#推荐管线) · [6 层链式管线评分](#6-层链式管线评分) · [优先级分类](#优先级分类) · [推荐输出格式](#推荐输出格式) · [Red Flags](#red-flags)
 
 ## 推荐管线
 
 ```mermaid
 flowchart LR
-    SCAN["node skills/rui/recommend.mjs<br/>扫描源码 → 故事候选"]:::tool --> EVAL["PM 按 5 层评分<br/>每层评估一个故事任务"]:::llm
+    INFRA{"L-1 基建检查<br/>项目基建完整?"}:::gate -->|"不完整"| INFRA_REC["优先推荐基建故事<br/>错误码·状态·日志·配置"]:::infra
+    INFRA -->|"完整"| SCAN["node skills/rui/recommend.mjs<br/>扫描源码 → 故事候选"]:::tool
+    SCAN --> EVAL["PM 按 5 层评分<br/>每层评估一个故事任务"]:::llm
     EVAL --> SORT["P0 → P3 排序<br/>同级按 L1→L2→L4→L0"]:::llm
     SORT --> PRESENT["结构化推荐输出<br/>象限图 + 排序表 + 详述卡"]:::llm
 
     classDef tool fill:#e8f5e9,stroke:#2e7d32;
     classDef llm fill:#fff3e0,stroke:#e65100;
+    classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef infra fill:#ffebee,stroke:#c62828;
 ```
+
+> **L-1 基建检查**先于 L0–L4 执行。基建不完整时优先推荐基建补齐任务，不进入后续评分。
 
 每个故事候选来自 `recommend.mjs` 输出的一条记录：
 
@@ -28,6 +34,80 @@ flowchart LR
 | `sourceFiles` | 覆盖的源码文件列表 |
 | `coverage.expectedDocs` | 预计产出的文档编号 |
 | `doc.status` | 当前文档状态（`no_docs` / `partial` / `complete`） |
+
+## 6 层链式管线评分
+
+```mermaid
+flowchart TB
+    subgraph Lm1["L-1 · 基建完整性 🏗️ PRIORITY"]
+        Lm1A["错误码体系完整?"]
+        Lm1B["状态管理规范?"]
+        Lm1C["日志/监控就绪?"]
+        Lm1D["配置管理统一?"]
+    end
+    subgraph L0["L0 · 时间 ⏱️"]
+        L0A["最后修改时间?"]
+        L0B["近期改动频率?"]
+    end
+    subgraph L1["L1 · 依赖 🔗"]
+        L1A["多少模块依赖它?"]
+        L1B["Hub 还是 Leaf?"]
+    end
+    subgraph L2["L2 · 风险 ⚠️"]
+        L2A["处理用户输入？认证?"]
+        L2B["误解会破坏什么?"]
+    end
+    subgraph L3["L3 · 覆盖 📋"]
+        L3A["故事文档存在吗?"]
+        L3B["文档完整且不过时吗?"]
+    end
+    subgraph L4["L4 · 质量 ✨"]
+        L4A["代码自解释还是难读?"]
+        L4B["大文件无注释吗?"]
+    end
+
+    Lm1 --> L0 --> L1 --> L2 --> L3 --> L4
+```
+
+### L-1 · 基建完整性
+
+> **最高优先级**。基建不完整时优先推荐基建补齐任务，不进入 L0–L4 评分。
+> 设计哲学：标准化基础设施比文档先行更重要——没有统一的错误码/状态/日志规范，后续文档和代码都会产生更大的债务。
+
+**检查清单**（逐项 grep/Read 验证，不确定 = 缺）：
+
+| # | 检查项 | 探测方式 | 缺位影响 |
+|---|--------|---------|---------|
+| I1 | 错误码体系 | 搜索 `errorCode` / `ErrorCode` / `ERR_` 等统一错误码定义 | 各模块自造错误格式，排查困难 |
+| I2 | 状态管理 | 搜索 store / state / context 统一管理方案 | 状态散落各处，数据流不可追溯 |
+| I3 | 日志规范 | 搜索 logger / `log.` / `console.` 等统一日志调用 | 日志格式不一，生产排障盲 |
+| I4 | 配置管理 | 搜索 config / env / `.env` 等统一配置入口 | 硬编码散落，环境切换出错 |
+| I5 | API 契约 | 搜索 API route / endpoint 类型定义或 OpenAPI/Swagger | 前后端契约不一致，联调成本高 |
+| I6 | 认证授权 | 搜索 auth / middleware / guard / token 统一方案 | 各路由自造认证，安全审计困难 |
+| I7 | 测试框架 | 检查 test/ 目录、测试配置文件、测试命令 | 无测试框架，代码变更无安全网 |
+
+**判定规则**：
+
+| 结果 | 条件 | 行为 |
+|------|------|------|
+| 基建完整 | 7 项全部有明确证据 | 进入 L0–L4 正常评分 |
+| 基建缺位 | 任一项缺位 | 生成「基建补齐」P0 故事推荐，优先于所有 L0–L4 推荐 |
+| 基建不确定 | 任一项无法判定 | 标注「待确认」，同时生成基建推荐 + 正常推荐 |
+
+**基建推荐输出格式**：
+
+```markdown
+## 🔧 基建补齐推荐（L-1 · 最高优先级）
+
+以下基础设施项在项目中未检测到统一方案，建议优先建立：
+
+| # | 基建项 | 缺位证据 | 建议故事 |
+|---|--------|---------|---------|
+| 1 | 错误码体系 | 未发现 `ERR_` / `errorCode` 统一定义 | `error-code-system` |
+| 2 | 日志规范 | 使用 `console.log` 散落，无 logger 封装 | `logging-standard` |
+```
+
+> 基建故事推荐通过 `/rui <需求>` 或 `/rui doc <需求>` 执行，与其他故事走相同管线。
 
 ## 5 层链式管线评分
 

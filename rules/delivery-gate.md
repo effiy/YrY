@@ -84,7 +84,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    CALL["调用 wework-bot<br/>--no-send"]:::step --> LOG["写入执行日志<br/>{project}-消息通知列表"]:::out
+    CALL["调用 wework-bot<br/>--no-send"]:::step --> LOG["写入执行日志<br/>{project}-消息通知列表<br/>含 🤖技能 + 📋命令"]:::out
     LOG --> MARK["在 rui-state.json<br/>delivery_pipeline.log_appended<br/>= true"]:::mark
     MARK --> NEXT["进入步骤 ②"]:::next
 
@@ -93,6 +93,12 @@ flowchart LR
     classDef mark fill:#fff3e0,stroke:#e65100;
     classDef next fill:#e8f5e9,stroke:#2e7d32;
 ```
+
+| 规则 | 描述 |
+|------|------|
+| 技能标识 | 每条日志必须含 `🤖 技能` 字段（rui / rui-story / rui-claude / wework-bot / import-docs） |
+| 命令记录 | 每条日志必须含 `📋 命令` 字段（用户执行的具体命令，含参数） |
+| 时间戳 | 每条日志以 `【YYYY-MM-DD HH:mm:ss】` 分隔行开头 |
 
 ## ② 文档同步
 
