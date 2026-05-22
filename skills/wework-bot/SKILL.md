@@ -3,8 +3,7 @@ name: wework-bot
 description: |
   Send WeChat Work (WeCom) bot messages and append matching entries to the
   story panel notification log. Mandatory upon rui completion, block, or gate
-  failure. This skill is specification-only; the implementing agent carries
-  out each step using the available tooling.
+  failure. Executable: node skills/wework-bot/send.mjs [options].
 user_invocable: true
 lifecycle: default-pipeline
 ---
@@ -13,7 +12,11 @@ lifecycle: default-pipeline
 
 > **--help / -h**：执行 `node skills/wework-bot/help.mjs` 输出完整帮助（含消息格式 + 场景示例）。用户输入 `/wework-bot --help` 或 `/wework-bot -h` 或 `/wework-bot help` 时，跳过逻辑，直接运行脚本。
 
-企业微信机器人通知。**每次使用 rui 技能都必须触发 wework-bot，这是管线完整性的硬性要求。** rui 管线末端强制步骤：自改进 → 追加日志 → 文档同步 → 发送通知。本技能不附带可执行脚本，所有行为按本规约执行。
+企业微信机器人通知。**每次使用 rui 技能都必须触发 wework-bot，这是管线完整性的硬性要求。** rui 管线末端强制步骤：自改进 → 追加日志 → 文档同步 → 发送通知。
+
+**可执行入口**: `node skills/wework-bot/send.mjs [options]` — 发送通知或健康检查。`--no-send` 仅追加日志不发 HTTP。
+
+[工作流全景](#工作流全景) · [调用形态](#调用形态) · [消息格式](#消息格式) · [消息通知列表](#消息通知列表) · [API 契约](#api-契约) · [安全](#安全) · [hook 触发器](#hook-触发器) · [空输入](#空输入) · [生效标志](#生效标志)
 
 ## 工作流全景
 

@@ -14,6 +14,8 @@ lifecycle: default-pipeline
 
 技术趋势发现。查询 GitHub Trending、OSS Insight、TrendShift、Top-Starred 四个数据源，输出结构化趋势报告。本技能为规约驱动（specification-only），由 implementing agent 执行 WebFetch + 结构化提取 + 格式化输出。
 
+[数据源全景](#数据源全景) · [调用形态](#调用形态) · [各子命令工作流](#各子命令工作流) · [输出格式规约](#输出格式规约) · [自改进集成](#自改进集成) · [降级策略](#降级策略) · [数据新鲜度](#数据新鲜度)
+
 ## 数据源全景
 
 ```mermaid
@@ -108,7 +110,7 @@ flowchart LR
 
 > 本技能是自改进管线 D5 诊断的核心数据源，同时跨 D0/D3/D6 提供外部参照基线。趋势数据为实时快照，不替代基线文件判断——仅作为外部信号辅助诊断假设的证伪或支撑。
 >
-> 集成锚点：[rules/self-improve.md](../../rules/self-improve.md)（诊断规则 D0–D7 · 提案路由 · E1–E4）· [agents/self-improve.md](../../agents/self-improve.md)（数据源表 · 操作流程）· [libs/trends.md](../../libs/trends.md)（外部参考索引）
+> 集成锚点：[rules/self-improve.md](../../rules/self-improve.md)（诊断规则 D0–D7 · 提案路由 · E1–E4）· [agents/self-improve.md](../../agents/self-improve.md)（数据源表 · 操作流程）
 
 ### 诊断覆盖全景
 
@@ -122,7 +124,7 @@ flowchart TB
         D0["D0 基线偏离<br/>技术选型与社区方向背离"]:::diag
         D3["D3 复杂度增长<br/>新兴工具可简化架构?"]:::diag
         D5["D5 依赖退化<br/>外部参考新鲜度验证"]:::diag
-        D6["D6 文档过时<br/>libs/ 参考 URL 可达性"]:::diag
+        D6["D6 文档过时<br/>外部参考 URL 可达性"]:::diag
     end
 
     subgraph 查询["趋势查询"]
@@ -166,7 +168,7 @@ flowchart TB
 |------|---------|-----------|---------|---------|
 | **D0** 基线偏离 | 项目依赖的技术栈在社区趋势中持续下降 | `github-trending --lang <L>` + `trendshift --range 90` | "当前技术栈与社区方向背离，可能增加长期维护成本" | CLAUDE.md 技术选型约束 |
 | **D3** 复杂度增长 | 存在更简洁的替代方案在快速崛起 | `github-trending` + `oss-insight` | "某新兴工具可替代当前 3 个依赖，降低架构复杂度" | agents/AGENT.md 深度模块原则 |
-| **D5** 依赖退化 | libs/ 外部参考 URL 失效或信息过时 | `all`（四源全查） | "libs/trends.md 引用的数据源有 2 个已变更域名" | rules/self-improve.md D5 规则 |
+| **D5** 依赖退化 | 外部参考新鲜度验证 | `all`（四源全查） | "外部数据源有 2 个已变更域名" | rules/self-improve.md D5 规则 |
 | **D6** 文档过时 | 连续窗口外部参考陈旧未更新 | `github-trending --since weekly` | "技术趋势参考连续 3 故事未刷新，可能遗漏关键变更" | CLAUDE.md 退化对策 L2 |
 
 ### 提案路由
@@ -179,18 +181,18 @@ flowchart LR
         F1["技术栈下降趋势"]:::find
         F2["新兴替代方案"]:::find
         F3["依赖 URL 失效"]:::find
-        F4["libs/ 陈旧未更新"]:::find
+        F4["趋势参考陈旧"]:::find
     end
 
     subgraph 路由["提案路由"]
         F1 -->|"D0 基线偏离"| PRC["process<br/>技术选型评审流程调整"]:::prop
         F2 -->|"D3 复杂度"| REF["refactor<br/>依赖替换可行性评估"]:::prop
-        F3 -->|"D5 依赖退化"| REF2["refactor<br/>更新 libs/ 外部参考"]:::prop
+        F3 -->|"D5 依赖退化"| REF2["refactor<br/>更新外部参考"]:::prop
         F4 -->|"D6 文档过时"| PRC2["process<br/>文档刷新周期调整"]:::prop
     end
 
     subgraph 升级["经验技能化"]
-        PRC & REF & PRC2 -->|"同发现 ≥2 故事"| UP["升级为 libs/trends.md<br/>新鲜度检查规则"]:::up
+        PRC & REF & PRC2 -->|"同发现 ≥2 故事"| UP["升级为趋势新鲜度检查规则"]:::up
     end
 
     classDef find fill:#e3f2fd,stroke:#1565c0;
@@ -201,9 +203,9 @@ flowchart LR
 | 趋势发现 | 诊断归属 | 提案类型 | 提案示例 | 升级条件 | 升级目标 |
 |---------|---------|---------|---------|---------|---------|
 | 核心技术栈在社区趋势下降 | D0 | `process` | "建议启动技术选型复审，评估替代方案" | 连续 2 故事触发 | `rules/code-pipeline.md` §技术选型 |
-| 新兴工具可简化架构 | D3 | `refactor` | "评估 {tool} 替代 {current} 的可行性与风险" | 连续 2 故事触发 | `libs/trends.md` 新增对比条目 |
-| libs/ 外部参考 URL 失效 | D5 | `refactor` | "更新 libs/ 失效链接，补充替代数据源" | 当前故事即修 | — |
-| libs/ 趋势参考陈旧 | D6 | `process` | "建议每 N 故事自动刷新 libs/ 趋势参考" | 连续 2 故事触发 | `agents/self-improve.md` 数据源表 |
+| 新兴工具可简化架构 | D3 | `refactor` | "评估 {tool} 替代 {current} 的可行性与风险" | 连续 2 故事触发 | 趋势参考新增对比条目 |
+| 外部参考 URL 失效 | D5 | `refactor` | "更新失效链接，补充替代数据源" | 当前故事即修 | — |
+| 趋势参考陈旧 | D6 | `process` | "建议每 N 故事自动刷新趋势参考" | 连续 2 故事触发 | `agents/self-improve.md` 数据源表 |
 
 ### §2.1 输出模板
 
@@ -241,10 +243,10 @@ flowchart LR
 | 自改进阶段 — D5 诊断 | self-improve Agent | `all` 或按诊断信号选择 | 填入 §2.1 诊断决策表 | 否（降级 `no-metrics`） |
 | 自改进阶段 — D0 诊断 | self-improve Agent | `github-trending --lang <L>` + `trendshift --range 90` | 验证技术栈社区方向 | 否 |
 | 自改进阶段 — D3 诊断 | self-improve Agent | `github-trending` + `oss-insight` | 评估架构简化机会 | 否 |
-| 自改进阶段 — D6 诊断 | self-improve Agent | `github-trending --since weekly` | 验证 libs/ 参考新鲜度 | 否 |
+| 自改进阶段 — D6 诊断 | self-improve Agent | `github-trending --since weekly` | 验证外部参考新鲜度 | 否 |
 | 交付阶段 — 技术选型验证 | pm / coder | `oss-insight` + `top-starred` | 选型依据附加到实施报告 | 否 |
 | 按需 — 独立趋势探查 | 用户手动 | 任意子命令 | 探索性查询，不入自改进复盘 | 否 |
-| 经验技能化 — libs/ 刷新 | self-improve Agent | `all` | 连续 ≥2 故事触发后自动刷新 libs/ 参考 | 否 |
+| 经验技能化 — 趋势刷新 | self-improve Agent | `all` | 连续 ≥2 故事触发后自动刷新趋势参考 | 否 |
 
 ### 记忆压缩与注入
 
@@ -278,7 +280,7 @@ flowchart LR
 | 趋势原始数据 | **不落盘**，仅实时查询 | 0（会话级） | — |
 | 诊断假设（§2.1） | 写入自改进复盘，跟随故事文档生命周期 | 故事文档保留期 | 同一技术栈再次出现在诊断中 |
 | 趋势摘要 | AI 压缩为 ≤3 条关键发现 | 滚动 6 故事 | 技术选型或依赖替换决策时 |
-| libs/ 新鲜度标记 | `libs/trends.md` 追加「最后验证」时间戳 | 每次 D5 诊断更新 | D5 诊断时检查距今是否 > 30 天 |
+| 趋势新鲜度标记 | 追加「最后验证」时间戳 | 每次 D5 诊断更新 | D5 诊断时检查距今是否 > 30 天 |
 
 ### 降级策略（自改进上下文）
 
@@ -298,7 +300,7 @@ flowchart LR
 | WebFetch 不可用（网络限制） | 输出 URL 引导用户手动访问，标注 `无网络访问` |
 | 页面 JS 渲染无法提取 | 输出页面 title + meta description，标注 `内容为 JS 渲染，需手动访问` |
 | API 限速 | 间隔 5s 重试，最多 2 次；仍失败则输出上次缓存 |
-| 数据源完全不可达 | 输出 `数据源不可达，参见 libs/trends.md 手动查阅` |
+| 数据源完全不可达 | 输出 `数据源不可达，请稍后重试` |
 
 ## 数据新鲜度
 

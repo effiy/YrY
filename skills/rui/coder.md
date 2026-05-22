@@ -4,6 +4,8 @@
 
 故事文档公式（F.story.\* / F.supp.\*）见 [formulas.md](./formulas.md)；强制约束见 [rules/doc-generation.md](../../rules/doc-generation.md)；coder 角色契约见 [agents/coder.md](../../agents/coder.md)。故事拆分决策树见 [agents/pm.md](../../agents/pm.md)。
 
+[目录布局](#目录布局) · [故事目录骨架](#故事目录骨架) · [文件创建生命周期](#文件创建生命周期) · [完整度判定](#完整度判定) · [数据契约](#数据契约) · [生效标志](#生效标志)
+
 ## 目录布局
 
 ```
@@ -99,11 +101,11 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    NS["not_started<br/>01 不存在"]:::s0 --> DIP["docs_in_progress<br/>技术/测试评审缺失"]:::s1
-    DIP --> DD["docs_done<br/>必选文档齐全"]:::s2
-    DD --> CIP["code_in_progress<br/>部分实施报告存在"]:::s3
-    CIP --> CD["code_done<br/>必选 + 自改进齐全"]:::s4
-    CD -->|"阻断"| BLK["blocked<br/>rui-state 标记"]:::block
+    NS["任务<br/>01 不存在"]:::s0 --> DIP["设计<br/>技术/测试评审缺失"]:::s1
+    DIP --> IMP["实施<br/>必选文档齐全"]:::s2
+    IMP --> TST["测试<br/>部分实施报告存在"]:::s3
+    TST --> RPT["报告<br/>必选 + 自改进齐全"]:::s4
+    RPT --> IMPV["改进<br/>自改进复盘存在"]:::s5
 
     classDef s0 fill:#eceff1,stroke:#90a4ae;
     classDef s1 fill:#fff3e0,stroke:#e65100;
@@ -115,12 +117,12 @@ flowchart LR
 
 | 状态 | 条件 |
 |------|------|
-| `not_started` | 故事任务文档不存在 |
-| `docs_in_progress` | 故事任务文档存在，技术评审/测试设计/安全审计有缺失 |
-| `docs_done` | 所有必选文档文件存在（含 {project}-交互日志.md 已创建） |
-| `code_in_progress` | 文档齐全，实施报告存在，测试报告缺失 |
-| `code_done` | 所有必选文件及自改进复盘存在（含 {project}-交互日志.md 持续追加） |
-| `blocked` | `rui-state.json` 中 `blocked=true` |
+| `任务` | 故事任务文档不存在 |
+| `设计` | 故事任务文档存在，技术评审/测试设计/安全审计有缺失 |
+| `实施` | 所有必选文档文件存在（含 {project}-交互日志.md 已创建） |
+| `测试` | 文档齐全，实施报告存在，测试报告缺失 |
+| `报告` | 所有必选文件存在（含 {project}-交互日志.md 持续追加） |
+| `改进` | 自改进复盘存在 |
 
 完整度按文件存在性判定；任务推荐按链式管线分层评分排序：阻断 → 故事推进 → 覆盖 → 健康 → 同步。
 

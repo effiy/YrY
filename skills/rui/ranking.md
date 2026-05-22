@@ -5,6 +5,8 @@
 >
 > 哲学：[信模型](../../CLAUDE.md) — agent 是决策者，数据和框架提供支撑。
 
+[推荐管线](#推荐管线) · [5 层链式管线评分](#5-层链式管线评分) · [优先级分类](#优先级分类) · [推荐输出格式](#推荐输出格式) · [Red Flags](#red-flags)
+
 ## 推荐管线
 
 ```mermaid
@@ -207,12 +209,6 @@ flowchart LR
 
 > PM agent 必须按以下三段式输出，不可降级。
 
-```mermaid
-flowchart LR
-    OVERVIEW["1. 全景概览<br/>摘要 + quadrantChart"] --> TABLE["2. 故事任务排序表<br/>P0→P3 排序"]
-    TABLE --> DETAIL["3. 每故事详述卡<br/>覆盖·证据·产出·命令·外部参考"]
-```
-
 ### 1. 全景概览
 
 一句话摘要（故事候选数、无文档率）+ mermaid quadrantChart。
@@ -244,75 +240,8 @@ flowchart LR
 **源码证据**：[A] `{primaryFile}` — {signatures 摘要}
 **文档现状**：{status} — {expectedDir 是否存在}
 **预计产出**：{expectedDocs 列表}
-**外部参考**：{externalRefs 列表，按 relevance 排序}
 **执行命令**：`{command}`
 ```
-
-## 外部参考映射
-
-> `recommend.mjs` 已根据模块特征自动匹配生态资源，写入 `externalRefs` 字段。
-> PM agent 在推荐时应引用相关的外部参考，帮助用户文档化时参考正确的方法论。
->
-> 外部参考来自 [外部参考知识库](../../libs/)。
-
-```mermaid
-flowchart LR
-    subgraph 特征["模块特征"]
-        F1["前端 / UI"]:::feat
-        F2["后端 / API"]:::feat
-        F3["认证 / 授权"]:::feat
-        F4["用户输入"]:::feat
-        F5["架构枢纽<br/>≥3 依赖"]:::feat
-        F6["大型模块<br/>>200 行"]:::feat
-        F7["状态管理"]:::feat
-        F8["新技术选型"]:::feat
-    end
-
-    subgraph 参考["匹配参考"]
-        R1["ui-ux-pro-max<br/>mattpocock-skills"]:::ref
-        R2["superpowers<br/>get-shit-done"]:::ref
-        R3["superpowers<br/>（验证门禁·安全纪律）"]:::ref
-        R4["superpowers<br/>（安全约束）"]:::ref
-        R5["get-shit-done<br/>superpowers"]:::ref
-        R6["mattpocock-skills<br/>（工程 discipline）"]:::ref
-        R7["claude-mem<br/>everything-claude-code"]:::ref
-        R8["GitHub Trending<br/>OSS Insight<br/>TrendShift"]:::ref
-    end
-
-    F1 --> R1
-    F2 --> R2
-    F3 --> R3
-    F4 --> R4
-    F5 --> R5
-    F6 --> R6
-    F7 --> R7
-    F8 --> R8
-
-    classDef feat fill:#e3f2fd,stroke:#1565c0;
-    classDef ref fill:#fff3e0,stroke:#e65100;
-```
-
-| 模块特征 | 触发条件 | 匹配的外部参考 |
-|---------|---------|--------------|
-| 前端 / UI | type === "frontend" | ui-ux-pro-max, mattpocock-skills |
-| 后端 / API | type === "backend" | superpowers, get-shit-done |
-| 认证/授权 | hasAuth | superpowers（验证门禁·安全纪律） |
-| 用户输入 | hasUserInput | superpowers（安全约束） |
-| 架构枢纽 | importedByCount ≥ 3 | get-shit-done（上下文工程）, superpowers |
-| 大型模块 | lines > 200 | mattpocock-skills（工程 discipline） |
-| 状态管理 | 文件名含 store/state/model | claude-mem（记忆模式）, everything-claude-code |
-| 全栈 | type === "fullstack" | 全部方法论资源 |
-| 新技术选型 | 涉及未使用过的库/框架 | GitHub Trending, OSS Insight, TrendShift（趋势验证） |
-| 架构演进 | 涉及跨故事重构 | TrendShift（技术采用信号）, OSS Insight（生态健康度） |
-
-### 引用要求
-
-| 优先级 | 最低引用数 | 要求 |
-|--------|:---------:|------|
-| P0 / P1 | ≥ 1 个相关外部参考 | 必须在详述卡中列出，说明具体可借鉴的设计理念 |
-| relevance = "high" | — | 必须在详述卡中提及，说明可参考的点 |
-| relevance = "normal" | — | 可选列出，供用户延伸阅读 |
-| PM 补充 | 允许 | 可根据对模块的实际理解，补充 `recommend.mjs` 未覆盖的参考 |
 
 ## Red Flags
 

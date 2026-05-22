@@ -1,10 +1,10 @@
 > | v1.6.4 | 2026-05-21 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 
-[§0 基线溯源与校准](#sec0-baseline) · [§1 观察](#sec1-observation) · [§2 诊断](#sec2-diagnosis) · [§3 改进](#sec3-improvement) · [§4 经验沉淀](#sec4-lessons) · [§5 评审清单](#sec5-checklist)
-
 > **导航**: [← YrY-测试报告](./YrY-测试报告.md) · [YrY-消息通知列表 →](./YrY-消息通知列表.md)
 
 > **来源引用**: 基于 `rui-story.mjs` 730 行实现 + SKILL.md 553 行规约的全流程复盘。证据 Level A + 实际执行数据。
+
+[§0 基线溯源与校准](#sec0-baseline) · [§1 观察](#sec1-observation) · [§2 诊断](#sec2-diagnosis) · [§3 改进](#sec3-improvement) · [§4 经验沉淀](#sec4-lessons) · [§5 评审清单](#sec5-checklist)
 
 ---
 

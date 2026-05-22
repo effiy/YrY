@@ -8,6 +8,8 @@ paths:
 
 > 无 snapshot 不出提案，诊断以基线为锚，单次执行不阻断主流程。
 
+[闭环全景](#闭环全景) · [适用](#适用) · [数据要求](#数据要求) · [诊断基准](#诊断基准) · [诊断规则 D0–D7](#诊断规则-d0d7) · [效果评估 E1–E4](#效果评估-e1e4) · [降级处理](#降级处理) · [经验技能化](#经验技能化) · [记忆压缩与注入](#记忆压缩与注入) · [例外](#例外) · [生效标志](#生效标志)
+
 ## 闭环全景
 
 ```mermaid
@@ -49,6 +51,8 @@ flowchart TB
 | ② 诊断 | 偏差信号 × 基线文件 | D0–D7 判定表 | 否 |
 | ③ 改进 | 诊断结论 | proposals.jsonl（append-only） | 否 |
 | ④ 评估 | proposals.jsonl + 前后记忆 | E1–E4 闭合/退化 | 否（单次不阻断） |
+
+**可执行工具**: `node skills/rui/proposals.mjs` — D0-D7 诊断引擎 + 提案生成 + E1-E4 评估。`node skills/rui-story/collect.mjs` — 指标采集 + 异常检测。
 
 ## 适用
 
@@ -205,7 +209,7 @@ flowchart TD
 
 ## 经验技能化
 
-> 源自 [hermes-agent](https://github.com/NousResearch/hermes-agent) 模式：从执行经验中创建 skill，使用中自我优化。当同一改进模式反复触发 → 从一次性提案升级为持久规则。
+> 从执行经验中创建 skill，使用中自我优化。当同一改进模式反复触发 → 从一次性提案升级为持久规则。
 
 ```mermaid
 flowchart TD
@@ -230,7 +234,7 @@ flowchart TD
 
 ## 记忆压缩与注入
 
-> 源自 [claude-mem](https://github.com/thedotmack/claude-mem) 的 AI 压缩 + 相似检索模式，结合 [agentmemory](https://github.com/rohitg00/agentmemory) 的基准评估方法。
+> AI 压缩 + 相似检索模式，结合基准评估方法。
 
 ```mermaid
 flowchart LR

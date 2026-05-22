@@ -15,6 +15,8 @@ agents:
 >
 > 哲学源自 [CLAUDE.md](../../CLAUDE.md)。本文件定义命令面与编排骨架，细节分散在：[rules/](../../rules/) · [agents/](../../agents/) · [formulas.md](./formulas.md) · [coder.md](./coder.md)。
 
+[选哪条命令](#选哪条命令) · [管线一览](#管线一览) · [阻断标识](#阻断标识) · [核心约束](#核心约束) · [故事文档](#故事文档) · [init](#init) · [doc](#doc) · [code](#code) · [端到端](#端到端) · [update](#update) · [code --from-doc](#code---from-doc) · [doc --from-code](#doc---from-code)
+
 ## 选哪条命令
 
 ```mermaid
@@ -84,7 +86,7 @@ flowchart LR
 - `no-checkout` — 未切换故事分支即写入/改码
 
 **预检→实现阶段**
-- `no-branch-isolation` — `git branch --show-current` 非 `feat/<name>` 时执行 Edit/Write
+- `no-branch-isolation` — `node skills/rui/branch-check.mjs` 验证失败（非 `feat/<name>` 时执行 Edit/Write）
 - `skip-gate-a` — Gate A 未通过即编码
 
 **实现→验证阶段**
@@ -170,7 +172,7 @@ flowchart TD
 基于 profile + 探索发现直接编写文件：
 
 - `CLAUDE.md` — 项目画像 + 执行准则 + 退化对策 + 项目约束（含 `rui:project-start/end` 标记）+ 自约束
-- `README.md` — 系统视图 + 命令流 + 快速开始 + 项目结构 + [领域语言段](../../README.md#领域语言)（术语定义 + 关系 + 示例对话 + 歧义标记，格式参照 [CONTEXT-FORMAT](https://github.com/mattpocock/skills/blob/main/skills/engineering/grill-with-docs/CONTEXT-FORMAT.md)）
+- `README.md` — 系统视图 + 命令流 + 快速开始 + 项目结构 + [领域语言段](../../README.md#领域语言)（术语定义 + 关系 + 示例对话 + 歧义标记）
 
 ### 4. setup — 机械搭建
 
@@ -316,7 +318,7 @@ flowchart TD
 
 | R# | 描述 | 校验方式 | 证据级别 |
 |----|------|---------|---------|
-| R1 | pm 拆分前必须查阅外部参考（superpowers · get-shit-done 等） | 检查 agents/pm.md 执行步骤 | B |
+| R1 | pm 拆分前必须建立事实基线（Read/Grep/Glob 研究源码） | 检查 agents/pm.md 执行步骤 | B |
 | R2 | 故事任务文档禁止包含技术术语（代码路径/API 路由/组件名/技术栈名） | 扫描 `/api/`、`/src/`、`<.*>` 等模式 | B |
 | R3 | 使用场景文档禁止包含技术术语和组件名 | 扫描技术名词模式 | B |
 | R4 | 所有文档必须含 `### 主要价值` 节，≥ 4 条 emoji 前缀行 | grep 计数 | B |
@@ -324,6 +326,7 @@ flowchart TD
 | R6 | 多故事时按优先级顺序串行处理，前一故事 doc 完成后再进下一故事 | 逐故事检查产出完整性 | B |
 | R7 | 分支必须从 main 拉出，禁止在已有功能分支上创建新故事分支 | `git log main..HEAD` 检查提交历史 | B |
 | R8 | 安全审计由 security agent 独立执行，不依赖 coder 自评 | 检查 agents/security.md 执行记录 | B |
+| R9 | 任何 rui 写操作前必须通过 branch-check.mjs 验证 | `node skills/rui/branch-check.mjs --story=<name> --mode=write`，exit code ≠ 0 阻断 | A |
 
 #### 数据约束
 
@@ -404,7 +407,7 @@ flowchart TD
 | 4 | 多故事拆分时下游故事依赖上游但上游未完成 | 风险 | M | M | 串行约束强制前一故事完成再进入下一故事 | FP9 |
 | 5 | 故事任务/使用场景混入技术术语导致下游设计偏离基线 | 风险 | M | H | P0 检查清单正则扫描；下游文档审查时反向溯源 | FP3, FP4 |
 | 6 | 项目类型误判导致技术评审章节裁剪错误 | 风险 | L | M | 类型判定失败时默认全量生成 | FP10 |
-| 7 | 外部参考 URL 不可达导致 pm 查阅失败 | 风险 | L | L | formulas.md 内联关键模式摘要，不依赖外链可达性 | FP1 |
+| 7 | 研究阶段源码不可读或关键路径缺失导致 pm 分析不完整 | 风险 | L | L | 源码不可读或结构混乱时阻断，要求用户先梳理源码 | FP1 |
 | 8 | security agent 与 coder 为同一实例导致审计不独立 | 风险 | M | H | 安全审计由独立 security agent 执行 | FP7 |
 | 9 | pm 能正确理解需求并拆分为合理粒度的故事 | 假设 | — | — | pm agent 规约约束拆分行为；拆分结果可通过故事任务文档验证 | FP1 |
 | 10 | 源码结构反映了实际架构使得 coder 能准确提取技术方案 | 假设 | — | — | 源码不可读或结构混乱时阻断，要求用户先梳理源码 | FP5 |
@@ -939,44 +942,13 @@ flowchart TD
 | 文档 | [formulas.md](./formulas.md) · [coder.md](./coder.md) · [import-docs SKILL](../import-docs/SKILL.md) · [wework-bot SKILL](../wework-bot/SKILL.md) |
 | 推荐 | [ranking.md](./ranking.md) · [recommend.mjs](./recommend.mjs) |
 
-## 外部参考融合
+## 集成参考
 
-> 管线的每个阶段均有对应的外部参考资源（详见 [外部参考知识库](../../libs/) 与 [formulas.md §外部参考应用指南](./formulas.md#外部参考应用指南)）。各 Agent 在执行前必须查阅对应参考，不可凭感觉执行。
-
-```mermaid
-flowchart TB
-    subgraph 阶段["管线阶段"]
-        S1["需求→文档<br/>pm 拆分 + coder 设计"]:::phase
-        S2["预检<br/>分支隔离 + Gate A"]:::phase
-        S3["实现<br/>逐模块编码 + P0 清零"]:::phase
-        S4["验证<br/>Gate B + 三报告"]:::phase
-        S5["自改进<br/>D0-D7 诊断"]:::phase
-        S6["交付<br/>三步收口"]:::phase
-    end
-
-    subgraph 参考["外部参考融合矩阵"]
-        R1["故事描述<br/>superpowers · get-shit-done<br/>ui-ux-pro-max<br/>karpathy-skills"]:::ref
-        R2["工程纪律<br/>mattpocock-skills<br/>everything-claude-code"]:::ref
-        R3["架构与执行<br/>system-design-primer<br/>ruflo · hermes-agent"]:::ref
-        R4["记忆与改进<br/>claude-mem · agentmemory<br/>superpowers"]:::ref
-        R5["趋势与发现<br/>GitHub Trending · OSS Insight<br/>TrendShift · Top-Starred"]:::ref
-    end
-
-    S1 --> R1
-    S2 & S3 --> R2
-    S3 --> R3
-    S4 & S5 --> R4
-    S6 --> R5
-
-    classDef phase fill:#e3f2fd,stroke:#1565c0;
-    classDef ref fill:#fff3e0,stroke:#e65100;
-```
-
-| 阶段 | 核心参考 | 具体应用 | 谁查阅 |
-|------|---------|---------|--------|
-| 需求→文档 | superpowers · get-shit-done · ui-ux-pro-max · karpathy-skills | 故事拆分粒度 · AC 设计 · UI 交互状态覆盖（≥3 状态）· LLM 编码陷阱规避 | pm |
-| 预检 | mattpocock-skills · everything-claude-code | 工程纪律 · 测试先行门禁 · 上下文质量优先 | tester · coder |
-| 实现 | system-design-primer · ruflo · hermes-agent · everything-claude-code | 深模块设计 · 多 Agent 协作 · 研究优先开发 · 纵深防御 | coder · security |
-| 验证 | claude-mem · agentmemory · superpowers | 执行记忆沉淀 · 基准评估 · 验证门禁五步法 | tester · reporter |
-| 自改进 | claude-mem · agentmemory · hermes-agent | 记忆压缩注入 · 经验技能化 · 跨会话相似检索 | self-improve |
-| 交付 | GitHub Trending · OSS Insight · TrendShift · Top-Starred | 技术趋势验证 · 架构健康度 · 新兴工具发现 · 社区验证的高质量项目参照 | reporter |
+| 阶段 | 核心方法 | 谁查阅 |
+|------|---------|--------|
+| 需求→文档 | 故事拆分粒度 · AC 设计 · UI 交互状态覆盖（≥3 状态） | pm |
+| 预检 | 工程纪律 · 测试先行门禁 · 上下文质量优先 | tester · coder |
+| 实现 | 深模块设计 · 多 Agent 协作 · 研究优先开发 · 纵深防御 | coder · security |
+| 验证 | 执行记忆沉淀 · 基准评估 · 验证门禁五步法 | tester · reporter |
+| 自改进 | 记忆压缩注入 · 经验技能化 · 跨会话相似检索 | self-improve |
+| 交付 | 技术趋势验证 · 架构健康度 · 新兴工具发现 | reporter |

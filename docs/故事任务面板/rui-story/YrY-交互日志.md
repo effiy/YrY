@@ -1,5 +1,7 @@
 > 交互日志 · 追加写入 · rui 管线自动维护
 
+[doc-from-code-rui-story](#会话-doc-from-code-rui-story--2026-05-20) · [update-rui-story](#会话-update-rui-story--2026-05-20) · [update-api-flow](#会话-update-api-flow-rui-story--2026-05-20) · [update-api-curl](#会话-update-api-curl-tech-review--2026-05-20) · [update-main-sync](#会话-update-main-sync-rui-story--2026-05-21)
+
 ## 会话 doc-from-code-rui-story — 2026-05-20
 
 ### 2026-05-20 | turn-1 | coder
@@ -98,5 +100,18 @@
 - SKILL.md --help 段简化
 - 全部命令验证通过：overview（71 sessions）、list、show、health（5 pass）
 - 产出: YrY-实施报告.md（行数/函数表/模块行号/偏差记录更新）、YrY-交互日志.md（本次会话追加）
+
+---
+### 22:34:09 | turn-99 | test
+
+**👤 用户**:
+—
+
+**🤖 助手**:
+—
+
+**📋 关键决策**:
+- 决定1
+- 决定2
 
 ---

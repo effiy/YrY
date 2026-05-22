@@ -3,6 +3,8 @@
 > 基础信念是 why。YrY 是故事驱动的 SDLC 编排系统，用自身管线管理自身演进。
 > [领域语言](./README.md#领域语言) · [系统全景](./README.md)
 
+[基础信念](#基础信念) · [铁律](#铁律) · [项目画像](#项目画像) · [项目约束](#项目约束) · [项目不可妥协底线](#项目不可妥协底线) · [退化对策](#退化对策) · [自约束](#自约束) · [引导](#引导)
+
 ## 基础信念
 
 ```mermaid
@@ -47,7 +49,7 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 |------|-----|
 | 项目名 | YrY |
 | 类型 | **meta** — Claude Code 插件，纯规约驱动 |
-| 版本 | 1.6.4 |
+| 版本 | 1.6.8 |
 | 架构 | plugin — 6 技能 + 6 Agent + 5 规则 |
 | 生态 | 无 package.json，markdown 规约 + node 辅助脚本 |
 | 自托管 | 是 — YrY 用自身管线管理自身演进 |
@@ -86,10 +88,10 @@ flowchart LR
 
 | 退化因 | 对策 | 具体战术 |
 |--------|------|---------|
-| 外部不可达 | 外部参考 URL 失效时，技能规约仍独立可执行 | 规约内联关键模式摘要，不依赖外链可达性 |
+| 外部不可达 | 外部 URL/资源不可达时，技能规约仍独立可执行 | 规约内联关键模式摘要，不依赖外链可达性 |
 | 渐进漂移 | 每轮 init 全量重生 rui 标记段；领域语言 Avoid 列标注禁用别名 | 术语变更同步更新 Avoid 列表，防止旧名复用 |
 | 人机偏差 | 铁律 + 行为纪律 Red Flags + 验证门禁五步法 | 合理化的 8 类借口 -> 速查表对照；每个声称 -> 五步验证 |
-| 跨会话退化 | `.memory/` 执行记忆 + claude-mem 模式的 AI 压缩摘要 | 关键决策写入 `.memory/` 自动注入后续上下文 |
+| 跨会话退化 | `.memory/` 执行记忆 + AI 压缩摘要 | 关键决策写入 `.memory/` 自动注入后续上下文 |
 
 ### 自约束
 
@@ -108,4 +110,4 @@ flowchart LR
 | 角色拓扑 · 行为纪律 · 设计原则 · 执行准则 · ADR · 多 Agent 协作模式 | [agents/AGENT.md](./agents/AGENT.md) |
 | 自改进闭环（诊断 D0-D7 · 经验技能化 · 记忆压缩注入 · 效果评估 E1-E4） | [rules/self-improve.md](./rules/self-improve.md) · [agents/self-improve.md](./agents/self-improve.md) |
 | 领域语言（术语定义） | [领域语言](./README.md#领域语言) |
-| 故事文档公式 · 外部参考应用指南 | [formulas.md](./skills/rui/formulas.md) |
+| 故事文档公式 | [formulas.md](./skills/rui/formulas.md) |

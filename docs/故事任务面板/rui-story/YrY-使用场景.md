@@ -1,10 +1,10 @@
 > | v1.4.8 | 2026-05-20 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 
-[§1 场景全景](#sec1-scenarios) · [§2 场景详述](#sec2-details) · [§3 场景覆盖矩阵](#sec3-matrix) · [§4 评审清单](#sec4-checklist) · [§5 体验基线](#sec5-experience) · [§6 API 参考](#sec6-api)
-
 > **导航**: [← YrY-故事任务](./YrY-故事任务.md) · [YrY-技术评审 →](./YrY-技术评审.md)
 
 > **来源引用**: 从 `skills/rui-story/SKILL.md` 命令族全景 + `rui-story.mjs` 命令处理器反推。证据 Level B + 源码路径。
+
+[§1 场景全景](#sec1-scenarios) · [§2 场景详述](#sec2-details) · [§3 场景覆盖矩阵](#sec3-matrix) · [§4 评审清单](#sec4-checklist) · [§5 体验基线](#sec5-experience) · [§6 API 参考](#sec6-api)
 
 ---
 
@@ -76,7 +76,7 @@ flowchart LR
 | 1 | 执行命令 | `/rui-story` | 开始查询远端 API | Token 缺失 → 显示配置指引 |
 | 2 | 查询远端 | API 请求 | 获取 sessions 列表 | 网络错误 → 显示"远端不可达" |
 | 3 | 筛选数据 | file_path 前缀过滤 | 仅保留故事任务面板数据 | 无匹配 → 显示"无故事任务面板数据" |
-| 4 | 状态判定 | 文件清单 + 项目前缀 | 每故事判定为 6 种状态之一 | 无法判定 → 标记 not_started |
+| 4 | 状态判定 | 文件清单 + 项目前缀 | 每故事判定为 6 种状态之一 | 无法判定 → 标记 任务 |
 | 5 | 聚合输出 | 状态计数 | 显示状态统计表 | — |
 | 6 | 最近活动 | 更新时间排序 | 显示最近 5 个活跃故事 | 无活动 → 显示"无" |
 

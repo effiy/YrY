@@ -1,10 +1,10 @@
 > | v1.4.8 | 2026-05-20 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 
-[§0 基线溯源](#sec0-baseline) · [§1 测试环境](#sec1-env) · [§2 冒烟测试](#sec2-smoke) · [§3 回归测试](#sec3-regression) · [§4 环境专项](#sec4-env-special) · [§5 已知问题](#sec5-issues) · [§6 Gate B 评估](#sec6-gateb) · [§7 评审清单](#sec7-checklist)
-
 > **导航**: [← YrY-实施报告](./YrY-实施报告.md) · [YrY-自改进复盘 →](./YrY-自改进复盘.md)
 
 > **来源引用**: 基于 `YrY-测试设计.md` 用例执行验证。证据 Level A + 实际命令输出。
+
+[§0 基线溯源](#sec0-baseline) · [§1 测试环境](#sec1-env) · [§2 冒烟测试](#sec2-smoke) · [§3 回归测试](#sec3-regression) · [§4 环境专项](#sec4-env-special) · [§5 已知问题](#sec5-issues) · [§6 Gate B 评估](#sec6-gateb) · [§7 评审清单](#sec7-checklist)
 
 ---
 

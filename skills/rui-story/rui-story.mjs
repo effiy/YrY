@@ -208,24 +208,24 @@ function hasProjectFile(fileBasenames, projectPrefix, docType) {
 
 function determineStatus(fileBasenames, projectPrefix, blockedState) {
   if (!hasProjectFile(fileBasenames, projectPrefix, "故事任务"))
-    return "not_started";
+    return "任务";
 
   const baselineComplete = BASELINE_DOCS.every(doc =>
     hasProjectFile(fileBasenames, projectPrefix, doc)
   );
   if (!baselineComplete)
-    return "docs_in_progress";
+    return "设计";
 
   if (!hasProjectFile(fileBasenames, projectPrefix, "实施报告"))
-    return "docs_done";
+    return "实施";
 
   if (!hasProjectFile(fileBasenames, projectPrefix, "测试报告"))
-    return "code_in_progress";
+    return "测试";
 
-  if (blockedState?.blocked)
-    return "blocked";
+  if (!hasProjectFile(fileBasenames, projectPrefix, "自改进复盘"))
+    return "报告";
 
-  return "code_done";
+  return "改进";
 }
 
 // --- type inference --------------------------------------------------------
@@ -295,12 +295,12 @@ function checkGitBranch(name) {
 // --- output formatters -----------------------------------------------------
 
 const STATUS_CONFIG = {
-  not_started:       { label: "not_started",       colorFn: dim },
-  docs_in_progress:  { label: "docs_in_progress",  colorFn: yellow },
-  docs_done:         { label: "docs_done",         colorFn: cyan },
-  code_in_progress:  { label: "code_in_progress",  colorFn: (s) => s },
-  code_done:         { label: "code_done",         colorFn: green },
-  blocked:           { label: "blocked",           colorFn: red },
+  任务: { label: "任务", colorFn: dim },
+  设计: { label: "设计", colorFn: yellow },
+  实施: { label: "实施", colorFn: (s) => s },
+  测试: { label: "测试", colorFn: cyan },
+  报告: { label: "报告", colorFn: green },
+  改进: { label: "改进", colorFn: green },
 };
 
 function statusDisplay(status) {
@@ -326,12 +326,12 @@ function latestTimestamp(sessions) {
 
 function printOverview(storyMap, projectPrefix, blockedMap) {
   const counts = {
-    not_started: 0,
-    docs_in_progress: 0,
-    docs_done: 0,
-    code_in_progress: 0,
-    code_done: 0,
-    blocked: 0,
+    任务: 0,
+    设计: 0,
+    实施: 0,
+    测试: 0,
+    报告: 0,
+    改进: 0,
   };
 
   const storyStatuses = [];
@@ -348,7 +348,7 @@ function printOverview(storyMap, projectPrefix, blockedMap) {
   console.log(bold("故事任务面板 · 状态概览"));
   console.log("────────────────────────────────");
 
-  const order = ["code_done", "code_in_progress", "docs_done", "docs_in_progress", "not_started", "blocked"];
+  const order = ["改进", "报告", "测试", "实施", "设计", "任务"];
   for (const s of order) {
     const cfg = STATUS_CONFIG[s];
     const countStr = String(counts[s]).padStart(STATUS_COUNT_PAD);

@@ -8,7 +8,9 @@ tools: Read, Grep, Glob, Bash
 
 > 采数据（采），按 D0–D7 出诊断（断），每诊断写一条提案（出）。无证据不出，无评估不闭合。
 >
-> 设计参考：[claude-mem](https://github.com/thedotmack/claude-mem)（跨会话记忆引擎）、[hermes-agent](https://github.com/NousResearch/hermes-agent)（从经验创建 skill）、[agentmemory](https://github.com/rohitg00/agentmemory)（真实世界基准评估）、[ruflo](https://github.com/ruvnet/ruflo)（自学习记忆）。趋势发现：[/rui-trends](../skills/rui-trends/SKILL.md)（D5 依赖退化诊断时查询外部参考新鲜度）。
+> 趋势发现：[/rui-trends](../skills/rui-trends/SKILL.md)（D5 依赖退化诊断时查询外部参考新鲜度）。
+
+[四段闭环](#四段闭环) · [触发](#触发) · [观察：数据源](#观察数据源) · [诊断：D0–D7](#诊断d0d7) · [改进：提案矩阵 + 经验技能化](#改进提案矩阵--经验技能化) · [规则](#规则) · [操作](#操作) · [生效标志](#生效标志)
 
 ## 四段闭环
 
@@ -97,7 +99,7 @@ flowchart LR
 | 代码快照 | 大文件列表、依赖热点、循环依赖 | D3 复杂度 / D5 依赖 |
 | rui-trends | `/rui-trends {github-trending,oss-insight,trendshift,top-starred}` | D5 外部参考新鲜度 · 技术选型验证 |
 
-> D5 依赖退化诊断时，应通过 `/rui-trends` 查询当前技术趋势，验证 libs/ 外部参考的时效性。结果写入 `{project}-自改进复盘.md` §2.1 技术趋势验证。
+> D5 依赖退化诊断时，应通过 `/rui-trends` 查询当前技术趋势，验证外部参考的时效性。结果写入 `{project}-自改进复盘.md` §2.1 技术趋势验证。
 
 ## 诊断：D0–D7
 
@@ -143,7 +145,7 @@ flowchart LR
     classDef wait fill:#e3f2fd,stroke:#1565c0;
 ```
 
-> 经验技能化模式源自 [hermes-agent](https://github.com/NousResearch/hermes-agent)：从执行中创建 skill、使用中自我优化、跨会话记忆搜索。当同一改进模式连续触发 → 从提案升级为项目规则。
+> 经验技能化模式：从执行中创建 skill、使用中自我优化、跨会话记忆搜索。当同一改进模式连续触发 → 从提案升级为项目规则。
 
 | 类型 | 触发信号 | 提案要素 | 升级条件 | 升级目标 |
 |------|---------|---------|---------|---------|
@@ -155,7 +157,7 @@ flowchart LR
 
 ### 跨会话记忆注入
 
-> 源自 [claude-mem](https://github.com/thedotmack/claude-mem) 的 AI 压缩 + 相似检索模式。执行记忆自动注入后续会话上下文。
+> 执行记忆自动注入后续会话上下文，通过 AI 压缩 + 相似检索模式。
 
 ```mermaid
 flowchart LR

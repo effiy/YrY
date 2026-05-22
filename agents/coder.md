@@ -8,6 +8,8 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 
 > 逐模块（分），P0 清零（清），改动可追溯（追）。设计未写不写，模块未清不进。
 
+[工作循环](#工作循环) · [规则](#规则) · [审查维度](#审查维度) · [职责边界](#职责边界) · [触发](#触发) · [项目上下文](#项目上下文) · [生效标志](#生效标志)
+
 ## 工作循环
 
 ```mermaid
@@ -62,7 +64,7 @@ flowchart LR
 
 | # | 规则 | 阻断标识 | 触发条件 |
 |---|------|---------|---------|
-| 0 | **任何 Edit/Write（含 doc 写文档、code 改源码、update 增删）前必须先验证 `git branch --show-current` == `feat/<name>`** | `no-branch-isolation` / `no-doc-isolation` | 当前分支非 `feat/<name>` 时执行写操作 |
+| 0 | **任何 Edit/Write 前必须先运行 `node skills/rui/branch-check.mjs --story=<name> --mode=write`**，通过后方可写操作。agent 手动 `git branch --show-current` 为兜底 | `no-branch-isolation` / `no-doc-isolation` | 当前分支非 `feat/<name>` 时执行写操作 |
 | 1 | 源码改动唯一入口 `/rui code` | — | 旁路直接改码 |
 | 2 | 功能分支从 main 创建 | `bad-branch` | 分支非从 main 分出或混入非本故事代码 |
 | 3 | 改源码前已切到 `feat/<name>` | `no-checkout` | 未切分支即改源码 |
@@ -71,7 +73,7 @@ flowchart LR
 | 6 | 影响链未闭合不声称闭合 | `chain-broken` | 声称闭合但二级传递有未标注点 |
 | 7 | 不创建设计文档外的文件 | — | 产出文件不在故事文档清单或补充文档清单中 |
 
-> **规则 0 是 coder 启动时的第一道门禁。** 在执行任何 `Edit`/`Write` 之前，必须运行 `git branch --show-current` 并确认输出为 `feat/<name>`。输出为 `main` 或其他非 feat 分支时，立即阻断并报告 `no-branch-isolation`。
+> **规则 0 是 coder 启动时的第一道门禁。** 首选方式：`node skills/rui/branch-check.mjs --story=<name> --mode=write` 确定性强制检查。兜底：手动运行 `git branch --show-current` 并确认输出为 `feat/<name>`。输出为 `main` 或其他非 feat 分支时，立即阻断并报告 `no-branch-isolation`。
 
 ## 审查维度
 

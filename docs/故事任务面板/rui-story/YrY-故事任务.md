@@ -1,10 +1,10 @@
 > | v1.4.8 | 2026-05-20 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 
-[§1 Story](#sec1-story) · [§2 Requirements](#sec2-requirements) · [§3 成功标准](#sec3-success) · [§4 范围边界](#sec4-scope) · [§5 AC](#sec5-ac) · [§6 风险与假设](#sec6-risks) · [§7 跨文档索引](#sec7-index) · [§L 自改进循环](#secL-improve)
-
 > **导航**: [YrY-使用场景 →](./YrY-使用场景.md)
 
 > **来源引用**: 从 `skills/rui-story/` 源码反推生成，证据 Level B + 源码路径。`doc --from-code rui-story`
+
+[§1 Story](#sec1-story) · [§2 Requirements](#sec2-requirements) · [§3 成功标准](#sec3-success) · [§4 范围边界](#sec4-scope) · [§5 AC](#sec5-ac) · [§6 风险与假设](#sec6-risks) · [§7 跨文档索引](#sec7-index) · [§L 自改进循环](#secL-improve)
 
 ---
 
@@ -135,7 +135,7 @@ flowchart TD
 | FP# | 描述 | 输入 | 输出 | 错误行为 | 优先级 |
 |-----|------|------|------|---------|--------|
 | FP1 | 远端会话查询 — 查询 sessions 集合并筛选故事任务面板数据 | API URL + Token | 按故事分组的 session 列表 | API 不可达时优雅退出并提示 | P0 |
-| FP2 | 故事状态判定 — 基于远端 file_path 存在性判定 6 种状态 | file_path 集合 + 项目前缀 + 本地 blocked 状态 | 状态标签 | 无法判定时默认为 not_started | P0 |
+| FP2 | 故事状态判定 — 基于远端 file_path 存在性判定 6 种状态（任务/设计/实施/测试/报告/改进） | file_path 集合 + 项目前缀 | 状态标签 | 无法判定时默认为 任务 | P0 |
 | FP3 | 项目类型推断 — 从远端技术评审内容推断前端/后端/全栈/元 | 技术评审文档内容 | 类型枚举 | 无法读取或解析时默认 meta | P1 |
 | FP4 | 状态概览输出 — 按状态聚合计数 + 最近活动列表 | 故事状态映射 | 格式化概览文本 | 无数据时显示空状态提示 | P0 |
 | FP5 | 进度全景表格 — 所有故事详情表格含状态/文件数/最后修改/类型/分支 | 故事状态映射 + 类型映射 | 格式化表格 | 无数据时显示空状态提示 | P0 |
@@ -168,7 +168,7 @@ flowchart TD
 | API URL | string | 有效 HTTPS URL，默认 `https://api.effiy.cn` | 环境变量 IMPORT_DOCS_API_URL |
 | API Token | string | 非空字符串 | 环境变量 API_X_TOKEN |
 | 项目前缀 | string | `{项目名}-`，从 CLAUDE.md 读取 | readProjectName() |
-| 状态枚举 | enum | not_started / docs_in_progress / docs_done / code_in_progress / code_done / blocked | determineStatus() |
+| 状态枚举 | enum | 任务 / 设计 / 实施 / 测试 / 报告 / 改进 | determineStatus() |
 | 类型枚举 | enum | backend / frontend / fullstack / meta | inferType() |
 | HTTP 超时 | number | 30,000ms | HTTP_TIMEOUT 常量 |
 | 并发数 | number | 4 | CONCURRENCY 常量 |

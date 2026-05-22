@@ -13,6 +13,8 @@ paths:
 > - 三步必须按序。跳序 = 未闭合。
 > - 阻断状态也必须触发通知。
 
+[交付全景](#交付全景) · [适用](#适用) · [① 追加日志](#①-追加日志) · [② 文档同步](#②-文档同步) · [③ 发送通知](#③-发送通知) · [核心约束](#核心约束) · [标记规则](#标记规则) · [例外](#例外) · [阻断标识](#阻断标识) · [生效标志](#生效标志)
+
 ## Red Flags — 暂停并回到 Iron Law
 
 - "改动很小，跳过通知"
@@ -28,7 +30,9 @@ paths:
 
 ```mermaid
 flowchart TB
-    DONE["管线完成"]:::src --> S1["① 追加日志<br/>wework-bot --no-send"]:::step
+    DONE["管线完成"]:::src --> S0["⓪ 执行记忆<br/>node .memory/collector.mjs"]:::step
+    S0 --> M0["mark memory_written"]:::mark
+    M0 --> S1["① 追加日志<br/>wework-bot --no-send"]:::step
     S1 --> M1["mark log_appended"]:::mark
     M1 --> S2["② 文档同步<br/>node skills/import-docs/sync.mjs"]:::step
     S2 --> M2["mark docs_synced"]:::mark
@@ -47,6 +51,7 @@ flowchart TB
 
 | 步骤 | 操作 | 标记 | 降级条件 |
 |------|------|------|---------|
+| ⓪ 执行记忆 | `node .memory/collector.mjs --story=<name> --command=<cmd>` 追加记录 | `memory_written` | — |
 | ① 追加日志 | `wework-bot --no-send` 写入日志 | `log_appended` | — |
 | ② 文档同步 | `node skills/import-docs/sync.mjs` 推送 | `docs_synced` | `no-token`（缺 API_X_TOKEN） |
 | ③ 发送通知 | `wework-bot` 推送企微 | `notification_sent` | — |

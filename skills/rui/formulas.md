@@ -2,6 +2,8 @@
 
 > 故事文档的结构单一真相源。章节、表头、字段规约——按此直接产出文档。
 
+[通用元素](#通用元素) · [双基线模型](#双基线模型) · [故事主线公式](#故事主线公式) · [补充文档公式](#补充文档公式) · [通知记忆文档](#通知记忆文档)
+
 ```mermaid
 flowchart TB
     subgraph 通用["通用元素（全局复用）"]
@@ -202,19 +204,6 @@ flowchart LR
 
 ### F.story.task — {project}-故事任务 `meta + Story×N`
 
-> **外部参考** — 描述故事前必须浏览 [外部参考知识库](../../libs/)，汲取故事拆分模式、AC 设计方法、场景描述技巧、上下文边界控制。粒度不确定或场景覆盖不全时，回查相应模式参照。
->
-> | 章节 | 参考资源 | 汲取要点 |
-> |------|---------|---------|
-> | §1 Story | [superpowers](https://github.com/obra/superpowers) | 故事拆分模式、spec-driven 开发、验证门禁设计 |
-> | §1 Story — 粒度控制 | [get-shit-done](https://github.com/gsd-build/get-shit-done/tree/main) | 上下文边界设计、故事描述粒度控制 |
-> | §2 Requirements | [mattpocock/skills](https://github.com/mattpocock/skills) | 工程 discipline、需求结构化表达 |
-> | §3 成功标准 | [superpowers](https://github.com/obra/superpowers) | spec-driven 验证门禁、用户可感知的 success metrics 设计 |
-> | §4 范围边界 | [get-shit-done](https://github.com/gsd-build/get-shit-done/tree/main) | 上下文边界设计、范围控制 |
-> | §5 AC | [superpowers](https://github.com/obra/superpowers) | 验证门禁、AC 可测试性、Gate 映射 |
-> | §6 风险与假设 | [mattpocock/skills](https://github.com/mattpocock/skills) | 工程 discipline、风险管理结构化 |
-> | §L 自改进 | [claude-mem](https://github.com/thedotmack/claude-mem) | 跨会话知识沉淀、执行记忆体系设计 |
-
 #### §0 基线声明
 
 > **问题空间基线 (Problem Space Baseline)**: 本文档定义"做什么(WHAT)"和"为什么(WHY)"。所有后续文档(03-09)的设计、实现、验证、改进决策均必须可追溯至本文档的具体章节。
@@ -293,17 +282,6 @@ flowchart LR
 | 4 | 偏差项必须链接到对应下游文档的具体章节说明原因 |
 
 ### F.story.scenarios — {project}-使用场景 `meta + nav + 全景 + 详述×N + 覆盖矩阵 + 清单`
-
-> **外部参考** — §2 场景详述涉及 UI 交互时，参考 [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) 的 161 条推理规则与 67 种 UI 风格交互模式。场景粒度与覆盖度可参考 [obra/superpowers](https://github.com/obra/superpowers) 的 spec-driven 模式。上下文边界可参考 [get-shit-done](https://github.com/gsd-build/get-shit-done/tree/main) 的上下文退化对策。
->
-> | 章节 | 参考资源 | 汲取要点 |
-> |------|---------|---------|
-> | §0 基线声明 | [get-shit-done](https://github.com/gsd-build/get-shit-done/tree/main) | 上下文边界设计、基线文档定位 |
-> | §1 场景全景 | [get-shit-done](https://github.com/gsd-build/get-shit-done/tree/main) | 场景边界划定、上下文范围控制 |
-> | §2 场景详述（UI） | [ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | 交互推理规则、视图状态矩阵、微交互规范 |
-> | §2 场景详述（粒度） | [superpowers](https://github.com/obra/superpowers) | spec-driven 场景覆盖、缺失路径识别 |
-> | §3 覆盖矩阵 | [superpowers](https://github.com/obra/superpowers) | FP 全覆盖验证、验收标准对齐 |
-> | §5 体验基线 | [ui-ux-pro-max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | 用户情感目标、体验度量 |
 
 #### §0 基线声明
 
@@ -785,86 +763,3 @@ flowchart LR
 | 14 | 实施报告含效果截图（§6 效果验证），按项目类型检查截图覆盖 | grep "效果验证"；检查截图引用 |
 | 15 | 实施报告含可操作验证（§7），按项目类型检查 curl 命令和操作步骤 | grep "curl" 或 "可操作验证"；检查 fenced 块和编号步骤 |
 
----
-
-## 外部参考应用指南
-
-> 生成每份故事文档前，PM / Coder / Tester 应按以下矩阵查阅对应外部参考，不可凭感觉写文档。
-
-```mermaid
-flowchart TD
-    subgraph 参考池["外部参考池（来自 README.md）"]
-        R1["superpowers<br/>验证门禁·行为纪律"]
-        R2["get-shit-done<br/>上下文工程·粒度控制"]
-        R3["mattpocock-skills<br/>工程 discipline"]
-        R4["ui-ux-pro-max<br/>UI 推理规则·交互模式"]
-        R5["claude-mem<br/>持久化记忆引擎"]
-        R6["everything-claude-code<br/>harness 优化全集"]
-        R7["karpathy-skills<br/>LLM编码陷阱"]
-        R8["system-design-primer<br/>大规模设计"]
-        R9["hermes-agent<br/>经验技能化"]
-        R10["ruflo<br/>多Agent协作"]
-    end
-
-    subgraph 应用点["文档生成应用点"]
-        A1["{project}-故事任务<br/>故事拆分·AC 设计"]:::doc
-        A2["使用场景<br/>UI 交互·粒度控制"]:::doc
-        A3["技术评审<br/>架构·组件·安全"]:::doc
-        A4["测试设计<br/>用例设计·Gate A"]:::doc
-        A5["安全审计<br/>威胁建模·独立审计"]:::doc
-        A6["自改进复盘<br/>诊断·记忆沉淀"]:::doc
-    end
-
-    R1 --> A1 & A2 & A4
-    R2 --> A1 & A2
-    R3 --> A3
-    R4 --> A2 & A3
-    R5 --> A5
-    R6 --> A3
-    R7 --> A1 & A2
-    R8 --> A3
-    R9 --> A5
-    R10 --> A1 & A3
-
-    classDef doc fill:#e3f2fd,stroke:#1565c0;
-```
-
-### 按文档类型的参考矩阵
-
-| 公式 | 阶段 | 首要参考 | 其次参考 | 查阅时机 |
-|------|------|---------|---------|---------|
-| `F.story.task` | §1 Story | superpowers — 故事拆分模式 | karpathy-skills — LLM 编码陷阱规避 | 开始撰写前 |
-| `F.story.task` | §1 Story（粒度） | get-shit-done — 上下文边界 | ruflo — 多 Agent 任务拆分 | 控制粒度时 |
-| `F.story.task` | §3 成功标准 | superpowers — 验证门禁 | — | 定义成功标准时 |
-| `F.story.task` | §4 范围边界 | get-shit-done — 上下文边界 | — | 划定范围时 |
-| `F.story.task` | §5 AC | superpowers — 验证门禁 | — | 编写 AC 时 |
-| `F.story.task` | §6 风险与假设 | mattpocock-skills — 工程 discipline | — | 风险评估时 |
-| `F.story.scenarios` | §0 基线声明 | get-shit-done — 上下文边界 | — | 生成使用场景前 |
-| `F.story.scenarios` | §2 场景详述（UI） | ui-ux-pro-max — 161 推理规则 | superpowers — spec-driven | 描述场景前 |
-| `F.story.scenarios` | §2 场景详述（粒度） | get-shit-done — 上下文退化 | karpathy-skills — 过度具体化陷阱 | 控制粒度时 |
-| `F.story.scenarios` | §5 体验基线 | ui-ux-pro-max — UI 推理规则 | — | 定义体验基线时 |
-| `F.story.technical-review` | §0 设计决策与任务规划 | mattpocock-skills — 工程 discipline | superpowers — 行为纪律 | 拆分任务+做设计决策时 |
-| `F.story.technical-review` | §1 系统架构 | system-design-primer — 大规模设计模式 | everything-claude-code — 研究优先 | 架构设计时 |
-| `F.story.technical-review` | §4 组件与状态 | mattpocock-skills — 工程 discipline | ui-ux-pro-max — 组件模式 | 设计组件时 |
-| `F.story.technical-review` | §5 交互与样式 | ui-ux-pro-max — 161 推理规则 | — | 交互设计时 |
-| `F.story.technical-review` | §7 安全约束 | superpowers — 安全纪律 | everything-claude-code — 安全思路 | 安全分析时 |
-| `F.story.test-design` | §2 测试用例 | superpowers — 验证门禁 | — | 设计用例时 |
-| `F.story.security-audit` | §2 威胁建模 | superpowers — 安全纪律 | system-design-primer — 纵深防御 | 安全审计时 |
-| `F.story.retrospective` | §2 诊断 | claude-mem — 记忆引擎 | agentmemory — 基准评估 | 自改进时 |
-| `F.story.retrospective` | §3 提案 | hermes-agent — 经验技能化 | — | 写提案时 |
-| `F.supp.page-design` | §2 视觉规格 | ui-ux-pro-max — UI 规则 | — | 页面设计时 |
-| `F.supp.integration-plan` | §2 集成方案 | ruflo — MCP 集成模式 | system-design-primer — 系统集成 | 集成设计时 |
-
-### 应用铁律
-
-| # | 规则 | 反例 |
-|---|------|------|
-| 1 | 必须至少查阅 1 个相关外部参考再动笔 | "凭经验直接写故事，不需要看参考" |
-| 2 | 粒度不确定时回查 get-shit-done 的上下文边界设计 | 需求概述堆砌 500 字无重点 |
-| 3 | UI 交互场景必须参考 ui-ux-pro-max 的推理规则，覆盖 ≥3 种交互状态 | 登录表单的 loading / empty / error 态未定义 |
-| 4 | AC 设计必须体现 superpowers 的验证门禁模式 | AC 无 Gate A/B 映射且用例不可执行 |
-| 5 | 技术趋势类参考（GitHub Trending / OSS Insight / TrendShift）用于技术选型验证，不替代具体技术评审 | "GitHub 上这个库很火所以我们用" — 无评审直接引入 |
-| 6 | pm 拆故事前须查阅 karpathy-skills 的 LLM 编码陷阱，避免故事粒度陷阱 | 单个故事覆盖 5+ 模块，无法独立交付 |
-| 7 | 架构设计涉及大规模系统时须查阅 system-design-primer 的设计模式 | 忽略伸缩性、容错、一致性等非功能需求 |
-| 8 | 自改进提案连续触发时须查阅 hermes-agent 的经验技能化模式 | 同一提案反复追加但从不升级为规则 |
-| 9 | 安全审计必须由 security agent 独立执行，不得由 coder 自评替代 | coder 在技术评审中"我觉得很安全" |

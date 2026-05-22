@@ -1,10 +1,10 @@
 > | v1.4.8 | 2026-05-20 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 
-[§0 基线溯源](#sec0-baseline) · [§1 资产识别](#sec1-assets) · [§2 威胁建模](#sec2-threats) · [§3 信任边界](#sec3-trust) · [§4 缓解措施](#sec4-mitigations) · [§5 合规检查](#sec5-compliance) · [§6 评审清单](#sec6-checklist)
-
 > **导航**: [← YrY-技术评审](./YrY-技术评审.md) · [← YrY-测试设计](./YrY-测试设计.md) · [YrY-实施报告 →](./YrY-实施报告.md)
 
 > **来源引用**: 从 `skills/rui-story/rui-story.mjs` 源码 + `skills/rui-story/SKILL.md` 操作边界反推。证据 Level B + 源码路径。独立安全审计，不依赖 coder 自评。
+
+[§0 基线溯源](#sec0-baseline) · [§1 资产识别](#sec1-assets) · [§2 威胁建模](#sec2-threats) · [§3 信任边界](#sec3-trust) · [§4 缓解措施](#sec4-mitigations) · [§5 合规检查](#sec5-compliance) · [§6 评审清单](#sec6-checklist)
 
 ---
 

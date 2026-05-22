@@ -11,6 +11,8 @@ lifecycle: default-pipeline
 
 作用范围：当前项目的 `.claude/` 目录。sync / retro 均以 `.claude/` 为操作边界。
 
+[命令族全景](#命令族全景) · [操作边界](#操作边界) · [sync](#sync) · [retro](#retro) · [history](#history) · [核心规则](#核心规则) · [参考模式](#参考模式) · [生效标志](#生效标志)
+
 ## 命令族全景
 
 ```mermaid
@@ -167,39 +169,14 @@ flowchart LR
 
 详见 [rules/rui-claude.md](../../rules/rui-claude.md)。
 
-## 外部参考
+## 参考模式
 
-> `.claude/` 配置管理、技能组织、安全约束思路参考以下资源。
-
-```mermaid
-flowchart LR
-    subgraph 参考["外部参考"]
-        R1["everything-claude-code<br/>harness 优化全集"]:::ref
-        R2["superpowers<br/>行为纪律·验证门禁"]:::ref
-        R3["GitHub Trending<br/>OSS Insight<br/>TrendShift"]:::ref
-    end
-
-    subgraph 应用["rui-claude 应用"]
-        A1["sync — API 远端同步"]:::app
-        A2["retro — 健康度分析模式"]:::app
-        A3["需求 — 安全约束思路"]:::app
-        A4["趋势 — 配置演进方向"]:::app
-    end
-
-    R1 --> A1 & A2
-    R2 --> A3
-    R3 --> A4
-
-    classDef ref fill:#fff3e0,stroke:#e65100;
-    classDef app fill:#e3f2fd,stroke:#1565c0;
-```
-
-| 命令 | 参考资源 | 汲取要点 |
-|------|---------|---------|
-| sync | import-docs | 远端 API 查询 + 文件下载模式 |
-| retro | everything-claude-code · superpowers | 健康度指标、行为纪律审查 |
-| 需求管线 | superpowers | 安全约束、验证门禁、仅限 `.claude/` 边界 |
-| 趋势跟踪 | GitHub Trending · OSS Insight · TrendShift | `.claude/` 配置演进方向、新兴工具采纳 |
+| 命令 | 参考要点 |
+|------|---------|
+| sync | 远端 API 查询 + 文件下载模式 |
+| retro | 健康度指标、行为纪律审查 |
+| 需求管线 | 安全约束、验证门禁、仅限 `.claude/` 边界 |
+| 趋势跟踪 | `.claude/` 配置演进方向、新兴工具采纳 |
 
 ## 生效标志
 

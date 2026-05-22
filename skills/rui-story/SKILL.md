@@ -13,6 +13,8 @@ lifecycle: default-pipeline
 >
 > 哲学源自 [CLAUDE.md](../../CLAUDE.md)。本文件定义命令面与操作规约。
 
+[命令族全景](#命令族全景) · [数据源](#数据源) · [操作边界](#操作边界) · [状态判定](#状态判定) · [/rui-story](#rui-story) · [/rui-story list](#rui-story-list) · [/rui-story show](#rui-story-show) · [/rui-story recommend](#rui-story-recommend) · [/rui-story health](#rui-story-health) · [/rui-story sync](#rui-story-sync) · [/rui-story clear](#rui-story-clear) · [/rui-story remove](#rui-story-remove) · [核心规则](#核心规则) · [生效标志](#生效标志) · [与 rui 的关系](#与-rui-的关系)
+
 ## 命令族全景
 
 ```mermaid
@@ -27,11 +29,14 @@ flowchart TD
     Q2 -->|"remove <name>"| REMOVE["删除故事目录<br/>本地 → 删除整个故事目录"]:::danger
     Q2 -->|"recommend"| RECOMMEND["同步推荐<br/>远端查询 → 可同步故事列表"]:::read
     Q2 -->|"health"| HEALTH["健康检查<br/>远端 + 本地 → 系统诊断"]:::read
+    Q2 -->|"status"| STATUS["状态管理<br/>转移验证 · 跨故事仪表板"]:::diag
+    Q2 -->|"collect"| COLLECT["指标采集<br/>执行指标 · 异常检测"]:::diag
 
     classDef entry fill:#fff3e0,stroke:#e65100;
     classDef read fill:#e8f5e9,stroke:#2e7d32;
     classDef write fill:#e3f2fd,stroke:#1565c0;
     classDef danger fill:#ffebee,stroke:#c62828;
+    classDef diag fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | 命令 | 类型 | 数据源 | 作用 |
@@ -44,6 +49,12 @@ flowchart TD
 | `/rui-story remove <name>` | 写入 | 本地文件系统 | 删除指定故事的整个本地目录；`<name>` 必填 |
 | `/rui-story recommend` | 只读 | 远端 API | 列出远端可同步的故事及推荐 sync 命令 |
 | `/rui-story health` | 只读 | 远端 API + 本地 | 系统健康检查：凭据、API 可达性、配置、数据完整性 |
+| `/rui-story status check` | 只读 | 本地状态机 | 验证状态转移合法性：`--from=<s> --to=<s>` |
+| `/rui-story status transition` | 写入 | 本地 rui-state.json | 执行状态转移并记录审计日志 |
+| `/rui-story status dashboard` | 只读 | 本地文件系统 | 跨故事聚合仪表板（本地 rui-state.json） |
+| `/rui-story collect story` | 只读 | 本地 .memory/ | 单故事指标采集 |
+| `/rui-story collect all` | 只读 | 本地 .memory/ | 跨故事指标汇总 |
+| `/rui-story collect anomalies` | 只读 | 本地 .memory/ | D0-D7 异常检测 |
 
 `<name>` 为纯语义 kebab-case（如 `user-login`），不加项目名前缀。
 
@@ -117,16 +128,16 @@ flowchart LR
 flowchart TD
     START["查询远端 sessions<br/>file_path 前缀 故事任务面板/"]:::s --> GROUP["按故事名称分组<br/>从 file_path 提取"]:::s
     GROUP --> CHK01{"{project}-故事任务.md<br/>存在?"}
-    CHK01 -->|"否"| NS["not_started"]:::s0
+    CHK01 -->|"否"| NS["任务"]:::s0
     CHK01 -->|"是"| CHKDOC{"文档基线齐全?<br/>含 使用场景 + 技术评审<br/>+ 测试设计 + 安全审计"}
-    CHKDOC -->|"否"| DIP["docs_in_progress"]:::s1
+    CHKDOC -->|"否"| DIP["设计"]:::s1
     CHKDOC -->|"是"| CHKIMP{"{project}-实施报告.md<br/>存在?"}
-    CHKIMP -->|"否"| DD["docs_done"]:::s2
+    CHKIMP -->|"否"| IMP["实施"]:::s2
     CHKIMP -->|"是"| CHKVER{"{project}-测试报告.md<br/>存在?"}
-    CHKVER -->|"否"| CIP["code_in_progress"]:::s3
-    CHKVER -->|"是"| CHKBLK{"rui-state.json<br/>blocked=true?"}
-    CHKBLK -->|"是"| BLK["blocked"]:::s5
-    CHKBLK -->|"否"| CD["code_done"]:::s4
+    CHKVER -->|"否"| TST["测试"]:::s3
+    CHKVER -->|"是"| CHKRET{"{project}-自改进复盘.md<br/>存在?"}
+    CHKRET -->|"否"| RPT["报告"]:::s4
+    CHKRET -->|"是"| IMPV["改进"]:::s5
 
     classDef s fill:#e3f2fd,stroke:#1565c0;
     classDef s0 fill:#eceff1,stroke:#90a4ae;
@@ -139,12 +150,12 @@ flowchart TD
 
 | 状态 | 条件 | 含义 |
 |------|------|------|
-| `not_started` | {project}-故事任务.md 不存在于远端 | 目录空或仅有元数据 |
-| `docs_in_progress` | 故事任务存在于远端，文档基线不完整 | 文档生成进行中 |
-| `docs_done` | 远端文档基线齐全，实施报告不存在 | 等待编码 |
-| `code_in_progress` | 实施报告存在于远端，测试报告不存在 | 实现验证中 |
-| `code_done` | 测试报告存在于远端，未阻断 | 可交付 |
-| `blocked` | `.memory/rui-state.json` 含 `blocked=true`（本地例外） | 管线阻断 |
+| `任务` | {project}-故事任务.md 不存在于远端 | 目录空或仅有元数据 |
+| `设计` | 故事任务存在于远端，文档基线不完整 | 文档生成进行中 |
+| `实施` | 远端文档基线齐全，实施报告不存在 | 等待编码 |
+| `测试` | 实施报告存在于远端，测试报告不存在 | 实现验证中 |
+| `报告` | 测试报告存在于远端，自改进复盘不存在 | 可交付 |
+| `改进` | 自改进复盘存在于远端 | 持续改进中 |
 
 项目类型按远端文件推断：技术评审含后端章节(API/数据) = 含后端；技术评审含前端章节(组件/交互/样式) = 含前端；两者均有 = fullstack；均无或无法判定 = meta。
 
@@ -168,12 +179,12 @@ flowchart LR
 ```
 故事任务面板 · 状态概览
 ─────────────────────────────
-  code_done        0
-  code_in_progress  0
-  docs_done         0
-  docs_in_progress  0
-  not_started       0
-  blocked           0
+  改进        0
+  报告        0
+  测试        0
+  实施        0
+  设计        0
+  任务        0
 ─────────────────────────────
   合计             0 个故事
 

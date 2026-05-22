@@ -18,9 +18,6 @@ const DEFAULT_EXCLUDES = new Set([
 ]);
 const DOC_BASE = "docs/故事任务面板";
 const CHURN_DAYS = 90;
-const LARGE_MODULE_LINE_THRESHOLD = 200;
-const HUB_MODULE_IMPORT_THRESHOLD = 3;
-const EXTERNAL_REF_HIGH_RELEVANCE_MIN_MATCH = 2;
 const DOC_COMPLETE_MIN_FILES = 4;
 const SIGNATURE_PREVIEW_LIMIT = 10;
 const COVERAGE_SIG_PREVIEW_COUNT = 3;
@@ -107,7 +104,7 @@ function showHelp() {
   const help = `
 ${bold("# recommend — 源码分析器")}
 
-${dim("扫描源码 → 提取签名 → 依赖分析 → git 指标 → 文档覆盖度 → 外部参考匹配")}
+${dim("扫描源码 → 提取签名 → 依赖分析 → git 指标 → 文档覆盖度")}
 ${dim("由 PM agent 在 /rui doc --from-code 探索模式中调用")}
 
 ${hdr("参数")}
@@ -125,8 +122,7 @@ ${hdr("逐文件收集指标")}
 ${item("metrics", "行数 · 签名提取 (Props/Events/Routes) · 被依赖数")}
 ${item("git", "最后修改时间 · 作者数 · 90天变更次数 (git log)")}
 ${item("doc", "检查 docs/故事任务面板/<name>/ 下的文档覆盖度")}
-${item("security", "检测: 用户输入 · 认证/Token · API 调用信号")}
-${item("externalRefs", "按模块特征匹配生态系统参考资源 (methodology/memory/ux)")}
+${item("signatures", "提取: Props/Events/Routes/API 端点签名")}
 
 ${hdr("输出结构")}
 ${line(dim("每个 story candidate 包含:"))}
@@ -137,7 +133,6 @@ ${item("metrics", "总行数 · 文件数 · 签名 Top 10 · 被依赖数")}
 ${item("git", "最后修改 · 作者数 · 90天变更次数")}
 ${item("doc", "覆盖率状态: no_docs / partial / complete")}
 ${item("security", "hasUserInput · hasAuth · hasApiCall 布尔信号")}
-${item("externalRefs", "关联的外部参考: name / url / desc / relevance (high/normal)")}
 
 ${hdr("示例")}
 ${item("# 自动检测类型，扫描当前项目", "", bold)}
@@ -491,84 +486,6 @@ function gitMetrics(root, file) {
   }
 }
 
-// --- external refs: map module characteristics to ecosystem references -------
-const EXTERNAL_REFS = {
-  methodology: [
-    { name: "superpowers", url: "https://github.com/obra/superpowers",
-      desc: "AI agent 软件开发方法论：spec-driven、验证门禁、行为纪律", tags: ["spec", "gate", "discipline", "security"] },
-    { name: "get-shit-done", url: "https://github.com/gsd-build/get-shit-done/tree/main",
-      desc: "轻量级元提示与上下文工程，专注上下文退化问题", tags: ["context", "spec", "architecture"] },
-    { name: "mattpocock-skills", url: "https://github.com/mattpocock/skills",
-      desc: "真实工程场景 Agent skills，非 vibe coding", tags: ["component", "engineering", "frontend"] },
-  ],
-  memory: [
-    { name: "claude-mem", url: "https://github.com/thedotmack/claude-mem",
-      desc: "跨会话持久化记忆引擎，AI 压缩 + 相似检索", tags: ["memory", "state", "context"] },
-    { name: "everything-claude-code", url: "https://github.com/affaan-m/everything-claude-code",
-      desc: "Agent harness 性能优化全集：skills、记忆、安全", tags: ["memory", "perf", "security", "organization"] },
-  ],
-  ux: [
-    { name: "ui-ux-pro-max", url: "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
-      desc: "跨平台专业 UI/UX 设计，161 推理规则 67 UI 风格", tags: ["ui", "design", "component", "frontend"] },
-  ],
-};
-
-function externalRefs(story) {
-  const refs = [];
-  const tags = new Set();
-
-  // Frontend / UI modules
-  if (story.type === "frontend" || story.type === "fullstack") {
-    tags.add("frontend"); tags.add("component"); tags.add("ui");
-  }
-  // Backend / API modules
-  if (story.type === "backend" || story.type === "fullstack") {
-    tags.add("spec"); tags.add("architecture");
-  }
-  // Security signals
-  if (story.security.hasAuth) { tags.add("security"); tags.add("gate"); tags.add("discipline"); }
-  if (story.security.hasUserInput) { tags.add("security"); }
-  // Hub modules (architecture importance)
-  if (story.metrics.importedByCount >= HUB_MODULE_IMPORT_THRESHOLD) { tags.add("architecture"); tags.add("context"); }
-  // Large modules
-  if (story.metrics.lines > LARGE_MODULE_LINE_THRESHOLD) { tags.add("engineering"); }
-  // State-related (heuristic: files named store/state/model)
-  const statePattern = /\b(store|state|model|context|memory|reducer|atom)\b/i;
-  if (story.sourceFiles.some(f => statePattern.test(f))) {
-    tags.add("state"); tags.add("memory");
-  }
-
-  for (const [category, entries] of Object.entries(EXTERNAL_REFS)) {
-    for (const entry of entries) {
-      const matchCount = entry.tags.filter(t => tags.has(t)).length;
-      if (matchCount >= EXTERNAL_REF_HIGH_RELEVANCE_MIN_MATCH) {
-        refs.push({ category, name: entry.name, url: entry.url, desc: entry.desc, relevance: "high" });
-      } else if (matchCount === 1) {
-        refs.push({ category, name: entry.name, url: entry.url, desc: entry.desc, relevance: "normal" });
-      }
-    }
-  }
-
-  // Deduplicate, prefer high relevance
-  const seen = new Map();
-  for (const r of refs) {
-    const existing = seen.get(r.name);
-    if (!existing || (r.relevance === "high" && existing.relevance !== "high")) {
-      seen.set(r.name, r);
-    }
-  }
-
-  return [...seen.values()];
-}
-
-// --- security: keyword-based signal detection ------------------------------
-function securitySignals(content, fileType) {
-  const hasUserInput = /v-model|form|input|req\.body|req\.query|req\.params|request\.form|request\.json|read_from_stdin|scanf|gets/i.test(content);
-  const hasAuth = /auth|token|jwt|session|login|logout|password|credential|oauth|passport|authenticate|guard|middleware.*auth/i.test(content);
-  const hasApiCall = /fetch\s*\(|axios|\.get\s*\(|\.post\s*\(|\.put\s*\(|\.patch\s*\(|\.delete\s*\(|request\s*\(|http\./i.test(content);
-  return { hasUserInput, hasAuth, hasApiCall };
-}
-
 // --- line count ------------------------------------------------------------
 function countLines(content) {
   if (!content) return 0;
@@ -691,12 +608,7 @@ function buildStoryCandidate(group, project, projectType) {
   // Doc: use primary file's doc status
   const doc = primary.doc;
 
-  // Assemble story object first for external refs
-  const story = { type: projectType === "fullstack" ? primary.type : projectType, security, metrics: { lines: totalLines, importedByCount: allImportedBy.length }, sourceFiles: group.map(f => f.file) };
-  const refs = externalRefs(story);
-
   return {
-    externalRefs: refs,
     storyName,
     command: `/rui doc --from-code ${project}-${storyName}`,
     storyType: "doc-from-code",

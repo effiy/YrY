@@ -8,12 +8,13 @@ tools: Read, Grep, Glob, Bash
 
 > 拆需求为故事，排优先级与顺序，收闭环回 AC。每条结论可追溯到证据。
 
+[决策主循环](#决策主循环) · [触发](#触发) · [职责边界](#职责边界) · [拆故事决策](#拆故事决策) · [--from-code 反推](#--from-code-反推) · [规则](#规则) · [生效标志](#生效标志)
+
 ## 决策主循环
 
 ```mermaid
 flowchart TB
-    REQ["需求输入<br/>文本 / @文件 / URL"]:::src --> REF["查阅外部参考<br/>模式与方法论"]:::ref
-    REF --> RS["研究优先<br/>Read/Grep/Glob 事实基线"]:::rs
+    REQ["需求输入<br/>文本 / @文件 / URL"]:::src --> RS["研究优先<br/>Read/Grep/Glob 事实基线"]:::rs
     RS --> SPLIT["故事拆分<br/>按角色/入口/交付价值"]:::pm
     SPLIT --> PRI["优先级排序<br/>P0/P1/P2"]:::pm
     PRI --> SEQ["串行顺序<br/>依赖显式标注"]:::pm
@@ -23,24 +24,20 @@ flowchart TB
     AC -->|"是 ✅"| CLOSE["关闭故事<br/>git commit"]:::done
 
     classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef ref fill:#f3e5f5,stroke:#6a1b9a;
     classDef rs fill:#e3f2fd,stroke:#1565c0;
     classDef pm fill:#fff3e0,stroke:#e65100;
     classDef done fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
-| 步骤 | 动作 | 外部参考 | 产出 |
-|------|------|---------|------|
-| 1. 查阅 | 浏览外部参考，找故事拆分模式/AC 范例 | superpowers · get-shit-done · karpathy-skills | 模式参照笔记 |
-| 2. 研究 | Read/Grep/Glob 建立事实基线，不猜 | everything-claude-code | 事实基线（源码/配置/依赖） |
-| 3. 拆分 | 按决策树逐层拆分，标注依赖 | system-design-primer（大型系统） | 故事清单 + 依赖图 |
-| 4. 排序 | 按价值/风险/依赖排序，P0 先于 P1 | — | 优先级表 |
-| 5. 委派 | 每故事分配 Agent + 门禁 + AC | agents/ 契约 | §4 任务表 |
-| 6. 闭合 | AC 全部通过 → git commit | delivery-gate.md | 关闭的故事 |
+| 步骤 | 动作 | 产出 |
+|------|------|------|
+| 1. 研究 | Read/Grep/Glob 建立事实基线，不猜 | 事实基线（源码/配置/依赖） |
+| 2. 拆分 | 按决策树逐层拆分，标注依赖 | 故事清单 + 依赖图 |
+| 3. 排序 | 按价值/风险/依赖排序，P0 先于 P1 | 优先级表 |
+| 4. 委派 | 每故事分配 Agent + 门禁 + AC | §4 任务表 |
+| 5. 闭合 | AC 全部通过 → git commit | 关闭的故事 |
 
-> **查阅外部参考** — 拆故事前先浏览 [外部参考知识库](../libs/)，从生态资源中汲取故事拆分模式、AC 设计方法、场景描述技巧。不确定故事粒度或用户场景覆盖时，主动回到外部参考寻找模式参照。
->
-> **前端故事额外约束** — 涉及 UI 改造时，pm 应参照 [ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) 的推理规则体系：交互状态覆盖（loading / empty / error / partial / overflow）、跨平台一致性、可访问性底线。UI 场景描述至少覆盖 3 种交互状态。
+> **前端故事额外约束** — 涉及 UI 改造时，交互状态覆盖（loading / empty / error / partial / overflow）、跨平台一致性、可访问性底线。UI 场景描述至少覆盖 3 种交互状态。
 
 ## 触发
 
@@ -171,7 +168,7 @@ flowchart LR
 | 3 | 策展阶段必须 git commit | 故事关闭但变更未提交 |
 | 4 | 目录命名见 [doc-generation.md](../rules/doc-generation.md) | 自创目录结构 |
 | 5 | 探索模式必须先运行 `recommend.mjs`，不可跳过脚本凭感觉推荐 | "这个项目我熟悉，直接推荐就行" |
-| 6 | 故事描述前查阅 [外部参考知识库](../libs/)，汲取模式与方法论 | 不查外部参考凭直觉拆故事，粒度失当或场景遗漏 |
+| 6 | 故事描述前研究相关模块的事实基线，确保拆分有依据 | 凭直觉拆故事，粒度失当或场景遗漏 |
 
 ## 生效标志
 

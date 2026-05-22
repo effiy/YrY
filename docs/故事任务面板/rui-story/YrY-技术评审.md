@@ -1,10 +1,10 @@
 > | v1.4.8 | 2026-05-20 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 
-[§0 设计决策与任务规划](#sec0-design) · [§1 系统架构](#sec1-architecture) · [§2 API 接口](#sec2-api) · [§3 数据模型](#sec3-data) · [§4 模块与状态](#sec4-modules) · [§7 安全约束](#sec7-security) · [§8 性能与限制](#sec8-performance) · [§9 评审清单](#sec9-checklist)
-
 > **导航**: [← YrY-使用场景](./YrY-使用场景.md) · [YrY-测试设计 →](./YrY-测试设计.md) · [YrY-安全审计 →](./YrY-安全审计.md)
 
 > **来源引用**: 从 `skills/rui-story/rui-story.mjs` + `skills/rui-story/SKILL.md` 源码反推。证据 Level B + 源码路径。
+
+[§0 设计决策与任务规划](#sec0-design) · [§1 系统架构](#sec1-architecture) · [§2 API 接口](#sec2-api) · [§3 数据模型](#sec3-data) · [§4 模块与状态](#sec4-modules) · [§7 安全约束](#sec7-security) · [§8 性能与限制](#sec8-performance) · [§9 评审清单](#sec9-checklist)
 
 ---
 
@@ -236,12 +236,12 @@ sequenceDiagram
 
 | 远端条件 | 本地条件 | 状态 |
 |---------|---------|------|
-| 无 {project}-故事任务.md | — | not_started |
-| 有故事任务，基线不完整 | — | docs_in_progress |
-| 基线齐全，无实施报告 | — | docs_done |
-| 有实施报告，无测试报告 | — | code_in_progress |
-| 有测试报告 | blocked=true | blocked |
-| 有测试报告 | 非 blocked | code_done |
+| 无 {project}-故事任务.md | — | 任务 |
+| 有故事任务，基线不完整 | — | 设计 |
+| 基线齐全，无实施报告 | — | 实施 |
+| 有实施报告，无测试报告 | — | 测试 |
+| 有测试报告，无自改进复盘 | — | 报告 |
+| 有自改进复盘 | — | 改进 |
 
 ### 3.4 类型推断规则
 
