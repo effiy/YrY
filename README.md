@@ -103,7 +103,7 @@ flowchart TD
 | `/rui doc <需求>` | 写入 | 拆需求出文档：生成 01/02/03/04，不改源码 |
 | `/rui code <name>` | 写入 | 实现故事：Gate A → 逐模块 → Gate B → 复盘 → 交付 |
 | `/rui update <name> [ctx]` | 写入 | 增量更新：T1/T2/T3 自动裁剪 |
-| `/rui yry` | 写入 | 自改进闭环：全自主扫描→诊断→实现→验证→版本升级，循环至无改进空间 |
+| `/rui yry [--depth N]` | 写入 | 自改进闭环：全自主扫描→诊断→实现→验证→版本升级，循环至无改进空间或达到深度上限（默认 3） |
 | `/rui version --up` | 写入 | 版本升级：自主判定 → 更新文件 → git commit → 合并 main → 推送 + tag |
 | `/rui version --rollback <name>` | 写入 | 版本回退：基于 git 版本链回退故事文档到历史版本（需确认） |
 | `/rui doc --from-code 需求` | 写入 | 从源码反推完整 5 文档基线到故事目录（源码只读） |

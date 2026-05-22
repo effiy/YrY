@@ -48,7 +48,7 @@ flowchart TD
 - `/rui code --from-doc <name>` — 从文档反推：只读源码补全缺失文档（实施报告/测试报告/自改进复盘），不覆盖已有
 - `/rui doc --from-code 需求` — 从源码反推：req 空时 pm 扫描推荐列表；req 有值时直接反推生成完整文档基线
 - `/rui doc --from-local <name>` — 从已有本地文档补全缺失文档基线（只读已有，生成缺失，不覆盖）
-- `/rui yry` — 自改进闭环：全自主扫描→诊断→实现→验证→版本升级，循环至无改进空间
+- `/rui yry [--depth N]` — 自改进闭环：全自主扫描→诊断→实现→验证→版本升级，循环至无改进空间或达到深度上限（默认 3）
 - `/rui version --up` — 版本升级：自主判定下一版本号 → 更新文件 → git commit → 合并到 main → 推送远端 + tag
 - `/rui version --rollback <name>` — 版本回退：基于 git 版本链回退故事文档到指定历史版本（需确认）
 
@@ -488,13 +488,16 @@ flowchart LR
 
 ## yry
 
-> 自改进闭环：全自主扫描所有故事，诊断→实现→验证→版本升级，循环至无改进空间。
+> 自改进闭环：全自主扫描所有故事，诊断→实现→验证→版本升级，循环至无改进空间或达到 `--depth` 上限。
 >
 > **每个闭环自动为涉及的故事升级版本号**（语义化版本：内容改进→补丁升级，新功能→次版本升级，架构变更→主版本升级）。
+>
+> **参数**：`/rui yry [--depth N]` — `--depth` 指定最大闭环次数，默认 3。
 
 ```mermaid
 flowchart TD
-    START["/rui yry"]:::entry --> SCAN["§1 全量扫描<br/>扫描所有故事 rui-state.json<br/>+ execution-memory.jsonl"]:::s
+    START["/rui yry [--depth N]"]:::entry --> INIT["初始化 depth 计数器<br/>max=N（默认 3）<br/>round=0"]:::s
+    INIT --> SCAN["§1 全量扫描<br/>扫描所有故事 rui-state.json<br/>+ execution-memory.jsonl"]:::s
     SCAN --> DIAG["§2 诊断排序<br/>D0-D7 模式匹配 →<br/>按优先级+影响面排序"]:::s
     DIAG --> CHECK{"有改进空间?"}
     CHECK -->|"否"| DONE["输出健康声明<br/>所有故事已达最优"]:::out
@@ -506,9 +509,10 @@ flowchart TD
     VER -->|"否"| ROLLBACK["回滚 + 记录<br/>标记 skip 避免死循环"]:::s
     BUMP --> DELIVER["§7 交付<br/>hook-log → import-docs<br/>→ wework-bot"]:::s
     ROLLBACK --> DELIVER
-    DELIVER --> LOOP{"继续循环?"}
-    LOOP -->|"是，还有改进项"| SCAN
-    LOOP -->|"否，已达最优 或 连续3轮无改进"| END["输出闭环摘要<br/>总改进数·版本变更·耗时"]:::out
+    DELIVER --> INC["round++"]:::s
+    INC --> LOOP{"继续循环?"}
+    LOOP -->|"round < max<br/>还有改进项"| SCAN
+    LOOP -->|"round >= max<br/>或已达最优<br/>或连续3轮无改进"| END["输出闭环摘要<br/>总轮数·改进数·版本变更·耗时"]:::out
 
     classDef entry fill:#fff3e0,stroke:#e65100;
     classDef s fill:#e3f2fd,stroke:#1565c0;
@@ -553,10 +557,13 @@ flowchart TD
 
 | 条件 | 说明 |
 |------|------|
+| 达到深度上限 | `round >= --depth`（默认 3），强制终止循环 |
 | 无改进空间 | 所有 D0-D7 诊断通过，无待处理提案 |
 | 连续 3 轮无效 | 连续 3 轮无实质性变更（仅格式或空操作） |
 | 用户中断 | Ctrl+C 或关闭会话 |
 | 阻断不可自愈 | 遇到 `doc-p0` / `code-p0` 等需要人工决策的阻断 |
+
+优先顺序：深度上限 > 无改进空间 > 连续无效 > 用户中断 > 阻断
 
 ### 约束
 
@@ -567,6 +574,7 @@ flowchart TD
 | 分支隔离 | 每故事自动创建/切换到 `feat/<name>` |
 | 版本强制 | 每次闭环完成必须 bump 版本号 |
 | 防死循环 | 同一改进项失败 ≥ 2 次 → skip + 记录 |
+| 深度约束 | `--depth` 指定最大闭环次数，默认 3，≤ 0 时仅扫描不执行 |
 | 无改进不 bump | 若闭环未产生实质变更，不升级版本 |
 
 **末端触发** [强制集成](#强制集成)。
