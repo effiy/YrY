@@ -29,6 +29,8 @@ const STATUS_LABELS = {
 };
 
 const FIELD_EMOJI = {
+  skill: "🤖",
+  command: "📋",
   conclusion: "🎯",
   description: "📝",
   scope: "📌",
@@ -58,6 +60,8 @@ function parseArgs() {
     noSend: false,
     retries: MAX_RETRIES,
     // Field values for structured message
+    skill: "",
+    command: "",
     conclusion: "",
     description: "",
     scope: "",
@@ -69,6 +73,8 @@ function parseArgs() {
     recovery: "",
     gate: "",
     gateResult: "",
+    stage: "",
+    fileStats: "",
   };
 
   for (const arg of args) {
@@ -99,7 +105,10 @@ function showUsage() {
   console.log("Options:");
   console.log("  --story=<name>         故事名");
   console.log("  --project=<name>       项目名（默认从 CLAUDE.md 读取）");
+  console.log("  --skill=<name>         技能标识（rui / rui-story / rui-claude / rui-bot / rui-import）");
+  console.log("  --command=<text>       执行的命令（如 /rui doc user-login）");
   console.log("  --status=<s>           状态: complete|blocked|gate-fail（默认 complete）");
+  console.log("  --stage=<text>         当前阶段");
   console.log("  --conclusion=<text>    结论");
   console.log("  --description=<text>   描述");
   console.log("  --scope=<text>         范围");
@@ -111,6 +120,7 @@ function showUsage() {
   console.log("  --recovery=<text>      恢复点（blocked 场景）");
   console.log("  --gate=<text>          门禁名称（gate-fail 场景）");
   console.log("  --gateResult=<text>    门禁结果（gate-fail 场景）");
+  console.log("  --fileStats=<text>     变更文件统计");
   console.log("  --content=<text>       直接指定消息正文（覆盖字段构建）");
   console.log("  --no-send              仅写日志，不发送 HTTP");
   console.log("  --retries=<N>          重试次数（默认 3）");
@@ -156,39 +166,62 @@ function loadConfig(projectRoot) {
 
 // --- message builder ---
 function buildMessage(opts, projectName) {
+  // When raw content is provided, still enforce skill + command prefix
   if (opts.content) {
-    const msg = `【${projectName}】\n${opts.content}`;
+    const header = `【${projectName}】`;
+    const prefixLines = [];
+    if (opts.skill) prefixLines.push(`${FIELD_EMOJI.skill} 技能: ${opts.skill}`);
+    if (opts.command) prefixLines.push(`${FIELD_EMOJI.command} 命令: ${opts.command}`);
+    const prefix = prefixLines.length > 0 ? prefixLines.join("\n") + "\n" : "";
+    const msg = `${header}\n${prefix}${opts.content}`;
     return msg.length > MAX_MSG_LENGTH ? msg.slice(0, MAX_MSG_LENGTH - 3) + "..." : msg;
   }
 
   const lines = [`【${projectName}】`];
   const emoji = STATUS_EMOJI[opts.status] || STATUS_EMOJI.complete;
   const label = STATUS_LABELS[opts.status] || STATUS_LABELS.complete;
+  const storyCtx = opts.story ? `故事 ${opts.story}` : "当前项目";
+  const dateStr = new Date().toISOString().slice(0, 10);
 
-  lines.push(`${emoji} ${label}`);
+  // Constraint #7: skill + command must be first two lines after project header
+  lines.push(`${FIELD_EMOJI.skill} 技能: ${opts.skill || "rui"}`);
+  lines.push(`${FIELD_EMOJI.command} 命令: ${opts.command || "—"}`);
 
-  // Common fields
-  if (opts.conclusion)   lines.push(`${FIELD_EMOJI.conclusion} 结论: ${opts.conclusion}`);
-  if (opts.description)  lines.push(`${FIELD_EMOJI.description} 描述: ${opts.description}`);
-  if (opts.scope)        lines.push(`${FIELD_EMOJI.scope} 范围: ${opts.scope}`);
+  // All required fields with smart defaults — never bare
+  const conclusion = opts.conclusion || `${label} ${storyCtx}${opts.stage ? ` ${opts.stage} 阶段` : ""}`;
+  const description = opts.description || `${storyCtx} 管线${label}`;
+  const scope = opts.scope || (opts.story ? `docs/故事任务面板/${opts.story}/` : "—");
+  const nextStep = opts.nextStep || (opts.status === "blocked" ? "修复后重跑同命令续跑" : "继续下一阶段");
+  const impact = opts.impact || (opts.story ? `docs/故事任务面板/${opts.story}/` : "—");
+  const evidence = opts.evidence || (opts.story ? ".memory/rui-state.json" : "—");
+  const session = opts.session || dateStr;
+
+  lines.push(`${FIELD_EMOJI.conclusion} 结论: ${conclusion}`);
+  lines.push(`${FIELD_EMOJI.description} 描述: ${description}`);
+  lines.push(`${FIELD_EMOJI.scope} 范围: ${scope}`);
 
   // Scenario-specific fields
-  if (opts.status === "complete" || !opts.status || opts.status === "complete") {
-    if (opts.nextStep) lines.push(`${FIELD_EMOJI.nextStep} 下一步: ${opts.nextStep}`);
-  }
   if (opts.status === "blocked") {
-    if (opts.reason)   lines.push(`${FIELD_EMOJI.reason} 原因: ${opts.reason}`);
-    if (opts.recovery) lines.push(`${FIELD_EMOJI.recovery} 恢复点: ${opts.recovery}`);
+    lines.push(`${FIELD_EMOJI.reason} 原因: ${opts.reason || "见 rui-state.json"}`);
+    lines.push(`${FIELD_EMOJI.recovery} 恢复点: ${opts.recovery || opts.stage || opts.story || "—"}`);
   }
   if (opts.status === "gate-fail") {
-    if (opts.gate)       lines.push(`${FIELD_EMOJI.gate} 门禁: ${opts.gate}`);
-    if (opts.gateResult) lines.push(`${FIELD_EMOJI.result} 结果: ${opts.gateResult}`);
+    lines.push(`${FIELD_EMOJI.gate} 门禁: ${opts.gate || "—"}`);
+    lines.push(`${FIELD_EMOJI.result} 结果: ${opts.gateResult || "—"}`);
   }
 
-  // More common fields
-  if (opts.impact)   lines.push(`${FIELD_EMOJI.impact} 影响: ${opts.impact}`);
-  if (opts.evidence) lines.push(`${FIELD_EMOJI.evidence} 证据: ${opts.evidence}`);
-  if (opts.session)  lines.push(`${FIELD_EMOJI.session} 会话: ${opts.session}`);
+  lines.push(`${FIELD_EMOJI.nextStep} 下一步: ${nextStep}`);
+  lines.push(`${FIELD_EMOJI.impact} 影响: ${impact}`);
+  lines.push(`${FIELD_EMOJI.evidence} 证据: ${evidence}`);
+  lines.push(`${FIELD_EMOJI.session} 会话: ${session}`);
+
+  // Detail section with file stats
+  if (opts.fileStats) {
+    lines.push("");
+    lines.push("———");
+    lines.push("");
+    lines.push(`变更统计: ${opts.fileStats}`);
+  }
 
   const msg = lines.join("\n");
   return msg.length > MAX_MSG_LENGTH ? msg.slice(0, MAX_MSG_LENGTH - 3) + "..." : msg;

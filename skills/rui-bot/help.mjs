@@ -73,6 +73,8 @@ ${item("--skill=<name>", "🤖 技能标识: rui | rui-story | rui-claude | rui-
 ${item("--command=<text>", "📋 命令: 用户执行的具体命令（含参数）", cyan)}
 
 ${item("--status=<s>", "通知类型: complete | blocked | gate-fail（默认 complete）", cyan)}
+${item("--stage=<text>", "当前管线阶段", yellow)}
+${item("--fileStats=<text>", "变更文件统计（追加到消息明细段）", yellow)}
 ${item("--conclusion=<text>", "🎯 结论", yellow)}
 ${item("--description=<text>", "📝 描述", yellow)}
 ${item("--scope=<text>", "📌 范围", yellow)}
