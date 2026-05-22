@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// import-docs sync — scan + filter + upload local documents to remote API
-// Triggered by: rui delivery gate step ②, or manual: node skills/import-docs/sync.mjs
+// rui-import sync — scan + filter + upload local documents to remote API
+// Triggered by: rui delivery gate step ②, or manual: node skills/rui-import/sync.mjs
 
 import { readFile, readdir, stat, mkdir, writeFile } from "node:fs/promises";
 import { join, relative, sep, dirname, resolve, basename } from "node:path";
@@ -51,7 +51,7 @@ function parseArgs() {
   return { scanRoot, scanDir, ...opts };
 }
 
-const SKILL_NAME = "import-docs";
+const SKILL_NAME = "rui-import";
 
 function findPluginHelpPath() {
   const pluginRoot = join(homedir(), ".claude/plugins/cache/yry/yry");
@@ -81,7 +81,7 @@ function showHelp() {
 }
 
 function fallbackHelp() {
-  console.log("import-docs sync — 文档批量同步到远端");
+  console.log("rui-import sync — 文档批量同步到远端");
   console.log("");
   console.log("参数 (key=value):");
   console.log("  workspace=true          项目根全量扫描 + 上传");
@@ -97,7 +97,7 @@ function fallbackHelp() {
   console.log("  API_X_TOKEN             鉴权令牌 (缺失时静默降级)");
   console.log("  IMPORT_DOCS_API_URL     覆盖默认 API 地址");
   console.log("");
-  console.log("详细: ~/.claude/plugins/cache/yry/yry/<version>/skills/import-docs/help.mjs");
+  console.log("详细: ~/.claude/plugins/cache/yry/yry/<version>/skills/rui-import/help.mjs");
 }
 
 // --- project root ----------------------------------------------------------
@@ -323,29 +323,29 @@ async function pullFromRemote(apiUrl, localDir, projectRoot) {
   const strategy = resolvePullFilter(localDir, projectRoot);
   if (!strategy) {
     const relDir = relative(projectRoot, localDir).split(sep).join("/");
-    console.error(`[import-docs] pull mode: unsupported dir=${relDir}`);
+    console.error(`[rui-import] pull mode: unsupported dir=${relDir}`);
     return { written: 0, failed: 0, reason: `不支持的 pull 目录: ${relDir}` };
   }
 
   const label = strategy.type === "story" ? `story=${strategy.storyName}` : ".claude/";
-  console.error(`[import-docs] pull mode: ${label}`);
+  console.error(`[rui-import] pull mode: ${label}`);
 
   let sessions;
   try {
     sessions = await querySessionsFull(apiUrl);
   } catch (err) {
-    console.error(`[import-docs] failed to query remote sessions: ${err.message}`);
+    console.error(`[rui-import] failed to query remote sessions: ${err.message}`);
     return { written: 0, failed: 0, reason: `远端查询失败: ${err.message}` };
   }
 
   const matched = sessions.filter(strategy.filter);
 
   if (matched.length === 0) {
-    console.error(`[import-docs] no remote files for: ${label}`);
+    console.error(`[rui-import] no remote files for: ${label}`);
     return { written: 0, failed: 0, reason: "远端无匹配文件" };
   }
 
-  console.error(`[import-docs] found ${matched.length} remote files for ${label}`);
+  console.error(`[rui-import] found ${matched.length} remote files for ${label}`);
 
   let written = 0, failed = 0;
   const errors = [];
@@ -367,20 +367,20 @@ async function pullFromRemote(apiUrl, localDir, projectRoot) {
 
       await writeFile(localPath, content, "utf-8");
       written++;
-      console.error(`[import-docs] pulled: ${remotePath} → ${relative(projectRoot, localPath)}`);
+      console.error(`[rui-import] pulled: ${remotePath} → ${relative(projectRoot, localPath)}`);
     } catch (err) {
       failed++;
       errors.push({ remotePath, error: err.message });
-      console.error(`[import-docs] FAILED pull: ${remotePath} — ${err.message}`);
+      console.error(`[rui-import] FAILED pull: ${remotePath} — ${err.message}`);
     }
   }
 
-  console.error(`[import-docs] pull done — written: ${written}, failed: ${failed}`);
+  console.error(`[rui-import] pull done — written: ${written}, failed: ${failed}`);
   return { written, failed, type: strategy.type, errors };
 }
 
 async function recommendPullMode(apiUrl) {
-  console.error("# import-docs pull 模式 — 远端可同步故事\n");
+  console.error("# rui-import pull 模式 — 远端可同步故事\n");
 
   if (!API_X_TOKEN) {
     console.error("⚠️  API_X_TOKEN: 缺失 — 无法查询远端");
@@ -417,7 +417,7 @@ async function recommendPullMode(apiUrl) {
 
   console.error("\n## 推荐命令\n");
   for (const name of storyMap.keys()) {
-    console.error(`   node skills/import-docs/sync.mjs dir=docs/故事任务面板/${name}/ mode=pull`);
+    console.error(`   node skills/rui-import/sync.mjs dir=docs/故事任务面板/${name}/ mode=pull`);
   }
 }
 
@@ -430,12 +430,12 @@ function hasArgs(opts) {
 async function recommendMode(root, workspaceName, opts, apiUrl) {
   const files = await scanFiles(root, opts.exts, opts.exclude);
 
-  console.log("# import-docs 状态检测与推荐\n");
+  console.log("# rui-import 状态检测与推荐\n");
 
   // API_X_TOKEN 检测
   if (!API_X_TOKEN) {
     console.log("⚠️  API_X_TOKEN: 缺失");
-    console.log("   → 推荐: 配置 token 后执行 `/import-docs workspace=true` 全量导入\n");
+    console.log("   → 推荐: 配置 token 后执行 `/rui-import workspace=true` 全量导入\n");
   } else {
     console.log("✅ API_X_TOKEN: 已配置");
   }
@@ -467,9 +467,9 @@ async function recommendMode(root, workspaceName, opts, apiUrl) {
   if (!API_X_TOKEN) {
     console.log("1. [凭据缺失] 设置 API_X_TOKEN 环境变量");
   }
-  console.log("2. [全量导入] `/import-docs workspace=true` 扫描并上传全部文件");
-  console.log("3. [增量同步] `/import-docs workspace=true exclude=...` 跳过指定目录");
-  console.log("4. [预览检查] `/import-docs workspace=true mode=list` 仅列出不上传");
+  console.log("2. [全量导入] `/rui-import workspace=true` 扫描并上传全部文件");
+  console.log("3. [增量同步] `/rui-import workspace=true exclude=...` 跳过指定目录");
+  console.log("4. [预览检查] `/rui-import workspace=true mode=list` 仅列出不上传");
   console.log("5. [定期巡检] 定期运行空输入检查 token / 远端可达性 / 文件差异");
 }
 
@@ -485,7 +485,7 @@ async function main() {
       : findProjectRoot(process.cwd());
 
   if (!existsSync(root)) {
-    console.error(`[import-docs] scan root not found: ${root}`);
+    console.error(`[rui-import] scan root not found: ${root}`);
     process.exit(0);
   }
 
@@ -494,7 +494,7 @@ async function main() {
   // 空输入 → 默认 workspace 全量同步；mode=pull 无 dir 时推荐
   if (!hasArgs(opts)) {
     if (opts.mode === "pull") {
-      console.error(`[import-docs] scan root: ${root} (pull recommend mode)`);
+      console.error(`[rui-import] scan root: ${root} (pull recommend mode)`);
       await recommendPullMode(apiUrl);
       return;
     }
@@ -504,30 +504,30 @@ async function main() {
   // Pull mode: remote → local download
   if (opts.mode === "pull") {
     if (!API_X_TOKEN) {
-      console.error("[import-docs] no API_X_TOKEN — no-token 降级，跳过 pull");
+      console.error("[rui-import] no API_X_TOKEN — no-token 降级，跳过 pull");
       return;
     }
-    console.error(`[import-docs] pull mode: dir=${root}`);
+    console.error(`[rui-import] pull mode: dir=${root}`);
     const result = await pullFromRemote(apiUrl, root, findProjectRoot(process.cwd()));
     console.error(JSON.stringify(result));
     process.exit(result.failed > 0 ? 1 : 0);
   }
 
-  console.error(`[import-docs] scan root: ${root}`);
-  console.error(`[import-docs] workspace: ${workspaceName}`);
+  console.error(`[rui-import] scan root: ${root}`);
+  console.error(`[rui-import] workspace: ${workspaceName}`);
 
   // 硬约束：一级目录标签只能是项目目录名或"故事任务面板"
   const allowedLabels = new Set([workspaceName, "故事任务面板"]);
   if (opts.prefix.length > 0) {
     const firstLabel = opts.prefix[0];
     if (!allowedLabels.has(firstLabel)) {
-      console.error(`[import-docs] ERROR: prefix 一级标签 "${firstLabel}" 不允许，只能是 "${workspaceName}" 或 "故事任务面板"`);
+      console.error(`[rui-import] ERROR: prefix 一级标签 "${firstLabel}" 不允许，只能是 "${workspaceName}" 或 "故事任务面板"`);
       process.exit(1);
     }
   }
 
   const files = await scanFiles(root, opts.exts, opts.exclude);
-  console.error(`[import-docs] found ${files.length} files`);
+  console.error(`[rui-import] found ${files.length} files`);
 
   // List mode
   if (opts.mode === "list") {
@@ -535,35 +535,35 @@ async function main() {
       const remotePath = resolveRemotePath(f, root, workspaceName, opts.prefix);
       console.log(`${f} → ${remotePath}`);
     }
-    console.error(`\n[import-docs] ${files.length} files (list mode, no upload)`);
+    console.error(`\n[rui-import] ${files.length} files (list mode, no upload)`);
     return;
   }
 
   // Import mode
   if (!API_X_TOKEN) {
-    console.error("[import-docs] no API_X_TOKEN — no-token 降级，跳过上传");
+    console.error("[rui-import] no API_X_TOKEN — no-token 降级，跳过上传");
     return;
   }
 
-  console.error("[import-docs] querying existing sessions...");
+  console.error("[rui-import] querying existing sessions...");
   let existingPaths;
   try {
     existingPaths = await querySessions(apiUrl);
-    console.error(`[import-docs] existing sessions: ${existingPaths.size}`);
+    console.error(`[rui-import] existing sessions: ${existingPaths.size}`);
   } catch (err) {
-    console.error(`[import-docs] failed to query sessions: ${err.message}`);
+    console.error(`[rui-import] failed to query sessions: ${err.message}`);
     existingPaths = new Set();
   }
 
-  console.error(`[import-docs] uploading ${files.length} files (concurrency=${CONCURRENCY})...`);
+  console.error(`[rui-import] uploading ${files.length} files (concurrency=${CONCURRENCY})...`);
   const result = await uploadAll(files, apiUrl, existingPaths, root, workspaceName, opts.prefix);
 
   // Summary
   const { created, overwritten, failed, errors } = result;
-  console.error(`[import-docs] done — created: ${created}, overwritten: ${overwritten}, failed: ${failed}`);
+  console.error(`[rui-import] done — created: ${created}, overwritten: ${overwritten}, failed: ${failed}`);
   if (errors.length > 0) {
     for (const e of errors) {
-      console.error(`[import-docs] FAILED: ${e.file} → ${e.error}`);
+      console.error(`[rui-import] FAILED: ${e.file} → ${e.error}`);
     }
   }
 
@@ -571,6 +571,6 @@ async function main() {
 }
 
 main().catch(err => {
-  console.error(`[import-docs] fatal: ${err.message}`);
+  console.error(`[rui-import] fatal: ${err.message}`);
   process.exit(0); // 不阻断管线
 });

@@ -90,7 +90,7 @@
 | TC-N01 | API_X_TOKEN 已配置，远端 API 可达，有 ≥1 个故事 | 执行 `/rui-story` | stdout 含"故事任务面板 · 状态概览"、6 种状态统计、最近活动列表 | FP1, FP2, FP4 | P0 |
 | TC-N02 | API_X_TOKEN 已配置，远端有 ≥1 个故事 | 执行 `/rui-story list` | stdout 含"进度全景"表格，含 Story/Status/Files/Last Modified/Type/Branch 6 列 | FP1, FP2, FP3, FP5 | P0 |
 | TC-N03 | API_X_TOKEN 已配置，远端存在 "rui-story" 故事 | 执行 `/rui-story show rui-story` | stdout 含详述卡：远端路径、类型、文件清单、git 分支、元数据 | FP1, FP2, FP3, FP6 | P0 |
-| TC-N04 | 已指定故事名 | 执行 `/rui-story sync <name>` | import-docs mode=pull 被调用 | FP9 | P0 |
+| TC-N04 | 已指定故事名 | 执行 `/rui-story sync <name>` | rui-import mode=pull 被调用 | FP9 | P0 |
 | TC-N05 | 故事目录含非 YrY- 前缀文件 | 执行 `/rui-story clear rui-story` 并确认 | 非 YrY- 文件被删除，YrY- 文件保留 | FP10 | P0 |
 | TC-N06 | 故事目录存在 | 执行 `/rui-story remove test-story` 并确认 | 整个目录被删除 | FP11 | P1 |
 | TC-N07 | 远端有可同步故事 | 执行 `/rui-story recommend` | stdout 含故事名列表 + 推荐 sync 命令 | FP7 | P1 |

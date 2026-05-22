@@ -1,18 +1,18 @@
 ---
-name: import-docs
+name: rui-import
 description: |
   Batch synchronize local documents to the remote document API. Auto-invoked by
   rui at the end of every pipeline — mandatory step, not user-facing unless
-  called directly. Executable: node skills/import-docs/sync.mjs [options].
+  called directly. Executable: node skills/rui-import/sync.mjs [options].
 user_invocable: true
 lifecycle: default-pipeline
 ---
 
-# import-docs
+# rui-import
 
-> **--help / -h**：执行 `node skills/import-docs/help.mjs` 输出完整帮助（含场景示例）。用户输入 `/import-docs --help` 或 `/import-docs -h` 或 `/import-docs help` 时，跳过逻辑，直接运行脚本。
+> **--help / -h**：执行 `node skills/rui-import/help.mjs` 输出完整帮助（含场景示例）。用户输入 `/rui-import --help` 或 `/rui-import -h` 或 `/rui-import help` 时，跳过逻辑，直接运行脚本。
 >
-> **可执行入口**：`node skills/import-docs/sync.mjs [options]` — 扫描 + 上传一体化。`--help` 查看选项。rui 交付管线步骤 ② 通过此脚本触发。
+> **可执行入口**：`node skills/rui-import/sync.mjs [options]` — 扫描 + 上传一体化。`--help` 查看选项。rui 交付管线步骤 ② 通过此脚本触发。
 
 将 workspace 内文档批量同步到远端 API。行为规约（扫描/过滤/路径映射/API 契约）见下文，脚本是本规约的可执行实现。
 
@@ -85,11 +85,11 @@ flowchart TD
 | 路径规整 | 所有分隔符 → `/`，所有空白字符 → `_` |
 | 故事面板路径 | 路径以 `docs/故事任务面板/` 开头时，远端 = `故事任务面板/<相对路径>`，一级标签 = 故事任务面板，去掉 `docs/` |
 | workspace 标签 | 其他路径以项目根目录名（即 `workspace 名`）为一级标签 |
-| **硬约束** | 一级目录标签只允许 **项目目录名称** 或 **故事任务面板**，禁止其他任何值。此约束适用于**所有调用**（rui 自动触发 · 手动 `/import-docs` · 脚本直接调用）。`prefix` 参数不得绕过，`resolveRemotePath` 结构化保证 |
+| **硬约束** | 一级目录标签只允许 **项目目录名称** 或 **故事任务面板**，禁止其他任何值。此约束适用于**所有调用**（rui 自动触发 · 手动 `/rui-import` · 脚本直接调用）。`prefix` 参数不得绕过，`resolveRemotePath` 结构化保证 |
 
 ## rui 强制触发
 
-> 每次使用 rui 技能都必须触发 import-docs，这是管线完整性的硬性要求。
+> 每次使用 rui 技能都必须触发 rui-import，这是管线完整性的硬性要求。
 
 ```mermaid
 flowchart LR
@@ -258,7 +258,7 @@ flowchart TD
 flowchart LR
     PIPE["管线完成"]:::s --> CHK{"API_X_TOKEN?"}
     CHK -->|"缺失"| SKIP["静默跳过<br/>不阻断"]:::warn
-    CHK -->|"存在"| RUN["node skills/import-docs/sync.mjs<br/>workspace 全量同步"]:::op
+    CHK -->|"存在"| RUN["node skills/rui-import/sync.mjs<br/>workspace 全量同步"]:::op
     RUN --> MARK["写 docs_synced 标记"]:::out
 
     classDef s fill:#e3f2fd,stroke:#1565c0;
@@ -269,8 +269,8 @@ flowchart LR
 
 | 触发 | 动作 | 降级 |
 |------|------|------|
-| rui 末端三步管线（步骤 ②） | `node skills/import-docs/sync.mjs` | `API_X_TOKEN` 缺失 → 静默跳过；网络失败 → 记录不阻断 |
-| 直接调用 | `node skills/import-docs/sync.mjs workspace=true` 等 | 同上 |
+| rui 末端三步管线（步骤 ②） | `node skills/rui-import/sync.mjs` | `API_X_TOKEN` 缺失 → 静默跳过；网络失败 → 记录不阻断 |
+| 直接调用 | `node skills/rui-import/sync.mjs workspace=true` 等 | 同上 |
 
 ## 空输入
 
@@ -284,7 +284,7 @@ flowchart TD
     classDef out fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
-空输入默认为 `workspace=true` 全量同步，等价于 `/import-docs workspace=true`。
+空输入默认为 `workspace=true` 全量同步，等价于 `/rui-import workspace=true`。
 
 ## 生效标志
 

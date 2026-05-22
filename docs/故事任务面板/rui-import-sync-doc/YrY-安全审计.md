@@ -2,7 +2,7 @@
 
 > **导航**: [← YrY-技术评审](./YrY-技术评审.md) · [→ YrY-实施报告](./YrY-实施报告.md)
 
-> **来源引用**: `/rui doc --from-code rui-import-sync-doc` · 源文件 `skills/import-docs/sync.mjs`
+> **来源引用**: `/rui doc --from-code rui-import-sync-doc` · 源文件 `skills/rui-import/sync.mjs`
 > **证据等级**: B（从源码反推，附源码路径）
 > **审计独立性**: 本审计由 security agent 独立执行，不依赖 coder 自评
 
@@ -150,4 +150,4 @@ flowchart LR
 
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
-> | 2026-05-22 | 初始生成 — doc --from-code | /rui doc --from-code rui-import-sync-doc | skills/import-docs/sync.mjs |
+> | 2026-05-22 | 初始生成 — doc --from-code | /rui doc --from-code rui-import-sync-doc | skills/rui-import/sync.mjs |

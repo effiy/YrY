@@ -70,7 +70,7 @@ flowchart LR
 flowchart LR
     TRIGGER["/rui-claude sync"]:::src --> CHECK{"确认用户意图?"}
     CHECK -->|"否"| ABORT["中止"]:::abort
-    CHECK -->|"是"| PULL["node skills/import-docs/sync.mjs<br/>dir=.claude/ mode=pull<br/>远端 API → 逐文件覆盖本地"]:::op
+    CHECK -->|"是"| PULL["node skills/rui-import/sync.mjs<br/>dir=.claude/ mode=pull<br/>远端 API → 逐文件覆盖本地"]:::op
     PULL --> DONE["完成<br/>自动记录 history"]:::done
 
     classDef src fill:#e8f5e9,stroke:#2e7d32;
@@ -84,7 +84,7 @@ flowchart LR
 | 数据源 | 远端 API（`api.effiy.cn`），查询 sessions 集合中 `tags[0]=<workspace> && tags[1]=.claude` 的记录 |
 | 行为 | 覆盖式更新，逐文件从远端 pull 覆盖本地 `.claude/`，保留嵌套目录结构 |
 | 前置条件 | `API_X_TOKEN` 环境变量已配置 |
-| 委托 | 完全委托 `import-docs`（`dir=.claude/ mode=pull`），不自行实现同步逻辑 |
+| 委托 | 完全委托 `rui-import`（`dir=.claude/ mode=pull`），不自行实现同步逻辑 |
 | 完成后 | 自动记录 history |
 
 ## retro — 健康度分析

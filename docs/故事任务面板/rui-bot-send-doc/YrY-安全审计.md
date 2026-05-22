@@ -59,4 +59,4 @@
 
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
-> | 2026-05-22 | 初始生成 | /rui doc --from-code rui-bot-send-doc | skills/wework-bot/send.mjs |
+> | 2026-05-22 | 初始生成 | /rui doc --from-code rui-bot-send-doc | skills/rui-bot/send.mjs |

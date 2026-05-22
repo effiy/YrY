@@ -113,7 +113,7 @@ flowchart LR
 7. **产出内聚** — 关键产出限定在 `docs/故事任务面板/<name>/`
 8. **公式驱动** — 文档由 [formulas.md](./formulas.md) 规约，故事任务+使用场景为问题/用户空间基线，技术评审/测试设计/安全审计为解决方案空间，实施报告/测试报告/自改进复盘为验证与改进空间
 9. **知识沉淀** — 写入 `{project}-10-交互日志.md` + `.memory/execution-memory.jsonl` + `.memory/rui-state.json`；提案写入 `.improvement/proposals.jsonl`
-10. **交付强制** — 三步按序触发（hook-log → import-docs → wework-bot），详见 [强制集成](#强制集成)
+10. **交付强制** — 三步按序触发（hook-log → rui-import → rui-bot），详见 [强制集成](#强制集成)
 11. **表达优先** — 文档内容必须 图 → 结构化文本 → 表，架构/流程/关系优先 mermaid，不可降级
 
 ## 故事文档
@@ -181,7 +181,7 @@ flowchart TD
 ### 4. setup — 机械搭建
 
 - 创建 `docs/故事任务面板/`
-- 生成 `.claude/skills/wework-bot/config.json`（schema 见 [wework-bot SKILL.md](../wework-bot/SKILL.md#内置配置)）
+- 生成 `.claude/skills/rui-bot/config.json`（schema 见 [rui-bot SKILL.md](../rui-bot/SKILL.md#内置配置)）
 - 写入 `docs/故事任务面板/.init-memory.json`
 
 ### 5. verify — 5 项就绪检查
@@ -192,17 +192,17 @@ flowchart TD
 - README.md 含项目名
 - README.md 含 `## 领域语言` 标题 + ≥3 个术语定义
 - `docs/故事任务面板/` 目录存在
-- `.claude/skills/wework-bot/config.json` 存在
+- `.claude/skills/rui-bot/config.json` 存在
 
 ### 6. trigger
 
-验证通过后触发 import-docs（workspace 全量）+ wework-bot 通知。缺 token 跳过，网络失败告警不阻断。
+验证通过后触发 rui-import（workspace 全量）+ rui-bot 通知。缺 token 跳过，网络失败告警不阻断。
 
 ### 产物
 
 - `CLAUDE.md` — `rui:project-*` 标记内全量重生，段外保留
 - `README.md` — 全量重生，领域语言段重复运行时增量补充
-- `.claude/skills/wework-bot/config.json` — 每次覆盖
+- `.claude/skills/rui-bot/config.json` — 每次覆盖
 - `docs/故事任务面板/.init-memory.json` — 每次覆盖
 
 ## doc
@@ -369,7 +369,7 @@ flowchart TD
 | 4 | 测试设计文档生成 | FP6 | tester 负责，Gate A 交接信令 |
 | 5 | 安全审计文档生成 | FP7 | security 负责，独立审计 |
 | 6 | 分支隔离门禁 | FP8 | 与 code 阶段同门禁 |
-| 7 | 末端交付三步 | — | hook-log → import-docs → wework-bot |
+| 7 | 末端交付三步 | — | hook-log → rui-import → rui-bot |
 
 #### 范围外
 
@@ -378,7 +378,7 @@ flowchart TD
 | 1 | 源码修改 | 源码变更是 code 阶段的职责 | 使用 `/rui code <name>` |
 | 2 | 实施报告/测试报告/自改进复盘 | 属于 code 阶段产出 | 使用 `/rui code <name>` |
 | 3 | git 分支创建与切换 | 由用户或管线在执行写入前操作 | `git checkout -b feat/<name>` |
-| 4 | 文档同步到远端 | 属于交付三步中的 import-docs | 末端自动触发 |
+| 4 | 文档同步到远端 | 属于交付三步中的 rui-import | 末端自动触发 |
 | 5 | 已有文档的增量更新 | doc 是新建基线，增量用 update | 使用 `/rui update <name>` |
 | 6 | 故事进度查询 | 属于 rui-story 面板管理 | 使用 `/rui-story` 或 `/rui-story list` |
 
@@ -395,7 +395,7 @@ flowchart TD
 | AC5 | 技术评审完成 | security 执行安全审计 | 生成安全审计文档，威胁建模覆盖全部信任边界 | Gate A |
 | AC6 | 当前分支非 `feat/<name>` | 管线检查分支隔离 | 阻断写入，提示用户创建 `feat/<name>` 从 main 拉出 | Gate A |
 | AC7 | 当前分支为 `feat/<name>` | 管线写入文档 | 直接写入全部文档到 `docs/故事任务面板/<name>/` | Gate A |
-| AC8 | 文档基线全部生成完成 | 管线触发末端交付 | hook-log → import-docs → wework-bot 三步按序执行 | Gate B |
+| AC8 | 文档基线全部生成完成 | 管线触发末端交付 | hook-log → rui-import → rui-bot 三步按序执行 | Gate B |
 | AC9 | 需求包含多个故事（故事列表 ≥ 2） | pm 拆分后按优先级排序 | 逐故事串行：故事 1 全部文档完成 → 故事 2 全部文档完成 → ... | Gate A |
 | AC10 | 需求无法解析（模糊、矛盾、信息不足） | pm 尝试解析 | 阻断 `no-parse`，提示用户补充信息，不生成空文档 | Gate A |
 
@@ -513,7 +513,7 @@ flowchart TD
     VERIFY --> VER{"通过?"}
     VER -->|"是"| BUMP["§6 版本升级<br/>按变更类型自动<br/>升级故事版本号"]:::s
     VER -->|"否"| ROLLBACK["回滚 + 记录<br/>标记 skip 避免死循环"]:::s
-    BUMP --> DELIVER["§7 交付<br/>hook-log → import-docs<br/>→ wework-bot"]:::s
+    BUMP --> DELIVER["§7 交付<br/>hook-log → rui-import<br/>→ rui-bot"]:::s
     ROLLBACK --> DELIVER
     DELIVER --> INC["round++"]:::s
     INC --> LOOP{"继续循环?"}
@@ -614,10 +614,13 @@ flowchart LR
     DECIDE -->|"PATCH<br/>措辞/格式/修复"| PATCH["bump PATCH<br/>1.7.0 → 1.7.1"]:::op
     DECIDE -->|"MINOR<br/>新功能/新命令"| MINOR["bump MINOR<br/>1.7.0 → 1.8.0"]:::op
     DECIDE -->|"MAJOR<br/>架构变更/破坏性"| MAJOR["bump MAJOR<br/>1.7.0 → 2.0.0"]:::op
-    PATCH --> UPDATE["更新 plugin.json<br/>更新 CLAUDE.md<br/>更新 README.md"]:::op
+    PATCH --> UPDATE["§4 更新版本文件<br/>plugin.json · CLAUDE.md<br/>README.md"]:::op
     MINOR --> UPDATE
     MAJOR --> UPDATE
-    UPDATE --> COMMIT["git add + git commit<br/>含版本号 + 变更摘要"]:::op
+    UPDATE --> HELP["§4a 更新 help<br/>扫描 skills/*/help.mjs<br/>修正过时引用"]:::op
+    HELP --> README["§4b 更新 README<br/>校验技能表 · 目录树<br/>命令文档 · 领域语言"]:::op
+    README --> DOCS["§4c 更新关联文档<br/>扫描 故事任务面板/<br/>修正过时引用"]:::op
+    DOCS --> COMMIT["git add + git commit<br/>含版本号 + 变更摘要"]:::op
     COMMIT --> MERGE["合并到 main<br/>git checkout main && git merge"]:::op
     MERGE --> PUSH["git push origin main"]:::op
     PUSH --> TAG["git tag vX.Y.Z<br/>git push --tags"]:::op
@@ -645,12 +648,30 @@ flowchart LR
 | §1 分支准备 | 检查当前分支，非 main 时 stash → checkout main → stash pop | 确保在 main 上操作 |
 | §2 分析变更 | `git diff origin/main..HEAD` + `git log` 检查变更范围 + 故事版本记录 | 判定变更类型 |
 | §3 判定版本 | 按变更信号决定 PATCH / MINOR / MAJOR | 新版本号 > 旧版本号 |
-| §4 更新文件 | `plugin.json` version + `CLAUDE.md` version + `README.md` version | 三者同步 |
+| §4 更新版本文件 | `plugin.json` version + `CLAUDE.md` version + `README.md` version | 三者同步 |
+| §4a 更新 help | 扫描 `skills/*/help.mjs`，修正过时技能名/路径/版本引用 | 确保 help 输出与项目现状一致 |
+| §4b 更新 README | 校验技能表 · 目录树 · 命令文档 · 领域语言是否与项目现状一致 | 版本号之外的结构性更新 |
+| §4c 更新关联文档 | 扫描 `docs/故事任务面板/`，修正过时引用（技能名/路径/命令） | 故事文档与项目现状同步 |
 | §5 git commit | `git add` + `git commit -m "chore: bump version to X.Y.Z"` | 含变更摘要 |
 | §6 合并 main | `git checkout main && git merge --ff-only <source>` | fast-forward 合入 |
 | §7 推送 | `git push origin main && git push --tags` | 含版本 tag |
 | §8 故事版本同步 | 更新涉及的故事 rui-state.json version_history | 记录此次项目版本变更 |
 | §9 输出摘要 | 旧版本 → 新版本 / 变更类型 / commit hash / tag | 终端输出 |
+
+### 文档自动更新 (§4a–§4c)
+
+> 版本升级后，用户可见文档必须反映项目现状。以下三步在 §4 版本号同步后执行，确保 help 输出、README、故事文档无过时引用。
+
+| 步骤 | 扫描范围 | 检查内容 | 修正示例 |
+|------|---------|---------|---------|
+| §4a 更新 help | `skills/*/help.mjs`（6 个） | 技能名、命令路径、版本引用是否过时 | `skills/wework-bot/` → `skills/rui-bot/` |
+| §4b 更新 README | `README.md` | 技能表、目录树、命令文档、领域语言、管线图是否与项目现状一致 | 目录树新增/删除/重命名条目 |
+| §4c 更新关联文档 | `docs/故事任务面板/` | 故事文档中的技能名、命令路径、文件路径引用是否过时 | `node skills/import-docs/sync.mjs` → `node skills/rui-import/sync.mjs` |
+
+**执行原则：**
+- 不重写文档内容，仅修正过时引用（技能名、路径、命令）
+- 优先使用 Grep 定位过时引用，再逐文件 Edit
+- §4a–§4c 的变更纳入 §5 的 git commit，形成完整版本快照
 
 ### git 记录规范
 
@@ -814,7 +835,7 @@ flowchart TD
         D3 --> D5
     end
 
-    GENSUB --> DELIVER["§3 交付三步<br/>hook-log→import-docs→wework-bot"]:::s
+    GENSUB --> DELIVER["§3 交付三步<br/>hook-log→rui-import→rui-bot"]:::s
 
     classDef s fill:#e3f2fd,stroke:#1565c0;
     classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px;
@@ -955,7 +976,7 @@ flowchart TD
     CHECK -->|"P0 未通过"| RETRY{"自修复 ≤ 2 轮?"}:::gate
     RETRY -->|"是"| GEN
     RETRY -->|"否"| BLOCK_DOC["doc-p0 🚫<br/>阻断"]:::bad
-    CHECK -->|"通过"| DELIVER["§6 交付三步<br/>hook-log → import-docs → wework-bot"]:::s
+    CHECK -->|"通过"| DELIVER["§6 交付三步<br/>hook-log → rui-import → rui-bot"]:::s
 
     classDef s fill:#e3f2fd,stroke:#1565c0;
     classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px;
@@ -1046,7 +1067,7 @@ flowchart TD
 |------|---------|---------|
 | {project}-实施报告.md | 需代码执行（截图、curl 命令、模块 P0 审查数据）| `/rui code <name>` |
 | {project}-测试报告.md | 需测试执行（通过/失败计数、环境快照）| `/rui code <name>` |
-| {project}-消息通知列表.md | wework-bot 自动追加 | 自动 |
+| {project}-消息通知列表.md | rui-bot 自动追加 | 自动 |
 | {project}-交互日志.md | rui 管线自动维护 | 自动 |
 
 ### §5 约束
@@ -1066,7 +1087,7 @@ flowchart TD
 
 ## 推荐
 
-只读，不触发 import-docs / wework-bot。
+只读，不触发 rui-import / rui-bot。
 
 - **§0 面板同步** — 推荐前先同步远端 + 扫描本地故事任务面板内容，检测冲突
 - **L-1 基建优先** — 错误码、状态管理、日志规范、配置管理等 7 项基建任一缺位时，优先推荐基建补齐任务
@@ -1078,7 +1099,7 @@ flowchart TD
 
 ## 强制集成
 
-> import-docs + wework-bot 三步收口。每次写入命令末端必须按序触发。
+> rui-import + rui-bot 三步收口。每次写入命令末端必须按序触发。
 
 ### 触发时机
 
@@ -1088,14 +1109,14 @@ flowchart TD
 ### 执行顺序（不可跳序）
 
 ```
-管线完成/阻断 → 1. hook-log（追加日志）→ 2. `node skills/import-docs/sync.mjs`（文档同步）→ 3. wework-bot（发送通知）
+管线完成/阻断 → 1. hook-log（追加日志）→ 2. `node skills/rui-import/sync.mjs`（文档同步）→ 3. rui-bot（发送通知）
 ```
 
 | # | 步骤 | 规约出处 | 标记字段 |
 |---|------|---------|---------|
-| 1 | hook-log | [wework-bot — hook-log](../wework-bot/SKILL.md#①-hook-log追加日志不发送) | `delivery_pipeline.log_appended` |
-| 2 | `node skills/import-docs/sync.mjs` | [import-docs — hook 触发器](../import-docs/SKILL.md#hook-触发器) | `delivery_pipeline.docs_synced` |
-| 3 | wework-bot | [wework-bot — hook-notify](../wework-bot/SKILL.md#③-hook-notify实际发送) | `delivery_pipeline.notification_sent` |
+| 1 | hook-log | [rui-bot — hook-log](../rui-bot/SKILL.md#①-hook-log追加日志不发送) | `delivery_pipeline.log_appended` |
+| 2 | `node skills/rui-import/sync.mjs` | [rui-import — hook 触发器](../rui-import/SKILL.md#hook-触发器) | `delivery_pipeline.docs_synced` |
+| 3 | rui-bot | [rui-bot — hook-notify](../rui-bot/SKILL.md#③-hook-notify实际发送) | `delivery_pipeline.notification_sent` |
 
 ### 降级
 
@@ -1197,10 +1218,10 @@ flowchart TD
 | 类别 | 内容 |
 |------|------|
 | 数据契约 | `{project}-10-交互日志.md`（追加）· `.memory/rui-state.json`（覆盖写）· `.memory/execution-memory.jsonl`（追加）· `.improvement/proposals.jsonl`（追加）— 字段见 [coder.md §数据契约](./coder.md) |
-| Hooks | Stop hooks 调用：hook-log → import-docs → hook-notify → delivery-gate |
+| Hooks | Stop hooks 调用：hook-log → rui-import → hook-notify → delivery-gate |
 | 规则 | [code-pipeline](../../rules/code-pipeline.md) · [delivery-gate](../../rules/delivery-gate.md) · [doc-generation](../../rules/doc-generation.md) · [self-improve](../../rules/self-improve.md) · [rui-claude](../../rules/rui-claude.md) |
 | 角色 | [pm](../../agents/pm.md) · [coder](../../agents/coder.md) · [tester](../../agents/tester.md) · [reporter](../../agents/reporter.md) · [security](../../agents/security.md) · [self-improve](../../agents/self-improve.md) |
-| 文档 | [formulas.md](./formulas.md) · [coder.md](./coder.md) · [import-docs SKILL](../import-docs/SKILL.md) · [wework-bot SKILL](../wework-bot/SKILL.md) |
+| 文档 | [formulas.md](./formulas.md) · [coder.md](./coder.md) · [rui-import SKILL](../rui-import/SKILL.md) · [rui-bot SKILL](../rui-bot/SKILL.md) |
 | 推荐 | [ranking.md](./ranking.md) · [recommend.mjs](./recommend.mjs) |
 
 ## 集成参考

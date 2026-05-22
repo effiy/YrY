@@ -56,7 +56,7 @@
 **📋 关键决策**:
 - T2 范围：在 YrY-使用场景.md 中逐场景新增「接口数据请求流」小节
 - 场景 A/B/C/G/H：含 query_documents + read-file API 文档 + curl 命令
-- 场景 D：含 import-docs 委托调用链 + curl 模拟命令
+- 场景 D：含 rui-import 委托调用链 + curl 模拟命令
 - 场景 E/F/I：标注本地操作 + 等效验证命令
 - 新增 §6 API 参考：API 清单 + 通用配置 + 两个 API 完整规约 + 场景→API 映射 mermaid 图
 - 产出: YrY-使用场景.md（新增 ~350 行 API 流文档）

@@ -2,7 +2,7 @@
 
 > **导航**: [← YrY-技术评审](./YrY-技术评审.md) · [→ YrY-实施报告](./YrY-实施报告.md)
 
-> **来源引用**: `/rui doc --from-code rui-import-sync-doc` · 源文件 `skills/import-docs/sync.mjs`
+> **来源引用**: `/rui doc --from-code rui-import-sync-doc` · 源文件 `skills/rui-import/sync.mjs`
 > **证据等级**: B（从源码反推，附源码路径）
 
 # YrY-测试设计 · rui-import-sync
@@ -116,7 +116,7 @@
 | 信号 | 值 | 说明 |
 |------|-----|------|
 | P0 用例数 | 8 | UC-IMP-01/04/05, UC-PULL-01/05, UC-DG-01/02/03 |
-| 验证命令 | `node skills/import-docs/sync.mjs workspace=true mode=list` | 预览模式验证扫描正确性 |
+| 验证命令 | `node skills/rui-import/sync.mjs workspace=true mode=list` | 预览模式验证扫描正确性 |
 | 阻塞条件 | P0 用例任一失败 | 阻断进入实现阶段 |
 | 环境要求 | Node.js + API_X_TOKEN（部分测试） | — |
 
@@ -135,4 +135,4 @@
 
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
-> | 2026-05-22 | 初始生成 — doc --from-code | /rui doc --from-code rui-import-sync-doc | skills/import-docs/sync.mjs |
+> | 2026-05-22 | 初始生成 — doc --from-code | /rui doc --from-code rui-import-sync-doc | skills/rui-import/sync.mjs |

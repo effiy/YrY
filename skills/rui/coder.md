@@ -52,7 +52,7 @@ flowchart LR
 | {project}-实施报告.md | ✓ | coder | 验证 |
 | {project}-测试报告.md | ✓ | tester | 验证 |
 | {project}-自改进复盘.md | ✓ | pm + reporter | 自改进 |
-| {project}-消息通知列表.md | 自动 | wework-bot hook | 交付 |
+| {project}-消息通知列表.md | 自动 | rui-bot hook | 交付 |
 | {project}-交互日志.md | ✓ | rui 管线 | 全阶段 |
 | {专题}.md | 按需 | pm 决策 | 文档生成 |
 

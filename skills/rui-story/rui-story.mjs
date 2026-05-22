@@ -124,7 +124,7 @@ function readProjectName(projectRoot) {
   return projectRoot.split(sep).pop();
 }
 
-// --- API helpers (replicated from import-docs/sync.mjs) --------------------
+// --- API helpers (replicated from rui-import/sync.mjs) --------------------
 async function fetchJson(url, options = {}) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), HTTP_TIMEOUT);
@@ -714,7 +714,7 @@ function fallbackHelp() {
   console.log("  /rui-story health             健康检查");
   console.log("");
   console.log(bold("写入命令"));
-  console.log("  /rui-story sync [<name>]      远端→本地 (委托 import-docs)");
+  console.log("  /rui-story sync [<name>]      远端→本地 (委托 rui-import)");
   console.log("  /rui-story clear [<name>]     仅本地：清除非项目前缀文件");
   console.log("  /rui-story remove <name>      仅本地：删除故事目录");
   console.log("");

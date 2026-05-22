@@ -81,7 +81,7 @@ flowchart LR
 flowchart LR
     TRIGGER["/rui-claude sync"]:::src --> CONFIRM{"确认用户意图?"}
     CONFIRM -->|"否"| ABORT["中止"]:::abort
-    CONFIRM -->|"是"| PULL["import-docs<br/>dir=.claude/ mode=pull<br/>远端 API → 逐文件覆盖"]:::op
+    CONFIRM -->|"是"| PULL["rui-import<br/>dir=.claude/ mode=pull<br/>远端 API → 逐文件覆盖"]:::op
     PULL --> DONE["同步完成"]:::done
 
     classDef src fill:#e8f5e9,stroke:#2e7d32;

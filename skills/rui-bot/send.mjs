@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// send — Executable wework-bot notification sender
-// 用法: node skills/wework-bot/send.mjs [options]
+// send — Executable rui-bot notification sender
+// 用法: node skills/rui-bot/send.mjs [options]
 // 按 SKILL.md 规约发送企微通知并追加消息日志
 
 import { join, resolve, dirname, basename } from "node:path";
@@ -90,11 +90,11 @@ function parseArgs() {
 
 function showUsage() {
   console.log("");
-  console.log("wework-bot send — 企业微信通知发送");
+  console.log("rui-bot send — 企业微信通知发送");
   console.log("");
   console.log("用法:");
-  console.log("  node skills/wework-bot/send.mjs [options]");
-  console.log("  node skills/wework-bot/send.mjs health");
+  console.log("  node skills/rui-bot/send.mjs [options]");
+  console.log("  node skills/rui-bot/send.mjs health");
   console.log("");
   console.log("Options:");
   console.log("  --story=<name>         故事名");
@@ -145,7 +145,7 @@ function readProjectName(projectRoot) {
 
 // --- config ---
 function loadConfig(projectRoot) {
-  const configPath = join(projectRoot, ".claude", "skills", "wework-bot", "config.json");
+  const configPath = join(projectRoot, ".claude", "skills", "rui-bot", "config.json");
   if (!existsSync(configPath)) return { api_url: API_URL_DEFAULT, robots: {}, agents: {}, default_robot: "general" };
   try {
     return JSON.parse(readFileSync(configPath, "utf-8"));
@@ -270,7 +270,7 @@ async function sendWithRetry(apiUrl, webhookUrl, content, token, maxRetries) {
     } catch (err) {
       lastError = err.message;
       if (i < maxRetries) {
-        console.error(`[wework-bot] 重试 ${i + 1}/${maxRetries}: ${err.message}`);
+        console.error(`[rui-bot] 重试 ${i + 1}/${maxRetries}: ${err.message}`);
         await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
       }
     }
@@ -285,7 +285,7 @@ async function cmdHealth(projectRoot) {
   const token = process.env.API_X_TOKEN || "";
 
   console.log("");
-  console.log("wework-bot 健康检查");
+  console.log("rui-bot 健康检查");
   console.log("═══════════════════");
   console.log("");
 
@@ -294,7 +294,7 @@ async function cmdHealth(projectRoot) {
   console.log(`  API_X_TOKEN:        ${tokenOk ? "✅ 已配置" : "⚠️  缺失"}`);
 
   // Config check
-  console.log(`  config.json:        ${existsSync(join(projectRoot, ".claude", "skills", "wework-bot", "config.json")) ? "✅ 存在" : "⚠️  缺失"}`);
+  console.log(`  config.json:        ${existsSync(join(projectRoot, ".claude", "skills", "rui-bot", "config.json")) ? "✅ 存在" : "⚠️  缺失"}`);
   console.log(`  api_url:            ${config.api_url || API_URL_DEFAULT}`);
   console.log(`  default_robot:      ${config.default_robot || "general"}`);
 
@@ -344,13 +344,13 @@ async function cmdSend(opts) {
   // Step 1: Always append notification log
   if (opts.story) {
     const logPath = appendNotificationLog(projectRoot, projectName, opts.story, message);
-    console.log(`[wework-bot] 日志已追加: ${logPath}`);
+    console.log(`[rui-bot] 日志已追加: ${logPath}`);
     appendDeliveryTracking(projectRoot, opts.story, "log", "success", Date.now() - startTime, null);
   }
 
   // Step 2: Send if not --no-send
   if (opts.noSend) {
-    console.log("[wework-bot] --no-send 模式，跳过 HTTP 发送");
+    console.log("[rui-bot] --no-send 模式，跳过 HTTP 发送");
     if (opts.story) {
       appendDeliveryTracking(projectRoot, opts.story, "notify", "skipped", Date.now() - startTime, null);
     }
@@ -358,7 +358,7 @@ async function cmdSend(opts) {
   }
 
   if (!token) {
-    console.log("[wework-bot] ⚠️  API_X_TOKEN 缺失，跳过 HTTP 发送（no-token 降级）");
+    console.log("[rui-bot] ⚠️  API_X_TOKEN 缺失，跳过 HTTP 发送（no-token 降级）");
     if (opts.story) {
       appendDeliveryTracking(projectRoot, opts.story, "notify", "skipped", Date.now() - startTime, "no-token");
     }
@@ -380,7 +380,7 @@ async function cmdSend(opts) {
   }
 
   if (!webhookUrl) {
-    console.log("[wework-bot] ⚠️  webhook URL 未配置，跳过发送");
+    console.log("[rui-bot] ⚠️  webhook URL 未配置，跳过发送");
     if (opts.story) {
       appendDeliveryTracking(projectRoot, opts.story, "notify", "skipped", Date.now() - startTime, "no-webhook");
     }
@@ -389,18 +389,18 @@ async function cmdSend(opts) {
 
   const apiUrl = config.api_url || API_URL_DEFAULT;
 
-  console.log(`[wework-bot] 发送通知: story=${opts.story || "—"} status=${opts.status}`);
+  console.log(`[rui-bot] 发送通知: story=${opts.story || "—"} status=${opts.status}`);
   const result = await sendWithRetry(apiUrl, webhookUrl, message, token, opts.retries);
 
   const elapsed = Date.now() - startTime;
 
   if (result.ok) {
-    console.log(`[wework-bot] ✅ 发送成功 (retries=${result.retries})`);
+    console.log(`[rui-bot] ✅ 发送成功 (retries=${result.retries})`);
     if (opts.story) {
       appendDeliveryTracking(projectRoot, opts.story, "notify", "success", elapsed, null);
     }
   } else {
-    console.error(`[wework-bot] ❌ 发送失败: ${result.error} (retries=${result.retries})`);
+    console.error(`[rui-bot] ❌ 发送失败: ${result.error} (retries=${result.retries})`);
     if (opts.story) {
       appendDeliveryTracking(projectRoot, opts.story, "notify", "failure", elapsed, result.error);
     }
@@ -427,6 +427,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error(`[wework-bot] fatal: ${err.message}`);
+  console.error(`[rui-bot] fatal: ${err.message}`);
   process.exit(0);
 });

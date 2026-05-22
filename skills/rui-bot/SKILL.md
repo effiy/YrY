@@ -1,20 +1,20 @@
 ---
-name: wework-bot
+name: rui-bot
 description: |
   Send WeChat Work (WeCom) bot messages and append matching entries to the
   story panel notification log. Mandatory upon rui completion, block, or gate
-  failure. Executable: node skills/wework-bot/send.mjs [options].
+  failure. Executable: node skills/rui-bot/send.mjs [options].
 user_invocable: true
 lifecycle: default-pipeline
 ---
 
-# wework-bot
+# rui-bot
 
-> **--help / -h**：执行 `node skills/wework-bot/help.mjs` 输出完整帮助（含消息格式 + 场景示例）。用户输入 `/wework-bot --help` 或 `/wework-bot -h` 或 `/wework-bot help` 时，跳过逻辑，直接运行脚本。
+> **--help / -h**：执行 `node skills/rui-bot/help.mjs` 输出完整帮助（含消息格式 + 场景示例）。用户输入 `/rui-bot --help` 或 `/rui-bot -h` 或 `/rui-bot help` 时，跳过逻辑，直接运行脚本。
 
-企业微信机器人通知。**每次使用 rui 技能都必须触发 wework-bot，这是管线完整性的硬性要求。** rui 管线末端强制步骤：自改进 → 追加日志 → 文档同步 → 发送通知。
+企业微信机器人通知。**每次使用 rui 技能都必须触发 rui-bot，这是管线完整性的硬性要求。** rui 管线末端强制步骤：自改进 → 追加日志 → 文档同步 → 发送通知。
 
-**可执行入口**: `node skills/wework-bot/send.mjs [options]` — 发送通知或健康检查。`--no-send` 仅追加日志不发 HTTP。
+**可执行入口**: `node skills/rui-bot/send.mjs [options]` — 发送通知或健康检查。`--no-send` 仅追加日志不发 HTTP。
 
 [工作流全景](#工作流全景) · [调用形态](#调用形态) · [消息格式](#消息格式) · [消息通知列表](#消息通知列表) · [API 契约](#api-契约) · [安全](#安全) · [hook 触发器](#hook-触发器) · [空输入](#空输入) · [生效标志](#生效标志)
 
@@ -23,7 +23,7 @@ lifecycle: default-pipeline
 ```mermaid
 flowchart TB
     RUI["rui 管线完成 / 阻断 / 失败"]:::src --> LOG["① 追加日志<br/>等价 send --no-send → {project}-消息通知列表"]:::step
-    LOG --> SYNC["② import-docs 同步"]:::step
+    LOG --> SYNC["② rui-import 同步"]:::step
     SYNC --> SEND["③ 发送通知<br/>send → 企微 webhook"]:::step
     SEND --> DONE["闭环"]:::done
 
@@ -37,7 +37,7 @@ flowchart TB
 | 步骤 | 操作 | 说明 |
 |------|------|------|
 | ① 追加日志 | `send --no-send` 等价行为 | 写入 `{project}-消息通知列表.md`，不发 HTTP |
-| ② 文档同步 | `import-docs` workspace 全量同步 | 推送变更到远端 |
+| ② 文档同步 | `rui-import` workspace 全量同步 | 推送变更到远端 |
 | ③ 发送通知 | `send` 等价行为 | POST 企微 webhook |
 
 ## 调用形态
@@ -162,7 +162,7 @@ flowchart LR
 | 5 | 明细段：错误日志前 20 行，文件 > 10 个时只列统计 | 50 个文件逐行列出 |
 | 6 | 首行 `【项目名】` 由发送方自动追加，正文不再重复 | 正文也以 `【项目名】` 开头 |
 | 7 | `🤖 技能` 和 `📋 命令` 必须为消息前两行（首行 `【项目名】` 之后） | 技能/命令字段遗漏或位置错误 |
-| 8 | `🤖 技能` 值为技能标识符（`rui` / `rui-story` / `rui-claude` / `wework-bot` / `import-docs`） | 使用非标准技能名 |
+| 8 | `🤖 技能` 值为技能标识符（`rui` / `rui-story` / `rui-claude` / `rui-bot` / `rui-import`） | 使用非标准技能名 |
 
 ### 示例
 
@@ -189,7 +189,7 @@ flowchart LR
 
 | 字段 | 格式 | 说明 |
 |------|------|------|
-| 🤖 技能 | `rui` / `rui-story` / `rui-claude` / `wework-bot` / `import-docs` | 触发消息的技能名 |
+| 🤖 技能 | `rui` / `rui-story` / `rui-claude` / `rui-bot` / `rui-import` | 触发消息的技能名 |
 | 📋 命令 | `/rui doc <name>` / `/rui-story sync` 等 | 用户执行的具体命令（含参数） |
 | 🎯 结论 | 完成 / 阻断 / 门禁失败 + story + 阶段 | 管线执行结论 |
 | ⏱️ 会话 | `<日期> <时间范围> | <N> agents 参与` | 执行时间与参与角色 |
@@ -198,7 +198,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    SEND["wework-bot<br/>name=&lt;Project&gt;-&lt;story&gt;"]:::src --> PARSE["分解路径<br/>&lt;story&gt;/"]:::op
+    SEND["rui-bot<br/>name=&lt;Project&gt;-&lt;story&gt;"]:::src --> PARSE["分解路径<br/>&lt;story&gt;/"]:::op
     PARSE --> APPEND["追加写入"]:::op
     APPEND --> FILE["docs/故事任务面板/<br/>&lt;story&gt;/<br/>{project}-消息通知列表.md"]:::file
 

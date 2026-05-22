@@ -724,11 +724,11 @@ function cmdMaterialize(opts) {
 
   if (!opts.dryRun) {
     console.log("");
-    console.log(bold("import-docs 同步"));
+    console.log(bold("rui-import 同步"));
     try {
-      execSync("node skills/import-docs/sync.mjs", { cwd: projectRoot, stdio: "inherit" });
+      execSync("node skills/rui-import/sync.mjs", { cwd: projectRoot, stdio: "inherit" });
     } catch {
-      console.log(yellow("  ⚠️  import-docs 同步失败，可手动重试: node skills/import-docs/sync.mjs"));
+      console.log(yellow("  ⚠️  rui-import 同步失败，可手动重试: node skills/rui-import/sync.mjs"));
     }
   }
 

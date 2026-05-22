@@ -2,7 +2,7 @@
 
 > **导航**: [→ YrY-使用场景](./YrY-使用场景.md)
 
-> **来源引用**: `/rui doc --from-code rui-bot-send-doc` · 源文件 `skills/wework-bot/send.mjs`
+> **来源引用**: `/rui doc --from-code rui-bot-send-doc` · 源文件 `skills/rui-bot/send.mjs`
 
 # YrY-故事任务 · rui-bot-send
 
@@ -133,4 +133,4 @@ flowchart TD
 
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
-> | 2026-05-22 | 初始生成 | /rui doc --from-code rui-bot-send-doc | skills/wework-bot/send.mjs |
+> | 2026-05-22 | 初始生成 | /rui doc --from-code rui-bot-send-doc | skills/rui-bot/send.mjs |

@@ -37,8 +37,8 @@ docs/故事任务面板/.init-memory.json
 # rui-claude history (local-only, never tracked)
 .claude/.history/
 
-# wework-bot resolved config (may contain webhook URL)
-skills/wework-bot/config.local.json
+# rui-bot resolved config (may contain webhook URL)
+skills/rui-bot/config.local.json
 
 # Claude Code local settings (may contain secrets)
 .claude/settings.local.json

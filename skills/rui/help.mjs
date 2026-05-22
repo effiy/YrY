@@ -128,7 +128,7 @@ ${scene("自改进诊断")}
 ${item("node skills/rui/proposals.mjs generate --story=user-login", "采集执行记忆 → D0-D7 判定 → 生成提案（数据<3条时降级）", cyan)}
 ${item("node skills/rui/proposals.mjs list --story=user-login --status=open", "查看待处理提案", cyan)}
 ${scene("提案实例化为故事任务")}
-${item("node skills/rui/proposals.mjs materialize --story=user-login", "open 提案 → 故事任务目录（任务）→ import-docs 自动同步", cyan)}
+${item("node skills/rui/proposals.mjs materialize --story=user-login", "open 提案 → 故事任务目录（任务）→ rui-import 自动同步", cyan)}
 ${item("node skills/rui/proposals.mjs generate --story=user-login --materialize", "诊断 + 实例化一步完成", cyan)}
 ${item("node skills/rui/proposals.mjs materialize --story=user-login --dry-run", "预览将创建的目录（不实际执行）", cyan)}
 ${scene("工具权限审计")}

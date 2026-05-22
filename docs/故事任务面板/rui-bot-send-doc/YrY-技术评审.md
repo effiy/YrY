@@ -43,7 +43,7 @@ flowchart LR
 
 ## §1 消息构建管线
 
-> 证据: `skills/wework-bot/send.mjs`
+> 证据: `skills/rui-bot/send.mjs`
 
 三种状态模板：
 
@@ -71,7 +71,7 @@ flowchart LR
 
 ## §3 日志追加
 
-> 证据: `skills/wework-bot/send.mjs` — appendFileSync 追加到 `{project}-消息通知列表.md`
+> 证据: `skills/rui-bot/send.mjs` — appendFileSync 追加到 `{project}-消息通知列表.md`
 
 每条通知记录含：时间戳、故事名、状态、内容摘要。
 
@@ -101,4 +101,4 @@ flowchart LR
 
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
-> | 2026-05-22 | 初始生成 | /rui doc --from-code rui-bot-send-doc | skills/wework-bot/send.mjs |
+> | 2026-05-22 | 初始生成 | /rui doc --from-code rui-bot-send-doc | skills/rui-bot/send.mjs |

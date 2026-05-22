@@ -64,7 +64,7 @@
 | TC-N01 | Token 已配置，远端有 1 个故事 | 执行 `overview` | stdout 含"故事任务面板 · 状态概览"、6 状态统计、最近活动 | ✅ | 输出格式正确 |
 | TC-N02 | Token 已配置，远端有 1 个故事 | 执行 `list` | stdout 含"进度全景"表格，6 列 | ✅ | 类型推断为"全栈" |
 | TC-N03 | Token 已配置，远端存在 rui-story | 执行 `show rui-story` | stdout 含详述卡：远端路径/类型/文件清单/git 分支/元数据 | ✅ | 7 文件全部列出 |
-| TC-N04 | SKILL.md 规约完整 | 检查 sync 委托路径 | import-docs mode=pull 定义清晰 | ✅ | 规约级验证 |
+| TC-N04 | SKILL.md 规约完整 | 检查 sync 委托路径 | rui-import mode=pull 定义清晰 | ✅ | 规约级验证 |
 | TC-N05 | SKILL.md 规约完整 | 检查 clear 双重清单机制 | 保留规则明确，确认流程不可跳过 | ✅ | 规约级验证 |
 | TC-N06 | SKILL.md 规约完整 | 检查 remove 确认机制 | name 必填 + 确认不可跳过 | ✅ | 规约级验证 |
 | TC-N07 | 远端有可同步故事 | 执行 `recommend` | stdout 含故事名列表 + sync 命令 | ✅ | "rui-story (7 个文件)" |

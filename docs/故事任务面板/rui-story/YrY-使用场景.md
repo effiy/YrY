@@ -234,7 +234,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     A["输入 /rui-story sync"] --> Q{"有 &lt;name&gt;?"}
-    Q -->|"是"| B["委托 import-docs<br/>mode=pull"]
+    Q -->|"是"| B["委托 rui-import<br/>mode=pull"]
     Q -->|"否"| C["查询远端可同步故事"]
     B --> D["输出同步结果"]
     C --> E["展示推荐列表"]
@@ -243,17 +243,17 @@ flowchart LR
 
 | # | 步骤 | 输入 | 系统响应 | 异常分支 |
 |---|------|------|---------|---------|
-| 1 | 有名称同步 | `/rui-story sync <name>` | 执行 import-docs mode=pull | 同步失败 → 显示错误 |
+| 1 | 有名称同步 | `/rui-story sync <name>` | 执行 rui-import mode=pull | 同步失败 → 显示错误 |
 | 2 | 无名称推荐 | `/rui-story sync` | 展示远端可同步故事列表 | 无远端数据 → 显示空提示 |
 | 3 | 确认同步 | 用户选择故事名 | 执行定向同步 | — |
 
 #### 接口数据请求流
 
-> **注意**: `sync` 命令在 `rui-story.mjs` 中为规约驱动——脚本本身不直接实现同步逻辑，而是委托给 `import-docs` 技能。
+> **注意**: `sync` 命令在 `rui-story.mjs` 中为规约驱动——脚本本身不直接实现同步逻辑，而是委托给 `rui-import` 技能。
 
-**委托调用**: `node skills/import-docs/sync.mjs dir="故事任务面板/<name>" mode=pull`
+**委托调用**: `node skills/rui-import/sync.mjs dir="故事任务面板/<name>" mode=pull`
 
-import-docs 的 API 调用链（详见 [import-docs SKILL.md](../../../skills/import-docs/SKILL.md)）：
+rui-import 的 API 调用链（详见 [rui-import SKILL.md](../../../skills/rui-import/SKILL.md)）：
 
 | 步骤 | API | 说明 |
 |------|-----|------|
@@ -440,7 +440,7 @@ flowchart LR
 | A 状态概览 | FP1, FP2, FP4 | AC1, AC4, AC5 | §1, §2 | TC-N01 | 待生成 | 无参数入口 |
 | B 进度全景 | FP1, FP2, FP3, FP5 | AC2 | §1, §2, §3 | TC-N02 | 待生成 | 含类型推断 |
 | C 单故事详情 | FP1, FP2, FP3, FP6 | AC3 | §1, §2 | TC-N03, TC-E01 | 待生成 | 含不存在分支 |
-| D 文档同步 | FP9 | AC6, AC7 | §1, §3 | TC-N04 | 待生成 | 委托 import-docs |
+| D 文档同步 | FP9 | AC6, AC7 | §1, §3 | TC-N04 | 待生成 | 委托 rui-import |
 | E 本地清理 | FP10 | AC8 | §1, §3 | TC-N05, TC-E02 | 待生成 | 破坏性操作 |
 | F 目录删除 | FP11 | AC9 | §1, §3 | TC-N06, TC-E03 | 待生成 | name 必填 |
 | G 同步推荐 | FP7 | AC11 | §1 | TC-N07 | 待生成 | — |
@@ -661,7 +661,7 @@ flowchart LR
         API1["POST /<br/>query_documents"]
         API2["POST /read-file"]
         LOCAL["本地操作<br/>无 API"]
-        IMPORT["委托 import-docs<br/>sync.mjs"]
+        IMPORT["委托 rui-import<br/>sync.mjs"]
     end
 
     A --> API1

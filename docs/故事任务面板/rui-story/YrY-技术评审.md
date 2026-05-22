@@ -41,7 +41,7 @@
 | 状态判定 | file_path 前缀匹配 | 远端 sessions 的 file_path 包含故事名 | §3 | FP2 |
 | 类型推断 | 读取远端技术评审内容 | 基于实际内容推断，不依赖元数据标签 | §3 | FP3 |
 | 并发策略 | 4 worker 并发 | 平衡远端负载与响应速度 | §8 | FP3 |
-| sync 委托 | 完全委托 import-docs | 避免重复实现同步逻辑 | §1 | FP9 |
+| sync 委托 | 完全委托 rui-import | 避免重复实现同步逻辑 | §1 | FP9 |
 | clear 实现 | SKILL.md 规约驱动 | 破坏性操作需 agent 执行确认流程 | §1 | FP10 |
 | 帮助系统 | 独立 help.mjs 脚本 | 可独立运行，不依赖主逻辑 | §1 | FP12 |
 | 项目名解析 | CLAUDE.md 多模式匹配 | 兼容不同项目格式，fallback 目录名 | §3 | FP2 |
@@ -113,7 +113,7 @@ flowchart TD
 | 现有 | `skills/rui-story/rui-story.mjs` | 主入口：参数解析、API 查询、状态判定、类型推断、格式化输出 |
 | 现有 | `skills/rui-story/SKILL.md` | 规约定义：命令族全景、操作边界、数据源、状态判定、核心规则 |
 | 现有 | `skills/rui-story/help.mjs` | 帮助系统：命令表 + 场景示例 + 数据源说明 |
-| 依赖 | `skills/import-docs/sync.mjs` | sync 命令委托目标 |
+| 依赖 | `skills/rui-import/sync.mjs` | sync 命令委托目标 |
 | 数据 | `CLAUDE.md` | 项目名解析源（readProjectName） |
 | 数据 | `docs/故事任务面板/<name>/.memory/rui-state.json` | blocked 状态源（readBlockedState） |
 
@@ -202,7 +202,7 @@ sequenceDiagram
 | `/rui-story show <name>` | ✓ | ✓ (推断类型) | blocked + git branch |
 | `/rui-story recommend` | ✓ | — | — |
 | `/rui-story health` | ✓ (条件) | — | CLAUDE.md + 目录 |
-| `/rui-story sync <name>` | 委托 import-docs | 委托 import-docs | 写入本地 |
+| `/rui-story sync <name>` | 委托 rui-import | 委托 rui-import | 写入本地 |
 | `/rui-story clear` | — | — | ✓ (仅本地文件系统) |
 | `/rui-story remove <name>` | — | — | ✓ (仅本地文件系统) |
 | `/rui-story --help` | — | — | ✓ (本地 help.mjs) |

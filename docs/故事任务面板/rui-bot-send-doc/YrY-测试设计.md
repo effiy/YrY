@@ -56,11 +56,11 @@
 | 信号 | 值 |
 |------|-----|
 | P0 用例 | UC-C01, UC-B01, UC-C03, UC-R02 |
-| 验证命令 | `node skills/wework-bot/send.mjs --no-send --story=test --status=complete --content=test` |
+| 验证命令 | `node skills/rui-bot/send.mjs --no-send --story=test --status=complete --content=test` |
 | 阻塞条件 | 消息模板字段缺失或日志写入失败 |
 
 ---
 
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
-> | 2026-05-22 | 初始生成 | /rui doc --from-code rui-bot-send-doc | skills/wework-bot/send.mjs |
+> | 2026-05-22 | 初始生成 | /rui doc --from-code rui-bot-send-doc | skills/rui-bot/send.mjs |

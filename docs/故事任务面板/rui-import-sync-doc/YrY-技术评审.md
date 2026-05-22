@@ -2,7 +2,7 @@
 
 > **导航**: [← YrY-使用场景](./YrY-使用场景.md) · [→ YrY-测试设计](./YrY-测试设计.md) · [→ YrY-安全审计](./YrY-安全审计.md)
 
-> **来源引用**: `/rui doc --from-code rui-import-sync-doc` · 源文件 `skills/import-docs/sync.mjs`
+> **来源引用**: `/rui doc --from-code rui-import-sync-doc` · 源文件 `skills/rui-import/sync.mjs`
 > **证据等级**: B（从源码反推，附源码路径）
 
 # YrY-技术评审 · rui-import-sync
@@ -131,7 +131,7 @@ flowchart LR
 
 ### 2.2 路径映射规则
 
-> 证据: `skills/import-docs/sync.mjs:147-168`
+> 证据: `skills/rui-import/sync.mjs:147-168`
 
 ```mermaid
 flowchart TD
@@ -146,7 +146,7 @@ flowchart TD
 
 ### 2.3 并发控制
 
-> 证据: `skills/import-docs/sync.mjs:248-280`
+> 证据: `skills/rui-import/sync.mjs:248-280`
 
 | 参数 | 值 | 说明 |
 |------|-----|------|
@@ -157,7 +157,7 @@ flowchart TD
 
 ### 2.4 Session 创建
 
-> 证据: `skills/import-docs/sync.mjs:222-245`
+> 证据: `skills/rui-import/sync.mjs:222-245`
 
 每条远端文件对应一个 session 记录，字段：
 
@@ -189,7 +189,7 @@ flowchart LR
 
 ### 3.2 拉取策略
 
-> 证据: `skills/import-docs/sync.mjs:288-323`
+> 证据: `skills/rui-import/sync.mjs:288-323`
 
 | 目录类型 | 过滤策略 | 路径映射 |
 |---------|---------|---------|
@@ -201,7 +201,7 @@ flowchart LR
 
 ## §4 错误处理与降级
 
-> 证据: `skills/import-docs/sync.mjs:177-196, 252-280`
+> 证据: `skills/rui-import/sync.mjs:177-196, 252-280`
 
 ```mermaid
 flowchart TD
@@ -259,4 +259,4 @@ flowchart TD
 
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
-> | 2026-05-22 | 初始生成 — doc --from-code | /rui doc --from-code rui-import-sync-doc | skills/import-docs/sync.mjs |
+> | 2026-05-22 | 初始生成 — doc --from-code | /rui doc --from-code rui-import-sync-doc | skills/rui-import/sync.mjs |

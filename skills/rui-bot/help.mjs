@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// wework-bot — WeChat Work bot notification help
-// 用法: node skills/wework-bot/help.mjs 或 /wework-bot --help
+// rui-bot — WeChat Work bot notification help
+// 用法: node skills/rui-bot/help.mjs 或 /rui-bot --help
 
 const ANSI_BOLD = 1;
 const ANSI_DIM = 2;
@@ -50,16 +50,16 @@ function scene(title) {
 }
 
 const help = `
-${bold("# wework-bot — 企业微信机器人通知")}
+${bold("# rui-bot — 企业微信机器人通知")}
 
 ${dim("消息发送 · 日志追加 · 管线收口 · 健康检查 | rui 强制集成")}
 
 ${hdr("快速入门")}
-${item("node skills/wework-bot/send.mjs --story=<name> --status=complete --no-send", "仅追加通知日志不发送 HTTP", cyan)}
-${item("node skills/wework-bot/send.mjs health", "健康检查：token / webhook / API 可达性", cyan)}
-${item("node skills/wework-bot/send.mjs --story=<name> --status=complete", "发送完成通知：构建消息 → 日志 + HTTP 发送", cyan)}
+${item("node skills/rui-bot/send.mjs --story=<name> --status=complete --no-send", "仅追加通知日志不发送 HTTP", cyan)}
+${item("node skills/rui-bot/send.mjs health", "健康检查：token / webhook / API 可达性", cyan)}
+${item("node skills/rui-bot/send.mjs --story=<name> --status=complete", "发送完成通知：构建消息 → 日志 + HTTP 发送", cyan)}
 
-${hdr("可执行入口: node skills/wework-bot/send.mjs")}
+${hdr("可执行入口: node skills/rui-bot/send.mjs")}
 
 ${subhdr("命令")}
 ${item("send.mjs [options]", "发送通知（默认命令）", cyan)}
@@ -69,7 +69,7 @@ ${item("send.mjs --help", "显示此帮助", cyan)}
 ${subhdr("参数")}
 ${item("--story=<name>", "故事名（kebab-case），必填", cyan)}
 ${item("--project=<name>", "项目名，默认从 CLAUDE.md 读取", yellow)}
-${item("--skill=<name>", "🤖 技能标识: rui | rui-story | rui-claude | wework-bot | import-docs", cyan)}
+${item("--skill=<name>", "🤖 技能标识: rui | rui-story | rui-claude | rui-bot | rui-import", cyan)}
 ${item("--command=<text>", "📋 命令: 用户执行的具体命令（含参数）", cyan)}
 
 ${item("--status=<s>", "通知类型: complete | blocked | gate-fail（默认 complete）", cyan)}
@@ -95,19 +95,19 @@ ${item("HTTP 响应", "stdout 打印发送结果", dim)}
 
 ${hdr("使用场景")}
 ${scene("管线完成自动通知（rui 自动触发）")}
-${item("node skills/wework-bot/send.mjs --story=user-login --status=complete --conclusion=\"...\" --description=\"...\"", "构建完成消息 → 日志 + HTTP 发送", cyan)}
+${item("node skills/rui-bot/send.mjs --story=user-login --status=complete --conclusion=\"...\" --description=\"...\"", "构建完成消息 → 日志 + HTTP 发送", cyan)}
 ${scene("仅追加通知日志不发送")}
-${item("node skills/wework-bot/send.mjs --story=user-login --status=complete --no-send", "消息写入本地日志文件，不调 HTTP", cyan)}
+${item("node skills/rui-bot/send.mjs --story=user-login --status=complete --no-send", "消息写入本地日志文件，不调 HTTP", cyan)}
 ${scene("阻断通知")}
-${item("node skills/wework-bot/send.mjs --story=payment --status=blocked --reason=\"API 限流\" --recovery=\"降低并发后重试\"", "构建阻断消息（含原因+恢复点）→ 日志 + 发送", cyan)}
+${item("node skills/rui-bot/send.mjs --story=payment --status=blocked --reason=\"API 限流\" --recovery=\"降低并发后重试\"", "构建阻断消息（含原因+恢复点）→ 日志 + 发送", cyan)}
 ${scene("门禁失败通知")}
-${item("node skills/wework-bot/send.mjs --story=deploy --status=gate-fail --gate=\"Gate B\" --gateResult=\"3 P0 未清零\"", "构建门禁消息（含门禁名称+结果）→ 日志 + 发送", cyan)}
+${item("node skills/rui-bot/send.mjs --story=deploy --status=gate-fail --gate=\"Gate B\" --gateResult=\"3 P0 未清零\"", "构建门禁消息（含门禁名称+结果）→ 日志 + 发送", cyan)}
 ${scene("健康检查")}
-${item("node skills/wework-bot/send.mjs health", "检测 token / config.json / webhook / API 可达性", cyan)}
+${item("node skills/rui-bot/send.mjs health", "检测 token / config.json / webhook / API 可达性", cyan)}
 ${scene("自定义消息内容")}
-${item("node skills/wework-bot/send.mjs --story=user-login --content=\"自定义消息正文\"", "直接指定消息正文，覆盖字段构建", cyan)}
+${item("node skills/rui-bot/send.mjs --story=user-login --content=\"自定义消息正文\"", "直接指定消息正文，覆盖字段构建", cyan)}
 ${scene("Token 缺失时先写日志后补发")}
-${item("node skills/wework-bot/send.mjs --story=user-login --status=complete --no-send", "Step 1：仅追加日志不发送（容错，自动 no-token 降级）", cyan)}
+${item("node skills/rui-bot/send.mjs --story=user-login --status=complete --no-send", "Step 1：仅追加日志不发送（容错，自动 no-token 降级）", cyan)}
 ${item("# 配置 API_X_TOKEN 后重新触发", "Step 2：Token 就绪后重跑管线自动发送", dim)}
 `;
 

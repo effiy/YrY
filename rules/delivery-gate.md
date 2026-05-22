@@ -6,7 +6,7 @@ paths:
 
 # delivery-gate
 
-> 每个 `/rui` 末端三步交付按序执行，每步必标记。未标记 = 未执行。import-docs 和 wework-bot 是 rui 管线的强制组成部分，不可省略。
+> 每个 `/rui` 末端三步交付按序执行，每步必标记。未标记 = 未执行。rui-import 和 rui-bot 是 rui 管线的强制组成部分，不可省略。
 >
 > **Iron Law — 违反字母即是违反精神：**
 > - 未标记 = 未执行。"调用过"不等于"已验证标记"。
@@ -32,11 +32,11 @@ paths:
 flowchart TB
     DONE["管线完成"]:::src --> S0["⓪ 执行记忆<br/>node .memory/collector.mjs"]:::step
     S0 --> M0["mark memory_written"]:::mark
-    M0 --> S1["① 追加日志<br/>wework-bot --no-send"]:::step
+    M0 --> S1["① 追加日志<br/>rui-bot --no-send"]:::step
     S1 --> M1["mark log_appended"]:::mark
-    M1 --> S2["② 文档同步<br/>node skills/import-docs/sync.mjs"]:::step
+    M1 --> S2["② 文档同步<br/>node skills/rui-import/sync.mjs"]:::step
     S2 --> M2["mark docs_synced"]:::mark
-    M2 --> S3["③ 发送通知<br/>wework-bot"]:::step
+    M2 --> S3["③ 发送通知<br/>rui-bot"]:::step
     S3 --> M3["mark notification_sent"]:::mark
     M3 --> CLOSED["闭环 ✅"]:::done
 
@@ -52,9 +52,9 @@ flowchart TB
 | 步骤 | 操作 | 标记 | 降级条件 |
 |------|------|------|---------|
 | ⓪ 执行记忆 | `node .memory/collector.mjs --story=<name> --command=<cmd>` 追加记录 | `memory_written` | — |
-| ① 追加日志 | `wework-bot --no-send` 写入日志 | `log_appended` | — |
-| ② 文档同步 | `node skills/import-docs/sync.mjs` 推送 | `docs_synced` | `no-token`（缺 API_X_TOKEN） |
-| ③ 发送通知 | `wework-bot` 推送企微 | `notification_sent` | — |
+| ① 追加日志 | `rui-bot --no-send` 写入日志 | `log_appended` | — |
+| ② 文档同步 | `node skills/rui-import/sync.mjs` 推送 | `docs_synced` | `no-token`（缺 API_X_TOKEN） |
+| ③ 发送通知 | `rui-bot` 推送企微 | `notification_sent` | — |
 
 ## 适用
 
@@ -84,7 +84,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    CALL["调用 wework-bot<br/>--no-send"]:::step --> LOG["写入执行日志<br/>{project}-消息通知列表<br/>含 🤖技能 + 📋命令"]:::out
+    CALL["调用 rui-bot<br/>--no-send"]:::step --> LOG["写入执行日志<br/>{project}-消息通知列表<br/>含 🤖技能 + 📋命令"]:::out
     LOG --> MARK["在 rui-state.json<br/>delivery_pipeline.log_appended<br/>= true"]:::mark
     MARK --> NEXT["进入步骤 ②"]:::next
 
@@ -96,7 +96,7 @@ flowchart LR
 
 | 规则 | 描述 |
 |------|------|
-| 技能标识 | 每条日志必须含 `🤖 技能` 字段（rui / rui-story / rui-claude / wework-bot / import-docs） |
+| 技能标识 | 每条日志必须含 `🤖 技能` 字段（rui / rui-story / rui-claude / rui-bot / rui-import） |
 | 命令记录 | 每条日志必须含 `📋 命令` 字段（用户执行的具体命令，含参数） |
 | 时间戳 | 每条日志以 `【YYYY-MM-DD HH:mm:ss】` 分隔行开头 |
 
@@ -104,7 +104,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    SYNC["node skills/import-docs/sync.mjs"]:::step --> Q1{"API_X_TOKEN<br/>存在?"}
+    SYNC["node skills/rui-import/sync.mjs"]:::step --> Q1{"API_X_TOKEN<br/>存在?"}
     Q1 -->|"是"| PUSH["推送 *.md + .claude/<br/>排除 .git / node_modules"]:::push
     Q1 -->|"否"| NOOP["降级：跳过推送<br/>仍标记 docs_synced"]:::warn
     PUSH --> Q2{"网络?"}
@@ -140,7 +140,7 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    CALL["调用 wework-bot"]:::step --> NAME["--name = &lt;project&gt;-&lt;name&gt;<br/>或 .claude/"]:::param
+    CALL["调用 rui-bot"]:::step --> NAME["--name = &lt;project&gt;-&lt;name&gt;<br/>或 .claude/"]:::param
     NAME --> CH{"管线状态?"}
     CH -->|"成功"| OK["报告完成"]:::ok
     CH -->|"失败/阻断"| FAIL["报告阻断状态"]:::warn
@@ -155,15 +155,15 @@ flowchart LR
 
 | # | 规则 |
 |---|------|
-| 9 | 通知名（`--name`）= `<name>` 或 `.claude/`，由 wework-bot 决定通道 |
+| 9 | 通知名（`--name`）= `<name>` 或 `.claude/`，由 rui-bot 决定通道 |
 
 ## 核心约束
 
 ```mermaid
 flowchart LR
     subgraph 必须["每次 rui 必须触发"]
-        M1["import-docs"]:::must
-        M2["wework-bot"]:::must
+        M1["rui-import"]:::must
+        M2["rui-bot"]:::must
     end
     subgraph 禁止["不可跳过"]
         X1["管线失败也需通知"]:::block
@@ -179,7 +179,7 @@ flowchart LR
 | # | 规则 | 反例 |
 |---|------|------|
 | — | 这是管线完整性的硬性要求，不是建议 | "本次改动很小，跳过通知" |
-| — | 即使管线中途失败/阻断，仍需触发通知（报告阻断状态） | 阻断后直接退出，未调 wework-bot |
+| — | 即使管线中途失败/阻断，仍需触发通知（报告阻断状态） | 阻断后直接退出，未调 rui-bot |
 | — | `no-token` 降级时：调用脚本 + 标记，跳过实际网络请求 | 因缺 token 跳过整个步骤 |
 | — | 跳过触发 = 违反核心约束 = 管线未闭合 | `--dry-run` 外跳步 |
 
@@ -247,8 +247,8 @@ flowchart LR
 ```mermaid
 flowchart LR
     S1["三步标记齐全<br/>log_appended · docs_synced · notification_sent"]:::sig --> S2["标记顺序正确<br/>① → ② → ③ 无跳序"]:::sig
-    S2 --> S3["import-docs 已触发<br/>含 no-token 降级"]:::sig
-    S3 --> S4["wework-bot 已触发<br/>含阻断状态报告"]:::sig
+    S2 --> S3["rui-import 已触发<br/>含 no-token 降级"]:::sig
+    S3 --> S4["rui-bot 已触发<br/>含阻断状态报告"]:::sig
     S4 --> S5["rui-state.json<br/>delivery 字段闭合"]:::sig
 
     classDef sig fill:#e8f5e9,stroke:#2e7d32;
@@ -258,6 +258,6 @@ flowchart LR
 |------|------------|
 | 三步标记齐全 | 补执行缺失步骤，写入标记 |
 | 标记顺序正确（① → ② → ③） | 清除错序标记，从断点重新执行 |
-| import-docs 已触发 | 调用 `node skills/import-docs/sync.mjs` 并标记 |
-| wework-bot 已触发 | 调用 wework-bot 并标记 |
+| rui-import 已触发 | 调用 `node skills/rui-import/sync.mjs` 并标记 |
+| rui-bot 已触发 | 调用 rui-bot 并标记 |
 | rui-state.json delivery 字段闭合 | 核对标记字段，补全后 closure 锁定 |

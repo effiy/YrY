@@ -85,8 +85,8 @@ flowchart TD
 | 我想要 | 从远端同步故事文档到本地，以及清理本地混入的非项目文件 |
 | 以便 | 本地文档与远端保持一致，且仅保留当前项目的文档 |
 | 优先级 | P0 |
-| 范围边界 | sync 委托 import-docs，clear/remove 仅操作本地文件系统 |
-| 依赖 | Story 1 完成，import-docs skill 可用 |
+| 范围边界 | sync 委托 rui-import，clear/remove 仅操作本地文件系统 |
+| 依赖 | Story 1 完成，rui-import skill 可用 |
 
 #### 范围外
 
@@ -98,7 +98,7 @@ flowchart TD
 
 | # | 操作 | 触发条件 | 操作步骤 | 预期结果 |
 |---|------|---------|---------|---------|
-| 1 | 同步故事文档 | 用户执行 `/rui-story sync <name>` | 委托 import-docs mode=pull → 从远端下载覆盖本地 | 本地文档与远端一致 |
+| 1 | 同步故事文档 | 用户执行 `/rui-story sync <name>` | 委托 rui-import mode=pull → 从远端下载覆盖本地 | 本地文档与远端一致 |
 | 2 | 同步推荐提示 | 用户执行 `/rui-story sync`（无参数） | 查询远端可同步故事 → 展示推荐列表 | 用户选择后执行定向同步 |
 | 3 | 清理非项目文件 | 用户执行 `/rui-story clear [<name>]` | 读取 CLAUDE.md 项目前缀 → 扫描目录 → 展示删除/保留双重清单 → 确认后删除 | 仅保留 `{project}-` 前缀文件 |
 | 4 | 删除故事目录 | 用户执行 `/rui-story remove <name>` | 检查目录存在 → 展示内容清单 → 确认后删除整个目录 | 本地目录完全删除，远端不受影响 |
@@ -142,7 +142,7 @@ flowchart TD
 | FP6 | 单故事详述卡 — 文件清单/状态/元数据/分支信息 | 故事名 + sessions | 格式化详述卡 | 故事不存在时列出已知故事名 | P0 |
 | FP7 | 同步推荐列表 — 远端可同步故事及推荐命令 | 故事分组 | 推荐列表 + sync 命令 | 无数据时显示空状态提示 | P1 |
 | FP8 | 健康检查报告 — 凭据/API 可达性/配置/数据完整性 | 环境变量 + 远端 API + 本地文件 | 诊断报告 | Token 缺失时跳过远端检查 | P1 |
-| FP9 | 文档同步 — 委托 import-docs 从远端拉取文档到本地 | 故事名 | 同步完成的本地文档 | import-docs 失败时传递错误 | P0 |
+| FP9 | 文档同步 — 委托 rui-import 从远端拉取文档到本地 | 故事名 | 同步完成的本地文档 | rui-import 失败时传递错误 | P0 |
 | FP10 | 本地清理 — 仅保留 `{project}-` 前缀文件，其余删除 | 故事名(可选) + 项目前缀 | 清理后的目录 | 无匹配文件时不执行任何操作 | P0 |
 | FP11 | 目录删除 — 删除整个故事本地目录 | 故事名(必填) | 已删除的目录 | 目录不存在时提示终止 | P1 |
 | FP12 | 帮助输出 — 显示完整命令用法与场景示例 | — | 格式化帮助文本 | help.mjs 不存在时回退到内置帮助 | P1 |
@@ -154,7 +154,7 @@ flowchart TD
 | R1 | 所有查询操作使用远端 API，不读本地文件系统 | 代码审查：overview/list/show/recommend 函数无 fs.readFileSync 调用 | B |
 | R2 | 仅查询和同步故事面板状态，不创建文档内容 | 代码审查：无文件写入操作（除 sync/clear/remove） | B |
 | R3 | 不修改源码，不创建/切换 git 分支 | 代码审查：无 Edit/Write 到 skills/agents/rules 目录 | B |
-| R4 | sync 完全委托 import-docs | 代码审查：sync 调用 node skills/import-docs/sync.mjs | B |
+| R4 | sync 完全委托 rui-import | 代码审查：sync 调用 node skills/rui-import/sync.mjs | B |
 | R5 | clear 仅操作本地文件系统，不触碰远端 | 代码审查：clear 逻辑无 fetch/网络请求 | B |
 | R6 | clear 仅保留 `{project}-` 前缀文件，先展示后确认 | 用户交互流程验证 | B |
 | R7 | remove 仅操作本地文件系统，name 必填，先展示后确认 | 用户交互流程验证 | B |
@@ -203,7 +203,7 @@ flowchart TD
 | 1 | 远端 API 查询引擎 | FP1 | 查询 sessions 集合，筛选故事任务面板数据 |
 | 2 | 状态判定与类型推断 | FP2, FP3 | 基于远端数据自动判定，含本地 blocked 例外 |
 | 3 | 只读命令族（概览/list/show/recommend/health） | FP4–FP8, FP12 | 零本地文件系统读取 |
-| 4 | 文档同步（sync） | FP9 | 委托 import-docs，mode=pull |
+| 4 | 文档同步（sync） | FP9 | 委托 rui-import，mode=pull |
 | 5 | 本地清理（clear/remove） | FP10, FP11 | 仅操作本地文件系统，不触碰远端 |
 | 6 | 帮助系统 | FP12 | help.mjs 确定性输出 |
 
@@ -214,7 +214,7 @@ flowchart TD
 | 1 | 故事文档内容创建 | 那是 /rui doc 的职责 | 使用 `/rui doc <需求>` |
 | 2 | 源码修改 | 那是 /rui code 的职责 | 使用 `/rui code <name>` |
 | 3 | git 分支创建与切换 | 那是 /rui code 的职责 | git checkout -b feat/<name> |
-| 4 | 远端文档删除 | 远端数据由 import-docs 管理 | — |
+| 4 | 远端文档删除 | 远端数据由 rui-import 管理 | — |
 | 5 | 故事进度变更（如标记完成） | 那是 rui 管线的职责 | 管线末端自动更新状态 |
 
 ---
@@ -230,7 +230,7 @@ flowchart TD
 | AC3 | API_X_TOKEN 已配置，远端存在指定故事 | 用户执行 `/rui-story show <name>` | 输出详述卡：文件清单/类型/分支/元数据 | Gate A |
 | AC4 | API_X_TOKEN 未配置 | 用户执行任意查询命令 | 输出 Token 缺失提示 + 配置方法 | Gate A |
 | AC5 | 远端 API 不可达 | 用户执行任意查询命令 | 输出错误信息后优雅退出 | Gate A |
-| AC6 | 用户指定故事名 | 用户执行 `/rui-story sync <name>` | 委托 import-docs 执行 mode=pull 同步 | Gate A |
+| AC6 | 用户指定故事名 | 用户执行 `/rui-story sync <name>` | 委托 rui-import 执行 mode=pull 同步 | Gate A |
 | AC7 | 用户未指定故事名 | 用户执行 `/rui-story sync` | 展示可同步故事推荐列表 | Gate A |
 | AC8 | 本地故事目录含非项目文件 | 用户执行 `/rui-story clear <name>` 并确认 | 删除非 `{project}-` 文件，保留项目文件 | Gate A |
 | AC9 | 用户指定故事名 | 用户执行 `/rui-story remove <name>` 并确认 | 删除整个本地故事目录 | Gate A |

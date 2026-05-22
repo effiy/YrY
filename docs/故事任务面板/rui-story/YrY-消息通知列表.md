@@ -70,8 +70,8 @@
 ✅ 完成
 🎯 结论: Phase 4 测试
 📝 描述: 验证 send.mjs 通知发送
-📌 范围: skills/wework-bot/
+📌 范围: skills/rui-bot/
 👉 下一步: 完成 Phase 5
 🌐 影响: 少量测试文件
-📎 证据: node skills/wework-bot/send.mjs health 通过
+📎 证据: node skills/rui-bot/send.mjs health 通过
 ⏱️ 会话: 20260521 22:30

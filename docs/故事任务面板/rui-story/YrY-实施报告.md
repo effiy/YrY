@@ -26,7 +26,7 @@
 | SC1 — 无参数状态概览 | 6 种状态全部统计，最近活动正确排序 | 6 状态统计正确，最近活动按时间降序 | ✅ | — |
 | SC2 — 进度全景表格 | 6 列表格含 Story/Status/Files/Last Modified/Type/Branch | 6 列完整，TTY 颜色 + 列对齐 | ✅ | — |
 | SC3 — 单故事详情 | 文件清单完整，状态和类型准确 | 7 文件清单 + 全栈类型 + feat/rui-story 分支 | ✅ | — |
-| SC4 — 远端同步到本地 | 本地文档与远端一致 | 委托 import-docs mode=pull | ✅ | sync 未实测（无 import-docs 独立测试环境） |
+| SC4 — 远端同步到本地 | 本地文档与远端一致 | 委托 rui-import mode=pull | ✅ | sync 未实测（无 rui-import 独立测试环境） |
 | SC5 — 安全清理非项目文件 | 仅保留 {project}- 文件，删除前展示双重清单 | SKILL.md 规约驱动，agent 执行确认流程 | ✅ | clear/remove 由 agent 按 SKILL.md 执行 |
 | SC6 — 健康检查 | 覆盖凭据/API/配置/数据 4 维度 | 5 pass, 0 warn, 0 error | ✅ | — |
 | SC7 — 帮助系统 | 含命令表 + 场景示例 | help.mjs 117 行完整输出 | ✅ | — |
@@ -106,7 +106,7 @@
 
 | # | 评审设计 | 实际实现 | 偏差原因 | 影响 | 优先级 |
 |---|---------|---------|---------|------|--------|
-| 1 | 技术评审 §1 计划 sync/clear/remove 在 rui-story.mjs 中实现 | sync 委托 import-docs；clear/remove 由 agent 按 SKILL.md 规约执行 | sync 复用已有 import-docs 能力避免重复；clear/remove 为破坏性操作需 agent 确认流程 | 无负面影响，职责更清晰 | P1 |
+| 1 | 技术评审 §1 计划 sync/clear/remove 在 rui-story.mjs 中实现 | sync 委托 rui-import；clear/remove 由 agent 按 SKILL.md 规约执行 | sync 复用已有 rui-import 能力避免重复；clear/remove 为破坏性操作需 agent 确认流程 | 无负面影响，职责更清晰 | P1 |
 | 2 | 技术评审 §3.4 类型推断规则含 "服务" 关键词匹配后端 | 实际实现中 "服务" 匹配后端 + "界面" 匹配前端 → 可能误判为 fullstack | 中文关键词歧义：YrY 技术评审同时提及"服务端"和"界面" | rui-story 被正确判定为全栈，无实际影响 | P2 |
 | 3 | 10a473f refactor: ANSI magic numbers → semantic constants + help path simplified | 32e5bde fea: 1.6.2 重新添加 findPluginHelpPath() + homedir/readdirSync 导入 | help.mjs 需从插件缓存目录定位，无法仅用本地路径 | 恢复 findPluginHelpPath() 是功能需要，非回退 | P2 |
 

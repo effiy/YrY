@@ -1,4 +1,4 @@
-# YrY <sub>v1.13.0</sub>
+# YrY <sub>v1.14.0</sub>
 
 > 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。
 
@@ -14,8 +14,8 @@ flowchart TD
         RUI[rui]:::skill
         RS[rui-story]:::skill
         RC[rui-claude]:::skill
-        ID[import-docs]:::skill
-        WW[wework-bot]:::skill
+        ID[rui-import]:::skill
+        WW[rui-bot]:::skill
         TD[rui-trends]:::skill
     end
 
@@ -118,7 +118,7 @@ flowchart TD
 | `/rui-story show <name>` | 只读 | 远端 API | 单故事详情：文件清单/状态/元数据 |
 | `/rui-story recommend` | 只读 | 远端 API | 同步推荐：列出远端可同步故事及推荐命令 |
 | `/rui-story health` | 只读 | 远端 API + 本地 | 健康检查：凭据/API 可达性/配置/数据完整性 |
-| `/rui-story sync [<name>]` | 写入 | 远端 API | 委托 import-docs 从远端拉取文档覆盖本地 |
+| `/rui-story sync [<name>]` | 写入 | 远端 API | 委托 rui-import 从远端拉取文档覆盖本地 |
 | `/rui-story clear [<name>]` | 写入 | 本地文件系统 | 仅保留 `{project}-` 前缀文件，其余删除（需确认） |
 | `/rui-story remove <name>` | 写入 | 本地文件系统 | 删除指定故事整个本地目录（需确认） |
 | `/rui-story status check` | 只读 | 本地状态机 | 验证状态转移合法性：`--from=<s> --to=<s>` |
@@ -191,8 +191,8 @@ flowchart LR
 - **rui** (`/rui init · doc · code · update · yry · version --up · --rollback · --from-code`) — 故事驱动 SDLC 主线，含诊断纪律、架构深化、交接纪律、版本管理
 - **rui-story** (`/rui-story list · show · recommend · health · sync · clear · remove · status  (merge/split 由 yry 自动执行)`) — 故事面板远端查询、进度管理、文档同步、本地清理、状态转移、合并拆分
 - **rui-claude** (`/rui-claude sync · retro · history`) — .claude/ 配置远端同步与复盘
-- **import-docs** — 自动（hook 触发）：批量同步故事文档到远端 API
-- **wework-bot** — 自动（hook 触发）：企微机器人推送管线状态通知
+- **rui-import** — 自动（hook 触发）：批量同步故事文档到远端 API
+- **rui-bot** — 自动（hook 触发）：企微机器人推送管线状态通知
 - **rui-trends** — 按需：查询 GitHub Trending / OSS Insight / TrendShift / Top-Starred，输出结构化趋势报告。自改进 D5 诊断集成
 
 详见 [`skills/`](./skills/)。
@@ -219,8 +219,8 @@ YrY/
 │   │   └── ranking.md       #     推荐评分框架
 │   ├── rui-story/           #   故事面板管理
 │   ├── rui-claude/          #   .claude/ 配置管理
-│   ├── import-docs/         #   文档远端同步
-│   ├── wework-bot/          #   企微通知
+│   ├── rui-import/         #   文档远端同步
+│   ├── rui-bot/          #   企微通知
 │   └── rui-trends/          #   技术趋势发现
 ├── docs/
 │   └── 故事任务面板/        #   故事产出目录
@@ -267,7 +267,7 @@ flowchart TD
 | **证据等级** | A=已验证(附路径) B=可推导(附推导链) C=未验证(标"待补充") D=幻觉(视为错误)。 | confidence level |
 | **Agent** | 六大协作角色：pm coder tester reporter security self-improve。每角色有交接信号和验证方式。 | bot, worker, role |
 | **公式** | 结构化文档产出规范。分为通用元素 (F.meta/F.nav/F.evidence)、故事主线 (F.story.*)、补充文档 (F.supp.*)。区别于"模板"——公式是规约 (what)，模板是文件 (how)；本系统只用公式。 | template, format |
-| **交付三步** | 管线末端强制序列：hook-log → import-docs → wework-bot。任一缺失 = 管线未闭合。 | delivery pipeline, post-steps |
+| **交付三步** | 管线末端强制序列：hook-log → rui-import → rui-bot。任一缺失 = 管线未闭合。 | delivery pipeline, post-steps |
 | **自改进** | D0–D7 诊断循环。采集执行数据→六维评估→生成改进提案→提案闭合。 | retrospective, post-mortem |
 | **执行记忆** | `.memory/execution-memory.jsonl`（追加）+ `.memory/rui-state.json`（覆盖写）。 | state, log |
 | **项目类型** | frontend / backend / fullstack / meta / unknown。决定技术评审章节裁剪（纯前端跳过 API/数据/后端性能，纯后端跳过组件/状态/交互/样式/DOM）。 | stack type |

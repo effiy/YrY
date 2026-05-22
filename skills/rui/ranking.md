@@ -39,7 +39,7 @@ flowchart LR
 
 | 步骤 | 操作 | 说明 |
 |------|------|------|
-| §0.1 远端同步 | `node skills/import-docs/sync.mjs dir=docs/故事任务面板/ mode=pull` | 拉取远端最新故事面板内容 |
+| §0.1 远端同步 | `node skills/rui-import/sync.mjs dir=docs/故事任务面板/ mode=pull` | 拉取远端最新故事面板内容 |
 | §0.2 本地扫描 | 遍历 `docs/故事任务面板/` 下所有故事目录 | 读取每个故事的 rui-state.json + 故事任务文档 |
 | §0.3 覆盖分析 | 对比推荐候选 vs 已有故事 | 识别内容重叠（≥50% FP# 重叠即冲突） |
 | §0.4 冲突标注 | 对冲突候选标注 `⚠ 已有相似故事` | 冲突故事优先建议 `/rui update` 或 yry auto-merge |

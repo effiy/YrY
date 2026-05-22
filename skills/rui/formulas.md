@@ -655,7 +655,7 @@ flowchart TD
 
 | 文件 | 生成方 | 方式 |
 |------|--------|------|
-| `{project}-消息通知列表.md` | wework-bot hook | 列表追加，含时间戳+类型+payload |
+| `{project}-消息通知列表.md` | rui-bot hook | 列表追加，含时间戳+类型+payload |
 | `{project}-交互日志.md` | rui 管线 | 追加写入 · 按会话+时间戳分段 · 含全部人机交互内容 |
 | `.memory/execution-memory.jsonl` | rui 管线 | 追加 JSONL，字段见 [coder.md](./coder.md) |
 | `.memory/rui-state.json` | rui 管线 | 单对象覆盖写 |
@@ -694,10 +694,10 @@ flowchart TD
 
 ### F.supp.notification-log — 消息通知列表
 
-> wework-bot hook 追加写入。每次管线通知（完成/阻断/门禁失败）追加一条记录。
+> rui-bot hook 追加写入。每次管线通知（完成/阻断/门禁失败）追加一条记录。
 
 ```markdown
-> 消息通知列表 · 追加写入 · wework-bot 自动维护
+> 消息通知列表 · 追加写入 · rui-bot 自动维护
 
 【YYYY-MM-DD HH:mm:ss】
 

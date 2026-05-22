@@ -24,7 +24,7 @@ flowchart TD
     Q1 -->|"有"| Q2{"哪个子命令?"}
     Q2 -->|"list"| LIST["进度全景<br/>远端查询 → 所有故事详细表格"]:::read
     Q2 -->|"show <name>"| SHOW["单故事详情<br/>远端查询 → 文件清单/状态/元数据"]:::read
-    Q2 -->|"sync <name>?"| SYNC["文档同步<br/>远端 → 本地（委托 import-docs）"]:::write
+    Q2 -->|"sync <name>?"| SYNC["文档同步<br/>远端 → 本地（委托 rui-import）"]:::write
     Q2 -->|"clear <name>?"| CLEAR["清理文件<br/>本地 → 移除非项目前缀文件"]:::danger
     Q2 -->|"remove <name>"| REMOVE["删除故事目录<br/>本地 → 删除整个故事目录"]:::danger
     Q2 -->|"recommend"| RECOMMEND["同步推荐<br/>远端查询 → 可同步故事列表"]:::read
@@ -103,7 +103,7 @@ POST <apiUrl>/
 flowchart LR
     subgraph 允许["✅ 允许"]
         A1["远端 API 查询<br/>故事任务面板 session"]:::ok
-        A2["sync 委托 import-docs<br/>远端 → 本地"]:::ok
+        A2["sync 委托 rui-import<br/>远端 → 本地"]:::ok
         A3["clear 操作本地文件系统<br/>移除非项目前缀文件"]:::ok
         A4["remove 操作本地文件系统<br/>删除指定故事目录"]:::ok
     end
@@ -333,7 +333,7 @@ Summary: 5 pass, 0 warn, 0 error
 
 ```mermaid
 flowchart LR
-    Q{"有 &lt;name&gt;?"} -->|"是"| SCOPED["node skills/import-docs/sync.mjs<br/>dir=docs/故事任务面板/&lt;n&gt;/ mode=pull"]:::op
+    Q{"有 &lt;name&gt;?"} -->|"是"| SCOPED["node skills/rui-import/sync.mjs<br/>dir=docs/故事任务面板/&lt;n&gt;/ mode=pull"]:::op
     Q -->|"否"| RECOMMEND["展示可同步故事推荐<br/>等待用户选择"]:::op
     SCOPED --> OUT["输出同步结果"]:::out
     RECOMMEND --> OUT
@@ -342,7 +342,7 @@ flowchart LR
     classDef out fill:#e8f5e9,stroke:#2e7d32;
 ```
 
-- 方向：从远端同步文档到本地，完全委托 import-docs（`mode=pull`），不自行实现同步逻辑
+- 方向：从远端同步文档到本地，完全委托 rui-import（`mode=pull`），不自行实现同步逻辑
 - 指定故事：`dir=docs/故事任务面板/<name>/ mode=pull` → 远端下载覆盖本地
 - 未指定：展示可同步故事推荐提示，等待用户选择后再同步
 
@@ -504,7 +504,7 @@ flowchart LR
         R1["远端 API 为默认数据源<br/>查询不读本地文件系统"]:::rule
         R2["仅查询与同步<br/>不创建文档内容"]:::rule
         R3["不修改源码<br/>不创建/切换 git 分支"]:::rule
-        R4["sync 完全委托<br/>import-docs"]:::rule
+        R4["sync 完全委托<br/>rui-import"]:::rule
         R5["kebab-case<br/>命名硬规范"]:::rule
         R6["clear 需确认<br/>破坏性操作先展示后确认"]:::rule
         R7["clear/remove 仅本地<br/>不触碰远端数据"]:::rule
@@ -522,7 +522,7 @@ flowchart LR
 | 1 | 所有查询操作使用远端 API，不读本地文件系统（sync 写入除外） | 修正为远端查询 |
 | 2 | 仅查询故事面板状态和同步文档，不创建故事文档内容（那是 `/rui doc`） | 撤销误创建的文件 |
 | 3 | 不修改源码，不创建/切换 git 分支（那是 `/rui code`） | — |
-| 4 | sync 完全委托 import-docs，不自行实现同步 | 修正命令重试 |
+| 4 | sync 完全委托 rui-import，不自行实现同步 | 修正命令重试 |
 | 5 | `<name>` = kebab-case | 拒绝执行 |
 | 8 | recommend/health 由 rui-story.mjs 确定性执行，不依赖 agent 解读 SKILL.md 流程 | 修正为脚本执行 |
  	| 9 | merge/split 由 `/rui yry` 自改进闭环自动检测执行，不提供手动命令 | — |
@@ -534,7 +534,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     F1["list/show/概览 查询<br/>远端 API 非本地"]:::sig
-    F1 --> F2["sync 正确委托<br/>import-docs"]:::sig
+    F1 --> F2["sync 正确委托<br/>rui-import"]:::sig
     F2 --> F3["状态判定准确<br/>基于远端 file_path"]:::sig
     F3 --> F4["clear/remove 操作安全<br/>仅本地，先展示后确认再删除"]:::sig
     F4 --> F5["recommend/health<br/>确定性脚本输出"]:::sig
@@ -545,7 +545,7 @@ flowchart LR
 | 标志 | 未达标的处置 |
 |------|------------|
 | list/show/概览查询远端 API，非本地文件系统 | 修正为远端查询 |
-| sync 正确委托 import-docs | 修正命令参数重试 |
+| sync 正确委托 rui-import | 修正命令参数重试 |
 | 状态判定基于远端 file_path 准确 | 修正判定逻辑 |
 | clear 从 CLAUDE.md 读取项目名前缀，展示双重清单，确认后执行，仅 `{project}-` 文件幸存 | 修正为展示后确认 |
 | remove 仅操作本地，name 必填，展示清单后确认再删除，远端数据零影响 | 修正为展示后确认 |
