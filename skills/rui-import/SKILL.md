@@ -87,6 +87,27 @@ flowchart TD
 | workspace 标签 | 其他路径以项目根目录名（即 `workspace 名`）为一级标签 |
 | **硬约束** | 一级目录标签只允许 **项目目录名称** 或 **docs**，禁止其他任何值。此约束适用于**所有调用**（rui 自动触发 · 手动 `/rui-import` · 脚本直接调用）。`prefix` 参数不得绕过，`resolveRemotePath` 结构化保证 |
 
+## 语义标签
+
+> 故事文档导入时自动附加三组语义标签，用于远端查询与分类。标签通过文件名后缀匹配，无需手动指定。
+
+| 文档后缀 | stage | type | baseline |
+|---------|-------|------|----------|
+| -故事任务.md | stage:doc | type:task | baseline:problem |
+| -使用场景.md | stage:doc | type:scenario | baseline:problem |
+| -技术评审.md | stage:doc | type:tech-review | baseline:solution |
+| -测试设计.md | stage:doc | type:test-design | baseline:solution |
+| -安全审计.md | stage:doc | type:security-audit | baseline:solution |
+| -实施报告.md | stage:code | type:impl-report | baseline:verify |
+| -测试报告.md | stage:code | type:test-report | baseline:verify |
+| -自改进复盘.md | stage:improve | type:retrospective | baseline:verify |
+| -消息通知列表.md | stage:auto | type:notification-log | — |
+| -交互日志.md | stage:auto | type:interaction-log | — |
+
+非故事文档（.claude/ 配置等）不附加语义标签，仅保留路径标签。
+
+远端会话示例：`tags: ["docs", "故事任务面板", "rui-story", "stage:doc", "type:task", "baseline:problem"]`
+
 ## rui 强制触发
 
 > 每次使用 rui 技能都必须触发 rui-import，这是管线完整性的硬性要求。
@@ -107,11 +128,11 @@ flowchart LR
     classDef scope fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
-| 检查点 | 时机 | 范围 |
-|--------|------|------|
-| 文档生成后 | 全文档基线产出 | 当前故事目录 .md + .claude/ 全部 |
-| 验证后 | 实施与测试报告产出 | 同上 |
-| 交付时 | 最终全量 | 全项目 .md + .claude/ 全部 |
+| 检查点 | 时机 | 方式 | 范围 |
+|--------|------|------|------|
+| 文档生成后 | 每文档产出时 | `file=<path>` 单文件导入 | 当前生成的文件 |
+| 验证后 | 报告产出时 | `file=<path>` 单文件导入 | 当前生成的文件 |
+| 交付时 | 最终全量 | `workspace=true` 批量安全网 | 全项目 .md + .claude/ 全部 |
 
 ## 调用形态
 

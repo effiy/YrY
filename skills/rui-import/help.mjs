@@ -65,6 +65,7 @@ ${subhdr("路径控制")}
 ${item("workspace=true", "项目根全量扫描 + 上传", cyan)}
 ${item("dir=<absolute path>", "指定目录扫描 + 上传", cyan)}
 ${item("prefix=a,b", "远端路径前缀（多级目录）", yellow)}
+${item("file=<path>", "单文件导入（自动附加三组语义标签）", cyan)}
 ${item("exclude=tmp,build", "追加排除子目录", yellow)}
 
 ${subhdr("文件过滤")}
@@ -104,6 +105,8 @@ ${scene("仅同步 .claude/ 配置到远端")}
 ${item("/rui-import dir=.claude/", "扫描 .claude/ 全量 → 上传到远端", cyan)}
 ${scene("拉取单个故事的全部文档")}
 ${item("/rui-import dir=docs/故事任务面板/user-login/ mode=pull", "从远端拉取整个故事目录覆盖本地", cyan)}
+${scene("单文件导入（自动语义标签）")}
+${item("/rui-import file=docs/故事任务面板/user-login/YrY-故事任务.md", "导入单个文件，自动附加 stage:doc / type:task / baseline:problem 标签", cyan)}
 `;
 
 console.log(help);

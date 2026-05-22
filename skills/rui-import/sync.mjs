@@ -15,6 +15,20 @@ const DEFAULT_EXTS = ["md"];
 const DEFAULT_EXCLUDES = new Set([".git", "node_modules", ".claude-plugin"]);
 const CONCURRENCY = 4;
 const HTTP_TIMEOUT = 30_000;
+
+// Document type → label mapping (matched by filename suffix)
+const DOC_TYPE_PATTERNS = [
+  { suffix: "-故事任务.md",     stage: "stage:doc",     type: "type:task",           baseline: "baseline:problem" },
+  { suffix: "-使用场景.md",     stage: "stage:doc",     type: "type:scenario",       baseline: "baseline:problem" },
+  { suffix: "-技术评审.md",     stage: "stage:doc",     type: "type:tech-review",    baseline: "baseline:solution" },
+  { suffix: "-测试设计.md",     stage: "stage:doc",     type: "type:test-design",    baseline: "baseline:solution" },
+  { suffix: "-安全审计.md",     stage: "stage:doc",     type: "type:security-audit", baseline: "baseline:solution" },
+  { suffix: "-实施报告.md",     stage: "stage:code",    type: "type:impl-report",    baseline: "baseline:verify" },
+  { suffix: "-测试报告.md",     stage: "stage:code",    type: "type:test-report",    baseline: "baseline:verify" },
+  { suffix: "-自改进复盘.md",   stage: "stage:improve", type: "type:retrospective",   baseline: "baseline:verify" },
+  { suffix: "-消息通知列表.md", stage: "stage:auto",    type: "type:notification-log", baseline: null },
+  { suffix: "-交互日志.md",     stage: "stage:auto",    type: "type:interaction-log",  baseline: null },
+];
 const ERROR_MSG_MAX_LEN = 500;
 const QUERY_LIMIT = 10_000;
 const PREVIEW_COUNT = 10;
@@ -45,6 +59,7 @@ function parseArgs() {
       case "apiUrl": opts.apiUrl = val; break;
       case "mode": opts.mode = val; break;
       case "names": opts.names = val.split(",").map(s => s.trim()); break;
+      case "file": opts.file = val; break;
     }
   }
 
@@ -89,6 +104,7 @@ function fallbackHelp() {
   console.log("  exts=md,json,yaml       文件扩展名 (默认: md)");
   console.log("  exclude=tmp,build       追加排除目录");
   console.log("  prefix=a,b              远端路径前缀");
+  console.log("  file=<path>             单文件导入（自动附加语义标签）");
   console.log("  apiUrl=<url>            覆盖 API 地址");
   console.log("  mode=list               仅列出，不上传");
   console.log("  mode=pull               远端 → 本地下载");
@@ -161,10 +177,23 @@ function resolveRemotePath(localPath, root, workspaceName, prefix) {
   return segments.join("/");
 }
 
-function getTags(remotePath) {
+function getTags(remotePath, localPath) {
   const parts = remotePath.split("/");
   parts.pop(); // remove filename
-  return parts;
+  const semanticLabels = localPath ? resolveLabels(localPath, remotePath) : [];
+  return [...parts, ...semanticLabels];
+}
+
+function resolveLabels(localPath, _remotePath) {
+  const filename = basename(localPath);
+  for (const pat of DOC_TYPE_PATTERNS) {
+    if (filename.endsWith(pat.suffix)) {
+      const labels = [pat.stage, pat.type];
+      if (pat.baseline) labels.push(pat.baseline);
+      return labels;
+    }
+  }
+  return [];
 }
 
 // --- HTTP helpers ----------------------------------------------------------
@@ -213,9 +242,9 @@ async function writeRemoteFile(apiUrl, remotePath, content) {
   return fetchJson(apiUrl + "/write-file", { method: "POST", body: JSON.stringify(body) });
 }
 
-async function createSession(apiUrl, remotePath) {
+async function createSession(apiUrl, remotePath, localPath) {
   const basename = remotePath.split("/").pop();
-  const tags = getTags(remotePath);
+  const tags = getTags(remotePath, localPath);
   const now = Date.now();
   const body = {
     module_name: "services.database.data_service",
@@ -238,23 +267,32 @@ async function createSession(apiUrl, remotePath) {
   return fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
 }
 
+// --- single-file upload ----------------------------------------------------
+async function uploadSingleFile(filePath, apiUrl, existingPaths, root, workspaceName, prefix) {
+  const remotePath = resolveRemotePath(filePath, root, workspaceName, prefix);
+  const content = await readFile(filePath, "utf-8");
+  await writeRemoteFile(apiUrl, remotePath, content);
+  if (existingPaths.has(remotePath)) {
+    return { status: "overwritten", file: filePath, remotePath };
+  }
+  await createSession(apiUrl, remotePath, filePath);
+  return { status: "created", file: filePath, remotePath };
+}
+
 // --- concurrent upload -----------------------------------------------------
 async function uploadAll(files, apiUrl, existingPaths, root, workspaceName, prefix) {
   let created = 0, overwritten = 0, failed = 0;
   const errors = [];
 
   async function worker(file) {
-    const remotePath = resolveRemotePath(file, root, workspaceName, prefix);
     try {
-      const content = await readFile(file, "utf-8");
-      await writeRemoteFile(apiUrl, remotePath, content);
-      if (existingPaths.has(remotePath)) { overwritten++; }
-      else {
-        await createSession(apiUrl, remotePath);
-        created++;
-      }
+      const result = await uploadSingleFile(file, apiUrl, existingPaths, root, workspaceName, prefix);
+      if (result.status === "created") created++;
+      else if (result.status === "overwritten") overwritten++;
+      else { failed++; errors.push({ file: result.file, remotePath: result.remotePath, error: result.error }); }
     } catch (err) {
       failed++;
+      const remotePath = resolveRemotePath(file, root, workspaceName, prefix);
       errors.push({ file, remotePath, error: err.message });
     }
   }
@@ -508,6 +546,47 @@ async function main() {
     const result = await pullFromRemote(apiUrl, root, findProjectRoot(process.cwd()));
     console.error(JSON.stringify(result));
     process.exit(result.failed > 0 ? 1 : 0);
+  }
+
+  // Single-file import mode
+  if (opts.file) {
+    const filePath = resolve(opts.file);
+    if (!existsSync(filePath)) {
+      console.error(`[rui-import] file not found: ${filePath}`);
+      process.exit(1);
+    }
+    if (!API_X_TOKEN) {
+      console.error("[rui-import] no API_X_TOKEN — no-token 降级，跳过上传");
+      return;
+    }
+    console.error(`[rui-import] single-file mode: ${filePath}`);
+    console.error(`[rui-import] scan root: ${findProjectRoot(process.cwd())}`);
+    console.error(`[rui-import] workspace: ${workspaceName}`);
+
+    let existingPaths;
+    try {
+      existingPaths = await querySessions(apiUrl);
+      console.error(`[rui-import] existing sessions: ${existingPaths.size}`);
+    } catch (err) {
+      console.error(`[rui-import] failed to query sessions: ${err.message}`);
+      existingPaths = new Set();
+    }
+
+    try {
+      const pr = findProjectRoot(process.cwd());
+      const result = await uploadSingleFile(filePath, apiUrl, existingPaths, pr, workspaceName, opts.prefix);
+      const remotePath = resolveRemotePath(filePath, pr, workspaceName, opts.prefix);
+      const labels = resolveLabels(filePath, remotePath);
+
+      console.error(`[rui-import] single-file done — ${result.status}: ${filePath} → ${remotePath}`);
+      if (labels.length > 0) {
+        console.error(`[rui-import] labels: ${labels.join(", ")}`);
+      }
+      process.exit(result.status === "failed" ? 1 : 0);
+    } catch (err) {
+      console.error(`[rui-import] FAILED: ${err.message}`);
+      process.exit(1);
+    }
   }
 
   console.error(`[rui-import] scan root: ${root}`);
