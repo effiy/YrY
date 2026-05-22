@@ -1,4 +1,4 @@
-# YrY <sub>v1.6.8</sub>
+# YrY <sub>v1.7.0</sub>
 
 > 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。
 
@@ -103,6 +103,7 @@ flowchart TD
 | `/rui doc <需求>` | 写入 | 拆需求出文档：生成 01/02/03/04，不改源码 |
 | `/rui code <name>` | 写入 | 实现故事：Gate A → 逐模块 → Gate B → 复盘 → 交付 |
 | `/rui update <name> [ctx]` | 写入 | 增量更新：T1/T2/T3 自动裁剪 |
+| `/rui yry` | 写入 | 自改进闭环：全自主扫描→诊断→实现→验证→版本升级，循环至无改进空间 |
 | `/rui doc --from-code 需求` | 写入 | 从源码反推完整 5 文档基线到故事目录（源码只读） |
 | `/rui code --from-doc <name>` | 只读 | 从文档反推码：禁止改源码 |
 
@@ -118,6 +119,11 @@ flowchart TD
 | `/rui-story sync [<name>]` | 写入 | 远端 API | 委托 import-docs 从远端拉取文档覆盖本地 |
 | `/rui-story clear [<name>]` | 写入 | 本地文件系统 | 仅保留 `{project}-` 前缀文件，其余删除（需确认） |
 | `/rui-story remove <name>` | 写入 | 本地文件系统 | 删除指定故事整个本地目录（需确认） |
+| `/rui-story status check` | 只读 | 本地状态机 | 验证状态转移合法性：`--from=<s> --to=<s>` |
+| `/rui-story status transition` | 写入 | 本地 rui-state.json | 执行状态转移并记录审计日志 |
+| `/rui-story status dashboard` | 只读 | 本地文件系统 | 跨故事聚合仪表板（本地 rui-state.json） |
+| `/rui-story merge [<name>]` | 写入 | 远端 API + 本地 | 合并远端与本地故事任务（最小可用原则）；自动升级版本号 |
+| `/rui-story split <name>` | 写入 | 本地文件系统 | 拆分大故事为独立子故事；父升级子初始 |
 | `/rui-story --help` | 只读 | 本地 | 完整命令用法 + 场景示例 |
 
 ### /rui-claude — .claude/ 配置管理
@@ -183,7 +189,7 @@ flowchart LR
 ## 技能
 
 - **rui** (`/rui init · doc · code · update · --from-code`) — 故事驱动 SDLC 主线，含诊断纪律、架构深化、交接纪律
-- **rui-story** (`/rui-story list · show · recommend · health · sync · clear · remove`) — 故事面板远端查询、进度管理、文档同步、本地清理
+- **rui-story** (`/rui-story list · show · recommend · health · sync · clear · remove · status · merge · split`) — 故事面板远端查询、进度管理、文档同步、本地清理、状态转移、合并拆分
 - **rui-claude** (`/rui-claude sync · retro · history`) — .claude/ 配置远端同步与复盘
 - **import-docs** — 自动（hook 触发）：批量同步故事文档到远端 API
 - **wework-bot** — 自动（hook 触发）：企微机器人推送管线状态通知

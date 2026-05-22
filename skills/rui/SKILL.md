@@ -15,7 +15,7 @@ agents:
 >
 > 哲学源自 [CLAUDE.md](../../CLAUDE.md)。本文件定义命令面与编排骨架，细节分散在：[rules/](../../rules/) · [agents/](../../agents/) · [formulas.md](./formulas.md) · [coder.md](./coder.md)。
 
-[选哪条命令](#选哪条命令) · [管线一览](#管线一览) · [阻断标识](#阻断标识) · [核心约束](#核心约束) · [故事文档](#故事文档) · [init](#init) · [doc](#doc) · [code](#code) · [端到端](#端到端) · [update](#update) · [code --from-doc](#code---from-doc) · [doc --from-code](#doc---from-code)
+[选哪条命令](#选哪条命令) · [管线一览](#管线一览) · [阻断标识](#阻断标识) · [核心约束](#核心约束) · [故事文档](#故事文档) · [init](#init) · [doc](#doc) · [code](#code) · [端到端](#端到端) · [update](#update) · [yry](#yry) · [code --from-doc](#code---from-doc) · [doc --from-code](#doc---from-code)
 
 ## 选哪条命令
 
@@ -32,6 +32,7 @@ flowchart TD
     Q2 -->|"文档齐缺实现"| CODE["/rui code <name>"]
     Q2 -->|"代码改完补文档"| FD["/rui code --from-doc"]
     Q2 -->|"小修小补"| UPD["/rui update"]
+    Q2 -->|"自改进闭环"| YRY["/rui yry"]
     Q2 -->|"看进度"| LIST["/rui-story list 或 /rui-story"]
 ```
 
@@ -47,6 +48,7 @@ flowchart TD
 - `/rui code --from-doc <name>` — 从文档反推：只读源码补全缺失文档（实施报告/测试报告/自改进复盘），不覆盖已有
 - `/rui doc --from-code 需求` — 从源码反推：req 空时 pm 扫描推荐列表；req 有值时直接反推生成完整文档基线
 - `/rui doc --from-local <name>` — 从已有本地文档补全缺失文档基线（只读已有，生成缺失，不覆盖）
+- `/rui yry` — 自改进闭环：全自主扫描→诊断→实现→验证→版本升级，循环至无改进空间
 
 ### 只读命令（不触发 hook）
 
@@ -479,6 +481,91 @@ flowchart LR
 | T1 | 措辞 / 格式 | 跳过 | 跳过 | 仅变更章节 |
 | T2 | 增删故事 / 接口变更 | 裁剪 | 裁剪 | 目标 + 下游 |
 | T3 | 边界变化 / 跨故事重构 | 完整重跑 | 完整重跑 | 全级联刷新 |
+
+**末端触发** [强制集成](#强制集成)。
+
+## yry
+
+> 自改进闭环：全自主扫描所有故事，诊断→实现→验证→版本升级，循环至无改进空间。
+>
+> **每个闭环自动为涉及的故事升级版本号**（语义化版本：内容改进→补丁升级，新功能→次版本升级，架构变更→主版本升级）。
+
+```mermaid
+flowchart TD
+    START["/rui yry"]:::entry --> SCAN["§1 全量扫描<br/>扫描所有故事 rui-state.json<br/>+ execution-memory.jsonl"]:::s
+    SCAN --> DIAG["§2 诊断排序<br/>D0-D7 模式匹配 →<br/>按优先级+影响面排序"]:::s
+    DIAG --> CHECK{"有改进空间?"}
+    CHECK -->|"否"| DONE["输出健康声明<br/>所有故事已达最优"]:::out
+    CHECK -->|"是"| PICK["§3 选取最优<br/>选取最高优先级改进项"]:::s
+    PICK --> IMPL["§4 自主实现<br/>/rui update <name><br/>或 /rui code <name>"]:::s
+    IMPL --> VERIFY["§5 验证<br/>Gate B 门禁<br/>+ 回归检查"]:::s
+    VERIFY --> VER{"通过?"}
+    VER -->|"是"| BUMP["§6 版本升级<br/>按变更类型自动<br/>升级故事版本号"]:::s
+    VER -->|"否"| ROLLBACK["回滚 + 记录<br/>标记 skip 避免死循环"]:::s
+    BUMP --> DELIVER["§7 交付<br/>hook-log → import-docs<br/>→ wework-bot"]:::s
+    ROLLBACK --> DELIVER
+    DELIVER --> LOOP{"继续循环?"}
+    LOOP -->|"是，还有改进项"| SCAN
+    LOOP -->|"否，已达最优 或 连续3轮无改进"| END["输出闭环摘要<br/>总改进数·版本变更·耗时"]:::out
+
+    classDef entry fill:#fff3e0,stroke:#e65100;
+    classDef s fill:#e3f2fd,stroke:#1565c0;
+    classDef out fill:#e8f5e9,stroke:#2e7d32;
+```
+
+### 版本管理
+
+> 每个故事在 `.memory/rui-state.json` 中维护 `version` 字段（语义化版本 `MAJOR.MINOR.PATCH`）。每次闭环完成时自动升级。
+
+| 变更类型 | 版本升级 | 示例 |
+|---------|---------|------|
+| 措辞修正 / 格式调整 | PATCH (`1.0.0` → `1.0.1`) | T1 update |
+| 增删功能 / 接口变更 | MINOR (`1.0.1` → `1.1.0`) | T2 update |
+| 边界变化 / 架构重构 | MAJOR (`1.1.0` → `2.0.0`) | T3 update |
+
+**版本判定规则**：
+
+| 规则 | 说明 |
+|------|------|
+| 初始版本 | 故事首次创建时 `version: "1.0.0"` |
+| 自动升级 | yry 闭环完成后根据变更类型自动 bump |
+| 手动升级 | `/rui update` 完成后由管线自动 bump |
+| 版本记录 | 每次升级追加到 `rui-state.json` 的 `version_history` 数组 |
+| 版本展示 | `/rui-story show <name>` 展示当前版本和版本历史 |
+
+**rui-state.json 版本字段**：
+
+```json
+{
+  "version": "1.2.1",
+  "version_history": [
+    {"version": "1.0.0", "date": "2026-05-20", "trigger": "doc --from-code", "change": "初始生成"},
+    {"version": "1.1.0", "date": "2026-05-21", "trigger": "/rui update", "change": "补充接口数据请求流"},
+    {"version": "1.2.0", "date": "2026-05-22", "trigger": "/rui update", "change": "追加状态管理和指标采集"},
+    {"version": "1.2.1", "date": "2026-05-22", "trigger": "/rui yry", "change": "自动修复 P1 格式问题"}
+  ]
+}
+```
+
+### 终止条件
+
+| 条件 | 说明 |
+|------|------|
+| 无改进空间 | 所有 D0-D7 诊断通过，无待处理提案 |
+| 连续 3 轮无效 | 连续 3 轮无实质性变更（仅格式或空操作） |
+| 用户中断 | Ctrl+C 或关闭会话 |
+| 阻断不可自愈 | 遇到 `doc-p0` / `code-p0` 等需要人工决策的阻断 |
+
+### 约束
+
+| 约束 | 规则 |
+|------|------|
+| 全自主 | 无用户交互，自动决策和实现 |
+| 逐故事 | 每次闭环处理一个故事的一个改进项 |
+| 分支隔离 | 每故事自动创建/切换到 `feat/<name>` |
+| 版本强制 | 每次闭环完成必须 bump 版本号 |
+| 防死循环 | 同一改进项失败 ≥ 2 次 → skip + 记录 |
+| 无改进不 bump | 若闭环未产生实质变更，不升级版本 |
 
 **末端触发** [强制集成](#强制集成)。
 

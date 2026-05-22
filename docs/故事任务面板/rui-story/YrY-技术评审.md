@@ -1,8 +1,8 @@
-> | v1.4.8 | 2026-05-20 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
+> | v1.5.0 | 2026-05-22 | deepseek-v4-pro | 🌿 feat/rui-story | ⏱️ — | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 
 > **导航**: [← YrY-使用场景](./YrY-使用场景.md) · [YrY-测试设计 →](./YrY-测试设计.md) · [YrY-安全审计 →](./YrY-安全审计.md)
 
-> **来源引用**: 从 `skills/rui-story/rui-story.mjs` + `skills/rui-story/SKILL.md` 源码反推。证据 Level B + 源码路径。
+> **来源引用**: 从 `skills/rui-story/rui-story.mjs` + `skills/rui-story/SKILL.md` 源码反推。证据 Level B + 源码路径。2026-05-22 通过 /rui update 追加状态机和指标采集架构。
 
 [§0 设计决策与任务规划](#sec0-design) · [§1 系统架构](#sec1-architecture) · [§2 API 接口](#sec2-api) · [§3 数据模型](#sec3-data) · [§4 模块与状态](#sec4-modules) · [§7 安全约束](#sec7-security) · [§8 性能与限制](#sec8-performance) · [§9 评审清单](#sec9-checklist)
 
@@ -30,7 +30,10 @@
 | §3 数据模型 | Story 2 FP2 FP3 | 场景 A/B/C | 已覆盖 |
 | §4 模块与状态 | Story 1 FP2 FP4 FP5 FP6 | 场景 A/B/C | 已覆盖 |
 | §7 安全约束 | Story 2 R5 R6 R7 | 场景 E/F | 已覆盖 |
-| §8 性能与限制 | FP3 | 场景 B | 已覆盖 |
+| §4.3 状态机定义 | Story 4 FP13 FP14 FP20 | 场景 J | 待实现 |
+| §3.5 审计日志 | Story 4 FP19 | 场景 J | 待实现 |
+| §4.4 指标采集 | Story 5 FP16 FP17 FP18 | 场景 K | 待实现 |
+| §8 性能与限制 | FP3 FP17 | 场景 B K | 已覆盖 |
 
 ### §0.1 设计决策
 
@@ -45,6 +48,11 @@
 | clear 实现 | SKILL.md 规约驱动 | 破坏性操作需 agent 执行确认流程 | §1 | FP10 |
 | 帮助系统 | 独立 help.mjs 脚本 | 可独立运行，不依赖主逻辑 | §1 | FP12 |
 | 项目名解析 | CLAUDE.md 多模式匹配 | 兼容不同项目格式，fallback 目录名 | §3 | FP2 |
+| 状态机定义 | 6 状态闭环：任务→设计→实施→测试→报告→改进→新任务 | 与确定状态逻辑共用判定函数，状态转移为有限允许列表 | §4.3 | FP13 FP20 |
+| 状态转移校验 | status check 预校验 + transition 二次校验 | 防止并发竞态，transition 写入前重新读取验证当前状态 | §4.3 | FP14 |
+| 审计日志 | JSONL 追加写入 .memory/audit-log.jsonl | 不可篡改的追加模式，含 timestamp/story/from/to/reason | §3.5 | FP19 |
+| 指标采集 | 读取 execution-memory.jsonl 计算统计量 | 仅读不写，按 story 筛选或全局聚合 | §4.4 | FP16 FP17 |
+| 异常检测 | D0-D7 模式匹配 execution-memory.jsonl | 与 self-improve 诊断框架对齐，输出异常级别+证据 | §4.4 | FP18 |
 
 ### §0.2 任务规划
 
@@ -252,6 +260,19 @@ sequenceDiagram
 | 仅含前端关键词（组件/交互/样式/前端/页面/ui/frontend/界面/布局/渲染/响应式） | frontend |
 | 均不含或无法读取 | meta |
 
+### 3.5 审计日志结构
+
+| Key/字段 | 类型 | 必填 | 说明 |
+|----------|------|------|------|
+| timestamp | string (ISO 8601) | 是 | 转移执行时间 |
+| story | string | 是 | 故事名 (kebab-case) |
+| from | enum | 是 | 转移前状态 |
+| to | enum | 是 | 转移后状态 |
+| reason | string | 是 | 转移原因（用户提供） |
+| operator | string | 是 | 操作者标识 |
+
+存储位置：`docs/故事任务面板/<name>/.memory/audit-log.jsonl`，JSONL 追加模式。
+
 ---
 
 <a id="sec4-modules"></a>
@@ -304,6 +325,52 @@ stateDiagram-v2
 | 类型推断 | `typeMap: Map<name, type>` | 4 种类型枚举 |
 | 输出 | stdout 格式化文本 | TTY 颜色 + 列对齐 |
 
+### 4.3 状态机定义
+
+> 故事状态闭环：6 个核心状态 + 新任务入口，形成持续改进循环。
+
+```mermaid
+stateDiagram-v2
+    [*] --> 新任务: 需求识别
+    新任务 --> 任务: 需求拆分完成
+    任务 --> 设计: 文档基线齐全
+    设计 --> 实施: 实现完成
+    实施 --> 测试: Gate B 通过
+    测试 --> 报告: 测试报告生成
+    报告 --> 改进: 复盘完成
+    改进 --> 新任务: 改进提案转化
+```
+
+| 转移 | 触发条件 | 验证规则 |
+|------|---------|---------|
+| 新任务 → 任务 | 故事任务文档生成 | {project}-故事任务.md 存在 |
+| 任务 → 设计 | 文档基线齐全 | 使用场景 + 技术评审 + 测试设计 + 安全审计 全部存在 |
+| 设计 → 实施 | 代码实现完成 | {project}-实施报告.md 存在 |
+| 实施 → 测试 | Gate B 通过 | {project}-测试报告.md 存在 |
+| 测试 → 报告 | 测试报告生成 | {project}-测试报告.md 存在 + 自改进复盘不存在 |
+| 报告 → 改进 | 复盘完成 | {project}-自改进复盘.md 存在 |
+| 改进 → 新任务 | 改进提案转化 | 新需求识别，新故事目录创建 |
+
+**合法转移矩阵**（仅允许相邻状态转移，跨级跳转 = 非法）：
+
+| from \ to | 新任务 | 任务 | 设计 | 实施 | 测试 | 报告 | 改进 |
+|--------|--------|------|------|------|------|------|------|
+| 新任务 | — | ✓ | — | — | — | — | — |
+| 任务 | — | — | ✓ | — | — | — | — |
+| 设计 | — | — | — | ✓ | — | — | — |
+| 实施 | — | — | — | — | ✓ | — | — |
+| 测试 | — | — | — | — | — | ✓ | — |
+| 报告 | — | — | — | — | — | — | ✓ |
+| 改进 | ✓ | — | — | — | — | — | — |
+
+### 4.4 指标采集模块
+
+| 函数 | 类型 | 签名 | 入参 | 返回 | 副作用 |
+|------|------|------|------|------|--------|
+| collectStoryMetrics | async (projectRoot, storyName) => object | 读取 .memory/execution-memory.jsonl → 筛选 → 计算 | 项目根 + 故事名 | `{阶段耗时, 轮次, P0数量, 阻断次数}` | 无（只读） |
+| collectAllMetrics | async (projectRoot) => object[] | 扫描所有故事目录 → 并发采集 | 项目根 | 各故事指标数组 | 无（只读） |
+| detectAnomalies | async (projectRoot) => object[] | D0-D7 模式匹配全部执行记忆 | 项目根 | `[{诊断级别, 证据, 故事}]` | 无（只读） |
+
 ---
 
 <a id="sec7-security"></a>
@@ -318,6 +385,8 @@ stateDiagram-v2
 | 4 | 未授权远端访问 | CLI → API | X-Token 认证 + HTTPS 传输 | P0 |
 | 5 | clear/remove 误操作 | 用户 → 本地文件系统 | 双重清单展示 + 用户确认机制，不可跳过 | P0 |
 | 6 | 信息泄露 via 错误信息 | API 响应 → stdout | 错误信息截断至 500 字符 `text.slice(0, 500)` | P1 |
+| 7 | 未授权状态转移 | CLI → rui-state.json | status transition 需显式调用，不可自动触发；每次转移写审计日志 | P0 |
+| 8 | 审计日志篡改 | 本地文件系统 | JSONL 追加模式不可篡改历史记录；异常检测可发现日志回溯 | P1 |
 
 ---
 
@@ -350,6 +419,9 @@ stateDiagram-v2
 | 6 | 效果示意完整 — §1 含 mermaid flowchart | ✅ |
 | 7 | 命令注入防护 — execSync 参数受控 | ✅ |
 | 8 | 错误处理优雅 — Token 缺失/API 不可达/目录不存在 | ✅ |
+| 9 | 状态机闭环 — 6 状态 + 新任务，合法转移矩阵完整 | ✅ |
+| 10 | 审计日志 — JSONL 追加，字段完整 | 待实现 |
+| 11 | 指标采集 — 仅读 .memory/，D0-D7 模式匹配 | 待实现 |
 
 ---
 
@@ -357,5 +429,6 @@ stateDiagram-v2
 >
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
+> | 2026-05-22 | 追加 §4.3 状态机定义（6 状态闭环+合法转移矩阵）、§4.4 指标采集模块、§3.5 审计日志结构、§7 安全约束补充（转移授权+审计防篡改） | /rui update rui-story | skills/rui-story/SKILL.md §状态转移 §指标采集 |
 > | 2026-05-20 | §2.4 补充 curl 调试命令（query_documents + read-file 完整示例、jq 后处理、调试工作流、场景→API 速查表） | /rui update rui-story | skills/rui-story/rui-story.mjs:93-127 |
 > | 2026-05-20 | 初始生成 | doc --from-code rui-story | skills/rui-story/rui-story.mjs + SKILL.md |

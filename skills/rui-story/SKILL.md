@@ -30,7 +30,8 @@ flowchart TD
     Q2 -->|"recommend"| RECOMMEND["同步推荐<br/>远端查询 → 可同步故事列表"]:::read
     Q2 -->|"health"| HEALTH["健康检查<br/>远端 + 本地 → 系统诊断"]:::read
     Q2 -->|"status"| STATUS["状态管理<br/>转移验证 · 跨故事仪表板"]:::diag
-    Q2 -->|"collect"| COLLECT["指标采集<br/>执行指标 · 异常检测"]:::diag
+    Q2 -->|"merge <name>?"| MERGE["合并故事<br/>远端+本地 → 最小可用合并"]:::write
+    Q2 -->|"split <name>"| SPLIT["拆分故事<br/>大故事 → 独立子故事"]:::write
 
     classDef entry fill:#fff3e0,stroke:#e65100;
     classDef read fill:#e8f5e9,stroke:#2e7d32;
@@ -52,9 +53,8 @@ flowchart TD
 | `/rui-story status check` | 只读 | 本地状态机 | 验证状态转移合法性：`--from=<s> --to=<s>` |
 | `/rui-story status transition` | 写入 | 本地 rui-state.json | 执行状态转移并记录审计日志 |
 | `/rui-story status dashboard` | 只读 | 本地文件系统 | 跨故事聚合仪表板（本地 rui-state.json） |
-| `/rui-story collect story` | 只读 | 本地 .memory/ | 单故事指标采集 |
-| `/rui-story collect all` | 只读 | 本地 .memory/ | 跨故事指标汇总 |
-| `/rui-story collect anomalies` | 只读 | 本地 .memory/ | D0-D7 异常检测 |
+| `/rui-story merge [<name>]` | 写入 | 远端 API + 本地 | 合并远端与本地故事任务（最小可用原则）；自动升级版本号 (MINOR) |
+| `/rui-story split <name>` | 写入 | 本地文件系统 | 拆分大故事为独立子故事；父故事版本升级 (MINOR)，子故事初始 1.0.0 |
 
 `<name>` 为纯语义 kebab-case（如 `user-login`），不加项目名前缀。
 
@@ -498,11 +498,132 @@ flowchart LR
 💡 远端文档不受影响，可通过 /rui-story sync rui-story 重新拉取。
 ```
 
+## `/rui-story merge [<name>]` — 合并故事任务
+
+> 按最小可用原则，将本地和远端与当前项目相关的故事任务合并为内聚的故事文档集。
+> **每次 merge 操作自动升级目标故事版本号（MINOR）。**
+>
+> 数据源：远端 API（拉取） + 本地文件系统（读取已有） → 本地文件系统（写入合并结果）。
+
+```mermaid
+flowchart LR
+    PARSE["解析可选的 name"]:::op --> FETCH["拉取远端故事面板<br/>全部 session 数据"]:::op
+    FETCH --> FILTER["筛选当前项目相关<br/>file_path 含 {project}- 前缀 或<br/>同故事名下不同文档"]:::op
+    FILTER --> LOCAL["读取本地对应故事<br/>已有文档"]:::op
+    LOCAL --> DIFF["差异分析<br/>远端独有·本地独有·冲突"]:::op
+    DIFF --> MERGE{"合并策略"}
+    MERGE -->|"远端独有"| PULL["拉取到本地"]:::op
+    MERGE -->|"本地独有"| KEEP["保留本地"]:::op
+    MERGE -->|"冲突"| RESOLVE["按最小可用原则<br/>保留内容更完整版本"]:::op
+    PULL --> BUMP["升级版本号 (MINOR)"]:::op
+    KEEP --> BUMP
+    RESOLVE --> BUMP
+    BUMP --> REPORT["输出合并摘要<br/>新增/保留/冲突/版本"]:::out
+
+    classDef op fill:#e3f2fd,stroke:#1565c0;
+    classDef out fill:#e8f5e9,stroke:#2e7d32;
+```
+
+**执行流程**：
+
+1. **拉取远端** — 查询远端 API 获取全部故事任务面板 sessions
+2. **筛选相关** — 筛选与当前项目相关的故事：`file_path` 含 `{project}-` 前缀，或目标故事名匹配
+3. **读取本地** — 读取 `docs/故事任务面板/<name>/` 下已有文档
+4. **差异分析** — 对比远端和本地，分类为：远端独有、本地独有、冲突（两端都有但内容不同）
+5. **合并执行** — 远端独有→拉取到本地；本地独有→保留；冲突→按最小可用原则选择内容更完整的版本
+6. **版本升级** — bump MINOR 版本，追加 version_history
+7. **输出摘要** — 新增文件数 / 保留文件数 / 冲突解决数 / 新版本号
+
+**最小可用原则**：
+
+| 场景 | 策略 | 说明 |
+|------|------|------|
+| 远端有，本地无 | 拉取远端 | 不丢失信息 |
+| 本地有，远端无 | 保留本地 | 本地工作不丢失 |
+| 两端都有，内容不同 | 选更完整者 | 比较文件大小+章节数，保留内容更丰富的版本 |
+| 仅一端含 `{project}-` 前缀 | 保留含项目前缀的版本 | 项目归属优先 |
+| 同名文件内容相同 | 跳过 | 无需操作 |
+
+**merge 无参数时**：扫描所有故事目录，列出可合并的故事及差异摘要，等待用户选择。
+
+---
+
+## `/rui-story split <name>` — 拆分故事任务
+
+> 将一个大故事按最小可用原则拆分为多个独立故事。原故事保留为父故事（含完整上下文），子故事按独立模块拆分。
+> **每次 split 操作自动升级版本号（原故事 MINOR，新子故事初始 1.0.0）。**
+
+```mermaid
+flowchart LR
+    PARSE["解析 name（必填）"]:::op --> READ["读取 story 全部文档<br/>故事任务/使用场景/技术评审等"]:::op
+    READ --> ANALYZE["分析拆分边界<br/>Story# 独立性·FP# 耦合度<br/>·模块边界"]:::op
+    ANALYZE --> PLAN["生成拆分方案<br/>子故事列表 + 文档分配"]:::out
+    PLAN --> CONFIRM{"用户确认?"}
+    CONFIRM -->|"是"| EXEC["执行拆分<br/>创建子故事目录<br/>分配文档·更新交叉引用"]:::op
+    CONFIRM -->|"否"| ABORT["取消操作"]:::out
+    EXEC --> BUMP_PARENT["父故事版本升级 (MINOR)"]:::op
+    BUMP_PARENT --> BUMP_CHILD["子故事初始化版本 (1.0.0)"]:::op
+    BUMP_CHILD --> REPORT["输出拆分摘要<br/>父/子故事·版本·文档分配"]:::out
+
+    classDef op fill:#e3f2fd,stroke:#1565c0;
+    classDef out fill:#e8f5e9,stroke:#2e7d32;
+```
+
+**执行流程**：
+
+1. **读取原故事** — 加载全部文档基线（故事任务/使用场景/技术评审/测试设计/安全审计）
+2. **分析拆分边界** — 按 Story# 独立性、FP# 耦合度、模块边界识别可拆分点
+3. **生成拆分方案** — 列出子故事名称、各子故事包含的 Story#/FP#、文档分配方案
+4. **等待确认** — 展示拆分方案，用户确认后执行
+5. **执行拆分**：
+   - 为每个子故事创建独立目录 `docs/故事任务面板/<child-name>/`
+   - 生成子故事的故事任务文档（含分配到的 Story# 和 FP#）
+   - 从原故事复制+裁剪相关文档到子故事目录
+   - 更新原故事的交叉引用，标记 "已拆分到 `<child-name>`"
+6. **版本管理** — 原故事 bump MINOR，子故事初始 version `1.0.0`
+7. **输出摘要** — 父故事新版本 / 子故事列表含初版 / 文档分配详情
+
+**拆分约束**：
+
+| 约束 | 规则 |
+|------|------|
+| 最小可用 | 每个子故事可独立通过管线（有自己的文档基线） |
+| 不丢信息 | 原故事保留完整上下文，子故事含交叉引用回父故事 |
+| Story# 不可拆分 | 单个 Story 不可拆分到多个子故事（原子性） |
+| 基线必含 | 每个子故事至少含 故事任务.md |
+| 版本独立 | 子故事版本独立于父故事 |
+
+**拆分方案输出示例**：
+
+```
+📋 拆分方案: rui-story
+
+原故事: rui-story (v1.5.0, 5 个 Story, 20 个 FP)
+
+子故事 1: rui-story-query (查询引擎)
+  Story 1 (远端查询引擎) · FP1-FP8
+  文档: 故事任务 · 使用场景 · 技术评审 · 测试设计 · 安全审计
+
+子故事 2: rui-story-sync (同步与清理)
+  Story 2 (文档同步与清理) · FP9-FP12
+  文档: 故事任务 · 使用场景 · 技术评审 · 测试设计 · 安全审计
+
+子故事 3: rui-story-status (状态管理)
+  Story 4 (状态转移) · FP13-FP15 FP19-FP20
+  文档: 故事任务 · 使用场景 · 技术评审 · 测试设计 · 安全审计
+
+子故事 4: rui-story-collect (指标采集)
+  Story 5 (指标采集) · FP16-FP18
+  文档: 故事任务 · 使用场景 · 技术评审 · 测试设计 · 安全审计
+
+⚠️  即将创建 4 个子故事目录，原故事 rui-story 保留完整上下文。确认？(y/n)
+```
+
 ## 核心规则
 
 ```mermaid
 flowchart LR
-    subgraph 规则["8 条硬约束"]
+    subgraph 规则["12 条硬约束"]
         R1["远端 API 为默认数据源<br/>查询不读本地文件系统"]:::rule
         R2["仅查询与同步<br/>不创建文档内容"]:::rule
         R3["不修改源码<br/>不创建/切换 git 分支"]:::rule
@@ -511,6 +632,10 @@ flowchart LR
         R6["clear 需确认<br/>破坏性操作先展示后确认"]:::rule
         R7["clear/remove 仅本地<br/>不触碰远端数据"]:::rule
         R8["recommend/health<br/>确定性脚本执行"]:::rule
+        R9["merge 最小可用<br/>不丢信息·版本升级"]:::rule
+        R10["split 保持原子性<br/>子故事独立可执行"]:::rule
+        R11["每次操作更新<br/>版本号 + 版本历史"]:::rule
+        R12["操作生成或更新<br/>故事任务内容"]:::rule
     end
 
     classDef rule fill:#e3f2fd,stroke:#1565c0;
@@ -526,6 +651,10 @@ flowchart LR
 | 6 | clear 仅操作本地文件系统，不触碰远端；仅保留 `{project}-` 前缀文件；先展示双重清单，用户确认后才执行 | 终止操作 |
 | 7 | remove 仅操作本地文件系统，不触碰远端；`<name>` 必填；先展示清单，用户确认后才执行删除 | 终止操作 |
 | 8 | recommend/health 由 rui-story.mjs 确定性执行，不依赖 agent 解读 SKILL.md 流程 | 修正为脚本执行 |
+| 9 | merge 按最小可用原则合并远端+本地，冲突选更完整版本；操作后自动升级版本号 (MINOR) | 终止操作 |
+| 10 | split 子故事保持原子性（Story# 不可拆分），每个子故事可独立通过管线；操作后版本升级 | 终止操作 |
+| 11 | 每次 rui/rui-story 写入操作必须更新故事版本号，追加 version_history 记录 | 操作无效 |
+| 12 | 每次 rui 操作（doc/code/update/yry）必须生成或更新对应故事的任务内容（故事任务文档 + rui-state.json） | 操作不完整 |
 
 ## 生效标志
 
