@@ -149,13 +149,10 @@ function resolveRemotePath(localPath, root, workspaceName, prefix) {
   const segments = [];
   if (prefix.length > 0) segments.push(...prefix);
 
-  // docs/ 下的所有文件：故事任务面板为第一层标签
-  // 结果: 故事任务面板/{子路径}/*
-  const docsIdx = rel.indexOf("docs/");
-  if (docsIdx !== -1) {
-    const storyRel = rel.slice(docsIdx + "docs/".length);
-    segments.push("故事任务面板");
-    segments.push(storyRel);
+  // docs/ 下的文件保持本地目录结构一致
+  // 结果: docs/故事任务面板/{子路径}/*
+  if (rel.startsWith("docs/")) {
+    segments.push(...rel.split("/"));
   } else {
     segments.push(workspaceName);
     segments.push(rel);
@@ -295,7 +292,7 @@ function resolvePullFilter(localDir, projectRoot) {
       storyName,
       filter: (s) => {
         const tags = s.tags || [];
-        return tags[0] === "故事任务面板" && tags[1] === storyName;
+        return tags[0] === "docs" && tags[1] === "故事任务面板" && tags[2] === storyName;
       },
       // story files are flat in one dir — local path = localDir + basename
       toLocal: (remotePath) => join(localDir, basename(remotePath)),
@@ -399,8 +396,8 @@ async function recommendPullMode(apiUrl) {
   const storyMap = new Map();
   for (const s of sessions) {
     const tags = s.tags || s.get_tags?.() || [];
-    if (tags[0] !== "故事任务面板" || !tags[1]) continue;
-    const name = tags[1];
+    if (tags[0] !== "docs" || tags[1] !== "故事任务面板" || !tags[2]) continue;
+    const name = tags[2];
     if (!storyMap.has(name)) storyMap.set(name, []);
     storyMap.get(name).push(s.file_path || s.get_file_path?.() || "");
   }
@@ -516,12 +513,12 @@ async function main() {
   console.error(`[rui-import] scan root: ${root}`);
   console.error(`[rui-import] workspace: ${workspaceName}`);
 
-  // 硬约束：一级目录标签只能是项目目录名或"故事任务面板"
-  const allowedLabels = new Set([workspaceName, "故事任务面板"]);
+  // 硬约束：一级目录标签只能是项目目录名或"docs"
+  const allowedLabels = new Set([workspaceName, "docs"]);
   if (opts.prefix.length > 0) {
     const firstLabel = opts.prefix[0];
     if (!allowedLabels.has(firstLabel)) {
-      console.error(`[rui-import] ERROR: prefix 一级标签 "${firstLabel}" 不允许，只能是 "${workspaceName}" 或 "故事任务面板"`);
+      console.error(`[rui-import] ERROR: prefix 一级标签 "${firstLabel}" 不允许，只能是 "${workspaceName}" 或 "docs"`);
       process.exit(1);
     }
   }

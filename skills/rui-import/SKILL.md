@@ -68,7 +68,7 @@ flowchart TD
     ALL & KEEP --> Q2{"目录命中排除?"}
     Q2 -->|"是"| SKIP
     Q2 -->|"否"| Q3{"路径匹配?"}
-    Q3 -->|"docs/故事任务面板/ 下"| PATH1["远端 = &lt;prefix&gt;/故事任务面板/&lt;故事相对路径&gt;"]:::path
+    Q3 -->|"docs/故事任务面板/ 下"| PATH1["远端保持本地目录结构一致<br/>一级标签 = docs"]:::path
     Q3 -->|"其他"| PATH2["远端 = &lt;prefix&gt;/&lt;workspace 名&gt;/&lt;相对路径&gt;"]:::path
 
     classDef rule fill:#e3f2fd,stroke:#1565c0;
@@ -83,9 +83,9 @@ flowchart TD
 | 默认排除目录 | `.git` · `node_modules` · `.claude-plugin` |
 | 用户排除 | `--exclude a,b,c` 追加排除子目录名（精确匹配，命中即整树跳过） |
 | 路径规整 | 所有分隔符 → `/`，所有空白字符 → `_` |
-| 故事面板路径 | 路径以 `docs/故事任务面板/` 开头时，远端 = `故事任务面板/<相对路径>`，一级标签 = 故事任务面板，去掉 `docs/` |
+| 故事面板路径 | 路径以 `docs/故事任务面板/` 开头时，远端保持本地目录结构一致，一级标签 = `docs` |
 | workspace 标签 | 其他路径以项目根目录名（即 `workspace 名`）为一级标签 |
-| **硬约束** | 一级目录标签只允许 **项目目录名称** 或 **故事任务面板**，禁止其他任何值。此约束适用于**所有调用**（rui 自动触发 · 手动 `/rui-import` · 脚本直接调用）。`prefix` 参数不得绕过，`resolveRemotePath` 结构化保证 |
+| **硬约束** | 一级目录标签只允许 **项目目录名称** 或 **docs**，禁止其他任何值。此约束适用于**所有调用**（rui 自动触发 · 手动 `/rui-import` · 脚本直接调用）。`prefix` 参数不得绕过，`resolveRemotePath` 结构化保证 |
 
 ## rui 强制触发
 
@@ -291,7 +291,7 @@ flowchart TD
 ```mermaid
 flowchart LR
     S1["扫描完整<br/>.claude/ 全部 + 其余 .md"]:::sig --> S2["排除正确<br/>.git / node_modules / .claude-plugin 已过滤"]:::sig
-    S2 --> S3["路径映射<br/>一级标签 = 故事任务面板"]:::sig
+    S2 --> S3["路径映射<br/>一级标签 = docs 或 项目目录名"]:::sig
     S3 --> S4["上传完成<br/>逐文件 POST 无遗漏"]:::sig
 
     classDef sig fill:#e8f5e9,stroke:#2e7d32;
@@ -301,5 +301,5 @@ flowchart LR
 |------|------------|
 | 扫描完整：.claude/ 全部 + 其余 .md | 补扫遗漏目录，重新执行 |
 | 排除正确：.git / node_modules / .claude-plugin 已过滤 | 调整排除规则 |
-| 路径映射：一级标签 ∈ {项目目录名, 故事任务面板} | 检查远端路径前缀，修正重传；禁止其他标签 |
+| 路径映射：一级标签 ∈ {项目目录名, docs} | 检查远端路径前缀，修正重传；禁止其他标签 |
 | 上传完成：逐文件 POST 无遗漏 | 查看错误日志，补传失败文件 |
