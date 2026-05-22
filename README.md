@@ -104,6 +104,8 @@ flowchart TD
 | `/rui code <name>` | 写入 | 实现故事：Gate A → 逐模块 → Gate B → 复盘 → 交付 |
 | `/rui update <name> [ctx]` | 写入 | 增量更新：T1/T2/T3 自动裁剪 |
 | `/rui yry` | 写入 | 自改进闭环：全自主扫描→诊断→实现→验证→版本升级，循环至无改进空间 |
+| `/rui version --up` | 写入 | 版本升级：自主判定 → 更新文件 → git commit → 合并 main → 推送 + tag |
+| `/rui version --rollback <name>` | 写入 | 版本回退：基于 git 版本链回退故事文档到历史版本（需确认） |
 | `/rui doc --from-code 需求` | 写入 | 从源码反推完整 5 文档基线到故事目录（源码只读） |
 | `/rui code --from-doc <name>` | 只读 | 从文档反推码：禁止改源码 |
 
@@ -188,7 +190,7 @@ flowchart LR
 
 ## 技能
 
-- **rui** (`/rui init · doc · code · update · --from-code`) — 故事驱动 SDLC 主线，含诊断纪律、架构深化、交接纪律
+- **rui** (`/rui init · doc · code · update · yry · version --up · --rollback · --from-code`) — 故事驱动 SDLC 主线，含诊断纪律、架构深化、交接纪律、版本管理
 - **rui-story** (`/rui-story list · show · recommend · health · sync · clear · remove · status · merge · split`) — 故事面板远端查询、进度管理、文档同步、本地清理、状态转移、合并拆分
 - **rui-claude** (`/rui-claude sync · retro · history`) — .claude/ 配置远端同步与复盘
 - **import-docs** — 自动（hook 触发）：批量同步故事文档到远端 API

@@ -15,7 +15,7 @@ agents:
 >
 > 哲学源自 [CLAUDE.md](../../CLAUDE.md)。本文件定义命令面与编排骨架，细节分散在：[rules/](../../rules/) · [agents/](../../agents/) · [formulas.md](./formulas.md) · [coder.md](./coder.md)。
 
-[选哪条命令](#选哪条命令) · [管线一览](#管线一览) · [阻断标识](#阻断标识) · [核心约束](#核心约束) · [故事文档](#故事文档) · [init](#init) · [doc](#doc) · [code](#code) · [端到端](#端到端) · [update](#update) · [yry](#yry) · [code --from-doc](#code---from-doc) · [doc --from-code](#doc---from-code)
+[选哪条命令](#选哪条命令) · [管线一览](#管线一览) · [阻断标识](#阻断标识) · [核心约束](#核心约束) · [故事文档](#故事文档) · [init](#init) · [doc](#doc) · [code](#code) · [端到端](#端到端) · [update](#update) · [yry](#yry) · [version --up](#version---up) · [version --rollback](#version---rollback) · [code --from-doc](#code---from-doc) · [doc --from-code](#doc---from-code)
 
 ## 选哪条命令
 
@@ -49,6 +49,8 @@ flowchart TD
 - `/rui doc --from-code 需求` — 从源码反推：req 空时 pm 扫描推荐列表；req 有值时直接反推生成完整文档基线
 - `/rui doc --from-local <name>` — 从已有本地文档补全缺失文档基线（只读已有，生成缺失，不覆盖）
 - `/rui yry` — 自改进闭环：全自主扫描→诊断→实现→验证→版本升级，循环至无改进空间
+- `/rui version --up` — 版本升级：自主判定下一版本号 → 更新文件 → git commit → 合并到 main → 推送远端 + tag
+- `/rui version --rollback <name>` — 版本回退：基于 git 版本链回退故事文档到指定历史版本（需确认）
 
 ### 只读命令（不触发 hook）
 
@@ -566,6 +568,148 @@ flowchart TD
 | 版本强制 | 每次闭环完成必须 bump 版本号 |
 | 防死循环 | 同一改进项失败 ≥ 2 次 → skip + 记录 |
 | 无改进不 bump | 若闭环未产生实质变更，不升级版本 |
+
+**末端触发** [强制集成](#强制集成)。
+
+## version --up
+
+> 自主判定下一版本号，更新所有版本文件，git commit + auto-merge → main + push。
+> **全自主操作，无需用户确认版本号。项目级和故事级统一入口。**
+>
+> 每次版本改动记录 git commit（含版本号 + 变更摘要），支持 `version --rollback` 回退。
+
+```mermaid
+flowchart LR
+    CMD["/rui version --up"]:::src --> CHECK{"当前分支?"}
+    CHECK -->|"非 main"| STASH["git stash → checkout main<br/>→ stash pop → 在 main 上操作"]:::op
+    CHECK -->|"main"| ANALYZE["分析当前变更<br/>git diff + 版本历史"]:::op
+    STASH --> ANALYZE
+    ANALYZE --> DECIDE{"变更类型?"}
+    DECIDE -->|"PATCH<br/>措辞/格式/修复"| PATCH["bump PATCH<br/>1.7.0 → 1.7.1"]:::op
+    DECIDE -->|"MINOR<br/>新功能/新命令"| MINOR["bump MINOR<br/>1.7.0 → 1.8.0"]:::op
+    DECIDE -->|"MAJOR<br/>架构变更/破坏性"| MAJOR["bump MAJOR<br/>1.7.0 → 2.0.0"]:::op
+    PATCH --> UPDATE["更新 plugin.json<br/>更新 CLAUDE.md<br/>更新 README.md"]:::op
+    MINOR --> UPDATE
+    MAJOR --> UPDATE
+    UPDATE --> COMMIT["git add + git commit<br/>含版本号 + 变更摘要"]:::op
+    COMMIT --> MERGE["合并到 main<br/>git checkout main && git merge"]:::op
+    MERGE --> PUSH["git push origin main"]:::op
+    PUSH --> TAG["git tag vX.Y.Z<br/>git push --tags"]:::op
+    TAG --> STORY["逐故事版本同步<br/>更新各 story 的<br/>rui-state.json version_history"]:::op
+    STORY --> REPORT["输出升级摘要<br/>旧版本→新版本·变更类型<br/>·commit hash·tag"]:::out
+
+    classDef src fill:#e8f5e9,stroke:#2e7d32;
+    classDef op fill:#e3f2fd,stroke:#1565c0;
+    classDef out fill:#f3e5f5,stroke:#6a1b9a;
+```
+
+### 版本判定规则
+
+| 变更信号 | 版本升级 | 示例 |
+|---------|---------|------|
+| 仅文档措辞/格式调整 | PATCH | `1.7.0` → `1.7.1` |
+| 新增 skill/agent/rule/命令 | MINOR | `1.7.0` → `1.8.0` |
+| 删除/重命名命令或接口 | MINOR | `1.7.0` → `1.8.0` |
+| 架构重构/破坏性变更 | MAJOR | `1.7.0` → `2.0.0` |
+
+### 执行流程
+
+| 步骤 | 操作 | 说明 |
+|------|------|------|
+| §1 分支准备 | 检查当前分支，非 main 时 stash → checkout main → stash pop | 确保在 main 上操作 |
+| §2 分析变更 | `git diff origin/main..HEAD` + `git log` 检查变更范围 + 故事版本记录 | 判定变更类型 |
+| §3 判定版本 | 按变更信号决定 PATCH / MINOR / MAJOR | 新版本号 > 旧版本号 |
+| §4 更新文件 | `plugin.json` version + `CLAUDE.md` version + `README.md` version | 三者同步 |
+| §5 git commit | `git add` + `git commit -m "chore: bump version to X.Y.Z"` | 含变更摘要 |
+| §6 合并 main | `git checkout main && git merge --ff-only <source>` | fast-forward 合入 |
+| §7 推送 | `git push origin main && git push --tags` | 含版本 tag |
+| §8 故事版本同步 | 更新涉及的故事 rui-state.json version_history | 记录此次项目版本变更 |
+| §9 输出摘要 | 旧版本 → 新版本 / 变更类型 / commit hash / tag | 终端输出 |
+
+### git 记录规范
+
+> 每次版本变更必须产生 git commit + tag，形成可回溯的版本链。
+
+| 规则 | 说明 |
+|------|------|
+| commit 格式 | `chore: bump version X.Y.Z → A.B.C`，body 列变更摘要 |
+| tag 格式 | `vX.Y.Z`，annotated tag，message 同 commit subject |
+| 故事版本记录 | 故事级版本变更同步写入 `rui-state.json` version_history，含 commit hash |
+| 回退支撑 | git tag + commit 链构成完整版本时间线，供 `version --rollback` 使用 |
+
+### 约束
+
+| 约束 | 规则 |
+|------|------|
+| 不降级 | 新版本号必须 > 旧版本号 |
+| 一致性 | plugin.json / CLAUDE.md / README.md 三者版本号同步更新 |
+| 不跳号 | 版本号严格递增，不跳过中间版本 |
+| git 强制 | 每次版本变更必须有 git commit + tag，无 commit 不升级 |
+| 仅 main | 在 main 分支上操作，推送目标为 origin/main |
+
+## version --rollback
+
+> 基于 git 版本链回退故事文档到指定历史版本。利用每次版本变更的 git commit 实现精确回退。
+>
+> **回退操作产生新 commit（revert），不破坏历史。**
+
+```mermaid
+flowchart LR
+    CMD["/rui version --rollback &lt;name&gt;"]:::src --> LIST{"--to 指定?"}
+    LIST -->|"否"| SHOW["展示可用版本列表<br/>git log --oneline<br/>docs/故事任务面板/&lt;name&gt;/"]:::op
+    SHOW --> USER["用户选择目标版本"]:::user
+    LIST -->|"是"| CHECK{"目标版本存在?"}
+    USER --> CHECK
+    CHECK -->|"否"| ABORT["提示版本不存在<br/>列出可用版本"]:::bad
+    CHECK -->|"是"| CONFIRM{"确认回退?<br/>展示变更范围"}:::gate
+    CONFIRM -->|"否"| CANCEL["取消"]:::abort
+    CONFIRM -->|"是"| REVERT["git checkout &lt;commit&gt;<br/>-- docs/故事任务面板/&lt;name&gt;/"]:::op
+    REVERT --> COMMIT["git commit -m<br/>revert: rollback &lt;name&gt; to vX.Y.Z"]:::op
+    COMMIT --> AUDIT["记录审计日志<br/>rui-state.json version_history"]:::op
+    AUDIT --> REPORT["输出回退摘要<br/>故事·源版本·目标版本·commit hash"]:::out
+
+    classDef src fill:#e8f5e9,stroke:#2e7d32;
+    classDef op fill:#e3f2fd,stroke:#1565c0;
+    classDef user fill:#f3e5f5,stroke:#6a1b9a;
+    classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef bad fill:#ffebee,stroke:#c62828;
+    classDef abort fill:#eceff1,stroke:#90a4ae;
+    classDef out fill:#e8f5e9,stroke:#2e7d32;
+```
+
+### 执行流程
+
+| 步骤 | 操作 | 说明 |
+|------|------|------|
+| §1 版本列表 | `git log --oneline -- docs/故事任务面板/<name>/` | 展示该故事的所有 git 版本记录 |
+| §2 目标确认 | 用户指定 `--to <version>` 或从列表选择 | version 可为 tag（v1.2.0）或 commit hash |
+| §3 变更预览 | `git diff <target>..HEAD -- docs/故事任务面板/<name>/` | 预览回退将产生的变更 |
+| §4 确认门禁 | 展示变更文件清单 + 版本跨度 | 用户确认后执行 |
+| §5 执行回退 | `git checkout <target> -- docs/故事任务面板/<name>/` | 仅回退该故事目录 |
+| §6 提交 | `git commit -m "revert: rollback <name> to <version>"` | 产生新 commit，不破坏历史 |
+| §7 审计 | 追加 rui-state.json version_history 条目 | 记录回退操作 + commit hash |
+| §8 输出 | 回退摘要：故事名、源版本、目标版本、commit hash | 终端输出 |
+
+### 版本列表格式
+
+```bash
+$ /rui version --rollback rui-story
+
+rui-story 可回退版本：
+a1b2c3d v1.5.0 — chore: bump rui-story to v1.5.0 (2026-05-22)
+e4f5g6h v1.4.0 — feat: 状态管理 + 自改进闭环 (2026-05-21)
+i7j8k9l v1.3.0 — feat: 合并拆分功能 (2026-05-20)
+```
+
+### 约束
+
+| 约束 | 规则 |
+|------|------|
+| 仅故事目录 | 回退范围仅限于 `docs/故事任务面板/<name>/`，不影响其他文件 |
+| 必须确认 | 回退前展示变更预览，用户确认后执行 |
+| 产生 commit | 回退操作产生新 git commit（revert），不破坏历史 |
+| 审计记录 | 回退操作写入 rui-state.json version_history |
+| 不可回退 merge/split | merge/split 产生的版本因涉及跨故事变更，不支持通过 --rollback 回退 |
 
 **末端触发** [强制集成](#强制集成)。
 

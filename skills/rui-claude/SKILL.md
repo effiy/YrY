@@ -13,6 +13,8 @@ lifecycle: default-pipeline
 
 [命令族全景](#命令族全景) · [操作边界](#操作边界) · [sync](#sync) · [retro](#retro) · [history](#history) · [核心规则](#核心规则) · [参考模式](#参考模式) · [生效标志](#生效标志)
 
+> **`version --up` 已迁移至 [`/rui version --up`](../rui/SKILL.md#version---up)。**
+
 ## 命令族全景
 
 ```mermaid
@@ -24,7 +26,6 @@ flowchart TB
     Q1 -->|"history"| HIST["操作历史<br/>list / stats"]:::cmd
     Q1 -->|"&lt;req&gt;"| REQ["需求管线<br/>doc + code → 交付"]:::cmd
     Q1 -->|"空输入"| LIST["推荐任务<br/>5~10 条"]:::cmd
-    Q1 -->|"version --up"| VERUP["版本升级<br/>判定 → 更新 → 推送"]:::cmd
 
     SYNC --> S_OUT[".claude/ 全量覆盖"]:::out
     RETRO --> R_OUT["docs/自改进故事面板/<br/>&lt;project&gt;-&lt;date&gt;.md"]:::out
@@ -44,7 +45,6 @@ flowchart TB
 | `/rui-claude retro` | 分析 .claude/ 结构健康度 → 三节复盘 | `docs/自改进故事面板/<date>.md` |
 | `/rui-claude history` | 查看操作历史：`list [--limit N]` / `stats [--json]` | 终端输出 |
 | `/rui-claude 需求` | 需求解析→故事拆分→逐故事 doc+code 管线→交付 | `.claude/` 内文件变更 |
-| `/rui-claude version --up` | 自主判定下一版本号 → 更新 plugin.json + CLAUDE.md → git commit + push | 版本号更新 + 远端推送 |
 | `/rui-claude` | 按 5 层管线评分推荐 5~10 条任务 | 推荐列表 |
 
 ## 操作边界
@@ -113,56 +113,6 @@ flowchart LR
 | 输入 | 本地 `.claude/` 目录的 `agents/` · `rules/` · `skills/` · `formulas.md` 等结构 |
 | 网络 | 纯本地分析，不连远端 |
 | 产出 | `docs/自改进故事面板/<date>.md`（三节：§1 配置结构 · §2 健康度 · §3 改进项） |
-
-## version --up — 版本号自主升级
-
-> 自主判定下一版本号，更新 `plugin.json` + `CLAUDE.md`，git commit + push 到远端。
-> **全自主操作，无需用户确认版本号。**
-
-```mermaid
-flowchart LR
-    CMD["/rui-claude version --up"]:::src --> ANALYZE["分析当前变更<br/>git diff + 故事更新记录"]:::op
-    ANALYZE --> DECIDE{"变更类型?"}
-    DECIDE -->|"PATCH<br/>措辞/格式/修复"| PATCH["bump PATCH<br/>1.6.8 → 1.6.9"]:::op
-    DECIDE -->|"MINOR<br/>新功能/新命令"| MINOR["bump MINOR<br/>1.6.8 → 1.7.0"]:::op
-    DECIDE -->|"MAJOR<br/>架构变更/破坏性"| MAJOR["bump MAJOR<br/>1.6.8 → 2.0.0"]:::op
-    PATCH --> UPDATE["更新 plugin.json 版本<br/>更新 CLAUDE.md 版本"]:::op
-    MINOR --> UPDATE
-    MAJOR --> UPDATE
-    UPDATE --> COMMIT["git add + commit<br/>含版本号描述"]:::op
-    COMMIT --> PUSH["git push origin<br/>当前分支"]:::op
-    PUSH --> REPORT["输出升级摘要<br/>旧版本→新版本·变更类型·commit hash"]:::out
-
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#f3e5f5,stroke:#6a1b9a;
-```
-
-**版本判定规则**：
-
-| 变更信号 | 版本升级 | 示例 |
-|---------|---------|------|
-| 仅文档措辞/格式调整 | PATCH | `1.6.8` → `1.6.9` |
-| 新增 skill/agent/rule/命令 | MINOR | `1.6.8` → `1.7.0` |
-| 删除/重命名命令或接口 | MINOR | `1.6.8` → `1.7.0` |
-| 架构重构/破坏性变更 | MAJOR | `1.6.8` → `2.0.0` |
-
-**执行流程**：
-
-1. **分析变更** — `git diff main..HEAD` 检查变更范围，配合故事版本记录判定变更类型
-2. **判定版本** — 按变更信号决定 PATCH/MINOR/MAJOR
-3. **更新文件** — `plugin.json` 的 `version` 字段 + `CLAUDE.md` 的版本号 + `README.md` 的版本号
-4. **提交推送** — `git add` + `git commit -m "chore: bump version to X.Y.Z"` + `git push origin <current-branch>`
-5. **输出摘要** — 旧版本 → 新版本 / 变更类型 / commit hash / 推送目标
-
-**约束**：
-
-| 约束 | 规则 |
-|------|------|
-| 不降级 | 新版本号必须 > 旧版本号 |
-| 一致性 | plugin.json / CLAUDE.md / README.md 三者版本号同步更新 |
-| 推送确认 | push 前展示目标分支和版本变更摘要 |
-| 仅当前分支 | 不切换分支，不创建 PR |
 
 ## history — 操作历史
 
