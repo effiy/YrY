@@ -226,3 +226,26 @@ flowchart TD
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
 > | 2026-05-22 | 初始生成 — doc --from-code | /rui doc --from-code rui-import-sync-doc | skills/rui-import/sync.mjs |
+
+## 关联故事
+
+```mermaid
+flowchart LR
+    IMPORT["本故事<br/>rui-import-sync<br/>文档同步中枢"]:::this
+    BRANCH["rui-branch-check<br/>分支隔离门禁<br/>交付步骤①"]:::other
+    BOT["rui-bot-send<br/>企微通知<br/>交付步骤③"]:::other
+    STORY["rui-story<br/>故事面板管理<br/>委托 sync"]:::other
+    
+    BRANCH -->|"管线步骤①→②"| IMPORT
+    IMPORT -->|"管线步骤②→③"| BOT
+    STORY -->|"委托同步"| IMPORT
+    
+    classDef this fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef other fill:#e3f2fd,stroke:#1565c0;
+```
+
+| 关联故事 | 关系类型 | 说明 |
+|---------|---------|------|
+| rui-branch-check-doc | 管线链 | 分支检查通过后进入本文档同步步骤（上游） |
+| rui-bot-send-doc | 管线链 | 文档同步完成后触发企微通知（下游） |
+| rui-story | 委托 | rui-story 的 sync 命令完全委托 rui-import 执行远端拉取 |

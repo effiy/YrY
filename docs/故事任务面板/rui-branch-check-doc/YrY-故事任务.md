@@ -128,3 +128,23 @@ flowchart TD
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
 > | 2026-05-22 | 初始生成 | /rui doc --from-code | skills/rui/branch-check.mjs |
+
+## 关联故事
+
+```mermaid
+flowchart LR
+    BRANCH["本故事<br/>rui-branch-check<br/>分支隔离门禁"]:::this
+    IMPORT["rui-import-sync<br/>文档同步<br/>交付步骤②"]:::other
+    BOT["rui-bot-send<br/>企微通知<br/>交付步骤③"]:::other
+    
+    BRANCH -->|"管线步骤①→②"| IMPORT
+    IMPORT -->|"管线步骤②→③"| BOT
+    
+    classDef this fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef other fill:#e3f2fd,stroke:#1565c0;
+```
+
+| 关联故事 | 关系类型 | 说明 |
+|---------|---------|------|
+| rui-import-sync-doc | 管线链 | 分支检查通过后进入文档同步（交付步骤②） |
+| rui-bot-send-doc | 管线链 | 文档同步完成后触发企微通知（交付步骤③） |

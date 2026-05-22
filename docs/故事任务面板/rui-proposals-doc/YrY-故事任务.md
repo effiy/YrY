@@ -134,3 +134,25 @@ flowchart TD
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
 > | 2026-05-22 | 初始生成 | /rui doc --from-code rui-proposals-doc | skills/rui/proposals.mjs |
+
+## 关联故事
+
+```mermaid
+flowchart LR
+    PROPOSALS["本故事<br/>rui-proposals<br/>自改进诊断引擎"]:::this
+    STORY["rui-story<br/>故事面板<br/>被诊断对象"]:::other
+    CHILD["improve-rui-story-d5<br/>D5 退化修复<br/>实例化子故事"]:::child
+    
+    PROPOSALS -->|"诊断 + 提案"| STORY
+    PROPOSALS -->|"实例化生成"| CHILD
+    STORY -->|"执行数据采集"| PROPOSALS
+    
+    classDef this fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef other fill:#e3f2fd,stroke:#1565c0;
+    classDef child fill:#e8f5e9,stroke:#2e7d32;
+```
+
+| 关联故事 | 关系类型 | 说明 |
+|---------|---------|------|
+| rui-story | 诊断对象 | 对 rui-story 执行 D0-D7 诊断，生成改进提案 |
+| improve-rui-story-d5 | 实例化 | D5 提案实例化为独立故事目录，含完整文档基线 |

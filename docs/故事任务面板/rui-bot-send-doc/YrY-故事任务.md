@@ -134,3 +134,23 @@ flowchart TD
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
 > | 2026-05-22 | 初始生成 | /rui doc --from-code rui-bot-send-doc | skills/rui-bot/send.mjs |
+
+## 关联故事
+
+```mermaid
+flowchart LR
+    BOT["本故事<br/>rui-bot-send<br/>企微通知收口"]:::this
+    BRANCH["rui-branch-check<br/>分支隔离门禁<br/>交付步骤①"]:::other
+    IMPORT["rui-import-sync<br/>文档同步<br/>交付步骤②"]:::other
+    
+    BRANCH -->|"管线步骤①→②"| IMPORT
+    IMPORT -->|"管线步骤②→③"| BOT
+    
+    classDef this fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef other fill:#e3f2fd,stroke:#1565c0;
+```
+
+| 关联故事 | 关系类型 | 说明 |
+|---------|---------|------|
+| rui-import-sync-doc | 管线链 | 接收文档同步完成信号后发送企微通知（上游） |
+| rui-branch-check-doc | 管线链 | 交付三步的起点，最终收敛到通知发送 |

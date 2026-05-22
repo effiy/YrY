@@ -86,3 +86,23 @@
 > | 置信度 | 1 |
 > | 评估状态 | pending |
 > 
+## 关联故事
+
+```mermaid
+flowchart LR
+    CHILD["本故事<br/>improve-rui-story-d5<br/>D5 依赖退化修复"]:::this
+    PARENT["rui-story<br/>故事面板管理<br/>父故事"]:::parent
+    PROPOSALS["rui-proposals<br/>诊断引擎<br/>提案来源"]:::other
+    
+    PROPOSALS -->|"D5 诊断生成提案"| CHILD
+    CHILD -->|"修复后反馈"| PARENT
+    
+    classDef this fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef parent fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef other fill:#e3f2fd,stroke:#1565c0;
+```
+
+| 关联故事 | 关系类型 | 说明 |
+|---------|---------|------|
+| rui-story | 父故事 | 由 rui-story 的 D5 诊断自动生成，修复后合并回父故事 |
+| rui-proposals-doc | 提案源 | proposals.mjs 的 D5 诊断触发实例化 |

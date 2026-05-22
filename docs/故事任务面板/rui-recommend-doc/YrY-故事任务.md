@@ -157,3 +157,23 @@ flowchart TD
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
 > | 2026-05-22 | 初始生成 | /rui doc --from-code rui-recommend-doc | skills/rui/recommend.mjs |
+
+## 关联故事
+
+```mermaid
+flowchart LR
+    RECOMMEND["本故事<br/>rui-recommend<br/>推荐引擎"]:::this
+    RUI["rui 管线<br/>doc --from-code<br/>数据采集核心"]:::other
+    STORY["rui-story<br/>故事面板<br/>消费推荐结果"]:::other
+    
+    RECOMMEND -->|"数据供给"| RUI
+    RECOMMEND -->|"推荐列表"| STORY
+    
+    classDef this fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef other fill:#e3f2fd,stroke:#1565c0;
+```
+
+| 关联故事 | 关系类型 | 说明 |
+|---------|---------|------|
+| rui-story | 数据供给 | 推荐引擎为故事面板的 list/recommend 命令提供数据 |
+| rui 管线 | 数据供给 | `doc --from-code` 探索模式的数据采集核心 |

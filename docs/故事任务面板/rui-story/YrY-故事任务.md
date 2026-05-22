@@ -289,3 +289,30 @@ flowchart TD
 > | 日期 | 变更 | 触发 | 证据 |
 > |------|------|------|------|
 > | 2026-05-20 | 初始生成 | doc --from-code rui-story | skills/rui-story/SKILL.md + rui-story.mjs |
+
+## 关联故事
+
+```mermaid
+flowchart LR
+    STORY["本故事<br/>rui-story<br/>故事面板管理中枢"]:::this
+    IMPORT["rui-import-sync<br/>文档同步<br/>委托 sync"]:::other
+    CHILD["improve-rui-story-d5<br/>D5 依赖退化修复<br/>自改进子故事"]:::child
+    RECOMMEND["rui-recommend<br/>推荐引擎<br/>数据采集"]:::other
+    PROPOSALS["rui-proposals<br/>诊断引擎<br/>提案生成"]:::other
+    
+    STORY -->|"委托同步"| IMPORT
+    STORY -->|"生成子故事"| CHILD
+    RECOMMEND -->|"数据供给"| STORY
+    PROPOSALS -->|"提案供给"| STORY
+    
+    classDef this fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    classDef other fill:#e3f2fd,stroke:#1565c0;
+    classDef child fill:#e8f5e9,stroke:#2e7d32;
+```
+
+| 关联故事 | 关系类型 | 说明 |
+|---------|---------|------|
+| rui-import-sync-doc | 委托 | rui-story 的 sync 命令完全委托 rui-import 执行 |
+| improve-rui-story-d5 | 父故事 | 由自改进 D5 诊断自动生成，修复工具调用失败率问题 |
+| rui-recommend-doc | 数据供给 | 推荐引擎为故事面板提供数据驱动的推荐列表 |
+| rui-proposals-doc | 提案供给 | 诊断引擎为故事面板提供改进提案 |
