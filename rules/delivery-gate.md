@@ -34,7 +34,7 @@ flowchart TB
     S0 --> M0["mark memory_written"]:::mark
     M0 --> S1["① 追加日志<br/>rui-bot --no-send"]:::step
     S1 --> M1["mark log_appended"]:::mark
-    M1 --> S2["② 文档同步<br/>node skills/rui-import/sync.mjs"]:::step
+    M1 --> S2["② 批量安全网<br/>node skills/rui-import/sync.mjs"]:::step
     S2 --> M2["mark docs_synced"]:::mark
     M2 --> S3["③ 发送通知<br/>rui-bot"]:::step
     S3 --> M3["mark notification_sent"]:::mark
@@ -53,7 +53,7 @@ flowchart TB
 |------|------|------|---------|
 | ⓪ 执行记忆 | `node .memory/collector.mjs --story=<name> --command=<cmd>` 追加记录 | `memory_written` | — |
 | ① 追加日志 | `rui-bot --no-send` 写入日志 | `log_appended` | — |
-| ② 文档同步 | `node skills/rui-import/sync.mjs` 推送 | `docs_synced` | `no-token`（缺 API_X_TOKEN） |
+| ② 批量安全网 | `node skills/rui-import/sync.mjs` 兜底补漏 | `docs_synced` | `no-token`（缺 API_X_TOKEN） |
 | ③ 发送通知 | `rui-bot` 推送企微 | `notification_sent` | — |
 
 ## 适用
@@ -100,12 +100,14 @@ flowchart LR
 | 命令记录 | 每条日志必须含 `📋 命令` 字段（用户执行的具体命令，含参数） |
 | 时间戳 | 每条日志以 `【YYYY-MM-DD HH:mm:ss】` 分隔行开头 |
 
-## ② 文档同步
+## ② 批量安全网（兜底）
+
+> 逐文件即时导入（`import-doc.mjs`）已在 doc/code 阶段完成，此步骤为兜底补漏。
 
 ```mermaid
 flowchart TD
-    SYNC["node skills/rui-import/sync.mjs"]:::step --> Q1{"API_X_TOKEN<br/>存在?"}
-    Q1 -->|"是"| PUSH["推送 *.md + .claude/<br/>排除 .git / node_modules"]:::push
+    SYNC["node skills/rui-import/sync.mjs<br/>批量安全网"]:::step --> Q1{"API_X_TOKEN<br/>存在?"}
+    Q1 -->|"是"| PUSH["全量扫描 *.md + .claude/<br/>补漏遗漏文件"]:::push
     Q1 -->|"否"| NOOP["降级：跳过推送<br/>仍标记 docs_synced"]:::warn
     PUSH --> Q2{"网络?"}
     Q2 -->|"超时"| WARN["记录告警不阻断<br/>下次覆盖重试"]:::warn
@@ -131,10 +133,11 @@ flowchart TD
 
 | # | 规则 |
 |---|------|
-| 5 | 同步范围：全部 `*.md` + `.claude/` 目录，排除 `.git` 和 `node_modules` |
-| 6 | `API_X_TOKEN` 仅从环境变量读取，禁止写入任何文件 |
-| 7 | 缺 `API_X_TOKEN` → `no-token` 降级，跳过推送但仍需标记 `docs_synced` |
-| 8 | 网络超时记录告警不阻断，下次覆盖重试 |
+| 5 | 逐文件导入为主路径（`node skills/rui/import-doc.mjs <file>`），批量安全网仅兜底 |
+| 6 | 同步范围：全部 `*.md` + `.claude/` 目录，排除 `.git` 和 `node_modules` |
+| 7 | `API_X_TOKEN` 仅从环境变量读取，禁止写入任何文件 |
+| 8 | 缺 `API_X_TOKEN` → `no-token` 降级，跳过推送但仍需标记 `docs_synced` |
+| 9 | 网络超时记录告警不阻断，下次覆盖重试 |
 
 ## ③ 发送通知
 
@@ -155,23 +158,26 @@ flowchart LR
 
 | # | 规则 |
 |---|------|
-| 9 | 通知名（`--name`）= `<name>` 或 `.claude/`，由 rui-bot 决定通道 |
+| 10 | 通知名（`--name`）= `<name>` 或 `.claude/`，由 rui-bot 决定通道 |
 
 ## 核心约束
 
 ```mermaid
 flowchart LR
     subgraph 必须["每次 rui 必须触发"]
-        M1["rui-import"]:::must
+        M0["import-doc.mjs<br/>逐文件即时导入"]:::primary
+        M1["rui-import 批量安全网"]:::must
         M2["rui-bot"]:::must
     end
     subgraph 禁止["不可跳过"]
+        X0["文档 Write 后不可跳过导入"]:::block
         X1["管线失败也需通知"]:::block
         X2["阻断也需通知"]:::block
         X3["no-token 也需调用脚本"]:::block
     end
     必须 --> 禁止
 
+    classDef primary fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px;
     classDef must fill:#e3f2fd,stroke:#1565c0;
     classDef block fill:#ffebee,stroke:#c62828;
 ```

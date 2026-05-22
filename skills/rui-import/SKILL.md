@@ -1,9 +1,11 @@
 ---
 name: rui-import
 description: |
-  Batch synchronize local documents to the remote document API. Auto-invoked by
-  rui at the end of every pipeline — mandatory step, not user-facing unless
-  called directly. Executable: node skills/rui-import/sync.mjs [options].
+  Synchronize local documents to the remote document API. Primary mechanism:
+  per-document instant import via import-doc.mjs after each Write. Batch sync
+  (sync.mjs workspace=true) serves as safety-net only at pipeline end.
+  Executable: node skills/rui-import/sync.mjs [options].
+  Helper: node skills/rui/import-doc.mjs <file-path> (per-document auto-import).
 user_invocable: true
 lifecycle: default-pipeline
 ---
@@ -112,35 +114,44 @@ flowchart TD
 
 > 每次使用 rui 技能都必须触发 rui-import，这是管线完整性的硬性要求。
 
+### 逐文件即时导入（主路径，不可跳过）
+
+每个文档 Write 后**必须**立即执行 `node skills/rui/import-doc.mjs <file-path>`。这是硬性步骤，不可推迟到批量安全网。
+
 ```mermaid
 flowchart LR
-    subgraph 检查点["三检查点强制同步"]
-        CP1["① 文档生成后<br/>全文档基线产出"]:::cp
-        CP2["② 验证后<br/>实施与测试报告产出"]:::cp
-        CP3["③ 交付时<br/>最终全量"]:::cp
-    end
+    WRITE["Write 文档"]:::write --> IMPORT["import-doc.mjs<br/>单文件即时导入"]:::primary
+    IMPORT --> RESULT{结果}
+    RESULT -->|"✓ ok"| NEXT["继续下一文档"]:::next
+    RESULT -->|"⚠ no-token"| SKIP["记录跳过<br/>继续"]:::warn
+    RESULT -->|"✗ failed"| WARN["记录告警<br/>继续"]:::warn
 
-    CP1 --> SCOPE1["当前故事 .md<br/>+ .claude/ 全部"]:::scope
-    CP2 --> SCOPE2["当前故事 .md<br/>+ .claude/ 全部"]:::scope
-    CP3 --> SCOPE3["全项目 .md<br/>+ .claude/ 全部"]:::scope
-
-    classDef cp fill:#e3f2fd,stroke:#1565c0;
-    classDef scope fill:#f3e5f5,stroke:#6a1b9a;
+    classDef write fill:#e3f2fd,stroke:#1565c0;
+    classDef primary fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px;
+    classDef next fill:#e3f2fd,stroke:#1565c0;
+    classDef warn fill:#fff3e0,stroke:#e65100;
 ```
+
+### 三检查点
 
 | 检查点 | 时机 | 方式 | 范围 |
 |--------|------|------|------|
-| 文档生成后 | 每文档产出时 | `file=<path>` 单文件导入 | 当前生成的文件 |
-| 验证后 | 报告产出时 | `file=<path>` 单文件导入 | 当前生成的文件 |
-| 交付时 | 最终全量 | `workspace=true` 批量安全网 | 全项目 .md + .claude/ 全部 |
+| 文档生成后 | 每文档产出时 | `node skills/rui/import-doc.mjs <file>` | 当前生成的文件 |
+| 验证后 | 报告产出时 | `node skills/rui/import-doc.mjs <file>` | 当前生成的文件 |
+| 交付时 | 最终全量兜底 | `node skills/rui-import/sync.mjs` | 全项目 .md + .claude/ 全部 |
+
+> 检查点 ① ② 为逐文件即时导入（主路径），检查点 ③ 为批量安全网（仅兜底，不可替代 ① ②）。
 
 ## 调用形态
 
-> 本技能没有可执行入口，调用方按下表传入意图，执行规约定义的扫描 + 上传流程。
+> **主路径**：`node skills/rui/import-doc.mjs <file-path>` — 每个文档 Write 后立即调用。  
+> **批量兜底**：`node skills/rui-import/sync.mjs [options]` — 管线末端全量扫描。  
+> 详见 [rui SKILL.md § 强制集成](../rui/SKILL.md#强制集成)。
 
 | 意图 | 输入 | 行为 |
 |------|------|------|
-| workspace 全量同步 | `workspace=true` | 项目根全量扫描 + 上传 |
+| 逐文件即时导入（主路径） | `node skills/rui/import-doc.mjs <file-path>` | 单文件验证 → 调用 sync.mjs file= → 输出结果 |
+| workspace 全量同步（兜底） | `node skills/rui-import/sync.mjs` | 项目根全量扫描 + 上传 |
 | 单目录同步 | `dir=<absolute path>` | 指定目录扫描 + 上传，路径仍以项目根计算相对路径 |
 | 自定义扩展名 | `exts=md,json,yaml` | 覆盖默认 `md` |
 | 排除子目录 | `exclude=tmp,build` | 追加排除（与默认排除合并） |
@@ -273,15 +284,23 @@ flowchart TD
 
 ## hook 触发器
 
-> 在 rui 管线末端被自动调用，行为等价于 workspace 全量同步。
+> 逐文件即时导入（`import-doc.mjs`）为主路径；末端批量 `sync.mjs` 为兜底安全网。
 
 ```mermaid
 flowchart LR
-    PIPE["管线完成"]:::s --> CHK{"API_X_TOKEN?"}
-    CHK -->|"缺失"| SKIP["静默跳过<br/>不阻断"]:::warn
-    CHK -->|"存在"| RUN["node skills/rui-import/sync.mjs<br/>workspace 全量同步"]:::op
-    RUN --> MARK["写 docs_synced 标记"]:::out
+    subgraph 主路径["主路径：逐文件即时导入"]
+        W["Write 文档"]:::write --> I["import-doc.mjs<br/><file>"]:::primary
+    end
 
+    subgraph 兜底["兜底：批量安全网"]
+        PIPE["管线末端"]:::s --> CHK{"API_X_TOKEN?"}
+        CHK -->|"缺失"| SKIP["静默跳过<br/>不阻断"]:::warn
+        CHK -->|"存在"| RUN["sync.mjs<br/>全量扫描"]:::op
+        RUN --> MARK["写 docs_synced 标记"]:::out
+    end
+
+    classDef write fill:#e8f5e9,stroke:#2e7d32;
+    classDef primary fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px;
     classDef s fill:#e3f2fd,stroke:#1565c0;
     classDef op fill:#e3f2fd,stroke:#1565c0;
     classDef warn fill:#fff3e0,stroke:#e65100;
@@ -290,7 +309,8 @@ flowchart LR
 
 | 触发 | 动作 | 降级 |
 |------|------|------|
-| rui 末端三步管线（步骤 ②） | `node skills/rui-import/sync.mjs` | `API_X_TOKEN` 缺失 → 静默跳过；网络失败 → 记录不阻断 |
+| 每个文档 Write 后（主路径） | `node skills/rui/import-doc.mjs <file-path>` | 失败不阻断，记录告警后继续 |
+| rui 末端三步管线步骤 ②（兜底） | `node skills/rui-import/sync.mjs` | `API_X_TOKEN` 缺失 → 静默跳过；网络失败 → 记录不阻断 |
 | 直接调用 | `node skills/rui-import/sync.mjs workspace=true` 等 | 同上 |
 
 ## 空输入

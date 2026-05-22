@@ -420,7 +420,14 @@ flowchart TD
 
 **产出**：{project}-故事任务.md（问题空间基线）· {project}-使用场景.md（用户空间基线）· {project}-技术评审.md（按项目类型裁剪章节）· {project}-测试设计.md（Gate A 交接）· {project}-安全审计.md（独立审计）
 
-**逐文件导入**：每个文档生成后立即触发单文件导入到远端（`node skills/rui-import/sync.mjs file=<path>`），自动附加语义标签（stage / type / baseline）。导入失败不阻断管线，末端批量安全网兜底。
+**逐文件自动导入**（强制）：每个文档生成后**必须**立即执行 `node skills/rui/import-doc.mjs <file-path>` 导入远端，自动附加语义标签（stage / type / baseline）。此为硬性步骤，不可跳过或推迟到批量安全网。导入失败不阻断管线，记录告警后继续。
+
+```mermaid
+flowchart LR
+    GEN[生成文档<br/>Write 文件] --> IMP[import-doc.mjs<br/>单文件导入] --> CHK{导入结果}
+    CHK -->|"✓ ok"| NEXT[继续下一文档]
+    CHK -->|"⚠ skipped/failed"| WARN[记录告警] --> NEXT
+```
 
 **末端触发** [强制集成](#强制集成)。
 
@@ -445,7 +452,7 @@ flowchart LR
 
 **产出**：{project}-实施报告.md · {project}-测试报告.md · {project}-自改进复盘.md
 
-**逐文件导入**：每个报告文档生成后立即触发单文件导入（`node skills/rui-import/sync.mjs file=<path>`），自动附加语义标签。
+**逐文件自动导入**（强制）：每个报告文档生成后**必须**立即执行 `node skills/rui/import-doc.mjs <file-path>` 导入远端，规则同 doc 阶段。
 
 **约束**：源码唯一入口 · Gate A `{project}-测试设计.md` 不存在即阻断 · Gate B >2 轮阻断 · P0 不清零不进下一模块
 
@@ -1110,18 +1117,27 @@ flowchart TD
 **触发**：`init` / `doc` / `code` / `需求` / `update` / `code --from-doc` / `doc --from-code` / `doc --from-local`  
 **不触发**：`/rui`（推荐）
 
+### 导入机制：逐文件即时导入 + 批量安全网
+
+```
+文档生成 → import-doc.mjs <file>（即时，不可跳过）
+                  ↓
+         下一文档生成 → import-doc.mjs <file>
+                  ↓
+               ...
+                  ↓
+管线完成/阻断 → 1. hook-log → 2. sync.mjs（批量安全网兜底）→ 3. rui-bot
+```
+
+> **逐文件导入**（主路径）：每个文档 Write 后**必须**执行 `node skills/rui/import-doc.mjs <file-path>`。这是硬性步骤，不可推迟。  
+> **批量安全网**（兜底）：末端 `node skills/rui-import/sync.mjs` 扫描全项目，补漏任何遗漏文件。仅作兜底，不可替代逐文件导入。
+
 ### 执行顺序（不可跳序）
-
-```
-管线完成/阻断 → 1. hook-log（追加日志）→ 2. `node skills/rui-import/sync.mjs`（批量安全网）→ 3. rui-bot（发送通知）
-```
-
-> doc/code 阶段每个文档生成后已通过 `file=<path>` 逐文件导入，步骤 2 为批量安全网兜底。
 
 | # | 步骤 | 规约出处 | 标记字段 |
 |---|------|---------|---------|
 | 1 | hook-log | [rui-bot — hook-log](../rui-bot/SKILL.md#①-hook-log追加日志不发送) | `delivery_pipeline.log_appended` |
-| 2 | `node skills/rui-import/sync.mjs`（批量安全网） | [rui-import — hook 触发器](../rui-import/SKILL.md#hook-触发器) | `delivery_pipeline.docs_synced` |
+| 2 | `node skills/rui-import/sync.mjs`（批量安全网兜底） | [rui-import — hook 触发器](../rui-import/SKILL.md#hook-触发器) | `delivery_pipeline.docs_synced` |
 | 3 | rui-bot | [rui-bot — hook-notify](../rui-bot/SKILL.md#③-hook-notify实际发送) | `delivery_pipeline.notification_sent` |
 
 ### 降级
