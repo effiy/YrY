@@ -32,9 +32,6 @@ flowchart TB
     SESSION --> REPORT["⑦ 汇总结果<br/>created · overwritten · failed"]:::step
 
     UPLOAD -.->|"单文件失败"| RETRY["记录错误<br/>继续处理"]:::warn
-
-    classDef step fill:#e3f2fd,stroke:#1565c0;
-    classDef warn fill:#fff3e0,stroke:#e65100;
 ```
 
 | 阶段 | 动作 | 说明 |
@@ -70,12 +67,8 @@ flowchart TD
     ALL & KEEP --> Q2{"目录命中排除?"}
     Q2 -->|"是"| SKIP
     Q2 -->|"否"| Q3{"路径匹配?"}
-    Q3 -->|"docs/故事任务面板/ 下"| PATH1["远端保持本地目录结构一致<br/>一级标签 = docs"]:::path
+    Q3 -->|"docs/故事任务面板/ 下"| PATH1["远端保持本地目录结构一致<br/>一级标签 = 故事任务面板"]:::path
     Q3 -->|"其他"| PATH2["远端 = &lt;prefix&gt;/&lt;workspace 名&gt;/&lt;相对路径&gt;"]:::path
-
-    classDef rule fill:#e3f2fd,stroke:#1565c0;
-    classDef skip fill:#ffebee,stroke:#c62828;
-    classDef path fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | 规则 | 说明 |
@@ -85,9 +78,9 @@ flowchart TD
 | 默认排除目录 | `.git` · `node_modules` · `.claude-plugin` |
 | 用户排除 | `--exclude a,b,c` 追加排除子目录名（精确匹配，命中即整树跳过） |
 | 路径规整 | 所有分隔符 → `/`，所有空白字符 → `_` |
-| 故事面板路径 | 路径以 `docs/故事任务面板/` 开头时，远端保持本地目录结构一致，一级标签 = `docs` |
+| 故事面板路径 | 路径以 `docs/故事任务面板/` 开头时，远端保持本地目录结构一致，一级标签 = `故事任务面板` |
 | workspace 标签 | 其他路径以项目根目录名（即 `workspace 名`）为一级标签 |
-| **硬约束** | 一级目录标签只允许 **项目目录名称** 或 **docs**，禁止其他任何值。此约束适用于**所有调用**（rui 自动触发 · 手动 `/rui-import` · 脚本直接调用）。`prefix` 参数不得绕过，`resolveRemotePath` 结构化保证 |
+| **硬约束** | 一级目录标签只允许 **项目目录名称** 或 **故事任务面板**，禁止其他任何值。此约束适用于**所有调用**（rui 自动触发 · 手动 `/rui-import` · 脚本直接调用）。`prefix` 参数不得绕过，`resolveRemotePath` 结构化保证 |
 
 ## 语义标签
 
@@ -108,7 +101,7 @@ flowchart TD
 
 非故事文档（.claude/ 配置等）不附加语义标签，仅保留路径标签。
 
-远端会话示例：`tags: ["docs", "故事任务面板", "rui-story", "stage:doc", "type:task", "baseline:problem"]`
+远端会话示例：`tags: ["故事任务面板", "rui-story", "stage:doc", "type:task", "baseline:problem"]`
 
 ## rui 强制触发
 
@@ -125,11 +118,6 @@ flowchart LR
     RESULT -->|"✓ ok"| NEXT["继续下一文档"]:::next
     RESULT -->|"⚠ no-token"| SKIP["记录跳过<br/>继续"]:::warn
     RESULT -->|"✗ failed"| WARN["记录告警<br/>继续"]:::warn
-
-    classDef write fill:#e3f2fd,stroke:#1565c0;
-    classDef primary fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px;
-    classDef next fill:#e3f2fd,stroke:#1565c0;
-    classDef warn fill:#fff3e0,stroke:#e65100;
 ```
 
 ### 三检查点
@@ -175,10 +163,6 @@ flowchart LR
     POST --> Q{"远端存在该 session?"}
     Q -->|"是"| OVERWRITE["status: overwritten"]:::op
     Q -->|"否"| CREATE["status: created<br/>+ POST / create_document"]:::op
-
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef api fill:#e3f2fd,stroke:#1565c0;
-    classDef op fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 ### 通用请求头
@@ -266,10 +250,6 @@ flowchart TD
     NEXT --> END{"全部完成?"}
     END -->|"是 + failed > 0"| EXIT_FAIL["退出码 1"]:::warn
     END -->|"是 + failed = 0"| EXIT_OK["退出码 0"]:::ok
-
-    classDef ok fill:#e8f5e9,stroke:#2e7d32;
-    classDef warn fill:#fff3e0,stroke:#e65100;
-    classDef block fill:#ffebee,stroke:#c62828;
 ```
 
 | 场景 | 处置 | 阻断? |
@@ -298,13 +278,6 @@ flowchart LR
         CHK -->|"存在"| RUN["sync.mjs<br/>全量扫描"]:::op
         RUN --> MARK["写 docs_synced 标记"]:::out
     end
-
-    classDef write fill:#e8f5e9,stroke:#2e7d32;
-    classDef primary fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px;
-    classDef s fill:#e3f2fd,stroke:#1565c0;
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef warn fill:#fff3e0,stroke:#e65100;
-    classDef out fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | 触发 | 动作 | 降级 |
@@ -319,10 +292,6 @@ flowchart LR
 flowchart TD
     EMPTY["无参数 / 空输入"]:::src --> DEFAULT["等价 workspace=true<br/>全量扫描 + 上传"]:::op
     DEFAULT --> RESULT["逐文件 POST<br/>输出 created / overwritten / failed"]:::out
-
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 空输入默认为 `workspace=true` 全量同步，等价于 `/rui-import workspace=true`。
@@ -332,15 +301,13 @@ flowchart TD
 ```mermaid
 flowchart LR
     S1["扫描完整<br/>.claude/ 全部 + 其余 .md"]:::sig --> S2["排除正确<br/>.git / node_modules / .claude-plugin 已过滤"]:::sig
-    S2 --> S3["路径映射<br/>一级标签 = docs 或 项目目录名"]:::sig
+    S2 --> S3["路径映射<br/>一级标签 = 故事任务面板 或 项目目录名"]:::sig
     S3 --> S4["上传完成<br/>逐文件 POST 无遗漏"]:::sig
-
-    classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 标志 | 未达标的处置 |
 |------|------------|
 | 扫描完整：.claude/ 全部 + 其余 .md | 补扫遗漏目录，重新执行 |
 | 排除正确：.git / node_modules / .claude-plugin 已过滤 | 调整排除规则 |
-| 路径映射：一级标签 ∈ {项目目录名, docs} | 检查远端路径前缀，修正重传；禁止其他标签 |
+| 路径映射：一级标签 ∈ {项目目录名, 故事任务面板} | 检查远端路径前缀，修正重传；禁止其他标签 |
 | 上传完成：逐文件 POST 无遗漏 | 查看错误日志，补传失败文件 |

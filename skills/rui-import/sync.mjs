@@ -165,9 +165,11 @@ function resolveRemotePath(localPath, root, workspaceName, prefix) {
   const segments = [];
   if (prefix.length > 0) segments.push(...prefix);
 
-  // docs/ 下的文件保持本地目录结构一致
-  // 结果: docs/故事任务面板/{子路径}/*
-  if (rel.startsWith("docs/")) {
+  // docs/故事任务面板/ 路径：跳过 docs，一级标签 = 故事任务面板
+  // 结果: 故事任务面板/{子路径}/*
+  if (rel.startsWith("docs/故事任务面板/")) {
+    segments.push(...rel.split("/").slice(1));
+  } else if (rel.startsWith("docs/")) {
     segments.push(...rel.split("/"));
   } else {
     segments.push(workspaceName);
@@ -330,7 +332,7 @@ function resolvePullFilter(localDir, projectRoot) {
       storyName,
       filter: (s) => {
         const tags = s.tags || [];
-        return tags[0] === "docs" && tags[1] === "故事任务面板" && tags[2] === storyName;
+        return tags[0] === "故事任务面板" && tags[1] === storyName;
       },
       // story files are flat in one dir — local path = localDir + basename
       toLocal: (remotePath) => join(localDir, basename(remotePath)),
@@ -434,8 +436,8 @@ async function recommendPullMode(apiUrl) {
   const storyMap = new Map();
   for (const s of sessions) {
     const tags = s.tags || s.get_tags?.() || [];
-    if (tags[0] !== "docs" || tags[1] !== "故事任务面板" || !tags[2]) continue;
-    const name = tags[2];
+    if (tags[0] !== "故事任务面板" || !tags[1]) continue;
+    const name = tags[1];
     if (!storyMap.has(name)) storyMap.set(name, []);
     storyMap.get(name).push(s.file_path || s.get_file_path?.() || "");
   }
