@@ -160,22 +160,12 @@ async function scanFiles(root, exts, userExcludes) {
 }
 
 // --- path mapping ----------------------------------------------------------
-function resolveRemotePath(localPath, root, workspaceName, prefix) {
+function resolveRemotePath(localPath, root, _workspaceName, prefix) {
   const rel = relative(root, localPath).split(sep).join("/").replace(/\s/g, "_");
   const segments = [];
   if (prefix.length > 0) segments.push(...prefix);
-
-  // docs/故事任务面板/ 路径：跳过 docs，一级标签 = 故事任务面板
-  // 结果: 故事任务面板/{子路径}/*
-  if (rel.startsWith("docs/故事任务面板/")) {
-    segments.push(...rel.split("/").slice(1));
-  } else if (rel.startsWith("docs/")) {
-    segments.push(...rel.split("/"));
-  } else {
-    segments.push(workspaceName);
-    segments.push(rel);
-  }
-
+  // 远端路径 = 本地相对路径，一一对应，不跳不补
+  segments.push(...rel.split("/"));
   return segments.join("/");
 }
 
@@ -332,7 +322,7 @@ function resolvePullFilter(localDir, projectRoot) {
       storyName,
       filter: (s) => {
         const tags = s.tags || [];
-        return tags[0] === "故事任务面板" && tags[1] === storyName;
+        return tags[0] === "docs" && tags[1] === "故事任务面板" && tags[2] === storyName;
       },
       // story files are flat in one dir — local path = localDir + basename
       toLocal: (remotePath) => join(localDir, basename(remotePath)),
@@ -346,10 +336,10 @@ function resolvePullFilter(localDir, projectRoot) {
       filter: (s) => {
         const tags = s.tags || [];
         const fp = s.file_path || "";
-        return tags[0] === workspaceName && fp.startsWith(`${workspaceName}/.claude/`);
+        return tags[0] === ".claude" && fp.startsWith(".claude/");
       },
-      // preserve nested structure: strip "{workspaceName}/" prefix
-      toLocal: (remotePath) => join(projectRoot, remotePath.slice(workspaceName.length + 1)),
+      // remote path mirrors local: toLocal = projectRoot + remotePath
+      toLocal: (remotePath) => join(projectRoot, remotePath),
     };
   }
 
@@ -436,8 +426,8 @@ async function recommendPullMode(apiUrl) {
   const storyMap = new Map();
   for (const s of sessions) {
     const tags = s.tags || s.get_tags?.() || [];
-    if (tags[0] !== "故事任务面板" || !tags[1]) continue;
-    const name = tags[1];
+    if (tags[0] !== "docs" || tags[1] !== "故事任务面板" || !tags[2]) continue;
+    const name = tags[2];
     if (!storyMap.has(name)) storyMap.set(name, []);
     storyMap.get(name).push(s.file_path || s.get_file_path?.() || "");
   }
@@ -593,16 +583,6 @@ async function main() {
 
   console.error(`[rui-import] scan root: ${root}`);
   console.error(`[rui-import] workspace: ${workspaceName}`);
-
-  // 硬约束：一级目录标签只能是项目目录名或"docs"
-  const allowedLabels = new Set([workspaceName, "docs"]);
-  if (opts.prefix.length > 0) {
-    const firstLabel = opts.prefix[0];
-    if (!allowedLabels.has(firstLabel)) {
-      console.error(`[rui-import] ERROR: prefix 一级标签 "${firstLabel}" 不允许，只能是 "${workspaceName}" 或 "docs"`);
-      process.exit(1);
-    }
-  }
 
   const files = await scanFiles(root, opts.exts, opts.exclude);
   console.error(`[rui-import] found ${files.length} files`);

@@ -66,9 +66,7 @@ flowchart TD
     EXT -->|"否"| SKIP["跳过 ❌"]:::skip
     ALL & KEEP --> Q2{"目录命中排除?"}
     Q2 -->|"是"| SKIP
-    Q2 -->|"否"| Q3{"路径匹配?"}
-    Q3 -->|"docs/故事任务面板/ 下"| PATH1["远端保持本地目录结构一致<br/>一级标签 = 故事任务面板"]:::path
-    Q3 -->|"其他"| PATH2["远端 = &lt;prefix&gt;/&lt;workspace 名&gt;/&lt;相对路径&gt;"]:::path
+    Q2 -->|"否"| PATH["远端路径 = prefix(如有) + 项目根相对路径<br/>与本地目录一一对应"]:::path
 ```
 
 | 规则 | 说明 |
@@ -78,9 +76,7 @@ flowchart TD
 | 默认排除目录 | `.git` · `node_modules` · `.claude-plugin` |
 | 用户排除 | `--exclude a,b,c` 追加排除子目录名（精确匹配，命中即整树跳过） |
 | 路径规整 | 所有分隔符 → `/`，所有空白字符 → `_` |
-| 故事面板路径 | 路径以 `docs/故事任务面板/` 开头时，远端保持本地目录结构一致，一级标签 = `故事任务面板` |
-| workspace 标签 | 其他路径以项目根目录名（即 `workspace 名`）为一级标签 |
-| **硬约束** | 一级目录标签只允许 **项目目录名称** 或 **故事任务面板**，禁止其他任何值。此约束适用于**所有调用**（rui 自动触发 · 手动 `/rui-import` · 脚本直接调用）。`prefix` 参数不得绕过，`resolveRemotePath` 结构化保证 |
+| 路径映射 | 远端路径 = `prefix`（如有）+ 项目根相对路径。与本地目录结构一一对应，不跳过、不前置、不重命名 |
 
 ## 语义标签
 
@@ -101,7 +97,7 @@ flowchart TD
 
 非故事文档（.claude/ 配置等）不附加语义标签，仅保留路径标签。
 
-远端会话示例：`tags: ["故事任务面板", "rui-story", "stage:doc", "type:task", "baseline:problem"]`
+远端会话示例：`tags: ["docs", "故事任务面板", "rui-story", "stage:doc", "type:task", "baseline:problem"]`
 
 ## rui 强制触发
 
@@ -301,7 +297,7 @@ flowchart TD
 ```mermaid
 flowchart LR
     S1["扫描完整<br/>.claude/ 全部 + 其余 .md"]:::sig --> S2["排除正确<br/>.git / node_modules / .claude-plugin 已过滤"]:::sig
-    S2 --> S3["路径映射<br/>一级标签 = 故事任务面板 或 项目目录名"]:::sig
+    S2 --> S3["路径映射<br/>远端路径 = 本地相对路径，一一对应"]:::sig
     S3 --> S4["上传完成<br/>逐文件 POST 无遗漏"]:::sig
 ```
 
@@ -309,5 +305,5 @@ flowchart LR
 |------|------------|
 | 扫描完整：.claude/ 全部 + 其余 .md | 补扫遗漏目录，重新执行 |
 | 排除正确：.git / node_modules / .claude-plugin 已过滤 | 调整排除规则 |
-| 路径映射：一级标签 ∈ {项目目录名, 故事任务面板} | 检查远端路径前缀，修正重传；禁止其他标签 |
+| 路径映射：远端路径 = prefix(如有) + 项目根相对路径，与本地一一对应 | 检查 resolveRemotePath 实现，确保无跳段无前置 |
 | 上传完成：逐文件 POST 无遗漏 | 查看错误日志，补传失败文件 |
