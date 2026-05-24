@@ -34,10 +34,6 @@ flowchart TD
     SECURITY -.约束.-> CODER
     SI -.提案.-> PM
     ID -.hook.-> WW
-
-    classDef core fill:#fff3e0,stroke:#e65100;
-    classDef agent fill:#e3f2fd,stroke:#1565c0;
-    classDef skill fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 ## 管线

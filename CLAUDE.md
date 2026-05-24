@@ -81,9 +81,6 @@ flowchart LR
         L4["L4 上下文工程<br/>时间决定结构"]:::def
     end
     退化 --> 对策
-
-    classDef risk fill:#ffebee,stroke:#c62828;
-    classDef def fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 退化因 | 对策 | 具体战术 |
