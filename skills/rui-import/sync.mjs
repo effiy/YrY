@@ -16,19 +16,6 @@ const DEFAULT_EXCLUDES = new Set([".git", "node_modules", ".claude-plugin"]);
 const CONCURRENCY = 4;
 const HTTP_TIMEOUT = 30_000;
 
-// Document type → label mapping (matched by filename suffix)
-const DOC_TYPE_PATTERNS = [
-  { suffix: "-故事任务.md",     stage: "stage:doc",     type: "type:task",           baseline: "baseline:problem" },
-  { suffix: "-使用场景.md",     stage: "stage:doc",     type: "type:scenario",       baseline: "baseline:problem" },
-  { suffix: "-技术评审.md",     stage: "stage:doc",     type: "type:tech-review",    baseline: "baseline:solution" },
-  { suffix: "-测试设计.md",     stage: "stage:doc",     type: "type:test-design",    baseline: "baseline:solution" },
-  { suffix: "-安全审计.md",     stage: "stage:doc",     type: "type:security-audit", baseline: "baseline:solution" },
-  { suffix: "-实施报告.md",     stage: "stage:code",    type: "type:impl-report",    baseline: "baseline:verify" },
-  { suffix: "-测试报告.md",     stage: "stage:code",    type: "type:test-report",    baseline: "baseline:verify" },
-  { suffix: "-自改进复盘.md",   stage: "stage:improve", type: "type:retrospective",   baseline: "baseline:verify" },
-  { suffix: "-消息通知列表.md", stage: "stage:auto",    type: "type:notification-log", baseline: null },
-  { suffix: "-交互日志.md",     stage: "stage:auto",    type: "type:interaction-log",  baseline: null },
-];
 const ERROR_MSG_MAX_LEN = 500;
 const QUERY_LIMIT = 10_000;
 const PREVIEW_COUNT = 10;
@@ -169,23 +156,19 @@ function resolveRemotePath(localPath, root, _workspaceName, prefix) {
   return segments.join("/");
 }
 
-function getTags(remotePath, localPath) {
+function getTags(remotePath, _localPath, projectRootName) {
   const parts = remotePath.split("/");
   parts.pop(); // remove filename
-  const semanticLabels = localPath ? resolveLabels(localPath, remotePath) : [];
-  return [...parts, ...semanticLabels];
-}
-
-function resolveLabels(localPath, _remotePath) {
-  const filename = basename(localPath);
-  for (const pat of DOC_TYPE_PATTERNS) {
-    if (filename.endsWith(pat.suffix)) {
-      const labels = [pat.stage, pat.type];
-      if (pat.baseline) labels.push(pat.baseline);
-      return labels;
-    }
+  // 故事任务面板路径：去除 docs，故事任务面板提升到第一级
+  if (parts[0] === "docs" && parts[1] === "故事任务面板") {
+    return parts.slice(1);
   }
-  return [];
+  // .claude/ 路径：保持本地路径一一对应
+  if (parts[0] === ".claude") {
+    return parts;
+  }
+  // 其他路径：项目根目录名作为第一级标签，后续与本地路径一一对应
+  return [projectRootName, ...parts];
 }
 
 // --- HTTP helpers ----------------------------------------------------------
@@ -234,9 +217,9 @@ async function writeRemoteFile(apiUrl, remotePath, content) {
   return fetchJson(apiUrl + "/write-file", { method: "POST", body: JSON.stringify(body) });
 }
 
-async function createSession(apiUrl, remotePath, localPath) {
+async function createSession(apiUrl, remotePath, localPath, projectRootName) {
   const basename = remotePath.split("/").pop();
-  const tags = getTags(remotePath, localPath);
+  const tags = getTags(remotePath, localPath, projectRootName);
   const now = Date.now();
   const body = {
     module_name: "services.database.data_service",
@@ -267,7 +250,7 @@ async function uploadSingleFile(filePath, apiUrl, existingPaths, root, workspace
   if (existingPaths.has(remotePath)) {
     return { status: "overwritten", file: filePath, remotePath };
   }
-  await createSession(apiUrl, remotePath, filePath);
+  await createSession(apiUrl, remotePath, filePath, workspaceName);
   return { status: "created", file: filePath, remotePath };
 }
 
@@ -322,7 +305,7 @@ function resolvePullFilter(localDir, projectRoot) {
       storyName,
       filter: (s) => {
         const tags = s.tags || [];
-        return tags[0] === "docs" && tags[1] === "故事任务面板" && tags[2] === storyName;
+        return tags[0] === "故事任务面板" && tags[1] === storyName;
       },
       // story files are flat in one dir — local path = localDir + basename
       toLocal: (remotePath) => join(localDir, basename(remotePath)),
@@ -426,8 +409,8 @@ async function recommendPullMode(apiUrl) {
   const storyMap = new Map();
   for (const s of sessions) {
     const tags = s.tags || s.get_tags?.() || [];
-    if (tags[0] !== "docs" || tags[1] !== "故事任务面板" || !tags[2]) continue;
-    const name = tags[2];
+    if (tags[0] !== "故事任务面板" || !tags[1]) continue;
+    const name = tags[1];
     if (!storyMap.has(name)) storyMap.set(name, []);
     storyMap.get(name).push(s.file_path || s.get_file_path?.() || "");
   }
@@ -568,12 +551,8 @@ async function main() {
       const pr = findProjectRoot(process.cwd());
       const result = await uploadSingleFile(filePath, apiUrl, existingPaths, pr, workspaceName, opts.prefix);
       const remotePath = resolveRemotePath(filePath, pr, workspaceName, opts.prefix);
-      const labels = resolveLabels(filePath, remotePath);
 
       console.error(`[rui-import] single-file done — ${result.status}: ${filePath} → ${remotePath}`);
-      if (labels.length > 0) {
-        console.error(`[rui-import] labels: ${labels.join(", ")}`);
-      }
       process.exit(result.status === "failed" ? 1 : 0);
     } catch (err) {
       console.error(`[rui-import] FAILED: ${err.message}`);
