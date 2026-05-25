@@ -163,9 +163,9 @@ function getTags(remotePath, _localPath, projectRootName) {
   if (parts[0] === "docs" && parts[1] === "故事任务面板") {
     return parts.slice(1);
   }
-  // .claude/ 路径：保持本地路径一一对应
+  // .claude/ 路径：项目根目录名作为第一级标签
   if (parts[0] === ".claude") {
-    return parts;
+    return [projectRootName, ...parts];
   }
   // 其他路径：项目根目录名作为第一级标签，后续与本地路径一一对应
   return [projectRootName, ...parts];
@@ -319,7 +319,7 @@ function resolvePullFilter(localDir, projectRoot) {
       filter: (s) => {
         const tags = s.tags || [];
         const fp = s.file_path || "";
-        return tags[0] === ".claude" && fp.startsWith(".claude/");
+        return tags[1] === ".claude" && fp.startsWith(".claude/");
       },
       // remote path mirrors local: toLocal = projectRoot + remotePath
       toLocal: (remotePath) => join(projectRoot, remotePath),
