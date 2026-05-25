@@ -4,6 +4,8 @@
 
 > **来源引用**: 由 `/rui doc --from-code rui-claude-help-doc` 触发，从 `skills/rui-claude/help.mjs` 源码反推。证据 Level B + 源码路径。
 
+[§1 Story](#sec1-story)
+
 ### 需求概述
 
 `.claude/` 配置管理技能的入口需要统一的帮助系统，让用户了解配置同步、健康度分析、操作历史等命令的用法。帮助文本覆盖 3 个只读命令、2 个写入命令、10 个使用场景。但帮助系统本身缺少文档基线。
@@ -31,6 +33,7 @@ flowchart TD
 
 ---
 
+<a id="sec1-story"></a>
 ## §1 Story
 
 ### Story 1: rui-claude 帮助系统 — 问题空间基线

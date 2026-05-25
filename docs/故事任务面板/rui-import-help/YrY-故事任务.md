@@ -4,6 +4,8 @@
 
 > **来源引用**: 由 `/rui doc --from-code rui-import-help-doc` 触发，从 `skills/rui-import/help.mjs` 源码反推。证据 Level B + 源码路径。
 
+[§1 Story](#sec1-story)
+
 ### 需求概述
 
 文档批量同步技能的入口需要帮助系统，让用户了解扫描、过滤、路径映射、上传等参数用法。帮助覆盖 4 组参数（路径控制/文件过滤/模式控制/其他）和 12 个使用场景。帮助系统本身缺少文档基线。
@@ -31,6 +33,7 @@ flowchart TD
 
 ---
 
+<a id="sec1-story"></a>
 ## §1 Story
 
 ### Story 1: rui-import 帮助系统 — 问题空间基线

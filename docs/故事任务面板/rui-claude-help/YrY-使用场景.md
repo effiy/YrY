@@ -4,6 +4,8 @@
 
 > **来源引用**: 基于 `YrY-故事任务.md` §1 + §1.1 反推。证据 Level A + 文档路径。
 
+[§0 基线声明](#sec0-baseline) · [§1 场景全景](#sec1-scenarios) · [§2 场景详述](#sec2-details) · [§3 场景覆盖矩阵](#sec3-matrix) · [§4 评审清单](#sec4-checklist) · [§5 体验基线](#sec5-experience)
+
 ### 主要价值
 
 - 👤 定义 rui-claude 帮助系统的用户空间基线
@@ -13,12 +15,14 @@
 
 ---
 
+<a id="sec0-baseline"></a>
 ## §0 基线声明
 
 > **用户空间基线**: 本文档定义"谁使用(WHO)"和"如何体验(HOW EXPERIENCE)"。
 
 ---
 
+<a id="sec1-scenarios"></a>
 ## §1 场景全景
 
 ```mermaid
@@ -33,6 +37,7 @@ flowchart TD
 
 ---
 
+<a id="sec2-details"></a>
 ## §2 场景详述
 
 ### 场景 1: 浏览完整帮助
@@ -76,6 +81,7 @@ flowchart LR
 
 ---
 
+<a id="sec3-matrix"></a>
 ## §3 场景覆盖矩阵
 
 | 场景 | FP# | AC# | 覆盖状态 |
@@ -86,6 +92,7 @@ flowchart LR
 
 ---
 
+<a id="sec4-checklist"></a>
 ## §4 评审清单
 
 | # | 检查项 | 状态 |
@@ -96,6 +103,7 @@ flowchart LR
 
 ---
 
+<a id="sec5-experience"></a>
 ## §5 体验基线
 
 | 角色 | 核心旅程 | 情感目标 | 成功感知 | 关联场景 |

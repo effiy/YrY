@@ -5,8 +5,11 @@
 > **来源引用**: `/rui doc --from-code rui-import-sync-doc` · 源文件 `skills/rui-import/sync.mjs`
 > **证据等级**: B（从源码反推，附源码路径）
 
+[§0 基线溯源](#sec0-baseline) · [§1 测试范围](#sec1-scope) · [§2 测试用例](#sec2-cases) · [§3 Gate A 交接信号](#sec3-gatea) · [§4 测试环境](#sec4-setup)
+
 # YrY-测试设计 · rui-import-sync
 
+<a id="sec0-baseline"></a>
 ## §0 基线溯源
 
 | AC# | 来源 | 测试覆盖 |
@@ -29,6 +32,7 @@
 
 ---
 
+<a id="sec1-scope"></a>
 ## §1 测试范围
 
 | 维度 | 覆盖范围 |
@@ -40,6 +44,7 @@
 
 ---
 
+<a id="sec2-cases"></a>
 ## §2 测试用例
 
 ### §2.1 导入模式（import）
@@ -111,6 +116,7 @@
 
 ---
 
+<a id="sec3-gatea"></a>
 ## §3 Gate A 交接信号
 
 | 信号 | 值 | 说明 |
@@ -122,6 +128,7 @@
 
 ---
 
+<a id="sec4-setup"></a>
 ## §4 测试环境
 
 | 维度 | 要求 |

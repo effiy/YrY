@@ -4,6 +4,8 @@
 
 > **来源引用**: security agent 独立审计。不依赖 coder 自评。
 
+[§0 基线溯源](#sec0-baseline) · [§2 威胁建模](#sec2-threats) · [§4 缓解措施](#sec4-mitigations) · [§5 合规检查](#sec5-compliance)
+
 ### 主要价值
 
 - 🔒 独立审计帮助系统安全面
@@ -13,6 +15,7 @@
 
 ---
 
+<a id="sec0-baseline"></a>
 ## §0 基线溯源
 
 | 审计条目 | 审计结论 |
@@ -21,6 +24,7 @@
 
 ---
 
+<a id="sec2-threats"></a>
 ## §2 威胁建模
 
 | # | 威胁 | 攻击面 | 可能性 | 影响 | STRIDE |
@@ -30,6 +34,7 @@
 
 ---
 
+<a id="sec4-mitigations"></a>
 ## §4 缓解措施
 
 | 威胁# | 缓解措施 | 优先级 | 状态 |
@@ -39,6 +44,7 @@
 
 ---
 
+<a id="sec5-compliance"></a>
 ## §5 合规检查
 
 全部 N/A — 纯输出工具。

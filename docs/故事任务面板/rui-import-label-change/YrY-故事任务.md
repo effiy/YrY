@@ -2,6 +2,8 @@
 
 > **导航**: [YrY-使用场景 →](./YrY-使用场景.md)
 
+[§1 Story](#sec1-story) · [§2 Requirements](#sec2-requirements) · [§3 成功标准](#sec3-success) · [§4 范围边界](#sec4-scope) · [§5 AC](#sec5-ac) · [§6 风险与假设](#sec6-risks) · [§7 跨文档索引](#sec7-index) · [变更记录](#changelog)
+
 ### 来源引用
 
 > 触发: `/rui` "rui-import 导入的目录标签应该和本地项目的目录保持一一对应的效果"
@@ -31,6 +33,7 @@ flowchart LR
 
 ---
 
+<a id="sec1-story"></a>
 ## §1 Story
 
 ### Story 1: resolveRemotePath 统一为相对路径直出
@@ -61,6 +64,7 @@ flowchart LR
 
 ---
 
+<a id="sec2-requirements"></a>
 ## §2 Requirements
 
 ### 功能点
@@ -91,6 +95,7 @@ flowchart LR
 
 ---
 
+<a id="sec3-success"></a>
 ## §3 成功标准
 
 | SC# | 描述 | 度量方式 | 目标值 | 优先级 | 关联 FP# |
@@ -101,6 +106,7 @@ flowchart LR
 
 ---
 
+<a id="sec4-scope"></a>
 ## §4 范围边界
 
 ### 范围内
@@ -122,6 +128,7 @@ flowchart LR
 
 ---
 
+<a id="sec5-ac"></a>
 ## §5 AC
 
 | AC# | Given | When | Then | 门禁 |
@@ -135,6 +142,7 @@ flowchart LR
 
 ---
 
+<a id="sec6-risks"></a>
 ## §6 风险与假设
 
 | # | 风险/假设 | 类型 | 可能性 | 影响 | 缓解/验证策略 | 关联 FP# |
@@ -145,6 +153,7 @@ flowchart LR
 
 ---
 
+<a id="sec7-index"></a>
 ## §7 跨文档索引
 
 | 本文档章节 | 基线内容 | 下游文档编号 | 预期覆盖 | 状态 |
@@ -157,6 +166,7 @@ flowchart LR
 
 ---
 
+<a id="changelog"></a>
 ## 变更记录
 
 | 日期 | 变更 | 触发 | 证据 |

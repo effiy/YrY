@@ -4,8 +4,11 @@
 
 > **审计独立性**: 本审计由 security agent 独立执行
 
+[§0 基线溯源](#sec0-baseline) · [§1 资产识别](#sec1-assets) · [§2 STRIDE 威胁建模](#sec2-stride) · [§3 合规检查](#sec3-compliance)
+
 # YrY-安全审计 · rui-bot-send
 
+<a id="sec0-baseline"></a>
 ## §0 基线溯源
 
 | 来源 | 覆盖 |
@@ -21,6 +24,7 @@
 
 ---
 
+<a id="sec1-assets"></a>
 ## §1 资产识别
 
 | 资产 | 敏感度 | 存储 | 传输 |
@@ -31,6 +35,7 @@
 
 ---
 
+<a id="sec2-stride"></a>
 ## §2 STRIDE 威胁建模
 
 | 类别 | 威胁 | 可能性 | 缓解 |
@@ -44,6 +49,7 @@
 
 ---
 
+<a id="sec3-compliance"></a>
 ## §3 合规检查
 
 | # | 检查项 | 状态 | 证据 |

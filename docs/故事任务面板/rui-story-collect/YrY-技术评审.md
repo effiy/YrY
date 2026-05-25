@@ -4,6 +4,8 @@
 
 > **来源引用**: `/rui doc --from-code rui-story-collect-doc`，源码 `skills/rui-story/collect.mjs:1-542`
 
+[§0 设计决策与任务规划](#sec0-design) · [§1 系统架构](#sec1-architecture) · [§7 安全约束](#sec7-security) · [§8 性能与限制](#sec8-performance) · [§9 评审清单](#sec9-checklist)
+
 ### 主要价值
 
 - 🎯 七维指标体系，对齐 D0-D7 诊断模型，数据驱动改进决策
@@ -12,6 +14,7 @@
 - 🛡️ JSONL 容错读取：无效行静默跳过，不阻断整体分析
 - 📋 JSON/Table 双格式输出，管道消费和人工查看兼顾
 
+<a id="sec0-design"></a>
 ## §0 设计决策与任务规划
 
 ### §0.0 基线溯源
@@ -57,6 +60,7 @@ flowchart LR
 
 ---
 
+<a id="sec1-architecture"></a>
 ## §1 系统架构
 
 ### 效果示意
@@ -147,6 +151,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec7-security"></a>
 ## §7 安全约束
 
 | # | 威胁 | 信任边界 | 缓解措施 | 优先级 |
@@ -157,6 +162,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec8-performance"></a>
 ## §8 性能与限制
 
 | 维度 | 约束 | 应对 |
@@ -168,6 +174,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec9-checklist"></a>
 ## §9 评审清单
 
 | # | 检查项 | 状态 |

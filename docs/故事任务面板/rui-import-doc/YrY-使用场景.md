@@ -4,6 +4,8 @@
 
 > **来源引用**: 本文档基于 `YrY-故事任务.md` §1 Story 1 与 §1.1 User Operations 反推生成。证据 Level A + 文档路径。
 
+[§0 基线声明](#sec0-baseline) · [§1 场景全景](#sec1-scenarios) · [§2 场景详述](#sec2-details) · [§3 场景覆盖矩阵](#sec3-matrix) · [§4 评审清单](#sec4-checklist) · [§5 体验基线](#sec5-experience)
+
 ### 主要价值
 
 - 👤 定义逐文件导入工具的用户空间基线，明确"谁在什么场景下使用"
@@ -13,12 +15,14 @@
 
 ---
 
+<a id="sec0-baseline"></a>
 ## §0 基线声明
 
 > **用户空间基线 (User Space Baseline)**: 本文档定义"谁使用(WHO)"和"如何体验(HOW EXPERIENCE)"。所有交互设计(技术评审)、测试用例(测试设计)、验收标准(故事任务 §5)均必须覆盖本文档定义的每个场景。
 
 ---
 
+<a id="sec1-scenarios"></a>
 ## §1 场景全景
 
 ```mermaid
@@ -37,6 +41,7 @@ flowchart TD
 
 ---
 
+<a id="sec2-details"></a>
 ## §2 场景详述
 
 ### 场景 1: 文档成功导入
@@ -113,6 +118,7 @@ flowchart LR
 
 ---
 
+<a id="sec3-matrix"></a>
 ## §3 场景覆盖矩阵
 
 | 场景 | FP# | AC# | 实现文档(技术评审) | 测试文档(测试设计) | 覆盖状态 | 备注 |
@@ -123,6 +129,7 @@ flowchart LR
 
 ---
 
+<a id="sec4-checklist"></a>
 ## §4 评审清单
 
 | # | 检查项 | 状态 |
@@ -137,6 +144,7 @@ flowchart LR
 
 ---
 
+<a id="sec5-experience"></a>
 ## §5 体验基线
 
 | 角色 | 核心旅程 | 情感目标 | 痛点解决 | 成功感知 | 关联场景 |

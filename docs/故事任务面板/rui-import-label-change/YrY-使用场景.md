@@ -2,6 +2,8 @@
 
 > **导航**: [← YrY-故事任务](./YrY-故事任务.md) · [YrY-技术评审 →](./YrY-技术评审.md)
 
+[§0 基线声明](#sec0-baseline) · [§1 场景全景](#sec1-scenarios) · [§2 场景详述](#sec2-details) · [§3 场景覆盖矩阵](#sec3-matrix) · [§4 评审清单](#sec4-checklist) · [§5 体验基线](#sec5-experience) · [变更记录](#changelog)
+
 ### 来源引用
 
 > 触发: `/rui` "rui-import 导入的目录标签应该和本地项目的目录保持一一对应的效果"
@@ -9,6 +11,7 @@
 
 ---
 
+<a id="sec0-baseline"></a>
 ## §0 基线声明
 
 > **用户空间基线 (User Space Baseline)**: 本文档定义"谁使用(WHO)"和"如何体验(HOW EXPERIENCE)"。所有交互设计(技术评审)、测试用例(测试设计)、验收标准(故事任务 §5)均必须覆盖本文档定义的每个场景。
@@ -22,6 +25,7 @@
 
 ---
 
+<a id="sec1-scenarios"></a>
 ## §1 场景全景
 
 ```mermaid
@@ -36,6 +40,7 @@ flowchart LR
 
 ---
 
+<a id="sec2-details"></a>
 ## §2 场景详述
 
 ### 场景 1: 全量导入 — 批量同步项目文档到远端
@@ -109,6 +114,7 @@ flowchart TD
 
 ---
 
+<a id="sec3-matrix"></a>
 ## §3 场景覆盖矩阵
 
 | 场景 | FP# | AC# | 实现文档(技术评审) | 测试文档(测试设计) | 覆盖状态 | 备注 |
@@ -120,6 +126,7 @@ flowchart TD
 
 ---
 
+<a id="sec4-checklist"></a>
 ## §4 评审清单
 
 | # | 检查项 | 状态 |
@@ -134,6 +141,7 @@ flowchart TD
 
 ---
 
+<a id="sec5-experience"></a>
 ## §5 体验基线
 
 | 角色 | 核心旅程 | 情感目标 | 痛点解决 | 成功感知 | 关联场景 |
@@ -144,6 +152,7 @@ flowchart TD
 
 ---
 
+<a id="changelog"></a>
 ## 变更记录
 
 | 日期 | 变更 | 触发 | 证据 |

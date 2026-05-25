@@ -6,8 +6,11 @@
 > **证据等级**: B（从源码反推，附源码路径）
 > **审计独立性**: 本审计由 security agent 独立执行，不依赖 coder 自评
 
+[§0 基线溯源](#sec0-baseline) · [§1 资产识别](#sec1-assets) · [§2 STRIDE 威胁建模](#sec2-stride) · [§3 信任边界](#sec3-trust) · [§4 合规检查](#sec4-compliance) · [§5 缓解优先级](#sec5-mitigation-priority)
+
 # YrY-安全审计 · rui-import-sync
 
+<a id="sec0-baseline"></a>
 ## §0 基线溯源
 
 | 来源 | 章节 | 本文档覆盖 |
@@ -27,6 +30,7 @@
 
 ---
 
+<a id="sec1-assets"></a>
 ## §1 资产识别
 
 | 资产 | 类型 | 敏感度 | 存储位置 | 传输路径 |
@@ -38,6 +42,7 @@
 
 ---
 
+<a id="sec2-stride"></a>
 ## §2 STRIDE 威胁建模
 
 ### S — 伪装（Spoofing）
@@ -87,6 +92,7 @@
 
 ---
 
+<a id="sec3-trust"></a>
 ## §3 信任边界
 
 ```mermaid
@@ -124,6 +130,7 @@ flowchart LR
 
 ---
 
+<a id="sec4-compliance"></a>
 ## §4 合规检查
 
 | # | 检查项 | 状态 | 证据 |
@@ -137,6 +144,7 @@ flowchart LR
 
 ---
 
+<a id="sec5-mitigation-priority"></a>
 ## §5 缓解优先级
 
 | 优先级 | 威胁 | 建议措施 |

@@ -4,10 +4,13 @@
 
 > **来源引用**: `/rui doc --from-code rui-help-doc §2.5` · 源文件 `skills/rui/help.mjs` · **独立审计**: security agent 独立执行，不依赖 coder 自评
 
+[独立审计声明](#independent-audit) · [§0 基线溯源](#sec0-baseline) · [§1 资产识别](#sec1-assets) · [§2 威胁建模](#sec2-threats) · [§3 信任边界](#sec3-trust) · [§4 缓解措施](#sec4-mitigations) · [§5 合规检查](#sec5-compliance) · [§6 评审清单](#sec6-checklist) · [回溯链](#traceability)
+
 # YrY-安全审计 · rui-help-doc
 
 ---
 
+<a id="independent-audit"></a>
 ## 独立审计声明
 
 > **本次安全审计由 security agent 独立执行**，基于源文件 `skills/rui/help.mjs`（120 行）的逐行审查。审计不依赖 coder 自评或技术评审文档。所有证据附源码行号，证据等级 B。审计结论：**零 P0 安全发现，零 P1 安全发现，STRIDE 六类全覆盖，合规 6 项全通过。**
@@ -24,6 +27,7 @@
 
 ---
 
+<a id="sec0-baseline"></a>
 ## §0 基线溯源
 
 | 审计条目 | 覆盖故事任务 FP# | 覆盖使用场景 | 审计结论 |
@@ -35,6 +39,7 @@
 
 ---
 
+<a id="sec1-assets"></a>
 ## §1 资产识别
 
 ### 1.1 数据资产
@@ -59,6 +64,7 @@
 
 ---
 
+<a id="sec2-threats"></a>
 ## §2 威胁建模
 
 > STRIDE 六类全覆盖。攻击面分析：本模块为纯输出工具——无用户输入通道、无网络通信、无文件系统操作、无认证机制。威胁面集中在输出端（stdout 注入）与源码完整性。
@@ -95,6 +101,7 @@ flowchart LR
 
 ---
 
+<a id="sec3-trust"></a>
 ## §3 信任边界
 
 | 边界 | 跨越方向 | 数据流 | 校验点 | 当前状态 |
@@ -125,6 +132,7 @@ flowchart LR
 
 ---
 
+<a id="sec4-mitigations"></a>
 ## §4 缓解措施
 
 | 威胁# | 缓解措施 | 实现位置 | 优先级 | 状态 |
@@ -144,6 +152,7 @@ flowchart LR
 
 ---
 
+<a id="sec5-compliance"></a>
 ## §5 合规检查
 
 | # | 检查项 | 要求 | 当前状态 | 偏差说明 |
@@ -159,6 +168,7 @@ flowchart LR
 
 ---
 
+<a id="sec6-checklist"></a>
 ## §6 评审清单
 
 | # | 检查项 | 状态 | 证据/备注 |
@@ -174,6 +184,7 @@ flowchart LR
 
 ---
 
+<a id="traceability"></a>
 ## 回溯链
 
 ```mermaid

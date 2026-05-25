@@ -4,6 +4,9 @@
 
 > **来源引用**: `/rui doc --from-code rui-audit-doc`，源码 `skills/rui/audit.mjs` (251 行)
 
+[§0 基线声明](#sec0-baseline) · [§1 Story](#sec1-story) · [§2 Requirements](#sec2-requirements) · [§3 成功标准](#sec3-success) · [§4 范围边界](#sec4-scope) · [§5 AC](#sec5-ac) · [§6 风险与假设](#sec6-risks) · [§7 跨文档索引](#sec7-index) · [§R 关联故事](#secR-related)
+
+<a id="sec0-baseline"></a>
 ## §0 基线声明
 
 > **问题空间基线 (Problem Space Baseline)**: 本文档定义"做什么(WHAT)"和"为什么(WHY)"。所有后续文档(03-09)的设计、实现、验证、改进决策均必须可追溯至本文档的具体章节。
@@ -36,6 +39,7 @@ flowchart TD
 
 ---
 
+<a id="sec1-story"></a>
 ## §1 Story
 
 ### Story 1: 工具审计系统文档基线
@@ -65,6 +69,7 @@ flowchart TD
 
 ---
 
+<a id="sec2-requirements"></a>
 ## §2 Requirements
 
 ### 功能点
@@ -99,6 +104,7 @@ flowchart TD
 
 ---
 
+<a id="sec3-success"></a>
 ## §3 成功标准
 
 | SC# | 描述 | 度量方式 | 目标值 | 优先级 | 关联 FP# |
@@ -110,6 +116,7 @@ flowchart TD
 
 ---
 
+<a id="sec4-scope"></a>
 ## §4 范围边界
 
 ### 范围内
@@ -131,6 +138,7 @@ flowchart TD
 
 ---
 
+<a id="sec5-ac"></a>
 ## §5 AC
 
 | AC# | Given | When | Then | 门禁 |
@@ -142,6 +150,7 @@ flowchart TD
 
 ---
 
+<a id="sec6-risks"></a>
 ## §6 风险与假设
 
 | # | 风险/假设 | 类型 | 可能性 | 影响 | 缓解/验证策略 | 关联 FP# |
@@ -153,6 +162,7 @@ flowchart TD
 
 ---
 
+<a id="sec7-index"></a>
 ## §7 跨文档索引
 
 | 本文档章节 | 基线内容 | 下游文档编号 | 预期覆盖 | 状态 |
@@ -165,6 +175,7 @@ flowchart TD
 
 ---
 
+<a id="secR-related"></a>
 ## §R 关联故事
 
 ```mermaid

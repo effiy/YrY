@@ -4,6 +4,8 @@
 
 > **来源引用**: `/rui doc --from-code rui-audit-doc`，源码 `skills/rui/audit.mjs:1-251`
 
+[§0 设计决策与任务规划](#sec0-design) · [§1 系统架构](#sec1-architecture) · [§7 安全约束](#sec7-security) · [§8 性能与限制](#sec8-performance) · [§9 评审清单](#sec9-checklist)
+
 ### 主要价值
 
 - 🎯 零外部依赖：纯 Node.js 标准库，永远可独立运行
@@ -11,6 +13,7 @@
 - ⚡ 三命令闭环：record → summary → check 覆盖全审计生命周期
 - 📊 JSONL 数据易消费：每行一条 JSON，jq/grep 即可查询
 
+<a id="sec0-design"></a>
 ## §0 设计决策与任务规划
 
 ### §0.0 基线溯源
@@ -54,6 +57,7 @@ flowchart LR
 
 ---
 
+<a id="sec1-architecture"></a>
 ## §1 系统架构
 
 ### 效果示意
@@ -152,6 +156,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec7-security"></a>
 ## §7 安全约束
 
 | # | 威胁 | 信任边界 | 缓解措施 | 优先级 |
@@ -163,6 +168,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec8-performance"></a>
 ## §8 性能与限制
 
 | 维度 | 约束 | 应对 |
@@ -175,6 +181,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec9-checklist"></a>
 ## §9 评审清单
 
 | # | 检查项 | 状态 |

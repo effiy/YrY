@@ -4,6 +4,9 @@
 
 > **来源引用**: `/rui doc --from-code rui-story-collect-doc`，基于 `YrY-故事任务.md` §1 Story 1
 
+[§0 基线声明](#sec0-baseline) · [§1 场景全景](#sec1-scenarios) · [§2 场景详述](#sec2-details) · [§3 场景覆盖矩阵](#sec3-matrix) · [§4 评审清单](#sec4-checklist)
+
+<a id="sec0-baseline"></a>
 ## §0 基线声明
 
 > **用户空间基线 (User Space Baseline)**: 本文档定义"谁使用(WHO)"和"如何体验(HOW EXPERIENCE)"。
@@ -17,6 +20,7 @@
 
 ---
 
+<a id="sec1-scenarios"></a>
 ## §1 场景全景
 
 ```mermaid
@@ -41,6 +45,7 @@ flowchart TD
 
 ---
 
+<a id="sec2-details"></a>
 ## §2 场景详述
 
 ### 场景 1: 单故事指标采集
@@ -107,6 +112,7 @@ flowchart TD
 
 ---
 
+<a id="sec3-matrix"></a>
 ## §3 场景覆盖矩阵
 
 | 场景 | FP# | AC# | 覆盖状态 |
@@ -117,6 +123,7 @@ flowchart TD
 
 ---
 
+<a id="sec4-checklist"></a>
 ## §4 评审清单
 
 | # | 检查项 | 状态 |

@@ -4,7 +4,7 @@
 
 > **来源引用**: 从 `skills/rui-story/` 源码反推生成，证据 Level B + 源码路径。`doc --from-code rui-story`
 
-[§1 Story](#sec1-story) · [§2 Requirements](#sec2-requirements) · [§3 成功标准](#sec3-success) · [§4 范围边界](#sec4-scope) · [§5 AC](#sec5-ac) · [§6 风险与假设](#sec6-risks) · [§7 跨文档索引](#sec7-index) · [§L 自改进循环](#secL-improve)
+[§1 Story](#sec1-story) · [§2 Requirements](#sec2-requirements) · [§3 成功标准](#sec3-success) · [§4 范围边界](#sec4-scope) · [§5 AC](#sec5-ac) · [§6 风险与假设](#sec6-risks) · [§7 跨文档索引](#sec7-index) · [§L 自改进循环](#secL-improve) · [关联故事](#related-stories)
 
 ---
 
@@ -290,6 +290,7 @@ flowchart TD
 > |------|------|------|------|
 > | 2026-05-20 | 初始生成 | doc --from-code rui-story | skills/rui-story/SKILL.md + rui-story.mjs |
 
+<a id="related-stories"></a>
 ## 关联故事
 
 ```mermaid

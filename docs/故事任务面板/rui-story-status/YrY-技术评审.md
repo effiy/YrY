@@ -4,6 +4,8 @@
 
 > **来源引用**: `/rui doc --from-code rui-story-status-doc`，源码 `skills/rui-story/status.mjs:1-371`
 
+[§0 设计决策与任务规划](#sec0-design) · [§1 系统架构](#sec1-architecture) · [§7 安全约束](#sec7-security) · [§8 性能与限制](#sec8-performance) · [§9 评审清单](#sec9-checklist)
+
 ### 主要价值
 
 - 🎯 六阶段有限状态机：7 条合法转移路径，拒绝所有非法跳跃
@@ -12,6 +14,7 @@
 - 📝 完整审计链：status-history.jsonl 记录每次转移的 from/to/timestamp/reason
 - 📊 本地仪表板不依赖远端 API，纯文件系统聚合
 
+<a id="sec0-design"></a>
 ## §0 设计决策与任务规划
 
 ### §0.0 基线溯源
@@ -55,6 +58,7 @@ flowchart LR
 
 ---
 
+<a id="sec1-architecture"></a>
 ## §1 系统架构
 
 ### 效果示意
@@ -123,6 +127,7 @@ flowchart TD
 
 ---
 
+<a id="sec7-security"></a>
 ## §7 安全约束
 
 | # | 威胁 | 信任边界 | 缓解措施 | 优先级 |
@@ -133,6 +138,7 @@ flowchart TD
 
 ---
 
+<a id="sec8-performance"></a>
 ## §8 性能与限制
 
 | 维度 | 约束 | 应对 |
@@ -143,6 +149,7 @@ flowchart TD
 
 ---
 
+<a id="sec9-checklist"></a>
 ## §9 评审清单
 
 | # | 检查项 | 状态 |

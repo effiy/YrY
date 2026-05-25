@@ -4,8 +4,11 @@
 
 > **来源引用**: `/rui doc --from-code rui-help-doc` · 从帮助命令的终端输出内容反推用户旅程
 
+[主要价值](#main-value) · [§0 基线声明](#sec0-baseline) · [§1 场景全景](#sec1-scenarios) · [§2 场景详述](#sec2-details) · [§3 场景覆盖矩阵](#sec3-matrix) · [§4 评审清单](#sec4-checklist) · [§5 体验基线](#sec5-experience) · [回溯链](#traceability)
+
 # YrY-使用场景 · rui-help-doc
 
+<a id="main-value"></a>
 ## 主要价值
 
 - 🧭 自助发现：用户无需离开终端即可完整了解 rui 全部能力，从入门到专家一条命令全覆盖
@@ -16,6 +19,7 @@
 
 ---
 
+<a id="sec0-baseline"></a>
 ## §0 基线声明
 
 > **用户空间基线 (User Space Baseline)**: 本文档定义"谁使用(WHO)"和"如何体验(HOW EXPERIENCE)"。所有交互设计(技术评审)、测试用例(测试设计)、验收标准(故事任务 §5)均必须覆盖本文档定义的每个场景。
@@ -31,6 +35,7 @@
 
 ---
 
+<a id="sec1-scenarios"></a>
 ## §1 场景全景
 
 ```mermaid
@@ -82,6 +87,7 @@ flowchart TD
 
 ---
 
+<a id="sec2-details"></a>
 ## §2 场景详述
 
 ### 场景 1: 初次上手 — 全面了解 rui 能力
@@ -421,6 +427,7 @@ flowchart TD
 
 ---
 
+<a id="sec3-matrix"></a>
 ## §3 场景覆盖矩阵
 
 | 场景 | FP# | AC# | 实现文档(技术评审) | 测试文档(测试设计) | 覆盖状态 | 备注 |
@@ -452,6 +459,7 @@ flowchart TD
 
 ---
 
+<a id="sec4-checklist"></a>
 ## §4 评审清单
 
 | # | 检查项 | 状态 | 证据/备注 |
@@ -469,6 +477,7 @@ flowchart TD
 
 ---
 
+<a id="sec5-experience"></a>
 ## §5 体验基线
 
 | 角色 | 核心旅程 | 情感目标 | 痛点解决 | 成功感知 | 关联场景 |
@@ -481,6 +490,7 @@ flowchart TD
 
 ---
 
+<a id="traceability"></a>
 ## 回溯链
 
 ```mermaid

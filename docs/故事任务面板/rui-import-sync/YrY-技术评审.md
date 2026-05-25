@@ -5,8 +5,11 @@
 > **来源引用**: `/rui doc --from-code rui-import-sync-doc` · 源文件 `skills/rui-import/sync.mjs`
 > **证据等级**: B（从源码反推，附源码路径）
 
+[§0 设计决策与任务规划](#sec0-design) · [§1 系统架构](#sec1-architecture) · [§2 上传管线（import 模式）](#sec2-import) · [§3 拉取管线（pull 模式）](#sec3-pull) · [§4 错误处理与降级](#sec4-errors) · [§5 安全考量](#sec5-security) · [§6 P0 检查清单](#sec6-p0-checklist)
+
 # YrY-技术评审 · rui-import-sync
 
+<a id="sec0-design"></a>
 ## §0 设计决策与任务规划
 
 ### 效果示意
@@ -56,6 +59,7 @@ flowchart LR
 
 ---
 
+<a id="sec1-architecture"></a>
 ## §1 系统架构
 
 ### 1.1 架构概览
@@ -113,6 +117,7 @@ flowchart TD
 
 ---
 
+<a id="sec2-import"></a>
 ## §2 上传管线（import 模式）
 
 ### 2.1 数据流
@@ -172,6 +177,7 @@ flowchart TD
 
 ---
 
+<a id="sec3-pull"></a>
 ## §3 拉取管线（pull 模式）
 
 ### 3.1 数据流
@@ -199,6 +205,7 @@ flowchart LR
 
 ---
 
+<a id="sec4-errors"></a>
 ## §4 错误处理与降级
 
 > 证据: `skills/rui-import/sync.mjs:177-196, 252-280`
@@ -230,6 +237,7 @@ flowchart TD
 
 ---
 
+<a id="sec5-security"></a>
 ## §5 安全考量
 
 | 关注点 | 实现 | 证据 |
@@ -244,6 +252,7 @@ flowchart TD
 
 ---
 
+<a id="sec6-p0-checklist"></a>
 ## §6 P0 检查清单
 
 | # | 检查项 | 状态 |

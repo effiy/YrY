@@ -4,6 +4,9 @@
 
 > **来源引用**: `/rui doc --from-code rui-story-collect-doc`，基于 `YrY-故事任务.md` §5 AC
 
+[§0 基线溯源](#sec0-baseline) · [§1 测试范围](#sec1-scope) · [§2 测试用例](#sec2-cases) · [§3 Gate A 交接](#sec3-gatea)
+
+<a id="sec0-baseline"></a>
 ## §0 基线溯源
 
 | TC# | 覆盖 AC# | 覆盖场景 | 覆盖类型 | 状态 |
@@ -24,6 +27,7 @@
 
 ---
 
+<a id="sec1-scope"></a>
 ## §1 测试范围
 
 ### 1.1 覆盖矩阵
@@ -37,6 +41,7 @@
 
 ---
 
+<a id="sec2-cases"></a>
 ## §2 测试用例
 
 ### 2.1 正常用例
@@ -63,6 +68,7 @@
 
 ---
 
+<a id="sec3-gatea"></a>
 ## §3 Gate A 交接
 
 | 信号 | 内容 |

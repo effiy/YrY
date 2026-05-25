@@ -2,8 +2,11 @@
 
 > **导航**: [← YrY-技术评审](./YrY-技术评审.md)
 
+[§0 基线溯源](#sec0-baseline) · [§2 测试用例](#sec2-cases) · [§3 Gate A 交接信号](#sec3-gatea)
+
 # YrY-测试设计 · rui-proposals
 
+<a id="sec0-baseline"></a>
 ## §0 基线溯源
 
 | AC# | 测试覆盖 |
@@ -20,6 +23,7 @@
 
 ---
 
+<a id="sec2-cases"></a>
 ## §2 测试用例
 
 ### §2.1 诊断生成
@@ -41,6 +45,7 @@
 
 ---
 
+<a id="sec3-gatea"></a>
 ## §3 Gate A 交接信号
 
 | 信号 | 值 |

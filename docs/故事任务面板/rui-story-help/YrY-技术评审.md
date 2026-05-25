@@ -4,6 +4,8 @@
 
 > **来源引用**: 基于 `YrY-故事任务.md` §2 + `YrY-使用场景.md` §2 生成。技术事实从源码反推。证据 Level B + 源码路径。
 
+[§0 设计决策与任务规划](#sec0-design) · [§1 系统架构](#sec1-architecture) · [§7 安全约束](#sec7-security) · [§9 评审清单](#sec9-checklist)
+
 ### 主要价值
 
 - 🏗 定义帮助系统的技术架构：模板字符串构建 → ANSI 颜色注入 → TTY 检测降级
@@ -13,6 +15,7 @@
 
 ---
 
+<a id="sec0-design"></a>
 ## §0 设计决策与任务规划
 
 ### §0.0 基线溯源
@@ -44,6 +47,7 @@ flowchart LR
 
 ---
 
+<a id="sec1-architecture"></a>
 ## §1 系统架构
 
 ### 效果示意
@@ -79,6 +83,7 @@ flowchart TD
 
 ---
 
+<a id="sec7-security"></a>
 ## §7 安全约束
 
 | # | 威胁 | 信任边界 | 缓解措施 | 优先级 |
@@ -88,6 +93,7 @@ flowchart TD
 
 ---
 
+<a id="sec9-checklist"></a>
 ## §9 评审清单
 
 | # | 检查项 | 状态 |

@@ -4,6 +4,8 @@
 
 > **来源引用**: `/rui doc --from-code rui-help-doc` · 源文件 `skills/rui/help.mjs:1-120`
 
+[§0 基线溯源](#sec0-baseline) · [§1 测试范围](#sec1-scope) · [§2 测试用例](#sec2-cases) · [§3 环境专项用例 (TC-X)](#sec3-env) · [§4 测试环境](#sec4-setup) · [§5 评审清单](#sec5-checklist) · [§6 Gate A 交接信号](#sec6-gatea)
+
 # YrY-测试设计 · rui-help-doc
 
 ### 主要价值
@@ -16,6 +18,7 @@
 
 ---
 
+<a id="sec0-baseline"></a>
 ## §0 基线溯源
 
 ```mermaid
@@ -88,6 +91,7 @@ flowchart LR
 
 ---
 
+<a id="sec1-scope"></a>
 ## §1 测试范围
 
 ### 1.1 覆盖矩阵
@@ -133,6 +137,7 @@ flowchart LR
 
 ---
 
+<a id="sec2-cases"></a>
 ## §2 测试用例
 
 ### 2.1 正常用例 (TC-N)
@@ -178,6 +183,7 @@ flowchart LR
 
 ---
 
+<a id="sec3-env"></a>
 ## §3 环境专项用例 (TC-X)
 
 | ID | Given | When | Then | 优先级 |
@@ -187,6 +193,7 @@ flowchart LR
 
 ---
 
+<a id="sec4-setup"></a>
 ## §4 测试环境
 
 | 维度 | 配置 |
@@ -202,6 +209,7 @@ flowchart LR
 
 ---
 
+<a id="sec5-checklist"></a>
 ## §5 评审清单
 
 | # | 检查项 | 状态 | 备注 |
@@ -219,6 +227,7 @@ flowchart LR
 
 ---
 
+<a id="sec6-gatea"></a>
 ## §6 Gate A 交接信号
 
 ```mermaid

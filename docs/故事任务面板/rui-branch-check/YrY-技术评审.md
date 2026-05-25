@@ -2,8 +2,11 @@
 
 > **导航**: [← YrY-使用场景](./YrY-使用场景.md) · [→ YrY-测试设计](./YrY-测试设计.md) · [→ YrY-安全审计](./YrY-安全审计.md)
 
+[§0 设计决策](#sec0-design) · [§1 验证项](#sec1-verification) · [§2 三种模式](#sec2-modes) · [§3 状态记录](#sec3-state) · [§4 P0 检查清单](#sec4-p0-checklist)
+
 # YrY-技术评审 · rui-branch-check
 
+<a id="sec0-design"></a>
 ## §0 设计决策
 
 ### 效果示意
@@ -47,6 +50,7 @@ flowchart LR
 
 ---
 
+<a id="sec1-verification"></a>
 ## §1 验证项
 
 | # | 验证项 | 阻断标识 | 证据 |
@@ -57,6 +61,7 @@ flowchart LR
 
 ---
 
+<a id="sec2-modes"></a>
 ## §2 三种模式
 
 | 模式 | 当前分支 | 行为 | exit code |
@@ -69,6 +74,7 @@ flowchart LR
 
 ---
 
+<a id="sec3-state"></a>
 ## §3 状态记录
 
 通过后写入 `.memory/rui-state.json`：
@@ -78,6 +84,7 @@ flowchart LR
 
 ---
 
+<a id="sec4-p0-checklist"></a>
 ## §4 P0 检查清单
 
 | # | 检查项 | 状态 |

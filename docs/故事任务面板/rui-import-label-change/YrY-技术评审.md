@@ -2,6 +2,8 @@
 
 > **导航**: [← YrY-使用场景](./YrY-使用场景.md) · [YrY-测试设计 →](./YrY-测试设计.md) · [YrY-安全审计 →](./YrY-安全审计.md)
 
+[§0 设计决策与任务规划](#sec0-design) · [§1 系统架构](#sec1-architecture) · [§7 安全约束](#sec7-security) · [§9 评审清单](#sec9-checklist) · [变更记录](#changelog)
+
 ### 来源引用
 
 > 基于: [YrY-故事任务](./YrY-故事任务.md) §1 Story 1 · §2 FP1–FP5
@@ -16,6 +18,7 @@
 
 ---
 
+<a id="sec0-design"></a>
 ## §0 设计决策与任务规划
 
 ### §0.0 基线溯源
@@ -58,6 +61,7 @@ flowchart LR
 
 ---
 
+<a id="sec1-architecture"></a>
 ## §1 系统架构
 
 ### 效果示意
@@ -180,6 +184,7 @@ if (opts.prefix.length > 0) {
 
 ---
 
+<a id="sec7-security"></a>
 ## §7 安全约束
 
 | # | 威胁 | 信任边界 | 缓解措施 | 优先级 |
@@ -189,6 +194,7 @@ if (opts.prefix.length > 0) {
 
 ---
 
+<a id="sec9-checklist"></a>
 ## §9 评审清单
 
 | # | 检查项 | 状态 |
@@ -202,6 +208,7 @@ if (opts.prefix.length > 0) {
 
 ---
 
+<a id="changelog"></a>
 ## 变更记录
 
 | 日期 | 变更 | 触发 | 证据 |

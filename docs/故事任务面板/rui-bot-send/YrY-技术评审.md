@@ -2,8 +2,11 @@
 
 > **导航**: [← YrY-使用场景](./YrY-使用场景.md) · [→ YrY-测试设计](./YrY-测试设计.md) · [→ YrY-安全审计](./YrY-安全审计.md)
 
+[§0 设计决策](#sec0-design) · [§1 消息构建管线](#sec1-message-pipeline) · [§2 HTTP 发送](#sec2-http) · [§3 日志追加](#sec3-log-append) · [§4 错误处理](#sec4-errors) · [§5 P0 检查清单](#sec5-p0-checklist)
+
 # YrY-技术评审 · rui-bot-send
 
+<a id="sec0-design"></a>
 ## §0 设计决策
 
 ### 效果示意
@@ -41,6 +44,7 @@ flowchart LR
 
 ---
 
+<a id="sec1-message-pipeline"></a>
 ## §1 消息构建管线
 
 > 证据: `skills/rui-bot/send.mjs`
@@ -57,6 +61,7 @@ flowchart LR
 
 ---
 
+<a id="sec2-http"></a>
 ## §2 HTTP 发送
 
 | 参数 | 值 |
@@ -69,6 +74,7 @@ flowchart LR
 
 ---
 
+<a id="sec3-log-append"></a>
 ## §3 日志追加
 
 > 证据: `skills/rui-bot/send.mjs` — appendFileSync 追加到 `{project}-消息通知列表.md`
@@ -77,6 +83,7 @@ flowchart LR
 
 ---
 
+<a id="sec4-errors"></a>
 ## §4 错误处理
 
 | 场景 | 行为 |
@@ -88,6 +95,7 @@ flowchart LR
 
 ---
 
+<a id="sec5-p0-checklist"></a>
 ## §5 P0 检查清单
 
 | # | 检查项 | 状态 |

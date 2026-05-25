@@ -4,6 +4,8 @@
 
 > **来源引用**: 基于双基线 + 源码反推。证据 Level B + 源码路径。
 
+[§0 设计决策](#sec0-design) · [§1 系统架构](#sec1-architecture) · [§9 评审清单](#sec9-checklist)
+
 ### 主要价值
 
 - 🏗 定义帮助系统技术架构：模板字符串 + ANSI + TTY 降级
@@ -13,6 +15,7 @@
 
 ---
 
+<a id="sec0-design"></a>
 ## §0 设计决策
 
 ### §0.0 基线溯源
@@ -32,6 +35,7 @@
 
 ---
 
+<a id="sec1-architecture"></a>
 ## §1 系统架构
 
 ### 效果示意
@@ -50,6 +54,7 @@ flowchart TD
 
 ---
 
+<a id="sec9-checklist"></a>
 ## §9 评审清单
 
 | # | 检查项 | 状态 |

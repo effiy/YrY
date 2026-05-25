@@ -5,8 +5,11 @@
 > **来源引用**: `/rui doc --from-code rui-import-sync-doc` · 源文件 `skills/rui-import/sync.mjs`
 > **证据等级**: B（从源码反推，附源码路径）
 
+[§0 基线声明](#sec0-baseline) · [§1 场景全景](#sec1-scenarios) · [§2 场景详述](#sec2-details) · [§3 场景覆盖矩阵](#sec3-matrix) · [§4 评审清单](#sec4-checklist) · [§5 体验基线](#sec5-experience)
+
 # YrY-使用场景 · rui-import-sync
 
+<a id="sec0-baseline"></a>
 ## §0 基线声明
 
 > **用户空间基线 (User Space Baseline)**: 本文档定义"谁使用(WHO)"和"如何体验(HOW EXPERIENCE)"。所有交互设计、测试用例、验收标准均必须覆盖本文档定义的每个场景。
@@ -22,6 +25,7 @@
 
 ---
 
+<a id="sec1-scenarios"></a>
 ## §1 场景全景
 
 ```mermaid
@@ -35,6 +39,7 @@ flowchart TD
     classDef user fill:#e3f2fd,stroke:#1565c0;
 ```
 
+<a id="sec2-details"></a>
 ## §2 场景详述
 
 ### 场景 1: 全量文档推送到远端
@@ -150,6 +155,7 @@ flowchart TD
 
 ---
 
+<a id="sec3-matrix"></a>
 ## §3 场景覆盖矩阵
 
 | 场景 | FP# | AC# | 实现文档 | 测试文档 | 覆盖状态 | 备注 |
@@ -162,6 +168,7 @@ flowchart TD
 
 ---
 
+<a id="sec4-checklist"></a>
 ## §4 评审清单
 
 | # | 检查项 | 状态 |
@@ -176,6 +183,7 @@ flowchart TD
 
 ---
 
+<a id="sec5-experience"></a>
 ## §5 体验基线
 
 | 角色 | 核心旅程 | 情感目标 | 痛点解决 | 成功感知 | 关联场景 |

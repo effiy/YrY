@@ -2,8 +2,11 @@
 
 > **导航**: [← YrY-使用场景](./YrY-使用场景.md) · [→ YrY-测试设计](./YrY-测试设计.md) · [→ YrY-安全审计](./YrY-安全审计.md)
 
+[§0 设计决策与任务规划](#sec0-design) · [§1 系统架构](#sec1-architecture) · [§2 依赖分析](#sec2-deps) · [§3 安全信号检测](#sec3-security-signals) · [§4 P0 检查清单](#sec4-p0-checklist)
+
 # YrY-技术评审 · rui-recommend
 
+<a id="sec0-design"></a>
 ## §0 设计决策与任务规划
 
 ### 效果示意
@@ -47,6 +50,7 @@ flowchart LR
 
 ---
 
+<a id="sec1-architecture"></a>
 ## §1 系统架构
 
 ### 1.1 项目类型判定
@@ -84,6 +88,7 @@ flowchart TD
 
 ---
 
+<a id="sec2-deps"></a>
 ## §2 依赖分析
 
 > 证据: `skills/rui/recommend.mjs:390-440`
@@ -102,6 +107,7 @@ import 语句解析 → 构建 { importer → [importees] } 映射
 
 ---
 
+<a id="sec3-security-signals"></a>
 ## §3 安全信号检测
 
 > 证据: `skills/rui/recommend.mjs:493-506`
@@ -114,6 +120,7 @@ import 语句解析 → 构建 { importer → [importees] } 映射
 
 ---
 
+<a id="sec4-p0-checklist"></a>
 ## §4 P0 检查清单
 
 | # | 检查项 | 状态 |

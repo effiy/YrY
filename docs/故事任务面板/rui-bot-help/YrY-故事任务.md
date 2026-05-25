@@ -4,6 +4,8 @@
 
 > **来源引用**: 由 `/rui doc --from-code rui-bot-help-doc` 触发，从 `skills/rui-bot/help.mjs` 源码反推。证据 Level B + 源码路径。
 
+[§1 Story](#sec1-story)
+
 ### 需求概述
 
 企业微信通知技能的入口需要帮助系统，让用户了解消息发送、日志追加、健康检查等操作。帮助覆盖 20+ 个参数、7 个使用场景、3 种通知类型（完成/阻断/门禁失败）。帮助系统本身缺少文档基线。
@@ -31,6 +33,7 @@ flowchart TD
 
 ---
 
+<a id="sec1-story"></a>
 ## §1 Story
 
 ### Story 1: rui-bot 帮助系统 — 问题空间基线

@@ -2,8 +2,11 @@
 
 > **导航**: [← YrY-使用场景](./YrY-使用场景.md) · [→ YrY-测试设计](./YrY-测试设计.md) · [→ YrY-安全审计](./YrY-安全审计.md)
 
+[§0 设计决策](#sec0-design) · [§1 D0-D7 诊断引擎](#sec1-diagnosis-engine) · [§2 提案生命周期](#sec2-proposal-lifecycle) · [§3 数据契约](#sec3-data-contract) · [§4 P0 检查清单](#sec4-p0-checklist)
+
 # YrY-技术评审 · rui-proposals
 
+<a id="sec0-design"></a>
 ## §0 设计决策
 
 ### 效果示意
@@ -43,6 +46,7 @@ flowchart LR
 
 ---
 
+<a id="sec1-diagnosis-engine"></a>
 ## §1 D0-D7 诊断引擎
 
 > 证据: `skills/rui/proposals.mjs`
@@ -60,6 +64,7 @@ flowchart LR
 
 ---
 
+<a id="sec2-proposal-lifecycle"></a>
 ## §2 提案生命周期
 
 ```
@@ -76,6 +81,7 @@ generate → list → evaluate → upgrade-candidates → materialize
 
 ---
 
+<a id="sec3-data-contract"></a>
 ## §3 数据契约
 
 | 文件 | 格式 | 最小记录数 |
@@ -87,6 +93,7 @@ generate → list → evaluate → upgrade-candidates → materialize
 
 ---
 
+<a id="sec4-p0-checklist"></a>
 ## §4 P0 检查清单
 
 | # | 检查项 | 状态 |

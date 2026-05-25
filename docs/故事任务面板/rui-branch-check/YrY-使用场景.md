@@ -2,8 +2,11 @@
 
 > **导航**: [← YrY-故事任务](./YrY-故事任务.md) · [→ YrY-技术评审](./YrY-技术评审.md)
 
+[§0 基线声明](#sec0-baseline) · [§1 场景全景](#sec1-scenarios) · [§2 场景详述](#sec2-details) · [§3 场景覆盖矩阵](#sec3-matrix) · [§4 评审清单](#sec4-checklist) · [§5 体验基线](#sec5-experience)
+
 # YrY-使用场景 · rui-branch-check
 
+<a id="sec0-baseline"></a>
 ## §0 基线声明
 
 > **用户空间基线**
@@ -16,6 +19,7 @@
 
 ---
 
+<a id="sec1-scenarios"></a>
 ## §1 场景全景
 
 ```mermaid
@@ -26,6 +30,7 @@ flowchart TD
     classDef user fill:#e3f2fd,stroke:#1565c0;
 ```
 
+<a id="sec2-details"></a>
 ## §2 场景详述
 
 ### 场景 1: 写操作前强制隔离
@@ -65,6 +70,7 @@ flowchart TD
 
 ---
 
+<a id="sec3-matrix"></a>
 ## §3 场景覆盖矩阵
 
 | 场景 | FP# | AC# | 状态 |
@@ -75,6 +81,7 @@ flowchart TD
 
 ---
 
+<a id="sec4-checklist"></a>
 ## §4 评审清单
 
 | # | 检查项 | 状态 |
@@ -84,6 +91,7 @@ flowchart TD
 
 ---
 
+<a id="sec5-experience"></a>
 ## §5 体验基线
 
 | 角色 | 核心旅程 | 成功感知 | 关联场景 |

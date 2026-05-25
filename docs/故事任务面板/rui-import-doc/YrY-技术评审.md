@@ -4,6 +4,8 @@
 
 > **来源引用**: 本文档基于 `YrY-故事任务.md` §2 + `YrY-使用场景.md` §2 生成。技术事实从源码反推。证据 Level B + 源码路径。
 
+[§0 设计决策与任务规划](#sec0-design) · [§1 系统架构](#sec1-architecture) · [§7 安全约束](#sec7-security) · [§8 性能与限制](#sec8-performance) · [§9 评审清单](#sec9-checklist)
+
 ### 主要价值
 
 - 🏗 定义逐文件导入工具的完整技术架构，覆盖入口→验证→导入→降级全链路
@@ -13,6 +15,7 @@
 
 ---
 
+<a id="sec0-design"></a>
 ## §0 设计决策与任务规划
 
 ### §0.0 基线溯源
@@ -57,6 +60,7 @@ flowchart LR
 
 ---
 
+<a id="sec1-architecture"></a>
 ## §1 系统架构
 
 ### 效果示意
@@ -127,6 +131,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec7-security"></a>
 ## §7 安全约束
 
 | # | 威胁 | 信任边界 | 缓解措施 | 优先级 |
@@ -138,6 +143,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec8-performance"></a>
 ## §8 性能与限制
 
 | 维度 | 约束 | 应对 |
@@ -149,6 +155,7 @@ sequenceDiagram
 
 ---
 
+<a id="sec9-checklist"></a>
 ## §9 评审清单
 
 | # | 检查项 | 状态 |
