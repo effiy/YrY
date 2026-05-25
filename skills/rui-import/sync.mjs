@@ -165,6 +165,18 @@ function resolveRemotePath(localPath, root, projectRootName, prefix) {
   return segments.join("/");
 }
 
+function validateFirstLevelLabel(remotePath, projectRootName, prefix) {
+  const parts = remotePath.split("/");
+  const labelIdx = prefix.length;
+  if (labelIdx >= parts.length) return true; // shouldn't happen, skip
+  const firstLabel = parts[labelIdx];
+  if (firstLabel !== projectRootName && firstLabel !== "故事任务面板") {
+    console.error(`[rui-import] INVALID first-level label: "${firstLabel}" (path: ${remotePath}). Must be "${projectRootName}" or "故事任务面板".`);
+    return false;
+  }
+  return true;
+}
+
 function getTags(remotePath, _localPath, projectRootName) {
   const parts = remotePath.split("/");
   parts.pop(); // remove filename
@@ -250,6 +262,7 @@ async function createSession(apiUrl, remotePath, localPath, projectRootName) {
 // --- single-file upload ----------------------------------------------------
 async function uploadSingleFile(filePath, apiUrl, existingPaths, root, workspaceName, prefix) {
   const remotePath = resolveRemotePath(filePath, root, workspaceName, prefix);
+  validateFirstLevelLabel(remotePath, workspaceName, prefix);
   const content = await readFile(filePath, "utf-8");
   await writeRemoteFile(apiUrl, remotePath, content);
   if (existingPaths.has(remotePath)) {
@@ -575,6 +588,7 @@ async function main() {
   if (opts.mode === "list") {
     for (const f of files) {
       const remotePath = resolveRemotePath(f, root, workspaceName, opts.prefix);
+      validateFirstLevelLabel(remotePath, workspaceName, opts.prefix);
       console.log(`${f} → ${remotePath}`);
     }
     console.error(`\n[rui-import] ${files.length} files (list mode, no upload)`);
