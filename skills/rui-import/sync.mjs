@@ -17,7 +17,7 @@ const CONCURRENCY = 4;
 const HTTP_TIMEOUT = 30_000;
 
 const ERROR_MSG_MAX_LEN = 500;
-const QUERY_LIMIT = 10_000;
+const PAGINATION_PAGE_SIZE = 500;
 const PREVIEW_COUNT = 10;
 const NODE_ARGV_OFFSET = 2;
 const DECIMAL_RADIX = 10;
@@ -211,13 +211,24 @@ async function fetchJson(url, options = {}) {
 }
 
 async function querySessionsFull(apiUrl) {
-  const body = {
-    module_name: "services.database.data_service",
-    method_name: "query_documents",
-    parameters: { cname: "sessions", limit: QUERY_LIMIT },
-  };
-  const data = await fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
-  return data?.data?.list || data?.list || [];
+  const allItems = [];
+  let skip = 0;
+
+  while (true) {
+    const body = {
+      module_name: "services.database.data_service",
+      method_name: "query_documents",
+      parameters: { cname: "sessions", limit: PAGINATION_PAGE_SIZE, skip },
+    };
+    const data = await fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
+    const list = data?.data?.list || data?.list || [];
+    allItems.push(...list);
+
+    if (list.length < PAGINATION_PAGE_SIZE) break;
+    skip += PAGINATION_PAGE_SIZE;
+  }
+
+  return allItems;
 }
 
 async function querySessions(apiUrl) {
@@ -256,7 +267,10 @@ async function createSession(apiUrl, remotePath, localPath, projectRootName) {
       },
     },
   };
-  return fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
+  const resp = await fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
+  // Return the created item for dedup tracking (fallback to synthetic marker)
+  const created = resp?.data || resp;
+  return (created && created.file_path) ? created : { file_path: remotePath, _id: "local-" + now };
 }
 
 async function updateSession(apiUrl, remotePath, existingItem) {
@@ -286,7 +300,9 @@ async function uploadSingleFile(filePath, apiUrl, existingPaths, root, workspace
     await updateSession(apiUrl, remotePath, existingItem);
     return { status: "overwritten", file: filePath, remotePath };
   }
-  await createSession(apiUrl, remotePath, filePath, workspaceName);
+  const created = await createSession(apiUrl, remotePath, filePath, workspaceName);
+  // Update existingPaths so concurrent workers don't create duplicates for the same path
+  existingPaths.set(remotePath, created);
   return { status: "created", file: filePath, remotePath };
 }
 

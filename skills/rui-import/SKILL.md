@@ -189,18 +189,18 @@ flowchart LR
 | `Accept` | `application/json` |
 | `X-Token` | `${API_X_TOKEN}`（仅来自环境变量） |
 
-### 1. 拉取已有 sessions
+### 1. 拉取已有 sessions（分页）
 
 ```
 POST <apiUrl>/
 {
   "module_name": "services.database.data_service",
   "method_name": "query_documents",
-  "parameters": { "cname": "sessions", "limit": 10000 }
+  "parameters": { "cname": "sessions", "limit": 500, "skip": 0 }
 }
 ```
 
-响应中 `data.list[].file_path` 组成「已存在路径集合」。
+分页循环：递增 `skip` 直到 `data.list.length < limit`。响应中 `data.list[].file_path` 组成「已存在路径集合」。
 
 ### 2. 写文件
 
@@ -209,9 +209,12 @@ POST <apiUrl>/write-file
 {
   "target_file": "<resolved remote path>",
   "content": "<utf-8 file content>",
-  "is_base64": false
+  "is_base64": false,
+  "overwrite": true
 }
 ```
+
+`overwrite: true` 时覆盖已有文件，`false` 时创建新文件。
 
 ### 3. 读文件（pull 模式）
 
@@ -247,6 +250,23 @@ POST <apiUrl>/
   }
 }
 ```
+
+### 5. 更新 session（overwritten 路径）
+
+```
+POST <apiUrl>/
+{
+  "module_name": "services.database.data_service",
+  "method_name": "update_document",
+  "parameters": {
+    "cname": "sessions",
+    "doc_id": "<existing _id>",
+    "data": { "updatedAt": <now ms>, "lastAccessTime": <now ms> }
+  }
+}
+```
+
+仅更新时间戳，不修改 file_path 或内容引用。
 
 ## 错误模型
 
