@@ -544,10 +544,6 @@ function generateBaselineDoc(proposal, projectName, storyDirName) {
 >
 > ---
 >
-> ### §0 基线声明
->
-> > **自改进需求基线 (Self-Improvement Baseline)**: 本文档由 D0-D7 诊断引擎自动生成，定义改进任务的 WHAT 和 WHY。所有后续实施决策必须可追溯至本文档的诊断证据。
->
 > ---
 >
 > ### 需求概述
@@ -558,11 +554,8 @@ function generateBaselineDoc(proposal, projectName, storyDirName) {
 >
 > \`\`\`mermaid
 > flowchart LR
->     NOW["当前状态<br/>${(proposal.current_state || proposal.evidence).slice(0, 30)}"]:::pain
->     NOW --> GOAL["目标状态<br/>${(proposal.target_state || "改进完成").slice(0, 30)}"]:::goal
->
->     classDef pain fill:#ffebee,stroke:#c62828;
->     classDef goal fill:#e8f5e9,stroke:#2e7d32;
+>     NOW["当前状态<br/>${(proposal.current_state || proposal.evidence).slice(0, 30)}"]
+>     NOW --> GOAL["目标状态<br/>${(proposal.target_state || "改进完成").slice(0, 30)}"]
 > \`\`\`
 >
 > ### 主要价值
@@ -578,15 +571,7 @@ function generateBaselineDoc(proposal, projectName, storyDirName) {
 >
 > ## §1 Story
 >
-> | 字段 | 内容 |
-> |------|------|
-> | 作为 | 项目维护者 |
-> | 我想要 | ${proposal.actionable_command} |
-> | 以便 | 解决 ${diagLabel}，提升项目健康度 |
-> | 优先级 | ${proposal.priority} |
-> | 范围边界 | ${proposal.problem_source} 相关配置与文档 |
-> | 依赖 | 执行记忆数据可用，诊断基线可访问 |
-> | 来源 | self-improve / ${diagId} / ${proposal.id} |
+> 作为项目维护者，我想要 ${proposal.actionable_command}，以便解决 ${diagLabel}，提升项目健康度。优先级 ${proposal.priority}。范围边界：${proposal.problem_source} 相关配置与文档。依赖：执行记忆数据可用，诊断基线可访问。来源：self-improve / ${diagId} / ${proposal.id}。
 >
 > ---
 >

@@ -72,6 +72,10 @@ function parseArgs() {
     return { command: cmd };
   }
 
+  if (cmd === "sync") {
+    return { command: "sync", name: args[1] || null };
+  }
+
   if (cmd === "show") {
     if (args.length < SHOW_MIN_ARGS) {
       console.error("rui-story: show 需要 <name> 参数");
@@ -670,6 +674,34 @@ async function cmdHealth(apiUrl, projectRoot) {
   printHealth(result);
 }
 
+async function cmdSync(apiUrl, projectRoot, projectPrefix, name) {
+  if (!name) {
+    console.error(dim("[rui-story] sync 需要 <name> 参数，使用 recommend 查看可同步故事"));
+    await cmdRecommend(apiUrl);
+    return;
+  }
+
+  const storyDir = join(projectRoot, "docs", "故事任务面板", name);
+  const syncScript = join(projectRoot, "skills", "rui-import", "sync.mjs");
+
+  if (!existsSync(syncScript)) {
+    console.error("[rui-story] rui-import sync 脚本不存在");
+    process.exit(0);
+  }
+
+  console.error(dim(`[rui-story] sync mode — 从远端拉取 story=${name} (前缀: ${projectPrefix})...`));
+
+  try {
+    execSync(`node "${syncScript}" dir="${storyDir}" mode=pull projectPrefix="${projectPrefix}"`, {
+      encoding: "utf-8",
+      stdio: "inherit",
+    });
+  } catch (err) {
+    console.error(`[rui-story] sync 失败: ${err.message}`);
+    process.exit(0);
+  }
+}
+
 async function cmdMergeToMain(projectRoot) {
   const steps = [];
   const mainBranch = "main";
@@ -857,7 +889,7 @@ async function main() {
   const projectPrefix = projectName + "-";
 
   // Token check for commands that query remote
-  const needsRemote = ["overview", "list", "show", "recommend", "health"].includes(opts.command);
+  const needsRemote = ["overview", "list", "show", "recommend", "health", "sync"].includes(opts.command);
   if (needsRemote && !API_X_TOKEN) {
     console.log("");
     console.log(yellow("⚠️  API_X_TOKEN: 缺失 — 无法查询远端"));
@@ -883,6 +915,9 @@ async function main() {
       break;
     case "health":
       await cmdHealth(apiUrl, projectRoot);
+      break;
+    case "sync":
+      await cmdSync(apiUrl, projectRoot, projectPrefix, opts.name);
       break;
     case "merge-to-main":
       await cmdMergeToMain(projectRoot);

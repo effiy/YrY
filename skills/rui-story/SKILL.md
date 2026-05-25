@@ -333,7 +333,7 @@ Summary: 5 pass, 0 warn, 0 error
 
 ```mermaid
 flowchart LR
-    Q{"有 &lt;name&gt;?"} -->|"是"| SCOPED["node skills/rui-import/sync.mjs<br/>dir=docs/故事任务面板/&lt;n&gt;/ mode=pull"]:::op
+    Q{"有 &lt;name&gt;?"} -->|"是"| SCOPED["node skills/rui-import/sync.mjs<br/>dir=docs/故事任务面板/&lt;n&gt;/ mode=pull<br/>projectPrefix={project}-"]:::op
     Q -->|"否"| RECOMMEND["展示可同步故事推荐<br/>等待用户选择"]:::op
     SCOPED --> OUT["输出同步结果"]:::out
     RECOMMEND --> OUT
@@ -343,7 +343,8 @@ flowchart LR
 ```
 
 - 方向：从远端同步文档到本地，完全委托 rui-import（`mode=pull`），不自行实现同步逻辑
-- 指定故事：`dir=docs/故事任务面板/<name>/ mode=pull` → 远端下载覆盖本地
+- 指定故事：`dir=docs/故事任务面板/<name>/ mode=pull projectPrefix={project}-` → 远端下载覆盖本地
+- **默认前缀过滤**：仅同步文件名与当前项目根目录名相同前缀的文件（如项目根 `YrY` → 仅拉取 `YrY-*` 文件），跳过其他项目文件
 - 未指定：展示可同步故事推荐提示，等待用户选择后再同步
 
 ## `/rui-story clear [<name>]` — 仅保留当前项目前缀文档

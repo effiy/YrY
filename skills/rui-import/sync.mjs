@@ -47,6 +47,7 @@ function parseArgs() {
       case "mode": opts.mode = val; break;
       case "names": opts.names = val.split(",").map(s => s.trim()); break;
       case "file": opts.file = val; break;
+      case "projectPrefix": opts.projectPrefix = val; break;
     }
   }
 
@@ -344,7 +345,7 @@ async function readRemoteFile(apiUrl, remotePath) {
   return fetchJson(apiUrl + "/read-file", { method: "POST", body: JSON.stringify(body) });
 }
 
-function resolvePullFilter(localDir, projectRoot) {
+function resolvePullFilter(localDir, projectRoot, projectPrefix) {
   const workspaceName = projectRoot.split(sep).pop() || "workspace";
   const relDir = relative(projectRoot, localDir).split(sep).join("/");
 
@@ -352,12 +353,16 @@ function resolvePullFilter(localDir, projectRoot) {
   if (relDir.startsWith("docs/故事任务面板/")) {
     const storyName = relDir.slice("docs/故事任务面板/".length).split("/")[0];
     if (!storyName) return null;
+    // Default prefix filter: project root dir name + "-" (e.g. "YrY-")
+    const filePrefix = projectPrefix || (workspaceName + "-");
     return {
       type: "story",
       storyName,
       filter: (s) => {
         const tags = s.tags || [];
-        return tags[0] === "故事任务面板" && tags[1] === storyName;
+        if (tags[0] !== "故事任务面板" || tags[1] !== storyName) return false;
+        const base = (s.file_path || "").split("/").pop();
+        return base.startsWith(filePrefix);
       },
       // story files are flat in one dir — local path = localDir + basename
       toLocal: (remotePath) => join(localDir, basename(remotePath)),
@@ -381,8 +386,8 @@ function resolvePullFilter(localDir, projectRoot) {
   return null;
 }
 
-async function pullFromRemote(apiUrl, localDir, projectRoot) {
-  const strategy = resolvePullFilter(localDir, projectRoot);
+async function pullFromRemote(apiUrl, localDir, projectRoot, projectPrefix) {
+  const strategy = resolvePullFilter(localDir, projectRoot, projectPrefix);
   if (!strategy) {
     const relDir = relative(projectRoot, localDir).split(sep).join("/");
     console.error(`[rui-import] pull mode: unsupported dir=${relDir}`);
@@ -570,7 +575,7 @@ async function main() {
       return;
     }
     console.error(`[rui-import] pull mode: dir=${root}`);
-    const result = await pullFromRemote(apiUrl, root, findProjectRoot(process.cwd()));
+    const result = await pullFromRemote(apiUrl, root, findProjectRoot(process.cwd()), opts.projectPrefix);
     console.error(JSON.stringify(result));
     process.exit(result.failed > 0 ? 1 : 0);
   }
