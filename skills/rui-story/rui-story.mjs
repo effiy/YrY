@@ -173,7 +173,6 @@ function groupSessionsByStory(sessions) {
   const map = new Map();
   for (const s of sessions) {
     const fp = s.file_path || "";
-    if (!fp.startsWith("故事任务面板/")) continue;
     const name = extractStoryName(fp);
     if (!name) continue;
     if (!map.has(name)) map.set(name, []);
@@ -658,7 +657,7 @@ async function cmdHealth(apiUrl, projectRoot) {
       const sessions = await querySessionsFull(apiUrl);
       result.totalSessions = sessions.length;
       const panelSessions = sessions.filter(s =>
-        (s.file_path || "").startsWith("故事任务面板/")
+        extractStoryName(s.file_path || "")
       );
       result.panelSessions = panelSessions.length;
       const storyMap = groupSessionsByStory(sessions);

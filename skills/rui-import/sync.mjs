@@ -147,11 +147,20 @@ async function scanFiles(root, exts, userExcludes) {
 }
 
 // --- path mapping ----------------------------------------------------------
-function resolveRemotePath(localPath, root, _workspaceName, prefix) {
-  const rel = relative(root, localPath).split(sep).join("/").replace(/\s/g, "_");
+function resolveRemotePath(localPath, root, projectRootName, prefix) {
+  let rel = relative(root, localPath).split(sep).join("/").replace(/\s/g, "_");
+
+  // 故事任务面板：去除 docs/，故事任务面板提升到第一级
+  const STORY_PANEL_PREFIX = "docs/故事任务面板/";
+  if (rel.startsWith(STORY_PANEL_PREFIX)) {
+    rel = "故事任务面板/" + rel.slice(STORY_PANEL_PREFIX.length);
+  } else {
+    // 其他路径：项目根目录名作为第一级
+    rel = projectRootName + "/" + rel;
+  }
+
   const segments = [];
   if (prefix.length > 0) segments.push(...prefix);
-  // 远端路径 = 本地相对路径，一一对应，不跳不补
   segments.push(...rel.split("/"));
   return segments.join("/");
 }
@@ -159,16 +168,12 @@ function resolveRemotePath(localPath, root, _workspaceName, prefix) {
 function getTags(remotePath, _localPath, projectRootName) {
   const parts = remotePath.split("/");
   parts.pop(); // remove filename
-  // 故事任务面板路径：去除 docs，故事任务面板提升到第一级
-  if (parts[0] === "docs" && parts[1] === "故事任务面板") {
-    return parts.slice(1);
+  // 故事任务面板路径：故事任务面板已提升到第一级（resolveRemotePath 已去除 docs/）
+  if (parts[0] === "故事任务面板") {
+    return parts;
   }
-  // .claude/ 路径：项目根目录名作为第一级标签
-  if (parts[0] === ".claude") {
-    return [projectRootName, ...parts];
-  }
-  // 其他路径：项目根目录名作为第一级标签，后续与本地路径一一对应
-  return [projectRootName, ...parts];
+  // 其他路径：项目根目录名已在第一级（resolveRemotePath 已前置）
+  return parts;
 }
 
 // --- HTTP helpers ----------------------------------------------------------
