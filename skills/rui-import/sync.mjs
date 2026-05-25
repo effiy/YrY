@@ -222,15 +222,15 @@ async function querySessionsFull(apiUrl) {
 
 async function querySessions(apiUrl) {
   const list = await querySessionsFull(apiUrl);
-  const paths = new Set();
+  const paths = new Map();
   for (const item of list) {
-    if (item.file_path) paths.add(item.file_path);
+    if (item.file_path) paths.set(item.file_path, item);
   }
   return paths;
 }
 
-async function writeRemoteFile(apiUrl, remotePath, content) {
-  const body = { target_file: remotePath, content, is_base64: false };
+async function writeRemoteFile(apiUrl, remotePath, content, overwrite) {
+  const body = { target_file: remotePath, content, is_base64: false, overwrite: !!overwrite };
   return fetchJson(apiUrl + "/write-file", { method: "POST", body: JSON.stringify(body) });
 }
 
@@ -259,13 +259,31 @@ async function createSession(apiUrl, remotePath, localPath, projectRootName) {
   return fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
 }
 
+async function updateSession(apiUrl, remotePath, existingItem) {
+  const docId = existingItem._id || existingItem.id;
+  if (!docId) return; // can't update without id, skip
+  const now = Date.now();
+  const body = {
+    module_name: "services.database.data_service",
+    method_name: "update_document",
+    parameters: {
+      cname: "sessions",
+      doc_id: docId,
+      data: { updatedAt: now, lastAccessTime: now },
+    },
+  };
+  return fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
+}
+
 // --- single-file upload ----------------------------------------------------
 async function uploadSingleFile(filePath, apiUrl, existingPaths, root, workspaceName, prefix) {
   const remotePath = resolveRemotePath(filePath, root, workspaceName, prefix);
   validateFirstLevelLabel(remotePath, workspaceName, prefix);
   const content = await readFile(filePath, "utf-8");
-  await writeRemoteFile(apiUrl, remotePath, content);
-  if (existingPaths.has(remotePath)) {
+  const existingItem = existingPaths.get(remotePath);
+  await writeRemoteFile(apiUrl, remotePath, content, !!existingItem);
+  if (existingItem) {
+    await updateSession(apiUrl, remotePath, existingItem);
     return { status: "overwritten", file: filePath, remotePath };
   }
   await createSession(apiUrl, remotePath, filePath, workspaceName);
@@ -562,7 +580,7 @@ async function main() {
       console.error(`[rui-import] existing sessions: ${existingPaths.size}`);
     } catch (err) {
       console.error(`[rui-import] failed to query sessions: ${err.message}`);
-      existingPaths = new Set();
+      existingPaths = new Map();
     }
 
     try {
@@ -608,7 +626,7 @@ async function main() {
     console.error(`[rui-import] existing sessions: ${existingPaths.size}`);
   } catch (err) {
     console.error(`[rui-import] failed to query sessions: ${err.message}`);
-    existingPaths = new Set();
+    existingPaths = new Map();
   }
 
   console.error(`[rui-import] uploading ${files.length} files (concurrency=${CONCURRENCY})...`);
