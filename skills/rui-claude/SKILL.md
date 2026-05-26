@@ -11,7 +11,7 @@ lifecycle: default-pipeline
 
 作用范围：当前项目的 `.claude/` 目录。sync / retro 均以 `.claude/` 为操作边界。
 
-[命令族全景](#命令族全景) · [操作边界](#操作边界) · [sync](#sync) · [retro](#retro) · [history](#history) · [核心规则](#核心规则) · [参考模式](#参考模式) · [生效标志](#生效标志)
+[命令族全景](#命令族全景) · [操作边界](#操作边界) · [sync](#sync) · [update](#update) · [retro](#retro) · [history](#history) · [核心规则](#核心规则) · [参考模式](#参考模式) · [生效标志](#生效标志)
 
 > **`version --up` 已迁移至 [`/rui version --up`](../rui/SKILL.md#version---up)。**
 
@@ -22,6 +22,7 @@ flowchart TB
     ENTRY["/rui-claude"]:::src --> Q1{"子命令?"}
 
     Q1 -->|"sync"| SYNC["覆盖式同步<br/>API pull → 本地覆盖"]:::cmd
+    Q1 -->|"update"| UPDATE["插件升级<br/>git pull → sync .claude/"]:::cmd
     Q1 -->|"retro"| RETRO["健康度分析<br/>三节复盘"]:::cmd
     Q1 -->|"history"| HIST["操作历史<br/>list / stats"]:::cmd
     Q1 -->|"&lt;req&gt;"| REQ["需求管线<br/>doc + code → 交付"]:::cmd
@@ -33,15 +34,12 @@ flowchart TB
     REQ --> PIPE["rui code 管线<br/>仅限 .claude/ 内"]:::pipe
     LIST --> L_OUT["推荐列表"]:::out
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef cmd fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#f3e5f5,stroke:#6a1b9a;
-    classDef pipe fill:#fff3e0,stroke:#e65100;
 ```
 
 | 命令 | 流程 | 产出 |
 |------|------|------|
 | `/rui-claude sync` | 查询远端 API → 逐文件 pull 覆盖本地 | `.claude/` 全量覆盖 |
+| `/rui-claude update` | git pull 最新 YrY 插件 → 清除旧版本缓存 → sync 远端 .claude/ | 插件升级 + 缓存清除 + `.claude/` 刷新 |
 | `/rui-claude retro` | 分析 .claude/ 结构健康度 → 三节复盘 | `docs/自改进故事面板/<date>.md` |
 | `/rui-claude history` | 查看操作历史：`list [--limit N]` / `stats [--json]` | 终端输出 |
 | `/rui-claude 需求` | 需求解析→故事拆分→逐故事 doc+code 管线→交付 | `.claude/` 内文件变更 |
@@ -60,8 +58,6 @@ flowchart LR
     end
     允许 -.->|"硬边界"| 禁止
 
-    classDef ok fill:#e8f5e9,stroke:#2e7d32;
-    classDef block fill:#ffebee,stroke:#c62828;
 ```
 
 ## sync — 覆盖式同步
@@ -73,10 +69,6 @@ flowchart LR
     CHECK -->|"是"| PULL["node skills/rui-import/sync.mjs<br/>dir=.claude/ mode=pull<br/>远端 API → 逐文件覆盖本地"]:::op
     PULL --> DONE["完成<br/>自动记录 history"]:::done
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef abort fill:#eceff1,stroke:#90a4ae;
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef done fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | 项目 | 说明 |
@@ -85,6 +77,29 @@ flowchart LR
 | 行为 | 覆盖式更新，逐文件从远端 pull 覆盖本地 `.claude/`，保留嵌套目录结构 |
 | 前置条件 | `API_X_TOKEN` 环境变量已配置 |
 | 委托 | 完全委托 `rui-import`（`dir=.claude/ mode=pull`），不自行实现同步逻辑 |
+| 完成后 | 自动记录 history |
+
+## update — 插件升级 + 缓存清除 + 配置同步
+
+```mermaid
+flowchart LR
+    TRIGGER["/rui-claude update"]:::src --> PULL["git pull origin main<br/>拉取最新 YrY 插件源码"]:::op
+    PULL --> CHECK{"pull 成功?"}
+    CHECK -->|"否"| FAIL["网络失败<br/>提示手动重试"]:::abort
+    CHECK -->|"是"| CLEAR["清除插件缓存<br/>rm -rf ~/.claude/plugins/<br/>cache/yry/yry/"]:::op
+    CLEAR --> SYNC["rui-claude sync<br/>远端 .claude/ → 本地覆盖"]:::op
+    SYNC --> DONE["升级完成<br/>插件源码 + 缓存清除 + .claude/ 三重刷新"]:::done
+
+```
+
+| 项目 | 说明 |
+|------|------|
+| 触发方式 | `/rui-claude update`，一键升级 YrY 插件并同步 .claude/ 配置 |
+| 步骤 1 | `git pull origin main` — 拉取最新 YrY 插件源码到本地 |
+| 步骤 2 | 清除插件缓存 — 删除 `~/.claude/plugins/cache/yry/yry/` 下所有旧版本目录，确保下次加载从最新源码重建缓存 |
+| 步骤 3 | 委托 `rui-claude sync` — 从远端 API 覆盖同步最新 .claude/ 目录 |
+| 前置条件 | 当前分支为 main，网络可达 origin + api.effiy.cn，`API_X_TOKEN` 已配置 |
+| 降级 | git pull 失败时中止并提示手动重试；sync 失败时遵循 sync 自身的降级策略 |
 | 完成后 | 自动记录 history |
 
 ## retro — 健康度分析
@@ -100,11 +115,6 @@ flowchart LR
 
     COLLECT -.->|"不连接"| REMOTE["远端"]:::no
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef section fill:#f3e5f5,stroke:#6a1b9a;
-    classDef out fill:#e8f5e9,stroke:#2e7d32;
-    classDef no fill:#eceff1,stroke:#90a4ae;
 ```
 
 | 项目 | 说明 |
@@ -126,11 +136,6 @@ flowchart LR
     FILE -.->|"约束"| C2["不入库"]:::rule
     FILE -.->|"约束"| C3["不同步"]:::rule
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef store fill:#fff3e0,stroke:#e65100;
-    classDef file fill:#f3e5f5,stroke:#6a1b9a;
-    classDef rule fill:#ffebee,stroke:#c62828;
 ```
 
 | 子命令 | 说明 |
@@ -156,7 +161,6 @@ flowchart LR
         R6["空输入只推荐不执行"]:::rule
     end
 
-    classDef rule fill:#e3f2fd,stroke:#1565c0;
 ```
 
 | # | 规则 | 违反标识 |
@@ -176,6 +180,7 @@ flowchart LR
 | 命令 | 参考要点 |
 |------|---------|
 | sync | 远端 API 查询 + 文件下载模式 |
+| update | git pull + 清除插件缓存 + sync 级联操作，三重刷新 |
 | retro | 健康度指标、行为纪律审查 |
 | 需求管线 | 安全约束、验证门禁、仅限 `.claude/` 边界 |
 | 趋势跟踪 | `.claude/` 配置演进方向、新兴工具采纳 |
@@ -188,7 +193,6 @@ flowchart LR
     S2 --> S3["管线完整<br/>变更走 rui code"]:::sig
     S3 --> S4["history 记录<br/>append-only 不入库"]:::sig
 
-    classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 标志 | 未达标的处置 |

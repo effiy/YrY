@@ -849,22 +849,16 @@ function fallbackHelp() {
   console.log("");
   console.log(bold("rui-story — 故事任务面板管理"));
   console.log("");
-  console.log(dim("远端查询 · 查看 · 同步 | 数据源为远端 API，不读本地文件系统"));
+  console.log(dim("远端查询 · 同步 · 健康检查 | 数据源为远端 API，不读本地文件系统"));
   console.log("");
   console.log(bold("只读命令（远端 API）"));
   console.log("  /rui-story                    状态概览");
   console.log("  /rui-story list               进度全景表格");
-  console.log("  /rui-story show <name>        单故事详情");
-  console.log("  /rui-story recommend          同步推荐");
   console.log("  /rui-story health             健康检查");
   console.log("");
   console.log(bold("写入命令"));
   console.log("  /rui-story sync [<name>]      远端→本地 (委托 rui-import)");
-  console.log("  /rui-story clear [<name>]     仅本地：清除非项目前缀文件");
   console.log("  /rui-story remove <name>      仅本地：删除故事目录");
-  console.log("");
-  console.log(bold("分支命令"));
-  console.log("  /rui-story merge-to-main      将当前分支合并到 main 并推送远端");
   console.log("");
 }
 

@@ -21,12 +21,6 @@ flowchart LR
     MARK --> SORT
     SORT --> PRESENT["结构化推荐输出<br/>象限图 + 排序表 + 详述卡"]:::llm
 
-    classDef tool fill:#e8f5e9,stroke:#2e7d32;
-    classDef llm fill:#fff3e0,stroke:#e65100;
-    classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px;
-    classDef infra fill:#ffebee,stroke:#c62828;
-    classDef sync fill:#e3f2fd,stroke:#1565c0;
-    classDef warn fill:#fff3e0,stroke:#e65100;
 ```
 
 > **§0 面板同步**先于所有评分执行。推荐前必须了解当前故事面板全貌，避免重复推荐和冲突。
@@ -194,9 +188,6 @@ flowchart LR
     LEAF["Leaf<br/>importedByCount = 0"]:::low --> MID["Mid<br/>1–2"]:::mid
     MID --> HUB["Hub<br/>≥ 3"]:::high
 
-    classDef low fill:#e8f5e9,stroke:#2e7d32;
-    classDef mid fill:#fff3e0,stroke:#e65100;
-    classDef high fill:#ffebee,stroke:#c62828;
 ```
 
 | 角色 | 条件 | 影响 |
@@ -221,10 +212,6 @@ flowchart LR
     MED --> LOW["低风险<br/>hasApiCall only"]:::low
     LOW --> NONE["无信号<br/>全部 false"]:::none
 
-    classDef high fill:#ffebee,stroke:#c62828;
-    classDef mid fill:#fff3e0,stroke:#e65100;
-    classDef low fill:#e3f2fd,stroke:#1565c0;
-    classDef none fill:#eceff1,stroke:#90a4ae;
 ```
 
 **权重**：高。安全敏感模块误解的破坏面大。
@@ -234,7 +221,7 @@ flowchart LR
 | 数据源 | 字段 |
 |--------|------|
 | `doc.status` | no_docs / partial / complete |
-| `doc.exists` | `{project}-故事任务.md` 是否存在 |
+| `doc.exists` | `故事任务.md` 是否存在 |
 | `doc.existingFiles` | 已有文档文件列表 |
 
 ```mermaid
@@ -243,9 +230,6 @@ flowchart LR
     PARTIAL --> STALE["文档过时<br/>complete + churn>0"]:::warn
     STALE --> FRESH["齐全且新<br/>complete + churn=0"]:::good
 
-    classDef bad fill:#ffebee,stroke:#c62828;
-    classDef warn fill:#fff3e0,stroke:#e65100;
-    classDef good fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 **权重**：首要。这是推荐要解决的核心问题。
@@ -279,10 +263,6 @@ flowchart TD
     Q3 -->|"是"| P2
     Q3 -->|"否"| P3["P3 文档齐全<br/>建议定期复核"]:::p3
 
-    classDef p0 fill:#ffebee,stroke:#c62828;
-    classDef p1 fill:#fff3e0,stroke:#e65100;
-    classDef p2 fill:#e3f2fd,stroke:#1565c0;
-    classDef p3 fill:#eceff1,stroke:#90a4ae;
 ```
 
 | 优先级 | 条件 | 含义 |
@@ -306,11 +286,6 @@ flowchart LR
         S4["④ L0 — recentChurn 降序"]:::rule
     end
 
-    classDef p0 fill:#ffebee,stroke:#c62828;
-    classDef p1 fill:#fff3e0,stroke:#e65100;
-    classDef p2 fill:#e3f2fd,stroke:#1565c0;
-    classDef p3 fill:#eceff1,stroke:#90a4ae;
-    classDef rule fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 ## 推荐输出格式
@@ -360,8 +335,6 @@ flowchart TD
     FLAG3["'没有数据<br/>凭经验推荐'"]:::flag --> FIX3["违反 Rule 5<br/>必须先跑 recommend.mjs"]:::fix
     FLAG4["'P0 太多<br/>降几个到 P1'"]:::flag --> FIX4["P0 是条件判定<br/>不是数量控制的"]:::fix
 
-    classDef flag fill:#ffebee,stroke:#c62828;
-    classDef fix fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | Red Flag | 处置 |

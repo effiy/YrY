@@ -65,7 +65,6 @@ flowchart TB
 
     C1 --> C2 --> C3 --> C4 --> C5 --> C6 --> C7 --> C8
 
-    classDef c fill:#e3f2fd,stroke:#1565c0;
 ```
 
 | 约束 | 一句话 | 违反示例 |
@@ -100,8 +99,6 @@ flowchart LR
     TOC --> DOC_TOP
     NAV --> DOC_END["主体章节末尾"]:::out
 
-    classDef must fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 三组件位序不可变：
@@ -161,7 +158,7 @@ flowchart LR
 ---
 
 > 关联文档：[上一篇](../<prev>/) · [下一篇](../<next>/) · [文档索引](../)
-> 上游基线：[{project}-故事任务.md](./{project}-故事任务.md) · [{project}-使用场景.md](./{project}-使用场景.md)
+> 上游基线：[故事任务.md](./故事任务.md) · [使用场景.md](./使用场景.md)
 > 生成模型：{模型名} | 生成日期：{YYYY-MM-DD}
 ```
 
@@ -183,7 +180,7 @@ flowchart LR
 | 1 | 版本行必填，占位符 `{...}` 留空即偏差 | `v{版本} \| {日期}` — 未替换占位符 |
 | 2 | 主体章节首尾含导航块（F.nav），索引文件除外 | 文章末尾无关联文档链接 |
 | 3 | 版本行字段必须可验证：版本号对 `plugin.json`、分支对 `git branch` | 分支写 `feat/user-login` 但实际在 `main` |
-| 4 | 导航块上游基线链必须闭合：每个链接指向已存在的文档 | 指向 `./{project}-技术评审.md` 但该文件不存在 |
+| 4 | 导航块上游基线链必须闭合：每个链接指向已存在的文档 | 指向 `./技术评审.md` 但该文件不存在 |
 | 5 | F.toc 必须覆盖文档内全部 `##` 级标题，无一遗漏 | 文档有 8 个 `##` 但 F.toc 只列出 5 个 |
 | 6 | F.toc 锚点必须为纯 ASCII kebab-case，使用 `<a id>` 显式标记 | 锚点含中文或 Unicode 符号导致跳转失效 |
 
@@ -205,10 +202,6 @@ flowchart LR
         X3["以无图文档为出发点 → 应先画图"]:::bad
     end
 
-    classDef first fill:#e8f5e9,stroke:#2e7d32;
-    classDef second fill:#e3f2fd,stroke:#1565c0;
-    classDef third fill:#f3e5f5,stroke:#6a1b9a;
-    classDef bad fill:#ffebee,stroke:#c62828;
 ```
 
 | # | 规则 | 反例 |
@@ -217,7 +210,6 @@ flowchart LR
 | 4 | **表优于列表** — 需要对照、比较、映射的信息优先用表格，纯枚举或步骤用列表 | 接口参数用文字列表逐行描述而非表格 |
 | 5 | **禁止文替图** — 能用图表达的信息，不得仅用文字。文档以图为骨架，文字为血肉 | "系统由 A、B、C 三个模块组成，A 调用 B，B 调用 C…" — 无图 |
 | 6 | **图先于文** — 每个章节的 mermaid 图位于该章节文字之前，读者先看结构再读细节 | 先写三段背景，末尾附一个小图 |
-| 7 | **默认配色** — mermaid 图使用默认配色，不定义 `classDef` 自定义颜色/描边；节点用形状区分类型 | mermaid 图中含 `classDef pain fill:#ffebee,stroke:#c62828` 等自定义样式 |
 
 <a id="dir-clean"></a>
 ## ③ 目录清
@@ -227,9 +219,6 @@ flowchart LR
     INPUT["CLI 输入<br/>&lt;name&gt;"]:::src --> PARSE["解析 kebab-case"]:::op
     PARSE --> PATH["docs/故事任务面板/<br/>&lt;name&gt;/"]:::out
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | 文档类 | 路径模式 | 命名规则 | 用途 |
@@ -240,7 +229,7 @@ flowchart LR
 |------|------|
 | `<name>` | 纯语义 kebab-case（如 `user-login`），不加项目名前缀 |
 | CLI 输入 | `<name>` |
-| 技术评审/实施报告 文件名 | 如 `{project}-技术评审.md` |
+| 技术评审/实施报告 文件名 | 如 `技术评审.md` |
 
 <a id="evidence"></a>
 ## ④ 证据足
@@ -275,8 +264,6 @@ flowchart LR
     P3 --> O3
     P4 --> O4
 
-    classDef phase fill:#e3f2fd,stroke:#1565c0;
-    classDef file fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | 阶段 | 创建文件 | 条件 |
@@ -296,9 +283,6 @@ flowchart TD
     Q1 -->|"增删/接口变更"| T2["T2<br/>裁剪影响分析<br/>裁剪架构设计<br/>刷新目标 + 下游"]:::t2
     Q1 -->|"边界变化/跨故事重构"| T3["T3<br/>完整重跑影响分析<br/>完整重跑架构设计<br/>全级联刷新"]:::t3
 
-    classDef t1 fill:#e8f5e9,stroke:#2e7d32;
-    classDef t2 fill:#fff3e0,stroke:#e65100;
-    classDef t3 fill:#ffebee,stroke:#c62828;
 ```
 
 | 级别 | 范围 | 影响分析 | 架构设计 | 文档刷新 |
@@ -324,8 +308,6 @@ flowchart LR
     end
     禁止 --> 必须
 
-    classDef bad fill:#ffebee,stroke:#c62828;
-    classDef good fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | # | 规则 | 反例 |
@@ -367,9 +349,6 @@ flowchart LR
     end
     评审 --> 报告 --> P3
 
-    classDef review fill:#e3f2fd,stroke:#1565c0;
-    classDef report fill:#e8f5e9,stroke:#2e7d32;
-    classDef must fill:#fff3e0,stroke:#e65100,stroke-width:2px;
 ```
 
 | # | 规则 | 反例 |
@@ -413,8 +392,6 @@ flowchart TD
     Q6 -->|"是"| D6["📄 性能基准.md"]:::doc
     Q6 -->|"否"| NONE["无需补充文档"]:::none
 
-    classDef doc fill:#e3f2fd,stroke:#1565c0;
-    classDef none fill:#eceff1,stroke:#90a4ae;
 ```
 
 | 触发条件 | 生成文档 | 主导 |
@@ -439,11 +416,6 @@ flowchart LR
     Q1 -->|"有值"| REVERSE["反推模式<br/>pm 从源码反推<br/>证据 Level B + 源码路径"]:::mode
     EXPLORE & REVERSE --> OUT["输出落故事任务面板"]:::out
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef must fill:#e3f2fd,stroke:#1565c0;
-    classDef done fill:#f3e5f5,stroke:#6a1b9a;
-    classDef mode fill:#fff3e0,stroke:#e65100;
-    classDef out fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | # | 规则 | 说明 |
@@ -473,7 +445,6 @@ flowchart LR
     S6 --> S7["无魔数<br/>命名常量 + 语义描述"]:::sig
     S7 --> S8["效果证<br/>效果图 + 可操作验证"]:::sig
 
-    classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 标志 | 未达标的处置 |

@@ -21,8 +21,8 @@ flowchart TB
     end
 
     subgraph 产出["三报告"]
-        B["{project}-实施报告<br/>文件 · 接口 · 组件 · 偏差 · P0"]:::rpt
-        T["{project}-测试报告<br/>冒烟 · 回归 · Gate B"]:::rpt
+        B["实施报告<br/>文件 · 接口 · 组件 · 偏差 · P0"]:::rpt
+        T["测试报告<br/>冒烟 · 回归 · Gate B"]:::rpt
     end
 
     subgraph 策展["策展"]

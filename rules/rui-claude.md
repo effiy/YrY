@@ -17,6 +17,7 @@ flowchart TB
 
     Q1 -->|"&lt;req&gt;"| REQ["需求驱动变更"]:::cmd
     Q1 -->|"sync"| SYNC["覆盖式同步"]:::cmd
+    Q1 -->|"update"| UPDATE["插件升级+清缓存+同步"]:::cmd
     Q1 -->|"retro"| RETRO["复盘分析"]:::cmd
     Q1 -->|"history"| HIST["历史记录"]:::cmd
     Q1 -->|"空输入"| LIST["推荐任务列表"]:::cmd
@@ -30,19 +31,13 @@ flowchart TB
     LOCAL -.->|"禁止"| AUTO["自动 commit/push 🚫"]:::block
     LOCAL --> MANUAL["开发者手动 git"]:::manual
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef cmd fill:#e3f2fd,stroke:#1565c0;
-    classDef pipe fill:#fff3e0,stroke:#e65100;
-    classDef out fill:#f3e5f5,stroke:#6a1b9a;
-    classDef local fill:#e8f5e9,stroke:#2e7d32;
-    classDef block fill:#ffebee,stroke:#c62828;
-    classDef manual fill:#e3f2fd,stroke:#1565c0;
 ```
 
 | 子命令 | 行为 | 走管线? | 产出位置 |
 |--------|------|--------|---------|
 | `需求` | 需求驱动的 .claude/ 变更 | ✅ rui code 管线 | `.claude/` 目录内 |
 | `sync` | 覆盖式更新（API pull → 本地覆盖） | ❌ 不走管线 | `.claude/` 全量 |
+| `update` | 插件升级（git pull → 清除缓存 → sync） | ❌ 不走管线 | 插件源码 + 缓存清除 + `.claude/` 三重刷新 |
 | `retro` | 复盘分析 | ❌ 独立流程 | `docs/自改进故事面板/` |
 | `history` | 自动记录历史 | ❌ 后台记录 | `.claude/.history/` |
 | 空输入 | 推荐任务 | ❌ 不执行 | — |
@@ -65,8 +60,6 @@ flowchart LR
     end
     允许 -.->|"边界"| 禁止
 
-    classDef ok fill:#e8f5e9,stroke:#2e7d32;
-    classDef block fill:#ffebee,stroke:#c62828;
 ```
 
 | # | 规则 | 反例 |
@@ -84,10 +77,6 @@ flowchart LR
     CONFIRM -->|"是"| PULL["rui-import<br/>dir=.claude/ mode=pull<br/>远端 API → 逐文件覆盖"]:::op
     PULL --> DONE["同步完成"]:::done
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef abort fill:#eceff1,stroke:#90a4ae;
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef done fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | # | 规则 | 说明 |
@@ -105,11 +94,6 @@ flowchart LR
 
     ANALYZE -.->|"不连接"| REMOTE["远端"]:::no
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#f3e5f5,stroke:#6a1b9a;
-    classDef file fill:#fff3e0,stroke:#e65100;
-    classDef no fill:#eceff1,stroke:#90a4ae;
 ```
 
 | # | 规则 |
@@ -127,10 +111,6 @@ flowchart LR
     FILE -.->|"约束"| C2["不入库"]:::rule
     FILE -.->|"约束"| C3["不同步"]:::rule
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef file fill:#f3e5f5,stroke:#6a1b9a;
-    classDef rule fill:#fff3e0,stroke:#e65100;
 ```
 
 | # | 规则 |
@@ -145,9 +125,6 @@ flowchart TD
     Q -->|"自动"| BLOCK["禁止 🚫<br/>自动 commit<br/>自动 push"]:::block
     Q -->|"手动"| OK["✅<br/>git add<br/>git commit<br/>git push"]:::ok
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef block fill:#ffebee,stroke:#c62828;
-    classDef ok fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | # | 规则 | 反例 |
@@ -161,9 +138,6 @@ flowchart LR
     SYNC_EX["sync 命令"]:::ex --> REASON["行为是恢复基线<br/>非业务变更"]:::reason
     REASON --> RESULT["不走 rui code 管线"]:::result
 
-    classDef ex fill:#fff3e0,stroke:#e65100;
-    classDef reason fill:#e3f2fd,stroke:#1565c0;
-    classDef result fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 场景 | 处理 | 原因 |
@@ -178,7 +152,6 @@ flowchart LR
     S2 --> S3["git 手动<br/>无自动 commit/push"]:::sig
     S3 --> S4["history 记录<br/>仅本地不入库"]:::sig
 
-    classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 标志 | 未达标的处置 |

@@ -38,11 +38,6 @@ flowchart TB
     改进 --> 评估
     评估 -.->|"下次循环"| 观察
 
-    classDef base fill:#e8f5e9,stroke:#2e7d32;
-    classDef data fill:#e3f2fd,stroke:#1565c0;
-    classDef diag fill:#fff3e0,stroke:#e65100;
-    classDef prop fill:#f3e5f5,stroke:#6a1b9a;
-    classDef eval fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 阶段 | 输入 | 输出 | 阻断? |
@@ -67,9 +62,6 @@ flowchart TD
     Q2 -->|"否"| BLOCK["不产出提案 🚫"]:::block
     Q2 -->|"是"| APPEND["append → proposals.jsonl"]:::ok
 
-    classDef must fill:#e3f2fd,stroke:#1565c0;
-    classDef block fill:#ffebee,stroke:#c62828;
-    classDef ok fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 ```mermaid
@@ -80,7 +72,6 @@ flowchart LR
         C3["效果评估<br/>前后各 ≥3 条记忆"]:::rule
     end
 
-    classDef rule fill:#fff3e0,stroke:#e65100;
 ```
 
 | # | 规则 | 反例 |
@@ -100,9 +91,6 @@ flowchart LR
     Q -->|"是"| REF["引用基线文件<br/>CLAUDE.md / rules/ / agents/"]:::ok
     REF --> DIAG["诊断有效 ✅"]:::ok
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef block fill:#ffebee,stroke:#c62828;
-    classDef ok fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | # | 规则 | 反例 |
@@ -129,7 +117,6 @@ flowchart LR
         D7["D7 配置漂移<br/>提案闭合率 < 50%"]:::diag
     end
 
-    classDef diag fill:#fff3e0,stroke:#e65100;
 ```
 
 | # | 信号 | 假设 | 置信度 | 基线依据 |
@@ -152,7 +139,6 @@ flowchart LR
     D2 & D4 -->|"质量/流程异常"| QLT["quality<br/>审查强化"]:::prop
     D3 -->|"边界/复杂度异常"| SEC["security<br/>边界加固"]:::prop
 
-    classDef prop fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | 诊断组 | 触发信号 | 提案类型 | 示例 |
@@ -181,10 +167,6 @@ flowchart LR
     JUDGE -->|"改善 > 退化"| CLOSE["闭合 ✅"]:::ok
     JUDGE -->|"退化 > 改善"| ROLL["回退或重提案"]:::warn
 
-    classDef good fill:#e8f5e9,stroke:#2e7d32;
-    classDef bad fill:#ffebee,stroke:#c62828;
-    classDef ok fill:#e8f5e9,stroke:#2e7d32;
-    classDef warn fill:#fff3e0,stroke:#e65100;
 ```
 
 | # | 指标 | 改善 | 退化 |
@@ -203,8 +185,6 @@ flowchart TD
     Q1 -->|"失败"| NOOP["no-metrics 降级<br/>写空白 08 占位<br/>不计入退化窗口"]:::warn
     Q1 -->|"不足 3 条"| OBS["跳过 E1–E4<br/>仅生成观察记录"]:::warn
 
-    classDef ok fill:#e8f5e9,stroke:#2e7d32;
-    classDef warn fill:#fff3e0,stroke:#e65100;
 ```
 
 ## 经验技能化
@@ -219,9 +199,6 @@ flowchart TD
     Q2 -->|"是"| UPGRADE["写入对应 rules/ 或 agents/<br/>标记来源提案 ID"]:::up
     Q2 -->|"否"| KEEP["保留为故事级提案<br/>标注不可泛化原因"]:::keep
 
-    classDef wait fill:#e3f2fd,stroke:#1565c0;
-    classDef up fill:#fff3e0,stroke:#e65100;
-    classDef keep fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 提案类型 | 升级条件 | 升级目标 | 示例 |
@@ -255,9 +232,6 @@ flowchart LR
     end
     源 --> 压缩 --> 注入
 
-    classDef data fill:#e3f2fd,stroke:#1565c0;
-    classDef comp fill:#fff3e0,stroke:#e65100;
-    classDef inj fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 记忆类型 | 压缩方式 | 保留窗口 | 注入触发 |
@@ -283,7 +257,6 @@ flowchart LR
     S2 --> S3["append-only<br/>proposals.jsonl 无覆盖"]:::sig
     S3 --> S4["E1–E4 闭合<br/>或标注退化/降级"]:::sig
 
-    classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 标志 | 未达标的处置 |

@@ -22,21 +22,18 @@ lifecycle: default-pipeline
 
 ```mermaid
 flowchart TB
-    RUI["rui 管线完成 / 阻断 / 失败"]:::src --> LOG["① 追加日志<br/>等价 send --no-send → {project}-消息通知列表"]:::step
+    RUI["rui 管线完成 / 阻断 / 失败"]:::src --> LOG["① 追加日志<br/>等价 send --no-send → 消息通知列表"]:::step
     LOG --> SYNC["② rui-import 同步"]:::step
     SYNC --> SEND["③ 发送通知<br/>send → 企微 webhook"]:::step
     SEND --> DONE["闭环"]:::done
 
     LOG -.->|"失败 / 阻断"| SEND
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef step fill:#e3f2fd,stroke:#1565c0;
-    classDef done fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | 步骤 | 操作 | 说明 |
 |------|------|------|
-| ① 追加日志 | `send --no-send` 等价行为 | 写入 `{project}-消息通知列表.md`，不发 HTTP |
+| ① 追加日志 | `send --no-send` 等价行为 | 写入 `消息通知列表.md`，不发 HTTP |
 | ② 文档同步 | `rui-import` workspace 全量同步 | 推送变更到远端 |
 | ③ 发送通知 | `send` 等价行为 | POST 企微 webhook |
 
@@ -64,7 +61,6 @@ flowchart LR
         NOSEND["noSend=true<br/>仅追加日志，不发 HTTP"]:::param
     end
 
-    classDef param fill:#e3f2fd,stroke:#1565c0;
 ```
 
 | 参数 | 描述 | 默认 / 推断 |
@@ -88,7 +84,7 @@ flowchart LR
 
 ```
 name = "<story>"   # kebab-case 的故事名
-  → 日志路径 = docs/故事任务面板/<story>/{project}-消息通知列表.md
+  → 日志路径 = docs/故事任务面板/<story>/消息通知列表.md
 ```
 
 ### 内置配置
@@ -118,10 +114,6 @@ flowchart TB
     end
     HEADER --> SUMMARY --> SEP --> DETAIL
 
-    classDef hdr fill:#f3e5f5,stroke:#6a1b9a;
-    classDef summary fill:#e3f2fd,stroke:#1565c0;
-    classDef sep fill:#eceff1,stroke:#90a4ae;
-    classDef detail fill:#fff3e0,stroke:#e65100;
 ```
 
 纯文本分行，emoji 前缀 + `:` 分隔。禁用 markdown。
@@ -140,9 +132,6 @@ flowchart LR
         C3["🤖技能 📋命令<br/>🎯结论 📝描述 📌范围<br/>🔍门禁 📊结果<br/>🌐影响 📎证据 ⏱️会话"]:::gate
     end
 
-    classDef ok fill:#e8f5e9,stroke:#2e7d32;
-    classDef block fill:#ffebee,stroke:#c62828;
-    classDef gate fill:#fff3e0,stroke:#e65100;
 ```
 
 | 场景 | 必含字段 | 特有字段 |
@@ -174,13 +163,13 @@ flowchart LR
 📝 描述: 为登录模块生成故事板，覆盖密码登录、短信验证码、OAuth 三种场景
 📌 范围: auth/
 👉 下一步: 运行 /rui code user-login 开始编码实现
-🌐 影响: docs/故事任务面板/user-login/{project}-故事任务.md
+🌐 影响: docs/故事任务面板/user-login/故事任务.md
 📎 证据: git log --oneline -1
 ⏱️ 会话: 自适应规划→策展 全流程 3.2min | 3 agents 参与
 
 ———
 
-变更文件: docs/故事任务面板/user-login/{project}-故事任务.md (新增, 285行)
+变更文件: docs/故事任务面板/user-login/故事任务.md (新增, 285行)
 ```
 
 ### 技能消息字段说明
@@ -200,14 +189,10 @@ flowchart LR
 flowchart LR
     SEND["rui-bot<br/>name=&lt;Project&gt;-&lt;story&gt;"]:::src --> PARSE["分解路径<br/>&lt;story&gt;/"]:::op
     PARSE --> APPEND["追加写入"]:::op
-    APPEND --> FILE["docs/故事任务面板/<br/>&lt;story&gt;/<br/>{project}-消息通知列表.md"]:::file
+    APPEND --> FILE["docs/故事任务面板/<br/>&lt;story&gt;/<br/>消息通知列表.md"]:::file
 
     APPEND -.->|"目录不存在"| MKDIR["递归创建"]:::util
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef file fill:#f3e5f5,stroke:#6a1b9a;
-    classDef util fill:#fff3e0,stroke:#e65100;
 ```
 
 | 项目 | 说明 |
@@ -228,11 +213,6 @@ flowchart LR
     POST --> BODY["Body: webhook_url + content"]:::body
     BODY --> WEWORK["企微机器人"]:::out
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef auth fill:#ffebee,stroke:#c62828;
-    classDef api fill:#e3f2fd,stroke:#1565c0;
-    classDef body fill:#f3e5f5,stroke:#6a1b9a;
-    classDef out fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 ```
@@ -269,8 +249,6 @@ flowchart LR
         C2["webhook URL 从环境变量"]:::ok
     end
 
-    classDef block fill:#ffebee,stroke:#c62828;
-    classDef ok fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | # | 规则 | P0? |
@@ -293,12 +271,8 @@ flowchart LR
     SCAN --> Q{"找到?"}
     Q -->|"否"| SKIP["静默跳过"]:::warn
     Q -->|"是"| BUILD["按 rui-state.json<br/>构建消息"]:::op
-    BUILD --> APPEND["执行 send（noSend=true）<br/>写入 {project}-消息通知列表"]:::out
+    BUILD --> APPEND["执行 send（noSend=true）<br/>写入 消息通知列表"]:::out
 
-    classDef s fill:#e3f2fd,stroke:#1565c0;
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef warn fill:#fff3e0,stroke:#e65100;
-    classDef out fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | 步骤 | 行为 |
@@ -320,10 +294,6 @@ flowchart LR
     Q -->|"否"| SKIP2["静默跳过"]:::warn
     Q -->|"是"| SEND["执行 send（noSend=false）"]:::out
 
-    classDef s fill:#e3f2fd,stroke:#1565c0;
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef warn fill:#fff3e0,stroke:#e65100;
-    classDef out fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | 触发 | 行为 |
@@ -372,7 +342,7 @@ flowchart TD
     EMPTY["无参数 / 空输入"]:::src --> CHECK["检测三项"]:::op
     CHECK --> T1["API_X_TOKEN 是否存在?"]:::check
     CHECK --> T2["内置配置是否就绪?"]:::check
-    CHECK --> T3["{project}-消息通知列表.md 是否存在?"]:::check
+    CHECK --> T3["消息通知列表.md 是否存在?"]:::check
 
     T1 & T2 & T3 --> RECOMMEND["推荐任务"]:::out
 
@@ -383,14 +353,9 @@ flowchart TD
         R4["定期巡检 → 检查通知完整性"]:::rec
     end
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef check fill:#fff3e0,stroke:#e65100;
-    classDef out fill:#f3e5f5,stroke:#6a1b9a;
-    classDef rec fill:#fff3e0,stroke:#e65100;
 ```
 
-无参数时不发送消息，仅检测 `API_X_TOKEN` / 内置配置 / 故事面板 `{project}-消息通知列表.md` 并输出推荐任务。
+无参数时不发送消息，仅检测 `API_X_TOKEN` / 内置配置 / 故事面板 `消息通知列表.md` 并输出推荐任务。
 
 ## 生效标志
 
@@ -398,9 +363,8 @@ flowchart TD
 flowchart LR
     S1["场景字段齐全<br/>完成 / 阻断 / 门禁 必含项到位"]:::sig --> S2["格式合规<br/>纯文本 · emoji:值 · ≤2000字"]:::sig
     S2 --> S3["安全底线<br/>token / webhook 不入库"]:::sig
-    S3 --> S4["日志完整<br/>{project}-消息通知列表 已追加"]:::sig
+    S3 --> S4["日志完整<br/>消息通知列表 已追加"]:::sig
 
-    classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 标志 | 未达标的处置 |
@@ -408,4 +372,4 @@ flowchart LR
 | 场景字段齐全 | 补齐缺失字段，重新发送 |
 | 格式合规（纯文本 · emoji:值 · ≤2000字） | 修正格式，重新发送 |
 | token / webhook 不入库 | 从 git 历史清除，轮换凭据 |
-| `{project}-消息通知列表` 已追加 | 补写日志条目 |
+| `消息通知列表` 已追加 | 补写日志条目 |

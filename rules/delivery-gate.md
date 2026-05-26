@@ -42,19 +42,14 @@ flowchart TB
 
     DONE -.->|"1h 内未闭合"| STOP["Stop hook 阻断<br/>delivery-incomplete 🚫"]:::block
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef step fill:#e3f2fd,stroke:#1565c0;
-    classDef mark fill:#f3e5f5,stroke:#6a1b9a;
-    classDef done fill:#e8f5e9,stroke:#2e7d32;
-    classDef block fill:#ffebee,stroke:#c62828;
 ```
 
 | 步骤 | 操作 | 标记 | 降级条件 |
 |------|------|------|---------|
-| ⓪ 执行记忆 | `node .memory/collector.mjs --story=<name> --command=<cmd>` 追加记录 | `memory_written` | — |
 | ① 追加日志 | `rui-bot --no-send` 写入日志 | `log_appended` | — |
 | ② 批量安全网 | `node skills/rui-import/sync.mjs` 兜底补漏 | `docs_synced` | `no-token`（缺 API_X_TOKEN） |
 | ③ 发送通知 | `rui-bot` 推送企微 | `notification_sent` | — |
+| ④ 自主测试 | 每次故事任务变更后执行自检：基线完整性 · 文档一致性 · 分支隔离 · 安全合规 | `self_test_passed` | `no-self-test`（缺 self-test 故事目录时跳过） |
 
 ## 适用
 
@@ -76,22 +71,16 @@ flowchart LR
         N2["/rui（推荐）"]:::no
     end
 
-    classDef yes fill:#e8f5e9,stroke:#2e7d32;
-    classDef no fill:#eceff1,stroke:#90a4ae;
 ```
 
 ## ① 追加日志
 
 ```mermaid
 flowchart LR
-    CALL["调用 rui-bot<br/>--no-send"]:::step --> LOG["写入执行日志<br/>{project}-消息通知列表<br/>含 🤖技能 + 📋命令"]:::out
+    CALL["调用 rui-bot<br/>--no-send"]:::step --> LOG["写入执行日志<br/>消息通知列表<br/>含 🤖技能 + 📋命令"]:::out
     LOG --> MARK["在 rui-state.json<br/>delivery_pipeline.log_appended<br/>= true"]:::mark
     MARK --> NEXT["进入步骤 ②"]:::next
 
-    classDef step fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#f3e5f5,stroke:#6a1b9a;
-    classDef mark fill:#fff3e0,stroke:#e65100;
-    classDef next fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 规则 | 描述 |
@@ -113,10 +102,6 @@ flowchart TD
     Q2 -->|"超时"| WARN["记录告警不阻断<br/>下次覆盖重试"]:::warn
     Q2 -->|"成功"| MARK["mark docs_synced"]:::mark
 
-    classDef step fill:#e3f2fd,stroke:#1565c0;
-    classDef push fill:#e8f5e9,stroke:#2e7d32;
-    classDef warn fill:#fff3e0,stroke:#e65100;
-    classDef mark fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 ```
@@ -149,11 +134,6 @@ flowchart LR
     CH -->|"失败/阻断"| FAIL["报告阻断状态"]:::warn
     OK & FAIL --> MARK["mark notification_sent"]:::mark
 
-    classDef step fill:#e3f2fd,stroke:#1565c0;
-    classDef param fill:#f3e5f5,stroke:#6a1b9a;
-    classDef ok fill:#e8f5e9,stroke:#2e7d32;
-    classDef warn fill:#fff3e0,stroke:#e65100;
-    classDef mark fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | # | 规则 |
@@ -177,9 +157,6 @@ flowchart LR
     end
     必须 --> 禁止
 
-    classDef primary fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px;
-    classDef must fill:#e3f2fd,stroke:#1565c0;
-    classDef block fill:#ffebee,stroke:#c62828;
 ```
 
 | # | 规则 | 反例 |
@@ -198,10 +175,6 @@ flowchart TD
     WRITE --> NEXT["进入下一步骤"]:::next
     CALL -.->|"未写入"| VIOL["未标记 = 未执行 🚫"]:::block
 
-    classDef api fill:#e3f2fd,stroke:#1565c0;
-    classDef state fill:#f3e5f5,stroke:#6a1b9a;
-    classDef next fill:#e8f5e9,stroke:#2e7d32;
-    classDef block fill:#ffebee,stroke:#c62828;
 ```
 
 | # | 规则 | 反例 |
@@ -221,9 +194,6 @@ flowchart TD
     Q1 -->|"no-token"| E3["跳过 push<br/>仍写标记"]:::warn
     Q1 -->|"正常"| E4["完整三步"]:::normal
 
-    classDef ex fill:#e8f5e9,stroke:#2e7d32;
-    classDef normal fill:#e3f2fd,stroke:#1565c0;
-    classDef warn fill:#fff3e0,stroke:#e65100;
 ```
 
 | 场景 | 三步管线 | 标记要求 |
@@ -239,8 +209,6 @@ flowchart LR
     B1["delivery-incomplete<br/>三步未全标记"]:::block
     B2["no-token<br/>API_X_TOKEN 缺失"]:::warn
 
-    classDef block fill:#ffebee,stroke:#c62828;
-    classDef warn fill:#fff3e0,stroke:#e65100;
 ```
 
 | 标识 | 触发条件 | 阻断? | 恢复方式 |
@@ -257,7 +225,6 @@ flowchart LR
     S3 --> S4["rui-bot 已触发<br/>含阻断状态报告"]:::sig
     S4 --> S5["rui-state.json<br/>delivery 字段闭合"]:::sig
 
-    classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 标志 | 未达标的处置 |

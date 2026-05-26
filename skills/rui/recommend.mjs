@@ -438,7 +438,7 @@ function deriveName(file, project) {
 function docStatus(root, project, name) {
   const expectedDir = join(root, DOC_BASE, name);
   const dirExists = existsSync(expectedDir);
-  const storyFile = join(expectedDir, `${project}-故事任务.md`);
+  const storyFile = join(expectedDir, '故事任务.md');
   const taskExists = existsSync(storyFile);
 
   let existingFiles = [];
@@ -625,7 +625,7 @@ function buildStoryCandidate(group, project, projectType) {
 
   return {
     storyName,
-    command: `/rui doc --from-code ${project}-${storyName}`,
+    command: `/rui doc --from-code ${storyName}`,
     storyType: "doc-from-code",
     project,
     type: projectType === "fullstack" ? primary.type : projectType,

@@ -13,7 +13,7 @@ lifecycle: default-pipeline
 >
 > 哲学源自 [CLAUDE.md](../../CLAUDE.md)。本文件定义命令面与操作规约。
 
-[命令族全景](#命令族全景) · [数据源](#数据源) · [操作边界](#操作边界) · [状态判定](#状态判定) · [/rui-story](#rui-story) · [/rui-story list](#rui-story-list) · [/rui-story show](#rui-story-show) · [/rui-story recommend](#rui-story-recommend) · [/rui-story health](#rui-story-health) · [/rui-story sync](#rui-story-sync) · [/rui-story clear](#rui-story-clear) · [/rui-story remove](#rui-story-remove) · [核心规则](#核心规则) · [生效标志](#生效标志) · [与 rui 的关系](#与-rui-的关系)
+[命令族全景](#命令族全景) · [数据源](#数据源) · [操作边界](#操作边界) · [状态判定](#状态判定) · [/rui-story](#rui-story) · [/rui-story list](#rui-story-list) · [/rui-story health](#rui-story-health) · [/rui-story sync](#rui-story-sync) · [/rui-story remove](#rui-story-remove) · [核心规则](#核心规则) · [生效标志](#生效标志) · [与 rui 的关系](#与-rui-的关系)
 
 ## 命令族全景
 
@@ -23,43 +23,26 @@ flowchart TD
     Q1 -->|"无"| OVERVIEW["状态概览<br/>远端查询 → 按状态统计 + 最近活动"]:::read
     Q1 -->|"有"| Q2{"哪个子命令?"}
     Q2 -->|"list"| LIST["进度全景<br/>远端查询 → 所有故事详细表格"]:::read
-    Q2 -->|"show <name>"| SHOW["单故事详情<br/>远端查询 → 文件清单/状态/元数据"]:::read
     Q2 -->|"sync <name>?"| SYNC["文档同步<br/>远端 → 本地（委托 rui-import）"]:::write
-    Q2 -->|"clear <name>?"| CLEAR["清理文件<br/>本地 → 移除非项目前缀文件"]:::danger
     Q2 -->|"remove <name>"| REMOVE["删除故事目录<br/>本地 → 删除整个故事目录"]:::danger
-    Q2 -->|"recommend"| RECOMMEND["同步推荐<br/>远端查询 → 可同步故事列表"]:::read
     Q2 -->|"health"| HEALTH["健康检查<br/>远端 + 本地 → 系统诊断"]:::read
-    Q2 -->|"status"| STATUS["状态管理<br/>转移验证 · 跨故事仪表板"]:::diag
 
-    classDef entry fill:#fff3e0,stroke:#e65100;
-    classDef read fill:#e8f5e9,stroke:#2e7d32;
-    classDef write fill:#e3f2fd,stroke:#1565c0;
-    classDef danger fill:#ffebee,stroke:#c62828;
-    classDef diag fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | 命令 | 类型 | 数据源 | 作用 |
 |------|------|--------|------|
 | `/rui-story` | 只读 | 远端 API | 状态概览：按状态统计 + 最近活动 |
 | `/rui-story list` | 只读 | 远端 API | 进度全景：所有故事详细表格（状态/文件数/最后修改/分支） |
-| `/rui-story show <name>` | 只读 | 远端 API | 单故事详情：文件清单/状态/元数据 |
 | `/rui-story sync [<name>]` | 写入 | 远端 API | 从远端拉取文档到本地；未指定名称时展示推荐提示 |
-| `/rui-story clear [<name>]` | 写入 | 本地文件系统 | 仅保留 `{project}-` 前缀文件，其余一律删除；未指定名称时扫描所有故事目录 |
 | `/rui-story remove <name>` | 写入 | 本地文件系统 | 删除指定故事的整个本地目录；`<name>` 必填 |
-| `/rui-story recommend` | 只读 | 远端 API | 列出远端可同步的故事及推荐 sync 命令 |
 | `/rui-story health` | 只读 | 远端 API + 本地 | 系统健康检查：凭据、API 可达性、配置、数据完整性 |
-| `/rui-story status check` | 只读 | 本地状态机 | 验证状态转移合法性：`--from=<s> --to=<s>` |
-| `/rui-story status transition` | 写入 | 本地 rui-state.json | 执行状态转移并记录审计日志 |
-| `/rui-story status dashboard` | 只读 | 本地文件系统 | 跨故事聚合仪表板（本地 rui-state.json） |
-
-> **`merge` / `split` 已由 [`/rui yry`](../rui/SKILL.md#yry) 自改进闭环自动执行**，不再提供手动命令。yry 扫描时自动检测可合并的重复故事和需拆分的大故事。
 
 `<name>` 为纯语义 kebab-case（如 `user-login`），不加项目名前缀。
 
 ## 数据源
 
-> **默认且唯一模式：远端 API**。所有查询操作（概览/list/show）直接查询远端 API，不读本地文件系统。
-> `sync` 命令涉及本地写入（从远端拉取到本地）；`clear` 和 `remove` 命令仅操作本地文件系统，不触碰远端。
+> **默认且唯一模式：远端 API**。所有查询操作（概览/list）直接查询远端 API，不读本地文件系统。
+> `sync` 命令涉及本地写入（从远端拉取到本地）；`remove` 命令仅操作本地文件系统，不触碰远端。
 
 ```mermaid
 flowchart LR
@@ -70,19 +53,13 @@ flowchart LR
     subgraph 命令["命令"]
         OVERVIEW["/rui-story"]
         LIST["/rui-story list"]
-        SHOW["/rui-story show"]
-        RECOMMEND["/rui-story recommend"]
         HEALTH["/rui-story health"]
     end
 
     SESSIONS -->|"query_documents"| OVERVIEW
     SESSIONS -->|"query_documents"| LIST
-    SESSIONS -->|"query_documents"| SHOW
-    SESSIONS -->|"query_documents"| RECOMMEND
     SESSIONS -->|"query_documents + local"| HEALTH
 
-    classDef api fill:#e3f2fd,stroke:#1565c0;
-    classDef cmd fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 **API 调用方式**：
@@ -104,8 +81,7 @@ flowchart LR
     subgraph 允许["✅ 允许"]
         A1["远端 API 查询<br/>故事任务面板 session"]:::ok
         A2["sync 委托 rui-import<br/>远端 → 本地"]:::ok
-        A3["clear 操作本地文件系统<br/>移除非项目前缀文件"]:::ok
-        A4["remove 操作本地文件系统<br/>删除指定故事目录"]:::ok
+        A3["remove 操作本地文件系统<br/>删除指定故事目录"]:::ok
     end
     subgraph 禁止["❌ 禁止"]
         B1["读取本地文件系统<br/>（查询操作）"]:::bad
@@ -114,41 +90,32 @@ flowchart LR
         B4["创建/切换 git 分支<br/>那是 /rui code"]:::bad
     end
 
-    classDef ok fill:#e8f5e9,stroke:#2e7d32;
-    classDef bad fill:#ffebee,stroke:#c62828;
 ```
 
 ## 状态判定
 
-> 按远端 sessions 的 `file_path` 存在性 + `.memory/rui-state.json`（仅 blocked 标记查本地）判定故事状态。
+> 按远端 sessions 的 `file_path` 存在性判定故事状态。
 
 ```mermaid
 flowchart TD
     START["查询远端 sessions<br/>file_path 前缀 故事任务面板/"]:::s --> GROUP["按故事名称分组<br/>从 file_path 提取"]:::s
-    GROUP --> CHK01{"{project}-故事任务.md<br/>存在?"}
+    GROUP --> CHK01{"故事任务.md<br/>存在?"}
     CHK01 -->|"否"| NS["任务"]:::s0
     CHK01 -->|"是"| CHKDOC{"文档基线齐全?<br/>含 使用场景 + 技术评审<br/>+ 测试设计 + 安全审计"}
     CHKDOC -->|"否"| DIP["设计"]:::s1
-    CHKDOC -->|"是"| CHKIMP{"{project}-实施报告.md<br/>存在?"}
+    CHKDOC -->|"是"| CHKIMP{"实施报告.md<br/>存在?"}
     CHKIMP -->|"否"| IMP["实施"]:::s2
-    CHKIMP -->|"是"| CHKVER{"{project}-测试报告.md<br/>存在?"}
+    CHKIMP -->|"是"| CHKVER{"测试报告.md<br/>存在?"}
     CHKVER -->|"否"| TST["测试"]:::s3
-    CHKVER -->|"是"| CHKRET{"{project}-自改进复盘.md<br/>存在?"}
+    CHKVER -->|"是"| CHKRET{"自改进复盘.md<br/>存在?"}
     CHKRET -->|"否"| RPT["报告"]:::s4
     CHKRET -->|"是"| IMPV["改进"]:::s5
 
-    classDef s fill:#e3f2fd,stroke:#1565c0;
-    classDef s0 fill:#eceff1,stroke:#90a4ae;
-    classDef s1 fill:#fff3e0,stroke:#e65100;
-    classDef s2 fill:#e8f5e9,stroke:#2e7d32;
-    classDef s3 fill:#e3f2fd,stroke:#1565c0;
-    classDef s4 fill:#c8e6c9,stroke:#388e3c;
-    classDef s5 fill:#ffebee,stroke:#c62828;
 ```
 
 | 状态 | 条件 | 含义 |
 |------|------|------|
-| `任务` | {project}-故事任务.md 不存在于远端 | 目录空或仅有元数据 |
+| `任务` | 故事任务.md 不存在于远端 | 目录空或仅有元数据 |
 | `设计` | 故事任务存在于远端，文档基线不完整 | 文档生成进行中 |
 | `实施` | 远端文档基线齐全，实施报告不存在 | 等待编码 |
 | `测试` | 实施报告存在于远端，测试报告不存在 | 实现验证中 |
@@ -168,8 +135,6 @@ flowchart LR
     C --> D["按状态聚合计数"]:::op
     D --> E["输出摘要表<br/>+ 最近修改的故事列表"]:::out
 
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 **输出**：
@@ -200,8 +165,6 @@ flowchart LR
     C --> D["按更新时间降序排列"]:::op
     D --> E["输出表格"]:::out
 
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 **输出列**：`Story | Status | Files | Last Modified | Type | Branch`
@@ -210,74 +173,6 @@ flowchart LR
 - **Last Modified**：远端 sessions 中最晚 `updatedAt`
 - **Type**：按远端文件推断（backend / frontend / fullstack / meta）
 - **Branch**：`git branch --list "feat/<name>"` — 有则显示分支名，无则为 `—`
-
-## `/rui-story show <name>` — 单故事详情
-
-```mermaid
-flowchart LR
-    PARSE["解析 name"]:::op --> QUERY["查询远端 API<br/>sessions 集合"]:::op
-    QUERY --> FILTER["筛选 file_path 匹配<br/>故事任务面板/&lt;name&gt;/"]:::op
-    FILTER --> SORT["按 file_path 排序"]:::op
-    SORT --> BRANCH["检查 git 分支<br/>git branch --list"]:::op
-    BRANCH --> OUT["输出详述卡"]:::out
-
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#e8f5e9,stroke:#2e7d32;
-```
-
-**输出结构**：
-
-```
-<name> · <status badge>
-
-📂 远端路径: 故事任务面板/<name>/
-📋 类型: <type>
-📄 文件: <N> 个
-
-  文件清单:
-  YrY-故事任务.md         2026-05-17 10:30
-  YrY-使用场景.md      2026-05-17 10:35
-  ...
-
-🔀 Git 分支: feat/<name>  (或 —)
-
-📊 元数据:
-  状态: <status>
-  阻断原因: <block_reason 或 —>
-```
-
-## `/rui-story recommend` — 同步推荐
-
-> 查询远端 API，列出所有可同步的故事及推荐命令。零本地文件系统读取。
-
-```mermaid
-flowchart LR
-    A["查询远端 API<br/>sessions 集合"]:::op --> B["筛选 故事任务面板/ 前缀"]:::op
-    B --> C["按故事名分组"]:::op
-    C --> D["列出故事名 + 文件数<br/>+ 推荐 sync 命令"]:::out
-
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#e8f5e9,stroke:#2e7d32;
-```
-
-**输出**：
-
-```
-远端可同步故事
-
-  rui-story       (34 个文件)
-  aicr            (7 个文件)
-  ...
-
-推荐命令
-
-  /rui-story sync rui-story
-  /rui-story sync aicr
-  ...
-```
-
-- 方向：仅查询远端，不写本地。用户根据推荐自行选择 sync 目标
-- 实现：`node skills/rui-story/rui-story.mjs recommend`
 
 ## `/rui-story health` — 健康检查
 
@@ -293,8 +188,6 @@ flowchart LR
     E --> G["输出诊断报告"]:::out
     F --> G
 
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 **检查维度**：
@@ -333,99 +226,16 @@ Summary: 5 pass, 0 warn, 0 error
 
 ```mermaid
 flowchart LR
-    Q{"有 &lt;name&gt;?"} -->|"是"| SCOPED["node skills/rui-import/sync.mjs<br/>dir=docs/故事任务面板/&lt;n&gt;/ mode=pull<br/>projectPrefix={project}-"]:::op
+    Q{"有 &lt;name&gt;?"} -->|"是"| SCOPED["node skills/rui-import/sync.mjs<br/>dir=docs/故事任务面板/&lt;n&gt;/ mode=pull"]:::op
     Q -->|"否"| RECOMMEND["展示可同步故事推荐<br/>等待用户选择"]:::op
     SCOPED --> OUT["输出同步结果"]:::out
     RECOMMEND --> OUT
 
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 - 方向：从远端同步文档到本地，完全委托 rui-import（`mode=pull`），不自行实现同步逻辑
-- 指定故事：`dir=docs/故事任务面板/<name>/ mode=pull projectPrefix={project}-` → 远端下载覆盖本地
-- **默认前缀过滤**：仅同步文件名与当前项目根目录名相同前缀的文件（如项目根 `YrY` → 仅拉取 `YrY-*` 文件），跳过其他项目文件
+- 指定故事：`dir=docs/故事任务面板/<name>/ mode=pull` → 远端下载覆盖本地
 - 未指定：展示可同步故事推荐提示，等待用户选择后再同步
-
-## `/rui-story clear [<name>]` — 仅保留当前项目前缀文档
-
-> **唯一保留规则：文件名以当前项目名前缀（如 `YrY-`）开头的文档。其余一律删除。**
->
-> 项目名前缀从 `CLAUDE.md` 的 `项目名` 字段读取，不可硬编码、不可推测、不可通过其他途径覆盖。
-> **破坏性操作，执行前需确认。**
->
-> **数据边界：clear 仅操作本地文件系统（`docs/故事任务面板/`），不查询远端 API、不删除远端文档、不触发任何网络请求。远端数据不受 clear 任何影响。**
-
-```mermaid
-flowchart LR
-    PARSE["解析可选的 name"]:::op --> PROJ["读取 CLAUDE.md<br/>确定项目名前缀"]:::op
-    PROJ --> SCAN["扫描 docs/故事任务面板/<br/>或 docs/故事任务面板/&lt;name&gt;/"]:::op
-    SCAN --> FILTER["筛选：文件名不以<br/>{project}- 开头"]:::op
-    FILTER --> SHOW["列出待删除文件清单<br/>+ 保留文件清单"]:::out
-    SHOW --> CONFIRM{"用户确认?"}
-    CONFIRM -->|"是"| DEL["执行删除"]:::danger
-    CONFIRM -->|"否"| ABORT["取消操作"]:::out
-    DEL --> CLEAN["清理空目录<br/>（含 .memory/）"]:::op
-    CLEAN --> REPORT["输出清理摘要<br/>保留/删除统计"]:::out
-
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#e8f5e9,stroke:#2e7d32;
-    classDef danger fill:#ffebee,stroke:#c62828;
-```
-
-**执行流程**：
-
-1. **确定项目前缀** — 读取 `CLAUDE.md` 中 `项目名` 字段（如 `YrY`），拼接 `-` 得到匹配前缀（如 `YrY-`）。此项为唯一保留依据，不可覆写
-2. **确定范围（仅本地）** — 有 `<name>` 则扫描 `docs/故事任务面板/<name>/`；无则扫描 `docs/故事任务面板/` 下所有故事目录。**不发起网络请求，不查询远端 API，不触碰远端数据**
-3. **筛选文件** — 所有文件名不以 `{project}-` 开头的一律标记为待删除。仅普通文件参与筛选，目录递归进入
-4. **展示清单** — 同时列出待删除文件和保留文件两份清单（路径 + 大小），明确告知用户哪些会删、哪些会留
-5. **等待确认** — 用户明确确认后才执行删除，不可跳过，不可默认 yes
-6. **执行清理** — 逐个删除文件。文件清空后递归删除空目录（含 `.memory/`）。若目录在清理后仅含 `{project}-` 前缀文件则保留该目录及剩余文件
-7. **输出摘要** — 已删除文件数 + 释放空间 + 保留文件数 + 删除的空目录数
-
-**保留规则（唯一且不可协商）**：
-
-| 条件 | 处置 | 说明 |
-|------|------|------|
-| 文件名以 `{project}-` 开头 | **保留** | 唯一放行条件，无例外 |
-| 文件名不以 `{project}-` 开头 | **删除** | 无论内容、来源、时间戳、文件大小 |
-| 目录（含 `.memory/`） | 文件清空后目录为空则**删除** | 仅含 `{project}-` 文件的目录保留 |
-| 整个故事目录无 `{project}-` 文件 | 删除该故事目录 | `{project}-` 文件数为 0 则该目录无保留价值 |
-
-> **项目名前缀是唯一的保留判断依据。** 不存在"重要文件除外"、"历史文件除外"、".memory 目录除外"等豁免路径。
-
-**输出示例**：
-
-```
-🔍 扫描 docs/故事任务面板/rui-story/...
-📋 项目名前缀: YrY-（来源: CLAUDE.md）
-
-待删除文件 (8):
-  YiAi-故事任务.md           (3.2K)
-  YiAi-使用场景.md        (4.1K)
-  YiAi-技术评审.md        (5.8K)
-  YiAi-测试设计.md        (2.9K)
-  YiAi-实施报告.md        (6.3K)
-  YiAi-测试报告.md        (3.7K)
-  YiAi-自改进复盘.md          (4.5K)
-  YiAi-交互日志.md            (1.8K)
-
-保留文件 (9):
-  YrY-故事任务.md             (20.2K)
-  YrY-使用场景.md          (16.5K)
-  YrY-技术评审.md          (12.8K)
-  YrY-测试设计.md          (10.9K)
-  YrY-实施报告.md          (7.3K)
-  YrY-测试报告.md          (4.7K)
-  YrY-自改进复盘.md            (7.7K)
-  YrY-交互日志.md              (5.7K)
-  YrY-消息通知列表.md          (1.2K)
-
-⚠️  即将删除 8 个文件，释放约 32K。确认？(y/n)
-
-✅ 已删除 8 个文件，释放 32K。
-📂 保留 9 个文件 (YrY-*)，0 个空目录已清理
-```
 
 ## `/rui-story remove <name>` — 删除故事本地目录
 
@@ -445,9 +255,6 @@ flowchart LR
     CONFIRM -->|"否"| ABORT["取消操作"]:::out
     DEL --> REPORT["输出删除摘要"]:::out
 
-    classDef op fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#e8f5e9,stroke:#2e7d32;
-    classDef danger fill:#ffebee,stroke:#c62828;
 ```
 
 **执行流程**：
@@ -457,20 +264,8 @@ flowchart LR
 3. **扫描内容** — 统计目录内文件数、总大小，列出所有文件清单
 4. **展示清单** — 列出待删除的全部文件（路径 + 大小）+ 目录本身
 5. **等待确认** — 用户明确确认后才执行删除，不可跳过，不可默认 yes
-6. **执行删除** — `rm -rf docs/故事任务面板/<name>/`，删除整个目录及所有内容（含 `.memory/`）
+6. **执行删除** — `rm -rf docs/故事任务面板/<name>/`，删除整个目录及所有内容
 7. **输出摘要** — 已删除文件数、释放空间、删除的目录路径
-
-**与 clear 的区别**：
-
-| 维度 | `clear` | `remove` |
-|------|---------|----------|
-| 操作对象 | 目录内非 `{project}-` 前缀文件 | 整个故事目录 |
-| name 参数 | 可选 | **必填** |
-| 保留规则 | 保留 `{project}-` 前缀文件 | 不保留任何文件 |
-| 结果 | 目录可能保留（含 `{project}-` 文件） | 目录完全删除 |
-| 用例 | 清理混入的其他项目文件 | 彻底清除某故事的本地副本 |
-
-> **数据边界：remove 仅操作本地文件系统。不查询远端 API、不删除远端文档、不同步任何变更到远端。远端该故事的文档完全不受影响，后续可通过 `sync` 重新拉取。**
 
 **输出示例**：
 
@@ -481,15 +276,15 @@ flowchart LR
   docs/故事任务面板/rui-story/
 
 目录内容 (9 个文件，约 87K):
-  YrY-故事任务.md             (20.2K)
-  YrY-使用场景.md          (16.5K)
-  YrY-技术评审.md          (12.8K)
-  YrY-测试设计.md          (10.9K)
-  YrY-实施报告.md          (7.3K)
-  YrY-测试报告.md          (4.7K)
-  YrY-自改进复盘.md            (7.7K)
-  YrY-交互日志.md              (5.7K)
-  YrY-消息通知列表.md          (1.2K)
+  故事任务.md             (20.2K)
+  使用场景.md          (16.5K)
+  技术评审.md          (12.8K)
+  测试设计.md          (10.9K)
+  实施报告.md          (7.3K)
+  测试报告.md          (4.7K)
+  自改进复盘.md            (7.7K)
+  交互日志.md              (5.7K)
+  消息通知列表.md          (1.2K)
 
 ⚠️  即将删除整个目录及 9 个文件，释放约 87K。此操作不可撤销。确认？(y/n)
 
@@ -501,21 +296,19 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    subgraph 规则["12 条硬约束"]
+    subgraph 规则["硬约束"]
         R1["远端 API 为默认数据源<br/>查询不读本地文件系统"]:::rule
         R2["仅查询与同步<br/>不创建文档内容"]:::rule
         R3["不修改源码<br/>不创建/切换 git 分支"]:::rule
         R4["sync 完全委托<br/>rui-import"]:::rule
         R5["kebab-case<br/>命名硬规范"]:::rule
-        R6["clear 需确认<br/>破坏性操作先展示后确认"]:::rule
-        R7["clear/remove 仅本地<br/>不触碰远端数据"]:::rule
-        R8["recommend/health<br/>确定性脚本执行"]:::rule
-            R9["每次操作更新<br/>版本号 + 版本历史"]:::rule
-            R10["操作生成或更新<br/>故事任务内容"]:::rule
-            R11["merge/split 由 yry<br/>自改进闭环自动执行"]:::rule
+        R6["remove 需确认<br/>破坏性操作先展示后确认"]:::rule
+        R7["remove 仅本地<br/>不触碰远端数据"]:::rule
+        R8["health<br/>确定性脚本执行"]:::rule
+        R9["每次操作更新<br/>版本号 + 版本历史"]:::rule
+        R10["操作生成或更新<br/>故事任务内容"]:::rule
     end
 
-    classDef rule fill:#e3f2fd,stroke:#1565c0;
 ```
 
 | # | 规则 | 违反处置 |
@@ -525,32 +318,31 @@ flowchart LR
 | 3 | 不修改源码，不创建/切换 git 分支（那是 `/rui code`） | — |
 | 4 | sync 完全委托 rui-import，不自行实现同步 | 修正命令重试 |
 | 5 | `<name>` = kebab-case | 拒绝执行 |
-| 8 | recommend/health 由 rui-story.mjs 确定性执行，不依赖 agent 解读 SKILL.md 流程 | 修正为脚本执行 |
- 	| 9 | merge/split 由 `/rui yry` 自改进闭环自动检测执行，不提供手动命令 | — |
-| 11 | 每次 rui/rui-story 写入操作必须更新故事版本号，追加 version_history 记录 | 操作无效 |
-| 12 | 每次 rui 操作（doc/code/update/yry）必须生成或更新对应故事的任务内容（故事任务文档 + rui-state.json） | 操作不完整 |
+| 6 | remove 破坏性操作先展示清单后确认，不默认 yes | 补确认 |
+| 7 | remove 仅操作本地文件系统，不触碰远端数据 | 撤销远端操作 |
+| 8 | health 由 rui-story.mjs 确定性执行，不依赖 agent 解读 SKILL.md 流程 | 修正为脚本执行 |
+| 9 | 每次 rui/rui-story 写入操作必须更新故事版本号，追加 version_history 记录 | 操作无效 |
+| 10 | 每次 rui 操作（doc/code/update/yry）必须生成或更新对应故事的任务内容 | 操作不完整 |
 
 ## 生效标志
 
 ```mermaid
 flowchart LR
-    F1["list/show/概览 查询<br/>远端 API 非本地"]:::sig
+    F1["list/概览 查询<br/>远端 API 非本地"]:::sig
     F1 --> F2["sync 正确委托<br/>rui-import"]:::sig
     F2 --> F3["状态判定准确<br/>基于远端 file_path"]:::sig
-    F3 --> F4["clear/remove 操作安全<br/>仅本地，先展示后确认再删除"]:::sig
-    F4 --> F5["recommend/health<br/>确定性脚本输出"]:::sig
+    F3 --> F4["remove 操作安全<br/>仅本地，先展示后确认再删除"]:::sig
+    F4 --> F5["health<br/>确定性脚本输出"]:::sig
 
-    classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 标志 | 未达标的处置 |
 |------|------------|
-| list/show/概览查询远端 API，非本地文件系统 | 修正为远端查询 |
+| list/概览查询远端 API，非本地文件系统 | 修正为远端查询 |
 | sync 正确委托 rui-import | 修正命令参数重试 |
 | 状态判定基于远端 file_path 准确 | 修正判定逻辑 |
-| clear 从 CLAUDE.md 读取项目名前缀，展示双重清单，确认后执行，仅 `{project}-` 文件幸存 | 修正为展示后确认 |
 | remove 仅操作本地，name 必填，展示清单后确认再删除，远端数据零影响 | 修正为展示后确认 |
-| recommend/health 由 rui-story.mjs 确定性输出，不依赖 agent 手动执行 SKILL.md 流程 | 修正为脚本执行 |
+| health 由 rui-story.mjs 确定性输出，不依赖 agent 手动执行 SKILL.md 流程 | 修正为脚本执行 |
 
 ## 与 rui 的关系
 
@@ -561,7 +353,4 @@ flowchart LR
     RUI["/rui<br/>SDLC 编排"]:::rui -->|"doc 创建文档"| PANEL["远端 故事任务面板/"]:::panel
     RS["/rui-story<br/>面板管理"]:::story -->|"查询 + 同步"| PANEL
 
-    classDef rui fill:#fff3e0,stroke:#e65100;
-    classDef story fill:#e3f2fd,stroke:#1565c0;
-    classDef panel fill:#e8f5e9,stroke:#2e7d32;
 ```

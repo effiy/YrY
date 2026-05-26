@@ -29,6 +29,7 @@ paths:
 - "doc 阶段只写文档不改源码，不需要切分支"
 - "文档写入不是'源码改动'，分支隔离管不着文档"
 - "先写文档再切分支，doc 不涉及编译不会出错"
+- "用本地缓存/记忆文件存状态，跨分支共享绕过隔离"
 
 **以上任何一个 = 停止。** 对于 3+ 修复失败的，见下方 [支撑技术](#根因追溯) 根因追溯模式。
 
@@ -43,22 +44,18 @@ flowchart TB
     GA -->|"✅ 通过"| MOD["③ 逐模块清零<br/>每模块 P0 → 下一模块"]:::phase
     MOD --> GB{"④ Gate B<br/>闭环验证"}
     GB -->|"❌ > 2 轮"| X2["gate-b-limit 🚫"]:::block
-    GB -->|"✅ 通过"| SI["⑤ 自改进<br/>{project}-自改进复盘"]:::phase
+    GB -->|"✅ 通过"| SI["⑤ 自改进<br/>自改进复盘"]:::phase
     SI --> DONE["交付"]:::done
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef phase fill:#e3f2fd,stroke:#1565c0;
-    classDef block fill:#ffebee,stroke:#c62828;
-    classDef done fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | 阶段 | 核心动作 | 阻断标识 | 例外 |
 |------|---------|---------|------|
 | ① 分支隔离 | **强制门禁**：改码前必须已切到 `feat/<name>`，否则阻断 | `bad-branch` / `no-checkout` / `auto-merge` / `no-branch-isolation` | 反推命令只读不写 |
-| ② Gate A | {project}-测试设计.md 存在且就绪 | `skip-gate-a` | 单行 CSS/文案 |
+| ② Gate A | 测试设计.md 存在且就绪 | `skip-gate-a` | 单行 CSS/文案 |
 | ③ 逐模块清零 | 每模块 P0 清零后进下一模块 | `chain-broken` | — |
 | ④ Gate B | 5 步验证 + 三报告闭合，修复 ≤ 2 轮 | `gate-b-limit` | — |
-| ⑤ 自改进 | 产出 {project}-自改进复盘 | `no-metrics`（降级不阻断） | 数据采集失败时降级 |
+| ⑤ 自改进 | 产出 自改进复盘 | `no-metrics`（降级不阻断） | 数据采集失败时降级 |
 
 ## ① 分支隔离 — 强制门禁
 
@@ -76,10 +73,6 @@ flowchart TB
     BLOCK --> FIX["切到 feat/&lt;name&gt;<br/>或从 main 创建新分支"]:::fix
     FIX --> CHECK
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef pass fill:#e8f5e9,stroke:#2e7d32;
-    classDef block fill:#ffebee,stroke:#c62828;
-    classDef fix fill:#fff3e0,stroke:#e65100;
 ```
 
 ```mermaid
@@ -92,11 +85,6 @@ flowchart LR
     FB -.->|"禁止"| X3["派生分支 bad-branch"]:::block
     MAIN -.->|"禁止"| X4["未切分支即改码<br/>no-branch-isolation"]:::block
 
-    classDef base fill:#e8f5e9,stroke:#2e7d32;
-    classDef feat fill:#e3f2fd,stroke:#1565c0;
-    classDef work fill:#fff3e0,stroke:#e65100;
-    classDef manual fill:#f3e5f5,stroke:#6a1b9a;
-    classDef block fill:#ffebee,stroke:#c62828;
 ```
 
 | # | 规则 | 违反标识 |
@@ -107,6 +95,7 @@ flowchart LR
 | 4 | 源码修改唯一入口是 `/rui code` 管线，反推命令只读不写 | — |
 | 5 | **任何 Edit/Write 操作源码前，必须先验证 `git branch --show-current` 输出为 `feat/<name>`** | `no-branch-isolation` |
 | 6 | 在 `main` 或非 `feat/` 前缀分支上执行 Edit/Write → 立即阻断 | `no-branch-isolation` |
+| 7 | 记忆/缓存系统（`.memory/`、本地状态文件等）禁止跨分支共享管线状态，不得用于绕过或削弱分支隔离 | `cache-leak` |
 
 **门禁执行者**：coder Agent、任何执行源码修改的 Agent。  
 **验证命令**：`git branch --show-current`  
@@ -116,7 +105,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    ENTER["准备编码"] --> Q1{"{project}-测试设计.md<br/>存在?"}
+    ENTER["准备编码"] --> Q1{"测试设计.md<br/>存在?"}
     Q1 -->|"否"| BLOCK["skip-gate-a 🚫"]:::block
     Q1 -->|"是"| Q2{"测试方案与原型<br/>已就绪?"}
     Q2 -->|"否"| BLOCK
@@ -124,14 +113,11 @@ flowchart TD
     Q3 -->|"单行 CSS/文案"| BYPASS["跳过 Gate A<br/>仍走分支隔离"]:::bypass
     Q3 -->|"普通代码"| PASS["Gate A ✅<br/>进入编码"]:::pass
 
-    classDef block fill:#ffebee,stroke:#c62828;
-    classDef bypass fill:#fff3e0,stroke:#e65100;
-    classDef pass fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | # | 规则 | 说明 |
 |---|------|------|
-| 5 | `{project}-测试设计.md` 不存在，不得编码 | 阻断标识 `skip-gate-a` |
+| 5 | `测试设计.md` 不存在，不得编码 | 阻断标识 `skip-gate-a` |
 | 6 | 单行 CSS/文案变更可跳过 Gate A | 仍走分支隔离 |
 | 7 | 测试方案与原型未就绪视为未通过 | tester 补充后方可继续 |
 
@@ -148,8 +134,6 @@ flowchart LR
     F2 --> C2
     C2 -->|"是 ✅"| M3["模块 N ..."]:::mod
 
-    classDef mod fill:#e3f2fd,stroke:#1565c0;
-    classDef fix fill:#fff3e0,stroke:#e65100;
 ```
 
 ```mermaid
@@ -160,9 +144,6 @@ flowchart LR
         P2["P2<br/>记录不阻断"]:::p2
     end
 
-    classDef p0 fill:#ffebee,stroke:#c62828;
-    classDef p1 fill:#fff3e0,stroke:#e65100;
-    classDef p2 fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | # | 规则 | 违反标识 |
@@ -185,9 +166,6 @@ flowchart LR
     FIX --> S4
     CHK -->|"是 ✅"| PASS["Gate B 通过"]:::pass
 
-    classDef step fill:#e3f2fd,stroke:#1565c0;
-    classDef fix fill:#fff3e0,stroke:#e65100;
-    classDef pass fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | # | 规则 | 违反标识 |
@@ -195,22 +173,22 @@ flowchart LR
 | 12 | 五步验证：环境快照 → 静态预检 → 设计对齐 → 单次执行 → 三报告 | — |
 | 13 | 三报告交叉引用闭合，评审清单全 ✅ 方过 | — |
 | 14 | 修复 ≤ 2 轮，超过阻断 | `gate-b-limit` |
-| 15 | 自改进必须产出 {project}-自改进复盘 | `no-metrics`（降级） |
+| 15 | 自改进必须产出 自改进复盘 | `no-metrics`（降级） |
 
 ## 产出收口
 
 ```
 故事任务面板/<Story>/
-├── {project}-故事任务.md
-├── {project}-使用场景.md
-├── {project}-技术评审.md
-├── {project}-测试设计.md
-├── {project}-实施报告.md                 ← coder 产出
-├── {project}-测试报告.md                 ← reporter 产出
-├── {project}-安全审计.md                 ← security 产出
-├── {project}-自改进复盘.md               ← self-improve 产出
-├── {project}-消息通知列表.md
-└── {project}-交互日志.md
+├── 故事任务.md
+├── 使用场景.md
+├── 技术评审.md
+├── 测试设计.md
+├── 实施报告.md                 ← coder 产出
+├── 测试报告.md                 ← reporter 产出
+├── 安全审计.md                 ← security 产出
+├── 自改进复盘.md               ← self-improve 产出
+├── 消息通知列表.md
+└── 交互日志.md
 ```
 
 | # | 规则 |
@@ -235,7 +213,6 @@ flowchart LR
         E7["写项目级基线文件"]:::ex
     end
 
-    classDef ex fill:#fff3e0,stroke:#e65100;
 ```
 
 | 场景 | 跳过 | 保留 |
@@ -258,8 +235,6 @@ flowchart LR
     B6["gate-b-limit<br/>修复超限"]:::block
     B7["no-metrics<br/>数据缺失"]:::warn
 
-    classDef block fill:#ffebee,stroke:#c62828;
-    classDef warn fill:#fff3e0,stroke:#e65100;
 ```
 
 | 标识 | 触发条件 | 阻断? |
@@ -284,7 +259,6 @@ flowchart LR
     S3 --> S4["Gate B 五步全 ✅<br/>修复 ≤ 2 轮"]:::sig
     S4 --> S5["三报告闭合<br/>无矛盾"]:::sig
 
-    classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 标志 | 未达标的处置 |

@@ -17,18 +17,18 @@ flowchart TB
 
     subgraph 主线["故事主线（10 文档，无编号前缀）"]
         subgraph 生成["文档生成阶段"]
-            F01["F.story.task<br/>{project}-故事任务"]
-            F02["F.story.scenarios<br/>{project}-使用场景"]
-            F03["F.story.technical-review<br/>{project}-技术评审"]
-            F04["F.story.test-design<br/>{project}-测试设计"]
-            F05["F.story.security-audit<br/>{project}-安全审计"]
+            F01["F.story.task<br/>故事任务"]
+            F02["F.story.scenarios<br/>使用场景"]
+            F03["F.story.technical-review<br/>技术评审"]
+            F04["F.story.test-design<br/>测试设计"]
+            F05["F.story.security-audit<br/>安全审计"]
         end
         subgraph 验证["验证阶段"]
-            F06["F.story.implementation-report<br/>{project}-实施报告"]
-            F07["F.story.test-report<br/>{project}-测试报告"]
+            F06["F.story.implementation-report<br/>实施报告"]
+            F07["F.story.test-report<br/>测试报告"]
         end
         subgraph 改进["改进阶段"]
-            F08["F.story.retrospective<br/>{project}-自改进复盘"]
+            F08["F.story.retrospective<br/>自改进复盘"]
         end
     end
 
@@ -39,9 +39,6 @@ flowchart TB
     通用 --> 主线
     通用 --> 补充
 
-    classDef gen fill:#e8f5e9,stroke:#2e7d32;
-    classDef story fill:#e3f2fd,stroke:#1565c0;
-    classDef supp fill:#fff3e0,stroke:#e65100;
     class F.meta,F.toc,F.nav,F.evidence,F.trace,F.value gen;
     class F01,F02,F03,F04,F05,F06,F07,F08 story;
     class FS supp;
@@ -60,7 +57,7 @@ flowchart TB
 | 约束 | 规则 |
 |------|------|
 | 占位符 | 任何 `{...}` 留到产出视为偏差 |
-| 可选字段 | `tool`、`time-range`、`philosophy` 链接（仅 {project}-故事任务） |
+| 可选字段 | `tool`、`time-range`、`philosophy` 链接（仅 故事任务） |
 
 ### F.toc — 标题链接跳转目录
 
@@ -84,18 +81,18 @@ flowchart TB
 ```mermaid
 flowchart LR
     subgraph 基线["基线（问题+用户空间）"]
-        01["{project}-故事任务<br/>WHAT & WHY"]
-        02["{project}-使用场景<br/>WHO & HOW"]
+        01["故事任务<br/>WHAT & WHY"]
+        02["使用场景<br/>WHO & HOW"]
     end
     01 --> 02
-    02 --> 03["{project}-技术评审<br/>HOW (技术方案)"]
-    03 --> 04["{project}-测试设计<br/>TEST PLAN"]
-    03 --> 05["{project}-安全审计<br/>SECURITY"]
-    04 --> 06["{project}-实施报告<br/>DID (实施)"]
+    02 --> 03["技术评审<br/>HOW (技术方案)"]
+    03 --> 04["测试设计<br/>TEST PLAN"]
+    03 --> 05["安全审计<br/>SECURITY"]
+    04 --> 06["实施报告<br/>DID (实施)"]
     05 --> 06
-    06 --> 07["{project}-测试报告<br/>TEST RESULT"]
-    07 --> 08["{project}-自改进复盘<br/>LEARN"]
-    08 --> 00["{project}-消息通知列表<br/>NOTIFY"]
+    06 --> 07["测试报告<br/>TEST RESULT"]
+    07 --> 08["自改进复盘<br/>LEARN"]
+    08 --> 00["消息通知列表<br/>NOTIFY"]
 ```
 
 **标记格式**：`> **导航**: [← {标题}](./{文件}.md) · [{标题} →](./{文件}.md)`
@@ -104,15 +101,15 @@ flowchart LR
 
 | 场景 | 前驱 `←` | 后继 `→` |
 |------|----------|---------|
-| 基线 {project}-故事任务 | 省略 | {project}-使用场景 |
-| 基线 {project}-使用场景 | {project}-故事任务 | {project}-技术评审 |
-| {project}-技术评审 | {project}-使用场景 | {project}-测试设计 和 {project}-安全审计（并列后继） |
-| {project}-测试设计 | {project}-技术评审 | {project}-实施报告 |
-| {project}-安全审计 | {project}-技术评审 | {project}-实施报告 |
-| {project}-实施报告 | {project}-测试设计 | {project}-测试报告 |
-| {project}-测试报告 | {project}-实施报告 | {project}-自改进复盘 |
-| {project}-自改进复盘 | {project}-测试报告 | {project}-消息通知列表 |
-| 链尾（消息通知列表） | {project}-自改进复盘 | 省略 |
+| 基线 故事任务 | 省略 | 使用场景 |
+| 基线 使用场景 | 故事任务 | 技术评审 |
+| 技术评审 | 使用场景 | 测试设计 和 安全审计（并列后继） |
+| 测试设计 | 技术评审 | 实施报告 |
+| 安全审计 | 技术评审 | 实施报告 |
+| 实施报告 | 测试设计 | 测试报告 |
+| 测试报告 | 实施报告 | 自改进复盘 |
+| 自改进复盘 | 测试报告 | 消息通知列表 |
+| 链尾（消息通知列表） | 自改进复盘 | 省略 |
 
 **项目类型裁剪**：
 
@@ -180,7 +177,7 @@ flowchart LR
 
 ## 双基线模型
 
-> {project}-故事任务 与 {project}-使用场景 是整个故事目录的**双基线文档**——问题空间与用户空间的定义。所有下游文档（03-09 及补充文档）均为解决方案/验证/改进空间，必须显式溯源至基线。
+> 故事任务 与 使用场景 是整个故事目录的**双基线文档**——问题空间与用户空间的定义。所有下游文档（03-09 及补充文档）均为解决方案/验证/改进空间，必须显式溯源至基线。
 
 ```mermaid
 flowchart LR
@@ -204,23 +201,19 @@ flowchart LR
     F01 & F02 --> 方案
     方案 --> 验证 --> 改进
 
-    classDef baseline fill:#fff3e0,stroke:#e65100,stroke-width:2px;
-    classDef p1 fill:#e3f2fd,stroke:#1565c0;
-    classDef p2 fill:#e8f5e9,stroke:#2e7d32;
-    classDef p3 fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | 空间 | 文档 | 核心问题 | 语言约束 | 溯源要求 |
 |------|------|---------|---------|---------|
-| **问题空间** | {project}-故事任务 | WHAT（做什么）WHY（为什么做） | 禁止代码路径、API 路由、组件名、数据库表名、技术栈名 | 基线，不溯源 |
-| **用户空间** | {project}-使用场景 | WHO（谁使用）HOW（如何体验） | 禁止技术术语、组件名、API 端点、文件路径、数据库概念、框架名 | 溯源至故事任务 |
+| **问题空间** | 故事任务 | WHAT（做什么）WHY（为什么做） | 禁止代码路径、API 路由、组件名、数据库表名、技术栈名 | 基线，不溯源 |
+| **用户空间** | 使用场景 | WHO（谁使用）HOW（如何体验） | 禁止技术术语、组件名、API 端点、文件路径、数据库概念、框架名 | 溯源至故事任务 |
 | **解决方案空间** | 技术评审·测试设计·安全审计 | HOW（技术方案）| 无限制 | 每章节必须溯源至故事任务+使用场景 |
 | **验证空间** | 实施报告·测试报告 | DID（是否达成） | 无限制 | 每章节必须溯源至故事任务+使用场景+对应方案文档 |
 | **改进空间** | 自改进复盘 | LEARN（学到什么） | 无限制 | 溯源至故事任务+使用场景+全链路 |
 
 ## 故事主线公式
 
-### F.story.task — {project}-故事任务 `meta + Story×N`
+### F.story.task — 故事任务 `meta + Story×N`
 
 #### F.story.task 强制元素
 
@@ -235,7 +228,6 @@ flowchart LR
 | # | 规则 |
 |---|------|
 | 1 | 至少包含 3 层节点：当前痛点 → 目标状态 → 中间关键里程碑 |
-| 2 | 节点数 ≥ 5，使用默认配色，不定义 `classDef` |
 | 3 | 必须覆盖故事范围内的核心流程，不可简化为单箭头 |
 | 4 | 放在 `### 需求概述` 之后、`### 主要价值` 之前 |
 
@@ -289,7 +281,7 @@ flowchart LR
 | 3 | 生成阶段初始状态为"待生成"，文档产出后更新为"已对齐"或"偏差" |
 | 4 | 偏差项必须链接到对应下游文档的具体章节说明原因 |
 
-### F.story.scenarios — {project}-使用场景 `meta + nav + 全景 + 详述×N + 覆盖矩阵 + 清单`
+### F.story.scenarios — 使用场景 `meta + nav + 全景 + 详述×N + 覆盖矩阵 + 清单`
 
 ```mermaid
 flowchart LR
@@ -304,7 +296,7 @@ flowchart LR
 |------|--------|----------|------|
 | §1 场景全景 | pm | mermaid flowchart 展示所有用户场景与模块关系 | 必填，每个故事 ≥ 2 个场景 |
 | §2 场景详述 | pm | 每场景：场景名 + `角色 \| 触发条件 \| 核心目标`；mermaid flowchart 操作流 + `# \| 步骤 \| 输入 \| 系统响应 \| 异常分支` | 每场景必含流程图 |
-| §3 场景覆盖矩阵 | pm | `场景 \| FP# \| AC# \| 实现文档(技术评审) \| 测试文档(测试设计) \| 覆盖状态 \| 备注`，与 {project}-故事任务 §2 FP# 及 §5 AC# 对齐 | 必填 |
+| §3 场景覆盖矩阵 | pm | `场景 \| FP# \| AC# \| 实现文档(技术评审) \| 测试文档(测试设计) \| 覆盖状态 \| 备注`，与 故事任务 §2 FP# 及 §5 AC# 对齐 | 必填 |
 | §4 评审清单 | pm | 场景 ≥ 2 / 每场景有图 / FP 全覆盖 / 异常分支明确 / 无技术术语 / 每场景含空状态与错误恢复 / 覆盖矩阵下游文档齐全 | 必填 |
 | §5 体验基线 | pm | `角色 \| 核心旅程 \| 情感目标 \| 痛点解决 \| 成功感知 \| 关联场景` | 必填 |
 
@@ -323,7 +315,7 @@ flowchart LR
 | 2 | 每条体验基线必须关联至 §2 的 ≥1 个场景 |
 | 3 | 成功感知描述用户如何知道目标已达成。正例："看到订单确认页面和预计送达时间"。反例："API 返回 200" |
 
-### F.story.technical-review — {project}-技术评审 `meta + nav + 基准 + 架构 + API + 数据 + 组件 + 状态 + 交互 + 样式 + DOM + 依赖 + 安全 + 性能 + 清单`
+### F.story.technical-review — 技术评审 `meta + nav + 基准 + 架构 + API + 数据 + 组件 + 状态 + 交互 + 样式 + DOM + 依赖 + 安全 + 性能 + 清单`
 
 > 统一技术评审，合并原后端评审(03)与前端评审(04)。按项目类型裁剪章节：纯前端跳过 API/数据/后端性能，纯后端跳过组件/状态/交互/样式/DOM/依赖。
 
@@ -347,7 +339,7 @@ flowchart LR
 
 | 子章节 | 负责人 | 表头/字段 | 约束 |
 |--------|--------|----------|------|
-| §0.0 基线溯源 | coder | `本设计章节 \| 实现 {project}-故事任务 \| 服务 {project}-使用场景 \| 覆盖状态`。每个技术章节必须声明其满足的故事任务需求(FP#/SC#/Story#)与使用场景 | 必填，≤ 1 个未覆盖项且标注原因 |
+| §0.0 基线溯源 | coder | `本设计章节 \| 实现 故事任务 \| 服务 使用场景 \| 覆盖状态`。每个技术章节必须声明其满足的故事任务需求(FP#/SC#/Story#)与使用场景 | 必填，≤ 1 个未覆盖项且标注原因 |
 | §0.1 设计决策 | coder + security | `决策领域 \| 选定方案 \| 选择理由 \| 详见 \| 实现 FP#`。每个决策必须标注其满足的故事任务功能需求 | 必填 |
 | §0.2 任务规划 | coder | `ID \| 描述 \| 工作量(S/M/L) \| 依赖 \| 交付物 \| Agent \| 门禁 \| 交接下游 \| 实现 FP#` + 任务依赖 mermaid。每个任务必须标注其实现的功能点 | 必填 |
 
@@ -378,7 +370,7 @@ flowchart LR
 | §8 性能与限制 | `维度 \| 约束 \| 应对`（按项目类型侧重：后端侧重吞吐/延迟/连接池，前端侧重首屏/包体积/渲染帧率） | — |
 | §9 评审清单 | 权限最小化 / API 鉴权 / 无硬编码密钥 / 输入校验完整 / 组件命名空间 / 状态约定 / 样式隔离 / 事件清理 / 加载顺序 / 基线溯源完备 / 效果示意完整 / 裁剪正确 | — |
 
-### F.story.test-design — {project}-测试设计 `meta + nav + Tester公式 + 范围 + 用例×4 + 环境 + 清单 + Gate A`
+### F.story.test-design — 测试设计 `meta + nav + Tester公式 + 范围 + 用例×4 + 环境 + 清单 + Gate A`
 
 ```mermaid
 flowchart LR
@@ -400,7 +392,7 @@ flowchart LR
 | §5 评审清单 | 每功能点多类覆盖 / Gate A 覆盖 / 回归与影响链一致 / 异常含恢复行为 / 环境专项覆盖 / 无外部依赖占比合理 / 影响链每点有回归 / 基线溯源闭合 |
 | §6 Gate A 交接 | `信号 \| 内容`：通过状态 / P0 用例 ID / 实现约束 / 验证命令 |
 
-### F.story.implementation-report — {project}-实施报告 `meta + nav + Reporter公式 + 总结 + 偏差 + P0 + 存储/样式 + 性能 + 效果 + 验证 + 清单`
+### F.story.implementation-report — 实施报告 `meta + nav + Reporter公式 + 总结 + 偏差 + P0 + 存储/样式 + 性能 + 效果 + 验证 + 清单`
 
 > 统一实施报告，合并原后端实施报告(06)与前端实施报告(07)。按项目类型侧重：纯前端侧重组件/样式/依赖验证，纯后端侧重接口/存储/性能验证，全栈兼顾两端。
 
@@ -434,7 +426,7 @@ flowchart LR
 | §7 可操作验证 | 7.1 后端 `接口 \| curl 命令(fenced bash 块) \| 预期响应摘要`（`${BASE_URL}`）；7.2 前端 `# \| 场景 \| 起始页面 \| 操作步骤 \| 预期显示`（步骤可独立复现） | 7.1 纯前端跳过；7.2 纯后端跳过 |
 | §8 评审清单 | 文件与任务对应 / 接口/组件与评审一致 / 偏差有因有据 / P0 清零 / 存储/样式已验证 / 性能可观察 / 基线溯源闭合 / 效果截图完整 / 可操作验证完整 | — |
 
-### F.story.test-report — {project}-测试报告 `meta + nav + Reporter公式 + 环境 + 冒烟 + 回归 + 专项 + 已知 + Gate B + 清单`
+### F.story.test-report — 测试报告 `meta + nav + Reporter公式 + 环境 + 冒烟 + 回归 + 专项 + 已知 + Gate B + 清单`
 
 ```mermaid
 flowchart LR
@@ -457,7 +449,7 @@ flowchart LR
 | §6 Gate B 评估 | `指标 \| 要求 \| 实际 \| 结果`：P0 全部通过 / P1 高通过率 / P0 已知清零 / 修复轮次可控 |
 | §7 评审清单 | Gate B 指标全部达标 / 冒烟+回归+专项闭合 / 已知问题有跟踪 / 环境快照可复现 / 基线溯源闭合 |
 
-### F.story.retrospective — {project}-自改进复盘 `meta + nav + Self-Improve公式 + 基线 + 观察 + 诊断 + 改进 + 经验 + 清单`
+### F.story.retrospective — 自改进复盘 `meta + nav + Self-Improve公式 + 基线 + 观察 + 诊断 + 改进 + 经验 + 清单`
 
 ```mermaid
 flowchart LR
@@ -470,7 +462,7 @@ flowchart LR
 
 | 章节 | 表头/内容 |
 |------|----------|
-| §0 基线溯源与校准 | `基线文件 \| 关键条款 \| 本次执行适用性 \| 偏差` 覆盖：{project}-故事任务(问题空间) / {project}-使用场景(用户空间) / CLAUDE.md / 5 rules / 3 agents。追加表：`故事任务成功标准 SC# \| 目标值 \| 最终达成 \| 未达原因 \| 后续动作` | 必填 |
+| §0 基线溯源与校准 | `基线文件 \| 关键条款 \| 本次执行适用性 \| 偏差` 覆盖：故事任务(问题空间) / 使用场景(用户空间) / CLAUDE.md / 5 rules / 3 agents。追加表：`故事任务成功标准 SC# \| 目标值 \| 最终达成 \| 未达原因 \| 后续动作` | 必填 |
 | §1 观察 | 1.1 时间线 `阶段 \| 开始 \| 结束 \| 耗时 \| Agent`；1.2 质量快照 `指标 \| 本故事 \| 项目均值 \| 偏差`；1.3 关键事件 `# \| 事件 \| 阶段 \| 影响 \| 经验` |
 | §2 诊断 | 2.1 诊断决策表 `规则 \| 触发条件 \| 本故事值 \| 触发? \| 根因假设`；2.2 六维评估 `维度 \| 评级 \| 证据 \| 说明`（耦合/稳定性/扩展性/可测试性/安全边界/依赖方向）；2.3 工流趋势 `指标 \| 本 \| 上 \| 趋势 \| 说明` |
 | §3 改进 | 3.1 改进清单 `# \| 类别 \| 优先级 \| 改进动作 \| 诊断来源 \| 预期效果 \| 状态`（skill/agent/rule/script/config 改进项同步至此）；3.2 架构演进 `# \| 优先级 \| 变更 \| 六维来源 \| 时段 \| 状态 \| 源自故事任务 §4 范围边界 \| 受故事任务 §6 风险约束`；3.3 提案同步 `提案ID \| 标题 \| 优先级 \| 状态 \| 效果评估` |
@@ -479,7 +471,7 @@ flowchart LR
 
 ---
 
-### F.story.security-audit — {project}-安全审计 `meta + nav + Security公式 + 威胁建模 + 信任边界 + 缓解 + 清单`
+### F.story.security-audit — 安全审计 `meta + nav + Security公式 + 威胁建模 + 信任边界 + 缓解 + 清单`
 
 > 由 security agent 独立执行，不依赖 coder 自评。基于技术评审文档进行独立安全审计。
 
@@ -519,8 +511,6 @@ flowchart TD
     DEC -->|跨故事模块| S_MOD["F.supp.module-interface<br/>模块接口"]
     DEC -->|无匹配| SKIP["不生成"]
 
-    classDef supp fill:#fff3e0,stroke:#e65100;
-    classDef nodec fill:#eceff1,stroke:#90a4ae;
     class S_PAGE,S_API,S_DATA,S_INT,S_PERM,S_PERF,S_MSG,S_MOD supp;
     class DEC,SKIP nodec;
 ```
@@ -652,8 +642,8 @@ flowchart TD
 
 | 文件 | 生成方 | 方式 |
 |------|--------|------|
-| `{project}-消息通知列表.md` | rui-bot hook | 列表追加，含时间戳+类型+payload |
-| `{project}-交互日志.md` | rui 管线 | 追加写入 · 按会话+时间戳分段 · 含全部人机交互内容 |
+| `消息通知列表.md` | rui-bot hook | 列表追加，含时间戳+类型+payload |
+| `交互日志.md` | rui 管线 | 追加写入 · 按会话+时间戳分段 · 含全部人机交互内容 |
 | `.memory/execution-memory.jsonl` | rui 管线 | 追加 JSONL，字段见 [coder.md](./coder.md) |
 | `.memory/rui-state.json` | rui 管线 | 单对象覆盖写 |
 | `.improvement/proposals.jsonl` | self-improve 引擎 | 追加 JSONL |
@@ -731,7 +721,7 @@ flowchart LR
 |------|------|:---:|
 | 生成 | 按公式逐章节产出，不依赖模板文件 | — |
 | 主要价值 | **每个故事文档（01–09 及补充文档）必须含 `### 主要价值` 节**：emoji 前缀列表，≥ 4 条价值主张，分行显示。位于文档标题/元信息之后、主体内容之前 | ✅ |
-| 效果示意 | **{project}-故事任务必须含 `### 效果示意` 节**：mermaid flowchart 展示当前痛点→目标状态→关键里程碑。节点 ≥ 5，默认配色。位于需求概述之后、主要价值之前。03/04 技术评审必须含效果示意 mermaid 图 | ✅ |
+| 效果示意 | **故事任务必须含 `### 效果示意` 节**：mermaid flowchart 展示当前痛点→目标状态→关键里程碑。节点 ≥ 5，默认配色。位于需求概述之后、主要价值之前。03/04 技术评审必须含效果示意 mermaid 图 | ✅ |
 | 效果验证 | **06/07 实施报告必须含效果截图**：06 后端每接口 ≥ 1 张终端截图，07 前端每场景 ≥ 1 张 UI 截图，覆盖正常态+关键状态 | ✅ |
 | 可操作验证 | **06/07 实施报告必须含可操作验证步骤**：06 每接口提供 curl 命令（`bash` fenced 块，使用 `${BASE_URL}`），07 每场景提供编号操作步骤 | ✅ |
 | 回溯链 | **每个文档必须含来源引用 + 变更记录**：来源引用紧随 meta；变更记录位于文档末尾 `\| 日期 \| 变更 \| 触发 \| 证据 \|`。无来源不断言 | ✅ |
@@ -745,7 +735,7 @@ flowchart LR
 | # | 检查项 | 验证方式 |
 |---|--------|---------|
 | 1 | `### 主要价值` 存在且 ≥ 4 条 emoji 前缀行 | grep 计数 |
-| 2 | `### 效果示意` 存在（{project}-故事任务必含） | grep + mermaid 渲染 |
+| 2 | `### 效果示意` 存在（故事任务必含） | grep + mermaid 渲染 |
 | 3 | 来源引用存在且为相对链接 | grep 链接格式 |
 | 4 | 变更记录表存在且 ≥ 1 行 | grep 表头 |
 | 5 | F.meta 无 `{...}` 占位符 | grep 残留 |

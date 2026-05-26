@@ -34,8 +34,6 @@ flowchart LR
 
     数据源 -->|"/rui-trends &lt;sub&gt;"| 管线
 
-    classDef src fill:#f3e5f5,stroke:#6a1b9a;
-    classDef phase fill:#e3f2fd,stroke:#1565c0;
 ```
 
 ## 调用形态
@@ -155,11 +153,6 @@ flowchart TB
     R33 --> E3
     E3 -.->|"下次循环"| SELF
 
-    classDef phase fill:#e8f5e9,stroke:#2e7d32;
-    classDef diag fill:#fff3e0,stroke:#e65100;
-    classDef action fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#f3e5f5,stroke:#6a1b9a;
-    classDef eval fill:#fce4ec,stroke:#c62828;
 ```
 
 ### 诊断 × 子命令映射
@@ -195,9 +188,6 @@ flowchart LR
         PRC & REF & PRC2 -->|"同发现 ≥2 故事"| UP["升级为趋势新鲜度检查规则"]:::up
     end
 
-    classDef find fill:#e3f2fd,stroke:#1565c0;
-    classDef prop fill:#f3e5f5,stroke:#6a1b9a;
-    classDef up fill:#fff3e0,stroke:#e65100;
 ```
 
 | 趋势发现 | 诊断归属 | 提案类型 | 提案示例 | 升级条件 | 升级目标 |
@@ -209,7 +199,7 @@ flowchart LR
 
 ### §2.1 输出模板
 
-> 以下模板由 rui-trends 查询结果填充，写入 `{project}-自改进复盘.md` §2.1 技术趋势验证。格式遵循 [F.story.retrospective](../../skills/rui/formulas.md) 的 §2 诊断章节约束。
+> 以下模板由 rui-trends 查询结果填充，写入 `自改进复盘.md` §2.1 技术趋势验证。格式遵循 [F.story.retrospective](../../skills/rui/formulas.md) 的 §2 诊断章节约束。
 
 ```markdown
 ### §2.1 技术趋势验证
@@ -269,10 +259,6 @@ flowchart LR
 
     采集 --> 提取 --> 压缩 --> 注入
 
-    classDef data fill:#e3f2fd,stroke:#1565c0;
-    classDef diag fill:#fff3e0,stroke:#e65100;
-    classDef comp fill:#f3e5f5,stroke:#6a1b9a;
-    classDef inj fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 数据类型 | 压缩策略 | 保留窗口 | 注入触发 |
@@ -304,4 +290,4 @@ flowchart LR
 
 ## 数据新鲜度
 
-趋势数据为实时动态内容，**不缓存到本地文件**。每次查询实时获取。如需持久化趋势快照，由调用方（自改进 Agent）决定是否写入 `{project}-自改进复盘.md`。
+趋势数据为实时动态内容，**不缓存到本地文件**。每次查询实时获取。如需持久化趋势快照，由调用方（自改进 Agent）决定是否写入 `自改进复盘.md`。

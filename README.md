@@ -1,4 +1,4 @@
-# YrY <sub>v1.24.0</sub>
+# YrY <sub>v1.25.0</sub>
 
 > 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。
 
@@ -111,15 +111,9 @@ flowchart TD
 |------|------|--------|------|
 | `/rui-story` | 只读 | 远端 API | 状态概览：按 6 种状态统计 + 最近活动 |
 | `/rui-story list` | 只读 | 远端 API | 进度全景：所有故事详情表格（状态/文件数/类型/分支） |
-| `/rui-story show <name>` | 只读 | 远端 API | 单故事详情：文件清单/状态/元数据 |
-| `/rui-story recommend` | 只读 | 远端 API | 同步推荐：列出远端可同步故事及推荐命令 |
 | `/rui-story health` | 只读 | 远端 API + 本地 | 健康检查：凭据/API 可达性/配置/数据完整性 |
 | `/rui-story sync [<name>]` | 写入 | 远端 API | 委托 rui-import 从远端拉取文档覆盖本地 |
-| `/rui-story clear [<name>]` | 写入 | 本地文件系统 | 仅保留 `{project}-` 前缀文件，其余删除（需确认） |
 | `/rui-story remove <name>` | 写入 | 本地文件系统 | 删除指定故事整个本地目录（需确认） |
-| `/rui-story status check` | 只读 | 本地状态机 | 验证状态转移合法性：`--from=<s> --to=<s>` |
-| `/rui-story status transition` | 写入 | 本地 rui-state.json | 执行状态转移并记录审计日志 |
-| `/rui-story status dashboard` | 只读 | 本地文件系统 | 跨故事聚合仪表板（本地 rui-state.json） |
 | `/rui-story --help` | 只读 | 本地 | 完整命令用法 + 场景示例 |
 
 ### /rui-claude — .claude/ 配置管理
@@ -221,9 +215,7 @@ YrY/
 ├── docs/
 │   └── 故事任务面板/        #   故事产出目录
 │       └── <name>/
-│           ├── {project}-*.md  #     故事文档（故事任务·使用场景·技术评审等）
-│           ├── .memory/     #     执行记忆（跨会话持久化）
-│           └── .improvement/ #    改进提案
+│           └── *.md  #     故事文档（故事任务·使用场景·技术评审等）
 ├── CLAUDE.md
 └── README.md
 ```
@@ -252,7 +244,7 @@ flowchart TD
 | **管线** | 端到端 SDLC 流程，需求→交付，每阶段有进入/退出条件。区别于"交付三步"（仅末端收口动作）。 | workflow, process, 流程 |
 | **故事** | 管线中单一、独立、可完成的作业单元。一个需求可拆为多个故事串行通过管线，各产出一组 01–09 文档。故事内 §4 的工作拆分称"任务"，非管线单元。 | task, ticket, issue |
 | **故事任务面板** | `docs/故事任务面板/<name>/` 目录。每个故事的所有产物内聚在此。 | output directory, doc folder |
-| **Gate A** | 编码前的强制性阻断点。`{project}-测试设计.md` 不存在或未就绪→编码不得开始。单行 CSS/文案为唯一例外。 | test gate, pre-code check |
+| **Gate A** | 编码前的强制性阻断点。`测试设计.md` 不存在或未就绪→编码不得开始。单行 CSS/文案为唯一例外。 | test gate, pre-code check |
 | **Gate B** | 编码后的闭合验证。五步检查（环境快照→静态预检→设计对齐→单次执行→三报告）。修复 > 2 轮→阻断。 | verification gate, post-code check |
 | **P0 / P1 / P2** | P0 = 阻塞发布必修项；P1 = 当轮修复项；P2 = 记录不阻断项。P0 不清零不进下一模块。 | critical / major / minor |
 | **阻断** | 管线在当前阶段停止，状态写入 `.memory/rui-state.json`。阻断≠失败，重跑同命令从中断点续。区别于"降级"（记录标记但不停止前进）。 | stop, halt, fail |

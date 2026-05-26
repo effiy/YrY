@@ -78,26 +78,9 @@ flowchart TD
 | 路径规整 | 所有分隔符 → `/`，所有空白字符 → `_` |
 | 路径映射 | 远端路径 = `prefix`（如有）+ 项目根相对路径。与本地目录结构一一对应，不跳过、不前置、不重命名 |
 
-## 语义标签
+非故事文档（.claude/ 配置等）仅保留路径标签。
 
-> 故事文档导入时自动附加三组语义标签，用于远端查询与分类。标签通过文件名后缀匹配，无需手动指定。
-
-| 文档后缀 | stage | type | baseline |
-|---------|-------|------|----------|
-| -故事任务.md | stage:doc | type:task | baseline:problem |
-| -使用场景.md | stage:doc | type:scenario | baseline:problem |
-| -技术评审.md | stage:doc | type:tech-review | baseline:solution |
-| -测试设计.md | stage:doc | type:test-design | baseline:solution |
-| -安全审计.md | stage:doc | type:security-audit | baseline:solution |
-| -实施报告.md | stage:code | type:impl-report | baseline:verify |
-| -测试报告.md | stage:code | type:test-report | baseline:verify |
-| -自改进复盘.md | stage:improve | type:retrospective | baseline:verify |
-| -消息通知列表.md | stage:auto | type:notification-log | — |
-| -交互日志.md | stage:auto | type:interaction-log | — |
-
-非故事文档（.claude/ 配置等）不附加语义标签，仅保留路径标签。
-
-远端会话示例：`tags: ["故事任务面板", "rui-story", "stage:doc", "type:task", "baseline:problem"]`
+远端会话示例：`tags: ["故事任务面板", "rui-story"]`
 
 ### 一级标签约束
 

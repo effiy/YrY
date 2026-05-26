@@ -49,7 +49,7 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 |------|-----|
 | 项目名 | YrY |
 | 类型 | **meta** — Claude Code 插件，纯规约驱动 |
-| 版本 | 1.24.0 |
+| 版本 | 1.25.0 |
 | 架构 | plugin — 6 技能 + 6 Agent + 5 规则 |
 | 生态 | 无 package.json，markdown 规约 + node 辅助脚本 |
 | 自托管 | 是 — YrY 用自身管线管理自身演进 |
@@ -64,6 +64,7 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 - **规约完整性** — 每 skill 必须有完整 SKILL.md；Agent 交接信号必须可被下游验证
 - **自托管一致性** — plugin.json 版本号必须与实际 skills/agents/rules 内容一致；自身管线不得降级
 - **禁止魔法数字** — 所有数字字面量必须赋予语义化常量名；仅 `0`、`1`、`-1`（循环/索引/初始化惯用值）可豁免
+- **分支隔离不可绕过** — 记忆/缓存/本地状态文件禁止跨分支共享管线状态，不得用于削弱或绕过 `feat/<name>` 分支隔离策略
 
 ### 退化对策
 
