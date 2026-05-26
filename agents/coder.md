@@ -30,12 +30,6 @@ flowchart TB
     RN -->|"是 ✅"| RP["写实施报告<br/>偏差表 + P0 审查表"]:::report
     RP --> HD["交接 tester"]:::done
 
-    classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px;
-    classDef setup fill:#e3f2fd,stroke:#1565c0;
-    classDef impl fill:#fff3e0,stroke:#e65100;
-    classDef report fill:#e8f5e9,stroke:#2e7d32;
-    classDef done fill:#f3e5f5,stroke:#6a1b9a;
-    classDef block fill:#ffebee,stroke:#c62828;
 ```
 
 ## 规则
@@ -58,8 +52,6 @@ flowchart LR
         R8["不创建设计文档外文件"]:::rule
     end
 
-    classDef rule fill:#e3f2fd,stroke:#1565c0;
-    classDef gate fill:#fff3e0,stroke:#e65100,stroke-width:2px;
 ```
 
 | # | 规则 | 阻断标识 | 触发条件 |
@@ -87,10 +79,6 @@ flowchart LR
     CLS -->|"P1"| SUG["当轮修复"]:::p1
     CLS -->|"P2"| NOTE["记录不阻断"]:::p2
 
-    classDef dim fill:#e3f2fd,stroke:#1565c0;
-    classDef p0 fill:#ffebee,stroke:#c62828;
-    classDef p1 fill:#fff3e0,stroke:#e65100;
-    classDef p2 fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 维度 | 检查点 | P0 示例 | P1 示例 | P2 示例 |
@@ -119,8 +107,6 @@ flowchart LR
     end
     coder -- "pm + tester" --> other
 
-    classDef in fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#eceff1,stroke:#90a4ae;
 ```
 
 | 归 coder | 不归 coder | 协作方 |

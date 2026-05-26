@@ -25,11 +25,6 @@ flowchart TB
     GB -->|"❌ > 2 轮修复"| X2["gate-b-limit<br/>阻交付 🚫"]:::block
     GB -->|"✅ 通过"| DONE["交接 reporter<br/>写测试报告"]:::done
 
-    classDef doc fill:#e3f2fd,stroke:#1565c0;
-    classDef block fill:#ffebee,stroke:#c62828;
-    classDef impl fill:#fff3e0,stroke:#e65100;
-    classDef run fill:#f3e5f5,stroke:#6a1b9a;
-    classDef done fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | Gate | 时机 | 阻断条件 | 阻断标识 | 例外 |
@@ -57,12 +52,6 @@ flowchart LR
     四类 --> MATRIX["覆盖矩阵<br/>每 FP ≥3 类"]:::out
     环境 --> MATRIX
 
-    classDef n fill:#e8f5e9,stroke:#2e7d32;
-    classDef b fill:#fff3e0,stroke:#e65100;
-    classDef e fill:#ffebee,stroke:#c62828;
-    classDef r fill:#e3f2fd,stroke:#1565c0;
-    classDef x fill:#f3e5f5,stroke:#6a1b9a;
-    classDef out fill:#eceff1,stroke:#455a64;
 ```
 
 | 类别 | ID 前缀 | 覆盖目标 |
@@ -82,7 +71,6 @@ flowchart LR
     S3 --> S4["④ 单次执行<br/>冒烟 + 回归 + 专项"]:::step
     S4 --> S5["⑤ 三报告闭合<br/>交叉引用一致"]:::step
 
-    classDef step fill:#e3f2fd,stroke:#1565c0;
 ```
 
 ## 用例规则
@@ -102,7 +90,6 @@ flowchart LR
         R6["无覆盖不通过"]:::rule
     end
 
-    classDef rule fill:#e3f2fd,stroke:#1565c0;
 ```
 
 | # | 规则 | 反例 |
@@ -124,9 +111,6 @@ flowchart LR
     CHK -->|"否"| FIX["附修复方案"]:::out
     CHK -->|"是"| PASS["通过"]:::ok
 
-    classDef dim fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#fff3e0,stroke:#e65100;
-    classDef ok fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 维度 | 检查点 | 不通过示例 |
@@ -152,8 +136,6 @@ flowchart LR
         O3["实现代码<br/>→ coder"]:::out
     end
 
-    classDef in fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#eceff1,stroke:#90a4ae;
 ```
 
 ## 项目上下文
@@ -168,7 +150,6 @@ flowchart LR
     S2 --> S3["§6 Gate B 评估<br/>全部达标"]:::sig
     S3 --> S4["三报告交叉引用一致"]:::sig
 
-    classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 标志 | 达标标准 | 未达标处置 |

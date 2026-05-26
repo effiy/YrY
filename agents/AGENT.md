@@ -31,9 +31,6 @@ flowchart TB
     si -.改进提案.-> pm
     coder & tester & reporter -.执行记忆.-> si
 
-    classDef core fill:#fff3e0,stroke:#e65100,stroke-width:2px;
-    classDef exec fill:#e3f2fd,stroke:#1565c0;
-    classDef cross fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | Agent | 一句话 | 核心动作 | 卡点 | 触发源 | 契约文件 |
@@ -101,9 +98,6 @@ flowchart LR
     B --> C["C 未验证<br/>标注「待补充」"]:::warn
     A & B -->|禁止| D["D 幻觉<br/>无 A/B 支撑且非 C"]:::bad
 
-    classDef ok fill:#e8f5e9,stroke:#2e7d32;
-    classDef warn fill:#fff3e0,stroke:#e65100;
-    classDef bad fill:#ffebee,stroke:#c62828;
 ```
 
 | Level | 含义 | 写入规则 | 示例 |
@@ -123,7 +117,6 @@ flowchart LR
     D --> E["标注处置<br/>改/不改/观察"]
     E -.未闭合.-> F[("P0 阻断<br/>chain-broken")]:::block
 
-    classDef block fill:#ffebee,stroke:#c62828;
 ```
 
 | 步骤 | 动作 | 产出 |
@@ -148,8 +141,6 @@ flowchart LR
     security["security<br/>§3 约束注入 + P0 缓解"]:::src -.约束.-> coder
     si["self-improve<br/>诊断出提案 + 闭合上一提案"]:::src -.反馈.-> pm
 
-    classDef src fill:#fff3e0,stroke:#e65100;
-    classDef dst fill:#e3f2fd,stroke:#1565c0;
 ```
 
 | Agent | 交接信号 | 下游验证方式 |
@@ -175,7 +166,6 @@ flowchart LR
         P5["可验证<br/>路径/接口/模块名可 Grep"]:::p
     end
 
-    classDef p fill:#e3f2fd,stroke:#1565c0;
 ```
 
 | 原则 | 含义 | 反例 |
@@ -276,8 +266,6 @@ flowchart LR
         F3["信号丢失<br/>交接信号未写入 rui-state"]:::bad
     end
 
-    classDef mode fill:#e3f2fd,stroke:#1565c0;
-    classDef bad fill:#ffebee,stroke:#c62828;
 ```
 
 | 模式 | 场景 | 交接信号 | 反模式 |

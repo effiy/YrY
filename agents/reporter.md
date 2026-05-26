@@ -34,9 +34,6 @@ flowchart TB
     B <-->|交叉引用| T
     产出 --> 策展
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef rpt fill:#e3f2fd,stroke:#1565c0;
-    classDef curate fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 ## 触发
@@ -53,8 +50,6 @@ flowchart LR
     CHK -->|"否 🔄"| WRI
     CHK -->|"是 ✅"| CUR["策展<br/>git commit"]:::done
 
-    classDef step fill:#e3f2fd,stroke:#1565c0;
-    classDef done fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 ## 报告骨架
@@ -82,9 +77,6 @@ flowchart LR
     PASS -->|"是"| GB["Gate B ✅"]:::ok
     PASS -->|"否"| REJ["退回对应 Agent"]:::bad
 
-    classDef dim fill:#e3f2fd,stroke:#1565c0;
-    classDef ok fill:#e8f5e9,stroke:#2e7d32;
-    classDef bad fill:#ffebee,stroke:#c62828;
 ```
 
 | 维度 | 检查点 | 不通过的处置 |
@@ -121,8 +113,6 @@ flowchart LR
     end
     in -- "分工明确" --> out
 
-    classDef in fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#eceff1,stroke:#90a4ae;
 ```
 
 ## 生效标志
@@ -133,7 +123,6 @@ flowchart LR
     S2 --> S3["无矛盾<br/>报告叙述一致"]:::sig
     S3 --> S4["Gate B 全 ✅<br/>否则退回 tester/coder"]:::sig
 
-    classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 标志 | 未达标的处置 |

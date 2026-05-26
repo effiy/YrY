@@ -23,10 +23,6 @@ flowchart TB
     AC -->|"否 🔄"| SPLIT
     AC -->|"是 ✅"| CLOSE["关闭故事<br/>git commit"]:::done
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef rs fill:#e3f2fd,stroke:#1565c0;
-    classDef pm fill:#fff3e0,stroke:#e65100;
-    classDef done fill:#f3e5f5,stroke:#6a1b9a;
 ```
 
 | 步骤 | 动作 | 产出 |
@@ -63,8 +59,6 @@ flowchart LR
     end
     pm --> del
 
-    classDef pm fill:#fff3e0,stroke:#e65100;
-    classDef del fill:#e3f2fd,stroke:#1565c0;
 ```
 
 > 子项目 pm 承接根 pm 决策，拆解子任务、选 Agent、检 AC 后关闭。未在 `agents/` 定义时根 pm 临时兼任，标注 `⚠ 代理`。
@@ -83,8 +77,6 @@ flowchart TD
     Q4 -->|是| S4["前端故事 + 后端故事"]:::split
     Q4 -->|否| S5["不拆<br/>单一故事"]:::nosplit
 
-    classDef split fill:#e3f2fd,stroke:#1565c0;
-    classDef nosplit fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 信号 | 处理 | 示例 |
@@ -125,10 +117,6 @@ flowchart LR
     end
     explore -.->|"用户选定后"| direct
 
-    classDef tool fill:#e8f5e9,stroke:#2e7d32;
-    classDef llm fill:#fff3e0,stroke:#e65100;
-    classDef exp fill:#e3f2fd,stroke:#1565c0;
-    classDef dir fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 ### 探索模式
@@ -178,7 +166,6 @@ flowchart LR
     S2 --> S3["§4 任务表每行<br/>有 Agent + 门禁 + 交接信号"]:::sig
     S3 --> S4["全部 Story AC 通过 → 关闭<br/>任一未达 → 退回"]:::sig
 
-    classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 标志 | 未达标的处理 |

@@ -23,12 +23,6 @@ flowchart TB
     AUD -->|"是"| BLK["阻断交付 🚫"]:::block
     AUD -->|"否"| PASS["放行 ✅"]:::ok
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef core fill:#fff3e0,stroke:#e65100;
-    classDef out fill:#e3f2fd,stroke:#1565c0;
-    classDef impl fill:#f3e5f5,stroke:#6a1b9a;
-    classDef block fill:#ffebee,stroke:#c62828;
-    classDef ok fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 ## 触发
@@ -51,8 +45,6 @@ flowchart TD
     C5 -->|是| INJ
     C5 -->|否| SKIP["不注入<br/>无显著安全面"]:::skip
 
-    classDef inj fill:#ffebee,stroke:#c62828;
-    classDef skip fill:#eceff1,stroke:#90a4ae;
 ```
 
 | 条件 | 典型信号 | 注入内容 |
@@ -74,12 +66,6 @@ flowchart LR
     PRI -->|"P1"| FIX["当轮修复"]:::p1
     PRI -->|"P2"| NOTE["记录跟踪"]:::p2
 
-    classDef t fill:#ffebee,stroke:#c62828;
-    classDef b fill:#fff3e0,stroke:#e65100;
-    classDef m fill:#e3f2fd,stroke:#1565c0;
-    classDef p0 fill:#ffebee,stroke:#c62828;
-    classDef p1 fill:#fff3e0,stroke:#e65100;
-    classDef p2 fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 > 公式：`威胁 → 信任边界 → 缓解`。套用至 §3 安全约束表 `# | 威胁 | 信任边界 | 缓解措施 | 优先级`。
@@ -96,8 +82,6 @@ flowchart LR
     end
     四维 --> OUT["每条发现附修复方案<br/>P0 阻断交付"]:::out
 
-    classDef dim fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#ffebee,stroke:#c62828;
 ```
 
 | 维度 | 检查点 | P0 示例 |
@@ -133,8 +117,6 @@ flowchart LR
         O3["测试用例<br/>→ tester"]:::out
     end
 
-    classDef in fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#eceff1,stroke:#90a4ae;
 ```
 
 ## 项目上下文

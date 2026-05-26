@@ -53,11 +53,6 @@ flowchart TB
     改进 --> 评估
     评估 -.->|"下次循环"| 观察
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef data fill:#e3f2fd,stroke:#1565c0;
-    classDef diag fill:#fff3e0,stroke:#e65100;
-    classDef prop fill:#f3e5f5,stroke:#6a1b9a;
-    classDef eval fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 > 每故事独立分析。单次执行，不阻断主流程。关键改进模式：当同一提案连续 3 个故事触发 → 上升为项目级规则或 skill。
@@ -85,9 +80,6 @@ flowchart LR
     基线 -->|"建立预期"| 执行
     执行 -->|"对比基线"| OUT["发现偏差 → 触发诊断"]:::out
 
-    classDef src fill:#e8f5e9,stroke:#2e7d32;
-    classDef data fill:#e3f2fd,stroke:#1565c0;
-    classDef out fill:#fff3e0,stroke:#e65100;
 ```
 
 | 数据源 | 产出字段 | 用途 |
@@ -120,7 +112,6 @@ flowchart LR
         D7["D7 配置漂移<br/>.claude/ 远端 vs 本地<br/>settings 不同步"]:::diag
     end
 
-    classDef diag fill:#fff3e0,stroke:#e65100;
 ```
 
 > 每条诊断必须引用基线文件作为依据。详见 [rules/self-improve.md](../rules/self-improve.md)。
@@ -139,10 +130,6 @@ flowchart LR
     RE -->|"是"| SKL["skill 化<br/>写入对应规则/agent"]:::up
     RE -->|"否"| WAIT["保持提案跟踪"]:::wait
 
-    classDef prop fill:#f3e5f5,stroke:#6a1b9a;
-    classDef out fill:#e8f5e9,stroke:#2e7d32;
-    classDef up fill:#fff3e0,stroke:#e65100;
-    classDef wait fill:#e3f2fd,stroke:#1565c0;
 ```
 
 > 经验技能化模式：从执行中创建 skill、使用中自我优化、跨会话记忆搜索。当同一改进模式连续触发 → 从提案升级为项目规则。
@@ -175,9 +162,6 @@ flowchart LR
     end
     写入 --> 压缩 --> 注入
 
-    classDef data fill:#e3f2fd,stroke:#1565c0;
-    classDef comp fill:#fff3e0,stroke:#e65100;
-    classDef inj fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 数据类型 | 压缩策略 | 注入时机 | 过期策略 |
@@ -217,7 +201,6 @@ flowchart LR
     S2 --> S3["§3.3 提案同步<br/>与 proposals.jsonl 一致"]:::sig
     S3 --> S4["§5 评审清单<br/>8 项全 ✅"]:::sig
 
-    classDef sig fill:#e8f5e9,stroke:#2e7d32;
 ```
 
 | 标志 | 未达标的处置 |
