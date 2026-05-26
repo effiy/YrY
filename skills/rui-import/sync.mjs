@@ -150,15 +150,7 @@ async function scanFiles(root, exts, userExcludes) {
 // --- path mapping ----------------------------------------------------------
 function resolveRemotePath(localPath, root, projectRootName, prefix) {
   let rel = relative(root, localPath).split(sep).join("/").replace(/\s/g, "_");
-
-  // 故事任务面板：去除 docs/，故事任务面板提升到第一级
-  const STORY_PANEL_PREFIX = "docs/故事任务面板/";
-  if (rel.startsWith(STORY_PANEL_PREFIX)) {
-    rel = "故事任务面板/" + rel.slice(STORY_PANEL_PREFIX.length);
-  } else {
-    // 其他路径：项目根目录名作为第一级
-    rel = projectRootName + "/" + rel;
-  }
+  rel = projectRootName + "/" + rel;
 
   const segments = [];
   if (prefix.length > 0) segments.push(...prefix);
@@ -166,26 +158,9 @@ function resolveRemotePath(localPath, root, projectRootName, prefix) {
   return segments.join("/");
 }
 
-function validateFirstLevelLabel(remotePath, projectRootName, prefix) {
-  const parts = remotePath.split("/");
-  const labelIdx = prefix.length;
-  if (labelIdx >= parts.length) return true; // shouldn't happen, skip
-  const firstLabel = parts[labelIdx];
-  if (firstLabel !== projectRootName && firstLabel !== "故事任务面板") {
-    console.error(`[rui-import] INVALID first-level label: "${firstLabel}" (path: ${remotePath}). Must be "${projectRootName}" or "故事任务面板".`);
-    return false;
-  }
-  return true;
-}
-
-function getTags(remotePath, _localPath, projectRootName) {
+function getTags(remotePath, _localPath, _projectRootName) {
   const parts = remotePath.split("/");
   parts.pop(); // remove filename
-  // 故事任务面板路径：故事任务面板已提升到第一级（resolveRemotePath 已去除 docs/）
-  if (parts[0] === "故事任务面板") {
-    return parts;
-  }
-  // 其他路径：项目根目录名已在第一级（resolveRemotePath 已前置）
   return parts;
 }
 
@@ -293,7 +268,6 @@ async function updateSession(apiUrl, remotePath, existingItem) {
 // --- single-file upload ----------------------------------------------------
 async function uploadSingleFile(filePath, apiUrl, existingPaths, root, workspaceName, prefix) {
   const remotePath = resolveRemotePath(filePath, root, workspaceName, prefix);
-  validateFirstLevelLabel(remotePath, workspaceName, prefix);
   const content = await readFile(filePath, "utf-8");
   const existingItem = existingPaths.get(remotePath);
   await writeRemoteFile(apiUrl, remotePath, content, !!existingItem);
@@ -627,7 +601,6 @@ async function main() {
   if (opts.mode === "list") {
     for (const f of files) {
       const remotePath = resolveRemotePath(f, root, workspaceName, opts.prefix);
-      validateFirstLevelLabel(remotePath, workspaceName, opts.prefix);
       console.log(`${f} → ${remotePath}`);
     }
     console.error(`\n[rui-import] ${files.length} files (list mode, no upload)`);
