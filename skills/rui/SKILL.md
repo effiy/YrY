@@ -133,11 +133,10 @@ flowchart LR
 
 ## 故事文档
 
-> 标准基线 10 文档，无编号前缀，无前后端拆分。文档按管线阶段生成，公式见 [formulas.md](./formulas.md)。
+> 标准基线 9 文档，无编号前缀，无前后端拆分。文档按管线阶段生成，公式见 [formulas.md](./formulas.md)。
 
 | 文件 | 阶段 | 基线 | 必选 |
 |------|------|:---:|:---:|
-| 消息通知列表.md | 交付 | — | 自动 |
 | 故事任务.md | 文档生成 | 问题空间 | ✓ |
 | 使用场景.md | 文档生成 | 用户空间 | ✓ |
 | 技术评审.md | 文档生成 | — | ✓ |
@@ -545,7 +544,7 @@ flowchart LR
 ```mermaid
 flowchart TD
     START["/rui yry [--depth N]"]:::entry --> INIT["初始化 depth 计数器<br/>max=N（默认 3）<br/>round=0"]:::s
-    INIT --> SCAN["§1 全量扫描<br/>扫描所有故事 rui-state.json<br/>+ execution-memory.jsonl<br/>+ 故事任务面板内容"]:::s
+    INIT --> SCAN["§1 全量扫描<br/>扫描所有故事<br/>+ 故事任务面板内容"]:::s
     SCAN --> MERGE_CHECK{"§1.1 可合并<br/>重复故事?"}
     MERGE_CHECK -->|"是"| AUTO_MERGE["自动合并<br/>最小可用原则<br/>bump MINOR"]:::op
     MERGE_CHECK -->|"否"| SPLIT_CHECK{"§1.2 需拆分<br/>过大故事?"}
@@ -581,7 +580,7 @@ flowchart TD
 
 ### 版本管理
 
-> 每个故事在 `.memory/rui-state.json` 中维护 `version` 字段（语义化版本 `MAJOR.MINOR.PATCH`）。每次闭环完成时自动升级。
+> 每个故事维护语义化版本 `MAJOR.MINOR.PATCH`。每次闭环完成时自动升级。
 
 | 变更类型 | 版本升级 | 示例 |
 |---------|---------|------|
@@ -596,10 +595,10 @@ flowchart TD
 | 初始版本 | 故事首次创建时 `version: "1.0.0"` |
 | 自动升级 | yry 闭环完成后根据变更类型自动 bump |
 | 手动升级 | `/rui update` 完成后由管线自动 bump |
-| 版本记录 | 每次升级追加到 `rui-state.json` 的 `version_history` 数组 |
-| 版本展示 | 查看 `.memory/rui-state.json` 中的 `version` 和 `version_history` 字段 |
+| 版本记录 | 每次升级通过 git commit + tag 记录 |
+| 版本展示 | 查看 git tag + commit 链中的版本记录 |
 
-**rui-state.json 版本字段**：
+**版本记录格式**：
 
 ```json
 {
@@ -666,7 +665,7 @@ flowchart LR
     COMMIT --> MERGE["合并到 main<br/>git checkout main && git merge"]:::op
     MERGE --> PUSH["git push origin main"]:::op
     PUSH --> TAG["git tag vX.Y.Z<br/>git push --tags"]:::op
-    TAG --> STORY["逐故事版本同步<br/>更新各 story 的<br/>rui-state.json version_history"]:::op
+    TAG --> STORY["逐故事版本同步<br/>通过 git tag 记录版本"]:::op
     STORY --> REPORT["输出升级摘要<br/>旧版本→新版本·变更类型<br/>·commit hash·tag"]:::out
 
 ```
@@ -694,7 +693,7 @@ flowchart LR
 | §5 git commit | `git add` + `git commit -m "chore: bump version to X.Y.Z"` | 含变更摘要 |
 | §6 合并 main | `git checkout main && git merge --ff-only <source>` | fast-forward 合入 |
 | §7 推送 | `git push origin main && git push --tags` | 含版本 tag |
-| §8 故事版本同步 | 更新涉及的故事 rui-state.json version_history | 记录此次项目版本变更 |
+| §8 故事版本同步 | 更新涉及的故事版本记录 | 记录此次项目版本变更 |
 | §9 输出摘要 | 旧版本 → 新版本 / 变更类型 / commit hash / tag | 终端输出 |
 
 ### 文档自动更新 (§4a–§4c)
@@ -720,7 +719,7 @@ flowchart LR
 |------|------|
 | commit 格式 | `chore: bump version X.Y.Z → A.B.C`，body 列变更摘要 |
 | tag 格式 | `vX.Y.Z`，annotated tag，message 同 commit subject |
-| 故事版本记录 | 故事级版本变更同步写入 `rui-state.json` version_history，含 commit hash |
+| 故事版本记录 | 故事级版本变更通过 git commit + tag 记录 |
 | 回退支撑 | git tag + commit 链构成完整版本时间线，供 `version --rollback` 使用 |
 
 ### 约束
@@ -751,7 +750,7 @@ flowchart LR
     CONFIRM -->|"否"| CANCEL["取消"]:::abort
     CONFIRM -->|"是"| REVERT["git checkout &lt;commit&gt;<br/>-- docs/故事任务面板/&lt;name&gt;/"]:::op
     REVERT --> COMMIT["git commit -m<br/>revert: rollback &lt;name&gt; to vX.Y.Z"]:::op
-    COMMIT --> AUDIT["记录审计日志<br/>rui-state.json version_history"]:::op
+    COMMIT --> AUDIT["记录审计日志<br/>git commit 链可追溯"]:::op
     AUDIT --> REPORT["输出回退摘要<br/>故事·源版本·目标版本·commit hash"]:::out
 
 ```
@@ -766,7 +765,7 @@ flowchart LR
 | §4 确认门禁 | 展示变更文件清单 + 版本跨度 | 用户确认后执行 |
 | §5 执行回退 | `git checkout <target> -- docs/故事任务面板/<name>/` | 仅回退该故事目录 |
 | §6 提交 | `git commit -m "revert: rollback <name> to <version>"` | 产生新 commit，不破坏历史 |
-| §7 审计 | 追加 rui-state.json version_history 条目 | 记录回退操作 + commit hash |
+| §7 审计 | 追加版本回退记录 | 记录回退操作 + commit hash |
 | §8 输出 | 回退摘要：故事名、源版本、目标版本、commit hash | 终端输出 |
 
 ### 版本列表格式
@@ -787,7 +786,7 @@ i7j8k9l v1.3.0 — feat: 合并拆分功能 (2026-05-20)
 | 仅故事目录 | 回退范围仅限于 `docs/故事任务面板/<name>/`，不影响其他文件 |
 | 必须确认 | 回退前展示变更预览，用户确认后执行 |
 | 产生 commit | 回退操作产生新 git commit（revert），不破坏历史 |
-| 审计记录 | 回退操作写入 rui-state.json version_history |
+| 审计记录 | 回退操作通过 git commit 链记录 |
 | 不可回退 merge/split | merge/split 产生的版本因涉及跨故事变更，不支持通过 --rollback 回退 |
 
 **末端触发** [强制集成](#强制集成)。
@@ -1014,7 +1013,7 @@ flowchart TD
 |------|------|------|
 | 目录不存在 | `no-story` | 使用 `/rui doc <需求>` 或 `/rui doc --from-code` |
 | 目录空（0 文档）| `no-doc` | 同上 |
-| 仅交互日志/消息通知列表 | `no-doc` | 同上 |
+| 仅交互日志 | `no-doc` | 同上 |
 | 无基线文档（仅测试设计/安全审计/自改进复盘存在）| `no-baseline` | 使用 `/rui doc --from-code` — 这些文档不足以反推故事任务 |
 | 6 文档全在 | `doc-full` | 使用 `/rui update <name>` |
 
@@ -1080,7 +1079,6 @@ flowchart TD
 |------|---------|---------|
 | 实施报告.md | 需代码执行（截图、curl 命令、模块 P0 审查数据）| `/rui code <name>` |
 | 测试报告.md | 需测试执行（通过/失败计数、环境快照）| `/rui code <name>` |
-| 消息通知列表.md | rui-bot 自动追加 | 自动 |
 | 交互日志.md | rui 管线自动维护 | 自动 |
 
 ### §5 约束
@@ -1241,7 +1239,7 @@ flowchart TD
 
 | 类别 | 内容 |
 |------|------|
-| 数据契约 | `10-交互日志.md`（追加）· `.memory/rui-state.json`（覆盖写）· `.memory/execution-memory.jsonl`（追加）· `.improvement/proposals.jsonl`（追加）— 字段见 [coder.md §数据契约](./coder.md) |
+| 数据契约 | `交互日志.md`（追加）· `.improvement/proposals.jsonl`（追加）— 字段见 [coder.md §数据契约](./coder.md) |
 | Hooks | Stop hooks 调用：hook-log → rui-import → hook-notify → delivery-gate |
 | 规则 | [code-pipeline](../../rules/code-pipeline.md) · [delivery-gate](../../rules/delivery-gate.md) · [doc-generation](../../rules/doc-generation.md) · [self-improve](../../rules/self-improve.md) · [rui-claude](../../rules/rui-claude.md) |
 | 角色 | [pm](../../agents/pm.md) · [coder](../../agents/coder.md) · [tester](../../agents/tester.md) · [reporter](../../agents/reporter.md) · [security](../../agents/security.md) · [self-improve](../../agents/self-improve.md) |

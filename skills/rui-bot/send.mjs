@@ -4,7 +4,7 @@
 // 按 SKILL.md 规约发送企微通知并追加消息日志
 
 import { join, resolve, dirname, basename } from "node:path";
-import { existsSync, readFileSync, mkdirSync, appendFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 // --- constants ----------------------------------------------------------------
 const API_URL_DEFAULT = "https://api.effiy.cn/wework/send-message";
@@ -227,42 +227,6 @@ function buildMessage(opts, projectName) {
   return msg.length > MAX_MSG_LENGTH ? msg.slice(0, MAX_MSG_LENGTH - 3) + "..." : msg;
 }
 
-// --- notification log ---
-function appendNotificationLog(projectRoot, projectName, story, message) {
-  const logPath = join(projectRoot, "docs", "故事任务面板", story, `${projectName}-消息通知列表.md`);
-  const logDir = dirname(logPath);
-  if (!existsSync(logDir)) mkdirSync(logDir, { recursive: true });
-
-  const now = new Date();
-  const pad = (n) => String(n).padStart(2, "0");
-  const timestamp = `【${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}】`;
-
-  const entry = `\n${timestamp}\n\n${message}\n`;
-
-  appendFileSync(logPath, entry, "utf-8");
-  return logPath;
-}
-
-// --- delivery tracking ---
-function appendDeliveryTracking(projectRoot, story, step, status, durationMs, error) {
-  const trackPath = join(projectRoot, "docs", "故事任务面板", story, ".memory", "delivery-tracking.jsonl");
-  const trackDir = dirname(trackPath);
-  if (!existsSync(trackDir)) mkdirSync(trackDir, { recursive: true });
-
-  const record = {
-    timestamp: new Date().toISOString(),
-    story,
-    step,
-    status,
-    duration_ms: durationMs,
-    error: error || null,
-    retry_count: 0,
-    notification_template_version: "1.0.0",
-  };
-
-  appendFileSync(trackPath, JSON.stringify(record) + "\n", "utf-8");
-}
-
 // --- API ---
 async function sendToWecom(apiUrl, webhookUrl, content, token) {
   const controller = new AbortController();
@@ -372,29 +336,14 @@ async function cmdSend(opts) {
   // Build message
   const message = buildMessage(opts, projectName);
 
-  const startTime = Date.now();
-
-  // Step 1: Always append notification log
-  if (opts.story) {
-    const logPath = appendNotificationLog(projectRoot, projectName, opts.story, message);
-    console.log(`[rui-bot] 日志已追加: ${logPath}`);
-    appendDeliveryTracking(projectRoot, opts.story, "log", "success", Date.now() - startTime, null);
-  }
-
-  // Step 2: Send if not --no-send
+  // Step 1: Send if not --no-send
   if (opts.noSend) {
     console.log("[rui-bot] --no-send 模式，跳过 HTTP 发送");
-    if (opts.story) {
-      appendDeliveryTracking(projectRoot, opts.story, "notify", "skipped", Date.now() - startTime, null);
-    }
     return;
   }
 
   if (!token) {
     console.log("[rui-bot] ⚠️  API_X_TOKEN 缺失，跳过 HTTP 发送（no-token 降级）");
-    if (opts.story) {
-      appendDeliveryTracking(projectRoot, opts.story, "notify", "skipped", Date.now() - startTime, "no-token");
-    }
     return;
   }
 
@@ -414,9 +363,6 @@ async function cmdSend(opts) {
 
   if (!webhookUrl) {
     console.log("[rui-bot] ⚠️  webhook URL 未配置，跳过发送");
-    if (opts.story) {
-      appendDeliveryTracking(projectRoot, opts.story, "notify", "skipped", Date.now() - startTime, "no-webhook");
-    }
     return;
   }
 
@@ -425,18 +371,10 @@ async function cmdSend(opts) {
   console.log(`[rui-bot] 发送通知: story=${opts.story || "—"} status=${opts.status}`);
   const result = await sendWithRetry(apiUrl, webhookUrl, message, token, opts.retries);
 
-  const elapsed = Date.now() - startTime;
-
   if (result.ok) {
     console.log(`[rui-bot] ✅ 发送成功 (retries=${result.retries})`);
-    if (opts.story) {
-      appendDeliveryTracking(projectRoot, opts.story, "notify", "success", elapsed, null);
-    }
   } else {
     console.error(`[rui-bot] ❌ 发送失败: ${result.error} (retries=${result.retries})`);
-    if (opts.story) {
-      appendDeliveryTracking(projectRoot, opts.story, "notify", "failure", elapsed, result.error);
-    }
   }
 }
 
