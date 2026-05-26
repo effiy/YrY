@@ -73,15 +73,16 @@
       ]
     },
     "yry-self-test": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "current_stage": "doc",
       "blocked": false,
       "version_history": [
-        {"version": "1.0.0", "date": "2026-05-26", "trigger": "/rui yry", "change": "D0 fix — 补齐 init 缺失的自主测试方案故事，5 文档基线完整"}
+        {"version": "1.0.0", "date": "2026-05-26", "trigger": "/rui yry", "change": "D0 fix — 补齐 init 缺失的自主测试方案故事，5 文档基线完整"},
+        {"version": "1.0.1", "date": "2026-05-26", "trigger": "/rui yry", "change": "PATCH — 补全使用场景/测试设计/安全审计 主要价值 节（各 4 emoji 行）"}
       ]
     }
   },
   "project_version": "1.26.2",
   "last_yry_scan": "2026-05-26",
-  "yry_round": 2
+  "yry_round": 3
 }
