@@ -95,7 +95,7 @@ ${item("/rui-import workspace=true mode=list", "列出待上传文件清单", cy
 ${scene("带远端前缀上传")}
 ${item("/rui-import workspace=true prefix=docs,api-v2", "远端路径前追加 docs/api-v2/", cyan)}
 ${scene("按文件名关键词精确拉取")}
-${item("/rui-import dir=docs/故事任务面板/user-login/ mode=pull names=技术评审,安全审计", "仅拉取名中含「技术评审」或「安全审计」的文件", cyan)}
+${item("/rui-import dir=docs/故事任务面板/user-login/ mode=pull names=技术评审,测试设计", "仅拉取名中含「技术评审」或「测试设计」的文件", cyan)}
 ${scene("覆盖远端 API 地址")}
 ${item("/rui-import workspace=true apiUrl=https://staging-api.example.com", "切换 API 目标（如预发验证）", cyan)}
 ${scene("先预览再同步（安全工作流）")}

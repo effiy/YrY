@@ -49,8 +49,8 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 |------|-----|
 | 项目名 | YrY |
 | 类型 | **meta** — Claude Code 插件，纯规约驱动 |
-| 版本 | 1.26.2 |
-| 架构 | plugin — 6 技能 + 6 Agent + 5 规则 |
+| 版本 | 2.0.0 |
+| 架构 | plugin — 6 技能 + 5 Agent + 4 规则 |
 | 生态 | 无 package.json，markdown 规约 + node 辅助脚本 |
 | 自托管 | 是 — YrY 用自身管线管理自身演进 |
 
@@ -64,7 +64,7 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 - **规约完整性** — 每 skill 必须有完整 SKILL.md；Agent 交接信号必须可被下游验证
 - **自托管一致性** — plugin.json 版本号必须与实际 skills/agents/rules 内容一致；自身管线不得降级
 - **禁止魔法数字** — 所有数字字面量必须赋予语义化常量名；仅 `0`、`1`、`-1`（循环/索引/初始化惯用值）可豁免
-- **分支隔离不可绕过** — 记忆/缓存/本地状态文件禁止跨分支共享管线状态，不得用于削弱或绕过 `feat/<name>` 分支隔离策略
+- **分支隔离不可绕过** — 本地状态文件禁止跨分支共享管线状态，不得用于削弱或绕过 `feat/<name>` 分支隔离策略
 
 ### 退化对策
 
@@ -89,7 +89,6 @@ flowchart LR
 | 外部不可达 | 外部 URL/资源不可达时，技能规约仍独立可执行 | 规约内联关键模式摘要，不依赖外链可达性 |
 | 渐进漂移 | 每轮 init 全量重生 rui 标记段；领域语言 Avoid 列标注禁用别名 | 术语变更同步更新 Avoid 列表，防止旧名复用 |
 | 人机偏差 | 铁律 + 行为纪律 Red Flags + 验证门禁五步法 | 合理化的 8 类借口 -> 速查表对照；每个声称 -> 五步验证 |
-| 跨会话退化 | `.memory/` 执行记忆 + AI 压缩摘要 | 关键决策写入 `.memory/` 自动注入后续上下文 |
 
 ### 自约束
 
@@ -106,6 +105,5 @@ flowchart LR
 | 交付收口（三步 hook） | [rules/delivery-gate.md](./rules/delivery-gate.md) |
 | 文档生成约束 · 表达优先 | [rules/doc-generation.md](./rules/doc-generation.md) |
 | 角色拓扑 · 行为纪律 · 设计原则 · 执行准则 · ADR · 多 Agent 协作模式 | [agents/AGENT.md](./agents/AGENT.md) |
-| 自改进闭环（诊断 D0-D7 · 经验技能化 · 记忆压缩注入 · 效果评估 E1-E4） | [rules/self-improve.md](./rules/self-improve.md) · [agents/self-improve.md](./agents/self-improve.md) |
 | 领域语言（术语定义） | [领域语言](./README.md#领域语言) |
 | 故事文档公式 | [formulas.md](./skills/rui/formulas.md) |

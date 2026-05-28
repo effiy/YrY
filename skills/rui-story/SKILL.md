@@ -101,7 +101,7 @@ flowchart TD
     START["查询远端 sessions<br/>file_path 前缀 故事任务面板/"]:::s --> GROUP["按故事名称分组<br/>从 file_path 提取"]:::s
     GROUP --> CHK01{"故事任务.md<br/>存在?"}
     CHK01 -->|"否"| NS["任务"]:::s0
-    CHK01 -->|"是"| CHKDOC{"文档基线齐全?<br/>含 使用场景 + 技术评审<br/>+ 测试设计 + 安全审计"}
+    CHK01 -->|"是"| CHKDOC{"文档基线齐全?<br/>含 使用场景 + 技术评审<br/>+ 测试设计"}
     CHKDOC -->|"否"| DIP["设计"]:::s1
     CHKDOC -->|"是"| CHKIMP{"实施报告.md<br/>存在?"}
     CHKIMP -->|"否"| IMP["实施"]:::s2
@@ -283,10 +283,8 @@ flowchart LR
   实施报告.md          (7.3K)
   测试报告.md          (4.7K)
   自改进复盘.md            (7.7K)
-  交互日志.md              (5.7K)
-  消息通知列表.md          (1.2K)
 
-⚠️  即将删除整个目录及 9 个文件，释放约 87K。此操作不可撤销。确认？(y/n)
+⚠️  即将删除整个目录及 7 个文件，释放约 71K。此操作不可撤销。确认？(y/n)
 
 ✅ 已删除 docs/故事任务面板/rui-story/，释放 87K。
 💡 远端文档不受影响，可通过 /rui-story sync rui-story 重新拉取。

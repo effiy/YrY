@@ -132,7 +132,6 @@ ${item("coverage", "文档覆盖描述 + 期望的 8 文档基线清单")}
 ${item("metrics", "总行数 · 文件数 · 签名 Top 10 · 被依赖数")}
 ${item("git", "最后修改 · 作者数 · 90天变更次数")}
 ${item("doc", "覆盖率状态: no_docs / partial / complete")}
-${item("security", "hasUserInput · hasAuth · hasApiCall 布尔信号")}
 
 ${hdr("示例")}
 ${item("# 自动检测类型，扫描当前项目", "", bold)}
@@ -151,11 +150,9 @@ ${hdr("管线集成")}
 ${line(dim("调用方: PM agent (skills/rui/SKILL.md §doc-from-code)"))}
 ${line(dim("流程: recommend 输出 JSON → PM 5 层评分 (L0–L4) → 排序 → 推荐列表"))}
 ${line(dim("评分维度: L0 时间紧急度 · L1 依赖拓扑 · L2 风险信号 · L3 覆盖缺口 · L4 质量信号"))}
-${line(dim("详细: skills/rui/ranking.md"))}
 
 ${hdr("相关资源")}
 ${item("SKILL.md", "skills/rui/SKILL.md — rui 完整规约", dim)}
-${item("ranking.md", "skills/rui/ranking.md — 5 层评分框架", dim)}
 ${item("help.mjs", "skills/rui/help.mjs — rui 编排器完整帮助", dim)}
 `;
 
@@ -492,20 +489,6 @@ function countLines(content) {
   return content.split("\n").length;
 }
 
-// --- security signals -------------------------------------------------------
-function securitySignals(content, _type) {
-  if (!content) return { hasUserInput: false, hasAuth: false, hasApiCall: false };
-  const patterns = {
-    hasUserInput: /readline|prompt|stdin|input|form|req\.body|req\.query|req\.params|process\.argv|process\.env|userInput/i,
-    hasAuth: /auth|token|session|login|password|credential|oauth|jwt|api.*key|bearer/i,
-    hasApiCall: /fetch|axios|http\.request|http\.get|https\.request|curl|api\.|\.post\(|\.get\(|\.put\(|\.delete\(/i,
-  };
-  return {
-    hasUserInput: patterns.hasUserInput.test(content),
-    hasAuth: patterns.hasAuth.test(content),
-    hasApiCall: patterns.hasApiCall.test(content),
-  };
-}
 
 // --- collect: assemble per-file metrics ------------------------------------
 async function collect(root, files, project, projectType) {
@@ -522,7 +505,6 @@ async function collect(root, files, project, projectType) {
     const git = gitMetrics(root, file);
     const doc = docStatus(root, project, name + "-doc");
     const lines = countLines(content);
-    const sec = securitySignals(content, type);
     const relFile = relative(root, file);
 
     results.push({
@@ -532,7 +514,6 @@ async function collect(root, files, project, projectType) {
       metrics: { lines, signatures, importedByCount: importedByList.length, importedBy: importedByList.slice(0, SIGNATURE_PREVIEW_LIMIT) },
       git,
       doc,
-      security: sec,
     });
   }
 
@@ -594,7 +575,7 @@ function buildStoryCandidate(group, project, projectType) {
   const totalLines = group.reduce((s, f) => s + f.metrics.lines, 0);
 
   // Expected docs — unified 10-document baseline, type determines chapter cropping
-  const expectedDocs = ["故事任务", "使用场景", "技术评审", "测试设计", "安全审计", "实施报告", "测试报告", "自改进复盘"];
+  const expectedDocs = ["故事任务", "使用场景", "技术评审", "测试设计", "实施报告", "测试报告", "自改进复盘"];
 
   // Coverage description
   const primarySig = allSignatures.length > 0 ? allSignatures.slice(0, COVERAGE_SIG_PREVIEW_COUNT).join("; ") : "";
@@ -602,13 +583,6 @@ function buildStoryCandidate(group, project, projectType) {
   const coverageDesc = primarySig
     ? `${primary.file}${fileCount} — ${primarySig}`
     : `${primary.file}${fileCount}`;
-
-  // Security: OR across group
-  const security = {
-    hasUserInput: group.some(f => f.security.hasUserInput),
-    hasAuth: group.some(f => f.security.hasAuth),
-    hasApiCall: group.some(f => f.security.hasApiCall),
-  };
 
   // Git: most recent lastModified, sum churn
   const sortedByDate = group.filter(f => f.git.lastModified).sort((a, b) =>
@@ -649,7 +623,6 @@ function buildStoryCandidate(group, project, projectType) {
       exists: doc.exists,
       existingFiles: doc.existingFiles,
     },
-    security,
   };
 }
 

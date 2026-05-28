@@ -19,17 +19,13 @@ flowchart TB
     end
 
     subgraph 横切["横切关注"]
-        security[security<br/>安全]:::cross
         si[self-improve<br/>改进]:::cross
     end
 
-    pm -->|委派安全审查| security
     pm -->|拆故事 + 排任务| coder & tester & reporter
     coder -->|产出| tester
     tester -->|验证| reporter
-    security -.安全约束.-> coder
     si -.改进提案.-> pm
-    coder & tester & reporter -.执行记忆.-> si
 
 ```
 
@@ -39,7 +35,6 @@ flowchart TB
 | **coder** | 逐模块实现，P0 清零 | 读设计 → 写代码 → P0 清零 → 进下一模块 | P0 未清零不进下一模块 | pm 委派 · rui 预检/实现/影响分析 | [coder.md](./coder.md) |
 | **tester** | 测试先行，Gate 阻不放行 | 写用例 → Gate A 审 → 执行 → Gate B 判 | Gate A 未通过不编码；Gate B 未通过不交付 | pm 委派 · rui 测试/验证 | [tester.md](./tester.md) |
 | **reporter** | 过程记录，交叉闭合 | 写实施报告 ×2 + 测试报告 → 三报告交叉引用 | 三报告不一致不闭合 | rui 验证/交付/策展 | [reporter.md](./reporter.md) |
-| **security** | 威胁建模，P0 卡发布 | 建威胁模型 → 写 §3 安全约束 → 注入 P0 | P0 安全项未缓解卡发布 | pm 安全审查委派 | [security.md](./security.md) |
 | **self-improve** | 采数据 → 出诊断 → 写提案 | 采集执行数据 → 六维诊断 → 改进提案 → 闭环保案 | 不阻断主流程（降级 `no-metrics`） | rui 自改进阶段 | [self-improve.md](./self-improve.md) |
 
 ## 管线阶段与 Agent 参与
@@ -58,7 +53,6 @@ flowchart LR
     end
     subgraph 实现["⚙️ 实现"]
         I1["逐模块编码<br/>coder"]
-        I2["安全审查<br/>security"]
     end
     subgraph 验证["✅ 验证"]
         V1["Gate B<br/>tester + reporter"]
@@ -69,22 +63,21 @@ flowchart LR
     end
 
     文档 --> 预检 --> 实现 --> 验证 --> 交付
-    I2 -.穿插.-> I1
 ```
 
-| 阶段 | pm | coder | tester | reporter | security | self-improve |
-|------|:---:|:---:|:---:|:---:|:---:|:---:|
-| 需求解析 | ● | | | | | |
-| 自适应规划 | ● | | | | | |
-| 影响分析 | ● | ● | | | | |
-| 架构设计 | | ● | | | | |
-| 文档基线 | ● | ● | ● | | | |
-| 分支隔离 | | ● | | | | |
-| Gate A | | | ● | | | |
-| 逐模块编码 | | ● | | | ● | |
-| Gate B | | | ● | ● | | |
-| 自改进 | | | | ● | | ● |
-| 交付 | | | | ● | | |
+| 阶段 | pm | coder | tester | reporter | self-improve |
+|------|:---:|:---:|:---:|:---:|:---:|
+| 需求解析 | ● | | | | |
+| 自适应规划 | ● | | | | |
+| 影响分析 | ● | ● | | | |
+| 架构设计 | | ● | | | |
+| 文档基线 | ● | ● | ● | | |
+| 分支隔离 | | ● | | | |
+| Gate A | | | ● | | |
+| 逐模块编码 | | ● | | | |
+| Gate B | | | ● | ● | |
+| 自改进 | | | | ● | ● |
+| 交付 | | | | ● | |
 
 ## 共用底线
 
@@ -138,7 +131,6 @@ flowchart LR
     pm["pm<br/>故事 §1 ≤ 3 句说清"]:::src --> coder["coder<br/>P0 清零 + 改动可追溯"]:::dst
     coder --> tester["tester<br/>Gate A 通过 / Gate B 达标"]:::dst
     tester --> reporter["reporter<br/>三报告交叉引用闭合"]:::dst
-    security["security<br/>§3 约束注入 + P0 缓解"]:::src -.约束.-> coder
     si["self-improve<br/>诊断出提案 + 闭合上一提案"]:::src -.反馈.-> pm
 
 ```
@@ -149,7 +141,6 @@ flowchart LR
 | **coder** | 每模块 P0 清零 + 改动文件/行数与任务 ID 对应 | tester 检 P0 清零记录 |
 | **tester** | Gate A 测试方案就绪 + Gate B P0 全部通过 · P1 高通过率 · 修复 ≤ 2 轮 | reporter 检测试报告与实施报告一致 |
 | **reporter** | 三报告（后端实施/前端实施/测试）交叉引用一致 + git commit | pm 检三报告闭合 |
-| **security** | 威胁模型覆盖所有安全面 + §3 约束已注入 coder 任务 + P0 安全项状态已标记 | coder 检任务中是否含安全约束 |
 | **self-improve** | 诊断信号 ≥ 1 条 + 改进提案 ≥ 1 条 + 上一故事提案状态已更新 | pm 检提案是否进入改进清单 |
 
 ## 文档写作原则
@@ -246,7 +237,6 @@ flowchart LR
 | "P2 不影响交付，我先忽略" | P2 堆叠 = 3 个故事后 P0。记录不阻断但必须记录。 |
 | "这个场景太罕见了，不需要验证" | 罕见场景 = 生产事故温床。至少 Level C 标注 + P2 记录。 |
 | "我已经读过代码了，不需要 grep" | 人眼扫描不如 grep 精确。影响分析必须用搜索工具，非视觉扫描。 |
-| "这个模式我见过很多次了" | 见过 ≠ 验证过。每个实例独立验证，不依赖记忆中的模式匹配。 |
 
 ### 多 Agent 协作模式
 
@@ -255,15 +245,14 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph 协作["三种协作模式"]
-        P1["委派模式<br/>pm → coder/tester/security<br/>单向下达·信号回传"]:::mode
+        P1["委派模式<br/>pm → coder/tester<br/>单向下达·信号回传"]:::mode
         P2["流水模式<br/>coder → tester → reporter<br/>逐级传递·每级验证"]:::mode
-        P3["横切模式<br/>security -.约束.-> coder<br/>si -.提案.-> pm<br/>并行约束·不阻塞主流程"]:::mode
+        P3["横切模式<br/>si -.提案.-> pm<br/>并行约束·不阻塞主流程"]:::mode
     end
 
     subgraph 失败["协调反模式"]
         F1["信息孤岛<br/>Agent 不读上游产出"]:::bad
         F2["重复工作<br/>两 Agent 改同一文件"]:::bad
-        F3["信号丢失<br/>交接信号未写入 rui-state"]:::bad
     end
 
 ```
@@ -272,7 +261,7 @@ flowchart LR
 |------|------|---------|--------|
 | 委派 | pm 拆故事后分配任务 | 任务含 Agent + 门禁 + AC | pm 不读 coder 实现报告就关闭故事 |
 | 流水 | 代码完成后验证 | P0 清零 → Gate B → 三报告 | reporter 不读实施报告就出测试报告 |
-| 横切 | security/si 约束主流程 | §3 约束注入 / 提案追加 | security 发现 P0 但未写入 coder 任务 |
+| 横切 | si 约束主流程 | 提案追加 | si 发现改进空间但未写入提案 |
 
 ### 验证门禁
 

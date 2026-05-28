@@ -17,8 +17,6 @@ const VALID_TRANSITIONS = {
 };
 
 const STORY_PANEL_DIR = "docs/故事任务面板";
-const RUI_STATE_FILE = ".memory/rui-state.json";
-const STATUS_HISTORY_FILE = ".memory/status-history.jsonl";
 const ARGV_OFFSET = 2;
 const STATUS_ORDER = ["改进", "报告", "测试", "实施", "设计", "任务"];
 const STATUS_LABELS = {
@@ -62,8 +60,6 @@ function showHelp() {
   console.log("  改进 → 报告");
   console.log("");
   console.log("输出:");
-  console.log("  transition: 更新 rui-state.json + 追加 status-history.jsonl");
-  console.log("  dashboard: 读取所有 docs/故事任务面板/*/.memory/rui-state.json");
   console.log("");
 }
 
@@ -129,27 +125,16 @@ function checkTransition(from, to) {
 }
 
 function readRuiState(storyPath) {
-  const statePath = join(storyPath, RUI_STATE_FILE);
-  if (!existsSync(statePath)) return null;
   try {
-    return JSON.parse(readFileSync(statePath, "utf-8"));
   } catch {
     return null;
   }
 }
 
 function writeRuiState(storyPath, state) {
-  const memoryDir = join(storyPath, ".memory");
-  if (!existsSync(memoryDir)) mkdirSync(memoryDir, { recursive: true });
-  const statePath = join(memoryDir, "rui-state.json");
-  writeFileSync(statePath, JSON.stringify(state, null, 2) + "\n", "utf-8");
 }
 
 function appendStatusHistory(storyPath, entry) {
-  const memoryDir = join(storyPath, ".memory");
-  if (!existsSync(memoryDir)) mkdirSync(memoryDir, { recursive: true });
-  const historyPath = join(memoryDir, "status-history.jsonl");
-  appendFileSync(historyPath, JSON.stringify(entry) + "\n", "utf-8");
 }
 
 function applyTransition(opts, projectRoot) {

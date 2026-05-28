@@ -16,14 +16,12 @@ lifecycle: default-pipeline
 
 **可执行入口**: `node skills/rui-bot/send.mjs [options]` — 发送通知或健康检查。`--no-send` 仅追加日志不发 HTTP。
 
-[工作流全景](#工作流全景) · [调用形态](#调用形态) · [消息格式](#消息格式) · [消息通知列表](#消息通知列表) · [API 契约](#api-契约) · [安全](#安全) · [hook 触发器](#hook-触发器) · [空输入](#空输入) · [生效标志](#生效标志)
+[工作流全景](#工作流全景) · [调用形态](#调用形态) · [消息格式](#消息格式) · [API 契约](#api-契约) · [安全](#安全) · [hook 触发器](#hook-触发器) · [空输入](#空输入) · [生效标志](#生效标志)
 
 ## 工作流全景
 
 ```mermaid
 flowchart TB
-    RUI["rui 管线完成 / 阻断 / 失败"]:::src --> LOG["① 追加日志<br/>等价 send --no-send → 消息通知列表"]:::step
-    LOG --> SYNC["② rui-import 同步"]:::step
     SYNC --> SEND["③ 发送通知<br/>send → 企微 webhook"]:::step
     SEND --> DONE["闭环"]:::done
 
@@ -33,7 +31,6 @@ flowchart TB
 
 | 步骤 | 操作 | 说明 |
 |------|------|------|
-| ① 追加日志 | `send --no-send` 等价行为 | 写入 `消息通知列表.md`，不发 HTTP |
 | ② 文档同步 | `rui-import` workspace 全量同步 | 推送变更到远端 |
 | ③ 发送通知 | `send` 等价行为 | POST 企微 webhook |
 
@@ -84,7 +81,6 @@ flowchart LR
 
 ```
 name = "<story>"   # kebab-case 的故事名
-  → 日志路径 = docs/故事任务面板/<story>/消息通知列表.md
 ```
 
 ### 内置配置
@@ -183,27 +179,6 @@ flowchart LR
 | 🎯 结论 | 完成 / 阻断 / 门禁失败 + story + 阶段 | 管线执行结论 |
 | ⏱️ 会话 | `<日期> <时间范围> | <N> agents 参与` | 执行时间与参与角色 |
 
-## 消息通知列表
-
-```mermaid
-flowchart LR
-    SEND["rui-bot<br/>name=&lt;Project&gt;-&lt;story&gt;"]:::src --> PARSE["分解路径<br/>&lt;story&gt;/"]:::op
-    PARSE --> APPEND["追加写入"]:::op
-    APPEND --> FILE["docs/故事任务面板/<br/>&lt;story&gt;/<br/>消息通知列表.md"]:::file
-
-    APPEND -.->|"目录不存在"| MKDIR["递归创建"]:::util
-
-```
-
-| 项目 | 说明 |
-|------|------|
-| 触发条件 | 指定了 `name` 时（无 `name` 时跳过日志） |
-| 写入模式 | 追加（append） |
-| 时间戳 | `【YYYY-MM-DD HH:mm:ss】` 单独一行作为分隔 |
-| 条目格式 | 时间戳行 + 空行 + 完整正文（含首行 `【项目名】`） + 末尾换行 |
-| 目录处理 | 不存在时递归创建 |
-| `noSend=true` | 仍执行日志写入 |
-
 ## API 契约
 
 ```mermaid
@@ -261,29 +236,9 @@ flowchart LR
 
 ## hook 触发器
 
-> rui 管线末端依次触发以下两个等价行为，覆盖三步交付的 ① 与 ③。
+> rui 管线末端触发通知发送。
 
-### ① hook-log（追加日志，不发送）
-
-```mermaid
-flowchart LR
-    PIPE["管线完成"]:::s --> SCAN["扫描 docs/故事任务面板/<br/>找最近 1h 内活跃故事"]:::op
-    SCAN --> Q{"找到?"}
-    Q -->|"否"| SKIP["静默跳过"]:::warn
-    Q -->|"是"| BUILD["按 rui-state.json<br/>构建消息"]:::op
-    BUILD --> APPEND["执行 send（noSend=true）<br/>写入 消息通知列表"]:::out
-
-```
-
-| 步骤 | 行为 |
-|------|------|
-| 活跃故事识别 | 遍历 `docs/故事任务面板/<story>/.memory/rui-state.json`，挑选 `timestamp` 在最近 1 小时内且最新的一条 |
-| 无活跃故事 | 静默跳过，退出码 0 |
-| 消息构建 | 见下文「自动消息模板」 |
-| 发送 | 等价 `send agent=rui name=<story> noSend=true content=...` |
-| 失败 | 记录到 stderr，不阻断 |
-
-### ③ hook-notify（实际发送）
+### hook-notify（发送通知）
 
 ```mermaid
 flowchart LR
@@ -316,7 +271,6 @@ flowchart LR
 📌 范围: docs/故事任务面板/<story>/
 👉 下一步: 继续下一阶段
 🌐 影响: docs/故事任务面板/<story>/
-📎 证据: .memory/rui-state.json
 ⏱️ 会话: <date> | <N> agents 参与
 ```
 
@@ -328,10 +282,8 @@ flowchart LR
 🎯 结论: 阻断 <story>
 📝 描述: 管线在 <current_stage> 阶段被阻断
 📌 范围: docs/故事任务面板/<story>/
-❌ 原因: <state.block_reason 或 "见 rui-state.json">
 🧭 恢复点: <current_stage>
 🌐 影响: docs/故事任务面板/<story>/
-📎 证据: .memory/rui-state.json
 ⏱️ 会话: <date> | <N> agents 参与
 ```
 
@@ -342,9 +294,7 @@ flowchart TD
     EMPTY["无参数 / 空输入"]:::src --> CHECK["检测三项"]:::op
     CHECK --> T1["API_X_TOKEN 是否存在?"]:::check
     CHECK --> T2["内置配置是否就绪?"]:::check
-    CHECK --> T3["消息通知列表.md 是否存在?"]:::check
-
-    T1 & T2 & T3 --> RECOMMEND["推荐任务"]:::out
+    T1 & T2 --> RECOMMEND["推荐任务"]:::out
 
     subgraph 推荐["推荐场景"]
         R1["配置缺失 → 检查 token / config"]:::rec
@@ -355,7 +305,7 @@ flowchart TD
 
 ```
 
-无参数时不发送消息，仅检测 `API_X_TOKEN` / 内置配置 / 故事面板 `消息通知列表.md` 并输出推荐任务。
+无参数时不发送消息，仅检测 `API_X_TOKEN` / 内置配置并输出推荐任务。
 
 ## 生效标志
 
@@ -363,7 +313,6 @@ flowchart TD
 flowchart LR
     S1["场景字段齐全<br/>完成 / 阻断 / 门禁 必含项到位"]:::sig --> S2["格式合规<br/>纯文本 · emoji:值 · ≤2000字"]:::sig
     S2 --> S3["安全底线<br/>token / webhook 不入库"]:::sig
-    S3 --> S4["日志完整<br/>消息通知列表 已追加"]:::sig
 
 ```
 
@@ -372,4 +321,3 @@ flowchart LR
 | 场景字段齐全 | 补齐缺失字段，重新发送 |
 | 格式合规（纯文本 · emoji:值 · ≤2000字） | 修正格式，重新发送 |
 | token / webhook 不入库 | 从 git 历史清除，轮换凭据 |
-| `消息通知列表` 已追加 | 补写日志条目 |

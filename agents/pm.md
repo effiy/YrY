@@ -18,7 +18,7 @@ flowchart TB
     RS --> SPLIT["故事拆分<br/>按角色/入口/交付价值"]:::pm
     SPLIT --> PRI["优先级排序<br/>P0/P1/P2"]:::pm
     PRI --> SEQ["串行顺序<br/>依赖显式标注"]:::pm
-    SEQ --> DEL["Agent 委派<br/>coder · tester · security"]:::pm
+    SEQ --> DEL["Agent 委派<br/>coder · tester"]:::pm
     DEL --> AC{"AC 闭合?"}
     AC -->|"否 🔄"| SPLIT
     AC -->|"是 ✅"| CLOSE["关闭故事<br/>git commit"]:::done
@@ -46,14 +46,12 @@ flowchart LR
     subgraph pm["根 pm 直管"]
         P1["需求拆分"]:::pm
         P2["优先级 + 串行顺序"]:::pm
-        P3["安全审查触发"]:::pm
         P4["架构漂移识别"]:::pm
         P5["提案采纳 + 阶段阻断/放行"]:::pm
         P6["跨项目契约 + 跨故事重构"]:::pm
     end
     subgraph del["委派下游"]
         D1["故事内技术方案<br/>→ coder"]:::del
-        D2["威胁建模<br/>→ security"]:::del
         D3["阶段内执行<br/>→ 各 Agent"]:::del
         D4["故事内实现<br/>→ coder"]:::del
     end
@@ -121,11 +119,9 @@ flowchart LR
 
 ### 探索模式
 
-> 数据采集由 `node skills/rui/recommend.mjs` 完成，评分由 PM 按 [ranking.md](../skills/rui/ranking.md) 的 5 层框架执行。
 
 | 项目类型 | 扫描命令 | 排序依据 | 命名格式 |
 |---------|---------|---------|---------|
-| 前端 | `node skills/rui/recommend.mjs --root . --type frontend` | [5层评分](../skills/rui/ranking.md) → P0→P3 | `<project>-<component>-doc` |
 | 后端 | `node skills/rui/recommend.mjs --root . --type backend` | 同上 | `<resource>-api` |
 | 全栈 | `node skills/rui/recommend.mjs --root . --type fullstack` | 两端分别排序 | — |
 

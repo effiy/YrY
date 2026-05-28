@@ -166,7 +166,6 @@ flowchart TB
 
 ### 提案路由
 
-> 趋势发现不直接生成提案——先写入诊断假设，由 self-improve Agent 综合其他数据源（执行记忆、Git diff、基线）判定是否触发提案。同一趋势信号连续 ≥2 故事触发 → 升级为规则。
 
 ```mermaid
 flowchart LR
@@ -238,9 +237,7 @@ flowchart LR
 | 按需 — 独立趋势探查 | 用户手动 | 任意子命令 | 探索性查询，不入自改进复盘 | 否 |
 | 经验技能化 — 趋势刷新 | self-improve Agent | `all` | 连续 ≥2 故事触发后自动刷新趋势参考 | 否 |
 
-### 记忆压缩与注入
 
-> 趋势快照不缓存到本地文件（数据新鲜度约束），但**诊断结论**通过 self-improve 的记忆压缩管线持久化。
 
 ```mermaid
 flowchart LR

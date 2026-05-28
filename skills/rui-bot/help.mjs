@@ -91,8 +91,7 @@ ${item("--no-send", "仅追加日志，不发送 HTTP 请求", cyan)}
 ${item("--retries=<N>", "HTTP 发送重试次数（默认 3）", yellow)}
 
 ${subhdr("输出")}
-${item("通知日志", "追加到 docs/故事任务面板/<story>/消息通知列表.md", dim)}
-${item("交付追踪", "追加到 .memory/delivery-tracking.jsonl", dim)}
+${item("send.mjs", "发送企微通知，详见 --help", dim)}
 ${item("HTTP 响应", "stdout 打印发送结果", dim)}
 
 ${hdr("使用场景")}

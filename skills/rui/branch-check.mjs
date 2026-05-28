@@ -41,7 +41,6 @@ function showHelp() {
   console.log("验证项:");
   console.log("  ① 当前分支 = feat/<name>（write 模式）");
   console.log("  ② feat/<name> 从 main 拉出（write 模式）");
-  console.log("  ③ story-level .memory/rui-state.json 写入 branch 字段");
   console.log("");
 }
 
@@ -121,12 +120,8 @@ function existingFeatBranches(cwd) {
   return result.split("\n").map((l) => l.replace(/^[* ] /, "").trim()).filter(Boolean);
 }
 
-// --- rui-state update ---------------------------------------------------------
 function updateRuiState(storyPath, branch) {
-  const memoryDir = join(storyPath, ".memory");
-  mkdirSync(memoryDir, { recursive: true });
 
-  const statePath = join(memoryDir, "rui-state.json");
   let state = {};
   if (existsSync(statePath)) {
     try {
@@ -138,7 +133,6 @@ function updateRuiState(storyPath, branch) {
 
   state.branch = branch;
   state.last_updated = new Date().toISOString();
-  writeFileSync(statePath, JSON.stringify(state, null, 2) + "\n", "utf-8");
 }
 
 // --- mode handlers -----------------------------------------------------------
@@ -213,22 +207,17 @@ function checkWriteMode(projectRoot, storyName) {
     // Don't block — this is a warning, not an error, to avoid blocking legitimate cases
   }
 
-  // Step 4: Update story-level rui-state.json
   const storyPath = join(projectRoot, STORY_PANEL_DIR, storyName);
   if (existsSync(storyPath)) {
     updateRuiState(storyPath, featBranch);
-    console.log(dim(`  rui-state.branch → ${featBranch}`));
   }
 
-  // Step 5: Update root-level rui-state.json
-  const rootStatePath = join(projectRoot, ".memory", "rui-state.json");
   if (existsSync(rootStatePath)) {
     try {
       const rootState = JSON.parse(readFileSync(rootStatePath, "utf-8"));
       rootState.branch = featBranch;
       rootState.last_updated = new Date().toISOString();
       writeFileSync(rootStatePath, JSON.stringify(rootState, null, 2) + "\n", "utf-8");
-      console.log(dim(`  root rui-state.branch → ${featBranch}`));
     } catch {
       // ignore
     }

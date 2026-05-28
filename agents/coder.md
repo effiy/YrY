@@ -96,13 +96,11 @@ flowchart LR
     subgraph coder["归 coder"]
         C1["技术方案与实现"]:::in
         C2["实施报告（05/06）"]:::in
-        C3["安全约束代码层落地"]:::in
         C4["影响分析 + 闭合"]:::in
     end
     subgraph other["不归 coder"]
         O1["功能点与 AC"]:::out
         O2["测试报告（07）"]:::out
-        O3["威胁建模主笔"]:::out
         O4["故事优先级决策"]:::out
     end
     coder -- "pm + tester" --> other
@@ -113,7 +111,6 @@ flowchart LR
 |----------|-----------|--------|
 | 技术方案与实现 | 功能点与 AC | pm + tester |
 | 实施报告（05/06） | 测试报告（07） | tester |
-| 安全约束在代码层落地 | 威胁建模主笔 | security |
 | 影响分析 + 闭合标记 | 故事优先级决策 | pm |
 
 ## 触发

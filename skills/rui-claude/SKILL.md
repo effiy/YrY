@@ -11,7 +11,7 @@ lifecycle: default-pipeline
 
 作用范围：当前项目的 `.claude/` 目录。sync / retro 均以 `.claude/` 为操作边界。
 
-[命令族全景](#命令族全景) · [操作边界](#操作边界) · [sync](#sync) · [update](#update) · [retro](#retro) · [history](#history) · [核心规则](#核心规则) · [参考模式](#参考模式) · [生效标志](#生效标志)
+[命令族全景](#命令族全景) · [操作边界](#操作边界) · [sync](#sync) · [update](#update) · [retro](#retro) · [核心规则](#核心规则) · [参考模式](#参考模式) · [生效标志](#生效标志)
 
 > **`version --up` 已迁移至 [`/rui version --up`](../rui/SKILL.md#version---up)。**
 
@@ -24,13 +24,11 @@ flowchart TB
     Q1 -->|"sync"| SYNC["覆盖式同步<br/>API pull → 本地覆盖"]:::cmd
     Q1 -->|"update"| UPDATE["插件升级<br/>git pull → sync .claude/"]:::cmd
     Q1 -->|"retro"| RETRO["健康度分析<br/>三节复盘"]:::cmd
-    Q1 -->|"history"| HIST["操作历史<br/>list / stats"]:::cmd
     Q1 -->|"&lt;req&gt;"| REQ["需求管线<br/>doc + code → 交付"]:::cmd
     Q1 -->|"空输入"| LIST["推荐任务<br/>5~10 条"]:::cmd
 
     SYNC --> S_OUT[".claude/ 全量覆盖"]:::out
     RETRO --> R_OUT["docs/自改进故事面板/<br/>&lt;project&gt;-&lt;date&gt;.md"]:::out
-    HIST --> H_OUT[".claude/.history/<br/>rui-claude-history.jsonl"]:::out
     REQ --> PIPE["rui code 管线<br/>仅限 .claude/ 内"]:::pipe
     LIST --> L_OUT["推荐列表"]:::out
 
@@ -41,7 +39,6 @@ flowchart TB
 | `/rui-claude sync` | 查询远端 API → 逐文件 pull 覆盖本地 | `.claude/` 全量覆盖 |
 | `/rui-claude update` | git pull 最新 YrY 插件 → 清除旧版本缓存 → sync 远端 .claude/ | 插件升级 + 缓存清除 + `.claude/` 刷新 |
 | `/rui-claude retro` | 分析 .claude/ 结构健康度 → 三节复盘 | `docs/自改进故事面板/<date>.md` |
-| `/rui-claude history` | 查看操作历史：`list [--limit N]` / `stats [--json]` | 终端输出 |
 | `/rui-claude 需求` | 需求解析→故事拆分→逐故事 doc+code 管线→交付 | `.claude/` 内文件变更 |
 | `/rui-claude` | 按 5 层管线评分推荐 5~10 条任务 | 推荐列表 |
 
@@ -67,7 +64,7 @@ flowchart LR
     TRIGGER["/rui-claude sync"]:::src --> CHECK{"确认用户意图?"}
     CHECK -->|"否"| ABORT["中止"]:::abort
     CHECK -->|"是"| PULL["node skills/rui-import/sync.mjs<br/>dir=.claude/ mode=pull<br/>远端 API → 逐文件覆盖本地"]:::op
-    PULL --> DONE["完成<br/>自动记录 history"]:::done
+    PULL --> DONE["完成"]:::done
 
 ```
 
@@ -77,7 +74,6 @@ flowchart LR
 | 行为 | 覆盖式更新，逐文件从远端 pull 覆盖本地 `.claude/`，保留嵌套目录结构 |
 | 前置条件 | `API_X_TOKEN` 环境变量已配置 |
 | 委托 | 完全委托 `rui-import`（`dir=.claude/ mode=pull`），不自行实现同步逻辑 |
-| 完成后 | 自动记录 history |
 
 ## update — 插件升级 + 缓存清除 + 配置同步
 
@@ -100,7 +96,6 @@ flowchart LR
 | 步骤 3 | 委托 `rui-claude sync` — 从远端 API 覆盖同步最新 .claude/ 目录 |
 | 前置条件 | 当前分支为 main，网络可达 origin + api.effiy.cn，`API_X_TOKEN` 已配置 |
 | 降级 | git pull 失败时中止并提示手动重试；sync 失败时遵循 sync 自身的降级策略 |
-| 完成后 | 自动记录 history |
 
 ## retro — 健康度分析
 
@@ -123,25 +118,6 @@ flowchart LR
 | 输入 | 本地 `.claude/` 目录的 `agents/` · `rules/` · `skills/` · `formulas.md` 等结构 |
 | 网络 | 纯本地分析，不连远端 |
 | 产出 | `docs/自改进故事面板/<date>.md`（三节：§1 配置结构 · §2 健康度 · §3 改进项） |
-
-## history — 操作历史
-
-```mermaid
-flowchart LR
-    CMD["sync / retro / &lt;req&gt; 完成"]:::src --> AUTO["自动追加历史条目"]:::op
-    AUTO --> APPEND["追加写入"]:::store
-    APPEND --> FILE[".claude/.history/<br/>rui-claude-history.jsonl"]:::file
-
-    FILE -.->|"约束"| C1["append-only"]:::rule
-    FILE -.->|"约束"| C2["不入库"]:::rule
-    FILE -.->|"约束"| C3["不同步"]:::rule
-
-```
-
-| 子命令 | 说明 |
-|--------|------|
-| `list [--limit N]` | 列出最近 N 条操作记录 |
-| `stats [--json]` | 操作统计摘要 |
 
 ## 核心规则
 
@@ -191,7 +167,6 @@ flowchart LR
 flowchart LR
     S1["操作边界<br/>仅 .claude/ 内"]:::sig --> S2["sync 确认<br/>意图确认后覆盖"]:::sig
     S2 --> S3["管线完整<br/>变更走 rui code"]:::sig
-    S3 --> S4["history 记录<br/>append-only 不入库"]:::sig
 
 ```
 
@@ -200,4 +175,3 @@ flowchart LR
 | 操作仅限 `.claude/` 目录 | 撤销外部变更 |
 | sync 前确认用户意图 | 补确认后重新执行 |
 | 变更走 rui code 管线 | 切分支重走管线 |
-| history 仅本地不入库 | 从 git 暂存区移除 history 文件 |

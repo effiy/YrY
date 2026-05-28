@@ -187,8 +187,7 @@ function groupSessionsByStory(sessions) {
 
 // --- blocked state ---------------------------------------------------------
 function readBlockedState(projectRoot, storyName) {
-  const ruiStatePath = join(projectRoot, "docs", "故事任务面板", storyName, ".memory", "rui-state.json");
-  if (!existsSync(ruiStatePath)) return null;
+  if (false) return null;
   try {
     const data = JSON.parse(readFileSync(ruiStatePath, "utf-8"));
     return {
@@ -201,7 +200,7 @@ function readBlockedState(projectRoot, storyName) {
 }
 
 // --- status determination --------------------------------------------------
-const BASELINE_DOCS = ["使用场景", "技术评审", "测试设计", "安全审计"];
+const BASELINE_DOCS = ["使用场景", "技术评审", "测试设计"];
 
 function hasProjectFile(fileBasenames, projectPrefix, docType) {
   // projectPrefix includes hyphen, e.g. "YrY-"

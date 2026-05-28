@@ -9,12 +9,6 @@ import { execSync } from "node:child_process";
 
 // --- constants ----------------------------------------------------------------
 const STORY_PANEL_DIR = "docs/故事任务面板";
-const PROPOSALS_DIR = ".improvement";
-const PROPOSALS_FILE = "proposals.jsonl";
-const EXEC_MEMORY_FILE = ".memory/execution-memory.jsonl";
-const TOOL_AUDIT_FILE = ".memory/tool-audit.jsonl";
-const DELIVERY_TRACK_FILE = ".memory/delivery-tracking.jsonl";
-const RUI_STATE_FILE = ".memory/rui-state.json";
 
 // Materialization constants
 const IMPROVE_STORY_PREFIX = "improve";
@@ -29,14 +23,14 @@ const P0_DENSITY_MULTIPLIER = 2.0;
 const T3_PROPORTION_THRESHOLD = 0.30;
 const STAGE_DURATION_MULTIPLIER = 3.0;
 
-const PROPOSAL_TYPES = ["process", "quality", "refactor", "security", "skill"];
+const PROPOSAL_TYPES = ["process", "quality", "refactor", "skill"];
 
 // Diagnostic → proposal type routing (from rules/self-improve.md)
 const DIAGNOSTIC_PROPOSAL_TYPE = {
   D0: "process",
   D1: "refactor",
   D2: "quality",
-  D3: "security",
+  D3: "refactor",
   D4: "quality",
   D5: "refactor",
   D6: "process",
@@ -104,12 +98,11 @@ function showHelp() {
   console.log("");
   console.log("D0-D7 诊断映射:");
   console.log("  D0 基线偏离 → process     D1 效率退化 → refactor");
-  console.log("  D2 质量退化 → quality     D3 复杂度增长 → security");
+  console.log("  D2 质量退化 → quality     D3 复杂度增长 → refactor");
   console.log("  D4 流程退化 → quality     D5 依赖退化 → refactor");
   console.log("  D6 文档过时 → process     D7 配置漂移 → process");
   console.log("");
-  console.log("升级阈值: process/quality/refactor ≥3 故事, security ≥1, skill ≥2");
-  console.log("数据要求: ≥3 条执行记忆走全量诊断，<3 条降级观察模式");
+  console.log("升级阈值: process/quality/refactor ≥3 故事, skill ≥2");
   console.log("");
 }
 
@@ -194,14 +187,8 @@ function readProjectName(projectRoot) {
 // --- data collection for a story --------------------------------------------
 function collectStoryData(projectRoot, storyName) {
   const storyPath = join(projectRoot, STORY_PANEL_DIR, storyName);
-  const execRecords = readJsonl(join(storyPath, EXEC_MEMORY_FILE));
-  const rootExecRecords = readJsonl(join(projectRoot, ".memory", "execution-memory.jsonl"));
   const allExec = execRecords.concat(rootExecRecords.filter((r) => r.story_name === storyName || r.story === storyName));
 
-  const toolAudit = readJsonl(join(storyPath, TOOL_AUDIT_FILE));
-  const deliveryTrack = readJsonl(join(storyPath, DELIVERY_TRACK_FILE));
-  const ruiState = readJson(join(storyPath, RUI_STATE_FILE));
-  const proposals = readJsonl(join(storyPath, PROPOSALS_FILE));
 
   return { storyName, storyPath, allExec, toolAudit, deliveryTrack, ruiState, proposals };
 }
@@ -377,7 +364,6 @@ function generateProposals(storyName, diagnostics, storyPath) {
   }
 
   // Dedup: skip diagnostics that already have an open proposal
-  const existingProposalsPath = join(storyPath, PROPOSALS_DIR, PROPOSALS_FILE);
   const existingProposals = readJsonl(existingProposalsPath);
   const openDiags = new Set(
     existingProposals
@@ -424,11 +410,8 @@ function generateProposals(storyName, diagnostics, storyPath) {
     });
   }
 
-  // Write to proposals.jsonl
-  const proposalsDir = join(storyPath, PROPOSALS_DIR);
   if (!existsSync(proposalsDir)) mkdirSync(proposalsDir, { recursive: true });
 
-  const proposalsPath = join(proposalsDir, PROPOSALS_FILE);
   for (const p of proposals) {
     appendFileSync(proposalsPath, JSON.stringify(p) + "\n", "utf-8");
   }
@@ -524,9 +507,6 @@ function createRuiState(storyPath, proposal) {
     ],
   };
 
-  const memoryDir = join(storyPath, ".memory");
-  mkdirSync(memoryDir, { recursive: true });
-  writeFileSync(join(memoryDir, "rui-state.json"), JSON.stringify(ruiState, null, 2) + "\n", "utf-8");
   return ruiState;
 }
 
@@ -571,7 +551,6 @@ function generateBaselineDoc(proposal, projectName, storyDirName) {
 >
 > ## §1 Story
 >
-> 作为项目维护者，我想要 ${proposal.actionable_command}，以便解决 ${diagLabel}，提升项目健康度。优先级 ${proposal.priority}。范围边界：${proposal.problem_source} 相关配置与文档。依赖：执行记忆数据可用，诊断基线可访问。来源：self-improve / ${diagId} / ${proposal.id}。
 >
 > ---
 >
@@ -644,14 +623,11 @@ function materializeProposal(proposal, projectRoot, projectName, dryRun) {
     return { proposalId: proposal.id, storyDirName, storyPath, dryRun: true };
   }
 
-  // Create story directory and .memory/
   mkdirSync(storyPath, { recursive: true });
   createRuiState(storyPath, proposal);
   const docPath = generateBaselineDoc(proposal, projectName, storyDirName);
 
   // Update proposal record with materialized story dir
-  const proposalsDir = join(projectRoot, STORY_PANEL_DIR, proposal.story_name, PROPOSALS_DIR);
-  updateProposalRecord(join(proposalsDir, PROPOSALS_FILE), proposal, storyDirName);
 
   return { proposalId: proposal.id, storyDirName, storyPath, docPath, dryRun: false };
 }
@@ -663,8 +639,6 @@ function cmdMaterialize(opts) {
   const minPriorityOrder = PRIORITY_ORDER[minPriority] !== undefined ? PRIORITY_ORDER[minPriority] : PRIORITY_ORDER.P2;
 
   const storyPath = join(projectRoot, STORY_PANEL_DIR, opts.story);
-  const proposalsDir = join(storyPath, PROPOSALS_DIR);
-  const proposalsPath = join(proposalsDir, PROPOSALS_FILE);
 
   if (!existsSync(proposalsPath)) {
     console.log("");
@@ -733,7 +707,6 @@ function cmdGenerate(opts) {
 
   if (data.allExec.length < MIN_EXEC_MEMORIES) {
     console.log("");
-    console.log(yellow(`[proposals] ⚠️  数据不足: ${data.allExec.length} 条执行记忆，需要 ≥ ${MIN_EXEC_MEMORIES} 条`));
     console.log(yellow("  降级: 跳过 E1-E4 评估，仅生成观察记录"));
     console.log("");
 
@@ -780,16 +753,13 @@ function cmdGenerate(opts) {
 function cmdList(opts) {
   const projectRoot = findProjectRoot(process.cwd());
   const storyPath = join(projectRoot, STORY_PANEL_DIR, opts.story || "");
-  const proposalsDir = join(storyPath, PROPOSALS_DIR);
 
   if (!existsSync(proposalsDir)) {
     console.log("");
-    console.log(dim(`  .improvement/ 目录不存在: ${storyPath}`));
     console.log("");
     return;
   }
 
-  const proposals = readJsonl(join(proposalsDir, PROPOSALS_FILE));
 
   if (opts.status && opts.status !== "all") {
     const filtered = proposals.filter((p) => p.status === opts.status);
@@ -844,7 +814,6 @@ function cmdList(opts) {
 
 function cmdEvaluate(opts) {
   console.log("");
-  console.log(yellow("[proposals] E1-E4 评估需要前后各 ≥3 条执行记忆，当前数据不足"));
   console.log(yellow("  跳过硬评估，提案状态保持 pending"));
   console.log("");
   console.log(dim("  提示: 运行更多故事管线积累数据后，重新运行 evaluate"));
@@ -862,7 +831,6 @@ function cmdUpgradeCandidates(opts) {
       const dirs = readdirSync(panelDir, { withFileTypes: true })
         .filter((d) => d.isDirectory() && !d.name.startsWith("."));
       for (const d of dirs) {
-        const proposalsPath = join(panelDir, d.name, PROPOSALS_DIR, PROPOSALS_FILE);
         const proposals = readJsonl(proposalsPath);
         for (const p of proposals) {
           allProposals.push({ ...p, _dir: d.name });
@@ -893,7 +861,7 @@ function cmdUpgradeCandidates(opts) {
     process: "rules/code-pipeline.md",
     quality: "agents/tester.md 或 agents/coder.md",
     refactor: "rules/code-pipeline.md §深度模块",
-    security: "agents/security.md P0 约束",
+
     skill: "skills/ 或 rules/ 新条目",
   };
 
@@ -901,7 +869,7 @@ function cmdUpgradeCandidates(opts) {
     process: 3,
     quality: 3,
     refactor: 3,
-    security: 1,
+
     skill: 2,
   };
 
@@ -922,7 +890,6 @@ function cmdUpgradeCandidates(opts) {
   if (!foundCandidate) {
     console.log(dim("  无满足升级阈值的提案类型"));
     console.log("");
-    console.log(dim("  升级阈值: process/quality/refactor ≥3 故事, security ≥1 故事, skill ≥2 故事"));
     console.log("");
     return;
   }

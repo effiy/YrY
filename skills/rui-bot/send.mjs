@@ -193,7 +193,6 @@ function buildMessage(opts, projectName) {
   const scope = opts.scope || (opts.story ? `docs/故事任务面板/${opts.story}/` : "—");
   const nextStep = opts.nextStep || (opts.status === "blocked" ? "修复后重跑同命令续跑" : "继续下一阶段");
   const impact = opts.impact || (opts.story ? `docs/故事任务面板/${opts.story}/` : "—");
-  const evidence = opts.evidence || (opts.story ? ".memory/rui-state.json" : "—");
   const session = opts.session || dateStr;
 
   lines.push(`${FIELD_EMOJI.conclusion} 结论: ${conclusion}`);
@@ -202,7 +201,6 @@ function buildMessage(opts, projectName) {
 
   // Scenario-specific fields
   if (opts.status === "blocked") {
-    lines.push(`${FIELD_EMOJI.reason} 原因: ${opts.reason || "见 rui-state.json"}`);
     lines.push(`${FIELD_EMOJI.recovery} 恢复点: ${opts.recovery || opts.stage || opts.story || "—"}`);
   }
   if (opts.status === "gate-fail") {
