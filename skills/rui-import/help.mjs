@@ -1,112 +1,58 @@
 #!/usr/bin/env node
-// rui-import — Batch sync local documents to remote API help
-// 用法: node skills/rui-import/help.mjs 或 /rui-import --help
+// rui-import — 文档同步到远端 API help
 
-const ANSI_BOLD = 1;
-const ANSI_DIM = 2;
-const ANSI_UNDERLINE = 4;
-const ANSI_YELLOW = 33;
-const ANSI_CYAN = 36;
-
-const { bold, underline, dim, yellow, cyan } = (() => {
-  const make = (code) => (s) => `\x1b[${code}m${s}\x1b[0m`;
-  const e = {
-    bold: make(ANSI_BOLD), underline: make(ANSI_UNDERLINE), dim: make(ANSI_DIM),
-    yellow: make(ANSI_YELLOW), cyan: make(ANSI_CYAN),
-  };
-  if (!process.stdout.isTTY) {
-    for (const k of Object.keys(e)) e[k] = (s) => s;
-  }
+const B = 1, D = 2, Y = 33, C = 36;
+const { bold, dim, yellow, cyan } = (() => {
+  const m = (c) => (s) => `\x1b[${c}m${s}\x1b[0m`;
+  const e = { bold: m(B), dim: m(D), yellow: m(Y), cyan: m(C) };
+  if (!process.stdout.isTTY) for (const k of Object.keys(e)) e[k] = (s) => s;
   return e;
 })();
 
-const INDENT = "  ";
-const SUB_INDENT = "    ";
-const LEFT_COLUMN_WIDTH = 52;
-const COLUMN_MIN_PADDING = 2;
+const I = "  ", SI = "    ", LW = 48;
 
-function hdr(text) {
-  return `\n${bold(text)}\n`;
+function hdr(t) { return `\n${bold(t)}\n`; }
+function item(c, d, f) {
+  const l = `${SI}${c}`;
+  return `${f ? f(l) : l}${" ".repeat(Math.max(2, LW - l.length))}${d}`;
 }
-
-function subhdr(text) {
-  return `\n${INDENT}${bold(text)}\n`;
-}
-
-function item(cmd, desc, colorFn) {
-  const left = `${SUB_INDENT}${cmd}`;
-  const pad = Math.max(COLUMN_MIN_PADDING, LEFT_COLUMN_WIDTH - left.length);
-  return `${colorFn ? colorFn(left) : left}${" ".repeat(pad)}${desc}`;
-}
-
-function flag(name, desc) {
-  const firstToken = name.split(/\s/)[0];
-  const prefix = firstToken.length === 1 ? "-" : "--";
-  return item(`  ${prefix}${name}`, desc, yellow);
-}
-
-function scene(title) {
-  return `\n${SUB_INDENT}${bold(title)}\n`;
-}
+function s(t) { return `\n${SI}${bold(t)}\n`; }
 
 const help = `
-${bold("# rui-import — 文档批量同步到远端")}
+${bold("# rui-import — 文档同步到远端")}
 
-${dim("扫描 · 过滤 · 路径映射 · 上传 | rui 管线强制集成")}
+${dim("扫描 · 过滤 · 上传 · 拉取 | rui 管线强制集成 | 执行入口: node skills/rui-import/sync.mjs")}
 
-${hdr("快速入门")}
-${item("/rui-import workspace=true", "项目根全量扫描 + 上传（最常用）", cyan)}
-${item("/rui-import", "状态检测：token / 远端可达性 / 文件差异 → 推荐任务", cyan)}
-${item("/rui-import mode=list", "仅枚举不上传，输出文件清单", cyan)}
+${hdr("语法")}
+${item("sync.mjs workspace=true", "项目根全量扫描 + 上传（最常用）", cyan)}
+${item("sync.mjs dir=<path>", "指定目录扫描 + 上传", cyan)}
+${item("sync.mjs file=<path>", "单文件导入（自动附加语义标签）", cyan)}
+${item("sync.mjs mode=pull dir=<path>", "远端 → 本地下载", yellow)}
+${item("sync.mjs mode=list", "仅枚举不上传，输出文件清单", cyan)}
 
-${hdr("参数")}
-
-${subhdr("路径控制")}
-${item("workspace=true", "项目根全量扫描 + 上传", cyan)}
-${item("dir=<absolute path>", "指定目录扫描 + 上传", cyan)}
+${hdr("常用选项")}
+${item("exts=md,json,yaml", "文件扩展名过滤（默认 md）", yellow)}
 ${item("prefix=a,b", "远端路径前缀（多级目录）", yellow)}
-${item("file=<path>", "单文件导入（自动附加三组语义标签）", cyan)}
 ${item("exclude=tmp,build", "追加排除子目录", yellow)}
-
-${subhdr("文件过滤")}
-${item("exts=md,json,yaml", "覆盖默认扩展名（默认：md）", yellow)}
-${item("names=a,b", "按文件名关键词过滤（pull 模式精确拉取）", yellow)}
-
-${subhdr("模式控制")}
-${item("mode=list", "仅枚举不上传，输出文件清单", cyan)}
-${item("mode=pull", "远端→本地下载（需配合 dir=）", cyan)}
-
-${subhdr("其他")}
+${item("names=a,b", "按文件名关键词过滤", yellow)}
 ${item("apiUrl=<url>", "覆盖默认 API 地址", yellow)}
 
 ${hdr("使用场景")}
-${scene("全量同步（rui 管线末端自动触发）")}
-${item("/rui-import workspace=true", "扫描项目根全部 .md + .claude/ → 上传", cyan)}
-${scene("从远端拉取故事文档")}
-${item("/rui-import dir=docs/故事任务面板/user-login/ mode=pull", "远端 → 本地覆盖", cyan)}
-${scene("从远端拉取 .claude/ 配置")}
-${item("/rui-import dir=.claude/ mode=pull", "远端 → 本地覆盖 .claude/ 全量", cyan)}
-${scene("同步指定目录 + 多文件类型")}
-${item("/rui-import dir=/path/to/docs exts=md,json,yaml", "仅该目录下的 md/json/yaml", cyan)}
-${scene("全量 + 排除临时目录")}
-${item("/rui-import workspace=true exclude=tmp,vendor", "跳过 tmp/ 和 vendor/", cyan)}
-${scene("预览不上传")}
-${item("/rui-import workspace=true mode=list", "列出待上传文件清单", cyan)}
-${scene("带远端前缀上传")}
-${item("/rui-import workspace=true prefix=docs,api-v2", "远端路径前追加 docs/api-v2/", cyan)}
-${scene("按文件名关键词精确拉取")}
-${item("/rui-import dir=docs/故事任务面板/user-login/ mode=pull names=技术评审,测试设计", "仅拉取名中含「技术评审」或「测试设计」的文件", cyan)}
-${scene("覆盖远端 API 地址")}
-${item("/rui-import workspace=true apiUrl=https://staging-api.example.com", "切换 API 目标（如预发验证）", cyan)}
-${scene("先预览再同步（安全工作流）")}
-${item("/rui-import workspace=true mode=list", "Step 1：预览待上传文件清单", cyan)}
-${item("/rui-import workspace=true", "Step 2：确认无误后实际同步", cyan)}
-${scene("仅同步 .claude/ 配置到远端")}
-${item("/rui-import dir=.claude/", "扫描 .claude/ 全量 → 上传到远端", cyan)}
-${scene("拉取单个故事的全部文档")}
-${item("/rui-import dir=docs/故事任务面板/user-login/ mode=pull", "从远端拉取整个故事目录覆盖本地", cyan)}
-${scene("单文件导入（自动语义标签）")}
-${item("/rui-import file=docs/故事任务面板/user-login/故事任务.md", "导入单个文件，自动附加 stage:doc / type:task / baseline:problem 标签", cyan)}
+${s("全量同步（rui 管线末端自动触发）")}
+${item("sync.mjs workspace=true", "扫描项目根全部 .md + .claude/ → 上传", cyan)}
+
+${s("从远端拉取故事文档")}
+${item("sync.mjs dir=docs/故事任务面板/user-login/ mode=pull", "远端 → 本地覆盖整个故事目录", cyan)}
+
+${s("从远端拉取 .claude/ 配置")}
+${item("sync.mjs dir=.claude/ mode=pull", "远端 → 本地覆盖 .claude/ 全量", cyan)}
+
+${s("先预览再同步（安全工作流）")}
+${item("sync.mjs workspace=true mode=list", "Step 1：预览待上传文件清单", cyan)}
+${item("sync.mjs workspace=true", "Step 2：确认无误后实际同步", cyan)}
+
+${s("单文件导入")}
+${item("sync.mjs file=docs/故事任务面板/user-login/故事任务.md", "导入单个文件，自动附加语义标签", cyan)}
 `;
 
 console.log(help);

@@ -121,6 +121,8 @@ function existingFeatBranches(cwd) {
 }
 
 function updateRuiState(storyPath, branch) {
+  const memoryDir = join(storyPath, ".memory");
+  const statePath = join(memoryDir, "rui-state.json");
 
   let state = {};
   if (existsSync(statePath)) {
@@ -133,6 +135,9 @@ function updateRuiState(storyPath, branch) {
 
   state.branch = branch;
   state.last_updated = new Date().toISOString();
+
+  if (!existsSync(memoryDir)) mkdirSync(memoryDir, { recursive: true });
+  writeFileSync(statePath, JSON.stringify(state, null, 2) + "\n", "utf-8");
 }
 
 // --- mode handlers -----------------------------------------------------------
@@ -212,12 +217,13 @@ function checkWriteMode(projectRoot, storyName) {
     updateRuiState(storyPath, featBranch);
   }
 
-  if (existsSync(rootStatePath)) {
+  const rootMemoryPath = join(projectRoot, ".memory", "rui-state.json");
+  if (existsSync(rootMemoryPath)) {
     try {
-      const rootState = JSON.parse(readFileSync(rootStatePath, "utf-8"));
+      const rootState = JSON.parse(readFileSync(rootMemoryPath, "utf-8"));
       rootState.branch = featBranch;
       rootState.last_updated = new Date().toISOString();
-      writeFileSync(rootStatePath, JSON.stringify(rootState, null, 2) + "\n", "utf-8");
+      writeFileSync(rootMemoryPath, JSON.stringify(rootState, null, 2) + "\n", "utf-8");
     } catch {
       // ignore
     }

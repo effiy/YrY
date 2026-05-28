@@ -210,7 +210,7 @@ function buildMessage(opts, projectName) {
 
   lines.push(`${FIELD_EMOJI.nextStep} 下一步: ${nextStep}`);
   lines.push(`${FIELD_EMOJI.impact} 影响: ${impact}`);
-  lines.push(`${FIELD_EMOJI.evidence} 证据: ${evidence}`);
+  lines.push(`${FIELD_EMOJI.evidence} 证据: ${opts.evidence || "—"}`);
   lines.push(`${FIELD_EMOJI.session} 会话: ${session}`);
 
   // Detail section with file stats

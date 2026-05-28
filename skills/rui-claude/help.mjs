@@ -1,97 +1,53 @@
 #!/usr/bin/env node
-// rui-claude — Manage .claude/ directories help
-// 用法: node skills/rui-claude/help.mjs 或 /rui-claude --help
+// rui-claude — .claude/ 目录管理 help
 
-const ANSI_BOLD = 1;
-const ANSI_DIM = 2;
-const ANSI_UNDERLINE = 4;
-const ANSI_YELLOW = 33;
-const ANSI_CYAN = 36;
-
-const { bold, underline, dim, yellow, cyan } = (() => {
-  const make = (code) => (s) => `\x1b[${code}m${s}\x1b[0m`;
-  const e = {
-    bold: make(ANSI_BOLD), underline: make(ANSI_UNDERLINE), dim: make(ANSI_DIM),
-    yellow: make(ANSI_YELLOW), cyan: make(ANSI_CYAN),
-  };
-  if (!process.stdout.isTTY) {
-    for (const k of Object.keys(e)) e[k] = (s) => s;
-  }
+const B = 1, D = 2, Y = 33, C = 36;
+const { bold, dim, yellow, cyan } = (() => {
+  const m = (c) => (s) => `\x1b[${c}m${s}\x1b[0m`;
+  const e = { bold: m(B), dim: m(D), yellow: m(Y), cyan: m(C) };
+  if (!process.stdout.isTTY) for (const k of Object.keys(e)) e[k] = (s) => s;
   return e;
 })();
 
-const INDENT = "  ";
-const SUB_INDENT = "    ";
-const LEFT_COLUMN_WIDTH = 44;
-const COLUMN_MIN_PADDING = 2;
+const I = "  ", SI = "    ", LW = 48;
 
-function hdr(text) {
-  return `\n${bold(text)}\n`;
+function hdr(t) { return `\n${bold(t)}\n`; }
+function item(c, d, f) {
+  const l = `${SI}${c}`;
+  return `${f ? f(l) : l}${" ".repeat(Math.max(2, LW - l.length))}${d}`;
 }
-
-function subhdr(text) {
-  return `\n${INDENT}${bold(text)}\n`;
-}
-
-function item(cmd, desc, colorFn) {
-  const left = `${SUB_INDENT}${cmd}`;
-  const pad = Math.max(COLUMN_MIN_PADDING, LEFT_COLUMN_WIDTH - left.length);
-  return `${colorFn ? colorFn(left) : left}${" ".repeat(pad)}${desc}`;
-}
-
-function flag(name, desc) {
-  const firstToken = name.split(/\s/)[0];
-  const prefix = firstToken.length === 1 ? "-" : "--";
-  return item(`  ${prefix}${name}`, desc, yellow);
-}
-
-function scene(title) {
-  return `\n${SUB_INDENT}${bold(title)}\n`;
-}
+function s(t) { return `\n${SI}${bold(t)}\n`; }
 
 const help = `
-${bold("# rui-claude — .claude/ 目录管理")}
+${bold("# rui-claude — .claude/ 配置管理")}
 
-${dim("同步远端配置 · 健康度分析 · 需求管线 | version --up 已迁移至 /rui")}
+${dim("同步远端配置 · 健康度分析 · 需求管线 | 注：version --up 已迁移至 /rui")}
 
-${hdr("快速入门")}
-${item("/rui-claude", "推荐任务：5 层评分排序的 .claude/ 维护建议", cyan)}
-${item("/rui-claude sync", "覆盖式同步：远端 API → rui-import pull 覆盖本地 .claude/", cyan)}
-${item("/rui-claude update", "插件升级：git pull 最新 YrY → 清除插件缓存 → sync 远端 .claude/", cyan)}
-${item("/rui-claude retro", "健康度分析：三节复盘（配置结构 / 健康度 / 改进项）", cyan)}
-
-${hdr("子命令")}
-
-${subhdr("只读命令")}
-${item("/rui-claude", "推荐任务：5 层评分排序（L0 时间 / L1 依赖 / L2 风险 / L3 覆盖 / L4 质量）", cyan)}
-${item("/rui-claude retro", "健康度分析：三节复盘（配置结构 / 健康度 / 改进项）", cyan)}
-${flag("name <kebab-case>", "指定故事名（默认自动生成）")}
-${flag("json", "JSON 格式输出")}
-
-${subhdr("写入命令")}
-${item("/rui-claude sync", "覆盖式同步：远端 API → rui-import pull 覆盖本地 .claude/", yellow)}
-${item("/rui-claude update", "插件升级：git pull 最新 YrY → sync 远端 .claude/ 双刷新", yellow)}
-${item("/rui-claude <需求>", "需求管线：走 rui code 流程修改 .claude/ 配置", yellow)}
+${hdr("语法")}
+${item("/rui-claude", "推荐任务：5 层评分排序的维护建议", cyan)}
+${item("/rui-claude sync", "远端 → 本地覆盖 .claude/（需确认）", yellow)}
+${item("/rui-claude update", "升级 YrY 插件 + 同步远端 .claude/", yellow)}
+${item("/rui-claude retro [--json]", "健康度分析：配置结构 / 健康度 / 改进项", cyan)}
+${item("/rui-claude <需求>", "需求管线：走完整 doc+code 修改 .claude/", yellow)}
 
 ${hdr("使用场景")}
-${scene("拉取团队最新 .claude/ 配置")}
-${item("/rui-claude sync", "从远端 API 全量覆盖本地 .claude/ → 提示确认后执行", cyan)}
-${scene("一键升级 YrY 插件并同步配置")}
-${item("/rui-claude update", "git pull 最新 YrY → 清除旧版本缓存 → sync .claude/ → 三重刷新完成", cyan)}
-${scene("分析配置健康度")}
-${item("/rui-claude retro", "分析 agents/rules/skills 结构 → 输出复盘文档", cyan)}
-${item("/rui-claude retro --name config-audit", "指定故事名，可溯源", cyan)}
+${s("拉取团队最新配置")}
+${item("/rui-claude sync", "从远端 API 全量覆盖本地 .claude/", cyan)}
+
+${s("一键升级并同步")}
+${item("/rui-claude update", "git pull 最新 YrY → 清缓存 → sync .claude/", cyan)}
+
+${s("分析配置健康度")}
+${item("/rui-claude retro", "分析 agents/rules/skills 结构 → 输出复盘", cyan)}
 ${item("/rui-claude retro --json", "JSON 格式输出（供脚本消费）", cyan)}
-${scene("修改 .claude/ 配置走完整管线")}
+
+${s("修改配置走完整管线")}
 ${item('/rui-claude "新增一个 check hook"', "需求 → doc → code → 交付", cyan)}
-${scene("获取推荐维护任务")}
-${item("/rui-claude", "5 层评分排序的 .claude/ 维护建议", cyan)}
-${scene("全流程：同步配置 → 分析 → 修复")}
-${item("/rui-claude sync", "Step 1：从远端拉取最新 .claude/ 配置", cyan)}
-${item("/rui-claude retro", "Step 2：分析配置健康度，获取改进项", cyan)}
-${item('/rui-claude "修复 retro 报告中的 P0 项"', "Step 3：走完整管线修复问题", cyan)}
-${scene("版本升级（迁移至 rui）")}
-${item("/rui version --up", "version --up 已从 rui-claude 迁移至 /rui，详见 /rui --help", cyan)}
+
+${s("全流程：同步 → 分析 → 修复")}
+${item("/rui-claude sync", "Step 1：从远端拉取最新 .claude/", cyan)}
+${item("/rui-claude retro", "Step 2：分析健康度，获取改进项", cyan)}
+${item('/rui-claude "修复 retro 报告中的 P0 项"', "Step 3：走完整管线修复", cyan)}
 `;
 
 console.log(help);

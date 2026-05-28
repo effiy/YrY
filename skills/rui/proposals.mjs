@@ -187,8 +187,19 @@ function readProjectName(projectRoot) {
 // --- data collection for a story --------------------------------------------
 function collectStoryData(projectRoot, storyName) {
   const storyPath = join(projectRoot, STORY_PANEL_DIR, storyName);
-  const allExec = execRecords.concat(rootExecRecords.filter((r) => r.story_name === storyName || r.story === storyName));
+  const memoryDir = join(storyPath, ".memory");
 
+  const execRecords = readJsonl(join(memoryDir, "execution-memory.jsonl"));
+  const toolAudit = readJsonl(join(memoryDir, "tool-audit.jsonl"));
+  const deliveryTrack = readJsonl(join(memoryDir, "delivery-track.jsonl"));
+  const ruiState = readJson(join(memoryDir, "rui-state.json"));
+  const proposals = readJsonl(join(storyPath, ".improvement", "proposals.jsonl"));
+
+  // Also read root-level execution memory
+  const rootMemoryDir = join(projectRoot, ".memory");
+  const rootExecRecords = readJsonl(join(rootMemoryDir, "execution-memory.jsonl"));
+
+  const allExec = execRecords.concat(rootExecRecords.filter((r) => r.story_name === storyName || r.story === storyName));
 
   return { storyName, storyPath, allExec, toolAudit, deliveryTrack, ruiState, proposals };
 }
@@ -363,8 +374,11 @@ function generateProposals(storyName, diagnostics, storyPath) {
     return [];
   }
 
+  const proposalsDir = join(storyPath, ".improvement");
+  const proposalsPath = join(proposalsDir, "proposals.jsonl");
+
   // Dedup: skip diagnostics that already have an open proposal
-  const existingProposals = readJsonl(existingProposalsPath);
+  const existingProposals = readJsonl(proposalsPath);
   const openDiags = new Set(
     existingProposals
       .filter((p) => p.status === "open")
@@ -639,6 +653,7 @@ function cmdMaterialize(opts) {
   const minPriorityOrder = PRIORITY_ORDER[minPriority] !== undefined ? PRIORITY_ORDER[minPriority] : PRIORITY_ORDER.P2;
 
   const storyPath = join(projectRoot, STORY_PANEL_DIR, opts.story);
+  const proposalsPath = join(storyPath, ".improvement", "proposals.jsonl");
 
   if (!existsSync(proposalsPath)) {
     console.log("");
@@ -753,13 +768,17 @@ function cmdGenerate(opts) {
 function cmdList(opts) {
   const projectRoot = findProjectRoot(process.cwd());
   const storyPath = join(projectRoot, STORY_PANEL_DIR, opts.story || "");
+  const proposalsDir = join(storyPath, ".improvement");
+  const proposalsPath = join(proposalsDir, "proposals.jsonl");
 
   if (!existsSync(proposalsDir)) {
     console.log("");
+    console.log(dim("  无 .improvement/ 目录"));
     console.log("");
     return;
   }
 
+  const proposals = readJsonl(proposalsPath);
 
   if (opts.status && opts.status !== "all") {
     const filtered = proposals.filter((p) => p.status === opts.status);
@@ -831,7 +850,8 @@ function cmdUpgradeCandidates(opts) {
       const dirs = readdirSync(panelDir, { withFileTypes: true })
         .filter((d) => d.isDirectory() && !d.name.startsWith("."));
       for (const d of dirs) {
-        const proposals = readJsonl(proposalsPath);
+        const pPath = join(panelDir, d.name, ".improvement", "proposals.jsonl");
+        const proposals = readJsonl(pPath);
         for (const p of proposals) {
           allProposals.push({ ...p, _dir: d.name });
         }

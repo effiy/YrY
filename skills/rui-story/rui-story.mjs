@@ -187,7 +187,9 @@ function groupSessionsByStory(sessions) {
 
 // --- blocked state ---------------------------------------------------------
 function readBlockedState(projectRoot, storyName) {
-  if (false) return null;
+  const memoryDir = join(projectRoot, STORY_PANEL_DIR, storyName, ".memory");
+  const ruiStatePath = join(memoryDir, "rui-state.json");
+  if (!existsSync(ruiStatePath)) return null;
   try {
     const data = JSON.parse(readFileSync(ruiStatePath, "utf-8"));
     return {
@@ -202,29 +204,23 @@ function readBlockedState(projectRoot, storyName) {
 // --- status determination --------------------------------------------------
 const BASELINE_DOCS = ["使用场景", "技术评审", "测试设计"];
 
-function hasProjectFile(fileBasenames, projectPrefix, docType) {
-  // projectPrefix includes hyphen, e.g. "YrY-"
-  const target = `${projectPrefix}${docType}.md`;
-  return fileBasenames.has(target);
-}
-
-function determineStatus(fileBasenames, projectPrefix, blockedState) {
-  if (!hasProjectFile(fileBasenames, projectPrefix, "故事任务"))
+function determineStatus(fileBasenames, blockedState) {
+  if (!fileBasenames.has("故事任务.md"))
     return "任务";
 
   const baselineComplete = BASELINE_DOCS.every(doc =>
-    hasProjectFile(fileBasenames, projectPrefix, doc)
+    fileBasenames.has(`${doc}.md`)
   );
   if (!baselineComplete)
     return "设计";
 
-  if (!hasProjectFile(fileBasenames, projectPrefix, "实施报告"))
+  if (!fileBasenames.has("实施报告.md"))
     return "实施";
 
-  if (!hasProjectFile(fileBasenames, projectPrefix, "测试报告"))
+  if (!fileBasenames.has("测试报告.md"))
     return "测试";
 
-  if (!hasProjectFile(fileBasenames, projectPrefix, "自改进复盘"))
+  if (!fileBasenames.has("自改进复盘.md"))
     return "报告";
 
   return "改进";
@@ -238,8 +234,8 @@ const TYPE_LABELS = {
   meta: "元",
 };
 
-async function inferType(apiUrl, storySessions, projectPrefix) {
-  const reviewTarget = `${projectPrefix}技术评审.md`;
+async function inferType(apiUrl, storySessions) {
+  const reviewTarget = "技术评审.md";
   const reviewSession = storySessions.find(s => {
     const base = (s.file_path || "").split("/").pop();
     return base === reviewTarget;
@@ -263,7 +259,7 @@ async function inferType(apiUrl, storySessions, projectPrefix) {
   }
 }
 
-async function inferTypesBatch(apiUrl, storyMap, projectPrefix) {
+async function inferTypesBatch(apiUrl, storyMap) {
   const entries = [...storyMap.entries()];
   const results = new Map();
 
@@ -271,7 +267,7 @@ async function inferTypesBatch(apiUrl, storyMap, projectPrefix) {
   async function worker() {
     while (queue.length > 0) {
       const [name, sessions] = queue.shift();
-      results.set(name, await inferType(apiUrl, sessions, projectPrefix));
+      results.set(name, await inferType(apiUrl, sessions));
     }
   }
   const workers = Array.from({ length: Math.min(CONCURRENCY, entries.length) }, worker);
@@ -326,7 +322,7 @@ function latestTimestamp(sessions) {
   return max;
 }
 
-function printOverview(storyMap, projectPrefix, blockedMap) {
+function printOverview(storyMap, blockedMap) {
   const counts = {
     任务: 0,
     设计: 0,
@@ -341,7 +337,7 @@ function printOverview(storyMap, projectPrefix, blockedMap) {
   for (const [name, sessions] of storyMap) {
     const basenames = new Set(sessions.map(s => (s.file_path || "").split("/").pop()));
     const blocked = blockedMap.get(name);
-    const status = determineStatus(basenames, projectPrefix, blocked);
+    const status = determineStatus(basenames, blocked);
     counts[status]++;
     storyStatuses.push({ name, status, updatedAt: latestTimestamp(sessions) });
   }
@@ -379,13 +375,13 @@ function printOverview(storyMap, projectPrefix, blockedMap) {
   console.log("");
 }
 
-function printList(storyMap, projectPrefix, blockedMap, typeMap) {
+function printList(storyMap, blockedMap, typeMap) {
   const entries = [];
 
   for (const [name, sessions] of storyMap) {
     const basenames = new Set(sessions.map(s => (s.file_path || "").split("/").pop()));
     const blocked = blockedMap.get(name);
-    const status = determineStatus(basenames, projectPrefix, blocked);
+    const status = determineStatus(basenames, blocked);
     const files = sessions.length;
     const lastMod = latestTimestamp(sessions);
     const type = typeMap.get(name) || "meta";
@@ -435,9 +431,9 @@ function printList(storyMap, projectPrefix, blockedMap, typeMap) {
   console.log("");
 }
 
-function printShow(storyName, sessions, projectPrefix, blockedState, type) {
+function printShow(storyName, sessions, blockedState, type) {
   const basenames = new Set(sessions.map(s => (s.file_path || "").split("/").pop()));
-  const status = determineStatus(basenames, projectPrefix, blockedState);
+  const status = determineStatus(basenames, blockedState);
   const branch = checkGitBranch(storyName);
 
   const files = sessions.map(s => ({
@@ -566,7 +562,7 @@ async function cmdOverview(apiUrl, projectRoot, projectPrefix) {
     const bs = readBlockedState(projectRoot, name);
     if (bs) blockedMap.set(name, bs);
   }
-  printOverview(storyMap, projectPrefix, blockedMap);
+  printOverview(storyMap, blockedMap);
 }
 
 async function cmdList(apiUrl, projectRoot, projectPrefix) {
@@ -593,9 +589,9 @@ async function cmdList(apiUrl, projectRoot, projectPrefix) {
   }
 
   console.error(dim(`[rui-story] 推断 ${storyMap.size} 个故事的类型...`));
-  const typeMap = await inferTypesBatch(apiUrl, storyMap, projectPrefix);
+  const typeMap = await inferTypesBatch(apiUrl, storyMap);
 
-  printList(storyMap, projectPrefix, blockedMap, typeMap);
+  printList(storyMap, blockedMap, typeMap);
 }
 
 async function cmdShow(apiUrl, projectRoot, projectPrefix, name) {
@@ -625,9 +621,9 @@ async function cmdShow(apiUrl, projectRoot, projectPrefix, name) {
 
   const storySessions = storyMap.get(name);
   const blockedState = readBlockedState(projectRoot, name);
-  const type = await inferType(apiUrl, storySessions, projectPrefix);
+  const type = await inferType(apiUrl, storySessions);
 
-  printShow(name, storySessions, projectPrefix, blockedState, type);
+  printShow(name, storySessions, blockedState, type);
 }
 
 async function cmdRecommend(apiUrl) {

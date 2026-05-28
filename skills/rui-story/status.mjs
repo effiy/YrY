@@ -125,16 +125,27 @@ function checkTransition(from, to) {
 }
 
 function readRuiState(storyPath) {
+  const statePath = join(storyPath, ".memory", "rui-state.json");
+  if (!existsSync(statePath)) return null;
   try {
+    return JSON.parse(readFileSync(statePath, "utf-8"));
   } catch {
     return null;
   }
 }
 
 function writeRuiState(storyPath, state) {
+  const memoryDir = join(storyPath, ".memory");
+  if (!existsSync(memoryDir)) mkdirSync(memoryDir, { recursive: true });
+  const statePath = join(memoryDir, "rui-state.json");
+  writeFileSync(statePath, JSON.stringify(state, null, 2) + "\n", "utf-8");
 }
 
 function appendStatusHistory(storyPath, entry) {
+  const historyPath = join(storyPath, ".memory", "execution-memory.jsonl");
+  const memoryDir = join(storyPath, ".memory");
+  if (!existsSync(memoryDir)) mkdirSync(memoryDir, { recursive: true });
+  appendFileSync(historyPath, JSON.stringify(entry) + "\n", "utf-8");
 }
 
 function applyTransition(opts, projectRoot) {
