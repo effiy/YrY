@@ -242,36 +242,602 @@ docs/故事任务面板/<name>/
 
 ### 实施报告 · coder
 
+> 与使用场景 §2 中的场景一一对应。**每个场景是一个自包含的追踪单元**——读者无需跳转其他节即可完整理解该场景的源文件、依赖图、测试覆盖和验证方式。全局依赖图和测试映射由各场景数据汇总而成。
+
 ```
 # <项目>-<故事> · 实施报告
 
 > v{版本} | {日期} | {模型} | feat/{name}
+  [§1 实施概览](#sec1) · [§2 逐场景实施](#sec2) · [§3 跨场景源码全景](#sec3) · [§4 测试文件全景](#sec4) · [§5 可操作验证](#sec5)
 
+### 主要价值
+- 🔗 每场景自包含：源文件 + 依赖图 + 测试 + 验证，无需跳转即可通读
+- 📊 场景内依赖图可独立理解该场景的文件拓扑，场景间通过 §3 关联
+- 🧪 测试→源文件映射可精确回答"这个文件被哪些测试覆盖"
+- 🔍 深度探查基于 Read/Grep 事实基线，证据 Level A
+
+<a id="sec1"></a>
 ## §1 实施概览
-逐项对比技术评审设计 vs 实际实现。偏差表：偏差 | 原因 | 影响 | 优先级。
 
-## §2 模块 P0 审查
-每模块：P0 项 | 状态 | 修复方式 | 验证命令
+逐项对比技术评审设计 vs 实际实现。场景→文件速览矩阵。
 
-## §6 效果验证
-后端：每接口 ≥1 张 curl+响应截图。
-前端：每场景 ≥1 张 UI 截图(正常态+关键状态)。
+| # | 设计项（技术评审引用） | 实际实现 | 偏差 | 原因 | 影响 | 优先级 |
+|---|----------------------|---------|------|------|------|--------|
+| 1 | <技术评审 §X 条款> | <实际做法> | 无/有 | — | — | — |
 
-## §7 可操作验证
-后端：`bash` fenced 块，`${BASE_URL}` 占位符。
-前端：编号步骤(起始页→操作→预期)。
+### 场景 → 文件速览
+
+> 一表纵览全故事场景与源文件对应关系。
+
+| 场景 | 新增文件 | 修改文件 | 未改依赖 | 测试文件 | 状态 |
+|------|---------|---------|---------|---------|------|
+| S1: <名> | `file.ts`, `types.ts` | `existing.ts` | `format.ts`, `client.ts` | `file.test.ts`, `api.test.ts` | ✅ |
+| S2: <名> | `other.ts` | — | `format.ts` | `other.test.ts`, `api.test.ts` | ✅ |
+
+<a id="sec2"></a>
+## §2 逐场景实施
+
+> 每个场景是**自包含追踪单元**。场景内 §2.1–§2.7 形成完整闭环：场景描述 → 源文件 → 依赖图 → P0 审查 → 设计偏差 → 测试清单 → 效果验证。
+
+### 场景 S1: <使用场景 §2 场景 1 的场景名>
+
+**场景概述**：<1 句复述场景内容，引用使用场景对应条目>  
+**关联 FP#**：FP1, FP2  
+**关联 SC#**：SC1, SC3
+
+<a id="sec2.1-s1-files"></a>
+#### §2.1 涉及源文件（深度探查）
+
+> 对每个文件执行 Read/Grep 建立事实基线。含关键导出、核心逻辑摘要。
+
+| # | 文件路径 | 类型 | 行数 | 关键导出/入口 | 核心逻辑摘要 | 关联场景 |
+|---|---------|------|------|-------------|-------------|---------|
+| 1 | `src/path/file.ts` | 🆕 新增 | 85 | `export function validateInput(x)` | 入口校验：空值 guard → 类型检查 → SQL 注入检测 → 返回 Result<T> | S1 |
+| 2 | `src/path/existing.ts` | ✏️ 修改 | +12/-3 | `export class UserService` | `createUser` 方法增加 `validator` 调用，L42 新增 null guard | S1, S3 |
+| 3 | `src/path/types.ts` | 🆕 新增 | 18 | `export type Result<T>`, `export type ValidationError` | Ok/Err 判别联合类型 + 错误码枚举 | S1, S2 |
+
+<a id="sec2.1-s1-depgraph"></a>
+#### §2.2 场景依赖图
+
+> 仅展示本场景涉及的文件及其直接依赖。跨场景依赖见 §3。
+
+```mermaid
+flowchart TB
+    subgraph 场景文件["场景 S1 文件"]
+        F1["file.ts<br/>🆕 validateInput()"]:::new
+        F2["existing.ts<br/>✏️ UserService.createUser()"]:::mod
+        F3["types.ts<br/>🆕 Result&lt;T&gt;"]:::new
+    end
+    subgraph 外部依赖["本场景引用的外部文件"]
+        U1["utils/format.ts"]:::ext
+        U2["api/client.ts"]:::ext
+    end
+
+    F2 --> F1
+    F2 --> F3
+    F1 --> F3
+    F1 --> U1
+    F2 --> U2
+
+    classDef new fill:#4caf50,stroke:#2e7d32,color:#fff
+    classDef mod fill:#ff9800,stroke:#e65100,color:#fff
+    classDef ext fill:#e0e0e0,stroke:#9e9e9e,color:#333
+```
+
+| 依赖路径 | 关系 | 说明 |
+|---------|------|------|
+| `existing.ts` → `file.ts` | 调用 | `UserService.createUser()` 调用 `validateInput()` |
+| `existing.ts` → `types.ts` | 导入类型 | 返回 `Result<User>`，错误分支返回 `ValidationError` |
+| `file.ts` → `types.ts` | 导入类型 | 返回 `Result<string>` |
+| `file.ts` → `utils/format.ts` | 导入工具 | `sanitize()` 预处理输入 |
+
+<a id="sec2.1-s1-trace"></a>
+#### §2.3 场景追踪链
+
+> 从场景到源文件到测试到验证的一站式追踪。本场景所有关联在此闭合。
+
+| 追踪维度 | 内容 | 引用 |
+|---------|------|------|
+| **场景定义** | <使用场景 §2 场景 1 的场景名 + 操作流摘要> | 使用场景.md §2.S1 |
+| **涉及源文件** | `file.ts`(🆕) · `existing.ts`(✏️) · `types.ts`(🆕) | 本报告 §2.1 |
+| **未改依赖** | `utils/format.ts` · `api/client.ts` | — |
+| **测试文件** | `file.test.ts`(8 用例) · `api.test.ts`(5 用例，跨 S1/S2) | 测试报告 §2.S1 |
+| **效果验证** | curl 正常路径 + 异常路径 | 本报告 §2.7 |
+| **关联 FP** | FP1 · FP2 | 故事任务.md §2 |
+| **关联 SC** | SC1 · SC3 | 故事任务.md §5 |
+
+<a id="sec2.1-s1-p0"></a>
+#### §2.4 模块 P0 审查
+
+| 模块 | P0 项 | 状态 | 修复方式 | 验证命令 |
+|------|-------|------|---------|---------|
+| `file.ts` | `validateInput` 未处理 SQL 注入 payload | ✅ 已修复 | L28 增加 `DETECT_SQL_INJECTION` 正则 → 返回 `ValidationError` | `grep "DETECT_SQL" src/path/file.ts` |
+| `existing.ts` | `createUser` L42 原始 `input` 透传未校验 → null 穿透 | ✅ 已修复 | L42 新增 `if (input == null) return Err(EMPTY_INPUT)` | `grep "EMPTY_INPUT" src/path/existing.ts` |
+
+<a id="sec2.1-s1-deviations"></a>
+#### §2.5 设计偏差
+
+| 技术评审条款 | 设计约定 | 实际做法 | 偏差原因 | 影响范围 |
+|------------|---------|---------|---------|---------|
+| §2 API 设计: POST /api/x | 请求体含 `version` 字段 | 改为 Header `X-API-Version` | 与现有中间件对齐 | `client.ts` 调用方需更新 Header（影响 S1, S2） |
+
+<a id="sec2.1-s1-tests"></a>
+#### §2.6 本场景测试清单
+
+> 仅列出覆盖本场景的测试文件。全量映射见测试报告 §3。
+
+| 测试文件 | 用例数 | 覆盖源文件 | 测试类型 | 关键断言 |
+|---------|--------|-----------|---------|---------|
+| `tests/unit/file.test.ts` | 8 | `file.ts` | 单元 | 空值→Err / 类型错误→Err / SQL payload→Err / 合法值→Ok |
+| `tests/integration/api.test.ts` | 3（S1 部分） | `file.ts`, `existing.ts`, `client.ts` | 集成 | 201→验证 Header / 400→验证错误码 / 401→验证未授权 |
+
+<a id="sec2.1-s1-verify"></a>
+#### §2.7 效果验证
+
+> 本场景的独立验证命令。任何开发者可逐条执行并得到相同结果。
+
+```bash
+# === 场景 S1: <场景名> — 正常路径 ===
+# 前置：启动服务
+cd <project-root> && npm run dev
+
+# 步骤 1: 正常创建
+curl -s -X POST ${BASE_URL}/api/x \
+  -H "Content-Type: application/json" \
+  -H "X-API-Version: 2026-05" \
+  -d '{"name": "test-user"}' | jq .
+# 预期: HTTP 201
+# {"id": "u_xxx", "name": "test-user", "createdAt": "..."}
+
+# 步骤 2: SQL 注入防护
+curl -s -X POST ${BASE_URL}/api/x \
+  -H "Content-Type: application/json" \
+  -d '{"name": "test'\''; DROP TABLE users;--"}' | jq .
+# 预期: HTTP 400
+# {"error": "INVALID_INPUT", "field": "name", "reason": "SQL_INJECTION_DETECTED"}
+
+# 步骤 3: 空值防护
+curl -s -X POST ${BASE_URL}/api/x \
+  -H "Content-Type: application/json" \
+  -d '{}' | jq .
+# 预期: HTTP 400
+# {"error": "INVALID_INPUT", "field": "name", "reason": "REQUIRED"}
+```
+
+---
+
+### 场景 S2: <使用场景 §2 场景 2 的场景名>
+
+**场景概述**：<1 句复述场景内容，引用使用场景对应条目>  
+**关联 FP#**：FP3  
+**关联 SC#**：SC2
+
+（同 S1 的 §2.1–§2.7 完整结构：涉及源文件 → 场景依赖图 → 场景追踪链 → 模块 P0 审查 → 设计偏差 → 本场景测试清单 → 效果验证）
+
+---
+
+### 场景 S{N}: <使用场景 §2 场景 N 的场景名>
+
+（同 S1 的 §2.1–§2.7 完整结构）
+
+---
+
+<a id="sec2.N-summary"></a>
+#### §2.N 全模块 P0 清零汇总
+
+| 场景 | 新增文件 | 修改文件 | P0 总数 | 已清零 | 未清零 | 场景状态 |
+|------|---------|---------|--------|--------|--------|---------|
+| S1 | 2 | 1 | 2 | 2 | 0 | ✅ |
+| S2 | 1 | 0 | 1 | 1 | 0 | ✅ |
+| **合计** | **3** | **1** | **3** | **3** | **0** | **✅** |
+
+<a id="sec3"></a>
+## §3 跨场景源码全景
+
+> 汇总所有场景的源文件，展示场景间文件共享关系和全量依赖图。
+
+### §3.1 文件 → 场景归属
+
+| 文件路径 | 类型 | 归属场景 | 行数 | 被其他场景依赖? |
+|---------|------|---------|------|:---:|
+| `src/path/file.ts` | 🆕 新增 | S1 | 85 | — |
+| `src/path/existing.ts` | ✏️ 修改 | S1 | +12/-3 | ✅ S3 |
+| `src/path/types.ts` | 🆕 新增 | S1, S2 | 18 | — |
+| `src/path/other.ts` | 🆕 新增 | S2 | 62 | — |
+
+### §3.2 跨场景依赖图
+
+```mermaid
+flowchart TB
+    subgraph S1["场景 S1"]
+        F1["file.ts 🆕"]:::new
+        F2["existing.ts ✏️"]:::mod
+    end
+    subgraph S2["场景 S2"]
+        F3["other.ts 🆕"]:::new
+    end
+    subgraph 共享["跨场景共享"]
+        F4["types.ts 🆕"]:::shared
+    end
+    subgraph 外部["未改依赖"]
+        U1["utils/format.ts"]:::ext
+        U2["api/client.ts"]:::ext
+    end
+
+    F2 --> F1
+    F2 --> F4
+    F1 --> F4
+    F3 --> F4
+    F1 --> U1
+    F2 --> U2
+    F3 --> U1
+
+    S1 -.->|"共享 types.ts"| 共享
+    S2 -.->|"共享 types.ts"| 共享
+
+    classDef new fill:#4caf50,stroke:#2e7d32,color:#fff
+    classDef mod fill:#ff9800,stroke:#e65100,color:#fff
+    classDef shared fill:#2196f3,stroke:#0d47a1,color:#fff
+    classDef ext fill:#e0e0e0,stroke:#9e9e9e,color:#333
+```
+
+| 图例 | 含义 |
+|------|------|
+| 🆕 新增 | 本次故事新建 |
+| ✏️ 修改 | 本次故事修改 |
+| 🔵 共享 | 多个场景共同使用的文件 |
+| 外部 | 依赖但未修改 |
+
+### §3.3 全量依赖矩阵
+
+> 行 = 源文件（调用方），列 = 被依赖文件。
+
+|  | `file.ts` | `existing.ts` | `types.ts` | `other.ts` | `format.ts` | `client.ts` |
+|--|:---:|:---:|:---:|:---:|:---:|:---:|
+| `file.ts` | — | | → 导入类型 | | → 调用 | |
+| `existing.ts` | → 调用 | — | → 导入类型 | | | → 调用 |
+| `other.ts` | | | → 导入类型 | — | → 调用 | |
+| `types.ts` | | | — | | | |
+
+<a id="sec4"></a>
+## §4 测试文件全景
+
+> 各场景测试文件的汇总视图和交叉覆盖关系。详情见测试报告各场景 §2。
+
+### §4.1 测试文件总览
+
+| # | 测试文件路径 | 覆盖场景 | 用例数 | 测试类型 | 覆盖源文件 | 框架 |
+|---|------------|---------|--------|---------|-----------|------|
+| 1 | `tests/unit/file.test.ts` | S1 | 8 | 单元 | `file.ts` | vitest |
+| 2 | `tests/integration/api.test.ts` | S1, S2 | 5 | 集成 | `file.ts`, `existing.ts`, `client.ts` | vitest |
+| 3 | `tests/unit/other.test.ts` | S2 | 6 | 单元 | `other.ts` | vitest |
+
+### §4.2 源文件 → 测试覆盖矩阵
+
+> 行 = 源文件，列 = 测试文件。可精确回答"这个文件被哪些测试覆盖"。
+
+| 源文件 | `file.test.ts` | `api.test.ts` | `other.test.ts` | 覆盖类型 | 覆盖率 |
+|--------|:---:|:---:|:---:|---------|--------|
+| `src/path/file.ts` | ✅ | ✅ | — | 单元 + 集成 | 94% |
+| `src/path/existing.ts` | — | ✅ | — | 集成 | 67% |
+| `src/path/types.ts` | — | — | — | 类型文件（无需直接测试） | — |
+| `src/path/other.ts` | — | — | ✅ | 单元 | 88% |
+| `utils/format.ts` | 间接 | 间接 | 间接 | 间接（通过被测文件调用） | — |
+
+<a id="sec5"></a>
+## §5 可操作验证
+
+> 按场景聚合的完整验证步骤。任何人克隆仓库后按序执行即可复现全部结果。
+
+### 场景 S1
+
+```bash
+# 前置：启动服务
+cd <project-root> && npm run dev
+
+# === S1 正常路径 ===
+curl -s -X POST ${BASE_URL}/api/x \
+  -H "Content-Type: application/json" \
+  -H "X-API-Version: 2026-05" \
+  -d '{"name": "test-user"}' | jq .
+# 预期: HTTP 201
+
+# === S1 异常路径: SQL 注入 ===
+curl -s -X POST ${BASE_URL}/api/x \
+  -H "Content-Type: application/json" \
+  -d '{"name": "test'\''; DROP TABLE users;--"}' | jq .
+# 预期: HTTP 400, INVALID_INPUT
+
+# === S1 异常路径: 空值 ===
+curl -s -X POST ${BASE_URL}/api/x \
+  -H "Content-Type: application/json" \
+  -d '{}' | jq .
+# 预期: HTTP 400, REQUIRED
+```
+
+### 场景 S2
+
+```bash
+# === S2 正常路径 ===
+curl -s -X GET ${BASE_URL}/api/x/list | jq .
+# 预期: HTTP 200, {"items": [...]}
+
+# === S2 异常路径: 未授权 ===
+curl -s -X GET ${BASE_URL}/api/x/list | jq .
+# 预期: HTTP 401
+```
+
+### 场景 S1 前端
+
+```
+1. 打开 http://localhost:3000/<page>
+2. 点击 "新建" 按钮 → 预期弹出表单
+3. 输入 SQL 注入 payload → 预期前端拦截并显示校验错误
+4. 提交合法表单 → 预期跳转到详情页
+```
+
+### 回溯链
+
+| 类型 | 来源 | 引用 |
+|------|------|------|
+| 需求基线 | 故事任务.md | §1 需求概述 · §2 功能点 · §5 验收标准 |
+| 用户基线 | 使用场景.md | §2 场景 S1–S{N}（逐场景一一对应，含操作流） |
+| 技术方案 | 技术评审.md | §1 系统架构 · §2 设计 · §7 评审清单 |
+| 测试基线 | 测试设计.md | §2 用例 TC# × 本报告各场景 §2.7 验证 |
 ```
 
 ### 测试报告 · tester
 
+> 与使用场景 §2 中的场景一一对应。**每个场景是自包含的测试追踪单元**——读者无需跳转即可了解该场景的测试执行结果、失败根因、覆盖源文件和覆盖图。全局映射和 Gate B 判定由各场景数据汇总得出。
+
 ```
 # <项目>-<故事> · 测试报告
 
-## §1 执行摘要
-| 总数 | 通过 | 失败 | 跳过 | 通过率 |
+> v{版本} | {日期} | {模型} | feat/{name}
+  [§1 执行摘要](#sec1) · [§2 逐场景测试](#sec2) · [§3 跨场景覆盖全景](#sec3) · [§4 Gate B 判定](#sec4)
 
-## §2 Gate B 判定
-P0 全通过 + P1 高通过率 + 修复 ≤2 轮 → 通过。
+### 主要价值
+- 🔗 每场景自包含：用例结果 + 根因修复 + 覆盖源文件 + 覆盖图 + 验证命令
+- 📊 测试→源文件矩阵可精确回答"这个文件被哪些测试覆盖，覆盖率多少"
+- 🔍 失败用例含根因定位（源文件:行号），修复前后对比可独立复核
+- 🛡️ Gate B 判定基于逐场景通过率和覆盖率，每项可下钻
+
+<a id="sec1"></a>
+## §1 执行摘要
+
+| 场景 | 测试文件 | 用例总数 | 通过 | 失败 | 跳过 | 通过率 | 覆盖文件数 | 新增覆盖率 |
+|------|---------|---------|------|------|------|--------|-----------|-----------|
+| S1: <场景名> | `file.test.ts`, `api.test.ts` | 13 | 13 | 0 | 0 | 100% | 4 | 94% |
+| S2: <场景名> | `other.test.ts`, `api.test.ts` | 8 | 7 | 1 | 0 | 88% | 2 | 88% |
+| S{N} | ... | ... | ... | ... | ... | ... | ... | ... |
+| **合计** | **M** | **T** | **P** | **F** | **S** | **P/T%** | **U** | — |
+
+<a id="sec2"></a>
+## §2 逐场景测试
+
+> 每个场景是**自包含测试追踪单元**。场景内 §2.1–§2.5 形成完整闭环：用例结果 → 失败修复 → 测试文件清单 → 覆盖图 → 可复现验证。
+
+### 场景 S1: <使用场景 §2 场景 1 的场景名>
+
+**场景概述**：<1 句复述，引用使用场景>  
+**关联 FP#**：FP1, FP2  
+**关联实施报告场景**：实施报告 §2.S1
+
+<a id="sec2.1-s1-results"></a>
+#### §2.1 测试执行结果
+
+| TC# | 测试用例描述 | 来源 TC# | 覆盖源文件 | 结果 | 耗时 | 失败原因 |
+|-----|------------|---------|-----------|------|------|---------|
+| TC1.1 | 正常输入返回 Ok | TC-A1 | `file.ts` | ✅ | 12ms | — |
+| TC1.2 | 空值返回 Err(EMPTY) | TC-A2 | `file.ts` | ✅ | 8ms | — |
+| TC1.3 | SQL 注入 payload 返回 Err(INJECTION) | TC-A3 | `file.ts`, `types.ts` | ❌ | 15ms | `file.ts:28` 正则未匹配 `'; DROP` 变体 |
+| TC1.4 | XSS payload 返回 Err(INVALID) | TC-A4 | `file.ts` | ✅ | 6ms | — |
+| TC1.5 | 超长输入返回 Err(TOO_LONG) | TC-A5 | `file.ts` | ✅ | 10ms | — |
+| TC1.6 | 创建用户端到端 201 | TC-I1 | `file.ts`, `existing.ts`, `client.ts` | ✅ | 45ms | — |
+| TC1.7 | 创建用户 400 响应 | TC-I2 | `existing.ts`, `client.ts` | ✅ | 38ms | — |
+| TC1.8 | 未授权 401 响应 | TC-I3 | `client.ts` | ✅ | 22ms | — |
+
+<a id="sec2.1-s1-failure-fix"></a>
+#### §2.2 失败分析与修复
+
+| 失败 TC# | 根因定位 | 修复前代码 | 修复方式 | 修复后结果 |
+|----------|---------|-----------|---------|-----------|
+| TC1.3 | `file.ts:28` 正则 `DETECT_SQL` 遗漏单引号 + 分号组合 | `/\b(SELECT|DROP|DELETE)\b/i` | 改为 `/\b(SELECT|DROP|DELETE|ALTER)\b|['";]/i` | ✅ 通过（重新执行 3 次确认） |
+
+<a id="sec2.1-s1-testfiles"></a>
+#### §2.3 本场景测试文件
+
+| 测试文件 | 用例数 | 归属场景 | 测试类型 | 关键断言 | 框架 |
+|---------|--------|---------|---------|---------|------|
+| `tests/unit/file.test.ts` | 8 | S1 | 单元 | `validateInput`：空值→Err / 类型错→Err / SQL→Err / XSS→Err / 合法→Ok | vitest |
+| `tests/integration/api.test.ts` | 3（S1 部分） | S1, S2 | 集成 | POST 201→验证 body / POST 400→验证 error 结构 / 401→验证 WWW-Authenticate | vitest |
+
+<a id="sec2.1-s1-coverage-graph"></a>
+#### §2.4 场景覆盖图
+
+> 本场景源文件及其测试覆盖状态。绿色=充分覆盖，橙色=部分覆盖，红色=未覆盖。
+
+```mermaid
+flowchart LR
+    subgraph 场景源文件["场景 S1 源文件"]
+        F1["file.ts 🆕<br/>✅ 覆盖 94%"]:::covered
+        F2["existing.ts ✏️<br/>⚠️ 覆盖 67%"]:::partial
+        F3["types.ts 🆕<br/>📐 类型文件"]:::types
+    end
+    subgraph 测试文件["测试文件"]
+        T1["file.test.ts<br/>8 用例"]:::test
+        T2["api.test.ts<br/>3 用例(S1)"]:::test
+    end
+    subgraph 外部["未改依赖"]
+        U1["client.ts<br/>间接覆盖"]:::indirect
+    end
+
+    T1 --> F1
+    T1 --> F3
+    T2 --> F1
+    T2 --> F2
+    T2 --> U1
+    F2 --> F1
+
+    classDef covered fill:#4caf50,stroke:#2e7d32,color:#fff
+    classDef partial fill:#ff9800,stroke:#e65100,color:#fff
+    classDef types fill:#9c27b0,stroke:#4a148c,color:#fff
+    classDef indirect fill:#2196f3,stroke:#0d47a1,color:#fff
+    classDef test fill:#607d8b,stroke:#263238,color:#fff
+```
+
+**覆盖率说明**：
+
+| 源文件 | 覆盖率 | 未覆盖路径 | 原因 | 处置 |
+|--------|--------|-----------|------|------|
+| `file.ts` | 94% | `default` 分支（L65） | 理论上不可达，已有类型穷举 | 记录不阻断 |
+| `existing.ts` | 67% | `updateUser` / `deleteUser` | 不在 S1 范围（属于 S3） | S3 测试覆盖 |
+
+<a id="sec2.1-s1-trace"></a>
+#### §2.5 场景追踪链
+
+> 从场景到用例到源文件到修复的一站式追踪。
+
+| 追踪维度 | 内容 | 引用 |
+|---------|------|------|
+| **场景定义** | <使用场景 §2 场景 1 的场景名 + 操作流> | 使用场景.md §2.S1 |
+| **测试文件** | `file.test.ts`(8) · `api.test.ts`(3/S1) | 本报告 §2.3 |
+| **源文件覆盖** | `file.ts`(94%) · `existing.ts`(67%) · `types.ts`(类型) | 本报告 §2.4 |
+| **失败 TC** | TC1.3：SQL 注入正则遗漏 | 本报告 §2.2 |
+| **修复文件** | `file.ts:28` 正则增强 | 实施报告 §2.S1 |
+| **验证命令** | `npm test -- --run tests/unit/file.test.ts` | 执行输出见附件 |
+| **关联 FP** | FP1 · FP2 | 故事任务.md §2 |
+
+---
+
+### 场景 S2: <使用场景 §2 场景 2 的场景名>
+
+**场景概述**：<1 句复述，引用使用场景>  
+**关联 FP#**：FP3  
+**关联实施报告场景**：实施报告 §2.S2
+
+（同 S1 的 §2.1–§2.5 完整结构：测试执行结果 → 失败分析与修复 → 本场景测试文件 → 场景覆盖图 → 场景追踪链）
+
+---
+
+### 场景 S{N}: <使用场景 §2 场景 N 的场景名>
+
+（同 S1 的 §2.1–§2.5 完整结构）
+
+---
+
+<a id="sec2.N-summary"></a>
+#### §2.N 逐场景汇总
+
+| 场景 | 用例数 | 通过 | 失败 | 修复后通过 | 失败根因 | 最终通过率 | 关联 FP# |
+|------|--------|------|------|-----------|---------|-----------|---------|
+| S1 | 13 | 12 | 1 | 13 | 正则遗漏变体 | 100% | FP1, FP2 |
+| S2 | 8 | 7 | 1 | 8 | 状态初始化缺失 | 100% | FP3 |
+| **合计** | **21** | **19** | **2** | **21** | — | **100%** | — |
+
+<a id="sec3"></a>
+## §3 跨场景覆盖全景
+
+> 汇总所有场景的测试覆盖数据。交叉引用实施报告 §3 依赖图。
+
+### §3.1 源文件 → 测试覆盖矩阵
+
+> 行 = 源文件，列 = 测试文件。可精确回答"这个文件被哪些测试覆盖，覆盖是否充分"。
+
+| 源文件 | `file.test.ts` | `api.test.ts` | `other.test.ts` | 覆盖类型 | 覆盖率 | 场景归属 | 状态 |
+|--------|:---:|:---:|:---:|---------|--------|---------|------|
+| `src/path/file.ts` | ✅ 8 | ✅ 2 | — | 单元 + 集成 | 94% | S1 | ✅ |
+| `src/path/existing.ts` | — | ✅ 2 | — | 集成 | 67% | S1 | ⚠️ S3 补覆盖 |
+| `src/path/types.ts` | — | — | — | 类型定义 | — | S1, S2 | 📐 |
+| `src/path/other.ts` | — | ✅ 1 | ✅ 6 | 单元 + 集成 | 88% | S2 | ✅ |
+| `utils/format.ts` | 间接 | 间接 | 间接 | 间接 | — | — | 🔵 |
+| `api/client.ts` | — | ✅ 2 | — | 集成 | 71% | — | ⚠️ |
+
+### §3.2 全量覆盖图
+
+```mermaid
+flowchart TB
+    subgraph S1["场景 S1"]
+        F1["file.ts 🆕<br/>✅ 94%"]:::covered
+        F2["existing.ts ✏️<br/>⚠️ 67%"]:::partial
+    end
+    subgraph S2["场景 S2"]
+        F3["other.ts 🆕<br/>✅ 88%"]:::covered
+    end
+    subgraph 共享["跨场景"]
+        F4["types.ts 🆕<br/>📐 类型"]:::types
+    end
+    subgraph 外部["未改依赖"]
+        U1["format.ts<br/>🔵 间接"]:::indirect
+        U2["client.ts<br/>⚠️ 71%"]:::partial
+    end
+    subgraph 测试["测试文件"]
+        T1["file.test.ts<br/>S1"]:::test
+        T2["api.test.ts<br/>S1+S2"]:::test
+        T3["other.test.ts<br/>S2"]:::test
+    end
+
+    F2 --> F1
+    F1 --> F4
+    F2 --> F4
+    F3 --> F4
+    F1 --> U1
+    F3 --> U1
+    F2 --> U2
+
+    T1 -.-> F1
+    T1 -.-> F4
+    T2 -.-> F1
+    T2 -.-> F2
+    T2 -.-> U2
+    T3 -.-> F3
+
+    classDef covered fill:#4caf50,stroke:#2e7d32,color:#fff
+    classDef partial fill:#ff9800,stroke:#e65100,color:#fff
+    classDef types fill:#9c27b0,stroke:#4a148c,color:#fff
+    classDef indirect fill:#2196f3,stroke:#0d47a1,color:#fff
+    classDef test fill:#607d8b,stroke:#263238,color:#fff
+```
+
+| 图例 | 含义 |
+|------|------|
+| ✅ 覆盖 N% | 直接测试覆盖 ≥ 80% |
+| ⚠️ 覆盖 N% | 直接测试覆盖 < 80%，需补充 |
+| 📐 类型 | 纯类型文件，不需要单元测试 |
+| 🔵 间接 | 被测试文件依赖，间接执行 |
+| 灰底测试 | 测试文件节点 |
+
+**未覆盖 / 覆盖不足源文件**：
+
+| 源文件 | 覆盖率 | 未覆盖路径 | 原因 | 风险 | 处置 |
+|--------|--------|-----------|------|------|------|
+| `existing.ts` | 67% | `updateUser`, `deleteUser` | 不在 S1 范围（S3 覆盖） | 低 | S3 测试补充 |
+| `client.ts` | 71% | 重试逻辑 / 超时处理 | 集成测试未模拟网络故障 | 中 | 下轮迭代补充 |
+
+<a id="sec4"></a>
+## §4 Gate B 判定
+
+| 判定项 | 目标 | 实际 | 依据 | 达标 |
+|--------|------|------|------|:---:|
+| P0 全部清零 | 0 个未清零 | 0 个 | 实施报告 §2.N | ✅ |
+| P1 高通过率 | ≥ 80% P1 已修复 | <实际值> | 实施报告 §2.N | ✅/❌ |
+| 修复轮数 | ≤ 2 轮 | <实际轮数> | 本报告 §2.2 各场景失败修复 | ✅/❌ |
+| S1 通过率 | ≥ 90% | 100% | 本报告 §2.S1 | ✅ |
+| S2 通过率 | ≥ 90% | 100% | 本报告 §2.S2 | ✅ |
+| 新增文件覆盖率 | 每文件 ≥ 80% | `file.ts` 94% · `other.ts` 88% · `types.ts` (类型) | 本报告 §3.1 | ✅ |
+| 修改文件覆盖率 | 每文件 ≥ 80% | `existing.ts` 67% （S3 补） | 本报告 §3.1 | ⚠️ 有原因 |
+| 未覆盖文件 | 全部有处置 | 2 个（1 个延期覆盖，1 个下轮迭代） | 本报告 §3.2 | ✅ |
+
+**Gate B 结论**：✅ 通过 — 2 项失败已修复，逐场景通过率 100%，新增文件覆盖率达标。`existing.ts` 67% 因 S3 范围外延期覆盖，`client.ts` 71% 下轮迭代补充。
+
+### 回溯链
+
+| 类型 | 来源 | 引用 |
+|------|------|------|
+| 需求基线 | 故事任务.md | §5 验收标准 SC1–SC{N} |
+| 用户基线 | 使用场景.md | §2 场景 S1–S{N}（逐场景一一对应，含操作流） |
+| 测试基线 | 测试设计.md | §2 用例 TC-A1–TC-A{N} × §2 用例 TC-I1–TC-I{N} |
+| 实施基线 | 实施报告.md | §2 逐场景源文件 × §3 跨场景依赖图 × §4 测试文件全景 |
 ```
 
 ### 自改进复盘 · self-improve
