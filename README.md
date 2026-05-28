@@ -1,4 +1,4 @@
-# YrY <sub>v2.0.0</sub>
+# YrY <sub>v2.0.1</sub>
 
 > 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。
 
@@ -131,3 +131,63 @@ flowchart LR
     TESTER -->|Gate A·阻编码| CODER
     TESTER -->|Gate B·阻交付| REPORTER[reporter<br>过程记录]
     REPORTER -->|三报告| PM
+    SI[self-improve<br>自改进] -.提案.-> PM
+```
+
+## 规则
+
+| 规则 | 作用域 | 核心 |
+|------|--------|------|
+| [code-pipeline.md](./rules/code-pipeline.md) | `**/*.{js,ts,py,...}` | 管线全流程：分支隔离 · Gate A/B · 逐模块 P0 清零 · 研究优先开发 |
+| [delivery-gate.md](./rules/delivery-gate.md) | `docs/故事任务面板/**/*.md` | 交付收口：三步 hook 按序执行 |
+| [doc-generation.md](./rules/doc-generation.md) | `docs/**/*.md` | 文档生成约束：表达优先 — 图 → 结构化文本 → 表 |
+| [rui-claude.md](./rules/rui-claude.md) | `.claude/**` | .claude/ 配置管理规则 |
+| [self-improve.md](./rules/self-improve.md) | `docs/故事任务面板/**/.improvement/**` | 自改进管线：提案 · 评估 · 回溯 |
+
+## 技能
+
+| 技能 | 入口 | 职责 |
+|------|------|------|
+| rui | `/rui` | SDLC 编排中枢：需求 → 文档 → 代码 → 交付 |
+| rui-story | `/rui-story` | 故事任务面板管理 + 远端同步 |
+| rui-claude | `/rui-claude` | .claude/ 配置全周期管理 |
+| rui-import | hook | 文档同步至远端 API；每文档即时导入 + 批量安全网 |
+| rui-bot | hook | 企微通知：rui 完成/阻塞/门禁失败时强制发送 |
+| rui-trends | `/rui-trends` | 技术趋势探测：GitHub Trending · OSS Insight · TrendShift |
+
+## 目录结构
+
+```
+YrY/
+├── agents/          # 5 角色定义（pm · coder · tester · reporter · self-improve）
+├── rules/           # 5 规则（管线 · 交付 · 文档 · claude 配置 · 自改进）
+├── skills/          # 6 技能（rui · rui-story · rui-claude · rui-import · rui-bot · rui-trends）
+├── templates/       # 文档模板（aicr-story）
+├── CLAUDE.md        # 项目指令 + 铁律 + 约束
+└── README.md        # 项目说明（本文件）
+```
+
+## 领域语言
+
+| 术语 | 含义 | 禁用别名 |
+|------|------|---------|
+| 故事 | 业务需求单元，对应 docs/故事任务面板/ 下一个目录 | 需求 / requirement |
+| 管线 | SDLC 全流程：需求解析 → 自适应规划 → ... → 交付 | 流水线 |
+| 门禁 | 质量卡点，Gate A（测试先行）· Gate B（验证通过）方可进入下一阶段 | 关卡 / checkpoint |
+| 模块 | 故事实现的最小交付单元，逐模块推进并 P0 清零 | 组件 |
+| P0 | 阻塞性最高优先级问题，不清理不进下一模块 | blocker / critical |
+| 铁律 | 4 条不可妥协规则：验先于称 · 溯先于修 · 清先于进 · 表达优先 | — |
+| 退化 | 信息质量随时间下降：外部不可达 · 渐进漂移 · 人机偏差 | 熵增 / decay |
+| 基线 | 文档快照基线，每故事 5 文档（01–05），可作为后续增量更新锚点 | baseline |
+| 自改进 | AI 自主诊断 → 提案 → 实现 → 验证闭环，持续提升项目质量 | self-improve |
+
+## 技术趋势
+
+通过 `/rui-trends` 自动探测技术趋势辅助架构决策。
+
+| 数据源 | 作用 |
+|--------|------|
+| GitHub Trending | 日/周热门仓库，语言过滤 |
+| OSS Insight | 中国区/全球仓库热度、生态位分析 |
+| TrendShift | 技术关键词升降趋势 |
+| Top-Starred | 全时段高星仓库参考 |
