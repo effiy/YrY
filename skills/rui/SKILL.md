@@ -649,7 +649,7 @@ flowchart LR
     MINOR --> UPDATE
     MAJOR --> UPDATE
     UPDATE --> HELP["§4a 更新 help<br/>扫描 skills/*/help.mjs<br/>修正过时引用"]:::op
-    HELP --> README["§4b 更新 README<br/>校验技能表 · 目录树<br/>命令文档 · 领域语言"]:::op
+    HELP --> README["§4b 更新 README<br/>校验技能表 · 目录树<br/>命令文档 · 领域语言<br/>重生故事任务列表"]:::op
     README --> DOCS["§4c 更新关联文档<br/>扫描 故事任务面板/<br/>修正过时引用"]:::op
     DOCS --> COMMIT["git add + git commit<br/>含版本号 + 变更摘要"]:::op
     COMMIT --> MERGE["合并到 main<br/>git checkout main && git merge"]:::op
@@ -678,7 +678,7 @@ flowchart LR
 | §3 判定版本 | 按变更信号决定 PATCH / MINOR / MAJOR | 新版本号 > 旧版本号 |
 | §4 更新版本文件 | `plugin.json` version + `CLAUDE.md` version + `README.md` version | 三者同步 |
 | §4a 更新 help | 扫描 `skills/*/help.mjs`，修正过时技能名/路径/版本引用 | 确保 help 输出与项目现状一致 |
-| §4b 更新 README | 校验技能表 · 目录树 · 命令文档 · 领域语言是否与项目现状一致 | 版本号之外的结构性更新 |
+| §4b 更新 README | 校验技能表 · 目录树 · 命令文档 · 领域语言 · 重生 `<!-- rui:story-list-start -->` 标记段内故事任务列表 | 版本号之外的结构性更新，故事与 README 联动 |
 | §4c 更新关联文档 | 扫描 `docs/故事任务面板/`，修正过时引用（技能名/路径/命令） | 故事文档与项目现状同步 |
 | §5 git commit | `git add` + `git commit -m "chore: bump version to X.Y.Z"` | 含变更摘要 |
 | §6 合并 main | `git checkout main && git merge --ff-only <source>` | fast-forward 合入 |
@@ -693,7 +693,7 @@ flowchart LR
 | 步骤 | 扫描范围 | 检查内容 | 修正示例 |
 |------|---------|---------|---------|
 | §4a 更新 help | `skills/*/help.mjs`（6 个） | 技能名、命令路径、版本引用是否过时 | `skills/wework-bot/` → `skills/rui-bot/` |
-| §4b 更新 README | `README.md` | 技能表、目录树、命令文档、领域语言、管线图是否与项目现状一致 | 目录树新增/删除/重命名条目 |
+| §4b 更新 README | `README.md` | 技能表、目录树、命令文档、领域语言、管线图、`<!-- rui:story-list-start -->` 标记段内故事任务列表是否与项目现状一致 | 目录树新增/删除/重命名条目、故事列表重生 |
 | §4c 更新关联文档 | `docs/故事任务面板/` | 故事文档中的技能名、命令路径、文件路径引用是否过时 | `node skills/import-docs/sync.mjs` → `node skills/rui-import/sync.mjs` |
 
 **执行原则：**
