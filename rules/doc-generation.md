@@ -43,8 +43,15 @@ NO MAGIC NUMBERS — EVERY NUMERIC LITERAL MUST BE SEMANTICALLY NAMED
 # 文档标题
 > v{版本} | {日期} | {模型} | feat/{name}
 > **导航**: [← 上一篇](./prev.md) · [下一篇 →](./next.md)
+
 [§1](#sec1) · [§2](#sec2) · [§3](#sec3)
 
+<a id="sec1"></a>
+## §1 标题一
+... 正文 ...
+
+<a id="sec2"></a>
+## §2 标题二
 ... 正文 ...
 ```
 
@@ -52,7 +59,7 @@ NO MAGIC NUMBERS — EVERY NUMERIC LITERAL MUST BE SEMANTICALLY NAMED
 |------|------|------|
 | F.meta | 标题后首行 | `v{版本} \| {日期} \| {模型} \| {分支}`，占位符留空=偏差 |
 | F.nav | F.meta 后，F.toc 前 | 单行 `> **导航**: [← 前驱](./prev.md) · [后继 →](./next.md)`，链接必须存在 |
-| F.toc | F.nav 后 | 单行 `·` 分隔，覆盖全部 `##`，`<a id>` 显式锚点 |
+| F.toc | F.nav 后 | 单行 `·` 分隔，覆盖全部 `##` 标题；每个目标标题前放置 `<a id="secN">` 显式锚点，确保点击链接即滚动定位 |
 
 ### ② 表达优先
 
