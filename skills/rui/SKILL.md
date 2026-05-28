@@ -783,11 +783,17 @@ flowchart TD
     BRANCH -->|"是"| SCAN["§1.4 源码定位<br/>按 name 匹配源文件集"]:::s
     SWITCH --> SCAN
     SCAN --> EXTRACT["§1.5 只读提取<br/>结构·接口·依赖·状态·安全"]:::s
-    EXTRACT --> GEN["§2 逐文档生成<br/>5 文档基线"]:::s
 
-    subgraph GENSUB["逐文档生成 — 5 文档基线"]
+    subgraph GENSUB["§2 逐文档生成 — 4 文档基线 + 即时导入"]
         direction LR
-        D1["§2.1 pm<br/>故事任务<br/>F.story.task"]:::agent
-        D2["§2.2 pm<br/>使用场景<br/>F.story.scenarios"]:::agent
-        D3["§2.3 coder<br/>技术评审<br/>F.story.technical-review"]:::agent
-        D4["§2.4 tester<br/>测试设计<br/>F.story.test-design"]:::agent
+        D1["§2.1 pm<br/>故事任务<br/>F.story.task"]:::agent --> IMP1["import-doc.mjs"]:::tool
+        IMP1 --> D2["§2.2 pm<br/>使用场景<br/>F.story.scenarios"]:::agent --> IMP2["import-doc.mjs"]:::tool
+        IMP2 --> D3["§2.3 coder<br/>技术评审<br/>F.story.technical-review"]:::agent --> IMP3["import-doc.mjs"]:::tool
+        IMP3 --> D4["§2.4 tester<br/>测试设计<br/>F.story.test-design"]:::agent --> IMP4["import-doc.mjs"]:::tool
+    end
+
+    EXTRACT --> D1
+    IMP4 --> LOOP{"多故事?"}
+    LOOP -->|"是·下一故事"| PARSE
+    LOOP -->|"否"| DELIVER["§3 交付<br/>rui-import 批量安全网<br/>→ rui-bot 通知"]:::s
+```
