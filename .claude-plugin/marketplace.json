@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "故事驱动的 SDLC 编排系统 — 知识图谱为核心",
-    "version": "2.5.0"
+    "version": "2.5.1"
   },
   "plugins": [
     {
@@ -15,7 +15,7 @@
         "repo": "effiy/YrY"
       },
       "description": "故事驱动的 SDLC 编排系统。知识图谱双图层模型：需求→文档→代码→交付。6 技能 + 5 Agent + 3 规则。",
-      "version": "2.5.0",
+      "version": "2.5.1",
       "author": {
         "name": "YrY"
       },
