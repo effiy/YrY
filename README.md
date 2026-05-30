@@ -1,4 +1,4 @@
-# YrY <sub>v2.4.0</sub>
+# YrY <sub>v2.4.1</sub>
 
 > 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。
 
@@ -48,7 +48,7 @@ flowchart LR
     K --> K1[文档同步] --> K2[企微通知]
 ```
 
-每阶段产出对应编号文档（01–09），交付时三步 hook 按序执行。详见 [rules/code-pipeline.md](./rules/code-pipeline.md)、[rules/delivery-gate.md](./rules/delivery-gate.md)。
+每阶段产出写入场景文档对应节（§0–§4），交付时三步 hook 按序执行。详见 [rules/code-pipeline.md](./rules/code-pipeline.md)、[rules/delivery-gate.md](./rules/delivery-gate.md)。
 
 ## 快速开始
 
@@ -57,16 +57,16 @@ flowchart LR
 /rui init
 
 # 2. 从源码反推文档（存量项目）
-/rui doc --from-code
+/rui doc <需求>
 
 # 3. 端到端交付（新需求）
 /rui 用户登录功能支持手机号+验证码
 
 # 4. 查看进度
-/rui-story list
+/rui-story
 ```
 
-> init 生成 CLAUDE.md 项目约束 + README 领域语言 + 故事面板目录。存量项目用 `doc --from-code` 反推文档基线。
+> init 生成 CLAUDE.md 项目约束 + README 领域语言 + 故事面板目录（技术架构故事 + 自测试套件）。存量项目用 `/rui doc <需求>` 只读源码反推文档基线。
 
 ## 命令
 
@@ -79,12 +79,10 @@ flowchart TD
     Q1 -->|".claude/ 配置"| RC["/rui-claude"]
     Q2 -->|"无·仓库新搭"| INIT["/rui init"]
     Q2 -->|"无·已有需求"| E2E["/rui <需求>"]
-    Q2 -->|"无·已有源码"| FC["/rui doc --from-code"]
-    Q2 -->|"已拆只缺文档"| DOC["/rui doc <需求>"]
-    Q2 -->|"文档齐缺实现"| CODE["/rui code <name>"]
-    Q2 -->|"代码改完想补文档"| FD["/rui code --from-doc"]
+    Q2 -->|"无·已有源码"| DOC["/rui doc <需求>"]
+    Q2 -->|"已拆只缺文档"| DOC2["/rui doc <需求>"]
     Q2 -->|"小修小补"| UPD["/rui update"]
-    Q2 -->|"只想看进度"| LIST["/rui-story list 或 /rui-story"]
+    Q2 -->|"只想看进度"| STORY["/rui-story"]
 ```
 
 ### /rui — 业务故事 SDLC
@@ -94,33 +92,22 @@ flowchart TD
 | `/rui` | 只读 | 5 层管线评分排序，推荐下一步任务 |
 | `/rui init` | 写入 | 建立基线：detect → explore → generate → setup → verify → trigger |
 | `/rui <需求>` | 写入 | 端到端：doc + code 自动串联，逐故事串行 |
-| `/rui doc <需求>` | 写入 | 拆需求出文档：生成 01/02/03/04，不改源码 |
-| `/rui code <name>` | 写入 | 实现故事：Gate A → 逐模块 → Gate B → 复盘 → 交付 |
-| `/rui update <name> [ctx]` | 写入 | 增量更新：T1/T2/T3 自动裁剪 |
-| `/rui yry [--depth N]` | 写入 | 自改进闭环：全自主扫描→诊断→实现→验证→版本升级，循环至无改进空间或达到深度上限（默认 3） |
-| `/rui version --up` | 写入 | 版本升级：自主判定 → 更新文件 → git commit → 合并 main → 推送 + tag |
-| `/rui doc --from-code 需求` | 写入 | 从源码反推完整 5 文档基线到故事目录（源码只读） |
-| `/rui code --from-doc <name>` | 只读 | 从文档反推码：禁止改源码 |
+| `/rui doc <需求>` | 写入 | 文档生成：拆需求为故事 + 场景文档基线（只读源码，不改动） |
+| `/rui update [ctx]` | 写入 | 增量更新：T1/T2/T3 自动裁剪 |
 
 ### /rui-story — 故事任务面板管理
 
 | 命令 | 类型 | 数据源 | 作用 |
 |------|------|--------|------|
-| `/rui-story` | 只读 | 远端 API | 状态概览：按 6 种状态统计 + 最近活动 |
-| `/rui-story list` | 只读 | 远端 API | 进度全景：所有故事详情表格（状态/文件数/类型/分支） |
-| `/rui-story health` | 只读 | 远端 API + 本地 | 健康检查：凭据/API 可达性/配置/数据完整性 |
+| `/rui-story` | 只读 | 远端 API | 状态概览：按状态统计 + 最近活动 |
 | `/rui-story sync [<name>]` | 写入 | 远端 API | 委托 rui-import 从远端拉取文档覆盖本地 |
-| `/rui-story remove <name>` | 写入 | 本地文件系统 | 删除指定故事整个本地目录（需确认） |
-| `/rui-story --help` | 只读 | 本地 | 完整命令用法 + 场景示例 |
 
 ### /rui-claude — .claude/ 配置管理
 
 | 命令 | 类型 | 作用 |
 |------|------|------|
 | `/rui-claude` | 只读 | 按 5 层管线评分推荐 5~10 条任务 |
-| `/rui-claude retro` | 写入 | 健康度分析：分析 .claude/ 结构产出复盘报告 |
 | `/rui-claude sync` | 写入 | 远端同步：API pull 覆盖本地 `.claude/`（需确认意图） |
-| `/rui-claude <需求>` | 写入 | 需求管线：仅限 `.claude/` 内的 doc+code→交付 |
 
 ## Agent 角色
 
@@ -130,7 +117,7 @@ flowchart LR
     CODER -->|逐模块| TESTER[tester<br>质量卡点]
     TESTER -->|Gate A·阻编码| CODER
     TESTER -->|Gate B·阻交付| REPORTER[reporter<br>过程记录]
-    REPORTER -->|三报告| PM
+    REPORTER -->|场景文档闭合| PM
     SI[self-improve<br>自改进] -.提案.-> PM
 ```
 
@@ -138,11 +125,9 @@ flowchart LR
 
 | 规则 | 作用域 | 核心 |
 |------|--------|------|
-| [code-pipeline.md](./rules/code-pipeline.md) | `**/*.{js,ts,py,...}` | 管线全流程：分支隔离 · Gate A/B · 逐模块 P0 清零 · 研究优先开发 |
+| [code-pipeline.md](./rules/code-pipeline.md) | `**/*.{js,ts,py,...}` + `.claude/**` | 管线全流程：分支隔离 · Gate A/B · 逐模块 P0 清零 · 自改进 · .claude/ 变更 |
 | [delivery-gate.md](./rules/delivery-gate.md) | `docs/故事任务面板/**/*.md` | 交付收口：三步 hook 按序执行 |
-| [doc-generation.md](./rules/doc-generation.md) | `docs/**/*.md` | 文档生成约束：表达优先 — 图 → 结构化文本 → 表 |
-| [rui-claude.md](./rules/rui-claude.md) | `.claude/**` | .claude/ 配置管理规则 |
-| [self-improve.md](./rules/self-improve.md) | `docs/故事任务面板/**/.improvement/**` | 自改进管线：提案 · 评估 · 回溯 |
+| [doc-generation.md](./rules/doc-generation.md) | `docs/**/*.md` | 文档生成约束：表达优先 · 双图层知识图谱 · 场景文档逐节填充 |
 
 ## 技能
 
@@ -160,7 +145,8 @@ flowchart LR
 ```
 YrY/
 ├── agents/          # 5 角色定义（pm · coder · tester · reporter · self-improve）
-├── rules/           # 5 规则（管线 · 交付 · 文档 · claude 配置 · 自改进）
+├── docs/            # 故事任务面板 + 知识图谱数据文件
+├── rules/           # 3 规则（管线 · 交付 · 文档）
 ├── skills/          # 6 技能（rui · rui-story · rui-claude · rui-import · rui-bot · rui-trends）
 ├── templates/       # 文档模板（aicr-story）
 ├── CLAUDE.md        # 项目指令 + 铁律 + 约束
@@ -170,22 +156,55 @@ YrY/
 ## 故事任务
 
 <!-- rui:story-list-start -->
-> 暂无故事任务。使用 `/rui init` 建立基线或 `/rui doc --from-code` 从源码反推。
+> 暂无故事任务。使用 `/rui init` 建立基线或 `/rui doc <需求>` 从源码反推。
 <!-- rui:story-list-end -->
+
+### 知识图谱
+
+故事目录按双图层模型组织，支撑 Story → 场景 → 源码 → 内容四层下钻。JSON 数据文件采用知识图谱模式（typed node + edge）。
+
+| 图层 | 数据文件 | 节点类型 | 说明 |
+|------|---------|---------|------|
+| 面板层 | `故事任务面板/story-deps.json` | `story` | 跨故事依赖：nodes（故事节点）+ edges（blocks/informs/integrates 边） |
+| 故事层 | `<name>/场景代码映射.json` | `function` `class` `file` `concept` | 场景→代码映射：scenes + graph（nodes/edges），id 格式 `type:path:name` |
+| 领域层 | `<name>/故事任务.md` | `story` `scene` | 场景功能点表（知识图谱 hub），`contains` 边连接故事与场景 |
+| 结构层 | `<name>/场景-N-xxx.md §2` | `src` `test` | 开发/测试源码清单，`maps_to` 边连接场景与文件 |
+| 内容层 | Read/Grep 获取 | `code` | 源码内容，`Read` 边连接文件与内容 |
+
+**图数据文件**（JSON，rui-import 自动同步远端）：
+
+| 文件 | 位置 | 核心字段 |
+|------|------|---------|
+| `story-deps.json` | `故事任务面板/` | `nodes` `edges` `dependencyEdgeTypes`（blocks/informs/integrates） |
+| `场景代码映射.json` | `故事任务面板/<name>/` | `scenes` `graph.nodes`（id/type/layer/code） `graph.edges`（source/target/type） |
+
+```
+故事任务面板/
+├── story-deps.json      ← 跨故事依赖关系图（nodes + edges）
+└── <name>/
+    ├── 故事任务.md           ← 场景功能点表（知识图谱 hub）
+    ├── 场景代码映射.json     ← 场景→代码映射（U-A 知识图谱模式）
+    ├── 场景-1-<slug>.md      ← §0 技术评审 · §1 测试设计 · §2 实施报告 · §3 测试报告 · §4 自改进
+    ├── 场景-2-<slug>.md      ← 同上
+    └── ...
+```
 
 ## 领域语言
 
 | 术语 | 含义 | 禁用别名 |
 |------|------|---------|
 | 故事 | 业务需求单元，对应 docs/故事任务面板/ 下一个目录 | 需求 / requirement |
+| 场景 | 故事的独立功能切片，一个故事含 N 个场景，每个场景对应一个 场景-N-xxx.md | use case / 用例 |
+| 场景功能点表 | 故事任务.md §1 的核心表格，每行映射场景→场景文档→开发源码→测试源码 | — |
 | 管线 | SDLC 全流程：需求解析 → 自适应规划 → ... → 交付 | 流水线 |
-| 门禁 | 质量卡点，Gate A（测试先行）· Gate B（验证通过）方可进入下一阶段 | 关卡 / checkpoint |
+| 门禁 | 质量卡点，Gate A（场景 §1 测试设计就绪）· Gate B（场景 §3 测试报告通过）方可进入下一阶段 | 关卡 / checkpoint |
 | 模块 | 故事实现的最小交付单元，逐模块推进并 P0 清零 | 组件 |
 | P0 | 阻塞性最高优先级问题，不清理不进下一模块 | blocker / critical |
 | 铁律 | 4 条不可妥协规则：验先于称 · 溯先于修 · 清先于进 · 表达优先 | — |
 | 退化 | 信息质量随时间下降：外部不可达 · 渐进漂移 · 人机偏差 | 熵增 / decay |
-| 基线 | 文档快照基线，每故事 5 文档（01–05），可作为后续增量更新锚点 | baseline |
+| 基线 | 文档基线：故事任务（场景功能点表）+ N 个场景文档（§0–§4），作为增量更新锚点 | baseline |
 | 自改进 | AI 自主诊断 → 提案 → 实现 → 验证闭环，持续提升项目质量 | self-improve |
+| 双图层 | 知识图谱的组织模型：领域层（业务语义）+ 结构层（源码文件），两层间通过 maps_to 边连接 | — |
 
 ## 技术趋势
 

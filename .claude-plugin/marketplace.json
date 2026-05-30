@@ -4,8 +4,8 @@
     "name": "YrY"
   },
   "metadata": {
-    "description": "故事驱动的 SDLC 编排系统——需求拆分→文档管线→代码管线→交付",
-    "version": "1.6.8"
+    "description": "故事驱动的 SDLC 编排系统 — 知识图谱为核心",
+    "version": "2.4.1"
   },
   "plugins": [
     {
@@ -14,19 +14,13 @@
         "source": "github",
         "repo": "effiy/YrY"
       },
-      "description": "故事驱动的 SDLC 编排系统。提供 /rui、/rui-claude 命令体系，6 Agent 协同，Gate A/B 强制验证，每故事 8 份文档。",
-      "version": "1.6.8",
+      "description": "故事驱动的 SDLC 编排系统。知识图谱双图层模型：需求→文档→代码→交付。6 技能 + 5 Agent + 3 规则。",
+      "version": "2.4.1",
       "author": {
         "name": "YrY"
       },
       "category": "ai",
-      "keywords": [
-        "sdlc",
-        "orchestration",
-        "story-driven",
-        "agent",
-        "pipeline"
-      ],
+      "keywords": ["sdlc", "knowledge-graph", "story-driven", "agent", "pipeline"],
       "license": "MIT",
       "repository": "https://github.com/effiy/YrY"
     }
