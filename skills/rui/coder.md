@@ -28,7 +28,7 @@ flowchart LR
         C3["场景-N-<slug>.md"]:::scene
     end
     subgraph 数据["数据文件"]
-        D1["场景代码映射.json"]:::data
+        D1["knowledge-graph.json"]:::data
     end
 ```
 
@@ -36,7 +36,7 @@ flowchart LR
 |------|:---:|--------|------|
 | 故事任务.md | ✓ | pm | 文档生成 |
 | 场景-N-<slug>.md | ✓ | coder/tester/si | 全阶段（§0–§4 逐节填充） |
-| 场景代码映射.json | ✓ | coder | 实现 |
+| knowledge-graph.json | ✓ | coder | 实现 |
 | {专题}.md | 按需 | pm 决策 | 文档生成 |
 
 补充文档按需触发，约束见 [rules/doc-generation.md](../../rules/doc-generation.md#补充文档)。

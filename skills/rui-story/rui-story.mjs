@@ -212,7 +212,7 @@ function determineStatus(fileBasenames, blockedState) {
   if (!hasSceneDoc)
     return "设计";
 
-  const hasMapping = fileBasenames.has("场景代码映射.json");
+  const hasMapping = fileBasenames.has("knowledge-graph.json");
   if (!hasMapping)
     return "实施";
 

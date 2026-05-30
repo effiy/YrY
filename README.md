@@ -1,4 +1,4 @@
-# YrY <sub>v2.6.0</sub>
+# YrY <sub>v2.7.0</sub>
 
 > 故事驱动的 SDLC 编排系统 — 场景基线 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。
 
@@ -156,7 +156,10 @@ YrY/
 ## 故事任务
 
 <!-- rui:story-list-start -->
-> 暂无故事任务。使用 `/rui init` 建立基线或 `/rui doc <需求>` 从源码反推。
+| 故事 | 版本 | 描述 | 状态 |
+|------|------|------|------|
+| [yry-arch](./docs/故事任务面板/yry-arch/故事任务.md) | v1.0.0 | 系统架构知识固化：模块地图 · 拓扑模型 · 数据流 · 信任边界 · ADR | 📄 基线 |
+| [yry-self-test](./docs/故事任务面板/yry-self-test/故事任务.md) | v1.0.0 | 自动化测试套件：脚本测试 · 规约验证 · 配置检查 | 📄 基线 |
 <!-- rui:story-list-end -->
 
 ### 知识图谱
@@ -166,7 +169,7 @@ YrY/
 | 图层 | 数据文件 | 节点类型 | 说明 |
 |------|---------|---------|------|
 | 面板层 | `故事任务面板/story-deps.json` | `story` | 跨故事依赖：nodes（故事节点）+ edges（blocks/informs/integrates 边） |
-| 故事层 | `<name>/场景代码映射.json` | `function` `class` `file` `concept` | 场景→代码映射：scenes + graph（nodes/edges），id 格式 `type:path:name` |
+| 故事层 | `<name>/knowledge-graph.json` | `function` `class` `file` `concept` | 场景→代码映射：scenes + graph（nodes/edges），id 格式 `type:path:name` |
 | 领域层 | `<name>/故事任务.md` | `story` `scene` | 场景功能点表（知识图谱 hub），`contains` 边连接故事与场景 |
 | 结构层 | `<name>/场景-N-xxx.md §2` | `src` `test` | 开发/测试源码清单，`maps_to` 边连接场景与文件 |
 | 内容层 | Read/Grep 获取 | `code` | 源码内容，`Read` 边连接文件与内容 |
@@ -176,14 +179,14 @@ YrY/
 | 文件 | 位置 | 核心字段 |
 |------|------|---------|
 | `story-deps.json` | `故事任务面板/` | `nodes` `edges` `dependencyEdgeTypes`（blocks/informs/integrates） |
-| `场景代码映射.json` | `故事任务面板/<name>/` | `scenes` `graph.nodes`（id/type/layer/code） `graph.edges`（source/target/type） |
+| `knowledge-graph.json` | `故事任务面板/<name>/` | `scenes` `graph.nodes`（id/type/layer/code） `graph.edges`（source/target/type） |
 
 ```
 故事任务面板/
 ├── story-deps.json      ← 跨故事依赖关系图（nodes + edges）
 └── <name>/
     ├── 故事任务.md           ← 场景功能点表（知识图谱 hub）
-    ├── 场景代码映射.json     ← 场景→代码映射（U-A 知识图谱模式）
+    ├── knowledge-graph.json     ← 场景→代码映射（U-A 知识图谱模式）
     ├── 场景-N-<slug>.md      ← §0 技术评审 · §1 测试设计 · §2 实施报告 · §3 测试报告 · §4 自改进
     └── ...
 ```

@@ -147,7 +147,7 @@ docs/故事任务面板/
 ├── 通知日志.md               ← 管线执行日志（时间倒序）
 └── <name>/                  ← 一个故事一个目录，kebab-case
     ├── 故事任务.md            ← pm · 基线（场景功能点表 · 知识图谱 hub）
-    ├── 场景代码映射.json      ← 场景→代码映射（U-A 知识图谱）
+    ├── knowledge-graph.json      ← 场景→代码映射（U-A 知识图谱）
     ├── 场景-1-<slug>.md      ← §0 技术评审 · §1 测试设计 · §2 实施报告 · §3 测试报告 · §4 自改进
     └── ...
 ```
@@ -156,7 +156,7 @@ docs/故事任务面板/
 |------|:---:|------|------|
 | 故事任务.md | pm | 文档生成 | 场景功能点表 + Story + AC + 使用场景。自身即基线，不含 §0 |
 | 场景-N-<slug>.md | coder/tester/si | 全阶段 | 统一场景文档，§0–§4 按阶段逐节填充，含该场景的用户角色、操作流 |
-| 场景代码映射.json | coder | 实现 | 知识图谱数据：scenes + graph (nodes/edges) |
+| knowledge-graph.json | coder | 实现 | 知识图谱数据：scenes + graph (nodes/edges) |
 | story-deps.json | pm | 规划 | 跨故事依赖：nodes + edges (blocks/informs/integrates) |
 
 ---

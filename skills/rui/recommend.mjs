@@ -575,7 +575,7 @@ function buildStoryCandidate(group, project, projectType) {
   const totalLines = group.reduce((s, f) => s + f.metrics.lines, 0);
 
   // Expected docs — scene-document baseline
-  const expectedDocs = ["故事任务", "场景代码映射"];
+  const expectedDocs = ["故事任务", "knowledge-graph"];
 
   // Coverage description
   const primarySig = allSignatures.length > 0 ? allSignatures.slice(0, COVERAGE_SIG_PREVIEW_COUNT).join("; ") : "";

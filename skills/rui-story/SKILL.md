@@ -105,7 +105,7 @@ flowchart TD
     CHKDOC -->|"否"| DIP["设计"]:::s1
     CHKDOC -->|"是"| CHKIMP{"场景文档 ≥1?<br/>（§0§1 已填充）"}
     CHKIMP -->|"否"| IMP["实施"]:::s2
-    CHKIMP -->|"是"| CHKVER{"场景代码映射.json<br/>存在?"}
+    CHKIMP -->|"是"| CHKVER{"knowledge-graph.json<br/>存在?"}
     CHKVER -->|"否"| TST["测试"]:::s3
     CHKVER -->|"是"| CHKRET{"场景文档 §4<br/>已填充?"}
     CHKRET -->|"否"| RPT["报告"]:::s4
@@ -278,7 +278,7 @@ flowchart LR
 目录内容 (4 个文件，约 58K):
   故事任务.md             (20.2K)
   场景-1-<slug>.md       (24.5K)
-  场景代码映射.json       (12.8K)
+  knowledge-graph.json       (12.8K)
 
 ⚠️  即将删除整个目录及 3 个文件，释放约 58K。此操作不可撤销。确认？(y/n)
 
