@@ -101,7 +101,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    TRIGGER["/rui-claude retro"]:::src --> COLLECT["采集统计<br/>agents/ · rules/ · formulas.md · skills/"]:::op
+    TRIGGER["/rui-claude retro"]:::src --> COLLECT["采集统计<br/>agents/ · rules/ · skills/"]:::op
     COLLECT --> WRITE["三节复盘"]:::op
     WRITE --> S1["§1 配置结构"]:::section
     WRITE --> S2["§2 健康度"]:::section
@@ -115,7 +115,7 @@ flowchart LR
 | 项目 | 说明 |
 |------|------|
 | 触发方式 | `/rui-claude retro [--name <story>] [--json]` |
-| 输入 | 本地 `.claude/` 目录的 `agents/` · `rules/` · `skills/` · `formulas.md` 等结构 |
+| 输入 | 本地 `.claude/` 目录的 `agents/` · `rules/` · `skills/` 等结构 |
 | 网络 | 纯本地分析，不连远端 |
 | 产出 | `docs/自改进故事面板/<date>.md`（三节：§1 配置结构 · §2 健康度 · §3 改进项） |
 

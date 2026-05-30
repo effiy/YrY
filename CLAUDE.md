@@ -3,7 +3,7 @@
 > 基础信念是 why。YrY 是故事驱动的 SDLC 编排系统，用自身管线管理自身演进。
 > [领域语言](./README.md#领域语言) · [系统全景](./README.md)
 
-[基础信念](#基础信念) · [铁律](#铁律) · [项目画像](#项目画像) · [项目约束](#项目约束) · [项目不可妥协底线](#项目不可妥协底线) · [退化对策](#退化对策) · [自约束](#自约束) · [引导](#引导)
+[基础信念](#基础信念) · [铁律](#铁律) · [项目约束](#项目约束) · [项目不可妥协底线](#项目不可妥协底线) · [退化对策](#退化对策) · [自约束](#自约束) · [引导](#引导)
 
 ## 基础信念
 
@@ -43,16 +43,6 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 | **表达优先** | 惜注意 | rui 生成文档必须图 → 结构化文本 → 表，不可降级 | 无图文档、架构用大段文字描述 |
 
 <!-- rui:project-start -->
-## 项目画像
-
-| 维度 | 值 |
-|------|-----|
-| 项目名 | YrY |
-| 类型 | **meta** — Claude Code 插件，纯规约驱动 |
-| 版本 | 2.5.1 |
-| 架构 | plugin — 6 技能 + 5 Agent + 3 规则 |
-| 生态 | 无 package.json，markdown 规约 + node 辅助脚本 |
-| 自托管 | 是 — YrY 用自身管线管理自身演进 |
 
 ## 项目约束
 
@@ -107,4 +97,4 @@ flowchart LR
 | 文档生成约束 · 表达优先 | [rules/doc-generation.md](./rules/doc-generation.md) |
 | 角色拓扑 · 行为纪律 · 设计原则 · 执行准则 · ADR · 多 Agent 协作模式 | [agents/AGENT.md](./agents/AGENT.md) |
 | 领域语言（术语定义） | [领域语言](./README.md#领域语言) |
-| 故事文档公式 | [formulas.md](./skills/rui/formulas.md) |
+| 文档生成约束 · 表达优先 | [rules/doc-generation.md](./rules/doc-generation.md) |

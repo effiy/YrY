@@ -202,27 +202,22 @@ function readBlockedState(projectRoot, storyName) {
 }
 
 // --- status determination --------------------------------------------------
-const BASELINE_DOCS = ["使用场景", "技术评审", "测试设计"];
+const BASELINE_FILES = ["故事任务.md"];
 
 function determineStatus(fileBasenames, blockedState) {
   if (!fileBasenames.has("故事任务.md"))
     return "任务";
 
-  const baselineComplete = BASELINE_DOCS.every(doc =>
-    fileBasenames.has(`${doc}.md`)
-  );
-  if (!baselineComplete)
+  const hasSceneDoc = [...fileBasenames].some(f => /^场景-\d+-.+\.md$/.test(f));
+  if (!hasSceneDoc)
     return "设计";
 
-  if (!fileBasenames.has("实施报告.md"))
+  const hasMapping = fileBasenames.has("场景代码映射.json");
+  if (!hasMapping)
     return "实施";
 
-  if (!fileBasenames.has("测试报告.md"))
-    return "测试";
-
-  if (!fileBasenames.has("自改进复盘.md"))
-    return "报告";
-
+  // §3 test report + §4 self-improve are within scene docs — check completeness heuristics
+  // For now, scene doc + mapping = at least 实施; further granularity via session content
   return "改进";
 }
 
@@ -235,11 +230,11 @@ const TYPE_LABELS = {
 };
 
 async function inferType(apiUrl, storySessions) {
-  const reviewTarget = "技术评审.md";
-  const reviewSession = storySessions.find(s => {
-    const base = (s.file_path || "").split("/").pop();
-    return base === reviewTarget;
+  const reviewTargets = storySessions.filter(s => {
+    const fp = s.file_path || "";
+    return /场景-\d+-.+\.md$/.test(fp);
   });
+  const reviewSession = reviewTargets[0];
   if (!reviewSession) return "meta";
 
   const remotePath = reviewSession.file_path;

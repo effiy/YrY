@@ -329,9 +329,10 @@ function runDiagnostics(data) {
     }
   }
 
-  // D6: Documentation staleness — consecutive degraded windows (proxied by missing self-improve)
-  const retroPath = join(data.storyPath, `${readProjectName(findProjectRoot(data.storyPath))}-自改进复盘.md`);
-  if (!existsSync(retroPath) && execCount >= DIAGNOSTIC_MIN_CONFIDENCE.D6) {
+  // D6: Documentation staleness — consecutive degraded windows (proxied by missing scene docs)
+  const storyDir = data.storyPath;
+  const hasSceneDocs = existsSync(storyDir) && readdirSync(storyDir).some(f => /^场景-\d+-.+\.md$/.test(f));
+  if (!hasSceneDocs && execCount >= DIAGNOSTIC_MIN_CONFIDENCE.D6) {
     diagnostics.push({
       id: "D6",
       label: DIAGNOSTIC_LABELS.D6,

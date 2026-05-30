@@ -198,7 +198,7 @@ flowchart LR
 
 ### §2.1 输出模板
 
-> 以下模板由 rui-trends 查询结果填充，写入 `自改进复盘.md` §2.1 技术趋势验证。格式遵循 [F.story.retrospective](../../skills/rui/formulas.md) 的 §2 诊断章节约束。
+> 以下模板由 rui-trends 查询结果填充，写入 `自改进复盘.md` §2.1 技术趋势验证。格式遵循 [rules/doc-generation.md](../../rules/doc-generation.md#场景-n-slug--coder--tester--self-improve) 的 §4 自改进约束。
 
 ```markdown
 ### §2.1 技术趋势验证

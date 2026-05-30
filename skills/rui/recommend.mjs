@@ -128,7 +128,7 @@ ${hdr("输出结构")}
 ${line(dim("每个 story candidate 包含:"))}
 ${item("storyName / command", "故事名 (kebab) + 推荐 /rui doc --from-code 命令", green)}
 ${item("sourceFiles", "源文件列表 + 关联文件 (双向 import 关系)")}
-${item("coverage", "文档覆盖描述 + 期望的 8 文档基线清单")}
+${item("coverage", "文档覆盖描述 + 期望的场景文档清单")}
 ${item("metrics", "总行数 · 文件数 · 签名 Top 10 · 被依赖数")}
 ${item("git", "最后修改 · 作者数 · 90天变更次数")}
 ${item("doc", "覆盖率状态: no_docs / partial / complete")}
@@ -574,8 +574,8 @@ function buildStoryCandidate(group, project, projectType) {
   const allImportedBy = [...new Set(group.flatMap(f => f.metrics.importedBy))];
   const totalLines = group.reduce((s, f) => s + f.metrics.lines, 0);
 
-  // Expected docs — unified 10-document baseline, type determines chapter cropping
-  const expectedDocs = ["故事任务", "使用场景", "技术评审", "测试设计", "实施报告", "测试报告", "自改进复盘"];
+  // Expected docs — scene-document baseline
+  const expectedDocs = ["故事任务", "场景代码映射"];
 
   // Coverage description
   const primarySig = allSignatures.length > 0 ? allSignatures.slice(0, COVERAGE_SIG_PREVIEW_COUNT).join("; ") : "";

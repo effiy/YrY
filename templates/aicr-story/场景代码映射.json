@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "description": "场景→代码映射。U-A 知识图谱模式：typed node + edge",
+  "scenes": {},
+  "graph": {
+    "nodes": [],
+    "edges": []
+  },
+  "architectureLayers": ["skill", "agent", "rule", "script", "config", "doc"],
+  "nodeTypes": {
+    "file": "源文件",
+    "function": "函数",
+    "class": "类/模块",
+    "concept": "概念"
+  },
+  "edgeTypes": {
+    "imports": "文件间导入",
+    "calls": "函数调用",
+    "extends": "继承",
+    "implements": "接口实现",
+    "uses": "使用/依赖"
+  }
+}

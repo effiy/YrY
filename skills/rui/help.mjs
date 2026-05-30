@@ -27,7 +27,7 @@ ${hdr("语法")}
 ${item("/rui", "任务推荐（只读，5 层管线评分排序）", cyan)}
 ${item("/rui init", "建立基线：CLAUDE.md + README + 故事面板", cyan)}
 ${item("/rui <需求> [--name <n>]", "端到端：doc + code 自动串联", cyan)}
-${item("/rui doc <需求> [--name <n>]", "拆需求为故事 + 5 文档基线（只读源码）", cyan)}
+${item("/rui doc <需求> [--name <n>]", "拆需求为故事 + 场景文档基线（只读源码）", cyan)}
 ${item("/rui doc --from-code [需求]", "从源码反推文档基线（只读，冲突保护）", cyan)}
 ${item("/rui doc --from-local <n>", "从已有本地文档补全缺失基线", cyan)}
 ${item("/rui code <name>", "实现故事（源码唯一入口）", cyan)}
@@ -46,7 +46,7 @@ ${item('/rui "用户登录支持手机号+验证码" --name user-login', "拆故
 
 ${s("存量代码补文档")}
 ${item("/rui doc --from-code", "pm 扫描源码推荐待文档化模块（选择后反推）", cyan)}
-${item("/rui doc --from-code user-login", "直接对指定模块源码反推 5 文档基线", cyan)}
+${item("/rui doc --from-code user-login", "反推双基线 + 场景文档（只读源码）", cyan)}
 
 ${s("增量更新")}
 ${item('/rui update user-login "新增 OAuth"', "T1~T3 自动判定变更范围，刷新文档 + 重跑验证", cyan)}
