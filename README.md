@@ -1,4 +1,4 @@
-# YrY <sub>v2.7.0</sub>
+# YrY <sub>v2.8.0</sub>
 
 > 故事驱动的 SDLC 编排系统 — 场景基线 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。
 
@@ -186,7 +186,7 @@ YrY/
 ├── story-deps.json      ← 跨故事依赖关系图（nodes + edges）
 └── <name>/
     ├── 故事任务.md           ← 场景功能点表（知识图谱 hub）
-    ├── knowledge-graph.json     ← 场景→代码映射（U-A 知识图谱模式）
+    ├── knowledge-graph.json     ← 场景→代码映射
     ├── 场景-N-<slug>.md      ← §0 技术评审 · §1 测试设计 · §2 实施报告 · §3 测试报告 · §4 自改进
     └── ...
 ```
