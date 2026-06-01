@@ -85,14 +85,31 @@ name = "<story>"   # kebab-case 的故事名
 
 ### 内置配置
 
-以下配置已内嵌于技能文档，无需外部 `config.json`：
+配置由 `rui init` 生成到 `.claude/skills/rui-bot/config.json`，每次 init 覆盖。schema：
+
+```json
+{
+  "api_url": "https://api.effiy.cn/wework/send-message",
+  "default_robot": "general",
+  "agents": {
+    "rui": "general"
+  },
+  "robots": {
+    "general": {
+      "webhook_url_env": "YRY_WEWORK_WEBHOOK_URL",
+      "webhook_url": ""
+    }
+  }
+}
+```
 
 | 配置项 | 默认值 | 覆盖方式 |
 |--------|--------|---------|
 | `api_url` | `https://api.effiy.cn/wework/send-message` | `WEWORK_BOT_API_URL` 环境变量或 `apiUrl` 参数 |
 | `default_robot` | `general` | `robot` 参数 |
-| `agents.rui` | `general` | `robot` 参数 |
-| `robots.general.webhook_url` | （空） | 环境变量注入 |
+| `agents.<name>` | `general` | `robot` 参数（每个 agent 映射到一个机器人名） |
+| `robots.<name>.webhook_url_env` | `YRY_WEWORK_WEBHOOK_URL` | 环境变量名可配置 |
+| `robots.<name>.webhook_url` | （空） | 环境变量注入 |
 
 机器人解析优先级：`robot` 参数 > `agents[agent]` > `default_robot`（`general`）。
 webhook URL 解析优先级：环境变量 > `robots[robot].webhook_url` > 默认空值。
@@ -154,11 +171,11 @@ flowchart LR
 ```
 【YiWeb】
 🤖 技能: rui
-📋 命令: /rui doc user-login
+📋 命令: /rui user-login
 🎯 结论: 完成 user-login 文档管线
 📝 描述: 为登录模块生成故事板，覆盖密码登录、短信验证码、OAuth 三种场景
 📌 范围: auth/
-👉 下一步: 运行 /rui code user-login 开始编码实现
+👉 下一步: 运行 /rui user-login 开始编码实现
 🌐 影响: docs/故事任务面板/user-login/故事任务.md
 📎 证据: git log --oneline -1
 ⏱️ 会话: 自适应规划→策展 全流程 3.2min | 3 agents 参与
@@ -175,7 +192,7 @@ flowchart LR
 | 字段 | 格式 | 说明 |
 |------|------|------|
 | 🤖 技能 | `rui` / `rui-story` / `rui-claude` / `rui-bot` / `rui-import` | 触发消息的技能名 |
-| 📋 命令 | `/rui doc <name>` / `/rui-story sync` 等 | 用户执行的具体命令（含参数） |
+| 📋 命令 | `/rui <name>` / `/rui-story sync` 等 | 用户执行的具体命令（含参数） |
 | 🎯 结论 | 完成 / 阻断 / 门禁失败 + story + 阶段 | 管线执行结论 |
 | ⏱️ 会话 | `<日期> <时间范围> | <N> agents 参与` | 执行时间与参与角色 |
 

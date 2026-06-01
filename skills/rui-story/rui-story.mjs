@@ -84,8 +84,9 @@ function parseArgs() {
     return { command: "show", name: args[1] };
   }
 
-  console.error(`rui-story: 未知命令 "${cmd}"，使用 --help 查看帮助`);
-  process.exit(0);
+  // Unknown first arg → treat as <需求> (natural language requirement)
+  // The full arg string is passed to the agent for interpretation per SKILL.md
+  return { command: "req", text: args.join(" ") };
 }
 
 // --- project root ----------------------------------------------------------
@@ -692,6 +693,19 @@ async function cmdSync(apiUrl, projectRoot, projectPrefix, name) {
   }
 }
 
+function cmdReq(text) {
+  console.log("");
+  console.log(bold("rui-story · 面板需求管线"));
+  console.log("─────────────────────────────");
+  console.log(`  需求: ${text}`);
+  console.log("");
+  console.log(dim("  委托 agent 按 SKILL.md § /rui-story <需求> 执行:"));
+  console.log(dim("  解析需求 → 确定面板操作 → 执行 → 交付"));
+  console.log("");
+  console.log("  支持操作: sync / remove / health / merge / split");
+  console.log("");
+}
+
 async function cmdMergeToMain(projectRoot) {
   const steps = [];
   const mainBranch = "main";
@@ -849,6 +863,7 @@ function fallbackHelp() {
   console.log(bold("写入命令"));
   console.log("  /rui-story sync [<name>]      远端→本地 (委托 rui-import)");
   console.log("  /rui-story remove <name>      仅本地：删除故事目录");
+  console.log("  /rui-story <需求>             面板需求管线 (sync/remove/health/...)");
   console.log("");
 }
 
@@ -905,6 +920,9 @@ async function main() {
       break;
     case "merge-to-main":
       await cmdMergeToMain(projectRoot);
+      break;
+    case "req":
+      cmdReq(opts.text);
       break;
     default:
       console.error(`[rui-story] 未知命令: ${opts.command}`);

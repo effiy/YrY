@@ -6,8 +6,8 @@
   },
   "robots": {
     "general": {
-      "webhook_url_env": "YRY_WEWORK_WEBHOOK_URL",
-      "webhook_url": ""
+      "webhook_url": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=80bcaa68-6511-4766-bfb3-510291371090"
     }
   }
 }
+

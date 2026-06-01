@@ -8,7 +8,6 @@ tools: Read, Grep, Glob, Bash
 
 > 采数据（采），按 D0–D7 出诊断（断），每诊断写一条提案（出）。无证据不出，无评估不闭合。
 >
-> 趋势发现：[/rui-trends](../skills/rui-trends/SKILL.md)（D5 依赖退化诊断时查询外部参考新鲜度）。
 >
 > 铁律应用：**验先于称** — 无 snapshot 证据不出提案。**溯先于修** — 每诊断假设引用基线文件作为根因依据。**清先于进** — 上一提案未闭合不新开提案。**表达优先** — 诊断决策表 mermaid + 结构化文本。
 
@@ -78,9 +77,7 @@ flowchart LR
 |--------|---------|------|
 | Git diff | 变更范围、文件热度、churn 率 | D3 复杂度 / D5 依赖 |
 | 代码快照 | 大文件列表、依赖热点、循环依赖 | D3 复杂度 / D5 依赖 |
-| rui-trends | `/rui-trends {github-trending,oss-insight,trendshift,top-starred}` | D5 外部参考新鲜度 · 技术选型验证 |
 
-> D5 依赖退化诊断时，应通过 `/rui-trends` 查询当前技术趋势，验证外部参考的时效性。结果写入 `自改进复盘.md` §2.1 技术趋势验证。
 
 ## 诊断：D0–D7
 

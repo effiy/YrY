@@ -1,9 +1,10 @@
-# YrY <sub>v2.8.0</sub>
+# YrY <sub>v2.9.0</sub>
 
 > 故事驱动的 SDLC 编排系统 — 场景基线 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。
 
-[系统全景](#系统全景) · [管线](#管线) · [快速开始](#快速开始) · [命令](#命令) · [/rui](#rui---业务故事-sdlc) · [/rui-story](#rui-story---故事任务面板管理) · [/rui-claude](#rui-claude---claude-配置管理) · [Agent 角色](#agent-角色) · [规则](#规则) · [技能](#技能) · [目录结构](#目录结构) · [故事任务](#故事任务) · [领域语言](#领域语言) · [技术趋势](#技术趋势)
+[系统全景](#sec0) · [管线](#sec1) · [快速开始](#sec2) · [命令](#sec3) · [/rui](#sec3a) · [/rui-story](#sec3b) · [/rui-claude](#sec3c) · [Agent 角色](#sec4) · [规则](#sec5) · [技能](#sec6) · [目录结构](#sec7) · [故事任务](#sec8) · [领域语言](#sec9)
 
+<a id="sec0"></a>
 ## 系统全景
 
 ```mermaid
@@ -16,24 +17,23 @@ flowchart TD
         RC[rui-claude]:::skill
         ID[rui-import]:::skill
         WW[rui-bot]:::skill
-        TD[rui-trends]:::skill
     end
 
-    subgraph Agents[五角色]
+    subgraph Agents[四角色]
         PM[("pm")]:::core
         CODER[coder]:::agent
         TESTER[tester]:::agent
-        REPORTER[reporter]:::agent
         SI[self-improve]:::agent
     end
 
     CMD --> RUI & RC
     RUI --> PM
-    PM --> CODER & TESTER & REPORTER
+    PM --> CODER & TESTER
     SI -.提案.-> PM
     ID -.hook.-> WW
 ```
 
+<a id="sec1"></a>
 ## 管线
 
 ```mermaid
@@ -50,24 +50,23 @@ flowchart LR
 
 每阶段产出写入场景文档对应节（§0–§4），交付时三步 hook 按序执行。详见 [rules/code-pipeline.md](./rules/code-pipeline.md)、[rules/delivery-gate.md](./rules/delivery-gate.md)。
 
+<a id="sec2"></a>
 ## 快速开始
 
 ```bash
 # 1. 建立项目基线（首次必做）
 /rui init
 
-# 2. 从源码反推文档（存量项目）
-/rui doc <需求>
-
-# 3. 端到端交付（新需求）
+# 2. 业务需求（模型自主判定模式）
 /rui 用户登录功能支持手机号+验证码
 
-# 4. 查看进度
+# 3. 查看进度
 /rui-story
 ```
 
-> init 生成 CLAUDE.md 项目约束 + README 领域语言 + 故事面板目录（技术架构故事 + 自测试套件）。存量项目用 `/rui doc <需求>` 只读源码反推文档基线。
+> init 生成 CLAUDE.md 项目约束 + README 领域语言 + 故事面板目录（技术架构故事 + 自测试套件）。存量项目用 `/rui <需求>` 只读源码反推文档基线。
 
+<a id="sec3"></a>
 ## 命令
 
 只读命令不触发末端 hook，写入命令末端自动执行交付三步。
@@ -78,23 +77,20 @@ flowchart TD
     Q1 -->|"业务故事"| Q2{"已有故事吗?"}
     Q1 -->|".claude/ 配置"| RC["/rui-claude"]
     Q2 -->|"无·仓库新搭"| INIT["/rui init"]
-    Q2 -->|"无·已有需求"| E2E["/rui <需求>"]
-    Q2 -->|"无·已有源码"| DOC["/rui doc <需求>"]
-    Q2 -->|"已拆只缺文档"| DOC2["/rui doc <需求>"]
-    Q2 -->|"小修小补"| UPD["/rui update"]
+    Q2 -->|"任意·统一入口"| E2E["/rui <需求><br/>模型自主判定模式"]
     Q2 -->|"只想看进度"| STORY["/rui-story"]
 ```
 
+<a id="sec3a"></a>
 ### /rui — 业务故事 SDLC
 
 | 命令 | 类型 | 作用 |
 |------|------|------|
 | `/rui` | 只读 | 5 层管线评分排序，推荐下一步任务 |
 | `/rui init` | 写入 | 建立基线：detect → explore → generate → setup → verify → trigger |
-| `/rui <需求>` | 写入 | 端到端：doc + code 自动串联，逐故事串行 |
-| `/rui doc <需求>` | 写入 | 文档生成：拆需求为故事 + 场景文档基线（只读源码，不改动） |
-| `/rui update [ctx]` | 写入 | 增量更新：T1/T2/T3 自动裁剪 |
+| `/rui <需求>` | 写入 | 统一入口：模型自主判定 新建/增量/反推/补齐/实现/自改进/端到端 |
 
+<a id="sec3b"></a>
 ### /rui-story — 故事任务面板管理
 
 | 命令 | 类型 | 数据源 | 作用 |
@@ -102,6 +98,7 @@ flowchart TD
 | `/rui-story` | 只读 | 远端 API | 状态概览：按状态统计 + 最近活动 |
 | `/rui-story sync [<name>]` | 写入 | 远端 API | 委托 rui-import 从远端拉取文档覆盖本地 |
 
+<a id="sec3c"></a>
 ### /rui-claude — .claude/ 配置管理
 
 | 命令 | 类型 | 作用 |
@@ -109,6 +106,7 @@ flowchart TD
 | `/rui-claude` | 只读 | 按 5 层管线评分推荐 5~10 条任务 |
 | `/rui-claude sync` | 写入 | 远端同步：API pull 覆盖本地 `.claude/`（需确认意图） |
 
+<a id="sec4"></a>
 ## Agent 角色
 
 ```mermaid
@@ -116,11 +114,11 @@ flowchart LR
     PM[pm<br>决策中枢] -->|拆故事| CODER[coder<br>代码实现]
     CODER -->|逐模块| TESTER[tester<br>质量卡点]
     TESTER -->|Gate A·阻编码| CODER
-    TESTER -->|Gate B·阻交付| REPORTER[reporter<br>过程记录]
     REPORTER -->|场景文档闭合| PM
     SI[self-improve<br>自改进] -.提案.-> PM
 ```
 
+<a id="sec5"></a>
 ## 规则
 
 | 规则 | 作用域 | 核心 |
@@ -129,6 +127,7 @@ flowchart LR
 | [delivery-gate.md](./rules/delivery-gate.md) | `docs/故事任务面板/**/*.md` | 交付收口：三步 hook 按序执行 |
 | [doc-generation.md](./rules/doc-generation.md) | `docs/**/*.md` | 文档生成约束：表达优先 · 双图层知识图谱 · 场景文档逐节填充 |
 
+<a id="sec6"></a>
 ## 技能
 
 | 技能 | 入口 | 职责 |
@@ -138,21 +137,22 @@ flowchart LR
 | rui-claude | `/rui-claude` | .claude/ 配置全周期管理 |
 | rui-import | hook | 文档同步至远端 API；每文档即时导入 + 批量安全网 |
 | rui-bot | hook | 企微通知：rui 完成/阻塞/门禁失败时强制发送 |
-| rui-trends | `/rui-trends` | 技术趋势探测：GitHub Trending · OSS Insight · TrendShift |
 
+<a id="sec7"></a>
 ## 目录结构
 
 ```
 YrY/
-├── agents/          # 5 角色定义（pm · coder · tester · reporter · self-improve）
+├── agents/          # 4 角色定义（pm · coder · tester · self-improve）
 ├── docs/            # 故事任务面板 + 知识图谱数据文件
 ├── rules/           # 3 规则（管线 · 交付 · 文档）
-├── skills/          # 6 技能（rui · rui-story · rui-claude · rui-import · rui-bot · rui-trends）
+├── skills/          # 5 技能（rui · rui-story · rui-claude · rui-import · rui-bot）
 ├── templates/       # 文档模板（aicr-story）
 ├── CLAUDE.md        # 项目指令 + 铁律 + 约束
 └── README.md        # 项目说明（本文件）
 ```
 
+<a id="sec8"></a>
 ## 故事任务
 
 <!-- rui:story-list-start -->
@@ -191,6 +191,7 @@ YrY/
     └── ...
 ```
 
+<a id="sec9"></a>
 ## 领域语言
 
 | 术语 | 含义 | 禁用别名 |
@@ -208,13 +209,3 @@ YrY/
 | 自改进 | AI 自主诊断 → 提案 → 实现 → 验证闭环，持续提升项目质量 | self-improve |
 | 双图层 | 知识图谱的组织模型：领域层（业务语义）+ 结构层（源码文件），两层间通过 maps_to 边连接 | — |
 
-## 技术趋势
-
-通过 `/rui-trends` 自动探测技术趋势辅助架构决策。
-
-| 数据源 | 作用 |
-|--------|------|
-| GitHub Trending | 日/周热门仓库，语言过滤 |
-| OSS Insight | 中国区/全球仓库热度、生态位分析 |
-| TrendShift | 技术关键词升降趋势 |
-| Top-Starred | 全时段高星仓库参考 |

@@ -115,8 +115,124 @@ flowchart LR
 | 实施报告（前端） | UI 截图（正常+关键态） | 1/场景 | 编号操作步骤，可独立复现 |
 | 测试报告 | 测试执行输出 | 1/场景 | fenced bash 块 |
 
-**前端必含布局线框** — §0 技术评审中，前端/全栈项目每场景必须包含页面布局线框（mermaid 或 ASCII），标注组件位置与交互区域。
-**API 必含 curl** — 后端/全栈项目每接口提供完整 curl 命令（method、headers、body、预期响应摘要）。
+#### 布局线框（前端/全栈 §0 必含）
+
+> §0 技术评审中，前端/全栈项目每场景必须包含页面布局线框。选择 mermaid（组件关系优先）或 ASCII（空间位置优先），二选一不可缺。
+
+**mermaid 布局线框** — 适合表达组件层级与数据流关系：
+
+```mermaid
+flowchart TB
+    subgraph header["🟦 Header 区"]
+        A1["Logo\n品牌标识"]:::static
+        A2["NavBar\n主导航"]:::nav
+        A3["UserMenu\n用户菜单"]:::action
+    end
+    subgraph main["🟨 Main 区"]
+        direction LR
+        subgraph sidebar["Sidebar"]
+            B1["FilterPanel\n筛选条件"]:::input
+            B2["CategoryTree\n分类树"]:::nav
+        end
+        subgraph content["Content"]
+            C1["DataTable\n数据列表"]:::display
+            C2["Pagination\n分页器"]:::action
+        end
+    end
+    header --> main
+    A2 -->|"切换视图"| C1
+    B1 -->|"筛选条件变更"| C1
+    C1 -->|"选中行"| C2
+```
+
+| mermaid 要素 | 约束 |
+|-------------|------|
+| 图类型 | `flowchart TB` 或 `flowchart LR`，按页面实际空间方向选择 |
+| 区域分区 | `subgraph` 对应页面逻辑区域（Header、Main、Sidebar、Content、Footer） |
+| 节点标注 | `名称\n职责一句话`，禁止仅写组件名无职责 |
+| 交互边 | 带标签的有向边标注触发动作（点击/输入/切换/提交） |
+| 样式类 | 按组件类型着色：`input`(输入)、`display`(展示)、`action`(操作)、`nav`(导航)、`feedback`(反馈)、`static`(静态) |
+| 覆盖要求 | 每场景 ≥1 张，覆盖该场景全部交互组件 |
+
+**ASCII 布局线框** — 适合表达空间位置与尺寸比例：
+
+```
+┌─────────────────────────────────────────────────┐
+│  Header (h: 64px)                                │
+│  ┌──────┐ ┌────────────────────────┐ ┌────────┐ │
+│  │ Logo │ │     NavBar             │ │ Avatar │ │
+│  └──────┘ └────────────────────────┘ └────────┘ │
+├──────────┬──────────────────────────────────────┤
+│ Sidebar  │ Content                              │
+│ (w:240)  │ ┌──────────────────────────────────┐ │
+│          │ │ DataTable                        │ │
+│ ┌──────┐ │ │ ┌────┬────┬────┬────┐           │ │
+│ │Filter│ │ │ │ ID │名称│状态│操作│           │ │
+│ │Panel │ │ │ ├────┼────┼────┼────┤           │ │
+│ │      │ │ │ │    │    │    │    │           │ │
+│ └──────┘ │ │ └────┴────┴────┴────┘           │ │
+│          │ └──────────────────────────────────┘ │
+│ ┌──────┐ │ ┌──────────────────────────────────┐ │
+│ │Cat.  │ │ │ Pagination  ◀ [1] 2 3 ... ▶    │ │
+│ │Tree  │ │ └──────────────────────────────────┘ │
+│ └──────┘ │                                      │
+└──────────┴──────────────────────────────────────┘
+ ◈ 点击触发    ⇄ 双向绑定    → 数据流向
+```
+
+| ASCII 要素 | 约束 |
+|-----------|------|
+| 字符集 | 框线：`┌┐└┘├┤┬┴┼│─`；交互标记：`◈ ⇄ → ← ↑ ↓`；仅用等宽字符 |
+| 区域标注 | 每区域标注组件名 + 关键尺寸约束（`h:` 高度、`w:` 宽度） |
+| 交互标记 | 可点击区域用 `◈`，双向绑定用 `⇄`，数据流向用 `→` |
+| 缩进与对齐 | 所有框线字符严格对齐，禁止参差不齐的边界 |
+| 图例 | 图下方附交互符号说明行 |
+| 覆盖要求 | 每场景 ≥1 张，覆盖该场景全部可见区域 |
+
+#### curl 命令（后端/全栈 §0 必含）
+
+> §0 技术评审中，后端/全栈项目每 API 端点必须提供完整 curl 命令。每个 curl 可独立复制执行（替换 `${BASE_URL}` 后）。
+
+**curl 模板**：
+
+````bash
+# {METHOD} {/api/path} — {一句话用途}
+curl -s -w "\n%{http_code}" \
+  -X {METHOD} \
+  "${BASE_URL}/api/{path}" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ${API_X_TOKEN}" \
+  -d '{
+    "field1": "value1",
+    "field2": 123
+  }'
+
+# 预期响应: HTTP {STATUS}
+# {
+#   "key": "type — 说明",
+#   ...
+# }
+````
+
+| curl 要素 | 约束 |
+|----------|------|
+| 注释行 | 首行 `# METHOD /path — 用途`，末尾 `# 预期响应: HTTP STATUS` |
+| HTTP 方法 | 显式 `-X {METHOD}`，禁止省略 |
+| URL | `${BASE_URL}/api/{path}`，禁止硬编码域名/IP/端口 |
+| 状态码捕获 | `-s -w "\n%{http_code}"`，末尾输出 HTTP 状态码 |
+| Headers | 至少含 `Content-Type` 和 `Authorization: Bearer ${API_X_TOKEN}` |
+| Body | JSON 格式，`-d` 单引号包裹，字段附类型注释 |
+| 预期响应 | curl 下方 `# 预期响应:` 行标注状态码 + 响应体结构摘要（含字段类型） |
+| 覆盖要求 | 每 API 端点 ≥1 条，覆盖正常请求 + 关键错误态（401/422/404） |
+
+**curl 产出清单**（§0 API 端点表每行必含 curl 列）：
+
+| 方法 | 路径 | 用途 | curl |
+|------|------|------|------|
+| GET | `/api/users` | 获取用户列表 | `curl -s -w "\n%{http_code}" -X GET "${BASE_URL}/api/users" -H "Authorization: Bearer ${API_X_TOKEN}"` |
+| POST | `/api/users` | 创建用户 | `curl -s -w "\n%{http_code}" -X POST "${BASE_URL}/api/users" -H "Content-Type: application/json" -H "Authorization: Bearer ${API_X_TOKEN}" -d '{"name":"string","email":"string"}'` |
+
+> **实施报告 curl 强化**：§2 实施报告中 curl 必须以终端截图呈现（含实际输出），不可仅贴命令文本。截图需清晰显示请求命令 + 响应体 + 状态码。
 
 ---
 
@@ -126,8 +242,12 @@ flowchart LR
 flowchart LR
     ST["故事任务.md<br/>WHAT & WHY<br/>场景功能点表 · 知识图谱 hub"]:::baseline --> S1["场景-1-xxx.md<br/>§0 评审 · §1 测试设计<br/>§2 实施 · §3 测试报告 · §4 改进"]:::scene
     ST --> S2["场景-2-xxx.md<br/>同上"]:::scene
-    ST --> SN["场景-N-xxx.md<br/>同上"]:::scene
+    ST --> S3["场景-3-xxx.md<br/>同上"]:::scene
+    ST --> S4["场景-4-xxx.md<br/>同上"]:::scene
+    ST --> S5["场景-5-xxx.md<br/>同上"]:::scene
 ```
+
+> **最少 5 场景**。每故事目录至少包含 5 个场景文档，不足 5 个时 init/doc 阶段补齐。
 
 故事任务是基线文档——**自身即基线，禁止含 §0 基线声明/基线溯源节**。所有下游场景文档必须显式溯源至故事任务。使用场景融入场景-N-<slug>.md，不作为独立文档。
 
@@ -145,10 +265,14 @@ flowchart LR
 docs/故事任务面板/
 ├── story-deps.json          ← 跨故事依赖图（nodes + edges）
 ├── 通知日志.md               ← 管线执行日志（时间倒序）
-└── <name>/                  ← 一个故事一个目录，kebab-case
+└── <name>/                  ← 一个故事一个目录，kebab-case，≥5 场景
     ├── 故事任务.md            ← pm · 基线（场景功能点表 · 知识图谱 hub）
-    ├── knowledge-graph.json      ← 场景→代码映射（U-A 知识图谱）
+    ├── knowledge-graph.json      ← 场景→代码映射
     ├── 场景-1-<slug>.md      ← §0 技术评审 · §1 测试设计 · §2 实施报告 · §3 测试报告 · §4 自改进
+    ├── 场景-2-<slug>.md      ← 同上，不同场景聚焦
+    ├── 场景-3-<slug>.md
+    ├── 场景-4-<slug>.md
+    ├── 场景-5-<slug>.md
     └── ...
 ```
 

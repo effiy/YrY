@@ -13,7 +13,7 @@ lifecycle: default-pipeline
 >
 > 哲学源自 [CLAUDE.md](../../CLAUDE.md)。本文件定义命令面与操作规约。
 
-[命令族全景](#命令族全景) · [数据源](#数据源) · [操作边界](#操作边界) · [状态判定](#状态判定) · [/rui-story](#rui-story) · [/rui-story list](#rui-story-list) · [/rui-story health](#rui-story-health) · [/rui-story sync](#rui-story-sync) · [/rui-story remove](#rui-story-remove) · [核心规则](#核心规则) · [生效标志](#生效标志) · [与 rui 的关系](#与-rui-的关系)
+[命令族全景](#命令族全景) · [数据源](#数据源) · [操作边界](#操作边界) · [状态判定](#状态判定) · [/rui-story](#rui-story) · [/rui-story list](#rui-story-list) · [/rui-story health](#rui-story-health) · [/rui-story sync](#rui-story-sync) · [/rui-story remove](#rui-story-remove) · [/rui-story &lt;需求&gt;](#rui-story-需求) · [核心规则](#核心规则) · [生效标志](#生效标志) · [与 rui 的关系](#与-rui-的关系)
 
 ## 命令族全景
 
@@ -26,6 +26,7 @@ flowchart TD
     Q2 -->|"sync <name>?"| SYNC["文档同步<br/>远端 → 本地（委托 rui-import）"]:::write
     Q2 -->|"remove <name>"| REMOVE["删除故事目录<br/>本地 → 删除整个故事目录"]:::danger
     Q2 -->|"health"| HEALTH["健康检查<br/>远端 + 本地 → 系统诊断"]:::read
+    Q2 -->|"&lt;需求&gt;"| REQ["面板需求管线<br/>解析需求 → 确定面板操作 → 执行 → 交付"]:::write
 
 ```
 
@@ -36,6 +37,7 @@ flowchart TD
 | `/rui-story sync [<name>]` | 写入 | 远端 API | 从远端拉取文档到本地；未指定名称时展示推荐提示 |
 | `/rui-story remove <name>` | 写入 | 本地文件系统 | 删除指定故事的整个本地目录；`<name>` 必填 |
 | `/rui-story health` | 只读 | 远端 API + 本地 | 系统健康检查：凭据、API 可达性、配置、数据完整性 |
+| `/rui-story <需求>` | 写入 | 远端 API + 本地 | 面板需求管线：解析需求 → 确定面板操作 → 执行 → 交付，仅限故事面板管理操作 |
 
 `<name>` 为纯语义 kebab-case（如 `user-login`），不加项目名前缀。
 
@@ -85,7 +87,7 @@ flowchart LR
     end
     subgraph 禁止["❌ 禁止"]
         B1["读取本地文件系统<br/>（查询操作）"]:::bad
-        B2["创建故事文档内容<br/>那是 /rui doc"]:::bad
+        B2["创建故事文档内容<br/>那是 /rui <需求>"]:::bad
         B3["修改源码<br/>那是 /rui code"]:::bad
         B4["创建/切换 git 分支<br/>那是 /rui code"]:::bad
     end
@@ -286,6 +288,24 @@ flowchart LR
 💡 远端文档不受影响，可通过 /rui-story sync rui-story 重新拉取。
 ```
 
+## `/rui-story <需求>` — 面板需求管线
+
+> 故事面板管理需求入口。解析需求 → 确定面板操作 → 执行 → 交付。仅限故事面板管理操作（sync/remove/health/merge/split），不创建故事文档内容。
+
+```mermaid
+flowchart LR
+    REQ["/rui-story <需求>"]:::src --> PARSE["解析需求<br/>确定目标面板操作"]:::op
+    PARSE --> EXEC["执行面板操作<br/>sync / remove / health / ..."]:::op
+    EXEC --> DELIVER["交付<br/>hook-log → rui-bot"]:::op
+```
+
+| 项目 | 说明 |
+|------|------|
+| 触发方式 | `/rui-story <需求>`，自然语言需求 |
+| 操作范围 | 仅限故事面板管理：sync（远端→本地）、remove（删除本地目录）、health（健康检查）、merge（合并重复故事）、split（拆分过大故事） |
+| 禁止 | 不创建故事文档内容（那是 `/rui <需求>`），不修改源码，不创建/切换 git 分支 |
+| 交付 | 末端 hook-log → rui-bot 通知 |
+
 ## 核心规则
 
 ```mermaid
@@ -308,7 +328,7 @@ flowchart LR
 | # | 规则 | 违反处置 |
 |---|------|---------|
 | 1 | 所有查询操作使用远端 API，不读本地文件系统（sync 写入除外） | 修正为远端查询 |
-| 2 | 仅查询故事面板状态和同步文档，不创建故事文档内容（那是 `/rui doc`） | 撤销误创建的文件 |
+| 2 | 仅查询故事面板状态和同步文档，不创建故事文档内容（那是 `/rui <需求>`） | 撤销误创建的文件 |
 | 3 | 不修改源码，不创建/切换 git 分支（那是 `/rui code`） | — |
 | 4 | sync 完全委托 rui-import，不自行实现同步 | 修正命令重试 |
 | 5 | `<name>` = kebab-case | 拒绝执行 |

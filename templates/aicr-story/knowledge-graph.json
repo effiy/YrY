@@ -1,10 +1,21 @@
 {
   "version": "1.0.0",
-  "description": "场景→代码映射。U-A 知识图谱模式：typed node + edge",
+  "description": "场景→代码映射。typed node + edge。节点和边通过 storyRef 与故事任务的功能点双向联动",
+  "story": {
+    "name": "<故事名>",
+    "description": "<故事描述>",
+    "scenarios": []
+  },
   "scenes": {},
   "graph": {
     "nodes": [],
     "edges": []
+  },
+  "storyValidation": {
+    "sourceFile": "故事任务.md",
+    "expectedNodeCount": 0,
+    "expectedEdgeCount": 0,
+    "storyCoverage": {}
   },
   "architectureLayers": ["skill", "agent", "rule", "script", "config", "doc"],
   "nodeTypes": {

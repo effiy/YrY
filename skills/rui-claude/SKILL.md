@@ -11,9 +11,7 @@ lifecycle: default-pipeline
 
 作用范围：当前项目的 `.claude/` 目录。sync / retro 均以 `.claude/` 为操作边界。
 
-[命令族全景](#命令族全景) · [操作边界](#操作边界) · [sync](#sync) · [update](#update) · [retro](#retro) · [核心规则](#核心规则) · [参考模式](#参考模式) · [生效标志](#生效标志)
-
-> **`version --up` 已迁移至 [`/rui version --up`](../rui/SKILL.md#version---up)。**
+[命令族全景](#命令族全景) · [操作边界](#操作边界) · [sync](#sync) · [update](#update) · [retro](#retro) · [&lt;需求&gt;](#需求--配置需求管线) · [核心规则](#核心规则) · [参考模式](#参考模式) · [生效标志](#生效标志)
 
 ## 命令族全景
 
@@ -118,6 +116,27 @@ flowchart LR
 | 输入 | 本地 `.claude/` 目录的 `agents/` · `rules/` · `skills/` 等结构 |
 | 网络 | 纯本地分析，不连远端 |
 | 产出 | `docs/自改进故事面板/<date>.md`（三节：§1 配置结构 · §2 健康度 · §3 改进项） |
+
+## &lt;需求&gt; — 配置需求管线
+
+> `.claude/` 配置需求入口。解析需求 → 故事拆分 → 逐故事 doc+code 管线 → 交付。仅限 `.claude/` 内变更。
+
+```mermaid
+flowchart LR
+    REQ["/rui-claude <需求>"]:::src --> PARSE["解析需求<br/>拆分故事"]:::op
+    PARSE --> BRANCH["feat/<name><br/>分支隔离"]:::op
+    BRANCH --> PIPELINE["逐故事 doc+code<br/>Gate A → 实现 → Gate B"]:::op
+    PIPELINE --> DELIVER["交付<br/>hook-log → rui-import → rui-bot"]:::op
+```
+
+| 项目 | 说明 |
+|------|------|
+| 触发方式 | `/rui-claude <需求>`，自然语言需求 |
+| 操作范围 | 仅限 `.claude/` 内文件变更 |
+| 管线 | 走 rui code 管线：Gate A → 逐模块 P0 清零 → Gate B |
+| 分支隔离 | 必须在 `feat/<name>` 分支，禁止在 main 上操作 |
+| 禁止 | 不触及业务源码，不自动 commit/push，不自动 merge |
+| 交付 | 末端 hook-log → rui-import → rui-bot 三步按序触发 |
 
 ## 核心规则
 

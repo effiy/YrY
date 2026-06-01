@@ -22,29 +22,98 @@
 <a id="sec0"></a>
 ## §0 技术评审
 
-> 文档生成阶段填充（pm+coder）。
+> 文档生成阶段填充（pm+coder）。前端必含布局线框，后端每 API 必含 curl。
 
-### 效果示意
+### 效果示意 — 布局线框（二选一）
+
+**mermaid 布局**（组件关系与数据流）：
 
 ```mermaid
-flowchart LR
-    A[触发] --> B[数据层] --> C[视图层] --> D[交互]
+flowchart TB
+    subgraph header["🟦 Header"]
+        H1["Logo"]:::static
+        H2["NavBar\n主导航入口"]:::nav
+    end
+    subgraph main["🟨 Main"]
+        direction LR
+        subgraph left["Left Panel"]
+            L1["{{COMPONENT_A}}\n{{职责}}"]:::input
+        end
+        subgraph right["Right Panel"]
+            R1["{{COMPONENT_B}}\n{{职责}}"]:::display
+            R2["{{COMPONENT_C}}\n{{职责}}"]:::action
+        end
+    end
+    header --> main
+    L1 -->|"{{触发动作}}"| R1
+    R1 -->|"{{交互动作}}"| R2
+```
+
+**ASCII 布局**（空间位置与尺寸）：
+
+```
+┌─────────────────────────────────────────────┐
+│  Header (h: 64px)                            │
+│  ┌──────┐ ┌────────────────────┐ ┌────────┐ │
+│  │ Logo │ │  NavBar            │ │ Avatar │ │
+│  └──────┘ └────────────────────┘ └────────┘ │
+├──────────────┬──────────────────────────────┤
+│ {{区域 A}}   │ {{区域 B}}                   │
+│ (w: {{宽}})  │ ┌──────────────────────────┐ │
+│              │ │ {{组件}}                 │ │
+│ ┌──────────┐ │ │                          │ │
+│ │ {{组件}} │ │ └──────────────────────────┘ │
+│ └──────────┘ │ ┌──────────────────────────┐ │
+│              │ │ {{组件}}                 │ │
+│ ┌──────────┐ │ └──────────────────────────┘ │
+│ │ {{组件}} │ │                              │
+│ └──────────┘ │                              │
+└──────────────┴──────────────────────────────┘
+ ◈ 点击    ⇄ 双向绑定    → 数据流
+```
+
+> 前端/全栈项目必选其一，标注组件位置与交互区域。mermaid 侧重数据流，ASCII 侧重空间比例。
+
+### 数据流全景
+
+```mermaid
+sequenceDiagram
+    actor U as 用户
+    participant C as {{前端组件}}
+    participant A as {{API层}}
+    participant D as {{数据层}}
+
+    U->>C: {{用户操作}}
+    C->>A: {{请求}}
+    A->>D: {{数据操作}}
+    D-->>A: {{响应}}
+    A-->>C: {{结果}}
+    C-->>U: {{界面更新}}
 ```
 
 ### 涉及模块
 
 | 模块 | 路径 | 职责 | 本场景角色 |
 |------|------|------|-----------|
+| {{模块1}} | `{{path/to/module}}` | {{职责描述}} | {{本场景中的角色}} |
 
 ### API 端点
 
 | 方法 | 路径 | 用途 | curl |
 |------|------|------|------|
+| GET | `/api/{{resource}}` | {{用途}} | `curl -s -w "\n%{http_code}" -X GET "${BASE_URL}/api/{{resource}}" -H "Authorization: Bearer ${API_X_TOKEN}"` |
+| POST | `/api/{{resource}}` | {{用途}} | `curl -s -w "\n%{http_code}" -X POST "${BASE_URL}/api/{{resource}}" -H "Content-Type: application/json" -H "Authorization: Bearer ${API_X_TOKEN}" -d '{"{{field}}":"{{value}}"}'` |
+
+> 后端/全栈项目每 API 必含完整 curl：method + URL（`${BASE_URL}` 占位）+ headers + body + 预期响应摘要。
 
 ### 设计评审清单
 
 | # | 检查项 | 状态 |
 |---|--------|:--:|
+| 1 | 布局线框已覆盖场景全部交互组件（前端） | |
+| 2 | 每 API 端点含完整 curl（后端） | |
+| 3 | 数据流序列图覆盖主操作路径 | |
+| 4 | 模块职责与边界无歧义 | |
 
 ---
 
@@ -117,9 +186,27 @@ flowchart LR
 
 ### 效果验证
 
+**后端**（终端截图含 curl 实际输出）：
+
 ```bash
-# 可执行的验证命令
+# {{METHOD}} {{/api/path}} — 验证 {{场景名}}
+curl -s -w "\n%{http_code}" \
+  -X {{METHOD}} \
+  "${BASE_URL}/api/{{path}}" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ${API_X_TOKEN}" \
+  -d '{"{{field}}":"{{value}}"}'
+
+# 预期: HTTP {{STATUS}}
+# 实际输出截图:
 ```
+
+**前端**（UI 截图，编号操作步骤可独立复现）：
+
+| 步# | 操作 | 截图 | 预期 | 实际 |
+|-----|------|------|------|------|
+| 1 | {{操作描述}} | ![step1](path) | {{预期效果}} | ✓/✗ |
+| 2 | {{操作描述}} | ![step2](path) | {{预期效果}} | ✓/✗ |
 
 ---
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // recommend — scan source repo, collect objective metrics for doc recommendation
-// Invoked by: PM agent in /rui doc --from-code explore mode
+// Invoked by: PM agent in /rui <需求> from-code reversal mode
 // Usage: node skills/rui/recommend.mjs --root <path> [--type auto|frontend|backend|fullstack] [--format json|jsonl]
 
 import { readFile, readdir, stat } from "node:fs/promises";
@@ -105,7 +105,7 @@ function showHelp() {
 ${bold("# recommend — 源码分析器")}
 
 ${dim("扫描源码 → 提取签名 → 依赖分析 → git 指标 → 文档覆盖度")}
-${dim("由 PM agent 在 /rui doc --from-code 探索模式中调用")}
+${dim("由 PM agent 在 /rui <需求> 从源码反推模式中调用")}
 
 ${hdr("参数")}
 ${item("--root=<path>", "项目根目录 (必填)", yellow)}
@@ -126,7 +126,7 @@ ${item("signatures", "提取: Props/Events/Routes/API 端点签名")}
 
 ${hdr("输出结构")}
 ${line(dim("每个 story candidate 包含:"))}
-${item("storyName / command", "故事名 (kebab) + 推荐 /rui doc --from-code 命令", green)}
+${item("storyName / command", "故事名 (kebab) + 推荐 /rui <需求> 命令", green)}
 ${item("sourceFiles", "源文件列表 + 关联文件 (双向 import 关系)")}
 ${item("coverage", "文档覆盖描述 + 期望的场景文档清单")}
 ${item("metrics", "总行数 · 文件数 · 签名 Top 10 · 被依赖数")}
@@ -599,7 +599,7 @@ function buildStoryCandidate(group, project, projectType) {
 
   return {
     storyName,
-    command: `/rui doc --from-code ${storyName}`,
+    command: `/rui ${storyName}`,
     storyType: "doc-from-code",
     project,
     type: projectType === "fullstack" ? primary.type : projectType,

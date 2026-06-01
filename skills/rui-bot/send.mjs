@@ -106,7 +106,7 @@ function showUsage() {
   console.log("  --story=<name>         故事名");
   console.log("  --project=<name>       项目名（默认从 CLAUDE.md 读取）");
   console.log("  --skill=<name>         技能标识（rui / rui-story / rui-claude / rui-bot / rui-import）");
-  console.log("  --command=<text>       执行的命令（如 /rui doc user-login）");
+  console.log("  --command=<text>       执行的命令（如 /rui user-login）");
   console.log("  --status=<s>           状态: complete|blocked|gate-fail（默认 complete）");
   console.log("  --stage=<text>         当前阶段");
   console.log("  --conclusion=<text>    结论");

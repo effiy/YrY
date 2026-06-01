@@ -29,7 +29,7 @@ paths:
 
 ```mermaid
 flowchart TB
-    STAGE["管线阶段完成<br/>doc / code / update / yry"]:::src --> L1{"① 追加日志<br/>hook-log"}
+    STAGE["管线阶段完成<br/>文档阶段 / code / yry"]:::src --> L1{"① 追加日志<br/>hook-log"}
     L1 -->|"✅ 已标记"| L2{"② 文档同步<br/>rui-import"}
     L1 -->|"❌ 未标记"| X1["log-missing 🚫"]:::block
     L2 -->|"✅ 已标记"| L3{"③ 发送通知<br/>rui-bot"}
@@ -59,12 +59,6 @@ flowchart LR
     subgraph 写入命令["写入命令（强制触发）"]
         INIT["/rui init"]:::cmd
         E2E["/rui &lt;需求&gt;"]:::cmd
-        DOC["/rui doc"]:::cmd
-        CODE["/rui code"]:::cmd
-        UPDATE["/rui update"]:::cmd
-        FD["/rui code --from-doc"]:::cmd
-        FC["/rui doc --from-code"]:::cmd
-        YRY["/rui yry"]:::cmd
     end
     subgraph 只读命令["只读命令（不触发）"]
         LIST["/rui（任务推荐）"]:::ro
@@ -76,14 +70,7 @@ flowchart LR
 | 命令 | 触发交付? | 说明 |
 |------|:---:|------|
 | `/rui init` | ✅ | 项目基线建立后全量同步 + 通知 |
-| `/rui <需求>` | ✅ | 端到端完成后触发 |
-| `/rui doc <需求>` | ✅ | 文档基线生成后触发 |
-| `/rui code <name>` | ✅ | 实现 + 验证完成后触发 |
-| `/rui update <name>` | ✅ | 增量更新后触发 |
-| `/rui code --from-doc` | ✅ | 反推补全后触发 |
-| `/rui doc --from-code` | ✅ | 反推生成后触发 |
-| `/rui yry` | ✅ | 每轮闭环完成后触发 |
-| `/rui version --up` | ✅ | 版本升级完成后触发 |
+| `/rui <需求>` | ✅ | 统一入口：全部模式完成后触发（含新建/增量/反推/补齐/实现/自改进/端到端） |
 | `/rui`（无参数） | ❌ | 只读任务推荐，无写入 |
 | `/rui-story list` | ❌ | 只读进度查询 |
 
