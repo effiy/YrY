@@ -5,6 +5,7 @@ user_invocable: true
 lifecycle: default-pipeline
 agents:
   required: [pm, coder, tester, reporter, security, self-improve]
+  optional: [code-reviewer, architect]
 ---
 
 # rui
@@ -52,10 +53,10 @@ flowchart TD
 
 - `/rui init` — 建立项目基线：detect → explore → generate → setup → verify → trigger
 - `/rui <需求>` — 端到端：doc + code 自动串联，逐故事串行
-- `/rui doc <需求>` — 拆需求为故事 + 生成文档基线（故事任务/使用场景/技术评审/测试设计/安全审计），禁止改源码
+- `/rui doc <需求>` — 拆需求为故事 + 生成文档基线（故事任务/场景-N-<slug>.md/知识图谱），禁止改源码
 - `/rui code <name>` — 实现故事：Gate A → 逐模块 → Gate B → 自改进 → 交付
 - `/rui update <name> [ctx] [--no-code]` — 增量更新：T1/T2/T3 自动裁剪
-- `/rui code --from-doc <name>` — 从文档反推：只读源码补全缺失文档（实施报告/测试报告/自改进复盘），不覆盖已有
+- `/rui code --from-doc <name>` — 从文档反推：只读源码补全缺失章节（场景 §2 实施报告/§3 测试报告/§4 自改进），不覆盖已有
 - `/rui doc --from-code 需求` — 从源码反推：req 空时 pm 扫描推荐列表；req 有值时直接反推生成完整文档基线
 - `/rui doc --from-local <name>` — 从已有本地文档补全缺失文档基线（只读已有，生成缺失，不覆盖）
 - `/rui yry [--depth N]` — 自改进闭环：全自主扫描→诊断→实现→验证→版本升级，循环至无改进空间或达到深度上限（默认 3）
@@ -78,12 +79,12 @@ flowchart LR
     A2 --> B[自适应规划] --> C[影响分析] --> D[架构设计] --> E[文档生成]
     A3 --> B
     E --> F[预检<br/>分支隔离] --> G[Gate A<br/>测试先行] --> H[实现] --> I[Gate B<br/>验证] --> J[自改进] --> K[交付]
-    K --> K1[追加日志] --> K2[文档同步] --> K3[发送通知] --> K4[自主测试]
+    K --> K1[rui-import<br/>手动] --> K2[rui-bot<br/>手动] --> K3[自主测试]
 ```
 
 - 影响分析 / 证据等级 → [agents/AGENT.md](../../agents/AGENT.md)
 - 分支隔离 / Gate A/B / P0 审查 → [rules/code-pipeline.md](../../rules/code-pipeline.md)
-- 交付三步 / 文档同步 → [rules/delivery-gate.md](../../rules/delivery-gate.md)
+- 交付收口 / 文档同步 → [rules/delivery-gate.md](../../rules/delivery-gate.md)
 - 诊断 D0–D7 / 评估 E1–E4 → [rules/self-improve.md](../../rules/self-improve.md)
 - 文档生成约束 → [rules/doc-generation.md](../../rules/doc-generation.md)
 - Agent 交接 → [agents/](../../agents/) 各角色
@@ -125,27 +126,23 @@ flowchart LR
 5. **逐模块 P0 清零** — 每模块审查后 P0 清零再前进
 6. **只读反推** — `--from-code` / `--from-doc` 禁止改源码
 7. **产出内聚** — 关键产出限定在 `docs/故事任务面板/<name>/`
-8. **公式驱动** — 文档由 [formulas.md](./formulas.md) 规约，故事任务+使用场景为问题/用户空间基线，技术评审/测试设计/安全审计为解决方案空间，实施报告/测试报告/自改进复盘为验证与改进空间
-9. **知识沉淀** — 写入 `交互日志.md`；提案写入 `.improvement/proposals.jsonl`
-10. **交付强制** — 三步按序触发（hook-log → rui-import → rui-bot → self-test），详见 [强制集成](#强制集成)
+8. **公式驱动** — 文档由 [formulas.md](./formulas.md) 规约，故事任务为问题空间基线，场景-N-<slug>.md 为场景层（自包含全生命周期），知识图谱为知识层
+9. **知识沉淀** — 提案写入 `.improvement/proposals.jsonl`；执行记忆写入 `.memory/execution-memory.jsonl`
+10. **交付收口** — 手动按需触发 rui-import + rui-bot，详见 [强制集成](#强制集成)
 11. **自主测试** — 每次故事任务变更后自动执行自检：基线完整性 · 文档一致性 · 分支隔离 · 安全合规；缺 self-test 故事目录时跳过不阻断
 12. **表达优先** — 文档内容必须 图 → 结构化文本 → 表，架构/流程/关系优先 mermaid，不可降级
 
 ## 故事文档
 
-> 标准基线 9 文档，无编号前缀，无前后端拆分。文档按管线阶段生成，公式见 [formulas.md](./formulas.md)。
+> 故事任务为唯一基线文档。场景-N-<slug>.md 自包含全生命周期（§0 技术评审 · §1 测试设计 · §2 实施报告 · §3 测试报告 · §4 自改进）。知识图谱为结构化知识层。公式见 [formulas.md](./formulas.md)。
 
 | 文件 | 阶段 | 基线 | 必选 |
 |------|------|:---:|:---:|
 | 故事任务.md | 文档生成 | 问题空间 | ✓ |
-| 使用场景.md | 文档生成 | 用户空间 | ✓ |
-| 技术评审.md | 文档生成 | — | ✓ |
-| 测试设计.md | 文档生成 | — | ✓ |
-| 安全审计.md | 文档生成 | — | ✓ |
-| 实施报告.md | 验证 | — | ✓ |
-| 测试报告.md | 验证 | — | ✓ |
-| 自改进复盘.md | 自改进 | — | ✓ |
-| 交互日志.md | 全阶段 | — | ✓ |
+| 场景-N-<slug>.md | 文档生成+实现+验证+自改进 | 场景层 | ✓（≥1） |
+| 场景-N-<slug>.html | 文档生成 | 架构图 | ✓（每个场景 1 个） |
+| 知识图谱.json | 文档生成+实现 | 知识层 | ✓ |
+| 知识图谱.html | 文档生成 | 知识层 | ✓ |
 
 ## init
 
@@ -198,25 +195,25 @@ flowchart TD
 >
 > 基于 explore 阶段抽取的模块地图、项目拓扑事实和基线文档（CLAUDE.md / README.md）自主构建。
 
-**4a. 技术架构故事** (`<project>-arch`)，按 5 文档基线生成（委托 pm → coder → tester → security 逐文档生成，同 doc 管线约束）：
+**4a. 技术架构故事** (`<project>-arch`)，按文档基线生成（委托 pm → coder → tester → security 逐文档生成，同 doc 管线约束）：
 
 | # | 文档 | Agent | 内容 |
 |---|------|-------|------|
 | 1 | 故事任务.md | pm | 系统架构知识固化 + 模块地图两大 Story，含 FP/AC/SC/风险 |
-| 2 | 使用场景.md | pm | ≥4 个架构参考场景（模块定位/数据流追踪/新人上手/依赖变更影响），每场景含 mermaid flowchart |
-| 3 | 技术评审.md | coder | 模块地图（入口文件+依赖+下游消费者）· 4 层拓扑模型 · 数据流图（命令/doc/交付/自改进）· 信任边界 · ADR · 依赖矩阵 |
-| 4 | 测试设计.md | tester | 架构验证用例（模块存在性/依赖完整性/信任边界/文档覆盖），四类全覆盖 |
-| 5 | 安全审计.md | security | STRIDE 六类威胁建模 · 6 项合规检查 · 信任边界独立审计 |
+| 2 | 场景-N-<slug>.md | pm + coder + tester + security | ≥4 个架构参考场景（模块定位/数据流追踪/新人上手/依赖变更影响），每场景自包含 §0-§4 全生命周期 |
+| 3 | 场景-N-<slug>.html | coder | 每场景架构图（自包含 HTML+SVG） |
+| 4 | 知识图谱.json | pm → coder | 模块+数据流+拓扑层次的结构化知识表示 |
+| 5 | 知识图谱.html | coder | 知识图谱可视化 |
 
-**4b. 自主测试方案** (`<project>-self-test`)，基于基线文档自主构建项目自检策略，按 5 文档基线生成：
+**4b. 自主测试方案** (`<project>-self-test`)，基于基线文档自主构建项目自检策略，按文档基线生成：
 
 | # | 文档 | Agent | 内容 |
 |---|------|-------|------|
 | 1 | 故事任务.md | pm | 项目自检体系两大 Story：管线健康自检 + 文档基线完整性校验，含 FP/AC/SC/风险 |
-| 2 | 使用场景.md | pm | ≥4 个自检场景（init 后全量自检/每次 commit 前增量自检/文档→代码一致性校验/安全面回归自检），每场景含 mermaid flowchart |
-| 3 | 技术评审.md | coder | 自检架构：检查项注册表 · 执行引擎（按序/并行/降级）· 报告输出格式 · 与 Gate A/B 的集成点 |
-| 4 | 测试设计.md | tester | 自检项用例（CLAUDE.md 完整性/README.md 领域语言/故事目录结构/分支隔离/版本一致性/安全合规），四类全覆盖 |
-| 5 | 安全审计.md | security | 自检面安全审计：检查项本身不可被绕过 · 自检结果不可伪造 · 降级路径不可滥用 |
+| 2 | 场景-N-<slug>.md | pm + coder + tester + security | ≥4 个自检场景（init 后全量自检/每次 commit 前增量自检/文档→代码一致性校验/安全面回归自检），每场景自包含 §0-§4 全生命周期 |
+| 3 | 场景-N-<slug>.html | coder | 每场景架构图（自包含 HTML+SVG） |
+| 4 | 知识图谱.json | pm → coder | 自检项结构化知识表示 |
+| 5 | 知识图谱.html | coder | 知识图谱可视化 |
 
 **故事命名**：`<project>-arch`、`<project>-self-test`（如项目名 `YrY` → `yry-arch`、`yry-self-test`）。
 
@@ -234,20 +231,20 @@ flowchart TD
 - README.md 含项目名
 - README.md 含 `## 领域语言` 标题 + ≥3 个术语定义
 - `docs/故事任务面板/` 目录存在
-- `docs/故事任务面板/<project>-arch/` 目录存在，含 5 文档基线
-- `docs/故事任务面板/<project>-self-test/` 目录存在，含 5 文档基线（故事任务/使用场景/技术评审/测试设计/安全审计）
+- `docs/故事任务面板/<project>-arch/` 目录存在，含文档基线（故事任务 + 场景-N-<slug>.md + 知识图谱）
+- `docs/故事任务面板/<project>-self-test/` 目录存在，含文档基线（故事任务 + 场景-N-<slug>.md + 知识图谱）
 - `.claude/skills/rui-bot/config.json` 存在
 
 ### 7. trigger
 
-验证通过后触发 rui-import（workspace 全量）+ rui-bot 通知。缺 token 跳过，网络失败告警不阻断。
+验证通过后可手动调用 rui-import + rui-bot。缺 token 跳过，网络失败告警不阻断。
 
 ### 产物
 
 - `CLAUDE.md` — `rui:project-*` 标记内全量重生，段外保留
 - `README.md` — 全量重生，领域语言段重复运行时增量补充
-- `docs/故事任务面板/<project>-arch/` — 项目技术架构故事（5 文档基线），每次全量重生
-- `docs/故事任务面板/<project>-self-test/` — 项目自主测试方案（5 文档基线），每次全量重生
+- `docs/故事任务面板/<project>-arch/` — 项目技术架构故事（故事任务 + 场景-N-<slug>.md + 知识图谱），每次全量重生
+- `docs/故事任务面板/<project>-self-test/` — 项目自主测试方案（故事任务 + 场景-N-<slug>.md + 知识图谱），每次全量重生
 - `.claude/skills/rui-bot/config.json` — 每次覆盖
 - `docs/故事任务面板/.init-memory.json` — 每次覆盖
 
@@ -256,6 +253,8 @@ flowchart TD
 > 需求到文档基线的完整管线。pm 拆需求为故事 → coder 补齐设计文档。全程只读源码，多故事串行。pm 应用烧烤纪律：挑战模糊术语、走完决策树、用领域语言命名、不确定 > 2 项不推进。
 >
 > **写故事文档也走分支隔离。** doc 阶段写入 `docs/故事任务面板/<name>/` 下的文档，这些写入操作必须在 `feat/<name>` 分支上执行，与 code 阶段同门禁。
+>
+> 产出：故事任务.md（问题空间基线）· 场景-N-<slug>.md（场景层，自包含 §0-§4 全生命周期）· 场景-N-<slug>.html · 知识图谱.json · 知识图谱.html
 
 ### 效果示意
 
@@ -265,7 +264,7 @@ flowchart TD
     NOW --> M1["里程碑 1<br/>pm 拆分故事<br/>影响分析·优先级排序"]:::milestone
     M1 --> M2["里程碑 2<br/>分支隔离门禁<br/>feat/&lt;name&gt; 从 main 拉出"]:::milestone
     M2 --> M3["里程碑 3<br/>coder 补齐设计文档<br/>使用场景·技术评审·测试设计·安全审计"]:::milestone
-    M3 --> GOAL["目标状态<br/>文档基线完整<br/>故事任务+使用场景+技术评审<br/>+测试设计+安全审计 全部齐备<br/>可直接进入 code 阶段"]:::goal
+    M3 --> GOAL["目标状态<br/>文档基线完整<br/>故事任务+场景-N-<slug>.md+知识图谱<br/>全部齐备<br/>可直接进入 code 阶段"]:::goal
 
 ```
 
@@ -302,25 +301,24 @@ flowchart TD
 | 字段 | 内容 |
 |------|------|
 | 作为 | coder |
-| 我想要 | 基于故事任务生成完整的技术设计文档基线 |
+| 我想要 | 基于故事任务生成完整的场景文档基线 |
 | 以便 | 实现阶段有完整的技术方案依循，安全面有独立审计 |
 | 优先级 | P0 |
-| 范围边界 | 只读源码 + 故事任务文档，写入使用场景/技术评审/测试设计/安全审计 |
+| 范围边界 | 只读源码 + 故事任务文档，写入场景-N-<slug>.md + 场景-N-<slug>.html + 知识图谱 |
 | 依赖 | Story 1 完成，故事任务文档存在 |
 
 ##### 范围外
 
 - 不涉及源码修改
-- 不覆盖实施报告/测试报告/自改进复盘（由 code 阶段产出）
+- 场景 §2-§4 由 code 阶段后续填充
 
 ##### §1.1 User Operations
 
 | # | 操作 | 触发条件 | 操作步骤 | 预期结果 |
 |---|------|---------|---------|---------|
-| 1 | 补齐使用场景 | pm 完成故事任务后自动触发 | coder 读取故事任务 → 按 F.story.scenarios 公式生成 → 校验用户空间语言边界（禁止技术术语/组件名/API 端点） | 生成 使用场景.md |
-| 2 | 补齐技术评审 | 使用场景完成后自动触发 | coder 只读源码 → 按 F.story.technical-review 公式生成（含架构/API/数据/组件/状态/交互，按项目类型裁剪章节） | 生成 技术评审.md |
-| 3 | 补齐测试设计 | 技术评审完成后自动触发 | tester 基于故事任务+使用场景双基线 → 按 F.story.test-design 公式生成 | 生成 测试设计.md |
-| 4 | 补齐安全审计 | 技术评审完成后自动触发 | security 基于技术评审 → 按 F.story.security-audit 公式独立审计 | 生成 安全审计.md |
+| 1 | 生成场景文档 | pm 完成故事任务后自动触发 | pm 读取故事任务 → 按 F.story.scene 公式生成场景概述 + §0（含效果示意 mermaid）· §1（测试设计）→ 校验用户空间语言边界（禁止技术术语/组件名/API 端点） | 生成 场景-N-<slug>.md（§0、§1） |
+| 2 | 生成架构图 | 场景文档 §0 完成后自动触发 | coder 按 F.supp.architecture-diagram 公式生成自包含 HTML+SVG | 生成 场景-N-<slug>.html |
+| 3 | 生成知识图谱 | 场景文档完成后自动触发 | pm 创建骨架 → coder 补充实现节点 | 生成 知识图谱.json + 知识图谱.html |
 
 ---
 
@@ -353,10 +351,10 @@ flowchart TD
 | FP1 | 需求解析 — 将自然语言/文件/URL 需求拆分为故事列表 | 需求文本或引用 | 故事列表（含优先级、依赖、范围边界） | 需求无法解析时阻断 `no-parse` | P0 |
 | FP2 | 影响分析 — 分析每个故事对现有系统的影响链 | 源码 + 故事需求 | 影响点列表 + 影响级别 | 影响链未闭合时阻断 `chain-broken` | P0 |
 | FP3 | 故事任务生成 — 按 F.story.task 公式生成 | 解析结果 + 影响分析 | 故事任务.md | 占位符未替换或 P0 检查项缺失时阻断 | P0 |
-| FP4 | 使用场景生成 — 按 F.story.scenarios 公式生成 | 故事任务文档 | 使用场景.md | 场景覆盖不全（<2 场景）或语言污染时阻断 | P0 |
-| FP5 | 技术评审生成 — 按 F.story.technical-review 公式生成（含架构/API/数据/组件/状态/交互/性能，按项目类型裁剪章节） | 故事任务+使用场景 + 源码 | 技术评审.md | P0 检查项未通过时阻断 | P0 |
-| FP6 | 测试设计生成 — 按 F.story.test-design 公式生成 | 故事任务+使用场景+技术评审 | 测试设计.md | AC 覆盖不全或 Gate A 交接信号缺失时阻断 | P0 |
-| FP7 | 安全审计生成 — 按 F.story.security-audit 公式生成 | 技术评审文档 | 安全审计.md | 威胁未覆盖或缓解措施缺失时阻断 | P0 |
+| FP4 | 场景文档生成 — 按 F.story.scene 公式生成场景概述 + §0 + §1 | 故事任务文档 | 场景-N-<slug>.md | 场景覆盖不全（<2 场景）或语言污染时阻断 | P0 |
+| FP5 | 架构图生成 — 按 F.supp.architecture-diagram 公式生成 | 场景-N-<slug>.md | 场景-N-<slug>.html | P0 检查项未通过时阻断 | P0 |
+| FP6 | 知识图谱生成 — 按 F.story.knowledge-graph 公式生成 | 故事任务 + 场景文档 | 知识图谱.json + 知识图谱.html | 验证规则未通过时阻断 | P0 |
+| FP7 | 安全审计 — security 独立审计场景 §0 安全信号 | 场景 §0 内容 | 场景 §0 安全相关章节 | 威胁未覆盖或缓解措施缺失时阻断 | P0 |
 | FP8 | 分支隔离验证 — 写入前检查 `feat/<name>` 分支 | 故事名称 | 通过/阻断 | 非 `feat/<name>` 分支上写入时阻断 `no-doc-isolation` | P0 |
 | FP9 | 多故事串行 — 按拆分顺序逐故事处理 | 故事列表 | 每故事完整文档基线 | 前一故事未完成时不得进入下一故事 | P0 |
 | FP10 | 项目类型裁剪 — 技术评审按项目类型跳过不适用章节 | 项目类型 | 裁剪后的技术评审文档（纯前端跳过 API/数据/后端性能章节，纯后端跳过组件/状态/交互/样式章节） | 类型判定失败时默认全量生成 | P1 |
@@ -367,7 +365,7 @@ flowchart TD
 |----|------|---------|---------|
 | R1 | pm 拆分前必须建立事实基线（Read/Grep/Glob 研究源码） | 检查 agents/pm.md 执行步骤 | B |
 | R2 | 故事任务文档禁止包含技术术语（代码路径/API 路由/组件名/技术栈名） | 扫描 `/api/`、`/src/`、`<.*>` 等模式 | B |
-| R3 | 使用场景文档禁止包含技术术语和组件名 | 扫描技术名词模式 | B |
+| R3 | 场景文档禁止包含技术术语和组件名 | 扫描技术名词模式 | B |
 | R4 | 所有文档必须含 `### 主要价值` 节，≥ 4 条 emoji 前缀行 | grep 计数 | B |
 | R5 | 每文档必须含回溯链（来源引用 + 变更记录） | grep 表头与链接格式 | B |
 | R6 | 多故事时按优先级顺序串行处理，前一故事 doc 完成后再进下一故事 | 逐故事检查产出完整性 | B |
@@ -382,7 +380,7 @@ flowchart TD
 | 故事名称 | string | `^[a-z0-9]+(-[a-z0-9]+)*$` (kebab-case) | 命名规范约定 |
 | 项目类型 | enum | `frontend` / `backend` / `fullstack` / `meta` / `unknown` | init detect 阶段判定 |
 | 故事优先级 | enum | P0 / P1 / P2 | pm 影响分析 |
-| 文档集 | 10 文档固定集 | 见 [故事文档](#故事文档) | formulas.md |
+| 文档集 | 故事文档固定集 | 见 [故事文档](#故事文档) | formulas.md |
 | 分支名 | string | `feat/<name>` | 分支隔离约束 |
 
 ---
@@ -391,12 +389,12 @@ flowchart TD
 
 | SC# | 描述 | 度量方式 | 目标值 | 优先级 | 关联 FP# |
 |-----|------|---------|--------|--------|---------|
-| SC1 | 用户可用一行命令从需求生成完整文档基线 | `/rui doc <需求>` 执行到全部文档产出 | 5 文档全部生成 | P0 | FP1–FP7 |
+| SC1 | 用户可用一行命令从需求生成完整文档基线 | `/rui doc <需求>` 执行到全部文档产出 | 全部基线文档生成 | P0 | FP1–FP7 |
 | SC2 | 文档基线通过全部 P0 检查 | [P0 检查清单](./formulas.md#p0-检查清单) | 全部通过 | P0 | FP3–FP7 |
 | SC3 | 多故事按优先级串行且互不交叉 | 逐故事产出目录时间戳检查 | 顺序一致 | P0 | FP9 |
 | SC4 | 文档写入仅在隔离分支进行 | `git branch --show-current` 验证 | 100% 匹配 `feat/<name>` | P0 | FP8 |
-| SC5 | 故事任务和使用场景通过语言边界扫描 | 技术术语正则扫描 | 0 命中 | P0 | R2, R3 |
-| SC6 | 技术评审按项目类型正确裁剪章节 | 按项目类型检查产出章节清单 | 与裁剪规则一致 | P1 | FP10 |
+| SC5 | 故事任务和场景文档通过语言边界扫描 | 技术术语正则扫描 | 0 命中 | P0 | R2, R3 |
+| SC6 | 场景 §0 按项目类型正确裁剪章节 | 按项目类型检查产出章节清单 | 与裁剪规则一致 | P1 | FP10 |
 
 ---
 
@@ -407,21 +405,21 @@ flowchart TD
 | # | 条目 | 关联 FP# | 边界说明 |
 |---|------|---------|---------|
 | 1 | 需求解析与故事拆分 | FP1, FP2 | pm 负责，含影响分析和优先级排序 |
-| 2 | 双基线文档生成（故事任务 + 使用场景） | FP3, FP4 | 问题空间 + 用户空间基线，所有下游溯源目标 |
-| 3 | 技术设计文档生成（技术评审） | FP5 | coder 负责，按项目类型裁剪章节 |
-| 4 | 测试设计文档生成 | FP6 | tester 负责，Gate A 交接信令 |
-| 5 | 安全审计文档生成 | FP7 | security 负责，独立审计 |
+| 2 | 基线文档生成（故事任务） | FP3 | 问题空间基线，所有下游溯源目标 |
+| 3 | 场景文档生成（场景-N-<slug>.md + .html） | FP4, FP5 | pm + coder 负责，自包含 §0-§4 全生命周期 |
+| 4 | 知识图谱生成 | FP6 | pm → coder，结构化知识层 |
+| 5 | 安全审计 | FP7 | security 负责，独立审计场景 §0 安全信号 |
 | 6 | 分支隔离门禁 | FP8 | 与 code 阶段同门禁 |
-| 7 | 末端交付三步 | — | hook-log → rui-import → rui-bot |
+| 7 | 交付收口 | — | rui-import + rui-bot 手动触发 |
 
 #### 范围外
 
 | # | 条目 | 排除原因 | 替代方案 |
 |---|------|---------|---------|
 | 1 | 源码修改 | 源码变更是 code 阶段的职责 | 使用 `/rui code <name>` |
-| 2 | 实施报告/测试报告/自改进复盘 | 属于 code 阶段产出 | 使用 `/rui code <name>` |
+| 2 | 场景 §2-§4（实施报告/测试报告/自改进） | 属于 code 阶段产出 | 使用 `/rui code <name>` |
 | 3 | git 分支创建与切换 | 由用户或管线在执行写入前操作 | `git checkout -b feat/<name>` |
-| 4 | 文档同步到远端 | 属于交付三步中的 rui-import | 末端自动触发 |
+| 4 | 文档同步到远端 | 属于交付收口中的 rui-import | 需手动触发 |
 | 5 | 已有文档的增量更新 | doc 是新建基线，增量用 update | 使用 `/rui update <name>` |
 | 6 | 故事进度查询 | 属于 rui-story 面板管理 | 使用 `/rui-story` 或 `/rui-story list` |
 
@@ -432,13 +430,13 @@ flowchart TD
 | AC# | Given | When | Then | 门禁 |
 |-----|-------|------|------|------|
 | AC1 | 用户提供清晰的自然语言需求 | 用户执行 `/rui doc <需求>` | pm 完成拆分，生成 ≥1 个故事的故事任务文档 | Gate A |
-| AC2 | pm 完成故事任务文档 | coder 补齐使用场景 | 生成使用场景文档，通过语言边界扫描（无技术术语污染） | Gate A |
-| AC3 | 使用场景完成 | coder 补齐技术评审 | 生成技术评审文档，效果示意 + 全部必填章节完整，按项目类型正确裁剪 | Gate A |
-| AC4 | 技术评审完成 | tester 生成测试设计 | 生成测试设计文档，AC 覆盖全部故事任务 §5 的 AC#，Gate A 交接信号完整 | Gate A |
-| AC5 | 技术评审完成 | security 执行安全审计 | 生成安全审计文档，威胁建模覆盖全部信任边界 | Gate A |
+| AC2 | pm 完成故事任务文档 | pm 生成场景文档 §0 + §1 | 生成场景-N-<slug>.md（含 §0 效果示意 + §1 测试设计），通过语言边界扫描 | Gate A |
+| AC3 | 场景 §0 完成 | coder 生成架构图 | 生成场景-N-<slug>.html，自包含 HTML+SVG | Gate A |
+| AC4 | 场景文档完成 | pm → coder 生成知识图谱 | 生成知识图谱.json + 知识图谱.html | Gate A |
+| AC5 | 场景 §0 安全信号存在 | security 执行安全审计 | 审计场景 §0 安全相关内容，威胁建模覆盖全部信任边界 | Gate A |
 | AC6 | 当前分支非 `feat/<name>` | 管线检查分支隔离 | 阻断写入，提示用户创建 `feat/<name>` 从 main 拉出 | Gate A |
 | AC7 | 当前分支为 `feat/<name>` | 管线写入文档 | 直接写入全部文档到 `docs/故事任务面板/<name>/` | Gate A |
-| AC8 | 文档基线全部生成完成 | 管线触发末端交付 | hook-log → rui-import → rui-bot 三步按序执行 | Gate B |
+| AC8 | 文档基线全部生成完成 | 管线完成 | rui-import + rui-bot 手动触发 | Gate B |
 | AC9 | 需求包含多个故事（故事列表 ≥ 2） | pm 拆分后按优先级排序 | 逐故事串行：故事 1 全部文档完成 → 故事 2 全部文档完成 → ... | Gate A |
 | AC10 | 需求无法解析（模糊、矛盾、信息不足） | pm 尝试解析 | 阻断 `no-parse`，提示用户补充信息，不生成空文档 | Gate A |
 
@@ -452,7 +450,7 @@ flowchart TD
 | 2 | P0 检查项中缺来源导致文档基线不完整 | 风险 | M | H | 每个断言必须有来源引用或证据路径；不可达来源标 C 级 | FP3–FP7 |
 | 3 | 分支名冲突（feat/<name> 已存在） | 风险 | M | M | 检测到冲突时提示用户处理已有分支 | FP8 |
 | 4 | 多故事拆分时下游故事依赖上游但上游未完成 | 风险 | M | M | 串行约束强制前一故事完成再进入下一故事 | FP9 |
-| 5 | 故事任务/使用场景混入技术术语导致下游设计偏离基线 | 风险 | M | H | P0 检查清单正则扫描；下游文档审查时反向溯源 | FP3, FP4 |
+| 5 | 故事任务/场景文档混入技术术语导致下游设计偏离基线 | 风险 | M | H | P0 检查清单正则扫描；下游文档审查时反向溯源 | FP3, FP4 |
 | 6 | 项目类型误判导致技术评审章节裁剪错误 | 风险 | L | M | 类型判定失败时默认全量生成 | FP10 |
 | 7 | 研究阶段源码不可读或关键路径缺失导致 pm 分析不完整 | 风险 | L | L | 源码不可读或结构混乱时阻断，要求用户先梳理源码 | FP1 |
 | 8 | security agent 与 coder 为同一实例导致审计不独立 | 风险 | M | H | 安全审计由独立 security agent 执行 | FP7 |
@@ -461,16 +459,7 @@ flowchart TD
 
 **约束**：只读源码 · 分支隔离（强制，同 code 阶段门禁） · 逐故事串行 · 在 `feat/<name>` 分支上写入文档
 
-**产出**：故事任务.md（问题空间基线）· 使用场景.md（用户空间基线）· 技术评审.md（按项目类型裁剪章节）· 测试设计.md（Gate A 交接）· 安全审计.md（独立审计）
-
-**逐文件自动导入**（强制）：每个文档生成后**必须**立即执行 `node skills/rui/import-doc.mjs <file-path>` 导入远端。此为硬性步骤，不可跳过或推迟到批量安全网。导入失败不阻断管线，记录告警后继续。
-
-```mermaid
-flowchart LR
-    GEN[生成文档<br/>Write 文件] --> IMP[import-doc.mjs<br/>单文件导入] --> CHK{导入结果}
-    CHK -->|"✓ ok"| NEXT[继续下一文档]
-    CHK -->|"⚠ skipped/failed"| WARN[记录告警] --> NEXT
-```
+**产出**：故事任务.md（问题空间基线）· 场景-N-<slug>.md（场景层，自包含 §0-§4）· 场景-N-<slug>.html（架构图）· 知识图谱.json + 知识图谱.html（知识层）
 
 **末端触发** [强制集成](#强制集成)。
 
@@ -490,11 +479,9 @@ flowchart LR
     C -.>2 轮.-> X[gate-b-limit]:::bad
 ```
 
-**产出**：实施报告.md · 测试报告.md · 自改进复盘.md
+**产出**：场景-N-<slug>.md §2 实施报告 · §3 测试报告 · §4 自改进
 
-**逐文件自动导入**（强制）：每个报告文档生成后**必须**立即执行 `node skills/rui/import-doc.mjs <file-path>` 导入远端，规则同 doc 阶段。
-
-**约束**：源码唯一入口 · Gate A `测试设计.md` 不存在即阻断 · Gate B >2 轮阻断 · P0 不清零不进下一模块
+**约束**：源码唯一入口 · Gate A 场景 §1 测试设计不存在即阻断 · Gate B >2 轮阻断 · P0 不清零不进下一模块
 
 **末端触发** [强制集成](#强制集成)。
 
@@ -560,7 +547,7 @@ flowchart TD
     VERIFY --> VER{"通过?"}
     VER -->|"是"| BUMP["§6 版本升级<br/>按变更类型自动<br/>升级故事版本号"]:::s
     VER -->|"否"| ROLLBACK["回滚 + 记录<br/>标记 skip 避免死循环"]:::s
-    BUMP --> DELIVER["§7 交付<br/>hook-log → rui-import<br/>→ rui-bot"]:::s
+    BUMP --> DELIVER["§7 交付<br/>rui-import → rui-bot<br/>（手动触发）"]:::s
     ROLLBACK --> DELIVER
     DELIVER --> INC["round++"]:::s
     INC --> LOOP{"继续循环?"}
@@ -836,7 +823,7 @@ flowchart LR
 
 ### req 有值 — 直接生成全文档基线
 
-> 从源码反推完整 5 文档基线到 `docs/故事任务面板/<name>/`。全程只读源码，证据 Level B + 源码路径，缺口标「待补充」。
+> 从源码反推完整文档基线到 `docs/故事任务面板/<name>/`。全程只读源码，证据 Level B + 源码路径，缺口标「待补充」。
 > 多故事时按 `recommend.mjs` 输出的 storyName 顺序串行，互不交叉。
 
 ```mermaid
@@ -848,20 +835,20 @@ flowchart TD
     BRANCH -->|"是"| SCAN["§1.4 源码定位<br/>按 name 匹配源文件集"]:::s
     SWITCH --> SCAN
     SCAN --> EXTRACT["§1.5 只读提取<br/>结构·接口·依赖·状态·安全"]:::s
-    EXTRACT --> GEN["§2 逐文档生成<br/>5 文档基线"]:::s
+    EXTRACT --> GEN["§2 逐文档生成<br/>文档基线"]:::s
 
-    subgraph GENSUB["逐文档生成 — 5 文档基线"]
+    subgraph GENSUB["逐文档生成 — 文档基线"]
         direction LR
         D1["§2.1 pm<br/>故事任务<br/>F.story.task"]:::agent
-        D2["§2.2 pm<br/>使用场景<br/>F.story.scenarios"]:::agent
-        D3["§2.3 coder<br/>技术评审<br/>F.story.technical-review"]:::agent
-        D4["§2.4 tester<br/>测试设计<br/>F.story.test-design"]:::agent
-        D5["§2.5 security<br/>安全审计<br/>F.story.security-audit"]:::agent
+        D2["§2.2 pm<br/>场景文档 §0 + §1<br/>F.story.scene"]:::agent
+        D3["§2.3 coder<br/>架构图<br/>F.supp.architecture-diagram"]:::agent
+        D4["§2.4 pm → coder<br/>知识图谱<br/>F.story.knowledge-graph"]:::agent
+        D5["§2.5 security<br/>安全审计<br/>独立审计"]:::agent
         D1 --> D2 --> D3 --> D4
-        D3 --> D5
+        D2 --> D5
     end
 
-    GENSUB --> DELIVER["§3 交付三步<br/>hook-log→rui-import→rui-bot"]:::s
+    GENSUB --> DELIVER["§3 交付收口<br/>rui-import→rui-bot"]:::s
 
 ```
 
@@ -895,16 +882,16 @@ flowchart TD
 
 #### §2 逐文档生成
 
-> 5 文档按序生成。前文档产出为后文档输入。每文档生成后立即通过 P0 检查清单校验。
+> 文档按序生成。前文档产出为后文档输入。每文档生成后立即通过 P0 检查清单校验。
 
 ```mermaid
 flowchart LR
     FACTS["代码事实集<br/>来自 §1.5"]:::input --> D1["§2.1 故事任务<br/>pm · F.story.task"]:::doc
-    D1 --> D2["§2.2 使用场景<br/>pm · F.story.scenarios"]:::doc
-    D2 --> D3["§2.3 技术评审<br/>coder · F.story.technical-review"]:::doc
-    D3 --> D4["§2.4 测试设计<br/>tester · F.story.test-design"]:::doc
-    D3 --> D5["§2.5 安全审计<br/>security · F.story.security-audit"]:::doc
-    D4 --> CHECK["P0 检查清单<br/>5 文档全部通过"]:::gate
+    D1 --> D2["§2.2 场景文档 §0 + §1<br/>pm · F.story.scene"]:::doc
+    D2 --> D3["§2.3 架构图<br/>coder · F.supp.architecture-diagram"]:::doc
+    D3 --> D4["§2.4 知识图谱<br/>pm → coder · F.story.knowledge-graph"]:::doc
+    D2 --> D5["§2.5 安全审计<br/>security · 独立审计"]:::doc
+    D4 --> CHECK["P0 检查清单<br/>全部文档通过"]:::gate
     D5 --> CHECK
 
 ```
@@ -912,10 +899,10 @@ flowchart LR
 | # | 文档 | Agent | 公式 | 反推策略 | 关键约束 |
 |---|------|-------|------|---------|---------|
 | §2.1 | `故事任务.md` | pm | [F.story.task](./formulas.md#fstorytask--project-故事任务-meta--storyn) | 从代码事实集反推业务意图：接口/组件 → 用户能做什么；状态管理 → 数据流；依赖链 → 模块边界 | 语言边界：禁止代码路径/API路由/组件名/技术栈名。证据 Level B + 源码路径 |
-| §2.2 | `使用场景.md` | pm | [F.story.scenarios](./formulas.md#fstoryscenarios--project-使用场景) | 从组件交互 + API 调用链反推用户旅程：正常路径 + ≥1 空状态 + ≥1 错误恢复。每场景必含 mermaid flowchart | 语言边界：禁止技术术语/组件名/API端点/文件路径。≥ 2 场景。场景覆盖矩阵对齐故事任务 FP# |
-| §2.3 | `技术评审.md` | coder | [F.story.technical-review](./formulas.md#fstorytechnical-review--project-技术评审) | 源码直接映射到技术章节：接口签名→§2 API；数据模型→§3；组件定义→§4；状态管理→§4.2；安全信号→§7。**含效果示意 mermaid 图**（全链路请求流/组件交互） | 按项目类型裁剪章节（纯前端跳过 API/数据/后端性能，纯后端跳过组件/状态/交互/样式/DOM）。§0 基线溯源至少映射故事任务 FP# + 使用场景 |
-| §2.4 | `测试设计.md` | tester | [F.story.test-design](./formulas.md#fstorytest-design--project-测试设计) | 基于故事任务 AC + 使用场景 + 技术评审接口/组件签名生成四类用例（正常/边界/异常/回归）。每用例 Given/When/Then 可执行 | §0 基线溯源覆盖全部 AC# 和场景。Gate A 交接信号完整（P0 用例 ID + 验证命令） |
-| §2.5 | `安全审计.md` | security | [F.story.security-audit](./formulas.md#fstorysecurity-audit--project-安全审计) | 基于技术评审 §7 安全信号 + 源码安全扫描独立审计：资产识别 → STRIDE 威胁建模 → 信任边界 → 缓解措施 → 合规检查 | 独立执行，不依赖 coder 自评。STRIDE 六类全覆盖。合规 6 项全查 |
+| §2.2 | `场景-N-<slug>.md` (§0 + §1) | pm + coder | [F.story.scene](./formulas.md#fstoryscene--场景-n-slugmd-meta--nav--0-技术评审--1-测试设计--2-实施报告--3-测试报告--4-自改进) | 从组件交互 + API 调用链反推用户旅程，源码直接映射到 §0 技术章节。每场景必含 mermaid flowchart + 效果示意 | 语言边界：禁止技术术语/组件名/API端点/文件路径。≥ 2 场景。§0 按项目类型裁剪 |
+| §2.3 | `场景-N-<slug>.html` | coder | [F.supp.architecture-diagram](./formulas.md#fsupparchitecture-diagram--架构图-模板渲染--自包含-html) | 基于场景 §0 内容生成深色主题 HTML+SVG 架构图 | 自包含，无外部依赖，含导出工具栏 |
+| §2.4 | `知识图谱.json` + `知识图谱.html` | pm → coder | [F.story.knowledge-graph](./formulas.md#fstoryknowledge-graph--知识图谱-meta--story--nodesdomainflowstep--edges--layers) | 从源码 + 场景文档提取 domain/flow/step 节点 + 边 | ≥ 1 domain + ≥ 1 flow + ≥ 3 steps |
+| §2.5 | 安全审计 | security | 独立审计 | 基于场景 §0 安全信号 + 源码安全扫描独立审计 | 独立执行，不依赖 coder 自评。STRIDE 六类全覆盖 |
 
 **反推证据等级**：
 
@@ -928,21 +915,21 @@ flowchart LR
 
 | # | 检查项 | 适用文档 |
 |---|--------|---------|
-| 1 | `### 主要价值` 存在且 ≥ 4 条 emoji 前缀行 | 全部 5 文档 |
-| 2 | F.meta 无 `{...}` 占位符 | 全部 5 文档 |
-| 3 | 回溯链完整（来源引用 + 变更记录） | 全部 5 文档 |
-| 4 | 故事任务 + 使用场景通过语言边界扫描（无技术术语污染） | §2.1, §2.2 |
-| 5 | 技术评审含效果示意 mermaid 图 + 基线溯源表 | §2.3 |
-| 6 | 测试设计 Gate A 交接信号完整 | §2.4 |
+| 1 | `### 主要价值` 存在且 ≥ 4 条 emoji 前缀行 | 全部文档 |
+| 2 | F.meta 无 `{...}` 占位符 | 全部文档 |
+| 3 | 回溯链完整（来源引用 + 变更记录） | 全部文档 |
+| 4 | 故事任务 + 场景文档通过语言边界扫描（无技术术语污染） | §2.1, §2.2 |
+| 5 | 场景 §0 含效果示意 mermaid 图 + 基线溯源表 | §2.2 |
+| 6 | 场景 §1 测试设计 Gate A 交接信号完整 | §2.2 |
 | 7 | 安全审计 STRIDE 六类全覆盖 + 独立审计标记 | §2.5 |
 
 #### §3 项目类型裁剪
 
-| 类型 | 故事任务 | 使用场景 | 技术评审章节 | 测试设计 | 安全审计 |
-|------|---------|---------|-------------|---------|---------|
-| 前端 | 全量 | 全量（侧重 UI 交互） | 跳过 §2 API / §3 数据 / §8 后端性能 | 侧重 UI 状态 + 交互用例 | 侧重输入校验 + XSS/CSRF |
-| 后端 | 全量 | 全量（侧重 API 使用者旅程） | 跳过 §4 组件 / §5 交互 / §6 DOM·事件·依赖 | 侧重接口 + 数据 + 性能用例 | 侧重认证 + 注入 + 权限 |
-| 全栈 | 全量 | 全量（覆盖两端用户） | 全章节，两端契约对齐 | 两端覆盖 + 集成用例 | 全威胁面 |
+| 类型 | 故事任务 | 场景文档 §0 | 场景文档 §1 | 安全审计 |
+|------|---------|-------------|-------------|---------|
+| 前端 | 全量 | 侧重 UI 交互，跳过 API/数据/后端性能章节 | 侧重 UI 状态 + 交互用例 | 侧重输入校验 + XSS/CSRF |
+| 后端 | 全量 | 侧重 API/数据，跳过组件/交互/DOM 章节 | 侧重接口 + 数据 + 性能用例 | 侧重认证 + 注入 + 权限 |
+| 全栈 | 全量 | 全章节，两端契约对齐 | 两端覆盖 + 集成用例 | 全威胁面 |
 
 #### §4 约束
 
@@ -954,7 +941,7 @@ flowchart LR
 | 冲突保护 | 目标目录已存在时拒绝覆盖 | 引导 `/rui update` |
 | 反推诚实 | 能从代码确定的写 Level A/B，不能确定的标「待补充」，不编造 | `chain-broken` |
 | 表达优先 | 每文档必须含 mermaid 图（效果示意/操作流/架构图至少其一），不可纯文本 | `doc-p0` |
-| 逐故事串行 | 多故事时按 recommend.mjs 输出顺序串行，前故事 5 文档全部完成再进下一故事 | `chain-broken` |
+| 逐故事串行 | 多故事时按 recommend.mjs 输出顺序串行，前故事基线文档全部完成再进下一故事 | `chain-broken` |
 
 **末端触发** [强制集成](#强制集成)。
 
@@ -968,7 +955,7 @@ flowchart LR
 flowchart TD
     SURVEY["§1 Survey<br/>扫描已有文档<br/>识别缺失"]:::s --> MIN{"§1.1 最少基线<br/>≥1 文档存在?"}:::gate
     MIN -->|"否"| REFUSE["拒绝<br/>引导 /rui doc --from-code 或 /rui doc <需求>"]:::bad
-    MIN -->|"是"| ALL{"§1.2 齐全检查<br/>6 文档全部存在?"}:::gate
+    MIN -->|"是"| ALL{"§1.2 齐全检查<br/>基线文档全部存在?"}:::gate
     ALL -->|"是"| SKIP["无需生成<br/>引导 /rui update <name>"]:::warn
     ALL -->|"否，有缺失"| BRANCH{"§1.3 分支隔离<br/>git branch == feat/&lt;name&gt;?"}:::gate
     BRANCH -->|"否"| SWITCH["创建/切换到 feat/&lt;name&gt;<br/>从 main 拉出"]:::block
@@ -980,21 +967,19 @@ flowchart TD
     subgraph GENSUB["逐文档生成 — 缺失文档（按依赖链串行）"]
         direction LR
         D1["§4.1 pm<br/>故事任务<br/>F.story.task"]:::agent
-        D2["§4.2 pm<br/>使用场景<br/>F.story.scenarios"]:::agent
-        D3["§4.3 coder<br/>技术评审<br/>F.story.technical-review"]:::agent
-        D4["§4.4 tester<br/>测试设计<br/>F.story.test-design"]:::agent
-        D5["§4.5 security<br/>安全审计<br/>F.story.security-audit"]:::agent
-        D6["§4.6 self-improve<br/>自改进复盘<br/>F.story.retrospective"]:::agent
+        D2["§4.2 pm<br/>场景文档 §0 + §1<br/>F.story.scene"]:::agent
+        D3["§4.3 coder<br/>架构图<br/>F.supp.architecture-diagram"]:::agent
+        D4["§4.4 pm → coder<br/>知识图谱<br/>F.story.knowledge-graph"]:::agent
+        D5["§4.5 security<br/>安全审计<br/>独立审计"]:::agent
         D1 --> D2 --> D3 --> D4
-        D3 --> D5
-        D4 & D5 --> D6
+        D2 --> D5
     end
 
     GENSUB --> CHECK["§5 P0 检查<br/>逐文档校验"]:::s
     CHECK -->|"P0 未通过"| RETRY{"自修复 ≤ 2 轮?"}:::gate
     RETRY -->|"是"| GEN
     RETRY -->|"否"| BLOCK_DOC["doc-p0 🚫<br/>阻断"]:::bad
-    CHECK -->|"通过"| DELIVER["§6 交付三步<br/>hook-log → rui-import → rui-bot"]:::s
+    CHECK -->|"通过"| DELIVER["§6 交付收口<br/>rui-import → rui-bot"]:::s
 
 ```
 
@@ -1013,9 +998,8 @@ flowchart TD
 |------|------|------|
 | 目录不存在 | `no-story` | 使用 `/rui doc <需求>` 或 `/rui doc --from-code` |
 | 目录空（0 文档）| `no-doc` | 同上 |
-| 仅交互日志 | `no-doc` | 同上 |
-| 无基线文档（仅测试设计/安全审计/自改进复盘存在）| `no-baseline` | 使用 `/rui doc --from-code` — 这些文档不足以反推故事任务 |
-| 6 文档全在 | `doc-full` | 使用 `/rui update <name>` |
+| 无基线文档（仅场景文档/知识图谱存在，故事任务缺失）| `no-baseline` | 使用 `/rui doc --from-code` — 这些文档不足以反推故事任务 |
+| 基线文档全在 | `doc-full` | 使用 `/rui update <name>` |
 
 ### §2 Read — 读取本地上下文
 
@@ -1024,62 +1008,57 @@ flowchart TD
 | 维度 | 来源文档 | 提取内容 |
 |------|---------|---------|
 | 业务基线 | 故事任务.md | Story#、FP#、AC#、SC#、风险 |
-| 用户基线 | 使用场景.md | 场景、操作流、覆盖矩阵 |
-| 技术设计 | 技术评审.md | 架构、API、数据模型、组件、状态 |
-| 测试计划 | 测试设计.md | 测试范围、用例、Gate A 交接 |
-| 安全审计 | 安全审计.md | 资产、威胁、信任边界、缓解措施 |
-| 过程历史 | 交互日志.md | 执行决策、阶段耗时、阻断事件 |
+| 场景 | 场景-N-<slug>.md | 场景概述、§0 技术评审、§1 测试设计、§2 实施报告、§3 测试报告、§4 自改进 |
+| 架构图 | 场景-N-<slug>.html | 场景架构可视化 |
+| 知识层 | 知识图谱.json | domain/flow/step 节点 + 边 + 层次 |
 
 ### §3 Prioritize — 按依赖链排序
 
 仅缺失文档进入生成管线，按依赖链排序：
 
 1. **故事任务**（缺失时）— 所有文档的上游基线
-2. **使用场景**（缺失时）— 依赖故事任务
-3. **技术评审**（缺失时）— 依赖故事任务 + 使用场景
-4. **测试设计**（缺失时）— 依赖故事任务 + 使用场景 + 技术评审（与安全审计并行）
-5. **安全审计**（缺失时）— 依赖技术评审（与测试设计并行）
-6. **自改进复盘**（缺失时）— 依赖全部以上文档
+2. **场景文档**（缺失时）— 依赖故事任务
+3. **架构图**（缺失时）— 依赖场景 §0
+4. **知识图谱**（缺失时）— 依赖故事任务 + 场景文档
+5. **安全审计**（缺失时）— 依赖场景 §0 安全信号
 
 **上游缺失、下游存在的特殊策略**：
 
 | 场景 | 策略 |
 |------|------|
-| 故事任务缺失，使用场景存在 | pm 从用户旅程反推 WHAT，可执行 |
-| 故事任务+使用场景缺失，技术评审存在 | pm 从架构反推业务意图，不确定项标 Level C |
-| 仅测试设计或安全审计存在 | 阻断 `no-baseline` — 业务上下文不足 |
+| 故事任务缺失，场景文档存在 | pm 从场景反推 WHAT，可执行 |
+| 故事任务缺失，知识图谱存在 | pm 从知识图谱反推业务意图，不确定项标 Level C |
+| 仅场景文档或知识图谱存在，故事任务缺失 | 阻断 `no-baseline` — 业务上下文不足 |
 
 ### §4 Generate — 逐文档生成
 
 | # | 文档 | Agent | 公式 | 反推策略 |
 |---|------|-------|------|---------|
 | §4.1 | 故事任务.md | pm | [F.story.task](./formulas.md#fstorytask--project-故事任务-meta--storyn) | 从下游文档反推业务意图。语言边界强制。证据 Level A + 文档路径。 |
-| §4.2 | 使用场景.md | pm | [F.story.scenarios](./formulas.md#fstoryscenarios--project-使用场景) | 从 FP# 反推用户旅程。≥2 场景，每场景含 mermaid flowchart + 正常/空/错误路径。 |
-| §4.3 | 技术评审.md | coder | [F.story.technical-review](./formulas.md#fstorytechnical-review--project-技术评审) | 从双基线反推架构。按项目类型裁剪章节。含基线溯源表 + 效果示意 mermaid。 |
-| §4.4 | 测试设计.md | tester | [F.story.test-design](./formulas.md#fstorytest-design--project-测试设计) | 从 AC# + 场景反推用例。四类全覆盖。Gate A 交接信号完整。 |
-| §4.5 | 安全审计.md | security | [F.story.security-audit](./formulas.md#fstorysecurity-audit--project-安全审计) | 从技术评审独立审计。STRIDE 六类全覆盖。不依赖 coder 自评。 |
-| §4.6 | 自改进复盘.md | self-improve | [F.story.retrospective](./formulas.md#fstoryretrospective--project-自改进复盘) | 从全部已有+已生成文档 + 交互日志提取观察与诊断。执行层数据标 Level C。 |
+| §4.2 | 场景-N-<slug>.md | pm + coder | [F.story.scene](./formulas.md#fstoryscene--场景-n-slugmd-meta--nav--0-技术评审--1-测试设计--2-实施报告--3-测试报告--4-自改进) | 从 FP# + AC# 反推场景概述 + §0 + §1。≥2 场景，每场景含 mermaid flowchart。 |
+| §4.3 | 场景-N-<slug>.html | coder | [F.supp.architecture-diagram](./formulas.md#fsupparchitecture-diagram--架构图-模板渲染--自包含-html) | 从场景 §0 生成深色主题 HTML+SVG。 |
+| §4.4 | 知识图谱.json + 知识图谱.html | pm → coder | [F.story.knowledge-graph](./formulas.md#fstoryknowledge-graph--知识图谱-meta--story--nodesdomainflowstep--edges--layers) | 从场景文档提取 domain/flow/step 节点。 |
+| §4.5 | 安全审计 | security | 独立审计 | 从场景 §0 独立审计。STRIDE 六类全覆盖。不依赖 coder 自评。 |
 
 ### 范围边界
 
-**范围内（6 文档，可从本地文档上下文生成）**：
+**范围内（可通过本地文档上下文生成）**：
 
 | 文件 | 阶段 | Agent |
 |------|------|-------|
 | 故事任务.md | 文档生成 | pm |
-| 使用场景.md | 文档生成 | pm |
-| 技术评审.md | 文档生成 | coder |
-| 测试设计.md | 文档生成 | tester |
-| 安全审计.md | 文档生成 | security |
-| 自改进复盘.md | 自改进 | self-improve |
+| 场景-N-<slug>.md (§0 + §1) | 文档生成 | pm + coder |
+| 场景-N-<slug>.html | 文档生成 | coder |
+| 知识图谱.json | 文档生成 | pm → coder |
+| 知识图谱.html | 文档生成 | coder |
 
-**范围外（4 文档，需代码执行或自动生成）**：
+**范围外（需代码执行或自动生成）**：
 
-| 文件 | 排除原因 | 替代方案 |
+| 内容 | 排除原因 | 替代方案 |
 |------|---------|---------|
-| 实施报告.md | 需代码执行（截图、curl 命令、模块 P0 审查数据）| `/rui code <name>` |
-| 测试报告.md | 需测试执行（通过/失败计数、环境快照）| `/rui code <name>` |
-| 交互日志.md | rui 管线自动维护 | 自动 |
+| 场景 §2 实施报告 | 需代码执行（截图、curl 命令、模块 P0 审查数据）| `/rui code <name>` |
+| 场景 §3 测试报告 | 需测试执行（通过/失败计数、环境快照）| `/rui code <name>` |
+| 场景 §4 自改进 | 需执行记忆数据 + D0-D7 诊断 | `/rui code <name>` 或 `/rui yry` |
 
 ### §5 约束
 
@@ -1110,44 +1089,24 @@ flowchart TD
 
 ## 强制集成
 
-> rui-import + rui-bot 三步收口。每次写入命令末端必须按序触发。
+> rui-import + rui-bot 需手动触发。管线完成后按需调用。
 
-### 触发时机
+### 手动触发命令
 
-**触发**：`init` / `doc` / `code` / `需求` / `update` / `code --from-doc` / `doc --from-code` / `doc --from-local`  
-**不触发**：`/rui`（推荐）
-
-### 导入机制：逐文件即时导入 + 批量安全网
-
-```
-文档生成 → import-doc.mjs <file>（即时，不可跳过）
-                  ↓
-         下一文档生成 → import-doc.mjs <file>
-                  ↓
-               ...
-                  ↓
-管线完成/阻断 → 1. hook-log → 2. sync.mjs（批量安全网兜底）→ 3. rui-bot
-```
-
-> **逐文件导入**（主路径）：每个文档 Write 后**必须**执行 `node skills/rui/import-doc.mjs <file-path>`。这是硬性步骤，不可推迟。  
-> **批量安全网**（兜底）：末端 `node skills/rui-import/sync.mjs` 扫描全项目，补漏任何遗漏文件。仅作兜底，不可替代逐文件导入。
-
-### 执行顺序（不可跳序）
-
-| # | 步骤 | 规约出处 | 标记字段 |
-|---|------|---------|---------|
-| 1 | hook-log | [rui-bot — hook-log](../rui-bot/SKILL.md#①-hook-log追加日志不发送) | `delivery_pipeline.log_appended` |
-| 2 | `node skills/rui-import/sync.mjs`（批量安全网兜底） | [rui-import — hook 触发器](../rui-import/SKILL.md#hook-触发器) | `delivery_pipeline.docs_synced` |
-| 3 | rui-bot | [rui-bot — hook-notify](../rui-bot/SKILL.md#③-hook-notify实际发送) | `delivery_pipeline.notification_sent` |
+| # | 步骤 | 命令 | 说明 |
+|---|------|------|------|
+| 1 | 追加通知 | `node skills/rui-bot/send.mjs --story=<name> --status=<s> --no-send` | 记录通知状态，不发 HTTP |
+| 2 | 文档同步 | `node skills/rui-import/sync.mjs workspace=true` | 全量扫描 + 上传 |
+| 3 | 发送通知 | `node skills/rui-bot/send.mjs --story=<name> --status=<s>` | POST 企微 webhook |
 
 ### 降级
 
-- `no-token`：`API_X_TOKEN` 缺失时跳过推送，仍写 `delivery_pipeline` 标记
-- 网络失败：告警不阻断，标记仍写
+- `no-token`：`API_X_TOKEN` 缺失时跳过推送
+- 网络失败：告警不阻断
 
 ## 诊断纪律
 
-> 结构化调试纪律。难 bug 不靠猜——靠反馈回路。
+> 结构化调试纪律。难 bug 不靠猜——靠反馈回路。方法论源自 systematic-debugging 技能（根因追溯 → 纵深防御 → 条件等待 → 假设测试 → 修复验证），已在 [code-pipeline.md 支撑技术](../../rules/code-pipeline.md#支撑技术) 中完整落地。
 
 ### Phase 1 — 构建反馈回路
 
@@ -1204,7 +1163,7 @@ flowchart TD
 
 ## 交接纪律
 
-> 会话上下文压缩为交接文档，供 Agent 间继续。
+> 会话上下文压缩为交接文档，供 Agent 间继续。**交接文档假设接手者拥有零上下文**——不依赖接收者"知道项目背景"或"看过前面的讨论"。每个断言必须有确切文件路径/行号/验证命令。
 
 ```markdown
 # Handoff: {简短描述}
@@ -1239,8 +1198,8 @@ flowchart TD
 
 | 类别 | 内容 |
 |------|------|
-| 数据契约 | `交互日志.md`（追加）· `.improvement/proposals.jsonl`（追加）— 字段见 [coder.md §数据契约](./coder.md) |
-| Hooks | Stop hooks 调用：hook-log → rui-import → hook-notify → delivery-gate |
+| 数据契约 | `.memory/execution-memory.jsonl`（追加）· `.improvement/proposals.jsonl`（追加）— 字段见 [coder.md §数据契约](./coder.md) |
+| 交付收口 | rui-import + rui-bot 手动触发 |
 | 规则 | [code-pipeline](../../rules/code-pipeline.md) · [delivery-gate](../../rules/delivery-gate.md) · [doc-generation](../../rules/doc-generation.md) · [self-improve](../../rules/self-improve.md) · [rui-claude](../../rules/rui-claude.md) |
 | 角色 | [pm](../../agents/pm.md) · [coder](../../agents/coder.md) · [tester](../../agents/tester.md) · [reporter](../../agents/reporter.md) · [security](../../agents/security.md) · [self-improve](../../agents/self-improve.md) |
 | 文档 | [formulas.md](./formulas.md) · [coder.md](./coder.md) · [rui-import SKILL](../rui-import/SKILL.md) · [rui-bot SKILL](../rui-bot/SKILL.md) |

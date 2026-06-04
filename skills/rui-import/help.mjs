@@ -80,7 +80,7 @@ ${subhdr("其他")}
 ${item("apiUrl=<url>", "覆盖默认 API 地址", yellow)}
 
 ${hdr("使用场景")}
-${scene("全量同步（rui 管线末端自动触发）")}
+${scene("全量同步")}
 ${item("/rui-import workspace=true", "扫描项目根全部 .md + .claude/ → 上传", cyan)}
 ${scene("从远端拉取故事文档")}
 ${item("/rui-import dir=docs/故事任务面板/user-login/ mode=pull", "远端 → 本地覆盖", cyan)}

@@ -91,6 +91,56 @@ flowchart LR
 | **Data** | 敏感数据暴露、不安全存储、日志泄露 | 明文存储密码 / access log 含身份证号 |
 | **Integrity** | CSP 缺失、SRI 缺失、签名校验缺失 | 第三方 CDN 脚本无 integrity 属性 |
 
+### OWASP Top 10 映射
+
+> 评审时对照此表，确保高发威胁类型覆盖。每条映射到 YrY 四维审查。
+
+| OWASP Top 10 | YrY 维度 | 检查信号 | 缓解 |
+|-------------|---------|---------|------|
+| A1 Broken Access Control | Auth | 未校验角色的 API、直接对象引用 | 每端点鉴权、角色校验中间件 |
+| A2 Cryptographic Failures | Data | 明文传输、弱加密算法、密钥硬编码 | TLS、AES-256-GCM、密钥外置 |
+| A3 Injection | Injection | 字符串拼接 SQL/命令、未转义渲染 | 参数化查询、DOMPurify、`execFileAsync` 非 `exec` |
+| A4 Insecure Design | Auth + Data | 缺少速率限制、无威胁建模 | 速率限制中间件、安全审查前置 |
+| A5 Security Misconfiguration | Integrity | 默认密码、调试端点暴露、CORS 过宽 | 配置硬化、CORS 白名单、helm 检查 |
+| A6 Vulnerable Components | Integrity | 已知 CVE 的依赖、未锁版本 | `npm audit`、SRI、锁定文件 |
+| A7 Auth Failures | Auth | 弱密码策略、会话未失效、Token 无过期 | bcrypt/argon2、会话 TTL、refresh token 轮换 |
+| A8 Software/Data Integrity | Integrity | 无签名校验的更新、CDN 无 SRI | SRI hash、GPG 签名、校验和 |
+| A9 Logging/Monitoring | Data | 不足日志、日志泄露敏感数据、无告警 | 结构化日志 + 脱敏、告警阈值、审计追踪 |
+| A10 SSRF | Injection | 用户提供的 URL 被服务端 fetch | URL 白名单、内网 IP 黑名单、禁用重定向 |
+
+### 紧急响应模式
+
+> 当发现 CRITICAL 安全缺陷（已在生产/即将部署）时，启动紧急响应：
+
+| 步骤 | 动作 | 时限 |
+|------|------|------|
+| 1. 隔离 | 确认影响范围：哪些服务/端点/数据受影响？ | 立即 |
+| 2. 阻塞 | 标记 P0 阻断，写入 rui-state `blocked=true, block_reason=security-critical` | 立即 |
+| 3. 通知 | 通过 rui-bot 推送阻断通知（含威胁描述 + 影响范围） | ≤ 5 分钟 |
+| 4. 修复 | coder 实现修复 + tester 安全用例覆盖 | 按优先级 |
+| 5. 复盘 | 写入场景文档 §4 自改进：为什么漏检？流程缺口在哪？ | 故事关闭前 |
+
+### 无障碍安全维度（前端故事触发）
+
+> 当故事涉及 UI 组件时，注入以下额外安全约束：
+
+```mermaid
+flowchart TD
+    STORY["前端故事"] --> Q1{"含 UI 组件?"}
+    Q1 -->|"是"| A11Y["注入无障碍安全约束"]:::inj
+    Q1 -->|"否"| SKIP["跳过"]:::skip
+```
+
+| 检查点 | WCAG 2.2 标准 | 安全影响 |
+|--------|--------------|---------|
+| 焦点流 | 键盘可操作，焦点可见，无键盘陷阱 | 键盘用户被锁在组件外/内 = 可用性拒绝 |
+| 触摸目标 | ≥ 24×24 CSS px（WCAG 2.5.8） | 过小触摸目标 = 运动障碍用户无法操作 |
+| 语义角色 | 交互元素有正确 ARIA role/name | 屏幕阅读器用户无法理解/操作 UI |
+| 色彩对比 | ≥ 4.5:1（正文）/ ≥ 3:1（大文本） | 低对比度 = 视障用户无法阅读 |
+| 错误提示 | 错误以文本描述（非仅颜色），关联到输入框 | 仅颜色提示 = 色盲用户收不到错误信息 |
+
+> 无障碍审查结果写入 §3 安全约束表，格式与威胁建模一致：`威胁 | 信任边界 | 缓解措施 | 优先级`。
+
 ## 规则
 
 | # | 规则 | 反例 |

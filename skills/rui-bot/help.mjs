@@ -52,7 +52,7 @@ function scene(title) {
 const help = `
 ${bold("# rui-bot — 企业微信机器人通知")}
 
-${dim("消息发送 · 日志追加 · 管线收口 · 健康检查 | rui 强制集成")}
+${dim("消息发送 · 日志追加 · 健康检查 | 手动触发")}
 
 ${hdr("快速入门")}
 ${item("node skills/rui-bot/send.mjs --story=<name> --status=complete --no-send", "仅追加通知日志不发送 HTTP", cyan)}
@@ -96,7 +96,7 @@ ${item("交付追踪", "追加到 .memory/delivery-tracking.jsonl", dim)}
 ${item("HTTP 响应", "stdout 打印发送结果", dim)}
 
 ${hdr("使用场景")}
-${scene("管线完成自动通知（rui 自动触发）")}
+${scene("管线完成通知")}
 ${item("node skills/rui-bot/send.mjs --story=user-login --status=complete --conclusion=\"...\" --description=\"...\"", "构建完成消息 → 日志 + HTTP 发送", cyan)}
 ${scene("仅追加通知日志不发送")}
 ${item("node skills/rui-bot/send.mjs --story=user-login --status=complete --no-send", "消息写入本地日志文件，不调 HTTP", cyan)}
@@ -110,7 +110,7 @@ ${scene("自定义消息内容")}
 ${item("node skills/rui-bot/send.mjs --story=user-login --content=\"自定义消息正文\"", "直接指定消息正文，覆盖字段构建", cyan)}
 ${scene("Token 缺失时先写日志后补发")}
 ${item("node skills/rui-bot/send.mjs --story=user-login --status=complete --no-send", "Step 1：仅追加日志不发送（容错，自动 no-token 降级）", cyan)}
-${item("# 配置 API_X_TOKEN 后重新触发", "Step 2：Token 就绪后重跑管线自动发送", dim)}
+${item("# 配置 API_X_TOKEN 后手动重发", "Step 2：Token 就绪后手动调用 send.mjs 发送", dim)}
 `;
 
 console.log(help);

@@ -1,0 +1,139 @@
+{
+  "version": "2.0.0",
+  "kind": "knowledge-graph",
+  "generatedAt": "",
+  "projectRoot": "docs/故事任务面板/<story-name>/",
+  "project": {
+    "name": "<故事名>",
+    "description": "<故事描述>",
+    "analyzedAt": "",
+    "version": "1.0.0"
+  },
+  "story": {
+    "name": "<故事名>",
+    "description": "<故事描述>",
+    "scenarios": [
+      {
+        "name": "场景1 · <场景名>",
+        "description": "<场景流程描述，数据流场景使用 ①②③ 顺序编号>",
+        "sourceFiles": [
+          {
+            "type": "skill|agent|rule|file|config|external|concept|test",
+            "file": "<相对路径，概念/外部节点可为 null>",
+            "keyContent": "`关键函数` `关键命令` `关键标识`",
+            "description": "<此文件在本场景中的具体角色，可含 🔴🟡⚠️ 风险标记>",
+            "risk": "🔴|🟡|⚠️|null"
+          }
+        ],
+        "graphNodes": ["<node_id_1>", "<node_id_2>"]
+      }
+    ]
+  },
+  "scenes": {
+    "<scene-key>": {
+      "name": "<场景名>",
+      "description": "<场景描述>",
+      "nodes": ["<node_id_1>", "<node_id_2>"]
+    }
+  },
+  "graph": {
+    "nodes": [
+      {
+        "data": {
+          "id": "<unique_id>",
+          "type": "story|scene|source",
+          "label": "<显示名>",
+          "keyContent": "`关键标识1` `关键标识2`",
+          "summary": "<1-2句摘要，用于tooltip和搜索>",
+          "risk": "🔴|🟡|⚠️|null",
+          "tags": ["<type>", "<layer>", "<keyword>"],
+          "complexity": "simple|moderate|complex",
+          "description": "<详细描述，≥30字符。含节点角色、行为特征、系统定位。安全节点附加安全约束说明，枢纽节点附加影响范围>",
+          "layer": "<所属架构层名称>",
+          "entryFile": "<入口文件路径>",
+          "consumers": ["<消费者1>", "<消费者2>"],
+          "storyRef": [{"story": "<Story N>", "fp": "<FPN>"}],
+          "scenarioRef": ["<scene-key>"],
+          "mdFiles": [
+            {
+              "scenario": "<场景全名>",
+              "scenarioIndex": 0,
+              "section": "§7 关联源码",
+              "file": "<场景文档文件名>"
+            }
+          ],
+          "relatedNodes": ["<关联节点ID1>", "<关联节点ID2>"]
+        },
+        "classes": "<type> <layer>"
+      }
+    ],
+    "edges": [
+      {
+        "data": {
+          "id": "e_<source>__<target>",
+          "source": "<source_node_id>",
+          "target": "<target_node_id>",
+          "from": "<source_node_id>",
+          "to": "<target_node_id>",
+          "type": "<edge_type>",
+          "label": "<显示标签>",
+          "description": "<≥20字符。描述关系的语义、触发条件和影响范围。格式：{源角色} → {目标角色}：{触发条件}，{影响范围}>",
+          "direction": "forward|backward|bidirectional",
+          "weight": 0.5,
+          "storyRef": [{"story": "<Story N>", "fp": "<FPN>"}]
+        },
+        "classes": "<edge_type>"
+      }
+    ]
+  },
+  "layers": [
+    {"id": "<layer_id>", "name": "<层名>", "description": "<层描述>", "nodeIds": ["<node_id>"]}
+  ],
+  "architectureLayers": ["<层名1>", "<层名2>"],
+  "layerTiers": {
+    "tiers": [
+      {"id": "tier-story", "name": "故事层", "order": 0, "description": ""},
+      {"id": "tier-scene", "name": "场景层", "order": 1, "description": ""},
+      {"id": "tier-source", "name": "源码层", "order": 2, "description": ""},
+      {"id": "tier-concept", "name": "概念层", "order": 3, "description": ""}
+    ],
+    "layerToTier": {}
+  },
+  "storyValidation": {
+    "sourceFile": "故事任务.md",
+    "expectedNodeCount": 0,
+    "expectedEdgeCount": 0,
+    "storyCoverage": {}
+  },
+  "crossReferences": {},
+  "stats": {
+    "nodeCount": 0,
+    "edgeCount": 0,
+    "layerCount": 0,
+    "sceneCount": 0,
+    "storyCount": 0
+  },
+  "nodeTypes": {
+    "story": { "label": "故事抽象概念", "color": "#EC4899", "description": "故事级抽象概念和治理原则" },
+    "scene": { "label": "场景文档节点", "color": "#8B5CF6", "description": "场景文档节点，关联场景-N-xxx.md" },
+    "source": { "label": "源码文件节点", "color": "#3B82F6", "description": "可执行源码文件节点" }
+  },
+  "edgeTypes": {
+    "orchestrates": { "label": "编排调度", "color": "#1E40AF", "description": "" },
+    "delegates": { "label": "委派任务", "color": "#166534", "description": "" },
+    "assigns": { "label": "分配工作", "color": "#854D0E", "description": "" },
+    "hands_off": { "label": "产出交接", "color": "#9A3412", "description": "" },
+    "feedback": { "label": "反馈回路", "color": "#9D174D", "description": "" },
+    "constrained_by": { "label": "规则约束", "color": "#7E22CE", "description": "" },
+    "depends_on": { "label": "依赖", "color": "#64748B", "description": "" },
+    "notifies": { "label": "通知", "color": "#0D9488", "description": "" },
+    "defines": { "label": "定义", "color": "#475569", "description": "" },
+    "governs": { "label": "治理约束", "color": "#B91C1C", "description": "" },
+    "validates": { "label": "验证", "color": "#22C55E", "description": "" },
+    "contains": { "label": "包含定义", "color": "#8B5CF6", "description": "" },
+    "references": { "label": "引用来源", "color": "#64748B", "description": "" },
+    "forbidden": { "label": "架构违规", "color": "#EF4444", "description": "" },
+    "imports": { "label": "文件间导入", "color": "#64748B", "description": "" },
+    "shares": { "label": "共享依赖", "color": "#0EA5E9", "description": "" }
+  }
+}

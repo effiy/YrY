@@ -87,7 +87,42 @@ flowchart LR
 | **Security** | 注入、认证绕过、数据暴露、密钥硬编码 | SQL 注入、密钥明文落盘 | 缺少 CSRF token | 错误消息泄露内部路径 |
 | **Maintainability** | 命名、圈复杂度、重复代码、抽象层级、魔法数字 | 魔法数字（非 0/1/-1 的字面数字）为 P0 | 圈复杂度 > 15 的函数 | 可提取公共函数的重复块 |
 
+**Maintainability 子维度**：
+
+| 子维度 | 检查信号 | 修复方向 |
+|--------|---------|---------|
+| **Structure** | 深层嵌套（>4 级）、条件可提前返回但未用、死代码/注释掉的代码 | 提取嵌套逻辑、early return、删除死代码 |
+| **Readability** | 非描述性命名、嵌套三元、解构可简化但未用 | 重命名为描述性名称、禁止嵌套三元、使用解构 |
+| **Quality** | `console.log` 残留、注释掉的代码块、重复逻辑 > 3 处 | 移除调试日志、删除注释代码、提取公共函数 |
+
+**常见误报（跳过，除非有本代码库具体证据）**：
+
+| 模式 | 为什么跳过 |
+|------|-----------|
+| "考虑加错误处理" 但调用者/框架已处理 | 上游已有 Express 错误中间件/React Error Boundary/顶层 try-catch |
+| "缺少输入校验" 但函数内部使用、调用者已校验 | 至少追踪一个调用者再标记 |
+| "魔法数字" 用于公知常量 | `200`/`404`/`1000`ms/`60`/`24`/`1024`/HTTP 状态码 |
+| "函数太长" 在穷举 switch/配置对象/测试表 | 长度 ≠ 复杂度 |
+| "可能空指针" 前一行的类型缩窄已在作用域内 | 追踪类型流，不匹配 `?.` 符号 |
+| "硬编码值" 在测试 fixture/示例代码/文档片段中 | 测试必须有硬编码期望值 |
+
 > 每条发现必须附具体修复方案，仅指出问题不算审查完成。
+
+### 模块完成后触发代码审查
+
+coder 完成模块自审查（P0 清零）后，可触发 code-reviewer 进行独立审查：
+
+```mermaid
+flowchart LR
+    SELF["coder 自审查<br/>P0 清零"]:::step --> TRIGGER["触发 code-reviewer<br/>提供 diff + 设计文档"]:::step
+    TRIGGER --> REVIEW["code-reviewer<br/>审查正确性/可维护性/简洁性"]:::step
+    REVIEW --> FINDINGS{"发现?"}
+    FINDINGS -->|"CRITICAL/HIGH"| FIX["coder 修复"]:::fix
+    FIX --> REVIEW
+    FINDINGS -->|"零发现或仅 LOW"| NEXT["进入下一模块"]:::pass
+```
+
+审查触发是可选的增强步骤——简单模块可跳过，复杂/安全敏感模块建议触发。
 
 ## 职责边界
 
@@ -95,13 +130,13 @@ flowchart LR
 flowchart LR
     subgraph coder["归 coder"]
         C1["技术方案与实现"]:::in
-        C2["实施报告（05/06）"]:::in
+        C2["场景文档 §2 实施报告"]:::in
         C3["安全约束代码层落地"]:::in
         C4["影响分析 + 闭合"]:::in
     end
     subgraph other["不归 coder"]
         O1["功能点与 AC"]:::out
-        O2["测试报告（07）"]:::out
+        O2["场景文档 §3 测试报告"]:::out
         O3["威胁建模主笔"]:::out
         O4["故事优先级决策"]:::out
     end
@@ -112,9 +147,39 @@ flowchart LR
 | 归 coder | 不归 coder | 协作方 |
 |----------|-----------|--------|
 | 技术方案与实现 | 功能点与 AC | pm + tester |
-| 实施报告（05/06） | 测试报告（07） | tester |
+| 场景文档 §2 实施报告 | 场景文档 §3 测试报告 | tester |
 | 安全约束在代码层落地 | 威胁建模主笔 | security |
 | 影响分析 + 闭合标记 | 故事优先级决策 | pm |
+
+### 知识图谱更新
+
+> coder 在逐模块实现时，同步更新 `知识图谱.json`：补充实现节点（file/function/class）、添加 `implements` 边（代码 → 业务步骤）、更新节点状态。
+
+```mermaid
+flowchart LR
+    MOD["模块完成<br/>P0 清零"]:::step --> CHK{"新增文件/函数?"}
+    CHK -->|"是"| ADD["添加实现节点<br/>file:/function:/class:"]:::step
+    CHK -->|"否"| EDGE
+    ADD --> EDGE["添加 implements 边<br/>代码节点 → step 节点"]:::step
+    EDGE --> SAVE["更新 知识图谱.json"]:::create
+```
+
+| 操作 | 触发条件 | 示例 |
+|------|---------|------|
+| 添加 file 节点 | 新建源码文件 | `"id": "file:src/routes/auth.ts", "type": "file"` |
+| 添加 function 节点 | 新建函数/方法 | `"id": "function:src/routes/auth.ts:login"` |
+| 添加 implements 边 | 代码实现了某业务步骤 | `{"source": "file:src/routes/auth.ts", "target": "step:login-flow:validate", "type": "implements"}` |
+
+### 架构图生成
+
+> 每个使用场景（含交互/数据流时）生成对应架构图。使用 `skills/rui/resources/architecture-template.html` 模板渲染。
+
+生成规则：
+- 场景-N-&lt;slug&gt;.md 含组件关系/API 调用/数据流 → 生成 `架构图/&lt;场景-slug&gt;.html`
+- 首个场景生成时 → 同时生成 `架构图/index.html`（故事总览）
+- 纯文字场景（无交互） → 跳过
+- 模板引用：`skills/rui/resources/architecture-template.html`（深色主题 + 导出工具栏）
+- 色板：按 [rules/architecture-diagram.md](../../rules/architecture-diagram.md) 语义映射
 
 ## 触发
 

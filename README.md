@@ -169,7 +169,7 @@ flowchart LR
 ```
 
 - **code-pipeline** — 源码改动：分支隔离 · Gate A/B · 逐模块清零，支撑技术含根因追溯/纵深防御/反馈回路/深度模块/垂直切片
-- **delivery-gate** — 交付收口：三步按序（日志 → 同步 → 通知），缺一不可
+- **delivery-gate** — 交付收口：日志 → 同步 → 通知，手动触发
 - **doc-generation** — 文档产出：目录命名 · 骨架模板 · 附属数据存放
 - **self-improve** — 复盘改进：数据采集 → 诊断 → 提案，`no-metrics` 降级不阻断
 - **rui-claude** — .claude/ 管理：仅限 `.claude/` · 禁自动 commit/push
@@ -181,8 +181,8 @@ flowchart LR
 - **rui** (`/rui init · doc · code · update · yry · version --up · --rollback · --from-code`) — 故事驱动 SDLC 主线，含诊断纪律、架构深化、交接纪律、版本管理
 - **rui-story** (`/rui-story list · show · recommend · health · sync · clear · remove · status  (merge/split 由 yry 自动执行)`) — 故事面板远端查询、进度管理、文档同步、本地清理、状态转移、合并拆分
 - **rui-claude** (`/rui-claude sync · retro · history`) — .claude/ 配置远端同步与复盘
-- **rui-import** — 自动（hook 触发）：批量同步故事文档到远端 API
-- **rui-bot** — 自动（hook 触发）：企微机器人推送管线状态通知
+- **rui-import** — 手动触发：批量同步故事文档到远端 API
+- **rui-bot** — 手动触发：企微机器人推送管线状态通知
 - **rui-trends** — 按需：查询 GitHub Trending / OSS Insight / TrendShift / Top-Starred，输出结构化趋势报告。自改进 D5 诊断集成
 
 详见 [`skills/`](./skills/)。
@@ -255,7 +255,7 @@ flowchart TD
 | **证据等级** | A=已验证(附路径) B=可推导(附推导链) C=未验证(标"待补充") D=幻觉(视为错误)。 | confidence level |
 | **Agent** | 六大协作角色：pm coder tester reporter security self-improve。每角色有交接信号和验证方式。 | bot, worker, role |
 | **公式** | 结构化文档产出规范。分为通用元素 (F.meta/F.nav/F.evidence)、故事主线 (F.story.*)、补充文档 (F.supp.*)。区别于"模板"——公式是规约 (what)，模板是文件 (how)；本系统只用公式。 | template, format |
-| **交付三步** | 管线末端强制序列：hook-log → rui-import → rui-bot。任一缺失 = 管线未闭合。 | delivery pipeline, post-steps |
+| **交付收口** | rui-import + rui-bot 手动触发。 | delivery pipeline, post-steps |
 | **自改进** | D0–D7 诊断循环。采集执行数据→六维评估→生成改进提案→提案闭合。 | retrospective, post-mortem |
 | **执行记忆** | `.memory/execution-memory.jsonl`（追加）+ `.memory/rui-state.json`（覆盖写）。 | state, log |
 | **项目类型** | frontend / backend / fullstack / meta / unknown。决定技术评审章节裁剪（纯前端跳过 API/数据/后端性能，纯后端跳过组件/状态/交互/样式/DOM）。 | stack type |

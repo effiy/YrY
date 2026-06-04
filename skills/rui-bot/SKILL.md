@@ -2,8 +2,8 @@
 name: rui-bot
 description: |
   Send WeChat Work (WeCom) bot messages and append matching entries to the
-  story panel notification log. Mandatory upon rui completion, block, or gate
-  failure. Executable: node skills/rui-bot/send.mjs [options].
+  story panel notification log. Manual trigger only.
+  Executable: node skills/rui-bot/send.mjs [options].
 user_invocable: true
 lifecycle: default-pipeline
 ---
@@ -12,30 +12,26 @@ lifecycle: default-pipeline
 
 > **--help / -h**：执行 `node skills/rui-bot/help.mjs` 输出完整帮助（含消息格式 + 场景示例）。用户输入 `/rui-bot --help` 或 `/rui-bot -h` 或 `/rui-bot help` 时，跳过逻辑，直接运行脚本。
 
-企业微信机器人通知。**每次使用 rui 技能都必须触发 rui-bot，这是管线完整性的硬性要求。** rui 管线末端强制步骤：自改进 → 追加日志 → 文档同步 → 发送通知。
+企业微信机器人通知。手动触发，通过 `send.mjs` 发送通知或追加日志。
 
 **可执行入口**: `node skills/rui-bot/send.mjs [options]` — 发送通知或健康检查。`--no-send` 仅追加日志不发 HTTP。
 
-[工作流全景](#工作流全景) · [调用形态](#调用形态) · [消息格式](#消息格式) · [消息通知列表](#消息通知列表) · [API 契约](#api-契约) · [安全](#安全) · [hook 触发器](#hook-触发器) · [空输入](#空输入) · [生效标志](#生效标志)
+[工作流全景](#工作流全景) · [调用形态](#调用形态) · [消息格式](#消息格式) · [消息通知列表](#消息通知列表) · [API 契约](#api-契约) · [安全](#安全) · [空输入](#空输入) · [生效标志](#生效标志)
 
 ## 工作流全景
 
 ```mermaid
 flowchart TB
-    RUI["rui 管线完成 / 阻断 / 失败"]:::src --> LOG["① 追加日志<br/>等价 send --no-send → 消息通知列表"]:::step
-    LOG --> SYNC["② rui-import 同步"]:::step
-    SYNC --> SEND["③ 发送通知<br/>send → 企微 webhook"]:::step
+    USER["手动调用"]:::src --> LOG["① 追加日志<br/>等价 send --no-send → 消息通知列表"]:::step
+    LOG --> SEND["② 发送通知<br/>send → 企微 webhook"]:::step
     SEND --> DONE["闭环"]:::done
-
-    LOG -.->|"失败 / 阻断"| SEND
 
 ```
 
 | 步骤 | 操作 | 说明 |
 |------|------|------|
 | ① 追加日志 | `send --no-send` 等价行为 | 写入 `消息通知列表.md`，不发 HTTP |
-| ② 文档同步 | `rui-import` workspace 全量同步 | 推送变更到远端 |
-| ③ 发送通知 | `send` 等价行为 | POST 企微 webhook |
+| ② 发送通知 | `send` 等价行为 | POST 企微 webhook |
 
 ## 调用形态
 
@@ -258,82 +254,6 @@ flowchart LR
 | 3 | `API_X_TOKEN` 仅从环境变量读取 | ✅ |
 | 4 | webhook URL 仅从环境变量解析 | — |
 | 5 | 真实 webhook URL 禁止写入文档，由环境变量注入 | — |
-
-## hook 触发器
-
-> rui 管线末端依次触发以下两个等价行为，覆盖三步交付的 ① 与 ③。
-
-### ① hook-log（追加日志，不发送）
-
-```mermaid
-flowchart LR
-    PIPE["管线完成"]:::s --> SCAN["扫描 docs/故事任务面板/<br/>找最近 1h 内活跃故事"]:::op
-    SCAN --> Q{"找到?"}
-    Q -->|"否"| SKIP["静默跳过"]:::warn
-    Q -->|"是"| BUILD["按 rui-state.json<br/>构建消息"]:::op
-    BUILD --> APPEND["执行 send（noSend=true）<br/>写入 消息通知列表"]:::out
-
-```
-
-| 步骤 | 行为 |
-|------|------|
-| 活跃故事识别 | 遍历 `docs/故事任务面板/<story>/.memory/rui-state.json`，挑选 `timestamp` 在最近 1 小时内且最新的一条 |
-| 无活跃故事 | 静默跳过，退出码 0 |
-| 消息构建 | 见下文「自动消息模板」 |
-| 发送 | 等价 `send agent=rui name=<story> noSend=true content=...` |
-| 失败 | 记录到 stderr，不阻断 |
-
-### ③ hook-notify（实际发送）
-
-```mermaid
-flowchart LR
-    PIPE["log + sync 完成"]:::s --> CHK1{"API_X_TOKEN?"}
-    CHK1 -->|"缺失"| SKIP1["静默跳过"]:::warn
-    CHK1 -->|"存在"| SCAN["同 hook-log 找活跃故事"]:::op
-    SCAN --> Q{"找到?"}
-    Q -->|"否"| SKIP2["静默跳过"]:::warn
-    Q -->|"是"| SEND["执行 send（noSend=false）"]:::out
-
-```
-
-| 触发 | 行为 |
-|------|------|
-| `API_X_TOKEN` 缺失 | 静默跳过，退出码 0 |
-| 活跃故事缺失 | 静默跳过，退出码 0 |
-| 网络失败 | 报告错误，但不阻断管线（`delivery-gate` 仍标记 `notification_sent`） |
-
-### 自动消息模板
-
-> hook 自动构建，正文不含 `【项目名】`，由 send 步骤自动拼接首行。
-
-完成（`state.blocked = false`）:
-
-```
-🤖 技能: <skill_name>
-📋 命令: /<skill_name> <command>
-🎯 结论: 完成 <story> <current_stage> 阶段
-📝 描述: 管线执行完毕
-📌 范围: docs/故事任务面板/<story>/
-👉 下一步: 继续下一阶段
-🌐 影响: docs/故事任务面板/<story>/
-📎 证据: .memory/rui-state.json
-⏱️ 会话: <date> | <N> agents 参与
-```
-
-阻断（`state.blocked = true`）:
-
-```
-🤖 技能: <skill_name>
-📋 命令: /<skill_name> <command>
-🎯 结论: 阻断 <story>
-📝 描述: 管线在 <current_stage> 阶段被阻断
-📌 范围: docs/故事任务面板/<story>/
-❌ 原因: <state.block_reason 或 "见 rui-state.json">
-🧭 恢复点: <current_stage>
-🌐 影响: docs/故事任务面板/<story>/
-📎 证据: .memory/rui-state.json
-⏱️ 会话: <date> | <N> agents 参与
-```
 
 ## 空输入
 

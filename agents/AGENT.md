@@ -18,15 +18,24 @@ flowchart TB
         reporter[reporter<br/>报告]:::exec
     end
 
+    subgraph 审查["审查层"]
+        cr[code-reviewer<br/>代码审查]:::review
+        architect[architect<br/>架构设计]:::review
+    end
+
     subgraph 横切["横切关注"]
         security[security<br/>安全]:::cross
         si[self-improve<br/>改进]:::cross
     end
 
     pm -->|委派安全审查| security
+    pm -->|委派架构设计| architect
     pm -->|拆故事 + 排任务| coder & tester & reporter
     coder -->|产出| tester
     tester -->|验证| reporter
+    coder -->|模块完成触发审查| cr
+    cr -.审查发现.-> coder
+    architect -.架构输入.-> coder
     security -.安全约束.-> coder
     si -.改进提案.-> pm
     coder & tester & reporter -.执行记忆.-> si
@@ -38,9 +47,11 @@ flowchart TB
 | **pm** | 决定做/不做/延期 | 拆需求 → 排故事 → 委派 Agent → 检 AC → 放行/阻断 | 故事无 AC 不委派 | rui 入口 · 自适应规划 · 反思钩子 · init | [pm.md](./pm.md) |
 | **coder** | 逐模块实现，P0 清零 | 读设计 → 写代码 → P0 清零 → 进下一模块 | P0 未清零不进下一模块 | pm 委派 · rui 预检/实现/影响分析 | [coder.md](./coder.md) |
 | **tester** | 测试先行，Gate 阻不放行 | 写用例 → Gate A 审 → 执行 → Gate B 判 | Gate A 未通过不编码；Gate B 未通过不交付 | pm 委派 · rui 测试/验证 | [tester.md](./tester.md) |
-| **reporter** | 过程记录，交叉闭合 | 写实施报告 ×2 + 测试报告 → 三报告交叉引用 | 三报告不一致不闭合 | rui 验证/交付/策展 | [reporter.md](./reporter.md) |
+| **reporter** | 过程记录，交叉闭合 | 写场景文档各 § → 各 § 交叉引用闭合 | 场景文档各 § 不一致不闭合 | rui 验证/交付/策展 | [reporter.md](./reporter.md) |
 | **security** | 威胁建模，P0 卡发布 | 建威胁模型 → 写 §3 安全约束 → 注入 P0 | P0 安全项未缓解卡发布 | pm 安全审查委派 | [security.md](./security.md) |
 | **self-improve** | 采数据 → 出诊断 → 写提案 | 采集执行数据 → 六维诊断 → 改进提案 → 闭环保案 | 不阻断主流程（降级 `no-metrics`） | rui 自改进阶段 | [self-improve.md](./self-improve.md) |
+| **code-reviewer** | 只读审查，查正确性/可维护性/简洁性 | 读 diff → 逐维度审查 → 四问门禁 → 输出报告 | 违反四问门禁的发现不报告 | coder 模块完成 / pm 触发 | [code-reviewer.md](./code-reviewer.md) |
+| **architect** | 系统架构设计，跨故事技术决策 | 现状分析 → 设计方案 → 取舍分析 → ADR | 不满足三条件不创建 ADR | pm 跨故事决策触发 | [architect.md](./architect.md) |
 
 ## 管线阶段与 Agent 参与
 
@@ -72,19 +83,21 @@ flowchart LR
     I2 -.穿插.-> I1
 ```
 
-| 阶段 | pm | coder | tester | reporter | security | self-improve |
-|------|:---:|:---:|:---:|:---:|:---:|:---:|
-| 需求解析 | ● | | | | | |
-| 自适应规划 | ● | | | | | |
-| 影响分析 | ● | ● | | | | |
-| 架构设计 | | ● | | | | |
-| 文档基线 | ● | ● | ● | | | |
-| 分支隔离 | | ● | | | | |
-| Gate A | | | ● | | | |
-| 逐模块编码 | | ● | | | ● | |
-| Gate B | | | ● | ● | | |
-| 自改进 | | | | ● | | ● |
-| 交付 | | | | ● | | |
+| 阶段 | pm | coder | tester | reporter | security | self-improve | code-reviewer | architect |
+|------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| 需求解析 | ● | | | | | | | |
+| 自适应规划 | ● | | | | | | | |
+| 影响分析 | ● | ● | | | | | | |
+| 架构设计 | | ● | | | | | | ● |
+| 文档基线 | ● | ● | ● | | | | | |
+| 分支隔离 | | ● | | | | | | |
+| Gate A | | | ● | | | | | |
+| 逐模块编码 | | ● | | | ● | | ○ | |
+| Gate B | | | ● | ● | | | ○ | |
+| 自改进 | | | | ● | | ● | | |
+| 交付 | | | | ● | | | | |
+
+> ● = 必须参与 · ○ = 可选参与（pm/coder 按需触发）
 
 ## 共用底线
 
@@ -137,9 +150,11 @@ flowchart LR
 flowchart LR
     pm["pm<br/>故事 §1 ≤ 3 句说清"]:::src --> coder["coder<br/>P0 清零 + 改动可追溯"]:::dst
     coder --> tester["tester<br/>Gate A 通过 / Gate B 达标"]:::dst
-    tester --> reporter["reporter<br/>三报告交叉引用闭合"]:::dst
+    tester --> reporter["reporter<br/>场景文档各 § 交叉引用闭合"]:::dst
     security["security<br/>§3 约束注入 + P0 缓解"]:::src -.约束.-> coder
     si["self-improve<br/>诊断出提案 + 闭合上一提案"]:::src -.反馈.-> pm
+    architect["architect<br/>架构设计 + ADR"]:::src -.设计输入.-> coder
+    cr["code-reviewer<br/>四问门禁 + 审查报告"]:::src -.审查发现.-> coder
 
 ```
 
@@ -148,9 +163,11 @@ flowchart LR
 | **pm** | 故事 §1 ≤ 3 句说清「做什么/给谁/为什么」+ AC 可独立验证 | coder 检 AC 是否可翻译为代码 |
 | **coder** | 每模块 P0 清零 + 改动文件/行数与任务 ID 对应 | tester 检 P0 清零记录 |
 | **tester** | Gate A 测试方案就绪 + Gate B P0 全部通过 · P1 高通过率 · 修复 ≤ 2 轮 | reporter 检测试报告与实施报告一致 |
-| **reporter** | 三报告（后端实施/前端实施/测试）交叉引用一致 + git commit | pm 检三报告闭合 |
+| **reporter** | 场景文档各 § 交叉引用一致 + git commit | pm 检各 § 闭合 |
 | **security** | 威胁模型覆盖所有安全面 + §3 约束已注入 coder 任务 + P0 安全项状态已标记 | coder 检任务中是否含安全约束 |
 | **self-improve** | 诊断信号 ≥ 1 条 + 改进提案 ≥ 1 条 + 上一故事提案状态已更新 | pm 检提案是否进入改进清单 |
+| **code-reviewer** | 审查报告含四问门禁通过的发现 + 审查摘要表 + 裁定 | coder 检发现是否已修复（P0 清零） |
+| **architect** | 架构设计文档（mermaid 图 + 组件职责 + 取舍分析）+ ADR（满足三条件时） | coder 检技术评审是否与架构设计对齐 |
 
 ## 文档写作原则
 
@@ -227,8 +244,56 @@ flowchart LR
 - "返回结果看起来正确" — "看起来"不是验证，需要可复现的验证命令
 - "当前在 main 但改动很小" — 无论改动大小，未切分支不可改源码。`no-branch-isolation`
 - "doc 只写文档，分支隔离管不着我" — 故事文档和源码同属一个故事的产物，写入操作一律走 feat 分支。`no-doc-isolation`
+- "审查反馈说得对，我马上改" — 先验证再实现。未验证 = 盲从。技术正确 > 社交舒适。
 
 **触发以上任一信号 → 暂停 → 运行验证命令 → 回到 Iron Law。**
+
+### 接收审查反馈协议
+
+> 审查反馈需要技术评估，而非表演式同意。验证先于实现。询问先于假设。
+
+```
+接收审查反馈时：
+1. READ   — 完整阅读反馈，不做出反应
+2. UNDERSTAND — 用自己的话重述需求（或询问）
+3. VERIFY — 对照代码库事实检查
+4. EVALUATE — 对 THIS 代码库来说技术正确？
+5. RESPOND — 技术性确认 或 有理有据的反驳
+6. IMPLEMENT — 一次一项，每项独立测试
+```
+
+**禁止响应列表**（永不使用）：
+
+| 禁止 | 为什么 | 替代 |
+|------|--------|------|
+| "你说得对！" | 表演式同意，不是技术评估 | 重述技术需求 |
+| "好观点！"/"优秀反馈！" | 表演式赞赏 | 直接开始工作（行动 > 言语） |
+| "让我马上实现"（验证前） | 盲从，未对照代码库验证 | 先验证再实现 |
+| "Thanks for [任何]" | 行动说话。代码本身证明你听到了反馈 | 说明改了什么 |
+| 任何 gratitude 表达 | 同上 | 同上 |
+
+**不清楚的反馈处理**：
+
+```
+IF 任何项目不清楚:
+  STOP — 尚未实现任何内容
+  ASK — 对所有不清楚的项目寻求澄清
+
+原因：项目可能相关。部分理解 = 错误实现。
+```
+
+**外部反馈的怀疑态度**（非 human partner 反馈）：
+
+实现前检查：
+1. 对 THIS 代码库技术正确？
+2. 会破坏现有功能？
+3. 当前实现方式的理由？
+4. 所有平台/版本都适用？
+5. 审查者了解完整上下文？
+
+不确定 → 说出来："没有 [X] 我无法验证这一点。应该 [调查/询问/继续]？"
+
+**反驳时的信号短语**："Strange things are afoot at the Circle K" — 当你对反驳感到不适时使用。技术正确 > 社交舒适。
 
 ### 合理化速查表
 
@@ -254,16 +319,18 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    subgraph 协作["三种协作模式"]
+    subgraph 协作["四种协作模式"]
         P1["委派模式<br/>pm → coder/tester/security<br/>单向下达·信号回传"]:::mode
         P2["流水模式<br/>coder → tester → reporter<br/>逐级传递·每级验证"]:::mode
         P3["横切模式<br/>security -.约束.-> coder<br/>si -.提案.-> pm<br/>并行约束·不阻塞主流程"]:::mode
+        P4["审查模式<br/>code-reviewer → coder<br/>只读审查·两阶段不可跳过"]:::mode
     end
 
     subgraph 失败["协调反模式"]
         F1["信息孤岛<br/>Agent 不读上游产出"]:::bad
         F2["重复工作<br/>两 Agent 改同一文件"]:::bad
         F3["信号丢失<br/>交接信号未写入 rui-state"]:::bad
+        F4["跳过审查<br/>spec compliance 未过就进入 code quality"]:::bad
     end
 
 ```
@@ -271,8 +338,37 @@ flowchart LR
 | 模式 | 场景 | 交接信号 | 反模式 |
 |------|------|---------|--------|
 | 委派 | pm 拆故事后分配任务 | 任务含 Agent + 门禁 + AC | pm 不读 coder 实现报告就关闭故事 |
-| 流水 | 代码完成后验证 | P0 清零 → Gate B → 三报告 | reporter 不读实施报告就出测试报告 |
+| 流水 | 代码完成后验证 | P0 清零 → Gate B → 场景文档各 § 闭合 | reporter 不读场景文档 §2 就出 §3 |
 | 横切 | security/si 约束主流程 | §3 约束注入 / 提案追加 | security 发现 P0 但未写入 coder 任务 |
+| 审查 | coder 完成模块后触发 code-reviewer | spec compliance ✅ → code quality ✅ → 两阶段全过才交接 | 跳过任一审查阶段；审查发现未修复就进入下一模块 |
+
+### 审查模式（Review Mode）
+
+> **两阶段审查不可跳过。Spec compliance 先于 code quality。审查发现未修复 = 未完成。**
+
+```mermaid
+flowchart TD
+    IMPL["coder 完成模块<br/>自审查 P0 清零"]:::src --> SR["阶段 1: Spec Compliance<br/>审查实现是否匹配设计"]:::step
+    SR --> SR_OK{"通过?"}
+    SR_OK -->|"否 ❌"| FIX_SPEC["coder 修复 spec 缺口"]:::fix
+    FIX_SPEC --> SR
+    SR_OK -->|"是 ✅"| CR["阶段 2: Code Quality<br/>审查正确性/可维护性/简洁性"]:::step
+    CR --> CR_OK{"通过?"}
+    CR_OK -->|"否 ❌"| FIX_QUAL["coder 修复质量问题"]:::fix
+    FIX_QUAL --> CR
+    CR_OK -->|"是 ✅"| NEXT["进入下一模块<br/>或交接 tester"]:::pass
+```
+
+| 阶段 | 审查重点 | 审查者 | 通过标准 |
+|------|---------|--------|---------|
+| **Spec Compliance** | 实现是否完整覆盖设计？有无遗漏需求？有无多余实现？有无理解偏差？ | code-reviewer | 所有 spec 要点已覆盖，无多余/遗漏 |
+| **Code Quality** | 逻辑正确性、安全缺陷、可维护性、简洁性、静默失败路径 | code-reviewer | 无 CRITICAL/HIGH 发现 |
+
+**审查模式铁律**：
+- Spec compliance 必须通过后才进入 code quality。顺序不可颠倒
+- 审查发现未修复不进下一模块（对齐 P0 不清零不进下一模块）
+- 审查者只读不写（对齐"源码唯一入口是 coder"）
+- 零发现是可接受且被期望的有效审查结果
 
 ### 验证门禁
 
@@ -297,6 +393,23 @@ flowchart LR
 | Bug 修复 | 测原始症状：通过 | 代码改了、"假定修好了" |
 | Agent 完成 | VCS diff 显示变更 | Agent 报告说"成功" |
 | 影响链闭合 | Grep 二级传递已做 | "应该没有遗漏" |
+| Lint 干净 | Lint 命令输出：0 error/warning | "IDE 没显示红线" |
+| 文档完整 | 每份文档的生效标志全 ✅ | "文档都写了" |
+
+**验证门禁 Red Flags — 立即停止**：
+
+以下短语出现时，你正在跳过验证门禁：
+
+- "should work now" / "应该没问题"
+- "probably fine" / "大概可以"
+- "seems to be correct" / "看起来对"
+- "I'm confident this passes" / "我确信能通过"
+- "上次运行通过了"（基于历史，非当前 commit）
+- "partial check is enough" / "检查前几行就行"
+- "the agent said it succeeded" / "Agent 报告说成功"
+- "looks correct" / "返回结果看起来正确"
+
+**以上任何一个短语 = 停止。你正在撒谎，不是验证。** 回到 IDENTIFY → RUN → READ → VERIFY 循环。
 
 ## 执行准则
 
@@ -315,6 +428,8 @@ flowchart LR
 **表达优先：图 → 结构化文本 → 表。**
 
 **语义化数字：禁止魔法数字。** 所有数字字面量必须赋予语义化常量名。仅 `0`、`1`、`-1`（循环/索引/初始化惯用值）可豁免。`if (status === 200)` → `if (status === HTTP_OK)`、`setTimeout(fn, 3000)` → `setTimeout(fn, POLL_INTERVAL_MS)`。
+
+**禁止占位符。** 计划/文档/任务中不得出现 TBD、TODO、implement later、add appropriate error handling、similar to Task N 等占位符。每个步骤/字段必须有实际内容。占位符 = 未完成，不是"待补充"。零上下文假设——写出的文档假设接手工程师对代码库零了解、品味可疑，每步必须给出确切文件路径、代码片段、验证命令。
 
 ## ADR（架构决策记录）
 

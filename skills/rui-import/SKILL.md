@@ -1,11 +1,8 @@
 ---
 name: rui-import
 description: |
-  Synchronize local documents to the remote document API. Primary mechanism:
-  per-document instant import via import-doc.mjs after each Write. Batch sync
-  (sync.mjs workspace=true) serves as safety-net only at pipeline end.
+  Synchronize local documents to the remote document API. Manual trigger only.
   Executable: node skills/rui-import/sync.mjs [options].
-  Helper: node skills/rui/import-doc.mjs <file-path> (per-document auto-import).
 user_invocable: true
 lifecycle: default-pipeline
 ---
@@ -18,7 +15,7 @@ lifecycle: default-pipeline
 
 将 workspace 内文档批量同步到远端 API。行为规约（扫描/过滤/路径映射/API 契约）见下文，脚本是本规约的可执行实现。
 
-[工作流全景](#工作流全景) · [项目根定位](#项目根定位) · [扫描规则](#扫描规则) · [rui 强制触发](#rui-强制触发) · [调用形态](#调用形态) · [API 契约](#api-契约) · [错误模型](#错误模型) · [hook 触发器](#hook-触发器) · [空输入](#空输入) · [生效标志](#生效标志)
+[工作流全景](#工作流全景) · [项目根定位](#项目根定位) · [扫描规则](#扫描规则) · [调用形态](#调用形态) · [API 契约](#api-契约) · [错误模型](#错误模型) · [空输入](#空输入) · [生效标志](#生效标志)
 
 ## 工作流全景
 
@@ -82,42 +79,14 @@ flowchart TD
 
 远端会话示例：`tags: ["故事任务面板", "rui-story"]`
 
-## rui 强制触发
-
-> 每次使用 rui 技能都必须触发 rui-import，这是管线完整性的硬性要求。
-
-### 逐文件即时导入（主路径，不可跳过）
-
-每个文档 Write 后**必须**立即执行 `node skills/rui/import-doc.mjs <file-path>`。这是硬性步骤，不可推迟到批量安全网。
-
-```mermaid
-flowchart LR
-    WRITE["Write 文档"]:::write --> IMPORT["import-doc.mjs<br/>单文件即时导入"]:::primary
-    IMPORT --> RESULT{结果}
-    RESULT -->|"✓ ok"| NEXT["继续下一文档"]:::next
-    RESULT -->|"⚠ no-token"| SKIP["记录跳过<br/>继续"]:::warn
-    RESULT -->|"✗ failed"| WARN["记录告警<br/>继续"]:::warn
-```
-
-### 三检查点
-
-| 检查点 | 时机 | 方式 | 范围 |
-|--------|------|------|------|
-| 文档生成后 | 每文档产出时 | `node skills/rui/import-doc.mjs <file>` | 当前生成的文件 |
-| 验证后 | 报告产出时 | `node skills/rui/import-doc.mjs <file>` | 当前生成的文件 |
-| 交付时 | 最终全量兜底 | `node skills/rui-import/sync.mjs` | 全项目 .md + .claude/ 全部 |
-
-> 检查点 ① ② 为逐文件即时导入（主路径），检查点 ③ 为批量安全网（仅兜底，不可替代 ① ②）。
-
 ## 调用形态
 
-> **主路径**：`node skills/rui/import-doc.mjs <file-path>` — 每个文档 Write 后立即调用。  
-> **批量兜底**：`node skills/rui-import/sync.mjs [options]` — 管线末端全量扫描。  
-> 详见 [rui SKILL.md § 强制集成](../rui/SKILL.md#强制集成)。
+> `node skills/rui-import/sync.mjs [options]` — 批量同步。  
+> `node skills/rui/import-doc.mjs <file-path>` — 单文件导入（需手动调用）。
 
 | 意图 | 输入 | 行为 |
 |------|------|------|
-| 逐文件即时导入（主路径） | `node skills/rui/import-doc.mjs <file-path>` | 单文件验证 → 调用 sync.mjs file= → 输出结果 |
+| 单文件导入 | `node skills/rui/import-doc.mjs <file-path>` | 单文件验证 → 调用 sync.mjs file= → 输出结果 |
 | workspace 全量同步（兜底） | `node skills/rui-import/sync.mjs` | 项目根全量扫描 + 上传 |
 | 单目录同步 | `dir=<absolute path>` | 指定目录扫描 + 上传，路径仍以项目根计算相对路径 |
 | 自定义扩展名 | `exts=md,json,yaml` | 覆盖默认 `md` |
@@ -260,30 +229,6 @@ flowchart TD
 | 网络超时 / 远端不可达 | 记录告警，不阻断管线 | 否 |
 | Token 写入仓库 / 日志 / 文档 | 禁止 🚫 | P0 |
 | 文件遍历 | 不受 `.gitignore` 限制 | — |
-
-## hook 触发器
-
-> 逐文件即时导入（`import-doc.mjs`）为主路径；末端批量 `sync.mjs` 为兜底安全网。
-
-```mermaid
-flowchart LR
-    subgraph 主路径["主路径：逐文件即时导入"]
-        W["Write 文档"]:::write --> I["import-doc.mjs<br/><file>"]:::primary
-    end
-
-    subgraph 兜底["兜底：批量安全网"]
-        PIPE["管线末端"]:::s --> CHK{"API_X_TOKEN?"}
-        CHK -->|"缺失"| SKIP["静默跳过<br/>不阻断"]:::warn
-        CHK -->|"存在"| RUN["sync.mjs<br/>全量扫描"]:::op
-        RUN --> MARK["写 docs_synced 标记"]:::out
-    end
-```
-
-| 触发 | 动作 | 降级 |
-|------|------|------|
-| 每个文档 Write 后（主路径） | `node skills/rui/import-doc.mjs <file-path>` | 失败不阻断，记录告警后继续 |
-| rui 末端三步管线步骤 ②（兜底） | `node skills/rui-import/sync.mjs` | `API_X_TOKEN` 缺失 → 静默跳过；网络失败 → 记录不阻断 |
-| 直接调用 | `node skills/rui-import/sync.mjs workspace=true` 等 | 同上 |
 
 ## 空输入
 

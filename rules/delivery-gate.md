@@ -6,25 +6,52 @@ paths:
 
 # delivery-gate
 
-> 每个 `/rui` 末端三步交付按序执行，每步必标记。未标记 = 未执行。rui-import 和 rui-bot 是 rui 管线的强制组成部分，不可省略。
+> rui-import 和 rui-bot 均为手动触发。管线完成后按需调用，不可省略。
 >
 > **Iron Law — 违反字母即是违反精神：**
 > - 未标记 = 未执行。"调用过"不等于"已验证标记"。
-> - 三步必须按序。跳序 = 未闭合。
-> - 阻断状态也必须触发通知。
+> - 阻断状态也应触发通知。
 
-[交付全景](#交付全景) · [适用](#适用) · [① 追加日志](#①-追加日志) · [② 文档同步](#②-文档同步) · [③ 发送通知](#③-发送通知) · [核心约束](#核心约束) · [标记规则](#标记规则) · [例外](#例外) · [阻断标识](#阻断标识) · [生效标志](#生效标志)
+[交付全景](#交付全景) · [适用](#适用) · [① 追加日志](#①-追加日志) · [② 文档同步](#②-文档同步) · [③ 发送通知](#③-发送通知) · [标记规则](#标记规则) · [例外](#例外) · [阻断标识](#阻断标识) · [生效标志](#生效标志)
 
 ## Red Flags — 暂停并回到 Iron Law
 
 - "改动很小，跳过通知"
 - "文档同步这次就算了"
-- "标记后补写就行，先继续下一步"
 - "no-token 降级就跳过整个步骤"
-- "三步一次性执行，不用逐步标记"
 - "通知模板很长，这次不填完整"
+- "测试应该没问题，先交付再验证"
+- "上次交付前跑过测试了，这次不用"
+- "只改了文档，不影响功能，跳过测试"
 
 **以上任何一个 = 停止。管线未闭合 = delivery-incomplete 阻断。**
+
+### 交付前测试验证（强制）
+
+> 任何交付选项呈现前，必须先验证测试通过。测试未通过 = 停止交付。
+
+```
+交付前强制步骤：
+1. 运行完整测试套件
+2. 读取完整输出
+3. 确认 0 失败
+4. 确认无 regression（之前通过的测试仍然通过）
+5. 仅测试通过后才呈现交付选项
+
+测试失败 → 停止 → 退回 coder 修复 → 验证重跑
+"应该能通过" → 停止 → 运行测试 → 读输出
+```
+
+### 验证完整性 — 合理化预防表
+
+| 借口 | 现实 |
+|------|------|
+| "测试上次运行通过了" | 未基于当前 commit 运行 = 未验证。验现实。 |
+| "改动很小，测试肯定没问题" | 小改动和大改动的回归风险相同。运行测试。 |
+| "只改了文档" | 文档变更不影响功能，但仍需验证基线完整性。 |
+| "部分检查就够了" | 截断输出 = 可能错过关键失败。读完整输出。 |
+| "应该没问题" | "应该"不是验证证据。运行命令 → 读输出 → 确认。 |
+| "我确信能通过" | 确信不是验证。命令输出是唯一证据。 |
 
 ## 交付全景
 
@@ -32,52 +59,32 @@ paths:
 flowchart TB
     DONE["管线完成"]:::src --> S0["⓪ 执行记忆<br/>node .memory/collector.mjs"]:::step
     S0 --> M0["mark memory_written"]:::mark
-    M0 --> S1["① 追加日志<br/>rui-bot --no-send"]:::step
+    M0 --> S1["① 追加日志<br/>rui-bot --no-send（手动）"]:::step
     S1 --> M1["mark log_appended"]:::mark
-    M1 --> S2["② 批量安全网<br/>node skills/rui-import/sync.mjs"]:::step
+    M1 --> S2["② 文档同步<br/>node skills/rui-import/sync.mjs（手动）"]:::step
     S2 --> M2["mark docs_synced"]:::mark
-    M2 --> S3["③ 发送通知<br/>rui-bot"]:::step
+    M2 --> S3["③ 发送通知<br/>rui-bot（手动）"]:::step
     S3 --> M3["mark notification_sent"]:::mark
     M3 --> CLOSED["闭环 ✅"]:::done
-
-    DONE -.->|"1h 内未闭合"| STOP["Stop hook 阻断<br/>delivery-incomplete 🚫"]:::block
 
 ```
 
 | 步骤 | 操作 | 标记 | 降级条件 |
 |------|------|------|---------|
 | ① 追加日志 | `rui-bot --no-send` 写入日志 | `log_appended` | — |
-| ② 批量安全网 | `node skills/rui-import/sync.mjs` 兜底补漏 | `docs_synced` | `no-token`（缺 API_X_TOKEN） |
+| ② 文档同步 | `node skills/rui-import/sync.mjs` 全量同步 | `docs_synced` | `no-token`（缺 API_X_TOKEN） |
 | ③ 发送通知 | `rui-bot` 推送企微 | `notification_sent` | — |
 | ④ 自主测试 | 每次故事任务变更后执行自检：基线完整性 · 文档一致性 · 分支隔离 · 安全合规 | `self_test_passed` | `no-self-test`（缺 self-test 故事目录时跳过） |
 
 ## 适用
 
-每个 `/rui` 命令的末端（含 `init` / `doc` / `code` / `update` / `--from-doc` / `--from-code` / 端到端）。**唯一的例外是 `list` 和推荐（纯只读）。**
-
-```mermaid
-flowchart LR
-    subgraph 触发["触发交付（强制）"]
-        T1["/rui init"]:::yes
-        T2["/rui doc"]:::yes
-        T3["/rui code"]:::yes
-        T4["/rui &lt;req&gt;"]:::yes
-        T5["/rui update"]:::yes
-        T6["/rui --from-doc"]:::yes
-        T7["/rui --from-code"]:::yes
-    end
-    subgraph 不触发["不触发交付"]
-        N1["/rui list"]:::no
-        N2["/rui（推荐）"]:::no
-    end
-
-```
+交付收口适用于所有 `/rui` 写入命令（含 `init` / `doc` / `code` / `update` / `--from-doc` / `--from-code` / 端到端）。`list` 和推荐（纯只读）不需要执行交付收口。
 
 ## ① 追加日志
 
 ```mermaid
 flowchart LR
-    CALL["调用 rui-bot<br/>--no-send"]:::step --> LOG["写入执行日志<br/>消息通知列表<br/>含 🤖技能 + 📋命令"]:::out
+    CALL["调用 rui-bot<br/>--no-send"]:::step --> LOG["写入执行日志<br/>含 🤖技能 + 📋命令"]:::out
     LOG --> MARK["在 rui-state.json<br/>delivery_pipeline.log_appended<br/>= true"]:::mark
     MARK --> NEXT["进入步骤 ②"]:::next
 
@@ -89,14 +96,14 @@ flowchart LR
 | 命令记录 | 每条日志必须含 `📋 命令` 字段（用户执行的具体命令，含参数） |
 | 时间戳 | 每条日志以 `【YYYY-MM-DD HH:mm:ss】` 分隔行开头 |
 
-## ② 批量安全网（兜底）
+## ② 文档同步
 
-> 逐文件即时导入（`import-doc.mjs`）已在 doc/code 阶段完成，此步骤为兜底补漏。
+> `node skills/rui-import/sync.mjs workspace=true` 全量扫描并上传。
 
 ```mermaid
 flowchart TD
-    SYNC["node skills/rui-import/sync.mjs<br/>批量安全网"]:::step --> Q1{"API_X_TOKEN<br/>存在?"}
-    Q1 -->|"是"| PUSH["全量扫描 *.md + .claude/<br/>补漏遗漏文件"]:::push
+    SYNC["node skills/rui-import/sync.mjs<br/>手动触发"]:::step --> Q1{"API_X_TOKEN<br/>存在?"}
+    Q1 -->|"是"| PUSH["全量扫描 *.md + .claude/<br/>上传远端"]:::push
     Q1 -->|"否"| NOOP["降级：跳过推送<br/>仍标记 docs_synced"]:::warn
     PUSH --> Q2{"网络?"}
     Q2 -->|"超时"| WARN["记录告警不阻断<br/>下次覆盖重试"]:::warn
@@ -118,11 +125,10 @@ flowchart TD
 
 | # | 规则 |
 |---|------|
-| 5 | 逐文件导入为主路径（`node skills/rui/import-doc.mjs <file>`），批量安全网仅兜底 |
-| 6 | 同步范围：全部 `*.md` + `.claude/` 目录，排除 `.git` 和 `node_modules` |
-| 7 | `API_X_TOKEN` 仅从环境变量读取，禁止写入任何文件 |
-| 8 | 缺 `API_X_TOKEN` → `no-token` 降级，跳过推送但仍需标记 `docs_synced` |
-| 9 | 网络超时记录告警不阻断，下次覆盖重试 |
+| 5 | 同步范围：全部 `*.md` + `.claude/` 目录，排除 `.git` 和 `node_modules` |
+| 6 | `API_X_TOKEN` 仅从环境变量读取，禁止写入任何文件 |
+| 7 | 缺 `API_X_TOKEN` → `no-token` 降级，跳过推送但仍需标记 `docs_synced` |
+| 8 | 网络超时记录告警不阻断，下次覆盖重试 |
 
 ## ③ 发送通知
 
@@ -140,32 +146,6 @@ flowchart LR
 |---|------|
 | 10 | 通知名（`--name`）= `<name>` 或 `.claude/`，由 rui-bot 决定通道 |
 
-## 核心约束
-
-```mermaid
-flowchart LR
-    subgraph 必须["每次 rui 必须触发"]
-        M0["import-doc.mjs<br/>逐文件即时导入"]:::primary
-        M1["rui-import 批量安全网"]:::must
-        M2["rui-bot"]:::must
-    end
-    subgraph 禁止["不可跳过"]
-        X0["文档 Write 后不可跳过导入"]:::block
-        X1["管线失败也需通知"]:::block
-        X2["阻断也需通知"]:::block
-        X3["no-token 也需调用脚本"]:::block
-    end
-    必须 --> 禁止
-
-```
-
-| # | 规则 | 反例 |
-|---|------|------|
-| — | 这是管线完整性的硬性要求，不是建议 | "本次改动很小，跳过通知" |
-| — | 即使管线中途失败/阻断，仍需触发通知（报告阻断状态） | 阻断后直接退出，未调 rui-bot |
-| — | `no-token` 降级时：调用脚本 + 标记，跳过实际网络请求 | 因缺 token 跳过整个步骤 |
-| — | 跳过触发 = 违反核心约束 = 管线未闭合 | `--dry-run` 外跳步 |
-
 ## 标记规则
 
 ```mermaid
@@ -180,57 +160,34 @@ flowchart TD
 | # | 规则 | 反例 |
 |---|------|------|
 | 1 | 标记即证据：未标记视为未执行 | "看起来调用了"不等于"已标记" |
-| 2 | 顺序强制：三步严格按序，跳序即视为未闭合 | 先发通知再补日志 |
-| 3 | Stop hook：1 小时内有 rui 活动且管线未闭合 → 阻断停止 | 执行完 3 小时后才标记 |
-| 4 | 恢复：按提示执行缺失步骤并标记，闭合后自动放行 | — |
+| 2 | 阻断后退出，需手动调用 rui-bot 通知 | 阻断后直接退出，未调 rui-bot |
+| 3 | `no-token` 降级时：调用脚本 + 标记，跳过实际网络请求 | 因缺 token 跳过整个步骤 |
 
 ## 例外
 
-```mermaid
-flowchart TD
-    Q1{"执行模式?"}
-    Q1 -->|"--dry-run"| E1["不执行三步管线<br/>不要求标记"]:::ex
-    Q1 -->|"--no-code"| E2["仍走完三步<br/>无例外"]:::normal
-    Q1 -->|"no-token"| E3["跳过 push<br/>仍写标记"]:::warn
-    Q1 -->|"正常"| E4["完整三步"]:::normal
-
-```
-
-| 场景 | 三步管线 | 标记要求 |
+| 场景 | 交付收口 | 标记要求 |
 |------|---------|---------|
-| `--dry-run` | 不执行 | 不要求 |
-| 仅文档变更（`--no-code`） | 完整执行 | 必须标记 |
 | `no-token`（API_X_TOKEN 缺失） | 跳过推送，其余完整 | 必须标记（含 `docs_synced`） |
 
 ## 阻断标识
 
-```mermaid
-flowchart LR
-    B1["delivery-incomplete<br/>三步未全标记"]:::block
-    B2["no-token<br/>API_X_TOKEN 缺失"]:::warn
-
-```
-
 | 标识 | 触发条件 | 阻断? | 恢复方式 |
 |------|---------|-------|---------|
-| `delivery-incomplete` | 三步未全部标记，距上次 rui 活动 < 1h | ✅ 阻断 | 补执行缺失步骤并标记 |
 | `no-token` | `API_X_TOKEN` 环境变量缺失 | ⚠️ 降级不阻断 | 设置环境变量后恢复推送 |
 
 ## 生效标志
 
 ```mermaid
 flowchart LR
-    S1["三步标记齐全<br/>log_appended · docs_synced · notification_sent"]:::sig --> S2["标记顺序正确<br/>① → ② → ③ 无跳序"]:::sig
-    S2 --> S3["rui-import 已触发<br/>含 no-token 降级"]:::sig
-    S3 --> S4["rui-bot 已触发<br/>含阻断状态报告"]:::sig
-    S4 --> S5["rui-state.json<br/>delivery 字段闭合"]:::sig
+    S1["标记齐全<br/>log_appended · docs_synced · notification_sent"]:::sig --> S2["rui-import 已触发<br/>含 no-token 降级"]:::sig
+    S2 --> S3["rui-bot 已触发<br/>含阻断状态报告"]:::sig
+    S3 --> S4["rui-state.json<br/>delivery 字段闭合"]:::sig
 
 ```
 
 | 标志 | 未达标的处置 |
 |------|------------|
-| 三步标记齐全 | 补执行缺失步骤，写入标记 |
-| 标记顺序正确（① → ② → ③） | 清除错序标记，从断点重新执行 |
+| 标记齐全 | 补执行缺失步骤，写入标记 |
 | rui-import 已触发 | 调用 `node skills/rui-import/sync.mjs` 并标记 |
 | rui-bot 已触发 | 调用 rui-bot 并标记 |
 | rui-state.json delivery 字段闭合 | 核对标记字段，补全后 closure 锁定 |

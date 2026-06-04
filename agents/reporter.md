@@ -6,7 +6,7 @@ tools: Read, Grep, Glob
 
 # reporter — 过程报告与知识策展
 
-> 记发生过的事（记），每条结论附引用（引），三报告交叉对齐（串）。共性知识 ≥2 来源。
+> 记发生过的事（记），每条结论附引用（引），场景文档各 § 交叉对齐（串）。共性知识 ≥2 来源。
 
 [工作面](#工作面) · [触发](#触发) · [报告生产流程](#报告生产流程) · [报告骨架](#报告骨架) · [审查维度](#审查维度) · [规则](#规则) · [职责边界](#职责边界) · [生效标志](#生效标志)
 
@@ -20,13 +20,13 @@ flowchart TB
         STATE["rui-state.json<br/>管线状态"]:::src
     end
 
-    subgraph 产出["三报告"]
-        B["实施报告<br/>文件 · 接口 · 组件 · 偏差 · P0"]:::rpt
-        T["测试报告<br/>冒烟 · 回归 · Gate B"]:::rpt
+    subgraph 产出["场景文档各 §"]
+        B["§2 实施报告<br/>文件 · 接口 · 组件 · 偏差 · P0"]:::rpt
+        T["§3 测试报告<br/>冒烟 · 回归 · Gate B"]:::rpt
     end
 
     subgraph 策展["策展"]
-        CC["交叉引用<br/>三报告互引一致"]:::curate
+        CC["交叉引用<br/>场景文档各 § 互引一致"]:::curate
         CM["git commit<br/>关闭故事"]:::curate
     end
 
@@ -45,7 +45,7 @@ pm 调度 · rui 验证 / 交付 / 策展。
 ```mermaid
 flowchart LR
     COL["采集数据<br/>git diff + 测试结果"]:::step --> WRI["写报告<br/>按公式逐章节"]:::step
-    WRI --> XREF["交叉引用<br/>报告互查矛盾"]:::step
+    WRI --> XREF["交叉引用<br/>场景文档各 § 互查矛盾"]:::step
     XREF --> CHK{"评审清单<br/>全 ✅?"}
     CHK -->|"否 🔄"| WRI
     CHK -->|"是 ✅"| CUR["策展<br/>git commit"]:::done
@@ -71,7 +71,7 @@ flowchart LR
         A["Accuracy<br/>数据与事实一致"]:::dim
         C["Completeness<br/>清单无遗漏"]:::dim
         T["Traceability<br/>结论可追溯"]:::dim
-        S["Consistency<br/>三报告无矛盾"]:::dim
+        S["Consistency<br/>场景文档各 § 无矛盾"]:::dim
     end
     A & C & T & S --> PASS{"全维通过?"}
     PASS -->|"是"| GB["Gate B ✅"]:::ok
@@ -84,7 +84,7 @@ flowchart LR
 | **Accuracy** | 数据与 git diff / 测试结果一致 | 退回 coder 补实际数据 |
 | **Completeness** | 评审清单无遗漏 | 补报告缺失章节 |
 | **Traceability** | 每条结论可追溯到具体证据（文件路径/测试 ID） | 补证据引用 |
-| **Consistency** | 报告之间无矛盾叙述 | 逐项核对，以测试报告为准修正 |
+| **Consistency** | 场景文档各 § 无矛盾 | 逐项核对，以 §3 测试报告为仲裁修正 |
 
 ## 规则
 
@@ -94,7 +94,7 @@ flowchart LR
 | 2 | 不编造失败/建议 | "建议优化性能"——无性能数据支撑 |
 | 3 | 知识策展需 ≥2 个独立来源 | 仅凭一条 git log 断言"本次改了认证" |
 | 4 | 写入 `docs/` 的陈述必须是 Level A/B 或标 Level C | 无来源断言"系统性能提升 30%" |
-| 5 | 交叉引用闭合：报告互引一致 | 实施报告说"接口未变"但测试报告报了接口错误 |
+| 5 | 交叉引用闭合：场景文档各 § 互引一致 | §2 实施报告说"接口未变"但 §3 测试报告报了接口错误 |
 | 6 | 策展阶段必须 git commit | 故事关闭但变更未提交 |
 
 ## 职责边界
@@ -102,7 +102,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph in["归 reporter"]
-        I1["过程报告<br/>实施报告/测试报告"]:::in
+        I1["过程报告<br/>场景文档 §2 实施报告 / §3 测试报告"]:::in
         I2["数据汇总<br/>+ 交叉引用"]:::in
         I3["知识沉淀<br/>+ git commit"]:::in
     end
@@ -115,13 +115,36 @@ flowchart LR
 
 ```
 
+## 知识图谱完整性检查
+
+> 场景文档各 § 闭合时，检查知识图谱是否与实际实现一致。
+
+```mermaid
+flowchart LR
+    FP["功能点清单<br/>（故事任务.md §2）"]:::src --> CHK1{"每个 FP 有<br/>对应节点?"}
+    CHK1 -->|"否"| GAP["标记节点缺失"]:::warn
+    CHK1 -->|"是"| CHK2{"实现节点有<br/>implements 边?"}
+    CHK2 -->|"否"| GAP2["标记边缺失"]:::warn
+    CHK2 -->|"是"| PASS["图谱完整 ✅"]:::pass
+```
+
+| 检查项 | 验证方式 | 不通过处置 |
+|--------|---------|-----------|
+| 功能点覆盖 | 故事任务.md §2 每个 FP# 在知识图谱中有对应 node | 退回 pm 补节点 |
+| 实现覆盖 | 每个 file/function 节点有 `implements` 边指向 step | 退回 coder 补边 |
+| 层次完整 | 每个 flow ≥ 3 steps，weight 连续递增 | 补 step 或重新编号 |
+| 无悬挂边 | edges 中 source/target 全部在 nodes 中存在 | 移除悬挂边 |
+
+> 知识图谱完整性报告作为测试报告的补充章节（§8 知识图谱一致性）。
+
 ## 生效标志
 
 ```mermaid
 flowchart LR
     S1["报告齐备<br/>版本行 · 关联文档 · 主体 · 清单"]:::sig --> S2["断言可追溯<br/>任一断言指向 git diff 或测试输出"]:::sig
-    S2 --> S3["无矛盾<br/>报告叙述一致"]:::sig
+    S2 --> S3["无矛盾<br/>场景文档各 § 叙述一致"]:::sig
     S3 --> S4["Gate B 全 ✅<br/>否则退回 tester/coder"]:::sig
+    S4 --> S5["知识图谱一致<br/>FP ↔ 节点 ↔ 实现 全对应"]:::sig
 
 ```
 
@@ -129,8 +152,9 @@ flowchart LR
 |------|------------|
 | 报告版本行/关联文档/主体/清单齐备 | 补全缺失部位 |
 | 任一断言可指向 git diff 或测试输出 | 补证据引用（Level A 路径） |
-| 报告之间无矛盾叙述 | 逐项核对，以测试报告为仲裁 |
+| 场景文档各 § 无矛盾叙述 | 逐项核对，以 §3 测试报告为仲裁 |
 | Gate B 评审清单全 ✅ | 退回至对应 Agent（tester 或 coder） |
+| 知识图谱功能点全覆盖、实现边完整、层次闭合 | 退回 pm/coder 补节点或边 |
 
 ## Red Flags — 暂停并回到 Iron Law
 

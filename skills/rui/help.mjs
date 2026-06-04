@@ -95,7 +95,7 @@ ${hdr("使用场景")}
 ${scene("端到端：一个需求从始至终")}
 ${item('/rui "用户登录：密码+短信验证码" --name user-login', "拆故事 → 文档基线 → 编码 → 验证 → 交付", cyan)}
 ${scene("仅生成文档基线")}
-${item('/rui doc "用户登录功能" --name user-login', "拆需求为故事，产出 5 文档基线到面板目录", cyan)}
+${item('/rui doc "用户登录功能" --name user-login', "拆需求为故事，产出文档基线到面板目录", cyan)}
 ${item("/rui doc @requirements.md --name payment", "从本地文件读取需求", cyan)}
 ${scene("从文档基线开始编码")}
 ${item("/rui code user-login", "Gate A → 逐模块 P0 清零 → Gate B → 交付", cyan)}

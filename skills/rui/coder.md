@@ -10,7 +10,7 @@
 
 ```
 docs/
-└── 故事任务面板/<name>/   ← 执行：主线 + 通知 + 交互日志 + 补充
+└── 故事任务面板/<name>/   ← 执行：主线 + 补充
 ```
 
 **命名规则**：`<name>` 纯语义 kebab-case（如 `user-login`、`claude-config`），不加项目名前缀。CLI 输入 `<name>`，对应路径 `docs/故事任务面板/<name>/`。详见 [rules/doc-generation.md](../../rules/doc-generation.md)。
@@ -19,22 +19,16 @@ docs/
 
 ```mermaid
 flowchart LR
-    subgraph 基线["基线文档（问题+用户空间）"]
+    subgraph 基线["基线（问题空间）"]
         B1["故事任务.md<br/>WHAT & WHY"]:::baseline
-        B2["使用场景.md<br/>WHO & HOW"]:::baseline
     end
-    subgraph 必选["必选（所有类型）"]
-        C1["技术评审.md"]:::must
-        C2["测试设计.md"]:::must
-        C3["安全审计.md"]:::must
-        C4["实施报告.md"]:::must
-        C5["测试报告.md"]:::must
-        C6["自改进复盘.md"]:::must
-        C7["消息通知列表.md"]:::must
-        C8["交互日志.md"]:::must
+    subgraph 场景["场景（按数量展开）"]
+        S1["场景-N-.md<br/>使用场景描述"]:::scene
+        S2["场景-N-.html<br/>架构图（自包含 HTML+SVG）"]:::scene
     end
-    subgraph 补充["按需"]
-        E1["{专题}.md"]:::supp
+    subgraph 知识["知识图谱"]
+        K1["知识图谱.json<br/>结构化知识表示"]:::kg
+        K2["知识图谱.html<br/>知识图谱可视化"]:::kg
     end
 
 ```
@@ -42,16 +36,10 @@ flowchart LR
 | 文件 | 必选 | 负责人 | 阶段 |
 |------|:---:|--------|------|
 | 故事任务.md | ✓ | pm | 文档生成 |
-| 使用场景.md | ✓ | pm | 文档生成 |
-| 技术评审.md | ✓ | coder + security | 文档生成 |
-| 测试设计.md | ✓ | tester | 文档生成 |
-| 安全审计.md | ✓ | security | 文档生成 |
-| 实施报告.md | ✓ | coder | 验证 |
-| 测试报告.md | ✓ | tester | 验证 |
-| 自改进复盘.md | ✓ | pm + reporter | 自改进 |
-| 消息通知列表.md | 自动 | rui-bot hook | 交付 |
-| 交互日志.md | ✓ | rui 管线 | 全阶段 |
-| {专题}.md | 按需 | pm 决策 | 文档生成 |
+| 场景-N-.md | ✓（≥1） | pm | 文档生成 |
+| 场景-N-.html | ✓（每个场景 1 个） | coder | 文档生成（伴随场景.md） |
+| 知识图谱.json | ✓ | pm → coder 更新 | 文档生成 + 实现 |
+| 知识图谱.html | ✓ | coder | 文档生成（基于知识图谱.json 渲染） |
 
 补充文档按需触发，决策树见 [rules/doc-generation.md](../../rules/doc-generation.md#补充文档)，公式见 [formulas.md](./formulas.md#补充文档公式)。
 
@@ -63,53 +51,61 @@ flowchart LR
 .memory/rui-state.json             ← 管线状态（覆盖）
 ```
 
-> **文档按管线阶段顺序创建**：故事任务+使用场景是基线（问题空间+用户空间），技术评审+测试设计+安全审计是解决方案文档，实施报告+测试报告+自改进复盘是验证与改进文档——不可提前创建。
+### Init 项目级 Index.html 骨架
+
+> `/rui init` 时生成三张项目级概览页（深色主题，使用 `skills/rui/resources/overview-template.html` 模板）：
+
+```
+docs/index.html      ← 项目概览（六维统计：依赖/框架 · 故事 · 场景 · 模块 · 测试 · 交互示例）
+tests/index.html     ← 测试概览（测试用例列表 + 通过率 + 覆盖矩阵）
+demos/index.html     ← 交互示例概览（demo 组件列表 + 截图 + 操作路径）
+```
+
+| 页面 | 统计维度 | 初始值 | 更新时机 |
+|------|---------|--------|---------|
+| `docs/index.html` | 六维：依赖/框架数、故事数、场景数、模块数、测试用例数、交互示例数 | 按 init 检测结果填充 | 每次 `/rui` 管线完成时刷新 |
+| `tests/index.html` | 测试用例列表 + 分类（正常/边界/异常/回归） | 按 test 目录检测结果 | Gate B 通过后更新 |
+| `demos/index.html` | 交互示例列表 + 分类 | 按 demos 目录检测结果 | 文档生成阶段更新 |
+
+**模板**：`skills/rui/resources/overview-template.html` — 深色主题 + 六维统计卡片 + 能力面板 + 导出工具栏。
+`docs/index.html` 的 6 个 stats 指标固定为：**第三方依赖/框架、故事、场景、业务模块/视图模块、测试用例、交互示例**。
+
+> **文档按管线阶段顺序创建**：故事任务是基线（问题空间），场景文档+架构图+知识图谱+补充文档是解决方案层——不可提前创建。场景 §2-§4 由 code 阶段填充。
 
 ## 文件创建生命周期
 
 ```mermaid
 flowchart TB
-    A["需求解析"]:::phase --> A1["├── 创建 交互日志.md<br/>写入会话头"]:::log
-    A1 --> B["规划"]:::phase
+    A["需求解析"]:::phase --> B["规划"]:::phase
     B --> C["影响分析"]:::phase
     C --> D["架构设计"]:::phase
     D --> E["文档生成"]:::phase
-    E -->|"创建"| E1["故事任务<br/>使用场景<br/>技术评审<br/>测试设计<br/>安全审计<br/>补充文档"]:::create
+    E -->|"创建"| E1["故事任务<br/>场景-N-.md + 场景-N-.html<br/>知识图谱.json + 知识图谱.html"]:::create
     E --> F["预检"]:::phase
-    F --> G["Gate A"]:::gate
-    G --> H["实现"]:::phase
-    H --> I["验证"]:::phase
-    I -->|"创建"| I1["实施报告<br/>测试报告"]:::create
-    I --> J["自改进"]:::phase
-    J -->|"创建"| J1["自改进复盘"]:::create
-    J --> K["交付"]:::phase
-    K -->|"追加"| K1["消息通知列表"]:::create
-    A1 -.->|"每阶段追加"| A2["交互日志<br/>全阶段追加写入"]:::log
+    F --> G["实现"]:::phase
+    G --> H["验证"]:::phase
+    H --> I["交付"]:::phase
 
 ```
 
-每次阶段变更：`rui-state.json` 覆盖写；过程追加到 `execution-memory.jsonl`；自改进提案追加到 `proposals.jsonl`；每次人机交互追加到 `交互日志.md`。
+每次阶段变更：`rui-state.json` 覆盖写；过程追加到 `execution-memory.jsonl`；自改进提案追加到 `proposals.jsonl`。
 
 ## 完整度判定
 
 ```mermaid
 flowchart LR
-    NS["任务<br/>01 不存在"]:::s0 --> DIP["设计<br/>技术/测试评审缺失"]:::s1
-    DIP --> IMP["实施<br/>必选文档齐全"]:::s2
-    IMP --> TST["测试<br/>部分实施报告存在"]:::s3
-    TST --> RPT["报告<br/>必选 + 自改进齐全"]:::s4
-    RPT --> IMPV["改进<br/>自改进复盘存在"]:::s5
+    NS["任务<br/>故事任务不存在"]:::s0 --> DIP["设计<br/>故事任务存在，场景/知识图谱缺失"]:::s1
+    DIP --> IMP["实施<br/>故事任务 + ≥1 场景(.md+.html) + 知识图谱(.json+.html) 齐全"]:::s2
+    IMP --> DONE["完成<br/>全部制品齐全"]:::s5
 
 ```
 
 | 状态 | 条件 |
 |------|------|
-| `任务` | 故事任务文档不存在 |
-| `设计` | 故事任务文档存在，技术评审/测试设计/安全审计有缺失 |
-| `实施` | 所有必选文档文件存在（含 交互日志.md 已创建） |
-| `测试` | 文档齐全，实施报告存在，测试报告缺失 |
-| `报告` | 所有必选文件存在（含 交互日志.md 持续追加） |
-| `改进` | 自改进复盘存在 |
+| `任务` | 故事任务.md 不存在 |
+| `设计` | 故事任务存在，场景-N-.md / 知识图谱.json 有缺失 |
+| `实施` | 故事任务 + ≥1 场景(.md+.html) + 知识图谱(.json+.html) 齐全 |
+| `完成` | 全部制品齐全，通知已触发 |
 
 完整度按文件存在性判定；任务推荐按链式管线分层评分排序：阻断 → 故事推进 → 覆盖 → 健康 → 同步。
 
@@ -122,7 +118,6 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph 管理["rui 管线维护（人工不编辑）"]
-        M0["交互日志.md<br/>追加写入"]:::data
         M1["execution-memory.jsonl<br/>追加写入"]:::data
         M2["rui-state.json<br/>覆盖写入"]:::data
         M3["proposals.jsonl<br/>追加写入"]:::data
@@ -132,7 +127,6 @@ flowchart LR
 
 ```
 docs/故事任务面板/<name>/
-├── 交互日志.md                   ← rui 管线追加写入
 ├── .improvement/
 │   └── proposals.jsonl              ← self-improve 追加
 └── .memory/
@@ -157,42 +151,10 @@ flowchart LR
 
 | 规则 | 说明 |
 |------|------|
-| append-only | `交互日志.md` · `execution-memory.jsonl` · `proposals.jsonl` 仅追加，不重写 |
+| append-only | `execution-memory.jsonl` · `proposals.jsonl` 仅追加，不重写 |
 | 覆盖写 | `rui-state.json` 每次阶段变更覆盖整个文件 |
-| 不手编 | 四个文件均由 rui 管线维护，人工编辑会破坏字段一致性 |
+| 不手编 | 三个文件均由 rui 管线维护，人工编辑会破坏字段一致性 |
 | 不入库审查 | 附属目录是元数据，不进入文档审查清单 |
-
-### 交互日志.md
-
-追加写入，markdown 格式。`需求解析` 阶段创建文件并写入会话头，此后每次人机交互轮次追加一条记录。
-
-```markdown
-> 交互日志 · 追加写入 · rui 管线自动维护
-
-## 会话 <session_id> — {YYYY-MM-DD}
-
-### {HH:mm:ss} | turn-{N} | {agent}
-
-**👤 用户**:
-{用户输入全文}
-
-**🤖 助手**:
-{助手响应/执行动作摘要}
-
-**📋 关键决策**:
-- {本轮决策、产出文件、阻断等}
-
----
-```
-
-| 约束 | 规则 |
-|------|------|
-| 写入模式 | append-only，不重写 |
-| 目录不存在 | 递归创建 |
-| 维护者 | rui 管线自动维护，人工不编辑 |
-| 入审查 | 否（附属元数据，不入库审查） |
-| 内容完整性 | 每次人机交互轮次均追加，含用户输入和助手响应的全文 |
-| session_id | 与 `rui-state.json` 的 `session_id` 一致 |
 
 ### execution-memory.jsonl
 
