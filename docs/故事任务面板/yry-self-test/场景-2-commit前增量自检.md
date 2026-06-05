@@ -182,21 +182,49 @@ sequenceDiagram
 <a id="sec2"></a>
 ## §2 实施报告
 
-> 待实现（code 阶段填充）。
+### 实施概述
+
+增量自检的框架基础设施已通过 `tests/run.mjs` 的筛选参数实现：`--skills`/`--agents`/`--rules`/`--integration` 支持定向执行部分测试套件。每个测试文件自包含，可独立运行。
+
+### 已实现
+
+| 实现 | 对应 | 说明 |
+|------|------|------|
+| `tests/run.mjs --skills` | 变更范围识别 | 仅运行受影响的 skill 测试 |
+| `tests/run.mjs --integration` | 跨模块影响 | 交叉引用和知识图谱检查 |
+| 单文件独立执行 | 定向检查 | `node tests/skills/rui.test.mjs` 单独运行 |
+| 安全基线扫描 | 安全面检查 | `tests/integration/cross-references.test.mjs` §安全基线 |
+
+### 待实现
+
+| 项目 | 优先级 | 说明 |
+|------|--------|------|
+| git hook 集成 | P1 | pre-commit hook 触发 `tests/run.mjs --skills --agents --rules` |
+| 变更范围自动识别 | P1 | 读取 `git diff --name-only` 自动映射到受影响测试文件 |
+| 分支隔离自动检查 | P0 | `tests/run.mjs` 执行前检查 `git branch --show-current` |
 
 ---
 
 <a id="sec3"></a>
 ## §3 测试报告
 
-> 待实现（test 阶段填充）。
+| 指标 | 值 |
+|------|-----|
+| 增量执行耗时 | <1s（全部 10 套件） |
+| 单文件执行耗时 | <100ms |
+| 筛选支持 | --skills / --agents / --rules / --integration |
+| 独立运行 | 每个 test.mjs 可单独执行 |
 
 ---
 
 <a id="sec4"></a>
 ## §4 自改进
 
-> 待实现（self-improve 阶段填充）。
+| # | 建议 | 优先级 |
+|---|------|--------|
+| 1 | 实现 `tests/run.mjs --changed` 参数，自动读取 `git diff` 映射测试文件 | P1 |
+| 2 | 添加分支隔离检查到 runner 启动逻辑 | P0 |
+| 3 | 添加 场景-2 TC-B1（主分支阻断）的自动化测试 | P0 |
 
 ---
 

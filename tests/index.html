@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YrY Tests · 自检中心</title>
+  <style>
+    :root {
+      --bg-content: rgba(22,22,32,1);
+      --bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
+      --bg-card-flat: rgba(34,34,46,1);
+      --bg-raised: rgba(42,42,56,1);
+      --color-accent: #FFC107;
+      --color-accent-2: #22d3ee;
+      --color-pass: #22c55e;
+      --color-fail: #ef4444;
+      --color-warn: #f59e0b;
+      --color-skip: #6b7280;
+      --text-primary: rgba(250,250,252,1);
+      --text-secondary: rgba(160,160,164,1);
+      --text-muted: rgba(110,110,114,1);
+      --shadow-card: 0 4px 20px rgba(0,0,0,0.3);
+      --shadow-hover: 0 12px 32px rgba(0,0,0,0.45);
+      --radius-card: 12px;
+      --border-subtle: 1px solid rgba(255,255,255,0.06);
+    }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes modalIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg-content); color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
+      line-height: 1.6; min-height: 100vh;
+    }
+    .container { max-width: 1120px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    /* ── Header ─────────────────────────────────────────── */
+    .header { text-align: center; margin-bottom: 32px; animation: fadeInDown 0.5s ease both; }
+    .header h1 { font-size: 2.1rem; font-weight: 700; }
+    .header h1 .accent { color: var(--color-accent); }
+    .header .sub { color: var(--text-secondary); margin-top: 6px; font-size: 0.9rem; }
+
+    /* ── Cross-nav ──────────────────────────────────────── */
+    .cross-nav { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; animation: fadeInDown 0.5s 0.05s ease both; }
+    .cross-card {
+      background: var(--bg-card); border: var(--border-subtle); border-radius: var(--radius-card);
+      padding: 14px 20px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit;
+      box-shadow: var(--shadow-card); transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+      min-width: 160px; flex: 1; max-width: 260px;
+    }
+    .cross-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: rgba(255,193,7,0.35); }
+    .cross-card .cross-icon { font-size: 1.4rem; }
+    .cross-card .cross-info { flex: 1; }
+    .cross-card .cross-name { font-weight: 600; font-size: 0.88rem; display: block; }
+    .cross-card .cross-sub { font-size: 0.72rem; color: var(--text-muted); display: block; margin-top: 1px; }
+    .cross-card .cross-arrow { color: var(--text-muted); font-size: 0.9rem; }
+    .cross-card.active { border-color: rgba(255,193,7,0.35); }
+    .cross-card.active .cross-name { color: var(--color-accent); }
+
+    /* ── Stats row ──────────────────────────────────────── */
+    .stats-grid { display: flex; gap: 14px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; animation: fadeInDown 0.5s 0.1s ease both; }
+    .stat-card {
+      background: var(--bg-card); border: var(--border-subtle); border-radius: var(--radius-card);
+      padding: 18px 22px; text-align: center; box-shadow: var(--shadow-card); min-width: 90px;
+      transition: transform 0.15s, box-shadow 0.15s; cursor: default;
+    }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+    .stat-card .val { font-size: 1.8rem; font-weight: 700; line-height: 1.1; }
+    .stat-card .val.t { color: var(--text-primary); }
+    .stat-card .val.p { color: var(--color-pass); }
+    .stat-card .val.f { color: var(--color-fail); }
+    .stat-card .val.s { color: var(--color-skip); }
+    .stat-card .val.d { color: var(--color-accent-2); font-size: 1.25rem; }
+    .stat-card .lbl { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* ── Progress bar ───────────────────────────────────── */
+    .bar-wrap { margin-bottom: 32px; animation: fadeInDown 0.5s 0.12s ease both; }
+    .bar-outer { height: 8px; border-radius: 4px; overflow: hidden; display: flex; background: rgba(255,255,255,0.04); }
+    .bar-outer .seg { height: 100%; transition: width 0.5s ease; min-width: 2px; }
+    .bar-outer .seg.p { background: var(--color-pass); }
+    .bar-outer .seg.f { background: var(--color-fail); }
+    .bar-outer .seg.s { background: var(--color-skip); }
+
+    /* ── Tabs ───────────────────────────────────────────── */
+    .tabs { display: flex; gap: 0; margin-bottom: 0; border-bottom: var(--border-subtle); animation: fadeInDown 0.5s 0.15s ease both; }
+    .tab {
+      padding: 10px 20px; cursor: pointer; font-size: 0.84rem; color: var(--text-muted);
+      border-bottom: 2px solid transparent; transition: all 0.15s; user-select: none;
+    }
+    .tab:hover { color: var(--text-secondary); }
+    .tab.on { color: var(--color-accent); border-bottom-color: var(--color-accent); }
+
+    /* ── Panel containers ───────────────────────────────── */
+    .panel { display: none; animation: fadeInUp 0.4s ease both; padding-top: 28px; }
+    .panel.on { display: block; }
+
+    /* ── Layer headers ──────────────────────────────────── */
+    .layer { margin-bottom: 44px; }
+    .layer-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .layer-head .lh-num {
+      width: 28px; height: 28px; border-radius: 50%; background: rgba(255,193,7,0.12);
+      color: var(--color-accent); font-size: 0.8rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .layer-head h2 { font-size: 1.15rem; font-weight: 700; }
+    .layer-head .lh-stat { font-size: 0.78rem; color: var(--text-muted); }
+
+    /* ── File cards (test file browser) ─────────────────── */
+    .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px; }
+    .file-card {
+      background: var(--bg-card); border: var(--border-subtle); border-radius: var(--radius-card);
+      padding: 16px 18px; box-shadow: var(--shadow-card); cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .file-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: rgba(255,255,255,0.1); }
+    .file-card .fc-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+    .file-card .fc-body { flex: 1; min-width: 0; }
+    .file-card .fc-name { font-weight: 600; font-size: 0.88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-card .fc-path { font-size: 0.7rem; color: var(--text-muted); font-family: monospace; margin-top: 1px; }
+    .file-card .fc-desc { font-size: 0.74rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.4; }
+    .file-card .fc-meta { display: flex; gap: 12px; margin-top: 6px; font-size: 0.7rem; color: var(--text-muted); flex-wrap: wrap; }
+    .file-card .fc-meta span { display: flex; align-items: center; gap: 3px; }
+    .file-card .fc-badge { font-size: 0.68rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+    .file-card .fc-badge.pass { background: rgba(34,197,94,0.12); color: var(--color-pass); }
+    .file-card .fc-badge.fail { background: rgba(239,68,68,0.12); color: var(--color-fail); }
+    .file-card .fc-badge.none { background: rgba(255,255,255,0.04); color: var(--text-muted); }
+
+    /* ── Suite cards (in results panel) ─────────────────── */
+    .suite {
+      background: var(--bg-card); border: var(--border-subtle); border-radius: var(--radius-card);
+      margin-bottom: 8px; box-shadow: var(--shadow-card); overflow: hidden;
+    }
+    .suite.open { border-color: rgba(255,255,255,0.08); }
+    .s-head {
+      display: flex; align-items: center; gap: 10px; padding: 12px 18px;
+      cursor: pointer; user-select: none; transition: background 0.12s;
+    }
+    .s-head:hover { background: rgba(255,255,255,0.02); }
+    .s-head .s-arrow { font-size: 0.6rem; color: var(--text-muted); transition: transform 0.2s; width: 12px; text-align: center; }
+    .suite.open .s-head .s-arrow { transform: rotate(90deg); }
+    .s-head .s-name { flex: 1; font-weight: 600; font-size: 0.88rem; }
+    .s-head .s-meta { display: flex; gap: 8px; font-size: 0.72rem; }
+    .s-head .s-meta .sm.p { color: var(--color-pass); }
+    .s-head .s-meta .sm.f { color: var(--color-fail); }
+    .s-body { display: none; border-top: var(--border-subtle); }
+    .suite.open .s-body { display: block; }
+    .t-row {
+      display: flex; align-items: center; gap: 10px; padding: 7px 18px 7px 36px;
+      font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.015);
+    }
+    .t-row.fail { background: rgba(239,68,68,0.04); }
+    .t-row .t-icon { width: 16px; text-align: center; flex-shrink: 0; font-size: 0.7rem; }
+    .t-row .t-name { flex: 1; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .t-row .t-err { font-size: 0.7rem; color: var(--color-fail); max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .t-row .t-dur { font-size: 0.68rem; color: var(--text-muted); min-width: 38px; text-align: right; font-variant-numeric: tabular-nums; }
+
+    /* ── Toolbar ────────────────────────────────────────── */
+    .toolbar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; animation: fadeInDown 0.5s 0.18s ease both; }
+    .btn {
+      background: var(--bg-card-flat); border: var(--border-subtle); border-radius: 8px;
+      color: var(--text-secondary); padding: 7px 14px; cursor: pointer; font-size: 0.8rem;
+      transition: all 0.15s; display: inline-flex; align-items: center; gap: 5px;
+      text-decoration: none; white-space: nowrap; font-family: inherit;
+    }
+    .btn:hover { border-color: rgba(255,255,255,0.15); color: var(--text-primary); transform: translateY(-1px); box-shadow: var(--shadow-card); }
+    .btn.primary { border-color: rgba(255,193,7,0.3); color: var(--color-accent); }
+    .search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 320px; }
+    .search-wrap input {
+      width: 100%; background: var(--bg-card-flat); border: var(--border-subtle); border-radius: 20px;
+      color: var(--text-primary); padding: 7px 14px 7px 34px; font-size: 0.82rem; outline: none;
+      transition: border-color 0.15s; font-family: inherit;
+    }
+    .search-wrap input:focus { border-color: rgba(255,193,7,0.4); }
+    .search-wrap input::placeholder { color: var(--text-muted); }
+    .search-wrap .si { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: var(--text-muted); pointer-events: none; }
+
+    /* ── Source modal ───────────────────────────────────── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200;
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: var(--bg-raised); border: var(--border-subtle); border-radius: var(--radius-card);
+      box-shadow: var(--shadow-hover); width: 100%; max-width: 900px; max-height: 85vh;
+      display: flex; flex-direction: column; animation: modalIn 0.2s ease;
+    }
+    .modal .m-head {
+      display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: var(--border-subtle);
+      flex-shrink: 0;
+    }
+    .modal .m-head .m-title { flex: 1; font-weight: 600; font-size: 0.92rem; font-family: monospace; }
+    .modal .m-head .m-close {
+      background: none; border: none; color: var(--text-muted); font-size: 1.3rem; cursor: pointer;
+      padding: 4px 8px; border-radius: 4px; transition: color 0.1s;
+    }
+    .modal .m-head .m-close:hover { color: var(--text-primary); }
+    .modal .m-body { flex: 1; overflow: auto; padding: 0; }
+    .modal .m-body pre {
+      margin: 0; padding: 16px 20px; font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.78rem; line-height: 1.55; color: var(--text-secondary);
+      white-space: pre-wrap; word-break: break-all; counter-reset: line;
+    }
+    .modal .m-body pre .ln {
+      display: inline-block; width: 36px; text-align: right; margin-right: 12px;
+      color: var(--text-muted); font-size: 0.7rem; user-select: none;
+    }
+
+    /* ── Empty / Loading ────────────────────────────────── */
+    .state-msg { text-align: center; padding: 72px 20px; animation: fadeInUp 0.5s ease both; }
+    .state-msg .icon { font-size: 3rem; margin-bottom: 10px; }
+    .state-msg h3 { font-size: 1.05rem; color: var(--text-secondary); }
+    .state-msg p { font-size: 0.82rem; color: var(--text-muted); margin: 4px 0; }
+    .state-msg code {
+      background: var(--bg-card-flat); padding: 5px 10px; border-radius: 6px;
+      font-size: 0.78rem; color: var(--color-accent-2); margin-top: 6px; display: inline-block;
+    }
+    .skeleton { background: linear-gradient(90deg, var(--bg-card-flat) 25%, rgba(255,255,255,0.03) 50%, var(--bg-card-flat) 75%); background-size: 800px 100%; animation: shimmer 1.5s infinite linear; border-radius: 4px; }
+
+    /* ── Toast ──────────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--bg-raised); border: 1px solid rgba(255,193,7,0.3); border-radius: 8px;
+      color: var(--text-primary); padding: 10px 20px; font-size: 0.82rem; z-index: 300;
+      box-shadow: var(--shadow-hover); opacity: 0; transition: opacity 0.2s; pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+
+    @media (max-width: 640px) {
+      .container { padding: 24px 12px 60px; }
+      .header h1 { font-size: 1.5rem; }
+      .cross-nav { flex-direction: column; align-items: stretch; }
+      .cross-card { max-width: none; }
+      .file-grid { grid-template-columns: 1fr; }
+      .stats-grid { gap: 6px; }
+      .stat-card { padding: 12px 14px; min-width: 65px; }
+      .stat-card .val { font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🧪 YrY <span class="accent">自检中心</span></h1>
+      <p class="sub">测试文件浏览 · 结果面板 · 源码查看 — 与文档中心联动</p>
+    </div>
+
+    <!-- Cross-panel navigation (联动 docs/index.html) -->
+    <div class="cross-nav">
+      <a class="cross-card" href="../docs/index.html">
+        <span class="cross-icon">📚</span>
+        <span class="cross-info">
+          <span class="cross-name">文档中心</span>
+          <span class="cross-sub">技能 · 故事 · Agent · 规则</span>
+        </span>
+        <span class="cross-arrow">→</span>
+      </a>
+      <a class="cross-card" href="../CLAUDE.md" target="_blank">
+        <span class="cross-icon">📜</span>
+        <span class="cross-info">
+          <span class="cross-name">CLAUDE.md</span>
+          <span class="cross-sub">项目指令 · 铁律 · 项目画像</span>
+        </span>
+        <span class="cross-arrow">→</span>
+      </a>
+      <a class="cross-card" href="../README.md" target="_blank">
+        <span class="cross-icon">📖</span>
+        <span class="cross-info">
+          <span class="cross-name">README.md</span>
+          <span class="cross-sub">系统全景 · 领域语言</span>
+        </span>
+        <span class="cross-arrow">→</span>
+      </a>
+      <a class="cross-card active">
+        <span class="cross-icon">🧪</span>
+        <span class="cross-info">
+          <span class="cross-name">自检中心</span>
+          <span class="cross-sub" id="navResultStatus">加载中…</span>
+        </span>
+        <span class="cross-arrow" style="color:var(--color-accent)">●</span>
+      </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid" id="statsRow"></div>
+    <div class="bar-wrap"><div class="bar-outer" id="bar"></div></div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <span class="tab on" data-panel="files">📁 测试文件</span>
+      <span class="tab" data-panel="results">📊 执行结果</span>
+    </div>
+
+    <!-- Panel: Files -->
+    <div class="panel on" id="panelFiles">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <span class="si">🔍</span>
+          <input type="text" id="searchFiles" placeholder="搜索测试文件…" autocomplete="off">
+        </div>
+        <button class="btn primary" onclick="runAllTests()">▶ 运行全部测试</button>
+        <button class="btn" onclick="expandAllFiles()">⊞ 展开</button>
+        <a class="btn" href="results.json" target="_blank">📄 JSON</a>
+      </div>
+      <div id="filesContent"></div>
+    </div>
+
+    <!-- Panel: Results -->
+    <div class="panel" id="panelResults">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <span class="si">🔍</span>
+          <input type="text" id="searchResults" placeholder="搜索测试名称…" autocomplete="off">
+        </div>
+        <button class="btn" onclick="expandAllSuites()">⊞ 展开全部</button>
+        <button class="btn" onclick="collapseAllSuites()">⊟ 收起全部</button>
+        <button class="btn" onclick="copyResultsMd()">📋 复制 Markdown</button>
+      </div>
+      <div id="resultsContent"></div>
+    </div>
+  </div>
+
+  <!-- Source modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="m-head">
+        <span class="m-title" id="modalTitle"></span>
+        <button class="m-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="m-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ═══════════════════════════════════════════════════════
+    // State
+    // ═══════════════════════════════════════════════════════
+    let manifest = null;   // manifest.json
+    let results = null;    // results.json
+    let activePanel = 'files';
+    let fileQuery = '';
+    let resultQuery = '';
+
+    const CAT_ICONS = { skills: '⚙️', agents: '🤖', rules: '📏', integration: '🔗', lib: '📦' };
+    const CAT_LABELS = { skills: 'Skills', agents: 'Agents', rules: 'Rules', integration: 'Integration', lib: 'Library' };
+
+    // ═══════════════════════════════════════════════════════
+    // Data loading
+    // ═══════════════════════════════════════════════════════
+    async function loadData() {
+      const [mRes, rRes] = await Promise.allSettled([
+        fetch('manifest.json'), fetch('results.json')
+      ]);
+      if (mRes.status === 'fulfilled' && mRes.value.ok) manifest = await mRes.value.json();
+      else console.warn('manifest.json not available');
+      if (rRes.status === 'fulfilled' && rRes.value.ok) results = await rRes.value.json();
+      else console.warn('results.json not available');
+      render();
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // Helpers
+    // ═══════════════════════════════════════════════════════
+    function esc(s) {
+      if (!s) return '';
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function fmtDur(ms) {
+      if (ms == null) return '';
+      if (ms < 1) return '<1ms';
+      if (ms < 1000) return Math.round(ms) + 'ms';
+      return (ms / 1000).toFixed(1) + 's';
+    }
+    function fmtTs(iso) {
+      if (!iso) return '';
+      try { return new Date(iso).toLocaleString('zh-CN'); } catch { return iso; }
+    }
+    function classifyPath(p) {
+      if (p.startsWith('skills/')) return 'skills';
+      if (p.startsWith('agents/')) return 'agents';
+      if (p.startsWith('rules/')) return 'rules';
+      if (p.startsWith('integration/')) return 'integration';
+      if (p.startsWith('lib/')) return 'lib';
+      return 'other';
+    }
+    function fileToResultKey(name) {
+      // Map test file name to results.json suite name
+      const m = {
+        'rui.test.mjs': 'rui skill', 'rui-bot.test.mjs': 'rui-bot skill',
+        'rui-claude.test.mjs': 'rui-claude skill', 'rui-import.test.mjs': 'rui-import skill',
+        'rui-story.test.mjs': 'rui-story skill', 'rui-trends.test.mjs': 'rui-trends skill',
+        'agents.test.mjs': 'agent definitions', 'rules.test.mjs': 'rule definitions',
+        'cross-references.test.mjs': 'cross-cutting integration',
+        'knowledge-graph.test.mjs': 'knowledge graph integrity',
+      };
+      return m[name] || null;
+    }
+
+    // Build result lookup: suite name → { passed, failed, skipped, total, tests }
+    function buildResultMap() {
+      if (!results || !results.suites) return {};
+      const map = {};
+      // Walk sequentially: named suite marks a group, "(standalone)" tests follow
+      let current = null;
+      for (const s of results.suites) {
+        const tests = (s.tests || []).filter(t => t.name);
+        if (s.name !== '(standalone)' && isTopMarker(s.name)) {
+          current = s.name;
+          if (!map[current]) map[current] = { passed: 0, failed: 0, skipped: 0, total: 0, tests: [] };
+        }
+        if (s.name === '(standalone)' && current && tests.length > 0) {
+          map[current].tests.push(...tests);
+          for (const t of tests) {
+            map[current].total++;
+            if (t.status === 'passed') map[current].passed++;
+            else if (t.status === 'failed') map[current].failed++;
+            else if (t.status === 'skipped') map[current].skipped++;
+          }
+        }
+      }
+      return map;
+    }
+    function isTopMarker(name) {
+      const n = name.toLowerCase();
+      return n.endsWith(' skill') || n.endsWith(' definitions') ||
+             n.endsWith(' integrity') || n.endsWith(' integration');
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // Render: Stats + Nav
+    // ═══════════════════════════════════════════════════════
+    function renderStats() {
+      const s = results?.summary || {};
+      const t = s.total || 0, p = s.passed || 0, f = s.failed || 0, sk = s.skipped || 0;
+      const dur = results?.durationMs ? fmtDur(results.durationMs) : '--';
+      const passPct = t > 0 ? (p/t*100).toFixed(1) : '0';
+
+      document.getElementById('statsRow').innerHTML = `
+        <div class="stat-card"><div class="val t">${t}</div><div class="lbl">总计断言</div></div>
+        <div class="stat-card"><div class="val p">${p}</div><div class="lbl">✅ 通过 · ${passPct}%</div></div>
+        <div class="stat-card"><div class="val f">${f}</div><div class="lbl">❌ 失败</div></div>
+        <div class="stat-card"><div class="val s">${sk}</div><div class="lbl">⏭️ 跳过</div></div>
+        <div class="stat-card"><div class="val d">${dur}</div><div class="lbl">⏱ 耗时</div></div>
+      `;
+      const pp = t > 0 ? (p/t*100) : 0, fp = t > 0 ? (f/t*100) : 0, sp = t > 0 ? (sk/t*100) : 0;
+      document.getElementById('bar').innerHTML = `
+        <div class="seg p" style="width:${pp}%"></div>
+        <div class="seg f" style="width:${fp}%"></div>
+        <div class="seg s" style="width:${sp}%"></div>
+      `;
+      document.getElementById('navResultStatus').textContent =
+        results ? `${p}/${t} 通过 · ${fmtTs(results.timestamp)}` : '暂无结果';
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // Panel: Files
+    // ═══════════════════════════════════════════════════════
+    function renderFiles() {
+      const container = document.getElementById('filesContent');
+      if (!manifest || !manifest.files) {
+        container.innerHTML = `<div class="state-msg"><div class="icon">📁</div><h3>文件清单不可用</h3><p>运行 <code>node tests/run.mjs --json</code> 生成 manifest.json</p></div>`;
+        return;
+      }
+
+      const resultMap = buildResultMap();
+      // Filter test files (exclude results.json, index.html, manifest.json)
+      const testFiles = manifest.files.filter(f =>
+        f.name.endsWith('.test.mjs') || f.name === 'run.mjs' || (f.dir === 'lib' && f.name.endsWith('.mjs'))
+      );
+
+      // Group by directory
+      const groups = {};
+      for (const f of testFiles) {
+        const cat = f.dir === 'lib' ? 'lib' : classifyPath(f.path);
+        if (!groups[cat]) groups[cat] = [];
+        groups[cat].push(f);
+      }
+
+      const order = ['skills', 'agents', 'rules', 'integration', 'lib'];
+      let html = '';
+
+      for (const cat of order) {
+        const files = groups[cat];
+        if (!files || !files.length) continue;
+        html += `<div class="layer">`;
+        html += `<div class="layer-head"><span class="lh-num">${files.length}</span><h2>${CAT_ICONS[cat] || ''} ${CAT_LABELS[cat] || cat}</h2><span class="lh-stat">${files.length} 文件</span></div>`;
+        html += `<div class="file-grid">`;
+
+        for (const f of files) {
+          if (fileQuery && !f.name.toLowerCase().includes(fileQuery) && !f.path.toLowerCase().includes(fileQuery) && !(f.desc && f.desc.toLowerCase().includes(fileQuery))) continue;
+
+          // Match with results
+          const rKey = fileToResultKey(f.name);
+          const r = rKey ? resultMap[rKey] : null;
+          let badge = '';
+          if (r && r.total > 0) {
+            badge = r.failed > 0
+              ? `<span class="fc-badge fail">❌ ${r.failed}/${r.total}</span>`
+              : `<span class="fc-badge pass">✅ ${r.passed}/${r.total}</span>`;
+          } else if (f.name.endsWith('.test.mjs')) {
+            badge = `<span class="fc-badge none">未执行</span>`;
+          }
+
+          html += `<div class="file-card" onclick="viewSource('${esc(f.path)}')" title="点击查看源码">`;
+          html += `<span class="fc-icon">${f.dir === 'lib' ? '📦' : '📄'}</span>`;
+          html += `<div class="fc-body">`;
+          html += `<div class="fc-name">${esc(f.name)} ${badge}</div>`;
+          html += `<div class="fc-path">${esc(f.path)}</div>`;
+          if (f.desc) html += `<div class="fc-desc">${esc(f.desc)}</div>`;
+          html += `<div class="fc-meta"><span>📏 ${f.lines} 行</span><span>📦 ${(f.size/1024).toFixed(1)}KB</span></div>`;
+          html += `</div></div>`;
+        }
+
+        html += `</div></div>`;
+      }
+
+      container.innerHTML = html || `<div class="state-msg"><div class="icon">🔍</div><h3>无匹配文件</h3></div>`;
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // Panel: Results
+    // ═══════════════════════════════════════════════════════
+    function renderResults() {
+      const container = document.getElementById('resultsContent');
+      if (!results || !results.suites) {
+        container.innerHTML = `<div class="state-msg"><div class="icon">📊</div><h3>暂无测试结果</h3><p>运行 <code>node tests/run.mjs --json</code> 生成 results.json</p></div>`;
+        return;
+      }
+
+      const resultMap = buildResultMap();
+      const entries = Object.entries(resultMap);
+      if (!entries.length) {
+        container.innerHTML = `<div class="state-msg"><div class="icon">📊</div><h3>无结果数据</h3></div>`;
+        return;
+      }
+
+      // Sort: skills first, then agents, rules, integration
+      const order = { skills: 1, agents: 2, rules: 3, integration: 4 };
+      entries.sort((a, b) => {
+        const ca = classifySuiteName(a[0]), cb = classifySuiteName(b[0]);
+        return (order[ca] || 5) - (order[cb] || 5);
+      });
+
+      let html = '';
+      for (const [name, r] of entries) {
+        if (resultQuery) {
+          const matchName = name.toLowerCase().includes(resultQuery);
+          const matchTest = r.tests.some(t => t.name.toLowerCase().includes(resultQuery) || (t.error && t.error.toLowerCase().includes(resultQuery)));
+          if (!matchName && !matchTest) continue;
+        }
+
+        const cat = classifySuiteName(name);
+        const icon = CAT_ICONS[cat] || '📦';
+        const hasFail = r.failed > 0;
+
+        html += `<div class="suite${hasFail ? ' open' : ''}" data-cat="${cat}">`;
+        html += `<div class="s-head" onclick="this.parentElement.classList.toggle('open')">`;
+        html += `<span class="s-arrow">▶</span>`;
+        html += `<span class="s-name">${icon} ${esc(name)}</span>`;
+        html += `<span class="s-meta">`;
+        if (r.passed > 0) html += `<span class="sm p">✅ ${r.passed}</span>`;
+        if (r.failed > 0) html += `<span class="sm f">❌ ${r.failed}</span>`;
+        if (r.skipped > 0) html += `<span class="sm" style="color:var(--color-skip)">⏭️ ${r.skipped}</span>`;
+        html += `</span></div>`;
+
+        html += `<div class="s-body">`;
+        const maxDur = Math.max(...r.tests.map(t => t.duration || 0), 1);
+        for (const t of r.tests) {
+          if (resultQuery && !t.name.toLowerCase().includes(resultQuery) && !(t.error && t.error.toLowerCase().includes(resultQuery))) continue;
+          const iconT = t.status === 'passed' ? '✅' : t.status === 'failed' ? '❌' : t.status === 'skipped' ? '⏭️' : '⬜';
+          html += `<div class="t-row${t.status === 'failed' ? ' fail' : ''}">`;
+          html += `<span class="t-icon">${iconT}</span>`;
+          html += `<span class="t-name" title="${esc(t.name)}">${esc(t.name)}</span>`;
+          if (t.error) html += `<span class="t-err" title="${esc(t.error)}">${esc(t.error)}</span>`;
+          html += `<span class="t-dur">${fmtDur(t.duration)}</span>`;
+          html += `</div>`;
+        }
+        html += `</div></div>`;
+      }
+
+      container.innerHTML = html || `<div class="state-msg"><div class="icon">🔍</div><h3>无匹配结果</h3></div>`;
+    }
+
+    function classifySuiteName(name) {
+      const n = name.toLowerCase();
+      if (n.includes('skill')) return 'skills';
+      if (n.includes('agent')) return 'agents';
+      if (n.includes('rule')) return 'rules';
+      if (n.includes('cross-cutting') || n.includes('knowledge graph')) return 'integration';
+      return 'other';
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // Source viewer
+    // ═══════════════════════════════════════════════════════
+    async function viewSource(relPath) {
+      const overlay = document.getElementById('modalOverlay');
+      const title = document.getElementById('modalTitle');
+      const body = document.getElementById('modalBody');
+      title.textContent = relPath;
+      body.innerHTML = `<div style="padding:40px;text-align:center;color:var(--text-muted)">加载中…</div>`;
+      overlay.classList.add('show');
+
+      try {
+        const resp = await fetch(relPath);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const text = await resp.text();
+        const lines = text.split('\n');
+        body.innerHTML = `<pre>${lines.map((l, i) =>
+          `<span class="ln">${i + 1}</span>${esc(l)}`
+        ).join('\n')}</pre>`;
+      } catch (e) {
+        body.innerHTML = `<div style="padding:40px;text-align:center;color:var(--color-fail)">无法加载: ${esc(e.message)}</div>`;
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('show');
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // Actions
+    // ═══════════════════════════════════════════════════════
+    function expandAllFiles() { document.querySelectorAll('#filesContent .file-card').forEach(c => c.style.display = ''); }
+    function expandAllSuites() { document.querySelectorAll('#resultsContent .suite').forEach(c => c.classList.add('open')); }
+    function collapseAllSuites() { document.querySelectorAll('#resultsContent .suite').forEach(c => c.classList.remove('open')); }
+
+    function runAllTests() {
+      toast('请在终端运行：node tests/run.mjs --json');
+    }
+
+    async function copyResultsMd() {
+      if (!results) return;
+      const s = results.summary || {};
+      let md = `## YrY 自检结果\n\n| 指标 | 值 |\n|------|----|\n| 总计 | ${s.total||0} |\n| ✅ 通过 | ${s.passed||0} |\n| ❌ 失败 | ${s.failed||0} |\n| ⏱ 耗时 | ${fmtDur(results.durationMs)} |\n| 🕐 时间 | ${fmtTs(results.timestamp)} |\n`;
+      const rm = buildResultMap();
+      for (const [name, r] of Object.entries(rm)) {
+        const icon = r.failed > 0 ? '❌' : '✅';
+        md += `\n### ${icon} ${name}\n| 通过 | 失败 | 跳过 | 总计 |\n|------|------|------|------|\n| ${r.passed} | ${r.failed} | ${r.skipped} | ${r.total} |\n`;
+      }
+      try { await navigator.clipboard.writeText(md); toast('已复制为 Markdown'); } catch { toast('复制失败'); }
+    }
+
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg; el.classList.add('show');
+      clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 1800);
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // Events
+    // ═══════════════════════════════════════════════════════
+    document.querySelector('.tabs').addEventListener('click', e => {
+      const tab = e.target.closest('.tab');
+      if (!tab) return;
+      activePanel = tab.dataset.panel;
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t === tab));
+      document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === 'panel' + (activePanel === 'files' ? 'Files' : 'Results')));
+      if (activePanel === 'files') renderFiles();
+      else renderResults();
+    });
+
+    document.getElementById('searchFiles').addEventListener('input', function() {
+      fileQuery = this.value.toLowerCase().trim();
+      renderFiles();
+    });
+    document.getElementById('searchResults').addEventListener('input', function() {
+      resultQuery = this.value.toLowerCase().trim();
+      renderResults();
+    });
+
+    document.getElementById('modalOverlay').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModal();
+      if ((e.ctrlKey || e.metaKey) && e.key === 'f') { e.preventDefault(); document.querySelector(`#search${activePanel === 'files' ? 'Files' : 'Results'}`).focus(); }
+    });
+
+    // ═══════════════════════════════════════════════════════
+    // Init
+    // ═══════════════════════════════════════════════════════
+    function render() {
+      renderStats();
+      if (activePanel === 'files') renderFiles();
+      else renderResults();
+    }
+
+    loadData();
+  </script>
+</body>
+</html>

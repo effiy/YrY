@@ -1,6 +1,6 @@
 # 场景 1: 初始化后全量自检
 
-> | v1.0.0 | 2026-06-05 | deepseek-v4-pro | 🌿 feat/yry-self-test | ⏱️ --:-- | 📎 [CLAUDE.md](../../../CLAUDE.md) |
+> | v1.1.0 | 2026-06-05 | deepseek-v4-pro | 🌿 feat/yry-self-test | ⏱️ --:-- | 📎 [CLAUDE.md](../../../CLAUDE.md) |
 > **导航**: [← 故事任务](./故事任务.md) · [场景-2 →](./场景-2-commit前增量自检.md)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
@@ -180,21 +180,112 @@ sequenceDiagram
 <a id="sec2"></a>
 ## §2 实施报告
 
-> 待实现（code 阶段填充）。
+### 实施概述
+
+构建了完整的 YrY 自检测试框架，位于 `tests/` 目录。框架由轻量级测试 harness、模块化测试套件和集成检查三部分组成，覆盖 6 skills、8 agents、8 rules 和跨模块一致性。
+
+### 产物清单
+
+| 文件 | 行数 | 职责 |
+|------|------|------|
+| `tests/lib/test-harness.mjs` | ~180 | describe/it/assert 原语 + 汇总报告 |
+| `tests/lib/helpers.mjs` | ~90 | 文件系统/路径/内容共享工具 |
+| `tests/run.mjs` | ~90 | 测试发现 + 筛选 + 执行编排 |
+| `tests/skills/rui.test.mjs` | ~80 | rui 技能完整性（SKILL.md + 6 可执行脚本 + 3 支持文档） |
+| `tests/skills/rui-bot.test.mjs` | ~55 | rui-bot 技能完整性（SKILL.md + send.mjs） |
+| `tests/skills/rui-claude.test.mjs` | ~30 | rui-claude 技能完整性（SKILL.md + help.mjs） |
+| `tests/skills/rui-import.test.mjs` | ~75 | rui-import 技能完整性（SKILL.md + sync.mjs 功能验证） |
+| `tests/skills/rui-story.test.mjs` | ~65 | rui-story 技能完整性（SKILL.md + 4 可执行脚本） |
+| `tests/skills/rui-trends.test.mjs` | ~30 | rui-trends 技能完整性（SKILL.md + help.mjs） |
+| `tests/agents/agents.test.mjs` | ~80 | 8 Agent 定义完整性（角色/行为/决策指导） |
+| `tests/rules/rules.test.mjs` | ~115 | 8 规则完整性（mermaid 图/表格/关键内容） |
+| `tests/integration/cross-references.test.mjs` | ~155 | 跨模块一致性（plugin.json/CLAUDE.md/故事目录/安全基线） |
+| `tests/integration/knowledge-graph.test.mjs` | ~90 | 知识图谱结构有效性（节点/边/层）+ schema 自适应 |
+
+### 架构决策
+
+| 决策 | 理由 | 影响 |
+|------|------|------|
+| 自建轻量 harness 而非引入 vitest/jest | 项目无 package.json，保持零依赖 | 测试直执行 `node tests/run.mjs` |
+| 每测试文件自包含（import harness + run()） | 可独立运行任意单文件，CI 友好 | `node tests/skills/rui.test.mjs` 即跑单个 |
+| skill 测试验证可执行脚本（help/exec） | 确保不仅是文件存在，而是可运行 | rui-import sync.mjs mode=list 实际执行 |
+| 知识图谱测试支持双 schema（self-test + arch） | yry-arch 和 yry-self-test 使用不同的 JSON 结构 | 检测 nodes/graph/scenes 字段自适应 |
+| 安全测试使用 grep 扫描而非重型 SAST | 匹配项目规模，秒级完成 | 检查 token 硬编码模式 |
+
+### 关键发现
+
+- **plugin.json 极简**：`.claude-plugin/plugin.json` 仅含 name/version/description，不枚举 skills/agents/rules 清单
+- **tester agent 风格特殊**：使用 Gate 模型 + 阻断条件语言，非传统"决策指导"格式，测试需适配
+- **yry-arch kg schema 差异**：使用 `graph`/`scenes` 字段而非 `nodes`/`edges`，测试实现 schema 自适应检测
+- **rui-import SKILL.md 独立**：作为 API 契约型技能，不引用 agents/rules，合理
 
 ---
 
 <a id="sec3"></a>
 ## §3 测试报告
 
-> 待实现（test 阶段填充）。
+### 测试执行摘要
+
+| 指标 | 值 |
+|------|-----|
+| 执行时间 | 2026-06-05 |
+| 测试套件 | 10 |
+| 断言总数 | 171 |
+| 通过 | 171 |
+| 失败 | 0 |
+| 跳过 | 0 |
+| 执行耗时 | <1s |
+
+### 分套件结果
+
+| 套件 | 断言 | 通过 | 失败 | 覆盖 |
+|------|------|------|------|------|
+| rui skill | 16 | 16 | 0 | SKILL.md 8 节 + 5 脚本 + 3 文档 |
+| rui-bot skill | 7 | 7 | 0 | SKILL.md 4 + send.mjs 3 |
+| rui-claude skill | 4 | 4 | 0 | SKILL.md 3 + help.mjs 1 |
+| rui-import skill | 10 | 10 | 0 | SKILL.md 6 + sync.mjs 4（含功能验证） |
+| rui-story skill | 8 | 8 | 0 | SKILL.md 3 + 脚本 5（含 --help 执行） |
+| rui-trends skill | 4 | 4 | 0 | SKILL.md 3 + help.mjs 1 |
+| agent definitions | 45 | 45 | 0 | AGENT.md 4 + 8×5 每 agent 检查 |
+| rule definitions | 48 | 48 | 0 | 8 规则 ×5 通用 + 7 关键规则专项 |
+| cross-cutting integration | 17 | 17 | 0 | plugin.json 2 + CLAUDE.md 5 + README 2 + 对齐 3 + 故事 4 + 安全 1 |
+| knowledge graph integrity | 12 | 12 | 0 | yry-arch 4 + yry-self-test 8 |
+
+### 门禁判定
+
+| Gate | 判定 | 证据 |
+|------|------|------|
+| Gate A（测试先行） | ✅ 通过 | 所有场景 §1 测试设计先于实现完成 |
+| 只读验证 | ✅ 通过 | 测试全程不修改任何被检查文件 |
+| 分支隔离 | ✅ 通过 | 实现在 `feat/yry-self-test` 分支完成 |
+| 覆盖完整性 | ✅ 通过 | skills 6/6, agents 8/8, rules 8/8, integration 2 |
 
 ---
 
 <a id="sec4"></a>
 ## §4 自改进
 
-> 待实现（self-improve 阶段填充）。
+### D0-D7 诊断结果
+
+| 诊断 | 判定 | 说明 |
+|------|------|------|
+| D0 文件存在性 | ✅ | 所有 skills/agents/rules 文件存在，故事目录完整 |
+| D1 结构完整性 | ✅ | SKILL.md 含必要章节，agent 含角色/行为/决策指导 |
+| D2 可执行性 | ✅ | help.mjs/sync.mjs/rui-story.mjs 均正确响应 --help |
+| D3 交叉引用 | ✅ | 大多数 skills 引用 agents/rules，CLAUDE.md 引用 skills/ |
+| D4 表达优先 | ✅ | 所有规则和主要技能文档含 mermaid 图 + 表格 |
+| D5 安全基线 | ✅ | 无硬编码 token，plugin.json 密钥仅通过环境变量 |
+| D6 知识图谱 | ✅ | 两个故事的知识图谱结构有效，HTML 可视化存在 |
+| D7 一致性 | ✅ | plugin.json 版本号存在，故事目录文档基线完整 |
+
+### 改进建议
+
+| # | 建议 | 优先级 | 理由 |
+|---|------|--------|------|
+| 1 | 增加 skill 功能级集成测试（如 sync.mjs 实际 API 调用 mock） | P2 | 当前仅验证语法/help，未验证业务逻辑 |
+| 2 | 增加 agent 交接信号格式校验（解析 AGENT.md 中的交接契约） | P1 | FP5 要求 Agent 交接信号可被下游验证 |
+| 3 | 添加 git hook 自动触发增量自检（pre-commit） | P1 | 场景-2 定义的提交前增量自检尚未实现 hook 集成 |
+| 4 | 增加性能回归测试（大文件数时的扫描耗时） | P3 | 当前项目文件数少，暂不急迫 |
 
 ---
 
