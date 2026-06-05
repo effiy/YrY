@@ -33,7 +33,20 @@ h1{font-size:1.5rem;font-weight:700}
 .card li{margin-bottom:.375rem}
 .footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
 @media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
+
+/* ── Breadcrumb ─────────────────────────── */
+.breadcrumb {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 1.25rem; font-size: 0.76rem;
+}
+.breadcrumb a {
+  color: #7aa2f7; text-decoration: none; transition: color 0.15s;
+}
+.breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
+.breadcrumb .bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
+.breadcrumb .bc-current { color: #94a3b8; font-weight: 500; }
 </style></head><body><div class="container" id="rc">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../计划.html">yry-arch · 系统架构知识固化</a><span class="bc-sep">/</span><span class="bc-current">场景 4 · 依赖变更影响分析</span><span class="bc-sep">/</span><span class="bc-current">📐 架构图</span></nav>
 <div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>依赖变更影响 — 架构图</h1>
 <div class="toolbar"><div class="toolbar-actions">
 <button onclick="copyAsImage(this)">📋 Copy</button>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>🔍 场景-2-数据流追踪 · 交互示例</title>
+<title>🔍 场景-2-数据流追踪 · 交互演示</title>
 <style>
 :root{--bg:#020617;--surface:#0f172a;--border:#1e293b;--text:#e2e8f0;--muted:#64748b;--cyan:#22d3ee;--emerald:#34d399;--amber:#fbbf24;--rose:#fb7185}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -26,12 +26,25 @@ a.back:hover{color:var(--cyan)}
 .toast.show{opacity:1}
 
 a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+
+/* ── Breadcrumb ─────────────────────────── */
+.breadcrumb {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 1.25rem; font-size: 0.76rem;
+}
+.breadcrumb a {
+  color: #7aa2f7; text-decoration: none; transition: color 0.15s;
+}
+.breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
+.breadcrumb .bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
+.breadcrumb .bc-current { color: #94a3b8; font-weight: 500; }
 </style>
 </head>
 <body>
 <div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../计划.html">yry-arch · 系统架构知识固化</a><span class="bc-sep">/</span><span class="bc-current">场景 2 · 数据流与追踪</span><span class="bc-sep">/</span><span class="bc-current">💡 交互示例</span></nav>
 <a href="../场景-2-数据流追踪/知识图谱.html" class="back">← 场景知识图谱</a>
-<h1><span>🔍</span> 🔍 场景-2-数据流追踪 · 交互示例</h1>
+<h1><span>🔍</span> 🔍 场景-2-数据流追踪 · 交互演示</h1>
 <p class="sub">追踪用户指令从进入到交付收口的完整数据流</p>
 
 <div class="card">

@@ -1,100 +1,141 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>🧩 场景-1-模块定位 · 知识图谱</title>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>🧩 模块定位 · 知识图谱</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 <style>
-:root { --bg:#020617; --surface:#0f172a; --border:#1e293b; --text:#e2e8f0; --muted:#64748b; --cyan:#22d3ee; --emerald:#34d399; --violet:#a78bfa; --amber:#fbbf24; --blue:#3B82F6; }
-* { margin:0;padding:0;box-sizing:border-box }
-body { background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;min-height:100vh;padding:24px }
-.container { max-width:960px;margin:0 auto }
-h1 { font-size:1.5rem;margin-bottom:4px } h1 span { color:var(--cyan) }
-.sub { color:var(--muted);font-size:.82rem;margin-bottom:24px }
-.card { background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px }
-.card h2 { font-size:.95rem;margin-bottom:12px;color:var(--cyan) }
-.card h3 { font-size:.82rem;color:var(--violet);margin-bottom:8px }
-.tag { display:inline-block;background:rgba(34,211,238,.1);color:var(--cyan);padding:2px 8px;border-radius:10px;font-size:.68rem;margin:2px 4px 2px 0 }
-.tag.green { background:rgba(52,211,153,.1);color:var(--emerald) }
-.tag.amber { background:rgba(251,191,36,.1);color:var(--amber) }
-.tag.blue { background:rgba(59,130,246,.1);color:var(--blue) }
-.file-item { padding:8px 12px;border-left:2px solid var(--border);margin:6px 0;font-size:.78rem }
-.file-item .type { color:var(--cyan);font-weight:600 }
-.file-item .path { color:var(--muted);font-family:monospace;font-size:.72rem }
-.file-item .desc { color:var(--text);margin-top:2px }
-.node-list { display:flex;flex-wrap:wrap;gap:6px }
-.node-chip { background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:.7rem;font-family:monospace;color:var(--muted) }
-.stats { display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px }
-.stat { background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;text-align:center;min-width:80px }
-.stat .sv { font-size:1.3rem;font-weight:700;color:var(--cyan) }
-.stat .sl { font-size:.64rem;color:var(--muted);text-transform:uppercase;margin-top:2px }
-a.back { color:var(--muted);text-decoration:none;font-size:.78rem;display:inline-block;margin-bottom:16px }
-a.back:hover { color:var(--cyan) }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
+.container{max-width:1400px;margin:0 auto}
+.header{margin-bottom:1.5rem}
+.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
+.pulse-dot{width:12px;height:12px;background:#22d3ee;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+h1{font-size:1.5rem;font-weight:700}
+.subtitle{color:#94a3b8;font-size:.875rem;margin-left:1.75rem}
+.toolbar{display:flex;gap:.5rem;margin-left:auto;flex-shrink:0;align-items:center}
+.toolbar-toggle{background:transparent;border:none;color:#475569;cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem}
+.toolbar-toggle:hover{color:#94a3b8;background:rgba(30,41,59,.5)}
+.toolbar-actions{display:none;gap:.5rem}
+.toolbar.expanded .toolbar-actions{display:flex}
+.toolbar-actions button{background:rgba(30,41,59,.8);border:1px solid #334155;color:#94a3b8;padding:.375rem .75rem;border-radius:.375rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.toolbar-actions button:hover{background:rgba(51,65,85,.8);color:white;border-color:#475569}
+.graph-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1rem;margin-bottom:1.5rem}
+#cy{width:100%;height:600px;border-radius:.5rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
+.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
+.card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
+.card-dot{width:8px;height:8px;border-radius:50%}
+.card-dot.scene{background:#8B5CF6}.card-dot.skill{background:#22d3ee}.card-dot.agent{background:#a78bfa}.card-dot.rule{background:#fbbf24}.card-dot.domain{background:#EC4899}.card-dot.flow{background:#34d399}.card-dot.step{background:#3B82F6}
+.card h3{font-size:.875rem;font-weight:600}
+.card ul{list-style:none;color:#94a3b8;font-size:.75rem}
+.card li{margin-bottom:.375rem}
+.legend{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:.75rem;padding:.75rem;background:rgba(15,23,42,.5);border-radius:.5rem;border:1px solid #1e293b;font-size:.75rem;color:#94a3b8}
+.legend-item{display:flex;align-items:center;gap:.375rem}
+.legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid}
+.legend-dot.scene{background:rgba(139,92,246,.3);border-color:#8B5CF6}
+.legend-dot.skill{background:rgba(34,211,238,.3);border-color:#22d3ee}
+.legend-dot.agent{background:rgba(167,139,250,.3);border-color:#a78bfa}
+.legend-dot.rule{background:rgba(251,191,36,.3);border-color:#fbbf24}
+.legend-dot.domain{background:rgba(236,72,153,.3);border-color:#EC4899}
+.legend-dot.flow{background:rgba(52,211,153,.3);border-color:#34d399}
+.legend-dot.step{background:rgba(59,130,246,.3);border-color:#3B82F6}
+.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
+@media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
 
-a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
-</style>
-</head>
-<body>
-<div class="container">
-<a href="../知识图谱.html" class="back">← 返回故事知识图谱</a>
-<h1><span>🧩</span> 🧩 场景-1-模块定位</h1>
-<p class="sub">在三十秒内定位任一模块（技能/Agent/规则）的入口、依赖、消费者和契约</p>
+/* ── Breadcrumb ─────────────────────────── */
+.breadcrumb {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 1.25rem; font-size: 0.76rem;
+}
+.breadcrumb a {
+  color: #7aa2f7; text-decoration: none; transition: color 0.15s;
+}
+.breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
+.breadcrumb .bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
+.breadcrumb .bc-current { color: #94a3b8; font-weight: 500; }
+</style></head><body><div class="container" id="report-container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../计划.html">yry-arch · 系统架构知识固化</a><span class="bc-sep">/</span><span class="bc-current">场景 1 · 模块定位与职责</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>🧩 模块定位 · 知识图谱</h1>
+<div class="toolbar"><div class="toolbar-actions">
+<button onclick="copyAsImage(this)">📋 Copy</button>
+<button onclick="downloadPNG(this)">🖼️ PNG</button>
+<button onclick="downloadPDF(this)">📄 PDF</button>
+</div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
+</div><p class="subtitle">yry-arch · 场景-1 · 3 源文件 · 7 图谱节点 · 模块识别→入口验证</p></div>
 
-<div class="stats">
-  <div class="stat"><div class="sv">3</div><div class="sl">源文件</div></div>
-  <div class="stat"><div class="sv">7</div><div class="sl">图谱节点</div></div>
-</div>
-
-<div class="card">
-  <h2>📁 源文件</h2>
-  <div class="file-item">
-  <span class="type"><span class="tag green">SKILL</span></span>
-  <span class="path">skills/rui/SKILL.md</span>
-  <div class="desc">核心技能入口，调度 pm→architect→coder→tester→reporter 全管线</div>
-</div>
-<div class="file-item">
-  <span class="type"><span class="tag blue">AGENT</span></span>
-  <span class="path">agents/AGENT.md</span>
-  <div class="desc">Agent 角色总纲：拓扑、行为纪律、设计原则、执行准则、多 Agent 协作模式</div>
-</div>
-<div class="file-item">
-  <span class="type"><span class="tag amber">RULE</span></span>
-  <span class="path">rules/code-pipeline.md</span>
-  <div class="desc">源码改动管线规则：分支隔离→逐模块实现→闭环验证→交付</div>
-</div>
-
-</div>
-
-<div class="card">
-  <h2>🔗 图谱节点</h2>
-  <div class="node-list">
-    <span class="node-chip">domain:module-ecosystem</span>
-<span class="node-chip">flow:module-location</span>
-<span class="node-chip">step:identify-module-type</span>
-<span class="node-chip">step:find-entry-file</span>
-<span class="node-chip">step:trace-dependencies</span>
-<span class="node-chip">step:identify-consumers</span>
-<span class="node-chip">step:verify-contract</span>
-
-  </div>
+<div class="legend">
+<span style="color:#94a3b8;font-weight:600;">节点:</span>
+<span class="legend-item"><span class="legend-dot scene"></span>场景</span>
+<span class="legend-item"><span class="legend-dot skill"></span>SKILL</span>
+<span class="legend-item"><span class="legend-dot agent"></span>AGENT</span>
+<span class="legend-item"><span class="legend-dot rule"></span>RULE</span>
+<span class="legend-item"><span class="legend-dot domain"></span>Domain</span>
+<span class="legend-item"><span class="legend-dot flow"></span>Flow</span>
+<span class="legend-item"><span class="legend-dot step"></span>Step</span>
+<span style="margin-left:1rem;color:#94a3b8;font-weight:600;">操作:</span>
+<span style="color:#64748b;">🖱 拖拽 · 滚轮缩放 · 点击节点高亮邻域</span>
 </div>
 
-<div class="card">
-  <h2>📊 场景数据</h2>
-  <pre style="background:rgba(0,0,0,.3);border-radius:6px;padding:14px;font-size:.7rem;color:var(--muted);overflow-x:auto;max-height:400px">{
-  "name": "模块定位",
-  "description": "在三十秒内定位任一模块的入口、依赖、消费者和接口契约",
-  "nodes": [
-    "domain:module-ecosystem",
-    "flow:module-location",
-    "step:identify-module-type",
-    "step:find-entry-file",
-    "step:trace-dependencies",
-    "step:identify-consumers",
-    "step:verify-contract"
-  ]
-}</pre>
+<div class="graph-container"><div id="cy"></div></div>
+
+<div class="cards">
+<div class="card"><div class="card-header"><div class="card-dot skill"></div><h3>Skills</h3></div><ul><li>skills/rui/SKILL.md — SDLC编排器入口</li></ul></div>
+<div class="card"><div class="card-header"><div class="card-dot agent"></div><h3>Agents</h3></div><ul><li>agents/AGENT.md — 角色拓扑总纲</li></ul></div>
+<div class="card"><div class="card-header"><div class="card-dot rule"></div><h3>Rules</h3></div><ul><li>rules/code-pipeline.md — 管线四阶段规则</li></ul></div>
 </div>
+
+<p class="footer">YrY v1.29.0 · yry-arch · 场景-1: 模块定位 · 知识图谱 v2.0.0</p>
 </div>
-</body>
-</html>
+<script>
+const cy=cytoscape({container:document.getElementById('cy'),style:[
+{selector:'node',style:{'label':'data(label)','font-family':'JetBrains Mono,monospace','font-size':'9px','color':'#e2e8f0','text-valign':'center','text-halign':'center','text-wrap':'wrap','text-max-width':'90px','border-width':2,'width':52,'height':52,'background-opacity':0.9,'transition-property':'background-color,border-color,width,height','transition-duration':'0.2s'}},
+{selector:'node[type="scene"]',style:{'background-color':'rgba(139,92,246,.35)','border-color':'#8B5CF6','width':66,'height':66,'font-size':'10px','font-weight':'700','shape':'round-rectangle'}},
+{selector:'node[type="skill"]',style:{'background-color':'rgba(34,211,238,.35)','border-color':'#22d3ee'}},
+{selector:'node[type="agent"]',style:{'background-color':'rgba(167,139,250,.35)','border-color':'#a78bfa'}},
+{selector:'node[type="rule"]',style:{'background-color':'rgba(251,191,36,.3)','border-color':'#fbbf24'}},
+{selector:'node[type="domain"]',style:{'background-color':'rgba(236,72,153,.3)','border-color':'#EC4899','width':60,'height':60,'font-size':'10px','font-weight':'600','shape':'rectangle'}},
+{selector:'node[type="flow"]',style:{'background-color':'rgba(52,211,153,.3)','border-color':'#34d399','width':56,'height':56,'font-weight':'600'}},
+{selector:'node[type="step"]',style:{'background-color':'rgba(59,130,246,.3)','border-color':'#3B82F6'}},
+{selector:'edge',style:{'width':1.2,'line-color':'#334155','target-arrow-color':'#334155','target-arrow-shape':'triangle','arrow-scale':0.8,'curve-style':'bezier','opacity':0.6}},
+{selector:'edge[type="contains"]',style:{'line-color':'#8B5CF6','target-arrow-color':'#8B5CF6','width':1.5,'opacity':0.7}},
+{selector:'edge[type="references"]',style:{'line-color':'#3B82F6','target-arrow-color':'#3B82F6','width':1,'opacity':0.5,'line-style':'dashed'}},
+{selector:'edge[type="defines"]',style:{'line-color':'#22d3ee','target-arrow-color':'#22d3ee','width':1.2,'opacity':0.6}},
+{selector:'node:selected',style:{'border-width':3,'border-color':'#fff','width':'70px','height':'70px','font-size':'10px','z-index':999}},
+{selector:'edge:selected',style:{'width':3,'line-color':'#fff','target-arrow-color':'#fff','opacity':1,'z-index':999}}
+],
+elements:{nodes:[
+{data:{id:'s1',label:'场景-1\n模块定位',type:'scene'}},
+{data:{id:'rui',label:'rui\nSKILL.md',type:'skill'}},
+{data:{id:'agent',label:'AGENT.md\n角色总纲',type:'agent'}},
+{data:{id:'pipeline',label:'code-pipeline\n管线规则',type:'rule'}},
+{data:{id:'domain',label:'module-\necosystem',type:'domain'}},
+{data:{id:'flow',label:'module-\nlocation',type:'flow'}},
+{data:{id:'st1',label:'identify\n-module-type',type:'step'}},
+{data:{id:'st2',label:'find\n-entry-file',type:'step'}},
+{data:{id:'st3',label:'trace\n-dependencies',type:'step'}},
+{data:{id:'st4',label:'identify\n-consumers',type:'step'}},
+{data:{id:'st5',label:'verify\n-contract',type:'step'}}
+],
+edges:[
+{data:{id:'e-s1-rui',source:'s1',target:'rui',type:'contains'}},
+{data:{id:'e-s1-agent',source:'s1',target:'agent',type:'contains'}},
+{data:{id:'e-s1-pipe',source:'s1',target:'pipeline',type:'contains'}},
+{data:{id:'e-s1-dom',source:'s1',target:'domain',type:'references'}},
+{data:{id:'e-dom-flow',source:'domain',target:'flow',type:'defines'}},
+{data:{id:'e-flow-st1',source:'flow',target:'st1',type:'defines'}},
+{data:{id:'e-flow-st2',source:'flow',target:'st2',type:'defines'}},
+{data:{id:'e-flow-st3',source:'flow',target:'st3',type:'defines'}},
+{data:{id:'e-flow-st4',source:'flow',target:'st4',type:'defines'}},
+{data:{id:'e-flow-st5',source:'flow',target:'st5',type:'defines'}}
+]},
+layout:{name:'breadthfirst',directed:true,spacingFactor:1.6,padding:30,avoidOverlap:true,nodeDimensionsIncludeLabels:true},
+wheelSensitivity:0.3,minZoom:0.3,maxZoom:3});
+
+cy.on('tap','node',function(evt){const node=evt.target;const hood=node.closedNeighborhood();cy.elements().style('opacity',0.15);hood.style('opacity',1);node.style('opacity',1)});
+cy.on('tap',function(evt){if(evt.target===cy)cy.elements().style('opacity',0.85)});
+
+async function copyAsImage(btn){const orig=btn.textContent;try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),blob=await new Promise(r=>canvas.toBlob(r,'image/png'));await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);btn.textContent='✓ Copied!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+async function downloadPNG(btn){const orig=btn.textContent;btn.textContent='⏳...';try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),link=document.createElement('a');link.download='知识图谱-模块定位.png';link.href=canvas.toDataURL('image/png');link.click();btn.textContent='✓ Done!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+async function downloadPDF(btn){const orig=btn.textContent;btn.textContent='⏳...';try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),imgData=canvas.toDataURL('image/png');const{jsPDF}=window.jspdf,orientation=canvas.width>canvas.height?'landscape':'portrait',pdf=new jsPDF({orientation,unit:'px',format:[canvas.width,canvas.height],hotfixes:['px_scaling']});pdf.addImage(imgData,'PNG',0,0,canvas.width,canvas.height);pdf.save('知识图谱-模块定位.pdf');btn.textContent='✓ Done!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+</script></body></html>

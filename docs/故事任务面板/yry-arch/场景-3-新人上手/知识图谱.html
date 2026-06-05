@@ -1,89 +1,122 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>🚀 场景-3-新人上手 · 知识图谱</title>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>🚀 新人上手 · 知识图谱</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 <style>
-:root { --bg:#020617; --surface:#0f172a; --border:#1e293b; --text:#e2e8f0; --muted:#64748b; --cyan:#22d3ee; --emerald:#34d399; --violet:#a78bfa; --amber:#fbbf24; --blue:#3B82F6; }
-* { margin:0;padding:0;box-sizing:border-box }
-body { background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;min-height:100vh;padding:24px }
-.container { max-width:960px;margin:0 auto }
-h1 { font-size:1.5rem;margin-bottom:4px } h1 span { color:var(--cyan) }
-.sub { color:var(--muted);font-size:.82rem;margin-bottom:24px }
-.card { background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px }
-.card h2 { font-size:.95rem;margin-bottom:12px;color:var(--cyan) }
-.card h3 { font-size:.82rem;color:var(--violet);margin-bottom:8px }
-.tag { display:inline-block;background:rgba(34,211,238,.1);color:var(--cyan);padding:2px 8px;border-radius:10px;font-size:.68rem;margin:2px 4px 2px 0 }
-.tag.green { background:rgba(52,211,153,.1);color:var(--emerald) }
-.tag.amber { background:rgba(251,191,36,.1);color:var(--amber) }
-.tag.blue { background:rgba(59,130,246,.1);color:var(--blue) }
-.file-item { padding:8px 12px;border-left:2px solid var(--border);margin:6px 0;font-size:.78rem }
-.file-item .type { color:var(--cyan);font-weight:600 }
-.file-item .path { color:var(--muted);font-family:monospace;font-size:.72rem }
-.file-item .desc { color:var(--text);margin-top:2px }
-.node-list { display:flex;flex-wrap:wrap;gap:6px }
-.node-chip { background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:.7rem;font-family:monospace;color:var(--muted) }
-.stats { display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px }
-.stat { background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px;text-align:center;min-width:80px }
-.stat .sv { font-size:1.3rem;font-weight:700;color:var(--cyan) }
-.stat .sl { font-size:.64rem;color:var(--muted);text-transform:uppercase;margin-top:2px }
-a.back { color:var(--muted);text-decoration:none;font-size:.78rem;display:inline-block;margin-bottom:16px }
-a.back:hover { color:var(--cyan) }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
+.container{max-width:1400px;margin:0 auto}
+.header{margin-bottom:1.5rem}
+.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
+.pulse-dot{width:12px;height:12px;background:#22d3ee;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+h1{font-size:1.5rem;font-weight:700}
+.subtitle{color:#94a3b8;font-size:.875rem;margin-left:1.75rem}
+.toolbar{display:flex;gap:.5rem;margin-left:auto;flex-shrink:0;align-items:center}
+.toolbar-toggle{background:transparent;border:none;color:#475569;cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem}
+.toolbar-toggle:hover{color:#94a3b8;background:rgba(30,41,59,.5)}
+.toolbar-actions{display:none;gap:.5rem}
+.toolbar.expanded .toolbar-actions{display:flex}
+.toolbar-actions button{background:rgba(30,41,59,.8);border:1px solid #334155;color:#94a3b8;padding:.375rem .75rem;border-radius:.375rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.toolbar-actions button:hover{background:rgba(51,65,85,.8);color:white;border-color:#475569}
+.graph-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1rem;margin-bottom:1.5rem}
+#cy{width:100%;height:600px;border-radius:.5rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
+.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
+.card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
+.card-dot{width:8px;height:8px;border-radius:50%}
+.card-dot.scene{background:#8B5CF6}.card-dot.file{background:#94a3b8}.card-dot.domain{background:#EC4899}.card-dot.flow{background:#34d399}
+.card h3{font-size:.875rem;font-weight:600}
+.card ul{list-style:none;color:#94a3b8;font-size:.75rem}
+.card li{margin-bottom:.375rem}
+.legend{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:.75rem;padding:.75rem;background:rgba(15,23,42,.5);border-radius:.5rem;border:1px solid #1e293b;font-size:.75rem;color:#94a3b8}
+.legend-item{display:flex;align-items:center;gap:.375rem}
+.legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid}
+.legend-dot.scene{background:rgba(139,92,246,.3);border-color:#8B5CF6}
+.legend-dot.file{background:rgba(148,163,184,.3);border-color:#94a3b8}
+.legend-dot.domain{background:rgba(236,72,153,.3);border-color:#EC4899}
+.legend-dot.flow{background:rgba(52,211,153,.3);border-color:#34d399}
+.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
+@media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
 
-a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
-</style>
-</head>
-<body>
-<div class="container">
-<a href="../知识图谱.html" class="back">← 返回故事知识图谱</a>
-<h1><span>🚀</span> 🚀 场景-3-新人上手</h1>
-<p class="sub">新人首次参与的端到端流程：从故事领取到交付收口的完整路径</p>
+/* ── Breadcrumb ─────────────────────────── */
+.breadcrumb {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 1.25rem; font-size: 0.76rem;
+}
+.breadcrumb a {
+  color: #7aa2f7; text-decoration: none; transition: color 0.15s;
+}
+.breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
+.breadcrumb .bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
+.breadcrumb .bc-current { color: #94a3b8; font-weight: 500; }
+</style></head><body><div class="container" id="report-container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../计划.html">yry-arch · 系统架构知识固化</a><span class="bc-sep">/</span><span class="bc-current">场景 3 · 新人上手与开发指南</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>🚀 新人上手 · 知识图谱</h1>
+<div class="toolbar"><div class="toolbar-actions">
+<button onclick="copyAsImage(this)">📋 Copy</button>
+<button onclick="downloadPNG(this)">🖼️ PNG</button>
+<button onclick="downloadPDF(this)">📄 PDF</button>
+</div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
+</div><p class="subtitle">yry-arch · 场景-3 · 2 源文件 · 4 图谱节点 · 故事领取→交付收口</p></div>
 
-<div class="stats">
-  <div class="stat"><div class="sv">2</div><div class="sl">源文件</div></div>
-  <div class="stat"><div class="sv">4</div><div class="sl">图谱节点</div></div>
+<div class="legend">
+<span style="color:#94a3b8;font-weight:600;">节点:</span>
+<span class="legend-item"><span class="legend-dot scene"></span>场景</span>
+<span class="legend-item"><span class="legend-dot file"></span>入口文件</span>
+<span class="legend-item"><span class="legend-dot domain"></span>Domain</span>
+<span class="legend-item"><span class="legend-dot flow"></span>Flow</span>
+<span style="margin-left:1rem;color:#94a3b8;font-weight:600;">操作:</span>
+<span style="color:#64748b;">🖱 拖拽 · 滚轮缩放 · 点击节点高亮邻域</span>
 </div>
 
-<div class="card">
-  <h2>📁 源文件</h2>
-  <div class="file-item">
-  <span class="type"><span class="tag ">FILE</span></span>
-  <span class="path">README.md</span>
-  <div class="desc">项目入口文档，系统全景图和命令速查</div>
-</div>
-<div class="file-item">
-  <span class="type"><span class="tag ">FILE</span></span>
-  <span class="path">CLAUDE.md</span>
-  <div class="desc">项目约束文件，定义铁律、不可妥协底线和退化对策</div>
+<div class="graph-container"><div id="cy"></div></div>
+
+<div class="cards">
+<div class="card"><div class="card-header"><div class="card-dot file"></div><h3>入口文件</h3></div><ul><li>README.md — 项目入口、系统全景图</li><li>CLAUDE.md — 铁律、不可妥协底线</li></ul></div>
+<div class="card"><div class="card-header"><div class="card-dot domain"></div><h3>覆盖领域</h3></div><ul><li>module-ecosystem — 模块生态定位</li><li>pipeline-execution — 管线执行流程</li></ul></div>
 </div>
 
+<p class="footer">YrY v1.29.0 · yry-arch · 场景-3: 新人上手 · 知识图谱 v2.0.0</p>
 </div>
+<script>
+const cy=cytoscape({container:document.getElementById('cy'),style:[
+{selector:'node',style:{'label':'data(label)','font-family':'JetBrains Mono,monospace','font-size':'9px','color':'#e2e8f0','text-valign':'center','text-halign':'center','text-wrap':'wrap','text-max-width':'90px','border-width':2,'width':52,'height':52,'background-opacity':0.9,'transition-property':'background-color,border-color,width,height','transition-duration':'0.2s'}},
+{selector:'node[type="scene"]',style:{'background-color':'rgba(139,92,246,.35)','border-color':'#8B5CF6','width':66,'height':66,'font-size':'10px','font-weight':'700','shape':'round-rectangle'}},
+{selector:'node[type="file"]',style:{'background-color':'rgba(148,163,184,.35)','border-color':'#94a3b8'}},
+{selector:'node[type="domain"]',style:{'background-color':'rgba(236,72,153,.3)','border-color':'#EC4899','width':60,'height':60,'font-size':'10px','font-weight':'600','shape':'rectangle'}},
+{selector:'node[type="flow"]',style:{'background-color':'rgba(52,211,153,.3)','border-color':'#34d399','width':56,'height':56,'font-weight':'600'}},
+{selector:'edge',style:{'width':1.2,'line-color':'#334155','target-arrow-color':'#334155','target-arrow-shape':'triangle','arrow-scale':0.8,'curve-style':'bezier','opacity':0.6}},
+{selector:'edge[type="contains"]',style:{'line-color':'#8B5CF6','target-arrow-color':'#8B5CF6','width':1.5,'opacity':0.7}},
+{selector:'edge[type="references"]',style:{'line-color':'#3B82F6','target-arrow-color':'#3B82F6','width':1,'opacity':0.5,'line-style':'dashed'}},
+{selector:'node:selected',style:{'border-width':3,'border-color':'#fff','width':'70px','height':'70px','font-size':'10px','z-index':999}},
+{selector:'edge:selected',style:{'width':3,'line-color':'#fff','target-arrow-color':'#fff','opacity':1,'z-index':999}}
+],
+elements:{nodes:[
+{data:{id:'s3',label:'场景-3\n新人上手',type:'scene'}},
+{data:{id:'readme',label:'README\n.md',type:'file'}},
+{data:{id:'claude',label:'CLAUDE\n.md',type:'file'}},
+{data:{id:'d1',label:'module-\necosystem',type:'domain'}},
+{data:{id:'d2',label:'pipeline-\nexecution',type:'domain'}},
+{data:{id:'f1',label:'module-\nlocation',type:'flow'}},
+{data:{id:'f2',label:'command-to-\ndelivery',type:'flow'}}
+],
+edges:[
+{data:{id:'e-s3-readme',source:'s3',target:'readme',type:'contains'}},
+{data:{id:'e-s3-claude',source:'s3',target:'claude',type:'contains'}},
+{data:{id:'e-s3-d1',source:'s3',target:'d1',type:'references'}},
+{data:{id:'e-s3-d2',source:'s3',target:'d2',type:'references'}},
+{data:{id:'e-d1-f1',source:'d1',target:'f1',type:'references'}},
+{data:{id:'e-d2-f2',source:'d2',target:'f2',type:'references'}}
+]},
+layout:{name:'breadthfirst',directed:true,spacingFactor:1.6,padding:30,avoidOverlap:true,nodeDimensionsIncludeLabels:true},
+wheelSensitivity:0.3,minZoom:0.3,maxZoom:3});
 
-<div class="card">
-  <h2>🔗 图谱节点</h2>
-  <div class="node-list">
-    <span class="node-chip">domain:module-ecosystem</span>
-<span class="node-chip">domain:pipeline-execution</span>
-<span class="node-chip">flow:module-location</span>
-<span class="node-chip">flow:command-to-delivery</span>
+cy.on('tap','node',function(evt){const node=evt.target;const hood=node.closedNeighborhood();cy.elements().style('opacity',0.15);hood.style('opacity',1);node.style('opacity',1)});
+cy.on('tap',function(evt){if(evt.target===cy)cy.elements().style('opacity',0.85)});
 
-  </div>
-</div>
-
-<div class="card">
-  <h2>📊 场景数据</h2>
-  <pre style="background:rgba(0,0,0,.3);border-radius:6px;padding:14px;font-size:.7rem;color:var(--muted);overflow-x:auto;max-height:400px">{
-  "name": "新人上手",
-  "description": "新成员在十分钟内理解系统骨架和协作方式",
-  "nodes": [
-    "domain:module-ecosystem",
-    "domain:pipeline-execution",
-    "flow:module-location",
-    "flow:command-to-delivery"
-  ]
-}</pre>
-</div>
-</div>
-</body>
-</html>
+async function copyAsImage(btn){const orig=btn.textContent;try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),blob=await new Promise(r=>canvas.toBlob(r,'image/png'));await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);btn.textContent='✓ Copied!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+async function downloadPNG(btn){const orig=btn.textContent;btn.textContent='⏳...';try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),link=document.createElement('a');link.download='知识图谱-新人上手.png';link.href=canvas.toDataURL('image/png');link.click();btn.textContent='✓ Done!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+async function downloadPDF(btn){const orig=btn.textContent;btn.textContent='⏳...';try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),imgData=canvas.toDataURL('image/png');const{jsPDF}=window.jspdf,orientation=canvas.width>canvas.height?'landscape':'portrait',pdf=new jsPDF({orientation,unit:'px',format:[canvas.width,canvas.height],hotfixes:['px_scaling']});pdf.addImage(imgData,'PNG',0,0,canvas.width,canvas.height);pdf.save('知识图谱-新人上手.pdf');btn.textContent='✓ Done!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+</script></body></html>

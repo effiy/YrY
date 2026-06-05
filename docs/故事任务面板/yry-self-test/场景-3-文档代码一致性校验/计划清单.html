@@ -29,9 +29,22 @@
   .nav { font-size:0.8rem; margin:1rem 0; } .nav a { color:var(--accent); text-decoration:none; margin-right:1rem; }
 
 a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+
+/* ── Breadcrumb ─────────────────────────── */
+.breadcrumb {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 1.25rem; font-size: 0.76rem;
+}
+.breadcrumb a {
+  color: #7aa2f7; text-decoration: none; transition: color 0.15s;
+}
+.breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
+.breadcrumb .bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
+.breadcrumb .bc-current { color: #94a3b8; font-weight: 500; }
 </style>
 </head>
 <body><div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../计划.html">yry-self-test · 自主测试方案</a><span class="bc-sep">/</span><span class="bc-current">场景 3 · 文档代码一致性校验</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
 <header><h1>📋 场景-3: 文档代码一致性校验 · 计划清单</h1>
 <div class="meta"><span>📌 v1.1.0</span> · <span>📅 2026-06-05</span> · <span>🏷️ yry-self-test</span></div>
 <div class="nav"><a href="../计划.html">← 计划总览</a> <a href="../场景-3-文档代码一致性校验.md">📄 场景文档</a> <a href="../场景-3-文档代码一致性校验.html">🎨 架构图</a></div></header>

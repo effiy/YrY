@@ -37,10 +37,23 @@
   .nav a { color:var(--accent); text-decoration:none; margin-right:1rem; } .nav a:hover { text-decoration:underline; }
 
 a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+
+/* ── Breadcrumb ─────────────────────────── */
+.breadcrumb {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 1.25rem; font-size: 0.76rem;
+}
+.breadcrumb a {
+  color: #7aa2f7; text-decoration: none; transition: color 0.15s;
+}
+.breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
+.breadcrumb .bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
+.breadcrumb .bc-current { color: #94a3b8; font-weight: 500; }
 </style>
 </head>
 <body>
 <div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../计划.html">yry-arch · 系统架构知识固化</a><span class="bc-sep">/</span><span class="bc-current">场景 2 · 数据流与追踪</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
 <header>
   <h1>📋 场景-2: 数据流追踪 · 计划清单</h1>
   <div class="meta"><span>📌 v1.29.0</span> · <span>📅 2026-06-05</span> · <span>🏷️ yry-arch</span></div>
