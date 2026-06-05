@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>rui demo · SDLC 编排器</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <style>
+    :root { --bg: rgba(22,22,32,1); --bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%); --bg-flat: rgba(34,34,46,1); --accent: #FFC107; --cyan: #22d3ee; --pass: #22c55e; --fail: #ef4444; --text: rgba(250,250,252,1); --text2: rgba(160,160,164,1); --text3: rgba(110,110,114,1); --shadow: 0 4px 20px rgba(0,0,0,0.3); --shadow-lg: 0 12px 32px rgba(0,0,0,0.45); --radius: 12px; --border: 1px solid rgba(255,255,255,0.06); }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; }
+    .container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+    .back { color: var(--text3); text-decoration: none; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 24px; transition: color 0.15s; }
+    .back:hover { color: var(--accent); }
+    h1 { font-size: 1.8rem; margin-bottom: 4px; } h1 span { color: var(--accent); }
+    .sub { color: var(--text2); font-size: 0.9rem; margin-bottom: 32px; }
+    .section { margin-bottom: 36px; }
+    .section h2 { font-size: 1.1rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .section h2 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+    .mermaid-wrap { background: var(--bg-card); border: var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); overflow-x: auto; margin-bottom: 20px; }
+    .cmd-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+    .cmd-card { background: var(--bg-card); border: var(--border); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); }
+    .cmd-card .name { font-weight: 700; font-size: 0.9rem; color: var(--accent); font-family: monospace; }
+    .cmd-card .desc { font-size: 0.78rem; color: var(--text2); margin: 4px 0 8px; }
+    .cmd-card pre { background: rgba(0,0,0,0.3); border-radius: 6px; padding: 8px 12px; font-size: 0.74rem; color: var(--cyan); overflow-x: auto; font-family: 'SF Mono', monospace; }
+    .flow-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: center; }
+    .flow-chip { background: var(--bg-flat); border: var(--border); border-radius: 20px; padding: 8px 16px; font-size: 0.82rem; }
+    .flow-chip .n { font-weight: 700; color: var(--accent); }
+    .flow-arrow { color: var(--text3); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <a href="./" class="back">← 演示中心</a>
+  <h1>🎯 <span>rui</span> · SDLC 编排器</h1>
+  <p class="sub">故事驱动的 SDLC 编排核心 — story → document → code → delivery</p>
+
+  <div class="section">
+    <h2><span class="dot"></span>管线流程</h2>
+    <div class="mermaid-wrap"><div class="mermaid">
+flowchart LR
+    A[需求输入] --> B[自适应规划] --> C[影响分析] --> D[架构设计] --> E[文档生成]
+    E --> F{分支隔离} -->|✅| G[Gate A 测试先行] --> H[实现] --> I[Gate B 验证] --> J[自改进] --> K[交付]
+    F -->|❌| X[🚫 阻断]
+    style A fill:#1a1a2e,stroke:#FFC107,color:#fff
+    style K fill:#1a1a2e,stroke:#22c55e,color:#fff
+    style X fill:#1a1a2e,stroke:#ef4444,color:#ef4444
+    </div></div>
+  </div>
+
+  <div class="section">
+    <h2><span class="dot"></span>子命令</h2>
+    <div class="flow-row" style="margin-bottom:20px">
+      <div class="flow-chip"><span class="n">init</span> 初始化</div><span class="flow-arrow">→</span>
+      <div class="flow-chip"><span class="n">doc</span> 文档基线</div><span class="flow-arrow">→</span>
+      <div class="flow-chip"><span class="n">code</span> 实现</div><span class="flow-arrow">→</span>
+      <div class="flow-chip"><span class="n">update</span> 增量更新</div><span class="flow-arrow">→</span>
+      <div class="flow-chip"><span class="n">yry</span> 自改进</div><span class="flow-arrow">→</span>
+      <div class="flow-chip"><span class="n">version</span> 版本管理</div>
+    </div>
+    <div class="cmd-grid">
+      <div class="cmd-card"><div class="name">/rui init</div><div class="desc">六步建立项目基线：detect → explore → generate → arch → setup → verify</div><pre>/rui init</pre></div>
+      <div class="cmd-card"><div class="name">/rui doc 需求</div><div class="desc">拆需求为故事 + 生成文档基线，全程只读源码</div><pre>/rui doc 用户登录功能</pre></div>
+      <div class="cmd-card"><div class="name">/rui code name</div><div class="desc">实现故事：Gate A → 逐模块 → Gate B → 自改进</div><pre>/rui code user-login</pre></div>
+      <div class="cmd-card"><div class="name">/rui update name</div><div class="desc">增量更新，T1/T2/T3 自动裁剪管线</div><pre>/rui update user-login --no-code</pre></div>
+      <div class="cmd-card"><div class="name">/rui yry</div><div class="desc">全自主自改进闭环，循环至收敛</div><pre>/rui yry --depth 3</pre></div>
+      <div class="cmd-card"><div class="name">/rui version --up</div><div class="desc">自主判定版本号 → 更新文件 → commit → push</div><pre>/rui version --up</pre></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="dot"></span>支撑文件</h2>
+    <div class="flow-row">
+      <div class="flow-chip">SKILL.md</div>
+      <div class="flow-chip">formulas.md</div>
+      <div class="flow-chip">coder.md</div>
+      <div class="flow-chip">ranking.md</div>
+      <div class="flow-chip">recommend.mjs</div>
+      <div class="flow-chip">branch-check.mjs</div>
+      <div class="flow-chip">audit.mjs</div>
+      <div class="flow-chip">help.mjs</div>
+    </div>
+  </div>
+</div>
+<script>mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#1a1a2e',primaryTextColor:'#fafafc',primaryBorderColor:'#FFC107',lineColor:'#a0a0a4'},flowchart:{useMaxWidth:true,htmlLabels:true,curve:'basis'}});</script>
+</body>
+</html>

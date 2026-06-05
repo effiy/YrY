@@ -36,6 +36,14 @@
     .header h1 .accent { color: var(--color-accent); }
     .header p { color: var(--text-secondary); margin-top: 8px; font-size: 0.92rem; }
 
+    .cross-nav { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; animation: fadeInDown 0.5s 0.05s ease both; }
+    .cross-card { background: var(--bg-card); border: var(--border-subtle); border-radius: var(--radius-card); padding: 14px 20px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; box-shadow: var(--shadow-card); transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; min-width: 150px; flex: 1; max-width: 240px; }
+    .cross-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: rgba(255,193,7,0.35); }
+    .cross-card .ci { font-size: 1.3rem; } .cross-card .cb { flex: 1; } .cross-card .cn { font-weight: 600; font-size: 0.86rem; display: block; } .cross-card .cs { font-size: 0.7rem; color: var(--text-muted); display: block; } .cross-card .ca { color: var(--text-muted); }
+    .cross-card.active { border-color: rgba(255,193,7,0.35); } .cross-card.active .cn { color: var(--color-accent); }
+    .meta-link { color: var(--color-accent-2); text-decoration: none; font-size: 0.68rem; margin-left: 2px; }
+    .meta-link:hover { text-decoration: underline; }
+
     .stats { display: flex; gap: 14px; justify-content: center; margin-bottom: 40px; flex-wrap: wrap; animation: fadeInDown 0.5s 0.1s ease both; }
     .stat {
       background: var(--bg-card); border: var(--border-subtle);
@@ -234,6 +242,12 @@
       <p>故事驱动的 SDLC 编排系统 — 五层结构：技能 → 故事 → 场景 → Agent 角色与规则 → 参考入口</p>
     </div>
 
+    <div class="cross-nav">
+      <a class="cross-card active"><span class="ci">📚</span><span class="cb"><span class="cn">文档中心</span><span class="cs">技能 · 故事 · Agent · 规则</span></span><span class="ca" style="color:var(--color-accent)">●</span></a>
+      <a class="cross-card" href="../tests/index.html"><span class="ci">🧪</span><span class="cb"><span class="cn">自检中心</span><span class="cs">171 断言 · 10 套件</span></span><span class="ca">→</span></a>
+      <a class="cross-card" href="../demos/index.html"><span class="ci">🎬</span><span class="cb"><span class="cn">演示中心</span><span class="cs">6 技能交互演示</span></span><span class="ca">→</span></a>
+    </div>
+
     <div class="stats">
       <a class="stat" href="#layer-skills"><div class="num">6</div><div class="label">技能</div></a>
       <a class="stat" href="#layer-story"><div class="num">2</div><div class="label">故事</div></a>
@@ -286,7 +300,7 @@
           <div class="body">
             <div class="name"><a href="../skills/rui/SKILL.md" target="_blank">rui</a></div>
             <div class="desc">故事驱动的 SDLC 编排器：story → document → code → delivery</div>
-            <div class="meta"><span class="accent">核心管线</span> · SKILL.md + formulas.md + coder.md</div>
+            <div class="meta"><span class="accent">核心管线</span> · SKILL.md + formulas.md + coder.md · <a class="meta-link" href="../demos/rui.html">🎬 demo</a> · <a class="meta-link" href="../tests/skills/rui.test.mjs">🧪 test</a></div>
           </div>
         </div>
         <div class="item-card">
@@ -294,7 +308,7 @@
           <div class="body">
             <div class="name"><a href="../skills/rui-story/SKILL.md" target="_blank">rui-story</a></div>
             <div class="desc">故事任务面板管理：collect · status · sync · notify</div>
-            <div class="meta"><span class="accent">面板管理</span> · rui-story.mjs (30KB)</div>
+            <div class="meta"><span class="accent">面板管理</span> · rui-story.mjs (30KB) · <a class="meta-link" href="../demos/rui-story.html">🎬 demo</a> · <a class="meta-link" href="../tests/skills/rui-story.test.mjs">🧪 test</a></div>
           </div>
         </div>
         <div class="item-card">
@@ -302,7 +316,7 @@
           <div class="body">
             <div class="name"><a href="../skills/rui-claude/SKILL.md" target="_blank">rui-claude</a></div>
             <div class="desc">管理所有 .claude/ 目录：sync from remote · analyze health · recommend tasks</div>
-            <div class="meta"><span class="accent">配置管理</span> · help.mjs</div>
+            <div class="meta"><span class="accent">配置管理</span> · help.mjs · <a class="meta-link" href="../demos/rui-claude.html">🎬 demo</a> · <a class="meta-link" href="../tests/skills/rui-claude.test.mjs">🧪 test</a></div>
           </div>
         </div>
         <div class="item-card">
@@ -310,7 +324,7 @@
           <div class="body">
             <div class="name"><a href="../skills/rui-import/SKILL.md" target="_blank">rui-import</a></div>
             <div class="desc">文档同步：本地文档 → 远程文档 API，手动触发</div>
-            <div class="meta"><span class="accent">文档同步</span> · sync.mjs (22KB)</div>
+            <div class="meta"><span class="accent">文档同步</span> · sync.mjs (22KB) · <a class="meta-link" href="../demos/rui-import.html">🎬 demo</a> · <a class="meta-link" href="../tests/skills/rui-import.test.mjs">🧪 test</a></div>
           </div>
         </div>
         <div class="item-card">
@@ -318,7 +332,7 @@
           <div class="body">
             <div class="name"><a href="../skills/rui-bot/SKILL.md" target="_blank">rui-bot</a></div>
             <div class="desc">企微通知：企业微信 Webhook 消息推送 · 通知日志记录</div>
-            <div class="meta"><span class="accent">消息推送</span> · send.mjs</div>
+            <div class="meta"><span class="accent">消息推送</span> · send.mjs · <a class="meta-link" href="../demos/rui-bot.html">🎬 demo</a> · <a class="meta-link" href="../tests/skills/rui-bot.test.mjs">🧪 test</a></div>
           </div>
         </div>
         <div class="item-card">
@@ -326,7 +340,7 @@
           <div class="body">
             <div class="name"><a href="../skills/rui-trends/SKILL.md" target="_blank">rui-trends</a></div>
             <div class="desc">技术趋势：GitHub Trending · OSS Insight · 自改进技术选型</div>
-            <div class="meta"><span class="accent">趋势发现</span> · help.mjs</div>
+            <div class="meta"><span class="accent">趋势发现</span> · help.mjs · <a class="meta-link" href="../demos/rui-trends.html">🎬 demo</a> · <a class="meta-link" href="../tests/skills/rui-trends.test.mjs">🧪 test</a></div>
           </div>
         </div>
       </div>
@@ -359,6 +373,7 @@
           <div class="story-foot">
             <a href="故事任务面板/yry-arch/场景-1-模块定位.html">架构图 &rarr;</a>
             <a href="故事任务面板/yry-arch/知识图谱.html">知识图谱 &rarr;</a>
+            <a class="meta-link" href="../tests/integration/knowledge-graph.test.mjs">🧪 kg test</a>
             <span class="story-meta-text">4 场景 · 6 技能 + 8 Agent + 8 规则</span>
           </div>
         </div>
@@ -379,6 +394,7 @@
           <div class="story-foot">
             <a href="故事任务面板/yry-self-test/场景-1-init后全量自检.html">架构图 &rarr;</a>
             <a href="故事任务面板/yry-self-test/知识图谱.html">知识图谱 &rarr;</a>
+            <a class="meta-link" href="../tests/index.html">🧪 171 tests</a>
             <span class="story-meta-text">4 场景 · 管线健康 + 文档完整性</span>
           </div>
         </div>

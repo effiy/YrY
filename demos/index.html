@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY Demos · 演示中心</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <style>
+    :root { --bg: rgba(22,22,32,1); --bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%); --bg-flat: rgba(34,34,46,1); --accent: #FFC107; --cyan: #22d3ee; --pass: #22c55e; --fail: #ef4444; --text: rgba(250,250,252,1); --text2: rgba(160,160,164,1); --text3: rgba(110,110,114,1); --shadow: 0 4px 20px rgba(0,0,0,0.3); --shadow-lg: 0 12px 32px rgba(0,0,0,0.45); --radius: 12px; --border: 1px solid rgba(255,255,255,0.06); }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; }
+    .container { max-width: 1120px; margin: 0 auto; padding: 48px 24px 80px; }
+    .header { text-align: center; margin-bottom: 32px; animation: fadeInDown 0.5s ease both; }
+    .header h1 { font-size: 2.1rem; font-weight: 700; } .header h1 .accent { color: var(--accent); }
+    .header .sub { color: var(--text2); font-size: 0.9rem; }
+    .cross-nav { display: flex; gap: 12px; justify-content: center; margin-bottom: 36px; flex-wrap: wrap; animation: fadeInDown 0.5s 0.05s ease both; }
+    .cross-card { background: var(--bg-card); border: var(--border); border-radius: var(--radius); padding: 14px 20px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; box-shadow: var(--shadow); transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; min-width: 150px; flex: 1; max-width: 240px; }
+    .cross-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: rgba(255,193,7,0.35); }
+    .cross-card .ci { font-size: 1.3rem; } .cross-card .cb { flex: 1; } .cross-card .cn { font-weight: 600; font-size: 0.86rem; display: block; } .cross-card .cs { font-size: 0.7rem; color: var(--text3); display: block; } .cross-card .ca { color: var(--text3); }
+    .cross-card.active { border-color: rgba(255,193,7,0.35); } .cross-card.active .cn { color: var(--accent); }
+    .section { margin-bottom: 44px; animation: fadeInUp 0.5s ease both; }
+    .sec-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .sec-head .sn { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,193,7,0.12); color: var(--accent); font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .sec-head h2 { font-size: 1.2rem; font-weight: 700; } .sec-head .ss { font-size: 0.78rem; color: var(--text3); }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+    @media (max-width: 640px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } .cross-nav { flex-direction: column; align-items: stretch; } .cross-card { max-width: none; } }
+    .card { background: var(--bg-card); border: var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s; text-decoration: none; color: inherit; display: block; cursor: pointer; }
+    .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: rgba(255,193,7,0.2); }
+    .card .c-icon { font-size: 1.5rem; margin-bottom: 8px; display: block; }
+    .card .c-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+    .card .c-desc { font-size: 0.8rem; color: var(--text2); line-height: 1.5; }
+    .card .c-meta { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .card .c-tag { background: rgba(255,193,7,0.1); color: var(--accent); padding: 2px 8px; border-radius: 10px; font-size: 0.68rem; }
+    .card .c-tag.cyan { background: rgba(34,211,238,0.1); color: var(--cyan); }
+    .card .c-tag.green { background: rgba(34,197,94,0.1); color: var(--pass); }
+    .card .c-links { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+    .card .c-links a { font-size: 0.68rem; color: var(--text3); text-decoration: none; background: var(--bg-flat); border: var(--border); border-radius: 4px; padding: 3px 8px; transition: all 0.15s; }
+    .card .c-links a:hover { border-color: rgba(255,193,7,0.35); color: var(--accent); }
+    .mermaid-wrap { background: var(--bg-card); border: var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); overflow-x: auto; margin-bottom: 20px; }
+    pre { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 14px 18px; font-size: 0.76rem; color: var(--cyan); overflow-x: auto; font-family: 'SF Mono', monospace; }
+    .flow-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: center; margin-bottom: 20px; }
+    .flow-chip { background: var(--bg-flat); border: var(--border); border-radius: 20px; padding: 8px 16px; font-size: 0.82rem; }
+    .flow-chip a { color: var(--accent); text-decoration: none; font-weight: 700; }
+    .flow-chip a:hover { text-decoration: underline; }
+    .flow-arrow { color: var(--text3); font-size: 0.9rem; padding: 0 4px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🎬 YrY <span class="accent">演示中心</span></h1>
+    <p class="sub">6 技能交互演示 · 管线可视化 · 全维度联动 docs + tests</p>
+  </div>
+
+  <div class="cross-nav">
+    <a class="cross-card" href="../docs/index.html"><span class="ci">📚</span><span class="cb"><span class="cn">文档中心</span><span class="cs">技能 · 故事 · Agent · 规则</span></span><span class="ca">→</span></a>
+    <a class="cross-card" href="../tests/index.html"><span class="ci">🧪</span><span class="cb"><span class="cn">自检中心</span><span class="cs" id="testNav">171 断言 · 全部通过</span></span><span class="ca">→</span></a>
+    <a class="cross-card active"><span class="ci">🎬</span><span class="cb"><span class="cn">演示中心</span><span class="cs">6 技能 · 交互演示</span></span><span class="ca" style="color:var(--accent)">●</span></a>
+  </div>
+
+  <!-- Pipeline overview -->
+  <div class="section">
+    <div class="sec-head"><span class="sn">1</span><h2>管线全景</h2><span class="ss">需求 → 交付 · 6 技能协同</span></div>
+    <div class="mermaid-wrap"><div class="mermaid">
+flowchart LR
+    subgraph S1["🎯 rui"]
+        A[需求] --> B[doc] --> C[code] --> D[交付]
+    end
+    subgraph S2["📋 rui-story"]
+        E[面板管理]
+    end
+    subgraph S3["📤 rui-import"]
+        F[文档同步]
+    end
+    subgraph S4["📢 rui-bot"]
+        G[企微通知]
+    end
+    D --> E --> F --> G
+    style S1 fill:#1a1a2e,stroke:#FFC107,color:#fff
+    style S2 fill:#1a1a2e,stroke:#22d3ee,color:#fff
+    style S3 fill:#1a1a2e,stroke:#22c55e,color:#fff
+    style S4 fill:#1a1a2e,stroke:#f59e0b,color:#fff
+    </div></div>
+    <div class="flow-row">
+      <div class="flow-chip"><a href="rui.html">🎯 rui</a> 编排器</div><span class="flow-arrow">→</span>
+      <div class="flow-chip"><a href="rui-story.html">📋 rui-story</a> 面板</div><span class="flow-arrow">→</span>
+      <div class="flow-chip"><a href="rui-import.html">📤 rui-import</a> 同步</div><span class="flow-arrow">→</span>
+      <div class="flow-chip"><a href="rui-bot.html">📢 rui-bot</a> 通知</div>
+    </div>
+  </div>
+
+  <!-- Skill demos grid -->
+  <div class="section">
+    <div class="sec-head"><span class="sn">2</span><h2>6 技能演示</h2><span class="ss">点击卡片进入交互演示 · 每个技能含流程 + 命令 + 联动链接</span></div>
+    <div class="grid-2">
+      <a class="card" href="rui.html">
+        <span class="c-icon">🎯</span><div class="c-title">rui · SDLC 编排器</div>
+        <div class="c-desc">故事驱动的核心管线。init · doc · code · update · yry · version 六子命令，从需求到交付全流程编排。</div>
+        <div class="c-meta"><span class="c-tag">P0 核心</span><span class="c-tag cyan">9 脚本</span><span class="c-tag green">16 测试</span></div>
+        <div class="c-links"><a href="../skills/rui/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui.test.mjs">🧪 测试</a><a href="../docs/index.html#layer-skills">📚 文档</a></div>
+      </a>
+      <a class="card" href="rui-story.html">
+        <span class="c-icon">📋</span><div class="c-title">rui-story · 故事面板管理</div>
+        <div class="c-desc">故事任务面板全生命周期。collect · status · sync · notify，本地面板与远端双向同步。</div>
+        <div class="c-meta"><span class="c-tag">P0 面板</span><span class="c-tag cyan">30KB 脚本</span><span class="c-tag green">8 测试</span></div>
+        <div class="c-links"><a href="../skills/rui-story/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui-story.test.mjs">🧪 测试</a><a href="../docs/index.html#layer-skills">📚 文档</a></div>
+      </a>
+      <a class="card" href="rui-claude.html">
+        <span class="c-icon">⚙️</span><div class="c-title">rui-claude · 配置管理</div>
+        <div class="c-desc">管理所有 .claude/ 目录。远端同步 → 健康分析 → 任务推荐，跨项目配置一致性保证。</div>
+        <div class="c-meta"><span class="c-tag">配置管理</span><span class="c-tag green">4 测试</span></div>
+        <div class="c-links"><a href="../skills/rui-claude/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui-claude.test.mjs">🧪 测试</a><a href="../docs/index.html#layer-skills">📚 文档</a></div>
+      </a>
+      <a class="card" href="rui-import.html">
+        <span class="c-icon">📤</span><div class="c-title">rui-import · 文档同步</div>
+        <div class="c-desc">本地文档批量同步到远端 API。七阶段流程：扫描 → 过滤 → 路径映射 → 上传 → Session 管理。</div>
+        <div class="c-meta"><span class="c-tag">交付收口</span><span class="c-tag cyan">sync.mjs</span><span class="c-tag green">10 测试</span></div>
+        <div class="c-links"><a href="../skills/rui-import/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui-import.test.mjs">🧪 测试</a><a href="../docs/index.html#layer-skills">📚 文档</a></div>
+      </a>
+      <a class="card" href="rui-bot.html">
+        <span class="c-icon">📢</span><div class="c-title">rui-bot · 企微通知</div>
+        <div class="c-desc">企业微信 Webhook 消息推送。故事状态变更 → 构建载荷 → 通知日志 → HTTP 推送。</div>
+        <div class="c-meta"><span class="c-tag">通知</span><span class="c-tag green">7 测试</span></div>
+        <div class="c-links"><a href="../skills/rui-bot/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui-bot.test.mjs">🧪 测试</a><a href="../docs/index.html#layer-skills">📚 文档</a></div>
+      </a>
+      <a class="card" href="rui-trends.html">
+        <span class="c-icon">📈</span><div class="c-title">rui-trends · 技术趋势</div>
+        <div class="c-desc">多源技术趋势发现。GitHub Trending · OSS Insight · TrendShift，辅助技术选型与架构验证。</div>
+        <div class="c-meta"><span class="c-tag">参考</span><span class="c-tag green">4 测试</span></div>
+        <div class="c-links"><a href="../skills/rui-trends/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui-trends.test.mjs">🧪 测试</a><a href="../docs/index.html#layer-skills">📚 文档</a></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Quick run -->
+  <div class="section">
+    <div class="sec-head"><span class="sn">3</span><h2>快速体验</h2><span class="ss">复制命令到终端执行</span></div>
+    <div class="grid-3">
+      <div class="card"><div class="c-title">🏗️ 初始化项目</div><div class="c-desc">六步建立项目基线</div><pre style="margin-top:8px">/rui init</pre></div>
+      <div class="card"><div class="c-title">📄 文档反推</div><div class="c-desc">从源码生成故事文档</div><pre style="margin-top:8px">/rui doc --from-code</pre></div>
+      <div class="card"><div class="c-title">🧪 运行自检</div><div class="c-desc">171 断言全维度验证</div><pre style="margin-top:8px">node tests/run.mjs</pre></div>
+      <div class="card"><div class="c-title">📤 文档同步</div><div class="c-desc">先预览再上传</div><pre style="margin-top:8px">node skills/rui-import/sync.mjs workspace=true mode=list</pre></div>
+      <div class="card"><div class="c-title">🔄 自改进闭环</div><div class="c-desc">全自主诊断 → 实现 → 验证</div><pre style="margin-top:8px">/rui yry --depth 3</pre></div>
+      <div class="card"><div class="c-title">📢 发送通知</div><div class="c-desc">仅记录日志不推送</div><pre style="margin-top:8px">node skills/rui-bot/send.mjs --story=test --status=done --no-send</pre></div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:20px 0;color:var(--text3);font-size:0.78rem">
+    YrY v1.28.0 · <a href="../CLAUDE.md" style="color:var(--accent)">CLAUDE.md</a> · <a href="../README.md" style="color:var(--accent)">README.md</a>
+  </div>
+</div>
+<script>
+mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#1a1a2e',primaryTextColor:'#fafafc',primaryBorderColor:'#FFC107',lineColor:'#a0a0a4'},flowchart:{useMaxWidth:true,htmlLabels:true,curve:'basis'}});
+// Load live test status
+(async()=>{try{const r=await(await fetch('../tests/results.json')).json();const s=r.summary||{};document.getElementById('testNav').textContent=`${s.passed||0}/${s.total||0} 通过`}catch(e){}})();
+</script>
+</body>
+</html>
