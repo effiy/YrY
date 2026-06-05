@@ -1,0 +1,6 @@
+{
+  "generated": "{{DATE}}",
+  "files": [
+    {{TEST_FILE_ENTRIES}}
+  ]
+}

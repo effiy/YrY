@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>{{PROJECT_NAME}} Docs · 文档中心</title>
+<style>
+:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
+.container{max-width:1120px;margin:0 auto;padding:48px 24px 80px}
+.header{text-align:center;margin-bottom:32px}
+.header h1{font-size:2.1rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+.header .sub{color:var(--text2);font-size:.9rem}
+.cross-nav{display:flex;gap:8px;justify-content:center;align-items:center;margin-bottom:40px;flex-wrap:wrap}
+.cross-link{color:var(--text3);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:all .15s}
+.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06)}
+.story-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:16px;margin-bottom:32px}
+.story-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.story-card .story-icon{font-size:1.5rem}
+.story-card .story-name{font-weight:700;font-size:1rem;margin-left:8px}
+.story-card .story-badge{font-size:.64rem;color:var(--accent);background:rgba(255,193,7,.1);padding:1px 6px;border-radius:8px;margin-left:4px}
+.story-card .story-desc{font-size:.78rem;color:var(--text2);margin:8px 0 12px;line-height:1.5}
+.story-scenes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.scene-tag{font-size:.72rem;color:var(--cyan);text-decoration:none;background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.15);padding:3px 10px;border-radius:4px;transition:all .15s}
+.scene-tag:hover{border-color:var(--cyan);background:rgba(34,211,238,.1)}
+.story-meta-text{font-size:.68rem;color:var(--text3)}
+.layer{margin-bottom:32px}
+.layer-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.layer-num{width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.layer-header h2{font-size:1.1rem}.layer-stats{font-size:.72rem;color:var(--text3)}
+.sub-title{font-size:.82rem;color:var(--accent);margin-bottom:12px;font-weight:600}
+.scene-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-bottom:20px}
+.scene-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.scene-num{font-size:.64rem;color:var(--accent);font-weight:600;margin-bottom:4px}
+.scene-name a{font-size:.85rem;font-weight:600;color:var(--text);text-decoration:none}
+.scene-name a:hover{color:var(--accent)}
+.scene-desc{font-size:.72rem;color:var(--text2);margin:4px 0 8px}
+.scene-meta{font-size:.64rem;color:var(--text3)}
+footer{text-align:center;color:var(--text3);font-size:.72rem;margin-top:40px;padding-top:20px;border-top:var(--border)}
+footer a{color:var(--cyan);text-decoration:none}footer a:hover{color:var(--accent)}
+@media(max-width:640px){.story-grid,.scene-grid{grid-template-columns:1fr}.container{padding:20px 12px 60px}}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header"><h1><span class="accent">{{PROJECT_NAME}}</span> Docs</h1><p class="sub">{{PROJECT_DESCRIPTION}}</p></div>
+<div class="cross-nav">{{NAV_LINKS}}</div>
+
+<!-- Story cards -->
+<div class="layer" id="layer-story">
+<div class="layer-header"><span class="layer-num">2</span><h2>故事</h2><span class="layer-stats">{{STORY_COUNT}} 故事</span></div>
+<div class="story-grid">{{STORY_CARDS}}</div>
+</div>
+
+<!-- Scene detail -->
+<div class="layer" id="layer-scene">
+<div class="layer-header"><span class="layer-num">3</span><h2>场景</h2><span class="layer-stats">{{STORY_COUNT}} 故事 · {{SCENE_COUNT}} 场景</span></div>
+{{SCENE_SECTIONS}}
+</div>
+
+<footer>{{PROJECT_NAME}} v{{VERSION}} · {{FOOTER_TEXT}}</footer>
+</div>
+</body>
+</html>

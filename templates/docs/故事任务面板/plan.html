@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>{{STORY_NAME}} · Plan</title>
+<style>
+:root{--bg:#020617;--surface:#0f172a;--border:#1e293b;--text:#e2e8f0;--muted:#64748b;--cyan:#22d3ee;--emerald:#34d399;--amber:#fbbf24}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;min-height:100vh;padding:24px}
+.container{max-width:960px;margin:0 auto}
+h1{font-size:1.5rem;margin-bottom:4px}h1 span{color:var(--cyan)}
+.sub{color:var(--muted);font-size:.82rem;margin-bottom:24px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px}
+.card h2{font-size:.95rem;margin-bottom:14px;color:var(--cyan)}
+.scenario-link{display:block;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.03);text-decoration:none;color:inherit;font-size:.82rem;transition:background .15s}
+.scenario-link:hover{background:rgba(34,211,238,.04)}
+.scenario-link .n{color:var(--cyan);font-weight:600}
+.scenario-link .desc{color:var(--muted);font-size:.74rem;margin-top:2px}
+</style>
+</head>
+<body>
+<div class="container">
+<h1><span>📋</span> {{STORY_NAME}} · Plan</h1>
+<p class="sub">{{STORY_DESCRIPTION}}</p>
+{{SCENARIO_LINKS}}
+</div>
+</body>
+</html>

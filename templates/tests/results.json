@@ -1,0 +1,13 @@
+{
+  "timestamp": "{{DATE}}",
+  "files": {{FILE_COUNT}},
+  "summary": {
+    "total": {{TOTAL}},
+    "passed": {{PASSED}},
+    "failed": {{FAILED}},
+    "skipped": {{SKIPPED}}
+  },
+  "suites": [
+    {{TEST_SUITES}}
+  ]
+}
