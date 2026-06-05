@@ -212,6 +212,49 @@ flowchart LR
 | §4 任务表每行有 Agent + 门禁 + 交接信号 | 补任务元数据，缺一则下游无法自检 |
 | 全部 Story AC 通过 | 关闭故事；任一未达退回对应 Agent |
 
+## 计划生成与交接
+
+> pm 拆分故事完成后，将故事文档基线交接给 planner agent 生成实施计划。pm 负责 WHAT + WHY，planner 负责 HOW。
+
+### 交接流程
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    PM["pm 完成<br/>故事文档基线"]:::pm --> PLAN["planner 读取基线<br/>生成实施计划"]:::planner
+    PLAN --> REVIEW["计划审查<br/>六项自审查清单"]:::review
+    REVIEW --> SAVE["保存<br/>plan.html<br/>+ 计划清单.html"]:::done
+    SAVE --> CODER["coder 执行<br/>inline 或 subagent-driven"]:::exec
+
+```
+
+| 步骤 | pm 职责 | planner 职责 |
+|------|---------|------------|
+| 1. 上下文 | 故事文档基线（WHAT + WHY） | 读取全部故事文档 |
+| 2. 范围 | 故事边界 + 优先级 + 依赖 | 检查是否需要拆分为子计划 |
+| 3. 分解 | — | 文件结构映射 + 任务分解 |
+| 4. 细节 | — | 每步确切路径 + 代码 + 命令 |
+| 5. 审查 | — | 六项自审查清单 |
+| 6. 产出 | 故事任务.md + 场景文档 | plan.html + 计划清单.html |
+
+### 交接信号
+
+| 信号 | 含义 | 验证方式 |
+|------|------|---------|
+| plan.html 已生成 | 故事级计划总览就绪 | `docs/故事任务面板/<name>/plan.html` 存在 |
+| 计划清单.html 齐全 | 每场景任务清单就绪 | 每个场景目录下 计划清单.html 存在 |
+| 六项审查通过 | 计划质量达标 | 零占位符 + 覆盖完整 + 命令可执行 |
+| 执行模式选定 | 执行策略已确定 | plan.html 中标注 inline 或 subagent-driven |
+
+> 计划执行规则详见 [plan-execution.md](../../rules/plan-execution.md)。planner agent 规约见 [planner.md](./planner.md)。
+
 ## 规划深度准则
 
 > pm 产出的计划是下游 Agent 的输入基线。计划质量直接决定实现质量。

@@ -16,7 +16,7 @@ agents:
 >
 > 哲学源自 [CLAUDE.md](../../CLAUDE.md)。本文件定义命令面与编排骨架，细节分散在：[rules/](../../rules/) · [agents/](../../agents/) · [formulas.md](./formulas.md) · [coder.md](./coder.md)。
 
-[选哪条命令](#选哪条命令) · [管线一览](#管线一览) · [阻断标识](#阻断标识) · [核心约束](#核心约束) · [故事文档](#故事文档) · [init](#init) · [doc](#doc) · [code](#code) · [端到端](#端到端) · [update](#update) · [yry](#yry) · [version --up](#version---up) · [version --rollback](#version---rollback) · [code --from-doc](#code---from-doc) · [doc --from-code](#doc---from-code)
+[选哪条命令](#选哪条命令) · [管线一览](#管线一览) · [阻断标识](#阻断标识) · [核心约束](#核心约束) · [故事文档](#故事文档) · [init](#init) · [doc](#doc) · [plan](#plan) · [code](#code) · [端到端](#端到端) · [update](#update) · [yry](#yry) · [version --up](#version---up) · [version --rollback](#version---rollback) · [code --from-doc](#code---from-doc) · [doc --from-code](#doc---from-code)
 
 ## 选哪条命令
 
@@ -62,7 +62,8 @@ flowchart TD
 - `/rui init` — 建立项目基线：detect → explore → generate → setup → verify → trigger
 - `/rui <需求>` — 端到端：doc + code 自动串联，逐故事串行
 - `/rui doc <需求>` — 拆需求为故事 + 生成文档基线（故事任务/场景-N-<slug>.md/知识图谱），禁止改源码
-- `/rui code <name>` — 实现故事：Gate A → 逐模块 → Gate B → 自改进 → 交付
+- `/rui plan <name>` — 生成实施计划：读取故事文档基线 → 文件结构映射 → 任务分解 → plan.html + 计划清单.html
+- `/rui code <name>` — 实现故事：计划门禁 → Gate A → 逐模块 → Gate B → 自改进 → 交付
 - `/rui update <name> [ctx] [--no-code]` — 增量更新：T1/T2/T3 自动裁剪
 - `/rui code --from-doc <name>` — 从文档反推：只读源码补全缺失章节（场景 §2 实施报告/§3 测试报告/§4 自改进），不覆盖已有
 - `/rui doc --from-code 需求` — 从源码反推：req 空时 pm 扫描推荐列表；req 有值时直接反推生成完整文档基线
@@ -86,7 +87,7 @@ flowchart LR
     A1 -->|"否"| A3[新建故事目录<br/>补齐全文档]
     A2 --> B[自适应规划] --> C[影响分析] --> D[架构设计] --> E[文档生成]
     A3 --> B
-    E --> F[预检<br/>分支隔离] --> G[Gate A<br/>测试先行] --> H[实现] --> I[Gate B<br/>验证] --> J[自改进] --> K[交付]
+    E --> P[计划门禁<br/>plan.html + 清单] --> F[预检<br/>分支隔离] --> G[Gate A<br/>测试先行] --> H[实现] --> I[Gate B<br/>验证] --> J[自改进] --> K[交付]
     K --> K1[rui-import<br/>手动] --> K2[rui-bot<br/>手动] --> K3[自主测试]
 ```
 
@@ -149,6 +150,8 @@ flowchart LR
 | 故事任务.md | 文档生成 | 问题空间 | ✓ |
 | 场景-N-<slug>.md | 文档生成+实现+验证+自改进 | 场景层 | ✓（≥1） |
 | 场景-N-<slug>.html | 文档生成 | 架构图 | ✓（每个场景 1 个） |
+| plan.html | 计划生成 | 故事级计划总览 | ✓ |
+| 场景-N-<slug>/计划清单.html | 计划生成 | 场景级任务清单 | ✓（每个场景 1 个） |
 | 知识图谱.json | 文档生成+实现 | 知识层 | ✓ |
 | 知识图谱.html | 文档生成 | 知识层 | ✓ |
 
@@ -468,6 +471,61 @@ flowchart TD
 **约束**：只读源码 · 分支隔离（强制，同 code 阶段门禁） · 逐故事串行 · 在 `feat/<name>` 分支上写入文档
 
 **产出**：故事任务.md（问题空间基线）· 场景-N-<slug>.md（场景层，自包含 §0-§4）· 场景-N-<slug>.html（架构图）· 知识图谱.json + 知识图谱.html（知识层）
+
+**末端触发** [强制集成](#强制集成)。
+
+## plan
+
+> doc 阶段完成后，planner agent 读取故事文档基线，生成实施计划。计划是 doc 和 code 之间的桥梁——无计划不实现。
+>
+> `/rui plan <name>` — 独立调用；`/rui code <name>` 内部自动触发计划门禁检查。
+>
+> **产出**：plan.html（故事级计划总览）· 计划清单.html（每场景任务清单）
+>
+> 详见 [plan-execution.md](../../rules/plan-execution.md) · [planner.md](../../agents/planner.md)。
+
+### 计划管线
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    DOC["doc 完成<br/>文档基线就绪"]:::src --> P1["① 读取基线<br/>planner 读取全部故事文档"]:::planner
+    P1 --> P2["② 文件映射<br/>改动文件关系图"]:::planner
+    P2 --> P3["③ 任务分解<br/>每步 2-5 分钟可完成"]:::planner
+    P3 --> P4["④ 自审查<br/>六项清单"]:::review
+    P4 --> P5["⑤ 保存<br/>plan.html + 计划清单.html"]:::done
+    P5 --> P6{"⑥ 执行模式"}
+    P6 -->|"简单 ≤ 5 步"| INLINE["Inline 执行"]:::exec
+    P6 -->|"复杂 > 5 步"| SUB["Subagent-Driven"]:::exec
+    INLINE & SUB --> CODE["进入 code 阶段"]:::phase
+
+```
+
+### 计划文档约束
+
+| # | 规则 | 反例 |
+|---|------|------|
+| 1 | 零占位符 — TBD/TODO/.../implement later 禁止 | "TBD: 错误处理策略" |
+| 2 | 每步 ≤ 5 分钟可完成，含确切路径+代码+命令+期望输出 | "实现用户认证模块" |
+| 3 | plan.html 必须含 mermaid 任务依赖图 | 纯文字任务列表 |
+| 4 | 计划清单.html 每场景一份，含可勾选步骤 | 仅故事级计划无场景清单 |
+| 5 | 六项自审查清单全 ✅ 后进入 code | 跳过审查直接开始实现 |
+
+### 执行模式选择
+
+| 模式 | 适用 | 质量保证 |
+|------|------|---------|
+| Inline | ≤ 5 步骤，≤ 2 文件 | 人工逐步骤验证 |
+| Subagent-Driven | > 5 步骤，多文件并行 | 独立 subagent 逐任务 + review 门禁，无依赖任务可并行 |
+
+**约束**：计划由 planner agent 生成 · 无计划不实现 · 零占位符 · 计划文档也走分支隔离
 
 **末端触发** [强制集成](#强制集成)。
 

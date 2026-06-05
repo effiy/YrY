@@ -48,7 +48,9 @@ paths:
   'tertiaryColor': '#21232f'
 }}}%%
 flowchart TB
-    REQ["需求故事"]:::src --> BR{"① 分支隔离<br/>当前在 feat/&lt;name&gt;?"}
+    REQ["需求故事"]:::src --> PLAN{"⓪ 计划门禁<br/>plan.html + 计划清单.html<br/>完整?"}
+    PLAN -->|"❌ 计划缺失"| XPLAN["no-plan 🚫"]:::block
+    PLAN -->|"✅ 计划完备"| BR{"① 分支隔离<br/>当前在 feat/&lt;name&gt;?"}
     BR -->|"❌ 在 main 或非法分支"| X0["no-branch-isolation 🚫"]:::block
     BR -->|"✅ 已切 feat 分支"| MOD["② 实现<br/>逐模块 P0 清零 → 下一模块"]:::phase
     MOD --> VERIFY["③ 验证<br/>闭环检查"]:::phase
@@ -59,10 +61,46 @@ flowchart TB
 
 | 阶段 | 核心动作 | 阻断标识 | 例外 |
 |------|---------|---------|------|
+| ⓪ 计划门禁 | plan.html + 计划清单.html 完整，六项自审查通过 | `no-plan` / `plan-p0` / `plan-placeholder` | `/rui init` 基线建立 |
 | ① 分支隔离 | **强制门禁**：改码前必须已切到 `feat/<name>`，否则阻断 | `bad-branch` / `no-checkout` / `auto-merge` / `no-branch-isolation` | 反推命令只读不写 |
 | ② 实现 | 每模块 P0 清零后进下一模块 | `chain-broken` | — |
 | ③ 验证 | 闭环验证，修复 ≤ 2 轮 | — | — |
 | ④ 交付 | 文档同步 + 通知，见 delivery-gate | — | — |
+
+## ⓪ 计划门禁 — 无计划不实现
+
+> **进入 code 阶段前，故事级 plan.html 和全部场景的 计划清单.html 必须完整。零占位符，六项自审查通过。**
+>
+> 计划由 planner agent 在 doc 阶段完成后生成。详情见 [plan-execution.md](./plan-execution.md)。
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart TB
+    DOC_DONE["doc 阶段完成"]:::src --> P1{"plan.html<br/>存在?"}
+    P1 -->|"❌ 缺失"| X1["no-plan 🚫<br/>阻断"]:::block
+    P1 -->|"✅ 存在"| P2{"计划清单.html<br/>每场景齐全?"}
+    P2 -->|"❌ 缺少"| X2["no-plan 🚫<br/>阻断"]:::block
+    P2 -->|"✅ 齐全"| P3{"六项自审查<br/>通过?"}
+    P3 -->|"❌ 未通过"| X3["plan-p0 🚫<br/>阻断"]:::block
+    P3 -->|"✅ 通过"| P4{"占位符扫描<br/>零 TBD/TODO/...?"}
+    P4 -->|"❌ 有占位符"| X4["plan-placeholder 🚫<br/>阻断"]:::block
+    P4 -->|"✅ 零占位符"| CODE["进入 ① 分支隔离"]:::pass
+
+```
+
+| # | 规则 | 违反标识 |
+|---|------|---------|
+| P1 | code 阶段前 plan.html 必须存在 | `no-plan` |
+| P2 | 每场景必须有 计划清单.html | `no-plan` |
+| P3 | 六项自审查清单全部通过 | `plan-p0` |
+| P4 | 计划中零占位符（TBD / TODO / ... / implement later） | `plan-placeholder` |
 
 ## ① 分支隔离 — 强制门禁
 
@@ -172,10 +210,15 @@ flowchart LR
 templates/故事任务/                   ← 模板（参考）
 故事任务面板/<Story>/                  ← 实例
 ├── 故事任务.md                       ← §1 Story · §2 范围边界 · §3 AC · §4 风险与假设
+├── plan.html                         ← 故事级计划总览（自包含 HTML+SVG，含任务依赖图）
 ├── 场景-1-<slug>.md                  ← §0 技术评审 · §1 测试设计 · §2 实施报告 · §3 测试报告 · §4 自改进
 ├── 场景-1-<slug>.html                ← 架构图（自包含深色主题 HTML+SVG）
+├── 场景-1-<slug>/
+│   └── 计划清单.html                  ← 场景级任务清单（自包含 HTML+SVG，含可勾选步骤）
 ├── 场景-2-<slug>.md
 ├── 场景-2-<slug>.html
+├── 场景-2-<slug>/
+│   └── 计划清单.html
 ├── 知识图谱.json                      ← 结构化知识表示（v2.0.0 schema）
 └── 知识图谱.html                      ← 知识图谱可视化（cytoscape.js 交互式图表）
 ```
@@ -224,6 +267,9 @@ flowchart LR
 
 | 标识 | 触发条件 | 阻断? |
 |------|---------|-------|
+| `no-plan` | code 阶段前 plan.html 或任一 计划清单.html 不存在 | ✅ 阻断 |
+| `plan-p0` | 计划六项自审查未通过 | ✅ 阻断 |
+| `plan-placeholder` | 计划中含 TBD / TODO / ... / implement later | ✅ 阻断 |
 | `bad-branch` | 分支非从 main 创建或混入非本故事代码 | ✅ 阻断 |
 | `no-checkout` | 未切换故事分支即写入/改码 | ✅ 阻断 |
 | `auto-merge` | 功能分支被自动合并到 main | ✅ 阻断 |

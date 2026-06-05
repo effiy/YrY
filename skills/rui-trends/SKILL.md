@@ -14,7 +14,7 @@ lifecycle: default-pipeline
 
 技术趋势发现。查询 GitHub Trending、OSS Insight、TrendShift、Top-Starred 四个数据源，输出结构化趋势报告。本技能为规约驱动（specification-only），由 implementing agent 执行 WebFetch + 结构化提取 + 格式化输出。
 
-[数据源全景](#数据源全景) · [调用形态](#调用形态) · [各子命令工作流](#各子命令工作流) · [输出格式规约](#输出格式规约) · [自改进集成](#自改进集成) · [降级策略](#降级策略) · [数据新鲜度](#数据新鲜度)
+[数据源全景](#数据源全景) · [调用形态](#调用形态) · [各子命令工作流](#各子命令工作流) · [输出格式规约](#输出格式规约) · [自改进集成](#自改进集成) · [计划集成](#计划集成) · [降级策略](#降级策略) · [数据新鲜度](#数据新鲜度)
 
 ## 数据源全景
 
@@ -290,6 +290,63 @@ flowchart LR
 | 部分数据源不可达 | 可用源正常输出，不可达源标注 `⚠️ 不可达` | D5 置信度降级，假设标记为 `低置信度` |
 | 数据不足（仅 1 源可用） | 输出可用数据，标注 `数据不足，建议手动验证` | 跳过 E3 评估，仅生成观察记录 |
 | 自改进阶段未触发 rui-trends | 不强制查询 | D5 诊断栏标注 `未查询趋势数据`，不视为偏差 |
+
+## 计划集成
+
+> rui-trends 的趋势信号在计划阶段提供技术选型验证、依赖健康度检查和架构决策支撑。计划生成前自动查询趋势数据，确保实施计划基于最新的技术现实。
+
+### 计划阶段触发
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    PLAN["plan 阶段启动"]:::src --> TREND{"计划涉及<br/>技术选型或<br/>外部依赖?"}
+    TREND -->|"是"| QUERY["自动触发 rui-trends<br/>查询相关数据源"]:::action
+    TREND -->|"否"| SKIP["跳过趋势查询"]:::skip
+    QUERY --> VALIDATE["趋势验证<br/>选型合理性 · 依赖健康度<br/>· 替代方案发现"]:::review
+    VALIDATE --> INJECT["注入 plan.html<br/>趋势信号 + 风险标注"]:::done
+    INJECT --> CODE["进入 code 阶段"]:::phase
+
+```
+
+### 计划趋势信号
+
+| 趋势信号 | 数据源 | 计划注入位置 | 影响 |
+|---------|--------|------------|------|
+| 技术栈社区活跃度下降 | `github-trending --lang <L>` + `trendshift --range 90` | plan.html 风险表 | 标注「技术风险：社区趋势下降」 |
+| 新兴替代方案快速崛起 | `github-trending` + `oss-insight` | plan.html 任务总览表 | 新增「技术选型评估」任务 |
+| 依赖 URL 可达性验证 | `all`（四源全查） | plan.html 文件结构图 | 更新计划中的外部引用 URL |
+| 高星项目提供参考实现 | `top-starred --min-stars N` | plan.html 任务总览表 | 补充「参考实现调研」子任务 |
+| 趋势数据陈旧（超过 30 天未刷新） | 所有数据源 | plan.html 自审查清单 | 新增审查项「趋势参考已刷新」 |
+
+### 计划 × 趋势路由表
+
+| 计划场景 | 触发诊断 | 推荐子命令 | 计划产出影响 |
+|---------|---------|-----------|------------|
+| 新增第三方依赖 | D5 依赖退化 | `oss-insight` + `top-starred` | 依赖对比表 + 备选方案 |
+| 架构重构（T3） | D3 复杂度增长 | `github-trending` + `trendshift` | 新兴架构模式参考 |
+| 性能优化 | D3 复杂度增长 | `github-trending --lang <L>` | 高性能替代工具推荐 |
+| 安全加固 | D5 依赖退化 | `github-trending --since weekly` | 安全补丁时效性标注 |
+| 文档更新（T1/T2） | D6 文档过时 | `github-trending --since weekly` | 外部参考新鲜度标记 |
+
+### 计划质量增强
+
+> 趋势数据嵌入计划文档后，下游 Agent 在执行时可参考：
+
+| Agent | 趋势数据用途 |
+|-------|------------|
+| coder | 实现时参考高星项目的设计模式和 API 设计 |
+| tester | 测试框架选择时参考社区趋势 |
+| security | 依赖安全审计时参考 CVE 数据库时效 |
+| code-reviewer | 审查时检查是否存在社区公认的更优模式 |
+| self-improve | 计划复盘时评估趋势信号预测准确性 |
 
 ## 降级策略
 

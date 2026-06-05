@@ -174,6 +174,98 @@ classDef note       fill:#e1e2e6,stroke:#9699a3,color:#9699a3
 ```
 
 <a id="origin"></a>
+## 备选主题库（源自 beautiful-mermaid 15 套主题）
+
+> 当项目需要在不同渲染环境下切换主题时（如浅色/深色文档平台），以下主题可从 beautiful-mermaid 的 `THEMES` 直接映射。
+> 每套主题仅需两个颜色（bg + fg），其他视觉元素通过 `color-mix()` 自动派生。
+
+### 深色主题
+
+| 主题名 | bg | fg | 适用场景 |
+|--------|-----|-----|---------|
+| Tokyo Night（默认） | `#1a1b26` | `#a9b1d6` | YrY 默认 |
+| Tokyo Night Storm | `#24283b` | `#a9b1d6` | 高对比度深色 |
+| Catppuccin Mocha | `#1e1e2e` | `#cdd6f4` | 柔和深色 |
+| Nord Dark | `#2e3440` | `#d8dee9` | 北欧极简深色 |
+| Dracula | `#282a36` | `#f8f8f2` | 经典 Dracula |
+| GitHub Dark | `#0d1117` | `#c9d1d9` | GitHub 深色 |
+| One Dark | `#282c34` | `#abb2bf` | Atom 风格 |
+| Solarized Dark | `#002b36` | `#839496` | 护眼深色 |
+
+### 浅色主题
+
+| 主题名 | bg | fg | 适用场景 |
+|--------|-----|-----|---------|
+| Tokyo Night Light | `#d5d6db` | `#343b58` | 浅色文档平台 |
+| Catppuccin Latte | `#eff1f5` | `#4c4f69` | 柔和浅色 |
+| Nord Light | `#eceff4` | `#3b4252` | 北欧极简浅色 |
+| GitHub Light | `#ffffff` | `#24292f` | GitHub 浅色 |
+| Solarized Light | `#fdf6e3` | `#657b83` | 护眼浅色 |
+| Zinc Light | `#fafafa` | `#18181b` | 中性锌色 |
+| Zinc Dark | `#18181b` | `#fafafa` | 中性锌色深 |
+
+### 切换主题（仅改两个变量）
+
+在 mermaid `%%{init}%%` 中仅需更换 `primaryColor` 和 `primaryTextColor`：
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '<bg>',        // ← 改这里
+  'primaryTextColor': '<fg>',    // ← 改这里
+  'primaryBorderColor': '<line>',
+  'lineColor': '<line>',
+  'secondaryColor': '<surface>',
+  'tertiaryColor': '<surface>'
+}}}%%
+```
+
+> **派生色自动适配**：`primaryBorderColor` / `lineColor` / `secondaryColor` / `tertiaryColor` 从 bg+fg 通过 `color-mix()` 派生。但在 mermaid 原生 `themeVariables` 中需预计算为静态 hex——参见上方 [10 级梯度表](#派生完整色表10-级梯度)。
+
+## 渲染质量准则（源自 beautiful-mermaid）
+
+### 同步渲染优先
+
+beautiful-mermaid 通过 ELK.js 的 FakeWorker 绕过实现同步布局，确保 SVG 生成是确定性的——同一输入始终产生同一输出。YrY 的 mermaid 图遵循相同原则：
+
+| 准则 | 说明 |
+|------|------|
+| 确定性输出 | 同一 mermaid 代码在不同平台渲染结果一致 |
+| 预计算色值 | CSS `color-mix()` 不可用时，使用预计算的静态 hex |
+| 无外部依赖 | mermaid 图仅依赖 `%%{init}%%` 中的 themeVariables，不依赖外部 CSS |
+
+### 数据属性语义化
+
+所有 mermaid 节点应使用语义化 ID，使渲染后的 SVG 含有意义的 `data-*` 属性：
+
+| 属性 | 用途 | 示例 |
+|------|------|------|
+| `data-id` | 节点标识符 | `data-id="pm"` → 用于样式/脚本定位 |
+| `data-label` | 节点显示文本 | `data-label="产品决策者"` |
+| `data-from` / `data-to` | 边的源和目标 | `data-from="pm" data-to="coder"` |
+
+### 节点形状选择指南
+
+| 形状 | mermaid 语法 | 适用场景 | YrY 中的用法 |
+|------|-------------|---------|------------|
+| 圆角矩形 | `A("label")` | 标准节点 | 默认 Agent/步骤 |
+| 矩形 | `A["label"]` | 数据/文件 | 文档产出 |
+| 菱形 | `A{"label"}` | 决策/门禁 | Gate A/B 检查 |
+| 圆柱 | `A[("label")]` | 数据库/存储 | 知识图谱.json |
+| 圆形 | `A(("label"))` | 起点/终点 | 管线入口/出口 |
+| 子程序 | `A[["label"]]` | 子流程 | subgraph 嵌套 |
+| 六边形 | `A{{"label"}}` | 准备/初始化 | init 阶段 |
+| 体育场 | `A(["label"])` | 终端节点 | 交付收口 |
+
+### 边样式选择指南
+
+| 样式 | mermaid 语法 | 适用场景 |
+|------|-------------|---------|
+| 实线箭头 | `-->` | 正常数据流/控制流 |
+| 粗线箭头 | `==>` | 重要/强制路径 |
+| 虚线箭头 | `-.->` | 可选/降级路径 |
+| 带标签箭头 | `-->|text|` | 协议/方法标注 |
+| 双向箭头 | `<-->` | 同步通信 |
+
 ## 设计溯源
 
 本配色系统派生自 beautiful-mermaid 的 CSS 变量架构：
