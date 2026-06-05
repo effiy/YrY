@@ -132,16 +132,18 @@ describe('cross-cutting integration', () => {
       }
     });
 
-    it('each story dir has 知识图谱.json and 知识图谱.html', () => {
+    it('each story dir has at least one scene subdir with 知识图谱.html', () => {
       for (const storyDir of listStoryDirs()) {
-        assert.ok(
-          fileExists(`docs/故事任务面板/${storyDir}/知识图谱.json`),
-          `${storyDir} must have 知识图谱.json`
-        );
-        assert.ok(
-          fileExists(`docs/故事任务面板/${storyDir}/知识图谱.html`),
-          `${storyDir} must have 知识图谱.html`
-        );
+        const storyPath = `docs/故事任务面板/${storyDir}`;
+        const entries = readDir(storyPath);
+        const sceneDirs = entries.filter(e => /^场景-\d+-/.test(e));
+        let hasKg = false;
+        for (const sd of sceneDirs) {
+          if (fileExists(`${storyPath}/${sd}/知识图谱.html`)) { hasKg = true; break; }
+        }
+        assert.ok(hasKg || sceneDirs.some(sd =>
+          fileExists(`${storyPath}/${sd}/知识图谱.html`)),
+          `${storyDir} must have 知识图谱.html in at least one scene subdir`);
       }
     });
   });

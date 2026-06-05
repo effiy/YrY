@@ -6,7 +6,7 @@ const ANSI_BOLD = 1;
 const ANSI_DIM = 2;
 const ANSI_UNDERLINE = 4;
 const ANSI_YELLOW = 33;
-const ANSI_GREEN = 36;
+const ANSI_GREEN = 32;
 const ANSI_CYAN = 36;
 
 const { bold, underline, dim, yellow, green, cyan } = (() => {
@@ -57,7 +57,7 @@ function scene(title) {
 const help = `
 ${bold("# rui-trends — 技术趋势发现 & 代码库健康分析")}
 
-${dim("代码库统计 · 大文件检测 · 变更热点 · 组件审计 · 历史复盘 · GitHub Trending")}
+${dim("代码库统计 · 大文件检测 · 变更热点 · 组件审计 · 历史复盘 · GitHub Trending · 技能发现")}
 
 ${hdr("快速入门")}
 ${item("/rui-trends", "基础统计：总文件/模块数/技术栈概况", green)}
@@ -89,6 +89,10 @@ ${item("/rui-trends trending", "GitHub Trending 当前热门仓库", green)}
 ${flag("since daily|weekly", "时间窗口，默认 daily")}
 ${flag("l <L>", "编程语言过滤（如 TypeScript, Rust, Go）")}
 
+${subhdr("find-skills — 发现 Agent 技能")}
+${item("/rui-trends find-skills", "搜索开放生态中的 Agent 技能", green)}
+${flag("query <q>", "搜索关键词（如 react, testing, deploy）")}
+
 ${hdr("使用场景")}
 ${scene("新接手项目")}
 ${item("/rui-trends", "先看基础统计，建立全局认知", green)}
@@ -105,6 +109,10 @@ ${item("/rui-trends trending", "了解外部技术趋势，保持技术敏感度
 ${scene("团队复盘")}
 ${item("/rui-trends all", "生成完整健康度报告", cyan)}
 ${item("/rui-trends review", "对比历史复盘记录，评估改进效果", green)}
+${scene("发现技能扩展能力")}
+${item("/rui-trends find-skills", "浏览可安装的 Agent 技能", green)}
+${item("/rui-trends find-skills react", "搜索 React 相关技能", green)}
+${item("/rui-trends find-skills testing", "搜索测试相关技能", green)}
 `;
 
 console.log(help);

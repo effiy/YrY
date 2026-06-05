@@ -13,16 +13,17 @@ describe('rule definitions', () => {
   const RULES = listRules();
   const REQUIRED_RULES = [
     'architecture-diagram', 'code-pipeline', 'delivery-gate',
-    'doc-generation', 'knowledge-graph', 'rui-claude',
+    'doc-generation', 'knowledge-graph', 'mermaid-theme',
+    'plan-execution', 'rui-claude',
     'security-guardrails', 'self-improve',
   ];
 
   describe('rule coverage', () => {
-    it('has all 8 required rules', () => {
+    it('has all 10 required rules', () => {
       for (const name of REQUIRED_RULES) {
         assert.ok(RULES.includes(name), `missing rule: ${name}`);
       }
-      assert.equal(RULES.length, 8, 'should have exactly 8 rule definitions');
+      assert.equal(RULES.length, 10, 'should have exactly 10 rule definitions');
     });
   });
 

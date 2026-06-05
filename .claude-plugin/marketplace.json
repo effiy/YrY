@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "故事驱动的 SDLC 编排系统——需求拆分→文档管线→代码管线→交付",
-    "version": "1.28.0"
+    "version": "1.29.0"
   },
   "plugins": [
     {
@@ -14,8 +14,8 @@
         "source": "github",
         "repo": "effiy/YrY"
       },
-      "description": "故事驱动的 SDLC 编排系统。提供 /rui、/rui-claude 命令体系，8 Agent 协同，Gate A/B 强制验证，每故事 8 份文档。",
-      "version": "1.28.0",
+      "description": "故事驱动的 SDLC 编排系统。提供 /rui、/rui-claude 命令体系，9 Agent 协同，Gate A/B 强制验证，每故事 5 份文档。",
+      "version": "1.29.0",
       "author": {
         "name": "YrY"
       },

@@ -37,14 +37,14 @@ describe('agent definitions', () => {
 
   // ── Individual agent definitions ────────────────────────────
   const AGENTS = listAgents();
-  const REQUIRED_AGENTS = ['pm', 'coder', 'tester', 'security', 'architect', 'code-reviewer', 'reporter', 'self-improve'];
+  const REQUIRED_AGENTS = ['pm', 'planner', 'coder', 'tester', 'security', 'architect', 'code-reviewer', 'reporter', 'self-improve'];
 
   describe('agent coverage', () => {
-    it('has all 8 required agents', () => {
+    it('has all 9 required agents', () => {
       for (const name of REQUIRED_AGENTS) {
         assert.ok(AGENTS.includes(name), `missing agent: ${name}`);
       }
-      assert.equal(AGENTS.length, 8, 'should have exactly 8 agent definitions');
+      assert.equal(AGENTS.length, 9, 'should have exactly 9 agent definitions');
     });
   });
 

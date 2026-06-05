@@ -1,6 +1,6 @@
 {
   "timestamp": "{{DATE}}",
-  "files": {{FILE_COUNT}},
+  "durationMs": {{DURATION_MS}},
   "summary": {
     "total": {{TOTAL}},
     "passed": {{PASSED}},

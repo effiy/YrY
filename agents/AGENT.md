@@ -59,6 +59,7 @@ flowchart TB
 | Agent | 一句话 | 核心动作 | 卡点 | 触发源 | 契约文件 |
 |-------|------|---------|------|--------|---------|
 | **pm** | 决定做/不做/延期 | 拆需求 → 排故事 → 委派 Agent → 检 AC → 放行/阻断 | 故事无 AC 不委派 | rui 入口 · 自适应规划 · 反思钩子 · init | [pm.md](./pm.md) |
+| **planner** | 从设计出实施计划 | 读设计 → 拆任务 → 排顺序 → 审查 → 交接 coder | 计划有占位符不交接 | pm 委派 · code 阶段前置 | [planner.md](./planner.md) |
 | **coder** | 逐模块实现，P0 清零 | 读设计 → 写代码 → P0 清零 → 进下一模块 | P0 未清零不进下一模块 | pm 委派 · rui 预检/实现/影响分析 | [coder.md](./coder.md) |
 | **tester** | 测试先行，Gate 阻不放行 | 写用例 → Gate A 审 → 执行 → Gate B 判 | Gate A 未通过不编码；Gate B 未通过不交付 | pm 委派 · rui 测试/验证 | [tester.md](./tester.md) |
 | **reporter** | 过程记录，交叉闭合 | 写场景文档各 § → 各 § 交叉引用闭合 | 场景文档各 § 不一致不闭合 | rui 验证/交付/策展 | [reporter.md](./reporter.md) |
@@ -98,19 +99,19 @@ flowchart LR
 
 ```
 
-| 阶段 | pm | coder | tester | reporter | security | self-improve | code-reviewer | architect |
-|------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 需求解析 | ● | | | | | | | |
-| 自适应规划 | ● | | | | | | | |
-| 影响分析 | ● | ● | | | | | | |
-| 架构设计 | | ● | | | | | | ● |
-| 文档基线 | ● | ● | ● | | | | | |
-| 分支隔离 | | ● | | | | | | |
-| Gate A | | | ● | | | | | |
-| 逐模块编码 | | ● | | | ● | | ○ | |
-| Gate B | | | ● | ● | | | ○ | |
-| 自改进 | | | | ● | | ● | | |
-| 交付 | | | | ● | | | | |
+| 阶段 | pm | planner | coder | tester | reporter | security | self-improve | code-reviewer | architect |
+|------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| 需求解析 | ● | | | | | | | | |
+| 自适应规划 | ● | | | | | | | | |
+| 影响分析 | ● | ● | ● | | | | | | |
+| 架构设计 | | | ● | | | | | | ● |
+| 文档基线 | ● | ● | ● | ● | | | | | |
+| 分支隔离 | | | ● | | | | | | |
+| Gate A | | | | ● | | | | | |
+| 逐模块编码 | | | ● | | | ● | | ○ | |
+| Gate B | | | | ● | ● | | | ○ | |
+| 自改进 | | | | | ● | | ● | | |
+| 交付 | | | | | ● | | | | |
 
 > ● = 必须参与 · ○ = 可选参与（pm/coder 按需触发）
 
@@ -179,6 +180,7 @@ flowchart LR
 | Agent | 交接信号 | 下游验证方式 |
 |-------|---------|-------------|
 | **pm** | 故事 §1 ≤ 3 句说清「做什么/给谁/为什么」+ AC 可独立验证 | coder 检 AC 是否可翻译为代码 |
+| **planner** | 计划清单零占位符 + 自审查通过 | coder 检每步是否可 2-5 分钟执行 |
 | **coder** | 每模块 P0 清零 + 改动文件/行数与任务 ID 对应 | tester 检 P0 清零记录 |
 | **tester** | Gate A 测试方案就绪 + Gate B P0 全部通过 · P1 高通过率 · 修复 ≤ 2 轮 | reporter 检测试报告与实施报告一致 |
 | **reporter** | 场景文档各 § 交叉引用一致 + git commit | pm 检各 § 闭合 |
@@ -235,6 +237,7 @@ flowchart LR
 | Agent | 常用 classDef |
 |-------|-------------|
 | pm | `core`, `exec`, `goal`, `note` |
+| planner | `exec`, `good`, `bad`, `note` |
 | architect | `core`, `note`, `cross` |
 | coder | `exec`, `must`, `good`, `bad`, `note` |
 | tester | `review`, `risk`, `good`, `bad`, `must` |

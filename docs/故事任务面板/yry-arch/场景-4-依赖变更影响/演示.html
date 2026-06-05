@@ -13,12 +13,6 @@
     * { box-sizing:border-box;margin:0;padding:0 }
     body { background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6 }
     .container { max-width:960px;margin:0 auto;padding:40px 24px 80px }
-    .back { color:var(--cyan);text-decoration:none;font-size:.82rem;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;transition:color .15s }
-    .back:hover { color:var(--accent) }
-    .nav-row { display:flex;gap:8px;align-items:center;margin-bottom:24px;flex-wrap:wrap }
-    .nav-row .prevnext { background:var(--bg-flat);border:var(--border);border-radius:6px;color:var(--text2);padding:5px 12px;font-size:.76rem;text-decoration:none;transition:all .15s }
-    .nav-row .prevnext:hover { border-color:rgba(255,193,7,.35);color:var(--accent) }
-    .nav-row .sep { color:var(--text3);font-size:.7rem }
     h1 { font-size:1.8rem;margin-bottom:4px } h1 span { color:var(--accent) }
     .sub { color:var(--text2);font-size:.9rem;margin-bottom:28px }
     .tabs { display:flex;gap:0;border-bottom:var(--border);margin-bottom:28px;animation:fadeInDown .5s .1s ease both }
@@ -61,12 +55,38 @@
     .kbd-hint { font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.03);border-radius:3px;padding:1px 5px;margin-left:4px }
     @media (max-width:640px) { .container { padding:20px 12px 60px } h1 { font-size:1.4rem } .cmd-grid { grid-template-columns:1fr } }
   a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+
+  /* ── Breadcrumb ─────────────────────────── */
+  .breadcrumb {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 1.25rem; font-size: 0.76rem;
+  }
+  .breadcrumb a {
+    color: #7aa2f7; text-decoration: none; transition: color 0.15s;
+  }
+  .breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
+  .breadcrumb .bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
+  .breadcrumb .bc-current { color: #94a3b8; font-weight: 500; }
+
+  /* ── Cross-Nav ─────────────────────────── */
+  .cross-nav {
+    display: flex; gap: 4px; justify-content: center; align-items: center;
+    margin-bottom: 1.25rem; flex-wrap: wrap;
+  }
+  .cross-link {
+    color: var(--cyan); text-decoration: none; font-size: 0.76rem;
+    padding: 3px 10px; border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+  }
+  .cross-link:hover { color: var(--accent); background: rgba(255,193,7,0.06); }
+  .cross-link.on { color: var(--accent); font-weight: 600; cursor: default; }
+  .cross-sep { color: var(--text3); font-size: 0.5rem; opacity: 0.35; user-select: none; }
 </style>
 </head>
 <body>
 <div class="container">
-  <a href="../../../index.html" class="back">← 文档中心</a>
-  <div class="nav-row"><span style="font-size:.78rem;color:var(--accent);font-weight:600">🔗 场景 4 · 依赖变更影响分析</span><span class="sep">|</span><a class="prevnext" href="计划清单.html">📋 计划清单</a><a class="prevnext" href="架构图.html">📐 架构图</a><a class="prevnext" href="知识图谱.html">🔗 知识图谱</a><a class="prevnext" href="测试面板.html">🧪 测试面板</a></div>
+  <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../计划.html">yry-arch · 系统架构知识固化</a><span class="bc-sep">/</span><span class="bc-current">场景 4 · 依赖变更影响分析</span><span class="bc-sep">/</span><span class="bc-current">💡 演示</span></nav>
+  <div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><span class="cross-link on">💡 演示</span></div>
   <h1>🔗 <span>依赖变更影响分析</span> · 演示</h1>
   <p class="sub">依赖图 · 影响分析 · 破坏性变更检测 — <span class="kbd-hint">1-5</span> 数字键切换 Tab · 悬停代码复制</p>
 
@@ -150,5 +170,6 @@ document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;con
 function copyCmd(btn,cmd){navigator.clipboard.writeText(cmd).then(()=>{btn.textContent='✅';btn.classList.add('done');setTimeout(()=>{btn.textContent='📋';btn.classList.remove('done')},1500)}).catch(()=>toast('复制失败'))}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}
 </script>
+<div class="footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY · 场景演示</div>
 </body>
 </html>

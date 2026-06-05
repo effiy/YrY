@@ -39,6 +39,7 @@ docs/故事任务面板/.init-memory.json
 
 # rui-bot resolved config (may contain webhook URL)
 skills/rui-bot/config.local.json
+.claude/skills/rui-bot/config.json
 
 # Claude Code local settings (may contain secrets)
 .claude/settings.local.json

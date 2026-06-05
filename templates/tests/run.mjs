@@ -1,8 +1,18 @@
 #!/usr/bin/env node
+
 /**
- * {{PROJECT_NAME}} Self-Test Runner
- * Usage: node tests/run.mjs [--json] [--skills|--agents|--rules|--integration] [--list]
+ * YrY Self-Test Runner — discovers and runs all test suites.
+ *
+ * Usage:
+ *   node tests/run.mjs                # Run all tests (text output)
+ *   node tests/run.mjs --json         # Run all tests, write tests/results.json
+ *   node tests/run.mjs --skills       # Run only skill tests
+ *   node tests/run.mjs --agents       # Run only agent tests
+ *   node tests/run.mjs --rules        # Run only rule tests
+ *   node tests/run.mjs --integration  # Run only integration tests
+ *   node tests/run.mjs --list         # List test files without running
  */
+
 import { readdirSync, existsSync, writeFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -11,41 +21,130 @@ import { spawnSync } from 'node:child_process';
 const TESTS_DIR = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = resolve(TESTS_DIR, '..');
 const RESULTS_PATH = resolve(TESTS_DIR, 'results.json');
-const TEST_DIRS = { skills: 'skills', agents: 'agents', rules: 'rules', integration: 'integration' };
 
-function discoverTests(filter) {
-  const tests = [];
-  for (const [category, dir] of Object.entries(TEST_DIRS)) {
-    if (filter && filter !== category) continue;
-    const dirPath = resolve(TESTS_DIR, dir);
-    if (!existsSync(dirPath)) continue;
-    for (const f of readdirSync(dirPath)) {
-      if (f.endsWith('.test.mjs')) tests.push({ category, path: resolve(dirPath, f), name: f });
+const TEST_DIRS = {
+  skills: 'skills',
+  agents: 'agents',
+  rules: 'rules',
+  integration: 'integration',
+};
+
+function discoverTests(subdir) {
+  const dir = resolve(TESTS_DIR, subdir);
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
+    .filter(f => f.endsWith('.mjs') || f.endsWith('.test.js'))
+    .map(f => resolve(dir, f))
+    .sort();
+}
+
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const filters = [];
+  let listOnly = false;
+  let jsonMode = false;
+
+  for (const arg of args) {
+    if (arg === '--skills') filters.push('skills');
+    else if (arg === '--agents') filters.push('agents');
+    else if (arg === '--rules') filters.push('rules');
+    else if (arg === '--integration') filters.push('integration');
+    else if (arg === '--list') listOnly = true;
+    else if (arg === '--json') jsonMode = true;
+  }
+
+  if (filters.length === 0) filters.push(...Object.keys(TEST_DIRS));
+  return { filters, listOnly, jsonMode };
+}
+
+function runTestFile(filePath, jsonMode) {
+  const args = ['--no-warnings', filePath];
+  if (jsonMode) args.push('--json');
+  return spawnSync('node', args, {
+    cwd: PROJECT_ROOT,
+    stdio: jsonMode ? 'pipe' : 'inherit',
+    timeout: 30_000,
+    encoding: 'utf-8',
+  });
+}
+
+function main() {
+  const { filters, listOnly, jsonMode } = parseArgs();
+  const allFiles = [];
+
+  for (const filter of filters) {
+    const subdir = TEST_DIRS[filter];
+    if (!subdir) continue;
+    allFiles.push(...discoverTests(subdir));
+  }
+
+  if (listOnly) {
+    console.log('Test files:');
+    for (const f of allFiles) console.log(`  ${f.replace(PROJECT_ROOT + '/', '')}`);
+    console.log(`\n${allFiles.length} test file(s)`);
+    return 0;
+  }
+
+  if (!jsonMode) {
+    console.log(`Running ${allFiles.length} test suite(s)...\n`);
+  }
+
+  let totalFailed = 0;
+  const allResults = [];
+
+  for (const file of allFiles) {
+    const result = runTestFile(file, jsonMode);
+    if (result.status !== 0) totalFailed++;
+
+    if (jsonMode) {
+      // Parse JSON from stdout (last line is the JSON result)
+      const output = (result.stdout || '').trim();
+      try {
+        const parsed = JSON.parse(output);
+        allResults.push(parsed);
+      } catch (e) {
+        allResults.push({
+          file: file.replace(PROJECT_ROOT + '/', ''),
+          error: 'Failed to parse JSON output',
+          raw: output.slice(-500),
+        });
+      }
     }
   }
-  return tests;
-}
 
-function runTest(testPath) {
-  const result = spawnSync('node', ['--experimental-vm-modules', testPath], { cwd: PROJECT_ROOT, timeout: 30000, encoding: 'utf-8' });
-  return { passed: result.status === 0, output: result.stdout + result.stderr, exitCode: result.status };
-}
+  if (jsonMode) {
+    // Merge results from all test suites
+    const merged = {
+      timestamp: new Date().toISOString(),
+      files: allResults.length,
+      summary: { total: 0, passed: 0, failed: 0, skipped: 0 },
+      suites: [],
+    };
 
-export async function run(filter) {
-  const tests = discoverTests(filter);
-  const results = { timestamp: new Date().toISOString(), files: tests.length, summary: { total: 0, passed: 0, failed: 0, skipped: 0 }, suites: [] };
-  for (const t of tests) {
-    const r = runTest(t.path);
-    results.suites.push({ name: t.name.replace('.test.mjs',''), category: t.category, passed: r.passed, output: r.output });
-    results.summary.total++;
-    if (r.passed) results.summary.passed++; else results.summary.failed++;
+    for (const r of allResults) {
+      if (r.error) {
+        merged.suites.push({ name: r.file, error: r.error, tests: [] });
+        continue;
+      }
+      merged.summary.total += r.summary?.total || 0;
+      merged.summary.passed += r.summary?.passed || 0;
+      merged.summary.failed += r.summary?.failed || 0;
+      merged.summary.skipped += r.summary?.skipped || 0;
+      if (r.suites) merged.suites.push(...r.suites);
+    }
+
+    writeFileSync(RESULTS_PATH, JSON.stringify(merged, null, 2), 'utf-8');
+    console.log(JSON.stringify(merged));
+    return merged.summary.failed > 0 ? 1 : 0;
   }
-  if (process.argv.includes('--json')) writeFileSync(RESULTS_PATH, JSON.stringify(results, null, 2));
-  return results.summary.failed > 0 ? 1 : 0;
+
+  if (totalFailed > 0) {
+    console.log(`\n${totalFailed} test suite(s) failed.`);
+    return 1;
+  }
+
+  console.log('\nAll test suites passed.');
+  return 0;
 }
 
-const args = process.argv.slice(2);
-if (args.includes('--list')) { discoverTests().forEach(t => console.log(`[${t.category}] ${t.name}`)); process.exit(0); }
-const filter = args.includes('--skills') ? 'skills' : args.includes('--agents') ? 'agents' : args.includes('--rules') ? 'rules' : args.includes('--integration') ? 'integration' : null;
-const exitCode = await run(filter);
-process.exit(exitCode);
+process.exit(main());

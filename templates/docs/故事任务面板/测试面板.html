@@ -1,0 +1,120 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>{{SCENE_NAME}} · 测试面板</title>
+<style>:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--skip:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideDown{from{opacity:0;max-height:0}to{opacity:1;max-height:2000px}}
+@keyframes modalIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)}50%{box-shadow:0 0 0 6px rgba(255,193,7,0)}}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
+.container{max-width:1120px;margin:0 auto;padding:48px 24px 80px}
+.header{text-align:center;margin-bottom:32px;animation:fadeInDown .5s ease both}
+.header h1{font-size:2.1rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+.header .sub{color:var(--text2);font-size:.9rem}
+.stats-grid{display:flex;gap:14px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 22px;text-align:center;box-shadow:var(--shadow);min-width:90px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat-card .val{font-size:1.8rem;font-weight:700;line-height:1.1}
+.stat-card .val.t{color:var(--text)}.stat-card .val.p{color:var(--pass)}.stat-card .val.f{color:var(--fail)}.stat-card .val.s{color:var(--skip)}.stat-card .val.d{color:var(--cyan)}
+.stat-card .lbl{font-size:.72rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+.bar-wrap{margin-bottom:32px;animation:fadeInDown .5s .12s ease both}
+.bar-outer{height:8px;border-radius:4px;overflow:hidden;display:flex;background:rgba(255,255,255,.04);cursor:pointer}
+.bar-outer .seg{height:100%;transition:width .5s ease;min-width:2px}
+.bar-outer .seg.p{background:var(--pass)}.bar-outer .seg.f{background:var(--fail)}.bar-outer .seg.s{background:var(--skip)}
+
+/* ── Breadcrumb ─────────────────────────── */
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+
+/* ── Cross-Nav ─────────────────────────── */
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .12s ease both}
+.cross-link{color:var(--cyan);text-decoration:none;font-size:.76rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}
+.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
+.cross-link.on{color:var(--accent);font-weight:600}
+.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
+
+.tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:0;animation:fadeInDown .5s .18s ease both}
+.tab{padding:10px 20px;cursor:pointer;font-size:.84rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none}
+.tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.panel{display:none;animation:fadeInUp .4s ease both;padding-top:28px}
+.panel.on{display:block}
+.btn{background:var(--bg-flat);border:var(--border);border-radius:8px;color:var(--text2);padding:7px 14px;cursor:pointer;font-size:.8rem;transition:all .15s;display:inline-flex;align-items:center;gap:5px;font-family:inherit}
+.btn:hover{border-color:rgba(255,255,255,.15);color:var(--text)}
+.suite{background:var(--bg-card);border:var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow);overflow:hidden;transition:border-color .2s}
+.suite.open{border-color:rgba(255,255,255,.08)}
+.s-head{display:flex;align-items:center;gap:10px;padding:12px 18px;cursor:pointer;user-select:none;transition:background .12s}
+.s-head:hover{background:rgba(255,255,255,.02)}
+.s-head .s-arrow{font-size:.6rem;color:var(--text3);transition:transform .2s;width:12px;text-align:center}
+.suite.open .s-head .s-arrow{transform:rotate(90deg)}
+.s-head .s-name{flex:1;font-weight:600;font-size:.88rem}
+.s-body{display:none;border-top:var(--border);animation:slideDown .25s ease}
+.suite.open .s-body{display:block}
+.t-row{display:flex;align-items:center;gap:10px;padding:7px 18px 7px 36px;font-size:.8rem;border-bottom:1px solid rgba(255,255,255,.015);cursor:pointer}
+.t-row:last-child{border-bottom:none}.t-row:hover{background:rgba(255,255,255,.02)}
+.t-row .t-icon{width:16px;text-align:center;flex-shrink:0;font-size:.7rem}
+.t-row .t-name{flex:1;color:var(--text2)}
+.t-row .t-dur{font-size:.68rem;color:var(--text3);min-width:38px;text-align:right}
+.card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow);animation:fadeInUp .4s ease both}
+.card h2{font-size:.92rem;margin-bottom:14px;color:var(--cyan);font-weight:600}
+.footer-note{text-align:center;color:var(--text3);font-size:.74rem;margin-top:32px;padding-bottom:16px}
+.footer-note a{color:var(--accent);text-decoration:none}
+@media(max-width:640px){.container{padding:24px 12px 60px}.header h1{font-size:1.5rem}.stats-grid{gap:6px}.stat-card{padding:12px 14px;min-width:65px}.stat-card .val{font-size:1.3rem}}
+</style></head><body><div class="container">
+<nav class="breadcrumb"><a href="{{DOCS_INDEX}}">📄 文档中心</a><span class="bc-sep">/</span><a href="{{STORY_PLAN}}">{{STORY_NAME}} · {{STORY_DESC}}</a><span class="bc-sep">/</span><span class="bc-current">{{SCENE_NAME}}</span><span class="bc-sep">/</span><span class="bc-current">🧪 测试面板</span></nav>
+<div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span><span class="cross-link on" id="navStatus">🧪 测试</span><span class="cross-sep">·</span><a href="演示.html" class="cross-link">💡 演示</a></div>
+<div class="header"><h1>🧩 <span class="accent">{{SCENE_NAME}} · 测试面板</span></h1><p class="sub">{{TEST_SUBTITLE}}</p></div>
+<div class="stats-grid" id="statsRow"></div>
+<div class="bar-wrap"><div class="bar-outer" id="bar" title="点击进度条筛选状态"></div></div>
+<div class="tabs"><span class="tab on" data-panel="files">📁 测试文件</span><span class="tab" data-panel="results">📊 执行结果</span><span class="tab" data-panel="slow">🐢 慢测试</span></div>
+<div class="panel on" id="panelFiles"><div id="filesContent"></div></div>
+<div class="panel" id="panelResults"><div id="resultsContent"></div></div>
+<div class="panel" id="panelSlow"><div id="slowContent"></div></div>
+<div class="footer-note">YrY 自检体系 · 场景测试面板 · <a href="{{TEST_INDEX}}">自检中心</a></div>
+</div>
+<script>
+const manifest={{MANIFEST_JSON}};
+const results={{RESULTS_JSON}};
+const SLOW_THRESHOLD=100;
+function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function fmtDur(ms){if(ms==null)return'';if(ms<1)return'<1ms';if(ms<1000)return Math.round(ms)+'ms';return(ms/1000).toFixed(1)+'s'}
+let activePanel='results';
+
+function renderStats(){
+  var s=results.summary,t=s.total||0,p=s.passed||0,f=s.failed||0,sk=s.skipped||0;
+  document.getElementById('statsRow').innerHTML='<div class="stat-card"><div class="val t">'+t+'</div><div class="lbl">总计断言</div></div><div class="stat-card"><div class="val p">'+p+'</div><div class="lbl">✅ 通过</div></div><div class="stat-card"><div class="val f">'+f+'</div><div class="lbl">❌ 失败</div></div><div class="stat-card"><div class="val s">'+sk+'</div><div class="lbl">⏭️ 跳过</div></div>';
+  var pp=t>0?(p/t*100):0,fp=t>0?(f/t*100):0,sp=t>0?(sk/t*100):0;
+  document.getElementById('bar').innerHTML='<div class="seg p" style="width:'+pp+'%"></div><div class="seg f" style="width:'+fp+'%"></div><div class="seg s" style="width:'+sp+'%"></div>';
+  document.getElementById('navStatus').textContent='🧪 自检 · '+p+'/'+t+' 通过'}
+
+function buildResultMap(){
+  if(!results||!results.suites)return{};
+  var map={},current=null;
+  for(var i=0;i<results.suites.length;i++){var s=results.suites[i];var tests=(s.tests||[]).filter(function(t){return t.name});
+    if(s.name!=='(standalone)'){current=s.name;if(!map[current])map[current]={passed:0,failed:0,skipped:0,total:0,tests:[]}}
+    if(s.name==='(standalone)'&&current){map[current].tests=map[current].tests.concat(tests);for(var j=0;j<tests.length;j++){var t=tests[j];map[current].total++;if(t.status==='passed')map[current].passed++;else if(t.status==='failed')map[current].failed++;else if(t.status==='skipped')map[current].skipped++}}}
+  }return map}
+
+function renderResults(){
+  var container=document.getElementById('resultsContent'),resultMap=buildResultMap(),entries=[];
+  for(var k in resultMap){if(resultMap.hasOwnProperty(k))entries.push([k,resultMap[k]])}
+  if(!entries.length){container.innerHTML='<div class="state-msg"><h3>暂无结果数据</h3></div>';return}
+  var html='';
+  for(var i=0;i<entries.length;i++){var name=entries[i][0],r=entries[i][1],hasFail=r.failed>0;
+    html+='<div class="suite'+(hasFail?' open':'')+'"><div class="s-head" data-action="toggle"><span class="s-arrow">▶</span><span class="s-name">🧪 '+esc(name)+'</span><span class="s-meta">'+(r.passed>0?'<span style="color:var(--pass)">✅ '+r.passed+'</span>':'')+(r.failed>0?'<span style="color:var(--fail)">❌ '+r.failed+'</span>':'')+(r.skipped>0?'<span style="color:var(--skip)">⏭️ '+r.skipped+'</span>':'')+'</span></div><div class="s-body">';
+    for(var j=0;j<r.tests.length;j++){var t=r.tests[j];
+      html+='<div class="t-row" title="点击复制测试名" onclick="navigator.clipboard.writeText(\''+esc(t.name)+'\')"><span class="t-icon">'+(t.status==='passed'?'✅':t.status==='failed'?'❌':t.status==='skipped'?'⏭️':'⬜')+'</span><span class="t-name">'+esc(t.name)+'</span>'+(t.error?'<span style="font-size:.7rem;color:var(--fail)">'+esc(t.error)+'</span>':'')+'<span class="t-dur">'+fmtDur(t.duration)+'</span></div>'}
+    html+='</div></div>'}
+  container.innerHTML=html}
+
+function renderFiles(){var container=document.getElementById('filesContent');if(!manifest||!manifest.files||!manifest.files.length){container.innerHTML='<div class="state-msg"><h3>暂无测试文件</h3></div>';return}var html='';for(var i=0;i<manifest.files.length;i++){var f=manifest.files[i];html+='<div class="t-row" style="padding-left:18px"><span class="t-icon">📄</span><span class="t-name">'+esc(f.name)+'</span><span style="font-size:.68rem;color:var(--text3)">'+esc(f.path)+'</span></div>'}container.innerHTML=html}
+function renderSlow(){var allTests=[];var rm=buildResultMap();for(var k in rm){if(rm.hasOwnProperty(k))allTests=allTests.concat(rm[k].tests)}var slow=allTests.filter(function(t){return(t.duration||0)>SLOW_THRESHOLD}).sort(function(a,b){return(b.duration||0)-(a.duration||0)});var container=document.getElementById('slowContent');if(!slow.length){container.innerHTML='<div class="state-msg"><h3>⚡ 所有测试都在 '+SLOW_THRESHOLD+'ms 以内</h3></div>';return}var html='';for(var i=0;i<slow.length;i++){var t=slow[i];html+='<div class="t-row" style="padding-left:18px"><span class="t-icon">'+(t.status==='passed'?'✅':'❌')+'</span><span class="t-name">'+esc(t.name)+'</span><span class="t-dur">'+fmtDur(t.duration)+'</span></div>'}container.innerHTML=html}
+
+function switchPanel(name){activePanel=name;document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.panel===name)});document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1))});if(name==='files')renderFiles();else if(name==='results')renderResults();else if(name==='slow')renderSlow()}
+document.querySelector('.tabs').addEventListener('click',function(e){var tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
+document.getElementById('resultsContent').addEventListener('click',function(e){var head=e.target.closest('.s-head');if(head){head.closest('.suite').classList.toggle('open')}});
+window.addEventListener('DOMContentLoaded',function(){renderStats();switchPanel('results')});
+</script></body></html>

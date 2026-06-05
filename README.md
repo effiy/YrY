@@ -27,8 +27,9 @@ flowchart TD
         TD[rui-trends]:::skill
     end
 
-    subgraph Agents[八角色]
+    subgraph Agents[九角色]
         PM[("pm")]:::core
+        PLANNER[planner]:::agent
         ARCHITECT[architect]:::agent
         CODER[coder]:::agent
         REVIEWER[code-reviewer]:::agent
@@ -158,6 +159,7 @@ flowchart LR
 ```
 
 - **pm** — 决策中枢：决定做/不做/延期，串起全部 Agent
+- **planner** — 实施规划：从设计出实施计划，拆任务、排顺序、审查交接 coder
 - **architect** — 系统架构设计：设计系统级架构、评估权衡、创建 ADR
 - **coder** — 代码实现：逐模块编码，P0 清零方进下一模块
 - **code-reviewer** — 代码审查：审查代码正确性、模式、反模式、简化机会（只读）
@@ -218,13 +220,13 @@ flowchart LR
 
 ```
 YrY/
-├── agents/                  # 8 个 Agent 角色契约
+├── agents/                  # 9 个 Agent 角色契约
 │   ├── AGENT.md             #   角色拓扑与共用底线
-│   ├── pm.md / architect.md / coder.md
+│   ├── pm.md / planner.md / architect.md / coder.md
 │   ├── code-reviewer.md / tester.md
 │   ├── reporter.md / security.md
 │   └── self-improve.md
-├── rules/                   # 8 组约束规则
+├── rules/                   # 10 组约束规则
 │   ├── code-pipeline.md     #   分支隔离 · Gate A/B
 │   ├── delivery-gate.md     #   三步 hook
 │   ├── doc-generation.md    #   文档生成规范
@@ -232,7 +234,9 @@ YrY/
 │   ├── knowledge-graph.md   #   知识图谱约束
 │   ├── security-guardrails.md  # 安全护栏
 │   ├── self-improve.md      #   自改进流程
-│   └── rui-claude.md        #   .claude/ 管理约束
+│   ├── rui-claude.md        #   .claude/ 管理约束
+│   ├── mermaid-theme.md     #   Mermaid 统一主题配置
+│   └── plan-execution.md    #   计划执行与验证管线
 ├── skills/                  # 6 项技能规约
 │   ├── rui/                 #   SDLC 编排
 │   │   ├── formulas.md      #     故事文档公式

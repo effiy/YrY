@@ -54,6 +54,7 @@ flowchart LR
 | `/rui-trends oss-insight [--metric stars\|forks\|contributors] [--limit N]` | 查询 OSS Insight 仓库排名 | 技术选型数据支撑 |
 | `/rui-trends trendshift [--range 7\|30\|90]` | 查询 TrendShift 趋势变化 | 识别快速上升项目 |
 | `/rui-trends top-starred [--min-stars N]` | 查询 GitHub 高星项目 | 社区验证参照 |
+| `/rui-trends find-skills [query]` | 搜索开放生态中的 Agent 技能（Skills CLI） | 发现可安装的技能扩展能力 |
 | `/rui-trends all` | 依次查询全部四个数据源 | 全面趋势扫描 |
 
 ## 各子命令工作流
@@ -93,6 +94,58 @@ flowchart LR
 步骤 3: 格式化为表格输出
 步骤 4: 附带来源 URL
 ```
+
+### find-skills
+
+> 帮助用户发现和安装开放 Agent 技能生态中的技能包。通过 Skills CLI（`npx skills`）搜索、验证并推荐可安装的技能。
+
+**适用场景**：用户询问"有没有 X 技能"、"帮我找个 Y 工具"、希望扩展 Agent 能力时。
+
+```
+步骤 1: 理解用户需求 — 识别领域、任务类型、是否属于常见任务
+步骤 2: 查阅 leaderboard — 先查看 https://skills.sh/ 确认是否有知名技能
+步骤 3: 搜索技能 — 运行 npx skills find <query>（如无匹配则告知用户）
+步骤 4: 质量验证 — 检查安装量（≥1K 为佳）、来源信誉、GitHub stars
+步骤 5: 呈现选项 — 展示技能名称、功能、安装量、来源、安装命令
+步骤 6: 协助安装 — npx skills add <owner/repo@skill> -g -y
+```
+
+**关键命令**：
+
+| 命令 | 用途 |
+|------|------|
+| `npx skills find [query]` | 交互式或关键词搜索技能 |
+| `npx skills add <package>` | 从 GitHub 或其他源安装技能 |
+| `npx skills check` | 检查技能更新 |
+| `npx skills update` | 更新所有已安装技能 |
+
+**常用技能分类**：
+
+| 类别 | 示例查询关键词 |
+|------|--------------|
+| Web 开发 | react, nextjs, typescript, css, tailwind |
+| 测试 | testing, jest, playwright, e2e |
+| DevOps | deploy, docker, kubernetes, ci-cd |
+| 文档 | docs, readme, changelog, api-docs |
+| 代码质量 | review, lint, refactor, best-practices |
+| 设计 | ui, ux, design-system, accessibility |
+| 生产力 | workflow, automation, git |
+
+**质量验证原则**：
+- 优先推荐安装量 ≥1K 的技能，谨慎对待 <100 安装的技能
+- 官方来源（`vercel-labs`、`anthropics`、`microsoft`）比未知作者更可信
+- 检查源仓库 GitHub stars，<100 stars 需保持怀疑
+- 不只依赖搜索结果，必须经过验证再推荐
+
+**搜索技巧**：
+- 使用具体关键词："react testing" 优于 "testing"
+- 尝试替代术语："deploy" 无结果时尝试 "deployment" 或 "ci-cd"
+- 关注热门来源：`vercel-labs/agent-skills`、`ComposioHQ/awesome-claude-skills`
+
+**未找到技能时**：
+1. 明确告知未找到匹配技能
+2. 提供直接协助完成任务
+3. 建议用户可用 `npx skills init` 创建自己的技能
 
 ## 输出格式规约
 

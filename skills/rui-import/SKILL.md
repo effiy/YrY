@@ -83,12 +83,9 @@ flowchart TD
 
 ## 调用形态
 
-> `node skills/rui-import/sync.mjs [options]` — 批量同步。  
-> `node skills/rui/import-doc.mjs <file-path>` — 单文件导入（需手动调用）。
+> `node skills/rui-import/sync.mjs [options]` — 批量同步。
 
 | 意图 | 输入 | 行为 |
-|------|------|------|
-| 单文件导入 | `node skills/rui/import-doc.mjs <file-path>` | 单文件验证 → 调用 sync.mjs file= → 输出结果 |
 | workspace 全量同步（兜底） | `node skills/rui-import/sync.mjs` | 项目根全量扫描 + 上传 |
 | 单目录同步 | `dir=<absolute path>` | 指定目录扫描 + 上传，路径仍以项目根计算相对路径 |
 | 排除子目录 | `exclude=tmp,build` | 追加排除（与默认排除合并） |

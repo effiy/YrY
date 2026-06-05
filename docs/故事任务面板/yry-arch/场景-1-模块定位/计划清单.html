@@ -5,346 +5,603 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>模块定位 · 计划清单</title>
 <style>
-  :root {
-    --bg: #020617; --fg: #a9b1d6; --surface: #0f172a; --border: #1e293b;
-    --line: #3d59a1; --accent: #7aa2f7; --muted: #53576c; --good: #34d399; --bad: #f87171; --warn: #fbbf24;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'JetBrains Mono', 'Fira Code', monospace; background: var(--bg); color: var(--fg); padding: 2rem; line-height: 1.6; }
-  .container { max-width: 900px; margin: 0 auto; }
-  header { margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; }
-  h1 { font-size: 1.3rem; color: var(--accent); }
-  h2 { font-size: 1.1rem; color: var(--accent); margin: 2rem 0 1rem; border-left: 3px solid var(--line); padding-left: 0.75rem; }
-  .meta { color: var(--muted); font-size: 0.75rem; margin: 0.5rem 0; }
-  .progress-container { margin: 1.5rem 0; }
-  .progress-label { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.5rem; }
-  .progress-bar { width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--line), var(--accent)); border-radius: 3px; transition: width 0.5s; }
-  .section { margin: 1.5rem 0; }
-  .step { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin: 0.75rem 0; overflow: hidden; }
-  .step-header { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; cursor: pointer; }
-  .step-header:hover { background: rgba(122,162,247,0.05); }
-  .step-num { font-weight: 700; color: var(--accent); min-width: 2rem; }
-  .step-checkbox { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
-  .step-title { flex: 1; }
-  .step-status { font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 4px; }
-  .status-pending { background: rgba(83,87,108,0.3); color: var(--muted); }
-  .status-done { background: rgba(52,211,153,0.15); color: var(--good); }
-  .step-body { display: none; padding: 0 1rem 1rem 3rem; font-size: 0.85rem; border-top: 1px solid var(--border); }
-  .step-body.open { display: block; }
-  .code-block { background: #020617; border: 1px solid var(--border); border-radius: 4px; padding: 0.75rem; margin: 0.5rem 0; font-size: 0.8rem; overflow-x: auto; white-space: pre-wrap; }
-  .verify-cmd { background: rgba(52,211,153,0.08); border-left: 3px solid var(--good); border-radius: 0 4px 4px 0; padding: 0.5rem 0.75rem; margin: 0.5rem 0; font-size: 0.8rem; }
-  .verify-cmd::before { content: "▶ 验证: "; color: var(--good); font-weight: 600; }
-  .expected::before { content: "✓ 期望: "; color: var(--accent); font-weight: 600; }
-  .expected { color: var(--muted); font-size: 0.8rem; margin: 0.25rem 0; }
-  .log-entry { font-size: 0.75rem; color: var(--muted); border-left: 2px solid var(--border); padding-left: 0.5rem; margin: 0.25rem 0; }
-  .log-time { color: var(--line); }
-  .footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.7rem; }
-  .nav { font-size: 0.8rem; margin: 1rem 0; }
-  .nav a { color: var(--accent); text-decoration: none; margin-right: 1rem; }
-  .nav a:hover { text-decoration: underline; }
-
-a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
-
-/* ── Breadcrumb ─────────────────────────── */
-.breadcrumb {
-  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
-  margin-bottom: 1.25rem; font-size: 0.76rem;
+:root {
+  --bg: rgba(22,22,32,1);
+  --bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
+  --bg-flat: rgba(34,34,46,1);
+  --bg-raised: rgba(42,42,56,1);
+  --accent: #FFC107; --cyan: #22d3ee; --pass: #22c55e; --fail: #ef4444; --warn: #f59e0b; --skip: #6b7280;
+  --text: rgba(250,250,252,1); --text2: rgba(160,160,164,1); --text3: rgba(110,110,114,1);
+  --shadow: 0 4px 20px rgba(0,0,0,0.3); --shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
+  --radius: 12px; --border: 1px solid rgba(255,255,255,0.06);
 }
-.breadcrumb a {
-  color: #7aa2f7; text-decoration: none; transition: color 0.15s;
-}
-.breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
-.breadcrumb .bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
-.breadcrumb .bc-current { color: #94a3b8; font-weight: 500; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif; line-height:1.6; min-height:100vh; }
+.container { max-width:960px; margin:0 auto; padding:40px 24px 80px; }
+
+/* Breadcrumb */
+.breadcrumb { display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:1.25rem; font-size:0.76rem; }
+.breadcrumb a { color:#7aa2f7; text-decoration:none; transition:color 0.15s; }
+.breadcrumb a:hover { color:#fbbf24; text-decoration:underline; }
+.breadcrumb .bc-sep { color:#53576c; opacity:0.5; user-select:none; }
+.breadcrumb .bc-current { color:#94a3b8; font-weight:500; }
+
+/* Cross-Nav */
+.cross-nav { display:flex; gap:4px; justify-content:center; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; }
+.cross-link { color:var(--cyan); text-decoration:none; font-size:0.76rem; padding:3px 10px; border-radius:4px; transition:color 0.15s,background 0.15s; }
+.cross-link:hover { color:var(--accent); background:rgba(255,193,7,0.06); }
+.cross-link.on { color:var(--accent); font-weight:600; cursor:default; }
+.cross-link.on:hover { background:transparent; }
+.cross-sep { color:var(--text3); font-size:0.5rem; opacity:0.35; user-select:none; }
+
+/* Header */
+.header { margin-bottom:16px; }
+.header h1 { font-size:1.6rem; font-weight:700; }
+.header h1 .accent { color:var(--accent); }
+.header .sub { color:var(--text2); font-size:0.85rem; margin-top:4px; }
+.header .meta { color:var(--text3); font-size:0.75rem; margin-top:6px; }
+
+/* Progress (always visible) */
+.progress-wrap { margin-bottom:20px; }
+.progress-label { display:flex; justify-content:space-between; font-size:0.78rem; margin-bottom:6px; color:var(--text2); }
+.progress-bar { width:100%; height:6px; background:var(--bg-flat); border-radius:3px; overflow:hidden; }
+.progress-fill { height:100%; background:linear-gradient(90deg, #3d59a1, var(--accent)); border-radius:3px; transition:width 0.4s ease; }
+
+/* Tabs */
+.tabs { display:flex; gap:0; border-bottom:var(--border); margin-bottom:24px; }
+.tab { padding:8px 18px; cursor:pointer; font-size:0.82rem; color:var(--text3); border-bottom:2px solid transparent; transition:all 0.15s; user-select:none; }
+.tab:hover { color:var(--text2); }
+.tab.on { color:var(--accent); border-bottom-color:var(--accent); }
+
+/* Panels */
+.panel { display:none; }
+.panel.on { display:block; }
+
+/* Section */
+.section { margin-bottom:24px; }
+.section h2 { font-size:0.95rem; color:var(--accent); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.section h2 .dot { width:7px; height:7px; border-radius:50%; background:var(--accent); flex-shrink:0; }
+.section h2 .s-done { color:var(--text3); font-size:0.72rem; font-weight:400; margin-left:2px; }
+
+/* Step Card */
+.step { background:var(--bg-card); border:var(--border); border-radius:var(--radius); margin:10px 0; overflow:hidden; box-shadow:var(--shadow); transition:border-color 0.2s; }
+.step:hover { border-color:rgba(255,193,7,0.12); }
+.step-header { display:flex; align-items:center; gap:10px; padding:12px 16px; cursor:pointer; user-select:none; transition:background 0.15s; }
+.step-header:hover { background:rgba(255,193,7,0.04); }
+.step-checkbox { width:18px; height:18px; accent-color:var(--accent); cursor:pointer; flex-shrink:0; }
+.step-num { font-weight:700; color:var(--accent); min-width:26px; font-size:0.88rem; }
+.step-title { flex:1; font-size:0.92rem; }
+.step-status { font-size:0.72rem; padding:3px 10px; border-radius:12px; flex-shrink:0; white-space:nowrap; }
+.status-done { background:rgba(34,197,94,0.12); color:var(--pass); }
+.status-pending { background:rgba(110,110,114,0.18); color:var(--text3); }
+.status-active { background:rgba(245,158,11,0.12); color:var(--warn); }
+
+/* Step Body */
+.step-body { display:none; padding:0 16px 16px 52px; font-size:0.84rem; border-top:var(--border); }
+.step-body.open { display:block; }
+.step-body p { color:var(--text2); margin:4px 0; }
+
+/* Skill Hint */
+.skill-hint { background:rgba(255,193,7,0.06); border-left:3px solid var(--accent); border-radius:0 6px 6px 0; padding:8px 14px; margin:10px 0; font-size:0.82rem; color:var(--text); display:flex; align-items:flex-start; gap:6px; }
+.skill-hint .hint-icon { color:var(--accent); font-weight:700; flex-shrink:0; }
+.skill-hint code { background:rgba(0,0,0,0.3); color:var(--cyan); padding:2px 6px; border-radius:4px; font-size:0.78rem; font-family:'SF Mono','Fira Code',monospace; }
+
+/* Dep Badges */
+.step-deps { display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.04); }
+.step-deps .dep-label { font-size:0.7rem; color:var(--text3); margin-right:2px; }
+.dep-badge { font-size:0.7rem; color:var(--cyan); text-decoration:none; background:var(--bg-flat); border:1px solid rgba(34,211,238,0.12); border-radius:12px; padding:2px 10px; transition:all 0.15s; }
+.dep-badge:hover { border-color:var(--accent); color:var(--accent); transform:translateY(-1px); }
+
+/* Code / Verify / Log */
+.code-block { background:rgba(0,0,0,0.3); border:var(--border); border-radius:6px; padding:10px 14px; margin:8px 0; font-size:0.76rem; overflow-x:auto; white-space:pre-wrap; font-family:'SF Mono','Fira Code',monospace; color:var(--cyan); }
+.verify-cmd { background:rgba(34,197,94,0.06); border-left:3px solid var(--pass); border-radius:0 4px 4px 0; padding:6px 10px; margin:6px 0; font-size:0.8rem; }
+.verify-cmd::before { content:"▶ 验证: "; color:var(--pass); font-weight:600; }
+.expected { color:var(--text3); font-size:0.78rem; margin:2px 0; }
+.expected::before { content:"✓ 期望: "; color:var(--accent); font-weight:600; }
+.log-entry { font-size:0.74rem; color:var(--text3); border-left:2px solid var(--border); padding-left:8px; margin:4px 0; }
+.log-time { color:#7aa2f7; }
+
+/* ── Tab 2: Overview Stats ───────────────── */
+.stat-grid { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+.stat-mini { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:14px 18px; text-align:center; box-shadow:var(--shadow); min-width:80px; flex:1; }
+.stat-mini .sv { font-size:1.4rem; font-weight:700; }
+.stat-mini .sv.g { color:var(--pass); } .stat-mini .sv.y { color:var(--accent); } .stat-mini .sv.c { color:var(--cyan); }
+.stat-mini .sl { font-size:0.64rem; color:var(--text3); margin-top:2px; text-transform:uppercase; letter-spacing:0.4px; }
+.section-stat { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:12px 16px; margin:8px 0; box-shadow:var(--shadow); display:flex; align-items:center; gap:12px; }
+.section-stat .ss-label { font-size:0.82rem; font-weight:600; min-width:100px; }
+.section-stat .ss-bar-wrap { flex:1; height:6px; background:var(--bg-flat); border-radius:3px; overflow:hidden; }
+.section-stat .ss-bar { height:100%; border-radius:3px; transition:width 0.4s; }
+.section-stat .ss-pct { font-size:0.76rem; color:var(--text2); min-width:44px; text-align:right; }
+
+/* ── Tab 3: Command Grid ────────────────── */
+.cmd-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:10px; }
+.cmd-card { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:16px 18px; box-shadow:var(--shadow); transition:transform 0.15s,box-shadow 0.15s; }
+.cmd-card:hover { transform:translateY(-1px); box-shadow:0 6px 24px rgba(0,0,0,0.35); }
+.cmd-card .c-stage { font-size:0.64rem; color:var(--text3); margin-bottom:4px; }
+.cmd-card .c-name { font-weight:700; font-size:0.84rem; color:var(--accent); font-family:monospace; margin-bottom:2px; }
+.cmd-card .c-desc { font-size:0.74rem; color:var(--text2); line-height:1.5; }
+.cmd-card pre { background:rgba(0,0,0,0.3); border-radius:6px; padding:8px 12px; margin-top:8px; font-size:0.74rem; color:var(--cyan); overflow-x:auto; font-family:'SF Mono',monospace; cursor:pointer; position:relative; }
+.cmd-card pre .cb { position:absolute; top:4px; right:6px; background:var(--bg-flat); border:var(--border); border-radius:4px; color:var(--text3); font-size:0.6rem; padding:1px 6px; cursor:pointer; opacity:0; transition:opacity 0.15s; font-family:inherit; }
+.cmd-card pre:hover .cb { opacity:1; }
+
+/* ── Tab 4: Related Pages ───────────────── */
+.link-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; }
+.link-card { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); text-decoration:none; color:inherit; display:block; transition:transform 0.15s,border-color 0.15s; }
+.link-card:hover { transform:translateY(-2px); border-color:rgba(255,193,7,0.25); }
+.link-card .lc-icon { font-size:1.2rem; margin-bottom:6px; }
+.link-card .lc-name { font-weight:700; font-size:0.88rem; color:var(--accent); }
+.link-card .lc-desc { font-size:0.74rem; color:var(--text2); margin-top:4px; line-height:1.5; }
+
+/* ── Tab 5: Verify ──────────────────────── */
+.verify-list { display:flex; flex-direction:column; gap:10px; }
+.verify-item { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:14px 18px; box-shadow:var(--shadow); }
+.verify-item .vi-label { font-size:0.78rem; color:var(--text2); margin-bottom:6px; }
+.verify-item pre { background:rgba(0,0,0,0.3); border-radius:6px; padding:8px 36px 8px 12px; font-size:0.76rem; color:var(--cyan); overflow-x:auto; font-family:'SF Mono',monospace; cursor:pointer; position:relative; }
+.verify-item pre .cb { position:absolute; top:4px; right:6px; background:var(--bg-flat); border:var(--border); border-radius:4px; color:var(--text3); font-size:0.6rem; padding:1px 6px; cursor:pointer; opacity:0; transition:opacity 0.15s; font-family:inherit; }
+.verify-item pre:hover .cb { opacity:1; }
+.verify-item .vi-expect { font-size:0.74rem; color:var(--text3); margin-top:4px; }
+.verify-item .vi-expect::before { content:"✓ "; color:var(--accent); }
+
+/* Toast */
+.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--bg-raised); border:1px solid rgba(255,193,7,0.3); border-radius:8px; color:var(--text); padding:10px 20px; font-size:0.82rem; z-index:300; box-shadow:var(--shadow-lg); opacity:0; transition:opacity 0.2s; pointer-events:none; }
+.toast.show { opacity:1; }
+
+/* Footer */
+.footer { margin-top:40px; padding-top:16px; border-top:var(--border); color:var(--text3); font-size:0.72rem; text-align:center; }
+
+a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
+@media (max-width:640px) { .container { padding:20px 12px 60px; } .header h1 { font-size:1.3rem; } .step-body { padding:0 10px 12px 40px; } .cmd-grid,.link-grid { grid-template-columns:1fr; } .stat-grid { flex-direction:column; } }
 </style>
 </head>
 <body>
 <div class="container">
 
 <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../计划.html">yry-arch · 系统架构知识固化</a><span class="bc-sep">/</span><span class="bc-current">场景 1 · 模块定位与职责</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
-<header>
-  <h1>📋 场景-1: 模块定位 · 计划清单</h1>
-  <div class="meta">
-    <span>📌 v1.29.0</span> · <span>📅 2026-06-05</span> · <span>🏷️ yry-arch</span>
-  </div>
-  <div class="nav">
-    <a href="../计划.html">← 计划总览</a>
-    <a href="../场景-1-模块定位.md">📄 场景文档</a>
-    <a href="../场景-1-模块定位.html">🎨 架构图</a>
-  </div>
-</header>
 
-<div class="progress-container">
+<div class="cross-nav">
+  <span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
+  <a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span>
+  <a href="演示.html" class="cross-link">💡 演示</a>
+</div>
+
+<div class="header">
+  <h1>📋 场景-1<span class="accent"> · 模块定位与职责</span></h1>
+  <p class="sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
+  <div class="meta">📌 v1.0.0 · 📅 2026-06-05 · 🏷️ yry-arch</div>
+</div>
+
+<!-- Progress bar always visible -->
+<div class="progress-wrap">
   <div class="progress-label"><span>整体进度</span><span id="progress-text">0 / 15 完成</span></div>
   <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
 </div>
 
-<h2>§0 技术评审 — 完成</h2>
+<!-- Tabs -->
+<div class="tabs">
+  <span class="tab on" data-panel="checklist">📋 清单</span>
+  <span class="tab" data-panel="overview">📊 概览</span>
+  <span class="tab" data-panel="commands">⚡ 命令</span>
+  <span class="tab" data-panel="related">📁 关联</span>
+  <span class="tab" data-panel="verify">🧪 验证</span>
+</div>
 
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
-    <span class="step-num">1</span>
-    <span class="step-title">阅读全部能力/角色/约束规约文件</span>
-    <span class="step-status status-done">✅ 完成</span>
-  </div>
-  <div class="step-body open">
-    <p>读取 agents/ 下 8 个角色定义 + rules/ 下 9 个规则文件 + skills/ 下 6 个技能 SKILL.md。</p>
-    <div class="code-block"># 扫描文件清单
-agents/pm.md agents/coder.md agents/tester.md agents/reporter.md
+<!-- ═══ Tab 1: Checklist ═══ -->
+<div class="panel on" id="panelChecklist">
+
+<div class="section">
+<h2><span class="dot"></span>§0 技术评审<span class="s-done">— 已完成</span></h2>
+
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">1</span><span class="step-title">阅读全部能力/角色/约束规约文件</span><span class="step-status status-done">✅ 完成</span>
+</div><div class="step-body open">
+  <p>读取 agents/ 下 8 个角色定义 + rules/ 下 9 个规则文件 + skills/ 下 6 个技能 SKILL.md，建立模块全景。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch --scene 1</code>扫描全部规约并生成场景文档骨架</div>
+  <div class="code-block">agents/pm.md agents/coder.md agents/tester.md agents/reporter.md
 agents/security.md agents/self-improve.md agents/code-reviewer.md agents/architect.md
 rules/code-pipeline.md rules/doc-generation.md rules/delivery-gate.md
 rules/knowledge-graph.md rules/architecture-diagram.md rules/mermaid-theme.md
 rules/security-guardrails.md rules/rui-claude.md rules/self-improve.md
 skills/rui/SKILL.md skills/rui-bot/SKILL.md skills/rui-claude/SKILL.md
 skills/rui-import/SKILL.md skills/rui-story/SKILL.md skills/rui-trends/SKILL.md</div>
-    <div class="verify-cmd">grep -l "name:" agents/*.md rules/*.md skills/*/SKILL.md | wc -l</div>
-    <div class="expected">≥ 20 个规约文件被定位</div>
-    <div class="log-entry"><span class="log-time">2026-06-05 10:34</span> 完成 — 定位 23 个规约文件</div>
-  </div>
+  <div class="verify-cmd">grep -l "name:" agents/*.md rules/*.md skills/*/SKILL.md | wc -l</div>
+  <div class="expected">≥ 20 个规约文件被定位</div>
+  <div class="log-entry"><span class="log-time">2026-06-05 10:34</span> 完成 — 定位 23 个规约文件</div>
+</div></div>
+
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">2</span><span class="step-title">提取每个模块的入口、依赖、下游消费者</span><span class="step-status status-done">✅ 完成</span>
+</div><div class="step-body">
+  <p>对每个文件提取：入口函数/命令、导入的依赖模块、被谁引用（下游消费者），形成模块边界矩阵。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch --scene 1</code>让 architect agent 分析模块间引用关系</div>
+  <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a><a href="架构图.html" class="dep-badge">📐 架构图</a></div>
+  <div class="verify-cmd">grep -rn "import\|require\|from" skills/rui/SKILL.md agents/AGENT.md</div>
+  <div class="expected">识别跨模块引用链 ≥ 10 条</div>
+  <div class="log-entry"><span class="log-time">2026-06-05 10:45</span> 完成 — 提取 6 技能 + 8 Agent + 8 规则的入口/依赖矩阵</div>
+</div></div>
+
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">3</span><span class="step-title">绘制模块拓扑图（mermaid）</span><span class="step-status status-done">✅ 完成</span>
+</div><div class="step-body">
+  <p>生成三层拓扑图：能力模块层 · 角色协作层 · 约束生效层。每层含节点和边，使用 mermaid-theme.md 主题。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch --output 架构图.html</code>自动生成 SVG 架构图</div>
+  <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="演示.html" class="dep-badge">💡 演示</a></div>
+  <div class="verify-cmd">grep -c "classDef" 场景-1-模块定位.md</div>
+  <div class="expected">≥ 3 个 classDef 定义</div>
+</div></div>
 </div>
 
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
-    <span class="step-num">2</span>
-    <span class="step-title">提取每个模块的入口、依赖、下游消费者</span>
-    <span class="step-status status-done">✅ 完成</span>
-  </div>
-  <div class="step-body">
-    <p>对每个文件提取：入口函数/命令、导入的依赖模块、被谁引用（下游消费者）。</p>
-    <div class="verify-cmd">grep -rn "^import\|^require\|^from" skills/rui/SKILL.md agents/AGENT.md</div>
-    <div class="expected">识别跨模块引用链</div>
-  </div>
-</div>
+<div class="section">
+<h2><span class="dot"></span>§1 测试设计<span class="s-done">— 已完成</span></h2>
 
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
-    <span class="step-num">3</span>
-    <span class="step-title">绘制模块拓扑图（mermaid）</span>
-    <span class="step-status status-done">✅ 完成</span>
-  </div>
-  <div class="step-body">
-    <p>生成三层拓扑图：能力模块层 · 角色协作层 · 约束生效层。每层含节点和边。</p>
-    <div class="code-block">```mermaid
-flowchart TB
-    subgraph 能力["六项能力"]
-      C1[rui 编排] --- C2[rui-bot 通知]
-      C3[rui-claude 配置] --- C4[rui-import 同步]
-      C5[rui-story 面板] --- C6[rui-trends 趋势]
-    end
-    ...</div>
-    <div class="verify-cmd">grep -c "classDef" 场景-1-模块定位.md</div>
-    <div class="expected">≥ 3 个 classDef 定义</div>
-  </div>
-</div>
-
-<h2>§1 测试设计 — 完成</h2>
-
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
-    <span class="step-num">4</span>
-    <span class="step-title">定义模块边界测试用例</span>
-    <span class="step-status status-done">✅ 完成</span>
-  </div>
-  <div class="step-body">
-    <p>每项能力模块定义：接口契约测试 · 依赖可达性测试 · 下游影响测试。</p>
-    <div class="code-block"># 测试用例结构
-TC-B-1: 模块入口可达 — 验证 rui SKILL.md 引用的所有 agent 文件存在
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">4</span><span class="step-title">定义模块边界测试用例</span><span class="step-status status-done">✅ 完成</span>
+</div><div class="step-body">
+  <p>每项能力模块定义：接口契约测试 · 依赖可达性测试 · 下游影响测试。写入 tests/skills/ 目录。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch</code>让 tester agent 生成测试用例骨架</div>
+  <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
+  <div class="code-block">TC-B-1: 模块入口可达 — 验证 rui SKILL.md 引用的所有 agent 文件存在
 TC-B-2: 依赖链闭合 — 验证 pm → coder → tester → reporter 链完整
 TC-B-3: 下游影响范围 — 修改 rui SKILL.md 后识别受影响的 agent 文件</div>
-  </div>
+</div></div>
+
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">5</span><span class="step-title">编写模块拓扑验证脚本</span><span class="step-status status-done">✅ 完成</span>
+</div><div class="step-body">
+  <p>编写 node.js 验证脚本：自动扫描模块间引用，检查是否有断链或循环依赖。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node scripts/validate-module-topology.mjs</code>运行拓扑验证脚本</div>
+  <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div>
+  <div class="verify-cmd">node scripts/validate-module-topology.mjs</div>
+  <div class="expected">exit code 0，输出 "所有模块引用有效，无断链/循环依赖"</div>
+</div></div>
 </div>
 
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
-    <span class="step-num">5</span>
-    <span class="step-title">编写模块拓扑验证脚本</span>
-    <span class="step-status status-done">✅ 完成</span>
-  </div>
-  <div class="step-body">
-    <p>编写 node.js 验证脚本：自动扫描模块间引用，检查是否有断链或循环依赖。</p>
-    <div class="verify-cmd">node scripts/validate-module-topology.mjs</div>
-    <div class="expected">exit code 0，输出 "所有模块引用有效，无断链/循环依赖"</div>
-  </div>
-</div>
+<div class="section">
+<h2><span class="dot"></span>§2 实施报告<span class="s-done">— 进行中</span></h2>
 
-<h2>§2 实施报告 — 进行中</h2>
-
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" onchange="updateProgress()">
-    <span class="step-num">6</span>
-    <span class="step-title">编写模块目录表</span>
-    <span class="step-status status-pending">⏳ 待开始</span>
-  </div>
-  <div class="step-body">
-    <p>按六项能力、八种角色、八组约束分别编制模块目录。每项含：入口文件 · 核心接口 · 依赖模块 · 下游消费者。</p>
-    <div class="code-block">| 模块 | 入口 | 核心接口 | 依赖 | 下游 |
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">6</span><span class="step-title">编写模块目录表</span><span class="step-status status-active">🔶 就绪</span>
+</div><div class="step-body">
+  <p>按六项能力、八种角色、八组约束分别编制模块目录。每项含：入口文件 · 核心接口 · 依赖模块 · 下游消费者。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch --scene 1</code>生成模块目录 Markdown 表格</div>
+  <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
+  <div class="code-block">| 模块 | 入口 | 核心接口 | 依赖 | 下游 |
 |------|------|---------|------|------|
-| rui | SKILL.md | /rui init/doc/code/update/yry/version | pm,coder,tester,security | rui-bot,rui-import |
-| pm | pm.md | 拆分故事·排序·委派·闭合 | AGENT.md | coder,tester,security |
+| rui | SKILL.md | /rui init/doc/code/update | pm,coder,tester | rui-bot,rui-import |
 | ... | ... | ... | ... | ... |</div>
-    <div class="verify-cmd">grep -c "^|" 场景-1-模块定位.md | head -1</div>
-    <div class="expected">≥ 20 行表格数据</div>
-  </div>
-</div>
+  <div class="verify-cmd">grep -c "^|" 场景-1-模块定位.md | head -1</div>
+  <div class="expected">≥ 20 行表格数据</div>
+</div></div>
 
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" onchange="updateProgress()">
-    <span class="step-num">7</span>
-    <span class="step-title">绘制关系图谱</span>
-    <span class="step-status status-pending">⏳ 待开始</span>
-  </div>
-  <div class="step-body">
-    <p>生成三层关系图谱的 HTML+SVG 架构图。</p>
-    <div class="code-block"># 三层图谱
-1. 能力模块调用链 — 6 项技能间的依赖和触发关系
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">7</span><span class="step-title">绘制关系图谱</span><span class="step-status status-pending">⏳ 待开始</span>
+</div><div class="step-body">
+  <p>生成三层关系图谱的 HTML+SVG 架构图。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch --output 知识图谱.html</code>生成交互式 Cytoscape 知识图谱</div>
+  <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a><a href="架构图.html" class="dep-badge">📐 架构图</a></div>
+  <div class="code-block">1. 能力模块调用链 — 6 项技能间的依赖和触发关系
 2. 角色协作网络 — 8 种 Agent 间的委派和反馈回路
 3. 约束生效点地图 — 8 组规则在管线各阶段的生效位置</div>
-  </div>
+</div></div>
+
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">8</span><span class="step-title">编写交叉引用索引</span><span class="step-status status-pending">⏳ 待开始</span>
+</div><div class="step-body">
+  <p>为每个模块断言附加规约来源引用（文件名 + 行号），形成可溯源的架构参照。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch</code>让 architect agent 生成带溯源引用的架构索引</div>
+  <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
+</div></div>
 </div>
 
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" onchange="updateProgress()">
-    <span class="step-num">8</span>
-    <span class="step-title">编写交叉引用索引</span>
-    <span class="step-status status-pending">⏳ 待开始</span>
-  </div>
-  <div class="step-body">
-    <p>为每个模块断言附加规约来源引用（文件名 + 行号），形成可溯源的架构参照。</p>
-  </div>
+<div class="section">
+<h2><span class="dot"></span>§3 测试报告</h2>
+
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">9</span><span class="step-title">运行模块边界测试</span><span class="step-status status-pending">⏳ 待开始</span>
+</div><div class="step-body">
+  <p>执行 TC-B-1 到 TC-B-3 全部边界测试用例，记录通过/失败。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node tests/skills/rui.test.mjs --verbose</code>运行模块边界测试</div>
+  <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div>
+  <div class="verify-cmd">node scripts/validate-module-topology.mjs --verbose</div>
+  <div class="expected">全部 TC-B 通过，0 失败</div>
+</div></div>
+
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">10</span><span class="step-title">记录测试结果与覆盖率</span><span class="step-status status-pending">⏳ 待开始</span>
+</div><div class="step-body">
+  <p>编写测试报告：通过/失败计数 · 模块覆盖率 · 未覆盖区域标注。通过 rui-bot 发送通知。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node skills/rui-bot/send.mjs --story=yry-arch --status=test-report</code>推送测试报告通知</div>
+  <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div>
+</div></div>
 </div>
 
-<h2>§3 测试报告</h2>
+<div class="section">
+<h2><span class="dot"></span>§4 自改进</h2>
 
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" onchange="updateProgress()">
-    <span class="step-num">9</span>
-    <span class="step-title">运行模块边界测试</span>
-    <span class="step-status status-pending">⏳ 待开始</span>
-  </div>
-  <div class="step-body">
-    <div class="verify-cmd">node scripts/validate-module-topology.mjs --verbose</div>
-    <div class="expected">全部 TC-B 通过，0 失败</div>
-  </div>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">11</span><span class="step-title">识别模块漂移信号</span><span class="step-status status-pending">⏳ 待开始</span>
+</div><div class="step-body">
+  <p>对比当前模块拓扑与基线，识别新增/删除/重命名的模块。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui-claude check</code>检查 .claude/ 配置漂移</div>
+  <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a><a href="架构图.html" class="dep-badge">📐 架构图</a></div>
+</div></div>
+
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">12</span><span class="step-title">更新知识图谱节点</span><span class="step-status status-pending">⏳ 待开始</span>
+</div><div class="step-body">
+  <p>将新发现的跨模块关系写入知识图谱.json，同步更新知识图谱.html 中 Cytoscape 节点。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch --output 知识图谱.html</code>重新生成知识图谱</div>
+  <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
+</div></div>
 </div>
 
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" onchange="updateProgress()">
-    <span class="step-num">10</span>
-    <span class="step-title">记录测试结果与覆盖率</span>
-    <span class="step-status status-pending">⏳ 待开始</span>
-  </div>
-  <div class="step-body">
-    <p>编写测试报告：通过/失败计数 · 模块覆盖率 · 未覆盖区域标注。</p>
-  </div>
+<div class="section">
+<h2><span class="dot"></span>架构图</h2>
+
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">13</span><span class="step-title">生成模块拓扑 HTML+SVG 架构图</span><span class="step-status status-pending">⏳ 待开始</span>
+</div><div class="step-body">
+  <p>按 architecture-diagram.md 设计系统，生成自包含深色主题 HTML+SVG。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch --output 架构图.html</code>生成完整 HTML+SVG 架构图</div>
+  <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="演示.html" class="dep-badge">💡 演示</a></div>
+</div></div>
 </div>
 
-<h2>§4 自改进</h2>
+<div class="section">
+<h2><span class="dot"></span>交付</h2>
 
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" onchange="updateProgress()">
-    <span class="step-num">11</span>
-    <span class="step-title">识别模块漂移信号</span>
-    <span class="step-status status-pending">⏳ 待开始</span>
-  </div>
-  <div class="step-body"><p>对比当前模块拓扑与基线，识别新增/删除/重命名的模块。</p></div>
-</div>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">14</span><span class="step-title">P0 检查清单验证</span><span class="step-status status-pending">⏳ 待开始</span>
+</div><div class="step-body">
+  <p>验证：场景文档含主要价值声明 · 首个 mermaid 块含 %%{init} 主题 · 架构图为 HTML+SVG · 所有链接可达。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch --check p0</code>逐项验证 P0 约束</div>
+  <div class="verify-cmd">grep -c "主要价值" 场景-1-模块定位.md && grep -c "%%{init" 场景-1-模块定位.md</div>
+  <div class="expected">主要价值 ≥ 1，%%{init} ≥ 1</div>
+</div></div>
 
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" onchange="updateProgress()">
-    <span class="step-num">12</span>
-    <span class="step-title">更新知识图谱节点</span>
-    <span class="step-status status-pending">⏳ 待开始</span>
-  </div>
-  <div class="step-body"><p>将新发现的跨模块关系写入知识图谱.json。</p></div>
-</div>
-
-<h2>架构图</h2>
-
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" onchange="updateProgress()">
-    <span class="step-num">13</span>
-    <span class="step-title">生成模块拓扑 HTML+SVG 架构图</span>
-    <span class="step-status status-pending">⏳ 待开始</span>
-  </div>
-  <div class="step-body">
-    <p>按 architecture-diagram.md 设计系统，生成自包含深色主题 HTML+SVG。</p>
-  </div>
-</div>
-
-<h2>交付</h2>
-
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" onchange="updateProgress()">
-    <span class="step-num">14</span>
-    <span class="step-title">P0 检查清单验证</span>
-    <span class="step-status status-pending">⏳ 待开始</span>
-  </div>
-  <div class="step-body">
-    <div class="verify-cmd">grep -c "主要价值" 场景-1-模块定位.md && grep -c "%%{init" 场景-1-模块定位.md</div>
-    <div class="expected">主要价值 ≥ 1，%%{init} ≥ 1（首个 mermaid 块）</div>
-  </div>
-</div>
-
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" onchange="updateProgress()">
-    <span class="step-num">15</span>
-    <span class="step-title">git commit + 交付收口</span>
-    <span class="step-status status-pending">⏳ 待开始</span>
-  </div>
-  <div class="step-body">
-    <div class="code-block">git add docs/故事任务面板/yry-arch/
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">15</span><span class="step-title">git commit + 交付收口</span><span class="step-status status-pending">⏳ 待开始</span>
+</div><div class="step-body">
+  <p>提交所有场景产物，同步文档到远端 API，发送企微通知。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>git add docs/故事任务面板/yry-arch/ && git commit</code>然后 <code>node skills/rui-import/sync.mjs workspace=true</code>最后 <code>node skills/rui-bot/send.mjs --story=yry-arch --status=done</code></div>
+  <div class="code-block">git add docs/故事任务面板/yry-arch/
 git commit -m "docs: 场景-1 模块定位完成"
 node skills/rui-import/sync.mjs workspace=true
 node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
+</div></div>
+</div>
+
+</div><!-- /panelChecklist -->
+
+<!-- ═══ Tab 2: Overview ═══ -->
+<div class="panel" id="panelOverview">
+
+<div class="stat-grid">
+  <div class="stat-mini"><div class="sv g" id="ov-done">5</div><div class="sl">已完成</div></div>
+  <div class="stat-mini"><div class="sv y" id="ov-ready">1</div><div class="sl">就绪</div></div>
+  <div class="stat-mini"><div class="sv" style="color:var(--text3)" id="ov-pending">9</div><div class="sl">待开始</div></div>
+  <div class="stat-mini"><div class="sv c">15</div><div class="sl">总步骤</div></div>
+</div>
+
+<div class="section"><h2><span class="dot"></span>各阶段完成度</h2>
+  <div class="section-stat"><span class="ss-label">§0 技术评审</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:100%;background:var(--pass)"></div></div><span class="ss-pct">3/3</span></div>
+  <div class="section-stat"><span class="ss-label">§1 测试设计</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:100%;background:var(--pass)"></div></div><span class="ss-pct">2/2</span></div>
+  <div class="section-stat"><span class="ss-label">§2 实施报告</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--warn)"></div></div><span class="ss-pct">0/3</span></div>
+  <div class="section-stat"><span class="ss-label">§3 测试报告</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/2</span></div>
+  <div class="section-stat"><span class="ss-label">§4 自改进</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/2</span></div>
+  <div class="section-stat"><span class="ss-label">架构图</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/1</span></div>
+  <div class="section-stat"><span class="ss-label">交付</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/2</span></div>
+</div>
+
+<div class="section"><h2><span class="dot"></span>下一步行动</h2>
+  <div class="cmd-card"><div class="c-stage">当前就绪 — 步骤 6</div><div class="c-name">编写模块目录表</div><div class="c-desc">按六项能力、八种角色、八组约束分别编制模块目录。切换到 ⚡命令 Tab 查看可执行命令。</div></div>
+</div>
+
+</div><!-- /panelOverview -->
+
+<!-- ═══ Tab 3: Commands ═══ -->
+<div class="panel" id="panelCommands">
+
+<div class="section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令</h2>
+<div class="cmd-grid">
+  <div class="cmd-card"><div class="c-stage">步骤 1</div><div class="c-name">扫描全部规约</div><div class="c-desc">读取所有 SKILL.md / Agent.md / rules 文件</div><pre>/rui doc --story yry-arch --scene 1<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --scene 1')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 2</div><div class="c-name">分析模块引用关系</div><div class="c-desc">architect agent 提取入口/依赖/消费者</div><pre>/rui doc --story yry-arch --scene 1<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --scene 1')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 3</div><div class="c-name">生成 SVG 架构图</div><div class="c-desc">三层拓扑图自动渲染为 HTML+SVG</div><pre>/rui doc --story yry-arch --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --output 架构图.html')">📋</span></pre></div>
+</div></div>
+
+<div class="section"><h2><span class="dot"></span>§1 测试设计 — 已执行命令</h2>
+<div class="cmd-grid">
+  <div class="cmd-card"><div class="c-stage">步骤 4</div><div class="c-name">生成测试用例骨架</div><div class="c-desc">tester agent 生成 TC-B 系列测试</div><pre>/rui doc --story yry-arch<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 5</div><div class="c-name">运行拓扑验证脚本</div><div class="c-desc">检查跨模块引用的完整性和闭合性</div><pre>node scripts/validate-module-topology.mjs<span class="cb" onclick="copyCmd(this,'node scripts/validate-module-topology.mjs')">📋</span></pre></div>
+</div></div>
+
+<div class="section"><h2><span class="dot"></span>§2 实施报告 — 待执行命令</h2>
+<div class="cmd-grid">
+  <div class="cmd-card"><div class="c-stage">步骤 6 · 🔶 就绪</div><div class="c-name">生成模块目录表</div><div class="c-desc">按能力/角色/约束编制模块目录 Markdown 表格</div><pre>/rui doc --story yry-arch --scene 1<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --scene 1')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 7</div><div class="c-name">生成知识图谱</div><div class="c-desc">Cytoscape 交互式三层关系图谱</div><pre>/rui doc --story yry-arch --output 知识图谱.html<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --output 知识图谱.html')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 8</div><div class="c-name">生成架构索引</div><div class="c-desc">带溯源引用的交叉引用索引</div><pre>/rui doc --story yry-arch<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch')">📋</span></pre></div>
+</div></div>
+
+<div class="section"><h2><span class="dot"></span>§3-交付 — 待执行命令</h2>
+<div class="cmd-grid">
+  <div class="cmd-card"><div class="c-stage">步骤 9</div><div class="c-name">运行边界测试</div><div class="c-desc">执行 TC-B-1 到 TC-B-3 全部测试</div><pre>node tests/skills/rui.test.mjs --verbose<span class="cb" onclick="copyCmd(this,'node tests/skills/rui.test.mjs --verbose')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 10</div><div class="c-name">推送测试报告</div><div class="c-desc">企微通知测试结果和覆盖率</div><pre>node skills/rui-bot/send.mjs --story=yry-arch --status=test-report<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=yry-arch --status=test-report')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 11</div><div class="c-name">检查配置漂移</div><div class="c-desc">识别 .claude/ 目录中的模块漂移</div><pre>/rui-claude check<span class="cb" onclick="copyCmd(this,'/rui-claude check')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 12</div><div class="c-name">重新生成知识图谱</div><div class="c-desc">更新 Cytoscape 节点和关系</div><pre>/rui doc --story yry-arch --output 知识图谱.html<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --output 知识图谱.html')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 13</div><div class="c-name">生成架构图</div><div class="c-desc">完整 HTML+SVG 三层拓扑架构图</div><pre>/rui doc --story yry-arch --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --output 架构图.html')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 14</div><div class="c-name">P0 约束验证</div><div class="c-desc">逐项验证 P0 检查清单</div><pre>/rui doc --story yry-arch --check p0<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --check p0')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 15</div><div class="c-name">交付收口</div><div class="c-desc">git commit → rui-import 同步 → rui-bot 通知</div><pre>git add . && git commit<span class="cb" onclick="copyCmd(this,'git add . && git commit')">📋</span></pre></div>
+</div></div>
+
+</div><!-- /panelCommands -->
+
+<!-- ═══ Tab 4: Related Pages ═══ -->
+<div class="panel" id="panelRelated">
+
+<div class="link-grid">
+  <a href="架构图.html" class="link-card">
+    <div class="lc-icon">📐</div><div class="lc-name">架构图</div>
+    <div class="lc-desc">三层拓扑 SVG 图：Skills → Agents → Rules，含管线描述和模块信息卡片</div>
+  </a>
+  <a href="知识图谱.html" class="link-card">
+    <div class="lc-icon">🔗</div><div class="lc-name">知识图谱</div>
+    <div class="lc-desc">Cytoscape 交互式关系图：7 类节点 × 多层关系，点击节点高亮邻域</div>
+  </a>
+  <a href="测试面板.html" class="link-card">
+    <div class="lc-icon">🧪</div><div class="lc-name">测试面板</div>
+    <div class="lc-desc">测试执行结果：边界测试 · 性能测试 · 门禁状态，30 秒定位模块健康度</div>
+  </a>
+  <a href="演示.html" class="link-card">
+    <div class="lc-icon">💡</div><div class="lc-name">演示</div>
+    <div class="lc-desc">6 步交互式演练：从 /rui init 到架构图生成，含可复制命令和模块拓扑</div>
+  </a>
+</div>
+
+</div><!-- /panelRelated -->
+
+<!-- ═══ Tab 5: Verify ═══ -->
+<div class="panel" id="panelVerify">
+
+<div class="verify-list">
+  <div class="verify-item"><div class="vi-label">步骤 1 · 规约文件定位</div>
+    <pre>grep -l "name:" agents/*.md rules/*.md skills/*/SKILL.md | wc -l<span class="cb" onclick="copyCmd(this,'grep -l \"name:\" agents/*.md rules/*.md skills/*/SKILL.md | wc -l')">📋</span></pre>
+    <div class="vi-expect">≥ 20 个规约文件被定位</div>
+  </div>
+  <div class="verify-item"><div class="vi-label">步骤 2 · 跨模块引用链</div>
+    <pre>grep -rn "import\|require\|from" skills/rui/SKILL.md agents/AGENT.md<span class="cb" onclick="copyCmd(this,'grep -rn \"import\\|require\\|from\" skills/rui/SKILL.md agents/AGENT.md')">📋</span></pre>
+    <div class="vi-expect">识别跨模块引用链 ≥ 10 条</div>
+  </div>
+  <div class="verify-item"><div class="vi-label">步骤 3 · mermaid classDef</div>
+    <pre>grep -c "classDef" 场景-1-模块定位.md<span class="cb" onclick="copyCmd(this,'grep -c \"classDef\" 场景-1-模块定位.md')">📋</span></pre>
+    <div class="vi-expect">≥ 3 个 classDef 定义</div>
+  </div>
+  <div class="verify-item"><div class="vi-label">步骤 5 · 拓扑验证</div>
+    <pre>node scripts/validate-module-topology.mjs<span class="cb" onclick="copyCmd(this,'node scripts/validate-module-topology.mjs')">📋</span></pre>
+    <div class="vi-expect">exit code 0，无断链/循环依赖</div>
+  </div>
+  <div class="verify-item"><div class="vi-label">步骤 6 · 模块目录表</div>
+    <pre>grep -c "^|" 场景-1-模块定位.md | head -1<span class="cb" onclick="copyCmd(this,'grep -c \"^|\" 场景-1-模块定位.md | head -1')">📋</span></pre>
+    <div class="vi-expect">≥ 20 行表格数据</div>
+  </div>
+  <div class="verify-item"><div class="vi-label">步骤 9 · 边界测试</div>
+    <pre>node scripts/validate-module-topology.mjs --verbose<span class="cb" onclick="copyCmd(this,'node scripts/validate-module-topology.mjs --verbose')">📋</span></pre>
+    <div class="vi-expect">全部 TC-B 通过，0 失败</div>
+  </div>
+  <div class="verify-item"><div class="vi-label">步骤 14 · P0 验证</div>
+    <pre>grep -c "主要价值" 场景-1-模块定位.md && grep -c "%%{init" 场景-1-模块定位.md<span class="cb" onclick="copyCmd(this,'grep -c \"主要价值\" 场景-1-模块定位.md && grep -c \"%%{init\" 场景-1-模块定位.md')">📋</span></pre>
+    <div class="vi-expect">主要价值 ≥ 1，%%{init} ≥ 1</div>
   </div>
 </div>
 
+</div><!-- /panelVerify -->
+
 <div class="footer">
-  <p>🤖 Generated with planner agent | scene: 模块定位 | updated: 2026-06-05</p>
+  <p>🤖 Generated with planner agent | scene: 模块定位与职责 | updated: 2026-06-05</p>
 </div>
 
 </div>
+
+<div class="toast" id="toast"></div>
+
 <script>
+const SCENE_KEY = 'yry-arch-s1-checklist';
+
+// ── Tab Switching ─────────────────────────
+document.querySelector('.tabs').addEventListener('click', e => {
+  const tab = e.target.closest('.tab');
+  if (!tab) return;
+  switchPanel(tab.dataset.panel);
+});
+
+function switchPanel(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.panel === name));
+  document.querySelectorAll('.panel').forEach(p => {
+    p.classList.toggle('on', p.id === 'panel' + name.charAt(0).toUpperCase() + name.slice(1));
+  });
+  localStorage.setItem(SCENE_KEY + '-tab', name);
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  const m = {'1':'checklist','2':'overview','3':'commands','4':'related','5':'verify'};
+  if (m[e.key]) { e.preventDefault(); switchPanel(m[e.key]); }
+});
+
+// ── Progress ─────────────────────────────
 function updateProgress() {
   const checks = document.querySelectorAll('.step-checkbox');
   const done = Array.from(checks).filter(c => c.checked).length;
   const total = checks.length;
-  const pct = Math.round((done/total)*100);
+  const pct = Math.round((done / total) * 100);
   document.getElementById('progress-fill').style.width = pct + '%';
   document.getElementById('progress-text').textContent = done + ' / ' + total + ' 完成';
-  // Update step status badges
+
   checks.forEach(cb => {
     const status = cb.closest('.step').querySelector('.step-status');
     if (cb.checked) {
-      status.textContent = '✅ 完成';
-      status.className = 'step-status status-done';
+      status.textContent = '✅ 完成'; status.className = 'step-status status-done';
     } else {
-      status.textContent = '⏳ 待开始';
-      status.className = 'step-status status-pending';
+      const allChecks = Array.from(checks);
+      const idx = allChecks.indexOf(cb);
+      const prevDone = idx === 0 || allChecks[idx - 1].checked;
+      status.textContent = prevDone ? '🔶 就绪' : '⏳ 待开始';
+      status.className = prevDone ? 'step-status status-active' : 'step-status status-pending';
     }
   });
+
+  // Update overview tab stats
+  const pending = total - done;
+  const ready = Array.from(checks).filter((c, i) => {
+    if (c.checked) return false;
+    const allChecks = Array.from(checks);
+    return i === 0 || allChecks[i - 1].checked;
+  }).length;
+  const ovDone = document.getElementById('ov-done');
+  const ovReady = document.getElementById('ov-ready');
+  const ovPending = document.getElementById('ov-pending');
+  if (ovDone) ovDone.textContent = done;
+  if (ovReady) ovReady.textContent = ready;
+  if (ovPending) ovPending.textContent = pending - ready;
+
+  // Persist
+  const state = {};
+  checks.forEach((cb, i) => { state['step-' + (i + 1)] = cb.checked; });
+  localStorage.setItem(SCENE_KEY, JSON.stringify(state));
 }
-// Expand checked steps by default
-document.querySelectorAll('.step-checkbox:checked').forEach(cb => {
-  cb.closest('.step').querySelector('.step-body').classList.add('open');
-});
-updateProgress();
+
+// ── Copy ─────────────────────────────────
+function copyCmd(btn, cmd) {
+  navigator.clipboard.writeText(cmd).then(() => {
+    btn.textContent = '✅'; btn.style.opacity = '1';
+    setTimeout(() => { btn.textContent = '📋'; btn.style.opacity = ''; }, 1500);
+  }).catch(() => toast('复制失败'));
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+// ── Init ──────────────────────────────────
+(function() {
+  const saved = JSON.parse(localStorage.getItem(SCENE_KEY) || '{}');
+  document.querySelectorAll('.step-checkbox').forEach((cb, i) => {
+    if (saved['step-' + (i + 1)]) {
+      cb.checked = true;
+      cb.closest('.step').querySelector('.step-body').classList.add('open');
+    }
+  });
+  updateProgress();
+
+  // Restore last active tab
+  const activeTab = localStorage.getItem(SCENE_KEY + '-tab') || 'checklist';
+  switchPanel(activeTab);
+})();
 </script>
 </body>
 </html>

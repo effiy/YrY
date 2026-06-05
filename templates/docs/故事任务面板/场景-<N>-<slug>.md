@@ -17,7 +17,7 @@
 | `架构图.html` | 技术评审 | architect |
 | `知识图谱.html` | 文档基线 | pm |
 | `测试面板.html` | 测试 | tester |
-| `交互示例.html` | 实施 | coder |
+| `演示.html` | 实施 | coder |
 
 ---
 
