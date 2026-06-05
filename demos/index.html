@@ -96,18 +96,18 @@
   <div class="section"><div class="sec-head"><span class="sn">1</span><h2>管线全景</h2><span class="ss">需求 → 交付 · 点击放大</span></div>
     <div class="mermaid-wrap" onclick="zoomMermaid(this)"><span class="zoom-hint">🔍 点击放大</span><div class="mermaid">
 flowchart LR
-    subgraph S1["🎯 rui · SDLC 编排"]
+    subgraph S1["rui - SDLC"]
         direction LR
-        A[📝 需求] --> B[📄 doc] --> C[⚡ code] --> D[🚀 交付]
+        A["需求"] --> B["doc"] --> C["code"] --> D["交付"]
     end
-    subgraph S2["📋 rui-story"]
-        E[📊 面板管理]
+    subgraph S2["rui-story"]
+        E["面板管理"]
     end
-    subgraph S3["📤 rui-import"]
-        F[☁️ 文档同步]
+    subgraph S3["rui-import"]
+        F["文档同步"]
     end
-    subgraph S4["📢 rui-bot"]
-        G[💬 企微通知]
+    subgraph S4["rui-bot"]
+        G["企微通知"]
     end
     D --> E --> F --> G
     style S1 fill:#1a1a2e,stroke:#FFC107,color:#fff
@@ -134,7 +134,7 @@ flowchart LR
         <div class="c-desc">故事驱动的核心管线。6 子命令从需求到交付全流程编排。</div>
         <div class="c-meta"><span class="c-tag">P0 核心</span><span class="c-tag cyan">9 脚本</span><span class="c-tag green">16 测试</span></div>
         <div class="preview-panel">
-          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A[init]-->B[doc]-->C[code]-->D[update]-->E[yry]-->F[version] style A fill:#1a1a2e,stroke:#FFC107,color:#fff</div></div>
+          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A["init"]-->B["doc"]-->C["code"]-->D["update"]-->E["yry"]-->F["version"] style A fill:#1a1a2e,stroke:#FFC107,color:#fff</div></div>
           <pre>/rui init<span class="copy-btn" onclick="copyCmd(this,'/rui init')">📋 复制</span></pre>
           <pre style="margin-top:4px">/rui doc --from-code<span class="copy-btn" onclick="copyCmd(this,'/rui doc --from-code')">📋 复制</span></pre>
           <div class="c-links" style="margin-top:8px"><a href="rui.html">🎬 全屏演示</a><a href="../skills/rui/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui.test.mjs">🧪 测试</a></div>
@@ -147,7 +147,7 @@ flowchart LR
         <div class="c-desc">故事任务面板全生命周期。collect · status · sync · notify。</div>
         <div class="c-meta"><span class="c-tag">P0 面板</span><span class="c-tag cyan">30KB</span><span class="c-tag green">8 测试</span></div>
         <div class="preview-panel">
-          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A[collect]-->B[status]-->C[sync]-->D[notify] style A fill:#1a1a2e,stroke:#22d3ee,color:#fff</div></div>
+          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A["collect"]-->B["status"]-->C["sync"]-->D["notify"] style A fill:#1a1a2e,stroke:#22d3ee,color:#fff</div></div>
           <pre>/rui-story list<span class="copy-btn" onclick="copyCmd(this,'/rui-story list')">📋 复制</span></pre>
           <div class="c-links" style="margin-top:8px"><a href="rui-story.html">🎬 全屏演示</a><a href="../skills/rui-story/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui-story.test.mjs">🧪 测试</a></div>
         </div>
@@ -159,7 +159,7 @@ flowchart LR
         <div class="c-desc">管理所有 .claude/ 目录。远端同步 → 健康分析 → 任务推荐。</div>
         <div class="c-meta"><span class="c-tag">配置</span><span class="c-tag green">4 测试</span></div>
         <div class="preview-panel">
-          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A[📡 同步]-->B[🔍 分析]-->C[📋 推荐] style A fill:#1a1a2e,stroke:#FFC107,color:#fff</div></div>
+          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A["同步"]-->B["分析"]-->C["推荐"] style A fill:#1a1a2e,stroke:#FFC107,color:#fff</div></div>
           <pre>/rui-claude sync<span class="copy-btn" onclick="copyCmd(this,'/rui-claude sync')">📋 复制</span></pre>
           <div class="c-links" style="margin-top:8px"><a href="rui-claude.html">🎬 全屏演示</a><a href="../skills/rui-claude/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui-claude.test.mjs">🧪 测试</a></div>
         </div>
@@ -171,7 +171,7 @@ flowchart LR
         <div class="c-desc">本地文档批量同步到远端 API。7 阶段流程，并发 4。</div>
         <div class="c-meta"><span class="c-tag">交付收口</span><span class="c-tag cyan">sync.mjs</span><span class="c-tag green">10 测试</span></div>
         <div class="preview-panel">
-          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A[扫描]-->B[过滤]-->C[映射]-->D[上传]-->E[Session] style A fill:#1a1a2e,stroke:#22c55e,color:#fff</div></div>
+          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A["扫描"]-->B["过滤"]-->C["映射"]-->D["上传"]-->E["Session"] style A fill:#1a1a2e,stroke:#22c55e,color:#fff</div></div>
           <pre>node skills/rui-import/sync.mjs workspace=true mode=list<span class="copy-btn" onclick="copyCmd(this,'node skills/rui-import/sync.mjs workspace=true mode=list')">📋 复制</span></pre>
           <div class="c-links" style="margin-top:8px"><a href="rui-import.html">🎬 全屏演示</a><a href="../skills/rui-import/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui-import.test.mjs">🧪 测试</a></div>
         </div>
@@ -183,7 +183,7 @@ flowchart LR
         <div class="c-desc">企业微信 Webhook 消息推送。故事状态变更 → 通知日志 → HTTP 推送。</div>
         <div class="c-meta"><span class="c-tag">通知</span><span class="c-tag green">7 测试</span></div>
         <div class="preview-panel">
-          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A[状态变更]-->B[构建载荷]-->C[POST/日志] style A fill:#1a1a2e,stroke:#f59e0b,color:#fff</div></div>
+          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A["状态变更"]-->B["构建载荷"]-->C["POST"] style A fill:#1a1a2e,stroke:#f59e0b,color:#fff</div></div>
           <pre>node skills/rui-bot/send.mjs --story=test --status=done --no-send<span class="copy-btn" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=test --status=done --no-send')">📋 复制</span></pre>
           <div class="c-links" style="margin-top:8px"><a href="rui-bot.html">🎬 全屏演示</a><a href="../skills/rui-bot/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui-bot.test.mjs">🧪 测试</a></div>
         </div>
@@ -195,7 +195,7 @@ flowchart LR
         <div class="c-desc">多源技术趋势发现。GitHub Trending · OSS Insight · TrendShift。</div>
         <div class="c-meta"><span class="c-tag">参考</span><span class="c-tag green">4 测试</span></div>
         <div class="preview-panel">
-          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A[多源采集]-->B[趋势分析]-->C[选型建议] style A fill:#1a1a2e,stroke:#FFC107,color:#fff</div></div>
+          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A["多源采集"]-->B["趋势分析"]-->C["选型建议"] style A fill:#1a1a2e,stroke:#FFC107,color:#fff</div></div>
           <pre>/rui-trends<span class="copy-btn" onclick="copyCmd(this,'/rui-trends')">📋 复制</span></pre>
           <div class="c-links" style="margin-top:8px"><a href="rui-trends.html">🎬 全屏演示</a><a href="../skills/rui-trends/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui-trends.test.mjs">🧪 测试</a></div>
         </div>

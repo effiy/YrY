@@ -211,6 +211,26 @@ flowchart LR
 | 5 | **禁止文替图** — 能用图表达的信息，不得仅用文字。文档以图为骨架，文字为血肉 | "系统由 A、B、C 三个模块组成，A 调用 B，B 调用 C…" — 无图 |
 | 6 | **图先于文** — 每个章节的 mermaid 图位于该章节文字之前，读者先看结构再读细节 | 先写三段背景，末尾附一个小图 |
 
+### Mermaid 编写规范
+
+> mermaid 语法错误是文档退化的重要来源。以下规则确保图在任何 mermaid 版本下可正常渲染。
+
+| # | 规则 | 错误 | 正确 |
+|---|------|------|------|
+| M1 | **节点标签必须引号包裹** — 含空格、特殊字符、中文的标签必须 `[""]` | `A[用户输入]` | `A["用户输入"]` |
+| M2 | **避免裸 `&`** — `&` 在 mermaid 中可能被解释为 HTML 实体边界，含 `&` 的标签必须引号包裹 | `A[D0 & D7]` | `A["D0 & D7"]` |
+| M3 | **避免 `()` 在节点标签中** — 圆括号是 mermaid 形状语法，含 `()` 的文本必须引号包裹 | `A[init()]` | `A["init()"]` |
+| M4 | **direction 必须在 subgraph 内声明** — `direction LR/TB` 仅对当前 subgraph 生效 | 在顶层声明 `direction LR` 期望影响 subgraph | 在每个 subgraph 内独立声明 |
+| M5 | **style 目标 ID 必须精确匹配** — 节点 ID 不含引号和特殊字符 | `style A["xx"] ...` | `style A ...`（只写 ID 部分）|
+| M6 | **禁止 HTML 标签** — `<br/>`、`<name>` 等即使引号包裹也可能被 mermaid 解析器误判 | `A["用户<br/>输入"]` | `A["用户 输入"]` 或拆分节点 |
+| M7 | **简短的箭头标签** — 箭头上的标签（`-->|text|`）应简短（≤ 20 字符），避免换行和特殊字符 | `-->|"用户点击提交按钮后触发"|` | `-->|"点击提交"|` |
+| M8 | **使用 htmlLabels: true** — mermaid 初始化时必须设置 `htmlLabels: true` 以支持富文本节点 | 未设置 htmlLabels | `mermaid.initialize({htmlLabels: true})` |
+
+**验证规则**：任何包含 mermaid 图的文件在提交前必须通过以下检查：
+- 浏览器控制台无 mermaid 语法错误
+- 所有 `flowchart`/`graph` 图中引用的节点 ID 均在图中定义
+- subgraph 内的 `direction` 声明语法正确（`direction LR` 或 `direction TB`）
+
 <a id="dir-clean"></a>
 ## ③ 目录清
 
