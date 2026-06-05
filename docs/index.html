@@ -142,13 +142,10 @@
     }
     .scene-card .scene-meta a {
       font-size: 0.68rem; color: var(--cyan, #22d3ee); text-decoration: none;
-      background: rgba(34,211,238,0.06); border: 1px solid rgba(34,211,238,0.15);
-      border-radius: 4px; padding: 2px 8px; transition: all 0.15s;
+      margin-right: 6px; transition: color 0.15s;
     }
-    .scene-card .scene-meta a:hover {
-      color: var(--color-accent); background: rgba(255,193,7,0.08); border-color: rgba(255,193,7,0.3);
-      text-decoration: underline;
-    }
+    .scene-card .scene-meta a:hover { color: var(--color-accent); text-decoration: underline; }
+    .scene-card .scene-meta span { color: var(--text-muted); font-size: 0.5rem; margin-right: 2px; }
 
     /* ── Story cards (compact, for L2) ───────── */
     .story-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 12px; margin-bottom: 10px; }
