@@ -19,6 +19,17 @@
 | 结构层 | src: ... / test: ... | maps_to 来自领域层 | verifies · Read → 内容层 |
 | 内容层 | Read/Grep 获取 | Read 来自结构层 | — |
 
+### 每场景交付物
+
+| 文件 | 填充阶段 | 填充者 |
+|------|---------|--------|
+| `计划清单.html` | 实施规划 | planner |
+| `架构图.html` | 技术评审 | architect |
+| `知识图谱.html` | 文档基线 | pm |
+| `测试面板.html` | 测试设计 + 测试报告 | tester |
+| `交互示例.html` | 实施报告 | coder |
+| `知识图谱.json` | 文档基线 | pm |
+
 ---
 
 <a id="sec0"></a>
@@ -40,17 +51,21 @@
 flowchart TB
     subgraph 入口["入口层"]
         direction TB
+        E1["{{入口模块}}"]:::entry
     end
     subgraph 核心["核心域"]
         direction TB
+        C1["{{核心模块A}}"]:::core
         C2["{{核心模块B}}"]:::core
     end
     subgraph 支撑["支撑层"]
         direction TB
+        U1["{{工具模块A}}"]:::util
         U2["{{共享类型}}"]:::util
     end
     subgraph 外部["外部依赖"]
         direction TB
+        X1["{{外部依赖}}"]:::ext
     end
     E1 --> C1
     E1 --> C2
@@ -59,6 +74,10 @@ flowchart TB
     C2 --> U2
     C2 --> X1
 
+    classDef entry fill:#1b1e2e,stroke:#7aa2f7,color:#7aa2f7
+    classDef core fill:#1e1f2b,stroke:#7aa2f7,color:#a9b1d6
+    classDef util fill:#1e1f2b,stroke:#565f89,color:#a9b1d6
+    classDef ext fill:#21232f,stroke:#565f89,color:#53576c
 ```
 
 ### 依赖矩阵
@@ -71,11 +90,21 @@ flowchart TB
 ### 变更影响分析
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
-    CHG["变更: {{变更描述}}"]:::change --> IMP1["直接影响<br/>{{模块}} 接口签名"]:::impact
-    IMP1 --> IMP2["级联影响<br/>{{下游模块}} 调用方"]:::impact
-    IMP2 --> IMP3["间接影响<br/>{{测试}} 用例更新"]:::impact
+    CHG["变更: {{变更描述}}"]:::change --> IMP1["直接影响\n{{模块}} 接口签名"]:::impact
+    IMP1 --> IMP2["级联影响\n{{下游模块}} 调用方"]:::impact
+    IMP2 --> IMP3["间接影响\n{{测试}} 用例更新"]:::impact
 
+    classDef change fill:#2a2417,stroke:#fbbf24,color:#fbbf24
+    classDef impact fill:#2a1a1a,stroke:#f87171,color:#f87171
 ```
 
 | 变更类型 | 影响级别 | 波及模块 | 兼容性 |
@@ -130,12 +159,18 @@ flowchart LR
 <a id="sec2"></a>
 ## §2 实施报告
 
-> 实现阶段填充（coder）。
+> 实现阶段填充（coder + planner）。
+
+### 实施计划
+
+> planner 生成 → 见 `场景-{{N}}-<slug>/计划清单.html`
 
 ### 操作步骤记录
 
 | 步# | 时间 | 操作 | 文件/命令 | 结果 | 备注 |
 |-----|------|------|----------|------|------|
+| 1 | HH:MM | 读计划清单 | `Read 计划清单.html` | ✓ | |
+| 2 | HH:MM | 读依赖分析 | `Read <path>` | ✓ | |
 
 ### 开发源码清单
 
@@ -150,6 +185,14 @@ flowchart LR
 ### 依赖图
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
     D1["src: ... 🆕"]:::src
     D2["src: ... ✏️"]:::src
@@ -159,6 +202,9 @@ flowchart LR
     T1 -.->|"covers"| D1
     T1 -.->|"covers"| D2
 
+    classDef src fill:#1e1f2b,stroke:#7aa2f7,color:#a9b1d6
+    classDef test fill:#1e1f2b,stroke:#34d399,color:#a9b1d6
+    classDef ext fill:#21232f,stroke:#565f89,color:#53576c
 ```
 
 ### P0 审查表
@@ -167,6 +213,14 @@ flowchart LR
 |------|-------|:--:|------|
 
 ### 效果验证
+
+```bash
+# 验证依赖完整性
+grep -r "import.*from" src/ | sort | uniq
+
+# 验证无循环依赖
+node scripts/check-circular-deps.mjs
+```
 
 ---
 

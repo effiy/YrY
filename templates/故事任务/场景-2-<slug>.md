@@ -19,6 +19,19 @@
 | 结构层 | src: ... / test: ... | maps_to 来自领域层 | verifies · Read → 内容层 |
 | 内容层 | Read/Grep 获取 | Read 来自结构层 | — |
 
+### 每场景交付物
+
+> 本场景目录下必须包含 5 个 HTML + 1 个 JSON：
+
+| 文件 | 填充阶段 | 填充者 |
+|------|---------|--------|
+| `计划清单.html` | 实施规划 | planner |
+| `架构图.html` | 技术评审 | architect |
+| `知识图谱.html` | 文档基线 | pm |
+| `测试面板.html` | 测试设计 + 测试报告 | tester |
+| `交互示例.html` | 实施报告 | coder |
+| `知识图谱.json` | 文档基线 | pm |
+
 ---
 
 <a id="sec0"></a>
@@ -90,6 +103,14 @@ curl -s -w "\n%{http_code}" \
 ### 状态流转
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 stateDiagram-v2
     [*] --> {{初始态}}: 资源创建
 
@@ -141,7 +162,7 @@ stateDiagram-v2
 <a id="sec1"></a>
 ## §1 测试设计
 
-> API 契约测试 + 数据流集成测试。
+> API 契约测试 + 数据流集成测试。文档生成阶段填充（tester）。
 
 ### 正常路径用例
 
@@ -166,12 +187,17 @@ stateDiagram-v2
 <a id="sec2"></a>
 ## §2 实施报告
 
-> 实现阶段填充（coder）。
+> 实现阶段填充（coder + planner）。planner 先生成计划清单.html，coder 按计划逐项执行。
+
+### 实施计划
+
+> planner 生成 → 见 `场景-{{N}}-<slug>/计划清单.html`
 
 ### 操作步骤记录
 
 | 步# | 时间 | 操作 | 文件/命令 | 结果 | 备注 |
 |-----|------|------|----------|------|------|
+| 1 | HH:MM | 读计划清单 | `Read 计划清单.html` | ✓ | |
 | 2 | HH:MM | 读设计文档 | `Read <path>` | ✓ | |
 | 3 | HH:MM | 实现 API 端点 | `Edit/Write <file>` | ✓/✗ | |
 
@@ -188,11 +214,23 @@ stateDiagram-v2
 ### 依赖图
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
     D1["src: ..."]:::src
     T1["test: ..."]:::test
     D1 -->|"imports"| DEP["dep"]:::ext
     T1 -.->|"covers"| D1
+
+    classDef src fill:#1e1f2b,stroke:#7aa2f7,color:#a9b1d6
+    classDef test fill:#1e1f2b,stroke:#34d399,color:#a9b1d6
+    classDef ext fill:#21232f,stroke:#565f89,color:#53576c
 ```
 
 ### P0 审查表

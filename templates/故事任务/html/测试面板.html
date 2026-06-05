@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>{{TITLE}} · 测试面板</title>
+<style>
+:root{--bg:#020617;--surface:#0f172a;--border:#1e293b;--text:#e2e8f0;--muted:#64748b;--cyan:#22d3ee;--emerald:#34d399;--rose:#fb7185;--amber:#fbbf24}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;min-height:100vh;padding:24px}
+.container{max-width:960px;margin:0 auto}
+h1{font-size:1.5rem;margin-bottom:4px}h1 span{color:var(--cyan)}
+.sub{color:var(--muted);font-size:.82rem;margin-bottom:24px}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 18px;text-align:center;min-width:80px}
+.stat .sv{font-size:1.4rem;font-weight:700;color:var(--cyan)}
+.stat .sv.pass{color:var(--emerald)}.stat .sv.fail{color:var(--rose)}
+.stat .sl{font-size:.64rem;color:var(--muted);text-transform:uppercase;margin-top:2px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px}
+.card h2{font-size:.95rem;margin-bottom:14px;color:var(--cyan)}
+.test-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.03);font-size:.78rem}
+.test-row:last-child{border-bottom:none}
+.test-row .name{flex:1;font-weight:500}
+.test-row .status{padding:3px 10px;border-radius:10px;font-size:.68rem;font-weight:600}
+.test-row .status.pass{background:rgba(52,211,153,.12);color:var(--emerald)}
+.test-row .status.fail{background:rgba(251,113,133,.12);color:var(--rose)}
+.test-row .status.pending{background:rgba(251,191,36,.12);color:var(--amber)}
+.gate-status{font-size:.78rem;color:var(--muted);line-height:1.8;white-space:pre-line}
+a.back{color:var(--muted);text-decoration:none;font-size:.78rem;display:inline-block;margin-bottom:16px}
+a.back:hover{color:var(--cyan)}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="../场景-{{N}}-{{SLUG}}.md" class="back">← 返回场景文档</a>
+<h1><span>🧪</span> {{TITLE}} · 测试面板</h1>
+<p class="sub">{{DESCRIPTION}}</p>
+
+<div class="stats">
+  <div class="stat"><div class="sv">{{TOTAL}}</div><div class="sl">总计</div></div>
+  <div class="stat"><div class="sv pass">{{PASSED}}</div><div class="sl">✅ 通过</div></div>
+  <div class="stat"><div class="sv fail">{{FAILED}}</div><div class="sl">❌ 失败</div></div>
+  <div class="stat"><div class="sv">{{PENDING}}</div><div class="sl">⏳ 待执行</div></div>
+</div>
+
+<div class="card">
+  <h2>✅ 测试用例</h2>
+  {{TEST_ITEMS}}
+</div>
+
+<div class="card">
+  <h2>📊 门禁状态</h2>
+  <div class="gate-status">{{GATE_STATUS}}</div>
+</div>
+
+<div class="card">
+  <h2>🛡️ 安全回归（如适用）</h2>
+  <div class="gate-status">{{SECURITY_STATUS}}</div>
+</div>
+</div>
+</body>
+</html>

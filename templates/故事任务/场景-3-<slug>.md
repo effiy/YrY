@@ -19,6 +19,17 @@
 | 结构层 | src: ... / test: ... | maps_to 来自领域层 | verifies · Read → 内容层 |
 | 内容层 | Read/Grep 获取 | Read 来自结构层 | — |
 
+### 每场景交付物
+
+| 文件 | 填充阶段 | 填充者 |
+|------|---------|--------|
+| `计划清单.html` | 实施规划 | planner |
+| `架构图.html` | 技术评审 | architect |
+| `知识图谱.html` | 文档基线 | pm |
+| `测试面板.html` | 测试设计 + 测试报告 | tester |
+| `交互示例.html` | 实施报告 | coder |
+| `知识图谱.json` | 文档基线 | pm |
+
 ---
 
 <a id="sec0"></a>
@@ -40,16 +51,18 @@
 flowchart TB
     subgraph 外部["🌐 外部不可信域"]
         direction TB
-        EXT["第三方 API"]:::untrusted
+        EXT["第三方 API"]:::risk
     end
     subgraph 边界["🔒 信任边界"]
         direction TB
-        VAL["输入校验层<br/>sanitize + validate"]:::boundary
+        GW["API Gateway\nToken 校验"]:::boundary
+        VAL["输入校验层\nsanitize + validate"]:::boundary
     end
     subgraph 内部["🔐 内部可信域"]
         direction TB
+        API["业务 API"]:::trusted
         DB["数据库"]:::trusted
-        SECRET["密钥存储<br/>环境变量"]:::trusted
+        SECRET["密钥存储\n环境变量"]:::trusted
     end
     外部 -->|"HTTPS + Token"| GW
     GW -->|"已验证身份"| VAL
@@ -57,6 +70,9 @@ flowchart TB
     API --> DB
     API -.->|"绝不硬编码"| SECRET
 
+    classDef risk fill:#2a1a1a,stroke:#f87171,color:#f87171
+    classDef boundary fill:#1b1e2e,stroke:#7aa2f7,color:#7aa2f7
+    classDef trusted fill:#1a2a1a,stroke:#34d399,color:#a9b1d6
 ```
 
 ### 认证与授权
@@ -67,7 +83,7 @@ flowchart TB
 
 ### 输入校验矩阵
 
-| 输入点 | 类型 | 校验规则 |  sanitize | 错误返回 |
+| 输入点 | 类型 | 校验规则 | sanitize | 错误返回 |
 |--------|------|---------|-----------|---------|
 | {{字段1}} | string | `^[a-z0-9-]+$`, max 255 | trim, escape | 400 Bad Request |
 | {{字段2}} | number | ≥ 0, ≤ MAX_SAFE_INTEGER | — | 422 Unprocessable |
@@ -75,11 +91,21 @@ flowchart TB
 ### 敏感数据流
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
-    ENV["环境变量<br/>API_X_TOKEN"]:::secret --> READ["启动时读取<br/>process.env"]:::op
-    READ --> MEM["内存持有<br/>不落盘"]:::secret
-    MEM --> API["API 调用<br/>Authorization header"]:::op
+    ENV["环境变量\nAPI_X_TOKEN"]:::secret --> READ["启动时读取\nprocess.env"]:::op
+    READ --> MEM["内存持有\n不落盘"]:::secret
+    MEM --> API["API 调用\nAuthorization header"]:::op
 
+    classDef secret fill:#2a1a1a,stroke:#f87171,color:#f87171
+    classDef op fill:#1e1f2b,stroke:#7aa2f7,color:#a9b1d6
 ```
 
 | 数据 | 分类 | 存储 | 传输 | 日志 |
@@ -136,12 +162,18 @@ flowchart LR
 <a id="sec2"></a>
 ## §2 实施报告
 
-> 实现阶段填充（coder）。
+> 实现阶段填充（coder + planner）。
+
+### 实施计划
+
+> planner 生成 → 见 `场景-{{N}}-<slug>/计划清单.html`
 
 ### 操作步骤记录
 
 | 步# | 时间 | 操作 | 文件/命令 | 结果 | 备注 |
 |-----|------|------|----------|------|------|
+| 1 | HH:MM | 读计划清单 | `Read 计划清单.html` | ✓ | |
+| 2 | HH:MM | 读安全设计 | `Read <path>` | ✓ | |
 
 ### 开发源码清单
 
@@ -156,12 +188,23 @@ flowchart LR
 ### 依赖图
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
     D1["src: ..."]:::src
     T1["test: ..."]:::test
     D1 -->|"imports"| DEP["dep"]:::ext
     T1 -.->|"covers"| D1
 
+    classDef src fill:#1e1f2b,stroke:#7aa2f7,color:#a9b1d6
+    classDef test fill:#1e1f2b,stroke:#34d399,color:#a9b1d6
+    classDef ext fill:#21232f,stroke:#565f89,color:#53576c
 ```
 
 ### P0 审查表
@@ -172,6 +215,20 @@ flowchart LR
 ### 效果验证
 
 > 安全验证：逐项验证认证/授权/输入校验/密钥保护。
+
+```bash
+# 验证认证不可绕过 — 无 token 请求
+curl -s -w "\n%{http_code}" -X GET "${BASE_URL}/api/{{protected}}" 
+# 预期: HTTP 401
+
+# 验证输入校验 — XSS 注入尝试
+curl -s -w "\n%{http_code}" \
+  -X POST "${BASE_URL}/api/{{resource}}" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ${API_X_TOKEN}" \
+  -d '{"field":"<script>alert(1)</script>"}'
+# 预期: HTTP 400
+```
 
 ---
 

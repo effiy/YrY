@@ -9,6 +9,8 @@
 
 **角色**: {{ROLE}} · **目标**: {{GOAL}} · **优先级**: {{PRIORITY}}
 
+> 本场景聚焦 **UI 布局与交互设计**：组件拓扑、交互流程、用户操作路径。前端/全栈项目必选。
+
 ### 图谱定位
 
 | 图层 | 本场景节点 | 上游 | 下游 |
@@ -17,12 +19,25 @@
 | 结构层 | src: ... / test: ... | maps_to 来自领域层 | verifies · Read → 内容层 |
 | 内容层 | Read/Grep 获取 | Read 来自结构层 | — |
 
+### 每场景交付物
+
+> 本场景目录 `场景-{{N}}-<slug>/` 下必须包含：
+
+| 文件 | 填充阶段 | 填充者 |
+|------|---------|--------|
+| `计划清单.html` | 实施规划 | planner |
+| `架构图.html` | 技术评审 | architect |
+| `知识图谱.html` | 文档基线 | pm |
+| `测试面板.html` | 测试设计 + 测试报告 | tester |
+| `交互示例.html` | 实施报告 | coder |
+| `知识图谱.json` | 文档基线 | pm |
+
 ---
 
 <a id="sec0"></a>
 ## §0 技术评审
 
-> 文档生成阶段填充（pm+coder）。前端必含布局线框，后端每 API 必含 curl。
+> 文档生成阶段填充（pm+architect）。前端必含布局线框，后端每 API 必含 curl。
 
 ### 效果示意 — 布局线框（二选一）
 
@@ -44,14 +59,13 @@ flowchart TB
         H2["NavBar\n主导航入口"]:::nav
     end
     subgraph main["🟨 Main"]
-        direction TB
         direction LR
         subgraph left["Left Panel"]
-        direction TB
+            direction TB
             L1["{{COMPONENT_A}}\n{{职责}}"]:::input
         end
         subgraph right["Right Panel"]
-        direction TB
+            direction TB
             R1["{{COMPONENT_B}}\n{{职责}}"]:::display
             R2["{{COMPONENT_C}}\n{{职责}}"]:::action
         end
@@ -59,6 +73,12 @@ flowchart TB
     header --> main
     L1 -->|"{{触发动作}}"| R1
     R1 -->|"{{交互动作}}"| R2
+
+    classDef static fill:#1e1f2b,stroke:#373949,color:#a9b1d6
+    classDef nav fill:#1b1e2e,stroke:#7aa2f7,color:#7aa2f7
+    classDef input fill:#1e1f2b,stroke:#7aa2f7,color:#a9b1d6
+    classDef display fill:#1e1f2b,stroke:#22d3ee,color:#a9b1d6
+    classDef action fill:#1e1f2b,stroke:#34d399,color:#a9b1d6
 ```
 
 **ASCII 布局**（空间位置与尺寸）：
@@ -89,6 +109,14 @@ flowchart TB
 ### 数据流全景
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 sequenceDiagram
     actor U as 用户
     participant C as {{前端组件}}
@@ -156,7 +184,13 @@ sequenceDiagram
 <a id="sec2"></a>
 ## §2 实施报告
 
-> 实现阶段填充（coder）。**本节是知识图谱结构层的核心**。
+> 实现阶段填充（coder + planner）。**本节是知识图谱结构层的核心**。
+>
+> planner 先生成计划清单.html，coder 按计划逐项执行并记录。
+
+### 实施计划
+
+> planner 生成 → 见 `场景-{{N}}-<slug>/计划清单.html`
 
 ### 操作步骤记录
 
@@ -164,7 +198,8 @@ sequenceDiagram
 
 | 步# | 时间 | 操作 | 文件/命令 | 结果 | 备注 |
 |-----|------|------|----------|------|------|
-| 2 | HH:MM | 读设计文档 | `Read <path>` | ✓ | 场景-1-xxx.md §0 §1 |
+| 1 | HH:MM | 读计划清单 | `Read 场景-{{N}}-<slug>/计划清单.html` | ✓ | planner 产出 |
+| 2 | HH:MM | 读设计文档 | `Read <path>` | ✓ | 场景-{{N}}-xxx.md §0 §1 |
 | 3 | HH:MM | 模块 1 编码 | `Edit/Write <file>` | ✓/✗ | 描述改动 |
 | 4 | HH:MM | 模块 1 P0 审查 | 对照审查维度逐项检查 | ✓/✗ | 见下方 P0 审查表 |
 | 5 | HH:MM | 模块 2 编码 | `Edit/Write <file>` | ✓/✗ | 描述改动 |
@@ -183,11 +218,23 @@ sequenceDiagram
 ### 依赖图
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
     D1["src: ..."]:::src
     T1["test: ..."]:::test
     D1 -->|"imports"| DEP["dep"]:::ext
     T1 -.->|"covers"| D1
+
+    classDef src fill:#1e1f2b,stroke:#7aa2f7,color:#a9b1d6
+    classDef test fill:#1e1f2b,stroke:#34d399,color:#a9b1d6
+    classDef ext fill:#21232f,stroke:#565f89,color:#53576c
 ```
 
 ### P0 审查表
@@ -233,10 +280,10 @@ curl -s -w "\n%{http_code}" \
 | 步# | 时间 | 操作 | 命令/文件 | 结果 | 备注 |
 |-----|------|------|----------|------|------|
 | 1 | HH:MM | 读实施报告 | `Read <实施报告路径>` | ✓ | 交叉引用基准 |
-| 2 | HH:MM | 运行测试套件 | `npm test -- <test-file>` 或等价命令 | ✓/✗ | |
+| 2 | HH:MM | 运行测试套件 | `node tests/run.mjs --filter=<story>` | ✓/✗ | |
 | 3 | HH:MM | 检查 TC-N 失败 | `Read <源文件>` 定位根因 | 根因: ... | |
-| 4 | HH:MM | 修复后重跑 | `npm test -- <test-file>` | ✓/✗ | 修复轮次 N |
-| 5 | HH:MM | 全量回归 | `npm test` | ✓/✗ | |
+| 4 | HH:MM | 修复后重跑 | `node tests/run.mjs --filter=<story>` | ✓/✗ | 修复轮次 N |
+| 5 | HH:MM | 全量回归 | `node tests/run.mjs` | ✓/✗ | |
 | ... | ... | ... | ... | ... | ... |
 
 ### 执行摘要
