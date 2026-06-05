@@ -1,0 +1,53 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>场景-1 · 包搜索与发现 — 计划清单</title>
+<style>
+:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--accent:#FFC107;--cyan:#22d3ee;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
+.container{max-width:900px;margin:0 auto;padding:48px 24px 80px}
+.header{text-align:center;margin-bottom:24px;animation:fadeInDown .5s ease both}
+.header h1{font-size:2rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+.header .sub{color:var(--text2);font-size:.85rem}
+
+/* ── Breadcrumb ─────────────────────────── */
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+
+/* ── Cross-Nav ─────────────────────────── */
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+.cross-link{color:var(--cyan);text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
+.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
+.cross-link.on{color:var(--accent);font-weight:600}
+.cross-sep{color:var(--text3);font-size:0.5rem;opacity:0.35;user-select:none}
+
+.progress-wrap{margin-bottom:28px;animation:fadeInDown .5s .12s ease both}
+.progress-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.04);overflow:hidden;margin-bottom:8px}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--cyan),var(--accent));transition:width .5s ease}
+.progress-text{text-align:center;font-size:.72rem;color:var(--text3)}
+.layer{margin-bottom:32px;animation:fadeInUp .4s ease both}
+.layer-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.layer-head .ln{width:26px;height:26px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.76rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.layer-head h2{font-size:1.05rem;font-weight:700}
+.item{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 18px;margin-bottom:8px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px;cursor:pointer;transition:transform .1s,box-shadow .1s}
+.item:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,0.35)}
+.item .status{width:22px;height:22px;border-radius:50%;border:2px solid var(--text3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.6rem}
+.item .status.done{background:rgba(34,197,94,.15);border-color:#22c55e;color:#22c55e}
+.item .status.ing{background:rgba(255,193,7,.15);border-color:var(--accent);color:var(--accent)}
+.item .body{flex:1;min-width:0}.item .title{font-size:.85rem;font-weight:600}.item .desc{font-size:.72rem;color:var(--text2);margin-top:2px}
+.item .tag{font-size:.64rem;padding:2px 8px;border-radius:8px;flex-shrink:0}
+.item .tag.owner{background:rgba(34,211,238,.1);color:var(--cyan)}
+.meta{text-align:center;color:var(--text3);font-size:.72rem;margin-top:32px}
+@media(max-width:640px){.container{padding:20px 12px 60px}}
+</style></head><body><div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · 个人 npm 包管理</span><span class="bc-sep">/</span><span class="bc-current">场景-1 · 包搜索与发现</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
+<div class="cross-nav"><span class="cross-link on">📋 清单</span><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><a href="演示.html" class="cross-link">💡 演示</a></div>
+<div class="header"><h1>📋 <span class="accent">场景-1 · 包搜索与发现 · 计划清单</span></h1><p class="sub">搜索 npm registry → 结构化结果展示</p></div>
+<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div><div class="progress-text">7/7 完成 · 100%</div></div>
+<div class="layer"><div class="layer-head"><div class="ln">1</div><h2>L1 — 命令设计</h2></div><div class="item" onclick="this.querySelector('.status').classList.toggle('done');update()"><div class="status done">✓</div><div class="body"><div class="title">定义 search 子命令</div><div class="desc">实现 npm search 封装：参数校验 → registry 查询 → JSON 解析 → 排序 → 表格输出</div></div><div class="tag owner">coder</div></div><div class="item" onclick="this.querySelector('.status').classList.toggle('done');update()"><div class="status done">✓</div><div class="body"><div class="title">参数支持</div><div class="desc">支持 --json（原始输出）、--limit（结果数控制）</div></div><div class="tag owner">coder</div></div><div class="item" onclick="this.querySelector('.status').classList.toggle('done');update()"><div class="status done">✓</div><div class="body"><div class="title">错误处理</div><div class="desc">关键词为空提示、registry 不可达友好引导、空结果提示</div></div><div class="tag owner">coder</div></div></div><div class="layer"><div class="layer-head"><div class="ln">2</div><h2>L2 — 输出格式</h2></div><div class="item" onclick="this.querySelector('.status').classList.toggle('done');update()"><div class="status done">✓</div><div class="body"><div class="title">表格化输出</div><div class="desc">名称/描述/版本/周下载量/更新时间 五列表格</div></div><div class="tag owner">coder</div></div><div class="item" onclick="this.querySelector('.status').classList.toggle('done');update()"><div class="status done">✓</div><div class="body"><div class="title">JSON 模式</div><div class="desc">--json 标志输出原始 JSON，供脚本消费</div></div><div class="tag owner">coder</div></div></div><div class="layer"><div class="layer-head"><div class="ln">3</div><h2>L3 — 文档规约</h2></div><div class="item" onclick="this.querySelector('.status').classList.toggle('done');update()"><div class="status done">✓</div><div class="body"><div class="title">SKILL.md 命令文档</div><div class="desc">命令族全景 mermaid + 参数表 + 输出格式 + 错误处理</div></div><div class="tag owner">pm</div></div><div class="item" onclick="this.querySelector('.status').classList.toggle('done');update()"><div class="status done">✓</div><div class="body"><div class="title">help.mjs 场景示例</div><div class="desc">场景 1 完整命令序列 + 预期输出</div></div><div class="tag owner">pm</div></div></div>
+<div class="meta">📌 v4.1.0 · 📅 2026-06-05 · 🏷️ rui-npm</div>
+</div></body></html>
