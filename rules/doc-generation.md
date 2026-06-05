@@ -30,6 +30,14 @@ NO MAGIC NUMBERS — EVERY NUMERIC LITERAL MUST BE SEMANTICALLY NAMED
 ## 八约束全景
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     subgraph C1["① 版头齐"]
         H1["F.meta 版本行"]:::c
@@ -65,6 +73,7 @@ flowchart TB
 
     C1 --> C2 --> C3 --> C4 --> C5 --> C6 --> C7 --> C8
 
+
 ```
 
 | 约束 | 一句话 | 违反示例 |
@@ -91,13 +100,14 @@ flowchart TB
 ```mermaid
 flowchart LR
     subgraph 必含["每文档必含三组件"]
-        META["F.meta<br/>版本行"]:::must
+        direction TB
         TOC["F.toc<br/>标题链接跳转目录"]:::must
         NAV["F.nav<br/>导航块"]:::must
     end
     META --> DOC_TOP["文档开头<br/>紧跟 # 标题"]:::out
     TOC --> DOC_TOP
     NAV --> DOC_END["主体章节末尾"]:::out
+
 
 ```
 
@@ -190,17 +200,18 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph 优先级["表达优先级（不可降级）"]
-        A["① 图<br/>mermaid / 流程图<br/>架构 / 流程 / 关系"]:::first
+        direction TB
         B["② 结构化文本<br/>列表 / 层级 / 关键点<br/>补充图中无法容纳的细节"]:::second
         C["③ 表<br/>数据对照 / 矩阵<br/>精确数值与映射"]:::third
     end
     A --> B --> C
 
     subgraph 反例["降级违规"]
-        X1["架构用大段文字 → 应改用 mermaid"]:::bad
+        direction TB
         X2["对比信息用列表 → 应改用表格"]:::bad
         X3["以无图文档为出发点 → 应先画图"]:::bad
     end
+
 
 ```
 
@@ -214,22 +225,32 @@ flowchart LR
 ### Mermaid 编写规范
 
 > mermaid 语法错误是文档退化的重要来源。以下规则确保图在任何 mermaid 版本下可正常渲染。
+>
+> **统一配色系统见 [mermaid-theme.md](./mermaid-theme.md)**——所有 mermaid 图的 `%%{init}%%` 主题配置和 classDef 色板以该文件为唯一真相源。
 
 | # | 规则 | 错误 | 正确 |
 |---|------|------|------|
 | M1 | **节点标签必须引号包裹** — 含空格、特殊字符、中文的标签必须 `[""]` | `A[用户输入]` | `A["用户输入"]` |
-| M2 | **避免裸 `&`** — `&` 在 mermaid 中可能被解释为 HTML 实体边界，含 `&` 的标签必须引号包裹 | `A[D0 & D7]` | `A["D0 & D7"]` |
+| M2 | **避免裸 `&`** — `&` 在 mermaid 中可能被解释为 HTML 实体边界，含 `&` 的标签必须引号包裹 | `A["D0 & D7"]` | `A["D0 & D7"]` |
 | M3 | **避免 `()` 在节点标签中** — 圆括号是 mermaid 形状语法，含 `()` 的文本必须引号包裹 | `A[init()]` | `A["init()"]` |
-| M4 | **direction 必须在 subgraph 内声明** — `direction LR/TB` 仅对当前 subgraph 生效 | 在顶层声明 `direction LR` 期望影响 subgraph | 在每个 subgraph 内独立声明 |
-| M5 | **style 目标 ID 必须精确匹配** — 节点 ID 不含引号和特殊字符 | `style A["xx"] ...` | `style A ...`（只写 ID 部分）|
-| M6 | **禁止 HTML 标签** — `<br/>`、`<name>` 等即使引号包裹也可能被 mermaid 解析器误判 | `A["用户<br/>输入"]` | `A["用户 输入"]` 或拆分节点 |
+| M3a | **避免 `--` 在节点标签中** — `--` 是 mermaid 连线语法（`---`=粗线，`-->`=箭头），含 `--` 的文本必须引号包裹，尤其菱形节点 `{--x}` → `{"--x"}` | `C{--no-send?}` | `C{"--no-send?"}` |
+| M4 | **direction 必须在 subgraph 内声明** — 含 2+ 节点的 subgraph 必须首行声明 `direction LR` 或 `direction TB` | subgraph 内无 direction 声明 | `subgraph X["标题"]`<br/>`    direction LR`<br/>`    A --> B`<br/>`end` |
+| M5 | **style/classDef 目标 ID 必须精确匹配** — 节点 ID 不含引号和特殊字符 | `style A["xx"] ...` | `style A ...`（只写 ID 部分）|
+| M6 | **仅允许 `<br/>` 作为 HTML 标签** — `<br/>` 是 mermaid 中唯一支持的多行换行机制，可在双引号标签内使用；其他 HTML 标签（`<b>`、`<i>`、`<div>`、`<font>` 等）禁止 | `A["用户<b>输入</b>"]` | `A["用户<br/>输入"]` |
 | M7 | **简短的箭头标签** — 箭头上的标签（`-->|text|`）应简短（≤ 20 字符），避免换行和特殊字符 | `-->|"用户点击提交按钮后触发"|` | `-->|"点击提交"|` |
-| M8 | **使用 htmlLabels: true** — mermaid 初始化时必须设置 `htmlLabels: true` 以支持富文本节点 | 未设置 htmlLabels | `mermaid.initialize({htmlLabels: true})` |
+| M8 | **htmlLabels 由渲染平台管理** — GitHub/VS Code Markdown Preview 的 mermaid 渲染器自动处理 htmlLabels。仅在导出为自包含 HTML 时需显式设置 `mermaid.initialize({htmlLabels: true})` | — | — |
+| M9 | **`%%{init}%%` 主题必须声明** — 每个文件的**第一个** mermaid 代码块必须包含 `%%{init}%%` 主题配置，配色取自 [mermaid-theme.md](./mermaid-theme.md) 的 Tokyo Night Dark 模板 | 文件中所有 mermaid 图均无 `%%{init}%%` | 首个 mermaid 块顶部加 `%%{init: {...}}%%` |
+| M10 | **classDef 使用统一语义色板** — `classDef` 定义的颜色必须来自 [mermaid-theme.md](./mermaid-theme.md#classdef) 中的 12 个语义类。每文件只定义其实际使用的类 | 自造 ad-hoc fill/stroke hex 值 | 从 mermaid-theme.md 色板复制语义 classDef |
+| M11 | **subgraph 方向必须声明** — 含 2+ 节点的每个 subgraph，首行必须声明 `direction`（同 M4 强化版） | subgraph 无 direction | `subgraph X["标题"]`<br/>`    direction LR` |
+| M12 | **语义类名优先** — classDef 名称使用抽象语义（`core`/`exec`/`review`/`risk`/`good`/`bad`），不使用视觉描述（`red`/`blue`/`green`/`yellow`） | `classDef red fill:#f87171` | `classDef risk fill:#2a1a1a,stroke:#f87171,color:#f87171` |
 
 **验证规则**：任何包含 mermaid 图的文件在提交前必须通过以下检查：
-- 浏览器控制台无 mermaid 语法错误
+- 文件中首个 mermaid 代码块含 `%%{init}%%` 主题配置（`grep -c '%%{init' <file>`）
+- 含 2+ 节点的 subgraph 均有 `direction` 声明
 - 所有 `flowchart`/`graph` 图中引用的节点 ID 均在图中定义
-- subgraph 内的 `direction` 声明语法正确（`direction LR` 或 `direction TB`）
+- `classDef` 颜色与 [mermaid-theme.md](./mermaid-theme.md) 色板一致
+- 无 `<b>`、`<i>`、`<div>`、`<font>` 等禁止的 HTML 标签（`<br/>` 除外）
+- mermaid.live 粘贴验证无语法错误
 
 <a id="dir-clean"></a>
 ## ③ 目录清
@@ -238,6 +259,7 @@ flowchart LR
 flowchart LR
     INPUT["CLI 输入<br/>&lt;name&gt;"]:::src --> PARSE["解析 kebab-case"]:::op
     PARSE --> PATH["docs/故事任务面板/<br/>&lt;name&gt;/"]:::out
+
 
 ```
 
@@ -268,16 +290,17 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph 阶段["管线阶段"]
-        P1["文档生成"]:::phase
+        direction TB
         P2["实现"]:::phase
         P3["验证"]:::phase
     end
     subgraph 产出["创建文件"]
-        O1["故事任务.md<br/>场景-N-<slug>.md<br/>场景-N-<slug>.html"]:::file
+        direction TB
         O2["知识图谱.json<br/>知识图谱.html"]:::file
     end
     P1 --> O1
     P3 --> O2
+
 
 ```
 
@@ -298,6 +321,7 @@ flowchart TD
     Q1 -->|"增删/接口变更"| T2["T2<br/>裁剪影响分析<br/>裁剪架构设计<br/>刷新目标 + 下游"]:::t2
     Q1 -->|"边界变化/跨故事重构"| T3["T3<br/>完整重跑影响分析<br/>完整重跑架构设计<br/>全级联刷新"]:::t3
 
+
 ```
 
 | 级别 | 范围 | 影响分析 | 架构设计 | 文档刷新 |
@@ -312,16 +336,17 @@ flowchart TD
 ```mermaid
 flowchart LR
     subgraph 禁止["❌ 魔法数字"]
-        N1["代码中裸数值<br/>Math.max(2, 28)"]:::bad
+        direction TB
         N2["文档中硬编码量级<br/>如 100 个 · < 5 秒"]:::bad
         N3["阈值/比例裸值<br/>通过率 ≥ 90%"]:::bad
     end
     subgraph 必须["✅ 语义化"]
-        S1["命名常量<br/>COLUMN_MIN_PADDING<br/>LEFT_COLUMN_WIDTH"]:::good
+        direction TB
         S2["语义描述<br/>超出常规面板量级<br/>在合理响应时间内"]:::good
         S3["门禁概念<br/>不低于门禁阈值<br/>达到质量基线标准"]:::good
     end
     禁止 --> 必须
+
 
 ```
 
@@ -354,15 +379,16 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph 评审["技术评审"]
-        R1["后端评审 → 架构效果 mermaid 图<br/>展示预期系统行为"]:::review
+        direction TB
         R2["前端评审 → UI 效果示意<br/>展示预期界面形态"]:::review
     end
     subgraph 报告["实施报告"]
-        P1["后端报告 → API 响应截图<br/>或终端输出截图"]:::report
+        direction TB
         P2["前端报告 → UI 截图<br/>展示实际实现的界面"]:::report
         P3["🔑 可操作验证步骤<br/>后端: curl 命令<br/>前端: 操作路径"]:::must
     end
     评审 --> 报告 --> P3
+
 
 ```
 
@@ -407,6 +433,7 @@ flowchart TD
     Q6 -->|"是"| D6["📄 性能基准.md"]:::doc
     Q6 -->|"否"| NONE["无需补充文档"]:::none
 
+
 ```
 
 | 触发条件 | 生成文档 | 主导 |
@@ -430,6 +457,7 @@ flowchart LR
     Q1 -->|"空"| EXPLORE["探索模式<br/>pm 扫描源码 → 推荐列表<br/>用户选择 → 生成文档"]:::mode
     Q1 -->|"有值"| REVERSE["反推模式<br/>pm 从源码反推<br/>证据 Level B + 源码路径"]:::mode
     EXPLORE & REVERSE --> OUT["输出落故事任务面板"]:::out
+
 
 ```
 
@@ -459,6 +487,7 @@ flowchart LR
     S5 --> S6["策展完成<br/>git commit 已提交"]:::sig
     S6 --> S7["无魔数<br/>命名常量 + 语义描述"]:::sig
     S7 --> S8["效果证<br/>效果图 + 可操作验证"]:::sig
+
 
 ```
 
