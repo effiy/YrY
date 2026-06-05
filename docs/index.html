@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YrY 文档中心</title>
+  <style>
+    :root {
+      --bg-content: rgba(22,22,32,1);
+      --bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
+      --bg-card-flat: rgba(34,34,46,1);
+      --color-accent: #FFC107;
+      --color-accent-2: #22d3ee;
+      --text-primary: rgba(250,250,252,1);
+      --text-secondary: rgba(160,160,164,1);
+      --text-muted: rgba(110,110,114,1);
+      --shadow-card: 0 4px 20px rgba(0,0,0,0.3);
+      --shadow-hover: 0 12px 32px rgba(0,0,0,0.45);
+      --radius-card: 12px;
+      --border-subtle: 1px solid rgba(255,255,255,0.06);
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg-content); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+    .header { text-align: center; margin-bottom: 32px; animation: fadeInDown 0.5s ease both; }
+    .header h1 { font-size: 2.2rem; font-weight: 700; }
+    .header h1 .accent { color: var(--color-accent); }
+    .header p { color: var(--text-secondary); margin-top: 8px; font-size: 0.92rem; }
+
+    .stats { display: flex; gap: 14px; justify-content: center; margin-bottom: 40px; flex-wrap: wrap; animation: fadeInDown 0.5s 0.1s ease both; }
+    .stat {
+      background: var(--bg-card); border: var(--border-subtle);
+      border-radius: var(--radius-card); padding: 16px 24px; text-align: center;
+      box-shadow: var(--shadow-card); min-width: 100px;
+      text-decoration: none; color: inherit; display: block;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+      cursor: pointer;
+    }
+    a.stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: rgba(255,193,7,0.35); }
+    .stat .num { font-size: 1.7rem; font-weight: 700; color: var(--color-accent); }
+    .stat .num.green { color: var(--color-accent-2); }
+    .stat .label { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Cross-panel navigation ──────────────── */
+    .cross-nav {
+      display: flex; gap: 10px; justify-content: center; margin-bottom: 36px;
+      flex-wrap: wrap; align-items: stretch;
+      animation: fadeInDown 0.5s 0.15s ease both;
+    }
+    .cross-nav .cross-card {
+      background: var(--bg-card); border: 1px solid rgba(255,193,7,0.15);
+      border-radius: 10px; padding: 12px 18px; box-shadow: var(--shadow-card);
+      text-decoration: none; color: inherit; display: flex; gap: 10px; align-items: center;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+      min-width: 180px;
+    }
+    .cross-nav .cross-card:hover {
+      transform: translateY(-2px); box-shadow: var(--shadow-hover);
+      border-color: rgba(255,193,7,0.35);
+    }
+    .cross-nav .cross-card .cross-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .cross-nav .cross-card .cross-info { flex: 1; min-width: 0; }
+    .cross-nav .cross-card .cross-info .cross-name { font-size: 0.82rem; font-weight: 600; color: var(--text-primary); }
+    .cross-nav .cross-card .cross-info .cross-stats { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+    .cross-nav .cross-card .cross-arrow { color: var(--color-accent); font-size: 0.85rem; flex-shrink: 0; opacity: 0.6; transition: opacity 0.15s; }
+    .cross-nav .cross-card:hover .cross-arrow { opacity: 1; }
+
+    .layer { margin-bottom: 36px; }
+    .layer-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+      padding-bottom: 8px; border-bottom: 2px solid var(--color-accent);
+    }
+    .layer-header .layer-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--color-accent); color: #1a1a2a;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 700; flex-shrink: 0;
+    }
+    .layer-header h2 { font-size: 1.2rem; margin: 0; flex: 1; }
+    .layer-header .layer-stats { font-size: 0.78rem; color: var(--text-muted); }
+
+    .sub-title {
+      font-size: 0.95rem; font-weight: 600; color: var(--text-secondary);
+      margin: 16px 0 10px; padding-left: 10px; border-left: 3px solid rgba(255,193,7,0.4);
+    }
+    .sub-title .accent { color: var(--color-accent); }
+
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 10px; margin-bottom: 10px; }
+    .item-card {
+      background: var(--bg-card); border: var(--border-subtle);
+      border-radius: 10px; padding: 13px 16px; box-shadow: var(--shadow-card);
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+      display: flex; gap: 10px; align-items: flex-start;
+      animation: fadeInUp 0.4s ease both;
+    }
+    .item-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-hover); border-color: rgba(255,193,7,0.2); }
+    .item-card .icon {
+      width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 0.75rem;
+    }
+    .item-card .icon.skill { background: rgba(255,193,7,0.15); color: var(--color-accent); }
+    .item-card .icon.agent { background: rgba(192,132,252,0.15); color: #c084fc; }
+    .item-card .icon.rule { background: rgba(100,220,180,0.15); color: #64DCB4; }
+    .item-card .icon.story { background: rgba(255,193,7,0.12); color: var(--color-accent); }
+    .item-card .icon.scene { background: rgba(34,211,238,0.12); color: var(--color-accent-2); }
+    .item-card .icon.ref { background: rgba(148,163,184,0.15); color: #94a3b8; }
+    .item-card .icon.node { background: rgba(100,149,237,0.18); color: #6495ED; }
+    .item-card .body { flex: 1; min-width: 0; }
+    .item-card .body .name { color: var(--text-primary); font-weight: 600; font-size: 0.9rem; }
+    .item-card .body .name a { color: inherit; text-decoration: none; }
+    .item-card .body .name a:hover { color: var(--color-accent); }
+    .item-card .body .desc { color: var(--text-muted); font-size: 0.74rem; margin-top: 2px; }
+    .item-card .body .meta { color: var(--text-muted); font-size: 0.7rem; margin-top: 3px; }
+    .item-card .body .meta .accent { color: var(--color-accent); }
+    .item-card .body .meta .ref-link {
+      color: var(--color-accent-2); text-decoration: none;
+      font-weight: 500; margin-left: 4px;
+    }
+    .item-card .body .meta .ref-link:hover { text-decoration: underline; }
+
+    /* ── Scene cards ─────────────────────────── */
+    .scene-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; margin-bottom: 10px; }
+    .scene-card {
+      background: var(--bg-card); border: var(--border-subtle);
+      border-radius: 10px; padding: 14px 16px; box-shadow: var(--shadow-card);
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    }
+    .scene-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-hover); border-color: rgba(255,193,7,0.2); }
+    .scene-card .scene-num {
+      font-size: 0.7rem; color: var(--color-accent); font-weight: 600; margin-bottom: 4px;
+    }
+    .scene-card .scene-name { font-size: 0.88rem; font-weight: 600; }
+    .scene-card .scene-name a { color: inherit; text-decoration: none; }
+    .scene-card .scene-name a:hover { color: var(--color-accent); }
+    .scene-card .scene-desc { color: var(--text-muted); font-size: 0.74rem; margin-top: 4px; }
+    .scene-card .scene-meta {
+      padding-top: 8px; margin-top: 8px; border-top: var(--border-subtle);
+    }
+    .scene-card .scene-meta a {
+      font-size: 0.78rem; color: var(--color-accent); text-decoration: none;
+    }
+    .scene-card .scene-meta a:hover { text-decoration: underline; }
+
+    /* ── Story cards (compact, for L2) ───────── */
+    .story-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 12px; margin-bottom: 10px; }
+    .story-card {
+      background: var(--bg-card); border: var(--border-subtle);
+      border-radius: var(--radius-card); padding: 20px 22px; box-shadow: var(--shadow-card);
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    }
+    .story-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: rgba(255,193,7,0.2); }
+    .story-card .story-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .story-card .story-head .story-icon {
+      width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+      background: rgba(255,193,7,0.12); color: var(--color-accent);
+      display: flex; align-items: center; justify-content: center; font-size: 0.9rem;
+    }
+    .story-card .story-head .story-name { font-size: 1rem; font-weight: 700; flex: 1; }
+    .story-card .story-head .story-badge {
+      font-size: 0.68rem; color: var(--color-accent);
+      border: 1px solid var(--color-accent); border-radius: 4px; padding: 1px 8px;
+    }
+    .story-card .story-desc { color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 12px; line-height: 1.5; }
+    .story-card .story-scenes { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+    .story-card .story-scenes .scene-tag {
+      font-size: 0.7rem; color: var(--text-muted); text-decoration: none;
+      background: rgba(255,255,255,0.04); border-radius: 4px; padding: 2px 8px;
+      transition: all 0.15s ease;
+    }
+    .story-card .story-scenes .scene-tag:hover {
+      color: var(--color-accent); background: rgba(255,255,255,0.08);
+    }
+    .story-card .story-foot {
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+      padding-top: 10px; border-top: var(--border-subtle);
+    }
+    .story-card .story-foot a {
+      font-size: 0.78rem; color: var(--color-accent); text-decoration: none;
+    }
+    .story-card .story-foot a:hover { text-decoration: underline; }
+    .story-card .story-foot .story-meta-text { font-size: 0.72rem; color: var(--text-muted); }
+
+    hr { border-color: rgba(255,255,255,0.08); margin: 8px 0 24px; }
+    .footer-note { text-align: center; color: var(--text-muted); font-size: 0.78rem; margin-top: 8px; padding-bottom: 20px; }
+    .footer-note a { color: var(--color-accent); text-decoration: none; }
+    .footer-note a:hover { text-decoration: underline; }
+
+    /* ── Back to top ───────────────────────── */
+    .back-top {
+      position: fixed; bottom: 28px; right: 28px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card-flat); border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-secondary); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; box-shadow: var(--shadow-card);
+      transition: all 0.2s ease;
+      opacity: 0; pointer-events: none; z-index: 100;
+    }
+    .back-top.visible { opacity: 1; pointer-events: auto; }
+    .back-top:hover { border-color: var(--color-accent); color: var(--color-accent); }
+
+    /* ── Responsive ────────────────────────── */
+    @media (max-width: 768px) {
+      .container { padding: 24px 12px 12px; }
+      .header h1 { font-size: 1.5rem; }
+      .card-grid { grid-template-columns: 1fr; }
+      .scene-grid { grid-template-columns: 1fr; }
+      .story-grid { grid-template-columns: 1fr; }
+      .stats { gap: 8px; }
+      .stat { padding: 10px 14px; min-width: 70px; }
+      .stat .num { font-size: 1.3rem; }
+      .cross-nav { flex-direction: column; align-items: center; }
+      .back-top { bottom: 16px; right: 16px; width: 36px; height: 36px; }
+    }
+    @media (max-width: 480px) {
+      .header h1 { font-size: 1.3rem; }
+      .item-card { padding: 12px 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><span class="accent">&#11088;</span> YrY 文档中心</h1>
+      <p>故事驱动的 SDLC 编排系统 — 五层结构：技能 → 故事 → 场景 → Agent 角色与规则 → 参考入口</p>
+    </div>
+
+    <div class="stats">
+      <a class="stat" href="#layer-skills"><div class="num">6</div><div class="label">技能</div></a>
+      <a class="stat" href="#layer-story"><div class="num">2</div><div class="label">故事</div></a>
+      <a class="stat" href="#layer-scene"><div class="num green">8</div><div class="label">场景</div></a>
+      <a class="stat" href="#layer-agents"><div class="num">8</div><div class="label">Agent 角色</div></a>
+      <a class="stat" href="#layer-rules"><div class="num green">8</div><div class="label">规则</div></a>
+      <a class="stat" href="#layer-refs"><div class="num green">5</div><div class="label">参考入口</div></a>
+    </div>
+
+    <!-- Cross-panel navigation -->
+    <div class="cross-nav">
+      <a href="../CLAUDE.md" class="cross-card" target="_blank">
+        <span class="cross-icon">&#128220;</span>
+        <span class="cross-info">
+          <span class="cross-name">CLAUDE.md</span>
+          <span class="cross-stats">项目指令 · 铁律 · 项目画像</span>
+        </span>
+        <span class="cross-arrow">&rarr;</span>
+      </a>
+      <a href="../README.md" class="cross-card" target="_blank">
+        <span class="cross-icon">&#128214;</span>
+        <span class="cross-info">
+          <span class="cross-name">README.md</span>
+          <span class="cross-stats">系统全景 · 领域语言 · 快速开始</span>
+        </span>
+        <span class="cross-arrow">&rarr;</span>
+      </a>
+      <a href="故事任务面板/通知日志.md" class="cross-card">
+        <span class="cross-icon">&#128276;</span>
+        <span class="cross-info">
+          <span class="cross-name">通知日志</span>
+          <span class="cross-stats">企微通知 · 交付记录</span>
+        </span>
+        <span class="cross-arrow">&rarr;</span>
+      </a>
+    </div>
+
+    <!-- ===== Layer 1: 技能 ===== -->
+    <div class="layer" id="layer-skills">
+      <div class="layer-header">
+        <span class="layer-num">1</span>
+        <h2>技能</h2>
+        <span class="layer-stats">6 能力模块 · 故事驱动的 SDLC 编排</span>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#127760;</span> 核心技能 (6)</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon skill">R</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui/SKILL.md" target="_blank">rui</a></div>
+            <div class="desc">故事驱动的 SDLC 编排器：story → document → code → delivery</div>
+            <div class="meta"><span class="accent">核心管线</span> · SKILL.md + formulas.md + coder.md</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">S</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui-story/SKILL.md" target="_blank">rui-story</a></div>
+            <div class="desc">故事任务面板管理：collect · status · sync · notify</div>
+            <div class="meta"><span class="accent">面板管理</span> · rui-story.mjs (30KB)</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">C</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui-claude/SKILL.md" target="_blank">rui-claude</a></div>
+            <div class="desc">管理所有 .claude/ 目录：sync from remote · analyze health · recommend tasks</div>
+            <div class="meta"><span class="accent">配置管理</span> · help.mjs</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">I</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui-import/SKILL.md" target="_blank">rui-import</a></div>
+            <div class="desc">文档同步：本地文档 → 远程文档 API，手动触发</div>
+            <div class="meta"><span class="accent">文档同步</span> · sync.mjs (22KB)</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">B</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui-bot/SKILL.md" target="_blank">rui-bot</a></div>
+            <div class="desc">企微通知：企业微信 Webhook 消息推送 · 通知日志记录</div>
+            <div class="meta"><span class="accent">消息推送</span> · send.mjs</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">T</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui-trends/SKILL.md" target="_blank">rui-trends</a></div>
+            <div class="desc">技术趋势：GitHub Trending · OSS Insight · 自改进技术选型</div>
+            <div class="meta"><span class="accent">趋势发现</span> · help.mjs</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- ===== Layer 2: 故事 ===== -->
+    <div class="layer" id="layer-story">
+      <div class="layer-header">
+        <span class="layer-num">2</span>
+        <h2>故事</h2>
+        <span class="layer-stats">2 故事 · 架构基线 + 自检体系</span>
+      </div>
+
+      <div class="story-grid">
+        <div class="story-card">
+          <div class="story-head">
+            <span class="story-icon">&#128451;</span>
+            <span class="story-name">系统架构知识固化</span>
+            <span class="story-badge">v1.27.0</span>
+          </div>
+          <div class="story-desc">YrY 架构全景分析，构建系统自我认知基线。模块拓扑 + 数据流追踪 + 新人上手 + 依赖变更影响，让后续故事规划、影响分析和架构决策有唯一事实参照。</div>
+          <div class="story-scenes">
+            <a class="scene-tag" href="故事任务面板/yry-arch/场景-1-模块定位.md">1. 模块定位与职责</a>
+            <a class="scene-tag" href="故事任务面板/yry-arch/场景-2-数据流追踪.md">2. 数据流与追踪</a>
+            <a class="scene-tag" href="故事任务面板/yry-arch/场景-3-新人上手.md">3. 新人上手与开发指南</a>
+            <a class="scene-tag" href="故事任务面板/yry-arch/场景-4-依赖变更影响.md">4. 依赖变更影响分析</a>
+          </div>
+          <div class="story-foot">
+            <a href="故事任务面板/yry-arch/场景-1-模块定位.html">架构图 &rarr;</a>
+            <a href="故事任务面板/yry-arch/知识图谱.html">知识图谱 &rarr;</a>
+            <span class="story-meta-text">4 场景 · 6 技能 + 8 Agent + 8 规则</span>
+          </div>
+        </div>
+
+        <div class="story-card">
+          <div class="story-head">
+            <span class="story-icon">&#129514;</span>
+            <span class="story-name">自主测试方案</span>
+            <span class="story-badge">v1.0.0</span>
+          </div>
+          <div class="story-desc">YrY 自检体系 — 项目的免疫系统。管线健康自检验证纪律关卡是否有效执行，文档基线完整性校验验证文档是否始终是可信任的真相来源。</div>
+          <div class="story-scenes">
+            <a class="scene-tag" href="故事任务面板/yry-self-test/场景-1-init后全量自检.md">1. init 后全量自检</a>
+            <a class="scene-tag" href="故事任务面板/yry-self-test/场景-2-commit前增量自检.md">2. commit 前增量自检</a>
+            <a class="scene-tag" href="故事任务面板/yry-self-test/场景-3-文档代码一致性校验.md">3. 文档代码一致性校验</a>
+            <a class="scene-tag" href="故事任务面板/yry-self-test/场景-4-安全面回归自检.md">4. 安全面回归自检</a>
+          </div>
+          <div class="story-foot">
+            <a href="故事任务面板/yry-self-test/场景-1-init后全量自检.html">架构图 &rarr;</a>
+            <a href="故事任务面板/yry-self-test/知识图谱.html">知识图谱 &rarr;</a>
+            <span class="story-meta-text">4 场景 · 管线健康 + 文档完整性</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- ===== Layer 3: 场景 ===== -->
+    <div class="layer" id="layer-scene">
+      <div class="layer-header">
+        <span class="layer-num">3</span>
+        <h2>场景</h2>
+        <span class="layer-stats">2 故事 · 8 场景</span>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#128451;</span> 系统架构知识固化 — 4 场景</div>
+      <div class="scene-grid">
+        <div class="scene-card">
+          <div class="scene-num">场景 1</div>
+          <div class="scene-name"><a href="故事任务面板/yry-arch/场景-1-模块定位.md">模块定位与职责</a></div>
+          <div class="scene-desc">6 技能 · 8 Agent · 8 规则 — 模块识别 · 职责边界 · 入口验证</div>
+          <div class="scene-meta"><a href="故事任务面板/yry-arch/场景-1-模块定位.html">架构图 &rarr;</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 2</div>
+          <div class="scene-name"><a href="故事任务面板/yry-arch/场景-2-数据流追踪.md">数据流与追踪</a></div>
+          <div class="scene-desc">从用户输入到交付收口 — 每阶段输入/输出/触发条件可追溯</div>
+          <div class="scene-meta"><a href="故事任务面板/yry-arch/场景-2-数据流追踪.html">架构图 &rarr;</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 3</div>
+          <div class="scene-name"><a href="故事任务面板/yry-arch/场景-3-新人上手.md">新人上手与开发指南</a></div>
+          <div class="scene-desc">环境搭建 · 调试方法 · 常见任务 — 新人可独立完成首修</div>
+          <div class="scene-meta"><a href="故事任务面板/yry-arch/场景-3-新人上手.html">架构图 &rarr;</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 4</div>
+          <div class="scene-name"><a href="故事任务面板/yry-arch/场景-4-依赖变更影响.md">依赖变更影响分析</a></div>
+          <div class="scene-desc">依赖图 · 影响分析 · 破坏性变更检测 — 变更影响可量化可追溯</div>
+          <div class="scene-meta"><a href="故事任务面板/yry-arch/场景-4-依赖变更影响.html">架构图 &rarr;</a></div>
+        </div>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#129514;</span> 自主测试方案 — 4 场景</div>
+      <div class="scene-grid">
+        <div class="scene-card">
+          <div class="scene-num">场景 1</div>
+          <div class="scene-name"><a href="故事任务面板/yry-self-test/场景-1-init后全量自检.md">init 后全量自检</a></div>
+          <div class="scene-desc">全量基线校验：CLAUDE.md markers · README 领域语言 · 故事面板完整性</div>
+          <div class="scene-meta"><a href="故事任务面板/yry-self-test/场景-1-init后全量自检.html">架构图 &rarr;</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 2</div>
+          <div class="scene-name"><a href="故事任务面板/yry-self-test/场景-2-commit前增量自检.md">commit 前增量自检</a></div>
+          <div class="scene-desc">增量变更检测：分支隔离 · 铁律合规 · 文件变更范围验证</div>
+          <div class="scene-meta"><a href="故事任务面板/yry-self-test/场景-2-commit前增量自检.html">架构图 &rarr;</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 3</div>
+          <div class="scene-name"><a href="故事任务面板/yry-self-test/场景-3-文档代码一致性校验.md">文档代码一致性校验</a></div>
+          <div class="scene-desc">规约 vs 实际：章节完整性 · 交叉引用有效性 · 知识图谱节点覆盖</div>
+          <div class="scene-meta"><a href="故事任务面板/yry-self-test/场景-3-文档代码一致性校验.html">架构图 &rarr;</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 4</div>
+          <div class="scene-name"><a href="故事任务面板/yry-self-test/场景-4-安全面回归自检.md">安全面回归自检</a></div>
+          <div class="scene-desc">认证不可绕过 · 密钥不落盘 · 输入必校验 — 安全面全量覆盖</div>
+          <div class="scene-meta"><a href="故事任务面板/yry-self-test/场景-4-安全面回归自检.html">架构图 &rarr;</a></div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- ===== Layer 4: Agent 角色 + 规则 ===== -->
+    <div class="layer" id="layer-agents">
+      <div class="layer-header">
+        <span class="layer-num">4</span>
+        <h2>Agent 角色与规则</h2>
+        <span class="layer-stats">8 Agent 角色 · 8 治理规则</span>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#129302;</span> Agent 角色 (8)</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon agent">P</span>
+          <div class="body">
+            <div class="name"><a href="../agents/pm.md" target="_blank">pm</a></div>
+            <div class="desc">产品决策者：决定做什么和不做什么，委派给子项目 PM</div>
+            <div class="meta"><span class="accent">核心角色</span> · 需求解析 → 自适应规划</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon agent">A</span>
+          <div class="body">
+            <div class="name"><a href="../agents/architect.md" target="_blank">architect</a></div>
+            <div class="desc">系统架构设计者：设计系统级架构 · 评估 trade-off · 创建 ADR</div>
+            <div class="meta">只读 · 架构设计 → 影响分析</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon agent">C</span>
+          <div class="body">
+            <div class="name"><a href="../agents/coder.md" target="_blank">coder</a></div>
+            <div class="desc">代码实现者：按设计文档实现代码 · 逐模块审查 · P0 强制清零</div>
+            <div class="meta"><span class="accent">核心角色</span> · 读写 · 逐模块实现</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon agent">R</span>
+          <div class="body">
+            <div class="name"><a href="../agents/code-reviewer.md" target="_blank">code-reviewer</a></div>
+            <div class="desc">代码质量审查者：审查正确性 · 模式 · 反模式 · 简化机会</div>
+            <div class="meta">只读 · 审查 → 反馈给 coder</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon agent">T</span>
+          <div class="body">
+            <div class="name"><a href="../agents/tester.md" target="_blank">tester</a></div>
+            <div class="desc">质量保障者：测试先行 · 验收标准 · Gate 强制</div>
+            <div class="meta"><span class="accent">关卡角色</span> · Gate A / Gate B</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon agent">E</span>
+          <div class="body">
+            <div class="name"><a href="../agents/reporter.md" target="_blank">reporter</a></div>
+            <div class="desc">过程报告者：生成过程报告 · 知识整理 · 证据标准</div>
+            <div class="meta">只读 · 自改进复盘 → 交付文档</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon agent">S</span>
+          <div class="body">
+            <div class="name"><a href="../agents/security.md" target="_blank">security</a></div>
+            <div class="desc">安全专家：威胁建模 · 约束执行 · 安全任务注入</div>
+            <div class="meta">只读 · 安全约束 → coder 注入</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon agent">I</span>
+          <div class="body">
+            <div class="name"><a href="../agents/self-improve.md" target="_blank">self-improve</a></div>
+            <div class="desc">自改进引擎：数据驱动提案 · 效果评估 · 回溯报告</div>
+            <div class="meta"><span class="accent">闭环角色</span> · 诊断 D0-D7 · 评估 E1-E4</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title" style="margin-top:18px;"><span class="accent">&#128220;</span> Agent 角色拓扑</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon ref">T</span>
+          <div class="body">
+            <div class="name"><a href="../agents/AGENT.md" target="_blank">AGENT.md</a></div>
+            <div class="desc">角色拓扑总览：行为纪律 · 设计原则 · 执行准则 · ADR · 多 Agent 协作模式</div>
+            <div class="meta"><span class="accent">总纲</span> · 22KB · 角色间委派与反馈回路</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer" id="layer-rules" style="margin-top:36px;">
+      <div class="layer-header">
+        <span class="layer-num" style="background: var(--color-accent-2);">R</span>
+        <h2>治理规则</h2>
+        <span class="layer-stats">8 规则 · 管线纪律 · 安全 · 文档 · 自改进</span>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#128736;</span> 管线规则 (3)</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon rule">P</span>
+          <div class="body">
+            <div class="name"><a href="../rules/code-pipeline.md" target="_blank">code-pipeline.md</a></div>
+            <div class="desc">管线全流程：分支隔离 · Gate A/B · 逐模块清零 · 研究优先开发</div>
+            <div class="meta"><span class="accent">核心管线</span> · 30KB</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">D</span>
+          <div class="body">
+            <div class="name"><a href="../rules/delivery-gate.md" target="_blank">delivery-gate.md</a></div>
+            <div class="desc">交付收口：三步 hook — 追加日志 → 文档同步 → 企微通知</div>
+            <div class="meta">7.5KB · 交付门禁</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">A</span>
+          <div class="body">
+            <div class="name"><a href="../rules/architecture-diagram.md" target="_blank">architecture-diagram.md</a></div>
+            <div class="desc">架构图规范：Mermaid 语法约定 · 颜色语义 · 布局标准</div>
+            <div class="meta">9.7KB · 表达优先</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#128214;</span> 文档规则 (2)</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon rule">D</span>
+          <div class="body">
+            <div class="name"><a href="../rules/doc-generation.md" target="_blank">doc-generation.md</a></div>
+            <div class="desc">文档生成约束：表达优先（图 → 文本 → 表）· 不可降级</div>
+            <div class="meta"><span class="accent">表达优先</span> · 21KB</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">K</span>
+          <div class="body">
+            <div class="name"><a href="../rules/knowledge-graph.md" target="_blank">knowledge-graph.md</a></div>
+            <div class="desc">知识图谱规范：节点类型 · 边关系 · JSON schema · 生成标准</div>
+            <div class="meta">6.6KB · 知识管理</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#128737;</span> 安全与配置规则 (2)</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon rule">S</span>
+          <div class="body">
+            <div class="name"><a href="../rules/security-guardrails.md" target="_blank">security-guardrails.md</a></div>
+            <div class="desc">安全护栏：认证不可绕过 · 密钥不落盘 · 输入必校验 · 禁止魔法数字</div>
+            <div class="meta"><span class="accent">安全底线</span> · 8.9KB</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">C</span>
+          <div class="body">
+            <div class="name"><a href="../rules/rui-claude.md" target="_blank">rui-claude.md</a></div>
+            <div class="desc">rui-claude 配置管理规则：.claude/ 目录同步 · 健康分析</div>
+            <div class="meta">5.7KB · 配置治理</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#128260;</span> 自改进规则 (1)</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon rule">I</span>
+          <div class="body">
+            <div class="name"><a href="../rules/self-improve.md" target="_blank">self-improve.md</a></div>
+            <div class="desc">自改进闭环：诊断 D0-D7 · 经验技能化 · 记忆压缩注入 · 效果评估 E1-E4</div>
+            <div class="meta"><span class="accent">闭环驱动</span> · 11KB</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- ===== Layer 5: 参考入口 ===== -->
+    <div class="layer" id="layer-refs">
+      <div class="layer-header">
+        <span class="layer-num">5</span>
+        <h2>参考入口</h2>
+        <span class="layer-stats">5 文档入口 · 项目元信息</span>
+      </div>
+
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon ref">R</span>
+          <div class="body">
+            <div class="name"><a href="../README.md" target="_blank">README.md</a></div>
+            <div class="desc">项目总览：系统全景 · 管线 · 快速开始 · 命令 · 领域语言（20 术语）</div>
+            <div class="meta"><span class="accent">入口文档</span> · 15KB</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon ref">C</span>
+          <div class="body">
+            <div class="name"><a href="../CLAUDE.md" target="_blank">CLAUDE.md</a></div>
+            <div class="desc">项目指令：铁律 · 项目画像 · 不可妥协底线 · 退化对策 · 引导</div>
+            <div class="meta"><span class="accent">AI 行为约束</span> · 6KB</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon ref">F</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui/formulas.md" target="_blank">formulas.md</a></div>
+            <div class="desc">故事文档公式：故事任务 · 场景 · 知识图谱 · 架构图的生成公式与模板</div>
+            <div class="meta"><span class="accent">文档模板</span> · 28KB</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon ref">N</span>
+          <div class="body">
+            <div class="name"><a href="故事任务面板/通知日志.md">通知日志</a></div>
+            <div class="desc">企微消息通知记录：交付通知 · 状态变更 · 时间线</div>
+            <div class="meta">自动生成 · 按时间排序</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon ref">B</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui-bot/SKILL.md" target="_blank">企微 Bot 配置</a></div>
+            <div class="desc">企业微信 Webhook 配置：消息格式 · 通知触发条件 · 发送示例</div>
+            <div class="meta">rui-bot · 交付 hook 第三步</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      YrY v1.27.0 · 故事驱动的 SDLC 编排系统 · <a href="../CLAUDE.md">CLAUDE.md</a> · <a href="../README.md">README.md</a> · <a href="故事任务面板/通知日志.md">通知日志</a>
+    </div>
+  </div>
+
+  <!-- Back to top button -->
+  <button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">&uarr;</button>
+
+  <script>
+    /* Staggered card animations */
+    document.querySelectorAll('.card-grid .item-card').forEach((card, i) => {
+      card.style.animationDelay = `${0.01 + (i % 20) * 0.012}s`;
+    });
+
+    /* Back to top */
+    const backTop = document.getElementById('backTop');
+    function toggleBackTop() {
+      backTop.classList.toggle('visible', window.scrollY > 400);
+    }
+    window.addEventListener('scroll', toggleBackTop, { passive: true });
+    backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  </script>
+</body>
+</html>
