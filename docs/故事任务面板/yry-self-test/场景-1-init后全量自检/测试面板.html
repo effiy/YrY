@@ -39,7 +39,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .tab .tab-badge{font-size:.6rem;background:var(--fail);color:#fff;border-radius:8px;padding:1px 6px;position:absolute;top:4px;right:0}
 .panel{display:none;animation:fadeInUp .4s ease both;padding-top:28px}
 .panel.on{display:block}
-.toolbar{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center;animation:fadeInDown .5s .18s ease both}
 .btn{background:var(--bg-flat);border:var(--border);border-radius:8px;color:var(--text2);padding:7px 14px;cursor:pointer;font-size:.8rem;transition:all .15s;display:inline-flex;align-items:center;gap:5px;text-decoration:none;white-space:nowrap;font-family:inherit}
 .btn:hover{border-color:rgba(255,255,255,.15);color:var(--text);transform:translateY(-1px);box-shadow:var(--shadow)}
 .btn.on{background:rgba(255,193,7,.12);border-color:rgba(255,193,7,.4);color:var(--accent)}
@@ -96,7 +95,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow);animation:fadeInUp .4s ease both}
 .card h2{font-size:.92rem;margin-bottom:14px;color:var(--cyan);font-weight:600}
 a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
-@media(max-width:640px){.container{padding:24px 12px 60px}.header h1{font-size:1.5rem}.stats-grid{gap:6px}.stat-card{padding:12px 14px;min-width:65px}.stat-card .val{font-size:1.3rem}.toolbar{flex-direction:column}.search-wrap{max-width:100%}}
+@media(max-width:640px){.container{padding:24px 12px 60px}.header h1{font-size:1.5rem}.stats-grid{gap:6px}.stat-card{padding:12px 14px;min-width:65px}.stat-card .val{font-size:1.3rem}.search-wrap{max-width:100%}}
 .file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
 .file-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;display:flex;align-items:flex-start;gap:12px}
 .file-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:rgba(255,255,255,.1)}
@@ -147,47 +146,30 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
     <a href="知识图谱.html" class="cross-link">← 场景知识图谱</a><span class="cross-sep">·</span>
     <a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span>
     <a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
-    <a href="交互示例.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span>
+    <a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span>
     <span class="cross-link on" id="navStatus">🧪 测试</span></div>
 
   <div class="tabs">
-    <span class="tab" data-panel="files">📁 测试文件</span>
-    <span class="tab on" data-panel="results">📊 执行结果</span>
+    <span class="tab on" data-panel="files">📁 测试文件</span>
+    <span class="tab" data-panel="results">📊 执行结果</span>
     <span class="tab" data-panel="slow">🐢 慢测试</span>
     <span class="tab" data-panel="perf">📈 性能测试</span>
     <span class="tab" data-panel="gate">🚦 门禁</span>
   </div>
 
-  <div class="panel" id="panelFiles">
-    <div class="toolbar">
-      <div class="search-wrap"><span class="si">🔍</span><input type="text" id="searchFiles" placeholder="搜索文件…" autocomplete="off"></div>
-      <button class="btn" onclick="expandAllFiles()">⊞ 展开</button>
-      <button class="btn" onclick="collapseAllFiles()">⊟ 收起</button>
-      <button class="btn" onclick="copyFileList()">📋 复制清单</button>
-      <span class="kbd-hint">Ctrl+F 搜索</span>
-    </div>
+  <div class="panel on" id="panelFiles">
     <div id="filesContent"></div>
   </div>
 
-  <div class="panel on" id="panelResults">
-    <div class="toolbar">
-      <div class="search-wrap"><span class="si">🔍</span><input type="text" id="searchResults" placeholder="搜索测试名称…" autocomplete="off"></div>
-      <button class="btn" id="btnSortDur" onclick="toggleSort()">⏱ 耗时排序</button>
-      <button class="btn" onclick="expandAllSuites()">⊞ 展开全部</button>
-      <button class="btn" onclick="collapseAllSuites()">⊟ 收起全部</button>
-      <button class="btn" onclick="copyResultsMd()">📋 复制 MD</button>
-      <span class="kbd-hint">j/k 导航 · Enter 展开 · Esc 关闭</span>
-    </div>
+  <div class="panel" id="panelResults">
     <div id="resultsContent"></div>
   </div>
 
   <div class="panel" id="panelSlow">
-    <div class="toolbar"><span style="color:var(--text3);font-size:.82rem">超过 100ms 的测试（按耗时降序）</span></div>
     <div id="slowContent"></div>
   </div>
 
   <div class="panel" id="panelPerf">
-    <div class="toolbar"><span style="color:var(--text3);font-size:.82rem">性能指标趋势（按测试耗时排列）</span></div>
     <div id="perfContent"></div>
   </div>
 
@@ -295,7 +277,7 @@ function renderPerf(){
 }
 
 // ═══ Source modal ═══
-function viewSource(relPath){var overlay=document.getElementById('modalOverlay');document.getElementById('modalTitle').textContent=relPath;document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>';overlay.classList.add('show');fetch(relPath).then(function(resp){if(!resp.ok)throw new Error('HTTP '+resp.status);return resp.text()}).then(function(text){var lines=text.split('\n');document.getElementById('modalBody').innerHTML='<pre>'+lines.map(function(l,i){return'<span class="ln">'+(i+1)+'</span>'+esc(l)}).join('\n')+'</pre>'}).catch(function(e){document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(e.message)+'</div>'})}
+function viewSource(relPath){var overlay=document.getElementById('modalOverlay');document.getElementById('modalTitle').textContent=relPath;document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>';overlay.classList.add('show');fetch('../../../../'+relPath).then(function(resp){if(!resp.ok)throw new Error('HTTP '+resp.status);return resp.text()}).then(function(text){var lines=text.split('\n');document.getElementById('modalBody').innerHTML='<pre>'+lines.map(function(l,i){return'<span class="ln">'+(i+1)+'</span>'+esc(l)}).join('\n')+'</pre>'}).catch(function(e){document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(e.message)+'</div>'})}
 function closeModal(){document.getElementById('modalOverlay').classList.remove('show')}
 
 // ═══ Actions ═══
@@ -330,12 +312,10 @@ function navigateResults(){
 
 // ═══ Event delegation ═══
 document.querySelector('.tabs').addEventListener('click',function(e){var tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
-document.getElementById('searchFiles').addEventListener('input',function(){fileQuery=this.value.toLowerCase().trim();renderFiles()});
-document.getElementById('searchResults').addEventListener('input',function(){resultQuery=this.value.toLowerCase().trim();renderResults()});
 document.getElementById('resultsContent').addEventListener('click',function(e){var head=e.target.closest('.s-head');if(head){var suite=head.closest('.suite');suite.classList.toggle('open')}});
 document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===e.currentTarget)closeModal()});
 document.getElementById('bar').addEventListener('click',function(e){var rect=this.getBoundingClientRect(),pct=(e.clientX-rect.left)/rect.width;if(pct<.33)filterByStatus('passed');else if(pct<.66)filterByStatus('failed');else filterByStatus('skipped')});
-window.addEventListener('DOMContentLoaded',function(){renderStats();switchPanel('results')});
+window.addEventListener('DOMContentLoaded',function(){renderStats();switchPanel('files')});
 </script>
 </body>
 </html>

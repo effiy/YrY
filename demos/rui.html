@@ -14,8 +14,6 @@
     * { box-sizing:border-box;margin:0;padding:0 }
     body { background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6 }
     .container { max-width:960px;margin:0 auto;padding:40px 24px 80px }
-    .back { color:var(--cyan);text-decoration:none;font-size:.82rem;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;transition:color .15s }
-    .back:hover { color:var(--accent) }
     .nav-row { display:flex;gap:8px;align-items:center;margin-bottom:24px;flex-wrap:wrap }
     .nav-row .prevnext { background:var(--bg-flat);border:var(--border);border-radius:6px;color:var(--text2);padding:5px 12px;font-size:.76rem;text-decoration:none;transition:all .15s }
     .nav-row .prevnext:hover { border-color:rgba(255,193,7,.35);color:var(--accent) }
@@ -63,11 +61,23 @@
     @media (max-width:640px) { .container { padding:20px 12px 60px } h1 { font-size:1.4rem } .cmd-grid { grid-template-columns:1fr } }
   
 a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+
+/* ── Breadcrumb ─────────────────────────── */
+.breadcrumb {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 1.25rem; font-size: 0.76rem;
+}
+.breadcrumb a {
+  color: #7aa2f7; text-decoration: none; transition: color 0.15s;
+}
+.breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
+.breadcrumb .bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
+.breadcrumb .bc-current { color: #94a3b8; font-weight: 500; }
 </style>
 </head>
 <body>
 <div class="container">
-  <a href="./" class="back">← 演示中心</a>
+  <nav class="breadcrumb"><a href="../docs/index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="./">🎬 演示中心</a><span class="bc-sep">/</span><span class="bc-current">🎯 rui · SDLC 编排器</span></nav>
   <div class="nav-row"><a class="prevnext" href="rui-trends.html">← rui-trends</a><span class="sep">|</span><span style="font-size:.78rem;color:var(--accent);font-weight:600">🎯 rui</span><span class="sep">|</span><a class="prevnext" href="rui-story.html">rui-story →</a></div>
   <h1>🎯 <span>rui</span> · SDLC 编排器</h1>
   <p class="sub">故事驱动的核心管线 — <span class="kbd-hint">1-6</span> 数字键切换 Tab · 悬停代码复制</p>

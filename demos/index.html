@@ -198,40 +198,42 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
   </div>
 
   <div style="text-align:center;padding:20px 0;color:var(--text3);font-size:.78rem">
-    YrY v1.28.0 · <a href="../CLAUDE.md" style="color:var(--accent)">CLAUDE.md</a> · <a href="../README.md" style="color:var(--accent)">README.md</a>
+    YrY v1.29.0 · <a href="../CLAUDE.md" style="color:var(--accent)">CLAUDE.md</a> · <a href="../README.md" style="color:var(--accent)">README.md</a>
   </div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
 
-{
-  const els=document[];
-  for(const el of els){
-    const code=el.textContent.trim();
-    if(!code)continue;
-    const id='mmd-'+Math.random().toString(36).slice(2,9);
-    try{
-      const{svg}=await el.innerHTML=svg;
-    }catch(e){
-      el.innerHTML='<div style="color:var(--fail);font-size:.76rem;padding:8px;border:1px solid var(--fail);border-radius:4px">⚠️ '+e.message.replace(/</g,'&lt;')+'</div>';
-    }
-  }
-}
-
 // ═══ Copy command ═══
 function copyCmd(btn,cmd){navigator.clipboard.writeText(cmd).then(()=>{btn.textContent='✅ 已复制';btn.classList.add('copied');setTimeout(()=>{btn.textContent='📋 复制';btn.classList.remove('copied')},1500)}).catch(()=>toast('复制失败'))}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}
 
-// ═══ Card expand/collapse ═══
-document.getElementById('skillGrid').addEventListener('click',e=>{
-  const card=e.target.closest('.card');if(!card||!card.dataset.skill)return;
+// ═══ Card expand/collapse & double-click navigation ═══
+const SKILL_URLS=['rui.html','rui-story.html','rui-claude.html','rui-import.html','rui-bot.html','rui-trends.html'];
+const skillGrid=document.getElementById('skillGrid');
+skillGrid.addEventListener('click',e=>{
   if(e.target.closest('a')||e.target.closest('.copy-btn')||e.target.closest('pre'))return;
+  const card=e.target.closest('.card');if(!card||!card.dataset.skill)return;
   card.classList.toggle('expanded');
-  document.getElementById('skillSearch').addEventListener('input',function(){const q=this.value.toLowerCase().trim();document.querySelectorAll('#skillGrid .card').forEach(c=>{const kw=(c.dataset.keywords||'')+' '+(c.querySelector('.c-title')?.textContent||'');c.style.display=(!q||kw.toLowerCase().includes(q))?'':'none'})});
+});
+skillGrid.addEventListener('dblclick',e=>{
+  if(e.target.closest('a')||e.target.closest('.copy-btn')||e.target.closest('pre'))return;
+  const card=e.target.closest('.card');if(!card||!card.dataset.skill)return;
+  const idx=SKILL_URLS.findIndex(u=>u.startsWith(card.dataset.skill));
+  if(idx>=0)location.href=SKILL_URLS[idx];
+});
+
+// ═══ Search filter ═══
+document.getElementById('skillSearch').addEventListener('input',function(){
+  const q=this.value.toLowerCase().trim();
+  document.querySelectorAll('#skillGrid .card').forEach(c=>{
+    const kw=(c.dataset.keywords||'')+' '+(c.querySelector('.c-title')?.textContent||'');
+    c.style.display=(!q||kw.toLowerCase().includes(q))?'':'none';
+  });
+});
 
 // ═══ Keyboard shortcuts 1-6 ═══
-const SKILL_URLS=['rui.html','rui-story.html','rui-claude.html','rui-import.html','rui-bot.html','rui-trends.html'];
 document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const n=parseInt(e.key);if(n>=1&&n<=6){e.preventDefault();location.href=SKILL_URLS[n-1]}});
 
 // ═══ Live test status ═══

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>场景 2 · commit 前增量自检 — 演示</title>
+  <style>
+    :root { --bg:rgba(22,22,32,1); --bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%); --bg-flat:rgba(34,34,46,1); --bg-raised:rgba(42,42,56,1); --accent:#FFC107; --cyan:#22d3ee; --pass:#22c55e; --fail:#ef4444; --text:rgba(250,250,252,1); --text2:rgba(160,160,164,1); --text3:rgba(110,110,114,1); --shadow:0 4px 20px rgba(0,0,0,0.3); --radius:12px; --border:1px solid rgba(255,255,255,0.06); }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeInDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes slideDown { from{opacity:0;max-height:0} to{opacity:1;max-height:800px} }
+    @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)} 50%{box-shadow:0 0 0 8px rgba(255,193,7,0)} }
+    @keyframes stepIn { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+    * { box-sizing:border-box;margin:0;padding:0 }
+    body { background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6 }
+    .container { max-width:960px;margin:0 auto;padding:40px 24px 80px }
+    .back { color:var(--cyan);text-decoration:none;font-size:.82rem;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;transition:color .15s }
+    .back:hover { color:var(--accent) }
+    .nav-row { display:flex;gap:8px;align-items:center;margin-bottom:24px;flex-wrap:wrap }
+    .nav-row .prevnext { background:var(--bg-flat);border:var(--border);border-radius:6px;color:var(--text2);padding:5px 12px;font-size:.76rem;text-decoration:none;transition:all .15s }
+    .nav-row .prevnext:hover { border-color:rgba(255,193,7,.35);color:var(--accent) }
+    .nav-row .sep { color:var(--text3);font-size:.7rem }
+    h1 { font-size:1.8rem;margin-bottom:4px } h1 span { color:var(--accent) }
+    .sub { color:var(--text2);font-size:.9rem;margin-bottom:28px }
+    .tabs { display:flex;gap:0;border-bottom:var(--border);margin-bottom:28px;animation:fadeInDown .5s .1s ease both }
+    .tab { padding:8px 18px;cursor:pointer;font-size:.82rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none }
+    .tab:hover { color:var(--text2) } .tab.on { color:var(--accent);border-bottom-color:var(--accent) }
+    .panel { display:none;animation:fadeInUp .4s ease both }
+    .panel.on { display:block }
+    .section { margin-bottom:32px }
+    .section h2 { font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px }
+    .section h2 .dot { width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0 }
+    .mermaid-wrap { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);overflow-x:auto;margin-bottom:16px }
+    .cmd-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px }
+    .cmd-card { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s }
+    .cmd-card:hover { transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.35) }
+    .cmd-card .name { font-weight:700;font-size:.88rem;color:var(--accent);font-family:monospace }
+    .cmd-card .desc { font-size:.76rem;color:var(--text2);margin:4px 0 8px;line-height:1.5 }
+    .cmd-card .stage { font-size:.64rem;color:var(--text3);margin-bottom:4px }
+    pre { background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer }
+    pre .cb { position:absolute;top:6px;right:6px;background:var(--bg-flat);border:var(--border);border-radius:4px;color:var(--text3);font-size:.62rem;padding:2px 7px;cursor:pointer;opacity:0;transition:opacity .15s;font-family:inherit }
+    pre:hover .cb { opacity:1 } pre .cb.done { color:var(--pass) }
+    .flow-row { display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0 }
+    .flow-chip { background:var(--bg-flat);border:var(--border);border-radius:20px;padding:6px 14px;font-size:.78rem;transition:all .15s }
+    .flow-chip:hover { border-color:rgba(255,193,7,.3) }
+    .flow-chip .n { font-weight:700;color:var(--accent) }
+    .flow-arrow { color:var(--text3);font-size:.8rem }
+    .file-list { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px }
+    .file-item { background:var(--bg-flat);border:var(--border);border-radius:6px;padding:8px 12px;font-size:.74rem;font-family:monospace;color:var(--text2) }
+    .stat-row { display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px }
+    .stat-mini { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:12px 16px;text-align:center;box-shadow:var(--shadow);min-width:70px }
+    .stat-mini .sv { font-size:1.3rem;font-weight:700 } .stat-mini .sv.g { color:var(--pass) } .stat-mini .sv.y { color:var(--accent) } .stat-mini .sl { font-size:.64rem;color:var(--text3);text-transform:uppercase;letter-spacing:.4px }
+    .links-row { display:flex;gap:8px;flex-wrap:wrap;margin-top:16px }
+    .links-row a { font-size:.76rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:6px;padding:6px 12px;transition:all .15s }
+    .links-row a:hover { border-color:var(--accent);color:var(--accent);text-decoration:underline }
+    .toast { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:0 12px 32px rgba(0,0,0,.45);opacity:0;transition:opacity .2s;pointer-events:none }
+    .toast.show { opacity:1 }
+    .walkthrough { counter-reset:step }
+    .walkthrough .step { counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both }
+    .walkthrough .step::before { content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0 }
+    .walkthrough .step .s-body { flex:1 } .walkthrough .step .s-title { font-weight:600;font-size:.88rem } .walkthrough .step .s-desc { font-size:.76rem;color:var(--text2);margin:3px 0 6px }
+    .kbd-hint { font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.03);border-radius:3px;padding:1px 5px;margin-left:4px }
+    @media (max-width:640px) { .container { padding:20px 12px 60px } h1 { font-size:1.4rem } .cmd-grid { grid-template-columns:1fr } }
+  a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="../../../index.html" class="back">← 文档中心</a>
+  <div class="nav-row"><span style="font-size:.78rem;color:var(--accent);font-weight:600">🔍 场景 2 · commit 前增量自检</span><span class="sep">|</span><a class="prevnext" href="计划清单.html">📋 计划清单</a><a class="prevnext" href="架构图.html">📐 架构图</a><a class="prevnext" href="知识图谱.html">🔗 知识图谱</a><a class="prevnext" href="测试面板.html">🧪 测试面板</a></div>
+  <h1>🔍 <span>commit 前增量自检</span> · 演示</h1>
+  <p class="sub">增量变更检测：分支隔离 · 铁律合规 · 文件变更范围验证 — <span class="kbd-hint">1-5</span> 数字键切换 Tab · 悬停代码复制</p>
+
+  <div class="tabs">
+    <span class="tab on" data-panel="walkthrough">🚶 演示</span>
+    <span class="tab" data-panel="overview">📊 概览</span>
+    <span class="tab" data-panel="commands">⚡ 命令</span>
+    <span class="tab" data-panel="files">📁 文件</span>
+    <span class="tab" data-panel="tests">🧪 测试</span>
+  </div>
+
+  <div class="panel on" id="panelWalkthrough">
+    <div class="walkthrough">
+      <div class="step"><div class="s-body"><div class="s-title">分支隔离检查</div><div class="s-desc">验证当前工作在 feat/&lt;name&gt; 分支上，禁止直接在 main 分支修改。分支隔离不可绕过。</div><pre>node skills/rui/branch-check.mjs<span class="cb" onclick="copyCmd(this,'node skills/rui/branch-check.mjs')">📋</span></pre></div></div>
+      <div class="step"><div class="s-body"><div class="s-title">铁律合规检查</div><div class="s-desc">对照四大铁律逐条验证。验先于称（有证据）· 溯先于修（有根因）· 清先于进（P0清零）· 表达优先（图→文→表）。</div><pre>cat CLAUDE.md | grep "NO COMPLETION"<span class="cb" onclick="copyCmd(this,'cat CLAUDE.md | grep "NO COMPLETION"')">📋</span></pre></div></div>
+      <div class="step"><div class="s-body"><div class="s-title">变更文件范围验证</div><div class="s-desc">git diff 检查变更范围是否与故事计划一致。超出范围的变更标记为异常需解释。</div><pre>git diff --stat origin/main<span class="cb" onclick="copyCmd(this,'git diff --stat origin/main')">📋</span></pre></div></div>
+      <div class="step"><div class="s-body"><div class="s-title">P0 清零确认</div><div class="s-desc">确认所有已知 P0 已清零，无未处理的阻断问题。P0 未清不得进入下一模块。</div><pre>grep -r "P0\|TODO" --include="*.md" .<span class="cb" onclick="copyCmd(this,'grep -r "P0\|TODO" --include="*.md" .')">📋</span></pre></div></div>
+      <div class="step"><div class="s-body"><div class="s-title">测试增量执行</div><div class="s-desc">运行受变更影响的测试，验证增量改动不破坏已有功能。仅执行变更相关测试。</div><pre>node skills/rui/audit.mjs --incremental<span class="cb" onclick="copyCmd(this,'node skills/rui/audit.mjs --incremental')">📋</span></pre></div></div>
+      <div class="step"><div class="s-body"><div class="s-title">文档同步检查</div><div class="s-desc">确认文档变更与代码变更一致。如有代码无文档（缺口）或文档无代码（过时），标记 P1。</div><pre>/rui-import mode=list<span class="cb" onclick="copyCmd(this,'/rui-import mode=list')">📋</span></pre></div></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panelOverview">
+    <div class="section"><h2><span class="dot"></span>增量自检流程</h2>
+      <div class="flow-row">
+        <div class="flow-chip"><span class="n">分支隔离</span></div><span class="flow-arrow">→</span>
+        <div class="flow-chip"><span class="n">铁律合规</span></div><span class="flow-arrow">→</span>
+        <div class="flow-chip"><span class="n">变更范围</span></div><span class="flow-arrow">→</span>
+        <div class="flow-chip"><span class="n">P0 清零</span></div><span class="flow-arrow">→</span>
+        <div class="flow-chip"><span class="n">文档同步</span></div>
+      </div>
+    </div>
+    <div class="section"><h2><span class="dot"></span>四大铁律</h2>
+      <div class="flow-row">
+        <div class="flow-chip"><span class="n">验先于称</span> 有证据</div><span class="flow-arrow">·</span>
+        <div class="flow-chip"><span class="n">溯先于修</span> 有根因</div><span class="flow-arrow">·</span>
+        <div class="flow-chip"><span class="n">清先于进</span> P0清零</div><span class="flow-arrow">·</span>
+        <div class="flow-chip"><span class="n">表达优先</span> 图→文→表</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panelCommands">
+    <div class="cmd-grid">
+      <div class="cmd-card"><div class="stage">分支检查</div><div class="name">branch-check.mjs</div><div class="desc">验证当前在 feat/ 分支，检测跨分支共享文件。</div><pre>node skills/rui/branch-check.mjs<span class="cb" onclick="copyCmd(this,'node skills/rui/branch-check.mjs')">📋</span></pre></div>
+      <div class="cmd-card"><div class="stage">变更范围</div><div class="name">git diff --stat</div><div class="desc">对比 origin/main 查看变更文件列表和统计。</div><pre>git diff --stat origin/main<span class="cb" onclick="copyCmd(this,'git diff --stat origin/main')">📋</span></pre></div>
+      <div class="cmd-card"><div class="stage">P0 扫描</div><div class="name">grep P0/TODO</div><div class="desc">扫描所有 markdown 文件中的 P0 标记和 TODO 项。</div><pre>grep -rn "P0\|TODO" --include="*.md" .<span class="cb" onclick="copyCmd(this,'grep -rn "P0\|TODO" --include="*.md" .')">📋</span></pre></div>
+      <div class="cmd-card"><div class="stage">增量审计</div><div class="name">audit.mjs --incremental</div><div class="desc">仅对变更文件运行审计，比对基线差异。</div><pre>node skills/rui/audit.mjs --incremental<span class="cb" onclick="copyCmd(this,'node skills/rui/audit.mjs --incremental')">📋</span></pre></div>
+      <div class="cmd-card"><div class="stage">文档差异</div><div class="name">/rui-import mode=list</div><div class="desc">列出待同步文件清单，检查文档代码一致性。</div><pre>/rui-import mode=list<span class="cb" onclick="copyCmd(this,'/rui-import mode=list')">📋</span></pre></div>
+      <div class="cmd-card"><div class="stage">铁律验证</div><div class="name">grep 铁律</div><div class="desc">从 CLAUDE.md 提取四大铁律，逐条对照验证。</div><pre>grep -A2 "验先于称\|溯先于修\|清先于进\|表达优先" CLAUDE.md<span class="cb" onclick="copyCmd(this,'grep -A2 "验先于称\|溯先于修\|清先于进\|表达优先" CLAUDE.md')">📋</span></pre></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panelFiles">
+    <div class="section"><h2><span class="dot"></span>相关文件</h2>
+      <div class="file-list">
+        <div class="file-item">📄 CLAUDE.md</div><div class="file-item">📐 code-pipeline.md</div>
+        <div class="file-item">⚡ branch-check.mjs</div>
+        <div class="file-item">⚡ audit.mjs</div>
+        <div class="file-item">📐 delivery-gate.md</div>
+        <div class="file-item">📄 plugin.json</div>
+      </div>
+    </div>
+    <div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="测试面板.html">🧪 测试面板</a></div>
+  </div>
+
+  <div class="panel" id="panelTests">
+    <div class="section"><h2><span class="dot"></span>测试覆盖</h2>
+      <div class="cmd-grid">
+        <div class="cmd-card"><div class="name">分支隔离有效</div><div class="desc">验证 branch-check.mjs 能正确检测非 feat 分支并阻断。</div></div>
+        <div class="cmd-card"><div class="name">铁律合规检验</div><div class="desc">验证四条铁律均被遵循，无违反信号出现。</div></div>
+        <div class="cmd-card"><div class="name">增量范围匹配</div><div class="desc">验证 git diff 变更范围与故事计划声明一致。</div></div>
+      </div>
+    </div>
+    <div class="links-row"><a href="测试面板.html">🧪 打开测试面板</a><a href="../../index.html">📄 返回文档中心</a></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+document.querySelector('.tabs').addEventListener('click',e=>{const tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
+function switchPanel(name){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===name));document.querySelectorAll('.panel').forEach(p=>{const on=p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1);p.classList.toggle('on',on)})}
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const m={'1':'walkthrough','2':'overview','3':'commands','4':'files','5':'tests'};if(m[e.key]){e.preventDefault();switchPanel(m[e.key])}});
+function copyCmd(btn,cmd){navigator.clipboard.writeText(cmd).then(()=>{btn.textContent='✅';btn.classList.add('done');setTimeout(()=>{btn.textContent='📋';btn.classList.remove('done')},1500)}).catch(()=>toast('复制失败'))}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}
+</script>
+</body>
+</html>
