@@ -21,7 +21,7 @@ lifecycle: default-pipeline
 
 ```mermaid
 flowchart TB
-    SCAN["① 扫描文件<br/>.claude/ 全部 + 其余 .md"]:::step --> FILTER["② 过滤<br/>排除 .git / node_modules / .claude-plugin"]:::step
+    SCAN["① 扫描文件<br/>全量纳入 · 无扩展名限制"]:::step --> FILTER["② 过滤<br/>排除 .git / node_modules / dist / .claude-plugin"]:::step
     FILTER --> RESOLVE["③ 解析远端路径<br/>故事任务面板 / workspace"]:::step
     RESOLVE --> EXIST["④ 拉取已有 sessions<br/>判断 created vs overwritten"]:::step
     EXIST --> UPLOAD["⑤ 逐文件上传<br/>POST /write-file（并发 ≤ 4）"]:::step
@@ -34,7 +34,7 @@ flowchart TB
 | 阶段 | 动作 | 说明 |
 |------|------|------|
 | ① 扫描 | 从项目根递归遍历 | 不受 `.gitignore` 限制 |
-| ② 过滤 | 排除 `.git` / `node_modules` / `.claude-plugin` 与显式 `--exclude` | 命中即跳过整个子树 |
+| ② 过滤 | 排除 `.git` / `node_modules` / `dist` / `.claude-plugin` 与显式 `--exclude` | 命中即跳过整个子树 |
 | ③ 解析 | 计算本地→远端路径映射 | 路径分隔符统一为 `/`，空格替换为 `_` |
 | ④ 拉取 | 远端 query sessions | 用于区分 `created` / `overwritten` |
 | ⑤ 上传 | 逐文件 POST | 并发上限 4，存在覆盖、不存在新建 |
@@ -56,21 +56,15 @@ flowchart TB
 
 ```mermaid
 flowchart TD
-    FILE["候选文件"] --> Q1{"位于 .claude/?"}
-    Q1 -->|"是"| ALL["纳入<br/>不限扩展名 · 递归全部子目录"]:::rule
-    Q1 -->|"否"| EXT{"扩展名命中 --exts?"}
-    EXT -->|"是"| KEEP["纳入"]:::rule
-    EXT -->|"否"| SKIP["跳过 ❌"]:::skip
-    ALL & KEEP --> Q2{"目录命中排除?"}
-    Q2 -->|"是"| SKIP
-    Q2 -->|"否"| PATH["远端路径 = prefix(如有) + 项目根相对路径<br/>与本地目录一一对应"]:::path
+    FILE["候选文件"] --> Q1{"目录命中排除?"}
+    Q1 -->|"是"| SKIP["跳过 ❌"]:::skip
+    Q1 -->|"否"| PATH["纳入<br/>不限扩展名 · 所有文件<br/>远端路径 = prefix(如有) + 项目根相对路径<br/>与本地目录一一对应"]:::path
 ```
 
 | 规则 | 说明 |
 |------|------|
-| `.claude/` 全量 | 不限扩展名，递归所有子目录 |
-| 其他目录 | 仅扩展名命中 `--exts` 默认 `md` |
-| 默认排除目录 | `.git` · `node_modules` · `.claude-plugin` |
+| 全量纳入 | 不限扩展名，所有文件均上传（递归全部子目录） |
+| 默认排除目录 | `.git` · `node_modules` · `dist` · `.claude-plugin` |
 | 用户排除 | `--exclude a,b,c` 追加排除子目录名（精确匹配，命中即整树跳过） |
 | 路径规整 | 所有分隔符 → `/`，所有空白字符 → `_` |
 | 路径映射 | 远端路径 = `prefix`（如有）+ 项目根相对路径。与本地目录结构一一对应，不跳过、不前置、不重命名 |
@@ -89,7 +83,6 @@ flowchart TD
 | 单文件导入 | `node skills/rui/import-doc.mjs <file-path>` | 单文件验证 → 调用 sync.mjs file= → 输出结果 |
 | workspace 全量同步（兜底） | `node skills/rui-import/sync.mjs` | 项目根全量扫描 + 上传 |
 | 单目录同步 | `dir=<absolute path>` | 指定目录扫描 + 上传，路径仍以项目根计算相对路径 |
-| 自定义扩展名 | `exts=md,json,yaml` | 覆盖默认 `md` |
 | 排除子目录 | `exclude=tmp,build` | 追加排除（与默认排除合并） |
 | 远端前缀 | `prefix=a,b` | 在远端路径最前追加 `a/b/...` |
 | 自定义 API | `apiUrl=https://api.example.com` | 覆盖默认 `https://api.effiy.cn` |
@@ -98,7 +91,6 @@ flowchart TD
 | 默认值 | 取值 |
 |--------|------|
 | `apiUrl` | `https://api.effiy.cn` |
-| `exts` | `['md']` |
 | `prefix` | `[]`（空） |
 | 并发度 | `4` |
 | HTTP 超时 | `30s` |
@@ -244,14 +236,14 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    S1["扫描完整<br/>.claude/ 全部 + 其余 .md"]:::sig --> S2["排除正确<br/>.git / node_modules / .claude-plugin 已过滤"]:::sig
+    S1["扫描完整<br/>全量纳入 · 无扩展名限制"]:::sig --> S2["排除正确<br/>.git / node_modules / dist / .claude-plugin 已过滤"]:::sig
     S2 --> S3["路径映射<br/>远端路径 = 本地相对路径，一一对应"]:::sig
     S3 --> S4["上传完成<br/>逐文件 POST 无遗漏"]:::sig
 ```
 
 | 标志 | 未达标的处置 |
 |------|------------|
-| 扫描完整：.claude/ 全部 + 其余 .md | 补扫遗漏目录，重新执行 |
-| 排除正确：.git / node_modules / .claude-plugin 已过滤 | 调整排除规则 |
+| 扫描完整：全量纳入 · 无扩展名限制 | 补扫遗漏目录，重新执行 |
+| 排除正确：.git / node_modules / dist / .claude-plugin 已过滤 | 调整排除规则 |
 | 路径映射：远端路径 = prefix(如有) + 项目根相对路径，与本地一一对应 | 检查 resolveRemotePath 实现，确保无跳段无前置 |
 | 上传完成：逐文件 POST 无遗漏 | 查看错误日志，补传失败文件 |

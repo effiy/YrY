@@ -11,8 +11,7 @@ import { homedir } from "node:os";
 // --- config ----------------------------------------------------------------
 const API_URL = process.env.IMPORT_DOCS_API_URL || "https://api.effiy.cn";
 const API_X_TOKEN = process.env.API_X_TOKEN || "";
-const DEFAULT_EXTS = ["md"];
-const DEFAULT_EXCLUDES = new Set([".git", "node_modules", ".claude-plugin"]);
+const DEFAULT_EXCLUDES = new Set([".git", "node_modules", ".claude-plugin", "dist"]);
 const CONCURRENCY = 4;
 const HTTP_TIMEOUT = 30_000;
 
@@ -24,7 +23,7 @@ const DECIMAL_RADIX = 10;
 // --- args ------------------------------------------------------------------
 function parseArgs() {
   const args = process.argv.slice(NODE_ARGV_OFFSET);
-  const opts = { exts: DEFAULT_EXTS, exclude: [], prefix: [], mode: "import" };
+  const opts = { exclude: [], prefix: [], mode: "import" };
   let scanRoot = null;
   let scanDir = null;
 
@@ -39,7 +38,6 @@ function parseArgs() {
     switch (key) {
       case "workspace": scanRoot = "workspace"; break;
       case "dir": scanDir = val; break;
-      case "exts": opts.exts = val.split(",").map(s => s.trim()); break;
       case "exclude": opts.exclude = val.split(",").map(s => s.trim()); break;
       case "prefix": opts.prefix = val.split(",").map(s => s.trim()); break;
       case "apiUrl": opts.apiUrl = val; break;
@@ -88,7 +86,7 @@ function fallbackHelp() {
   console.log("参数 (key=value):");
   console.log("  workspace=true          项目根全量扫描 + 上传");
   console.log("  dir=<path>              指定目录扫描 (绝对路径)");
-  console.log("  exts=md,json,yaml       文件扩展名 (默认: md)");
+  console.log("  exts=md,json,yaml       已废弃 — 现无扩展名限制，所有文件均上传");
   console.log("  exclude=tmp,build       追加排除目录");
   console.log("  prefix=a,b              远端路径前缀");
   console.log("  file=<path>             单文件导入（自动附加语义标签）");
@@ -116,7 +114,7 @@ function findProjectRoot(startDir) {
 }
 
 // --- scan ------------------------------------------------------------------
-async function scanFiles(root, exts, userExcludes) {
+async function scanFiles(root, userExcludes) {
   const result = [];
   const excludes = new Set([...DEFAULT_EXCLUDES, ...userExcludes]);
 
@@ -134,16 +132,7 @@ async function scanFiles(root, exts, userExcludes) {
   }
 
   await walk(root);
-
-  return result.filter(file => {
-    const rel = relative(root, file);
-    const parts = rel.split(sep);
-    // .claude/ 全量纳入
-    if (parts[0] === ".claude") return true;
-    // 其他仅匹配扩展名
-    const ext = file.split(".").pop()?.toLowerCase();
-    return ext && exts.includes(ext);
-  });
+  return result;
 }
 
 // --- path mapping ----------------------------------------------------------
@@ -457,7 +446,7 @@ function hasArgs(opts) {
 }
 
 async function recommendMode(root, workspaceName, opts, apiUrl) {
-  const files = await scanFiles(root, opts.exts, opts.exclude);
+  const files = await scanFiles(root, opts.exclude);
 
   console.log("# rui-import 状态检测与推荐\n");
 
@@ -582,7 +571,7 @@ async function main() {
   console.error(`[rui-import] scan root: ${root}`);
   console.error(`[rui-import] workspace: ${workspaceName}`);
 
-  const files = await scanFiles(root, opts.exts, opts.exclude);
+  const files = await scanFiles(root, opts.exclude);
   console.error(`[rui-import] found ${files.length} files`);
 
   // List mode
