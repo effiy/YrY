@@ -3,18 +3,21 @@
 // 用法: node skills/rui-bot/send.mjs [options]
 // 按 SKILL.md 规约发送企微通知并追加消息日志
 
-import { join, resolve, dirname, basename } from "node:path";
+import { join } from "node:path";
 import { existsSync, readFileSync } from "node:fs";
+
+import {
+  NODE_ARGV_OFFSET, HTTP_TIMEOUT_MS, MAX_RETRIES, RETRY_DELAY_MS,
+  MAX_MSG_LENGTH,
+} from "../../lib/constants.mjs";
+import { findProjectRoot, readProjectName } from "../../lib/fs.mjs";
 
 // --- constants ----------------------------------------------------------------
 const API_URL_DEFAULT = "https://api.effiy.cn/wework/send-message";
-const HTTP_TIMEOUT = 30_000;
-const MAX_RETRIES = 3;
-const RETRY_DELAY_MS = 1_000;
-const MAX_MSG_LENGTH = 2_000;
+const HTTP_TIMEOUT = HTTP_TIMEOUT_MS;
 const ERROR_TRUNCATE_LINES = 20;
 const FILE_LIST_MAX = 10;
-const ARGV_OFFSET = 2;
+const ARGV_OFFSET = NODE_ARGV_OFFSET;
 
 const STATUS_EMOJI = {
   complete: "✅",
@@ -125,32 +128,6 @@ function showUsage() {
   console.log("  --no-send              仅写日志，不发送 HTTP");
   console.log("  --retries=<N>          重试次数（默认 3）");
   console.log("");
-}
-
-// --- project helpers ---------------------------------------------------------
-function findProjectRoot(startDir) {
-  let dir = resolve(startDir);
-  while (true) {
-    if (existsSync(join(dir, ".git")) || existsSync(join(dir, ".claude"))) return dir;
-    const parent = dirname(dir);
-    if (parent === dir) return resolve(startDir);
-    dir = parent;
-  }
-}
-
-function readProjectName(projectRoot) {
-  const claudePath = join(projectRoot, "CLAUDE.md");
-  if (!existsSync(claudePath)) return basename(projectRoot);
-  try {
-    const content = readFileSync(claudePath, "utf-8");
-    let match = content.match(/\|\s*项目名\s*\|\s*(\S+)\s*\|/);
-    if (match) return match[1];
-    match = content.match(/\*\*项目名\*\*[：:]\s*(\S+)/);
-    if (match) return match[1];
-    return basename(projectRoot);
-  } catch {
-    return basename(projectRoot);
-  }
 }
 
 // --- config ---

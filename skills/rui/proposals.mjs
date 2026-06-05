@@ -22,7 +22,8 @@ const MATERIALIZED_FIELD = "materialized_story_dir";
 const DEFAULT_MIN_PRIORITY = "P2";
 const PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 };
 
-const ARGV_OFFSET = 2;
+import { NODE_ARGV_OFFSET } from "../../lib/constants.mjs";
+const ARGV_OFFSET = NODE_ARGV_OFFSET;
 const MIN_EXEC_MEMORIES = 3;
 const BLOCK_RATE_THRESHOLD = 0.20;
 const P0_DENSITY_MULTIPLIER = 2.0;
@@ -77,12 +78,9 @@ const DIAGNOSTIC_MIN_CONFIDENCE = {
 };
 
 // --- TTY helpers -------------------------------------------------------------
-const tty = process.stdout.isTTY;
-const bold = (s) => tty ? `\x1b[1m${s}\x1b[22m` : s;
-const dim = (s) => tty ? `\x1b[2m${s}\x1b[22m` : s;
-const red = (s) => tty ? `\x1b[31m${s}\x1b[39m` : s;
-const green = (s) => tty ? `\x1b[32m${s}\x1b[39m` : s;
-const yellow = (s) => tty ? `\x1b[33m${s}\x1b[39m` : s;
+import { bold, dim, red, green, yellow, cyan } from "../../lib/tty.mjs";
+import { readProjectName } from "../../lib/fs.mjs";
+import { readJsonl, readJson } from "../../lib/fs.mjs";
 
 // --- args --------------------------------------------------------------------
 function showHelp() {
@@ -143,53 +141,11 @@ function parseArgs() {
 }
 
 // --- project root ------------------------------------------------------------
-function findProjectRoot(startDir) {
-  let dir = resolve(startDir);
-  while (true) {
-    if (existsSync(join(dir, ".git")) || existsSync(join(dir, ".claude"))) return dir;
-    const parent = dirname(dir);
-    if (parent === dir) return resolve(startDir);
-    dir = parent;
-  }
-}
+import { findProjectRoot } from "../../lib/fs.mjs";
 
 // --- data readers ------------------------------------------------------------
-function readJsonl(path) {
-  if (!existsSync(path)) return [];
-  try {
-    const content = readFileSync(path, "utf-8").trim();
-    if (!content) return [];
-    return content.split("\n").map((line) => {
-      try { return JSON.parse(line); } catch { return null; }
-    }).filter(Boolean);
-  } catch {
-    return [];
-  }
-}
 
-function readJson(path) {
-  if (!existsSync(path)) return null;
-  try {
-    return JSON.parse(readFileSync(path, "utf-8"));
-  } catch {
-    return null;
-  }
-}
 
-function readProjectName(projectRoot) {
-  const claudePath = join(projectRoot, "CLAUDE.md");
-  if (!existsSync(claudePath)) return projectRoot.split("/").pop();
-  try {
-    const content = readFileSync(claudePath, "utf-8");
-    let match = content.match(/\|\s*项目名\s*\|\s*(\S+)\s*\|/);
-    if (match) return match[1];
-    match = content.match(/\*\*项目名\*\*[：:]\s*(\S+)/);
-    if (match) return match[1];
-    return projectRoot.split("/").pop();
-  } catch {
-    return projectRoot.split("/").pop();
-  }
-}
 
 // --- data collection for a story --------------------------------------------
 function collectStoryData(projectRoot, storyName) {

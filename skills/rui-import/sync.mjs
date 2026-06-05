@@ -8,16 +8,19 @@ import { existsSync, readdirSync } from "node:fs";
 import { execSync } from "node:child_process";
 import { homedir } from "node:os";
 
+import {
+  NODE_ARGV_OFFSET, HTTP_TIMEOUT_MS, CONCURRENCY, ERROR_MSG_MAX_LEN,
+  DEFAULT_API_URL,
+} from "../../lib/constants.mjs";
+import { findProjectRoot } from "../../lib/fs.mjs";
+
 // --- config ----------------------------------------------------------------
-const API_URL = process.env.IMPORT_DOCS_API_URL || "https://api.effiy.cn";
+const API_URL = process.env.IMPORT_DOCS_API_URL || DEFAULT_API_URL;
 const API_X_TOKEN = process.env.API_X_TOKEN || "";
 const DEFAULT_EXCLUDES = new Set([".git", "node_modules", ".claude-plugin", "dist"]);
-const CONCURRENCY = 4;
-const HTTP_TIMEOUT = 30_000;
+const HTTP_TIMEOUT = HTTP_TIMEOUT_MS;
 
-const ERROR_MSG_MAX_LEN = 500;
 const PREVIEW_COUNT = 10;
-const NODE_ARGV_OFFSET = 2;
 const DECIMAL_RADIX = 10;
 
 // --- args ------------------------------------------------------------------
@@ -99,18 +102,6 @@ function fallbackHelp() {
   console.log("  IMPORT_DOCS_API_URL     覆盖默认 API 地址");
   console.log("");
   console.log("详细: ~/.claude/plugins/cache/yry/yry/<version>/skills/rui-import/help.mjs");
-}
-
-// --- project root ----------------------------------------------------------
-function findProjectRoot(startDir) {
-  let dir = resolve(startDir);
-  while (true) {
-    if (existsSync(join(dir, ".git")) || existsSync(join(dir, ".claude")))
-      return dir;
-    const parent = dirname(dir);
-    if (parent === dir) return resolve(startDir); // fallback to cwd
-    dir = parent;
-  }
 }
 
 // --- scan ------------------------------------------------------------------
@@ -618,5 +609,4 @@ async function main() {
 main().catch(err => {
   console.error(`[rui-import] fatal: ${err.message}`);
   process.exit(1);
-});
 });

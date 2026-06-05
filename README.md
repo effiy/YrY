@@ -1,8 +1,8 @@
-# YrY <sub>v1.30.0</sub>
+# YrY <sub>v4.0.0</sub>
 
-> 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。
+> 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。共享 `lib/` 消除 491 行跨文件重复。
 
-[系统全景](#系统全景) · [管线](#管线) · [快速开始](#快速开始) · [命令](#命令) · [/rui](#rui---业务故事-sdlc) · [/rui-story](#rui-story---故事任务面板管理) · [/rui-claude](#rui-claude---claude-配置管理) · [/rui-npm](#rui-npm---个人-npm-包管理) · [Agent 角色](#agent-角色) · [规则](#规则) · [技能](#技能) · [目录结构](#目录结构) · [领域语言](#领域语言) · [技术趋势](#技术趋势)
+[系统全景](#系统全景) · [管线](#管线) · [快速开始](#快速开始) · [命令](#命令) · [/rui](#rui) · [/rui-story](#rui-story) · [/rui-claude](#rui-claude) · [/rui-npm](#rui-npm) · [Agent 角色](#agent-角色) · [规则](#规则) · [技能](#技能) · [目录结构](#目录结构) · [领域语言](#领域语言) · [技术趋势](#技术趋势)
 
 ## 系统全景
 
@@ -107,6 +107,8 @@ flowchart TD
 
 ```
 
+<a id="rui"></a>
+
 ### /rui — 业务故事 SDLC
 
 | 命令 | 类型 | 作用 |
@@ -123,6 +125,8 @@ flowchart TD
 | `/rui doc --from-code 需求` | 写入 | 从源码反推完整 5 文档基线到故事目录（源码只读） |
 | `/rui code --from-doc <name>` | 只读 | 从文档反推码：禁止改源码 |
 
+<a id="rui-story"></a>
+
 ### /rui-story — 故事任务面板管理
 
 | 命令 | 类型 | 数据源 | 作用 |
@@ -134,6 +138,8 @@ flowchart TD
 | `/rui-story remove <name>` | 写入 | 本地文件系统 | 删除指定故事整个本地目录（需确认） |
 | `/rui-story --help` | 只读 | 本地 | 完整命令用法 + 场景示例 |
 
+<a id="rui-claude"></a>
+
 ### /rui-claude — .claude/ 配置管理
 
 | 命令 | 类型 | 作用 |
@@ -143,6 +149,8 @@ flowchart TD
 | `/rui-claude retro` | 写入 | 健康度分析：分析 .claude/ 结构产出复盘报告 |
 | `/rui-claude sync` | 写入 | 远端同步：API pull 覆盖本地 `.claude/`（需确认意图） |
 | `/rui-claude <需求>` | 写入 | 需求管线：仅限 `.claude/` 内的 doc+code→交付 |
+
+<a id="rui-npm"></a>
 
 ### /rui-npm — 个人 npm 包管理
 
@@ -232,7 +240,7 @@ flowchart LR
 - **rui-trends** — 按需：查询 GitHub Trending / OSS Insight / TrendShift / Top-Starred，输出结构化趋势报告。自改进 D5 诊断集成
 - **rui-npm** (`/rui-npm search · install · update · list · info · uninstall · publish · npx · audit`) — 个人 npm 包管理：搜索、增删改查、本地发布即发即用
 
-详见 [`skills/`](./skills/)。
+详见 [`skills/`](./skills/)。所有脚本通过 [`lib/`](./lib/) 共享 TTY 格式化、项目工具函数和常量定义。
 
 ## 目录结构
 
@@ -282,6 +290,11 @@ YrY/
 │   ├── docs/
 │   ├── tests/
 │   └── demos/
+├── lib/                     # 项目级共享库（消除跨文件重复）
+│   ├── tty.mjs              #   TTY/ANSI 格式化函数
+│   ├── fs.mjs               #   文件系统与项目工具
+│   ├── constants.mjs        #   共享常量（超时/并发/阈值/路径）
+│   └── help-layout.mjs      #   help 文件布局函数
 ├── tests/                   # 自检测试套件
 │   ├── run.mjs              #   测试运行器
 │   ├── skills/ agents/ rules/ integration/

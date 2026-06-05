@@ -58,8 +58,8 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 | 项目名 | YrY |
 | 类型 | **meta** — Claude Code 插件，纯规约驱动 |
 | 版本 | 4.0.0 |
-| 架构 | plugin — 7 技能 + 9 Agent + 10 规则 |
-| 生态 | 无 package.json，markdown 规约 + node 辅助脚本 |
+| 架构 | plugin — 7 技能 + 9 Agent + 10 规则 + 4 共享库（lib/） |
+| 生态 | 无 package.json，markdown 规约 + node 辅助脚本 + 共享 lib/ 消除重复 |
 | 自托管 | 是 — YrY 用自身管线管理自身演进 |
 
 ## 项目约束
@@ -71,7 +71,7 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 - **输入必校验** — 用户输入必须经过验证/转义，XSS/注入为 P0
 - **规约完整性** — 每 skill 必须有完整 SKILL.md；Agent 交接信号必须可被下游验证
 - **自托管一致性** — plugin.json 版本号必须与实际 skills/agents/rules 内容一致；自身管线不得降级
-- **禁止魔法数字** — 所有数字字面量必须赋予语义化常量名；仅 `0`、`1`、`-1`（循环/索引/初始化惯用值）可豁免
+- **禁止魔法数字** — 所有数字字面量必须赋予语义化常量名；仅 `0`、`1`、`-1`（循环/索引/初始化惯用值）可豁免。项目共享常量统一定义在 `lib/constants.mjs`，各脚本从该处导入
 - **分支隔离不可绕过** — 记忆/缓存/本地状态文件禁止跨分支共享管线状态，不得用于削弱或绕过 `feat/<name>` 分支隔离策略
 
 ### 退化对策
@@ -109,6 +109,7 @@ flowchart LR
 - YrY 自身演进走 `/rui` 管线，不得绕过
 - 自身 `.claude/` 配置通过 `/rui-claude` 管理
 - 技能规约修改后必须重跑 init 验证
+- 跨文件共享代码放 `lib/`，禁止 copy-paste；各脚本从 `lib/` 导入通用函数/常量
 <!-- rui:project-end -->
 
 ## 引导
@@ -120,5 +121,6 @@ flowchart LR
 | 文档生成约束 · 表达优先 | [rules/doc-generation.md](./rules/doc-generation.md) |
 | 角色拓扑 · 行为纪律 · 设计原则 · 执行准则 · ADR · 多 Agent 协作模式 | [agents/AGENT.md](./agents/AGENT.md) |
 | 自改进闭环（诊断 D0-D7 · 经验技能化 · 记忆压缩注入 · 效果评估 E1-E4） | [rules/self-improve.md](./rules/self-improve.md) · [agents/self-improve.md](./agents/self-improve.md) |
+| 共享库（TTY · FS · 常量 · help 布局） | [lib/](./lib/) |
 | 领域语言（术语定义） | [领域语言](./README.md#领域语言) |
 | 故事文档公式 | [formulas.md](./skills/rui/formulas.md) |

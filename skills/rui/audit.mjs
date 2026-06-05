@@ -7,7 +7,8 @@ import { join, resolve, dirname } from "node:path";
 import { existsSync, readFileSync, mkdirSync, appendFileSync } from "node:fs";
 
 // --- constants ----------------------------------------------------------------
-const ARGV_OFFSET = 2;
+import { NODE_ARGV_OFFSET } from "../../lib/constants.mjs";
+const ARGV_OFFSET = NODE_ARGV_OFFSET;
 const AUDIT_FILE = ".memory/tool-audit.jsonl";
 
 // Agent tool permissions (from agent YAML frontmatter)
@@ -20,13 +21,7 @@ const AGENT_TOOLS = {
   "self-improve": new Set(["Read", "Grep", "Glob", "Bash"]),
 };
 
-// --- TTY helpers -------------------------------------------------------------
-const tty = process.stdout.isTTY;
-const bold = (s) => tty ? `\x1b[1m${s}\x1b[22m` : s;
-const dim = (s) => tty ? `\x1b[2m${s}\x1b[22m` : s;
-const red = (s) => tty ? `\x1b[31m${s}\x1b[39m` : s;
-const green = (s) => tty ? `\x1b[32m${s}\x1b[39m` : s;
-const yellow = (s) => tty ? `\x1b[33m${s}\x1b[39m` : s;
+import { bold, dim, red, green, yellow } from "../../lib/tty.mjs";
 
 // --- args --------------------------------------------------------------------
 function showHelp() {
@@ -74,15 +69,7 @@ function parseArgs() {
 }
 
 // --- project root ------------------------------------------------------------
-function findProjectRoot(startDir) {
-  let dir = resolve(startDir);
-  while (true) {
-    if (existsSync(join(dir, ".git")) || existsSync(join(dir, ".claude"))) return dir;
-    const parent = dirname(dir);
-    if (parent === dir) return resolve(startDir);
-    dir = parent;
-  }
-}
+import { findProjectRoot } from "../../lib/fs.mjs";
 
 // --- audit path ---
 function getAuditPath(projectRoot, story) {

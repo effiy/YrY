@@ -2,52 +2,8 @@
 // rui-import — Batch sync local documents to remote API help
 // 用法: node skills/rui-import/help.mjs 或 /rui-import --help
 
-const ANSI_BOLD = 1;
-const ANSI_DIM = 2;
-const ANSI_UNDERLINE = 4;
-const ANSI_YELLOW = 33;
-const ANSI_CYAN = 36;
-
-const { bold, underline, dim, yellow, cyan } = (() => {
-  const make = (code) => (s) => `\x1b[${code}m${s}\x1b[0m`;
-  const e = {
-    bold: make(ANSI_BOLD), underline: make(ANSI_UNDERLINE), dim: make(ANSI_DIM),
-    yellow: make(ANSI_YELLOW), cyan: make(ANSI_CYAN),
-  };
-  if (!process.stdout.isTTY) {
-    for (const k of Object.keys(e)) e[k] = (s) => s;
-  }
-  return e;
-})();
-
-const INDENT = "  ";
-const SUB_INDENT = "    ";
-const LEFT_COLUMN_WIDTH = 52;
-const COLUMN_MIN_PADDING = 2;
-
-function hdr(text) {
-  return `\n${bold(text)}\n`;
-}
-
-function subhdr(text) {
-  return `\n${INDENT}${bold(text)}\n`;
-}
-
-function item(cmd, desc, colorFn) {
-  const left = `${SUB_INDENT}${cmd}`;
-  const pad = Math.max(COLUMN_MIN_PADDING, LEFT_COLUMN_WIDTH - left.length);
-  return `${colorFn ? colorFn(left) : left}${" ".repeat(pad)}${desc}`;
-}
-
-function flag(name, desc) {
-  const firstToken = name.split(/\s/)[0];
-  const prefix = firstToken.length === 1 ? "-" : "--";
-  return item(`  ${prefix}${name}`, desc, yellow);
-}
-
-function scene(title) {
-  return `\n${SUB_INDENT}${bold(title)}\n`;
-}
+import { bold, dim, yellow, cyan } from '../../lib/tty.mjs';
+import { hdr, subhdr, item, flag, scene } from '../../lib/help-layout.mjs';
 
 const help = `
 ${bold("# rui-import — 文档批量同步到远端")}

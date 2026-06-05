@@ -10,16 +10,11 @@ import { existsSync, readFileSync, mkdirSync, writeFileSync } from "node:fs";
 // --- constants ----------------------------------------------------------------
 const STORY_PANEL_DIR = "docs/故事任务面板";
 const FEAT_PREFIX = "feat/";
-const ARGV_OFFSET = 2;
+import { NODE_ARGV_OFFSET } from "../../lib/constants.mjs";
+const ARGV_OFFSET = NODE_ARGV_OFFSET;
 const VALID_MODES = ["write", "read", "init"];
 
-// --- TTY helpers -------------------------------------------------------------
-const tty = process.stdout.isTTY;
-const bold = (s) => tty ? `\x1b[1m${s}\x1b[22m` : s;
-const dim = (s) => tty ? `\x1b[2m${s}\x1b[22m` : s;
-const red = (s) => tty ? `\x1b[31m${s}\x1b[39m` : s;
-const green = (s) => tty ? `\x1b[32m${s}\x1b[39m` : s;
-const yellow = (s) => tty ? `\x1b[33m${s}\x1b[39m` : s;
+import { bold, dim, red, green, yellow } from "../../lib/tty.mjs";
 
 // --- args --------------------------------------------------------------------
 function showHelp() {
@@ -76,15 +71,7 @@ function parseArgs() {
 }
 
 // --- project root ------------------------------------------------------------
-function findProjectRoot(startDir) {
-  let dir = resolve(startDir);
-  while (true) {
-    if (existsSync(join(dir, ".git")) || existsSync(join(dir, ".claude"))) return dir;
-    const parent = dirname(dir);
-    if (parent === dir) return resolve(startDir);
-    dir = parent;
-  }
-}
+import { findProjectRoot } from "../../lib/fs.mjs";
 
 // --- git helpers -------------------------------------------------------------
 function git(args, cwd) {

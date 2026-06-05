@@ -8,12 +8,17 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { execSync } from "node:child_process";
 import { homedir } from "node:os";
 
+import { bold, dim, red, green, yellow, cyan } from "../../lib/tty.mjs";
+import {
+  NODE_ARGV_OFFSET, HTTP_TIMEOUT_MS, CONCURRENCY, ERROR_MSG_MAX_LEN,
+  DEFAULT_API_URL,
+} from "../../lib/constants.mjs";
+import { findProjectRoot, readProjectName } from "../../lib/fs.mjs";
+
 // --- config ----------------------------------------------------------------
-const API_URL = process.env.IMPORT_DOCS_API_URL || "https://api.effiy.cn";
+const API_URL = process.env.IMPORT_DOCS_API_URL || DEFAULT_API_URL;
 const API_X_TOKEN = process.env.API_X_TOKEN || "";
-const HTTP_TIMEOUT = 30_000;
-const CONCURRENCY = 4;
-const ERROR_MSG_MAX_LEN = 500;
+const HTTP_TIMEOUT = HTTP_TIMEOUT_MS;
 
 // --- story extraction constants -------------------------------------------
 const STORY_DIR_OFFSET = 1;
@@ -35,26 +40,7 @@ const RECOMMEND_NAME_WIDTH = 20;
 const DATE_ZERO_PAD = 2;
 
 // --- CLI argument constants ------------------------------------------------
-const NODE_ARGV_OFFSET = 2;
 const SHOW_MIN_ARGS = 2;
-
-// --- TTY helpers -----------------------------------------------------------
-const ANSI_BOLD_ON = 1;
-const ANSI_BOLD_OFF = 22;
-const ANSI_DIM_ON = 2;
-const ANSI_FG_RED = 31;
-const ANSI_FG_GREEN = 32;
-const ANSI_FG_YELLOW = 33;
-const ANSI_FG_CYAN = 36;
-const ANSI_FG_DEFAULT = 39;
-
-const tty = process.stdout.isTTY;
-const bold = (s) => tty ? `\x1b[${ANSI_BOLD_ON}m${s}\x1b[${ANSI_BOLD_OFF}m` : s;
-const dim = (s) => tty ? `\x1b[${ANSI_DIM_ON}m${s}\x1b[${ANSI_BOLD_OFF}m` : s;
-const red = (s) => tty ? `\x1b[${ANSI_FG_RED}m${s}\x1b[${ANSI_FG_DEFAULT}m` : s;
-const green = (s) => tty ? `\x1b[${ANSI_FG_GREEN}m${s}\x1b[${ANSI_FG_DEFAULT}m` : s;
-const yellow = (s) => tty ? `\x1b[${ANSI_FG_YELLOW}m${s}\x1b[${ANSI_FG_DEFAULT}m` : s;
-const cyan = (s) => tty ? `\x1b[${ANSI_FG_CYAN}m${s}\x1b[${ANSI_FG_DEFAULT}m` : s;
 
 // --- args ------------------------------------------------------------------
 function parseArgs() {
@@ -87,45 +73,6 @@ function parseArgs() {
   process.exit(0);
 }
 
-// --- project root ----------------------------------------------------------
-function findProjectRoot(startDir) {
-  let dir = resolve(startDir);
-  while (true) {
-    if (existsSync(join(dir, ".git")) || existsSync(join(dir, ".claude")))
-      return dir;
-    const parent = dirname(dir);
-    if (parent === dir) return resolve(startDir);
-    dir = parent;
-  }
-}
-
-// --- project name from CLAUDE.md -------------------------------------------
-function readProjectName(projectRoot) {
-  const claudePath = join(projectRoot, "CLAUDE.md");
-  if (!existsSync(claudePath)) return null;
-
-  let content;
-  try {
-    content = readFileSync(claudePath, "utf-8");
-  } catch {
-    return null;
-  }
-
-  // Pattern 1: Table row (YrY style): | 项目名 | YrY |
-  let match = content.match(/\|\s*项目名\s*\|\s*(\S+)\s*\|/);
-  if (match) return match[1];
-
-  // Pattern 2: Bold label (YiAi style): **项目名**：YiAi（宜 AI）
-  match = content.match(/\*\*项目名\*\*[：:]\s*(\S+?)(?:（[^）]*）)?\s*$/m);
-  if (match) return match[1];
-
-  // Pattern 3: 项目名: Value
-  match = content.match(/项目名[：:]\s*(\S+)/);
-  if (match) return match[1].replace(/（.*）/, "").trim();
-
-  // Fallback: project root directory name
-  return projectRoot.split(sep).pop();
-}
 
 // --- API helpers (replicated from rui-import/sync.mjs) --------------------
 async function fetchJson(url, options = {}) {
