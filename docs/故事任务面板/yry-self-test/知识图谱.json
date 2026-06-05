@@ -1,0 +1,400 @@
+{
+  "version": "2.0.0",
+  "meta": {
+    "story": "yry-self-test",
+    "generated": "2026-06-05"
+  },
+  "nodes": {
+    "domain": [
+      {
+        "id": "domain:pipeline-health",
+        "type": "domain",
+        "name": "Pipeline Health",
+        "summary": "Verifies engineering discipline gates are effective — workspace isolation, test-first gate, verification loop, P0 clearing, Agent handoff signals, blocking flags. Covers FP1-FP6.",
+        "tags": ["pipeline", "discipline", "gate", "health-check"],
+        "complexity": "high",
+        "domainMeta": {
+          "entities": ["Gate", "CheckResult", "BlockReport", "HandoffSignal"],
+          "businessRules": [
+            "R1: Self-check is read-only, never modifies files",
+            "R2: Results in three states — pass, warn, block",
+            "R3: Block results contain gate name, verifiable evidence, and repair path",
+            "R4: Self-check can be triggered independently at any time",
+            "R8: Block items must be cleared before next story begins"
+          ],
+          "crossDomainInteractions": ["document-integrity", "security-regression"]
+        }
+      },
+      {
+        "id": "domain:document-integrity",
+        "type": "domain",
+        "name": "Document Integrity",
+        "summary": "Verifies all story documents exist, are structurally complete, and consistent — directory existence, core document presence, section completeness, cross-reference closure, traceability chain, knowledge graph validity. Covers FP7-FP12.",
+        "tags": ["document", "integrity", "cross-reference", "knowledge-graph"],
+        "complexity": "high",
+        "domainMeta": {
+          "entities": ["StoryDir", "SceneDoc", "KnowledgeGraph", "CrossReference", "TraceabilityChain"],
+          "businessRules": [
+            "R1: Self-check is read-only, never auto-creates missing documents",
+            "R5: Missing documents are reported, not auto-created",
+            "R2: Results in three states — pass, warn, block",
+            "R6: Check list syncs with document conventions"
+          ],
+          "crossDomainInteractions": ["pipeline-health", "security-regression"]
+        }
+      },
+      {
+        "id": "domain:security-regression",
+        "type": "domain",
+        "name": "Security Regression",
+        "summary": "Verifies project non-negotiable security baselines are intact — no hardcoded secrets, no auth bypass paths, input validation coverage, sensitive config via env vars, dependency vulnerability scan, security constraint degradation detection. STRIDE six-face coverage.",
+        "tags": ["security", "secrets", "auth", "validation", "dependencies", "STRIDE"],
+        "complexity": "high",
+        "domainMeta": {
+          "entities": ["SecretPattern", "AuthPath", "InputPoint", "ConfigItem", "Dependency", "SecurityConstraint"],
+          "businessRules": [
+            "Auth must not be bypassable — P0",
+            "Secrets must not be written to disk — P0",
+            "All user input must be validated — P0",
+            "Security constraints cannot be silently removed"
+          ],
+          "crossDomainInteractions": ["pipeline-health", "document-integrity"]
+        }
+      }
+    ],
+    "flow": [
+      {
+        "id": "flow:init-full-check",
+        "type": "flow",
+        "name": "Init Full Self-Check",
+        "summary": "Runs all seven initialization readiness checks after project init — instruction doc integrity marker, readme project name, domain vocabulary (>=3 terms), story panel directory, architecture story baseline, self-test story baseline, integration config.",
+        "tags": ["full-check", "initialization", "readiness"],
+        "complexity": "medium",
+        "domainMeta": {
+          "entryPoint": "Post-init trigger",
+          "entryType": "manual-trigger"
+        }
+      },
+      {
+        "id": "flow:pre-commit-incremental-check",
+        "type": "flow",
+        "name": "Pre-Commit Incremental Check",
+        "summary": "Runs before each commit — identifies change scope, verifies branch isolation (not on main), checks change range (files within story dir), verifies no new P0 regression, checks doc-code sync.",
+        "tags": ["incremental", "pre-commit", "gate"],
+        "complexity": "medium",
+        "domainMeta": {
+          "entryPoint": "Pre-commit hook",
+          "entryType": "git-hook"
+        }
+      },
+      {
+        "id": "flow:doc-code-consistency",
+        "type": "flow",
+        "name": "Document-Code Consistency",
+        "summary": "Four-layer verification — file reference reachability (L1), implementation report match (L2), test report alignment (L3), knowledge graph validity (L4). Plus cross-reference closure and traceability chain completeness.",
+        "tags": ["consistency", "document", "code", "cross-reference"],
+        "complexity": "high",
+        "domainMeta": {
+          "entryPoint": "Post-change trigger",
+          "entryType": "manual-or-auto-trigger"
+        }
+      },
+      {
+        "id": "flow:security-regression-check",
+        "type": "flow",
+        "name": "Security Regression Check",
+        "summary": "Six-face security scan using STRIDE — secrets scan, auth path verification, input validation coverage, config security, dependency vulnerability scan, security constraint regression.",
+        "tags": ["security", "regression", "STRIDE", "secrets"],
+        "complexity": "high",
+        "domainMeta": {
+          "entryPoint": "Post-change trigger",
+          "entryType": "manual-or-auto-trigger"
+        }
+      }
+    ],
+    "step": [
+      {
+        "id": "step:init-full-check:verify-instruction-doc",
+        "type": "step",
+        "name": "Verify Instruction Doc",
+        "summary": "Check project instruction document contains the required integrity marker segment. Missing = block.",
+        "tags": ["init", "instruction-doc", "integrity-marker"],
+        "complexity": "low"
+      },
+      {
+        "id": "step:init-full-check:verify-readme",
+        "type": "step",
+        "name": "Verify Project Readme",
+        "summary": "Check project readme file contains the project name header. Missing = block.",
+        "tags": ["init", "readme", "project-name"],
+        "complexity": "low"
+      },
+      {
+        "id": "step:init-full-check:verify-domain-vocabulary",
+        "type": "step",
+        "name": "Verify Domain Vocabulary",
+        "summary": "Check domain vocabulary section exists and contains >= 3 term definitions. Insufficient = block.",
+        "tags": ["init", "domain-vocabulary", "terminology"],
+        "complexity": "low"
+      },
+      {
+        "id": "step:init-full-check:verify-story-panel-dir",
+        "type": "step",
+        "name": "Verify Story Panel Dir",
+        "summary": "Check story task panel directory exists. Missing = block (subsequent checks depend on it).",
+        "tags": ["init", "story-panel", "directory"],
+        "complexity": "low"
+      },
+      {
+        "id": "step:init-full-check:verify-arch-baseline",
+        "type": "step",
+        "name": "Verify Arch Story Baseline",
+        "summary": "Traverse architecture story directory; check three baseline documents (story task, scene doc, knowledge graph) exist. Missing one = warn.",
+        "tags": ["init", "architecture", "baseline"],
+        "complexity": "medium"
+      },
+      {
+        "id": "step:init-full-check:verify-self-test-baseline",
+        "type": "step",
+        "name": "Verify Self-Test Baseline",
+        "summary": "Traverse self-test story directory; check three baseline documents exist. Missing one = warn.",
+        "tags": ["init", "self-test", "baseline"],
+        "complexity": "medium"
+      },
+      {
+        "id": "step:init-full-check:verify-integration-config",
+        "type": "step",
+        "name": "Verify Integration Config",
+        "summary": "Check integration configuration file exists. Missing = warn (degradable, does not block core).",
+        "tags": ["init", "integration", "config"],
+        "complexity": "low"
+      },
+      {
+        "id": "step:pre-commit-incremental-check:identify-change-scope",
+        "type": "step",
+        "name": "Identify Change Scope",
+        "summary": "Query version control for modified/added/deleted files to determine what was changed.",
+        "tags": ["pre-commit", "change-scope", "vc"],
+        "complexity": "low"
+      },
+      {
+        "id": "step:pre-commit-incremental-check:verify-branch-isolation",
+        "type": "step",
+        "name": "Verify Branch Isolation",
+        "summary": "Query current branch name; verify not on main. On main = block immediately, stop all further checks.",
+        "tags": ["pre-commit", "branch-isolation", "feat-branch"],
+        "complexity": "low"
+      },
+      {
+        "id": "step:pre-commit-incremental-check:verify-change-range",
+        "type": "step",
+        "name": "Verify Change Range",
+        "summary": "Verify all changed files are within the current story directory. Cross-story contamination = block.",
+        "tags": ["pre-commit", "change-range", "cross-contamination"],
+        "complexity": "medium"
+      },
+      {
+        "id": "step:pre-commit-incremental-check:verify-p0-regression",
+        "type": "step",
+        "name": "Verify P0 Regression",
+        "summary": "Compare blocking flag counts before and after change. New P0/blocking items = block.",
+        "tags": ["pre-commit", "p0", "regression"],
+        "complexity": "medium"
+      },
+      {
+        "id": "step:pre-commit-incremental-check:verify-doc-sync",
+        "type": "step",
+        "name": "Verify Document Sync",
+        "summary": "If code changed, verify associated scene documents are updated. Stale documents = warn.",
+        "tags": ["pre-commit", "doc-sync", "code-doc"],
+        "complexity": "medium"
+      },
+      {
+        "id": "step:doc-code-consistency:verify-file-reference",
+        "type": "step",
+        "name": "L1: File Reference Reachability",
+        "summary": "Verify every file reference in documents points to an existing file. Broken references = block.",
+        "tags": ["consistency", "file-reference", "broken-link"],
+        "complexity": "medium"
+      },
+      {
+        "id": "step:doc-code-consistency:verify-impl-report",
+        "type": "step",
+        "name": "L2: Implementation Report Match",
+        "summary": "Compare section 2 implementation report change records against version control logs. Mismatch = warn.",
+        "tags": ["consistency", "implementation-report", "change-log"],
+        "complexity": "high"
+      },
+      {
+        "id": "step:doc-code-consistency:verify-test-report",
+        "type": "step",
+        "name": "L3: Test Report Alignment",
+        "summary": "Compare section 3 test report claimed results against actual test execution output. Deviation = warn.",
+        "tags": ["consistency", "test-report", "alignment"],
+        "complexity": "high"
+      },
+      {
+        "id": "step:doc-code-consistency:verify-kg-validity",
+        "type": "step",
+        "name": "L4: Knowledge Graph Validity",
+        "summary": "Verify all implementation nodes map to existing source files; all edges have valid source/target nodes. Invalid = warn.",
+        "tags": ["consistency", "knowledge-graph", "validity"],
+        "complexity": "medium"
+      },
+      {
+        "id": "step:doc-code-consistency:verify-cross-ref-closure",
+        "type": "step",
+        "name": "Cross-Reference Closure",
+        "summary": "Traverse all cross-references across documents; verify each target exists. Unclosed = block.",
+        "tags": ["consistency", "cross-reference", "closure"],
+        "complexity": "medium"
+      },
+      {
+        "id": "step:doc-code-consistency:verify-traceability",
+        "type": "step",
+        "name": "Traceability Chain",
+        "summary": "Check each document has source citation and change record table. Missing traceability = warn.",
+        "tags": ["consistency", "traceability", "audit"],
+        "complexity": "low"
+      },
+      {
+        "id": "step:security-regression-check:scan-secrets",
+        "type": "step",
+        "name": "Scan Hardcoded Secrets",
+        "summary": "Scan all source/config files for hardcoded credentials — tokens, passwords, private keys. Match = block immediately.",
+        "tags": ["security", "secrets", "credentials", "scan"],
+        "complexity": "medium"
+      },
+      {
+        "id": "step:security-regression-check:verify-auth-paths",
+        "type": "step",
+        "name": "Verify Auth Paths",
+        "summary": "Trace auth entry points to protected resources; verify no unauthenticated access paths exist. Bypass = block.",
+        "tags": ["security", "auth", "bypass"],
+        "complexity": "high"
+      },
+      {
+        "id": "step:security-regression-check:verify-input-validation",
+        "type": "step",
+        "name": "Verify Input Validation",
+        "summary": "Identify all external input points; verify corresponding validation logic exists. Missing = warn.",
+        "tags": ["security", "input-validation", "xss", "injection"],
+        "complexity": "high"
+      },
+      {
+        "id": "step:security-regression-check:verify-config-security",
+        "type": "step",
+        "name": "Verify Config Security",
+        "summary": "Check sensitive config values use environment variables, not hardcoded literals. Hardcoded = warn.",
+        "tags": ["security", "config", "env-var"],
+        "complexity": "medium"
+      },
+      {
+        "id": "step:security-regression-check:scan-dependencies",
+        "type": "step",
+        "name": "Scan Dependencies",
+        "summary": "Compare dependency manifest against known vulnerability database. High-severity CVEs = block.",
+        "tags": ["security", "dependencies", "vulnerability", "cve"],
+        "complexity": "medium"
+      },
+      {
+        "id": "step:security-regression-check:verify-security-constraints",
+        "type": "step",
+        "name": "Verify Constraint Regression",
+        "summary": "Compare current security constraints against baseline; detect removed or weakened constraints. Degradation = block.",
+        "tags": ["security", "constraint", "regression", "baseline"],
+        "complexity": "high"
+      }
+    ]
+  },
+  "edges": [
+    { "source": "domain:pipeline-health", "target": "flow:init-full-check", "type": "contains_flow", "weight": 1.0 },
+    { "source": "domain:pipeline-health", "target": "flow:pre-commit-incremental-check", "type": "contains_flow", "weight": 1.0 },
+    { "source": "domain:document-integrity", "target": "flow:doc-code-consistency", "type": "contains_flow", "weight": 1.0 },
+    { "source": "domain:security-regression", "target": "flow:security-regression-check", "type": "contains_flow", "weight": 1.0 },
+    { "source": "flow:init-full-check", "target": "step:init-full-check:verify-instruction-doc", "type": "flow_step", "weight": 0.1 },
+    { "source": "flow:init-full-check", "target": "step:init-full-check:verify-readme", "type": "flow_step", "weight": 0.2 },
+    { "source": "flow:init-full-check", "target": "step:init-full-check:verify-domain-vocabulary", "type": "flow_step", "weight": 0.3 },
+    { "source": "flow:init-full-check", "target": "step:init-full-check:verify-story-panel-dir", "type": "flow_step", "weight": 0.4 },
+    { "source": "flow:init-full-check", "target": "step:init-full-check:verify-arch-baseline", "type": "flow_step", "weight": 0.5 },
+    { "source": "flow:init-full-check", "target": "step:init-full-check:verify-self-test-baseline", "type": "flow_step", "weight": 0.6 },
+    { "source": "flow:init-full-check", "target": "step:init-full-check:verify-integration-config", "type": "flow_step", "weight": 0.7 },
+    { "source": "flow:pre-commit-incremental-check", "target": "step:pre-commit-incremental-check:identify-change-scope", "type": "flow_step", "weight": 0.1 },
+    { "source": "flow:pre-commit-incremental-check", "target": "step:pre-commit-incremental-check:verify-branch-isolation", "type": "flow_step", "weight": 0.2 },
+    { "source": "flow:pre-commit-incremental-check", "target": "step:pre-commit-incremental-check:verify-change-range", "type": "flow_step", "weight": 0.3 },
+    { "source": "flow:pre-commit-incremental-check", "target": "step:pre-commit-incremental-check:verify-p0-regression", "type": "flow_step", "weight": 0.4 },
+    { "source": "flow:pre-commit-incremental-check", "target": "step:pre-commit-incremental-check:verify-doc-sync", "type": "flow_step", "weight": 0.5 },
+    { "source": "flow:doc-code-consistency", "target": "step:doc-code-consistency:verify-file-reference", "type": "flow_step", "weight": 0.1 },
+    { "source": "flow:doc-code-consistency", "target": "step:doc-code-consistency:verify-impl-report", "type": "flow_step", "weight": 0.2 },
+    { "source": "flow:doc-code-consistency", "target": "step:doc-code-consistency:verify-test-report", "type": "flow_step", "weight": 0.3 },
+    { "source": "flow:doc-code-consistency", "target": "step:doc-code-consistency:verify-kg-validity", "type": "flow_step", "weight": 0.4 },
+    { "source": "flow:doc-code-consistency", "target": "step:doc-code-consistency:verify-cross-ref-closure", "type": "flow_step", "weight": 0.5 },
+    { "source": "flow:doc-code-consistency", "target": "step:doc-code-consistency:verify-traceability", "type": "flow_step", "weight": 0.6 },
+    { "source": "flow:security-regression-check", "target": "step:security-regression-check:scan-secrets", "type": "flow_step", "weight": 0.1 },
+    { "source": "flow:security-regression-check", "target": "step:security-regression-check:verify-auth-paths", "type": "flow_step", "weight": 0.2 },
+    { "source": "flow:security-regression-check", "target": "step:security-regression-check:verify-input-validation", "type": "flow_step", "weight": 0.3 },
+    { "source": "flow:security-regression-check", "target": "step:security-regression-check:verify-config-security", "type": "flow_step", "weight": 0.4 },
+    { "source": "flow:security-regression-check", "target": "step:security-regression-check:scan-dependencies", "type": "flow_step", "weight": 0.5 },
+    { "source": "flow:security-regression-check", "target": "step:security-regression-check:verify-security-constraints", "type": "flow_step", "weight": 0.6 },
+    { "source": "domain:pipeline-health", "target": "domain:security-regression", "type": "cross_domain", "weight": 0.8 },
+    { "source": "domain:document-integrity", "target": "domain:pipeline-health", "type": "cross_domain", "weight": 0.6 },
+    { "source": "domain:security-regression", "target": "domain:document-integrity", "type": "cross_domain", "weight": 0.5 },
+    { "source": "step:pre-commit-incremental-check:verify-branch-isolation", "target": "step:security-regression-check:verify-security-constraints", "type": "cross_domain", "weight": 0.7 },
+    { "source": "step:doc-code-consistency:verify-kg-validity", "target": "step:init-full-check:verify-self-test-baseline", "type": "cross_domain", "weight": 0.5 },
+    { "source": "step:security-regression-check:verify-input-validation", "target": "step:pre-commit-incremental-check:verify-p0-regression", "type": "cross_domain", "weight": 0.4 }
+  ],
+  "layers": [
+    {
+      "id": "layer:pipeline-health-layer",
+      "name": "Pipeline Health Layer",
+      "description": "Verifies engineering discipline gates are effective — workspace isolation, test-first gate, verification loop, P0 clearing, Agent handoff signals, blocking flags. Covers scenes 1 and 2.",
+      "nodeIds": [
+        "domain:pipeline-health",
+        "flow:init-full-check",
+        "flow:pre-commit-incremental-check",
+        "step:init-full-check:verify-instruction-doc",
+        "step:init-full-check:verify-readme",
+        "step:init-full-check:verify-domain-vocabulary",
+        "step:init-full-check:verify-story-panel-dir",
+        "step:init-full-check:verify-arch-baseline",
+        "step:init-full-check:verify-self-test-baseline",
+        "step:init-full-check:verify-integration-config",
+        "step:pre-commit-incremental-check:identify-change-scope",
+        "step:pre-commit-incremental-check:verify-branch-isolation",
+        "step:pre-commit-incremental-check:verify-change-range",
+        "step:pre-commit-incremental-check:verify-p0-regression",
+        "step:pre-commit-incremental-check:verify-doc-sync"
+      ]
+    },
+    {
+      "id": "layer:document-integrity-layer",
+      "name": "Document Integrity Layer",
+      "description": "Verifies document baseline completeness — directory existence, core document presence, section completeness, cross-reference closure, traceability chain, knowledge graph structure. Covers scene 3.",
+      "nodeIds": [
+        "domain:document-integrity",
+        "flow:doc-code-consistency",
+        "step:doc-code-consistency:verify-file-reference",
+        "step:doc-code-consistency:verify-impl-report",
+        "step:doc-code-consistency:verify-test-report",
+        "step:doc-code-consistency:verify-kg-validity",
+        "step:doc-code-consistency:verify-cross-ref-closure",
+        "step:doc-code-consistency:verify-traceability"
+      ]
+    },
+    {
+      "id": "layer:security-layer",
+      "name": "Security Layer",
+      "description": "Verifies project non-negotiable security baselines are intact — no hardcoded secrets, no auth bypass paths, input validation coverage, config security, dependency vulnerability scan, security constraint regression. STRIDE six-face coverage. Covers scene 4.",
+      "nodeIds": [
+        "domain:security-regression",
+        "flow:security-regression-check",
+        "step:security-regression-check:scan-secrets",
+        "step:security-regression-check:verify-auth-paths",
+        "step:security-regression-check:verify-input-validation",
+        "step:security-regression-check:verify-config-security",
+        "step:security-regression-check:scan-dependencies",
+        "step:security-regression-check:verify-security-constraints"
+      ]
+    }
+  ]
+}

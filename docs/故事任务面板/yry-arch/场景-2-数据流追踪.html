@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>场景 2: 数据流追踪 — YrY Pipeline</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'SF Mono', 'Consolas', monospace;
+      background: #020617; min-height: 100vh; padding: 2rem; color: white;
+    }
+    .container { max-width: 1300px; margin: 0 auto; }
+    .header { margin-bottom: 2rem; }
+    .header-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+    .pulse-dot { width: 12px; height: 12px; background: #fbbf24; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
+    .subtitle { color: #94a3b8; font-size: 0.875rem; margin-left: 1.75rem; }
+    .diagram-container {
+      background: rgba(15, 23, 42, 0.5); border-radius: 1rem; border: 1px solid #1e293b;
+      padding: 1.5rem; overflow-x: auto;
+    }
+    svg { width: 100%; min-width: 1100px; display: block; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .card { background: rgba(15, 23, 42, 0.5); border-radius: 0.75rem; border: 1px solid #1e293b; padding: 1.25rem; }
+    .card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .card-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .card-dot.amber { background: #fbbf24; }
+    .card-dot.emerald { background: #34d399; }
+    .card-dot.rose { background: #fb7185; }
+    .card-dot.cyan { background: #22d3ee; }
+    .card h3 { font-size: 0.875rem; font-weight: 600; }
+    .card ul { list-style: none; color: #94a3b8; font-size: 0.75rem; }
+    .card li { margin-bottom: 0.375rem; }
+    .footer { text-align: center; margin-top: 1.5rem; color: #475569; font-size: 0.75rem; }
+    .toolbar { display: flex; gap: 0.5rem; margin-left: auto; flex-shrink: 0; align-items: center; }
+    .toolbar-toggle { background: transparent; border: none; color: #475569; cursor: pointer; font-size: 1.25rem; line-height: 1; padding: 0.25rem 0.5rem; border-radius: 0.375rem; transition: color 0.2s, background 0.2s; }
+    .toolbar-toggle:hover { color: #94a3b8; background: rgba(30, 41, 59, 0.5); }
+    .toolbar-actions { display: none; gap: 0.5rem; }
+    .toolbar.expanded .toolbar-actions { display: flex; }
+    .toolbar-actions button { background: rgba(30, 41, 59, 0.8); border: 1px solid #334155; color: #94a3b8; padding: 0.375rem 0.75rem; border-radius: 0.375rem; font-family: inherit; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .toolbar-actions button:hover { background: rgba(51, 65, 85, 0.8); color: white; border-color: #475569; }
+    @media print { body { background: #020617; padding: 1rem; } .toolbar { display: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="container" id="report-container">
+    <div class="header">
+      <div class="header-row">
+        <div class="pulse-dot"></div>
+        <h1>场景 2: 数据流追踪 — 从指令到交付的 11 阶段管线</h1>
+        <div class="toolbar">
+          <div class="toolbar-actions">
+            <button onclick="downloadSVG(this)">SVG</button>
+            <button onclick="downloadPNG(this)">PNG</button>
+          </div>
+          <button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export" aria-label="Export">...</button>
+        </div>
+      </div>
+      <p class="subtitle">管线阶段编目 · 数据流序列 · 门禁矩阵 · 角色参与矩阵 · 交付收口链路</p>
+    </div>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1200 1000" id="main-svg">
+        <defs>
+          <marker id="arrow-amber" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24" />
+          </marker>
+          <marker id="arrow-emerald" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#34d399" />
+          </marker>
+          <marker id="arrow-rose" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#fb7185" />
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+
+        <rect width="100%" height="100%" fill="url(#grid)" />
+
+        <!-- ========== TITLE AREA ========== -->
+        <text x="600" y="30" fill="white" font-size="14" font-weight="700" text-anchor="middle">YrY SDLC Pipeline — 11 Stages</text>
+
+        <!-- ========== PIPELINE BOUNDARY ========== -->
+        <rect x="30" y="55" width="1140" height="860" rx="12" fill="rgba(251, 191, 36, 0.03)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="8,4"/>
+        <text x="50" y="78" fill="#fbbf24" font-size="10" font-weight="600">YrY Pipeline Boundary</text>
+
+        <!-- ========== ENTRY POINT ========== -->
+        <rect x="100" y="90" width="160" height="70" rx="8" fill="rgba(30, 41, 59, 0.5)" stroke="#94a3b8" stroke-width="2"/>
+        <text x="180" y="118" fill="white" font-size="13" font-weight="700" text-anchor="middle">User Command</text>
+        <text x="180" y="138" fill="#94a3b8" font-size="9" text-anchor="middle">/rui · /rui-story</text>
+
+        <!-- ========== STAGE 1: 需求解析 ========== -->
+        <rect x="310" y="90" width="160" height="70" rx="6" fill="#0f172a"/>
+        <rect x="310" y="90" width="160" height="70" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="390" y="114" fill="white" font-size="11" font-weight="600" text-anchor="middle">1. 需求解析</text>
+        <text x="390" y="132" fill="#94a3b8" font-size="8" text-anchor="middle">pm · 指令意图识别</text>
+        <text x="390" y="148" fill="#475569" font-size="7" text-anchor="middle">输入: 用户原始指令</text>
+
+        <line x1="260" y1="125" x2="308" y2="125" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrow-amber)"/>
+
+        <!-- ========== STAGE 2: 自适应规划 ========== -->
+        <rect x="520" y="90" width="160" height="70" rx="6" fill="#0f172a"/>
+        <rect x="520" y="90" width="160" height="70" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="600" y="114" fill="white" font-size="11" font-weight="600" text-anchor="middle">2. 自适应规划</text>
+        <text x="600" y="132" fill="#94a3b8" font-size="8" text-anchor="middle">pm · 技能匹配 · 路径选择</text>
+        <text x="600" y="148" fill="#475569" font-size="7" text-anchor="middle">输入: 意图分类结果</text>
+
+        <line x1="470" y1="125" x2="518" y2="125" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrow-amber)"/>
+
+        <!-- ========== STAGE 3: 影响分析 ========== -->
+        <rect x="730" y="90" width="160" height="70" rx="6" fill="#0f172a"/>
+        <rect x="730" y="90" width="160" height="70" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="810" y="114" fill="white" font-size="11" font-weight="600" text-anchor="middle">3. 影响分析</text>
+        <text x="810" y="132" fill="#94a3b8" font-size="8" text-anchor="middle">pm · 变更范围评估</text>
+        <text x="810" y="148" fill="#475569" font-size="7" text-anchor="middle">输入: 执行路径规划</text>
+
+        <line x1="680" y1="125" x2="728" y2="125" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrow-amber)"/>
+
+        <!-- ========== STAGE 4: 架构设计 ========== -->
+        <rect x="940" y="90" width="160" height="70" rx="6" fill="#0f172a"/>
+        <rect x="940" y="90" width="160" height="70" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="1020" y="114" fill="white" font-size="11" font-weight="600" text-anchor="middle">4. 架构设计</text>
+        <text x="1020" y="132" fill="#94a3b8" font-size="8" text-anchor="middle">architect · 技术方案</text>
+        <text x="1020" y="148" fill="#475569" font-size="7" text-anchor="middle">输入: 影响分析报告</text>
+
+        <line x1="890" y1="125" x2="938" y2="125" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrow-amber)"/>
+
+        <!-- Row 1→2 connector -->
+        <path d="M 1020 160 L 1020 190 L 1020 210 L 940 210" fill="none" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrow-amber)"/>
+
+        <!-- ========== STAGE 5: 文档生成 (row 2, right-to-left) ========== -->
+        <rect x="730" y="195" width="160" height="70" rx="6" fill="#0f172a"/>
+        <rect x="730" y="195" width="160" height="70" rx="6" fill="rgba(76, 29, 149, 0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="810" y="219" fill="white" font-size="11" font-weight="600" text-anchor="middle">5. 文档生成</text>
+        <text x="810" y="237" fill="#94a3b8" font-size="8" text-anchor="middle">pm+coder · 按公式产出</text>
+        <text x="810" y="253" fill="#475569" font-size="7" text-anchor="middle">输入: 架构设计方案</text>
+
+        <line x1="918" y1="230" x2="892" y2="230" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow-amber)"/>
+
+        <!-- ========== STAGE 6: 预检/分支隔离 ========== -->
+        <rect x="520" y="195" width="160" height="70" rx="6" fill="#0f172a"/>
+        <rect x="520" y="195" width="160" height="70" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="600" y="219" fill="white" font-size="11" font-weight="600" text-anchor="middle">6. 预检 · 分支隔离</text>
+        <text x="600" y="237" fill="#94a3b8" font-size="8" text-anchor="middle">coder · feat/&lt;story&gt; 创建</text>
+        <text x="600" y="253" fill="#475569" font-size="7" text-anchor="middle">输入: 文档基线</text>
+
+        <line x1="708" y1="230" x2="682" y2="230" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrow-amber)"/>
+
+        <!-- ========== STAGE 7: Gate A 测试先行 ========== -->
+        <rect x="310" y="195" width="160" height="70" rx="6" fill="#0f172a"/>
+        <rect x="310" y="195" width="160" height="70" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="390" y="219" fill="white" font-size="11" font-weight="600" text-anchor="middle">7. Gate A · 测试先行</text>
+        <text x="390" y="237" fill="#94a3b8" font-size="8" text-anchor="middle">tester · 编写测试用例</text>
+        <text x="390" y="253" fill="#475569" font-size="7" text-anchor="middle">输入: 文档基线 + 分支</text>
+
+        <line x1="498" y1="230" x2="472" y2="230" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrow-amber)"/>
+
+        <!-- Gate A decision -->
+        <line x1="390" y1="265" x2="390" y2="290" stroke="#fb7185" stroke-width="1.5"/>
+        <polygon points="390,290 410,305 390,320 370,305" fill="rgba(136, 19, 55, 0.6)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="390" y="307" fill="white" font-size="8" font-weight="600" text-anchor="middle">Gate</text>
+        <text x="390" y="319" fill="white" font-size="7" font-weight="600" text-anchor="middle">A</text>
+
+        <!-- Gate A PASS → Stage 8 -->
+        <line x1="390" y1="320" x2="390" y2="350" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>
+        <text x="402" y="338" fill="#34d399" font-size="8">通过</text>
+
+        <!-- Gate A BLOCK → back -->
+        <line x1="370" y1="305" x2="250" y2="305" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="4,4"/>
+        <line x1="250" y1="305" x2="250" y2="125" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="4,4"/>
+        <line x1="250" y1="125" x2="308" y2="125" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="4,4" marker-end="url(#arrow-rose)"/>
+        <text x="180" y="300" fill="#fb7185" font-size="7">阻断 · 修复后重进</text>
+
+        <!-- ========== STAGE 8: 逐模块实现 ========== -->
+        <rect x="270" y="355" width="240" height="120" rx="6" fill="#0f172a"/>
+        <rect x="270" y="355" width="240" height="120" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="2"/>
+        <text x="390" y="380" fill="white" font-size="12" font-weight="600" text-anchor="middle">8. 逐模块实现 · P0 清零</text>
+        <text x="390" y="400" fill="#94a3b8" font-size="8" text-anchor="middle">coder 实现 → 自审查</text>
+        <text x="390" y="416" fill="#94a3b8" font-size="8" text-anchor="middle">code-reviewer 独立审查</text>
+        <text x="390" y="432" fill="#94a3b8" font-size="8" text-anchor="middle">security 安全审查</text>
+        <text x="390" y="452" fill="#34d399" font-size="7" text-anchor="middle">P0 清零方进下一模块</text>
+        <text x="390" y="468" fill="#475569" font-size="7" text-anchor="middle">输入: 测试用例 + 设计文档</text>
+
+        <!-- ========== STAGE 9: Gate B 闭环验证 ========== -->
+        <rect x="270" y="530" width="240" height="70" rx="6" fill="#0f172a"/>
+        <rect x="270" y="530" width="240" height="70" rx="6" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="390" y="555" fill="white" font-size="11" font-weight="600" text-anchor="middle">9. Gate B · 闭环验证</text>
+        <text x="390" y="573" fill="#94a3b8" font-size="8" text-anchor="middle">tester · 运行测试套件</text>
+        <text x="390" y="589" fill="#475569" font-size="7" text-anchor="middle">输入: 实现代码 + 测试用例</text>
+
+        <line x1="390" y1="475" x2="390" y2="528" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>
+
+        <!-- Gate B decision -->
+        <line x1="390" y1="600" x2="390" y2="625" stroke="#fb7185" stroke-width="1.5"/>
+        <polygon points="390,625 410,640 390,655 370,640" fill="rgba(136, 19, 55, 0.6)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="390" y="642" fill="white" font-size="8" font-weight="600" text-anchor="middle">Gate</text>
+        <text x="390" y="654" fill="white" font-size="7" font-weight="600" text-anchor="middle">B</text>
+
+        <!-- Gate B PASS -->
+        <line x1="390" y1="655" x2="390" y2="685" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>
+        <text x="402" y="673" fill="#34d399" font-size="8">通过</text>
+
+        <!-- Gate B BLOCK -->
+        <line x1="370" y1="640" x2="230" y2="640" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="4,4"/>
+        <line x1="230" y1="640" x2="230" y2="415" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="4,4"/>
+        <line x1="230" y1="415" x2="268" y2="415" stroke="#fb7185" stroke-width="1.2" stroke-dasharray="4,4" marker-end="url(#arrow-rose)"/>
+        <text x="160" y="635" fill="#fb7185" font-size="7">阻断 · 返回修复</text>
+
+        <!-- ========== STAGE 10: 自改进复盘 ========== -->
+        <rect x="540" y="530" width="220" height="70" rx="6" fill="#0f172a"/>
+        <rect x="540" y="530" width="220" height="70" rx="6" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1.5"/>
+        <text x="650" y="555" fill="white" font-size="11" font-weight="600" text-anchor="middle">10. 复盘改进</text>
+        <text x="650" y="573" fill="#94a3b8" font-size="8" text-anchor="middle">self-improve · D0-D7 诊断</text>
+        <text x="650" y="589" fill="#475569" font-size="7" text-anchor="middle">输入: 测试报告 + 偏差表</text>
+
+        <line x1="510" y1="600" x2="538" y2="600" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>
+
+        <!-- ========== STAGE 11: 交付收口 ========== -->
+        <rect x="540" y="655" width="220" height="100" rx="6" fill="#0f172a"/>
+        <rect x="540" y="655" width="220" height="100" rx="6" fill="rgba(120, 53, 15, 0.3)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="650" y="680" fill="white" font-size="11" font-weight="600" text-anchor="middle">11. 交付收口</text>
+        <text x="650" y="700" fill="#94a3b8" font-size="8" text-anchor="middle">Hook 1: 追加日志</text>
+        <text x="650" y="716" fill="#94a3b8" font-size="8" text-anchor="middle">Hook 2: 文档同步</text>
+        <text x="650" y="732" fill="#94a3b8" font-size="8" text-anchor="middle">Hook 3: 企微通知</text>
+        <text x="650" y="748" fill="#475569" font-size="7" text-anchor="middle">输入: 复盘改进报告</text>
+
+        <line x1="650" y1="600" x2="650" y2="653" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrow-amber)"/>
+
+        <!-- ========== DONE ========== -->
+        <rect x="820" y="665" width="140" height="80" rx="8" fill="rgba(6, 78, 59, 0.5)" stroke="#34d399" stroke-width="2"/>
+        <text x="890" y="695" fill="#34d399" font-size="13" font-weight="700" text-anchor="middle">交付完成</text>
+        <text x="890" y="715" fill="#94a3b8" font-size="9" text-anchor="middle">全阶段闭环</text>
+        <text x="890" y="733" fill="#34d399" font-size="8" text-anchor="middle">可追溯 · 可回滚</text>
+
+        <line x1="760" y1="705" x2="818" y2="705" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>
+
+        <!-- ========== ROLE ASSIGNMENTS (bottom) ========== -->
+        <text x="600" y="810" fill="white" font-size="10" font-weight="600" text-anchor="middle">每阶段角色参与</text>
+
+        <rect x="50" y="825" width="1100" height="65" rx="6" fill="rgba(15, 23, 42, 0.8)" stroke="#334155" stroke-width="1"/>
+
+        <!-- Stage 1-4 roles -->
+        <text x="80" y="845" fill="#22d3ee" font-size="8" text-anchor="middle">1-2</text>
+        <text x="80" y="858" fill="#94a3b8" font-size="7" text-anchor="middle">pm</text>
+        <text x="80" y="875" fill="#475569" font-size="7" text-anchor="middle">必须</text>
+
+        <text x="155" y="845" fill="#22d3ee" font-size="8" text-anchor="middle">3</text>
+        <text x="155" y="858" fill="#94a3b8" font-size="7" text-anchor="middle">pm, architect</text>
+        <text x="155" y="875" fill="#475569" font-size="7" text-anchor="middle">必须</text>
+
+        <text x="240" y="845" fill="#22d3ee" font-size="8" text-anchor="middle">4</text>
+        <text x="240" y="858" fill="#94a3b8" font-size="7" text-anchor="middle">architect</text>
+        <text x="240" y="875" fill="#475569" font-size="7" text-anchor="middle">必须</text>
+
+        <text x="325" y="845" fill="#22d3ee" font-size="8" text-anchor="middle">5</text>
+        <text x="325" y="858" fill="#94a3b8" font-size="7" text-anchor="middle">pm, coder</text>
+        <text x="325" y="875" fill="#475569" font-size="7" text-anchor="middle">必须</text>
+
+        <text x="410" y="845" fill="#22d3ee" font-size="8" text-anchor="middle">6</text>
+        <text x="410" y="858" fill="#94a3b8" font-size="7" text-anchor="middle">coder</text>
+        <text x="410" y="875" fill="#475569" font-size="7" text-anchor="middle">必须</text>
+
+        <text x="495" y="845" fill="#22d3ee" font-size="8" text-anchor="middle">7</text>
+        <text x="495" y="858" fill="#94a3b8" font-size="7" text-anchor="middle">tester</text>
+        <text x="495" y="875" fill="#475569" font-size="7" text-anchor="middle">必须</text>
+
+        <text x="590" y="845" fill="#22d3ee" font-size="8" text-anchor="middle">8</text>
+        <text x="590" y="858" fill="#94a3b8" font-size="7" text-anchor="middle">coder</text>
+        <text x="590" y="868" fill="#475569" font-size="6" text-anchor="middle">必须</text>
+        <text x="590" y="878" fill="#475569" font-size="6" text-anchor="middle">reviewer, security 可选</text>
+
+        <text x="710" y="845" fill="#22d3ee" font-size="8" text-anchor="middle">9</text>
+        <text x="710" y="858" fill="#94a3b8" font-size="7" text-anchor="middle">tester</text>
+        <text x="710" y="875" fill="#475569" font-size="7" text-anchor="middle">必须</text>
+
+        <text x="795" y="845" fill="#22d3ee" font-size="8" text-anchor="middle">10</text>
+        <text x="795" y="858" fill="#94a3b8" font-size="7" text-anchor="middle">self-improve</text>
+        <text x="795" y="875" fill="#475569" font-size="7" text-anchor="middle">必须</text>
+
+        <text x="910" y="845" fill="#22d3ee" font-size="8" text-anchor="middle">11</text>
+        <text x="910" y="858" fill="#94a3b8" font-size="7" text-anchor="middle">reporter, rui-bot</text>
+        <text x="910" y="875" fill="#475569" font-size="7" text-anchor="middle">必须</text>
+
+        <!-- ========== LEGEND ========== -->
+        <rect x="1000" y="825" width="150" height="65" rx="6" fill="rgba(15, 23, 42, 0.9)" stroke="#334155" stroke-width="1"/>
+        <text x="1012" y="842" fill="white" font-size="8" font-weight="600">图例</text>
+        <rect x="1012" y="850" width="12" height="8" rx="2" fill="rgba(6, 78, 59, 0.4)" stroke="#34d399" stroke-width="1"/>
+        <text x="1030" y="857" fill="#94a3b8" font-size="7">处理阶段</text>
+        <rect x="1012" y="863" width="12" height="8" rx="2" fill="rgba(136, 19, 55, 0.4)" stroke="#fb7185" stroke-width="1"/>
+        <text x="1030" y="870" fill="#94a3b8" font-size="7">门禁阻断</text>
+        <line x1="1012" y1="881" x2="1024" y2="881" stroke="#fb7185" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="1030" y="884" fill="#94a3b8" font-size="7">阻断返回</text>
+      </svg>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-header"><div class="card-dot amber"></div><h3>正常路径 (Happy Path)</h3></div>
+        <ul>
+          <li>指令 → 解析 → 规划 → 分析 → 设计</li>
+          <li>文档 → 分支 → Gate A 通过</li>
+          <li>逐模块实现 → P0 清零</li>
+          <li>Gate B 通过 → 复盘 → 交付</li>
+          <li>三步 Hook: 日志 → 同步 → 通知</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-dot rose"></div><h3>阻断路径 (Block Conditions)</h3></div>
+        <ul>
+          <li>Gate A 阻断: 测试用例不达标</li>
+          <li>Gate B 阻断: 测试未通过/P0 未清零</li>
+          <li>no-branch-isolation: 未切 feat 分支</li>
+          <li>chain-broken: 影响链未闭合</li>
+          <li>auto-merge: 非法自动合并</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-dot emerald"></div><h3>关键产出物</h3></div>
+        <ul>
+          <li>01-需求解析 → 故事定义</li>
+          <li>02-自适应规划 → 执行路径</li>
+          <li>03-影响分析 → 变更影响报告</li>
+          <li>04-架构设计 → 技术方案文档</li>
+          <li>05-09 → 故事/场景/测试/实现文档</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-dot cyan"></div><h3>协作角色映射</h3></div>
+        <ul>
+          <li>pm: 阶段 1-3, 5 (必须)</li>
+          <li>architect: 阶段 3-4 (必须)</li>
+          <li>coder: 阶段 5-6, 8 (必须)</li>
+          <li>tester: 阶段 7, 9 (必须)</li>
+          <li>self-improve: 阶段 10 (必须)</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="footer">YrY v1.27.0 · Data Flow Pipeline · feat/yry-arch</p>
+  </div>
+
+  <script>
+    function getSVGString() {
+      const svg = document.getElementById('main-svg');
+      const clone = svg.cloneNode(true);
+      clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      return new XMLSerializer().serializeToString(clone);
+    }
+    function downloadSVG(btn) {
+      const orig = btn.textContent;
+      try {
+        const data = '<?xml version="1.0" encoding="UTF-8"?>\n' + getSVGString();
+        const blob = new Blob([data], { type: 'image/svg+xml' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = '场景-2-数据流追踪.svg'; a.click();
+        URL.revokeObjectURL(url);
+        btn.textContent = 'Done';
+      } catch(e) { btn.textContent = 'Failed'; }
+      setTimeout(() => btn.textContent = orig, 2000);
+    }
+    function downloadPNG(btn) {
+      const orig = btn.textContent; btn.textContent = '...';
+      try {
+        const svgData = getSVGString();
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width * 2; canvas.height = img.height * 2;
+          const ctx = canvas.getContext('2d'); ctx.scale(2, 2);
+          ctx.fillStyle = '#020617'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0);
+          const a = document.createElement('a'); a.href = canvas.toDataURL('image/png'); a.download = '场景-2-数据流追踪.png'; a.click();
+          URL.revokeObjectURL(url);
+          btn.textContent = 'Done';
+        };
+        img.src = url;
+      } catch(e) { btn.textContent = 'Failed'; }
+      setTimeout(() => btn.textContent = orig, 2000);
+    }
+  </script>
+</body>
+</html>
