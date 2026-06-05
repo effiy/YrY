@@ -39,21 +39,17 @@
     .meta-link { color: var(--cyan, #22d3ee); text-decoration: none; font-size: 0.68rem; margin-left: 2px; transition: color 0.15s; }
     .meta-link:hover { text-decoration: underline; }
 
-    .stats { display: flex; gap: 14px; justify-content: center; margin-bottom: 40px; flex-wrap: wrap; animation: fadeInDown 0.5s 0.1s ease both; }
+    .stats { display: flex; gap: 0; justify-content: center; margin-bottom: 40px; flex-wrap: wrap; animation: fadeInDown 0.5s 0.1s ease both; background: var(--bg-card); border: var(--border-subtle); border-radius: var(--radius-card); overflow: hidden; box-shadow: var(--shadow-card); }
     .stat {
-      background: var(--bg-card); border: var(--border-subtle);
-      border-radius: var(--radius-card); padding: 16px 24px; text-align: center;
-      box-shadow: var(--shadow-card); min-width: 100px;
-      text-decoration: none; color: inherit; display: block;
-      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
-      cursor: pointer; position: relative;
+      text-decoration: none; color: inherit; display: flex; align-items: center; gap: 8px;
+      padding: 16px 28px; transition: background 0.15s, transform 0.15s;
+      position: relative; cursor: pointer;
     }
-    a.stat::after { content: " ▾"; font-size: 0.6em; opacity: 0; transition: opacity 0.15s; }
-    a.stat:hover::after { opacity: 0.5; color: var(--color-accent); }
-    a.stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: rgba(255,193,7,0.35); }
-    .stat .num { font-size: 1.7rem; font-weight: 700; color: var(--color-accent); }
+    .stat + .stat { border-left: var(--border-subtle); }
+    .stat:hover { background: rgba(255,193,7,0.04); }
+    .stat .num { font-size: 1.6rem; font-weight: 700; color: var(--color-accent); line-height: 1; }
     .stat .num.green { color: var(--color-accent-2); }
-    .stat .label { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+    .stat .label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
 
     /* ── Cross-panel navigation ──────────────── */
     .cross-nav {
@@ -88,7 +84,7 @@
     }
     .sub-title .accent { color: var(--color-accent); }
 
-    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 10px; margin-bottom: 10px; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 10px; }
     .item-card {
       background: var(--bg-card); border: var(--border-subtle);
       border-radius: 10px; padding: 13px 16px; box-shadow: var(--shadow-card);
@@ -122,7 +118,7 @@
     .item-card .body .meta .ref-link:hover { text-decoration: underline; }
 
     /* ── Scene cards ─────────────────────────── */
-    .scene-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; margin-bottom: 10px; }
+    .scene-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-bottom: 10px; }
     .scene-card {
       background: var(--bg-card); border: var(--border-subtle);
       border-radius: 10px; padding: 14px 16px; box-shadow: var(--shadow-card);
@@ -148,7 +144,7 @@
     .scene-card .scene-meta span { color: var(--text-muted); font-size: 0.5rem; margin-right: 2px; }
 
     /* ── Story cards (compact, for L2) ───────── */
-    .story-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 12px; margin-bottom: 10px; }
+    .story-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 14px; margin-bottom: 10px; }
     .story-card {
       background: var(--bg-card); border: var(--border-subtle);
       border-radius: var(--radius-card); padding: 20px 22px; box-shadow: var(--shadow-card);
@@ -200,19 +196,25 @@
     .back-top:hover { border-color: var(--color-accent); color: var(--color-accent); }
 
     /* ── Responsive ────────────────────────── */
-    @media (max-width: 768px) {
-      .container { padding: 24px 12px 12px; }
-      .header h1 { font-size: 1.5rem; }
-      .card-grid { grid-template-columns: 1fr; }
-      .scene-grid { grid-template-columns: 1fr; }
+    @media (max-width: 900px) {
       .story-grid { grid-template-columns: 1fr; }
-      .stats { gap: 8px; }
-      .stat { padding: 10px 14px; min-width: 70px; }
+    }
+    @media (max-width: 768px) {
+      .container { padding: 20px 16px; }
+      .header h1 { font-size: 1.5rem; }
+      .card-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+      .scene-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+      .story-grid { grid-template-columns: 1fr; }
+      .stats { flex-direction: column; } .stat + .stat { border-left: none; border-top: var(--border-subtle); }
+      .stat { padding: 12px 20px; justify-content: center; }
       .stat .num { font-size: 1.3rem; }
       .back-top { bottom: 16px; right: 16px; width: 36px; height: 36px; }
     }
     @media (max-width: 480px) {
+      .container { padding: 16px 10px; }
       .header h1 { font-size: 1.3rem; }
+      .card-grid { grid-template-columns: 1fr; }
+      .scene-grid { grid-template-columns: 1fr; }
       .item-card { padding: 12px 14px; }
     }
   
@@ -227,12 +229,12 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
     </div>
 
     <div class="stats">
-      <a class="stat" href="#layer-skills"><div class="num">6</div><div class="label">技能</div></a>
-      <a class="stat" href="#layer-story"><div class="num">2</div><div class="label">故事</div></a>
-      <a class="stat" href="#layer-scene"><div class="num green">8</div><div class="label">场景</div></a>
-      <a class="stat" href="#layer-agents"><div class="num">8</div><div class="label">Agent 角色</div></a>
-      <a class="stat" href="#layer-rules"><div class="num green">8</div><div class="label">规则</div></a>
-      <a class="stat" href="#layer-refs"><div class="num green">5</div><div class="label">参考入口</div></a>
+      <a class="stat" href="#layer-skills"><span class="num">6</span><span class="label">技能</span></a>
+      <a class="stat" href="#layer-story"><span class="num">2</span><span class="label">故事</span></a>
+      <a class="stat" href="#layer-scene"><span class="num green">8</span><span class="label">场景</span></a>
+      <a class="stat" href="#layer-agents"><span class="num">8</span><span class="label">Agent</span></a>
+      <a class="stat" href="#layer-rules"><span class="num green">8</span><span class="label">规则</span></a>
+      <a class="stat" href="#layer-refs"><span class="num green">5</span><span class="label">参考</span></a>
     </div>
 
     <div class="cross-nav">
