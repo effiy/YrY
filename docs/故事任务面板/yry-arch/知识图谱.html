@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YrY 架构知识图谱 — v1.27.0</title>
+<style>
+  :root {
+    --bg: #020617;
+    --surface: #0f172a;
+    --border: #1e293b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --cyan: #22d3ee;
+    --emerald: #34d399;
+    --violet: #a78bfa;
+    --rose: #fb7185;
+    --amber: #fbbf24;
+    --slate: #94a3b8;
+    --blue: #3B82F6;
+    --pink: #EC4899;
+    --red: #EF4444;
+    --green: #22C55E;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    user-select: none;
+  }
+  #toolbar {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 8px;
+    z-index: 100;
+  }
+  #toolbar button {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  #toolbar button:hover { background: #1e293b; border-color: #334155; }
+  #toolbar button.export-btn { border-color: var(--emerald); color: var(--emerald); }
+  #toolbar button.export-btn:hover { background: rgba(52,211,153,0.1); }
+  #legend {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    z-index: 100;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    max-width: 600px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--muted);
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .legend-dot.domain { background: var(--cyan); }
+  .legend-dot.flow { background: var(--emerald); }
+  .legend-dot.step { background: var(--violet); }
+  .legend-dot.source { background: var(--blue); }
+  .legend-dot.edge-orchestrates { background: #1E40AF; }
+  .legend-dot.edge-governs { background: #B91C1C; }
+  .legend-dot.edge-depends { background: #64748B; }
+  .legend-dot.edge-feedback { background: #9D174D; }
+  #toggle-bar {
+    position: fixed;
+    top: 12px;
+    left: 20px;
+    display: flex;
+    gap: 8px;
+    z-index: 100;
+  }
+  #toggle-bar button {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    font-family: inherit;
+    font-size: 11px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--muted);
+  }
+  #toggle-bar button.active { color: white; }
+  #toggle-bar button.toggle-domain { border-color: var(--cyan); }
+  #toggle-bar button.toggle-domain.active { background: rgba(34,211,238,0.15); color: var(--cyan); }
+  #toggle-bar button.toggle-flow { border-color: var(--emerald); }
+  #toggle-bar button.toggle-flow.active { background: rgba(52,211,153,0.15); color: var(--emerald); }
+  #toggle-bar button.toggle-step { border-color: var(--violet); }
+  #toggle-bar button.toggle-step.active { background: rgba(167,139,250,0.15); color: var(--violet); }
+  #tooltip {
+    position: fixed;
+    pointer-events: none;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 10px;
+    line-height: 1.6;
+    max-width: 320px;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.15s;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  }
+  #tooltip .tt-label { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+  #tooltip .tt-type { color: var(--muted); font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  #tooltip .tt-desc { color: #94a3b8; font-size: 10px; }
+  #tooltip .tt-meta { color: #475569; font-size: 9px; margin-top: 4px; }
+  #title {
+    position: fixed;
+    top: 50px;
+    left: 20px;
+    z-index: 100;
+    pointer-events: none;
+  }
+  #title h1 { font-size: 14px; font-weight: 600; color: var(--text); }
+  #title span { font-size: 10px; color: var(--muted); }
+  svg { display: block; }
+  .node-rect { transition: opacity 0.3s; }
+  .node-rect.hidden { opacity: 0.08; pointer-events: none; }
+  .edge-path { transition: opacity 0.3s; fill: none; stroke-width: 1; }
+  .edge-path.hidden { opacity: 0.04; }
+  .edge-path.dimmed { opacity: 0.15; }
+  .grid-bg { stroke: #1e293b; stroke-width: 0.5; stroke-dasharray: 4 4; }
+</style>
+</head>
+<body>
+
+<div id="title">
+  <h1>YrY Architecture Knowledge Graph</h1>
+  <span>v1.27.0 · Schema 2.0.0 · 38 nodes · 44 edges</span>
+</div>
+
+<div id="toggle-bar">
+  <button class="toggle-domain active" data-type="domain" onclick="toggleType('domain', this)">◈ Domains</button>
+  <button class="toggle-flow active" data-type="flow" onclick="toggleType('flow', this)">⇢ Flows</button>
+  <button class="toggle-step active" data-type="step" onclick="toggleType('step', this)">◎ Steps</button>
+</div>
+
+<div id="toolbar">
+  <button class="export-btn" onclick="exportSVG()">⬇ Export SVG</button>
+  <button onclick="resetView()">↺ Reset</button>
+</div>
+
+<div id="tooltip"></div>
+
+<div id="legend">
+  <div class="legend-item"><span class="legend-dot domain"></span> Domain</div>
+  <div class="legend-item"><span class="legend-dot flow"></span> Flow</div>
+  <div class="legend-item"><span class="legend-dot step"></span> Step</div>
+  <div class="legend-item"><span class="legend-dot source"></span> Source Module</div>
+  <div class="legend-item" style="margin-left:12px;"><span class="legend-dot edge-orchestrates"></span> orchestrates</div>
+  <div class="legend-item"><span class="legend-dot edge-governs"></span> governs</div>
+  <div class="legend-item"><span class="legend-dot edge-depends"></span> depends_on</div>
+  <div class="legend-item"><span class="legend-dot edge-feedback"></span> feedback</div>
+</div>
+
+<svg id="graph"></svg>
+
+<script>
+// ─── Embedded Knowledge Graph Data ───
+const KG = {
+  "version": "2.0.0",
+  "meta": { "story": "yry-arch", "generated": "2026-06-05", "project": "YrY", "version": "1.27.0" },
+  "nodes": [
+    {"id":"domain:module-ecosystem","type":"domain","label":"Module Ecosystem","keyContent":"skills · agents · rules","summary":"YrY module topology: 6 skills, 8 agents, 8 rules and their dependency chains","description":"Complete module ecosystem of YrY—all capability modules (skills), collaborative roles (agents), and governance constraints (rules). Each module annotated with entry point, dependencies, downstream consumers, and interface contracts.","layer":"Module Layer","risk":null},
+    {"id":"domain:pipeline-execution","type":"domain","label":"Pipeline Execution","keyContent":"parse → split → generate → gate A → implement → gate B → deliver","summary":"SDLC pipeline: 7 stages from user command to delivery closure with 2 quality gates","description":"YrY pipeline execution domain—defines the full lifecycle from requirement parsing, adaptive planning, impact analysis, architecture design, document generation, branch isolation, test-first (Gate A), module-by-module implementation, closed-loop verification (Gate B), review & improvement, to delivery closure.","layer":"Pipeline Layer","risk":null},
+    {"id":"flow:module-location","type":"flow","label":"Module Location Flow","keyContent":"identify → find entry → trace deps → identify consumers → verify contract","summary":"Five-step progressive exploration to locate and understand any module in the system","description":"Standard method to locate and understand any YrY module. Step 1: identify module type (skill/agent/rule). Step 2: locate entry file. Step 3: trace upstream dependencies. Step 4: identify downstream consumers. Step 5: cross-verify interface contracts.","layer":"Module Layer","risk":null},
+    {"id":"flow:command-to-delivery","type":"flow","label":"Command-to-Delivery Flow","keyContent":"parse → split → generate → gate A → implement → gate B → deliver","summary":"Full execution path from user command entry to delivery closure with dual gates","description":"Core execution path of YrY. Parse user command intent → split requirements into story units → generate design docs and test cases → Gate A test-first check → module-by-module implementation with P0 clearance → Gate B closed-loop verification → delivery closure (append log + sync docs + WeCom notification).","layer":"Pipeline Layer","risk":null},
+    {"id":"step:identify-module-type","type":"step","label":"S1: Identify Module Type","keyContent":"skill | agent | rule | file","summary":"Determine whether target module is a skill, agent, rule, or other file type","description":"Step 1 of module location: classify the target module by name and path into skill (skills/), agent (agents/), rule (rules/), or other. Type determines subsequent dependency tracing strategy.","layer":"Module Layer","risk":null},
+    {"id":"step:find-entry-file","type":"step","label":"S2: Find Entry File","keyContent":"SKILL.md · AGENT.md · README.md","summary":"Locate the primary entry file—skill spec, agent contract, or rule document","description":"Step 2 of module location: based on module type, locate the entry file. Skills: skills/<name>/SKILL.md. Agents: agents/<name>.md. Rules: rules/<name>.md. The entry file contains core responsibilities, inputs/outputs, and contracts.","layer":"Module Layer","risk":null},
+    {"id":"step:trace-dependencies","type":"step","label":"S3: Trace Dependencies","keyContent":"depends_on · imports · references","summary":"Trace upstream along import and reference chains to find all dependencies","description":"Step 3 of module location: from the entry file, trace all upstream dependencies—other skills, agents, rules it directly references, imported helper scripts, and external resources. Uses depends_on/imports/references edge types. Critical input for impact analysis.","layer":"Module Layer","risk":"🟡"},
+    {"id":"step:identify-consumers","type":"step","label":"S4: Identify Consumers","keyContent":"consumers · consumed_by · hands_off","summary":"Trace downstream to find all modules that consume this module's outputs","description":"Step 4 of module location: identify all downstream consumers—which skills orchestrate it, which agents depend on its output, which rules constrain its behavior. Core input for change impact assessment.","layer":"Module Layer","risk":"🟡"},
+    {"id":"step:verify-contract","type":"step","label":"S5: Verify Contract","keyContent":"interface contract · handoff signal · block identifier","summary":"Cross-verify interface contracts match actual upstream/downstream call relationships","description":"Step 5 of module location: cross-verify the module's declared interface contracts (inputs/outputs/handoff signals) match actual upstream and downstream call relationships. Check for undeclared implicit dependencies, falsely claimed consumers, or mismatched handoff contracts.","layer":"Module Layer","risk":null},
+    {"id":"step:parse-command","type":"step","label":"P1: Parse Command","keyContent":"/rui · intent parsing · init|doc|code","summary":"Parse user command intent and parameters, identify story type and expected path","description":"Stage 1 of command-to-delivery: user enters requirement via /rui command. System parses intent (init/doc/code/story), extracts key parameters, identifies story type, and passes result to adaptive planning. The sole entry point of the pipeline.","layer":"Pipeline Layer","risk":null},
+    {"id":"step:split-stories","type":"step","label":"P2: Split Stories","keyContent":"pm · adaptive planning · impact analysis · architecture design","summary":"pm splits requirements into story units, matches roles, performs impact analysis","description":"Stage 2: pm Agent receives parsed command, performs adaptive planning—splits requirements into story units and function points, matches execution roles, evaluates change impact, produces architecture design and technical plan. Outputs story task doc and design baseline.","layer":"Pipeline Layer","risk":null},
+    {"id":"step:generate-docs","type":"step","label":"P3: Generate Docs","keyContent":"doc --from-code · story formula · scene docs","summary":"Generate story task doc, scene docs, knowledge graph, and establish document baseline","description":"Stage 3: generate complete document baseline per story formula—story task .md (Story/FP/AC/BR), scene docs (01-04 numbered templates), knowledge graph skeleton (story/scene/source nodes). This output is the single source of truth for all subsequent implementation.","layer":"Pipeline Layer","risk":null},
+    {"id":"step:gate-a-verify","type":"step","label":"P4: Gate A — Verify","keyContent":"test-first · branch isolation · pre-check","summary":"Verify branch isolation and test case completeness; block implementation if failed","description":"Stage 4: Gate A mandatory checkpoint—verify current branch is feat/<name> (branch isolation), test cases written per scene docs (test-first). Either condition fails triggers no-branch-isolation or no-test-baseline block. The last defense before coding begins.","layer":"Pipeline Layer","risk":"🔴"},
+    {"id":"step:implement-modules","type":"step","label":"P5: Implement Modules","keyContent":"coder · P0 clearance · self-review · code-reviewer","summary":"coder implements module by module; each module P0 self-review cleared before next","description":"Stage 5: coder Agent implements modules sequentially—read design docs → impact analysis → code → self-review (Correctness/Security/Maintainability) → P0 clearance → next module. Optionally triggers code-reviewer. security Agent imposes security constraints. Each change traceable, impact chain closed.","layer":"Pipeline Layer","risk":"🔴"},
+    {"id":"step:gate-b-verify","type":"step","label":"P6: Gate B — Verify","keyContent":"closed-loop verification · test suite · fix ≤ 2 rounds","summary":"Run full test suite to verify correctness; block delivery if failures exceed 2 fix rounds","description":"Stage 6: Gate B closed-loop verification—run full test suite, confirm 0 failures and no regressions. tester validates all ACs pass. reporter checks doc integrity and graph consistency. >2 fix rounds triggers architecture problem questioning mode. Pass to enter delivery.","layer":"Pipeline Layer","risk":"🔴"},
+    {"id":"step:deliver","type":"step","label":"P7: Deliver","keyContent":"append log · sync docs · WeCom notify · self-improve","summary":"Execute delivery three-step hook—append log, sync docs, send notification, trigger review","description":"Stage 7 (endpoint): delivery closure after pipeline completion—① append execution log to .memory/; ② sync docs ensuring README/CLAUDE.md consistency; ③ send WeCom notification via rui-bot. self-improve Agent triggers review loop: diagnose (D0-D7) → skillify experience → memory compression → evaluate (E1-E4). Story status updated to closed.","layer":"Pipeline Layer","risk":null},
+    {"id":"node:skill-rui","type":"source","label":"skill: rui","keyContent":"/rui · rui init · rui doc · rui code","summary":"Core skill entry—schedules pm→architect→coder→tester→reporter full pipeline","description":"YrY's core skill module providing the /rui command family (init/doc/code/story). Parses user commands, loads project context, schedules agents per pipeline order. The sole user operation entry point and root of the module topology.","layer":"Module Layer","risk":null},
+    {"id":"node:agent-pm","type":"source","label":"agent: pm","keyContent":"requirement analysis · story splitting · priority · scheduling","summary":"Product Manager role—parses requirements, splits stories, decides priority, schedules agents","description":"pm is the pipeline scheduling hub. Receives parsed /rui command, performs requirement analysis and story splitting, matches execution roles, decides story priorities. Orchestrates architect for design, coder for implementation, tester for testing, reporter for reporting. Only role authorized to decide story priority.","layer":"Module Layer","risk":null},
+    {"id":"node:rule-code-pipeline","type":"source","label":"rule: code-pipeline","keyContent":"branch isolation · module-by-module · P0 gate · Iron Law","summary":"Source change pipeline rule—branch isolation gate, module-by-module implementation, P0 clearance","description":"The sole legal path for source changes. Enforces branch isolation gate (feat/<name>), module-by-module implementation with self-review P0 clearance, fix cap at 2 rounds. Defines prohibited behaviors (Red Flags) and block identifiers. An uncompromisable Iron Law rule.","layer":"Module Layer","risk":"🔴"},
+    {"id":"node:rule-delivery-gate","type":"source","label":"rule: delivery-gate","keyContent":"① append log · ② sync docs · ③ send notify · delivery-incomplete","summary":"Delivery closure rule—three-step hook executed in order; unmarked equals unexecuted","description":"Mandatory delivery closure rule. After pipeline completion, three-step hook must execute in order: ① append execution log, ② sync docs (README/CLAUDE.md), ③ WeCom notification via rui-bot. Unmarked equals unexecuted. Block status also triggers notification. Full test suite must pass before delivery.","layer":"Module Layer","risk":"🔴"},
+    {"id":"node:agent-coder","type":"source","label":"agent: coder","keyContent":"technical solution · module implementation · self-review · P0 clearance · impact analysis","summary":"Code implementation role—technical solution execution, module-by-module with 3-dimension self-review","description":"coder is the source change executor. Implements modules sequentially—read design docs → impact analysis → code → self-review (Correctness/Security/Maintainability) → P0 clearance → next module. Constrained by code-pipeline rules and security Agent. Produces implementation report (deviation table + P0 review table), syncs knowledge graph.","layer":"Module Layer","risk":null},
+    {"id":"node:agent-security","type":"source","label":"agent: security","keyContent":"threat modeling · security constraints · injection · auth bypass","summary":"Security role—leads threat modeling, imposes security constraints on coder","description":"security Agent governs the security dimension. Leads threat modeling, defines security constraints (auth cannot be bypassed, keys never on disk, input must be validated). Imposes constraints on coder during implementation via constrained_by edges. Reviews auth paths, injection points, data exposure surfaces.","layer":"Module Layer","risk":"🔴"},
+    {"id":"node:agent-self-improve","type":"source","label":"agent: self-improve","keyContent":"diagnose D0-D7 · skillify experience · memory compression · E1-E4","summary":"Self-improvement role—diagnoses defects, distills experience into skills, evaluates outcomes","description":"self-improve Agent executes YrY's self-improvement closed loop. Post-delivery triggers review: diagnose defects (D0-D7 grading) → skillify effective experience (distill into spec updates) → memory compression inject into subsequent context → evaluate outcomes (E1-E4). Submits improvement proposals to pm via feedback edges, forming positive evolution loop.","layer":"Module Layer","risk":null},
+    {"id":"node:skill-rui-bot","type":"source","label":"skill: rui-bot","keyContent":"WeCom notify · webhook · delivery notification","summary":"Bot notification skill—sends pipeline completion notices and block alerts via WeCom webhook","description":"rui-bot skill handles external notification for delivery closure. Sends WeCom webhook messages: pipeline completion notice (story name, execution summary, delivery time) or block alert (block identifier and recovery guide). Manually triggered, depends on rui-import hook.","layer":"Module Layer","risk":"🟡"},
+    {"id":"node:agent-tester","type":"source","label":"agent: tester","keyContent":"test design · AC verification · Gate B · test report","summary":"Testing role—test case design, AC verification execution, Gate B checkpoint","description":"tester Agent manages the testing lifecycle. Gate A phase: writes test cases per scene docs. Gate B phase: runs full test suite verifying all ACs. Produces test report (§3), validates function point coverage. Blocks delivery and returns to coder for fixes on failure.","layer":"Module Layer","risk":null},
+    {"id":"node:rule-security-guardrails","type":"source","label":"rule: security-guardrails","keyContent":"auth cannot bypass · keys never on disk · input must validate","summary":"Security guardrail rule—defines uncompromisable security baselines; XSS/injection/auth-bypass are P0","description":"Security guardrail rule defines uncompromisable security baselines: auth cannot be bypassed, keys never on disk (env vars only), input must be validated (XSS/injection are P0). Spec integrity (every skill has complete SKILL.md) and self-hosting consistency (plugin.json matches actual) are also mandatory.","layer":"Module Layer","risk":"🔴"},
+    {"id":"node:agent-architect","type":"source","label":"agent: architect","keyContent":"architecture design · technical solution · design doc · ADR","summary":"Architecture design role—technical solution formulation, passes design constraints to coder","description":"architect Agent handles technical architecture decisions. Under pm scheduling, formulates technical solutions and produces design docs. Passes design constraints to coder via hands_off edges. Maintains ADR (Architecture Decision Records) ensuring architectural consistency. Can be triggered by self-improve proposals for re-decision.","layer":"Module Layer","risk":null},
+    {"id":"node:agent-code-reviewer","type":"source","label":"agent: code-reviewer","keyContent":"independent review · CRITICAL/HIGH/LOW · correctness · maintainability","summary":"Code review role—independent review of coder output with graded issue annotation","description":"code-reviewer Agent is an optional enhanced review step. Receives coder's diff + design docs, independently reviews from correctness/maintainability/simplicity dimensions. Annotates findings as CRITICAL/HIGH/LOW. CRITICAL/HIGH require fix and re-review. Zero findings or LOW only to proceed to next module.","layer":"Module Layer","risk":null},
+    {"id":"node:agent-reporter","type":"source","label":"agent: reporter","keyContent":"implementation report · deviation table · consistency check · delivery notify","summary":"Reporting role—aggregates implementation deviations, verifies doc consistency, triggers delivery","description":"reporter Agent handles pipeline-end aggregation and closure. Collects implementation data from all stages, generates implementation report (with deviation table). Verifies knowledge graph stats match reality. In delivery phase, checks doc sync status and triggers rui-bot notification.","layer":"Module Layer","risk":null},
+    {"id":"node:rule-doc-generation","type":"source","label":"rule: doc-generation","keyContent":"expression priority · diagram→text→table · story formula · no-diagram=incomplete","summary":"Document generation rule—expression priority (diagram→text→table), non-degradable, standardizes formats","description":"Document generation rule defines format constraints for all YrY output docs. Expression priority iron law: diagram → structured text → table, non-degradable. Scenes without architecture diagrams are considered incomplete. Story docs must follow formula generation (01-09 numbering). Standardizes scene doc templates and architecture diagram templates.","layer":"Module Layer","risk":null},
+    {"id":"node:rule-architecture-diagram","type":"source","label":"rule: architecture-diagram","keyContent":"color palette · semantic colors · dark theme · export toolbar","summary":"Architecture diagram rule—design system color palette, component patterns, generation timing","description":"Architecture diagram generation rule defines YrY's design system. Semantic color palette (frontend=cyan / backend=emerald / database=violet / security=rose), JetBrains Mono typography, dark #020617 background. Each scene with interaction/data flow generates a corresponding architecture diagram. Template at skills/rui/resources/architecture-template.html.","layer":"Module Layer","risk":null},
+    {"id":"node:skill-rui-story","type":"source","label":"skill: rui-story","keyContent":"/rui-story list · story panel · status management","summary":"Story panel management skill—lists, views, manages story task status and progress","description":"rui-story skill provides story task panel management. /rui-story list to view all story statuses and progress, manages story lifecycle (open → in-progress → closed). Supports pm's priority decisions and scheduling.","layer":"Module Layer","risk":null},
+    {"id":"node:skill-rui-claude","type":"source","label":"skill: rui-claude","keyContent":"/rui-claude · CLAUDE.md management · project constraints","summary":"Claude config management skill—manages CLAUDE.md project constraints and agent configuration","description":"rui-claude skill manages YrY's own Claude Code configuration. /rui-claude command manages CLAUDE.md project constraint sections, agent configuration, and self-constraints. Ensures self-pipeline non-degradation and self-hosting consistency.","layer":"Module Layer","risk":null},
+    {"id":"node:skill-rui-import","type":"source","label":"skill: rui-import","keyContent":"legacy import · reverse-engineer docs · doc --from-code","summary":"Legacy import skill—reverse-engineers document baseline from existing source code","description":"rui-import skill provides document reverse-engineering for existing projects. doc --from-code reverse-generates document baseline (story tasks + scene docs + knowledge graph) from existing source. Manual trigger, hooks rui-bot on completion.","layer":"Module Layer","risk":null},
+    {"id":"node:skill-rui-trends","type":"source","label":"skill: rui-trends","keyContent":"tech trends · npm analysis · ecosystem monitoring","summary":"Tech trends skill—analyzes dependency updates and ecosystem changes for decision support","description":"rui-trends skill monitors technology trends and ecosystem changes. Analyzes npm dependency updates, security advisories, ecosystem movements. Provides data support for architect's technology selection and pm's priority decisions.","layer":"Module Layer","risk":null},
+    {"id":"node:rule-self-improve","type":"source","label":"rule: self-improve","keyContent":"diagnose D0-D7 · skillify experience · memory compression · evaluate E1-E4","summary":"Self-improvement rule—defines diagnosis grading, experience distillation, memory management, evaluation","description":"Self-improvement rule defines YrY's self-evolution framework. Diagnosis grading D0-D7 (syntax error to architecture defect). Experience skillification process (distill effective countermeasures into skill spec updates). Memory compression injection (key decisions written to .memory/ auto-injected into subsequent context). Evaluation criteria E1-E4 (single fix to systemic improvement).","layer":"Module Layer","risk":null},
+    {"id":"node:rule-rui-claude","type":"source","label":"rule: rui-claude","keyContent":"CLAUDE.md structure · project constraints · self-hosting consistency","summary":"Claude config management rule—CLAUDE.md structure spec, project constraint fields, consistency check","description":"rui-claude rule defines CLAUDE.md structure spec and project constraint fields. Ensures CLAUDE.md contains: basic beliefs, iron law, project profile, project constraints, uncompromisable baselines, degradation countermeasures, and self-constraints sections. Defines validation methods for each field.","layer":"Module Layer","risk":null},
+    {"id":"node:rule-knowledge-graph","type":"source","label":"rule: knowledge-graph","keyContent":"v2.0.0 · three-tier hierarchy · node types · edge types","summary":"Knowledge graph rule—one graph per story, nodes 1:1 with function points, three-tier hierarchy","description":"Knowledge graph rule defines YrY's knowledge graph schema v2.0.0. Three-tier hierarchy (story→scene→source), 16 edge types (orchestrates/delegates/constrained_by etc.), mandatory node fields (label/keyContent/summary/description). Graph must have 1:1 correspondence with function points, no dangling edges, stats consistent with reality.","layer":"Module Layer","risk":null}
+  ],
+  "edges": [
+    {"id":"e_dm_fl","source":"domain:module-ecosystem","target":"flow:module-location","type":"contains","label":"contains","description":"Module ecosystem contains module location flow — defines standard exploration within domain. Steps ordered by weight."},
+    {"id":"e_dp_fc","source":"domain:pipeline-execution","target":"flow:command-to-delivery","type":"contains","label":"contains","description":"Pipeline execution domain contains command-to-delivery flow — full execution path from user command to delivery. Seven stages in weight order with dual gates."},
+    {"id":"e_fl_s1","source":"flow:module-location","target":"step:identify-module-type","type":"contains","label":"step-1","description":"Module location flow step 1: identify target module type. weight=0.1"},
+    {"id":"e_fl_s2","source":"flow:module-location","target":"step:find-entry-file","type":"contains","label":"step-2","description":"Module location flow step 2: locate entry file based on type. weight=0.2"},
+    {"id":"e_fl_s3","source":"flow:module-location","target":"step:trace-dependencies","type":"contains","label":"step-3","description":"Module location flow step 3: trace upstream dependencies. weight=0.3"},
+    {"id":"e_fl_s4","source":"flow:module-location","target":"step:identify-consumers","type":"contains","label":"step-4","description":"Module location flow step 4: identify downstream consumers. weight=0.4"},
+    {"id":"e_fl_s5","source":"flow:module-location","target":"step:verify-contract","type":"contains","label":"step-5","description":"Module location flow step 5: verify interface contracts. weight=0.5"},
+    {"id":"e_s1_s2","source":"step:identify-module-type","target":"step:find-entry-file","type":"depends_on","label":"next","description":"Identify type → Find entry file: type determines correct entry file path."},
+    {"id":"e_s2_s3","source":"step:find-entry-file","target":"step:trace-dependencies","type":"depends_on","label":"next","description":"Find entry file → Trace dependencies: entry file is the starting point for dependency tracing."},
+    {"id":"e_s3_s4","source":"step:trace-dependencies","target":"step:identify-consumers","type":"depends_on","label":"next","description":"Trace dependencies → Identify consumers: after dependency analysis, reverse-trace to find consumer modules."},
+    {"id":"e_s4_s5","source":"step:identify-consumers","target":"step:verify-contract","type":"depends_on","label":"next","description":"Identify consumers → Verify contract: cross-verify interface contracts with actual relationships."},
+    {"id":"e_fc_p1","source":"flow:command-to-delivery","target":"step:parse-command","type":"contains","label":"stage-1","description":"Command-to-delivery stage 1: parse user command. weight=0.1"},
+    {"id":"e_fc_p2","source":"flow:command-to-delivery","target":"step:split-stories","type":"contains","label":"stage-2","description":"Command-to-delivery stage 2: pm splits stories and plans. weight=0.2"},
+    {"id":"e_fc_p3","source":"flow:command-to-delivery","target":"step:generate-docs","type":"contains","label":"stage-3","description":"Command-to-delivery stage 3: generate document baseline. weight=0.3"},
+    {"id":"e_fc_p4","source":"flow:command-to-delivery","target":"step:gate-a-verify","type":"contains","label":"stage-4","description":"Command-to-delivery stage 4: Gate A verification. weight=0.4"},
+    {"id":"e_fc_p5","source":"flow:command-to-delivery","target":"step:implement-modules","type":"contains","label":"stage-5","description":"Command-to-delivery stage 5: module-by-module implementation. weight=0.5"},
+    {"id":"e_fc_p6","source":"flow:command-to-delivery","target":"step:gate-b-verify","type":"contains","label":"stage-6","description":"Command-to-delivery stage 6: Gate B verification. weight=0.6"},
+    {"id":"e_fc_p7","source":"flow:command-to-delivery","target":"step:deliver","type":"contains","label":"stage-7","description":"Command-to-delivery stage 7: delivery closure. weight=0.7"},
+    {"id":"e_p1_p2","source":"step:parse-command","target":"step:split-stories","type":"depends_on","label":"next","description":"Parse command → Split stories: parsed parameters passed to pm for story splitting."},
+    {"id":"e_p2_p3","source":"step:split-stories","target":"step:generate-docs","type":"depends_on","label":"next","description":"Split stories → Generate docs: story units confirmed, generate full document baseline."},
+    {"id":"e_p3_p4","source":"step:generate-docs","target":"step:gate-a-verify","type":"depends_on","label":"next","description":"Generate docs → Gate A: doc baseline complete, enter first gate for branch isolation check."},
+    {"id":"e_p4_p5","source":"step:gate-a-verify","target":"step:implement-modules","type":"depends_on","label":"pass","description":"Gate A pass → Implement modules: branch isolation and test baseline verified, coder begins."},
+    {"id":"e_p5_p6","source":"step:implement-modules","target":"step:gate-b-verify","type":"depends_on","label":"complete","description":"Implement modules done → Gate B: all modules done with P0 cleared, enter closed-loop verification."},
+    {"id":"e_p6_p7","source":"step:gate-b-verify","target":"step:deliver","type":"depends_on","label":"pass","description":"Gate B pass → Deliver: test suite verified, enter delivery closure with three-step hook."},
+    {"id":"e_dm_dp","source":"domain:module-ecosystem","target":"domain:pipeline-execution","type":"shares","label":"cross-domain","description":"Module Ecosystem ↔ Pipeline Execution: modules define participants, pipeline defines their collaboration path. Both domains share the same module topology."},
+    {"id":"e_fl_fc","source":"flow:module-location","target":"flow:command-to-delivery","type":"references","label":"complementary","description":"Module Location ↔ Command-to-Delivery: static topology understanding complements dynamic execution tracing. Together they form the complete architecture reference."},
+    {"id":"e_skillrui_dm","source":"node:skill-rui","target":"domain:module-ecosystem","type":"defines","label":"core module","description":"skill rui is the core entry of the module ecosystem, defining pipeline scheduling logic."},
+    {"id":"e_pm_arch","source":"node:agent-pm","target":"node:agent-architect","type":"orchestrates","label":"orchestrates design","description":"pm orchestrates architect: delegates technical solution formulation when story contains architecture decision points."},
+    {"id":"e_arch_coder","source":"node:agent-architect","target":"node:agent-coder","type":"hands_off","label":"design handoff","description":"architect → coder design handoff: design constraints passed to coder after architecture design complete."},
+    {"id":"e_pm_coder","source":"node:agent-pm","target":"node:agent-coder","type":"assigns","label":"assigns implementation","description":"pm assigns implementation to coder: after story confirmation, pm delegates implementation work."},
+    {"id":"e_cp_coder","source":"node:rule-code-pipeline","target":"node:agent-coder","type":"governs","label":"governs","description":"code-pipeline rule governs coder: enforces branch isolation, module-by-module P0 clearance, fix cap at 2 rounds."},
+    {"id":"e_sec_coder","source":"node:agent-security","target":"node:agent-coder","type":"constrained_by","label":"constrains","description":"security Agent constrains coder: imposes auth, key, and input validation baselines that coder must satisfy."},
+    {"id":"e_sg_sec","source":"node:rule-security-guardrails","target":"node:agent-security","type":"defines","label":"defines guardrails","description":"security-guardrails rule defines the specific security guardrails that security Agent enforces."},
+    {"id":"e_coder_rev","source":"node:agent-coder","target":"node:agent-code-reviewer","type":"delegates","label":"delegates review","description":"coder delegates to code-reviewer: optional post-module independent review with graded issue annotation."},
+    {"id":"e_rev_coder","source":"node:agent-code-reviewer","target":"node:agent-coder","type":"feedback","label":"review feedback","description":"code-reviewer → coder feedback loop: CRITICAL/HIGH findings require fix and re-review cycle."},
+    {"id":"e_coder_test","source":"node:agent-coder","target":"node:agent-tester","type":"hands_off","label":"handoff to test","description":"coder → tester handoff: after all modules implemented, code output handed to tester for Gate B verification."},
+    {"id":"e_test_coder","source":"node:agent-tester","target":"node:agent-coder","type":"feedback","label":"test feedback","description":"tester → coder feedback: test failures or regressions return to coder for fix. Max 2 rounds."},
+    {"id":"e_si_pm","source":"node:agent-self-improve","target":"node:agent-pm","type":"feedback","label":"improvement proposal","description":"self-improve → pm feedback: post-review proposals submitted to pm for consideration in next story planning."},
+    {"id":"e_sr_si","source":"node:rule-self-improve","target":"node:agent-self-improve","type":"defines","label":"defines process","description":"self-improve rule defines self-improve Agent execution process: D0-D7 diagnosis, skillification, memory compression, E1-E4 evaluation."},
+    {"id":"e_dg_rep","source":"node:rule-delivery-gate","target":"node:agent-reporter","type":"governs","label":"governs delivery","description":"delivery-gate rule governs reporter: enforces pre-delivery test verification, three-step hook order, unmarked=unexecuted."},
+    {"id":"e_imp_bot","source":"node:skill-rui-import","target":"node:skill-rui-bot","type":"notifies","label":"hook notify","description":"rui-import → rui-bot hook: on legacy import completion, triggers rui-bot WeCom notification."},
+    {"id":"e_doc_pm","source":"node:rule-doc-generation","target":"node:agent-pm","type":"governs","label":"governs docs","description":"doc-generation rule governs pm's doc output: expression priority non-degradable, no-diagram=incomplete."},
+    {"id":"e_kg_p3","source":"node:rule-knowledge-graph","target":"step:generate-docs","type":"defines","label":"defines schema","description":"knowledge-graph rule defines the graph schema for doc generation: three-tier hierarchy, mandatory fields, 16 edge types."},
+    {"id":"e_rui_p1","source":"node:skill-rui","target":"step:parse-command","type":"defines","label":"pipeline entry","description":"skill rui defines command parsing stage: /rui command family is the sole pipeline entry point."}
+  ]
+};
+
+// ─── Layout Engine ───
+const COLORS = {
+  domain: { fill: 'rgba(8, 51, 68, 0.5)', stroke: '#22d3ee', text: '#22d3ee' },
+  flow: { fill: 'rgba(6, 78, 59, 0.5)', stroke: '#34d399', text: '#34d399' },
+  step: { fill: 'rgba(76, 29, 149, 0.4)', stroke: '#a78bfa', text: '#a78bfa' },
+  source: { fill: 'rgba(8, 47, 73, 0.4)', stroke: '#3B82F6', text: '#93c5fd' }
+};
+const EDGE_COLORS = {
+  contains: '#8B5CF6',
+  depends_on: '#64748B',
+  shares: '#0EA5E9',
+  references: '#64748B',
+  defines: '#475569',
+  orchestrates: '#1E40AF',
+  hands_off: '#9A3412',
+  assigns: '#854D0E',
+  governs: '#B91C1C',
+  constrained_by: '#7E22CE',
+  delegates: '#166534',
+  feedback: '#9D174D',
+  notifies: '#0D9488'
+};
+
+// Node positions (layered DAG layout)
+const positions = {};
+let nodeMap = {};
+KG.nodes.forEach(n => { nodeMap[n.id] = n; });
+
+// Module Layer nodes
+const moduleSteps = ['step:identify-module-type','step:find-entry-file','step:trace-dependencies','step:identify-consumers','step:verify-contract'];
+const pipelineSteps = ['step:parse-command','step:split-stories','step:generate-docs','step:gate-a-verify','step:implement-modules','step:gate-b-verify','step:deliver'];
+// Source nodes
+const skillNodes = KG.nodes.filter(n => n.type === 'source' && n.id.startsWith('node:skill-'));
+const agentNodes = KG.nodes.filter(n => n.type === 'source' && n.id.startsWith('node:agent-'));
+const ruleNodes = KG.nodes.filter(n => n.type === 'source' && n.id.startsWith('node:rule-'));
+
+const W = 2200, H = 1450;
+
+// Position domains
+positions['domain:module-ecosystem'] = { x: 300, y: 50, w: 280, h: 60 };
+positions['domain:pipeline-execution'] = { x: 1620, y: 50, w: 280, h: 60 };
+
+// Position flows
+positions['flow:module-location'] = { x: 220, y: 155, w: 280, h: 52 };
+positions['flow:command-to-delivery'] = { x: 1540, y: 155, w: 280, h: 52 };
+
+// Position module steps (horizontal)
+const msX = 60, msY = 248, msGap = 108, msW = 100, msH = 48;
+moduleSteps.forEach((id, i) => {
+  positions[id] = { x: msX + i * msGap, y: msY, w: msW, h: msH };
+});
+
+// Position pipeline steps (horizontal)
+const psX = 1370, psY = 248, psGap = 108, psW = 100, psH = 48;
+pipelineSteps.forEach((id, i) => {
+  positions[id] = { x: psX + i * psGap, y: psY, w: psW, h: psH };
+});
+
+// Position source nodes in three rows
+const srcW = 150, srcH = 34;
+const row1Y = 340, row2Y = 400, row3Y = 460;
+// Skills row
+skillNodes.forEach((n, i) => {
+  positions[n.id] = { x: 50 + i * 180, y: row1Y, w: srcW, h: srcH };
+});
+// Agents row
+agentNodes.forEach((n, i) => {
+  positions[n.id] = { x: 50 + i * 180, y: row2Y, w: srcW, h: srcH };
+});
+// Rules row
+ruleNodes.forEach((n, i) => {
+  if (i < 5) positions[n.id] = { x: 50 + i * 180, y: row3Y, w: srcW, h: srcH };
+  else positions[n.id] = { x: 50 + (i-5) * 180, y: row3Y + 52, w: srcW, h: srcH };
+});
+
+// Adjust: Pipeline source nodes on the right side
+const pipelineSources = ['node:rule-code-pipeline','node:rule-delivery-gate','node:rule-security-guardrails',
+  'node:agent-security','node:agent-code-reviewer','node:agent-tester','node:agent-reporter',
+  'node:rule-doc-generation','node:rule-architecture-diagram','node:rule-knowledge-graph',
+  'node:rule-self-improve','node:rule-rui-claude'];
+const psrcX = 1400, psrcY = 340, psrcGapX = 170, psrcGapY = 52;
+pipelineSources.forEach((id, i) => {
+  if (positions[id]) {
+    const col = i % 3;
+    const row = Math.floor(i / 3);
+    positions[id] = { x: psrcX + col * psrcGapX, y: psrcY + row * psrcGapY, w: 150, h: srcH };
+  }
+});
+
+// Add skill-rui at center-top of module layer
+positions['node:skill-rui'] = { x: 260, y: 520, w: 160, h: 40 };
+positions['node:agent-pm'] = { x: 260, y: 580, w: 160, h: 40 };
+positions['node:agent-architect'] = { x: 440, y: 580, w: 160, h: 40 };
+positions['node:agent-coder'] = { x: 620, y: 580, w: 160, h: 40 };
+
+// ─── SVG Setup ───
+const svg = document.getElementById('graph');
+svg.setAttribute('width', '100%');
+svg.setAttribute('height', '100%');
+svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+svg.style.background = '#020617';
+
+let scale = 1, tx = 0, ty = 0;
+let isPanning = false, panStart = { x: 0, y: 0 };
+let visibleTypes = { domain: true, flow: true, step: true };
+
+function transformPoint(e) {
+  const rect = svg.getBoundingClientRect();
+  return {
+    x: (e.clientX - rect.left) * (W / rect.width),
+    y: (e.clientY - rect.top) * (H / rect.height)
+  };
+}
+
+// Main group with transform
+const mainGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+mainGroup.setAttribute('id', 'main-group');
+svg.appendChild(mainGroup);
+
+function applyTransform() {
+  mainGroup.setAttribute('transform', `translate(${tx},${ty}) scale(${scale})`);
+}
+applyTransform();
+
+// Grid pattern
+const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+const pattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
+pattern.setAttribute('id', 'grid');
+pattern.setAttribute('width', '60');
+pattern.setAttribute('height', '60');
+pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+const gridPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+gridPath.setAttribute('d', 'M 60 0 L 0 0 0 60');
+gridPath.setAttribute('fill', 'none');
+gridPath.setAttribute('stroke', '#1e293b');
+gridPath.setAttribute('stroke-width', '0.5');
+gridPath.setAttribute('stroke-dasharray', '4 4');
+pattern.appendChild(gridPath);
+defs.appendChild(pattern);
+svg.appendChild(defs);
+
+const gridRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+gridRect.setAttribute('width', W);
+gridRect.setAttribute('height', H);
+gridRect.setAttribute('fill', 'url(#grid)');
+mainGroup.appendChild(gridRect);
+
+// Layer background regions
+function addLayerBg(x, y, w, h, label) {
+  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  rect.setAttribute('x', x);
+  rect.setAttribute('y', y);
+  rect.setAttribute('width', w);
+  rect.setAttribute('height', h);
+  rect.setAttribute('fill', 'rgba(15,23,42,0.3)');
+  rect.setAttribute('stroke', '#1e293b');
+  rect.setAttribute('stroke-width', '1');
+  rect.setAttribute('rx', '8');
+  rect.setAttribute('ry', '8');
+  g.appendChild(rect);
+  const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  text.setAttribute('x', x + 14);
+  text.setAttribute('y', y + 22);
+  text.setAttribute('fill', '#475569');
+  text.setAttribute('font-size', '10');
+  text.setAttribute('font-family', 'inherit');
+  text.textContent = label;
+  g.appendChild(text);
+  return g;
+}
+
+mainGroup.appendChild(addLayerBg(15, 10, 1160, 650, 'MODULE LAYER'));
+mainGroup.appendChild(addLayerBg(1340, 10, 845, 650, 'PIPELINE LAYER'));
+
+// Draw edges
+const edgeGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+edgeGroup.setAttribute('id', 'edge-group');
+mainGroup.appendChild(edgeGroup);
+
+function getNodeCenter(id) {
+  const p = positions[id];
+  if (!p) return { x: 0, y: 0 };
+  return { x: p.x + p.w / 2, y: p.y + p.h / 2 };
+}
+
+function drawCurvedEdge(from, to, type) {
+  const fc = getNodeCenter(from);
+  const tc = getNodeCenter(to);
+  const color = EDGE_COLORS[type] || '#64748B';
+  const midX = (fc.x + tc.x) / 2;
+  const midY = (fc.y + tc.y) / 2;
+
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  const dx = tc.x - fc.x;
+  const dy = tc.y - fc.y;
+  const cx1 = fc.x + dx * 0.3, cy1 = fc.y;
+  const cx2 = tc.x - dx * 0.3, cy2 = tc.y;
+  const d = `M ${fc.x} ${fc.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${tc.x} ${tc.y}`;
+  path.setAttribute('d', d);
+  path.setAttribute('stroke', color);
+  path.setAttribute('stroke-width', type === 'governs' || type === 'constrained_by' ? '1.5' : '1');
+  path.setAttribute('fill', 'none');
+  path.setAttribute('opacity', '0.35');
+  path.setAttribute('stroke-dasharray', type === 'feedback' ? '4 3' : type === 'depends_on' ? '6 3' : 'none');
+  path.classList.add('edge-path');
+  path.dataset.type = type;
+
+  // Arrowhead
+  if (type !== 'shares' && type !== 'references') {
+    const arrowSize = 5;
+    const angle = Math.atan2(tc.y - cy2, tc.x - cx2);
+    const ax = tc.x - arrowSize * Math.cos(angle - Math.PI / 6);
+    const ay = tc.y - arrowSize * Math.sin(angle - Math.PI / 6);
+    const bx = tc.x - arrowSize * Math.cos(angle + Math.PI / 6);
+    const by = tc.y - arrowSize * Math.sin(angle + Math.PI / 6);
+    const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    arrow.setAttribute('points', `${tc.x},${tc.y} ${ax},${ay} ${bx},${by}`);
+    arrow.setAttribute('fill', color);
+    arrow.setAttribute('opacity', '0.35');
+    arrow.classList.add('edge-path');
+    arrow.dataset.type = type;
+    edgeGroup.appendChild(arrow);
+  }
+
+  edgeGroup.appendChild(path);
+  return path;
+}
+
+KG.edges.forEach(e => {
+  if (positions[e.source] && positions[e.target]) {
+    drawCurvedEdge(e.source, e.target, e.type);
+  }
+});
+
+// Draw nodes
+const nodeGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+nodeGroup.setAttribute('id', 'node-group');
+mainGroup.appendChild(nodeGroup);
+
+const tooltip = document.getElementById('tooltip');
+
+Object.entries(positions).forEach(([id, pos]) => {
+  const node = nodeMap[id];
+  if (!node) return;
+  const colors = COLORS[node.type] || COLORS.source;
+  const isStep = node.type === 'step';
+  const isSource = node.type === 'source';
+
+  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  g.setAttribute('data-id', id);
+  g.setAttribute('data-type', node.type);
+  g.classList.add('node-group');
+
+  // Rounded rect
+  const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  rect.setAttribute('x', pos.x);
+  rect.setAttribute('y', pos.y);
+  rect.setAttribute('width', pos.w);
+  rect.setAttribute('height', pos.h);
+  rect.setAttribute('rx', isSource ? '4' : '8');
+  rect.setAttribute('ry', isSource ? '4' : '8');
+  rect.setAttribute('fill', colors.fill);
+  rect.setAttribute('stroke', colors.stroke);
+  rect.setAttribute('stroke-width', node.risk === '🔴' ? '2' : '1');
+  rect.classList.add('node-rect');
+
+  // Risk indicator
+  if (node.risk === '🔴') {
+    const riskIndicator = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    riskIndicator.setAttribute('cx', pos.x + pos.w - 8);
+    riskIndicator.setAttribute('cy', pos.y + 8);
+    riskIndicator.setAttribute('r', '4');
+    riskIndicator.setAttribute('fill', '#EF4444');
+    g.appendChild(riskIndicator);
+  } else if (node.risk === '🟡') {
+    const riskIndicator = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    riskIndicator.setAttribute('cx', pos.x + pos.w - 8);
+    riskIndicator.setAttribute('cy', pos.y + 8);
+    riskIndicator.setAttribute('r', '4');
+    riskIndicator.setAttribute('fill', '#F59E0B');
+    g.appendChild(riskIndicator);
+  }
+
+  // Type icon
+  const icon = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  icon.setAttribute('x', pos.x + 8);
+  icon.setAttribute('y', pos.y + 18);
+  icon.setAttribute('fill', colors.text);
+  icon.setAttribute('font-size', isSource ? '9' : '10');
+  icon.setAttribute('font-family', 'inherit');
+  icon.textContent = node.type === 'domain' ? '◈' : node.type === 'flow' ? '⇢' : '◎';
+  g.appendChild(icon);
+
+  // Label text
+  const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  label.setAttribute('x', pos.x + (node.type !== 'source' ? pos.w / 2 : 24));
+  label.setAttribute('y', pos.y + pos.h / 2 + 4);
+  label.setAttribute('text-anchor', node.type !== 'source' ? 'middle' : 'start');
+  label.setAttribute('fill', '#e2e8f0');
+  label.setAttribute('font-size', isSource ? '9' : '10');
+  label.setAttribute('font-weight', '600');
+  label.setAttribute('font-family', 'inherit');
+  if (isSource && node.label.length > 20) {
+    label.textContent = node.label.substring(0, 19) + '…';
+  } else {
+    label.textContent = node.label;
+  }
+  if (isSource) {
+    label.setAttribute('fill', colors.stroke);
+  }
+  g.appendChild(label);
+
+  // Type sub-label (for step nodes)
+  if (isStep) {
+    const sub = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    sub.setAttribute('x', pos.x + pos.w / 2);
+    sub.setAttribute('y', pos.y + pos.h - 8);
+    sub.setAttribute('text-anchor', 'middle');
+    sub.setAttribute('fill', '#64748B');
+    sub.setAttribute('font-size', '7');
+    sub.setAttribute('font-family', 'inherit');
+    sub.textContent = id.startsWith('step:identify') || id.startsWith('step:find') || id.startsWith('step:trace') || id.startsWith('step:verify') ? 'MODULE LOCATION' : 'PIPELINE EXECUTION';
+    g.appendChild(sub);
+  }
+
+  // Hover interaction
+  g.addEventListener('mouseenter', (e) => {
+    const tt = tooltip;
+    tt.innerHTML = `
+      <div class="tt-label" style="color:${colors.stroke}">${node.label}</div>
+      <div class="tt-type">${node.type.toUpperCase()} · ${node.layer || ''} · ${node.risk || ''}</div>
+      <div class="tt-desc">${node.summary || node.description}</div>
+      <div class="tt-meta">id: ${id} · ${node.keyContent || ''}</div>
+    `;
+    tt.style.opacity = '1';
+    tt.style.left = Math.min(e.clientX + 16, window.innerWidth - 340) + 'px';
+    tt.style.top = Math.min(e.clientY + 16, window.innerHeight - 180) + 'px';
+    rect.setAttribute('stroke-width', '3');
+  });
+  g.addEventListener('mousemove', (e) => {
+    tooltip.style.left = Math.min(e.clientX + 16, window.innerWidth - 340) + 'px';
+    tooltip.style.top = Math.min(e.clientY + 16, window.innerHeight - 180) + 'px';
+  });
+  g.addEventListener('mouseleave', () => {
+    tooltip.style.opacity = '0';
+    rect.setAttribute('stroke-width', node.risk === '🔴' ? '2' : '1');
+  });
+
+  nodeGroup.appendChild(g);
+});
+
+// ─── Pan & Zoom ───
+svg.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? 0.9 : 1.1;
+  const newScale = Math.min(2.5, Math.max(0.2, scale * delta));
+  const pt = transformPoint(e);
+  tx = pt.x - (pt.x - tx) * (newScale / scale);
+  ty = pt.y - (pt.y - ty) * (newScale / scale);
+  scale = newScale;
+  applyTransform();
+});
+
+svg.addEventListener('mousedown', (e) => {
+  if (e.button === 0 && e.target === svg || e.target === gridRect || e.target.classList.contains('grid-bg')) {
+    isPanning = true;
+    panStart = { x: e.clientX - tx, y: e.clientY - ty };
+    svg.style.cursor = 'grabbing';
+  }
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (isPanning) {
+    tx = e.clientX - panStart.x;
+    ty = e.clientY - panStart.y;
+    applyTransform();
+  }
+});
+
+window.addEventListener('mouseup', () => {
+  isPanning = false;
+  svg.style.cursor = 'default';
+});
+
+// Touch support
+svg.addEventListener('touchstart', (e) => {
+  if (e.touches.length === 1) {
+    isPanning = true;
+    panStart = { x: e.touches[0].clientX - tx, y: e.touches[0].clientY - ty };
+  }
+});
+svg.addEventListener('touchmove', (e) => {
+  if (isPanning && e.touches.length === 1) {
+    e.preventDefault();
+    tx = e.touches[0].clientX - panStart.x;
+    ty = e.touches[0].clientY - panStart.y;
+    applyTransform();
+  }
+});
+svg.addEventListener('touchend', () => { isPanning = false; });
+
+// ─── Toggle Visibility ───
+function toggleType(type, btn) {
+  visibleTypes[type] = !visibleTypes[type];
+  btn.classList.toggle('active', visibleTypes[type]);
+
+  document.querySelectorAll('.node-group').forEach(g => {
+    const nodeType = g.dataset.type;
+    if (nodeType === type) {
+      g.querySelector('.node-rect').classList.toggle('hidden', !visibleTypes[type]);
+      g.style.pointerEvents = visibleTypes[type] ? 'auto' : 'none';
+    }
+  });
+
+  document.querySelectorAll('.edge-path').forEach(p => {
+    const eType = p.dataset.type;
+    // Dim edges connected to hidden nodes
+    const sourceId = p.closest('g')?.dataset?.sourceId;
+    p.classList.toggle('hidden', !visibleTypes[type]);
+  });
+
+  // Refresh edge visibility based on connected nodes
+  updateEdgeVisibility();
+}
+
+function updateEdgeVisibility() {
+  document.querySelectorAll('.edge-path').forEach(el => {
+    // Keep all edges visible at reduced opacity for now
+    el.classList.remove('hidden');
+  });
+}
+
+// ─── Export SVG ───
+function exportSVG() {
+  const clone = svg.cloneNode(true);
+  clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+  clone.setAttribute('width', W);
+  clone.setAttribute('height', H);
+  clone.querySelector('#main-group')?.setAttribute('transform', '');
+  const ser = new XMLSerializer().serializeToString(clone);
+  const blob = new Blob([ser], { type: 'image/svg+xml' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'yry-architecture-knowledge-graph.svg';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─── Reset View ───
+function resetView() {
+  scale = 1;
+  tx = 0;
+  ty = 0;
+  applyTransform();
+}
+
+// ─── Initial state: slightly zoomed out for overview ───
+scale = 0.55;
+tx = -50;
+ty = 20;
+applyTransform();
+</script>
+</body>
+</html>

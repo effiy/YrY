@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YrY Self-Test — 场景 4: 安全面回归自检</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      background: #020617;
+      min-height: 100vh;
+      padding: 2rem;
+      color: white;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header { margin-bottom: 2rem; }
+    .header-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+    .pulse-dot { width: 12px; height: 12px; background: #22d3ee; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
+    .subtitle { color: #94a3b8; font-size: 0.875rem; margin-left: 1.75rem; }
+    .diagram-container {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 1rem;
+      border: 1px solid #1e293b;
+      padding: 1.5rem;
+      overflow-x: auto;
+    }
+    svg { width: 100%; min-width: 920px; display: block; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .card { background: rgba(15, 23, 42, 0.5); border-radius: 0.75rem; border: 1px solid #1e293b; padding: 1.25rem; }
+    .card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .card-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .card-dot.cyan { background: #22d3ee; }
+    .card-dot.emerald { background: #34d399; }
+    .card-dot.violet { background: #a78bfa; }
+    .card-dot.amber { background: #fbbf24; }
+    .card-dot.rose { background: #fb7185; }
+    .card h3 { font-size: 0.875rem; font-weight: 600; }
+    .card ul { list-style: none; color: #94a3b8; font-size: 0.75rem; }
+    .card li { margin-bottom: 0.375rem; }
+    .footer { text-align: center; margin-top: 1.5rem; color: #475569; font-size: 0.75rem; }
+    .toolbar { display: flex; gap: 0.5rem; margin-left: auto; flex-shrink: 0; align-items: center; }
+    .toolbar-toggle { background: transparent; border: none; color: #475569; cursor: pointer; font-size: 1.25rem; line-height: 1; padding: 0.25rem 0.5rem; border-radius: 0.375rem; transition: color 0.2s, background 0.2s; }
+    .toolbar-toggle:hover { color: #94a3b8; background: rgba(30, 41, 59, 0.5); }
+    .toolbar-actions { display: none; gap: 0.5rem; }
+    .toolbar.expanded .toolbar-actions { display: flex; }
+    .toolbar-actions button {
+      background: rgba(30, 41, 59, 0.8); border: 1px solid #334155; color: #94a3b8;
+      padding: 0.375rem 0.75rem; border-radius: 0.375rem; font-family: inherit;
+      font-size: 0.75rem; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    }
+    .toolbar-actions button:hover { background: rgba(51, 65, 85, 0.8); color: white; border-color: #475569; }
+    @media print { body { background: #020617; padding: 1rem; } .toolbar { display: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="container" id="report-container">
+    <div class="header">
+      <div class="header-row">
+        <div class="pulse-dot"></div>
+        <h1>YrY Self-Test — 场景 4: 安全面回归自检</h1>
+        <div class="toolbar">
+          <div class="toolbar-actions">
+            <button onclick="copySVG(this)">&#x1F4CB; Copy SVG</button>
+            <button onclick="downloadPNG(this)">&#x1F5BC; PNG</button>
+            <button onclick="downloadSVG(this)">&#x1F4C4; SVG</button>
+          </div>
+          <button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export" aria-label="Export">&#x22EF;</button>
+        </div>
+      </div>
+      <p class="subtitle">STRIDE 6 面扫描 &middot; 密钥零容忍 &middot; 认证不可绕过 &middot; 输入必校验 &middot; 约束防退化</p>
+    </div>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1060 740" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+          </marker>
+          <marker id="arr-pass" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#34d399"/>
+          </marker>
+          <marker id="arr-fail" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#fb7185"/>
+          </marker>
+          <marker id="arr-warn" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24"/>
+          </marker>
+          <marker id="arr-cyan" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#22d3ee"/>
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+          </pattern>
+          <!-- Glow for security-critical surfaces -->
+          <filter id="glow-rose">
+            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <rect width="100%" height="100%" fill="url(#grid)"/>
+
+        <!-- Trigger -->
+        <rect x="370" y="28" width="320" height="42" rx="8" fill="#0f172a"/>
+        <rect x="370" y="28" width="320" height="42" rx="8" fill="rgba(136,19,55,0.2)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="530" y="54" fill="#fb7185" font-size="12" font-weight="700" text-anchor="middle">&#x1F6E1; &#x89E6;&#x53D1;&#x5B89;&#x5168;&#x9762;&#x56DE;&#x5F52;&#x81EA;&#x68C0;</text>
+
+        <!-- Central Engine -->
+        <line x1="530" y1="70" x2="530" y2="94" stroke="#fb7185" stroke-width="1.5" marker-end="url(#arr-fail)"/>
+
+        <rect x="410" y="98" width="240" height="36" rx="8" fill="#0f172a"/>
+        <rect x="410" y="98" width="240" height="36" rx="8" fill="rgba(136,19,55,0.15)" stroke="#fb7185" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="530" y="120" fill="#fb7185" font-size="10" font-weight="600" text-anchor="middle">&#x1F3AF; &#x5B89;&#x5168;&#x81EA;&#x68C0;&#x5F15;&#x64CE; &#x2014; &#x516D;&#x9762;&#x5E76;&#x884C;&#x626B;&#x63CF;</text>
+
+        <!-- Distribution lines from engine to surfaces -->
+        <line x1="410" y1="116" x2="190" y2="116" stroke="#fb7185" stroke-width="0.8" stroke-dasharray="3,3"/>
+        <line x1="190" y1="116" x2="190" y2="156" stroke="#fb7185" stroke-width="0.8" stroke-dasharray="3,3"/>
+        <line x1="410" y1="106" x2="530" y2="106" stroke="#fb7185" stroke-width="0.8" stroke-dasharray="3,3"/>
+        <line x1="530" y1="106" x2="530" y2="156" stroke="#fb7185" stroke-width="0.8" stroke-dasharray="3,3"/>
+        <line x1="650" y1="116" x2="870" y2="116" stroke="#fb7185" stroke-width="0.8" stroke-dasharray="3,3"/>
+        <line x1="870" y1="116" x2="870" y2="156" stroke="#fb7185" stroke-width="0.8" stroke-dasharray="3,3"/>
+
+        <!-- ============================================================ -->
+        <!-- ROW 1: S1, S2, S3 -->
+        <!-- ============================================================ -->
+
+        <!-- S1: Key Scan (BLOCK) -->
+        <rect x="30" y="160" width="320" height="150" rx="8" fill="#0f172a"/>
+        <rect x="30" y="160" width="320" height="150" rx="8" fill="rgba(136,19,55,0.1)" stroke="#fb7185" stroke-width="2" filter="url(#glow-rose)"/>
+        <!-- Surface badge -->
+        <rect x="42" y="170" width="32" height="20" rx="4" fill="rgba(136,19,55,0.5)" stroke="#fb7185" stroke-width="1"/>
+        <text x="58" y="184" fill="white" font-size="11" font-weight="700" text-anchor="middle">S1</text>
+        <text x="84" y="184" fill="#fb7185" font-size="11" font-weight="700">&#x1F511; &#x5BC6;&#x94A5;&#x626B;&#x63CF;</text>
+        <text x="84" y="202" fill="#94a3b8" font-size="9">&#x626B;&#x63CF;&#x5168;&#x90E8;&#x6587;&#x4EF6; &#xb7; &#x5339;&#x914D;&#x5BC6;&#x94A5;&#x6A21;&#x5F0F;</text>
+        <line x1="42" y1="212" x2="338" y2="212" stroke="#fb7185" stroke-width="0.5" opacity="0.3"/>
+        <text x="42" y="232" fill="#94a3b8" font-size="8">&#x2022; Token / API Key / Password / Private Key</text>
+        <text x="42" y="246" fill="#94a3b8" font-size="8">&#x2022; &#x7CBE;&#x786E;&#x5230;&#x6587;&#x4EF6;&#x540D; + &#x884C;&#x53F7; + &#x5339;&#x914D;&#x6A21;&#x5F0F;</text>
+        <text x="42" y="260" fill="#94a3b8" font-size="8">&#x2022; &#x6D4B;&#x8BD5;&#x5360;&#x4F4D;&#x7B26;&#x8C41;&#x514D; &#xb7; &#x6CE8;&#x91CA;&#x4E2D;&#x7684;&#x6A21;&#x5F0F;&#x8B66;&#x544A;</text>
+        <!-- S1 status badge -->
+        <rect x="230" y="225" width="72" height="22" rx="4" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/>
+        <text x="266" y="239" fill="#fb7185" font-size="9" font-weight="700" text-anchor="middle">&#x1F6AB; BLOCK</text>
+        <text x="42" y="282" fill="#64748b" font-size="8">&#x5224;&#x5B9A;: &#x547D;&#x4E2D;&#x5373;&#x963B;&#x65AD; &#xb7; &#x96F6;&#x5BB9;&#x5FCD;</text>
+        <text x="42" y="298" fill="#64748b" font-size="8">&#x201C;&#x5BC6;&#x94A5;&#x4E0D;&#x843D;&#x76D8;&#x201D; &#x2014; &#x9879;&#x76EE;&#x4E0D;&#x53EF;&#x59A5;&#x534F;&#x5E95;&#x7EBF;</text>
+
+        <!-- S2: Auth Integrity (BLOCK) -->
+        <rect x="370" y="160" width="320" height="150" rx="8" fill="#0f172a"/>
+        <rect x="370" y="160" width="320" height="150" rx="8" fill="rgba(136,19,55,0.08)" stroke="#fb7185" stroke-width="2" filter="url(#glow-rose)"/>
+        <rect x="382" y="170" width="32" height="20" rx="4" fill="rgba(136,19,55,0.5)" stroke="#fb7185" stroke-width="1"/>
+        <text x="398" y="184" fill="white" font-size="11" font-weight="700" text-anchor="middle">S2</text>
+        <text x="424" y="184" fill="#fb7185" font-size="11" font-weight="700">&#x1F510; &#x8BA4;&#x8BC1;&#x5B8C;&#x6574;&#x6027;</text>
+        <text x="424" y="202" fill="#94a3b8" font-size="9">&#x8FFD;&#x8E2A;&#x8BA4;&#x8BC1;&#x5165;&#x53E3; &#x2192; &#x53D7;&#x4FDD;&#x62A4;&#x8D44;&#x6E90;&#x7684;&#x5B8C;&#x6574;&#x94FE;&#x8DEF;</text>
+        <line x1="382" y1="212" x2="678" y2="212" stroke="#fb7185" stroke-width="0.5" opacity="0.3"/>
+        <text x="382" y="232" fill="#94a3b8" font-size="8">&#x2022; &#x68C0;&#x67E5;&#x8BA4;&#x8BC1;&#x4E2D;&#x95F4;&#x4EF6;&#x662F;&#x5426;&#x88AB;&#x7ED5;&#x8FC7;</text>
+        <text x="382" y="246" fill="#94a3b8" font-size="8">&#x2022; &#x68C0;&#x67E5;&#x88C5;&#x9970;&#x5668;/&#x5B88;&#x536B;&#x662F;&#x5426;&#x7F3A;&#x5931;</text>
+        <text x="382" y="260" fill="#94a3b8" font-size="8">&#x2022; &#x76F4;&#x63A5;&#x8BBF;&#x95EE; + &#x95F4;&#x63A5;&#x8BBF;&#x95EE;&#x8DEF;&#x5F84;&#x5168;&#x8986;&#x76D6;</text>
+        <rect x="570" y="225" width="72" height="22" rx="4" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/>
+        <text x="606" y="239" fill="#fb7185" font-size="9" font-weight="700" text-anchor="middle">&#x1F6AB; BLOCK</text>
+        <text x="382" y="282" fill="#64748b" font-size="8">&#x5224;&#x5B9A;: &#x4EFB;&#x4F55;&#x7ED5;&#x8FC7;&#x8DEF;&#x5F84;&#x5373;&#x963B;&#x65AD;</text>
+        <text x="382" y="298" fill="#64748b" font-size="8">&#x201C;&#x8BA4;&#x8BC1;&#x4E0D;&#x53EF;&#x7ED5;&#x8FC7;&#x201D; &#x2014; &#x9879;&#x76EE;&#x4E0D;&#x53EF;&#x59A5;&#x534F;&#x5E95;&#x7EBF;</text>
+
+        <!-- S3: Input Validation (WARN) -->
+        <rect x="710" y="160" width="320" height="150" rx="8" fill="#0f172a"/>
+        <rect x="710" y="160" width="320" height="150" rx="8" fill="rgba(251,191,36,0.05)" stroke="#fbbf24" stroke-width="1.5"/>
+        <rect x="722" y="170" width="32" height="20" rx="4" fill="rgba(251,191,36,0.3)" stroke="#fbbf24" stroke-width="1"/>
+        <text x="738" y="184" fill="white" font-size="11" font-weight="700" text-anchor="middle">S3</text>
+        <text x="764" y="184" fill="#fbbf24" font-size="11" font-weight="700">&#x1F4E5; &#x8F93;&#x5165;&#x6821;&#x9A8C;</text>
+        <text x="764" y="202" fill="#94a3b8" font-size="9">&#x8BC6;&#x522B;&#x6240;&#x6709;&#x5916;&#x90E8;&#x8F93;&#x5165;&#x70B9; &#xb7; &#x9A8C;&#x8BC1;&#x6821;&#x9A8C;&#x903B;&#x8F91;&#x5B58;&#x5728;&#x6027;</text>
+        <line x1="722" y1="212" x2="1018" y2="212" stroke="#fbbf24" stroke-width="0.5" opacity="0.3"/>
+        <text x="722" y="232" fill="#94a3b8" font-size="8">&#x2022; &#x7528;&#x6237;&#x8F93;&#x5165; / &#x6587;&#x4EF6;&#x8BFB;&#x53D6; / &#x5916;&#x90E8;&#x7F51;&#x7EDC;&#x6570;&#x636E;</text>
+        <text x="722" y="246" fill="#94a3b8" font-size="8">&#x2022; XSS / SQL &#x6CE8;&#x5165; / &#x547D;&#x4EE4;&#x6CE8;&#x5165;&#x9632;&#x62A4;</text>
+        <text x="722" y="260" fill="#94a3b8" font-size="8">&#x2022; &#x672A;&#x6821;&#x9A8C;&#x8F93;&#x5165;&#x70B9;&#x5217;&#x51FA;&#x7C7B;&#x578B;&#x548C;&#x5EFA;&#x8BAE;&#x7B56;&#x7565;</text>
+        <rect x="910" y="225" width="72" height="22" rx="4" fill="rgba(251,191,36,0.2)" stroke="#fbbf24" stroke-width="1"/>
+        <text x="946" y="239" fill="#fbbf24" font-size="9" font-weight="700" text-anchor="middle">&#x26A0; WARN</text>
+        <text x="722" y="282" fill="#64748b" font-size="8">&#x5224;&#x5B9A;: &#x6821;&#x9A8C;&#x7F3A;&#x5931;&#x5219;&#x8B66;&#x544A;</text>
+        <text x="722" y="298" fill="#64748b" font-size="8">&#x201C;&#x8F93;&#x5165;&#x5FC5;&#x6821;&#x9A8C;&#x201D; &#x2014; &#x9879;&#x76EE;&#x4E0D;&#x53EF;&#x59A5;&#x534F;&#x5E95;&#x7EBF;</text>
+
+        <!-- ============================================================ -->
+        <!-- ROW 2: S4, S5, S6 -->
+        <!-- ============================================================ -->
+
+        <!-- S4: Config Safety (WARN) -->
+        <rect x="30" y="340" width="320" height="150" rx="8" fill="#0f172a"/>
+        <rect x="30" y="340" width="320" height="150" rx="8" fill="rgba(251,191,36,0.04)" stroke="#fbbf24" stroke-width="1.5"/>
+        <rect x="42" y="350" width="32" height="20" rx="4" fill="rgba(251,191,36,0.3)" stroke="#fbbf24" stroke-width="1"/>
+        <text x="58" y="364" fill="white" font-size="11" font-weight="700" text-anchor="middle">S4</text>
+        <text x="84" y="364" fill="#fbbf24" font-size="11" font-weight="700">&#x2699; &#x914D;&#x7F6E;&#x5B89;&#x5168;</text>
+        <text x="84" y="382" fill="#94a3b8" font-size="9">&#x68C0;&#x67E5;&#x654F;&#x611F;&#x914D;&#x7F6E;&#x662F;&#x5426;&#x901A;&#x8FC7;&#x73AF;&#x5883;&#x53D8;&#x91CF;&#x4F20;&#x5165;</text>
+        <line x1="42" y1="392" x2="338" y2="392" stroke="#fbbf24" stroke-width="0.5" opacity="0.3"/>
+        <text x="42" y="412" fill="#94a3b8" font-size="8">&#x2022; &#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x4E2D;&#x662F;&#x5426;&#x542B;&#x660E;&#x6587;&#x5BC6;&#x94A5;</text>
+        <text x="42" y="426" fill="#94a3b8" font-size="8">&#x2022; &#x654F;&#x611F;&#x7AEF;&#x70B9;/&#x51ED;&#x636E;&#x662F;&#x5426;&#x786C;&#x7F16;&#x7801;</text>
+        <text x="42" y="440" fill="#94a3b8" font-size="8">&#x2022; env var &#x4F20;&#x5165;&#x6A21;&#x5F0F;&#x9A8C;&#x8BC1;</text>
+        <rect x="230" y="405" width="72" height="22" rx="4" fill="rgba(251,191,36,0.2)" stroke="#fbbf24" stroke-width="1"/>
+        <text x="266" y="419" fill="#fbbf24" font-size="9" font-weight="700" text-anchor="middle">&#x26A0; WARN</text>
+        <text x="42" y="462" fill="#64748b" font-size="8">&#x5224;&#x5B9A;: &#x654F;&#x611F;&#x503C;&#x786C;&#x7F16;&#x7801;&#x5219;&#x8B66;&#x544A;</text>
+        <text x="42" y="478" fill="#64748b" font-size="8">&#x660E;&#x6587;&#x5BC6;&#x94A5;&#x5219;&#x5347;&#x7EA7;&#x4E3A; S1 BLOCK</text>
+
+        <!-- S5: Dependency Audit (WARN) -->
+        <rect x="370" y="340" width="320" height="150" rx="8" fill="#0f172a"/>
+        <rect x="370" y="340" width="320" height="150" rx="8" fill="rgba(76,29,149,0.05)" stroke="#a78bfa" stroke-width="1.5"/>
+        <rect x="382" y="350" width="32" height="20" rx="4" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1"/>
+        <text x="398" y="364" fill="white" font-size="11" font-weight="700" text-anchor="middle">S5</text>
+        <text x="424" y="364" fill="#a78bfa" font-size="11" font-weight="700">&#x1F4E6; &#x4F9D;&#x8D56;&#x5BA1;&#x8BA1;</text>
+        <text x="424" y="382" fill="#94a3b8" font-size="9">&#x5BF9;&#x6BD4;&#x4F9D;&#x8D56;&#x6E05;&#x5355;&#x4E0E;&#x5DF2;&#x77E5;&#x6F0F;&#x6D1E;&#x6570;&#x636E;&#x5E93;</text>
+        <line x1="382" y1="392" x2="678" y2="392" stroke="#a78bfa" stroke-width="0.5" opacity="0.3"/>
+        <text x="382" y="412" fill="#94a3b8" font-size="8">&#x2022; &#x8BFB;&#x53D6;&#x4F9D;&#x8D56;&#x58F0;&#x660E;&#x6587;&#x4EF6;</text>
+        <text x="382" y="426" fill="#94a3b8" font-size="8">&#x2022; &#x5BF9;&#x6BD4; CVE / GHSA &#x6F0F;&#x6D1E;&#x6570;&#x636E;&#x5E93;</text>
+        <text x="382" y="440" fill="#94a3b8" font-size="8">&#x2022; &#x9AD8;&#x5371;&#x6F0F;&#x6D1E;&#x53EF;&#x5347;&#x7EA7;&#x4E3A;&#x963B;&#x65AD;</text>
+        <rect x="570" y="405" width="72" height="22" rx="4" fill="rgba(76,29,149,0.2)" stroke="#a78bfa" stroke-width="1"/>
+        <text x="606" y="419" fill="#a78bfa" font-size="9" font-weight="700" text-anchor="middle">&#x26A0; WARN</text>
+        <text x="382" y="462" fill="#64748b" font-size="8">&#x5224;&#x5B9A;: &#x5DF2;&#x77E5;&#x6F0F;&#x6D1E;&#x5219;&#x8B66;&#x544A;</text>
+        <text x="382" y="478" fill="#64748b" font-size="8">&#x4F4E;&#x5371;&#x4E0D;&#x963B;&#x65AD; &#xb7; &#x9AD8;&#x5371;&#x53EF;&#x914D;&#x7F6E;&#x4E3A;&#x963B;&#x65AD;</text>
+
+        <!-- S6: Constraint Drift (BLOCK) -->
+        <rect x="710" y="340" width="320" height="150" rx="8" fill="#0f172a"/>
+        <rect x="710" y="340" width="320" height="150" rx="8" fill="rgba(136,19,55,0.08)" stroke="#fb7185" stroke-width="2" filter="url(#glow-rose)"/>
+        <rect x="722" y="350" width="32" height="20" rx="4" fill="rgba(136,19,55,0.5)" stroke="#fb7185" stroke-width="1"/>
+        <text x="738" y="364" fill="white" font-size="11" font-weight="700" text-anchor="middle">S6</text>
+        <text x="764" y="364" fill="#fb7185" font-size="11" font-weight="700">&#x1F4DC; &#x5B89;&#x5168;&#x7EA6;&#x675F;&#x68C0;&#x67E5;</text>
+        <text x="764" y="382" fill="#94a3b8" font-size="9">&#x5BF9;&#x6BD4;&#x5B89;&#x5168;&#x5E95;&#x7EBF;&#x58F0;&#x660E;&#x4E0E;&#x5F53;&#x524D;&#x4EE3;&#x7801;&#x72B6;&#x6001;</text>
+        <line x1="722" y1="392" x2="1018" y2="392" stroke="#fb7185" stroke-width="0.5" opacity="0.3"/>
+        <text x="722" y="412" fill="#94a3b8" font-size="8">&#x2022; &#x5B89;&#x5168;&#x7EA6;&#x675F;&#x662F;&#x5426;&#x88AB;&#x79FB;&#x9664;&#x6216;&#x524A;&#x5F31;</text>
+        <text x="722" y="426" fill="#94a3b8" font-size="8">&#x2022; &#x5206;&#x652F;&#x9694;&#x79BB; / P0 &#x6E05;&#x96F6; / &#x8F93;&#x5165;&#x6821;&#x9A8C;&#x7B49;&#x7EA6;&#x675F;</text>
+        <text x="722" y="440" fill="#94a3b8" font-size="8">&#x2022; &#x57FA;&#x4E8E;&#x7248;&#x672C;&#x63A7;&#x5236;&#x53D8;&#x66F4;&#x5BF9;&#x6BD4;</text>
+        <rect x="910" y="405" width="72" height="22" rx="4" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/>
+        <text x="946" y="419" fill="#fb7185" font-size="9" font-weight="700" text-anchor="middle">&#x1F6AB; BLOCK</text>
+        <text x="722" y="462" fill="#64748b" font-size="8">&#x5224;&#x5B9A;: &#x7EA6;&#x675F;&#x88AB;&#x524A;&#x5F31;&#x5373;&#x963B;&#x65AD;</text>
+        <text x="722" y="478" fill="#64748b" font-size="8">&#x201C;&#x89C4;&#x7EA6;&#x5B8C;&#x6574;&#x6027;&#x201D; &#x2014; &#x9879;&#x76EE;&#x4E0D;&#x53EF;&#x59A5;&#x534F;&#x5E95;&#x7EBF;</text>
+
+        <!-- Distribution from engine to row 2 -->
+        <line x1="410" y1="106" x2="190" y2="106" stroke="#fb7185" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.4"/>
+        <line x1="190" y1="106" x2="190" y2="340" stroke="#fb7185" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.3"/>
+        <line x1="530" y1="106" x2="530" y2="340" stroke="#fb7185" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.3"/>
+
+        <!-- ============================================================ -->
+        <!-- OUTPUT: Aggregation and Results -->
+        <!-- ============================================================ -->
+
+        <!-- Dashed arrows from all surfaces downward to aggregation -->
+        <line x1="190" y1="310" x2="190" y2="530" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.3"/>
+        <line x1="530" y1="310" x2="530" y2="530" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.3"/>
+        <line x1="870" y1="310" x2="870" y2="530" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.3"/>
+        <line x1="190" y1="490" x2="190" y2="530" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.3"/>
+        <line x1="530" y1="490" x2="530" y2="530" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.3"/>
+        <line x1="870" y1="490" x2="870" y2="530" stroke="#94a3b8" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.3"/>
+
+        <!-- Aggregation Zone -->
+        <rect x="120" y="534" width="820" height="48" rx="8" fill="#0f172a"/>
+        <rect x="120" y="534" width="820" height="48" rx="8" fill="rgba(30,41,59,0.3)" stroke="#64748b" stroke-width="1"/>
+        <text x="530" y="556" fill="#94a3b8" font-size="10" font-weight="600" text-anchor="middle">&#x1F4CA; &#x6C47;&#x603B;&#x516D;&#x9762;&#x7ED3;&#x679C;: &#x963B;&#x65AD;&#x9762; (S1, S2, S6) + &#x8B66;&#x544A;&#x9762; (S3, S4, S5)</text>
+        <text x="530" y="572" fill="#64748b" font-size="8" text-anchor="middle">&#x516D;&#x9762;&#x72EC;&#x7ACB;&#x6267;&#x884C; &#xb7; &#x4E00;&#x9762;&#x963B;&#x65AD;&#x4E0D;&#x5F71;&#x54CD;&#x5176;&#x4F59;&#x9762;&#x7EE7;&#x7EED; &#xb7; &#x7CBE;&#x786E;&#x5230;&#x6587;&#x4EF6;+&#x884C;&#x53F7;+&#x6A21;&#x5F0F;</text>
+
+        <line x1="530" y1="582" x2="530" y2="610" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- PASS Node -->
+        <rect x="340" y="614" width="380" height="52" rx="10" fill="#0f172a"/>
+        <rect x="340" y="614" width="380" height="52" rx="10" fill="rgba(6,78,59,0.3)" stroke="#34d399" stroke-width="2"/>
+        <text x="530" y="636" fill="#34d399" font-size="13" font-weight="700" text-anchor="middle">&#x2705; &#x5B89;&#x5168;&#x9762;&#x81EA;&#x68C0;&#x901A;&#x8FC7;</text>
+        <text x="530" y="656" fill="#94a3b8" font-size="9" text-anchor="middle">&#x9879;&#x76EE;&#x5B89;&#x5168;&#x5E95;&#x7EBF;&#x5B8C;&#x6574; &#xb7; &#x516D;&#x6761;&#x9632;&#x7EBF;&#x5168;&#x90E8;&#x786E;&#x8BA4;</text>
+
+        <!-- Legend -->
+        <text x="28" y="700" fill="white" font-size="10" font-weight="600">Legend</text>
+        <rect x="28" y="710" width="16" height="10" rx="2" fill="rgba(136,19,55,0.2)" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="50" y="718" fill="#94a3b8" font-size="8">Block Surface (S1/S2/S6) &#x2014; &#x4E0D;&#x53EF;&#x59A5;&#x534F;&#x5E95;&#x7EBF;</text>
+        <rect x="320" y="710" width="16" height="10" rx="2" fill="rgba(251,191,36,0.15)" stroke="#fbbf24" stroke-width="1"/>
+        <text x="342" y="718" fill="#94a3b8" font-size="8">Warn Surface (S3/S4) &#x2014; &#x53EF;&#x914D;&#x7F6E;&#x5347;&#x7EA7;</text>
+        <rect x="560" y="710" width="16" height="10" rx="2" fill="rgba(76,29,149,0.15)" stroke="#a78bfa" stroke-width="1"/>
+        <text x="582" y="718" fill="#94a3b8" font-size="8">Dependency Audit (S5) &#x2014; &#x9AD8;&#x5371;&#x53EF;&#x5347;&#x7EA7;&#x963B;&#x65AD;</text>
+        <rect x="780" y="710" width="16" height="10" rx="2" fill="rgba(6,78,59,0.3)" stroke="#34d399" stroke-width="1"/>
+        <text x="802" y="718" fill="#94a3b8" font-size="8">All Pass</text>
+        <line x1="880" y1="715" x2="910" y2="715" stroke="#fb7185" stroke-width="0.8" stroke-dasharray="3,3"/>
+        <text x="916" y="718" fill="#94a3b8" font-size="8">Scan Distribution</text>
+
+        <!-- Compliance badges area -->
+        <rect x="40" y="526" width="56" height="18" rx="4" fill="rgba(136,19,55,0.2)" stroke="#fb7185" stroke-width="0.8"/>
+        <text x="68" y="539" fill="#fb7185" font-size="7" font-weight="600" text-anchor="middle">4x BLOCK</text>
+      </svg>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot rose"></div>
+          <h3>&#x1F6AB; &#x963B;&#x65AD;&#x9762; (S1 / S2 / S6)</h3>
+        </div>
+        <ul>
+          <li>&#x2022; S1 &#x5BC6;&#x94A5;&#x626B;&#x63CF;: &#x547D;&#x4E2D;&#x5373;&#x963B;&#x65AD; &#xb7; &#x96F6;&#x5BB9;&#x5FCD;</li>
+          <li>&#x2022; S2 &#x8BA4;&#x8BC1;&#x68C0;&#x67E5;: &#x4EFB;&#x4F55;&#x7ED5;&#x8FC7;&#x5373;&#x963B;&#x65AD;</li>
+          <li>&#x2022; S6 &#x7EA6;&#x675F;&#x68C0;&#x67E5;: &#x7EA6;&#x675F;&#x524A;&#x5F31;&#x5373;&#x963B;&#x65AD;</li>
+          <li>&#x2022; &#x5BF9;&#x5E94; 4 &#x6761;&#x4E0D;&#x53EF;&#x59A5;&#x534F;&#x5E95;&#x7EBF;</li>
+          <li>&#x2022; &#x542B;: &#x6587;&#x4EF6;+&#x884C;&#x53F7;+&#x5339;&#x914D;&#x6A21;&#x5F0F;+&#x4FEE;&#x590D;</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot amber"></div>
+          <h3>&#x26A0; &#x8B66;&#x544A;&#x9762; (S3 / S4 / S5)</h3>
+        </div>
+        <ul>
+          <li>&#x2022; S3 &#x8F93;&#x5165;&#x6821;&#x9A8C;: &#x672A;&#x6821;&#x9A8C;&#x5219;&#x8B66;&#x544A;</li>
+          <li>&#x2022; S4 &#x914D;&#x7F6E;&#x5B89;&#x5168;: &#x786C;&#x7F16;&#x7801;&#x5219;&#x8B66;&#x544A;</li>
+          <li>&#x2022; S5 &#x4F9D;&#x8D56;&#x5BA1;&#x8BA1;: &#x5DF2;&#x77E5;&#x6F0F;&#x6D1E;&#x5219;&#x8B66;&#x544A;</li>
+          <li>&#x2022; S3/S4 &#x53EF;&#x914D;&#x7F6E;&#x5347;&#x7EA7;&#x4E3A;&#x963B;&#x65AD;</li>
+          <li>&#x2022; S5 &#x9AD8;&#x5371;&#x6F0F;&#x6D1E;&#x53EF;&#x5347;&#x7EA7;&#x4E3A;&#x963B;&#x65AD;</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-dot emerald"></div>
+          <h3>&#x26A1; &#x6267;&#x884C;&#x7279;&#x6027;</h3>
+        </div>
+        <ul>
+          <li>&#x2022; &#x516D;&#x9762;&#x5E76;&#x884C;&#x6267;&#x884C; &#xb7; &#x72EC;&#x7ACB;&#x5224;&#x5B9A;</li>
+          <li>&#x2022; &le; 15 &#x79D2;&#x5168;&#x91CF;&#x626B;&#x63CF;</li>
+          <li>&#x2022; &#x4E00;&#x9762;&#x963B;&#x65AD;&#x4E0D;&#x5F71;&#x54CD;&#x5176;&#x4F59;</li>
+          <li>&#x2022; &#x5047;&#x9633;&#x6027;&#x53EF;&#x63A7;: &#x8C41;&#x514D;&#x6807;&#x8BB0;</li>
+          <li>&#x2022; &#x53EA;&#x8BFB;&#xFF0C;&#x4E0D;&#x4FEE;&#x6539;&#x4EFB;&#x4F55;&#x6587;&#x4EF6;</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="footer">YrY Self-Test &#x2022; Scene 4: Security Regression Self-Check &#x2022; v1.0.0 &#x2022; self-contained architecture diagram</p>
+  </div>
+
+  <script>
+    function copySVG(btn) {
+      var orig = btn.textContent;
+      try {
+        var svg = document.querySelector('svg');
+        var data = new XMLSerializer().serializeToString(svg);
+        navigator.clipboard.writeText(data);
+        btn.textContent = '✓ Copied!';
+      } catch(e) { btn.textContent = '✗ Failed'; }
+      setTimeout(function() { btn.textContent = orig; }, 2000);
+    }
+    function downloadPNG(btn) {
+      var orig = btn.textContent;
+      btn.textContent = '⏳ ...';
+      try {
+        var svg = document.querySelector('svg');
+        var data = new XMLSerializer().serializeToString(svg);
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+        var img = new Image();
+        img.onload = function() {
+          canvas.width = img.width || 1200;
+          canvas.height = img.height || 740;
+          ctx.fillStyle = '#020617';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0);
+          var link = document.createElement('a');
+          link.download = 'scene-4-security-regression.png';
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          btn.textContent = '✓ Done!';
+        };
+        img.onerror = function() { btn.textContent = '✗ Failed'; };
+        img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(data)));
+      } catch(e) { btn.textContent = '✗ Failed'; }
+      setTimeout(function() { btn.textContent = orig; }, 2000);
+    }
+    function downloadSVG(btn) {
+      var orig = btn.textContent;
+      try {
+        var svg = document.querySelector('svg');
+        var data = new XMLSerializer().serializeToString(svg);
+        var blob = new Blob([data], {type: 'image/svg+xml'});
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement('a');
+        link.download = 'scene-4-security-regression.svg';
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+        btn.textContent = '✓ Done!';
+      } catch(e) { btn.textContent = '✗ Failed'; }
+      setTimeout(function() { btn.textContent = orig; }, 2000);
+    }
+  </script>
+</body>
+</html>

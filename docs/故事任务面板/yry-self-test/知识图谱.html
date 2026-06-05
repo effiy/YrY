@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YrY Self-Test — Knowledge Graph</title>
+<style>
+  :root {
+    --bg: #020617;
+    --surface: #0f172a;
+    --surface2: #1e293b;
+    --border: #334155;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --domain: #06b6d4;
+    --domain-bg: rgba(6, 182, 212, 0.15);
+    --domain-border: rgba(6, 182, 212, 0.4);
+    --flow: #10b981;
+    --flow-bg: rgba(16, 185, 129, 0.15);
+    --flow-border: rgba(16, 185, 129, 0.4);
+    --step: #8b5cf6;
+    --step-bg: rgba(139, 92, 246, 0.15);
+    --step-border: rgba(139, 92, 246, 0.4);
+    --cross: #f59e0b;
+    --warn: #f97316;
+    --block: #ef4444;
+    --pass: #22c55e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .header h1 { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+  .header .story-tag {
+    background: var(--surface2);
+    color: var(--text2);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+  .header .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--pass);
+    box-shadow: 0 0 8px var(--pass);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .controls {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn {
+    background: var(--surface2);
+    color: var(--text2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .btn:hover { background: var(--border); color: var(--text); }
+  .btn.active { background: var(--domain-bg); border-color: var(--domain); color: var(--domain); }
+  .btn.fit { background: var(--surface2); color: var(--text2); }
+  .filter-group { display: flex; gap: 4px; }
+  .filter-btn {
+    background: transparent;
+    color: var(--text3);
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { color: var(--text2); border-color: var(--border); }
+  .filter-btn.on-domain { color: var(--domain); border-color: var(--domain-border); background: var(--domain-bg); }
+  .filter-btn.on-flow { color: var(--flow); border-color: var(--flow-border); background: var(--flow-bg); }
+  .filter-btn.on-step { color: var(--step); border-color: var(--step-border); background: var(--step-bg); }
+  .main {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+  }
+  .main:active { cursor: grabbing; }
+  .main.panning { cursor: grabbing; }
+  svg { display: block; }
+  .tooltip {
+    display: none;
+    position: absolute;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    max-width: 320px;
+    pointer-events: none;
+    z-index: 100;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  .tooltip .tt-type {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+  .tooltip .tt-type.domain { color: var(--domain); }
+  .tooltip .tt-type.flow { color: var(--flow); }
+  .tooltip .tt-type.step { color: var(--step); }
+  .tooltip .tt-name { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .tooltip .tt-summary { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .tooltip .tt-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+  .tooltip .tt-tag {
+    font-size: 10px;
+    background: var(--surface2);
+    color: var(--text3);
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .legend {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    gap: 16px;
+    z-index: 5;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text3); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+  .legend-dot.dom { background: var(--domain); }
+  .legend-dot.flw { background: var(--flow); }
+  .legend-dot.stp { background: var(--step); }
+  .legend-dot.crs { background: var(--cross); }
+  .node-rect { transition: opacity 0.2s; }
+  .node-rect.hidden { opacity: 0.08; pointer-events: none; }
+  .edge-line { transition: opacity 0.2s; }
+  .edge-line.hidden { opacity: 0.04; }
+  .node-label { pointer-events: none; user-select: none; }
+  .grid-line { stroke: #1e293b; stroke-width: 0.5; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>YrY Self-Test</h1>
+    <span class="story-tag">Knowledge Graph</span>
+    <span class="story-tag">v2.0.0</span>
+    <div class="dot"></div>
+  </div>
+  <div class="controls">
+    <div class="filter-group">
+      <button class="filter-btn on-domain" data-type="domain" onclick="toggleType('domain')">Domains</button>
+      <button class="filter-btn on-flow" data-type="flow" onclick="toggleType('flow')">Flows</button>
+      <button class="filter-btn on-step" data-type="step" onclick="toggleType('step')">Steps</button>
+    </div>
+    <button class="btn" onclick="toggleCrossDomain()" id="btn-cross">Cross-Domain Edges</button>
+    <button class="btn fit" onclick="fitToScreen()">Fit</button>
+    <button class="btn" onclick="zoomIn()">+</button>
+    <button class="btn" onclick="zoomOut()">-</button>
+  </div>
+</div>
+
+<div class="main" id="main">
+  <svg id="svg"></svg>
+  <div class="tooltip" id="tooltip">
+    <div class="tt-type" id="tt-type"></div>
+    <div class="tt-name" id="tt-name"></div>
+    <div class="tt-summary" id="tt-summary"></div>
+    <div class="tt-tags" id="tt-tags"></div>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot dom"></div> Domain</div>
+    <div class="legend-item"><div class="legend-dot flw"></div> Flow</div>
+    <div class="legend-item"><div class="legend-dot stp"></div> Step</div>
+    <div class="legend-item"><div class="legend-dot crs"></div> Cross-Domain</div>
+  </div>
+</div>
+
+<script>
+// === Knowledge Graph Data ===
+const DATA = {
+  "nodes": {
+    "domain": [
+      {"id":"domain:pipeline-health","type":"domain","name":"Pipeline Health","summary":"Verifies engineering discipline gates are effective — workspace isolation, test-first gate, verification loop, P0 clearing, Agent handoff signals, blocking flags. Covers FP1-FP6.","tags":["pipeline","discipline","gate","health-check"]},
+      {"id":"domain:document-integrity","type":"domain","name":"Document Integrity","summary":"Verifies all story documents exist, are structurally complete, and consistent — directory existence, core document presence, section completeness, cross-reference closure, traceability chain, knowledge graph validity. Covers FP7-FP12.","tags":["document","integrity","cross-reference","knowledge-graph"]},
+      {"id":"domain:security-regression","type":"domain","name":"Security Regression","summary":"Verifies project non-negotiable security baselines are intact — no hardcoded secrets, no auth bypass paths, input validation coverage, sensitive config via env vars, dependency vulnerability scan, security constraint degradation detection. STRIDE six-face coverage.","tags":["security","secrets","auth","validation","dependencies","STRIDE"]}
+    ],
+    "flow": [
+      {"id":"flow:init-full-check","type":"flow","name":"Init Full Self-Check","summary":"Runs all seven initialization readiness checks after project init — instruction doc, readme, domain vocabulary, story panel dir, architecture baseline, self-test baseline, integration config.","tags":["full-check","initialization","readiness"]},
+      {"id":"flow:pre-commit-incremental-check","type":"flow","name":"Pre-Commit Incremental Check","summary":"Runs before each commit — identifies change scope, verifies branch isolation, checks change range, verifies no new P0 regression, checks doc-code sync.","tags":["incremental","pre-commit","gate"]},
+      {"id":"flow:doc-code-consistency","type":"flow","name":"Document-Code Consistency","summary":"Four-layer verification — file reference reachability (L1), implementation report match (L2), test report alignment (L3), knowledge graph validity (L4). Plus cross-reference closure and traceability.","tags":["consistency","document","code","cross-reference"]},
+      {"id":"flow:security-regression-check","type":"flow","name":"Security Regression Check","summary":"Six-face security scan using STRIDE — secrets scan, auth path verification, input validation coverage, config security, dependency vulnerability scan, security constraint regression.","tags":["security","regression","STRIDE","secrets"]}
+    ],
+    "step": [
+      {"id":"step:init-full-check:verify-instruction-doc","type":"step","name":"Verify Instruction Doc","summary":"Check project instruction document contains integrity marker. Missing = block.","tags":["init","instruction-doc","integrity-marker"]},
+      {"id":"step:init-full-check:verify-readme","type":"step","name":"Verify Project Readme","summary":"Check readme file contains project name header. Missing = block.","tags":["init","readme","project-name"]},
+      {"id":"step:init-full-check:verify-domain-vocabulary","type":"step","name":"Verify Domain Vocabulary","summary":"Check domain vocabulary has >= 3 term definitions. Insufficient = block.","tags":["init","domain-vocabulary","terminology"]},
+      {"id":"step:init-full-check:verify-story-panel-dir","type":"step","name":"Verify Story Panel Dir","summary":"Check story task panel directory exists. Missing = block.","tags":["init","story-panel","directory"]},
+      {"id":"step:init-full-check:verify-arch-baseline","type":"step","name":"Verify Arch Story Baseline","summary":"Check architecture story has three baseline docs. Missing = warn.","tags":["init","architecture","baseline"]},
+      {"id":"step:init-full-check:verify-self-test-baseline","type":"step","name":"Verify Self-Test Baseline","summary":"Check self-test story has three baseline docs. Missing = warn.","tags":["init","self-test","baseline"]},
+      {"id":"step:init-full-check:verify-integration-config","type":"step","name":"Verify Integration Config","summary":"Check integration config file exists. Missing = warn (degradable).","tags":["init","integration","config"]},
+      {"id":"step:pre-commit-incremental-check:identify-change-scope","type":"step","name":"Identify Change Scope","summary":"Query VCS for modified/added/deleted files.","tags":["pre-commit","change-scope","vc"]},
+      {"id":"step:pre-commit-incremental-check:verify-branch-isolation","type":"step","name":"Verify Branch Isolation","summary":"Verify not on main branch. On main = block immediately.","tags":["pre-commit","branch-isolation","feat-branch"]},
+      {"id":"step:pre-commit-incremental-check:verify-change-range","type":"step","name":"Verify Change Range","summary":"All changed files within story dir. Cross-story = block.","tags":["pre-commit","change-range","cross-contamination"]},
+      {"id":"step:pre-commit-incremental-check:verify-p0-regression","type":"step","name":"Verify P0 Regression","summary":"Compare blocking flag counts before/after change. New P0 = block.","tags":["pre-commit","p0","regression"]},
+      {"id":"step:pre-commit-incremental-check:verify-doc-sync","type":"step","name":"Verify Document Sync","summary":"If code changed, verify associated docs are updated. Stale = warn.","tags":["pre-commit","doc-sync","code-doc"]},
+      {"id":"step:doc-code-consistency:verify-file-reference","type":"step","name":"L1: File Reference Reachability","summary":"Verify file references in docs point to existing files. Broken = block.","tags":["consistency","file-reference","broken-link"]},
+      {"id":"step:doc-code-consistency:verify-impl-report","type":"step","name":"L2: Implementation Report Match","summary":"Compare section 2 change records against VCS logs. Mismatch = warn.","tags":["consistency","implementation-report","change-log"]},
+      {"id":"step:doc-code-consistency:verify-test-report","type":"step","name":"L3: Test Report Alignment","summary":"Compare section 3 claimed results vs actual test output. Deviation = warn.","tags":["consistency","test-report","alignment"]},
+      {"id":"step:doc-code-consistency:verify-kg-validity","type":"step","name":"L4: Knowledge Graph Validity","summary":"Verify impl nodes map to source files; edges have valid targets. Invalid = warn.","tags":["consistency","knowledge-graph","validity"]},
+      {"id":"step:doc-code-consistency:verify-cross-ref-closure","type":"step","name":"Cross-Reference Closure","summary":"Traverse all cross-references; verify each target exists. Unclosed = block.","tags":["consistency","cross-reference","closure"]},
+      {"id":"step:doc-code-consistency:verify-traceability","type":"step","name":"Traceability Chain","summary":"Check each doc has source citation and change record. Missing = warn.","tags":["consistency","traceability","audit"]},
+      {"id":"step:security-regression-check:scan-secrets","type":"step","name":"Scan Hardcoded Secrets","summary":"Scan all files for hardcoded credentials. Match = block.","tags":["security","secrets","credentials","scan"]},
+      {"id":"step:security-regression-check:verify-auth-paths","type":"step","name":"Verify Auth Paths","summary":"Trace auth entries to protected resources; no bypass paths. Bypass = block.","tags":["security","auth","bypass"]},
+      {"id":"step:security-regression-check:verify-input-validation","type":"step","name":"Verify Input Validation","summary":"Identify all external input points; verify validation logic exists. Missing = warn.","tags":["security","input-validation","xss","injection"]},
+      {"id":"step:security-regression-check:verify-config-security","type":"step","name":"Verify Config Security","summary":"Sensitive config uses env vars, not hardcoded. Hardcoded = warn.","tags":["security","config","env-var"]},
+      {"id":"step:security-regression-check:scan-dependencies","type":"step","name":"Scan Dependencies","summary":"Compare deps against known vulnerability DB. High-severity CVE = block.","tags":["security","dependencies","vulnerability","cve"]},
+      {"id":"step:security-regression-check:verify-security-constraints","type":"step","name":"Verify Constraint Regression","summary":"Compare security constraints vs baseline; detect removed/weakened constraints. Degradation = block.","tags":["security","constraint","regression","baseline"]}
+    ]
+  },
+  "edges": [
+    {"source":"domain:pipeline-health","target":"flow:init-full-check","type":"contains_flow","weight":1.0},
+    {"source":"domain:pipeline-health","target":"flow:pre-commit-incremental-check","type":"contains_flow","weight":1.0},
+    {"source":"domain:document-integrity","target":"flow:doc-code-consistency","type":"contains_flow","weight":1.0},
+    {"source":"domain:security-regression","target":"flow:security-regression-check","type":"contains_flow","weight":1.0},
+    {"source":"flow:init-full-check","target":"step:init-full-check:verify-instruction-doc","type":"flow_step","weight":0.1},
+    {"source":"flow:init-full-check","target":"step:init-full-check:verify-readme","type":"flow_step","weight":0.2},
+    {"source":"flow:init-full-check","target":"step:init-full-check:verify-domain-vocabulary","type":"flow_step","weight":0.3},
+    {"source":"flow:init-full-check","target":"step:init-full-check:verify-story-panel-dir","type":"flow_step","weight":0.4},
+    {"source":"flow:init-full-check","target":"step:init-full-check:verify-arch-baseline","type":"flow_step","weight":0.5},
+    {"source":"flow:init-full-check","target":"step:init-full-check:verify-self-test-baseline","type":"flow_step","weight":0.6},
+    {"source":"flow:init-full-check","target":"step:init-full-check:verify-integration-config","type":"flow_step","weight":0.7},
+    {"source":"flow:pre-commit-incremental-check","target":"step:pre-commit-incremental-check:identify-change-scope","type":"flow_step","weight":0.1},
+    {"source":"flow:pre-commit-incremental-check","target":"step:pre-commit-incremental-check:verify-branch-isolation","type":"flow_step","weight":0.2},
+    {"source":"flow:pre-commit-incremental-check","target":"step:pre-commit-incremental-check:verify-change-range","type":"flow_step","weight":0.3},
+    {"source":"flow:pre-commit-incremental-check","target":"step:pre-commit-incremental-check:verify-p0-regression","type":"flow_step","weight":0.4},
+    {"source":"flow:pre-commit-incremental-check","target":"step:pre-commit-incremental-check:verify-doc-sync","type":"flow_step","weight":0.5},
+    {"source":"flow:doc-code-consistency","target":"step:doc-code-consistency:verify-file-reference","type":"flow_step","weight":0.1},
+    {"source":"flow:doc-code-consistency","target":"step:doc-code-consistency:verify-impl-report","type":"flow_step","weight":0.2},
+    {"source":"flow:doc-code-consistency","target":"step:doc-code-consistency:verify-test-report","type":"flow_step","weight":0.3},
+    {"source":"flow:doc-code-consistency","target":"step:doc-code-consistency:verify-kg-validity","type":"flow_step","weight":0.4},
+    {"source":"flow:doc-code-consistency","target":"step:doc-code-consistency:verify-cross-ref-closure","type":"flow_step","weight":0.5},
+    {"source":"flow:doc-code-consistency","target":"step:doc-code-consistency:verify-traceability","type":"flow_step","weight":0.6},
+    {"source":"flow:security-regression-check","target":"step:security-regression-check:scan-secrets","type":"flow_step","weight":0.1},
+    {"source":"flow:security-regression-check","target":"step:security-regression-check:verify-auth-paths","type":"flow_step","weight":0.2},
+    {"source":"flow:security-regression-check","target":"step:security-regression-check:verify-input-validation","type":"flow_step","weight":0.3},
+    {"source":"flow:security-regression-check","target":"step:security-regression-check:verify-config-security","type":"flow_step","weight":0.4},
+    {"source":"flow:security-regression-check","target":"step:security-regression-check:scan-dependencies","type":"flow_step","weight":0.5},
+    {"source":"flow:security-regression-check","target":"step:security-regression-check:verify-security-constraints","type":"flow_step","weight":0.6},
+    {"source":"domain:pipeline-health","target":"domain:security-regression","type":"cross_domain","weight":0.8},
+    {"source":"domain:document-integrity","target":"domain:pipeline-health","type":"cross_domain","weight":0.6},
+    {"source":"domain:security-regression","target":"domain:document-integrity","type":"cross_domain","weight":0.5},
+    {"source":"step:pre-commit-incremental-check:verify-branch-isolation","target":"step:security-regression-check:verify-security-constraints","type":"cross_domain","weight":0.7},
+    {"source":"step:doc-code-consistency:verify-kg-validity","target":"step:init-full-check:verify-self-test-baseline","type":"cross_domain","weight":0.5},
+    {"source":"step:security-regression-check:verify-input-validation","target":"step:pre-commit-incremental-check:verify-p0-regression","type":"cross_domain","weight":0.4}
+  ]
+};
+
+// === State ===
+const nodeMap = {};
+const nodeList = [];
+DATA.nodes.domain.forEach(n => { nodeMap[n.id] = n; nodeList.push(n); });
+DATA.nodes.flow.forEach(n => { nodeMap[n.id] = n; nodeList.push(n); });
+DATA.nodes.step.forEach(n => { nodeMap[n.id] = n; nodeList.push(n); });
+
+let visibleTypes = { domain: true, flow: true, step: true };
+let showCrossDomain = true;
+let scale = 1;
+let panX = 0, panY = 0;
+let isPanning = false;
+let panStart = { x: 0, y: 0 };
+
+// === Layout Configuration ===
+const LAYOUT = {
+  domainY: 90,
+  domainH: 62, domainW: 280,
+  flowY: 230,
+  flowH: 52, flowW: 260,
+  stepStartY: 360,
+  stepH: 36, stepW: 220, stepGap: 8,
+  marginX: 60, marginY: 40,
+  colGap: 40
+};
+
+// Compute column positions: 4 flows, step columns under each
+const flowColumns = [
+  { flowId: 'flow:init-full-check', domainId: 'domain:pipeline-health', steps: [], x: 0 },
+  { flowId: 'flow:pre-commit-incremental-check', domainId: 'domain:pipeline-health', steps: [], x: 0 },
+  { flowId: 'flow:doc-code-consistency', domainId: 'domain:document-integrity', steps: [], x: 0 },
+  { flowId: 'flow:security-regression-check', domainId: 'domain:security-regression', steps: [], x: 0 }
+];
+
+DATA.edges.forEach(e => {
+  if (e.type === 'flow_step') {
+    const col = flowColumns.find(c => c.flowId === e.source);
+    if (col) col.steps.push({ id: e.target, weight: e.weight });
+  }
+});
+flowColumns.forEach(col => {
+  col.steps.sort((a, b) => a.weight - b.weight);
+});
+
+const totalCols = flowColumns.length;
+const colWidth = LAYOUT.stepW + LAYOUT.colGap;
+const totalFlowWidth = totalCols * colWidth - LAYOUT.colGap;
+const totalWidth = totalFlowWidth + LAYOUT.marginX * 2;
+const maxSteps = Math.max(...flowColumns.map(c => c.steps.length));
+const totalHeight = LAYOUT.stepStartY + maxSteps * (LAYOUT.stepH + LAYOUT.stepGap) + LAYOUT.marginY;
+
+// Domain positions
+const domainPositions = {};
+const domains = DATA.nodes.domain;
+const domainTotalW = domains.length * LAYOUT.domainW + (domains.length - 1) * 60;
+let domainStartX = (totalFlowWidth - domainTotalW) / 2 + LAYOUT.marginX;
+domains.forEach((d, i) => {
+  domainPositions[d.id] = { x: domainStartX + i * (LAYOUT.domainW + 60), y: LAYOUT.domainY };
+});
+
+// Flow positions — align under domains
+const flowPositions = {};
+flowColumns.forEach((col, i) => {
+  const colX = LAYOUT.marginX + i * colWidth;
+  col.x = colX;
+  const dom = domainPositions[col.domainId];
+  const fx = colX + LAYOUT.stepW / 2 - LAYOUT.flowW / 2;
+  flowPositions[col.flowId] = { x: fx, y: LAYOUT.flowY };
+});
+// Adjust flow positions to center under domain
+const pipelineDomain = domainPositions['domain:pipeline-health'];
+const pipelineFlows = flowColumns.filter(c => c.domainId === 'domain:pipeline-health');
+if (pipelineFlows.length === 2) {
+  const f0x = pipelineFlows[0].x;
+  const f1x = pipelineFlows[1].x;
+  const midF = (f0x + LAYOUT.flowW/2 + f1x + LAYOUT.flowW/2) / 2;
+  const shift = pipelineDomain.x + LAYOUT.domainW/2 - midF;
+  flowPositions[pipelineFlows[0].flowId].x += shift;
+  flowPositions[pipelineFlows[1].flowId].x += shift;
+}
+
+// Step positions under each flow column
+const stepPositions = {};
+flowColumns.forEach(col => {
+  col.steps.forEach((s, si) => {
+    stepPositions[s.id] = {
+      x: col.x,
+      y: LAYOUT.stepStartY + si * (LAYOUT.stepH + LAYOUT.stepGap)
+    };
+  });
+});
+
+const nodePositions = {};
+Object.assign(nodePositions, domainPositions, flowPositions, stepPositions);
+
+// === SVG Setup ===
+const svg = document.getElementById('svg');
+const svgNS = 'http://www.w3.org/2000/svg';
+const main = document.getElementById('main');
+const tooltip = document.getElementById('tooltip');
+
+function updateSVGSize() {
+  const w = Math.max(totalWidth + 200, main.clientWidth);
+  const h = Math.max(totalHeight + 200, main.clientHeight);
+  svg.setAttribute('width', w);
+  svg.setAttribute('height', h);
+  svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+}
+updateSVGSize();
+
+// === Grid ===
+const gridGroup = document.createElementNS(svgNS, 'g');
+gridGroup.setAttribute('id', 'grid');
+const gridSize = 50;
+function drawGrid() {
+  gridGroup.innerHTML = '';
+  const w = parseInt(svg.getAttribute('width'));
+  const h = parseInt(svg.getAttribute('height'));
+  for (let x = 0; x < w; x += gridSize) {
+    const line = document.createElementNS(svgNS, 'line');
+    line.setAttribute('x1', x); line.setAttribute('y1', 0);
+    line.setAttribute('x2', x); line.setAttribute('y2', h);
+    line.setAttribute('class', 'grid-line');
+    gridGroup.appendChild(line);
+  }
+  for (let y = 0; y < h; y += gridSize) {
+    const line = document.createElementNS(svgNS, 'line');
+    line.setAttribute('x1', 0); line.setAttribute('y1', y);
+    line.setAttribute('x2', w); line.setAttribute('y2', y);
+    line.setAttribute('class', 'grid-line');
+    gridGroup.appendChild(line);
+  }
+}
+drawGrid();
+svg.appendChild(gridGroup);
+
+// === Main transform group ===
+const mainGroup = document.createElementNS(svgNS, 'g');
+mainGroup.setAttribute('id', 'mainGroup');
+svg.appendChild(mainGroup);
+
+// === Edge colors ===
+function edgeColor(type) {
+  switch (type) {
+    case 'contains_flow': return { stroke: 'rgba(6,182,212,0.3)', dash: 'none', width: 2.5 };
+    case 'flow_step': return { stroke: 'rgba(139,92,246,0.2)', dash: '6,4', width: 1.5 };
+    case 'cross_domain': return { stroke: 'rgba(245,158,11,0.35)', dash: '8,4,2,4', width: 2 };
+    default: return { stroke: 'rgba(100,116,139,0.3)', dash: 'none', width: 1.5 };
+  }
+}
+
+// === Draw Edges ===
+const edgesGroup = document.createElementNS(svgNS, 'g');
+edgesGroup.setAttribute('id', 'edges');
+mainGroup.appendChild(edgesGroup);
+
+DATA.edges.forEach((edge, idx) => {
+  const sp = nodePositions[edge.source];
+  const tp = nodePositions[edge.target];
+  if (!sp || !tp) return;
+  const src = nodeMap[edge.source];
+  const tgt = nodeMap[edge.target];
+  const srcW = src.type === 'domain' ? LAYOUT.domainW : (src.type === 'flow' ? LAYOUT.flowW : LAYOUT.stepW);
+  const srcH = src.type === 'domain' ? LAYOUT.domainH : (src.type === 'flow' ? LAYOUT.flowH : LAYOUT.stepH);
+  const tgtW = tgt.type === 'domain' ? LAYOUT.domainW : (tgt.type === 'flow' ? LAYOUT.flowW : LAYOUT.stepW);
+  const tgtH = tgt.type === 'domain' ? LAYOUT.domainH : (tgt.type === 'flow' ? LAYOUT.flowH : LAYOUT.stepH);
+
+  const sx = sp.x + srcW / 2;
+  const sy = sp.y + srcH;
+  const tx = tp.x + tgtW / 2;
+  const ty = tp.y;
+
+  const path = document.createElementNS(svgNS, 'path');
+  const midY = (sy + ty) / 2;
+  const d = `M ${sx} ${sy} C ${sx} ${midY}, ${tx} ${midY}, ${tx} ${ty}`;
+  const style = edgeColor(edge.type);
+  path.setAttribute('d', d);
+  path.setAttribute('stroke', style.stroke);
+  path.setAttribute('stroke-width', style.width);
+  path.setAttribute('fill', 'none');
+  path.setAttribute('stroke-dasharray', style.dash);
+  path.setAttribute('class', 'edge-line');
+  if (edge.type === 'cross_domain') path.setAttribute('data-cross', 'true');
+  edgesGroup.appendChild(path);
+});
+
+// === Draw Nodes ===
+const nodesGroup = document.createElementNS(svgNS, 'g');
+nodesGroup.setAttribute('id', 'nodes');
+mainGroup.appendChild(nodesGroup);
+
+function nodeColor(type) {
+  switch (type) {
+    case 'domain': return { fill: 'var(--domain-bg)', stroke: 'var(--domain-border)', text: 'var(--domain)' };
+    case 'flow': return { fill: 'var(--flow-bg)', stroke: 'var(--flow-border)', text: 'var(--flow)' };
+    case 'step': return { fill: 'var(--step-bg)', stroke: 'var(--step-border)', text: 'var(--step)' };
+    default: return { fill: 'rgba(100,116,139,0.15)', stroke: 'rgba(100,116,139,0.3)', text: '#94a3b8' };
+  }
+}
+
+function rxForType(type) {
+  switch (type) {
+    case 'domain': return 12;
+    case 'flow': return 8;
+    case 'step': return 6;
+    default: return 6;
+  }
+}
+
+nodeList.forEach(node => {
+  const pos = nodePositions[node.id];
+  if (!pos) return;
+  const w = node.type === 'domain' ? LAYOUT.domainW : (node.type === 'flow' ? LAYOUT.flowW : LAYOUT.stepW);
+  const h = node.type === 'domain' ? LAYOUT.domainH : (node.type === 'flow' ? LAYOUT.flowH : LAYOUT.stepH);
+  const colors = nodeColor(node.type);
+  const rx = rxForType(node.type);
+
+  const g = document.createElementNS(svgNS, 'g');
+  g.setAttribute('class', 'node-group');
+  g.setAttribute('data-id', node.id);
+  g.setAttribute('data-type', node.type);
+
+  const rect = document.createElementNS(svgNS, 'rect');
+  rect.setAttribute('x', pos.x);
+  rect.setAttribute('y', pos.y);
+  rect.setAttribute('width', w);
+  rect.setAttribute('height', h);
+  rect.setAttribute('rx', rx);
+  rect.setAttribute('ry', rx);
+  rect.setAttribute('fill', colors.fill);
+  rect.setAttribute('stroke', colors.stroke);
+  rect.setAttribute('stroke-width', '1.5');
+  rect.setAttribute('class', 'node-rect');
+
+  // Text
+  const text = document.createElementNS(svgNS, 'text');
+  text.setAttribute('x', pos.x + w / 2);
+  text.setAttribute('y', pos.y + h / 2);
+  text.setAttribute('text-anchor', 'middle');
+  text.setAttribute('dominant-baseline', 'central');
+  text.setAttribute('fill', colors.text);
+  text.setAttribute('font-size', node.type === 'domain' ? '14' : (node.type === 'flow' ? '12' : '11'));
+  text.setAttribute('font-weight', node.type === 'domain' ? '600' : '500');
+  text.setAttribute('class', 'node-label');
+  text.setAttribute('pointer-events', 'none');
+
+  // Truncate text
+  let displayName = node.name;
+  const maxChars = node.type === 'domain' ? 30 : (node.type === 'flow' ? 28 : 24);
+  if (displayName.length > maxChars) displayName = displayName.substring(0, maxChars - 2) + '..';
+  text.textContent = displayName;
+
+  g.appendChild(rect);
+  g.appendChild(text);
+
+  // Event handlers
+  g.addEventListener('mouseenter', (e) => {
+    const ttType = document.getElementById('tt-type');
+    const ttName = document.getElementById('tt-name');
+    const ttSummary = document.getElementById('tt-summary');
+    const ttTags = document.getElementById('tt-tags');
+
+    ttType.textContent = node.type.toUpperCase();
+    ttType.className = 'tt-type ' + node.type;
+    ttName.textContent = node.name;
+    ttSummary.textContent = node.summary;
+    ttTags.innerHTML = (node.tags || []).map(t => `<span class="tt-tag">${t}</span>`).join('');
+
+    const rect = main.getBoundingClientRect();
+    tooltip.style.display = 'block';
+    tooltip.style.left = (e.clientX - rect.left + 16) + 'px';
+    tooltip.style.top = (e.clientY - rect.top - 10) + 'px';
+  });
+  g.addEventListener('mousemove', (e) => {
+    const rect2 = main.getBoundingClientRect();
+    let tx = e.clientX - rect2.left + 16;
+    let ty = e.clientY - rect2.top - 10;
+    const ttW = tooltip.offsetWidth;
+    const ttH = tooltip.offsetHeight;
+    if (tx + ttW > rect2.width) tx = e.clientX - rect2.left - ttW - 16;
+    if (ty + ttH > rect2.height) ty = e.clientY - rect2.top - ttH - 16;
+    tooltip.style.left = tx + 'px';
+    tooltip.style.top = ty + 'px';
+  });
+  g.addEventListener('mouseleave', () => {
+    tooltip.style.display = 'none';
+  });
+
+  nodesGroup.appendChild(g);
+});
+
+// === Visibility Updates ===
+function updateVisibility() {
+  const nodeEls = nodesGroup.querySelectorAll('.node-group');
+  nodeEls.forEach(el => {
+    const type = el.getAttribute('data-type');
+    const rect = el.querySelector('.node-rect');
+    if (visibleTypes[type]) {
+      rect.classList.remove('hidden');
+      el.style.pointerEvents = 'auto';
+    } else {
+      rect.classList.add('hidden');
+      el.style.pointerEvents = 'none';
+    }
+  });
+
+  const edgeEls = edgesGroup.querySelectorAll('.edge-line');
+  edgeEls.forEach(el => {
+    const isCross = el.getAttribute('data-cross') === 'true';
+    if (isCross) {
+      if (showCrossDomain) el.classList.remove('hidden');
+      else el.classList.add('hidden');
+    } else {
+      // For flow edges: show only if both endpoints are visible
+      // Default: always show non-cross edges
+      el.classList.remove('hidden');
+    }
+  });
+}
+
+// === Toggle functions ===
+function toggleType(type) {
+  visibleTypes[type] = !visibleTypes[type];
+  const btn = document.querySelector(`.filter-btn[data-type="${type}"]`);
+  const activeClass = type === 'domain' ? 'on-domain' : (type === 'flow' ? 'on-flow' : 'on-step');
+  if (visibleTypes[type]) {
+    btn.classList.add(activeClass);
+  } else {
+    btn.classList.remove(activeClass);
+  }
+  updateVisibility();
+}
+
+function toggleCrossDomain() {
+  showCrossDomain = !showCrossDomain;
+  const btn = document.getElementById('btn-cross');
+  if (showCrossDomain) {
+    btn.classList.add('active');
+  } else {
+    btn.classList.remove('active');
+  }
+  updateVisibility();
+}
+
+// Initialize cross-domain button
+document.getElementById('btn-cross').classList.add('active');
+
+// === Zoom and Pan ===
+function applyTransform() {
+  mainGroup.setAttribute('transform', `translate(${panX},${panY}) scale(${scale})`);
+}
+
+function fitToScreen() {
+  scale = Math.min(
+    (main.clientWidth - 40) / totalWidth,
+    (main.clientHeight - 100) / totalHeight,
+    1.5
+  );
+  panX = (main.clientWidth - totalWidth * scale) / 2;
+  panY = 60;
+  applyTransform();
+}
+
+function zoomIn() {
+  scale = Math.min(scale * 1.3, 3);
+  applyTransform();
+}
+
+function zoomOut() {
+  scale = Math.max(scale / 1.3, 0.3);
+  applyTransform();
+}
+
+// Mouse wheel zoom
+main.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const rect = main.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const factor = e.deltaY < 0 ? 1.1 : 0.9;
+  const newScale = Math.max(0.3, Math.min(3, scale * factor));
+
+  panX = mx - (mx - panX) * (newScale / scale);
+  panY = my - (my - panY) * (newScale / scale);
+  scale = newScale;
+  applyTransform();
+}, { passive: false });
+
+// Pan
+main.addEventListener('mousedown', (e) => {
+  if (e.target.closest('.node-group')) return;
+  isPanning = true;
+  main.classList.add('panning');
+  panStart = { x: e.clientX - panX, y: e.clientY - panY };
+});
+window.addEventListener('mousemove', (e) => {
+  if (!isPanning) return;
+  panX = e.clientX - panStart.x;
+  panY = e.clientY - panStart.y;
+  applyTransform();
+});
+window.addEventListener('mouseup', () => {
+  isPanning = false;
+  main.classList.remove('panning');
+});
+
+// Touch support
+main.addEventListener('touchstart', (e) => {
+  if (e.touches.length === 1 && !e.target.closest('.node-group')) {
+    isPanning = true;
+    panStart = { x: e.touches[0].clientX - panX, y: e.touches[0].clientY - panY };
+  }
+});
+main.addEventListener('touchmove', (e) => {
+  if (!isPanning || e.touches.length !== 1) return;
+  panX = e.touches[0].clientX - panStart.x;
+  panY = e.touches[0].clientY - panStart.y;
+  applyTransform();
+});
+main.addEventListener('touchend', () => { isPanning = false; });
+
+// Keyboard shortcuts
+window.addEventListener('keydown', (e) => {
+  if (e.key === '+' || e.key === '=') { e.preventDefault(); zoomIn(); }
+  if (e.key === '-') { e.preventDefault(); zoomOut(); }
+  if (e.key === '0') { e.preventDefault(); fitToScreen(); }
+});
+
+// === Initial fit ===
+fitToScreen();
+
+// === Resize handler ===
+window.addEventListener('resize', () => {
+  updateSVGSize();
+  drawGrid();
+});
+</script>
+</body>
+</html>
