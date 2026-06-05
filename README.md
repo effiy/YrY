@@ -248,9 +248,27 @@ YrY/
 │   ├── rui-bot/          #   企微通知
 │   └── rui-trends/          #   技术趋势发现
 ├── docs/
+│   ├── index.html           #   文档中心着陆页
 │   └── 故事任务面板/        #   故事产出目录
 │       └── <name>/
-│           └── *.md  #     故事文档（故事任务·使用场景·技术评审等）
+│           ├── 故事任务.md  #     故事定义与 AC
+│           └── 场景-<N>-<slug>/
+│               ├── 计划清单.html  # 实施清单
+│               ├── 架构图.html    # SVG 架构图
+│               ├── 知识图谱.html  # 知识图谱可视化
+│               ├── 测试面板.html  # 测试仪表盘
+│               └── 演示.html      # 交互演示
+├── demos/                   # 技能演示页面
+├── templates/               # 管线模板（与 docs/tests 结构镜像）
+│   ├── docs/
+│   ├── tests/
+│   └── demos/
+├── tests/                   # 自检测试套件
+│   ├── run.mjs              #   测试运行器
+│   ├── skills/ agents/ rules/ integration/
+│   └── lib/                 #   测试工具（harness + helpers）
+├── .claude/                 # Claude Code 本地配置
+├── .claude-plugin/          # 插件清单与市场元数据
 ├── CLAUDE.md
 └── README.md
 ```

@@ -4,7 +4,7 @@ description: Story-driven SDLC orchestrator: story → document → code → del
 user_invocable: true
 lifecycle: default-pipeline
 agents:
-  required: [pm, coder, tester, reporter, security, self-improve]
+  required: [pm, planner, coder, tester, reporter, security, self-improve]
   optional: [code-reviewer, architect]
 ---
 

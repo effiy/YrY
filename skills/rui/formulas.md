@@ -188,7 +188,7 @@ flowchart LR
 
 ### F.story.task — 故事任务 `meta + Story×N`
 
-> 模板参考：[templates/故事任务/故事任务.md](../../templates/故事任务/故事任务.md)
+> 模板参考：[templates/docs/故事任务面板/故事任务.md](../../templates/docs/故事任务面板/故事任务.md)
 
 #### F.story.task 强制元素
 
@@ -258,7 +258,7 @@ flowchart LR
 
 ### F.story.scene — 场景-N-<slug>.md `meta + nav + §0 技术评审 + §1 测试设计 + §2 实施报告 + §3 测试报告 + §4 自改进`
 
-> 模板参考：[templates/故事任务/场景-1-<slug>.md](../../templates/故事任务/场景-1-<slug>.md)。每个场景自包含全生命周期文档。
+> 模板参考：[templates/docs/故事任务面板/场景-<N>-<slug>.md](../../templates/docs/故事任务面板/场景-<N>-<slug>.md)。每个场景自包含全生命周期文档。
 
 ```mermaid
 flowchart LR
