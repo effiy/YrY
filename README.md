@@ -2,7 +2,7 @@
 
 > 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。
 
-[系统全景](#系统全景) · [管线](#管线) · [快速开始](#快速开始) · [命令](#命令) · [/rui](#rui---业务故事-sdlc) · [/rui-story](#rui-story---故事任务面板管理) · [/rui-claude](#rui-claude---claude-配置管理) · [Agent 角色](#agent-角色) · [规则](#规则) · [技能](#技能) · [目录结构](#目录结构) · [领域语言](#领域语言) · [技术趋势](#技术趋势)
+[系统全景](#系统全景) · [管线](#管线) · [快速开始](#快速开始) · [命令](#命令) · [/rui](#rui---业务故事-sdlc) · [/rui-story](#rui-story---故事任务面板管理) · [/rui-claude](#rui-claude---claude-配置管理) · [/rui-npm](#rui-npm---个人-npm-包管理) · [Agent 角色](#agent-角色) · [规则](#规则) · [技能](#技能) · [目录结构](#目录结构) · [领域语言](#领域语言) · [技术趋势](#技术趋势)
 
 ## 系统全景
 
@@ -18,13 +18,14 @@
 flowchart TD
     CMD["/rui · /rui-story · /rui-claude"]
 
-    subgraph Skills[六技能]
+    subgraph Skills[七技能]
         direction TB
         RS[rui-story]:::skill
         RC[rui-claude]:::skill
         ID[rui-import]:::skill
         WW[rui-bot]:::skill
         TD[rui-trends]:::skill
+        RN[rui-npm]:::skill
     end
 
     subgraph Agents[九角色]
@@ -142,6 +143,21 @@ flowchart TD
 | `/rui-claude sync` | 写入 | 远端同步：API pull 覆盖本地 `.claude/`（需确认意图） |
 | `/rui-claude <需求>` | 写入 | 需求管线：仅限 `.claude/` 内的 doc+code→交付 |
 
+### /rui-npm — 个人 npm 包管理
+
+| 命令 | 类型 | 作用 |
+|------|------|------|
+| `/rui-npm search <keyword>` | 只读 | 按关键词搜索 npm registry，结构化展示结果 |
+| `/rui-npm install <pkg>[@version]` | 写入 | 安装包到当前项目 |
+| `/rui-npm update <pkg>` | 写入 | 更新指定包到兼容最新版本 |
+| `/rui-npm list [--depth N]` | 只读 | 列出当前项目已安装的依赖 |
+| `/rui-npm info <pkg>` | 只读 | 查看包的完整元数据（版本/许可证/维护者） |
+| `/rui-npm uninstall <pkg>` | 写入 | 从当前项目卸载包 |
+| `/rui-npm publish <path>` | 写入 | 发布本地文件或目录为 npm 包，即刻可用 |
+| `/rui-npm npx <pkg>[@version]` | 执行 | 通过 npx 直接运行包，无需安装 |
+| `/rui-npm audit` | 只读 | 审计已安装依赖的安全漏洞 |
+| `/rui-npm --help` | 只读 | 完整命令用法 + 场景示例 |
+
 ## Agent 角色
 
 ```mermaid
@@ -213,6 +229,7 @@ flowchart LR
 - **rui-import** — 手动触发：批量同步故事文档到远端 API
 - **rui-bot** — 手动触发：企微机器人推送管线状态通知
 - **rui-trends** — 按需：查询 GitHub Trending / OSS Insight / TrendShift / Top-Starred，输出结构化趋势报告。自改进 D5 诊断集成
+- **rui-npm** (`/rui-npm search · install · update · list · info · uninstall · publish · npx · audit`) — 个人 npm 包管理：搜索、增删改查、本地发布即发即用
 
 详见 [`skills/`](./skills/)。
 
@@ -237,7 +254,7 @@ YrY/
 │   ├── rui-claude.md        #   .claude/ 管理约束
 │   ├── mermaid-theme.md     #   Mermaid 统一主题配置
 │   └── plan-execution.md    #   计划执行与验证管线
-├── skills/                  # 6 项技能规约
+├── skills/                  # 7 项技能规约
 │   ├── rui/                 #   SDLC 编排
 │   │   ├── formulas.md      #     故事文档公式
 │   │   ├── coder.md         #     工作手册·数据契约
@@ -246,7 +263,8 @@ YrY/
 │   ├── rui-claude/          #   .claude/ 配置管理
 │   ├── rui-import/         #   文档远端同步
 │   ├── rui-bot/          #   企微通知
-│   └── rui-trends/          #   技术趋势发现
+│   ├── rui-trends/          #   技术趋势发现
+│   └── rui-npm/             #   个人 npm 包管理
 ├── docs/
 │   ├── index.html           #   文档中心着陆页
 │   └── 故事任务面板/        #   故事产出目录

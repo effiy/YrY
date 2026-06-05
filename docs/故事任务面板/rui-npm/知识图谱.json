@@ -1,0 +1,118 @@
+{
+  "meta": {
+    "story": "rui-npm",
+    "version": "1.0.0",
+    "generated": "2026-06-05",
+    "agent": "pm → coder"
+  },
+  "nodes": {
+    "domain": [
+      {
+        "id": "npm-registry",
+        "label": "npm Registry",
+        "type": "domain",
+        "description": "公共 npm 包注册中心，提供包搜索、元数据查询、包上传功能"
+      },
+      {
+        "id": "local-project",
+        "label": "本地项目",
+        "type": "domain",
+        "description": "用户当前工作目录，包含 package.json 和 node_modules"
+      },
+      {
+        "id": "local-filesystem",
+        "label": "本地文件系统",
+        "type": "domain",
+        "description": "用户本地的 JavaScript 文件和目录，作为 publish 的输入源"
+      }
+    ],
+    "flow": [
+      {
+        "id": "flow-search",
+        "label": "包搜索流",
+        "type": "flow",
+        "description": "用户输入关键词 → npm registry 搜索 → 解析排序 → 结构化输出",
+        "steps": ["search"]
+      },
+      {
+        "id": "flow-install",
+        "label": "包安装流",
+        "type": "flow",
+        "description": "用户指定包名 → 前置检查 → npm install → 版本确认",
+        "steps": ["install", "update", "list"]
+      },
+      {
+        "id": "flow-publish",
+        "label": "本地发布流",
+        "type": "flow",
+        "description": "本地文件/目录 → 登录检查 → package.json 准备 → npm publish → 即时可用",
+        "steps": ["publish", "npx"]
+      },
+      {
+        "id": "flow-audit",
+        "label": "审计清理流",
+        "type": "flow",
+        "description": "元数据查询 → 安全漏洞检测 → 卸载清理",
+        "steps": ["info", "audit", "uninstall"]
+      }
+    ],
+    "step": [
+      {
+        "id": "search",
+        "label": "search",
+        "description": "按关键词搜索 npm registry，结果按周下载量降序排列，默认展示 20 条"
+      },
+      {
+        "id": "install",
+        "label": "install",
+        "description": "安装指定包到当前项目的 dependencies 或 devDependencies"
+      },
+      {
+        "id": "update",
+        "label": "update",
+        "description": "更新已安装包到兼容最新版本，展示版本变更"
+      },
+      {
+        "id": "list",
+        "label": "list",
+        "description": "列出当前项目已安装的依赖，支持 --depth 控制树深度"
+      },
+      {
+        "id": "info",
+        "label": "info",
+        "description": "查看指定包在 registry 中的完整元数据"
+      },
+      {
+        "id": "uninstall",
+        "label": "uninstall",
+        "description": "从当前项目移除指定包"
+      },
+      {
+        "id": "publish",
+        "label": "publish",
+        "description": "发布本地文件或目录为 npm 包，自动生成 package.json"
+      },
+      {
+        "id": "npx",
+        "label": "npx",
+        "description": "通过 npx 直接执行 npm 包，无需安装"
+      },
+      {
+        "id": "audit",
+        "label": "audit",
+        "description": "审计已安装依赖的已知安全漏洞，按严重级别分组"
+      }
+    ]
+  },
+  "edges": [
+    {"from": "local-project", "to": "npm-registry", "label": "查询/下载", "flows": ["flow-search", "flow-install", "flow-audit"]},
+    {"from": "local-filesystem", "to": "npm-registry", "label": "上传发布", "flows": ["flow-publish"]},
+    {"from": "npm-registry", "to": "local-project", "label": "包安装", "flows": ["flow-install"]},
+    {"from": "local-filesystem", "to": "npm-registry", "label": "npx 拉取执行", "flows": ["flow-publish"]}
+  ],
+  "layers": [
+    {"name": "命令面", "nodes": ["search", "install", "update", "list", "info", "uninstall", "publish", "npx", "audit"]},
+    {"name": "数据域", "nodes": ["npm-registry", "local-project", "local-filesystem"]},
+    {"name": "数据流", "nodes": ["flow-search", "flow-install", "flow-publish", "flow-audit"]}
+  ]
+}

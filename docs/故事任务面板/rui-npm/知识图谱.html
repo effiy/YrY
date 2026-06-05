@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>rui-npm 知识图谱</title>
+<style>
+  :root {
+    --bg: #1e1f2b;
+    --surface: #2b2d3b;
+    --text: #a9b1d6;
+    --accent: #3d59a1;
+    --domain: #34d399;
+    --flow: #60a5fa;
+    --step: #fbbf24;
+    --edge: #f87171;
+    --layer: #c084fc;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    padding: 24px;
+  }
+  h1 { color: #fff; margin-bottom: 4px; }
+  .subtitle { color: #6b7280; font-size: 14px; margin-bottom: 24px; }
+  .graph { display: flex; flex-wrap: wrap; gap: 24px; }
+  .column { flex: 1; min-width: 300px; }
+  .column h2 { color: #fff; font-size: 16px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); }
+  .node {
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+  }
+  .node.domain { border-left-color: var(--domain); }
+  .node.flow { border-left-color: var(--flow); }
+  .node.step { border-left-color: var(--step); }
+  .node .label { color: #fff; font-weight: 600; display: block; }
+  .node .desc { font-size: 13px; color: #9ca3af; margin-top: 4px; display: block; }
+  .node .meta { font-size: 11px; color: #6b7280; margin-top: 4px; }
+  .edge-list { font-size: 13px; }
+  .edge-item {
+    background: var(--surface);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .edge-item .from { color: var(--domain); }
+  .edge-item .to { color: var(--domain); }
+  .edge-item .arrow { color: var(--edge); }
+  .edge-item .label { color: var(--flow); font-size: 12px; }
+  .layer-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .layer-tag {
+    background: var(--surface);
+    border: 1px solid var(--layer);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: var(--layer);
+  }
+  .badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 3px;
+    padding: 1px 6px;
+    font-size: 11px;
+    margin-left: 6px;
+  }
+</style>
+</head>
+<body>
+
+<h1>rui-npm 知识图谱</h1>
+<p class="subtitle">v1.0.0 · 2026-06-05 · 9 步骤 · 3 数据域 · 4 数据流 · 4 连接边</p>
+
+<div class="graph">
+
+<div class="column">
+  <h2>🌐 数据域</h2>
+  <div class="node domain">
+    <span class="label">npm Registry <span class="badge">外部</span></span>
+    <span class="desc">公共 npm 包注册中心，提供包搜索、元数据查询、包上传功能</span>
+  </div>
+  <div class="node domain">
+    <span class="label">本地项目 <span class="badge">内部</span></span>
+    <span class="desc">用户当前工作目录，包含 package.json 和 node_modules</span>
+  </div>
+  <div class="node domain">
+    <span class="label">本地文件系统 <span class="badge">内部</span></span>
+    <span class="desc">用户本地的 JavaScript 文件和目录，作为 publish 的输入源</span>
+  </div>
+</div>
+
+<div class="column">
+  <h2>📊 步骤（9 个子命令）</h2>
+  <div class="node step"><span class="label">search</span><span class="desc">按关键词搜索 npm registry</span></div>
+  <div class="node step"><span class="label">install</span><span class="desc">安装包到当前项目</span></div>
+  <div class="node step"><span class="label">update</span><span class="desc">更新已安装包到最新兼容版本</span></div>
+  <div class="node step"><span class="label">list</span><span class="desc">列出当前项目已安装的依赖</span></div>
+  <div class="node step"><span class="label">info</span><span class="desc">查看包的完整元数据</span></div>
+  <div class="node step"><span class="label">uninstall</span><span class="desc">从当前项目移除包</span></div>
+  <div class="node step"><span class="label">publish</span><span class="desc">发布本地文件/目录为 npm 包</span></div>
+  <div class="node step"><span class="label">npx</span><span class="desc">通过 npx 直接执行包</span></div>
+  <div class="node step"><span class="label">audit</span><span class="desc">审计依赖的已知安全漏洞</span></div>
+</div>
+
+<div class="column">
+  <h2>🔀 数据流</h2>
+  <div class="node flow">
+    <span class="label">包搜索流</span>
+    <span class="desc">关键词 → registry 搜索 → 解析排序 → 结构化输出</span>
+    <span class="meta">步骤: search</span>
+  </div>
+  <div class="node flow">
+    <span class="label">包安装流</span>
+    <span class="desc">指定包名 → 前置检查 → npm install → 版本确认</span>
+    <span class="meta">步骤: install · update · list</span>
+  </div>
+  <div class="node flow">
+    <span class="label">本地发布流</span>
+    <span class="desc">文件/目录 → 登录检查 → package.json → npm publish → 即时可用</span>
+    <span class="meta">步骤: publish · npx</span>
+  </div>
+  <div class="node flow">
+    <span class="label">审计清理流</span>
+    <span class="desc">元数据查询 → 安全漏洞检测 → 卸载清理</span>
+    <span class="meta">步骤: info · audit · uninstall</span>
+  </div>
+</div>
+
+<div class="column">
+  <h2>🔗 连接边</h2>
+  <div class="edge-list">
+    <div class="edge-item">
+      <span class="from">本地项目</span>
+      <span class="arrow">→</span>
+      <span class="to">npm Registry</span>
+      <span class="label">查询/下载（搜索·安装·审计流）</span>
+    </div>
+    <div class="edge-item">
+      <span class="from">本地文件系统</span>
+      <span class="arrow">→</span>
+      <span class="to">npm Registry</span>
+      <span class="label">上传发布（本地发布流）</span>
+    </div>
+    <div class="edge-item">
+      <span class="from">npm Registry</span>
+      <span class="arrow">→</span>
+      <span class="to">本地项目</span>
+      <span class="label">包安装（安装流）</span>
+    </div>
+    <div class="edge-item">
+      <span class="from">npm Registry</span>
+      <span class="arrow">→</span>
+      <span class="to">本地文件系统</span>
+      <span class="label">npx 拉取执行（发布流）</span>
+    </div>
+  </div>
+</div>
+
+<div class="column">
+  <h2>📐 分层视图</h2>
+  <div class="layer-bar">
+    <span class="layer-tag">命令面: search·install·update·list·info·uninstall·publish·npx·audit</span>
+  </div>
+  <div class="layer-bar">
+    <span class="layer-tag">数据域: npm-registry·local-project·local-filesystem</span>
+  </div>
+  <div class="layer-bar">
+    <span class="layer-tag">数据流: 搜索流·安装流·发布流·审计流</span>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>新人上手与开发指南 — 审查报告</title>
+<style>
+:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--info:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideDown{from{opacity:0;max-height:0}to{opacity:1;max-height:3000px}}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
+.container{max-width:1120px;margin:0 auto;padding:48px 24px 80px}
+.header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
+.header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+.header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
+.stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
+.stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}.stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
+.bar-wrap{margin-bottom:28px;animation:fadeInDown .5s .12s ease both}
+.bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
+.bar-outer .seg{height:100%;transition:width .5s ease;min-width:3px}
+.bar-outer .seg.strength{background:var(--pass)}.bar-outer .seg.gap{background:var(--fail)}.bar-outer .seg.suggestion{background:var(--warn)}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
+.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}
+.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
+.cross-link.on{color:var(--accent);font-weight:600}
+.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
+.tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:0;animation:fadeInDown .5s .18s ease both}
+.tab{padding:10px 20px;cursor:pointer;font-size:.84rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none;position:relative}
+.tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.tab .tab-badge{font-size:.62rem;background:var(--fail);color:#fff;border-radius:8px;padding:1px 6px;position:absolute;top:4px;right:-2px}
+.panel{display:none;animation:fadeInUp .4s ease both;padding-top:28px}
+.panel.on{display:block}
+.suite{background:var(--bg-card);border:var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow);overflow:hidden}
+.suite.open{border-color:rgba(255,255,255,.08)}
+.s-head{display:flex;align-items:center;gap:10px;padding:12px 18px;cursor:pointer;user-select:none}
+.s-head:hover{background:rgba(255,255,255,.02)}
+.s-head .s-arrow{font-size:.6rem;color:var(--text3);transition:transform .2s;width:12px;text-align:center}
+.suite.open .s-head .s-arrow{transform:rotate(90deg)}
+.s-head .s-name{flex:1;font-weight:600;font-size:.88rem}
+.s-head .s-badge{font-size:.68rem;padding:2px 8px;border-radius:10px;font-weight:600}
+.s-badge.pass{background:rgba(34,197,94,.12);color:var(--pass)}.s-badge.warn{background:rgba(245,158,11,.12);color:var(--warn)}.s-badge.fail{background:rgba(239,68,68,.12);color:var(--fail)}
+.s-body{display:none;border-top:var(--border);animation:slideDown .25s ease;padding:14px 18px}
+.suite.open .s-body{display:block}
+.case-card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem;margin-bottom:12px}
+.case-card.good{border-left:3px solid var(--pass)}.case-card.bad{border-left:3px solid var(--fail)}
+.case-card h4{font-size:.85rem;font-weight:600;margin-bottom:.5rem;display:flex;align-items:center;gap:6px}
+.case-card .case-tag{font-size:.65rem;font-weight:600;padding:2px 8px;border-radius:3px}
+.case-tag.good{background:rgba(34,197,94,.1);color:var(--pass)}.case-tag.bad{background:rgba(239,68,68,.1);color:var(--fail)}
+.case-card .case-loc{font-size:.7rem;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:6px}
+.case-card .case-desc{color:var(--text2);font-size:.78rem;line-height:1.6;margin-bottom:6px}
+.case-card .case-why{color:var(--text3);font-size:.74rem;line-height:1.5;font-style:italic}
+.case-card pre{background:rgba(0,0,0,.3);border-radius:6px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);overflow-x:auto;margin-top:8px;line-height:1.5;white-space:pre-wrap}
+.dim-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:10px;box-shadow:var(--shadow)}
+.dim-card h3{font-size:.9rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.dim-card .dim-score{font-size:1.4rem;font-weight:700;margin-left:auto}
+.dim-card .dim-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.04);overflow:hidden;margin-bottom:8px}
+.dim-card .dim-bar-inner{height:100%;border-radius:3px}
+.dim-card ul{list-style:none;color:var(--text2);font-size:.78rem;margin-top:6px}
+.dim-card ul li{margin-bottom:4px;padding-left:16px;position:relative}
+.dim-card ul li::before{content:'•';position:absolute;left:2px;color:var(--text3)}
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px}
+.rec-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.rec-card.p1{border-left:3px solid var(--fail)}.rec-card.p2{border-left:3px solid var(--warn)}.rec-card.p3{border-left:3px solid var(--info)}
+.rec-card .rec-pri{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:3px;display:inline-block;margin-bottom:6px}
+.rec-pri.p1{background:rgba(239,68,68,.12);color:var(--fail)}.rec-pri.p2{background:rgba(245,158,11,.12);color:var(--warn)}.rec-pri.p3{background:rgba(107,114,128,.12);color:var(--info)}
+.rec-card h4{font-size:.82rem;font-weight:600;margin-bottom:4px}
+.rec-card p{color:var(--text2);font-size:.74rem;line-height:1.5}
+.ev-list{list-style:none}
+.ev-list li{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:.78rem}
+.ev-list li .ev-icon{flex-shrink:0;font-size:.8rem}
+.ev-list li .ev-text{color:var(--text2)}
+.footer{text-align:center;color:var(--text3);font-size:.74rem;margin-top:48px;padding-top:20px;border-top:var(--border)}
+.footer a{color:var(--accent);text-decoration:none}.footer a:hover{text-decoration:underline}
+@media(max-width:768px){.container{padding:24px 12px 60px}.header h1{font-size:1.4rem}.stats-grid{gap:6px}.stat-card{padding:12px 14px;min-width:60px}.stat-card .val{font-size:1.2rem}.rec-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<nav class="breadcrumb"><a href="../../docs/index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../index.html">📝 审查中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 场景 3 · 新人上手与开发指南</span></nav>
+<div class="cross-nav">
+  <a href="../../docs/故事任务面板/yry-arch/场景-3-新人上手/计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span>
+  <a href="../../docs/故事任务面板/yry-arch/场景-3-新人上手/架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
+  <a href="../../docs/故事任务面板/yry-arch/场景-3-新人上手/知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
+  <a href="../../docs/故事任务面板/yry-arch/场景-3-新人上手/测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span>
+  <a href="../../docs/故事任务面板/yry-arch/场景-3-新人上手/演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span>
+  <span class="cross-link on">📝 审查</span>
+</div>
+<div class="header"><h1>📝 <span class="accent">场景 3：新人上手与开发指南</span> — 审查报告</h1><p class="sub">审查日期 2026-06-05 · 版本 v1.0.0 · 审查人 code-reviewer Agent · 4 维度 × 6 发现</p></div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="val health">82%</div><div class="lbl">🏥 综合健康度</div></div>
+  <div class="stat-card"><div class="val health">80%</div><div class="lbl">📋 完整性</div></div>
+  <div class="stat-card"><div class="val health">85%</div><div class="lbl">🔗 一致性</div></div>
+  <div class="stat-card"><div class="val warn-h">72%</div><div class="lbl">🔍 可追溯</div></div>
+  <div class="stat-card"><div class="val health">90%</div><div class="lbl">💬 表达力</div></div>
+  <div class="stat-card"><div class="val health">6</div><div class="lbl">📊 发现项</div></div>
+</div>
+
+<div class="bar-wrap">
+  <div class="bar-outer"><div class="seg strength" style="width:33%"></div><div class="seg gap" style="width:33%"></div><div class="seg suggestion" style="width:33%"></div></div>
+  <div style="display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:.68rem;color:var(--text3)"><span>✅ 2 优势</span><span>❌ 2 缺口</span><span>⚠️ 2 建议</span></div>
+</div>
+
+<div class="tabs">
+  <span class="tab on" data-panel="overview">📊 总览</span>
+  <span class="tab" data-panel="good">✅ 好案例 <span class="tab-badge">2</span></span>
+  <span class="tab" data-panel="bad">❌ 坏案例 <span class="tab-badge">2</span></span>
+  <span class="tab" data-panel="recommendations">📝 改进建议</span>
+  <span class="tab" data-panel="evidence">📎 证据链</span>
+</div>
+
+<div class="panel on" id="panelOverview">
+  <div class="dim-card"><h3>📋 完整性 Completeness <span class="dim-score" style="color:var(--pass)">80%</span></h3><div class="dim-bar"><div class="dim-bar-inner" style="width:80%;background:var(--pass)"></div></div><ul><li>覆盖环境搭建、目录导览、常见任务 3 大板块</li><li>⚠️ 缺少故障排查指南——新人最常遇到的阻碍场景</li><li>⚠️ 操作步骤缺少预期输出验证</li></ul></div>
+  <div class="dim-card"><h3>🔗 一致性 Consistency <span class="dim-score" style="color:var(--pass)">85%</span></h3><div class="dim-bar"><div class="dim-bar-inner" style="width:85%;background:var(--pass)"></div></div><ul><li>命令示例与实际 skill 规约一致，目录结构与仓库布局吻合</li><li>术语使用与领域语言定义对齐</li></ul></div>
+  <div class="dim-card"><h3>🔍 可追溯 Traceability <span class="dim-score" style="color:var(--warn)">72%</span></h3><div class="dim-bar"><div class="dim-bar-inner" style="width:72%;background:var(--warn)"></div></div><ul><li>⚠️ 操作步骤缺少"运行后应看到什么"的预期输出，新人无法自我验证</li><li>⚠️ 环境依赖未标注版本要求和平台差异</li></ul></div>
+  <div class="dim-card"><h3>💬 表达力 Expressiveness <span class="dim-score" style="color:var(--pass)">90%</span></h3><div class="dim-bar"><div class="dim-bar-inner" style="width:90%;background:var(--pass)"></div></div><ul><li>上手 Mermaid 流程图清晰，"首修任务"概念设计优秀</li><li>步骤式导航降低认知门槛</li></ul></div>
+</div>
+
+<div class="panel" id="panelGood">
+  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> "首修任务"引导设计</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-3-新人上手.md : 上手流程</div><div class="case-desc">以"环境搭建 → 了解项目 → 首修任务 → 提交变更"为主线，给新人一个有终点的学习路径。首修任务（如修改一个文档、添加一个测试用例）让新人在 30 分钟内完成第一个贡献。</div><div class="case-why">💡 <strong>为什么好：</strong>给新人一个具体可完成的小目标——这比"读完所有文档"有效得多。完成首修即建立了对系统的感性认知和操作信心。</div></div>
+  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 目录导览与架构图呼应</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-3-新人上手.md : 目录导览</div><div class="case-desc">按 skills/ → agents/ → rules/ → docs/ → tests/ 层次导览项目目录，与场景 1 架构图的 3 层 Tier 结构一致。新人在导览后自然过渡到架构文档的深入阅读。</div><div class="case-why">💡 <strong>为什么好：</strong>目录结构反映了架构设计——让新人先看目录，再看架构图，物理结构和逻辑结构形成双重认知锚点。</div></div>
+</div>
+
+<div class="panel" id="panelBad">
+  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 无预期输出验证</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-3-新人上手.md : 操作步骤</div><div class="case-desc">关键操作如 rui-story init、rui-claude sync 仅给出命令，未说明运行成功后的预期终端输出。新人无法判断操作是否成功——如果命令静默失败（如 token 未配置），新人可能在 30 分钟后才发现系统根本没跑起来。</div><div class="case-why">💡 <strong>为什么不好：</strong>无声失败是新人的头号杀手。每个操作步骤都应包含"如果成功，你应该看到..."的预期输出截图或文字，让新人能自我验证每一步。</div></div>
+  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 缺少故障排查 FAQ</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-3-新人上手.md : 全局</div><div class="case-desc">整个文档假设环境搭建一帆风顺。现实中新人会遇到的 node 版本不对、权限不足、企微 Webhook 未配置、API token 缺失等问题，没有任何故障排查指引。</div><div class="case-why">💡 <strong>为什么不好：</strong>文档的"快乐路径"假设在新人场景下最脆弱——新人恰恰是最容易遇到环境问题的人群。没有 FAQ 意味着新人卡住后只能中断上手流程去搜索解决方案。</div></div>
+</div>
+
+<div class="panel" id="panelRecommendations">
+  <div class="rec-grid">
+    <div class="rec-card p1"><span class="rec-pri p1">P1 · 立即</span><h4>为关键操作增加预期输出</h4><p>在每步操作后增加"预期输出"框（终端截图或文字），让新人能自我验证。参考 formulas.md 中"效果示意"的写法。</p></div>
+    <div class="rec-card p1"><span class="rec-pri p1">P1 · 立即</span><h4>增加故障排查 FAQ</h4><p>收集过去 3 个月新人实际遇到的阻碍（≥5 项），编写症状→原因→修复的排查步骤。预计 1 小时。</p></div>
+    <div class="rec-card p2"><span class="rec-pri p2">P2 · 本迭代</span><h4>增加"20 分钟快速体验"路径</h4><p>设计可复制粘贴的命令序列，让新人在理解架构前先看到系统跑起来。</p></div>
+    <div class="rec-card p3"><span class="rec-pri p3">P3 · 未来</span><h4>补充多平台环境搭建说明</h4><p>增加 Linux (Ubuntu) 和 Windows (WSL2) 的差异化说明。</p></div>
+  </div>
+</div>
+
+<div class="panel" id="panelEvidence">
+  <div class="suite open"><div class="s-head"><span class="s-arrow">▶</span><span class="s-name">📎 审查证据清单</span><span class="s-badge pass">4 项</span></div><div class="s-body"><ul class="ev-list">
+    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>预期输出缺失：</strong>grep '预期输出\|你应该看到\|expected output' on 场景-3-新人上手.md → 0 results</span></li>
+    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>FAQ 缺失：</strong>grep 'FAQ\|常见问题\|故障排查\|troubleshoot' on 场景-3-新人上手.md → 0 results</span></li>
+    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>命令一致性：</strong>场景中的命令示例与各 skill SKILL.md 中的命令签名一致</span></li>
+    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>目录结构：</strong>导览路径与实际仓库目录树匹配（skills/ agents/ rules/ docs/ tests/）</span></li>
+  </ul></div></div>
+</div>
+
+<div class="footer">YrY v1.30.0 · 审查中心 · <a href="../index.html">审查中心</a> · <a href="../../docs/index.html">文档中心</a></div>
+</div>
+<script>
+document.querySelector('.tabs').addEventListener('click',function(e){var tab=e.target.closest('.tab');if(!tab)return;document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t===tab)});document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel'+tab.dataset.panel.charAt(0).toUpperCase()+tab.dataset.panel.slice(1))})});
+document.addEventListener('click',function(e){var head=e.target.closest('.s-head');if(head)head.closest('.suite').classList.toggle('open')});
+</script>
+</body>
+</html>
