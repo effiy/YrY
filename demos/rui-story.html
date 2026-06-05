@@ -85,11 +85,11 @@
 
   <div class="panel" id="panelOverview">
     <div class="section"><h2><span class="dot"></span>命令流程</h2>
-      <div class="mermaid-wrap"><div class="mermaid">flowchart LR A["collect 采集"]-->B["status 状态"]-->C["sync 同步"]-->D["notify 通知"] style A 
-    fill:#1a1a2e,stroke:#FFC107,color:#fff style D </div></div>
+      <div class="mermaid-wrap"><div class="mermaid">flowchart LR A["collect 采集"]-->B["status 状态"]-->C["sync 同步"]-->D["notify 通知"] style A fill:#1b1e2e,stroke:#7aa2f7,color:#7aa2f7
+    style D fill:#1e1f2b,stroke:#34d399,color:#a9b1d6</div></div>
     </div>
     <div class="section"><h2><span class="dot"></span>在管线中的位置</h2>
-      <div class="mermaid-wrap"><div class="mermaid">flowchart LR A["rui 交付"]-->B["rui-story 面板"]-->C["rui-import 同步"]-->D["rui-bot 通知"] style B </div></div>
+      <div class="mermaid-wrap"><div class="mermaid">flowchart LR A["rui 交付"]-->B["rui-story 面板"]-->C["rui-import 同步"]-->D["rui-bot 通知"] style B fill:#1e1f2b,stroke:#22d3ee,color:#a9b1d6</div></div>
     </div>
   </div>
 
@@ -128,7 +128,21 @@
 <div class="toast" id="toast"></div>
 
 <script>
-mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#1a1a2e',primaryTextColor:'#fafafc',primaryBorderColor:'#FFC107',lineColor:'#a0a0a4'},flowchart:{useMaxWidth:true,htmlLabels:true,curve:'basis'}});
+mermaid.initialize({
+  theme: 'base',
+  themeVariables: {
+    primaryColor: '#1e1f2b',
+    primaryTextColor: '#a9b1d6',
+    primaryBorderColor: '#3d59a1',
+    lineColor: '#3d59a1',
+    secondaryColor: '#2b2d3b',
+    tertiaryColor: '#21232f',
+    noteBkgColor: '#21232f',
+    noteTextColor: '#53576c'
+  },
+  securityLevel: 'loose',
+  flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
+});
 document.querySelector('.tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t)return;switchPanel(t.dataset.panel)});
 function switchPanel(n){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===n));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='panel'+n.charAt(0).toUpperCase()+n.slice(1)));if(n==='tests')loadTestStats()}
 document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const m={'1':'walkthrough','2':'overview','3':'commands','4':'files','5':'tests'};if(m[e.key]){e.preventDefault();switchPanel(m[e.key])}});

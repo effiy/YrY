@@ -95,8 +95,8 @@
   <div class="panel" id="panelOverview">
     <div class="section"><h2><span class="dot"></span>管线流程</h2>
       <div class="mermaid-wrap"><div class="mermaid">
-flowchart LR A["需求"]-->B["doc 文档基线"]-->C["code 实现"]-->D["交付"] B-->E["分支隔离"] E-->F["Gate A"]-->G["Gate B"]-->H["自改进"] style A 
-    fill:#1a1a2e,stroke:#FFC107,color:#fff style D 
+flowchart LR A["需求"]-->B["doc 文档基线"]-->C["code 实现"]-->D["交付"] B-->E["分支隔离"] E-->F["Gate A"]-->G["Gate B"]-->H["自改进"] style A fill:#1b1e2e,stroke:#7aa2f7,color:#7aa2f7
+    style D fill:#1e1f2b,stroke:#34d399,color:#a9b1d6
       </div></div>
     </div>
     <div class="section"><h2><span class="dot"></span>子命令拓扑</h2>
@@ -157,7 +157,21 @@ flowchart LR A["需求"]-->B["doc 文档基线"]-->C["code 实现"]-->D["交付"
 <div class="toast" id="toast"></div>
 
 <script>
-mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#1a1a2e',primaryTextColor:'#fafafc',primaryBorderColor:'#FFC107',lineColor:'#a0a0a4'},flowchart:{useMaxWidth:true,htmlLabels:true,curve:'basis'}});
+mermaid.initialize({
+  theme: 'base',
+  themeVariables: {
+    primaryColor: '#1e1f2b',
+    primaryTextColor: '#a9b1d6',
+    primaryBorderColor: '#3d59a1',
+    lineColor: '#3d59a1',
+    secondaryColor: '#2b2d3b',
+    tertiaryColor: '#21232f',
+    noteBkgColor: '#21232f',
+    noteTextColor: '#53576c'
+  },
+  securityLevel: 'loose',
+  flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
+});
 
 // ═══ Tab switching ═══
 document.querySelector('.tabs').addEventListener('click',e=>{const tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
