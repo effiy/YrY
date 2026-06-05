@@ -18,6 +18,14 @@ lifecycle: default-pipeline
 ## 命令族全景
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TD
     ENTRY["/rui-story"]:::entry --> Q1{"有参数吗?"}
     Q1 -->|"无"| OVERVIEW["状态概览<br/>远端查询 → 按状态统计 + 最近活动"]:::read
@@ -26,6 +34,7 @@ flowchart TD
     Q2 -->|"sync <name>?"| SYNC["文档同步<br/>远端 → 本地（委托 rui-import）"]:::write
     Q2 -->|"remove <name>"| REMOVE["删除故事目录<br/>本地 → 删除整个故事目录"]:::danger
     Q2 -->|"health"| HEALTH["健康检查<br/>远端 + 本地 → 系统诊断"]:::read
+
 
 ```
 
@@ -47,11 +56,11 @@ flowchart TD
 ```mermaid
 flowchart LR
     subgraph 远端["远端 API (api.effiy.cn)"]
-        SESSIONS["sessions 集合<br/>file_path 前缀 故事任务面板/"]
+        direction TB
     end
 
     subgraph 命令["命令"]
-        OVERVIEW["/rui-story"]
+        direction TB
         LIST["/rui-story list"]
         HEALTH["/rui-story health"]
     end
@@ -59,6 +68,7 @@ flowchart LR
     SESSIONS -->|"query_documents"| OVERVIEW
     SESSIONS -->|"query_documents"| LIST
     SESSIONS -->|"query_documents + local"| HEALTH
+
 
 ```
 
@@ -79,16 +89,17 @@ POST <apiUrl>/
 ```mermaid
 flowchart LR
     subgraph 允许["✅ 允许"]
-        A1["远端 API 查询<br/>故事任务面板 session"]:::ok
+        direction TB
         A2["sync 委托 rui-import<br/>远端 → 本地"]:::ok
         A3["remove 操作本地文件系统<br/>删除指定故事目录"]:::ok
     end
     subgraph 禁止["❌ 禁止"]
-        B1["读取本地文件系统<br/>（查询操作）"]:::bad
+        direction TB
         B2["创建故事文档内容<br/>那是 /rui doc"]:::bad
         B3["修改源码<br/>那是 /rui code"]:::bad
         B4["创建/切换 git 分支<br/>那是 /rui code"]:::bad
     end
+
 
 ```
 
@@ -110,6 +121,7 @@ flowchart TD
     CHKVER -->|"是"| CHKRET{"场景 §4 自改进<br/>存在?"}
     CHKRET -->|"否"| RPT["报告"]:::s4
     CHKRET -->|"是"| IMPV["改进"]:::s5
+
 
 ```
 
@@ -134,6 +146,7 @@ flowchart LR
     B --> C["按故事名分组判定状态"]:::op
     C --> D["按状态聚合计数"]:::op
     D --> E["输出摘要表<br/>+ 最近修改的故事列表"]:::out
+
 
 ```
 
@@ -165,6 +178,7 @@ flowchart LR
     C --> D["按更新时间降序排列"]:::op
     D --> E["输出表格"]:::out
 
+
 ```
 
 **输出列**：`Story | Status | Files | Last Modified | Type | Branch`
@@ -187,6 +201,7 @@ flowchart LR
     D --> F["统计故事任务面板数据"]:::op
     E --> G["输出诊断报告"]:::out
     F --> G
+
 
 ```
 
@@ -231,6 +246,7 @@ flowchart LR
     SCOPED --> OUT["输出同步结果"]:::out
     RECOMMEND --> OUT
 
+
 ```
 
 - 方向：从远端同步文档到本地，完全委托 rui-import（`mode=pull`），不自行实现同步逻辑
@@ -254,6 +270,7 @@ flowchart LR
     CONFIRM -->|"是"| DEL["删除整个目录<br/>docs/故事任务面板/&lt;name&gt;/"]:::danger
     CONFIRM -->|"否"| ABORT["取消操作"]:::out
     DEL --> REPORT["输出删除摘要"]:::out
+
 
 ```
 
@@ -293,7 +310,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph 规则["硬约束"]
-        R1["远端 API 为默认数据源<br/>查询不读本地文件系统"]:::rule
+        direction TB
         R2["仅查询与同步<br/>不创建文档内容"]:::rule
         R3["不修改源码<br/>不创建/切换 git 分支"]:::rule
         R4["sync 完全委托<br/>rui-import"]:::rule
@@ -304,6 +321,7 @@ flowchart LR
         R9["每次操作更新<br/>版本号 + 版本历史"]:::rule
         R10["操作生成或更新<br/>故事任务内容"]:::rule
     end
+
 
 ```
 
@@ -330,6 +348,7 @@ flowchart LR
     F3 --> F4["remove 操作安全<br/>仅本地，先展示后确认再删除"]:::sig
     F4 --> F5["health<br/>确定性脚本输出"]:::sig
 
+
 ```
 
 | 标志 | 未达标的处置 |
@@ -348,5 +367,6 @@ flowchart LR
 flowchart LR
     RUI["/rui<br/>SDLC 编排"]:::rui -->|"doc 创建文档"| PANEL["远端 故事任务面板/"]:::panel
     RS["/rui-story<br/>面板管理"]:::story -->|"查询 + 同步"| PANEL
+
 
 ```

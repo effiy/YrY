@@ -13,6 +13,14 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 ## 工作循环
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     BR{"① 分支隔离门禁<br/>git branch --show-current<br/>== feat/&lt;name&gt;?"}:::gate -->|"❌ 否"| BLOCK["no-branch-isolation 🚫<br/>阻断：禁止 Edit/Write"]:::block
     BR -->|"✅ 是"| RD["读设计文档<br/>01 + 02/03 + 04"]:::setup
@@ -30,6 +38,7 @@ flowchart TB
     RN -->|"是 ✅"| RP["写实施报告<br/>偏差表 + P0 审查表"]:::report
     RP --> HD["交接 tester"]:::done
 
+
 ```
 
 ## 规则
@@ -37,20 +46,21 @@ flowchart TB
 ```mermaid
 flowchart LR
     subgraph 入口["唯一入口"]
-        R1["源码改动仅走 /rui code"]:::rule
+        direction TB
         R2["禁止旁路直接改码"]:::rule
     end
     subgraph 分支["分支隔离 — 强制门禁"]
-        R0["Edit/Write 前验证 git branch"]:::gate
+        direction TB
         R3["feat/&lt;name&gt; 从 main 创建"]:::rule
         R4["改码前必须已切分支"]:::rule
         R5["禁止自动合并到 main"]:::rule
     end
     subgraph 质量["质量门"]
-        R6["P0 清零方进下一模块"]:::rule
+        direction TB
         R7["影响链闭合再声称闭合"]:::rule
         R8["不创建设计文档外文件"]:::rule
     end
+
 
 ```
 
@@ -78,6 +88,7 @@ flowchart LR
     CLS -->|"P0"| FIX["必修<br/>不清零不进下一模块"]:::p0
     CLS -->|"P1"| SUG["当轮修复"]:::p1
     CLS -->|"P2"| NOTE["记录不阻断"]:::p2
+
 
 ```
 
@@ -120,6 +131,7 @@ flowchart LR
     FINDINGS -->|"CRITICAL/HIGH"| FIX["coder 修复"]:::fix
     FIX --> REVIEW
     FINDINGS -->|"零发现或仅 LOW"| NEXT["进入下一模块"]:::pass
+
 ```
 
 审查触发是可选的增强步骤——简单模块可跳过，复杂/安全敏感模块建议触发。
@@ -142,6 +154,7 @@ flowchart LR
     end
     coder -- "pm + tester" --> other
 
+
 ```
 
 | 归 coder | 不归 coder | 协作方 |
@@ -162,6 +175,7 @@ flowchart LR
     CHK -->|"否"| EDGE
     ADD --> EDGE["添加 implements 边<br/>代码节点 → step 节点"]:::step
     EDGE --> SAVE["更新 知识图谱.json"]:::create
+
 ```
 
 | 操作 | 触发条件 | 示例 |

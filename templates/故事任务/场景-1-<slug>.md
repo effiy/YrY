@@ -29,17 +29,29 @@
 **mermaid 布局**（组件关系与数据流）：
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     subgraph header["🟦 Header"]
+        direction TB
         H1["Logo"]:::static
         H2["NavBar\n主导航入口"]:::nav
     end
     subgraph main["🟨 Main"]
+        direction TB
         direction LR
         subgraph left["Left Panel"]
+        direction TB
             L1["{{COMPONENT_A}}\n{{职责}}"]:::input
         end
         subgraph right["Right Panel"]
+        direction TB
             R1["{{COMPONENT_B}}\n{{职责}}"]:::display
             R2["{{COMPONENT_C}}\n{{职责}}"]:::action
         end

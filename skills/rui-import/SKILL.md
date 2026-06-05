@@ -20,6 +20,14 @@ lifecycle: default-pipeline
 ## 工作流全景
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     SCAN["① 扫描文件<br/>全量纳入 · 无扩展名限制"]:::step --> FILTER["② 过滤<br/>排除 .git / node_modules / dist / .claude-plugin"]:::step
     FILTER --> RESOLVE["③ 解析远端路径<br/>故事任务面板 / workspace"]:::step

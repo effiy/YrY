@@ -13,26 +13,35 @@ tools: Read, Grep, Glob
 ## 工作面
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     subgraph 输入["数据源"]
-        DIFF["git diff<br/>变更清单"]:::src
+        direction TB
         LOG["测试输出<br/>通过/失败"]:::src
         STATE["rui-state.json<br/>管线状态"]:::src
     end
 
     subgraph 产出["场景文档各 §"]
-        B["§2 实施报告<br/>文件 · 接口 · 组件 · 偏差 · P0"]:::rpt
+        direction TB
         T["§3 测试报告<br/>冒烟 · 回归 · Gate B"]:::rpt
     end
 
     subgraph 策展["策展"]
-        CC["交叉引用<br/>场景文档各 § 互引一致"]:::curate
+        direction TB
         CM["git commit<br/>关闭故事"]:::curate
     end
 
     输入 --> 产出
     B <-->|交叉引用| T
     产出 --> 策展
+
 
 ```
 
@@ -49,6 +58,7 @@ flowchart LR
     XREF --> CHK{"评审清单<br/>全 ✅?"}
     CHK -->|"否 🔄"| WRI
     CHK -->|"是 ✅"| CUR["策展<br/>git commit"]:::done
+
 
 ```
 
@@ -68,7 +78,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph 四维["四维审查"]
-        A["Accuracy<br/>数据与事实一致"]:::dim
+        direction TB
         C["Completeness<br/>清单无遗漏"]:::dim
         T["Traceability<br/>结论可追溯"]:::dim
         S["Consistency<br/>场景文档各 § 无矛盾"]:::dim
@@ -76,6 +86,7 @@ flowchart LR
     A & C & T & S --> PASS{"全维通过?"}
     PASS -->|"是"| GB["Gate B ✅"]:::ok
     PASS -->|"否"| REJ["退回对应 Agent"]:::bad
+
 
 ```
 
@@ -113,6 +124,7 @@ flowchart LR
     end
     in -- "分工明确" --> out
 
+
 ```
 
 ## 知识图谱完整性检查
@@ -126,6 +138,7 @@ flowchart LR
     CHK1 -->|"是"| CHK2{"实现节点有<br/>implements 边?"}
     CHK2 -->|"否"| GAP2["标记边缺失"]:::warn
     CHK2 -->|"是"| PASS["图谱完整 ✅"]:::pass
+
 ```
 
 | 检查项 | 验证方式 | 不通过处置 |
@@ -145,6 +158,7 @@ flowchart LR
     S2 --> S3["无矛盾<br/>场景文档各 § 叙述一致"]:::sig
     S3 --> S4["Gate B 全 ✅<br/>否则退回 tester/coder"]:::sig
     S4 --> S5["知识图谱一致<br/>FP ↔ 节点 ↔ 实现 全对应"]:::sig
+
 
 ```
 

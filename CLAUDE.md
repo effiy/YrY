@@ -8,6 +8,14 @@
 ## 基础信念
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
     A[信模型<br/>模型能判断] --> B[惜注意<br/>注意力稀缺]
     B --> C[验现实<br/>运行即证]
@@ -71,17 +79,22 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 ```mermaid
 flowchart LR
     subgraph 退化["退化三因"]
+        direction TB
         D1["外部不可达<br/>URL 失效·API 变更"]:::risk
         D2["渐进漂移<br/>术语膨胀·文档过时"]:::risk
         D3["人机偏差<br/>合理化·跳过流程"]:::risk
     end
     subgraph 对策["四层防御"]
+        direction TB
         L1["L1 自包含<br/>规约独立可执行"]:::def
         L2["L2 重生机制<br/>全量覆盖标记段"]:::def
         L3["L3 铁律+Red Flags<br/>识别合理化"]:::def
         L4["L4 上下文工程<br/>时间决定结构"]:::def
     end
     退化 --> 对策
+
+    classDef risk fill:#2a1a1a,stroke:#f87171,color:#f87171
+    classDef def fill:#1a2a1a,stroke:#34d399,color:#a9b1d6
 ```
 
 | 退化因 | 对策 | 具体战术 |

@@ -7,11 +7,19 @@
 ## 系统全景
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TD
     CMD["/rui · /rui-story · /rui-claude"]
 
     subgraph Skills[六技能]
-        RUI[rui]:::skill
+        direction TB
         RS[rui-story]:::skill
         RC[rui-claude]:::skill
         ID[rui-import]:::skill
@@ -38,6 +46,7 @@ flowchart TD
     SECURITY -.约束.-> CODER
     SI -.提案.-> PM
     ID -.hook.-> WW
+
 ```
 
 ## 管线
@@ -52,6 +61,7 @@ flowchart LR
     I --> J[自改进·复盘]
     J --> K[交付]
     K --> K1[追加日志] --> K2[文档同步] --> K3[企微通知]
+
 ```
 
 每阶段产出对应编号文档（01–09），交付时三步 hook 按序执行。详见 [rules/code-pipeline.md](./rules/code-pipeline.md)、[rules/delivery-gate.md](./rules/delivery-gate.md)。
@@ -91,6 +101,7 @@ flowchart TD
     Q2 -->|"代码改完想补文档"| FD["/rui code --from-doc"]
     Q2 -->|"小修小补"| UPD["/rui update"]
     Q2 -->|"只想看进度"| LIST["/rui-story list 或 /rui-story"]
+
 ```
 
 ### /rui — 业务故事 SDLC
@@ -143,6 +154,7 @@ flowchart LR
     REVIEWER[code-reviewer<br>代码审查] -.审查.-> CODER
     SECURITY[security<br>威胁建模] -.约束.-> CODER
     SI[self-improve<br>持续改进] -.提案.-> PM
+
 ```
 
 - **pm** — 决策中枢：决定做/不做/延期，串起全部 Agent
@@ -161,7 +173,7 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph 管线阶段
-        S1[需求→文档]
+        direction TB
         S2[预检]
         S3[Gate A]
         S4[实现]
@@ -177,6 +189,7 @@ flowchart LR
     DG[delivery-gate] -.-> S6
     SI[self-improve] -.-> S6
     RC[rui-claude] -.-> .claude/
+
 ```
 
 - **code-pipeline** — 源码改动：分支隔离 · Gate A/B · 逐模块清零，支撑技术含根因追溯/纵深防御/反馈回路/深度模块/垂直切片
@@ -255,6 +268,7 @@ flowchart TD
     PIPE -->|收口| TRIAD[交付三步]
     SI[自改进] -->|采集| MEM[执行记忆]
     MEM -->|记录| PIPE
+
 ```
 
 | 术语 | 含义 | Avoid |

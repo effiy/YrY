@@ -23,6 +23,14 @@ agents:
 > **每次用户输入交互，rui 自主识别对应的故事任务**：已有故事 → 补充更新其文档内容；新需求 → 新建故事目录并补齐全文档。所有写入操作末端必须执行自主测试。
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TD
     Q0{"用户输入<br/>自动识别故事任务"}
     Q0 -->|"匹配已有故事"| EXISTING{"故事目录存在?"}
@@ -838,6 +846,7 @@ flowchart TD
     EXTRACT --> GEN["§2 逐文档生成<br/>文档基线"]:::s
 
     subgraph GENSUB["逐文档生成 — 文档基线"]
+        direction TB
         direction LR
         D1["§2.1 pm<br/>故事任务<br/>F.story.task"]:::agent
         D2["§2.2 pm<br/>场景文档 §0 + §1<br/>F.story.scene"]:::agent
@@ -965,6 +974,7 @@ flowchart TD
     PRIORITY --> GEN["§4 逐文档生成<br/>仅生成缺失文档"]:::s
     
     subgraph GENSUB["逐文档生成 — 缺失文档（按依赖链串行）"]
+        direction TB
         direction LR
         D1["§4.1 pm<br/>故事任务<br/>F.story.task"]:::agent
         D2["§4.2 pm<br/>场景文档 §0 + §1<br/>F.story.scene"]:::agent

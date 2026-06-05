@@ -18,6 +18,14 @@ lifecycle: default-pipeline
 ## 命令族全景
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     ENTRY["/rui-claude"]:::src --> Q1{"子命令?"}
 
@@ -33,6 +41,7 @@ flowchart TB
     HIST --> H_OUT[".claude/.history/<br/>rui-claude-history.jsonl"]:::out
     REQ --> PIPE["rui code 管线<br/>仅限 .claude/ 内"]:::pipe
     LIST --> L_OUT["推荐列表"]:::out
+
 
 ```
 
@@ -50,13 +59,14 @@ flowchart TB
 ```mermaid
 flowchart LR
     subgraph 允许["✅ 操作范围"]
-        IN[".claude/"]:::ok
+        direction TB
     end
     subgraph 禁止["❌ 不可触及"]
-        OUT1["业务源码"]:::block
+        direction TB
         OUT2["外部配置"]:::block
     end
     允许 -.->|"硬边界"| 禁止
+
 
 ```
 
@@ -68,6 +78,7 @@ flowchart LR
     CHECK -->|"否"| ABORT["中止"]:::abort
     CHECK -->|"是"| PULL["node skills/rui-import/sync.mjs<br/>dir=.claude/ mode=pull<br/>远端 API → 逐文件覆盖本地"]:::op
     PULL --> DONE["完成<br/>自动记录 history"]:::done
+
 
 ```
 
@@ -89,6 +100,7 @@ flowchart LR
     CHECK -->|"是"| CLEAR["清除插件缓存<br/>rm -rf ~/.claude/plugins/<br/>cache/yry/yry/"]:::op
     CLEAR --> SYNC["rui-claude sync<br/>远端 .claude/ → 本地覆盖"]:::op
     SYNC --> DONE["升级完成<br/>插件源码 + 缓存清除 + .claude/ 三重刷新"]:::done
+
 
 ```
 
@@ -115,6 +127,7 @@ flowchart LR
 
     COLLECT -.->|"不连接"| REMOTE["远端"]:::no
 
+
 ```
 
 | 项目 | 说明 |
@@ -136,6 +149,7 @@ flowchart LR
     FILE -.->|"约束"| C2["不入库"]:::rule
     FILE -.->|"约束"| C3["不同步"]:::rule
 
+
 ```
 
 | 子命令 | 说明 |
@@ -148,18 +162,19 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph 边界["操作边界"]
-        R1["仅限 .claude/"]:::rule
+        direction TB
         R7["禁止自动 commit/push"]:::rule
     end
     subgraph 管线["管线约束"]
-        R2["走 rui code 管线"]:::rule
+        direction TB
         R3["feat 分支隔离"]:::rule
         R4["禁止 auto-merge"]:::rule
     end
     subgraph 行为["行为约束"]
-        R5["sync 前确认意图"]:::rule
+        direction TB
         R6["空输入只推荐不执行"]:::rule
     end
+
 
 ```
 
@@ -192,6 +207,7 @@ flowchart LR
     S1["操作边界<br/>仅 .claude/ 内"]:::sig --> S2["sync 确认<br/>意图确认后覆盖"]:::sig
     S2 --> S3["管线完整<br/>变更走 rui code"]:::sig
     S3 --> S4["history 记录<br/>append-only 不入库"]:::sig
+
 
 ```
 

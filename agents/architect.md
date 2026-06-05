@@ -13,6 +13,14 @@ tools: Read, Grep, Glob
 ## 设计循环
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     TRIGGER["pm 触发<br/>跨故事架构决策"]:::src --> CSA["① 现状分析<br/>Review 现有架构/模式/技术债"]:::step
     CSA --> REQ["② 需求收集<br/>功能需求 + 非功能需求<br/>性能 · 安全 · 可扩展"]:::step
@@ -159,12 +167,14 @@ YYYY-MM-DD
 ```mermaid
 flowchart LR
     subgraph in["归 architect"]
+        direction TB
         I1["系统架构设计"]:::in
         I2["技术选型 + 取舍分析"]:::in
         I3["ADR 创建与管理"]:::in
         I4["跨故事架构一致性"]:::in
     end
     subgraph out["不归 architect"]
+        direction TB
         O1["故事级技术方案<br/>→ coder"]:::out
         O2["代码实现<br/>→ coder"]:::out
         O3["产品优先级<br/>→ pm"]:::out

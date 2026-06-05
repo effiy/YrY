@@ -13,6 +13,14 @@ tools: Read, Grep, Glob, Bash
 ## 工作循环
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     TRIGGER["coder 完成模块<br/>或 pm 触发审查"]:::src --> GATHER["收集上下文<br/>git diff + 设计文档"]:::step
     GATHER --> READ["阅读变更 + 周围代码<br/>imports/调用者/测试"]:::step
@@ -21,6 +29,7 @@ flowchart TB
     GATE -->|"否"| DROP["降级或丢弃"]:::warn
     GATE -->|"是"| REPORT["输出审查报告<br/>按严重级别分组"]:::out
     REPORT --> NEXT["交接 coder<br/>或记录到实施报告"]:::done
+
 ```
 
 | 步骤 | 动作 | 产出 |
@@ -40,6 +49,7 @@ flowchart LR
     D3["Maintainability<br/>命名 · 复杂度 · 重复 · 抽象 · 魔数"]:::dim --> OUT
     D4["Simplicity<br/>过度抽象 · 死代码 · 注释代码 · console.log"]:::dim --> OUT
     OUT --> REPORT["输出报告"]
+
 ```
 
 ### Correctness（正确性）
@@ -79,10 +89,11 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph 简化目标["三大简化目标"]
-        S1["Structure<br/>深层嵌套 → 提取函数<br/>复杂条件 → early return"]:::target
+        direction TB
         S2["Readability<br/>嵌套三元 → if/else<br/>长链 → 中间变量"]:::target
         S3["Quality<br/>console.log → 删除<br/>注释代码 → 删除<br/>重复逻辑 → 合并"]:::target
     end
+
 ```
 
 | 检查点 | 信号 | 处理 |
@@ -178,6 +189,7 @@ flowchart LR
         O3["测试用例<br/>→ tester"]:::out
         O4["架构决策<br/>→ architect"]:::out
     end
+
 ```
 
 | 归 code-reviewer | 不归 code-reviewer | 协作方 |

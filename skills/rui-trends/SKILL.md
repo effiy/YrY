@@ -19,20 +19,29 @@ lifecycle: default-pipeline
 ## 数据源全景
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
     subgraph 数据源["动态数据源"]
-        GT["GitHub Trending<br/>github.com/trending"]:::src
+        direction TB
         OI["OSS Insight<br/>ossinsight.io"]:::src
         TS["TrendShift<br/>trendshift.io"]:::src
         TSR["Top-Starred<br/>GitHub Search"]:::src
     end
 
     subgraph 管线["YrY 管线"]
-        SELF["自改进阶段<br/>D5 依赖退化诊断"]:::phase
+        direction TB
         DELIVERY["交付阶段<br/>技术选型验证"]:::phase
     end
 
     数据源 -->|"/rui-trends &lt;sub&gt;"| 管线
+
 
 ```
 
@@ -115,31 +124,31 @@ flowchart LR
 ```mermaid
 flowchart TB
     subgraph 触发["自改进阶段入口"]
-        SELF["self-improve Agent<br/>加载基线 + 采集执行数据"]:::phase
+        direction TB
     end
 
     subgraph 诊断["D0–D7 诊断矩阵"]
-        D0["D0 基线偏离<br/>技术选型与社区方向背离"]:::diag
+        direction TB
         D3["D3 复杂度增长<br/>新兴工具可简化架构?"]:::diag
         D5["D5 依赖退化<br/>外部参考新鲜度验证"]:::diag
         D6["D6 文档过时<br/>外部参考 URL 可达性"]:::diag
     end
 
     subgraph 查询["趋势查询"]
-        GT["github-trending<br/>当前社区热点"]:::action
+        direction TB
         OI["oss-insight<br/>仓库排名对比"]:::action
         TS["trendshift<br/>star 增长趋势"]:::action
         TSR["top-starred<br/>顶级项目验证"]:::action
     end
 
     subgraph 输出["自改进复盘"]
-        R21["§2.1 诊断决策表<br/>D0/D3/D5/D6 趋势列"]:::out
+        direction TB
         R22["§2.2 六维评估<br/>依赖方向 · 稳定性"]:::out
         R33["§3.3 提案同步<br/>趋势发现 → 提案"]:::out
     end
 
     subgraph 评估["效果评估"]
-        E3["E3 外部参考时效性<br/>关联 bad_case 消失?"]:::eval
+        direction TB
     end
 
     SELF --> D0 & D3 & D5 & D6
@@ -152,6 +161,7 @@ flowchart TB
     R22 --> R33
     R33 --> E3
     E3 -.->|"下次循环"| SELF
+
 
 ```
 
@@ -171,22 +181,23 @@ flowchart TB
 ```mermaid
 flowchart LR
     subgraph 发现["趋势发现"]
-        F1["技术栈下降趋势"]:::find
+        direction TB
         F2["新兴替代方案"]:::find
         F3["依赖 URL 失效"]:::find
         F4["趋势参考陈旧"]:::find
     end
 
     subgraph 路由["提案路由"]
-        F1 -->|"D0 基线偏离"| PRC["process<br/>技术选型评审流程调整"]:::prop
+        direction TB
         F2 -->|"D3 复杂度"| REF["refactor<br/>依赖替换可行性评估"]:::prop
         F3 -->|"D5 依赖退化"| REF2["refactor<br/>更新外部参考"]:::prop
         F4 -->|"D6 文档过时"| PRC2["process<br/>文档刷新周期调整"]:::prop
     end
 
     subgraph 升级["经验技能化"]
-        PRC & REF & PRC2 -->|"同发现 ≥2 故事"| UP["升级为趋势新鲜度检查规则"]:::up
+        direction TB
     end
+
 
 ```
 
@@ -245,19 +256,20 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph 采集["趋势查询"]
-        RAW["实时趋势数据<br/>（不落盘）"]:::data
+        direction TB
     end
     subgraph 提取["诊断提取"]
-        DIAG["诊断假设 + 置信度<br/>写入 §2.1"]:::diag
+        direction TB
     end
     subgraph 压缩["AI 压缩"]
-        COMP["趋势摘要<br/>关键发现 ≤3 条"]:::comp
+        direction TB
     end
     subgraph 注入["下次注入"]
-        INJ["相似技术选型时<br/>注入历史趋势摘要"]:::inj
+        direction TB
     end
 
     采集 --> 提取 --> 压缩 --> 注入
+
 
 ```
 

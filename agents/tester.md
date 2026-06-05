@@ -16,6 +16,14 @@ tools: Read, Grep, Glob, Bash
 ## 双 Gate 模型
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     DOC["测试设计<br/>pm 委派后产出"]:::doc --> GA{"Gate A<br/>测试先行"}
     GA -->|"❌ 缺失"| X1["skip-gate-a<br/>阻编码 🚫"]:::block
@@ -24,6 +32,7 @@ flowchart TB
     RUN --> GB{"Gate B<br/>验证"}
     GB -->|"❌ > 2 轮修复"| X2["gate-b-limit<br/>阻交付 🚫"]:::block
     GB -->|"✅ 通过"| DONE["交接 reporter<br/>写测试报告"]:::done
+
 
 ```
 
@@ -45,6 +54,7 @@ flowchart LR
     GREEN --> VRFY_G["验证 GREEN<br/>测试通过 + 其他测试仍绿"]:::step
     VRFY_G --> REFACTOR["REFACTOR<br/>清理重复/改善命名<br/>保持绿色"]:::step
     REFACTOR --> VRFY_G
+
 ```
 
 | TDD 阶段 | 动作 | 验证 |
@@ -84,16 +94,17 @@ pm 调度 · rui 测试先行/实现/验证/文档生成 · `rui check`。
 ```mermaid
 flowchart LR
     subgraph 四类["四类用例"]
-        TN["TC-N<br/>正常用例<br/>Happy path"]:::n
+        direction TB
         TB["TC-B<br/>边界用例<br/>极值 · 空值 · 超长"]:::b
         TE["TC-E<br/>异常用例<br/>网络错误 · 超时 · 并发"]:::e
         TR["TC-R<br/>回归用例<br/>影响链覆盖"]:::r
     end
     subgraph 环境["环境专项"]
-        TX["TC-X<br/>生命周期 · 通信通道 · 存储"]:::x
+        direction TB
     end
     四类 --> MATRIX["覆盖矩阵<br/>每 FP ≥3 类"]:::out
     环境 --> MATRIX
+
 
 ```
 
@@ -114,6 +125,7 @@ flowchart LR
     S3 --> S4["④ 单次执行<br/>冒烟 + 回归 + 专项"]:::step
     S4 --> S5["⑤ 场景文档各 § 闭合<br/>交叉引用一致"]:::step
 
+
 ```
 
 ## 用例规则
@@ -121,17 +133,18 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph 命名["命名"]
-        R1["should [预期]<br/>when [条件]"]:::rule
+        direction TB
     end
     subgraph 隔离["隔离"]
-        R2["Mock 外部依赖<br/>不 mock 内部模块"]:::rule
+        direction TB
         R3["afterEach 清理<br/>DOM · 定时器 · 监听器"]:::rule
     end
     subgraph 覆盖["覆盖"]
-        R4["每故事 ≥1 条<br/>主操作流"]:::rule
+        direction TB
         R5["P0 阻塞发布<br/>P1 建议 · P2 可选"]:::rule
         R6["无覆盖不通过"]:::rule
     end
+
 
 ```
 
@@ -154,6 +167,7 @@ flowchart LR
     SIL["Silence<br/>无静默失败路径"]:::dim --> CHK
     CHK -->|"否"| FIX["附修复方案"]:::out
     CHK -->|"是"| PASS["通过"]:::ok
+
 
 ```
 
@@ -190,6 +204,7 @@ flowchart LR
         O3["实现代码<br/>→ coder"]:::out
     end
 
+
 ```
 
 ## 项目上下文
@@ -203,6 +218,7 @@ flowchart LR
     S1["§1.1 覆盖矩阵<br/>每 FP ≥3 类"]:::sig --> S2["§6 Gate A 交接<br/>四项齐备"]:::sig
     S2 --> S3["§6 Gate B 评估<br/>全部达标"]:::sig
     S3 --> S4["场景文档各 § 交叉引用一致"]:::sig
+
 
 ```
 

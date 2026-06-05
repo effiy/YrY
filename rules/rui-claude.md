@@ -12,6 +12,14 @@ paths:
 ## 命令族全景
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     ENTRY["/rui-claude"]:::src --> Q1{"子命令?"}
 
@@ -30,6 +38,7 @@ flowchart TB
     PIPE --> LOCAL["本地变更"]:::local
     LOCAL -.->|"禁止"| AUTO["自动 commit/push 🚫"]:::block
     LOCAL --> MANUAL["开发者手动 git"]:::manual
+
 
 ```
 
@@ -51,14 +60,15 @@ flowchart TB
 ```mermaid
 flowchart LR
     subgraph 允许["✅ 操作范围"]
-        IN[".claude/ 目录内"]:::ok
+        direction TB
     end
     subgraph 禁止["❌ 不可触及"]
-        OUT1["外部源码文件"]:::block
+        direction TB
         OUT2["业务目录"]:::block
         OUT3["系统配置"]:::block
     end
     允许 -.->|"边界"| 禁止
+
 
 ```
 
@@ -77,6 +87,7 @@ flowchart LR
     CONFIRM -->|"是"| PULL["rui-import<br/>dir=.claude/ mode=pull<br/>远端 API → 逐文件覆盖"]:::op
     PULL --> DONE["同步完成"]:::done
 
+
 ```
 
 | # | 规则 | 说明 |
@@ -93,6 +104,7 @@ flowchart LR
     WRITE --> PATH["docs/自改进故事面板/<br/>&lt;project&gt;-&lt;date&gt;.md"]:::file
 
     ANALYZE -.->|"不连接"| REMOTE["远端"]:::no
+
 
 ```
 
@@ -111,6 +123,7 @@ flowchart LR
     FILE -.->|"约束"| C2["不入库"]:::rule
     FILE -.->|"约束"| C3["不同步"]:::rule
 
+
 ```
 
 | # | 规则 |
@@ -125,6 +138,7 @@ flowchart TD
     Q -->|"自动"| BLOCK["禁止 🚫<br/>自动 commit<br/>自动 push"]:::block
     Q -->|"手动"| OK["✅<br/>git add<br/>git commit<br/>git push"]:::ok
 
+
 ```
 
 | # | 规则 | 反例 |
@@ -137,6 +151,7 @@ flowchart TD
 flowchart LR
     SYNC_EX["sync 命令"]:::ex --> REASON["行为是恢复基线<br/>非业务变更"]:::reason
     REASON --> RESULT["不走 rui code 管线"]:::result
+
 
 ```
 
@@ -151,6 +166,7 @@ flowchart LR
     S1["操作范围<br/>仅 .claude/ 内"]:::sig --> S2["变更走管线<br/>&lt;req&gt; 经 Gate A/B"]:::sig
     S2 --> S3["git 手动<br/>无自动 commit/push"]:::sig
     S3 --> S4["history 记录<br/>仅本地不入库"]:::sig
+
 
 ```
 

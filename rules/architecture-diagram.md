@@ -7,6 +7,8 @@ paths:
 
 > 每个使用场景对应一个自包含的深色主题 HTML+SVG 架构图。图表优先于文字——表达优先。
 >
+> **两套图表系统的分工**：本文件管理 **HTML+SVG 架构图**（深空主题，7 语义色板，自包含 `.html` 文件）。**Mermaid 内联图**（markdown 中的 ` ```mermaid ` 代码块）的配色与规范见 [mermaid-theme.md](./mermaid-theme.md) 和 [doc-generation.md](./doc-generation.md#diagram-first)。两套系统服务于不同目的，各有独立的完整样式规范。
+>
 > **Iron Law — 违反字母即是违反精神：**
 > - 表达优先：图 → 结构化文本 → 表。无架构图的场景视为未完成。
 > - 设计系统一致性：色板/排版/间距不得偏离本文规范。
@@ -197,6 +199,14 @@ SVG viewBox height: at least 560 to fit legend
 ## 生成时机
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
     SCENARIO["使用场景.md<br/>生成完成"]:::src --> CHECK{"场景含<br/>交互/数据流?"}
     CHECK -->|"是"| GEN["生成架构图<br/>架构图/<场景-slug>.html"]:::create

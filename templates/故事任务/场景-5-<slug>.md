@@ -29,6 +29,14 @@
 ### 构建与部署流
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
     SRC["源码"]:::src --> BUILD["构建<br/>{{构建命令}}"]:::op
     BUILD --> ARTIFACT["产物<br/>{{产物描述}}"]:::artifact

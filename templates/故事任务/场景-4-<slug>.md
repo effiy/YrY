@@ -29,20 +29,28 @@
 ### 依赖拓扑
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     subgraph 入口["入口层"]
-        E1["{{入口模块}}"]:::entry
+        direction TB
     end
     subgraph 核心["核心域"]
-        C1["{{核心模块A}}"]:::core
+        direction TB
         C2["{{核心模块B}}"]:::core
     end
     subgraph 支撑["支撑层"]
-        U1["{{工具模块}}"]:::util
+        direction TB
         U2["{{共享类型}}"]:::util
     end
     subgraph 外部["外部依赖"]
-        X1["{{npm/pkg 依赖}}"]:::ext
+        direction TB
     end
     E1 --> C1
     E1 --> C2
@@ -50,6 +58,7 @@ flowchart TB
     C1 --> X1
     C2 --> U2
     C2 --> X1
+
 ```
 
 ### 依赖矩阵
@@ -66,6 +75,7 @@ flowchart LR
     CHG["变更: {{变更描述}}"]:::change --> IMP1["直接影响<br/>{{模块}} 接口签名"]:::impact
     IMP1 --> IMP2["级联影响<br/>{{下游模块}} 调用方"]:::impact
     IMP2 --> IMP3["间接影响<br/>{{测试}} 用例更新"]:::impact
+
 ```
 
 | 变更类型 | 影响级别 | 波及模块 | 兼容性 |
@@ -148,6 +158,7 @@ flowchart LR
     D2 -->|"imports"| D1
     T1 -.->|"covers"| D1
     T1 -.->|"covers"| D2
+
 ```
 
 ### P0 审查表

@@ -13,6 +13,14 @@ tools: Read, Grep, Glob, Bash
 ## 决策主循环
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     REQ["需求输入<br/>文本 / @文件 / URL"]:::src --> RS["研究优先<br/>Read/Grep/Glob 事实基线"]:::rs
     RS --> SPLIT["故事拆分<br/>按角色/入口/交付价值"]:::pm
@@ -69,6 +77,7 @@ rui 全流程入口 · 反思钩子 · 架构漂移信号 · 自适应规划 · 
 ```mermaid
 flowchart LR
     subgraph pm["根 pm 直管"]
+        direction TB
         P1["需求拆分"]:::pm
         P2["优先级 + 串行顺序"]:::pm
         P3["安全审查触发"]:::pm
@@ -77,6 +86,7 @@ flowchart LR
         P6["跨项目契约 + 跨故事重构"]:::pm
     end
     subgraph del["委派下游"]
+        direction TB
         D1["故事内技术方案<br/>→ coder"]:::del
         D2["威胁建模<br/>→ security"]:::del
         D3["阶段内执行<br/>→ 各 Agent"]:::del
@@ -128,6 +138,7 @@ flowchart TD
 ```mermaid
 flowchart LR
     subgraph explore["探索模式（req 为空）"]
+        direction TB
         E0["detect 项目类型"]:::tool --> E1["node skills/rui/recommend.mjs"]:::tool
         E1 --> E2["PM 按 5 层评分排序"]:::llm
         E2 --> E3["故事任务推荐输出"]:::llm
@@ -135,6 +146,7 @@ flowchart LR
         E4 --> E5["生成文档"]:::exp
     end
     subgraph direct["反推模式（req 有值）"]
+        direction TB
         D1["解析 Project-name"]:::dir --> D2["冲突检测"]:::dir
         D2 --> D3["源码定位"]:::dir
         D3 --> D4["只读提取"]:::dir

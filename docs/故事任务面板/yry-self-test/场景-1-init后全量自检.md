@@ -36,6 +36,14 @@
 ### 效果示意 — 自检流程
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TD
     TRIGGER["触发全量自检<br/>初始化完成后"]:::src --> S1["第一项检查<br/>项目指令文档含完整性标记?"]
     S1 -->|"✅"| S2["第二项检查<br/>项目自述文件含项目名?"]

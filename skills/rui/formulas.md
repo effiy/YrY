@@ -5,9 +5,17 @@
 [通用元素](#通用元素) · [单基线模型](#单基线模型) · [故事主线公式](#故事主线公式) · [补充文档公式](#补充文档公式)
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     subgraph 通用["通用元素（全局复用）"]
-        F.meta["F.meta<br/>版本头"]
+        direction TB
         F.toc["F.toc<br/>标题链接跳转目录"]
         F.nav["F.nav<br/>导航块"]
         F.evidence["F.evidence<br/>证据等级"]
@@ -16,12 +24,12 @@ flowchart TB
     end
 
     subgraph 主线["故事主线（文档 + 知识图谱）"]
-        F01["F.story.task<br/>故事任务"]
+        direction TB
         F02["F.story.knowledge-graph<br/>知识图谱.json"]
     end
 
     subgraph 补充["补充文档（按需触发）"]
-        FS["F.supp.*<br/>专题文档 + 架构图"]
+        direction TB
     end
 
     通用 --> 主线
@@ -30,6 +38,7 @@ flowchart TB
     class F.meta,F.toc,F.nav,F.evidence,F.trace,F.value gen;
     class F01,F02 story;
     class FS supp;
+
 ```
 
 ## 通用元素
@@ -74,6 +83,7 @@ flowchart LR
     03 --> 05["场景-2-xxx.html<br/>架构图"]:::arch
     01 --> 06["知识图谱.json<br/>结构化知识"]:::kg
     06 --> 07["知识图谱.html<br/>可视化"]:::kg
+
 ```
 
 **标记格式**：`> **导航**: [← {标题}](./{文件}.md) · [{标题} →](./{文件}.md)`
@@ -108,6 +118,7 @@ flowchart LR
     SRC["需求/决策来源"] --> DOC["文档断言"]
     DOC --> EVID["证据附路径"]
     EVID --> VERIFY["验证命令可复现"]
+
 ```
 
 | 元素 | 位置 | 约束 |
@@ -153,17 +164,18 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph 基线["📋 基线（问题空间）"]
-        F01["故事任务<br/>WHAT & WHY"]:::baseline
+        direction TB
     end
     subgraph 场景["📄 场景 × N"]
-        F02["场景-N-<slug>.md<br/>§0 技术评审 · §1 测试设计<br/>§2 实施报告 · §3 测试报告 · §4 自改进"]:::scene
+        direction TB
         F02H["场景-N-<slug>.html<br/>架构图"]:::arch
     end
     subgraph 知识["🧠 知识图谱"]
-        KG1["知识图谱.json"]:::kg
+        direction TB
         KG2["知识图谱.html"]:::kg
     end
     F01 --> 场景 --> 知识
+
 ```
 
 | 层 | 制品 | 核心问题 | 说明 |
@@ -255,6 +267,7 @@ flowchart LR
     S1 --> S2["§2 实施报告<br/>操作步骤 · 源码清单 · P0 审查 · 效果验证"]
     S2 --> S3["§3 测试报告<br/>执行摘要 · 用例详情 · 失败分析"]
     S3 --> S4["§4 自改进<br/>D0-D7 诊断 · 改进清单"]
+
 ```
 
 | 章节 | 内容 | 负责人 |
@@ -297,6 +310,7 @@ flowchart LR
     S0["story<br/>name + phase + analyzedAt"] --> S1["nodes<br/>domain ≥1 · flow ≥1 · step ≥3"]
     S1 --> S2["edges<br/>contains_flow · flow_step · cross_domain"]
     S2 --> S3["layers（可选）<br/>架构层次映射"]
+
 ```
 
 | 章节 | 内容 | 必填 |
@@ -348,6 +362,7 @@ flowchart TD
 
     class S_PAGE,S_API,S_DATA,S_INT,S_PERM,S_PERF,S_MSG,S_MOD,S_ARCH supp;
     class DEC,SKIP nodec;
+
 ```
 
 > **共同骨架**：`meta + nav + 触发与范围 + 主体章节 + 与主线对齐 + 评审清单`。存放于故事目录 `{专题}.md`。

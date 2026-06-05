@@ -13,6 +13,14 @@ tools: Read, Grep, Glob
 ## 工作面
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     IN["识别输入点<br/>扫描用户输入/API/认证/存储/第三方"]:::src --> TM["威胁建模<br/>威胁 → 信任边界 → 缓解"]:::core
     TM --> S3["写入 §3 安全约束<br/>后端/前端技术评审"]:::out
@@ -22,6 +30,7 @@ flowchart TB
     CD & TS --> AUD{"P0 安全项<br/>未缓解?"}
     AUD -->|"是"| BLK["阻断交付 🚫"]:::block
     AUD -->|"否"| PASS["放行 ✅"]:::ok
+
 
 ```
 
@@ -45,6 +54,7 @@ flowchart TD
     C5 -->|是| INJ
     C5 -->|否| SKIP["不注入<br/>无显著安全面"]:::skip
 
+
 ```
 
 | 条件 | 典型信号 | 注入内容 |
@@ -66,6 +76,7 @@ flowchart LR
     PRI -->|"P1"| FIX["当轮修复"]:::p1
     PRI -->|"P2"| NOTE["记录跟踪"]:::p2
 
+
 ```
 
 > 公式：`威胁 → 信任边界 → 缓解`。套用至 §3 安全约束表 `# | 威胁 | 信任边界 | 缓解措施 | 优先级`。
@@ -75,12 +86,13 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph 四维["四维审查"]
-        INJ["Injection<br/>XSS · 命令 · SQL · 路径穿越"]:::dim
+        direction TB
         AUTH["Auth<br/>越权 · 提权 · 会话 · Token"]:::dim
         DATA["Data<br/>暴露 · 不安全存储 · 日志泄露"]:::dim
         INT["Integrity<br/>CSP · SRI · 签名校验"]:::dim
     end
     四维 --> OUT["每条发现附修复方案<br/>P0 阻断交付"]:::out
+
 
 ```
 
@@ -129,6 +141,7 @@ flowchart TD
     STORY["前端故事"] --> Q1{"含 UI 组件?"}
     Q1 -->|"是"| A11Y["注入无障碍安全约束"]:::inj
     Q1 -->|"否"| SKIP["跳过"]:::skip
+
 ```
 
 | 检查点 | WCAG 2.2 标准 | 安全影响 |
@@ -166,6 +179,7 @@ flowchart LR
         O2["安全代码实现<br/>→ coder"]:::out
         O3["测试用例<br/>→ tester"]:::out
     end
+
 
 ```
 

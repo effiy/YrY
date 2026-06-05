@@ -29,17 +29,25 @@
 ### 信任边界
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     subgraph 外部["🌐 外部不可信域"]
-        U["用户/客户端"]:::untrusted
+        direction TB
         EXT["第三方 API"]:::untrusted
     end
     subgraph 边界["🔒 信任边界"]
-        GW["认证网关<br/>token 校验"]:::boundary
+        direction TB
         VAL["输入校验层<br/>sanitize + validate"]:::boundary
     end
     subgraph 内部["🔐 内部可信域"]
-        API["API 服务"]:::trusted
+        direction TB
         DB["数据库"]:::trusted
         SECRET["密钥存储<br/>环境变量"]:::trusted
     end
@@ -48,6 +56,7 @@ flowchart TB
     VAL -->|"合法输入"| API
     API --> DB
     API -.->|"绝不硬编码"| SECRET
+
 ```
 
 ### 认证与授权
@@ -70,6 +79,7 @@ flowchart LR
     ENV["环境变量<br/>API_X_TOKEN"]:::secret --> READ["启动时读取<br/>process.env"]:::op
     READ --> MEM["内存持有<br/>不落盘"]:::secret
     MEM --> API["API 调用<br/>Authorization header"]:::op
+
 ```
 
 | 数据 | 分类 | 存储 | 传输 | 日志 |
@@ -151,6 +161,7 @@ flowchart LR
     T1["test: ..."]:::test
     D1 -->|"imports"| DEP["dep"]:::ext
     T1 -.->|"covers"| D1
+
 ```
 
 ### P0 审查表

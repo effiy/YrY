@@ -36,6 +36,14 @@
 ### 效果示意 — 增量自检流程
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TD
     TRIGGER["提交前触发增量自检"]:::src --> SCOPE["第一步：识别变更范围<br/>哪些文件被修改/新增/删除?"]
 

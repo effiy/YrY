@@ -9,11 +9,19 @@
 ## 角色拓扑
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     pm(("pm<br/>决策中枢")):::core
 
     subgraph 执行链["执行链"]
-        coder[coder<br/>实现]:::exec
+        coder["coder<br/>实现"]:::exec
         tester[tester<br/>质量]:::exec
         reporter[reporter<br/>报告]:::exec
     end
@@ -40,6 +48,12 @@ flowchart TB
     si -.改进提案.-> pm
     coder & tester & reporter -.执行记忆.-> si
 
+    classDef core fill:#1b1e2e,stroke:#7aa2f7,color:#7aa2f7
+    classDef exec fill:#1e1f2b,stroke:#565f89,color:#a9b1d6
+    classDef review fill:#1e1f2b,stroke:#7aa2f7,color:#a9b1d6
+    classDef cross fill:#21232f,stroke:#565f89,color:#a9b1d6
+
+
 ```
 
 | Agent | 一句话 | 核心动作 | 卡点 | 触发源 | 契约文件 |
@@ -58,29 +72,30 @@ flowchart TB
 ```mermaid
 flowchart LR
     subgraph 文档["📄 文档生成"]
-        D1["需求解析<br/>pm"] --> D2["自适应规划<br/>pm"]
+        direction TB
         D2 --> D3["影响分析<br/>pm + coder"]
         D3 --> D4["架构设计<br/>coder"]
         D4 --> D5["文档基线<br/>pm + coder + tester"]
     end
     subgraph 预检["🔍 预检"]
-        P1["分支隔离<br/>coder"]
+        direction TB
         P2["Gate A<br/>tester"]
     end
     subgraph 实现["⚙️ 实现"]
-        I1["逐模块编码<br/>coder"]
+        direction TB
         I2["安全审查<br/>security"]
     end
     subgraph 验证["✅ 验证"]
-        V1["Gate B<br/>tester + reporter"]
+        direction TB
         V2["自改进<br/>self-improve"]
     end
     subgraph 交付["🚀 交付"]
-        DL["文档同步 + 通知"]
+        direction TB
     end
 
     文档 --> 预检 --> 实现 --> 验证 --> 交付
     I2 -.穿插.-> I1
+
 ```
 
 | 阶段 | pm | coder | tester | reporter | security | self-improve | code-reviewer | architect |
@@ -111,6 +126,7 @@ flowchart LR
     B --> C["C 未验证<br/>标注「待补充」"]:::warn
     A & B -->|禁止| D["D 幻觉<br/>无 A/B 支撑且非 C"]:::bad
 
+
 ```
 
 | Level | 含义 | 写入规则 | 示例 |
@@ -129,6 +145,7 @@ flowchart LR
     C --> D["二级传递<br/>搜受影响符号的引用"]
     D --> E["标注处置<br/>改/不改/观察"]
     E -.未闭合.-> F[("P0 阻断<br/>chain-broken")]:::block
+
 
 ```
 
@@ -156,6 +173,7 @@ flowchart LR
     architect["architect<br/>架构设计 + ADR"]:::src -.设计输入.-> coder
     cr["code-reviewer<br/>四问门禁 + 审查报告"]:::src -.审查发现.-> coder
 
+
 ```
 
 | Agent | 交接信号 | 下游验证方式 |
@@ -176,12 +194,13 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph 原则["五原则"]
-        P1["一句话定位<br/>这是什么、给谁看"]:::p
+        direction TB
         P2["30 秒定位<br/>任何角色 30s 找到所需"]:::p
         P3["图先文后<br/>架构/流程/关系→mermaid"]:::p
         P4["事实优先<br/>「是什么」非「应该是什么」"]:::p
         P5["可验证<br/>路径/接口/模块名可 Grep"]:::p
     end
+
 
 ```
 
@@ -189,9 +208,40 @@ flowchart LR
 |------|------|------|
 | 一句话定位 | 每份文件开头说明「这是什么、给谁看」 | 开头直接进入技术细节 |
 | 30 秒定位 | 任何角色 30 秒内找到所需 | 关键信息埋在长段落中 |
-| 图先文后 | 架构/流程/关系先用 mermaid，文字补细节 | 大段文字描述架构，无图 |
+| 图先文后 | 架构/流程/关系先用 mermaid，文字补细节。Mermaid 图必须遵循 [mermaid-theme.md](../rules/mermaid-theme.md) 的 `%%{init}%%` 主题配置和统一 classDef 色板 | 大段文字描述架构，无图 |
 | 事实优先 | 描述「是什么」而非「应该是什么」 | "建议使用 Redis 缓存" |
 | 可验证 | 路径/接口/模块名可通过 Read/Grep 验证（Level A/B） | "应该有个 UserService" |
+
+### Mermaid 图创建检查清单
+
+> 在任何文档中创建 mermaid 图时，遵循以下检查清单。统一配色系统见 [rules/mermaid-theme.md](../rules/mermaid-theme.md)。
+
+**创建步骤**（按顺序）：
+
+1. **插入 `%%{init}%%`** — 在文件**第一个** mermaid 代码块顶部添加主题配置。直接从 [mermaid-theme.md](../rules/mermaid-theme.md#tokyo-night-dark) 的 Tokyo Night Dark 模板复制。同一文件后续图不需要重复 `%%{init}%%`。
+
+2. **定义语义 classDef** — 从 [mermaid-theme.md](../rules/mermaid-theme.md#classdef) 的 12 个语义类中选择本图需要的。classDef 放在图的末尾（最后一条边之后）。只定义本图实际使用的类。
+
+3. **应用类到节点** — 使用 `:::className` 语法在节点标签后应用类。优先使用语义类名（`core`/`exec`/`review`/`risk`/`goal`），而非视觉描述（`red`/`blue`）。
+
+4. **声明 subgraph 方向** — 含 2+ 节点的每个 subgraph，首行必须声明 `direction LR` 或 `direction TB`。链式流程用 `direction LR`，层级分组用 `direction TB`。
+
+5. **使用 `<br/>` 换行** — 多行标签用 `<br/>` 在双引号标签内换行（`["第一行<br/>第二行"]`）。禁止其他 HTML 标签（`<b>`、`<i>`、`<div>`、`<font>`）。
+
+6. **优先 flowchart** — YrY 约 85% 的图使用 `flowchart`。仅数据流交互使用 `sequenceDiagram`，状态迁移使用 `stateDiagram-v2`。
+
+**Agent 常用 classDef 速查**：
+
+| Agent | 常用 classDef |
+|-------|-------------|
+| pm | `core`, `exec`, `goal`, `note` |
+| architect | `core`, `note`, `cross` |
+| coder | `exec`, `must`, `good`, `bad`, `note` |
+| tester | `review`, `risk`, `good`, `bad`, `must` |
+| code-reviewer | `review`, `note`, `good`, `bad` |
+| security | `risk`, `must`, `good`, `bad` |
+| reporter | `default`, `note`, `goal` |
+| self-improve | `exec`, `note`, `cross` |
 
 ## 设计原则
 
@@ -320,18 +370,19 @@ IF 任何项目不清楚:
 ```mermaid
 flowchart LR
     subgraph 协作["四种协作模式"]
-        P1["委派模式<br/>pm → coder/tester/security<br/>单向下达·信号回传"]:::mode
+        direction TB
         P2["流水模式<br/>coder → tester → reporter<br/>逐级传递·每级验证"]:::mode
         P3["横切模式<br/>security -.约束.-> coder<br/>si -.提案.-> pm<br/>并行约束·不阻塞主流程"]:::mode
         P4["审查模式<br/>code-reviewer → coder<br/>只读审查·两阶段不可跳过"]:::mode
     end
 
     subgraph 失败["协调反模式"]
-        F1["信息孤岛<br/>Agent 不读上游产出"]:::bad
+        direction TB
         F2["重复工作<br/>两 Agent 改同一文件"]:::bad
         F3["信号丢失<br/>交接信号未写入 rui-state"]:::bad
         F4["跳过审查<br/>spec compliance 未过就进入 code quality"]:::bad
     end
+
 
 ```
 
@@ -357,6 +408,7 @@ flowchart TD
     CR_OK -->|"否 ❌"| FIX_QUAL["coder 修复质量问题"]:::fix
     FIX_QUAL --> CR
     CR_OK -->|"是 ✅"| NEXT["进入下一模块<br/>或交接 tester"]:::pass
+
 ```
 
 | 阶段 | 审查重点 | 审查者 | 通过标准 |

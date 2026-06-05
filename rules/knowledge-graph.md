@@ -37,6 +37,14 @@ paths:
 ### 三层层次
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     TIER1["tier-story<br/>故事层 — 故事级抽象概念"]:::story --> TIER2["tier-scene<br/>场景层 — 场景文档节点"]:::scene
     TIER2 --> TIER3["tier-source<br/>源码层 — 可执行源码文件"]:::source

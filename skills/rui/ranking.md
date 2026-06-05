@@ -10,6 +10,14 @@
 ## 推荐管线
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
     SYNC["§0 面板同步<br/>远端+本地故事面板<br/>冲突检测 + 覆盖分析"]:::sync --> INFRA{"L-1 基建检查<br/>项目基建完整?"}:::gate
     INFRA -->|"不完整"| INFRA_REC["优先推荐基建故事<br/>错误码·状态·日志·配置"]:::infra
@@ -62,28 +70,34 @@ flowchart LR
 ```mermaid
 flowchart TB
     subgraph Lm1["L-1 · 基建完整性 🏗️ PRIORITY"]
+        direction TB
         Lm1A["错误码体系完整?"]
         Lm1B["状态管理规范?"]
         Lm1C["日志/监控就绪?"]
         Lm1D["配置管理统一?"]
     end
     subgraph L0["L0 · 时间 ⏱️"]
+        direction TB
         L0A["最后修改时间?"]
         L0B["近期改动频率?"]
     end
     subgraph L1["L1 · 依赖 🔗"]
+        direction TB
         L1A["多少模块依赖它?"]
         L1B["Hub 还是 Leaf?"]
     end
     subgraph L2["L2 · 风险 ⚠️"]
+        direction TB
         L2A["处理用户输入？认证?"]
         L2B["误解会破坏什么?"]
     end
     subgraph L3["L3 · 覆盖 📋"]
+        direction TB
         L3A["故事文档存在吗?"]
         L3B["文档完整且不过时吗?"]
     end
     subgraph L4["L4 · 质量 ✨"]
+        direction TB
         L4A["代码自解释还是难读?"]
         L4B["大文件无注释吗?"]
     end
@@ -136,22 +150,27 @@ flowchart TB
 ```mermaid
 flowchart TB
     subgraph L0["L0 · 时间 ⏱️"]
+        direction TB
         L0A["最后修改时间？"]
         L0B["近期改动频率？"]
     end
     subgraph L1["L1 · 依赖 🔗"]
+        direction TB
         L1A["多少模块依赖它？"]
         L1B["Hub 还是 Leaf？"]
     end
     subgraph L2["L2 · 风险 ⚠️"]
+        direction TB
         L2A["处理用户输入？认证？"]
         L2B["误解会破坏什么？"]
     end
     subgraph L3["L3 · 覆盖 📋"]
+        direction TB
         L3A["故事文档存在吗？"]
         L3B["文档完整且不过时吗？"]
     end
     subgraph L4["L4 · 质量 ✨"]
+        direction TB
         L4A["代码自解释还是难读？"]
         L4B["大文件无注释吗？"]
     end

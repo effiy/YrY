@@ -18,18 +18,27 @@ docs/
 ## 故事目录骨架
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart LR
     subgraph 基线["基线（问题空间）"]
-        B1["故事任务.md<br/>WHAT & WHY"]:::baseline
+        direction TB
     end
     subgraph 场景["场景（按数量展开）"]
-        S1["场景-N-.md<br/>使用场景描述"]:::scene
+        direction TB
         S2["场景-N-.html<br/>架构图（自包含 HTML+SVG）"]:::scene
     end
     subgraph 知识["知识图谱"]
-        K1["知识图谱.json<br/>结构化知识表示"]:::kg
+        direction TB
         K2["知识图谱.html<br/>知识图谱可视化"]:::kg
     end
+
 
 ```
 
@@ -86,6 +95,7 @@ flowchart TB
     G --> H["验证"]:::phase
     H --> I["交付"]:::phase
 
+
 ```
 
 每次阶段变更：`rui-state.json` 覆盖写；过程追加到 `execution-memory.jsonl`；自改进提案追加到 `proposals.jsonl`。
@@ -97,6 +107,7 @@ flowchart LR
     NS["任务<br/>故事任务不存在"]:::s0 --> DIP["设计<br/>故事任务存在，场景/知识图谱缺失"]:::s1
     DIP --> IMP["实施<br/>故事任务 + ≥1 场景(.md+.html) + 知识图谱(.json+.html) 齐全"]:::s2
     IMP --> DONE["完成<br/>全部制品齐全"]:::s5
+
 
 ```
 
@@ -118,10 +129,11 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph 管理["rui 管线维护（人工不编辑）"]
-        M1["execution-memory.jsonl<br/>追加写入"]:::data
+        direction TB
         M2["rui-state.json<br/>覆盖写入"]:::data
         M3["proposals.jsonl<br/>追加写入"]:::data
     end
+
 
 ```
 
@@ -144,6 +156,7 @@ flowchart LR
     D --> E1["任务推荐<br/>排序"]:::use
     D --> E2["/rui update<br/>上下文"]:::use
     D --> E3["自改进复盘<br/>追加"]:::use
+
 
 ```
 

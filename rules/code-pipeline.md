@@ -39,12 +39,21 @@ paths:
 ## 管线全景
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
 flowchart TB
     REQ["需求故事"]:::src --> BR{"① 分支隔离<br/>当前在 feat/&lt;name&gt;?"}
     BR -->|"❌ 在 main 或非法分支"| X0["no-branch-isolation 🚫"]:::block
     BR -->|"✅ 已切 feat 分支"| MOD["② 实现<br/>逐模块 P0 清零 → 下一模块"]:::phase
     MOD --> VERIFY["③ 验证<br/>闭环检查"]:::phase
     VERIFY --> DONE["④ 交付"]:::done
+
 
 ```
 
@@ -71,6 +80,7 @@ flowchart TB
     BLOCK --> FIX["切到 feat/&lt;name&gt;<br/>或从 main 创建新分支"]:::fix
     FIX --> CHECK
 
+
 ```
 
 ```mermaid
@@ -82,6 +92,7 @@ flowchart LR
     MAIN -.->|"禁止"| X2["直接在 main 改码 no-checkout"]:::block
     FB -.->|"禁止"| X3["派生分支 bad-branch"]:::block
     MAIN -.->|"禁止"| X4["未切分支即改码<br/>no-branch-isolation"]:::block
+
 
 ```
 
@@ -112,15 +123,17 @@ flowchart LR
     F2 --> C2
     C2 -->|"是 ✅"| M3["模块 N ..."]:::mod
 
+
 ```
 
 ```mermaid
 flowchart LR
     subgraph 优先级["优先级"]
-        P0["P0<br/>阻塞发布必修"]:::p0
+        direction TB
         P1["P1<br/>当轮修复"]:::p1
         P2["P2<br/>记录不阻断"]:::p2
     end
+
 
 ```
 
@@ -143,6 +156,7 @@ flowchart LR
     CHK -->|"否 🔄"| FIX["修复（≤2 轮）"]:::fix
     FIX --> S4
     CHK -->|"是 ✅"| PASS["验证通过"]:::pass
+
 
 ```
 
@@ -177,13 +191,14 @@ templates/故事任务/                   ← 模板（参考）
 ```mermaid
 flowchart LR
     subgraph 反推["反推命令"]
-        E1["分支隔离"]:::ex
+        direction TB
         E2["只读源码"]:::ex
     end
     subgraph init["/rui init"]
         E3["无分支隔离"]:::ex
         E4["写项目级基线文件"]:::ex
     end
+
 
 ```
 
@@ -203,6 +218,7 @@ flowchart LR
     B8["no-doc-isolation<br/>未切 feat 分支即写文档"]:::block
     B5["chain-broken<br/>影响链断裂"]:::block
     B7["no-metrics<br/>数据缺失"]:::warn
+
 
 ```
 
@@ -224,6 +240,7 @@ flowchart LR
     S1 --> S2["P0 全模块清零<br/>无 chain-broken"]:::sig
     S2 --> S3["验证五步全 ✅<br/>修复 ≤ 2 轮"]:::sig
     S3 --> S4["场景文档闭合<br/>各节交叉引用无矛盾"]:::sig
+
 
 ```
 
@@ -264,6 +281,7 @@ flowchart TD
     TRACE --> SRC{"⑤ 这是源头？"}
     SRC -->|"否，继续"| ASK
     SRC -->|"是"| FIX["⑥ 源头修复<br/>修复后每层加防御"]:::pass
+
 ```
 
 | 回溯层 | 关键问题 | 插桩方法 |
@@ -334,6 +352,7 @@ flowchart LR
     L2 --> L3["L3 环境守卫<br/>阻止上下文特定的危险操作"]:::def
     L3 --> L4["L4 诊断检测<br/>捕获上下文用于取证"]:::def
     L4 --> SAFE["安全执行"]:::pass
+
 ```
 
 | 层 | 用途 | 可被绕过的场景 | 防御代码示例 |
@@ -448,6 +467,7 @@ flowchart LR
     COUNT -->|"< 3 次"| H2["修正假设<br/>基于新证据"]:::step
     H2 --> T
     COUNT -->|"≥ 3 次"| ARCH["🛑 停止<br/>质疑架构而非继续猜"]:::block
+
 ```
 
 | 规则 | 说明 |
@@ -540,7 +560,7 @@ flowchart LR
 ```mermaid
 flowchart TB
     subgraph 猎杀目标["五大猎杀目标"]
-        T1["① 空 catch 块<br/>catch {} / catch 后转 null/[]"]:::risk
+        direction TB
         T2["② 不足日志<br/>无上下文/错误级别/记完即忘"]:::risk
         T3["③ 危险回退<br/>默认值掩盖真实失败<br/>.catch(() => [])"]:::risk
         T4["④ 错误传播断裂<br/>堆栈丢失/泛化重抛<br/>缺失 async 处理"]:::risk
@@ -551,6 +571,7 @@ flowchart TB
     T3 --> OUT
     T4 --> OUT
     T5 --> OUT
+
 ```
 
 | 猎杀目标 | 识别模式 | 修复方向 |
@@ -599,6 +620,7 @@ flowchart TD
     GATE -->|"是"| SEV{"严重级别<br/>可辩护?"}
     SEV -->|"否"| ADJUST["调整级别"]:::fix
     SEV -->|"是"| REPORT["报告发现"]:::pass
+
 ```
 
 | 过滤器 | 规则 |
