@@ -21,9 +21,9 @@
     .header h1 { font-size:2.1rem;font-weight:700 } .header h1 .accent { color:var(--accent) }
     .header .sub { color:var(--text2);font-size:.9rem }
     .cross-nav { display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:40px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both }
-    .cross-link { color:var(--text3);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s }
-    .cross-link:hover { color:var(--accent);background:rgba(255,193,7,.06) }
-    .cross-link.on { color:var(--accent) }
+    .cross-link { color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s }
+    .cross-link:hover { color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline }
+    .cross-link.on { color:var(--accent);font-weight:600 }
     .cross-sep { color:var(--text3);font-size:.5rem;opacity:.35;user-select:none }
     .section { margin-bottom:44px;animation:fadeInUp .5s ease both }
     .sec-head { display:flex;align-items:center;gap:12px;margin-bottom:20px }
@@ -42,7 +42,7 @@
     .card .c-tag.cyan { background:rgba(34,211,238,.1);color:var(--cyan) }
     .card .c-tag.green { background:rgba(34,197,94,.1);color:var(--pass) }
     .card .c-links { display:flex;gap:6px;margin-top:10px;flex-wrap:wrap }
-    .card .c-links a { font-size:.68rem;color:var(--text3);text-decoration:none;background:var(--bg-flat);border:var(--border);border-radius:4px;padding:3px 8px;transition:all .15s }
+    .card .c-links a { font-size:.68rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:4px;padding:3px 8px;transition:all .15s }
     .card .c-links a:hover { border-color:rgba(255,193,7,.35);color:var(--accent) }
     .card .preview-panel { display:none;margin-top:14px;border-top:var(--border);padding-top:14px;animation:slideDown .3s ease }
     .card.expanded .preview-panel { display:block }
@@ -76,7 +76,9 @@
     .modal-overlay.show { display:flex }
     .modal-overlay 
     .modal-overlay 
-  </style>
+  
+a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+</style>
 </head>
 <body>
 <div class="container">

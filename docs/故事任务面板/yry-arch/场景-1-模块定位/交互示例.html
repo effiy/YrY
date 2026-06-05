@@ -24,6 +24,8 @@ a.back{color:var(--muted);text-decoration:none;font-size:.78rem;display:inline-b
 a.back:hover{color:var(--cyan)}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--cyan);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
+
+a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 </style>
 </head>
 <body>

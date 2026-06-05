@@ -20,9 +20,9 @@
     .header h1 { font-size:2.1rem;font-weight:700 } .header h1 .accent { color:var(--accent) }
     .header .sub { color:var(--text2);font-size:.9rem }
     .cross-nav { display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:40px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both }
-    .cross-link { color:var(--text3);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s }
-    .cross-link:hover { color:var(--accent);background:rgba(255,193,7,.06) }
-    .cross-link.on { color:var(--accent) }
+    .cross-link { color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s }
+    .cross-link:hover { color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline }
+    .cross-link.on { color:var(--accent);font-weight:600 }
     .cross-sep { color:var(--text3);font-size:.5rem;opacity:.35;user-select:none }
     .stats-grid { display:flex;gap:14px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both }
     .stat-card { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 22px;text-align:center;box-shadow:var(--shadow);min-width:90px;transition:transform .15s,box-shadow .15s;cursor:pointer;position:relative }
@@ -113,7 +113,9 @@
     .toast.show { opacity:1 }
     .slow-warn { font-size:.64rem;color:var(--warn);margin-left:4px }
     @media (max-width:640px) { .container { padding:24px 12px 60px } .header h1 { font-size:1.5rem } .file-grid { grid-template-columns:1fr } .stats-grid { gap:6px } .stat-card { padding:12px 14px;min-width:65px } .stat-card .val { font-size:1.3rem } .toolbar { flex-direction:column } .search-wrap { max-width:100% } }
-  </style>
+  
+a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+</style>
 </head>
 <body>
 <div class="container">
