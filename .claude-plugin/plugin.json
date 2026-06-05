@@ -1,7 +1,7 @@
 {
   "name": "yry",
   "description": "故事驱动的 SDLC 编排系统——需求拆分→文档管线→代码管线→交付。提供 /rui、/rui-claude 命令体系，9 Agent 协同，Gate A/B 强制验证。",
-  "version": "4.1.1",
+  "version": "4.2.0",
   "author": {
     "name": "YrY"
   },
