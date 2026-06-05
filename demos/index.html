@@ -20,18 +20,18 @@
     .header { text-align:center;margin-bottom:32px;animation:fadeInDown .5s ease both }
     .header h1 { font-size:2.1rem;font-weight:700 } .header h1 .accent { color:var(--accent) }
     .header .sub { color:var(--text2);font-size:.9rem }
-    .cross-nav { display:flex;gap:12px;justify-content:center;margin-bottom:36px;flex-wrap:wrap;animation:fadeInDown .5s .05s ease both }
-    .cross-card { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s,border-color .15s;min-width:150px;flex:1;max-width:240px }
-    .cross-card:hover { transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:rgba(255,193,7,.35) }
-    .cross-card .ci { font-size:1.3rem } .cross-card .cb { flex:1 } .cross-card .cn { font-weight:600;font-size:.86rem;display:block } .cross-card .cs { font-size:.7rem;color:var(--text3);display:block } .cross-card .ca { color:var(--text3) }
-    .cross-card.active { border-color:rgba(255,193,7,.35) } .cross-card.active .cn { color:var(--accent) }
+    .cross-nav { display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:40px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both }
+    .cross-link { color:var(--text3);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s }
+    .cross-link:hover { color:var(--accent);background:rgba(255,193,7,.06) }
+    .cross-link.on { color:var(--accent) }
+    .cross-sep { color:var(--text3);font-size:.5rem;opacity:.35;user-select:none }
     .section { margin-bottom:44px;animation:fadeInUp .5s ease both }
     .sec-head { display:flex;align-items:center;gap:12px;margin-bottom:20px }
     .sec-head .sn { width:32px;height:32px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.85rem;font-weight:700;display:flex;align-items:center;justify-content:center }
     .sec-head h2 { font-size:1.2rem;font-weight:700 } .sec-head .ss { font-size:.78rem;color:var(--text3) }
     .grid-2 { display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px }
     .grid-3 { display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px }
-    @media (max-width:640px) { .grid-2,.grid-3 { grid-template-columns:1fr } .cross-nav { flex-direction:column;align-items:stretch } .cross-card { max-width:none } .container { padding:24px 12px 60px } .header h1 { font-size:1.5rem } }
+    @media (max-width:640px) { .grid-2,.grid-3 { grid-template-columns:1fr } .container { padding:24px 12px 60px } .header h1 { font-size:1.5rem } }
     .card { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s,border-color .15s;text-decoration:none;color:inherit;display:block;cursor:pointer;position:relative }
     .card:hover { transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:rgba(255,193,7,.2) }
     .card .c-icon { font-size:1.5rem;margin-bottom:8px;display:block }
@@ -83,9 +83,11 @@
   <div class="header"><h1>🎬 YrY <span class="accent">演示中心</span></h1><p class="sub">6 技能交互演示 · 管线可视化 · 实时数据联动</p></div>
 
   <div class="cross-nav">
-    <a class="cross-card" href="../docs/index.html"><span class="ci">📚</span><span class="cb"><span class="cn">文档中心</span><span class="cs">技能 · 故事 · Agent · 规则</span></span><span class="ca">→</span></a>
-    <a class="cross-card" href="../tests/index.html"><span class="ci">🧪</span><span class="cb"><span class="cn">自检中心</span><span class="cs" id="testNav">加载中…</span></span><span class="ca">→</span></a>
-    <a class="cross-card active"><span class="ci">🎬</span><span class="cb"><span class="cn">演示中心</span><span class="cs">6 技能 · 交互演示</span></span><span class="ca" style="color:var(--accent)">●</span></a>
+    <a class="cross-link" href="../docs/index.html">📚 文档中心</a>
+    <span class="cross-sep">·</span>
+    <a class="cross-link" href="../tests/index.html" id="testNav">🧪 自检中心</a>
+    <span class="cross-sep">·</span>
+    <span class="cross-link on">🎬 演示中心</span>
   </div>
 
   <div class="kbd-bar"><span>点击卡片</span> 内联预览 · <span>点击流程图</span> 放大 · <span>悬停代码</span> 复制 · <span>1-6</span> 快速导航</div>
@@ -248,7 +250,7 @@ const SKILL_URLS=['rui.html','rui-story.html','rui-claude.html','rui-import.html
 document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const n=parseInt(e.key);if(n>=1&&n<=6){e.preventDefault();location.href=SKILL_URLS[n-1]}});
 
 // ═══ Live test status ═══
-(async()=>{try{const r=await(await fetch('../tests/results.json')).json();const s=r.summary||{};document.getElementById('testNav').textContent=`${s.passed||0}/${s.total||0} 通过`}catch(e){}})();
+(async()=>{try{const r=await(await fetch('../tests/results.json')).json();const s=r.summary||{};document.getElementById('testNav').textContent=`🧪 自检中心 · ${s.passed||0}/${s.total||0} 通过`}catch(e){}})();
 </script>
 </body>
 </html>

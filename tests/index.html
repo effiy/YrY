@@ -19,11 +19,11 @@
     .header { text-align:center;margin-bottom:32px;animation:fadeInDown .5s ease both }
     .header h1 { font-size:2.1rem;font-weight:700 } .header h1 .accent { color:var(--accent) }
     .header .sub { color:var(--text2);font-size:.9rem }
-    .cross-nav { display:flex;gap:12px;justify-content:center;margin-bottom:36px;flex-wrap:wrap;animation:fadeInDown .5s .05s ease both }
-    .cross-card { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s,border-color .15s;min-width:150px;flex:1;max-width:240px }
-    .cross-card:hover { transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:rgba(255,193,7,.35) }
-    .cross-card .ci { font-size:1.3rem } .cross-card .cb { flex:1 } .cross-card .cn { font-weight:600;font-size:.86rem;display:block } .cross-card .cs { font-size:.7rem;color:var(--text3);display:block } .cross-card .ca { color:var(--text3) }
-    .cross-card.active { border-color:rgba(255,193,7,.35) } .cross-card.active .cn { color:var(--accent) }
+    .cross-nav { display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:40px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both }
+    .cross-link { color:var(--text3);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s }
+    .cross-link:hover { color:var(--accent);background:rgba(255,193,7,.06) }
+    .cross-link.on { color:var(--accent) }
+    .cross-sep { color:var(--text3);font-size:.5rem;opacity:.35;user-select:none }
     .stats-grid { display:flex;gap:14px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both }
     .stat-card { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 22px;text-align:center;box-shadow:var(--shadow);min-width:90px;transition:transform .15s,box-shadow .15s;cursor:pointer;position:relative }
     .stat-card:hover { transform:translateY(-2px);box-shadow:var(--shadow-lg) }
@@ -112,21 +112,23 @@
     .toast { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .2s;pointer-events:none }
     .toast.show { opacity:1 }
     .slow-warn { font-size:.64rem;color:var(--warn);margin-left:4px }
-    @media (max-width:640px) { .container { padding:24px 12px 60px } .header h1 { font-size:1.5rem } .cross-nav { flex-direction:column;align-items:stretch } .cross-card { max-width:none } .file-grid { grid-template-columns:1fr } .stats-grid { gap:6px } .stat-card { padding:12px 14px;min-width:65px } .stat-card .val { font-size:1.3rem } .toolbar { flex-direction:column } .search-wrap { max-width:100% } }
+    @media (max-width:640px) { .container { padding:24px 12px 60px } .header h1 { font-size:1.5rem } .file-grid { grid-template-columns:1fr } .stats-grid { gap:6px } .stat-card { padding:12px 14px;min-width:65px } .stat-card .val { font-size:1.3rem } .toolbar { flex-direction:column } .search-wrap { max-width:100% } }
   </style>
 </head>
 <body>
 <div class="container">
   <div class="header"><h1>🧪 YrY <span class="accent">自检中心</span></h1><p class="sub">测试文件浏览 · 结果面板 · 源码查看 — 联动 docs + demos</p></div>
 
-  <div class="cross-nav">
-    <a class="cross-card" href="../docs/index.html"><span class="ci">📚</span><span class="cb"><span class="cn">文档中心</span><span class="cs">技能 · 故事 · Agent · 规则</span></span><span class="ca">→</span></a>
-    <a class="cross-card" href="../demos/index.html"><span class="ci">🎬</span><span class="cb"><span class="cn">演示中心</span><span class="cs">6 技能交互演示</span></span><span class="ca">→</span></a>
-    <a class="cross-card active"><span class="ci">🧪</span><span class="cb"><span class="cn">自检中心</span><span class="cs" id="navStatus">加载中…</span></span><span class="ca" style="color:var(--accent)">●</span></a>
-  </div>
-
   <div class="stats-grid" id="statsRow"></div>
   <div class="bar-wrap"><div class="bar-outer" id="bar" title="点击进度条筛选状态"></div></div>
+
+  <div class="cross-nav">
+    <a class="cross-link" href="../docs/index.html">📚 文档中心</a>
+    <span class="cross-sep">·</span>
+    <a class="cross-link" href="../demos/index.html">🎬 演示中心</a>
+    <span class="cross-sep">·</span>
+    <span class="cross-link on" id="navStatus">🧪 自检中心</span>
+  </div>
 
   <div class="tabs"><span class="tab on" data-panel="files">📁 测试文件</span><span class="tab" data-panel="results">📊 执行结果</span><span class="tab" data-panel="slow">🐢 慢测试</span></div>
 
@@ -211,7 +213,7 @@ function renderStats(){
     <div class="stat-card"><div class="val d">${dur}</div><div class="lbl">⏱ 耗时</div></div>`;
   const pp=t>0?(p/t*100):0,fp=t>0?(f/t*100):0,sp=t>0?(sk/t*100):0;
   document.getElementById('bar').innerHTML=`<div class="seg p" style="width:${pp}%"></div><div class="seg f" style="width:${fp}%"></div><div class="seg s" style="width:${sp}%"></div>`;
-  document.getElementById('navStatus').textContent=results?`${p}/${t} 通过 · ${fmtTs(results.timestamp)}`:'暂无结果';
+  document.getElementById('navStatus').textContent=results?`🧪 自检中心 · ${p}/${t} 通过`:'🧪 自检中心';
 }
 
 // ═══ Files panel ═══
