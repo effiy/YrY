@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>commit前增量自检 · 计划清单</title>
+<style>
+  :root { --bg: #020617; --fg: #a9b1d6; --surface: #0f172a; --border: #1e293b; --line: #3d59a1; --accent: #7aa2f7; --muted: #53576c; --good: #34d399; --bad: #f87171; --warn: #fbbf24; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'JetBrains Mono','Fira Code',monospace; background:var(--bg); color:var(--fg); padding:2rem; line-height:1.6; }
+  .container { max-width:900px; margin:0 auto; }
+  header { margin-bottom:2rem; border-bottom:1px solid var(--border); padding-bottom:1rem; }
+  h1 { font-size:1.3rem; color:var(--accent); } h2 { font-size:1.1rem; color:var(--accent); margin:2rem 0 1rem; border-left:3px solid var(--line); padding-left:0.75rem; }
+  .meta { color:var(--muted); font-size:0.75rem; margin:0.5rem 0; }
+  .progress-bar { width:100%; height:6px; background:var(--border); border-radius:3px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--line),var(--accent)); border-radius:3px; width:7%; }
+  .progress-label { display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:0.5rem; }
+  .step { background:var(--surface); border:1px solid var(--border); border-radius:8px; margin:0.75rem 0; }
+  .step-header { display:flex; align-items:center; gap:0.75rem; padding:0.75rem 1rem; cursor:pointer; }
+  .step-header:hover { background:rgba(122,162,247,0.05); }
+  .step-num { font-weight:700; color:var(--accent); min-width:2rem; } .step-checkbox { width:18px; height:18px; accent-color:var(--accent); cursor:pointer; }
+  .step-title { flex:1; } .step-status { font-size:0.75rem; padding:0.15rem 0.5rem; border-radius:4px; }
+  .status-pending { background:rgba(83,87,108,0.3); color:var(--muted); } .status-done { background:rgba(52,211,153,0.15); color:var(--good); }
+  .step-body { display:none; padding:0 1rem 1rem 3rem; font-size:0.85rem; border-top:1px solid var(--border); } .step-body.open { display:block; }
+  .code-block { background:#020617; border:1px solid var(--border); border-radius:4px; padding:0.75rem; margin:0.5rem 0; font-size:0.8rem; white-space:pre-wrap; }
+  .verify-cmd { background:rgba(52,211,153,0.08); border-left:3px solid var(--good); border-radius:0 4px 4px 0; padding:0.5rem 0.75rem; margin:0.5rem 0; font-size:0.8rem; }
+  .verify-cmd::before { content:"▶ 验证: "; color:var(--good); font-weight:600; }
+  .expected::before { content:"✓ 期望: "; color:var(--accent); font-weight:600; } .expected { color:var(--muted); font-size:0.8rem; }
+  .footer { margin-top:3rem; padding-top:1rem; border-top:1px solid var(--border); color:var(--muted); font-size:0.7rem; }
+  .nav { font-size:0.8rem; margin:1rem 0; } .nav a { color:var(--accent); text-decoration:none; margin-right:1rem; }
+</style>
+</head>
+<body><div class="container">
+<header><h1>📋 场景-2: commit前增量自检 · 计划清单</h1>
+<div class="meta"><span>📌 v1.1.0</span> · <span>📅 2026-06-05</span> · <span>🏷️ yry-self-test</span></div>
+<div class="nav"><a href="../plan.html">← 计划总览</a> <a href="../场景-2-commit前增量自检.md">📄 场景文档</a> <a href="../场景-2-commit前增量自检.html">🎨 架构图</a></div></header>
+<div class="progress-label"><span>整体进度</span><span id="progress-text">1 / 14 完成</span></div><div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:7%"></div></div>
+
+<h2>§0 技术评审</h2>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">1</span><span class="step-title">设计增量自检触发流程（mermaid）</span><span class="step-status status-done">✅ 完成</span></div><div class="step-body open"><p>git diff → 变更范围识别 → 依赖图传播 → 增量自检项选择 → 执行 → 结果输出。仅检测受变更影响的项。</p><div class="code-block">git diff --name-only HEAD~1 → 变更文件集 → 查询依赖图 → 确定受影响自检项 → 增量执行</div></div></div>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">2</span><span class="step-title">定义变更范围自动剪枝算法</span><span class="step-status status-pending">⏳ 待开始</span></div></div>
+
+<h2>§1 测试设计</h2>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">3</span><span class="step-title">定义变更感知测试用例</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><p>TC-I-1: 修改 agents/pm.md → 仅触发角色链自检<br>TC-I-2: 修改 rules/ 文件 → 仅触发约束自检<br>TC-I-3: 无变更 → 零自检项<br>TC-I-4: 跨模块变更 → 触发多维度自检</p></div></div>
+
+<h2>§2 实施报告</h2>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">4</span><span class="step-title">实现 git diff 变更检测</span><span class="step-status status-pending">⏳ 待开始</span></div></div>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">5</span><span class="step-title">实现依赖图传播算法</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="code-block"># 变更 agents/pm.md
+→ 影响: agents/coder.md (依赖 pm 输出)
+         skills/rui/SKILL.md (引用 pm 角色)
+         rules/code-pipeline.md (管线约束)</div></div></div>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">6</span><span class="step-title">实现增量自检执行器</span><span class="step-status status-pending">⏳ 待开始</span></div></div>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">7</span><span class="step-title">集成 git hook</span><span class="step-status status-pending">⏳ 待开始</span></div></div>
+
+<h2>§3 测试报告</h2>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">8</span><span class="step-title">增量 vs 全量性能对比</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="verify-cmd">time node scripts/self-test.mjs --mode=full && time node scripts/self-test.mjs --mode=incremental</div><div class="expected">增量耗时 < 全量耗时的 30%</div></div></div>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">9</span><span class="step-title">验证增量自检覆盖率</span><span class="step-status status-pending">⏳ 待开始</span></div></div>
+
+<h2>§4 自改进 + 交付</h2>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">10</span><span class="step-title">优化变更范围剪枝精度</span><span class="step-status status-pending">⏳ 待开始</span></div></div>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">11</span><span class="step-title">记录剪枝准确率</span><span class="step-status status-pending">⏳ 待开始</span></div></div>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">12</span><span class="step-title">生成 HTML+SVG 架构图</span><span class="step-status status-pending">⏳ 待开始</span></div></div>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">13</span><span class="step-title">P0 验证</span><span class="step-status status-pending">⏳ 待开始</span></div></div>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">14</span><span class="step-title">git commit + 交付收口</span><span class="step-status status-pending">⏳ 待开始</span></div></div>
+
+<div class="footer"><p>🤖 Generated with planner agent | scene: commit前增量自检 | updated: 2026-06-05</p></div>
+</div>
+<script>
+function updateProgress(){const c=document.querySelectorAll('.step-checkbox');const d=Array.from(c).filter(x=>x.checked).length;document.getElementById('progress-fill').style.width=(d/c.length*100)+'%';document.getElementById('progress-text').textContent=d+' / '+c.length+' 完成';c.forEach(cb=>{const s=cb.closest('.step').querySelector('.step-status');if(cb.checked){s.textContent='✅ 完成';s.className='step-status status-done'}else{s.textContent='⏳ 待开始';s.className='step-status status-pending'}})}
+document.querySelectorAll('.step-checkbox:checked').forEach(cb=>cb.closest('.step').querySelector('.step-body').classList.add('open'));updateProgress();
+</script>
+</body></html>

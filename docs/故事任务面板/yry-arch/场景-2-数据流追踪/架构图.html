@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>🔍 场景-2-数据流追踪 · 架构图</title>
+<style>
+:root{--bg:#020617;--surface:#0f172a;--border:#1e293b;--text:#e2e8f0;--muted:#64748b;--cyan:#22d3ee;--emerald:#34d399;--violet:#a78bfa;--amber:#fbbf24;--blue:#3B82F6;--rose:#fb7185}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;min-height:100vh;padding:24px}
+.container{max-width:1000px;margin:0 auto}
+h1{font-size:1.5rem;margin-bottom:4px}h1 span{color:var(--cyan)}
+.sub{color:var(--muted);font-size:.82rem;margin-bottom:24px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:16px}
+.card h2{font-size:.95rem;margin-bottom:16px;color:var(--cyan)}
+.arch-diagram{background:rgba(0,0,0,.3);border-radius:8px;padding:24px;overflow-x:auto;font-family:monospace;font-size:.74rem;line-height:1.8;color:var(--muted);white-space:pre}
+.layer{margin-bottom:20px;border-left:3px solid var(--cyan);padding-left:16px}
+.layer h3{font-size:.82rem;color:var(--violet);margin-bottom:8px}
+.layer .item{display:inline-block;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.15);border-radius:6px;padding:4px 10px;margin:3px 6px 3px 0;font-size:.72rem;font-family:monospace}
+.layer .item.core{border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.08);color:var(--violet)}
+.layer .item.exec{border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.08);color:var(--blue)}
+.layer .item.review{border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08);color:var(--emerald)}
+.layer .item.risk{border-color:rgba(251,113,133,.3);background:rgba(251,113,133,.08);color:var(--rose)}
+.flow-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0;font-size:.76rem}
+.flow-node{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-weight:600}
+.flow-arrow{color:var(--muted)}
+a.back{color:var(--muted);text-decoration:none;font-size:.78rem;display:inline-block;margin-bottom:16px}
+a.back:hover{color:var(--cyan)}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="../场景-2-数据流追踪/知识图谱.html" class="back">← 场景知识图谱</a>
+<h1><span>🔍</span> 🔍 场景-2-数据流追踪 · 架构图</h1>
+<p class="sub">追踪用户指令从进入到交付收口的完整数据流</p>
+
+<div class="card">
+  <h2>📐 模块拓扑</h2>
+  <div class="layer">
+    <h3>输入 / 触发</h3>
+    <span class="item core">用户提交 `/rui code <story-name>` 启动管线</span>
+  </div>
+  <div class="layer">
+    <h3>核心执行</h3>
+    <span class="item exec">分支隔离检查</span>
+<span class="item exec">Gate A 测试先行</span>
+<span class="item exec">逐模块 P0 清零</span>
+<span class="item exec">Gate B ≤2 轮验证</span>
+  </div>
+  <div class="layer">
+    <h3>门禁 / 审查</h3>
+    <span class="item review">code-reviewer 审查</span>
+<span class="item review">security 安全审计</span>
+<span class="item review">P0 清零确认</span>
+  </div>
+  <div class="layer">
+    <h3>产出 / 交付</h3>
+    <span class="item exec">交付产物 + 自改进报告</span>
+  </div>
+</div>
+
+<div class="card">
+  <h2>🔄 数据流</h2>
+  <div class="flow-row">
+    <span class="flow-node">输入</span><span class="flow-arrow">→</span>
+    <span class="flow-node">处理</span><span class="flow-arrow">→</span>
+    <span class="flow-node">验证</span><span class="flow-arrow">→</span>
+    <span class="flow-node">产出</span>
+  </div>
+  <p style="color:var(--muted);font-size:.74rem;margin-top:12px">/rui code → 分支检查 → Gate A → coder 实现 → tester 验证 → code-reviewer → security → Gate B → 交付</p>
+</div>
+
+<div class="card">
+  <h2>📋 关键决策点</h2>
+  <div style="font-size:.78rem;color:var(--muted);line-height:1.8">
+    • Gate A 门禁：测试先行，RED 阶段必须失败非语法错误<br>• 逐模块策略：P0 不清零不进下一模块<br>• Gate B 门禁：验证轮数 ≤ 2，超限触发自改进<br>• 交付收口：日志追加 → 文档同步 → 企微通知
+  </div>
+</div>
+</div>
+</body>
+</html>

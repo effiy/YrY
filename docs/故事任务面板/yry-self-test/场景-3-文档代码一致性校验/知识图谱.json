@@ -1,0 +1,12 @@
+{
+  "version": "2.0.0",
+  "kind": "scenario-knowledge-graph",
+  "generatedAt": "2026-06-05",
+  "project": {},
+  "story": "yry-self-test",
+  "scenario": {
+    "name": "场景-3-文档代码一致性校验",
+    "sceneKey": "scene:doc-consistency"
+  },
+  "sceneData": {}
+}

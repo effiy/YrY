@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>⚡ 场景-4-依赖变更影响 · 架构图</title>
+<style>
+:root{--bg:#020617;--surface:#0f172a;--border:#1e293b;--text:#e2e8f0;--muted:#64748b;--cyan:#22d3ee;--emerald:#34d399;--violet:#a78bfa;--amber:#fbbf24;--blue:#3B82F6;--rose:#fb7185}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;min-height:100vh;padding:24px}
+.container{max-width:1000px;margin:0 auto}
+h1{font-size:1.5rem;margin-bottom:4px}h1 span{color:var(--cyan)}
+.sub{color:var(--muted);font-size:.82rem;margin-bottom:24px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:16px}
+.card h2{font-size:.95rem;margin-bottom:16px;color:var(--cyan)}
+.arch-diagram{background:rgba(0,0,0,.3);border-radius:8px;padding:24px;overflow-x:auto;font-family:monospace;font-size:.74rem;line-height:1.8;color:var(--muted);white-space:pre}
+.layer{margin-bottom:20px;border-left:3px solid var(--cyan);padding-left:16px}
+.layer h3{font-size:.82rem;color:var(--violet);margin-bottom:8px}
+.layer .item{display:inline-block;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.15);border-radius:6px;padding:4px 10px;margin:3px 6px 3px 0;font-size:.72rem;font-family:monospace}
+.layer .item.core{border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.08);color:var(--violet)}
+.layer .item.exec{border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.08);color:var(--blue)}
+.layer .item.review{border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08);color:var(--emerald)}
+.layer .item.risk{border-color:rgba(251,113,133,.3);background:rgba(251,113,133,.08);color:var(--rose)}
+.flow-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0;font-size:.76rem}
+.flow-node{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-weight:600}
+.flow-arrow{color:var(--muted)}
+a.back{color:var(--muted);text-decoration:none;font-size:.78rem;display:inline-block;margin-bottom:16px}
+a.back:hover{color:var(--cyan)}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="../场景-4-依赖变更影响/知识图谱.html" class="back">← 场景知识图谱</a>
+<h1><span>⚡</span> ⚡ 场景-4-依赖变更影响 · 架构图</h1>
+<p class="sub">依赖变更时的全局影响分析与修复路径</p>
+
+<div class="card">
+  <h2>📐 模块拓扑</h2>
+  <div class="layer">
+    <h3>输入 / 触发</h3>
+    <span class="item core">核心模块（如 rules/code-pipeline.md）发生变更</span>
+  </div>
+  <div class="layer">
+    <h3>核心执行</h3>
+    <span class="item exec">变更检测：识别变更类型和影响面</span>
+<span class="item exec">影响分析：追踪依赖链和消费者</span>
+<span class="item exec">级联更新：按影响优先级逐级刷新</span>
+<span class="item exec">回归验证：全量自检通过</span>
+  </div>
+  <div class="layer">
+    <h3>门禁 / 审查</h3>
+    <span class="item review">security 审计变更是否引入新风险</span>
+<span class="item review">code-reviewer 验证级联更新完整性</span>
+  </div>
+  <div class="layer">
+    <h3>产出 / 交付</h3>
+    <span class="item exec">影响分析报告 + 级联更新 PR</span>
+  </div>
+</div>
+
+<div class="card">
+  <h2>🔄 数据流</h2>
+  <div class="flow-row">
+    <span class="flow-node">输入</span><span class="flow-arrow">→</span>
+    <span class="flow-node">处理</span><span class="flow-arrow">→</span>
+    <span class="flow-node">验证</span><span class="flow-arrow">→</span>
+    <span class="flow-node">产出</span>
+  </div>
+  <p style="color:var(--muted);font-size:.74rem;margin-top:12px">变更提交 → 影响分析 → 级联更新 → 自检 → review → 合并</p>
+</div>
+
+<div class="card">
+  <h2>📋 关键决策点</h2>
+  <div style="font-size:.78rem;color:var(--muted);line-height:1.8">
+    • T1 变更（措辞/格式）：跳过架构分析，直接刷新<br>• T2 变更（增删/接口）：裁剪分析，刷新目标和下游<br>• T3 变更（边界/重构）：完整重跑影响分析 + 架构设计
+  </div>
+</div>
+</div>
+</body>
+</html>

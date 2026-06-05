@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>⚡ 场景-4-依赖变更影响 · 交互示例</title>
+<style>
+:root{--bg:#020617;--surface:#0f172a;--border:#1e293b;--text:#e2e8f0;--muted:#64748b;--cyan:#22d3ee;--emerald:#34d399;--amber:#fbbf24;--rose:#fb7185}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;min-height:100vh;padding:24px}
+.container{max-width:960px;margin:0 auto}
+h1{font-size:1.5rem;margin-bottom:4px}h1 span{color:var(--cyan)}
+.sub{color:var(--muted);font-size:.82rem;margin-bottom:24px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px}
+.card h2{font-size:.95rem;margin-bottom:14px;color:var(--cyan)}
+pre{background:rgba(0,0,0,.4);border-radius:6px;padding:14px 40px 14px 18px;font-size:.76rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer;margin:8px 0}
+pre .cb{position:absolute;top:8px;right:8px;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--muted);font-size:.64rem;padding:3px 8px;cursor:pointer;opacity:0;transition:opacity .15s;font-family:inherit}
+pre:hover .cb{opacity:1}
+pre .cb.done{color:var(--emerald)}
+.step{counter-increment:step;display:flex;gap:12px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.step::before{content:counter(step);width:26px;height:26px;border-radius:50%;background:rgba(34,211,238,.12);color:var(--cyan);font-size:.74rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step .sb{flex:1}.step .st{font-weight:600;font-size:.85rem}.step .sd{font-size:.74rem;color:var(--muted);margin:3px 0 6px}
+a.back{color:var(--muted);text-decoration:none;font-size:.78rem;display:inline-block;margin-bottom:16px}
+a.back:hover{color:var(--cyan)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--cyan);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="container">
+<a href="../场景-4-依赖变更影响/知识图谱.html" class="back">← 场景知识图谱</a>
+<h1><span>⚡</span> ⚡ 场景-4-依赖变更影响 · 交互示例</h1>
+<p class="sub">依赖变更时的全局影响分析与修复路径</p>
+
+<div class="card">
+  <h2>🚶 操作步骤</h2>
+  <div style="counter-reset:step">
+    <div class="step"><div class="sb"><div class="st">检测变更</div><div class="sd">识别变更文件的类型（T1/T2/T3）和影响面</div><pre>git diff --name-only HEAD~1<span class="cb">📋</span></pre></div></div>
+<div class="step"><div class="sb"><div class="st">追踪影响链</div><div class="sd">从变更点出发，追踪所有直接和间接依赖</div><pre>grep -r "changed-module" --include="*.md"<span class="cb">📋</span></pre></div></div>
+<div class="step"><div class="sb"><div class="st">级联更新</div><div class="sd">按优先级刷新受影响文件，确保引用一致</div><pre>/rui update <story-name><span class="cb">📋</span></pre></div></div>
+<div class="step"><div class="sb"><div class="st">回归验证</div><div class="sd">运行全量自检，确认变更不引入回归</div><pre>node tests/run.mjs<span class="cb">📋</span></pre></div></div>
+
+  </div>
+</div>
+
+<div class="card">
+  <h2>💡 预期输出</h2>
+  <pre style="color:var(--emerald)">变更类型: T1 (措辞修正)</pre>
+<pre style="color:var(--emerald)">影响面: 3 文件直接 + 7 文件间接</pre>
+<pre style="color:var(--emerald)">级联更新: 10 文件已刷新</pre>
+
+</div>
+
+<div class="toast" id="toast"></div>
+</div>
+<script>
+document.querySelectorAll('pre .cb').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const cmd=btn.parentElement.textContent.replace(/📋|✅/g,'').trim();
+    navigator.clipboard.writeText(cmd).then(()=>{
+      btn.textContent='✅';btn.classList.add('done');
+      setTimeout(()=>{btn.textContent='📋';btn.classList.remove('done')},1500)
+    }).catch(()=>{
+      const t=document.getElementById('toast');
+      t.textContent='复制失败';t.classList.add('show');
+      setTimeout(()=>t.classList.remove('show'),1800)
+    })
+  })
+});
+</script>
+</body>
+</html>

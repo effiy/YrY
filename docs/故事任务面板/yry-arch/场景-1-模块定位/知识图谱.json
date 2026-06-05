@@ -1,0 +1,61 @@
+{
+  "version": "2.0.0",
+  "kind": "scenario-knowledge-graph",
+  "generatedAt": "2026-06-05",
+  "project": {
+    "name": "YrY",
+    "description": "故事驱动的 SDLC 编排系统 — Claude Code 插件，纯规约驱动。6 技能 + 8 Agent + 8 规则，用自身管线管理自身演进。",
+    "analyzedAt": "2026-06-05",
+    "version": "1.28.0"
+  },
+  "story": "yry-arch",
+  "scenario": {
+    "name": "场景1 · 模块定位",
+    "description": "在三十秒内定位任一模块（技能/Agent/规则）的入口、依赖、消费者和契约",
+    "sourceFiles": [
+      {
+        "type": "skill",
+        "file": "skills/rui/SKILL.md",
+        "keyContent": "`/rui` `rui init` `rui doc` `rui code`",
+        "description": "核心技能入口，调度 pm→architect→coder→tester→reporter 全管线",
+        "risk": null
+      },
+      {
+        "type": "agent",
+        "file": "agents/AGENT.md",
+        "keyContent": "`Iron Law` `行为纪律` `设计原则`",
+        "description": "Agent 角色总纲：拓扑、行为纪律、设计原则、执行准则、多 Agent 协作模式",
+        "risk": null
+      },
+      {
+        "type": "rule",
+        "file": "rules/code-pipeline.md",
+        "keyContent": "`分支隔离` `逐模块清零` `P0 门禁`",
+        "description": "源码改动管线规则：分支隔离→逐模块实现→闭环验证→交付",
+        "risk": null
+      }
+    ],
+    "graphNodes": [
+      "domain:module-ecosystem",
+      "flow:module-location",
+      "step:identify-module-type",
+      "step:find-entry-file",
+      "step:trace-dependencies",
+      "step:identify-consumers",
+      "step:verify-contract"
+    ]
+  },
+  "sceneData": {
+    "name": "模块定位",
+    "description": "在三十秒内定位任一模块的入口、依赖、消费者和接口契约",
+    "nodes": [
+      "domain:module-ecosystem",
+      "flow:module-location",
+      "step:identify-module-type",
+      "step:find-entry-file",
+      "step:trace-dependencies",
+      "step:identify-consumers",
+      "step:verify-contract"
+    ]
+  }
+}
