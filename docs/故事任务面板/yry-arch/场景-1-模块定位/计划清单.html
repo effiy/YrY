@@ -10,11 +10,13 @@
   --bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
   --bg-flat: rgba(34,34,46,1);
   --bg-raised: rgba(42,42,56,1);
-  --accent: #FFC107; --cyan: #22d3ee; --pass: #22c55e; --fail: #ef4444; --warn: #f59e0b; --skip: #6b7280;
+  --accent: #FFC107; --cyan: #22d3ee; --pass: #22c55e; --fail: #ef4444; --warn: #f59e0b; --info: #6b7280; --skip: #6b7280;
   --text: rgba(250,250,252,1); --text2: rgba(160,160,164,1); --text3: rgba(110,110,114,1);
   --shadow: 0 4px 20px rgba(0,0,0,0.3); --shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
   --radius: 12px; --border: 1px solid rgba(255,255,255,0.06);
 }
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 * { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior:smooth; }
 body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif; line-height:1.6; min-height:100vh; }
@@ -28,19 +30,31 @@ body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkM
 .breadcrumb .bc-current { color:#94a3b8; font-weight:500; }
 
 /* Cross-Nav */
-.cross-nav { display:flex; gap:4px; justify-content:center; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; }
-.cross-link { color:var(--cyan); text-decoration:none; font-size:0.76rem; padding:3px 10px; border-radius:4px; transition:color 0.15s,background 0.15s; }
-.cross-link:hover { color:var(--accent); background:rgba(255,193,7,0.06); }
-.cross-link.on { color:var(--accent); font-weight:600; cursor:default; }
-.cross-link.on:hover { background:transparent; }
-.cross-sep { color:var(--text3); font-size:0.5rem; opacity:0.35; user-select:none; }
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
+.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}
+.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
+.cross-link.on{color:var(--accent);font-weight:600}
+.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
+
+/* Stats */
+.stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
+.stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}
+.stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
+
+/* Health bar */
+.bar-wrap{margin-bottom:28px;animation:fadeInDown .5s .12s ease both}
+.bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
+.bar-outer .seg{height:100%;transition:width .5s ease;min-width:3px}
+.bar-outer .seg.strength{background:var(--pass)}.bar-outer .seg.gap{background:var(--fail)}.bar-outer .seg.suggestion{background:var(--warn)}.bar-outer .seg.neutral{background:var(--info)}
 
 /* Header */
-.header { margin-bottom:16px; }
-.header h1 { font-size:1.6rem; font-weight:700; }
-.header h1 .accent { color:var(--accent); }
-.header .sub { color:var(--text2); font-size:0.85rem; margin-top:4px; }
-.header .meta { color:var(--text3); font-size:0.75rem; margin-top:6px; }
+.header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
+.header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+.header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
+.header .meta{color:var(--text3);font-size:.75rem;margin-top:6px}
 
 /* Progress (always visible) */
 .progress-wrap { margin-bottom:20px; }
@@ -171,9 +185,10 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
   <h1>📋 场景-1<span class="accent"> · 模块定位与职责</span></h1>
   <p class="sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
   <div class="meta">📌 v1.0.0 · 📅 2026-06-05 · 🏷️ yry-arch</div>
-<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">0</div><div class="lbl">✅ 完成</div></div><div class="stat-card"><div class="val">6</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val">0%</div><div class="lbl">📊 进度</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg p" style="width:0%"></div><div class="seg s" style="width:100%"></div></div></div>
-
 </div>
+
+<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">0</div><div class="lbl">✅ 完成</div></div><div class="stat-card"><div class="val">6</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val">0%</div><div class="lbl">📊 进度</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:0%"></div><div class="seg gap" style="width:100%"></div></div></div>
+  <div style="display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:.68rem;color:var(--text3)"><span>✅ 0 完成</span><span>⏳ 0 待执行</span></div>
 
 <!-- Progress bar always visible -->
 <div class="progress-wrap">

@@ -58,6 +58,7 @@ ${hdr("快速入门")}
 ${item("/rui-claude", "推荐任务：5 层评分排序的 .claude/ 维护建议", cyan)}
 ${item("/rui-claude sync", "覆盖式同步：远端 API → rui-import pull 覆盖本地 .claude/", cyan)}
 ${item("/rui-claude update", "插件升级：git pull 最新 YrY → 清除插件缓存 → sync 远端 .claude/", cyan)}
+${item("/rui-claude update-version", "版本收敛升级：合并所有分支 → 自主升版 → 推送 + tag", cyan)}
 ${item("/rui-claude retro", "健康度分析：三节复盘（配置结构 / 健康度 / 改进项）", cyan)}
 
 ${hdr("子命令")}
@@ -75,6 +76,7 @@ ${flag("json", "JSON 格式输出")}
 ${subhdr("写入命令")}
 ${item("/rui-claude sync", "覆盖式同步：远端 API → rui-import pull 覆盖本地 .claude/", yellow)}
 ${item("/rui-claude update", "插件升级：git pull 最新 YrY → sync 远端 .claude/ 双刷新", yellow)}
+${item("/rui-claude update-version", "版本收敛升级：合并所有分支 → 自主升版 → 推送 + tag", yellow)}
 ${item("/rui-claude <需求>", "需求管线：走 rui code 流程修改 .claude/ 配置", yellow)}
 
 ${hdr("使用场景")}
@@ -82,6 +84,8 @@ ${scene("拉取团队最新 .claude/ 配置")}
 ${item("/rui-claude sync", "从远端 API 全量覆盖本地 .claude/ → 提示确认后执行", cyan)}
 ${scene("一键升级 YrY 插件并同步配置")}
 ${item("/rui-claude update", "git pull 最新 YrY → 清除旧版本缓存 → sync .claude/ → 三重刷新完成", cyan)}
+${scene("合并所有开发分支并发布新版本")}
+${item("/rui-claude update-version", "合并所有 feat 分支到 main → 自主判定版本号 → 推送远端 + tag", cyan)}
 ${scene("分析配置健康度")}
 ${item("/rui-claude retro", "分析 agents/rules/skills 结构 → 输出复盘文档", cyan)}
 ${item("/rui-claude retro --name config-audit", "指定故事名，可溯源", cyan)}
