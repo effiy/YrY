@@ -121,18 +121,18 @@ flowchart LR
 | `Accept` | `application/json` |
 | `X-Token` | `${API_X_TOKEN}`（仅来自环境变量） |
 
-### 1. 拉取已有 sessions（分页）
+### 1. 拉取已有 sessions
 
 ```
 POST <apiUrl>/
 {
   "module_name": "services.database.data_service",
   "method_name": "query_documents",
-  "parameters": { "cname": "sessions", "limit": 500, "skip": 0 }
+  "parameters": { "cname": "sessions" }
 }
 ```
 
-分页循环：递增 `skip` 直到 `data.list.length < limit`。响应中 `data.list[].file_path` 组成「已存在路径集合」。
+单次查询，返回全部 sessions。响应中 `data.list[].file_path` 组成「已存在路径集合」。
 
 ### 2. 写文件
 

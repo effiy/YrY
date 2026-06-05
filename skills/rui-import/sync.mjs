@@ -17,7 +17,6 @@ const CONCURRENCY = 4;
 const HTTP_TIMEOUT = 30_000;
 
 const ERROR_MSG_MAX_LEN = 500;
-const PAGINATION_PAGE_SIZE = 500;
 const PREVIEW_COUNT = 10;
 const NODE_ARGV_OFFSET = 2;
 const DECIMAL_RADIX = 10;
@@ -187,24 +186,13 @@ async function fetchJson(url, options = {}) {
 }
 
 async function querySessionsFull(apiUrl) {
-  const allItems = [];
-  let skip = 0;
-
-  while (true) {
-    const body = {
-      module_name: "services.database.data_service",
-      method_name: "query_documents",
-      parameters: { cname: "sessions", limit: PAGINATION_PAGE_SIZE, skip },
-    };
-    const data = await fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
-    const list = data?.data?.list || data?.list || [];
-    allItems.push(...list);
-
-    if (list.length < PAGINATION_PAGE_SIZE) break;
-    skip += PAGINATION_PAGE_SIZE;
-  }
-
-  return allItems;
+  const body = {
+    module_name: "services.database.data_service",
+    method_name: "query_documents",
+    parameters: { cname: "sessions" },
+  };
+  const data = await fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
+  return data?.data?.list || data?.list || [];
 }
 
 async function querySessions(apiUrl) {

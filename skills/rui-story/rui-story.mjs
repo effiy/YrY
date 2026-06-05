@@ -13,7 +13,6 @@ const API_URL = process.env.IMPORT_DOCS_API_URL || "https://api.effiy.cn";
 const API_X_TOKEN = process.env.API_X_TOKEN || "";
 const HTTP_TIMEOUT = 30_000;
 const CONCURRENCY = 4;
-const QUERY_LIMIT = 10_000;
 const ERROR_MSG_MAX_LEN = 500;
 
 // --- story extraction constants -------------------------------------------
@@ -154,7 +153,7 @@ async function querySessionsFull(apiUrl) {
   const body = {
     module_name: "services.database.data_service",
     method_name: "query_documents",
-    parameters: { cname: "sessions", limit: QUERY_LIMIT },
+    parameters: { cname: "sessions" },
   };
   const data = await fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
   return data?.data?.list || data?.list || [];

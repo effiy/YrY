@@ -19,9 +19,11 @@ flowchart TD
         TD[rui-trends]:::skill
     end
 
-    subgraph Agents[六角色]
+    subgraph Agents[八角色]
         PM[("pm")]:::core
+        ARCHITECT[architect]:::agent
         CODER[coder]:::agent
+        REVIEWER[code-reviewer]:::agent
         TESTER[tester]:::agent
         REPORTER[reporter]:::agent
         SECURITY[security]:::agent
@@ -30,7 +32,9 @@ flowchart TD
 
     CMD --> RUI & RC
     RUI --> PM
-    PM --> CODER & TESTER & REPORTER
+    PM --> ARCHITECT & CODER & TESTER & REPORTER
+    ARCHITECT -.设计.-> CODER
+    REVIEWER -.审查.-> CODER
     SECURITY -.约束.-> CODER
     SI -.提案.-> PM
     ID -.hook.-> WW
@@ -130,17 +134,21 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    PM[pm<br>决策中枢] -->|拆故事| CODER[coder<br>代码实现]
+    PM[pm<br>决策中枢] -->|拆故事| ARCHITECT[architect<br>架构设计]
+    ARCHITECT -->|设计规约| CODER[coder<br>代码实现]
     CODER -->|逐模块| TESTER[tester<br>质量卡点]
     TESTER -->|Gate A·阻编码| CODER
     TESTER -->|Gate B·阻交付| REPORTER[reporter<br>过程记录]
     REPORTER -->|三报告| PM
+    REVIEWER[code-reviewer<br>代码审查] -.审查.-> CODER
     SECURITY[security<br>威胁建模] -.约束.-> CODER
     SI[self-improve<br>持续改进] -.提案.-> PM
 ```
 
 - **pm** — 决策中枢：决定做/不做/延期，串起全部 Agent
+- **architect** — 系统架构设计：设计系统级架构、评估权衡、创建 ADR
 - **coder** — 代码实现：逐模块编码，P0 清零方进下一模块
+- **code-reviewer** — 代码审查：审查代码正确性、模式、反模式、简化机会（只读）
 - **tester** — 质量卡点：Gate A 阻编码、Gate B 阻交付
 - **reporter** — 过程记录：三报告交叉闭合
 - **security** — 威胁建模：§3 安全约束注入，P0 卡发布
@@ -163,6 +171,9 @@ flowchart LR
 
     CP[code-pipeline] -.-> S2 & S3 & S4 & S5
     DOC[doc-generation] -.-> S1
+    AD[architecture-diagram] -.-> S1
+    KG[knowledge-graph] -.-> S1 & S6
+    SG[security-guardrails] -.-> S4
     DG[delivery-gate] -.-> S6
     SI[self-improve] -.-> S6
     RC[rui-claude] -.-> .claude/
@@ -171,6 +182,9 @@ flowchart LR
 - **code-pipeline** — 源码改动：分支隔离 · Gate A/B · 逐模块清零，支撑技术含根因追溯/纵深防御/反馈回路/深度模块/垂直切片
 - **delivery-gate** — 交付收口：日志 → 同步 → 通知，手动触发
 - **doc-generation** — 文档产出：目录命名 · 骨架模板 · 附属数据存放
+- **architecture-diagram** — 架构图约束：故事文档中 HTML 架构图的生成与规范
+- **knowledge-graph** — 知识图谱：故事文档中 JSON 知识图谱的结构与查询
+- **security-guardrails** — 安全护栏：代码文件的安全约束检查与注入防护
 - **self-improve** — 复盘改进：数据采集 → 诊断 → 提案，`no-metrics` 降级不阻断
 - **rui-claude** — .claude/ 管理：仅限 `.claude/` · 禁自动 commit/push
 
@@ -179,7 +193,7 @@ flowchart LR
 ## 技能
 
 - **rui** (`/rui init · doc · code · update · yry · version --up · --rollback · --from-code`) — 故事驱动 SDLC 主线，含诊断纪律、架构深化、交接纪律、版本管理
-- **rui-story** (`/rui-story list · show · recommend · health · sync · clear · remove · status  (merge/split 由 yry 自动执行)`) — 故事面板远端查询、进度管理、文档同步、本地清理、状态转移、合并拆分
+- **rui-story** (`/rui-story list · health · sync · remove`) — 故事面板远端查询、进度管理、文档同步、本地删除
 - **rui-claude** (`/rui-claude sync · retro · history`) — .claude/ 配置远端同步与复盘
 - **rui-import** — 手动触发：批量同步故事文档到远端 API
 - **rui-bot** — 手动触发：企微机器人推送管线状态通知
@@ -191,15 +205,19 @@ flowchart LR
 
 ```
 YrY/
-├── agents/                  # 6 个 Agent 角色契约
+├── agents/                  # 8 个 Agent 角色契约
 │   ├── AGENT.md             #   角色拓扑与共用底线
-│   ├── pm.md / coder.md / tester.md
+│   ├── pm.md / architect.md / coder.md
+│   ├── code-reviewer.md / tester.md
 │   ├── reporter.md / security.md
 │   └── self-improve.md
-├── rules/                   # 5 组约束规则
+├── rules/                   # 8 组约束规则
 │   ├── code-pipeline.md     #   分支隔离 · Gate A/B
 │   ├── delivery-gate.md     #   三步 hook
 │   ├── doc-generation.md    #   文档生成规范
+│   ├── architecture-diagram.md # 架构图约束
+│   ├── knowledge-graph.md   #   知识图谱约束
+│   ├── security-guardrails.md  # 安全护栏
 │   ├── self-improve.md      #   自改进流程
 │   └── rui-claude.md        #   .claude/ 管理约束
 ├── skills/                  # 6 项技能规约

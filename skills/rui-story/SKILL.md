@@ -68,7 +68,7 @@ POST <apiUrl>/
 {
   "module_name": "services.database.data_service",
   "method_name": "query_documents",
-  "parameters": { "cname": "sessions", "limit": 10000 }
+  "parameters": { "cname": "sessions" }
 }
 ```
 
