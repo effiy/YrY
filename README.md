@@ -20,6 +20,7 @@ flowchart TD
 
     subgraph Skills[七技能]
         direction TB
+        RUI[rui]:::skill
         RS[rui-story]:::skill
         RC[rui-claude]:::skill
         ID[rui-import]:::skill

@@ -617,5 +617,6 @@ async function main() {
 
 main().catch(err => {
   console.error(`[rui-import] fatal: ${err.message}`);
-  process.exit(0); // 不阻断管线
+  process.exit(1);
+});
 });

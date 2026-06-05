@@ -399,5 +399,5 @@ async function main() {
 
 main().catch((err) => {
   console.error(`[rui-bot] fatal: ${err.message}`);
-  process.exit(0);
+  process.exit(1);
 });

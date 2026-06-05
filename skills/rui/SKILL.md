@@ -108,7 +108,7 @@ flowchart LR
 - `chain-broken` — 影响链未闭合
 - `doc-p0` — 文档 P0 不通过且无法自修复
 
-**需求→文档阶段**
+**文档→代码阶段**
 - `no-doc-isolation` — doc/update 阶段在非 `feat/<name>` 分支写入故事文档
 - `bad-branch` — 分支未从 main 创建或混入非本故事代码
 - `no-checkout` — 未切换故事分支即写入/改码

@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>文档代码一致性校验 — 审查报告</title>
+<title>commit 前增量自检 — 审查报告</title>
 <style>
 :root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--info:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
@@ -19,7 +19,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
 .stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
 .stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}.stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
-.bar-wrap{margin-bottom:28px}.bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
+.bar-wrap{margin-bottom:28px;animation:fadeInDown .5s .12s ease both}
+.bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
 .bar-outer .seg{height:100%;transition:width .5s ease;min-width:3px}
 .bar-outer .seg.strength{background:var(--pass)}.bar-outer .seg.gap{background:var(--fail)}.bar-outer .seg.suggestion{background:var(--warn)}
 .breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
@@ -72,23 +73,28 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 </head>
 <body>
 <div class="container">
-<nav class="breadcrumb"><a href="../../docs/index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../index.html">📝 审查中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 场景 3 · 文档代码一致性校验</span></nav>
+
+<nav class="breadcrumb">
+  <a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span>
+  <span class="bc-current">自主测试方案 · 场景 2 · commit 前增量自检</span>
+</nav>
+
 <div class="cross-nav">
-  <a href="../../docs/故事任务面板/yry-self-test/场景-3-文档代码一致性校验/计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span>
-  <a href="../../docs/故事任务面板/yry-self-test/场景-3-文档代码一致性校验/架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
-  <a href="../../docs/故事任务面板/yry-self-test/场景-3-文档代码一致性校验/知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
-  <a href="../../docs/故事任务面板/yry-self-test/场景-3-文档代码一致性校验/测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span>
-  <a href="../../docs/故事任务面板/yry-self-test/场景-3-文档代码一致性校验/演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span>
+  <a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
+  <a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span>
+  <a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span>
   <span class="cross-link on">📝 审查</span>
 </div>
-<div class="header"><h1>📝 <span class="accent">场景 3：文档代码一致性校验</span> — 审查报告</h1><p class="sub">审查日期 2026-06-05 · 版本 v1.1.0 · 审查人 code-reviewer Agent · 4 维度 × 6 发现</p></div>
+<div class="header"><h1>📝 <span class="accent">场景 2：commit 前增量自检</span> — 审查报告</h1><p class="sub">审查日期 2026-06-05 · 版本 v1.1.0 · 审查人 code-reviewer Agent · 4 维度 × 6 发现</p></div>
 
 <div class="stats-grid">
-  <div class="stat-card"><div class="val health">83%</div><div class="lbl">🏥 综合健康度</div></div>
-  <div class="stat-card"><div class="val health">84%</div><div class="lbl">📋 完整性</div></div>
-  <div class="stat-card"><div class="val health">85%</div><div class="lbl">🔗 一致性</div></div>
-  <div class="stat-card"><div class="val warn-h">78%</div><div class="lbl">🔍 可追溯</div></div>
-  <div class="stat-card"><div class="val health">83%</div><div class="lbl">💬 表达力</div></div>
+  <div class="stat-card"><div class="val health">86%</div><div class="lbl">🏥 综合健康度</div></div>
+  <div class="stat-card"><div class="val health">86%</div><div class="lbl">📋 完整性</div></div>
+  <div class="stat-card"><div class="val health">90%</div><div class="lbl">🔗 一致性</div></div>
+  <div class="stat-card"><div class="val warn-h">82%</div><div class="lbl">🔍 可追溯</div></div>
+  <div class="stat-card"><div class="val health">87%</div><div class="lbl">💬 表达力</div></div>
   <div class="stat-card"><div class="val health">6</div><div class="lbl">📊 发现项</div></div>
 </div>
 
@@ -106,41 +112,40 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 </div>
 
 <div class="panel on" id="panelOverview">
-  <div class="dim-card"><h3>📋 完整性 Completeness <span class="dim-score" style="color:var(--pass)">84%</span></h3><div class="dim-bar"><div class="dim-bar-inner" style="width:84%;background:var(--pass)"></div></div><ul><li>覆盖章节完整性、交叉引用有效性、知识图谱节点覆盖三大维度</li><li>校验规则可扩展——新增项只需追加一行</li><li>⚠️ 缺少 HTML 产物与 .md 源文件的同步状态校验</li></ul></div>
-  <div class="dim-card"><h3>🔗 一致性 Consistency <span class="dim-score" style="color:var(--pass)">85%</span></h3><div class="dim-bar"><div class="dim-bar-inner" style="width:85%;background:var(--pass)"></div></div><ul><li>校验规则与 doc-generation.md 和 knowledge-graph.md 的约束对齐</li><li>版本号交叉验证逻辑与 plugin.json 的版本管理一致</li></ul></div>
-  <div class="dim-card"><h3>🔍 可追溯 Traceability <span class="dim-score" style="color:var(--warn)">78%</span></h3><div class="dim-bar"><div class="dim-bar-inner" style="width:78%;background:var(--warn)"></div></div><ul><li>⚠️ 未区分内部/外部链接的检查策略——内部链接应阻断，外部链接应仅警告</li><li>⚠️ 三维校验的关系未表达——它们是独立并行还是串行依赖？</li></ul></div>
-  <div class="dim-card"><h3>💬 表达力 Expressiveness <span class="dim-score" style="color:var(--pass)">83%</span></h3><div class="dim-bar"><div class="dim-bar-inner" style="width:83%;background:var(--pass)"></div></div><ul><li>校验流程图清晰展示三阶段</li><li>⚠️ 缺少三维校验拓扑图（并行/串行依赖关系）</li></ul></div>
+  <div class="dim-card"><h3>📋 完整性 Completeness <span class="dim-score" style="color:var(--pass)">86%</span></h3><div class="dim-bar"><div class="dim-bar-inner" style="width:86%;background:var(--pass)"></div></div><ul><li>覆盖分支隔离、铁律合规、文件范围三大核心维度</li><li>⚠️ 缺少 commit message 格式校验</li><li>⚠️ 缺少跨分支文件冲突检测</li></ul></div>
+  <div class="dim-card"><h3>🔗 一致性 Consistency <span class="dim-score" style="color:var(--pass)">90%</span></h3><div class="dim-bar"><div class="dim-bar-inner" style="width:90%;background:var(--pass)"></div></div><ul><li>分支命名规范与 code-pipeline.md 一致</li><li>铁律检查项与四条铁律逐一对应</li><li>增量变更计算基于 git diff --name-only，逻辑确定性</li></ul></div>
+  <div class="dim-card"><h3>🔍 可追溯 Traceability <span class="dim-score" style="color:var(--warn)">82%</span></h3><div class="dim-bar"><div class="dim-bar-inner" style="width:82%;background:var(--warn)"></div></div><ul><li>增量变更可追溯到 git diff 输出</li><li>⚠️ 铁律合规判定仅给"通过/失败"结论，缺少证据链</li></ul></div>
+  <div class="dim-card"><h3>💬 表达力 Expressiveness <span class="dim-score" style="color:var(--pass)">87%</span></h3><div class="dim-bar"><div class="dim-bar-inner" style="width:87%;background:var(--pass)"></div></div><ul><li>增量自检 Mermaid 流程图覆盖"检测→分类→判定→汇总"四阶段</li><li>⚠️ 缺少典型场景的决策树示例</li></ul></div>
 </div>
 
 <div class="panel" id="panelGood">
-  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 三维校验精准覆盖退化三因</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/场景-3-文档代码一致性校验.md : §0</div><div class="case-desc">章节完整性校验→防止渐进漂移（增量更新导致的章节丢失），交叉引用校验→防止外部不可达（链接失效），知识图谱节点覆盖→防止文档与图谱脱节。三维与退化三因一一对应。</div><div class="case-why">💡 <strong>为什么好：</strong>校验维度的选择有理论依据——不是随机覆盖，而是系统性地针对已知退化路径设计防御。这种"威胁驱动的校验设计"是安全思维的体现。</div></div>
-  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 校验规则表可扩展</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/场景-3-文档代码一致性校验.md : 校验规则表</div><div class="case-desc">场景定义了清晰的扩展接口——新增校验项只需在规则表中追加一行（校验目标 + 判定函数 + 严重级别），无需重构现有逻辑。这种设计使校验体系可随项目增长渐进扩展。</div><div class="case-why">💡 <strong>为什么好：</strong>可扩展性决定了自检体系的寿命。随着项目演进，新的退化路径会出现——校验体系必须能低摩擦地跟进，否则会成为过时的摆设。</div></div>
+  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> git diff 驱动的增量聚焦设计</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/场景-2-commit前增量自检.md : §0</div><div class="case-desc">与全量检查不同，增量自检精准聚焦于 git diff --name-only 范围内的变更文件，避免了全量扫描的性能浪费。变更范围确定后仅对变更文件执行铁律检查。</div><div class="case-why">💡 <strong>为什么好：</strong>增量聚焦是"惜注意"原则在自检体系中的落实——只检查变更的部分。在大型项目中，全量扫描成本不可接受，增量检查是唯一的可扩展方案。</div></div>
+  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 分支隔离检测覆盖边界情况</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/场景-2-commit前增量自检.md : 分支隔离检测</div><div class="case-desc">检测覆盖了跨分支文件共享的边界情况（memory/、.claude/ 缓存），恰好是"分支隔离不可绕过"底线的具体执行点。检测逻辑与规则定义紧密对齐。</div><div class="case-why">💡 <strong>为什么好：</strong>边界情况是安全检测中最容易遗漏的。本场景精准命中了"记忆/缓存文件跨分支共享"这一高频风险点，使分支隔离从原则变成可执行的检查。</div></div>
 </div>
 
 <div class="panel" id="panelBad">
-  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 缺少 .md→.html 同步状态校验</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/场景-3-文档代码一致性校验.md : 校验规则表</div><div class="case-desc">YrY 的文档管线从 .md 生成 .html 产物。如果 .md 已更新但 HTML 未重新生成，文档中心将展示过期内容。当前校验未检测这种不同步状态——管道断裂不会被发现。</div><div class="case-why">💡 <strong>为什么不好：</strong>文档管线的输出是 HTML——用户看到的是 HTML，不是 .md。只校验 .md 而不校验 HTML 产物，相当于只检查源代码而不检查编译产物。编译本身可能就是问题源。</div></div>
-  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 未区分内部/外部链接检查策略</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/场景-3-文档代码一致性校验.md : 交叉引用校验</div><div class="case-desc">对内部链接（指向仓库内文件）和外部链接（指向 URL）使用相同的检查策略。内部链接失败应阻断（确保文档自洽），外部链接失败应仅警告（可能因网络临时不可达）。一视同仁会导致误报或漏报。</div><div class="case-why">💡 <strong>为什么不好：</strong>不同链接有不同的失败语义。把外部链接的网络不可达当作阻断级别错误，会让自检在断网时完全不可用。区分策略是健壮性的基础。</div></div>
+  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 铁律违规定位缺少证据</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/场景-2-commit前增量自检.md : 铁律判定</div><div class="case-desc">铁律合规判定仅输出"通过/失败"——失败时不告知具体违规的文件和行号。例如"验先于称"违规时，用户需要知道哪个文件哪一行做了无证据的声称才能高效修复。</div><div class="case-why">💡 <strong>为什么不好：</strong>没有证据的失败判定是不可操作的。"有铁律违规"的信息量几乎为零——用户需要在数百个文件中手动搜索违规点。精准定位到文件:行号才能让修复路径可操作。</div></div>
+  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 无 commit message 格式校验</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/场景-2-commit前增量自检.md : 全局</div><div class="case-desc">增量自检不检查 commit message 是否符合规范（是否含 Co-Authored-By、是否遵循 conventional commits）。在 YrY 的交付纪律中，commit message 是交付收口的一部分。</div><div class="case-why">💡 <strong>为什么不好：</strong>commit message 是交付审计的基础。格式不一致会导致自动化工具无法解析变更历史。Co-Authored-By 缺失则违反项目自身规范。</div></div>
 </div>
 
 <div class="panel" id="panelRecommendations">
   <div class="rec-grid">
-    <div class="rec-card p1"><span class="rec-pri p1">P1 · 立即</span><h4>增加 .md→.html 同步时间戳校验</h4><p>对比 .md 源和 .html 产物的 mtime，若 .md 更新则标记"可能过期"。预计 45 分钟。</p></div>
-    <div class="rec-card p1"><span class="rec-pri p1">P1 · 立即</span><h4>区分内部/外部链接检查策略</h4><p>内部链接→阻断（文件存在性检查），外部链接→警告（HTTP 可达性检查+超时+重试）。</p></div>
-    <div class="rec-card p2"><span class="rec-pri p2">P2 · 本迭代</span><h4>增加三维校验拓扑图</h4><p>展示三个维度间的并行/串行依赖关系。</p></div>
-    <div class="rec-card p3"><span class="rec-pri p3">P3 · 未来</span><h4>增加文档健康仪表板</h4><p>汇总展示文档数、通过率、Top 5 问题、漂移趋势。</p></div>
+    <div class="rec-card p1"><span class="rec-pri p1">P1 · 立即</span><h4>增强铁律违规证据输出</h4><p>失败时输出具体位置（文件:行号）和证据摘要。如"验先于称违规：docs/index.html:45 声称全部通过但无验证命令输出"。预计 1 小时。</p></div>
+    <div class="rec-card p2"><span class="rec-pri p2">P2 · 本迭代</span><h4>增加 commit message 格式校验</h4><p>验证是否包含 Co-Authored-By 签名（项目规范），警告级别。</p></div>
+    <div class="rec-card p3"><span class="rec-pri p3">P3 · 未来</span><h4>增加 pre-commit hook 集成指南</h4><p>说明如何将增量自检集成为 Claude Code hook 或 git pre-commit hook。</p></div>
   </div>
 </div>
 
 <div class="panel" id="panelEvidence">
   <div class="suite open"><div class="s-head"><span class="s-arrow">▶</span><span class="s-name">📎 审查证据清单</span><span class="s-badge pass">4 项</span></div><div class="s-body"><ul class="ev-list">
-    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>退化三因映射：</strong>三维校验与退化三因（外部不可达/渐进漂移/人机偏差）一一对应验证</span></li>
-    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>同步检测缺失：</strong>grep 'mtime\|同步\|sync.*html\|html.*sync' on 场景-3 → 0 results</span></li>
-    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>链接策略：</strong>grep '内部.*链接\|internal.*link\|外部.*链接\|external.*link' on 场景-3 → 无分类处理</span></li>
-    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>扩展接口：</strong>校验规则表结构支持新增行（目标+函数+级别），验证扩展性</span></li>
+    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>分支命名验证：</strong>grep 'feat/' on code-pipeline.md 和 场景-2 文档——命名规范一致</span></li>
+    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>铁律映射：</strong>四条铁律 (验先于称/溯先于修/清先于进/表达优先) 在增量检查中均有对应检测</span></li>
+    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>证据缺失：</strong>grep '文件:\|行号\|line' on 铁律判定逻辑 → 无精准定位字段</span></li>
+    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>commit message：</strong>grep 'commit.*message\|提交信息' on 场景-2 → 0 results</span></li>
   </ul></div></div>
 </div>
 
-<div class="footer">YrY v1.30.0 · 审查中心 · <a href="../index.html">审查中心</a> · <a href="../../docs/index.html">文档中心</a></div>
+<div class="footer">YrY v1.30.0 · <a href="../../../index.html">文档中心</a></div>
 </div>
 <script>document.querySelector('.tabs').addEventListener('click',function(e){var t=e.target.closest('.tab');if(!t)return;document.querySelectorAll('.tab').forEach(function(x){x.classList.toggle('on',x===t)});document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel'+t.dataset.panel.charAt(0).toUpperCase()+t.dataset.panel.slice(1))})});document.addEventListener('click',function(e){var h=e.target.closest('.s-head');if(h)h.closest('.suite').classList.toggle('open')});</script>
 </body>

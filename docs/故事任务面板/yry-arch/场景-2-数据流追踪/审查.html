@@ -88,13 +88,18 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 <body>
 <div class="container">
 
-<nav class="breadcrumb"><a href="../../docs/index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../index.html">📝 审查中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 场景 2 · 数据流与追踪</span></nav>
+<nav class="breadcrumb">
+  <a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span>
+  <span class="bc-current">系统架构知识固化 · 场景 2 · 数据流追踪</span>
+</nav>
+
+
 <div class="cross-nav">
-  <a href="../../docs/故事任务面板/yry-arch/场景-2-数据流追踪/计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span>
-  <a href="../../docs/故事任务面板/yry-arch/场景-2-数据流追踪/架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
-  <a href="../../docs/故事任务面板/yry-arch/场景-2-数据流追踪/知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
-  <a href="../../docs/故事任务面板/yry-arch/场景-2-数据流追踪/测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span>
-  <a href="../../docs/故事任务面板/yry-arch/场景-2-数据流追踪/演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span>
+  <a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
+  <a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span>
+  <a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span>
   <span class="cross-link on">📝 审查</span>
 </div>
 
@@ -164,7 +169,7 @@ Gate B 阻断 → 回退到 tester → 补测 → 重新 Gate B
   </ul></div></div>
 </div>
 
-<div class="footer">YrY v1.30.0 · 审查中心 · <a href="../index.html">审查中心</a> · <a href="../../docs/index.html">文档中心</a></div>
+<div class="footer">YrY v1.30.0 · <a href="../../../index.html">文档中心</a></div>
 </div>
 <script>
 document.querySelector('.tabs').addEventListener('click',function(e){var tab=e.target.closest('.tab');if(!tab)return;document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t===tab)});document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel'+tab.dataset.panel.charAt(0).toUpperCase()+tab.dataset.panel.slice(1))})});
