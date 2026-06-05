@@ -1,85 +1,50 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>📋 场景-2-commit前增量自检 · 架构图</title>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>commit前增量自检 — 架构图</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 <style>
-:root{--bg:#020617;--surface:#0f172a;--border:#1e293b;--text:#e2e8f0;--muted:#64748b;--cyan:#22d3ee;--emerald:#34d399;--violet:#a78bfa;--amber:#fbbf24;--blue:#3B82F6;--rose:#fb7185}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif;min-height:100vh;padding:24px}
-.container{max-width:1000px;margin:0 auto}
-h1{font-size:1.5rem;margin-bottom:4px}h1 span{color:var(--cyan)}
-.sub{color:var(--muted);font-size:.82rem;margin-bottom:24px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:16px}
-.card h2{font-size:.95rem;margin-bottom:16px;color:var(--cyan)}
-.arch-diagram{background:rgba(0,0,0,.3);border-radius:8px;padding:24px;overflow-x:auto;font-family:monospace;font-size:.74rem;line-height:1.8;color:var(--muted);white-space:pre}
-.layer{margin-bottom:20px;border-left:3px solid var(--cyan);padding-left:16px}
-.layer h3{font-size:.82rem;color:var(--violet);margin-bottom:8px}
-.layer .item{display:inline-block;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.15);border-radius:6px;padding:4px 10px;margin:3px 6px 3px 0;font-size:.72rem;font-family:monospace}
-.layer .item.core{border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.08);color:var(--violet)}
-.layer .item.exec{border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.08);color:var(--blue)}
-.layer .item.review{border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08);color:var(--emerald)}
-.layer .item.risk{border-color:rgba(251,113,133,.3);background:rgba(251,113,133,.08);color:var(--rose)}
-.flow-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0;font-size:.76rem}
-.flow-node{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-weight:600}
-.flow-arrow{color:var(--muted)}
-a.back{color:var(--muted);text-decoration:none;font-size:.78rem;display:inline-block;margin-bottom:16px}
-a.back:hover{color:var(--cyan)}
-
-a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
-</style>
-</head>
-<body>
-<div class="container">
-<a href="../场景-2-commit前增量自检/知识图谱.html" class="back">← 场景知识图谱</a>
-<h1><span>📋</span> 📋 场景-2-commit前增量自检 · 架构图</h1>
-<p class="sub">commit 前的增量自检：变更文件识别、影响面计算、门禁检查</p>
-
-<div class="card">
-  <h2>📐 模块拓扑</h2>
-  <div class="layer">
-    <h3>输入 / 触发</h3>
-    <span class="item core">git commit 前自动触发的增量自检</span>
-  </div>
-  <div class="layer">
-    <h3>核心执行</h3>
-    <span class="item exec">变更文件识别</span>
-<span class="item exec">影响面计算</span>
-<span class="item exec">门禁检查 (P0)</span>
-<span class="item exec">建议修复项</span>
-  </div>
-  <div class="layer">
-    <h3>门禁 / 审查</h3>
-    <span class="item review">变更文件列表精确</span>
-<span class="item review">影响面不遗漏</span>
-<span class="item review">P0 阻断正确识别</span>
-  </div>
-  <div class="layer">
-    <h3>产出 / 交付</h3>
-    <span class="item exec">增量自检报告 + 修复建议</span>
-  </div>
-</div>
-
-<div class="card">
-  <h2>🔄 数据流</h2>
-  <div class="flow-row">
-    <span class="flow-node">输入</span><span class="flow-arrow">→</span>
-    <span class="flow-node">处理</span><span class="flow-arrow">→</span>
-    <span class="flow-node">验证</span><span class="flow-arrow">→</span>
-    <span class="flow-node">产出</span>
-  </div>
-  <p style="color:var(--muted);font-size:.74rem;margin-top:12px">git diff → 变更识别 → 影响面计算 → 门禁检查 → 报告</p>
-</div>
-
-<div class="card">
-  <h2>📋 关键决策点</h2>
-  <div style="font-size:.78rem;color:var(--muted);line-height:1.8">
-    • P0 阻断 → 禁止 commit
-• 警告项 → 建议修复，不阻断
-• 仅变更文件检查，不触发全量
-  </div>
-</div>
-</div>
-</body>
-</html>
+body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
+.container{max-width:1200px;margin:0 auto}.header{margin-bottom:1.5rem}
+.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
+.pulse-dot{width:12px;height:12px;background:#22d3ee;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+h1{font-size:1.5rem;font-weight:700}
+.subtitle{color:#94a3b8;font-size:.875rem;margin-left:1.75rem}
+.toolbar{display:flex;gap:.5rem;margin-left:auto;flex-shrink:0;align-items:center}
+.toolbar-toggle{background:transparent;border:none;color:#475569;cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem}
+.toolbar-toggle:hover{color:#94a3b8;background:rgba(30,41,59,.5)}
+.toolbar-actions{display:none;gap:.5rem}
+.toolbar.expanded .toolbar-actions{display:flex}
+.toolbar-actions button{background:rgba(30,41,59,.8);border:1px solid #334155;color:#94a3b8;padding:.375rem .75rem;border-radius:.375rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.toolbar-actions button:hover{background:rgba(51,65,85,.8);color:white;border-color:#475569}
+.diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
+.diagram-container svg{width:100%;min-width:900px;display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
+.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
+.card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
+.card-dot{width:8px;height:8px;border-radius:50%}
+.card-dot.cyan{background:#22d3ee}.card-dot.emerald{background:#34d399}
+.card-dot.violet{background:#a78bfa}.card-dot.amber{background:#fbbf24}
+.card-dot.rose{background:#fb7185}.card-dot.blue{background:#3B82F6}
+.card h3{font-size:.875rem;font-weight:600}
+.card ul{list-style:none;color:#94a3b8;font-size:.75rem}
+.card li{margin-bottom:.375rem}
+.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
+@media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
+</style></head><body><div class="container" id="rc">
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>commit前增量自检 — 架构图</h1>
+<div class="toolbar"><div class="toolbar-actions">
+<button onclick="copyAsImage(this)">📋 Copy</button>
+<button onclick="downloadPNG(this)">🖼️ PNG</button>
+<button onclick="downloadPDF(this)">📄 PDF</button>
+</div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
+</div><p class="subtitle">变更识别→影响面计算→P0门禁→增量报告</p></div>
+<div class="diagram-container"><svg viewBox="0 0 1100 360"><defs><pattern id="g" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width=".5"/></pattern></defs><rect width="100%" height="100%" fill="url(#g)"/><rect x="30" y="15" width="1040" height="55" rx="10" fill="rgba(34,211,238,0.04)" stroke="#22d3ee" stroke-width="1"/><text x="50" y="37" fill="#22d3ee" font-size="10" font-weight="600">Trigger: git add → commit前自动触发增量自检</text><rect x="30" y="80" width="1040" height="55" rx="10" fill="rgba(34,211,238,0.04)" stroke="#a78bfa" stroke-width="1"/><text x="50" y="102" fill="#a78bfa" font-size="10" font-weight="600">Phase 1: 变更识别 → git diff --name-only 精确变更集</text><rect x="30" y="145" width="1040" height="55" rx="10" fill="rgba(34,211,238,0.04)" stroke="#34d399" stroke-width="1"/><text x="50" y="167" fill="#34d399" font-size="10" font-weight="600">Phase 2: 影响面计算 → 依赖链追踪·直接+级联范围</text><rect x="30" y="210" width="1040" height="55" rx="10" fill="rgba(34,211,238,0.04)" stroke="#fbbf24" stroke-width="1"/><text x="50" y="232" fill="#fbbf24" font-size="10" font-weight="600">Phase 3: P0门禁 → 铁律合规·安全底线·分支隔离</text><rect x="30" y="275" width="1040" height="55" rx="10" fill="rgba(34,211,238,0.04)" stroke="#fb7185" stroke-width="1"/><text x="50" y="297" fill="#fb7185" font-size="10" font-weight="600">Output: 增量报告 → P0阻断(禁止commit)+警告(建议修复)</text><line x1="550" y1="70" x2="550" y2="80" stroke="#64748b" stroke-width="1.5"/><line x1="550" y1="135" x2="550" y2="145" stroke="#64748b" stroke-width="1.5"/><line x1="550" y1="200" x2="550" y2="210" stroke="#64748b" stroke-width="1.5"/><line x1="550" y1="265" x2="550" y2="275" stroke="#64748b" stroke-width="1.5"/></svg></div>
+<div class="cards"><div class="card"><div class="card-header"><div class="card-dot cyan"></div><h3>触发</h3></div><ul><li>git commit前触发</li><li>仅检查变更文件</li></ul></div><div class="card"><div class="card-header"><div class="card-dot violet"></div><h3>变更识别</h3></div><ul><li>git diff精确变更</li><li>新增/修改/删除</li></ul></div><div class="card"><div class="card-header"><div class="card-dot emerald"></div><h3>影响面</h3></div><ul><li>依赖链追踪</li><li>级联影响计算</li></ul></div><div class="card"><div class="card-header"><div class="card-dot amber"></div><h3>P0门禁</h3></div><ul><li>P0阻断禁止commit</li><li>警告建议修复</li></ul></div></div>
+<p class="footer">YrY v1.29.0 · 自主测试 · 场景2: commit前增量自检</p></div>
+<script>
+async function copyAsImage(b){const o=b.textContent;try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2}),bl=await new Promise(r=>c.toBlob(r,"image/png"));await navigator.clipboard.write([new ClipboardItem({"image/png":bl})]);b.textContent="✓ Copied!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}
+async function downloadPNG(b){const o=b.textContent;b.textContent="⏳...";try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2}),a=document.createElement("a");a.download="场景2自检.png";a.href=c.toDataURL("image/png");a.click();b.textContent="✓ Done!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}
+async function downloadPDF(b){const o=b.textContent;b.textContent="⏳...";try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2});const{jsPDF}=window.jspdf;const d=new jsPDF({orientation:c.width>c.height?"l":"p",unit:"px",format:[c.width/2,c.height/2]});d.addImage(c.toDataURL("image/png"),"PNG",0,0,c.width/2,c.height/2);d.save("场景2自检.pdf");b.textContent="✓ Done!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}
+</script></body></html>
