@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>rui demo · SDLC 编排器</title>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  
   <style>
     :root { --bg:rgba(22,22,32,1); --bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%); --bg-flat:rgba(34,34,46,1); --bg-raised:rgba(42,42,56,1); --accent:#FFC107; --cyan:#22d3ee; --pass:#22c55e; --fail:#ef4444; --text:rgba(250,250,252,1); --text2:rgba(160,160,164,1); --text3:rgba(110,110,114,1); --shadow:0 4px 20px rgba(0,0,0,0.3); --radius:12px; --border:1px solid rgba(255,255,255,0.06); }
     @keyframes fadeInUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
@@ -94,10 +94,7 @@
   <!-- Overview panel -->
   <div class="panel" id="panelOverview">
     <div class="section"><h2><span class="dot"></span>管线流程</h2>
-      <div class="mermaid-wrap"><div class="mermaid">
-flowchart LR A["需求"]-->B["doc 文档基线"]-->C["code 实现"]-->D["交付"] B-->E["分支隔离"] E-->F["Gate A"]-->G["Gate B"]-->H["自改进"] style A fill:#1b1e2e,stroke:#7aa2f7,color:#7aa2f7
-    style D fill:#1e1f2b,stroke:#34d399,color:#a9b1d6
-      </div></div>
+      
     </div>
     <div class="section"><h2><span class="dot"></span>子命令拓扑</h2>
       <div class="flow-row">
@@ -157,46 +154,10 @@ flowchart LR A["需求"]-->B["doc 文档基线"]-->C["code 实现"]-->D["交付"
 <div class="toast" id="toast"></div>
 
 <script>
-mermaid.initialize({
-  startOnLoad: false,
-  theme: 'base',
-  themeVariables: {
-    primaryColor: '#1e1f2b',
-    primaryTextColor: '#a9b1d6',
-    primaryBorderColor: '#3d59a1',
-    lineColor: '#3d59a1',
-    secondaryColor: '#2b2d3b',
-    tertiaryColor: '#21232f',
-    noteBkgColor: '#21232f',
-    noteTextColor: '#53576c'
-  },
-  securityLevel: 'loose',
-  flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
-});
-// ═══ Mermaid async render ═══
-const _mermaidRendered=new Set();
-async function renderMermaid(container){
-  const els=container.querySelectorAll('.mermaid');
-  for(const el of els){
-    const code=el.textContent.trim();
-    if(!code)continue;
-    const id='mmd-'+Math.random().toString(36).slice(2,9);
-    try{
-      const{svg}=await mermaid.render(id,code);
-      el.innerHTML=svg;
-      _mermaidRendered.add(el);
-    }catch(e){
-      el.innerHTML='<div style="color:var(--fail);font-size:.76rem;padding:8px;border:1px solid var(--fail);border-radius:4px">⚠️ '+e.message.replace(/</g,'&lt;')+'</div>';
-      console.error('Mermaid render failed:',e);
-    }
-  }
-}
-function ensureMermaid(panel){if(panel&&!panel.dataset.mermaidDone){panel.dataset.mermaidDone='1';renderMermaid(panel);}}
-document.querySelectorAll('.panel.on').forEach(ensureMermaid);
 
 // ═══ Tab switching ═══
 document.querySelector('.tabs').addEventListener('click',e=>{const tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
-function switchPanel(name){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===name));document.querySelectorAll('.panel').forEach(p=>{const on=p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1);p.classList.toggle('on',on);if(on)ensureMermaid(p)});if(name==='tests')loadTestStats()}
+function switchPanel(name){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===name));document.querySelectorAll('.panel').forEach(p=>{const on=p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1);p.classList.toggle('on',on);});if(name==='tests')loadTestStats()}
 document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const m={'1':'walkthrough','2':'overview','3':'commands','4':'files','5':'tests'};if(m[e.key]){e.preventDefault();switchPanel(m[e.key])}});
 
 // ═══ Copy ═══

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>YrY Demos · 演示中心</title>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  
   <style>
     :root { --bg: rgba(22,22,32,1); --bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%); --bg-flat: rgba(34,34,46,1); --bg-raised: rgba(42,42,56,1); --accent: #FFC107; --cyan: #22d3ee; --pass: #22c55e; --fail: #ef4444; --warn: #f59e0b; --text: rgba(250,250,252,1); --text2: rgba(160,160,164,1); --text3: rgba(110,110,114,1); --shadow: 0 4px 20px rgba(0,0,0,0.3); --shadow-lg: 0 12px 32px rgba(0,0,0,0.45); --radius: 12px; --border: 1px solid rgba(255,255,255,0.06); }
     @keyframes fadeInUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
@@ -48,11 +48,11 @@
     .card.expanded .preview-panel { display:block }
     .card .expand-hint { position:absolute;top:12px;right:16px;font-size:.6rem;color:var(--text3);opacity:0;transition:opacity .2s }
     .card:hover .expand-hint { opacity:1 }
-    .mermaid-wrap { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);overflow-x:auto;margin-bottom:20px;cursor:pointer;position:relative }
-    .mermaid-wrap .zoom-hint { position:absolute;top:10px;right:14px;font-size:.6rem;color:var(--text3);opacity:0;transition:opacity .2s }
-    .mermaid-wrap:hover .zoom-hint { opacity:1 }
-    .mermaid-wrap.zoomed { position:fixed;inset:40px;z-index:150;max-width:none;background:var(--bg);padding:40px;overflow:auto }
-    .mermaid-wrap.zoomed .zoom-hint { opacity:1 }
+    
+    
+    
+    
+    
     pre { background:rgba(0,0,0,.3);border-radius:8px;padding:14px 40px 14px 18px;font-size:.76rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer;transition:background .15s }
     pre:hover { background:rgba(0,0,0,.4) }
     pre .copy-btn { position:absolute;top:8px;right:8px;background:var(--bg-flat);border:var(--border);border-radius:4px;color:var(--text3);font-size:.64rem;padding:3px 8px;cursor:pointer;opacity:0;transition:opacity .15s;font-family:inherit }
@@ -74,8 +74,8 @@
     .kbd-bar span { background:var(--bg-flat);border:var(--border);border-radius:3px;padding:2px 6px;margin:0 2px;font-family:monospace }
     .modal-overlay { display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:center;justify-content:center;padding:20px }
     .modal-overlay.show { display:flex }
-    .modal-overlay .mermaid-wrap { max-width:90vw;max-height:85vh;overflow:auto;cursor:default }
-    .modal-overlay .mermaid-wrap:hover .zoom-hint { opacity:0 }
+    .modal-overlay 
+    .modal-overlay 
   </style>
 </head>
 <body>
@@ -94,27 +94,7 @@
 
   <!-- Pipeline -->
   <div class="section"><div class="sec-head"><span class="sn">1</span><h2>管线全景</h2><span class="ss">需求 → 交付 · 点击放大</span></div>
-    <div class="mermaid-wrap" onclick="zoomMermaid(this)"><span class="zoom-hint">🔍 点击放大</span><div class="mermaid">
-flowchart LR
-    subgraph S1["rui - SDLC"]
-        direction LR
-        A["需求"] --> B["doc"] --> C["code"] --> D["交付"]
-    end
-    subgraph S2["rui-story"]
-        E["面板管理"]
-    end
-    subgraph S3["rui-import"]
-        F["文档同步"]
-    end
-    subgraph S4["rui-bot"]
-        G["企微通知"]
-    end
-    D --> E --> F --> G
-    style S1 fill:#1b1e2e,stroke:#7aa2f7,color:#7aa2f7
-    style S2 fill:#1e1f2b,stroke:#22d3ee,color:#a9b1d6
-    style S3 fill:#1e1f2b,stroke:#34d399,color:#a9b1d6
-    style S4 fill:#1e1f2b,stroke:#f59e0b,color:#a9b1d6
-    </div></div>
+    
     <div class="flow-row">
       <div class="flow-chip"><a href="rui.html">🎯 rui</a></div><span class="flow-arrow">→</span>
       <div class="flow-chip"><a href="rui-story.html">📋 rui-story</a></div><span class="flow-arrow">→</span>
@@ -134,7 +114,7 @@ flowchart LR
         <div class="c-desc">故事驱动的核心管线。6 子命令从需求到交付全流程编排。</div>
         <div class="c-meta"><span class="c-tag">P0 核心</span><span class="c-tag cyan">9 脚本</span><span class="c-tag green">16 测试</span></div>
         <div class="preview-panel">
-          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A["init"]-->B["doc"]-->C["code"]-->D["update"]-->E["yry"]-->F["version"] style A fill:#1b1e2e,stroke:#7aa2f7,color:#7aa2f7</div></div>
+          
           <pre>/rui init<span class="copy-btn" onclick="copyCmd(this,'/rui init')">📋 复制</span></pre>
           <pre style="margin-top:4px">/rui doc --from-code<span class="copy-btn" onclick="copyCmd(this,'/rui doc --from-code')">📋 复制</span></pre>
           <div class="c-links" style="margin-top:8px"><a href="rui.html">🎬 全屏演示</a><a href="../skills/rui/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui.test.mjs">🧪 测试</a></div>
@@ -147,7 +127,7 @@ flowchart LR
         <div class="c-desc">故事任务面板全生命周期。collect · status · sync · notify。</div>
         <div class="c-meta"><span class="c-tag">P0 面板</span><span class="c-tag cyan">30KB</span><span class="c-tag green">8 测试</span></div>
         <div class="preview-panel">
-          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A["collect"]-->B["status"]-->C["sync"]-->D["notify"] style A fill:#1e1f2b,stroke:#22d3ee,color:#a9b1d6</div></div>
+          
           <pre>/rui-story list<span class="copy-btn" onclick="copyCmd(this,'/rui-story list')">📋 复制</span></pre>
           <div class="c-links" style="margin-top:8px"><a href="rui-story.html">🎬 全屏演示</a><a href="../skills/rui-story/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui-story.test.mjs">🧪 测试</a></div>
         </div>
@@ -159,7 +139,7 @@ flowchart LR
         <div class="c-desc">管理所有 .claude/ 目录。远端同步 → 健康分析 → 任务推荐。</div>
         <div class="c-meta"><span class="c-tag">配置</span><span class="c-tag green">4 测试</span></div>
         <div class="preview-panel">
-          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A["同步"]-->B["分析"]-->C["推荐"] style A fill:#1b1e2e,stroke:#7aa2f7,color:#7aa2f7</div></div>
+          
           <pre>/rui-claude sync<span class="copy-btn" onclick="copyCmd(this,'/rui-claude sync')">📋 复制</span></pre>
           <div class="c-links" style="margin-top:8px"><a href="rui-claude.html">🎬 全屏演示</a><a href="../skills/rui-claude/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui-claude.test.mjs">🧪 测试</a></div>
         </div>
@@ -171,7 +151,7 @@ flowchart LR
         <div class="c-desc">本地文档批量同步到远端 API。7 阶段流程，并发 4。</div>
         <div class="c-meta"><span class="c-tag">交付收口</span><span class="c-tag cyan">sync.mjs</span><span class="c-tag green">10 测试</span></div>
         <div class="preview-panel">
-          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A["扫描"]-->B["过滤"]-->C["映射"]-->D["上传"]-->E["Session"] style A fill:#1e1f2b,stroke:#34d399,color:#a9b1d6</div></div>
+          
           <pre>node skills/rui-import/sync.mjs workspace=true mode=list<span class="copy-btn" onclick="copyCmd(this,'node skills/rui-import/sync.mjs workspace=true mode=list')">📋 复制</span></pre>
           <div class="c-links" style="margin-top:8px"><a href="rui-import.html">🎬 全屏演示</a><a href="../skills/rui-import/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui-import.test.mjs">🧪 测试</a></div>
         </div>
@@ -183,7 +163,7 @@ flowchart LR
         <div class="c-desc">企业微信 Webhook 消息推送。故事状态变更 → 通知日志 → HTTP 推送。</div>
         <div class="c-meta"><span class="c-tag">通知</span><span class="c-tag green">7 测试</span></div>
         <div class="preview-panel">
-          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A["状态变更"]-->B["构建载荷"]-->C["POST"] style A fill:#1e1f2b,stroke:#f59e0b,color:#a9b1d6</div></div>
+          
           <pre>node skills/rui-bot/send.mjs --story=test --status=done --no-send<span class="copy-btn" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=test --status=done --no-send')">📋 复制</span></pre>
           <div class="c-links" style="margin-top:8px"><a href="rui-bot.html">🎬 全屏演示</a><a href="../skills/rui-bot/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui-bot.test.mjs">🧪 测试</a></div>
         </div>
@@ -195,7 +175,7 @@ flowchart LR
         <div class="c-desc">多源技术趋势发现。GitHub Trending · OSS Insight · TrendShift。</div>
         <div class="c-meta"><span class="c-tag">参考</span><span class="c-tag green">4 测试</span></div>
         <div class="preview-panel">
-          <div class="mermaid-wrap" style="margin:0 0 12px"><div class="mermaid">flowchart LR A["多源采集"]-->B["趋势分析"]-->C["选型建议"] style A fill:#1b1e2e,stroke:#7aa2f7,color:#7aa2f7</div></div>
+          
           <pre>/rui-trends<span class="copy-btn" onclick="copyCmd(this,'/rui-trends')">📋 复制</span></pre>
           <div class="c-links" style="margin-top:8px"><a href="rui-trends.html">🎬 全屏演示</a><a href="../skills/rui-trends/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui-trends.test.mjs">🧪 测试</a></div>
         </div>
@@ -220,42 +200,22 @@ flowchart LR
   </div>
 </div>
 <div class="toast" id="toast"></div>
-<div class="modal-overlay" id="mermaidModal" onclick="if(event.target===this)this.classList.remove('show')"></div>
 
 <script>
-mermaid.initialize({
-  startOnLoad: false,
-  theme: 'base',
-  themeVariables: {
-    primaryColor: '#1e1f2b',
-    primaryTextColor: '#a9b1d6',
-    primaryBorderColor: '#3d59a1',
-    lineColor: '#3d59a1',
-    secondaryColor: '#2b2d3b',
-    tertiaryColor: '#21232f',
-    noteBkgColor: '#21232f',
-    noteTextColor: '#53576c'
-  },
-  securityLevel: 'loose',
-  flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
-});
-// ═══ Mermaid async render ═══
-async function renderAllMermaid(){
-  const els=document.querySelectorAll('.mermaid');
+
+{
+  const els=document[];
   for(const el of els){
     const code=el.textContent.trim();
     if(!code)continue;
     const id='mmd-'+Math.random().toString(36).slice(2,9);
     try{
-      const{svg}=await mermaid.render(id,code);
-      el.innerHTML=svg;
+      const{svg}=await el.innerHTML=svg;
     }catch(e){
       el.innerHTML='<div style="color:var(--fail);font-size:.76rem;padding:8px;border:1px solid var(--fail);border-radius:4px">⚠️ '+e.message.replace(/</g,'&lt;')+'</div>';
-      console.error('Mermaid render failed:',e);
     }
   }
 }
-renderAllMermaid();
 
 // ═══ Copy command ═══
 function copyCmd(btn,cmd){navigator.clipboard.writeText(cmd).then(()=>{btn.textContent='✅ 已复制';btn.classList.add('copied');setTimeout(()=>{btn.textContent='📋 复制';btn.classList.remove('copied')},1500)}).catch(()=>toast('复制失败'))}
@@ -266,16 +226,7 @@ document.getElementById('skillGrid').addEventListener('click',e=>{
   const card=e.target.closest('.card');if(!card||!card.dataset.skill)return;
   if(e.target.closest('a')||e.target.closest('.copy-btn')||e.target.closest('pre'))return;
   card.classList.toggle('expanded');
-  // Re-render mermaid in preview panel (only once)
-  if(card.classList.contains('expanded')&&!card.dataset.rendered){card.dataset.rendered='1';try{mermaid.run({nodes:[card.querySelector('.mermaid')]})}catch(ex){}}
-});
-
-// ═══ Mermaid zoom ═══
-function zoomMermaid(wrap){const modal=document.getElementById('mermaidModal');if(wrap.classList.contains('zoomed')){wrap.classList.remove('zoomed');modal.classList.remove('show');modal.innerHTML=''}else{const clone=wrap.cloneNode(true);clone.classList.remove('zoomed');clone.querySelector('.zoom-hint')&&clone.querySelector('.zoom-hint').remove();clone.onclick=function(e){e.stopPropagation()};modal.innerHTML='';modal.appendChild(clone);modal.classList.add('show');try{mermaid.run({nodes:[clone.querySelector('.mermaid')]})}catch(ex){}}}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElementById('mermaidModal').classList.remove('show');document.querySelectorAll('.mermaid-wrap.zoomed').forEach(w=>w.classList.remove('zoomed'))}});
-
-// ═══ Skill search ═══
-document.getElementById('skillSearch').addEventListener('input',function(){const q=this.value.toLowerCase().trim();document.querySelectorAll('#skillGrid .card').forEach(c=>{const kw=(c.dataset.keywords||'')+' '+(c.querySelector('.c-title')?.textContent||'');c.style.display=(!q||kw.toLowerCase().includes(q))?'':'none'})});
+  document.getElementById('skillSearch').addEventListener('input',function(){const q=this.value.toLowerCase().trim();document.querySelectorAll('#skillGrid .card').forEach(c=>{const kw=(c.dataset.keywords||'')+' '+(c.querySelector('.c-title')?.textContent||'');c.style.display=(!q||kw.toLowerCase().includes(q))?'':'none'})});
 
 // ═══ Keyboard shortcuts 1-6 ═══
 const SKILL_URLS=['rui.html','rui-story.html','rui-claude.html','rui-import.html','rui-bot.html','rui-trends.html'];
