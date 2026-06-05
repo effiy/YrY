@@ -224,6 +224,7 @@ flowchart LR
 
 <script>
 mermaid.initialize({
+  startOnLoad: false,
   theme: 'base',
   themeVariables: {
     primaryColor: '#1e1f2b',
@@ -238,6 +239,23 @@ mermaid.initialize({
   securityLevel: 'loose',
   flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
 });
+// ═══ Mermaid async render ═══
+async function renderAllMermaid(){
+  const els=document.querySelectorAll('.mermaid');
+  for(const el of els){
+    const code=el.textContent.trim();
+    if(!code)continue;
+    const id='mmd-'+Math.random().toString(36).slice(2,9);
+    try{
+      const{svg}=await mermaid.render(id,code);
+      el.innerHTML=svg;
+    }catch(e){
+      el.innerHTML='<div style="color:var(--fail);font-size:.76rem;padding:8px;border:1px solid var(--fail);border-radius:4px">⚠️ '+e.message.replace(/</g,'&lt;')+'</div>';
+      console.error('Mermaid render failed:',e);
+    }
+  }
+}
+renderAllMermaid();
 
 // ═══ Copy command ═══
 function copyCmd(btn,cmd){navigator.clipboard.writeText(cmd).then(()=>{btn.textContent='✅ 已复制';btn.classList.add('copied');setTimeout(()=>{btn.textContent='📋 复制';btn.classList.remove('copied')},1500)}).catch(()=>toast('复制失败'))}

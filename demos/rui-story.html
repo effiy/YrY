@@ -129,6 +129,7 @@
 
 <script>
 mermaid.initialize({
+  startOnLoad: false,
   theme: 'base',
   themeVariables: {
     primaryColor: '#1e1f2b',
@@ -143,8 +144,29 @@ mermaid.initialize({
   securityLevel: 'loose',
   flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
 });
+// ═══ Mermaid async render ═══
+const _mermaidRendered=new Set();
+async function renderMermaid(container){
+  const els=container.querySelectorAll('.mermaid');
+  for(const el of els){
+    const code=el.textContent.trim();
+    if(!code)continue;
+    const id='mmd-'+Math.random().toString(36).slice(2,9);
+    try{
+      const{svg}=await mermaid.render(id,code);
+      el.innerHTML=svg;
+      _mermaidRendered.add(el);
+    }catch(e){
+      el.innerHTML='<div style="color:var(--fail);font-size:.76rem;padding:8px;border:1px solid var(--fail);border-radius:4px">⚠️ '+e.message.replace(/</g,'&lt;')+'</div>';
+      console.error('Mermaid render failed:',e);
+    }
+  }
+}
+function ensureMermaid(panel){if(panel&&!panel.dataset.mermaidDone){panel.dataset.mermaidDone='1';renderMermaid(panel);}}
+document.querySelectorAll('.panel.on').forEach(ensureMermaid);
+
 document.querySelector('.tabs').addEventListener('click',e=>{const t=e.target.closest('.tab');if(!t)return;switchPanel(t.dataset.panel)});
-function switchPanel(n){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===n));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='panel'+n.charAt(0).toUpperCase()+n.slice(1)));if(n==='tests')loadTestStats()}
+function switchPanel(n){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===n));document.querySelectorAll('.panel').forEach(p=>{const on=p.id==='panel'+n.charAt(0).toUpperCase()+n.slice(1);p.classList.toggle('on',on);if(on)ensureMermaid(p)});if(n==='tests')loadTestStats()}
 document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const m={'1':'walkthrough','2':'overview','3':'commands','4':'files','5':'tests'};if(m[e.key]){e.preventDefault();switchPanel(m[e.key])}});
 function copyCmd(btn){const pre=btn.parentElement;const cmd=pre.textContent.replace(/📋|✅/g,'').trim();navigator.clipboard.writeText(cmd).then(()=>{btn.textContent='✅';btn.classList.add('done');setTimeout(()=>{btn.textContent='📋';btn.classList.remove('done')},1500)}).catch(()=>toast('复制失败'))}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}
