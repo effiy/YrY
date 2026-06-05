@@ -82,7 +82,7 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 </head>
 <body>
 <div class="container">
-  <div class="header"><h1>🎬 YrY <span class="accent">演示中心</span></h1><p class="sub">6 技能交互演示 · 管线可视化 · 实时数据联动</p></div>
+  <div class="header"><h1>🎬 YrY <span class="accent">演示中心</span></h1><p class="sub">7 技能交互演示 · 管线可视化 · 实时数据联动</p></div>
 
   <div class="cross-nav">
     <a class="cross-link" href="../docs/index.html">📚 文档中心</a>
@@ -100,13 +100,16 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
     <div class="flow-row">
       <div class="flow-chip"><a href="rui.html">🎯 rui</a></div><span class="flow-arrow">→</span>
       <div class="flow-chip"><a href="rui-story.html">📋 rui-story</a></div><span class="flow-arrow">→</span>
+      <div class="flow-chip"><a href="rui-claude.html">⚙️ rui-claude</a></div><span class="flow-arrow">→</span>
       <div class="flow-chip"><a href="rui-import.html">📤 rui-import</a></div><span class="flow-arrow">→</span>
-      <div class="flow-chip"><a href="rui-bot.html">📢 rui-bot</a></div>
+      <div class="flow-chip"><a href="rui-bot.html">📢 rui-bot</a></div><span class="flow-arrow">→</span>
+      <div class="flow-chip"><a href="rui-npm.html">📦 rui-npm</a></div><span class="flow-arrow">→</span>
+      <div class="flow-chip"><a href="rui-trends.html">📈 rui-trends</a></div>
     </div>
   </div>
 
   <!-- Skills with inline preview -->
-  <div class="section"><div class="sec-head"><span class="sn">2</span><h2>6 技能演示</h2><span class="ss">点击展开内联预览 · 双击进入全屏演示</span></div>
+  <div class="section"><div class="sec-head"><span class="sn">2</span><h2>7 技能演示</h2><span class="ss">点击展开内联预览 · 双击进入全屏演示</span></div>
     <div class="search-wrap"><span class="si">🔍</span><input type="text" id="skillSearch" placeholder="搜索技能…" autocomplete="off"></div>
     <div class="grid-2" id="skillGrid">
       <!-- rui -->
@@ -158,6 +161,22 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
           <div class="c-links" style="margin-top:8px"><a href="rui-import.html">🎬 全屏演示</a><a href="../skills/rui-import/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui-import.test.mjs">🧪 测试</a></div>
         </div>
       </div>
+      <!-- rui-npm -->
+      <div class="card" data-skill="rui-npm" data-keywords="rui-npm npm 包 搜索 安装 发布 publish npx audit">
+        <span class="expand-hint">点击展开</span>
+        <span class="c-icon">📦</span><div class="c-title">rui-npm · npm 包管理</div>
+        <div class="c-desc">个人 npm 包全生命周期管理。9 子命令覆盖搜索/安装/更新/发布/npx/审计。</div>
+        <div class="c-meta"><span class="c-tag">npm 管理</span><span class="c-tag cyan">9 命令</span><span class="c-tag green">77 测试</span></div>
+        <div class="preview-panel">
+          <pre>/rui-npm search react<span class="copy-btn" onclick="copyCmd(this,'/rui-npm search react')">📋 复制</span></pre>
+          <pre>/rui-npm install lodash<span class="copy-btn" onclick="copyCmd(this,'/rui-npm install lodash')">📋 复制</span></pre>
+          <pre>/rui-npm publish ./my-cli.mjs --name my-util<span class="copy-btn" onclick="copyCmd(this,'/rui-npm publish ./my-cli.mjs --name my-util')">📋 复制</span></pre>
+          <pre>/rui-npm npx my-util<span class="copy-btn" onclick="copyCmd(this,'/rui-npm npx my-util')">📋 复制</span></pre>
+          <pre>/rui-npm audit<span class="copy-btn" onclick="copyCmd(this,'/rui-npm audit')">📋 复制</span></pre>
+          <div class="c-links" style="margin-top:8px"><a href="rui-npm.html">🎬 全屏演示</a><a href="../skills/rui-npm/SKILL.md">📄 SKILL.md</a><a href="../tests/skills/rui-npm.test.mjs">🧪 测试</a></div>
+        </div>
+      </div>
+
       <!-- rui-bot -->
       <div class="card" data-skill="rui-bot" data-keywords="rui-bot 企微 通知 webhook 消息 推送 send">
         <span class="expand-hint">点击展开</span>
@@ -198,7 +217,7 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
   </div>
 
   <div style="text-align:center;padding:20px 0;color:var(--text3);font-size:.78rem">
-    YrY v1.30.0 · <a href="../CLAUDE.md" style="color:var(--accent)">CLAUDE.md</a> · <a href="../README.md" style="color:var(--accent)">README.md</a>
+    YrY v4.1.2 · <a href="../CLAUDE.md" style="color:var(--accent)">CLAUDE.md</a> · <a href="../README.md" style="color:var(--accent)">README.md</a>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -210,7 +229,7 @@ function copyCmd(btn,cmd){navigator.clipboard.writeText(cmd).then(()=>{btn.textC
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}
 
 // ═══ Card expand/collapse & double-click navigation ═══
-const SKILL_URLS=['rui.html','rui-story.html','rui-claude.html','rui-import.html','rui-bot.html','rui-trends.html'];
+const SKILL_URLS=['rui.html','rui-story.html','rui-claude.html','rui-import.html','rui-bot.html','rui-trends.html','rui-npm.html'];
 const skillGrid=document.getElementById('skillGrid');
 skillGrid.addEventListener('click',e=>{
   if(e.target.closest('a')||e.target.closest('.copy-btn')||e.target.closest('pre'))return;

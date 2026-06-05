@@ -755,7 +755,7 @@ flowchart LR
 
 | 步骤 | 扫描范围 | 检查内容 | 修正示例 |
 |------|---------|---------|---------|
-| §4a 更新 help | `skills/*/help.mjs`（6 个） | 技能名、命令路径、版本引用是否过时 | `skills/wework-bot/` → `skills/rui-bot/` |
+| §4a 更新 help | `skills/*/help.mjs`（7 个） | 技能名、命令路径、版本引用是否过时 | `skills/wework-bot/` → `skills/rui-bot/` |
 | §4b 更新 README | `README.md` | 技能表、目录树、命令文档、领域语言、管线图是否与项目现状一致 | 目录树新增/删除/重命名条目 |
 | §4c 更新关联文档 | `docs/故事任务面板/` | 故事文档中的技能名、命令路径、文件路径引用是否过时 | `node skills/import-docs/sync.mjs` → `node skills/rui-import/sync.mjs` |
 

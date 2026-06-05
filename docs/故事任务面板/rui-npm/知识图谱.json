@@ -1,0 +1,151 @@
+{
+  "meta": {
+    "story": "rui-npm",
+    "version": "1.0.0",
+    "generated": "2026-06-05",
+    "generator": "deepseek-v4-pro"
+  },
+  "domains": [
+    {
+      "id": "npm-registry",
+      "label": "npm Registry 交互",
+      "description": "与 npm 官方 registry 的搜索、查询、发布操作",
+      "skills": ["rui-npm"],
+      "sub_commands": ["search", "info", "publish"]
+    },
+    {
+      "id": "dependency-management",
+      "label": "依赖生命周期管理",
+      "description": "本地项目依赖的安装、更新、列表、卸载全生命周期",
+      "skills": ["rui-npm"],
+      "sub_commands": ["install", "update", "list", "uninstall"]
+    },
+    {
+      "id": "security-audit",
+      "label": "安全审计",
+      "description": "依赖安全漏洞扫描和修复建议",
+      "skills": ["rui-npm"],
+      "sub_commands": ["audit"]
+    },
+    {
+      "id": "local-publish",
+      "label": "本地发布与远程执行",
+      "description": "本地文件/目录发布为 npm 包，及通过 npx 远程执行",
+      "skills": ["rui-npm"],
+      "sub_commands": ["publish", "npx"]
+    }
+  ],
+  "flows": [
+    {
+      "id": "search-flow",
+      "label": "包搜索流程",
+      "steps": ["validate-keyword", "npm-search-json", "sort-by-downloads", "format-output"],
+      "entry": "search <keyword>",
+      "exit": "表格/JSON 搜索结果"
+    },
+    {
+      "id": "install-flow",
+      "label": "包安装流程",
+      "steps": ["check-package-json", "npm-install-save", "confirm-version"],
+      "entry": "install <pkg>[@version]",
+      "exit": "安装确认 + 版本信息"
+    },
+    {
+      "id": "update-flow",
+      "label": "包更新流程",
+      "steps": ["record-current-version", "npm-update", "compare-versions"],
+      "entry": "update <pkg>",
+      "exit": "旧版→新版变更摘要"
+    },
+    {
+      "id": "publish-flow",
+      "label": "本地发布流程",
+      "steps": ["validate-path", "check-npm-login", "generate-package-json", "conflict-detection", "npm-publish", "cleanup-temp"],
+      "entry": "publish <path>",
+      "exit": "包名+版本+发布确认"
+    },
+    {
+      "id": "audit-flow",
+      "label": "安全审计流程",
+      "steps": ["check-package-json", "npm-audit-json", "group-by-severity", "fix-suggestions"],
+      "entry": "audit",
+      "exit": "漏洞摘要表 + 修复建议"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "skill-rui-npm",
+      "type": "skill",
+      "label": "rui-npm 技能",
+      "path": "skills/rui-npm/SKILL.md",
+      "description": "个人 npm packages 管理器"
+    },
+    {
+      "id": "exec-rui-npm",
+      "type": "executable",
+      "label": "rui-npm.mjs",
+      "path": "skills/rui-npm/rui-npm.mjs",
+      "description": "9 子命令的统一执行入口"
+    },
+    {
+      "id": "help-rui-npm",
+      "type": "help",
+      "label": "help.mjs",
+      "path": "skills/rui-npm/help.mjs",
+      "description": "7 场景 + 参数文档"
+    },
+    {
+      "id": "scene-1",
+      "type": "scene",
+      "label": "场景 1: 包搜索与发现",
+      "path": "docs/故事任务面板/rui-npm/场景-1-包搜索与发现/",
+      "covers": ["FP1"]
+    },
+    {
+      "id": "scene-2",
+      "type": "scene",
+      "label": "场景 2: 包安装与版本管理",
+      "path": "docs/故事任务面板/rui-npm/场景-2-包安装与版本管理/",
+      "covers": ["FP2", "FP3", "FP4"]
+    },
+    {
+      "id": "scene-3",
+      "type": "scene",
+      "label": "场景 3: 本地发布与 npx 使用",
+      "path": "docs/故事任务面板/rui-npm/场景-3-本地发布与npx使用/",
+      "covers": ["FP7", "FP8"]
+    },
+    {
+      "id": "scene-4",
+      "type": "scene",
+      "label": "场景 4: 包信息审计与卸载",
+      "path": "docs/故事任务面板/rui-npm/场景-4-包信息审计与卸载/",
+      "covers": ["FP5", "FP6", "FP9"]
+    }
+  ],
+  "edges": [
+    {"source": "skill-rui-npm", "target": "exec-rui-npm", "relation": "implements"},
+    {"source": "skill-rui-npm", "target": "help-rui-npm", "relation": "documents"},
+    {"source": "skill-rui-npm", "target": "scene-1", "relation": "contains"},
+    {"source": "skill-rui-npm", "target": "scene-2", "relation": "contains"},
+    {"source": "skill-rui-npm", "target": "scene-3", "relation": "contains"},
+    {"source": "skill-rui-npm", "target": "scene-4", "relation": "contains"},
+    {"source": "exec-rui-npm", "target": "npm-registry", "relation": "depends_on"},
+    {"source": "scene-1", "target": "search-flow", "relation": "maps_to"},
+    {"source": "scene-2", "target": "install-flow", "relation": "maps_to"},
+    {"source": "scene-2", "target": "update-flow", "relation": "maps_to"},
+    {"source": "scene-3", "target": "publish-flow", "relation": "maps_to"},
+    {"source": "scene-4", "target": "audit-flow", "relation": "maps_to"}
+  ],
+  "layers": {
+    "domain": ["npm-registry", "dependency-management", "security-audit", "local-publish"],
+    "flow": ["search-flow", "install-flow", "update-flow", "publish-flow", "audit-flow"],
+    "step": [
+      "validate-keyword", "npm-search-json", "sort-by-downloads", "format-output",
+      "check-package-json", "npm-install-save", "confirm-version",
+      "record-current-version", "npm-update", "compare-versions",
+      "validate-path", "check-npm-login", "generate-package-json", "conflict-detection", "npm-publish", "cleanup-temp",
+      "npm-audit-json", "group-by-severity", "fix-suggestions"
+    ]
+  }
+}

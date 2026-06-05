@@ -1,0 +1,46 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>yry-self-test · 计划总览</title>
+<style>:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
+.container{max-width:900px;margin:0 auto;padding:48px 24px 80px}
+.header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
+.header h1{font-size:2rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+.header .sub{color:var(--text2);font-size:.85rem}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.5rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+.scenes{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:12px}
+.scene-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);text-decoration:none;color:var(--text);display:block;transition:border-color .15s,transform .1s}
+.scene-card:hover{border-color:rgba(255,193,7,.2);transform:translateY(-1px)}
+.scene-card .num{font-size:.68rem;color:var(--accent);font-weight:600;margin-bottom:4px}
+.scene-card .title{font-size:.92rem;font-weight:700;margin-bottom:4px}
+.scene-card .desc{font-size:.76rem;color:var(--text2)}
+.scene-card .links{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.scene-card .links a{font-size:.68rem;color:var(--cyan);text-decoration:none;padding:3px 8px;border-radius:4px;background:rgba(34,211,238,.06);transition:color .15s,background .15s}
+.scene-card .links a:hover{color:var(--accent);background:rgba(255,193,7,.08)}
+.files-section{margin-bottom:32px;animation:fadeInUp .4s .1s ease both}
+.files-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.file-card{background:var(--bg-card);border:var(--border);border-radius:8px;padding:12px 14px;box-shadow:var(--shadow);text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px;transition:border-color .15s}
+.file-card:hover{border-color:rgba(34,211,238,.2)}
+.file-card .icon{font-size:1.1rem}.file-card .name{font-size:.8rem;font-weight:600}
+.meta{text-align:center;color:var(--text3);font-size:.72rem;margin-top:40px}
+@media(max-width:640px){.container{padding:20px 12px 60px}.scenes{grid-template-columns:1fr}}
+</style></head><body><div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自主测试方案</span><span class="bc-sep">/</span><span class="bc-current">📋 计划总览</span></nav>
+<div class="header"><h1>📋 <span class="accent">yry-self-test · 计划总览</span></h1><p class="sub">项目自主测试方案 — 2 Stories · 4 场景 · 管线健康 + 文档完整性</p></div>
+<div class="scenes">
+<a href="场景-1-init后全量自检.md" class="scene-card"><div class="num">S1 · full-self-test</div><div class="title">init 后全量自检</div><div class="desc">全量基线校验：CLAUDE.md markers · README 领域语言 · 故事面板完整性</div><div class="links"><span>📄 场景</span><span>📐 架构</span><span>🔗 图谱</span><span>🧪 测试</span></div></a>
+<a href="场景-2-commit前增量自检.md" class="scene-card"><div class="num">S2 · incremental-test</div><div class="title">commit 前增量自检</div><div class="desc">增量变更检测：分支隔离 · 铁律合规 · 文件变更范围验证</div><div class="links"><span>📄 场景</span><span>📐 架构</span><span>🔗 图谱</span><span>🧪 测试</span></div></a>
+<a href="场景-3-文档代码一致性校验.md" class="scene-card"><div class="num">S3 · doc-code-check</div><div class="title">文档代码一致性校验</div><div class="desc">规约 vs 实际：章节完整性 · 交叉引用有效性 · 知识图谱节点覆盖</div><div class="links"><span>📄 场景</span><span>📐 架构</span><span>🔗 图谱</span><span>🧪 测试</span></div></a>
+<a href="场景-4-安全面回归自检.md" class="scene-card"><div class="num">S4 · security-check</div><div class="title">安全面回归自检</div><div class="desc">认证不可绕过 · 密钥不落盘 · 输入必校验 — 安全面全量覆盖</div><div class="links"><span>📄 场景</span><span>📐 架构</span><span>🔗 图谱</span><span>🧪 测试</span></div></a>
+</div>
+<div class="files-section"><div class="files-grid">
+<a href="故事任务.md" class="file-card"><span class="icon">📄</span><span class="name">故事任务.md</span></a>
+<a href="知识图谱.json" class="file-card"><span class="icon">🔗</span><span class="name">知识图谱.json</span></a>
+</div></div>
+<div class="meta">YrY v4.1.2 · yry-self-test · 自主测试方案 · 生成于 2026-06-06</div>
+</div></body></html>

@@ -1,0 +1,37 @@
+{
+  "meta": { "story": "yry-self-test", "version": "1.1.0", "generated": "2026-06-06", "generator": "deepseek-v4-pro" },
+  "domains": [
+    { "id": "pipeline-health", "label": "管线健康自检", "description": "验证纪律关卡是否有效执行 — 铁律合规/分支隔离/Gate A/B 门禁", "skills": ["rui"] },
+    { "id": "doc-integrity", "label": "文档基线完整性", "description": "验证文档是否始终是可信任的真相来源 — 章节完整/交叉引用有效/知识图谱覆盖", "skills": ["rui-story", "rui-import"] },
+    { "id": "consistency-check", "label": "文档代码一致性", "description": "规约 vs 实际 — 章节完整性/交叉引用有效性/知识图谱节点覆盖", "skills": ["rui", "rui-story"] },
+    { "id": "security-regression", "label": "安全面回归", "description": "认证不可绕过/密钥不落盘/输入必校验 — 安全面全量覆盖", "skills": ["rui-claude"] }
+  ],
+  "flows": [
+    { "id": "full-self-test", "label": "init 后全量自检", "steps": ["check-claude-markers", "check-readme-language", "check-story-panel", "check-yry-arch", "check-yry-self-test", "check-rui-bot-config"], "scene": "场景-1" },
+    { "id": "incremental-test", "label": "commit 前增量自检", "steps": ["check-branch-isolation", "check-iron-law", "check-file-scope", "run-affected-tests"], "scene": "场景-2" },
+    { "id": "doc-code-check", "label": "文档代码一致性校验", "steps": ["check-section-completeness", "check-cross-refs", "check-kg-coverage", "check-skill-doc-sync"], "scene": "场景-3" },
+    { "id": "security-check", "label": "安全面回归自检", "steps": ["scan-auth-bypass", "scan-key-leak", "scan-input-validation", "scan-xss-injection"], "scene": "场景-4" }
+  ],
+  "nodes": [
+    { "id": "story-yry-self-test", "type": "story", "label": "yry-self-test 自检体系", "path": "docs/故事任务面板/yry-self-test/故事任务.md" },
+    { "id": "scene-1", "type": "scene", "label": "init 后全量自检", "path": "docs/故事任务面板/yry-self-test/场景-1-init后全量自检.md", "covers": ["FP1", "FP2", "FP3"] },
+    { "id": "scene-2", "type": "scene", "label": "commit 前增量自检", "path": "docs/故事任务面板/yry-self-test/场景-2-commit前增量自检.md", "covers": ["FP4", "FP5", "FP6"] },
+    { "id": "scene-3", "type": "scene", "label": "文档代码一致性校验", "path": "docs/故事任务面板/yry-self-test/场景-3-文档代码一致性校验.md", "covers": ["FP7", "FP8", "FP9"] },
+    { "id": "scene-4", "type": "scene", "label": "安全面回归自检", "path": "docs/故事任务面板/yry-self-test/场景-4-安全面回归自检.md", "covers": ["FP10", "FP11", "FP12"] }
+  ],
+  "edges": [
+    { "source": "story-yry-self-test", "target": "scene-1", "relation": "contains" },
+    { "source": "story-yry-self-test", "target": "scene-2", "relation": "contains" },
+    { "source": "story-yry-self-test", "target": "scene-3", "relation": "contains" },
+    { "source": "story-yry-self-test", "target": "scene-4", "relation": "contains" },
+    { "source": "scene-1", "target": "full-self-test", "relation": "maps_to" },
+    { "source": "scene-2", "target": "incremental-test", "relation": "maps_to" },
+    { "source": "scene-3", "target": "doc-code-check", "relation": "maps_to" },
+    { "source": "scene-4", "target": "security-check", "relation": "maps_to" }
+  ],
+  "layers": {
+    "domain": ["pipeline-health", "doc-integrity", "consistency-check", "security-regression"],
+    "flow": ["full-self-test", "incremental-test", "doc-code-check", "security-check"],
+    "step": ["check-claude-markers", "check-readme-language", "check-story-panel", "check-yry-arch", "check-yry-self-test", "check-rui-bot-config", "check-branch-isolation", "check-iron-law", "check-file-scope", "run-affected-tests"]
+  }
+}

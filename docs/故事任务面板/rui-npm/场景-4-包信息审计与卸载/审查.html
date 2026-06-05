@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>包信息审计与卸载 — 审查报告</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--info:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
+.container{max-width:1120px;margin:0 auto;padding:48px 24px 80px}
+.header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
+.header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+.header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
+.stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
+.stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}
+.stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
+.bar-wrap{margin-bottom:28px;animation:fadeInDown .5s .12s ease both}
+.bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
+.bar-outer .seg{height:100%;transition:width .5s ease;min-width:3px}
+.bar-outer .seg.strength{background:var(--pass)}.bar-outer .seg.gap{background:var(--fail)}.bar-outer .seg.suggestion{background:var(--warn)}.bar-outer .seg.neutral{background:var(--info)}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
+.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}
+.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
+.cross-link.on{color:var(--accent);font-weight:600}
+.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
+.section{margin-bottom:28px;animation:fadeInUp .4s ease both}
+.section h2{font-size:1.1rem;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.review-table{width:100%;border-collapse:collapse;font-size:.84rem}
+.review-table th{text-align:left;color:var(--text2);font-weight:600;padding:8px 12px;border-bottom:var(--border);font-size:.76rem}
+.review-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
+.review-table tr:hover td{background:rgba(255,255,255,0.02)}
+.badge{font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:4px}
+.badge.s{background:rgba(34,197,94,.12);color:var(--pass)}.badge.i{background:rgba(245,158,11,.12);color:var(--warn)}
+.summary-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:16px;box-shadow:var(--shadow)}
+.summary-card h3{font-size:.92rem;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.summary-card p{color:var(--text2);font-size:.82rem;line-height:1.6}
+.footer-note{text-align:center;color:var(--text3);font-size:.72rem;margin-top:40px}
+</style>
+</head>
+<body><div class="container">
+<nav class="breadcrumb"><a href="../../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../../故事任务.md">rui-npm</a><span class="bc-sep">/</span><a href="场景-4-包信息审计与卸载.md">场景 4 · 包信息审计与卸载</a><span class="bc-sep">/</span><span class="bc-current">📝 审查</span></nav>
+
+<nav class="cross-nav">
+  <a class="cross-link" href="场景-4-包信息审计与卸载.md">📄 场景</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="计划清单.html">📋 计划清单</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="架构图.html">📐 架构图</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="知识图谱.html">🔗 知识图谱</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="测试面板.html">🧪 测试面板</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+  <a class="cross-link on" href="审查.html">📝 审查</a>
+</nav>
+
+<div class="header"><h1>📝 <span class="accent">包信息审计与卸载 · 审查报告</span></h1><p class="sub">代码审查 · 安全检查 · 设计一致性</p></div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="val health">5</div><div class="lbl">优势点</div></div>
+  <div class="stat-card"><div class="val" style="color:var(--warn)">1</div><div class="lbl">改进建议</div></div>
+  <div class="stat-card"><div class="val" style="color:var(--info)">0</div><div class="lbl">缺口</div></div>
+  <div class="stat-card"><div class="val health">100%</div><div class="lbl">健康度</div></div>
+</div>
+
+<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:83%"></div><div class="seg suggestion" style="width:17%"></div></div></div>
+
+<div class="section">
+  <h2><span class="dot"></span>优势点</h2>
+  <table class="review-table">
+    <thead><tr><th>#</th><th>维度</th><th>发现</th><th>位置</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge s">S1</span></td><td>信息完整性</td><td>info 子命令从 npm view JSON 中提取名称/描述/版本/许可证/主页/仓库/维护者/关键词/最近版本/依赖共 10 类字段，分区展示</td><td><code>rui-npm.mjs:279-307</code></td></tr>
+      <tr><td><span class="badge s">S2</span></td><td>审计可操作</td><td>audit 按 severity 排序（critical→high→moderate→low），展示漏洞来源（via）+ 影响范围（range）+ 是否可修复，附带 npm audit fix 命令</td><td><code>rui-npm.mjs:465-498</code></td></tr>
+      <tr><td><span class="badge s">S3</span></td><td>错误处理</td><td>audit 在非零退出码时仍尝试解析 JSON 和 stderr 回退，确保漏洞数据不因退出码丢失</td><td><code>rui-npm.mjs:453-459</code></td></tr>
+      <tr><td><span class="badge s">S4</span></td><td>卸载安全</td><td>uninstall 前置校验 package.json 存在 + 包名已安装，避免误操作</td><td><code>rui-npm.mjs:310-315</code></td></tr>
+      <tr><td><span class="badge s">S5</span></td><td>CI 可集成</td><td>info/audit 均支持 --json 标志输出原始数据，CI 可解析 audit JSON 中 vulnerabilities 对象判定是否阻断</td><td><code>rui-npm.mjs:461-464</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>改进建议</h2>
+  <table class="review-table">
+    <thead><tr><th>#</th><th>维度</th><th>建议</th><th>影响</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge i">I1</span></td><td>审计增强</td><td>建议 audit 输出中增加漏洞 CVSS 评分列，帮助用户不只看 severity 标签，还能根据量化分值决策。当前 npm audit JSON 中含 cvss.score 字段但未展示</td><td>安全增强 · P2</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>安全审查</h2>
+  <table class="review-table">
+    <thead><tr><th>威胁</th><th>风险等级</th><th>当前缓解</th><th>评估</th></tr></thead>
+    <tbody>
+      <tr><td>audit 结果误报导致不必要的依赖变更</td><td>Medium</td><td>展示具体漏洞来源（via），用户可人工判断；npm audit fix 仅修复兼容变更</td><td><span class="badge s">充分</span></td></tr>
+      <tr><td>卸载关键依赖导致项目不可用</td><td>Medium</td><td>uninstall 前验证包名在 package.json 中；git 可回退</td><td><span class="badge s">充分</span></td></tr>
+      <tr><td>advisory DB 不可达导致审计跳过</td><td>Low</td><td>网络失败时明确标注"无网络连接，跳过安全审计"</td><td><span class="badge s">充分</span></td></tr>
+      <tr><td>info 输出泄露内部依赖结构</td><td>Low</td><td>仅查询公开 registry 信息，不暴露本地代码</td><td><span class="badge s">充分</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>设计一致性检查</h2>
+  <div class="summary-card"><h3>📐 设计评审清单 — 6/6 ✅</h3><p>info 含许可证/维护者/版本历史 ✓ · audit 按严重级别分组 ✓ · audit 修复建议 ✓ · 无漏洞确认 ✓ · uninstall 前置校验 ✓ · JSON 支持 ✓</p></div>
+</div>
+
+<div class="footer-note">📝 rui-npm 审查报告 · 场景 4/4 · 包信息审计与卸载 · 生成于 2026-06-05</div>
+</div>
+</body>
+</html>

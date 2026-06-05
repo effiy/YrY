@@ -1,0 +1,37 @@
+{
+  "meta": { "story": "yry-arch", "version": "1.0.0", "generated": "2026-06-06", "generator": "deepseek-v4-pro" },
+  "domains": [
+    { "id": "module-topology", "label": "模块拓扑", "description": "6 技能 + 9 Agent + 10 规则的模块编目和依赖关系", "skills": ["rui", "rui-story", "rui-claude", "rui-import", "rui-bot", "rui-trends", "rui-npm"] },
+    { "id": "dataflow-tracking", "label": "数据流追踪", "description": "从用户指令进入系统到交付收口的 11 阶段端到端数据流", "stages": ["需求解析", "自适应规划", "影响分析", "架构设计", "文档生成", "分支隔离", "测试先行", "逐模块实现", "闭环验证", "复盘改进", "交付收口"] },
+    { "id": "cross-referencing", "label": "交叉引用体系", "description": "模块间调用、委派、约束关系的交叉验证和溯源", "evidence_levels": ["A", "B", "C"] },
+    { "id": "onboarding", "label": "新人上手导航", "description": "从零了解系统架构的导航路线和开发指南" }
+  ],
+  "flows": [
+    { "id": "module-locate", "label": "模块定位流程", "steps": ["open-directory", "search-module", "view-entry", "trace-dependencies", "source-to-spec"], "scene": "场景-1" },
+    { "id": "dataflow-trace", "label": "数据流追踪流程", "steps": ["trace-instruction", "locate-stage", "check-gate", "integrate-new-stage", "verify-consistency"], "scene": "场景-2" },
+    { "id": "onboarding-flow", "label": "新人上手流程", "steps": ["env-setup", "understand-topology", "run-first-task", "debug-flow", "common-tasks"], "scene": "场景-3" },
+    { "id": "change-impact", "label": "变更影响分析", "steps": ["identify-change", "trace-impact-chain", "assess-risk", "plan-mitigation", "verify"], "scene": "场景-4" }
+  ],
+  "nodes": [
+    { "id": "story-yry-arch", "type": "story", "label": "yry-arch 架构基线", "path": "docs/故事任务面板/yry-arch/故事任务.md" },
+    { "id": "scene-1", "type": "scene", "label": "模块定位与职责", "path": "docs/故事任务面板/yry-arch/场景-1-模块定位.md", "covers": ["FP1", "FP2", "FP3", "FP4", "FP5"] },
+    { "id": "scene-2", "type": "scene", "label": "数据流与追踪", "path": "docs/故事任务面板/yry-arch/场景-2-数据流追踪.md", "covers": ["FP6", "FP7", "FP8", "FP9", "FP10"] },
+    { "id": "scene-3", "type": "scene", "label": "新人上手与开发指南", "path": "docs/故事任务面板/yry-arch/场景-3-新人上手.md" },
+    { "id": "scene-4", "type": "scene", "label": "依赖变更影响分析", "path": "docs/故事任务面板/yry-arch/场景-4-依赖变更影响.md" }
+  ],
+  "edges": [
+    { "source": "story-yry-arch", "target": "scene-1", "relation": "contains" },
+    { "source": "story-yry-arch", "target": "scene-2", "relation": "contains" },
+    { "source": "story-yry-arch", "target": "scene-3", "relation": "contains" },
+    { "source": "story-yry-arch", "target": "scene-4", "relation": "contains" },
+    { "source": "scene-1", "target": "module-locate", "relation": "maps_to" },
+    { "source": "scene-2", "target": "dataflow-trace", "relation": "maps_to" },
+    { "source": "scene-3", "target": "onboarding-flow", "relation": "maps_to" },
+    { "source": "scene-4", "target": "change-impact", "relation": "maps_to" }
+  ],
+  "layers": {
+    "domain": ["module-topology", "dataflow-tracking", "cross-referencing", "onboarding"],
+    "flow": ["module-locate", "dataflow-trace", "onboarding-flow", "change-impact"],
+    "step": ["open-directory", "search-module", "view-entry", "trace-dependencies", "source-to-spec", "trace-instruction", "locate-stage", "check-gate", "integrate-new-stage", "verify-consistency"]
+  }
+}

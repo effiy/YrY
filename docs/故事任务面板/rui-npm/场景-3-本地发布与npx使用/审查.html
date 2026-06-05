@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>本地发布与 npx 使用 — 审查报告</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--info:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
+.container{max-width:1120px;margin:0 auto;padding:48px 24px 80px}
+.header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
+.header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+.header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
+.stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
+.stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}
+.stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
+.bar-wrap{margin-bottom:28px;animation:fadeInDown .5s .12s ease both}
+.bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
+.bar-outer .seg{height:100%;transition:width .5s ease;min-width:3px}
+.bar-outer .seg.strength{background:var(--pass)}.bar-outer .seg.gap{background:var(--fail)}.bar-outer .seg.suggestion{background:var(--warn)}.bar-outer .seg.neutral{background:var(--info)}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
+.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}
+.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
+.cross-link.on{color:var(--accent);font-weight:600}
+.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
+.section{margin-bottom:28px;animation:fadeInUp .4s ease both}
+.section h2{font-size:1.1rem;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.review-table{width:100%;border-collapse:collapse;font-size:.84rem}
+.review-table th{text-align:left;color:var(--text2);font-weight:600;padding:8px 12px;border-bottom:var(--border);font-size:.76rem}
+.review-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
+.review-table tr:hover td{background:rgba(255,255,255,0.02)}
+.badge{font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:4px}
+.badge.s{background:rgba(34,197,94,.12);color:var(--pass)}.badge.i{background:rgba(245,158,11,.12);color:var(--warn)}
+.summary-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:16px;box-shadow:var(--shadow)}
+.summary-card h3{font-size:.92rem;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.summary-card p{color:var(--text2);font-size:.82rem;line-height:1.6}
+.footer-note{text-align:center;color:var(--text3);font-size:.72rem;margin-top:40px}
+</style>
+</head>
+<body><div class="container">
+<nav class="breadcrumb"><a href="../../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../../故事任务.md">rui-npm</a><span class="bc-sep">/</span><a href="场景-3-本地发布与npx使用.md">场景 3 · 本地发布与 npx 使用</a><span class="bc-sep">/</span><span class="bc-current">📝 审查</span></nav>
+
+<nav class="cross-nav">
+  <a class="cross-link" href="场景-3-本地发布与npx使用.md">📄 场景</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="计划清单.html">📋 计划清单</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="架构图.html">📐 架构图</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="知识图谱.html">🔗 知识图谱</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="测试面板.html">🧪 测试面板</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+  <a class="cross-link on" href="审查.html">📝 审查</a>
+</nav>
+
+<div class="header"><h1>📝 <span class="accent">本地发布与 npx 使用 · 审查报告</span></h1><p class="sub">代码审查 · 安全检查 · 设计一致性</p></div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="val health">6</div><div class="lbl">优势点</div></div>
+  <div class="stat-card"><div class="val" style="color:var(--warn)">1</div><div class="lbl">改进建议</div></div>
+  <div class="stat-card"><div class="val" style="color:var(--info)">0</div><div class="lbl">缺口</div></div>
+  <div class="stat-card"><div class="val health">100%</div><div class="lbl">健康度</div></div>
+</div>
+
+<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:86%"></div><div class="seg suggestion" style="width:14%"></div></div></div>
+
+<div class="section">
+  <h2><span class="dot"></span>优势点</h2>
+  <table class="review-table">
+    <thead><tr><th>#</th><th>维度</th><th>发现</th><th>位置</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge s">S1</span></td><td>双模式设计</td><td>文件模式和目录模式自动判定（statSync.isDirectory），文件模式创建临时目录 + 自动生成 package.json，目录模式保留已有配置</td><td><code>rui-npm.mjs:336-351</code></td></tr>
+      <tr><td><span class="badge s">S2</span></td><td>安全防护</td><td>四层前置校验：路径存在 → npm 登录 → package.json 有效 → 命名冲突。任一层失败即阻断并给出恢复路径</td><td><code>rui-npm.mjs:331-400</code></td></tr>
+      <tr><td><span class="badge s">S3</span></td><td>资源清理</td><td>临时目录在 publish 成功和失败后均执行清理（rmSync recursive），无残留风险</td><td><code>rui-npm.mjs:414-417</code></td></tr>
+      <tr><td><span class="badge s">S4</span></td><td>自动脚手架</td><td>自动生成的 package.json 含 name/version/main/bin/license 全字段，文件模式自动推导 bin 入口</td><td><code>rui-npm.mjs:359-371</code></td></tr>
+      <tr><td><span class="badge s">S5</span></td><td>冲突检测</td><td>publish 前 npm view 检查同名包，冲突时输出已有版本号并提示改名</td><td><code>rui-npm.mjs:390-400</code></td></tr>
+      <tr><td><span class="badge s">S6</span></td><td>npx 透传</td><td>npx --yes 自动确认安装提示；spawnSync stdio:inherit 流式透传 stdout/stderr；退出码透传</td><td><code>rui-npm.mjs:430-447</code></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>改进建议</h2>
+  <table class="review-table">
+    <thead><tr><th>#</th><th>维度</th><th>建议</th><th>影响</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge i">I1</span></td><td>安全增强</td><td>建议 publish 前自动检查 .npmignore 或 files 字段，若不存在且目录含 .env/.secret 等敏感文件模式时给出警告。当前依赖用户自觉配置</td><td>安全增强 · P2</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>安全审查</h2>
+  <table class="review-table">
+    <thead><tr><th>威胁</th><th>风险等级</th><th>当前缓解</th><th>评估</th></tr></thead>
+    <tbody>
+      <tr><td>发布含敏感信息的文件</td><td>High</td><td>--dry-run 预览机制；建议发布前配置 .npmignore</td><td><span class="badge i">待增强</span></td></tr>
+      <tr><td>npm 未登录尝试 publish</td><td>Medium</td><td>publish 前 npm whoami 强制检查</td><td><span class="badge s">充分</span></td></tr>
+      <tr><td>包名冲突导致意外覆盖</td><td>Medium</td><td>publish 前 npm view 同名包检测</td><td><span class="badge s">充分</span></td></tr>
+      <tr><td>临时目录残留</td><td>Low</td><td>成功/失败均清理；OS 自动清理 /tmp</td><td><span class="badge s">充分</span></td></tr>
+      <tr><td>npx 执行恶意包</td><td>Medium</td><td>npx --yes 自动确认；用户应确认包名来源</td><td><span class="badge s">充分</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>设计一致性检查</h2>
+  <div class="summary-card"><h3>📐 设计评审清单 — 7/7 ✅</h3><p>路径验证 ✓ · 文件/目录双模式 ✓ · npm 登录检查 ✓ · package.json 自动生成 ✓ · 冲突检测 ✓ · --dry-run 预览 ✓ · 临时目录清理 ✓</p></div>
+</div>
+
+<div class="footer-note">📝 rui-npm 审查报告 · 场景 3/4 · 本地发布与 npx 使用 · 生成于 2026-06-05</div>
+</div>
+</body>
+</html>

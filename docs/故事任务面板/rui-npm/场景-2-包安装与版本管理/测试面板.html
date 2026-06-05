@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>包安装与版本管理 · 测试面板</title>
+<style>:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--skip:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
+.container{max-width:1120px;margin:0 auto;padding:48px 24px 80px}
+.header{text-align:center;margin-bottom:32px;animation:fadeInDown .5s ease both}
+.header h1{font-size:2.1rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+.header .sub{color:var(--text2);font-size:.9rem}
+.stats-grid{display:flex;gap:14px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 22px;text-align:center;box-shadow:var(--shadow);min-width:90px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat-card .val{font-size:1.8rem;font-weight:700;line-height:1.1}
+.stat-card .val.t{color:var(--text)}.stat-card .val.p{color:var(--pass)}.stat-card .val.f{color:var(--fail)}.stat-card .val.s{color:var(--skip)}.stat-card .val.d{color:var(--cyan);font-size:1.25rem}
+.stat-card .lbl{font-size:.72rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+.bar-wrap{margin-bottom:32px;animation:fadeInDown .5s .12s ease both}
+.bar-outer{height:8px;border-radius:4px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
+.bar-outer .seg{height:100%;transition:width .5s ease;min-width:2px}
+.bar-outer .seg.p{background:var(--pass)}.bar-outer .seg.f{background:var(--fail)}.bar-outer .seg.s{background:var(--skip)}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:40px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
+.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}
+.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
+.cross-link.on{color:var(--accent);font-weight:600}
+.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+.tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:0;animation:fadeInDown .5s .18s ease both}
+.tab{padding:10px 20px;cursor:pointer;font-size:.84rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none}
+.tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.panel{display:none;animation:fadeInUp .4s ease both;padding-top:28px}
+.panel.on{display:block}
+.test-table{width:100%;border-collapse:collapse;font-size:.84rem;margin-bottom:20px}
+.test-table th{text-align:left;color:var(--text2);font-weight:600;padding:8px 12px;border-bottom:var(--border);font-size:.76rem;text-transform:uppercase;letter-spacing:.5px}
+.test-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
+.test-table tr:hover td{background:rgba(255,255,255,0.02)}
+.badge{font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.badge.p0{background:rgba(239,68,68,.12);color:var(--fail)}.badge.p1{background:rgba(245,158,11,.12);color:var(--warn)}
+.badge.pass{background:rgba(34,197,94,.12);color:var(--pass)}.badge.pending{background:rgba(107,114,128,.12);color:var(--skip)}
+.gate-signal{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 24px;margin-top:20px;box-shadow:var(--shadow)}
+.gate-signal h3{color:var(--accent);font-size:.95rem;margin-bottom:12px}
+.gate-signal table{width:100%;font-size:.82rem}
+.gate-signal td{padding:6px 12px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.gate-signal td:first-child{color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:.76rem}
+.footer-note{text-align:center;color:var(--text3);font-size:.72rem;margin-top:40px}
+@media(max-width:768px){.container{padding:20px 12px 60px}.test-table{font-size:.76rem}}
+</style>
+</head>
+<body><div class="container">
+<nav class="breadcrumb"><a href="../../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../../故事任务.md">rui-npm</a><span class="bc-sep">/</span><a href="场景-2-包安装与版本管理.md">场景 2 · 包安装与版本管理</a><span class="bc-sep">/</span><span class="bc-current">🧪 测试面板</span></nav>
+
+<nav class="cross-nav">
+  <a class="cross-link" href="场景-2-包安装与版本管理.md">📄 场景</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="计划清单.html">📋 计划清单</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="架构图.html">📐 架构图</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="知识图谱.html">🔗 知识图谱</a><span class="cross-sep">·</span>
+  <a class="cross-link on" href="测试面板.html">🧪 测试面板</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="审查.html">📝 审查</a>
+</nav>
+
+<div class="header"><h1>🧪 <span class="accent">包安装与版本管理 · 测试面板</span></h1><p class="sub">FP2/FP3/FP4 覆盖 · 11 测试用例 · Gate A 就绪</p></div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="val t">11</div><div class="lbl">总用例</div></div>
+  <div class="stat-card"><div class="val p">5</div><div class="lbl">正常路径</div></div>
+  <div class="stat-card"><div class="val f">6</div><div class="lbl">边界/异常</div></div>
+  <div class="stat-card"><div class="val d">P0</div><div class="lbl">优先级</div></div>
+</div>
+
+<div class="bar-wrap"><div class="bar-outer"><div class="seg p" style="width:45%"></div><div class="seg f" style="width:55%"></div></div></div>
+
+<div class="tabs">
+  <div class="tab on" onclick="switchTab('normal')">✅ 正常路径 (5)</div>
+  <div class="tab" onclick="switchTab('boundary')">⚠️ 边界/异常 (6)</div>
+  <div class="tab" onclick="switchTab('gate')">🚦 Gate A 交接</div>
+</div>
+
+<div class="panel on" id="panel-normal">
+  <table class="test-table">
+    <thead><tr><th>TC#</th><th>Given</th><th>When</th><th>Then</th><th>覆盖</th><th>优先级</th></tr></thead>
+    <tbody>
+      <tr><td>TC-N2.1</td><td>有 package.json</td><td><code>install lodash</code></td><td>lodash 安装到 node_modules，package.json 更新</td><td>FP2</td><td><span class="badge p0">P0</span></td></tr>
+      <tr><td>TC-N2.2</td><td>有 package.json</td><td><code>install lodash@4.17.20</code></td><td>安装指定版本 4.17.20</td><td>FP2</td><td><span class="badge p0">P0</span></td></tr>
+      <tr><td>TC-N2.3</td><td>lodash 已安装</td><td><code>update lodash</code></td><td>展示 lodash: X.X.X → Y.Y.Y 变更</td><td>FP3</td><td><span class="badge p0">P0</span></td></tr>
+      <tr><td>TC-N2.4</td><td>已安装多个包</td><td><code>list</code></td><td>表格输出所有直接依赖（包名/版本/层级）</td><td>FP4</td><td><span class="badge p0">P0</span></td></tr>
+      <tr><td>TC-N2.5</td><td>有 package.json</td><td><code>install prettier --dev</code></td><td>安装为 devDependency</td><td>FP2</td><td><span class="badge p1">P1</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="panel" id="panel-boundary">
+  <table class="test-table">
+    <thead><tr><th>TC#</th><th>Given</th><th>When</th><th>Then</th><th>覆盖</th><th>优先级</th></tr></thead>
+    <tbody>
+      <tr><td>TC-B2.1</td><td>无 package.json</td><td><code>install lodash</code></td><td>错误提示：无 package.json，引导 npm init</td><td>FP2</td><td><span class="badge p0">P0</span></td></tr>
+      <tr><td>TC-B2.2</td><td>有 package.json</td><td><code>install some-nonexistent-pkg-xyz</code></td><td>错误提示 + 搜索建议</td><td>FP2</td><td><span class="badge p0">P0</span></td></tr>
+      <tr><td>TC-B2.3</td><td>有 package.json</td><td><code>update nonexistent</code></td><td>错误提示（未安装的包）</td><td>FP3</td><td><span class="badge p1">P1</span></td></tr>
+      <tr><td>TC-B2.4</td><td>lodash 已是最新</td><td><code>update lodash</code></td><td>输出"已是最新兼容版本"</td><td>FP3</td><td><span class="badge p1">P1</span></td></tr>
+      <tr><td>TC-B2.5</td><td>有 package.json</td><td><code>list --depth 1</code></td><td>含一级子依赖</td><td>FP4</td><td><span class="badge p1">P1</span></td></tr>
+      <tr><td>TC-B2.6</td><td>无 package.json</td><td><code>install typescript --global</code></td><td>全局安装成功（不检查 package.json）</td><td>FP2</td><td><span class="badge p1">P1</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="panel" id="panel-gate">
+  <div class="gate-signal">
+    <h3>🚦 Gate A 交接信号</h3>
+    <table>
+      <tr><td>test_design_exists</td><td><span class="badge pass">true</span></td><td>§1 测试设计已就绪</td></tr>
+      <tr><td>test_case_count</td><td>11</td><td>正常 5 + 边界 6</td></tr>
+      <tr><td>fp_coverage</td><td>FP2, FP3, FP4</td><td>覆盖安装/更新/列表三个功能点</td></tr>
+      <tr><td>每 FP ≥3 类用例</td><td><span class="badge pass">✓</span></td><td>FP2: 4, FP3: 3, FP4: 3</td></tr>
+      <tr><td>install 前置校验 package.json</td><td><span class="badge pass">✓</span></td><td>非全局模式强制校验</td></tr>
+      <tr><td>update 展示版本变更</td><td><span class="badge pass">✓</span></td><td>旧版→新版对比输出</td></tr>
+      <tr><td style="padding-top:12px"><strong>Gate A 判定</strong></td><td colspan="2" style="padding-top:12px"><span class="badge pass">✅ 通过 — 可进入 code 阶段</span></td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="footer-note">🧪 rui-npm 测试面板 · 场景 2/4 · 包安装与版本管理 · 生成于 2026-06-05</div>
+</div>
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelector(`.tab:nth-${name==='normal'?'1':name==='boundary'?'2':'3'}`).classList.add('on');
+  document.getElementById('panel-'+name).classList.add('on');
+}
+</script>
+</body>
+</html>

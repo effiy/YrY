@@ -1,0 +1,132 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>包安装与版本管理 · 知识图谱</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
+.container{max-width:1400px;margin:0 auto}
+.header{margin-bottom:1.5rem}
+.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
+.pulse-dot{width:12px;height:12px;background:#22d3ee;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+h1{font-size:1.5rem;font-weight:700}
+.subtitle{color:#94a3b8;font-size:.875rem;margin-left:1.75rem}
+.graph-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1rem;margin-bottom:1.5rem}
+#cy{width:100%;height:550px;border-radius:.5rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin-bottom:1.5rem}
+.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
+.card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
+.card-dot{width:8px;height:8px;border-radius:50%}
+.card-dot.domain{background:#EC4899}.card-dot.flow{background:#34d399}.card-dot.step{background:#3B82F6}.card-dot.skill{background:#22d3ee}
+.card h3{font-size:.875rem;font-weight:600}
+.card ul{list-style:none;color:#94a3b8;font-size:.75rem}
+.card li{margin-bottom:.375rem}
+.legend{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:.75rem;padding:.75rem;background:rgba(15,23,42,.5);border-radius:.5rem;border:1px solid #1e293b;font-size:.75rem;color:#94a3b8}
+.legend-item{display:flex;align-items:center;gap:.375rem}
+.legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid}
+.legend-dot.domain{background:rgba(236,72,153,.3);border-color:#EC4899}
+.legend-dot.flow{background:rgba(52,211,153,.3);border-color:#34d399}
+.legend-dot.step{background:rgba(59,130,246,.3);border-color:#3B82F6}
+.legend-dot.skill{background:rgba(34,211,238,.3);border-color:#22d3ee}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap}
+.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
+.cross-link:hover{color:#fbbf24;background:rgba(255,193,7,.06);text-decoration:underline}
+.cross-link.on{color:#fbbf24;font-weight:600}
+.cross-sep{color:#53576c;opacity:0.35;user-select:none}
+.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
+</style></head><body><div class="container">
+<nav class="breadcrumb"><a href="../../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../../故事任务.md">rui-npm</a><span class="bc-sep">/</span><span class="bc-current">场景 2 · 知识图谱</span></nav>
+
+<nav class="cross-nav">
+  <a class="cross-link" href="场景-2-包安装与版本管理.md">📄 场景</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+  <a class="cross-link on" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="审查.html">📝 审查</a>
+</nav>
+
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>🧩 包安装与版本管理 · 知识图谱</h1></div><p class="subtitle">场景 2/4 — install · update · list 三命令的知识结构</p></div>
+
+<div class="legend">
+  <div class="legend-item"><span class="legend-dot domain"></span> 领域层（Domain）</div>
+  <div class="legend-item"><span class="legend-dot flow"></span> 数据流（Flow）</div>
+  <div class="legend-item"><span class="legend-dot step"></span> 执行步骤（Step）</div>
+  <div class="legend-item"><span class="legend-dot skill"></span> 技能模块（Skill）</div>
+</div>
+
+<div class="graph-container"><div id="cy"></div></div>
+
+<div class="cards">
+  <div class="card"><div class="card-header"><span class="card-dot domain"></span><h3>领域层 — 依赖管理</h3></div><ul><li>Story 2 · rui-npm 技能</li><li>install · update · list 三命令</li><li>覆盖 FP2/FP3/FP4</li></ul></div>
+  <div class="card"><div class="card-header"><span class="card-dot flow"></span><h3>数据流 — 三条路径</h3></div><ul><li>install: 校验 → registry → node_modules</li><li>update: 当前版本 → npm update → 对比</li><li>list: npm list --json → 扁平化</li></ul></div>
+  <div class="card"><div class="card-header"><span class="card-dot step"></span><h3>执行步骤</h3></div><ul><li>install: ① 验证 package.json ② npm install ③ 确认版本</li><li>update: ① 记录当前版 ② npm update ③ 对比</li><li>list: ① npm list ② 递归扁平化 ③ 表格</li></ul></div>
+</div>
+
+<div class="footer">🧩 rui-npm 知识图谱 · 场景 2/4 · 包安装与版本管理 · Powered by Cytoscape.js</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+var cy=cytoscape({container:document.getElementById('cy'),
+style:[{selector:'node',style:{'background-color':'#1e293b','label':'data(label)','color':'#e2e8f0','font-size':'10px','font-family':'JetBrains Mono,monospace','text-valign':'center','text-halign':'center','border-width':2,'width':95,'height':38,'shape':'roundrectangle','text-wrap':'wrap','text-max-width':'85px'}},
+{selector:'node[type="domain"]',style:{'background-color':'rgba(236,72,153,.2)','border-color':'#EC4899','width':120,'height':44}},
+{selector:'node[type="flow"]',style:{'background-color':'rgba(52,211,153,.2)','border-color':'#34d399'}},
+{selector:'node[type="step"]',style:{'background-color':'rgba(59,130,246,.2)','border-color':'#3B82F6','width':85,'height':34}},
+{selector:'node[type="skill"]',style:{'background-color':'rgba(34,211,238,.2)','border-color':'#22d3ee','width':110,'height':42}},
+{selector:'edge',style:{'curve-style':'bezier','line-color':'#475569','target-arrow-color':'#475569','target-arrow-shape':'triangle','width':1.5,'arrow-scale':1}},
+{selector:'edge[relation="contains"]',style:{'line-color':'#8B5CF6','target-arrow-color':'#8B5CF6','line-style':'dashed'}},
+{selector:'edge[relation="maps_to"]',style:{'line-color':'#34d399','target-arrow-color':'#34d399'}},
+{selector:'edge[relation="next"]',style:{'line-color':'#3B82F6','target-arrow-color':'#3B82F6','width':2}}],
+elements:{nodes:[
+{data:{id:'story',label:'Story\nrui-npm',type:'domain'}},
+{data:{id:'scene2',label:'场景 2\n安装与版本管理',type:'domain'}},
+{data:{id:'skill',label:'rui-npm\n技能',type:'skill'}},
+{data:{id:'fp2',label:'FP2\n包安装',type:'domain'}},
+{data:{id:'fp3',label:'FP3\n包更新',type:'domain'}},
+{data:{id:'fp4',label:'FP4\n包列表',type:'domain'}},
+{data:{id:'install',label:'install\n子命令',type:'flow'}},
+{data:{id:'update',label:'update\n子命令',type:'flow'}},
+{data:{id:'list',label:'list\n子命令',type:'flow'}},
+{data:{id:'check-pkg',label:'验证\npackage.json',type:'step'}},
+{data:{id:'npm-i',label:'npm install\n--save',type:'step'}},
+{data:{id:'ver-confirm',label:'确认\n安装版本',type:'step'}},
+{data:{id:'before-ver',label:'记录\n当前版本',type:'step'}},
+{data:{id:'npm-up',label:'npm update',type:'step'}},
+{data:{id:'ver-diff',label:'版本对比\n旧→新',type:'step'}},
+{data:{id:'npm-ls',label:'npm list\n--json',type:'step'}},
+{data:{id:'flatten',label:'递归扁平化\n→ 表格',type:'step'}},
+{data:{id:'reg',label:'npm\nregistry',type:'flow'}},
+{data:{id:'fs',label:'本地\n文件系统',type:'flow'}}
+],edges:[
+{data:{source:'story',target:'scene2',relation:'contains'}},
+{data:{source:'story',target:'fp2',relation:'contains'}},
+{data:{source:'story',target:'fp3',relation:'contains'}},
+{data:{source:'story',target:'fp4',relation:'contains'}},
+{data:{source:'scene2',target:'skill',relation:'maps_to'}},
+{data:{source:'fp2',target:'install',relation:'maps_to'}},
+{data:{source:'fp3',target:'update',relation:'maps_to'}},
+{data:{source:'fp4',target:'list',relation:'maps_to'}},
+{data:{source:'install',target:'check-pkg',relation:'next'}},
+{data:{source:'check-pkg',target:'npm-i',relation:'next'}},
+{data:{source:'npm-i',target:'reg',relation:'next'}},
+{data:{source:'reg',target:'fs',relation:'next'}},
+{data:{source:'fs',target:'ver-confirm',relation:'next'}},
+{data:{source:'update',target:'before-ver',relation:'next'}},
+{data:{source:'before-ver',target:'npm-up',relation:'next'}},
+{data:{source:'npm-up',target:'ver-diff',relation:'next'}},
+{data:{source:'list',target:'npm-ls',relation:'next'}},
+{data:{source:'npm-ls',target:'flatten',relation:'next'}}
+]},
+layout:{name:'breadthfirst',directed:true,spacingFactor:1.15,roots:'[id="story"]'},
+minZoom:0.5,maxZoom:2});
+cy.fit(cy.elements(),50);
+});
+</script>
+</body></html>
