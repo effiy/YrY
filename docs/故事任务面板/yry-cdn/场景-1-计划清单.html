@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>场景-1 计划清单 — CDN资源加载与页面渲染</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+<style>
+  .checklist { list-style: none; padding: 0; }
+  .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; margin-bottom: 6px; background: var(--yry-bg-flat); border-radius: 8px; border: var(--yry-border); font-size: .82rem; }
+  .checklist li:hover { border-color: rgba(255,255,255,.1); }
+  .checklist .step-id { color: var(--yry-accent); font-weight: 700; min-width: 48px; font-size: .76rem; }
+  .checklist .step-name { flex: 1; color: var(--yry-text); font-weight: 500; }
+  .checklist .step-path { color: var(--yry-text3); font-size: .72rem; margin-top: 2px; }
+  .checklist .step-cmd { background: rgba(0,0,0,.3); border-radius: 4px; padding: 4px 8px; font-family: monospace; font-size: .72rem; color: var(--yry-cyan); margin-top: 4px; display: block; }
+  .checklist .step-expect { color: var(--yry-text2); font-size: .72rem; margin-top: 2px; }
+  input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--yry-accent); cursor: pointer; margin-top: 2px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div class="yry-container">
+  <div class="yry-breadcrumb">
+    <a href="../">故事面板</a><span class="yry-bc-sep">/</span>
+    <a href="./plan.html">yry-cdn plan</a><span class="yry-bc-sep">/</span>
+    <span class="yry-bc-current">场景-1 清单</span>
+  </div>
+  <div class="yry-header">
+    <h1>场景-1 <span class="yry-accent">计划清单</span></h1>
+    <div class="yry-sub">CDN 资源加载与页面渲染 · 3 步 · 15min</div>
+  </div>
+
+  <ul class="checklist">
+    <li>
+      <input type="checkbox" id="s1">
+      <div>
+        <span class="step-id">步骤 1</span>
+        <span class="step-name">验证 Cat A + Cat B 页面加载链</span>
+        <div class="step-path">📄 场景-1-cdn资源加载与页面渲染.md §1 TC1–TC2</div>
+        <div class="step-cmd"># Cat B 页面: 打开审查页面 → DevTools Network → 检查 shared.css → theme.css → shared.js 加载顺序</div>
+        <div class="step-cmd"># Cat A 页面: 打开架构图页面 → 检查 Google Fonts → shared.css → theme-mono.css 顺序</div>
+        <div class="step-expect">✅ 所有资源 200，顺序正确。console: typeof YrY === 'object'，CSS 变量已注入</div>
+      </div>
+    </li>
+    <li>
+      <input type="checkbox" id="s2">
+      <div>
+        <span class="step-id">步骤 2</span>
+        <span class="step-name">验证降级策略</span>
+        <div class="step-path">📄 场景-1-cdn资源加载与页面渲染.md §1 TC4–TC5</div>
+        <div class="step-cmd"># DevTools → Network → Block fonts.googleapis.com → 重新加载 Cat A 页面</div>
+        <div class="step-cmd"># 临时: mv cdn/shared.js cdn/shared.bak.js → 加载 Cat B 页面 → mv cdn/shared.bak.js cdn/shared.js</div>
+        <div class="step-expect">✅ 字体回退为 monospace。shared.js 不可用时 HTML/CSS 仍正常渲染</div>
+      </div>
+    </li>
+    <li>
+      <input type="checkbox" id="s3">
+      <div>
+        <span class="step-id">步骤 3</span>
+        <span class="step-name">撰写实施报告（§2）</span>
+        <div class="step-path">📄 场景-1-cdn资源加载与页面渲染.md → 追加 §2 实施报告</div>
+        <div class="step-cmd"># 记录: Gate A 交接信号验证结果 + Network 截图 + 降级测试截图</div>
+        <div class="step-expect">✅ §2 含实施时间、环境快照、5 项 Gate A 信号全部通过/失败的证据</div>
+      </div>
+    </li>
+  </ul>
+
+  <div class="yry-footer" style="margin-top:40px;">yry-cdn · 场景-1 计划清单 · <a href="plan.html">← plan</a></div>
+</div>
+<script src="../../../../cdn/shared.js"></script>
+</body>
+</html>

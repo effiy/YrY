@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>场景-3 计划清单 — 组件库与JS工具API</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css"><link rel="stylesheet" href="../../../../cdn/theme.css">
+<style>.checklist{list-style:none;padding:0}.checklist li{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;margin-bottom:6px;background:var(--yry-bg-flat);border-radius:8px;border:var(--yry-border);font-size:.82rem}.checklist li:hover{border-color:rgba(255,255,255,.1)}.step-id{color:var(--yry-accent);font-weight:700;min-width:48px;font-size:.76rem}.step-name{flex:1;color:var(--yry-text);font-weight:500}.step-path{color:var(--yry-text3);font-size:.72rem;margin-top:2px}.step-cmd{background:rgba(0,0,0,.3);border-radius:4px;padding:4px 8px;font-family:monospace;font-size:.72rem;color:var(--yry-cyan);margin-top:4px;display:block}.step-expect{color:var(--yry-text2);font-size:.72rem;margin-top:2px}input[type=checkbox]{width:18px;height:18px;accent-color:var(--yry-accent);cursor:pointer;margin-top:2px;flex-shrink:0}</style>
+</head>
+<body>
+<div class="yry-container">
+<div class="yry-breadcrumb"><a href="../">故事面板</a><span class="yry-bc-sep">/</span><a href="./plan.html">yry-cdn plan</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景-3 清单</span></div>
+<div class="yry-header"><h1>场景-3 <span class="yry-accent">计划清单</span></h1><div class="yry-sub">组件库与 JS 工具 API · 4 步 · 20min</div></div>
+<ul class="checklist">
+<li><input type="checkbox" id="s1"><div><span class="step-id">步骤 1</span><span class="step-name">验证 9 个 YrY.* API</span><div class="step-path">📄 场景-3-组件库与JS工具API.md §1 TC1–TC6</div><div class="step-cmd"># console 逐项执行: YrY.toast('test') / YrY.toast('test',5000) / 快速连调 / XSS测试</div><div class="step-cmd"># YrY.copyCmd(btn,'copy test') / YrY.switchPanel('name') / YrY.initSuiteToggle()</div><div class="step-cmd"># YrY.expandAllSuites() / YrY.collapseAllSuites() / YrY.fmtDur(142) / YrY.esc('<script>') / YrY.clipboardWrite('test')</div><div class="step-expect">✅ 9/9 API 无异常，Toast 防 XSS，fmtDur/esc 边界值正确</div></div></li>
+<li><input type="checkbox" id="s2"><div><span class="step-id">步骤 2</span><span class="step-name">验证组件渲染完整性</span><div class="step-path">📄 场景-3-组件库与JS工具API.md</div><div class="step-cmd"># Cat B 页面: DevTools 检查 .yry-stats .yry-tabs .yry-panel .yry-suite .yry-progress .yry-btn .yry-link-grid</div><div class="step-cmd"># Cat A 页面: DevTools 检查 .yry-mono-container .yry-diagram-wrap .yry-pulse-dot .yry-mono-legend</div><div class="step-expect">✅ 14 System + 7 Mono 组件全部存在且有非初始计算样式</div></div></li>
+<li><input type="checkbox" id="s3"><div><span class="step-id">步骤 3</span><span class="step-name">验证套件事件委托</span><div class="step-path">📄 场景-3-组件库与JS工具API.md §1 TC4</div><div class="step-cmd"># 点击任意 .yry-suite-head → 验证展开(箭头旋转90°) → 再次点击收起</div><div class="step-cmd"># YrY.expandAllSuites() → 全部展开 → YrY.collapseAllSuites() → 全部收起</div><div class="step-expect">✅ 事件委托正常，批量操作生效</div></div></li>
+<li><input type="checkbox" id="s4"><div><span class="step-id">步骤 4</span><span class="step-name">撰写实施报告（§2）</span><div class="step-path">📄 场景-3-组件库与JS工具API.md → 追加 §2</div><div class="step-cmd"># 记录: API 测试 9/9 结果 + 组件截图 + fmtDur/esc 边界值表 + 4 项 Gate A 信号</div><div class="step-expect">✅ §2 含 API 通过率、组件覆盖表、边界值测试结果</div></div></li>
+</ul>
+<div class="yry-footer" style="margin-top:40px;">yry-cdn · 场景-3 计划清单 · <a href="plan.html">← plan</a></div>
+</div>
+<script src="../../../../cdn/shared.js"></script>
+</body>
+</html>
