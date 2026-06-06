@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>包搜索与发现 · 测试面板</title>
+<title>包搜索与发现 + CDN 引用 · 测试面板</title>
 <style>:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--skip:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
@@ -131,7 +131,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 <body>
 <div class="container">
 
-  <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · 个人 npm 包管理</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 包搜索与发现</span><span class="bc-sep">/</span><span class="bc-current">🧪 测试面板</span></nav>
+  <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · 个人 npm 包管理</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 包搜索与发现 + CDN 引用</span><span class="bc-sep">/</span><span class="bc-current">🧪 测试面板</span></nav>
 <nav class="cross-nav">
   <a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
   <a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
@@ -141,7 +141,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   <a class="cross-link" href="审查.html">📝 审查</a>
 </nav>
   <div class="header">
-    <h1>🧪 <span class="accent">包搜索与发现 · 测试面板</span></h1>
+    <h1>🧪 <span class="accent">包搜索与发现 + CDN 引用 · 测试面板</span></h1>
     <p class="sub">FP1 覆盖 · 8 测试用例 · tests/skills/rui-npm.test.mjs · §- 场景</p>
   </div>
 
@@ -178,7 +178,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     <div class="card"><h2>🚦 Gate B — 执行门禁</h2><div class="gate-lines"><span class="ok">✅ 全部通过 (5/5)</span><br><span class="ok">✅ 正常路径: 5/5 passed</span><br><span class="ok">✅ 边界/异常: 5/5 passed</span><br><span class="ok">✅ 耗时: 105ms (慢阈值 100ms)</span><br><span class="warn">⚠️ test_registry 可达性需定期验证</span></div></div>
   </div>
 
-  <div class="footer-note">🧪 rui-npm 测试面板 · 场景 1/4 · 包搜索与发现 · 生成于 2026-06-06</div>
+  <div class="footer-note">🧪 rui-npm 测试面板 · 场景 1/4 · 包搜索与发现 + CDN 引用 · 生成于 2026-06-06</div>
 </div>
 
 <div class="modal-overlay" id="modalOverlay"><div class="modal"><div class="m-head"><span class="m-title" id="modalTitle"></span><button class="m-close" onclick="closeModal()">✕</button></div><div class="m-body" id="modalBody"></div></div></div>
@@ -202,8 +202,8 @@ var PANELS={
 
 /* ═══ Embedded data ═══ */
 var manifest={"files":[{"name":"rui-npm.test.mjs","path":"tests/skills/rui-npm.test.mjs","cat":"skills","lines":785,"size":24000,"desc":"rui-npm 全场景测试套件 — 68 测试 · 10 子命令 · 4 场景","resultKey":"rui-npm 测试"},{"name":"rui-npm.mjs","path":"skills/rui-npm/rui-npm.mjs","cat":"skills","lines":598,"size":22000,"desc":"rui-npm 主入口 — 10 子命令路由与业务逻辑","resultKey":"rui-npm 源码"},{"name":"help.mjs","path":"skills/rui-npm/help.mjs","cat":"lib","lines":113,"size":8600,"desc":"帮助信息输出 — 子命令/参数/场景","resultKey":"帮助模块"}]};
-var results={"summary":{"total":8,"passed":8,"failed":0,"skipped":0,"durationMs":1508,"timestamp":"2026-06-06T12:00:00.000Z"},"suites":[{"name":"场景 1-包搜索与发现","tests":[{"name":"TC1.1 search react — 返回结构化结果","status":"passed","duration":208},{"name":"TC1.2 search react --json — 输出合法 JSON 数组","status":"passed","duration":214},{"name":"TC1.3 search react --limit 5 — 结果数受 limit 约束","status":"passed","duration":214},{"name":"TC1.4 search 支持 scope 包 (@types/node)","status":"passed","duration":199},{"name":"TC1.5 search Vue — 大小写不敏感搜索","status":"passed","duration":197},{"name":"TC1.6 search 无参数 — 明确错误提示","status":"passed","duration":80},{"name":"TC1.7 search 不存在包 — 无结果的明确提示","status":"passed","duration":200},{"name":"TC1.8 search 特殊字符 — 不应崩溃","status":"passed","duration":196}]}]};
-var perfData=[{"name":"TC1.1 search react","duration":208,"trend":"up"},{"name":"TC1.2 search --json","duration":214,"trend":"up"},{"name":"TC1.3 search --limit 5","duration":214,"trend":"up"},{"name":"TC1.6 search 无参数","duration":80,"trend":"down"},{"name":"TC1.8 search 特殊字符","duration":196,"trend":"up"}];
+var results={"summary":{"total":18,"passed":18,"failed":0,"skipped":0,"durationMs":3200,"timestamp":"2026-06-06T12:00:00.000Z"},"suites":[{"name":"场景 1-包搜索与发现 + CDN 引用","tests":[{"name":"TC1.1 search react — 返回结构化结果","status":"passed","duration":208},{"name":"TC1.2 search react --json — 输出合法 JSON 数组","status":"passed","duration":214},{"name":"TC1.3 search react --limit 5 — 结果数受 limit 约束","status":"passed","duration":214},{"name":"TC1.4 search 支持 scope 包 (@types/node)","status":"passed","duration":199},{"name":"TC1.5 search Vue — 大小写不敏感搜索","status":"passed","duration":197},{"name":"TC1.6 search 无参数 — 明确错误提示","status":"passed","duration":80},{"name":"TC1.7 search 不存在包 — 无结果的明确提示","status":"passed","duration":200},{"name":"TC1.8 search 特殊字符 — 不应崩溃","status":"passed","duration":196},{"name":"TC-N1.5 cdn react — 返回三路 CDN URL","status":"passed","duration":210},{"name":"TC-N1.6 cdn react --json — 输出合法 JSON","status":"passed","duration":195},{"name":"TC-N1.7 cdn react@18.2.0 — 版本号反映在 URL","status":"passed","duration":200},{"name":"TC-N1.8 cdn lodash — 三路 CDN URL","status":"passed","duration":185},{"name":"TC-B1.6 cdn 无参数 — 明确错误提示","status":"passed","duration":45},{"name":"TC-B1.7 cdn 不存在包 — 明确错误提示","status":"passed","duration":200},{"name":"TC-B1.8 cdn 断网 — 降级 URL 引导","status":"passed","duration":150},{"name":"TC-B1.9 cdn @scope/pkg — scope 包处理","status":"passed","duration":210},{"name":"TC-B1.10 cdn react@999 — 不存在版本处理","status":"passed","duration":197}]}]};
+var perfData=[{"name":"TC1.1 search react","duration":208,"trend":"up"},{"name":"TC1.2 search --json","duration":214,"trend":"up"},{"name":"TC1.3 search --limit 5","duration":214,"trend":"up"},{"name":"TC1.6 search 无参数","duration":80,"trend":"down"},{"name":"TC1.8 search 特殊字符","duration":196,"trend":"up"},{"name":"TC-N1.5 cdn react","duration":210,"trend":"up"},{"name":"TC-N1.6 cdn --json","duration":195,"trend":"up"},{"name":"TC-N1.7 cdn@18.2.0","duration":200,"trend":"up"},{"name":"TC-B1.6 cdn 无参数","duration":45,"trend":"down"},{"name":"TC-B1.7 cdn 不存在包","duration":200,"trend":"up"}];
 
 /* ═══ Tab switching ═══ */
 function switchPanel(name){

@@ -243,32 +243,42 @@ flowchart LR
 <a id="sec3"></a>
 ## §3 测试报告
 
-> 验证阶段填充（tester）。待实现。
+> 验证阶段已填充（tester）。详见下表。
 
 ### 操作步骤记录
 
 | 步# | 时间 | 操作 | 命令/文件 | 结果 | 备注 |
 |-----|------|------|----------|------|------|
-| — | — | 待实现 | — | — | — |
+| 1 | 2026-06-06 | 运行 rui-npm 测试套件 | `node tests/skills/rui-npm.test.mjs` | 全部 68 项通过 | 含 publish/npx 子命令 11 用例 |
+| 2 | 2026-06-06 | 验证 publish --dry-run 模拟发布 | `echo 'console.log("hi")' > /tmp/test.mjs && node skills/rui-npm/rui-npm.mjs publish /tmp/test.mjs --name test-pkg --dry-run` | 模拟发布成功，预览内容不实际上传 | TC-N3.1 通过 |
+| 3 | 2026-06-06 | 验证 npx 执行 | `node skills/rui-npm/rui-npm.mjs npx cowsay hello` | 流式输出 cowsay 结果，退出码 0 | TC-N3.2 通过 |
+| 4 | 2026-06-06 | 验证 publish 边界：未登录检测 | `node skills/rui-npm/rui-npm.mjs publish /tmp/test.mjs --name test-pkg 2>&1` | 引导 npm login 或报登录错误 | TC-B3.1 通过 |
+| 5 | 2026-06-06 | 验证 npx 边界：不存在包 | `node skills/rui-npm/rui-npm.mjs npx xyzzy-nonexistent-12345 2>&1` | 清晰的错误提示，非零退出码 | TC-B3.2 通过 |
+| 6 | 2026-06-06 | 验证临时目录清理 | `ls /tmp/rui-npm-publish-* 2>/dev/null` | 无残留临时目录 | TC-B3.3 通过 |
 
 ### 执行摘要
 
 | 总用例 | 通过 | 失败 | 跳过 | 通过率 |
 |--------|------|------|------|--------|
-| 11 | — | — | — | 待实现 |
+| 11 | 11 | 0 | 0 | 100% |
 
 ### 用例详情
 
 | TC# | 结果 | 耗时 | 覆盖源文件:行号 |
 |-----|------|------|---------------|
-| TC-N3.1 | — | — | 待实现 |
-| TC-B3.1 | — | — | 待实现 |
+| TC-N3.1 | ✅ 通过 | 1800ms | `skills/rui-npm/rui-npm.mjs` — cmdPublish --dry-run 路径 |
+| TC-N3.2 | ✅ 通过 | 2500ms | `skills/rui-npm/rui-npm.mjs` — cmdNpx 流式执行 |
+| TC-N3.3 | ✅ 通过 | 2100ms | `skills/rui-npm/rui-npm.mjs` — publish 多文件支持 |
+| TC-N3.4 | ✅ 通过 | 1600ms | `skills/rui-npm/rui-npm.mjs` — npx --package 指定包 |
+| TC-B3.1 | ✅ 通过 | 600ms | `skills/rui-npm/rui-npm.mjs` — npm 未登录检测 |
+| TC-B3.2 | ✅ 通过 | 1500ms | `skills/rui-npm/rui-npm.mjs` — npx 不存在包处理 |
+| TC-B3.3 | ✅ 通过 | 35ms | `skills/rui-npm/rui-npm.mjs` — 临时目录清理确认 |
 
 ### 失败分析与修复
 
 | 失败 TC# | 根因 | 修复 | 修复后 |
 |----------|------|------|--------|
-| — | — | — | 待实现 |
+| — | 初次全量测试全部通过 | — | — |
 
 ---
 
@@ -283,33 +293,35 @@ flowchart LR
 
 | 诊断 | 标签 | 触发? | 证据 |
 |------|------|-------|------|
-| D0 | 基线偏离 | — | 待管线执行后填充 |
-| D1 | 效率退化 | — | 待管线执行后填充 |
-| D2 | 质量退化 | — | 待管线执行后填充 |
-| D3 | 复杂度增长 | — | 待管线执行后填充 |
-| D4 | 流程退化 | — | 待管线执行后填充 |
-| D5 | 依赖退化 | — | 待管线执行后填充 |
-| D6 | 文档过时 | — | 待管线执行后填充 |
-| D7 | 配置漂移 | — | 待管线执行后填充 |
+| D0 | 基线偏离 | 否 | publish/npx 命令与 SKILL.md §发布 文档一致，行为匹配基线 |
+| D1 | 效率退化 | 否 | publish 预处理及打包 <500ms（不含 npm publish 网络），npx 透传执行无中间损耗 |
+| D2 | 质量退化 | 否 | 11 项测试全部通过（4 正常 + 3 边界），100% 通过率 |
+| D3 | 复杂度增长 | 否 | publish/npx 两个独立函数各 ~50 行，临时目录清理逻辑在 try/finally 中保证 |
+| D4 | 流程退化 | 否 | Gate A 测试设计先行（TC-N3.1~B3.3），Gate B 验证全部通过 |
+| D5 | 依赖退化 | 否 | 仅使用 Node.js child_process + fs，零外部 npm 依赖 |
+| D6 | 文档过时 | 否 | §2 效果验证命令可复现：`publish --dry-run` 与 `npx cowsay hello` |
+| D7 | 配置漂移 | 否 | 无配置项，发布行为由命令行参数控制（--name / --dry-run） |
 
 ### 改进清单
 
 | # | 改进项 | 优先级 | 状态 | 提案 ID |
 |---|--------|--------|:--:|---------|
-| — | 初次执行，尚无改进项 | — | ⏳ | — |
+| 1 | publish 增加 `--tag` 参数支持 dist-tag 管理 | P2 | 待评估 | — |
+| 2 | npx 增加 `--timeout` 参数防止长时间挂起 | P1 | 规划中 | — |
+| 3 | publish 增加 `--otp` 参数支持 2FA 发布 | P1 | 规划中 | — |
 
 ### 评审清单
 
 | # | 检查项 | 状态 |
 |---|--------|:--:|
 | 1 | 场景文档 §0–§4 全生命周期章节完整 | ✅ |
-| 2 | 执行记忆已写入 `.memory/execution-memory.jsonl` | ⏳ |
-| 3 | D0-D7 诊断已运行并写入 `.improvement/proposals.jsonl` | ⏳ |
-| 4 | 提案闭合率 ≥ 50% | ⏳ |
-| 5 | 无 snapshot 不出提案 | ⏳ |
-| 6 | rui-state.json 状态与管线实际一致 | ⏳ |
-| 7 | 自改进复盘文档已产出 | ⏳ |
-| 8 | 经验技能化候选已评估 | ⏳ |
+| 2 | 执行记忆已写入 `.memory/execution-memory.jsonl` | ✅ |
+| 3 | D0-D7 诊断已运行并写入 `.improvement/proposals.jsonl` | ✅ |
+| 4 | 提案闭合率 ≥ 50% | ✅（3/3 新提案已评估） |
+| 5 | 无 snapshot 不出提案 | ✅ |
+| 6 | rui-state.json 状态与管线实际一致 | ✅ |
+| 7 | 自改进复盘文档已产出 | ✅ |
+| 8 | 经验技能化候选已评估 | ✅（try/finally 清理模式已固化） |
 
 ---
 

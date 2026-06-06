@@ -7,13 +7,13 @@ lifecycle: default-pipeline
 
 # rui-npm
 
-> 个人 npm packages 管理器：搜索 · 安装 · 更新 · 列表 · 信息 · 卸载 · 本地发布 · npx 执行。
+> 个人 npm packages 管理器：搜索 · 安装 · 更新 · 列表 · 信息 · 卸载 · 本地发布 · npx 执行 · CDN 引用。
 >
 > **--help / -h**：执行 `node skills/rui-npm/help.mjs` 输出完整帮助（含命令族全景 + 场景示例）。用户输入 `/rui-npm --help` 或 `/rui-npm -h` 或 `/rui-npm help` 时，跳过逻辑，直接运行脚本。
 >
 > 哲学源自 [CLAUDE.md](../../CLAUDE.md)。
 
-[命令族全景](#命令族全景) · [子命令](#子命令) · [search](#search) · [install](#install) · [update](#update) · [list](#list) · [info](#info) · [uninstall](#uninstall) · [publish](#publish) · [npx](#npx) · [audit](#audit) · [核心规则](#核心规则) · [降级策略](#降级策略) · [生效标志](#生效标志)
+[命令族全景](#命令族全景) · [子命令](#子命令) · [search](#search) · [install](#install) · [update](#update) · [list](#list) · [info](#info) · [uninstall](#uninstall) · [publish](#publish) · [npx](#npx) · [audit](#audit) · [cdn](#cdn) · [核心规则](#核心规则) · [降级策略](#降级策略) · [生效标志](#生效标志)
 
 ## 命令族全景
 
@@ -38,6 +38,7 @@ flowchart TD
     Q1 -->|"publish &lt;path&gt;"| PUBLISH["本地发布<br/>文件/目录 → npm publish"]:::write
     Q1 -->|"npx &lt;pkg&gt;"| NPX["npx 执行<br/>不安装直接运行"]:::run
     Q1 -->|"audit"| AUDIT["安全审计<br/>npm audit 封装"]:::read
+    Q1 -->|"cdn &lt;pkg&gt;"| CDN["CDN 引用<br/>unpkg/jsDelivr/esm.sh"]:::read
     Q1 -->|"空输入"| HELP["显示帮助"]:::read
 
     classDef entry fill:#3d59a1,color:#fff
@@ -57,6 +58,7 @@ flowchart TD
 | `/rui-npm publish <path>` | 写入 | 发布本地文件或目录到 npm registry |
 | `/rui-npm npx <pkg>[@version]` | 执行 | 通过 npx 直接运行 npm 包 |
 | `/rui-npm audit` | 只读 | 审计已安装依赖的安全漏洞 |
+| `/rui-npm cdn <pkg>[@version]` | 只读 | 查看包在 unpkg/jsDelivr/esm.sh 的 CDN 引用地址 |
 | `/rui-npm --help` | 只读 | 显示完整帮助 |
 
 ## 子命令
@@ -257,6 +259,45 @@ flowchart TD
 - `npm audit fix --force` — 强制修复（可能包含破坏性变更）
 ```
 
+### cdn — CDN 引用
+
+> 查看 npm 包在主流 CDN 的引用地址，方便直接在浏览器中通过 `<script>` 或 `import` 使用。
+
+```
+步骤 1: 验证包名非空
+步骤 2: 解析包名和可选版本号（无版本则使用 latest）
+步骤 3: npm view <pkg> version 验证包存在
+步骤 4: 生成 unpkg / jsDelivr / esm.sh 三条 CDN 地址
+步骤 5: 格式化为表格输出
+```
+
+**参数**：
+
+| 参数 | 必需 | 说明 |
+|------|------|------|
+| `<pkg>[@version]` | 是 | 包名，可选版本号（如 `react@18.2.0`） |
+| `--json` | 否 | 输出 JSON 格式 |
+
+**输出格式**：
+
+```markdown
+## react@18.2.0 — CDN 引用地址
+
+| CDN | URL |
+|-----|-----|
+| unpkg    | https://unpkg.com/react@18.2.0/ |
+| jsDelivr | https://cdn.jsdelivr.net/npm/react@18.2.0/ |
+| esm.sh   | https://esm.sh/react@18.2.0 |
+```
+
+**CDN 选用指南**：
+
+| CDN | 特点 | 适用场景 |
+|-----|------|---------|
+| unpkg | 原始 npm 文件直出，URL 即 npm 路径 | 查看包内文件、调试 |
+| jsDelivr | 全球 CDN 加速，支持多文件合并 | 生产环境 `<script>` 引用 |
+| esm.sh | 自动转 ESM 格式，支持 TypeScript/JSX | `<script type="module">` 或 `import` |
+
 ## 核心规则
 
 ```mermaid
@@ -300,6 +341,8 @@ flowchart LR
 | package.json 不存在（写操作） | 提示 `当前目录无 package.json，请先执行 npm init` |
 | 目录无 package.json（publish 目录模式） | 交互式生成 package.json 后继续 |
 | npm audit 无网络 | 跳过审计，标注 `无网络连接，跳过安全审计` |
+| cdn 包不存在 registry | 输出 `包不存在，请检查包名或先执行 search` |
+| cdn 无网络 | 输出错误详情 + 引导手动访问 `https://www.npmjs.com/package/<pkg>` 确认包名 |
 
 ## 生效标志
 

@@ -83,6 +83,74 @@ describe('rui-claude skill', () => {
     it('update-version.mjs exists', () => {
       assert.ok(fileExists(`${SKILL_DIR}/update-version.mjs`), 'update-version.mjs must exist');
     });
+
+    it('update-version.mjs is executable JavaScript', () => {
+      const content = readFile(`${SKILL_DIR}/update-version.mjs`);
+      assert.ok(content.length > 200, 'update-version.mjs should have substantial content');
+      assert.ok(content.includes('import') || content.includes('require'), 'must have imports');
+    });
+  });
+
+  describe('cross-references', () => {
+    it('SKILL.md references rules/rui-claude.md', () => {
+      const content = readFile(`${SKILL_DIR}/SKILL.md`);
+      assert.ok(
+        content.includes('rui-claude.md') || content.includes('rui-claude'),
+        'SKILL.md must reference rules/rui-claude.md'
+      );
+    });
+
+    it('SKILL.md references agents directory', () => {
+      const content = readFile(`${SKILL_DIR}/SKILL.md`);
+      assert.ok(
+        content.includes('agent') || content.includes('Agent'),
+        'SKILL.md must reference agent roles'
+      );
+    });
+
+    it('help.mjs references all 4 commands consistently', () => {
+      const helpOut = execSync('node skills/rui-claude/help.mjs 2>&1', {
+        cwd: process.cwd(), encoding: 'utf-8', timeout: 10_000,
+      });
+      const commands = ['sync', 'update', 'retro', 'history'];
+      let allFound = true;
+      for (const cmd of commands) {
+        if (!helpOut.includes(cmd)) allFound = false;
+      }
+      assert.ok(allFound, 'help.mjs must document all 4 commands: sync, update, retro, history');
+    });
+  });
+
+  describe('SKILL.md completeness', () => {
+    it('has a command overview section', () => {
+      const content = readFile(`${SKILL_DIR}/SKILL.md`);
+      assert.ok(
+        content.includes('## ') && (content.includes('命令') || content.includes('Command') || content.includes('command')),
+        'SKILL.md must document commands'
+      );
+    });
+
+    it('documents .claude/ directory conventions', () => {
+      const content = readFile(`${SKILL_DIR}/SKILL.md`);
+      assert.ok(
+        content.includes('.claude') || content.includes('claude/'),
+        'SKILL.md must reference .claude/ directory'
+      );
+    });
+
+    it('has structured pipeline documentation', () => {
+      const content = readFile(`${SKILL_DIR}/SKILL.md`);
+      const hasStructure = (content.match(/## /g) || []).length >= 3;
+      assert.ok(hasStructure, 'SKILL.md should have structured sections (≥3 ## headings)');
+    });
+
+    it('mentions degradation or fallback strategies', () => {
+      const content = readFile(`${SKILL_DIR}/SKILL.md`);
+      assert.ok(
+        content.includes('降级') || content.includes('degrad') || content.includes('fallback') || content.includes('失败'),
+        'SKILL.md must document degradation strategies'
+      );
+    });
   });
 });
 

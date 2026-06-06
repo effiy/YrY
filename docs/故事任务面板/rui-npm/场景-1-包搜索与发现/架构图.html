@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>场景-1 · 包搜索与发现 — 架构图</title>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>场景-1 · 包搜索与发现 + CDN 引用 — 架构图</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
@@ -49,7 +49,7 @@ h1{font-size:1.5rem;font-weight:700}
 .cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
 .cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
 </style></head><body><div class="container" id="rc">
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · 个人 npm 包管理</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 包搜索与发现</span><span class="bc-sep">/</span><span class="bc-current">📐 架构图</span></nav>
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · 个人 npm 包管理</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 包搜索与发现 + CDN 引用</span><span class="bc-sep">/</span><span class="bc-current">📐 架构图</span></nav>
 <nav class="cross-nav">
   <a class="cross-link" href="计划清单.html">📋 计划清单</a><span class="cross-sep">·</span>
   <span class="cross-link on">📐 架构图</span><span class="cross-sep">·</span>
@@ -58,25 +58,40 @@ h1{font-size:1.5rem;font-weight:700}
   <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
   <a class="cross-link" href="审查.html">📝 审查</a>
 </nav>
-<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>场景-1 · 包搜索与发现 — 架构图</h1>
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>场景-1 · 包搜索与发现 + CDN 引用 — 架构图</h1>
 <div class="toolbar"><div class="toolbar-actions">
 <button onclick="copyAsImage(this)">📋 Copy</button>
 <button onclick="downloadPNG(this)">🖼️ PNG</button>
 <button onclick="downloadPDF(this)">📄 PDF</button>
 </div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
-</div><p class="subtitle">npm search 命令流向：用户输入 → registry 查询 → JSON 解析 → 表格输出</p></div>
-<div class="diagram-container"><svg viewBox="0 0 800 320" xmlns="http://www.w3.org/2000/svg"><defs><marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#22d3ee"/></marker><linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0f172a"/><stop offset="100%" stop-color="#1e293b"/></linearGradient></defs><rect width="800" height="320" fill="url(#bgGrad)" rx="12"/><text x="400" y="28" text-anchor="middle" fill="#94a3b8" font-size="13" font-family="JetBrains Mono">npm Registry 搜索流</text>
-<rect x="30" y="50" width="130" height="50" rx="8" fill="#1e293b" stroke="#334155"/><text x="95" y="72" text-anchor="middle" fill="#fbbf24" font-size="12" font-family="JetBrains Mono">/rui-npm</text><text x="95" y="88" text-anchor="middle" fill="#94a3b8" font-size="10">用户输入</text>
-<line x1="160" y1="75" x2="230" y2="75" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="235" y="50" width="130" height="50" rx="8" fill="#1e293b" stroke="#334155"/><text x="300" y="72" text-anchor="middle" fill="#22d3ee" font-size="12" font-family="JetBrains Mono">npm search</text><text x="300" y="88" text-anchor="middle" fill="#94a3b8" font-size="10">--json --long</text>
-<line x1="365" y1="75" x2="435" y2="75" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="440" y="50" width="130" height="50" rx="8" fill="#1e293b" stroke="#334155"/><text x="505" y="72" text-anchor="middle" fill="#22d3ee" font-size="12" font-family="JetBrains Mono">JSON 解析</text><text x="505" y="88" text-anchor="middle" fill="#94a3b8" font-size="10">downloads 排序</text>
-<line x1="570" y1="75" x2="640" y2="75" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow)"/>
-<rect x="645" y="50" width="130" height="50" rx="8" fill="#1e293b" stroke="#334155"/><text x="710" y="72" text-anchor="middle" fill="#22c55e" font-size="12" font-family="JetBrains Mono">表格输出</text><text x="710" y="88" text-anchor="middle" fill="#94a3b8" font-size="10">top 20 结果</text>
-<rect x="440" y="160" width="335" height="70" rx="8" fill="#1e293b" stroke="#334155"/><text x="607" y="185" text-anchor="middle" fill="#f59e0b" font-size="11" font-family="JetBrains Mono">错误处理</text><text x="607" y="202" text-anchor="middle" fill="#94a3b8" font-size="10">关键词为空 → 提示用法</text><text x="607" y="218" text-anchor="middle" fill="#94a3b8" font-size="10">registry 不可达 → 引导手动访问 npmjs.com</text>
-<line x1="505" y1="100" x2="505" y2="155" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4 3"/></svg></div>
-<div class="cards"><div class="card"><div class="card-header"><div class="card-dot cyan"></div><h3>命令流</h3></div><ul><li>search — 关键词搜索 npm registry</li><li>校验关键词非空 → 友好提示</li><li>JSON 解析 → 按 downloads 降序</li><li>双格式输出：表格 | --json</li></ul></div><div class="card"><div class="card-header"><div class="card-dot amber"></div><h3>错误处理</h3></div><ul><li>关键词为空 → 提示用法 + 示例</li><li>registry 不可达 → npmjs.com URL</li><li>JSON 解析失败 → 明确报错不崩溃</li></ul></div><div class="card"><div class="card-header"><div class="card-dot emerald"></div><h3>输出格式</h3></div><ul><li>表格：名称/描述/版本/下载量/更新时间</li><li>JSON：--json 标志输出原始数据</li><li>按周下载量降序，top 20 结果</li></ul></div></div>
-<p class="footer">YrY v4.3.0 · rui-npm · S1-搜索</p></div>
+</div><p class="subtitle">npm search + cdn 命令流向：用户输入 → registry 查询/验证 → JSON 解析 → 表格输出 / CDN 三源 URL</p></div>
+<div class="diagram-container"><svg viewBox="0 0 800 320" xmlns="http://www.w3.org/2000/svg"><defs><marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#22d3ee"/></marker><linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0f172a"/><stop offset="100%" stop-color="#1e293b"/></linearGradient></defs><rect width="800" height="420" fill="url(#bgGrad)" rx="12"/><text x="400" y="28" text-anchor="middle" fill="#94a3b8" font-size="13" font-family="JetBrains Mono">npm Registry 搜索 + CDN 引用发现双路径</text>
+
+<!-- Search path -->
+<rect x="30" y="52" width="130" height="44" rx="8" fill="#1e293b" stroke="#334155"/><text x="95" y="72" text-anchor="middle" fill="#fbbf24" font-size="11" font-family="JetBrains Mono">/rui-npm</text><text x="95" y="86" text-anchor="middle" fill="#94a3b8" font-size="9">用户输入</text>
+<line x1="160" y1="74" x2="228" y2="74" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="233" y="52" width="124" height="44" rx="8" fill="#1e293b" stroke="#334155"/><text x="295" y="72" text-anchor="middle" fill="#22d3ee" font-size="11" font-family="JetBrains Mono">npm search</text><text x="295" y="86" text-anchor="middle" fill="#94a3b8" font-size="9">--json --long</text>
+<line x1="357" y1="74" x2="425" y2="74" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="430" y="52" width="124" height="44" rx="8" fill="#1e293b" stroke="#334155"/><text x="492" y="72" text-anchor="middle" fill="#22d3ee" font-size="11" font-family="JetBrains Mono">JSON 解析</text><text x="492" y="86" text-anchor="middle" fill="#94a3b8" font-size="9">downloads 排序</text>
+<line x1="554" y1="74" x2="622" y2="74" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="627" y="52" width="138" height="44" rx="8" fill="#1e293b" stroke="#334155"/><text x="696" y="72" text-anchor="middle" fill="#22c55e" font-size="11" font-family="JetBrains Mono">表格输出</text><text x="696" y="86" text-anchor="middle" fill="#94a3b8" font-size="9">top 20 / --json</text>
+
+<!-- CDN path -->
+<rect x="30" y="132" width="130" height="44" rx="8" fill="#1e293b" stroke="#475569"/><text x="95" y="152" text-anchor="middle" fill="#fbbf24" font-size="11" font-family="JetBrains Mono">/rui-npm cdn</text><text x="95" y="166" text-anchor="middle" fill="#94a3b8" font-size="9">pkg@version</text>
+<line x1="160" y1="154" x2="228" y2="154" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="233" y="132" width="124" height="44" rx="8" fill="#1e293b" stroke="#475569"/><text x="295" y="152" text-anchor="middle" fill="#a78bfa" font-size="11" font-family="JetBrains Mono">npm view</text><text x="295" y="166" text-anchor="middle" fill="#94a3b8" font-size="9">验证包存在性</text>
+<line x1="357" y1="154" x2="425" y2="154" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="430" y="132" width="124" height="44" rx="8" fill="#1e293b" stroke="#475569"/><text x="492" y="152" text-anchor="middle" fill="#a78bfa" font-size="11" font-family="JetBrains Mono">URL 生成</text><text x="492" y="166" text-anchor="middle" fill="#94a3b8" font-size="9">三路 CDN</text>
+<line x1="554" y1="154" x2="622" y2="154" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="627" y="132" width="138" height="44" rx="8" fill="#1e293b" stroke="#475569"/><text x="696" y="150" text-anchor="middle" fill="#a78bfa" font-size="10" font-family="JetBrains Mono">unpkg / jsDelivr</text><text x="696" y="164" text-anchor="middle" fill="#a78bfa" font-size="10">/ esm.sh</text>
+
+<!-- Error handling box -->
+<rect x="233" y="220" width="558" height="75" rx="8" fill="#1e293b" stroke="#334155"/><text x="512" y="245" text-anchor="middle" fill="#f59e0b" font-size="11" font-family="JetBrains Mono">错误处理</text><text x="512" y="262" text-anchor="middle" fill="#94a3b8" font-size="10">search: 关键词为空 → 提示用法 / registry 不可达 → 引导 npmjs.com 手动搜索</text><text x="512" y="278" text-anchor="middle" fill="#94a3b8" font-size="10">cdn: 包名为空 → 提示用法 / 包不存在 → 明确报错 / 网络不可达 → 引导手动 URL</text>
+
+<line x1="492" y1="96" x2="492" y2="128" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="492" y1="176" x2="492" y2="216" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4 3"/></svg></div>
+<div class="cards"><div class="card"><div class="card-header"><div class="card-dot cyan"></div><h3>命令流</h3></div><ul><li>search — 关键词搜索 npm registry</li><li>cdn — 查看包 CDN 引用地址（三源）</li><li>校验关键词非空 / 包名非空 → 友好提示</li><li>JSON 解析 → 按 downloads 降序</li><li>双格式输出：表格 | --json</li></ul></div><div class="card"><div class="card-header"><div class="card-dot amber"></div><h3>错误处理</h3></div><ul><li>关键词为空 → 提示用法 + 示例</li><li>registry 不可达 → npmjs.com URL</li><li>包不存在 (cdn) → 明确报错</li><li>JSON 解析失败 → 明确报错不崩溃</li></ul></div><div class="card"><div class="card-header"><div class="card-dot emerald"></div><h3>输出格式</h3></div><ul><li>search 表格：名称/描述/版本/下载量/更新时间</li><li>cdn 表格：CDN 名称 / URL（unpkg/jsDelivr/esm.sh）</li><li>JSON：--json 标志输出原始数据</li><li>按周下载量降序，top 20 结果</li></ul></div></div>
+<p class="footer">YrY v4.4.1 · rui-npm v1.2.0 · S1-搜索+CDN</p></div>
 <script>
 async function copyAsImage(b){const o=b.textContent;try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2}),bl=await new Promise(r=>c.toBlob(r,"image/png"));await navigator.clipboard.write([new ClipboardItem({"image/png":bl})]);b.textContent="✓ Copied!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}
 async function downloadPNG(b){const o=b.textContent;b.textContent="⏳...";try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2}),a=document.createElement("a");a.download="场景-1-包搜索与发现.png";a.href=c.toDataURL("image/png");a.click();b.textContent="✓ Done!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}

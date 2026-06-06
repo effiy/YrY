@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>包搜索与发现 · 知识图谱</title>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>包搜索与发现 + CDN 引用 · 知识图谱</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -53,7 +53,7 @@ h1{font-size:1.5rem;font-weight:700}
 .cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
 .cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
 </style></head><body><div class="container" id="report-container">
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · 个人 npm 包管理</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 包搜索与发现</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · 个人 npm 包管理</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 包搜索与发现 + CDN 引用</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
 
 <nav class="cross-nav">
   <a class="cross-link" href="计划清单.html">📋 计划清单</a><span class="cross-sep">·</span>
@@ -64,13 +64,13 @@ h1{font-size:1.5rem;font-weight:700}
   <a class="cross-link" href="审查.html">📝 审查</a>
 </nav>
 
-<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>🧩 包搜索与发现 · 知识图谱</h1>
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>🧩 包搜索与发现 + CDN 引用 · 知识图谱</h1>
 	<div class="toolbar"><div class="toolbar-actions">
 	<button onclick="copyAsImage(this)">📋 Copy</button>
 	<button onclick="downloadPNG(this)">🖼️ PNG</button>
 	<button onclick="downloadPDF(this)">📄 PDF</button>
 	</div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
-	</div><p class="subtitle">场景 1/4 — npm registry 搜索流程的知识结构</p></div>
+	</div><p class="subtitle">场景 1/4 — npm registry 搜索 + CDN 引用发现的知识结构</p></div>
 
 <div class="legend">
   <div class="legend-item"><span class="legend-dot domain"></span> 领域层（Domain）</div>
@@ -88,7 +88,7 @@ h1{font-size:1.5rem;font-weight:700}
   <div class="card"><div class="card-header"><span class="card-dot step"></span><h3>执行步骤</h3></div><ul><li>① 验证关键词非空</li><li>② npm search --json --long</li><li>③ 按周下载量降序 · 截取前 N</li><li>④ 格式化表格/JSON 输出</li><li>⑤ 附带搜索时间戳</li></ul></div>
 </div>
 
-<div class="footer">🧩 rui-npm 知识图谱 · 场景 1/4 · 包搜索与发现 · Powered by Cytoscape.js</div>
+<div class="footer">🧩 rui-npm 知识图谱 · 场景 1/4 · 包搜索与发现 + CDN 引用 · Powered by Cytoscape.js</div>
 </div>
 
 <script>
@@ -106,7 +106,7 @@ style:[{selector:'node',style:{'background-color':'#1e293b','label':'data(label)
 {selector:'edge[relation="next"]',style:{'line-color':'#3B82F6','target-arrow-color':'#3B82F6','width':2}}],
 elements:{nodes:[
 {data:{id:'story',label:'Story\nrui-npm',type:'domain'}},
-{data:{id:'scene1',label:'场景 1\n包搜索与发现',type:'scene'}},
+{data:{id:'scene1',label:'场景 1\n包搜索与发现\n+ CDN 引用',type:'scene'}},
 {data:{id:'skill',label:'rui-npm\n技能',type:'skill'}},
 {data:{id:'cmd',label:'search\n子命令',type:'flow'}},
 {data:{id:'validate',label:'① 参数校验',type:'step'}},

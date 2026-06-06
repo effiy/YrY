@@ -94,7 +94,7 @@
 
 
 <h1>rui-npm 知识图谱</h1>
-<p class="subtitle">v1.0.0 · 2026-06-05 · 9 步骤 · 3 数据域 · 4 数据流 · 4 连接边</p>
+<p class="subtitle">v1.2.0 · 2026-06-06 · 10 步骤 · 3 数据域 · 5 数据流 · 5 连接边</p>
 
 <div class="graph">
 
@@ -115,8 +115,9 @@
 </div>
 
 <div class="column">
-  <h2>📊 步骤（9 个子命令）</h2>
+  <h2>📊 步骤（10 个子命令）</h2>
   <div class="node step"><span class="label">search</span><span class="desc">按关键词搜索 npm registry</span></div>
+  <div class="node step"><span class="label">cdn</span><span class="desc">查看包在 unpkg/jsDelivr/esm.sh 的 CDN 引用地址</span></div>
   <div class="node step"><span class="label">install</span><span class="desc">安装包到当前项目</span></div>
   <div class="node step"><span class="label">update</span><span class="desc">更新已安装包到最新兼容版本</span></div>
   <div class="node step"><span class="label">list</span><span class="desc">列出当前项目已安装的依赖</span></div>
@@ -133,6 +134,11 @@
     <span class="label">包搜索流</span>
     <span class="desc">关键词 → registry 搜索 → 解析排序 → 结构化输出</span>
     <span class="meta">步骤: search</span>
+  </div>
+  <div class="node flow">
+    <span class="label">CDN 引用发现流</span>
+    <span class="desc">包名+版本 → npm view 验证 → 三路 CDN URL 生成 → 表格/JSON 输出</span>
+    <span class="meta">步骤: cdn</span>
   </div>
   <div class="node flow">
     <span class="label">包安装流</span>
@@ -158,7 +164,7 @@
       <span class="from">本地项目</span>
       <span class="arrow">→</span>
       <span class="to">npm Registry</span>
-      <span class="label">查询/下载（搜索·安装·审计流）</span>
+      <span class="label">查询/下载（搜索·CDN·安装·审计流）</span>
     </div>
     <div class="edge-item">
       <span class="from">本地文件系统</span>
@@ -184,13 +190,13 @@
 <div class="column">
   <h2>📐 分层视图</h2>
   <div class="layer-bar">
-    <span class="layer-tag">命令面: search·install·update·list·info·uninstall·publish·npx·audit</span>
+    <span class="layer-tag">命令面: search·cdn·install·update·list·info·uninstall·publish·npx·audit</span>
   </div>
   <div class="layer-bar">
     <span class="layer-tag">数据域: npm-registry·local-project·local-filesystem</span>
   </div>
   <div class="layer-bar">
-    <span class="layer-tag">数据流: 搜索流·安装流·发布流·审计流</span>
+    <span class="layer-tag">数据流: 搜索流·CDN流·安装流·发布流·审计流</span>
   </div>
 </div>
 

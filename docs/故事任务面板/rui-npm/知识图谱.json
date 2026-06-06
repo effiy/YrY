@@ -1,17 +1,17 @@
 {
   "meta": {
     "story": "rui-npm",
-    "version": "1.0.0",
-    "generated": "2026-06-05",
+    "version": "1.2.0",
+    "generated": "2026-06-06",
     "generator": "deepseek-v4-pro"
   },
   "domains": [
     {
       "id": "npm-registry",
       "label": "npm Registry 交互",
-      "description": "与 npm 官方 registry 的搜索、查询、发布操作",
+      "description": "与 npm 官方 registry 的搜索、查询、CDN 引用发现、发布操作",
       "skills": ["rui-npm"],
-      "sub_commands": ["search", "info", "publish"]
+      "sub_commands": ["search", "info", "cdn", "publish"]
     },
     {
       "id": "dependency-management",
@@ -42,6 +42,13 @@
       "steps": ["validate-keyword", "npm-search-json", "sort-by-downloads", "format-output"],
       "entry": "search <keyword>",
       "exit": "表格/JSON 搜索结果"
+    },
+    {
+      "id": "cdn-flow",
+      "label": "CDN 引用发现流程",
+      "steps": ["validate-pkg-name", "parse-version", "npm-view-verify", "generate-cdn-urls", "format-output"],
+      "entry": "cdn <pkg>[@version]",
+      "exit": "unpkg/jsDelivr/esm.sh CDN 地址"
     },
     {
       "id": "install-flow",
@@ -85,7 +92,7 @@
       "type": "executable",
       "label": "rui-npm.mjs",
       "path": "skills/rui-npm/rui-npm.mjs",
-      "description": "9 子命令的统一执行入口"
+      "description": "10 子命令的统一执行入口"
     },
     {
       "id": "help-rui-npm",
@@ -97,9 +104,9 @@
     {
       "id": "scene-1",
       "type": "scene",
-      "label": "场景 1: 包搜索与发现",
+      "label": "场景 1: 包搜索与发现 + CDN 引用",
       "path": "docs/故事任务面板/rui-npm/场景-1-包搜索与发现/",
-      "covers": ["FP1"]
+      "covers": ["FP1", "FP11"]
     },
     {
       "id": "scene-2",
@@ -132,6 +139,7 @@
     {"source": "skill-rui-npm", "target": "scene-4", "relation": "contains"},
     {"source": "exec-rui-npm", "target": "npm-registry", "relation": "depends_on"},
     {"source": "scene-1", "target": "search-flow", "relation": "maps_to"},
+    {"source": "scene-1", "target": "cdn-flow", "relation": "maps_to"},
     {"source": "scene-2", "target": "install-flow", "relation": "maps_to"},
     {"source": "scene-2", "target": "update-flow", "relation": "maps_to"},
     {"source": "scene-3", "target": "publish-flow", "relation": "maps_to"},
@@ -139,9 +147,10 @@
   ],
   "layers": {
     "domain": ["npm-registry", "dependency-management", "security-audit", "local-publish"],
-    "flow": ["search-flow", "install-flow", "update-flow", "publish-flow", "audit-flow"],
+    "flow": ["search-flow", "cdn-flow", "install-flow", "update-flow", "publish-flow", "audit-flow"],
     "step": [
       "validate-keyword", "npm-search-json", "sort-by-downloads", "format-output",
+      "validate-pkg-name", "parse-version", "npm-view-verify", "generate-cdn-urls",
       "check-package-json", "npm-install-save", "confirm-version",
       "record-current-version", "npm-update", "compare-versions",
       "validate-path", "check-npm-login", "generate-package-json", "conflict-detection", "npm-publish", "cleanup-temp",

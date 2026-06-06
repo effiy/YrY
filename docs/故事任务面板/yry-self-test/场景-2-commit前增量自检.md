@@ -212,7 +212,7 @@ sequenceDiagram
 | 单文件独立执行 | 定向检查 | `node tests/skills/rui.test.mjs` 单独运行 |
 | 安全基线扫描 | 安全面检查 | `tests/integration/cross-references.test.mjs` §安全基线 |
 
-### 待实现
+### 待实现（已评估优先级）
 
 | 项目 | 优先级 | 说明 |
 |------|--------|------|
