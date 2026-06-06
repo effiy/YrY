@@ -1,73 +1,412 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>commit前增量自检 — 架构图</title>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YrY Self-Test — 场景 2: 提交前增量自检</title>
 <!-- ═══ CDN: YrY 共享样式 ═══ -->
-<link rel="stylesheet" href="../../../../cdn/shared.css">
-<link rel="stylesheet" href="../../../../cdn/theme-mono.css">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
-.container{max-width:1200px;margin:0 auto}.header{margin-bottom:1.5rem}
-.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
-.pulse-dot{width:12px;height:12px;background:#22d3ee;border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-h1{font-size:1.5rem;font-weight:700}
-.subtitle{color:#94a3b8;font-size:.875rem;margin-left:1.75rem}
-.toolbar{display:flex;gap:.5rem;margin-left:auto;flex-shrink:0;align-items:center}
-.toolbar-toggle{background:transparent;border:none;color:#475569;cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem}
-.toolbar-toggle:hover{color:#94a3b8;background:rgba(30,41,59,.5)}
-.toolbar-actions{display:none;gap:.5rem}
-.toolbar.expanded .toolbar-actions{display:flex}
-.toolbar-actions button{background:rgba(30,41,59,.8);border:1px solid #334155;color:#94a3b8;padding:.375rem .75rem;border-radius:.375rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s;white-space:nowrap}
-.toolbar-actions button:hover{background:rgba(51,65,85,.8);color:white;border-color:#475569}
-.diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
-.diagram-container svg{width:100%;min-width:900px;display:block}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
-.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
-.card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
-.card-dot{width:8px;height:8px;border-radius:50%}
-.card-dot.cyan{background:#22d3ee}.card-dot.emerald{background:#34d399}
-.card-dot.violet{background:#a78bfa}.card-dot.amber{background:#fbbf24}
-.card-dot.rose{background:#fb7185}.card-dot.blue{background:#3B82F6}
-.card h3{font-size:.875rem;font-weight:600}
-.card ul{list-style:none;color:#94a3b8;font-size:.75rem}
-.card li{margin-bottom:.375rem}
-.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
-@media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
+<link rel="stylesheet" href="../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../cdn/theme.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      background: #020617;
+      min-height: 100vh;
+      padding: 2rem;
+      color: white;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header { margin-bottom: 2rem; }
+    .header-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+    .pulse-dot { width: 12px; height: 12px; background: #22d3ee; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
+    .subtitle { color: #94a3b8; font-size: 0.875rem; margin-left: 1.75rem; }
+    .diagram-container {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 1rem;
+      border: 1px solid #1e293b;
+      padding: 1.5rem;
+      overflow-x: auto;
+    }
+    svg { width: 100%; min-width: 920px; display: block; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .card { background: rgba(15, 23, 42, 0.5); border-radius: 0.75rem; border: 1px solid #1e293b; padding: 1.25rem; }
+    .card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .card-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .card-dot.cyan { background: #22d3ee; }
+    .card-dot.emerald { background: #34d399; }
+    .card-dot.violet { background: #a78bfa; }
+    .card-dot.amber { background: #fbbf24; }
+    .card-dot.rose { background: #fb7185; }
+    .card h3 { font-size: 0.875rem; font-weight: 600; }
+    .card ul { list-style: none; color: #94a3b8; font-size: 0.75rem; }
+    .card li { margin-bottom: 0.375rem; }
+    .footer { text-align: center; margin-top: 1.5rem; color: #475569; font-size: 0.75rem; }
+    .toolbar { display: flex; gap: 0.5rem; margin-left: auto; flex-shrink: 0; align-items: center; }
+    .toolbar-toggle { background: transparent; border: none; color: #475569; cursor: pointer; font-size: 1.25rem; line-height: 1; padding: 0.25rem 0.5rem; border-radius: 0.375rem; transition: color 0.2s, background 0.2s; }
+    .toolbar-toggle:hover { color: #94a3b8; background: rgba(30, 41, 59, 0.5); }
+    .toolbar-actions { display: none; gap: 0.5rem; }
+    .toolbar.expanded .toolbar-actions { display: flex; }
+    .toolbar-actions button {
+      background: rgba(30, 41, 59, 0.8); border: 1px solid #334155; color: #94a3b8;
+      padding: 0.375rem 0.75rem; border-radius: 0.375rem; font-family: inherit;
+      font-size: 0.75rem; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+    }
+    .toolbar-actions button:hover { background: rgba(51, 65, 85, 0.8); color: white; border-color: #475569; }
+    @media print { body { background: #020617; padding: 1rem; } .toolbar { display: none !important; } }
+  
+.cross-nav{display:flex;gap:6px;justify-content:center;align-items:center;margin-bottom:2rem;flex-wrap:wrap}
+.cross-nav .cross-link{color:#22d3ee;text-decoration:none;font-size:0.78rem;padding:4px 12px;border-radius:4px;transition:color 0.15s,background 0.15s}
+.cross-nav .cross-link:hover{color:#fbbf24;background:rgba(251,191,36,0.08)}
+.cross-nav .cross-link.on{color:#fbbf24;font-weight:600}
+.cross-nav .cross-sep{color:#475569;font-size:0.5rem;opacity:0.4;user-select:none}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
 
-/* ── Breadcrumb ─────────────────────────── */
-.breadcrumb {
-  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
-  margin-bottom: 1.25rem; font-size: 0.76rem;
-}
-.breadcrumb a {
-  color: #7aa2f7; text-decoration: none; transition: color 0.15s;
-}
-.breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
-.breadcrumb .bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
-.breadcrumb .bc-current { color: #94a3b8; font-weight: 500; }
-.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap}
-.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
-.cross-link:hover{color:#fbbf24;background:rgba(251,191,36,0.06)}
-.cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
-.cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
-</style></head><body><div class="container" id="rc">
+</style>
+</head>
+<body>
+  <div class="yry-container" id="report-container">
 <nav class="yry-breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">yry-self-test · 自主测试方案</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 2 · commit 前增量自检</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">📐 架构图</span></nav>
-<div class="yry-cross-nav"><a href="计划清单.html" class="yry-cross-link">📋 清单</a><span class="yry-cross-sep">·</span><span class="cross-link on">📐 架构</span><span class="yry-cross-sep">·</span><a href="知识图谱.html" class="yry-cross-link">🔗 图谱</a><span class="yry-cross-sep">·</span><a href="测试面板.html" class="yry-cross-link">🧪 测试</a><span class="yry-cross-sep">·</span><a href="演示.html" class="yry-cross-link">💡 演示</a><span class="yry-cross-sep">·</span><a href="审查.html" class="yry-cross-link">📝 审查</a></div>
-<div class="yry-mono-header"><div class="yry-mono-header-row"><div class="pulse-dot"></div><h1>commit前增量自检 — 架构图</h1>
-<div class="yry-toolbar"><div class="yry-toolbar-actions">
-<button onclick="copyAsImage(this)">📋 Copy</button>
-<button onclick="downloadPNG(this)">🖼️ PNG</button>
-<button onclick="downloadPDF(this)">📄 PDF</button>
-</div><button class="yry-toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
-</div><p class="yry-mono-subtitle">变更识别→影响面计算→P0门禁→增量报告</p></div>
-<div class="diagram-container"><svg viewBox="0 0 1100 360"><defs><pattern id="g" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width=".5"/></pattern></defs><rect width="100%" height="100%" fill="url(#g)"/><rect x="30" y="15" width="1040" height="55" rx="10" fill="rgba(34,211,238,0.04)" stroke="#22d3ee" stroke-width="1"/><text x="50" y="37" fill="#22d3ee" font-size="10" font-weight="600">Trigger: git add → commit前自动触发增量自检</text><rect x="30" y="80" width="1040" height="55" rx="10" fill="rgba(34,211,238,0.04)" stroke="#a78bfa" stroke-width="1"/><text x="50" y="102" fill="#a78bfa" font-size="10" font-weight="600">Phase 1: 变更识别 → git diff --name-only 精确变更集</text><rect x="30" y="145" width="1040" height="55" rx="10" fill="rgba(34,211,238,0.04)" stroke="#34d399" stroke-width="1"/><text x="50" y="167" fill="#34d399" font-size="10" font-weight="600">Phase 2: 影响面计算 → 依赖链追踪·直接+级联范围</text><rect x="30" y="210" width="1040" height="55" rx="10" fill="rgba(34,211,238,0.04)" stroke="#fbbf24" stroke-width="1"/><text x="50" y="232" fill="#fbbf24" font-size="10" font-weight="600">Phase 3: P0门禁 → 铁律合规·安全底线·分支隔离</text><rect x="30" y="275" width="1040" height="55" rx="10" fill="rgba(34,211,238,0.04)" stroke="#fb7185" stroke-width="1"/><text x="50" y="297" fill="#fb7185" font-size="10" font-weight="600">Output: 增量报告 → P0阻断(禁止commit)+警告(建议修复)</text><line x1="550" y1="70" x2="550" y2="80" stroke="#64748b" stroke-width="1.5"/><line x1="550" y1="135" x2="550" y2="145" stroke="#64748b" stroke-width="1.5"/><line x1="550" y1="200" x2="550" y2="210" stroke="#64748b" stroke-width="1.5"/><line x1="550" y1="265" x2="550" y2="275" stroke="#64748b" stroke-width="1.5"/></svg></div>
-<div class="yry-mono-cards"><div class="yry-mono-card"><div class="yry-mono-card-header"><div class="card-dot cyan"></div><h3>触发</h3></div><ul><li>git commit前触发</li><li>仅检查变更文件</li></ul></div><div class="yry-mono-card"><div class="yry-mono-card-header"><div class="card-dot violet"></div><h3>变更识别</h3></div><ul><li>git diff精确变更</li><li>新增/修改/删除</li></ul></div><div class="yry-mono-card"><div class="yry-mono-card-header"><div class="card-dot emerald"></div><h3>影响面</h3></div><ul><li>依赖链追踪</li><li>级联影响计算</li></ul></div><div class="yry-mono-card"><div class="yry-mono-card-header"><div class="card-dot amber"></div><h3>P0门禁</h3></div><ul><li>P0阻断禁止commit</li><li>警告建议修复</li></ul></div></div>
-<p class="yry-mono-footer">YrY v1.1.0 · 自主测试 · 场景2: commit前增量自检</p></div>
-<script>
-async function copyAsImage(b){const o=b.textContent;try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2}),bl=await new Promise(r=>c.toBlob(r,"image/png"));await navigator.clipboard.write([new ClipboardItem({"image/png":bl})]);b.textContent="✓ Copied!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}
-async function downloadPNG(b){const o=b.textContent;b.textContent="⏳...";try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2}),a=document.createElement("a");a.download="场景2自检.png";a.href=c.toDataURL("image/png");a.click();b.textContent="✓ Done!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}
-async function downloadPDF(b){const o=b.textContent;b.textContent="⏳...";try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2});const{jsPDF}=window.jspdf;const d=new jsPDF({orientation:c.width>c.height?"l":"p",unit:"px",format:[c.width/2,c.height/2]});d.addImage(c.toDataURL("image/png"),"PNG",0,0,c.width/2,c.height/2);d.save("场景2自检.pdf");b.textContent="✓ Done!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}
-</script><script src="../../../../cdn/shared.js"></script>
-</body></html>
+
+<div class="yry-cross-nav"><a class="yry-cross-link" href="场景-2-commit前增量自检/计划清单.html">📋 清单</a><span class="yry-cross-sep">·</span><span class="cross-link on">📐 架构</span><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="场景-2-commit前增量自检/知识图谱.html">🔗 图谱</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="场景-2-commit前增量自检/测试面板.html">🧪 测试</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="场景-2-commit前增量自检/演示.html">💡 演示</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="场景-2-commit前增量自检/审查.html">📝 审查</a></div>
+
+    <div class="yry-header">
+      <div class="header-row">
+        <div class="pulse-dot"></div>
+        <h1>YrY Self-Test — 场景 2: 提交前增量自检</h1>
+        <div class="toolbar">
+          <div class="toolbar-actions">
+            <button onclick="copySVG(this)">&#x1F4CB; Copy SVG</button>
+            <button onclick="downloadPNG(this)">&#x1F5BC; PNG</button>
+            <button onclick="downloadSVG(this)">&#x1F4C4; SVG</button>
+          </div>
+          <button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export" aria-label="Export">&#x22EF;</button>
+        </div>
+      </div>
+      <p class="subtitle">Commit Hook 触发 &middot; 5 步增量门禁 &middot; 分支隔离验证 &middot; 变更范围约束 &middot; P0 回归检测 &middot; 文档同步检查</p>
+    </div>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1000 850" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+          </marker>
+          <marker id="arr-pass" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#34d399"/>
+          </marker>
+          <marker id="arr-fail" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#fb7185"/>
+          </marker>
+          <marker id="arr-warn" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24"/>
+          </marker>
+          <marker id="arr-cyan" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#22d3ee"/>
+          </marker>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+
+        <rect width="100%" height="100%" fill="url(#grid)"/>
+
+        <!-- Trigger -->
+        <rect x="350" y="30" width="300" height="44" rx="8" fill="#0f172a"/>
+        <rect x="350" y="30" width="300" height="44" rx="8" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="500" y="57" fill="#22d3ee" font-size="12" font-weight="700" text-anchor="middle">&#x1F4E6; 提交前触发增量自检</text>
+
+        <line x1="500" y1="74" x2="500" y2="100" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arr-cyan)"/>
+
+        <!-- === SCOPE: 变更范围识别 (preliminary step, not a gate) === -->
+        <rect x="160" y="104" width="320" height="50" rx="6" fill="#0f172a"/>
+        <rect x="160" y="104" width="320" height="50" rx="6" fill="rgba(8,51,68,0.3)" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="190" y="125" fill="#22d3ee" font-size="11" font-weight="600">&#x1F50D; SCOPE: &#x8BC6;&#x522B;&#x53D8;&#x66F4;&#x8303;&#x56F4;</text>
+        <text x="190" y="144" fill="#94a3b8" font-size="9">git diff &#x2014; &#x67E5;&#x8BE2;&#x53D8;&#x66F4;&#x6587;&#x4EF6;&#x6E05;&#x5355; &#xb7; &#x65B0;&#x589E;/&#x4FEE;&#x6539;/&#x5220;&#x9664;</text>
+
+        <line x1="500" y1="154" x2="500" y2="180" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arr-cyan)"/>
+
+        <!-- === STEP 2: BRANCH isolation check (GATE 1 - BLOCK) === -->
+        <rect x="140" y="184" width="360" height="54" rx="6" fill="#0f172a"/>
+        <rect x="140" y="184" width="360" height="54" rx="6" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="165" y="205" fill="white" font-size="11" font-weight="600">&#x1F512; G1: &#x5206;&#x652F;&#x9694;&#x79BB;&#x95E8;&#x7981;</text>
+        <text x="165" y="221" fill="#94a3b8" font-size="9">git branch --show-current &#x2260; main?</text>
+        <text x="165" y="233" fill="#64748b" font-size="8">&#x5F53;&#x524D;&#x5FC5;&#x987B;&#x5728; feat/&lt;name&gt; &#x72EC;&#x7ACB;&#x5DE5;&#x4F5C;&#x533A;</text>
+
+        <polygon points="530,211 550,226 530,241 510,226" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>
+        <polygon points="530,211 550,226 530,241 510,226" fill="rgba(30,41,59,0.5)"/>
+        <text x="530" y="230" fill="#94a3b8" font-size="9" text-anchor="middle">?</text>
+        <line x1="500" y1="226" x2="510" y2="226" stroke="#94a3b8" stroke-width="1.5"/>
+        <!-- FAIL → BLOCK -->
+        <line x1="550" y1="226" x2="640" y2="226" stroke="#fb7185" stroke-width="2" marker-end="url(#arr-fail)"/>
+        <text x="593" y="220" fill="#fb7185" font-size="9" font-weight="600" text-anchor="middle">&#x274C; FAIL</text>
+        <!-- PASS ↓ -->
+        <line x1="530" y1="241" x2="530" y2="272" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr-pass)"/>
+        <text x="545" y="260" fill="#34d399" font-size="9">PASS</text>
+
+        <!-- === STEP 3: RANGE check (GATE 2 - BLOCK) === -->
+        <rect x="140" y="276" width="360" height="54" rx="6" fill="#0f172a"/>
+        <rect x="140" y="276" width="360" height="54" rx="6" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="165" y="297" fill="white" font-size="11" font-weight="600">&#x1F4E6; G2: &#x53D8;&#x66F4;&#x8303;&#x56F4;&#x7EA6;&#x675F;</text>
+        <text x="165" y="313" fill="#94a3b8" font-size="9">&#x53D8;&#x66F4;&#x6587;&#x4EF6; &#x2286; docs/&#x6545;&#x4E8B;&#x4EFB;&#x52A1;&#x9762;&#x677F;/&lt;&#x6545;&#x4E8B;&gt;?</text>
+        <text x="165" y="325" fill="#64748b" font-size="8">&#x5168;&#x90E8;&#x53D8;&#x66F4;&#x5FC5;&#x987B;&#x5728;&#x5F53;&#x524D;&#x6545;&#x4E8B;&#x76EE;&#x5F55;&#x5185;</text>
+
+        <polygon points="530,303 550,318 530,333 510,318" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>
+        <polygon points="530,303 550,318 530,333 510,318" fill="rgba(30,41,59,0.5)"/>
+        <text x="530" y="322" fill="#94a3b8" font-size="9" text-anchor="middle">?</text>
+        <line x1="500" y1="318" x2="510" y2="318" stroke="#94a3b8" stroke-width="1.5"/>
+        <!-- FAIL → BLOCK -->
+        <line x1="550" y1="318" x2="640" y2="318" stroke="#fb7185" stroke-width="2" marker-end="url(#arr-fail)"/>
+        <text x="593" y="312" fill="#fb7185" font-size="9" font-weight="600" text-anchor="middle">&#x274C; FAIL</text>
+        <!-- PASS ↓ -->
+        <line x1="530" y1="333" x2="530" y2="364" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr-pass)"/>
+        <text x="545" y="352" fill="#34d399" font-size="9">PASS</text>
+
+        <!-- === STEP 4: P0 regression check (GATE 3 - BLOCK) === -->
+        <rect x="140" y="368" width="360" height="54" rx="6" fill="#0f172a"/>
+        <rect x="140" y="368" width="360" height="54" rx="6" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+        <text x="165" y="389" fill="white" font-size="11" font-weight="600">&#x26D4; G3: P0 &#x56DE;&#x5F52;&#x68C0;&#x6D4B;</text>
+        <text x="165" y="405" fill="#94a3b8" font-size="9">&#x53D8;&#x66F4;&#x540E;&#x963B;&#x65AD;&#x6807;&#x8BC6;&#x6570; &#x2264; &#x53D8;&#x66F4;&#x524D;&#x963B;&#x65AD;&#x6807;&#x8BC6;&#x6570;?</text>
+        <text x="165" y="417" fill="#64748b" font-size="8">&#x5BF9;&#x6BD4;&#x53D8;&#x66F4;&#x524D;&#x540E;&#x7684;&#x963B;&#x65AD;&#x6E05;&#x5355;&#xFF0C;&#x65B0;&#x589E;&#x5219;&#x963B;&#x65AD;</text>
+
+        <polygon points="530,395 550,410 530,425 510,410" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>
+        <polygon points="530,395 550,410 530,425 510,410" fill="rgba(30,41,59,0.5)"/>
+        <text x="530" y="414" fill="#94a3b8" font-size="9" text-anchor="middle">?</text>
+        <line x1="500" y1="410" x2="510" y2="410" stroke="#94a3b8" stroke-width="1.5"/>
+        <!-- FAIL → BLOCK -->
+        <line x1="550" y1="410" x2="640" y2="410" stroke="#fb7185" stroke-width="2" marker-end="url(#arr-fail)"/>
+        <text x="593" y="404" fill="#fb7185" font-size="9" font-weight="600" text-anchor="middle">&#x274C; FAIL</text>
+        <!-- PASS ↓ -->
+        <line x1="530" y1="425" x2="530" y2="456" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr-pass)"/>
+        <text x="545" y="444" fill="#34d399" font-size="9">PASS</text>
+
+        <!-- === STEP 5: DOC sync check (GATE 4 - WARN) === -->
+        <rect x="140" y="460" width="360" height="54" rx="6" fill="#0f172a"/>
+        <rect x="140" y="460" width="360" height="54" rx="6" fill="rgba(30,41,59,0.5)" stroke="#fbbf24" stroke-width="1.5"/>
+        <text x="165" y="481" fill="#fbbf24" font-size="11" font-weight="600">&#x1F4C4; G4: &#x6587;&#x6863;&#x4E00;&#x81F4;&#x6027;</text>
+        <text x="165" y="497" fill="#94a3b8" font-size="9">&#x4EE3;&#x7801;&#x53D8;&#x66F4; &#x2192; &#x5173;&#x8054;&#x573A;&#x666F;&#x6587;&#x6863;&#x5DF2;&#x540C;&#x6B65;?</text>
+        <text x="165" y="509" fill="#64748b" font-size="8">&#x7EAF;&#x6587;&#x6863;&#x53D8;&#x66F4;&#x8DF3;&#x8FC7;&#xFF0C;&#x4EE3;&#x7801;&#x53D8;&#x800C;&#x6587;&#x6863;&#x672A;&#x52A8;&#x5219;&#x8B66;&#x544A;</text>
+
+        <polygon points="530,487 550,502 530,517 510,502" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5"/>
+        <polygon points="530,487 550,502 530,517 510,502" fill="rgba(30,41,59,0.5)"/>
+        <text x="530" y="506" fill="#fbbf24" font-size="9" text-anchor="middle">?</text>
+        <line x1="500" y1="502" x2="510" y2="502" stroke="#94a3b8" stroke-width="1.5"/>
+        <!-- FAIL → WARN -->
+        <line x1="550" y1="502" x2="640" y2="502" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-warn)"/>
+        <text x="593" y="496" fill="#fbbf24" font-size="9" text-anchor="middle">WARN</text>
+        <!-- PASS ↓ -->
+        <line x1="530" y1="517" x2="530" y2="555" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr-pass)"/>
+        <text x="545" y="539" fill="#34d399" font-size="9">PASS</text>
+
+        <!-- BLOCK Collector -->
+        <rect x="650" y="178" width="320" height="260" rx="8" fill="rgba(136,19,55,0.08)" stroke="#fb7185" stroke-width="1.5" stroke-dasharray="6,3"/>
+        <text x="810" y="202" fill="#fb7185" font-size="11" font-weight="700" text-anchor="middle">&#x1F6AB; BLOCK &#x2014; &#x7ACB;&#x5373;&#x963B;&#x65AD;</text>
+        <line x1="670" y1="214" x2="950" y2="214" stroke="#fb7185" stroke-width="0.5"/>
+        <text x="670" y="236" fill="#fb7185" font-size="9">G1 FAIL: &#x5206;&#x652F;&#x9694;&#x79BB;&#x88AB;&#x7ED5;&#x8FC7;</text>
+        <text x="680" y="252" fill="#94a3b8" font-size="8">&#x2192; &#x53D8;&#x66F4;&#x53D1;&#x751F;&#x5728;&#x4E3B;&#x5206;&#x652F;&#x4E0A; &#xb7; git checkout -b feat/name</text>
+        <text x="670" y="276" fill="#fb7185" font-size="9">G2 FAIL: &#x8DE8;&#x6545;&#x4E8B;&#x6C61;&#x67D3;</text>
+        <text x="680" y="292" fill="#94a3b8" font-size="8">&#x2192; &#x5217;&#x51FA;&#x8D8A;&#x754C;&#x6587;&#x4EF6;&#x6E05;&#x5355;&#x53CA;&#x5176;&#x6240;&#x5C5E;&#x6545;&#x4E8B;</text>
+        <text x="670" y="316" fill="#fb7185" font-size="9">G3 FAIL: P0 &#x56DE;&#x5F52; &#x2014; &#x65B0;&#x589E;&#x963B;&#x65AD;</text>
+        <text x="680" y="332" fill="#94a3b8" font-size="8">&#x2192; &#x53D8;&#x66F4;&#x524D;: N &#x963B;&#x65AD; / &#x53D8;&#x66F4;&#x540E;: M &#x963B;&#x65AD; (M > N)</text>
+        <text x="670" y="358" fill="#94a3b8" font-size="8">&#x963B;&#x65AD;&#x5373;&#x505C;&#xFF1A;&#x4EFB;&#x4E00;&#x963B;&#x65AD;&#x7ACB;&#x5373;&#x505C;&#x6B62;&#x540E;&#x7EED;&#x68C0;&#x67E5;</text>
+        <text x="670" y="380" fill="#94a3b8" font-size="8">&#x963B;&#x65AD;&#x62A5;&#x544A;&#x542B;: &#x9879;&#x540D; + &#x8BC1;&#x636E; + &#x4FEE;&#x590D;&#x8DEF;&#x5F84;</text>
+
+        <!-- WARN Collector -->
+        <rect x="650" y="458" width="320" height="100" rx="8" fill="rgba(251,191,36,0.06)" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="6,3"/>
+        <text x="810" y="482" fill="#fbbf24" font-size="11" font-weight="700" text-anchor="middle">&#x26A0; WARN &#x2014; &#x6587;&#x6863;&#x6EDE;&#x540E;</text>
+        <line x1="670" y1="494" x2="950" y2="494" stroke="#fbbf24" stroke-width="0.5"/>
+        <text x="670" y="516" fill="#fbbf24" font-size="9">G4 WARN: &#x6587;&#x6863;&#x6EDE;&#x540E;&#x4E8E;&#x4EE3;&#x7801;</text>
+        <text x="680" y="532" fill="#94a3b8" font-size="8">&#x2192; &#x5217;&#x51FA;&#x9700;&#x540C;&#x6B65;&#x7684;&#x573A;&#x666F;&#x6587;&#x6863;&#x7AE0;&#x8282; &#xb7; &#x5EFA;&#x8BAE;&#x63D0;&#x4EA4;&#x524D;&#x4FEE;&#x590D;</text>
+        <text x="680" y="548" fill="#64748b" font-size="8">&#x7EAF;&#x6587;&#x6863;&#x53D8;&#x66F4;&#x81EA;&#x52A8;&#x8DF3;&#x8FC7;&#x6B64;&#x6B65;</text>
+
+        <!-- PASS Node -->
+        <rect x="340" y="570" width="320" height="52" rx="10" fill="#0f172a"/>
+        <rect x="340" y="570" width="320" height="52" rx="10" fill="rgba(6,78,59,0.3)" stroke="#34d399" stroke-width="2"/>
+        <text x="500" y="592" fill="#34d399" font-size="13" font-weight="700" text-anchor="middle">&#x2705; &#x589E;&#x91CF;&#x81EA;&#x68C0;&#x901A;&#x8FC7;</text>
+        <text x="500" y="612" fill="#94a3b8" font-size="9" text-anchor="middle">&#x4EC5;&#x68C0;&#x67E5;&#x53D7;&#x5F71;&#x54CD;&#x5173;&#x5361; &#xb7; &#x4E0D;&#x89E6;&#x53D1;&#x5168;&#x91CF; &#xb7; git commit & push</text>
+
+        <!-- Arrow from PASS to Report -->
+        <line x1="500" y1="622" x2="500" y2="650" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr-pass)"/>
+
+        <!-- Report Output -->
+        <rect x="260" y="655" width="480" height="44" rx="6" fill="#0f172a"/>
+        <rect x="260" y="655" width="480" height="44" rx="6" fill="rgba(30,41,59,0.3)" stroke="#64748b" stroke-width="1"/>
+        <text x="500" y="674" fill="#94a3b8" font-size="9" text-anchor="middle">&#x1F4CB; &#x589E;&#x91CF;&#x62A5;&#x544A;: 5/5 &#x65AD;&#x8A00;&#x901A;&#x8FC7; &#xb7; &lt; 10 &#x79D2; &#x5B8C;&#x6210; (&lt; 20 &#x6587;&#x4EF6;) &#xb7; &#x53EA;&#x8BFB;&#x975E;&#x4FB5;&#x5165; &#xb7; 2026-06-06T08:30:00.000Z</text>
+        <text x="500" y="690" fill="#64748b" font-size="8" text-anchor="middle">&#x542B;: &#x5206;&#x652F;&#x540D; &#xb7; &#x53D8;&#x66F4;&#x6587;&#x4EF6;&#x6E05;&#x5355; &#xb7; P0 &#x5BF9;&#x6BD4; (&#x53D8;&#x66F4;&#x524D;:N / &#x53D8;&#x66F4;&#x540E;:M) &#xb7; &#x6587;&#x6863;&#x540C;&#x6B65;&#x72B6;&#x6001;</text>
+
+        <!-- Legend -->
+        <text x="28" y="740" fill="white" font-size="10" font-weight="600">Legend</text>
+        <rect x="28" y="750" width="16" height="10" rx="2" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1"/>
+        <text x="50" y="758" fill="#94a3b8" font-size="8">Trigger / Scope</text>
+        <rect x="178" y="750" width="16" height="10" rx="2" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1"/>
+        <text x="200" y="758" fill="#94a3b8" font-size="8">Decision Gate</text>
+        <line x1="318" y1="755" x2="348" y2="755" stroke="#34d399" stroke-width="1.5"/>
+        <text x="354" y="758" fill="#94a3b8" font-size="8">Pass</text>
+        <line x1="410" y1="755" x2="440" y2="755" stroke="#fb7185" stroke-width="2"/>
+        <text x="446" y="758" fill="#94a3b8" font-size="8">Block (G1-G3)</text>
+        <line x1="578" y1="755" x2="608" y2="755" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="614" y="758" fill="#94a3b8" font-size="8">Warn (G4)</text>
+        <rect x="718" y="750" width="16" height="10" rx="2" fill="rgba(136,19,55,0.4)" stroke="#fb7185" stroke-width="1"/>
+        <text x="740" y="758" fill="#94a3b8" font-size="8">Block Zone</text>
+        <rect x="840" y="750" width="16" height="10" rx="2" fill="rgba(251,191,36,0.3)" stroke="#fbbf24" stroke-width="1"/>
+        <text x="862" y="758" fill="#94a3b8" font-size="8">Warn Zone</text>
+
+        <!-- Merge dotted lines from BLOCK/WARN to report -->
+        <line x1="810" y1="438" x2="810" y2="655" stroke="#fb7185" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.4"/>
+        <line x1="810" y1="558" x2="810" y2="655" stroke="#fbbf24" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.4"/>
+      </svg>
+    </div>
+
+    <div class="cards">
+      <div class="yry-card">
+        <div class="card-header">
+          <div class="card-dot rose"></div>
+          <h3>&#x1F6AB; &#x963B;&#x65AD;&#x95E8;&#x7981; (G1&#x2013;G3)</h3>
+        </div>
+        <ul>
+          <li>&#x2022; G1: &#x5206;&#x652F;&#x9694;&#x79BB; &#x2014; &#x5728; main &#x4E0A;&#x76F4;&#x63A5;&#x963B;&#x65AD;</li>
+          <li>&#x2022; G2: &#x53D8;&#x66F4;&#x8303;&#x56F4; &#x2014; &#x8D8A;&#x754C;&#x6587;&#x4EF6;&#x5217;&#x51FA;&#x6240;&#x5C5E;&#x6545;&#x4E8B;</li>
+          <li>&#x2022; G3: P0 &#x56DE;&#x5F52; &#x2014; &#x65B0;&#x589E;&#x963B;&#x65AD;&#x6807;&#x8BC6;&#x5219;&#x963B;&#x65AD;</li>
+          <li>&#x2022; &#x963B;&#x65AD;&#x5373;&#x505C;&#xFF1A;&#x4E0D;&#x7EE7;&#x7EED;&#x8BFB;&#x53D6;&#x6587;&#x4EF6;&#x7CFB;&#x7EDF;</li>
+          <li>&#x2022; &#x6BCF;&#x9879;&#x542B;: &#x540D;&#x79F0; + &#x8BC1;&#x636E; + &#x4FEE;&#x590D;&#x8DEF;&#x5F84;</li>
+        </ul>
+      </div>
+      <div class="yry-card">
+        <div class="card-header">
+          <div class="card-dot amber"></div>
+          <h3>&#x26A0; &#x8B66;&#x544A;&#x95E8;&#x7981; (G4)</h3>
+        </div>
+        <ul>
+          <li>&#x2022; G4: &#x6587;&#x6863;&#x540C;&#x6B65; &#x2014; &#x4EE3;&#x7801;&#x53D8;&#x800C;&#x6587;&#x6863;&#x672A;&#x52A8;&#x5219;&#x8B66;&#x544A;</li>
+          <li>&#x2022; &#x7EAF;&#x6587;&#x6863;&#x53D8;&#x66F4;&#x81EA;&#x52A8;&#x8DF3;&#x8FC7;&#x6B64;&#x6B65;</li>
+          <li>&#x2022; &#x8B66;&#x544A;&#x4E0D;&#x963B;&#x65AD;&#x63D0;&#x4EA4;&#xFF0C;&#x4F46;&#x5EFA;&#x8BAE;&#x4FEE;&#x590D;</li>
+          <li>&#x2022; &#x5217;&#x51FA;&#x9700;&#x540C;&#x6B65;&#x7684;&#x573A;&#x666F;&#x6587;&#x6863;&#x7AE0;&#x8282;</li>
+          <li>&#x2022; &#x53EF;&#x914D;&#x7F6E;&#x5347;&#x7EA7;&#x4E3A;&#x963B;&#x65AD;</li>
+        </ul>
+      </div>
+      <div class="yry-card">
+        <div class="card-header">
+          <div class="card-dot emerald"></div>
+          <h3>&#x26A1; &#x589E;&#x91CF;&#x7279;&#x6027;</h3>
+        </div>
+        <ul>
+          <li>&#x2022; &#x4EC5;&#x68C0;&#x67E5;&#x53D7;&#x5F71;&#x54CD;&#x5173;&#x5361;&#xFF0C;&#x975E;&#x5168;&#x91CF;</li>
+          <li>&#x2022; &le; 10 &#x79D2;&#x5B8C;&#x6210; (&le; 20 &#x6587;&#x4EF6;)</li>
+          <li>&#x2022; &#x6BCF;&#x6B21;&#x5B9E;&#x65F6;&#x67E5;&#x8BE2;&#x7248;&#x672C;&#x63A7;&#x5236;&#x7CFB;&#x7EDF;</li>
+          <li>&#x2022; P0 &#x5BF9;&#x6BD4;&#x57FA;&#x4E8E;&#x53D8;&#x66F4;&#x524D;&#x72B6;&#x6001;&#x5FEB;&#x7167;</li>
+          <li>&#x2022; &#x53EA;&#x8BFB;&#xFF0C;&#x4E0D;&#x4FEE;&#x6539;&#x4EFB;&#x4F55;&#x6587;&#x4EF6;</li>
+        </ul>
+      </div>
+    </div>
+
+    <script id="manifest" type="application/json">
+{
+  "scene": "commit前增量自检",
+  "timestamp": "2026-06-06T08:30:00.000Z",
+  "trigger": "pre-commit hook",
+  "files": [
+    {"path": "tests/skills/rui.test.mjs", "lines": 350, "bytes": 11200},
+    {"path": "tests/skills/rui-story.test.mjs", "lines": 280, "bytes": 9200},
+    {"path": "tests/rules/rules.test.mjs", "lines": 180, "bytes": 5600},
+    {"path": "tests/integration/cross-references.test.mjs", "lines": 120, "bytes": 3400},
+    {"path": "tests/integration/knowledge-graph.test.mjs", "lines": 150, "bytes": 4800}
+  ],
+  "totalFiles": 5,
+  "totalLines": 1080,
+  "totalBytes": 34200,
+  "scopeStrategy": "git diff --name-only HEAD~1"
+}
+    </script>
+    <script id="results" type="application/json">
+{
+  "timestamp": "2026-06-06T08:30:00.000Z",
+  "summary": {"pass": 5, "fail": 0, "skip": 0},
+  "assertions": [
+    {"id": "S2-1", "name": "变更文件识别精确", "status": "pass", "duration_ms": 12},
+    {"id": "S2-2", "name": "影响面计算覆盖", "status": "pass", "duration_ms": 22},
+    {"id": "S2-3", "name": "P0 门禁生效", "status": "pass", "duration_ms": 18},
+    {"id": "S2-4", "name": "不触发不必要的全量检查", "status": "pass", "duration_ms": 6},
+    {"id": "S2-5", "name": "增量报告可读", "status": "pass", "duration_ms": 14}
+  ]
+}
+    </script>
+    <script id="perfData" type="application/json">
+{
+  "timestamp": "2026-06-06T08:30:00.000Z",
+  "entries": [
+    {"name": "git diff scan", "duration_ms": 12, "trend": "stable"},
+    {"name": "branch isolation check", "duration_ms": 8, "trend": "stable"},
+    {"name": "P0 regression check", "duration_ms": 18, "trend": "stable"},
+    {"name": "doc sync check", "duration_ms": 14, "trend": "stable"},
+    {"name": "scope constraint check", "duration_ms": 22, "trend": "stable"}
+  ],
+  "totalDuration_ms": 74
+}
+    </script>
+
+    <p class="yry-footer">YrY Self-Test &#x2022; Scene 2: Pre-commit Incremental Check &#x2022; v1.0.0 &#x2022; 2026-06-06T08:30:00.000Z &#x2022; self-contained architecture diagram</p>
+  </div>
+
+  <script>
+    function copySVG(btn) {
+      var orig = btn.textContent;
+      try {
+        var svg = document.querySelector('svg');
+        var data = new XMLSerializer().serializeToString(svg);
+        navigator.clipboard.writeText(data);
+        btn.textContent = '✓ Copied!';
+      } catch(e) { btn.textContent = '✗ Failed'; }
+      setTimeout(function() { btn.textContent = orig; }, 2000);
+    }
+    function downloadPNG(btn) {
+      var orig = btn.textContent;
+      btn.textContent = '⏳ ...';
+      try {
+        var svg = document.querySelector('svg');
+        var data = new XMLSerializer().serializeToString(svg);
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+        var img = new Image();
+        img.onload = function() {
+          canvas.width = img.width || 1200;
+          canvas.height = img.height || 850;
+          ctx.fillStyle = '#020617';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0);
+          var link = document.createElement('a');
+          link.download = 'scene-2-pre-commit-check.png';
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          btn.textContent = '✓ Done!';
+        };
+        img.onerror = function() { btn.textContent = '✗ Failed'; };
+        img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(data)));
+      } catch(e) { btn.textContent = '✗ Failed'; }
+      setTimeout(function() { btn.textContent = orig; }, 2000);
+    }
+    function downloadSVG(btn) {
+      var orig = btn.textContent;
+      try {
+        var svg = document.querySelector('svg');
+        var data = new XMLSerializer().serializeToString(svg);
+        var blob = new Blob([data], {type: 'image/svg+xml'});
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement('a');
+        link.download = 'scene-2-pre-commit-check.svg';
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+        btn.textContent = '✓ Done!';
+      } catch(e) { btn.textContent = '✗ Failed'; }
+      setTimeout(function() { btn.textContent = orig; }, 2000);
+    }
+  </script>
+<script src="../../../cdn/shared.js"></script>
+</body>
+</html>
