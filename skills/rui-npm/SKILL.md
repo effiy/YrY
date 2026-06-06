@@ -39,6 +39,7 @@ flowchart TD
     Q1 -->|"npx &lt;pkg&gt;"| NPX["npx 执行<br/>不安装直接运行"]:::run
     Q1 -->|"audit"| AUDIT["安全审计<br/>npm audit 封装"]:::read
     Q1 -->|"cdn &lt;pkg&gt;"| CDN["CDN 引用<br/>unpkg/jsDelivr/esm.sh"]:::read
+    Q1 -->|"login"| LOGIN["登录认证<br/>Access Token 配置"]:::write
     Q1 -->|"空输入"| HELP["显示帮助"]:::read
 
     classDef entry fill:#3d59a1,color:#fff
@@ -59,6 +60,7 @@ flowchart TD
 | `/rui-npm npx <pkg>[@version]` | 执行 | 通过 npx 直接运行 npm 包 |
 | `/rui-npm audit` | 只读 | 审计已安装依赖的安全漏洞 |
 | `/rui-npm cdn <pkg>[@version]` | 只读 | 查看包在 unpkg/jsDelivr/esm.sh 的 CDN 引用地址 |
+| `/rui-npm login [--token <token>]` | 写入 | 通过 Access Token 配置 npm registry 认证 |
 | `/rui-npm --help` | 只读 | 显示完整帮助 |
 
 ## 子命令
@@ -198,7 +200,7 @@ flowchart TD
 | `--access public` | 否 | 发布为公开包（scope 包默认 private） |
 | `--dry-run` | 否 | 模拟发布，不实际上传 |
 
-**前置条件**：`npm whoami` 成功（已登录 npm）。
+**前置条件**：`npm whoami` 成功（已通过 `rui-npm login` 配置 token 或 `npm login` 登录）。
 
 **自动生成 package.json（文件模式）**：
 
@@ -298,6 +300,45 @@ flowchart TD
 | jsDelivr | 全球 CDN 加速，支持多文件合并 | 生产环境 `<script>` 引用 |
 | esm.sh | 自动转 ESM 格式，支持 TypeScript/JSX | `<script type="module">` 或 `import` |
 
+### login — npm 认证
+
+> 通过 Access Token 配置 npm registry 认证，无需交互式登录。
+
+```
+步骤 1: 获取 token — --token 标志或 NPM_TOKEN 环境变量
+步骤 2: 验证 token 非空且长度 ≥ 20
+步骤 3: npm config set //registry.npmjs.org/:_authToken <token>
+步骤 4: npm whoami 验证 token 有效性
+步骤 5: 输出认证成功信息（含 masked token 和用户名）
+步骤 6: token 无效时自动清除配置
+```
+
+**参数**：
+
+| 参数 | 必需 | 说明 |
+|------|------|------|
+| `--token <token>` | 否* | npm Access Token（Automation 类型推荐）。未提供时从 `NPM_TOKEN` 环境变量读取 |
+
+> \* `--token` 和 `NPM_TOKEN` 必须至少提供一个。
+
+**Token 格式期望**：npm Access Token 通常以 `npm_` 开头，长度 > 30 字符。建议使用 Automation 类型 token（适用于 CI/CD 和非交互场景）。
+
+**成功输出**：
+
+```markdown
+🔑 配置 Access Token (npm_****abcd) ...
+🔍 验证 token ...
+✅ 认证成功！
+   用户: your-username
+   token: npm_****abcd
+   已配置到: npm config //registry.npmjs.org/:_authToken
+```
+
+**安全特性**：
+- token 在所有输出中仅显示前 4 + 后 4 字符（如 `npm_****abcd`）
+- token 通过 npm config 存储，由 npm 自身的 .npmrc 权限保护
+- 验证失败时自动清除已配置的无效 token
+
 ## 核心规则
 
 ```mermaid
@@ -305,7 +346,7 @@ flowchart LR
     subgraph 写前检查["写操作前置条件"]
         direction TB
         R1["验证 package.json 存在"]:::rule
-        R2["publish 前验证 npm 登录"]:::rule
+        R2["publish 前验证 npm 认证"]:::rule
     end
     subgraph 错误处理["错误处理"]
         direction TB
@@ -324,7 +365,7 @@ flowchart LR
 | # | 规则 | 违反行为 |
 |---|------|---------|
 | 1 | install/uninstall/update/list/audit 前验证 package.json 存在 | 提示用户先执行 `npm init` |
-| 2 | publish 前验证 `npm whoami` 成功 | 提示用户先执行 `npm login` |
+| 2 | publish 前验证 `npm whoami` 成功；login 配置 Access Token | 提示用户先执行 `rui-npm login --token <token>` 或 `npm login` |
 | 3 | 网络不可达时输出友好提示和手动 URL | 标注 `网络不可达` |
 | 4 | 包不存在 registry 时建议搜索确认拼写 | 输出 `包不存在，建议 /rui-npm search <kw>` |
 | 5 | 查询结果默认表格化输出，`--json` 标志输出原始 JSON | — |
@@ -337,11 +378,13 @@ flowchart LR
 | npm CLI 不可用 | 输出 `未检测到 npm，请先安装 Node.js` |
 | npm 版本 < 7.0.0 | 警告 `npm 版本过旧，建议升级至 7.x+`，降级使用兼容参数 |
 | npm registry 不可达 | 输出错误详情 + 手动访问 `https://www.npmjs.com/` 引导 |
-| npm 未登录（publish） | 提示 `请先执行 npm login 登录 npm 账户` |
+| npm 未认证（publish） | 提示 `请先执行 rui-npm login --token <token> 或 npm login 认证` |
 | package.json 不存在（写操作） | 提示 `当前目录无 package.json，请先执行 npm init` |
 | 目录无 package.json（publish 目录模式） | 交互式生成 package.json 后继续 |
 | npm audit 无网络 | 跳过审计，标注 `无网络连接，跳过安全审计` |
 | cdn 包不存在 registry | 输出 `包不存在，请检查包名或先执行 search` |
+| login token 无效或过期 | 提示 `token 验证失败，可能已过期`，自动清除无效 token 配置 |
+| login 未提供 token | 提示 `--token 标志或 NPM_TOKEN 环境变量`，引导获取 Automation token |
 | cdn 无网络 | 输出错误详情 + 引导手动访问 `https://www.npmjs.com/package/<pkg>` 确认包名 |
 
 ## 生效标志
@@ -351,6 +394,7 @@ flowchart LR
     S1["命令入口统一<br/>所有操作通过 rui-npm.mjs"]:::sig --> S2["输出结构化<br/>表格优先，JSON 可选"]:::sig
     S2 --> S3["错误友好<br/>每种失败有明确提示和恢复建议"]:::sig
     S3 --> S4["本地发布闭环<br/>publish → npx 可用"]:::sig
+    S4 --> S5["认证闭环<br/>login → publish 可用"]:::sig
 
     classDef sig fill:#34d399,color:#000
 ```
@@ -360,4 +404,5 @@ flowchart LR
 | 全部子命令可通过 `node skills/rui-npm/rui-npm.mjs <cmd>` 执行 | 检查脚本入口和参数解析 |
 | help.mjs 输出覆盖全部子命令和场景 | 补全缺失的文档段 |
 | publish 后立即可通过 npx 执行 | 检查 npm registry 同步延迟 |
+| login 成功后 publish 可直接使用（无需重复认证） | 验证 npm whoami 返回正确用户名 |
 | 所有错误路径有明确提示 | 补充错误处理分支 |

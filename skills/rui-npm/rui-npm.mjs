@@ -13,12 +13,16 @@
 //   npx       <pkg>[@version]     npx 执行包
 //   audit                         安全审计
 //   cdn      <pkg>[@version]     查看 CDN 引用地址
+//   login    [--token <token>]   配置 Access Token 认证
 
 import { spawnSync, spawn } from "node:child_process";
 import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync, readdirSync, rmSync } from "node:fs";
 import { join, resolve, basename, dirname, extname } from "node:path";
 import { tmpdir } from "node:os";
 import { randomBytes } from "node:crypto";
+
+// --- config ----------------------------------------------------------------
+const NPM_TOKEN = process.env.NPM_TOKEN || "";
 
 // ─── Helpers ────────────────────────────────────────────────────
 
@@ -62,10 +66,19 @@ function checkPackageJson() {
 }
 
 function checkNpmLogin() {
+  // 先检查 token 配置，再检查 whoami
+  const configuredToken = checkNpmToken();
   const r = npm(["whoami"]);
   if (r.status !== 0) {
-    console.error("❌ 未登录 npm。请先执行 npm login 登录你的 npm 账户。");
-    console.error("   （如无账户，请先访问 https://www.npmjs.com/signup 注册）");
+    console.error("❌ 未认证 npm registry。请通过以下任一方式认证：");
+    console.error("   Access Token: rui-npm login --token <your-token>");
+    console.error("      或设置环境变量 NPM_TOKEN 后执行 rui-npm login");
+    console.error("   交互式登录:   npm login");
+    if (configuredToken) {
+      console.error(`   ⚠️  已检测到 NPM_TOKEN 环境变量 (${maskToken(configuredToken)})，但未通过 npm 验证。`);
+      console.error(`   token 可能已过期，或尚未执行 rui-npm login 配置到 npm。`);
+    }
+    console.error("   （如无 npm 账户，请先访问 https://www.npmjs.com/signup 注册）");
     process.exit(1);
   }
   return r.stdout.trim();
@@ -89,7 +102,7 @@ function toTable(headers, rows) {
 function parseArgs(argv) {
   const args = { _: [], json: false, depth: 0, dev: false, global: false, limit: 20,
     name: null, version: "1.0.0", description: null, access: null, dryRun: false,
-    npxArgs: [], raw: [] };
+    token: null, npxArgs: [], raw: [] };
   let i = 0;
   while (i < argv.length) {
     const a = argv[i];
@@ -103,6 +116,7 @@ function parseArgs(argv) {
     else if (a === "--description") { args.description = argv[++i]; }
     else if (a === "--access") { args.access = argv[++i]; }
     else if (a === "--dry-run") { args.dryRun = true; }
+    else if (a === "--token") { args.token = argv[++i]; }
     else if (a === "--") { args.npxArgs = argv.slice(i + 1); i = argv.length; }
     else if (a.startsWith("-")) { args.raw.push(a); }
     else { args._.push(a); }
@@ -111,8 +125,72 @@ function parseArgs(argv) {
   return args;
 }
 
+function maskToken(token) {
+  if (!token || token.length <= 8) return "****";
+  return token.slice(0, 4) + "****" + token.slice(-4);
+}
+
+function checkNpmToken() {
+  // npm config get 对 _authToken 是受保护的，无法通过 CLI 回读
+  // 检查 NPM_TOKEN 环境变量作为替代信号
+  return NPM_TOKEN || null;
+}
+
 function timestamp() {
   return new Date().toISOString().replace("T", " ").substring(0, 19);
+}
+
+function cmdLogin(args) {
+  // Step 1: 获取 token — args.token 或 NPM_TOKEN 环境变量
+  const token = args.token || NPM_TOKEN || "";
+
+  if (!token) {
+    console.error("❌ 未提供 Access Token。请通过以下方式提供：");
+    console.error("   --token 标志:    rui-npm login --token <your-token>");
+    console.error("   环境变量:         NPM_TOKEN=<your-token> rui-npm login");
+    console.error("   获取 token:       访问 https://www.npmjs.com/settings/<user>/tokens");
+    console.error("                     → Generate New Token → 选择 \"Automation\" 类型");
+    process.exit(1);
+  }
+
+  // Step 2: 验证 token 格式（npm token 通常以 npm_ 开头，长度 > 30）
+  if (token.length < 20) {
+    console.error(`❌ token 格式无效（长度 ${token.length} < 20）。请检查是否完整复制了 Access Token。`);
+    console.error("   获取 Access Token: https://www.npmjs.com/settings/<user>/tokens");
+    process.exit(1);
+  }
+
+  // Step 3: 配置 token
+  console.log(`🔑 配置 Access Token (${maskToken(token)}) ...`);
+  const configResult = npm(["config", "set", "//registry.npmjs.org/:_authToken", token]);
+  if (configResult.status !== 0) {
+    console.error("❌ 配置 token 失败。请检查 npm 配置是否正常。");
+    process.exit(1);
+  }
+
+  // Step 4: 验证 token
+  console.log("🔍 验证 token ...");
+  const whoami = npm(["whoami"]);
+  if (whoami.status !== 0) {
+    console.error("❌ token 验证失败。可能的原因：");
+    console.error("   - token 已过期或已被撤销");
+    console.error("   - token 类型不正确（建议使用 Automation 类型）");
+    console.error("   请访问 https://www.npmjs.com/settings/<user>/tokens 检查 token 状态");
+    // 清除无效 token
+    npm(["config", "delete", "//registry.npmjs.org/:_authToken"]);
+    process.exit(1);
+  }
+
+  const username = whoami.stdout.trim();
+  console.log(`✅ 认证成功！`);
+  console.log(`   用户: ${username}`);
+  console.log(`   token: ${maskToken(token)}`);
+  console.log(`   已配置到: npm config //registry.npmjs.org/:_authToken`);
+  console.log();
+  console.log("💡 提示：");
+  console.log("   - token 已保存到 npm 配置，后续 publish 等操作可直接使用");
+  console.log("   - 查看当前认证状态: rui-npm publish 任意文件（会显示已登录用户）");
+  console.log("   - 清除 token: npm config delete //registry.npmjs.org/:_authToken");
 }
 
 // ─── Subcommands ────────────────────────────────────────────────
@@ -572,9 +650,10 @@ function main() {
     case "npx":       cmdNpx(args._[0], args); break;
     case "audit":     cmdAudit(args); break;
     case "cdn":       cmdCdn(args._[0], args); break;
+    case "login":    cmdLogin(args); break;
     default:
       console.error(`❌ 未知子命令: ${command}`);
-      console.error("   可用命令: search, install, update, list, info, uninstall, publish, npx, audit, cdn");
+      console.error("   可用命令: search, install, update, list, info, uninstall, publish, npx, audit, cdn, login");
       console.error("   查看帮助: rui-npm --help");
       process.exit(1);
   }
