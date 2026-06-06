@@ -6,35 +6,26 @@
 import { join, resolve, dirname } from "node:path";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 
-// --- constants ----------------------------------------------------------------
-const STORY_PANEL_DIR = "docs/故事任务面板";
-const EXEC_MEMORY_FILE = ".memory/execution-memory.jsonl";
-const TOOL_AUDIT_FILE = ".memory/tool-audit.jsonl";
-const DELIVERY_TRACK_FILE = ".memory/delivery-tracking.jsonl";
-const RUI_STATE_FILE = ".memory/rui-state.json";
-const STATUS_HISTORY_FILE = ".memory/status-history.jsonl";
-const PROPOSALS_FILE = ".improvement/proposals.jsonl";
+// --- constants (imported from shared lib) --------------------------------------
+import {
+  NODE_ARGV_OFFSET,
+  STORY_PANEL_DIR,
+  EXEC_MEMORY_FILE,
+  TOOL_AUDIT_FILE,
+  DELIVERY_TRACK_FILE,
+  RUI_STATE_FILE,
+  STATUS_HISTORY_FILE,
+  PROPOSALS_FILE,
+  BLOCK_RATE_P0,
+  P0_DENSITY_MULTIPLIER,
+  T3_PROPORTION_THRESHOLD,
+  STAGE_DURATION_MULTIPLIER,
+  DIAGNOSTIC_LABELS,
+} from "../../lib/constants.mjs";
 
-import { NODE_ARGV_OFFSET } from "../../lib/constants.mjs";
 const ARGV_OFFSET = NODE_ARGV_OFFSET;
 const DEFAULT_WINDOW = 12;
 const ANOMALY_MULTIPLIER = 2.0;
-const BLOCK_RATE_P0 = 0.20;
-const P0_DENSITY_MULTIPLIER = 2.0;
-const T3_PROPORTION_P0 = 0.30;
-const STAGE_DURATION_MULTIPLIER = 3.0;
-
-// Diagnostic → anomaly mapping (from rules/self-improve.md)
-const DIAGNOSTIC_LABELS = {
-  D0: "基线偏离",
-  D1: "效率退化",
-  D2: "质量退化",
-  D3: "复杂度增长",
-  D4: "流程退化",
-  D5: "依赖退化",
-  D6: "文档过时",
-  D7: "配置漂移",
-};
 
 // --- TTY helpers -------------------------------------------------------------
 import { bold, dim, red, green, yellow, cyan } from "../../lib/tty.mjs";
@@ -259,13 +250,13 @@ function detectAnomalies(allMetrics, threshold) {
     }
 
     // D3: T3 proportion > 30%
-    if (m.t3_proportion > T3_PROPORTION_P0 * 100) {
+    if (m.t3_proportion > T3_PROPORTION_THRESHOLD * 100) {
       storyAnomalies.push({
         diagnostic: "D3",
         label: DIAGNOSTIC_LABELS.D3,
         metric: "t3_proportion",
         value: m.t3_proportion,
-        threshold_value: T3_PROPORTION_P0 * 100,
+        threshold_value: T3_PROPORTION_THRESHOLD * 100,
       });
     }
 

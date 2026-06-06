@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>模块定位 · 计划清单</title>
+<!-- ═══ CDN: YrY 共享样式 ═══ -->
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
 <style>
 :root {
   --bg: rgba(22,22,32,1);
@@ -169,46 +172,46 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 </style>
 </head>
 <body>
-<div class="container">
+<div class="yry-container">
 
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 模块定位与职责</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
+<nav class="yry-breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">yry-arch · 系统架构知识固化</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 1 · 模块定位与职责</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">📋 计划清单</span></nav>
 
-<div class="cross-nav">
-  <span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
-  <a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
-  <a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
-  <a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span>
-  <a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a>
+<div class="yry-cross-nav">
+  <span class="cross-link on">📋 清单</span><span class="yry-cross-sep">·</span>
+  <a href="架构图.html" class="yry-cross-link">📐 架构</a><span class="yry-cross-sep">·</span>
+  <a href="知识图谱.html" class="yry-cross-link">🔗 图谱</a><span class="yry-cross-sep">·</span>
+  <a href="测试面板.html" class="yry-cross-link">🧪 测试</a><span class="yry-cross-sep">·</span>
+  <a href="演示.html" class="yry-cross-link">💡 演示</a><span class="yry-cross-sep">·</span><a href="审查.html" class="yry-cross-link">📝 审查</a>
 </div>
 
-<div class="header">
-  <h1>📋 场景-1<span class="accent"> · 模块定位与职责</span></h1>
-  <p class="sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
+<div class="yry-header">
+  <h1>📋 场景-1<span class="yry-accent"> · 模块定位与职责</span></h1>
+  <p class="yry-sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
   <div class="meta">📌 v1.0.0 · 📅 2026-06-05 · 🏷️ yry-arch</div>
 </div>
 
-<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">0</div><div class="lbl">✅ 完成</div></div><div class="stat-card"><div class="val">6</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val">0%</div><div class="lbl">📊 进度</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:0%"></div><div class="seg gap" style="width:100%"></div></div></div>
+<div class="yry-stats"><div class="yry-stat"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="yry-stat"><div class="val health">0</div><div class="lbl">✅ 完成</div></div><div class="yry-stat"><div class="val">6</div><div class="lbl">⏳ 待执行</div></div><div class="yry-stat"><div class="val">0%</div><div class="lbl">📊 进度</div></div></div><div class="yry-bar-wrap"><div class="yry-bar-outer"><div class="seg strength" style="width:0%"></div><div class="seg gap" style="width:100%"></div></div></div>
   <div style="display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:.68rem;color:var(--text3)"><span>✅ 0 完成</span><span>⏳ 0 待执行</span></div>
 
 <!-- Progress bar always visible -->
-<div class="progress-wrap">
-  <div class="progress-label"><span>整体进度</span><span id="progress-text">0 / 15 完成</span></div>
-  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+<div class="yry-progress-wrap">
+  <div class="yry-progress-label"><span>整体进度</span><span id="progress-text">0 / 15 完成</span></div>
+  <div class="yry-progress-bar"><div class="yry-progress-fill" id="progress-fill" style="width:0%"></div></div>
 </div>
 
 <!-- Tabs -->
-<div class="tabs">
+<div class="yry-tabs">
   <span class="tab on" data-panel="checklist">📋 清单</span>
-  <span class="tab" data-panel="overview">📊 概览</span>
-  <span class="tab" data-panel="commands">⚡ 命令</span>
-  <span class="tab" data-panel="related">📁 关联</span>
-  <span class="tab" data-panel="verify">🧪 验证</span>
+  <span class="yry-tab" data-panel="overview">📊 概览</span>
+  <span class="yry-tab" data-panel="commands">⚡ 命令</span>
+  <span class="yry-tab" data-panel="related">📁 关联</span>
+  <span class="yry-tab" data-panel="verify">🧪 验证</span>
 </div>
 
 <!-- ═══ Tab 1: Checklist ═══ -->
 <div class="panel on" id="panelChecklist">
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>§0 技术评审<span class="s-done">— 已完成</span></h2>
 
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
@@ -250,7 +253,7 @@ skills/rui-import/SKILL.md skills/rui-story/SKILL.md skills/rui-trends/SKILL.md<
 </div></div>
 </div>
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>§1 测试设计<span class="s-done">— 已完成</span></h2>
 
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
@@ -275,7 +278,7 @@ TC-B-3: 下游影响范围 — 修改 rui SKILL.md 后识别受影响的 agent �
 </div></div>
 </div>
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>§2 实施报告<span class="s-done">— 进行中</span></h2>
 
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
@@ -312,7 +315,7 @@ TC-B-3: 下游影响范围 — 修改 rui SKILL.md 后识别受影响的 agent �
 </div></div>
 </div>
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>§3 测试报告</h2>
 
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
@@ -334,7 +337,7 @@ TC-B-3: 下游影响范围 — 修改 rui SKILL.md 后识别受影响的 agent �
 </div></div>
 </div>
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>§4 自改进</h2>
 
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
@@ -354,7 +357,7 @@ TC-B-3: 下游影响范围 — 修改 rui SKILL.md 后识别受影响的 agent �
 </div></div>
 </div>
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>架构图</h2>
 
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
@@ -366,7 +369,7 @@ TC-B-3: 下游影响范围 — 修改 rui SKILL.md 后识别受影响的 agent �
 </div></div>
 </div>
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>交付</h2>
 
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
@@ -393,7 +396,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
 </div><!-- /panelChecklist -->
 
 <!-- ═══ Tab 2: Overview ═══ -->
-<div class="panel" id="panelOverview">
+<div class="yry-panel" id="panelOverview">
 
 <div class="stat-grid">
   <div class="stat-mini"><div class="sv g" id="ov-done">5</div><div class="sl">已完成</div></div>
@@ -402,7 +405,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
   <div class="stat-mini"><div class="sv c">15</div><div class="sl">总步骤</div></div>
 </div>
 
-<div class="section"><h2><span class="dot"></span>各阶段完成度</h2>
+<div class="yry-section"><h2><span class="dot"></span>各阶段完成度</h2>
   <div class="section-stat"><span class="ss-label">§0 技术评审</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:100%;background:var(--pass)"></div></div><span class="ss-pct">3/3</span></div>
   <div class="section-stat"><span class="ss-label">§1 测试设计</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:100%;background:var(--pass)"></div></div><span class="ss-pct">2/2</span></div>
   <div class="section-stat"><span class="ss-label">§2 实施报告</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--warn)"></div></div><span class="ss-pct">0/3</span></div>
@@ -412,36 +415,36 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
   <div class="section-stat"><span class="ss-label">交付</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/2</span></div>
 </div>
 
-<div class="section"><h2><span class="dot"></span>下一步行动</h2>
+<div class="yry-section"><h2><span class="dot"></span>下一步行动</h2>
   <div class="cmd-card"><div class="c-stage">当前就绪 — 步骤 6</div><div class="c-name">编写模块目录表</div><div class="c-desc">按六项能力、八种角色、八组约束分别编制模块目录。切换到 ⚡命令 Tab 查看可执行命令。</div></div>
 </div>
 
 </div><!-- /panelOverview -->
 
 <!-- ═══ Tab 3: Commands ═══ -->
-<div class="panel" id="panelCommands">
+<div class="yry-panel" id="panelCommands">
 
-<div class="section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令</h2>
+<div class="yry-section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令</h2>
 <div class="cmd-grid">
   <div class="cmd-card"><div class="c-stage">步骤 1</div><div class="c-name">扫描全部规约</div><div class="c-desc">读取所有 SKILL.md / Agent.md / rules 文件</div><pre>/rui doc --story yry-arch --scene 1<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --scene 1')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 2</div><div class="c-name">分析模块引用关系</div><div class="c-desc">architect agent 提取入口/依赖/消费者</div><pre>/rui doc --story yry-arch --scene 1<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --scene 1')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 3</div><div class="c-name">生成 SVG 架构图</div><div class="c-desc">三层拓扑图自动渲染为 HTML+SVG</div><pre>/rui doc --story yry-arch --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --output 架构图.html')">📋</span></pre></div>
 </div></div>
 
-<div class="section"><h2><span class="dot"></span>§1 测试设计 — 已执行命令</h2>
+<div class="yry-section"><h2><span class="dot"></span>§1 测试设计 — 已执行命令</h2>
 <div class="cmd-grid">
   <div class="cmd-card"><div class="c-stage">步骤 4</div><div class="c-name">生成测试用例骨架</div><div class="c-desc">tester agent 生成 TC-B 系列测试</div><pre>/rui doc --story yry-arch<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 5</div><div class="c-name">运行拓扑验证脚本</div><div class="c-desc">检查跨模块引用的完整性和闭合性</div><pre>node scripts/validate-module-topology.mjs<span class="cb" onclick="copyCmd(this,'node scripts/validate-module-topology.mjs')">📋</span></pre></div>
 </div></div>
 
-<div class="section"><h2><span class="dot"></span>§2 实施报告 — 待执行命令</h2>
+<div class="yry-section"><h2><span class="dot"></span>§2 实施报告 — 待执行命令</h2>
 <div class="cmd-grid">
   <div class="cmd-card"><div class="c-stage">步骤 6 · 🔶 就绪</div><div class="c-name">生成模块目录表</div><div class="c-desc">按能力/角色/约束编制模块目录 Markdown 表格</div><pre>/rui doc --story yry-arch --scene 1<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --scene 1')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 7</div><div class="c-name">生成知识图谱</div><div class="c-desc">Cytoscape 交互式三层关系图谱</div><pre>/rui doc --story yry-arch --output 知识图谱.html<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --output 知识图谱.html')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 8</div><div class="c-name">生成架构索引</div><div class="c-desc">带溯源引用的交叉引用索引</div><pre>/rui doc --story yry-arch<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch')">📋</span></pre></div>
 </div></div>
 
-<div class="section"><h2><span class="dot"></span>§3-交付 — 待执行命令</h2>
+<div class="yry-section"><h2><span class="dot"></span>§3-交付 — 待执行命令</h2>
 <div class="cmd-grid">
   <div class="cmd-card"><div class="c-stage">步骤 9</div><div class="c-name">运行边界测试</div><div class="c-desc">执行 TC-B-1 到 TC-B-3 全部测试</div><pre>node tests/skills/rui.test.mjs --verbose<span class="cb" onclick="copyCmd(this,'node tests/skills/rui.test.mjs --verbose')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 10</div><div class="c-name">推送测试报告</div><div class="c-desc">企微通知测试结果和覆盖率</div><pre>node skills/rui-bot/send.mjs --story=yry-arch --status=test-report<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=yry-arch --status=test-report')">📋</span></pre></div>
@@ -455,7 +458,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
 </div><!-- /panelCommands -->
 
 <!-- ═══ Tab 4: Related Pages ═══ -->
-<div class="panel" id="panelRelated">
+<div class="yry-panel" id="panelRelated">
 
 <div class="link-grid">
   <a href="架构图.html" class="link-card">
@@ -479,7 +482,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
 </div><!-- /panelRelated -->
 
 <!-- ═══ Tab 5: Verify ═══ -->
-<div class="panel" id="panelVerify">
+<div class="yry-panel" id="panelVerify">
 
 <div class="verify-list">
   <div class="verify-item"><div class="vi-label">步骤 1 · 规约文件定位</div>
@@ -514,13 +517,13 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
 
 </div><!-- /panelVerify -->
 
-<div class="footer">
+<div class="yry-footer">
   <p>🤖 Generated with planner agent | scene: 模块定位与职责 | updated: 2026-06-05</p>
 </div>
 
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="yry-toast" id="toast"></div>
 
 <script>
 const SCENE_KEY = 'yry-arch-s1-checklist';
@@ -620,5 +623,6 @@ function toast(msg) {
   switchPanel(activeTab);
 })();
 </script>
+<script src="../../../../cdn/shared.js"></script>
 </body>
 </html>

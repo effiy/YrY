@@ -28,15 +28,12 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .bar-outer{height:8px;border-radius:4px;overflow:hidden;display:flex;background:rgba(255,255,255,.04);cursor:pointer}
 .bar-outer .seg{height:100%;transition:width .5s ease;min-width:2px}
 .bar-outer .seg.p{background:var(--pass)}.bar-outer .seg.f{background:var(--fail)}.bar-outer .seg.s{background:var(--skip)}
-.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:40px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
-.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}
-.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
-.cross-link.on{color:var(--accent);font-weight:600}
-.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
 .tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:0;animation:fadeInDown .5s .18s ease both}
-.tab{padding:10px 20px;cursor:pointer;font-size:.84rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none;position:relative}
-.tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
-.tab .tab-badge{font-size:.6rem;background:var(--fail);color:#fff;border-radius:8px;padding:1px 6px;position:absolute;top:4px;right:0}
+.tab{padding:10px 20px;cursor:pointer;font-size:.84rem;color:var(--text3);border-bottom:2px solid transparent;transition:color .15s,border-color .15s,background .15s;user-select:none;position:relative;border-radius:6px 6px 0 0;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit}
+.tab:hover{color:var(--text2);background:rgba(255,255,255,.03)}.tab.on{color:var(--accent);border-bottom-color:var(--accent);background:rgba(255,193,7,.04)}
+.tab:active{transform:scale(.97);transition:transform .08s}
+.tab .tab-kbd{font-size:.58rem;color:var(--text3);background:rgba(255,255,255,.06);border-radius:3px;padding:1px 5px;margin-left:5px;vertical-align:middle;font-family:monospace}
+.tab.on .tab-kbd{background:rgba(255,193,7,.15);color:var(--accent)}
 .panel{display:none;animation:fadeInUp .4s ease both;padding-top:28px}
 .panel.on{display:block}
 .btn{background:var(--bg-flat);border:var(--border);border-radius:8px;color:var(--text2);padding:7px 14px;cursor:pointer;font-size:.8rem;transition:all .15s;display:inline-flex;align-items:center;gap:5px;text-decoration:none;white-space:nowrap;font-family:inherit}
@@ -46,7 +43,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .search-wrap input{width:100%;background:var(--bg-flat);border:var(--border);border-radius:20px;color:var(--text);padding:7px 14px 7px 34px;font-size:.82rem;outline:none;transition:border-color .15s;font-family:inherit}
 .search-wrap input:focus{border-color:rgba(255,193,7,.4)}.search-wrap input::placeholder{color:var(--text3)}
 .search-wrap .si{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.8rem;color:var(--text3);pointer-events:none}
-.kbd-hint{font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.04);border-radius:3px;padding:1px 5px;margin-left:4px}
 .suite{background:var(--bg-card);border:var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow);overflow:hidden;transition:border-color .2s}
 .suite.open{border-color:rgba(255,255,255,.08)}
 .suite.focused{border-color:rgba(255,193,7,.4)}
@@ -72,7 +68,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .t-row .t-dur .td-bar-inner{height:100%;border-radius:2px;background:var(--cyan);transition:width .3s}
 .t-row .t-dur.slow .td-bar-inner{background:var(--warn)}
 .t-row .t-dur.very-slow .td-bar-inner{background:var(--fail)}
-.sort-indicator{font-size:.6rem;color:var(--accent);margin-left:2px}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.show{display:flex}
 .modal{background:var(--bg-raised);border:var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);width:100%;max-width:900px;max-height:85vh;display:flex;flex-direction:column;animation:modalIn .2s ease}
@@ -94,7 +89,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .gate-lines .ok{color:var(--pass)}.gate-lines .warn{color:var(--warn)}
 .card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow);animation:fadeInUp .4s ease both}
 .card h2{font-size:.92rem;margin-bottom:14px;color:var(--cyan);font-weight:600}
-a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 @media(max-width:640px){.container{padding:24px 12px 60px}.header h1{font-size:1.5rem}.stats-grid{gap:6px}.stat-card{padding:12px 14px;min-width:65px}.stat-card .val{font-size:1.3rem}.search-wrap{max-width:100%}}
 .file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
 .file-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;display:flex;align-items:flex-start;gap:12px}
@@ -115,8 +109,6 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 .layer-head .ln{width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center}
 .layer-head h2{font-size:1.15rem;font-weight:700}.layer-head .ls{font-size:.78rem;color:var(--text3)}
 .footer-note{text-align:center;color:var(--text3);font-size:.74rem;margin-top:32px;padding-bottom:16px}
-.footer-note a{color:var(--accent);text-decoration:none}
-.footer-note a:hover{text-decoration:underline}
 .test-table{width:100%;border-collapse:collapse;font-size:.84rem;margin-bottom:20px}
 .test-table th{text-align:left;color:var(--text2);font-weight:600;padding:8px 12px;border-bottom:var(--border);font-size:.76rem;text-transform:uppercase;letter-spacing:.5px}
 .test-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
@@ -129,19 +121,25 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 .breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
 .breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
 .breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
+.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}
+.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
+.cross-link.on{color:var(--accent);font-weight:600}
+.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
 </style>
 </head>
 <body>
 <div class="container">
 
-  <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../故事任务.md">rui-npm</a><span class="bc-sep">/</span><a href="场景-1-包搜索与发现.md">场景 1 · 包搜索与发现</a><span class="bc-sep">/</span><span class="bc-current">🧪 测试面板</span></nav>
-<div class="cross-nav">
-    <a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span>
-    <a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
-    <a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
-    <a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span>
-    <span class="cross-link on" id="navStatus">🧪 测试</span><span class="cross-sep">·</span>
-    <a href="审查.html" class="cross-link">📝 审查</a></div>
+  <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · 个人 npm 包管理</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 包搜索与发现</span><span class="bc-sep">/</span><span class="bc-current">🧪 测试面板</span></nav>
+<nav class="cross-nav">
+  <a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+  <span class="cross-link on">🧪 测试</span><span class="cross-sep">·</span>
+  <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="审查.html">📝 审查</a>
+</nav>
   <div class="header">
     <h1>🧪 <span class="accent">包搜索与发现 · 测试面板</span></h1>
     <p class="sub">FP1 覆盖 · 8 测试用例 · tests/skills/rui-npm.test.mjs · §- 场景</p>
@@ -150,20 +148,29 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
   <div class="stats-grid" id="statsRow"></div>
   <div class="bar-wrap"><div class="bar-outer" id="bar" title="点击进度条筛选状态"></div></div>
 
-  <div class="tabs">
-    <span class="tab on" data-panel="files">📁 测试文件</span>
-    <span class="tab" data-panel="results">📊 执行结果</span>
-    <span class="tab" data-panel="normal">✅ 正常路径</span>
-    <span class="tab" data-panel="boundary">⚠️ 边界/异常</span>
-    <span class="tab" data-panel="slow">🐢 慢测试</span>
-    <span class="tab" data-panel="perf">📈 性能测试</span>
-    <span class="tab" data-panel="gate">🚦 门禁</span>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both" id="toolbar">
+    <div class="search-wrap"><span class="si">🔍</span><input id="searchInput" type="text" placeholder="搜索测试…" oninput="onSearch(this.value)"></div>
+    <button class="btn" onclick="expandAllSuites()">📂 展开全部</button>
+    <button class="btn" onclick="collapseAllSuites()">📁 收起全部</button>
+    <button class="btn" id="btnSortDur" onclick="toggleSort()">⏱ 耗时排序</button>
+    <button class="btn" onclick="copyResultsMd()">📋 复制 MD</button>
+    <span style="font-size:.72rem;color:var(--text3);margin-left:auto;white-space:nowrap" id="navStatus"></span>
+  </div>
+
+  <div class="tabs" id="tabBar">
+    <button class="tab on" id="tabFiles"    onclick="switchPanel('files')"    >📁 测试文件<span class="tab-kbd">1</span></button>
+    <button class="tab"    id="tabResults"  onclick="switchPanel('results')"  >📊 执行结果<span class="tab-kbd">2</span></button>
+    <button class="tab"    id="tabNormal"   onclick="switchPanel('normal')"   >✅ 正常路径<span class="tab-kbd">3</span></button>
+    <button class="tab"    id="tabBoundary" onclick="switchPanel('boundary')" >⚠️ 边界/异常<span class="tab-kbd">4</span></button>
+    <button class="tab"    id="tabSlow"     onclick="switchPanel('slow')"     >🐢 慢测试<span class="tab-kbd">5</span></button>
+    <button class="tab"    id="tabPerf"     onclick="switchPanel('perf')"     >📈 性能测试<span class="tab-kbd">6</span></button>
+    <button class="tab"    id="tabGate"     onclick="switchPanel('gate')"     >🚦 门禁<span class="tab-kbd">7</span></button>
   </div>
 
   <div class="panel on" id="panelFiles"><div id="filesContent"></div></div>
   <div class="panel" id="panelResults"><div id="resultsContent"></div></div>
   <div class="panel" id="panelNormal"><div id="normalContent"></div></div>
-<div class="panel" id="panelBoundary"><div id="boundaryContent"></div></div>
+  <div class="panel" id="panelBoundary"><div id="boundaryContent"></div></div>
   <div class="panel" id="panelSlow"><div id="slowContent"></div></div>
   <div class="panel" id="panelPerf"><div id="perfContent"></div></div>
   <div class="panel" id="panelGate">
@@ -178,14 +185,44 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <div class="toast" id="toast"></div>
 
 <script>
-let activePanel='results',fileQuery='',resultQuery='',sortByDur=false,focusIdx=-1;
-const SLOW_THRESHOLD=100;
+/* ═══ State ═══ */
+var activePanel='files',fileQuery='',resultQuery='',sortByDur=false,focusIdx=-1,statusFilter='';
+var SLOW_THRESHOLD=100;
+
+/* ═══ Panel map — direct element references ═══ */
+var PANELS={
+  files:    {el:document.getElementById('panelFiles'),    tab:document.getElementById('tabFiles'),    render:renderFiles},
+  results:  {el:document.getElementById('panelResults'),  tab:document.getElementById('tabResults'),  render:renderResults},
+  normal:   {el:document.getElementById('panelNormal'),   tab:document.getElementById('tabNormal'),   render:renderNormal},
+  boundary: {el:document.getElementById('panelBoundary'), tab:document.getElementById('tabBoundary'), render:renderBoundary},
+  slow:     {el:document.getElementById('panelSlow'),     tab:document.getElementById('tabSlow'),     render:renderSlow},
+  perf:     {el:document.getElementById('panelPerf'),     tab:document.getElementById('tabPerf'),     render:renderPerf},
+  gate:     {el:document.getElementById('panelGate'),     tab:document.getElementById('tabGate'),     render:null}
+};
 
 /* ═══ Embedded data ═══ */
-const manifest={"files":[{"name":"rui-npm.test.mjs","path":"tests/skills/rui-npm.test.mjs","cat":"skills","lines":785,"size":24000,"desc":"rui-npm 全场景测试套件 — 68 测试 · 10 子命令 · 4 场景","resultKey":"rui-npm 测试"},{"name":"rui-npm.mjs","path":"skills/rui-npm/rui-npm.mjs","cat":"skills","lines":598,"size":22000,"desc":"rui-npm 主入口 — 10 子命令路由与业务逻辑","resultKey":"rui-npm 源码"},{"name":"help.mjs","path":"skills/rui-npm/help.mjs","cat":"lib","lines":113,"size":8600,"desc":"帮助信息输出 — 子命令/参数/场景","resultKey":"帮助模块"}]};
-const results={"summary":{"total":68,"passed":68,"failed":0,"skipped":0,"durationMs":18500,"timestamp":"2026-06-06T12:00:00.000Z"},"suites":[{"name":"场景 1-包搜索与发现","tests":[{"name":"TC1.1 search react — 返回结构化结果","status":"passed","duration":208},{"name":"TC1.2 search react --json — 输出合法 JSON 数组","status":"passed","duration":214},{"name":"TC1.3 search react --limit 5 — 结果数受 limit 约束","status":"passed","duration":214},{"name":"TC1.4 search 支持 scope 包 (@types/node)","status":"passed","duration":199},{"name":"TC1.5 search Vue — 大小写不敏感搜索","status":"passed","duration":197},{"name":"TC1.6 search 无参数 — 明确错误提示","status":"passed","duration":80},{"name":"TC1.7 search 不存在包 — 无结果的明确提示","status":"passed","duration":200},{"name":"TC1.8 search 特殊字符 — 不应崩溃","status":"passed","duration":196}]}]}]};
-const perfData=[{"name":"TC1.1 search react","duration":208,"trend":"up"},{"name":"TC1.2 search --json","duration":214,"trend":"up"},{"name":"TC1.3 search --limit 5","duration":214,"trend":"up"},{"name":"TC1.6 search 无参数","duration":80,"trend":"down"},{"name":"TC1.8 search 特殊字符","duration":196,"trend":"up"}];
+var manifest={"files":[{"name":"rui-npm.test.mjs","path":"tests/skills/rui-npm.test.mjs","cat":"skills","lines":785,"size":24000,"desc":"rui-npm 全场景测试套件 — 68 测试 · 10 子命令 · 4 场景","resultKey":"rui-npm 测试"},{"name":"rui-npm.mjs","path":"skills/rui-npm/rui-npm.mjs","cat":"skills","lines":598,"size":22000,"desc":"rui-npm 主入口 — 10 子命令路由与业务逻辑","resultKey":"rui-npm 源码"},{"name":"help.mjs","path":"skills/rui-npm/help.mjs","cat":"lib","lines":113,"size":8600,"desc":"帮助信息输出 — 子命令/参数/场景","resultKey":"帮助模块"}]};
+var results={"summary":{"total":8,"passed":8,"failed":0,"skipped":0,"durationMs":1508,"timestamp":"2026-06-06T12:00:00.000Z"},"suites":[{"name":"场景 1-包搜索与发现","tests":[{"name":"TC1.1 search react — 返回结构化结果","status":"passed","duration":208},{"name":"TC1.2 search react --json — 输出合法 JSON 数组","status":"passed","duration":214},{"name":"TC1.3 search react --limit 5 — 结果数受 limit 约束","status":"passed","duration":214},{"name":"TC1.4 search 支持 scope 包 (@types/node)","status":"passed","duration":199},{"name":"TC1.5 search Vue — 大小写不敏感搜索","status":"passed","duration":197},{"name":"TC1.6 search 无参数 — 明确错误提示","status":"passed","duration":80},{"name":"TC1.7 search 不存在包 — 无结果的明确提示","status":"passed","duration":200},{"name":"TC1.8 search 特殊字符 — 不应崩溃","status":"passed","duration":196}]}]};
+var perfData=[{"name":"TC1.1 search react","duration":208,"trend":"up"},{"name":"TC1.2 search --json","duration":214,"trend":"up"},{"name":"TC1.3 search --limit 5","duration":214,"trend":"up"},{"name":"TC1.6 search 无参数","duration":80,"trend":"down"},{"name":"TC1.8 search 特殊字符","duration":196,"trend":"up"}];
 
+/* ═══ Tab switching ═══ */
+function switchPanel(name){
+  if(!PANELS[name])return;
+  activePanel=name;
+  /* Update tabs */
+  for(var k in PANELS){
+    if(!PANELS.hasOwnProperty(k))continue;
+    var on=(k===name);
+    PANELS[k].tab.classList.toggle('on',on);
+    PANELS[k].el.classList.toggle('on',on);
+  }
+  /* Render */
+  if(PANELS[name].render){PANELS[name].render()}
+  /* Reset nav focus */
+  focusIdx=-1;
+}
+
+/* ═══ Helpers ═══ */
 function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function fmtDur(ms){if(ms==null)return'';if(ms<1)return'<1ms';if(ms<1000)return Math.round(ms)+'ms';return(ms/1000).toFixed(1)+'s'}
 function fmtTs(iso){if(!iso)return'';try{return new Date(iso).toLocaleString('zh-CN')}catch{return iso}}
@@ -198,6 +235,10 @@ function buildResultMap(){
   }return map}
 function getAllTests(){var rm=buildResultMap();var all=[];for(var k in rm){if(rm.hasOwnProperty(k))all=all.concat(rm[k].tests)}return all}
 
+function resetFilters(){resultQuery='';fileQuery='';statusFilter='';var inp=document.getElementById('searchInput');if(inp)inp.value='';var cards=document.querySelectorAll('.stat-card');for(var i=0;i<cards.length;i++){cards[i].classList.remove('active-filter')}}
+function onSearch(q){var lq=q.toLowerCase();statusFilter='';var cards=document.querySelectorAll('.stat-card');for(var i=0;i<cards.length;i++){cards[i].classList.remove('active-filter')};if(activePanel==='results'){resultQuery=lq;renderResults()}else if(activePanel==='files'){fileQuery=lq;renderFiles()}else{resultQuery=lq;fileQuery=lq;renderResults();renderFiles()}}
+
+/* ═══ Stats ═══ */
 function renderStats(){
   var s=results.summary,t=s.total||0,p=s.passed||0,f=s.failed||0,sk=s.skipped||0;
   var dur=results.durationMs?fmtDur(results.durationMs):'--';
@@ -205,9 +246,10 @@ function renderStats(){
   document.getElementById('statsRow').innerHTML='<div class="stat-card" onclick="filterByStatus(\'all\')" id="statAll"><div class="val t">'+t+'</div><div class="lbl">总计断言</div></div><div class="stat-card" onclick="filterByStatus(\'passed\')" id="statPassed"><div class="val p">'+p+'</div><div class="lbl">✅ 通过 · '+passPct+'%</div></div><div class="stat-card" onclick="filterByStatus(\'failed\')" id="statFailed"><div class="val f">'+f+'</div><div class="lbl">❌ 失败</div></div><div class="stat-card" onclick="filterByStatus(\'skipped\')" id="statSkipped"><div class="val s">'+sk+'</div><div class="lbl">⏭️ 跳过</div></div><div class="stat-card"><div class="val d">'+dur+'</div><div class="lbl">⏱ 耗时</div></div>';
   var pp=t>0?(p/t*100):0,fp=t>0?(f/t*100):0,sp=t>0?(sk/t*100):0;
   document.getElementById('bar').innerHTML='<div class="seg p" style="width:'+pp+'%"></div><div class="seg f" style="width:'+fp+'%"></div><div class="seg s" style="width:'+sp+'%"></div>';
-  document.getElementById('navStatus').textContent='🧪 测试 · '+p+'/'+t+' 通过'
+  var ns=document.getElementById('navStatus');if(ns)ns.textContent='🧪 测试 · '+p+'/'+t+' 通过'
 }
 
+/* ═══ Files panel ═══ */
 var CAT_ICONS={skills:'⚙️',agents:'🤖',rules:'📏',integration:'🔗',lib:'📦'};
 var CAT_LABELS={skills:'Skills',agents:'Agents',rules:'Rules',integration:'Integration',lib:'Library'};
 function renderFiles(){
@@ -227,6 +269,7 @@ function renderFiles(){
   container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配文件</h3></div>'
 }
 
+/* ═══ Results panel ═══ */
 function renderResults(){
   var container=document.getElementById('resultsContent');
   if(!results||!results.suites){container.innerHTML='<div class="state-msg"><div class="icon">📊</div><h3>暂无测试结果</h3></div>';return}
@@ -237,14 +280,17 @@ function renderResults(){
     if(resultQuery){var mn=name.toLowerCase().includes(resultQuery),mt=r.tests.some(function(t){return t.name.toLowerCase().includes(resultQuery)||(t.error&&t.error.toLowerCase().includes(resultQuery))});if(!mn&&!mt)continue}
     var hasFail=r.failed>0,tests=r.tests;if(sortByDur)tests=[].concat(tests).sort(function(a,b){return(b.duration||0)-(a.duration||0)});
     var maxDur=Math.max.apply(null,tests.map(function(t){return t.duration||0}).concat([1]));
-    html+='<div class="suite'+(hasFail?' open':'')+'"><div class="s-head" data-action="toggle"><span class="s-arrow">▶</span><span class="s-name">🧪 '+esc(name)+'</span><span class="s-meta">'+(r.passed>0?'<span class="sm p">✅ '+r.passed+'</span>':'')+(r.failed>0?'<span class="sm f">❌ '+r.failed+'</span>':'')+(r.skipped>0?'<span class="sm" style="color:var(--skip)">⏭️ '+r.skipped+'</span>':'')+'</span></div><div class="s-body">';
-    for(var j=0;j<tests.length;j++){var t=tests[j];if(resultQuery&&!t.name.toLowerCase().includes(resultQuery)&&!(t.error&&t.error.toLowerCase().includes(resultQuery)))continue;
+    html+='<div class="suite'+(hasFail?' open':'')+'"><div class="s-head" onclick="toggleSuite(this)"><span class="s-arrow">▶</span><span class="s-name">🧪 '+esc(name)+'</span><span class="s-meta">'+(r.passed>0?'<span class="sm p">✅ '+r.passed+'</span>':'')+(r.failed>0?'<span class="sm f">❌ '+r.failed+'</span>':'')+(r.skipped>0?'<span class="sm" style="color:var(--skip)">⏭️ '+r.skipped+'</span>':'')+'</span></div><div class="s-body">';
+    for(var j=0;j<tests.length;j++){var t=tests[j];if(statusFilter&&t.status!==statusFilter)continue;if(resultQuery&&!t.name.toLowerCase().includes(resultQuery)&&!(t.error&&t.error.toLowerCase().includes(resultQuery)))continue;
       var durMs=t.duration||0,barPct=maxDur>0?Math.round(durMs/maxDur*100):0,durClass=durMs>500?'very-slow':durMs>SLOW_THRESHOLD?'slow':'';
       html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'" onclick="copyTestName(\''+esc(t.name)+'\')" title="点击复制测试名"><span class="t-icon">'+(t.status==='passed'?'✅':t.status==='failed'?'❌':t.status==='skipped'?'⏭️':'⬜')+'</span><span class="t-name">'+esc(t.name)+'</span>'+(t.error?'<span class="t-err" title="'+esc(t.error)+'">'+esc(t.error)+'</span>':'')+'<span class="t-dur '+durClass+'"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(t.duration)+(durMs>SLOW_THRESHOLD?'<span class="slow-warn">🐢</span>':'')+'</span></div>'}
     html+='</div></div>'}
   container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配结果</h3></div>'
 }
 
+function toggleSuite(headEl){var suite=headEl.closest('.suite');if(suite)suite.classList.toggle('open')}
+
+/* ═══ Normal / Boundary / Slow / Perf panels ═══ */
 function renderNormal(){
   var container=document.getElementById('normalContent');
   var html='<div class="card"><h2>✅ 正常路径 (5)</h2><table class="test-table"><thead><tr><th>TC#</th><th>Given</th><th>When</th><th>Then</th><th>覆盖</th><th>优先级</th></tr></thead><tbody>';
@@ -273,8 +319,7 @@ function renderSlow(){
   if(!slow.length){container.innerHTML='<div class="state-msg"><div class="icon">⚡</div><h3>所有测试都在 '+SLOW_THRESHOLD+'ms 以内</h3><p>最长耗时 40ms — search --registry 自定义源</p></div>';return}
   var html='';
   for(var i=0;i<slow.length;i++){var t=slow[i];html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'" style="padding-left:18px" onclick="copyTestName(\''+esc(t.name)+'\')" title="点击复制测试名"><span class="t-icon">'+(t.status==='passed'?'✅':'❌')+'</span><span class="t-name">'+esc(t.name)+'</span><span class="t-dur very-slow">'+fmtDur(t.duration)+'</span></div>'}
-  container.innerHTML=html
-}
+  container.innerHTML=html}
 
 function renderPerf(){
   var container=document.getElementById('perfContent');
@@ -283,23 +328,22 @@ function renderPerf(){
   for(var i=0;i<perfData.length;i++){var p=perfData[i],durMs=p.duration||0,durClass=durMs>50?'slow':'';
     html+='<div class="t-row" style="padding-left:18px;cursor:default"><span class="t-icon">'+(p.trend==='up'?'📈':p.trend==='down'?'📉':'📊')+'</span><span class="t-name">'+esc(p.name)+'</span><span class="t-dur '+durClass+'">'+fmtDur(durMs)+'</span></div>'}
   html+='</div>';
-  container.innerHTML=html
-}
+  container.innerHTML=html}
 
+/* ═══ Source modal ═══ */
 function viewSource(relPath){var overlay=document.getElementById('modalOverlay');document.getElementById('modalTitle').textContent=relPath;document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>';overlay.classList.add('show');fetch('../../../../'+relPath).then(function(resp){if(!resp.ok)throw new Error('HTTP '+resp.status);return resp.text()}).then(function(text){var lines=text.split('\n');document.getElementById('modalBody').innerHTML='<pre>'+lines.map(function(l,i){return'<span class="ln">'+(i+1)+'</span>'+esc(l)}).join('\n')+'</pre>'}).catch(function(e){document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(e.message)+'</div>'})}
 function closeModal(){document.getElementById('modalOverlay').classList.remove('show')}
 
-function expandAllFiles(){document.querySelectorAll('#filesContent .file-card').forEach(function(c){c.style.display=''})}
-function expandAllSuites(){document.querySelectorAll('#resultsContent .suite').forEach(function(c){c.classList.add('open')})}
-function collapseAllSuites(){document.querySelectorAll('#resultsContent .suite').forEach(function(c){c.classList.remove('open')})}
+/* ═══ Actions ═══ */
+function expandAllSuites(){var suites=document.querySelectorAll('#resultsContent .suite');for(var i=0;i<suites.length;i++){suites[i].classList.add('open')}}
+function collapseAllSuites(){var suites=document.querySelectorAll('#resultsContent .suite');for(var i=0;i<suites.length;i++){suites[i].classList.remove('open')}}
 function toggleSort(){sortByDur=!sortByDur;document.getElementById('btnSortDur').classList.toggle('on',sortByDur);renderResults()}
 function copyTestName(name){navigator.clipboard.writeText(name).then(function(){toast('已复制: '+name)}).catch(function(){})}
 function copyResultsMd(){var s=results.summary,md='## 场景自检结果\n\n| 指标 | 值 |\n|------|----|\n| 总计 | '+(s.total||0)+' |\n| ✅ 通过 | '+(s.passed||0)+' |\n| ❌ 失败 | '+(s.failed||0)+' |\n| ⏱ 耗时 | '+fmtDur(results.durationMs)+' |\n| 🕐 时间 | '+fmtTs(results.timestamp)+' |\n',rm=buildResultMap(),k;for(k in rm){if(!rm.hasOwnProperty(k))continue;var r=rm[k],icon=r.failed>0?'❌':'✅';md+='\n### '+icon+' '+k+'\n| 通过 | 失败 | 跳过 | 总计 |\n|------|------|------|------|\n| '+r.passed+' | '+r.failed+' | '+r.skipped+' | '+r.total+' |\n'}navigator.clipboard.writeText(md).then(function(){toast('已复制为 Markdown')}).catch(function(){toast('复制失败')})}
-function copyFileList(){if(!manifest)return;var list=manifest.files.map(function(f){return f.path}).join('\n');navigator.clipboard.writeText(list).then(function(){toast('已复制文件清单')}).catch(function(){toast('复制失败')})}
-function filterByStatus(status){resultQuery=status==='all'?'':status==='passed'?'✅':status==='failed'?'❌':'';document.querySelectorAll('.stat-card').forEach(function(c){c.classList.remove('active-filter')});var el=document.getElementById(status==='all'?'statAll':status==='passed'?'statPassed':status==='failed'?'statFailed':status==='skipped'?'statSkipped':'statAll');if(el)el.classList.add('active-filter');switchPanel('results');renderResults()}
-function switchPanel(name){activePanel=name;document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.panel===name)});document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1))});if(name==='files')renderFiles();else if(name==='results')renderResults();else if(name==='normal')renderNormal();else if(name==='boundary')renderBoundary();else if(name==='slow')renderSlow();else if(name==='perf')renderPerf()}
+function filterByStatus(status){statusFilter=status==='all'?'':status;resultQuery='';var inp=document.getElementById('searchInput');if(inp)inp.value='';var cards=document.querySelectorAll('.stat-card');for(var i=0;i<cards.length;i++){cards[i].classList.remove('active-filter')};var el=document.getElementById(status==='all'?'statAll':status==='passed'?'statPassed':status==='failed'?'statFailed':status==='skipped'?'statSkipped':'statAll');if(el)el.classList.add('active-filter');switchPanel('results')}
 function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show')},1800)}
 
+/* ═══ Keyboard navigation ═══ */
 document.addEventListener('keydown',function(e){
   if(document.activeElement.tagName==='INPUT')return;
   if(e.key==='Escape'){closeModal()}
@@ -307,17 +351,17 @@ document.addEventListener('keydown',function(e){
   if(e.key==='k'||e.key==='ArrowUp'){e.preventDefault();focusIdx=Math.max(-1,focusIdx-1);navigateResults()}
   if(e.key==='Enter'&&activePanel==='results'){var focused=document.querySelector('.suite.focused');if(focused)focused.classList.toggle('open')}
   if(e.key==='Enter'&&activePanel==='files'){var focused=document.querySelector('.file-card.focused');if(focused)focused.click()}
-  if((e.ctrlKey||e.metaKey)&&e.key==='f'){e.preventDefault();var inp=document.getElementById(activePanel==='files'?'searchFiles':'searchResults');if(inp)inp.focus()}
+  if((e.ctrlKey||e.metaKey)&&e.key==='f'){e.preventDefault();var inp=document.getElementById('searchInput');if(inp)inp.focus()}
   if(e.key==='1')switchPanel('files');if(e.key==='2')switchPanel('results');if(e.key==='3')switchPanel('normal');if(e.key==='4')switchPanel('boundary');if(e.key==='5')switchPanel('slow');if(e.key==='6')switchPanel('perf');if(e.key==='7')switchPanel('gate')
 });
 function navigateResults(){
-  document.querySelectorAll('.suite.focused,.t-row.focused,.file-card.focused').forEach(function(e){e.classList.remove('focused')});
+  var els=document.querySelectorAll('.suite.focused,.t-row.focused,.file-card.focused');
+  for(var i=0;i<els.length;i++){els[i].classList.remove('focused')}
   var suites=document.querySelectorAll('#resultsContent .suite');if(suites.length===0)return;if(focusIdx<0)return;
   if(focusIdx>=suites.length)focusIdx=suites.length-1;suites[focusIdx].classList.add('focused');suites[focusIdx].scrollIntoView({behavior:'smooth',block:'nearest'})
 }
 
-document.querySelector('.tabs').addEventListener('click',function(e){var tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
-document.getElementById('resultsContent').addEventListener('click',function(e){var head=e.target.closest('.s-head');if(head){var suite=head.closest('.suite');suite.classList.toggle('open')}});
+/* ═══ Init ═══ */
 document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===e.currentTarget)closeModal()});
 document.getElementById('bar').addEventListener('click',function(e){var rect=this.getBoundingClientRect(),pct=(e.clientX-rect.left)/rect.width;if(pct<.33)filterByStatus('passed');else if(pct<.66)filterByStatus('failed');else filterByStatus('skipped')});
 window.addEventListener('DOMContentLoaded',function(){renderStats();switchPanel('files')});

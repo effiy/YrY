@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>commit前增量自检 · 计划清单</title>
+<!-- ═══ CDN: YrY 共享样式 ═══ -->
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
 <style>
 :root {
   --bg: rgba(22,22,32,1);
@@ -148,41 +151,41 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 </style>
 </head>
 <body>
-<div class="container">
+<div class="yry-container">
 
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自主测试方案</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · commit 前增量自检</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
+<nav class="yry-breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">yry-self-test · 自主测试方案</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 2 · commit 前增量自检</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">📋 计划清单</span></nav>
 
-<div class="cross-nav">
-  <span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
-  <a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
-  <a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
-  <a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span>
-  <a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a>
+<div class="yry-cross-nav">
+  <span class="cross-link on">📋 清单</span><span class="yry-cross-sep">·</span>
+  <a href="架构图.html" class="yry-cross-link">📐 架构</a><span class="yry-cross-sep">·</span>
+  <a href="知识图谱.html" class="yry-cross-link">🔗 图谱</a><span class="yry-cross-sep">·</span>
+  <a href="测试面板.html" class="yry-cross-link">🧪 测试</a><span class="yry-cross-sep">·</span>
+  <a href="演示.html" class="yry-cross-link">💡 演示</a><span class="yry-cross-sep">·</span><a href="审查.html" class="yry-cross-link">📝 审查</a>
 </div>
 
-<div class="header">
-  <h1>📋 场景-2<span class="accent"> · commit 前增量自检</span></h1>
-  <p class="sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
+<div class="yry-header">
+  <h1>📋 场景-2<span class="yry-accent"> · commit 前增量自检</span></h1>
+  <p class="yry-sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
   <div class="meta">📌 v1.1.0 · 📅 2026-06-05 · 🏷️ yry-self-test</div>
 </div>
 
-<div class="progress-wrap">
-  <div class="progress-label"><span>整体进度</span><span id="progress-text">0 / 14 完成</span></div>
-  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+<div class="yry-progress-wrap">
+  <div class="yry-progress-label"><span>整体进度</span><span id="progress-text">0 / 14 完成</span></div>
+  <div class="yry-progress-bar"><div class="yry-progress-fill" id="progress-fill" style="width:0%"></div></div>
 </div>
 
-<div class="tabs">
+<div class="yry-tabs">
   <span class="tab on" data-panel="checklist">📋 清单</span>
-  <span class="tab" data-panel="overview">📊 概览</span>
-  <span class="tab" data-panel="commands">⚡ 命令</span>
-  <span class="tab" data-panel="related">📁 关联</span>
-  <span class="tab" data-panel="verify">🧪 验证</span>
+  <span class="yry-tab" data-panel="overview">📊 概览</span>
+  <span class="yry-tab" data-panel="commands">⚡ 命令</span>
+  <span class="yry-tab" data-panel="related">📁 关联</span>
+  <span class="yry-tab" data-panel="verify">🧪 验证</span>
 </div>
 
 <!-- ═══ Tab 1: Checklist ═══ -->
 <div class="panel on" id="panelChecklist">
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>§0 技术评审<span class="s-done">— 已完成</span></h2>
 
 <div class="step">
@@ -198,7 +201,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
     <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
     <div class="code-block">git diff --name-only HEAD~1 → 变更文件集 → 查询依赖图 → 确定受影响自检项 → 增量执行</div>
   </div>
-<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">0</div><div class="lbl">✅ 完成</div></div><div class="stat-card"><div class="val">6</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val">0%</div><div class="lbl">📊 进度</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:0%"></div><div class="seg gap" style="width:100%"></div></div></div>
+<div class="yry-stats"><div class="yry-stat"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="yry-stat"><div class="val health">0</div><div class="lbl">✅ 完成</div></div><div class="yry-stat"><div class="val">6</div><div class="lbl">⏳ 待执行</div></div><div class="yry-stat"><div class="val">0%</div><div class="lbl">📊 进度</div></div></div><div class="yry-bar-wrap"><div class="yry-bar-outer"><div class="seg strength" style="width:0%"></div><div class="seg gap" style="width:100%"></div></div></div>
 
 </div>
 
@@ -217,7 +220,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 </div>
 </div>
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>§1 测试设计</h2>
 
 <div class="step">
@@ -235,7 +238,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 </div>
 </div>
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>§2 实施报告<span class="s-done">— 进行中</span></h2>
 
 <div class="step">
@@ -295,7 +298,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 </div>
 </div>
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>§3 测试报告</h2>
 
 <div class="step">
@@ -325,7 +328,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 </div>
 </div>
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>§4 自改进 + 交付</h2>
 
 <div class="step">
@@ -394,7 +397,7 @@ node skills/rui-bot/send.mjs --story=yry-self-test --status=done</div>
 </div><!-- /panelChecklist -->
 
 <!-- ═══ Tab 2: Overview ═══ -->
-<div class="panel" id="panelOverview">
+<div class="yry-panel" id="panelOverview">
 
 <div class="stat-grid">
   <div class="stat-mini"><div class="sv g" id="ov-done">1</div><div class="sl">已完成</div></div>
@@ -403,7 +406,7 @@ node skills/rui-bot/send.mjs --story=yry-self-test --status=done</div>
   <div class="stat-mini"><div class="sv c">14</div><div class="sl">总步骤</div></div>
 </div>
 
-<div class="section"><h2><span class="dot"></span>各阶段完成度</h2>
+<div class="yry-section"><h2><span class="dot"></span>各阶段完成度</h2>
   <div class="section-stat"><span class="ss-label">§0 技术评审</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:50%;background:var(--accent)"></div></div><span class="ss-pct">1/2</span></div>
   <div class="section-stat"><span class="ss-label">§1 测试设计</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/1</span></div>
   <div class="section-stat"><span class="ss-label">§2 实施报告</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/4</span></div>
@@ -411,27 +414,27 @@ node skills/rui-bot/send.mjs --story=yry-self-test --status=done</div>
   <div class="section-stat"><span class="ss-label">§4 自改进+交付</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/5</span></div>
 </div>
 
-<div class="section"><h2><span class="dot"></span>下一步行动</h2>
+<div class="yry-section"><h2><span class="dot"></span>下一步行动</h2>
   <div class="cmd-card"><div class="c-stage">当前就绪 — 步骤 2</div><div class="c-name">定义变更范围自动剪枝算法</div><div class="c-desc">根据依赖图自动剪枝：不在影响传播路径上的模块跳过自检。切换到 ⚡命令 Tab 查看可执行命令。</div></div>
 </div>
 
 </div><!-- /panelOverview -->
 
 <!-- ═══ Tab 3: Commands ═══ -->
-<div class="panel" id="panelCommands">
+<div class="yry-panel" id="panelCommands">
 
-<div class="section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令</h2>
+<div class="yry-section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令</h2>
 <div class="cmd-grid">
   <div class="cmd-card"><div class="c-stage">步骤 1</div><div class="c-name">生成增量自检流程文档</div><div class="c-desc">git diff → 依赖图传播 → 增量自检项选择</div><pre>/rui doc --story yry-self-test --scene 2<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-self-test --scene 2')">📋</span></pre></div>
 </div></div>
 
-<div class="section"><h2><span class="dot"></span>§0-§1 — 待执行命令</h2>
+<div class="yry-section"><h2><span class="dot"></span>§0-§1 — 待执行命令</h2>
 <div class="cmd-grid">
   <div class="cmd-card"><div class="c-stage">步骤 2 · 🔶 就绪</div><div class="c-name">设计剪枝算法</div><div class="c-desc">architect agent 分析依赖图剪枝逻辑</div><pre>/rui doc --story yry-self-test<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-self-test')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 3</div><div class="c-name">生成变更感知测试用例</div><div class="c-desc">tester agent 生成 TC-I 系列测试</div><pre>/rui doc --story yry-self-test<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-self-test')">📋</span></pre></div>
 </div></div>
 
-<div class="section"><h2><span class="dot"></span>§2-§4 — 待执行命令</h2>
+<div class="yry-section"><h2><span class="dot"></span>§2-§4 — 待执行命令</h2>
 <div class="cmd-grid">
   <div class="cmd-card"><div class="c-stage">步骤 4</div><div class="c-name">检测变更文件集</div><div class="c-desc">git diff 获取变更文件列表</div><pre>git diff --name-only HEAD~1<span class="cb" onclick="copyCmd(this,'git diff --name-only HEAD~1')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 5</div><div class="c-name">更新依赖图数据</div><div class="c-desc">重新生成知识图谱供传播算法使用</div><pre>/rui doc --story yry-self-test --output 知识图谱.html<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-self-test --output 知识图谱.html')">📋</span></pre></div>
@@ -447,7 +450,7 @@ node skills/rui-bot/send.mjs --story=yry-self-test --status=done</div>
 </div><!-- /panelCommands -->
 
 <!-- ═══ Tab 4: Related Pages ═══ -->
-<div class="panel" id="panelRelated">
+<div class="yry-panel" id="panelRelated">
 
 <div class="link-grid">
   <a href="架构图.html" class="link-card">
@@ -471,7 +474,7 @@ node skills/rui-bot/send.mjs --story=yry-self-test --status=done</div>
 </div><!-- /panelRelated -->
 
 <!-- ═══ Tab 5: Verify ═══ -->
-<div class="panel" id="panelVerify">
+<div class="yry-panel" id="panelVerify">
 
 <div class="verify-list">
   <div class="verify-item"><div class="vi-label">步骤 8 · 增量 vs 全量性能对比</div>
@@ -482,13 +485,13 @@ node skills/rui-bot/send.mjs --story=yry-self-test --status=done</div>
 
 </div><!-- /panelVerify -->
 
-<div class="footer">
+<div class="yry-footer">
   <p>🤖 Generated with planner agent | scene: commit前增量自检 | updated: 2026-06-05</p>
 </div>
 
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="yry-toast" id="toast"></div>
 
 <script>
 const SCENE_KEY = 'yry-self-test-s2-checklist';
@@ -580,5 +583,6 @@ function toast(msg) {
   switchPanel(activeTab);
 })();
 </script>
+<script src="../../../../cdn/shared.js"></script>
 </body>
 </html>

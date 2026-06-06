@@ -1,6 +1,8 @@
 <!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>包安装与版本管理 · 知识图谱</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
@@ -9,8 +11,16 @@ body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;
 .header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
 .pulse-dot{width:12px;height:12px;background:#22d3ee;border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 h1{font-size:1.5rem;font-weight:700}
 .subtitle{color:#94a3b8;font-size:.875rem;margin-left:1.75rem}
+.toolbar{display:flex;gap:.5rem;margin-left:auto;flex-shrink:0;align-items:center}
+.toolbar-toggle{background:transparent;border:none;color:#475569;cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem}
+.toolbar-toggle:hover{color:#94a3b8;background:rgba(30,41,59,.5)}
+.toolbar-actions{display:none;gap:.5rem}
+.toolbar.expanded .toolbar-actions{display:flex}
+.toolbar-actions button{background:rgba(30,41,59,.8);border:1px solid #334155;color:#94a3b8;padding:.375rem .75rem;border-radius:.375rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.toolbar-actions button:hover{background:rgba(51,65,85,.8);color:white;border-color:#475569}
 .graph-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1rem;margin-bottom:1.5rem}
 #cy{width:100%;height:550px;border-radius:.5rem}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin-bottom:1.5rem}
@@ -33,26 +43,33 @@ h1{font-size:1.5rem;font-weight:700}
 .breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
 .breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
 .breadcrumb .bc-current{color:#94a3b8;font-weight:500}
-.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap}
-.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
-.cross-link:hover{color:#fbbf24;background:rgba(255,193,7,.06);text-decoration:underline}
-.cross-link.on{color:#fbbf24;font-weight:600}
-.cross-sep{color:#53576c;opacity:0.35;user-select:none}
 .footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
-</style></head><body><div class="container">
-<nav class="breadcrumb"><a href="../../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../../故事任务.md">rui-npm</a><span class="bc-sep">/</span><span class="bc-current">场景 2 · 知识图谱</span></nav>
+
+@media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
+.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
+.cross-link:hover{color:#fbbf24;background:rgba(251,191,36,0.06)}
+.cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
+.cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
+</style></head><body><div class="container" id="report-container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · 个人 npm 包管理</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · 包安装与版本管理</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
 
 <nav class="cross-nav">
-  <a class="cross-link" href="场景-2-包安装与版本管理.md">📄 场景</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
-  <a class="cross-link on" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="计划清单.html">📋 计划清单</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="架构图.html">📐 架构图</a><span class="cross-sep">·</span>
+  <span class="cross-link on">🔗 知识图谱</span><span class="cross-sep">·</span>
+  <a class="cross-link" href="测试面板.html">🧪 测试面板</a><span class="cross-sep">·</span>
   <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
   <a class="cross-link" href="审查.html">📝 审查</a>
 </nav>
 
-<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>🧩 包安装与版本管理 · 知识图谱</h1></div><p class="subtitle">场景 2/4 — install · update · list 三命令的知识结构</p></div>
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>🧩 包安装与版本管理 · 知识图谱</h1>
+	<div class="toolbar"><div class="toolbar-actions">
+	<button onclick="copyAsImage(this)">📋 Copy</button>
+	<button onclick="downloadPNG(this)">🖼️ PNG</button>
+	<button onclick="downloadPDF(this)">📄 PDF</button>
+	</div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
+	</div><p class="subtitle">场景 2/4 — install · update · list 三命令的知识结构</p></div>
 
 <div class="legend">
   <div class="legend-item"><span class="legend-dot domain"></span> 领域层（Domain）</div>
@@ -127,6 +144,13 @@ elements:{nodes:[
 layout:{name:'breadthfirst',directed:true,spacingFactor:1.15,roots:'[id="story"]'},
 minZoom:0.5,maxZoom:2});
 cy.fit(cy.elements(),50);
-});
-</script>
+
+	cy.on('tap','node',function(evt){const node=evt.target;const hood=node.closedNeighborhood();cy.elements().style('opacity',0.15);hood.style('opacity',1);node.style('opacity',1)});
+	cy.on('tap',function(evt){if(evt.target===cy)cy.elements().style('opacity',0.85)});
+	});
+
+	async function copyAsImage(btn){const orig=btn.textContent;try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),blob=await new Promise(r=>canvas.toBlob(r,'image/png'));await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);btn.textContent='✓ Copied!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+	async function downloadPNG(btn){const orig=btn.textContent;btn.textContent='⏳...';try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),link=document.createElement('a');link.download='知识图谱-包安装与版本管理.png';link.href=canvas.toDataURL('image/png');link.click();btn.textContent='✓ Done!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+	async function downloadPDF(btn){const orig=btn.textContent;btn.textContent='⏳...';try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),imgData=canvas.toDataURL('image/png');const{jsPDF}=window.jspdf,orientation=canvas.width>canvas.height?'landscape':'portrait',pdf=new jsPDF({orientation,unit:'px',format:[canvas.width,canvas.height],hotfixes:['px_scaling']});pdf.addImage(imgData,'PNG',0,0,canvas.width,canvas.height);pdf.save('知识图谱-包安装与版本管理.pdf');btn.textContent='✓ Done!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+	</script>
 </body></html>

@@ -7,75 +7,42 @@ import { join, resolve, dirname } from "node:path";
 import { existsSync, readFileSync, readdirSync, mkdirSync, appendFileSync, writeFileSync } from "node:fs";
 import { execSync } from "node:child_process";
 
-// --- constants ----------------------------------------------------------------
-const STORY_PANEL_DIR = "docs/故事任务面板";
-const PROPOSALS_DIR = ".improvement";
-const PROPOSALS_FILE = "proposals.jsonl";
-const EXEC_MEMORY_FILE = ".memory/execution-memory.jsonl";
-const TOOL_AUDIT_FILE = ".memory/tool-audit.jsonl";
-const DELIVERY_TRACK_FILE = ".memory/delivery-tracking.jsonl";
-const RUI_STATE_FILE = ".memory/rui-state.json";
+// --- constants (imported from shared lib) --------------------------------------
+import {
+  NODE_ARGV_OFFSET,
+  STORY_PANEL_DIR,
+  PROPOSALS_DIR,
+  PROPOSALS_FILE,
+  EXEC_MEMORY_FILE,
+  TOOL_AUDIT_FILE,
+  DELIVERY_TRACK_FILE,
+  RUI_STATE_FILE,
+  IMPROVE_STORY_PREFIX,
+  DEFAULT_MIN_PRIORITY,
+  PRIORITY_ORDER,
+  MIN_EXEC_MEMORIES,
+  BLOCK_RATE_THRESHOLD,
+  P0_DENSITY_MULTIPLIER,
+  T3_PROPORTION_THRESHOLD,
+  STAGE_DURATION_MULTIPLIER,
+  PROPOSAL_TYPES,
+  DIAGNOSTIC_PROPOSAL_TYPE,
+  DIAGNOSTIC_LABELS,
+  DIAGNOSTIC_BASELINES,
+  DIAGNOSTIC_MIN_CONFIDENCE,
+  UPGRADE_THRESHOLDS,
+  UPGRADE_TARGETS,
+  TOOL_ERROR_RATE_THRESHOLD,
+  GATE_B_MAX_ROUNDS,
+  PROPOSAL_CLOSURE_MIN_RATE,
+  STATUS_HISTORY_FILE,
+  MEMORY_DIR,
+  COMPRESSED_MEMORY_FILE,
+} from "../../lib/constants.mjs";
 
-// Materialization constants
-const IMPROVE_STORY_PREFIX = "improve";
-const MATERIALIZED_FIELD = "materialized_story_dir";
-const DEFAULT_MIN_PRIORITY = "P2";
-const PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 };
-
-import { NODE_ARGV_OFFSET } from "../../lib/constants.mjs";
 const ARGV_OFFSET = NODE_ARGV_OFFSET;
-const MIN_EXEC_MEMORIES = 3;
-const BLOCK_RATE_THRESHOLD = 0.20;
-const P0_DENSITY_MULTIPLIER = 2.0;
-const T3_PROPORTION_THRESHOLD = 0.30;
-const STAGE_DURATION_MULTIPLIER = 3.0;
 
-const PROPOSAL_TYPES = ["process", "quality", "refactor", "security", "skill"];
-
-// Diagnostic → proposal type routing (from rules/self-improve.md)
-const DIAGNOSTIC_PROPOSAL_TYPE = {
-  D0: "process",
-  D1: "refactor",
-  D2: "quality",
-  D3: "security",
-  D4: "quality",
-  D5: "refactor",
-  D6: "process",
-  D7: "process",
-};
-
-const DIAGNOSTIC_LABELS = {
-  D0: "基线偏离",
-  D1: "效率退化",
-  D2: "质量退化",
-  D3: "复杂度增长",
-  D4: "流程退化",
-  D5: "依赖退化",
-  D6: "文档过时",
-  D7: "配置漂移",
-};
-
-const DIAGNOSTIC_BASELINES = {
-  D0: "CLAUDE.md · agents/",
-  D1: "code-pipeline.md",
-  D2: "doc-generation.md",
-  D3: "pm.md（故事拆分）",
-  D4: "code-pipeline.md",
-  D5: "agents/",
-  D6: "CLAUDE.md",
-  D7: "rules/self-improve.md",
-};
-
-const DIAGNOSTIC_MIN_CONFIDENCE = {
-  D0: 1,
-  D1: 5,
-  D2: 3,
-  D3: 3,
-  D4: 2,
-  D5: 3,
-  D6: 2,
-  D7: 5,
-};
+const MATERIALIZED_FIELD = "materialized_story_dir";
 
 // --- TTY helpers -------------------------------------------------------------
 import { bold, dim, red, green, yellow, cyan } from "../../lib/tty.mjs";
@@ -158,8 +125,48 @@ function collectStoryData(projectRoot, storyName) {
   const deliveryTrack = readJsonl(join(storyPath, DELIVERY_TRACK_FILE));
   const ruiState = readJson(join(storyPath, RUI_STATE_FILE));
   const proposals = readJsonl(join(storyPath, PROPOSALS_FILE));
+  const statusHistory = readJsonl(join(storyPath, STATUS_HISTORY_FILE));
 
-  return { storyName, storyPath, allExec, toolAudit, deliveryTrack, ruiState, proposals };
+  // Snapshot: collect git evidence as required by rules/self-improve.md
+  let gitSnapshot = null;
+  let codeSnapshot = null;
+  try {
+    const gitRoot = projectRoot;
+    // Git diff stat since last story completion marker
+    const diffStat = execSync("git diff --stat HEAD", { cwd: gitRoot, encoding: "utf-8", timeout: 5000 }).trim();
+    const changedFiles = execSync("git diff --name-only HEAD", { cwd: gitRoot, encoding: "utf-8", timeout: 5000 }).trim().split("\n").filter(Boolean);
+    const diffShort = execSync("git diff --shortstat HEAD", { cwd: gitRoot, encoding: "utf-8", timeout: 5000 }).trim();
+
+    gitSnapshot = {
+      branch: execSync("git branch --show-current", { cwd: gitRoot, encoding: "utf-8", timeout: 3000 }).trim(),
+      shortStat: diffShort,
+      changedFiles,
+      fileCount: changedFiles.length,
+      diffSummary: diffStat.slice(0, 2000),
+      collectedAt: new Date().toISOString(),
+    };
+
+    // Code snapshot: large files and dependency hotspots
+    const largeFiles = changedFiles
+      .filter((f) => existsSync(join(gitRoot, f)))
+      .map((f) => {
+        try {
+          const stat = readFileSync(join(gitRoot, f), "utf-8");
+          return { file: f, lines: stat.split("\n").length };
+        } catch { return { file: f, lines: -1 }; }
+      })
+      .filter((f) => f.lines > 500);
+
+    codeSnapshot = {
+      largeFiles,
+      hotFiles: changedFiles.filter((f) => changedFiles.filter((g) => g !== f && f.split("/")[0] === g.split("/")[0]).length >= 2).slice(0, 10),
+    };
+  } catch {
+    gitSnapshot = { error: "git snapshot 采集失败", collectedAt: new Date().toISOString() };
+    codeSnapshot = { error: "代码快照采集失败" };
+  }
+
+  return { storyName, storyPath, allExec, toolAudit, deliveryTrack, ruiState, proposals, statusHistory, gitSnapshot, codeSnapshot };
 }
 
 // --- D0-D7 diagnostics -------------------------------------------------------
@@ -256,25 +263,64 @@ function runDiagnostics(data) {
     }
   }
 
-  // D4: Process degradation — Gate B > 2 rounds (proxied by delivery failures + retries)
-  const deliveryFailures = data.deliveryTrack.filter((r) => r.status === "failure").length;
-  if (deliveryFailures >= DIAGNOSTIC_MIN_CONFIDENCE.D4) {
-    diagnostics.push({
-      id: "D4",
-      label: DIAGNOSTIC_LABELS.D4,
-      triggered: true,
-      confidence: deliveryFailures,
-      evidence: `${deliveryFailures} 次交付失败`,
-      baseline: DIAGNOSTIC_BASELINES.D4,
-      suggestion: "交付失败率偏高，检查 Gate A/B 验证步骤，确保测试先行",
-    });
+  // D4: Process degradation — Gate B > 2 rounds (from status history retries)
+  if (data.statusHistory && data.statusHistory.length >= DIAGNOSTIC_MIN_CONFIDENCE.D4) {
+    // Count phase retries where status went backward (from later to earlier stage)
+    const forwardOrder = ["任务", "设计", "实施", "测试", "报告", "改进"];
+    let gateBRounds = 0;
+    for (const entry of data.statusHistory) {
+      const fromIdx = forwardOrder.indexOf(entry.from_status);
+      const toIdx = forwardOrder.indexOf(entry.to_status);
+      // A retry (going backward) from 测试 or later = Gate B retry
+      if (fromIdx >= forwardOrder.indexOf("测试") && toIdx < fromIdx) {
+        gateBRounds++;
+      }
+    }
+    // Track delivery failures too, but primary signal is Gate B rounds
+    const deliveryFailures = data.deliveryTrack.filter((r) => r.status === "failure").length;
+    if (gateBRounds > GATE_B_MAX_ROUNDS) {
+      diagnostics.push({
+        id: "D4",
+        label: DIAGNOSTIC_LABELS.D4,
+        triggered: true,
+        confidence: gateBRounds,
+        evidence: `Gate B ${gateBRounds} 轮回溯 > ${GATE_B_MAX_ROUNDS} 轮阈值${deliveryFailures > 0 ? `（交付失败 ${deliveryFailures} 次）` : ""}`,
+        baseline: DIAGNOSTIC_BASELINES.D4,
+        suggestion: `Gate B 回溯 ${gateBRounds} 轮，测试先行不足。建议在 Gate A 加强测试用例设计，减少 Gate B 回溯`,
+      });
+    } else if (deliveryFailures >= DIAGNOSTIC_MIN_CONFIDENCE.D4 && gateBRounds === 0) {
+      // Fallback: if no status history, use delivery failures as proxy
+      diagnostics.push({
+        id: "D4",
+        label: DIAGNOSTIC_LABELS.D4,
+        triggered: true,
+        confidence: deliveryFailures,
+        evidence: `${deliveryFailures} 次交付失败（无状态历史数据，使用交付追踪代理）`,
+        baseline: DIAGNOSTIC_BASELINES.D4,
+        suggestion: "交付失败率偏高，检查 Gate A/B 验证步骤，确保测试先行",
+      });
+    }
+  } else {
+    // No status history — fall back to delivery failures
+    const deliveryFailures = data.deliveryTrack.filter((r) => r.status === "failure").length;
+    if (deliveryFailures >= DIAGNOSTIC_MIN_CONFIDENCE.D4) {
+      diagnostics.push({
+        id: "D4",
+        label: DIAGNOSTIC_LABELS.D4,
+        triggered: true,
+        confidence: deliveryFailures,
+        evidence: `${deliveryFailures} 次交付失败（状态历史数据不足，使用交付追踪代理）`,
+        baseline: DIAGNOSTIC_BASELINES.D4,
+        suggestion: "交付失败率偏高，检查 Gate A/B 验证步骤，确保测试先行",
+      });
+    }
   }
 
   // D5: Dependency degradation — stage durations (proxied by retries)
   if (data.toolAudit.length >= DIAGNOSTIC_MIN_CONFIDENCE.D5) {
     const toolErrors = data.toolAudit.filter((r) => r.result === "failure").length;
     const errorRate = data.toolAudit.length > 0 ? toolErrors / data.toolAudit.length : 0;
-    if (errorRate > 0.3) {
+    if (errorRate > TOOL_ERROR_RATE_THRESHOLD) {
       diagnostics.push({
         id: "D5",
         label: DIAGNOSTIC_LABELS.D5,
@@ -287,18 +333,68 @@ function runDiagnostics(data) {
     }
   }
 
-  // D6: Documentation staleness — consecutive degraded windows (proxied by missing self-improve)
-  const retroPath = join(data.storyPath, `${readProjectName(findProjectRoot(data.storyPath))}-自改进复盘.md`);
-  if (!existsSync(retroPath) && execCount >= DIAGNOSTIC_MIN_CONFIDENCE.D6) {
-    diagnostics.push({
-      id: "D6",
-      label: DIAGNOSTIC_LABELS.D6,
-      triggered: true,
-      confidence: 1,
-      evidence: "自改进复盘文档缺失",
-      baseline: DIAGNOSTIC_BASELINES.D6,
-      suggestion: "补齐自改进复盘文档，确保每个故事走完管线后产出复盘",
-    });
+  // D6: Documentation staleness — check document vs code consistency
+  if (execCount >= DIAGNOSTIC_MIN_CONFIDENCE.D6) {
+    const projectRoot = findProjectRoot(data.storyPath);
+    const projectName = readProjectName(projectRoot);
+    let docIssues = [];
+
+    // Check 1: Scene docs freshness — compare doc mtime vs git last modified
+    try {
+      const storyDir = data.storyPath;
+      if (existsSync(storyDir)) {
+        const entries = readdirSync(storyDir, { withFileTypes: true });
+        for (const entry of entries) {
+          if (entry.isDirectory() && entry.name.startsWith("场景")) {
+            const sceneDir = join(storyDir, entry.name);
+            const mdFiles = readdirSync(sceneDir).filter((f) => f.endsWith(".md") || f.endsWith(".html"));
+            for (const mf of mdFiles) {
+              const docPath = join(sceneDir, mf);
+              try {
+                const docStat = readFileSync(docPath, "utf-8");
+                // Check if document has §4 自改进 section (required for completed scenes)
+                const hasSelfImprove = /§4\s*自改进|自改进复盘/i.test(docStat);
+                const hasEvidence = /证据 Level|snapshot|Git diff|代码快照/.test(docStat);
+                if (!hasSelfImprove && docStat.length > 500) {
+                  docIssues.push(`${entry.name}/${mf}: 缺少 §4 自改进章节`);
+                }
+                if (!hasEvidence && /§2\s*实施报告|实施报告/.test(docStat)) {
+                  docIssues.push(`${entry.name}/${mf}: §2 实施报告缺少证据引用`);
+                }
+              } catch { /* skip unreadable files */ }
+            }
+          }
+        }
+      }
+    } catch { /* skip */ }
+
+    // Check 2: Retro document existence
+    const retroPath = join(data.storyPath, `${projectName}-自改进复盘.md`);
+    const retroMissing = !existsSync(retroPath);
+
+    // Check 3: proposals.jsonl existence as a proxy for self-improve execution
+    const proposalsPath = join(data.storyPath, PROPOSALS_DIR, PROPOSALS_FILE);
+    const noProposals = !existsSync(proposalsPath) || readJsonl(proposalsPath).length === 0;
+
+    if (docIssues.length > 0 || retroMissing || (noProposals && execCount >= MIN_EXEC_MEMORIES)) {
+      const evidenceParts = [];
+      if (docIssues.length > 0) evidenceParts.push(`${docIssues.length} 个场景文档缺自改进章节`);
+      if (retroMissing) evidenceParts.push("自改进复盘文档缺失");
+      if (noProposals && execCount >= MIN_EXEC_MEMORIES) evidenceParts.push("无提案记录");
+      const confidence = docIssues.length + (retroMissing ? 1 : 0) + (noProposals ? 1 : 0);
+
+      diagnostics.push({
+        id: "D6",
+        label: DIAGNOSTIC_LABELS.D6,
+        triggered: true,
+        confidence,
+        evidence: evidenceParts.join("；"),
+        baseline: DIAGNOSTIC_BASELINES.D6,
+        suggestion: docIssues.length > 0
+          ? `补齐 ${docIssues.length} 个场景的 §4 自改进章节，确保文档与代码同步`
+          : "补齐自改进复盘文档和提案记录，确保每个故事走完管线后产出复盘",
+      });
+    }
   }
 
   // D7: Configuration drift — proposal closure rate < 50%
@@ -326,9 +422,20 @@ function runDiagnostics(data) {
 
 // --- proposal generation ---
 
-function generateProposals(storyName, diagnostics, storyPath) {
+function generateProposals(storyName, diagnostics, storyPath, snapshotData) {
   if (diagnostics.length === 0) {
     console.log(green("[proposals] 无诊断触发，不生成提案"));
+    return [];
+  }
+
+  // Enforce snapshot evidence requirement (rules/self-improve.md: "无 snapshot 不出提案")
+  const hasGitSnapshot = snapshotData && snapshotData.gitSnapshot && !snapshotData.gitSnapshot.error;
+  const hasCodeSnapshot = snapshotData && snapshotData.codeSnapshot && !snapshotData.codeSnapshot.error;
+
+  if (!hasGitSnapshot && !hasCodeSnapshot) {
+    console.log(yellow("[proposals] ⚠️  无 snapshot 证据，按规则不产出提案"));
+    console.log(dim("  规则: rules/self-improve.md — 提案必须有 snapshot 证据支撑"));
+    console.log("");
     return [];
   }
 
@@ -375,6 +482,10 @@ function generateProposals(storyName, diagnostics, storyPath) {
       target_state: `解决 ${diag.label}`,
       s1_metrics: {},
       s2_metrics: { confidence: diag.confidence },
+      snapshot: {
+        git: snapshotData?.gitSnapshot || null,
+        code: snapshotData?.codeSnapshot || null,
+      },
       feedback: [],
       eval_result: "pending",
     });
@@ -701,6 +812,9 @@ function cmdGenerate(opts) {
   }
 
   console.log(`[proposals] 采集数据: exec=${data.allExec.length} audit=${data.toolAudit.length} delivery=${data.deliveryTrack.length} proposals=${data.proposals.length}`);
+  if (data.gitSnapshot && !data.gitSnapshot.error) {
+    console.log(`[proposals] Git 快照: ${data.gitSnapshot.fileCount} 个变更文件, ${data.gitSnapshot.shortStat}`);
+  }
   console.log(`[proposals] 运行 D0-D7 诊断...`);
 
   const diagnostics = runDiagnostics(data);
@@ -720,7 +834,8 @@ function cmdGenerate(opts) {
   }
   console.log("");
 
-  const proposals = generateProposals(opts.story, diagnostics, data.storyPath);
+  const snapshotData = { gitSnapshot: data.gitSnapshot, codeSnapshot: data.codeSnapshot };
+  const proposals = generateProposals(opts.story, diagnostics, data.storyPath, snapshotData);
   console.log(green(`✅ 已生成 ${proposals.length} 条提案`));
 
   for (const p of proposals) {
@@ -799,11 +914,232 @@ function cmdList(opts) {
 }
 
 function cmdEvaluate(opts) {
+  const projectRoot = findProjectRoot(process.cwd());
+
+  if (!opts.id) {
+    console.log("");
+    console.log(yellow("[proposals] evaluate 需要 --id=<proposal_id>"));
+    console.log("");
+    return;
+  }
+
+  // Find the proposal across all stories
+  let targetProposal = null;
+  let targetStoryPath = null;
+  const storyDirs = [];
+  try {
+    const panelDir = join(projectRoot, STORY_PANEL_DIR);
+    if (existsSync(panelDir)) {
+      const entries = readdirSync(panelDir, { withFileTypes: true });
+      for (const e of entries) {
+        if (e.isDirectory() && !e.name.startsWith(".")) {
+          storyDirs.push({ name: e.name, path: join(panelDir, e.name) });
+        }
+      }
+    }
+  } catch { /* skip */ }
+
+  for (const sd of storyDirs) {
+    const proposalsPath = join(sd.path, PROPOSALS_DIR, PROPOSALS_FILE);
+    const proposals = readJsonl(proposalsPath);
+    const found = proposals.find((p) => p.id === opts.id);
+    if (found) {
+      targetProposal = found;
+      targetStoryPath = sd.path;
+      break;
+    }
+  }
+
+  if (!targetProposal) {
+    console.log("");
+    console.log(yellow(`[proposals] 未找到提案: ${opts.id}`));
+    console.log("");
+    return;
+  }
+
+  // Collect execution memories for pre/post windows
+  const allExec = [];
+  for (const sd of storyDirs) {
+    const storyExec = readJsonl(join(sd.path, EXEC_MEMORY_FILE));
+    allExec.push(...storyExec);
+  }
+  // Also check root .memory
+  const rootExec = readJsonl(join(projectRoot, MEMORY_DIR, "execution-memory.jsonl"));
+  allExec.push(...rootExec);
+
+  const proposalDate = new Date(targetProposal.date).getTime();
+
+  // Pre-window: memories before proposal date (up to 12 most recent)
+  const preMemories = allExec
+    .filter((r) => {
+      const ts = r.timestamp ? new Date(r.timestamp).getTime() : 0;
+      return ts < proposalDate;
+    })
+    .slice(-12);
+
+  // Post-window: memories after proposal date (up to 12 most recent)
+  const postMemories = allExec
+    .filter((r) => {
+      const ts = r.timestamp ? new Date(r.timestamp).getTime() : 0;
+      return ts >= proposalDate;
+    })
+    .slice(0, 12);
+
+  const preCount = preMemories.length;
+  const postCount = postMemories.length;
+
   console.log("");
-  console.log(yellow("[proposals] E1-E4 评估需要前后各 ≥3 条执行记忆，当前数据不足"));
-  console.log(yellow("  跳过硬评估，提案状态保持 pending"));
+  console.log(bold(`E1-E4 评估 · ${targetProposal.id}`));
+  console.log("══════════════════════════════");
+  console.log(`  提案类型: ${targetProposal.type} | 优先级: ${targetProposal.priority}`);
+  console.log(`  前后记忆: pre=${preCount} post=${postCount} (需要各 ≥${MIN_EXEC_MEMORIES})`);
   console.log("");
-  console.log(dim("  提示: 运行更多故事管线积累数据后，重新运行 evaluate"));
+
+  if (preCount < MIN_EXEC_MEMORIES || postCount < MIN_EXEC_MEMORIES) {
+    console.log(yellow("  ⚠️  数据不足，无法完成硬评估"));
+    console.log(yellow("  降级: 仅生成观察记录，提案状态保持 open"));
+    console.log("");
+    console.log(dim("  提示: 运行更多故事管线积累数据后，重新运行 evaluate"));
+    console.log("");
+
+    // Write partial observation to proposal feedback
+    targetProposal.feedback.push({
+      date: new Date().toISOString(),
+      type: "observation",
+      note: `数据不足 (pre=${preCount}, post=${postCount})，跳过 E1-E4 硬评估`,
+    });
+    targetProposal.eval_result = "insufficient_data";
+    return;
+  }
+
+  // Compute pre metrics
+  function computeMetrics(memories) {
+    let blockedCount = 0;
+    let totalP0 = 0, totalIssues = 0;
+    let t3Count = 0;
+    const agentCounts = {};
+
+    for (const r of memories) {
+      if (r.was_blocked) blockedCount++;
+      const qi = r.quality_issues || {};
+      totalP0 += (qi.P0 || []).length;
+      totalIssues += (qi.P0 || []).length + (qi.P1 || []).length + (qi.P2 || []).length;
+      if (r.planned_change_level === "T3" || r.actual_change_level === "T3") t3Count++;
+      const agents = r.agents_called || [];
+      for (const a of agents) {
+        agentCounts[a] = (agentCounts[a] || 0) + 1;
+      }
+    }
+
+    return {
+      count: memories.length,
+      block_rate: memories.length > 0 ? blockedCount / memories.length : 0,
+      p0_density: totalIssues > 0 ? totalP0 / totalIssues : 0,
+      t3_proportion: memories.length > 0 ? t3Count / memories.length : 0,
+      agent_participation: agentCounts,
+    };
+  }
+
+  const preMetrics = computeMetrics(preMemories);
+  const postMetrics = computeMetrics(postMemories);
+
+  // E1: Block rate
+  const e1_improved = postMetrics.block_rate < preMetrics.block_rate;
+  const e1_degraded = postMetrics.block_rate > preMetrics.block_rate;
+
+  // E2: P0 density
+  const e2_improved = postMetrics.p0_density < preMetrics.p0_density;
+  const e2_degraded = postMetrics.p0_density > preMetrics.p0_density;
+
+  // E3: Bad cases — check if bad_cases from pre-window still appear in post-window
+  const preBadCases = new Set();
+  for (const r of preMemories) {
+    const bc = r.bad_cases || [];
+    for (const b of bc) {
+      if (b.lesson) preBadCases.add(b.lesson);
+    }
+  }
+  const postBadCases = new Set();
+  for (const r of postMemories) {
+    const bc = r.bad_cases || [];
+    for (const b of bc) {
+      if (b.lesson) postBadCases.add(b.lesson);
+    }
+  }
+  const stillPresent = [...preBadCases].filter((bc) => postBadCases.has(bc));
+  const resolved = [...preBadCases].filter((bc) => !postBadCases.has(bc));
+  const e3_improved = resolved.length > 0;
+  const e3_degraded = stillPresent.length > 0;
+
+  // E4: Overall
+  let improvements = 0, degradations = 0;
+  if (e1_improved) improvements++; else if (e1_degraded) degradations++;
+  if (e2_improved) improvements++; else if (e2_degraded) degradations++;
+  if (e3_improved) improvements++; else if (e3_degraded) degradations++;
+
+  const overall = improvements > degradations ? "improved" :
+                  degradations > improvements ? "degraded" : "neutral";
+
+  // Display results
+  console.log(bold("  评估结果"));
+  console.log("  ─────────");
+  console.log(`  E1 阻断率:   pre=${(preMetrics.block_rate * 100).toFixed(1)}% → post=${(postMetrics.block_rate * 100).toFixed(1)}%  ${e1_improved ? green("↓改善") : e1_degraded ? red("↑退化") : dim("→持平")}`);
+  console.log(`  E2 P0 密度:  pre=${(preMetrics.p0_density * 100).toFixed(1)}% → post=${(postMetrics.p0_density * 100).toFixed(1)}%  ${e2_improved ? green("↓改善") : e2_degraded ? red("↑退化") : dim("→持平")}`);
+  console.log(`  E3 不良案例: 已解决=${resolved.length} 仍存在=${stillPresent.length}  ${e3_improved && !e3_degraded ? green("✓改善") : e3_degraded ? red("✗退化") : dim("→无数据")}`);
+  console.log(`  E4 综合:     ${overall === "improved" ? green("改善 ✅") : overall === "degraded" ? red("退化 ⚠️") : dim("中性")}`);
+  console.log("");
+
+  // Update proposal status
+  const evalResult = {
+    proposal_id: targetProposal.id,
+    evaluated_at: new Date().toISOString(),
+    pre_memory_count: preCount,
+    post_memory_count: postCount,
+    E1: e1_improved ? "improved" : e1_degraded ? "degraded" : "unchanged",
+    E2: e2_improved ? "improved" : e2_degraded ? "degraded" : "unchanged",
+    E3: e3_improved && !e3_degraded ? "improved" : e3_degraded ? "degraded" : "unchanged",
+    E4: overall,
+    resolved_bad_cases: resolved,
+    still_present_bad_cases: stillPresent,
+  };
+
+  targetProposal.feedback.push({
+    date: new Date().toISOString(),
+    type: "evaluation",
+    result: evalResult,
+  });
+  targetProposal.eval_result = overall;
+
+  if (overall === "improved") {
+    targetProposal.status = "done";
+    console.log(green("  ✅ 提案闭合 — 改善 > 退化"));
+  } else if (overall === "degraded") {
+    console.log(red("  ⚠️  提案退化 — 建议回退或重新提案"));
+  }
+
+  // Write back to proposals.jsonl
+  const proposalsPath = join(targetStoryPath, PROPOSALS_DIR, PROPOSALS_FILE);
+  if (existsSync(proposalsPath)) {
+    try {
+      const lines = readFileSync(proposalsPath, "utf-8").trim().split("\n").filter(Boolean);
+      const updated = lines.map((line) => {
+        const parsed = JSON.parse(line);
+        if (parsed.id === targetProposal.id) {
+          return JSON.stringify(Object.assign(parsed, {
+            status: targetProposal.status,
+            eval_result: targetProposal.eval_result,
+            feedback: targetProposal.feedback,
+          }));
+        }
+        return JSON.stringify(parsed);
+      });
+      writeFileSync(proposalsPath, updated.join("\n") + "\n", "utf-8");
+      console.log(dim(`  已更新 proposals.jsonl`));
+    } catch (e) {
+      console.log(yellow(`  ⚠️  更新 proposals.jsonl 失败: ${e.message}`));
+    }
+  }
+
   console.log("");
 }
 
@@ -845,21 +1181,8 @@ function cmdUpgradeCandidates(opts) {
     typeStoryCounts[p.type].add(p._dir || p.story_name);
   }
 
-  const upgradeMap = {
-    process: "rules/code-pipeline.md",
-    quality: "agents/tester.md 或 agents/coder.md",
-    refactor: "rules/code-pipeline.md §深度模块",
-    security: "agents/security.md P0 约束",
-    skill: "skills/ 或 rules/ 新条目",
-  };
-
-  const thresholdMap = {
-    process: 3,
-    quality: 3,
-    refactor: 3,
-    security: 1,
-    skill: 2,
-  };
+  const upgradeMap = UPGRADE_TARGETS;
+  const thresholdMap = UPGRADE_THRESHOLDS;
 
   let foundCandidate = false;
   for (const [type, stories] of Object.entries(typeStoryCounts)) {

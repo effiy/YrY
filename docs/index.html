@@ -215,6 +215,10 @@
       display: flex; align-items: center; justify-content: center; font-size: 0.9rem;
     }
     .story-card .story-head .story-name { font-size: 1rem; font-weight: 700; flex: 1; }
+    .story-card .story-head .story-name a {
+      color: var(--cyan, #22d3ee); text-decoration: none; transition: color 0.15s;
+    }
+    .story-card .story-head .story-name a:hover { color: var(--color-accent); text-decoration: underline; }
     .story-card .story-head .story-badge {
       font-size: 0.68rem; color: var(--color-accent);
       border: 1px solid var(--color-accent); border-radius: 4px; padding: 1px 8px;
@@ -406,7 +410,7 @@
         <div class="story-card">
           <div class="story-head">
             <span class="story-icon">&#128451;</span>
-            <span class="story-name">系统架构知识固化</span>
+            <span class="story-name"><a href="故事任务面板/yry-arch/故事任务.md">系统架构知识固化</a></span>
             <span class="story-badge">v1.0.0</span>
           </div>
           <div class="story-desc">YrY 架构全景分析，构建系统自我认知基线。模块拓扑 + 数据流追踪 + 新人上手 + 依赖变更影响，让后续故事规划、影响分析和架构决策有唯一事实参照。</div>
@@ -421,7 +425,7 @@
         <div class="story-card">
           <div class="story-head">
             <span class="story-icon">&#129514;</span>
-            <span class="story-name">自主测试方案</span>
+            <span class="story-name"><a href="故事任务面板/yry-self-test/故事任务.md">自主测试方案</a></span>
             <span class="story-badge">v1.1.0</span>
           </div>
           <div class="story-desc">YrY 自检体系 — 项目的免疫系统。管线健康自检验证纪律关卡是否有效执行，文档基线完整性校验验证文档是否始终是可信任的真相来源。</div>
@@ -436,7 +440,7 @@
         <div class="story-card">
           <div class="story-head">
             <span class="story-icon">&#128230;</span>
-            <span class="story-name">npm 包管理工具</span>
+            <span class="story-name"><a href="故事任务面板/rui-npm/故事任务.md">npm 包管理工具</a></span>
             <span class="story-badge">v1.1.0</span>
           </div>
           <div class="story-desc">个人 npm 包全生命周期管理 — 包搜索与发现、安装与版本管理、本地发布与 npx 使用、包信息审计与安全卸载。32 文件 · 77 测试 · 每场景 7 配套文件。</div>

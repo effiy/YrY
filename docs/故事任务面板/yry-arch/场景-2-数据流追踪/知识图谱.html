@@ -1,4 +1,7 @@
 <!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>🔍 数据流追踪 · 知识图谱</title>
+<!-- ═══ CDN: YrY 共享样式 ═══ -->
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme-mono.css">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -61,15 +64,15 @@ h1{font-size:1.5rem;font-weight:700}
 .cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
 .cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
 </style></head><body><div class="container" id="report-container">
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · 数据流与追踪</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
-<div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><span class="cross-link on">🔗 图谱</span><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
-<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>🔍 数据流追踪 · 知识图谱</h1>
-<div class="toolbar"><div class="toolbar-actions">
+<nav class="yry-breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">yry-arch · 系统架构知识固化</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 2 · 数据流与追踪</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">🔗 知识图谱</span></nav>
+<div class="yry-cross-nav"><a href="计划清单.html" class="yry-cross-link">📋 清单</a><span class="yry-cross-sep">·</span><a href="架构图.html" class="yry-cross-link">📐 架构</a><span class="yry-cross-sep">·</span><span class="cross-link on">🔗 图谱</span><span class="yry-cross-sep">·</span><a href="测试面板.html" class="yry-cross-link">🧪 测试</a><span class="yry-cross-sep">·</span><a href="演示.html" class="yry-cross-link">💡 演示</a><span class="yry-cross-sep">·</span><a href="审查.html" class="yry-cross-link">📝 审查</a></div>
+<div class="yry-mono-header"><div class="yry-mono-header-row"><div class="pulse-dot"></div><h1>🔍 数据流追踪 · 知识图谱</h1>
+<div class="yry-toolbar"><div class="yry-toolbar-actions">
 <button onclick="copyAsImage(this)">📋 Copy</button>
 <button onclick="downloadPNG(this)">🖼️ PNG</button>
 <button onclick="downloadPDF(this)">📄 PDF</button>
-</div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
-</div><p class="subtitle">yry-arch · 场景-2 · 3 源文件 · 9 图谱节点 · 指令→交付全链路</p></div>
+</div><button class="yry-toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
+</div><p class="yry-mono-subtitle">yry-arch · 场景-2 · 3 源文件 · 9 图谱节点 · 指令→交付全链路</p></div>
 
 <div class="legend">
 <span style="color:#94a3b8;font-weight:600;">节点:</span>
@@ -85,13 +88,13 @@ h1{font-size:1.5rem;font-weight:700}
 
 <div class="graph-container"><div id="cy"></div></div>
 
-<div class="cards">
-<div class="card"><div class="card-header"><div class="card-dot rule"></div><h3>Pipeline Rules</h3></div><ul><li>rules/code-pipeline.md — 管线四阶段定义</li><li>rules/delivery-gate.md — 交付收口三步hook</li></ul></div>
-<div class="card"><div class="card-header"><div class="card-dot skill"></div><h3>Entry Point</h3></div><ul><li>skills/rui/SKILL.md — 用户指令解析入口</li></ul></div>
-<div class="card"><div class="card-header"><div class="card-dot flow"></div><h3>Data Flow</h3></div><ul><li>7 阶段: parse→split→generate→gateA→implement→gateB→deliver</li></ul></div>
+<div class="yry-mono-cards">
+<div class="yry-mono-card"><div class="yry-mono-card-header"><div class="card-dot rule"></div><h3>Pipeline Rules</h3></div><ul><li>rules/code-pipeline.md — 管线四阶段定义</li><li>rules/delivery-gate.md — 交付收口三步hook</li></ul></div>
+<div class="yry-mono-card"><div class="yry-mono-card-header"><div class="card-dot skill"></div><h3>Entry Point</h3></div><ul><li>skills/rui/SKILL.md — 用户指令解析入口</li></ul></div>
+<div class="yry-mono-card"><div class="yry-mono-card-header"><div class="card-dot flow"></div><h3>Data Flow</h3></div><ul><li>7 阶段: parse→split→generate→gateA→implement→gateB→deliver</li></ul></div>
 </div>
 
-<p class="footer">YrY v1.0.0 · yry-arch · 场景-2: 数据流追踪 · 知识图谱 v2.0.0</p>
+<p class="yry-mono-footer">YrY v1.0.0 · yry-arch · 场景-2: 数据流追踪 · 知识图谱 v2.0.0</p>
 </div>
 <script>
 const cy=cytoscape({container:document.getElementById('cy'),style:[
@@ -147,4 +150,5 @@ cy.on('tap',function(evt){if(evt.target===cy)cy.elements().style('opacity',0.85)
 async function copyAsImage(btn){const orig=btn.textContent;try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),blob=await new Promise(r=>canvas.toBlob(r,'image/png'));await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);btn.textContent='✓ Copied!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
 async function downloadPNG(btn){const orig=btn.textContent;btn.textContent='⏳...';try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),link=document.createElement('a');link.download='知识图谱-数据流追踪.png';link.href=canvas.toDataURL('image/png');link.click();btn.textContent='✓ Done!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
 async function downloadPDF(btn){const orig=btn.textContent;btn.textContent='⏳...';try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),imgData=canvas.toDataURL('image/png');const{jsPDF}=window.jspdf,orientation=canvas.width>canvas.height?'landscape':'portrait',pdf=new jsPDF({orientation,unit:'px',format:[canvas.width,canvas.height],hotfixes:['px_scaling']});pdf.addImage(imgData,'PNG',0,0,canvas.width,canvas.height);pdf.save('知识图谱-数据流追踪.pdf');btn.textContent='✓ Done!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
-</script></body></html>
+</script><script src="../../../../cdn/shared.js"></script>
+</body></html>

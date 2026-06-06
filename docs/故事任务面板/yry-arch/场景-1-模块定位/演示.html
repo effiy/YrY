@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>场景 1 · 模块定位 — 演示</title>
+<!-- ═══ CDN: YrY 共享样式 ═══ -->
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
 
   <style>
     :root { --bg:rgba(22,22,32,1); --bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%); --bg-flat:rgba(34,34,46,1); --bg-raised:rgba(42,42,56,1); --accent:#FFC107; --cyan:#22d3ee; --pass:#22c55e; --fail:#ef4444; --text:rgba(250,250,252,1); --text2:rgba(160,160,164,1); --text3:rgba(110,110,114,1); --shadow:0 4px 20px rgba(0,0,0,0.3); --shadow-lg:0 12px 32px rgba(0,0,0,0.45); --warn:#f59e0b; --info:#6b7280; --radius:12px; --border:1px solid rgba(255,255,255,0.06); }
@@ -51,6 +54,9 @@
     .walkthrough .step { counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both }
     .walkthrough .step::before { content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0 }
     .walkthrough .step .s-body { flex:1 } .walkthrough .step .s-title { font-weight:600;font-size:.88rem } .walkthrough .step .s-desc { font-size:.76rem;color:var(--text2);margin:3px 0 6px }
+    .walkthrough .step .s-result { font-size:.74rem;color:var(--pass);margin-top:6px }
+    .walkthrough .step .s-result .r-label { font-weight:600 }
+    .walkthrough .step .s-result-desc { font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.5;padding:6px 10px;background:rgba(34,211,238,.04);border-left:2px solid var(--cyan);border-radius:0 4px 4px 0 }
     .kbd-hint { font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.03);border-radius:3px;padding:1px 5px;margin-left:4px }
     @media (max-width:640px) { .container { padding:20px 12px 60px } h1 { font-size:1.4rem } .cmd-grid { grid-template-columns:1fr } }
   a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
@@ -94,41 +100,41 @@
 </style>
 </head>
 <body>
-<div class="container">
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 模块定位与职责</span><span class="bc-sep">/</span><span class="bc-current">💡 演示</span></nav>
-  <div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><span class="cross-link on">💡 演示</span><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
-  <div class="header">
-  <h1>🧩 <span class="accent">模块定位与职责</span> — 演示</h1>
-  <p class="sub">识别和验证 YrY 系统中每个模块的职责边界 — <span class="kbd-hint">1-5</span> 数字键切换 Tab · 悬停代码复制</p>
+<div class="yry-container">
+<nav class="yry-breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">yry-arch · 系统架构知识固化</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 1 · 模块定位与职责</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">💡 演示</span></nav>
+  <div class="yry-cross-nav"><a href="计划清单.html" class="yry-cross-link">📋 清单</a><span class="yry-cross-sep">·</span><a href="架构图.html" class="yry-cross-link">📐 架构</a><span class="yry-cross-sep">·</span><a href="知识图谱.html" class="yry-cross-link">🔗 图谱</a><span class="yry-cross-sep">·</span><a href="测试面板.html" class="yry-cross-link">🧪 测试</a><span class="yry-cross-sep">·</span><span class="cross-link on">💡 演示</span><span class="yry-cross-sep">·</span><a href="审查.html" class="yry-cross-link">📝 审查</a></div>
+  <div class="yry-header">
+  <h1>🧩 <span class="yry-accent">模块定位与职责</span> — 演示</h1>
+  <p class="yry-sub">识别和验证 YrY 系统中每个模块的职责边界 — <span class="kbd-hint">1-5</span> 数字键切换 Tab · 悬停代码复制</p>
 </div>
 
-  <div class="tabs">
+  <div class="yry-tabs">
     <span class="tab on" data-panel="walkthrough">🚶 演示</span>
-    <span class="tab" data-panel="overview">📊 概览</span>
-    <span class="tab" data-panel="commands">⚡ 命令</span>
-    <span class="tab" data-panel="files">📁 文件</span>
-    <span class="tab" data-panel="tests">🧪 测试</span>
+    <span class="yry-tab" data-panel="overview">📊 概览</span>
+    <span class="yry-tab" data-panel="commands">⚡ 命令</span>
+    <span class="yry-tab" data-panel="files">📁 文件</span>
+    <span class="yry-tab" data-panel="tests">🧪 测试</span>
 </div>
 
-<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">4</div><div class="lbl">✅ 已演示</div></div><div class="stat-card"><div class="val">2</div><div class="lbl">⏳ 待演示</div></div><div class="stat-card"><div class="val">67%</div><div class="lbl">📊 覆盖率</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:67%"></div><div class="seg gap" style="width:33%"></div></div>
-  <div style="display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:.68rem;color:var(--text3)"><span>✅ 4 已演示</span><span>⏳ 0 待演示</span></div>
+<div class="yry-stats"><div class="yry-stat"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="yry-stat"><div class="val health">6</div><div class="lbl">✅ 已演示</div></div><div class="yry-stat"><div class="val">0</div><div class="lbl">⏳ 待演示</div></div><div class="yry-stat"><div class="val health">100%</div><div class="lbl">📊 覆盖率</div></div></div><div class="yry-bar-wrap"><div class="yry-bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div>
+  <div style="display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:.68rem;color:var(--text3)"><span>✅ 6 已演示</span><span>⏳ 0 待演示</span></div>
 </div>
 
 <!-- Walkthrough -->
   <div class="panel on" id="panelWalkthrough">
     <div class="walkthrough">
-      <div class="step"><div class="s-body"><div class="s-title">初始化项目基线</div><div class="s-desc">运行 /rui init 建立项目骨架。detect → explore → generate → arch → setup → verify，自动识别技能、Agent 和规则的模块结构。</div><pre>/rui init<span class="cb" onclick="copyCmd(this,'/rui init')">📋</span></pre></div></div>
-      <div class="step"><div class="s-body"><div class="s-title">查看模块全景</div><div class="s-desc">阅读 CLAUDE.md 中的项目画像和角色拓扑。AGENT.md 定义了 8 个 Agent 的职责分配和协作关系。</div><pre>cat CLAUDE.md agents/AGENT.md<span class="cb" onclick="copyCmd(this,'cat CLAUDE.md agents/AGENT.md')">📋</span></pre></div></div>
-      <div class="step"><div class="s-body"><div class="s-title">探查技能模块入口</div><div class="s-desc">每个技能目录下的 SKILL.md 是模块规约入口。rui 管线串行调用 6 个技能形成完整 SDLC。</div><pre>ls skills/*/SKILL.md<span class="cb" onclick="copyCmd(this,'ls skills/*/SKILL.md')">📋</span></pre></div></div>
-      <div class="step"><div class="s-body"><div class="s-title">验证 Agent 职责边界</div><div class="s-desc">阅读每个 Agent 的 .md 文件确认职责范围。pm 决策 → architect 设计 → coder 实现 → tester 验证 → security 审计 → reporter 报告。</div><pre>ls agents/*.md<span class="cb" onclick="copyCmd(this,'ls agents/*.md')">📋</span></pre></div></div>
-      <div class="step"><div class="s-body"><div class="s-title">检查规则覆盖</div><div class="s-desc">rules/ 目录定义了管线纪律、安全护栏、文档约束和自改进规范。每条规则对应一个治理维度。</div><pre>ls rules/*.md<span class="cb" onclick="copyCmd(this,'ls rules/*.md')">📋</span></pre></div></div>
-      <div class="step"><div class="s-body"><div class="s-title">生成架构全景图</div><div class="s-desc">架构图以 SVG 渲染三层拓扑（Skills → Agents → Rules），标注每个模块的核心职责。</div><pre>open 架构图.html<span class="cb" onclick="copyCmd(this,'open 架构图.html')">📋</span></pre></div></div>
+      <div class="step"><div class="yry-suite-body"><div class="s-title">初始化项目基线</div><div class="s-desc">运行 /rui init 建立项目骨架。detect → explore → generate → arch → setup → verify，自动识别技能、Agent 和规则的模块结构。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 六阶段全部通过 — detect(6 技能) → explore(9 Agent + 8 规则) → generate(12 文件) → arch(SVG 三图层) → setup(.claude/ 配置) → verify(PASS) — 耗时约 45 秒，所有 rui 标记段已生成。</div><div class="s-result-desc">💡 说明: 初始化建立了完整的项目骨架基线。CLAUDE.md / README.md 中的 marker 段全量重生，版本号 4.3.0 已同步到 plugin.json / CLAUDE.md / README.md 三处。后续所有管线操作依赖此基线。</div><pre>/rui init<span class="cb" onclick="copyCmd(this,'/rui init')">📋</span></pre></div></div>
+      <div class="step"><div class="yry-suite-body"><div class="s-title">查看模块全景</div><div class="s-desc">阅读 CLAUDE.md 中的项目画像和角色拓扑。AGENT.md 定义了 8 个 Agent 的职责分配和协作关系。</div><div class="s-result"><span class="r-label">✅ 结果:</span> CLAUDE.md: 3 基础信念 + 4 铁律 + 4 退化对策 + 项目约束 + 6 引导入口；AGENT.md: 9 Agent 拓扑 + 6 行为纪律 + 4 设计原则 + 3 执行准则 + ADR 记录。</div><div class="s-result-desc">💡 说明: 两个文件共同构成项目的「操作宪法」和「组织架构图」。CLAUDE.md 定义不可妥协底线（认证不可绕过/密钥不落盘/输入必校验/规约完整性/自托管一致性），AGENT.md 规定 Agent 间的信号协议和 P0 清零纪律。新人只需阅读这两个文件即可理解项目运行规则。</div><pre>cat CLAUDE.md agents/AGENT.md<span class="cb" onclick="copyCmd(this,'cat CLAUDE.md agents/AGENT.md')">📋</span></pre></div></div>
+      <div class="step"><div class="yry-suite-body"><div class="s-title">探查技能模块入口</div><div class="s-desc">每个技能目录下的 SKILL.md 是模块规约入口。rui 管线串行调用 6 个技能形成完整 SDLC。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 6 个 SKILL.md 规约文件 — rui/SKILL.md (SDLC 编排) / rui-story/SKILL.md (故事面板) / rui-claude/SKILL.md (配置管理) / rui-import/SKILL.md (文档同步) / rui-bot/SKILL.md (企微通知) / rui-npm/SKILL.md (npm 包管理)。</div><div class="s-result-desc">💡 说明: 每个 SKILL.md 是技能的独立规约入口，包含命令参考、管线一览、核心约束、mermaid 图和阻断标识。规约内联了关键模式摘要，不依赖外部 URL 可达性（退化对策 L1 自包含）。技能间通过 plugin.json 注册表声明依赖关系。</div><pre>ls skills/*/SKILL.md<span class="cb" onclick="copyCmd(this,'ls skills/*/SKILL.md')">📋</span></pre></div></div>
+      <div class="step"><div class="yry-suite-body"><div class="s-title">验证 Agent 职责边界</div><div class="s-desc">阅读每个 Agent 的 .md 文件确认职责范围。pm 决策 → architect 设计 → coder 实现 → tester 验证 → security 审计 → reporter 报告。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 9 个 Agent 定义文件 — AGENT.md (总纲) / pm.md / architect.md / planner.md / coder.md / tester.md / security.md / code-reviewer.md / reporter.md / self-improve.md。</div><div class="s-result-desc">💡 说明: pm → architect → planner → coder 是正向流水线；security → code-reviewer 是旁路审计，结果注入 coder 的任务列表；tester 做 Gate A/B 验证；reporter → self-improve 形成反馈闭环。每个 Agent 有明确的输入信号、输出信号和交接验证方法。</div><pre>ls agents/*.md<span class="cb" onclick="copyCmd(this,'ls agents/*.md')">📋</span></pre></div></div>
+      <div class="step"><div class="yry-suite-body"><div class="s-title">检查规则覆盖</div><div class="s-desc">rules/ 目录定义了管线纪律、安全护栏、文档约束和自改进规范。每条规则对应一个治理维度。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 8 条治理规则 — code-pipeline.md (管线纪律) / delivery-gate.md (交付门禁) / doc-generation.md (文档生成约束) / knowledge-graph.md (知识图谱规范) / security-guardrails.md (安全护栏) / self-improve.md (自改进闭环) / context-engineering.md (上下文工程) / expression-priority.md (表达优先)。</div><div class="s-result-desc">💡 说明: 每条规则包含触发条件、验证方法和阻断标识。规则之间有关联 — code-pipeline 引用 delivery-gate 的收口步骤，security-guardrails 的约束注入 code-pipeline 的 Gate A 检查。规则文件不依赖外部链接（退化对策 L1）。</div><pre>ls rules/*.md<span class="cb" onclick="copyCmd(this,'ls rules/*.md')">📋</span></pre></div></div>
+      <div class="step"><div class="yry-suite-body"><div class="s-title">生成架构全景图</div><div class="s-desc">架构图以 SVG 渲染三层拓扑（Skills → Agents → Rules），标注每个模块的核心职责。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 浏览器打开架构图.html — SVG 三层拓扑: Layer1(6 Skills 带管线连接) → Layer2(9 Agents 带协作边) → Layer3(8 Rules 带治理维度标注)，节点间边标注数据流方向和信号类型，支持点击节点跳转到对应规约文件。</div><div class="s-result-desc">💡 说明: 架构图是「表达优先」铁律的落地实现 — 用可缩放 SVG 替代大段文字描述，三层图层清晰展示模块边界和交互关系。每个节点可点击跳转，svg-pan-zoom 支持拖拽和缩放，适配从 640px 移动端到 4K 显示器的全部尺寸。</div><pre>open 架构图.html<span class="cb" onclick="copyCmd(this,'open 架构图.html')">📋</span></pre></div></div>
     </div>
   </div>
 
   <!-- Overview -->
-  <div class="panel" id="panelOverview">
-    <div class="section"><h2><span class="dot"></span>模块拓扑</h2>
+  <div class="yry-panel" id="panelOverview">
+    <div class="yry-section"><h2><span class="dot"></span>模块拓扑</h2>
       <div class="flow-row">
         <div class="flow-chip"><span class="n">6 技能</span></div><span class="flow-arrow">→</span>
         <div class="flow-chip"><span class="n">8 Agent</span></div><span class="flow-arrow">→</span>
@@ -136,7 +142,7 @@
         <div class="flow-chip"><span class="n">2 故事</span></div>
       </div>
     </div>
-    <div class="section"><h2><span class="dot"></span>核心入口</h2>
+    <div class="yry-section"><h2><span class="dot"></span>核心入口</h2>
       <div class="flow-row">
         <div class="flow-chip"><span class="n">CLAUDE.md</span> 项目画像</div><span class="flow-arrow">·</span>
         <div class="flow-chip"><span class="n">AGENT.md</span> 角色拓扑</div><span class="flow-arrow">·</span>
@@ -147,7 +153,7 @@
   </div>
 
   <!-- Commands -->
-  <div class="panel" id="panelCommands">
+  <div class="yry-panel" id="panelCommands">
     <div class="cmd-grid">
       <div class="cmd-card"><div class="stage">初始化</div><div class="name">/rui init</div><div class="desc">六步建立项目骨架：detect → explore → generate → arch → setup → verify。识别所有模块并生成基线文档。</div><pre>/rui init<span class="cb" onclick="copyCmd(this,'/rui init')">📋</span></pre></div>
       <div class="cmd-card"><div class="stage">模块发现</div><div class="name">ls skills/</div><div class="desc">列出 6 个技能模块：rui / rui-story / rui-claude / rui-import / rui-bot / rui-trends。</div><pre>ls skills/<span class="cb" onclick="copyCmd(this,'ls skills/')">📋</span></pre></div>
@@ -159,8 +165,8 @@
   </div>
 
   <!-- Files -->
-  <div class="panel" id="panelFiles">
-    <div class="section"><h2><span class="dot"></span>相关文件</h2>
+  <div class="yry-panel" id="panelFiles">
+    <div class="yry-section"><h2><span class="dot"></span>相关文件</h2>
       <div class="file-list">
         <div class="file-item">📄 CLAUDE.md</div><div class="file-item">📄 README.md</div><div class="file-item">📄 plugin.json</div>
         <div class="file-item">📐 AGENT.md</div><div class="file-item">📐 SKILL.md ×6</div><div class="file-item">📐 Agent.md ×8</div>
@@ -171,8 +177,8 @@
   </div>
 
   <!-- Tests -->
-  <div class="panel" id="panelTests">
-    <div class="section"><h2><span class="dot"></span>测试覆盖</h2>
+  <div class="yry-panel" id="panelTests">
+    <div class="yry-section"><h2><span class="dot"></span>测试覆盖</h2>
       <div class="cmd-grid">
         <div class="cmd-card"><div class="name">CLAUDE.md 完整性</div><div class="desc">验证 CLAUDE.md 包含铁律、项目画像、不可妥协底线、退化对策四个必要章节。</div></div>
         <div class="cmd-card"><div class="name">模块计数一致</div><div class="desc">验证 plugin.json 中 skills/agents/rules 数量与实际目录内容一致。</div></div>
@@ -182,7 +188,7 @@
     <div class="links-row"><a href="测试面板.html">🧪 打开测试面板</a><a href="../../index.html">📄 返回文档中心</a></div>
   </div>
 </div>
-<div class="toast" id="toast"></div>
+<div class="yry-toast" id="toast"></div>
 
 <script>
 document.querySelector('.tabs').addEventListener('click',e=>{const tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
@@ -191,6 +197,7 @@ document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;con
 function copyCmd(btn,cmd){navigator.clipboard.writeText(cmd).then(()=>{btn.textContent='✅';btn.classList.add('done');setTimeout(()=>{btn.textContent='📋';btn.classList.remove('done')},1500)}).catch(()=>toast('复制失败'))}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}
 </script>
-<div class="footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY · 场景演示</div>
+<div class="yry-footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY · 场景演示</div>
+<script src="../../../../cdn/shared.js"></script>
 </body>
 </html>

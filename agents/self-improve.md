@@ -34,10 +34,11 @@ flowchart TB
 
     subgraph 诊断["② 诊断：D0–D7"]
         direction TB
+        D0["D0 基线偏离"]:::diag
         D1["D1 效率退化"]:::diag
         D2["D2 质量退化"]:::diag
         D3["D3 复杂度增长"]:::diag
-        D4["D4 安全边界模糊"]:::diag
+        D4["D4 流程退化"]:::diag
         D5["D5 依赖退化"]:::diag
         D6["D6 文档过时"]:::diag
         D7["D7 配置漂移"]:::diag
@@ -114,10 +115,13 @@ flowchart LR
     end
     subgraph 过程["过程诊断"]
         direction TB
+        D1["D1 效率退化<br/>阻断率 > 20%<br/>阶段耗时异常"]:::diag
         D2["D2 质量退化<br/>P0 密度上升<br/>Gate B > 1 轮"]:::diag
+        D4["D4 流程退化<br/>Gate B > 2 轮<br/>交付失败率高"]:::diag
     end
     subgraph 边界["边界诊断"]
         direction TB
+        D0["D0 基线偏离<br/>执行与基线冲突<br/>哲学偏离"]:::diag
         D6["D6 文档过时<br/>代码与文档不一致<br/>证据 Level 降级"]:::diag
         D7["D7 配置漂移<br/>.claude/ 远端 vs 本地<br/>settings 不同步"]:::diag
     end

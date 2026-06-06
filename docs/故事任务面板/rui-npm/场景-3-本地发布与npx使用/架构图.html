@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>场景-3 · 本地发布与npx使用 — 架构图</title>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>场景-3 · 本地发布与npx 使用 — 架构图</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
@@ -10,16 +10,25 @@ body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;
 .header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
 .pulse-dot{width:12px;height:12px;background:#22d3ee;border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 h1{font-size:1.5rem;font-weight:700}
 .subtitle{color:#94a3b8;font-size:.875rem;margin-left:1.75rem}
 .toolbar{display:flex;gap:.5rem;margin-left:auto;flex-shrink:0;align-items:center}
-.toolbar-actions{display:flex;gap:.5rem}
-.toolbar-actions button{background:rgba(30,41,59,.8);border:1px solid #334155;color:#94a3b8;padding:.375rem .75rem;border-radius:.375rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s}
+.toolbar-toggle{background:transparent;border:none;color:#475569;cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem}
+.toolbar-toggle:hover{color:#94a3b8;background:rgba(30,41,59,.5)}
+.toolbar-actions{display:none;gap:.5rem}
+.toolbar.expanded .toolbar-actions{display:flex}
+.toolbar-actions button{background:rgba(30,41,59,.8);border:1px solid #334155;color:#94a3b8;padding:.375rem .75rem;border-radius:.375rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s;white-space:nowrap}
 .toolbar-actions button:hover{background:rgba(51,65,85,.8);color:white;border-color:#475569}
 .diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
 .diagram-container svg{width:100%;min-width:900px;display:block}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
 .card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
+.card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
+.card-dot{width:8px;height:8px;border-radius:50%}
+.card-dot.cyan{background:#22d3ee}.card-dot.emerald{background:#34d399}
+.card-dot.violet{background:#a78bfa}.card-dot.amber{background:#fbbf24}
+.card-dot.rose{background:#fb7185}.card-dot.blue{background:#3B82F6}
 .card h3{font-size:.875rem;font-weight:600}
 .card ul{list-style:none;color:#94a3b8;font-size:.75rem}
 .card li{margin-bottom:.375rem}
@@ -31,24 +40,30 @@ h1{font-size:1.5rem;font-weight:700}
 .breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
 .breadcrumb .bc-current{color:#94a3b8;font-weight:500}
 
-/* ── Cross-Nav ─────────────────────────── */
-.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap}
+.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
+@media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
+
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
 .cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
 .cross-link:hover{color:#fbbf24;background:rgba(251,191,36,0.06)}
 .cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
 .cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
-
-.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
-@media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
 </style></head><body><div class="container" id="rc">
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · 个人 npm 包管理</span><span class="bc-sep">/</span><span class="bc-current">场景-3 · 本地发布与npx使用</span><span class="bc-sep">/</span><span class="bc-current">📐 架构图</span></nav>
-<div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><span class="cross-link on">📐 架构</span><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><a href="演示.html" class="cross-link">💡 演示</a></div>
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · 个人 npm 包管理</span><span class="bc-sep">/</span><span class="bc-current">场景 3 · 本地发布与 npx 使用</span><span class="bc-sep">/</span><span class="bc-current">📐 架构图</span></nav>
+<nav class="cross-nav">
+  <a class="cross-link" href="计划清单.html">📋 计划清单</a><span class="cross-sep">·</span>
+  <span class="cross-link on">📐 架构图</span><span class="cross-sep">·</span>
+  <a class="cross-link" href="知识图谱.html">🔗 知识图谱</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="测试面板.html">🧪 测试面板</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="审查.html">📝 审查</a>
+</nav>
 <div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>场景-3 · 本地发布与npx使用 — 架构图</h1>
 <div class="toolbar"><div class="toolbar-actions">
 <button onclick="copyAsImage(this)">📋 Copy</button>
 <button onclick="downloadPNG(this)">🖼️ PNG</button>
 <button onclick="downloadPDF(this)">📄 PDF</button>
-</div></div>
+</div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
 </div><p class="subtitle">publish 管道：文件/目录 → 登录校验 → package.json → registry 冲突检测 → npm publish</p></div>
 <div class="diagram-container"><svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg"><defs><marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#22d3ee"/></marker><linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0f172a"/><stop offset="100%" stop-color="#1e293b"/></linearGradient></defs><rect width="800" height="300" fill="url(#bgGrad)" rx="12"/><text x="400" y="25" text-anchor="middle" fill="#94a3b8" font-size="13" font-family="JetBrains Mono">本地发布与 npx 执行流</text>
 <rect x="30" y="55" width="110" height="45" rx="8" fill="#1e293b" stroke="#334155"/><text x="85" y="74" text-anchor="middle" fill="#fbbf24" font-size="11" font-family="JetBrains Mono">文件/目录</text><text x="85" y="90" text-anchor="middle" fill="#94a3b8" font-size="9">path 输入</text>
@@ -61,8 +76,8 @@ h1{font-size:1.5rem;font-weight:700}
 <rect x="595" y="130" width="180" height="50" rx="8" fill="#1e293b" stroke="#22d3ee"/><text x="685" y="150" text-anchor="middle" fill="#22d3ee" font-size="11" font-family="JetBrains Mono">npx <pkg></text><text x="685" y="167" text-anchor="middle" fill="#94a3b8" font-size="10">--yes 自动确认 → 流式执行</text>
 <line x1="650" y1="100" x2="650" y2="125" stroke="#22d3ee" stroke-width="1" stroke-dasharray="4 3"/>
 <rect x="60" y="170" width="250" height="65" rx="8" fill="#1e293b" stroke="#f59e0b"/><text x="185" y="193" text-anchor="middle" fill="#f59e0b" font-size="11" font-family="JetBrains Mono">冲突/错误处理</text><text x="185" y="210" text-anchor="middle" fill="#94a3b8" font-size="10">同名冲突 → --name 改名</text><text x="185" y="225" text-anchor="middle" fill="#94a3b8" font-size="10">未登录 → 提示 npm login</text></svg></div>
-<div class="cards"></div>
-<p class="footer">YrY v4.1.0 · rui-npm · S3-发布</p></div>
+<div class="cards"><div class="card"><div class="card-header"><div class="card-dot cyan"></div><h3>发布管道</h3></div><ul><li>文件/目录输入 → 登录校验</li><li>package.json 自动生成或读取</li><li>npm publish → registry</li><li>发布确认 + CDN URL 返回</li></ul></div><div class="card"><div class="card-header"><div class="card-dot amber"></div><h3>冲突与错误处理</h3></div><ul><li>同名冲突 → --name 改名发布</li><li>未登录 → 提示 npm login</li><li>无 package.json → 自动生成</li></ul></div><div class="card"><div class="card-header"><div class="card-dot emerald"></div><h3>npx 使用</h3></div><ul><li>npx <pkg> 即发即用</li><li>--yes 自动确认不提示</li><li>流式输出执行结果</li></ul></div></div>
+<p class="footer">YrY v4.3.0 · rui-npm · S3-发布</p></div>
 <script>
 async function copyAsImage(b){const o=b.textContent;try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2}),bl=await new Promise(r=>c.toBlob(r,"image/png"));await navigator.clipboard.write([new ClipboardItem({"image/png":bl})]);b.textContent="✓ Copied!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}
 async function downloadPNG(b){const o=b.textContent;b.textContent="⏳...";try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2}),a=document.createElement("a");a.download="场景-3-本地发布与npx使用.png";a.href=c.toDataURL("image/png");a.click();b.textContent="✓ Done!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}

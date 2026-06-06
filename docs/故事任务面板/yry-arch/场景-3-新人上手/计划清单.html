@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>新人上手 · 计划清单</title>
+<!-- ═══ CDN: YrY 共享样式 ═══ -->
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
 <style>
 :root {
   --bg: rgba(22,22,32,1);
@@ -168,46 +171,46 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 </style>
 </head>
 <body>
-<div class="container">
+<div class="yry-container">
 
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 3 · 新人上手与开发指南</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
+<nav class="yry-breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">yry-arch · 系统架构知识固化</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 3 · 新人上手与开发指南</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">📋 计划清单</span></nav>
 
-<div class="cross-nav">
-  <span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
-  <a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
-  <a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
-  <a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span>
-  <a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a>
+<div class="yry-cross-nav">
+  <span class="cross-link on">📋 清单</span><span class="yry-cross-sep">·</span>
+  <a href="架构图.html" class="yry-cross-link">📐 架构</a><span class="yry-cross-sep">·</span>
+  <a href="知识图谱.html" class="yry-cross-link">🔗 图谱</a><span class="yry-cross-sep">·</span>
+  <a href="测试面板.html" class="yry-cross-link">🧪 测试</a><span class="yry-cross-sep">·</span>
+  <a href="演示.html" class="yry-cross-link">💡 演示</a><span class="yry-cross-sep">·</span><a href="审查.html" class="yry-cross-link">📝 审查</a>
 </div>
 
-<div class="header">
-  <h1>📋 场景-3<span class="accent"> · 新人上手与开发指南</span></h1>
-  <p class="sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
+<div class="yry-header">
+  <h1>📋 场景-3<span class="yry-accent"> · 新人上手与开发指南</span></h1>
+  <p class="yry-sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
   <div class="meta">📌 v1.0.0 · 📅 2026-06-05 · 🏷️ yry-arch</div>
 </div>
 
-<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">0</div><div class="lbl">✅ 完成</div></div><div class="stat-card"><div class="val">6</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val">0%</div><div class="lbl">📊 进度</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:0%"></div><div class="seg gap" style="width:100%"></div></div></div>
+<div class="yry-stats"><div class="yry-stat"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="yry-stat"><div class="val health">0</div><div class="lbl">✅ 完成</div></div><div class="yry-stat"><div class="val">6</div><div class="lbl">⏳ 待执行</div></div><div class="yry-stat"><div class="val">0%</div><div class="lbl">📊 进度</div></div></div><div class="yry-bar-wrap"><div class="yry-bar-outer"><div class="seg strength" style="width:0%"></div><div class="seg gap" style="width:100%"></div></div></div>
   <div style="display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:.68rem;color:var(--text3)"><span>✅ 0 完成</span><span>⏳ 0 待执行</span></div>
 
 <!-- Progress bar always visible -->
-<div class="progress-wrap">
-  <div class="progress-label"><span>整体进度</span><span id="progress-text">0 / 14 完成</span></div>
-  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+<div class="yry-progress-wrap">
+  <div class="yry-progress-label"><span>整体进度</span><span id="progress-text">0 / 14 完成</span></div>
+  <div class="yry-progress-bar"><div class="yry-progress-fill" id="progress-fill" style="width:0%"></div></div>
 </div>
 
 <!-- Tabs -->
-<div class="tabs">
+<div class="yry-tabs">
   <span class="tab on" data-panel="checklist">📋 清单</span>
-  <span class="tab" data-panel="overview">📊 概览</span>
-  <span class="tab" data-panel="commands">⚡ 命令</span>
-  <span class="tab" data-panel="related">📁 关联</span>
-  <span class="tab" data-panel="verify">🧪 验证</span>
+  <span class="yry-tab" data-panel="overview">📊 概览</span>
+  <span class="yry-tab" data-panel="commands">⚡ 命令</span>
+  <span class="yry-tab" data-panel="related">📁 关联</span>
+  <span class="yry-tab" data-panel="verify">🧪 验证</span>
 </div>
 
 <!-- ═══ Tab 1: Checklist ═══ -->
 <div class="panel on" id="panelChecklist">
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>§0 技术评审<span class="s-done">— 已完成</span></h2>
 
 <div class="step">
@@ -244,7 +247,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 </div>
 </div>
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>§1 测试设计</h2>
 
 <div class="step">
@@ -262,7 +265,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 </div>
 </div>
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>§2 实施报告<span class="s-done">— 进行中</span></h2>
 
 <div class="step">
@@ -308,7 +311,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 </div>
 </div>
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>§3 测试报告</h2>
 
 <div class="step">
@@ -341,7 +344,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 </div>
 </div>
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>§4 自改进</h2>
 
 <div class="step">
@@ -373,7 +376,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 </div>
 </div>
 
-<div class="section">
+<div class="yry-section">
 <h2><span class="dot"></span>交付</h2>
 
 <div class="step">
@@ -437,7 +440,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
 </div><!-- /panelChecklist -->
 
 <!-- ═══ Tab 2: Overview ═══ -->
-<div class="panel" id="panelOverview">
+<div class="yry-panel" id="panelOverview">
 
 <div class="stat-grid">
   <div class="stat-mini"><div class="sv g" id="ov-done">1</div><div class="sl">已完成</div></div>
@@ -446,7 +449,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
   <div class="stat-mini"><div class="sv c">14</div><div class="sl">总步骤</div></div>
 </div>
 
-<div class="section"><h2><span class="dot"></span>各阶段完成度</h2>
+<div class="yry-section"><h2><span class="dot"></span>各阶段完成度</h2>
   <div class="section-stat"><span class="ss-label">§0 技术评审</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:50%;background:var(--warn)"></div></div><span class="ss-pct">1/2</span></div>
   <div class="section-stat"><span class="ss-label">§1 测试设计</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/1</span></div>
   <div class="section-stat"><span class="ss-label">§2 实施报告</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/3</span></div>
@@ -455,22 +458,22 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
   <div class="section-stat"><span class="ss-label">交付</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/4</span></div>
 </div>
 
-<div class="section"><h2><span class="dot"></span>下一步行动</h2>
+<div class="yry-section"><h2><span class="dot"></span>下一步行动</h2>
   <div class="cmd-card"><div class="c-stage">当前就绪 — 步骤 2</div><div class="c-name">编写 30 秒导航索引</div><div class="c-desc">"我想了解X" → "去看Y文件的Z章节" 的快速索引表，覆盖 ≥ 10 个常见问题。切换到 ⚡命令 Tab 查看可执行命令。</div></div>
 </div>
 
 </div><!-- /panelOverview -->
 
 <!-- ═══ Tab 3: Commands ═══ -->
-<div class="panel" id="panelCommands">
+<div class="yry-panel" id="panelCommands">
 
-<div class="section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令</h2>
+<div class="yry-section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令</h2>
 <div class="cmd-grid">
   <div class="cmd-card"><div class="c-stage">步骤 1</div><div class="c-name">生成学习路径索引</div><div class="c-desc">生成项目基线，自动建立从 README 到技能手册的学习路径</div><pre>/rui init<span class="cb" onclick="copyCmd(this,'/rui init')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 2 · 🔶 就绪</div><div class="c-name">生成新人导航索引表</div><div class="c-desc">"我想了解X" → "去看Y文件Z章节" 快速索引</div><pre>/rui doc --story yry-arch --scene 3<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --scene 3')">📋</span></pre></div>
 </div></div>
 
-<div class="section"><h2><span class="dot"></span>§1-§2 测试设计与实施 — 待执行命令</h2>
+<div class="yry-section"><h2><span class="dot"></span>§1-§2 测试设计与实施 — 待执行命令</h2>
 <div class="cmd-grid">
   <div class="cmd-card"><div class="c-stage">步骤 3</div><div class="c-name">生成上手路径测试</div><div class="c-desc">tester agent 生成 TC-O 系列测试用例</div><pre>/rui doc --story yry-arch<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 4</div><div class="c-name">生成新人指南文档</div><div class="c-desc">从零到第一个 /rui init 的完整指南</div><pre>/rui doc --story yry-arch --scene 3<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --scene 3')">📋</span></pre></div>
@@ -478,7 +481,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
   <div class="cmd-card"><div class="c-stage">步骤 6</div><div class="c-name">生成学习路径架构图</div><div class="c-desc">可视化阅读顺序和模块依赖</div><pre>/rui doc --story yry-arch --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --output 架构图.html')">📋</span></pre></div>
 </div></div>
 
-<div class="section"><h2><span class="dot"></span>§3-交付 — 待执行命令</h2>
+<div class="yry-section"><h2><span class="dot"></span>§3-交付 — 待执行命令</h2>
 <div class="cmd-grid">
   <div class="cmd-card"><div class="c-stage">步骤 7</div><div class="c-name">运手上路路径验证</div><div class="c-desc">模拟新人：按 30 秒索引验证所有导航链接</div><pre>node tests/skills/rui.test.mjs --verbose<span class="cb" onclick="copyCmd(this,'node tests/skills/rui.test.mjs --verbose')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 8</div><div class="c-name">推送测试报告</div><div class="c-desc">企微通知上手路径验证报告</div><pre>node skills/rui-bot/send.mjs --story=yry-arch --status=test-report<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=yry-arch --status=test-report')">📋</span></pre></div>
@@ -492,7 +495,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
 </div><!-- /panelCommands -->
 
 <!-- ═══ Tab 4: Related Pages ═══ -->
-<div class="panel" id="panelRelated">
+<div class="yry-panel" id="panelRelated">
 
 <div class="link-grid">
   <a href="架构图.html" class="link-card">
@@ -516,7 +519,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
 </div><!-- /panelRelated -->
 
 <!-- ═══ Tab 5: Verify ═══ -->
-<div class="panel" id="panelVerify">
+<div class="yry-panel" id="panelVerify">
 
 <div class="verify-list">
   <div class="verify-item"><div class="vi-label">步骤 7 · 上手路径验证</div>
@@ -527,13 +530,13 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
 
 </div><!-- /panelVerify -->
 
-<div class="footer">
+<div class="yry-footer">
   <p>🤖 Generated with planner agent | scene: 新人上手与开发指南 | updated: 2026-06-05</p>
 </div>
 
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="yry-toast" id="toast"></div>
 
 <script>
 const SCENE_KEY = 'yry-arch-s3-checklist';
@@ -633,5 +636,6 @@ function toast(msg) {
   switchPanel(activeTab);
 })();
 </script>
+<script src="../../../../cdn/shared.js"></script>
 </body>
 </html>

@@ -6,9 +6,10 @@
 <title>包信息审计与卸载 — 审查报告</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--info:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--info:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideDown{from{opacity:0;max-height:0}to{opacity:1;max-height:3000px}}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
@@ -36,88 +37,131 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
 .cross-link.on{color:var(--accent);font-weight:600}
 .cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
-.section{margin-bottom:28px;animation:fadeInUp .4s ease both}
-.section h2{font-size:1.1rem;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.section h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
-.review-table{width:100%;border-collapse:collapse;font-size:.84rem}
-.review-table th{text-align:left;color:var(--text2);font-weight:600;padding:8px 12px;border-bottom:var(--border);font-size:.76rem}
-.review-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
-.review-table tr:hover td{background:rgba(255,255,255,0.02)}
-.badge{font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:4px}
-.badge.s{background:rgba(34,197,94,.12);color:var(--pass)}.badge.i{background:rgba(245,158,11,.12);color:var(--warn)}
-.summary-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:16px;box-shadow:var(--shadow)}
-.summary-card h3{font-size:.92rem;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.summary-card p{color:var(--text2);font-size:.82rem;line-height:1.6}
-.footer-note{text-align:center;color:var(--text3);font-size:.72rem;margin-top:40px}
+.tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:0;animation:fadeInDown .5s .18s ease both}
+.tab{padding:10px 20px;cursor:pointer;font-size:.84rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none;position:relative}
+.tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.tab .tab-badge{font-size:.62rem;background:var(--fail);color:#fff;border-radius:8px;padding:1px 6px;position:absolute;top:4px;right:-2px}
+.panel{display:none;animation:fadeInUp .4s ease both;padding-top:28px}
+.panel.on{display:block}
+.suite{background:var(--bg-card);border:var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow);overflow:hidden;transition:border-color .2s}
+.suite.open{border-color:rgba(255,255,255,.08)}
+.s-head{display:flex;align-items:center;gap:10px;padding:12px 18px;cursor:pointer;user-select:none;transition:background .12s}
+.s-head:hover{background:rgba(255,255,255,.02)}
+.s-head .s-arrow{font-size:.6rem;color:var(--text3);transition:transform .2s;width:12px;text-align:center}
+.suite.open .s-head .s-arrow{transform:rotate(90deg)}
+.s-head .s-name{flex:1;font-weight:600;font-size:.88rem}
+.s-head .s-badge{font-size:.68rem;padding:2px 8px;border-radius:10px;font-weight:600}
+.s-badge.pass{background:rgba(34,197,94,.12);color:var(--pass)}
+.s-badge.warn{background:rgba(245,158,11,.12);color:var(--warn)}
+.s-body{display:none;border-top:var(--border);animation:slideDown .25s ease;padding:14px 18px}
+.suite.open .s-body{display:block}
+.case-card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem;margin-bottom:12px}
+.case-card.good{border-left:3px solid var(--pass)}
+.case-card.bad{border-left:3px solid var(--fail)}
+.case-card h4{font-size:.85rem;font-weight:600;margin-bottom:.5rem;display:flex;align-items:center;gap:6px}
+.case-card .case-tag{font-size:.65rem;font-weight:600;padding:2px 8px;border-radius:3px}
+.case-tag.good{background:rgba(34,197,94,.1);color:var(--pass)}
+.case-tag.bad{background:rgba(239,68,68,.1);color:var(--fail)}
+.case-card .case-loc{font-size:.7rem;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:6px}
+.case-card .case-desc{color:var(--text2);font-size:.78rem;line-height:1.6;margin-bottom:6px}
+.case-card .case-why{color:var(--text3);font-size:.74rem;line-height:1.5;font-style:italic}
+.case-card pre{background:rgba(0,0,0,.3);border-radius:6px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);overflow-x:auto;margin-top:8px;line-height:1.5;white-space:pre-wrap}
+.dim-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:10px;box-shadow:var(--shadow)}
+.dim-card h3{font-size:.9rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.dim-card .dim-score{font-size:1.4rem;font-weight:700;margin-left:auto}
+.dim-card .dim-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.04);overflow:hidden;margin-bottom:8px}
+.dim-card .dim-bar-inner{height:100%;border-radius:3px;transition:width .5s ease}
+.dim-card ul{list-style:none;color:var(--text2);font-size:.78rem;margin-top:6px}
+.dim-card ul li{margin-bottom:4px;padding-left:16px;position:relative}
+.dim-card ul li::before{content:'•';position:absolute;left:2px;color:var(--text3)}
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px}
+.rec-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.rec-card.p1{border-left:3px solid var(--fail)}
+.rec-card.p2{border-left:3px solid var(--warn)}
+.rec-card .rec-pri{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:3px;display:inline-block;margin-bottom:6px}
+.rec-pri.p1{background:rgba(239,68,68,.12);color:var(--fail)}
+.rec-pri.p2{background:rgba(245,158,11,.12);color:var(--warn)}
+.rec-card h4{font-size:.82rem;font-weight:600;margin-bottom:4px}
+.rec-card p{color:var(--text2);font-size:.74rem;line-height:1.5}
+.ev-list{list-style:none}
+.ev-list li{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.03);font-size:.78rem}
+.ev-list li .ev-icon{flex-shrink:0;font-size:.8rem}
+.ev-list li .ev-text{color:var(--text2)}
+.ev-list li .ev-link{color:var(--cyan);text-decoration:none;font-size:.72rem}
+.ev-list li .ev-link:hover{color:var(--accent)}
+.footer{text-align:center;color:var(--text3);font-size:.74rem;margin-top:48px;padding-top:20px;border-top:var(--border)}
+.footer a{color:var(--accent);text-decoration:none}
+.footer a:hover{text-decoration:underline}
+@media(max-width:768px){.container{padding:24px 12px 60px}.header h1{font-size:1.4rem}.stats-grid{gap:6px}.stat-card{padding:12px 14px;min-width:60px}.stat-card .val{font-size:1.2rem}.rec-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body><div class="container">
-<nav class="breadcrumb"><a href="../../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../../故事任务.md">rui-npm</a><span class="bc-sep">/</span><a href="场景-4-包信息审计与卸载.md">场景 4 · 包信息审计与卸载</a><span class="bc-sep">/</span><span class="bc-current">📝 审查</span></nav>
-
-<nav class="cross-nav">
-  <a class="cross-link" href="场景-4-包信息审计与卸载.md">📄 场景</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="计划清单.html">📋 计划清单</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="架构图.html">📐 架构图</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="知识图谱.html">🔗 知识图谱</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="测试面板.html">🧪 测试面板</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
-  <a class="cross-link on" href="审查.html">📝 审查</a>
-</nav>
-
-<div class="header"><h1>📝 <span class="accent">包信息审计与卸载 · 审查报告</span></h1><p class="sub">代码审查 · 安全检查 · 设计一致性</p></div>
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · 个人 npm 包管理</span><span class="bc-sep">/</span><span class="bc-current">场景 4 · 包信息审计与卸载</span><span class="bc-sep">/</span><span class="bc-current">📝 审查</span></nav>
+<div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><span class="cross-link on">📝 审查</span></div>
+<div class="header"><h1>📝 <span class="accent">包信息审计与卸载</span> — 审查报告</h1><p class="sub">审查日期 2026-06-05 · 版本 v4.3.0 · 审查人 code-reviewer Agent · 4 维度 × 6 发现</p></div>
 
 <div class="stats-grid">
-  <div class="stat-card"><div class="val health">5</div><div class="lbl">优势点</div></div>
-  <div class="stat-card"><div class="val" style="color:var(--warn)">1</div><div class="lbl">改进建议</div></div>
-  <div class="stat-card"><div class="val" style="color:var(--info)">0</div><div class="lbl">缺口</div></div>
-  <div class="stat-card"><div class="val health">100%</div><div class="lbl">健康度</div></div>
+  <div class="stat-card"><div class="val health">96%</div><div class="lbl">🏥 综合健康度</div></div>
+  <div class="stat-card"><div class="val health">100%</div><div class="lbl">💻 代码质量</div></div>
+  <div class="stat-card"><div class="val health">95%</div><div class="lbl">🛡️ 安全</div></div>
+  <div class="stat-card"><div class="val health">95%</div><div class="lbl">⚡ 错误处理</div></div>
+  <div class="stat-card"><div class="val health">95%</div><div class="lbl">📐 设计一致性</div></div>
+  <div class="stat-card"><div class="val health">6</div><div class="lbl">📊 发现项</div></div>
 </div>
 
-<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:83%"></div><div class="seg suggestion" style="width:17%"></div></div></div>
+<div class="bar-wrap"><div class="bar-outer" id="healthBar"><div class="seg strength" style="width:83%"></div><div class="seg suggestion" style="width:17%"></div></div><div style="display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:.68rem;color:var(--text3)"><span>✅ 5 优势</span><span>❌ 0 缺口</span><span>⚠️ 1 建议</span></div></div>
 
-<div class="section">
-  <h2><span class="dot"></span>优势点</h2>
-  <table class="review-table">
-    <thead><tr><th>#</th><th>维度</th><th>发现</th><th>位置</th></tr></thead>
-    <tbody>
-      <tr><td><span class="badge s">S1</span></td><td>信息完整性</td><td>info 子命令从 npm view JSON 中提取名称/描述/版本/许可证/主页/仓库/维护者/关键词/最近版本/依赖共 10 类字段，分区展示</td><td><code>rui-npm.mjs:279-307</code></td></tr>
-      <tr><td><span class="badge s">S2</span></td><td>审计可操作</td><td>audit 按 severity 排序（critical→high→moderate→low），展示漏洞来源（via）+ 影响范围（range）+ 是否可修复，附带 npm audit fix 命令</td><td><code>rui-npm.mjs:465-498</code></td></tr>
-      <tr><td><span class="badge s">S3</span></td><td>错误处理</td><td>audit 在非零退出码时仍尝试解析 JSON 和 stderr 回退，确保漏洞数据不因退出码丢失</td><td><code>rui-npm.mjs:453-459</code></td></tr>
-      <tr><td><span class="badge s">S4</span></td><td>卸载安全</td><td>uninstall 前置校验 package.json 存在 + 包名已安装，避免误操作</td><td><code>rui-npm.mjs:310-315</code></td></tr>
-      <tr><td><span class="badge s">S5</span></td><td>CI 可集成</td><td>info/audit 均支持 --json 标志输出原始数据，CI 可解析 audit JSON 中 vulnerabilities 对象判定是否阻断</td><td><code>rui-npm.mjs:461-464</code></td></tr>
-    </tbody>
-  </table>
+<div class="tabs">
+  <span class="tab on" data-panel="overview">📊 总览</span>
+  <span class="tab" data-panel="good">✅ 优势发现 <span class="tab-badge">5</span></span>
+  <span class="tab" data-panel="security">🛡️ 安全审查</span>
+  <span class="tab" data-panel="recommendations">📝 改进建议</span>
+  <span class="tab" data-panel="evidence">📎 证据链</span>
 </div>
 
-<div class="section">
-  <h2><span class="dot"></span>改进建议</h2>
-  <table class="review-table">
-    <thead><tr><th>#</th><th>维度</th><th>建议</th><th>影响</th></tr></thead>
-    <tbody>
-      <tr><td><span class="badge i">I1</span></td><td>审计增强</td><td>建议 audit 输出中增加漏洞 CVSS 评分列，帮助用户不只看 severity 标签，还能根据量化分值决策。当前 npm audit JSON 中含 cvss.score 字段但未展示</td><td>安全增强 · P2</td></tr>
-    </tbody>
-  </table>
+<div class="panel on" id="panelOverview">
+  <div class="dim-card"><h3>💻 代码质量 <span class="dim-score" style="color:var(--pass)">100%</span></h3><div class="dim-bar"><div class="dim-bar-inner" style="width:100%;background:var(--pass)"></div></div><ul><li>info 从 npm view JSON 提取 10 类字段，分区展示</li><li>audit 按 severity 排序（critical→high→moderate→low）</li><li>audit 在非零退出码时仍尝试解析 JSON + stderr 回退</li></ul></div>
+  <div class="dim-card"><h3>🛡️ 安全 <span class="dim-score" style="color:var(--pass)">95%</span></h3><div class="dim-bar"><div class="dim-bar-inner" style="width:95%;background:var(--pass)"></div></div><ul><li>uninstall 前置校验 package.json + 包名已安装</li><li>advisory DB 不可达时明确标注而非静默跳过</li><li>⚠️ CVSS 评分未展示，仅展示 severity 标签</li></ul></div>
+  <div class="dim-card"><h3>⚡ 错误处理 <span class="dim-score" style="color:var(--pass)">95%</span></h3><div class="dim-bar"><div class="dim-bar-inner" style="width:95%;background:var(--pass)"></div></div><ul><li>audit 非零退出码仍解析 JSON——不因退出码丢失漏洞数据</li><li>info 包不存在时明确提示而非空输出</li><li>uninstall 包未安装时给出明确错误</li></ul></div>
+  <div class="dim-card"><h3>📐 设计一致性 <span class="dim-score" style="color:var(--pass)">95%</span></h3><div class="dim-bar"><div class="dim-bar-inner" style="width:95%;background:var(--pass)"></div></div><ul><li>info 含许可证/维护者/版本历史 ✓ · audit 按级别分组 ✓</li><li>audit 修复建议 ✓ · uninstall 前置校验 ✓ · JSON 支持 ✓</li></ul></div>
 </div>
 
-<div class="section">
-  <h2><span class="dot"></span>安全审查</h2>
-  <table class="review-table">
-    <thead><tr><th>威胁</th><th>风险等级</th><th>当前缓解</th><th>评估</th></tr></thead>
-    <tbody>
-      <tr><td>audit 结果误报导致不必要的依赖变更</td><td>Medium</td><td>展示具体漏洞来源（via），用户可人工判断；npm audit fix 仅修复兼容变更</td><td><span class="badge s">充分</span></td></tr>
-      <tr><td>卸载关键依赖导致项目不可用</td><td>Medium</td><td>uninstall 前验证包名在 package.json 中；git 可回退</td><td><span class="badge s">充分</span></td></tr>
-      <tr><td>advisory DB 不可达导致审计跳过</td><td>Low</td><td>网络失败时明确标注"无网络连接，跳过安全审计"</td><td><span class="badge s">充分</span></td></tr>
-      <tr><td>info 输出泄露内部依赖结构</td><td>Low</td><td>仅查询公开 registry 信息，不暴露本地代码</td><td><span class="badge s">充分</span></td></tr>
-    </tbody>
-  </table>
+<div class="panel" id="panelGood">
+  <div class="case-card good"><h4>✅ <span class="case-tag good">优势</span> 信息分区展示</h4><div class="case-loc">📁 skills/rui-npm/rui-npm.mjs : 279-307</div><div class="case-desc">info 从 npm view JSON 中提取名称/描述/版本/许可证/主页/仓库/维护者/关键词/最近版本/依赖共 10 类字段，分区展示为基本信息/版本信息/依赖关系三个区域。</div><div class="case-why">💡 <strong>为什么好：</strong>npm view 原始 JSON 包含 40+ 字段，用户难以快速定位关键信息。分区展示将高价值字段（许可证/维护者/依赖）优先呈现，其余按需折叠。</div></div>
+  <div class="case-card good"><h4>✅ <span class="case-tag good">优势</span> 审计可操作输出</h4><div class="case-loc">📁 skills/rui-npm/rui-npm.mjs : 465-498</div><div class="case-desc">audit 按 severity 排序，展示漏洞来源（via）+ 影响范围（range）+ 是否可修复，附带 npm audit fix 命令。用户看到漏洞的同时知道如何修复。</div><div class="case-why">💡 <strong>为什么好：</strong>安全问题报告最难的部分不是发现漏洞，而是让修复变得可操作。这里每个漏洞都附带具体的修复命令，用户只需复制执行。</div></div>
+  <div class="case-card good"><h4>✅ <span class="case-tag good">优势</span> 退出码容错</h4><div class="case-loc">📁 skills/rui-npm/rui-npm.mjs : 453-459</div><div class="case-desc">audit 在非零退出码时仍尝试解析 JSON 和 stderr 回退。npm audit 发现漏洞时返回非零退出码，但 JSON 数据仍然有效——不应因退出码而丢弃数据。</div><div class="case-why">💡 <strong>为什么好：</strong>这是对 npm audit 行为深入理解的体现——npm audit 在发现漏洞时 exit code != 0 但 stdout 仍包含有效 JSON。先解析再判退出码是正确的处理顺序。</div></div>
+  <div class="case-card good"><h4>✅ <span class="case-tag good">优势</span> 卸载安全校验</h4><div class="case-loc">📁 skills/rui-npm/rui-npm.mjs : 310-315</div><div class="case-desc">uninstall 前置校验 package.json 存在 + 包名已安装，避免误操作。双重检查确保不会尝试卸载不存在的包或在不正确的目录执行。</div><div class="case-why">💡 <strong>为什么好：</strong>uninstall 是不可逆操作——一旦执行，依赖被移除。前置校验是防御性编程的基础实践：在执行破坏性操作前验证所有前置条件。</div></div>
+  <div class="case-card good"><h4>✅ <span class="case-tag good">优势</span> CI 可集成设计</h4><div class="case-loc">📁 skills/rui-npm/rui-npm.mjs : 461-464</div><div class="case-desc">info/audit 均支持 --json 标志输出原始数据。CI 可解析 audit JSON 中 vulnerabilities 对象判定是否阻断管线。</div><div class="case-why">💡 <strong>为什么好：</strong>双模式设计（人类友好的默认输出 + 机器可读的 --json 模式）让工具同时适用于交互式使用和自动化管道。CI 不需要解析人类友好的表格输出。</div></div>
 </div>
 
-<div class="section">
-  <h2><span class="dot"></span>设计一致性检查</h2>
-  <div class="summary-card"><h3>📐 设计评审清单 — 6/6 ✅</h3><p>info 含许可证/维护者/版本历史 ✓ · audit 按严重级别分组 ✓ · audit 修复建议 ✓ · 无漏洞确认 ✓ · uninstall 前置校验 ✓ · JSON 支持 ✓</p></div>
+<div class="panel" id="panelSecurity">
+  <div class="case-card good"><h4>🛡️ <span class="case-tag good">Medium Risk</span> 审计误报处理</h4><div class="case-loc">📁 skills/rui-npm/rui-npm.mjs</div><div class="case-desc">展示具体漏洞来源（via），用户可人工判断是否为误报。npm audit fix 仅修复兼容变更，不会引入破坏性改动。</div><div class="case-why">🔒 <strong>缓解：</strong>漏洞来源可视化让用户能区分真实威胁和噪声。via 字段展示漏洞链，用户可判断是否影响自身使用场景。</div></div>
+  <div class="case-card good"><h4>🛡️ <span class="case-tag good">Medium Risk</span> 关键依赖误卸载</h4><div class="case-loc">📁 skills/rui-npm/rui-npm.mjs</div><div class="case-desc">uninstall 前验证包名在 package.json 中；git 可回退。双重校验降低误操作风险。</div><div class="case-why">🔒 <strong>缓解：</strong>前置校验 + git 安全网。卸载前确认包名存在，卸载后可通过 git checkout 恢复。</div></div>
+  <div class="case-card good"><h4>🛡️ <span class="case-tag good">Low Risk</span> Advisory DB 不可达</h4><div class="case-loc">📁 skills/rui-npm/rui-npm.mjs</div><div class="case-desc">网络失败时明确标注"无网络连接，跳过安全审计"。不静默跳过，用户始终知道审计状态。</div><div class="case-why">🔒 <strong>缓解：</strong>显式标注而非静默跳过。安全工具最大的风险是给用户"安全"的假象——明确告知审计被跳过了。</div></div>
 </div>
 
-<div class="footer-note">📝 rui-npm 审查报告 · 场景 4/4 · 包信息审计与卸载 · 生成于 2026-06-05</div>
+<div class="panel" id="panelRecommendations">
+  <div class="rec-grid">
+    <div class="rec-card p2"><span class="rec-pri p2">P2 · 本迭代</span><h4>增加 CVSS 评分展示</h4><p>建议 audit 输出中增加漏洞 CVSS 评分列，帮助用户不只看 severity 标签，还能根据量化分值决策。当前 npm audit JSON 中含 cvss.score 字段但未展示，不同 severity 级别的 CVSS 范围可能有重叠，量化评分可帮助更精确的风险评估。</p></div>
+  </div>
 </div>
+
+<div class="panel" id="panelEvidence">
+  <div class="suite open"><div class="s-head" data-action="toggle"><span class="s-arrow">▶</span><span class="s-name">📎 审查证据清单</span><span class="s-badge pass">5 项可追溯</span></div><div class="s-body"><ul class="ev-list">
+    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>代码审查 — info 完整性：</strong>npm view JSON → 10 类字段提取 → 分区展示</span><a href="../../../skills/rui-npm/rui-npm.mjs" class="ev-link">rui-npm.mjs</a></li>
+    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>代码审查 — audit 容错：</strong>非零退出码时仍解析 JSON + stderr 回退</span><a href="../../../skills/rui-npm/rui-npm.mjs" class="ev-link">rui-npm.mjs</a></li>
+    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>安全审查 — advisory DB：</strong>网络不可达时明确标注而非静默跳过</span><a href="架构图.html" class="ev-link">架构图 →</a></li>
+    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>设计一致性：</strong>6/6 设计评审清单全部通过</span><a href="演示.html" class="ev-link">演示 →</a></li>
+    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>测试覆盖：</strong>info/audit/uninstall 三命令测试全部通过</span><a href="测试面板.html" class="ev-link">测试面板 →</a></li>
+  </ul></div></div>
+</div>
+
+<div class="footer">YrY v4.3.0 · <a href="../../../index.html">文档中心</a></div>
+</div>
+<script>
+document.querySelector('.tabs').addEventListener('click',function(e){var tab=e.target.closest('.tab');if(!tab)return;document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t===tab)});document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel'+tab.dataset.panel.charAt(0).toUpperCase()+tab.dataset.panel.slice(1))});});
+document.addEventListener('click',function(e){var head=e.target.closest('.s-head');if(!head)return;head.closest('.suite').classList.toggle('open');});
+document.getElementById('healthBar').addEventListener('click',function(e){var rect=this.getBoundingClientRect(),pct=(e.clientX-rect.left)/rect.width;var panel=pct<.33?'good':pct<.5?'security':'recommendations';document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.panel===panel)});document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel'+panel.charAt(0).toUpperCase()+panel.slice(1))});});
+</script>
 </body>
 </html>

@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YrY Self-Test — 场景 3: 文档代码一致性校验</title>
+<!-- ═══ CDN: YrY 共享样式 ═══ -->
+<link rel="stylesheet" href="../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../cdn/theme.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -53,11 +56,27 @@
     }
     .toolbar-actions button:hover { background: rgba(51, 65, 85, 0.8); color: white; border-color: #475569; }
     @media print { body { background: #020617; padding: 1rem; } .toolbar { display: none !important; } }
-  </style>
+  
+.cross-nav{display:flex;gap:6px;justify-content:center;align-items:center;margin-bottom:2rem;flex-wrap:wrap}
+.cross-nav .cross-link{color:#22d3ee;text-decoration:none;font-size:0.78rem;padding:4px 12px;border-radius:4px;transition:color 0.15s,background 0.15s}
+.cross-nav .cross-link:hover{color:#fbbf24;background:rgba(251,191,36,0.08)}
+.cross-nav .cross-link.on{color:#fbbf24;font-weight:600}
+.cross-nav .cross-sep{color:#475569;font-size:0.5rem;opacity:0.4;user-select:none}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+
+</style>
 </head>
 <body>
-  <div class="container" id="report-container">
-    <div class="header">
+  <div class="yry-container" id="report-container">
+<nav class="yry-breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">yry-self-test · 自主测试方案</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 3 · 文档代码一致性校验</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">📐 架构图</span></nav>
+
+<div class="yry-cross-nav"><a class="yry-cross-link" href="场景-3-文档代码一致性校验/计划清单.html">📋 清单</a><span class="yry-cross-sep">·</span><span class="cross-link on">📐 架构</span><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="场景-3-文档代码一致性校验/知识图谱.html">🔗 图谱</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="场景-3-文档代码一致性校验/测试面板.html">🧪 测试</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="场景-3-文档代码一致性校验/演示.html">💡 演示</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="场景-3-文档代码一致性校验/审查.html">📝 审查</a></div>
+
+    <div class="yry-header">
       <div class="header-row">
         <div class="pulse-dot"></div>
         <h1>YrY Self-Test — 场景 3: 文档代码一致性校验</h1>
@@ -294,7 +313,7 @@
     </div>
 
     <div class="cards">
-      <div class="card">
+      <div class="yry-card">
         <div class="card-header">
           <div class="card-dot rose"></div>
           <h3>&#x1F6AB; &#x963B;&#x65AD;&#x5C42; (L1)</h3>
@@ -307,7 +326,7 @@
           <li>&#x2022; &#x7CBE;&#x786E;&#x5230;&#x6587;&#x4EF6;&#x884C;&#x53F7;&#x6216;&#x7AE0;&#x8282;</li>
         </ul>
       </div>
-      <div class="card">
+      <div class="yry-card">
         <div class="card-header">
           <div class="card-dot amber"></div>
           <h3>&#x26A0; &#x8B66;&#x544A;&#x5C42; (L2&#x2013;L4)</h3>
@@ -320,7 +339,7 @@
           <li>&#x2022; &#x53EF;&#x6307;&#x5B9A;&#x5355;&#x6545;&#x4E8B;&#x5B9A;&#x5411;&#x68C0;&#x67E5;</li>
         </ul>
       </div>
-      <div class="card">
+      <div class="yry-card">
         <div class="card-header">
           <div class="card-dot violet"></div>
           <h3>&#x1F4CA; &#x5DEE;&#x8DDD;&#x91CF;&#x5316;</h3>
@@ -381,7 +400,7 @@
 }
     </script>
 
-    <p class="footer">YrY Self-Test &#x2022; Scene 3: Document-Code Consistency Check &#x2022; v1.0.0 &#x2022; 2026-06-06T08:30:00.000Z &#x2022; self-contained architecture diagram</p>
+    <p class="yry-footer">YrY Self-Test &#x2022; Scene 3: Document-Code Consistency Check &#x2022; v1.0.0 &#x2022; 2026-06-06T08:30:00.000Z &#x2022; self-contained architecture diagram</p>
   </div>
 
   <script>
@@ -438,5 +457,6 @@
       setTimeout(function() { btn.textContent = orig; }, 2000);
     }
   </script>
+<script src="../../../cdn/shared.js"></script>
 </body>
 </html>
