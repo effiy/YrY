@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>场景-4: 存量页面迁移 — 架构图</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme-mono.css">
+<style>svg text{font-family:'JetBrains Mono',monospace}</style>
+</head>
+<body>
+<div class="yry-mono-container wide">
+  <div class="yry-breadcrumb">
+    <a href="../../../../docs/故事任务面板/">故事面板</a><span class="yry-bc-sep">/</span>
+    <a href="../">yry-cdn</a><span class="yry-bc-sep">/</span>
+    <span class="yry-bc-current">场景-4 架构图</span>
+  </div>
+  <div class="yry-cross-nav">
+    <a class="yry-cross-link" href="场景-1-cdn资源加载与页面渲染.html">场景-1</a><span class="yry-cross-sep">|</span>
+    <a class="yry-cross-link" href="场景-2-双主题系统设计.html">场景-2</a><span class="yry-cross-sep">|</span>
+    <a class="yry-cross-link" href="场景-3-组件库与JS工具API.html">场景-3</a><span class="yry-cross-sep">|</span>
+    <a class="yry-cross-link on" href="场景-4-存量页面迁移.html">场景-4</a><span class="yry-cross-sep">|</span>
+    <a class="yry-cross-link" href="场景-5-npm包发布与版本管理.html">场景-5</a>
+  </div>
+  <div class="yry-mono-header">
+    <div class="yry-mono-header-row"><div class="yry-pulse-dot"></div><h1>存量页面迁移 — 架构图</h1></div>
+    <div class="yry-mono-subtitle">yry-cdn / 场景-4 / 6 步迁移流程 + 代码变化对比</div>
+  </div>
+
+  <div class="yry-diagram-wrap">
+    <svg viewBox="0 0 1100 700" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#475569"/></marker>
+        <marker id="arr-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#22c55e"/></marker>
+      </defs>
+
+      <!-- BEFORE state -->
+      <rect x="30" y="20" width="320" height="260" rx="10" fill="#2a1a1a" stroke="#ef4444" stroke-width="1.5"/>
+      <text x="190" y="48" text-anchor="middle" fill="#ef4444" font-size="13" font-weight="700">迁移前 页面</text>
+      <line x1="50" y1="58" x2="330" y2="58" stroke="#ef4444" stroke-width="0.5"/>
+      <text x="50" y="82" fill="#64748b" font-size="9">&lt;style&gt;</text>
+      <text x="60" y="100" fill="#94a3b8" font-size="9">*, *::before, *::after { ... }</text>
+      <text x="60" y="116" fill="#94a3b8" font-size="9">@keyframes yry-fadeInUp { ... }</text>
+      <text x="60" y="132" fill="#94a3b8" font-size="9">.yry-breadcrumb { ... }  ← CDN 覆盖</text>
+      <text x="60" y="148" fill="#94a3b8" font-size="9">.yry-cross-nav { ... }     ← CDN 覆盖</text>
+      <text x="60" y="164" fill="#94a3b8" font-size="9">.yry-toast { ... }         ← CDN 覆盖</text>
+      <text x="60" y="180" fill="#94a3b8" font-size="9">:root { --yry-* }          ← CDN 覆盖</text>
+      <text x="60" y="196" fill="#94a3b8" font-size="9">.yry-container { ... }     ← CDN 覆盖</text>
+      <text x="60" y="214" fill="#94a3b8" font-size="9">.scene-card { ... }        ← 保留</text>
+      <text x="50" y="238" fill="#94a3b8" font-size="9">&lt;/style&gt;</text>
+      <text x="50" y="258" fill="#64748b" font-size="9">&lt;script&gt;function toast()...&lt;/script&gt;</text>
+      <text x="190" y="276" text-anchor="middle" fill="#ef4444" font-size="9">~150 行内联代码</text>
+
+      <!-- Arrow -->
+      <line x1="350" y1="150" x2="420" y2="150" stroke="#22c55e" stroke-width="2" marker-end="url(#arr-green)"/>
+
+      <!-- 6 Steps -->
+      <text x="580" y="48" text-anchor="middle" fill="#a9b1d6" font-size="13" font-weight="700">6 步迁移流程</text>
+
+      <rect x="450" y="65" width="260" height="32" rx="6" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="580" y="86" text-anchor="middle" fill="#fbbf24" font-size="10">① 分析 — 对比 CDN 覆盖清单</text>
+
+      <rect x="450" y="107" width="260" height="32" rx="6" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="580" y="128" text-anchor="middle" fill="#fbbf24" font-size="10">② 判定 — Cat A / Cat B?</text>
+
+      <rect x="450" y="149" width="260" height="32" rx="6" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="580" y="170" text-anchor="middle" fill="#fbbf24" font-size="10">③ 添加 — &lt;link&gt; + &lt;script&gt;</text>
+
+      <rect x="450" y="191" width="260" height="32" rx="6" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="580" y="212" text-anchor="middle" fill="#fbbf24" font-size="10">④ 替换 — 旧类名 → yry-*</text>
+
+      <rect x="450" y="233" width="260" height="32" rx="6" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="580" y="254" text-anchor="middle" fill="#fbbf24" font-size="10">⑤ 替换 — 旧函数 → YrY.*</text>
+
+      <rect x="450" y="275" width="260" height="32" rx="6" fill="#1a3a2a" stroke="#22c55e" stroke-width="1"/>
+      <text x="580" y="296" text-anchor="middle" fill="#22c55e" font-size="10">⑥ 验证 — 截图对比 + 交互测试</text>
+
+      <!-- Arrow -->
+      <line x1="710" y1="291" x2="780" y2="291" stroke="#22c55e" stroke-width="2" marker-end="url(#arr-green)"/>
+
+      <!-- AFTER state -->
+      <rect x="790" y="20" width="280" height="260" rx="10" fill="#1a3a1a" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="930" y="48" text-anchor="middle" fill="#22c55e" font-size="13" font-weight="700">迁移后 页面</text>
+      <line x1="810" y1="58" x2="1070" y2="58" stroke="#22c55e" stroke-width="0.5"/>
+      <text x="810" y="82" fill="#22c55e" font-size="9">&lt;link href=&quot;shared.css&quot;&gt;</text>
+      <text x="810" y="100" fill="#22c55e" font-size="9">&lt;link href=&quot;theme.css&quot;&gt;</text>
+      <text x="810" y="118" fill="#22c55e" font-size="9">&lt;script src=&quot;shared.js&quot;&gt;</text>
+      <line x1="810" y1="128" x2="1070" y2="128" stroke="#1e293b"/>
+      <text x="810" y="150" fill="#64748b" font-size="9">&lt;style&gt;</text>
+      <text x="820" y="168" fill="#94a3b8" font-size="9">.scene-card { ... }   ← 保留</text>
+      <text x="820" y="186" fill="#94a3b8" font-size="9">svg { ... }           ← 保留</text>
+      <text x="810" y="210" fill="#64748b" font-size="9">&lt;/style&gt;</text>
+      <line x1="810" y1="220" x2="1070" y2="220" stroke="#1e293b"/>
+      <text x="810" y="242" fill="#64748b" font-size="9">&lt;script&gt;page logic&lt;/script&gt;</text>
+      <text x="930" y="276" text-anchor="middle" fill="#22c55e" font-size="9">~40 行内联代码 (↓60%)</text>
+
+      <!-- Code delta summary -->
+      <rect x="300" y="340" width="500" height="100" rx="8" fill="#1a2a3a" stroke="#1e293b" stroke-width="1"/>
+      <text x="550" y="368" text-anchor="middle" fill="#a9b1d6" font-size="12" font-weight="600">代码变更统计 (单页面)</text>
+      <line x1="330" y1="378" x2="770" y2="378" stroke="#1e293b"/>
+      <text x="340" y="400" fill="#ef4444" font-size="10">删除: ~100 行内联 CSS (CDN 已覆盖)</text>
+      <text x="340" y="418" fill="#ef4444" font-size="10">删除: ~50 行内联 JS (替换为 YrY.*)</text>
+      <text x="340" y="436" fill="#22c55e" font-size="10">新增: 3-4 行 &lt;link&gt; / &lt;script&gt; CDN 引用</text>
+
+      <!-- Migration checklist at bottom -->
+      <rect x="100" y="470" width="900" height="55" rx="8" fill="#1a2a1a" stroke="#f59e0b" stroke-width="1"/>
+      <text x="550" y="496" text-anchor="middle" fill="#f59e0b" font-size="11" font-weight="600">⚠️ 迁移检查 (每页面必检)</text>
+      <text x="550" y="516" text-anchor="middle" fill="#64748b" font-size="9">页面渲染一致 · CSS 计算样式一致 · Toast 交互正常 · 复制功能正常 · 面板切换正常 · 折叠套件正常 · git diff 仅为 CDN 覆盖内容</text>
+
+      <!-- Consumer stats -->
+      <rect x="100" y="555" width="250" height="60" rx="8" fill="#1a2a4a" stroke="#22d3ee" stroke-width="1"/>
+      <text x="225" y="580" text-anchor="middle" fill="#22d3ee" font-size="11" font-weight="600">Category A</text>
+      <text x="225" y="602" text-anchor="middle" fill="#64748b" font-size="9">架构图 + 知识图谱页面</text>
+
+      <rect x="380" y="555" width="340" height="60" rx="8" fill="#2a1a3a" stroke="#fbbf24" stroke-width="1"/>
+      <text x="550" y="580" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">Category B (主要迁移目标)</text>
+      <text x="550" y="602" text-anchor="middle" fill="#64748b" font-size="9">审查 · 测试面板 · 演示 · 计划清单 · plan</text>
+
+      <rect x="750" y="555" width="250" height="60" rx="8" fill="#1a3a2a" stroke="#22c55e" stroke-width="1"/>
+      <text x="875" y="580" text-anchor="middle" fill="#22c55e" font-size="11" font-weight="600">迁移范例</text>
+      <text x="875" y="602" text-anchor="middle" fill="#64748b" font-size="9">rui-npm/plan.html</text>
+
+      <rect x="300" y="645" width="500" height="40" rx="8" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="550" y="670" text-anchor="middle" fill="#a9b1d6" font-size="11">🔄 CDN 升级 → 55 页面自动受益 · 无需逐页面操作</text>
+    </svg>
+  </div>
+
+  <div class="yry-mono-legend">
+    <div class="yry-mono-legend-item"><div class="yry-mono-dot rose"></div>迁移前 (内联)</div>
+    <div class="yry-mono-legend-item"><div class="yry-mono-dot emerald"></div>迁移后 (CDN)</div>
+    <div class="yry-mono-legend-item"><div class="yry-mono-dot amber"></div>6 步迁移</div>
+  </div>
+  <div class="yry-mono-footer">YrY CDN · 场景-4 架构图 · 2026-06-07</div>
+</div>
+<script src="../../../../cdn/shared.js"></script>
+</body>
+</html>

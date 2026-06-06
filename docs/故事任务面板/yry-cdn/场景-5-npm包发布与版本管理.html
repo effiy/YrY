@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>场景-5: npm包发布与版本管理 — 架构图</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme-mono.css">
+<style>svg text{font-family:'JetBrains Mono',monospace}</style>
+</head>
+<body>
+<div class="yry-mono-container wide">
+  <div class="yry-breadcrumb">
+    <a href="../../../../docs/故事任务面板/">故事面板</a><span class="yry-bc-sep">/</span>
+    <a href="../">yry-cdn</a><span class="yry-bc-sep">/</span>
+    <span class="yry-bc-current">场景-5 架构图</span>
+  </div>
+  <div class="yry-cross-nav">
+    <a class="yry-cross-link" href="场景-1-cdn资源加载与页面渲染.html">场景-1</a><span class="yry-cross-sep">|</span>
+    <a class="yry-cross-link" href="场景-2-双主题系统设计.html">场景-2</a><span class="yry-cross-sep">|</span>
+    <a class="yry-cross-link" href="场景-3-组件库与JS工具API.html">场景-3</a><span class="yry-cross-sep">|</span>
+    <a class="yry-cross-link" href="场景-4-存量页面迁移.html">场景-4</a><span class="yry-cross-sep">|</span>
+    <a class="yry-cross-link on" href="场景-5-npm包发布与版本管理.html">场景-5</a>
+  </div>
+  <div class="yry-mono-header">
+    <div class="yry-mono-header-row"><div class="yry-pulse-dot"></div><h1>npm 包发布与版本管理 — 架构图</h1></div>
+    <div class="yry-mono-subtitle">yry-cdn / 场景-5 / 语义化版本 + npm publish 管线</div>
+  </div>
+
+  <div class="yry-diagram-wrap">
+    <svg viewBox="0 0 1100 700" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#475569"/></marker>
+        <marker id="arr-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#22c55e"/></marker>
+        <marker id="arr-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ef4444"/></marker>
+      </defs>
+
+      <!-- Package.json -->
+      <rect x="300" y="20" width="500" height="90" rx="10" fill="#2a1a3a" stroke="#fbbf24" stroke-width="1.5"/>
+      <text x="550" y="48" text-anchor="middle" fill="#fbbf24" font-size="14" font-weight="700">package.json — yry-cdn</text>
+      <text x="550" y="68" text-anchor="middle" fill="#94a3b8" font-size="10">name: "yry-cdn" · version: "1.0.0" · main: "shared.js"</text>
+      <text x="550" y="86" text-anchor="middle" fill="#94a3b8" font-size="10">files: shared.css · shared.js · theme.css · theme-mono.css · README.md</text>
+      <text x="550" y="102" text-anchor="middle" fill="#64748b" font-size="9">license: MIT · repository: GitHub · author: effiyichengliang</text>
+
+      <!-- Change triggers -->
+      <line x1="550" y1="110" x2="550" y2="150" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <rect x="350" y="155" width="400" height="40" rx="8" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="550" y="180" text-anchor="middle" fill="#a9b1d6" font-size="11">CDN 文件发生变更</text>
+
+      <!-- Three paths -->
+      <line x1="240" y1="175" x2="120" y2="230" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arr-green)"/>
+      <line x1="550" y1="195" x2="550" y2="230" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+      <line x1="860" y1="175" x2="980" y2="230" stroke="#ef4444" stroke-width="1.5" marker-end="url(#arr-red)"/>
+
+      <text x="380" y="210" text-anchor="middle" fill="#a9b1d6" font-size="9">类型判定</text>
+
+      <!-- PATCH path -->
+      <rect x="20" y="235" width="200" height="80" rx="8" fill="#1a2a2a" stroke="#22c55e" stroke-width="1"/>
+      <text x="120" y="260" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="700">PATCH</text>
+      <text x="120" y="280" text-anchor="middle" fill="#64748b" font-size="9">1.0.0 → 1.0.1</text>
+      <text x="120" y="296" text-anchor="middle" fill="#64748b" font-size="9">措辞/注释/格式</text>
+      <text x="120" y="310" text-anchor="middle" fill="#64748b" font-size="9">0 消费者需操作</text>
+
+      <!-- MINOR path -->
+      <rect x="450" y="235" width="200" height="80" rx="8" fill="#1a3a2a" stroke="#f59e0b" stroke-width="1"/>
+      <text x="550" y="260" text-anchor="middle" fill="#f59e0b" font-size="12" font-weight="700">MINOR</text>
+      <text x="550" y="280" text-anchor="middle" fill="#64748b" font-size="9">1.0.0 → 1.1.0</text>
+      <text x="550" y="296" text-anchor="middle" fill="#64748b" font-size="9">新增组件/API</text>
+      <text x="550" y="310" text-anchor="middle" fill="#64748b" font-size="9">0 消费者需操作 (可选)</text>
+
+      <!-- MAJOR path -->
+      <rect x="880" y="235" width="200" height="80" rx="8" fill="#2a1a1a" stroke="#ef4444" stroke-width="1"/>
+      <text x="980" y="260" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="700">MAJOR</text>
+      <text x="980" y="280" text-anchor="middle" fill="#64748b" font-size="9">1.0.0 → 2.0.0</text>
+      <text x="980" y="296" text-anchor="middle" fill="#64748b" font-size="9">破坏性变更</text>
+      <text x="980" y="310" text-anchor="middle" fill="#64748b" font-size="9">55 消费者需适配</text>
+
+      <!-- Merge to publish pipeline -->
+      <line x1="120" y1="315" x2="300" y2="360" stroke="#475569" stroke-width="1"/>
+      <line x1="550" y1="315" x2="550" y2="360" stroke="#475569" stroke-width="1"/>
+      <line x1="980" y1="315" x2="800" y2="360" stroke="#475569" stroke-width="1"/>
+
+      <!-- Publish pipeline -->
+      <rect x="300" y="365" width="500" height="100" rx="8" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1.5"/>
+      <text x="550" y="390" text-anchor="middle" fill="#a9b1d6" font-size="12" font-weight="600">发布管线</text>
+      <text x="550" y="412" text-anchor="middle" fill="#64748b" font-size="10">① 更新 package.json version 字段</text>
+      <text x="550" y="428" text-anchor="middle" fill="#64748b" font-size="10">② git commit -m "chore: bump yry-cdn X→Y"</text>
+      <text x="550" y="444" text-anchor="middle" fill="#64748b" font-size="10">③ git tag vX.Y.Z + git push --tags</text>
+
+      <line x1="550" y1="465" x2="550" y2="510" stroke="#22c55e" stroke-width="2" marker-end="url(#arr-green)"/>
+
+      <!-- npm publish -->
+      <rect x="200" y="515" width="300" height="55" rx="8" fill="#1a3a2a" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="350" y="540" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="600">④ npm publish --dry-run</text>
+      <text x="350" y="560" text-anchor="middle" fill="#64748b" font-size="9">验证文件清单 + 包完整性</text>
+
+      <rect x="600" y="515" width="300" height="55" rx="8" fill="#1a3a2a" stroke="#22c55e" stroke-width="1.5"/>
+      <text x="750" y="540" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="600">⑤ npm publish</text>
+      <text x="750" y="560" text-anchor="middle" fill="#64748b" font-size="9">发布到 registry → 55 消费者可用</text>
+
+      <line x1="350" y1="570" x2="350" y2="605" stroke="#475569" stroke-width="1" marker-end="url(#arr)"/>
+      <line x1="750" y1="570" x2="750" y2="605" stroke="#475569" stroke-width="1" marker-end="url(#arr)"/>
+
+      <!-- Published state -->
+      <rect x="300" y="610" width="500" height="45" rx="8" fill="#1a3a1a" stroke="#22c55e" stroke-width="2"/>
+      <text x="550" y="632" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="600">✅ yry-cdn@X.Y.Z 已发布</text>
+      <text x="550" y="650" text-anchor="middle" fill="#64748b" font-size="9">git tag vX.Y.Z ⇔ npm registry ⇔ 55 HTML 页面</text>
+
+      <!-- Version history table area -->
+      <rect x="100" y="20" width="170" height="50" rx="6" fill="#1a2a3a" stroke="#1e293b" stroke-width="1"/>
+      <text x="185" y="42" text-anchor="middle" fill="#64748b" font-size="9">版本历史</text>
+      <text x="185" y="58" text-anchor="middle" fill="#94a3b8" font-size="9">git tag --list 'v*'</text>
+    </svg>
+  </div>
+
+  <div class="yry-mono-legend">
+    <div class="yry-mono-legend-item"><div class="yry-mono-dot emerald"></div>PATCH / 发布成功</div>
+    <div class="yry-mono-legend-item"><div class="yry-mono-dot amber"></div>MINOR 升级</div>
+    <div class="yry-mono-legend-item"><div class="yry-mono-dot rose"></div>MAJOR 升级</div>
+    <div class="yry-mono-legend-item"><div class="yry-mono-dot blue"></div>发布管线</div>
+  </div>
+  <div class="yry-mono-footer">YrY CDN · 场景-5 架构图 · 2026-06-07</div>
+</div>
+<script src="../../../../cdn/shared.js"></script>
+</body>
+</html>

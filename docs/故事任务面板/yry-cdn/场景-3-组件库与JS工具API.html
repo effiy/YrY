@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>场景-3: 组件库与JS工具API — 架构图</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme-mono.css">
+<style>svg text{font-family:'JetBrains Mono',monospace}</style>
+</head>
+<body>
+<div class="yry-mono-container wide">
+  <div class="yry-breadcrumb">
+    <a href="../../../../docs/故事任务面板/">故事面板</a><span class="yry-bc-sep">/</span>
+    <a href="../">yry-cdn</a><span class="yry-bc-sep">/</span>
+    <span class="yry-bc-current">场景-3 架构图</span>
+  </div>
+  <div class="yry-cross-nav">
+    <a class="yry-cross-link" href="场景-1-cdn资源加载与页面渲染.html">场景-1</a><span class="yry-cross-sep">|</span>
+    <a class="yry-cross-link" href="场景-2-双主题系统设计.html">场景-2</a><span class="yry-cross-sep">|</span>
+    <a class="yry-cross-link on" href="场景-3-组件库与JS工具API.html">场景-3</a><span class="yry-cross-sep">|</span>
+    <a class="yry-cross-link" href="场景-4-存量页面迁移.html">场景-4</a><span class="yry-cross-sep">|</span>
+    <a class="yry-cross-link" href="场景-5-npm包发布与版本管理.html">场景-5</a>
+  </div>
+  <div class="yry-mono-header">
+    <div class="yry-mono-header-row"><div class="yry-pulse-dot"></div><h1>组件库与 JS 工具 API — 架构图</h1></div>
+    <div class="yry-mono-subtitle">yry-cdn / 场景-3 / 21 CSS 组件 + 9 JS API</div>
+  </div>
+
+  <div class="yry-diagram-wrap">
+    <svg viewBox="0 0 1100 750" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#475569"/></marker>
+      </defs>
+
+      <!-- shared.js box -->
+      <rect x="300" y="10" width="500" height="60" rx="8" fill="#1a3a2a" stroke="#22c55e" stroke-width="2"/>
+      <text x="550" y="36" text-anchor="middle" fill="#22c55e" font-size="13" font-weight="700">window.YrY — IIFE 模块</text>
+      <text x="550" y="56" text-anchor="middle" fill="#64748b" font-size="9">script 标签加载后全局可用 · 9 个公共方法</text>
+
+      <!-- API boxes in 3 columns -->
+      <!-- Col 1: Notification & Clipboard -->
+      <rect x="70" y="100" width="280" height="70" rx="6" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="210" y="124" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">📢 YrY.toast(msg, dur?)</text>
+      <text x="210" y="144" text-anchor="middle" fill="#64748b" font-size="9">textContent 赋值防 XSS · 默认 1.8s</text>
+      <text x="210" y="160" text-anchor="middle" fill="#64748b" font-size="9">复用 .yry-toast 元素 · clearTimeout 防叠加</text>
+
+      <rect x="380" y="100" width="340" height="70" rx="6" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="550" y="124" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">📋 YrY.copyCmd(btn, cmd)</text>
+      <text x="550" y="144" text-anchor="middle" fill="#64748b" font-size="9">navigator.clipboard.writeText · 📋→✅→📋 三态</text>
+      <text x="550" y="160" text-anchor="middle" fill="#64748b" font-size="9">失败时回调 YrY.toast('复制失败')</text>
+
+      <rect x="750" y="100" width="280" height="70" rx="6" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="890" y="124" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">📎 YrY.clipboardWrite(t,ok,fail)</text>
+      <text x="890" y="144" text-anchor="middle" fill="#64748b" font-size="9">剪贴板写入 + 成功/失败回调</text>
+      <text x="890" y="160" text-anchor="middle" fill="#64748b" font-size="9">比 copyCmd 更通用</text>
+
+      <!-- Row 2: Navigation & Panels -->
+      <rect x="70" y="200" width="450" height="70" rx="6" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="295" y="224" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">🗂️ YrY.switchPanel(name, tabSel?, panelSel?)</text>
+      <text x="295" y="244" text-anchor="middle" fill="#64748b" font-size="9">标签 .yry-tab[data-panel] · 面板 #panelXxx.yry-panel</text>
+      <text x="295" y="260" text-anchor="middle" fill="#64748b" font-size="9">.on 类切换 · 首字母大写 ID 约定</text>
+
+      <!-- Row 3: Suite Toggle -->
+      <rect x="70" y="300" width="450" height="85" rx="6" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="295" y="324" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">📂 折叠套件三件套</text>
+      <text x="295" y="346" text-anchor="middle" fill="#64748b" font-size="9">YrY.initSuiteToggle(container?) — 事件委托 .yry-suite-head click</text>
+      <text x="295" y="362" text-anchor="middle" fill="#64748b" font-size="9">YrY.expandAllSuites(scope?) — 全部 .yry-suite 添加 .open</text>
+      <text x="295" y="378" text-anchor="middle" fill="#64748b" font-size="9">YrY.collapseAllSuites(scope?) — 全部移除 .open</text>
+
+      <!-- Row 4: Utility -->
+      <rect x="70" y="415" width="280" height="55" rx="6" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="210" y="438" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">⏱️ YrY.fmtDur(ms)</text>
+      <text x="210" y="458" text-anchor="middle" fill="#64748b" font-size="9">142→"142ms" · 1500→"1.5s" · &lt;1→"&lt;1ms"</text>
+
+      <rect x="380" y="415" width="280" height="55" rx="6" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="520" y="438" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">🛡️ YrY.esc(s)</text>
+      <text x="520" y="458" text-anchor="middle" fill="#64748b" font-size="9">&amp; &lt; &gt; &quot; → HTML 实体</text>
+
+      <!-- CSS Components region -->
+      <line x1="30" y1="500" x2="1070" y2="500" stroke="#1e293b" stroke-dasharray="6"/>
+      <text x="550" y="524" text-anchor="middle" fill="#a9b1d6" font-size="13" font-weight="700">CSS 组件层 (21 个)</text>
+
+      <!-- CSS Components row -->
+      <rect x="30" y="540" width="200" height="45" rx="6" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="130" y="560" text-anchor="middle" fill="#a9b1d6" font-size="9">面包屑 Breadcrumb</text>
+      <text x="130" y="576" text-anchor="middle" fill="#64748b" font-size="8">yry-breadcrumb</text>
+
+      <rect x="245" y="540" width="200" height="45" rx="6" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="345" y="560" text-anchor="middle" fill="#a9b1d6" font-size="9">横向导航 Cross-Nav</text>
+      <text x="345" y="576" text-anchor="middle" fill="#64748b" font-size="8">yry-cross-nav/link</text>
+
+      <rect x="460" y="540" width="200" height="45" rx="6" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="560" y="560" text-anchor="middle" fill="#a9b1d6" font-size="9">导出工具栏 Toolbar</text>
+      <text x="560" y="576" text-anchor="middle" fill="#64748b" font-size="8">yry-toolbar</text>
+
+      <rect x="675" y="540" width="200" height="45" rx="6" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="775" y="560" text-anchor="middle" fill="#a9b1d6" font-size="9">Toast 通知</text>
+      <text x="775" y="576" text-anchor="middle" fill="#64748b" font-size="8">yry-toast</text>
+
+      <rect x="890" y="540" width="180" height="45" rx="6" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+      <text x="980" y="560" text-anchor="middle" fill="#a9b1d6" font-size="9">页脚 Footer</text>
+      <text x="980" y="576" text-anchor="middle" fill="#64748b" font-size="8">yry-footer</text>
+
+      <!-- System components row -->
+      <text x="550" y="612" text-anchor="middle" fill="#fbbf24" font-size="10" font-weight="600">System 主题组件 (theme.css)</text>
+      <rect x="30" y="622" width="155" height="38" rx="5" fill="#2a1a3a" stroke="#fbbf24" stroke-width="0.5"/>
+      <text x="107" y="640" text-anchor="middle" fill="#64748b" font-size="8">Container/Header</text>
+      <text x="107" y="654" text-anchor="middle" fill="#64748b" font-size="8">yry-container</text>
+
+      <rect x="195" y="622" width="155" height="38" rx="5" fill="#2a1a3a" stroke="#fbbf24" stroke-width="0.5"/>
+      <text x="272" y="640" text-anchor="middle" fill="#64748b" font-size="8">Stats/Bar</text>
+      <text x="272" y="654" text-anchor="middle" fill="#64748b" font-size="8">yry-stats/bar</text>
+
+      <rect x="360" y="622" width="155" height="38" rx="5" fill="#2a1a3a" stroke="#fbbf24" stroke-width="0.5"/>
+      <text x="437" y="640" text-anchor="middle" fill="#64748b" font-size="8">Tabs/Panels</text>
+      <text x="437" y="654" text-anchor="middle" fill="#64748b" font-size="8">yry-tabs/panel</text>
+
+      <rect x="525" y="622" width="155" height="38" rx="5" fill="#2a1a3a" stroke="#fbbf24" stroke-width="0.5"/>
+      <text x="602" y="640" text-anchor="middle" fill="#64748b" font-size="8">Card/Suite</text>
+      <text x="602" y="654" text-anchor="middle" fill="#64748b" font-size="8">yry-card/suite</text>
+
+      <rect x="690" y="622" width="155" height="38" rx="5" fill="#2a1a3a" stroke="#fbbf24" stroke-width="0.5"/>
+      <text x="767" y="640" text-anchor="middle" fill="#64748b" font-size="8">Progress/Button</text>
+      <text x="767" y="654" text-anchor="middle" fill="#64748b" font-size="8">yry-progress/btn</text>
+
+      <rect x="855" y="622" width="215" height="38" rx="5" fill="#2a1a3a" stroke="#fbbf24" stroke-width="0.5"/>
+      <text x="962" y="640" text-anchor="middle" fill="#64748b" font-size="8">Section/LinkCard</text>
+      <text x="962" y="654" text-anchor="middle" fill="#64748b" font-size="8">yry-section/link-card</text>
+
+      <!-- Mono components -->
+      <text x="550" y="688" text-anchor="middle" fill="#22d3ee" font-size="10" font-weight="600">Mono 主题组件 (theme-mono.css)</text>
+      <rect x="130" y="698" width="195" height="38" rx="5" fill="#1a2a4a" stroke="#22d3ee" stroke-width="0.5"/>
+      <text x="227" y="716" text-anchor="middle" fill="#64748b" font-size="8">Container / Header / PulseDot</text>
+      <text x="227" y="730" text-anchor="middle" fill="#64748b" font-size="8">yry-mono-*</text>
+
+      <rect x="340" y="698" width="220" height="38" rx="5" fill="#1a2a4a" stroke="#22d3ee" stroke-width="0.5"/>
+      <text x="450" y="716" text-anchor="middle" fill="#64748b" font-size="8">Diagram / Graph Wrap</text>
+      <text x="450" y="730" text-anchor="middle" fill="#64748b" font-size="8">yry-diagram/graph-wrap</text>
+
+      <rect x="575" y="698" width="195" height="38" rx="5" fill="#1a2a4a" stroke="#22d3ee" stroke-width="0.5"/>
+      <text x="672" y="716" text-anchor="middle" fill="#64748b" font-size="8">Cards / Dots / Legend</text>
+      <text x="672" y="730" text-anchor="middle" fill="#64748b" font-size="8">yry-mono-card/dot/legend</text>
+    </svg>
+  </div>
+
+  <div class="yry-mono-legend">
+    <div class="yry-mono-legend-item"><div class="yry-mono-dot emerald"></div>JS API (9 方法)</div>
+    <div class="yry-mono-legend-item"><div class="yry-mono-dot blue"></div>全局 CSS 组件 (5)</div>
+    <div class="yry-mono-legend-item"><div class="yry-mono-dot amber"></div>System 组件 (14)</div>
+    <div class="yry-mono-legend-item"><div class="yry-mono-dot cyan"></div>Mono 组件 (7)</div>
+  </div>
+  <div class="yry-mono-footer">YrY CDN · 场景-3 架构图 · 2026-06-07</div>
+</div>
+<script src="../../../../cdn/shared.js"></script>
+</body>
+</html>

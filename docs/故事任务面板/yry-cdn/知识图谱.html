@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>yry-cdn 知识图谱</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme-mono.css">
+<script src="https://unpkg.com/cytoscape@3.28.1/dist/cytoscape.umd.js"></script>
+<style>
+  .yry-graph-wrap { margin-top: 0; }
+  .yry-cy { height: 620px; }
+</style>
+</head>
+<body>
+<div class="yry-mono-container wide">
+  <div class="yry-breadcrumb">
+    <a href="../../../../docs/故事任务面板/">故事面板</a><span class="yry-bc-sep">/</span>
+    <a href="../">yry-cdn</a><span class="yry-bc-sep">/</span>
+    <span class="yry-bc-current">知识图谱</span>
+  </div>
+  <div class="yry-cross-nav">
+    <a class="yry-cross-link" href="场景-1-cdn资源加载与页面渲染.html">场景-1</a><span class="yry-cross-sep">|</span>
+    <a class="yry-cross-link" href="场景-2-双主题系统设计.html">场景-2</a><span class="yry-cross-sep">|</span>
+    <a class="yry-cross-link" href="场景-3-组件库与JS工具API.html">场景-3</a><span class="yry-cross-sep">|</span>
+    <a class="yry-cross-link" href="场景-4-存量页面迁移.html">场景-4</a><span class="yry-cross-sep">|</span>
+    <a class="yry-cross-link" href="场景-5-npm包发布与版本管理.html">场景-5</a>
+  </div>
+  <div class="yry-mono-header">
+    <div class="yry-mono-header-row"><div class="yry-pulse-dot"></div><h1>yry-cdn 知识图谱</h1></div>
+    <div class="yry-mono-subtitle">4 领域 · 6 节点 · 14 边 · 4 层次</div>
+  </div>
+
+  <div class="yry-graph-wrap">
+    <div class="yry-cy" id="cy"></div>
+  </div>
+
+  <div class="yry-mono-cards">
+    <div class="yry-mono-card">
+      <div class="yry-mono-card-header"><div class="yry-mono-dot cyan"></div><h3>主题系统</h3></div>
+      <ul>
+        <li>双主题: Category A (Mono) + Category B (System)</li>
+        <li>theme.css: 14 设计令牌 + 14 组件</li>
+        <li>theme-mono.css: 7 Mono 组件</li>
+        <li>shared.css: 6 动画 + 5 全局组件</li>
+      </ul>
+    </div>
+    <div class="yry-mono-card">
+      <div class="yry-mono-card-header"><div class="yry-mono-dot emerald"></div><h3>JS 工具 API</h3></div>
+      <ul>
+        <li>YrY.toast() — Toast 通知</li>
+        <li>YrY.copyCmd() — 剪贴板复制</li>
+        <li>YrY.switchPanel() — 面板切换</li>
+        <li>Suite toggle × 3 — 折叠控制</li>
+        <li>fmtDur / esc / clipboardWrite — 工具方法</li>
+      </ul>
+    </div>
+    <div class="yry-mono-card">
+      <div class="yry-mono-card-header"><div class="yry-mono-dot amber"></div><h3>包管理</h3></div>
+      <ul>
+        <li>yry-cdn v1.0.0 (npm)</li>
+        <li>5 文件发布清单</li>
+        <li>语义化版本: PATCH/MINOR/MAJOR</li>
+        <li>git tag 版本追踪</li>
+      </ul>
+    </div>
+    <div class="yry-mono-card">
+      <div class="yry-mono-card-header"><div class="yry-mono-dot violet"></div><h3>消费者</h3></div>
+      <ul>
+        <li>55 个 HTML 页面引用 CDN</li>
+        <li>Cat A: 架构图 + 知识图谱</li>
+        <li>Cat B: 审查 · 测试 · 演示 · 计划</li>
+        <li>迁移: 减少内联代码 60%</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="yry-mono-footer">YrY CDN · 知识图谱 · 2026-06-07</div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var cy = cytoscape({
+      container: document.getElementById('cy'),
+      style: [
+        { selector: 'node', style: {
+          'label': 'data(label)',
+          'font-family': 'JetBrains Mono, monospace',
+          'font-size': '10px',
+          'text-valign': 'center',
+          'text-halign': 'center',
+          'color': '#a9b1d6',
+          'text-wrap': 'wrap',
+          'text-max-width': '140px'
+        }},
+        { selector: 'node[type="file"]', style: { 'background-color': '#3d59a1', 'shape': 'rectangle', 'width': 100, 'height': 36 }},
+        { selector: 'node[type="domain"]', style: { 'background-color': '#a78bfa', 'shape': 'roundrectangle', 'width': 120, 'height': 44, 'font-size': '12px', 'font-weight': '600' }},
+        { selector: 'node[type="api"]', style: { 'background-color': '#22c55e', 'shape': 'ellipse', 'width': 80, 'height': 30, 'font-size': '9px' }},
+        { selector: 'node[type="consumer"]', style: { 'background-color': '#fbbf24', 'shape': 'roundrectangle', 'width': 110, 'height': 32, 'font-size': '10px' }},
+        { selector: 'node[type="external"]', style: { 'background-color': '#f59e0b', 'shape': 'diamond', 'width': 90, 'height': 36, 'font-size': '9px' }},
+        { selector: 'edge', style: { 'width': 1.5, 'line-color': '#475569', 'target-arrow-color': '#475569', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier', 'font-size': '8px', 'color': '#64748b' }},
+        { selector: 'edge[rel="depends_on"]', style: { 'line-color': '#ef4444', 'target-arrow-color': '#ef4444', 'line-style': 'dashed' }},
+        { selector: 'edge[rel="consumes"]', style: { 'line-color': '#22d3ee', 'target-arrow-color': '#22d3ee' }},
+        { selector: 'edge[rel="operates_on"]', style: { 'line-color': '#22c55e', 'target-arrow-color': '#22c55e' }},
+        { selector: 'edge[rel="calls"]', style: { 'line-color': '#f59e0b', 'target-arrow-color': '#f59e0b', 'line-style': 'dotted' }}
+      ],
+      layout: { name: 'breadthfirst', directed: true, padding: 30, spacingFactor: 1.5 },
+      elements: {
+        nodes: [
+          { data: { id: 'd-theme', label: '🎨 主题系统', type: 'domain' }},
+          { data: { id: 'd-components', label: '🧩 组件库', type: 'domain' }},
+          { data: { id: 'd-js-api', label: '⚡ JS API', type: 'domain' }},
+          { data: { id: 'd-package', label: '📦 包管理', type: 'domain' }},
+          { data: { id: 'shared.css', label: 'shared.css\n5.9KB', type: 'file', parent: 'd-components' }},
+          { data: { id: 'shared.js', label: 'shared.js\n5.1KB', type: 'file', parent: 'd-js-api' }},
+          { data: { id: 'theme.css', label: 'theme.css\n11.3KB', type: 'file', parent: 'd-theme' }},
+          { data: { id: 'theme-mono.css', label: 'theme-mono.css\n6.1KB', type: 'file', parent: 'd-theme' }},
+          { data: { id: 'package.json', label: 'package.json', type: 'file', parent: 'd-package' }},
+          { data: { id: 'toast', label: 'YrY.toast', type: 'api', parent: 'd-js-api' }},
+          { data: { id: 'copyCmd', label: 'YrY.copyCmd', type: 'api', parent: 'd-js-api' }},
+          { data: { id: 'switchPanel', label: 'YrY.switchPanel', type: 'api', parent: 'd-js-api' }},
+          { data: { id: 'suiteToggle', label: 'SuiteToggle ×3', type: 'api', parent: 'd-js-api' }},
+          { data: { id: 'cat-a', label: 'Cat A 页面\n架构图·图谱', type: 'consumer' }},
+          { data: { id: 'cat-b', label: 'Cat B 页面\n审查·测试·计划', type: 'consumer' }},
+          { data: { id: 'navigator.clipboard', label: 'navigator\n.clipboard', type: 'external' }},
+          { data: { id: 'fonts-google', label: 'Google Fonts\nJetBrains Mono', type: 'external' }}
+        ],
+        edges: [
+          { data: { id: 'e1', source: 'theme.css', target: 'shared.css', rel: 'depends_on' }},
+          { data: { id: 'e2', source: 'theme-mono.css', target: 'shared.css', rel: 'depends_on' }},
+          { data: { id: 'e3', source: 'shared.js', target: 'shared.css', rel: 'depends_on' }},
+          { data: { id: 'e4', source: 'cat-b', target: 'shared.css', rel: 'consumes' }},
+          { data: { id: 'e5', source: 'cat-b', target: 'theme.css', rel: 'consumes' }},
+          { data: { id: 'e6', source: 'cat-a', target: 'shared.css', rel: 'consumes' }},
+          { data: { id: 'e7', source: 'cat-a', target: 'theme-mono.css', rel: 'consumes' }},
+          { data: { id: 'e8', source: 'cat-a', target: 'fonts-google', rel: 'calls' }},
+          { data: { id: 'e9', source: 'cat-b', target: 'shared.js', rel: 'consumes' }},
+          { data: { id: 'e10', source: 'cat-a', target: 'shared.js', rel: 'consumes' }},
+          { data: { id: 'e11', source: 'toast', target: 'shared.css', rel: 'operates_on' }},
+          { data: { id: 'e12', source: 'copyCmd', target: 'navigator.clipboard', rel: 'calls' }},
+          { data: { id: 'e13', source: 'switchPanel', target: 'theme.css', rel: 'operates_on' }},
+          { data: { id: 'e14', source: 'suiteToggle', target: 'theme.css', rel: 'operates_on' }}
+        ]
+      }
+    });
+  });
+</script>
+<script src="../../../../cdn/shared.js"></script>
+</body>
+</html>
