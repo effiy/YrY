@@ -7,13 +7,13 @@ lifecycle: default-pipeline
 
 # rui-npm
 
-> 个人 npm packages 管理器：搜索 · 安装 · 更新 · 列表 · 信息 · 卸载 · 本地发布 · npx 执行。
+> 个人 npm packages 管理器：搜索 · 安装 · 更新 · 列表 · 信息 · 卸载 · 本地发布 · npx 执行 · CDN 引用 · 账号级管理。
 >
 > **--help / -h**：执行 `node skills/rui-npm/help.mjs` 输出完整帮助（含命令族全景 + 场景示例）。用户输入 `/rui-npm --help` 或 `/rui-npm -h` 或 `/rui-npm help` 时，跳过逻辑，直接运行脚本。
 >
 > 哲学源自 [CLAUDE.md](../../CLAUDE.md)。
 
-[命令族全景](#命令族全景) · [子命令](#子命令) · [search](#search) · [install](#install) · [update](#update) · [list](#list) · [info](#info) · [uninstall](#uninstall) · [publish](#publish) · [npx](#npx) · [audit](#audit) · [核心规则](#核心规则) · [降级策略](#降级策略) · [生效标志](#生效标志)
+[命令族全景](#命令族全景) · [子命令](#子命令) · [search](#search) · [install](#install) · [update](#update) · [list](#list) · [info](#info) · [uninstall](#uninstall) · [publish](#publish) · [npx](#npx) · [audit](#audit) · [my-packages](#my-packages) · [deprecate](#deprecate) · [unpublish-子命令](#unpublish-子命令) · [核心规则](#核心规则) · [降级策略](#降级策略) · [生效标志](#生效标志)
 
 ## 命令族全景
 
@@ -38,6 +38,9 @@ flowchart TD
     Q1 -->|"publish &lt;path&gt;"| PUBLISH["本地发布<br/>文件/目录 → npm publish"]:::write
     Q1 -->|"npx &lt;pkg&gt;"| NPX["npx 执行<br/>不安装直接运行"]:::run
     Q1 -->|"audit"| AUDIT["安全审计<br/>npm audit 封装"]:::read
+    Q1 -->|"my-packages"| MY_PKGS["我的包列表<br/>账号级包管理"]:::read
+    Q1 -->|"deprecate &lt;pkg&gt;"| DEPRECATE["废弃版本<br/>标记 deprecated"]:::write
+    Q1 -->|"unpublish &lt;pkg&gt;"| UNPUBLISH["删除包/版本<br/>从 registry 移除"]:::write
     Q1 -->|"空输入"| HELP["显示帮助"]:::read
 
     classDef entry fill:#3d59a1,color:#fff
@@ -57,6 +60,9 @@ flowchart TD
 | `/rui-npm publish <path>` | 写入 | 发布本地文件或目录到 npm registry |
 | `/rui-npm npx <pkg>[@version]` | 执行 | 通过 npx 直接运行 npm 包 |
 | `/rui-npm audit` | 只读 | 审计已安装依赖的安全漏洞 |
+| `/rui-npm my-packages [--limit N]` | 只读 | 列出当前登录用户拥有的所有 npm 包 |
+| `/rui-npm deprecate <pkg>[@version] "<msg>"` | 写入 | 标记指定包或版本为 deprecated |
+| `/rui-npm unpublish <pkg>[@version] [--force]` | 写入 | 从 registry 删除指定包或版本 |
 | `/rui-npm --help` | 只读 | 显示完整帮助 |
 
 ## 子命令
@@ -257,6 +263,106 @@ flowchart TD
 - `npm audit fix --force` — 强制修复（可能包含破坏性变更）
 ```
 
+### my-packages — 我的包列表
+
+> 列出当前登录用户拥有的所有 npm 包。需 npm 认证。
+
+```
+步骤 1: 验证 npm 登录状态（npm whoami）
+步骤 2: 调用 registry search API（maintainer:<username>）获取包列表
+步骤 3: 按周下载量降序排列
+步骤 4: 格式化为表格输出（名称/描述/版本/周下载量）
+步骤 5: registry API 不可达时降级使用 npm access ls-packages
+```
+
+**参数**：
+
+| 参数 | 必需 | 说明 |
+|------|------|------|
+| `--json` | 否 | 输出 JSON 格式 |
+| `--limit N` | 否 | 结果数量限制，默认 100 |
+
+**前置条件**：`npm whoami` 成功（已通过 `rui-npm login` 配置 token 或 `npm login` 登录）。
+
+**输出格式**：
+
+```markdown
+## <username> 的 npm 包（N 个）— YYYY-MM-DD HH:MM
+
+| # | 包名 | 版本 | 周下载量 | 描述 |
+|---|------|------|---------|------|
+| 1 | my-util | 2.1.0 | 1.2k/w | A useful utility library |
+```
+
+### deprecate — 废弃版本
+
+> 标记指定包或版本为 deprecated。需 npm 认证且为包所有者。
+
+```
+步骤 1: 验证 npm 登录状态（npm whoami）
+步骤 2: 解析包名和可选版本号
+步骤 3: 验证当前用户是包的所有者（npm view <pkg> maintainers）
+步骤 4: 非所有者拒绝操作并输出当前所有者信息
+步骤 5: npm deprecate <pkg>[@version] "<message>"
+步骤 6: 输出废弃确认 + npm 页面链接
+```
+
+**参数**：
+
+| 参数 | 必需 | 说明 |
+|------|------|------|
+| `<pkg>[@version]` | 是 | 包名，可选版本号（如 `my-util@1.0.0`） |
+| `"<message>"` | 是 | 废弃消息，说明原因和替代方案（1-256 字符） |
+
+**前置条件**：`npm whoami` 成功 + 当前用户是目标包的所有者。
+
+**输出示例**：
+
+```markdown
+⚠️  废弃 my-util@1.0.0 ...
+   消息: Use 2.0.0 instead
+✅ my-util@1.0.0 已标记为 deprecated
+   查看: https://www.npmjs.com/package/my-util/v/1.0.0
+```
+
+### unpublish — 删除包/版本 {#unpublish-子命令}
+
+> 从 npm registry 删除指定包或版本。需 npm 认证且为包所有者。执行前展示安全警告。
+
+```
+步骤 1: 验证 npm 登录状态（npm whoami）
+步骤 2: 解析包名和可选版本号
+步骤 3: 验证当前用户是包的所有者（npm view <pkg> maintainers）
+步骤 4: 非所有者拒绝操作并输出当前所有者信息
+步骤 5: 展示安全警告（删除不可逆 · 72h 恢复窗口 · 包名可能被他人注册 · 建议优先 deprecate）
+步骤 6: npm unpublish <pkg>[@version] [--force]
+步骤 7: 输出删除确认 + npm support 链接
+```
+
+**参数**：
+
+| 参数 | 必需 | 说明 |
+|------|------|------|
+| `<pkg>[@version]` | 是 | 包名，可选版本号（如 `my-util@1.0.0`）。无版本号时删除整个包 |
+| `--force` / `-f` | 否 | 强制删除（绕过 72 小时限制） |
+
+**前置条件**：`npm whoami` 成功 + 当前用户是目标包的所有者。
+
+**安全警告输出**：
+
+```markdown
+⚠️  ═══════════════════════════════════════
+⚠️  即将从 npm registry 删除: my-util@1.0.0
+⚠️  包现有版本数: 3
+⚠️  
+⚠️  注意事项:
+⚠️  - 删除后 72 小时内可联系 npm support 恢复
+⚠️  - 超过 72 小时的版本删除可能被拒绝（需 --force）
+⚠️  - 删除后该包名可能被他人注册
+⚠️  - npm 官方建议优先使用 deprecate 而非 unpublish
+⚠️  ═══════════════════════════════════════
+```
+
 ## 核心规则
 
 ```mermaid
@@ -264,7 +370,8 @@ flowchart LR
     subgraph 写前检查["写操作前置条件"]
         direction TB
         R1["验证 package.json 存在"]:::rule
-        R2["publish 前验证 npm 登录"]:::rule
+        R2["publish/deprecate/unpublish 前验证 npm 认证"]:::rule
+        R3["deprecate/unpublish 前验证包所有权"]:::rule
     end
     subgraph 错误处理["错误处理"]
         direction TB
@@ -283,11 +390,13 @@ flowchart LR
 | # | 规则 | 违反行为 |
 |---|------|---------|
 | 1 | install/uninstall/update/list/audit 前验证 package.json 存在 | 提示用户先执行 `npm init` |
-| 2 | publish 前验证 `npm whoami` 成功 | 提示用户先执行 `npm login` |
-| 3 | 网络不可达时输出友好提示和手动 URL | 标注 `网络不可达` |
-| 4 | 包不存在 registry 时建议搜索确认拼写 | 输出 `包不存在，建议 /rui-npm search <kw>` |
-| 5 | 查询结果默认表格化输出，`--json` 标志输出原始 JSON | — |
-| 6 | publish 时检查 registry 同名冲突 | 提示用户改名或使用 `--access` |
+| 2 | publish/deprecate/unpublish 前验证 `npm whoami` 成功；login 配置 Access Token | 提示用户先执行 `rui-npm login --token <token>` 或 `npm login` |
+| 3 | deprecate/unpublish 前验证当前用户是包所有者 | 提示用户非所有者无法操作，展示当前维护者列表 |
+| 4 | 网络不可达时输出友好提示和手动 URL | 标注 `网络不可达` |
+| 5 | 包不存在 registry 时建议搜索确认拼写 | 输出 `包不存在，建议 /rui-npm search <kw>` |
+| 6 | 查询结果默认表格化输出，`--json` 标志输出原始 JSON | — |
+| 7 | publish 时检查 registry 同名冲突 | 提示用户改名或使用 `--access` |
+| 8 | unpublish 执行前展示安全警告（不可逆操作） | 提示用户优先使用 deprecate |
 
 ## 降级策略
 
@@ -296,10 +405,15 @@ flowchart LR
 | npm CLI 不可用 | 输出 `未检测到 npm，请先安装 Node.js` |
 | npm 版本 < 7.0.0 | 警告 `npm 版本过旧，建议升级至 7.x+`，降级使用兼容参数 |
 | npm registry 不可达 | 输出错误详情 + 手动访问 `https://www.npmjs.com/` 引导 |
-| npm 未登录（publish） | 提示 `请先执行 npm login 登录 npm 账户` |
+| npm 未认证（publish/deprecate/unpublish/my-packages） | 提示 `请先执行 rui-npm login --token <token> 或 npm login 认证` |
 | package.json 不存在（写操作） | 提示 `当前目录无 package.json，请先执行 npm init` |
 | 目录无 package.json（publish 目录模式） | 交互式生成 package.json 后继续 |
 | npm audit 无网络 | 跳过审计，标注 `无网络连接，跳过安全审计` |
+| deprecate 非包所有者 | 提示 `你不是包的所有者`，展示当前维护者列表，拒绝操作 |
+| unpublish 非包所有者 | 提示 `你不是包的所有者`，展示当前维护者列表，拒绝操作 |
+| unpublish 超 72 小时无 --force | 提示 `超过 72 小时的版本需 --force 标志`，引导使用 deprecate |
+| my-packages registry API 不可达 | 降级使用 `npm access ls-packages`；两者均不可达时引导手动访问 npm 网站 |
+| my-packages 未认证 | 提示 `请先执行 rui-npm login 或设置 NPM_TOKEN` |
 
 ## 生效标志
 
@@ -308,6 +422,8 @@ flowchart LR
     S1["命令入口统一<br/>所有操作通过 rui-npm.mjs"]:::sig --> S2["输出结构化<br/>表格优先，JSON 可选"]:::sig
     S2 --> S3["错误友好<br/>每种失败有明确提示和恢复建议"]:::sig
     S3 --> S4["本地发布闭环<br/>publish → npx 可用"]:::sig
+    S4 --> S5["认证闭环<br/>login → publish/my-packages/deprecate/unpublish 可用"]:::sig
+    S5 --> S6["账号级管理闭环<br/>my-packages → deprecate → unpublish"]:::sig
 
     classDef sig fill:#34d399,color:#000
 ```
@@ -317,4 +433,6 @@ flowchart LR
 | 全部子命令可通过 `node skills/rui-npm/rui-npm.mjs <cmd>` 执行 | 检查脚本入口和参数解析 |
 | help.mjs 输出覆盖全部子命令和场景 | 补全缺失的文档段 |
 | publish 后立即可通过 npx 执行 | 检查 npm registry 同步延迟 |
+| login 成功后 publish/my-packages/deprecate/unpublish 可直接使用（无需重复认证） | 验证 npm whoami 返回正确用户名 |
+| deprecate/unpublish 前所有权验证不绕过 | 验证非所有者操作被正确拒绝 |
 | 所有错误路径有明确提示 | 补充错误处理分支 |
