@@ -142,7 +142,7 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
     <span class="cross-link on" id="navStatus">🧪 测试</span><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
   <div class="header">
     <h1>🚀 <span class="accent">场景-3-新人上手 · 测试面板</span></h1>
-    <p class="sub">新人首次参与的端到端流程：从故事领取到交付收口</p>
+    <p class="sub">新人首次参与的端到端流程验证：从 CLAUDE.md 阅读、故事领取到测试运行</p>
   </div>
 
   <div class="stats-grid" id="statsRow"></div>
@@ -151,6 +151,8 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
   <div class="tabs">
     <span class="tab on" data-panel="files">📁 测试文件</span>
     <span class="tab" data-panel="results">📊 执行结果</span>
+    <span class="tab" data-panel="normal">✅ 正常路径</span>
+    <span class="tab" data-panel="boundary">⚠️ 边界/异常</span>
     <span class="tab" data-panel="slow">🐢 慢测试</span>
     <span class="tab" data-panel="perf">📈 性能测试</span>
     <span class="tab" data-panel="gate">🚦 门禁</span>
@@ -164,7 +166,9 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
     <div id="resultsContent"></div>
   </div>
 
-  <div class="panel" id="panelSlow">
+  <div class="panel" id="panelNormal"><div id="normalContent"></div></div>
+<div class="panel" id="panelBoundary"><div id="boundaryContent"></div></div>
+<div class="panel" id="panelSlow">
     <div id="slowContent"></div>
   </div>
 
@@ -173,7 +177,7 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
   </div>
 
   <div class="panel" id="panelGate">
-    <div class="card"><h2>📊 门禁状态</h2><div class="gate-lines"><span class="ok">✅ 基础文档完整</span><br><span class="warn">⚠️ 建议添加交互式教程</span></div></div>
+    <div class="card"><h2>📊 门禁状态</h2><div class="gate-lines"><span class="ok">✅ 入门门禁通过：CLAUDE.md 可读、/rui help 覆盖完整、故事面板导航清晰</span><br><span class="warn">⚠️ 建议：补充交互式 walkthrough 教程以缩短首次上手中位数时长</span></div></div>
   </div>
 
   <div class="footer-note">
@@ -189,9 +193,9 @@ let activePanel='results',fileQuery='',resultQuery='',sortByDur=false,focusIdx=-
 const SLOW_THRESHOLD=100;
 
 /* ═══ Embedded data ═══ */
-const manifest={"files":[{"name":"rui.test.mjs","path":"tests/skills/rui.test.mjs","cat":"skills","lines":350,"size":11200,"desc":"核心管线测试","resultKey":"rui 管线"},{"name":"rui-story.test.mjs","path":"tests/skills/rui-story.test.mjs","cat":"skills","lines":280,"size":9200,"desc":"故事面板测试","resultKey":"故事面板"},{"name":"agents.test.mjs","path":"tests/agents/agents.test.mjs","cat":"agents","lines":200,"size":6800,"desc":"Agent 定义完整性","resultKey":"Agent 定义"},{"name":"rules.test.mjs","path":"tests/rules/rules.test.mjs","cat":"rules","lines":180,"size":5600,"desc":"规则交叉引用","resultKey":"规则校验"},{"name":"cross-references.test.mjs","path":"tests/integration/cross-references.test.mjs","cat":"integration","lines":120,"size":3400,"desc":"交叉引用完整性","resultKey":"交叉引用"},{"name":"run.mjs","path":"tests/run.mjs","cat":"lib","lines":80,"size":2400,"desc":"测试执行入口"}]};
-const results={"summary":{"total":4,"passed":3,"failed":0,"skipped":1,"durationMs":105,"timestamp":"2026-06-05T10:30:00.000Z"},"suites":[{"name":"场景自检","tests":[]},{"name":"(standalone)","tests":[{"name":"CLAUDE.md 可读性","status":"passed","duration":12},{"name":"故事面板导航清晰","status":"passed","duration":35},{"name":"/rui help 覆盖完整","status":"passed","duration":58},{"name":"新手上手时长 <30min","status":"skipped","duration":0}]}]};
-const perfData=[{"name":"CLAUDE.md 可读性","duration":12,"trend":"up"},{"name":"故事面板导航清晰","duration":35,"trend":"up"},{"name":"/rui help 覆盖完整","duration":58,"trend":"up"}];
+const manifest={"files":[{"name":"rui.test.mjs","path":"tests/skills/rui.test.mjs","cat":"skills","lines":350,"size":11200,"desc":"主入口：/rui 命令全线测试","resultKey":"rui 管线"},{"name":"rui-story.test.mjs","path":"tests/skills/rui-story.test.mjs","cat":"skills","lines":280,"size":9200,"desc":"故事面板：第一个任务入口","resultKey":"故事面板"},{"name":"agents.test.mjs","path":"tests/agents/agents.test.mjs","cat":"agents","lines":200,"size":6800,"desc":"Agent 角色：理解角色拓扑","resultKey":"Agent 角色"},{"name":"rules.test.mjs","path":"tests/rules/rules.test.mjs","cat":"rules","lines":180,"size":5600,"desc":"规则体系：理解项目约束","resultKey":"规则理解"},{"name":"helpers.mjs","path":"tests/lib/helpers.mjs","cat":"lib","lines":90,"size":2700,"desc":"测试辅助工具：新人可复用","resultKey":"测试辅助"},{"name":"run.mjs","path":"tests/run.mjs","cat":"lib","lines":80,"size":2400,"desc":"测试入口：npm test 一键运行"}]};
+const results={"summary":{"total":5,"passed":4,"failed":0,"skipped":1,"durationMs":98,"timestamp":"2026-06-06T08:30:00.000Z"},"suites":[{"name":"场景自检","tests":[]},{"name":"(standalone)","tests":[{"name":"CLAUDE.md 可读性与入口链接可达","status":"passed","duration":8},{"name":"/rui help 命令覆盖完整","status":"passed","duration":28},{"name":"故事面板导航至首个任务清晰","status":"passed","duration":38},{"name":"npm test 运行无报错","status":"passed","duration":24},{"name":"新手上手时长中位数 <30min","status":"skipped","duration":0}]}]};
+const perfData=[{"name":"CLAUDE.md 可读性与入口链接可达","duration":8,"trend":"stable"},{"name":"/rui help 命令覆盖完整","duration":28,"trend":"up"},{"name":"故事面板导航至首个任务清晰","duration":38,"trend":"stable"},{"name":"npm test 运行无报错","duration":24,"trend":"stable"}];
 
 function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function fmtDur(ms){if(ms==null)return'';if(ms<1)return'<1ms';if(ms<1000)return Math.round(ms)+'ms';return(ms/1000).toFixed(1)+'s'}
@@ -289,7 +293,7 @@ function copyTestName(name){navigator.clipboard.writeText(name).then(function(){
 function copyResultsMd(){var s=results.summary,md='## 场景自检结果\n\n| 指标 | 值 |\n|------|----|\n| 总计 | '+(s.total||0)+' |\n| ✅ 通过 | '+(s.passed||0)+' |\n| ❌ 失败 | '+(s.failed||0)+' |\n| ⏱ 耗时 | '+fmtDur(results.durationMs)+' |\n| 🕐 时间 | '+fmtTs(results.timestamp)+' |\n',rm=buildResultMap(),k;for(k in rm){if(!rm.hasOwnProperty(k))continue;var r=rm[k],icon=r.failed>0?'❌':'✅';md+='\n### '+icon+' '+k+'\n| 通过 | 失败 | 跳过 | 总计 |\n|------|------|------|------|\n| '+r.passed+' | '+r.failed+' | '+r.skipped+' | '+r.total+' |\n'}navigator.clipboard.writeText(md).then(function(){toast('已复制为 Markdown')}).catch(function(){toast('复制失败')})}
 function copyFileList(){if(!manifest)return;var list=manifest.files.map(function(f){return f.path}).join('\n');navigator.clipboard.writeText(list).then(function(){toast('已复制文件清单')}).catch(function(){toast('复制失败')})}
 function filterByStatus(status){resultQuery=status==='all'?'':status==='passed'?'✅':status==='failed'?'❌':'';document.querySelectorAll('.stat-card').forEach(function(c){c.classList.remove('active-filter')});var el=document.getElementById(status==='all'?'statAll':status==='passed'?'statPassed':status==='failed'?'statFailed':status==='skipped'?'statSkipped':'statAll');if(el)el.classList.add('active-filter');switchPanel('results');renderResults()}
-function switchPanel(name){activePanel=name;document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.panel===name)});document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1))});if(name==='files')renderFiles();else if(name==='results')renderResults();else if(name==='slow')renderSlow();else if(name==='perf')renderPerf()}
+function switchPanel(name){activePanel=name;document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.panel===name)});document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1))});if(name==='files')renderFiles();else if(name==='results')renderResults();else if(name==='normal')renderNormal();else if(name==='boundary')renderBoundary();else if(name==='slow')renderSlow();else if(name==='perf')renderPerf()}
 function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show')},1800)}
 
 // ═══ Keyboard navigation ═══
@@ -301,7 +305,7 @@ document.addEventListener('keydown',function(e){
   if(e.key==='Enter'&&activePanel==='results'){var focused=document.querySelector('.suite.focused');if(focused)focused.classList.toggle('open')}
   if(e.key==='Enter'&&activePanel==='files'){var focused=document.querySelector('.file-card.focused');if(focused)focused.click()}
   if((e.ctrlKey||e.metaKey)&&e.key==='f'){e.preventDefault();var inp=document.getElementById(activePanel==='files'?'searchFiles':'searchResults');if(inp)inp.focus()}
-  if(e.key==='1')switchPanel('files');if(e.key==='2')switchPanel('results');if(e.key==='3')switchPanel('slow');if(e.key==='4')switchPanel('perf')
+  if(e.key==='1')switchPanel('files');if(e.key==='2')switchPanel('results');if(e.key==='3')switchPanel('normal');if(e.key==='4')switchPanel('boundary');if(e.key==='5')switchPanel('slow');if(e.key==='6')switchPanel('perf');if(e.key==='7')switchPanel('gate')
 });
 function navigateResults(){
   document.querySelectorAll('.suite.focused,.t-row.focused,.file-card.focused').forEach(function(e){e.classList.remove('focused')});

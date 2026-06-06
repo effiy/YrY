@@ -12,10 +12,11 @@
 //   publish   <path>              发布本地文件/目录
 //   npx       <pkg>[@version]     npx 执行包
 //   audit                         安全审计
+//   cdn      <pkg>[@version]     查看 CDN 引用地址
 
 import { spawnSync, spawn } from "node:child_process";
-import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync, readdirSync } from "node:fs";
-import { join, resolve, basename, dirname } from "node:path";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync, readdirSync, rmSync } from "node:fs";
+import { join, resolve, basename, dirname, extname } from "node:path";
 import { tmpdir } from "node:os";
 import { randomBytes } from "node:crypto";
 
@@ -360,8 +361,8 @@ function cmdPublish(path, args) {
       name: pkgName,
       version: args.version,
       description: args.description || `Auto-published by rui-npm — ${basename(absPath)}`,
-      main: isDir ? (existsSync(join(publishDir, "index.js")) ? "index.js" : undefined) : `index${require("node:path").extname(absPath)}`,
-      bin: !isDir ? { [pkgName]: `./index${require("node:path").extname(absPath)}` } : undefined,
+      main: isDir ? (existsSync(join(publishDir, "index.js")) ? "index.js" : undefined) : `index${extname(absPath)}`,
+      bin: !isDir ? { [pkgName]: `./index${extname(absPath)}` } : undefined,
       license: "MIT",
     };
     // Clean undefined keys
@@ -379,7 +380,7 @@ function cmdPublish(path, args) {
     } catch {
       console.error("❌ package.json 格式无效，请修正后重试。");
       if (tmpDir) {
-        const { rmSync } = require("node:fs");
+  
         rmSync(tmpDir, { recursive: true, force: true });
       }
       process.exit(1);
@@ -393,7 +394,7 @@ function cmdPublish(path, args) {
     console.error(`❌ npm registry 已存在包 "${pkgName}" (${check.stdout.trim()})。`);
     console.error(`   请使用 --name 指定不同的包名，或使用 npm deprecate 废弃旧版本。`);
     if (tmpDir) {
-      const { rmSync } = require("node:fs");
+
       rmSync(tmpDir, { recursive: true, force: true });
     }
     process.exit(1);
@@ -412,7 +413,7 @@ function cmdPublish(path, args) {
 
   // Cleanup temp dir
   if (tmpDir) {
-    const { rmSync } = require("node:fs");
+
     rmSync(tmpDir, { recursive: true, force: true });
   }
 
@@ -498,6 +499,52 @@ function cmdAudit(args) {
   }
 }
 
+function cmdCdn(pkg, args) {
+  if (!pkg) {
+    console.error("❌ 请提供包名。用法: rui-npm cdn <pkg>[@version]");
+    console.error("   示例: rui-npm cdn react");
+    console.error("   示例: rui-npm cdn react@18.2.0");
+    process.exit(1);
+  }
+  // Parse package name and optional version
+  const atIdx = pkg.lastIndexOf("@");
+  const pkgName = atIdx > 0 ? pkg.substring(0, atIdx) : pkg;
+  const version = atIdx > 0 ? pkg.substring(atIdx + 1) : null;
+
+  // Verify package exists in registry
+  console.log(`📡 查询 ${pkg} CDN 引用地址 ...`);
+  const r = npm(["view", pkgName, "version"]);
+  if (r.status !== 0) {
+    console.error(`❌ 包 "${pkgName}" 在 npm registry 中不存在。`);
+    process.exit(1);
+  }
+  const latestVersion = r.stdout.trim();
+
+  // If no version specified, use latest
+  const ver = version || latestVersion;
+
+  const urls = {
+    package: pkgName,
+    version: ver,
+    unpkg: `https://unpkg.com/${pkgName}@${ver}/`,
+    jsDelivr: `https://cdn.jsdelivr.net/npm/${pkgName}@${ver}/`,
+    esm: `https://esm.sh/${pkgName}@${ver}`,
+  };
+
+  if (args.json) {
+    console.log(JSON.stringify(urls, null, 2));
+    return;
+  }
+
+  console.log(`\n## ${pkgName}@${ver} — CDN 引用地址\n`);
+  console.log(`| CDN | URL |`);
+  console.log(`|-----|-----|`);
+  console.log(`| unpkg    | ${urls.unpkg} |`);
+  console.log(`| jsDelivr | ${urls.jsDelivr} |`);
+  console.log(`| esm.sh   | ${urls.esm} |`);
+  console.log();
+}
+
 // ─── Main ───────────────────────────────────────────────────────
 
 function main() {
@@ -524,9 +571,10 @@ function main() {
     case "publish":   cmdPublish(args._[0], args); break;
     case "npx":       cmdNpx(args._[0], args); break;
     case "audit":     cmdAudit(args); break;
+    case "cdn":       cmdCdn(args._[0], args); break;
     default:
       console.error(`❌ 未知子命令: ${command}`);
-      console.error("   可用命令: search, install, update, list, info, uninstall, publish, npx, audit");
+      console.error("   可用命令: search, install, update, list, info, uninstall, publish, npx, audit, cdn");
       console.error("   查看帮助: rui-npm --help");
       process.exit(1);
   }

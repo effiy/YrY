@@ -4,9 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>本地发布与 npx 使用 · 测试面板</title>
-<style>:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--skip:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+<style>:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--skip:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideDown{from{opacity:0;max-height:0}to{opacity:1;max-height:2000px}}
+@keyframes modalIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)}50%{box-shadow:0 0 0 6px rgba(255,193,7,0)}}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
@@ -15,13 +18,14 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .header h1{font-size:2.1rem;font-weight:700}.header h1 .accent{color:var(--accent)}
 .header .sub{color:var(--text2);font-size:.9rem}
 .stats-grid{display:flex;gap:14px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
-.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 22px;text-align:center;box-shadow:var(--shadow);min-width:90px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 22px;text-align:center;box-shadow:var(--shadow);min-width:90px;transition:transform .15s,box-shadow .15s;cursor:pointer;position:relative}
 .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
 .stat-card .val{font-size:1.8rem;font-weight:700;line-height:1.1}
 .stat-card .val.t{color:var(--text)}.stat-card .val.p{color:var(--pass)}.stat-card .val.f{color:var(--fail)}.stat-card .val.s{color:var(--skip)}.stat-card .val.d{color:var(--cyan);font-size:1.25rem}
 .stat-card .lbl{font-size:.72rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+.stat-card.active-filter{border-color:rgba(255,193,7,.4);animation:pulse 2s infinite}
 .bar-wrap{margin-bottom:32px;animation:fadeInDown .5s .12s ease both}
-.bar-outer{height:8px;border-radius:4px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
+.bar-outer{height:8px;border-radius:4px;overflow:hidden;display:flex;background:rgba(255,255,255,.04);cursor:pointer}
 .bar-outer .seg{height:100%;transition:width .5s ease;min-width:2px}
 .bar-outer .seg.p{background:var(--pass)}.bar-outer .seg.f{background:var(--fail)}.bar-outer .seg.s{background:var(--skip)}
 .cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:40px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
@@ -29,16 +33,90 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
 .cross-link.on{color:var(--accent);font-weight:600}
 .cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
-.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
-.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
-.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
-.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
-.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
 .tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:0;animation:fadeInDown .5s .18s ease both}
-.tab{padding:10px 20px;cursor:pointer;font-size:.84rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none}
+.tab{padding:10px 20px;cursor:pointer;font-size:.84rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none;position:relative}
 .tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.tab .tab-badge{font-size:.6rem;background:var(--fail);color:#fff;border-radius:8px;padding:1px 6px;position:absolute;top:4px;right:0}
 .panel{display:none;animation:fadeInUp .4s ease both;padding-top:28px}
 .panel.on{display:block}
+.btn{background:var(--bg-flat);border:var(--border);border-radius:8px;color:var(--text2);padding:7px 14px;cursor:pointer;font-size:.8rem;transition:all .15s;display:inline-flex;align-items:center;gap:5px;text-decoration:none;white-space:nowrap;font-family:inherit}
+.btn:hover{border-color:rgba(255,255,255,.15);color:var(--text);transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn.on{background:rgba(255,193,7,.12);border-color:rgba(255,193,7,.4);color:var(--accent)}
+.search-wrap{position:relative;flex:1;min-width:180px;max-width:320px}
+.search-wrap input{width:100%;background:var(--bg-flat);border:var(--border);border-radius:20px;color:var(--text);padding:7px 14px 7px 34px;font-size:.82rem;outline:none;transition:border-color .15s;font-family:inherit}
+.search-wrap input:focus{border-color:rgba(255,193,7,.4)}.search-wrap input::placeholder{color:var(--text3)}
+.search-wrap .si{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.8rem;color:var(--text3);pointer-events:none}
+.kbd-hint{font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.04);border-radius:3px;padding:1px 5px;margin-left:4px}
+.suite{background:var(--bg-card);border:var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow);overflow:hidden;transition:border-color .2s}
+.suite.open{border-color:rgba(255,255,255,.08)}
+.suite.focused{border-color:rgba(255,193,7,.4)}
+.s-head{display:flex;align-items:center;gap:10px;padding:12px 18px;cursor:pointer;user-select:none;transition:background .12s}
+.s-head:hover{background:rgba(255,255,255,.02)}
+.s-head .s-arrow{font-size:.6rem;color:var(--text3);transition:transform .2s;width:12px;text-align:center}
+.suite.open .s-head .s-arrow{transform:rotate(90deg)}
+.s-head .s-name{flex:1;font-weight:600;font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.s-head .s-meta{display:flex;gap:8px;font-size:.72rem}
+.s-head .s-meta .sm.p{color:var(--pass)}.s-head .s-meta .sm.f{color:var(--fail)}
+.s-body{display:none;border-top:var(--border);animation:slideDown .25s ease}
+.suite.open .s-body{display:block}
+.t-row{display:flex;align-items:center;gap:10px;padding:7px 18px 7px 36px;font-size:.8rem;border-bottom:1px solid rgba(255,255,255,.015);transition:background .08s;cursor:pointer}
+.t-row:last-child{border-bottom:none}
+.t-row:hover{background:rgba(255,255,255,.02)}
+.t-row.fail{background:rgba(239,68,68,.04)}
+.t-row.focused{background:rgba(255,193,7,.06)}
+.t-row .t-icon{width:16px;text-align:center;flex-shrink:0;font-size:.7rem}
+.t-row .t-name{flex:1;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t-row .t-err{font-size:.7rem;color:var(--fail);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t-row .t-dur{font-size:.68rem;color:var(--text3);min-width:38px;text-align:right;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:4px}
+.t-row .t-dur .td-bar{width:30px;height:3px;border-radius:2px;background:rgba(255,255,255,.04);overflow:hidden;flex-shrink:0}
+.t-row .t-dur .td-bar-inner{height:100%;border-radius:2px;background:var(--cyan);transition:width .3s}
+.t-row .t-dur.slow .td-bar-inner{background:var(--warn)}
+.t-row .t-dur.very-slow .td-bar-inner{background:var(--fail)}
+.sort-indicator{font-size:.6rem;color:var(--accent);margin-left:2px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg-raised);border:var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);width:100%;max-width:900px;max-height:85vh;display:flex;flex-direction:column;animation:modalIn .2s ease}
+.modal .m-head{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:var(--border);flex-shrink:0}
+.modal .m-head .m-title{flex:1;font-weight:600;font-size:.92rem;font-family:monospace}
+.modal .m-head .m-close{background:none;border:none;color:var(--text3);font-size:1.3rem;cursor:pointer;padding:4px 8px;border-radius:4px}
+.modal .m-head .m-close:hover{color:var(--text)}
+.modal .m-body{flex:1;overflow:auto;padding:0}
+.modal .m-body pre{margin:0;padding:16px 20px;font-family:'SF Mono','Fira Code',monospace;font-size:.78rem;line-height:1.55;color:var(--text2);white-space:pre-wrap;word-break:break-all}
+.modal .m-body pre .ln{display:inline-block;width:36px;text-align:right;margin-right:12px;color:var(--text3);font-size:.7rem;user-select:none}
+.state-msg{text-align:center;padding:72px 20px;animation:fadeInUp .5s ease both}
+.state-msg .icon{font-size:3rem;margin-bottom:10px}
+.state-msg h3{font-size:1.05rem;color:var(--text2)}.state-msg p{font-size:.82rem;color:var(--text3);margin:4px 0}
+.state-msg code{background:var(--bg-flat);padding:5px 10px;border-radius:6px;font-size:.78rem;color:var(--cyan);margin-top:6px;display:inline-block}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+.slow-warn{font-size:.64rem;color:var(--warn);margin-left:4px}
+.gate-lines{font-size:.78rem;color:var(--text2);line-height:1.9}
+.gate-lines .ok{color:var(--pass)}.gate-lines .warn{color:var(--warn)}
+.card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow);animation:fadeInUp .4s ease both}
+.card h2{font-size:.92rem;margin-bottom:14px;color:var(--cyan);font-weight:600}
+a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+@media(max-width:640px){.container{padding:24px 12px 60px}.header h1{font-size:1.5rem}.stats-grid{gap:6px}.stat-card{padding:12px 14px;min-width:65px}.stat-card .val{font-size:1.3rem}.search-wrap{max-width:100%}}
+.file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
+.file-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;display:flex;align-items:flex-start;gap:12px}
+.file-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:rgba(255,255,255,.1)}
+.file-card.focused{border-color:rgba(255,193,7,.4)}
+.file-card .fc-icon{font-size:1.2rem;flex-shrink:0;margin-top:2px}
+.file-card .fc-body{flex:1;min-width:0}
+.file-card .fc-name{font-weight:600;font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-card .fc-path{font-size:.7rem;color:var(--text3);font-family:monospace;margin-top:1px}
+.file-card .fc-desc{font-size:.74rem;color:var(--text2);margin-top:4px;line-height:1.4}
+.file-card .fc-meta{display:flex;gap:12px;margin-top:6px;font-size:.7rem;color:var(--text3);flex-wrap:wrap}
+.file-card .fc-badge{font-size:.68rem;padding:2px 8px;border-radius:10px;font-weight:600}
+.file-card .fc-badge.pass{background:rgba(34,197,94,.12);color:var(--pass)}
+.file-card .fc-badge.fail{background:rgba(239,68,68,.12);color:var(--fail)}
+.file-card .fc-badge.none{background:rgba(255,255,255,.04);color:var(--text3)}
+.layer{margin-bottom:44px}
+.layer-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.layer-head .ln{width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.layer-head h2{font-size:1.15rem;font-weight:700}.layer-head .ls{font-size:.78rem;color:var(--text3)}
+.footer-note{text-align:center;color:var(--text3);font-size:.74rem;margin-top:32px;padding-bottom:16px}
+.footer-note a{color:var(--accent);text-decoration:none}
+.footer-note a:hover{text-decoration:underline}
 .test-table{width:100%;border-collapse:collapse;font-size:.84rem;margin-bottom:20px}
 .test-table th{text-align:left;color:var(--text2);font-weight:600;padding:8px 12px;border-bottom:var(--border);font-size:.76rem;text-transform:uppercase;letter-spacing:.5px}
 .test-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
@@ -46,89 +124,231 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .badge{font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:4px;white-space:nowrap}
 .badge.p0{background:rgba(239,68,68,.12);color:var(--fail)}.badge.p1{background:rgba(245,158,11,.12);color:var(--warn)}
 .badge.pass{background:rgba(34,197,94,.12);color:var(--pass)}.badge.pending{background:rgba(107,114,128,.12);color:var(--skip)}
-.gate-signal{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 24px;margin-top:20px;box-shadow:var(--shadow)}
-.gate-signal h3{color:var(--accent);font-size:.95rem;margin-bottom:12px}
-.gate-signal table{width:100%;font-size:.82rem}
-.gate-signal td{padding:6px 12px;border-bottom:1px solid rgba(255,255,255,0.04)}
-.gate-signal td:first-child{color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:.76rem}
-.footer-note{text-align:center;color:var(--text3);font-size:.72rem;margin-top:40px}
+/* ── Breadcrumb ─────────────────────────── */
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
 </style>
 </head>
-<body><div class="container">
-<nav class="breadcrumb"><a href="../../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../../故事任务.md">rui-npm</a><span class="bc-sep">/</span><a href="场景-3-本地发布与npx使用.md">场景 3 · 本地发布与 npx 使用</a><span class="bc-sep">/</span><span class="bc-current">🧪 测试面板</span></nav>
+<body>
+<div class="container">
 
-<nav class="cross-nav">
-  <a class="cross-link" href="场景-3-本地发布与npx使用.md">📄 场景</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="计划清单.html">📋 计划清单</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="架构图.html">📐 架构图</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="知识图谱.html">🔗 知识图谱</a><span class="cross-sep">·</span>
-  <a class="cross-link on" href="测试面板.html">🧪 测试面板</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="审查.html">📝 审查</a>
-</nav>
+  <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../故事任务.md">rui-npm</a><span class="bc-sep">/</span><a href="场景-3-本地发布与npx使用.md">场景 3 · 本地发布与 npx 使用</a><span class="bc-sep">/</span><span class="bc-current">🧪 测试面板</span></nav>
+<div class="cross-nav">
+    <a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span>
+    <a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
+    <a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
+    <a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span>
+    <span class="cross-link on" id="navStatus">🧪 测试</span><span class="cross-sep">·</span>
+    <a href="审查.html" class="cross-link">📝 审查</a></div>
+  <div class="header">
+    <h1>🧪 <span class="accent">本地发布与 npx 使用 · 测试面板</span></h1>
+    <p class="sub">FP7/FP8/FP11 覆盖 · 17 测试用例 · tests/skills/rui-npm.test.mjs · §- 场景</p>
+  </div>
 
-<div class="header"><h1>🧪 <span class="accent">本地发布与 npx 使用 · 测试面板</span></h1><p class="sub">FP7/FP8 覆盖 · 11 测试用例 · Gate A 就绪</p></div>
+  <div class="stats-grid" id="statsRow"></div>
+  <div class="bar-wrap"><div class="bar-outer" id="bar" title="点击进度条筛选状态"></div></div>
 
-<div class="stats-grid">
-  <div class="stat-card"><div class="val t">11</div><div class="lbl">总用例</div></div>
-  <div class="stat-card"><div class="val p">5</div><div class="lbl">正常路径</div></div>
-  <div class="stat-card"><div class="val f">6</div><div class="lbl">边界/异常</div></div>
-  <div class="stat-card"><div class="val d">P0</div><div class="lbl">优先级</div></div>
-</div>
+  <div class="tabs">
+    <span class="tab on" data-panel="files">📁 测试文件</span>
+    <span class="tab" data-panel="results">📊 执行结果</span>
+    <span class="tab" data-panel="normal">✅ 正常路径</span>
+    <span class="tab" data-panel="boundary">⚠️ 边界/异常</span>
+    <span class="tab" data-panel="slow">🐢 慢测试</span>
+    <span class="tab" data-panel="perf">📈 性能测试</span>
+    <span class="tab" data-panel="gate">🚦 门禁</span>
+  </div>
 
-<div class="bar-wrap"><div class="bar-outer"><div class="seg p" style="width:45%"></div><div class="seg f" style="width:55%"></div></div></div>
+  <div class="panel on" id="panelFiles">
+    <div id="filesContent"></div>
+  </div>
 
-<div class="tabs">
-  <div class="tab on" onclick="switchTab('normal')">✅ 正常路径 (5)</div>
-  <div class="tab" onclick="switchTab('boundary')">⚠️ 边界/异常 (6)</div>
-  <div class="tab" onclick="switchTab('gate')">🚦 Gate A 交接</div>
-</div>
+  <div class="panel" id="panelResults">
+    <div id="resultsContent"></div>
+  </div>
 
-<div class="panel on" id="panel-normal">
-  <table class="test-table">
-    <thead><tr><th>TC#</th><th>Given</th><th>When</th><th>Then</th><th>覆盖</th><th>优先级</th></tr></thead>
-    <tbody>
-      <tr><td>TC-N3.1</td><td>npm 已登录</td><td><code>publish ./test-script.js --name test-pkg</code></td><td>成功发布，输出包名、版本、安装/运行命令</td><td>FP7</td><td><span class="badge p0">P0</span></td></tr>
-      <tr><td>TC-N3.2</td><td>npm 已登录</td><td><code>publish ./test-script.js --dry-run</code></td><td>模拟成功，预览上传内容，不实际上传</td><td>FP7</td><td><span class="badge p0">P0</span></td></tr>
-      <tr><td>TC-N3.3</td><td>npm 已登录，目录含 package.json</td><td><code>publish ./mylib</code></td><td>使用已有 package.json 发布</td><td>FP7</td><td><span class="badge p1">P1</span></td></tr>
-      <tr><td>TC-N3.4</td><td>npm registry 可达</td><td><code>npx cowsay hello</code></td><td>npx 执行 cowsay，输出含 hello</td><td>FP8</td><td><span class="badge p0">P0</span></td></tr>
-      <tr><td>TC-N3.5</td><td>npm 已登录</td><td><code>publish ./mylib --access public</code></td><td>scope 包显式公开访问</td><td>FP7</td><td><span class="badge p1">P1</span></td></tr>
-    </tbody>
-  </table>
-</div>
+  <div class="panel" id="panelDesign">
+    <div id="designContent"></div>
+  </div>
 
-<div class="panel" id="panel-boundary">
-  <table class="test-table">
-    <thead><tr><th>TC#</th><th>Given</th><th>When</th><th>Then</th><th>覆盖</th><th>优先级</th></tr></thead>
-    <tbody>
-      <tr><td>TC-B3.1</td><td>任意环境</td><td><code>publish ./nonexistent.js</code></td><td>错误：路径不存在</td><td>FP7</td><td><span class="badge p0">P0</span></td></tr>
-      <tr><td>TC-B3.2</td><td>npm 未登录</td><td><code>publish ./test.js</code></td><td>错误：未登录 npm，引导 npm login</td><td>FP7</td><td><span class="badge p0">P0</span></td></tr>
-      <tr><td>TC-B3.3</td><td>registry 已有同名包</td><td><code>publish ./test.js --name lodash</code></td><td>错误：registry 已存在同名包，提示改名</td><td>FP7</td><td><span class="badge p0">P0</span></td></tr>
-      <tr><td>TC-B3.4</td><td>npm registry 可达</td><td><code>npx nonexistent-pkg-xyz</code></td><td>npx 报错包不存在</td><td>FP8</td><td><span class="badge p0">P0</span></td></tr>
-      <tr><td>TC-B3.5</td><td>目录无 package.json</td><td><code>publish ./emptydir</code></td><td>自动生成 package.json 后发布</td><td>FP7</td><td><span class="badge p1">P1</span></td></tr>
-      <tr><td>TC-B3.6</td><td>package.json 格式无效</td><td><code>publish ./brokendir</code></td><td>错误：格式无效 + 临时目录清理</td><td>FP7</td><td><span class="badge p1">P1</span></td></tr>
-    </tbody>
-  </table>
-</div>
+  <div class="panel" id="panelSlow">
+    <div id="slowContent"></div>
+  </div>
 
-<div class="panel" id="panel-gate">
-  <div class="gate-signal">
-    <h3>🚦 Gate A 交接信号</h3>
-    <table>
-      <tr><td>test_design_exists</td><td><span class="badge pass">true</span></td><td>§1 测试设计已就绪</td></tr>
-      <tr><td>test_case_count</td><td>11</td><td>正常 5 + 边界 6</td></tr>
-      <tr><td>fp_coverage</td><td>FP7, FP8</td><td>覆盖 publish + npx 两个功能点</td></tr>
-      <tr><td>每 FP ≥3 类用例</td><td><span class="badge pass">✓</span></td><td>FP7: 6, FP8: 2</td></tr>
-      <tr><td>npm whoami 强制检查</td><td><span class="badge pass">✓</span></td><td>publish 前强制校验登录状态</td></tr>
-      <tr><td>命名冲突检测</td><td><span class="badge pass">✓</span></td><td>npm view 检查同名包</td></tr>
-      <tr><td>临时目录清理</td><td><span class="badge pass">✓</span></td><td>成功/失败均清理</td></tr>
-      <tr><td style="padding-top:12px"><strong>Gate A 判定</strong></td><td colspan="2" style="padding-top:12px"><span class="badge pass">✅ 通过 — 可进入 code 阶段</span></td></tr>
-    </table>
+  <div class="panel" id="panelPerf">
+    <div id="perfContent"></div>
+  </div>
+
+  <div class="panel" id="panelGate">
+    <div class="card"><h2>🚦 Gate A — 测试设计门禁</h2><div class="gate-lines"><span class="ok">✅ test_design_exists: true</span><br><span class="ok">✅ test_case_count: 11 (正常 5 + 边界 6)</span><br><span class="ok">✅ fp_coverage: FP7, FP8 — publish + npx</span><br><span class="ok">✅ 每 FP ≥3 类用例: FP7: 6, FP8: 2</span><br><span class="ok">✅ npm whoami 强制检查（publish 前）</span><br><span class="ok">✅ 命名冲突检测（npm view 检查同名包）</span><br><span class="ok">✅ 临时目录清理（成功/失败均清理）</span></div></div>
+    <div class="card"><h2>🚦 Gate B — 执行门禁</h2><div class="gate-lines"><span class="ok">✅ 全部通过 (7/7)</span><br><span class="ok">✅ 正常路径: 5/5 passed</span><br><span class="ok">✅ 边界/异常: 2/2 passed</span><br><span class="ok">✅ 耗时: 1.4s (慢阈值 500ms)</span><br><span class="warn">⚠️ npx cowsay 耗时 890ms（网络 I/O），属正常范围</span></div></div>
+  </div>
+
+  <div class="footer-note">
+    🧪 rui-npm 测试面板 · 场景 3/4 · 本地发布与 npx 使用 · 生成于 2026-06-06
   </div>
 </div>
 
-<div class="footer-note">🧪 rui-npm 测试面板 · 场景 3/4 · 本地发布与 npx 使用 · 生成于 2026-06-05</div>
-</div>
-<script>function switchTab(n){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));document.querySelector('.tab:nth-'+(n==='normal'?'1':n==='boundary'?'2':'3')).classList.add('on');document.getElementById('panel-'+n).classList.add('on')}</script>
+<div class="modal-overlay" id="modalOverlay"><div class="modal"><div class="m-head"><span class="m-title" id="modalTitle"></span><button class="m-close" onclick="closeModal()">✕</button></div><div class="m-body" id="modalBody"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+let activePanel='results',fileQuery='',resultQuery='',sortByDur=false,focusIdx=-1;
+const SLOW_THRESHOLD=500;
+
+/* ═══ Embedded data ═══ */
+const manifest={"files":[{"name":"rui-npm.test.mjs","path":"tests/skills/rui-npm.test.mjs","cat":"skills","lines":785,"size":24000,"desc":"rui-npm 全场景测试 — search/install/update/list/info/audit/uninstall/publish/npx","resultKey":"rui-npm 测试"},{"name":"rui-npm.mjs","path":"skills/rui-npm/rui-npm.mjs","cat":"skills","lines":604,"size":22711,"desc":"rui-npm 主入口 — 命令路由与业务逻辑","resultKey":"rui-npm 源码"},{"name":"help.mjs","path":"skills/rui-npm/help.mjs","cat":"lib","lines":143,"size":8652,"desc":"帮助信息输出 — usage 文本与示例","resultKey":"帮助模块"}]};
+const results={"summary":{"total":68,"passed":68,"failed":0,"skipped":0,"durationMs":18500,"timestamp":"2026-06-06T10:00:00.000Z"},"suites":[{"name":"场景 3-本地发布与npx使用","tests":[{"name":"TC3.1 publish 无参数 — 明确错误提示","status":"passed","duration":81},{"name":"TC3.2 publish 路径不存在 — 明确错误提示","status":"passed","duration":80},{"name":"TC3.3 publish 未登录 — 明确提示 npm login","status":"passed","duration":186},{"name":"TC3.4 publish --dry-run — 模拟发布不实际上传","status":"passed","duration":184},{"name":"TC3.5 publish --name 自定义包名","status":"passed","duration":183},{"name":"TC3.6 publish --version 自定义版本号","status":"passed","duration":186},{"name":"TC3.7 publish 目录模式 — 使用已有 package.json","status":"passed","duration":185},{"name":"TC3.8 publish 文件模式 — 自动生成 package.json","status":"passed","duration":184},{"name":"TC3.9 publish package.json 无效格式 — 明确错误","status":"passed","duration":186},{"name":"TC3.10 npx 无参数 — 明确错误提示","status":"passed","duration":84},{"name":"TC3.11 npx 基本执行 — 调起 npx 命令","status":"passed","duration":374},{"name":"TC3.12 npx 含版本号 — 版本号传递","status":"passed","duration":374},{"name":"TC3.13 cdn 无参数 — 明确错误提示","status":"passed","duration":80},{"name":"TC3.14 cdn react — 返回三路 CDN URL","status":"passed","duration":328},{"name":"TC3.15 cdn react --json — 输出合法 JSON","status":"passed","duration":340},{"name":"TC3.16 cdn 含版本号 — 版本号反映在 URL 中","status":"passed","duration":330},{"name":"TC3.17 cdn 不存在的包 — 明确错误提示","status":"passed","duration":2200}]}]},{"name":"(standalone)","tests":[{"name":"publish test-script --name test-pkg 成功发布并输出包名/版本/命令","status":"passed","duration":120},{"name":"publish --dry-run 模拟成功预览上传内容","status":"passed","duration":68},{"name":"publish 目录（含 package.json）使用已有配置发布","status":"passed","duration":95},{"name":"npx cowsay hello 执行并输出含 hello","status":"passed","duration":890},{"name":"npx nonexistent-pkg 报错包不存在","status":"passed","duration":210},{"name":"publish 路径不存在错误提示","status":"passed","duration":8},{"name":"publish 未登录 npm 引导 npm login","status":"passed","duration":12}]}]};
+const perfData=[{"name":"publish 基本发布","duration":120,"trend":"up"},{"name":"publish --dry-run","duration":68,"trend":"down"},{"name":"npx cowsay","duration":890,"trend":"up"},{"name":"publish 目录","duration":95,"trend":"down"},{"name":"npx 不存在包","duration":210,"trend":"up"}];
+
+function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function fmtDur(ms){if(ms==null)return'';if(ms<1)return'<1ms';if(ms<1000)return Math.round(ms)+'ms';return(ms/1000).toFixed(1)+'s'}
+function fmtTs(iso){if(!iso)return'';try{return new Date(iso).toLocaleString('zh-CN')}catch{return iso}}
+function buildResultMap(){
+  if(!results||!results.suites)return{};
+  var map={},current=null;
+  for(var i=0;i<results.suites.length;i++){var s=results.suites[i];var tests=(s.tests||[]).filter(function(t){return t.name});
+    if(s.name!=='(standalone)'){current=s.name;if(!map[current])map[current]={passed:0,failed:0,skipped:0,total:0,tests:[]}}
+    if(s.name==='(standalone)'&&current&&tests.length>0){map[current].tests=map[current].tests.concat(tests);for(var j=0;j<tests.length;j++){var t=tests[j];map[current].total++;if(t.status==='passed')map[current].passed++;else if(t.status==='failed')map[current].failed++;else if(t.status==='skipped')map[current].skipped++}}
+  }return map}
+function getAllTests(){var rm=buildResultMap();var all=[];for(var k in rm){if(rm.hasOwnProperty(k))all=all.concat(rm[k].tests)}return all}
+
+/* ═══ Stats ═══ */
+function renderStats(){
+  var s=results.summary,t=s.total||0,p=s.passed||0,f=s.failed||0,sk=s.skipped||0;
+  var dur=results.durationMs?fmtDur(results.durationMs):'--';
+  var passPct=t>0?(p/t*100).toFixed(1):'0';
+  document.getElementById('statsRow').innerHTML='<div class="stat-card" onclick="filterByStatus(\'all\')" id="statAll"><div class="val t">'+t+'</div><div class="lbl">总计断言</div></div><div class="stat-card" onclick="filterByStatus(\'passed\')" id="statPassed"><div class="val p">'+p+'</div><div class="lbl">✅ 通过 · '+passPct+'%</div></div><div class="stat-card" onclick="filterByStatus(\'failed\')" id="statFailed"><div class="val f">'+f+'</div><div class="lbl">❌ 失败</div></div><div class="stat-card" onclick="filterByStatus(\'skipped\')" id="statSkipped"><div class="val s">'+sk+'</div><div class="lbl">⏭️ 跳过</div></div><div class="stat-card"><div class="val d">'+dur+'</div><div class="lbl">⏱ 耗时</div></div>';
+  var pp=t>0?(p/t*100):0,fp=t>0?(f/t*100):0,sp=t>0?(sk/t*100):0;
+  document.getElementById('bar').innerHTML='<div class="seg p" style="width:'+pp+'%"></div><div class="seg f" style="width:'+fp+'%"></div><div class="seg s" style="width:'+sp+'%"></div>';
+  document.getElementById('navStatus').textContent='🧪 测试 · '+p+'/'+t+' 通过'
+}
+
+/* ═══ Files panel ═══ */
+var CAT_ICONS={skills:'⚙️',agents:'🤖',rules:'📏',integration:'🔗',lib:'📦'};
+var CAT_LABELS={skills:'Skills',agents:'Agents',rules:'Rules',integration:'Integration',lib:'Library'};
+function renderFiles(){
+  var container=document.getElementById('filesContent');
+  if(!manifest||!manifest.files||!manifest.files.length){container.innerHTML='<div class="state-msg"><div class="icon">📁</div><h3>暂无测试文件</h3></div>';return}
+  var resultMap=buildResultMap(),groups={};
+  for(var i=0;i<manifest.files.length;i++){var f=manifest.files[i],cat=f.cat||'other';if(!groups[cat])groups[cat]=[];groups[cat].push(f)}
+  var order=['skills','agents','rules','integration','lib'],html='';
+  for(var o=0;o<order.length;o++){var cat=order[o],files=groups[cat];if(!files||!files.length)continue;
+    html+='<div class="layer"><div class="layer-head"><span class="ln">'+files.length+'</span><h2>'+(CAT_ICONS[cat]||'')+' '+(CAT_LABELS[cat]||cat)+'</h2><span class="ls">'+files.length+' 文件</span></div><div class="file-grid">';
+    for(var j=0;j<files.length;j++){var f=files[j];if(fileQuery&&!f.name.toLowerCase().includes(fileQuery)&&!f.path.toLowerCase().includes(fileQuery)&&!(f.desc&&f.desc.toLowerCase().includes(fileQuery)))continue;
+      var rKey=f.resultKey,r=rKey?resultMap[rKey]:null,badge='';
+      if(r&&r.total>0)badge=r.failed>0?'<span class="fc-badge fail">❌ '+r.failed+'/'+r.total+'</span>':'<span class="fc-badge pass">✅ '+r.passed+'/'+r.total+'</span>';
+      else if(f.name.endsWith('.test.mjs'))badge='<span class="fc-badge none">未执行</span>';
+      html+='<div class="file-card" onclick="viewSource(\''+esc(f.path)+'\')" title="点击查看源码"><span class="fc-icon">'+(f.cat==='lib'?'📦':'📄')+'</span><div class="fc-body"><div class="fc-name">'+esc(f.name)+' '+badge+'</div><div class="fc-path">'+esc(f.path)+'</div>'+(f.desc?'<div class="fc-desc">'+esc(f.desc)+'</div>':'')+'<div class="fc-meta"><span>📏 '+f.lines+' 行</span><span>📦 '+(f.size/1024).toFixed(2)+'KB</span>'+(r?'<span>🧪 '+r.total+' 断言</span>':'')+'</div></div></div>'}
+    html+='</div></div>'}
+  container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配文件</h3></div>'
+}
+
+/* ═══ Results panel ═══ */
+function renderResults(){
+  var container=document.getElementById('resultsContent');
+  if(!results||!results.suites){container.innerHTML='<div class="state-msg"><div class="icon">📊</div><h3>暂无测试结果</h3></div>';return}
+  var resultMap=buildResultMap(),entries=[],k;for(k in resultMap){if(resultMap.hasOwnProperty(k))entries.push([k,resultMap[k]])}
+  if(!entries.length){container.innerHTML='<div class="state-msg"><div class="icon">📊</div><h3>无结果数据</h3></div>';return}
+  var html='';focusIdx=-1;
+  for(var i=0;i<entries.length;i++){var name=entries[i][0],r=entries[i][1];
+    if(resultQuery){var mn=name.toLowerCase().includes(resultQuery),mt=r.tests.some(function(t){return t.name.toLowerCase().includes(resultQuery)||(t.error&&t.error.toLowerCase().includes(resultQuery))});if(!mn&&!mt)continue}
+    var hasFail=r.failed>0,tests=r.tests;if(sortByDur)tests=[].concat(tests).sort(function(a,b){return(b.duration||0)-(a.duration||0)});
+    var maxDur=Math.max.apply(null,tests.map(function(t){return t.duration||0}).concat([1]));
+    html+='<div class="suite'+(hasFail?' open':'')+'"><div class="s-head" data-action="toggle"><span class="s-arrow">▶</span><span class="s-name">🧪 '+esc(name)+'</span><span class="s-meta">'+(r.passed>0?'<span class="sm p">✅ '+r.passed+'</span>':'')+(r.failed>0?'<span class="sm f">❌ '+r.failed+'</span>':'')+(r.skipped>0?'<span class="sm" style="color:var(--skip)">⏭️ '+r.skipped+'</span>':'')+'</span></div><div class="s-body">';
+    for(var j=0;j<tests.length;j++){var t=tests[j];if(resultQuery&&!t.name.toLowerCase().includes(resultQuery)&&!(t.error&&t.error.toLowerCase().includes(resultQuery)))continue;
+      var durMs=t.duration||0,barPct=maxDur>0?Math.round(durMs/maxDur*100):0,durClass=durMs>500?'very-slow':durMs>SLOW_THRESHOLD?'slow':'';
+      html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'" onclick="copyTestName(\''+esc(t.name)+'\')" title="点击复制测试名"><span class="t-icon">'+(t.status==='passed'?'✅':t.status==='failed'?'❌':t.status==='skipped'?'⏭️':'⬜')+'</span><span class="t-name">'+esc(t.name)+'</span>'+(t.error?'<span class="t-err" title="'+esc(t.error)+'">'+esc(t.error)+'</span>':'')+'<span class="t-dur '+durClass+'"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(t.duration)+(durMs>SLOW_THRESHOLD?'<span class="slow-warn">🐢</span>':'')+'</span></div>'}
+    html+='</div></div>'}
+  container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配结果</h3></div>'
+}
+
+/* ═══ Design panel (用例设计) ═══ */
+function renderNormal(){
+  var container=document.getElementById('normalContent');
+  var html='<div class="card"><h2>✅ 正常路径 (5)</h2><table class="test-table"><thead><tr><th>TC#</th><th>Given</th><th>When</th><th>Then</th><th>覆盖</th><th>优先级</th></tr></thead><tbody>';
+  html+='<tr><td>TC-N3.1</td><td>npm 已登录</td><td><code>publish ./test-script.js --name test-pkg</code></td><td>成功发布，输出包名、版本、安装/运行命令</td><td>FP7</td><td><span class="badge p0">P0</span></td></tr>';
+  html+='<tr><td>TC-N3.2</td><td>npm 已登录</td><td><code>publish ./test-script.js --dry-run</code></td><td>模拟成功，预览上传内容，不实际上传</td><td>FP7</td><td><span class="badge p0">P0</span></td></tr>';
+  html+='<tr><td>TC-N3.3</td><td>npm 已登录，目录含 package.json</td><td><code>publish ./mylib</code></td><td>使用已有 package.json 发布</td><td>FP7</td><td><span class="badge p1">P1</span></td></tr>';
+  html+='<tr><td>TC-N3.4</td><td>npm registry 可达</td><td><code>npx cowsay hello</code></td><td>npx 执行 cowsay，输出含 hello</td><td>FP8</td><td><span class="badge p0">P0</span></td></tr>';
+  html+='<tr><td>TC-N3.5</td><td>npm 已登录</td><td><code>publish ./mylib --access public</code></td><td>scope 包显式公开访问</td><td>FP7</td><td><span class="badge p1">P1</span></td></tr>';
+  html+='</tbody></table></div>';
+  container.innerHTML=html}
+
+function renderBoundary(){
+  var container=document.getElementById('boundaryContent');
+  var html='<div class="card"><h2>⚠️ 边界/异常 (6)</h2><table class="test-table"><thead><tr><th>TC#</th><th>Given</th><th>When</th><th>Then</th><th>覆盖</th><th>优先级</th></tr></thead><tbody>';
+  html+='<tr><td>TC-B3.1</td><td>任意环境</td><td><code>publish ./nonexistent.js</code></td><td>错误：路径不存在</td><td>FP7</td><td><span class="badge p0">P0</span></td></tr>';
+  html+='<tr><td>TC-B3.2</td><td>npm 未登录</td><td><code>publish ./test.js</code></td><td>错误：未登录 npm，引导 npm login</td><td>FP7</td><td><span class="badge p0">P0</span></td></tr>';
+  html+='<tr><td>TC-B3.3</td><td>registry 已有同名包</td><td><code>publish ./test.js --name lodash</code></td><td>错误：registry 已存在同名包，提示改名</td><td>FP7</td><td><span class="badge p0">P0</span></td></tr>';
+  html+='<tr><td>TC-B3.4</td><td>npm registry 可达</td><td><code>npx nonexistent-pkg-xyz</code></td><td>npx 报错包不存在</td><td>FP8</td><td><span class="badge p0">P0</span></td></tr>';
+  html+='<tr><td>TC-B3.5</td><td>目录无 package.json</td><td><code>publish ./emptydir</code></td><td>自动生成 package.json 后发布</td><td>FP7</td><td><span class="badge p1">P1</span></td></tr>';
+  html+='<tr><td>TC-B3.6</td><td>package.json 格式无效</td><td><code>publish ./brokendir</code></td><td>错误：格式无效 + 临时目录清理</td><td>FP7</td><td><span class="badge p1">P1</span></td></tr>';
+  html+='</tbody></table></div>';
+  container.innerHTML=html}
+
+/* ═══ Slow tests panel ═══ */
+function renderSlow(){
+  var container=document.getElementById('slowContent');
+  var all=getAllTests(),slow=all.filter(function(t){return(t.duration||0)>SLOW_THRESHOLD}).sort(function(a,b){return(b.duration||0)-(a.duration||0)});
+  if(!slow.length){container.innerHTML='<div class="state-msg"><div class="icon">⚡</div><h3>所有测试都在 '+SLOW_THRESHOLD+'ms 以内</h3><p>最长耗时 210ms — npx nonexistent-pkg 报错</p></div>';return}
+  var html='';
+  for(var i=0;i<slow.length;i++){var t=slow[i];html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'" style="padding-left:18px" onclick="copyTestName(\''+esc(t.name)+'\')" title="点击复制测试名"><span class="t-icon">'+(t.status==='passed'?'✅':'❌')+'</span><span class="t-name">'+esc(t.name)+'</span><span class="t-dur very-slow">'+fmtDur(t.duration)+'</span></div>'}
+  container.innerHTML=html
+}
+
+/* ═══ Perf tests panel ═══ */
+function renderPerf(){
+  var container=document.getElementById('perfContent');
+  if(!perfData||!perfData.length){container.innerHTML='<div class="state-msg"><div class="icon">📈</div><h3>暂无性能测试数据</h3></div>';return}
+  var html='<div class="card"><h2>📈 性能趋势</h2><p style="font-size:.78rem;color:var(--text3);margin-bottom:12px">场景 3 publish/npx 延迟分布 · 慢阈值 500ms · 趋势 vs 上次回归</p>';
+  for(var i=0;i<perfData.length;i++){var p=perfData[i],durMs=p.duration||0,durClass=durMs>500?'slow':'';
+    html+='<div class="t-row" style="padding-left:18px;cursor:default"><span class="t-icon">'+(p.trend==='up'?'📈':p.trend==='down'?'📉':'📊')+'</span><span class="t-name">'+esc(p.name)+'</span><span class="t-dur '+durClass+'">'+fmtDur(durMs)+'</span></div>'}
+  html+='</div>';
+  container.innerHTML=html
+}
+
+/* ═══ Source modal ═══ */
+function viewSource(relPath){var overlay=document.getElementById('modalOverlay');document.getElementById('modalTitle').textContent=relPath;document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>';overlay.classList.add('show');fetch('../../../../'+relPath).then(function(resp){if(!resp.ok)throw new Error('HTTP '+resp.status);return resp.text()}).then(function(text){var lines=text.split('\n');document.getElementById('modalBody').innerHTML='<pre>'+lines.map(function(l,i){return'<span class="ln">'+(i+1)+'</span>'+esc(l)}).join('\n')+'</pre>'}).catch(function(e){document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(e.message)+'</div>'})}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('show')}
+
+/* ═══ Actions ═══ */
+function expandAllFiles(){document.querySelectorAll('#filesContent .file-card').forEach(function(c){c.style.display=''})}
+function expandAllSuites(){document.querySelectorAll('#resultsContent .suite').forEach(function(c){c.classList.add('open')})}
+function collapseAllSuites(){document.querySelectorAll('#resultsContent .suite').forEach(function(c){c.classList.remove('open')})}
+function toggleSort(){sortByDur=!sortByDur;document.getElementById('btnSortDur').classList.toggle('on',sortByDur);renderResults()}
+function copyTestName(name){navigator.clipboard.writeText(name).then(function(){toast('已复制: '+name)}).catch(function(){})}
+function copyResultsMd(){var s=results.summary,md='## 场景自检结果\n\n| 指标 | 值 |\n|------|----|\n| 总计 | '+(s.total||0)+' |\n| ✅ 通过 | '+(s.passed||0)+' |\n| ❌ 失败 | '+(s.failed||0)+' |\n| ⏱ 耗时 | '+fmtDur(results.durationMs)+' |\n| 🕐 时间 | '+fmtTs(results.timestamp)+' |\n',rm=buildResultMap(),k;for(k in rm){if(!rm.hasOwnProperty(k))continue;var r=rm[k],icon=r.failed>0?'❌':'✅';md+='\n### '+icon+' '+k+'\n| 通过 | 失败 | 跳过 | 总计 |\n|------|------|------|------|\n| '+r.passed+' | '+r.failed+' | '+r.skipped+' | '+r.total+' |\n'}navigator.clipboard.writeText(md).then(function(){toast('已复制为 Markdown')}).catch(function(){toast('复制失败')})}
+function copyFileList(){if(!manifest)return;var list=manifest.files.map(function(f){return f.path}).join('\n');navigator.clipboard.writeText(list).then(function(){toast('已复制文件清单')}).catch(function(){toast('复制失败')})}
+function filterByStatus(status){resultQuery=status==='all'?'':status==='passed'?'✅':status==='failed'?'❌':'';document.querySelectorAll('.stat-card').forEach(function(c){c.classList.remove('active-filter')});var el=document.getElementById(status==='all'?'statAll':status==='passed'?'statPassed':status==='failed'?'statFailed':status==='skipped'?'statSkipped':'statAll');if(el)el.classList.add('active-filter');switchPanel('results');renderResults()}
+function switchPanel(name){activePanel=name;document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.panel===name)});document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1))});if(name==='files')renderFiles();else if(name==='results')renderResults();else if(name==='normal')renderNormal();else if(name==='boundary')renderBoundary();else if(name==='slow')renderSlow();else if(name==='perf')renderPerf()}
+function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show')},1800)}
+
+/* ═══ Keyboard navigation ═══ */
+document.addEventListener('keydown',function(e){
+  if(document.activeElement.tagName==='INPUT')return;
+  if(e.key==='Escape'){closeModal()}
+  if(e.key==='j'||e.key==='ArrowDown'){e.preventDefault();focusIdx++;navigateResults()}
+  if(e.key==='k'||e.key==='ArrowUp'){e.preventDefault();focusIdx=Math.max(-1,focusIdx-1);navigateResults()}
+  if(e.key==='Enter'&&activePanel==='results'){var focused=document.querySelector('.suite.focused');if(focused)focused.classList.toggle('open')}
+  if(e.key==='Enter'&&activePanel==='files'){var focused=document.querySelector('.file-card.focused');if(focused)focused.click()}
+  if((e.ctrlKey||e.metaKey)&&e.key==='f'){e.preventDefault();var inp=document.getElementById(activePanel==='files'?'searchFiles':'searchResults');if(inp)inp.focus()}
+  if(e.key==='1')switchPanel('files');if(e.key==='2')switchPanel('results');if(e.key==='3')switchPanel('normal');if(e.key==='4')switchPanel('boundary');if(e.key==='5')switchPanel('slow');if(e.key==='6')switchPanel('perf');if(e.key==='7')switchPanel('gate')
+});
+function navigateResults(){
+  document.querySelectorAll('.suite.focused,.t-row.focused,.file-card.focused').forEach(function(e){e.classList.remove('focused')});
+  var suites=document.querySelectorAll('#resultsContent .suite');if(suites.length===0)return;if(focusIdx<0)return;
+  if(focusIdx>=suites.length)focusIdx=suites.length-1;suites[focusIdx].classList.add('focused');suites[focusIdx].scrollIntoView({behavior:'smooth',block:'nearest'})
+}
+
+/* ═══ Event delegation ═══ */
+document.querySelector('.tabs').addEventListener('click',function(e){var tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
+document.getElementById('resultsContent').addEventListener('click',function(e){var head=e.target.closest('.s-head');if(head){var suite=head.closest('.suite');suite.classList.toggle('open')}});
+document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===e.currentTarget)closeModal()});
+document.getElementById('bar').addEventListener('click',function(e){var rect=this.getBoundingClientRect(),pct=(e.clientX-rect.left)/rect.width;if(pct<.33)filterByStatus('passed');else if(pct<.66)filterByStatus('failed');else filterByStatus('skipped')});
+window.addEventListener('DOMContentLoaded',function(){renderStats();switchPanel('files')});
+</script>
 </body>
 </html>
