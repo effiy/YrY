@@ -289,8 +289,8 @@
 
     <div class="stats">
       <a class="stat" href="#layer-skills"><div class="num">7</div><div class="label">技能</div></a>
-      <a class="stat" href="#layer-story"><div class="num">3</div><div class="label">故事</div></a>
-      <a class="stat" href="#layer-scene"><div class="num green">12</div><div class="label">场景</div></a>
+      <a class="stat" href="#layer-story"><div class="num">4</div><div class="label">故事</div></a>
+      <a class="stat" href="#layer-scene"><div class="num green">17</div><div class="label">场景</div></a>
       <a class="stat" href="#layer-agents"><div class="num">9</div><div class="label">Agent 角色</div></a>
       <a class="stat" href="#layer-rules"><div class="num green">10</div><div class="label">规则</div></a>
       <a class="stat" href="#layer-refs"><div class="num green">5</div><div class="label">参考入口</div></a>
@@ -406,7 +406,7 @@
       <div class="layer-header">
         <span class="layer-num">2</span>
         <h2>故事</h2>
-        <span class="layer-stats">3 故事 · 架构基线 + 自检体系 + npm 管理</span>
+        <span class="layer-stats">4 故事 · 架构基线 + 自检体系 + npm 管理 + CDN 共享库</span>
       </div>
 
       <div class="story-grid">
@@ -453,6 +453,23 @@
             <span class="scene-tag">3. 本地发布与 npx 使用</span>
             <span class="scene-tag">4. 包信息审计与卸载</span>
           </div>
+        <div class="story-card">
+          <div class="story-head">
+            <span class="story-icon">&#127760;</span>
+            <span class="story-name"><a href="故事任务面板/yry-cdn/故事任务.md">CDN 共享前端资源库</a></span>
+            <span class="story-badge">v1.0.0</span>
+          </div>
+          <div class="story-desc">YrY 共享前端资源 — 双主题系统（Mono + System）、21 CSS 组件、9 JS 工具 API。55+ 页面统一引用，消除内联重复代码 40-60%。</div>
+          <div class="story-scenes">
+            <span class="scene-tag">1. CDN资源加载与页面渲染</span>
+            <span class="scene-tag">2. 双主题系统设计</span>
+            <span class="scene-tag">3. 组件库与JS工具API</span>
+            <span class="scene-tag">4. 存量页面迁移</span>
+            <span class="scene-tag">5. npm包发布与版本管理</span>
+          </div>
+          <div class="c-links" style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap"><a href="故事任务面板/yry-cdn/故事任务.md" style="font-size:.68rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:4px;padding:3px 8px">📋 故事任务</a><a href="故事任务面板/yry-cdn/plan.html" style="font-size:.68rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:4px;padding:3px 8px">📐 计划总览</a><a href="故事任务面板/yry-cdn/知识图谱.json" style="font-size:.68rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:4px;padding:3px 8px">🔗 知识图谱</a><a href="故事任务面板/yry-cdn/安全审计.md" style="font-size:.68rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:4px;padding:3px 8px">🛡️ 安全审计</a><a href="../cdn/README.md" style="font-size:.68rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:4px;padding:3px 8px">📄 CDN README</a></div>
+        </div>
+
           <div class="c-links" style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap"><a href="故事任务面板/rui-npm/故事任务.md" style="font-size:.68rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:4px;padding:3px 8px">📋 故事任务</a><a href="故事任务面板/rui-npm/plan.html" style="font-size:.68rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:4px;padding:3px 8px">📐 计划总览</a><a href="故事任务面板/rui-npm/知识图谱.json" style="font-size:.68rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:4px;padding:3px 8px">🔗 知识图谱</a><a href="../skills/rui-npm/SKILL.md" style="font-size:.68rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:4px;padding:3px 8px">📄 SKILL.md</a><a href="../tests/skills/rui-npm.test.mjs" style="font-size:.68rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:4px;padding:3px 8px">🧪 测试</a></div>
         </div>
       </div>
@@ -465,7 +482,7 @@
       <div class="layer-header">
         <span class="layer-num">3</span>
         <h2>场景</h2>
-        <span class="layer-stats">3 故事 · 12 场景</span>
+        <span class="layer-stats">4 故事 · 17 场景</span>
       </div>
 
       <div class="sub-title"><span class="accent">&#128451;</span> 系统架构知识固化 — 4 场景</div>
@@ -555,6 +572,40 @@
           <div class="scene-name"><a href="故事任务面板/rui-npm/场景-5-账号级包管理/场景-5-账号级包管理.md" target="_blank">账号级包管理</a></div>
           <div class="scene-desc">my-packages · deprecate · unpublish — 个人 npm 资产 CRUD</div>
           <div class="scene-meta"><a href="故事任务面板/rui-npm/场景-5-账号级包管理/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-5-账号级包管理/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-5-账号级包管理/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-5-账号级包管理/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-5-账号级包管理/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-5-账号级包管理/审查.html">📝审查</a></div>
+        </div>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#127760;</span> CDN 共享前端资源库 — 5 场景</div>
+      <div class="scene-grid">
+        <div class="scene-card">
+          <div class="scene-num">场景 1</div>
+          <div class="scene-name"><a href="故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/场景-1-cdn资源加载与页面渲染.md" target="_blank">CDN资源加载与页面渲染</a></div>
+          <div class="scene-desc">5 步加载链 · shared.css + 主题 CSS + shared.js — 55 页面统一渲染</div>
+          <div class="scene-meta"><a href="故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/审查.html">📝审查</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 2</div>
+          <div class="scene-name"><a href="故事任务面板/yry-cdn/场景-2-双主题系统设计/场景-2-双主题系统设计.md" target="_blank">双主题系统设计</a></div>
+          <div class="scene-desc">Cat A (Mono) vs Cat B (System) · 14 设计令牌 · 21 组件 · 7 动画</div>
+          <div class="scene-meta"><a href="故事任务面板/yry-cdn/场景-2-双主题系统设计/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-2-双主题系统设计/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-2-双主题系统设计/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-2-双主题系统设计/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-2-双主题系统设计/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-2-双主题系统设计/审查.html">📝审查</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 3</div>
+          <div class="scene-name"><a href="故事任务面板/yry-cdn/场景-3-组件库与JS工具API/场景-3-组件库与JS工具API.md" target="_blank">组件库与JS工具API</a></div>
+          <div class="scene-desc">21 CSS 组件 · 9 YrY.* API — Toast/复制/面板切换/折叠套件/剪贴板</div>
+          <div class="scene-meta"><a href="故事任务面板/yry-cdn/场景-3-组件库与JS工具API/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-3-组件库与JS工具API/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-3-组件库与JS工具API/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-3-组件库与JS工具API/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-3-组件库与JS工具API/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-3-组件库与JS工具API/审查.html">📝审查</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 4</div>
+          <div class="scene-name"><a href="故事任务面板/yry-cdn/场景-4-存量页面迁移/场景-4-存量页面迁移.md" target="_blank">存量页面迁移</a></div>
+          <div class="scene-desc">6 步迁移指南 · 可删除清单 · 类名替换 · JS 函数替换 · 截图验证</div>
+          <div class="scene-meta"><a href="故事任务面板/yry-cdn/场景-4-存量页面迁移/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-4-存量页面迁移/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-4-存量页面迁移/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-4-存量页面迁移/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-4-存量页面迁移/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-4-存量页面迁移/审查.html">📝审查</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 5</div>
+          <div class="scene-name"><a href="故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/场景-5-npm包发布与版本管理.md" target="_blank">npm包发布与版本管理</a></div>
+          <div class="scene-desc">package.json 规范 · PATCH/MINOR/MAJOR 策略 · dry-run · git tag 版本链</div>
+          <div class="scene-meta"><a href="故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/审查.html">📝审查</a></div>
         </div>
       </div>
     </div>
