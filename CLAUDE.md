@@ -57,7 +57,7 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 |------|-----|
 | 项目名 | YrY |
 | 类型 | **meta** — Claude Code 插件，纯规约驱动 |
-| 版本 | 4.4.1 |
+| 版本 | 4.5.0 |
 | 架构 | plugin — 8 技能 + 9 Agent + 10 规则 + 4 共享库（lib/） |
 | 生态 | 无 package.json，markdown 规约 + node 辅助脚本 + 共享 lib/ 消除重复 |
 | 自托管 | 是 — YrY 用自身管线管理自身演进 |

@@ -66,7 +66,11 @@ function checkPackageJson() {
 }
 
 function checkNpmLogin() {
-  // 先检查 token 配置，再检查 whoami
+  // 默认从环境变量 NPM_TOKEN 自动配置 npm（参考 rui-import 从 env 获取凭据的模式）
+  if (NPM_TOKEN) {
+    npm(["config", "set", "//registry.npmjs.org/:_authToken", NPM_TOKEN]);
+  }
+
   const configuredToken = checkNpmToken();
   const r = npm(["whoami"]);
   if (r.status !== 0) {
@@ -76,7 +80,7 @@ function checkNpmLogin() {
     console.error("   交互式登录:   npm login");
     if (configuredToken) {
       console.error(`   ⚠️  已检测到 NPM_TOKEN 环境变量 (${maskToken(configuredToken)})，但未通过 npm 验证。`);
-      console.error(`   token 可能已过期，或尚未执行 rui-npm login 配置到 npm。`);
+      console.error(`   token 可能已过期。`);
     }
     console.error("   （如无 npm 账户，请先访问 https://www.npmjs.com/signup 注册）");
     process.exit(1);
