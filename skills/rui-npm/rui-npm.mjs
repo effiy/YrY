@@ -3,23 +3,27 @@
 // 用法: node skills/rui-npm/rui-npm.mjs <command> [options]
 //
 // 子命令:
-//   search    <keyword>           搜索 npm registry
-//   install   <pkg>[@version]     安装包
-//   update    <pkg>               更新包
-//   list      [--depth N]         列出已安装包
-//   info      <pkg>               查看包信息
-//   uninstall <pkg>               卸载包
-//   publish   <path>              发布本地文件/目录
-//   npx       <pkg>[@version]     npx 执行包
-//   audit                         安全审计
-//   cdn      <pkg>[@version]     查看 CDN 引用地址
-//   login    [--token <token>]   配置 Access Token 认证
+//   search       <keyword>           搜索 npm registry
+//   install      <pkg>[@version]     安装包
+//   update       <pkg>               更新包
+//   list         [--depth N]         列出已安装包
+//   info         <pkg>               查看包信息
+//   uninstall    <pkg>               卸载包
+//   publish      <path>              发布本地文件/目录
+//   npx          <pkg>[@version]     npx 执行包
+//   audit                            安全审计
+//   cdn        <pkg>[@version]     查看 CDN 引用地址
+//   login      [--token <token>]   配置 Access Token 认证
+//   my-packages  [--limit N]         列出我所有的包
+//   deprecate    <pkg> "<msg>"       废弃包版本
+//   unpublish    <pkg>[@version]     删除包/版本
 
 import { spawnSync, spawn } from "node:child_process";
-import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync, readdirSync, rmSync } from "node:fs";
-import { join, resolve, basename, dirname, extname } from "node:path";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync, readdirSync } from "node:fs";
+import { join, resolve, basename, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { randomBytes } from "node:crypto";
+import { get } from "node:https";
 
 // --- config ----------------------------------------------------------------
 const NPM_TOKEN = process.env.NPM_TOKEN || "";
@@ -66,7 +70,7 @@ function checkPackageJson() {
 }
 
 function checkNpmLogin() {
-  // 默认从环境变量 NPM_TOKEN 自动配置 npm（参考 rui-import 从 env 获取凭据的模式）
+  // 默认从环境变量 NPM_TOKEN 自动配置 npm
   if (NPM_TOKEN) {
     npm(["config", "set", "//registry.npmjs.org/:_authToken", NPM_TOKEN]);
   }
@@ -88,6 +92,15 @@ function checkNpmLogin() {
   return r.stdout.trim();
 }
 
+function maskToken(token) {
+  if (!token || token.length <= 8) return "****";
+  return token.slice(0, 4) + "****" + token.slice(-4);
+}
+
+function checkNpmToken() {
+  return NPM_TOKEN || null;
+}
+
 function toTable(headers, rows) {
   if (!rows.length) return "(无结果)";
   const cols = headers.map((h, i) => {
@@ -106,7 +119,7 @@ function toTable(headers, rows) {
 function parseArgs(argv) {
   const args = { _: [], json: false, depth: 0, dev: false, global: false, limit: 20,
     name: null, version: "1.0.0", description: null, access: null, dryRun: false,
-    token: null, npxArgs: [], raw: [] };
+    token: null, npxArgs: [], raw: [], force: false };
   let i = 0;
   while (i < argv.length) {
     const a = argv[i];
@@ -121,6 +134,7 @@ function parseArgs(argv) {
     else if (a === "--access") { args.access = argv[++i]; }
     else if (a === "--dry-run") { args.dryRun = true; }
     else if (a === "--token") { args.token = argv[++i]; }
+    else if (a === "--force" || a === "-f") { args.force = true; }
     else if (a === "--") { args.npxArgs = argv.slice(i + 1); i = argv.length; }
     else if (a.startsWith("-")) { args.raw.push(a); }
     else { args._.push(a); }
@@ -129,23 +143,13 @@ function parseArgs(argv) {
   return args;
 }
 
-function maskToken(token) {
-  if (!token || token.length <= 8) return "****";
-  return token.slice(0, 4) + "****" + token.slice(-4);
-}
-
-function checkNpmToken() {
-  // npm config get 对 _authToken 是受保护的，无法通过 CLI 回读
-  // 检查 NPM_TOKEN 环境变量作为替代信号
-  return NPM_TOKEN || null;
-}
-
 function timestamp() {
   return new Date().toISOString().replace("T", " ").substring(0, 19);
 }
 
+// ─── Subcommands ────────────────────────────────────────────────
+
 function cmdLogin(args) {
-  // Step 1: 获取 token — args.token 或 NPM_TOKEN 环境变量
   const token = args.token || NPM_TOKEN || "";
 
   if (!token) {
@@ -157,14 +161,12 @@ function cmdLogin(args) {
     process.exit(1);
   }
 
-  // Step 2: 验证 token 格式（npm token 通常以 npm_ 开头，长度 > 30）
   if (token.length < 20) {
     console.error(`❌ token 格式无效（长度 ${token.length} < 20）。请检查是否完整复制了 Access Token。`);
     console.error("   获取 Access Token: https://www.npmjs.com/settings/<user>/tokens");
     process.exit(1);
   }
 
-  // Step 3: 配置 token
   console.log(`🔑 配置 Access Token (${maskToken(token)}) ...`);
   const configResult = npm(["config", "set", "//registry.npmjs.org/:_authToken", token]);
   if (configResult.status !== 0) {
@@ -172,7 +174,6 @@ function cmdLogin(args) {
     process.exit(1);
   }
 
-  // Step 4: 验证 token
   console.log("🔍 验证 token ...");
   const whoami = npm(["whoami"]);
   if (whoami.status !== 0) {
@@ -180,7 +181,6 @@ function cmdLogin(args) {
     console.error("   - token 已过期或已被撤销");
     console.error("   - token 类型不正确（建议使用 Automation 类型）");
     console.error("   请访问 https://www.npmjs.com/settings/<user>/tokens 检查 token 状态");
-    // 清除无效 token
     npm(["config", "delete", "//registry.npmjs.org/:_authToken"]);
     process.exit(1);
   }
@@ -193,11 +193,9 @@ function cmdLogin(args) {
   console.log();
   console.log("💡 提示：");
   console.log("   - token 已保存到 npm 配置，后续 publish 等操作可直接使用");
-  console.log("   - 查看当前认证状态: rui-npm publish 任意文件（会显示已登录用户）");
+  console.log("   - 查看当前认证状态: npm whoami");
   console.log("   - 清除 token: npm config delete //registry.npmjs.org/:_authToken");
 }
-
-// ─── Subcommands ────────────────────────────────────────────────
 
 function cmdSearch(keyword, args) {
   if (!keyword) {
@@ -443,8 +441,8 @@ function cmdPublish(path, args) {
       name: pkgName,
       version: args.version,
       description: args.description || `Auto-published by rui-npm — ${basename(absPath)}`,
-      main: isDir ? (existsSync(join(publishDir, "index.js")) ? "index.js" : undefined) : `index${extname(absPath)}`,
-      bin: !isDir ? { [pkgName]: `./index${extname(absPath)}` } : undefined,
+      main: isDir ? (existsSync(join(publishDir, "index.js")) ? "index.js" : undefined) : `index${require("node:path").extname(absPath)}`,
+      bin: !isDir ? { [pkgName]: `./index${require("node:path").extname(absPath)}` } : undefined,
       license: "MIT",
     };
     // Clean undefined keys
@@ -462,7 +460,7 @@ function cmdPublish(path, args) {
     } catch {
       console.error("❌ package.json 格式无效，请修正后重试。");
       if (tmpDir) {
-  
+        const { rmSync } = require("node:fs");
         rmSync(tmpDir, { recursive: true, force: true });
       }
       process.exit(1);
@@ -476,7 +474,7 @@ function cmdPublish(path, args) {
     console.error(`❌ npm registry 已存在包 "${pkgName}" (${check.stdout.trim()})。`);
     console.error(`   请使用 --name 指定不同的包名，或使用 npm deprecate 废弃旧版本。`);
     if (tmpDir) {
-
+      const { rmSync } = require("node:fs");
       rmSync(tmpDir, { recursive: true, force: true });
     }
     process.exit(1);
@@ -495,7 +493,7 @@ function cmdPublish(path, args) {
 
   // Cleanup temp dir
   if (tmpDir) {
-
+    const { rmSync } = require("node:fs");
     rmSync(tmpDir, { recursive: true, force: true });
   }
 
@@ -588,12 +586,10 @@ function cmdCdn(pkg, args) {
     console.error("   示例: rui-npm cdn react@18.2.0");
     process.exit(1);
   }
-  // Parse package name and optional version
   const atIdx = pkg.lastIndexOf("@");
   const pkgName = atIdx > 0 ? pkg.substring(0, atIdx) : pkg;
   const version = atIdx > 0 ? pkg.substring(atIdx + 1) : null;
 
-  // Verify package exists in registry
   console.log(`📡 查询 ${pkg} CDN 引用地址 ...`);
   const r = npm(["view", pkgName, "version"]);
   if (r.status !== 0) {
@@ -601,8 +597,6 @@ function cmdCdn(pkg, args) {
     process.exit(1);
   }
   const latestVersion = r.stdout.trim();
-
-  // If no version specified, use latest
   const ver = version || latestVersion;
 
   const urls = {
@@ -627,6 +621,229 @@ function cmdCdn(pkg, args) {
   console.log();
 }
 
+function registryGet(path) {
+  return new Promise((resolve, reject) => {
+    const url = `https://registry.npmjs.org${path}`;
+    get(url, { headers: { "Accept": "application/json" } }, (res) => {
+      let body = "";
+      res.on("data", (chunk) => { body += chunk; });
+      res.on("end", () => {
+        try { resolve(JSON.parse(body)); } catch { reject(new Error(`Parse error: ${body.slice(0, 200)}`)); }
+      });
+    }).on("error", reject);
+  });
+}
+
+async function cmdMyPackages(args) {
+  const npmUser = checkNpmLogin();
+  console.log(`📦 查询 ${npmUser} 的 npm 包 ...`);
+
+  let packages = [];
+
+  // Try registry search API first (most reliable for listing by maintainer)
+  try {
+    const searchUrl = `/-/v1/search?text=maintainer:${encodeURIComponent(npmUser)}&size=${Math.min(args.limit || 100, 250)}`;
+    const result = await registryGet(searchUrl);
+    packages = (result.objects || []).map((o) => o.package || o);
+  } catch {
+    // Fallback: try npm access ls-packages
+    console.log("   registry search API 不可达，尝试 npm access ls-packages ...");
+    const r = npm(["access", "ls-packages"]);
+    if (r.status === 0 && r.stdout) {
+      try {
+        const data = JSON.parse(r.stdout);
+        packages = Object.entries(data || {}).map(([name]) => ({ name }));
+      } catch {
+        // can't parse
+      }
+    }
+    if (!packages.length) {
+      console.error("❌ 无法获取包列表。npm registry 可能不可达。");
+      console.error(`   手动访问: https://www.npmjs.com/~${encodeURIComponent(npmUser)}`);
+      process.exit(1);
+    }
+  }
+
+  if (!packages.length) {
+    console.log(`用户 ${npmUser} 暂无发布的 npm 包。`);
+    return;
+  }
+
+  // Enrich with version info where possible (async in sequence to avoid rate limit)
+  const enriched = [];
+  for (const p of packages) {
+    const name = p.name;
+    const description = p.description || "";
+    const version = p.version || "?";
+    const downloads = p.downloads?.weekly || p.downloads?.monthly || 0;
+    enriched.push({ name, description, version, downloads });
+  }
+
+  // Sort by downloads desc
+  enriched.sort((a, b) => b.downloads - a.downloads);
+
+  const top = enriched.slice(0, args.limit || 100);
+
+  if (args.json) {
+    console.log(JSON.stringify(top, null, 2));
+    return;
+  }
+
+  console.log(`\n## ${npmUser} 的 npm 包（${enriched.length} 个） — ${timestamp()}\n`);
+  const headers = ["#", "包名", "版本", "周下载量", "描述"];
+  const rows = top.map((p, i) => [
+    i + 1,
+    p.name,
+    p.version,
+    p.downloads ? `${(p.downloads / 1000).toFixed(1)}k/w` : "?",
+    (p.description || "").substring(0, 60),
+  ]);
+  console.log(toTable(headers, rows));
+  if (enriched.length > top.length) {
+    console.log(`\n> 共 ${enriched.length} 个包，展示前 ${top.length} 个。使用 --limit 调整数量。`);
+  }
+}
+
+function verifyOwnership(username, pkgName) {
+  // Check if the user is a maintainer of the package
+  const r = npm(["view", pkgName, "maintainers", "--json"]);
+  if (r.status !== 0) {
+    console.error(`❌ 包 "${pkgName}" 在 npm registry 中不存在。`);
+    console.error(`   可尝试: /rui-npm search ${pkgName}`);
+    process.exit(1);
+  }
+  try {
+    const maintainers = JSON.parse(r.stdout);
+    const isOwner = Array.isArray(maintainers) && maintainers.some(
+      (m) => (typeof m === "string" ? m : m.name) === username
+    );
+    if (!isOwner) {
+      console.error(`❌ 你不是包 "${pkgName}" 的所有者。只有包的所有者才能执行此操作。`);
+      console.error(`   当前登录用户: ${username}`);
+      console.error(`   包维护者: ${JSON.stringify(maintainers)}`);
+      process.exit(1);
+    }
+  } catch {
+    console.error("❌ 无法验证包所有权。请检查网络连接。");
+    process.exit(1);
+  }
+}
+
+function cmdDeprecate(pkg, args) {
+  if (!pkg) {
+    console.error("❌ 请提供包名和废弃消息。用法: rui-npm deprecate <pkg>[@version] \"<message>\"");
+    console.error("   示例: rui-npm deprecate my-util@1.0.0 \"Use 2.0.0 instead\"");
+    console.error("   示例: rui-npm deprecate my-util \"This package is no longer maintained\"");
+    process.exit(1);
+  }
+
+  // Parse pkg and version from positional args
+  // Format: deprecate <pkg>[@version] "<message>"
+  // args._[0] is pkg, the rest of args._ may be the message parts
+  const pkgName = pkg.split("@")[0];
+  const pkgVersion = pkg.includes("@") && pkg.lastIndexOf("@") > 0 ? pkg.substring(pkg.lastIndexOf("@") + 1) : null;
+
+  // Message is everything after pkg in the raw args
+  const pkgIdx = args._.indexOf(pkg);
+  const messageParts = args._.slice(pkgIdx + 1);
+  const message = messageParts.join(" ");
+
+  if (!message) {
+    console.error("❌ 请提供废弃消息。用法: rui-npm deprecate <pkg>[@version] \"<message>\"");
+    console.error("   示例: rui-npm deprecate my-util@1.0.0 \"Use 2.0.0 instead\"");
+    process.exit(1);
+  }
+
+  const npmUser = checkNpmLogin();
+  console.log(`👤 已登录 npm: ${npmUser}`);
+
+  // Verify ownership
+  verifyOwnership(npmUser, pkgName);
+
+  // Execute deprecate
+  const target = pkgVersion ? `${pkgName}@${pkgVersion}` : pkgName;
+  console.log(`⚠️  废弃 ${target} ...`);
+  console.log(`   消息: ${message}`);
+
+  const result = spawnSync("npm", ["deprecate", target, message], { stdio: "inherit", encoding: "utf-8" });
+  if (result.status !== 0) {
+    console.error(`❌ 废弃失败（退出码 ${result.status}）。`);
+    process.exit(result.status);
+  }
+  console.log(`✅ ${target} 已标记为 deprecated`);
+  if (pkgVersion) {
+    console.log(`   查看: https://www.npmjs.com/package/${pkgName}/v/${pkgVersion}`);
+  } else {
+    console.log(`   查看: https://www.npmjs.com/package/${pkgName}`);
+  }
+}
+
+function cmdUnpublish(pkg, args) {
+  if (!pkg) {
+    console.error("❌ 请提供包名。用法: rui-npm unpublish <pkg>[@version] [--force]");
+    console.error("   示例: rui-npm unpublish my-util@1.0.0");
+    console.error("   示例: rui-npm unpublish my-util --force");
+    process.exit(1);
+  }
+
+  const pkgName = pkg.includes("@") && pkg.lastIndexOf("@") > 0 ? pkg.substring(0, pkg.lastIndexOf("@")) : pkg;
+  const pkgVersion = pkg.includes("@") && pkg.lastIndexOf("@") > 0 ? pkg.substring(pkg.lastIndexOf("@") + 1) : null;
+  const force = args.force || args.raw.includes("--force") || args.raw.includes("-f");
+
+  const npmUser = checkNpmLogin();
+  console.log(`👤 已登录 npm: ${npmUser}`);
+
+  // Verify ownership
+  verifyOwnership(npmUser, pkgName);
+
+  // Get package info for safety warning
+  const info = npm(["view", pkgName, "--json"]);
+  let pkgData = {};
+  try { pkgData = JSON.parse(info.stdout); } catch {}
+  if (Array.isArray(pkgData)) pkgData = pkgData[pkgData.length - 1];
+
+  // Safety warning
+  const target = pkgVersion ? `${pkgName}@${pkgVersion}` : pkgName;
+  console.log();
+  console.log("⚠️  ═══════════════════════════════════════");
+  console.log(`⚠️  即将从 npm registry 删除: ${target}`);
+  if (pkgData.versions) {
+    const versions = Array.isArray(pkgData.versions) ? pkgData.versions : Object.keys(pkgData.versions);
+    console.log(`⚠️  包现有版本数: ${versions.length}`);
+    if (!pkgVersion && versions.length > 1) {
+      console.log(`⚠️  将删除所有 ${versions.length} 个版本！`);
+    }
+  }
+  console.log("⚠️  ");
+  console.log("⚠️  注意事项:");
+  console.log("⚠️  - 删除后 72 小时内可联系 npm support 恢复");
+  console.log("⚠️  - 超过 72 小时的版本删除可能被拒绝（需 --force）");
+  console.log("⚠️  - 删除后该包名可能被他人注册");
+  console.log("⚠️  - npm 官方建议优先使用 deprecate 而非 unpublish");
+  console.log("⚠️  ═══════════════════════════════════════");
+  console.log();
+
+  if (pkgVersion) {
+    console.log(`🗑️  删除版本 ${target} ...`);
+  } else {
+    console.log(`🗑️  删除包 ${target}（所有版本）...`);
+  }
+
+  const unpublishArgs = ["unpublish", target];
+  if (force) unpublishArgs.push("--force");
+
+  const result = spawnSync("npm", unpublishArgs, { stdio: "inherit", encoding: "utf-8" });
+  if (result.status !== 0) {
+    console.error(`❌ 删除失败（退出码 ${result.status}）。`);
+    if (!force) {
+      console.error("   提示：超过 72 小时的包需使用 --force 标志。");
+    }
+    process.exit(result.status);
+  }
+  console.log(`✅ ${target} 已从 npm registry 删除`);
+  console.log("   ℹ️  72 小时内可联系 npm support 恢复: https://www.npmjs.com/support");
+}
+
 // ─── Main ───────────────────────────────────────────────────────
 
 function main() {
@@ -644,20 +861,23 @@ function main() {
   const args = parseArgs(rest);
 
   switch (command) {
-    case "search":    cmdSearch(args._[0], args); break;
-    case "install":   cmdInstall(args._[0], args); break;
-    case "update":    cmdUpdate(args._[0], args); break;
-    case "list":      cmdList(args); break;
-    case "info":      cmdInfo(args._[0], args); break;
-    case "uninstall": cmdUninstall(args._[0], args); break;
-    case "publish":   cmdPublish(args._[0], args); break;
-    case "npx":       cmdNpx(args._[0], args); break;
-    case "audit":     cmdAudit(args); break;
-    case "cdn":       cmdCdn(args._[0], args); break;
-    case "login":    cmdLogin(args); break;
+    case "search":      cmdSearch(args._[0], args); break;
+    case "install":     cmdInstall(args._[0], args); break;
+    case "update":      cmdUpdate(args._[0], args); break;
+    case "list":        cmdList(args); break;
+    case "info":        cmdInfo(args._[0], args); break;
+    case "uninstall":   cmdUninstall(args._[0], args); break;
+    case "publish":     cmdPublish(args._[0], args); break;
+    case "npx":         cmdNpx(args._[0], args); break;
+    case "audit":       cmdAudit(args); break;
+    case "cdn":         cmdCdn(args._[0], args); break;
+    case "login":       cmdLogin(args); break;
+    case "my-packages": cmdMyPackages(args); break;
+    case "deprecate":   cmdDeprecate(args._[0], args); break;
+    case "unpublish":   cmdUnpublish(args._[0], args); break;
     default:
       console.error(`❌ 未知子命令: ${command}`);
-      console.error("   可用命令: search, install, update, list, info, uninstall, publish, npx, audit, cdn, login");
+      console.error("   可用命令: search, install, update, list, info, uninstall, publish, npx, audit, cdn, login, my-packages, deprecate, unpublish");
       console.error("   查看帮助: rui-npm --help");
       process.exit(1);
   }
