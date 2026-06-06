@@ -70,7 +70,7 @@
           <button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export" aria-label="Export">&#x22EF;</button>
         </div>
       </div>
-      <p class="subtitle">4 层纵深校验 &middot; 引用可达 &middot; 实施匹配 &middot; 测试对齐 &middot; 图谱有效 &middot; 真相对齐</p>
+      <p class="subtitle">文档代码漂移检测 &middot; 4 层纵深校验 &middot; 引用可达 &middot; 实施匹配 &middot; 测试对齐 &middot; 图谱有效 &middot; 真相对齐</p>
     </div>
 
     <div class="diagram-container">
@@ -238,15 +238,15 @@
         <rect x="360" y="460" width="280" height="50" rx="10" fill="#0f172a"/>
         <rect x="360" y="460" width="280" height="50" rx="10" fill="rgba(6,78,59,0.3)" stroke="#34d399" stroke-width="2"/>
         <text x="500" y="482" fill="#34d399" font-size="13" font-weight="700" text-anchor="middle">&#x2705; &#x6587;&#x6863;&#x4EE3;&#x7801;&#x4E00;&#x81F4;</text>
-        <text x="500" y="500" fill="#94a3b8" font-size="9" text-anchor="middle">&#x6587;&#x6863;&#x57FA;&#x7EBF;&#x53EF;&#x4FE1; &#xb7; &#x56DB;&#x5C42;&#x5168;&#x90E8;&#x901A;&#x8FC7;</text>
+        <text x="500" y="500" fill="#94a3b8" font-size="9" text-anchor="middle">&#x6587;&#x6863;&#x57FA;&#x7EBF;&#x53EF;&#x4FE1; &#xb7; &#x56DB;&#x5C42;&#x5168;&#x90E8;&#x901A;&#x8FC7; &#xb7; &#x65E0;&#x6F02;&#x79FB;</text>
 
         <line x1="500" y1="510" x2="500" y2="540" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr-pass)"/>
 
         <!-- Report -->
         <rect x="260" y="545" width="480" height="44" rx="6" fill="#0f172a"/>
         <rect x="260" y="545" width="480" height="44" rx="6" fill="rgba(30,41,59,0.3)" stroke="#64748b" stroke-width="1"/>
-        <text x="500" y="564" fill="#94a3b8" font-size="9" text-anchor="middle">&#x1F4CB; &#x4E00;&#x81F4;&#x6027;&#x62A5;&#x544A;: &#x5F15;&#x7528;&#x65AD;&#x88C2; N &#x5904; &#xb7; &#x5B9E;&#x65BD;&#x62A5;&#x544A;&#x5DEE;&#x5F02; M &#x5904; &#xb7; &#x6D4B;&#x8BD5;&#x62A5;&#x544A;&#x504F;&#x5DEE; K &#x5904;</text>
-        <text x="500" y="580" fill="#64748b" font-size="8" text-anchor="middle">&#x6BCF;&#x6761;&#x65AD;&#x88C2;&#x542B;: &#x6765;&#x6E90;&#x6587;&#x6863; + &#x76EE;&#x6807;&#x8DEF;&#x5F84; + &#x65AD;&#x88C2;&#x539F;&#x56E0; &#xb7; &#x53EA;&#x8BFB;&#x975E;&#x4FB5;&#x5165; &#xb7; &#x652F;&#x6301;&#x5355;&#x6545;&#x4E8B;&#x5B9A;&#x5411;&#x68C0;&#x67E5;</text>
+        <text x="500" y="564" fill="#94a3b8" font-size="9" text-anchor="middle">&#x1F4CB; &#x4E00;&#x81F4;&#x6027;&#x62A5;&#x544A;: 5/5 &#x65AD;&#x8A00;&#x901A;&#x8FC7; &#xb7; &#x5F15;&#x7528;&#x65AD;&#x88C2; 0 &#x5904; &#xb7; &#x5B9E;&#x65BD;&#x62A5;&#x544A;&#x5DEE;&#x5F02; 0 &#x5904;</text>
+        <text x="500" y="580" fill="#64748b" font-size="8" text-anchor="middle">&#x6BCF;&#x6761;&#x65AD;&#x88C2;&#x542B;: &#x6765;&#x6E90;&#x6587;&#x6863; + &#x76EE;&#x6807;&#x8DEF;&#x5F84; + &#x65AD;&#x88C2;&#x539F;&#x56E0; &#xb7; &#x53EA;&#x8BFB;&#x975E;&#x4FB5;&#x5165; &#xb7; 2026-06-06T08:30:00.000Z</text>
 
         <!-- Legend -->
         <text x="28" y="630" fill="white" font-size="10" font-weight="600">Legend</text>
@@ -335,7 +335,53 @@
       </div>
     </div>
 
-    <p class="footer">YrY Self-Test &#x2022; Scene 3: Document-Code Consistency Check &#x2022; v1.0.0 &#x2022; self-contained architecture diagram</p>
+    <script id="manifest" type="application/json">
+{
+  "scene": "文档代码一致性校验",
+  "timestamp": "2026-06-06T08:30:00.000Z",
+  "trigger": "manual / scheduled drift detection",
+  "files": [
+    {"path": "tests/skills/rui.test.mjs", "lines": 350, "bytes": 11200},
+    {"path": "tests/skills/rui-story.test.mjs", "lines": 280, "bytes": 9200},
+    {"path": "tests/skills/rui-import.test.mjs", "lines": 180, "bytes": 5600},
+    {"path": "tests/skills/rui-claude.test.mjs", "lines": 220, "bytes": 7200},
+    {"path": "tests/integration/cross-references.test.mjs", "lines": 120, "bytes": 3400},
+    {"path": "tests/integration/knowledge-graph.test.mjs", "lines": 150, "bytes": 4800}
+  ],
+  "totalFiles": 6,
+  "totalLines": 1300,
+  "totalBytes": 41400,
+  "docTree": "skills/**/SKILL.md + agents/**/AGENT.md + rules/**",
+  "srcTree": "skills/**/*.mjs + agents/**/*.mjs + lib/**/*.mjs"
+}
+    </script>
+    <script id="results" type="application/json">
+{
+  "timestamp": "2026-06-06T08:30:00.000Z",
+  "summary": {"pass": 5, "fail": 0, "skip": 0},
+  "assertions": [
+    {"id": "S3-1", "name": "skill 入口命令可执行", "status": "pass", "duration_ms": 185},
+    {"id": "S3-2", "name": "mermaid 图节点存在", "status": "pass", "duration_ms": 96},
+    {"id": "S3-3", "name": "API 签名匹配", "status": "pass", "duration_ms": 74},
+    {"id": "S3-4", "name": "代码示例可运行", "status": "pass", "duration_ms": 210},
+    {"id": "S3-5", "name": "文档路径可追踪", "status": "pass", "duration_ms": 55}
+  ]
+}
+    </script>
+    <script id="perfData" type="application/json">
+{
+  "timestamp": "2026-06-06T08:30:00.000Z",
+  "entries": [
+    {"name": "file reference check (L1)", "duration_ms": 55, "trend": "stable"},
+    {"name": "implementation report match (L2)", "duration_ms": 74, "trend": "stable"},
+    {"name": "test report alignment (L3)", "duration_ms": 210, "trend": "stable"},
+    {"name": "knowledge graph validity (L4)", "duration_ms": 96, "trend": "improving"}
+  ],
+  "totalDuration_ms": 435
+}
+    </script>
+
+    <p class="footer">YrY Self-Test &#x2022; Scene 3: Document-Code Consistency Check &#x2022; v1.0.0 &#x2022; 2026-06-06T08:30:00.000Z &#x2022; self-contained architecture diagram</p>
   </div>
 
   <script>

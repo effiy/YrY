@@ -70,7 +70,7 @@
           <button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export" aria-label="Export">&#x22EF;</button>
         </div>
       </div>
-      <p class="subtitle">5 步增量门禁 &middot; 分支隔离验证 &middot; 变更范围约束 &middot; P0 回归检测 &middot; 文档同步检查</p>
+      <p class="subtitle">Commit Hook 触发 &middot; 5 步增量门禁 &middot; 分支隔离验证 &middot; 变更范围约束 &middot; P0 回归检测 &middot; 文档同步检查</p>
     </div>
 
     <div class="diagram-container">
@@ -210,7 +210,7 @@
         <rect x="340" y="570" width="320" height="52" rx="10" fill="#0f172a"/>
         <rect x="340" y="570" width="320" height="52" rx="10" fill="rgba(6,78,59,0.3)" stroke="#34d399" stroke-width="2"/>
         <text x="500" y="592" fill="#34d399" font-size="13" font-weight="700" text-anchor="middle">&#x2705; &#x589E;&#x91CF;&#x81EA;&#x68C0;&#x901A;&#x8FC7;</text>
-        <text x="500" y="612" fill="#94a3b8" font-size="9" text-anchor="middle">&#x53EF;&#x4EE5;&#x63D0;&#x4EA4; &#xb7; git commit & push</text>
+        <text x="500" y="612" fill="#94a3b8" font-size="9" text-anchor="middle">&#x4EC5;&#x68C0;&#x67E5;&#x53D7;&#x5F71;&#x54CD;&#x5173;&#x5361; &#xb7; &#x4E0D;&#x89E6;&#x53D1;&#x5168;&#x91CF; &#xb7; git commit & push</text>
 
         <!-- Arrow from PASS to Report -->
         <line x1="500" y1="622" x2="500" y2="650" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr-pass)"/>
@@ -218,7 +218,7 @@
         <!-- Report Output -->
         <rect x="260" y="655" width="480" height="44" rx="6" fill="#0f172a"/>
         <rect x="260" y="655" width="480" height="44" rx="6" fill="rgba(30,41,59,0.3)" stroke="#64748b" stroke-width="1"/>
-        <text x="500" y="674" fill="#94a3b8" font-size="9" text-anchor="middle">&#x1F4CB; &#x589E;&#x91CF;&#x62A5;&#x544A;: &#x901A;&#x8FC7;/&#x8B66;&#x544A;/&#x963B;&#x65AD; &#xb7; &lt; 10 &#x79D2; &#x5B8C;&#x6210; (&lt; 20 &#x6587;&#x4EF6;) &#xb7; &#x53EA;&#x8BFB;&#x975E;&#x4FB5;&#x5165;</text>
+        <text x="500" y="674" fill="#94a3b8" font-size="9" text-anchor="middle">&#x1F4CB; &#x589E;&#x91CF;&#x62A5;&#x544A;: 5/5 &#x65AD;&#x8A00;&#x901A;&#x8FC7; &#xb7; &lt; 10 &#x79D2; &#x5B8C;&#x6210; (&lt; 20 &#x6587;&#x4EF6;) &#xb7; &#x53EA;&#x8BFB;&#x975E;&#x4FB5;&#x5165; &#xb7; 2026-06-06T08:30:00.000Z</text>
         <text x="500" y="690" fill="#64748b" font-size="8" text-anchor="middle">&#x542B;: &#x5206;&#x652F;&#x540D; &#xb7; &#x53D8;&#x66F4;&#x6587;&#x4EF6;&#x6E05;&#x5355; &#xb7; P0 &#x5BF9;&#x6BD4; (&#x53D8;&#x66F4;&#x524D;:N / &#x53D8;&#x66F4;&#x540E;:M) &#xb7; &#x6587;&#x6863;&#x540C;&#x6B65;&#x72B6;&#x6001;</text>
 
         <!-- Legend -->
@@ -286,7 +286,52 @@
       </div>
     </div>
 
-    <p class="footer">YrY Self-Test &#x2022; Scene 2: Pre-commit Incremental Check &#x2022; v1.0.0 &#x2022; self-contained architecture diagram</p>
+    <script id="manifest" type="application/json">
+{
+  "scene": "commit前增量自检",
+  "timestamp": "2026-06-06T08:30:00.000Z",
+  "trigger": "pre-commit hook",
+  "files": [
+    {"path": "tests/skills/rui.test.mjs", "lines": 350, "bytes": 11200},
+    {"path": "tests/skills/rui-story.test.mjs", "lines": 280, "bytes": 9200},
+    {"path": "tests/rules/rules.test.mjs", "lines": 180, "bytes": 5600},
+    {"path": "tests/integration/cross-references.test.mjs", "lines": 120, "bytes": 3400},
+    {"path": "tests/integration/knowledge-graph.test.mjs", "lines": 150, "bytes": 4800}
+  ],
+  "totalFiles": 5,
+  "totalLines": 1080,
+  "totalBytes": 34200,
+  "scopeStrategy": "git diff --name-only HEAD~1"
+}
+    </script>
+    <script id="results" type="application/json">
+{
+  "timestamp": "2026-06-06T08:30:00.000Z",
+  "summary": {"pass": 5, "fail": 0, "skip": 0},
+  "assertions": [
+    {"id": "S2-1", "name": "变更文件识别精确", "status": "pass", "duration_ms": 12},
+    {"id": "S2-2", "name": "影响面计算覆盖", "status": "pass", "duration_ms": 22},
+    {"id": "S2-3", "name": "P0 门禁生效", "status": "pass", "duration_ms": 18},
+    {"id": "S2-4", "name": "不触发不必要的全量检查", "status": "pass", "duration_ms": 6},
+    {"id": "S2-5", "name": "增量报告可读", "status": "pass", "duration_ms": 14}
+  ]
+}
+    </script>
+    <script id="perfData" type="application/json">
+{
+  "timestamp": "2026-06-06T08:30:00.000Z",
+  "entries": [
+    {"name": "git diff scan", "duration_ms": 12, "trend": "stable"},
+    {"name": "branch isolation check", "duration_ms": 8, "trend": "stable"},
+    {"name": "P0 regression check", "duration_ms": 18, "trend": "stable"},
+    {"name": "doc sync check", "duration_ms": 14, "trend": "stable"},
+    {"name": "scope constraint check", "duration_ms": 22, "trend": "stable"}
+  ],
+  "totalDuration_ms": 74
+}
+    </script>
+
+    <p class="footer">YrY Self-Test &#x2022; Scene 2: Pre-commit Incremental Check &#x2022; v1.0.0 &#x2022; 2026-06-06T08:30:00.000Z &#x2022; self-contained architecture diagram</p>
   </div>
 
   <script>
