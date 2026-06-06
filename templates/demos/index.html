@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>{{PROJECT_NAME}} Demos · 演示中心</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.0.0/theme.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.0.0/shared.css">
 <style>
-:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+:root{--bg:var(--yry-bg);--bg-card:var(--yry-bg-card);--accent:var(--yry-accent);--cyan:var(--yry-cyan);--pass:var(--yry-pass);--text:var(--yry-text);--text2:var(--yry-text2);--text3:var(--yry-text3);--shadow:var(--yry-shadow);--radius:var(--yry-radius);--border:var(--yry-border)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
 .container{max-width:1120px;margin:0 auto;padding:48px 24px 80px}
-.header{text-align:center;margin-bottom:32px;animation:fadeInUp .5s ease both}
+.header{text-align:center;margin-bottom:32px;animation:yry-fadeInUp .5s ease both}
 .header h1{font-size:2.1rem;font-weight:700}.header h1 .accent{color:var(--accent)}
 .header .sub{color:var(--text2);font-size:.9rem}
 .cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:40px;flex-wrap:wrap}
@@ -17,7 +18,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06)}.cross-link.on{color:var(--accent)}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
 .card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);transition:all .15s;text-decoration:none;color:inherit;display:block;cursor:pointer}
-.card:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.45);border-color:rgba(255,193,7,.2)}
+.card:hover{transform:translateY(-2px);box-shadow:var(--yry-shadow-lg);border-color:rgba(255,193,7,.2)}
 .card .c-icon{font-size:1.5rem;margin-bottom:8px;display:block}
 .card .c-title{font-weight:700;font-size:.95rem;margin-bottom:4px}
 .card .c-desc{font-size:.8rem;color:var(--text2)}
@@ -31,5 +32,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 <div class="cross-nav">{{NAV_LINKS}}</div>
 <div class="grid">{{DEMO_CARDS}}</div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.0.0/shared.js"></script>
 </body>
 </html>

@@ -4,20 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YrY 文档中心</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.0.0/theme.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.0.0/shared.css">
   <style>
     :root {
-      --bg-content: rgba(22,22,32,1);
-      --bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
-      --bg-card-flat: rgba(34,34,46,1);
-      --color-accent: #FFC107;
-      --color-accent-2: #22d3ee;
-      --text-primary: rgba(250,250,252,1);
-      --text-secondary: rgba(160,160,164,1);
-      --text-muted: rgba(110,110,114,1);
-      --shadow-card: 0 4px 20px rgba(0,0,0,0.3);
-      --shadow-hover: 0 12px 32px rgba(0,0,0,0.45);
-      --radius-card: 12px;
-      --border-subtle: 1px solid rgba(255,255,255,0.06);
+      --bg-content: var(--yry-bg);
+      --bg-card: var(--yry-bg-card);
+      --bg-card-flat: var(--yry-bg-flat);
+      --color-accent: var(--yry-accent);
+      --color-accent-2: var(--yry-cyan);
+      --text-primary: var(--yry-text);
+      --text-secondary: var(--yry-text2);
+      --text-muted: var(--yry-text3);
+      --shadow-card: var(--yry-shadow);
+      --shadow-hover: var(--yry-shadow-lg);
+      --radius-card: var(--yry-radius);
+      --border-subtle: var(--yry-border);
+      --cyan: var(--yry-cyan);
     }
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(12px); }
@@ -922,6 +925,7 @@
   <!-- Back to top button -->
   <button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">&uarr;</button>
 
+  <script src="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.0.0/shared.js"></script>
   <script>
     /* Staggered card animations */
     document.querySelectorAll('.card-grid .item-card').forEach((card, i) => {

@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>YrY Tests · 自检中心</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.0.0/theme.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.0.0/shared.css">
   <style>
-    :root { --bg:rgba(22,22,32,1); --bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%); --bg-flat:rgba(34,34,46,1); --bg-raised:rgba(42,42,56,1); --accent:#FFC107; --cyan:#22d3ee; --pass:#22c55e; --fail:#ef4444; --warn:#f59e0b; --skip:#6b7280; --text:rgba(250,250,252,1); --text2:rgba(160,160,164,1); --text3:rgba(110,110,114,1); --shadow:0 4px 20px rgba(0,0,0,0.3); --shadow-lg:0 12px 32px rgba(0,0,0,0.45); --radius:12px; --border:1px solid rgba(255,255,255,0.06); }
+    :root { --bg:var(--yry-bg); --bg-card:var(--yry-bg-card); --bg-flat:var(--yry-bg-flat); --bg-raised:var(--yry-bg-raised); --accent:var(--yry-accent); --cyan:var(--yry-cyan); --pass:var(--yry-pass); --fail:var(--yry-fail); --warn:var(--yry-warn); --skip:var(--yry-skip); --text:var(--yry-text); --text2:var(--yry-text2); --text3:var(--yry-text3); --shadow:var(--yry-shadow); --shadow-lg:var(--yry-shadow-lg); --radius:var(--yry-radius); --border:var(--yry-border); }
+    /* Reuse CDN animations via aliased keyframes */
     @keyframes fadeInUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
     @keyframes fadeInDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
     @keyframes shimmer { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
@@ -168,6 +171,7 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <div class="modal-overlay" id="modalOverlay"><div class="modal"><div class="m-head"><span class="m-title" id="modalTitle"></span><button class="m-close" onclick="closeModal()">✕</button></div><div class="m-body" id="modalBody"></div></div></div>
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.0.0/shared.js"></script>
 <script>
 let manifest=null,results=null,activePanel='files',fileQuery='',resultQuery='',sortByDur=false,autoRefreshId=null,focusIdx=-1;
 const CAT_ICONS={skills:'⚙️',agents:'🤖',rules:'📏',integration:'🔗',lib:'📦'};
@@ -181,8 +185,10 @@ async function loadData(){
   render();
 }
 
-function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function fmtDur(ms){if(ms==null)return'';if(ms<1)return'<1ms';if(ms<1000)return Math.round(ms)+'ms';return(ms/1000).toFixed(1)+'s'}
+// Delegated to CDN YrY.* utilities
+function esc(s){ return YrY.esc(s); }
+function fmtDur(ms){ return YrY.fmtDur(ms); }
+function toast(msg){ YrY.toast(msg); }
 function fmtTs(iso){if(!iso)return'';try{return new Date(iso).toLocaleString('zh-CN')}catch{return iso}}
 function classifyPath(p){if(p.startsWith('skills/'))return'skills';if(p.startsWith('agents/'))return'agents';if(p.startsWith('rules/'))return'rules';if(p.startsWith('integration/'))return'integration';if(p.startsWith('lib/'))return'lib';return'other'}
 function fileToResultKey(name){const m={'rui.test.mjs':'rui skill','rui-bot.test.mjs':'rui-bot skill','rui-claude.test.mjs':'rui-claude skill','rui-import.test.mjs':'rui-import skill','rui-story.test.mjs':'rui-story skill','rui-trends.test.mjs':'rui-trends skill','agents.test.mjs':'agent definitions','rules.test.mjs':'rule definitions','cross-references.test.mjs':'cross-cutting integration','knowledge-graph.test.mjs':'knowledge graph integrity'};return m[name]||null}
@@ -286,8 +292,6 @@ async function copyFileList(){if(!manifest)return;const list=manifest.files.map(
 
 function filterByStatus(status){resultQuery=status==='all'?'':status==='passed'?'✅':status==='failed'?'❌':'';document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active-filter'));const el=document.getElementById(status==='all'?'statAll':status==='passed'?'statPassed':status==='failed'?'statFailed':status==='skipped'?'statSkipped':'statAll');if(el)el.classList.add('active-filter');switchPanel('results');renderResults()}
 function switchPanel(name){activePanel=name;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===name));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='panel'+(name==='files'?'Files':name==='results'?'Results':name==='slow'?'Slow':'')));if(name==='files')renderFiles();else if(name==='results')renderResults();else if(name==='slow')renderSlow()}
-
-function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}
 
 // ═══ Keyboard navigation ═══
 document.addEventListener('keydown',e=>{

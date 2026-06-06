@@ -26,7 +26,22 @@ import { randomBytes } from "node:crypto";
 import { get } from "node:https";
 
 // --- config ----------------------------------------------------------------
+// 参考 rui-import: 自主从系统环境变量获取 token，模块加载时自动配置，后续操作透明使用
+const REGISTRY_OFFICIAL = "https://registry.npmjs.org/";
 const NPM_TOKEN = process.env.NPM_TOKEN || "";
+if (NPM_TOKEN) {
+  spawnSync("npm", ["config", "set", "//registry.npmjs.org/:_authToken", NPM_TOKEN], {
+    encoding: "utf-8",
+    stdio: "pipe",
+  });
+}
+
+// 当 NPM_TOKEN 存在但默认 registry 为镜像时，auth 类命令必须显式指向官方 registry
+function registryArgs() {
+  if (!NPM_TOKEN) return [];
+  const defaultRegistry = spawnSync("npm", ["config", "get", "registry"], { encoding: "utf-8" }).stdout.trim();
+  return defaultRegistry !== REGISTRY_OFFICIAL ? ["--registry", REGISTRY_OFFICIAL] : [];
+}
 
 // ─── Helpers ────────────────────────────────────────────────────
 
@@ -69,24 +84,23 @@ function checkPackageJson() {
   }
 }
 
+// 参考 rui-import: token 在模块加载时已从环境变量自动配置，此处仅做 whoami 验证
 function checkNpmLogin() {
-  // 默认从环境变量 NPM_TOKEN 自动配置 npm
-  if (NPM_TOKEN) {
-    npm(["config", "set", "//registry.npmjs.org/:_authToken", NPM_TOKEN]);
-  }
-
-  const configuredToken = checkNpmToken();
-  const r = npm(["whoami"]);
+  const r = npm(["whoami", ...registryArgs()]);
   if (r.status !== 0) {
+    const configuredToken = NPM_TOKEN || null;
     console.error("❌ 未认证 npm registry。请通过以下任一方式认证：");
-    console.error("   Access Token: rui-npm login --token <your-token>");
-    console.error("      或设置环境变量 NPM_TOKEN 后执行 rui-npm login");
-    console.error("   交互式登录:   npm login");
+    console.error("   环境变量:       NPM_TOKEN=<your-token> rui-npm <command>");
+    console.error("   显式配置:       rui-npm login --token <your-token>");
+    console.error("   交互式登录:      npm login");
     if (configuredToken) {
       console.error(`   ⚠️  已检测到 NPM_TOKEN 环境变量 (${maskToken(configuredToken)})，但未通过 npm 验证。`);
-      console.error(`   token 可能已过期。`);
+      console.error(`   token 可能已过期，请访问 https://www.npmjs.com/settings/<user>/tokens 检查`);
+    } else {
+      console.error("   获取 token:      访问 https://www.npmjs.com/settings/<user>/tokens");
+      console.error("                    → Generate New Token → 选择 \"Automation\" 类型");
+      console.error("   （如无 npm 账户，请先访问 https://www.npmjs.com/signup 注册）");
     }
-    console.error("   （如无 npm 账户，请先访问 https://www.npmjs.com/signup 注册）");
     process.exit(1);
   }
   return r.stdout.trim();
@@ -95,10 +109,6 @@ function checkNpmLogin() {
 function maskToken(token) {
   if (!token || token.length <= 8) return "****";
   return token.slice(0, 4) + "****" + token.slice(-4);
-}
-
-function checkNpmToken() {
-  return NPM_TOKEN || null;
 }
 
 function toTable(headers, rows) {
@@ -149,15 +159,17 @@ function timestamp() {
 
 // ─── Subcommands ────────────────────────────────────────────────
 
+// 参考 rui-import: token 在模块加载时已从 NPM_TOKEN 环境变量自动配置
+// 此命令用于显式配置新 token 或验证已配置的 token
 function cmdLogin(args) {
   const token = args.token || NPM_TOKEN || "";
 
   if (!token) {
     console.error("❌ 未提供 Access Token。请通过以下方式提供：");
-    console.error("   --token 标志:    rui-npm login --token <your-token>");
-    console.error("   环境变量:         NPM_TOKEN=<your-token> rui-npm login");
-    console.error("   获取 token:       访问 https://www.npmjs.com/settings/<user>/tokens");
-    console.error("                     → Generate New Token → 选择 \"Automation\" 类型");
+    console.error("   环境变量:       NPM_TOKEN=<your-token> rui-npm <command>");
+    console.error("   显式配置:       rui-npm login --token <your-token>");
+    console.error("   获取 token:     访问 https://www.npmjs.com/settings/<user>/tokens");
+    console.error("                   → Generate New Token → 选择 \"Automation\" 类型");
     process.exit(1);
   }
 
@@ -167,15 +179,20 @@ function cmdLogin(args) {
     process.exit(1);
   }
 
-  console.log(`🔑 配置 Access Token (${maskToken(token)}) ...`);
-  const configResult = npm(["config", "set", "//registry.npmjs.org/:_authToken", token]);
-  if (configResult.status !== 0) {
-    console.error("❌ 配置 token 失败。请检查 npm 配置是否正常。");
-    process.exit(1);
+  // 如果通过 --token 显式传入，重新配置（覆盖模块加载时的环境变量配置）
+  if (args.token) {
+    console.log(`🔑 配置 Access Token (${maskToken(token)}) ...`);
+    const configResult = npm(["config", "set", "//registry.npmjs.org/:_authToken", token]);
+    if (configResult.status !== 0) {
+      console.error("❌ 配置 token 失败。请检查 npm 配置是否正常。");
+      process.exit(1);
+    }
+  } else {
+    console.log(`🔑 使用环境变量 NPM_TOKEN (${maskToken(token)})，已自动配置`);
   }
 
   console.log("🔍 验证 token ...");
-  const whoami = npm(["whoami"]);
+  const whoami = npm(["whoami", ...registryArgs()]);
   if (whoami.status !== 0) {
     console.error("❌ token 验证失败。可能的原因：");
     console.error("   - token 已过期或已被撤销");
@@ -192,7 +209,7 @@ function cmdLogin(args) {
   console.log(`   已配置到: npm config //registry.npmjs.org/:_authToken`);
   console.log();
   console.log("💡 提示：");
-  console.log("   - token 已保存到 npm 配置，后续 publish 等操作可直接使用");
+  console.log("   - 设置环境变量 NPM_TOKEN 后，所有操作自动使用该 token 认证");
   console.log("   - 查看当前认证状态: npm whoami");
   console.log("   - 清除 token: npm config delete //registry.npmjs.org/:_authToken");
 }
@@ -433,13 +450,15 @@ function cmdPublish(path, args) {
 
   // Check / generate package.json
   const pkgJsonPath = join(publishDir, "package.json");
-  const pkgName = args.name || basename(absPath).replace(/\.[^.]+$/, "").replace(/[^a-z0-9._-]/g, "-");
+  const derivedName = args.name || basename(absPath).replace(/\.[^.]+$/, "").replace(/[^a-z0-9._-]/g, "-");
+  let pkgName = derivedName;
+  let pkgVersion = args.version;
 
   if (!existsSync(pkgJsonPath)) {
     console.log(`📝 自动生成 package.json (name: ${pkgName}) ...`);
     const pkgJson = {
       name: pkgName,
-      version: args.version,
+      version: pkgVersion,
       description: args.description || `Auto-published by rui-npm — ${basename(absPath)}`,
       main: isDir ? (existsSync(join(publishDir, "index.js")) ? "index.js" : undefined) : `index${require("node:path").extname(absPath)}`,
       bin: !isDir ? { [pkgName]: `./index${require("node:path").extname(absPath)}` } : undefined,
@@ -451,12 +470,14 @@ function cmdPublish(path, args) {
     }
     writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2) + "\n");
     console.log(`   包名: ${pkgName}`);
-    console.log(`   版本: ${args.version}`);
+    console.log(`   版本: ${pkgVersion}`);
   } else {
-    // Validate existing package.json
+    // Validate existing package.json — use its name/version for conflict check and output
     try {
       const existing = JSON.parse(readFileSync(pkgJsonPath, "utf-8"));
-      console.log(`📝 使用已有 package.json: ${existing.name}@${existing.version}`);
+      pkgName = existing.name || pkgName;
+      pkgVersion = existing.version || pkgVersion;
+      console.log(`📝 使用已有 package.json: ${pkgName}@${pkgVersion}`);
     } catch {
       console.error("❌ package.json 格式无效，请修正后重试。");
       if (tmpDir) {
@@ -467,21 +488,36 @@ function cmdPublish(path, args) {
     }
   }
 
-  // Conflict check
+  // Conflict check: 阻止名称冲突 — 包存在但当前用户非维护者时拒绝
   console.log(`🔍 检查 registry 是否存在同名包 "${pkgName}" ...`);
-  const check = npm(["view", pkgName, "version"]);
+  const check = npm(["view", pkgName, "version", ...registryArgs()]);
   if (check.status === 0) {
-    console.error(`❌ npm registry 已存在包 "${pkgName}" (${check.stdout.trim()})。`);
-    console.error(`   请使用 --name 指定不同的包名，或使用 npm deprecate 废弃旧版本。`);
-    if (tmpDir) {
-      const { rmSync } = require("node:fs");
-      rmSync(tmpDir, { recursive: true, force: true });
+    // 验证所有权: 自己是维护者则允许（版本更新），否则拒绝（名称冲突）
+    const maintainersResult = npm(["view", pkgName, "maintainers", "--json", ...registryArgs()]);
+    let isMaintainer = false;
+    try {
+      const maintainers = JSON.parse(maintainersResult.stdout);
+      isMaintainer = Array.isArray(maintainers) && maintainers.some(
+        (m) => {
+          const name = typeof m === "string" ? m.split(" ")[0] : m.name;
+          return name === npmUser;
+        }
+      );
+    } catch { /* can't verify, block to be safe */ }
+    if (!isMaintainer) {
+      console.error(`❌ npm registry 已存在包 "${pkgName}" (${check.stdout.trim()})，且你不是维护者。`);
+      console.error(`   请使用 --name 指定不同的包名，或联系维护者。`);
+      if (tmpDir) {
+        const { rmSync } = require("node:fs");
+        rmSync(tmpDir, { recursive: true, force: true });
+      }
+      process.exit(1);
     }
-    process.exit(1);
+    console.log(`   ✅ 你是维护者，允许发布新版本 (current: ${check.stdout.trim()})`);
   }
 
   // Publish
-  const npmArgs = ["publish"];
+  const npmArgs = ["publish", ...registryArgs()];
   if (args.access) npmArgs.push("--access", args.access);
   if (args.dryRun) npmArgs.push("--dry-run");
   console.log(args.dryRun ? "🧪 模拟发布 (--dry-run) ..." : "🚀 发布中 ...");
@@ -502,7 +538,7 @@ function cmdPublish(path, args) {
     process.exit(result.status);
   }
   if (!args.dryRun) {
-    console.log(`✅ ${pkgName}@${args.version} 发布成功`);
+    console.log(`✅ ${pkgName}@${pkgVersion} 发布成功`);
     console.log(`   安装: npm install ${pkgName}`);
     console.log(`   运行: npx ${pkgName}`);
   }
@@ -648,7 +684,7 @@ async function cmdMyPackages(args) {
   } catch {
     // Fallback: try npm access ls-packages
     console.log("   registry search API 不可达，尝试 npm access ls-packages ...");
-    const r = npm(["access", "ls-packages"]);
+    const r = npm(["access", "ls-packages", ...registryArgs()]);
     if (r.status === 0 && r.stdout) {
       try {
         const data = JSON.parse(r.stdout);
@@ -706,7 +742,7 @@ async function cmdMyPackages(args) {
 
 function verifyOwnership(username, pkgName) {
   // Check if the user is a maintainer of the package
-  const r = npm(["view", pkgName, "maintainers", "--json"]);
+  const r = npm(["view", pkgName, "maintainers", "--json", ...registryArgs()]);
   if (r.status !== 0) {
     console.error(`❌ 包 "${pkgName}" 在 npm registry 中不存在。`);
     console.error(`   可尝试: /rui-npm search ${pkgName}`);
@@ -715,7 +751,10 @@ function verifyOwnership(username, pkgName) {
   try {
     const maintainers = JSON.parse(r.stdout);
     const isOwner = Array.isArray(maintainers) && maintainers.some(
-      (m) => (typeof m === "string" ? m : m.name) === username
+      (m) => {
+        const name = typeof m === "string" ? m.split(" ")[0] : m.name;
+        return name === username;
+      }
     );
     if (!isOwner) {
       console.error(`❌ 你不是包 "${pkgName}" 的所有者。只有包的所有者才能执行此操作。`);
@@ -765,7 +804,7 @@ function cmdDeprecate(pkg, args) {
   console.log(`⚠️  废弃 ${target} ...`);
   console.log(`   消息: ${message}`);
 
-  const result = spawnSync("npm", ["deprecate", target, message], { stdio: "inherit", encoding: "utf-8" });
+  const result = spawnSync("npm", ["deprecate", target, message, ...registryArgs()], { stdio: "inherit", encoding: "utf-8" });
   if (result.status !== 0) {
     console.error(`❌ 废弃失败（退出码 ${result.status}）。`);
     process.exit(result.status);
@@ -797,7 +836,7 @@ function cmdUnpublish(pkg, args) {
   verifyOwnership(npmUser, pkgName);
 
   // Get package info for safety warning
-  const info = npm(["view", pkgName, "--json"]);
+  const info = npm(["view", pkgName, "--json", ...registryArgs()]);
   let pkgData = {};
   try { pkgData = JSON.parse(info.stdout); } catch {}
   if (Array.isArray(pkgData)) pkgData = pkgData[pkgData.length - 1];
@@ -829,7 +868,7 @@ function cmdUnpublish(pkg, args) {
     console.log(`🗑️  删除包 ${target}（所有版本）...`);
   }
 
-  const unpublishArgs = ["unpublish", target];
+  const unpublishArgs = ["unpublish", target, ...registryArgs()];
   if (force) unpublishArgs.push("--force");
 
   const result = spawnSync("npm", unpublishArgs, { stdio: "inherit", encoding: "utf-8" });

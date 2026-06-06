@@ -1,0 +1,28 @@
+{
+  "name": "yry-cdn",
+  "version": "1.0.0",
+  "description": "YrY CDN — shared frontend resources: themes, CSS components, animations, JS utilities for story panel HTML pages",
+  "main": "shared.js",
+  "files": [
+    "shared.css",
+    "shared.js",
+    "theme.css",
+    "theme-mono.css",
+    "README.md"
+  ],
+  "keywords": [
+    "yry",
+    "cdn",
+    "css",
+    "theme",
+    "mono",
+    "frontend",
+    "utility"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/effiyichengliang/YrY.git"
+  },
+  "author": "effiyichengliang"
+}
