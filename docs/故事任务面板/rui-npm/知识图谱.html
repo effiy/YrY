@@ -112,10 +112,14 @@
     <span class="label">本地文件系统 <span class="badge">内部</span></span>
     <span class="desc">用户本地的 JavaScript 文件和目录，作为 publish 的输入源</span>
   </div>
+  <div class="node domain">
+    <span class="label">npm 账号 <span class="badge">认证</span></span>
+    <span class="desc">用户个人 npm 账号，管理已发布包的所有权、废弃和删除</span>
+  </div>
 </div>
 
 <div class="column">
-  <h2>📊 步骤（10 个子命令）</h2>
+  <h2>📊 步骤（14 个子命令）</h2>
   <div class="node step"><span class="label">search</span><span class="desc">按关键词搜索 npm registry</span></div>
   <div class="node step"><span class="label">cdn</span><span class="desc">查看包在 unpkg/jsDelivr/esm.sh 的 CDN 引用地址</span></div>
   <div class="node step"><span class="label">install</span><span class="desc">安装包到当前项目</span></div>
@@ -126,6 +130,10 @@
   <div class="node step"><span class="label">publish</span><span class="desc">发布本地文件/目录为 npm 包</span></div>
   <div class="node step"><span class="label">npx</span><span class="desc">通过 npx 直接执行包</span></div>
   <div class="node step"><span class="label">audit</span><span class="desc">审计依赖的已知安全漏洞</span></div>
+  <div class="node step"><span class="label">login</span><span class="desc">通过 Access Token 配置 npm 认证</span></div>
+  <div class="node step"><span class="label">my-packages</span><span class="desc">列出当前用户拥有的所有 npm 包</span></div>
+  <div class="node step"><span class="label">deprecate</span><span class="desc">标记指定包/版本为 deprecated</span></div>
+  <div class="node step"><span class="label">unpublish</span><span class="desc">从 registry 删除包/版本（安全警告前置）</span></div>
 </div>
 
 <div class="column">
@@ -154,6 +162,11 @@
     <span class="label">审计清理流</span>
     <span class="desc">元数据查询 → 安全漏洞检测 → 卸载清理</span>
     <span class="meta">步骤: info · audit · uninstall</span>
+  </div>
+  <div class="node flow">
+    <span class="label">账号级管理流</span>
+    <span class="desc">认证 → 我的包列表 → 废弃版本 → 删除包（所有权验证 + 安全警告）</span>
+    <span class="meta">步骤: login · my-packages · deprecate · unpublish</span>
   </div>
 </div>
 
@@ -184,19 +197,25 @@
       <span class="to">本地文件系统</span>
       <span class="label">npx 拉取执行（发布流）</span>
     </div>
+    <div class="edge-item">
+      <span class="from">npm 账号</span>
+      <span class="arrow">→</span>
+      <span class="to">npm Registry</span>
+      <span class="label">包管理（账号级管理流）</span>
+    </div>
   </div>
 </div>
 
 <div class="column">
   <h2>📐 分层视图</h2>
   <div class="layer-bar">
-    <span class="layer-tag">命令面: search·cdn·install·update·list·info·uninstall·publish·npx·audit</span>
+    <span class="layer-tag">命令面: search·cdn·install·update·list·info·uninstall·publish·npx·audit·login·my-packages·deprecate·unpublish</span>
   </div>
   <div class="layer-bar">
-    <span class="layer-tag">数据域: npm-registry·local-project·local-filesystem</span>
+    <span class="layer-tag">数据域: npm-registry·local-project·local-filesystem·npm-account</span>
   </div>
   <div class="layer-bar">
-    <span class="layer-tag">数据流: 搜索流·CDN流·安装流·发布流·审计流</span>
+    <span class="layer-tag">数据流: 搜索流·CDN流·安装流·发布流·审计流·账号级管理流</span>
   </div>
 </div>
 

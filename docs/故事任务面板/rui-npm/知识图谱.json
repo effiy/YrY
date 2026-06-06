@@ -1,7 +1,7 @@
 {
   "meta": {
     "story": "rui-npm",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "generated": "2026-06-06",
     "generator": "deepseek-v4-pro"
   },
@@ -26,6 +26,13 @@
       "description": "依赖安全漏洞扫描和修复建议",
       "skills": ["rui-npm"],
       "sub_commands": ["audit"]
+    },
+    {
+      "id": "account-management",
+      "label": "账号级包管理",
+      "description": "个人 npm 账号下包的查看、废弃、删除操作",
+      "skills": ["rui-npm"],
+      "sub_commands": ["my-packages", "deprecate", "unpublish"]
     },
     {
       "id": "local-publish",
@@ -77,6 +84,27 @@
       "steps": ["check-package-json", "npm-audit-json", "group-by-severity", "fix-suggestions"],
       "entry": "audit",
       "exit": "漏洞摘要表 + 修复建议"
+    },
+    {
+      "id": "my-packages-flow",
+      "label": "我的包列表流程",
+      "steps": ["check-npm-login", "get-username", "registry-search-api", "sort-by-downloads", "format-output"],
+      "entry": "my-packages",
+      "exit": "表格/JSON 用户包列表"
+    },
+    {
+      "id": "deprecate-flow",
+      "label": "包废弃流程",
+      "steps": ["check-npm-login", "verify-ownership", "npm-deprecate", "output-confirmation"],
+      "entry": "deprecate <pkg> \"<msg>\"",
+      "exit": "废弃确认 + npm 页面链接"
+    },
+    {
+      "id": "unpublish-flow",
+      "label": "包删除流程",
+      "steps": ["check-npm-login", "verify-ownership", "safety-warning", "npm-unpublish", "output-confirmation"],
+      "entry": "unpublish <pkg>[@version]",
+      "exit": "删除确认 + npm support 链接"
     }
   ],
   "nodes": [
@@ -92,14 +120,14 @@
       "type": "executable",
       "label": "rui-npm.mjs",
       "path": "skills/rui-npm/rui-npm.mjs",
-      "description": "10 子命令的统一执行入口"
+      "description": "14 子命令的统一执行入口"
     },
     {
       "id": "help-rui-npm",
       "type": "help",
       "label": "help.mjs",
       "path": "skills/rui-npm/help.mjs",
-      "description": "7 场景 + 参数文档"
+      "description": "5 场景 + 参数文档"
     },
     {
       "id": "scene-1",
@@ -128,6 +156,13 @@
       "label": "场景 4: 包信息审计与卸载",
       "path": "docs/故事任务面板/rui-npm/场景-4-包信息审计与卸载/",
       "covers": ["FP5", "FP6", "FP9"]
+    },
+    {
+      "id": "scene-5",
+      "type": "scene",
+      "label": "场景 5: 账号级包管理",
+      "path": "docs/故事任务面板/rui-npm/场景-5-账号级包管理/",
+      "covers": ["FP12", "FP13", "FP14"]
     }
   ],
   "edges": [
@@ -137,24 +172,32 @@
     {"source": "skill-rui-npm", "target": "scene-2", "relation": "contains"},
     {"source": "skill-rui-npm", "target": "scene-3", "relation": "contains"},
     {"source": "skill-rui-npm", "target": "scene-4", "relation": "contains"},
+    {"source": "skill-rui-npm", "target": "scene-5", "relation": "contains"},
     {"source": "exec-rui-npm", "target": "npm-registry", "relation": "depends_on"},
+    {"source": "exec-rui-npm", "target": "account-management", "relation": "depends_on"},
     {"source": "scene-1", "target": "search-flow", "relation": "maps_to"},
     {"source": "scene-1", "target": "cdn-flow", "relation": "maps_to"},
     {"source": "scene-2", "target": "install-flow", "relation": "maps_to"},
     {"source": "scene-2", "target": "update-flow", "relation": "maps_to"},
     {"source": "scene-3", "target": "publish-flow", "relation": "maps_to"},
-    {"source": "scene-4", "target": "audit-flow", "relation": "maps_to"}
+    {"source": "scene-4", "target": "audit-flow", "relation": "maps_to"},
+    {"source": "scene-5", "target": "my-packages-flow", "relation": "maps_to"},
+    {"source": "scene-5", "target": "deprecate-flow", "relation": "maps_to"},
+    {"source": "scene-5", "target": "unpublish-flow", "relation": "maps_to"}
   ],
   "layers": {
-    "domain": ["npm-registry", "dependency-management", "security-audit", "local-publish"],
-    "flow": ["search-flow", "cdn-flow", "install-flow", "update-flow", "publish-flow", "audit-flow"],
+    "domain": ["npm-registry", "dependency-management", "security-audit", "local-publish", "account-management"],
+    "flow": ["search-flow", "cdn-flow", "install-flow", "update-flow", "publish-flow", "audit-flow", "my-packages-flow", "deprecate-flow", "unpublish-flow"],
     "step": [
       "validate-keyword", "npm-search-json", "sort-by-downloads", "format-output",
       "validate-pkg-name", "parse-version", "npm-view-verify", "generate-cdn-urls",
       "check-package-json", "npm-install-save", "confirm-version",
       "record-current-version", "npm-update", "compare-versions",
       "validate-path", "check-npm-login", "generate-package-json", "conflict-detection", "npm-publish", "cleanup-temp",
-      "npm-audit-json", "group-by-severity", "fix-suggestions"
+      "npm-audit-json", "group-by-severity", "fix-suggestions",
+      "check-npm-login", "get-username", "registry-search-api", "sort-by-downloads",
+      "verify-ownership", "npm-deprecate", "output-confirmation",
+      "safety-warning", "npm-unpublish"
     ]
   }
 }
