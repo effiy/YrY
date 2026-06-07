@@ -1,6 +1,6 @@
 # 场景 4: 安全面回归自检
 
-> | v1.0.0 | 2026-06-05 | deepseek-v4-pro | 🌿 feat/yry-self-test | ⏱️ --:-- | 📎 [CLAUDE.md](../../../CLAUDE.md) |
+> | v1.0.0 | 2026-06-05 | deepseek-v4-pro | 🌿 feat/yry-self-test | ⏱️ --:-- | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
 > **导航**: [← 场景-3](./index.md) · [知识图谱 →](./知识图谱.json)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
@@ -269,10 +269,10 @@ sequenceDiagram
 
 ---
 
-> **回溯链**: 本文档由 `/rui init` 流程的 Step 4b（自主测试方案）触发生成，场景定义基于项目的四条不可妥协安全底线和安全审查的 STRIDE 六面覆盖要求。来源决策：[CLAUDE.md §项目不可妥协底线](../../../CLAUDE.md#项目不可妥协底线)（四条安全底线：认证不可绕过、密钥不落盘、输入必校验、规约完整性），[security.md](../../../agents/security.md)（security Agent 的威胁建模和 STRIDE 六面覆盖规约），[coder.md §审查维度](../../../agents/coder.md#审查维度)（Security 维度检查点：注入、认证绕过、数据暴露、密钥硬编码）。交叉引用：[故事任务](./故事任务.md)（基线需求），[yry-arch 场景文档](../yry-arch/)（安全相关架构场景）。
+> **回溯链**: 本文档由 `/rui init` 流程的 Step 4b（自主测试方案）触发生成，场景定义基于项目的四条不可妥协安全底线和安全审查的 STRIDE 六面覆盖要求。来源决策：[CLAUDE.md §项目不可妥协底线](../../../../CLAUDE.md#项目不可妥协底线)（四条安全底线：认证不可绕过、密钥不落盘、输入必校验、规约完整性），[security.md](../../../../agents/security.md)（security Agent 的威胁建模和 STRIDE 六面覆盖规约），[coder.md §审查维度](../../../../agents/coder.md#审查维度)（Security 维度检查点：注入、认证绕过、数据暴露、密钥硬编码）。交叉引用：[故事任务](../故事任务.md)（基线需求），[yry-arch 场景文档](../../yry-arch/)（安全相关架构场景）。
 
 ### 变更记录
 
 | 日期 | 变更 | 触发 | 证据 |
 |------|------|------|------|
-| 2026-06-05 | v1.0.0 初始化：生成场景概述 + §0 技术评审（含效果示意和基线溯源）+ §1 测试设计（含 4 TC-N + 7 TC-B + Gate A 交接） | `/rui init` Step 4b — 自主测试方案场景-4 生成 | [CLAUDE.md §项目不可妥协底线](../../../CLAUDE.md)；[security.md](../../../agents/security.md)；[coder.md §审查维度](../../../agents/coder.md)；[formulas.md §F.story.scene](../../../skills/rui/formulas.md) |
+| 2026-06-05 | v1.0.0 初始化：生成场景概述 + §0 技术评审（含效果示意和基线溯源）+ §1 测试设计（含 4 TC-N + 7 TC-B + Gate A 交接） | `/rui init` Step 4b — 自主测试方案场景-4 生成 | [CLAUDE.md §项目不可妥协底线](../../../../CLAUDE.md)；[security.md](../../../../agents/security.md)；[coder.md §审查维度](../../../../agents/coder.md)；[formulas.md §F.story.scene](../../../../skills/rui/formulas.md) |

@@ -1,8 +1,0 @@
-{
-  "generated": "{{DATE}}",
-  "stories": {{STORY_COUNT}},
-  "scenes": {{SCENE_COUNT}},
-  "files": [
-    {{TEST_FILE_ENTRIES}}
-  ]
-}

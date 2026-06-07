@@ -303,12 +303,12 @@ catch (JSON parse error) → 明确报错不崩溃</pre>
     <div class="s-body">
       <ul class="ev-list">
         <li><span class="ev-icon">📄</span><span class="ev-text"><strong>代码审查 — 错误处理：</strong>三层 try-catch 覆盖（参数校验 / search 失败 / JSON 解析失败），每层有恢复路径</span> <a href="架构图.html" class="ev-link">架构图 →</a></li>
-        <li><span class="ev-icon">📄</span><span class="ev-text"><strong>代码审查 — 降级设计：</strong>网络不可达时输出 npmjs.com 手动搜索 URL，不阻断用户</span> <a href="../../../skills/rui-npm/rui-npm.mjs" class="ev-link">rui-npm.mjs</a></li>
-        <li><span class="ev-icon">📄</span><span class="ev-text"><strong>安全审查 — 注入防护：</strong>spawnSync 数组参数化，不经过 shell 解析</span> <a href="../../../skills/rui-npm/rui-npm.mjs" class="ev-link">rui-npm.mjs</a></li>
+        <li><span class="ev-icon">📄</span><span class="ev-text"><strong>代码审查 — 降级设计：</strong>网络不可达时输出 npmjs.com 手动搜索 URL，不阻断用户</span> <a href="../../../../skills/rui-npm/rui-npm.mjs" class="ev-link">rui-npm.mjs</a></li>
+        <li><span class="ev-icon">📄</span><span class="ev-text"><strong>安全审查 — 注入防护：</strong>spawnSync 数组参数化，不经过 shell 解析</span> <a href="../../../../skills/rui-npm/rui-npm.mjs" class="ev-link">rui-npm.mjs</a></li>
         <li><span class="ev-icon">📄</span><span class="ev-text"><strong>设计一致性：</strong>关键词为空提示 / 下载量降序 / --json 标志 / 网络不可达降级 / 空结果提示</span> <a href="演示.html" class="ev-link">演示 →</a></li>
         <li><span class="ev-icon">📄</span><span class="ev-text"><strong>测试覆盖：</strong>18 测试用例全部通过（9 正常 + 9 边界：search 8 + CDN 10），FP1 + FP11 覆盖率 100%</span> <a href="测试面板.html" class="ev-link">测试面板 →</a></li>
-        <li><span class="ev-icon">📄</span><span class="ev-text"><strong>CDN 审查 — URL 生成：</strong>三路 CDN URL 模板字符串生成，版本解析正确，npm view 先验证包存在性</span> <a href="../../../skills/rui-npm/rui-npm.mjs" class="ev-link">rui-npm.mjs:502-546</a></li>
-        <li><span class="ev-icon">📄</span><span class="ev-text"><strong>CDN 安全审查 — 注入防护：</strong>spawnSync 数组参数化 + HTTPS-only URL</span> <a href="../../../skills/rui-npm/SKILL.md" class="ev-link">SKILL.md cdn 规约</a></li>
+        <li><span class="ev-icon">📄</span><span class="ev-text"><strong>CDN 审查 — URL 生成：</strong>三路 CDN URL 模板字符串生成，版本解析正确，npm view 先验证包存在性</span> <a href="../../../../skills/rui-npm/rui-npm.mjs" class="ev-link">rui-npm.mjs:502-546</a></li>
+        <li><span class="ev-icon">📄</span><span class="ev-text"><strong>CDN 安全审查 — 注入防护：</strong>spawnSync 数组参数化 + HTTPS-only URL</span> <a href="../../../../skills/rui-npm/SKILL.md" class="ev-link">SKILL.md cdn 规约</a></li>
       </ul>
     </div>
   </div>

@@ -8,14 +8,14 @@
 </head>
 <body>
 <div class="yry-container">
-<div class="yry-breadcrumb"><a href="../">故事面板</a><span class="yry-bc-sep">/</span><a href="./plan.html">yry-cdn plan</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景-5 清单</span></div>
+<div class="yry-breadcrumb"><a href="../">故事面板</a><span class="yry-bc-sep">/</span><a href="../">yry-cdn plan</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景-5 清单</span></div>
 <div class="yry-header"><h1>场景-5 <span class="yry-accent">计划清单</span></h1><div class="yry-sub">npm 包发布与版本管理 · 3 步 · 10min</div></div>
 <ul class="checklist">
 <li><input type="checkbox" id="s1"><div><span class="step-id">步骤 1</span><span class="step-name">验证 package.json 规范完整性</span><div class="step-path">📄 index.md §1 TC1–TC2 + TC4</div><div class="step-cmd"># node -e "const p=require('./cdn/package.json'); ['name','version','description','main','files','license','repository','author'].forEach(k=>console.log(k+':'+p[k]))"</div><div class="step-cmd"># 验证 files 清单: ls cdn/shared.css cdn/shared.js cdn/theme.css cdn/theme-mono.css cdn/README.md cdn/package.json</div><div class="step-cmd"># 验证版本号格式: node -e "console.log(/^\d+\.\d+\.\d+$/.test(require('./cdn/package.json').version))"</div><div class="step-expect">✅ 8 字段齐全，6 文件存在（含 package.json），版本号 1.0.0 格式正确</div></div></li>
 <li><input type="checkbox" id="s2"><div><span class="step-id">步骤 2</span><span class="step-name">npm publish --dry-run</span><div class="step-path">📄 index.md §1 TC3</div><div class="step-cmd"># cd cdn/ && npm publish --dry-run 2>&1</div><div class="step-expect">✅ 输出列出 5 个将发布的文件（不含 package.json），exit code 0</div></div></li>
 <li><input type="checkbox" id="s3"><div><span class="step-id">步骤 3</span><span class="step-name">撰写实施报告（§2）</span><div class="step-path">📄 index.md → 追加 §2</div><div class="step-cmd"># 记录: dry-run 输出 + 版本号验证 + 文件清单验证 + 4 项 Gate A 信号</div><div class="step-expect">✅ §2 含 package.json 字段截图、dry-run 输出、发布检查清单结果</div></div></li>
 </ul>
-<div class="yry-footer" style="margin-top:40px;">yry-cdn · 场景-5 计划清单 · <a href="plan.html">← plan</a></div>
+<div class="yry-footer" style="margin-top:40px;">yry-cdn · 场景-5 计划清单 · <a href="../">← plan</a></div>
 </div>
 <script src="../../../../../cdn/shared.js"></script>
 </body>

@@ -1,6 +1,6 @@
 # 场景 2: 提交前增量自检
 
-> | v1.0.0 | 2026-06-05 | deepseek-v4-pro | 🌿 feat/yry-self-test | ⏱️ --:-- | 📎 [CLAUDE.md](../../../CLAUDE.md) |
+> | v1.0.0 | 2026-06-05 | deepseek-v4-pro | 🌿 feat/yry-self-test | ⏱️ --:-- | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
 > **导航**: [← 场景-1](./index.md) · [场景-3 →](./index.md)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
@@ -245,10 +245,10 @@ sequenceDiagram
 
 ---
 
-> **回溯链**: 本文档由 `/rui init` 流程的 Step 4b（自主测试方案）触发生成，场景定义基于管线规则中的分支隔离门禁、逐模块 P0 清零纪律和交付收口规则。来源决策：[code-pipeline.md §① 分支隔离](../../../rules/code-pipeline.md#①-分支隔离--强制门禁)（分支隔离强制门禁），[code-pipeline.md §生效标志](../../../rules/code-pipeline.md#生效标志)（逐项生效标志定义），[delivery-gate.md](../../../rules/delivery-gate.md)（交付收口文档同步规则），[coder.md](../../../agents/coder.md#规则)（coder 行为纪律）。交叉引用：[故事任务](./故事任务.md)（基线需求）。
+> **回溯链**: 本文档由 `/rui init` 流程的 Step 4b（自主测试方案）触发生成，场景定义基于管线规则中的分支隔离门禁、逐模块 P0 清零纪律和交付收口规则。来源决策：[code-pipeline.md §① 分支隔离](../../../../rules/code-pipeline.md#①-分支隔离--强制门禁)（分支隔离强制门禁），[code-pipeline.md §生效标志](../../../../rules/code-pipeline.md#生效标志)（逐项生效标志定义），[delivery-gate.md](../../../../rules/delivery-gate.md)（交付收口文档同步规则），[coder.md](../../../../agents/coder.md#规则)（coder 行为纪律）。交叉引用：[故事任务](../故事任务.md)（基线需求）。
 
 ### 变更记录
 
 | 日期 | 变更 | 触发 | 证据 |
 |------|------|------|------|
-| 2026-06-05 | v1.0.0 初始化：生成场景概述 + §0 技术评审（含效果示意和基线溯源）+ §1 测试设计（含 4 TC-N + 7 TC-B + Gate A 交接） | `/rui init` Step 4b — 自主测试方案场景-2 生成 | [code-pipeline.md §① 分支隔离](../../../rules/code-pipeline.md)；[code-pipeline.md §生效标志](../../../rules/code-pipeline.md)；[coder.md §规则](../../../agents/coder.md)；[formulas.md §F.story.scene](../../../skills/rui/formulas.md) |
+| 2026-06-05 | v1.0.0 初始化：生成场景概述 + §0 技术评审（含效果示意和基线溯源）+ §1 测试设计（含 4 TC-N + 7 TC-B + Gate A 交接） | `/rui init` Step 4b — 自主测试方案场景-2 生成 | [code-pipeline.md §① 分支隔离](../../../../rules/code-pipeline.md)；[code-pipeline.md §生效标志](../../../../rules/code-pipeline.md)；[coder.md §规则](../../../../agents/coder.md)；[formulas.md §F.story.scene](../../../../skills/rui/formulas.md) |

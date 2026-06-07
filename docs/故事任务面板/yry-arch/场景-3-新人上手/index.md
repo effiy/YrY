@@ -1,6 +1,6 @@
 # 场景 3: 新人上手
 
-> | v1.0.0 | 2026-06-05 | deepseek-v4-pro | 🌿 feat/yry-arch | 📎 [CLAUDE.md](../../../CLAUDE.md) |
+> | v1.0.0 | 2026-06-05 | deepseek-v4-pro | 🌿 feat/yry-arch | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
 > **导航**: [← 场景-2](./index.md) · [场景-4 →](./index.md)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
@@ -340,10 +340,10 @@ flowchart TD
 
 > **回溯链**
 >
-> - 需求来源：本场景由 [故事任务 §7 跨文档索引](./故事任务.md#s-7-跨文档索引) 分配，综合覆盖 Story 1 全部 FP 和 Story 2 全部 FP，作为新成员从零上手的导航路线。
-> - 基线内容：[故事任务 Story 1 §2 Requirements](./故事任务.md#s2-requirements) — FP1–FP5；[故事任务 Story 2 §2 Requirements](./故事任务.md#s2-requirements) — FP6–FP10。综合提供模块拓扑认知和数据流认知。
-> - 管线阶段：从需求解析到交付收口的十一个阶段，取自 [管线全流程](../../../rules/code-pipeline.md) 规约。
-> - 公式约束：遵循 [F.story.scene](../../../skills/rui/formulas.md#fstoryscene--场景-n-slugmd-meta--nav--0-技术评审--1-测试设计--2-实施报告--3-测试报告--4-自改进) 公式，含 §0–§4 全生命周期章节。
+> - 需求来源：本场景由 [故事任务 §7 跨文档索引](../故事任务.md#s-7-跨文档索引) 分配，综合覆盖 Story 1 全部 FP 和 Story 2 全部 FP，作为新成员从零上手的导航路线。
+> - 基线内容：[故事任务 Story 1 §2 Requirements](../故事任务.md#s2-requirements) — FP1–FP5；[故事任务 Story 2 §2 Requirements](../故事任务.md#s2-requirements) — FP6–FP10。综合提供模块拓扑认知和数据流认知。
+> - 管线阶段：从需求解析到交付收口的十一个阶段，取自 [管线全流程](../../../../rules/code-pipeline.md) 规约。
+> - 公式约束：遵循 [F.story.scene](../../../../skills/rui/formulas.md#fstoryscene--场景-n-slugmd-meta--nav--0-技术评审--1-测试设计--2-实施报告--3-测试报告--4-自改进) 公式，含 §0–§4 全生命周期章节。
 > - 证据级别：本场景 §0 上手路径设计基于模块拓扑和数据流基线的综合引用（证据级别 B）；各文档的引用链接可验证（证据级别 A）。
 
 ### 变更记录
