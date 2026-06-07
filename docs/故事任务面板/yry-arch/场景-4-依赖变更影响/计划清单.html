@@ -171,46 +171,46 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 </style>
 </head>
 <body>
-<div class="yry-container">
+<div class="container">
 
-<nav class="yry-breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">yry-arch · 系统架构知识固化</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 4 · 依赖变更影响分析</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">📋 计划清单</span></nav>
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 4 · 依赖变更影响分析</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
 
-<div class="yry-cross-nav">
-  <span class="cross-link on">📋 清单</span><span class="yry-cross-sep">·</span>
-  <a href="架构图.html" class="yry-cross-link">📐 架构</a><span class="yry-cross-sep">·</span>
-  <a href="知识图谱.html" class="yry-cross-link">🔗 图谱</a><span class="yry-cross-sep">·</span>
-  <a href="测试面板.html" class="yry-cross-link">🧪 测试</a><span class="yry-cross-sep">·</span>
-  <a href="演示.html" class="yry-cross-link">💡 演示</a><span class="yry-cross-sep">·</span><a href="审查.html" class="yry-cross-link">📝 审查</a>
+<div class="cross-nav">
+  <span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
+  <a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span>
+  <a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a>
 </div>
 
-<div class="yry-header">
-  <h1>📋 场景-4<span class="yry-accent"> · 依赖变更影响分析</span></h1>
-  <p class="yry-sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
-  <div class="meta">📌 v1.0.0 · 📅 2026-06-05 · 🏷️ yry-arch</div>
+<div class="header">
+  <h1>📋 场景-4<span class="accent"> · 依赖变更影响分析</span></h1>
+  <p class="sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
+  <div class="meta">📌 v1.0.0 · 📅 2026-06-05 · 🏷️ arch</div>
 </div>
 
-<div class="yry-stats"><div class="yry-stat"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="yry-stat"><div class="val health">0</div><div class="lbl">✅ 完成</div></div><div class="yry-stat"><div class="val">6</div><div class="lbl">⏳ 待执行</div></div><div class="yry-stat"><div class="val">0%</div><div class="lbl">📊 进度</div></div></div><div class="yry-bar-wrap"><div class="yry-bar-outer"><div class="seg strength" style="width:0%"></div><div class="seg gap" style="width:100%"></div></div></div>
+<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">0</div><div class="lbl">✅ 完成</div></div><div class="stat-card"><div class="val">6</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val">0%</div><div class="lbl">📊 进度</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:0%"></div><div class="seg gap" style="width:100%"></div></div></div>
   <div style="display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:.68rem;color:var(--text3)"><span>✅ 0 完成</span><span>⏳ 0 待执行</span></div>
 
 <!-- Progress bar always visible -->
-<div class="yry-progress-wrap">
-  <div class="yry-progress-label"><span>整体进度</span><span id="progress-text">0 / 14 完成</span></div>
-  <div class="yry-progress-bar"><div class="yry-progress-fill" id="progress-fill" style="width:0%"></div></div>
+<div class="progress-wrap">
+  <div class="progress-label"><span>整体进度</span><span id="progress-text">0 / 14 完成</span></div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
 </div>
 
 <!-- Tabs -->
-<div class="yry-tabs">
+<div class="tabs">
   <span class="tab on" data-panel="checklist">📋 清单</span>
-  <span class="yry-tab" data-panel="overview">📊 概览</span>
-  <span class="yry-tab" data-panel="commands">⚡ 命令</span>
-  <span class="yry-tab" data-panel="related">📁 关联</span>
-  <span class="yry-tab" data-panel="verify">🧪 验证</span>
+  <span class="tab" data-panel="overview">📊 概览</span>
+  <span class="tab" data-panel="commands">⚡ 命令</span>
+  <span class="tab" data-panel="related">📁 关联</span>
+  <span class="tab" data-panel="verify">🧪 验证</span>
 </div>
 
 <!-- ═══ Tab 1: Checklist ═══ -->
 <div class="panel on" id="panelChecklist">
 
-<div class="yry-section">
+<div class="section">
 <h2><span class="dot"></span>§0 技术评审<span class="s-done">— 已完成</span></h2>
 
 <div class="step">
@@ -222,7 +222,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
   </div>
   <div class="step-body open">
     <p>按依赖图追踪变更的影响传播路径：单一模块变更 → 直接依赖者 → 间接依赖者 → 下游消费者。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch --scene 4</code>生成影响传播模型文档</div>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --scene 4</code>生成影响传播模型文档</div>
     <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
     <div class="code-block">变更源 → L1 直接依赖 (立即影响) → L2 间接依赖 (级联影响) → L3 下游 (潜在影响)</div>
   </div>
@@ -237,13 +237,13 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
   </div>
   <div class="step-body">
     <p>模块×模块 矩阵：标注每对模块间的依赖方向、影响级别、验证方法。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch</code>让 architect agent 生成影响矩阵</div>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch</code>让 architect agent 生成影响矩阵</div>
     <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
   </div>
 </div>
 </div>
 
-<div class="yry-section">
+<div class="section">
 <h2><span class="dot"></span>§1 测试设计</h2>
 
 <div class="step">
@@ -255,13 +255,13 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
   </div>
   <div class="step-body">
     <p>TC-I-1: 修改 rui SKILL.md → 验证下游 agent 引用自动检测。TC-I-2: 新增 agent → 验证交叉引用自动更新。TC-I-3: 删除规则 → 验证受影响故事目录识别。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch</code>让 tester agent 生成影响分析测试用例</div>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch</code>让 tester agent 生成影响分析测试用例</div>
     <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div>
   </div>
 </div>
 </div>
 
-<div class="yry-section">
+<div class="section">
 <h2><span class="dot"></span>§2 实施报告<span class="s-done">— 进行中</span></h2>
 
 <div class="step">
@@ -273,7 +273,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
   </div>
   <div class="step-body">
     <p>定义标准化的变更影响分析流程：变更检测 → 影响范围计算 → 通知触发 → 验证闭环。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch --scene 4</code>生成影响分析流程文档</div>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --scene 4</code>生成影响分析流程文档</div>
     <div class="step-deps"><span class="dep-label">关联页面:</span><a href="演示.html" class="dep-badge">💡 演示</a></div>
   </div>
 </div>
@@ -304,13 +304,13 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
   </div>
   <div class="step-body">
     <p>生成可视化的影响传播图，展示变更如何在模块间级联传播。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch --output 架构图.html</code>生成影响传播架构图</div>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --output 架构图.html</code>生成影响传播架构图</div>
     <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
   </div>
 </div>
 </div>
 
-<div class="yry-section">
+<div class="section">
 <h2><span class="dot"></span>§3 测试报告</h2>
 
 <div class="step">
@@ -342,7 +342,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 </div>
 </div>
 
-<div class="yry-section">
+<div class="section">
 <h2><span class="dot"></span>§4 自改进</h2>
 
 <div class="step">
@@ -368,13 +368,13 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
   </div>
   <div class="step-body">
     <p>根据漏报/误报分析结果，优化影响传播算法和检测规则。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch --output 知识图谱.html</code>更新知识图谱中的依赖边权重</div>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --output 知识图谱.html</code>更新知识图谱中的依赖边权重</div>
     <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
   </div>
 </div>
 </div>
 
-<div class="yry-section">
+<div class="section">
 <h2><span class="dot"></span>交付</h2>
 
 <div class="step">
@@ -386,7 +386,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
   </div>
   <div class="step-body">
     <p>验证：影响传播模型完整 · 影响矩阵覆盖所有模块对 · 架构图为 HTML+SVG · 所有链接可达。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch --check p0</code>逐项验证 P0 约束</div>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --check p0</code>逐项验证 P0 约束</div>
   </div>
 </div>
 
@@ -399,7 +399,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
   </div>
   <div class="step-body">
     <p>生成影响传播可视化架构图。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch --output 架构图.html</code>生成完整架构图</div>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --output 架构图.html</code>生成完整架构图</div>
     <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a></div>
   </div>
 </div>
@@ -413,7 +413,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
   </div>
   <div class="step-body">
     <p>验证影响矩阵中每条依赖关系的准确性和影响级别标注。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch --check p0</code>验证影响矩阵准确性</div>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --check p0</code>验证影响矩阵准确性</div>
     <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
   </div>
 </div>
@@ -439,7 +439,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
 </div><!-- /panelChecklist -->
 
 <!-- ═══ Tab 2: Overview ═══ -->
-<div class="yry-panel" id="panelOverview">
+<div class="panel" id="panelOverview">
 
 <div class="stat-grid">
   <div class="stat-mini"><div class="sv g" id="ov-done">1</div><div class="sl">已完成</div></div>
@@ -448,7 +448,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
   <div class="stat-mini"><div class="sv c">14</div><div class="sl">总步骤</div></div>
 </div>
 
-<div class="yry-section"><h2><span class="dot"></span>各阶段完成度</h2>
+<div class="section"><h2><span class="dot"></span>各阶段完成度</h2>
   <div class="section-stat"><span class="ss-label">§0 技术评审</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:50%;background:var(--warn)"></div></div><span class="ss-pct">1/2</span></div>
   <div class="section-stat"><span class="ss-label">§1 测试设计</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/1</span></div>
   <div class="section-stat"><span class="ss-label">§2 实施报告</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/3</span></div>
@@ -457,44 +457,44 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
   <div class="section-stat"><span class="ss-label">交付</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/4</span></div>
 </div>
 
-<div class="yry-section"><h2><span class="dot"></span>下一步行动</h2>
+<div class="section"><h2><span class="dot"></span>下一步行动</h2>
   <div class="cmd-card"><div class="c-stage">当前就绪 — 步骤 2</div><div class="c-name">编写影响矩阵</div><div class="c-desc">模块×模块 矩阵：标注每对模块间的依赖方向、影响级别、验证方法。切换到 ⚡命令 Tab 查看可执行命令。</div></div>
 </div>
 
 </div><!-- /panelOverview -->
 
 <!-- ═══ Tab 3: Commands ═══ -->
-<div class="yry-panel" id="panelCommands">
+<div class="panel" id="panelCommands">
 
-<div class="yry-section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令</h2>
+<div class="section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令</h2>
 <div class="cmd-grid">
-  <div class="cmd-card"><div class="c-stage">步骤 1</div><div class="c-name">生成影响传播模型</div><div class="c-desc">按依赖图追踪变更影响：单一模块→直接依赖→间接依赖→下游</div><pre>/rui doc --story yry-arch --scene 4<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --scene 4')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 2 · 🔶 就绪</div><div class="c-name">生成影响矩阵</div><div class="c-desc">architect agent 生成模块×模块影响矩阵</div><pre>/rui doc --story yry-arch<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 1</div><div class="c-name">生成影响传播模型</div><div class="c-desc">按依赖图追踪变更影响：单一模块→直接依赖→间接依赖→下游</div><pre>/rui doc --story arch --scene 4<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --scene 4')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 2 · 🔶 就绪</div><div class="c-name">生成影响矩阵</div><div class="c-desc">architect agent 生成模块×模块影响矩阵</div><pre>/rui doc --story arch<span class="cb" onclick="copyCmd(this,'/rui doc --story arch')">📋</span></pre></div>
 </div></div>
 
-<div class="yry-section"><h2><span class="dot"></span>§1-§2 测试设计与实施 — 待执行命令</h2>
+<div class="section"><h2><span class="dot"></span>§1-§2 测试设计与实施 — 待执行命令</h2>
 <div class="cmd-grid">
-  <div class="cmd-card"><div class="c-stage">步骤 3</div><div class="c-name">生成影响分析测试</div><div class="c-desc">tester agent 生成 TC-I 系列测试用例</div><pre>/rui doc --story yry-arch<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 4</div><div class="c-name">生成影响分析流程文档</div><div class="c-desc">变更检测→影响范围→通知触发→验证闭环</div><pre>/rui doc --story yry-arch --scene 4<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --scene 4')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 3</div><div class="c-name">生成影响分析测试</div><div class="c-desc">tester agent 生成 TC-I 系列测试用例</div><pre>/rui doc --story arch<span class="cb" onclick="copyCmd(this,'/rui doc --story arch')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 4</div><div class="c-name">生成影响分析流程文档</div><div class="c-desc">变更检测→影响范围→通知触发→验证闭环</div><pre>/rui doc --story arch --scene 4<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --scene 4')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 5</div><div class="c-name">运行影响检测脚本</div><div class="c-desc">自动检测文件变更并计算影响范围</div><pre>node scripts/detect-impact.mjs --changed=agents/pm.md<span class="cb" onclick="copyCmd(this,'node scripts/detect-impact.mjs --changed=agents/pm.md')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 6</div><div class="c-name">生成影响传播架构图</div><div class="c-desc">可视化变更在模块间级联传播</div><pre>/rui doc --story yry-arch --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --output 架构图.html')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 6</div><div class="c-name">生成影响传播架构图</div><div class="c-desc">可视化变更在模块间级联传播</div><pre>/rui doc --story arch --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --output 架构图.html')">📋</span></pre></div>
 </div></div>
 
-<div class="yry-section"><h2><span class="dot"></span>§3-交付 — 待执行命令</h2>
+<div class="section"><h2><span class="dot"></span>§3-交付 — 待执行命令</h2>
 <div class="cmd-grid">
   <div class="cmd-card"><div class="c-stage">步骤 7</div><div class="c-name">运行影响分析测试</div><div class="c-desc">执行 TC-I-1 到 TC-I-3 全部测试</div><pre>node tests/skills/rui.test.mjs --verbose<span class="cb" onclick="copyCmd(this,'node tests/skills/rui.test.mjs --verbose')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 8</div><div class="c-name">推送测试报告</div><div class="c-desc">企微通知影响分析精度与召回率</div><pre>node skills/rui-bot/send.mjs --story=yry-arch --status=test-report<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=yry-arch --status=test-report')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 9</div><div class="c-name">检查配置漂移</div><div class="c-desc">检查配置和规则是否影响检测精度</div><pre>/rui-claude check<span class="cb" onclick="copyCmd(this,'/rui-claude check')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 10</div><div class="c-name">更新知识图谱依赖边</div><div class="c-desc">根据漏报/误报分析优化传播算法</div><pre>/rui doc --story yry-arch --output 知识图谱.html<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --output 知识图谱.html')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 11</div><div class="c-name">P0 约束验证</div><div class="c-desc">逐项验证 P0 检查清单</div><pre>/rui doc --story yry-arch --check p0<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --check p0')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 12</div><div class="c-name">生成架构图</div><div class="c-desc">完整影响传播 HTML+SVG 架构图</div><pre>/rui doc --story yry-arch --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-arch --output 架构图.html')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 10</div><div class="c-name">更新知识图谱依赖边</div><div class="c-desc">根据漏报/误报分析优化传播算法</div><pre>/rui doc --story arch --output 知识图谱.html<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --output 知识图谱.html')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 11</div><div class="c-name">P0 约束验证</div><div class="c-desc">逐项验证 P0 检查清单</div><pre>/rui doc --story arch --check p0<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --check p0')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 12</div><div class="c-name">生成架构图</div><div class="c-desc">完整影响传播 HTML+SVG 架构图</div><pre>/rui doc --story arch --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --output 架构图.html')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 14</div><div class="c-name">交付收口</div><div class="c-desc">git commit → rui-import 同步 → rui-bot 通知</div><pre>git add . && git commit<span class="cb" onclick="copyCmd(this,'git add . && git commit')">📋</span></pre></div>
 </div></div>
 
 </div><!-- /panelCommands -->
 
 <!-- ═══ Tab 4: Related Pages ═══ -->
-<div class="yry-panel" id="panelRelated">
+<div class="panel" id="panelRelated">
 
 <div class="link-grid">
   <a href="架构图.html" class="link-card">
@@ -518,7 +518,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
 </div><!-- /panelRelated -->
 
 <!-- ═══ Tab 5: Verify ═══ -->
-<div class="yry-panel" id="panelVerify">
+<div class="panel" id="panelVerify">
 
 <div class="verify-list">
   <div class="verify-item"><div class="vi-label">步骤 5 · 影响检测脚本</div>
@@ -529,13 +529,13 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
 
 </div><!-- /panelVerify -->
 
-<div class="yry-footer">
+<div class="footer">
   <p>🤖 Generated with planner agent | scene: 依赖变更影响分析 | updated: 2026-06-05</p>
 </div>
 
 </div>
 
-<div class="yry-toast" id="toast"></div>
+<div class="toast" id="toast"></div>
 
 <script>
 const SCENE_KEY = 'yry-arch-s4-checklist';

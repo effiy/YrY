@@ -92,39 +92,39 @@
 </style>
 </head>
 <body>
-<div class="yry-container">
-<nav class="yry-breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">yry-self-test · 自主测试方案</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 3 · 文档代码一致性校验</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">💡 演示</span></nav>
-<div class="yry-cross-nav"><a href="计划清单.html" class="yry-cross-link">📋 清单</a><span class="yry-cross-sep">·</span><a href="架构图.html" class="yry-cross-link">📐 架构</a><span class="yry-cross-sep">·</span><a href="知识图谱.html" class="yry-cross-link">🔗 图谱</a><span class="yry-cross-sep">·</span><a href="测试面板.html" class="yry-cross-link">🧪 测试</a><span class="yry-cross-sep">·</span><span class="cross-link on">💡 演示</span><span class="yry-cross-sep">·</span><a href="审查.html" class="yry-cross-link">📝 审查</a></div>
-  <div class="yry-header">
-  <h1>📝 <span class="yry-accent">文档代码一致性校验</span> — 演示</h1>
-  <p class="yry-sub">规约 vs 实际：章节完整性 · 交叉引用有效性 · 知识图谱节点覆盖 — <span class="kbd-hint">1-5</span> 数字键切换 Tab · 悬停代码复制</p>
+<div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自主测试方案</span><span class="bc-sep">/</span><span class="bc-current">场景 3 · 文档代码一致性校验</span><span class="bc-sep">/</span><span class="bc-current">💡 演示</span></nav>
+<div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><span class="cross-link on">💡 演示</span><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
+  <div class="header">
+  <h1>📝 <span class="accent">文档代码一致性校验</span> — 演示</h1>
+  <p class="sub">规约 vs 实际：章节完整性 · 交叉引用有效性 · 知识图谱节点覆盖 — <span class="kbd-hint">1-5</span> 数字键切换 Tab · 悬停代码复制</p>
 </div>
 
-  <div class="yry-tabs">
+  <div class="tabs">
     <span class="tab on" data-panel="walkthrough">🚶 演示</span>
-    <span class="yry-tab" data-panel="overview">📊 概览</span>
-    <span class="yry-tab" data-panel="commands">⚡ 命令</span>
-    <span class="yry-tab" data-panel="files">📁 文件</span>
-    <span class="yry-tab" data-panel="tests">🧪 测试</span>
+    <span class="tab" data-panel="overview">📊 概览</span>
+    <span class="tab" data-panel="commands">⚡ 命令</span>
+    <span class="tab" data-panel="files">📁 文件</span>
+    <span class="tab" data-panel="tests">🧪 测试</span>
 </div>
 
-<div class="yry-stats"><div class="yry-stat"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="yry-stat"><div class="val health">6</div><div class="lbl">✅ 已演示</div></div><div class="yry-stat"><div class="val">0</div><div class="lbl">⏳ 待演示</div></div><div class="yry-stat"><div class="val health">100%</div><div class="lbl">📊 覆盖率</div></div></div><div class="yry-bar-wrap"><div class="yry-bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div>
+<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">6</div><div class="lbl">✅ 已演示</div></div><div class="stat-card"><div class="val">0</div><div class="lbl">⏳ 待演示</div></div><div class="stat-card"><div class="val health">100%</div><div class="lbl">📊 覆盖率</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div>
   <div style="display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:.68rem;color:var(--text3)"><span>✅ 6 已演示</span><span>⏳ 0 待演示</span></div>
 </div>
 
 <div class="panel on" id="panelWalkthrough">
     <div class="walkthrough">
-      <div class="step"><div class="yry-suite-body"><div class="s-title">章节完整性检查</div><div class="s-desc">验证每个 SKILL.md 的必要章节存在。SKILL.md 必须包含：命令参考、管线一览、核心约束、mermaid 图、阻断标识。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 6 个 SKILL.md 章节统计 — rui(12 章节) / rui-story(10) / rui-claude(9) / rui-import(8) / rui-bot(7) / rui-npm(10) → 必要章节全覆盖(命令参考+管线一览+核心约束+mermaid图+阻断标识) ✅ / 平均 9.3 章节/技能。</div><div class="s-result-desc">💡 说明: 每个 SKILL.md 的必要章节定义了规约完整性的最低标准。5 个必要章节缺一不可: 命令参考(用户入口)、管线一览(流程上下文)、核心约束(铁律映射)、mermaid 图(表达优先)、阻断标识(P0 条件)。缺少任一项 = P1。</div><pre>for f in skills/*/SKILL.md; do echo "=== $f ===" && grep -c "^##" "$f"; done<span class="cb" onclick="copyCmd(this,'for f in skills/*/SKILL.md; do echo "=== $f ===" && grep -c "^##" "$f"; done')">📋</span></pre></div></div>
-      <div class="step"><div class="yry-suite-body"><div class="s-title">交叉引用有效性验证</div><div class="s-desc">检查文档中所有内部链接是否指向存在的文件。断链标记为 P1，需修复。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 内部链接扫描 — 发现 87 个 .md 交叉引用 → 验证目标文件存在: 87/87 可达 ✅ / 0 断链 / 3 个相对路径需标准化 (../../ vs ../) → 全部引用有效。</div><div class="s-result-desc">💡 说明: 断链检查是文档代码一致性的基础 — 断链意味着读者点击后 404，文档失去导航功能。检查方法: grep 提取所有 [text](path.md) 模式 → 解析相对路径 → 验证目标文件存在。断链 = P1（文档的可导航性被破坏，但不影响功能安全）。</div><pre>grep -rn "\[.*\](\.\..*\.md)" --include="*.md" . | grep -v node_modules<span class="cb" onclick="copyCmd(this,'grep -rn "\[.*\](\.\..*\.md)" --include="*.md" . | grep -v node_modules')">📋</span></pre></div></div>
-      <div class="step"><div class="yry-suite-body"><div class="s-title">知识图谱节点覆盖</div><div class="s-desc">验证知识图谱.json 中的节点与 skills/agents/rules 实际内容一致。未覆盖的模块标记为缺口。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 知识图谱节点覆盖 — 23 节点 (skills:6/6 + agents:9/9 + rules:8/8) → 覆盖率: 23/23 = 100% ✅ / 边关系: 56 条 (depends_on:14 + invokes:18 + governed_by:16 + generates:8) → 0 孤岛节点 / 0 缺口。</div><div class="s-result-desc">💡 说明: 知识图谱节点覆盖是文档代码一致性的可视化验证。每个模块目录必须在图谱中有对应节点，孤岛节点（无边关系的节点）表示模块未集成到系统中。覆盖率 ≥95% 为合格，<95% = P1。图谱与架构图互补 — 架构图展示结构，图谱展示关系。</div><pre>cat 知识图谱.html<span class="cb" onclick="copyCmd(this,'cat 知识图谱.html')">📋</span></pre></div></div>
-      <div class="step"><div class="yry-suite-body"><div class="s-title">代码-文档映射</div><div class="s-desc">对比 plugin.json 中注册的技能与 skills/ 目录实际文件，验证一一对应无遗漏无多余。</div><div class="s-result"><span class="r-label">✅ 结果:</span> diff 输出为空 — plugin.json 注册 6 技能 (rui/rui-story/rui-claude/rui-import/rui-bot/rui-npm/rui-trends) ↔ skills/ 目录 7 目录 → 差异: rui-trends 在 plugin.json 注册但 skills/ 目录为空 (仅 SKILL.md) → P1 (注册但未完整实现)。</div><div class="s-result-desc">💡 说明: 代码-文档映射的核心是「注册表 = 磁盘」一致性。plugin.json 声明了 7 个技能但磁盘上 rui-trends 目录不完整 — 这是典型的配置漂移（plugin.json 超前于实际实现）。处理方式: 补全 rui-trends 目录或从 plugin.json 中移除注册。</div><pre>diff <(ls skills/) <(cat plugin.json | grep -o '"name":"[^"]*"' | cut -d'"' -f4)<span class="cb" onclick="copyCmd(this,'diff <(ls skills/) <(cat plugin.json | grep -o \'"name":"[^"]*"\' | cut -d\'"\' -f4)')">📋</span></pre></div></div>
-      <div class="step"><div class="yry-suite-body"><div class="s-title">表达优先检查</div><div class="s-desc">验证文档遵循表达优先原则：架构用 mermaid 图而非大段文字、关键流程有图、复杂结构用表。</div><div class="s-result"><span class="r-label">✅ 结果:</span> mermaid 图统计 — rui(4 图) / rui-story(3) / rui-claude(2) / rui-import(2) / rui-bot(2) / rui-npm(3) → 总计 16 个 mermaid 图 / 6 技能全覆盖 ✅ / 图类型: flowchart(10) + sequence(4) + class(2)。</div><div class="s-result-desc">💡 说明: 表达优先铁律要求「图 → 结构化文本 → 表」。mermaid 图统计验证: (1) 每个 SKILL.md 至少有 1 个 mermaid 图，(2) 架构描述用图而非大段文字，(3) 关键流程（如管线阶段、Agent 交互）用 sequence 图。0 图 = 违反表达优先 = P1。</div><pre>grep -c "mermaid\|```mermaid" skills/*/SKILL.md<span class="cb" onclick="copyCmd(this,'grep -c "mermaid\|```mermaid" skills/*/SKILL.md')">📋</span></pre></div></div>
-      <div class="step"><div class="yry-suite-body"><div class="s-title">远端同步一致性</div><div class="s-desc">对比本地文件与远端 API 存储的文件内容。差异标记为需要重新同步。</div><div class="s-result"><span class="r-label">✅ 结果:</span> rui-import mode=list — 本地 47 文件 vs 远端 47 文件 → 待同步: 12 文件 (版本 4.3.0 → 远端 4.2.0) → 文件级 diff: 8 个演示.html 新增结果段落 + 2 个 SKILL.md 更新 + 1 知识图谱.json 边更新 + 1 测试面板.html 统计更新。</div><div class="s-result-desc">💡 说明: 远端同步一致性是文档代码一致性的最后一道检查。本地领先远端 = 正常（本地开发中），远端领先本地 = 异常（别人更新了但本地未同步）。差异文件列表是 rui-import sync 的输入 — 确认无误后执行 sync 推送到远端 API。</div><pre>/rui-import mode=list<span class="cb" onclick="copyCmd(this,'/rui-import mode=list')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">章节完整性检查</div><div class="s-desc">验证每个 SKILL.md 的必要章节存在。SKILL.md 必须包含：命令参考、管线一览、核心约束、mermaid 图、阻断标识。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 6 个 SKILL.md 章节统计 — rui(12 章节) / rui-story(10) / rui-claude(9) / rui-import(8) / rui-bot(7) / rui-npm(10) → 必要章节全覆盖(命令参考+管线一览+核心约束+mermaid图+阻断标识) ✅ / 平均 9.3 章节/技能。</div><div class="s-result-desc">💡 说明: 每个 SKILL.md 的必要章节定义了规约完整性的最低标准。5 个必要章节缺一不可: 命令参考(用户入口)、管线一览(流程上下文)、核心约束(铁律映射)、mermaid 图(表达优先)、阻断标识(P0 条件)。缺少任一项 = P1。</div><pre>for f in skills/*/SKILL.md; do echo "=== $f ===" && grep -c "^##" "$f"; done<span class="cb" onclick="copyCmd(this,'for f in skills/*/SKILL.md; do echo "=== $f ===" && grep -c "^##" "$f"; done')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">交叉引用有效性验证</div><div class="s-desc">检查文档中所有内部链接是否指向存在的文件。断链标记为 P1，需修复。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 内部链接扫描 — 发现 87 个 .md 交叉引用 → 验证目标文件存在: 87/87 可达 ✅ / 0 断链 / 3 个相对路径需标准化 (../../ vs ../) → 全部引用有效。</div><div class="s-result-desc">💡 说明: 断链检查是文档代码一致性的基础 — 断链意味着读者点击后 404，文档失去导航功能。检查方法: grep 提取所有 [text](path.md) 模式 → 解析相对路径 → 验证目标文件存在。断链 = P1（文档的可导航性被破坏，但不影响功能安全）。</div><pre>grep -rn "\[.*\](\.\..*\.md)" --include="*.md" . | grep -v node_modules<span class="cb" onclick="copyCmd(this,'grep -rn "\[.*\](\.\..*\.md)" --include="*.md" . | grep -v node_modules')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">知识图谱节点覆盖</div><div class="s-desc">验证知识图谱.json 中的节点与 skills/agents/rules 实际内容一致。未覆盖的模块标记为缺口。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 知识图谱节点覆盖 — 23 节点 (skills:6/6 + agents:9/9 + rules:8/8) → 覆盖率: 23/23 = 100% ✅ / 边关系: 56 条 (depends_on:14 + invokes:18 + governed_by:16 + generates:8) → 0 孤岛节点 / 0 缺口。</div><div class="s-result-desc">💡 说明: 知识图谱节点覆盖是文档代码一致性的可视化验证。每个模块目录必须在图谱中有对应节点，孤岛节点（无边关系的节点）表示模块未集成到系统中。覆盖率 ≥95% 为合格，<95% = P1。图谱与架构图互补 — 架构图展示结构，图谱展示关系。</div><pre>cat 知识图谱.html<span class="cb" onclick="copyCmd(this,'cat 知识图谱.html')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">代码-文档映射</div><div class="s-desc">对比 plugin.json 中注册的技能与 skills/ 目录实际文件，验证一一对应无遗漏无多余。</div><div class="s-result"><span class="r-label">✅ 结果:</span> diff 输出为空 — plugin.json 注册 6 技能 (rui/rui-story/rui-claude/rui-import/rui-bot/rui-npm/rui-trends) ↔ skills/ 目录 7 目录 → 差异: rui-trends 在 plugin.json 注册但 skills/ 目录为空 (仅 SKILL.md) → P1 (注册但未完整实现)。</div><div class="s-result-desc">💡 说明: 代码-文档映射的核心是「注册表 = 磁盘」一致性。plugin.json 声明了 7 个技能但磁盘上 rui-trends 目录不完整 — 这是典型的配置漂移（plugin.json 超前于实际实现）。处理方式: 补全 rui-trends 目录或从 plugin.json 中移除注册。</div><pre>diff <(ls skills/) <(cat plugin.json | grep -o '"name":"[^"]*"' | cut -d'"' -f4)<span class="cb" onclick="copyCmd(this,'diff <(ls skills/) <(cat plugin.json | grep -o \'"name":"[^"]*"\' | cut -d\'"\' -f4)')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">表达优先检查</div><div class="s-desc">验证文档遵循表达优先原则：架构用 mermaid 图而非大段文字、关键流程有图、复杂结构用表。</div><div class="s-result"><span class="r-label">✅ 结果:</span> mermaid 图统计 — rui(4 图) / rui-story(3) / rui-claude(2) / rui-import(2) / rui-bot(2) / rui-npm(3) → 总计 16 个 mermaid 图 / 6 技能全覆盖 ✅ / 图类型: flowchart(10) + sequence(4) + class(2)。</div><div class="s-result-desc">💡 说明: 表达优先铁律要求「图 → 结构化文本 → 表」。mermaid 图统计验证: (1) 每个 SKILL.md 至少有 1 个 mermaid 图，(2) 架构描述用图而非大段文字，(3) 关键流程（如管线阶段、Agent 交互）用 sequence 图。0 图 = 违反表达优先 = P1。</div><pre>grep -c "mermaid\|```mermaid" skills/*/SKILL.md<span class="cb" onclick="copyCmd(this,'grep -c "mermaid\|```mermaid" skills/*/SKILL.md')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">远端同步一致性</div><div class="s-desc">对比本地文件与远端 API 存储的文件内容。差异标记为需要重新同步。</div><div class="s-result"><span class="r-label">✅ 结果:</span> rui-import mode=list — 本地 47 文件 vs 远端 47 文件 → 待同步: 12 文件 (版本 4.3.0 → 远端 4.2.0) → 文件级 diff: 8 个演示.html 新增结果段落 + 2 个 SKILL.md 更新 + 1 知识图谱.json 边更新 + 1 测试面板.html 统计更新。</div><div class="s-result-desc">💡 说明: 远端同步一致性是文档代码一致性的最后一道检查。本地领先远端 = 正常（本地开发中），远端领先本地 = 异常（别人更新了但本地未同步）。差异文件列表是 rui-import sync 的输入 — 确认无误后执行 sync 推送到远端 API。</div><pre>/rui-import mode=list<span class="cb" onclick="copyCmd(this,'/rui-import mode=list')">📋</span></pre></div></div>
     </div>
   </div>
 
-  <div class="yry-panel" id="panelOverview">
-    <div class="yry-section"><h2><span class="dot"></span>一致性检查维度</h2>
+  <div class="panel" id="panelOverview">
+    <div class="section"><h2><span class="dot"></span>一致性检查维度</h2>
       <div class="flow-row">
         <div class="flow-chip"><span class="n">章节</span> 完整性</div><span class="flow-arrow">→</span>
         <div class="flow-chip"><span class="n">引用</span> 有效性</div><span class="flow-arrow">→</span>
@@ -133,7 +133,7 @@
         <div class="flow-chip"><span class="n">表达</span> 优先</div>
       </div>
     </div>
-    <div class="yry-section"><h2><span class="dot"></span>规约-实现对照</h2>
+    <div class="section"><h2><span class="dot"></span>规约-实现对照</h2>
       <div class="flow-row">
         <div class="flow-chip"><span class="n">SKILL.md</span> → skills/</div><span class="flow-arrow">·</span>
         <div class="flow-chip"><span class="n">Agent.md</span> → agents/</div><span class="flow-arrow">·</span>
@@ -143,7 +143,7 @@
     </div>
   </div>
 
-  <div class="yry-panel" id="panelCommands">
+  <div class="panel" id="panelCommands">
     <div class="cmd-grid">
       <div class="cmd-card"><div class="stage">章节检查</div><div class="name">grep 章节标题</div><div class="desc">统计每个 SKILL.md 的章节数，验证必要章节全部存在。</div><pre>for f in skills/*/SKILL.md; do echo "$f: $(grep -c '^##' $f) sections"; done<span class="cb" onclick="copyCmd(this,'for f in skills/*/SKILL.md; do echo "$f: $(grep -c \'^##\' $f) sections"; done')">📋</span></pre></div>
       <div class="cmd-card"><div class="stage">引用检查</div><div class="name">grep 内部链接</div><div class="desc">提取所有内部 .md 链接，验证目标文件存在。</div><pre>grep -roh '\[.*\]([^)]*\.md)' --include="*.md" . | sort | uniq -c<span class="cb" onclick="copyCmd(this,'grep -roh \'\[.*\]([^)]*\.md)\' --include="*.md" . | sort | uniq -c')">📋</span></pre></div>
@@ -154,8 +154,8 @@
     </div>
   </div>
 
-  <div class="yry-panel" id="panelFiles">
-    <div class="yry-section"><h2><span class="dot"></span>相关文件</h2>
+  <div class="panel" id="panelFiles">
+    <div class="section"><h2><span class="dot"></span>相关文件</h2>
       <div class="file-list">
         <div class="file-item">📄 SKILL.md ×6</div>
         <div class="file-item">📄 Agent.md ×8</div>
@@ -168,8 +168,8 @@
     <div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="测试面板.html">🧪 测试面板</a></div>
   </div>
 
-  <div class="yry-panel" id="panelTests">
-    <div class="yry-section"><h2><span class="dot"></span>测试覆盖</h2>
+  <div class="panel" id="panelTests">
+    <div class="section"><h2><span class="dot"></span>测试覆盖</h2>
       <div class="cmd-grid">
         <div class="cmd-card"><div class="name">章节 100% 完整</div><div class="desc">验证每个 SKILL.md 包含所有必要章节，无遗漏。</div></div>
         <div class="cmd-card"><div class="name">0 断链</div><div class="desc">验证所有文档内部链接指向存在的文件，无 404。</div></div>
@@ -179,7 +179,7 @@
     <div class="links-row"><a href="测试面板.html">🧪 打开测试面板</a><a href="../../../index.html">📄 返回文档中心</a></div>
   </div>
 </div>
-<div class="yry-toast" id="toast"></div>
+<div class="toast" id="toast"></div>
 <script>
 document.querySelector('.tabs').addEventListener('click',e=>{const tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
 function switchPanel(name){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===name));document.querySelectorAll('.panel').forEach(p=>{const on=p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1);p.classList.toggle('on',on)})}
@@ -187,7 +187,7 @@ document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;con
 function copyCmd(btn,cmd){navigator.clipboard.writeText(cmd).then(()=>{btn.textContent='✅';btn.classList.add('done');setTimeout(()=>{btn.textContent='📋';btn.classList.remove('done')},1500)}).catch(()=>toast('复制失败'))}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}
 </script>
-<div class="yry-footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY · 场景演示</div>
+<div class="footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY · 场景演示</div>
 <script src="../../../../cdn/shared.js"></script>
 </body>
 </html>

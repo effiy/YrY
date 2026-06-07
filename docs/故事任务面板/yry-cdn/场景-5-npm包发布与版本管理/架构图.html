@@ -4,125 +4,133 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>场景-5: npm包发布与版本管理 — 架构图</title>
+<!-- ═══ CDN: YrY 共享样式 ═══ -->
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../../../../cdn/shared.css">
 <link rel="stylesheet" href="../../../../../cdn/theme-mono.css">
-<style>svg text{font-family:'JetBrains Mono',monospace}</style>
-</head>
-<body>
-<div class="yry-mono-container wide">
-  <div class="yry-breadcrumb">
-    <a href="../../../../docs/故事任务面板/">故事面板</a><span class="yry-bc-sep">/</span>
-    <a href="../">yry-cdn</a><span class="yry-bc-sep">/</span>
-    <span class="yry-bc-current">场景-5 架构图</span>
-  </div>
-  <div class="yry-cross-nav">
-    <a class="yry-cross-link" href="../场景-1-cdn资源加载与页面渲染/架构图.html">场景-1</a><span class="yry-cross-sep">|</span>
-    <a class="yry-cross-link" href="../场景-2-双主题系统设计/架构图.html">场景-2</a><span class="yry-cross-sep">|</span>
-    <a class="yry-cross-link" href="../场景-3-组件库与JS工具API/架构图.html">场景-3</a><span class="yry-cross-sep">|</span>
-    <a class="yry-cross-link" href="../场景-4-存量页面迁移/架构图.html">场景-4</a><span class="yry-cross-sep">|</span>
-    <a class="yry-cross-link on" href="../场景-5-npm包发布与版本管理/架构图.html">场景-5</a>
-  </div>
-  <div class="yry-mono-header">
-    <div class="yry-mono-header-row"><div class="yry-pulse-dot"></div><h1>npm 包发布与版本管理 — 架构图</h1></div>
-    <div class="yry-mono-subtitle">yry-cdn / 场景-5 / 语义化版本 + npm publish 管线</div>
-  </div>
-
-  <div class="yry-diagram-wrap">
-    <svg viewBox="0 0 1100 700" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#475569"/></marker>
-        <marker id="arr-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#22c55e"/></marker>
-        <marker id="arr-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ef4444"/></marker>
-      </defs>
-
-      <!-- Package.json -->
-      <rect x="300" y="20" width="500" height="90" rx="10" fill="#2a1a3a" stroke="#fbbf24" stroke-width="1.5"/>
-      <text x="550" y="48" text-anchor="middle" fill="#fbbf24" font-size="14" font-weight="700">package.json — yry-cdn</text>
-      <text x="550" y="68" text-anchor="middle" fill="#94a3b8" font-size="10">name: "yry-cdn" · version: "1.0.0" · main: "shared.js"</text>
-      <text x="550" y="86" text-anchor="middle" fill="#94a3b8" font-size="10">files: shared.css · shared.js · theme.css · theme-mono.css · README.md</text>
-      <text x="550" y="102" text-anchor="middle" fill="#64748b" font-size="9">license: MIT · repository: GitHub · author: effiyichengliang</text>
-
-      <!-- Change triggers -->
-      <line x1="550" y1="110" x2="550" y2="150" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
-
-      <rect x="350" y="155" width="400" height="40" rx="8" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
-      <text x="550" y="180" text-anchor="middle" fill="#a9b1d6" font-size="11">CDN 文件发生变更</text>
-
-      <!-- Three paths -->
-      <line x1="240" y1="175" x2="120" y2="230" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arr-green)"/>
-      <line x1="550" y1="195" x2="550" y2="230" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
-      <line x1="860" y1="175" x2="980" y2="230" stroke="#ef4444" stroke-width="1.5" marker-end="url(#arr-red)"/>
-
-      <text x="380" y="210" text-anchor="middle" fill="#a9b1d6" font-size="9">类型判定</text>
-
-      <!-- PATCH path -->
-      <rect x="20" y="235" width="200" height="80" rx="8" fill="#1a2a2a" stroke="#22c55e" stroke-width="1"/>
-      <text x="120" y="260" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="700">PATCH</text>
-      <text x="120" y="280" text-anchor="middle" fill="#64748b" font-size="9">1.0.0 → 1.0.1</text>
-      <text x="120" y="296" text-anchor="middle" fill="#64748b" font-size="9">措辞/注释/格式</text>
-      <text x="120" y="310" text-anchor="middle" fill="#64748b" font-size="9">0 消费者需操作</text>
-
-      <!-- MINOR path -->
-      <rect x="450" y="235" width="200" height="80" rx="8" fill="#1a3a2a" stroke="#f59e0b" stroke-width="1"/>
-      <text x="550" y="260" text-anchor="middle" fill="#f59e0b" font-size="12" font-weight="700">MINOR</text>
-      <text x="550" y="280" text-anchor="middle" fill="#64748b" font-size="9">1.0.0 → 1.1.0</text>
-      <text x="550" y="296" text-anchor="middle" fill="#64748b" font-size="9">新增组件/API</text>
-      <text x="550" y="310" text-anchor="middle" fill="#64748b" font-size="9">0 消费者需操作 (可选)</text>
-
-      <!-- MAJOR path -->
-      <rect x="880" y="235" width="200" height="80" rx="8" fill="#2a1a1a" stroke="#ef4444" stroke-width="1"/>
-      <text x="980" y="260" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="700">MAJOR</text>
-      <text x="980" y="280" text-anchor="middle" fill="#64748b" font-size="9">1.0.0 → 2.0.0</text>
-      <text x="980" y="296" text-anchor="middle" fill="#64748b" font-size="9">破坏性变更</text>
-      <text x="980" y="310" text-anchor="middle" fill="#64748b" font-size="9">55 消费者需适配</text>
-
-      <!-- Merge to publish pipeline -->
-      <line x1="120" y1="315" x2="300" y2="360" stroke="#475569" stroke-width="1"/>
-      <line x1="550" y1="315" x2="550" y2="360" stroke="#475569" stroke-width="1"/>
-      <line x1="980" y1="315" x2="800" y2="360" stroke="#475569" stroke-width="1"/>
-
-      <!-- Publish pipeline -->
-      <rect x="300" y="365" width="500" height="100" rx="8" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1.5"/>
-      <text x="550" y="390" text-anchor="middle" fill="#a9b1d6" font-size="12" font-weight="600">发布管线</text>
-      <text x="550" y="412" text-anchor="middle" fill="#64748b" font-size="10">① 更新 package.json version 字段</text>
-      <text x="550" y="428" text-anchor="middle" fill="#64748b" font-size="10">② git commit -m "chore: bump yry-cdn X→Y"</text>
-      <text x="550" y="444" text-anchor="middle" fill="#64748b" font-size="10">③ git tag vX.Y.Z + git push --tags</text>
-
-      <line x1="550" y1="465" x2="550" y2="510" stroke="#22c55e" stroke-width="2" marker-end="url(#arr-green)"/>
-
-      <!-- npm publish -->
-      <rect x="200" y="515" width="300" height="55" rx="8" fill="#1a3a2a" stroke="#22c55e" stroke-width="1.5"/>
-      <text x="350" y="540" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="600">④ npm publish --dry-run</text>
-      <text x="350" y="560" text-anchor="middle" fill="#64748b" font-size="9">验证文件清单 + 包完整性</text>
-
-      <rect x="600" y="515" width="300" height="55" rx="8" fill="#1a3a2a" stroke="#22c55e" stroke-width="1.5"/>
-      <text x="750" y="540" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="600">⑤ npm publish</text>
-      <text x="750" y="560" text-anchor="middle" fill="#64748b" font-size="9">发布到 registry → 55 消费者可用</text>
-
-      <line x1="350" y1="570" x2="350" y2="605" stroke="#475569" stroke-width="1" marker-end="url(#arr)"/>
-      <line x1="750" y1="570" x2="750" y2="605" stroke="#475569" stroke-width="1" marker-end="url(#arr)"/>
-
-      <!-- Published state -->
-      <rect x="300" y="610" width="500" height="45" rx="8" fill="#1a3a1a" stroke="#22c55e" stroke-width="2"/>
-      <text x="550" y="632" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="600">✅ yry-cdn@X.Y.Z 已发布</text>
-      <text x="550" y="650" text-anchor="middle" fill="#64748b" font-size="9">git tag vX.Y.Z ⇔ npm registry ⇔ 55 HTML 页面</text>
-
-      <!-- Version history table area -->
-      <rect x="100" y="20" width="170" height="50" rx="6" fill="#1a2a3a" stroke="#1e293b" stroke-width="1"/>
-      <text x="185" y="42" text-anchor="middle" fill="#64748b" font-size="9">版本历史</text>
-      <text x="185" y="58" text-anchor="middle" fill="#94a3b8" font-size="9">git tag --list 'v*'</text>
-    </svg>
-  </div>
-
-  <div class="yry-mono-legend">
-    <div class="yry-mono-legend-item"><div class="yry-mono-dot emerald"></div>PATCH / 发布成功</div>
-    <div class="yry-mono-legend-item"><div class="yry-mono-dot amber"></div>MINOR 升级</div>
-    <div class="yry-mono-legend-item"><div class="yry-mono-dot rose"></div>MAJOR 升级</div>
-    <div class="yry-mono-legend-item"><div class="yry-mono-dot blue"></div>发布管线</div>
-  </div>
-  <div class="yry-mono-footer">YrY CDN · 场景-5 架构图 · 2026-06-07</div>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
+.container{max-width:1200px;margin:0 auto}
+.header{margin-bottom:1.5rem}
+.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
+.pulse-dot{width:12px;height:12px;background:#22d3ee;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+h1{font-size:1.5rem;font-weight:700}
+.subtitle{color:#94a3b8;font-size:.875rem;margin-left:1.75rem}
+.toolbar{display:flex;gap:.5rem;margin-left:auto;flex-shrink:0;align-items:center}
+.toolbar-toggle{background:transparent;border:none;color:#475569;cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem}
+.toolbar-toggle:hover{color:#94a3b8;background:rgba(30,41,59,.5)}
+.toolbar-actions{display:none;gap:.5rem}
+.toolbar.expanded .toolbar-actions{display:flex}
+.toolbar-actions button{background:rgba(30,41,59,.8);border:1px solid #334155;color:#94a3b8;padding:.375rem .75rem;border-radius:.375rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.toolbar-actions button:hover{background:rgba(51,65,85,.8);color:white;border-color:#475569}
+.diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
+.diagram-container svg{width:100%;min-width:900px;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;padding:.75rem;background:rgba(15,23,42,.5);border-radius:.5rem;border:1px solid #1e293b;font-size:.75rem;color:#94a3b8}
+.legend-item{display:flex;align-items:center;gap:.375rem}
+.legend-dot{width:10px;height:10px;border-radius:50%}
+.legend-dot.emerald{background:#22c55e}.legend-dot.amber{background:#fbbf24}.legend-dot.rose{background:#fb7185}.legend-dot.blue{background:#3B82F6}
+.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
+@media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap}
+.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
+.cross-link:hover{color:#fbbf24;background:rgba(251,191,36,0.06)}
+.cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
+.cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
+</style></head><body><div class="container" id="rc">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../故事任务.md">yry-cdn · CDN 共享前端资源管理</a><span class="bc-sep">/</span><span class="bc-current">场景 5 · npm 包发布与版本管理</span><span class="bc-sep">/</span><span class="bc-current">📐 架构图</span></nav>
+<div class="cross-nav">
+<a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><span class="cross-link on">📐 架构</span><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a>
 </div>
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>npm 包发布与版本管理 — 架构图</h1>
+<div class="toolbar"><div class="toolbar-actions">
+<button onclick="copyAsImage(this)">📋 Copy</button>
+<button onclick="downloadPNG(this)">🖼️ PNG</button>
+<button onclick="downloadPDF(this)">📄 PDF</button>
+</div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
+</div><p class="subtitle">yry-cdn / 场景-5 / 语义化版本 + npm publish 管线</p></div>
+
+<div class="diagram-container">
+<svg viewBox="0 0 1100 700" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#475569"/></marker>
+<marker id="arr-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#22c55e"/></marker>
+<marker id="arr-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ef4444"/></marker>
+</defs>
+<!-- Package.json -->
+<rect x="300" y="20" width="500" height="90" rx="10" fill="#2a1a3a" stroke="#fbbf24" stroke-width="1.5"/>
+<text x="550" y="48" text-anchor="middle" fill="#fbbf24" font-size="14" font-weight="700">package.json — cdn</text>
+<text x="550" y="68" text-anchor="middle" fill="#94a3b8" font-size="10">name: "yry-cdn" · version: "1.0.0" · main: "shared.js"</text>
+<text x="550" y="86" text-anchor="middle" fill="#94a3b8" font-size="10">files: shared.css · shared.js · theme.css · theme-mono.css · README.md</text>
+<text x="550" y="102" text-anchor="middle" fill="#64748b" font-size="9">license: MIT · repository: GitHub · author: effiyichengliang</text>
+<line x1="550" y1="110" x2="550" y2="150" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="350" y="155" width="400" height="40" rx="8" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1"/>
+<text x="550" y="180" text-anchor="middle" fill="#a9b1d6" font-size="11">CDN 文件发生变更</text>
+<line x1="240" y1="175" x2="120" y2="230" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arr-green)"/>
+<line x1="550" y1="195" x2="550" y2="230" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+<line x1="860" y1="175" x2="980" y2="230" stroke="#ef4444" stroke-width="1.5" marker-end="url(#arr-red)"/>
+<text x="380" y="210" text-anchor="middle" fill="#a9b1d6" font-size="9">类型判定</text>
+<rect x="20" y="235" width="200" height="80" rx="8" fill="#1a2a2a" stroke="#22c55e" stroke-width="1"/>
+<text x="120" y="260" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="700">PATCH</text>
+<text x="120" y="280" text-anchor="middle" fill="#64748b" font-size="9">1.0.0 → 1.0.1</text>
+<text x="120" y="296" text-anchor="middle" fill="#64748b" font-size="9">措辞/注释/格式</text>
+<text x="120" y="310" text-anchor="middle" fill="#64748b" font-size="9">0 消费者需操作</text>
+<rect x="450" y="235" width="200" height="80" rx="8" fill="#1a3a2a" stroke="#f59e0b" stroke-width="1"/>
+<text x="550" y="260" text-anchor="middle" fill="#f59e0b" font-size="12" font-weight="700">MINOR</text>
+<text x="550" y="280" text-anchor="middle" fill="#64748b" font-size="9">1.0.0 → 1.1.0</text>
+<text x="550" y="296" text-anchor="middle" fill="#64748b" font-size="9">新增组件/API</text>
+<text x="550" y="310" text-anchor="middle" fill="#64748b" font-size="9">0 消费者需操作 (可选)</text>
+<rect x="880" y="235" width="200" height="80" rx="8" fill="#2a1a1a" stroke="#ef4444" stroke-width="1"/>
+<text x="980" y="260" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="700">MAJOR</text>
+<text x="980" y="280" text-anchor="middle" fill="#64748b" font-size="9">1.0.0 → 2.0.0</text>
+<text x="980" y="296" text-anchor="middle" fill="#64748b" font-size="9">破坏性变更</text>
+<text x="980" y="310" text-anchor="middle" fill="#64748b" font-size="9">55 消费者需适配</text>
+<line x1="120" y1="315" x2="300" y2="360" stroke="#475569" stroke-width="1"/>
+<line x1="550" y1="315" x2="550" y2="360" stroke="#475569" stroke-width="1"/>
+<line x1="980" y1="315" x2="800" y2="360" stroke="#475569" stroke-width="1"/>
+<rect x="300" y="365" width="500" height="100" rx="8" fill="#1a2a3a" stroke="#3d59a1" stroke-width="1.5"/>
+<text x="550" y="390" text-anchor="middle" fill="#a9b1d6" font-size="12" font-weight="600">发布管线</text>
+<text x="550" y="412" text-anchor="middle" fill="#64748b" font-size="10">① 更新 package.json version 字段</text>
+<text x="550" y="428" text-anchor="middle" fill="#64748b" font-size="10">② git commit -m "chore: bump cdn X→Y"</text>
+<text x="550" y="444" text-anchor="middle" fill="#64748b" font-size="10">③ git tag vX.Y.Z + git push --tags</text>
+<line x1="550" y1="465" x2="550" y2="510" stroke="#22c55e" stroke-width="2" marker-end="url(#arr-green)"/>
+<rect x="200" y="515" width="300" height="55" rx="8" fill="#1a3a2a" stroke="#22c55e" stroke-width="1.5"/>
+<text x="350" y="540" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="600">④ npm publish --dry-run</text>
+<text x="350" y="560" text-anchor="middle" fill="#64748b" font-size="9">验证文件清单 + 包完整性</text>
+<rect x="600" y="515" width="300" height="55" rx="8" fill="#1a3a2a" stroke="#22c55e" stroke-width="1.5"/>
+<text x="750" y="540" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="600">⑤ npm publish</text>
+<text x="750" y="560" text-anchor="middle" fill="#64748b" font-size="9">发布到 registry → 55 消费者可用</text>
+<line x1="350" y1="570" x2="350" y2="605" stroke="#475569" stroke-width="1" marker-end="url(#arr)"/>
+<line x1="750" y1="570" x2="750" y2="605" stroke="#475569" stroke-width="1" marker-end="url(#arr)"/>
+<rect x="300" y="610" width="500" height="45" rx="8" fill="#1a3a1a" stroke="#22c55e" stroke-width="2"/>
+<text x="550" y="632" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="600">✅ cdn@X.Y.Z 已发布</text>
+<text x="550" y="650" text-anchor="middle" fill="#64748b" font-size="9">git tag vX.Y.Z ⇔ npm registry ⇔ 55 HTML 页面</text>
+<rect x="100" y="20" width="170" height="50" rx="6" fill="#1a2a3a" stroke="#1e293b" stroke-width="1"/>
+<text x="185" y="42" text-anchor="middle" fill="#64748b" font-size="9">版本历史</text>
+<text x="185" y="58" text-anchor="middle" fill="#94a3b8" font-size="9">git tag --list 'v*'</text>
+</svg>
+</div>
+
+<div class="legend">
+<span class="legend-item"><span class="legend-dot emerald"></span>PATCH / 发布成功</span>
+<span class="legend-item"><span class="legend-dot amber"></span>MINOR 升级</span>
+<span class="legend-item"><span class="legend-dot rose"></span>MAJOR 升级</span>
+<span class="legend-item"><span class="legend-dot blue"></span>发布管线</span>
+</div>
+<p class="footer">YrY v4.6.0 · cdn · 场景-5 架构图 · npm 包发布与版本管理</p>
+</div>
+<script>
+async function copyAsImage(b){const o=b.textContent;try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2}),bl=await new Promise(r=>c.toBlob(r,"image/png"));await navigator.clipboard.write([new ClipboardItem({"image/png":bl})]);b.textContent="✓ Copied!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}
+async function downloadPNG(b){const o=b.textContent;b.textContent="⏳...";try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2}),a=document.createElement("a");a.download="场景5-npm包发布与版本管理.png";a.href=c.toDataURL("image/png");a.click();b.textContent="✓ Done!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}
+async function downloadPDF(b){const o=b.textContent;b.textContent="⏳...";try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2});const{jsPDF}=window.jspdf;const d=new jsPDF({orientation:c.width>c.height?"l":"p",unit:"px",format:[c.width/2,c.height/2]});d.addImage(c.toDataURL("image/png"),"PNG",0,0,c.width/2,c.height/2);d.save("场景5-npm包发布与版本管理.pdf");b.textContent="✓ Done!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}
+</script>
 <script src="../../../../../cdn/shared.js"></script>
-</body>
-</html>
+</body></html>

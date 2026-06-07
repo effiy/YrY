@@ -62,15 +62,15 @@ h1{font-size:1.5rem;font-weight:700}
 .cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
 .cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
 </style></head><body><div class="container" id="report-container">
-<nav class="yry-breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">yry-arch · 系统架构知识固化</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 3 · 新人上手与开发指南</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">🔗 知识图谱</span></nav>
-<div class="yry-cross-nav"><a href="计划清单.html" class="yry-cross-link">📋 清单</a><span class="yry-cross-sep">·</span><a href="架构图.html" class="yry-cross-link">📐 架构</a><span class="yry-cross-sep">·</span><span class="cross-link on">🔗 图谱</span><span class="yry-cross-sep">·</span><a href="测试面板.html" class="yry-cross-link">🧪 测试</a><span class="yry-cross-sep">·</span><a href="演示.html" class="yry-cross-link">💡 演示</a><span class="yry-cross-sep">·</span><a href="审查.html" class="yry-cross-link">📝 审查</a></div>
-<div class="yry-mono-header"><div class="yry-mono-header-row"><div class="pulse-dot"></div><h1>🚀 新人上手 · 知识图谱</h1>
-<div class="yry-toolbar"><div class="yry-toolbar-actions">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 3 · 新人上手与开发指南</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
+<div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><span class="cross-link on">🔗 图谱</span><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
+<div class="mono-header"><div class="mono-header-row"><div class="pulse-dot"></div><h1>🚀 新人上手 · 知识图谱</h1>
+<div class="toolbar"><div class="toolbar-actions">
 <button onclick="copyAsImage(this)">📋 Copy</button>
 <button onclick="downloadPNG(this)">🖼️ PNG</button>
 <button onclick="downloadPDF(this)">📄 PDF</button>
-</div><button class="yry-toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
-</div><p class="yry-mono-subtitle">yry-arch · 场景-3 · 2 源文件 · 4 图谱节点 · 故事领取→交付收口</p></div>
+</div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
+</div><p class="mono-subtitle">yry-arch · 场景-3 · 2 源文件 · 4 图谱节点 · 故事领取→交付收口</p></div>
 
 <div class="legend">
 <span style="color:#94a3b8;font-weight:600;">节点:</span>
@@ -84,12 +84,12 @@ h1{font-size:1.5rem;font-weight:700}
 
 <div class="graph-container"><div id="cy"></div></div>
 
-<div class="yry-mono-cards">
-<div class="yry-mono-card"><div class="yry-mono-card-header"><div class="card-dot file"></div><h3>入口文件</h3></div><ul><li>README.md — 项目入口、系统全景图</li><li>CLAUDE.md — 铁律、不可妥协底线</li></ul></div>
-<div class="yry-mono-card"><div class="yry-mono-card-header"><div class="card-dot domain"></div><h3>覆盖领域</h3></div><ul><li>module-ecosystem — 模块生态定位</li><li>pipeline-execution — 管线执行流程</li></ul></div>
+<div class="mono-cards">
+<div class="mono-card"><div class="mono-card-header"><div class="card-dot file"></div><h3>入口文件</h3></div><ul><li>README.md — 项目入口、系统全景图</li><li>CLAUDE.md — 铁律、不可妥协底线</li></ul></div>
+<div class="mono-card"><div class="mono-card-header"><div class="card-dot domain"></div><h3>覆盖领域</h3></div><ul><li>module-ecosystem — 模块生态定位</li><li>pipeline-execution — 管线执行流程</li></ul></div>
 </div>
 
-<p class="yry-mono-footer">YrY v1.0.0 · yry-arch · 场景-3: 新人上手 · 知识图谱 v2.0.0</p>
+<p class="mono-footer">YrY v1.0.0 · arch · 场景-3: 新人上手 · 知识图谱 v2.0.0</p>
 </div>
 <script>
 const cy=cytoscape({container:document.getElementById('cy'),style:[

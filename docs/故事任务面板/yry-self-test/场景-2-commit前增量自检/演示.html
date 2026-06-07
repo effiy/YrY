@@ -92,39 +92,39 @@
 </style>
 </head>
 <body>
-<div class="yry-container">
-<nav class="yry-breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">yry-self-test · 自主测试方案</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 2 · commit 前增量自检</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">💡 演示</span></nav>
-<div class="yry-cross-nav"><a href="计划清单.html" class="yry-cross-link">📋 清单</a><span class="yry-cross-sep">·</span><a href="架构图.html" class="yry-cross-link">📐 架构</a><span class="yry-cross-sep">·</span><a href="知识图谱.html" class="yry-cross-link">🔗 图谱</a><span class="yry-cross-sep">·</span><a href="测试面板.html" class="yry-cross-link">🧪 测试</a><span class="yry-cross-sep">·</span><span class="cross-link on">💡 演示</span><span class="yry-cross-sep">·</span><a href="审查.html" class="yry-cross-link">📝 审查</a></div>
-  <div class="yry-header">
-  <h1>🔍 <span class="yry-accent">commit 前增量自检</span> — 演示</h1>
-  <p class="yry-sub">增量变更检测：分支隔离 · 铁律合规 · 文件变更范围验证 — <span class="kbd-hint">1-5</span> 数字键切换 Tab · 悬停代码复制</p>
+<div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自主测试方案</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · commit 前增量自检</span><span class="bc-sep">/</span><span class="bc-current">💡 演示</span></nav>
+<div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><span class="cross-link on">💡 演示</span><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
+  <div class="header">
+  <h1>🔍 <span class="accent">commit 前增量自检</span> — 演示</h1>
+  <p class="sub">增量变更检测：分支隔离 · 铁律合规 · 文件变更范围验证 — <span class="kbd-hint">1-5</span> 数字键切换 Tab · 悬停代码复制</p>
 </div>
 
-  <div class="yry-tabs">
+  <div class="tabs">
     <span class="tab on" data-panel="walkthrough">🚶 演示</span>
-    <span class="yry-tab" data-panel="overview">📊 概览</span>
-    <span class="yry-tab" data-panel="commands">⚡ 命令</span>
-    <span class="yry-tab" data-panel="files">📁 文件</span>
-    <span class="yry-tab" data-panel="tests">🧪 测试</span>
+    <span class="tab" data-panel="overview">📊 概览</span>
+    <span class="tab" data-panel="commands">⚡ 命令</span>
+    <span class="tab" data-panel="files">📁 文件</span>
+    <span class="tab" data-panel="tests">🧪 测试</span>
 </div>
 
-<div class="yry-stats"><div class="yry-stat"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="yry-stat"><div class="val health">6</div><div class="lbl">✅ 已演示</div></div><div class="yry-stat"><div class="val">0</div><div class="lbl">⏳ 待演示</div></div><div class="yry-stat"><div class="val health">100%</div><div class="lbl">📊 覆盖率</div></div></div><div class="yry-bar-wrap"><div class="yry-bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div>
+<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">6</div><div class="lbl">✅ 已演示</div></div><div class="stat-card"><div class="val">0</div><div class="lbl">⏳ 待演示</div></div><div class="stat-card"><div class="val health">100%</div><div class="lbl">📊 覆盖率</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div>
   <div style="display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:.68rem;color:var(--text3)"><span>✅ 6 已演示</span><span>⏳ 0 待演示</span></div>
 </div>
 
 <div class="panel on" id="panelWalkthrough">
     <div class="walkthrough">
-      <div class="step"><div class="yry-suite-body"><div class="s-title">分支隔离检查</div><div class="s-desc">验证当前工作在 feat/&lt;name&gt; 分支上，禁止直接在 main 分支修改。分支隔离不可绕过。</div><div class="s-result"><span class="r-label">✅ 结果:</span> branch-check.mjs 输出 — 当前分支: feat/yry-self-test ✅ / 分支前缀验证: feat/ ✓ / main 分支保护: 非 main ✓ / 跨分支文件检查: .memory/ 和 .claude/ 缓存未跨分支共享 ✅ → 通过。</div><div class="s-result-desc">💡 说明: 分支隔离是不可妥协底线 #7。branch-check.mjs 做三件事: (1) 验证当前在 feat/ 分支，(2) 确认不在 main，(3) 扫描 .memory/ .claude/ 等缓存目录确认未跨分支共享状态。违反任一项 = P0 阻断 commit。</div><pre>node skills/rui/branch-check.mjs<span class="cb" onclick="copyCmd(this,'node skills/rui/branch-check.mjs')">📋</span></pre></div></div>
-      <div class="step"><div class="yry-suite-body"><div class="s-title">铁律合规检查</div><div class="s-desc">对照四大铁律逐条验证。验先于称（有证据）· 溯先于修（有根因）· 清先于进（P0清零）· 表达优先（图→文→表）。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 铁律合规扫描 — 验先于称: diff 中无"应该没问题"/"上次通过了"等违反信号词 ✅ / 溯先于修: 所有修复前有 grep/Read 证据 ✅ / 清先于进: 当前模块 P0=0 ✅ / 表达优先: 变更中架构描述使用 mermaid 图非纯文本 ✅ → 四大铁律全部合规。</div><div class="s-result-desc">💡 说明: 铁律合规检查不是 grep 关键词，而是对照四种违反信号扫描 diff 内容。验先于称的信号词: "should work"/"上次通过"/"应该没问题"; 溯先于修的信号: 无根因分析的修复方案; 清先于进的信号: 跳过 P0 标 P1; 表达优先的信号: 架构用大段文字无图。</div><pre>cat CLAUDE.md | grep "NO COMPLETION"<span class="cb" onclick="copyCmd(this,'cat CLAUDE.md | grep "NO COMPLETION"')">📋</span></pre></div></div>
-      <div class="step"><div class="yry-suite-body"><div class="s-title">变更文件范围验证</div><div class="s-desc">git diff 检查变更范围是否与故事计划一致。超出范围的变更标记为异常需解释。</div><div class="s-result"><span class="r-label">✅ 结果:</span> git diff --stat origin/main — 变更文件 12 个 (8 演示.html 修改 + 2 SKILL.md 更新 + 1 知识图谱.json + 1 plugin.json) / 故事计划预期: 12 文件 (yry-self-test 场景 1-4 演示补全) → 范围匹配 ✅ / 0 超范围文件。</div><div class="s-result-desc">💡 说明: 变更范围验证防止「顺手改」问题 — 开发者在修一个 bug 时顺手改了无关文件。超出故事计划范围的变更必须: (1) 在 commit message 中明确说明原因，(2) 创建对应的故事卡片记录，(3) 或者拆分到独立 commit。未解释的超范围变更 = 阻断 commit。</div><pre>git diff --stat origin/main<span class="cb" onclick="copyCmd(this,'git diff --stat origin/main')">📋</span></pre></div></div>
-      <div class="step"><div class="yry-suite-body"><div class="s-title">P0 清零确认</div><div class="s-desc">确认所有已知 P0 已清零，无未处理的阻断问题。P0 未清不得进入下一模块。</div><div class="s-result"><span class="r-label">✅ 结果:</span> grep P0/TODO 扫描 — P0 标记: 0 个未解决（所有 P0 已标 resolved 或 closed）/ TODO 项: 2 个（"TODO: 补充场景-4 的 rui-npm audit 测试用例" + "TODO: lib/ 共享函数文档补全"）→ 2 个 TODO 均为 P2 级优化，非阻断。</div><div class="s-result-desc">💡 说明: P0 清零确认是「清先于进」铁律的执行检查。grep 扫描后人工确认每个 P0/TODO 的状态 — P0 必须已解决；P1 可有未解决但需在 commit message 中说明；P2 可延后。关键判断: P0 是阻断级（安全漏洞/数据丢失/规约不一致），不是所有 TODO 都是 P0。</div><pre>grep -r "P0\|TODO" --include="*.md" .<span class="cb" onclick="copyCmd(this,'grep -r "P0\|TODO" --include="*.md" .')">📋</span></pre></div></div>
-      <div class="step"><div class="yry-suite-body"><div class="s-title">测试增量执行</div><div class="s-desc">运行受变更影响的测试，验证增量改动不破坏已有功能。仅执行变更相关测试。</div><div class="s-result"><span class="r-label">✅ 结果:</span> audit.mjs --incremental — 变更文件 12 个 → 裁剪测试范围: rui.test.mjs(12 项) + rui-npm.test.mjs(0 项，无 npm 相关变更) → 执行 12/12 通过 → 对比基线 results.json: 0 回归，12 项结果与基线一致。</div><div class="s-result-desc">💡 说明: 增量测试只执行受变更影响的测试项（通过分析 diff 中的文件路径与测试文件的 import/grep 关系裁剪），避免全量运行浪费时间。对比基线 results.json 检测退化 — 之前通过现在失败的测试 = 回归 = P0。</div><pre>node skills/rui/audit.mjs --incremental<span class="cb" onclick="copyCmd(this,'node skills/rui/audit.mjs --incremental')">📋</span></pre></div></div>
-      <div class="step"><div class="yry-suite-body"><div class="s-title">文档同步检查</div><div class="s-desc">确认文档变更与代码变更一致。如有代码无文档（缺口）或文档无代码（过时），标记 P1。</div><div class="s-result"><span class="r-label">✅ 结果:</span> rui-import mode=list — 本地文件 47 个 → 远端文件 47 个 → 待同步: 12 个 (8 演示.html + 2 SKILL.md + 1 知识图谱 + 1 测试面板) → 版本差: 本地 4.3.0 vs 远端 4.2.0 (本地领先) → 0 代码无文档缺口 / 0 文档无代码过时。</div><div class="s-result-desc">💡 说明: 文档同步检查验证代码变更与文档变更的一致性。两大致命问题: (1) 缺口 — 只改代码不改文档，后来的开发者无文档可读；(2) 过时 — 文档描述了已被删除的代码。两者都是 P1（不阻断但必须在交付前修复）。mode=list 仅列出差异不执行同步。</div><pre>/rui-import mode=list<span class="cb" onclick="copyCmd(this,'/rui-import mode=list')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">分支隔离检查</div><div class="s-desc">验证当前工作在 feat/&lt;name&gt; 分支上，禁止直接在 main 分支修改。分支隔离不可绕过。</div><div class="s-result"><span class="r-label">✅ 结果:</span> branch-check.mjs 输出 — 当前分支: feat/yry-self-test ✅ / 分支前缀验证: feat/ ✓ / main 分支保护: 非 main ✓ / 跨分支文件检查: .memory/ 和 .claude/ 缓存未跨分支共享 ✅ → 通过。</div><div class="s-result-desc">💡 说明: 分支隔离是不可妥协底线 #7。branch-check.mjs 做三件事: (1) 验证当前在 feat/ 分支，(2) 确认不在 main，(3) 扫描 .memory/ .claude/ 等缓存目录确认未跨分支共享状态。违反任一项 = P0 阻断 commit。</div><pre>node skills/rui/branch-check.mjs<span class="cb" onclick="copyCmd(this,'node skills/rui/branch-check.mjs')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">铁律合规检查</div><div class="s-desc">对照四大铁律逐条验证。验先于称（有证据）· 溯先于修（有根因）· 清先于进（P0清零）· 表达优先（图→文→表）。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 铁律合规扫描 — 验先于称: diff 中无"应该没问题"/"上次通过了"等违反信号词 ✅ / 溯先于修: 所有修复前有 grep/Read 证据 ✅ / 清先于进: 当前模块 P0=0 ✅ / 表达优先: 变更中架构描述使用 mermaid 图非纯文本 ✅ → 四大铁律全部合规。</div><div class="s-result-desc">💡 说明: 铁律合规检查不是 grep 关键词，而是对照四种违反信号扫描 diff 内容。验先于称的信号词: "should work"/"上次通过"/"应该没问题"; 溯先于修的信号: 无根因分析的修复方案; 清先于进的信号: 跳过 P0 标 P1; 表达优先的信号: 架构用大段文字无图。</div><pre>cat CLAUDE.md | grep "NO COMPLETION"<span class="cb" onclick="copyCmd(this,'cat CLAUDE.md | grep "NO COMPLETION"')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">变更文件范围验证</div><div class="s-desc">git diff 检查变更范围是否与故事计划一致。超出范围的变更标记为异常需解释。</div><div class="s-result"><span class="r-label">✅ 结果:</span> git diff --stat origin/main — 变更文件 12 个 (8 演示.html 修改 + 2 SKILL.md 更新 + 1 知识图谱.json + 1 plugin.json) / 故事计划预期: 12 文件 (yry-self-test 场景 1-4 演示补全) → 范围匹配 ✅ / 0 超范围文件。</div><div class="s-result-desc">💡 说明: 变更范围验证防止「顺手改」问题 — 开发者在修一个 bug 时顺手改了无关文件。超出故事计划范围的变更必须: (1) 在 commit message 中明确说明原因，(2) 创建对应的故事卡片记录，(3) 或者拆分到独立 commit。未解释的超范围变更 = 阻断 commit。</div><pre>git diff --stat origin/main<span class="cb" onclick="copyCmd(this,'git diff --stat origin/main')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">P0 清零确认</div><div class="s-desc">确认所有已知 P0 已清零，无未处理的阻断问题。P0 未清不得进入下一模块。</div><div class="s-result"><span class="r-label">✅ 结果:</span> grep P0/TODO 扫描 — P0 标记: 0 个未解决（所有 P0 已标 resolved 或 closed）/ TODO 项: 2 个（"TODO: 补充场景-4 的 rui-npm audit 测试用例" + "TODO: lib/ 共享函数文档补全"）→ 2 个 TODO 均为 P2 级优化，非阻断。</div><div class="s-result-desc">💡 说明: P0 清零确认是「清先于进」铁律的执行检查。grep 扫描后人工确认每个 P0/TODO 的状态 — P0 必须已解决；P1 可有未解决但需在 commit message 中说明；P2 可延后。关键判断: P0 是阻断级（安全漏洞/数据丢失/规约不一致），不是所有 TODO 都是 P0。</div><pre>grep -r "P0\|TODO" --include="*.md" .<span class="cb" onclick="copyCmd(this,'grep -r "P0\|TODO" --include="*.md" .')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">测试增量执行</div><div class="s-desc">运行受变更影响的测试，验证增量改动不破坏已有功能。仅执行变更相关测试。</div><div class="s-result"><span class="r-label">✅ 结果:</span> audit.mjs --incremental — 变更文件 12 个 → 裁剪测试范围: rui.test.mjs(12 项) + rui-npm.test.mjs(0 项，无 npm 相关变更) → 执行 12/12 通过 → 对比基线 results.json: 0 回归，12 项结果与基线一致。</div><div class="s-result-desc">💡 说明: 增量测试只执行受变更影响的测试项（通过分析 diff 中的文件路径与测试文件的 import/grep 关系裁剪），避免全量运行浪费时间。对比基线 results.json 检测退化 — 之前通过现在失败的测试 = 回归 = P0。</div><pre>node skills/rui/audit.mjs --incremental<span class="cb" onclick="copyCmd(this,'node skills/rui/audit.mjs --incremental')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">文档同步检查</div><div class="s-desc">确认文档变更与代码变更一致。如有代码无文档（缺口）或文档无代码（过时），标记 P1。</div><div class="s-result"><span class="r-label">✅ 结果:</span> rui-import mode=list — 本地文件 47 个 → 远端文件 47 个 → 待同步: 12 个 (8 演示.html + 2 SKILL.md + 1 知识图谱 + 1 测试面板) → 版本差: 本地 4.3.0 vs 远端 4.2.0 (本地领先) → 0 代码无文档缺口 / 0 文档无代码过时。</div><div class="s-result-desc">💡 说明: 文档同步检查验证代码变更与文档变更的一致性。两大致命问题: (1) 缺口 — 只改代码不改文档，后来的开发者无文档可读；(2) 过时 — 文档描述了已被删除的代码。两者都是 P1（不阻断但必须在交付前修复）。mode=list 仅列出差异不执行同步。</div><pre>/rui-import mode=list<span class="cb" onclick="copyCmd(this,'/rui-import mode=list')">📋</span></pre></div></div>
     </div>
   </div>
 
-  <div class="yry-panel" id="panelOverview">
-    <div class="yry-section"><h2><span class="dot"></span>增量自检流程</h2>
+  <div class="panel" id="panelOverview">
+    <div class="section"><h2><span class="dot"></span>增量自检流程</h2>
       <div class="flow-row">
         <div class="flow-chip"><span class="n">分支隔离</span></div><span class="flow-arrow">→</span>
         <div class="flow-chip"><span class="n">铁律合规</span></div><span class="flow-arrow">→</span>
@@ -133,7 +133,7 @@
         <div class="flow-chip"><span class="n">文档同步</span></div>
       </div>
     </div>
-    <div class="yry-section"><h2><span class="dot"></span>四大铁律</h2>
+    <div class="section"><h2><span class="dot"></span>四大铁律</h2>
       <div class="flow-row">
         <div class="flow-chip"><span class="n">验先于称</span> 有证据</div><span class="flow-arrow">·</span>
         <div class="flow-chip"><span class="n">溯先于修</span> 有根因</div><span class="flow-arrow">·</span>
@@ -143,7 +143,7 @@
     </div>
   </div>
 
-  <div class="yry-panel" id="panelCommands">
+  <div class="panel" id="panelCommands">
     <div class="cmd-grid">
       <div class="cmd-card"><div class="stage">分支检查</div><div class="name">branch-check.mjs</div><div class="desc">验证当前在 feat/ 分支，检测跨分支共享文件。</div><pre>node skills/rui/branch-check.mjs<span class="cb" onclick="copyCmd(this,'node skills/rui/branch-check.mjs')">📋</span></pre></div>
       <div class="cmd-card"><div class="stage">变更范围</div><div class="name">git diff --stat</div><div class="desc">对比 origin/main 查看变更文件列表和统计。</div><pre>git diff --stat origin/main<span class="cb" onclick="copyCmd(this,'git diff --stat origin/main')">📋</span></pre></div>
@@ -154,8 +154,8 @@
     </div>
   </div>
 
-  <div class="yry-panel" id="panelFiles">
-    <div class="yry-section"><h2><span class="dot"></span>相关文件</h2>
+  <div class="panel" id="panelFiles">
+    <div class="section"><h2><span class="dot"></span>相关文件</h2>
       <div class="file-list">
         <div class="file-item">📄 CLAUDE.md</div><div class="file-item">📐 code-pipeline.md</div>
         <div class="file-item">⚡ branch-check.mjs</div>
@@ -167,8 +167,8 @@
     <div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="测试面板.html">🧪 测试面板</a></div>
   </div>
 
-  <div class="yry-panel" id="panelTests">
-    <div class="yry-section"><h2><span class="dot"></span>测试覆盖</h2>
+  <div class="panel" id="panelTests">
+    <div class="section"><h2><span class="dot"></span>测试覆盖</h2>
       <div class="cmd-grid">
         <div class="cmd-card"><div class="name">分支隔离有效</div><div class="desc">验证 branch-check.mjs 能正确检测非 feat 分支并阻断。</div></div>
         <div class="cmd-card"><div class="name">铁律合规检验</div><div class="desc">验证四条铁律均被遵循，无违反信号出现。</div></div>
@@ -178,7 +178,7 @@
     <div class="links-row"><a href="测试面板.html">🧪 打开测试面板</a><a href="../../../index.html">📄 返回文档中心</a></div>
   </div>
 </div>
-<div class="yry-toast" id="toast"></div>
+<div class="toast" id="toast"></div>
 <script>
 document.querySelector('.tabs').addEventListener('click',e=>{const tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
 function switchPanel(name){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===name));document.querySelectorAll('.panel').forEach(p=>{const on=p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1);p.classList.toggle('on',on)})}
@@ -186,7 +186,7 @@ document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;con
 function copyCmd(btn,cmd){navigator.clipboard.writeText(cmd).then(()=>{btn.textContent='✅';btn.classList.add('done');setTimeout(()=>{btn.textContent='📋';btn.classList.remove('done')},1500)}).catch(()=>toast('复制失败'))}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}
 </script>
-<div class="yry-footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY · 场景演示</div>
+<div class="footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY · 场景演示</div>
 <script src="../../../../cdn/shared.js"></script>
 </body>
 </html>

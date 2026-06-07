@@ -151,41 +151,41 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 </style>
 </head>
 <body>
-<div class="yry-container">
+<div class="container">
 
-<nav class="yry-breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">yry-self-test · 自主测试方案</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 4 · 安全面回归自检</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">📋 计划清单</span></nav>
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自主测试方案</span><span class="bc-sep">/</span><span class="bc-current">场景 4 · 安全面回归自检</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
 
-<div class="yry-cross-nav">
-  <span class="cross-link on">📋 清单</span><span class="yry-cross-sep">·</span>
-  <a href="架构图.html" class="yry-cross-link">📐 架构</a><span class="yry-cross-sep">·</span>
-  <a href="知识图谱.html" class="yry-cross-link">🔗 图谱</a><span class="yry-cross-sep">·</span>
-  <a href="测试面板.html" class="yry-cross-link">🧪 测试</a><span class="yry-cross-sep">·</span>
-  <a href="演示.html" class="yry-cross-link">💡 演示</a><span class="yry-cross-sep">·</span><a href="审查.html" class="yry-cross-link">📝 审查</a>
+<div class="cross-nav">
+  <span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
+  <a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span>
+  <a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a>
 </div>
 
-<div class="yry-header">
-  <h1>📋 场景-4<span class="yry-accent"> · 安全面回归自检</span></h1>
-  <p class="yry-sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
-  <div class="meta">📌 v1.1.0 · 📅 2026-06-05 · 🏷️ yry-self-test</div>
+<div class="header">
+  <h1>📋 场景-4<span class="accent"> · 安全面回归自检</span></h1>
+  <p class="sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
+  <div class="meta">📌 v1.1.0 · 📅 2026-06-05 · 🏷️ self-test</div>
 </div>
 
-<div class="yry-progress-wrap">
-  <div class="yry-progress-label"><span>整体进度</span><span id="progress-text">0 / 14 完成</span></div>
-  <div class="yry-progress-bar"><div class="yry-progress-fill" id="progress-fill" style="width:0%"></div></div>
+<div class="progress-wrap">
+  <div class="progress-label"><span>整体进度</span><span id="progress-text">0 / 14 完成</span></div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
 </div>
 
-<div class="yry-tabs">
+<div class="tabs">
   <span class="tab on" data-panel="checklist">📋 清单</span>
-  <span class="yry-tab" data-panel="overview">📊 概览</span>
-  <span class="yry-tab" data-panel="commands">⚡ 命令</span>
-  <span class="yry-tab" data-panel="related">📁 关联</span>
-  <span class="yry-tab" data-panel="verify">🧪 验证</span>
+  <span class="tab" data-panel="overview">📊 概览</span>
+  <span class="tab" data-panel="commands">⚡ 命令</span>
+  <span class="tab" data-panel="related">📁 关联</span>
+  <span class="tab" data-panel="verify">🧪 验证</span>
 </div>
 
 <!-- ═══ Tab 1: Checklist ═══ -->
 <div class="panel on" id="panelChecklist">
 
-<div class="yry-section">
+<div class="section">
 <h2><span class="dot"></span>§0 技术评审<span class="s-done">— 已完成</span></h2>
 
 <div class="step">
@@ -197,7 +197,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
   </div>
   <div class="step-body open">
     <p>STRIDE: Spoofing · Tampering · Repudiation · Information Disclosure · Denial of Service · Elevation of Privilege。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-self-test --scene 4</code>生成 STRIDE 威胁模型文档</div>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story self-test --scene 4</code>生成 STRIDE 威胁模型文档</div>
     <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
     <div class="code-block">| 威胁 | YrY 场景 | 检测规则 |
 |------|---------|---------|
@@ -208,7 +208,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 | DoS | WebFetch 超量调用 | 并发限制 + 超时 |
 | EoP | 跨分支状态共享 | memory 隔离检查 |</div>
   </div>
-<div class="yry-stats"><div class="yry-stat"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="yry-stat"><div class="val health">0</div><div class="lbl">✅ 完成</div></div><div class="yry-stat"><div class="val">6</div><div class="lbl">⏳ 待执行</div></div><div class="yry-stat"><div class="val">0%</div><div class="lbl">📊 进度</div></div></div><div class="yry-bar-wrap"><div class="yry-bar-outer"><div class="seg strength" style="width:0%"></div><div class="seg gap" style="width:100%"></div></div></div>
+<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">0</div><div class="lbl">✅ 完成</div></div><div class="stat-card"><div class="val">6</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val">0%</div><div class="lbl">📊 进度</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:0%"></div><div class="seg gap" style="width:100%"></div></div></div>
 
 </div>
 
@@ -221,13 +221,13 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
   </div>
   <div class="step-body">
     <p>六类威胁的扫描流程：触发→每类检测→结果汇总→风险评级。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-self-test --output 架构图.html</code>生成安全扫描流程图</div>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story self-test --output 架构图.html</code>生成安全扫描流程图</div>
     <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a></div>
   </div>
 </div>
 </div>
 
-<div class="yry-section">
+<div class="section">
 <h2><span class="dot"></span>§1 测试设计</h2>
 
 <div class="step">
@@ -239,13 +239,13 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
   </div>
   <div class="step-body">
     <p>每类 ≥ 2 个测试用例：已知漏洞模式 + 边界条件。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-self-test</code>让 security agent 生成安全测试用例</div>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story self-test</code>让 security agent 生成安全测试用例</div>
     <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div>
   </div>
 </div>
 </div>
 
-<div class="yry-section">
+<div class="section">
 <h2><span class="dot"></span>§2 实施报告<span class="s-done">— 进行中</span></h2>
 
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">4</span><span class="step-title">实现密钥检测扫描器</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui-claude check</code>扫描 .claude/ 配置中的敏感信息</div><div class="verify-cmd">grep -rn "API_KEY\|token\|secret\|password" --include="*.{js,ts,md,json}" | grep -v "node_modules\|\.git"</div><div class="expected">仅匹配环境变量引用和文档说明，无硬编码密钥</div></div></div>
@@ -255,24 +255,24 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">8</span><span class="step-title">实现静默失败猎杀</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="verify-cmd">grep -rn "catch\s*{" --include="*.{mjs,js}" | grep -v "node_modules"</div></div></div>
 </div>
 
-<div class="yry-section">
+<div class="section">
 <h2><span class="dot"></span>§3 测试报告</h2>
 
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">9</span><span class="step-title">运行安全全量扫描</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node scripts/security-scan.mjs --all --output=json</code>运行安全全量扫描</div><div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div><div class="verify-cmd">node scripts/security-scan.mjs --all --output=json</div></div></div>
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">10</span><span class="step-title">记录漏洞检出率与误报率</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node skills/rui-bot/send.mjs --story=yry-self-test --status=security-report</code>推送安全扫描报告</div></div></div>
 </div>
 
-<div class="yry-section">
+<div class="section">
 <h2><span class="dot"></span>§4 自改进</h2>
 
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">11</span><span class="step-title">新威胁模式自动追加机制</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui-trends</code>分析安全趋势发现新威胁模式</div><div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div></div></div>
-<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">12</span><span class="step-title">安全规则自动更新</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-self-test --output 知识图谱.html</code>更新安全知识图谱</div></div></div>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">12</span><span class="step-title">安全规则自动更新</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story self-test --output 知识图谱.html</code>更新安全知识图谱</div></div></div>
 </div>
 
-<div class="yry-section">
+<div class="section">
 <h2><span class="dot"></span>交付</h2>
 
-<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">13</span><span class="step-title">P0 验证 + 架构图</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-self-test --check p0 --output 架构图.html</code>P0 验证并生成安全架构图</div><div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="演示.html" class="dep-badge">💡 演示</a></div></div></div>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">13</span><span class="step-title">P0 验证 + 架构图</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story self-test --check p0 --output 架构图.html</code>P0 验证并生成安全架构图</div><div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="演示.html" class="dep-badge">💡 演示</a></div></div></div>
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">14</span><span class="step-title">git commit + 交付收口</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>git add docs/故事任务面板/yry-self-test/ && git commit</code>然后 <code>node skills/rui-import/sync.mjs workspace=true</code>最后 <code>node skills/rui-bot/send.mjs --story=yry-self-test --status=done</code></div><div class="code-block">git add docs/故事任务面板/yry-self-test/
 git commit -m "docs: 场景-4 安全面回归自检完成"
 node skills/rui-import/sync.mjs workspace=true
@@ -282,7 +282,7 @@ node skills/rui-bot/send.mjs --story=yry-self-test --status=done</div></div></di
 </div><!-- /panelChecklist -->
 
 <!-- ═══ Tab 2: Overview ═══ -->
-<div class="yry-panel" id="panelOverview">
+<div class="panel" id="panelOverview">
 
 <div class="stat-grid">
   <div class="stat-mini"><div class="sv g" id="ov-done">1</div><div class="sl">已完成</div></div>
@@ -291,7 +291,7 @@ node skills/rui-bot/send.mjs --story=yry-self-test --status=done</div></div></di
   <div class="stat-mini"><div class="sv c">14</div><div class="sl">总步骤</div></div>
 </div>
 
-<div class="yry-section"><h2><span class="dot"></span>各阶段完成度</h2>
+<div class="section"><h2><span class="dot"></span>各阶段完成度</h2>
   <div class="section-stat"><span class="ss-label">§0 技术评审</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:50%;background:var(--accent)"></div></div><span class="ss-pct">1/2</span></div>
   <div class="section-stat"><span class="ss-label">§1 测试设计</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/1</span></div>
   <div class="section-stat"><span class="ss-label">§2 实施报告</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/5</span></div>
@@ -300,42 +300,42 @@ node skills/rui-bot/send.mjs --story=yry-self-test --status=done</div></div></di
   <div class="section-stat"><span class="ss-label">交付</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/2</span></div>
 </div>
 
-<div class="yry-section"><h2><span class="dot"></span>下一步行动</h2>
+<div class="section"><h2><span class="dot"></span>下一步行动</h2>
   <div class="cmd-card"><div class="c-stage">当前就绪 — 步骤 2</div><div class="c-name">设计安全扫描 mermaid 流程图</div><div class="c-desc">六类威胁的扫描流程：触发→每类检测→结果汇总→风险评级。切换到 ⚡命令 Tab 查看可执行命令。</div></div>
 </div>
 
 </div><!-- /panelOverview -->
 
 <!-- ═══ Tab 3: Commands ═══ -->
-<div class="yry-panel" id="panelCommands">
+<div class="panel" id="panelCommands">
 
-<div class="yry-section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令</h2>
+<div class="section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令</h2>
 <div class="cmd-grid">
-  <div class="cmd-card"><div class="c-stage">步骤 1</div><div class="c-name">生成 STRIDE 威胁模型文档</div><div class="c-desc">六类威胁模型：S·T·R·I·D·E</div><pre>/rui doc --story yry-self-test --scene 4<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-self-test --scene 4')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 1</div><div class="c-name">生成 STRIDE 威胁模型文档</div><div class="c-desc">六类威胁模型：S·T·R·I·D·E</div><pre>/rui doc --story self-test --scene 4<span class="cb" onclick="copyCmd(this,'/rui doc --story self-test --scene 4')">📋</span></pre></div>
 </div></div>
 
-<div class="yry-section"><h2><span class="dot"></span>§0-§1 — 待执行命令</h2>
+<div class="section"><h2><span class="dot"></span>§0-§1 — 待执行命令</h2>
 <div class="cmd-grid">
-  <div class="cmd-card"><div class="c-stage">步骤 2 · 🔶 就绪</div><div class="c-name">生成安全扫描流程图</div><div class="c-desc">六类威胁扫描流程 mermaid → HTML+SVG</div><pre>/rui doc --story yry-self-test --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-self-test --output 架构图.html')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 3</div><div class="c-name">生成安全测试用例</div><div class="c-desc">security agent 生成 STRIDE 六类测试用例</div><pre>/rui doc --story yry-self-test<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-self-test')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 2 · 🔶 就绪</div><div class="c-name">生成安全扫描流程图</div><div class="c-desc">六类威胁扫描流程 mermaid → HTML+SVG</div><pre>/rui doc --story self-test --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story self-test --output 架构图.html')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 3</div><div class="c-name">生成安全测试用例</div><div class="c-desc">security agent 生成 STRIDE 六类测试用例</div><pre>/rui doc --story self-test<span class="cb" onclick="copyCmd(this,'/rui doc --story self-test')">📋</span></pre></div>
 </div></div>
 
-<div class="yry-section"><h2><span class="dot"></span>§2-交付 — 待执行命令</h2>
+<div class="section"><h2><span class="dot"></span>§2-交付 — 待执行命令</h2>
 <div class="cmd-grid">
   <div class="cmd-card"><div class="c-stage">步骤 4</div><div class="c-name">扫描敏感信息</div><div class="c-desc">检查 .claude/ 配置中的密钥泄露</div><pre>/rui-claude check<span class="cb" onclick="copyCmd(this,'/rui-claude check')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 7</div><div class="c-name">检查分支隔离配置</div><div class="c-desc">验证 EoP 威胁防护</div><pre>/rui-claude check<span class="cb" onclick="copyCmd(this,'/rui-claude check')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 9</div><div class="c-name">运行安全全量扫描</div><div class="c-desc">STRIDE 六类全量扫描 JSON 输出</div><pre>node scripts/security-scan.mjs --all --output=json<span class="cb" onclick="copyCmd(this,'node scripts/security-scan.mjs --all --output=json')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 10</div><div class="c-name">推送安全扫描报告</div><div class="c-desc">企微通知漏洞检出率与误报率</div><pre>node skills/rui-bot/send.mjs --story=yry-self-test --status=security-report<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=yry-self-test --status=security-report')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 11</div><div class="c-name">分析安全趋势</div><div class="c-desc">发现新威胁模式</div><pre>/rui-trends<span class="cb" onclick="copyCmd(this,'/rui-trends')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 12</div><div class="c-name">更新安全知识图谱</div><div class="c-desc">自动更新安全规则和图谱节点</div><pre>/rui doc --story yry-self-test --output 知识图谱.html<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-self-test --output 知识图谱.html')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 13</div><div class="c-name">P0 验证 + 安全架构图</div><div class="c-desc">P0 验证并生成安全架构图</div><pre>/rui doc --story yry-self-test --check p0 --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-self-test --check p0 --output 架构图.html')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 12</div><div class="c-name">更新安全知识图谱</div><div class="c-desc">自动更新安全规则和图谱节点</div><pre>/rui doc --story self-test --output 知识图谱.html<span class="cb" onclick="copyCmd(this,'/rui doc --story self-test --output 知识图谱.html')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 13</div><div class="c-name">P0 验证 + 安全架构图</div><div class="c-desc">P0 验证并生成安全架构图</div><pre>/rui doc --story self-test --check p0 --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story self-test --check p0 --output 架构图.html')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 14</div><div class="c-name">交付收口</div><div class="c-desc">git commit → rui-import 同步 → rui-bot 通知</div><pre>git add . && git commit<span class="cb" onclick="copyCmd(this,'git add . && git commit')">📋</span></pre></div>
 </div></div>
 
 </div><!-- /panelCommands -->
 
 <!-- ═══ Tab 4: Related Pages ═══ -->
-<div class="yry-panel" id="panelRelated">
+<div class="panel" id="panelRelated">
 
 <div class="link-grid">
   <a href="架构图.html" class="link-card">
@@ -359,7 +359,7 @@ node skills/rui-bot/send.mjs --story=yry-self-test --status=done</div></div></di
 </div><!-- /panelRelated -->
 
 <!-- ═══ Tab 5: Verify ═══ -->
-<div class="yry-panel" id="panelVerify">
+<div class="panel" id="panelVerify">
 
 <div class="verify-list">
   <div class="verify-item"><div class="vi-label">步骤 4 · 密钥检测扫描</div>
@@ -378,11 +378,11 @@ node skills/rui-bot/send.mjs --story=yry-self-test --status=done</div></div></di
 
 </div><!-- /panelVerify -->
 
-<div class="yry-footer"><p>🤖 Generated with planner agent | scene: 安全面回归自检 | updated: 2026-06-05</p></div>
+<div class="footer"><p>🤖 Generated with planner agent | scene: 安全面回归自检 | updated: 2026-06-05</p></div>
 
 </div>
 
-<div class="yry-toast" id="toast"></div>
+<div class="toast" id="toast"></div>
 
 <script>
 const SCENE_KEY = 'yry-self-test-s4-checklist';

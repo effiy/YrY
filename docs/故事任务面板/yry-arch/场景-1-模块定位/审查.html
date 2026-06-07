@@ -124,37 +124,37 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 </style>
 </head>
 <body>
-<div class="yry-container">
+<div class="container">
 
-<nav class="yry-breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">yry-arch · 系统架构知识固化</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 1 · 模块定位与职责</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">📝 审查</span></nav>
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 模块定位与职责</span><span class="bc-sep">/</span><span class="bc-current">📝 审查</span></nav>
 
-<div class="yry-cross-nav">
-  <a href="计划清单.html" class="yry-cross-link">📋 清单</a><span class="yry-cross-sep">·</span>
-  <a href="架构图.html" class="yry-cross-link">📐 架构</a><span class="yry-cross-sep">·</span>
-  <a href="知识图谱.html" class="yry-cross-link">🔗 图谱</a><span class="yry-cross-sep">·</span>
-  <a href="测试面板.html" class="yry-cross-link">🧪 测试</a><span class="yry-cross-sep">·</span>
-  <a href="演示.html" class="yry-cross-link">💡 演示</a><span class="yry-cross-sep">·</span>
+<div class="cross-nav">
+  <a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
+  <a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span>
+  <a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span>
   <span class="cross-link on">📝 审查</span>
 </div>
 
-<div class="yry-header">
-  <h1>📝 <span class="yry-accent">场景 1：模块定位与职责</span> — 审查报告</h1>
-  <p class="yry-sub">审查日期 2026-06-05 · 版本 v1.0.0 · 审查人 code-reviewer Agent · 4 维度 × 6 发现</p>
+<div class="header">
+  <h1>📝 <span class="accent">场景 1：模块定位与职责</span> — 审查报告</h1>
+  <p class="sub">审查日期 2026-06-05 · 版本 v1.0.0 · 审查人 code-reviewer Agent · 4 维度 × 6 发现</p>
 </div>
 
 <!-- Stats Cards -->
-<div class="yry-stats" id="statsRow">
-  <div class="yry-stat"><div class="val health">85%</div><div class="lbl">🏥 综合健康度</div></div>
-  <div class="yry-stat"><div class="val health">85%</div><div class="lbl">📋 完整性</div></div>
-  <div class="yry-stat"><div class="val health">90%</div><div class="lbl">🔗 一致性</div></div>
-  <div class="yry-stat"><div class="val warn-h">75%</div><div class="lbl">🔍 可追溯</div></div>
-  <div class="yry-stat"><div class="val health">88%</div><div class="lbl">💬 表达力</div></div>
-  <div class="yry-stat"><div class="val health">6</div><div class="lbl">📊 发现项</div></div>
+<div class="stats-grid" id="statsRow">
+  <div class="stat-card"><div class="val health">85%</div><div class="lbl">🏥 综合健康度</div></div>
+  <div class="stat-card"><div class="val health">85%</div><div class="lbl">📋 完整性</div></div>
+  <div class="stat-card"><div class="val health">90%</div><div class="lbl">🔗 一致性</div></div>
+  <div class="stat-card"><div class="val warn-h">75%</div><div class="lbl">🔍 可追溯</div></div>
+  <div class="stat-card"><div class="val health">88%</div><div class="lbl">💬 表达力</div></div>
+  <div class="stat-card"><div class="val health">6</div><div class="lbl">📊 发现项</div></div>
 </div>
 
 <!-- Health Breakdown Bar -->
-<div class="yry-bar-wrap">
-  <div class="yry-bar-outer" id="healthBar" title="发现分布: 优势/缺口/建议">
+<div class="bar-wrap">
+  <div class="bar-outer" id="healthBar" title="发现分布: 优势/缺口/建议">
     <div class="seg strength" style="width:33%"></div>
     <div class="seg gap" style="width:17%"></div>
     <div class="seg suggestion" style="width:50%"></div>
@@ -165,12 +165,12 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 </div>
 
 <!-- Tabs -->
-<div class="yry-tabs">
+<div class="tabs">
   <span class="tab on" data-panel="overview">📊 总览</span>
-  <span class="yry-tab" data-panel="good">✅ 好案例 <span class="tab-badge">2</span></span>
-  <span class="yry-tab" data-panel="bad">❌ 坏案例 <span class="tab-badge">1</span></span>
-  <span class="yry-tab" data-panel="recommendations">📝 改进建议</span>
-  <span class="yry-tab" data-panel="evidence">📎 证据链</span>
+  <span class="tab" data-panel="good">✅ 好案例 <span class="tab-badge">2</span></span>
+  <span class="tab" data-panel="bad">❌ 坏案例 <span class="tab-badge">1</span></span>
+  <span class="tab" data-panel="recommendations">📝 改进建议</span>
+  <span class="tab" data-panel="evidence">📎 证据链</span>
 </div>
 
 <!-- ═══ Panel: Overview ═══ -->
@@ -218,7 +218,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 </div>
 
 <!-- ═══ Panel: Good Cases ═══ -->
-<div class="yry-panel" id="panelGood">
+<div class="panel" id="panelGood">
   <div class="case-card good">
     <h4>✅ <span class="case-tag good">好案例</span> 模块拓扑三层可视化</h4>
     <div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-1-模块定位/架构图.html : 65-67</div>
@@ -240,7 +240,7 @@ Pipeline Bar:   amber (#fbbf24) — 横贯底部</pre>
 </div>
 
 <!-- ═══ Panel: Bad Cases ═══ -->
-<div class="yry-panel" id="panelBad">
+<div class="panel" id="panelBad">
   <div class="case-card bad">
     <h4>❌ <span class="case-tag bad">坏案例</span> 图谱定位表占位文本未回填</h4>
     <div class="case-loc">📁 docs/故事任务面板/yry-arch/index.md : §0 图谱定位表</div>
@@ -254,7 +254,7 @@ Pipeline Bar:   amber (#fbbf24) — 横贯底部</pre>
 </div>
 
 <!-- ═══ Panel: Recommendations ═══ -->
-<div class="yry-panel" id="panelRecommendations">
+<div class="panel" id="panelRecommendations">
   <div class="rec-grid">
     <div class="rec-card p1">
       <span class="rec-pri p1">P1 · 立即</span>
@@ -285,10 +285,10 @@ Pipeline Bar:   amber (#fbbf24) — 横贯底部</pre>
 </div>
 
 <!-- ═══ Panel: Evidence ═══ -->
-<div class="yry-panel" id="panelEvidence">
+<div class="panel" id="panelEvidence">
   <div class="suite open">
-    <div class="yry-suite-head" data-action="toggle"><span class="yry-suite-arrow">▶</span><span class="yry-suite-name">📎 审查证据清单</span><span class="s-badge pass">5 项可追溯</span></div>
-    <div class="yry-suite-body">
+    <div class="suite-head" data-action="toggle"><span class="suite-arrow">▶</span><span class="suite-name">📎 审查证据清单</span><span class="s-badge pass">5 项可追溯</span></div>
+    <div class="suite-body">
       <ul class="ev-list">
         <li><span class="ev-icon">📄</span><span class="ev-text"><strong>架构图验证：</strong>架构图.html SVG 含 3 Tier + Pipeline，模块数 6+8+8=22，与 CLAUDE.md 统计一致</span> <a href="架构图.html" class="ev-link">查看 →</a></li>
         <li><span class="ev-icon">📄</span><span class="ev-text"><strong>场景 .md 结构：</strong>章节 §0-§4 完整，图谱定位表含领域层/结构层/内容层三行</span> <a href="../../../../skills/rui/formulas.md">formulas.md</a></li>
@@ -300,7 +300,7 @@ Pipeline Bar:   amber (#fbbf24) — 横贯底部</pre>
   </div>
 </div>
 
-<div class="yry-footer">
+<div class="footer">
   YrY v4.5.0 · <a href="../../../index.html">文档中心</a>
 </div>
 

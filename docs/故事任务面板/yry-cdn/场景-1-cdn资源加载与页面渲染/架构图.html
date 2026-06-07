@@ -4,148 +4,138 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>场景-1: CDN资源加载与页面渲染 — 架构图</title>
+<!-- ═══ CDN: YrY 共享样式 ═══ -->
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../../../../cdn/shared.css">
 <link rel="stylesheet" href="../../../../../cdn/theme-mono.css">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 <style>
-  .legend-note { color: #64748b; font-size: 0.7rem; margin-top: 0.5rem; }
-  svg text { font-family: 'JetBrains Mono', monospace; }
-</style>
-</head>
-<body>
-<div class="yry-mono-container wide">
-  <div class="yry-breadcrumb">
-    <a href="../../../../docs/故事任务面板/">故事面板</a>
-    <span class="yry-bc-sep">/</span>
-    <a href="../">yry-cdn</a>
-    <span class="yry-bc-sep">/</span>
-    <span class="yry-bc-current">场景-1 架构图</span>
-  </div>
-  <div class="yry-cross-nav">
-    <a class="yry-cross-link on" href="../场景-1-cdn资源加载与页面渲染/架构图.html">场景-1</a>
-    <span class="yry-cross-sep">|</span>
-    <a class="yry-cross-link" href="../场景-2-双主题系统设计/架构图.html">场景-2</a>
-    <span class="yry-cross-sep">|</span>
-    <a class="yry-cross-link" href="../场景-3-组件库与JS工具API/架构图.html">场景-3</a>
-    <span class="yry-cross-sep">|</span>
-    <a class="yry-cross-link" href="../场景-4-存量页面迁移/架构图.html">场景-4</a>
-    <span class="yry-cross-sep">|</span>
-    <a class="yry-cross-link" href="../场景-5-npm包发布与版本管理/架构图.html">场景-5</a>
-  </div>
-
-  <div class="yry-mono-header">
-    <div class="yry-mono-header-row">
-      <div class="yry-pulse-dot"></div>
-      <h1>CDN 资源加载与页面渲染 — 架构图</h1>
-    </div>
-    <div class="yry-mono-subtitle">yry-cdn / 场景-1 / CDN 加载链路 + 资源依赖图</div>
-  </div>
-
-  <div class="yry-diagram-wrap">
-    <svg viewBox="0 0 1100 720" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-          <polygon points="0 0, 10 3.5, 0 7" fill="#475569"/>
-        </marker>
-        <marker id="arrow-cyan" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-          <polygon points="0 0, 10 3.5, 0 7" fill="#22d3ee"/>
-        </marker>
-        <marker id="arrow-amber" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-          <polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24"/>
-        </marker>
-        <linearGradient id="grad-sys" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#2a1a3a"/>
-          <stop offset="100%" stop-color="#1a2a3a"/>
-        </linearGradient>
-        <linearGradient id="grad-mono" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#1a2a4a"/>
-          <stop offset="100%" stop-color="#0a1a3a"/>
-        </linearGradient>
-        <linearGradient id="grad-base" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#1a2a3a"/>
-          <stop offset="100%" stop-color="#1a2a3a"/>
-        </linearGradient>
-      </defs>
-
-      <!-- User Entry -->
-      <rect x="430" y="10" width="240" height="44" rx="8" fill="#1a1a2a" stroke="#a78bfa" stroke-width="1.5"/>
-      <text x="550" y="38" text-anchor="middle" fill="#a9b1d6" font-size="12" font-weight="600">👤 用户打开页面</text>
-
-      <line x1="550" y1="54" x2="550" y2="84" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
-
-      <!-- Type Decision -->
-      <polygon points="550,85 680,130 550,175 420,130" fill="#2a1a2a" stroke="#a78bfa" stroke-width="1.5"/>
-      <text x="550" y="135" text-anchor="middle" fill="#a9b1d6" font-size="11">页面类型?</text>
-
-      <!-- Cat A path -->
-      <line x1="420" y1="130" x2="180" y2="220" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow-cyan)"/>
-      <text x="280" y="160" text-anchor="middle" fill="#22d3ee" font-size="10">Category A</text>
-
-      <!-- Cat B path -->
-      <line x1="680" y1="130" x2="920" y2="220" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrow-amber)"/>
-      <text x="820" y="160" text-anchor="middle" fill="#fbbf24" font-size="10">Category B</text>
-
-      <!-- Step 1: Google Fonts (Cat A only) -->
-      <rect x="40" y="230" width="280" height="56" rx="8" fill="#1a2a2a" stroke="#f59e0b" stroke-width="1"/>
-      <text x="180" y="252" text-anchor="middle" fill="#f59e0b" font-size="11" font-weight="600">① Google Fonts (仅 Cat A)</text>
-      <text x="180" y="272" text-anchor="middle" fill="#64748b" font-size="9">fonts.googleapis.com</text>
-      <text x="180" y="284" text-anchor="middle" fill="#64748b" font-size="9">JetBrains Mono woff2</text>
-
-      <line x1="180" y1="286" x2="180" y2="340" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
-
-      <!-- Step 2: shared.css -->
-      <rect x="380" y="350" width="340" height="72" rx="8" fill="url(#grad-base)" stroke="#3d59a1" stroke-width="1.5"/>
-      <text x="550" y="372" text-anchor="middle" fill="#a9b1d6" font-size="12" font-weight="600">② shared.css 加载</text>
-      <text x="550" y="390" text-anchor="middle" fill="#64748b" font-size="9">CSS Reset · 6 动画 · 面包屑</text>
-      <text x="550" y="404" text-anchor="middle" fill="#64748b" font-size="9">cross-nav · Toolbar · Toast · 工具类</text>
-
-      <!-- Line from Cat A to shared.css -->
-      <line x1="180" y1="230" x2="180" y2="290" stroke="#475569" stroke-width="0.5"/>
-      <line x1="180" y1="290" x2="380" y2="386" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
-
-      <line x1="550" y1="422" x2="550" y2="466" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
-
-      <!-- Step 3: Theme CSS -->
-      <rect x="40" y="476" width="280" height="72" rx="8" fill="url(#grad-mono)" stroke="#22d3ee" stroke-width="1"/>
-      <text x="180" y="498" text-anchor="middle" fill="#22d3ee" font-size="11" font-weight="600">③a theme-mono.css</text>
-      <text x="180" y="516" text-anchor="middle" fill="#64748b" font-size="9">深蓝黑底 + 等宽字体</text>
-      <text x="180" y="530" text-anchor="middle" fill="#64748b" font-size="9">图表容器 · 图例 · 脉冲点 · 卡片</text>
-
-      <rect x="780" y="476" width="280" height="72" rx="8" fill="url(#grad-sys)" stroke="#fbbf24" stroke-width="1"/>
-      <text x="920" y="498" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">③b theme.css</text>
-      <text x="920" y="516" text-anchor="middle" fill="#64748b" font-size="9">深紫黑底 + 系统字体</text>
-      <text x="920" y="530" text-anchor="middle" fill="#64748b" font-size="9">14 设计令牌 · 14 组件样式</text>
-
-      <line x1="550" y1="466" x2="180" y2="476" stroke="#22d3ee" stroke-width="0.5" stroke-dasharray="4" marker-end="url(#arrow-cyan)"/>
-      <line x1="550" y1="466" x2="920" y2="476" stroke="#fbbf24" stroke-width="0.5" stroke-dasharray="4" marker-end="url(#arrow-amber)"/>
-
-      <line x1="180" y1="548" x2="180" y2="590" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
-      <line x1="920" y1="548" x2="920" y2="590" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
-
-      <!-- Step 4: shared.js -->
-      <rect x="380" y="600" width="340" height="56" rx="8" fill="#1a3a2a" stroke="#22c55e" stroke-width="1.5"/>
-      <text x="550" y="622" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="600">④ shared.js 加载</text>
-      <text x="550" y="640" text-anchor="middle" fill="#64748b" font-size="9">IIFE → window.YrY 就绪 · 9 个公共 API</text>
-
-      <line x1="180" y1="590" x2="380" y2="628" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
-      <line x1="920" y1="590" x2="720" y2="628" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
-
-      <!-- Step 5: Interactive -->
-      <line x1="550" y1="656" x2="550" y2="690" stroke="#34d399" stroke-width="2" marker-end="url(#arrow)"/>
-      <rect x="430" y="692" width="240" height="22" rx="6" fill="#1a3a1a" stroke="#22c55e" stroke-width="1"/>
-      <text x="550" y="708" text-anchor="middle" fill="#34d399" font-size="10" font-weight="600">⑤ 页面可交互 ✅</text>
-    </svg>
-  </div>
-
-  <div class="yry-mono-legend">
-    <div class="yry-mono-legend-item"><div class="yry-mono-dot cyan"></div> Category A 路径</div>
-    <div class="yry-mono-legend-item"><div class="yry-mono-dot amber"></div> Category B 路径</div>
-    <div class="yry-mono-legend-item"><div class="yry-mono-dot emerald"></div> JS 执行</div>
-    <div class="yry-mono-legend-item"><div class="yry-mono-dot violet"></div> 决策点</div>
-  </div>
-
-  <div class="yry-mono-footer">YrY CDN · 场景-1 架构图 · 2026-06-07</div>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
+.container{max-width:1200px;margin:0 auto}
+.header{margin-bottom:1.5rem}
+.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
+.pulse-dot{width:12px;height:12px;background:#22d3ee;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+h1{font-size:1.5rem;font-weight:700}
+.subtitle{color:#94a3b8;font-size:.875rem;margin-left:1.75rem}
+.toolbar{display:flex;gap:.5rem;margin-left:auto;flex-shrink:0;align-items:center}
+.toolbar-toggle{background:transparent;border:none;color:#475569;cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem}
+.toolbar-toggle:hover{color:#94a3b8;background:rgba(30,41,59,.5)}
+.toolbar-actions{display:none;gap:.5rem}
+.toolbar.expanded .toolbar-actions{display:flex}
+.toolbar-actions button{background:rgba(30,41,59,.8);border:1px solid #334155;color:#94a3b8;padding:.375rem .75rem;border-radius:.375rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.toolbar-actions button:hover{background:rgba(51,65,85,.8);color:white;border-color:#475569}
+.diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
+.diagram-container svg{width:100%;min-width:900px;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;padding:.75rem;background:rgba(15,23,42,.5);border-radius:.5rem;border:1px solid #1e293b;font-size:.75rem;color:#94a3b8}
+.legend-item{display:flex;align-items:center;gap:.375rem}
+.legend-dot{width:10px;height:10px;border-radius:50%}
+.legend-dot.cyan{background:#22d3ee}.legend-dot.amber{background:#fbbf24}.legend-dot.emerald{background:#34d399}.legend-dot.violet{background:#a78bfa}
+.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
+@media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
+/* Breadcrumb */
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+/* Cross-Nav */
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap}
+.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
+.cross-link:hover{color:#fbbf24;background:rgba(251,191,36,0.06)}
+.cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
+.cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
+</style></head><body><div class="container" id="rc">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../故事任务.md">yry-cdn · CDN 共享前端资源管理</a><span class="bc-sep">/</span><span class="bc-current">场景 1 · CDN 资源加载与页面渲染</span><span class="bc-sep">/</span><span class="bc-current">📐 架构图</span></nav>
+<div class="cross-nav">
+<a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><span class="cross-link on">📐 架构</span><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a>
 </div>
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>CDN 资源加载与页面渲染 — 架构图</h1>
+<div class="toolbar"><div class="toolbar-actions">
+<button onclick="copyAsImage(this)">📋 Copy</button>
+<button onclick="downloadPNG(this)">🖼️ PNG</button>
+<button onclick="downloadPDF(this)">📄 PDF</button>
+</div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
+</div><p class="subtitle">yry-cdn / 场景-1 / CDN 加载链路 + 资源依赖图</p></div>
+
+<div class="diagram-container">
+<svg viewBox="0 0 1100 720" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#475569"/></marker>
+<marker id="arrow-cyan" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#22d3ee"/></marker>
+<marker id="arrow-amber" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24"/></marker>
+<linearGradient id="grad-sys" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2a1a3a"/><stop offset="100%" stop-color="#1a2a3a"/></linearGradient>
+<linearGradient id="grad-mono" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1a2a4a"/><stop offset="100%" stop-color="#0a1a3a"/></linearGradient>
+<linearGradient id="grad-base" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1a2a3a"/><stop offset="100%" stop-color="#1a2a3a"/></linearGradient>
+</defs>
+<!-- User Entry -->
+<rect x="430" y="10" width="240" height="44" rx="8" fill="#1a1a2a" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="550" y="38" text-anchor="middle" fill="#a9b1d6" font-size="12" font-weight="600">👤 用户打开页面</text>
+<line x1="550" y1="54" x2="550" y2="84" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+<!-- Type Decision -->
+<polygon points="550,85 680,130 550,175 420,130" fill="#2a1a2a" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="550" y="135" text-anchor="middle" fill="#a9b1d6" font-size="11">页面类型?</text>
+<!-- Cat A path -->
+<line x1="420" y1="130" x2="180" y2="220" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arrow-cyan)"/>
+<text x="280" y="160" text-anchor="middle" fill="#22d3ee" font-size="10">Category A</text>
+<!-- Cat B path -->
+<line x1="680" y1="130" x2="920" y2="220" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arrow-amber)"/>
+<text x="820" y="160" text-anchor="middle" fill="#fbbf24" font-size="10">Category B</text>
+<!-- Step 1: Google Fonts (Cat A only) -->
+<rect x="40" y="230" width="280" height="56" rx="8" fill="#1a2a2a" stroke="#f59e0b" stroke-width="1"/>
+<text x="180" y="252" text-anchor="middle" fill="#f59e0b" font-size="11" font-weight="600">① Google Fonts (仅 Cat A)</text>
+<text x="180" y="272" text-anchor="middle" fill="#64748b" font-size="9">fonts.googleapis.com</text>
+<text x="180" y="284" text-anchor="middle" fill="#64748b" font-size="9">JetBrains Mono woff2</text>
+<line x1="180" y1="286" x2="180" y2="340" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+<!-- Step 2: shared.css -->
+<rect x="380" y="350" width="340" height="72" rx="8" fill="url(#grad-base)" stroke="#3d59a1" stroke-width="1.5"/>
+<text x="550" y="372" text-anchor="middle" fill="#a9b1d6" font-size="12" font-weight="600">② shared.css 加载</text>
+<text x="550" y="390" text-anchor="middle" fill="#64748b" font-size="9">CSS Reset · 6 动画 · 面包屑</text>
+<text x="550" y="404" text-anchor="middle" fill="#64748b" font-size="9">cross-nav · Toolbar · Toast · 工具类</text>
+<line x1="180" y1="230" x2="180" y2="290" stroke="#475569" stroke-width="0.5"/>
+<line x1="180" y1="290" x2="380" y2="386" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="550" y1="422" x2="550" y2="466" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+<!-- Step 3: Theme CSS -->
+<rect x="40" y="476" width="280" height="72" rx="8" fill="url(#grad-mono)" stroke="#22d3ee" stroke-width="1"/>
+<text x="180" y="498" text-anchor="middle" fill="#22d3ee" font-size="11" font-weight="600">③a theme-mono.css</text>
+<text x="180" y="516" text-anchor="middle" fill="#64748b" font-size="9">深蓝黑底 + 等宽字体</text>
+<text x="180" y="530" text-anchor="middle" fill="#64748b" font-size="9">图表容器 · 图例 · 脉冲点 · 卡片</text>
+<rect x="780" y="476" width="280" height="72" rx="8" fill="url(#grad-sys)" stroke="#fbbf24" stroke-width="1"/>
+<text x="920" y="498" text-anchor="middle" fill="#fbbf24" font-size="11" font-weight="600">③b theme.css</text>
+<text x="920" y="516" text-anchor="middle" fill="#64748b" font-size="9">深紫黑底 + 系统字体</text>
+<text x="920" y="530" text-anchor="middle" fill="#64748b" font-size="9">14 设计令牌 · 14 组件样式</text>
+<line x1="550" y1="466" x2="180" y2="476" stroke="#22d3ee" stroke-width="0.5" stroke-dasharray="4" marker-end="url(#arrow-cyan)"/>
+<line x1="550" y1="466" x2="920" y2="476" stroke="#fbbf24" stroke-width="0.5" stroke-dasharray="4" marker-end="url(#arrow-amber)"/>
+<line x1="180" y1="548" x2="180" y2="590" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="920" y1="548" x2="920" y2="590" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+<!-- Step 4: shared.js -->
+<rect x="380" y="600" width="340" height="56" rx="8" fill="#1a3a2a" stroke="#22c55e" stroke-width="1.5"/>
+<text x="550" y="622" text-anchor="middle" fill="#22c55e" font-size="12" font-weight="600">④ shared.js 加载</text>
+<text x="550" y="640" text-anchor="middle" fill="#64748b" font-size="9">IIFE → window.YrY 就绪 · 9 个公共 API</text>
+<line x1="180" y1="590" x2="380" y2="628" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+<line x1="920" y1="590" x2="720" y2="628" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
+<!-- Step 5: Interactive -->
+<line x1="550" y1="656" x2="550" y2="690" stroke="#34d399" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="430" y="692" width="240" height="22" rx="6" fill="#1a3a1a" stroke="#22c55e" stroke-width="1"/>
+<text x="550" y="708" text-anchor="middle" fill="#34d399" font-size="10" font-weight="600">⑤ 页面可交互 ✅</text>
+</svg>
+</div>
+
+<div class="legend">
+<span class="legend-item"><span class="legend-dot cyan"></span>Category A 路径</span>
+<span class="legend-item"><span class="legend-dot amber"></span>Category B 路径</span>
+<span class="legend-item"><span class="legend-dot emerald"></span>JS 执行</span>
+<span class="legend-item"><span class="legend-dot violet"></span>决策点</span>
+</div>
+
+<p class="footer">YrY v4.6.0 · cdn · 场景-1 架构图 · CDN 资源加载与页面渲染</p>
+</div>
+<script>
+async function copyAsImage(b){const o=b.textContent;try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2}),bl=await new Promise(r=>c.toBlob(r,"image/png"));await navigator.clipboard.write([new ClipboardItem({"image/png":bl})]);b.textContent="✓ Copied!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}
+async function downloadPNG(b){const o=b.textContent;b.textContent="⏳...";try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2}),a=document.createElement("a");a.download="场景1-CDN资源加载.png";a.href=c.toDataURL("image/png");a.click();b.textContent="✓ Done!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}
+async function downloadPDF(b){const o=b.textContent;b.textContent="⏳...";try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2});const{jsPDF}=window.jspdf;const d=new jsPDF({orientation:c.width>c.height?"l":"p",unit:"px",format:[c.width/2,c.height/2]});d.addImage(c.toDataURL("image/png"),"PNG",0,0,c.width/2,c.height/2);d.save("场景1-CDN资源加载.pdf");b.textContent="✓ Done!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}
+</script>
 <script src="../../../../../cdn/shared.js"></script>
-</body>
-</html>
+</body></html>

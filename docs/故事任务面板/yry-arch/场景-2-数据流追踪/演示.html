@@ -99,39 +99,39 @@
 </style>
 </head>
 <body>
-<div class="yry-container">
-<nav class="yry-breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">yry-arch · 系统架构知识固化</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 2 · 数据流与追踪</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">💡 演示</span></nav>
-  <div class="yry-cross-nav"><a href="计划清单.html" class="yry-cross-link">📋 清单</a><span class="yry-cross-sep">·</span><a href="架构图.html" class="yry-cross-link">📐 架构</a><span class="yry-cross-sep">·</span><a href="知识图谱.html" class="yry-cross-link">🔗 图谱</a><span class="yry-cross-sep">·</span><a href="测试面板.html" class="yry-cross-link">🧪 测试</a><span class="yry-cross-sep">·</span><span class="cross-link on">💡 演示</span><span class="yry-cross-sep">·</span><a href="审查.html" class="yry-cross-link">📝 审查</a></div>
-  <div class="yry-header">
-  <h1>🔍 <span class="yry-accent">数据流与追踪</span> — 演示</h1>
-  <p class="yry-sub">从用户输入到交付收口 — 每阶段数据可追溯 — <span class="kbd-hint">1-5</span> 数字键切换 Tab · 悬停代码复制</p>
+<div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · 数据流与追踪</span><span class="bc-sep">/</span><span class="bc-current">💡 演示</span></nav>
+  <div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><span class="cross-link on">💡 演示</span><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
+  <div class="header">
+  <h1>🔍 <span class="accent">数据流与追踪</span> — 演示</h1>
+  <p class="sub">从用户输入到交付收口 — 每阶段数据可追溯 — <span class="kbd-hint">1-5</span> 数字键切换 Tab · 悬停代码复制</p>
 </div>
 
-  <div class="yry-tabs">
+  <div class="tabs">
     <span class="tab on" data-panel="walkthrough">🚶 演示</span>
-    <span class="yry-tab" data-panel="overview">📊 概览</span>
-    <span class="yry-tab" data-panel="commands">⚡ 命令</span>
-    <span class="yry-tab" data-panel="files">📁 文件</span>
-    <span class="yry-tab" data-panel="tests">🧪 测试</span>
+    <span class="tab" data-panel="overview">📊 概览</span>
+    <span class="tab" data-panel="commands">⚡ 命令</span>
+    <span class="tab" data-panel="files">📁 文件</span>
+    <span class="tab" data-panel="tests">🧪 测试</span>
 </div>
 
-<div class="yry-stats"><div class="yry-stat"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="yry-stat"><div class="val health">6</div><div class="lbl">✅ 已演示</div></div><div class="yry-stat"><div class="val">0</div><div class="lbl">⏳ 待演示</div></div><div class="yry-stat"><div class="val health">100%</div><div class="lbl">📊 覆盖率</div></div></div><div class="yry-bar-wrap"><div class="yry-bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div>
+<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">6</div><div class="lbl">✅ 已演示</div></div><div class="stat-card"><div class="val">0</div><div class="lbl">⏳ 待演示</div></div><div class="stat-card"><div class="val health">100%</div><div class="lbl">📊 覆盖率</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div>
   <div style="display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:.68rem;color:var(--text3)"><span>✅ 6 已演示</span><span>⏳ 0 待演示</span></div>
 </div>
 
 <div class="panel on" id="panelWalkthrough">
     <div class="walkthrough">
-      <div class="step"><div class="yry-suite-body"><div class="s-title">用户输入入口</div><div class="s-desc">用户通过 /rui 命令输入需求。pm Agent 首先解析需求，拆分为故事任务，委派给各子 PM。</div><div class="s-result"><span class="r-label">✅ 结果:</span> pm 输出结构化故事卡片 — 故事名「用户登录功能」、标签「auth」、4 个场景拆分（登录界面 / 认证逻辑 / 会话管理 / 错误处理）。每个场景生成独立的任务文档到 docs/故事任务面板/。</div><div class="s-result-desc">💡 说明: /rui 是所有管线的统一入口。pm 解析自然语言需求后，按「场景-步骤」公式拆分为可独立验证的场景卡片。拆分粒度决定后续 coder 的并行度 — 场景数越多，可并行度越高。</div><pre>/rui doc 用户需要登录功能<span class="cb" onclick="copyCmd(this,'/rui doc 用户需要登录功能')">📋</span></pre></div></div>
-      <div class="step"><div class="yry-suite-body"><div class="s-title">文档生成阶段</div><div class="s-desc">pm 拆需求 → coder 补齐设计文档 → security 独立审计。产出故事任务.md + 场景文档 + 知识图谱.json。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 生成 5 个交付物 — 故事任务.md (主文档) / 场景-N.md ×4 (场景规约) / 知识图谱.json (节点+边) / 架构图.html (SVG 拓扑) / 计划清单.html (任务面板)。security Agent 注入安全约束到 coder 的任务列表。</div><div class="s-result-desc">💡 说明: doc 阶段是管线的「规约层」— 所有后续实现依赖此阶段的输出质量。--from-code 模式从现有源码反推文档（只读），适合存量项目建立文档基线。security 在此阶段注入约束而非事后审计（左移安全）。</div><pre>/rui doc 用户登录 --from-code<span class="cb" onclick="copyCmd(this,'/rui doc 用户登录 --from-code')">📋</span></pre></div></div>
-      <div class="step"><div class="yry-suite-body"><div class="s-title">代码实现阶段</div><div class="s-desc">分支隔离 → Gate A 测试先行 → 逐模块 P0 清零 → Gate B 验证 ≤ 2 轮。每个模块完成后 P0 必须清零才能进入下一个。</div><div class="s-result"><span class="r-label">✅ 结果:</span> feat/user-login 分支创建 → Gate A 通过 (测试先行+安全约束注入) → 4 个模块逐次清零 (M1:0 P0 → M2:1 P0→清零 → M3:0 P0 → M4:0 P0) → Gate B 1 轮通过 → merge 到 main。</div><div class="s-result-desc">💡 说明: code 阶段是管线的「实现层」。分支隔离（feat/ 前缀）强制防止直接修改 main。Gate A 在编码前验证准入条件（测试先行、安全约束），Gate B 在交付前验证退出条件（≤2 轮修复）。清先于进铁律：P0 未清不得进入下一模块。</div><pre>/rui code user-login<span class="cb" onclick="copyCmd(this,'/rui code user-login')">📋</span></pre></div></div>
-      <div class="step"><div class="yry-suite-body"><div class="s-title">自改进闭环</div><div class="s-desc">扫描所有故事 → D0-D7 诊断 → 选取最优改进项 → 实现 → 验证 → 版本升级。循环至收敛。</div><div class="s-result"><span class="r-label">✅ 结果:</span> Round 1: 8 诊断 → 3 改进项 → 选取 #1 (测试覆盖率提升) → 实现 → 验证 68→72 测试 → Round 2: 5 诊断 → 2 改进项 → 选取 #1 (文档补全) → 实现 → 验证 → Round 3: 3 诊断 → 0 改进项 → 收敛退出。</div><div class="s-result-desc">💡 说明: 自改进闭环是管线的「反馈层」— 每轮扫描所有故事面板，运行 D0-D7 诊断（覆盖质量、覆盖盲区、文档漂移、测试缺口、安全回归、依赖老化、性能退化、体验降级），选取效果最优项实现。--depth 控制最大迭代轮数，收敛后自动退出。</div><pre>/rui yry --depth 3<span class="cb" onclick="copyCmd(this,'/rui yry --depth 3')">📋</span></pre></div></div>
-      <div class="step"><div class="yry-suite-body"><div class="s-title">交付收口</div><div class="s-desc">三步 Hook：追加通知日志 → rui-import 文档同步 → rui-bot 企微通知。每个 hook 独立可验证。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 版本 4.2.0 → 4.3.0: Hook1 通知日志追加 3 条新记录 → Hook2 rui-import 同步 12 个文件到远端 API → Hook3 rui-bot 企微通知发送成功 → commit + tag + push 一气呵成。</div><div class="s-result-desc">💡 说明: 交付收口三步 hook 是管线的「交付层」。version --up 自动判定语义化版本号（major/minor/patch），更新 plugin.json/CLAUDE.md/README.md 三处版本号，然后顺序执行三个 hook。任一 hook 失败会回滚版本号变更，保证一致性。</div><pre>/rui version --up<span class="cb" onclick="copyCmd(this,'/rui version --up')">📋</span></pre></div></div>
-      <div class="step"><div class="yry-suite-body"><div class="s-title">数据流可追溯</div><div class="s-desc">每阶段输入/输出有明确文件标记。git log + 通知日志 + 测试结果形成完整追溯链。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 5 条提交记录完整追溯链 — e9d4ad0 (交付: 4.2→4.3) ← b926fc5 (merge: feat/yry-self-test) ← ad6aea1 (实现: 测试加强 68 项) ← 2d45b24 (交付: 4.1→4.2) ← 9d09af8 (自改进: 3-round repair)。</div><div class="s-result-desc">💡 说明: 每条 commit 消息标注阶段类型（doc/code/merge/deliver/repair），git log 形成完整的「谁在什么阶段做了什么」追溯链。配合通知日志（docs/故事任务面板/通知日志.md）和测试结果（tests/results.json），三方交叉验证确保数据流不可篡改。</div><pre>git log --oneline -5<span class="cb" onclick="copyCmd(this,'git log --oneline -5')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">用户输入入口</div><div class="s-desc">用户通过 /rui 命令输入需求。pm Agent 首先解析需求，拆分为故事任务，委派给各子 PM。</div><div class="s-result"><span class="r-label">✅ 结果:</span> pm 输出结构化故事卡片 — 故事名「用户登录功能」、标签「auth」、4 个场景拆分（登录界面 / 认证逻辑 / 会话管理 / 错误处理）。每个场景生成独立的任务文档到 docs/故事任务面板/。</div><div class="s-result-desc">💡 说明: /rui 是所有管线的统一入口。pm 解析自然语言需求后，按「场景-步骤」公式拆分为可独立验证的场景卡片。拆分粒度决定后续 coder 的并行度 — 场景数越多，可并行度越高。</div><pre>/rui doc 用户需要登录功能<span class="cb" onclick="copyCmd(this,'/rui doc 用户需要登录功能')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">文档生成阶段</div><div class="s-desc">pm 拆需求 → coder 补齐设计文档 → security 独立审计。产出故事任务.md + 场景文档 + 知识图谱.json。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 生成 5 个交付物 — 故事任务.md (主文档) / 场景-N.md ×4 (场景规约) / 知识图谱.json (节点+边) / 架构图.html (SVG 拓扑) / 计划清单.html (任务面板)。security Agent 注入安全约束到 coder 的任务列表。</div><div class="s-result-desc">💡 说明: doc 阶段是管线的「规约层」— 所有后续实现依赖此阶段的输出质量。--from-code 模式从现有源码反推文档（只读），适合存量项目建立文档基线。security 在此阶段注入约束而非事后审计（左移安全）。</div><pre>/rui doc 用户登录 --from-code<span class="cb" onclick="copyCmd(this,'/rui doc 用户登录 --from-code')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">代码实现阶段</div><div class="s-desc">分支隔离 → Gate A 测试先行 → 逐模块 P0 清零 → Gate B 验证 ≤ 2 轮。每个模块完成后 P0 必须清零才能进入下一个。</div><div class="s-result"><span class="r-label">✅ 结果:</span> feat/user-login 分支创建 → Gate A 通过 (测试先行+安全约束注入) → 4 个模块逐次清零 (M1:0 P0 → M2:1 P0→清零 → M3:0 P0 → M4:0 P0) → Gate B 1 轮通过 → merge 到 main。</div><div class="s-result-desc">💡 说明: code 阶段是管线的「实现层」。分支隔离（feat/ 前缀）强制防止直接修改 main。Gate A 在编码前验证准入条件（测试先行、安全约束），Gate B 在交付前验证退出条件（≤2 轮修复）。清先于进铁律：P0 未清不得进入下一模块。</div><pre>/rui code user-login<span class="cb" onclick="copyCmd(this,'/rui code user-login')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">自改进闭环</div><div class="s-desc">扫描所有故事 → D0-D7 诊断 → 选取最优改进项 → 实现 → 验证 → 版本升级。循环至收敛。</div><div class="s-result"><span class="r-label">✅ 结果:</span> Round 1: 8 诊断 → 3 改进项 → 选取 #1 (测试覆盖率提升) → 实现 → 验证 68→72 测试 → Round 2: 5 诊断 → 2 改进项 → 选取 #1 (文档补全) → 实现 → 验证 → Round 3: 3 诊断 → 0 改进项 → 收敛退出。</div><div class="s-result-desc">💡 说明: 自改进闭环是管线的「反馈层」— 每轮扫描所有故事面板，运行 D0-D7 诊断（覆盖质量、覆盖盲区、文档漂移、测试缺口、安全回归、依赖老化、性能退化、体验降级），选取效果最优项实现。--depth 控制最大迭代轮数，收敛后自动退出。</div><pre>/rui yry --depth 3<span class="cb" onclick="copyCmd(this,'/rui yry --depth 3')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">交付收口</div><div class="s-desc">三步 Hook：追加通知日志 → rui-import 文档同步 → rui-bot 企微通知。每个 hook 独立可验证。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 版本 4.2.0 → 4.3.0: Hook1 通知日志追加 3 条新记录 → Hook2 rui-import 同步 12 个文件到远端 API → Hook3 rui-bot 企微通知发送成功 → commit + tag + push 一气呵成。</div><div class="s-result-desc">💡 说明: 交付收口三步 hook 是管线的「交付层」。version --up 自动判定语义化版本号（major/minor/patch），更新 plugin.json/CLAUDE.md/README.md 三处版本号，然后顺序执行三个 hook。任一 hook 失败会回滚版本号变更，保证一致性。</div><pre>/rui version --up<span class="cb" onclick="copyCmd(this,'/rui version --up')">📋</span></pre></div></div>
+      <div class="step"><div class="suite-body"><div class="s-title">数据流可追溯</div><div class="s-desc">每阶段输入/输出有明确文件标记。git log + 通知日志 + 测试结果形成完整追溯链。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 5 条提交记录完整追溯链 — e9d4ad0 (交付: 4.2→4.3) ← b926fc5 (merge: feat/yry-self-test) ← ad6aea1 (实现: 测试加强 68 项) ← 2d45b24 (交付: 4.1→4.2) ← 9d09af8 (自改进: 3-round repair)。</div><div class="s-result-desc">💡 说明: 每条 commit 消息标注阶段类型（doc/code/merge/deliver/repair），git log 形成完整的「谁在什么阶段做了什么」追溯链。配合通知日志（docs/故事任务面板/通知日志.md）和测试结果（tests/results.json），三方交叉验证确保数据流不可篡改。</div><pre>git log --oneline -5<span class="cb" onclick="copyCmd(this,'git log --oneline -5')">📋</span></pre></div></div>
     </div>
   </div>
 
-  <div class="yry-panel" id="panelOverview">
-    <div class="yry-section"><h2><span class="dot"></span>管线数据流</h2>
+  <div class="panel" id="panelOverview">
+    <div class="section"><h2><span class="dot"></span>管线数据流</h2>
       <div class="flow-row">
         <div class="flow-chip"><span class="n">输入</span></div><span class="flow-arrow">→</span>
         <div class="flow-chip"><span class="n">doc</span> 文档</div><span class="flow-arrow">→</span>
@@ -140,7 +140,7 @@
         <div class="flow-chip"><span class="n">deliver</span> 交付</div>
       </div>
     </div>
-    <div class="yry-section"><h2><span class="dot"></span>关卡信号</h2>
+    <div class="section"><h2><span class="dot"></span>关卡信号</h2>
       <div class="flow-row">
         <div class="flow-chip"><span class="n">Gate A</span> 准入</div><span class="flow-arrow">→</span>
         <div class="flow-chip"><span class="n">P0 清零</span></div><span class="flow-arrow">→</span>
@@ -150,7 +150,7 @@
     </div>
   </div>
 
-  <div class="yry-panel" id="panelCommands">
+  <div class="panel" id="panelCommands">
     <div class="cmd-grid">
       <div class="cmd-card"><div class="stage">文档生成</div><div class="name">/rui doc 需求描述</div><div class="desc">输入需求 → pm 拆分为故事 → coder 补齐设计文档 → security 审计。</div><pre>/rui doc 添加用户登录功能<span class="cb" onclick="copyCmd(this,'/rui doc 添加用户登录功能')">📋</span></pre></div>
       <div class="cmd-card"><div class="stage">代码实现</div><div class="name">/rui code name</div><div class="desc">分支隔离 → Gate A → 逐模块 P0 清零 → Gate B ≤ 2 轮 → 交付。</div><pre>/rui code user-login<span class="cb" onclick="copyCmd(this,'/rui code user-login')">📋</span></pre></div>
@@ -161,8 +161,8 @@
     </div>
   </div>
 
-  <div class="yry-panel" id="panelFiles">
-    <div class="yry-section"><h2><span class="dot"></span>相关文件</h2>
+  <div class="panel" id="panelFiles">
+    <div class="section"><h2><span class="dot"></span>相关文件</h2>
       <div class="file-list">
         <div class="file-item">📄 code-pipeline.md</div><div class="file-item">📄 delivery-gate.md</div>
         <div class="file-item">📄 SKILL.md (rui)</div><div class="file-item">📄 formulas.md</div>
@@ -172,8 +172,8 @@
     <div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="测试面板.html">🧪 测试面板</a></div>
   </div>
 
-  <div class="yry-panel" id="panelTests">
-    <div class="yry-section"><h2><span class="dot"></span>测试覆盖</h2>
+  <div class="panel" id="panelTests">
+    <div class="section"><h2><span class="dot"></span>测试覆盖</h2>
       <div class="cmd-grid">
         <div class="cmd-card"><div class="name">管线阶段可追溯</div><div class="desc">验证每个管线阶段的输入/输出文件存在，阶段间信号可被下游验证。</div></div>
         <div class="cmd-card"><div class="name">Gate A/B 有效</div><div class="desc">验证 Gate A 准入条件和 Gate B 交付条件均被强制执行。</div></div>
@@ -183,7 +183,7 @@
     <div class="links-row"><a href="测试面板.html">🧪 打开测试面板</a><a href="../../../index.html">📄 返回文档中心</a></div>
   </div>
 </div>
-<div class="yry-toast" id="toast"></div>
+<div class="toast" id="toast"></div>
 <script>
 document.querySelector('.tabs').addEventListener('click',e=>{const tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
 function switchPanel(name){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===name));document.querySelectorAll('.panel').forEach(p=>{const on=p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1);p.classList.toggle('on',on)})}
@@ -191,7 +191,7 @@ document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;con
 function copyCmd(btn,cmd){navigator.clipboard.writeText(cmd).then(()=>{btn.textContent='✅';btn.classList.add('done');setTimeout(()=>{btn.textContent='📋';btn.classList.remove('done')},1500)}).catch(()=>toast('复制失败'))}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}
 </script>
-<div class="yry-footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY · 场景演示</div>
+<div class="footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY · 场景演示</div>
 <script src="../../../../cdn/shared.js"></script>
 </body>
 </html>

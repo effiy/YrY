@@ -1,69 +1,22 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>场景-2 计划清单 — 双主题系统设计</title>
-<link rel="stylesheet" href="../../../../../cdn/shared.css">
-<link rel="stylesheet" href="../../../../../cdn/theme.css">
-<style>
-  .checklist { list-style: none; padding: 0; }
-  .checklist li { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; margin-bottom: 6px; background: var(--yry-bg-flat); border-radius: 8px; border: var(--yry-border); font-size: .82rem; }
-  .checklist li:hover { border-color: rgba(255,255,255,.1); }
-  .step-id { color: var(--yry-accent); font-weight: 700; min-width: 48px; font-size: .76rem; }
-  .step-name { flex: 1; color: var(--yry-text); font-weight: 500; }
-  .step-path { color: var(--yry-text3); font-size: .72rem; margin-top: 2px; }
-  .step-cmd { background: rgba(0,0,0,.3); border-radius: 4px; padding: 4px 8px; font-family: monospace; font-size: .72rem; color: var(--yry-cyan); margin-top: 4px; display: block; }
-  .step-expect { color: var(--yry-text2); font-size: .72rem; margin-top: 2px; }
-  input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--yry-accent); cursor: pointer; margin-top: 2px; flex-shrink: 0; }
-</style>
+<link rel="stylesheet" href="../../../../../cdn/shared.css"><link rel="stylesheet" href="../../../../../cdn/theme.css">
+<style>.checklist{list-style:none;padding:0}.checklist li{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;margin-bottom:6px;background:var(--yry-bg-flat);border-radius:8px;border:var(--yry-border);font-size:.82rem}.checklist li:hover{border-color:rgba(255,255,255,.1)}.step-id{color:var(--yry-accent);font-weight:700;min-width:48px;font-size:.76rem}.step-name{flex:1;color:var(--yry-text);font-weight:500}.step-path{color:var(--yry-text3);font-size:.72rem;margin-top:2px}.step-cmd{background:rgba(0,0,0,.3);border-radius:4px;padding:4px 8px;font-family:monospace;font-size:.72rem;color:var(--yry-cyan);margin-top:4px;display:block}.step-expect{color:var(--yry-text2);font-size:.72rem;margin-top:2px}input[type=checkbox]{width:18px;height:18px;accent-color:var(--yry-accent);cursor:pointer;margin-top:2px;flex-shrink:0}.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}</style>
 </head>
 <body>
-<div class="yry-container">
-  <div class="yry-breadcrumb">
-    <a href="../">故事面板</a><span class="yry-bc-sep">/</span>
-    <a href="../">yry-cdn plan</a><span class="yry-bc-sep">/</span>
-    <span class="yry-bc-current">场景-2 清单</span>
-  </div>
-  <div class="yry-header">
-    <h1>场景-2 <span class="yry-accent">计划清单</span></h1>
-    <div class="yry-sub">双主题系统设计 · 3 步 · 15min</div>
-  </div>
-  <ul class="checklist">
-    <li>
-      <input type="checkbox" id="s1">
-      <div>
-        <span class="step-id">步骤 1</span>
-        <span class="step-name">验证 System 主题 14 设计令牌 + 14 组件存在</span>
-        <div class="step-path">📄 index.md §1 TC1</div>
-        <div class="step-cmd"># 打开任意 Cat B 审查页面 → DevTools → Styles → :root → 计数 --yry-* 变量</div>
-        <div class="step-cmd"># 检查 14 System 组件: .yry-container .yry-stats .yry-tabs .yry-panel .yry-suite .yry-progress-wrap .yry-btn .yry-section .yry-link-grid 等</div>
-        <div class="step-expect">✅ :root 含 14 个 --yry-* 变量，14 组件 CSS 类全部有计算样式</div>
-      </div>
-    </li>
-    <li>
-      <input type="checkbox" id="s2">
-      <div>
-        <span class="step-id">步骤 2</span>
-        <span class="step-name">验证 Cat A vs Cat B 视觉差异 + 响应式</span>
-        <div class="step-path">📄 index.md §1 TC2–TC4</div>
-        <div class="step-cmd"># 并排截屏 Cat A 架构图页面 + Cat B 审查页面 → 对比背景色/字体/卡片风格</div>
-        <div class="step-cmd"># Cat B 页面: DevTools → 切换视口 375px → 检查 .yry-container padding + 无横向滚动</div>
-        <div class="step-expect">✅ Cat A 背景 #020617 + JetBrains Mono。Cat B 背景深紫黑 + 系统字体。375px 布局正常</div>
-      </div>
-    </li>
-    <li>
-      <input type="checkbox" id="s3">
-      <div>
-        <span class="step-id">步骤 3</span>
-        <span class="step-name">撰写实施报告（§2）</span>
-        <div class="step-path">📄 index.md → 追加 §2</div>
-        <div class="step-cmd"># 记录: CSS 变量值截图 + 两主题对比截图 + 响应式断点截图 + 5 项 Gate A 信号</div>
-        <div class="step-expect">✅ §2 含视觉对比证据、CSS 变量值、响应式验证结果</div>
-      </div>
-    </li>
-  </ul>
-  <div class="yry-footer" style="margin-top:40px;">yry-cdn · 场景-2 计划清单 · <a href="../">← plan</a></div>
+<div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../故事任务.md">yry-cdn · CDN 共享前端资源管理</a><span class="bc-sep">/</span><span class="bc-current">场景 2 · 双主题系统设计</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
+<div class="cross-nav"><span class="cross-link on">📋 清单</span><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
+<div class="header"><h1>场景-2 <span class="accent">计划清单</span></h1><div class="sub">双主题系统设计 · 3 步 · 15min</div></div>
+<ul class="checklist">
+<li><input type="checkbox" id="s1"><div><span class="step-id">步骤 1</span><span class="step-name">验证 System 主题 14 设计令牌 + 14 组件存在</span><div class="step-path">📄 index.md §1 TC1</div><div class="step-cmd"># 打开任意 Cat B 审查页面 → DevTools → Styles → :root → 计数 --yry-* 变量</div><div class="step-cmd"># 检查 14 System 组件: .container .stats .tabs .panel .suite .progress-wrap .btn .section .link-grid 等</div><div class="step-expect">✅ :root 含 14 个 --yry-* 变量，14 组件 CSS 类全部有计算样式</div></div></li>
+<li><input type="checkbox" id="s2"><div><span class="step-id">步骤 2</span><span class="step-name">验证 Cat A vs Cat B 视觉差异 + 响应式</span><div class="step-path">📄 index.md §1 TC2–TC4</div><div class="step-cmd"># 并排截屏 Cat A 架构图页面 + Cat B 审查页面 → 对比背景色/字体/卡片风格</div><div class="step-cmd"># Cat B 页面: DevTools → 切换视口 375px → 检查 .container padding + 无横向滚动</div><div class="step-expect">✅ Cat A 背景 #020617 + JetBrains Mono。Cat B 背景深紫黑 + 系统字体。375px 布局正常</div></div></li>
+<li><input type="checkbox" id="s3"><div><span class="step-id">步骤 3</span><span class="step-name">撰写实施报告（§2）</span><div class="step-path">📄 index.md → 追加 §2</div><div class="step-cmd"># 记录: CSS 变量值截图 + 两主题对比截图 + 响应式断点截图 + 5 项 Gate A 信号</div><div class="step-expect">✅ §2 含视觉对比证据、CSS 变量值、响应式验证结果</div></div></li>
+</ul>
+<div class="footer" style="margin-top:40px;">YrY v4.6.0 · cdn · 场景-2 计划清单</div>
 </div>
 <script src="../../../../../cdn/shared.js"></script>
 </body>

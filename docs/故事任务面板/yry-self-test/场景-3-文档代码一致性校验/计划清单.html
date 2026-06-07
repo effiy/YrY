@@ -151,41 +151,41 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 </style>
 </head>
 <body>
-<div class="yry-container">
+<div class="container">
 
-<nav class="yry-breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">yry-self-test · 自主测试方案</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 3 · 文档代码一致性校验</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">📋 计划清单</span></nav>
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自主测试方案</span><span class="bc-sep">/</span><span class="bc-current">场景 3 · 文档代码一致性校验</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
 
-<div class="yry-cross-nav">
-  <span class="cross-link on">📋 清单</span><span class="yry-cross-sep">·</span>
-  <a href="架构图.html" class="yry-cross-link">📐 架构</a><span class="yry-cross-sep">·</span>
-  <a href="知识图谱.html" class="yry-cross-link">🔗 图谱</a><span class="yry-cross-sep">·</span>
-  <a href="测试面板.html" class="yry-cross-link">🧪 测试</a><span class="yry-cross-sep">·</span>
-  <a href="演示.html" class="yry-cross-link">💡 演示</a><span class="yry-cross-sep">·</span><a href="审查.html" class="yry-cross-link">📝 审查</a>
+<div class="cross-nav">
+  <span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
+  <a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span>
+  <a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a>
 </div>
 
-<div class="yry-header">
-  <h1>📋 场景-3<span class="yry-accent"> · 文档代码一致性校验</span></h1>
-  <p class="yry-sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
-  <div class="meta">📌 v1.1.0 · 📅 2026-06-05 · 🏷️ yry-self-test</div>
+<div class="header">
+  <h1>📋 场景-3<span class="accent"> · 文档代码一致性校验</span></h1>
+  <p class="sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
+  <div class="meta">📌 v1.1.0 · 📅 2026-06-05 · 🏷️ self-test</div>
 </div>
 
-<div class="yry-progress-wrap">
-  <div class="yry-progress-label"><span>整体进度</span><span id="progress-text">0 / 14 完成</span></div>
-  <div class="yry-progress-bar"><div class="yry-progress-fill" id="progress-fill" style="width:0%"></div></div>
+<div class="progress-wrap">
+  <div class="progress-label"><span>整体进度</span><span id="progress-text">0 / 14 完成</span></div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
 </div>
 
-<div class="yry-tabs">
+<div class="tabs">
   <span class="tab on" data-panel="checklist">📋 清单</span>
-  <span class="yry-tab" data-panel="overview">📊 概览</span>
-  <span class="yry-tab" data-panel="commands">⚡ 命令</span>
-  <span class="yry-tab" data-panel="related">📁 关联</span>
-  <span class="yry-tab" data-panel="verify">🧪 验证</span>
+  <span class="tab" data-panel="overview">📊 概览</span>
+  <span class="tab" data-panel="commands">⚡ 命令</span>
+  <span class="tab" data-panel="related">📁 关联</span>
+  <span class="tab" data-panel="verify">🧪 验证</span>
 </div>
 
 <!-- ═══ Tab 1: Checklist ═══ -->
 <div class="panel on" id="panelChecklist">
 
-<div class="yry-section">
+<div class="section">
 <h2><span class="dot"></span>§0 技术评审<span class="s-done">— 已完成</span></h2>
 
 <div class="step">
@@ -197,7 +197,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
   </div>
   <div class="step-body open">
     <p>六维一致性：① 目录结构一致 ② 章节完整 ③ 交叉引用有效 ④ 回溯链完整 ⑤ 知识图谱节点对应 ⑥ 版本号一致。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-self-test --scene 3</code>生成一致性矩阵文档</div>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story self-test --scene 3</code>生成一致性矩阵文档</div>
     <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
     <div class="code-block">| 维度 | 文档侧 | 代码侧 | 校验方式 |
 |------|--------|--------|---------|
@@ -208,7 +208,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 | 图谱 | 知识图谱节点 | 源码模块 | JSON schema 校验 |
 | 版本 | 文档版本号 | plugin.json | 字符串比对 |</div>
   </div>
-<div class="yry-stats"><div class="yry-stat"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="yry-stat"><div class="val health">0</div><div class="lbl">✅ 完成</div></div><div class="yry-stat"><div class="val">6</div><div class="lbl">⏳ 待执行</div></div><div class="yry-stat"><div class="val">0%</div><div class="lbl">📊 进度</div></div></div><div class="yry-bar-wrap"><div class="yry-bar-outer"><div class="seg strength" style="width:0%"></div><div class="seg gap" style="width:100%"></div></div></div>
+<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">0</div><div class="lbl">✅ 完成</div></div><div class="stat-card"><div class="val">6</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val">0%</div><div class="lbl">📊 进度</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:0%"></div><div class="seg gap" style="width:100%"></div></div></div>
 
 </div>
 
@@ -221,13 +221,13 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
   </div>
   <div class="step-body">
     <p>六维校验的完整流程：触发→每维校验→结果汇总→不一致定位。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-self-test --output 架构图.html</code>生成一致性校验流程图</div>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story self-test --output 架构图.html</code>生成一致性校验流程图</div>
     <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a></div>
   </div>
 </div>
 </div>
 
-<div class="yry-section">
+<div class="section">
 <h2><span class="dot"></span>§1 测试设计</h2>
 
 <div class="step">
@@ -239,35 +239,35 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
   </div>
   <div class="step-body">
     <p>TC-C-1: 场景 §0 引用的 agent 文件存在。TC-C-2: 知识图谱节点对应源码模块存在。TC-C-3: 文档交叉引用全部可达。TC-C-4: 版本号在 plugin.json/CLAUDE.md/README.md 中一致。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-self-test</code>让 tester agent 生成一致性测试用例</div>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story self-test</code>让 tester agent 生成一致性测试用例</div>
     <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div>
   </div>
 </div>
 </div>
 
-<div class="yry-section">
+<div class="section">
 <h2><span class="dot"></span>§2 实施报告<span class="s-done">— 进行中</span></h2>
 
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">4</span><span class="step-title">实现目录结构校验器</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node scripts/validate-doc-consistency.mjs --check=dirs</code>运行目录校验</div></div></div>
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">5</span><span class="step-title">实现章节完整性校验器</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui-story sync</code>同步故事面板章节信息</div><div class="verify-cmd">grep -c "^## §" 场景-*-*.md | awk -F: '{print $1, $2}'</div><div class="expected">每个场景 ≥ 5 个 § 章节</div></div></div>
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">6</span><span class="step-title">实现交叉引用可达性检查</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div></div></div>
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">7</span><span class="step-title">实现回溯链完整性检查</span><span class="step-status status-pending">⏳ 待开始</span></div></div>
-<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">8</span><span class="step-title">实现知识图谱节点验证</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-self-test --output 知识图谱.html</code>重新生成验证节点</div><div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div></div></div>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">8</span><span class="step-title">实现知识图谱节点验证</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story self-test --output 知识图谱.html</code>重新生成验证节点</div><div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div></div></div>
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">9</span><span class="step-title">实现版本号一致性校验</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node skills/rui-import/sync.mjs --dry-run</code>验证版本号一致性</div></div></div>
 </div>
 
-<div class="yry-section">
+<div class="section">
 <h2><span class="dot"></span>§3 测试报告</h2>
 
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">10</span><span class="step-title">运行一致性全量校验</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node scripts/validate-doc-consistency.mjs --all</code>运行全量一致性校验</div><div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div><div class="verify-cmd">node scripts/validate-doc-consistency.mjs --all</div></div></div>
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">11</span><span class="step-title">记录不一致项检出率</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node skills/rui-bot/send.mjs --story=yry-self-test --status=test-report</code>推送一致性报告</div></div></div>
 </div>
 
-<div class="yry-section">
+<div class="section">
 <h2><span class="dot"></span>§4 自改进 + 交付</h2>
 
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">12</span><span class="step-title">自动修复建议生成</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui-trends</code>分析趋势辅助修复建议</div></div></div>
-<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">13</span><span class="step-title">P0 验证 + 架构图</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-self-test --output 架构图.html --check p0</code>验证并生成架构图</div><div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a></div></div></div>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">13</span><span class="step-title">P0 验证 + 架构图</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story self-test --output 架构图.html --check p0</code>验证并生成架构图</div><div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a></div></div></div>
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">14</span><span class="step-title">git commit + 交付收口</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>git add docs/故事任务面板/yry-self-test/ && git commit</code>然后 <code>node skills/rui-import/sync.mjs workspace=true</code>最后 <code>node skills/rui-bot/send.mjs --story=yry-self-test --status=done</code></div><div class="code-block">git add docs/故事任务面板/yry-self-test/
 git commit -m "docs: 场景-3 文档代码一致性校验完成"
 node skills/rui-import/sync.mjs workspace=true
@@ -277,7 +277,7 @@ node skills/rui-bot/send.mjs --story=yry-self-test --status=done</div></div></di
 </div><!-- /panelChecklist -->
 
 <!-- ═══ Tab 2: Overview ═══ -->
-<div class="yry-panel" id="panelOverview">
+<div class="panel" id="panelOverview">
 
 <div class="stat-grid">
   <div class="stat-mini"><div class="sv g" id="ov-done">1</div><div class="sl">已完成</div></div>
@@ -286,7 +286,7 @@ node skills/rui-bot/send.mjs --story=yry-self-test --status=done</div></div></di
   <div class="stat-mini"><div class="sv c">14</div><div class="sl">总步骤</div></div>
 </div>
 
-<div class="yry-section"><h2><span class="dot"></span>各阶段完成度</h2>
+<div class="section"><h2><span class="dot"></span>各阶段完成度</h2>
   <div class="section-stat"><span class="ss-label">§0 技术评审</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:50%;background:var(--accent)"></div></div><span class="ss-pct">1/2</span></div>
   <div class="section-stat"><span class="ss-label">§1 测试设计</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/1</span></div>
   <div class="section-stat"><span class="ss-label">§2 实施报告</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/6</span></div>
@@ -294,43 +294,43 @@ node skills/rui-bot/send.mjs --story=yry-self-test --status=done</div></div></di
   <div class="section-stat"><span class="ss-label">§4 自改进+交付</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/3</span></div>
 </div>
 
-<div class="yry-section"><h2><span class="dot"></span>下一步行动</h2>
+<div class="section"><h2><span class="dot"></span>下一步行动</h2>
   <div class="cmd-card"><div class="c-stage">当前就绪 — 步骤 2</div><div class="c-name">设计一致性校验 mermaid 流程图</div><div class="c-desc">六维校验的完整流程：触发→每维校验→结果汇总→不一致定位。切换到 ⚡命令 Tab 查看可执行命令。</div></div>
 </div>
 
 </div><!-- /panelOverview -->
 
 <!-- ═══ Tab 3: Commands ═══ -->
-<div class="yry-panel" id="panelCommands">
+<div class="panel" id="panelCommands">
 
-<div class="yry-section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令</h2>
+<div class="section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令</h2>
 <div class="cmd-grid">
-  <div class="cmd-card"><div class="c-stage">步骤 1</div><div class="c-name">生成一致性矩阵文档</div><div class="c-desc">六维一致性矩阵：目录·章节·引用·回溯·图谱·版本</div><pre>/rui doc --story yry-self-test --scene 3<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-self-test --scene 3')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 1</div><div class="c-name">生成一致性矩阵文档</div><div class="c-desc">六维一致性矩阵：目录·章节·引用·回溯·图谱·版本</div><pre>/rui doc --story self-test --scene 3<span class="cb" onclick="copyCmd(this,'/rui doc --story self-test --scene 3')">📋</span></pre></div>
 </div></div>
 
-<div class="yry-section"><h2><span class="dot"></span>§0-§1 — 待执行命令</h2>
+<div class="section"><h2><span class="dot"></span>§0-§1 — 待执行命令</h2>
 <div class="cmd-grid">
-  <div class="cmd-card"><div class="c-stage">步骤 2 · 🔶 就绪</div><div class="c-name">生成一致性校验流程图</div><div class="c-desc">六维校验流程 mermaid → HTML+SVG</div><pre>/rui doc --story yry-self-test --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-self-test --output 架构图.html')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 3</div><div class="c-name">生成一致性测试用例</div><div class="c-desc">tester agent 生成 TC-C 系列测试</div><pre>/rui doc --story yry-self-test<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-self-test')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 2 · 🔶 就绪</div><div class="c-name">生成一致性校验流程图</div><div class="c-desc">六维校验流程 mermaid → HTML+SVG</div><pre>/rui doc --story self-test --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story self-test --output 架构图.html')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 3</div><div class="c-name">生成一致性测试用例</div><div class="c-desc">tester agent 生成 TC-C 系列测试</div><pre>/rui doc --story self-test<span class="cb" onclick="copyCmd(this,'/rui doc --story self-test')">📋</span></pre></div>
 </div></div>
 
-<div class="yry-section"><h2><span class="dot"></span>§2-§4 — 待执行命令</h2>
+<div class="section"><h2><span class="dot"></span>§2-§4 — 待执行命令</h2>
 <div class="cmd-grid">
   <div class="cmd-card"><div class="c-stage">步骤 4</div><div class="c-name">运行目录校验</div><div class="c-desc">校验文档目录结构与 git 文件清单一致</div><pre>node scripts/validate-doc-consistency.mjs --check=dirs<span class="cb" onclick="copyCmd(this,'node scripts/validate-doc-consistency.mjs --check=dirs')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 5</div><div class="c-name">同步故事面板章节</div><div class="c-desc">验证场景 §0-§4 章节完整性</div><pre>/rui-story sync<span class="cb" onclick="copyCmd(this,'/rui-story sync')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 8</div><div class="c-name">重新生成知识图谱</div><div class="c-desc">验证图谱节点与源码模块对应</div><pre>/rui doc --story yry-self-test --output 知识图谱.html<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-self-test --output 知识图谱.html')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 8</div><div class="c-name">重新生成知识图谱</div><div class="c-desc">验证图谱节点与源码模块对应</div><pre>/rui doc --story self-test --output 知识图谱.html<span class="cb" onclick="copyCmd(this,'/rui doc --story self-test --output 知识图谱.html')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 9</div><div class="c-name">版本号一致性校验</div><div class="c-desc">dry-run 模式验证版本号</div><pre>node skills/rui-import/sync.mjs --dry-run<span class="cb" onclick="copyCmd(this,'node skills/rui-import/sync.mjs --dry-run')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 10</div><div class="c-name">运行全量一致性校验</div><div class="c-desc">六维全量校验并输出报告</div><pre>node scripts/validate-doc-consistency.mjs --all<span class="cb" onclick="copyCmd(this,'node scripts/validate-doc-consistency.mjs --all')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 11</div><div class="c-name">推送一致性报告</div><div class="c-desc">企微通知不一致项检出率</div><pre>node skills/rui-bot/send.mjs --story=yry-self-test --status=test-report<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=yry-self-test --status=test-report')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 12</div><div class="c-name">分析趋势辅助修复</div><div class="c-desc">技术趋势分析辅助修复建议</div><pre>/rui-trends<span class="cb" onclick="copyCmd(this,'/rui-trends')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 13</div><div class="c-name">P0 验证 + 架构图</div><div class="c-desc">验证 P0 约束并生成一致性架构图</div><pre>/rui doc --story yry-self-test --output 架构图.html --check p0<span class="cb" onclick="copyCmd(this,'/rui doc --story yry-self-test --output 架构图.html --check p0')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 13</div><div class="c-name">P0 验证 + 架构图</div><div class="c-desc">验证 P0 约束并生成一致性架构图</div><pre>/rui doc --story self-test --output 架构图.html --check p0<span class="cb" onclick="copyCmd(this,'/rui doc --story self-test --output 架构图.html --check p0')">📋</span></pre></div>
   <div class="cmd-card"><div class="c-stage">步骤 14</div><div class="c-name">交付收口</div><div class="c-desc">git commit → rui-import 同步 → rui-bot 通知</div><pre>git add . && git commit<span class="cb" onclick="copyCmd(this,'git add . && git commit')">📋</span></pre></div>
 </div></div>
 
 </div><!-- /panelCommands -->
 
 <!-- ═══ Tab 4: Related Pages ═══ -->
-<div class="yry-panel" id="panelRelated">
+<div class="panel" id="panelRelated">
 
 <div class="link-grid">
   <a href="架构图.html" class="link-card">
@@ -354,7 +354,7 @@ node skills/rui-bot/send.mjs --story=yry-self-test --status=done</div></div></di
 </div><!-- /panelRelated -->
 
 <!-- ═══ Tab 5: Verify ═══ -->
-<div class="yry-panel" id="panelVerify">
+<div class="panel" id="panelVerify">
 
 <div class="verify-list">
   <div class="verify-item"><div class="vi-label">步骤 5 · 章节完整性校验</div>
@@ -369,11 +369,11 @@ node skills/rui-bot/send.mjs --story=yry-self-test --status=done</div></div></di
 
 </div><!-- /panelVerify -->
 
-<div class="yry-footer"><p>🤖 Generated with planner agent | scene: 文档代码一致性校验 | updated: 2026-06-05</p></div>
+<div class="footer"><p>🤖 Generated with planner agent | scene: 文档代码一致性校验 | updated: 2026-06-05</p></div>
 
 </div>
 
-<div class="yry-toast" id="toast"></div>
+<div class="toast" id="toast"></div>
 
 <script>
 const SCENE_KEY = 'yry-self-test-s3-checklist';

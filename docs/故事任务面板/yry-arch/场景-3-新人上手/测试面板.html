@@ -135,64 +135,64 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 </style>
 </head>
 <body>
-<div class="yry-container">
+<div class="container">
 
-  <nav class="yry-breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">yry-arch · 系统架构知识固化</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 3 · 新人上手与开发指南</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">🧪 测试面板</span></nav>
-<nav class="yry-cross-nav">
-<a class="yry-cross-link" href="计划清单.html">📋 计划清单</a><span class="yry-cross-sep">·</span>
-<a class="yry-cross-link" href="架构图.html">📐 架构图</a><span class="yry-cross-sep">·</span>
-<a class="yry-cross-link" href="知识图谱.html">🔗 知识图谱</a><span class="yry-cross-sep">·</span>
-<span class="cross-link on">🧪 测试面板</span><span class="yry-cross-sep">·</span>
-<a class="yry-cross-link" href="演示.html">💡 演示</a><span class="yry-cross-sep">·</span>
-<a class="yry-cross-link" href="审查.html">📝 审查</a>
+  <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 3 · 新人上手与开发指南</span><span class="bc-sep">/</span><span class="bc-current">🧪 测试面板</span></nav>
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 计划清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构图</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 知识图谱</a><span class="cross-sep">·</span>
+<span class="cross-link on">🧪 测试面板</span><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审查</a>
 </nav>
-  <div class="yry-header">
-    <h1>🚀 <span class="yry-accent">场景-3-新人上手 · 测试面板</span></h1>
-    <p class="yry-sub">新人首次参与的端到端流程验证：从 CLAUDE.md 阅读、故事领取到测试运行</p>
+  <div class="header">
+    <h1>🚀 <span class="accent">场景-3-新人上手 · 测试面板</span></h1>
+    <p class="sub">新人首次参与的端到端流程验证：从 CLAUDE.md 阅读、故事领取到测试运行</p>
   </div>
 
-  <div class="yry-stats" id="statsRow"></div>
-  <div class="yry-bar-wrap"><div class="yry-bar-outer" id="bar" title="点击进度条筛选状态"></div></div>
+  <div class="stats-grid" id="statsRow"></div>
+  <div class="bar-wrap"><div class="bar-outer" id="bar" title="点击进度条筛选状态"></div></div>
 
-  <div class="yry-tabs">
+  <div class="tabs">
     <span class="tab on" data-panel="files">📁 测试文件</span>
-    <span class="yry-tab" data-panel="results">📊 执行结果</span>
-    <span class="yry-tab" data-panel="normal">✅ 正常路径</span>
-    <span class="yry-tab" data-panel="boundary">⚠️ 边界/异常</span>
-    <span class="yry-tab" data-panel="slow">🐢 慢测试</span>
-    <span class="yry-tab" data-panel="perf">📈 性能测试</span>
-    <span class="yry-tab" data-panel="gate">🚦 门禁</span>
+    <span class="tab" data-panel="results">📊 执行结果</span>
+    <span class="tab" data-panel="normal">✅ 正常路径</span>
+    <span class="tab" data-panel="boundary">⚠️ 边界/异常</span>
+    <span class="tab" data-panel="slow">🐢 慢测试</span>
+    <span class="tab" data-panel="perf">📈 性能测试</span>
+    <span class="tab" data-panel="gate">🚦 门禁</span>
   </div>
 
   <div class="panel on" id="panelFiles">
     <div id="filesContent"></div>
   </div>
 
-  <div class="yry-panel" id="panelResults">
+  <div class="panel" id="panelResults">
     <div id="resultsContent"></div>
   </div>
 
-  <div class="yry-panel" id="panelNormal"><div id="normalContent"></div></div>
-<div class="yry-panel" id="panelBoundary"><div id="boundaryContent"></div></div>
-<div class="yry-panel" id="panelSlow">
+  <div class="panel" id="panelNormal"><div id="normalContent"></div></div>
+<div class="panel" id="panelBoundary"><div id="boundaryContent"></div></div>
+<div class="panel" id="panelSlow">
     <div id="slowContent"></div>
   </div>
 
-  <div class="yry-panel" id="panelPerf">
+  <div class="panel" id="panelPerf">
     <div id="perfContent"></div>
   </div>
 
-  <div class="yry-panel" id="panelGate">
-    <div class="yry-card"><h2>📊 门禁状态</h2><div class="gate-lines"><span class="ok">✅ 入门门禁通过：CLAUDE.md 可读、/rui help 覆盖完整、故事面板导航清晰</span><br><span class="warn">⚠️ 建议：补充交互式 walkthrough 教程以缩短首次上手中位数时长</span></div></div>
+  <div class="panel" id="panelGate">
+    <div class="card"><h2>📊 门禁状态</h2><div class="gate-lines"><span class="ok">✅ 入门门禁通过：CLAUDE.md 可读、/rui help 覆盖完整、故事面板导航清晰</span><br><span class="warn">⚠️ 建议：补充交互式 walkthrough 教程以缩短首次上手中位数时长</span></div></div>
   </div>
 
-  <div class="yry-footer-note">
+  <div class="footer-note">
     YrY 自检体系 · 场景测试面板 · <a href="../../../../tests/index.html">自检中心</a>
   </div>
 </div>
 
 <div class="modal-overlay" id="modalOverlay"><div class="modal"><div class="m-head"><span class="m-title" id="modalTitle"></span><button class="m-close" onclick="closeModal()">✕</button></div><div class="m-body" id="modalBody"></div></div></div>
-<div class="yry-toast" id="toast"></div>
+<div class="toast" id="toast"></div>
 
 <script>
 let activePanel='results',fileQuery='',resultQuery='',sortByDur=false,focusIdx=-1;
@@ -220,7 +220,7 @@ function renderStats(){
   var s=results.summary,t=s.total||0,p=s.passed||0,f=s.failed||0,sk=s.skipped||0;
   var dur=results.durationMs?fmtDur(results.durationMs):'--';
   var passPct=t>0?(p/t*100).toFixed(1):'0';
-  document.getElementById('statsRow').innerHTML='<div class="yry-stat" onclick="filterByStatus(\'all\')" id="statAll"><div class="val t">'+t+'</div><div class="lbl">总计断言</div></div><div class="yry-stat" onclick="filterByStatus(\'passed\')" id="statPassed"><div class="val p">'+p+'</div><div class="lbl">✅ 通过 · '+passPct+'%</div></div><div class="yry-stat" onclick="filterByStatus(\'failed\')" id="statFailed"><div class="val f">'+f+'</div><div class="lbl">❌ 失败</div></div><div class="yry-stat" onclick="filterByStatus(\'skipped\')" id="statSkipped"><div class="val s">'+sk+'</div><div class="lbl">⏭️ 跳过</div></div><div class="yry-stat"><div class="val d">'+dur+'</div><div class="lbl">⏱ 耗时</div></div>';
+  document.getElementById('statsRow').innerHTML='<div class="stat-card" onclick="filterByStatus(\'all\')" id="statAll"><div class="val t">'+t+'</div><div class="lbl">总计断言</div></div><div class="stat-card" onclick="filterByStatus(\'passed\')" id="statPassed"><div class="val p">'+p+'</div><div class="lbl">✅ 通过 · '+passPct+'%</div></div><div class="stat-card" onclick="filterByStatus(\'failed\')" id="statFailed"><div class="val f">'+f+'</div><div class="lbl">❌ 失败</div></div><div class="stat-card" onclick="filterByStatus(\'skipped\')" id="statSkipped"><div class="val s">'+sk+'</div><div class="lbl">⏭️ 跳过</div></div><div class="stat-card"><div class="val d">'+dur+'</div><div class="lbl">⏱ 耗时</div></div>';
   var pp=t>0?(p/t*100):0,fp=t>0?(f/t*100):0,sp=t>0?(sk/t*100):0;
   document.getElementById('bar').innerHTML='<div class="seg p" style="width:'+pp+'%"></div><div class="seg f" style="width:'+fp+'%"></div><div class="seg s" style="width:'+sp+'%"></div>';
   document.getElementById('navStatus').textContent='🧪 自检 · '+p+'/'+t+' 通过'
@@ -257,7 +257,7 @@ function renderResults(){
     if(resultQuery){var mn=name.toLowerCase().includes(resultQuery),mt=r.tests.some(function(t){return t.name.toLowerCase().includes(resultQuery)||(t.error&&t.error.toLowerCase().includes(resultQuery))});if(!mn&&!mt)continue}
     var hasFail=r.failed>0,tests=r.tests;if(sortByDur)tests=[].concat(tests).sort(function(a,b){return(b.duration||0)-(a.duration||0)});
     var maxDur=Math.max.apply(null,tests.map(function(t){return t.duration||0}).concat([1]));
-    html+='<div class="suite'+(hasFail?' open':'')+'"><div class="yry-suite-head" data-action="toggle"><span class="yry-suite-arrow">▶</span><span class="yry-suite-name">🧪 '+esc(name)+'</span><span class="s-meta">'+(r.passed>0?'<span class="sm p">✅ '+r.passed+'</span>':'')+(r.failed>0?'<span class="sm f">❌ '+r.failed+'</span>':'')+(r.skipped>0?'<span class="sm" style="color:var(--skip)">⏭️ '+r.skipped+'</span>':'')+'</span></div><div class="yry-suite-body">';
+    html+='<div class="suite'+(hasFail?' open':'')+'"><div class="suite-head" data-action="toggle"><span class="suite-arrow">▶</span><span class="suite-name">🧪 '+esc(name)+'</span><span class="s-meta">'+(r.passed>0?'<span class="sm p">✅ '+r.passed+'</span>':'')+(r.failed>0?'<span class="sm f">❌ '+r.failed+'</span>':'')+(r.skipped>0?'<span class="sm" style="color:var(--skip)">⏭️ '+r.skipped+'</span>':'')+'</span></div><div class="suite-body">';
     for(var j=0;j<tests.length;j++){var t=tests[j];if(resultQuery&&!t.name.toLowerCase().includes(resultQuery)&&!(t.error&&t.error.toLowerCase().includes(resultQuery)))continue;
       var durMs=t.duration||0,barPct=maxDur>0?Math.round(durMs/maxDur*100):0,durClass=durMs>500?'very-slow':durMs>SLOW_THRESHOLD?'slow':'';
       html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'" onclick="copyTestName(\''+esc(t.name)+'\')" title="点击复制测试名"><span class="t-icon">'+(t.status==='passed'?'✅':t.status==='failed'?'❌':t.status==='skipped'?'⏭️':'⬜')+'</span><span class="t-name">'+esc(t.name)+'</span>'+(t.error?'<span class="t-err" title="'+esc(t.error)+'">'+esc(t.error)+'</span>':'')+'<span class="t-dur '+durClass+'"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(t.duration)+(durMs>SLOW_THRESHOLD?'<span class="slow-warn">🐢</span>':'')+'</span></div>'}

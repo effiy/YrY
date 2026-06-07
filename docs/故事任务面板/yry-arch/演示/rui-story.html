@@ -127,7 +127,7 @@
     <div class="cmd-grid">
       <div class="cmd-card"><div class="stage">只读 · 概览</div><div class="name">/rui-story</div><div class="desc">远端查询 → 按状态分组统计 + 最近 5 个活跃故事。快速了解项目整体进度。</div><pre>/rui-story<span class="cb" onclick="copyCmd(this,'/rui-story')">📋</span></pre></div>
       <div class="cmd-card"><div class="stage">只读 · 详细</div><div class="name">/rui-story list</div><div class="desc">远端查询 → 所有故事表格：Story | Status | Files | Last Modified | Type | Branch。</div><pre>/rui-story list<span class="cb" onclick="copyCmd(this,'/rui-story list')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">写入 · 同步</div><div class="name">/rui-story sync [name]</div><div class="desc">远端 → 本地覆盖（委托 rui-import mode=pull）。可指定故事名或全部同步。</div><pre>/rui-story sync yry-arch<span class="cb" onclick="copyCmd(this,'/rui-story sync yry-arch')">📋</span></pre></div>
+      <div class="cmd-card"><div class="stage">写入 · 同步</div><div class="name">/rui-story sync [name]</div><div class="desc">远端 → 本地覆盖（委托 rui-import mode=pull）。可指定故事名或全部同步。</div><pre>/rui-story sync arch<span class="cb" onclick="copyCmd(this,'/rui-story sync arch')">📋</span></pre></div>
       <div class="cmd-card"><div class="stage">只读 · 健康</div><div class="name">/rui-story health</div><div class="desc">检查 API 凭据 / 远端可达性 / 项目配置 / 数据完整性。不修改任何数据。</div><pre>/rui-story health<span class="cb" onclick="copyCmd(this,'/rui-story health')">📋</span></pre></div>
       <div class="cmd-card"><div class="stage">写入 · 删除</div><div class="name">/rui-story remove name</div><div class="desc">仅删除本地故事目录，先展示内容后确认。远端数据不受影响。</div><pre>/rui-story remove user-login<span class="cb" onclick="copyCmd(this,'/rui-story remove user-login')">📋</span></pre></div>
     </div>

@@ -1,1 +1,43 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>CDN资源加载与页面渲染 — 知识图谱</title><link rel="stylesheet" href="../../../../../cdn/shared.css"><link rel="stylesheet" href="../../../../../cdn/theme-mono.css"></head><body><div class="yry-mono-container"><div class="yry-breadcrumb"><a href="../../">故事面板</a><span class="yry-bc-sep">/</span><a href="../故事任务.md">yry-cdn</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">知识图谱</span></div><div class="yry-mono-header"><div class="yry-mono-header-row"><div class="yry-pulse-dot"></div><h1>CDN资源加载与页面渲染 知识图谱</h1></div><div class="yry-mono-subtitle">待 code 阶段生成</div></div><div class="yry-diagram-wrap"><p style="color:#94a3b8;text-align:center;padding:2rem">此页面将在 <code>/rui code yry-cdn</code> 阶段由 coder 填充。</p></div></div><script src="../../../../../cdn/shared.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>场景 1 · CDN加载链路 — 知识图谱</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../../cdn/theme-mono.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
+.container{max-width:900px;margin:0 auto}
+.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.5rem;margin-bottom:1rem}
+.card h3{font-size:.9rem;font-weight:600;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+.card ul{list-style:none;color:#94a3b8;font-size:.78rem}.card li{margin-bottom:.5rem;padding-left:1rem;position:relative}
+.card li::before{content:'•';position:absolute;left:0;color:#475569}
+.cta{text-align:center;margin:2rem 0}
+.cta a{color:#22d3ee;text-decoration:none;font-size:.9rem;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.2);border-radius:8px;padding:.75rem 1.5rem;display:inline-block;transition:all .2s}
+.cta a:hover{background:rgba(34,211,238,.15);border-color:#22d3ee;color:#fff}
+.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:2rem}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}</style></head><body><div class="mono-container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-cdn · CDN 共享前端资源管理</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · CDN 资源加载与页面渲染</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
+<div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><span class="cross-link on">🔗 图谱</span><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
+
+<div class="cta"><a href="../知识图谱.html">🧩 打开 cdn 完整知识图谱 →</a></div>
+
+<div class="card"><h3>📊 场景 1 · CDN 加载链路节点覆盖</h3><ul>
+<li><strong>4 领域节点:</strong> 🎨 主题系统 · 🧩 组件库 · ⚡ JS API · 📦 包管理</li>
+<li><strong>5 文件节点:</strong> shared.css (5.9KB) · shared.js (5.1KB) · theme.css (11.3KB) · theme-mono.css (6.1KB) · package.json</li>
+<li><strong>4 API 节点:</strong> YrY.toast · YrY.copyCmd · YrY.switchPanel · Suite Toggle×3</li>
+<li><strong>2 消费者节点:</strong> Cat A (架构·图谱) · Cat B (审查·测试)</li>
+<li><strong>2 外部依赖:</strong> navigator.clipboard · Google Fonts</li>
+<li><strong>14 条关系边:</strong> depends_on · consumes · operates_on · calls</li>
+</ul></div>
+
+<div class="card"><h3>🔗 场景内关联</h3><ul>
+<li>CDN 加载链路 (架构图) → 5 步加载流程: Google Fonts → shared.css → theme.css/mono → shared.js → 可交互</li>
+<li>设计令牌 (审查) → 14 个 :root CSS 变量被所有组件引用</li>
+<li>JS API (测试面板) → 9 个公共方法通过 IIFE 暴露为 window.YrY</li>
+</ul></div>
+
+<div class="mono-footer" style="text-align:center;padding:1rem;color:#475569;font-size:.75rem">YrY v4.6.0 · cdn · 场景-1 知识图谱</div>
+</div><script src="../../../../../cdn/shared.js"></script></body></html>
