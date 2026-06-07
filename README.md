@@ -1,4 +1,4 @@
-# YrY <sub>v4.6.0</sub>
+# YrY <sub>v4.7.0</sub>
 
 > 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。共享 `lib/` 消除 491 行跨文件重复。
 
@@ -286,9 +286,9 @@ YrY/
 │               ├── 知识图谱.html  # 知识图谱可视化
 │               ├── 测试面板.html  # 测试仪表盘
 │               └── 演示.html      # 交互演示
-├── templates/               # 管线模板（与 docs/tests 结构镜像）
-│   ├── docs/
-│   ├── tests/
+├── templates/               # 管线模板
+│   ├── docs/                 #   故事文档模板
+│   └── README.md
 ├── lib/                     # 项目级共享库（消除跨文件重复）
 │   ├── tty.mjs              #   TTY/ANSI 格式化函数
 │   ├── fs.mjs               #   文件系统与项目工具
