@@ -139,17 +139,17 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 
 <div class="yry-panel" id="panelGood">
   <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 8 阶段端到端追踪</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-2-数据流追踪/架构图.html</div><div class="case-desc">数据流从用户触发 /rui 命令开始，经 story → doc → plan → code → test → review → deliver 共 8 个阶段，每阶段标注输入/输出/触发条件，Gate A/B 在流程中的位置与管线规则完全对应。</div><div class="case-why">💡 <strong>为什么好：</strong>端到端追踪是系统可观测性的基础——当某个环节出现问题时，数据流图提供了回溯路径。每阶段的 I/O 定义使模块间的数据契约显式化。</div></div>
-  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 输入/输出/触发条件三元组定义</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-2-数据流追踪.md : §0 数据流表</div><div class="case-desc">每个管线阶段用"输入 → 输出 → 触发条件"三元组精确定义，使阶段间的数据传递有明确的契约。这种模式便于自动化测试——测试只需验证给定输入是否产生预期输出。</div><div class="case-why">💡 <strong>为什么好：</strong>三元组模式是可测试的接口定义——它把隐式的流程描述转为显式的、可验证的契约。后续的文档代码一致性校验可以直接验证这些三元组是否被满足。</div></div>
+  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 输入/输出/触发条件三元组定义</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/index.md : §0 数据流表</div><div class="case-desc">每个管线阶段用"输入 → 输出 → 触发条件"三元组精确定义，使阶段间的数据传递有明确的契约。这种模式便于自动化测试——测试只需验证给定输入是否产生预期输出。</div><div class="case-why">💡 <strong>为什么好：</strong>三元组模式是可测试的接口定义——它把隐式的流程描述转为显式的、可验证的契约。后续的文档代码一致性校验可以直接验证这些三元组是否被满足。</div></div>
 </div>
 
 <div class="yry-panel" id="panelBad">
-  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 仅描述快乐路径，无异常流</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-2-数据流追踪.md : 数据流图</div><div class="case-desc">当前 Mermaid 流程图仅展示所有阶段正常通过的"快乐路径"。当 Gate A 检测到 P0 未清零时，数据如何回流到 coder 阶段？当 Gate B 发现交付条件不满足时，修复循环如何触发？这些异常路径完全不可见。</div><div class="case-why">💡 <strong>为什么不好：</strong>系统韧性由异常处理路径决定。只描述快乐路径的文档会让维护者误以为"一切都会顺利"，实际运行时遇到阻断会手足无措。异常路径的数据流对于故障诊断和恢复同样关键。</div><pre>// 当前仅覆盖：
+  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 仅描述快乐路径，无异常流</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/index.md : 数据流图</div><div class="case-desc">当前 Mermaid 流程图仅展示所有阶段正常通过的"快乐路径"。当 Gate A 检测到 P0 未清零时，数据如何回流到 coder 阶段？当 Gate B 发现交付条件不满足时，修复循环如何触发？这些异常路径完全不可见。</div><div class="case-why">💡 <strong>为什么不好：</strong>系统韧性由异常处理路径决定。只描述快乐路径的文档会让维护者误以为"一切都会顺利"，实际运行时遇到阻断会手足无措。异常路径的数据流对于故障诊断和恢复同样关键。</div><pre>// 当前仅覆盖：
 story → doc → plan → code → test → review → deliver
 // 缺失的异常路径：
 Gate A 阻断 → 回退到 coder → 修复 → 重新 Gate A
 Gate B 阻断 → 回退到 tester → 补测 → 重新 Gate B
 数据同步失败 → 重试/降级策略</pre></div>
-  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 数据格式定义分散，无统一索引</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-2-数据流追踪.md : §0</div><div class="case-desc">各阶段产生的中间产物（故事 .md、场景 .md、计划清单.html 等）格式定义散见于各 skill 规约和 formulas.md，场景文档中未提供统一的数据格式索引表。查询某个产物的 Schema 需要跨多份文档检索。</div><div class="case-why">💡 <strong>为什么不好：</strong>数据格式是管线契约的核心。分散的定义增加了维护成本——当格式变更时，需要在多份文档中同步更新。集中索引一张表即可解决所有"这个阶段的输出是什么格式"的查询。</div></div>
+  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 数据格式定义分散，无统一索引</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/index.md : §0</div><div class="case-desc">各阶段产生的中间产物（故事 .md、场景 .md、计划清单.html 等）格式定义散见于各 skill 规约和 formulas.md，场景文档中未提供统一的数据格式索引表。查询某个产物的 Schema 需要跨多份文档检索。</div><div class="case-why">💡 <strong>为什么不好：</strong>数据格式是管线契约的核心。分散的定义增加了维护成本——当格式变更时，需要在多份文档中同步更新。集中索引一张表即可解决所有"这个阶段的输出是什么格式"的查询。</div></div>
 </div>
 
 <div class="yry-panel" id="panelRecommendations">
@@ -165,7 +165,7 @@ Gate B 阻断 → 回退到 tester → 补测 → 重新 Gate B
     <li><span class="ev-icon">📄</span><span class="ev-text"><strong>数据流阶段验证：</strong>架构图中的 8 阶段序列与 code-pipeline.md 的管线定义一致</span></li>
     <li><span class="ev-icon">📄</span><span class="ev-text"><strong>Gate 位置校验：</strong>Gate A 在 plan→code 之间、Gate B 在 review→deliver 之间，与 delivery-gate.md 吻合</span></li>
     <li><span class="ev-icon">📄</span><span class="ev-text"><strong>I/O 契约：</strong>每阶段的输入/输出在场景 .md 中以表格形式定义，可机械验证</span></li>
-    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>异常路径缺失：</strong>grep '回退\|retry\|rollback' on 场景-2-数据流追踪.md → 0 results</span></li>
+    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>异常路径缺失：</strong>grep '回退\|retry\|rollback' on index.md → 0 results</span></li>
   </ul></div></div>
 </div>
 

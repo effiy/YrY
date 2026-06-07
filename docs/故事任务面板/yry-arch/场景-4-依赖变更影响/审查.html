@@ -133,12 +133,12 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 </div>
 
 <div class="yry-panel" id="panelGood">
-  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 破坏性变更分类体系与 SemVer 对齐</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-4-依赖变更影响.md : §0</div><div class="case-desc">场景定义了清晰的变更分类：Major（接口契约变更）→ Minor（新增可选参数）→ Patch（内部实现重构），与 SemVer 标准完全对齐。每类变更标注了影响范围评估方法和推荐的回滚策略。</div><div class="case-why">💡 <strong>为什么好：</strong>将 SemVer 的版本语义直接映射到依赖影响分析中，使变更影响可量化。开发者变更一个接口时，能立即知道这是 Major 级别的破坏性变更。</div></div>
+  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 破坏性变更分类体系与 SemVer 对齐</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/index.md : §0</div><div class="case-desc">场景定义了清晰的变更分类：Major（接口契约变更）→ Minor（新增可选参数）→ Patch（内部实现重构），与 SemVer 标准完全对齐。每类变更标注了影响范围评估方法和推荐的回滚策略。</div><div class="case-why">💡 <strong>为什么好：</strong>将 SemVer 的版本语义直接映射到依赖影响分析中，使变更影响可量化。开发者变更一个接口时，能立即知道这是 Major 级别的破坏性变更。</div></div>
   <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 依赖方向无反向依赖</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-4-依赖变更影响/架构图.html</div><div class="case-desc">依赖图验证了 Skills → Agents → Rules 的自顶向下依赖方向，不存在下层依赖上层的情况。这证明架构的层次化设计是健康的——上层变更影响下层，但下层变更不会反向波及上层。</div><div class="case-why">💡 <strong>为什么好：</strong>无反向依赖是分层架构的核心健康指标。这个发现本身就是依赖分析的产出——它从架构层面确认了系统的依赖纪律没有腐化。</div></div>
 </div>
 
 <div class="yry-panel" id="panelBad">
-  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 跨故事依赖不可见</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-4-依赖变更影响.md : 依赖图</div><div class="case-desc">当前依赖分析仅覆盖 yry-arch 故事内的模块。实际上 yry-self-test 场景对 yry-arch 存在验证依赖（自检体系验证架构基线），但这一跨故事依赖未被建模。当架构文档变更时，自检体系可能被意外破坏而无人知晓。</div><div class="case-why">💡 <strong>为什么不好：</strong>跨故事依赖是依赖分析中最容易遗漏的部分。遗漏它们意味着"变更影响可量化"的承诺在跨故事边界处失效——而这恰恰是影响最大的变更类型。</div></div>
+  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 跨故事依赖不可见</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/index.md : 依赖图</div><div class="case-desc">当前依赖分析仅覆盖 yry-arch 故事内的模块。实际上 yry-self-test 场景对 yry-arch 存在验证依赖（自检体系验证架构基线），但这一跨故事依赖未被建模。当架构文档变更时，自检体系可能被意外破坏而无人知晓。</div><div class="case-why">💡 <strong>为什么不好：</strong>跨故事依赖是依赖分析中最容易遗漏的部分。遗漏它们意味着"变更影响可量化"的承诺在跨故事边界处失效——而这恰恰是影响最大的变更类型。</div></div>
   <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 间接依赖未显式标注</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-4-依赖变更影响/知识图谱.html</div><div class="case-desc">依赖边仅标注了直接依赖（A 直接引用 B），但 A→B→C 这种间接依赖链中，A 对 C 的传递依赖未在知识图谱中显式标注。分析变更影响时需要手动遍历中间节点。</div><div class="case-why">💡 <strong>为什么不好：</strong>传递依赖是影响分析中最耗时的部分。如果每次都要手动遍历间接依赖链，那么"三十秒内判断影响范围"的目标就无法实现。</div></div>
 </div>
 

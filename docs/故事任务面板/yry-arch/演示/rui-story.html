@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>rui-claude demo · 配置管理</title>
+  <title>rui-story demo · 故事面板</title>
 
   <style>
     :root { --bg:rgba(22,22,32,1); --bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%); --bg-flat:rgba(34,34,46,1); --bg-raised:rgba(42,42,56,1); --accent:#FFC107; --cyan:#22d3ee; --pass:#22c55e; --fail:#ef4444; --text:rgba(250,250,252,1); --text2:rgba(160,160,164,1); --text3:rgba(110,110,114,1); --shadow:0 4px 20px rgba(0,0,0,0.3); --radius:12px; --border:1px solid rgba(255,255,255,0.06); }
@@ -77,10 +77,10 @@
 </head>
 <body>
 <div class="container">
-  <nav class="breadcrumb"><a href="../docs/index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="./">🎬 演示中心</a><span class="bc-sep">/</span><span class="bc-current">⚙️ rui-claude · 配置管理</span></nav>
-  <div class="nav-row"><a class="prevnext" href="rui-story.html">← rui-story</a><span class="sep">|</span><span style="font-size:.78rem;color:var(--accent);font-weight:600">⚙️ rui-claude</span><span class="sep">|</span><a class="prevnext" href="rui-import.html">rui-import →</a></div>
-  <h1>⚙️ <span>rui-claude</span> · 配置管理</h1>
-  <p class="sub">管理所有 .claude/ 目录 — <span class="kbd-hint">1-5</span> 数字键切换 Tab · 悬停代码复制</p>
+  <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="index.html">🎬 演示中心</a><span class="bc-sep">/</span><span class="bc-current">📋 rui-story · 故事面板管理</span></nav>
+  <div class="nav-row"><a class="prevnext" href="rui.html">← rui</a><span class="sep">|</span><span style="font-size:.78rem;color:var(--accent);font-weight:600">📋 rui-story</span><span class="sep">|</span><a class="prevnext" href="rui-claude.html">rui-claude →</a></div>
+  <h1>📋 <span>rui-story</span> · 故事面板管理</h1>
+  <p class="sub">远端查询 · 同步 · 健康检查 — <span class="kbd-hint">1-5</span> 数字键切换 Tab · 悬停代码复制</p>
 
   <div class="tabs">
     <span class="tab on" data-panel="walkthrough">🚶 演练</span>
@@ -93,32 +93,31 @@
   <!-- Walkthrough panel -->
   <div class="panel on" id="panelWalkthrough">
     <div class="walkthrough">
-      <div class="step"><div class="s-body"><div class="s-title">推荐任务</div><div class="s-desc">五层评分排序（L0 时间 / L1 依赖 / L2 风险 / L3 覆盖 / L4 质量），输出优先级排序的 .claude/ 维护建议。</div><pre>/rui-claude<span class="cb" onclick="copyCmd(this,'/rui-claude')">📋</span></pre></div></div>
-      <div class="step"><div class="s-body"><div class="s-title">覆盖式同步远端配置</div><div class="s-desc">远端 API → rui-import pull 覆盖本地 .claude/ 目录。适合跨设备同步或初始化新环境。</div><pre>/rui-claude sync<span class="cb" onclick="copyCmd(this,'/rui-claude sync')">📋</span></pre></div></div>
-      <div class="step"><div class="s-body"><div class="s-title">插件升级</div><div class="s-desc">git pull 最新 YrY → 清除插件缓存 → sync 远端 .claude/ 双刷新。保持插件和配置同步最新。</div><pre>/rui-claude update<span class="cb" onclick="copyCmd(this,'/rui-claude update')">📋</span></pre></div></div>
-      <div class="step"><div class="s-body"><div class="s-title">健康度分析</div><div class="s-desc">三节复盘：配置结构完整性 → 健康度评分 → 改进项推荐。支持 --json 格式输出。</div><pre>/rui-claude retro<span class="cb" onclick="copyCmd(this,'/rui-claude retro')">📋</span></pre></div></div>
-      <div class="step"><div class="s-body"><div class="s-title">需求管线修改配置</div><div class="s-desc">走 /rui code 流程修改 .claude/ 配置，有分支隔离和 Gate A/B 保护。适合大规模配置变更。</div><pre>/rui-claude 添加新的安全护栏规则<span class="cb" onclick="copyCmd(this,'/rui-claude 添加新的安全护栏规则')">📋</span></pre></div></div>
-      <div class="step"><div class="s-body"><div class="s-title">全量扫描</div><div class="s-desc">跨项目扫描所有 .claude/ 目录状态，输出汇总报告。适合多项目环境治理。</div><pre>/rui-claude scan --all<span class="cb" onclick="copyCmd(this,'/rui-claude scan --all')">📋</span></pre></div></div>
+      <div class="step"><div class="s-body"><div class="s-title">状态概览</div><div class="s-desc">远端查询所有故事 → 按状态分组统计 + 最近 5 个活跃故事。数据源为远端 API，不读本地文件系统。</div><pre>/rui-story<span class="cb" onclick="copyCmd(this,'/rui-story')">📋</span></pre></div></div>
+      <div class="step"><div class="s-body"><div class="s-title">进度全景</div><div class="s-desc">远端查询 → 所有故事详细表格。含类型推断 + git 分支关联，方便追踪每个故事的当前状态。</div><pre>/rui-story list<span class="cb" onclick="copyCmd(this,'/rui-story list')">📋</span></pre></div></div>
+      <div class="step"><div class="s-body"><div class="s-title">从远端同步故事文档</div><div class="s-desc">远端 → 本地覆盖（委托 rui-import mode=pull）。可指定故事名同步单个故事，或全部同步。</div><pre>/rui-story sync user-login<span class="cb" onclick="copyCmd(this,'/rui-story sync user-login')">📋</span></pre></div></div>
+      <div class="step"><div class="s-body"><div class="s-title">健康检查</div><div class="s-desc">检查 API 凭据有效性、远端可达性、项目配置完整性、数据格式合规性。不修改任何数据。</div><pre>/rui-story health<span class="cb" onclick="copyCmd(this,'/rui-story health')">📋</span></pre></div></div>
+      <div class="step"><div class="s-body"><div class="s-title">删除故事目录</div><div class="s-desc">仅删除本地故事目录（先展示内容后确认）。不影响远端数据，可重新 sync 恢复。</div><pre>/rui-story remove user-login<span class="cb" onclick="copyCmd(this,'/rui-story remove user-login')">📋</span></pre></div></div>
     </div>
   </div>
 
   <!-- Overview panel -->
   <div class="panel" id="panelOverview">
-    <div class="section"><h2><span class="dot"></span>工作流</h2>
+    <div class="section"><h2><span class="dot"></span>查询流程</h2>
       <div class="flow-row">
-        <div class="flow-chip"><span class="n">推荐</span></div><span class="flow-arrow">→</span>
-        <div class="flow-chip"><span class="n">sync</span> 同步</div><span class="flow-arrow">→</span>
-        <div class="flow-chip"><span class="n">retro</span> 分析</div><span class="flow-arrow">→</span>
-        <div class="flow-chip"><span class="n">update</span> 升级</div>
+        <div class="flow-chip"><span class="n">远端 API</span></div><span class="flow-arrow">→</span>
+        <div class="flow-chip"><span class="n">query_documents</span></div><span class="flow-arrow">→</span>
+        <div class="flow-chip"><span class="n">状态统计</span></div><span class="flow-arrow">→</span>
+        <div class="flow-chip"><span class="n">本地展示</span></div>
       </div>
     </div>
     <div class="section"><h2><span class="dot"></span>子命令拓扑</h2>
       <div class="flow-row">
-        <div class="flow-chip"><span class="n">推荐</span> /rui-claude</div><span class="flow-arrow">·</span>
+        <div class="flow-chip"><span class="n">空输入</span> 状态概览</div><span class="flow-arrow">·</span>
+        <div class="flow-chip"><span class="n">list</span> 进度全景</div><span class="flow-arrow">·</span>
         <div class="flow-chip"><span class="n">sync</span> 远端→本地</div><span class="flow-arrow">·</span>
-        <div class="flow-chip"><span class="n">retro</span> 健康度分析</div><span class="flow-arrow">·</span>
-        <div class="flow-chip"><span class="n">update</span> 插件升级</div><span class="flow-arrow">·</span>
-        <div class="flow-chip"><span class="n">需求</span> 走管线修改</div>
+        <div class="flow-chip"><span class="n">health</span> 健康检查</div><span class="flow-arrow">·</span>
+        <div class="flow-chip"><span class="n">remove</span> 本地删除</div>
       </div>
     </div>
   </div>
@@ -126,12 +125,11 @@
   <!-- Commands panel -->
   <div class="panel" id="panelCommands">
     <div class="cmd-grid">
-      <div class="cmd-card"><div class="stage">只读 · 推荐</div><div class="name">/rui-claude</div><div class="desc">五层评分排序：L0 时间 / L1 依赖 / L2 风险 / L3 覆盖 / L4 质量 → 优先级推荐列表。</div><pre>/rui-claude<span class="cb" onclick="copyCmd(this,'/rui-claude')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">写入 · 同步</div><div class="name">/rui-claude sync</div><div class="desc">覆盖式同步：远端 API → rui-import pull 覆盖本地 .claude/ 目录。</div><pre>/rui-claude sync<span class="cb" onclick="copyCmd(this,'/rui-claude sync')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">只读 · 分析</div><div class="name">/rui-claude retro</div><div class="desc">健康度分析三节复盘：配置结构 / 健康度评分 / 改进项。支持 --json 和 --name。</div><pre>/rui-claude retro --name=config-audit --json<span class="cb" onclick="copyCmd(this,'/rui-claude retro --name=config-audit --json')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">写入 · 升级</div><div class="name">/rui-claude update</div><div class="desc">git pull 最新 YrY → 清除插件缓存 → sync 远端 .claude/ 双刷新。</div><pre>/rui-claude update<span class="cb" onclick="copyCmd(this,'/rui-claude update')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">只读 · 扫描</div><div class="name">/rui-claude scan --all</div><div class="desc">跨项目全量扫描 .claude/ 目录，生成汇总状态的完整性报告。</div><pre>/rui-claude scan --all<span class="cb" onclick="copyCmd(this,'/rui-claude scan --all')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">写入 · 需求</div><div class="name">/rui-claude 需求</div><div class="desc">走 /rui code 流程修改 .claude/ 配置，有分支隔离和关卡保护。</div><pre>/rui-claude 更新安全护栏配置<span class="cb" onclick="copyCmd(this,'/rui-claude 更新安全护栏配置')">📋</span></pre></div>
+      <div class="cmd-card"><div class="stage">只读 · 概览</div><div class="name">/rui-story</div><div class="desc">远端查询 → 按状态分组统计 + 最近 5 个活跃故事。快速了解项目整体进度。</div><pre>/rui-story<span class="cb" onclick="copyCmd(this,'/rui-story')">📋</span></pre></div>
+      <div class="cmd-card"><div class="stage">只读 · 详细</div><div class="name">/rui-story list</div><div class="desc">远端查询 → 所有故事表格：Story | Status | Files | Last Modified | Type | Branch。</div><pre>/rui-story list<span class="cb" onclick="copyCmd(this,'/rui-story list')">📋</span></pre></div>
+      <div class="cmd-card"><div class="stage">写入 · 同步</div><div class="name">/rui-story sync [name]</div><div class="desc">远端 → 本地覆盖（委托 rui-import mode=pull）。可指定故事名或全部同步。</div><pre>/rui-story sync yry-arch<span class="cb" onclick="copyCmd(this,'/rui-story sync yry-arch')">📋</span></pre></div>
+      <div class="cmd-card"><div class="stage">只读 · 健康</div><div class="name">/rui-story health</div><div class="desc">检查 API 凭据 / 远端可达性 / 项目配置 / 数据完整性。不修改任何数据。</div><pre>/rui-story health<span class="cb" onclick="copyCmd(this,'/rui-story health')">📋</span></pre></div>
+      <div class="cmd-card"><div class="stage">写入 · 删除</div><div class="name">/rui-story remove name</div><div class="desc">仅删除本地故事目录，先展示内容后确认。远端数据不受影响。</div><pre>/rui-story remove user-login<span class="cb" onclick="copyCmd(this,'/rui-story remove user-login')">📋</span></pre></div>
     </div>
   </div>
 
@@ -139,10 +137,10 @@
   <div class="panel" id="panelFiles">
     <div class="section"><h2><span class="dot"></span>支撑文件</h2>
       <div class="file-list">
-        <div class="file-item">📄 SKILL.md</div><div class="file-item">❓ help.mjs</div>
+        <div class="file-item">📄 SKILL.md</div><div class="file-item">⚡ rui-story.mjs (30KB)</div><div class="file-item">❓ help.mjs</div>
       </div>
     </div>
-    <div class="links-row"><a href="../skills/rui-claude/SKILL.md" target="_blank">📄 SKILL.md</a><a href="../skills/rui-claude/help.mjs" target="_blank">❓ help.mjs</a><a href="../tests/skills/rui-claude.test.mjs" target="_blank">🧪 测试文件</a><a href="../tests/index.html" target="_blank">📊 测试面板</a></div>
+    <div class="links-row"><a href="../../../../skills/rui-story/SKILL.md" target="_blank">📄 SKILL.md</a><a href="../../../../skills/rui-story/help.mjs" target="_blank">❓ help.mjs</a><a href="../../../../tests/skills/rui-story.test.mjs" target="_blank">🧪 测试文件</a><a href="../../../../tests/index.html" target="_blank">📊 测试面板</a></div>
   </div>
 
   <!-- Tests panel -->
@@ -150,12 +148,12 @@
     <div class="stat-row" id="testStats"></div>
     <div class="section"><h2><span class="dot"></span>测试覆盖</h2>
       <div class="cmd-grid">
-        <div class="cmd-card"><div class="name">SKILL.md 完整性</div><div class="desc">验证 SKILL.md 存在、非空、含扫描/分析/同步操作文档和子命令参考。</div></div>
-        <div class="cmd-card"><div class="name">可执行脚本验证</div><div class="desc">验证 help.mjs 存在且内容有效、语法正确。</div></div>
-        <div class="cmd-card"><div class="name">目录结构检查</div><div class="desc">验证 .claude/ 目录结构完整、settings.json 合规、hook 配置有效。</div></div>
+        <div class="cmd-card"><div class="name">SKILL.md 完整性</div><div class="desc">验证 SKILL.md 存在、非空、含远端查询/同步/健康检查子命令文档和 mermaid 图。</div></div>
+        <div class="cmd-card"><div class="name">可执行脚本验证</div><div class="desc">验证 rui-story.mjs 存在且 --help 输出正确（实际执行）。</div></div>
+        <div class="cmd-card"><div class="name">远端 API 连通性</div><div class="desc">API 凭据有效 → query_documents 成功返回 → 数据格式符合 JSON Schema。</div></div>
       </div>
     </div>
-    <div class="links-row"><a href="../tests/skills/rui-claude.test.mjs" target="_blank">🧪 查看测试源码</a><a href="../tests/index.html" target="_blank">📊 打开测试面板</a><a href="../demos/index.html">🎬 返回演示中心</a></div>
+    <div class="links-row"><a href="../../../../tests/skills/rui-story.test.mjs" target="_blank">🧪 查看测试源码</a><a href="../../../../tests/index.html" target="_blank">📊 打开测试面板</a><a href="index.html">🎬 返回演示中心</a></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -174,7 +172,7 @@ function toast(msg){const el=document.getElementById('toast');el.textContent=msg
 // ═══ Live test stats ═══
 let testCache=null;
 async function loadTestStats(){if(testCache){renderTestStats(testCache);return}try{const r=await(await fetch('../tests/results.json')).json();testCache=r;renderTestStats(r)}catch(e){document.getElementById('testStats').innerHTML='<div style="color:var(--text3);font-size:.82rem">测试结果不可用</div>'}}
-function renderTestStats(r){const s=r.summary||{};document.getElementById('testStats').innerHTML=`<div class="stat-mini"><div class="sv" style="color:var(--text)">${s.total||0}</div><div class="sl">总计</div></div><div class="stat-mini"><div class="sv g">${s.passed||0}</div><div class="sl">✅ 通过</div></div><div class="stat-mini"><div class="sv" style="color:var(--fail)">${s.failed||0}</div><div class="sl">❌ 失败</div></div><div class="stat-mini"><div class="sv" style="color:var(--accent)">4</div><div class="sl">claude 测试</div></div>`}
+function renderTestStats(r){const s=r.summary||{};document.getElementById('testStats').innerHTML=`<div class="stat-mini"><div class="sv" style="color:var(--text)">${s.total||0}</div><div class="sl">总计</div></div><div class="stat-mini"><div class="sv g">${s.passed||0}</div><div class="sl">✅ 通过</div></div><div class="stat-mini"><div class="sv" style="color:var(--fail)">${s.failed||0}</div><div class="sl">❌ 失败</div></div><div class="stat-mini"><div class="sv" style="color:var(--accent)">6</div><div class="sl">story 测试</div></div>`}
 </script>
 </body>
 </html>

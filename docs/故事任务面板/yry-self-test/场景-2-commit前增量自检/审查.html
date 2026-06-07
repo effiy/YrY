@@ -119,13 +119,13 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 </div>
 
 <div class="yry-panel" id="panelGood">
-  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> git diff 驱动的增量聚焦设计</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/场景-2-commit前增量自检.md : §0</div><div class="case-desc">与全量检查不同，增量自检精准聚焦于 git diff --name-only 范围内的变更文件，避免了全量扫描的性能浪费。变更范围确定后仅对变更文件执行铁律检查。</div><div class="case-why">💡 <strong>为什么好：</strong>增量聚焦是"惜注意"原则在自检体系中的落实——只检查变更的部分。在大型项目中，全量扫描成本不可接受，增量检查是唯一的可扩展方案。</div></div>
-  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 分支隔离检测覆盖边界情况</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/场景-2-commit前增量自检.md : 分支隔离检测</div><div class="case-desc">检测覆盖了跨分支文件共享的边界情况（memory/、.claude/ 缓存），恰好是"分支隔离不可绕过"底线的具体执行点。检测逻辑与规则定义紧密对齐。</div><div class="case-why">💡 <strong>为什么好：</strong>边界情况是安全检测中最容易遗漏的。本场景精准命中了"记忆/缓存文件跨分支共享"这一高频风险点，使分支隔离从原则变成可执行的检查。</div></div>
+  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> git diff 驱动的增量聚焦设计</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/index.md : §0</div><div class="case-desc">与全量检查不同，增量自检精准聚焦于 git diff --name-only 范围内的变更文件，避免了全量扫描的性能浪费。变更范围确定后仅对变更文件执行铁律检查。</div><div class="case-why">💡 <strong>为什么好：</strong>增量聚焦是"惜注意"原则在自检体系中的落实——只检查变更的部分。在大型项目中，全量扫描成本不可接受，增量检查是唯一的可扩展方案。</div></div>
+  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 分支隔离检测覆盖边界情况</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/index.md : 分支隔离检测</div><div class="case-desc">检测覆盖了跨分支文件共享的边界情况（memory/、.claude/ 缓存），恰好是"分支隔离不可绕过"底线的具体执行点。检测逻辑与规则定义紧密对齐。</div><div class="case-why">💡 <strong>为什么好：</strong>边界情况是安全检测中最容易遗漏的。本场景精准命中了"记忆/缓存文件跨分支共享"这一高频风险点，使分支隔离从原则变成可执行的检查。</div></div>
 </div>
 
 <div class="yry-panel" id="panelBad">
-  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 铁律违规定位缺少证据</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/场景-2-commit前增量自检.md : 铁律判定</div><div class="case-desc">铁律合规判定仅输出"通过/失败"——失败时不告知具体违规的文件和行号。例如"验先于称"违规时，用户需要知道哪个文件哪一行做了无证据的声称才能高效修复。</div><div class="case-why">💡 <strong>为什么不好：</strong>没有证据的失败判定是不可操作的。"有铁律违规"的信息量几乎为零——用户需要在数百个文件中手动搜索违规点。精准定位到文件:行号才能让修复路径可操作。</div></div>
-  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 无 commit message 格式校验</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/场景-2-commit前增量自检.md : 全局</div><div class="case-desc">增量自检不检查 commit message 是否符合规范（是否含 Co-Authored-By、是否遵循 conventional commits）。在 YrY 的交付纪律中，commit message 是交付收口的一部分。</div><div class="case-why">💡 <strong>为什么不好：</strong>commit message 是交付审计的基础。格式不一致会导致自动化工具无法解析变更历史。Co-Authored-By 缺失则违反项目自身规范。</div></div>
+  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 铁律违规定位缺少证据</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/index.md : 铁律判定</div><div class="case-desc">铁律合规判定仅输出"通过/失败"——失败时不告知具体违规的文件和行号。例如"验先于称"违规时，用户需要知道哪个文件哪一行做了无证据的声称才能高效修复。</div><div class="case-why">💡 <strong>为什么不好：</strong>没有证据的失败判定是不可操作的。"有铁律违规"的信息量几乎为零——用户需要在数百个文件中手动搜索违规点。精准定位到文件:行号才能让修复路径可操作。</div></div>
+  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 无 commit message 格式校验</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/index.md : 全局</div><div class="case-desc">增量自检不检查 commit message 是否符合规范（是否含 Co-Authored-By、是否遵循 conventional commits）。在 YrY 的交付纪律中，commit message 是交付收口的一部分。</div><div class="case-why">💡 <strong>为什么不好：</strong>commit message 是交付审计的基础。格式不一致会导致自动化工具无法解析变更历史。Co-Authored-By 缺失则违反项目自身规范。</div></div>
 </div>
 
 <div class="yry-panel" id="panelRecommendations">

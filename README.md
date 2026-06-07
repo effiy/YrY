@@ -286,11 +286,9 @@ YrY/
 │               ├── 知识图谱.html  # 知识图谱可视化
 │               ├── 测试面板.html  # 测试仪表盘
 │               └── 演示.html      # 交互演示
-├── demos/                   # 技能演示页面
 ├── templates/               # 管线模板（与 docs/tests 结构镜像）
 │   ├── docs/
 │   ├── tests/
-│   └── demos/
 ├── lib/                     # 项目级共享库（消除跨文件重复）
 │   ├── tty.mjs              #   TTY/ANSI 格式化函数
 │   ├── fs.mjs               #   文件系统与项目工具

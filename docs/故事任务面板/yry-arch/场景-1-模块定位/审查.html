@@ -233,7 +233,7 @@ Pipeline Bar:   amber (#fbbf24) — 横贯底部</pre>
 
   <div class="case-card good">
     <h4>✅ <span class="case-tag good">好案例</span> 场景文档结构与公式严格对齐</h4>
-    <div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-1-模块定位.md : 整体结构</div>
+    <div class="case-loc">📁 docs/故事任务面板/yry-arch/index.md : 整体结构</div>
     <div class="case-desc">场景 .md 文件严格遵循 formulas.md 定义的公式：版本元数据 → 导航 → 概述(角色·目标·优先级) → 主要价值 → 图谱定位 → §0 技术评审 → §1 测试设计 → §2 实施报告 → §3 测试报告 → §4 自改进。与场景-2/3/4 结构完全一致。</div>
     <div class="case-why">💡 <strong>为什么好：</strong>结构一致性是文档基线的基础——当所有场景遵循相同公式时，交叉引用和自动化校验变得可行。读者切换场景时认知负荷为零。</div>
   </div>
@@ -243,7 +243,7 @@ Pipeline Bar:   amber (#fbbf24) — 横贯底部</pre>
 <div class="yry-panel" id="panelBad">
   <div class="case-card bad">
     <h4>❌ <span class="case-tag bad">坏案例</span> 图谱定位表占位文本未回填</h4>
-    <div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-1-模块定位.md : §0 图谱定位表</div>
+    <div class="case-loc">📁 docs/故事任务面板/yry-arch/index.md : §0 图谱定位表</div>
     <div class="case-desc">图谱定位表中结构层和内容层节点标记为"文档生成阶段填充"，这些字段在文档已生成完毕后仍未更新。导致知识图谱的可追溯性断裂——从图谱节点无法反向定位到具体的 .html 产物文件。</div>
     <div class="case-why">💡 <strong>为什么不好：</strong>占位文本在生成后不更新，违反了"验现实"铁律。下游工具（如知识图谱的完整性校验）会因为这些占位文本而误判文档不完整。正确做法是生成后立即回填实际文件路径。</div>
     <pre>| 图层 | 本场景节点 | 上游 | 下游 |

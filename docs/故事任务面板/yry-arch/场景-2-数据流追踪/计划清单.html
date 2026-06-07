@@ -225,7 +225,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
     <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch --scene 2</code>扫描管线数据流并生成追踪文档</div>
     <div class="code-block">/rui doc → pm 解析 → 故事拆分 → coder 场景生成 → security 审计 → 交付收口</div>
     <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
-    <div class="verify-cmd">grep -c "阶段" 场景-2-数据流追踪.md</div>
+    <div class="verify-cmd">grep -c "阶段" index.md</div>
     <div class="expected">≥ 5 个阶段被追踪</div>
     <div class="log-entry"><span class="log-time">2026-06-05 10:34</span> 完成</div>
   </div>
@@ -242,7 +242,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
     <p>用 sequenceDiagram 展示用户→rui→pm→coder→tester→reporter 的完整消息流。</p>
     <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story yry-arch --output 架构图.html</code>生成 sequenceDiagram SVG</div>
     <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a></div>
-    <div class="verify-cmd">grep -c "sequenceDiagram" 场景-2-数据流追踪.md</div>
+    <div class="verify-cmd">grep -c "sequenceDiagram" index.md</div>
     <div class="expected">≥ 1 个 sequenceDiagram</div>
   </div>
 </div>
@@ -546,11 +546,11 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
 
 <div class="verify-list">
   <div class="verify-item"><div class="vi-label">步骤 1 · 阶段追踪</div>
-    <pre>grep -c "阶段" 场景-2-数据流追踪.md<span class="cb" onclick="copyCmd(this,'grep -c \"阶段\" 场景-2-数据流追踪.md')">📋</span></pre>
+    <pre>grep -c "阶段" index.md<span class="cb" onclick="copyCmd(this,'grep -c \"阶段\" index.md')">📋</span></pre>
     <div class="vi-expect">≥ 5 个阶段被追踪</div>
   </div>
   <div class="verify-item"><div class="vi-label">步骤 2 · sequenceDiagram</div>
-    <pre>grep -c "sequenceDiagram" 场景-2-数据流追踪.md<span class="cb" onclick="copyCmd(this,'grep -c \"sequenceDiagram\" 场景-2-数据流追踪.md')">📋</span></pre>
+    <pre>grep -c "sequenceDiagram" index.md<span class="cb" onclick="copyCmd(this,'grep -c \"sequenceDiagram\" index.md')">📋</span></pre>
     <div class="vi-expect">≥ 1 个 sequenceDiagram</div>
   </div>
   <div class="verify-item"><div class="vi-label">步骤 5 · 数据流完整性</div>

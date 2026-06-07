@@ -24,9 +24,6 @@
 ```
 templates/
 ├── README.md                          # 本文件
-├── demos/
-│   ├── index.html                     # 演示中心着陆页
-│   └── skill.html                     # 单技能演示页
 ├── docs/
 │   ├── index.html                     # 文档中心着陆页
 │   └── 故事任务面板/

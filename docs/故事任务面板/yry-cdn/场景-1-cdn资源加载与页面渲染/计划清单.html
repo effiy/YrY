@@ -36,7 +36,7 @@
       <div>
         <span class="step-id">步骤 1</span>
         <span class="step-name">验证 Cat A + Cat B 页面加载链</span>
-        <div class="step-path">📄 场景-1-cdn资源加载与页面渲染.md §1 TC1–TC2</div>
+        <div class="step-path">📄 index.md §1 TC1–TC2</div>
         <div class="step-cmd"># Cat B 页面: 打开审查页面 → DevTools Network → 检查 shared.css → theme.css → shared.js 加载顺序</div>
         <div class="step-cmd"># Cat A 页面: 打开架构图页面 → 检查 Google Fonts → shared.css → theme-mono.css 顺序</div>
         <div class="step-expect">✅ 所有资源 200，顺序正确。console: typeof YrY === 'object'，CSS 变量已注入</div>
@@ -47,7 +47,7 @@
       <div>
         <span class="step-id">步骤 2</span>
         <span class="step-name">验证降级策略</span>
-        <div class="step-path">📄 场景-1-cdn资源加载与页面渲染.md §1 TC4–TC5</div>
+        <div class="step-path">📄 index.md §1 TC4–TC5</div>
         <div class="step-cmd"># DevTools → Network → Block fonts.googleapis.com → 重新加载 Cat A 页面</div>
         <div class="step-cmd"># 临时: mv cdn/shared.js cdn/shared.bak.js → 加载 Cat B 页面 → mv cdn/shared.bak.js cdn/shared.js</div>
         <div class="step-expect">✅ 字体回退为 monospace。shared.js 不可用时 HTML/CSS 仍正常渲染</div>
@@ -58,7 +58,7 @@
       <div>
         <span class="step-id">步骤 3</span>
         <span class="step-name">撰写实施报告（§2）</span>
-        <div class="step-path">📄 场景-1-cdn资源加载与页面渲染.md → 追加 §2 实施报告</div>
+        <div class="step-path">📄 index.md → 追加 §2 实施报告</div>
         <div class="step-cmd"># 记录: Gate A 交接信号验证结果 + Network 截图 + 降级测试截图</div>
         <div class="step-expect">✅ §2 含实施时间、环境快照、5 项 Gate A 信号全部通过/失败的证据</div>
       </div>

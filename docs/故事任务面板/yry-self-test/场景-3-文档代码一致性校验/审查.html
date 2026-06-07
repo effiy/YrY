@@ -118,13 +118,13 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 </div>
 
 <div class="yry-panel" id="panelGood">
-  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 三维校验精准覆盖退化三因</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/场景-3-文档代码一致性校验.md : §0</div><div class="case-desc">章节完整性校验→防止渐进漂移（增量更新导致的章节丢失），交叉引用校验→防止外部不可达（链接失效），知识图谱节点覆盖→防止文档与图谱脱节。三维与退化三因一一对应。</div><div class="case-why">💡 <strong>为什么好：</strong>校验维度的选择有理论依据——不是随机覆盖，而是系统性地针对已知退化路径设计防御。这种"威胁驱动的校验设计"是安全思维的体现。</div></div>
-  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 校验规则表可扩展</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/场景-3-文档代码一致性校验.md : 校验规则表</div><div class="case-desc">场景定义了清晰的扩展接口——新增校验项只需在规则表中追加一行（校验目标 + 判定函数 + 严重级别），无需重构现有逻辑。这种设计使校验体系可随项目增长渐进扩展。</div><div class="case-why">💡 <strong>为什么好：</strong>可扩展性决定了自检体系的寿命。随着项目演进，新的退化路径会出现——校验体系必须能低摩擦地跟进，否则会成为过时的摆设。</div></div>
+  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 三维校验精准覆盖退化三因</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/index.md : §0</div><div class="case-desc">章节完整性校验→防止渐进漂移（增量更新导致的章节丢失），交叉引用校验→防止外部不可达（链接失效），知识图谱节点覆盖→防止文档与图谱脱节。三维与退化三因一一对应。</div><div class="case-why">💡 <strong>为什么好：</strong>校验维度的选择有理论依据——不是随机覆盖，而是系统性地针对已知退化路径设计防御。这种"威胁驱动的校验设计"是安全思维的体现。</div></div>
+  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 校验规则表可扩展</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/index.md : 校验规则表</div><div class="case-desc">场景定义了清晰的扩展接口——新增校验项只需在规则表中追加一行（校验目标 + 判定函数 + 严重级别），无需重构现有逻辑。这种设计使校验体系可随项目增长渐进扩展。</div><div class="case-why">💡 <strong>为什么好：</strong>可扩展性决定了自检体系的寿命。随着项目演进，新的退化路径会出现——校验体系必须能低摩擦地跟进，否则会成为过时的摆设。</div></div>
 </div>
 
 <div class="yry-panel" id="panelBad">
-  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 缺少 .md→.html 同步状态校验</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/场景-3-文档代码一致性校验.md : 校验规则表</div><div class="case-desc">YrY 的文档管线从 .md 生成 .html 产物。如果 .md 已更新但 HTML 未重新生成，文档中心将展示过期内容。当前校验未检测这种不同步状态——管道断裂不会被发现。</div><div class="case-why">💡 <strong>为什么不好：</strong>文档管线的输出是 HTML——用户看到的是 HTML，不是 .md。只校验 .md 而不校验 HTML 产物，相当于只检查源代码而不检查编译产物。编译本身可能就是问题源。</div></div>
-  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 未区分内部/外部链接检查策略</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/场景-3-文档代码一致性校验.md : 交叉引用校验</div><div class="case-desc">对内部链接（指向仓库内文件）和外部链接（指向 URL）使用相同的检查策略。内部链接失败应阻断（确保文档自洽），外部链接失败应仅警告（可能因网络临时不可达）。一视同仁会导致误报或漏报。</div><div class="case-why">💡 <strong>为什么不好：</strong>不同链接有不同的失败语义。把外部链接的网络不可达当作阻断级别错误，会让自检在断网时完全不可用。区分策略是健壮性的基础。</div></div>
+  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 缺少 .md→.html 同步状态校验</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/index.md : 校验规则表</div><div class="case-desc">YrY 的文档管线从 .md 生成 .html 产物。如果 .md 已更新但 HTML 未重新生成，文档中心将展示过期内容。当前校验未检测这种不同步状态——管道断裂不会被发现。</div><div class="case-why">💡 <strong>为什么不好：</strong>文档管线的输出是 HTML——用户看到的是 HTML，不是 .md。只校验 .md 而不校验 HTML 产物，相当于只检查源代码而不检查编译产物。编译本身可能就是问题源。</div></div>
+  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 未区分内部/外部链接检查策略</h4><div class="case-loc">📁 docs/故事任务面板/yry-self-test/index.md : 交叉引用校验</div><div class="case-desc">对内部链接（指向仓库内文件）和外部链接（指向 URL）使用相同的检查策略。内部链接失败应阻断（确保文档自洽），外部链接失败应仅警告（可能因网络临时不可达）。一视同仁会导致误报或漏报。</div><div class="case-why">💡 <strong>为什么不好：</strong>不同链接有不同的失败语义。把外部链接的网络不可达当作阻断级别错误，会让自检在断网时完全不可用。区分策略是健壮性的基础。</div></div>
 </div>
 
 <div class="yry-panel" id="panelRecommendations">

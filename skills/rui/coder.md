@@ -67,14 +67,14 @@ flowchart LR
 ```
 docs/index.html      ← 项目概览（六维统计：依赖/框架 · 故事 · 场景 · 模块 · 测试 · 交互示例）
 tests/index.html     ← 测试概览（测试用例列表 + 通过率 + 覆盖矩阵）
-demos/index.html     ← 交互示例概览（demo 组件列表 + 截图 + 操作路径）
+docs/故事任务面板/yry-arch/演示/index.html     ← 交互示例概览（demo 组件列表 + 截图 + 操作路径）
 ```
 
 | 页面 | 统计维度 | 初始值 | 更新时机 |
 |------|---------|--------|---------|
 | `docs/index.html` | 六维：依赖/框架数、故事数、场景数、模块数、测试用例数、交互示例数 | 按 init 检测结果填充 | 每次 `/rui` 管线完成时刷新 |
 | `tests/index.html` | 测试用例列表 + 分类（正常/边界/异常/回归） | 按 test 目录检测结果 | Gate B 通过后更新 |
-| `demos/index.html` | 交互示例列表 + 分类 | 按 demos 目录检测结果 | 文档生成阶段更新 |
+| `demos/index.html` | 交互示例列表 + 分类 | 按场景-1-模块定位目录检测结果 | 文档生成阶段更新 |
 
 **模板**：`skills/rui/resources/overview-template.html` — 深色主题 + 六维统计卡片 + 能力面板 + 导出工具栏。
 `docs/index.html` 的 6 个 stats 指标固定为：**第三方依赖/框架、故事、场景、业务模块/视图模块、测试用例、交互示例**。

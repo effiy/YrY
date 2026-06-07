@@ -133,13 +133,13 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 </div>
 
 <div class="yry-panel" id="panelGood">
-  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> "首修任务"引导设计</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-3-新人上手.md : 上手流程</div><div class="case-desc">以"环境搭建 → 了解项目 → 首修任务 → 提交变更"为主线，给新人一个有终点的学习路径。首修任务（如修改一个文档、添加一个测试用例）让新人在 30 分钟内完成第一个贡献。</div><div class="case-why">💡 <strong>为什么好：</strong>给新人一个具体可完成的小目标——这比"读完所有文档"有效得多。完成首修即建立了对系统的感性认知和操作信心。</div></div>
-  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 目录导览与架构图呼应</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-3-新人上手.md : 目录导览</div><div class="case-desc">按 skills/ → agents/ → rules/ → docs/ → tests/ 层次导览项目目录，与场景 1 架构图的 3 层 Tier 结构一致。新人在导览后自然过渡到架构文档的深入阅读。</div><div class="case-why">💡 <strong>为什么好：</strong>目录结构反映了架构设计——让新人先看目录，再看架构图，物理结构和逻辑结构形成双重认知锚点。</div></div>
+  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> "首修任务"引导设计</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/index.md : 上手流程</div><div class="case-desc">以"环境搭建 → 了解项目 → 首修任务 → 提交变更"为主线，给新人一个有终点的学习路径。首修任务（如修改一个文档、添加一个测试用例）让新人在 30 分钟内完成第一个贡献。</div><div class="case-why">💡 <strong>为什么好：</strong>给新人一个具体可完成的小目标——这比"读完所有文档"有效得多。完成首修即建立了对系统的感性认知和操作信心。</div></div>
+  <div class="case-card good"><h4>✅ <span class="case-tag good">好案例</span> 目录导览与架构图呼应</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/index.md : 目录导览</div><div class="case-desc">按 skills/ → agents/ → rules/ → docs/ → tests/ 层次导览项目目录，与场景 1 架构图的 3 层 Tier 结构一致。新人在导览后自然过渡到架构文档的深入阅读。</div><div class="case-why">💡 <strong>为什么好：</strong>目录结构反映了架构设计——让新人先看目录，再看架构图，物理结构和逻辑结构形成双重认知锚点。</div></div>
 </div>
 
 <div class="yry-panel" id="panelBad">
-  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 无预期输出验证</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-3-新人上手.md : 操作步骤</div><div class="case-desc">关键操作如 rui-story init、rui-claude sync 仅给出命令，未说明运行成功后的预期终端输出。新人无法判断操作是否成功——如果命令静默失败（如 token 未配置），新人可能在 30 分钟后才发现系统根本没跑起来。</div><div class="case-why">💡 <strong>为什么不好：</strong>无声失败是新人的头号杀手。每个操作步骤都应包含"如果成功，你应该看到..."的预期输出截图或文字，让新人能自我验证每一步。</div></div>
-  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 缺少故障排查 FAQ</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/场景-3-新人上手.md : 全局</div><div class="case-desc">整个文档假设环境搭建一帆风顺。现实中新人会遇到的 node 版本不对、权限不足、企微 Webhook 未配置、API token 缺失等问题，没有任何故障排查指引。</div><div class="case-why">💡 <strong>为什么不好：</strong>文档的"快乐路径"假设在新人场景下最脆弱——新人恰恰是最容易遇到环境问题的人群。没有 FAQ 意味着新人卡住后只能中断上手流程去搜索解决方案。</div></div>
+  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 无预期输出验证</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/index.md : 操作步骤</div><div class="case-desc">关键操作如 rui-story init、rui-claude sync 仅给出命令，未说明运行成功后的预期终端输出。新人无法判断操作是否成功——如果命令静默失败（如 token 未配置），新人可能在 30 分钟后才发现系统根本没跑起来。</div><div class="case-why">💡 <strong>为什么不好：</strong>无声失败是新人的头号杀手。每个操作步骤都应包含"如果成功，你应该看到..."的预期输出截图或文字，让新人能自我验证每一步。</div></div>
+  <div class="case-card bad"><h4>❌ <span class="case-tag bad">坏案例</span> 缺少故障排查 FAQ</h4><div class="case-loc">📁 docs/故事任务面板/yry-arch/index.md : 全局</div><div class="case-desc">整个文档假设环境搭建一帆风顺。现实中新人会遇到的 node 版本不对、权限不足、企微 Webhook 未配置、API token 缺失等问题，没有任何故障排查指引。</div><div class="case-why">💡 <strong>为什么不好：</strong>文档的"快乐路径"假设在新人场景下最脆弱——新人恰恰是最容易遇到环境问题的人群。没有 FAQ 意味着新人卡住后只能中断上手流程去搜索解决方案。</div></div>
 </div>
 
 <div class="yry-panel" id="panelRecommendations">
@@ -153,8 +153,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 
 <div class="yry-panel" id="panelEvidence">
   <div class="suite open"><div class="yry-suite-head"><span class="yry-suite-arrow">▶</span><span class="yry-suite-name">📎 审查证据清单</span><span class="s-badge pass">4 项</span></div><div class="yry-suite-body"><ul class="ev-list">
-    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>预期输出缺失：</strong>grep '预期输出\|你应该看到\|expected output' on 场景-3-新人上手.md → 0 results</span></li>
-    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>FAQ 缺失：</strong>grep 'FAQ\|常见问题\|故障排查\|troubleshoot' on 场景-3-新人上手.md → 0 results</span></li>
+    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>预期输出缺失：</strong>grep '预期输出\|你应该看到\|expected output' on index.md → 0 results</span></li>
+    <li><span class="ev-icon">📄</span><span class="ev-text"><strong>FAQ 缺失：</strong>grep 'FAQ\|常见问题\|故障排查\|troubleshoot' on index.md → 0 results</span></li>
     <li><span class="ev-icon">📄</span><span class="ev-text"><strong>命令一致性：</strong>场景中的命令示例与各 skill SKILL.md 中的命令签名一致</span></li>
     <li><span class="ev-icon">📄</span><span class="ev-text"><strong>目录结构：</strong>导览路径与实际仓库目录树匹配（skills/ agents/ rules/ docs/ tests/）</span></li>
   </ul></div></div>

@@ -77,10 +77,10 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    01["故事任务<br/>WHAT & WHY"] --> 02["场景-1-xxx.md<br/>场景 1"]:::scene
-    01 --> 03["场景-2-xxx.md<br/>场景 2"]:::scene
-    02 --> 04["场景-1-xxx.html<br/>架构图"]:::arch
-    03 --> 05["场景-2-xxx.html<br/>架构图"]:::arch
+    01["故事任务<br/>WHAT & WHY"] --> 02["场景-1-xxx/<br/>index.md"]:::scene
+    01 --> 03["场景-2-xxx/<br/>index.md"]:::scene
+    02 --> 04["场景-1-xxx/<br/>架构图.html"]:::arch
+    03 --> 05["场景-2-xxx/<br/>架构图.html"]:::arch
     01 --> 06["知识图谱.json<br/>结构化知识"]:::kg
     06 --> 07["知识图谱.html<br/>可视化"]:::kg
 
@@ -92,8 +92,8 @@ flowchart LR
 
 | 文档 | 前驱 `←` | 后继 `→` |
 |------|----------|---------|
-| 故事任务 | 省略 | 场景-1-<slug>.md |
-| 场景-N-<slug>.md | 故事任务（N=1）或 场景-{N-1}.md | 场景-{N+1}.md（如有）或 知识图谱.json |
+| 故事任务 | 省略 | 场景-1-<slug>/index.md |
+| 场景-N-<slug>/index.md | 故事任务（N=1）或 场景-{N-1}/index.md | 场景-{N+1}/index.md（如有）或 知识图谱.json |
 | 场景-N-<slug>.html | 场景-N-<slug>.md | —（链尾） |
 | 知识图谱.json | 最后一个场景 | 知识图谱.html |
 | 知识图谱.html | 知识图谱.json | —（链尾） |

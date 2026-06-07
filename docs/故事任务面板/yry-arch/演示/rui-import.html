@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>rui-bot demo · 企微通知</title>
+  <title>rui-import demo · 文档同步</title>
 
   <style>
     :root { --bg:rgba(22,22,32,1); --bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%); --bg-flat:rgba(34,34,46,1); --bg-raised:rgba(42,42,56,1); --accent:#FFC107; --cyan:#22d3ee; --pass:#22c55e; --fail:#ef4444; --text:rgba(250,250,252,1); --text2:rgba(160,160,164,1); --text3:rgba(110,110,114,1); --shadow:0 4px 20px rgba(0,0,0,0.3); --radius:12px; --border:1px solid rgba(255,255,255,0.06); }
@@ -77,10 +77,10 @@
 </head>
 <body>
 <div class="container">
-  <nav class="breadcrumb"><a href="../docs/index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="./">🎬 演示中心</a><span class="bc-sep">/</span><span class="bc-current">📢 rui-bot · 企微通知</span></nav>
-  <div class="nav-row"><a class="prevnext" href="rui-import.html">← rui-import</a><span class="sep">|</span><span style="font-size:.78rem;color:var(--accent);font-weight:600">📢 rui-bot</span><span class="sep">|</span><a class="prevnext" href="rui-trends.html">rui-trends →</a></div>
-  <h1>📢 <span>rui-bot</span> · 企微通知</h1>
-  <p class="sub">企业微信 Webhook 消息推送 — <span class="kbd-hint">1-5</span> 数字键切换 Tab · 悬停代码复制</p>
+  <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="index.html">🎬 演示中心</a><span class="bc-sep">/</span><span class="bc-current">📤 rui-import · 文档同步</span></nav>
+  <div class="nav-row"><a class="prevnext" href="rui-claude.html">← rui-claude</a><span class="sep">|</span><span style="font-size:.78rem;color:var(--accent);font-weight:600">📤 rui-import</span><span class="sep">|</span><a class="prevnext" href="rui-bot.html">rui-bot →</a></div>
+  <h1>📤 <span>rui-import</span> · 文档同步</h1>
+  <p class="sub">本地文档 → 远程 API — <span class="kbd-hint">1-5</span> 数字键切换 Tab · 悬停代码复制</p>
 
   <div class="tabs">
     <span class="tab on" data-panel="walkthrough">🚶 演练</span>
@@ -93,30 +93,34 @@
   <!-- Walkthrough panel -->
   <div class="panel on" id="panelWalkthrough">
     <div class="walkthrough">
-      <div class="step"><div class="s-body"><div class="s-title">发送完成通知</div><div class="s-desc">故事完成时通过企微 Webhook 推送状态变更通知到群聊。API_X_TOKEN 从环境变量注入，消息含故事名、阶段、结论等字段。</div><pre>node skills/rui-bot/send.mjs --story=user-login --status=complete<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=user-login --status=complete')">📋</span></pre></div></div>
-      <div class="step"><div class="s-body"><div class="s-title">调试模式：仅追加日志不发送</div><div class="s-desc">仅追加通知日志但不发送 HTTP 请求。适用于本地测试或 token 不可用时的降级模式。</div><pre>node skills/rui-bot/send.mjs --story=user-login --status=complete --no-send<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=user-login --status=complete --no-send')">📋</span></pre></div></div>
-      <div class="step"><div class="s-body"><div class="s-title">发送阻断通知</div><div class="s-desc">故事遇到阻断时发送阻断通知，包含阻断标识和修复建议。支持 complete / blocked / gate-fail 三种状态。</div><pre>node skills/rui-bot/send.mjs --story=user-login --status=blocked<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=user-login --status=blocked')">📋</span></pre></div></div>
-      <div class="step"><div class="s-body"><div class="s-title">健康检查</div><div class="s-desc">检查 token 是否存在、config.json 配置完整性、webhook URL 可达性。不发送消息，仅输出健康状态。</div><pre>node skills/rui-bot/send.mjs health<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs health')">📋</span></pre></div></div>
-      <div class="step"><div class="s-body"><div class="s-title">管线集成：交付收口第三步</div><div class="s-desc">rui 管线 delivery-gate 的第三步 hook：追加日志 → 文档同步 → 企微通知。通知含 stage / fileStats / conclusion / nextStep 等完整字段。</div><pre>node skills/rui-bot/send.mjs --story=user-login --status=complete --stage=deliver --conclusion=done<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=user-login --status=complete --stage=deliver --conclusion=done')">📋</span></pre></div></div>
+      <div class="step"><div class="s-body"><div class="s-title">全量同步（最常用）</div><div class="s-desc">项目根全量扫描所有文件 → 上传到远端 API。并发 4，自动区分 created / overwritten。默认排除 .git / node_modules / dist / .claude-plugin。</div><pre>node skills/rui-import/sync.mjs<span class="cb" onclick="copyCmd(this,'node skills/rui-import/sync.mjs')">📋</span></pre></div></div>
+      <div class="step"><div class="s-body"><div class="s-title">先预览再同步（安全工作流）</div><div class="s-desc">Step 1：输出待上传文件清单，不发 HTTP 请求。确认无误后 Step 2：去掉 mode=list 实际同步。推荐每次同步前执行。</div><pre>node skills/rui-import/sync.mjs mode=list<span class="cb" onclick="copyCmd(this,'node skills/rui-import/sync.mjs mode=list')">📋</span></pre></div></div>
+      <div class="step"><div class="s-body"><div class="s-title">从远端拉取文档</div><div class="s-desc">远端 → 本地覆盖指定目录。适用于恢复丢失的本地文档或同步他人更新。需配合 dir= 指定目标目录。</div><pre>node skills/rui-import/sync.mjs dir=docs/故事任务面板/ mode=pull<span class="cb" onclick="copyCmd(this,'node skills/rui-import/sync.mjs dir=docs/故事任务面板/ mode=pull')">📋</span></pre></div></div>
+      <div class="step"><div class="s-body"><div class="s-title">单目录同步</div><div class="s-desc">指定目录扫描 + 上传，路径以项目根计算相对路径。支持前缀注入 prefix=a,b。</div><pre>node skills/rui-import/sync.mjs dir=docs/故事任务面板/user-login/<span class="cb" onclick="copyCmd(this,'node skills/rui-import/sync.mjs dir=docs/故事任务面板/user-login/')">📋</span></pre></div></div>
+      <div class="step"><div class="s-body"><div class="s-title">状态检测</div><div class="s-desc">空输入触发状态检测：检查 token 可用性、远端可达性、文件差异分析。输出推荐操作而不实际同步。</div><pre>/rui-import<span class="cb" onclick="copyCmd(this,'/rui-import')">📋</span></pre></div></div>
     </div>
   </div>
 
   <!-- Overview panel -->
   <div class="panel" id="panelOverview">
-    <div class="section"><h2><span class="dot"></span>通知流程</h2>
+    <div class="section"><h2><span class="dot"></span>七阶段流程</h2>
       <div class="flow-row">
-        <div class="flow-chip"><span class="n">send.mjs</span></div><span class="flow-arrow">→</span>
-        <div class="flow-chip"><span class="n">构建消息</span></div><span class="flow-arrow">→</span>
-        <div class="flow-chip"><span class="n">追加日志</span></div><span class="flow-arrow">→</span>
-        <div class="flow-chip"><span class="n">HTTP 发送</span></div><span class="flow-arrow">→</span>
-        <div class="flow-chip"><span class="n">企微群</span></div>
+        <div class="flow-chip"><span class="n">①</span> 扫描</div><span class="flow-arrow">→</span>
+        <div class="flow-chip"><span class="n">②</span> 过滤</div><span class="flow-arrow">→</span>
+        <div class="flow-chip"><span class="n">③</span> 解析路径</div><span class="flow-arrow">→</span>
+        <div class="flow-chip"><span class="n">④</span> 拉取已有</div><span class="flow-arrow">→</span>
+        <div class="flow-chip"><span class="n">⑤</span> 逐文件上传</div><span class="flow-arrow">→</span>
+        <div class="flow-chip"><span class="n">⑥</span> 创建 session</div><span class="flow-arrow">→</span>
+        <div class="flow-chip"><span class="n">⑦</span> 汇总报告</div>
       </div>
     </div>
-    <div class="section"><h2><span class="dot"></span>通知状态类型</h2>
+    <div class="section"><h2><span class="dot"></span>模式与选项</h2>
       <div class="flow-row">
-        <div class="flow-chip"><span class="n">complete</span> 完成通知</div><span class="flow-arrow">|</span>
-        <div class="flow-chip"><span class="n">blocked</span> 阻断通知</div><span class="flow-arrow">|</span>
-        <div class="flow-chip"><span class="n">gate-fail</span> 关卡失败</div>
+        <div class="flow-chip"><span class="n">workspace=true</span> 全量</div><span class="flow-arrow">|</span>
+        <div class="flow-chip"><span class="n">mode=list</span> 枚举</div><span class="flow-arrow">|</span>
+        <div class="flow-chip"><span class="n">mode=pull</span> 下载</div><span class="flow-arrow">|</span>
+        <div class="flow-chip"><span class="n">prefix=a,b</span> 前缀</div><span class="flow-arrow">|</span>
+        <div class="flow-chip"><span class="n">exclude=tmp</span> 排除</div>
       </div>
     </div>
   </div>
@@ -124,11 +128,12 @@
   <!-- Commands panel -->
   <div class="panel" id="panelCommands">
     <div class="cmd-grid">
-      <div class="cmd-card"><div class="stage">默认命令</div><div class="name">send.mjs --story= --status=</div><div class="desc">发送通知到企微群（先追加日志，再 HTTP 发送）。status 支持 complete / blocked / gate-fail。</div><pre>node skills/rui-bot/send.mjs --story=name --status=complete<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=name --status=complete')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">调试模式</div><div class="name">send.mjs --no-send</div><div class="desc">仅追加通知日志不发送 HTTP 请求。token 不可用时的降级模式，管线默认行为。</div><pre>node skills/rui-bot/send.mjs --story=name --status=complete --no-send<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=name --status=complete --no-send')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">健康检查</div><div class="name">send.mjs health</div><div class="desc">检查 token / config.json / webhook URL / API 可达性。不发送消息。</div><pre>node skills/rui-bot/send.mjs health<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs health')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">阻断通知</div><div class="name">send.mjs --status=blocked</div><div class="desc">故事阻断时发送通知，消息含阻断标识和修复路径。</div><pre>node skills/rui-bot/send.mjs --story=name --status=blocked<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=name --status=blocked')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">完整参数</div><div class="name">send.mjs 含可选字段</div><div class="desc">支持 --stage / --fileStats / --conclusion / --description / --scope / --nextStep / --impact / --evidence 等扩展字段。</div><pre>node skills/rui-bot/send.mjs --story=name --status=complete --stage=deliver --conclusion=done --scope=full<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=name --status=complete --stage=deliver --conclusion=done --scope=full')">📋</span></pre></div>
+      <div class="cmd-card"><div class="stage">最常用</div><div class="name">全量同步</div><div class="desc">项目根全量扫描 → 逐文件上传，并发 4。自动区分 created / overwritten，输出汇总。</div><pre>node skills/rui-import/sync.mjs<span class="cb" onclick="copyCmd(this,'node skills/rui-import/sync.mjs')">📋</span></pre></div>
+      <div class="cmd-card"><div class="stage">安全预览</div><div class="name">仅枚举不上传</div><div class="desc">输出待上传文件清单，不发 HTTP 请求。确认无误后去掉 mode=list 实际同步。</div><pre>node skills/rui-import/sync.mjs mode=list<span class="cb" onclick="copyCmd(this,'node skills/rui-import/sync.mjs mode=list')">📋</span></pre></div>
+      <div class="cmd-card"><div class="stage">目录同步</div><div class="name">指定目录上传</div><div class="desc">指定目录扫描 + 上传，路径以项目根计算相对路径，与远端一一对应。</div><pre>node skills/rui-import/sync.mjs dir=docs/故事任务面板/<span class="cb" onclick="copyCmd(this,'node skills/rui-import/sync.mjs dir=docs/故事任务面板/')">📋</span></pre></div>
+      <div class="cmd-card"><div class="stage">远端下载</div><div class="name">mode=pull 拉取</div><div class="desc">远端 → 本地覆盖指定目录。需配合 dir= 使用，names= 可按文件名关键词过滤。</div><pre>node skills/rui-import/sync.mjs dir=.claude/ mode=pull<span class="cb" onclick="copyCmd(this,'node skills/rui-import/sync.mjs dir=.claude/ mode=pull')">📋</span></pre></div>
+      <div class="cmd-card"><div class="stage">单文件</div><div class="name">单文件导入</div><div class="desc">导入单个文件，自动附加语义标签和故事面板 session 关联。</div><pre>node skills/rui-import/sync.mjs file=docs/故事任务面板/.../故事任务.md<span class="cb" onclick="copyCmd(this,'node skills/rui-import/sync.mjs file=docs/故事任务面板/.../故事任务.md')">📋</span></pre></div>
+      <div class="cmd-card"><div class="stage">扩展名过滤</div><div class="name">exts= 覆盖扩展名</div><div class="desc">默认全扩展名。可设置 exts=md,json,yaml 限制上传文件类型。</div><pre>node skills/rui-import/sync.mjs exts=md,json<span class="cb" onclick="copyCmd(this,'node skills/rui-import/sync.mjs exts=md,json')">📋</span></pre></div>
     </div>
   </div>
 
@@ -136,11 +141,10 @@
   <div class="panel" id="panelFiles">
     <div class="section"><h2><span class="dot"></span>支撑文件</h2>
       <div class="file-list">
-        <div class="file-item">📄 SKILL.md</div><div class="file-item">⚡ send.mjs</div><div class="file-item">❓ help.mjs</div>
-        <div class="file-item">🔧 config.json</div>
+        <div class="file-item">📄 SKILL.md</div><div class="file-item">⚡ sync.mjs (22KB)</div><div class="file-item">❓ help.mjs</div>
       </div>
     </div>
-    <div class="links-row"><a href="../skills/rui-bot/SKILL.md" target="_blank">📄 SKILL.md</a><a href="../skills/rui-bot/help.mjs" target="_blank">❓ help.mjs</a><a href="../tests/skills/rui-bot.test.mjs" target="_blank">🧪 测试文件</a><a href="../tests/index.html" target="_blank">📊 测试面板</a></div>
+    <div class="links-row"><a href="../../../../skills/rui-import/SKILL.md" target="_blank">📄 SKILL.md</a><a href="../../../../skills/rui-import/help.mjs" target="_blank">❓ help.mjs</a><a href="../../../../tests/skills/rui-import.test.mjs" target="_blank">🧪 测试文件</a><a href="../../../../tests/index.html" target="_blank">📊 测试面板</a></div>
   </div>
 
   <!-- Tests panel -->
@@ -148,12 +152,12 @@
     <div class="stat-row" id="testStats"></div>
     <div class="section"><h2><span class="dot"></span>测试覆盖</h2>
       <div class="cmd-grid">
-        <div class="cmd-card"><div class="name">SKILL.md 完整性</div><div class="desc">验证 SKILL.md 存在、非空、含 send.mjs 引用和 API/webhook 文档。</div></div>
-        <div class="cmd-card"><div class="name">可执行脚本验证</div><div class="desc">验证 help.mjs + send.mjs 存在且 send.mjs --help 可执行。</div></div>
-        <div class="cmd-card"><div class="name">通知日志完整性</div><div class="desc">验证通知日志格式正确、时间戳有序、状态值合法。</div></div>
+        <div class="cmd-card"><div class="name">SKILL.md 完整性</div><div class="desc">6 项检查：工作流全景、扫描规则、API 契约、错误模型、mermaid 图、生效标志。</div></div>
+        <div class="cmd-card"><div class="name">可执行脚本验证</div><div class="desc">sync.mjs --help + mode=list 功能验证（实际执行），语法正确性检查。</div></div>
+        <div class="cmd-card"><div class="name">路径映射正确性</div><div class="desc">验证 resolveRemotePath 实现，确保远端路径 = prefix + 项目根相对路径，无跳段无前置。</div></div>
       </div>
     </div>
-    <div class="links-row"><a href="../tests/skills/rui-bot.test.mjs" target="_blank">🧪 查看测试源码</a><a href="../tests/index.html" target="_blank">📊 打开测试面板</a><a href="../demos/index.html">🎬 返回演示中心</a></div>
+    <div class="links-row"><a href="../../../../tests/skills/rui-import.test.mjs" target="_blank">🧪 查看测试源码</a><a href="../../../../tests/index.html" target="_blank">📊 打开测试面板</a><a href="index.html">🎬 返回演示中心</a></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -172,7 +176,7 @@ function toast(msg){const el=document.getElementById('toast');el.textContent=msg
 // ═══ Live test stats ═══
 let testCache=null;
 async function loadTestStats(){if(testCache){renderTestStats(testCache);return}try{const r=await(await fetch('../tests/results.json')).json();testCache=r;renderTestStats(r)}catch(e){document.getElementById('testStats').innerHTML='<div style="color:var(--text3);font-size:.82rem">测试结果不可用</div>'}}
-function renderTestStats(r){const s=r.summary||{};document.getElementById('testStats').innerHTML=`<div class="stat-mini"><div class="sv" style="color:var(--text)">${s.total||0}</div><div class="sl">总计</div></div><div class="stat-mini"><div class="sv g">${s.passed||0}</div><div class="sl">✅ 通过</div></div><div class="stat-mini"><div class="sv" style="color:var(--fail)">${s.failed||0}</div><div class="sl">❌ 失败</div></div><div class="stat-mini"><div class="sv" style="color:var(--accent)">7</div><div class="sl">bot 测试</div></div>`}
+function renderTestStats(r){const s=r.summary||{};document.getElementById('testStats').innerHTML=`<div class="stat-mini"><div class="sv" style="color:var(--text)">${s.total||0}</div><div class="sl">总计</div></div><div class="stat-mini"><div class="sv g">${s.passed||0}</div><div class="sl">✅ 通过</div></div><div class="stat-mini"><div class="sv" style="color:var(--fail)">${s.failed||0}</div><div class="sl">❌ 失败</div></div><div class="stat-mini"><div class="sv" style="color:var(--accent)">10</div><div class="sl">import 测试</div></div>`}
 </script>
 </body>
 </html>
