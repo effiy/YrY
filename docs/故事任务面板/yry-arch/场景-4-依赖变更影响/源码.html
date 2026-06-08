@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>场景-4-依赖变更影响 · 源码</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+<style>:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--skip:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideDown{from{opacity:0;max-height:0}to{opacity:1;max-height:2000px}}
+@keyframes modalIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)}50%{box-shadow:0 0 0 6px rgba(255,193,7,0)}}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
+.container{max-width:1120px;margin:0 auto;padding:48px 24px 80px}
+.header{text-align:center;margin-bottom:32px;animation:fadeInDown .5s ease both}
+.header h1{font-size:2.1rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+.header .sub{color:var(--text2);font-size:.9rem}
+.stats-grid{display:flex;gap:14px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 22px;text-align:center;box-shadow:var(--shadow);min-width:90px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat-card .val{font-size:1.8rem;font-weight:700;line-height:1.1}
+.stat-card .val.c{color:var(--cyan)}.stat-card .val.a{color:var(--accent)}.stat-card .val.p{color:var(--pass)}
+.stat-card .lbl{font-size:.72rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+.stat-card.active-filter{border-color:rgba(255,193,7,.4);animation:pulse 2s infinite}
+.bar-wrap{margin-bottom:32px;animation:fadeInDown .5s .12s ease both}
+.bar-outer{height:8px;border-radius:4px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
+.bar-outer .seg{height:100%;transition:width .5s ease;min-width:2px}
+.bar-outer .seg.skill{background:var(--accent)}.bar-outer .seg.agent{background:#c084fc}.bar-outer .seg.rule{background:var(--pass)}.bar-outer .seg.lib{background:var(--cyan)}
+.tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:0;animation:fadeInDown .5s .18s ease both}
+.tab{padding:10px 20px;cursor:pointer;font-size:.84rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none;position:relative}
+.tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.panel{display:none;animation:fadeInUp .4s ease both;padding-top:28px}
+.panel.on{display:block}
+.search-wrap{position:relative;flex:1;min-width:180px;max-width:320px;margin-bottom:16px}
+.search-wrap input{width:100%;background:var(--bg-flat);border:var(--border);border-radius:20px;color:var(--text);padding:7px 14px 7px 34px;font-size:.82rem;outline:none;transition:border-color .15s;font-family:inherit}
+.search-wrap input:focus{border-color:rgba(255,193,7,.4)}.search-wrap input::placeholder{color:var(--text3)}
+.search-wrap .si{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.8rem;color:var(--text3);pointer-events:none}
+.suite{background:var(--bg-card);border:var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow);overflow:hidden;transition:border-color .2s}
+.suite.open{border-color:rgba(255,255,255,.08)}
+.suite.focused{border-color:rgba(255,193,7,.4)}
+.s-head{display:flex;align-items:center;gap:10px;padding:12px 18px;cursor:pointer;user-select:none;transition:background .12s}
+.s-head:hover{background:rgba(255,255,255,.02)}
+.s-head .s-arrow{font-size:.6rem;color:var(--text3);transition:transform .2s;width:12px;text-align:center}
+.suite.open .s-head .s-arrow{transform:rotate(90deg)}
+.s-head .s-name{flex:1;font-weight:600;font-size:.88rem}
+.s-head .s-meta{font-size:.72rem;color:var(--text3)}
+.s-body{display:none;border-top:var(--border);animation:slideDown .25s ease}
+.suite.open .s-body{display:block}
+.t-row{display:flex;align-items:center;gap:10px;padding:8px 18px 8px 36px;font-size:.8rem;border-bottom:1px solid rgba(255,255,255,.015);transition:background .08s;cursor:pointer}
+.t-row:last-child{border-bottom:none}.t-row:hover{background:rgba(255,255,255,.02)}
+.t-row.focused{background:rgba(255,193,7,.06)}
+.t-row .t-icon{width:16px;text-align:center;flex-shrink:0;font-size:.7rem}
+.t-row .t-name{flex:1;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t-row .t-path{font-size:.7rem;color:var(--text3);font-family:monospace;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:8px}
+.t-row .t-meta{font-size:.68rem;color:var(--text3);min-width:60px;text-align:right}
+.file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px}
+.file-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;display:flex;align-items:flex-start;gap:12px}
+.file-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:rgba(255,255,255,.1)}
+.file-card.focused{border-color:rgba(255,193,7,.4)}
+.file-card .fc-icon{font-size:1.4rem;flex-shrink:0;margin-top:2px}
+.file-card .fc-body{flex:1;min-width:0}
+.file-card .fc-name{font-weight:600;font-size:.88rem}
+.file-card .fc-path{font-size:.7rem;color:var(--text3);font-family:monospace;margin-top:1px}
+.file-card .fc-desc{font-size:.74rem;color:var(--text2);margin-top:4px;line-height:1.4}
+.file-card .fc-meta{display:flex;gap:12px;margin-top:6px;font-size:.7rem;color:var(--text3);flex-wrap:wrap}
+.file-card .fc-badge{font-size:.66rem;padding:2px 8px;border-radius:10px;font-weight:600}
+.file-card .fc-badge.skill{background:rgba(255,193,7,.12);color:var(--accent)}
+.file-card .fc-badge.agent{background:rgba(192,132,252,.12);color:#c084fc}
+.file-card .fc-badge.rule{background:rgba(34,197,94,.12);color:var(--pass)}
+.file-card .fc-badge.lib{background:rgba(34,211,238,.12);color:var(--cyan)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg-raised);border:var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);width:100%;max-width:900px;max-height:85vh;display:flex;flex-direction:column;animation:modalIn .2s ease}
+.modal .m-head{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:var(--border);flex-shrink:0}
+.modal .m-head .m-title{flex:1;font-weight:600;font-size:.92rem;font-family:monospace}
+.modal .m-head .m-close{background:none;border:none;color:var(--text3);font-size:1.3rem;cursor:pointer;padding:4px 8px;border-radius:4px}
+.modal .m-head .m-close:hover{color:var(--text)}
+.modal .m-body{flex:1;overflow:auto;padding:0}
+.modal .m-body pre{margin:0;padding:16px 20px;font-family:'SF Mono','Fira Code',monospace;font-size:.78rem;line-height:1.55;color:var(--text2);white-space:pre-wrap;word-break:break-all}
+.modal .m-body pre .ln{display:inline-block;width:36px;text-align:right;margin-right:12px;color:var(--text3);font-size:.7rem;user-select:none}
+.state-msg{text-align:center;padding:72px 20px;animation:fadeInUp .5s ease both}
+.state-msg .icon{font-size:3rem;margin-bottom:10px}
+.state-msg h3{font-size:1.05rem;color:var(--text2)}.state-msg p{font-size:.82rem;color:var(--text3);margin:4px 0}
+.state-msg code{background:var(--bg-flat);padding:5px 10px;border-radius:6px;font-size:.78rem;color:var(--cyan);margin-top:6px;display:inline-block}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+.card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow);animation:fadeInUp .4s ease both}
+.card h2{font-size:.92rem;margin-bottom:14px;color:var(--cyan);font-weight:600}
+.dep-graph{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;padding:16px 0;font-size:.8rem}
+.dep-node{background:var(--bg-flat);border:var(--border);border-radius:8px;padding:8px 14px;color:var(--text);font-family:monospace;font-size:.78rem;white-space:nowrap}
+.dep-arrow{color:var(--text3);font-size:1.2rem}
+.dep-node.root{border-color:rgba(255,193,7,.4);color:var(--accent)}
+.dep-node.leaf{border-color:rgba(34,211,238,.3);color:var(--cyan)}
+.gate-lines{font-size:.78rem;color:var(--text2);line-height:1.9}
+.gate-lines .ok{color:var(--pass)}.gate-lines .warn{color:var(--warn)}
+.footer-note{text-align:center;color:var(--text3);font-size:.74rem;margin-top:32px;padding-bottom:16px}
+.footer-note a{color:var(--accent);text-decoration:none}.footer-note a:hover{text-decoration:underline}
+a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+@media(max-width:640px){.container{padding:24px 12px 60px}.header h1{font-size:1.5rem}.stats-grid{gap:6px}.stat-card{padding:12px 14px;min-width:65px}.stat-card .val{font-size:1.3rem}.file-grid{grid-template-columns:1fr}.dep-graph{flex-direction:column}}
+.checklist{list-style:none;padding:0}.checklist li{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;margin-bottom:4px;font-size:.8rem;color:var(--text2);border-radius:6px}
+.checklist li .chk{color:var(--pass);flex-shrink:0}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}</style>
+</head>
+<body>
+<div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 4 · 依赖变更影响分析</span><span class="bc-sep">/</span><span class="bc-current">📄 源码</span></nav>
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 计划清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构图</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 知识图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试面板</a><span class="cross-sep">·</span>
+<span class="cross-link on">📄 源码</span><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审查</a>
+</nav>
+<div class="header">
+  <h1>📄 <span class="accent">依赖变更影响 · 源码</span></h1>
+  <p class="sub">YrY 系统全部源文件 — 依赖图 · 影响分析 · 破坏性变更检测 · 变更影响可量化可追溯</p>
+</div>
+
+<div class="stats-grid" id="statsRow"></div>
+<div class="bar-wrap"><div class="bar-outer" id="bar" title="按类型分布"></div></div>
+
+<div class="tabs">
+  <span class="tab on" data-panel="files">📁 文件清单</span>
+  <span class="tab" data-panel="browse">📂 目录浏览</span>
+  <span class="tab" data-panel="deps">🔗 模块拓扑</span>
+  <span class="tab" data-panel="spec">📋 模块清单</span>
+</div>
+
+<div class="panel on" id="panelFiles"><div style="margin-bottom:12px;display:flex;gap:8px"><div class="search-wrap"><span class="si">🔍</span><input id="fileSearch" placeholder="搜索文件…" oninput="onSearch(this.value)"></div></div><div id="filesContent"></div></div>
+<div class="panel" id="panelBrowse"><div id="browseContent"></div></div>
+<div class="panel" id="panelDeps">
+  <div class="card"><h2>依赖层次图</h2>
+    <div class="dep-graph"><span class="dep-node root">lib/ (4)</span><span class="dep-arrow">→</span><span class="dep-node">rules/ (10)</span><span class="dep-arrow">→</span><span class="dep-node">agents/ (9)</span><span class="dep-arrow">→</span><span class="dep-node leaf">skills/ (7)</span></div>
+    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">变更影响传播方向：lib 变更影响所有上层 · skills 变更影响最小</p>
+  </div>
+  <div class="card"><h2>破坏性变更检测点</h2>
+    <ul class="checklist">
+      <li><span class="chk">🔍</span> lib/constants.mjs 常量重命名 → 所有 imports 需更新</li>
+      <li><span class="chk">🔍</span> agents/AGENT.md 角色定义变更 → 所有 agents/*.md 需检查</li>
+      <li><span class="chk">🔍</span> rules/code-pipeline.md 流程变更 → skills/rui/* 需适配</li>
+      <li><span class="chk">🔍</span> skills/*/SKILL.md 接口变更 → 跨技能调用链需验证</li>
+    </ul></div>
+</div>
+<div class="panel" id="panelSpec">
+  <div class="card"><h2>📋 模块职责清单</h2>
+    <ul class="checklist">
+      <li><span class="chk">✅</span> skills/ — 7 技能模块 · 用户入口 · 编排管线</li>
+      <li><span class="chk">✅</span> agents/ — 9 Agent 角色 · 协作拓扑 · 行为纪律</li>
+      <li><span class="chk">✅</span> rules/ — 10 治理规则 · 管线纪律 · 安全护栏</li>
+      <li><span class="chk">✅</span> lib/ — 4 共享库 · TTY · FS · 常量 · help 布局</li>
+    </ul>
+  </div>
+</div>
+
+<div class="footer-note">YrY 系统架构 · 场景源码 · <a href="../../../index.html">文档中心</a></div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay"><div class="modal"><div class="m-head"><span class="m-title" id="modalTitle"></span><button class="m-close" onclick="closeModal()">✕</button></div><div class="m-body" id="modalBody"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+var activePanel='files',fileQuery='',focusIdx=-1;
+var manifest={"files":[
+  {"name":"rui/SKILL.md","path":"skills/rui/SKILL.md","cat":"skill","lines":210,"size":11800,"desc":"核心编排器 — 故事驱动的 SDLC 编排，全流程管线"},
+  {"name":"rui/formulas.md","path":"skills/rui/formulas.md","cat":"skill","lines":520,"size":28500,"desc":"故事文档公式 — 生成模板与公式定义"},
+  {"name":"rui/coder.md","path":"skills/rui/coder.md","cat":"skill","lines":120,"size":6200,"desc":"Coder 编码规范 — 实现约束"},
+  {"name":"rui/ranking.md","path":"skills/rui/ranking.md","cat":"skill","lines":95,"size":4800,"desc":"排序规则 — 提案优先级排序"},
+  {"name":"rui-story/SKILL.md","path":"skills/rui-story/SKILL.md","cat":"skill","lines":180,"size":9400,"desc":"故事面板管理 — 收集/状态/同步/通知"},
+  {"name":"rui-claude/SKILL.md","path":"skills/rui-claude/SKILL.md","cat":"skill","lines":140,"size":7200,"desc":".claude/ 配置管理 — 同步/健康分析"},
+  {"name":"rui-import/SKILL.md","path":"skills/rui-import/SKILL.md","cat":"skill","lines":100,"size":5100,"desc":"文档同步 — 本地到远程 API"},
+  {"name":"rui-bot/SKILL.md","path":"skills/rui-bot/SKILL.md","cat":"skill","lines":90,"size":4600,"desc":"企微通知 — Webhook 消息推送"},
+  {"name":"rui-trends/SKILL.md","path":"skills/rui-trends/SKILL.md","cat":"skill","lines":80,"size":4200,"desc":"技术趋势发现 — GitHub Trending"},
+  {"name":"rui-npm/SKILL.md","path":"skills/rui-npm/SKILL.md","cat":"skill","lines":110,"size":5600,"desc":"npm 包管理 — 搜索/安装/发布/审计"},
+  {"name":"AGENT.md","path":"agents/AGENT.md","cat":"agent","lines":140,"size":22000,"desc":"角色拓扑总纲 — 行为纪律/设计原则/ADR"},
+  {"name":"pm.md","path":"agents/pm.md","cat":"agent","lines":80,"size":4200,"desc":"产品决策者 — 需求解析/委派子PM"},
+  {"name":"planner.md","path":"agents/planner.md","cat":"agent","lines":75,"size":3900,"desc":"实施规划者 — 步骤拆分/方案评估"},
+  {"name":"architect.md","path":"agents/architect.md","cat":"agent","lines":65,"size":3400,"desc":"系统架构设计者 — ADR/影响分析"},
+  {"name":"coder.md","path":"agents/coder.md","cat":"agent","lines":90,"size":4700,"desc":"代码实现者 — 逐模块/P0清零"},
+  {"name":"code-reviewer.md","path":"agents/code-reviewer.md","cat":"agent","lines":70,"size":3600,"desc":"代码审查者 — 正确性/简化/复用"},
+  {"name":"tester.md","path":"agents/tester.md","cat":"agent","lines":85,"size":4400,"desc":"质量保障者 — Gate A/B 关卡"},
+  {"name":"reporter.md","path":"agents/reporter.md","cat":"agent","lines":60,"size":3100,"desc":"过程报告者 — 复盘/知识资产"},
+  {"name":"security.md","path":"agents/security.md","cat":"agent","lines":75,"size":3900,"desc":"安全专家 — 威胁建模/约束注入"},
+  {"name":"self-improve.md","path":"agents/self-improve.md","cat":"agent","lines":100,"size":5200,"desc":"自改进引擎 — D0-D7诊断/E1-E4评估"},
+  {"name":"code-pipeline.md","path":"rules/code-pipeline.md","cat":"rule","lines":530,"size":30700,"desc":"管线全流程 — 分支隔离/Gate A/B/逐模块"},
+  {"name":"delivery-gate.md","path":"rules/delivery-gate.md","cat":"rule","lines":120,"size":7500,"desc":"交付收口 — 三步Hook"},
+  {"name":"architecture-diagram.md","path":"rules/architecture-diagram.md","cat":"rule","lines":170,"size":9700,"desc":"架构图规范 — Mermaid语法/颜色语义"},
+  {"name":"plan-execution.md","path":"rules/plan-execution.md","cat":"rule","lines":100,"size":5900,"desc":"计划执行 — 逐步骤验证/P0清零"},
+  {"name":"doc-generation.md","path":"rules/doc-generation.md","cat":"rule","lines":340,"size":21500,"desc":"文档生成约束 — 表达优先 图→文→表"},
+  {"name":"knowledge-graph.md","path":"rules/knowledge-graph.md","cat":"rule","lines":110,"size":6600,"desc":"知识图谱规范 — JSON Schema"},
+  {"name":"mermaid-theme.md","path":"rules/mermaid-theme.md","cat":"rule","lines":40,"size":2100,"desc":"Mermaid 主题 — 暗色标准"},
+  {"name":"security-guardrails.md","path":"rules/security-guardrails.md","cat":"rule","lines":150,"size":8900,"desc":"安全护栏 — 四不妥协"},
+  {"name":"rui-claude.md","path":"rules/rui-claude.md","cat":"rule","lines":110,"size":5700,"desc":"配置管理规则 — .claude/同步策略"},
+  {"name":"self-improve.md","path":"rules/self-improve.md","cat":"rule","lines":180,"size":11200,"desc":"自改进闭环 — D0-D7/E1-E4"},
+  {"name":"constants.mjs","path":"lib/constants.mjs","cat":"lib","lines":30,"size":800,"desc":"共享常量 — 语义化常量定义"},
+  {"name":"fs.mjs","path":"lib/fs.mjs","cat":"lib","lines":50,"size":1400,"desc":"文件系统工具 — 读写/遍历"},
+  {"name":"help-layout.mjs","path":"lib/help-layout.mjs","cat":"lib","lines":40,"size":1100,"desc":"Help 布局 — 格式化输出"},
+  {"name":"tty.mjs","path":"lib/tty.mjs","cat":"lib","lines":35,"size":900,"desc":"终端工具 — 颜色/样式"}
+]};
+
+function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function fmtSize(b){if(!b||b===0)return'—';if(b<1024)return b+'B';return (b/1024).toFixed(1)+'KB'}
+var CAT_ICONS={skill:'⚙️',agent:'🤖',rule:'📜',lib:'📦'};
+var CAT_LABELS={skill:'技能 Skills',agent:'Agent 角色',rule:'规则 Rules',lib:'共享库 Lib'};
+
+function renderStats(){
+  var files=manifest.files,total=files.length,totalLines=0;
+  var cc={skill:0,agent:0,rule:0,lib:0},cs={skill:0,agent:0,rule:0,lib:0},cl={skill:0,agent:0,rule:0,lib:0};
+  for(var i=0;i<files.length;i++){var f=files[i];cc[f.cat]=(cc[f.cat]||0)+1;cs[f.cat]=(cs[f.cat]||0)+(f.size||0);cl[f.cat]=(cl[f.cat]||0)+(f.lines||0);totalLines+=f.lines||0}
+  document.getElementById('statsRow').innerHTML=
+    '<div class="stat-card" onclick="filterByCat(\'all\')" id="statAll"><div class="val c">'+total+'</div><div class="lbl">📄 文件总数</div></div>'+
+    '<div class="stat-card" onclick="filterByCat(\'skill\')" id="statSkill"><div class="val a">'+cc.skill+'</div><div class="lbl">⚙️ 技能 ('+cl.skill+' 行)</div></div>'+
+    '<div class="stat-card" onclick="filterByCat(\'agent\')" id="statAgent"><div class="val p" style="color:#c084fc">'+cc.agent+'</div><div class="lbl">🤖 Agent ('+cl.agent+' 行)</div></div>'+
+    '<div class="stat-card" onclick="filterByCat(\'rule\')" id="statRule"><div class="val p">'+cc.rule+'</div><div class="lbl">📜 规则 ('+cl.rule+' 行)</div></div>'+
+    '<div class="stat-card" onclick="filterByCat(\'lib\')" id="statLib"><div class="val c">'+cc.lib+'</div><div class="lbl">📦 共享库 ('+cl.lib+' 行)</div></div>';
+  var ts=totalLines||1;
+  document.getElementById('bar').innerHTML=
+    '<div class="seg skill" style="width:'+(cl.skill/ts*100)+'%" title="技能: '+cl.skill+' 行"></div>'+
+    '<div class="seg agent" style="width:'+(cl.agent/ts*100)+'%" title="Agent: '+cl.agent+' 行"></div>'+
+    '<div class="seg rule" style="width:'+(cl.rule/ts*100)+'%" title="规则: '+cl.rule+' 行"></div>'+
+    '<div class="seg lib" style="width:'+(cl.lib/ts*100)+'%" title="Lib: '+cl.lib+' 行"></div>';
+}
+
+function renderFiles(){
+  var container=document.getElementById('filesContent');
+  if(!manifest||!manifest.files.length){container.innerHTML='<div class="state-msg"><div class="icon">📁</div><h3>暂无文件</h3></div>';return}
+  var groups={};for(var i=0;i<manifest.files.length;i++){var f=manifest.files[i],cat=f.cat||'other';if(!groups[cat])groups[cat]=[];groups[cat].push(f)}
+  var order=['skill','agent','rule','lib'],html='';
+  for(var o=0;o<order.length;o++){var cat=order[o],files=groups[cat];if(!files||!files.length)continue;
+    html+='<div class="suite open"><div class="s-head" data-action="toggle"><span class="s-arrow">▶</span><span class="s-name">'+(CAT_ICONS[cat]||'')+' '+(CAT_LABELS[cat]||cat)+'</span><span class="s-meta">'+files.length+' 文件</span></div><div class="s-body"><div class="file-grid">';
+    for(var j=0;j<files.length;j++){var f=files[j];if(fileQuery&&!f.name.toLowerCase().includes(fileQuery)&&!f.path.toLowerCase().includes(fileQuery)&&!(f.desc&&f.desc.toLowerCase().includes(fileQuery)))continue;
+      var badge='';if(f.cat==='skill')badge='<span class="fc-badge skill">SKILL</span>';else if(f.cat==='agent')badge='<span class="fc-badge agent">AGENT</span>';else if(f.cat==='rule')badge='<span class="fc-badge rule">RULE</span>';else badge='<span class="fc-badge lib">LIB</span>';
+      html+='<div class="file-card" data-path="'+esc(f.path)+'" onclick="viewSource(\''+esc(f.path)+'\')"><span class="fc-icon">'+(f.cat==='skill'?'⚙️':f.cat==='agent'?'🤖':f.cat==='rule'?'📜':'📦')+'</span><div class="fc-body"><div class="fc-name">'+esc(f.name)+' '+badge+'</div><div class="fc-path">'+esc(f.path)+'</div>'+(f.desc?'<div class="fc-desc">'+esc(f.desc)+'</div>':'')+'<div class="fc-meta">'+(f.lines?'<span>📏 '+f.lines+' 行</span>':'')+'<span>📦 '+fmtSize(f.size)+'</span></div></div></div>'}
+    html+='</div></div></div>'}
+  container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配文件</h3></div>'
+}
+
+function renderBrowse(){
+  var container=document.getElementById('browseContent');
+  var html='';
+  var dirs=['skills/','agents/','rules/','lib/'];
+  for(var d=0;d<dirs.length;d++){var dir=dirs[d];var children=manifest.files.filter(function(f){return f.path.startsWith(dir)});
+    html+='<div class="suite open"><div class="s-head" data-action="toggle"><span class="s-arrow">▶</span><span class="s-name">📁 '+dir+'</span><span class="s-meta">'+children.length+' 文件</span></div><div class="s-body">';
+    for(var i=0;i<children.length;i++){var f=children[i];var icon=f.cat==='skill'?'⚙️':f.cat==='agent'?'🤖':f.cat==='rule'?'📜':'📦';
+      html+='<div class="t-row" onclick="viewSource(\''+esc(f.path)+'\')"><span class="t-icon">'+icon+'</span><span class="t-name">'+esc(f.name)+'</span><span class="t-path">'+esc(f.path)+'</span><span class="t-meta">'+fmtSize(f.size)+'</span></div>'}
+    html+='</div></div>'}
+  container.innerHTML=html
+}
+
+function viewSource(relPath){
+  var overlay=document.getElementById('modalOverlay');
+  document.getElementById('modalTitle').textContent=relPath;
+  var body=document.getElementById('modalBody');
+  body.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>';overlay.classList.add('show');
+  fetch('../../../../'+relPath).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.text()})
+    .then(function(t){var lines=t.split('\n');body.innerHTML='<pre>'+lines.map(function(l,i){return'<span class="ln">'+(i+1)+'</span>'+esc(l)}).join('\n')+'</pre>'})
+    .catch(function(e){body.innerHTML='<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(e.message)+'</div>'})
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('show')}
+function switchPanel(name){
+  activePanel=name;
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.panel===name)});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1))});
+  if(name==='files')renderFiles();else if(name==='browse')renderBrowse()
+}
+function filterByCat(cat){fileQuery=cat==='all'?'':'';document.querySelectorAll('.stat-card').forEach(function(c){c.classList.remove('active-filter')});var el=document.getElementById(cat==='all'?'statAll':cat==='skill'?'statSkill':cat==='agent'?'statAgent':cat==='rule'?'statRule':cat==='lib'?'statLib':null);if(el)el.classList.add('active-filter');if(cat!=='all'){window._filterCat=cat;switchPanel('files');renderFilesFiltered()}else{window._filterCat=null;switchPanel('files');renderFiles()}}
+function renderFilesFiltered(){
+  var container=document.getElementById('filesContent'),cat=window._filterCat||'all',html='';
+  var files=cat==='all'?manifest.files:manifest.files.filter(function(f){return f.cat===cat});
+  var groups={};for(var i=0;i<files.length;i++){var f=files[i],c=f.cat||'other';if(!groups[c])groups[c]=[];groups[c].push(f)}
+  for(var c in groups){
+    html+='<div class="suite open"><div class="s-head" data-action="toggle"><span class="s-arrow">▶</span><span class="s-name">'+(CAT_ICONS[c]||'')+' '+(CAT_LABELS[c]||c)+'</span><span class="s-meta">'+groups[c].length+' 文件</span></div><div class="s-body"><div class="file-grid">';
+    for(var j=0;j<groups[c].length;j++){var f=groups[c][j];var badge='';if(f.cat==='skill')badge='<span class="fc-badge skill">SKILL</span>';else if(f.cat==='agent')badge='<span class="fc-badge agent">AGENT</span>';else if(f.cat==='rule')badge='<span class="fc-badge rule">RULE</span>';else badge='<span class="fc-badge lib">LIB</span>';
+      html+='<div class="file-card" onclick="viewSource(\''+esc(f.path)+'\')"><span class="fc-icon">'+(f.cat==='skill'?'⚙️':f.cat==='agent'?'🤖':f.cat==='rule'?'📜':'📦')+'</span><div class="fc-body"><div class="fc-name">'+esc(f.name)+' '+badge+'</div><div class="fc-path">'+esc(f.path)+'</div>'+(f.desc?'<div class="fc-desc">'+esc(f.desc)+'</div>':'')+'<div class="fc-meta"><span>📏 '+(f.lines||'—')+' 行</span></div></div></div>'}
+    html+='</div></div></div>'}
+  container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配文件</h3></div>'
+}
+function onSearch(q){fileQuery=q.toLowerCase().trim();renderFiles()}
+function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show')},1800)}
+
+document.addEventListener('keydown',function(e){
+  if(document.activeElement.tagName==='INPUT')return;
+  if(e.key==='Escape'){closeModal()}
+  if(e.key==='1')switchPanel('files');if(e.key==='2')switchPanel('browse');if(e.key==='3')switchPanel('deps');if(e.key==='4')switchPanel('spec')
+});
+document.querySelector('.tabs').addEventListener('click',function(e){var tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
+document.addEventListener('click',function(e){var head=e.target.closest('.s-head');if(head){var suite=head.closest('.suite');suite.classList.toggle('open')}});
+document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===e.currentTarget)closeModal()});
+window.addEventListener('DOMContentLoaded',function(){renderStats();switchPanel('files')});
+</script>
+<script src="../../../../cdn/shared.js"></script>
+</body>
+</html>

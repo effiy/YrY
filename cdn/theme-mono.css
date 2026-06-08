@@ -98,14 +98,65 @@ body {
   text-align: center; color: #475569; font-size: .75rem; margin-top: 1rem;
 }
 
+/* ── Breadcrumb (mono theme) ─────────────────────────────────────────── */
+.yry-mono-container .breadcrumb {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 1.25rem; font-size: 0.76rem;
+}
+.yry-mono-container .breadcrumb a {
+  color: #7aa2f7; text-decoration: none; transition: color 0.15s;
+}
+.yry-mono-container .breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
+.yry-mono-container .breadcrumb .bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
+.yry-mono-container .breadcrumb .bc-current { color: #94a3b8; font-weight: 500; }
+
+/* ── Cross-nav (mono theme) ──────────────────────────────────────────── */
+.yry-mono-container .cross-nav {
+  display: flex; gap: 4px; justify-content: center; align-items: center;
+  margin-bottom: 1.25rem; flex-wrap: wrap;
+}
+.yry-mono-container .cross-link { color: #7aa2f7; font-size: 0.76rem; text-decoration: none; padding: 3px 10px; border-radius: 4px; transition: color 0.15s, background 0.15s; }
+.yry-mono-container .cross-link:hover { color: #fbbf24; background: rgba(251,191,36,0.06); }
+.yry-mono-container .cross-link.on { color: #fbbf24; font-weight: 600; cursor: default; }
+.yry-mono-container .cross-sep { color: #475569; font-size: 0.5rem; opacity: 0.35; user-select: none; }
+
 /* ── Cross-nav overrides (mono theme uses different link colors) ────────── */
 .yry-mono-container .yry-cross-link { color: #7aa2f7; font-size: 0.76rem; }
 .yry-mono-container .yry-cross-link:hover { color: #fbbf24; background: rgba(251,191,36,0.06); }
 .yry-mono-container .yry-cross-link.on { color: #fbbf24; cursor: default; }
 .yry-mono-container .yry-cross-sep { color: #475569; }
 
+/* ── Animations ─────────────────────────────────────────────────────────── */
+@keyframes yry-mono-card-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.yry-mono-card { animation: yry-mono-card-in .4s ease both; }
+.yry-mono-cards .yry-mono-card:nth-child(1) { animation-delay: .05s; }
+.yry-mono-cards .yry-mono-card:nth-child(2) { animation-delay: .12s; }
+.yry-mono-cards .yry-mono-card:nth-child(3) { animation-delay: .19s; }
+.yry-mono-cards .yry-mono-card:nth-child(4) { animation-delay: .26s; }
+
+/* ── Hover polish ──────────────────────────────────────────────────────── */
+.yry-mono-card {
+  transition: transform .2s, border-color .2s, box-shadow .2s;
+}
+.yry-mono-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(148,163,184,.2);
+  box-shadow: 0 4px 24px rgba(0,0,0,.3);
+}
+
+.yry-diagram-wrap {
+  transition: border-color .2s, box-shadow .2s;
+}
+.yry-diagram-wrap:hover {
+  border-color: rgba(148,163,184,.15);
+}
+
 /* ── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {
   body { padding: 1rem; }
   .yry-mono-container { padding: 0; }
+  .yry-mono-cards { grid-template-columns: 1fr; }
 }

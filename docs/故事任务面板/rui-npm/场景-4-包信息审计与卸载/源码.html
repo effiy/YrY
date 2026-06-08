@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>场景-4-包信息审计与卸载 · 源码</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+<style>:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--skip:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideDown{from{opacity:0;max-height:0}to{opacity:1;max-height:2000px}}
+@keyframes modalIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
+.container{max-width:1120px;margin:0 auto;padding:48px 24px 80px}
+.header{text-align:center;margin-bottom:32px;animation:fadeInDown .5s ease both}
+.header h1{font-size:2.1rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+.header .sub{color:var(--text2);font-size:.9rem}
+.stats-grid{display:flex;gap:14px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 22px;text-align:center;box-shadow:var(--shadow);min-width:90px;transition:transform .15s,box-shadow .15s}
+.stat-card .val{font-size:1.8rem;font-weight:700;line-height:1.1}
+.stat-card .val.c{color:var(--cyan)}.stat-card .val.a{color:var(--accent)}.stat-card .val.p{color:var(--pass)}
+.stat-card .lbl{font-size:.72rem;color:var(--text3);margin-top:2px}
+.bar-wrap{margin-bottom:32px;animation:fadeInDown .5s .12s ease both}
+.bar-outer{height:8px;border-radius:4px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
+.bar-outer .seg{height:100%;transition:width .5s ease;min-width:2px}
+.bar-outer .seg.md{background:var(--accent)}.bar-outer .seg.js{background:var(--pass)}
+.tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:0;animation:fadeInDown .5s .18s ease both}
+.tab{padding:10px 20px;cursor:pointer;font-size:.84rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none}
+.tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.panel{display:none;animation:fadeInUp .4s ease both;padding-top:28px}.panel.on{display:block}
+.suite{background:var(--bg-card);border:var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow);overflow:hidden;transition:border-color .2s}
+.suite.open{border-color:rgba(255,255,255,.08)}
+.s-head{display:flex;align-items:center;gap:10px;padding:12px 18px;cursor:pointer;user-select:none;transition:background .12s}
+.s-head:hover{background:rgba(255,255,255,.02)}
+.s-head .s-arrow{font-size:.6rem;color:var(--text3);transition:transform .2s;width:12px;text-align:center}
+.suite.open .s-head .s-arrow{transform:rotate(90deg)}
+.s-head .s-name{flex:1;font-weight:600;font-size:.88rem}
+.s-head .s-meta{font-size:.72rem;color:var(--text3)}
+.s-body{display:none;border-top:var(--border);animation:slideDown .25s ease}
+.suite.open .s-body{display:block}
+.file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px}
+.file-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;display:flex;align-items:flex-start;gap:12px}
+.file-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:rgba(255,255,255,.1)}
+.file-card .fc-icon{font-size:1.4rem;flex-shrink:0;margin-top:2px}
+.file-card .fc-body{flex:1;min-width:0}
+.file-card .fc-name{font-weight:600;font-size:.88rem}
+.file-card .fc-path{font-size:.7rem;color:var(--text3);font-family:monospace;margin-top:1px}
+.file-card .fc-desc{font-size:.74rem;color:var(--text2);margin-top:4px;line-height:1.4}
+.file-card .fc-meta{display:flex;gap:12px;margin-top:6px;font-size:.7rem;color:var(--text3);flex-wrap:wrap}
+.file-card .fc-badge{font-size:.66rem;padding:2px 8px;border-radius:10px;font-weight:600}
+.file-card .fc-badge.md{background:rgba(255,193,7,.12);color:var(--accent)}
+.file-card .fc-badge.js{background:rgba(34,197,94,.12);color:var(--pass)}
+.file-card .fc-badge.lib{background:rgba(34,211,238,.12);color:var(--cyan)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg-raised);border:var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);width:100%;max-width:900px;max-height:85vh;display:flex;flex-direction:column;animation:modalIn .2s ease}
+.modal .m-head{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:var(--border);flex-shrink:0}
+.modal .m-head .m-title{flex:1;font-weight:600;font-size:.92rem;font-family:monospace}
+.modal .m-head .m-close{background:none;border:none;color:var(--text3);font-size:1.3rem;cursor:pointer;padding:4px 8px;border-radius:4px}
+.modal .m-head .m-close:hover{color:var(--text)}
+.modal .m-body{flex:1;overflow:auto;padding:0}
+.modal .m-body pre{margin:0;padding:16px 20px;font-family:'SF Mono','Fira Code',monospace;font-size:.78rem;line-height:1.55;color:var(--text2);white-space:pre-wrap;word-break:break-all}
+.modal .m-body pre .ln{display:inline-block;width:36px;text-align:right;margin-right:12px;color:var(--text3);font-size:.7rem;user-select:none}
+.state-msg{text-align:center;padding:72px 20px;animation:fadeInUp .5s ease both}
+.state-msg .icon{font-size:3rem;margin-bottom:10px}
+.state-msg h3{font-size:1.05rem;color:var(--text2)}.state-msg p{font-size:.82rem;color:var(--text3);margin:4px 0}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+.card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow);animation:fadeInUp .4s ease both}
+.card h2{font-size:.92rem;margin-bottom:14px;color:var(--cyan);font-weight:600}
+.dep-graph{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;padding:16px 0;font-size:.8rem}
+.dep-node{background:var(--bg-flat);border:var(--border);border-radius:8px;padding:8px 14px;color:var(--text);font-family:monospace;font-size:.78rem;white-space:nowrap}
+.dep-arrow{color:var(--text3);font-size:1.2rem}
+.dep-node.root{border-color:rgba(255,193,7,.4);color:var(--accent)}
+.dep-node.leaf{border-color:rgba(34,211,238,.3);color:var(--cyan)}
+.footer-note{text-align:center;color:var(--text3);font-size:.74rem;margin-top:32px;padding-bottom:16px}
+.footer-note a{color:var(--accent);text-decoration:none}.footer-note a:hover{text-decoration:underline}
+a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+.checklist{list-style:none;padding:0}.checklist li{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;margin-bottom:4px;font-size:.8rem;color:var(--text2);border-radius:6px}
+.checklist li .chk{color:var(--pass);flex-shrink:0}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
+@media(max-width:640px){.container{padding:24px 12px 60px}.header h1{font-size:1.5rem}.file-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · npm 包管理工具</span><span class="bc-sep">/</span><span class="bc-current">场景 4 · 包信息审计与卸载</span><span class="bc-sep">/</span><span class="bc-current">📄 源码</span></nav>
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 计划清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构图</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 知识图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试面板</a><span class="cross-sep">·</span>
+<span class="cross-link on">📄 源码</span><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审查</a>
+</nav>
+<div class="header">
+  <h1>📄 <span class="accent">包信息审计与卸载 · 源码</span></h1>
+  <p class="sub">rui-npm 技能源文件 — 3 文件 · npm audit · npm ls · npm uninstall</p>
+</div>
+
+<div class="stats-grid" id="statsRow"></div>
+<div class="bar-wrap"><div class="bar-outer" id="bar" title="按类型分布"></div></div>
+
+<div class="tabs">
+  <span class="tab on" data-panel="files">📁 文件清单</span>
+  <span class="tab" data-panel="deps">🔗 调用链路</span>
+  <span class="tab" data-panel="spec">📋 搜索 API</span>
+</div>
+
+<div class="panel on" id="panelFiles"><div id="filesContent"></div></div>
+<div class="panel" id="panelDeps">
+  <div class="card"><h2>审计调用链路</h2>
+    <div class="dep-graph"><span class="dep-node root">用户 /rui-npm audit</span><span class="dep-arrow">→</span><span class="dep-node">SKILL.md 规约</span><span class="dep-arrow">→</span><span class="dep-node">rui-npm.mjs audit</span><span class="dep-arrow">→</span><span class="dep-node leaf">npm audit/ls</span></div>
+    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">audit 命令 → npm audit → 安全报告 → 清理建议</p>
+  </div>
+  <div class="card"><h2>审计相关函数</h2>
+    <ul class="checklist">
+      <li><span class="chk">🛡️</span> npmAudit() — 安全漏洞扫描</li>
+      <li><span class="chk">🛡️</span> npmLs(depth) — 列出已安装包树</li>
+      <li><span class="chk">🛡️</span> npmUninstall(name) — 安全卸载及清理</li>
+      <li><span class="chk">🛡️</span> checkVulns(json) — 漏洞等级分类与建议</li>
+    </ul></div>
+</div>
+<div class="panel" id="panelSpec">
+  <div class="card"><h2>📋 审计与卸载规范清单</h2>
+    <ul class="checklist">
+      <li><span class="chk">✅</span> SKILL.md — audit/uninstall 命令定义</li>
+      <li><span class="chk">✅</span> rui-npm.mjs — audit/ls/uninstall 实现</li>
+      <li><span class="chk">✅</span> help.mjs — 审计用法示例 · 安全建议</li>
+    </ul>
+  </div>
+</div>
+
+<div class="footer-note">rui-npm · 场景源码 · <a href="../../../index.html">文档中心</a></div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay"><div class="modal"><div class="m-head"><span class="m-title" id="modalTitle"></span><button class="m-close" onclick="closeModal()">✕</button></div><div class="m-body" id="modalBody"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+var manifest={"files":[
+  {"name":"SKILL.md","path":"skills/rui-npm/SKILL.md","cat":"md","lines":110,"size":5600,"desc":"技能规约 — 4 场景命令定义 · 参数说明 · 使用示例"},
+  {"name":"rui-npm.mjs","path":"skills/rui-npm/rui-npm.mjs","cat":"js","lines":420,"size":14800,"desc":"主脚本 — search/view/install/publish/audit/unpublish 全部实现"},
+  {"name":"help.mjs","path":"skills/rui-npm/help.mjs","cat":"lib","lines":40,"size":1100,"desc":"帮助布局 — 用法示例 · 参数说明 · 格式化输出"}
+]};
+
+function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function fmtSize(b){if(!b||b===0)return'—';if(b<1024)return b+'B';return (b/1024).toFixed(1)+'KB'}
+
+function renderStats(){
+  var files=manifest.files,total=files.length,totalLines=0,totalSize=0;
+  var mdLines=0,jsLines=0,libLines=0;
+  for(var i=0;i<files.length;i++){var f=files[i];totalLines+=f.lines||0;totalSize+=f.size||0;if(f.cat==='md')mdLines+=f.lines;else if(f.cat==='js')jsLines+=f.lines;else libLines+=f.lines}
+  document.getElementById('statsRow').innerHTML=
+    '<div class="stat-card"><div class="val c">'+total+'</div><div class="lbl">📄 文件总数</div></div>'+
+    '<div class="stat-card"><div class="val a">'+mdLines+'</div><div class="lbl">📖 规约行数</div></div>'+
+    '<div class="stat-card"><div class="val p">'+jsLines+'</div><div class="lbl">⚡ 脚本行数</div></div>'+
+    '<div class="stat-card"><div class="val c">'+fmtSize(totalSize)+'</div><div class="lbl">📦 总大小</div></div>';
+  var ts=totalLines||1;
+  document.getElementById('bar').innerHTML=
+    '<div class="seg md" style="width:'+(mdLines/ts*100)+'%" title="规约: '+mdLines+' 行"></div>'+
+    '<div class="seg js" style="width:'+(jsLines/ts*100)+'%" title="脚本: '+jsLines+' 行"></div>';
+}
+
+function renderFiles(){
+  var html='<div class="suite open"><div class="s-head" data-action="toggle"><span class="s-arrow">▶</span><span class="s-name">📁 skills/rui-npm/</span><span class="s-meta">'+manifest.files.length+' 文件</span></div><div class="s-body"><div class="file-grid">';
+  for(var i=0;i<manifest.files.length;i++){var f=manifest.files[i];
+    var badge='',icon='📖';if(f.cat==='js'){badge='<span class="fc-badge js">JS</span>';icon='⚡'}else if(f.cat==='lib'){badge='<span class="fc-badge lib">LIB</span>';icon='📦'}else{badge='<span class="fc-badge md">MD</span>'}
+    html+='<div class="file-card" onclick="viewSource(\''+esc(f.path)+'\')"><span class="fc-icon">'+icon+'</span><div class="fc-body"><div class="fc-name">'+esc(f.name)+' '+badge+'</div><div class="fc-path">'+esc(f.path)+'</div>'+(f.desc?'<div class="fc-desc">'+esc(f.desc)+'</div>':'')+'<div class="fc-meta"><span>📏 '+f.lines+' 行</span><span>📦 '+fmtSize(f.size)+'</span></div></div></div>'}
+  html+='</div></div></div>';
+  document.getElementById('filesContent').innerHTML=html
+}
+
+function viewSource(relPath){
+  var overlay=document.getElementById('modalOverlay');
+  document.getElementById('modalTitle').textContent=relPath;
+  var body=document.getElementById('modalBody');
+  body.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>';overlay.classList.add('show');
+  fetch('../../../../'+relPath).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.text()})
+    .then(function(t){var lines=t.split('\n');body.innerHTML='<pre>'+lines.map(function(l,i){return'<span class="ln">'+(i+1)+'</span>'+esc(l)}).join('\n')+'</pre>'})
+    .catch(function(e){body.innerHTML='<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(e.message)+'</div>'})
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('show')}
+function switchPanel(name){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.panel===name)});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1))});
+}
+
+document.addEventListener('keydown',function(e){
+  if(document.activeElement.tagName==='INPUT')return;
+  if(e.key==='Escape'){closeModal()}
+  if(e.key==='1')switchPanel('files');if(e.key==='2')switchPanel('deps');if(e.key==='3')switchPanel('spec')
+});
+document.querySelector('.tabs').addEventListener('click',function(e){var tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
+document.addEventListener('click',function(e){var head=e.target.closest('.s-head');if(head){var suite=head.closest('.suite');suite.classList.toggle('open')}});
+document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===e.currentTarget)closeModal()});
+window.addEventListener('DOMContentLoaded',function(){renderStats();renderFiles()});
+</script>
+<script src="../../../../cdn/shared.js"></script>
+</body>
+</html>

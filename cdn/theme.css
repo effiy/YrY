@@ -226,3 +226,29 @@ a[target="_blank"]::after { content: " ↗"; font-size: .7em; opacity: .5; }
   .yry-stat { padding: 12px 14px; min-width: 60px; }
   .yry-stat .yry-stat-val { font-size: 1.2rem; }
 }
+
+/* ── Card hover polish ──────────────────────────────────────────────────── */
+.yry-card {
+  transition: transform .2s, border-color .2s, box-shadow .2s;
+}
+.yry-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,.1);
+}
+
+.yry-suite {
+  transition: border-color .2s, box-shadow .2s;
+}
+.yry-suite:hover {
+  border-color: rgba(255,255,255,.08);
+}
+
+/* ── Staggered animation for link cards ─────────────────────────────────── */
+.yry-link-card {
+  transition: transform .2s, border-color .2s, box-shadow .2s;
+}
+.yry-link-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,193,7,.25);
+  box-shadow: var(--yry-shadow-lg);
+}
