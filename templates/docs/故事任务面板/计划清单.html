@@ -4,330 +4,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{SCENE_SHORT}} · 计划清单</title>
+<link rel="stylesheet" href="{{CDN_PREFIX}}/cdn/shared.css">
+<link rel="stylesheet" href="{{CDN_PREFIX}}/cdn/theme.css">
+<link rel="stylesheet" href="{{CDN_PREFIX}}/cdn/yry-checklist.css">
 <style>
-:root {
-  --bg: rgba(22,22,32,1);
-  --bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
-  --bg-flat: rgba(34,34,46,1);
-  --bg-raised: rgba(42,42,56,1);
-  --accent: #FFC107; --cyan: #22d3ee; --pass: #22c55e; --fail: #ef4444; --warn: #f59e0b; --info: #6b7280; --skip: #6b7280;
-  --text: rgba(250,250,252,1); --text2: rgba(160,160,164,1); --text3: rgba(110,110,114,1);
-  --shadow: 0 4px 20px rgba(0,0,0,0.3); --shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
-  --radius: 12px; --border: 1px solid rgba(255,255,255,0.06);
-}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-@keyframes slideDown{from{opacity:0;max-height:0}to{opacity:1;max-height:800px}}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)}50%{box-shadow:0 0 0 8px rgba(255,193,7,0)}}
-@keyframes stepIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
-* { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior:smooth; }
-body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif; line-height:1.6; min-height:100vh; }
-.container { max-width:960px; margin:0 auto; padding:40px 24px 80px; }
-
-/* Breadcrumb */
-.breadcrumb { display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:1.25rem; font-size:0.76rem; }
-.breadcrumb a { color:#7aa2f7; text-decoration:none; transition:color 0.15s; }
-.breadcrumb a:hover { color:#fbbf24; text-decoration:underline; }
-.breadcrumb .bc-sep { color:#53576c; opacity:0.5; user-select:none; }
-.breadcrumb .bc-current { color:#94a3b8; font-weight:500; }
-
-/* Cross-Nav */
-.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
-.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}
-.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
-.cross-link.on{color:var(--accent);font-weight:600}
-.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
-
-/* Stats */
-.stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
-.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}
-.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
-.stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
-.stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}
-.stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
-
-/* Health bar */
-.bar-wrap{margin-bottom:28px;animation:fadeInDown .5s .12s ease both}
-.bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
-.bar-outer .seg{height:100%;transition:width .5s ease;min-width:3px}
-.bar-outer .seg.strength{background:var(--pass)}.bar-outer .seg.gap{background:var(--fail)}.bar-outer .seg.suggestion{background:var(--warn)}.bar-outer .seg.neutral{background:var(--info)}
-
-/* Header */
-.header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
-.header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
-.header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
-.header .meta{color:var(--text3);font-size:.75rem;margin-top:6px}
-
-/* Progress (always visible) */
-.progress-wrap { margin-bottom:20px; }
-.progress-label { display:flex; justify-content:space-between; font-size:0.78rem; margin-bottom:6px; color:var(--text2); }
-.progress-bar { width:100%; height:6px; background:var(--bg-flat); border-radius:3px; overflow:hidden; }
-.progress-fill { height:100%; background:linear-gradient(90deg, #3d59a1, var(--accent)); border-radius:3px; transition:width 0.4s ease; }
-
-/* Tabs */
-.tabs { display:flex; gap:0; border-bottom:var(--border); margin-bottom:24px; }
-.tab { padding:8px 18px; cursor:pointer; font-size:0.82rem; color:var(--text3); border-bottom:2px solid transparent; transition:all 0.15s; user-select:none; }
-.tab:hover { color:var(--text2); }
-.tab.on { color:var(--accent); border-bottom-color:var(--accent); }
-
-/* Panels */
-.panel { display:none; }
-.panel.on { display:block; }
-
-/* Section */
-.section { margin-bottom:24px; }
-.section h2 { font-size:0.95rem; color:var(--accent); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
-.section h2 .dot { width:7px; height:7px; border-radius:50%; background:var(--accent); flex-shrink:0; }
-.section h2 .s-done { color:var(--text3); font-size:0.72rem; font-weight:400; margin-left:2px; }
-
-/* Step Card */
-.step { background:var(--bg-card); border:var(--border); border-radius:var(--radius); margin:10px 0; overflow:hidden; box-shadow:var(--shadow); transition:border-color 0.2s; }
-.step:hover { border-color:rgba(255,193,7,0.12); }
-.step-header { display:flex; align-items:center; gap:10px; padding:12px 16px; cursor:pointer; user-select:none; transition:background 0.15s; }
-.step-header:hover { background:rgba(255,193,7,0.04); }
-.step-checkbox { width:18px; height:18px; accent-color:var(--accent); cursor:pointer; flex-shrink:0; }
-.step-num { font-weight:700; color:var(--accent); min-width:26px; font-size:0.88rem; }
-.step-title { flex:1; font-size:0.92rem; }
-.step-status { font-size:0.72rem; padding:3px 10px; border-radius:12px; flex-shrink:0; white-space:nowrap; }
-.status-done { background:rgba(34,197,94,0.12); color:var(--pass); }
-.status-pending { background:rgba(110,110,114,0.18); color:var(--text3); }
-.status-active { background:rgba(245,158,11,0.12); color:var(--warn); }
-
-/* Step Body */
-.step-body { display:none; padding:0 16px 16px 52px; font-size:0.84rem; border-top:var(--border); }
-.step-body.open { display:block; }
-.step-body p { color:var(--text2); margin:4px 0; }
-
-/* Skill Hint */
-.skill-hint { background:rgba(255,193,7,0.06); border-left:3px solid var(--accent); border-radius:0 6px 6px 0; padding:8px 14px; margin:10px 0; font-size:0.82rem; color:var(--text); display:flex; align-items:flex-start; gap:6px; }
-.skill-hint .hint-icon { color:var(--accent); font-weight:700; flex-shrink:0; }
-.skill-hint code { background:rgba(0,0,0,0.3); color:var(--cyan); padding:2px 6px; border-radius:4px; font-size:0.78rem; font-family:'SF Mono','Fira Code',monospace; }
-
-/* Dep Badges */
-.step-deps { display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.04); }
-.step-deps .dep-label { font-size:0.7rem; color:var(--text3); margin-right:2px; }
-.dep-badge { font-size:0.7rem; color:var(--cyan); text-decoration:none; background:var(--bg-flat); border:1px solid rgba(34,211,238,0.12); border-radius:12px; padding:2px 10px; transition:all 0.15s; }
-.dep-badge:hover { border-color:var(--accent); color:var(--accent); transform:translateY(-1px); }
-
-/* Code / Verify / Log */
-.code-block { background:rgba(0,0,0,0.3); border:var(--border); border-radius:6px; padding:10px 14px; margin:8px 0; font-size:0.76rem; overflow-x:auto; white-space:pre-wrap; font-family:'SF Mono','Fira Code',monospace; color:var(--cyan); }
-.verify-cmd { background:rgba(34,197,94,0.06); border-left:3px solid var(--pass); border-radius:0 4px 4px 0; padding:6px 10px; margin:6px 0; font-size:0.8rem; }
-.verify-cmd::before { content:"▶ 验证: "; color:var(--pass); font-weight:600; }
-.expected { color:var(--text3); font-size:0.78rem; margin:2px 0; }
-.expected::before { content:"✓ 期望: "; color:var(--accent); font-weight:600; }
-.log-entry { font-size:0.74rem; color:var(--text3); border-left:2px solid var(--border); padding-left:8px; margin:4px 0; }
-.log-time { color:#7aa2f7; }
-
-/* Tab 2: Overview Stats */
-.stat-grid { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
-.stat-mini { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:14px 18px; text-align:center; box-shadow:var(--shadow); min-width:80px; flex:1; }
-.stat-mini .sv { font-size:1.4rem; font-weight:700; }
-.stat-mini .sv.g { color:var(--pass); } .stat-mini .sv.y { color:var(--accent); } .stat-mini .sv.c { color:var(--cyan); }
-.stat-mini .sl { font-size:0.64rem; color:var(--text3); margin-top:2px; text-transform:uppercase; letter-spacing:0.4px; }
-.section-stat { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:12px 16px; margin:8px 0; box-shadow:var(--shadow); display:flex; align-items:center; gap:12px; }
-.section-stat .ss-label { font-size:0.82rem; font-weight:600; min-width:100px; }
-.section-stat .ss-bar-wrap { flex:1; height:6px; background:var(--bg-flat); border-radius:3px; overflow:hidden; }
-.section-stat .ss-bar { height:100%; border-radius:3px; transition:width 0.4s; }
-.section-stat .ss-pct { font-size:0.76rem; color:var(--text2); min-width:44px; text-align:right; }
-
-/* Tab 3: Command Grid */
-.cmd-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:10px; }
-.cmd-card { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:16px 18px; box-shadow:var(--shadow); transition:transform 0.15s,box-shadow 0.15s; }
-.cmd-card:hover { transform:translateY(-1px); box-shadow:0 6px 24px rgba(0,0,0,0.35); }
-.cmd-card .c-stage { font-size:0.64rem; color:var(--text3); margin-bottom:4px; }
-.cmd-card .c-name { font-weight:700; font-size:0.84rem; color:var(--accent); font-family:monospace; margin-bottom:2px; }
-.cmd-card .c-desc { font-size:0.74rem; color:var(--text2); line-height:1.5; }
-.cmd-card pre { background:rgba(0,0,0,0.3); border-radius:6px; padding:8px 12px; margin-top:8px; font-size:0.74rem; color:var(--cyan); overflow-x:auto; font-family:'SF Mono',monospace; cursor:pointer; position:relative; }
-.cmd-card pre .cb { position:absolute; top:4px; right:6px; background:var(--bg-flat); border:var(--border); border-radius:4px; color:var(--text3); font-size:0.6rem; padding:1px 6px; cursor:pointer; opacity:0; transition:opacity 0.15s; font-family:inherit; }
-.cmd-card pre:hover .cb { opacity:1; }
-
-/* Tab 4: Related Pages */
-.link-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; }
-.link-card { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); text-decoration:none; color:inherit; display:block; transition:transform 0.15s,border-color 0.15s; }
-.link-card:hover { transform:translateY(-2px); border-color:rgba(255,193,7,0.25); }
-.link-card .lc-icon { font-size:1.2rem; margin-bottom:6px; }
-.link-card .lc-name { font-weight:700; font-size:0.88rem; color:var(--accent); }
-.link-card .lc-desc { font-size:0.74rem; color:var(--text2); margin-top:4px; line-height:1.5; }
-
-/* Tab 5: Verify */
-.verify-list { display:flex; flex-direction:column; gap:10px; }
-.verify-item { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:14px 18px; box-shadow:var(--shadow); }
-.verify-item .vi-label { font-size:0.78rem; color:var(--text2); margin-bottom:6px; }
-.verify-item pre { background:rgba(0,0,0,0.3); border-radius:6px; padding:8px 36px 8px 12px; font-size:0.76rem; color:var(--cyan); overflow-x:auto; font-family:'SF Mono',monospace; cursor:pointer; position:relative; }
-.verify-item pre .cb { position:absolute; top:4px; right:6px; background:var(--bg-flat); border:var(--border); border-radius:4px; color:var(--text3); font-size:0.6rem; padding:1px 6px; cursor:pointer; opacity:0; transition:opacity 0.15s; font-family:inherit; }
-.verify-item pre:hover .cb { opacity:1; }
-.verify-item .vi-expect { font-size:0.74rem; color:var(--text3); margin-top:4px; }
-.verify-item .vi-expect::before { content:"✓ "; color:var(--accent); }
-
-/* Toast */
-.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--bg-raised); border:1px solid rgba(255,193,7,0.3); border-radius:8px; color:var(--text); padding:10px 20px; font-size:0.82rem; z-index:300; box-shadow:var(--shadow-lg); opacity:0; transition:opacity 0.2s; pointer-events:none; }
-.toast.show { opacity:1; }
-
-/* Footer */
-.footer { margin-top:40px; padding-top:16px; border-top:var(--border); color:var(--text3); font-size:0.72rem; text-align:center; }
-
-a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
-@media (max-width:640px) { .container { padding:20px 12px 60px; } .header h1 { font-size:1.3rem; } .step-body { padding:0 10px 12px 40px; } .cmd-grid,.link-grid { grid-template-columns:1fr; } .stat-grid { flex-direction:column; } }
+.container{max-width:960px;margin:0 auto;padding:40px 24px 80px}
 </style>
 </head>
 <body>
 <div class="container">
 
-<nav class="breadcrumb"><a href="{{DOCS_INDEX}}">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">{{STORY_NAME}} · {{STORY_LABEL}}</span><span class="bc-sep">/</span><span class="bc-current">{{SCENE_NAME}}</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
+<nav class="breadcrumb"><a href="{{DOCS_INDEX}}">文档中心</a><span class="bc-sep">/</span><span class="bc-current">{{STORY_NAME}} · {{STORY_DESC}}</span><span class="bc-sep">/</span><span class="bc-current">{{SCENE_SHORT}}</span><span class="bc-sep">/</span><span class="bc-current">计划清单</span></nav>
 
 <div class="cross-nav">
-  <span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
-  <a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
-  <a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
-  <a href="源码.html" class="cross-link">📄 源码</a><span class="cross-sep">·</span>
-  <a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span>
-  <a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span>
-  <a href="审查.html" class="cross-link">📝 审查</a>
+  <span class="cross-link on">清单</span><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">图谱</a><span class="cross-sep">·</span>
+  <a href="测试面板.html" class="cross-link">测试</a><span class="cross-sep">·</span>
+  <a href="演示.html" class="cross-link">演示</a><span class="cross-sep">·</span>
+  <a href="审查.html" class="cross-link">审查</a><span class="cross-sep">·</span>
+  <a href="源码.html" class="cross-link">源码</a>
 </div>
 
 <div class="header">
-  <h1>📋 场景-{{N}}<span class="accent"> · {{SCENE_NAME}}</span></h1>
-  <p class="sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
-  <div class="meta">📌 v{{VERSION}} · 📅 {{DATE}} · 🏷️ {{STORY_NAME}}</div>
+  <h1>{{SCENE_SHORT}}<span class="accent"> · 计划清单</span></h1>
+  <p>{{SCENE_DESC}}</p>
 </div>
 
-<div class="stats-grid">{{PLAN_STATS_ROW}}</div>
-<div class="bar-wrap">{{PLAN_HEALTH_BAR}}</div>
-
-<div class="progress-wrap">
-  <div class="progress-label"><span>整体进度</span><span id="progress-text">0 / {{TOTAL_STEPS}} 完成</span></div>
-  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+<div class="checklist">
+{{#each CHECKLIST_SECTIONS}}
+<div class="cl-section"><h2>{{SECTION_TITLE}}</h2>
+{{#each ITEMS}}
+<div class="cl-item {{STATUS}}"><span class="cl-check">{{CHECK}}</span> {{DESC}}</div>
+{{/each}}
+</div>
+{{/each}}
 </div>
 
-<div class="tabs">
-  <span class="tab on" data-panel="checklist">📋 清单</span>
-  <span class="tab" data-panel="overview">📊 概览</span>
-  <span class="tab" data-panel="commands">⚡ 命令</span>
-  <span class="tab" data-panel="related">📁 关联</span>
-  <span class="tab" data-panel="verify">🧪 验证</span>
-</div>
-
-<!-- ═══ Tab 1: Checklist ═══ -->
-<div class="panel on" id="panelChecklist">{{CHECKLIST_SECTIONS}}</div>
-
-<!-- ═══ Tab 2: Overview ═══ -->
-<div class="panel" id="panelOverview">{{OVERVIEW_PANEL}}</div>
-
-<!-- ═══ Tab 3: Commands ═══ -->
-<div class="panel" id="panelCommands">{{COMMANDS_PANEL}}</div>
-
-<!-- ═══ Tab 4: Related Pages ═══ -->
-<div class="panel" id="panelRelated">{{RELATED_PANEL}}</div>
-
-<!-- ═══ Tab 5: Verify ═══ -->
-<div class="panel" id="panelVerify">{{VERIFY_PANEL}}</div>
-
-<div class="footer">
-  <p>{{FOOTER_TEXT}}</p>
-</div>
-
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-const SCENE_KEY = '{{STORY_NAME}}-s{{N}}-checklist';
-
-/* Tab Switching */
-document.querySelector('.tabs').addEventListener('click', e => {
-  const tab = e.target.closest('.tab');
-  if (!tab) return;
-  switchPanel(tab.dataset.panel);
-});
-
-function switchPanel(name) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.panel === name));
-  document.querySelectorAll('.panel').forEach(p => {
-    p.classList.toggle('on', p.id === 'panel' + name.charAt(0).toUpperCase() + name.slice(1));
-  });
-  localStorage.setItem(SCENE_KEY + '-tab', name);
-}
-
-/* Keyboard shortcuts */
-document.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT') return;
-  const m = {'1':'checklist','2':'overview','3':'commands','4':'related','5':'verify'};
-  if (m[e.key]) { e.preventDefault(); switchPanel(m[e.key]); }
-});
-
-/* Progress */
-function updateProgress() {
-  const checks = document.querySelectorAll('.step-checkbox');
-  const done = Array.from(checks).filter(c => c.checked).length;
-  const total = checks.length;
-  const pct = Math.round((done / total) * 100);
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('progress-text').textContent = done + ' / ' + total + ' 完成';
-
-  checks.forEach(cb => {
-    const status = cb.closest('.step').querySelector('.step-status');
-    if (cb.checked) {
-      status.textContent = '✅ 完成'; status.className = 'step-status status-done';
-    } else {
-      const allChecks = Array.from(checks);
-      const idx = allChecks.indexOf(cb);
-      const prevDone = idx === 0 || allChecks[idx - 1].checked;
-      status.textContent = prevDone ? '🔶 就绪' : '⏳ 待开始';
-      status.className = prevDone ? 'step-status status-active' : 'step-status status-pending';
-    }
-  });
-
-  /* Update overview tab stats */
-  const pending = total - done;
-  const ready = Array.from(checks).filter((c, i) => {
-    if (c.checked) return false;
-    const allChecks = Array.from(checks);
-    return i === 0 || allChecks[i - 1].checked;
-  }).length;
-  const ovDone = document.getElementById('ov-done');
-  const ovReady = document.getElementById('ov-ready');
-  const ovPending = document.getElementById('ov-pending');
-  if (ovDone) ovDone.textContent = done;
-  if (ovReady) ovReady.textContent = ready;
-  if (ovPending) ovPending.textContent = pending - ready;
-
-  /* Persist */
-  const state = {};
-  checks.forEach((cb, i) => { state['step-' + (i + 1)] = cb.checked; });
-  localStorage.setItem(SCENE_KEY, JSON.stringify(state));
-}
-
-/* Copy */
-function copyCmd(btn, cmd) {
-  navigator.clipboard.writeText(cmd).then(() => {
-    btn.textContent = '✅'; btn.style.opacity = '1';
-    setTimeout(() => { btn.textContent = '📋'; btn.style.opacity = ''; }, 1500);
-  }).catch(() => toast('复制失败'));
-}
-
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove('show'), 1800);
-}
-
-/* Init */
-(function() {
-  const saved = JSON.parse(localStorage.getItem(SCENE_KEY) || '{}');
-  document.querySelectorAll('.step-checkbox').forEach((cb, i) => {
-    if (saved['step-' + (i + 1)]) {
-      cb.checked = true;
-      cb.closest('.step').querySelector('.step-body').classList.add('open');
-    }
-  });
-  updateProgress();
-
-  /* Restore last active tab */
-  const activeTab = localStorage.getItem(SCENE_KEY + '-tab') || 'checklist';
-  switchPanel(activeTab);
-})();
-</script>
-</body>
-</html>
+</div></body></html>

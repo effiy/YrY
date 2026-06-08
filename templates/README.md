@@ -28,43 +28,28 @@ templates/
 │   ├── index.html                     # 文档中心着陆页
 │   └── 故事任务面板/
 │       ├── 故事任务.md                # 故事任务文档
-│       ├── 场景-<N>-<slug>.md         # 场景文档模板
+│       ├── 场景-<N>-<slug>.md         # 场景文档模板（管线中重命名为 index.md）
 │       ├── 计划清单.html              # 每场景实施清单
 │       ├── 架构图.html                # 每场景架构图（深色主题 + SVG）
-│       ├── 知识图谱.html              # 每场景知识图谱（深色主题 + D3）
+│       ├── 知识图谱.html              # 每场景知识图谱（深色主题 + Cytoscape.js）
 │       ├── 源码.html                  # 每场景源文件清单（按分类展示 + 回溯链表）
 │       ├── 测试面板.html              # 每场景测试仪表盘（分页 + 统计）
 │       ├── 演示.html                  # 每场景交互演示（逐步展示）
 │       └── 审查.html                  # 每场景审查报告（维度评分 + 案例 + 建议）
-└── tests/
-    ├── run.mjs                        # 测试运行器（子进程生成，多过滤器）
-    ├── manifest.json                  # 测试清单
-    ├── results.json                   # 测试结果模式
-    ├── agents/
-    │   └── agents.test.mjs            # Agent 定义验证
-    ├── integration/
-    │   ├── cross-references.test.mjs  # 跨文档交叉引用检查
-    │   └── knowledge-graph.test.mjs   # 知识图谱结构检查
-    ├── lib/
-    │   ├── helpers.mjs                # 共享测试工具（FS、解析器、列表）
-    │   └── test-harness.mjs           # describe/it/assert 测试框架
-    ├── rules/
-    │   └── rules.test.mjs             # 规则定义验证
-    └── skills/
-        └── (每个技能一个测试文件 — 请参见实际 tests/skills/ 示例)
 ```
 
-> **注意**: `templates/tests/` 和 `tests/` 是**有意分离**的。前者通过 `/rui init` 分发给新项目，后者是 YrY 自身的自检测试。两者结构镜像但路径解析上下文不同（`PROJECT_ROOT` 指向各自的项目根）。修改测试框架时更新 `templates/tests/`，然后同步至 `tests/`。
+> **注意**: `templates/tests/` 目录不再单独维护。测试框架统一由 `tests/` 目录管理（`tests/lib/test-harness.mjs` + `tests/lib/helpers.mjs`），新的 `/rui init` 项目从 `tests/lib/` 复制模板测试基础设施。修改测试框架时直接在 `tests/lib/` 中修改。
 
-## 每场景 7 个交付物
+## 每场景 8 个交付物
 
-每个场景目录在管线完成后包含恰好 7 个 HTML 交付物：
+每个场景目录在管线完成后包含恰好 1 个 index.md + 7 个 HTML 交付物：
 
 | 文件 | 负责人 | 用途 | 模板 |
 |------|--------|-------|-----------|
+| `index.md` | pm+coder | 场景全阶段文档（§0–§4） | `templates/docs/故事任务面板/场景-<N>-<slug>.md` |
 | `计划清单.html` | planner | 实施规划与进度追踪 | `templates/docs/故事任务面板/计划清单.html` |
 | `架构图.html` | architect | SVG 架构图，含导出 | `templates/docs/故事任务面板/架构图.html` |
-| `知识图谱.html` | pm | 知识图谱可视化 | `templates/docs/故事任务面板/知识图谱.html` |
+| `知识图谱.html` | pm | 知识图谱可视化（Cytoscape.js） | `templates/docs/故事任务面板/知识图谱.html` |
 | `源码.html` | coder | 源文件清单 — 按分类展示 · 回溯链 · 覆盖状态 | `templates/docs/故事任务面板/源码.html` |
 | `测试面板.html` | tester | 测试仪表盘与结果 | `templates/docs/故事任务面板/测试面板.html` |
 | `演示.html` | coder | 交互式逐步演示 | `templates/docs/故事任务面板/演示.html` |
