@@ -2,9 +2,9 @@
    YrY Theme Mono CSS — JetBrains Mono 主题页面的样式
    适用: 架构图 · 知识图谱 (深蓝黑底 + 等宽字体)
 
-   依赖: shared.css (需先加载)
+   依赖: shared.css (需先加载) · fonts.css (JetBrains Mono self-hosted)
    使用方式:
-     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+     <link rel="stylesheet" href="../../../../cdn/fonts.css">
      <link rel="stylesheet" href="../../../../cdn/shared.css">
      <link rel="stylesheet" href="../../../../cdn/theme-mono.css">
    ═══════════════════════════════════════════════════════════════════════════ */
