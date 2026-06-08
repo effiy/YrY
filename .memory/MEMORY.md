@@ -1,3 +1,0 @@
-- [YrY 4.3.0 — 自改进数据层启动](yry-boot-4.3.0.md) — 2026-06-06 引导自改进数据层：创建 .memory/ + .improvement/ 基础设施，统一常量，修复 D4/D6 诊断，实现 E1-E4 真实评估
-- [项目基线](project-baseline.md) — YrY 是一个 Claude Code 插件，纯规约驱动，用自身管线管理自身演进。8 技能 + 9 Agent + 10 规则 + 4 共享库
-- [自改进系统设计](self-improve-design.md) — D0-D7 诊断 + E1-E4 评估 + 经验技能化四段闭环，执行记忆自动压缩注入后续上下文
