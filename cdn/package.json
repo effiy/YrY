@@ -1,6 +1,6 @@
 {
   "name": "yry-cdn",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "YrY CDN — shared frontend resources: themes, CSS components, animations, JS utilities for story panel HTML pages",
   "main": "shared.js",
   "files": [
@@ -8,6 +8,8 @@
     "shared.js",
     "theme.css",
     "theme-mono.css",
+    "fonts.css",
+    "fonts/*.woff2",
     "README.md"
   ],
   "keywords": [

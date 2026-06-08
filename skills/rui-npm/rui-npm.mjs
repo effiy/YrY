@@ -1,8 +1,16 @@
 #!/usr/bin/env node
-// rui-npm — personal npm package manager
-// 用法: node skills/rui-npm/rui-npm.mjs <command> [options]
-//
-// 子命令:
+/**
+ * rui-npm — personal npm package manager
+ * 用法: node skills/rui-npm/rui-npm.mjs <command> [options]
+ *
+ * 对应场景文档:
+ *   - docs/故事任务面板/rui-npm/场景-1-包搜索与发现/
+ *   - docs/故事任务面板/rui-npm/场景-2-包安装与版本管理/
+ *   - docs/故事任务面板/rui-npm/场景-3-本地发布与npx使用/
+ *   - docs/故事任务面板/rui-npm/场景-4-包信息审计与卸载/
+ *   - docs/故事任务面板/rui-npm/场景-5-账号级包管理/
+ *
+ * 子命令:
 //   search       <keyword>           搜索 npm registry
 //   install      <pkg>[@version]     安装包
 //   update       <pkg>               更新包
@@ -19,8 +27,8 @@
 //   unpublish    <pkg>[@version]     删除包/版本
 
 import { spawnSync, spawn } from "node:child_process";
-import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync, readdirSync } from "node:fs";
-import { join, resolve, basename, dirname } from "node:path";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync, readdirSync, cpSync, rmSync } from "node:fs";
+import { join, resolve, basename, dirname, extname } from "node:path";
 import { tmpdir } from "node:os";
 import { randomBytes } from "node:crypto";
 import { get } from "node:https";
@@ -128,7 +136,7 @@ function toTable(headers, rows) {
 
 function parseArgs(argv) {
   const args = { _: [], json: false, depth: 0, dev: false, global: false, limit: 20,
-    name: null, version: "1.0.0", description: null, access: null, dryRun: false,
+    name: null, version: null, description: null, access: null, dryRun: false,
     token: null, npxArgs: [], raw: [], force: false };
   let i = 0;
   while (i < argv.length) {
@@ -458,15 +466,15 @@ function cmdPublish(path, args) {
     console.log(`📝 自动生成 package.json (name: ${pkgName}) ...`);
     const pkgJson = {
       name: pkgName,
-      version: pkgVersion,
+      version: pkgVersion || "1.0.0",
       description: args.description || `Auto-published by rui-npm — ${basename(absPath)}`,
-      main: isDir ? (existsSync(join(publishDir, "index.js")) ? "index.js" : undefined) : `index${require("node:path").extname(absPath)}`,
-      bin: !isDir ? { [pkgName]: `./index${require("node:path").extname(absPath)}` } : undefined,
+      main: isDir ? (existsSync(join(publishDir, "index.js")) ? "index.js" : undefined) : `index${extname(absPath)}`,
+      bin: !isDir ? { [pkgName]: `./index${extname(absPath)}` } : undefined,
       license: "MIT",
     };
     // Clean undefined keys
     for (const k of Object.keys(pkgJson)) {
-      if (pkgJson[k] === undefined) delete pkgJson[k];
+      if (pkgJson[k] === undefined || pkgJson[k] === null) delete pkgJson[k];
     }
     writeFileSync(pkgJsonPath, JSON.stringify(pkgJson, null, 2) + "\n");
     console.log(`   包名: ${pkgName}`);
@@ -475,17 +483,29 @@ function cmdPublish(path, args) {
     // Validate existing package.json — use its name/version for conflict check and output
     try {
       const existing = JSON.parse(readFileSync(pkgJsonPath, "utf-8"));
-      pkgName = existing.name || pkgName;
-      pkgVersion = existing.version || pkgVersion;
+      pkgName = args.name || existing.name || pkgName;
+      pkgVersion = args.version || existing.version || pkgVersion;
       console.log(`📝 使用已有 package.json: ${pkgName}@${pkgVersion}`);
     } catch {
       console.error("❌ package.json 格式无效，请修正后重试。");
       if (tmpDir) {
-        const { rmSync } = require("node:fs");
         rmSync(tmpDir, { recursive: true, force: true });
       }
       process.exit(1);
     }
+  }
+
+  // If dir mode with --name/--version overrides, use temp copy to avoid modifying source
+  if (isDir && (args.name || args.version) && existsSync(pkgJsonPath)) {
+    const origDir = publishDir;
+    tmpDir = join(tmpdir(), `rui-npm-${randomBytes(6).toString("hex")}`);
+    cpSync(origDir, tmpDir, { recursive: true });
+    publishDir = tmpDir;
+    const tmpPkgPath = join(publishDir, "package.json");
+    const pkg = JSON.parse(readFileSync(tmpPkgPath, "utf-8"));
+    if (args.name) pkg.name = args.name;
+    if (args.version) pkg.version = args.version;
+    writeFileSync(tmpPkgPath, JSON.stringify(pkg, null, 2) + "\n");
   }
 
   // Conflict check: 阻止名称冲突 — 包存在但当前用户非维护者时拒绝
@@ -508,7 +528,6 @@ function cmdPublish(path, args) {
       console.error(`❌ npm registry 已存在包 "${pkgName}" (${check.stdout.trim()})，且你不是维护者。`);
       console.error(`   请使用 --name 指定不同的包名，或联系维护者。`);
       if (tmpDir) {
-        const { rmSync } = require("node:fs");
         rmSync(tmpDir, { recursive: true, force: true });
       }
       process.exit(1);
@@ -529,7 +548,6 @@ function cmdPublish(path, args) {
 
   // Cleanup temp dir
   if (tmpDir) {
-    const { rmSync } = require("node:fs");
     rmSync(tmpDir, { recursive: true, force: true });
   }
 

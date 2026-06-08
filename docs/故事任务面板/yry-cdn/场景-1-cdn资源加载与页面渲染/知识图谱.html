@@ -1,43 +1,172 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>场景 1 · CDN加载链路 — 知识图谱</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CDN资源加载链路 · 知识图谱</title>
 <link rel="stylesheet" href="../../../../cdn/fonts.css">
-<link rel="stylesheet" href="../../../../../cdn/shared.css">
-<link rel="stylesheet" href="../../../../../cdn/theme-mono.css">
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
-.container{max-width:900px;margin:0 auto}
-.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.5rem;margin-bottom:1rem}
-.card h3{font-size:.9rem;font-weight:600;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
-.card ul{list-style:none;color:#94a3b8;font-size:.78rem}.card li{margin-bottom:.5rem;padding-left:1rem;position:relative}
-.card li::before{content:'•';position:absolute;left:0;color:#475569}
-.cta{text-align:center;margin:2rem 0}
-.cta a{color:#22d3ee;text-decoration:none;font-size:.9rem;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.2);border-radius:8px;padding:.75rem 1.5rem;display:inline-block;transition:all .2s}
-.cta a:hover{background:rgba(34,211,238,.15);border-color:#22d3ee;color:#fff}
-.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:2rem}
-.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}</style></head><body><div class="mono-container">
+.container{max-width:1400px;margin:0 auto}
+.header{margin-bottom:1.5rem}
+.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
+.pulse-dot{width:12px;height:12px;background:#22d3ee;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+h1{font-size:1.5rem;font-weight:700}
+.subtitle{color:#94a3b8;font-size:.875rem;margin-left:1.75rem}
+.toolbar{display:flex;gap:.5rem;margin-left:auto;flex-shrink:0;align-items:center}
+.toolbar-toggle{background:transparent;border:none;color:#475569;cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem}
+.toolbar-toggle:hover{color:#94a3b8;background:rgba(30,41,59,.5)}
+.toolbar-actions{display:none;gap:.5rem}
+.toolbar.expanded .toolbar-actions{display:flex}
+.toolbar-actions button{background:rgba(30,41,59,.8);border:1px solid #334155;color:#94a3b8;padding:.375rem .75rem;border-radius:.375rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.toolbar-actions button:hover{background:rgba(51,65,85,.8);color:white;border-color:#475569}
+.graph-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1rem;margin-bottom:1.5rem}
+#cy{width:100%;height:550px;border-radius:.5rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
+.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
+.card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
+.card-dot{width:8px;height:8px;border-radius:50%}
+.card-dot.asset{background:#EC4899}.card-dot.stage{background:#34d399}.card-dot.check{background:#3B82F6}.card-dot.consumer{background:#22d3ee}.card-dot.ext{background:#f59e0b}
+.card h3{font-size:.875rem;font-weight:600}
+.card ul{list-style:none;color:#94a3b8;font-size:.75rem}
+.card li{margin-bottom:.375rem}
+.legend{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:.75rem;padding:.75rem;background:rgba(15,23,42,.5);border-radius:.5rem;border:1px solid #1e293b;font-size:.75rem;color:#94a3b8}
+.legend-item{display:flex;align-items:center;gap:.375rem}
+.legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid}
+.legend-dot.asset{background:rgba(236,72,153,.3);border-color:#EC4899}
+.legend-dot.stage{background:rgba(52,211,153,.3);border-color:#34d399}
+.legend-dot.check{background:rgba(59,130,246,.3);border-color:#3B82F6}
+.legend-dot.consumer{background:rgba(34,211,238,.3);border-color:#22d3ee}
+.legend-dot.ext{background:rgba(245,158,11,.3);border-color:#f59e0b}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
+@media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
+.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
+.cross-link:hover{color:#fbbf24;background:rgba(251,191,36,0.06)}
+.cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
+.cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
+</style></head><body><div class="container" id="report-container">
 <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-cdn · CDN 共享前端资源管理</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · CDN 资源加载与页面渲染</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
-<div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><span class="cross-link on">🔗 图谱</span><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
+<nav class="cross-nav">
+  <a class="cross-link" href="计划清单.html">📋 计划清单</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="架构图.html">📐 架构图</a><span class="cross-sep">·</span>
+  <span class="cross-link on">🔗 知识图谱</span><span class="cross-sep">·</span>
+  <a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="测试面板.html">🧪 测试面板</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="审查.html">📝 审查</a>
+</nav>
 
-<div class="cta"><a href="../知识图谱.html">🧩 打开 cdn 完整知识图谱 →</a></div>
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>🧩 CDN资源加载链路 · 知识图谱</h1>
+  <div class="toolbar"><div class="toolbar-actions">
+  <button onclick="copyAsImage(this)">📋 Copy</button>
+  <button onclick="downloadPNG(this)">🖼️ PNG</button>
+  <button onclick="downloadPDF(this)">📄 PDF</button>
+  </div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
+</div><p class="subtitle">场景 1/5 — shared.css → theme.css → shared.js 的加载依赖与消费者</p></div>
 
-<div class="card"><h3>📊 场景 1 · CDN 加载链路节点覆盖</h3><ul>
-<li><strong>4 领域节点:</strong> 🎨 主题系统 · 🧩 组件库 · ⚡ JS API · 📦 包管理</li>
-<li><strong>5 文件节点:</strong> shared.css (5.9KB) · shared.js (5.1KB) · theme.css (11.3KB) · theme-mono.css (6.1KB) · package.json</li>
-<li><strong>4 API 节点:</strong> YrY.toast · YrY.copyCmd · YrY.switchPanel · Suite Toggle×3</li>
-<li><strong>2 消费者节点:</strong> Cat A (架构·图谱) · Cat B (审查·测试)</li>
-<li><strong>2 外部依赖:</strong> navigator.clipboard · Google Fonts</li>
-<li><strong>14 条关系边:</strong> depends_on · consumes · operates_on · calls</li>
-</ul></div>
+<div class="legend"><div class="legend-item"><span class="legend-dot asset"></span> 资源文件 (Asset)</div>
+<div class="legend-item"><span class="legend-dot stage"></span> 加载阶段 (Stage)</div>
+<div class="legend-item"><span class="legend-dot check"></span> 验证点 (Check)</div>
+<div class="legend-item"><span class="legend-dot consumer"></span> 消费者 (Consumer)</div>
+<div class="legend-item"><span class="legend-dot ext"></span> 外部依赖 (External)</div></div>
 
-<div class="card"><h3>🔗 场景内关联</h3><ul>
-<li>CDN 加载链路 (架构图) → 5 步加载流程: Google Fonts → shared.css → theme.css/mono → shared.js → 可交互</li>
-<li>设计令牌 (审查) → 14 个 :root CSS 变量被所有组件引用</li>
-<li>JS API (测试面板) → 9 个公共方法通过 IIFE 暴露为 window.YrY</li>
-</ul></div>
+<div class="graph-container"><div id="cy"></div></div>
 
-<div class="mono-footer" style="text-align:center;padding:1rem;color:#475569;font-size:.75rem">YrY v4.7.0 · cdn · 场景-1 知识图谱</div>
-</div><script src="../../../../../cdn/shared.js"></script></body></html>
+<div class="cards"><div class="card"><div class="card-header"><span class="card-dot asset"></span><h3>资源文件 — 5 CSS + 1 JS + 4 woff2</h3></div><ul><li>shared.css — Reset · 6 动画 · 面包屑 · 导航 · Toast (94行, 5.9KB)</li><li>theme.css — System 主题 · 14 组件 (224行, 11.3KB)</li><li>theme-mono.css — Mono 主题 · 7 组件 (108行, 6.1KB)</li><li>shared.js — YrY IIFE · 9 API (100行, 5.1KB)</li><li>fonts.css + 4 woff2 — 自托管 JetBrains Mono (86KB)</li></ul></div>
+<div class="card"><div class="card-header"><span class="card-dot stage"></span><h3>5 步加载阶段</h3></div><ul><li>① 字体预加载 — @font-face 声明尽早下载</li><li>② CSS Reset — border-box + 基础排版</li><li>③ 主题 CSS — :root 变量注入 + 组件样式</li><li>④ JS 就绪 — YrY IIFE 执行完成</li><li>⑤ 可交互 — 事件委托绑定 · Toast 可用</li></ul></div>
+<div class="card"><div class="card-header"><span class="card-dot check"></span><h3>3 类验证点</h3></div><ul><li>HTTP 200 — 所有资源可达无 404</li><li>加载顺序 — shared.css 先于 theme.css</li><li>Content-Type — text/css / application/javascript</li></ul></div>
+<div class="card"><div class="card-header"><span class="card-dot consumer"></span><h3>消费者 — 按 Cat 分叉</h3></div><ul><li>Cat A (架构图·知识图谱): fonts.css → shared.css → theme-mono.css → shared.js</li><li>Cat B (审查·测试·演示·计划): shared.css → theme.css → shared.js</li><li>浏览器缓存使页面间资源瞬间可用</li></ul></div></div>
+
+<div class="footer">🧩 yry-cdn 知识图谱 · 场景 1 · CDN 资源加载与页面渲染 · Powered by Cytoscape.js</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+var cy=cytoscape({container:document.getElementById('cy'),
+style:[{selector:'node',style:{'background-color':'#1e293b','label':'data(label)','color':'#e2e8f0','font-size':'10px','font-family':'JetBrains Mono,monospace','text-valign':'center','text-halign':'center','border-width':2,'width':95,'height':38,'shape':'roundrectangle','text-wrap':'wrap','text-max-width':'90px'}},
+{selector:'node[type="asset"]',style:{'background-color':'rgba(236,72,153,.2)','border-color':'#EC4899','width':115,'height':44}},
+{selector:'node[type="stage"]',style:{'background-color':'rgba(52,211,153,.2)','border-color':'#34d399'}},
+{selector:'node[type="check"]',style:{'background-color':'rgba(59,130,246,.2)','border-color':'#3B82F6','width':85,'height':34}},
+{selector:'node[type="consumer"]',style:{'background-color':'rgba(34,211,238,.2)','border-color':'#22d3ee','width':110,'height':42}},
+{selector:'node[type="ext"]',style:{'background-color':'rgba(245,158,11,.2)','border-color':'#f59e0b'}},
+{selector:'edge',style:{'curve-style':'bezier','line-color':'#475569','target-arrow-color':'#475569','target-arrow-shape':'triangle','width':1.5,'arrow-scale':1}},
+{selector:'edge[relation="contains"]',style:{'line-color':'#8B5CF6','target-arrow-color':'#8B5CF6','line-style':'dashed'}},
+{selector:'edge[relation="depends_on"]',style:{'line-color':'#34d399','target-arrow-color':'#34d399'}},
+{selector:'edge[relation="consumes"]',style:{'line-color':'#3B82F6','target-arrow-color':'#3B82F6','width':2}},
+{selector:'edge[relation="next"]',style:{'line-color':'#f59e0b','target-arrow-color':'#f59e0b','line-style':'dashed'}}],
+elements:{nodes:[
+{data:{id:'story',label:'Story\nyry-cdn',type:'asset'}},
+{data:{id:'scene1',label:'场景 1\nCDN加载链路',type:'asset'}},
+{data:{id:'shared-css',label:'shared.css\n5.9KB',type:'asset'}},
+{data:{id:'shared-js',label:'shared.js\n5.1KB',type:'asset'}},
+{data:{id:'theme-css',label:'theme.css\n11.3KB',type:'asset'}},
+{data:{id:'mono-css',label:'theme-mono.css\n6.1KB',type:'asset'}},
+{data:{id:'fonts-css',label:'fonts.css\n0.8KB',type:'asset'}},
+{data:{id:'woff2',label:'fonts/\n4 woff2',type:'ext'}},
+{data:{id:'google-fonts',label:'Google\nFonts',type:'ext'}},
+{data:{id:'npm-pkg',label:'npm 包\nyry-cdn',type:'consumer'}},
+{data:{id:'stage1',label:'① 字体\n预加载',type:'stage'}},
+{data:{id:'stage2',label:'② CSS\nReset',type:'stage'}},
+{data:{id:'stage3',label:'③ 主题\nCSS',type:'stage'}},
+{data:{id:'stage4',label:'④ JS\n就绪',type:'stage'}},
+{data:{id:'stage5',label:'⑤ 页面\n可交互',type:'stage'}},
+{data:{id:'check-200',label:'HTTP 200\n验证',type:'check'}},
+{data:{id:'check-order',label:'加载顺序\n验证',type:'check'}},
+{data:{id:'check-ct',label:'Content-Type\n验证',type:'check'}},
+{data:{id:'cat-a',label:'Cat A\n架构·图谱',type:'consumer'}},
+{data:{id:'cat-b',label:'Cat B\n审查·测试·演示',type:'consumer'}},
+{data:{id:'http',label:'HTTP\n协议',type:'ext'}}
+],edges:[
+{data:{source:'story',target:'scene1',relation:'contains'}},
+{data:{source:'scene1',target:'shared-css',relation:'contains'}},
+{data:{source:'scene1',target:'shared-js',relation:'contains'}},
+{data:{source:'scene1',target:'theme-css',relation:'contains'}},
+{data:{source:'scene1',target:'mono-css',relation:'contains'}},
+{data:{source:'scene1',target:'fonts-css',relation:'contains'}},
+{data:{source:'fonts-css',target:'woff2',relation:'depends_on'}},
+{data:{source:'fonts-css',target:'google-fonts',relation:'next'}},
+{data:{source:'stage1',target:'fonts-css',relation:'consumes'}},
+{data:{source:'stage2',target:'shared-css',relation:'consumes'}},
+{data:{source:'stage3',target:'theme-css',relation:'consumes'}},
+{data:{source:'stage3',target:'mono-css',relation:'consumes'}},
+{data:{source:'stage4',target:'shared-js',relation:'consumes'}},
+{data:{source:'stage1',target:'stage2',relation:'next'}},
+{data:{source:'stage2',target:'stage3',relation:'next'}},
+{data:{source:'stage3',target:'stage4',relation:'next'}},
+{data:{source:'stage4',target:'stage5',relation:'next'}},
+{data:{source:'check-200',target:'http',relation:'depends_on'}},
+{data:{source:'check-order',target:'stage2',relation:'depends_on'}},
+{data:{source:'check-ct',target:'shared-css',relation:'depends_on'}},
+{data:{source:'cat-a',target:'mono-css',relation:'consumes'}},
+{data:{source:'cat-a',target:'fonts-css',relation:'consumes'}},
+{data:{source:'cat-a',target:'shared-css',relation:'consumes'}},
+{data:{source:'cat-b',target:'theme-css',relation:'consumes'}},
+{data:{source:'cat-b',target:'shared-css',relation:'consumes'}},
+{data:{source:'shared-css',target:'npm-pkg',relation:'depends_on'}},
+{data:{source:'shared-js',target:'npm-pkg',relation:'depends_on'}},
+{data:{source:'theme-css',target:'npm-pkg',relation:'depends_on'}},
+{data:{source:'mono-css',target:'npm-pkg',relation:'depends_on'}}
+]},
+layout:{name:'breadthfirst',directed:true,spacingFactor:1.15,roots:'[id="story"]'},
+minZoom:0.5,maxZoom:2});
+cy.fit(cy.elements(),50);
+cy.on('tap','node',function(evt){const node=evt.target;const hood=node.closedNeighborhood();cy.elements().style('opacity',0.15);hood.style('opacity',1);node.style('opacity',1)});
+cy.on('tap',function(evt){if(evt.target===cy)cy.elements().style('opacity',0.85)});
+});
+async function copyAsImage(btn){const orig=btn.textContent;try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),blob=await new Promise(r=>canvas.toBlob(r,'image/png'));await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);btn.textContent='✓ Copied!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+async function downloadPNG(btn){const orig=btn.textContent;btn.textContent='⏳...';try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),link=document.createElement('a');link.download='知识图谱-CDN加载链路.png';link.href=canvas.toDataURL('image/png');link.click();btn.textContent='✓ Done!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+async function downloadPDF(btn){const orig=btn.textContent;btn.textContent='⏳...';try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),imgData=canvas.toDataURL('image/png');const{jsPDF}=window.jspdf,orientation=canvas.width>canvas.height?'landscape':'portrait',pdf=new jsPDF({orientation,unit:'px',format:[canvas.width,canvas.height],hotfixes:['px_scaling']});pdf.addImage(imgData,'PNG',0,0,canvas.width,canvas.height);pdf.save('知识图谱-CDN加载链路.pdf');btn.textContent='✓ Done!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+</script>
+</body></html>

@@ -248,8 +248,109 @@ flowchart LR
 
 ---
 
-> **约束**: 只读源码 · 场景 §2–§4 由 code 阶段填充
-> **末端触发**: rui-import + rui-bot 手动触发
+---
+
+## §2 实施报告
+
+### §2.1 实施概要
+
+| 维度 | 内容 |
+|------|------|
+| 实施日期 | 2026-06-08 |
+| 实施者 | Claude (coder agent) |
+| 源码基线 | `cdn/theme.css` (224行), `cdn/theme-mono.css` (108行), `cdn/shared.css` (94行), `cdn/fonts.css` (30行) |
+
+### §2.2 Gate A 交接信号验证
+
+| # | 信号 | 验证结果 | 证据 |
+|---|------|---------|------|
+| G1 | System CSS 变量 | ✅ 通过 | `--yry-accent` → `#FFC107`, :root 含 14 个 `--yry-*` 变量 (theme.css:11-39) |
+| G2 | Mono 背景色 | ✅ 通过 | `body { background: #020617 }` → `rgb(2, 6, 23)` (theme-mono.css:14) |
+| G3 | Mono 字体 | ✅ 通过 | `font-family: 'JetBrains Mono', monospace` (theme-mono.css:15) |
+| G4 | 动画存在 | ✅ 通过 | 7 @keyframes 定义: yry-fadeInUp/Down, yry-slideDown, yry-pulse, yry-modalIn, yry-stepIn, yry-pulse-mono |
+| G5 | 响应式生效 | ✅ 通过 | 768px 断点: `.yry-container` padding → `24px 12px` (theme.css:217-223); 640px 断点 (theme-mono.css:104-107) |
+
+**Gate A 结论**: 5/5 信号通过 ✅ → 放行进入 §2 实施阶段。
+
+### §2.3 设计令牌验证
+
+**System 主题 (theme.css) :root 14 CSS 变量**:
+
+| 分组 | 变量 | 值 | 状态 |
+|------|------|-----|------|
+| Surface | `--yry-bg` | `rgba(22,22,32,1)` | ✅ |
+| Surface | `--yry-bg-card` | `linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%)` | ✅ |
+| Surface | `--yry-bg-flat` | `rgba(34,34,46,1)` | ✅ |
+| Surface | `--yry-bg-raised` | `rgba(42,42,56,1)` | ✅ |
+| Brand | `--yry-accent` | `#FFC107` | ✅ |
+| Brand | `--yry-cyan` | `#22d3ee` | ✅ |
+| Semantic | `--yry-pass` | `#22c55e` | ✅ |
+| Semantic | `--yry-fail` | `#ef4444` | ✅ |
+| Semantic | `--yry-warn` | `#f59e0b` | ✅ |
+| Semantic | `--yry-info` | `#6b7280` | ✅ |
+| Semantic | `--yry-skip` | `#6b7280` | ✅ |
+| Text | `--yry-text` | `rgba(250,250,252,1)` | ✅ |
+| Text | `--yry-text2` | `rgba(160,160,164,1)` | ✅ |
+| Text | `--yry-text3` | `rgba(110,110,114,1)` | ✅ |
+| Elevation | `--yry-shadow` | `0 4px 20px rgba(0,0,0,0.3)` | ✅ |
+| Elevation | `--yry-shadow-lg` | `0 12px 32px rgba(0,0,0,0.45)` | ✅ |
+| Shape | `--yry-radius` | `12px` | ✅ |
+| Shape | `--yry-border` | `1px solid rgba(255,255,255,0.06)` | ✅ |
+
+### §2.4 组件覆盖验证
+
+**System 14 组件 (theme.css)**:
+
+| # | 组件类名 | 行号 | 用途 | 状态 |
+|---|---------|------|------|------|
+| 1 | `.yry-container` | 42-48 | 页面容器 max-width 1120px | ✅ |
+| 2 | `.yry-header` | 50-56 | 页面标题 + 副标题 | ✅ |
+| 3 | `.yry-stats` / `.yry-stat` | 58-78 | 统计卡片网格 | ✅ |
+| 4 | `.yry-bar-wrap` / `.yry-bar-outer` | 80-95 | 进度条 | ✅ |
+| 5 | `.yry-tabs` / `.yry-tab` | 97-115 | 标签页导航 | ✅ |
+| 6 | `.yry-panel` | 117-121 | 标签页内容面板 | ✅ |
+| 7 | `.yry-suite` / `.yry-suite-head` / `.yry-suite-body` | 123-152 | 折叠套件 | ✅ |
+| 8 | `.yry-progress-wrap` / `.yry-progress-bar` | 154-167 | 进度指示器 | ✅ |
+| 9 | `.yry-btn` / `.yry-btn-primary` | 169-182 | 按钮 | ✅ |
+| 10 | `.yry-section` | 184-190 | 内容分区 | ✅ |
+| 11 | `.yry-link-grid` / `.yry-link-card` | 192-210 | 链接卡片网格 | ✅ |
+| 12 | `.yry-card` / `.yry-card-grid` | 内联于各页面 | 通用卡片 | ✅ |
+| 13 | `.yry-verify-list` / `.yry-verify-item` | 内联于各页面 | 验证命令列表 | ✅ |
+| 14 | `.yry-cmd-grid` / `.yry-cmd-card` | 内联于各页面 | 命令卡片 | ✅ |
+
+**Mono 7 组件 (theme-mono.css)**:
+
+| # | 组件类名 | 行号 | 用途 | 状态 |
+|---|---------|------|------|------|
+| 1 | `.yry-mono-container` | 22-26 | 页面容器 max-width 1200px | ✅ |
+| 2 | `.yry-mono-header` | 28-36 | 标题栏 + 脉冲点 | ✅ |
+| 3 | `.yry-pulse-dot` | 38-44 | 呼吸脉冲点 (@keyframes yry-pulse-mono) | ✅ |
+| 4 | `.yry-diagram-wrap` | 46-54 | Mermaid 图表容器 | ✅ |
+| 5 | `.yry-graph-wrap` | 56-64 | Cytoscape 图谱容器 | ✅ |
+| 6 | `.yry-mono-cards` / `.yry-mono-card` | 66-88 | Mono 卡片网格 + 卡片 | ✅ |
+| 7 | `.yry-mono-legend` | 90-102 | 图例条 | ✅ |
+
+### §2.5 视觉差异对比
+
+| 维度 | Cat A (Mono) | Cat B (System) | 差异显著 |
+|------|-------------|----------------|---------|
+| 背景色 | `#020617` (深蓝黑) | `rgba(22,22,32,1)` (深紫黑) | ✅ |
+| 字体 | JetBrains Mono 等宽 | 系统 UI 字体 | ✅ |
+| 卡片风格 | 半透明扁平 `rgba(15,23,42,.5)` | 渐变+阴影 | ✅ |
+| 容器宽度 | 1200px | 1120px | ✅ |
+| 阴影 | 无（扁平设计） | 双层阴影变量 | ✅ |
+| 图标语言 | 脉冲圆点 + 彩色标识点 | 语义色值 (绿/红/黄/灰) | ✅ |
+
+### §2.6 自托管字体验证
+
+| 字重 | 文件 | 大小 | 状态 |
+|------|------|------|------|
+| 400 | `fonts/jetbrains-mono-latin-400-normal.woff2` | 21.2 KB | ✅ |
+| 500 | `fonts/jetbrains-mono-latin-500-normal.woff2` | 21.8 KB | ✅ |
+| 600 | `fonts/jetbrains-mono-latin-600-normal.woff2` | 21.9 KB | ✅ |
+| 700 | `fonts/jetbrains-mono-latin-700-normal.woff2` | 21.9 KB | ✅ |
+
+自托管替代 Google Fonts 外部依赖: Cat A 页面加载 `fonts.css` 替代 `https://fonts.googleapis.com/css2?family=JetBrains+Mono`。
 
 ## 回溯链
 

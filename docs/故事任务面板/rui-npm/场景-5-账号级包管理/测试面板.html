@@ -86,7 +86,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .toast.show{opacity:1}
 .slow-warn{font-size:.64rem;color:var(--warn);margin-left:4px}
 .gate-lines{font-size:.78rem;color:var(--text2);line-height:1.9}
-.gate-lines .ok{color:var(--pass)}.gate-lines .warn{color:var(--warn)}
+.gate-lines .ok{color:var(--pass)}.gate-lines .warn{color:var(--warn)}.gate-lines .pending{color:var(--skip)}
 .card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow);animation:fadeInUp .4s ease both}
 .card h2{font-size:.92rem;margin-bottom:14px;color:var(--cyan);font-weight:600}
 @media(max-width:640px){.container{padding:24px 12px 60px}.header h1{font-size:1.5rem}.stats-grid{gap:6px}.stat-card{padding:12px 14px;min-width:65px}.stat-card .val{font-size:1.3rem}.search-wrap{max-width:100%}}
@@ -142,7 +142,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 </nav>
   <div class="header">
     <h1>🧪 <span class="accent">账号级包管理 · 测试面板</span></h1>
-    <p class="sub">FP5/FP6/FP9 覆盖 · 10 测试用例 · tests/skills/rui-npm.test.mjs · §- 场景</p>
+    <p class="sub">FP5/FP6/FP9/FP10 覆盖 · 14 测试用例 · login · my-packages · deprecate · unpublish</p>
   </div>
 
   <div class="stats-grid" id="statsRow"></div>
@@ -163,7 +163,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     <button class="tab"    id="tabNormal"   onclick="switchPanel('normal')"   >✅ 正常路径<span class="tab-kbd">3</span></button>
     <button class="tab"    id="tabBoundary" onclick="switchPanel('boundary')" >⚠️ 边界/异常<span class="tab-kbd">4</span></button>
     <button class="tab"    id="tabSlow"     onclick="switchPanel('slow')"     >🐢 慢测试<span class="tab-kbd">5</span></button>
-    <button class="tab"    id="tabPerf"     onclick="switchPanel('perf')"     >📈 性能测试<span class="tab-kbd">6</span></button>
+    <button class="tab"    id="tabPerf"     onclick="switchPanel('perf')"     >📈 性能趋势<span class="tab-kbd">6</span></button>
     <button class="tab"    id="tabGate"     onclick="switchPanel('gate')"     >🚦 门禁<span class="tab-kbd">7</span></button>
   </div>
 
@@ -174,11 +174,11 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   <div class="panel" id="panelSlow"><div id="slowContent"></div></div>
   <div class="panel" id="panelPerf"><div id="perfContent"></div></div>
   <div class="panel" id="panelGate">
-    <div class="card"><h2>🚦 Gate A — 测试设计门禁</h2><div class="gate-lines"><span class="ok">✅ test_design_exists: true</span><br><span class="ok">✅ test_case_count: 11 (正常 5 + 边界 6)</span><br><span class="ok">✅ fp_coverage: FP5, FP6, FP9 — my-packages · deprecate · unpublish 同时清理 node_modules + package.json</span></div></div>
-    <div class="card"><h2>🚦 Gate B — 执行门禁</h2><div class="gate-lines"><span class="ok">✅ 全部通过 (7/7)</span><br><span class="ok">✅ 正常路径: 5/5 passed</span><br><span class="ok">✅ 边界/异常: 2/2 passed</span><br><span class="ok">✅ 耗时: 308ms (慢阈值 500ms)</span><br><span class="warn">⚠️ audit 网络 I/O 耗时 180ms，注册表延迟不可控</span></div></div>
+    <div class="card"><h2>🚦 Gate A — 测试设计门禁</h2><div class="gate-lines"><span class="ok">✅ test_design_exists: true</span><br><span class="ok">✅ test_case_count: 14 (正常路径 6 + 边界/异常 8)</span><br><span class="ok">✅ fp_coverage: FP5 (my-packages) · FP6 (deprecate) · FP9 (unpublish) · FP10 (login)</span><br><span class="ok">✅ 测试设计覆盖: 认证门禁 · 所有权验证 · API 降级 · 安全警告 · 参数校验 · --json/--limit/--force 标志</span></div></div>
+    <div class="card"><h2>🚦 Gate B — 执行门禁</h2><div class="gate-lines"><span class="pending">⏳ 待执行 — 测试用例已设计，尚未集成到 tests/skills/rui-npm.test.mjs</span><br><span class="pending">⏳ 目标: 14/14 passed · 正常 6/6 · 边界 8/8</span><br><span class="warn">⚠️ 阻塞: 场景 5 测试用例需新增到测试文件 §5 节</span><br><span class="ok">✅ 测试设计审查通过 — login/my-packages/deprecate/unpublish 四命令全覆盖</span></div></div>
   </div>
 
-  <div class="footer-note">🧪 rui-npm 测试面板 · 场景 5/5 · 账号级包管理 · 生成于 2026-06-06</div>
+  <div class="footer-note">🧪 rui-npm 测试面板 · 场景 5/5 · 账号级包管理 · 生成于 2026-06-08</div>
 </div>
 
 <div class="modal-overlay" id="modalOverlay"><div class="modal"><div class="m-head"><span class="m-title" id="modalTitle"></span><button class="m-close" onclick="closeModal()">✕</button></div><div class="m-body" id="modalBody"></div></div></div>
@@ -201,9 +201,9 @@ var PANELS={
 };
 
 /* ═══ Embedded data ═══ */
-var manifest={"files":[{"name":"rui-npm.test.mjs","path":"tests/skills/rui-npm.test.mjs","cat":"skills","lines":785,"size":24000,"desc":"rui-npm 全场景测试 — search/install/update/list/my-packages · deprecate · unpublish/publish/npx","resultKey":"rui-npm 测试"},{"name":"rui-npm.mjs","path":"skills/rui-npm/rui-npm.mjs","cat":"skills","lines":604,"size":22711,"desc":"rui-npm 主入口 — 命令路由与业务逻辑","resultKey":"rui-npm 源码"},{"name":"help.mjs","path":"skills/rui-npm/help.mjs","cat":"lib","lines":143,"size":8652,"desc":"帮助信息输出 — usage 文本与示例","resultKey":"帮助模块"}]};
-var results={"summary":{"total":17,"passed":17,"failed":0,"skipped":0,"durationMs":3500,"timestamp":"2026-06-06T10:45:00.000Z"},"suites":[{"name":"场景 5-账号级包管理","tests":[{"name":"TC4.1 my-packages · deprecate · unpublish 无 package.json 错误提示","status":"passed","duration":10}]}]};
-var perfData=[{"name":"info react","duration":28,"trend":"down"},{"name":"uninstall lodash","duration":35,"trend":"down"},{"name":"audit","duration":180,"trend":"up"},{"name":"info --json","duration":22,"trend":"down"},{"name":"audit 无漏洞","duration":15,"trend":"down"}];
+var manifest={"files":[{"name":"rui-npm.test.mjs","path":"tests/skills/rui-npm.test.mjs","cat":"skills","lines":817,"size":24800,"desc":"rui-npm 全场景测试 — 场景 5 节待新增: login/my-packages/deprecate/unpublish","resultKey":"rui-npm 测试"},{"name":"rui-npm.mjs","path":"skills/rui-npm/rui-npm.mjs","cat":"skills","lines":884,"size":31000,"desc":"rui-npm 主入口 — cmdLogin/cmdMyPackages/cmdDeprecate/cmdUnpublish + verifyOwnership","resultKey":"rui-npm 源码"},{"name":"help.mjs","path":"skills/rui-npm/help.mjs","cat":"lib","lines":143,"size":8652,"desc":"帮助信息输出 — 场景 5 示例: my-packages/deprecate/unpublish/login","resultKey":"帮助模块"}]};
+var results={"summary":{"total":14,"passed":0,"failed":0,"skipped":14,"durationMs":0,"timestamp":"2026-06-08T00:00:00.000Z"},"suites":[{"name":"场景 5-账号级包管理","tests":[{"name":"TC-N5.1 login --token <valid> — 配置认证 + npm whoami 验证","status":"skipped","duration":0},{"name":"TC-N5.2 my-packages — 表格输出: 名称/描述/版本/周下载量 降序","status":"skipped","duration":0},{"name":"TC-N5.3 my-packages --json — 机器可读 JSON 输出","status":"skipped","duration":0},{"name":"TC-N5.4 my-packages --limit 5 — 限制返回数量","status":"skipped","duration":0},{"name":"TC-N5.5 deprecate pkg@version \"msg\" — 所有权验证 + 废弃标记","status":"skipped","duration":0},{"name":"TC-N5.6 unpublish pkg@version — 安全警告 + 所有权验证 + 删除","status":"skipped","duration":0},{"name":"TC-B5.1 login 无 --token — 错误提示 + usage","status":"skipped","duration":0},{"name":"TC-B5.2 login --token 短于 20 字符 — 格式校验拒绝","status":"skipped","duration":0},{"name":"TC-B5.3 my-packages 未认证 — 引导先执行 login","status":"skipped","duration":0},{"name":"TC-B5.4 my-packages API 不可达 — 降级 npm access ls-packages","status":"skipped","duration":0},{"name":"TC-B5.5 deprecate 非所有者 — 拒绝 + 展示维护者列表","status":"skipped","duration":0},{"name":"TC-B5.6 deprecate 缺少版本参数 — usage 错误提示","status":"skipped","duration":0},{"name":"TC-B5.7 unpublish 非所有者 — 拒绝 + 展示维护者列表","status":"skipped","duration":0},{"name":"TC-B5.8 unpublish --force — 跳过 72h 冷却限制","status":"skipped","duration":0}]}]};
+var perfData=[];
 
 /* ═══ Tab switching ═══ */
 function switchPanel(name){
@@ -240,10 +240,10 @@ function renderStats(){
   var s=results.summary,t=s.total||0,p=s.passed||0,f=s.failed||0,sk=s.skipped||0;
   var dur=results.durationMs?fmtDur(results.durationMs):'--';
   var passPct=t>0?(p/t*100).toFixed(1):'0';
-  document.getElementById('statsRow').innerHTML='<div class="stat-card" onclick="filterByStatus(\'all\')" id="statAll"><div class="val t">'+t+'</div><div class="lbl">总计断言</div></div><div class="stat-card" onclick="filterByStatus(\'passed\')" id="statPassed"><div class="val p">'+p+'</div><div class="lbl">✅ 通过 · '+passPct+'%</div></div><div class="stat-card" onclick="filterByStatus(\'failed\')" id="statFailed"><div class="val f">'+f+'</div><div class="lbl">❌ 失败</div></div><div class="stat-card" onclick="filterByStatus(\'skipped\')" id="statSkipped"><div class="val s">'+sk+'</div><div class="lbl">⏭️ 跳过</div></div><div class="stat-card"><div class="val d">'+dur+'</div><div class="lbl">⏱ 耗时</div></div>';
+  document.getElementById('statsRow').innerHTML='<div class="stat-card" onclick="filterByStatus(\'all\')" id="statAll"><div class="val t">'+t+'</div><div class="lbl">设计用例</div></div><div class="stat-card" onclick="filterByStatus(\'passed\')" id="statPassed"><div class="val p">'+p+'</div><div class="lbl">✅ 通过 · '+passPct+'%</div></div><div class="stat-card" onclick="filterByStatus(\'failed\')" id="statFailed"><div class="val f">'+f+'</div><div class="lbl">❌ 失败</div></div><div class="stat-card" onclick="filterByStatus(\'skipped\')" id="statSkipped"><div class="val s">'+sk+'</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val d">'+dur+'</div><div class="lbl">⏱ 耗时</div></div>';
   var pp=t>0?(p/t*100):0,fp=t>0?(f/t*100):0,sp=t>0?(sk/t*100):0;
   document.getElementById('bar').innerHTML='<div class="seg p" style="width:'+pp+'%"></div><div class="seg f" style="width:'+fp+'%"></div><div class="seg s" style="width:'+sp+'%"></div>';
-  var ns=document.getElementById('navStatus');if(ns)ns.textContent='🧪 测试 · '+p+'/'+t+' 通过'
+  var ns=document.getElementById('navStatus');if(ns)ns.textContent='🧪 测试 · '+p+'/'+t+' 通过 · ⏳ 待执行'
 }
 
 /* ═══ Files panel ═══ */
@@ -260,7 +260,7 @@ function renderFiles(){
     for(var j=0;j<files.length;j++){var f=files[j];if(fileQuery&&!f.name.toLowerCase().includes(fileQuery)&&!f.path.toLowerCase().includes(fileQuery)&&!(f.desc&&f.desc.toLowerCase().includes(fileQuery)))continue;
       var rKey=f.resultKey,r=rKey?resultMap[rKey]:null,badge='';
       if(r&&r.total>0)badge=r.failed>0?'<span class="fc-badge fail">❌ '+r.failed+'/'+r.total+'</span>':'<span class="fc-badge pass">✅ '+r.passed+'/'+r.total+'</span>';
-      else if(f.name.endsWith('.test.mjs'))badge='<span class="fc-badge none">未执行</span>';
+      else if(f.name.endsWith('.test.mjs'))badge='<span class="fc-badge none">待新增 §5</span>';
       html+='<div class="file-card" onclick="viewSource(\''+esc(f.path)+'\')" title="点击查看源码"><span class="fc-icon">'+(f.cat==='lib'?'📦':'📄')+'</span><div class="fc-body"><div class="fc-name">'+esc(f.name)+' '+badge+'</div><div class="fc-path">'+esc(f.path)+'</div>'+(f.desc?'<div class="fc-desc">'+esc(f.desc)+'</div>':'')+'<div class="fc-meta"><span>📏 '+f.lines+' 行</span><span>📦 '+(f.size/1024).toFixed(2)+'KB</span>'+(r?'<span>🧪 '+r.total+' 断言</span>':'')+'</div></div></div>'}
     html+='</div></div>'}
   container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配文件</h3></div>'
@@ -277,10 +277,10 @@ function renderResults(){
     if(resultQuery){var mn=name.toLowerCase().includes(resultQuery),mt=r.tests.some(function(t){return t.name.toLowerCase().includes(resultQuery)||(t.error&&t.error.toLowerCase().includes(resultQuery))});if(!mn&&!mt)continue}
     var hasFail=r.failed>0,tests=r.tests;if(sortByDur)tests=[].concat(tests).sort(function(a,b){return(b.duration||0)-(a.duration||0)});
     var maxDur=Math.max.apply(null,tests.map(function(t){return t.duration||0}).concat([1]));
-    html+='<div class="suite'+(hasFail?' open':'')+'"><div class="s-head" onclick="toggleSuite(this)"><span class="s-arrow">▶</span><span class="s-name">🧪 '+esc(name)+'</span><span class="s-meta">'+(r.passed>0?'<span class="sm p">✅ '+r.passed+'</span>':'')+(r.failed>0?'<span class="sm f">❌ '+r.failed+'</span>':'')+(r.skipped>0?'<span class="sm" style="color:var(--skip)">⏭️ '+r.skipped+'</span>':'')+'</span></div><div class="s-body">';
+    html+='<div class="suite'+(hasFail?' open':'')+'"><div class="s-head" onclick="toggleSuite(this)"><span class="s-arrow">▶</span><span class="s-name">🧪 '+esc(name)+'</span><span class="s-meta">'+(r.passed>0?'<span class="sm p">✅ '+r.passed+'</span>':'')+(r.failed>0?'<span class="sm f">❌ '+r.failed+'</span>':'')+(r.skipped>0?'<span class="sm" style="color:var(--skip)">⏳ '+r.skipped+'</span>':'')+'</span></div><div class="s-body">';
     for(var j=0;j<tests.length;j++){var t=tests[j];if(statusFilter&&t.status!==statusFilter)continue;if(resultQuery&&!t.name.toLowerCase().includes(resultQuery)&&!(t.error&&t.error.toLowerCase().includes(resultQuery)))continue;
       var durMs=t.duration||0,barPct=maxDur>0?Math.round(durMs/maxDur*100):0,durClass=durMs>500?'very-slow':durMs>SLOW_THRESHOLD?'slow':'';
-      html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'" onclick="copyTestName(\''+esc(t.name)+'\')" title="点击复制测试名"><span class="t-icon">'+(t.status==='passed'?'✅':t.status==='failed'?'❌':t.status==='skipped'?'⏭️':'⬜')+'</span><span class="t-name">'+esc(t.name)+'</span>'+(t.error?'<span class="t-err" title="'+esc(t.error)+'">'+esc(t.error)+'</span>':'')+'<span class="t-dur '+durClass+'"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(t.duration)+(durMs>SLOW_THRESHOLD?'<span class="slow-warn">🐢</span>':'')+'</span></div>'}
+      html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'" onclick="copyTestName(\''+esc(t.name)+'\')" title="点击复制测试名"><span class="t-icon">'+(t.status==='passed'?'✅':t.status==='failed'?'❌':t.status==='skipped'?'⏳':'⬜')+'</span><span class="t-name">'+esc(t.name)+'</span>'+(t.error?'<span class="t-err" title="'+esc(t.error)+'">'+esc(t.error)+'</span>':'')+'<span class="t-dur '+durClass+'"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(t.duration)+(durMs>SLOW_THRESHOLD?'<span class="slow-warn">🐢</span>':'')+'</span></div>'}
     html+='</div></div>'}
   container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配结果</h3></div>'
 }
@@ -290,43 +290,37 @@ function toggleSuite(headEl){var suite=headEl.closest('.suite');if(suite)suite.c
 /* ═══ Normal / Boundary / Slow / Perf panels ═══ */
 function renderNormal(){
   var container=document.getElementById('normalContent');
-  var html='<div class="card"><h2>✅ 正常路径 (5)</h2><table class="test-table"><thead><tr><th>TC#</th><th>Given</th><th>When</th><th>Then</th><th>覆盖</th><th>优先级</th></tr></thead><tbody>';
-  html+='<tr><td>TC-N4.1</td><td>npm registry 可达</td><td><code>info react</code></td><td>输出 react 版本/许可证/维护者/仓库链接/最近版本</td><td>FP5</td><td><span class="badge p0">P0</span></td></tr>';
-  html+='<tr><td>TC-N4.2</td><td>有 package.json, 已安装 lodash</td><td><code>uninstall lodash</code></td><td>lodash 从 node_modules 和 package.json 移除</td><td>FP6</td><td><span class="badge p0">P0</span></td></tr>';
-  html+='<tr><td>TC-N4.3</td><td>有 package.json, 有已安装依赖</td><td><code>audit</code></td><td>漏洞摘要表，按 critical/high/moderate/low 分组</td><td>FP9</td><td><span class="badge p0">P0</span></td></tr>';
-  html+='<tr><td>TC-N4.4</td><td>npm registry 可达</td><td><code>info react --json</code></td><td>JSON 格式完整元数据</td><td>FP5</td><td><span class="badge p1">P1</span></td></tr>';
-  html+='<tr><td>TC-N4.5</td><td>有 package.json, 无已知漏洞</td><td><code>audit</code></td><td>输出"✅ 未发现已知漏洞"</td><td>FP9</td><td><span class="badge p1">P1</span></td></tr>';
+  var html='<div class="card"><h2>✅ 正常路径 (6)</h2><p style="font-size:.78rem;color:var(--text3);margin-bottom:12px">覆盖: login 认证配置 · my-packages 资产列表 · deprecate 安全废弃 · unpublish 精确删除</p><table class="test-table"><thead><tr><th>TC#</th><th>Given</th><th>When</th><th>Then</th><th>覆盖</th><th>优先级</th></tr></thead><tbody>';
+  html+='<tr><td>TC-N5.1</td><td>有效的 npm access token</td><td><code>login --token &lt;token&gt;</code></td><td>token 写入 ~/.npmrc, npm whoami 验证成功</td><td>FP10</td><td><span class="badge p0">P0</span></td></tr>';
+  html+='<tr><td>TC-N5.2</td><td>已认证, 账号下有包</td><td><code>my-packages</code></td><td>表格输出: 名称/描述/最新版本/周下载量 按下载量降序</td><td>FP5</td><td><span class="badge p0">P0</span></td></tr>';
+  html+='<tr><td>TC-N5.3</td><td>已认证, 账号下有包</td><td><code>my-packages --json</code></td><td>合法 JSON 数组, 每个包含 name/description/version/downloads</td><td>FP5</td><td><span class="badge p1">P1</span></td></tr>';
+  html+='<tr><td>TC-N5.4</td><td>已认证, 账号下有 10+ 包</td><td><code>my-packages --limit 5</code></td><td>仅返回前 5 条, 按下载量降序</td><td>FP5</td><td><span class="badge p1">P1</span></td></tr>';
+  html+='<tr><td>TC-N5.5</td><td>已认证, 是目标包所有者</td><td><code>deprecate my-util@1.0.0 "Use 2.0.0"</code></td><td>所有权验证通过 → npm deprecate 执行 → npm 页面链接输出</td><td>FP6</td><td><span class="badge p0">P0</span></td></tr>';
+  html+='<tr><td>TC-N5.6</td><td>已认证, 是目标包所有者</td><td><code>unpublish my-util@1.0.0</code></td><td>安全警告展示 → 所有权验证通过 → 确认后删除 → 不可逆提醒</td><td>FP9</td><td><span class="badge p0">P0</span></td></tr>';
   html+='</tbody></table></div>';
   container.innerHTML=html}
 
 function renderBoundary(){
   var container=document.getElementById('boundaryContent');
-  var html='<div class="card"><h2>⚠️ 边界/异常 (6)</h2><table class="test-table"><thead><tr><th>TC#</th><th>Given</th><th>When</th><th>Then</th><th>覆盖</th><th>优先级</th></tr></thead><tbody>';
-  html+='<tr><td>TC-B4.1</td><td>npm registry 可达</td><td><code>info nonexistent-pkg-xyz</code></td><td>错误：包不存在 + 搜索建议</td><td>FP5</td><td><span class="badge p0">P0</span></td></tr>';
-  html+='<tr><td>TC-B4.2</td><td>有 package.json</td><td><code>uninstall not-installed-pkg</code></td><td>错误提示：包未安装</td><td>FP6</td><td><span class="badge p1">P1</span></td></tr>';
-  html+='<tr><td>TC-B4.3</td><td>无 package.json</td><td><code>audit</code></td><td>错误提示：无 package.json</td><td>FP9</td><td><span class="badge p0">P0</span></td></tr>';
-  html+='<tr><td>TC-B4.4</td><td>无 package.json</td><td><code>uninstall lodash</code></td><td>错误提示：无 package.json</td><td>FP6</td><td><span class="badge p0">P0</span></td></tr>';
-  html+='<tr><td>TC-B4.5</td><td>网络不可达</td><td><code>audit</code></td><td>错误：审计失败 + 手动链接引导</td><td>FP9</td><td><span class="badge p1">P1</span></td></tr>';
-  html+='<tr><td>TC-B4.6</td><td>有 package.json</td><td><code>audit --json</code></td><td>JSON 格式原始审计数据（含 vulnerabilities 对象）</td><td>FP9</td><td><span class="badge p1">P1</span></td></tr>';
+  var html='<div class="card"><h2>⚠️ 边界/异常 (8)</h2><p style="font-size:.78rem;color:var(--text3);margin-bottom:12px">覆盖: 认证缺失 · Token 格式 · 所有权拒绝 · API 降级 · 参数校验 · --force 标志</p><table class="test-table"><thead><tr><th>TC#</th><th>Given</th><th>When</th><th>Then</th><th>覆盖</th><th>优先级</th></tr></thead><tbody>';
+  html+='<tr><td>TC-B5.1</td><td>未提供 token</td><td><code>login</code> 无参数</td><td>错误: token 必填 + usage 提示</td><td>FP10</td><td><span class="badge p0">P0</span></td></tr>';
+  html+='<tr><td>TC-B5.2</td><td>token 长度 &lt; 20 字符</td><td><code>login --token abc123</code></td><td>错误: token 格式无效, 引导 npmjs.com 创建 token</td><td>FP10</td><td><span class="badge p1">P1</span></td></tr>';
+  html+='<tr><td>TC-B5.3</td><td>未执行 login</td><td><code>my-packages</code></td><td>错误: 未认证, 请先执行 login --token &lt;token&gt;</td><td>FP5</td><td><span class="badge p0">P0</span></td></tr>';
+  html+='<tr><td>TC-B5.4</td><td>已认证, registry API 不可达</td><td><code>my-packages</code></td><td>降级 npm access ls-packages → 仍失败则引导 npmjs.com/~username</td><td>FP5</td><td><span class="badge p1">P1</span></td></tr>';
+  html+='<tr><td>TC-B5.5</td><td>已认证, 非目标包所有者</td><td><code>deprecate lodash@4.0.0 "test"</code></td><td>拒绝 + 展示维护者列表 (含 email)</td><td>FP6</td><td><span class="badge p0">P0</span></td></tr>';
+  html+='<tr><td>TC-B5.6</td><td>已认证</td><td><code>deprecate my-util</code> 缺版本号</td><td>错误: 缺少版本参数, 显示 usage</td><td>FP6</td><td><span class="badge p1">P1</span></td></tr>';
+  html+='<tr><td>TC-B5.7</td><td>已认证, 非目标包所有者</td><td><code>unpublish lodash@4.0.0</code></td><td>拒绝 + 展示维护者列表 (含 email)</td><td>FP9</td><td><span class="badge p0">P0</span></td></tr>';
+  html+='<tr><td>TC-B5.8</td><td>已认证, 是目标包所有者</td><td><code>unpublish my-util@1.0.0 --force</code></td><td>安全警告仍展示, 跳过 72h 冷却限制, 直接删除</td><td>FP9</td><td><span class="badge p1">P1</span></td></tr>';
   html+='</tbody></table></div>';
   container.innerHTML=html}
 
 function renderSlow(){
   var container=document.getElementById('slowContent');
-  var all=getAllTests(),slow=all.filter(function(t){return(t.duration||0)>SLOW_THRESHOLD}).sort(function(a,b){return(b.duration||0)-(a.duration||0)});
-  if(!slow.length){container.innerHTML='<div class="state-msg"><div class="icon">⚡</div><h3>所有测试都在 '+SLOW_THRESHOLD+'ms 以内</h3><p>最长耗时 180ms — audit 漏洞摘要表</p></div>';return}
-  var html='';
-  for(var i=0;i<slow.length;i++){var t=slow[i];html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'" style="padding-left:18px" onclick="copyTestName(\''+esc(t.name)+'\')" title="点击复制测试名"><span class="t-icon">'+(t.status==='passed'?'✅':'❌')+'</span><span class="t-name">'+esc(t.name)+'</span><span class="t-dur very-slow">'+fmtDur(t.duration)+'</span></div>'}
-  container.innerHTML=html}
+  container.innerHTML='<div class="state-msg"><div class="icon">⚡</div><h3>待执行后采集</h3><p>尚未执行测试，慢测试数据将在首次运行后自动采集。</p><p style="font-size:.74rem;color:var(--text3)">预期慢操作: my-packages registry API 查询 · deprecate/unpublish 网络往返</p></div>'}
 
 function renderPerf(){
   var container=document.getElementById('perfContent');
-  if(!perfData||!perfData.length){container.innerHTML='<div class="state-msg"><div class="icon">📈</div><h3>暂无性能测试数据</h3></div>';return}
-  var html='<div class="card"><h2>📈 性能趋势</h2><p style="font-size:.78rem;color:var(--text3);margin-bottom:12px">场景 5 my-packages · deprecate · unpublish 延迟分布 · 慢阈值 500ms · 趋势 vs 上次回归</p>';
-  for(var i=0;i<perfData.length;i++){var p=perfData[i],durMs=p.duration||0,durClass=durMs>500?'slow':'';
-    html+='<div class="t-row" style="padding-left:18px;cursor:default"><span class="t-icon">'+(p.trend==='up'?'📈':p.trend==='down'?'📉':'📊')+'</span><span class="t-name">'+esc(p.name)+'</span><span class="t-dur '+durClass+'">'+fmtDur(durMs)+'</span></div>'}
-  html+='</div>';
-  container.innerHTML=html}
+  container.innerHTML='<div class="state-msg"><div class="icon">📈</div><h3>待执行后采集</h3><p>尚未执行测试，性能趋势数据将在至少两次运行后生成对比。</p><p style="font-size:.74rem;color:var(--text3)">跟踪指标: my-packages API 响应时间 · deprecate RTT · unpublish RTT · login whoami 验证延迟</p></div>'}
 
 /* ═══ Source modal ═══ */
 function viewSource(relPath){var overlay=document.getElementById('modalOverlay');document.getElementById('modalTitle').textContent=relPath;document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>';overlay.classList.add('show');fetch('../../../../'+relPath).then(function(resp){if(!resp.ok)throw new Error('HTTP '+resp.status);return resp.text()}).then(function(text){var lines=text.split('\n');document.getElementById('modalBody').innerHTML='<pre>'+lines.map(function(l,i){return'<span class="ln">'+(i+1)+'</span>'+esc(l)}).join('\n')+'</pre>'}).catch(function(e){document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(e.message)+'</div>'})}
@@ -337,7 +331,7 @@ function expandAllSuites(){var suites=document.querySelectorAll('#resultsContent
 function collapseAllSuites(){var suites=document.querySelectorAll('#resultsContent .suite');for(var i=0;i<suites.length;i++){suites[i].classList.remove('open')}}
 function toggleSort(){sortByDur=!sortByDur;document.getElementById('btnSortDur').classList.toggle('on',sortByDur);renderResults()}
 function copyTestName(name){navigator.clipboard.writeText(name).then(function(){toast('已复制: '+name)}).catch(function(){})}
-function copyResultsMd(){var s=results.summary,md='## 场景自检结果\n\n| 指标 | 值 |\n|------|----|\n| 总计 | '+(s.total||0)+' |\n| ✅ 通过 | '+(s.passed||0)+' |\n| ❌ 失败 | '+(s.failed||0)+' |\n| ⏱ 耗时 | '+fmtDur(results.durationMs)+' |\n| 🕐 时间 | '+fmtTs(results.timestamp)+' |\n',rm=buildResultMap(),k;for(k in rm){if(!rm.hasOwnProperty(k))continue;var r=rm[k],icon=r.failed>0?'❌':'✅';md+='\n### '+icon+' '+k+'\n| 通过 | 失败 | 跳过 | 总计 |\n|------|------|------|------|\n| '+r.passed+' | '+r.failed+' | '+r.skipped+' | '+r.total+' |\n'}navigator.clipboard.writeText(md).then(function(){toast('已复制为 Markdown')}).catch(function(){toast('复制失败')})}
+function copyResultsMd(){var s=results.summary,md='## 场景 5 测试结果\n\n| 指标 | 值 |\n|------|----|\n| 设计用例 | '+(s.total||0)+' |\n| ✅ 通过 | '+(s.passed||0)+' |\n| ❌ 失败 | '+(s.failed||0)+' |\n| ⏳ 待执行 | '+(s.skipped||0)+' |\n| ⏱ 耗时 | '+fmtDur(results.durationMs)+' |\n| 🕐 时间 | '+fmtTs(results.timestamp)+' |\n',rm=buildResultMap(),k;for(k in rm){if(!rm.hasOwnProperty(k))continue;var r=rm[k],icon=r.failed>0?'❌':r.passed===r.total?'✅':'⏳';md+='\n### '+icon+' '+k+'\n| 通过 | 失败 | 待执行 | 总计 |\n|------|------|--------|------|\n| '+r.passed+' | '+r.failed+' | '+r.skipped+' | '+r.total+' |\n'}navigator.clipboard.writeText(md).then(function(){toast('已复制为 Markdown')}).catch(function(){toast('复制失败')})}
 function filterByStatus(status){statusFilter=status==='all'?'':status;resultQuery='';var inp=document.getElementById('searchInput');if(inp)inp.value='';var cards=document.querySelectorAll('.stat-card');for(var i=0;i<cards.length;i++){cards[i].classList.remove('active-filter')};var el=document.getElementById(status==='all'?'statAll':status==='passed'?'statPassed':status==='failed'?'statFailed':status==='skipped'?'statSkipped':'statAll');if(el)el.classList.add('active-filter');switchPanel('results')}
 function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show')},1800)}
 

@@ -1,20 +1,179 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>场景 3 · 组件库与JS API — 知识图谱</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>组件库与JS工具API · 知识图谱</title>
 <link rel="stylesheet" href="../../../../cdn/fonts.css">
-<link rel="stylesheet" href="../../../../../cdn/shared.css"><link rel="stylesheet" href="../../../../../cdn/theme-mono.css">
-<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}.container{max-width:900px;margin:0 auto}.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.5rem;margin-bottom:1rem}.card h3{font-size:.9rem;font-weight:600;margin-bottom:.75rem}.card ul{list-style:none;color:#94a3b8;font-size:.78rem}.card li{margin-bottom:.5rem;padding-left:1rem;position:relative}.card li::before{content:'•';position:absolute;left:0;color:#475569}.cta{text-align:center;margin:2rem 0}.cta a{color:#22d3ee;text-decoration:none;font-size:.9rem;background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.2);border-radius:8px;padding:.75rem 1.5rem;display:inline-block;transition:all .2s}.cta a:hover{background:rgba(34,211,238,.15);border-color:#22d3ee;color:#fff}.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}</style></head><body><div class="mono-container">
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-cdn · CDN 共享前端资源管理</span><span class="bc-sep">/</span><span class="bc-current">场景 3 · 组件库与 JS 工具 API</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
-<div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><span class="cross-link on">🔗 图谱</span><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
-<div class="cta"><a href="../知识图谱.html">🧩 打开 cdn 完整知识图谱 →</a></div>
-<div class="card"><h3>📊 场景 3 · JS API 节点覆盖</h3><ul>
-<li><strong>3 交互 API:</strong> YrY.toast() — 通知 · YrY.copyCmd() — 剪贴板 · YrY.switchPanel() — 面板切换</li>
-<li><strong>3 Suite API:</strong> toggleSuite · expandAllSuites · collapseAllSuites</li>
-<li><strong>3 工具函数:</strong> fmtDur — 时间格式化 · esc — XSS 防注入 · clipboardWrite — 剪贴板写入</li>
-<li><strong>55 消费者:</strong> 所有 HTML 页面通过 shared.js 获取 YrY API，IIFE 模式无全局泄漏</li>
-<li><strong>2 外部依赖:</strong> navigator.clipboard API · DOM API (事件委托)</li>
-</ul></div>
-<div class="mono-footer" style="text-align:center;padding:1rem;color:#475569;font-size:.75rem">YrY v4.7.0 · cdn · 场景-3 知识图谱</div>
-</div><script src="../../../../../cdn/shared.js"></script></body></html>
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
+.container{max-width:1400px;margin:0 auto}
+.header{margin-bottom:1.5rem}
+.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
+.pulse-dot{width:12px;height:12px;background:#22d3ee;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+h1{font-size:1.5rem;font-weight:700}
+.subtitle{color:#94a3b8;font-size:.875rem;margin-left:1.75rem}
+.toolbar{display:flex;gap:.5rem;margin-left:auto;flex-shrink:0;align-items:center}
+.toolbar-toggle{background:transparent;border:none;color:#475569;cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem}
+.toolbar-toggle:hover{color:#94a3b8;background:rgba(30,41,59,.5)}
+.toolbar-actions{display:none;gap:.5rem}
+.toolbar.expanded .toolbar-actions{display:flex}
+.toolbar-actions button{background:rgba(30,41,59,.8);border:1px solid #334155;color:#94a3b8;padding:.375rem .75rem;border-radius:.375rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.toolbar-actions button:hover{background:rgba(51,65,85,.8);color:white;border-color:#475569}
+.graph-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1rem;margin-bottom:1.5rem}
+#cy{width:100%;height:550px;border-radius:.5rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
+.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
+.card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
+.card-dot{width:8px;height:8px;border-radius:50%}
+.card-dot.source{background:#EC4899}.card-dot.method{background:#34d399}.card-dot.component{background:#3B82F6}.card-dot.consumer{background:#22d3ee}.card-dot.platform{background:#f59e0b}
+.card h3{font-size:.875rem;font-weight:600}
+.card ul{list-style:none;color:#94a3b8;font-size:.75rem}
+.card li{margin-bottom:.375rem}
+.legend{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:.75rem;padding:.75rem;background:rgba(15,23,42,.5);border-radius:.5rem;border:1px solid #1e293b;font-size:.75rem;color:#94a3b8}
+.legend-item{display:flex;align-items:center;gap:.375rem}
+.legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid}
+.legend-dot.source{background:rgba(236,72,153,.3);border-color:#EC4899}
+.legend-dot.method{background:rgba(52,211,153,.3);border-color:#34d399}
+.legend-dot.component{background:rgba(59,130,246,.3);border-color:#3B82F6}
+.legend-dot.consumer{background:rgba(34,211,238,.3);border-color:#22d3ee}
+.legend-dot.platform{background:rgba(245,158,11,.3);border-color:#f59e0b}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
+@media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
+.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
+.cross-link:hover{color:#fbbf24;background:rgba(251,191,36,0.06)}
+.cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
+.cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
+</style></head><body><div class="container" id="report-container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../故事任务.md">yry-cdn · CDN 共享前端资源管理</a><span class="bc-sep">/</span><span class="bc-current">场景 3 · 组件库与 JS 工具 API</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
+<nav class="cross-nav">
+  <a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+  <span class="cross-link on">🔗 图谱</span><span class="cross-sep">·</span>
+  <a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="审查.html">📝 审查</a>
+</nav>
+
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>🧩 组件库与JS工具API · 知识图谱</h1>
+  <div class="toolbar"><div class="toolbar-actions">
+  <button onclick="copyAsImage(this)">📋 Copy</button>
+  <button onclick="downloadPNG(this)">🖼️ PNG</button>
+  <button onclick="downloadPDF(this)">📄 PDF</button>
+  </div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
+</div><p class="subtitle">场景 3/5 — 27 组件 + 9 API 的知识结构</p></div>
+
+<div class="legend"><div class="legend-item"><span class="legend-dot source"></span> 源文件 (Source)</div>
+<div class="legend-item"><span class="legend-dot method"></span> API 方法 (Method)</div>
+<div class="legend-item"><span class="legend-dot component"></span> CSS 组件 (Component)</div>
+<div class="legend-item"><span class="legend-dot consumer"></span> 消费者 (Consumer)</div>
+<div class="legend-item"><span class="legend-dot platform"></span> 浏览器 API (Platform)</div></div>
+
+<div class="graph-container"><div id="cy"></div></div>
+
+<div class="cards"><div class="card"><div class="card-header"><span class="card-dot method"></span><h3>9 个 YrY API</h3></div><ul><li>toast(msg,dur?) — textContent 防 XSS</li><li>copyCmd(btn,cmd) — 剪贴板 + 视觉反馈</li><li>switchPanel(name) — 标签页切换</li><li>initSuiteToggle() — 事件委托折叠</li><li>expandAllSuites / collapseAllSuites</li><li>fmtDur(ms) — ms→人类可读</li><li>esc(s) — & < > " 转义</li><li>clipboardWrite — 回调式剪贴板</li></ul></div>
+<div class="card"><div class="card-header"><span class="card-dot component"></span><h3>27 个 CSS 组件</h3></div><ul><li>6 全局 (shared.css): 面包屑·cross-nav·Toolbar·Toast·页脚·键盘提示</li><li>14 System (theme.css): Container·Header·Stats·Bar·Tabs·Panel·Suite·Progress·Button·Section·LinkCard·Card·Verify·Cmd</li><li>7 Mono (theme-mono.css): Container·Header·PulseDot·Diagram·Graph·Cards·Legend</li></ul></div>
+<div class="card"><div class="card-header"><span class="card-dot consumer"></span><h3>55 消费者页面</h3></div><ul><li>每个页面加载 shared.css + 主题 CSS + shared.js</li><li>yry-* 前缀类名 + YrY.* API 调用</li><li>零配置 — 页面只需声明 Cat 类型即可获得完整视觉与交互</li></ul></div></div>
+
+<div class="footer">🧩 yry-cdn 知识图谱 · 场景 3 · 组件库与 JS 工具 API · Powered by Cytoscape.js</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+var cy=cytoscape({container:document.getElementById('cy'),
+style:[{selector:'node',style:{'background-color':'#1e293b','label':'data(label)','color':'#e2e8f0','font-size':'10px','font-family':'JetBrains Mono,monospace','text-valign':'center','text-halign':'center','border-width':2,'width':95,'height':38,'shape':'roundrectangle','text-wrap':'wrap','text-max-width':'90px'}},
+{selector:'node[type="source"]',style:{'background-color':'rgba(236,72,153,.2)','border-color':'#EC4899','width':115,'height':44}},
+{selector:'node[type="method"]',style:{'background-color':'rgba(52,211,153,.2)','border-color':'#34d399'}},
+{selector:'node[type="component"]',style:{'background-color':'rgba(59,130,246,.2)','border-color':'#3B82F6','width':85,'height':34}},
+{selector:'node[type="consumer"]',style:{'background-color':'rgba(34,211,238,.2)','border-color':'#22d3ee','width':110,'height':42}},
+{selector:'node[type="platform"]',style:{'background-color':'rgba(245,158,11,.2)','border-color':'#f59e0b'}},
+{selector:'edge',style:{'curve-style':'bezier','line-color':'#475569','target-arrow-color':'#475569','target-arrow-shape':'triangle','width':1.5,'arrow-scale':1}},
+{selector:'edge[relation="contains"]',style:{'line-color':'#8B5CF6','target-arrow-color':'#8B5CF6','line-style':'dashed'}},
+{selector:'edge[relation="depends_on"]',style:{'line-color':'#34d399','target-arrow-color':'#34d399'}},
+{selector:'edge[relation="consumes"]',style:{'line-color':'#3B82F6','target-arrow-color':'#3B82F6','width':2}},
+{selector:'edge[relation="next"]',style:{'line-color':'#f59e0b','target-arrow-color':'#f59e0b','line-style':'dashed'}}],
+elements:{nodes:[
+{data:{id:'story',label:'Story\nyry-cdn',type:'source'}},
+{data:{id:'scene3',label:'场景 3\n组件库与API',type:'source'}},
+{data:{id:'shared-css',label:'shared.css\n6 全局组件',type:'source'}},
+{data:{id:'shared-js',label:'shared.js\n9 API',type:'source'}},
+{data:{id:'theme-css',label:'theme.css\n14 组件',type:'source'}},
+{data:{id:'mono-css',label:'theme-mono.css\n7 组件',type:'source'}},
+{data:{id:'toast',label:'toast()\n通知',type:'method'}},
+{data:{id:'copyCmd',label:'copyCmd()\n剪贴板',type:'method'}},
+{data:{id:'switchPanel',label:'switchPanel()\n面板切换',type:'method'}},
+{data:{id:'initSuite',label:'initSuiteToggle()\n折叠套件',type:'method'}},
+{data:{id:'expandAll',label:'expandAll\nSuites()',type:'method'}},
+{data:{id:'collapseAll',label:'collapseAll\nSuites()',type:'method'}},
+{data:{id:'fmtDur',label:'fmtDur()\n时间格式化',type:'method'}},
+{data:{id:'esc',label:'esc()\nHTML转义',type:'method'}},
+{data:{id:'clipboardW',label:'clipboard\nWrite()',type:'method'}},
+{data:{id:'breadcrumb',label:'面包屑\n.breadcrumb',type:'component'}},
+{data:{id:'cross-nav',label:'cross-nav\n导航',type:'component'}},
+{data:{id:'toast-css',label:'Toast\n样式',type:'component'}},
+{data:{id:'toolbar',label:'Toolbar\n导出',type:'component'}},
+{data:{id:'footer-c',label:'页脚\n.footer',type:'component'}},
+{data:{id:'kbd',label:'键盘提示\n.kbd-hint',type:'component'}},
+{data:{id:'sys-comp',label:'System\n14 组件',type:'component'}},
+{data:{id:'mono-comp',label:'Mono\n7 组件',type:'component'}},
+{data:{id:'cat-a',label:'Cat A\n架构·图谱',type:'consumer'}},
+{data:{id:'cat-b',label:'Cat B\n审查·测试·演示',type:'consumer'}},
+{data:{id:'clipboard',label:'navigator\n.clipboard',type:'platform'}},
+{data:{id:'dom',label:'DOM\nAPI',type:'platform'}}
+],edges:[
+{data:{source:'story',target:'scene3',relation:'contains'}},
+{data:{source:'scene3',target:'shared-css',relation:'contains'}},
+{data:{source:'scene3',target:'shared-js',relation:'contains'}},
+{data:{source:'scene3',target:'theme-css',relation:'contains'}},
+{data:{source:'scene3',target:'mono-css',relation:'contains'}},
+{data:{source:'shared-js',target:'toast',relation:'contains'}},
+{data:{source:'shared-js',target:'copyCmd',relation:'contains'}},
+{data:{source:'shared-js',target:'switchPanel',relation:'contains'}},
+{data:{source:'shared-js',target:'initSuite',relation:'contains'}},
+{data:{source:'shared-js',target:'expandAll',relation:'contains'}},
+{data:{source:'shared-js',target:'collapseAll',relation:'contains'}},
+{data:{source:'shared-js',target:'fmtDur',relation:'contains'}},
+{data:{source:'shared-js',target:'esc',relation:'contains'}},
+{data:{source:'shared-js',target:'clipboardW',relation:'contains'}},
+{data:{source:'shared-css',target:'breadcrumb',relation:'contains'}},
+{data:{source:'shared-css',target:'cross-nav',relation:'contains'}},
+{data:{source:'shared-css',target:'toast-css',relation:'contains'}},
+{data:{source:'shared-css',target:'toolbar',relation:'contains'}},
+{data:{source:'shared-css',target:'footer-c',relation:'contains'}},
+{data:{source:'shared-css',target:'kbd',relation:'contains'}},
+{data:{source:'theme-css',target:'sys-comp',relation:'contains'}},
+{data:{source:'mono-css',target:'mono-comp',relation:'contains'}},
+{data:{source:'copyCmd',target:'clipboard',relation:'depends_on'}},
+{data:{source:'clipboardW',target:'clipboard',relation:'depends_on'}},
+{data:{source:'initSuite',target:'dom',relation:'depends_on'}},
+{data:{source:'cat-a',target:'mono-css',relation:'consumes'}},
+{data:{source:'cat-a',target:'shared-css',relation:'consumes'}},
+{data:{source:'cat-a',target:'shared-js',relation:'consumes'}},
+{data:{source:'cat-b',target:'theme-css',relation:'consumes'}},
+{data:{source:'cat-b',target:'shared-css',relation:'consumes'}},
+{data:{source:'cat-b',target:'shared-js',relation:'consumes'}}
+]},
+layout:{name:'breadthfirst',directed:true,spacingFactor:1.15,roots:'[id="story"]'},
+minZoom:0.5,maxZoom:2});
+cy.fit(cy.elements(),50);
+cy.on('tap','node',function(evt){const node=evt.target;const hood=node.closedNeighborhood();cy.elements().style('opacity',0.15);hood.style('opacity',1);node.style('opacity',1)});
+cy.on('tap',function(evt){if(evt.target===cy)cy.elements().style('opacity',0.85)});
+});
+async function copyAsImage(btn){const orig=btn.textContent;try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),blob=await new Promise(r=>canvas.toBlob(r,'image/png'));await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);btn.textContent='✓ Copied!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+async function downloadPNG(btn){const orig=btn.textContent;btn.textContent='⏳...';try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),link=document.createElement('a');link.download='知识图谱-组件库与JSAPI.png';link.href=canvas.toDataURL('image/png');link.click();btn.textContent='✓ Done!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+async function downloadPDF(btn){const orig=btn.textContent;btn.textContent='⏳...';try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),imgData=canvas.toDataURL('image/png');const{jsPDF}=window.jspdf,orientation=canvas.width>canvas.height?'landscape':'portrait',pdf=new jsPDF({orientation,unit:'px',format:[canvas.width,canvas.height],hotfixes:['px_scaling']});pdf.addImage(imgData,'PNG',0,0,canvas.width,canvas.height);pdf.save('知识图谱-组件库与JSAPI.pdf');btn.textContent='✓ Done!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+</script>
+</body></html>

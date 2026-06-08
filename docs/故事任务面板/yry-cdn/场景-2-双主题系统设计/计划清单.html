@@ -1,23 +1,486 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>场景-2 计划清单 — 双主题系统设计</title>
-<link rel="stylesheet" href="../../../../../cdn/shared.css"><link rel="stylesheet" href="../../../../../cdn/theme.css">
-<style>.checklist{list-style:none;padding:0}.checklist li{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;margin-bottom:6px;background:var(--yry-bg-flat);border-radius:8px;border:var(--yry-border);font-size:.82rem}.checklist li:hover{border-color:rgba(255,255,255,.1)}.step-id{color:var(--yry-accent);font-weight:700;min-width:48px;font-size:.76rem}.step-name{flex:1;color:var(--yry-text);font-weight:500}.step-path{color:var(--yry-text3);font-size:.72rem;margin-top:2px}.step-cmd{background:rgba(0,0,0,.3);border-radius:4px;padding:4px 8px;font-family:monospace;font-size:.72rem;color:var(--yry-cyan);margin-top:4px;display:block}.step-expect{color:var(--yry-text2);font-size:.72rem;margin-top:2px}input[type=checkbox]{width:18px;height:18px;accent-color:var(--yry-accent);cursor:pointer;margin-top:2px;flex-shrink:0}.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>双主题系统设计 · 计划清单</title>
+<!-- ═══ CDN: YrY 共享样式 ═══ -->
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+<style>
+:root {
+  --bg: rgba(22,22,32,1);
+  --bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
+  --bg-flat: rgba(34,34,46,1);
+  --bg-raised: rgba(42,42,56,1);
+  --accent: #FFC107; --cyan: #22d3ee; --pass: #22c55e; --fail: #ef4444; --warn: #f59e0b; --info: #6b7280; --skip: #6b7280;
+  --text: rgba(250,250,252,1); --text2: rgba(160,160,164,1); --text3: rgba(110,110,114,1);
+  --shadow: 0 4px 20px rgba(0,0,0,0.3); --shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
+  --radius: 12px; --border: 1px solid rgba(255,255,255,0.06);
+}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif; line-height:1.6; min-height:100vh; }
+.container { max-width:960px; margin:0 auto; padding:40px 24px 80px; }
+
+.header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
+.header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+.header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
+.header .meta{color:var(--text3);font-size:.75rem;margin-top:6px}
+
+.progress-wrap { margin-bottom:20px; }
+.progress-label { display:flex; justify-content:space-between; font-size:0.78rem; margin-bottom:6px; color:var(--text2); }
+.progress-bar { width:100%; height:6px; background:var(--bg-flat); border-radius:3px; overflow:hidden; }
+.progress-fill { height:100%; background:linear-gradient(90deg, #3d59a1, var(--accent)); border-radius:3px; transition:width 0.4s ease; }
+
+.tabs { display:flex; gap:0; border-bottom:var(--border); margin-bottom:24px; }
+.tab { padding:8px 18px; cursor:pointer; font-size:0.82rem; color:var(--text3); border-bottom:2px solid transparent; transition:all 0.15s; user-select:none; }
+.tab:hover { color:var(--text2); }
+.tab.on { color:var(--accent); border-bottom-color:var(--accent); }
+
+.panel { display:none; }
+.panel.on { display:block; }
+
+.section { margin-bottom:24px; }
+.section h2 { font-size:0.95rem; color:var(--accent); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.section h2 .dot { width:7px; height:7px; border-radius:50%; background:var(--accent); flex-shrink:0; }
+.section h2 .s-done { color:var(--text3); font-size:0.72rem; font-weight:400; margin-left:2px; }
+
+.step { background:var(--bg-card); border:var(--border); border-radius:var(--radius); margin:10px 0; overflow:hidden; box-shadow:var(--shadow); transition:border-color 0.2s; }
+.step:hover { border-color:rgba(255,193,7,0.12); }
+.step-header { display:flex; align-items:center; gap:10px; padding:12px 16px; cursor:pointer; user-select:none; transition:background 0.15s; }
+.step-header:hover { background:rgba(255,193,7,0.04); }
+.step-checkbox { width:18px; height:18px; accent-color:var(--accent); cursor:pointer; flex-shrink:0; }
+.step-num { font-weight:700; color:var(--accent); min-width:26px; font-size:0.88rem; }
+.step-title { flex:1; font-size:0.92rem; }
+.step-status { font-size:0.72rem; padding:3px 10px; border-radius:12px; flex-shrink:0; white-space:nowrap; }
+.status-done { background:rgba(34,197,94,0.12); color:var(--pass); }
+.status-pending { background:rgba(110,110,114,0.18); color:var(--text3); }
+.status-active { background:rgba(245,158,11,0.12); color:var(--warn); }
+
+.step-body { display:none; padding:0 16px 16px 52px; font-size:0.84rem; border-top:var(--border); }
+.step-body.open { display:block; }
+.step-body p { color:var(--text2); margin:4px 0; }
+
+.skill-hint { background:rgba(255,193,7,0.06); border-left:3px solid var(--accent); border-radius:0 6px 6px 0; padding:8px 14px; margin:10px 0; font-size:0.82rem; color:var(--text); display:flex; align-items:flex-start; gap:6px; }
+.skill-hint .hint-icon { color:var(--accent); font-weight:700; flex-shrink:0; }
+.skill-hint code { background:rgba(0,0,0,0.3); color:var(--cyan); padding:2px 6px; border-radius:4px; font-size:0.78rem; }
+
+.step-deps { display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.04); }
+.step-deps .dep-label { font-size:0.7rem; color:var(--text3); margin-right:2px; }
+.dep-badge { font-size:0.7rem; color:var(--cyan); text-decoration:none; background:var(--bg-flat); border:1px solid rgba(34,211,238,0.12); border-radius:12px; padding:2px 10px; transition:all 0.15s; }
+.dep-badge:hover { border-color:var(--accent); color:var(--accent); transform:translateY(-1px); }
+
+.code-block { background:rgba(0,0,0,0.3); border:var(--border); border-radius:6px; padding:10px 14px; margin:8px 0; font-size:0.76rem; overflow-x:auto; white-space:pre-wrap; font-family:'SF Mono','Fira Code',monospace; color:var(--cyan); }
+.verify-cmd { background:rgba(34,197,94,0.06); border-left:3px solid var(--pass); border-radius:0 4px 4px 0; padding:6px 10px; margin:6px 0; font-size:0.8rem; }
+.verify-cmd::before { content:"▶ 验证: "; color:var(--pass); font-weight:600; }
+.expected { color:var(--text3); font-size:0.78rem; margin:2px 0; }
+.expected::before { content:"✓ 期望: "; color:var(--accent); font-weight:600; }
+.log-entry { font-size:0.74rem; color:var(--text3); border-left:2px solid var(--border); padding-left:8px; margin:4px 0; }
+.log-time { color:#7aa2f7; }
+
+.stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
+.stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}
+.stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
+.bar-wrap{margin-bottom:28px;animation:fadeInDown .5s .12s ease both}
+.bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
+.bar-outer .seg{height:100%;transition:width .5s ease;min-width:3px}
+.bar-outer .seg.strength{background:var(--pass)}.bar-outer .seg.gap{background:var(--fail)}.bar-outer .seg.suggestion{background:var(--warn)}.bar-outer .seg.neutral{background:var(--info)}
+
+.stat-grid { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+.stat-mini { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:14px 18px; text-align:center; box-shadow:var(--shadow); min-width:80px; flex:1; }
+.stat-mini .sv { font-size:1.4rem; font-weight:700; }
+.stat-mini .sv.g { color:var(--pass); } .stat-mini .sv.y { color:var(--accent); } .stat-mini .sv.c { color:var(--cyan); }
+.stat-mini .sl { font-size:0.64rem; color:var(--text3); margin-top:2px; text-transform:uppercase; letter-spacing:0.4px; }
+.section-stat { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:12px 16px; margin:8px 0; box-shadow:var(--shadow); display:flex; align-items:center; gap:12px; }
+.section-stat .ss-label { font-size:0.82rem; font-weight:600; min-width:100px; }
+.section-stat .ss-bar-wrap { flex:1; height:6px; background:var(--bg-flat); border-radius:3px; overflow:hidden; }
+.section-stat .ss-bar { height:100%; border-radius:3px; transition:width 0.4s; }
+.section-stat .ss-pct { font-size:0.76rem; color:var(--text2); min-width:44px; text-align:right; }
+
+.cmd-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:10px; }
+.cmd-card { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:16px 18px; box-shadow:var(--shadow); transition:transform 0.15s,box-shadow 0.15s; }
+.cmd-card:hover { transform:translateY(-1px); box-shadow:0 6px 24px rgba(0,0,0,0.35); }
+.cmd-card .c-stage { font-size:0.64rem; color:var(--text3); margin-bottom:4px; }
+.cmd-card .c-name { font-weight:700; font-size:0.84rem; color:var(--accent); font-family:monospace; margin-bottom:2px; }
+.cmd-card .c-desc { font-size:0.74rem; color:var(--text2); line-height:1.5; }
+.cmd-card pre { background:rgba(0,0,0,0.3); border-radius:6px; padding:8px 12px; margin-top:8px; font-size:0.74rem; color:var(--cyan); overflow-x:auto; font-family:'SF Mono',monospace; cursor:pointer; position:relative; }
+.cmd-card pre .cb { position:absolute; top:4px; right:6px; background:var(--bg-flat); border:var(--border); border-radius:4px; color:var(--text3); font-size:0.6rem; padding:1px 6px; cursor:pointer; opacity:0; transition:opacity 0.15s; font-family:inherit; }
+.cmd-card pre:hover .cb { opacity:1; }
+
+.link-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; }
+.link-card { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); text-decoration:none; color:inherit; display:block; transition:transform 0.15s,border-color 0.15s; }
+.link-card:hover { transform:translateY(-2px); border-color:rgba(255,193,7,0.25); }
+.link-card .lc-icon { font-size:1.2rem; margin-bottom:6px; }
+.link-card .lc-name { font-weight:700; font-size:0.88rem; color:var(--accent); }
+.link-card .lc-desc { font-size:0.74rem; color:var(--text2); margin-top:4px; line-height:1.5; }
+
+.verify-list { display:flex; flex-direction:column; gap:10px; }
+.verify-item { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:14px 18px; box-shadow:var(--shadow); }
+.verify-item .vi-label { font-size:0.78rem; color:var(--text2); margin-bottom:6px; }
+.verify-item pre { background:rgba(0,0,0,0.3); border-radius:6px; padding:8px 36px 8px 12px; font-size:0.76rem; color:var(--cyan); overflow-x:auto; font-family:'SF Mono',monospace; cursor:pointer; position:relative; }
+.verify-item pre .cb { position:absolute; top:4px; right:6px; background:var(--bg-flat); border:var(--border); border-radius:4px; color:var(--text3); font-size:0.6rem; padding:1px 6px; cursor:pointer; opacity:0; transition:opacity 0.15s; font-family:inherit; }
+.verify-item pre:hover .cb { opacity:1; }
+.verify-item .vi-expect { font-size:0.74rem; color:var(--text3); margin-top:4px; }
+.verify-item .vi-expect::before { content:"✓ "; color:var(--accent); }
+
+.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--bg-raised); border:1px solid rgba(255,193,7,0.3); border-radius:8px; color:var(--text); padding:10px 20px; font-size:0.82rem; z-index:300; box-shadow:var(--shadow-lg); opacity:0; transition:opacity 0.2s; pointer-events:none; }
+.toast.show { opacity:1; }
+
+.footer { margin-top:40px; padding-top:16px; border-top:var(--border); color:var(--text3); font-size:0.72rem; text-align:center; }
+
+a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
+@media (max-width:640px) { .container { padding:20px 12px 60px; } .header h1 { font-size:1.3rem; } .step-body { padding:0 10px 12px 40px; } .cmd-grid,.link-grid { grid-template-columns:1fr; } .stat-grid { flex-direction:column; } }
+
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}</style>
 </head>
 <body>
 <div class="container">
+
 <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../故事任务.md">yry-cdn · CDN 共享前端资源管理</a><span class="bc-sep">/</span><span class="bc-current">场景 2 · 双主题系统设计</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
-<div class="cross-nav"><span class="cross-link on">📋 清单</span><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
-<div class="header"><h1>场景-2 <span class="accent">计划清单</span></h1><div class="sub">双主题系统设计 · 3 步 · 15min</div></div>
-<ul class="checklist">
-<li><input type="checkbox" id="s1"><div><span class="step-id">步骤 1</span><span class="step-name">验证 System 主题 14 设计令牌 + 14 组件存在</span><div class="step-path">📄 index.md §1 TC1</div><div class="step-cmd"># 打开任意 Cat B 审查页面 → DevTools → Styles → :root → 计数 --yry-* 变量</div><div class="step-cmd"># 检查 14 System 组件: .container .stats .tabs .panel .suite .progress-wrap .btn .section .link-grid 等</div><div class="step-expect">✅ :root 含 14 个 --yry-* 变量，14 组件 CSS 类全部有计算样式</div></div></li>
-<li><input type="checkbox" id="s2"><div><span class="step-id">步骤 2</span><span class="step-name">验证 Cat A vs Cat B 视觉差异 + 响应式</span><div class="step-path">📄 index.md §1 TC2–TC4</div><div class="step-cmd"># 并排截屏 Cat A 架构图页面 + Cat B 审查页面 → 对比背景色/字体/卡片风格</div><div class="step-cmd"># Cat B 页面: DevTools → 切换视口 375px → 检查 .container padding + 无横向滚动</div><div class="step-expect">✅ Cat A 背景 #020617 + JetBrains Mono。Cat B 背景深紫黑 + 系统字体。375px 布局正常</div></div></li>
-<li><input type="checkbox" id="s3"><div><span class="step-id">步骤 3</span><span class="step-name">撰写实施报告（§2）</span><div class="step-path">📄 index.md → 追加 §2</div><div class="step-cmd"># 记录: CSS 变量值截图 + 两主题对比截图 + 响应式断点截图 + 5 项 Gate A 信号</div><div class="step-expect">✅ §2 含视觉对比证据、CSS 变量值、响应式验证结果</div></div></li>
-</ul>
-<div class="footer" style="margin-top:40px;">YrY v4.7.0 · cdn · 场景-2 计划清单</div>
+
+<div class="cross-nav">
+  <span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
+              <a href="源码.html" class="cross-link">📄 源码</a><span class="cross-sep">·</span>
+              <a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span>
+  <a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a>
 </div>
-<script src="../../../../../cdn/shared.js"></script>
+
+<div class="header">
+  <h1>🎨 场景-2<span class="accent"> · 双主题系统设计</span></h1>
+  <p class="sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
+  <div class="meta">📌 v4.7.0 · 📅 2026-06-08 · 🏷️ cdn</div>
+</div>
+
+<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">2</div><div class="lbl">✅ 完成</div></div><div class="stat-card"><div class="val">4</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val warn-h">33%</div><div class="lbl">📊 进度</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:33%"></div><div class="seg gap" style="width:67%"></div></div></div>
+
+<div class="progress-wrap">
+  <div class="progress-label"><span>整体进度</span><span id="progress-text">0 / 6 完成</span></div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+</div>
+
+<div class="tabs">
+  <span class="tab on" data-panel="checklist">📋 清单</span>
+  <span class="tab" data-panel="overview">📊 概览</span>
+  <span class="tab" data-panel="commands">⚡ 命令</span>
+  <span class="tab" data-panel="related">📁 关联</span>
+  <span class="tab" data-panel="verify">🧪 验证</span>
+</div>
+
+<!-- ═══ Tab 1: Checklist ═══ -->
+<div class="panel on" id="panelChecklist">
+
+<div class="section">
+<h2><span class="dot"></span>§0 技术评审<span class="s-done">— 已完成</span></h2>
+
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">1</span><span class="step-title">验证 System 主题 14 设计令牌 + 14 组件</span><span class="step-status status-done">✅ 完成</span>
+</div><div class="step-body open">
+  <p>打开 Cat B 页面（审查/测试/演示/计划），DevTools 检查 :root 中的 14 个 --yry-* CSS 变量定义，验证所有 14 个 System 组件使用这些变量引用，无硬编码颜色值。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span>打开 Cat B 审查页面 → <code>F12 → Elements → :root</code> → 计数 --yry-* 变量</div>
+  <div class="code-block">// 在 Console 中统计 :root 下的 --yry-* 变量
+const rootStyles = getComputedStyle(document.documentElement);
+const tokens = Array.from(document.styleSheets)
+  .flatMap(s => { try { return Array.from(s.cssRules) } catch { return [] } })
+  .filter(r => r.selectorText === ':root')
+  .flatMap(r => Array.from(r.style))
+  .filter(p => p.startsWith('--yry-'));
+console.log('Tokens:', tokens.length, tokens);</div>
+  <div class="verify-cmd">grep -c "\-\-yry-" cdn/theme.css</div>
+  <div class="expected">14 个 --yry-* 令牌在 theme.css :root 中定义，14 System 组件全部使用 var(--yry-*) 引用</div>
+  <div class="log-entry"><span class="log-time">2026-06-08 11:30</span> 完成 — 14 CSS 变量全部定义，14 System 组件无硬编码颜色</div>
+</div></div>
+
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">2</span><span class="step-title">验证 Cat A vs Cat B 视觉差异 + 响应式</span><span class="step-status status-done">✅ 完成</span>
+</div><div class="step-body">
+  <p>并排对比 Cat A 架构图页面（深蓝黑背景 #020617 + JetBrains Mono + Mono 主题组件）与 Cat B 审查页面（深紫黑背景 + 系统字体 + System 主题组件），验证两主题视觉隔离完整。同时验证 Cat B 在 375px 视口下的响应式布局。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span>分别打开 Cat A 架构图 + Cat B 审查页面 → <code>并排截图对比</code></div>
+  <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图 (Cat A)</a><a href="审查.html" class="dep-badge">📝 审查 (Cat B)</a></div>
+  <div class="code-block">// Cat A 页面特征
+body.background = #020617
+font-family = 'JetBrains Mono', monospace
+组件前缀 = yry-mono-*
+
+// Cat B 页面特征
+body.background = rgba(22,22,32,1)
+font-family = system-ui
+组件前缀 = yry-container / yry-stats / yry-tabs / ...</div>
+  <div class="verify-cmd"># Cat B 375px 视口: DevTools → Toggle Device Toolbar → 375px → 检查无横向滚动</div>
+  <div class="expected">Cat A/B 视觉风格完全不同。375px 视口下布局正常，无横向溢出</div>
+</div></div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>§1 测试设计<span class="s-done">— 待执行</span></h2>
+
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">3</span><span class="step-title">定义令牌覆盖率测试用例</span><span class="step-status status-active">🔶 就绪</span>
+</div><div class="step-body">
+  <p>编写自动化测试验证 14 个设计令牌在所有组件中的引用覆盖率。检查 theme.css 中每个 .yry-* 组件是否使用 var(--yry-*) 而非硬编码色值。同时验证 Mono 主题的 7 个组件也使用独立的令牌体系。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node tests/skills/theme-tokens.test.mjs --verbose</code>运行主题令牌测试</div>
+  <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div>
+  <div class="code-block">TC-1: :root --yry-* 定义数量 = 14
+TC-2: System 14 组件 100% 使用 var(--yry-*)
+TC-3: Mono 7 组件 100% 使用独立令牌（非共享 --yry-*）
+TC-4: Cat A/B 页面各加载正确的主题 CSS</div>
+</div></div>
+
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">4</span><span class="step-title">定义交叉主题测试用例</span><span class="step-status status-active">🔶 就绪</span>
+</div><div class="step-body">
+  <p>编写测试验证 Cat A / Cat B 页面在同浏览器中交替加载时无样式泄漏。验证两主题的 CSS 变量命名空间隔离（Cat A 不引用 --yry-*，Cat B 不引用 Mono 令牌）。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node tests/integration/cross-cat.test.mjs --verbose</code>运行交叉主题测试</div>
+  <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a><a href="演示.html" class="dep-badge">💡 演示</a></div>
+  <div class="code-block">TC-5: Cat A 页面 → Cat B 页面切换，无样式残留
+TC-6: Cat B 页面 → Cat A 页面切换，Mono 组件不污染 System 页面
+TC-7: 响应式: 375px / 768px / 1280px 三断点 Cat B 布局正常</div>
+</div></div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>§2 实施报告</h2>
+
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">5</span><span class="step-title">撰写实施报告（§2 实施报告）</span><span class="step-status status-pending">⏳ 待开始</span>
+</div><div class="step-body">
+  <p>记录：CSS 变量值截图 + Cat A/B 主题对比截图 + 响应式断点截图 + 5 项 Gate A 信号。写入场景 index.md §2 章节。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story cdn --scene 2</code>让 coder agent 填充 §2 实施报告</div>
+  <div class="step-deps"><span class="dep-label">关联页面:</span><a href="审查.html" class="dep-badge">📝 审查</a><a href="演示.html" class="dep-badge">💡 演示</a></div>
+  <div class="verify-cmd">grep -c "§2" index.md && grep -c "Gate A" index.md</div>
+  <div class="expected">§2 含视觉对比证据、CSS 变量值截图、响应式验证结果、5 项 Gate A 信号</div>
+</div></div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>§3-§4 测试报告与自改进</h2>
+
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+  <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">6</span><span class="step-title">P0 检查清单验证 + git commit + 交付收口</span><span class="step-status status-pending">⏳ 待开始</span>
+</div><div class="step-body">
+  <p>验证：全部 14 个 --yry-* 令牌值一致性 · Cat A/B 主题隔离无误 · Cat A 架构图与 Cat B 审查页面视觉正确 · 响应式无溢出。提交所有场景产物，同步文档到远端，发送企微通知。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>git add docs/故事任务面板/yry-cdn/ && git commit</code></div>
+  <div class="code-block">git add docs/故事任务面板/yry-cdn/场景-2-双主题系统设计/
+git commit -m "docs: 场景-2 双主题系统设计完成"
+node skills/rui-import/sync.mjs workspace=true
+node skills/rui-bot/send.mjs --story=yry-cdn --status=done</div>
+</div></div>
+</div>
+
+</div><!-- /panelChecklist -->
+
+<!-- ═══ Tab 2: Overview ═══ -->
+<div class="panel" id="panelOverview">
+
+<div class="stat-grid">
+  <div class="stat-mini"><div class="sv g" id="ov-done">2</div><div class="sl">已完成</div></div>
+  <div class="stat-mini"><div class="sv y" id="ov-ready">2</div><div class="sl">就绪</div></div>
+  <div class="stat-mini"><div class="sv" style="color:var(--text3)" id="ov-pending">2</div><div class="sl">待开始</div></div>
+  <div class="stat-mini"><div class="sv c">6</div><div class="sl">总步骤</div></div>
+</div>
+
+<div class="section"><h2><span class="dot"></span>各阶段完成度</h2>
+  <div class="section-stat"><span class="ss-label">§0 技术评审</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:100%;background:var(--pass)"></div></div><span class="ss-pct">2/2</span></div>
+  <div class="section-stat"><span class="ss-label">§1 测试设计</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--warn)"></div></div><span class="ss-pct">0/2</span></div>
+  <div class="section-stat"><span class="ss-label">§2 实施报告</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/1</span></div>
+  <div class="section-stat"><span class="ss-label">§3-§4 交付</span><div class="ss-bar-wrap"><div class="ss-bar" style="width:0%;background:var(--text3)"></div></div><span class="ss-pct">0/1</span></div>
+</div>
+
+<div class="section"><h2><span class="dot"></span>下一步行动</h2>
+  <div class="cmd-card"><div class="c-stage">当前就绪 — 步骤 3</div><div class="c-name">定义令牌覆盖率测试用例</div><div class="c-desc">编写自动化测试验证 14 个设计令牌在 14 个 System 组件中的引用覆盖率达到 100%。切换到 ⚡命令 Tab 查看可执行命令。</div></div>
+</div>
+
+</div><!-- /panelOverview -->
+
+<!-- ═══ Tab 3: Commands ═══ -->
+<div class="panel" id="panelCommands">
+
+<div class="section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令</h2>
+<div class="cmd-grid">
+  <div class="cmd-card"><div class="c-stage">步骤 1</div><div class="c-name">验证设计令牌定义</div><div class="c-desc">检查 :root --yry-* 变量数量与值</div><pre>grep -c "\-\-yry-" cdn/theme.css<span class="cb" onclick="copyCmd(this,'grep -c "--yry-" cdn/theme.css')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 2</div><div class="c-name">并排对比 Cat A vs Cat B</div><div class="c-desc">打开两个页面验证视觉差异</div><pre>open 架构图.html → open 审查.html<span class="cb" onclick="copyCmd(this,'open 架构图.html → open 审查.html')">📋</span></pre></div>
+</div></div>
+
+<div class="section"><h2><span class="dot"></span>§1 测试设计 — 待执行命令</h2>
+<div class="cmd-grid">
+  <div class="cmd-card"><div class="c-stage">步骤 3 · 🔶 就绪</div><div class="c-name">运行主题令牌测试</div><div class="c-desc">自动化验证 14 令牌覆盖率</div><pre>node tests/skills/theme-tokens.test.mjs --verbose<span class="cb" onclick="copyCmd(this,'node tests/skills/theme-tokens.test.mjs --verbose')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 4 · 🔶 就绪</div><div class="c-name">运行交叉主题测试</div><div class="c-desc">验证 Cat A/B 交替加载无样式泄漏</div><pre>node tests/integration/cross-cat.test.mjs --verbose<span class="cb" onclick="copyCmd(this,'node tests/integration/cross-cat.test.mjs --verbose')">📋</span></pre></div>
+</div></div>
+
+<div class="section"><h2><span class="dot"></span>§2-交付 — 待执行命令</h2>
+<div class="cmd-grid">
+  <div class="cmd-card"><div class="c-stage">步骤 5</div><div class="c-name">生成实施报告</div><div class="c-desc">coder agent 填充 §2 实施报告</div><pre>/rui doc --story cdn --scene 2<span class="cb" onclick="copyCmd(this,'/rui doc --story cdn --scene 2')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 6</div><div class="c-name">交付收口</div><div class="c-desc">git commit → rui-import 同步 → rui-bot 通知</div><pre>git add . && git commit<span class="cb" onclick="copyCmd(this,'git add . && git commit')">📋</span></pre></div>
+</div></div>
+
+</div><!-- /panelCommands -->
+
+<!-- ═══ Tab 4: Related Pages ═══ -->
+<div class="panel" id="panelRelated">
+
+<div class="link-grid">
+  <a href="架构图.html" class="link-card">
+    <div class="lc-icon">📐</div><div class="lc-name">架构图</div>
+    <div class="lc-desc">Cat A/B 双主题 CSS 架构：全局 → System/Mono → 资源链的 3 层主题</div>
+  </a>
+  <a href="知识图谱.html" class="link-card">
+    <div class="lc-icon">🔗</div><div class="lc-name">知识图谱</div>
+    <div class="lc-desc">Cytoscape 交互式 Cat A/B 交叉测试图：6 领域 × 8 类型节点</div>
+  </a>
+  <a href="源码.html" class="link-card">
+    <div class="lc-icon">📄</div><div class="lc-name">源码</div>
+    <div class="lc-desc">theme.css (14 令牌 + 14 组件) + theme-mono.css (7 组件) 内联查看</div>
+  </a>
+  <a href="测试面板.html" class="link-card">
+    <div class="lc-icon">🧪</div><div class="lc-name">测试面板</div>
+    <div class="lc-desc">8 项测试执行结果：令牌覆盖 · 交叉主题 · 响应式断点</div>
+  </a>
+  <a href="演示.html" class="link-card">
+    <div class="lc-icon">💡</div><div class="lc-name">演示</div>
+    <div class="lc-desc">5 步交互式演练：Cat A/B 切换 → 令牌编辑 → 响应式测试</div>
+  </a>
+  <a href="审查.html" class="link-card">
+    <div class="lc-icon">📝</div><div class="lc-name">审查报告</div>
+    <div class="lc-desc">4 维度 × 5 发现：完整性·一致性·可追溯·表达力</div>
+  </a>
+</div>
+
+</div><!-- /panelRelated -->
+
+<!-- ═══ Tab 5: Verify ═══ -->
+<div class="panel" id="panelVerify">
+
+<div class="verify-list">
+  <div class="verify-item"><div class="vi-label">步骤 1 · 设计令牌数量</div>
+    <pre>grep -c "\-\-yry-" cdn/theme.css<span class="cb" onclick="copyCmd(this,'grep -c "--yry-" cdn/theme.css')">📋</span></pre>
+    <div class="vi-expect">≥ 14 个 --yry-* CSS 变量定义</div>
+  </div>
+  <div class="verify-item"><div class="vi-label">步骤 2 · Cat A 背景色验证</div>
+    <pre># 打开架构图.html → F12 → Console
+getComputedStyle(document.body).backgroundColor<span class="cb" onclick="copyCmd(this,'getComputedStyle(document.body).backgroundColor')">📋</span></pre>
+    <div class="vi-expect">rgb(2, 6, 23) — #020617</div>
+  </div>
+  <div class="verify-item"><div class="vi-label">步骤 2 · 响应式视口</div>
+    <pre># DevTools → Toggle Device Toolbar → 375px → 检查横向溢出<span class="cb" onclick="copyCmd(this,'DevTools → Toggle Device Toolbar → 375px')">📋</span></pre>
+    <div class="vi-expect">Cat B 页面在 375px 下无横向滚动条</div>
+  </div>
+  <div class="verify-item"><div class="vi-label">步骤 5 · §2 实施报告</div>
+    <pre>grep -c "§2" index.md && grep -c "Gate A" index.md<span class="cb" onclick="copyCmd(this,'grep -c "§2" index.md && grep -c "Gate A" index.md')">📋</span></pre>
+    <div class="vi-expect">§2 ≥ 1，Gate A ≥ 1</div>
+  </div>
+  <div class="verify-item"><div class="vi-label">步骤 6 · 双主题页面数</div>
+    <pre>grep -rl "theme.css\|theme-mono.css" docs/故事任务面板/yry-cdn/ | wc -l<span class="cb" onclick="copyCmd(this,'grep -rl "theme.css\|theme-mono.css" docs/故事任务面板/yry-cdn/ | wc -l')">📋</span></pre>
+    <div class="vi-expect">≥ 30 个页面引用主题 CSS</div>
+  </div>
+</div>
+
+</div><!-- /panelVerify -->
+
+<div class="footer">
+  <p>🤖 Generated with planner agent | scene: 双主题系统设计 | updated: 2026-06-08</p>
+</div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SCENE_KEY = 'yry-cdn-s2-checklist';
+
+document.querySelector('.tabs').addEventListener('click', e => {
+  const tab = e.target.closest('.tab');
+  if (!tab) return;
+  switchPanel(tab.dataset.panel);
+});
+
+function switchPanel(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.panel === name));
+  document.querySelectorAll('.panel').forEach(p => {
+    p.classList.toggle('on', p.id === 'panel' + name.charAt(0).toUpperCase() + name.slice(1));
+  });
+  localStorage.setItem(SCENE_KEY + '-tab', name);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  const m = {'1':'checklist','2':'overview','3':'commands','4':'related','5':'verify'};
+  if (m[e.key]) { e.preventDefault(); switchPanel(m[e.key]); }
+});
+
+function updateProgress() {
+  const checks = document.querySelectorAll('.step-checkbox');
+  const done = Array.from(checks).filter(c => c.checked).length;
+  const total = checks.length;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = done + ' / ' + total + ' 完成';
+
+  checks.forEach(cb => {
+    const status = cb.closest('.step').querySelector('.step-status');
+    if (cb.checked) {
+      status.textContent = '✅ 完成'; status.className = 'step-status status-done';
+    } else {
+      const allChecks = Array.from(checks);
+      const idx = allChecks.indexOf(cb);
+      const prevDone = idx === 0 || allChecks[idx - 1].checked;
+      status.textContent = prevDone ? '🔶 就绪' : '⏳ 待开始';
+      status.className = prevDone ? 'step-status status-active' : 'step-status status-pending';
+    }
+  });
+
+  const pending = total - done;
+  const ready = Array.from(checks).filter((c, i) => {
+    if (c.checked) return false;
+    const allChecks = Array.from(checks);
+    return i === 0 || allChecks[i - 1].checked;
+  }).length;
+  const ovDone = document.getElementById('ov-done');
+  const ovReady = document.getElementById('ov-ready');
+  const ovPending = document.getElementById('ov-pending');
+  if (ovDone) ovDone.textContent = done;
+  if (ovReady) ovReady.textContent = ready;
+  if (ovPending) ovPending.textContent = pending - ready;
+
+  const state = {};
+  checks.forEach((cb, i) => { state['step-' + (i + 1)] = cb.checked; });
+  localStorage.setItem(SCENE_KEY, JSON.stringify(state));
+}
+
+function copyCmd(btn, cmd) {
+  navigator.clipboard.writeText(cmd).then(() => {
+    btn.textContent = '✅'; btn.style.opacity = '1';
+    setTimeout(() => { btn.textContent = '📋'; btn.style.opacity = ''; }, 1500);
+  }).catch(() => toast('复制失败'));
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+(function() {
+  const saved = JSON.parse(localStorage.getItem(SCENE_KEY) || '{}');
+  document.querySelectorAll('.step-checkbox').forEach((cb, i) => {
+    if (saved['step-' + (i + 1)]) {
+      cb.checked = true;
+      cb.closest('.step').querySelector('.step-body').classList.add('open');
+    }
+  });
+  updateProgress();
+
+  const activeTab = localStorage.getItem(SCENE_KEY + '-tab') || 'checklist';
+  switchPanel(activeTab);
+})();
+</script>
+<script src="../../../../cdn/shared.js"></script>
 </body>
 </html>

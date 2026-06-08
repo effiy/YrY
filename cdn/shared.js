@@ -5,6 +5,12 @@
    使用方式:
      <script src="../../../../cdn/shared.js"></script>
      然后调用: YrY.toast('消息') / YrY.copyCmd(btn, cmd) / YrY.switchPanel(name)
+
+   对应场景文档:
+     - docs/故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/
+     - docs/故事任务面板/yry-cdn/场景-3-组件库与JS工具API/
+     - docs/故事任务面板/yry-cdn/场景-4-存量页面迁移/
+     - docs/故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/
    ═══════════════════════════════════════════════════════════════════════════ */
 
 const YrY = (function() {

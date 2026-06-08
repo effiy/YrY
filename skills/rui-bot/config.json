@@ -1,0 +1,23 @@
+{
+  "_comment": "WeChat Work (企业微信) bot configuration — 对应场景: docs/故事任务面板/yry-self-test/场景-4-安全面回归自检/",
+  "wecom": {
+    "botKey": "REQUIRED:ENV.WECOM_BOT_KEY",
+    "corpId": "REQUIRED:ENV.WECOM_CORP_ID",
+    "agentId": "REQUIRED:ENV.WECOM_AGENT_ID",
+    "appSecret": "REQUIRED:ENV.WECOM_APP_SECRET"
+  },
+  "notification": {
+    "onGateFail": true,
+    "onModuleComplete": true,
+    "onP0Found": true,
+    "onDeliverySuccess": true
+  },
+  "retry": {
+    "maxRetries": 3,
+    "backoffMs": 5000
+  },
+  "message": {
+    "maxLength": 2048,
+    "format": "markdown"
+  }
+}

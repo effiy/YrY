@@ -1,4 +1,9 @@
-/* JetBrains Mono — self-hosted, subset: latin, weights: 400/500/600/700 */
+/* JetBrains Mono — self-hosted, subset: latin, weights: 400/500/600/700
+
+   对应场景文档:
+     - docs/故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/
+     - docs/故事任务面板/yry-cdn/场景-2-双主题系统设计/
+*/
 
 @font-face {
   font-family: 'JetBrains Mono';

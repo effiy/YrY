@@ -254,8 +254,85 @@ CDN 变更的影响面取决于变更类型：
 
 ---
 
-> **约束**: 只读源码 · 场景 §2–§4 由 code 阶段填充
-> **末端触发**: rui-import + rui-bot 手动触发
+---
+
+## §2 实施报告
+
+### §2.1 实施概要
+
+| 维度 | 内容 |
+|------|------|
+| 实施日期 | 2026-06-08 |
+| 实施者 | Claude (coder agent) |
+| 包名 | `yry-cdn` |
+| 版本 | `1.1.0` |
+| 发布文件数 | 11 (含 fonts.css + 4 woff2) |
+| tarball 大小 | 96.0 KB |
+
+### §2.2 Gate A 交接信号验证
+
+| # | 信号 | 验证结果 | 证据 |
+|---|------|---------|------|
+| G1 | package.json 8 字段齐全 | ✅ | name/version/description/main/files/keywords/license/repository/author |
+| G2 | version 格式正确 | ✅ | `1.1.0` 匹配 `/^\d+\.\d+\.\d+$/` |
+| G3 | files 清单完整 | ✅ | 7 条目含 fonts.css + fonts/*.woff2 |
+| G4 | npm publish --dry-run 通过 | ✅ | exit code 0, 列出 11 文件 |
+
+**Gate A 结论**: 4/4 信号通过 ✅ → 放行。
+
+### §2.3 package.json 字段验证
+
+| 字段 | 值 | 状态 |
+|------|-----|------|
+| name | `yry-cdn` | ✅ |
+| version | `1.1.0` | ✅ semver |
+| description | 非空 | ✅ |
+| main | `shared.js` | ✅ 文件存在 |
+| files | 7 条目 | ✅ 全部存在 |
+| keywords | 7 个 | ✅ |
+| license | MIT | ✅ |
+| repository | git+https://github.com/... | ✅ |
+| author | effiyichengliang | ✅ |
+
+### §2.4 npm publish --dry-run 结果
+
+```
+npm notice 📦  yry-cdn@1.1.0
+npm notice Tarball Contents
+npm notice 5.0kB  README.md
+npm notice 819B   fonts.css
+npm notice 21.2kB fonts/jetbrains-mono-latin-400-normal.woff2
+npm notice 21.8kB fonts/jetbrains-mono-latin-500-normal.woff2
+npm notice 21.9kB fonts/jetbrains-mono-latin-600-normal.woff2
+npm notice 21.9kB fonts/jetbrains-mono-latin-700-normal.woff2
+npm notice 614B   package.json
+npm notice 5.9kB  shared.css
+npm notice 5.1kB  shared.js
+npm notice 6.1kB  theme-mono.css
+npm notice 11.3kB theme.css
+npm notice Tarball Details
+npm notice package size: 96.0 kB
+npm notice unpacked size: 121.6 kB
+npm notice total files: 11
+```
+
+### §2.5 修复记录
+
+| 问题 | 修复前 | 修复后 | 日期 |
+|------|--------|--------|------|
+| fonts 未包含在发布清单 | `files: [5 files]` 不含 fonts | `files: [7 entries]` 含 fonts.css + fonts/*.woff2 | 2026-06-08 |
+| 自托管字体缺失 | Google Fonts 外部依赖 | fonts.css + 4 woff2 自托管 | 2026-06-08 |
+
+### §2.6 P0 检查清单
+
+| # | 检查项 | 状态 |
+|---|--------|------|
+| P0-1 | 版本号 semver 格式 | ✅ |
+| P0-2 | files 数组所有文件存在 | ✅ |
+| P0-3 | main 入口文件存在 | ✅ |
+| P0-4 | npm publish --dry-run 无错误 | ✅ |
+| P0-5 | 密钥/Token 未出现在 package.json | ✅ |
+| P0-6 | 自托管字体发布完整性 | ✅ |
 
 ## 回溯链
 

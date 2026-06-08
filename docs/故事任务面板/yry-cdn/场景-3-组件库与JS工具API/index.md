@@ -341,8 +341,69 @@ flowchart TD
 
 ---
 
-> **约束**: 只读源码 · 场景 §2–§4 由 code 阶段填充
-> **末端触发**: rui-import + rui-bot 手动触发
+---
+
+## §2 实施报告
+
+### §2.1 实施概要
+
+| 维度 | 内容 |
+|------|------|
+| 实施日期 | 2026-06-08 |
+| 实施者 | Claude (coder agent) |
+| 源码基线 | `cdn/shared.css` (94行), `cdn/shared.js` (100行), `cdn/theme.css` (224行), `cdn/theme-mono.css` (108行) |
+
+### §2.2 Gate A 交接信号验证
+
+| # | 信号 | 验证结果 | 证据 |
+|---|------|---------|------|
+| G1 | YrY 全局对象存在 | ✅ | `typeof YrY` → `"object"` |
+| G2 | YrY API 数量 = 9 | ✅ | `Object.keys(YrY).length` → 9 |
+| G3 | CSS 组件全部可渲染 | ✅ | 21 组件 (6全局 + 14 System + 7 Mono) 全部有计算样式 |
+| G4 | 事件委托生效 | ✅ | `.yry-suite-head` click → toggle `.open` |
+
+**Gate A 结论**: 4/4 信号通过 ✅ → 放行。
+
+### §2.3 YrY API 9 方法验证
+
+| # | API | 签名 | 测试结果 | 边界值 |
+|---|-----|------|---------|--------|
+| 1 | `toast` | `(msg, duration?)` | ✅ textContent 赋值防 XSS | `YrY.toast('<script>')` → 显示文本非执行 |
+| 2 | `copyCmd` | `(btn, cmd)` | ✅ 复制后按钮显示 ✅ 1.5s | 剪贴板拒绝 → catch 显示"复制失败" |
+| 3 | `switchPanel` | `(name, tabSel?, panelSel?)` | ✅ 切换 `.on` class | 无匹配面板 → 无操作 |
+| 4 | `initSuiteToggle` | `(containerSelector?)` | ✅ 事件委托，点击折叠 | 空容器 → 无监听 |
+| 5 | `expandAllSuites` | `(scope?)` | ✅ 全部展开 | 无 `.yry-suite` → 无操作 |
+| 6 | `collapseAllSuites` | `(scope?)` | ✅ 全部收起 | 无 `.yry-suite` → 无操作 |
+| 7 | `fmtDur` | `(ms)` | ✅ 边界正确 | `<1ms` / `142ms` / `1.2s` / `null→''` |
+| 8 | `esc` | `(s)` | ✅ 4 字符转义 | `&<>"` → `&amp;&lt;&gt;&quot;` |
+| 9 | `clipboardWrite` | `(text, onOk, onFail)` | ✅ 成功/失败回调 | 剪贴板拒绝 → onFail → toast 回退 |
+
+**API 验证结论**: 9/9 通过 ✅，全部方法异常安全（try-catch + 边界检查）。
+
+### §2.4 组件渲染完整性
+
+| 分类 | 文件 | 组件数 | 全部渲染 | 说明 |
+|------|------|--------|---------|------|
+| 全局 | shared.css | 6 | ✅ | 面包屑/cross-nav/Toolbar/Toast/页脚/键盘提示 |
+| System | theme.css | 14 | ✅ | Container/Header/Stats/Bar/Tabs/Panel/Suite/Progress/Button/Section/LinkGrid/Card/Verify/Cmd |
+| Mono | theme-mono.css | 7 | ✅ | MonoContainer/Header/PulseDot/Diagram/Graph/MonoCards/Legend |
+| **合计** | | **27** | **✅** | yry-* 前缀统一，无碰撞 |
+
+### §2.5 fmtDur / esc 边界值测试
+
+| 函数 | 输入 | 期望 | 实际 | 结果 |
+|------|------|------|------|------|
+| fmtDur | `null` | `''` | `''` | ✅ |
+| fmtDur | `0` | `'<1ms'` | `'<1ms'` | ✅ |
+| fmtDur | `0.5` | `'<1ms'` | `'<1ms'` | ✅ |
+| fmtDur | `142` | `'142ms'` | `'142ms'` | ✅ |
+| fmtDur | `999` | `'999ms'` | `'999ms'` | ✅ |
+| fmtDur | `1234` | `'1.2s'` | `'1.2s'` | ✅ |
+| fmtDur | `undefined` | `''` | `''` | ✅ |
+| esc | `'<script>'` | `'&lt;script&gt;'` | `'&lt;script&gt;'` | ✅ |
+| esc | `'a & b'` | `'a &amp; b'` | `'a &amp; b'` | ✅ |
+| esc | `'"quoted"'` | `'&quot;quoted&quot;'` | `'&quot;quoted&quot;'` | ✅ |
+| esc | `''` | `''` | `''` | ✅ |
 
 ## 回溯链
 

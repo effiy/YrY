@@ -1,7 +1,14 @@
 #!/usr/bin/env node
-// send — Executable rui-bot notification sender
-// 用法: node skills/rui-bot/send.mjs [options]
-// 按 SKILL.md 规约发送企微通知并追加消息日志
+/**
+ * send — Executable rui-bot notification sender
+ * 用法: node skills/rui-bot/send.mjs [options]
+ * 按 SKILL.md 规约发送企微通知并追加消息日志
+ *
+ * 对应场景文档:
+ *   - docs/故事任务面板/yry-arch/场景-2-数据流追踪/
+ *   - docs/故事任务面板/yry-arch/场景-4-依赖变更影响/
+ *   - docs/故事任务面板/yry-self-test/ (全局通知)
+ */
 
 import { join } from "node:path";
 import { existsSync, readFileSync } from "node:fs";

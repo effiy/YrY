@@ -1,0 +1,40 @@
+# YrY CDN — npm 包发布忽略清单
+# 对应场景文档:
+#   - docs/故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/
+
+# Package management files
+node_modules/
+package-lock.json
+yarn.lock
+.npmrc
+
+# Development files
+.env
+.env.*
+*.log
+*.tmp
+
+# Test files
+tests/
+test/
+*.test.js
+*.test.mjs
+
+# Script files (not part of CDN delivery)
+scripts/
+skills/
+
+# Project configuration
+.claude/
+CLAUDE.md
+README.md
+docs/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

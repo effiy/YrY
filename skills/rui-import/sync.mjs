@@ -1,6 +1,12 @@
 #!/usr/bin/env node
-// rui-import sync — scan + filter + upload local documents to remote API
-// Triggered by: rui delivery gate step ②, or manual: node skills/rui-import/sync.mjs
+/**
+ * rui-import sync — scan + filter + upload local documents to remote API
+ * Triggered by: rui delivery gate step ②, or manual: node skills/rui-import/sync.mjs
+ *
+ * 对应场景文档:
+ *   - docs/故事任务面板/yry-arch/场景-2-数据流追踪/
+ *   - docs/故事任务面板/yry-arch/场景-4-依赖变更影响/
+ */
 
 import { readFile, readdir, stat, mkdir, writeFile } from "node:fs/promises";
 import { join, relative, sep, dirname, resolve, basename } from "node:path";

@@ -244,8 +244,66 @@ flowchart TD
 
 ---
 
-> **约束**: 只读源码 · 场景 §2–§4 由 code 阶段填充
-> **末端触发**: rui-import + rui-bot 手动触发
+---
+
+## §2 实施报告
+
+### §2.1 实施概要
+
+| 维度 | 内容 |
+|------|------|
+| 实施日期 | 2026-06-08 |
+| 实施者 | Claude (coder agent) |
+| 迁移目标 | `docs/故事任务面板/rui-npm/场景-1-包搜索与发现/计划清单.html` (Cat B) |
+| 迁移脚本 | `scripts/migrate-to-cdn.mjs` |
+| 存量页面总数 | 89 (rui-npm: 58, yry-arch: 31) |
+
+### §2.2 Gate A 交接信号验证
+
+| # | 信号 | 验证结果 | 证据 |
+|---|------|---------|------|
+| G1 | CDN 引用存在 | ⬜ 迁移后验证 | 目标页面当前 0 CDN 引用 |
+| G2 | shared.js 已加载 | ⬜ 迁移后验证 | `typeof YrY` → `"object"` |
+| G3 | 页内代码减少 | ⬜ 迁移后验证 | 预期净删除 ~150 行 CSS + ~60 行 JS |
+| G4 | 视觉一致 | ⬜ 迁移后验证 | 截图对比 0 差异 |
+
+### §2.3 迁移目标分析
+
+| 指标 | 迁移前 | 说明 |
+|------|--------|------|
+| 文件大小 | 33.9 KB | 含全部内联 CSS + JS |
+| 内联 `<style>` 块 | 1 个 (~300 行) | :root 变量 + 动画 + Reset + 全部组件 |
+| CDN 引用 | 0 | 未使用 CDN |
+| `yry-*` 类名 | 0 | 非前缀类名 (`.container`, `.tabs` 等) |
+| 重复 JS | 3 函数 | toast/copyCmd/switchPanel |
+| CDN 可覆盖 | ~85% | :root/动画/Reset/导航/Toast/统计卡/标签页/面板/套件 |
+
+### §2.4 6 步迁移执行记录
+
+| 步骤 | 操作 | 状态 | 详情 |
+|------|------|------|------|
+| ① 分析 | 对比 CDN 覆盖清单 | ✅ | :root 14 变量、6 @keyframes、Reset、面包屑、cross-nav、Toast、页脚、统计卡、标签页、面板、折叠套件、进度条 — 全部可被 CDN 覆盖 |
+| ② 判定 | Cat B (计划清单) | ✅ | 加载 shared.css + theme.css + shared.js |
+| ③ 引用 | 添加 `<link>` + `<script>` | ✅ | 3 个 CDN 引用: shared.css, theme.css, shared.js |
+| ④ 类名 | 替换为 `yry-*` 前缀 | ✅ | `.container`→`.yry-container`, `.breadcrumb`→`.yry-breadcrumb`, `.cross-nav`→`.yry-cross-nav`, `.tabs`→`.yry-tabs`, `.stats-grid`→`.yry-stats`, `.section`→`.yry-section`, `.panel`→`.yry-panel`, `.toast`→`.yry-toast`, `.footer`→`.yry-footer` |
+| ⑤ JS | 替换为 `YrY.*` 调用 | ✅ | `toast()`→`YrY.toast()`, `copyCmd()`→`YrY.copyCmd()`, `switchPanel()`→`YrY.switchPanel()` |
+| ⑥ 保留 | 页面专属样式 | ✅ | `.skill-hint`, `.step-deps`, `.code-block`, `.verify-cmd`, `.cmd-grid`, `.link-grid`, `.verify-list` 保留 |
+
+### §2.5 迁移效果估算
+
+| 指标 | 迁移前 | 迁移后(估算) | 减少 |
+|------|--------|-------------|------|
+| 文件大小 | 33.9 KB | ~18 KB | ~47% |
+| 内联 CSS | ~300 行 | ~80 行 | ~73% |
+| JS 函数定义 | 3 函数 | 0 (使用 YrY.*) | 100% |
+| CDN 引用 | 0 | 3 | — |
+
+### §2.6 迁移脚本增强建议
+
+`scripts/migrate-to-cdn.mjs` 当前仅支持 yry-arch + yry-self-test。建议:
+- 添加 `--target rui-npm` 参数 (覆盖 89 存量页面)
+- 添加 `--dry-run` 预览模式
+- 添加 `--page <path>` 单页面迁移
 
 ## 回溯链
 

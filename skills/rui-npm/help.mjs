@@ -1,6 +1,15 @@
 #!/usr/bin/env node
-// rui-npm — personal npm package manager help
-// 用法: node skills/rui-npm/help.mjs 或 /rui-npm --help
+/**
+ * rui-npm — personal npm package manager help
+ * 用法: node skills/rui-npm/help.mjs 或 /rui-npm --help
+ *
+ * 对应场景文档:
+ *   - docs/故事任务面板/rui-npm/场景-1-包搜索与发现/
+ *   - docs/故事任务面板/rui-npm/场景-2-包安装与版本管理/
+ *   - docs/故事任务面板/rui-npm/场景-3-本地发布与npx使用/
+ *   - docs/故事任务面板/rui-npm/场景-4-包信息审计与卸载/
+ *   - docs/故事任务面板/rui-npm/场景-5-账号级包管理/
+ */
 
 const ANSI_BOLD = 1;
 const ANSI_DIM = 2;
