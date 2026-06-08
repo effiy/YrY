@@ -6,14 +6,14 @@
 import { join, sep, dirname, resolve } from "node:path";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { execSync } from "node:child_process";
-import { homedir } from "node:os";
 
 import { bold, dim, red, green, yellow, cyan } from "../../lib/tty.mjs";
 import {
   NODE_ARGV_OFFSET, HTTP_TIMEOUT_MS, CONCURRENCY, ERROR_MSG_MAX_LEN,
   DEFAULT_API_URL,
 } from "../../lib/constants.mjs";
-import { findProjectRoot, readProjectName } from "../../lib/fs.mjs";
+import { findProjectRoot, readProjectName, findPluginHelpPath } from "../../lib/fs.mjs";
+import { fetchJson } from "../../lib/network.mjs";
 
 // --- config ----------------------------------------------------------------
 const API_URL = process.env.IMPORT_DOCS_API_URL || DEFAULT_API_URL;
@@ -74,41 +74,19 @@ function parseArgs() {
 }
 
 
-// --- API helpers (replicated from rui-import/sync.mjs) --------------------
-async function fetchJson(url, options = {}) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), HTTP_TIMEOUT);
-  try {
-    const res = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "X-Token": API_X_TOKEN,
-        ...options.headers,
-      },
-    });
-    const text = await res.text();
-    if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, ERROR_MSG_MAX_LEN)}`);
-    try { return JSON.parse(text); }
-    catch { return text; }
-  } finally { clearTimeout(timer); }
-}
-
 async function querySessionsFull(apiUrl) {
   const body = {
     module_name: "services.database.data_service",
     method_name: "query_documents",
     parameters: { cname: "sessions" },
   };
-  const data = await fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
+  const data = await fetchJson(apiUrl + "/", API_X_TOKEN, { method: "POST", body: JSON.stringify(body) });
   return data?.data?.list || data?.list || [];
 }
 
 async function readRemoteFile(apiUrl, remotePath) {
   const body = { target_file: remotePath };
-  return fetchJson(apiUrl + "/read-file", { method: "POST", body: JSON.stringify(body) });
+  return fetchJson(apiUrl + "/read-file", API_X_TOKEN, { method: "POST", body: JSON.stringify(body) });
 }
 
 // --- story extraction ------------------------------------------------------
@@ -765,21 +743,8 @@ async function cmdMergeToMain(projectRoot) {
 // --- help delegate ---------------------------------------------------------
 const SKILL_NAME = "rui-story";
 
-function findPluginHelpPath() {
-  const pluginRoot = join(homedir(), ".claude/plugins/cache/yry/yry");
-  if (!existsSync(pluginRoot)) return null;
-  try {
-    const versions = readdirSync(pluginRoot).filter(d => /^\d+\.\d+\.\d+$/.test(d)).sort();
-    if (versions.length === 0) return null;
-    const helpPath = join(pluginRoot, versions[versions.length - 1], "skills", SKILL_NAME, "help.mjs");
-    return existsSync(helpPath) ? helpPath : null;
-  } catch {
-    return null;
-  }
-}
-
 async function showHelp() {
-  const helpPath = findPluginHelpPath();
+  const helpPath = findPluginHelpPath(SKILL_NAME);
   if (helpPath) {
     try {
       execSync(`node "${helpPath}"`, { stdio: "inherit" });

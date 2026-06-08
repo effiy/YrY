@@ -7,7 +7,7 @@ import { readFile, readdir, stat } from "node:fs/promises";
 import { join, relative, resolve, dirname, basename, sep } from "node:path";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { execSync } from "node:child_process";
-import { homedir } from "node:os";
+import { findPluginHelpPath } from "../../lib/fs.mjs";
 
 // --- config ----------------------------------------------------------------
 const FRONTEND_EXTS = new Set([".vue", ".jsx", ".tsx", ".svelte"]);
@@ -52,21 +52,8 @@ function parseArgs() {
 
 const SKILL_NAME = "rui";
 
-function findPluginHelpPath() {
-  const pluginRoot = join(homedir(), ".claude/plugins/cache/yry/yry");
-  if (!existsSync(pluginRoot)) return null;
-  try {
-    const versions = readdirSync(pluginRoot).filter(d => /^\d+\.\d+\.\d+$/.test(d)).sort();
-    if (versions.length === 0) return null;
-    const helpPath = join(pluginRoot, versions[versions.length - 1], "skills", SKILL_NAME, "help.mjs");
-    return existsSync(helpPath) ? helpPath : null;
-  } catch {
-    return null;
-  }
-}
-
 function showHelp() {
-  const helpPath = findPluginHelpPath();
+  const helpPath = findPluginHelpPath(SKILL_NAME);
   if (existsSync(helpPath)) {
     try {
       execSync(`node "${helpPath}"`, { stdio: "inherit" });

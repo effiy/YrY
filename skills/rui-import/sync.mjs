@@ -12,13 +12,13 @@ import { readFile, readdir, stat, mkdir, writeFile } from "node:fs/promises";
 import { join, relative, sep, dirname, resolve, basename } from "node:path";
 import { existsSync, readdirSync } from "node:fs";
 import { execSync } from "node:child_process";
-import { homedir } from "node:os";
 
 import {
   NODE_ARGV_OFFSET, HTTP_TIMEOUT_MS, CONCURRENCY, ERROR_MSG_MAX_LEN,
   DEFAULT_API_URL,
 } from "../../lib/constants.mjs";
-import { findProjectRoot } from "../../lib/fs.mjs";
+import { findProjectRoot, findPluginHelpPath } from "../../lib/fs.mjs";
+import { fetchJson } from "../../lib/network.mjs";
 
 // --- config ----------------------------------------------------------------
 const API_URL = process.env.IMPORT_DOCS_API_URL || DEFAULT_API_URL;
@@ -62,21 +62,8 @@ function parseArgs() {
 
 const SKILL_NAME = "rui-import";
 
-function findPluginHelpPath() {
-  const pluginRoot = join(homedir(), ".claude/plugins/cache/yry/yry");
-  if (!existsSync(pluginRoot)) return null;
-  try {
-    const versions = readdirSync(pluginRoot).filter(d => /^\d+\.\d+\.\d+$/.test(d)).sort();
-    if (versions.length === 0) return null;
-    const helpPath = join(pluginRoot, versions[versions.length - 1], "skills", SKILL_NAME, "help.mjs");
-    return existsSync(helpPath) ? helpPath : null;
-  } catch {
-    return null;
-  }
-}
-
 function showHelp() {
-  const helpPath = findPluginHelpPath();
+  const helpPath = findPluginHelpPath(SKILL_NAME);
   if (helpPath) {
     try {
       execSync(`node "${helpPath}"`, { stdio: "inherit" });
@@ -149,35 +136,13 @@ function getTags(remotePath, _localPath, _projectRootName) {
   return parts;
 }
 
-// --- HTTP helpers ----------------------------------------------------------
-async function fetchJson(url, options = {}) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), HTTP_TIMEOUT);
-  try {
-    const res = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "X-Token": API_X_TOKEN,
-        ...options.headers,
-      },
-    });
-    const text = await res.text();
-    if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, ERROR_MSG_MAX_LEN)}`);
-    try { return JSON.parse(text); }
-    catch { return text; }
-  } finally { clearTimeout(timer); }
-}
-
 async function querySessionsFull(apiUrl) {
   const body = {
     module_name: "services.database.data_service",
     method_name: "query_documents",
     parameters: { cname: "sessions" },
   };
-  const data = await fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
+  const data = await fetchJson(apiUrl + "/", API_X_TOKEN, { method: "POST", body: JSON.stringify(body) });
   return data?.data?.list || data?.list || [];
 }
 
@@ -192,7 +157,7 @@ async function querySessions(apiUrl) {
 
 async function writeRemoteFile(apiUrl, remotePath, content, overwrite) {
   const body = { target_file: remotePath, content, is_base64: false, overwrite: !!overwrite };
-  return fetchJson(apiUrl + "/write-file", { method: "POST", body: JSON.stringify(body) });
+  return fetchJson(apiUrl + "/write-file", API_X_TOKEN, { method: "POST", body: JSON.stringify(body) });
 }
 
 async function createSession(apiUrl, remotePath, localPath, projectRootName) {
@@ -217,7 +182,7 @@ async function createSession(apiUrl, remotePath, localPath, projectRootName) {
       },
     },
   };
-  const resp = await fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
+  const resp = await fetchJson(apiUrl + "/", API_X_TOKEN, { method: "POST", body: JSON.stringify(body) });
   // Return the created item for dedup tracking (fallback to synthetic marker)
   const created = resp?.data || resp;
   return (created && created.file_path) ? created : { file_path: remotePath, _id: "local-" + now };
@@ -236,7 +201,7 @@ async function updateSession(apiUrl, remotePath, existingItem) {
       data: { updatedAt: now, lastAccessTime: now },
     },
   };
-  return fetchJson(apiUrl + "/", { method: "POST", body: JSON.stringify(body) });
+  return fetchJson(apiUrl + "/", API_X_TOKEN, { method: "POST", body: JSON.stringify(body) });
 }
 
 // --- single-file upload ----------------------------------------------------
@@ -290,7 +255,7 @@ async function uploadAll(files, apiUrl, existingPaths, root, workspaceName, pref
 // --- remote read (pull mode) ------------------------------------------------
 async function readRemoteFile(apiUrl, remotePath) {
   const body = { target_file: remotePath };
-  return fetchJson(apiUrl + "/read-file", { method: "POST", body: JSON.stringify(body) });
+  return fetchJson(apiUrl + "/read-file", API_X_TOKEN, { method: "POST", body: JSON.stringify(body) });
 }
 
 function resolvePullFilter(localDir, projectRoot, projectPrefix) {

@@ -4,15 +4,9 @@
 
 import { execSync } from 'child_process';
 import { readFileSync, writeFileSync } from 'fs';
+import { bold, dim, red, green, yellow, cyan } from '../../lib/tty.mjs';
 
 const DRY_RUN = process.argv.includes('--dry-run');
-
-function bold(s) { return '\x1b[1m' + s + '\x1b[0m'; }
-function dim(s) { return '\x1b[2m' + s + '\x1b[0m'; }
-function green(s) { return '\x1b[32m' + s + '\x1b[0m'; }
-function yellow(s) { return '\x1b[33m' + s + '\x1b[0m'; }
-function cyan(s) { return '\x1b[36m' + s + '\x1b[0m'; }
-function red(s) { return '\x1b[31m' + s + '\x1b[0m'; }
 
 function exec(cmd, opts) {
   opts = opts || {};
@@ -25,7 +19,7 @@ function exec(cmd, opts) {
 }
 
 function exit(msg, code) {
-  console.error(red('\n' + String.fromCharCode(0x2717) + ' ' + msg));
+  console.error(red('\n✗ ' + msg));
   process.exit(code || 1);
 }
 
