@@ -36,6 +36,11 @@ body { background:var(--yry-bg); color:var(--yry-text); font-family:-apple-syste
 .empty-state p { font-size:.88rem; color:var(--yry-text3); max-width:480px; margin:0 auto; line-height:1.6; }
 .empty-state code { background:var(--yry-bg-flat); padding:5px 10px; border-radius:6px; font-size:.78rem; color:var(--yry-cyan); margin-top:6px; display:inline-block; }
 
+.cross-nav { display:flex; gap:4px; justify-content:center; align-items:center; margin-bottom:40px; flex-wrap:wrap }
+.cross-link { color:var(--yry-cyan); text-decoration:none; font-size:.74rem; padding:3px 10px; border-radius:4px; transition:color .15s,background .15s }
+.cross-link:hover { color:var(--yry-accent); background:rgba(255,193,7,.06); text-decoration:underline }
+.cross-sep { color:var(--yry-text3); font-size:.5rem; opacity:.35; user-select:none }
+
 .footer-note { text-align:center; color:var(--yry-text3); font-size:.74rem; margin-top:48px; padding-top:24px; border-top:1px solid rgba(255,255,255,0.06); }
 .footer-note a { color:var(--yry-accent); text-decoration:none; }
 .footer-note a:hover { text-decoration:underline; }
