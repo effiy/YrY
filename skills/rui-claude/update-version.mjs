@@ -198,10 +198,23 @@ if (DRY_RUN) {
     readme = readme
       .replace(/(\*\*版本\*\*[：:]\s*`?)[\d.]+(`?)/, '$1' + newVersion + '$2')
       .replace(/(version[：:]\s*`?)[\d.]+(`?)/g, '$1' + newVersion + '$2')
-      .replace(/(v)[\d.]+(\s)/g, 'v' + newVersion + '$2');
+      .replace(/(v)[\d.]+(\s)/g, 'v' + newVersion + '$2')
+      .replace(/(<sub>v)[\d.]+(<\/sub>)/, '$1' + newVersion + '$2');
     writeFileSync(readmePath, readme, 'utf-8');
     console.log(green('  OK: README.md -> ' + newVersion));
   } catch (e) { console.log(yellow('  WARNING: README.md not found, skipped')); }
+
+  // 6e: docs/index.html
+  try {
+    var indexPath = 'docs/index.html';
+    var indexHtml = readFileSync(indexPath, 'utf-8');
+    indexHtml = indexHtml.replace(
+      /(YrY v)[\d.]+( ·)/,
+      '$1' + newVersion + '$2'
+    );
+    writeFileSync(indexPath, indexHtml, 'utf-8');
+    console.log(green('  OK: docs/index.html -> ' + newVersion));
+  } catch (e) { console.log(yellow('  WARNING: docs/index.html not found, skipped')); }
 }
 
 // Section 7: Git commit
