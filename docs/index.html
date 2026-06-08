@@ -294,6 +294,7 @@
       <a class="stat" href="#layer-agents"><div class="num">9</div><div class="label">Agent 角色</div></a>
       <a class="stat" href="#layer-rules"><div class="num green">10</div><div class="label">规则</div></a>
       <a class="stat" href="#layer-refs"><div class="num green">4</div><div class="label">参考入口</div></a>
+      <a class="stat" href="#layer-deps"><div class="num green">10</div><div class="label">依赖/框架</div></a>
     </div>
 
     <div class="cross-nav">
@@ -304,6 +305,8 @@
       <a class="cross-link" href="../CLAUDE.md" target="_blank">📜 CLAUDE.md</a>
       <span class="cross-sep">·</span>
       <a class="cross-link" href="../README.md" target="_blank">📖 README.md</a>
+      <span class="cross-sep">·</span>
+      <a class="cross-link" href="#layer-deps">📦 依赖/框架</a>
     </div>
 
     <!-- ===== Layer 1: 技能 ===== -->
@@ -958,8 +961,168 @@
       </div>
     </div>
 
+    <hr>
+
+    <!-- ===== Layer 6: 第三方依赖与框架 ===== -->
+    <div class="layer" id="layer-deps">
+      <div class="layer-header">
+        <span class="layer-num">6</span>
+        <h2>第三方依赖与框架</h2>
+        <span class="layer-stats">7 运行时 · 3 开发依赖 · 零外部 npm 依赖</span>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#9889;</span> 运行时依赖 (7)</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon rule">C</span>
+          <div class="body">
+            <div class="name"><a href="https://www.jsdelivr.com/package/npm/yry-cdn-lib" target="_blank">yry-cdn-lib</a></div>
+            <div class="desc">YrY 自建 CDN 共享库 — 双主题系统 (Mono + System)、21 CSS 组件、9 JS 工具 API。55+ 页面统一引用</div>
+            <div class="tags-row">
+              <span class="tag-chip accent">自建</span>
+              <span class="tag-chip info">jsDelivr CDN</span>
+              <span class="tag-chip cyan">v1.1.0</span>
+            </div>
+            <div class="meta"><span class="detail">shared.css + theme.css + theme-mono.css + fonts.css + shared.js</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">G</span>
+          <div class="body">
+            <div class="name"><a href="https://js.cytoscape.org/" target="_blank">Cytoscape.js</a></div>
+            <div class="desc">图论可视化库 — 知识图谱页面的交互式节点-边图渲染。支持布局算法、缩放、导出</div>
+            <div class="tags-row">
+              <span class="tag-chip green">可视化</span>
+              <span class="tag-chip info">jsDelivr CDN</span>
+              <span class="tag-chip cyan">v3.28.1</span>
+            </div>
+            <div class="meta"><span class="detail">4 故事面板 · 知识图谱.html — breadthfirst 布局</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">H</span>
+          <div class="body">
+            <div class="name"><a href="https://html2canvas.hertzen.com/" target="_blank">html2canvas</a></div>
+            <div class="desc">DOM 截图引擎 — 架构图和知识图谱页面的截图导出功能。DOM → Canvas → PNG/PDF</div>
+            <div class="tags-row">
+              <span class="tag-chip green">导出</span>
+              <span class="tag-chip info">jsDelivr CDN</span>
+              <span class="tag-chip cyan">v1.4.1</span>
+            </div>
+            <div class="meta"><span class="detail">架构图 + 知识图谱 — Copy / PNG / PDF 三格式导出</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">J</span>
+          <div class="body">
+            <div class="name"><a href="https://github.com/parallax/jsPDF" target="_blank">jsPDF</a></div>
+            <div class="desc">客户端 PDF 生成 — 架构图和知识图谱页面的 PDF 导出。配合 html2canvas 使用</div>
+            <div class="tags-row">
+              <span class="tag-chip green">导出</span>
+              <span class="tag-chip info">jsDelivr CDN</span>
+              <span class="tag-chip cyan">v2.5.2</span>
+            </div>
+            <div class="meta"><span class="detail">A4 纵向 · 矢量缩放 · 下载触发</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">A</span>
+          <div class="body">
+            <div class="name">api.effiy.cn</div>
+            <div class="desc">远端文档 API — rui-import 同步引擎的目标端点。文档的增删改查、session 管理。认证: X-Token</div>
+            <div class="tags-row">
+              <span class="tag-chip accent">自建</span>
+              <span class="tag-chip info">REST API</span>
+            </div>
+            <div class="meta"><span class="detail">query_documents · create_document · update_document · write-file · read-file</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">W</span>
+          <div class="body">
+            <div class="name">企业微信 Webhook</div>
+            <div class="desc">企微群机器人消息推送 — rui-bot 通知引擎的消息目标。Markdown 格式，支持 @成员</div>
+            <div class="tags-row">
+              <span class="tag-chip purple">通知</span>
+              <span class="tag-chip info">Webhook</span>
+            </div>
+            <div class="meta"><span class="detail">rui-bot · 交付三步 · 阻断/完成/异常通知</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">N</span>
+          <div class="body">
+            <div class="name">npm Registry</div>
+            <div class="desc">npm 官方注册表 — rui-npm 技能的数据源。search / view / install / publish / audit</div>
+            <div class="tags-row">
+              <span class="tag-chip info">外部 API</span>
+              <span class="tag-chip info">registry.npmjs.org</span>
+            </div>
+            <div class="meta"><span class="detail">rui-npm · 5 场景 · 包搜索/安装/发布/审计/卸载</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#128736;</span> 开发依赖 (3)</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon ref">N</span>
+          <div class="body">
+            <div class="name">Node.js 内置模块</div>
+            <div class="desc">项目零外部 npm 依赖。全部脚本基于 Node.js 内置模块：fs, path, child_process, crypto, http, os, url</div>
+            <div class="tags-row">
+              <span class="tag-chip green">零依赖</span>
+              <span class="tag-chip info">Built-in</span>
+            </div>
+            <div class="meta"><span class="detail">14 脚本 + 4 共享库 — 全部使用 Node.js 标准库</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon ref">T</span>
+          <div class="body">
+            <div class="name">自建测试框架</div>
+            <div class="desc">轻量级 describe/it/assert 测试原语 — 零外部依赖，支持 .only/.skip、JSON 输出。自包含可独立执行</div>
+            <div class="tags-row">
+              <span class="tag-chip accent">自建</span>
+              <span class="tag-chip info">Zero Deps</span>
+            </div>
+            <div class="meta"><span class="detail">tests/lib/test-harness.mjs + helpers.mjs · 13 套件</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon ref">P</span>
+          <div class="body">
+            <div class="name"><a href="../cdn/package.json" target="_blank">yry-cdn npm 包</a></div>
+            <div class="desc">CDN 资源发布为 npm 包 — jsDelivr 自动同步。cdn/package.json 定义发布清单 (files[])</div>
+            <div class="tags-row">
+              <span class="tag-chip accent">自建</span>
+              <span class="tag-chip info">npm</span>
+              <span class="tag-chip cyan">v1.1.0</span>
+            </div>
+            <div class="meta"><span class="detail">shared.css + shared.js + theme.css + theme-mono.css + fonts.css + fonts/*.woff2</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#128230;</span> 依赖架构决策</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon rule">Z</span>
+          <div class="body">
+            <div class="name">零外部 npm 依赖原则</div>
+            <div class="desc">项目根无 package.json、无 node_modules。所有业务逻辑基于 Node.js 标准库实现。测试框架自建。CDN 资源的 npm 发布仅用于分发（jsDelivr），不引入运行时依赖。</div>
+            <div class="tags-row">
+              <span class="tag-chip accent">架构决策</span>
+              <span class="tag-chip green">零依赖</span>
+            </div>
+            <div class="meta"><span class="detail">CLAUDE.md · 项目约束 · 自托管一致性</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="footer-note">
-      YrY v4.7.0 · 故事驱动的 SDLC 编排系统 · <a href="../CLAUDE.md">CLAUDE.md</a> · <a href="../README.md">README.md</a>
+      YrY v4.8.0 · 故事驱动的 SDLC 编排系统 · <a href="../CLAUDE.md">CLAUDE.md</a> · <a href="../README.md">README.md</a>
     </div>
   </div>
 

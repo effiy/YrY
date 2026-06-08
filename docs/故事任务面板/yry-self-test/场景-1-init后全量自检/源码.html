@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>场景1-init后全量自检 · 源码</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+<style>:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--skip:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
+.container{max-width:1120px;margin:0 auto;padding:48px 24px 80px}
+.header{text-align:center;margin-bottom:32px;animation:fadeInDown .5s ease both}
+.header h1{font-size:2.1rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+.header .sub{color:var(--text2);font-size:.9rem}
+.stats-grid{display:flex;gap:14px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 22px;text-align:center;box-shadow:var(--shadow);min-width:90px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat-card .val{font-size:1.8rem;font-weight:700;line-height:1.1}
+.stat-card .val.c{color:var(--cyan)}.stat-card .val.a{color:var(--accent)}.stat-card .val.p{color:var(--pass)}
+.stat-card .lbl{font-size:.72rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+.bar-wrap{margin-bottom:32px;animation:fadeInDown .5s .12s ease both}
+.bar-outer{height:8px;border-radius:4px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
+.bar-outer .seg{height:100%;transition:width .5s ease;min-width:2px}
+.bar-outer .seg.runner{background:var(--accent)}.bar-outer .seg.lib{background:var(--pass)}.bar-outer .seg.skill{background:var(--cyan)}.bar-outer .seg.script{background:#a78bfa}
+.file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px}
+.file-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;display:flex;align-items:flex-start;gap:12px}
+.file-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:rgba(255,255,255,.1)}
+.file-card .fc-icon{font-size:1.4rem;flex-shrink:0;margin-top:2px}
+.file-card .fc-body{flex:1;min-width:0}
+.file-card .fc-name{font-weight:600;font-size:.88rem}
+.file-card .fc-path{font-size:.7rem;color:var(--text3);font-family:monospace;margin-top:1px}
+.file-card .fc-desc{font-size:.74rem;color:var(--text2);margin-top:4px;line-height:1.4}
+.file-card .fc-badge{font-size:.66rem;padding:2px 8px;border-radius:10px;font-weight:600}
+.file-card .fc-badge.runner{background:rgba(255,193,7,.12);color:var(--accent)}
+.file-card .fc-badge.lib{background:rgba(34,197,94,.12);color:var(--pass)}
+.file-card .fc-badge.skill{background:rgba(34,211,238,.12);color:var(--cyan)}
+.file-card .fc-badge.script{background:rgba(167,139,250,.12);color:#a78bfa}
+.card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow);animation:fadeInUp .4s ease both}
+.card h2{font-size:.92rem;margin-bottom:14px;color:var(--cyan);font-weight:600}
+.section{margin-bottom:24px}
+.section h2{font-size:1rem;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
+</style>
+</head>
+<body>
+<div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../故事任务.md">yry-self-test</a><span class="bc-sep">/</span><span class="bc-current">场景 1 · init 后全量自检</span><span class="bc-sep">/</span><span class="bc-current">📄 源码</span></nav>
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<span class="cross-link on">📄 源码</span><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审查</a>
+</nav>
+<div class="header">
+  <h1>📄 <span class="accent">init 后全量自检 · 源码</span></h1>
+  <p class="sub">覆盖 FP1–FP12 的脚本、测试框架核心、6 技能测试套件</p>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="val c">10</div><div class="lbl">源文件</div></div>
+  <div class="stat-card"><div class="val a">2</div><div class="lbl">分类</div></div>
+  <div class="stat-card"><div class="val p">171</div><div class="lbl">断言覆盖</div></div>
+</div>
+<div class="bar-wrap"><div class="bar-outer">
+  <div class="seg runner" style="width:20%"></div>
+  <div class="seg lib" style="width:20%"></div>
+  <div class="seg skill" style="width:50%"></div>
+  <div class="seg script" style="width:10%"></div>
+</div></div>
+
+<div class="section">
+  <h2>🧪 测试框架核心</h2>
+  <div class="file-grid" id="core">
+    <div class="file-card"><div class="fc-icon">🏃</div><div class="fc-body"><div class="fc-name">run.mjs</div><div class="fc-path">tests/run.mjs</div><div class="fc-desc">测试发现 + 筛选 + 编排入口。支持 --skills/--agents/--rules/--integration 定向执行</div><div class="fc-badge runner">Runner</div></div></div>
+    <div class="file-card"><div class="fc-icon">⚙️</div><div class="fc-body"><div class="fc-name">test-harness.mjs</div><div class="fc-path">tests/lib/test-harness.mjs</div><div class="fc-desc">describe/it/assert 原语 + 汇总报告 + JSON 输出。自建零依赖 harness</div><div class="fc-badge lib">Lib</div></div></div>
+    <div class="file-card"><div class="fc-icon">🛠️</div><div class="fc-body"><div class="fc-name">helpers.mjs</div><div class="fc-path">tests/lib/helpers.mjs</div><div class="fc-desc">文件系统/路径/内容共享工具函数 (fileExists/readFile/listSkills/listAgents)</div><div class="fc-badge lib">Lib</div></div></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>📦 技能测试套件（6 套件）</h2>
+  <div class="file-grid" id="skills">
+    <div class="file-card"><div class="fc-icon">🎯</div><div class="fc-body"><div class="fc-name">rui.test.mjs</div><div class="fc-path">tests/skills/rui.test.mjs</div><div class="fc-desc">rui SDLC 编排器完整性：SKILL.md 8 节 + 5 脚本 + 3 文档。16 断言</div><div class="fc-badge skill">Skill</div></div></div>
+    <div class="file-card"><div class="fc-icon">🤖</div><div class="fc-body"><div class="fc-name">rui-bot.test.mjs</div><div class="fc-path">tests/skills/rui-bot.test.mjs</div><div class="fc-desc">rui-bot 企微通知技能：SKILL.md 4 节 + send.mjs 3 项检查。7 断言</div><div class="fc-badge skill">Skill</div></div></div>
+    <div class="file-card"><div class="fc-icon">🔧</div><div class="fc-body"><div class="fc-name">rui-claude.test.mjs</div><div class="fc-path">tests/skills/rui-claude.test.mjs</div><div class="fc-desc">rui-claude 配置管理技能：SKILL.md 3 节 + help.mjs 1 项。4 断言</div><div class="fc-badge skill">Skill</div></div></div>
+    <div class="file-card"><div class="fc-icon">⬆️</div><div class="fc-body"><div class="fc-name">rui-import.test.mjs</div><div class="fc-path">tests/skills/rui-import.test.mjs</div><div class="fc-desc">rui-import 文档同步技能：SKILL.md 6 节 + sync.mjs 功能验证。10 断言</div><div class="fc-badge skill">Skill</div></div></div>
+    <div class="file-card"><div class="fc-icon">📋</div><div class="fc-body"><div class="fc-name">rui-story.test.mjs</div><div class="fc-path">tests/skills/rui-story.test.mjs</div><div class="fc-desc">rui-story 故事面板管理：SKILL.md 3 节 + 4 可执行脚本。8 断言</div><div class="fc-badge skill">Skill</div></div></div>
+    <div class="file-card"><div class="fc-icon">📈</div><div class="fc-body"><div class="fc-name">rui-trends.test.mjs</div><div class="fc-path">tests/skills/rui-trends.test.mjs</div><div class="fc-desc">rui-trends 技术趋势技能：SKILL.md 3 节 + help.mjs 1 项。4 断言</div><div class="fc-badge skill">Skill</div></div></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>📜 自检脚本</h2>
+  <div class="file-grid" id="scripts">
+    <div class="file-card"><div class="fc-icon">🔍</div><div class="fc-body"><div class="fc-name">self-test.mjs</div><div class="fc-path">scripts/self-test.mjs</div><div class="fc-desc">全量自检入口：扫描全部测试套件并汇总输出健康报告。FP1–FP12 全覆盖</div><div class="fc-badge script">Script</div></div></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>🔗 源码 → 文档 回溯链</h2>
+  <table style="width:100%;font-size:.8rem;border-collapse:collapse">
+    <tr style="color:var(--text3)"><th style="text-align:left;padding:6px 12px;border-bottom:var(--border)">源文件</th><th style="text-align:left;padding:6px 12px;border-bottom:var(--border)">对应场景</th></tr>
+    <tr><td style="padding:4px 12px;font-family:monospace;font-size:.75rem;color:var(--cyan)">tests/run.mjs</td><td style="padding:4px 12px"><a href="index.md" style="color:#7aa2f7">场景 1 §2 实施报告</a></td></tr>
+    <tr><td style="padding:4px 12px;font-family:monospace;font-size:.75rem;color:var(--cyan)">tests/lib/test-harness.mjs</td><td style="padding:4px 12px"><a href="index.md#sec2" style="color:#7aa2f7">场景 1 §2 架构决策</a></td></tr>
+    <tr><td style="padding:4px 12px;font-family:monospace;font-size:.75rem;color:var(--cyan)">tests/skills/rui.test.mjs</td><td style="padding:4px 12px"><a href="index.md#sec3" style="color:#7aa2f7">场景 1 §3 测试报告（16 断言）</a></td></tr>
+    <tr><td style="padding:4px 12px;font-family:monospace;font-size:.75rem;color:var(--cyan)">scripts/self-test.mjs</td><td style="padding:4px 12px"><a href="index.md#sec0" style="color:#7aa2f7">场景 1 §0 自检流程图</a></td></tr>
+    <tr><td style="padding:4px 12px;font-family:monospace;font-size:.75rem;color:var(--cyan)">skills/rui/audit.mjs</td><td style="padding:4px 12px"><a href="../故事任务.md#s-1-story" style="color:#7aa2f7">故事任务 §1 FP1–FP6</a></td></tr>
+  </table>
+</div>
+
+<div class="footer-note" style="text-align:center;color:var(--text3);font-size:.74rem;margin-top:32px;padding-bottom:16px">yry-self-test · 场景-1 · <a href="../故事任务.md" style="color:var(--accent);text-decoration:none">故事基线</a></div>
+</div>
+</body>
+</html>

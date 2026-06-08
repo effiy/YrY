@@ -202,7 +202,7 @@ sequenceDiagram
 
 ### 实施概述
 
-文档代码一致性校验通过三层测试实现：（1）知识图谱结构有效性测试自动检测两种 schema 变体；（2）跨引用集成测试验证 plugin.json/CLAUDE.md/故事目录/安全基线一致性；（3）规则完整性测试确保每个规则含 mermaid 图和结构化表格。
+文档代码一致性校验通过三层测试实现：（1）知识图谱结构有效性测试自动检测两种 schema 变体；（2）跨引用集成测试验证 plugin.json/CLAUDE.md/故事目录/安全基线一致性；（3）规则完整性测试确保每个规则含 mermaid 图和结构化表格。自 v4.8.0 起新增两个独立校验脚本覆盖 L1 和 L2。
 
 ### 关键实现
 
@@ -212,6 +212,8 @@ sequenceDiagram
 | `tests/integration/cross-references.test.mjs` §故事一致性 | FP7, FP8, FP9, FP11 | 验证每个故事目录含 故事任务.md + ≥1 场景文档 + 知识图谱 |
 | `tests/rules/rules.test.mjs` §code-pipeline | FP12 | 验证关键规则（管线/安全/文档生成）含必需要素 |
 | `tests/agents/agents.test.mjs` | FP5, FP12 | 验证 8 Agent 定义完整性（角色/行为/决策指导） |
+| `scripts/validate-doc-consistency.mjs` | FP11 | **v4.8.0 新增** — L1 引用可达性：提取文档中全部源文件引用 → 逐条验证目标存在 → 断裂报告含三要素（来源/目标/原因） |
+| `scripts/validate-module-topology.mjs` | FP10, FP11 | **v4.8.0 新增** — 依赖图构建 + 循环检测 + 无效引用识别。验证 agents/rules/skills/lib 之间拓扑 |
 
 ### 交叉引用闭合验证
 
@@ -270,9 +272,11 @@ PASS: all layer nodeIds reference existing nodes
 
 | # | 建议 | 优先级 | 理由 |
 |---|------|--------|------|
-| 1 | 添加 L2 实施报告匹配度检查（对比场景 §2 与 git log） | P2 | 当前仅检查文档存在性和结构，未对比内容匹配度 |
-| 2 | 添加 L3 测试报告对齐度检查 | P2 | 需解析场景 §3 的内容并与实际执行结果对比 |
-| 3 | 统一两个 kg schema 或在知识图谱规则中明确允许的变体 | P1 | 避免未来新增故事时再次产生 schema 分化 |
+| 1 | 添加 L1 引用可达性自动化 (validate-doc-consistency.mjs) | ✅ **已完成 v4.8.0** | 提取文档中全部源文件引用 → 逐条验证目标存在 → 断裂报告含三要素 |
+| 2 | 添加 L2 实施报告匹配度检查（对比场景 §2 与 git log） | P1 | 当前仅检查文档存在性和结构，未对比内容匹配度。已由 detect-impact.mjs 部分覆盖 |
+| 3 | 添加 L3 测试报告对齐度检查 | P2 | 需解析场景 §3 的内容并与实际执行结果对比 |
+| 4 | 统一两个 kg schema 或在知识图谱规则中明确允许的变体 | P1 | 避免未来新增故事时再次产生 schema 分化 |
+| 5 | 模块拓扑验证 (validate-module-topology.mjs) | ✅ **已完成 v4.8.0** | 依赖图构建 + 循环检测 + 无效引用识别 |
 
 ---
 
@@ -283,3 +287,4 @@ PASS: all layer nodeIds reference existing nodes
 | 日期 | 变更 | 触发 | 证据 |
 |------|------|------|------|
 | 2026-06-05 | v1.0.0 初始化：生成场景概述 + §0 技术评审（含效果示意和基线溯源）+ §1 测试设计（含 4 TC-N + 7 TC-B + Gate A 交接） | `/rui init` Step 4b — 自主测试方案场景-3 生成 | [formulas.md §使用约定](../../../../skills/rui/formulas.md)；[delivery-gate.md](../../../../rules/delivery-gate.md)；[coder.md §审查维度](../../../../agents/coder.md)；[formulas.md §F.story.scene](../../../../skills/rui/formulas.md) |
+| 2026-06-08 | v1.1.0 补充：§2 实施报告更新 — `scripts/validate-doc-consistency.mjs` (L1 引用可达性) + `scripts/validate-module-topology.mjs` (循环检测)。新增 `源码.html` 页面。§4 改进建议标记 L1 和模块拓扑为已完成 | `/rui update yry-self-test` — 补充缺失源文件 | 源码: [validate-doc-consistency.mjs](../../../../scripts/validate-doc-consistency.mjs) · [validate-module-topology.mjs](../../../../scripts/validate-module-topology.mjs) · [源码.html](./源码.html) |

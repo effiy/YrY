@@ -218,23 +218,25 @@ sequenceDiagram
 
 ### 实施概述
 
-安全面回归自检的第一面（密钥扫描）已通过 `tests/integration/cross-references.test.mjs` §安全基线实现。基于 grep 模式匹配扫描全部项目文件，排除文档引用误报。第四面（配置安全）通过同一测试覆盖。
+安全面回归自检已通过多层测试和独立脚本实现覆盖。自 v4.8.0 起新增 `security-scan.mjs` 独立脚本覆盖六面中的三面（S1 密钥/S3 输入校验/S5 依赖），`detect-impact.mjs` 提供 S6 变更检测基础。
 
 ### 已实现
 
 | 检查面 | 测试位置 | 方法 |
 |--------|---------|------|
-| 第一面：密钥扫描 | `tests/integration/cross-references.test.mjs` §安全基线 | grep 模式匹配 `API_X_TOKEN=value`、`sk-` 前缀密钥 |
-| 第四面：配置安全 | 同上 | 验证 `API_X_TOKEN` 仅通过环境变量引用（SKILL.md/help.mjs 中的文档引用已排除） |
+| 第一面：密钥扫描 | `tests/integration/cross-references.test.mjs` §安全基线 + `scripts/security-scan.mjs` | grep 模式匹配 + 独立脚本支持 6 种密钥模式（API key/token/password/private key） |
+| 第三面：输入校验 | `scripts/security-scan.mjs` | **v4.8.0 新增** — XSS 向量检测（innerHTML/dangerouslySetInnerHTML/document.write/eval） |
+| 第四面：配置安全 | `tests/integration/cross-references.test.mjs` + `skills/rui-bot/config.json` | 验证 `API_X_TOKEN` 仅通过环境变量引用，配置模板使用 ENV 占位符 |
+| 第五面：依赖安全 | `scripts/security-scan.mjs` | **v4.8.0 新增** — `npm audit --json` 集成，高危/严重漏洞检测 |
+| 第六面：安全约束退化 | `scripts/detect-impact.mjs` | **v4.8.0 新增** — `--since <commit>` 变更影响分析，输出受影响模块清单 |
 
 ### 待实现（已评估优先级）
 
 | 检查面 | 优先级 | 原因 | 状态 |
 |--------|--------|------|:--:|
 | 第二面：认证检查 | P2 | YrY 为 CLI 插件无传统认证路径；需检查 API_X_TOKEN 传递链路 | 📋 已规划 |
-| 第三面：输入校验 | P2 | 需逐脚本检查参数校验逻辑 | 📋 已规划 |
-| 第五面：依赖安全 | P3 | 项目零外部依赖（无 package.json），markdown 规约无运行时注入面 | ✅ 已验证 |
-| 第六面：安全约束退化 | P1 | 需建立基线快照 + 变更对比机制 | 📋 已规划 |
+| 第六面完整实现 | P1 | 需建立安全约束基线快照 + 变更前后 diff 对比 | 🔄 部分实现 (detect-impact.mjs) |
+| git hook 阻断 | P1 | 硬编码密钥检测 → pre-commit hook 阻止提交 | 📋 已规划 |
 
 ---
 
@@ -276,3 +278,4 @@ sequenceDiagram
 | 日期 | 变更 | 触发 | 证据 |
 |------|------|------|------|
 | 2026-06-05 | v1.0.0 初始化：生成场景概述 + §0 技术评审（含效果示意和基线溯源）+ §1 测试设计（含 4 TC-N + 7 TC-B + Gate A 交接） | `/rui init` Step 4b — 自主测试方案场景-4 生成 | [CLAUDE.md §项目不可妥协底线](../../../../CLAUDE.md)；[security.md](../../../../agents/security.md)；[coder.md §审查维度](../../../../agents/coder.md)；[formulas.md §F.story.scene](../../../../skills/rui/formulas.md) |
+| 2026-06-08 | v1.1.0 补充：§2 实施报告更新 — 新增 `scripts/security-scan.mjs` 覆盖 S1(密钥)/S3(XSS)/S5(npm audit) 三面 + `scripts/detect-impact.mjs` 提供 S6 变更检测基础 + `skills/rui-bot/config.json` 安全配置。S1/S3/S4/S5 标记为已实现。新增 `源码.html` 页面 | `/rui update yry-self-test` — 补充缺失源文件 | 源码: [security-scan.mjs](../../../../scripts/security-scan.mjs) · [detect-impact.mjs](../../../../scripts/detect-impact.mjs) · [config.json](../../../../skills/rui-bot/config.json) · [源码.html](./源码.html) |

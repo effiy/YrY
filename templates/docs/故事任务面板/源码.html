@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>{{SCENE_SHORT}} · 源码</title>
+<link rel="stylesheet" href="{{CDN_PREFIX}}/cdn/shared.css">
+<link rel="stylesheet" href="{{CDN_PREFIX}}/cdn/theme.css">
+<style>
+:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--skip:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideDown{from{opacity:0;max-height:0}to{opacity:1;max-height:2000px}}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
+.container{max-width:1120px;margin:0 auto;padding:48px 24px 80px}
+.header{text-align:center;margin-bottom:32px;animation:fadeInDown .5s ease both}
+.header h1{font-size:2.1rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+.header .sub{color:var(--text2);font-size:.9rem}
+.stats-grid{display:flex;gap:14px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 22px;text-align:center;box-shadow:var(--shadow);min-width:90px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat-card .val{font-size:1.8rem;font-weight:700;line-height:1.1}
+.stat-card .val.c{color:var(--cyan)}.stat-card .val.a{color:var(--accent)}.stat-card .val.p{color:var(--pass)}
+.stat-card .lbl{font-size:.72rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+.bar-wrap{margin-bottom:32px;animation:fadeInDown .5s .12s ease both}
+.bar-outer{height:8px;border-radius:4px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
+.bar-outer .seg{height:100%;transition:width .5s ease;min-width:2px}
+/* File grid */
+.file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px}
+.file-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;display:flex;align-items:flex-start;gap:12px}
+.file-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:rgba(255,255,255,.1)}
+.file-card .fc-icon{font-size:1.4rem;flex-shrink:0;margin-top:2px}
+.file-card .fc-body{flex:1;min-width:0}
+.file-card .fc-name{font-weight:600;font-size:.88rem}
+.file-card .fc-path{font-size:.7rem;color:var(--text3);font-family:monospace;margin-top:1px}
+.file-card .fc-desc{font-size:.74rem;color:var(--text2);margin-top:4px;line-height:1.4}
+.file-card .fc-badge{font-size:.66rem;padding:2px 8px;border-radius:10px;font-weight:600}
+/* Section */
+.card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow);animation:fadeInUp .4s ease both}
+.card h2{font-size:.92rem;margin-bottom:14px;color:var(--cyan);font-weight:600}
+.section{margin-bottom:24px}
+.section h2{font-size:1rem;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+/* Navigation */
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
+.footer-note{text-align:center;color:var(--text3);font-size:.74rem;margin-top:32px;padding-bottom:16px}.footer-note a{color:var(--accent);text-decoration:none}.footer-note a:hover{text-decoration:underline}
+@media(max-width:640px){.container{padding:24px 12px 60px}.header h1{font-size:1.5rem}.stats-grid{gap:6px}.stat-card{padding:12px 14px;min-width:65px}.stat-card .val{font-size:1.3rem}.file-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<nav class="breadcrumb"><a href="{{DOCS_INDEX}}">📄 文档中心</a><span class="bc-sep">/</span><a href="{{STORY_MD}}">{{STORY_NAME}}</a><span class="bc-sep">/</span><span class="bc-current">{{SCENE_NAME}}</span><span class="bc-sep">/</span><span class="bc-current">📄 源码</span></nav>
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<span class="cross-link on">📄 源码</span><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审查</a>
+</nav>
+<div class="header">
+  <h1>📄 <span class="accent">{{SCENE_TITLE}}</span></h1>
+  <p class="sub">{{SOURCE_SUBTITLE}}</p>
+</div>
+
+<div class="stats-grid">{{SOURCE_STATS}}</div>
+<div class="bar-wrap"><div class="bar-outer">{{SOURCE_PROGRESS_BAR}}</div></div>
+
+<!-- File sections — repeat per category -->
+{{#each SOURCE_SECTIONS}}
+<div class="section">
+  <h2>{{SECTION_ICON}} {{SECTION_TITLE}}</h2>
+  <div class="file-grid">
+    {{#each FILES}}
+    <div class="file-card">
+      <div class="fc-icon">{{FILE_ICON}}</div>
+      <div class="fc-body">
+        <div class="fc-name">{{FILE_NAME}}</div>
+        <div class="fc-path">{{FILE_PATH}}</div>
+        <div class="fc-desc">{{FILE_DESC}}</div>
+        <div class="fc-badge {{BADGE_CLASS}}">{{BADGE_LABEL}}</div>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+</div>
+{{/each}}
+
+<!-- Backtracking table -->
+<div class="card">
+  <h2>{{BACKTRACK_TITLE}}</h2>
+  <table style="width:100%;font-size:.8rem;border-collapse:collapse">
+    <tr style="color:var(--text3)"><th style="text-align:left;padding:6px 12px;border-bottom:var(--border)">{{COL_SOURCE}}</th><th style="text-align:left;padding:6px 12px;border-bottom:var(--border)">{{COL_SCENE}}</th></tr>
+    {{#each BACKTRACK_ROWS}}
+    <tr>
+      <td style="padding:4px 12px;font-family:monospace;font-size:.75rem;color:var(--cyan)">{{SOURCE_FILE}}</td>
+      <td style="padding:4px 12px"><a href="{{SCENE_LINK}}" style="color:#7aa2f7">{{SCENE_REF}}</a></td>
+    </tr>
+    {{/each}}
+  </table>
+</div>
+
+<!-- Optional extra content -->
+{{#if EXTRA_CARD}}
+<div class="card">
+  <h2>{{EXTRA_CARD_TITLE}}</h2>
+  {{EXTRA_CARD_CONTENT}}
+</div>
+{{/if}}
+
+<div class="footer-note">{{STORY_NAME}} · {{SCENE_SHORT}} · <a href="{{STORY_MD}}" style="color:var(--accent)">故事基线</a></div>
+</div>
+</body>
+</html>

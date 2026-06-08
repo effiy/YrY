@@ -211,14 +211,17 @@ sequenceDiagram
 | `tests/run.mjs --integration` | 跨模块影响 | 交叉引用和知识图谱检查 |
 | 单文件独立执行 | 定向检查 | `node tests/skills/rui.test.mjs` 单独运行 |
 | 安全基线扫描 | 安全面检查 | `tests/integration/cross-references.test.mjs` §安全基线 |
+| `scripts/self-test.mjs` | 全量/增量自检入口 | `--quick` 增量模式 + `--json` 输出, 变更前后对比 |
+| `scripts/detect-impact.mjs` | 变更范围自动识别 | `--since <commit>` 读取 git diff 映射受影响模块 |
+| `skills/rui/branch-check.mjs` | 分支隔离自动检查 | P0 强制门禁: 验证当前分支为 `feat/<name>` |
 
 ### 待实现（已评估优先级）
 
 | 项目 | 优先级 | 说明 |
 |------|--------|------|
 | git hook 集成 | P1 | pre-commit hook 触发 `tests/run.mjs --skills --agents --rules` |
-| 变更范围自动识别 | P1 | 读取 `git diff --name-only` 自动映射到受影响测试文件 |
-| 分支隔离自动检查 | P0 | `tests/run.mjs` 执行前检查 `git branch --show-current` |
+| CI 集成 | P2 | GitHub Actions 自动触发增量自检 |
+| 变更范围自动映射 | P2 | 从文件变更列表自动推导受影响的测试套件（已由 detect-impact.mjs 部分覆盖） |
 
 ---
 
@@ -252,3 +255,4 @@ sequenceDiagram
 | 日期 | 变更 | 触发 | 证据 |
 |------|------|------|------|
 | 2026-06-05 | v1.0.0 初始化：生成场景概述 + §0 技术评审（含效果示意和基线溯源）+ §1 测试设计（含 4 TC-N + 7 TC-B + Gate A 交接） | `/rui init` Step 4b — 自主测试方案场景-2 生成 | [code-pipeline.md §① 分支隔离](../../../../rules/code-pipeline.md)；[code-pipeline.md §生效标志](../../../../rules/code-pipeline.md)；[coder.md §规则](../../../../agents/coder.md)；[formulas.md §F.story.scene](../../../../skills/rui/formulas.md) |
+| 2026-06-08 | v1.1.0 补充：§2 实施报告更新 — `scripts/self-test.mjs` 提供增量自检入口 + `scripts/detect-impact.mjs` 覆盖变更范围识别（P1→实现）+ 分支隔离由 `branch-check.mjs` 覆盖。新增 `源码.html` 页面 | `/rui update yry-self-test` — 补充缺失源文件 | 源码: [scripts/self-test.mjs](../../../../scripts/self-test.mjs) · [scripts/detect-impact.mjs](../../../../scripts/detect-impact.mjs) · [源码.html](./源码.html) |

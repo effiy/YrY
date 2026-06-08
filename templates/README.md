@@ -32,6 +32,7 @@ templates/
 │       ├── 计划清单.html              # 每场景实施清单
 │       ├── 架构图.html                # 每场景架构图（深色主题 + SVG）
 │       ├── 知识图谱.html              # 每场景知识图谱（深色主题 + D3）
+│       ├── 源码.html                  # 每场景源文件清单（按分类展示 + 回溯链表）
 │       ├── 测试面板.html              # 每场景测试仪表盘（分页 + 统计）
 │       ├── 演示.html                  # 每场景交互演示（逐步展示）
 │       └── 审查.html                  # 每场景审查报告（维度评分 + 案例 + 建议）
@@ -55,15 +56,16 @@ templates/
 
 > **注意**: `templates/tests/` 和 `tests/` 是**有意分离**的。前者通过 `/rui init` 分发给新项目，后者是 YrY 自身的自检测试。两者结构镜像但路径解析上下文不同（`PROJECT_ROOT` 指向各自的项目根）。修改测试框架时更新 `templates/tests/`，然后同步至 `tests/`。
 
-## 每场景 6 个交付物
+## 每场景 7 个交付物
 
-每个场景目录在管线完成后包含恰好 6 个 HTML 交付物：
+每个场景目录在管线完成后包含恰好 7 个 HTML 交付物：
 
 | 文件 | 负责人 | 用途 | 模板 |
 |------|--------|-------|-----------|
 | `计划清单.html` | planner | 实施规划与进度追踪 | `templates/docs/故事任务面板/计划清单.html` |
 | `架构图.html` | architect | SVG 架构图，含导出 | `templates/docs/故事任务面板/架构图.html` |
 | `知识图谱.html` | pm | 知识图谱可视化 | `templates/docs/故事任务面板/知识图谱.html` |
+| `源码.html` | coder | 源文件清单 — 按分类展示 · 回溯链 · 覆盖状态 | `templates/docs/故事任务面板/源码.html` |
 | `测试面板.html` | tester | 测试仪表盘与结果 | `templates/docs/故事任务面板/测试面板.html` |
 | `演示.html` | coder | 交互式逐步演示 | `templates/docs/故事任务面板/演示.html` |
 | `审查.html` | reviewer | 代码审查记录 — 维度评分 · 好/坏案例 · 改进建议 · 证据链 | `templates/docs/故事任务面板/审查.html` |
