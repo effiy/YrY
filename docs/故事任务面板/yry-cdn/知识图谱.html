@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>yry-cdn 全景 · 知识图谱</title>
-<link rel="stylesheet" href="../../cdn/fonts.css">
+<link rel="stylesheet" href="../../../../cdn/fonts.css">
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
@@ -32,24 +32,25 @@ h1{font-size:1.5rem;font-weight:700}
 .card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
 .card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
 .card-dot{width:8px;height:8px;border-radius:50%}
-.card-dot.a{background:#EC4899}.card-dot.b{background:#34d399}.card-dot.c{background:#3B82F6}.card-dot.d{background:#22d3ee}.card-dot.e{background:#f59e0b}
+.card-dot.domain{background:#EC4899}.card-dot.flow{background:#34d399}.card-dot.step{background:#3B82F6}.card-dot.skill{background:#22d3ee}.card-dot.scene{background:#8B5CF6}
 .card h3{font-size:.875rem;font-weight:600}
 .card ul{list-style:none;color:#94a3b8;font-size:.75rem}
 .card li{margin-bottom:.375rem}
 .legend{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:.75rem;padding:.75rem;background:rgba(15,23,42,.5);border-radius:.5rem;border:1px solid #1e293b;font-size:.75rem;color:#94a3b8}
 .legend-item{display:flex;align-items:center;gap:.375rem}
 .legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid}
-.legend-dot.a{background:rgba(236,72,153,.3);border-color:#EC4899}
-.legend-dot.b{background:rgba(52,211,153,.3);border-color:#34d399}
-.legend-dot.c{background:rgba(59,130,246,.3);border-color:#3B82F6}
-.legend-dot.d{background:rgba(34,211,238,.3);border-color:#22d3ee}
-.legend-dot.e{background:rgba(245,158,11,.3);border-color:#f59e0b}
+.legend-dot.domain{background:rgba(236,72,153,.3);border-color:#EC4899}
+.legend-dot.flow{background:rgba(52,211,153,.3);border-color:#34d399}
+.legend-dot.step{background:rgba(59,130,246,.3);border-color:#3B82F6}
+.legend-dot.skill{background:rgba(34,211,238,.3);border-color:#22d3ee}
+.legend-dot.scene{background:rgba(139,92,246,.3);border-color:#8B5CF6}
 .breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
 .breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
 .breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
 .breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
 .breadcrumb .bc-current{color:#94a3b8;font-weight:500}
 .footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
+
 @media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
 .cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
 .cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}

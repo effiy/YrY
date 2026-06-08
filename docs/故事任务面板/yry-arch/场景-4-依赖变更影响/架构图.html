@@ -1,7 +1,4 @@
 <!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>依赖变更影响 — 架构图</title>
-<!-- ═══ CDN: YrY 共享样式 ═══ -->
-<link rel="stylesheet" href="../../../../cdn/shared.css">
-<link rel="stylesheet" href="../../../../cdn/theme-mono.css">
 <link rel="stylesheet" href="../../../../cdn/fonts.css">
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
@@ -13,6 +10,7 @@ body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;
 .header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
 .pulse-dot{width:12px;height:12px;background:#22d3ee;border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 h1{font-size:1.5rem;font-weight:700}
 .subtitle{color:#94a3b8;font-size:.875rem;margin-left:1.75rem}
 .toolbar{display:flex;gap:.5rem;margin-left:auto;flex-shrink:0;align-items:center}
@@ -34,23 +32,18 @@ h1{font-size:1.5rem;font-weight:700}
 .card h3{font-size:.875rem;font-weight:600}
 .card ul{list-style:none;color:#94a3b8;font-size:.75rem}
 .card li{margin-bottom:.375rem}
+
+/* ── Breadcrumb ─────────────────────────── */
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+
 .footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
 @media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
 
-/* ── Breadcrumb ─────────────────────────── */
-.breadcrumb {
-  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
-  margin-bottom: 1.25rem; font-size: 0.76rem;
-}
-.breadcrumb a {
-  color: #7aa2f7; text-decoration: none; transition: color 0.15s;
-}
-.breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
-.breadcrumb .bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
-.breadcrumb .bc-current { color: #94a3b8; font-weight: 500; }
-
-/* ── Cross-Nav ─────────────────────────── */
-.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
 .cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
 .cross-link:hover{color:#fbbf24;background:rgba(251,191,36,0.06)}
 .cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
