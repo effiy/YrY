@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>跨故事集成回归自检 · 演示</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css"><link rel="stylesheet" href="../../../../cdn/theme.css">
+<style>.container{max-width:960px;margin:0 auto;padding:40px 24px 80px}pre{background:#0f172a;color:#e2e8f0;padding:16px;border-radius:8px;font-size:.8rem;overflow-x:auto;line-height:1.5}.output{border-left:3px solid #22c55e;padding-left:16px}.output.warn{border-left-color:#f59e0b}</style></head><body><div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自动化测试套件</span><span class="bc-sep">/</span><span class="bc-current">场景 5 · 跨故事集成回归自检</span><span class="bc-sep">/</span><span class="bc-current">演示</span></nav>
+<div class="cross-nav">
+  <a href="计划清单.html" class="cross-link">清单</a><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">图谱</a><span class="cross-sep">·</span>
+  <a href="测试面板.html" class="cross-link">测试</a><span class="cross-sep">·</span>
+  <span class="cross-link on">演示</span><span class="cross-sep">·</span>
+  <a href="审查.html" class="cross-link">审查</a><span class="cross-sep">·</span>
+  <a href="源码.html" class="cross-link">源码</a>
+</div>
+<div class="header"><h1>场景-5<span class="accent"> · 跨故事集成回归自检</span></h1><p>集成回归演示 — 全量执行 · 依赖验证 · 一致性报告</p></div>
+
+<div class="card"><h2>演示 1: 全量回归执行（预期行为）</h2>
+<p style="color:#94a3b8;font-size:.82rem;margin-bottom:12px">一条命令运行所有故事的测试套件</p>
+<pre>$ <span style="color:#22d3ee">node tests/run-all.mjs</span>
+
+<span class="output">=== YrY Full Regression Suite ===
+Date: 2026-06-08T09:00:00.000Z
+Stories: yry-arch · yry-self-test · yry-cdn · rui-npm
+
+[1/4] yry-arch ................... PASS (4/4 scenes)
+[2/4] yry-self-test .............. PASS (10 suites, 171 assertions)
+[3/4] yry-cdn .................... PASS (5/5 scenes)
+[4/4] rui-npm .................... PASS (5/5 scenes)
+
+=== Cross-Story Integration ===
+[1/4] arch → self-test (module topology) ..... PASS
+[2/4] arch → cdn (architecture baseline) ..... PASS
+[3/4] arch → npm (architecture baseline) ..... PASS
+[4/4] self-test → arch (test coverage) ........ PASS
+
+=== Global Consistency ===
+[1/3] Version consistency (4.8.2) ............. PASS
+[2/3] CDN reference version (@1.1.0) .......... PASS
+[3/3] Document index integrity ................ PASS
+
+=== Summary ===
+Total: 14 suites · Passed: 14 · Failed: 0 · Skipped: 0
+Duration: 2.8s
+Result: ALL PASS</span></pre>
+</div>
+
+<div class="card"><h2>演示 2: 跨故事依赖断裂检测</h2>
+<p style="color:#94a3b8;font-size:.82rem;margin-bottom:12px">当 yry-arch 场景-5 目录缺失时的检测结果</p>
+<pre>$ <span style="color:#22d3ee">node tests/integration/cross-story.test.mjs</span>
+
+<span class="output">=== Cross-Story Dependency Closure Check ===
+
+[OK] arch → self-test: arch/场景-1 存在 ✓
+[OK] arch → self-test: arch/场景-2 存在 ✓
+[OK] arch → self-test: arch/场景-3 存在 ✓
+[OK] arch → self-test: arch/场景-4 存在 ✓
+<span style="color:#f59e0b">[FAIL] arch → self-test: arch/场景-5 缺失 ✗
+  Source: yry-self-test/场景-1
+  Target: yry-arch/场景-5-信任边界与安全面/index.md
+  Reason: target not found
+  Impact: self-test scene-1 references arch scene-5 for module topology</span>
+
+[OK] arch → cdn: all scenes present ✓
+[OK] arch → npm: all scenes present ✓
+
+Summary: 12/13 dependencies closed · 1 broken
+Broken: arch/场景-5 (missing)</span></pre>
+</div>
+
+<div class="card"><h2>演示 3: 全局一致性报告</h2>
+<p style="color:#94a3b8;font-size:.82rem;margin-bottom:12px">每次版本升级后自动执行的一致性检查</p>
+<pre>$ <span style="color:#22d3ee">node scripts/check-consistency.mjs</span>
+
+<span class="output">=== Global Consistency Report ===
+
+Version Check:
+  plugin.json .............. 4.8.2 ✓
+  CLAUDE.md ................ 4.8.2 ✓
+  README.md ................ 4.8.2 ✓
+  marketplace.json ......... 4.8.2 ✓
+  docs/index.html .......... 4.8.2 ✓
+
+CDN Reference Check:
+  docs/index.html .......... @1.1.0 ✓
+  templates/docs/index.html  @1.1.0 ✓
+  tests/index.html ......... @1.1.0 ✓
+  yry-arch/演示/index.html  @1.1.0 ✓
+
+Document Index Check:
+  docs/index.html links .... 18/18 reachable ✓
+
+Scene Count Check:
+  yry-arch ................. 5/5 ✓ (meets ≥5 baseline)
+  yry-self-test ............ 5/5 ✓ (meets ≥5 baseline)
+  yry-cdn .................. 5/5 ✓
+  rui-npm .................. 5/5 ✓
+
+Result: ALL CONSISTENT</span></pre>
+</div>
+</div></body></html>

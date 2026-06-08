@@ -119,6 +119,12 @@ flowchart LR
 | 管线全流程（分支隔离 · Gate A/B · 逐模块清零 · 支撑技术 · 研究优先开发） | [rules/code-pipeline.md](./rules/code-pipeline.md) |
 | 交付收口（三步 hook） | [rules/delivery-gate.md](./rules/delivery-gate.md) |
 | 文档生成约束 · 表达优先 | [rules/doc-generation.md](./rules/doc-generation.md) |
+| 架构图生成（自包含 HTML+SVG 深色主题） | [rules/architecture-diagram.md](./rules/architecture-diagram.md) |
+| 知识图谱（三层 schema：story→scene→source） | [rules/knowledge-graph.md](./rules/knowledge-graph.md) |
+| Mermaid 统一配色（项目唯一色板真相源） | [rules/mermaid-theme.md](./rules/mermaid-theme.md) |
+| 计划执行（创建→审查→执行→验证） | [rules/plan-execution.md](./rules/plan-execution.md) |
+| rui-claude 操作约束（仅限 .claude/） | [rules/rui-claude.md](./rules/rui-claude.md) |
+| 安全防护基线（防线在信任边界处） | [rules/security-guardrails.md](./rules/security-guardrails.md) |
 | 角色拓扑 · 行为纪律 · 设计原则 · 执行准则 · ADR · 多 Agent 协作模式 | [agents/AGENT.md](./agents/AGENT.md) |
 | 自改进闭环（诊断 D0-D7 · 经验技能化 · 记忆压缩注入 · 效果评估 E1-E4） | [rules/self-improve.md](./rules/self-improve.md) · [agents/self-improve.md](./agents/self-improve.md) |
 | 共享库（TTY · FS · 常量 · help 布局） | [lib/](./lib/) |

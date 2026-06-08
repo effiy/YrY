@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>信任边界与安全面 · 架构图</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme-mono.css">
+<link rel="stylesheet" href="../../../../cdn/fonts.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
+.container{max-width:1200px;margin:0 auto}
+.breadcrumb{margin-bottom:1.5rem;font-size:.75rem;color:#64748b}
+.breadcrumb a{color:#22d3ee;text-decoration:none}
+.breadcrumb a:hover{color:#fbbf24}
+.cross-nav{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.cross-nav a,.cross-nav span{color:#94a3b8;text-decoration:none;font-size:.75rem;padding:.25rem .625rem;border-radius:.25rem;transition:all .2s}
+.cross-nav a:hover{color:#22d3ee;background:rgba(34,211,238,.08)}
+.cross-nav .on{color:#fbbf24;background:rgba(255,193,7,.1)}
+.header{margin-bottom:2rem}
+h1{font-size:1.25rem;font-weight:700}
+.accent{color:#fbbf24}
+.subtitle{color:#64748b;font-size:.8rem;margin-top:.25rem}
+.diagram{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:2rem;margin-bottom:1.5rem;overflow-x:auto}
+.diagram svg{max-width:100%;height:auto}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}
+.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
+.card h3{font-size:.85rem;color:#fbbf24;margin-bottom:.75rem}
+.card p,.card li{font-size:.78rem;color:#94a3b8;line-height:1.6}
+.card ul{list-style:none;padding:0}
+.card li::before{content:'→ ';color:#22d3ee}
+</style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../../index.html">文档中心</a> / <a href="../故事任务.md">yry-arch</a> / 场景 5 · 信任边界与安全面 / 架构图</nav>
+
+<div class="cross-nav">
+  <a href="计划清单.html">清单</a><span>·</span>
+  <span class="on">架构</span><span>·</span>
+  <a href="知识图谱.html">图谱</a><span>·</span>
+  <a href="测试面板.html">测试</a><span>·</span>
+  <a href="演示.html">演示</a><span>·</span>
+  <a href="审查.html">审查</a><span>·</span>
+  <a href="源码.html">源码</a>
+</div>
+
+<div class="header">
+  <h1>场景-5<span class="accent"> · 信任边界与安全面</span></h1>
+  <p class="subtitle">外部输入面 → 信任边界 → 内部执行域 — 三层防御架构</p>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 1000 580" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gExt" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7f1d1d"/><stop offset="100%" stop-color="#450a0a"/></linearGradient>
+    <linearGradient id="gGate" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1e3a5f"/><stop offset="100%" stop-color="#0f172a"/></linearGradient>
+    <linearGradient id="gCore" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#064e3b"/><stop offset="100%" stop-color="#022c22"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+
+  <!-- External input surface -->
+  <rect x="30" y="20" width="200" height="540" rx="12" fill="url(#gExt)" stroke="#f87171" stroke-width="1.5" opacity="0.9"/>
+  <text x="130" y="50" text-anchor="middle" fill="#fca5a5" font-size="13" font-weight="700">外部输入面</text>
+
+  <rect x="50" y="70" width="160" height="60" rx="8" fill="rgba(248,113,113,.15)" stroke="#f87171" stroke-width="1"/>
+  <text x="130" y="95" text-anchor="middle" fill="#fca5a5" font-size="12" font-weight="600">CLI 参数</text>
+  <text x="130" y="115" text-anchor="middle" fill="#f87171" font-size="10">需求文本 · --flags</text>
+
+  <rect x="50" y="145" width="160" height="60" rx="8" fill="rgba(248,113,113,.15)" stroke="#f87171" stroke-width="1"/>
+  <text x="130" y="170" text-anchor="middle" fill="#fca5a5" font-size="12" font-weight="600">环境变量</text>
+  <text x="130" y="190" text-anchor="middle" fill="#f87171" font-size="10">API_X_TOKEN · 密钥</text>
+
+  <rect x="50" y="220" width="160" height="60" rx="8" fill="rgba(248,113,113,.15)" stroke="#f87171" stroke-width="1"/>
+  <text x="130" y="245" text-anchor="middle" fill="#fca5a5" font-size="12" font-weight="600">文件系统</text>
+  <text x="130" y="265" text-anchor="middle" fill="#f87171" font-size="10">Read · Write · 源码</text>
+
+  <rect x="50" y="295" width="160" height="60" rx="8" fill="rgba(248,113,113,.15)" stroke="#f87171" stroke-width="1"/>
+  <text x="130" y="320" text-anchor="middle" fill="#fca5a5" font-size="12" font-weight="600">网络</text>
+  <text x="130" y="340" text-anchor="middle" fill="#f87171" font-size="10">WebFetch · API 调用</text>
+
+  <rect x="50" y="370" width="160" height="60" rx="8" fill="rgba(248,113,113,.15)" stroke="#f87171" stroke-width="1"/>
+  <text x="130" y="395" text-anchor="middle" fill="#fca5a5" font-size="12" font-weight="600">Git 操作</text>
+  <text x="130" y="415" text-anchor="middle" fill="#f87171" font-size="10">commit · push · merge</text>
+
+  <!-- Trust boundary -->
+  <rect x="290" y="20" width="420" height="540" rx="12" fill="url(#gGate)" stroke="#3b82f6" stroke-width="1.5" opacity="0.9"/>
+  <text x="500" y="50" text-anchor="middle" fill="#93c5fd" font-size="13" font-weight="700">信任边界 — 三层验证</text>
+
+  <rect x="310" y="70" width="380" height="140" rx="8" fill="rgba(59,130,246,.1)" stroke="#3b82f6" stroke-width="1"/>
+  <text x="500" y="95" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="600">B1 输入校验层</text>
+  <text x="500" y="115" text-anchor="middle" fill="#60a5fa" font-size="10">XSS 向量检测 · SQL 注入检测 · 路径遍历防护</text>
+  <text x="500" y="135" text-anchor="middle" fill="#60a5fa" font-size="10">innerHTML · dangerouslySetInnerHTML · eval · document.write</text>
+  <text x="500" y="155" text-anchor="middle" fill="#60a5fa" font-size="10">security-guardrails.md S3 · agents/pm.md Red Flags</text>
+  <text x="500" y="175" text-anchor="middle" fill="#60a5fa" font-size="10">security-scan.mjs 自动化扫描</text>
+  <rect x="480" y="188" width="40" height="14" rx="4" fill="rgba(34,197,94,.2)" stroke="#22c55e" stroke-width="1"/>
+  <text x="500" y="199" text-anchor="middle" fill="#22c55e" font-size="9">✓ 已覆盖</text>
+
+  <rect x="310" y="225" width="380" height="120" rx="8" fill="rgba(59,130,246,.1)" stroke="#3b82f6" stroke-width="1"/>
+  <text x="500" y="250" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="600">B2 认证层</text>
+  <text x="500" y="270" text-anchor="middle" fill="#60a5fa" font-size="10">API_X_TOKEN 仅 process.env 读取 · 不落盘</text>
+  <text x="500" y="290" text-anchor="middle" fill="#60a5fa" font-size="10">Token 缺失 → 降级跳过 · 不阻断主流程</text>
+  <text x="500" y="310" text-anchor="middle" fill="#60a5fa" font-size="10">security-guardrails.md S1 · S2</text>
+  <rect x="480" y="323" width="40" height="14" rx="4" fill="rgba(34,197,94,.2)" stroke="#22c55e" stroke-width="1"/>
+  <text x="500" y="334" text-anchor="middle" fill="#22c55e" font-size="9">✓ 已覆盖</text>
+
+  <rect x="310" y="360" width="380" height="120" rx="8" fill="rgba(59,130,246,.1)" stroke="#3b82f6" stroke-width="1"/>
+  <text x="500" y="385" text-anchor="middle" fill="#93c5fd" font-size="12" font-weight="600">B3 授权层</text>
+  <text x="500" y="405" text-anchor="middle" fill="#60a5fa" font-size="10">分支隔离 branch-check.mjs · feat/ 强制验证</text>
+  <text x="500" y="425" text-anchor="middle" fill="#60a5fa" font-size="10">禁止 --no-verify · 禁止跨分支共享管线状态</text>
+  <text x="500" y="445" text-anchor="middle" fill="#60a5fa" font-size="10">security-guardrails.md S4 · S6</text>
+  <rect x="480" y="458" width="40" height="14" rx="4" fill="rgba(34,197,94,.2)" stroke="#22c55e" stroke-width="1"/>
+  <text x="500" y="469" text-anchor="middle" fill="#22c55e" font-size="9">✓ 已覆盖</text>
+
+  <!-- Internal execution domain -->
+  <rect x="770" y="20" width="200" height="540" rx="12" fill="url(#gCore)" stroke="#34d399" stroke-width="1.5" opacity="0.9"/>
+  <text x="870" y="50" text-anchor="middle" fill="#6ee7b7" font-size="13" font-weight="700">内部执行域</text>
+
+  <rect x="790" y="80" width="160" height="80" rx="8" fill="rgba(52,211,153,.1)" stroke="#34d399" stroke-width="1"/>
+  <text x="870" y="105" text-anchor="middle" fill="#6ee7b7" font-size="12" font-weight="600">skills/</text>
+  <text x="870" y="125" text-anchor="middle" fill="#34d399" font-size="10">7 技能规约</text>
+  <text x="870" y="145" text-anchor="middle" fill="#34d399" font-size="10">rui · rui-claude · rui-npm</text>
+
+  <rect x="790" y="175" width="160" height="80" rx="8" fill="rgba(52,211,153,.1)" stroke="#34d399" stroke-width="1"/>
+  <text x="870" y="200" text-anchor="middle" fill="#6ee7b7" font-size="12" font-weight="600">agents/</text>
+  <text x="870" y="220" text-anchor="middle" fill="#34d399" font-size="10">9 角色契约</text>
+  <text x="870" y="240" text-anchor="middle" fill="#34d399" font-size="10">pm · coder · tester · security</text>
+
+  <rect x="790" y="270" width="160" height="80" rx="8" fill="rgba(52,211,153,.1)" stroke="#34d399" stroke-width="1"/>
+  <text x="870" y="295" text-anchor="middle" fill="#6ee7b7" font-size="12" font-weight="600">rules/</text>
+  <text x="870" y="315" text-anchor="middle" fill="#34d399" font-size="10">10 治理规则</text>
+  <text x="870" y="335" text-anchor="middle" fill="#34d399" font-size="10">security-guardrails · code-pipeline</text>
+
+  <rect x="790" y="365" width="160" height="60" rx="8" fill="rgba(52,211,153,.1)" stroke="#34d399" stroke-width="1"/>
+  <text x="870" y="390" text-anchor="middle" fill="#6ee7b7" font-size="12" font-weight="600">lib/</text>
+  <text x="870" y="410" text-anchor="middle" fill="#34d399" font-size="10">共享函数 · 常量 · TTY</text>
+
+  <!-- Arrows between layers -->
+  <line x1="230" y1="200" x2="290" y2="200" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <line x1="710" y1="200" x2="770" y2="200" stroke="#34d399" stroke-width="2" marker-end="url(#arrowGreen)"/>
+</svg>
+</div>
+
+<div class="cards">
+  <div class="card">
+    <h3>六面安全覆盖</h3>
+    <ul>
+      <li>S1 密钥不落盘 — ✓</li>
+      <li>S2 认证不可绕过 — ✓</li>
+      <li>S3 输入必校验 — ✓</li>
+      <li>S4 分支隔离 — ✓</li>
+      <li>S5 外部依赖 — ⚠️ 部分</li>
+      <li>S6 退化检测 — ✓</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>关键阻断标识</h3>
+    <ul>
+      <li>no-token — Token 缺失降级</li>
+      <li>bad-branch — 分支隔离违反</li>
+      <li>code-p0 — 安全 P0 未清零</li>
+      <li>no-branch-isolation — 写入未检查</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>自动化扫描</h3>
+    <ul>
+      <li>security-scan.mjs — S1/S3/S5</li>
+      <li>detect-impact.mjs — S6</li>
+      <li>branch-check.mjs — S4</li>
+      <li>npm audit — S5 依赖安全</li>
+    </ul>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

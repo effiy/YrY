@@ -1,0 +1,47 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>跨故事集成回归自检 · 审查</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css"><link rel="stylesheet" href="../../../../cdn/theme.css">
+<style>.container{max-width:960px;margin:0 auto;padding:40px 24px 80px}.review-table{width:100%;border-collapse:collapse;margin:16px 0}.review-table th{background:rgba(255,193,7,.1);color:#fbbf24;padding:10px 14px;text-align:left;font-size:.82rem;border-bottom:2px solid rgba(255,193,7,.2)}.review-table td{padding:10px 14px;font-size:.82rem;color:#cbd5e1;border-bottom:1px solid rgba(148,163,184,.1)}.pass{color:#22c55e;font-weight:600}.warn{color:#f59e0b;font-weight:600}</style></head><body><div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自动化测试套件</span><span class="bc-sep">/</span><span class="bc-current">场景 5 · 跨故事集成回归自检</span><span class="bc-sep">/</span><span class="bc-current">审查</span></nav>
+<div class="cross-nav">
+  <a href="计划清单.html" class="cross-link">清单</a><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">图谱</a><span class="cross-sep">·</span>
+  <a href="测试面板.html" class="cross-link">测试</a><span class="cross-sep">·</span>
+  <a href="演示.html" class="cross-link">演示</a><span class="cross-sep">·</span>
+  <span class="cross-link on">审查</span><span class="cross-sep">·</span>
+  <a href="源码.html" class="cross-link">源码</a>
+</div>
+<div class="header"><h1>场景-5<span class="accent"> · 跨故事集成回归自检</span></h1><p>集成审查报告 — 依赖闭合 · 覆盖率 · 一致性</p></div>
+
+<div class="card"><h2>审查摘要</h2>
+<table class="review-table">
+<tr><th>维度</th><th>状态</th><th>覆盖</th><th>说明</th></tr>
+<tr><td>单故事测试覆盖</td><td class="pass">通过</td><td>4/4 故事</td><td>每个故事有完整的场景文档基线</td></tr>
+<tr><td>跨故事依赖闭合</td><td class="pass">通过</td><td>4/4 依赖</td><td>所有声明的上下游依赖目标存在</td></tr>
+<tr><td>版本一致性</td><td class="pass">通过</td><td>5/5 文件</td><td>plugin.json · CLAUDE.md · README.md · marketplace.json · docs/index.html 均为 4.8.2</td></tr>
+<tr><td>CDN 引用一致性</td><td class="pass">通过</td><td>4/4 文件</td><td>全部引用 @1.1.0 与 cdn/package.json 一致</td></tr>
+<tr><td>全量回归入口</td><td class="warn">待实施</td><td>0/1</td><td>tests/run-all.mjs 尚未创建</td></tr>
+<tr><td>自动化依赖验证</td><td class="warn">待实施</td><td>0/1</td><td>tests/integration/cross-story.test.mjs 尚未创建</td></tr>
+</table>
+</div>
+
+<div class="card"><h2>场景计数验证（init 规约 ≥5）</h2>
+<table class="review-table">
+<tr><th>故事</th><th>场景数</th><th>状态</th><th>场景列表</th></tr>
+<tr><td>yry-arch</td><td class="pass">5</td><td class="pass">达标</td><td>模块定位 · 数据流追踪 · 新人上手 · 依赖变更影响 · 信任边界与安全面</td></tr>
+<tr><td>yry-self-test</td><td class="pass">5</td><td class="pass">达标</td><td>init全量 · commit增量 · 文档代码一致性 · 安全面回归 · 跨故事集成回归</td></tr>
+<tr><td>yry-cdn</td><td class="pass">5</td><td class="pass">达标</td><td>CDN资源加载 · 双主题系统 · 组件库与JS · 存量页面迁移 · npm包发布</td></tr>
+<tr><td>rui-npm</td><td class="pass">5</td><td class="pass">达标</td><td>包搜索与发现 · 包安装与版本管理 · 本地发布与npx · 包信息审计与卸载 · 账号级包管理</td></tr>
+</table>
+</div>
+
+<div class="card"><h2>审查结论</h2>
+<p style="color:#cbd5e1;font-size:.85rem;line-height:1.8">
+<span class="pass">静态一致性全部通过。</span>
+四个故事的场景计数均已达到 init 规约要求的 ≥5 场景基线。
+版本号和 CDN 引用已通过此次自改进周期修复为一致状态。
+<span class="warn">两个动态验证脚本（run-all.mjs 和 cross-story.test.mjs）待实施，</span>
+建议下个周期通过 /rui code yry-self-test 完成。
+</p>
+</div>
+</div></body></html>

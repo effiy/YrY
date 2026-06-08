@@ -1,0 +1,44 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>跨故事集成回归自检 · 源码</title>
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+<style>.container{max-width:960px;margin:0 auto;padding:40px 24px 80px}.source-ref{display:block;padding:8px 12px;margin:4px 0;border-radius:6px;background:rgba(34,211,238,.05);border:1px solid rgba(34,211,238,.1);color:#22d3ee;text-decoration:none;font-size:.82rem;transition:all .15s}.source-ref:hover{background:rgba(34,211,238,.12);border-color:rgba(34,211,238,.25)}.source-ref .path{color:#94a3b8;font-family:'JetBrains Mono',monospace}.source-ref .arrow{color:#fbbf24;margin:0 6px}</style></head><body><div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自动化测试套件</span><span class="bc-sep">/</span><span class="bc-current">场景 5 · 跨故事集成回归自检</span><span class="bc-sep">/</span><span class="bc-current">源码</span></nav>
+<div class="cross-nav">
+  <a href="计划清单.html" class="cross-link">清单</a><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">图谱</a><span class="cross-sep">·</span>
+  <a href="测试面板.html" class="cross-link">测试</a><span class="cross-sep">·</span>
+  <a href="演示.html" class="cross-link">演示</a><span class="cross-sep">·</span>
+  <a href="审查.html" class="cross-link">审查</a><span class="cross-sep">·</span>
+  <span class="cross-link on">源码</span>
+</div>
+<div class="header"><h1>场景-5<span class="accent"> · 跨故事集成回归自检</span></h1><p>集成回归相关源码索引</p></div>
+
+<div class="card"><h2>全量回归入口（待实施）</h2>
+<a class="source-ref"><span class="path">tests/run-all.mjs</span><span class="arrow">→</span>全量回归统一入口 — 串联所有故事测试套件</a>
+</div>
+
+<div class="card"><h2>跨故事集成验证（待实施）</h2>
+<a class="source-ref"><span class="path">tests/integration/cross-story.test.mjs</span><span class="arrow">→</span>跨故事依赖闭合验证 — 解析依赖声明并验证目标存在</a>
+</div>
+
+<div class="card"><h2>现有测试基础设施</h2>
+<a class="source-ref" href="../../../../tests/skills/rui.test.mjs"><span class="path">tests/skills/rui.test.mjs</span><span class="arrow">→</span>rui 技能测试</a>
+<a class="source-ref" href="../../../../tests/skills/rui-story.test.mjs"><span class="path">tests/skills/rui-story.test.mjs</span><span class="arrow">→</span>rui-story 技能测试</a>
+<a class="source-ref" href="../../../../tests/skills/rui-claude.test.mjs"><span class="path">tests/skills/rui-claude.test.mjs</span><span class="arrow">→</span>rui-claude 技能测试</a>
+<a class="source-ref" href="../../../../tests/skills/rui-import.test.mjs"><span class="path">tests/skills/rui-import.test.mjs</span><span class="arrow">→</span>rui-import 技能测试</a>
+</div>
+
+<div class="card"><h2>一致性检查脚本</h2>
+<a class="source-ref" href="../../../../scripts/validate-doc-consistency.mjs"><span class="path">scripts/validate-doc-consistency.mjs</span><span class="arrow">→</span>L1 引用可达性 — 提取文档引用并验证目标存在</a>
+<a class="source-ref" href="../../../../scripts/validate-module-topology.mjs"><span class="path">scripts/validate-module-topology.mjs</span><span class="arrow">→</span>依赖图构建 + 循环检测 + 无效引用识别</a>
+<a class="source-ref" href="../../../../skills/rui-claude/update-version.mjs"><span class="path">skills/rui-claude/update-version.mjs</span><span class="arrow">→</span>版本升级 + 一致性覆盖（含 docs/index.html + README.md sub 模式）</a>
+</div>
+
+<div class="card"><h2>场景-3 相关（文档代码一致性）</h2>
+<a class="source-ref" href="../场景-3-文档代码一致性校验/源码.html"><span class="path">场景-3/源码.html</span><span class="arrow">→</span>文档代码一致性校验源码索引</a>
+</div>
+
+<div class="card"><h2>场景-4 相关（安全面回归）</h2>
+<a class="source-ref" href="../场景-4-安全面回归自检/源码.html"><span class="path">场景-4/源码.html</span><span class="arrow">→</span>安全面回归自检源码索引</a>
+</div>
+</div></body></html>

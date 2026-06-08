@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>信任边界与安全面 · 演示</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+<style>
+.container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+pre { background: #0f172a; color: #e2e8f0; padding: 16px; border-radius: 8px; font-size: .8rem; overflow-x: auto; line-height: 1.5; }
+.output { border-left: 3px solid #22c55e; padding-left: 16px; }
+.output.warn { border-left-color: #f59e0b; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../../index.html">文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 5 · 信任边界与安全面</span><span class="bc-sep">/</span><span class="bc-current">演示</span></nav>
+
+<div class="cross-nav">
+  <a href="计划清单.html" class="cross-link">清单</a><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">图谱</a><span class="cross-sep">·</span>
+  <a href="测试面板.html" class="cross-link">测试</a><span class="cross-sep">·</span>
+  <span class="cross-link on">演示</span><span class="cross-sep">·</span>
+  <a href="审查.html" class="cross-link">审查</a><span class="cross-sep">·</span>
+  <a href="源码.html" class="cross-link">源码</a>
+</div>
+
+<div class="header">
+  <h1>场景-5<span class="accent"> · 信任边界与安全面</span></h1>
+  <p>安全扫描演示 — 命令输出 · 阻断流程 · 降级行为</p>
+</div>
+
+<div class="card"><h2>演示 1: 密钥不落盘扫描</h2>
+<p style="color:#94a3b8;font-size:.82rem;margin-bottom:12px">执行 security-scan.mjs S1 模块，全仓库扫描硬编码密钥</p>
+<pre>$ <span style="color:#22d3ee">node scripts/security-scan.mjs --check=S1</span>
+
+<span class="output">Scanning: S1 密钥不落盘 (token/key/secret patterns)
+  Target: **/*.mjs **/*.js **/*.json
+  Exclude: node_modules/ .git/
+
+  [PASS] skills/rui-bot/send.mjs — token via process.env
+  [PASS] skills/rui-import/sync.mjs — token via process.env
+  [PASS] .claude-plugin/plugin.json — no secrets
+  [PASS] .claude-plugin/marketplace.json — no secrets
+
+  Summary: 4 files scanned, 0 violations, 0 secrets found
+  Result: S1 COVERED — no hardcoded credentials</span></pre>
+</div>
+
+<div class="card"><h2>演示 2: XSS 向量检测</h2>
+<p style="color:#94a3b8;font-size:.82rem;margin-bottom:12px">扫描所有 .mjs 文件中的 XSS 危险模式</p>
+<pre>$ <span style="color:#22d3ee">node scripts/security-scan.mjs --check=S3</span>
+
+<span class="output">Scanning: S3 输入校验 (XSS vectors)
+  Patterns: innerHTML | dangerouslySetInnerHTML | document.write | eval(
+
+  [PASS] skills/rui/help.mjs — no XSS vectors
+  [PASS] skills/rui-story/rui-story.mjs — no XSS vectors
+  [PASS] skills/rui-import/sync.mjs — no XSS vectors
+  ... (24 files total)
+
+  Summary: 24 files scanned, 0 XSS vectors found
+  Result: S3 COVERED — HTML output uses safe APIs</span></pre>
+</div>
+
+<div class="card"><h2>演示 3: 分支隔离阻断</h2>
+<p style="color:#94a3b8;font-size:.82rem;margin-bottom:12px">在 main 分支尝试写入操作，预期被 branch-check.mjs 阻断</p>
+<pre>$ <span style="color:#f59e0b">git branch --show-current</span>
+main
+
+$ <span style="color:#22d3ee">node skills/rui/branch-check.mjs</span>
+
+<span class="output warn">BLOCKED: bad-branch
+  Current branch: main
+  Required pattern: feat/&lt;name&gt;
+  Reason: Edit/Write operations require feature branch isolation.
+  Action: git checkout -b feat/&lt;name&gt;</span></pre>
+</div>
+
+<div class="card"><h2>演示 4: Token 缺失降级</h2>
+<p style="color:#94a3b8;font-size:.82rem;margin-bottom:12px">未设置 API_X_TOKEN 时 rui-import 静默跳过</p>
+<pre>$ <span style="color:#f59e0b">unset API_X_TOKEN</span>
+$ <span style="color:#22d3ee">node skills/rui-import/import-doc.mjs test.md</span>
+
+<span class="output">[rui-import] API_X_TOKEN not set — skipping sync
+[rui-import] This is a non-blocking degradation.
+[rui-import] Set API_X_TOKEN to enable document sync.</span></pre>
+</div>
+
+</div>
+</body>
+</html>

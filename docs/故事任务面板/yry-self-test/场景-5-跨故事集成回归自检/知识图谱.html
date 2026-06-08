@@ -1,0 +1,71 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>跨故事集成回归自检 · 知识图谱</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css"><link rel="stylesheet" href="../../../../cdn/theme-mono.css"><link rel="stylesheet" href="../../../../cdn/fonts.css">
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
+.container{max-width:1400px;margin:0 auto}
+.breadcrumb{margin-bottom:1rem;font-size:.75rem;color:#64748b}
+.breadcrumb a{color:#22d3ee;text-decoration:none}.breadcrumb a:hover{color:#fbbf24}
+.cross-nav{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.cross-nav a,.cross-nav span{color:#94a3b8;text-decoration:none;font-size:.75rem;padding:.25rem .625rem;border-radius:.25rem;transition:all .2s}
+.cross-nav a:hover{color:#22d3ee;background:rgba(34,211,238,.08)}.cross-nav .on{color:#fbbf24;background:rgba(255,193,7,.1)}
+.header{margin-bottom:1.5rem}h1{font-size:1.25rem;font-weight:700}.accent{color:#fbbf24}.subtitle{color:#64748b;font-size:.8rem;margin-top:.25rem}
+.graph-container{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1rem;margin-bottom:1.5rem}#cy{width:100%;height:500px;border-radius:.5rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}
+.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
+.card h3{font-size:.85rem;color:#fbbf24;margin-bottom:.75rem}
+.card p,.card li{font-size:.78rem;color:#94a3b8;line-height:1.6}.card ul{list-style:none;padding:0}.card li::before{content:'→ ';color:#22d3ee}
+</style></head><body><div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">文档中心</a> / <a href="../故事任务.md">yry-self-test</a> / 场景 5 · 跨故事集成回归自检 / 知识图谱</nav>
+<div class="cross-nav">
+  <a href="计划清单.html">清单</a><span>·</span><a href="架构图.html">架构</a><span>·</span><span class="on">图谱</span><span>·</span>
+  <a href="测试面板.html">测试</a><span>·</span><a href="演示.html">演示</a><span>·</span><a href="审查.html">审查</a><span>·</span><a href="源码.html">源码</a>
+</div>
+<div class="header"><h1>场景-5<span class="accent"> · 跨故事集成回归自检</span></h1><p class="subtitle">领域层 → 结构层 → 内容层 — 集成拓扑图谱</p></div>
+<div class="graph-container"><div id="cy"></div></div>
+<div class="cards">
+<div class="card"><h3>领域层节点</h3><ul><li>story: yry-self-test (contains → 5 scenes)</li><li>scene: cross-story-integration (本场景)</li><li>story: yry-arch (参考基线)</li><li>story: yry-cdn · rui-npm (同级故事)</li></ul></div>
+<div class="card"><h3>结构层节点</h3><ul><li>单故事测试 (4 故事并行)</li><li>跨故事集成 (依赖链验证)</li><li>全局一致性 (版本/CDN/索引)</li><li>汇总报告 (覆盖率仪表盘)</li></ul></div>
+<div class="card"><h3>内容层节点</h3><ul><li>tests/run-all.mjs — 全量回归入口</li><li>tests/integration/cross-story.test.mjs</li><li>validate-doc-consistency.mjs</li><li>update-version.mjs (post-check)</li></ul></div>
+</div>
+<script>
+var cy = cytoscape({
+  container: document.getElementById('cy'),
+  style: [
+    {selector:'node',style:{label:'data(label)',color:'#e2e8f0','font-size':'10px','font-family':'JetBrains Mono,monospace','text-valign':'center','text-halign':'center','text-wrap':'wrap','text-max-width':'130px'}},
+    {selector:'edge',style:{width:1.5,'line-color':'#334155','target-arrow-color':'#334155','target-arrow-shape':'triangle','curve-style':'bezier','opacity':0.7}},
+    {selector:'.story',style:{background:'#c084fc','border-color':'#a855f7','border-width':2}},
+    {selector:'.scene',style:{background:'#fbbf24','border-color':'#f59e0b','border-width':2}},
+    {selector:'.test',style:{background:'#22d3ee','border-color':'#06b6d4','border-width':2}},
+    {selector:'.check',style:{background:'#34d399','border-color':'#10b981','border-width':2}}
+  ],
+  elements: {
+    nodes: [
+      {data:{id:'self',label:'yry-self-test'},classes:'story'},
+      {data:{id:'arch',label:'yry-arch'},classes:'story'},
+      {data:{id:'cdn',label:'yry-cdn'},classes:'story'},
+      {data:{id:'npm',label:'rui-npm'},classes:'story'},
+      {data:{id:'scene5',label:'场景-5\n集成回归'},classes:'scene'},
+      {data:{id:'s1',label:'单故事\n并行测试'},classes:'test'},
+      {data:{id:'s2',label:'跨故事\n集成验证'},classes:'test'},
+      {data:{id:'s3',label:'全局\n一致性'},classes:'check'},
+      {data:{id:'runall',label:'run-all.mjs'},classes:'test'},
+      {data:{id:'cross',label:'cross-story\n.test.mjs'},classes:'test'},
+      {data:{id:'ver',label:'版本\n一致性'},classes:'check'},
+      {data:{id:'cdnc',label:'CDN\n一致性'},classes:'check'},
+      {data:{id:'idx',label:'索引\n完整性'},classes:'check'}
+    ],
+    edges: [
+      {data:{source:'self',target:'scene5'}},
+      {data:{source:'scene5',target:'s1'}},{data:{source:'scene5',target:'s2'}},{data:{source:'scene5',target:'s3'}},
+      {data:{source:'s1',target:'arch'}},{data:{source:'s1',target:'self'}},{data:{source:'s1',target:'cdn'}},{data:{source:'s1',target:'npm'}},
+      {data:{source:'s2',target:'cross'}},{data:{source:'s1',target:'runall'}},
+      {data:{source:'s3',target:'ver'}},{data:{source:'s3',target:'cdnc'}},{data:{source:'s3',target:'idx'}},
+      {data:{source:'ver',target:'arch'}},{data:{source:'cdnc',target:'cdn'}},{data:{source:'idx',target:'self'}}
+    ]
+  },
+  layout: {name:'breadthfirst',directed:true,spacingFactor:1.15}
+});
+</script>
+</div></body></html>

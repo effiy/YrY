@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>信任边界与安全面 · 源码</title>
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+<style>
+.container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+.source-ref { display: block; padding: 8px 12px; margin: 4px 0; border-radius: 6px; background: rgba(34,211,238,.05); border: 1px solid rgba(34,211,238,.1); color: #22d3ee; text-decoration: none; font-size: .82rem; transition: all .15s; }
+.source-ref:hover { background: rgba(34,211,238,.12); border-color: rgba(34,211,238,.25); }
+.source-ref .path { color: #94a3b8; font-family: 'JetBrains Mono',monospace; }
+.source-ref .arrow { color: #fbbf24; margin: 0 6px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../../index.html">文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 5 · 信任边界与安全面</span><span class="bc-sep">/</span><span class="bc-current">源码</span></nav>
+
+<div class="cross-nav">
+  <a href="计划清单.html" class="cross-link">清单</a><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">图谱</a><span class="cross-sep">·</span>
+  <a href="测试面板.html" class="cross-link">测试</a><span class="cross-sep">·</span>
+  <a href="演示.html" class="cross-link">演示</a><span class="cross-sep">·</span>
+  <a href="审查.html" class="cross-link">审查</a><span class="cross-sep">·</span>
+  <span class="cross-link on">源码</span>
+</div>
+
+<div class="header">
+  <h1>场景-5<span class="accent"> · 信任边界与安全面</span></h1>
+  <p>安全相关源码索引 — 脚本 · 规则 · 配置</p>
+</div>
+
+<div class="card"><h2>安全扫描脚本</h2>
+<a class="source-ref" href="../../../../scripts/security-scan.mjs"><span class="path">scripts/security-scan.mjs</span><span class="arrow">→</span>S1 密钥不落盘 + S3 输入校验 + S5 依赖安全扫描</a>
+</div>
+
+<div class="card"><h2>变更影响检测</h2>
+<a class="source-ref" href="../../../../scripts/detect-impact.mjs"><span class="path">scripts/detect-impact.mjs</span><span class="arrow">→</span>S6 安全约束退化检测 — 变更影响分析</a>
+</div>
+
+<div class="card"><h2>分支隔离</h2>
+<a class="source-ref" href="../../../../skills/rui/branch-check.mjs"><span class="path">skills/rui/branch-check.mjs</span><span class="arrow">→</span>S4 分支隔离验证 — 每次 Edit/Write 前强制调用</a>
+</div>
+
+<div class="card"><h2>安全规则基线</h2>
+<a class="source-ref" href="../../../../rules/security-guardrails.md"><span class="path">rules/security-guardrails.md</span><span class="arrow">→</span>六面安全防护基线 — S1–S6 完整定义</a>
+</div>
+
+<div class="card"><h2>管线规则（安全相关条款）</h2>
+<a class="source-ref" href="../../../../rules/code-pipeline.md"><span class="path">rules/code-pipeline.md</span><span class="arrow">→</span>分支隔离 · Gate A/B 强制验证 · P0 清零</a>
+<a class="source-ref" href="../../../../rules/delivery-gate.md"><span class="path">rules/delivery-gate.md</span><span class="arrow">→</span>交付收口 · 三步 hook 按序执行</a>
+</div>
+
+<div class="card"><h2>安全 Agent 契约</h2>
+<a class="source-ref" href="../../../../agents/security.md"><span class="path">agents/security.md</span><span class="arrow">→</span>安全角色契约 — P0 约束 · 威胁建模 · 审查清单</a>
+<a class="source-ref" href="../../../../agents/AGENT.md"><span class="path">agents/AGENT.md</span><span class="arrow">→</span>角色拓扑 · 行为纪律 · Red Flags 速查表</a>
+</div>
+
+<div class="card"><h2>认证相关（Token 管理）</h2>
+<a class="source-ref" href="../../../../skills/rui-bot/send.mjs"><span class="path">skills/rui-bot/send.mjs</span><span class="arrow">→</span>企微通知 — API_X_TOKEN via process.env</a>
+<a class="source-ref" href="../../../../skills/rui-import/sync.mjs"><span class="path">skills/rui-import/sync.mjs</span><span class="arrow">→</span>文档同步 — API_X_TOKEN via process.env</a>
+</div>
+
+<div class="card"><h2>项目基线（安全约束声明）</h2>
+<a class="source-ref" href="../../../../CLAUDE.md"><span class="path">CLAUDE.md</span><span class="arrow">→</span>项目不可妥协底线 — 认证不可绕过 · 密钥不落盘 · 输入必校验</a>
+</div>
+
+</div>
+</body>
+</html>

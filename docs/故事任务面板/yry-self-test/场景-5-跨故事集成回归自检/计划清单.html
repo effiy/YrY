@@ -1,0 +1,44 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>跨故事集成回归自检 · 计划清单</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css"><link rel="stylesheet" href="../../../../cdn/theme.css"><link rel="stylesheet" href="../../../../cdn/yry-checklist.css">
+<style>.container{max-width:960px;margin:0 auto;padding:40px 24px 80px}</style></head><body><div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自动化测试套件</span><span class="bc-sep">/</span><span class="bc-current">场景 5 · 跨故事集成回归自检</span><span class="bc-sep">/</span><span class="bc-current">计划清单</span></nav>
+<div class="cross-nav">
+  <span class="cross-link on">清单</span><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">图谱</a><span class="cross-sep">·</span>
+  <a href="测试面板.html" class="cross-link">测试</a><span class="cross-sep">·</span>
+  <a href="演示.html" class="cross-link">演示</a><span class="cross-sep">·</span>
+  <a href="审查.html" class="cross-link">审查</a><span class="cross-sep">·</span>
+  <a href="源码.html" class="cross-link">源码</a>
+</div>
+<div class="header"><h1>场景-5<span class="accent"> · 跨故事集成回归自检</span></h1><p>全量回归 · 跨故事依赖验证 · 全局一致性检查</p></div>
+<div class="checklist">
+<div class="cl-section"><h2>FP1 全量回归入口</h2>
+<div class="cl-item pending"><span class="cl-check">○</span> tests/run-all.mjs 统一入口脚本</div>
+<div class="cl-item pending"><span class="cl-check">○</span> 串联 4 个故事的测试套件</div>
+<div class="cl-item done"><span class="cl-check">✓</span> 单故事测试套件已就绪（10 套件 171 断言）</div>
+</div>
+<div class="cl-section"><h2>FP2 跨故事依赖闭合验证</h2>
+<div class="cl-item pending"><span class="cl-check">○</span> tests/integration/cross-story.test.mjs</div>
+<div class="cl-item done"><span class="cl-check">✓</span> 每个故事 tasks.md 已编目上下游依赖</div>
+<div class="cl-item pending"><span class="cl-check">○</span> 自动解析依赖声明并逐条验证目标存在</div>
+</div>
+<div class="cl-section"><h2>FP3 文档中心索引完整性</h2>
+<div class="cl-item done"><span class="cl-check">✓</span> docs/index.html 覆盖全部 4 个故事</div>
+<div class="cl-item done"><span class="cl-check">✓</span> 所有场景链接可点击</div>
+<div class="cl-item pending"><span class="cl-check">○</span> 自动化链接可达性检查脚本</div>
+</div>
+<div class="cl-section"><h2>FP4 版本号一致性</h2>
+<div class="cl-item done"><span class="cl-check">✓</span> update-version.mjs 覆盖 5 个文件</div>
+<div class="cl-item done"><span class="cl-check">✓</span> 4.8.2 版本一致（2026-06-08 自改进修复后）</div>
+<div class="cl-item pending"><span class="cl-check">○</span> 版本一致性自动检查脚本（可集成到 update-version.mjs post-check）</div>
+</div>
+<div class="cl-section"><h2>FP5 CDN 引用版本一致性</h2>
+<div class="cl-item done"><span class="cl-check">✓</span> CDN 引用已统一更新到 @1.1.0</div>
+<div class="cl-item done"><span class="cl-check">✓</span> 与 cdn/package.json 版本一致</div>
+</div>
+<div class="cl-section"><h2>FP6 知识图谱完整性</h2>
+<div class="cl-item done"><span class="cl-check">✓</span> 4 个故事 × 知识图谱.json 结构有效</div>
+<div class="cl-item done"><span class="cl-check">✓</span> 场景-3 validate-doc-consistency.mjs 覆盖图谱结构验证</div>
+</div>
+</div></div></body></html>

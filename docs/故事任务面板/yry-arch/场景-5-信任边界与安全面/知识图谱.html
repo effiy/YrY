@@ -1,0 +1,96 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>信任边界与安全面 · 知识图谱</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme-mono.css">
+<link rel="stylesheet" href="../../../../cdn/fonts.css">
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
+.container{max-width:1400px;margin:0 auto}
+.breadcrumb{margin-bottom:1rem;font-size:.75rem;color:#64748b}
+.breadcrumb a{color:#22d3ee;text-decoration:none}
+.breadcrumb a:hover{color:#fbbf24}
+.cross-nav{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.cross-nav a,.cross-nav span{color:#94a3b8;text-decoration:none;font-size:.75rem;padding:.25rem .625rem;border-radius:.25rem;transition:all .2s}
+.cross-nav a:hover{color:#22d3ee;background:rgba(34,211,238,.08)}
+.cross-nav .on{color:#fbbf24;background:rgba(255,193,7,.1)}
+.header{margin-bottom:1.5rem}
+h1{font-size:1.25rem;font-weight:700}
+.accent{color:#fbbf24}
+.subtitle{color:#64748b;font-size:.8rem;margin-top:.25rem}
+.graph-container{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1rem;margin-bottom:1.5rem}
+#cy{width:100%;height:500px;border-radius:.5rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}
+.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
+.card h3{font-size:.85rem;color:#fbbf24;margin-bottom:.75rem}
+.card p,.card li{font-size:.78rem;color:#94a3b8;line-height:1.6}
+.card ul{list-style:none;padding:0}
+.card li::before{content:'→ ';color:#22d3ee}
+</style></head><body>
+<div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">文档中心</a> / <a href="../故事任务.md">yry-arch</a> / 场景 5 · 信任边界与安全面 / 知识图谱</nav>
+<div class="cross-nav">
+  <a href="计划清单.html">清单</a><span>·</span>
+  <a href="架构图.html">架构</a><span>·</span>
+  <span class="on">图谱</span><span>·</span>
+  <a href="测试面板.html">测试</a><span>·</span>
+  <a href="演示.html">演示</a><span>·</span>
+  <a href="审查.html">审查</a><span>·</span>
+  <a href="源码.html">源码</a>
+</div>
+<div class="header"><h1>场景-5<span class="accent"> · 信任边界与安全面</span></h1><p class="subtitle">领域层 → 结构层 → 内容层 — 安全知识图谱</p></div>
+<div class="graph-container"><div id="cy"></div></div>
+<div class="cards">
+  <div class="card"><h3>领域层节点</h3><ul><li>story: yry-arch (contains → 5 scenes)</li><li>scene: trust-boundary (安全面编目)</li><li>rule: security-guardrails (S1–S6)</li></ul></div>
+  <div class="card"><h3>结构层节点</h3><ul><li>输入面: CLI · ENV · FS · Network · Git</li><li>信任边界: B1 校验 · B2 认证 · B3 授权</li><li>执行域: skills/ · agents/ · rules/ · lib/</li></ul></div>
+  <div class="card"><h3>内容层节点</h3><ul><li>security-scan.mjs — 自动化扫描脚本</li><li>detect-impact.mjs — 变更影响检测</li><li>branch-check.mjs — 分支隔离验证</li><li>npm audit — 依赖安全审计</li></ul></div>
+</div>
+<script>
+var cy = cytoscape({
+  container: document.getElementById('cy'),
+  style: [
+    {selector:'node',style:{label:'data(label)',color:'#e2e8f0','font-size':'11px','font-family':'JetBrains Mono,monospace','text-valign':'center','text-halign':'center','text-wrap':'wrap','text-max-width':'140px'}},
+    {selector:'edge',style:{width:1.5,'line-color':'#334155','target-arrow-color':'#334155','target-arrow-shape':'triangle','curve-style':'bezier','opacity':0.7}},
+    {selector:'.domain',style:{background:'#c084fc','border-color':'#a855f7','border-width':2}},
+    {selector:'.structure',style:{background:'#3b82f6','border-color':'#2563eb','border-width':2}},
+    {selector:'.content',style:{background:'#22d3ee','border-color':'#06b6d4','border-width':2}},
+    {selector:'.entry',style:{background:'#f87171','border-color':'#ef4444','border-width':2}},
+    {selector:'.gate',style:{background:'#fbbf24','border-color':'#f59e0b','border-width':2}}
+  ],
+  elements: {
+    nodes: [
+      {data:{id:'story',label:'story:\nyry-arch'},classes:'domain'},
+      {data:{id:'scene',label:'scene:\ntrust-boundary'},classes:'domain'},
+      {data:{id:'sg',label:'rule:\nsecurity-\nguardrails'},classes:'domain'},
+      {data:{id:'input',label:'输入面\n6 类入口'},classes:'entry'},
+      {data:{id:'b1',label:'B1\n输入校验'},classes:'gate'},
+      {data:{id:'b2',label:'B2\n认证'},classes:'gate'},
+      {data:{id:'b3',label:'B3\n授权'},classes:'gate'},
+      {data:{id:'skills',label:'skills/\n7 技能'},classes:'structure'},
+      {data:{id:'agents',label:'agents/\n9 角色'},classes:'structure'},
+      {data:{id:'rules',label:'rules/\n10 规则'},classes:'structure'},
+      {data:{id:'lib',label:'lib/\n共享库'},classes:'structure'},
+      {data:{id:'scan',label:'security-\nscan.mjs'},classes:'content'},
+      {data:{id:'detect',label:'detect-\nimpact.mjs'},classes:'content'},
+      {data:{id:'branch',label:'branch-\ncheck.mjs'},classes:'content'}
+    ],
+    edges: [
+      {data:{source:'story',target:'scene'}},
+      {data:{source:'scene',target:'sg'}},
+      {data:{source:'input',target:'b1'}},
+      {data:{source:'input',target:'b2'}},
+      {data:{source:'input',target:'b3'}},
+      {data:{source:'b1',target:'skills'}},
+      {data:{source:'b2',target:'agents'}},
+      {data:{source:'b3',target:'rules'}},
+      {data:{source:'skills',target:'lib'}},
+      {data:{source:'agents',target:'lib'}},
+      {data:{source:'sg',target:'scan'}},
+      {data:{source:'sg',target:'detect'}},
+      {data:{source:'sg',target:'branch'}}
+    ]
+  },
+  layout: {name:'breadthfirst',directed:true,spacingFactor:1.2}
+});
+</script>
+</div></body></html>

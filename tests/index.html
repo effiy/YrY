@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>YrY Tests · 自检中心</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.0.0/theme.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.0.0/shared.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/theme.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.css">
   <style>
     :root { --bg:var(--yry-bg); --bg-card:var(--yry-bg-card); --bg-flat:var(--yry-bg-flat); --bg-raised:var(--yry-bg-raised); --accent:var(--yry-accent); --cyan:var(--yry-cyan); --pass:var(--yry-pass); --fail:var(--yry-fail); --warn:var(--yry-warn); --skip:var(--yry-skip); --text:var(--yry-text); --text2:var(--yry-text2); --text3:var(--yry-text3); --shadow:var(--yry-shadow); --shadow-lg:var(--yry-shadow-lg); --radius:var(--yry-radius); --border:var(--yry-border); }
     /* Reuse CDN animations via aliased keyframes */
@@ -171,7 +171,7 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <div class="modal-overlay" id="modalOverlay"><div class="modal"><div class="m-head"><span class="m-title" id="modalTitle"></span><button class="m-close" onclick="closeModal()">✕</button></div><div class="m-body" id="modalBody"></div></div></div>
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.0.0/shared.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.js"></script>
 <script>
 let manifest=null,results=null,activePanel='files',fileQuery='',resultQuery='',sortByDur=false,autoRefreshId=null,focusIdx=-1;
 const CAT_ICONS={skills:'⚙️',agents:'🤖',rules:'📏',integration:'🔗',lib:'📦'};

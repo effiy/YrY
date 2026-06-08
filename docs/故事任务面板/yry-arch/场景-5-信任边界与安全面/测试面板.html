@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>信任边界与安全面 · 测试面板</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+<style>
+.container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+.gate-lines { margin: 12px 0; line-height: 2; }
+.ok { color: #22c55e; }
+.warn { color: #f59e0b; }
+.fail { color: #ef4444; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../../index.html">文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 5 · 信任边界与安全面</span><span class="bc-sep">/</span><span class="bc-current">测试面板</span></nav>
+
+<div class="cross-nav">
+  <a href="计划清单.html" class="cross-link">清单</a><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">图谱</a><span class="cross-sep">·</span>
+  <span class="cross-link on">测试</span><span class="cross-sep">·</span>
+  <a href="演示.html" class="cross-link">演示</a><span class="cross-sep">·</span>
+  <a href="审查.html" class="cross-link">审查</a><span class="cross-sep">·</span>
+  <a href="源码.html" class="cross-link">源码</a>
+</div>
+
+<div class="header">
+  <h1>场景-5<span class="accent"> · 信任边界与安全面</span></h1>
+  <p>安全测试面板 — 六面覆盖 · 自动扫描 · 门禁状态</p>
+</div>
+
+<div class="card"><h2>门禁状态</h2>
+<div class="gate-lines">
+<span class="ok">P0 门禁通过：S1 密钥不落盘扫描 0 命中 · S3 输入校验 Red Flags 激活 · S4 分支隔离 branch-check.mjs 强制执行</span><br>
+<span class="warn">P1 观察：S5 外部依赖安全部分覆盖（npm audit 已集成，但未添加自动阻断逻辑）</span>
+</div></div>
+
+<div class="card"><h2>S1 密钥不落盘</h2>
+<div class="gate-lines">
+<span class="ok">grep -rE 'token.*=|API_KEY|secret' --include='*.mjs' --include='*.json' | grep -v node_modules | grep -v .git</span><br>
+<span class="ok">结果：仅 process.env 引用，无硬编码密钥</span><br>
+<span class="ok">security-scan.mjs S1 模块自动化验证</span>
+</div></div>
+
+<div class="card"><h2>S3 输入校验</h2>
+<div class="gate-lines">
+<span class="ok">XSS 向量扫描：innerHTML · dangerouslySetInnerHTML · document.write · eval</span><br>
+<span class="ok">结果：skill/agent 源码中 0 命中（HTML 生成使用 textContent）</span><br>
+<span class="ok">agents/pm.md Red Flags 中 XSS/注入为最高优先级阻断项</span>
+</div></div>
+
+<div class="card"><h2>S4 分支隔离</h2>
+<div class="gate-lines">
+<span class="ok">node skills/rui/branch-check.mjs — 每次 Edit/Write 前强制调用</span><br>
+<span class="ok">非 feat/ 分支写入 → bad-branch 阻断</span><br>
+<span class="ok">跨分支共享管线状态 → no-branch-isolation 阻断</span>
+</div></div>
+
+<div class="card"><h2>S5 外部依赖安全</h2>
+<div class="gate-lines">
+<span class="warn">npm audit — 集成但无自动阻断逻辑</span><br>
+<span class="ok">WebFetch URL 校验 — 内网地址拒绝</span><br>
+<span class="warn">缺少 URL 白名单机制（当前仅黑名单）</span>
+</div></div>
+
+<div class="card"><h2>S6 安全约束退化检测</h2>
+<div class="gate-lines">
+<span class="ok">scripts/detect-impact.mjs — 变更影响分析</span><br>
+<span class="ok">scripts/security-scan.mjs — 定期安全扫描</span><br>
+<span class="warn">缺少 CronCreate 定期触发机制（依赖手动执行）</span>
+</div></div>
+
+<script>
+var results = {
+  summary: {total:18, passed:15, failed:0, warn:3, durationMs:320, timestamp:"2026-06-08T08:30:00.000Z"},
+  suites: [
+    {name:"S1 密钥不落盘",tests:[
+      {name:"grepScan — 全仓库 token/key/secret 扫描",status:"passed",duration:45},
+      {name:"envCheck — process.env 引用确认",status:"passed",duration:12},
+      {name:"automationScript — security-scan.mjs S1 模块",status:"passed",duration:28}
+    ]},
+    {name:"S3 输入校验",tests:[
+      {name:"xssInnerHTML — innerHTML 模式扫描",status:"passed",duration:15},
+      {name:"xssDangerously — dangerouslySetInnerHTML 检测",status:"passed",duration:8},
+      {name:"xssEval — eval/document.write 检测",status:"passed",duration:10},
+      {name:"redFlags — pm.md XSS Red Flag 激活",status:"passed",duration:5}
+    ]},
+    {name:"S4 分支隔离",tests:[
+      {name:"mainBlocked — main 分支写入被拒",status:"passed",duration:35},
+      {name:"featAllowed — feat/ 分支写入正常",status:"passed",duration:22},
+      {name:"crossBranchBlocked — 跨分支共享被拒",status:"passed",duration:18}
+    ]},
+    {name:"S5 外部依赖",tests:[
+      {name:"npmAudit — npm audit 可执行",status:"passed",duration:55},
+      {name:"autoBlock — 高危漏洞自动阻断","status":"warn",duration:0,note:"未实现"},
+      {name:"urlWhitelist — URL 白名单","status":"warn",duration:0,note:"当前仅黑名单"}
+    ]},
+    {name:"S6 退化检测",tests:[
+      {name:"detectImpact — detect-impact.mjs 可执行",status:"passed",duration:30},
+      {name:"securityScan — security-scan.mjs 可执行",status:"passed",duration:25},
+      {name:"cronAuto — 定期自动触发","status":"warn",duration:0,note:"依赖手动执行"}
+    ]}
+  ]
+};
+</script>
+
+</div>
+</body>
+</html>

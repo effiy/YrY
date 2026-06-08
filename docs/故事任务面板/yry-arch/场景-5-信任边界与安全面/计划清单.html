@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>信任边界与安全面 · 计划清单</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+<link rel="stylesheet" href="../../../../cdn/yry-checklist.css">
+<style>
+.container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../../index.html">文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 5 · 信任边界与安全面</span><span class="bc-sep">/</span><span class="bc-current">计划清单</span></nav>
+
+<div class="cross-nav">
+  <span class="cross-link on">清单</span><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">图谱</a><span class="cross-sep">·</span>
+  <a href="测试面板.html" class="cross-link">测试</a><span class="cross-sep">·</span>
+  <a href="演示.html" class="cross-link">演示</a><span class="cross-sep">·</span>
+  <a href="审查.html" class="cross-link">审查</a><span class="cross-sep">·</span>
+  <a href="源码.html" class="cross-link">源码</a>
+</div>
+
+<div class="header">
+  <h1>场景-5<span class="accent"> · 信任边界与安全面</span></h1>
+  <p>安全约束覆盖矩阵 · 输入面全编目 · 信任链逐跳追踪</p>
+</div>
+
+<div class="checklist">
+  <div class="cl-section">
+    <h2>FP1 密钥不落盘扫描</h2>
+    <div class="cl-item done"><span class="cl-check">✓</span> 全仓库 grep 扫描 token/key/secret 模式</div>
+    <div class="cl-item done"><span class="cl-check">✓</span> 确认仅 process.env 引用</div>
+    <div class="cl-item done"><span class="cl-check">✓</span> 排除 node_modules 和 .git 目录</div>
+    <div class="cl-item done"><span class="cl-check">✓</span> security-scan.mjs 自动化脚本覆盖</div>
+  </div>
+
+  <div class="cl-section">
+    <h2>FP2 XSS 向量检测</h2>
+    <div class="cl-item done"><span class="cl-check">✓</span> innerHTML 模式扫描</div>
+    <div class="cl-item done"><span class="cl-check">✓</span> dangerouslySetInnerHTML 检测</div>
+    <div class="cl-item done"><span class="cl-check">✓</span> document.write / eval 检测</div>
+    <div class="cl-item pending"><span class="cl-check">○</span> 新增 HTML 生成路径自动注册到扫描清单</div>
+  </div>
+
+  <div class="cl-section">
+    <h2>FP3 分支隔离验证</h2>
+    <div class="cl-item done"><span class="cl-check">✓</span> branch-check.mjs 在所有 Edit/Write 前调用</div>
+    <div class="cl-item done"><span class="cl-check">✓</span> 非 feat/ 分支写入被阻断</div>
+    <div class="cl-item done"><span class="cl-check">✓</span> 阻断标识 bad-branch 明确输出</div>
+  </div>
+
+  <div class="cl-section">
+    <h2>FP4 输入校验 — 特殊字符</h2>
+    <div class="cl-item done"><span class="cl-check">✓</span> XSS 向量需求文本 pm 正常解析</div>
+    <div class="cl-item done"><span class="cl-check">✓</span> HTML 输出中转义特殊字符</div>
+    <div class="cl-item pending"><span class="cl-check">○</span> 添加自动化测试用例覆盖全部注入向量</div>
+  </div>
+
+  <div class="cl-section">
+    <h2>FP5 外部 URL 安全</h2>
+    <div class="cl-item done"><span class="cl-check">✓</span> WebFetch 内网地址拒绝</div>
+    <div class="cl-item pending"><span class="cl-check">○</span> URL 白名单机制（当前仅黑名单）</div>
+    <div class="cl-item pending"><span class="cl-check">○</span> S5 从"部分覆盖"提升到"已覆盖"</div>
+  </div>
+
+  <div class="cl-section">
+    <h2>FP6 Token 降级</h2>
+    <div class="cl-item done"><span class="cl-check">✓</span> API_X_TOKEN 缺失时静默跳过</div>
+    <div class="cl-item done"><span class="cl-check">✓</span> 不阻断主流程</div>
+    <div class="cl-item done"><span class="cl-check">✓</span> 日志记录降级原因</div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

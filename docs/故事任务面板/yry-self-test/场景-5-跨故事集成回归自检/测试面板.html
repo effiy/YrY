@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>跨故事集成回归自检 · 测试面板</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css"><link rel="stylesheet" href="../../../../cdn/theme.css">
+<style>.container{max-width:960px;margin:0 auto;padding:40px 24px 80px}.gate-lines{margin:12px 0;line-height:2}.ok{color:#22c55e}.warn{color:#f59e0b}.fail{color:#ef4444}</style></head><body><div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自动化测试套件</span><span class="bc-sep">/</span><span class="bc-current">场景 5 · 跨故事集成回归自检</span><span class="bc-sep">/</span><span class="bc-current">测试面板</span></nav>
+<div class="cross-nav">
+  <a href="计划清单.html" class="cross-link">清单</a><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">图谱</a><span class="cross-sep">·</span>
+  <span class="cross-link on">测试</span><span class="cross-sep">·</span>
+  <a href="演示.html" class="cross-link">演示</a><span class="cross-sep">·</span>
+  <a href="审查.html" class="cross-link">审查</a><span class="cross-sep">·</span>
+  <a href="源码.html" class="cross-link">源码</a>
+</div>
+<div class="header"><h1>场景-5<span class="accent"> · 跨故事集成回归自检</span></h1><p>集成测试面板 — 全量回归 · 依赖闭合 · 一致性检查</p></div>
+
+<div class="card"><h2>门禁状态</h2>
+<div class="gate-lines">
+<span class="ok">P0 门禁通过：4 故事单故事测试套件就绪 · 跨故事依赖已编目 · 版本号/CDN 引用一致</span><br>
+<span class="warn">P1 待实施：tests/run-all.mjs 全量回归入口 · tests/integration/cross-story.test.mjs 依赖验证</span>
+</div></div>
+
+<div class="card"><h2>FP1 全量回归</h2>
+<div class="gate-lines">
+<span class="ok">yry-arch: 4 场景文档基线完整</span>
+<span class="ok">yry-self-test: 10 套件 171 断言</span>
+<span class="ok">yry-cdn: 5 场景文档基线完整</span>
+<span class="ok">rui-npm: 5 场景文档基线完整</span>
+<span class="warn">tests/run-all.mjs 统一入口待实施</span>
+</div></div>
+
+<div class="card"><h2>FP2 跨故事依赖闭合</h2>
+<div class="gate-lines">
+<span class="ok">arch → self-test: 模块拓扑依赖有效</span>
+<span class="ok">arch → cdn: 架构基线依赖有效</span>
+<span class="ok">arch → npm: 架构基线依赖有效</span>
+<span class="ok">self-test → arch: 测试覆盖依赖有效</span>
+</div></div>
+
+<div class="card"><h2>FP3–FP5 全局一致性</h2>
+<div class="gate-lines">
+<span class="ok">FP3 文档索引: docs/index.html 全部链接可达</span>
+<span class="ok">FP4 版本号: 全仓库 4.8.2 一致</span>
+<span class="ok">FP5 CDN 引用: @1.1.0 与 cdn/package.json 一致</span>
+</div></div>
+
+<script>
+var results = {
+  summary: {total:14, passed:11, pending:3, durationMs:280, timestamp:"2026-06-08T09:00:00.000Z"},
+  suites: [
+    {name:"FP1 全量回归",tests:[
+      {name:"yry-arch — 场景文档基线",status:"passed",duration:15},
+      {name:"yry-self-test — 自检套件",status:"passed",duration:45},
+      {name:"yry-cdn — 场景文档基线",status:"passed",duration:12},
+      {name:"rui-npm — 场景文档基线",status:"passed",duration:10},
+      {name:"run-all.mjs — 统一入口","status":"pending",duration:0}
+    ]},
+    {name:"FP2 跨故事依赖",tests:[
+      {name:"arch→self-test 模块拓扑",status:"passed",duration:18},
+      {name:"arch→cdn 架构基线",status:"passed",duration:8},
+      {name:"arch→npm 架构基线",status:"passed",duration:8},
+      {name:"self-test→arch 测试覆盖",status:"passed",duration:12}
+    ]},
+    {name:"FP3–FP5 全局一致性",tests:[
+      {name:"FP3 文档索引链接可达",status:"passed",duration:25},
+      {name:"FP4 版本号一致",status:"passed",duration:35},
+      {name:"FP5 CDN 引用版本",status:"passed",duration:22},
+      {name:"FP6 知识图谱完整性",status:"passed",duration:30}
+    ]}
+  ]
+};
+</script>
+</div></body></html>

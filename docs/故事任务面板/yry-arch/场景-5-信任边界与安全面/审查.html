@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>信任边界与安全面 · 审查</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+<style>
+.container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+.review-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+.review-table th { background: rgba(255,193,7,.1); color: #fbbf24; padding: 10px 14px; text-align: left; font-size: .82rem; border-bottom: 2px solid rgba(255,193,7,.2); }
+.review-table td { padding: 10px 14px; font-size: .82rem; color: #cbd5e1; border-bottom: 1px solid rgba(148,163,184,.1); }
+.pass { color: #22c55e; font-weight: 600; }
+.warn { color: #f59e0b; font-weight: 600; }
+.fail { color: #ef4444; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../../index.html">文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 5 · 信任边界与安全面</span><span class="bc-sep">/</span><span class="bc-current">审查</span></nav>
+
+<div class="cross-nav">
+  <a href="计划清单.html" class="cross-link">清单</a><span class="cross-sep">·</span>
+  <a href="架构图.html" class="cross-link">架构</a><span class="cross-sep">·</span>
+  <a href="知识图谱.html" class="cross-link">图谱</a><span class="cross-sep">·</span>
+  <a href="测试面板.html" class="cross-link">测试</a><span class="cross-sep">·</span>
+  <a href="演示.html" class="cross-link">演示</a><span class="cross-sep">·</span>
+  <span class="cross-link on">审查</span><span class="cross-sep">·</span>
+  <a href="源码.html" class="cross-link">源码</a>
+</div>
+
+<div class="header">
+  <h1>场景-5<span class="accent"> · 信任边界与安全面</span></h1>
+  <p>安全审查报告 — 六面覆盖 · 缺口分析 · 改进建议</p>
+</div>
+
+<div class="card"><h2>审查摘要</h2>
+<table class="review-table">
+<tr><th>维度</th><th>状态</th><th>覆盖</th><th>说明</th></tr>
+<tr><td>S1 密钥不落盘</td><td class="pass">通过</td><td>4/4 文件</td><td>全部 token 引用通过 process.env，security-scan.mjs 自动化验证</td></tr>
+<tr><td>S2 认证不可绕过</td><td class="pass">通过</td><td>全链路</td><td>API_X_TOKEN 缺失时降级不执行，不暴露内部状态</td></tr>
+<tr><td>S3 输入必校验</td><td class="pass">通过</td><td>24/24 文件</td><td>XSS 向量零命中，pm.md Red Flags 激活</td></tr>
+<tr><td>S4 分支隔离</td><td class="pass">通过</td><td>全写入路径</td><td>branch-check.mjs 在所有 Edit/Write 前强制调用</td></tr>
+<tr><td>S5 外部依赖安全</td><td class="warn">部分覆盖</td><td>2/3 检查项</td><td>npm audit 已集成但无自动阻断；URL 仅黑名单</td></tr>
+<tr><td>S6 退化检测</td><td class="pass">通过</td><td>2/2 脚本</td><td>detect-impact.mjs + security-scan.mjs 覆盖检测</td></tr>
+</table>
+</div>
+
+<div class="card"><h2>P0 审查项</h2>
+<table class="review-table">
+<tr><th>#</th><th>检查项</th><th>结果</th><th>证据</th></tr>
+<tr><td>1</td><td>无硬编码密钥</td><td class="pass">通过</td><td>grep -rE 扫描 0 命中</td></tr>
+<tr><td>2</td><td>XSS 向量零命中</td><td class="pass">通过</td><td>security-scan.mjs S3 扫描 0 命中</td></tr>
+<tr><td>3</td><td>分支隔离可执行</td><td class="pass">通过</td><td>branch-check.mjs 返回非零退出码阻断</td></tr>
+<tr><td>4</td><td>安全约束已文档化</td><td class="pass">通过</td><td>security-guardrails.md 六面全覆盖</td></tr>
+<tr><td>5</td><td>认证无绕过路径</td><td class="pass">通过</td><td>所有 API 调用路径均检查 token 存在性</td></tr>
+</table>
+</div>
+
+<div class="card"><h2>改进建议</h2>
+<table class="review-table">
+<tr><th>#</th><th>建议</th><th>优先级</th><th>影响</th></tr>
+<tr><td>1</td><td>S5 npm audit 添加自动阻断 — 高危/严重漏洞时阻断 Gate A</td><td class="warn">P1</td><td>防止已知漏洞的依赖进入交付</td></tr>
+<tr><td>2</td><td>WebFetch 添加 URL 白名单 — 仅允许已知安全域名</td><td class="warn">P1</td><td>防止 SSRF 和恶意 URL 访问</td></tr>
+<tr><td>3</td><td>CronCreate 定期安全扫描 — 防止安全约束随时间退化</td><td>P2</td><td>自动化持续安全保障</td></tr>
+</table>
+</div>
+
+<div class="card"><h2>审查结论</h2>
+<p style="color:#cbd5e1;font-size:.85rem;line-height:1.8">
+<span class="pass">P0 审查全部通过。</span>
+六面安全约束中 S1/S2/S3/S4/S6 已完全覆盖并通过自动化脚本验证。
+<span class="warn">S5 外部依赖安全尚有一个 P1 缺口（npm audit 自动阻断未实现）。</span>
+建议下一个自改进周期优先处理 S5 缺口，将"部分覆盖"提升至"已覆盖"。
+</p>
+</div>
+
+</div>
+</body>
+</html>
