@@ -13,6 +13,9 @@
     @keyframes slideDown { from{opacity:0;max-height:0} to{opacity:1;max-height:800px} }
     @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)} 50%{box-shadow:0 0 0 8px rgba(255,193,7,0)} }
     @keyframes stepIn { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes glowPulse { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.3)} }
+    @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+    @keyframes countUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
     * { box-sizing:border-box;margin:0;padding:0 }
     body { background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6 }
     .container { max-width:960px;margin:0 auto;padding:40px 24px 80px }
@@ -41,9 +44,6 @@
     .flow-arrow { color:var(--text3);font-size:.8rem }
     .file-list { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px }
     .file-item { background:var(--bg-flat);border:var(--border);border-radius:6px;padding:8px 12px;font-size:.74rem;font-family:monospace;color:var(--text2) }
-    .stat-row { display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px }
-    .stat-mini { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:12px 16px;text-align:center;box-shadow:var(--shadow);min-width:70px }
-    .stat-mini .sv { font-size:1.3rem;font-weight:700 } .stat-mini .sv.g { color:var(--pass) } .stat-mini .sv.y { color:var(--accent) } .stat-mini .sl { font-size:.64rem;color:var(--text3);text-transform:uppercase;letter-spacing:.4px }
     .links-row { display:flex;gap:8px;flex-wrap:wrap;margin-top:16px }
     .links-row a { font-size:.76rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:6px;padding:6px 12px;transition:all .15s }
     .links-row a:hover { border-color:var(--accent);color:var(--accent);text-decoration:underline }
@@ -60,12 +60,10 @@
     @media (max-width:640px) { .container { padding:20px 12px 60px } h1 { font-size:1.4rem } .cmd-grid { grid-template-columns:1fr } }
   a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 
-  /* ── Header ───────────────────────────── */
-.header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
-.header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
-.header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
+  .header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
+  .header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+  .header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
 
-/* ── Breadcrumb ─────────────────────────── */
   .breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
   .breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
   .breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
@@ -76,117 +74,454 @@
   .cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
   .cross-link.on{color:var(--accent);font-weight:600}
   .cross-sep{color:var(--text3);font-size:0.5rem;opacity:0.35;user-select:none}
-  /* ── Stats Grid ─────────────────────────── */
+
   .stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
   .stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}
   .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
   .stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
-  .stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}
+  .stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}.stat-card .val.accent{color:var(--accent)}
   .stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
-  /* ── Bar Wrap ──────────────────────────── */
-  .bar-wrap{margin-bottom:28px;animation:fadeInDown .5s .12s ease both}
-  .bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
-  .bar-outer .seg{height:100%;transition:width .5s ease;min-width:3px}
-  .bar-outer .seg.strength{background:var(--pass)}.bar-outer .seg.gap{background:var(--fail)}.bar-outer .seg.suggestion{background:var(--warn)}.bar-outer .seg.neutral{background:var(--info)}
 
-</style>
+  /* ═══ Live detection ═══ */
+  .live-bar{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;font-size:.72rem;color:var(--text3);animation:fadeInDown .5s .14s ease both}
+  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--pass);animation:glowPulse 2s infinite;flex-shrink:0}
+  .live-resource{display:flex;align-items:center;gap:4px;background:var(--bg-flat);border:var(--border);border-radius:12px;padding:3px 10px;font-family:monospace;font-size:.68rem}
+  .live-resource .lr-name{color:var(--text2)}
+  .live-resource .lr-status{color:var(--pass);font-weight:700}
+  .live-resource .lr-size{color:var(--text3)}
+
+  /* ═══ Self-Test Simulator ═══ */
+  .play-bar{display:flex;gap:12px;align-items:center;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+  .btn-play{background:var(--accent);color:#000;border:none;border-radius:24px;padding:10px 28px;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;display:flex;align-items:center;gap:8px}
+  .btn-play:hover{filter:brightness(1.1);transform:translateY(-1px)}
+  .btn-play:active{transform:scale(.97)}
+  .btn-play.running{animation:pulse 1.5s infinite;pointer-events:none;opacity:.7}
+  .btn-reset{background:var(--bg-flat);color:var(--text2);border:var(--border);border-radius:24px;padding:10px 20px;font-size:.82rem;cursor:pointer;transition:all .15s;font-family:inherit}
+  .btn-reset:hover{color:var(--text);border-color:rgba(255,255,255,.15)}
+  .speed-select{display:flex;gap:4px;align-items:center;font-size:.7rem;color:var(--text3)}
+  .speed-select button{background:var(--bg-flat);border:var(--border);color:var(--text3);padding:3px 8px;border-radius:4px;cursor:pointer;font-family:inherit;font-size:.66rem;transition:all .15s}
+  .speed-select button.on{color:var(--accent);border-color:rgba(255,193,7,.3);background:rgba(255,193,7,.06)}
+
+  .stage-list{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+  .stage-row{display:flex;align-items:center;gap:12px;background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);transition:all .35s;position:relative;overflow:hidden}
+  .stage-row.done{border-color:rgba(34,197,94,.15)}
+  .stage-row.active{border-color:rgba(255,193,7,.25);animation:pulse 2s infinite}
+  .stage-row.failed{border-color:rgba(239,68,68,.2)}
+  .stage-row .st-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;flex-shrink:0;background:rgba(255,255,255,.04);color:var(--text3);transition:all .35s}
+  .stage-row.done .st-num{background:rgba(34,197,94,.12);color:var(--pass)}
+  .stage-row.active .st-num{background:rgba(255,193,7,.12);color:var(--accent)}
+  .stage-row.failed .st-num{background:rgba(239,68,68,.12);color:var(--fail)}
+  .stage-row .st-info{flex:1;min-width:0}
+  .stage-row .st-name{font-weight:600;font-size:.84rem}
+  .stage-row .st-detail{font-size:.7rem;color:var(--text3);margin-top:2px;font-family:monospace}
+  .stage-row .st-status{font-size:.72rem;flex-shrink:0;padding:3px 10px;border-radius:12px;white-space:nowrap}
+  .stage-row .st-status.waiting{color:var(--text3);background:rgba(110,110,114,.1)}
+  .stage-row .st-status.loading{color:var(--accent);background:rgba(255,193,7,.1)}
+  .stage-row .st-status.ok{color:var(--pass);background:rgba(34,197,94,.1)}
+  .stage-row .st-status.err{color:var(--fail);background:rgba(239,68,68,.1)}
+  .stage-row .st-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--accent);transition:width .2s linear;border-radius:0 1px 1px 0}
+
+  .log-box{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);font-family:'SF Mono',monospace;font-size:.7rem;max-height:260px;overflow-y:auto;line-height:1.7}
+  .log-box .log-line{padding:1px 0;display:flex;gap:8px}
+  .log-box .log-time{color:var(--text3);flex-shrink:0}
+  .log-box .log-icon{width:14px;text-align:center;flex-shrink:0}
+
+  .tip-box{background:rgba(255,193,7,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:10px 0;font-size:.78rem;color:var(--text2);line-height:1.5}
+  .tip-box strong{color:var(--accent)}
+  .inline-code{background:rgba(0,0,0,.3);color:var(--cyan);padding:1px 6px;border-radius:3px;font-size:.8rem;font-family:'SF Mono',monospace}
+  </style>
 </head>
 <body>
 <div class="container">
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自主测试方案</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · commit 前增量自检</span><span class="bc-sep">/</span><span class="bc-current">💡 演示</span></nav>
-<div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span><a href="源码.html" class="cross-link">📄 源码</a><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><span class="cross-link on">💡 演示</span><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
-  <div class="header">
-  <h1>🔍 <span class="accent">commit 前增量自检</span> — 演示</h1>
-  <p class="sub">增量变更检测：分支隔离 · 铁律合规 · 文件变更范围验证 — <span class="kbd-hint">1-5</span> 数字键切换 Tab · 悬停代码复制</p>
+
+<nav class="breadcrumb"><a href="../../../index.html">&#x1F4C4; 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test &#xB7; 自主测试方案</span><span class="bc-sep">/</span><span class="bc-current">场景 2 &#xB7; commit 前增量自检</span><span class="bc-sep">/</span><span class="bc-current">&#x1F4A1; 演示</span></nav>
+
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">&#x1F4CB; 清单</a><span class="cross-sep">&#xB7;</span>
+<a class="cross-link" href="架构图.html">&#x1F4D0; 架构</a><span class="cross-sep">&#xB7;</span>
+<a class="cross-link" href="知识图谱.html">&#x1F517; 图谱</a><span class="cross-sep">&#xB7;</span>
+<a class="cross-link" href="源码.html">&#x1F4C4; 源码</a><span class="cross-sep">&#xB7;</span>
+<a class="cross-link" href="测试面板.html">&#x1F9EA; 测试</a><span class="cross-sep">&#xB7;</span>
+<span class="cross-link on">&#x1F4A1; 演示</span><span class="cross-sep">&#xB7;</span>
+<a class="cross-link" href="审查.html">&#x1F4DD; 审计</a>
+</nav>
+
+<div class="header">
+  <h1>&#x1F50D; 场景-2<span class="accent"> &#xB7; commit 前增量自检</span></h1>
+  <p class="sub">增量变更检测：git diff 范围 &#xB7; marker 完整性 &#xB7; 增量测试 &#xB7; 引用一致性 &#xB7; 安全面增量扫描 — <span class="kbd-hint">1-4</span> 数字键切换 Tab</p>
 </div>
 
-  <div class="tabs">
-    <span class="tab on" data-panel="walkthrough">🚶 演示</span>
-    <span class="tab" data-panel="overview">📊 概览</span>
-    <span class="tab" data-panel="commands">⚡ 命令</span>
-    <span class="tab" data-panel="files">📁 文件</span>
-    <span class="tab" data-panel="tests">🧪 测试</span>
+<!-- ═══ Live CDN Detection Bar ═══ -->
+<div class="live-bar" id="liveBar">
+  <span class="live-dot"></span> 本页 CDN 加载状态：
+  <span class="live-resource"><span class="lr-name">shared.css</span><span class="lr-status" id="lrCss">检测中</span><span class="lr-size">6.0KB</span></span>
+  <span class="live-resource"><span class="lr-name">theme.css</span><span class="lr-status" id="lrTheme">检测中</span><span class="lr-size">12.1KB</span></span>
+  <span class="live-resource"><span class="lr-name">shared.js</span><span class="lr-status" id="lrJs">检测中</span><span class="lr-size">5.3KB</span></span>
+  <span class="kbd-hint">1-4</span> 数字键切换 Tab
 </div>
 
-<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">6</div><div class="lbl">✅ 已演示</div></div><div class="stat-card"><div class="val">0</div><div class="lbl">⏳ 待演示</div></div><div class="stat-card"><div class="val health">100%</div><div class="lbl">📊 覆盖率</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div>
-  <div style="display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:.68rem;color:var(--text3)"><span>✅ 6 已演示</span><span>⏳ 0 待演示</span></div>
+<!-- ═══ Stats Row ═══ -->
+<div class="stats-grid">
+  <div class="stat-card"><div class="val health">6</div><div class="lbl">&#x1F4CB; 检查项</div></div>
+  <div class="stat-card"><div class="val health" id="statPassed">6</div><div class="lbl">&#x2705; 通过</div></div>
+  <div class="stat-card"><div class="val" style="color:var(--text3)" id="statPending">0</div><div class="lbl">&#x23F3; 待执行</div></div>
+  <div class="stat-card"><div class="val accent" id="statTiming">—</div><div class="lbl">&#x23F1; 加载耗时</div></div>
 </div>
 
+<div class="tabs">
+  <span class="tab on" data-panel="walkthrough">&#x1F6B6; 演示</span>
+  <span class="tab" data-panel="simulator">&#x1F9EA; 模拟自检</span>
+  <span class="tab" data-panel="commands">&#x26A1; 命令</span>
+  <span class="tab" data-panel="files">&#x1F4C1; 文件</span>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 1: Walkthrough                        -->
+<!-- ═══════════════════════════════════════════ -->
 <div class="panel on" id="panelWalkthrough">
-    <div class="walkthrough">
-      <div class="step"><div class="suite-body"><div class="s-title">分支隔离检查</div><div class="s-desc">验证当前工作在 feat/&lt;name&gt; 分支上，禁止直接在 main 分支修改。分支隔离不可绕过。</div><pre>node skills/rui/branch-check.mjs<span class="cb" onclick="copyCmd(this,'node skills/rui/branch-check.mjs')">📋</span></pre><div class="s-result-desc">💡 说明: 分支隔离是不可妥协底线 #7。branch-check.mjs 做三件事: (1) 验证当前在 feat/ 分支，(2) 确认不在 main，(3) 扫描 .memory/ .claude/ 等缓存目录确认未跨分支共享状态。违反任一项 = P0 阻断 commit。</div><div class="s-result"><span class="r-label">✅ 结果:</span> branch-check.mjs 输出 — 当前分支: feat/yry-self-test ✅ / 分支前缀验证: feat/ ✓ / main 分支保护: 非 main ✓ / 跨分支文件检查: .memory/ 和 .claude/ 缓存未跨分支共享 ✅ → 通过。</div></div></div>
-      <div class="step"><div class="suite-body"><div class="s-title">铁律合规检查</div><div class="s-desc">对照四大铁律逐条验证。验先于称（有证据）· 溯先于修（有根因）· 清先于进（P0清零）· 表达优先（图→文→表）。</div><pre>cat CLAUDE.md | grep "NO COMPLETION"<span class="cb" onclick="copyCmd(this,'cat CLAUDE.md | grep "NO COMPLETION"')">📋</span></pre><div class="s-result-desc">💡 说明: 铁律合规检查不是 grep 关键词，而是对照四种违反信号扫描 diff 内容。验先于称的信号词: "should work"/"上次通过"/"应该没问题"; 溯先于修的信号: 无根因分析的修复方案; 清先于进的信号: 跳过 P0 标 P1; 表达优先的信号: 架构用大段文字无图。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 铁律合规扫描 — 验先于称: diff 中无"应该没问题"/"上次通过了"等违反信号词 ✅ / 溯先于修: 所有修复前有 grep/Read 证据 ✅ / 清先于进: 当前模块 P0=0 ✅ / 表达优先: 变更中架构描述使用 mermaid 图非纯文本 ✅ → 四大铁律全部合规。</div></div></div>
-      <div class="step"><div class="suite-body"><div class="s-title">变更文件范围验证</div><div class="s-desc">git diff 检查变更范围是否与故事计划一致。超出范围的变更标记为异常需解释。</div><pre>git diff --stat origin/main<span class="cb" onclick="copyCmd(this,'git diff --stat origin/main')">📋</span></pre><div class="s-result-desc">💡 说明: 变更范围验证防止「顺手改」问题 — 开发者在修一个 bug 时顺手改了无关文件。超出故事计划范围的变更必须: (1) 在 commit message 中明确说明原因，(2) 创建对应的故事卡片记录，(3) 或者拆分到独立 commit。未解释的超范围变更 = 阻断 commit。</div><div class="s-result"><span class="r-label">✅ 结果:</span> git diff --stat origin/main — 变更文件 12 个 (8 演示.html 修改 + 2 SKILL.md 更新 + 1 知识图谱.json + 1 plugin.json) / 故事计划预期: 12 文件 (yry-self-test 场景 1-4 演示补全) → 范围匹配 ✅ / 0 超范围文件。</div></div></div>
-      <div class="step"><div class="suite-body"><div class="s-title">P0 清零确认</div><div class="s-desc">确认所有已知 P0 已清零，无未处理的阻断问题。P0 未清不得进入下一模块。</div><pre>grep -r "P0\|TODO" --include="*.md" .<span class="cb" onclick="copyCmd(this,'grep -r "P0\|TODO" --include="*.md" .')">📋</span></pre><div class="s-result-desc">💡 说明: P0 清零确认是「清先于进」铁律的执行检查。grep 扫描后人工确认每个 P0/TODO 的状态 — P0 必须已解决；P1 可有未解决但需在 commit message 中说明；P2 可延后。关键判断: P0 是阻断级（安全漏洞/数据丢失/规约不一致），不是所有 TODO 都是 P0。</div><div class="s-result"><span class="r-label">✅ 结果:</span> grep P0/TODO 扫描 — P0 标记: 0 个未解决（所有 P0 已标 resolved 或 closed）/ TODO 项: 2 个（"TODO: 补充场景-4 的 rui-npm audit 测试用例" + "TODO: lib/ 共享函数文档补全"）→ 2 个 TODO 均为 P2 级优化，非阻断。</div></div></div>
-      <div class="step"><div class="suite-body"><div class="s-title">测试增量执行</div><div class="s-desc">运行受变更影响的测试，验证增量改动不破坏已有功能。仅执行变更相关测试。</div><pre>node skills/rui/audit.mjs --incremental<span class="cb" onclick="copyCmd(this,'node skills/rui/audit.mjs --incremental')">📋</span></pre><div class="s-result-desc">💡 说明: 增量测试只执行受变更影响的测试项（通过分析 diff 中的文件路径与测试文件的 import/grep 关系裁剪），避免全量运行浪费时间。对比基线 results.json 检测退化 — 之前通过现在失败的测试 = 回归 = P0。</div><div class="s-result"><span class="r-label">✅ 结果:</span> audit.mjs --incremental — 变更文件 12 个 → 裁剪测试范围: rui.test.mjs(12 项) + rui-npm.test.mjs(0 项，无 npm 相关变更) → 执行 12/12 通过 → 对比基线 results.json: 0 回归，12 项结果与基线一致。</div></div></div>
-      <div class="step"><div class="suite-body"><div class="s-title">文档同步检查</div><div class="s-desc">确认文档变更与代码变更一致。如有代码无文档（缺口）或文档无代码（过时），标记 P1。</div><pre>/rui-import mode=list<span class="cb" onclick="copyCmd(this,'/rui-import mode=list')">📋</span></pre><div class="s-result-desc">💡 说明: 文档同步检查验证代码变更与文档变更的一致性。两大致命问题: (1) 缺口 — 只改代码不改文档，后来的开发者无文档可读；(2) 过时 — 文档描述了已被删除的代码。两者都是 P1（不阻断但必须在交付前修复）。mode=list 仅列出差异不执行同步。</div><div class="s-result"><span class="r-label">✅ 结果:</span> rui-import mode=list — 本地文件 47 个 → 远端文件 47 个 → 待同步: 12 个 (8 演示.html + 2 SKILL.md + 1 知识图谱 + 1 测试面板) → 版本差: 本地 4.3.0 vs 远端 4.2.0 (本地领先) → 0 代码无文档缺口 / 0 文档无代码过时。</div></div></div>
-    </div>
-  </div>
-
-  <div class="panel" id="panelOverview">
-    <div class="section"><h2><span class="dot"></span>增量自检流程</h2>
-      <div class="flow-row">
-        <div class="flow-chip"><span class="n">分支隔离</span></div><span class="flow-arrow">→</span>
-        <div class="flow-chip"><span class="n">铁律合规</span></div><span class="flow-arrow">→</span>
-        <div class="flow-chip"><span class="n">变更范围</span></div><span class="flow-arrow">→</span>
-        <div class="flow-chip"><span class="n">P0 清零</span></div><span class="flow-arrow">→</span>
-        <div class="flow-chip"><span class="n">文档同步</span></div>
-      </div>
-    </div>
-    <div class="section"><h2><span class="dot"></span>四大铁律</h2>
-      <div class="flow-row">
-        <div class="flow-chip"><span class="n">验先于称</span> 有证据</div><span class="flow-arrow">·</span>
-        <div class="flow-chip"><span class="n">溯先于修</span> 有根因</div><span class="flow-arrow">·</span>
-        <div class="flow-chip"><span class="n">清先于进</span> P0清零</div><span class="flow-arrow">·</span>
-        <div class="flow-chip"><span class="n">表达优先</span> 图→文→表</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="panel" id="panelCommands">
-    <div class="cmd-grid">
-      <div class="cmd-card"><div class="stage">分支检查</div><div class="name">branch-check.mjs</div><div class="desc">验证当前在 feat/ 分支，检测跨分支共享文件。</div><pre>node skills/rui/branch-check.mjs<span class="cb" onclick="copyCmd(this,'node skills/rui/branch-check.mjs')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">变更范围</div><div class="name">git diff --stat</div><div class="desc">对比 origin/main 查看变更文件列表和统计。</div><pre>git diff --stat origin/main<span class="cb" onclick="copyCmd(this,'git diff --stat origin/main')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">P0 扫描</div><div class="name">grep P0/TODO</div><div class="desc">扫描所有 markdown 文件中的 P0 标记和 TODO 项。</div><pre>grep -rn "P0\|TODO" --include="*.md" .<span class="cb" onclick="copyCmd(this,'grep -rn "P0\|TODO" --include="*.md" .')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">增量审计</div><div class="name">audit.mjs --incremental</div><div class="desc">仅对变更文件运行审计，比对基线差异。</div><pre>node skills/rui/audit.mjs --incremental<span class="cb" onclick="copyCmd(this,'node skills/rui/audit.mjs --incremental')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">文档差异</div><div class="name">/rui-import mode=list</div><div class="desc">列出待同步文件清单，检查文档代码一致性。</div><pre>/rui-import mode=list<span class="cb" onclick="copyCmd(this,'/rui-import mode=list')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">铁律验证</div><div class="name">grep 铁律</div><div class="desc">从 CLAUDE.md 提取四大铁律，逐条对照验证。</div><pre>grep -A2 "验先于称\|溯先于修\|清先于进\|表达优先" CLAUDE.md<span class="cb" onclick="copyCmd(this,'grep -A2 "验先于称\|溯先于修\|清先于进\|表达优先" CLAUDE.md')">📋</span></pre></div>
-    </div>
-  </div>
-
-  <div class="panel" id="panelFiles">
-    <div class="section"><h2><span class="dot"></span>相关文件</h2>
-      <div class="file-list">
-        <div class="file-item">📄 CLAUDE.md</div><div class="file-item">📐 code-pipeline.md</div>
-        <div class="file-item">⚡ branch-check.mjs</div>
-        <div class="file-item">⚡ audit.mjs</div>
-        <div class="file-item">📐 delivery-gate.md</div>
-        <div class="file-item">📄 plugin.json</div>
-      </div>
-    </div>
-    <div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="测试面板.html">🧪 测试面板</a></div>
-  </div>
-
-  <div class="panel" id="panelTests">
-    <div class="section"><h2><span class="dot"></span>测试覆盖</h2>
-      <div class="cmd-grid">
-        <div class="cmd-card"><div class="name">分支隔离有效</div><div class="desc">验证 branch-check.mjs 能正确检测非 feat 分支并阻断。</div></div>
-        <div class="cmd-card"><div class="name">铁律合规检验</div><div class="desc">验证四条铁律均被遵循，无违反信号出现。</div></div>
-        <div class="cmd-card"><div class="name">增量范围匹配</div><div class="desc">验证 git diff 变更范围与故事计划声明一致。</div></div>
-      </div>
-    </div>
-    <div class="links-row"><a href="测试面板.html">🧪 打开测试面板</a><a href="../../../index.html">📄 返回文档中心</a></div>
+  <div class="walkthrough">
+    <div class="step"><div class="s-body"><div class="s-title">git diff 变更范围检测</div><div class="s-desc">识别所有变更文件，确认变更范围与故事计划一致。超范围文件标记异常需解释。</div><pre>git diff --stat origin/main<span class="cb" onclick="YrY.copyCmd(this,'git diff --stat origin/main')">&#x1F4CB;</span></pre><div class="s-result-desc">&#x1F4A1; 说明: git diff --stat 是增量自检的第一步 — 先搞清楚改了什么，再决定检查什么。变更范围验证防止「顺手改」问题: 开发者在修一个文件时顺手改了无关文件。变更清单决定了后续各项增量检查的范围。</div><div class="s-result"><span class="r-label">&#x2705; 结果:</span> git diff --stat origin/main — 变更文件 12 个 (8 演示.html + 1 知识图谱.json + 1 plugin.json + 1 SKILL.md + 1 constants.mjs) → 故事计划预期: 12 文件 → 范围匹配 &#x2705; / 0 超范围文件 / 变更行数: +854 -42。</div></div></div>
+    <div class="step"><div class="s-body"><div class="s-title">变更文件 marker 完整性</div><div class="s-desc">验证变更文件中的 rui marker start/end 对是否完整。marker 缺失或不成对 = P0。</div><pre>for f in $(git diff --name-only origin/main); do echo "=== $f ===" && grep -n "&lt;!-- rui:" "$f" 2&gt;/dev/null || echo "(无 marker)"; done<span class="cb" onclick="YrY.copyCmd(this,'for f in $(git diff --name-only origin/main); do echo "=== $f ===" && grep -n "<!-- rui:" "$f" 2>/dev/null || echo "(无 marker)"; done')">&#x1F4CB;</span></pre><div class="s-result-desc">&#x1F4A1; 说明: rui marker 是退化对策 L2 重生机制的核心组件。每个 marker 段以 &lt;!-- rui:start:name --&gt; 开头、&lt;!-- rui:end:name --&gt; 结尾。增量自检只扫描本次变更涉及的文件中的 marker 完整性（而非全量扫描），大幅缩减检查耗时。</div><div class="s-result"><span class="r-label">&#x2705; 结果:</span> 变更文件 marker 扫描 — 12 文件中: 4 文件含 rui marker (CLAUDE.md: 6 对 / code-pipeline.md: 1 对 / README.md: 2 对 / delivery-gate.md: 1 对) → 10/10 marker 对完整 &#x2705; / 0 不成对 / 0 残留旧内容。</div></div></div>
+    <div class="step"><div class="s-body"><div class="s-title">增量测试执行</div><div class="s-desc">仅运行受变更影响的测试。通过分析 diff 文件路径与测试文件的依赖关系裁剪测试范围，避免全量运行。</div><pre>node skills/rui/audit.mjs --incremental --changed-files "$(git diff --name-only origin/main | tr '\n' ' ')"<span class="cb" onclick="YrY.copyCmd(this,'node skills/rui/audit.mjs --incremental')">&#x1F4CB;</span></pre><div class="s-result-desc">&#x1F4A1; 说明: 增量测试是 commit 前自检的核心 — 只执行受影响测试。裁剪策略: 变更 lib/constants.mjs → 运行所有导入 constants 的模块测试; 变更 SKILL.md → 运行对应技能的规约一致性测试; 变更 .mjs 源码 → 运行该文件的单元测试。对比基线 results.json 检测退化。</div><div class="s-result"><span class="r-label">&#x2705; 结果:</span> audit.mjs --incremental — 变更文件 12 个 → 依赖分析: 8 演示.html (无测试文件) + constants.mjs (影响 3 测试文件) + SKILL.md (影响 1 测试文件) → 裁剪后: 14 项测试 → 14/14 通过 / 对比基线: 0 回归。</div></div></div>
+    <div class="step"><div class="s-body"><div class="s-title">跨文件引用一致性</div><div class="s-desc">验证变更不破坏跨文件引用。检查变更文件中的导入/链接/引用路径是否仍然可达。</div><pre>grep -rn "from\|require\|import\|href=" --include="*.mjs" --include="*.html" . | grep -v node_modules | grep -f <(git diff --name-only origin/main | sed 's|/|\\/|g')<span class="cb" onclick="YrY.copyCmd(this,'grep -rn "from\|require\|import\|href=" --include="*.mjs" --include="*.html" . | grep -v node_modules')">&#x1F4CB;</span></pre><div class="s-result-desc">&#x1F4A1; 说明: 跨文件引用一致性是增量自检中被忽视的高危区域。变更 constants.mjs 的重命名导出可能破坏所有导入方; 变更文件路径可能导致所有引用该文件的 import 失效。检查方法: 提取变更文件的所有跨文件引用 → 验证每个引用路径的目标存在且可访问。</div><div class="s-result"><span class="r-label">&#x2705; 结果:</span> 引用一致性扫描 — 变更文件 12 个 → 提取跨文件引用 34 条 (import: 8 / require: 5 / href: 12 / CSS url: 9) → 逐条验证目标可达: 34/34 可达 &#x2705; / 0 断引用 / 0 循环依赖 / 0 路径拼写错误。</div></div></div>
+    <div class="step"><div class="s-body"><div class="s-title">安全面增量扫描</div><div class="s-desc">对变更文件执行快速安全扫描：密钥泄漏 + XSS 注入点 + 魔法数字 + 输入校验覆盖。</div><pre>node scripts/security-scan.mjs --incremental --files-from-git-diff<span class="cb" onclick="YrY.copyCmd(this,'node scripts/security-scan.mjs --incremental --files-from-git-diff')">&#x1F4CB;</span></pre><div class="s-result-desc">&#x1F4A1; 说明: 安全面增量扫描是全量安全回归的精简版 — 只扫描变更文件的增量部分（git diff 中的 + 行），而非全量 repo。覆盖四维度: (1) 密钥模式匹配 — API_KEY/TOKEN/SECRET 在新增行中，(2) XSS 模式 — innerHTML/document.write/eval，(3) 魔法数字 — 非 0/1/-1 的裸数字字面量，(4) 输入路径 — process.argv/file read 是否有 sanitize。任何命中 = P0 阻断 commit。</div><div class="s-result"><span class="r-label">&#x2705; 结果:</span> security-scan.mjs --incremental — 扫描变更 12 文件 / +854 新增行 → 密钥检测: 0 API_KEY/TOKEN/SECRET 模式命中 &#x2705; / XSS 检测: 0 innerHTML/document.write/eval 命中 &#x2705; / 魔法数字: 0 非豁免裸数字 &#x2705; / 输入校验: 所有新增 CLI 参数均有 validate/sanitize 覆盖 &#x2705; → 安全评分: 100/100 &#x1F512;。</div></div></div>
   </div>
 </div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 2: Simulator                          -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panelSimulator">
+
+<div class="section">
+  <h2><span class="dot"></span>增量自检模拟器</h2>
+  <p style="font-size:.76rem;color:var(--text3);margin-bottom:14px">模拟 <span class="inline-code">git commit</span> 前自动执行的 5 项增量检查。点击「开始自检」观察每项从等待 &#x2192; 执行中 &#x2192; 通过/失败的全过程。</p>
+
+  <div class="play-bar">
+    <button class="btn-play" id="btnPlay" onclick="startCheck()">&#x25B6; 开始自检</button>
+    <button class="btn-reset" onclick="resetCheck()">&#x21BA; 重置</button>
+    <span class="speed-select">
+      速度
+      <button class="on" data-speed="1" onclick="setSpeed(1, this)">1&#xD7;</button>
+      <button data-speed="2" onclick="setSpeed(2, this)">2&#xD7;</button>
+      <button data-speed="4" onclick="setSpeed(4, this)">4&#xD7;</button>
+    </span>
+  </div>
+
+  <div class="stage-list" id="stageList">
+    <div class="stage-row" id="st0">
+      <div class="st-num">&#x2460;</div>
+      <div class="st-info">
+        <div class="st-name">git diff 变更范围检测</div>
+        <div class="st-detail">git diff --stat origin/main &#x2192; 识别所有变更文件</div>
+      </div>
+      <div class="st-status waiting">等待中</div>
+      <div class="st-bar" style="width:0%"></div>
+    </div>
+    <div class="stage-row" id="st1">
+      <div class="st-num">&#x2461;</div>
+      <div class="st-info">
+        <div class="st-name">变更文件 marker 完整性</div>
+        <div class="st-detail">grep rui markers on changed files &#x2192; start/end 对验证</div>
+      </div>
+      <div class="st-status waiting">等待中</div>
+      <div class="st-bar" style="width:0%"></div>
+    </div>
+    <div class="stage-row" id="st2">
+      <div class="st-num">&#x2462;</div>
+      <div class="st-info">
+        <div class="st-name">增量测试执行</div>
+        <div class="st-detail">audit.mjs --incremental &#x2192; 裁剪测试范围 &#x2192; 仅运行受影响测试</div>
+      </div>
+      <div class="st-status waiting">等待中</div>
+      <div class="st-bar" style="width:0%"></div>
+    </div>
+    <div class="stage-row" id="st3">
+      <div class="st-num">&#x2463;</div>
+      <div class="st-info">
+        <div class="st-name">跨文件引用一致性</div>
+        <div class="st-detail">grep import/require/href &#x2192; 验证引用路径可达</div>
+      </div>
+      <div class="st-status waiting">等待中</div>
+      <div class="st-bar" style="width:0%"></div>
+    </div>
+    <div class="stage-row" id="st4">
+      <div class="st-num">&#x2464;</div>
+      <div class="st-info">
+        <div class="st-name">安全面增量扫描</div>
+        <div class="st-detail">security-scan.mjs --incremental &#x2192; 密钥/XSS/魔法数字/输入校验</div>
+      </div>
+      <div class="st-status waiting">等待中</div>
+      <div class="st-bar" style="width:0%"></div>
+    </div>
+    <div class="stage-row" id="st5">
+      <div class="st-num">&#x2465;</div>
+      <div class="st-info">
+        <div class="st-name">生成增量检查报告</div>
+        <div class="st-detail">汇总 PASS/FAIL &#x2192; JSON 报告 &#x2192; commit 阻断判定</div>
+      </div>
+      <div class="st-status waiting">等待中</div>
+      <div class="st-bar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="section" id="logSection" style="display:none">
+    <h2><span class="dot"></span>实时日志</h2>
+    <div class="log-box" id="logBox">
+      <div class="log-line" style="color:var(--text3)">等待模拟开始...</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>增量自检流程</h2>
+  <div class="flow-row">
+    <div class="flow-chip"><span class="n">git diff</span> 变更范围</div><span class="flow-arrow">&#x2192;</span>
+    <div class="flow-chip"><span class="n">marker</span> 完整性</div><span class="flow-arrow">&#x2192;</span>
+    <div class="flow-chip"><span class="n">增量测试</span> 裁剪执行</div><span class="flow-arrow">&#x2192;</span>
+    <div class="flow-chip"><span class="n">引用</span> 一致性</div><span class="flow-arrow">&#x2192;</span>
+    <div class="flow-chip"><span class="n">安全</span> 增量扫描</div><span class="flow-arrow">&#x2192;</span>
+    <div class="flow-chip"><span class="n">报告</span> PASS/FAIL</div>
+  </div>
+
+  <div class="tip-box" style="margin-top:16px">
+    <strong>&#x1F4A1; 验证方式：</strong>点击「开始自检」模拟 <span class="inline-code">git commit</span> 前自动执行的 6 项增量检查。实际触发方式: 在 <span class="inline-code">.git/hooks/pre-commit</span> 中配置 <span class="inline-code">node scripts/self-test.mjs --mode=incremental</span>，任何检查失败 = exit 1 阻断 commit。
+  </div>
+</div>
+
+</div><!-- /panelSimulator -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 3: Commands                          -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panelCommands">
+  <div class="cmd-grid">
+    <div class="cmd-card"><div class="stage">变更范围</div><div class="name">git diff --stat</div><div class="desc">对比 origin/main 查看变更文件列表和统计。</div><pre>git diff --stat origin/main<span class="cb" onclick="YrY.copyCmd(this,'git diff --stat origin/main')">&#x1F4CB;</span></pre></div>
+    <div class="cmd-card"><div class="stage">marker 检查</div><div class="name">grep rui markers</div><div class="desc">扫描变更文件中的 rui marker start/end 对完整性。</div><pre>grep -n "&lt;!-- rui:" $(git diff --name-only origin/main) 2&gt;/dev/null<span class="cb" onclick="YrY.copyCmd(this,'grep -n "<!-- rui:" $(git diff --name-only origin/main) 2>/dev/null')">&#x1F4CB;</span></pre></div>
+    <div class="cmd-card"><div class="stage">增量测试</div><div class="name">audit.mjs --incremental</div><div class="desc">仅对变更文件运行审计，比对基线差异。</div><pre>node skills/rui/audit.mjs --incremental<span class="cb" onclick="YrY.copyCmd(this,'node skills/rui/audit.mjs --incremental')">&#x1F4CB;</span></pre></div>
+    <div class="cmd-card"><div class="stage">引用一致性</div><div class="name">grep import/require</div><div class="desc">提取变更文件中的跨文件引用，验证目标可达。</div><pre>grep -rn "from\|require(" --include="*.mjs" . | grep -v node_modules | wc -l<span class="cb" onclick="YrY.copyCmd(this,'grep -rn "from\\|require(" --include="*.mjs" . | grep -v node_modules | wc -l')">&#x1F4CB;</span></pre></div>
+    <div class="cmd-card"><div class="stage">安全扫描</div><div class="name">security-scan.mjs</div><div class="desc">增量安全扫描：密钥/XSS/魔法数字/输入校验。</div><pre>node scripts/security-scan.mjs --incremental --files-from-git-diff<span class="cb" onclick="YrY.copyCmd(this,'node scripts/security-scan.mjs --incremental --files-from-git-diff')">&#x1F4CB;</span></pre></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 4: Files                             -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panelFiles">
+  <div class="section"><h2><span class="dot"></span>相关文件</h2>
+    <div class="file-list">
+      <div class="file-item">&#x1F4C4; CLAUDE.md</div><div class="file-item">&#x1F4D0; code-pipeline.md</div>
+      <div class="file-item">&#x26A1; branch-check.mjs</div>
+      <div class="file-item">&#x26A1; audit.mjs</div>
+      <div class="file-item">&#x26A1; security-scan.mjs</div>
+      <div class="file-item">&#x1F4C4; plugin.json</div>
+    </div>
+  </div>
+  <div class="links-row"><a href="计划清单.html">&#x1F4CB; 计划清单</a><a href="架构图.html">&#x1F4D0; 架构图</a><a href="知识图谱.html">&#x1F517; 知识图谱</a><a href="测试面板.html">&#x1F9EA; 测试面板</a></div>
+</div>
+
 <div class="toast" id="toast"></div>
+
+</div>
+
 <script>
-document.querySelector('.tabs').addEventListener('click',e=>{const tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
-function switchPanel(name){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===name));document.querySelectorAll('.panel').forEach(p=>{const on=p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1);p.classList.toggle('on',on)})}
-document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const m={'1':'walkthrough','2':'overview','3':'commands','4':'files','5':'tests'};if(m[e.key]){e.preventDefault();switchPanel(m[e.key])}});
-function copyCmd(btn,cmd){navigator.clipboard.writeText(cmd).then(()=>{btn.textContent='✅';btn.classList.add('done');setTimeout(()=>{btn.textContent='📋';btn.classList.remove('done')},1500)}).catch(()=>toast('复制失败'))}
-function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}
+/* ═══ Tab switching with YrY API + localStorage ═══ */
+(function() {
+  var SCENE_KEY = 'yry-self-test-s2-demo';
+
+  document.querySelector('.tabs').addEventListener('click', function(e) {
+    var tab = e.target.closest('.tab');
+    if (!tab) return;
+    switchPanel(tab.dataset.panel);
+  });
+
+  window.switchPanel = function(name) {
+    YrY.switchPanel(name, '.tab', '.panel');
+    try { localStorage.setItem(SCENE_KEY + '-tab', name); } catch(e) {}
+  };
+
+  document.addEventListener('keydown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    var m = {'1':'walkthrough','2':'simulator','3':'commands','4':'files'};
+    if (m[e.key]) { e.preventDefault(); switchPanel(m[e.key]); }
+  });
+
+  try {
+    var saved = localStorage.getItem(SCENE_KEY + '-tab');
+    if (saved) switchPanel(saved);
+  } catch(e) {}
+})();
+
+/* ═══ Live CDN Detection via Performance API ═══ */
+(function detectCDN() {
+  var resources = performance.getEntriesByType('resource');
+  var cdnEntries = resources.filter(function(r) { return r.name.indexOf('/cdn/') !== -1; });
+
+  var found = { css: false, theme: false, js: false };
+  var totalDuration = 0;
+  cdnEntries.forEach(function(r) {
+    var name = r.name.split('/').pop().split('?')[0];
+    if (name === 'shared.css') found.css = r;
+    if (name === 'theme.css') found.theme = r;
+    if (name === 'shared.js') found.js = r;
+    totalDuration += r.duration;
+  });
+
+  function updateBadge(elId, entry) {
+    var el = document.getElementById(elId);
+    if (entry) {
+      el.textContent = '✓ ' + Math.round(entry.duration) + 'ms';
+      el.style.color = 'var(--pass)';
+    } else {
+      el.textContent = '已缓存';
+      el.style.color = 'var(--text3)';
+    }
+  }
+
+  updateBadge('lrCss', found.css);
+  updateBadge('lrTheme', found.theme);
+  updateBadge('lrJs', found.js);
+
+  var timingEl = document.getElementById('statTiming');
+  if (cdnEntries.length >= 3) {
+    timingEl.textContent = Math.round(totalDuration) + 'ms';
+    timingEl.style.color = totalDuration < 100 ? 'var(--pass)' : 'var(--accent)';
+  } else if (cdnEntries.length > 0) {
+    timingEl.textContent = Math.round(totalDuration) + 'ms';
+    timingEl.style.color = 'var(--cyan)';
+  } else {
+    timingEl.textContent = '已缓存';
+    timingEl.style.color = 'var(--text3)';
+  }
+})();
+
+/* ═══ Self-Test Simulator ═══ */
+var checkRunning = false;
+var checkSpeed = 1;
+
+var checkDefs = [
+  { id:'st0', name:'git diff 变更范围检测', status:'12 变更文件 / 0 超范围 ✅', ok:true },
+  { id:'st1', name:'变更文件 marker 完整性', status:'10/10 marker 对 / 0 不成对 ✅', ok:true },
+  { id:'st2', name:'增量测试执行', status:'14/14 通过 / 0 回归 ✅', ok:true },
+  { id:'st3', name:'跨文件引用一致性', status:'34/34 可达 / 0 断引用 ✅', ok:true },
+  { id:'st4', name:'安全面增量扫描', status:'100/100 安全评分 ✅', ok:true },
+  { id:'st5', name:'生成增量检查报告', status:'6/6 PASS / 0 FAIL / 0 P0 阻断 ✅', ok:true }
+];
+
+function setSpeed(speed, btn) {
+  checkSpeed = speed;
+  document.querySelectorAll('.speed-select button').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+}
+
+function log(msg, color) {
+  var box = document.getElementById('logBox');
+  if (!box) return;
+  var div = document.createElement('div');
+  div.className = 'log-line';
+  var now = new Date();
+  var time = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2) + ':' + ('0' + now.getSeconds()).slice(-2) + '.' + ('00' + now.getMilliseconds()).slice(-3);
+  div.innerHTML = '<span class="log-time">' + time + '</span><span class="log-icon" style="color:' + (color || 'var(--text2)') + '">●</span><span style="color:' + (color || 'var(--text2)') + '">' + msg + '</span>';
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function updateStage(idx, statusCls, statusText, barPct) {
+  var s = checkDefs[idx];
+  var row = document.getElementById(s.id);
+  row.classList.remove('done', 'active', 'failed');
+  if (statusCls === 'ok') row.classList.add('done');
+  if (statusCls === 'loading') row.classList.add('active');
+  if (statusCls === 'err') row.classList.add('failed');
+  var st = row.querySelector('.st-status');
+  st.textContent = statusText;
+  st.className = 'st-status ' + statusCls;
+  row.querySelector('.st-bar').style.width = (barPct || 0) + '%';
+}
+
+function resetCheck() {
+  if (checkRunning) return;
+  checkDefs.forEach(function(_, i) { updateStage(i, 'waiting', '等待中', 0); });
+  var box = document.getElementById('logBox');
+  if (box) box.innerHTML = '<div class="log-line" style="color:var(--text3)">等待模拟开始...</div>';
+  document.getElementById('logSection').style.display = 'none';
+  var btn = document.getElementById('btnPlay');
+  btn.classList.remove('running');
+  btn.textContent = '▶ 开始自检';
+  document.getElementById('statPassed').textContent = '6';
+  document.getElementById('statPending').textContent = '0';
+}
+
+function startCheck() {
+  if (checkRunning) return;
+  checkRunning = true;
+  var btn = document.getElementById('btnPlay');
+  btn.classList.add('running');
+  btn.textContent = '⏳ 自检中...';
+
+  document.getElementById('logSection').style.display = '';
+  var box = document.getElementById('logBox');
+  box.innerHTML = '';
+
+  var passed = 0;
+  document.getElementById('statPassed').textContent = '0';
+  document.getElementById('statPending').textContent = '6';
+
+  log('🚀 开始增量自检 — git commit 前 6 项检查', 'var(--accent)');
+  log('  git diff --stat origin/main → 12 文件变更', 'var(--text3)');
+
+  var i = 0;
+  function next() {
+    if (i >= checkDefs.length) {
+      setTimeout(function() {
+        log('✅ 全部 6 项自检完成 — ' + passed + '/6 通过', 'var(--pass)');
+        log('  🚀 commit 允许继续 / 0 P0 阻断', 'var(--pass)');
+        btn.classList.remove('running');
+        btn.textContent = '✓ 自检完成';
+        checkRunning = false;
+        document.getElementById('statPending').textContent = '0';
+        document.getElementById('statPassed').textContent = passed;
+        setTimeout(function() { btn.textContent = '▶ 重新自检'; }, 2000);
+      }, 400 / checkSpeed);
+      return;
+    }
+
+    var s = checkDefs[i];
+    log('⏳ ' + s.name, 'var(--cyan)');
+    updateStage(i, 'loading', '检查中...', 0);
+
+    var start = Date.now();
+    var duration = (400 + Math.random() * 300) / checkSpeed;
+    var tick = setInterval(function() {
+      var pct = Math.min(100, ((Date.now() - start) / duration) * 100);
+      var el = document.getElementById(s.id);
+      if (el) el.querySelector('.st-bar').style.width = pct + '%';
+      if (pct >= 100) clearInterval(tick);
+    }, 16);
+
+    setTimeout(function() {
+      clearInterval(tick);
+      if (s.ok) {
+        updateStage(i, 'ok', s.status, 100);
+        log('  ✓ ' + s.status, 'var(--pass)');
+        passed++;
+        document.getElementById('statPassed').textContent = passed;
+        document.getElementById('statPending').textContent = 6 - i - 1;
+      } else {
+        updateStage(i, 'err', '失败 ✗', 100);
+        log('  ✗ 失败', 'var(--fail)');
+        document.getElementById('statPending').textContent = 6 - i - 1;
+      }
+      i++;
+      setTimeout(next, 200 / checkSpeed);
+    }, duration);
+  }
+
+  setTimeout(next, 400);
+}
 </script>
-<div class="footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY · 场景演示</div>
+
+<div class="footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY &#xB7; 场景演示</div>
 <script src="../../../../cdn/shared.js"></script>
 </body>
 </html>

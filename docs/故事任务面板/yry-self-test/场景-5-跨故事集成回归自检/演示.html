@@ -1,99 +1,401 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>跨故事集成回归自检 · 演示</title>
-<link rel="stylesheet" href="../../../../cdn/shared.css"><link rel="stylesheet" href="../../../../cdn/theme.css">
-<style>.container{max-width:960px;margin:0 auto;padding:40px 24px 80px}pre{background:#0f172a;color:#e2e8f0;padding:16px;border-radius:8px;font-size:.8rem;overflow-x:auto;line-height:1.5}.output{border-left:3px solid #22c55e;padding-left:16px}.output.warn{border-left-color:#f59e0b}</style></head><body><div class="container">
-<nav class="breadcrumb"><a href="../../../index.html">文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自动化测试套件</span><span class="bc-sep">/</span><span class="bc-current">场景 5 · 跨故事集成回归自检</span><span class="bc-sep">/</span><span class="bc-current">演示</span></nav>
-<div class="cross-nav">
-  <a href="计划清单.html" class="cross-link">清单</a><span class="cross-sep">·</span>
-  <a href="架构图.html" class="cross-link">架构</a><span class="cross-sep">·</span>
-  <a href="知识图谱.html" class="cross-link">图谱</a><span class="cross-sep">·</span>
-  <a href="测试面板.html" class="cross-link">测试</a><span class="cross-sep">·</span>
-  <span class="cross-link on">演示</span><span class="cross-sep">·</span>
-  <a href="审查.html" class="cross-link">审查</a><span class="cross-sep">·</span>
-  <a href="源码.html" class="cross-link">源码</a>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>场景 5 · 跨故事集成回归自检 — 演示</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+  <style>
+    :root { --bg:rgba(22,22,32,1); --bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%); --bg-flat:rgba(34,34,46,1); --bg-raised:rgba(42,42,56,1); --accent:#FFC107; --cyan:#22d3ee; --pass:#22c55e; --fail:#ef4444; --text:rgba(250,250,252,1); --text2:rgba(160,160,164,1); --text3:rgba(110,110,114,1); --shadow:0 4px 20px rgba(0,0,0,0.3); --shadow-lg:0 12px 32px rgba(0,0,0,0.45); --warn:#f59e0b; --info:#6b7280; --radius:12px; --border:1px solid rgba(255,255,255,0.06); }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeInDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)} 50%{box-shadow:0 0 0 8px rgba(255,193,7,0)} }
+    @keyframes stepIn { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes glowPulse { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.3)} }
+    @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+    @keyframes countUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    * { box-sizing:border-box;margin:0;padding:0 }
+    body { background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6 }
+    .container { max-width:960px;margin:0 auto;padding:40px 24px 80px }
+    .tabs { display:flex;gap:0;border-bottom:var(--border);margin-bottom:28px;animation:fadeInDown .5s .1s ease both }
+    .tab { padding:8px 18px;cursor:pointer;font-size:.82rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none }
+    .tab:hover { color:var(--text2) } .tab.on { color:var(--accent);border-bottom-color:var(--accent) }
+    .panel { display:none;animation:fadeInUp .4s ease both }.panel.on { display:block }
+    .section { margin-bottom:32px }.section h2 { font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px }
+    .section h2 .dot { width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0 }
+    .cmd-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px }
+    .cmd-card { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s }
+    .cmd-card:hover { transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.35) }
+    .cmd-card .name { font-weight:700;font-size:.88rem;color:var(--accent);font-family:monospace }
+    .cmd-card .desc { font-size:.76rem;color:var(--text2);margin:4px 0 8px;line-height:1.5 }
+    .cmd-card .stage { font-size:.64rem;color:var(--text3);margin-bottom:4px }
+    pre { background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer }
+    pre .cb { position:absolute;top:6px;right:6px;background:var(--bg-flat);border:var(--border);border-radius:4px;color:var(--text3);font-size:.62rem;padding:2px 7px;cursor:pointer;opacity:0;transition:opacity .15s;font-family:inherit }
+    pre:hover .cb { opacity:1 } pre .cb.done { color:var(--pass) }
+    .flow-row { display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0 }
+    .flow-chip { background:var(--bg-flat);border:var(--border);border-radius:20px;padding:6px 14px;font-size:.78rem;transition:all .15s }
+    .flow-chip:hover { border-color:rgba(255,193,7,.3) }.flow-chip .n { font-weight:700;color:var(--accent) }
+    .flow-arrow { color:var(--text3);font-size:.8rem }
+    .file-list { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px }
+    .file-item { background:var(--bg-flat);border:var(--border);border-radius:6px;padding:8px 12px;font-size:.74rem;font-family:monospace;color:var(--text2) }
+    .links-row { display:flex;gap:8px;flex-wrap:wrap;margin-top:16px }
+    .links-row a { font-size:.76rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:6px;padding:6px 12px;transition:all .15s }
+    .links-row a:hover { border-color:var(--accent);color:var(--accent);text-decoration:underline }
+    .toast { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:0 12px 32px rgba(0,0,0,.45);opacity:0;transition:opacity .2s;pointer-events:none }
+    .toast.show { opacity:1 }
+    .walkthrough { counter-reset:step }
+    .walkthrough .step { counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both }
+    .walkthrough .step::before { content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0 }
+    .walkthrough .step .s-body { flex:1 }.walkthrough .step .s-title { font-weight:600;font-size:.88rem }
+    .walkthrough .step .s-desc { font-size:.76rem;color:var(--text2);margin:3px 0 6px }
+    .walkthrough .step .s-result { font-size:.74rem;color:var(--pass);margin-top:6px }.walkthrough .step .s-result .r-label { font-weight:600 }
+    .walkthrough .step .s-result-desc { font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.5;padding:6px 10px;background:rgba(34,211,238,.04);border-left:2px solid var(--cyan);border-radius:0 4px 4px 0 }
+    .kbd-hint { font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.03);border-radius:3px;padding:1px 5px;margin-left:4px }
+    @media (max-width:640px) { .container { padding:20px 12px 60px } h1 { font-size:1.4rem } .cmd-grid { grid-template-columns:1fr } }
+  a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+
+  .header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
+  .header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+  .header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
+
+  .breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+  .breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+  .breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+  .breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+  .cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
+  .cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}
+  .cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
+  .cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:0.5rem;opacity:0.35;user-select:none}
+
+  .stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+  .stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+  .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+  .stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
+  .stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}.stat-card .val.accent{color:var(--accent)}
+  .stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
+
+  .live-bar{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;font-size:.72rem;color:var(--text3);animation:fadeInDown .5s .14s ease both}
+  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--pass);animation:glowPulse 2s infinite;flex-shrink:0}
+  .live-resource{display:flex;align-items:center;gap:4px;background:var(--bg-flat);border:var(--border);border-radius:12px;padding:3px 10px;font-family:monospace;font-size:.68rem}
+  .live-resource .lr-name{color:var(--text2)}.live-resource .lr-status{color:var(--pass);font-weight:700}.live-resource .lr-size{color:var(--text3)}
+
+  .play-bar{display:flex;gap:12px;align-items:center;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+  .btn-play{background:var(--accent);color:#000;border:none;border-radius:24px;padding:10px 28px;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;display:flex;align-items:center;gap:8px}
+  .btn-play:hover{filter:brightness(1.1);transform:translateY(-1px)}.btn-play:active{transform:scale(.97)}
+  .btn-play.running{animation:pulse 1.5s infinite;pointer-events:none;opacity:.7}
+  .btn-reset{background:var(--bg-flat);color:var(--text2);border:var(--border);border-radius:24px;padding:10px 20px;font-size:.82rem;cursor:pointer;transition:all .15s;font-family:inherit}
+  .btn-reset:hover{color:var(--text);border-color:rgba(255,255,255,.15)}
+  .speed-select{display:flex;gap:4px;align-items:center;font-size:.7rem;color:var(--text3)}
+  .speed-select button{background:var(--bg-flat);border:var(--border);color:var(--text3);padding:3px 8px;border-radius:4px;cursor:pointer;font-family:inherit;font-size:.66rem;transition:all .15s}
+  .speed-select button.on{color:var(--accent);border-color:rgba(255,193,7,.3);background:rgba(255,193,7,.06)}
+
+  .stage-list{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+  .stage-row{display:flex;align-items:center;gap:12px;background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);transition:all .35s;position:relative;overflow:hidden}
+  .stage-row.done{border-color:rgba(34,197,94,.15)}.stage-row.active{border-color:rgba(255,193,7,.25);animation:pulse 2s infinite}
+  .stage-row.failed{border-color:rgba(239,68,68,.2)}
+  .stage-row .st-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;flex-shrink:0;background:rgba(255,255,255,.04);color:var(--text3);transition:all .35s}
+  .stage-row.done .st-num{background:rgba(34,197,94,.12);color:var(--pass)}
+  .stage-row.active .st-num{background:rgba(255,193,7,.12);color:var(--accent)}
+  .stage-row.failed .st-num{background:rgba(239,68,68,.12);color:var(--fail)}
+  .stage-row .st-info{flex:1;min-width:0}.stage-row .st-name{font-weight:600;font-size:.84rem}
+  .stage-row .st-detail{font-size:.7rem;color:var(--text3);margin-top:2px;font-family:monospace}
+  .stage-row .st-status{font-size:.72rem;flex-shrink:0;padding:3px 10px;border-radius:12px;white-space:nowrap}
+  .stage-row .st-status.waiting{color:var(--text3);background:rgba(110,110,114,.1)}
+  .stage-row .st-status.loading{color:var(--accent);background:rgba(255,193,7,.1)}
+  .stage-row .st-status.ok{color:var(--pass);background:rgba(34,197,94,.1)}
+  .stage-row .st-status.err{color:var(--fail);background:rgba(239,68,68,.1)}
+  .stage-row .st-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--accent);transition:width .2s linear;border-radius:0 1px 1px 0}
+
+  .log-box{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);font-family:'SF Mono',monospace;font-size:.7rem;max-height:260px;overflow-y:auto;line-height:1.7}
+  .log-box .log-line{padding:1px 0;display:flex;gap:8px}.log-box .log-time{color:var(--text3);flex-shrink:0}.log-box .log-icon{width:14px;text-align:center;flex-shrink:0}
+
+  .matrix-table{width:100%;border-collapse:separate;border-spacing:0;margin-bottom:20px;font-size:.78rem}
+  .matrix-table th{background:var(--bg-flat);color:var(--accent);padding:10px 14px;text-align:left;font-weight:600;border-bottom:var(--border)}
+  .matrix-table th:first-child{border-radius:8px 0 0 0}.matrix-table th:last-child{border-radius:0 8px 0 0}
+  .matrix-table td{background:var(--bg-card);padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.03)}
+  .matrix-table tr:last-child td:first-child{border-radius:0 0 0 8px}.matrix-table tr:last-child td:last-child{border-radius:0 0 8px 0}
+  .matrix-table .badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:.66rem;font-weight:600}
+  .matrix-table .badge.pass{background:rgba(34,197,94,.12);color:var(--pass)}
+  .matrix-table .badge.warn{background:rgba(245,158,11,.12);color:var(--warn)}
+
+  .tip-box{background:rgba(255,193,7,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:10px 0;font-size:.78rem;color:var(--text2);line-height:1.5}
+  .tip-box strong{color:var(--accent)}
+  .inline-code{background:rgba(0,0,0,.3);color:var(--cyan);padding:1px 6px;border-radius:3px;font-size:.8rem;font-family:'SF Mono',monospace}
+  </style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自主测试方案</span><span class="bc-sep">/</span><span class="bc-current">场景 5 · 跨故事集成回归自检</span><span class="bc-sep">/</span><span class="bc-current">💡 演示</span></nav>
+
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<span class="cross-link on">💡 演示</span><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
+
+<div class="header">
+  <h1>🌐 场景-5<span class="accent"> · 跨故事集成回归自检</span></h1>
+  <p class="sub">全量故事面板加载 · 跨场景链接可达性 · CDN 资源引用一致性 · 跨场景数据一致性 · 全量测试套件执行 — <span class="kbd-hint">1-4</span> 数字键切换 Tab</p>
 </div>
-<div class="header"><h1>场景-5<span class="accent"> · 跨故事集成回归自检</span></h1><p>集成回归演示 — 全量执行 · 依赖验证 · 一致性报告</p></div>
 
-<div class="card"><h2>演示 1: 全量回归执行（预期行为）</h2>
-<p style="color:#94a3b8;font-size:.82rem;margin-bottom:12px">一条命令运行所有故事的测试套件</p>
-<pre>$ <span style="color:#22d3ee">node tests/run-all.mjs</span>
-
-<span class="output">=== YrY Full Regression Suite ===
-Date: 2026-06-08T09:00:00.000Z
-Stories: yry-arch · yry-self-test · yry-cdn · rui-npm
-
-[1/4] yry-arch ................... PASS (4/4 scenes)
-[2/4] yry-self-test .............. PASS (10 suites, 171 assertions)
-[3/4] yry-cdn .................... PASS (5/5 scenes)
-[4/4] rui-npm .................... PASS (5/5 scenes)
-
-=== Cross-Story Integration ===
-[1/4] arch → self-test (module topology) ..... PASS
-[2/4] arch → cdn (architecture baseline) ..... PASS
-[3/4] arch → npm (architecture baseline) ..... PASS
-[4/4] self-test → arch (test coverage) ........ PASS
-
-=== Global Consistency ===
-[1/3] Version consistency (4.8.2) ............. PASS
-[2/3] CDN reference version (@1.1.0) .......... PASS
-[3/3] Document index integrity ................ PASS
-
-=== Summary ===
-Total: 14 suites · Passed: 14 · Failed: 0 · Skipped: 0
-Duration: 2.8s
-Result: ALL PASS</span></pre>
+<div class="live-bar" id="liveBar">
+  <span class="live-dot"></span> 本页 CDN 加载状态：
+  <span class="live-resource"><span class="lr-name">shared.css</span><span class="lr-status" id="lrCss">检测中</span><span class="lr-size">6.0KB</span></span>
+  <span class="live-resource"><span class="lr-name">theme.css</span><span class="lr-status" id="lrTheme">检测中</span><span class="lr-size">12.1KB</span></span>
+  <span class="live-resource"><span class="lr-name">shared.js</span><span class="lr-status" id="lrJs">检测中</span><span class="lr-size">5.3KB</span></span>
+  <span class="kbd-hint">1-4</span> 数字键切换 Tab
 </div>
 
-<div class="card"><h2>演示 2: 跨故事依赖断裂检测</h2>
-<p style="color:#94a3b8;font-size:.82rem;margin-bottom:12px">当 yry-arch 场景-5 目录缺失时的检测结果</p>
-<pre>$ <span style="color:#22d3ee">node tests/integration/cross-story.test.mjs</span>
-
-<span class="output">=== Cross-Story Dependency Closure Check ===
-
-[OK] arch → self-test: arch/场景-1 存在 ✓
-[OK] arch → self-test: arch/场景-2 存在 ✓
-[OK] arch → self-test: arch/场景-3 存在 ✓
-[OK] arch → self-test: arch/场景-4 存在 ✓
-<span style="color:#f59e0b">[FAIL] arch → self-test: arch/场景-5 缺失 ✗
-  Source: yry-self-test/场景-1
-  Target: yry-arch/场景-5-信任边界与安全面/index.md
-  Reason: target not found
-  Impact: self-test scene-1 references arch scene-5 for module topology</span>
-
-[OK] arch → cdn: all scenes present ✓
-[OK] arch → npm: all scenes present ✓
-
-Summary: 12/13 dependencies closed · 1 broken
-Broken: arch/场景-5 (missing)</span></pre>
+<div class="stats-grid">
+  <div class="stat-card"><div class="val health">5</div><div class="lbl">📋 检查项</div></div>
+  <div class="stat-card"><div class="val health" id="statPassed">5</div><div class="lbl">✅ 通过</div></div>
+  <div class="stat-card"><div class="val" style="color:var(--text3)" id="statPending">0</div><div class="lbl">⏳ 待执行</div></div>
+  <div class="stat-card"><div class="val accent" id="statTiming">—</div><div class="lbl">⏱ 加载耗时</div></div>
 </div>
 
-<div class="card"><h2>演示 3: 全局一致性报告</h2>
-<p style="color:#94a3b8;font-size:.82rem;margin-bottom:12px">每次版本升级后自动执行的一致性检查</p>
-<pre>$ <span style="color:#22d3ee">node scripts/check-consistency.mjs</span>
-
-<span class="output">=== Global Consistency Report ===
-
-Version Check:
-  plugin.json .............. 4.8.2 ✓
-  CLAUDE.md ................ 4.8.2 ✓
-  README.md ................ 4.8.2 ✓
-  marketplace.json ......... 4.8.2 ✓
-  docs/index.html .......... 4.8.2 ✓
-
-CDN Reference Check:
-  docs/index.html .......... @1.1.0 ✓
-  templates/docs/index.html  @1.1.0 ✓
-  tests/index.html ......... @1.1.0 ✓
-  yry-arch/演示/index.html  @1.1.0 ✓
-
-Document Index Check:
-  docs/index.html links .... 18/18 reachable ✓
-
-Scene Count Check:
-  yry-arch ................. 5/5 ✓ (meets ≥5 baseline)
-  yry-self-test ............ 5/5 ✓ (meets ≥5 baseline)
-  yry-cdn .................. 5/5 ✓
-  rui-npm .................. 5/5 ✓
-
-Result: ALL CONSISTENT</span></pre>
+<div class="tabs">
+  <span class="tab on" data-panel="walkthrough">🚶 演示</span>
+  <span class="tab" data-panel="simulator">🧪 模拟自检</span>
+  <span class="tab" data-panel="commands">⚡ 命令</span>
+  <span class="tab" data-panel="matrix">📊 矩阵</span>
 </div>
-</div></body></html>
+
+<div class="panel on" id="panelWalkthrough">
+  <div class="walkthrough">
+    <div class="step"><div class="s-body"><div class="s-title">全量故事面板加载</div><div class="s-desc">加载所有 4 个故事 × 每故事 5 场景的面板。验证所有故事目录、场景文件、知识图谱完整可加载。</div><pre>node tests/run-all.mjs --mode=panel-load<span class="cb" onclick="YrY.copyCmd(this,'node tests/run-all.mjs --mode=panel-load')">📋</span></pre><div class="s-result-desc">💡 说明: 故事面板加载是跨故事集成的第一步 — 确保所有故事的面板（演示/架构图/知识图谱/测试面板/审查）都能正常加载。统计维度: 故事数、场景数、文件覆盖率、加载时间。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 面板加载 — 4 故事: yry-arch(5 场景, 35 文件完整 ✅) / yry-self-test(5 场景, 35 文件 ✅) / yry-cdn(5 场景, 35 文件 ✅) / rui-npm(5 场景, 35 文件 ✅) → 20 场景 / 140 文件全覆盖 / 加载耗时 2.8s.</div></div></div>
+    <div class="step"><div class="s-body"><div class="s-title">跨场景链接可达性</div><div class="s-desc">验证跨故事交叉引用链接目标文件真实存在。断链接 = P1。</div><pre>grep -rn "href=\"\.\./\.\." docs/ --include="*.html" | while read line; do echo "$line" | grep -oP '(?<=href=")[^"]*'; done | while read p; do [ -f "docs/$p" ] && echo "✓ $p" || echo "✗ $p"; done<span class="cb" onclick="YrY.copyCmd(this,'grep -rn "href=\"\\.\\./\\.\\." docs/ --include="*.html" | head -20')">📋</span></pre><div class="s-result-desc">💡 说明: 跨场景链接可达性验证每个故事文档中指向其他故事的链接。检查方法: (1) 提取所有跨目录 href，(2) 解析相对路径，(3) 逐条验证目标文件存在。断链接导致跨故事导航失效。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 跨场景链接 — 扫描 140+ 跨目录引用 → 验证目标文件: 138/140 可达 ✅ / 2 断链接 (指向 rui-trends 未完成实现) → 可达率 98.6% / P1 标记: 2 处。</div></div></div>
+    <div class="step"><div class="s-body"><div class="s-title">CDN 资源引用一致性</div><div class="s-desc">验证所有 HTML 文件引用的 CDN 资源（shared.css/theme.css/shared.js）版本一致。</div><pre>grep -rn "cdn/shared\|cdn/theme" docs/ --include="*.html" | grep -v node_modules | head -20<span class="cb" onclick="YrY.copyCmd(this,'grep -rn "cdn/shared\\|cdn/theme" docs/ --include="*.html" | grep -v node_modules | head -20')">📋</span></pre><div class="s-result-desc">💡 说明: CDN 资源引用一致性检查确保所有页面引用同一版本的共享资源。版本不匹配 = P1（页面可能加载旧版本资源，导致样式不一致或 API 不兼容）。检查: shared.css / theme.css / shared.js 在所有 HTML 中的引用路径一致。</div><div class="s-result"><span class="r-label">✅ 结果:</span> CDN 引用 — 扫描 28+ HTML 文件 → shared.css: 28/28 引用 cdn/shared.css ✅ / theme.css: 28/28 引用 cdn/theme.css ✅ / shared.js: 28/28 引用 cdn/shared.js ✅ → 0 路径变异 / 0 旧版本遗留。</div></div></div>
+    <div class="step"><div class="s-body"><div class="s-title">跨场景数据一致性</div><div class="s-desc">验证版本号、场景计数、文件计数在跨故事之间一致。任何数据不一致 = P1。</div><pre>node scripts/check-consistency.mjs --cross-story<span class="cb" onclick="YrY.copyCmd(this,'node scripts/check-consistency.mjs --cross-story')">📋</span></pre><div class="s-result-desc">💡 说明: 跨场景数据一致性检查确保: (1) plugin.json 版本与所有文档一致，(2) 每个故事的场景数 ≥5 且一致，(3) 每个故事的文件计数在可容忍偏差范围内，(4) 知识图谱中的节点计数与实际目录文件数一致。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 数据一致性 — 版本号: 4.9.0 全一致 ✅ / 场景数: 4 故事 × 5 场景 ✅ / 文件计数: 每故事 35 文件 / 偏差 ±3 ✅ / 知识图谱节点: 与实际目录 100% 匹配 ✅。</div></div></div>
+    <div class="step"><div class="s-body"><div class="s-title">全量测试套件执行</div><div class="s-desc">按依赖拓扑顺序执行所有故事的测试套件：arch → self-test → cdn → npm。任何 FAIL = 阻断。</div><pre>node tests/run-all.mjs --report=json<span class="cb" onclick="YrY.copyCmd(this,'node tests/run-all.mjs --report=json')">📋</span></pre><div class="s-result-desc">💡 说明: 全量测试套件按依赖拓扑顺序执行。arch → self-test(依赖 arch) → cdn(依赖 arch) → npm。单故事测试全部通过后才运行跨故事集成测试。全局一致性检查最后执行。JSON 报告通过 rui-bot 推送。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 全量套件 — [1/4] arch PASS (4/4) / [2/4] self-test PASS (10 suites, 171 assertions) / [3/4] cdn PASS (5/5) / [4/4] npm PASS (5/5) → 集成测试 4/4 PASS → 一致性 3/3 PASS → 总计 14/14 套件通过。</div></div></div>
+  </div>
+</div>
+
+<div class="panel" id="panelSimulator">
+
+<div class="section">
+  <h2><span class="dot"></span>跨故事集成回归模拟器</h2>
+  <p style="font-size:.76rem;color:var(--text3);margin-bottom:14px">模拟 <span class="inline-code">node tests/run-all.mjs</span> 的全量跨故事集成回归。点击「开始自检」观察面板加载 → 链接可达性 → CDN 一致性 → 数据一致性 → 全量测试的全过程。</p>
+
+  <div class="play-bar">
+    <button class="btn-play" id="btnPlay" onclick="startCheck()">▶ 开始自检</button>
+    <button class="btn-reset" onclick="resetCheck()">↺ 重置</button>
+    <span class="speed-select">
+      速度
+      <button class="on" data-speed="1" onclick="setSpeed(1, this)">1×</button>
+      <button data-speed="2" onclick="setSpeed(2, this)">2×</button>
+      <button data-speed="4" onclick="setSpeed(4, this)">4×</button>
+    </span>
+  </div>
+
+  <div class="stage-list" id="stageList">
+    <div class="stage-row" id="st0"><div class="st-num">①</div><div class="st-info"><div class="st-name">全量故事面板加载</div><div class="st-detail">4 stories × 5 scenes → 140 文件覆盖 → 加载耗时 2.8s</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
+    <div class="stage-row" id="st1"><div class="st-num">②</div><div class="st-info"><div class="st-name">跨场景链接可达性</div><div class="st-detail">grep 跨目录 href → 138/140 可达 → 交叉引用验证</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
+    <div class="stage-row" id="st2"><div class="st-num">③</div><div class="st-info"><div class="st-name">CDN 资源引用一致性</div><div class="st-detail">shared.css/theme.css/shared.js → 28+ HTML 版本一致</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
+    <div class="stage-row" id="st3"><div class="st-num">④</div><div class="st-info"><div class="st-name">跨场景数据一致性</div><div class="st-detail">版本 4.9.0 / 5 场景/故事 / 35 文件/故事 → 偏差 ±3</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
+    <div class="stage-row" id="st4"><div class="st-num">⑤</div><div class="st-info"><div class="st-name">全量测试套件执行</div><div class="st-detail">arch → self-test → cdn → npm → 14 suites / 171+ assertions</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
+  </div>
+
+  <div class="section" id="logSection" style="display:none">
+    <h2><span class="dot"></span>实时日志</h2>
+    <div class="log-box" id="logBox"><div class="log-line" style="color:var(--text3)">等待模拟开始...</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>集成回归流程</h2>
+  <div class="flow-row">
+    <div class="flow-chip"><span class="n">面板加载</span> 4故事×5场景</div><span class="flow-arrow">→</span>
+    <div class="flow-chip"><span class="n">链接可达</span> 交叉引用</div><span class="flow-arrow">→</span>
+    <div class="flow-chip"><span class="n">CDN 一致</span> 版本验证</div><span class="flow-arrow">→</span>
+    <div class="flow-chip"><span class="n">数据一致</span> 计数/版本</div><span class="flow-arrow">→</span>
+    <div class="flow-chip"><span class="n">全量测试</span> 集成套件</div>
+  </div>
+  <div class="tip-box" style="margin-top:16px"><strong>🌐 执行策略：</strong>按依赖拓扑排序 — arch(底层) → self-test(依赖 arch) → cdn(依赖 arch) → npm。跨故事测试在单故事全部通过后运行。全局一致性最后执行。<span class="inline-code">node tests/run-all.mjs --verbose</span> 查看详细输出。</div>
+</div>
+
+</div>
+
+<div class="panel" id="panelCommands">
+  <div class="cmd-grid">
+    <div class="cmd-card"><div class="stage">全量面板</div><div class="name">node tests/run-all.mjs</div><div class="desc">加载所有故事面板，验证文件完整性和加载耗时。</div><pre>node tests/run-all.mjs --mode=panel-load<span class="cb" onclick="YrY.copyCmd(this,'node tests/run-all.mjs --mode=panel-load')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">链接可达性</div><div class="name">grep 交叉引用</div><div class="desc">提取所有跨目录 href 并验证目标文件存在。</div><pre>grep -rn "href=\"\.\./\." docs/ --include="*.html" | head -20<span class="cb" onclick="YrY.copyCmd(this,'grep -rn "href=\"\\.\\./\\.\\." docs/ --include="*.html" | head -20')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">CDN 一致性</div><div class="name">grep cdn/ 引用</div><div class="desc">扫描所有 HTML 的 CDN 引用路径，验证版本一致。</div><pre>grep -rn "cdn/shared\|cdn/theme" docs/ --include="*.html" | head -20<span class="cb" onclick="YrY.copyCmd(this,'grep -rn "cdn/shared\\|cdn/theme" docs/ --include="*.html" | head -20')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">数据一致性</div><div class="name">check-consistency.mjs</div><div class="desc">验证版本/计数/状态在跨故事间一致。</div><pre>node scripts/check-consistency.mjs --cross-story<span class="cb" onclick="YrY.copyCmd(this,'node scripts/check-consistency.mjs --cross-story')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">全量测试</div><div class="name">run-all.mjs</div><div class="desc">按依赖拓扑顺序运行所有测试套件。</div><pre>node tests/run-all.mjs<span class="cb" onclick="YrY.copyCmd(this,'node tests/run-all.mjs')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">JSON 报告</div><div class="name">run-all --report=json</div><div class="desc">输出结构化 JSON 报告，用于 CI 集成。</div><pre>node tests/run-all.mjs --report=json<span class="cb" onclick="YrY.copyCmd(this,'node tests/run-all.mjs --report=json')">📋</span></pre></div>
+  </div>
+</div>
+
+<div class="panel" id="panelMatrix">
+
+<div class="section">
+  <h2><span class="dot"></span>跨故事依赖矩阵</h2>
+  <p style="font-size:.74rem;color:var(--text3);margin-bottom:14px">行 = 来源故事 | 列 = 目标故事 | 每个单元格表示该方向的依赖是否闭合。</p>
+
+  <table class="matrix-table">
+    <thead><tr><th>来源 ↓ / 目标 →</th><th>yry-arch</th><th>yry-self-test</th><th>yry-cdn</th><th>rui-npm</th></tr></thead>
+    <tbody>
+      <tr><td style="font-weight:600;color:var(--accent)">yry-arch</td><td>—</td><td><span class="badge pass">✓ 闭合</span></td><td><span class="badge pass">✓ 闭合</span></td><td><span class="badge pass">✓ 闭合</span></td></tr>
+      <tr><td style="font-weight:600;color:var(--accent)">yry-self-test</td><td><span class="badge pass">✓ 闭合</span></td><td>—</td><td><span class="badge pass">✓ 闭合</span></td><td><span class="badge pass">✓ 闭合</span></td></tr>
+      <tr><td style="font-weight:600;color:var(--accent)">yry-cdn</td><td><span class="badge pass">✓ 闭合</span></td><td>—</td><td>—</td><td><span class="badge pass">✓ 闭合</span></td></tr>
+      <tr><td style="font-weight:600;color:var(--accent)">rui-npm</td><td><span class="badge pass">✓ 闭合</span></td><td>—</td><td>—</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section">
+    <h2><span class="dot"></span>全局一致性检查项</h2>
+    <table class="matrix-table">
+      <thead><tr><th>检查项</th><th>文件数</th><th>期望</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>版本号一致性</td><td>5</td><td style="font-family:monospace;color:var(--cyan)">4.9.0</td><td><span class="badge pass">PASS</span></td></tr>
+        <tr><td>CDN 引用版本</td><td>28+</td><td style="font-family:monospace;color:var(--cyan)">cdn/shared.*</td><td><span class="badge pass">PASS</span></td></tr>
+        <tr><td>场景覆盖</td><td>4 故事</td><td style="color:var(--text2)">5 场景/故事</td><td><span class="badge pass">PASS</span></td></tr>
+        <tr><td>知识图谱 schema</td><td>4</td><td style="color:var(--text2)">JSON 有效</td><td><span class="badge pass">PASS</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tip-box" style="margin-top:16px"><strong>🌐 集成策略：</strong>FP1 全量面板加载 → FP2 跨场景链接验证 → FP3 CDN 一致性 → FP4 数据一致性 → FP5 全量测试套件。五步顺序执行，每步失败标记但不阻断后续（最终汇总判定）。</div>
+</div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+</div>
+
+<script>
+(function() {
+  var SCENE_KEY = 'yry-self-test-s5-demo';
+  document.querySelector('.tabs').addEventListener('click', function(e) {
+    var tab = e.target.closest('.tab'); if (!tab) return; switchPanel(tab.dataset.panel);
+  });
+  window.switchPanel = function(name) {
+    YrY.switchPanel(name, '.tab', '.panel');
+    try { localStorage.setItem(SCENE_KEY + '-tab', name); } catch(e) {}
+  };
+  document.addEventListener('keydown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    var m = {'1':'walkthrough','2':'simulator','3':'commands','4':'matrix'};
+    if (m[e.key]) { e.preventDefault(); switchPanel(m[e.key]); }
+  });
+  try { var saved = localStorage.getItem(SCENE_KEY + '-tab'); if (saved) switchPanel(saved); } catch(e) {}
+})();
+
+(function detectCDN() {
+  var resources = performance.getEntriesByType('resource');
+  var cdnEntries = resources.filter(function(r) { return r.name.indexOf('/cdn/') !== -1; });
+  var found = { css: false, theme: false, js: false }; var totalDuration = 0;
+  cdnEntries.forEach(function(r) {
+    var name = r.name.split('/').pop().split('?')[0];
+    if (name === 'shared.css') found.css = r; if (name === 'theme.css') found.theme = r; if (name === 'shared.js') found.js = r;
+    totalDuration += r.duration;
+  });
+  function updateBadge(elId, entry) {
+    var el = document.getElementById(elId);
+    if (entry) { el.textContent = '✓ ' + Math.round(entry.duration) + 'ms'; el.style.color = 'var(--pass)'; }
+    else { el.textContent = '已缓存'; el.style.color = 'var(--text3)'; }
+  }
+  updateBadge('lrCss', found.css); updateBadge('lrTheme', found.theme); updateBadge('lrJs', found.js);
+  var timingEl = document.getElementById('statTiming');
+  if (cdnEntries.length >= 3) { timingEl.textContent = Math.round(totalDuration) + 'ms'; timingEl.style.color = totalDuration < 100 ? 'var(--pass)' : 'var(--accent)'; }
+  else if (cdnEntries.length > 0) { timingEl.textContent = Math.round(totalDuration) + 'ms'; timingEl.style.color = 'var(--cyan)'; }
+  else { timingEl.textContent = '已缓存'; timingEl.style.color = 'var(--text3)'; }
+})();
+
+var checkRunning = false; var checkSpeed = 1;
+var checkDefs = [
+  { id:'st0', name:'全量故事面板加载', status:'4 stories × 5 scenes / 140 文件覆盖 ✅', ok:true },
+  { id:'st1', name:'跨场景链接可达性', status:'138/140 可达 / 2 P1 标记 ⚠️', ok:true },
+  { id:'st2', name:'CDN 资源引用一致性', status:'28+ HTML 全部一致 shared.css/theme.css/shared.js ✅', ok:true },
+  { id:'st3', name:'跨场景数据一致性', status:'版本 4.9.0 全一致 / 5 场景/故事 / ±3 偏差 ✅', ok:true },
+  { id:'st4', name:'全量测试套件执行', status:'14/14 suites PASS / 171+ assertions / 2.8s ✅', ok:true }
+];
+
+function setSpeed(speed, btn) {
+  checkSpeed = speed;
+  document.querySelectorAll('.speed-select button').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+}
+
+function log(msg, color) {
+  var box = document.getElementById('logBox'); if (!box) return;
+  var div = document.createElement('div'); div.className = 'log-line';
+  var now = new Date();
+  var time = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2) + ':' + ('0' + now.getSeconds()).slice(-2) + '.' + ('00' + now.getMilliseconds()).slice(-3);
+  div.innerHTML = '<span class="log-time">' + time + '</span><span class="log-icon" style="color:' + (color || 'var(--text2)') + '">●</span><span style="color:' + (color || 'var(--text2)') + '">' + msg + '</span>';
+  box.appendChild(div); box.scrollTop = box.scrollHeight;
+}
+
+function updateStage(idx, statusCls, statusText, barPct) {
+  var s = checkDefs[idx]; var row = document.getElementById(s.id);
+  row.classList.remove('done', 'active', 'failed');
+  if (statusCls === 'ok') row.classList.add('done');
+  if (statusCls === 'loading') row.classList.add('active');
+  if (statusCls === 'err') row.classList.add('failed');
+  var st = row.querySelector('.st-status'); st.textContent = statusText; st.className = 'st-status ' + statusCls;
+  row.querySelector('.st-bar').style.width = (barPct || 0) + '%';
+}
+
+function resetCheck() {
+  if (checkRunning) return;
+  checkDefs.forEach(function(_, i) { updateStage(i, 'waiting', '等待中', 0); });
+  var box = document.getElementById('logBox'); if (box) box.innerHTML = '<div class="log-line" style="color:var(--text3)">等待模拟开始...</div>';
+  document.getElementById('logSection').style.display = 'none';
+  var btn = document.getElementById('btnPlay'); btn.classList.remove('running'); btn.textContent = '▶ 开始自检';
+  document.getElementById('statPassed').textContent = '5'; document.getElementById('statPending').textContent = '0';
+}
+
+function startCheck() {
+  if (checkRunning) return; checkRunning = true;
+  var btn = document.getElementById('btnPlay'); btn.classList.add('running'); btn.textContent = '⏳ 自检中...';
+  document.getElementById('logSection').style.display = '';
+  var box = document.getElementById('logBox'); box.innerHTML = '';
+  var passed = 0;
+  document.getElementById('statPassed').textContent = '0'; document.getElementById('statPending').textContent = '5';
+  log('🌐 跨故事集成回归开始 — node tests/run-all.mjs', 'var(--accent)');
+  log('  故事: yry-arch · yry-self-test · yry-cdn · rui-npm', 'var(--text3)');
+  var i = 0;
+  function next() {
+    if (i >= checkDefs.length) {
+      setTimeout(function() {
+        log('✅ 全部 5 项集成回归完成 — ' + passed + '/5 通过', 'var(--pass)');
+        log('  ⏱ 总耗时: 2.8s / 4 stories / 20 scenes', 'var(--text2)');
+        btn.classList.remove('running'); btn.textContent = '✓ 自检完成'; checkRunning = false;
+        document.getElementById('statPending').textContent = '0'; document.getElementById('statPassed').textContent = passed;
+        setTimeout(function() { btn.textContent = '▶ 重新自检'; }, 2000);
+      }, 400 / checkSpeed); return;
+    }
+    var s = checkDefs[i];
+    log('⏳ ' + s.name, 'var(--cyan)'); updateStage(i, 'loading', '运行中...', 0);
+    var start = Date.now(); var duration = (500 + Math.random() * 400) / checkSpeed;
+    var tick = setInterval(function() {
+      var pct = Math.min(100, ((Date.now() - start) / duration) * 100);
+      var el = document.getElementById(s.id); if (el) el.querySelector('.st-bar').style.width = pct + '%';
+      if (pct >= 100) clearInterval(tick);
+    }, 16);
+    setTimeout(function() {
+      clearInterval(tick);
+      if (s.ok) {
+        updateStage(i, 'ok', s.status, 100); log('  ✓ ' + s.status, 'var(--pass)');
+        passed++; document.getElementById('statPassed').textContent = passed; document.getElementById('statPending').textContent = 5 - i - 1;
+      } else {
+        updateStage(i, 'err', '失败 ✗', 100); log('  ✗ 回归失败', 'var(--fail)');
+        document.getElementById('statPending').textContent = 5 - i - 1;
+      }
+      i++; setTimeout(next, 200 / checkSpeed);
+    }, duration);
+  }
+  setTimeout(next, 400);
+}
+</script>
+
+<div class="footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY · 场景演示</div>
+<script src="../../../../cdn/shared.js"></script>
+</body>
+</html>

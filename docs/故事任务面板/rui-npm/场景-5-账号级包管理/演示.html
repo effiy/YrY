@@ -1,29 +1,387 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>场景-5 · 账号级包管理 — 演示</title>
-<style>:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--warn:#f59e0b;--fail:#ef4444;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}@keyframes stepIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6}.container{max-width:960px;margin:0 auto;padding:40px 24px 80px}.tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:28px;animation:fadeInDown .5s .1s ease both}.tab{padding:8px 18px;cursor:pointer;font-size:.82rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none}.tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}.panel{display:none;animation:fadeInUp .4s ease both}.panel.on{display:block}.section{margin-bottom:32px}.section h2{font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px}.section h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}.cmd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}.cmd-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s}.cmd-card:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.35)}.cmd-card .name{font-weight:700;font-size:.88rem;color:var(--accent);font-family:monospace}.cmd-card .desc{font-size:.76rem;color:var(--text2);margin:4px 0 8px;line-height:1.5}.cmd-card .stage{font-size:.64rem;color:var(--text3);margin-bottom:4px}pre{background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer}pre .cb{position:absolute;top:6px;right:6px;background:var(--bg-flat);border:var(--border);border-radius:4px;color:var(--text3);font-size:.62rem;padding:2px 7px;cursor:pointer;opacity:0;transition:opacity .15s;font-family:inherit}pre:hover .cb{opacity:1}pre .cb.done{color:var(--pass)}.flow-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0}.flow-chip{background:var(--bg-flat);border:var(--border);border-radius:20px;padding:6px 14px;font-size:.78rem}.flow-chip .n{font-weight:700;color:var(--accent)}.flow-arrow{color:var(--text3);font-size:.8rem}.file-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px}.file-item{background:var(--bg-flat);border:var(--border);border-radius:6px;padding:8px 12px;font-size:.74rem;font-family:monospace;color:var(--text2)}.links-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.links-row a{font-size:.76rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:6px;padding:6px 12px;transition:all .15s}.links-row a:hover{border-color:var(--accent);color:var(--accent)}.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:0 12px 32px rgba(0,0,0,.45);opacity:0;transition:opacity .2s;pointer-events:none}.toast.show{opacity:1}.walkthrough{counter-reset:step}.walkthrough .step{counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both}.walkthrough .step::before{content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}.walkthrough .step .s-body{flex:1}.walkthrough .step .s-title{font-weight:600;font-size:.88rem}.walkthrough .step .s-desc{font-size:.76rem;color:var(--text2);margin:3px 0 6px}.walkthrough .step .s-result{font-size:.74rem;color:var(--pass);margin-top:6px}.walkthrough .step .s-result .r-label{font-weight:600}.walkthrough .step .s-result-desc{font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.5;padding:6px 10px;background:rgba(34,211,238,.04);border-left:2px solid var(--cyan);border-radius:0 4px 4px 0}.walkthrough .step .s-warn{font-size:.72rem;color:var(--warn);margin-top:4px;line-height:1.5;padding:6px 10px;background:rgba(245,158,11,.04);border-left:2px solid var(--warn);border-radius:0 4px 4px 0}.kbd-hint{font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.03);border-radius:3px;padding:1px 5px;margin-left:4px}.header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}.header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}.header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06)}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}.stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}.stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}.stat-card .val.health{color:var(--pass)}.stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}.bar-wrap{margin-bottom:28px;animation:fadeInDown .5s .12s ease both}.bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}.bar-outer .seg{height:100%;transition:width .5s ease;min-width:3px}.bar-outer .seg.strength{background:var(--pass)}@media(max-width:640px){.container{padding:20px 12px 60px}h1{font-size:1.4rem}.cmd-grid{grid-template-columns:1fr}}</style></head><body><div class="container">
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · 个人 npm 包管理</span><span class="bc-sep">/</span><span class="bc-current">场景 5 · 账号级包管理</span><span class="bc-sep">/</span><span class="bc-current">💡 演示</span></nav>
-<div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><span class="cross-link on">💡 演示</span><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
-<div class="header"><h1>🧩 <span class="accent">账号级包管理</span> — 演示</h1><p class="sub">资产总览 → 安全废弃 → 精确删除 → 完整闭环 <span class="kbd-hint">1-5</span> 数字键切换 Tab</p></div>
-<div class="stats-grid"><div class="stat-card"><div class="val health">4</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">4</div><div class="lbl">✅ 已演示</div></div><div class="stat-card"><div class="val">0</div><div class="lbl">⏳ 待演示</div></div><div class="stat-card"><div class="val health">100%</div><div class="lbl">📊 覆盖率</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div></div></div>
-<div class="tabs"><span class="tab on" data-panel="walkthrough">🚶 演示</span><span class="tab" data-panel="overview">📊 概览</span><span class="tab" data-panel="commands">⚡ 命令</span><span class="tab" data-panel="files">📁 文件</span><span class="tab" data-panel="tests">🧪 测试</span></div>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>场景-5 · 账号级包管理 — 演示</title>
+  <link rel="stylesheet" href="../../../../cdn/shared.css">
+  <link rel="stylesheet" href="../../../../cdn/theme.css">
+  <style>
+    :root { --bg:rgba(22,22,32,1); --bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%); --bg-flat:rgba(34,34,46,1); --bg-raised:rgba(42,42,56,1); --accent:#FFC107; --cyan:#22d3ee; --pass:#22c55e; --warn:#f59e0b; --fail:#ef4444; --info:#6b7280; --text:rgba(250,250,252,1); --text2:rgba(160,160,164,1); --text3:rgba(110,110,114,1); --shadow:0 4px 20px rgba(0,0,0,0.3); --shadow-lg:0 12px 32px rgba(0,0,0,0.45); --radius:12px; --border:1px solid rgba(255,255,255,0.06) }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeInDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes stepIn { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes glowPulse { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.3)} }
+    @keyframes countUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes slideDown { from{opacity:0;max-height:0} to{opacity:1;max-height:300px} }
+    @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)} 50%{box-shadow:0 0 0 6px rgba(255,193,7,0)} }
+    * { box-sizing:border-box;margin:0;padding:0 }
+    body { background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6 }
+    .container { max-width:960px;margin:0 auto;padding:40px 24px 80px }
+    .tabs { display:flex;gap:0;border-bottom:var(--border);margin-bottom:28px;animation:fadeInDown .5s .1s ease both }
+    .tab { padding:8px 18px;cursor:pointer;font-size:.82rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none }
+    .tab:hover { color:var(--text2) } .tab.on { color:var(--accent);border-bottom-color:var(--accent) }
+    .panel { display:none;animation:fadeInUp .4s ease both }
+    .panel.on { display:block }
+    .section { margin-bottom:32px } .section h2 { font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px }
+    .section h2 .dot { width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0 }
+    .cmd-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px }
+    .cmd-card { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s }
+    .cmd-card:hover { transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.35) }
+    .cmd-card .name { font-weight:700;font-size:.88rem;color:var(--accent);font-family:monospace }
+    .cmd-card .desc { font-size:.76rem;color:var(--text2);margin:4px 0 8px;line-height:1.5 }
+    .cmd-card .stage { font-size:.64rem;color:var(--text3);margin-bottom:4px }
+    pre { background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer }
+    pre .cb { position:absolute;top:6px;right:6px;background:var(--bg-flat);border:var(--border);border-radius:4px;color:var(--text3);font-size:.62rem;padding:2px 7px;cursor:pointer;opacity:0;transition:opacity .15s;font-family:inherit }
+    pre:hover .cb { opacity:1 } pre .cb.done { color:var(--pass) }
+    .flow-row { display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0 }
+    .flow-chip { background:var(--bg-flat);border:var(--border);border-radius:20px;padding:6px 14px;font-size:.78rem }
+    .flow-chip .n { font-weight:700;color:var(--accent) } .flow-arrow { color:var(--text3);font-size:.8rem }
+    .file-list { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px }
+    .file-item { background:var(--bg-flat);border:var(--border);border-radius:6px;padding:8px 12px;font-size:.74rem;font-family:monospace;color:var(--text2) }
+    .links-row { display:flex;gap:8px;flex-wrap:wrap;margin-top:16px }
+    .links-row a { font-size:.76rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:6px;padding:6px 12px;transition:all .15s }
+    .links-row a:hover { border-color:var(--accent);color:var(--accent) }
+    .yry-toast { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:0 12px 32px rgba(0,0,0,.45);opacity:0;transition:opacity .2s;pointer-events:none }
+    .yry-toast.show { opacity:1 }
+    .walkthrough { counter-reset:step }
+    .walkthrough .step { counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both }
+    .walkthrough .step::before { content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0 }
+    .walkthrough .step .s-body { flex:1 } .walkthrough .step .s-title { font-weight:600;font-size:.88rem }
+    .walkthrough .step .s-desc { font-size:.76rem;color:var(--text2);margin:3px 0 6px }
+    .walkthrough .step .s-result { font-size:.74rem;color:var(--pass);margin-top:6px }
+    .walkthrough .step .s-result .r-label { font-weight:600 }
+    .walkthrough .step .s-result-desc { font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.5;padding:6px 10px;background:rgba(34,211,238,.04);border-left:2px solid var(--cyan);border-radius:0 4px 4px 0 }
+    .walkthrough .step .s-warn { font-size:.72rem;color:var(--warn);margin-top:4px;line-height:1.5;padding:6px 10px;background:rgba(245,158,11,.04);border-left:2px solid var(--warn);border-radius:0 4px 4px 0 }
+    .kbd-hint { font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.03);border-radius:3px;padding:1px 5px;margin-left:4px }
+    .header { text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both }
+    .header h1 { font-size:1.8rem;font-weight:700 } .header h1 .accent { color:var(--accent) }
+    .header .sub { color:var(--text2);font-size:.9rem;margin-top:4px }
+    .breadcrumb { display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem }
+    .breadcrumb a { color:#7aa2f7;text-decoration:none;transition:color 0.15s } .breadcrumb a:hover { color:#fbbf24;text-decoration:underline }
+    .breadcrumb .bc-sep { color:#53576c;opacity:0.5;user-select:none } .breadcrumb .bc-current { color:#94a3b8;font-weight:500 }
+    .cross-nav { display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both }
+    .cross-link { color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s }
+    .cross-link:hover { color:var(--accent);background:rgba(255,193,7,.06) } .cross-link.on { color:var(--accent);font-weight:600 }
+    .cross-sep { color:var(--text3);font-size:.5rem;opacity:.35;user-select:none }
+    .stats-grid { display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both }
+    .stat-card { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer }
+    .stat-card:hover { transform:translateY(-2px);box-shadow:var(--shadow-lg) } .stat-card .val { font-size:1.6rem;font-weight:700;line-height:1.1 }
+    .stat-card .val.health { color:var(--pass) } .stat-card .lbl { font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px }
+    .bar-wrap { margin-bottom:28px;animation:fadeInDown .5s .12s ease both }
+    .bar-outer { height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04) }
+    .bar-outer .seg { height:100%;transition:width .5s ease;min-width:3px } .bar-outer .seg.strength { background:var(--pass) }
+    .live-bar { display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;font-size:.72rem;color:var(--text3);animation:fadeInDown .5s .14s ease both }
+    .live-dot { width:7px;height:7px;border-radius:50%;background:var(--pass);animation:glowPulse 2s infinite;flex-shrink:0 }
+    .live-resource { display:flex;align-items:center;gap:4px;background:var(--bg-flat);border:var(--border);border-radius:12px;padding:3px 10px;font-family:monospace;font-size:.68rem }
+    .live-resource .lr-name { color:var(--text2) } .live-resource .lr-status { color:var(--pass);font-weight:700 } .live-resource .lr-size { color:var(--text3);font-size:.62rem }
+    .play-bar { display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px }
+    .btn-play, .btn-reset { background:var(--bg-flat);border:var(--border);border-radius:6px;color:var(--text2);padding:6px 14px;cursor:pointer;font-size:.78rem;transition:all .15s;font-family:inherit;display:inline-flex;align-items:center;gap:5px }
+    .btn-play:hover, .btn-reset:hover { border-color:rgba(255,255,255,.15);color:var(--text) }
+    .btn-play.running { animation:pulse 1.5s infinite;border-color:var(--accent);color:var(--accent) }
+    .speed-select { background:var(--bg-flat);border:var(--border);border-radius:6px;color:var(--text2);padding:5px 8px;font-size:.74rem;font-family:inherit;cursor:pointer;transition:all .15s }
+    .speed-select:hover { border-color:rgba(255,255,255,.15);color:var(--text) } .speed-select.on { border-color:var(--accent);color:var(--accent);background:rgba(255,193,7,.08) }
+    .stage-list { display:flex;flex-direction:column;gap:6px;margin-bottom:16px }
+    .stage-row { display:flex;align-items:center;gap:10px;background:var(--bg-flat);border:var(--border);border-radius:8px;padding:10px 14px;transition:all .2s }
+    .stage-row.ok { border-left:3px solid var(--pass) } .stage-row.running { border-left:3px solid var(--accent);animation:pulse 1.5s infinite }
+    .stage-row.fail { border-left:3px solid var(--fail) }
+    .st-num { width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.06);color:var(--text3);font-size:.68rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0 }
+    .stage-row.ok .st-num { background:rgba(34,197,94,.12);color:var(--pass) } .stage-row.running .st-num { background:rgba(255,193,7,.12);color:var(--accent) }
+    .stage-row.fail .st-num { background:rgba(239,68,68,.12);color:var(--fail) }
+    .st-info { flex:1;min-width:0 } .st-name { font-weight:600;font-size:.8rem;color:var(--text) }
+    .st-detail { font-size:.68rem;color:var(--text2);margin-top:2px } .st-provides { font-size:.64rem;color:var(--text3);font-family:monospace;margin-top:1px }
+    .st-status { font-size:.68rem;font-weight:600;flex-shrink:0 }
+    .stage-row.ok .st-status { color:var(--pass) } .stage-row.running .st-status { color:var(--accent) } .stage-row.fail .st-status { color:var(--fail) }
+    .st-bar { width:60px;height:4px;border-radius:2px;background:rgba(255,255,255,.06);overflow:hidden;flex-shrink:0 }
+    .st-bar-fill { height:100%;border-radius:2px;background:var(--pass);transition:width .3s ease;width:0 }
+    .log-box { background:rgba(0,0,0,.3);border:var(--border);border-radius:8px;padding:12px 14px;min-height:120px;max-height:240px;overflow-y:auto;font-family:monospace;font-size:.72rem;margin-bottom:16px }
+    .log-line { padding:3px 0;display:flex;gap:8px;align-items:flex-start;animation:countUp .2s ease both }
+    .log-time { color:var(--text3);flex-shrink:0;font-size:.66rem } .log-icon { flex-shrink:0;width:14px;text-align:center }
+    .tip-box { background:rgba(34,211,238,.04);border:1px solid rgba(34,211,238,.12);border-radius:6px;padding:8px 12px;font-size:.72rem;color:var(--text2);margin-top:8px }
+    .inline-code { font-family:monospace;font-size:.8em;background:rgba(255,255,255,.06);padding:1px 4px;border-radius:3px }
+    a[target="_blank"]::after { content:" ↗";font-size:.7em;opacity:.5 }
+    .yry-footer { text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06) }
+    @media (max-width:640px) { .container { padding:20px 12px 60px } h1 { font-size:1.4rem } .cmd-grid { grid-template-columns:1fr } }
+  </style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../../index.html">&#x1F4C4; 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · 个人 npm 包管理</span><span class="bc-sep">/</span><span class="bc-current">场景 5 · 账号级包管理</span><span class="bc-sep">/</span><span class="bc-current">&#x1F4A1; 演示</span></nav>
+
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">&#x1F4CB; 清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">&#x1F4D0; 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">&#x1F517; 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">&#x1F4C4; 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">&#x1F9EA; 测试</a><span class="cross-sep">·</span>
+<span class="cross-link on">&#x1F4A1; 演示</span><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">&#x1F4DD; 审计</a>
+</nav>
+
+<div class="header">
+  <h1>&#x1F9E9; <span class="accent">账号级包管理</span> — 演示</h1>
+  <p class="sub">资产总览 → 安全废弃 → 精确删除 → 完整闭环 <span class="kbd-hint">1-6</span> 数字键切换 Tab</p>
+</div>
+
+<div class="live-bar">
+  <span class="live-dot"></span> 本页 CDN 加载状态：
+  <span class="live-resource"><span class="lr-name">shared.css</span><span class="lr-status" id="lrCss">检测中</span><span class="lr-size">6.0KB</span></span>
+  <span class="live-resource"><span class="lr-name">theme.css</span><span class="lr-status" id="lrTheme">检测中</span><span class="lr-size">12.1KB</span></span>
+  <span class="live-resource"><span class="lr-name">shared.js</span><span class="lr-status" id="lrJs">检测中</span><span class="lr-size">5.3KB</span></span>
+  <span class="kbd-hint">1-6</span> 数字键切换 Tab
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="val health">4</div><div class="lbl">&#x1F4CB; 步骤</div></div>
+  <div class="stat-card"><div class="val health">4</div><div class="lbl">&#x2705; 已演示</div></div>
+  <div class="stat-card"><div class="val">0</div><div class="lbl">&#x23F3; 待演示</div></div>
+  <div class="stat-card"><div class="val health">100%</div><div class="lbl">&#x1F4CA; 覆盖率</div></div>
+  <div class="stat-card"><div class="val" style="color:var(--cyan)" id="statTiming">—</div><div class="lbl">&#x23F1; CDN 加载</div></div>
+</div>
+<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div></div></div>
+
+<div class="tabs">
+  <span class="tab on" data-panel="walkthrough">&#x1F6B6; 演示</span>
+  <span class="tab" data-panel="simulator">&#x1F3AC; 模拟演练</span>
+  <span class="tab" data-panel="overview">&#x1F4CA; 概览</span>
+  <span class="tab" data-panel="commands">&#x26A1; 命令</span>
+  <span class="tab" data-panel="files">&#x1F4C1; 文件</span>
+  <span class="tab" data-panel="tests">&#x1F9EA; 测试</span>
+</div>
+
 <div class="panel on" id="panelWalkthrough"><div class="walkthrough">
-<div class="step"><div class="s-body"><div class="s-title">查看账号下所有 npm 包</div><div class="s-desc">一条命令列出自己发布的所有包——名称、描述、最新版本、周下载量，按下载量降序排列。</div><pre>/rui-npm my-packages<span class="cb" onclick="copyCmd(this,'/rui-npm my-packages')">📋</span></pre><div class="s-result-desc">💡 说明: my-packages 优先调用 registry search API (GET /-/v1/search?text=maintainer:&lt;user&gt;)，返回含描述/版本/下载量的完整元数据；API 不可达时自动降级为 npm access ls-packages。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 📦 账号下 3 个包 — my-util (v2.1.0, 1.2K/周) / my-cli (v1.5.0, 340/周) / my-lib (v0.9.0, 86/周)。</div></div></div>
-<div class="step"><div class="s-body"><div class="s-title">安全废弃旧版本</div><div class="s-desc">标记废弃版本并附替代方案引导——不影响已安装用户，比直接删除更安全。</div><pre>/rui-npm deprecate my-util@1.0.0 "Use 2.0.0 — API redesigned"<span class="cb" onclick="copyCmd(this,'/rui-npm deprecate my-util@1.0.0 &quot;Use 2.0.0 — API redesigned&quot;')">📋</span></pre><div class="s-result-desc">💡 说明: deprecate 执行前验证当前用户是包所有者（npm whoami + npm view maintainers 交叉检查）。非所有者拒绝操作并展示维护者列表。废弃消息会显示在 npm 网站包页面。</div><div class="s-result"><span class="r-label">✅ 结果:</span> ⚠️ my-util@1.0.0 已标记为 deprecated — 替代版本: 2.0.0 / 查看: npmjs.com/package/my-util/v/1.0.0。</div></div></div>
-<div class="step"><div class="s-body"><div class="s-title">删除误发版本（不可逆操作）</div><div class="s-desc">安全警告前置展示后，精确删除指定版本。不可逆操作，慎用。</div><pre>/rui-npm unpublish my-util@1.0.0<span class="cb" onclick="copyCmd(this,'/rui-npm unpublish my-util@1.0.0')">📋</span></pre><div class="s-result-desc">💡 说明: unpublish 执行前展示三重安全警告：① 操作不可逆 ② 72h 内可通过 npm support 恢复 ③ 包名可被他人注册。所有权验证 + 安全警告双重确认后才执行。</div><div class="s-warn">⚠️ 安全提示: 优先使用 deprecate 而非 unpublish。deprecate 对已安装用户无影响；unpublish 是破坏性操作，npm 官方建议仅在误发密钥等紧急场景使用。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 🗑️ my-util@1.0.0 已从 registry 删除 — ⚠️ 不可恢复 / 72h 内可联系 npm support / 包名 my-util 仍被占用（其他版本存在）。</div></div></div>
-<div class="step"><div class="s-body"><div class="s-title">完整生命周期：从本地发布到账号清理</div><div class="s-desc">发布本地文件/文件夹 → 查看账号资产 → 废弃旧版本 → 清理误发版本，四步闭环。</div><pre>/rui-npm publish ./src/my-helper.mjs --name my-helper
+
+<div class="step"><div class="s-body">
+  <div class="s-title">查看账号下所有 npm 包</div>
+  <div class="s-desc">一条命令列出自己发布的所有包——名称、描述、最新版本、周下载量，按下载量降序排列。</div>
+  <pre>/rui-npm my-packages<span class="cb" onclick="YrY.copyCmd(this,'/rui-npm my-packages')">&#x1F4CB;</span></pre>
+  <div class="s-result-desc">&#x1F4A1; 说明: my-packages 优先调用 registry search API (GET /-/v1/search?text=maintainer:&lt;user&gt;)，返回含描述/版本/下载量的完整元数据；API 不可达时自动降级为 npm access ls-packages。</div>
+  <div class="s-result"><span class="r-label">&#x2705; 结果:</span> &#x1F4E6; 账号下 3 个包 — my-util (v2.1.0, 1.2K/周) / my-cli (v1.5.0, 340/周) / my-lib (v0.9.0, 86/周)。</div>
+</div></div>
+
+<div class="step"><div class="s-body">
+  <div class="s-title">安全废弃旧版本</div>
+  <div class="s-desc">标记废弃版本并附替代方案引导——不影响已安装用户，比直接删除更安全。</div>
+  <pre>/rui-npm deprecate my-util@1.0.0 "Use 2.0.0 — API redesigned"<span class="cb" onclick="YrY.copyCmd(this,'/rui-npm deprecate my-util@1.0.0 &quot;Use 2.0.0 — API redesigned&quot;')">&#x1F4CB;</span></pre>
+  <div class="s-result-desc">&#x1F4A1; 说明: deprecate 执行前验证当前用户是包所有者（npm whoami + npm view maintainers 交叉检查）。非所有者拒绝操作并展示维护者列表。废弃消息会显示在 npm 网站包页面。</div>
+  <div class="s-result"><span class="r-label">&#x2705; 结果:</span> &#x26A0; my-util@1.0.0 已标记为 deprecated — 替代版本: 2.0.0 / 查看: npmjs.com/package/my-util/v/1.0.0。</div>
+</div></div>
+
+<div class="step"><div class="s-body">
+  <div class="s-title">删除误发版本（不可逆操作）</div>
+  <div class="s-desc">安全警告前置展示后，精确删除指定版本。不可逆操作，慎用。</div>
+  <pre>/rui-npm unpublish my-util@1.0.0<span class="cb" onclick="YrY.copyCmd(this,'/rui-npm unpublish my-util@1.0.0')">&#x1F4CB;</span></pre>
+  <div class="s-result-desc">&#x1F4A1; 说明: unpublish 执行前展示三重安全警告：&#x2460; 操作不可逆 &#x2461; 72h 内可通过 npm support 恢复 &#x2462; 包名可被他人注册。所有权验证 + 安全警告双重确认后才执行。</div>
+  <div class="s-warn">&#x26A0; 安全提示: 优先使用 deprecate 而非 unpublish。deprecate 对已安装用户无影响；unpublish 是破坏性操作，npm 官方建议仅在误发密钥等紧急场景使用。</div>
+  <div class="s-result"><span class="r-label">&#x2705; 结果:</span> &#x1F5D1; my-util@1.0.0 已从 registry 删除 — &#x26A0; 不可恢复 / 72h 内可联系 npm support / 包名 my-util 仍被占用（其他版本存在）。</div>
+</div></div>
+
+<div class="step"><div class="s-body">
+  <div class="s-title">完整生命周期：从本地发布到账号清理</div>
+  <div class="s-desc">发布本地文件/文件夹 → 查看账号资产 → 废弃旧版本 → 清理误发版本，四步闭环。</div>
+  <pre>/rui-npm publish ./src/my-helper.mjs --name my-helper
 /rui-npm my-packages
 /rui-npm deprecate my-helper@0.1.0 "Merged into my-util@2.0.0"
-/rui-npm unpublish my-helper@0.0.1 --force<span class="cb" onclick="copyCmd(this,'/rui-npm publish ./src/my-helper.mjs --name my-helper\n/rui-npm my-packages\n/rui-npm deprecate my-helper@0.1.0 &quot;Merged into my-util@2.0.0&quot;\n/rui-npm unpublish my-helper@0.0.1 --force')">📋</span></pre><div class="s-result-desc">💡 说明: 完整闭环演示账号级包管理的四个阶段：<br>① <b>publish</b> — 将本地 .mjs 文件或目录发布为 npm 包（自动生成 package.json，支持 --name/--version/--dry-run）<br>② <b>my-packages</b> — 确认新包出现在账号资产列表中<br>③ <b>deprecate</b> — 标记不再维护的早期版本，引导用户升级<br>④ <b>unpublish --force</b> — 删除误发的占位版本（--force 跳过 72h 限制）</div><div class="s-result"><span class="r-label">✅ 结果:</span> 🔄 完整闭环验证通过 — publish ✅ / my-packages 确认可见 ✅ / deprecate 标记成功 ✅ / unpublish 删除完成 ✅。</div></div></div>
+/rui-npm unpublish my-helper@0.0.1 --force<span class="cb" onclick="YrY.copyCmd(this,'/rui-npm publish ./src/my-helper.mjs --name my-helper\n/rui-npm my-packages\n/rui-npm deprecate my-helper@0.1.0 &quot;Merged into my-util@2.0.0&quot;\n/rui-npm unpublish my-helper@0.0.1 --force')">&#x1F4CB;</span></pre>
+  <div class="s-result-desc">&#x1F4A1; 说明: 完整闭环演示账号级包管理的四个阶段：<br>&#x2460; <b>publish</b> — 将本地 .mjs 文件或目录发布为 npm 包（自动生成 package.json，支持 --name/--version/--dry-run）<br>&#x2461; <b>my-packages</b> — 确认新包出现在账号资产列表中<br>&#x2462; <b>deprecate</b> — 标记不再维护的早期版本，引导用户升级<br>&#x2463; <b>unpublish --force</b> — 删除误发的占位版本（--force 跳过 72h 限制）</div>
+  <div class="s-result"><span class="r-label">&#x2705; 结果:</span> &#x1F504; 完整闭环验证通过 — publish &#x2705; / my-packages 确认可见 &#x2705; / deprecate 标记成功 &#x2705; / unpublish 删除完成 &#x2705;。</div>
 </div></div>
-<div class="panel" id="panelOverview"><div class="section"><h2><span class="dot"></span>账号管理流程</h2><div class="flow-row"><div class="flow-chip"><span class="n">publish</span> 本地→远程</div><span class="flow-arrow">→</span><div class="flow-chip"><span class="n">my-packages</span> 资产总览</div><span class="flow-arrow">→</span><div class="flow-chip"><span class="n">deprecate</span> 安全废弃</div><span class="flow-arrow">→</span><div class="flow-chip"><span class="n">unpublish</span> 精确删除</div></div></div><div class="section"><h2><span class="dot"></span>关键安全机制</h2><div class="flow-row"><div class="flow-chip"><span class="n">npm whoami</span> 认证门禁</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">maintainers</span> 所有权验证</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">安全警告</span> 不可逆提示</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">API 降级</span> access ls-packages</div></div></div></div>
+
+</div></div>
+
+<div class="panel" id="panelSimulator">
+
+<div class="play-bar">
+  <button class="btn-play" id="btnPlay" onclick="startSim()">&#x25B6; 开始演练</button>
+  <button class="btn-reset" onclick="resetSim()">&#x21BA; 重置</button>
+  <span style="color:var(--text3);font-size:.74rem;margin-left:auto">速度:</span>
+  <button class="speed-select" onclick="setSpeed(1,this)">1&#x00D7;</button>
+  <button class="speed-select" onclick="setSpeed(2,this)">2&#x00D7;</button>
+  <button class="speed-select" onclick="setSpeed(4,this)">4&#x00D7;</button>
+</div>
+
+<div class="stage-list">
+  <div class="stage-row" id="stg-0">
+    <div class="st-num">1</div><div class="st-info"><div class="st-name">账号资产总览</div><div class="st-detail">列出账号下所有发布包，按下载量降序</div><div class="st-provides">/rui-npm my-packages</div></div>
+    <div class="st-bar"><div class="st-bar-fill"></div></div><div class="st-status">等待中</div>
+  </div>
+  <div class="stage-row" id="stg-1">
+    <div class="st-num">2</div><div class="st-info"><div class="st-name">安全废弃</div><div class="st-detail">验证所有者身份 → 标记废弃版本+替代引导</div><div class="st-provides">/rui-npm deprecate my-util@1.0.0</div></div>
+    <div class="st-bar"><div class="st-bar-fill"></div></div><div class="st-status">等待中</div>
+  </div>
+  <div class="stage-row" id="stg-2">
+    <div class="st-num">3</div><div class="st-info"><div class="st-name">精确删除</div><div class="st-detail">三重安全警告 → 所有权验证后执行删除</div><div class="st-provides">/rui-npm unpublish my-util@1.0.0</div></div>
+    <div class="st-bar"><div class="st-bar-fill"></div></div><div class="st-status">等待中</div>
+  </div>
+  <div class="stage-row" id="stg-3">
+    <div class="st-num">4</div><div class="st-info"><div class="st-name">完整闭环</div><div class="st-detail">本地文件 → npm 包 → 纳入账号资产管理</div><div class="st-provides">/rui-npm publish ./my-cli.mjs --name my-cli</div></div>
+    <div class="st-bar"><div class="st-bar-fill"></div></div><div class="st-status">等待中</div>
+  </div>
+</div>
+
+<div class="log-box" id="logBox"></div>
+<div class="tip-box">&#x1F4A1; 点击 <span class="inline-code">&#x25B6; 开始演练</span> 自动模拟资产总览→安全废弃→精确删除→完整闭环的账号管理流程。unpublish 阶段会有安全警告提示。</div>
+
+</div>
+
+<div class="panel" id="panelOverview">
+<div class="section"><h2><span class="dot"></span>账号管理流程</h2>
+<div class="flow-row"><div class="flow-chip"><span class="n">publish</span> 本地→远程</div><span class="flow-arrow">→</span><div class="flow-chip"><span class="n">my-packages</span> 资产总览</div><span class="flow-arrow">→</span><div class="flow-chip"><span class="n">deprecate</span> 安全废弃</div><span class="flow-arrow">→</span><div class="flow-chip"><span class="n">unpublish</span> 精确删除</div></div>
+</div>
+<div class="section"><h2><span class="dot"></span>关键安全机制</h2>
+<div class="flow-row"><div class="flow-chip"><span class="n">npm whoami</span> 认证门禁</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">maintainers</span> 所有权验证</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">安全警告</span> 不可逆提示</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">API 降级</span> access ls-packages</div></div>
+</div>
+</div>
+
 <div class="panel" id="panelCommands"><div class="cmd-grid">
-<div class="cmd-card"><div class="stage">资产总览</div><div class="name">/rui-npm my-packages</div><div class="desc">列出自己发布的所有包：名称/描述/版本/周下载量，支持 --json 和 --limit。</div><pre>/rui-npm my-packages<span class="cb" onclick="copyCmd(this,'/rui-npm my-packages')">📋</span></pre></div>
-<div class="cmd-card"><div class="stage">安全废弃</div><div class="name">/rui-npm deprecate my-util@1.0.0 "Use 2.0.0"</div><div class="desc">标记废弃版本+替代引导，所有权验证，不影响已安装用户。</div><pre>/rui-npm deprecate my-util@1.0.0 "Use 2.0.0"<span class="cb" onclick="copyCmd(this,'/rui-npm deprecate my-util@1.0.0 &quot;Use 2.0.0&quot;')">📋</span></pre></div>
-<div class="cmd-card"><div class="stage">精确删除</div><div class="name">/rui-npm unpublish my-util@1.0.0</div><div class="desc">安全警告前置 + 所有权验证 + 不可逆提醒，--force 跳过 72h 限制。</div><pre>/rui-npm unpublish my-util@1.0.0<span class="cb" onclick="copyCmd(this,'/rui-npm unpublish my-util@1.0.0')">📋</span></pre></div>
-<div class="cmd-card"><div class="stage">完整闭环</div><div class="name">/rui-npm publish ./my-cli.mjs --name my-cli</div><div class="desc">发布本地文件/文件夹为 npm 包 → 加入账号资产管理生命周期。</div><pre>/rui-npm publish ./my-cli.mjs --name my-cli<span class="cb" onclick="copyCmd(this,'/rui-npm publish ./my-cli.mjs --name my-cli')">📋</span></pre></div>
+
+<div class="cmd-card"><div class="stage">资产总览</div><div class="name">/rui-npm my-packages</div><div class="desc">列出自己发布的所有包：名称/描述/版本/周下载量，支持 --json 和 --limit。</div><pre>/rui-npm my-packages<span class="cb" onclick="YrY.copyCmd(this,'/rui-npm my-packages')">&#x1F4CB;</span></pre></div>
+
+<div class="cmd-card"><div class="stage">安全废弃</div><div class="name">/rui-npm deprecate my-util@1.0.0 "Use 2.0.0"</div><div class="desc">标记废弃版本+替代引导，所有权验证，不影响已安装用户。</div><pre>/rui-npm deprecate my-util@1.0.0 "Use 2.0.0"<span class="cb" onclick="YrY.copyCmd(this,'/rui-npm deprecate my-util@1.0.0 &quot;Use 2.0.0&quot;')">&#x1F4CB;</span></pre></div>
+
+<div class="cmd-card"><div class="stage">精确删除</div><div class="name">/rui-npm unpublish my-util@1.0.0</div><div class="desc">安全警告前置 + 所有权验证 + 不可逆提醒，--force 跳过 72h 限制。</div><pre>/rui-npm unpublish my-util@1.0.0<span class="cb" onclick="YrY.copyCmd(this,'/rui-npm unpublish my-util@1.0.0')">&#x1F4CB;</span></pre></div>
+
+<div class="cmd-card"><div class="stage">完整闭环</div><div class="name">/rui-npm publish ./my-cli.mjs --name my-cli</div><div class="desc">发布本地文件/文件夹为 npm 包 → 加入账号资产管理生命周期。</div><pre>/rui-npm publish ./my-cli.mjs --name my-cli<span class="cb" onclick="YrY.copyCmd(this,'/rui-npm publish ./my-cli.mjs --name my-cli')">&#x1F4CB;</span></pre></div>
+
 </div></div>
-<div class="panel" id="panelFiles"><div class="section"><h2><span class="dot"></span>相关文件</h2><div class="file-list"><div class="file-item">📄 rui-npm.mjs</div><div class="file-item">📄 SKILL.md</div><div class="file-item">📄 help.mjs</div><div class="file-item">📋 计划清单.html</div><div class="file-item">📐 架构图.html</div><div class="file-item">🔗 知识图谱.html</div></div></div><div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="测试面板.html">🧪 测试面板</a></div></div>
-<div class="panel" id="panelTests"><div class="section"><h2><span class="dot"></span>测试覆盖</h2><div class="cmd-grid"><div class="cmd-card"><div class="name">my-packages 测试</div><div class="desc">已登录列表 / --json 输出 / --limit 限制 / 未登录阻断 / API 降级</div></div><div class="cmd-card"><div class="name">deprecate 测试</div><div class="desc">版本废弃 / 整包废弃 / 非所有者拒绝 / 缺参数提示 / 未登录阻断</div></div><div class="cmd-card"><div class="name">unpublish 测试</div><div class="desc">版本删除 / --force 跳过限制 / 非所有者拒绝 / 缺参数提示 / 未登录阻断</div></div><div class="cmd-card"><div class="name">publish 测试</div><div class="desc">文件模式 / 目录模式 / --name 改名 / --dry-run / 安全门禁</div></div></div></div><div class="links-row"><a href="测试面板.html">🧪 打开测试面板</a></div></div>
-<div class="toast" id="toast"></div>
-<script>document.querySelector('.tabs').addEventListener('click',e=>{const tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});function switchPanel(name){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===name));document.querySelectorAll('.panel').forEach(p=>{const on=p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1);p.classList.toggle('on',on)})}document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const m={'1':'walkthrough','2':'overview','3':'commands','4':'files','5':'tests'};if(m[e.key]){e.preventDefault();switchPanel(m[e.key])}});function copyCmd(btn,cmd){navigator.clipboard.writeText(cmd).then(()=>{btn.textContent='✅';btn.classList.add('done');setTimeout(()=>{btn.textContent='📋';btn.classList.remove('done')},1500)})}function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}</script>
-<div style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY v4.7.0 · rui-npm · S5-账号级包管理 · 演示</div>
-</body></html>
+
+<div class="panel" id="panelFiles">
+<div class="section"><h2><span class="dot"></span>相关文件</h2>
+<div class="file-list"><div class="file-item">&#x1F4C4; rui-npm.mjs</div><div class="file-item">&#x1F4C4; SKILL.md</div><div class="file-item">&#x1F4C4; help.mjs</div><div class="file-item">&#x1F4CB; 计划清单.html</div><div class="file-item">&#x1F4D0; 架构图.html</div><div class="file-item">&#x1F517; 知识图谱.html</div></div></div>
+<div class="links-row"><a href="计划清单.html">&#x1F4CB; 计划清单</a><a href="架构图.html">&#x1F4D0; 架构图</a><a href="知识图谱.html">&#x1F517; 知识图谱</a><a href="测试面板.html">&#x1F9EA; 测试面板</a></div>
+</div>
+
+<div class="panel" id="panelTests">
+<div class="section"><h2><span class="dot"></span>测试覆盖</h2>
+<div class="cmd-grid">
+  <div class="cmd-card"><div class="name">my-packages 测试</div><div class="desc">已登录列表 / --json 输出 / --limit 限制 / 未登录阻断 / API 降级</div></div>
+  <div class="cmd-card"><div class="name">deprecate 测试</div><div class="desc">版本废弃 / 整包废弃 / 非所有者拒绝 / 缺参数提示 / 未登录阻断</div></div>
+  <div class="cmd-card"><div class="name">unpublish 测试</div><div class="desc">版本删除 / --force 跳过限制 / 非所有者拒绝 / 缺参数提示 / 未登录阻断</div></div>
+  <div class="cmd-card"><div class="name">publish 测试</div><div class="desc">文件模式 / 目录模式 / --name 改名 / --dry-run / 安全门禁</div></div>
+</div>
+</div>
+<div class="links-row"><a href="测试面板.html">&#x1F9EA; 打开测试面板</a></div>
+</div>
+
+<div class="yry-toast" id="toast"></div>
+
+</div>
+
+<script>
+(function detectCDN() {
+  var resources = performance.getEntriesByType('resource');
+  var cdnEntries = resources.filter(function(r) { return r.name.indexOf('/cdn/') !== -1; });
+  var found = { css: false, theme: false, js: false };
+  cdnEntries.forEach(function(r) {
+    var name = r.name.split('/').pop().split('?')[0];
+    if (name === 'shared.css') found.css = r;
+    if (name === 'theme.css') found.theme = r;
+    if (name === 'shared.js') found.js = r;
+  });
+  function updateBadge(elId, entry) {
+    var el = document.getElementById(elId);
+    if (entry) { el.textContent = '✓ ' + Math.round(entry.duration) + 'ms'; el.style.color = 'var(--pass)'; }
+    else { el.textContent = '—'; el.style.color = 'var(--text3)'; }
+  }
+  updateBadge('lrCss', found.css); updateBadge('lrTheme', found.theme); updateBadge('lrJs', found.js);
+  var total = [found.css, found.theme, found.js].filter(Boolean).reduce(function(s,r){return s+r.duration},0);
+  var st = document.getElementById('statTiming');
+  if (found.css || found.theme || found.js) { st.textContent = Math.round(total) + 'ms'; st.style.color = 'var(--cyan)'; }
+})();
+</script>
+
+<script>
+(function(){
+  var KEY='rui-npm-s5-demo';
+  document.querySelector('.tabs').addEventListener('click',function(e){
+    var t=e.target.closest('.tab'); if(!t)return;
+    YrY.switchPanel(t.dataset.panel,'.tab','.panel');
+    try{localStorage.setItem(KEY+'-tab',t.dataset.panel)}catch(e){}
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+    var m={'1':'walkthrough','2':'simulator','3':'overview','4':'commands','5':'files','6':'tests'};
+    if(m[e.key]){e.preventDefault();YrY.switchPanel(m[e.key],'.tab','.panel');}
+  });
+  try{var s=localStorage.getItem(KEY+'-tab');if(s)YrY.switchPanel(s,'.tab','.panel');}catch(e){}
+})();
+</script>
+
+<script>
+(function(){
+  var simRunning = false, simTimer = null, simSpeed = 1, simCurrent = -1;
+  var stageDefs = [
+    { id:'st0', name:'账号资产总览', detail:'查询账号 @user 下所有已发布 npm 包...', cmd:'/rui-npm my-packages', provides:'✓ 账号下 3 个包 — my-util(v2.1.0) / my-cli(v1.5.0) / my-lib(v0.9.0)' },
+    { id:'st1', name:'安全废弃', detail:'验证包所有者身份... 标记 my-util@1.0.0 为 deprecated...', cmd:'/rui-npm deprecate my-util@1.0.0', provides:'⚠ my-util@1.0.0 已标记为 deprecated — 替代版本: 2.0.0' },
+    { id:'st2', name:'精确删除', detail:'三重安全警告确认... 从 registry 删除 my-util@1.0.0...', cmd:'/rui-npm unpublish my-util@1.0.0', provides:'✓ my-util@1.0.0 已删除 — 不可恢复 / 包名仍被占用' },
+    { id:'st3', name:'完整闭环', detail:'本地文件 ./my-cli.mjs → npm registry 发布...', cmd:'/rui-npm publish ./my-cli.mjs --name my-cli', provides:'✓ 发布成功 — my-cli@1.0.0 已加入账号资产管理' }
+  ];
+
+  window.setSpeed = function(speed, btn) {
+    simSpeed = speed;
+    document.querySelectorAll('.speed-select').forEach(function(b) { b.classList.remove('on'); });
+    if (btn) btn.classList.add('on');
+  };
+
+  function log(msg, color) {
+    var box = document.getElementById('logBox');
+    var line = document.createElement('div'); line.className = 'log-line';
+    var now = new Date();
+    var ts = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
+    line.innerHTML = '<span class="log-time">' + ts + '</span><span class="log-icon" style="color:' + (color || 'var(--text2)') + '">●</span>' + msg;
+    box.appendChild(line); box.scrollTop = box.scrollHeight;
+  }
+
+  function updateStage(idx, statusCls, statusText, barPct) {
+    var row = document.getElementById('stg-' + idx); if (!row) return;
+    row.className = 'stage-row ' + (statusCls || '');
+    var st = row.querySelector('.st-status'); if (st) st.textContent = statusText || '等待中';
+    var bar = row.querySelector('.st-bar-fill'); if (bar) bar.style.width = (barPct || 0) + '%';
+  }
+
+  window.resetSim = function() {
+    simRunning = false; if (simTimer) { clearTimeout(simTimer); simTimer = null; }
+    simCurrent = -1;
+    var btn = document.getElementById('btnPlay'); if (btn) { btn.textContent = '▶ 开始演练'; btn.classList.remove('running'); }
+    document.getElementById('logBox').innerHTML = '';
+    for (var i = 0; i < stageDefs.length; i++) { updateStage(i, '', '等待中', 0); }
+  };
+
+  function runNextStage() {
+    if (!simRunning) return;
+    simCurrent++;
+    if (simCurrent >= stageDefs.length) {
+      simRunning = false;
+      var btn = document.getElementById('btnPlay'); if (btn) { btn.textContent = '✅ 演练完成'; btn.classList.remove('running'); }
+      log('🎉 全部阶段完成！4步账号管理闭环验证通过', 'var(--pass)');
+      YrY.toast('演练完成！所有阶段已执行'); return;
+    }
+    var s = stageDefs[simCurrent];
+    updateStage(simCurrent, 'running', '执行中...', 50); log(s.detail, 'var(--accent)');
+    if (simCurrent === 2) { log('⚠ 安全警告: 此操作不可逆 / 72h 内可联系 npm support 恢复', 'var(--warn)'); }
+    var timePerStage = Math.round(1500 / simSpeed);
+    simTimer = setTimeout(function() {
+      updateStage(simCurrent, 'ok', '已完成', 100); log(s.provides, 'var(--pass)');
+      var delay = Math.round(600 / simSpeed);
+      simTimer = setTimeout(function() { runNextStage(); }, delay);
+    }, timePerStage);
+  }
+
+  window.startSim = function() {
+    if (simRunning) { simRunning = false; if (simTimer) { clearTimeout(simTimer); simTimer = null; }
+      var btn = document.getElementById('btnPlay'); if (btn) { btn.textContent = '▶ 继续演练'; btn.classList.remove('running'); } return; }
+    simRunning = true;
+    var btn = document.getElementById('btnPlay'); if (btn) { btn.textContent = '⏸ 暂停'; btn.classList.add('running'); }
+    if (simCurrent < 0) { simCurrent = -1; document.getElementById('logBox').innerHTML = ''; for (var i = 0; i < stageDefs.length; i++) { updateStage(i, '', '等待中', 0); } }
+    runNextStage();
+  };
+
+  document.querySelector('.speed-select').classList.add('on');
+})();
+</script>
+
+<script src="../../../../cdn/shared.js"></script>
+
+<div class="yry-footer">YrY · 场景演示</div>
+</body>
+</html>

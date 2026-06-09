@@ -1,95 +1,293 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>信任边界与安全面 · 演示</title>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>场景 5 · 信任边界与安全面 — 演示</title>
 <link rel="stylesheet" href="../../../../cdn/shared.css">
 <link rel="stylesheet" href="../../../../cdn/theme.css">
 <style>
-.container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
-pre { background: #0f172a; color: #e2e8f0; padding: 16px; border-radius: 8px; font-size: .8rem; overflow-x: auto; line-height: 1.5; }
-.output { border-left: 3px solid #22c55e; padding-left: 16px; }
-.output.warn { border-left-color: #f59e0b; }
+:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--warn:#f59e0b;--info:#6b7280;--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)}50%{box-shadow:0 0 0 8px rgba(255,193,7,0)}}
+@keyframes stepIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+@keyframes glowPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6}
+.container{max-width:960px;margin:0 auto;padding:40px 24px 80px}
+.tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:28px;overflow-x:auto;animation:fadeInDown .5s .1s ease both}
+.tab{padding:8px 14px;cursor:pointer;font-size:.78rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none;white-space:nowrap;flex-shrink:0}
+.tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.panel{display:none;animation:fadeInUp .4s ease both}.panel.on{display:block}
+.section{margin-bottom:32px}
+.section h2{font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.cmd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+.cmd-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s}
+.cmd-card:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.cmd-card .name{font-weight:700;font-size:.88rem;color:var(--accent);font-family:monospace}
+.cmd-card .desc{font-size:.76rem;color:var(--text2);margin:4px 0 8px;line-height:1.5}
+.cmd-card .stage{font-size:.64rem;color:var(--text3);margin-bottom:4px}
+pre{background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer}
+pre .cb{position:absolute;top:6px;right:6px;background:var(--bg-flat);border:var(--border);border-radius:4px;color:var(--text3);font-size:.62rem;padding:2px 7px;cursor:pointer;opacity:0;transition:opacity .15s;font-family:inherit}
+pre:hover .cb{opacity:1}pre .cb.done{color:var(--pass)}
+pre.output{border-left:3px solid #22c55e;padding-left:16px}
+pre.output.warn{border-left-color:#f59e0b}
+.flow-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0}
+.flow-chip{background:var(--bg-flat);border:var(--border);border-radius:20px;padding:6px 14px;font-size:.78rem;transition:all .15s}
+.flow-chip:hover{border-color:rgba(255,193,7,.3)}.flow-chip .n{font-weight:700;color:var(--accent)}
+.flow-arrow{color:var(--text3);font-size:.8rem}
+.file-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px}
+.file-item{background:var(--bg-flat);border:var(--border);border-radius:6px;padding:8px 12px;font-size:.74rem;font-family:monospace;color:var(--text2)}
+.links-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.links-row a{font-size:.76rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:6px;padding:6px 12px;transition:all .15s}
+.links-row a:hover{border-color:var(--accent);color:var(--accent);text-decoration:underline}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:0 12px 32px rgba(0,0,0,.45);opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+.walkthrough{counter-reset:step}
+.walkthrough .step{counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both}
+.walkthrough .step::before{content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.walkthrough .step .s-body{flex:1}.walkthrough .step .s-title{font-weight:600;font-size:.88rem}.walkthrough .step .s-desc{font-size:.76rem;color:var(--text2);margin:3px 0 6px}
+.walkthrough .step .s-result{font-size:.74rem;color:var(--pass);margin-top:6px}
+.walkthrough .step .s-result .r-label{font-weight:600}
+.walkthrough .step .s-result-desc{font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.5;padding:6px 10px;background:rgba(34,211,238,.04);border-left:2px solid var(--cyan);border-radius:0 4px 4px 0}
+.kbd-hint{font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.03);border-radius:3px;padding:1px 5px;margin-left:4px}
+@media(max-width:640px){.container{padding:20px 12px 60px}h1{font-size:1.4rem}.cmd-grid{grid-template-columns:1fr}}
+a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+.header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
+.header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+.header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
+.stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
+.stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}.stat-card .val.accent{color:var(--accent)}
+.stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
+.bar-wrap{margin-bottom:28px;animation:fadeInDown .5s .12s ease both}
+.bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
+.bar-outer .seg{height:100%;transition:width .5s ease;min-width:3px}
+.bar-outer .seg.strength{background:var(--pass)}.bar-outer .seg.gap{background:var(--fail)}.bar-outer .seg.suggestion{background:var(--warn)}.bar-outer .seg.neutral{background:var(--info)}
+.live-bar{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;font-size:.72rem;color:var(--text3);animation:fadeInDown .5s .14s ease both}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--pass);animation:glowPulse 2s infinite;flex-shrink:0}
+.live-resource{display:flex;align-items:center;gap:4px;background:var(--bg-flat);border:var(--border);border-radius:12px;padding:3px 10px;font-family:monospace;font-size:.68rem}
+.live-resource .lr-name{color:var(--text2)}.live-resource .lr-status{color:var(--pass);font-weight:700}.live-resource .lr-size{color:var(--text3)}
+.play-bar{display:flex;gap:12px;align-items:center;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+.btn-play{background:var(--accent);color:#000;border:none;border-radius:24px;padding:10px 28px;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;display:flex;align-items:center;gap:8px}
+.btn-play:hover{filter:brightness(1.1);transform:translateY(-1px)}.btn-play:active{transform:scale(.97)}
+.btn-play.running{animation:pulse 1.5s infinite;pointer-events:none;opacity:.7}
+.btn-reset{background:var(--bg-flat);color:var(--text2);border:var(--border);border-radius:24px;padding:10px 20px;font-size:.82rem;cursor:pointer;transition:all .15s;font-family:inherit}
+.btn-reset:hover{color:var(--text);border-color:rgba(255,255,255,.15)}
+.speed-select{background:var(--bg-flat);color:var(--text2);border:var(--border);border-radius:20px;padding:8px 14px;font-size:.76rem;cursor:pointer;font-family:inherit;outline:none}
+.speed-select:focus{border-color:rgba(255,193,7,.3)}
+.log-box{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);font-family:'SF Mono',monospace;font-size:.7rem;max-height:240px;overflow-y:auto;line-height:1.7;display:none}
+.log-box .log-line{padding:1px 0;display:flex;gap:8px}.log-box .log-time{color:var(--text3);flex-shrink:0}.log-box .log-icon{flex-shrink:0;width:16px;text-align:center}
+.tip-box{background:rgba(255,193,7,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:10px 0;font-size:.78rem;color:var(--text2);line-height:1.5}
+.tip-box strong{color:var(--accent)}
+.inline-code{font-family:'SF Mono',monospace;font-size:.82em;background:rgba(255,255,255,.04);padding:1px 5px;border-radius:3px;color:var(--cyan)}
+.stage-list{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+.stage-row{display:flex;align-items:center;gap:12px;background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);transition:all .35s;position:relative;overflow:hidden}
+.stage-row.done{border-color:rgba(34,197,94,.15)}.stage-row.active{border-color:rgba(255,193,7,.25);animation:pulse 2s infinite}.stage-row.failed{border-color:rgba(239,68,68,.2)}
+.stage-row .st-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;flex-shrink:0;background:rgba(255,255,255,.04);color:var(--text3);transition:all .35s}
+.stage-row.done .st-num{background:rgba(34,197,94,.12);color:var(--pass)}.stage-row.active .st-num{background:rgba(255,193,7,.12);color:var(--accent)}.stage-row.failed .st-num{background:rgba(239,68,68,.12);color:var(--fail)}
+.stage-row .st-info{flex:1;min-width:0}.stage-row .st-name{font-weight:600;font-size:.84rem}.stage-row .st-detail{font-size:.7rem;color:var(--text3);margin-top:2px}
+.stage-row .st-status{font-size:.72rem;flex-shrink:0;padding:3px 10px;border-radius:12px;white-space:nowrap}
+.stage-row .st-status.waiting{color:var(--text3);background:rgba(110,110,114,.1)}.stage-row .st-status.loading{color:var(--accent);background:rgba(255,193,7,.1)}.stage-row .st-status.ok{color:var(--pass);background:rgba(34,197,94,.1)}.stage-row .st-status.err{color:var(--fail);background:rgba(239,68,68,.1)}
+.stage-row .st-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--accent);transition:width .2s linear;border-radius:0 1px 1px 0}
 </style>
 </head>
 <body>
 <div class="container">
-
-<nav class="breadcrumb"><a href="../../../index.html">文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 5 · 信任边界与安全面</span><span class="bc-sep">/</span><span class="bc-current">演示</span></nav>
-
-<div class="cross-nav">
-  <a href="计划清单.html" class="cross-link">清单</a><span class="cross-sep">·</span>
-  <a href="架构图.html" class="cross-link">架构</a><span class="cross-sep">·</span>
-  <a href="知识图谱.html" class="cross-link">图谱</a><span class="cross-sep">·</span>
-  <a href="测试面板.html" class="cross-link">测试</a><span class="cross-sep">·</span>
-  <span class="cross-link on">演示</span><span class="cross-sep">·</span>
-  <a href="审查.html" class="cross-link">审查</a><span class="cross-sep">·</span>
-  <a href="源码.html" class="cross-link">源码</a>
-</div>
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 5 · 信任边界与安全面</span><span class="bc-sep">/</span><span class="bc-current">💡 演示</span></nav>
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<span class="cross-link on">💡 演示</span><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
 
 <div class="header">
-  <h1>场景-5<span class="accent"> · 信任边界与安全面</span></h1>
-  <p>安全扫描演示 — 命令输出 · 阻断流程 · 降级行为</p>
+  <h1>🛡 <span class="accent">信任边界与安全面</span> — 演示</h1>
+  <p class="sub">安全扫描 · 阻断流程 · 降级行为 — <span class="kbd-hint">1-6</span> 数字键切换 Tab</p>
 </div>
 
-<div class="card"><h2>演示 1: 密钥不落盘扫描</h2>
-<p style="color:#94a3b8;font-size:.82rem;margin-bottom:12px">执行 security-scan.mjs S1 模块，全仓库扫描硬编码密钥</p>
-<pre>$ <span style="color:#22d3ee">node scripts/security-scan.mjs --check=S1</span>
+<div class="live-bar" id="liveBar">
+  <span class="live-dot"></span> 本页 CDN 加载状态：
+  <span class="live-resource"><span class="lr-name">shared.css</span><span class="lr-status" id="lrCss">检测中</span><span class="lr-size">6.0KB</span></span>
+  <span class="live-resource"><span class="lr-name">theme.css</span><span class="lr-status" id="lrTheme">检测中</span><span class="lr-size">12.1KB</span></span>
+  <span class="live-resource"><span class="lr-name">shared.js</span><span class="lr-status" id="lrJs">检测中</span><span class="lr-size">5.3KB</span></span>
+  <span class="kbd-hint">1-6</span> 数字键切换 Tab
+</div>
 
+<div class="stats-grid">
+  <div class="stat-card"><div class="val accent">4</div><div class="lbl">🛡 安全演示</div></div>
+  <div class="stat-card"><div class="val health">4</div><div class="lbl">✅ 已验证</div></div>
+  <div class="stat-card"><div class="val accent">6</div><div class="lbl">🔒 底线</div></div>
+  <div class="stat-card"><div class="val health">0</div><div class="lbl">🚫 P0</div></div>
+  <div class="stat-card"><div class="val" style="color:var(--cyan)" id="statTiming">—</div><div class="lbl">⏱ CDN</div></div>
+</div>
+
+<div class="tabs">
+  <span class="tab on" data-panel="walkthrough">🚶 演示</span>
+  <span class="tab" data-panel="overview">📊 概览</span>
+  <span class="tab" data-panel="commands">⚡ 命令</span>
+  <span class="tab" data-panel="files">📁 文件</span>
+  <span class="tab" data-panel="tests">🧪 测试</span>
+  <span class="tab" data-panel="simulator">🎬 模拟演练</span>
+</div>
+
+<div class="panel on" id="panelWalkthrough">
+  <div class="section">
+    <h2><span class="dot"></span>演示 1: 密钥不落盘扫描</h2>
+    <p style="font-size:.76rem;color:var(--text3);margin-bottom:12px">执行 security-scan.mjs S1 模块，全仓库扫描硬编码密钥</p>
+    <pre>$ <span style="color:#22d3ee">node scripts/security-scan.mjs --check=S1</span>
 <span class="output">Scanning: S1 密钥不落盘 (token/key/secret patterns)
-  Target: **/*.mjs **/*.js **/*.json
-  Exclude: node_modules/ .git/
-
+  Target: **/*.mjs **/*.js **/*.json  Exclude: node_modules/ .git/
   [PASS] skills/rui-bot/send.mjs — token via process.env
   [PASS] skills/rui-import/sync.mjs — token via process.env
   [PASS] .claude-plugin/plugin.json — no secrets
   [PASS] .claude-plugin/marketplace.json — no secrets
-
   Summary: 4 files scanned, 0 violations, 0 secrets found
   Result: S1 COVERED — no hardcoded credentials</span></pre>
-</div>
-
-<div class="card"><h2>演示 2: XSS 向量检测</h2>
-<p style="color:#94a3b8;font-size:.82rem;margin-bottom:12px">扫描所有 .mjs 文件中的 XSS 危险模式</p>
-<pre>$ <span style="color:#22d3ee">node scripts/security-scan.mjs --check=S3</span>
-
+  </div>
+  <div class="section">
+    <h2><span class="dot"></span>演示 2: XSS 向量检测</h2>
+    <p style="font-size:.76rem;color:var(--text3);margin-bottom:12px">扫描所有 .mjs 文件中的 XSS 危险模式</p>
+    <pre>$ <span style="color:#22d3ee">node scripts/security-scan.mjs --check=S3</span>
 <span class="output">Scanning: S3 输入校验 (XSS vectors)
   Patterns: innerHTML | dangerouslySetInnerHTML | document.write | eval(
-
   [PASS] skills/rui/help.mjs — no XSS vectors
   [PASS] skills/rui-story/rui-story.mjs — no XSS vectors
   [PASS] skills/rui-import/sync.mjs — no XSS vectors
   ... (24 files total)
-
   Summary: 24 files scanned, 0 XSS vectors found
   Result: S3 COVERED — HTML output uses safe APIs</span></pre>
-</div>
-
-<div class="card"><h2>演示 3: 分支隔离阻断</h2>
-<p style="color:#94a3b8;font-size:.82rem;margin-bottom:12px">在 main 分支尝试写入操作，预期被 branch-check.mjs 阻断</p>
-<pre>$ <span style="color:#f59e0b">git branch --show-current</span>
+  </div>
+  <div class="section">
+    <h2><span class="dot"></span>演示 3: 分支隔离阻断</h2>
+    <p style="font-size:.76rem;color:var(--text3);margin-bottom:12px">在 main 分支尝试写入操作，预期被 branch-check.mjs 阻断</p>
+    <pre>$ <span style="color:#f59e0b">git branch --show-current</span>
 main
-
 $ <span style="color:#22d3ee">node skills/rui/branch-check.mjs</span>
-
 <span class="output warn">BLOCKED: bad-branch
   Current branch: main
   Required pattern: feat/&lt;name&gt;
   Reason: Edit/Write operations require feature branch isolation.
   Action: git checkout -b feat/&lt;name&gt;</span></pre>
-</div>
-
-<div class="card"><h2>演示 4: Token 缺失降级</h2>
-<p style="color:#94a3b8;font-size:.82rem;margin-bottom:12px">未设置 API_X_TOKEN 时 rui-import 静默跳过</p>
-<pre>$ <span style="color:#f59e0b">unset API_X_TOKEN</span>
+  </div>
+  <div class="section">
+    <h2><span class="dot"></span>演示 4: Token 缺失降级</h2>
+    <p style="font-size:.76rem;color:var(--text3);margin-bottom:12px">未设置 API_X_TOKEN 时 rui-import 静默跳过</p>
+    <pre>$ <span style="color:#f59e0b">unset API_X_TOKEN</span>
 $ <span style="color:#22d3ee">node skills/rui-import/import-doc.mjs test.md</span>
-
 <span class="output">[rui-import] API_X_TOKEN not set — skipping sync
 [rui-import] This is a non-blocking degradation.
 [rui-import] Set API_X_TOKEN to enable document sync.</span></pre>
+  </div>
 </div>
 
+<div class="panel" id="panelOverview">
+  <div class="section"><h2><span class="dot"></span>六大不可妥协底线</h2>
+    <div class="flow-row">
+      <div class="flow-chip"><span class="n">S1</span> 密钥不落盘</div><span class="flow-arrow">·</span>
+      <div class="flow-chip"><span class="n">S2</span> 认证不可绕过</div><span class="flow-arrow">·</span>
+      <div class="flow-chip"><span class="n">S3</span> 输入必校验</div><span class="flow-arrow">·</span>
+      <div class="flow-chip"><span class="n">S4</span> 规约完整性</div><span class="flow-arrow">·</span>
+      <div class="flow-chip"><span class="n">S5</span> 自托管一致性</div><span class="flow-arrow">·</span>
+      <div class="flow-chip"><span class="n">S6</span> 分支隔离</div>
+    </div>
+  </div>
+  <div class="section"><h2><span class="dot"></span>信任边界</h2>
+    <div class="flow-row">
+      <div class="flow-chip"><span class="n">扫描层</span> 静态检测</div><span class="flow-arrow">→</span>
+      <div class="flow-chip"><span class="n">阻断层</span> Gate A/B</div><span class="flow-arrow">→</span>
+      <div class="flow-chip"><span class="n">降级层</span> 可选功能</div>
+    </div>
+  </div>
 </div>
+
+<div class="panel" id="panelCommands">
+  <div class="cmd-grid">
+    <div class="cmd-card"><div class="stage">密钥扫描</div><div class="name">node security-scan.mjs --check=S1</div><div class="desc">全仓库扫描 token/key/secret 模式，排除 node_modules/.git。</div><pre>node scripts/security-scan.mjs --check=S1<span class="cb" onclick="YrY.copyCmd(this,'node scripts/security-scan.mjs --check=S1')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">XSS 检测</div><div class="name">node security-scan.mjs --check=S3</div><div class="desc">检测 innerHTML/document.write/eval() 等注入向量。</div><pre>node scripts/security-scan.mjs --check=S3<span class="cb" onclick="YrY.copyCmd(this,'node scripts/security-scan.mjs --check=S3')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">分支验证</div><div class="name">node branch-check.mjs</div><div class="desc">验证当前分支 = feat/&lt;name&gt;。在 main 上执行阻断写入。</div><pre>node skills/rui/branch-check.mjs<span class="cb" onclick="YrY.copyCmd(this,'node skills/rui/branch-check.mjs')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">认证审计</div><div class="name">grep auth patterns</div><div class="desc">搜索认证相关路径，确保无绕过漏洞。</div><pre>grep -rn "auth\|token\|session" skills/ | grep -v process.env<span class="cb" onclick="YrY.copyCmd(this,'grep -rn auth skills/')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">全量安全扫描</div><div class="name">node security-scan.mjs --all</div><div class="desc">S1-S6 全量扫描 + CI 阻断。每次交付前强制通过。</div><pre>node scripts/security-scan.mjs --all<span class="cb" onclick="YrY.copyCmd(this,'node scripts/security-scan.mjs --all')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">降级测试</div><div class="name">unset API_X_TOKEN</div><div class="desc">验证 Token 缺失时各模块正确降级，不抛出异常。</div><pre>unset API_X_TOKEN && /rui<span class="cb" onclick="YrY.copyCmd(this,'unset API_X_TOKEN')">📋</span></pre></div>
+  </div>
+</div>
+
+<div class="panel" id="panelFiles">
+  <div class="section"><h2><span class="dot"></span>相关文件</h2>
+    <div class="file-list">
+      <div class="file-item">📐 security-guardrails.md</div><div class="file-item">⚡ security-scan.mjs</div>
+      <div class="file-item">⚡ branch-check.mjs</div><div class="file-item">⚡ audit.mjs</div>
+      <div class="file-item">📐 code-pipeline.md</div><div class="file-item">📄 CLAUDE.md</div>
+    </div>
+  </div>
+  <div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="测试面板.html">🧪 测试面板</a></div>
+</div>
+
+<div class="panel" id="panelTests">
+  <div class="section"><h2><span class="dot"></span>测试覆盖</h2>
+    <div class="cmd-grid">
+      <div class="cmd-card"><div class="name">S1 密钥不落盘</div><div class="desc">验证全仓库无硬编码密钥。正则匹配 + 排除白名单双重保障。</div></div>
+      <div class="cmd-card"><div class="name">S3 XSS 注入防护</div><div class="desc">验证 HTML 输出使用安全 API。24 文件零注入点。</div></div>
+      <div class="cmd-card"><div class="name">S6 分支隔离强执行</div><div class="desc">验证 main 分支上写入操作被 branch-check.mjs 阻断。</div></div>
+      <div class="cmd-card"><div class="name">Token 降级不崩溃</div><div class="desc">验证 API_X_TOKEN 缺失时 rui-import 静默跳过。</div></div>
+    </div>
+  </div>
+  <div class="links-row"><a href="测试面板.html">🧪 打开测试面板</a><a href="../../../index.html">📄 返回文档中心</a></div>
+</div>
+
+<div class="panel" id="panelSimulator">
+  <div class="section">
+    <h2><span class="dot"></span>安全面模拟演练</h2>
+    <p style="font-size:.76rem;color:var(--text3);margin-bottom:14px">交互式模拟安全审计的四个核心阶段。从密钥检测到分支隔离，展示完整安全工作流。</p>
+    <div class="play-bar">
+      <button class="btn-play" id="btnSimPlay" onclick="startSim()">▶ 开始模拟</button>
+      <button class="btn-reset" onclick="resetSim()">↺ 重置</button>
+      <select class="speed-select" id="speedSelect" onchange="setSpeed(this.value)">
+        <option value="1">1x 速度</option><option value="2">2x 快速</option><option value="0.5">0.5x 慢速</option><option value="3">3x 极速</option>
+      </select>
+    </div>
+    <div class="stage-list" id="stageList">
+      <div class="stage-row" id="stg0"><div class="st-num">①</div><div class="st-info"><div class="st-name">密钥检测扫描</div><div class="st-detail">grep API keys/tokens — 全仓库扫描 token/key/secret 硬编码模式</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
+      <div class="stage-row" id="stg1"><div class="st-num">②</div><div class="st-info"><div class="st-name">XSS 注入检查</div><div class="st-detail">innerHTML/dangerouslySetInnerHTML/document.write 等注入点</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
+      <div class="stage-row" id="stg2"><div class="st-num">③</div><div class="st-info"><div class="st-name">认证路径审计</div><div class="st-detail">auth 不可绕过验证 — 搜索认证路径确保无旁路漏洞</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
+      <div class="stage-row" id="stg3"><div class="st-num">④</div><div class="st-info"><div class="st-name">分支隔离验证</div><div class="st-detail">feat/ 分支保护检查 — branch-check.mjs 阻断 main 写入</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
+    </div>
+    <div class="log-box" id="simLogBox"><div style="color:var(--text3)">等待模拟开始...</div></div>
+  </div>
+  <div class="tip-box"><strong>💡 安全防线在信任边界处:</strong> 防护应部署在信任边界而非系统内部。<span class="inline-code">grep -rn "token\|key\|secret" skills/ | grep -v process.env</span> 是每日安全巡检第一条命令。</div>
+</div>
+
+<div class="toast" id="toast"></div></div>
+
+<script>
+(function(){var K='yry-arch-s5-demo';
+document.querySelector('.tabs').addEventListener('click',function(e){var t=e.target.closest('.tab');if(!t)return;switchPanel(t.dataset.panel)});
+window.switchPanel=function(n){YrY.switchPanel(n,'.tab','.panel');try{localStorage.setItem(K+'-tab',n)}catch(e){}};
+document.addEventListener('keydown',function(e){if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;var m={'1':'walkthrough','2':'overview','3':'commands','4':'files','5':'tests','6':'simulator'};if(m[e.key]){e.preventDefault();switchPanel(m[e.key])}});
+try{var s=localStorage.getItem(K+'-tab');if(s)switchPanel(s)}catch(e){}})();
+
+(function(){var R=performance.getEntriesByType('resource'),C=R.filter(function(r){return r.name.indexOf('/cdn/')!==-1}),f={c:false,t:false,j:false},d=0;C.forEach(function(r){var n=r.name.split('/').pop().split('?')[0];if(n==='shared.css')f.c=r;if(n==='theme.css')f.t=r;if(n==='shared.js')f.j=r;d+=r.duration});function u(i,e){var el=document.getElementById(i);if(e){el.textContent='✓ '+Math.round(e.duration)+'ms';el.style.color='var(--pass)'}else{el.textContent='—';el.style.color='var(--text3)'}}u('lrCss',f.c);u('lrTheme',f.t);u('lrJs',f.j);var t=document.getElementById('statTiming');if(C.length>=3){t.textContent=Math.round(d)+'ms';t.style.color=d<100?'var(--pass)':'var(--accent)'}else if(C.length>0){t.textContent=Math.round(d)+'ms';t.style.color='var(--cyan)'}else{t.textContent='已缓存';t.style.color='var(--text3)'}})();
+
+var R_=false,S=1,I=['stg0','stg1','stg2','stg3'];
+var D=[{name:'密钥检测扫描',detail:'grep API keys/tokens — 全仓库扫描硬编码凭据',logLines:['🔍 运行 grep -rn "token|key|secret|password" skills/ lib/ ...','  ✓ skills/rui-bot/send.mjs — token via process.env ✅','  ✓ skills/rui-import/sync.mjs — token via process.env ✅','  ✓ .claude-plugin/plugin.json — no secrets ✅','  ✓ lib/tty.mjs — no secrets ✅','  ✓ 密钥扫描完成: 28 文件, 0 hardcoded, 0 P0 违规']},{name:'XSS 注入检查',detail:'innerHTML/dangerouslySetInnerHTML/document.write 注入点',logLines:['🔍 运行 grep -rn "innerHTML|dangerouslySetInnerHTML|document\\.write|eval" skills/ ...','  ✓ skills/rui/help.mjs — 使用 textContent, 无注入点 ✅','  ✓ skills/rui-story/rui-story.mjs — 使用 createElement, 无注入点 ✅','  ✓ skills/rui-import/sync.mjs — 使用 safe APIs ✅','  ✓ 24 files scanned — 0 XSS vectors found','  ✓ XSS 注入检查完成 — 所有 HTML 输出使用安全 API']},{name:'认证路径审计',detail:'auth 不可绕过验证 — 搜索认证路径',logLines:['🔍 运行 grep -rn "auth|login|verify|authenticate" skills/ rules/ ...','  ✓ rules/security-guardrails.md — 五大防线定义 ✅','  ✓ skills/rui-bot/send.mjs — token 通过 env 传入, 无旁路 ✅','  ✓ skills/rui-import/sync.mjs — 认证路径受 process.env 保护 ✅','  ✓ rules/code-pipeline.md — Gate A 包含认证检查 ✅','  ✓ 认证路径审计完成 — 0 绕过路径, 所有入口受保护']},{name:'分支隔离验证',detail:'feat/ 分支保护检查 — branch-check.mjs 阻断 main 写入',logLines:['🔍 运行 node skills/rui/branch-check.mjs --mode=write ...','  ⚠ 当前分支: main — 检测写入操作尝试','  ⛔ BLOCKED: no-branch-isolation — 当前分支非 feat/&lt;name&gt;','  ⛔ 阻断原因: Edit/Write 操作需要功能分支隔离','  ⛔ 阻断类型: bad-branch — 硬阻断, 不可绕过','  ✓ 分支隔离验证完成 — main 写入已被阻断']}];
+function L(m,c){var b=document.getElementById('simLogBox');if(!b)return;b.style.display='block';var d=document.createElement('div');d.className='log-line';var n=new Date();var t=('0'+n.getHours()).slice(-2)+':'+('0'+n.getMinutes()).slice(-2)+':'+('0'+n.getSeconds()).slice(-2)+'.'+('00'+n.getMilliseconds()).slice(-3);d.innerHTML='<span class="log-time">'+t+'</span><span class="log-icon" style="color:'+(c||'var(--text2)')+'">●</span><span style="color:'+(c||'var(--text2)')+'">'+m+'</span>';b.appendChild(d);b.scrollTop=b.scrollHeight}
+function U(i,c,t,p){var r=document.getElementById(I[i]);if(!r)return;r.classList.remove('done','active','failed');if(c==='ok')r.classList.add('done');if(c==='loading')r.classList.add('active');if(c==='err')r.classList.add('failed');var s=r.querySelector('.st-status');s.textContent=t;s.className='st-status '+c;r.querySelector('.st-bar').style.width=(p||0)+'%'}
+function resetSim(){if(R_)return;I.forEach(function(_,i){U(i,'waiting','等待中',0)});var b=document.getElementById('simLogBox');if(b){b.innerHTML='<div style="color:var(--text3)">等待模拟开始...</div>';b.style.display='none'}var x=document.getElementById('btnSimPlay');x.classList.remove('running');x.textContent='▶ 开始模拟'}
+function setSpeed(v){S=parseFloat(v)}
+function startSim(){if(R_)return;R_=true;var B=document.getElementById('btnSimPlay');B.classList.add('running');B.textContent='⏳ 模拟中...';var b=document.getElementById('simLogBox');b.style.display='block';b.innerHTML='';L('🚀 开始安全面模拟演练','var(--accent)');var d=800,i=0;function next(){if(i>=D.length){setTimeout(function(){L('✅ 4 阶段安全审计完成 — 安全知识已固化','var(--pass)');B.classList.remove('running');B.textContent='✓ 模拟完成';R_=false;YrY.toast('安全面模拟完成',2500);setTimeout(function(){B.textContent='▶ 重新模拟'},2000)},400/S);return}var def=D[i];U(i,'loading','扫描中...',0);L('⏳ '+def.name+' — '+def.detail,'var(--cyan)');var s=Date.now();var dur=d/S;var t=setInterval(function(){var p=Math.min(100,((Date.now()-s)/dur)*100);var el=document.getElementById(I[i]);if(el)el.querySelector('.st-bar').style.width=p+'%';if(p>=100)clearInterval(t)},16);var ld=dur/(def.logLines.length+2);def.logLines.forEach(function(l,li){var isPass=l.indexOf('✓')!==-1||l.indexOf('✅')!==-1;var isBlock=l.indexOf('⛔')!==-1||l.indexOf('⚠')!==-1;var col='var(--text2)';if(isPass)col='var(--pass)';if(isBlock)col='var(--warn)';setTimeout(function(){L(l,col)},ld*(li+1))});setTimeout(function(){clearInterval(t);U(i,'ok','完成 ✓',100);L('  ✅ '+def.name+' — 阶段完成','var(--pass)');i++;setTimeout(next,300/S)},dur)}setTimeout(next,300/S)}
+</script>
+<div class="footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY · 场景演示</div>
+<script src="../../../../cdn/shared.js"></script>
 </body>
 </html>

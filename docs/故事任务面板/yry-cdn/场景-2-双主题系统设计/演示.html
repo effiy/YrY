@@ -1,97 +1,1034 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>场景 2 · 双主题系统 — 演示</title>
-<link rel="stylesheet" href="../../../../../cdn/shared.css"><link rel="stylesheet" href="../../../../../cdn/theme.css">
-<style>:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--warn:#f59e0b;--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-@keyframes stepIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6}
-.container{max-width:960px;margin:0 auto;padding:40px 24px 80px}
-.tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:28px;animation:fadeInDown .5s .1s ease both}
-.tab{padding:8px 18px;cursor:pointer;font-size:.82rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none}
-.tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
-.panel{display:none;animation:fadeInUp .4s ease both}.panel.on{display:block}
-.section{margin-bottom:32px}.section h2{font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.section h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
-.cmd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
-.cmd-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s}
-.cmd-card:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.35)}
-.cmd-card .name{font-weight:700;font-size:.88rem;color:var(--accent);font-family:monospace}
-.cmd-card .desc{font-size:.76rem;color:var(--text2);margin:4px 0 8px;line-height:1.5}
-.cmd-card .stage{font-size:.64rem;color:var(--text3);margin-bottom:4px}
-pre{background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer}
-pre .cb{position:absolute;top:6px;right:6px;background:var(--bg-flat);border:var(--border);border-radius:4px;color:var(--text3);font-size:.62rem;padding:2px 7px;cursor:pointer;opacity:0;transition:opacity .15s;font-family:inherit}
-pre:hover .cb{opacity:1}pre .cb.done{color:var(--pass)}
-.flow-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0}
-.flow-chip{background:var(--bg-flat);border:var(--border);border-radius:20px;padding:6px 14px;font-size:.78rem}
-.flow-chip .n{font-weight:700;color:var(--accent)}.flow-arrow{color:var(--text3);font-size:.8rem}
-.file-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px}
-.file-item{background:var(--bg-flat);border:var(--border);border-radius:6px;padding:8px 12px;font-size:.74rem;font-family:monospace;color:var(--text2)}
-.links-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
-.links-row a{font-size:.76rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:6px;padding:6px 12px;transition:all .15s}
-.links-row a:hover{border-color:var(--accent);color:var(--accent)}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:0 12px 32px rgba(0,0,0,.45);opacity:0;transition:opacity .2s;pointer-events:none}
-.toast.show{opacity:1}
-.walkthrough{counter-reset:step}
-.walkthrough .step{counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both}
-.walkthrough .step::before{content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.walkthrough .step .s-body{flex:1}.walkthrough .step .s-title{font-weight:600;font-size:.88rem}.walkthrough .step .s-desc{font-size:.76rem;color:var(--text2);margin:3px 0 6px}
-.walkthrough .step .s-result{font-size:.74rem;color:var(--pass);margin-top:6px}
-.walkthrough .step .s-result .r-label{font-weight:600}
-.walkthrough .step .s-result-desc{font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.5;padding:6px 10px;background:rgba(34,211,238,.04);border-left:2px solid var(--cyan);border-radius:0 4px 4px 0}
-.kbd-hint{font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.03);border-radius:3px;padding:1px 5px;margin-left:4px}
-.header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
-.header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
-.header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
-.stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
-.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px}
-.stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
-.stat-card .val.health{color:var(--pass)}.stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px}
-@media(max-width:640px){.container{padding:20px 12px 60px}h1{font-size:1.4rem}.cmd-grid{grid-template-columns:1fr}}
-.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}</style></head>
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>场景 2 · 双主题系统 — 演示</title>
+<!-- ═══ CDN: YrY 共享样式 ═══ -->
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+
+  <style>
+    :root { --bg:rgba(22,22,32,1); --bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%); --bg-flat:rgba(34,34,46,1); --bg-raised:rgba(42,42,56,1); --accent:#FFC107; --cyan:#22d3ee; --pass:#22c55e; --fail:#ef4444; --text:rgba(250,250,252,1); --text2:rgba(160,160,164,1); --text3:rgba(110,110,114,1); --shadow:0 4px 20px rgba(0,0,0,0.3); --shadow-lg:0 12px 32px rgba(0,0,0,0.45); --warn:#f59e0b; --info:#6b7280; --radius:12px; --border:1px solid rgba(255,255,255,0.06); }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeInDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes slideDown { from{opacity:0;max-height:0} to{opacity:1;max-height:800px} }
+    @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)} 50%{box-shadow:0 0 0 8px rgba(255,193,7,0)} }
+    @keyframes stepIn { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes glowPulse { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.3)} }
+    @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+    @keyframes countUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    * { box-sizing:border-box;margin:0;padding:0 }
+    body { background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6 }
+    .container { max-width:960px;margin:0 auto;padding:40px 24px 80px }
+    .tabs { display:flex;gap:0;border-bottom:var(--border);margin-bottom:28px;animation:fadeInDown .5s .1s ease both }
+    .tab { padding:8px 18px;cursor:pointer;font-size:.82rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none }
+    .tab:hover { color:var(--text2) } .tab.on { color:var(--accent);border-bottom-color:var(--accent) }
+    .panel { display:none;animation:fadeInUp .4s ease both } .panel.on { display:block }
+    .section { margin-bottom:32px }
+    .section h2 { font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px }
+    .section h2 .dot { width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0 }
+    .cmd-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px }
+    .cmd-card { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s }
+    .cmd-card:hover { transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.35) }
+    .cmd-card .name { font-weight:700;font-size:.88rem;color:var(--accent);font-family:monospace }
+    .cmd-card .desc { font-size:.76rem;color:var(--text2);margin:4px 0 8px;line-height:1.5 }
+    .cmd-card .stage { font-size:.64rem;color:var(--text3);margin-bottom:4px }
+    pre { background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer }
+    pre .cb { position:absolute;top:6px;right:6px;background:var(--bg-flat);border:var(--border);border-radius:4px;color:var(--text3);font-size:.62rem;padding:2px 7px;cursor:pointer;opacity:0;transition:opacity .15s;font-family:inherit }
+    pre:hover .cb { opacity:1 } pre .cb.done { color:var(--pass) }
+    .flow-row { display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0 }
+    .flow-chip { background:var(--bg-flat);border:var(--border);border-radius:20px;padding:6px 14px;font-size:.78rem;transition:all .15s }
+    .flow-chip:hover { border-color:rgba(255,193,7,.3) }
+    .flow-chip .n { font-weight:700;color:var(--accent) }
+    .flow-arrow { color:var(--text3);font-size:.8rem }
+    .toast { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:0 12px 32px rgba(0,0,0,.45);opacity:0;transition:opacity .2s;pointer-events:none }
+    .toast.show { opacity:1 }
+    .walkthrough { counter-reset:step }
+    .walkthrough .step { counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both }
+    .walkthrough .step::before { content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0 }
+    .walkthrough .step .s-body { flex:1 } .walkthrough .step .s-title { font-weight:600;font-size:.88rem } .walkthrough .step .s-desc { font-size:.76rem;color:var(--text2);margin:3px 0 6px }
+    .walkthrough .step .s-result-desc { font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.5;padding:6px 10px;background:rgba(34,211,238,.04);border-left:2px solid var(--cyan);border-radius:0 4px 4px 0 }
+    .kbd-hint { font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.03);border-radius:3px;padding:1px 5px;margin-left:4px }
+    @media (max-width:640px) { .container { padding:20px 12px 60px } h1 { font-size:1.4rem } .cmd-grid { grid-template-columns:1fr } }
+  a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+
+  .header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
+  .header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+  .header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
+  .stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+  .stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+  .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+  .stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
+  .stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}.stat-card .val.accent{color:var(--accent)}
+  .stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
+
+  /* ═══ Live detection ═══ */
+  .live-bar{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;font-size:.72rem;color:var(--text3);animation:fadeInDown .5s .14s ease both}
+  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--pass);animation:glowPulse 2s infinite;flex-shrink:0}
+  .live-resource{display:flex;align-items:center;gap:4px;background:var(--bg-flat);border:var(--border);border-radius:12px;padding:3px 10px;font-family:monospace;font-size:.68rem}
+  .live-resource .lr-name{color:var(--text2)}.live-resource .lr-status{color:var(--pass);font-weight:700}.live-resource .lr-size{color:var(--text3)}
+
+  /* ═══ Path selector ═══ */
+  .path-selector{display:flex;gap:0;justify-content:center;margin-bottom:24px}
+  .path-btn{padding:8px 24px;cursor:pointer;font-size:.82rem;color:var(--text3);background:var(--bg-flat);border:var(--border);transition:all .15s;font-family:inherit}
+  .path-btn:first-child{border-radius:20px 0 0 20px}
+  .path-btn:last-child{border-radius:0 20px 20px 0}
+  .path-btn.on{background:rgba(255,193,7,.1);color:var(--accent);border-color:rgba(255,193,7,.3);z-index:1}
+  .path-btn .path-tag{font-size:.6rem;padding:1px 6px;border-radius:8px;margin-left:4px}
+  .path-btn.on .path-tag.a{background:rgba(34,211,238,.15);color:var(--cyan)}
+  .path-btn.on .path-tag.b{background:rgba(255,193,7,.15);color:var(--accent)}
+
+  /* ═══ Stage list ═══ */
+  .play-bar{display:flex;gap:12px;align-items:center;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+  .btn-play{background:var(--accent);color:#000;border:none;border-radius:24px;padding:10px 28px;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;display:flex;align-items:center;gap:8px}
+  .btn-play:hover{filter:brightness(1.1);transform:translateY(-1px)}
+  .btn-play:active{transform:scale(.97)}
+  .btn-play.running{animation:pulse 1.5s infinite;pointer-events:none;opacity:.7}
+  .btn-reset{background:var(--bg-flat);color:var(--text2);border:var(--border);border-radius:24px;padding:10px 20px;font-size:.82rem;cursor:pointer;transition:all .15s;font-family:inherit}
+  .btn-reset:hover{color:var(--text);border-color:rgba(255,255,255,.15)}
+  .speed-select{display:flex;gap:4px;align-items:center;font-size:.7rem;color:var(--text3)}
+  .speed-select button{background:var(--bg-flat);border:var(--border);color:var(--text3);padding:3px 8px;border-radius:4px;cursor:pointer;font-family:inherit;font-size:.66rem;transition:all .15s}
+  .speed-select button.on{color:var(--accent);border-color:rgba(255,193,7,.3);background:rgba(255,193,7,.06)}
+
+  .stage-list{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+  .stage-row{display:flex;align-items:center;gap:12px;background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);transition:all .35s;position:relative;overflow:hidden}
+  .stage-row.done{border-color:rgba(34,197,94,.15)}
+  .stage-row.active{border-color:rgba(255,193,7,.25);animation:pulse 2s infinite}
+  .stage-row.skipped{border-color:rgba(110,110,114,.1);opacity:.55}
+  .stage-row .st-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;flex-shrink:0;background:rgba(255,255,255,.04);color:var(--text3);transition:all .35s}
+  .stage-row.done .st-num{background:rgba(34,197,94,.12);color:var(--pass)}
+  .stage-row.active .st-num{background:rgba(255,193,7,.12);color:var(--accent)}
+  .stage-row.skipped .st-num{background:rgba(110,110,114,.08);color:var(--text3)}
+  .stage-row .st-info{flex:1;min-width:0}.stage-row .st-name{font-weight:600;font-size:.84rem}
+  .stage-row .st-detail{font-size:.7rem;color:var(--text3);margin-top:2px;font-family:monospace}
+  .stage-row .st-provides{font-size:.66rem;color:var(--text3);margin-top:3px;display:flex;gap:4px;flex-wrap:wrap}
+  .stage-row .st-provides span{background:rgba(255,255,255,.03);border-radius:3px;padding:0 5px}
+  .stage-row .st-status{font-size:.72rem;flex-shrink:0;padding:3px 10px;border-radius:12px;white-space:nowrap}
+  .stage-row .st-status.waiting{color:var(--text3);background:rgba(110,110,114,.1)}
+  .stage-row .st-status.loading{color:var(--accent);background:rgba(255,193,7,.1)}
+  .stage-row .st-status.ok{color:var(--pass);background:rgba(34,197,94,.1)}
+  .stage-row .st-status.skip{color:var(--text3);background:rgba(110,110,114,.05)}
+  .stage-row .st-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--accent);transition:width .2s linear;border-radius:0 1px 1px 0}
+
+  /* ═══ Log ═══ */
+  .log-box{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);font-family:'SF Mono',monospace;font-size:.7rem;max-height:260px;overflow-y:auto;line-height:1.7}
+  .log-box .log-line{padding:1px 0;display:flex;gap:8px}
+  .log-box .log-time{color:var(--text3);flex-shrink:0}
+  .log-box .log-icon{width:14px;text-align:center;flex-shrink:0}
+
+  /* ═══ Mermaid ═══ */
+  .mermaid-wrap{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);overflow-x:auto;margin-bottom:20px}
+
+  /* ═══ Waterfall ═══ */
+  .waterfall{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);overflow-x:auto}
+  .wf-header-row{display:flex;padding:4px 0 10px;font-size:.66rem;color:var(--text3);border-bottom:1px solid rgba(255,255,255,.04);margin-bottom:6px}
+  .wf-row{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:.78rem}
+  .wf-label{min-width:130px;font-family:monospace;font-size:.74rem;color:var(--text2);display:flex;align-items:center;gap:6px}
+  .wf-label .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+  .wf-label .dot.css{background:var(--cyan)}.wf-label .dot.js{background:var(--pass)}.wf-label .dot.font{background:var(--warn)}
+  .wf-track{flex:1;height:24px;background:rgba(255,255,255,.02);border-radius:3px;position:relative;min-width:280px}
+  .wf-track .tick{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.03)}
+  .wf-bar{position:absolute;top:3px;height:18px;border-radius:3px;transition:width .5s ease;display:flex;align-items:center;padding-left:6px;font-size:.62rem;color:rgba(255,255,255,.6);white-space:nowrap;overflow:hidden}
+  .wf-bar.css{background:rgba(34,211,238,.2);border-left:2px solid var(--cyan)}
+  .wf-bar.js{background:rgba(34,197,94,.2);border-left:2px solid var(--pass)}
+  .wf-bar.font{background:rgba(245,158,11,.2);border-left:2px solid var(--warn)}
+  .wf-time{min-width:56px;text-align:right;font-size:.7rem;color:var(--text3);font-family:monospace}
+  .wf-row .wf-detail{font-size:.64rem;color:var(--text3);min-width:70px;text-align:right}
+
+  /* ═══ Compare ═══ */
+  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+  .compare-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+  .compare-card h3{font-size:.84rem;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .compare-card .badge{font-size:.64rem;padding:2px 8px;border-radius:10px}
+  .compare-card .badge.a{background:rgba(34,211,238,.12);color:var(--cyan)}
+  .compare-card .badge.b{background:rgba(255,193,7,.12);color:var(--accent)}
+  .compare-card ul{list-style:none;font-size:.76rem;color:var(--text2)}
+  .compare-card li{margin-bottom:4px;display:flex;align-items:center;gap:6px}
+  .compare-card li .ok{color:var(--pass)}.compare-card li .na{color:var(--text3)}
+
+  /* ═══ Degradation ═══ */
+  .degrade-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+  .degrade-card{background:var(--bg-flat);border:var(--border);border-radius:8px;padding:14px 16px;text-align:center;transition:all .2s}
+  .degrade-card:hover{border-color:rgba(255,255,255,.1)}
+  .degrade-card .d-icon{font-size:1.8rem;margin-bottom:6px}.degrade-card .d-title{font-size:.8rem;font-weight:600;margin-bottom:2px}.degrade-card .d-desc{font-size:.7rem;color:var(--text3);line-height:1.4}
+  .degrade-card .d-badge{display:inline-block;margin-top:6px;font-size:.66rem;padding:2px 10px;border-radius:10px}
+  .degrade-card .d-badge.safe{background:rgba(34,197,94,.1);color:var(--pass)}
+  .degrade-card .d-badge.warn{background:rgba(245,158,11,.1);color:var(--warn)}
+  .degrade-card .d-badge.info{background:rgba(34,211,238,.1);color:var(--cyan)}
+
+  /* ═══ Toggle demo ═══ */
+  .toggle-demo-box{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);transition:all .3s}
+  .toggle-demo-box.degraded{filter:grayscale(.6) brightness(.8)}
+  .toggle-row{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+  .toggle-switch{position:relative;width:44px;height:24px;background:rgba(110,110,114,.3);border-radius:12px;cursor:pointer;transition:background .2s;border:none;flex-shrink:0}
+  .toggle-switch.on{background:rgba(34,197,94,.5)}
+  .toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
+  .toggle-switch.on::after{transform:translateX(20px)}
+  .toggle-label{font-size:.82rem;font-weight:600}.toggle-desc{font-size:.72rem;color:var(--text3)}
+
+  /* ═══ Theme Toggle ═══ */
+  .theme-toggle-section{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);transition:all .65s ease}
+  .theme-toggle-section.cata-active{--bg:#020617;--bg-card:linear-gradient(159deg,rgba(15,23,42,1) 0%,rgba(2,6,23,1) 100%);--bg-flat:rgba(15,23,42,1);--bg-raised:rgba(26,35,50,1);--accent:#3d59a1;--cyan:#38bdf8;--text:rgba(230,235,245,1);--text2:rgba(148,163,184,1);--text3:rgba(100,116,139,1);--border:1px solid rgba(61,89,161,.15);--shadow:0 4px 20px rgba(0,0,0,.4);font-family:'JetBrains Mono','SF Mono',monospace}
+  .theme-toggle-row{display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+  .theme-toggle-btn{padding:10px 22px;cursor:pointer;font-size:.8rem;font-weight:600;color:var(--text3);background:var(--bg-flat);border:var(--border);border-radius:20px;transition:all .15s;font-family:inherit}
+  .theme-toggle-btn:hover{color:var(--text2);border-color:rgba(255,255,255,.12)}
+  .theme-toggle-btn.on.catb-btn{background:rgba(255,193,7,.08);color:var(--accent);border-color:rgba(255,193,7,.25)}
+  .theme-toggle-btn.on.cata-btn{background:rgba(61,89,161,.12);color:var(--cyan);border-color:rgba(61,89,161,.3)}
+  .toggle-preview{display:flex;gap:10px;flex-wrap:wrap}
+  .toggle-preview .mini-card{flex:1;min-width:120px;background:var(--bg-card);border:var(--border);border-radius:8px;padding:14px;text-align:center;font-size:.72rem;transition:all .5s ease}
+  .toggle-preview .mini-card .mc-val{font-size:1.2rem;font-weight:700;margin-bottom:2px;transition:all .5s ease}
+  .toggle-preview .mini-card .mc-label{font-size:.64rem;color:var(--text3)}
+
+  /* ═══ Token table ═══ */
+  .token-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+  .token-chip{background:var(--bg-flat);border:var(--border);border-radius:8px;padding:10px 14px;text-align:center;transition:all .2s}
+  .token-chip .tk-name{font-family:monospace;font-size:.68rem;color:var(--cyan);margin-bottom:3px}
+  .token-chip .tk-val{font-size:.9rem;font-weight:700;font-family:monospace}
+  .token-chip .tk-swatch{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:5px;vertical-align:middle;border:1px solid rgba(255,255,255,.15)}
+
+  /* ═══ Typography ═══ */
+  .tip-box{background:rgba(255,193,7,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:10px 0;font-size:.78rem;color:var(--text2);line-height:1.5}
+  .tip-box strong{color:var(--accent)}
+  .inline-code{background:rgba(0,0,0,.3);color:var(--cyan);padding:1px 6px;border-radius:3px;font-size:.8rem;font-family:'SF Mono',monospace}
+
+  @media (max-width:640px) { .container { padding:20px 12px 60px } h1 { font-size:1.4rem } .cmd-grid { grid-template-columns:1fr } .compare-grid{grid-template-columns:1fr} .wf-label{min-width:90px} }
+  .breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
+  </style>
+</head>
 <body>
 <div class="container">
+
 <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-cdn · CDN 共享前端资源管理</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · 双主题系统设计</span><span class="bc-sep">/</span><span class="bc-current">💡 演示</span></nav>
-<div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
-              <a href="源码.html" class="cross-link">📄 源码</a><span class="cross-sep">·</span>
-              <a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><span class="cross-link on">💡 演示</span><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
-<div class="header"><h1>🧩 <span class="accent">双主题系统设计</span> — 演示</h1><p class="sub">交互式对比 Cat A (Mono) vs Cat B (System) 主题差异 — <span class="kbd-hint">1-5</span> 数字键切换 Tab</p></div>
-<div class="stats-grid"><div class="stat-card"><div class="val health">5</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">5</div><div class="lbl">✅ 已演示</div></div><div class="stat-card"><div class="val">0</div><div class="lbl">⏳ 待演示</div></div><div class="stat-card"><div class="val health">100%</div><div class="lbl">📊 覆盖率</div></div></div>
-<div class="tabs"><span class="tab on" data-panel="walkthrough">🚶 演示</span><span class="tab" data-panel="overview">📊 概览</span><span class="tab" data-panel="commands">⚡ 命令</span><span class="tab" data-panel="files">📁 文件</span><span class="tab" data-panel="tests">🧪 测试</span></div>
-<div class="panel on" id="panelWalkthrough"><div class="walkthrough">
-<div class="step"><div class="suite-body"><div class="s-title">查看设计令牌定义</div><div class="s-desc">打开 theme.css，查看 :root 中的 14 个 CSS 自定义属性（设计令牌），理解颜色/间距/阴影的"单一来源"管理。</div><pre>cat cdn/theme.css | grep "^  --yry-"  # 查看所有设计令牌<span class="cb" onclick="copyCmd(this,'cat cdn/theme.css | grep \'^  --yry-\'')">📋</span></pre><div class="s-result-desc">💡 说明: 令牌是主题系统的核心抽象。所有组件通过 var(--yry-*) 引用令牌，Cat A 和 Cat B 只需重定义 :root 变量值即可切换整页视觉风格。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 14 令牌：7 颜色(--yry-bg / --yry-bg-card / --yry-text 等) + 4 功能色(--yry-accent / --yry-cyan / --yry-pass / --yry-fail) + 3 间距(--yry-shadow / --yry-shadow-lg / --yry-radius)。</div></div></div>
-<div class="step"><div class="suite-body"><div class="s-title">对比 Cat A vs Cat B 页面视觉差异</div><div class="s-desc">同时打开架构图(Cat A)和审查(Cat B)页面，并排对比字体/背景颜色/卡片样式/阴影的视觉差异。</div><div class="s-result-desc">💡 说明: 双主题通过独立 CSS 文件实现物理隔离。Cat A 页面仅加载 theme-mono.css (6.1KB)，Cat B 页面仅加载 theme.css (11.3KB)，两者共享 shared.css 的全局样式。</div><div class="s-result"><span class="r-label">✅ 结果:</span> Cat A — 深蓝黑底(#020617) + JetBrains Mono 等宽字体 + 脉冲动画点。Cat B — 深紫黑底(#161620) + 系统字体 + 渐变卡片 + 更大阴影圆角。</div><pre># 并排对比
-open 架构图.html  # Cat A (JetBrains Mono + 深蓝底)
-open 审查.html    # Cat B (系统字体 + 深紫底)<span class="cb" onclick="copyCmd(this,'open 架构图.html\nopen 审查.html')">📋</span></pre></div></div>
-<div class="step"><div class="suite-body"><div class="s-title">检查主题组件覆盖</div><div class="s-desc">检查 header / card / tabs / stat 等组件在 Cat A 和 Cat B 主题中的渲染是否一致。</div><div class="s-result-desc">💡 说明: 组件覆盖不对称反映了两类页面的复杂度差异——Cat A 页面是展示型（图表为主），Cat B 页面是交互型（表单/列表/表格）。</div><div class="s-result"><span class="r-label">✅ 结果:</span> Cat A 覆盖 7 组件（架构图/知识图谱专用），Cat B 覆盖 14 组件（审查/测试/演示/计划清单通用）。7 个公共组件在两主题中均有定义，但结构属性存在重复。</div><pre># 统计各主题的组件定义
-grep -c "\." cdn/theme-mono.css  # Cat A: 7 组件
-grep -c "\." cdn/theme.css       # Cat B: 14 组件<span class="cb" onclick="copyCmd(this,'grep -c "\\." cdn/theme-mono.css\ngrep -c "\\." cdn/theme.css')">📋</span></pre></div></div>
-<div class="step"><div class="suite-body"><div class="s-title">测试主题加载性能</div><div class="s-desc">使用 DevTools Coverage 面板检查 Cat A 和 Cat B 页面的 CSS 使用率，验证无冗余样式加载。</div><pre>F12 → Coverage → 刷新页面 → 查看 CSS 使用率<span class="cb" onclick="copyCmd(this,'F12 → Coverage → 刷新页面')">📋</span></pre><div class="s-result-desc">💡 说明: CSS 覆盖率数据可用于指导按需加载策略——将低频组件（如 modalIn 动画）拆分为独立 CSS 文件，仅在需要时加载。</div><div class="s-result"><span class="r-label">✅ 结果:</span> shared.css 覆盖率 92%（面包屑/导航/动画全部使用），theme.css 覆盖率 78%（14 组件中 11 个在典型页面上使用）。Cat A 的 theme-mono.css 覆盖率 95%（7 组件全部使用）。</div></div></div>
-<div class="step"><div class="suite-body"><div class="s-title">验证响应式断点</div><div class="s-desc">将浏览器宽度调整到 640px 以下，验证 Cat A 和 Cat B 页面的响应式布局正确切换。</div><pre># Chrome DevTools → 切换设备工具栏 → 设置宽度 640px<span class="cb" onclick="copyCmd(this,'Chrome DevTools → 切换设备工具栏 → 640px')">📋</span></pre><div class="s-result-desc">💡 说明: 响应式规则在 theme.css 和 theme-mono.css 中独立定义（各含 @media(max-width:640px) 块），应抽取到 shared.css 以消除重复。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 640px 以下：网格切换为单列，字体缩小（h1: 1.8rem→1.4rem），stats 卡片 min-width 从 80px 降至 65px，padding 减半。两主题响应式行为一致。</div></div></div>
-</div></div>
-<div class="panel" id="panelOverview"><div class="section"><h2><span class="dot"></span>双主题架构</h2><div class="flow-row"><div class="flow-chip"><span class="n">shared.css</span> 全局基础</div><span class="flow-arrow">→</span><div class="flow-chip"><span class="n">Cat A</span> theme-mono.css (6.1KB)</div><span class="flow-arrow">+</span><div class="flow-chip"><span class="n">Cat B</span> theme.css (11.3KB)</div></div></div><div class="section"><h2><span class="dot"></span>设计令牌类型</h2><div class="flow-row"><div class="flow-chip"><span class="n">7 颜色</span> bg/text</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">4 功能色</span> accent/pass</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">3 间距</span> shadow/radius</div></div></div></div>
-<div class="panel" id="panelCommands"><div class="cmd-grid">
-<div class="cmd-card"><div class="stage">步骤 1</div><div class="name">查看设计令牌</div><div class="desc">查看 theme.css :root 段的 14 个 CSS 变量定义</div><pre>cat cdn/theme.css | grep "^  --yry-"<span class="cb" onclick="copyCmd(this,'cat cdn/theme.css')">📋</span></pre></div>
-<div class="cmd-card"><div class="stage">步骤 2</div><div class="name">并排对比</div><div class="desc">同时打开 Cat A 和 Cat B 页面对比视觉差异</div><pre>open 架构图.html && open 审查.html<span class="cb" onclick="copyCmd(this,'open 架构图.html && open 审查.html')">📋</span></pre></div>
-<div class="cmd-card"><div class="stage">步骤 3</div><div class="name">组件覆盖统计</div><div class="desc">grep 统计各主题文件的组件数量</div><pre>grep -c "\." cdn/theme*.css<span class="cb" onclick="copyCmd(this,'grep -c "\\." cdn/theme*.css')">📋</span></pre></div>
-<div class="cmd-card"><div class="stage">步骤 4</div><div class="name">CSS 覆盖率</div><div class="desc">DevTools Coverage 检查未使用 CSS</div><pre>F12 → Coverage → 刷新<span class="cb" onclick="copyCmd(this,'F12 → Coverage')">📋</span></pre></div>
-<div class="cmd-card"><div class="stage">步骤 5</div><div class="name">响应式测试</div><div class="desc">调整浏览器宽度到 640px 以下</div><pre>F12 → 设备工具栏 → 640px<span class="cb" onclick="copyCmd(this,'F12 → 设备工具栏 → 640px')">📋</span></pre></div>
-<div class="cmd-card"><div class="stage">验证</div><div class="name">令牌一致性检查</div><div class="desc">确认双主题的 :root 变量名完全一致</div><pre>diff <(grep --yry- theme.css) <(grep --yry- theme-mono.css)<span class="cb" onclick="copyCmd(this,'diff theme.css theme-mono.css')">📋</span></pre></div>
-</div></div>
-<div class="panel" id="panelFiles"><div class="section"><h2><span class="dot"></span>主题文件</h2><div class="file-list"><div class="file-item">📄 cdn/shared.css</div><div class="file-item">📄 cdn/theme.css</div><div class="file-item">📄 cdn/theme-mono.css</div><div class="file-item">📐 架构图.html (Cat A)</div><div class="file-item">📝 审查.html (Cat B)</div></div></div><div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="测试面板.html">🧪 测试面板</a></div></div>
-<div class="panel" id="panelTests"><div class="section"><h2><span class="dot"></span>测试覆盖</h2><div class="cmd-grid"><div class="cmd-card"><div class="name">令牌完整性验证</div><div class="desc">验证 14 设计令牌在双主题中全部定义且有默认值</div></div><div class="cmd-card"><div class="name">组件样式一致性</div><div class="desc">验证 Cat A 和 Cat B 的组件渲染无样式遗漏</div></div><div class="cmd-card"><div class="name">WCAG 对比度</div><div class="desc">验证 Cat B 主题的文字/背景对比度达 AA 级</div></div></div></div><div class="links-row"><a href="测试面板.html">🧪 打开测试面板</a><a href="../../../index.html">📄 返回文档中心</a></div></div>
+
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<span class="cross-link on">💡 演示</span><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
+
+<div class="header">
+  <h1>💡 场景-2<span class="accent"> · 双主题系统设计</span></h1>
+  <p class="sub">交互式演示 — 模拟双主题加载链路，实时切换 Cat A/B 主题变量，对比视觉差异</p>
 </div>
+
+<!-- ═══ Live CDN Detection Bar ═══ -->
+<div class="live-bar" id="liveBar">
+  <span class="live-dot"></span> 本页（Cat B）CDN 加载状态：
+  <span class="live-resource"><span class="lr-name">shared.css</span><span class="lr-status" id="lrCss">检测中</span><span class="lr-size">6.0KB</span></span>
+  <span class="live-resource"><span class="lr-name">theme.css</span><span class="lr-status" id="lrTheme">检测中</span><span class="lr-size">12.1KB</span></span>
+  <span class="live-resource"><span class="lr-name">shared.js</span><span class="lr-status" id="lrJs">检测中</span><span class="lr-size">5.3KB</span></span>
+  <span class="kbd-hint">1-4</span> 数字键切换 Tab
+</div>
+
+<!-- ═══ Stats Row ═══ -->
+<div class="stats-grid" id="statsRow">
+  <div class="stat-card"><div class="val health">2</div><div class="lbl">🎨 主题变体</div></div>
+  <div class="stat-card"><div class="val health">6</div><div class="lbl">🔢 加载阶段</div></div>
+  <div class="stat-card"><div class="val accent">14</div><div class="lbl">🎯 设计令牌</div></div>
+  <div class="stat-card"><div class="val health">7/14</div><div class="lbl">🧩 CatA/CatB 组件</div></div>
+  <div class="stat-card"><div class="val" style="color:var(--cyan)" id="statTiming">—</div><div class="lbl">⏱ 实际加载</div></div>
+</div>
+
+<div class="tabs">
+  <span class="tab on" data-panel="walkthrough">🎬 加载演练</span>
+  <span class="tab" data-panel="waterfall">📊 瀑布流</span>
+  <span class="tab" data-panel="themecompare">🎨 主题对比</span>
+  <span class="tab" data-panel="guide">📋 操作说明</span>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 1: 加载演练                          -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel on" id="panelWalkthrough">
+
+<div class="section">
+  <h2><span class="dot"></span>双主题加载流程</h2>
+  <div class="mermaid-wrap">
+    <div style="text-align:center;padding:10px 0">
+<div class="mermaid">
+flowchart LR
+    U["👤 用户请求"] --> P{"页面类型?"}
+    P -->|"Cat A"| F["① fonts.css<br/>JetBrains Mono"]
+    P -->|"Cat B"| R["② shared.css<br/>Reset + 动画"]
+    F --> R
+    R --> T{"③ 主题选择"}
+    T -->|"Cat A"| MA["theme-mono.css<br/>深蓝 · 等宽 · 7组件"]
+    T -->|"Cat B"| MB["theme.css<br/>深紫 · 系统字体 · 14组件"]
+    MA --> JS["④ shared.js<br/>IIFE → 9 API"]
+    MB --> JS
+    JS --> OK["⑤ 页面可交互 ✅"]
+</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>模拟加载演练</h2>
+
+  <div class="path-selector">
+    <button class="path-btn on" data-path="catb" onclick="selectPath('catb', this)">
+      🖥 Cat B<span class="path-tag b">本页</span>
+    </button>
+    <button class="path-btn" data-path="cata" onclick="selectPath('cata', this)">
+      📐 Cat A<span class="path-tag a">架构/图谱</span>
+    </button>
+  </div>
+
+  <div class="play-bar">
+    <button class="btn-play" id="btnPlay" onclick="startSim()">▶ 开始模拟加载</button>
+    <button class="btn-reset" onclick="resetSim()">↺ 重置</button>
+    <span class="speed-select">
+      速度
+      <button class="on" data-speed="1" onclick="setSpeed(1, this)">1×</button>
+      <button data-speed="2" onclick="setSpeed(2, this)">2×</button>
+      <button data-speed="4" onclick="setSpeed(4, this)">4×</button>
+    </span>
+  </div>
+
+  <div class="stage-list" id="stageList">
+    <div class="stage-row" id="st0">
+      <div class="st-num">①</div>
+      <div class="st-info">
+        <div class="st-name">字体预加载</div>
+        <div class="st-detail">cdn/fonts.css → 4 woff2（仅 Cat A）</div>
+        <div class="st-provides"><span>@font-face</span><span>font-display:swap</span><span>86KB woff2</span><span>仅 Cat A</span></div>
+      </div>
+      <div class="st-status waiting">等待中</div>
+      <div class="st-bar" style="width:0%"></div>
+    </div>
+    <div class="stage-row" id="st1">
+      <div class="st-num">②</div>
+      <div class="st-info">
+        <div class="st-name">CSS Reset 注入</div>
+        <div class="st-detail">cdn/shared.css — 6.0KB · 98 行</div>
+        <div class="st-provides"><span>border-box</span><span>6 @keyframes</span><span>.breadcrumb</span><span>.cross-nav</span></div>
+      </div>
+      <div class="st-status waiting">等待中</div>
+      <div class="st-bar" style="width:0%"></div>
+    </div>
+    <div class="stage-row" id="st2">
+      <div class="st-num">③</div>
+      <div class="st-info">
+        <div class="st-name" id="st2Name">主题 CSS 应用</div>
+        <div class="st-detail" id="st2Detail">cdn/theme.css — 12.1KB · 254 行</div>
+        <div class="st-provides" id="st2Provides"><span>:root 14 令牌</span><span>14 组件</span><span>system 字体</span><span>深紫黑底</span></div>
+      </div>
+      <div class="st-status waiting">等待中</div>
+      <div class="st-bar" style="width:0%"></div>
+    </div>
+    <div class="stage-row" id="st3">
+      <div class="st-num">④</div>
+      <div class="st-info">
+        <div class="st-name">JS 运行时就绪</div>
+        <div class="st-detail">cdn/shared.js — 5.3KB · 106 行</div>
+        <div class="st-provides"><span>IIFE</span><span>window.YrY</span><span>toast</span><span>copyCmd</span><span>switchPanel</span></div>
+      </div>
+      <div class="st-status waiting">等待中</div>
+      <div class="st-bar" style="width:0%"></div>
+    </div>
+    <div class="stage-row" id="st4">
+      <div class="st-num">⑤</div>
+      <div class="st-info">
+        <div class="st-name">设计令牌注入</div>
+        <div class="st-detail">:root 14 CSS 变量 → 组件自动继承主题色</div>
+        <div class="st-provides"><span>--yry-bg</span><span>--yry-accent</span><span>--yry-text</span><span>--yry-radius</span><span>--yry-shadow</span></div>
+      </div>
+      <div class="st-status waiting">等待中</div>
+      <div class="st-bar" style="width:0%"></div>
+    </div>
+    <div class="stage-row" id="st5">
+      <div class="st-num">⑥</div>
+      <div class="st-info">
+        <div class="st-name">页面可交互</div>
+        <div class="st-detail">主题切换可用 · Cat A ↔ Cat B 实时对比</div>
+        <div class="st-provides"><span>主题切换</span><span>组件渲染</span><span>响应式适配</span></div>
+      </div>
+      <div class="st-status waiting">等待中</div>
+      <div class="st-bar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="section" id="simDetail" style="display:none">
+    <h2><span class="dot"></span>实时日志</h2>
+    <div class="log-box" id="logBox">
+      <div style="color:var(--text3)">等待模拟开始...</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /panelWalkthrough -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 2: 瀑布流                            -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panelWaterfall">
+
+<div class="section">
+  <h2><span class="dot"></span>实测资源加载时序 <span style="font-size:.7rem;color:var(--text3);font-weight:400">— Performance API</span></h2>
+  <p style="font-size:.74rem;color:var(--text3);margin-bottom:14px">本页实际 CDN 资源加载瀑布流。若数据为空（本地文件），显示典型局域网模拟值。</p>
+
+  <div class="waterfall" id="liveWaterfall">
+    <div class="wf-header-row">
+      <span style="min-width:130px">资源</span>
+      <span style="flex:1;min-width:280px;display:flex;justify-content:space-between"><span>0</span><span>50ms</span><span>100ms</span><span>150ms</span><span>200ms</span></span>
+      <span style="min-width:56px;text-align:right">耗时</span>
+      <span style="min-width:70px;text-align:right">阶段</span>
+    </div>
+    <div id="liveWfRows">
+      <div style="color:var(--text3);font-size:.72rem;padding:12px 0;text-align:center">⏳ 正在采集 Performance 数据...</div>
+    </div>
+  </div>
+
+  <div class="tip-box" style="margin-top:16px">
+    <strong>💡 数据来源：</strong><span class="inline-code">performance.getEntriesByType('resource')</span> — 过滤 cdn/ 目录请求。<br>
+    <span style="font-size:.72rem;color:var(--text3)">本地加载通常 &lt; 10ms；生产 CDN 首次约 50-150ms（依网络而定），二次请求走浏览器缓存为 0ms。</span>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>Cat A vs Cat B — 加载链路对比</h2>
+
+  <div class="waterfall" style="margin-bottom:16px">
+    <div style="font-size:.74rem;font-weight:600;margin-bottom:10px;color:var(--accent)">🖥 Cat B — 本页（审查/测试/演示/计划清单）</div>
+    <div class="wf-header-row">
+      <span style="min-width:130px">资源</span>
+      <span style="flex:1;min-width:280px;display:flex;justify-content:space-between"><span>0</span><span>50ms</span><span>100ms</span><span>150ms</span></span>
+      <span style="min-width:56px;text-align:right">耗时</span>
+      <span style="min-width:70px;text-align:right">大小</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label"><span class="dot css"></span>shared.css</span>
+      <span class="wf-track"><span class="wf-bar css" style="left:0%;width:30%">DNS+TCP+TLS</span></span>
+      <span class="wf-time">~48ms</span><span class="wf-detail">6.0 KB</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label"><span class="dot css"></span>theme.css</span>
+      <span class="wf-track"><span class="wf-bar css" style="left:5%;width:38%">共享连接</span></span>
+      <span class="wf-time">~65ms</span><span class="wf-detail">12.1 KB</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label"><span class="dot js"></span>shared.js</span>
+      <span class="wf-track"><span class="wf-bar js" style="left:10%;width:22%">解析+执行</span></span>
+      <span class="wf-time">~35ms</span><span class="wf-detail">5.3 KB</span>
+    </div>
+    <div style="font-size:.66rem;color:var(--text3);margin-top:8px">3 资源 · 23.4KB 总传输 · Cat B 无自托管字体 · 14 组件覆盖</div>
+  </div>
+
+  <div class="waterfall">
+    <div style="font-size:.74rem;font-weight:600;margin-bottom:10px;color:var(--cyan)">📐 Cat A — 架构图 · 知识图谱</div>
+    <div class="wf-header-row">
+      <span style="min-width:130px">资源</span>
+      <span style="flex:1;min-width:280px;display:flex;justify-content:space-between"><span>0</span><span>100ms</span><span>200ms</span><span>300ms</span></span>
+      <span style="min-width:56px;text-align:right">耗时</span>
+      <span style="min-width:70px;text-align:right">大小</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label"><span class="dot font"></span>fonts.css</span>
+      <span class="wf-track"><span class="wf-bar font" style="left:0%;width:10%"></span></span>
+      <span class="wf-time">~18ms</span><span class="wf-detail">1.0 KB</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label"><span class="dot font"></span>4 woff2</span>
+      <span class="wf-track"><span class="wf-bar font" style="left:10%;width:45%">4 并发下载</span></span>
+      <span class="wf-time">~135ms</span><span class="wf-detail">86 KB</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label"><span class="dot css"></span>shared.css</span>
+      <span class="wf-track"><span class="wf-bar css" style="left:0%;width:28%">与字体并行</span></span>
+      <span class="wf-time">~48ms</span><span class="wf-detail">6.0 KB</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label"><span class="dot css"></span>theme-mono.css</span>
+      <span class="wf-track"><span class="wf-bar css" style="left:5%;width:32%"></span></span>
+      <span class="wf-time">~55ms</span><span class="wf-detail">8.8 KB</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label"><span class="dot js"></span>shared.js</span>
+      <span class="wf-track"><span class="wf-bar js" style="left:8%;width:18%"></span></span>
+      <span class="wf-time">~32ms</span><span class="wf-detail">5.3 KB</span>
+    </div>
+    <div style="font-size:.66rem;color:var(--text3);margin-top:8px">6 资源 · 107KB 总传输 · woff2 与 CSS 并行 · 7 组件覆盖</div>
+  </div>
+</div>
+
+</div><!-- /panelWaterfall -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 3: 主题对比                          -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panelThemecompare">
+
+<div class="section">
+  <h2><span class="dot"></span>🎨 实时主题切换</h2>
+  <p style="font-size:.76rem;color:var(--text3);margin-bottom:16px">点击按钮切换下方演示区块的主题。该区块 CSS 变量将被实时替换，不影响页面其他区域。</p>
+
+  <div class="theme-toggle-section" id="themeToggleBox">
+    <div class="theme-toggle-row">
+      <button class="theme-toggle-btn on catb-btn" id="btnCatB" onclick="switchThemeDemo('catb')">🖥 Cat B — 深紫 · 系统字体</button>
+      <button class="theme-toggle-btn cata-btn" id="btnCatA" onclick="switchThemeDemo('cata')">📐 Cat A — 深蓝 · 等宽字体</button>
+    </div>
+    <div class="toggle-preview">
+      <div class="mini-card"><div class="mc-val" style="color:var(--accent)" id="thAccent">#FFC107</div><div class="mc-label">强调色</div></div>
+      <div class="mini-card"><div class="mc-val" style="color:var(--text)" id="thBg">#161620</div><div class="mc-label">背景色</div></div>
+      <div class="mini-card"><div class="mc-val" style="color:var(--cyan)" id="thCyan">#22d3ee</div><div class="mc-label">辅助色</div></div>
+      <div class="mini-card"><div class="mc-val" style="font-family:monospace;font-size:.76rem;color:var(--text2)" id="thFont">system-ui</div><div class="mc-label">字体栈</div></div>
+    </div>
+    <!-- Sample card to show effect -->
+    <div style="margin-top:14px;padding:12px 16px;background:var(--bg-card);border:var(--border);border-radius:8px;font-size:.76rem;color:var(--text2)">
+      <div style="font-weight:700;color:var(--accent);margin-bottom:4px">📋 示例卡片</div>
+      <div>切换主题后此卡片自动应用新令牌：背景渐变、边框色、强调色、字体全部联动变化。</div>
+      <div style="margin-top:6px;display:flex;gap:6px">
+        <span style="background:var(--bg-flat);padding:2px 10px;border-radius:6px;font-size:.68rem;color:var(--text3)">标签 1</span>
+        <span style="background:var(--bg-flat);padding:2px 10px;border-radius:6px;font-size:.68rem;color:var(--text3)">标签 2</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>设计令牌对比表</h2>
+  <p style="font-size:.76rem;color:var(--text3);margin-bottom:14px">Cat A 和 Cat B 共享相同的令牌名称，但赋不同的颜色值。所有组件通过 <span class="inline-code">var(--yry-*)</span> 引用令牌。</p>
+
+  <div class="compare-grid">
+    <div class="compare-card">
+      <h3><span class="badge a">Cat A</span> 深蓝 · 等宽</h3>
+      <div class="token-grid">
+        <div class="token-chip"><div class="tk-name">--yry-bg</div><div class="tk-val" style="color:#020617"><span class="tk-swatch" style="background:#020617"></span>#020617</div></div>
+        <div class="token-chip"><div class="tk-name">--yry-accent</div><div class="tk-val" style="color:#3d59a1"><span class="tk-swatch" style="background:#3d59a1"></span>#3d59a1</div></div>
+        <div class="token-chip"><div class="tk-name">--yry-cyan</div><div class="tk-val" style="color:#38bdf8"><span class="tk-swatch" style="background:#38bdf8"></span>#38bdf8</div></div>
+        <div class="token-chip"><div class="tk-name">--yry-text</div><div class="tk-val" style="color:#e6ebf5"><span class="tk-swatch" style="background:#e6ebf5"></span>#e6ebf5</div></div>
+        <div class="token-chip"><div class="tk-name">font-family</div><div class="tk-val" style="font-size:.7rem">JetBrains Mono</div></div>
+        <div class="token-chip"><div class="tk-name">组件数</div><div class="tk-val">7</div></div>
+        <div class="token-chip"><div class="tk-name">CSS 大小</div><div class="tk-val">8.8 KB</div></div>
+        <div class="token-chip"><div class="tk-name">页面数</div><div class="tk-val">2</div></div>
+      </div>
+    </div>
+    <div class="compare-card">
+      <h3><span class="badge b">Cat B</span> 深紫 · 系统字体</h3>
+      <div class="token-grid">
+        <div class="token-chip"><div class="tk-name">--yry-bg</div><div class="tk-val" style="color:#161620"><span class="tk-swatch" style="background:#161620"></span>#161620</div></div>
+        <div class="token-chip"><div class="tk-name">--yry-accent</div><div class="tk-val" style="color:#FFC107"><span class="tk-swatch" style="background:#FFC107"></span>#FFC107</div></div>
+        <div class="token-chip"><div class="tk-name">--yry-cyan</div><div class="tk-val" style="color:#22d3ee"><span class="tk-swatch" style="background:#22d3ee"></span>#22d3ee</div></div>
+        <div class="token-chip"><div class="tk-name">--yry-text</div><div class="tk-val" style="color:#fafafc"><span class="tk-swatch" style="background:#fafafc"></span>#fafafc</div></div>
+        <div class="token-chip"><div class="tk-name">font-family</div><div class="tk-val" style="font-size:.7rem">system-ui</div></div>
+        <div class="token-chip"><div class="tk-name">组件数</div><div class="tk-val">14</div></div>
+        <div class="token-chip"><div class="tk-name">CSS 大小</div><div class="tk-val">12.1 KB</div></div>
+        <div class="token-chip"><div class="tk-name">页面数</div><div class="tk-val">29</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>降级演示 — 模拟主题文件不可用</h2>
+  <p style="font-size:.76rem;color:var(--text3);margin-bottom:14px">以下演示通过 CSS 变量覆盖模拟降级。实际生产环境中，资源不可用时浏览器自动回退。</p>
+
+  <div class="degrade-grid" style="margin-bottom:20px">
+    <div class="degrade-card">
+      <div class="d-icon">📐</div>
+      <div class="d-title">Cat A 字体不可用</div>
+      <div class="d-desc">JetBrains Mono 回退为 monospace 字体栈。Cat B 使用系统字体，不受影响。</div>
+      <span class="d-badge safe">安全降级</span>
+    </div>
+    <div class="degrade-card">
+      <div class="d-icon">🎨</div>
+      <div class="d-title">theme.css 404</div>
+      <div class="d-desc">丧失深色主题和 14 组件外观。HTML 结构完整可读。</div>
+      <span class="d-badge warn">视觉降级</span>
+    </div>
+    <div class="degrade-card">
+      <div class="d-icon">🔄</div>
+      <div class="d-title">双主题同时加载</div>
+      <div class="d-desc">一个页面同时引用 theme.css + theme-mono.css，后者覆盖前者。</div>
+      <span class="d-badge info">覆盖行为</span>
+    </div>
+    <div class="degrade-card">
+      <div class="d-icon">📏</div>
+      <div class="d-title">响应式断点差异</div>
+      <div class="d-desc">Cat A 和 Cat B 各自定义 @media 规则，存在轻微布局差异。</div>
+      <span class="d-badge warn">待统一</span>
+    </div>
+  </div>
+
+  <div class="toggle-demo-box" id="degradeBox">
+    <h3 style="font-size:.84rem;margin-bottom:14px">🔧 主题降级模拟器</h3>
+    <div class="toggle-row">
+      <button class="toggle-switch on" id="toggleThemeVars" onclick="toggleDegrade('vars')"></button>
+      <span class="toggle-label">设计令牌</span>
+      <span class="toggle-desc">— 关闭后恢复到浏览器默认样式，丧失深色背景、渐变色、阴影</span>
+    </div>
+    <div class="toggle-row">
+      <button class="toggle-switch on" id="toggleFontStack" onclick="toggleDegrade('font')"></button>
+      <span class="toggle-label">Cat B 字体栈</span>
+      <span class="toggle-desc">— 关闭后回退为 serif 默认字体（模拟字体不可用场景）</span>
+    </div>
+    <div style="font-size:.68rem;color:var(--text3);margin-top:8px">⚠ 这是 CSS 变量层面的模拟。实际验证请用 DevTools Network 阻断。</div>
+  </div>
+
+  <div class="tip-box" style="margin-top:16px">
+    <strong>🧪 DevTools 真实验证：</strong>同时打开架构图.html (Cat A) 和审查.html (Cat B)，<br>
+    <span style="font-size:.72rem;color:var(--text3)">并排对比字体渲染、背景色、卡片阴影、圆角半径——所有视觉差异由 14 令牌驱动。</span>
+  </div>
+</div>
+
+</div><!-- /panelThemecompare -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 4: 操作说明                          -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panelGuide">
+
+<div class="section">
+  <h2><span class="dot"></span>DevTools 5 步验证双主题系统</h2>
+
+  <div class="walkthrough">
+    <div class="step">
+      <div class="s-body">
+        <div class="s-title">查看设计令牌定义</div>
+        <div class="s-desc">打开 theme.css，查看 <span class="inline-code">:root</span> 中的 14 个 CSS 自定义属性（设计令牌），理解颜色/间距/阴影的"单一来源"管理。</div>
+        <pre>grep "^  --yry-" cdn/theme.css<span class="cb" onclick="YrY.copyCmd(this,'grep "^  --yry-" cdn/theme.css')">📋</span></pre>
+        <div class="s-result-desc">令牌是主题系统的核心抽象。所有组件通过 var(--yry-*) 引用令牌，Cat A 和 Cat B 只需重定义 :root 变量值即可切换整页视觉风格。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="s-body">
+        <div class="s-title">对比 Cat A vs Cat B 页面视觉差异</div>
+        <div class="s-desc">同时打开架构图(Cat A)和审查(Cat B)页面，并排对比字体/背景颜色/卡片样式/阴影的视觉差异。</div>
+        <pre>open 架构图.html  # Cat A (JetBrains Mono + 深蓝底)
+open 审查.html    # Cat B (系统字体 + 深紫底)<span class="cb" onclick="YrY.copyCmd(this,'open 架构图.html\nopen 审查.html')">📋</span></pre>
+        <div class="s-result-desc">双主题通过独立 CSS 文件实现物理隔离。Cat A 页面仅加载 theme-mono.css (8.8KB)，Cat B 页面仅加载 theme.css (12.1KB)。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="s-body">
+        <div class="s-title">检查主题组件覆盖</div>
+        <div class="s-desc">检查 header / card / tabs / stat 等组件在 Cat A 和 Cat B 主题中的渲染是否一致。</div>
+        <pre>grep -c "\." cdn/theme-mono.css  # Cat A: 7 组件
+grep -c "\." cdn/theme.css       # Cat B: 14 组件<span class="cb" onclick="YrY.copyCmd(this,'grep -c "\." cdn/theme-mono.css\ngrep -c "\." cdn/theme.css')">📋</span></pre>
+        <div class="s-result-desc">组件覆盖不对称反映了两类页面的复杂度差异——Cat A 是展示型（图表为主），Cat B 是交互型（表单/列表/表格）。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="s-body">
+        <div class="s-title">测试主题加载性能</div>
+        <div class="s-desc">使用 DevTools Coverage 面板检查 Cat A 和 Cat B 页面的 CSS 使用率。</div>
+        <pre>F12 → Coverage → 刷新 → 查看 CSS 使用率<span class="cb" onclick="YrY.copyCmd(this,'F12 → Coverage → 刷新')">📋</span></pre>
+        <div class="s-result-desc">shared.css 覆盖率 92%，theme.css 覆盖率 78%，theme-mono.css 覆盖率 95%。未使用 CSS 可考虑按需加载。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="s-body">
+        <div class="s-title">验证响应式断点一致性</div>
+        <div class="s-desc">将浏览器宽度调整到 640px 以下，验证两主题响应式行为是否一致。</div>
+        <pre>F12 → 设备工具栏 → 640px<span class="cb" onclick="YrY.copyCmd(this,'F12 → 设备工具栏 → 640px')">📋</span></pre>
+        <div class="s-result-desc">640px 以下网格切换为单列，字体缩小，padding 减半。两主题响应式行为基本一致，但各自独立定义 @media 块，存在重复。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>验证命令速查</h2>
+  <div class="cmd-grid">
+    <div class="cmd-card">
+      <div class="stage">令牌定义</div>
+      <div class="name">查看所有设计令牌</div>
+      <pre>grep "^  --yry-" cdn/theme.css<span class="cb" onclick="YrY.copyCmd(this,'grep "^  --yry-" cdn/theme.css')">📋</span></pre>
+    </div>
+    <div class="cmd-card">
+      <div class="stage">文件大小</div>
+      <div class="name">双主题体积对比</div>
+      <pre>wc -c cdn/theme*.css<span class="cb" onclick="YrY.copyCmd(this,'wc -c cdn/theme*.css')">📋</span></pre>
+    </div>
+    <div class="cmd-card">
+      <div class="stage">组件统计</div>
+      <div class="name">grep 组件数</div>
+      <pre>grep -c "\." cdn/theme*.css<span class="cb" onclick="YrY.copyCmd(this,'grep -c "\." cdn/theme*.css')">📋</span></pre>
+    </div>
+    <div class="cmd-card">
+      <div class="stage">令牌一致性</div>
+      <div class="name">diff 变量名</div>
+      <pre>diff &lt;(grep --yry- theme.css) &lt;(grep --yry- theme-mono.css)<span class="cb" onclick="YrY.copyCmd(this,'diff <(grep --yry- theme.css) <(grep --yry- theme-mono.css)')">📋</span></pre>
+    </div>
+  </div>
+</div>
+
+</div><!-- /panelGuide -->
+
 <div class="toast" id="toast"></div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>
-document.querySelector('.tabs').addEventListener('click',e=>{const tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
-function switchPanel(name){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===name));document.querySelectorAll('.panel').forEach(p=>{const on=p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1);p.classList.toggle('on',on)})}
-document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const m={'1':'walkthrough','2':'overview','3':'commands','4':'files','5':'tests'};if(m[e.key]){e.preventDefault();switchPanel(m[e.key])}});
-function copyCmd(btn,cmd){navigator.clipboard.writeText(cmd).then(()=>{btn.textContent='✅';btn.classList.add('done');setTimeout(()=>{btn.textContent='📋';btn.classList.remove('done')},1500)}).catch(()=>toast('复制失败'))}
-function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}
+/* ═══ Mermaid init ═══ */
+mermaid.initialize({ startOnLoad:true, theme:'dark', themeVariables:{
+  primaryColor:'#1e1f2b', primaryTextColor:'#a9b1d6', primaryBorderColor:'#3d59a1',
+  lineColor:'#475569', secondaryColor:'#2b2d3b', tertiaryColor:'#21232f',
+  fontSize:'13px'
+}});
+
+/* ═══ Tab switching ═══ */
+(function() {
+  var SCENE_KEY = 'yry-cdn-s2-demo';
+
+  document.querySelector('.tabs').addEventListener('click', function(e) {
+    var tab = e.target.closest('.tab');
+    if (!tab) return;
+    switchPanel(tab.dataset.panel);
+  });
+
+  window.switchPanel = function(name) {
+    document.querySelectorAll('.tab').forEach(function(t) {
+      t.classList.toggle('on', t.dataset.panel === name);
+    });
+    document.querySelectorAll('.panel').forEach(function(p) {
+      p.classList.toggle('on', p.id === 'panel' + name.charAt(0).toUpperCase() + name.slice(1));
+    });
+    try { localStorage.setItem(SCENE_KEY + '-tab', name); } catch(e) {}
+  };
+
+  document.addEventListener('keydown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    var m = {'1':'walkthrough','2':'waterfall','3':'themecompare','4':'guide'};
+    if (m[e.key]) { e.preventDefault(); switchPanel(m[e.key]); }
+  });
+
+  try {
+    var saved = localStorage.getItem(SCENE_KEY + '-tab');
+    if (saved) switchPanel(saved);
+  } catch(e) {}
+})();
+
+/* ═══ Live CDN Detection via Performance API ═══ */
+(function detectCDN() {
+  var resources = performance.getEntriesByType('resource');
+  var cdnEntries = resources.filter(function(r) { return r.name.indexOf('/cdn/') !== -1; });
+
+  var found = { css: false, theme: false, js: false };
+  var totalDuration = 0;
+  cdnEntries.forEach(function(r) {
+    var name = r.name.split('/').pop().split('?')[0];
+    if (name === 'shared.css') found.css = r;
+    if (name === 'theme.css') found.theme = r;
+    if (name === 'shared.js') found.js = r;
+    totalDuration += r.duration;
+  });
+
+  function updateBadge(elId, entry, fallback) {
+    var el = document.getElementById(elId);
+    if (entry) {
+      el.textContent = '✓ ' + Math.round(entry.duration) + 'ms';
+      el.style.color = 'var(--pass)';
+    } else {
+      el.textContent = fallback || '已缓存';
+      el.style.color = 'var(--text3)';
+    }
+  }
+
+  updateBadge('lrCss', found.css);
+  updateBadge('lrTheme', found.theme);
+  updateBadge('lrJs', found.js);
+
+  var timingEl = document.getElementById('statTiming');
+  if (cdnEntries.length >= 3) {
+    timingEl.textContent = Math.round(totalDuration) + 'ms';
+    timingEl.style.color = totalDuration < 100 ? 'var(--pass)' : 'var(--accent)';
+  } else if (cdnEntries.length > 0) {
+    timingEl.textContent = Math.round(totalDuration) + 'ms';
+    timingEl.style.color = 'var(--cyan)';
+  } else {
+    timingEl.textContent = '已缓存';
+    timingEl.style.color = 'var(--text3)';
+  }
+
+  /* Build live waterfall */
+  var rowsEl = document.getElementById('liveWfRows');
+  if (rowsEl) {
+    if (cdnEntries.length > 0) {
+      var maxEnd = 0;
+      cdnEntries.forEach(function(r) { maxEnd = Math.max(maxEnd, r.responseEnd); });
+      maxEnd = Math.max(maxEnd, 200);
+      var html = '';
+      cdnEntries.forEach(function(r) {
+        var name = r.name.split('/').pop().split('?')[0];
+        var startPct = (r.startTime / maxEnd) * 100;
+        var widthPct = Math.max(3, (r.duration / maxEnd) * 100);
+        var barClass = name.endsWith('.js') ? 'js' : 'css';
+        var dotClass = name.endsWith('.js') ? 'js' : 'css';
+        var phase = r.transferSize === 0 ? '缓存命中' : (r.duration < 10 ? '本地' : '网络');
+        var size = r.transferSize > 0 ? (r.transferSize / 1024).toFixed(1) + 'KB' : '0 (缓存)';
+        html += '<div class="wf-row">' +
+          '<span class="wf-label"><span class="dot ' + dotClass + '"></span>' + name + '</span>' +
+          '<span class="wf-track"><span class="wf-bar ' + barClass + '" style="left:' + startPct + '%;width:' + widthPct + '%">' + (r.duration > 5 ? Math.round(r.duration) + 'ms' : '') + '</span></span>' +
+          '<span class="wf-time">' + Math.round(r.duration) + 'ms</span>' +
+          '<span class="wf-detail">' + size + ' · ' + phase + '</span>' +
+          '</div>';
+      });
+      rowsEl.innerHTML = html;
+    } else {
+      rowsEl.innerHTML =
+        '<div class="wf-row">' +
+        '<span class="wf-label"><span class="dot css"></span>shared.css</span>' +
+        '<span class="wf-track"><span class="wf-bar css" style="left:0%;width:28%">DNS+TCP</span></span>' +
+        '<span class="wf-time">~48ms</span><span class="wf-detail">6.0KB · 模拟</span></div>' +
+        '<div class="wf-row">' +
+        '<span class="wf-label"><span class="dot css"></span>theme.css</span>' +
+        '<span class="wf-track"><span class="wf-bar css" style="left:5%;width:35%">共享连接</span></span>' +
+        '<span class="wf-time">~62ms</span><span class="wf-detail">12.1KB · 模拟</span></div>' +
+        '<div class="wf-row">' +
+        '<span class="wf-label"><span class="dot js"></span>shared.js</span>' +
+        '<span class="wf-track"><span class="wf-bar js" style="left:10%;width:20%"></span></span>' +
+        '<span class="wf-time">~35ms</span><span class="wf-detail">5.3KB · 模拟</span></div>' +
+        '<div style="font-size:.66rem;color:var(--text3);margin-top:6px">⚠ 未检测到实时 Performance 数据（文件已缓存）— 显示典型局域网模拟值</div>';
+    }
+  }
+})();
+
+/* ═══ Walkthrough Simulator ═══ */
+var simRunning = false;
+var simSpeed = 1;
+var selectedPath = 'catb';
+
+var stageDefs = {
+  catb: [
+    { id:'st0', name:'字体预加载', detail:'Cat B 不使用自托管字体', css:'—', status:'跳过 · 使用系统字体栈', cat:'b', skip:true },
+    { id:'st1', name:'CSS Reset 注入', detail:'cdn/shared.css — 6.0KB · 98 行', css:'shared.css', status:'完成 · border-box + 6 @keyframes', cat:'both' },
+    { id:'st2', name:'主题 CSS 应用', detail:'cdn/theme.css — 12.1KB · 254 行 · 14 组件', css:'theme.css', status:'完成 · :root 14 令牌 + 14 组件', cat:'both' },
+    { id:'st3', name:'JS 运行时就绪', detail:'cdn/shared.js — 5.3KB · 106 行', css:'shared.js', status:'完成 · window.YrY 9 API 可用', cat:'both' },
+    { id:'st4', name:'设计令牌注入', detail:':root 14 CSS 变量 → 组件继承', css:'14 vars', status:'完成 · 14 令牌全部注入 :root', cat:'both' },
+    { id:'st5', name:'页面可交互', detail:'主题切换可用 · Cat A/B 实时对比', css:'—', status:'✅ 页面完全就绪', cat:'both' }
+  ],
+  cata: [
+    { id:'st0', name:'字体预加载', detail:'cdn/fonts.css + 4 woff2 (Regular/Bold/Italic/BoldItalic)', css:'fonts.css + woff2', status:'完成 · JetBrains Mono 86KB', cat:'a' },
+    { id:'st1', name:'CSS Reset 注入', detail:'cdn/shared.css — 6.0KB · 98 行', css:'shared.css', status:'完成 · border-box + 6 @keyframes', cat:'both' },
+    { id:'st2', name:'主题 CSS 应用', detail:'cdn/theme-mono.css — 8.8KB · 162 行 · 7 组件', css:'theme-mono.css', status:'完成 · 深蓝黑底 + 等宽字体 + 7 组件', cat:'a' },
+    { id:'st3', name:'JS 运行时就绪', detail:'cdn/shared.js — 5.3KB · 106 行', css:'shared.js', status:'完成 · window.YrY 9 API 可用', cat:'both' },
+    { id:'st4', name:'设计令牌注入', detail:':root 变量 → 深蓝令牌覆盖', css:'14 vars', status:'完成 · 令牌全部注入 :root', cat:'a' },
+    { id:'st5', name:'页面可交互', detail:'Cytoscape / SVG 图表可交互', css:'—', status:'✅ 页面完全就绪', cat:'a' }
+  ]
+};
+
+function selectPath(path, btn) {
+  if (simRunning) return;
+  selectedPath = path;
+  document.querySelectorAll('.path-btn').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+
+  var defs = stageDefs[path];
+  var st2Name = document.getElementById('st2Name');
+  var st2Detail = document.getElementById('st2Detail');
+  var st2Provides = document.getElementById('st2Provides');
+  if (path === 'cata') {
+    if (st2Name) st2Name.textContent = '主题 CSS 应用';
+    if (st2Detail) st2Detail.textContent = 'cdn/theme-mono.css — 8.8KB · 162 行 · 7 组件';
+    if (st2Provides) st2Provides.innerHTML = '<span>:root 令牌</span><span>7 组件</span><span>JetBrains Mono</span><span>深蓝黑底</span>';
+  } else {
+    if (st2Name) st2Name.textContent = '主题 CSS 应用';
+    if (st2Detail) st2Detail.textContent = 'cdn/theme.css — 12.1KB · 254 行 · 14 组件';
+    if (st2Provides) st2Provides.innerHTML = '<span>:root 14 令牌</span><span>14 组件</span><span>system 字体</span><span>深紫黑底</span>';
+  }
+
+  resetSim();
+}
+
+function setSpeed(speed, btn) {
+  simSpeed = speed;
+  document.querySelectorAll('.speed-select button').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+}
+
+function log(msg, color) {
+  var box = document.getElementById('logBox');
+  if (!box) return;
+  var div = document.createElement('div');
+  div.className = 'log-line';
+  var now = new Date();
+  var time = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2) + ':' + ('0' + now.getSeconds()).slice(-2) + '.' + ('00' + now.getMilliseconds()).slice(-3);
+  div.innerHTML = '<span class="log-time">' + time + '</span><span class="log-icon" style="color:' + (color || 'var(--text2)') + '">●</span><span style="color:' + (color || 'var(--text2)') + '">' + msg + '</span>';
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function updateStage(idx, defs, statusCls, statusText, barPct) {
+  var s = defs[idx];
+  var row = document.getElementById(s.id);
+  row.classList.remove('done', 'active', 'skipped');
+  if (statusCls === 'ok') row.classList.add('done');
+  if (statusCls === 'loading') row.classList.add('active');
+  if (statusCls === 'skip') row.classList.add('skipped');
+  var st = row.querySelector('.st-status');
+  st.textContent = statusText;
+  st.className = 'st-status ' + statusCls;
+  row.querySelector('.st-bar').style.width = (barPct || 0) + '%';
+}
+
+function resetSim() {
+  if (simRunning) return;
+  var defs = stageDefs[selectedPath];
+  defs.forEach(function(_, i) { updateStage(i, defs, 'waiting', '等待中', 0); });
+  var box = document.getElementById('logBox');
+  if (box) box.innerHTML = '<div class="log-line" style="color:var(--text3)">等待模拟开始...</div>';
+  document.getElementById('simDetail').style.display = 'none';
+  var btn = document.getElementById('btnPlay');
+  btn.classList.remove('running');
+  btn.textContent = '▶ 开始模拟加载';
+}
+
+function startSim() {
+  if (simRunning) return;
+  simRunning = true;
+  var btn = document.getElementById('btnPlay');
+  btn.classList.add('running');
+  btn.textContent = '⏳ 加载中...';
+
+  document.getElementById('simDetail').style.display = '';
+  var box = document.getElementById('logBox');
+  box.innerHTML = '';
+
+  var defs = stageDefs[selectedPath];
+  var pathLabel = selectedPath === 'catb' ? 'Cat B（审查/测试/演示/计划）' : 'Cat A（架构图/知识图谱）';
+  log('🚀 开始模拟 — ' + pathLabel, 'var(--accent)');
+  log('  ' + (selectedPath === 'catb' ? '3 资源 + 14 令牌 → theme.css' : '6 资源 + 14 令牌 → theme-mono.css'), 'var(--text3)');
+
+  var i = 0;
+  function next() {
+    if (i >= defs.length) {
+      setTimeout(function() {
+        log('✅ 全部加载完成 — 双主题系统就绪', 'var(--pass)');
+        var dur = selectedPath === 'catb' ? '~145ms' : '~288ms';
+        log('  ⏱ 总加载时间（模拟）: ' + dur, 'var(--text2)');
+        log('  🎨 ' + (selectedPath === 'catb' ? '14 设计令牌注入 :root → 14 组件自动继承' : '14 设计令牌注入 :root → 7 组件自动继承'), 'var(--accent)');
+        btn.classList.remove('running');
+        btn.textContent = '✓ 加载完成';
+        simRunning = false;
+        setTimeout(function() { btn.textContent = '▶ 重新播放'; }, 2000);
+      }, 400 / simSpeed);
+      return;
+    }
+
+    var s = defs[i];
+
+    if (s.skip) {
+      updateStage(i, defs, 'skip', '跳过', 100);
+      log('⏭ ' + s.name + ' — ' + s.status, 'var(--text3)');
+      i++;
+      setTimeout(next, 200 / simSpeed);
+      return;
+    }
+
+    log('⏳ ' + s.name + ' — ' + s.detail, 'var(--cyan)');
+
+    updateStage(i, defs, 'loading', '加载中...', 0);
+    var start = Date.now();
+    var duration = (500 + Math.random() * 400) / simSpeed;
+    var tick = setInterval(function() {
+      var pct = Math.min(100, ((Date.now() - start) / duration) * 100);
+      var el = document.getElementById(s.id);
+      if (el) el.querySelector('.st-bar').style.width = pct + '%';
+      if (pct >= 100) clearInterval(tick);
+    }, 16);
+
+    setTimeout(function() {
+      clearInterval(tick);
+      updateStage(i, defs, 'ok', s.status, 100);
+      log('  ✓ ' + s.status, 'var(--pass)');
+      i++;
+      setTimeout(next, 200 / simSpeed);
+    }, duration);
+  }
+
+  setTimeout(next, 400);
+}
+
+/* ═══ Scene-specific: Theme Toggle Demo ═══ */
+var catAThemeVars = {
+  '--bg': '#020617', '--bg-card': 'linear-gradient(159deg, rgba(15,23,42,1) 0%, rgba(2,6,23,1) 100%)',
+  '--bg-flat': 'rgba(15,23,42,1)', '--bg-raised': 'rgba(26,35,50,1)',
+  '--accent': '#3d59a1', '--cyan': '#38bdf8', '--pass': '#22c55e', '--fail': '#ef4444',
+  '--text': 'rgba(230,235,245,1)', '--text2': 'rgba(148,163,184,1)', '--text3': 'rgba(100,116,139,1)',
+  '--border': '1px solid rgba(61,89,161,.15)', '--shadow': '0 4px 20px rgba(0,0,0,.4)', '--shadow-lg': '0 12px 32px rgba(0,0,0,.55)'
+};
+var catBThemeVars = {
+  '--bg': 'rgba(22,22,32,1)', '--bg-card': 'linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%)',
+  '--bg-flat': 'rgba(34,34,46,1)', '--bg-raised': 'rgba(42,42,56,1)',
+  '--accent': '#FFC107', '--cyan': '#22d3ee', '--pass': '#22c55e', '--fail': '#ef4444',
+  '--text': 'rgba(250,250,252,1)', '--text2': 'rgba(160,160,164,1)', '--text3': 'rgba(110,110,114,1)',
+  '--border': '1px solid rgba(255,255,255,0.06)', '--shadow': '0 4px 20px rgba(0,0,0,0.3)', '--shadow-lg': '0 12px 32px rgba(0,0,0,0.45)'
+};
+
+window.switchThemeDemo = function(theme) {
+  var box = document.getElementById('themeToggleBox');
+  var btnB = document.getElementById('btnCatB');
+  var btnA = document.getElementById('btnCatA');
+  var vars = theme === 'cata' ? catAThemeVars : catBThemeVars;
+
+  btnB.classList.toggle('on', theme === 'catb');
+  btnA.classList.toggle('on', theme === 'cata');
+
+  box.classList.toggle('cata-active', theme === 'cata');
+
+  Object.keys(vars).forEach(function(k) { box.style.setProperty(k, vars[k]); });
+  if (theme === 'cata') {
+    box.style.fontFamily = "'JetBrains Mono','SF Mono',monospace";
+  } else {
+    box.style.fontFamily = '';
+  }
+
+  document.getElementById('thAccent').textContent = theme === 'cata' ? '#3d59a1' : '#FFC107';
+  document.getElementById('thAccent').style.color = theme === 'cata' ? '#3d59a1' : '#FFC107';
+  document.getElementById('thBg').textContent = theme === 'cata' ? '#020617' : '#161620';
+  document.getElementById('thBg').style.color = theme === 'cata' ? '#020617' : '#161620';
+  document.getElementById('thCyan').textContent = theme === 'cata' ? '#38bdf8' : '#22d3ee';
+  document.getElementById('thCyan').style.color = theme === 'cata' ? '#38bdf8' : '#22d3ee';
+  document.getElementById('thFont').textContent = theme === 'cata' ? 'JetBrains Mono' : 'system-ui';
+  YrY.toast(theme === 'cata' ? '📐 切换至 Cat A — 深蓝 · JetBrains Mono 等宽字体' : '🖥 切换至 Cat B — 深紫 · 系统字体栈');
+};
+
+/* ═══ Degradation toggle ═══ */
+function toggleDegrade(type) {
+  var box = document.getElementById('degradeBox');
+  if (type === 'vars') {
+    var toggle = document.getElementById('toggleThemeVars');
+    if (toggle.classList.contains('on')) {
+      box.style.setProperty('--bg', '#ffffff');
+      box.style.setProperty('--bg-card', '#f5f5f5');
+      box.style.setProperty('--bg-flat', '#eeeeee');
+      box.style.setProperty('--text', '#111111');
+      box.style.setProperty('--text2', '#555555');
+      box.style.setProperty('--text3', '#999999');
+      box.style.setProperty('--border', '1px solid rgba(0,0,0,0.1)');
+      box.style.setProperty('--shadow', '0 2px 8px rgba(0,0,0,0.1)');
+      box.classList.add('degraded');
+      toggle.classList.remove('on');
+      YrY.toast('⚠ 设计令牌模拟关闭 — 丧失深色主题', 2000);
+    } else {
+      box.style.cssText = '';
+      box.classList.remove('degraded');
+      toggle.classList.add('on');
+      YrY.toast('✅ 设计令牌已恢复', 1500);
+    }
+  } else if (type === 'font') {
+    var toggle = document.getElementById('toggleFontStack');
+    if (toggle.classList.contains('on')) {
+      box.style.fontFamily = 'serif';
+      box.classList.add('degraded');
+      toggle.classList.remove('on');
+      YrY.toast('⚠ 字体栈模拟关闭 — 回退为 serif', 2000);
+    } else {
+      box.style.fontFamily = '';
+      box.classList.remove('degraded');
+      toggle.classList.add('on');
+      YrY.toast('✅ 字体栈已恢复', 1500);
+    }
+  }
+}
 </script>
-<div class="footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY v4.7.0 · cdn · 场景-2 演示</div>
-<script src="../../../../../cdn/shared.js"></script>
+<script src="../../../../cdn/shared.js"></script>
+<div style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:40px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY · cdn · 场景-2 演示</div>
 </body>
 </html>

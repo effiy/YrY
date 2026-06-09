@@ -4,8 +4,8 @@
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>场景 1 · CDN加载 — 演示</title>
 <!-- ═══ CDN: YrY 共享样式 ═══ -->
-<link rel="stylesheet" href="../../../../../cdn/shared.css">
-<link rel="stylesheet" href="../../../../../cdn/theme.css">
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
 
   <style>
     :root { --bg:rgba(22,22,32,1); --bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%); --bg-flat:rgba(34,34,46,1); --bg-raised:rgba(42,42,56,1); --accent:#FFC107; --cyan:#22d3ee; --pass:#22c55e; --fail:#ef4444; --text:rgba(250,250,252,1); --text2:rgba(160,160,164,1); --text3:rgba(110,110,114,1); --shadow:0 4px 20px rgba(0,0,0,0.3); --shadow-lg:0 12px 32px rgba(0,0,0,0.45); --warn:#f59e0b; --info:#6b7280; --radius:12px; --border:1px solid rgba(255,255,255,0.06); }
@@ -14,6 +14,9 @@
     @keyframes slideDown { from{opacity:0;max-height:0} to{opacity:1;max-height:800px} }
     @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)} 50%{box-shadow:0 0 0 8px rgba(255,193,7,0)} }
     @keyframes stepIn { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes glowPulse { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.3)} }
+    @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+    @keyframes countUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
     * { box-sizing:border-box;margin:0;padding:0 }
     body { background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6 }
     .container { max-width:960px;margin:0 auto;padding:40px 24px 80px }
@@ -25,7 +28,6 @@
     .section { margin-bottom:32px }
     .section h2 { font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px }
     .section h2 .dot { width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0 }
-    .mermaid-wrap { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);overflow-x:auto;margin-bottom:16px }
     .cmd-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px }
     .cmd-card { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s }
     .cmd-card:hover { transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.35) }
@@ -40,22 +42,12 @@
     .flow-chip:hover { border-color:rgba(255,193,7,.3) }
     .flow-chip .n { font-weight:700;color:var(--accent) }
     .flow-arrow { color:var(--text3);font-size:.8rem }
-    .file-list { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px }
-    .file-item { background:var(--bg-flat);border:var(--border);border-radius:6px;padding:8px 12px;font-size:.74rem;font-family:monospace;color:var(--text2) }
-    .stat-row { display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px }
-    .stat-mini { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:12px 16px;text-align:center;box-shadow:var(--shadow);min-width:70px }
-    .stat-mini .sv { font-size:1.3rem;font-weight:700 } .stat-mini .sv.g { color:var(--pass) } .stat-mini .sv.y { color:var(--accent) } .stat-mini .sl { font-size:.64rem;color:var(--text3);text-transform:uppercase;letter-spacing:.4px }
-    .links-row { display:flex;gap:8px;flex-wrap:wrap;margin-top:16px }
-    .links-row a { font-size:.76rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:6px;padding:6px 12px;transition:all .15s }
-    .links-row a:hover { border-color:var(--accent);color:var(--accent);text-decoration:underline }
     .toast { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:0 12px 32px rgba(0,0,0,.45);opacity:0;transition:opacity .2s;pointer-events:none }
     .toast.show { opacity:1 }
     .walkthrough { counter-reset:step }
     .walkthrough .step { counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both }
     .walkthrough .step::before { content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0 }
     .walkthrough .step .s-body { flex:1 } .walkthrough .step .s-title { font-weight:600;font-size:.88rem } .walkthrough .step .s-desc { font-size:.76rem;color:var(--text2);margin:3px 0 6px }
-    .walkthrough .step .s-result { font-size:.74rem;color:var(--pass);margin-top:6px }
-    .walkthrough .step .s-result .r-label { font-weight:600 }
     .walkthrough .step .s-result-desc { font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.5;padding:6px 10px;background:rgba(34,211,238,.04);border-left:2px solid var(--cyan);border-radius:0 4px 4px 0 }
     .kbd-hint { font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.03);border-radius:3px;padding:1px 5px;margin-left:4px }
     @media (max-width:640px) { .container { padding:20px 12px 60px } h1 { font-size:1.4rem } .cmd-grid { grid-template-columns:1fr } }
@@ -64,128 +56,919 @@
   .header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
   .header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
   .header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
-  .stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+  .stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
   .stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}
   .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
   .stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
-  .stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}
+  .stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}.stat-card .val.accent{color:var(--accent)}
   .stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
-  .bar-wrap{margin-bottom:28px;animation:fadeInDown .5s .12s ease both}
-  .bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
-  .bar-outer .seg{height:100%;transition:width .5s ease;min-width:3px}
-  .bar-outer .seg.strength{background:var(--pass)}.bar-outer .seg.gap{background:var(--fail)}.bar-outer .seg.suggestion{background:var(--warn)}.bar-outer .seg.neutral{background:var(--info)}
-.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}</style>
+
+  /* ═══ Live detection ═══ */
+  .live-bar{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;font-size:.72rem;color:var(--text3);animation:fadeInDown .5s .14s ease both}
+  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--pass);animation:glowPulse 2s infinite;flex-shrink:0}
+  .live-resource{display:flex;align-items:center;gap:4px;background:var(--bg-flat);border:var(--border);border-radius:12px;padding:3px 10px;font-family:monospace;font-size:.68rem}
+  .live-resource .lr-name{color:var(--text2)}
+  .live-resource .lr-status{color:var(--pass);font-weight:700}
+  .live-resource .lr-size{color:var(--text3)}
+
+  /* ═══ Path selector ═══ */
+  .path-selector{display:flex;gap:0;justify-content:center;margin-bottom:24px}
+  .path-btn{padding:8px 24px;cursor:pointer;font-size:.82rem;color:var(--text3);background:var(--bg-flat);border:var(--border);transition:all .15s;font-family:inherit}
+  .path-btn:first-child{border-radius:20px 0 0 20px}
+  .path-btn:last-child{border-radius:0 20px 20px 0}
+  .path-btn.on{background:rgba(255,193,7,.1);color:var(--accent);border-color:rgba(255,193,7,.3);z-index:1}
+  .path-btn .path-tag{font-size:.6rem;padding:1px 6px;border-radius:8px;margin-left:4px}
+  .path-btn.on .path-tag.a{background:rgba(34,211,238,.15);color:var(--cyan)}
+  .path-btn.on .path-tag.b{background:rgba(255,193,7,.15);color:var(--accent)}
+
+  /* ═══ Stage list (walkthrough) ═══ */
+  .play-bar{display:flex;gap:12px;align-items:center;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+  .btn-play{background:var(--accent);color:#000;border:none;border-radius:24px;padding:10px 28px;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;display:flex;align-items:center;gap:8px}
+  .btn-play:hover{filter:brightness(1.1);transform:translateY(-1px)}
+  .btn-play:active{transform:scale(.97)}
+  .btn-play.running{animation:pulse 1.5s infinite;pointer-events:none;opacity:.7}
+  .btn-reset{background:var(--bg-flat);color:var(--text2);border:var(--border);border-radius:24px;padding:10px 20px;font-size:.82rem;cursor:pointer;transition:all .15s;font-family:inherit}
+  .btn-reset:hover{color:var(--text);border-color:rgba(255,255,255,.15)}
+  .speed-select{display:flex;gap:4px;align-items:center;font-size:.7rem;color:var(--text3)}
+  .speed-select button{background:var(--bg-flat);border:var(--border);color:var(--text3);padding:3px 8px;border-radius:4px;cursor:pointer;font-family:inherit;font-size:.66rem;transition:all .15s}
+  .speed-select button.on{color:var(--accent);border-color:rgba(255,193,7,.3);background:rgba(255,193,7,.06)}
+
+  .stage-list{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+  .stage-row{display:flex;align-items:center;gap:12px;background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);transition:all .35s;position:relative;overflow:hidden}
+  .stage-row.done{border-color:rgba(34,197,94,.15)}
+  .stage-row.active{border-color:rgba(255,193,7,.25);animation:pulse 2s infinite}
+  .stage-row.skipped{border-color:rgba(110,110,114,.1);opacity:.55}
+  .stage-row .st-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;flex-shrink:0;background:rgba(255,255,255,.04);color:var(--text3);transition:all .35s}
+  .stage-row.done .st-num{background:rgba(34,197,94,.12);color:var(--pass)}
+  .stage-row.active .st-num{background:rgba(255,193,7,.12);color:var(--accent)}
+  .stage-row.skipped .st-num{background:rgba(110,110,114,.08);color:var(--text3)}
+  .stage-row .st-info{flex:1;min-width:0}
+  .stage-row .st-name{font-weight:600;font-size:.84rem}
+  .stage-row .st-detail{font-size:.7rem;color:var(--text3);margin-top:2px;font-family:monospace}
+  .stage-row .st-provides{font-size:.66rem;color:var(--text3);margin-top:3px;display:flex;gap:4px;flex-wrap:wrap}
+  .stage-row .st-provides span{background:rgba(255,255,255,.03);border-radius:3px;padding:0 5px}
+  .stage-row .st-status{font-size:.72rem;flex-shrink:0;padding:3px 10px;border-radius:12px;white-space:nowrap}
+  .stage-row .st-status.waiting{color:var(--text3);background:rgba(110,110,114,.1)}
+  .stage-row .st-status.loading{color:var(--accent);background:rgba(255,193,7,.1)}
+  .stage-row .st-status.ok{color:var(--pass);background:rgba(34,197,94,.1)}
+  .stage-row .st-status.skip{color:var(--text3);background:rgba(110,110,114,.05)}
+  .stage-row .st-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--accent);transition:width .2s linear;border-radius:0 1px 1px 0}
+
+  /* ═══ Log ═══ */
+  .log-box{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);font-family:'SF Mono',monospace;font-size:.7rem;max-height:260px;overflow-y:auto;line-height:1.7}
+  .log-box .log-line{padding:1px 0;display:flex;gap:8px}
+  .log-box .log-time{color:var(--text3);flex-shrink:0}
+  .log-box .log-icon{width:14px;text-align:center;flex-shrink:0}
+
+  /* ═══ Mermaid ═══ */
+  .mermaid-wrap{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);overflow-x:auto;margin-bottom:20px}
+
+  /* ═══ Waterfall ═══ */
+  .waterfall{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);overflow-x:auto}
+  .wf-header-row{display:flex;padding:4px 0 10px;font-size:.66rem;color:var(--text3);border-bottom:1px solid rgba(255,255,255,.04);margin-bottom:6px}
+  .wf-row{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:.78rem}
+  .wf-label{min-width:130px;font-family:monospace;font-size:.74rem;color:var(--text2);display:flex;align-items:center;gap:6px}
+  .wf-label .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+  .wf-label .dot.css{background:var(--cyan)}.wf-label .dot.js{background:var(--pass)}.wf-label .dot.font{background:var(--warn)}
+  .wf-track{flex:1;height:24px;background:rgba(255,255,255,.02);border-radius:3px;position:relative;min-width:280px}
+  .wf-track .tick{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.03)}
+  .wf-bar{position:absolute;top:3px;height:18px;border-radius:3px;transition:width .5s ease;display:flex;align-items:center;padding-left:6px;font-size:.62rem;color:rgba(255,255,255,.6);white-space:nowrap;overflow:hidden}
+  .wf-bar.css{background:rgba(34,211,238,.2);border-left:2px solid var(--cyan)}
+  .wf-bar.js{background:rgba(34,197,94,.2);border-left:2px solid var(--pass)}
+  .wf-bar.font{background:rgba(245,158,11,.2);border-left:2px solid var(--warn)}
+  .wf-time{min-width:56px;text-align:right;font-size:.7rem;color:var(--text3);font-family:monospace}
+  .wf-row .wf-detail{font-size:.64rem;color:var(--text3);min-width:70px;text-align:right}
+
+  /* ═══ Compare ═══ */
+  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+  .compare-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+  .compare-card h3{font-size:.84rem;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .compare-card .badge{font-size:.64rem;padding:2px 8px;border-radius:10px}
+  .compare-card .badge.a{background:rgba(34,211,238,.12);color:var(--cyan)}
+  .compare-card .badge.b{background:rgba(255,193,7,.12);color:var(--accent)}
+  .compare-card ul{list-style:none;font-size:.76rem;color:var(--text2)}
+  .compare-card li{margin-bottom:4px;display:flex;align-items:center;gap:6px}
+  .compare-card li .ok{color:var(--pass)}.compare-card li .na{color:var(--text3)}
+
+  /* ═══ Degradation ═══ */
+  .degrade-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+  .degrade-card{background:var(--bg-flat);border:var(--border);border-radius:8px;padding:14px 16px;text-align:center;transition:all .2s}
+  .degrade-card:hover{border-color:rgba(255,255,255,.1)}
+  .degrade-card .d-icon{font-size:1.8rem;margin-bottom:6px}
+  .degrade-card .d-title{font-size:.8rem;font-weight:600;margin-bottom:2px}
+  .degrade-card .d-desc{font-size:.7rem;color:var(--text3);line-height:1.4}
+  .degrade-card .d-badge{display:inline-block;margin-top:6px;font-size:.66rem;padding:2px 10px;border-radius:10px}
+  .degrade-card .d-badge.safe{background:rgba(34,197,94,.1);color:var(--pass)}
+  .degrade-card .d-badge.warn{background:rgba(245,158,11,.1);color:var(--warn)}
+  .degrade-card .d-badge.info{background:rgba(34,211,238,.1);color:var(--cyan)}
+
+  /* ═══ Toggle demo ═══ */
+  .toggle-demo-box{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);transition:all .3s}
+  .toggle-demo-box.degraded{filter:grayscale(.6) brightness(.8)}
+  .toggle-row{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+  .toggle-switch{position:relative;width:44px;height:24px;background:rgba(110,110,114,.3);border-radius:12px;cursor:pointer;transition:background .2s;border:none;flex-shrink:0}
+  .toggle-switch.on{background:rgba(34,197,94,.5)}
+  .toggle-switch::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
+  .toggle-switch.on::after{transform:translateX(20px)}
+  .toggle-label{font-size:.82rem;font-weight:600}
+  .toggle-desc{font-size:.72rem;color:var(--text3)}
+
+  /* ═══ Typography ═══ */
+  .tip-box{background:rgba(255,193,7,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:10px 0;font-size:.78rem;color:var(--text2);line-height:1.5}
+  .tip-box strong{color:var(--accent)}
+  .inline-code{background:rgba(0,0,0,.3);color:var(--cyan);padding:1px 6px;border-radius:3px;font-size:.8rem;font-family:'SF Mono',monospace}
+
+  @media (max-width:640px) { .container { padding:20px 12px 60px } h1 { font-size:1.4rem } .cmd-grid { grid-template-columns:1fr } .compare-grid{grid-template-columns:1fr} .wf-label{min-width:90px} }
+  .breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
+  </style>
 </head>
 <body>
 <div class="container">
+
 <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-cdn · CDN 共享前端资源管理</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · CDN 资源加载与页面渲染</span><span class="bc-sep">/</span><span class="bc-current">💡 演示</span></nav>
-  <div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
-              <a href="源码.html" class="cross-link">📄 源码</a><span class="cross-sep">·</span>
-              <a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><span class="cross-link on">💡 演示</span><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
-  <div class="header">
-  <h1>🧩 <span class="accent">CDN 资源加载与页面渲染</span> — 演示</h1>
-  <p class="sub">交互式演练 CDN 加载链路、主题系统和降级策略 — <span class="kbd-hint">1-5</span> 数字键切换 Tab · 悬停代码复制</p>
+
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<span class="cross-link on">💡 演示</span><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
+
+<div class="header">
+  <h1>💡 场景-1<span class="accent"> · CDN 资源加载与页面渲染</span></h1>
+  <p class="sub">交互式演示 — 模拟 5 步加载链路，观察 CDN 资源如何逐步构建页面</p>
 </div>
 
-  <div class="tabs">
-    <span class="tab on" data-panel="walkthrough">🚶 演示</span>
-    <span class="tab" data-panel="overview">📊 概览</span>
-    <span class="tab" data-panel="commands">⚡ 命令</span>
-    <span class="tab" data-panel="files">📁 文件</span>
-    <span class="tab" data-panel="tests">🧪 测试</span>
+<!-- ═══ Live CDN Detection Bar ═══ -->
+<div class="live-bar" id="liveBar">
+  <span class="live-dot"></span> 本页（Cat B）CDN 加载状态：
+  <span class="live-resource"><span class="lr-name">shared.css</span><span class="lr-status" id="lrCss">检测中</span><span class="lr-size">6.0KB</span></span>
+  <span class="live-resource"><span class="lr-name">theme.css</span><span class="lr-status" id="lrTheme">检测中</span><span class="lr-size">12.1KB</span></span>
+  <span class="live-resource"><span class="lr-name">shared.js</span><span class="lr-status" id="lrJs">检测中</span><span class="lr-size">5.3KB</span></span>
+  <span class="kbd-hint">1-4</span> 数字键切换 Tab
 </div>
 
-<div class="stats-grid"><div class="stat-card"><div class="val health">5</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">5</div><div class="lbl">✅ 已演示</div></div><div class="stat-card"><div class="val">0</div><div class="lbl">⏳ 待演示</div></div><div class="stat-card"><div class="val health">100%</div><div class="lbl">📊 覆盖率</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div>
-  <div style="display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:.68rem;color:var(--text3)"><span>✅ 5 已演示</span><span>⏳ 0 待演示</span></div>
+<!-- ═══ Stats Row ═══ -->
+<div class="stats-grid" id="statsRow">
+  <div class="stat-card"><div class="val health" id="statResources">3</div><div class="lbl">📦 CDN 资源</div></div>
+  <div class="stat-card"><div class="val health">5</div><div class="lbl">🔢 加载阶段</div></div>
+  <div class="stat-card"><div class="val accent" id="statCssSize">18.1</div><div class="lbl">📐 CSS (KB)</div></div>
+  <div class="stat-card"><div class="val health" id="statJsSize">5.3</div><div class="lbl">⚡ JS (KB)</div></div>
+  <div class="stat-card"><div class="val" style="color:var(--cyan)" id="statTiming">—</div><div class="lbl">⏱ 实际加载</div></div>
 </div>
 
-<!-- Walkthrough -->
-  <div class="panel on" id="panelWalkthrough">
-    <div class="walkthrough">
-      <div class="step"><div class="suite-body"><div class="s-title">查看 CDN 加载链路</div><div class="s-desc">打开任意 Cat B 页面（审查/测试/演示/计划），使用浏览器 DevTools Network 面板观察资源加载顺序。</div><pre>打开审查页面 → F12 → Network 标签 → 刷新 → 观察加载瀑布流<span class="cb" onclick="copyCmd(this,'打开任意 Cat B 页面，F12 打开 DevTools Network 面板')">📋</span></pre><div class="s-result-desc">💡 说明: Cat A 页面在 shared.css 之前额外加载 Google Fonts（fonts.googleapis.com/css2?family=JetBrains+Mono），字体文件为 woff2 格式。Cat B 使用系统字体栈，跳过外部字体请求，首屏渲染快约 80ms。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 加载顺序：① shared.css（5.9KB）→ ② theme.css（11.3KB）→ ③ shared.js（5.1KB）。所有资源返回 HTTP 200，Content-Type 正确。页面在 DOMContentLoaded 后 120ms 可交互。</div></div></div>
-      <div class="step"><div class="suite-body"><div class="s-title">验证双主题系统</div><div class="s-desc">同时打开 Cat A 页面（架构图/知识图谱）和 Cat B 页面（审查/测试/演示/计划），对比样式差异。</div><div class="s-result-desc">💡 说明: 双主题通过两个独立的 CSS 文件实现：theme-mono.css（Cat A，6.1KB）和 theme.css（Cat B，11.3KB）。两者共享 shared.css 的全局样式，但各自定义 :root 级别的设计令牌（颜色/字体/阴影），组件通过 var(--yry-*) 引用令牌自动适配。</div><div class="s-result"><span class="r-label">✅ 结果:</span> Cat A — 深蓝黑底(#020617) + JetBrains Mono 等宽字体 + 脉冲动画点 + 卡片使用半透明背景。Cat B — 深紫黑底(#161620) + 系统字体 + 渐变色卡片 + 更大圆角和阴影。</div><pre># Cat A 页面 (等宽字体 + 深蓝底)
-open 架构图.html
+<div class="tabs">
+  <span class="tab on" data-panel="walkthrough">🎬 加载演练</span>
+  <span class="tab" data-panel="waterfall">📊 瀑布流</span>
+  <span class="tab" data-panel="effects">🎨 效果展示</span>
+  <span class="tab" data-panel="guide">📋 操作说明</span>
+</div>
 
-# Cat B 页面 (系统字体 + 深紫底)
-open 审查.html<span class="cb" onclick="copyCmd(this,'# 打开两个页面并排对比\nopen 架构图.html\nopen 审查.html')">📋</span></pre></div></div>
-      <div class="step"><div class="suite-body"><div class="s-title">测试 JS API (YrY.*)</div><div class="s-desc">在浏览器 Console 中测试 shared.js 暴露的 9 个公共 API：YrY.toast / YrY.copyCmd / YrY.switchPanel 等。</div><div class="s-result-desc">💡 说明: shared.js 使用 IIFE 模式 (function(){...})() 封装，仅暴露 window.YrY 单一命名空间。内部 3 个私有辅助函数（_getOrCreateToastEl / _resetToastTimer / _copyToClipboard）不污染全局。所有 API 在 DOMContentLoaded 之前即可调用（内部自动等待 DOM 就绪）。</div><div class="s-result"><span class="r-label">✅ 结果:</span> YrY.toast('Hello CDN!') 在底部居中显示通知，1.8s 后自动消失。YrY.copyCmd 向剪贴板写入文本并触发按钮图标切换。window.YrY 对象在 IIFE 执行后立即可用。</div><pre>// 在任意 Cat A/B 页面 Console 中执行
-YrY.toast('Hello CDN!')
-console.log(Object.keys(YrY))  // 查看所有公共 API<span class="cb" onclick="copyCmd(this,'YrY.toast(\'Hello CDN!\')\nconsole.log(Object.keys(YrY))')">📋</span></pre></div></div>
-      <div class="step"><div class="suite-body"><div class="s-title">验证降级策略</div><div class="s-desc">使用 DevTools Network 面板阻止外部资源，验证页面的降级行为。</div><div class="s-result-desc">💡 说明: 降级策略分为两层：① 字体降级 — Cat A 页面 CSS font-family 指定了回退栈 'JetBrains Mono', monospace；② JS 降级 — 所有 YrY API 在调用前检查 DOM 元素存在性，不存在时静默返回而非抛异常。页面核心内容（HTML + CSS）独立于 JS 运行。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 阻止 fonts.googleapis.com 后，Cat A 页面回退为 monospace 字体栈，布局不受影响。阻止 shared.js 后，HTML/CSS 正常渲染，仅交互增强（toast/copyCmd/switchPanel）不可用——无 JS 异常，页面不白屏。</div><pre># DevTools → Network → 右键 fonts.googleapis.com → Block request domain
-# 然后刷新 Cat A 页面（架构图/知识图谱）观察字体回退<span class="cb" onclick="copyCmd(this,'# 1. 打开 DevTools Network 面板\n# 2. 右键 fonts.googleapis.com → Block request domain\n# 3. 刷新 Cat A 页面')">📋</span></pre></div></div>
-      <div class="step"><div class="suite-body"><div class="s-title">查看页面性能 (Lighthouse)</div><div class="s-desc">使用 Chrome DevTools Lighthouse 面板运行性能审计，检查 CDN 资源的加载性能。</div><div class="s-result-desc">💡 说明: 所有 CDN 资源使用 &lt;link rel="stylesheet"&gt; 方式加载（不阻塞 HTML 解析），shared.js 放在 &lt;/body&gt; 之前（不阻塞 DOM 构建）。Google Fonts 使用 &lt;link&gt; 而非 @import（避免 CSS 链式加载延迟）。整体加载策略遵循 Web Vitals 最佳实践。</div><div class="s-result"><span class="r-label">✅ 结果:</span> Cat B 页面 Performance 评分 96/100。首次内容绘制(FCP) 0.6s，最大内容绘制(LCP) 0.9s。CSS 文件大小：shared.css 5.9KB + theme.css 11.3KB = 17.2KB (gzip 后 ~3.5KB)。无渲染阻塞资源（CSS 为 &lt;link&gt; 方式异步加载）。</div><pre># Chrome → F12 → Lighthouse 标签 → Generate report
-# 关注: FCP / LCP / Render Blocking Resources<span class="cb" onclick="copyCmd(this,'# 1. 打开任意 Cat B 页面\n# 2. F12 → Lighthouse → Generate report')">📋</span></pre></div></div>
-    </div>
-  </div>
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 1: 加载演练                          -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel on" id="panelWalkthrough">
 
-  <!-- Overview -->
-  <div class="panel" id="panelOverview">
-    <div class="section"><h2><span class="dot"></span>CDN 加载链路</h2>
-      <div class="flow-row">
-        <div class="flow-chip"><span class="n">① Google Fonts</span> (仅 Cat A)</div><span class="flow-arrow">→</span>
-        <div class="flow-chip"><span class="n">② shared.css</span> 5.9KB</div><span class="flow-arrow">→</span>
-        <div class="flow-chip"><span class="n">③ Theme CSS</span> Cat A/B 分叉</div><span class="flow-arrow">→</span>
-        <div class="flow-chip"><span class="n">④ shared.js</span> 5.1KB</div><span class="flow-arrow">→</span>
-        <div class="flow-chip"><span class="n">⑤ 可交互</span> ✅</div>
-      </div>
+<div class="section">
+  <h2><span class="dot"></span>加载流程</h2>
+  <div class="mermaid-wrap">
+    <div style="text-align:center;padding:10px 0">
+<div class="mermaid">
+flowchart LR
+    U["👤 用户请求"] --> P{"页面类型?"}
+    P -->|"Cat A"| F["① fonts.css<br/>JetBrains Mono"]
+    P -->|"Cat B"| R["② shared.css<br/>Reset + 动画"]
+    F --> R
+    R --> T{"③ 主题选择"}
+    T -->|"Cat A"| MA["theme-mono.css<br/>深蓝 + 等宽"]
+    T -->|"Cat B"| MB["theme.css<br/>深紫 + 系统字体"]
+    MA --> JS["④ shared.js<br/>IIFE → YrY API"]
+    MB --> JS
+    JS --> OK["⑤ 页面可交互 ✅"]
+</div>
     </div>
-    <div class="section"><h2><span class="dot"></span>核心资源</h2>
-      <div class="flow-row">
-        <div class="flow-chip"><span class="n">shared.css</span> 全局组件</div><span class="flow-arrow">·</span>
-        <div class="flow-chip"><span class="n">theme.css</span> Cat B 主题</div><span class="flow-arrow">·</span>
-        <div class="flow-chip"><span class="n">theme-mono.css</span> Cat A 主题</div><span class="flow-arrow">·</span>
-        <div class="flow-chip"><span class="n">shared.js</span> IIFE API</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Commands -->
-  <div class="panel" id="panelCommands">
-    <div class="cmd-grid">
-      <div class="cmd-card"><div class="stage">步骤 1</div><div class="name">DevTools Network</div><div class="desc">打开审查页面，F12 → Network 标签，刷新页面，观察 shared.css → theme.css → shared.js 加载瀑布流。</div><pre>open 审查.html → F12 → Network<span class="cb" onclick="copyCmd(this,'open 审查.html')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">步骤 2</div><div class="name">对比双主题</div><div class="desc">并排打开 Cat A（架构图.html）和 Cat B（审查.html）页面，对比字体/颜色/卡片样式的视觉差异。</div><pre>open 架构图.html && open 审查.html<span class="cb" onclick="copyCmd(this,'open 架构图.html && open 审查.html')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">步骤 3</div><div class="name">Console API 测试</div><div class="desc">在任意页面 Console 中执行 YrY.toast('test') 验证 JS API 可用性。</div><pre>YrY.toast('Hello CDN!')<span class="cb" onclick="copyCmd(this,'YrY.toast(\'Hello CDN!\')')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">步骤 4</div><div class="name">阻止外部字体</div><div class="desc">DevTools → Network → 阻止 fonts.googleapis.com，刷新 Cat A 页面验证字体降级。</div><pre>Block: fonts.googleapis.com<span class="cb" onclick="copyCmd(this,'Block: fonts.googleapis.com')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">步骤 5</div><div class="name">Lighthouse 审计</div><div class="desc">Chrome → F12 → Lighthouse → Generate report，查看 FCP/LCP 和渲染阻塞资源。</div><pre>F12 → Lighthouse → Generate<span class="cb" onclick="copyCmd(this,'F12 → Lighthouse → Generate report')">📋</span></pre></div>
-      <div class="cmd-card"><div class="stage">验证</div><div class="name">检查 CDN 引用</div><div class="desc">确认所有 55 个页面正确引用 shared.css + shared.js，路径深度一致（5 级）。</div><pre>grep -r "shared.css" docs/故事任务面板/yry-cdn/ | wc -l<span class="cb" onclick="copyCmd(this,'grep -r "shared.css" docs/故事任务面板/yry-cdn/ | wc -l')">📋</span></pre></div>
-    </div>
-  </div>
-
-  <!-- Files -->
-  <div class="panel" id="panelFiles">
-    <div class="section"><h2><span class="dot"></span>CDN 资源文件</h2>
-      <div class="file-list">
-        <div class="file-item">📄 cdn/shared.css</div><div class="file-item">📄 cdn/theme.css</div><div class="file-item">📄 cdn/theme-mono.css</div><div class="file-item">📄 cdn/shared.js</div>
-        <div class="file-item">📐 架构图.html</div><div class="file-item">📐 知识图谱.html</div><div class="file-item">📋 场景-1 计划清单.html</div>
-        <div class="file-item">🧪 场景-1 测试面板.html</div><div class="file-item">📝 场景-1 审查.html</div>
-      </div>
-    </div>
-    <div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="测试面板.html">🧪 测试面板</a><a href="审查.html">📝 审查</a></div>
-  </div>
-
-  <!-- Tests -->
-  <div class="panel" id="panelTests">
-    <div class="section"><h2><span class="dot"></span>测试覆盖</h2>
-      <div class="cmd-grid">
-        <div class="cmd-card"><div class="name">CDN 加载顺序验证</div><div class="desc">验证 Cat A 和 Cat B 页面的资源加载顺序：shared.css → theme*.css → shared.js。</div></div>
-        <div class="cmd-card"><div class="name">降级策略测试</div><div class="desc">模拟 Google Fonts 不可用、shared.js 404 等场景，验证页面仍可正常渲染。</div></div>
-        <div class="cmd-card"><div class="name">跨浏览器兼容</div><div class="desc">Chrome / Safari / Edge 最新版完整冒烟测试。</div></div>
-        <div class="cmd-card"><div class="name">设计令牌覆盖</div><div class="desc">验证 14 个 CSS 设计令牌在 Cat A 和 Cat B 主题中全部定义且有默认值。</div></div>
-      </div>
-    </div>
-    <div class="links-row"><a href="测试面板.html">🧪 打开测试面板</a><a href="../../../index.html">📄 返回文档中心</a></div>
   </div>
 </div>
+
+<div class="section">
+  <h2><span class="dot"></span>模拟加载演练</h2>
+
+  <div class="path-selector">
+    <button class="path-btn on" data-path="catb" onclick="selectPath('catb', this)">
+      🖥 Cat B<span class="path-tag b">本页</span>
+    </button>
+    <button class="path-btn" data-path="cata" onclick="selectPath('cata', this)">
+      📐 Cat A<span class="path-tag a">架构/图谱</span>
+    </button>
+  </div>
+
+  <div class="play-bar">
+    <button class="btn-play" id="btnPlay" onclick="startWalkthrough()">▶ 开始模拟加载</button>
+    <button class="btn-reset" onclick="resetWalkthrough()">↺ 重置</button>
+    <span class="speed-select">
+      速度
+      <button class="on" data-speed="1" onclick="setSpeed(1, this)">1×</button>
+      <button data-speed="2" onclick="setSpeed(2, this)">2×</button>
+      <button data-speed="4" onclick="setSpeed(4, this)">4×</button>
+    </span>
+  </div>
+
+  <div class="stage-list" id="stageList">
+    <div class="stage-row" id="st0">
+      <div class="st-num">①</div>
+      <div class="st-info">
+        <div class="st-name">字体预加载</div>
+        <div class="st-detail">cdn/fonts.css → 4 woff2 （Regular/Bold/Italic/BoldItalic）</div>
+        <div class="st-provides"><span>@font-face</span><span>font-display:swap</span><span>86KB woff2</span><span>仅 Cat A</span></div>
+      </div>
+      <div class="st-status waiting">等待中</div>
+      <div class="st-bar" style="width:0%"></div>
+    </div>
+    <div class="stage-row" id="st1">
+      <div class="st-num">②</div>
+      <div class="st-info">
+        <div class="st-name">CSS Reset 注入</div>
+        <div class="st-detail">cdn/shared.css — 6.0KB · 98 行</div>
+        <div class="st-provides"><span>border-box</span><span>6 @keyframes</span><span>.breadcrumb</span><span>.cross-nav</span><span>.toast</span><span>toolbar</span></div>
+      </div>
+      <div class="st-status waiting">等待中</div>
+      <div class="st-bar" style="width:0%"></div>
+    </div>
+    <div class="stage-row" id="st2">
+      <div class="st-num">③</div>
+      <div class="st-info">
+        <div class="st-name" id="st2Name">主题 CSS 应用</div>
+        <div class="st-detail" id="st2Detail">cdn/theme.css — 12.1KB · 254 行</div>
+        <div class="st-provides" id="st2Provides"><span>:root 14 令牌</span><span>14 组件</span><span>system 字体</span><span>深紫黑底</span></div>
+      </div>
+      <div class="st-status waiting">等待中</div>
+      <div class="st-bar" style="width:0%"></div>
+    </div>
+    <div class="stage-row" id="st3">
+      <div class="st-num">④</div>
+      <div class="st-info">
+        <div class="st-name">JS 运行时就绪</div>
+        <div class="st-detail">cdn/shared.js — 5.3KB · 106 行</div>
+        <div class="st-provides"><span>IIFE</span><span>window.YrY</span><span>toast</span><span>copyCmd</span><span>switchPanel</span><span>fmtDur</span><span>esc</span><span>clipboardWrite</span></div>
+      </div>
+      <div class="st-status waiting">等待中</div>
+      <div class="st-bar" style="width:0%"></div>
+    </div>
+    <div class="stage-row" id="st4">
+      <div class="st-num">⑤</div>
+      <div class="st-info">
+        <div class="st-name">页面可交互</div>
+        <div class="st-detail">事件委托绑定 · Toast 可用 · 设计令牌注入完成</div>
+        <div class="st-provides"><span>YrY.toast()</span><span>YrY.copyCmd()</span><span>Tab 切换</span><span>元素动画</span></div>
+      </div>
+      <div class="st-status waiting">等待中</div>
+      <div class="st-bar" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="section" id="walkthroughDetail" style="display:none">
+    <h2><span class="dot"></span>实时日志</h2>
+    <div class="log-box" id="logBox">
+      <div style="color:var(--text3)">等待模拟开始...</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /panelWalkthrough -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 2: 瀑布流                            -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panelWaterfall">
+
+<div class="section">
+  <h2><span class="dot"></span>实测资源加载时序 <span style="font-size:.7rem;color:var(--text3);font-weight:400">— Performance API</span></h2>
+  <p style="font-size:.74rem;color:var(--text3);margin-bottom:14px">本页实际 CDN 资源加载瀑布流。若数据为空（本地文件），显示典型局域网模拟值。</p>
+
+  <div class="waterfall" id="liveWaterfall">
+    <div class="wf-header-row">
+      <span style="min-width:130px">资源</span>
+      <span style="flex:1;min-width:280px;display:flex;justify-content:space-between"><span>0</span><span>50ms</span><span>100ms</span><span>150ms</span><span>200ms</span></span>
+      <span style="min-width:56px;text-align:right">耗时</span>
+      <span style="min-width:70px;text-align:right">阶段</span>
+    </div>
+    <div id="liveWfRows">
+      <div style="color:var(--text3);font-size:.72rem;padding:12px 0;text-align:center">⏳ 正在采集 Performance 数据...</div>
+    </div>
+  </div>
+
+  <div class="tip-box" style="margin-top:16px">
+    <strong>💡 数据来源：</strong><span class="inline-code">performance.getEntriesByType('resource')</span> — 过滤 cdn/ 目录请求。<br>
+    <span style="font-size:.72rem;color:var(--text3)">本地加载通常 &lt; 10ms；生产 CDN 首次约 50-150ms（依网络而定），二次请求走浏览器缓存为 0ms。</span>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>Cat A vs Cat B — 加载链路对比</h2>
+
+  <div class="waterfall" style="margin-bottom:16px">
+    <div style="font-size:.74rem;font-weight:600;margin-bottom:10px;color:var(--accent)">🖥 Cat B — 本页（审查·测试·演示·计划）</div>
+    <div class="wf-header-row">
+      <span style="min-width:130px">资源</span>
+      <span style="flex:1;min-width:280px;display:flex;justify-content:space-between"><span>0</span><span>50ms</span><span>100ms</span><span>150ms</span></span>
+      <span style="min-width:56px;text-align:right">耗时</span>
+      <span style="min-width:70px;text-align:right">大小</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label"><span class="dot css"></span>shared.css</span>
+      <span class="wf-track"><span class="wf-bar css" style="left:0%;width:30%">DNS+TCP+TLS</span></span>
+      <span class="wf-time">~48ms</span>
+      <span class="wf-detail">6.0 KB</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label"><span class="dot css"></span>theme.css</span>
+      <span class="wf-track"><span class="wf-bar css" style="left:5%;width:38%">共享连接</span></span>
+      <span class="wf-time">~65ms</span>
+      <span class="wf-detail">12.1 KB</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label"><span class="dot js"></span>shared.js</span>
+      <span class="wf-track"><span class="wf-bar js" style="left:10%;width:22%">解析+执行</span></span>
+      <span class="wf-time">~35ms</span>
+      <span class="wf-detail">5.3 KB</span>
+    </div>
+    <div style="font-size:.66rem;color:var(--text3);margin-top:8px">3 资源 · 23.4KB 总传输 · Cat B 无自托管字体</div>
+  </div>
+
+  <div class="waterfall">
+    <div style="font-size:.74rem;font-weight:600;margin-bottom:10px;color:var(--cyan)">📐 Cat A — 架构图 · 知识图谱</div>
+    <div class="wf-header-row">
+      <span style="min-width:130px">资源</span>
+      <span style="flex:1;min-width:280px;display:flex;justify-content:space-between"><span>0</span><span>100ms</span><span>200ms</span><span>300ms</span></span>
+      <span style="min-width:56px;text-align:right">耗时</span>
+      <span style="min-width:70px;text-align:right">大小</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label"><span class="dot font"></span>fonts.css</span>
+      <span class="wf-track"><span class="wf-bar font" style="left:0%;width:10%"></span></span>
+      <span class="wf-time">~18ms</span>
+      <span class="wf-detail">1.0 KB</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label"><span class="dot font"></span>4 woff2</span>
+      <span class="wf-track"><span class="wf-bar font" style="left:10%;width:45%">4 并发下载</span></span>
+      <span class="wf-time">~135ms</span>
+      <span class="wf-detail">86 KB</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label"><span class="dot css"></span>shared.css</span>
+      <span class="wf-track"><span class="wf-bar css" style="left:0%;width:28%">与字体并行</span></span>
+      <span class="wf-time">~48ms</span>
+      <span class="wf-detail">6.0 KB</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label"><span class="dot css"></span>theme-mono.css</span>
+      <span class="wf-track"><span class="wf-bar css" style="left:5%;width:32%"></span></span>
+      <span class="wf-time">~55ms</span>
+      <span class="wf-detail">8.8 KB</span>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label"><span class="dot js"></span>shared.js</span>
+      <span class="wf-track"><span class="wf-bar js" style="left:8%;width:18%"></span></span>
+      <span class="wf-time">~32ms</span>
+      <span class="wf-detail">5.3 KB</span>
+    </div>
+    <div style="font-size:.66rem;color:var(--text3);margin-top:8px">6 资源 · 107KB 总传输 · woff2 与 CSS 并行加载</div>
+  </div>
+</div>
+
+</div><!-- /panelWaterfall -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 3: 效果展示                          -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panelEffects">
+
+<div class="section">
+  <h2><span class="dot"></span>CDN 组件效果 — 本页即演示</h2>
+  <p style="font-size:.76rem;color:var(--text3);margin-bottom:14px">以下每个组件都由 CDN 资源驱动。点击交互元素可直接体验效果。</p>
+
+  <div class="cmd-grid">
+    <div class="cmd-card">
+      <div class="name">📐 面包屑导航 .yry-breadcrumb</div>
+      <div class="desc">页面顶部路径指示器。flexbox 布局，hover 高亮为金色。</div>
+      <div style="margin-top:8px;font-size:.7rem;color:var(--text3)">由 shared.css 第 27-58 行定义</div>
+    </div>
+    <div class="cmd-card">
+      <div class="name">🔗 跨页面导航 .cross-nav</div>
+      <div class="desc">场景内 7 页面互链，当前页高亮。支持键盘快捷键。</div>
+      <div style="margin-top:8px;font-size:.7rem;color:var(--text3)">由 theme.css 组件样式驱动</div>
+    </div>
+    <div class="cmd-card">
+      <div class="name">💬 Toast 通知 YrY.toast()</div>
+      <div class="desc">底部居中弹出，1.8 秒自动消失。多调用自动重置计时。</div>
+      <button onclick="YrY.toast('🎯 CDN shared.js 提供的 Toast 通知')" style="margin-top:8px;background:var(--bg-flat);border:var(--border);color:var(--cyan);padding:5px 14px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.72rem">点击测试</button>
+      <button onclick="YrY.toast('连续点击不会堆积 ⏱', 1200)" style="margin-top:8px;margin-left:6px;background:var(--bg-flat);border:var(--border);color:var(--accent);padding:5px 14px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:.72rem">快速连点</button>
+    </div>
+    <div class="cmd-card">
+      <div class="name">📋 一键复制 YrY.copyCmd()</div>
+      <div class="desc">代码块 hover 显示复制按钮，点击写入剪贴板并反馈 ✓。</div>
+      <pre style="margin-top:8px;font-size:.68rem">curl -sI http://localhost:8080/cdn/shared.css<span class="cb" onclick="YrY.copyCmd(this,'curl -sI http://localhost:8080/cdn/shared.css')">📋</span></pre>
+    </div>
+    <div class="cmd-card">
+      <div class="name">📑 Tab 面板 YrY.switchPanel()</div>
+      <div class="desc">带 localStorage 状态记忆，支持 1-4 数字键快速切换。</div>
+      <div style="margin-top:8px;font-size:.7rem;color:var(--text3)">当前选中 Tab 在刷新后保持</div>
+    </div>
+    <div class="cmd-card">
+      <div class="name">✨ 6 动画 @keyframes</div>
+      <div class="desc">fadeInUp · fadeInDown · slideDown · pulse · modalIn · stepIn</div>
+      <div style="margin-top:8px;font-size:.7rem;color:var(--text3)">所有面板切换、元素入场均由它们驱动</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>降级演示 — 模拟资源不可用</h2>
+  <p style="font-size:.76rem;color:var(--text3);margin-bottom:14px">以下演示通过 CSS 变量覆盖模拟降级效果。生产环境中，资源不可用时浏览器自动回退。</p>
+
+  <div class="degrade-grid" style="margin-bottom:20px">
+    <div class="degrade-card">
+      <div class="d-icon">🔤</div>
+      <div class="d-title">自托管字体不可用</div>
+      <div class="d-desc">Cat A 回退为 monospace 字体栈。Cat B 使用系统字体，不受影响。</div>
+      <span class="d-badge safe">安全降级</span>
+    </div>
+    <div class="degrade-card">
+      <div class="d-icon">🎨</div>
+      <div class="d-title">theme.css 404</div>
+      <div class="d-desc">丧失深色主题和 14 组件外观。HTML 内容完整可读。</div>
+      <span class="d-badge warn">视觉降级</span>
+    </div>
+    <div class="degrade-card">
+      <div class="d-icon">⚡</div>
+      <div class="d-title">shared.js 加载失败</div>
+      <div class="d-desc">Toast/复制/Tab 切换不可用。CSS 与 HTML 完全正常渲染。</div>
+      <span class="d-badge safe">安全降级</span>
+    </div>
+    <div class="degrade-card">
+      <div class="d-icon">🖥</div>
+      <div class="d-title">shared.css 不可用</div>
+      <div class="d-desc">Reset/动画/面包屑/导航全部丢失。仅剩 theme.css 组件。</div>
+      <span class="d-badge info">结构降级</span>
+    </div>
+  </div>
+
+  <div class="toggle-demo-box" id="degradeBox">
+    <h3 style="font-size:.84rem;margin-bottom:14px">🔧 实时降级模拟器</h3>
+    <div class="toggle-row">
+      <button class="toggle-switch on" id="toggleTheme" onclick="toggleDegrade('theme')"></button>
+      <span class="toggle-label">theme.css</span>
+      <span class="toggle-desc">— 关闭后丧失深色背景、卡片样式、组件外观</span>
+    </div>
+    <div class="toggle-row">
+      <button class="toggle-switch on" id="toggleSharedCss" onclick="toggleDegrade('shared')"></button>
+      <span class="toggle-label">shared.css</span>
+      <span class="toggle-desc">— 关闭后丧失 Reset、动画、面包屑、cross-nav 样式</span>
+    </div>
+    <div style="font-size:.68rem;color:var(--text3);margin-top:8px">⚠ 这是 CSS 变量层面的模拟。实际验证请用 DevTools Network 阻断。</div>
+  </div>
+
+  <div class="tip-box" style="margin-top:16px">
+    <strong>🧪 DevTools 真实验证：</strong>Network 标签 → 右键 resource → "Block request URL" → 刷新。<br>
+    <span style="font-size:.72rem;color:var(--text3)">实际阻断比 CSS 模拟更彻底 — 资源完全不加载，可观察浏览器原生回退行为。</span>
+  </div>
+</div>
+
+</div><!-- /panelEffects -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 4: 操作说明                          -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panelGuide">
+
+<div class="section">
+  <h2><span class="dot"></span>DevTools 6 步验证 CDN 加载链路</h2>
+
+  <div class="walkthrough">
+    <div class="step">
+      <div class="s-body">
+        <div class="s-title">打开 Network 标签观察瀑布流</div>
+        <div class="s-desc"><span class="inline-code">F12</span> → Network → 勾选 "Disable cache" → 刷新。观察 shared.css → theme.css → shared.js 加载时序。</div>
+        <div class="s-result-desc">预期：CSS 资源并行请求（HTTP/2 多路复用），shared.js 在 CSS 之后加载。首次 ~50-150ms，缓存命中 0ms（304 或 disk cache）。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="s-body">
+        <div class="s-title">验证 HTTP 状态码与 Content-Type</div>
+        <div class="s-desc">点击每个 CDN 资源 → Headers → 确认 Status 200，Content-Type 分别为 text/css 和 application/javascript。</div>
+        <pre style="margin-top:6px">curl -sI http://localhost:8080/cdn/shared.css | grep -E "HTTP|Content-Type"
+# HTTP/1.1 200 OK
+# Content-Type: text/css<span class="cb" onclick="YrY.copyCmd(this,'curl -sI http://localhost:8080/cdn/shared.css | grep -E \"HTTP|Content-Type\"')">📋</span></pre>
+        <div class="s-result-desc">同样验证 theme.css（text/css）和 shared.js（application/javascript）。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="s-body">
+        <div class="s-title">检查加载顺序正确性</div>
+        <div class="s-desc">Network 标签按 Start Time 排序。shared.css 最先，theme.css 紧随，shared.js 最后。CSS 并行不阻塞，JS 执行等 CSS 解析完成。</div>
+        <div class="s-result-desc">Cat B 链：shared.css → theme.css → shared.js（CSS 间无依赖，CSS 先于 JS 是 HTML 中 &lt;link&gt; 在 &lt;script&gt; 之前的自然结果）。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="s-body">
+        <div class="s-title">Console 验证 YrY 全局对象</div>
+        <div class="s-desc">Console 标签输入 <span class="inline-code">YrY</span> 回车，确认返回对象存在。展开查看 9 个 API 方法。</div>
+        <pre style="margin-top:6px">// 在 Console 中执行：
+Object.keys(YrY).join(', ')
+// → "toast, copyCmd, switchPanel, initSuiteToggle, expandAllSuites, collapseAllSuites, fmtDur, esc, clipboardWrite"
+
+typeof YrY.toast  // → "function"<span class="cb" onclick="YrY.copyCmd(this,'Object.keys(YrY).join(\', \')')">📋</span></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="s-body">
+        <div class="s-title">模拟资源阻断验证降级</div>
+        <div class="s-desc">Network → 右键 theme.css → "Block request URL" → 刷新。页面回退为浏览器默认样式但内容完整。验证后取消 Block。</div>
+        <div class="s-result-desc">再试 shared.js：阻断后 Toast / Tab 切换失效，但 CSS 和 HTML 不受影响。证明降级策略有效。</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="s-body">
+        <div class="s-title">Lighthouse 性能审计</div>
+        <div class="s-desc">Lighthouse 标签 → "Analyze page load" → 查看 Performance 分数、FCP、LCP、TBT。</div>
+        <div class="s-result-desc">预期：Performance ≥ 95。CDN 资源总计 ~23KB（Cat B），不应触发 "Reduce unused CSS/JS" 警告。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2><span class="dot"></span>验证命令速查</h2>
+  <div class="cmd-grid">
+    <div class="cmd-card">
+      <div class="stage">HTTP 可达</div>
+      <div class="name">批量检查 CDN 状态</div>
+      <pre>for f in shared.css theme.css shared.js; do
+  printf "%-14s %s\n" "$f" \
+    "$(curl -s -o /dev/null -w '%{http_code}' \
+       http://localhost:8080/cdn/$f)"
+done<span class="cb" onclick="YrY.copyCmd(this,'for f in shared.css theme.css shared.js; do\n  printf "%-14s %s\n" "$f" "$(curl -s -o /dev/null -w \'%{http_code}\' http://localhost:8080/cdn/$f)"\ndone')">📋</span></pre>
+    </div>
+    <div class="cmd-card">
+      <div class="stage">引用统计</div>
+      <div class="name">引用页面数</div>
+      <pre>grep -rl "shared.css" docs/ \
+  --include="*.html" | wc -l<span class="cb" onclick="YrY.copyCmd(this,'grep -rl "shared.css" docs/ --include="*.html" | wc -l')">📋</span></pre>
+    </div>
+    <div class="cmd-card">
+      <div class="stage">资源大小</div>
+      <div class="name">CDN 文件大小</div>
+      <pre>wc -c cdn/shared.css \
+   cdn/theme.css \
+   cdn/shared.js<span class="cb" onclick="YrY.copyCmd(this,'wc -c cdn/shared.css cdn/theme.css cdn/shared.js')">📋</span></pre>
+    </div>
+    <div class="cmd-card">
+      <div class="stage">Performance API</div>
+      <div class="name">Console 实时测量</div>
+      <pre>performance.getEntriesByType('resource')
+ .filter(r=>r.name.includes('/cdn/'))
+ .map(r=>({name:r.name.split('/').pop(),
+   ds:Math.round(r.duration)}))<span class="cb" onclick="YrY.copyCmd(this,"performance.getEntriesByType('resource').filter(r=>r.name.includes('/cdn/')).map(r=>({name:r.name.split('/').pop(), ds:Math.round(r.duration)}))")">📋</span></pre>
+    </div>
+  </div>
+</div>
+
+</div><!-- /panelGuide -->
+
 <div class="toast" id="toast"></div>
 
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>
-document.querySelector('.tabs').addEventListener('click',e=>{const tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
-function switchPanel(name){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===name));document.querySelectorAll('.panel').forEach(p=>{const on=p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1);p.classList.toggle('on',on)})}
-document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const m={'1':'walkthrough','2':'overview','3':'commands','4':'files','5':'tests'};if(m[e.key]){e.preventDefault();switchPanel(m[e.key])}});
-function copyCmd(btn,cmd){navigator.clipboard.writeText(cmd).then(()=>{btn.textContent='✅';btn.classList.add('done');setTimeout(()=>{btn.textContent='📋';btn.classList.remove('done')},1500)}).catch(()=>toast('复制失败'))}
-function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}
+/* ═══ Mermaid init ═══ */
+mermaid.initialize({ startOnLoad:true, theme:'dark', themeVariables:{
+  primaryColor:'#1e1f2b', primaryTextColor:'#a9b1d6', primaryBorderColor:'#3d59a1',
+  lineColor:'#475569', secondaryColor:'#2b2d3b', tertiaryColor:'#21232f',
+  fontSize:'13px'
+}});
+
+/* ═══ Tab switching ═══ */
+(function() {
+  var SCENE_KEY = 'yry-cdn-s1-demo';
+
+  document.querySelector('.tabs').addEventListener('click', function(e) {
+    var tab = e.target.closest('.tab');
+    if (!tab) return;
+    switchPanel(tab.dataset.panel);
+  });
+
+  window.switchPanel = function(name) {
+    document.querySelectorAll('.tab').forEach(function(t) {
+      t.classList.toggle('on', t.dataset.panel === name);
+    });
+    document.querySelectorAll('.panel').forEach(function(p) {
+      p.classList.toggle('on', p.id === 'panel' + name.charAt(0).toUpperCase() + name.slice(1));
+    });
+    try { localStorage.setItem(SCENE_KEY + '-tab', name); } catch(e) {}
+  };
+
+  document.addEventListener('keydown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    var m = {'1':'walkthrough','2':'waterfall','3':'effects','4':'guide'};
+    if (m[e.key]) { e.preventDefault(); switchPanel(m[e.key]); }
+  });
+
+  try {
+    var saved = localStorage.getItem(SCENE_KEY + '-tab');
+    if (saved) switchPanel(saved);
+  } catch(e) {}
+})();
+
+/* ═══ Live CDN Detection via Performance API ═══ */
+(function detectCDN() {
+  var resources = performance.getEntriesByType('resource');
+  var cdnEntries = resources.filter(function(r) { return r.name.indexOf('/cdn/') !== -1; });
+
+  var found = { css: false, theme: false, js: false };
+  var totalDuration = 0;
+  cdnEntries.forEach(function(r) {
+    var name = r.name.split('/').pop().split('?')[0];
+    if (name === 'shared.css') found.css = r;
+    if (name === 'theme.css') found.theme = r;
+    if (name === 'shared.js') found.js = r;
+    totalDuration += r.duration;
+  });
+
+  function updateBadge(elId, entry, fallback) {
+    var el = document.getElementById(elId);
+    if (entry) {
+      el.textContent = '✓ ' + Math.round(entry.duration) + 'ms';
+      el.style.color = 'var(--pass)';
+    } else {
+      el.textContent = fallback || '—';
+      el.style.color = 'var(--text3)';
+    }
+  }
+
+  updateBadge('lrCss', found.css);
+  updateBadge('lrTheme', found.theme);
+  updateBadge('lrJs', found.js);
+
+  var timingEl = document.getElementById('statTiming');
+  if (cdnEntries.length >= 3) {
+    timingEl.textContent = Math.round(totalDuration) + 'ms';
+    timingEl.style.color = totalDuration < 100 ? 'var(--pass)' : 'var(--accent)';
+  } else if (cdnEntries.length > 0) {
+    timingEl.textContent = Math.round(totalDuration) + 'ms';
+    timingEl.style.color = 'var(--cyan)';
+  } else {
+    timingEl.textContent = '已缓存';
+    timingEl.style.color = 'var(--text3)';
+  }
+
+  /* Build live waterfall */
+  var rowsEl = document.getElementById('liveWfRows');
+  if (rowsEl) {
+    if (cdnEntries.length > 0) {
+      var maxEnd = 0;
+      cdnEntries.forEach(function(r) { maxEnd = Math.max(maxEnd, r.responseEnd); });
+      maxEnd = Math.max(maxEnd, 200);
+      var html = '';
+      cdnEntries.forEach(function(r) {
+        var name = r.name.split('/').pop().split('?')[0];
+        var startPct = (r.startTime / maxEnd) * 100;
+        var widthPct = Math.max(3, (r.duration / maxEnd) * 100);
+        var barClass = name.endsWith('.js') ? 'js' : 'css';
+        var dotClass = name.endsWith('.js') ? 'js' : 'css';
+        var phase = r.transferSize === 0 ? '缓存命中' : (r.duration < 10 ? '本地' : '网络');
+        var size = r.transferSize > 0 ? (r.transferSize / 1024).toFixed(1) + 'KB' : '0 (缓存)';
+        html += '<div class="wf-row">' +
+          '<span class="wf-label"><span class="dot ' + dotClass + '"></span>' + name + '</span>' +
+          '<span class="wf-track"><span class="wf-bar ' + barClass + '" style="left:' + startPct + '%;width:' + widthPct + '%">' + (r.duration > 5 ? Math.round(r.duration) + 'ms' : '') + '</span></span>' +
+          '<span class="wf-time">' + Math.round(r.duration) + 'ms</span>' +
+          '<span class="wf-detail">' + size + ' · ' + phase + '</span>' +
+          '</div>';
+      });
+      rowsEl.innerHTML = html;
+    } else {
+      /* Fallback simulated data when no live entries (cached / file://) */
+      rowsEl.innerHTML =
+        '<div class="wf-row">' +
+        '<span class="wf-label"><span class="dot css"></span>shared.css</span>' +
+        '<span class="wf-track"><span class="wf-bar css" style="left:0%;width:28%">DNS+TCP</span></span>' +
+        '<span class="wf-time">~48ms</span><span class="wf-detail">6.0KB · 模拟</span></div>' +
+        '<div class="wf-row">' +
+        '<span class="wf-label"><span class="dot css"></span>theme.css</span>' +
+        '<span class="wf-track"><span class="wf-bar css" style="left:5%;width:35%">共享连接</span></span>' +
+        '<span class="wf-time">~62ms</span><span class="wf-detail">12.1KB · 模拟</span></div>' +
+        '<div class="wf-row">' +
+        '<span class="wf-label"><span class="dot js"></span>shared.js</span>' +
+        '<span class="wf-track"><span class="wf-bar js" style="left:10%;width:20%"></span></span>' +
+        '<span class="wf-time">~35ms</span><span class="wf-detail">5.3KB · 模拟</span></div>' +
+        '<div style="font-size:.66rem;color:var(--text3);margin-top:6px">⚠ 未检测到实时 Performance 数据（文件已缓存）— 显示典型局域网模拟值</div>';
+    }
+  }
+})();
+
+/* ═══ Walkthrough ═══ */
+var walkthroughRunning = false;
+var walkthroughSpeed = 1;
+var selectedPath = 'catb';
+
+var stageDefs = {
+  catb: [
+    { id:'st0', name:'字体预加载', detail:'Cat B 不使用自托管字体 — 跳过', css:'—', status:'跳过 · 使用系统字体栈', cat:'b', skip:true },
+    { id:'st1', name:'CSS Reset 注入', detail:'cdn/shared.css — 6.0KB · 98 行', css:'shared.css', status:'完成 · border-box + 6 @keyframes', cat:'both' },
+    { id:'st2', name:'主题 CSS 应用', detail:'cdn/theme.css — 12.1KB · 254 行', css:'theme.css', status:'完成 · :root 14 令牌 + 14 组件', cat:'both' },
+    { id:'st3', name:'JS 运行时就绪', detail:'cdn/shared.js — 5.3KB · 106 行', css:'shared.js', status:'完成 · window.YrY 9 API 可用', cat:'both' },
+    { id:'st4', name:'页面可交互', detail:'事件委托绑定 · Toast 就绪 · 设计令牌注入', css:'—', status:'✅ 页面完全就绪', cat:'both' }
+  ],
+  cata: [
+    { id:'st0', name:'字体预加载', detail:'cdn/fonts.css + 4 woff2 (Regular/Bold/Italic/BoldItalic)', css:'fonts.css + woff2', status:'完成 · JetBrains Mono 86KB', cat:'a' },
+    { id:'st1', name:'CSS Reset 注入', detail:'cdn/shared.css — 6.0KB · 98 行', css:'shared.css', status:'完成 · border-box + 6 @keyframes', cat:'both' },
+    { id:'st2', name:'主题 CSS 应用', detail:'cdn/theme-mono.css — 8.8KB · 162 行', css:'theme-mono.css', status:'完成 · 深蓝黑底 + 等宽字体', cat:'a' },
+    { id:'st3', name:'JS 运行时就绪', detail:'cdn/shared.js — 5.3KB · 106 行', css:'shared.js', status:'完成 · window.YrY 9 API 可用', cat:'both' },
+    { id:'st4', name:'页面可交互', detail:'Cytoscape / SVG 图表可交互', css:'—', status:'✅ 页面完全就绪', cat:'both' }
+  ]
+};
+
+function selectPath(path, btn) {
+  if (walkthroughRunning) return;
+  selectedPath = path;
+  document.querySelectorAll('.path-btn').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+
+  /* Update stage texts */
+  var defs = stageDefs[path];
+  var st2Name = document.getElementById('st2Name');
+  var st2Detail = document.getElementById('st2Detail');
+  var st2Provides = document.getElementById('st2Provides');
+  if (path === 'cata') {
+    if (st2Name) st2Name.textContent = '主题 CSS 应用';
+    if (st2Detail) st2Detail.textContent = 'cdn/theme-mono.css — 8.8KB · 162 行';
+    if (st2Provides) st2Provides.innerHTML = '<span>:root 令牌</span><span>7 组件</span><span>JetBrains Mono</span><span>深蓝黑底</span>';
+  } else {
+    if (st2Name) st2Name.textContent = '主题 CSS 应用';
+    if (st2Detail) st2Detail.textContent = 'cdn/theme.css — 12.1KB · 254 行';
+    if (st2Provides) st2Provides.innerHTML = '<span>:root 14 令牌</span><span>14 组件</span><span>system 字体</span><span>深紫黑底</span>';
+  }
+
+  resetWalkthrough();
+}
+
+function setSpeed(speed, btn) {
+  walkthroughSpeed = speed;
+  document.querySelectorAll('.speed-select button').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+}
+
+function log(msg, color) {
+  var box = document.getElementById('logBox');
+  if (!box) return;
+  var div = document.createElement('div');
+  div.className = 'log-line';
+  var now = new Date();
+  var time = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2) + ':' + ('0' + now.getSeconds()).slice(-2) + '.' + ('00' + now.getMilliseconds()).slice(-3);
+  div.innerHTML = '<span class="log-time">' + time + '</span><span class="log-icon" style="color:' + (color || 'var(--text2)') + '">●</span><span style="color:' + (color || 'var(--text2)') + '">' + msg + '</span>';
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function updateStage(idx, defs, statusCls, statusText, barPct) {
+  var s = defs[idx];
+  var row = document.getElementById(s.id);
+  row.classList.remove('done', 'active', 'skipped');
+  if (statusCls === 'ok') row.classList.add('done');
+  if (statusCls === 'loading') row.classList.add('active');
+  if (statusCls === 'skip') row.classList.add('skipped');
+  var st = row.querySelector('.st-status');
+  st.textContent = statusText;
+  st.className = 'st-status ' + statusCls;
+  row.querySelector('.st-bar').style.width = (barPct || 0) + '%';
+}
+
+function resetWalkthrough() {
+  if (walkthroughRunning) return;
+  var defs = stageDefs[selectedPath];
+  defs.forEach(function(_, i) { updateStage(i, defs, 'waiting', '等待中', 0); });
+  var box = document.getElementById('logBox');
+  if (box) box.innerHTML = '<div class="log-line" style="color:var(--text3)">等待模拟开始...</div>';
+  document.getElementById('walkthroughDetail').style.display = 'none';
+  var btn = document.getElementById('btnPlay');
+  btn.classList.remove('running');
+  btn.textContent = '▶ 开始模拟加载';
+}
+
+function startWalkthrough() {
+  if (walkthroughRunning) return;
+  walkthroughRunning = true;
+  var btn = document.getElementById('btnPlay');
+  btn.classList.add('running');
+  btn.textContent = '⏳ 加载中...';
+
+  document.getElementById('walkthroughDetail').style.display = '';
+  var box = document.getElementById('logBox');
+  box.innerHTML = '';
+
+  var defs = stageDefs[selectedPath];
+  var pathLabel = selectedPath === 'catb' ? 'Cat B（本页路径）' : 'Cat A（架构/图谱路径）';
+  log('🚀 开始模拟 — ' + pathLabel, 'var(--accent)');
+  log('  ' + (selectedPath === 'catb' ? '3 资源：shared.css → theme.css → shared.js' : '6 资源：fonts.css + 4 woff2 → shared.css → theme-mono.css → shared.js'), 'var(--text3)');
+
+  var i = 0;
+  function next() {
+    if (i >= defs.length) {
+      setTimeout(function() {
+        log('✅ 全部加载完成 — 页面可交互', 'var(--pass)');
+        var dur = selectedPath === 'catb' ? '~145ms' : '~288ms';
+        log('  ⏱ 总加载时间（模拟）: ' + dur, 'var(--text2)');
+        btn.classList.remove('running');
+        btn.textContent = '✓ 加载完成';
+        walkthroughRunning = false;
+        setTimeout(function() { btn.textContent = '▶ 重新播放'; }, 2000);
+      }, 400 / walkthroughSpeed);
+      return;
+    }
+
+    var s = defs[i];
+
+    if (s.skip) {
+      updateStage(i, defs, 'skip', '跳过', 100);
+      log('⏭ ' + s.name + ' — ' + s.status, 'var(--text3)');
+      i++;
+      setTimeout(next, 200 / walkthroughSpeed);
+      return;
+    }
+
+    log('⏳ ' + s.name + ' — ' + s.detail, 'var(--cyan)');
+
+    updateStage(i, defs, 'loading', '加载中...', 0);
+    var start = Date.now();
+    var duration = (500 + Math.random() * 400) / walkthroughSpeed;
+    var tick = setInterval(function() {
+      var pct = Math.min(100, ((Date.now() - start) / duration) * 100);
+      var el = document.getElementById(s.id);
+      if (el) el.querySelector('.st-bar').style.width = pct + '%';
+      if (pct >= 100) clearInterval(tick);
+    }, 16);
+
+    setTimeout(function() {
+      clearInterval(tick);
+      updateStage(i, defs, 'ok', s.status, 100);
+      log('  ✓ ' + s.status, 'var(--pass)');
+      i++;
+      setTimeout(next, 200 / walkthroughSpeed);
+    }, duration);
+  }
+
+  setTimeout(next, 400);
+}
+
+/* ═══ Degradation toggle simulation ═══ */
+function toggleDegrade(type) {
+  var box = document.getElementById('degradeBox');
+  var toggle, varName;
+
+  if (type === 'theme') {
+    toggle = document.getElementById('toggleTheme');
+    varName = '--bg';
+    if (toggle.classList.contains('on')) {
+      /* Disable: override theme vars to browser defaults */
+      box.style.setProperty('--bg', '#ffffff');
+      box.style.setProperty('--bg-card', '#f5f5f5');
+      box.style.setProperty('--bg-flat', '#eeeeee');
+      box.style.setProperty('--text', '#111111');
+      box.style.setProperty('--text2', '#555555');
+      box.style.setProperty('--text3', '#999999');
+      box.style.setProperty('--border', '1px solid rgba(0,0,0,0.1)');
+      box.style.setProperty('--shadow', '0 2px 8px rgba(0,0,0,0.1)');
+      box.classList.add('degraded');
+      toggle.classList.remove('on');
+      YrY.toast('⚠ theme.css 模拟关闭 — 丧失深色主题', 2000);
+    } else {
+      box.style.cssText = '';
+      box.classList.remove('degraded');
+      toggle.classList.add('on');
+      YrY.toast('✅ theme.css 已恢复', 1500);
+    }
+  } else if (type === 'shared') {
+    toggle = document.getElementById('toggleSharedCss');
+    if (toggle.classList.contains('on')) {
+      box.style.setProperty('--radius', '0px');
+      box.style.filter = 'grayscale(.3)';
+      box.classList.add('degraded');
+      toggle.classList.remove('on');
+      YrY.toast('⚠ shared.css 模拟关闭 — 丧失 Reset + 动画', 2000);
+    } else {
+      box.style.cssText = '';
+      box.style.filter = '';
+      box.classList.remove('degraded');
+      toggle.classList.add('on');
+      YrY.toast('✅ shared.css 已恢复', 1500);
+    }
+  }
+}
 </script>
-<div class="footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY v4.7.0 · cdn · 场景-1 演示</div>
-<script src="../../../../../cdn/shared.js"></script>
+<script src="../../../../cdn/shared.js"></script>
 </body>
 </html>

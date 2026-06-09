@@ -1,26 +1,460 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>场景-2 · 包安装与版本管理 — 演示</title>
-<style>:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}@keyframes stepIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6}.container{max-width:960px;margin:0 auto;padding:40px 24px 80px}.tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:28px;animation:fadeInDown .5s .1s ease both}.tab{padding:8px 18px;cursor:pointer;font-size:.82rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none}.tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}.panel{display:none;animation:fadeInUp .4s ease both}.panel.on{display:block}.section{margin-bottom:32px}.section h2{font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px}.section h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}.cmd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}.cmd-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s}.cmd-card:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.35)}.cmd-card .name{font-weight:700;font-size:.88rem;color:var(--accent);font-family:monospace}.cmd-card .desc{font-size:.76rem;color:var(--text2);margin:4px 0 8px;line-height:1.5}.cmd-card .stage{font-size:.64rem;color:var(--text3);margin-bottom:4px}pre{background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer}pre .cb{position:absolute;top:6px;right:6px;background:var(--bg-flat);border:var(--border);border-radius:4px;color:var(--text3);font-size:.62rem;padding:2px 7px;cursor:pointer;opacity:0;transition:opacity .15s;font-family:inherit}pre:hover .cb{opacity:1}pre .cb.done{color:var(--pass)}.flow-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0}.flow-chip{background:var(--bg-flat);border:var(--border);border-radius:20px;padding:6px 14px;font-size:.78rem}.flow-chip .n{font-weight:700;color:var(--accent)}.flow-arrow{color:var(--text3);font-size:.8rem}.file-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px}.file-item{background:var(--bg-flat);border:var(--border);border-radius:6px;padding:8px 12px;font-size:.74rem;font-family:monospace;color:var(--text2)}.links-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.links-row a{font-size:.76rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:6px;padding:6px 12px;transition:all .15s}.links-row a:hover{border-color:var(--accent);color:var(--accent)}.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:0 12px 32px rgba(0,0,0,.45);opacity:0;transition:opacity .2s;pointer-events:none}.toast.show{opacity:1}.walkthrough{counter-reset:step}.walkthrough .step{counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both}.walkthrough .step::before{content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}.walkthrough .step .s-body{flex:1}.walkthrough .step .s-title{font-weight:600;font-size:.88rem}.walkthrough .step .s-desc{font-size:.76rem;color:var(--text2);margin:3px 0 6px}.walkthrough .step .s-result{font-size:.74rem;color:var(--pass);margin-top:6px}.walkthrough .step .s-result .r-label{font-weight:600}.walkthrough .step .s-result-desc{font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.5;padding:6px 10px;background:rgba(34,211,238,.04);border-left:2px solid var(--cyan);border-radius:0 4px 4px 0}.kbd-hint{font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.03);border-radius:3px;padding:1px 5px;margin-left:4px}.header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}.header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}.header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06)}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}.stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}.stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}.stat-card .val.health{color:var(--pass)}.stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}.bar-wrap{margin-bottom:28px;animation:fadeInDown .5s .12s ease both}.bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}.bar-outer .seg{height:100%;transition:width .5s ease;min-width:3px}.bar-outer .seg.strength{background:var(--pass)}@media(max-width:640px){.container{padding:20px 12px 60px}h1{font-size:1.4rem}.cmd-grid{grid-template-columns:1fr}}</style></head><body><div class="container">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>场景-2 · 包安装与版本管理 — 演示</title>
+<!-- ═══ CDN: YrY 共享样式 ═══ -->
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+
+  <style>
+    :root { --bg:rgba(22,22,32,1); --bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%); --bg-flat:rgba(34,34,46,1); --bg-raised:rgba(42,42,56,1); --accent:#FFC107; --cyan:#22d3ee; --pass:#22c55e; --warn:#f59e0b; --fail:#ef4444; --info:#6b7280; --text:rgba(250,250,252,1); --text2:rgba(160,160,164,1); --text3:rgba(110,110,114,1); --shadow:0 4px 20px rgba(0,0,0,0.3); --shadow-lg:0 12px 32px rgba(0,0,0,0.45); --radius:12px; --border:1px solid rgba(255,255,255,0.06) }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeInDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes stepIn { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes glowPulse { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.3)} }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+    @keyframes countUp { from{opacity:0} to{opacity:1} }
+    @keyframes slideDown { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+    * { box-sizing:border-box;margin:0;padding:0 }
+    body { background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6 }
+    .container { max-width:960px;margin:0 auto;padding:40px 24px 80px }
+    .tabs { display:flex;gap:0;border-bottom:var(--border);margin-bottom:28px;animation:fadeInDown .5s .1s ease both }
+    .tab { padding:8px 18px;cursor:pointer;font-size:.82rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none }
+    .tab:hover { color:var(--text2) } .tab.on { color:var(--accent);border-bottom-color:var(--accent) }
+    .panel { display:none;animation:fadeInUp .4s ease both }
+    .panel.on { display:block }
+    .section { margin-bottom:32px }
+    .section h2 { font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px }
+    .section h2 .dot { width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0 }
+    .cmd-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px }
+    .cmd-card { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s }
+    .cmd-card:hover { transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.35) }
+    .cmd-card .name { font-weight:700;font-size:.88rem;color:var(--accent);font-family:monospace }
+    .cmd-card .desc { font-size:.76rem;color:var(--text2);margin:4px 0 8px;line-height:1.5 }
+    .cmd-card .stage { font-size:.64rem;color:var(--text3);margin-bottom:4px }
+    pre { background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer }
+    pre .cb { position:absolute;top:6px;right:6px;background:var(--bg-flat);border:var(--border);border-radius:4px;color:var(--text3);font-size:.62rem;padding:2px 7px;cursor:pointer;opacity:0;transition:opacity .15s;font-family:inherit }
+    pre:hover .cb { opacity:1 } pre .cb.done { color:var(--pass) }
+    .flow-row { display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0 }
+    .flow-chip { background:var(--bg-flat);border:var(--border);border-radius:20px;padding:6px 14px;font-size:.78rem }
+    .flow-chip .n { font-weight:700;color:var(--accent) }
+    .flow-arrow { color:var(--text3);font-size:.8rem }
+    .file-list { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px }
+    .file-item { background:var(--bg-flat);border:var(--border);border-radius:6px;padding:8px 12px;font-size:.74rem;font-family:monospace;color:var(--text2) }
+    .links-row { display:flex;gap:8px;flex-wrap:wrap;margin-top:16px }
+    .links-row a { font-size:.76rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:6px;padding:6px 12px;transition:all .15s }
+    .links-row a:hover { border-color:var(--accent);color:var(--accent) }
+    .toast { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:0 12px 32px rgba(0,0,0,.45);opacity:0;transition:opacity .2s;pointer-events:none }
+    .toast.show { opacity:1 }
+    .walkthrough { counter-reset:step }
+    .walkthrough .step { counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both }
+    .walkthrough .step::before { content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0 }
+    .walkthrough .step .s-body { flex:1 } .walkthrough .step .s-title { font-weight:600;font-size:.88rem }
+    .walkthrough .step .s-desc { font-size:.76rem;color:var(--text2);margin:3px 0 6px }
+    .walkthrough .step .s-result { font-size:.74rem;color:var(--pass);margin-top:6px }
+    .walkthrough .step .s-result .r-label { font-weight:600 }
+    .walkthrough .step .s-result-desc { font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.5;padding:6px 10px;background:rgba(34,211,238,.04);border-left:2px solid var(--cyan);border-radius:0 4px 4px 0 }
+    .kbd-hint { font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.03);border-radius:3px;padding:1px 5px;margin-left:4px }
+    .header { text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both }
+    .header h1 { font-size:1.8rem;font-weight:700 } .header h1 .accent { color:var(--accent) }
+    .header .sub { color:var(--text2);font-size:.9rem;margin-top:4px }
+    .breadcrumb { display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem }
+    .breadcrumb a { color:#7aa2f7;text-decoration:none;transition:color 0.15s }
+    .breadcrumb a:hover { color:#fbbf24;text-decoration:underline }
+    .breadcrumb .bc-sep { color:#53576c;opacity:0.5;user-select:none }
+    .breadcrumb .bc-current { color:#94a3b8;font-weight:500 }
+    .cross-nav { display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both }
+    .cross-link { color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s }
+    .cross-link:hover { color:var(--accent);background:rgba(255,193,7,.06) }
+    .cross-link.on { color:var(--accent);font-weight:600 }
+    .cross-sep { color:var(--text3);font-size:.5rem;opacity:.35;user-select:none }
+    .stats-grid { display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both }
+    .stat-card { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer }
+    .stat-card:hover { transform:translateY(-2px);box-shadow:var(--shadow-lg) }
+    .stat-card .val { font-size:1.6rem;font-weight:700;line-height:1.1 }
+    .stat-card .val.health { color:var(--pass) }
+    .stat-card .lbl { font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px }
+    .bar-wrap { margin-bottom:28px;animation:fadeInDown .5s .12s ease both }
+    .bar-outer { height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04) }
+    .bar-outer .seg { height:100%;transition:width .5s ease;min-width:3px }
+    .bar-outer .seg.strength { background:var(--pass) }
+
+    /* ═══ Live CDN detection bar ═══ */
+    .live-bar { display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;font-size:.72rem;color:var(--text3);animation:fadeInDown .5s .14s ease both }
+    .live-dot { width:7px;height:7px;border-radius:50%;background:var(--pass);animation:glowPulse 2s infinite;flex-shrink:0 }
+    .live-resource { display:flex;align-items:center;gap:4px;background:var(--bg-flat);border:var(--border);border-radius:12px;padding:3px 10px;font-family:monospace;font-size:.68rem }
+    .live-resource .lr-name { color:var(--text2) } .live-resource .lr-status { color:var(--pass);font-weight:700 }
+    .live-resource .lr-size { color:var(--text3);font-size:.62rem }
+
+    /* ═══ Play bar / Simulator ═══ */
+    .play-bar { display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap }
+    .btn-play, .btn-reset { background:var(--bg-raised);border:var(--border);border-radius:6px;padding:8px 16px;color:var(--text);cursor:pointer;font-size:.78rem;transition:all .15s }
+    .btn-play:hover, .btn-reset:hover { border-color:var(--accent);color:var(--accent) }
+    .btn-play.running { color:var(--accent);animation:pulse 1.5s infinite }
+    .speed-select { display:flex;gap:4px;margin-left:auto }
+    .speed-select button { background:var(--bg-flat);border:var(--border);border-radius:4px;padding:4px 10px;color:var(--text3);font-size:.68rem;cursor:pointer;transition:all .15s }
+    .speed-select button.on { background:rgba(255,193,7,.12);color:var(--accent);border-color:rgba(255,193,7,.3) }
+
+    /* ═══ Stage list ═══ */
+    .stage-list { display:flex;flex-direction:column;gap:8px;margin-bottom:16px }
+    .stage-row { display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:var(--bg-card);border:var(--border);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden }
+    .stage-row.done { border-color:rgba(34,197,94,.15) }
+    .stage-row.active { border-color:rgba(34,211,238,.2) }
+    .stage-row.skipped { border-color:rgba(245,158,11,.15);opacity:.7 }
+    .st-num { width:28px;height:28px;border-radius:50%;background:var(--bg-flat);border:var(--border);color:var(--text3);font-size:.72rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700 }
+    .stage-row.done .st-num { background:rgba(34,197,94,.12);color:var(--pass);border-color:rgba(34,197,94,.2) }
+    .stage-row.active .st-num { background:rgba(34,211,238,.12);color:var(--cyan);border-color:rgba(34,211,238,.2) }
+    .st-info { flex:1;min-width:140px }
+    .st-name { font-size:.82rem;font-weight:600 }
+    .st-detail { font-size:.7rem;color:var(--text3);margin-top:2px }
+    .st-status { font-size:.66rem;padding:2px 8px;border-radius:10px;flex-shrink:0 }
+    .st-status.waiting { color:var(--text3);background:rgba(255,255,255,.03) }
+    .st-status.loading { color:var(--cyan);background:rgba(34,211,238,.08) }
+    .st-status.ok { color:var(--pass);background:rgba(34,197,94,.08) }
+    .st-status.err { color:var(--fail);background:rgba(239,68,68,.08) }
+    .st-bar { position:absolute;bottom:0;left:0;height:3px;background:var(--cyan);transition:width .3s ease }
+    .stage-row.done .st-bar { background:var(--pass) }
+
+    /* ═══ Log box ═══ */
+    .log-box { background:rgba(0,0,0,.35);border:var(--border);border-radius:8px;padding:10px;max-height:180px;overflow-y:auto;font-family:'SF Mono',monospace;font-size:.68rem;line-height:1.7 }
+    .log-line { display:flex;gap:8px;align-items:baseline }
+    .log-time { color:var(--text3);font-size:.64rem;flex-shrink:0 }
+    .log-icon { font-size:.5rem }
+
+    /* ═══ Tip box / Inline code ═══ */
+    .tip-box { background:rgba(34,211,238,.04);border:1px solid rgba(34,211,238,.1);border-radius:6px;padding:10px 14px;font-size:.72rem;color:var(--text2);margin-bottom:12px }
+    .inline-code { background:rgba(0,0,0,.3);border-radius:3px;padding:1px 5px;font-family:'SF Mono',monospace;font-size:.72rem;color:var(--cyan) }
+
+    a[target="_blank"]::after { content:" ↗";font-size:.7em;opacity:.5 }
+    @media (max-width:640px) { .container { padding:20px 12px 60px } h1 { font-size:1.4rem } .cmd-grid { grid-template-columns:1fr } }
+  </style>
+</head>
+<body>
+<div class="container">
+
 <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · 个人 npm 包管理</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · 包安装与版本管理</span><span class="bc-sep">/</span><span class="bc-current">💡 演示</span></nav>
-<div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><span class="cross-link on">💡 演示</span><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
-<div class="header"><h1>🧩 <span class="accent">包安装与版本管理</span> — 演示</h1><p class="sub">install → update → list，全生命周期依赖管理 <span class="kbd-hint">1-5</span> 数字键切换 Tab</p></div>
-<div class="stats-grid"><div class="stat-card"><div class="val health">4</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">4</div><div class="lbl">✅ 已演示</div></div><div class="stat-card"><div class="val">0</div><div class="lbl">⏳ 待演示</div></div><div class="stat-card"><div class="val health">100%</div><div class="lbl">📊 覆盖率</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div></div></div>
-<div class="tabs"><span class="tab on" data-panel="walkthrough">🚶 演示</span><span class="tab" data-panel="overview">📊 概览</span><span class="tab" data-panel="commands">⚡ 命令</span><span class="tab" data-panel="files">📁 文件</span><span class="tab" data-panel="tests">🧪 测试</span></div>
+
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<span class="cross-link on">💡 演示</span><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
+
+<div class="header">
+  <h1>🧩 <span class="accent">包安装与版本管理</span> — 演示</h1>
+  <p class="sub">install → update → list，全生命周期依赖管理 <span class="kbd-hint">1-6</span> 数字键切换 Tab</p>
+</div>
+
+<!-- ═══ Live CDN Detection Bar ═══ -->
+<div class="live-bar" id="liveBar">
+  <span class="live-dot"></span> 本页 CDN 加载状态：
+  <span class="live-resource"><span class="lr-name">shared.css</span><span class="lr-status" id="lrCss">检测中</span><span class="lr-size">6.0KB</span></span>
+  <span class="live-resource"><span class="lr-name">theme.css</span><span class="lr-status" id="lrTheme">检测中</span><span class="lr-size">12.1KB</span></span>
+  <span class="live-resource"><span class="lr-name">shared.js</span><span class="lr-status" id="lrJs">检测中</span><span class="lr-size">5.3KB</span></span>
+  <span class="kbd-hint">1-6</span> 数字键切换 Tab
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="val health">4</div><div class="lbl">📋 步骤</div></div>
+  <div class="stat-card"><div class="val health">4</div><div class="lbl">✅ 已演示</div></div>
+  <div class="stat-card"><div class="val">0</div><div class="lbl">⏳ 待演示</div></div>
+  <div class="stat-card"><div class="val health">100%</div><div class="lbl">📊 覆盖率</div></div>
+  <div class="stat-card"><div class="val" style="color:var(--cyan)" id="statTiming">—</div><div class="lbl">⏱ CDN 加载</div></div>
+</div>
+<div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div></div></div>
+
+<div class="tabs">
+  <span class="tab on" data-panel="walkthrough">🚶 演示</span>
+  <span class="tab" data-panel="overview">📊 概览</span>
+  <span class="tab" data-panel="commands">⚡ 命令</span>
+  <span class="tab" data-panel="files">📁 文件</span>
+  <span class="tab" data-panel="tests">🧪 测试</span>
+  <span class="tab" data-panel="simulator">🎬 模拟演练</span>
+</div>
+
 <div class="panel on" id="panelWalkthrough"><div class="walkthrough">
-<div class="step"><div class="s-body"><div class="s-title">安装 lodash 到项目</div><div class="s-desc">安装到 dependencies，自动写入 package.json，确认安装版本。</div><pre>/rui-npm install lodash@4.17.21<span class="cb" onclick="copyCmd(this,'/rui-npm install lodash@4.17.21')">📋</span></pre><div class="s-result-desc">💡 说明: @4.17.21 指定精确版本安装，^ 前缀表示兼容范围。生产依赖写入 dependencies，运行时可用。</div><div class="s-result"><span class="r-label">✅ 结果:</span> ✅ lodash@4.17.21 已安装 — package.json dependencies 新增 "lodash": "^4.17.21" / node_modules/lodash/ 5.8MB。</div></div></div>
-<div class="step"><div class="s-body"><div class="s-title">安装 devDependency</div><div class="s-desc">安装开发依赖，如 prettier、eslint 等工具链。</div><pre>/rui-npm install prettier --dev<span class="cb" onclick="copyCmd(this,'/rui-npm install prettier --dev')">📋</span></pre><div class="s-result-desc">💡 说明: --dev 标志将包安装到 devDependencies（开发/构建依赖），生产环境不会安装。</div><div class="s-result"><span class="r-label">✅ 结果:</span> ✅ prettier@3.6.2 已安装到 devDependencies — 12 个子依赖 / 安装耗时: 5.8s。</div></div></div>
-<div class="step"><div class="s-body"><div class="s-title">更新 lodash 到最新兼容版</div><div class="s-desc">记录更新前版本，展示版本变更。</div><pre>/rui-npm update lodash<span class="cb" onclick="copyCmd(this,'/rui-npm update lodash')">📋</span></pre><div class="s-result-desc">💡 说明: update 默认升级到兼容范围内最新版本。补丁版本（4.17.x）只包含 bug 修复。</div><div class="s-result"><span class="r-label">✅ 结果:</span> ⬆️ lodash: 4.17.21 → 4.17.22 (补丁更新) — 修复 2 个 Bug / 无破坏性变更。</div></div></div>
-<div class="step"><div class="s-body"><div class="s-title">查看当前依赖树</div><div class="s-desc">列出所有直接依赖及版本。</div><pre>/rui-npm list --depth 0<span class="cb" onclick="copyCmd(this,'/rui-npm list --depth 0')">📋</span></pre><div class="s-result-desc">💡 说明: --depth 0 仅列出直接依赖，--depth 1 增加一层子依赖。定期运行 list 检查依赖树健康度。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 📋 直接依赖 (3 个) — lodash@4.17.22 / prettier@3.6.2 / 总计: 3 + 12 = 15 个包。</div></div></div>
+
+<div class="step"><div class="s-body">
+  <div class="s-title">安装 lodash 到项目</div>
+  <div class="s-desc">安装到 dependencies，自动写入 package.json，确认安装版本。</div>
+  <pre>/rui-npm install lodash@4.17.21<span class="cb" onclick="YrY.copyCmd(this,'/rui-npm install lodash@4.17.21')">📋</span></pre>
+  <div class="s-result-desc">💡 说明: @4.17.21 指定精确版本安装，^ 前缀表示兼容范围。生产依赖写入 dependencies，运行时可用。</div>
+  <div class="s-result"><span class="r-label">✅ 结果:</span> ✅ lodash@4.17.21 已安装 — package.json dependencies 新增 "lodash": "^4.17.21" / node_modules/lodash/ 5.8MB。</div>
 </div></div>
-<div class="panel" id="panelOverview"><div class="section"><h2><span class="dot"></span>依赖管理流程</h2><div class="flow-row"><div class="flow-chip"><span class="n">install</span> 安装</div><span class="flow-arrow">→</span><div class="flow-chip"><span class="n">update</span> 更新</div><span class="flow-arrow">→</span><div class="flow-chip"><span class="n">list</span> 列表</div></div></div><div class="section"><h2><span class="dot"></span>关键特性</h2><div class="flow-row"><div class="flow-chip"><span class="n">@version</span> 精确版本</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">--dev</span> 开发依赖</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">--depth</span> 树深度</div></div></div></div>
+
+<div class="step"><div class="s-body">
+  <div class="s-title">安装 devDependency</div>
+  <div class="s-desc">安装开发依赖，如 prettier、eslint 等工具链。</div>
+  <pre>/rui-npm install prettier --dev<span class="cb" onclick="YrY.copyCmd(this,'/rui-npm install prettier --dev')">📋</span></pre>
+  <div class="s-result-desc">💡 说明: --dev 标志将包安装到 devDependencies（开发/构建依赖），生产环境不会安装。</div>
+  <div class="s-result"><span class="r-label">✅ 结果:</span> ✅ prettier@3.6.2 已安装到 devDependencies — 12 个子依赖 / 安装耗时: 5.8s。</div>
+</div></div>
+
+<div class="step"><div class="s-body">
+  <div class="s-title">更新 lodash 到最新兼容版</div>
+  <div class="s-desc">记录更新前版本，展示版本变更。</div>
+  <pre>/rui-npm update lodash<span class="cb" onclick="YrY.copyCmd(this,'/rui-npm update lodash')">📋</span></pre>
+  <div class="s-result-desc">💡 说明: update 默认升级到兼容范围内最新版本。补丁版本（4.17.x）只包含 bug 修复。</div>
+  <div class="s-result"><span class="r-label">✅ 结果:</span> ⬆️ lodash: 4.17.21 → 4.17.22 (补丁更新) — 修复 2 个 Bug / 无破坏性变更。</div>
+</div></div>
+
+<div class="step"><div class="s-body">
+  <div class="s-title">查看当前依赖树</div>
+  <div class="s-desc">列出所有直接依赖及版本。</div>
+  <pre>/rui-npm list --depth 0<span class="cb" onclick="YrY.copyCmd(this,'/rui-npm list --depth 0')">📋</span></pre>
+  <div class="s-result-desc">💡 说明: --depth 0 仅列出直接依赖，--depth 1 增加一层子依赖。定期运行 list 检查依赖树健康度。</div>
+  <div class="s-result"><span class="r-label">✅ 结果:</span> 📋 直接依赖 (3 个) — lodash@4.17.22 / prettier@3.6.2 / 总计: 3 + 12 = 15 个包。</div>
+</div></div>
+
+</div></div>
+
+<div class="panel" id="panelOverview">
+<div class="section"><h2><span class="dot"></span>依赖管理流程</h2>
+<div class="flow-row"><div class="flow-chip"><span class="n">install</span> 安装</div><span class="flow-arrow">→</span><div class="flow-chip"><span class="n">update</span> 更新</div><span class="flow-arrow">→</span><div class="flow-chip"><span class="n">list</span> 列表</div></div>
+</div>
+<div class="section"><h2><span class="dot"></span>关键特性</h2>
+<div class="flow-row"><div class="flow-chip"><span class="n">@version</span> 精确版本</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">--dev</span> 开发依赖</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">--depth</span> 树深度</div></div>
+</div>
+</div>
+
 <div class="panel" id="panelCommands"><div class="cmd-grid">
-<div class="cmd-card"><div class="stage">安装</div><div class="name">/rui-npm install lodash@4.17.21</div><div class="desc">指定精确版本安装到 dependencies，自动写入 package.json。</div><pre>/rui-npm install lodash@4.17.21<span class="cb" onclick="copyCmd(this,'/rui-npm install lodash@4.17.21')">📋</span></pre></div>
-<div class="cmd-card"><div class="stage">开发依赖</div><div class="name">/rui-npm install prettier --dev</div><div class="desc">安装到 devDependencies，生产环境不安装。</div><pre>/rui-npm install prettier --dev<span class="cb" onclick="copyCmd(this,'/rui-npm install prettier --dev')">📋</span></pre></div>
-<div class="cmd-card"><div class="stage">更新</div><div class="name">/rui-npm update lodash</div><div class="desc">升级到兼容范围内最新版本，展示 before/after 对比。</div><pre>/rui-npm update lodash<span class="cb" onclick="copyCmd(this,'/rui-npm update lodash')">📋</span></pre></div>
-<div class="cmd-card"><div class="stage">列表</div><div class="name">/rui-npm list --depth 0</div><div class="desc">列出直接依赖及版本，--depth 控制展开深度。</div><pre>/rui-npm list --depth 0<span class="cb" onclick="copyCmd(this,'/rui-npm list --depth 0')">📋</span></pre></div>
+
+<div class="cmd-card"><div class="stage">安装</div><div class="name">/rui-npm install lodash@4.17.21</div><div class="desc">指定精确版本安装到 dependencies，自动写入 package.json。</div><pre>/rui-npm install lodash@4.17.21<span class="cb" onclick="YrY.copyCmd(this,'/rui-npm install lodash@4.17.21')">📋</span></pre></div>
+
+<div class="cmd-card"><div class="stage">开发依赖</div><div class="name">/rui-npm install prettier --dev</div><div class="desc">安装到 devDependencies，生产环境不安装。</div><pre>/rui-npm install prettier --dev<span class="cb" onclick="YrY.copyCmd(this,'/rui-npm install prettier --dev')">📋</span></pre></div>
+
+<div class="cmd-card"><div class="stage">更新</div><div class="name">/rui-npm update lodash</div><div class="desc">升级到兼容范围内最新版本，展示 before/after 对比。</div><pre>/rui-npm update lodash<span class="cb" onclick="YrY.copyCmd(this,'/rui-npm update lodash')">📋</span></pre></div>
+
+<div class="cmd-card"><div class="stage">列表</div><div class="name">/rui-npm list --depth 0</div><div class="desc">列出直接依赖及版本，--depth 控制展开深度。</div><pre>/rui-npm list --depth 0<span class="cb" onclick="YrY.copyCmd(this,'/rui-npm list --depth 0')">📋</span></pre></div>
+
 </div></div>
-<div class="panel" id="panelFiles"><div class="section"><h2><span class="dot"></span>相关文件</h2><div class="file-list"><div class="file-item">📄 rui-npm.mjs</div><div class="file-item">📄 SKILL.md</div><div class="file-item">📋 计划清单.html</div><div class="file-item">📐 架构图.html</div><div class="file-item">🔗 知识图谱.html</div></div></div><div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="测试面板.html">🧪 测试面板</a></div></div>
-<div class="panel" id="panelTests"><div class="section"><h2><span class="dot"></span>测试覆盖</h2><div class="cmd-grid"><div class="cmd-card"><div class="name">install 正常路径</div><div class="desc">正常安装 / --dev 开发依赖 / --global 全局 / @version 精确版本</div></div><div class="cmd-card"><div class="name">边界/异常</div><div class="desc">无 package.json 报错 / 网络失败恢复 / 版本冲突处理</div></div></div></div><div class="links-row"><a href="测试面板.html">🧪 打开测试面板</a></div></div>
-<div class="toast" id="toast"></div>
-<script>document.querySelector('.tabs').addEventListener('click',e=>{const tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});function switchPanel(name){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===name));document.querySelectorAll('.panel').forEach(p=>{const on=p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1);p.classList.toggle('on',on)})}document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;const m={'1':'walkthrough','2':'overview','3':'commands','4':'files','5':'tests'};if(m[e.key]){e.preventDefault();switchPanel(m[e.key])}});function copyCmd(btn,cmd){navigator.clipboard.writeText(cmd).then(()=>{btn.textContent='✅';btn.classList.add('done');setTimeout(()=>{btn.textContent='📋';btn.classList.remove('done')},1500)})}function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}</script>
-<div style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY v4.5.0 · rui-npm · S2-安装 · 演示</div>
-</body></html>
+
+<div class="panel" id="panelFiles">
+<div class="section"><h2><span class="dot"></span>相关文件</h2>
+<div class="file-list"><div class="file-item">📄 rui-npm.mjs</div><div class="file-item">📄 SKILL.md</div><div class="file-item">📋 计划清单.html</div><div class="file-item">📐 架构图.html</div><div class="file-item">🔗 知识图谱.html</div></div>
+</div>
+<div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="测试面板.html">🧪 测试面板</a></div>
+</div>
+
+<div class="panel" id="panelTests">
+<div class="section"><h2><span class="dot"></span>测试覆盖</h2>
+<div class="cmd-grid">
+  <div class="cmd-card"><div class="name">install 正常路径</div><div class="desc">正常安装 / --dev 开发依赖 / --global 全局 / @version 精确版本</div></div>
+  <div class="cmd-card"><div class="name">边界/异常</div><div class="desc">无 package.json 报错 / 网络失败恢复 / 版本冲突处理</div></div>
+</div>
+</div>
+<div class="links-row"><a href="测试面板.html">🧪 打开测试面板</a></div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel: Simulator  🎬 模拟演练             -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panelSimulator">
+<div class="tip-box">🎬 <strong>交互式模拟演练</strong> — 按 <span class="inline-code">▶ 开始模拟</span> 观看四个阶段的实时执行过程，包括日志输出和进度条动画。</div>
+
+<div class="play-bar">
+  <button class="btn-play" id="btnPlay" onclick="startSim()">▶ 开始模拟</button>
+  <button class="btn-reset" id="btnReset" onclick="resetSim()">↺ 重置</button>
+  <div class="speed-select">
+    <button class="on" onclick="setSpeed(1,this)">1×</button>
+    <button onclick="setSpeed(2,this)">2×</button>
+    <button onclick="setSpeed(4,this)">4×</button>
+  </div>
+</div>
+
+<div class="stage-list">
+  <div class="stage-row" id="st0">
+    <div class="st-num">1</div><div class="st-info"><div class="st-name">安装 lodash@4.17.21</div><div class="st-detail">/rui-npm install lodash@4.17.21 → dependencies</div></div>
+    <div class="st-status waiting">等待中</div>
+    <div class="st-bar" style="width:0%"></div>
+  </div>
+  <div class="stage-row" id="st1">
+    <div class="st-num">2</div><div class="st-info"><div class="st-name">安装 devDependency</div><div class="st-detail">/rui-npm install prettier --dev → devDependencies</div></div>
+    <div class="st-status waiting">等待中</div>
+    <div class="st-bar" style="width:0%"></div>
+  </div>
+  <div class="stage-row" id="st2">
+    <div class="st-num">3</div><div class="st-info"><div class="st-name">更新 lodash 版本</div><div class="st-detail">/rui-npm update lodash → 补丁升级</div></div>
+    <div class="st-status waiting">等待中</div>
+    <div class="st-bar" style="width:0%"></div>
+  </div>
+  <div class="stage-row" id="st3">
+    <div class="st-num">4</div><div class="st-info"><div class="st-name">查看依赖树</div><div class="st-detail">/rui-npm list --depth 0 → 直接依赖统计</div></div>
+    <div class="st-status waiting">等待中</div>
+    <div class="st-bar" style="width:0%"></div>
+  </div>
+</div>
+
+<div id="logSection" style="display:none">
+  <div class="section"><h2><span class="dot"></span>执行日志</h2></div>
+  <div class="log-box" id="logBox"><div class="log-line" style="color:var(--text3)">等待模拟开始...</div></div>
+</div>
+</div>
+
+<div class="yry-toast toast" id="toast"></div>
+
+</div>
+
+<script>
+(function detectCDN() {
+  var resources = performance.getEntriesByType('resource');
+  var cdnEntries = resources.filter(function(r) { return r.name.indexOf('/cdn/') !== -1; });
+
+  var found = { css: false, theme: false, js: false };
+  var totalMs = 0;
+  cdnEntries.forEach(function(r) {
+    var name = r.name.split('/').pop().split('?')[0];
+    if (name === 'shared.css') found.css = r;
+    if (name === 'theme.css') found.theme = r;
+    if (name === 'shared.js') found.js = r;
+    totalMs += r.duration;
+  });
+
+  function updateBadge(elId, entry) {
+    var el = document.getElementById(elId);
+    if (entry) {
+      el.textContent = '✓ ' + Math.round(entry.duration) + 'ms';
+      el.style.color = 'var(--pass)';
+    } else {
+      el.textContent = '—';
+      el.style.color = 'var(--text3)';
+    }
+  }
+
+  updateBadge('lrCss', found.css);
+  updateBadge('lrTheme', found.theme);
+  updateBadge('lrJs', found.js);
+
+  var timingEl = document.getElementById('statTiming');
+  if (timingEl && totalMs > 0) {
+    timingEl.textContent = Math.round(totalMs) + 'ms';
+  }
+})();
+</script>
+
+<script>
+(function(){
+  var KEY='rui-npm-s2-demo';
+  document.querySelector('.tabs').addEventListener('click',function(e){
+    var t=e.target.closest('.tab'); if(!t)return;
+    YrY.switchPanel(t.dataset.panel,'.tab','.panel');
+    try{localStorage.setItem(KEY+'-tab',t.dataset.panel)}catch(e){}
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+    var m={'1':'walkthrough','2':'simulator','3':'overview','4':'commands','5':'files','6':'tests'};
+    if(m[e.key]){e.preventDefault();YrY.switchPanel(m[e.key],'.tab','.panel');}
+  });
+  try{var s=localStorage.getItem(KEY+'-tab');if(s)YrY.switchPanel(s,'.tab','.panel');}catch(e){}
+})();
+</script>
+
+<!-- ═══ Simulator engine ═══ -->
+<script>
+var simRunning = false;
+var simSpeed = 1;
+
+var stageDefs = [
+  { id:'st0', name:'安装 lodash@4.17.21', detail:'/rui-npm install lodash@4.17.21 → dependencies', status:'✅ lodash@4.17.21 · node_modules 5.8MB', ok:true },
+  { id:'st1', name:'安装 devDependency', detail:'/rui-npm install prettier --dev → devDependencies', status:'✅ prettier@3.6.2 · 12 个子依赖', ok:true },
+  { id:'st2', name:'更新 lodash 版本', detail:'/rui-npm update lodash → 补丁升级', status:'✅ 4.17.21 → 4.17.22 (补丁)', ok:true },
+  { id:'st3', name:'查看依赖树', detail:'/rui-npm list --depth 0 → 直接依赖统计', status:'✅ 3 个直接依赖 · 15 个总计', ok:true }
+];
+
+function setSpeed(speed, btn) {
+  simSpeed = speed;
+  document.querySelectorAll('.speed-select button').forEach(function(b) { b.classList.remove('on'); });
+  btn.classList.add('on');
+}
+
+function log(msg, color) {
+  var box = document.getElementById('logBox');
+  if (!box) return;
+  var div = document.createElement('div');
+  div.className = 'log-line';
+  var now = new Date();
+  var time = ('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2)+':'+('0'+now.getSeconds()).slice(-2)+'.'+('00'+now.getMilliseconds()).slice(-3);
+  div.innerHTML = '<span class="log-time">'+time+'</span><span class="log-icon" style="color:'+(color||'var(--text2)')+'">●</span><span style="color:'+(color||'var(--text2)')+'">'+msg+'</span>';
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function updateStage(idx, statusCls, statusText, barPct) {
+  var s = stageDefs[idx];
+  var row = document.getElementById(s.id);
+  row.classList.remove('done', 'active', 'skipped');
+  if (statusCls === 'ok') row.classList.add('done');
+  if (statusCls === 'loading') row.classList.add('active');
+  var st = row.querySelector('.st-status');
+  st.textContent = statusText;
+  st.className = 'st-status ' + statusCls;
+  row.querySelector('.st-bar').style.width = (barPct||0) + '%';
+}
+
+function resetSim() {
+  if (simRunning) return;
+  stageDefs.forEach(function(_, i) { updateStage(i, 'waiting', '等待中', 0); });
+  var box = document.getElementById('logBox');
+  if (box) box.innerHTML = '<div class="log-line" style="color:var(--text3)">等待模拟开始...</div>';
+  document.getElementById('logSection').style.display = 'none';
+  var btn = document.getElementById('btnPlay');
+  btn.classList.remove('running');
+  btn.textContent = '▶ 开始模拟';
+}
+
+function startSim() {
+  if (simRunning) return;
+  simRunning = true;
+  var btn = document.getElementById('btnPlay');
+  btn.classList.add('running');
+  btn.textContent = '⏳ 执行中...';
+  document.getElementById('logSection').style.display = '';
+  var box = document.getElementById('logBox');
+  box.innerHTML = '';
+  log('🚀 开始模拟执行', 'var(--accent)');
+
+  var i = 0;
+  function next() {
+    if (i >= stageDefs.length) {
+      setTimeout(function() {
+        log('✅ 全部步骤完成', 'var(--pass)');
+        btn.classList.remove('running');
+        btn.textContent = '✓ 完成';
+        simRunning = false;
+        setTimeout(function() { btn.textContent = '▶ 重新播放'; }, 2000);
+      }, 400 / simSpeed);
+      return;
+    }
+    var s = stageDefs[i];
+    log('⏳ ' + s.name + ' — ' + s.detail, 'var(--cyan)');
+    updateStage(i, 'loading', '执行中...', 0);
+    var start = Date.now();
+    var duration = (500 + Math.random() * 400) / simSpeed;
+    var tick = setInterval(function() {
+      var pct = Math.min(100, ((Date.now() - start) / duration) * 100);
+      var el = document.getElementById(s.id);
+      if (el) el.querySelector('.st-bar').style.width = pct + '%';
+      if (pct >= 100) clearInterval(tick);
+    }, 16);
+    setTimeout(function() {
+      clearInterval(tick);
+      updateStage(i, 'ok', s.status, 100);
+      log('  ✓ ' + s.status, 'var(--pass)');
+      i++;
+      setTimeout(next, 200 / simSpeed);
+    }, duration);
+  }
+  setTimeout(next, 400);
+}
+</script>
+
+<script src="../../../../cdn/shared.js"></script>
+
+<div class="yry-footer">YrY · 场景演示</div>
+</body>
+</html>
