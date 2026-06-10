@@ -736,6 +736,13 @@ const HEALTH_DIMENSIONS = {
   diagnostics:{ label: "D0-D7 诊断", weight: 10 },
   git:        { label: "Git 仓库状态", weight: 10 },
   security:   { label: "安全扫描", weight: 10 },
+  em_testing: { label: "测试体系", weight: 10 },
+  em_types:   { label: "类型安全", weight: 8 },
+  em_linting: { label: "代码规范", weight: 8 },
+  em_cicd:    { label: "CI/CD", weight: 8 },
+  em_docs:    { label: "文档完整", weight: 8 },
+  em_deps:    { label: "依赖管理", weight: 5 },
+  em_git:     { label: "Git 纪律", weight: 5 },
 };
 
 const HEALTH_GRADE = [
@@ -1097,6 +1104,16 @@ async function cmdHealth(projectRoot, opts = {}) {
   });
   console.log(`  ${secInfo.icon} 安全扫描:         ${secInfo.summary}`);
 
+  // ── 10-16. Engineering maturity (rui-init §7) ────────────
+  const emResult = assessEngineeringMaturity(projectRoot);
+  Object.assign(scores, emResult.scores);
+  for (const d of emResult.details) details.push(d);
+  for (const [dim, info] of Object.entries(emResult.scores)) {
+    const icon = info >= 80 ? "✅" : info >= 60 ? "⚠️" : "❌";
+    const label = HEALTH_DIMENSIONS[dim]?.label || dim;
+    console.log(`  ${icon} ${label}:${" ".repeat(Math.max(0, 12 - label.length))} ${info} 分 — ${emResult.summaries[dim] || ""}`);
+  }
+
   // ── Composite score ───────────────────────────────────
   let totalScore = 0;
   let totalWeight = 0;
@@ -1128,6 +1145,153 @@ async function cmdHealth(projectRoot, opts = {}) {
   const result = { composite, grade: grade.grade, scores, details, diagnostics: diagResult, config, tokenOk, robotOkCount, robotNames, gitInfo, secInfo };
   saveHealthTrend(result, projectRoot);
   return result;
+}
+
+/**
+ * Assess project engineering maturity from file system signals.
+ * Returns scores and details for the 7 engineering dimensions (rui-init §7).
+ */
+function assessEngineeringMaturity(projectRoot) {
+  const scores = {};
+  const details = [];
+  const summaries = {};
+  const pkgJsonPath = join(projectRoot, "package.json");
+  const pkg = existsSync(pkgJsonPath) ? JSON.parse(readFileSync(pkgJsonPath, "utf-8")) : null;
+  const allDeps = { ...(pkg?.dependencies || {}), ...(pkg?.devDependencies || {}) };
+  const depNames = Object.keys(allDeps);
+
+  // 1. Testing infrastructure
+  const testFrameworks = ["vitest", "jest", "mocha", "ava", "jasmine", "pytest", "go-test", "cargo-test"];
+  const hasTestFramework = depNames.some(d => testFrameworks.includes(d));
+  const hasTestDir = existsSync(join(projectRoot, "tests")) || existsSync(join(projectRoot, "__tests__")) || existsSync(join(projectRoot, "test"));
+  const hasTestScript = pkg?.scripts?.test;
+  const testCaseCount = countTestCases(projectRoot);
+  let emTestScore = 0;
+  if (hasTestFramework && testCaseCount >= 10) emTestScore = 100;
+  else if (hasTestFramework && testCaseCount > 0) emTestScore = 80;
+  else if (hasTestFramework || hasTestDir) emTestScore = 60;
+  else if (hasTestScript) emTestScore = 30;
+  scores.em_testing = emTestScore;
+  summaries.em_testing = hasTestFramework ? `${testCaseCount} 用例` : "无测试框架";
+  details.push({ dim: "em_testing", label: "测试体系", status: emTestScore >= 80 ? "pass" : emTestScore >= 60 ? "warn" : "fail", detail: `${hasTestFramework ? testFrameworks.find(d => depNames.includes(d)) : "无框架"}, ${testCaseCount} 用例`, score: emTestScore });
+
+  // 2. Type safety
+  const isTS = existsSync(join(projectRoot, "tsconfig.json"));
+  const hasStrictTS = isTS && readFileSync(join(projectRoot, "tsconfig.json"), "utf-8").includes('"strict"');
+  const hasFlow = depNames.includes("flow-bin") || existsSync(join(projectRoot, ".flowconfig"));
+  const hasTypings = existsSync(join(projectRoot, "*.d.ts")) || depNames.some(d => d.startsWith("@types/"));
+  let emTypeScore = 0;
+  if (isTS && hasStrictTS) emTypeScore = 100;
+  else if (isTS) emTypeScore = 70;
+  else if (hasFlow || hasTypings) emTypeScore = 40;
+  scores.em_types = emTypeScore;
+  summaries.em_types = isTS ? (hasStrictTS ? "strict" : "宽松") : "纯 JS";
+  details.push({ dim: "em_types", label: "类型安全", status: emTypeScore >= 80 ? "pass" : emTypeScore >= 60 ? "warn" : "fail", detail: isTS ? `TypeScript${hasStrictTS ? " strict" : " (宽松)"}` : "纯 JavaScript", score: emTypeScore });
+
+  // 3. Linting/code style
+  const hasESLint = existsSync(join(projectRoot, ".eslintrc.js")) || existsSync(join(projectRoot, ".eslintrc.json")) || existsSync(join(projectRoot, ".eslintrc.cjs")) || existsSync(join(projectRoot, ".eslintrc")) || existsSync(join(projectRoot, "eslint.config.js")) || existsSync(join(projectRoot, "eslint.config.mjs"));
+  const hasPrettier = existsSync(join(projectRoot, ".prettierrc")) || existsSync(join(projectRoot, ".prettierrc.json")) || existsSync(join(projectRoot, ".prettierrc.js")) || existsSync(join(projectRoot, "prettier.config.js"));
+  const hasEditorConfig = existsSync(join(projectRoot, ".editorconfig"));
+  const lintCount = [hasESLint, hasPrettier, hasEditorConfig].filter(Boolean).length;
+  const hasCILint = hasESLint && (existsSync(join(projectRoot, ".github")) || existsSync(join(projectRoot, ".gitlab-ci.yml")));
+  let emLintScore = 0;
+  if (hasCILint) emLintScore = 100;
+  else if (lintCount >= 2) emLintScore = 80;
+  else if (lintCount >= 1) emLintScore = 60;
+  scores.em_linting = emLintScore;
+  const lintTools = [];
+  if (hasESLint) lintTools.push("ESLint");
+  if (hasPrettier) lintTools.push("Prettier");
+  if (hasEditorConfig) lintTools.push("EditorConfig");
+  summaries.em_linting = lintTools.join(",") || "无";
+  details.push({ dim: "em_linting", label: "代码规范", status: emLintScore >= 80 ? "pass" : emLintScore >= 60 ? "warn" : "fail", detail: `${lintCount} 工具: ${lintTools.join(", ") || "无"}${hasCILint ? " + CI 强制" : ""}`, score: emLintScore });
+
+  // 4. CI/CD
+  const hasGitHubActions = existsSync(join(projectRoot, ".github", "workflows"));
+  const hasGitLabCI = existsSync(join(projectRoot, ".gitlab-ci.yml"));
+  const hasJenkins = existsSync(join(projectRoot, "Jenkinsfile"));
+  const hasCICD = hasGitHubActions || hasGitLabCI || hasJenkins;
+  const hasCIWorkflows = hasGitHubActions && readdirSync(join(projectRoot, ".github", "workflows")).filter(f => f.endsWith(".yml") || f.endsWith(".yaml")).length > 0;
+  let emCICDScore = 0;
+  if (hasCIWorkflows) emCICDScore = 100;
+  else if (hasCICD) emCICDScore = 70;
+  scores.em_cicd = emCICDScore;
+  const ciLabel = hasGitHubActions ? "GitHub Actions" : hasGitLabCI ? "GitLab CI" : hasJenkins ? "Jenkins" : "无";
+  summaries.em_cicd = ciLabel;
+  details.push({ dim: "em_cicd", label: "CI/CD", status: emCICDScore >= 80 ? "pass" : emCICDScore >= 60 ? "warn" : "fail", detail: hasCICD ? ciLabel : "无 CI/CD 管线", score: emCICDScore });
+
+  // 5. Documentation completeness
+  const hasReadme = existsSync(join(projectRoot, "README.md"));
+  const hasClaude = existsSync(join(projectRoot, "CLAUDE.md"));
+  const hasAPIDocs = existsSync(join(projectRoot, "docs")) || existsSync(join(projectRoot, "api-docs"));
+  const docCount = [hasReadme, hasClaude, hasAPIDocs].filter(Boolean).length;
+  let emDocScore = 0;
+  if (docCount >= 3) emDocScore = 100;
+  else if (docCount >= 2) emDocScore = 80;
+  else if (docCount >= 1) emDocScore = 50;
+  scores.em_docs = emDocScore;
+  const docList = [];
+  if (hasReadme) docList.push("README");
+  if (hasClaude) docList.push("CLAUDE.md");
+  if (hasAPIDocs) docList.push("docs/");
+  summaries.em_docs = docList.join(",") || "无";
+  details.push({ dim: "em_docs", label: "文档完整", status: emDocScore >= 80 ? "pass" : emDocScore >= 60 ? "warn" : "fail", detail: `${docCount} 文档: ${docList.join(", ") || "无"}`, score: emDocScore });
+
+  // 6. Dependency management
+  const hasLockfile = existsSync(join(projectRoot, "package-lock.json")) || existsSync(join(projectRoot, "yarn.lock")) || existsSync(join(projectRoot, "pnpm-lock.yaml")) || existsSync(join(projectRoot, "bun.lockb"));
+  const hasNpmScriptVersion = pkg?.scripts && Object.keys(pkg.scripts).some(k => k.includes("version") || k.includes("release"));
+  const lockType = existsSync(join(projectRoot, "pnpm-lock.yaml")) ? "pnpm" : existsSync(join(projectRoot, "yarn.lock")) ? "yarn" : existsSync(join(projectRoot, "package-lock.json")) ? "npm" : existsSync(join(projectRoot, "bun.lockb")) ? "bun" : "";
+  let emDepScore = 0;
+  if (hasLockfile && hasNpmScriptVersion) emDepScore = 100;
+  else if (hasLockfile) emDepScore = 70;
+  scores.em_deps = emDepScore;
+  summaries.em_deps = hasLockfile ? lockType : "无 lockfile";
+  details.push({ dim: "em_deps", label: "依赖管理", status: emDepScore >= 80 ? "pass" : emDepScore >= 60 ? "warn" : "fail", detail: hasLockfile ? `${lockType} lockfile${hasNpmScriptVersion ? " + 版本脚本" : ""}` : "无锁文件", score: emDepScore });
+
+  // 7. Git discipline
+  const hasGitignore = existsSync(join(projectRoot, ".gitignore"));
+  const hasGitAttributes = existsSync(join(projectRoot, ".gitattributes"));
+  const hasPRTemplate = existsSync(join(projectRoot, ".github", "PULL_REQUEST_TEMPLATE.md")) || existsSync(join(projectRoot, ".github", "pull_request_template.md"));
+  const gitDiscCount = [hasGitignore, hasGitAttributes, hasPRTemplate].filter(Boolean).length;
+  const hasBranchProtection = existsSync(join(projectRoot, ".github")) && gitDiscCount >= 2;
+  let emGitScore = 0;
+  if (hasBranchProtection) emGitScore = 100;
+  else if (gitDiscCount >= 2) emGitScore = 80;
+  else if (hasGitignore) emGitScore = 60;
+  scores.em_git = emGitScore;
+  const gitItems = [];
+  if (hasGitignore) gitItems.push(".gitignore");
+  if (hasGitAttributes) gitItems.push(".gitattributes");
+  if (hasPRTemplate) gitItems.push("PR 模板");
+  summaries.em_git = gitItems.join(",") || "仅基本";
+  details.push({ dim: "em_git", label: "Git 纪律", status: emGitScore >= 80 ? "pass" : emGitScore >= 60 ? "warn" : "fail", detail: `${gitDiscCount} 项: ${gitItems.join(", ") || "无"}`, score: emGitScore });
+
+  return { scores, details, summaries };
+}
+
+/**
+ * Count test cases across known test file patterns.
+ */
+function countTestCases(projectRoot) {
+  let count = 0;
+  const testDirs = ["tests", "__tests__", "test", "spec"];
+  for (const dir of testDirs) {
+    const p = join(projectRoot, dir);
+    if (!existsSync(p)) continue;
+    try {
+      const files = readdirSync(p, { recursive: true, withFileTypes: true });
+      for (const f of files) {
+        if (f.isFile() && /\.(test|spec)\.(m?js|ts|tsx|py|go|rs)$/.test(f.name)) {
+          try {
+            const content = readFileSync(join(f.path || p, f.name), "utf-8");
+            const matches = content.match(/\b(it|test|describe|def test_|func Test)\b/g);
+            if (matches) count += matches.length;
+          } catch {}
+        }
+      }
+    } catch {}
+  }
+  return count;
 }
 
 /**

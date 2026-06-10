@@ -260,6 +260,169 @@
     .back-top.visible { opacity: 1; pointer-events: auto; }
     .back-top:hover { border-color: var(--color-accent); color: var(--color-accent); }
 
+    /* ── Notification bell ─────────────────── */
+    .notify-bell {
+      position: fixed; top: 28px; right: 28px; z-index: 200;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card-flat); border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-secondary); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; box-shadow: var(--shadow-card);
+      transition: all 0.2s ease;
+    }
+    .notify-bell:hover { border-color: var(--color-accent); color: var(--color-accent); }
+    .notify-bell .badge {
+      position: absolute; top: -4px; right: -4px;
+      min-width: 18px; height: 18px; border-radius: 9px;
+      background: #ef4444; color: #fff; font-size: 0.65rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 4px; line-height: 1;
+    }
+    .notify-bell .badge:empty { display: none; }
+
+    /* ── Floating panel ────────────────────── */
+    .notify-overlay {
+      position: fixed; inset: 0; z-index: 299;
+      background: rgba(0,0,0,0.3);
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .notify-overlay.open { opacity: 1; pointer-events: auto; }
+    .notify-panel {
+      position: fixed; top: 80px; right: 28px; z-index: 300;
+      width: 480px; max-height: 75vh;
+      background: var(--bg-card, #1e1f2b); border: var(--border-subtle);
+      border-radius: 12px; box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+      display: flex; flex-direction: column;
+      opacity: 0; pointer-events: none; transform: translateY(-8px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .notify-panel.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .notify-panel .panel-header {
+      display: flex; gap: 0; padding: 14px 20px 0; flex-shrink: 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .notify-panel .tab {
+      padding: 8px 18px; font-size: 0.82rem; font-weight: 500;
+      color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent;
+      margin-bottom: -1px; transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none;
+    }
+    .notify-panel .tab:hover { color: var(--text-secondary); }
+    .notify-panel .tab .tab-count {
+      font-size: 0.68rem; color: var(--text-muted); margin-left: 4px;
+    }
+    .notify-panel .tab.active {
+      color: var(--color-accent); border-bottom-color: var(--color-accent);
+    }
+    .notify-panel .tab.active .tab-count { color: var(--color-accent); }
+    .notify-panel .panel-refresh {
+      margin-left: auto; padding: 4px 10px; font-size: 1rem; cursor: pointer;
+      background: none; border: none; color: var(--text-muted);
+      border-radius: 4px; transition: all 0.15s;
+    }
+    .notify-panel .panel-refresh:hover { color: var(--color-accent); background: rgba(255,255,255,0.03); }
+    .notify-panel .panel-refresh.spinning { animation: spin .6s linear; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .notify-panel .panel-body {
+      flex: 1; overflow-y: auto; padding: 0;
+      max-height: calc(75vh - 56px);
+    }
+    /* ── Summary bar ─────────────────────── */
+    .notify-panel .panel-summary {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 12px 20px; margin: 6px 12px;
+      background: rgba(255,255,255,0.025); border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+    .panel-sum-icon { font-size: 1rem; }
+    .panel-sum-text { font-size: 0.78rem; color: var(--text-secondary); font-weight: 500; }
+    .panel-sum-meta { font-size: 0.66rem; color: var(--text-muted); margin-left: auto; }
+    .r-sum-score { font-weight: 700; color: var(--color-accent); font-size: 0.82rem; }
+    .panel-sum-chips { display: flex; gap: 4px; }
+    .r-sum-chip { font-size: 0.64rem; padding: 2px 8px; border-radius: 8px; font-weight: 600; }
+    .r-sum-chip.pass { background: rgba(34,197,94,0.12); color: #22c55e; }
+    .r-sum-chip.warn { background: rgba(245,158,11,0.12); color: #f59e0b; }
+    .r-sum-chip.fail { background: rgba(239,68,68,0.12); color: #ef4444; }
+.r-sum-chip.info { background: rgba(59,130,246,0.1); color: #60a5fa; }
+    /* ── Report list ─────────────────────── */
+    .notify-panel .report-list { list-style: none; }
+    .notify-panel .report-item {
+      padding: 14px 20px; transition: background 0.12s;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      cursor: pointer;
+    }
+    .notify-panel .report-item:last-child { border-bottom: none; }
+    .notify-panel .report-item:hover { background: rgba(255,255,255,0.04); }
+    .notify-panel .report-item.r-latest { background: rgba(255,193,7,0.03); }
+    .notify-panel .report-item.r-latest:hover { background: rgba(255,193,7,0.06); }
+    .notify-panel .report-item .r-row1 {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 5px;
+    }
+    .notify-panel .report-item .r-icon {
+      font-size: 1.1rem; flex-shrink: 0; width: 24px; text-align: center;
+    }
+    .notify-panel .report-item .r-title {
+      flex: 1; min-width: 0; font-size: 0.84rem; font-weight: 600; color: var(--text-primary);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .notify-panel .report-item .r-title a {
+      color: var(--cyan, #22d3ee); text-decoration: none; transition: color 0.15s;
+    }
+    .notify-panel .report-item .r-title a:hover { color: var(--color-accent); }
+    .notify-panel .report-item .r-badge {
+      flex-shrink: 0; font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 10px;
+      white-space: nowrap;
+    }
+    .notify-panel .report-item .r-badge.pass { background: rgba(34,197,94,0.15); color: #22c55e; }
+    .notify-panel .report-item .r-badge.warn { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .notify-panel .report-item .r-badge.fail { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .notify-panel .report-item .r-badge.A { background: rgba(34,197,94,0.15); color: #22c55e; }
+    .notify-panel .report-item .r-badge.B { background: rgba(34,197,94,0.12); color: #22c55e; }
+    .notify-panel .report-item .r-badge.C { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .notify-panel .report-item .r-badge.D { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .notify-panel .report-item .r-badge.score { background: rgba(255,193,7,0.1); color: var(--color-accent); }
+    .notify-panel .report-item .r-row2 {
+      display: flex; align-items: center; gap: 8px; padding-left: 34px;
+      font-size: 0.7rem; color: var(--text-muted); line-height: 1.5;
+    }
+    .notify-panel .report-item .r-row2 .r-dot { color: var(--text-muted); opacity: 0.5; }
+    .notify-panel .report-item .r-chips {
+      display: flex; gap: 4px; flex-wrap: wrap; padding-left: 34px; margin-top: 5px;
+    }
+    .r-chip {
+      font-size: 0.63rem; padding: 2px 7px; border-radius: 6px; font-weight: 500;
+      white-space: nowrap;
+    }
+    .r-chip.warn { background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.15); }
+    .r-chip.fail { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.15); }
+    .r-chip.pass { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.15); }
+    .r-chip.info { background: rgba(148,163,184,0.08); color: #94a3b8; border: 1px solid rgba(148,163,184,0.12); }
+    .r-reltime { color: var(--color-accent); font-weight: 500; }
+    .notify-panel .report-item .r-summary {
+      padding-left: 34px; font-size: 0.72rem; color: var(--text-secondary);
+      line-height: 1.45; margin-top: 4px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .notify-panel .panel-loading {
+      text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.82rem;
+    }
+    .notify-panel .panel-empty {
+      text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.82rem;
+    }
+    .notify-panel .panel-footer {
+      padding: 10px 20px; border-top: 1px solid rgba(255,255,255,0.06);
+      text-align: center; flex-shrink: 0;
+    }
+    .notify-panel .panel-footer a {
+      color: var(--cyan, #22d3ee); text-decoration: none; font-size: 0.74rem; transition: color 0.15s;
+    }
+    .notify-panel .panel-footer a:hover { color: var(--color-accent); }
+
+    @media (max-width: 768px) {
+      .notify-bell { top: 16px; right: 16px; width: 36px; height: 36px; font-size: 1rem; }
+      .notify-panel { top: 60px; right: 8px; left: 8px; width: auto; max-height: 65vh; }
+      .notify-panel .panel-body { max-height: calc(65vh - 56px); }
+    }
+
     /* ── Responsive ────────────────────────── */
     @media (max-width: 768px) {
       .container { padding: 24px 12px 12px; }
@@ -312,6 +475,8 @@
       <a class="cross-link" href="./健康报告/">🩺 健康报告</a>
       <span class="cross-sep">·</span>
       <a class="cross-link" href="./自循环报告/">🔄 自循环报告</a>
+      <span class="cross-sep">·</span>
+      <a class="cross-link" href="./趋势报告/">📡 趋势报告</a>
       <span class="cross-sep">·</span>
       <a class="cross-link" href="../CLAUDE.md" target="_blank">📜 CLAUDE.md</a>
       <span class="cross-sep">·</span>
@@ -1204,6 +1369,35 @@
     </div>
   </div>
 
+  <!-- Notification bell -->
+  <button class="notify-bell" id="notifyBell" title="报告通知" aria-label="报告通知">
+    &#128276;
+    <span class="badge" id="notifyBadge"></span>
+  </button>
+
+  <!-- Notification overlay -->
+  <div class="notify-overlay" id="notifyOverlay"></div>
+
+  <!-- Floating panel -->
+  <div class="notify-panel" id="notifyPanel">
+    <div class="panel-header">
+      <button class="tab active" data-tab="health">健康报告</button>
+      <button class="tab" data-tab="loop">自循环报告</button>
+      <button class="tab" data-tab="trend">趋势发现</button>
+      <button class="panel-refresh" id="panelRefresh" title="刷新报告列表">&#x21bb;</button>
+    </div>
+    <div class="panel-body" id="panelBody">
+      <div class="panel-loading">加载中...</div>
+    </div>
+    <div class="panel-footer">
+      <a href="./健康报告/">查看全部健康报告</a>
+      <span style="margin: 0 8px;color:var(--text-muted);opacity:.4">|</span>
+      <a href="./自循环报告/">查看全部自循环报告</a>
+      <span style="margin: 0 8px;color:var(--text-muted);opacity:.4">|</span>
+      <a href="./趋势报告/">查看全部趋势报告</a>
+    </div>
+  </div>
+
   <!-- Back to top button -->
   <button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">&uarr;</button>
 
@@ -1222,6 +1416,546 @@
     }
     window.addEventListener('scroll', toggleBackTop, { passive: true });
     backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    /* ── Notification bell + floating panel ─── */
+    (function() {
+      const bell = document.getElementById('notifyBell');
+      const badge = document.getElementById('notifyBadge');
+      const panel = document.getElementById('notifyPanel');
+      const overlay = document.getElementById('notifyOverlay');
+      const panelBody = document.getElementById('panelBody');
+      const tabs = document.querySelectorAll('.notify-panel .tab');
+
+      let activeTab = 'health';
+      let reportData = { health: [], loop: [], trend: [] };
+      let loaded = false;
+
+      function open() { panel.classList.add('open'); overlay.classList.add('open'); if (!loaded) fetchAll(); }
+      function close() { panel.classList.remove('open'); overlay.classList.remove('open'); }
+      function toggle() { panel.classList.contains('open') ? close() : open(); }
+
+      bell.addEventListener('click', toggle);
+      overlay.addEventListener('click', close);
+
+      tabs.forEach(function(t) {
+        t.addEventListener('click', function() {
+          tabs.forEach(function(x) { x.classList.remove('active'); });
+          this.classList.add('active');
+          activeTab = this.dataset.tab;
+          renderList();
+        });
+      });
+
+      /* Refresh button */
+      var refreshBtn = document.getElementById('panelRefresh');
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          refreshBtn.classList.add('spinning');
+          reportData = { health: [], loop: [], trend: [] }; loaded = false;
+          fetchAll().finally(function() { refreshBtn.classList.remove('spinning'); });
+        });
+      }
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && panel.classList.contains('open')) close();
+      });
+
+      /* Parse filename into structured fields */
+      function parseHealthFilename(href) {
+        var name = href.replace('.html', '').replace('health-', '');
+        var parts = name.split('-');
+        var date = parts.slice(0, 3).join('-');
+        var timeId = parts.slice(3).join('');
+        return { date: date, timeId: timeId, fullName: name };
+      }
+
+      function parseLoopFilename(href) {
+        var name = href.replace('.html', '');
+        var parts = name.split('-');
+        // Find date position: last 3 parts before the final timestamp
+        // e.g. rui-bot-2026-06-10-mq7h46e5
+        // skill is everything before YYYY-MM-DD
+        var dateIdx = -1;
+        for (var i = 0; i < parts.length - 2; i++) {
+          if (/^\d{4}$/.test(parts[i]) && /^\d{2}$/.test(parts[i+1]) && /^\d{2}$/.test(parts[i+2])) {
+            dateIdx = i; break;
+          }
+        }
+        var skill = dateIdx > 0 ? parts.slice(0, dateIdx).join('-') : parts.slice(0, -4).join('-');
+        var date = dateIdx > 0 ? parts.slice(dateIdx, dateIdx + 3).join('-') : '';
+        var timeId = parts.slice(dateIdx > 0 ? dateIdx + 3 : -4).join('');
+        return { skill: skill, date: date, timeId: timeId, fullName: name };
+      }
+
+      function parseIndex(html, basePath) {
+        var items = [];
+        var re = /<a\s+href="([^"]+)">([^<]+)<\/a>\s*<\/td>\s*<td[^>]*>([^<]*)<\/td>/gi;
+        var m;
+        while ((m = re.exec(html)) !== null) {
+          var href = m[1];
+          var label = m[2].replace(/<[^>]+>/g, '');
+          var col2 = m[3].trim();
+          items.push({ href: href, label: label, col2: col2, basePath: basePath });
+        }
+        if (items.length === 0) {
+          var re2 = /<tr[^>]*>\s*<td[^>]*><a\s+href="([^"]+)">([^<]+)<\/a>/gi;
+          while ((m = re2.exec(html)) !== null) {
+            items.push({ href: m[1], label: m[2].replace(/<[^>]+>/g, ''), col2: '', basePath: basePath });
+          }
+        }
+        items.sort(function(a, b) { return b.href.localeCompare(a.href); });
+        return items;
+      }
+
+      /* Compute relative time string from date like "2026-06-10" */
+      function relativeTime(dateStr) {
+        if (!dateStr) return '';
+        try {
+          var d = new Date(dateStr);
+          var now = new Date();
+          var diffMs = now - d;
+          var diffMin = Math.floor(diffMs / 60000);
+          var diffHr = Math.floor(diffMs / 3600000);
+          var diffDay = Math.floor(diffMs / 86400000);
+          if (diffMin < 1) return '刚刚';
+          if (diffMin < 60) return diffMin + '分钟前';
+          if (diffHr < 24) return diffHr + '小时前';
+          if (diffDay === 1) return '昨天';
+          if (diffDay < 7) return diffDay + '天前';
+          return dateStr;
+        } catch(e) { return dateStr; }
+      }
+
+      /* Extract key metrics from health report HTML */
+      function extractHealthMeta(html) {
+        var meta = {};
+        var sm = html.match(/h-score-num[^>]*>(\d+)</);
+        if (sm) meta.score = parseInt(sm[1], 10);
+        var gm = html.match(/h-score-grade[^>]*>([ABCD]) 级</);
+        if (gm) meta.grade = gm[1];
+        var tm = html.match(/h-hs-val[^>]*>(\d+)\/8 触发</);
+        if (tm) meta.triggers = parseInt(tm[1], 10);
+        // Page title & H1
+        var pt = html.match(/<title>([^<]+)<\/title>/);
+        if (pt) meta.pageTitle = pt[1];
+        var h1 = html.match(/<h1[^>]*>([^<]+)<\/h1>/);
+        if (h1) meta.heading = h1[1];
+        // Summary card — overall assessment
+        var ov = html.match(/h-summary-val[^>]*>([^<]+)<\/div>/);
+        if (ov) meta.overall = ov[1].replace(/<[^>]+>/g, '').trim();
+        // Trend vs previous
+        var tr = html.match(/h-hs-val[^>]*style="color:([^"]+)"[^>]*>([^<]+)</);
+        if (tr) meta.trendLabel = tr[2];
+        // Most critical recommendation
+        var rec = html.match(/h-rec-text">([^<]+)</);
+        if (rec) meta.topRec = rec[1];
+        // Count recommendations
+        var recMatch = html.match(/h-rec-item/g);
+        if (recMatch) meta.recs = recMatch.length;
+        // Per-dimension scores
+        var dimScores = {};
+        var dimRe = /h-dim-label[^>]*>([^<]+)<\/span>[\s\S]*?h-dim-score[^>]*>(\d+) 分</g;
+        var dm;
+        while ((dm = dimRe.exec(html)) !== null) {
+          dimScores[dm[1]] = parseInt(dm[2], 10);
+        }
+        if (Object.keys(dimScores).length > 0) {
+          meta.dimScores = dimScores;
+          // Count pass/warn/fail dimensions
+          var dimPass = 0, dimWarn = 0, dimFail = 0, bestDim = '', worstDim = '', bestScore = 0, worstScore = 100;
+          var dk = Object.keys(dimScores);
+          for (var di = 0; di < dk.length; di++) {
+            var ds = dimScores[dk[di]];
+            if (ds >= 80) dimPass++;
+            else if (ds >= 60) dimWarn++;
+            else dimFail++;
+            if (ds > bestScore) { bestScore = ds; bestDim = dk[di]; }
+            if (ds < worstScore) { worstScore = ds; worstDim = dk[di]; }
+          }
+          meta.dimStats = { pass: dimPass, warn: dimWarn, fail: dimFail, total: dk.length, best: { dim: bestDim, score: bestScore }, worst: { dim: worstDim, score: worstScore } };
+        }
+        // Git info
+        var brMatch = html.match(/分支: <strong>([^<]+)</);
+        if (brMatch) meta.branch = brMatch[1];
+        return meta;
+      }
+
+      /* Extract key metrics from loop report HTML */
+      function extractLoopMeta(html) {
+        var meta = {};
+        var sm = html.match(/yry-badge\s+(pass|warn|fail)/);
+        if (sm) meta.status = sm[1];
+        var sum = html.match(/yry-summary">([^<]+)</);
+        if (sum) meta.summary = sum[1];
+        // Page title & H1
+        var pt = html.match(/<title>([^<]+)<\/title>/);
+        if (pt) meta.pageTitle = pt[1];
+        var h1 = html.match(/<h1[^>]*>([^<]+)<\/h1>/);
+        if (h1) meta.heading = h1[1];
+        // Meta line (date + interval + status)
+        var mline = html.match(/yry-header[^>]*meta[^>]*>([^<]+)</);
+        if (mline) meta.metaLine = mline[1];
+        // Findings — extract titles
+        var findingTitles = [];
+        var fre = /yry-finding-head[^>]*>[\d]+\.\s*([^<]+)</g;
+        var fm;
+        while ((fm = fre.exec(html)) !== null) findingTitles.push(fm[1]);
+        if (findingTitles.length > 0) meta.findingTitles = findingTitles;
+        // Count findings by level
+        var infoCount = (html.match(/yry-finding\s+info/g) || []).length;
+        var warnCount = (html.match(/yry-finding\s+warn/g) || []).length;
+        var failCount = (html.match(/yry-finding\s+fail/g) || []).length;
+        if (infoCount + warnCount + failCount > 0) {
+          meta.findings = { info: infoCount, warn: warnCount, fail: failCount };
+        }
+        // Health context
+        var hc = html.match(/yry-val[^>]*>(\d+)<\/div>\s*<div[^>]*yry-lbl[^>]*>🩺 健康度 ([ABCD]) 级</);
+        if (hc) { meta.healthScore = parseInt(hc[1], 10); meta.healthGrade = hc[2]; }
+        return meta;
+      }
+
+      async function fetchIndex(url, key) {
+        try {
+          var resp = await fetch(url);
+          if (!resp.ok) return [];
+          var html = await resp.text();
+          var basePath = key === 'health' ? './健康报告/' : './自循环报告/';
+          var items = parseIndex(html, basePath);
+          return items;
+        } catch (e) { return []; }
+      }
+
+      /* Lazy-fetch top N report details and enrich items */
+      async function enrichItems(items, key, limit) {
+        limit = limit || 8;
+        var enriched = [];
+        for (var i = 0; i < items.length; i++) {
+          var item = items[i];
+          if (key === 'health') {
+            var p = parseHealthFilename(item.href);
+            enriched.push({
+              href: item.href, basePath: item.basePath,
+              date: p.date, timeId: p.timeId,
+              meta: i < limit ? null : null  // placeholder; will fill below
+            });
+          } else {
+            var lp = parseLoopFilename(item.href);
+            enriched.push({
+              href: item.href, basePath: item.basePath,
+              skill: lp.skill, date: lp.date, timeId: lp.timeId,
+              meta: null
+            });
+          }
+        }
+        // Fetch first N in parallel
+        var fetches = [];
+        for (var j = 0; j < Math.min(limit, items.length); j++) {
+          fetches.push(
+            fetch(items[j].basePath + items[j].href)
+              .then(function(r) { return r.ok ? r.text() : ''; })
+              .catch(function() { return ''; })
+          );
+        }
+        var results = await Promise.all(fetches);
+        for (var k = 0; k < results.length; k++) {
+          if (results[k]) {
+            enriched[k].meta = key === 'health'
+              ? extractHealthMeta(results[k])
+              : extractLoopMeta(results[k]);
+          }
+        }
+        return enriched;
+      }
+
+      /* Fetch trend items from reports.json manifest */
+      async function fetchTrendItems() {
+        try {
+          var resp = await fetch('./趋势报告/reports.json');
+          if (!resp.ok) return [];
+          var manifest = await resp.json();
+          return manifest.map(function(r) {
+            return {
+              href: r.file || '',
+              basePath: './趋势报告/',
+              date: r.date,
+              source: r.source,
+              ok: r.ok,
+              trend: r.trend,
+              items: r.items,
+              reachable: r.reachable,
+              total: r.total,
+              label: r.source,
+              meta: {
+                ok: r.ok,
+                trend: r.trend,
+                items: r.items,
+                source: r.source,
+                reachable: r.reachable,
+                total: r.total
+              }
+            };
+          });
+        } catch(e) { return []; }
+      }
+
+      async function fetchAll() {
+        loaded = true;
+        panelBody.innerHTML = '<div class="panel-loading">加载中...</div>';
+        var _a = await Promise.all([
+          fetchIndex('./健康报告/index.html', 'health'),
+          fetchIndex('./自循环报告/index.html', 'loop'),
+          fetchTrendItems()
+        ]);
+        var healthItems = _a[0], loopItems = _a[1], trendItems = _a[2];
+
+        // Update tab counts
+        var tabEls = document.querySelectorAll('.notify-panel .tab');
+        if (tabEls[0]) {
+          var hc = tabEls[0].querySelector('.tab-count');
+          if (!hc) { hc = document.createElement('span'); hc.className = 'tab-count'; tabEls[0].appendChild(hc); }
+          hc.textContent = '(' + healthItems.length + ')';
+        }
+        if (tabEls[1]) {
+          var lc = tabEls[1].querySelector('.tab-count');
+          if (!lc) { lc = document.createElement('span'); lc.className = 'tab-count'; tabEls[1].appendChild(lc); }
+          lc.textContent = '(' + loopItems.length + ')';
+        }
+        if (tabEls[2]) {
+          var tc = tabEls[2].querySelector('.tab-count');
+          if (!tc) { tc = document.createElement('span'); tc.className = 'tab-count'; tabEls[2].appendChild(tc); }
+          tc.textContent = '(' + trendItems.length + ')';
+        }
+
+        var total = healthItems.length + loopItems.length + trendItems.length;
+        if (total > 0) { badge.textContent = total > 99 ? '99+' : String(total); }
+
+        // Show skeleton immediately, then enrich
+        reportData.health = healthItems;
+        reportData.loop = loopItems;
+        reportData.trend = trendItems;
+        renderList();
+
+        // Enrich with details lazily
+        var _b = await Promise.all([
+          enrichItems(healthItems, 'health', 8),
+          enrichItems(loopItems, 'loop', 8)
+        ]);
+        reportData.health = _b[0];
+        reportData.loop = _b[1];
+        renderList();
+      }
+
+      function renderList() {
+        var list = activeTab === 'health' ? reportData.health : activeTab === 'loop' ? reportData.loop : reportData.trend;
+        if (list.length === 0) {
+          var hintCmd = activeTab === 'health' ? 'node skills/rui-bot/send.mjs health --html' :
+                        activeTab === 'loop' ? 'node skills/rui-bot/lib/loop-report.mjs' :
+                        'node skills/rui-trends/rui-trends.mjs all --html';
+          panelBody.innerHTML = '<div class="panel-empty">暂无报告<br><span style="font-size:.7rem;color:var(--text-muted);margin-top:8px;display:block">运行 <code style="color:var(--cyan)">' + hintCmd + '</code> 生成首份报告</span></div>';
+          return;
+        }
+        var isHealth = activeTab === 'health';
+        var isTrend = activeTab === 'trend';
+        var html = '';
+        // Summary bar
+        if (!isTrend) {
+          html += buildSummaryBar(list, isHealth);
+        } else {
+          html += buildTrendSummaryBar(list);
+        }
+        html += '<ul class="report-list">';
+        for (var i = 0; i < list.length; i++) {
+          html += renderItem(list[i], isHealth, i === 0);
+        }
+        html += '</ul>';
+        panelBody.innerHTML = html;
+      }
+
+      function buildSummaryBar(list, isHealth) {
+        var enriched = 0, total = list.length;
+        for (var i = 0; i < list.length; i++) { if (list[i].meta) enriched++; }
+        if (isHealth) {
+          // Find best/latest grade
+          var grades = { A: 0, B: 0, C: 0, D: 0 };
+          var latestScore = '', latestGrade = '';
+          for (var i = 0; i < list.length; i++) {
+            var m = list[i].meta;
+            if (m && m.grade) grades[m.grade] = (grades[m.grade] || 0) + 1;
+            if (i === 0 && m && m.score) { latestScore = m.score; latestGrade = m.grade || ''; }
+          }
+          var gradeStr = '';
+          if (latestScore) gradeStr = '<span class="r-sum-score">' + latestScore + '分 ' + latestGrade + '级</span>';
+          return '<div class="panel-summary">'
+            + '<span class="panel-sum-icon">🩺</span>'
+            + '<span class="panel-sum-text">' + total + ' 份报告</span>'
+            + gradeStr
+            + '<span class="panel-sum-meta">' + enriched + ' 份已解析</span>'
+            + '</div>';
+        } else {
+          var pass = 0, warn = 0, fail = 0;
+          for (var j = 0; j < list.length; j++) {
+            var lm = list[j].meta;
+            if (lm && lm.status === 'pass') pass++;
+            else if (lm && lm.status === 'warn') warn++;
+            else if (lm && lm.status === 'fail') fail++;
+          }
+          var statusStr = [];
+          if (pass > 0) statusStr.push('<span class="r-sum-chip pass">' + pass + ' 通过</span>');
+          if (warn > 0) statusStr.push('<span class="r-sum-chip warn">' + warn + ' 告警</span>');
+          if (fail > 0) statusStr.push('<span class="r-sum-chip fail">' + fail + ' 异常</span>');
+          return '<div class="panel-summary">'
+            + '<span class="panel-sum-icon">🔄</span>'
+            + '<span class="panel-sum-text">' + total + ' 份报告</span>'
+            + (statusStr.length ? '<span class="panel-sum-chips">' + statusStr.join('') + '</span>' : '')
+            + '<span class="panel-sum-meta">' + enriched + ' 份已解析</span>'
+            + '</div>';
+        }
+      }
+
+      function buildTrendSummaryBar(list) {
+        var ok = 0, degraded = 0, total = list.length;
+        for (var i = 0; i < list.length; i++) {
+          if (list[i].ok) ok++; else degraded++;
+        }
+        var rise = 0, flat = 0;
+        for (var i = 0; i < list.length; i++) {
+          if (list[i].trend === 'rise') rise++;
+          else if (list[i].trend === 'fall') {}
+          else flat++;
+        }
+        var statusStr = [];
+        if (ok > 0) statusStr.push('<span class="r-sum-chip pass">' + ok + ' 可达</span>');
+        if (degraded > 0) statusStr.push('<span class="r-sum-chip fail">' + degraded + ' 不可达</span>');
+        if (rise > 0) statusStr.push('<span class="r-sum-chip info">' + rise + ' ↑上升</span>');
+        return '<div class="panel-summary">'
+          + '<span class="panel-sum-icon">📡</span>'
+          + '<span class="panel-sum-text">' + total + ' 份趋势快照</span>'
+          + (statusStr.length ? '<span class="panel-sum-chips">' + statusStr.join('') + '</span>' : '')
+          + '</div>';
+      }
+
+      function renderItem(item, isHealth, isLatest) {
+        var href = item.basePath + item.href;
+        var meta = item.meta;
+        var row1 = '', row2 = '';
+        var chips = '';
+        var desc = '';
+
+        if (isHealth) {
+          // Title: use page title or fall back to date
+          var titleText = (meta && meta.pageTitle) ? meta.pageTitle : ('🩺 健康报告 · ' + item.date);
+          row1 = '<span class="r-icon">🩺</span>'
+            + '<span class="r-title"><a href="' + href + '" target="_blank">' + escHtml(titleText) + '</a></span>';
+          if (meta && meta.score !== undefined) {
+            row1 += '<span class="r-badge score">' + meta.score + '分</span>';
+            if (meta.grade) row1 += '<span class="r-badge ' + meta.grade + '">' + meta.grade + '级</span>';
+          } else if (!meta) {
+            row1 += '<span class="r-badge" style="opacity:.35;background:transparent;border:1px solid rgba(255,255,255,.08)">…</span>';
+          }
+          // Row 2: metadata with relative time
+          var relTime = relativeTime(item.date);
+          row2 = '<span class="r-reltime">' + escHtml(relTime) + '</span>';
+          if (meta) {
+            if (meta.triggers !== undefined) row2 += '<span class="r-dot">·</span><span>' + meta.triggers + '/8 触发</span>';
+            if (meta.recs !== undefined) row2 += '<span class="r-dot">·</span><span>' + meta.recs + ' 项建议</span>';
+            if (meta.trendLabel) row2 += '<span class="r-dot">·</span><span style="color:' + (meta.trendLabel.indexOf('提升') !== -1 ? '#22c55e' : meta.trendLabel.indexOf('下降') !== -1 ? '#ef4444' : '') + '">' + escHtml(meta.trendLabel) + '</span>';
+            // Dimension highlights — best + worst
+            if (meta.dimStats && meta.dimStats.best.dim) {
+              chips += '<div class="r-chips">';
+              chips += '<span class="r-chip pass" title="最高分维度">' + escHtml(meta.dimStats.best.dim) + ' ' + meta.dimStats.best.score + '分</span>';
+              if (meta.dimStats.worst.score < 100) {
+                chips += '<span class="r-chip ' + (meta.dimStats.worst.score < 60 ? 'fail' : 'warn') + '" title="最低分维度">' + escHtml(meta.dimStats.worst.dim) + ' ' + meta.dimStats.worst.score + '分</span>';
+              }
+              // Dim status counts
+              chips += '<span class="r-chip info" title="' + meta.dimStats.pass + '项≥80 / ' + meta.dimStats.warn + '项60-79 / ' + meta.dimStats.fail + '项<60">' + meta.dimStats.pass + 'P ' + (meta.dimStats.warn > 0 ? meta.dimStats.warn + 'W ' : '') + (meta.dimStats.fail > 0 ? meta.dimStats.fail + 'F' : '') + '</span>';
+              chips += '</div>';
+            }
+            // Top recommendation as description
+            if (meta.topRec) {
+              desc = '<div class="r-summary">💡 ' + escHtml(meta.topRec) + '</div>';
+            } else if (meta.overall) {
+              desc = '<div class="r-summary">' + escHtml(meta.overall) + '</div>';
+            }
+          }
+        } else if (activeTab === 'trend') {
+          var sourceIcon = { 'all': '📡', 'github-trending': '🐙', 'oss-insight': '📊', 'trendshift': '📈', 'top-starred': '⭐' };
+          var sourceLabels = { 'all': '全量扫描', 'github-trending': 'GitHub Trending', 'oss-insight': 'OSS Insight', 'trendshift': 'TrendShift', 'top-starred': 'Top-Starred' };
+          var icon = sourceIcon[item.source] || '📡';
+          var label = sourceLabels[item.source] || item.source;
+          var titleText = icon + ' ' + label + ' · ' + item.date;
+          row1 = '<span class="r-icon">📡</span>'
+            + '<span class="r-title"><a href="' + href + '" target="_blank">' + escHtml(titleText) + '</a></span>';
+          if (meta && meta.ok !== undefined) {
+            row1 += '<span class="r-badge ' + (meta.ok ? 'pass' : 'fail') + '">' + (meta.ok ? '可达' : '不可达') + '</span>';
+          }
+          // Trend direction badge
+          if (meta && meta.trend) {
+            var trLabel = meta.trend === 'rise' ? '↑ 上升' : meta.trend === 'fall' ? '↓ 下降' : '→ 持平';
+            var trCls = meta.trend === 'rise' ? 'pass' : meta.trend === 'fall' ? 'fail' : '';
+            if (trCls) row1 += '<span class="r-badge ' + trCls + '">' + trLabel + '</span>';
+          }
+          var relTime = relativeTime(item.date);
+          row2 = '<span class="r-reltime">' + escHtml(relTime) + '</span>';
+          if (meta && meta.items !== undefined) row2 += '<span class="r-dot">·</span><span>' + meta.items + ' 条目</span>';
+          if (meta && meta.reachable !== undefined) {
+            row2 += '<span class="r-dot">·</span><span style="color:#22c55e">' + meta.reachable + '/' + meta.total + ' 可达</span>';
+          }
+          // Chips for trend
+          chips += '<div class="r-chips">';
+          if (meta && meta.ok) chips += '<span class="r-chip pass">数据源可达</span>';
+          else if (meta) chips += '<span class="r-chip fail">数据源不可达</span>';
+          chips += '<span class="r-chip info">趋势快照</span>';
+          chips += '</div>';
+        } else {
+          // Loop: use page title, or heading, or skill name
+          var loopTitle = (meta && meta.pageTitle) ? meta.pageTitle.replace('自循环报告 · ', '') : (item.skill || item.label);
+          row1 = '<span class="r-icon">🔄</span>'
+            + '<span class="r-title"><a href="' + href + '" target="_blank">' + escHtml(loopTitle) + '</a></span>';
+          if (meta && meta.status) {
+            var sb = { pass: '通过', warn: '告警', fail: '异常' };
+            row1 += '<span class="r-badge ' + meta.status + '">' + (sb[meta.status] || meta.status) + '</span>';
+          }
+          // Row 2: relative time + health context
+          var relTime = relativeTime(item.date);
+          row2 = '<span class="r-reltime">' + escHtml(relTime) + '</span>';
+          if (item.timeId) row2 += '<span class="r-dot">·</span><span>' + escHtml(item.timeId) + '</span>';
+          if (meta && meta.healthScore !== undefined) {
+            var hg = meta.healthGrade || '';
+            var hc = meta.healthScore >= 80 ? '#22c55e' : meta.healthScore >= 60 ? '#f59e0b' : '#ef4444';
+            row2 += '<span class="r-dot">·</span><span style="color:' + hc + '">🩺 ' + meta.healthScore + '分 ' + hg + '级</span>';
+          }
+          // Findings chips
+          if (meta && meta.findings) {
+            var f = meta.findings;
+            chips += '<div class="r-chips">';
+            if (f.fail > 0) chips += '<span class="r-chip fail">' + f.fail + ' 异常</span>';
+            if (f.warn > 0) chips += '<span class="r-chip warn">' + f.warn + ' 告警</span>';
+            if (f.info > 0) chips += '<span class="r-chip info">' + f.info + ' 信息</span>';
+            chips += '</div>';
+          }
+          // Finding titles or summary
+          if (meta && meta.findingTitles && meta.findingTitles.length > 0) {
+            desc = '<div class="r-summary">' + escHtml(meta.findingTitles.slice(0, 2).join(' · ')) + '</div>';
+          } else if (meta && meta.summary) {
+            desc = '<div class="r-summary">' + escHtml(meta.summary) + '</div>';
+          }
+        }
+
+        return '<li class="report-item' + (isLatest ? ' r-latest' : '') + '" onclick="window.open(\'' + href + '\',\'_blank\')">'
+          + '<div class="r-row1">' + row1 + '</div>'
+          + '<div class="r-row2">' + row2 + '</div>'
+          + chips
+          + desc
+          + '</li>';
+      }
+
+      function escHtml(s) {
+        var d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+      }
+    })();
   </script>
 </body>
 </html>

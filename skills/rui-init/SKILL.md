@@ -23,7 +23,7 @@ agents:
   'tertiaryColor': '#21232f'
 }}}%%
 flowchart LR
-    P1[detect]:::s --> P2[explore]:::llm --> P3[generate]:::llm --> P4[arch]:::llm --> P5[setup]:::s --> P6[verify]:::s --> P7[trigger]:::s --> P8[.init-memory]
+    P1[detect]:::s --> P2[explore]:::llm --> P3[generate]:::llm --> P4[arch]:::llm --> P5[setup]:::s --> P6[verify]:::s --> P7[maturity]:::llm --> P8[trigger]:::s --> P9[.init-memory]
     P6 -.失败.-> Fix[终止·修复重跑]
 ```
 
@@ -111,7 +111,7 @@ flowchart TD
 - 生成 `.claude/skills/rui-bot/config.json`（schema 见 [rui-bot SKILL.md](../rui-bot/SKILL.md#内置配置)）
 - 写入 `docs/故事任务面板/.init-memory.json`
 
-## 6. verify — 10 项就绪检查
+## 6. verify — 10 项就绪检查 + 工程化门禁
 
 任一失败即终止：
 
@@ -125,22 +125,64 @@ flowchart TD
 - `<project>-self-test/` 每场景含 index.md + 7 个 HTML 文件（同上）
 - `<project>-arch/` 场景数 ≥5，`<project>-self-test/` 场景数 ≥6
 - `.claude/skills/rui-bot/config.json` 存在
+- 工程化成熟度已评估（§7 完成）且健康报告 + 自循环报告已生成
 
-## 7. trigger — 自动触发
+## 7. maturity — 工程化程度评估 + 报告生成
 
-验证通过后**自动执行**：
+> **此步骤不可跳过。** 每次 init 必须评估项目工程化成熟度并生成健康报告与自循环报告。
 
-1. **启动自循环任务** — 写入 6 个持久化 cron 任务到 `.claude/scheduled_tasks.json`：
-   - rui-bot 通知轮询（每小时 :07）
-   - rui-import 文档巡检（每小时 :37）
-   - rui-story 状态轮询（每 7 分钟）
-   - rui-claude 配置巡检（每天 10:07）
-   - self-improve 自改进（每周一 9:03）
-   - rui-analysis 健康看门狗（周一/周四 8:03）
+**7a. 工程化维度采集**（基于 detect + explore 阶段的事实数据）：
+
+| 维度 | 探测方式 | 满分 | 评分标准 |
+|------|---------|------|---------|
+| 测试体系 | 依赖 + 配置文件 + 测试用例数 | 20 | 有框架+用例≥10→20；有框架无用例→10；无框架→0 |
+| 类型安全 | TypeScript/Flow/typing 文件存在 | 15 | TS 严格模式→15；有 TS 但宽松→10；纯 JS→0 |
+| 代码规范 | ESLint/Prettier/.editorconfig 配置 | 15 | 有配置+CI 强制→15；有配置→10；无→0 |
+| CI/CD | GitHub Actions/Jenkins/.gitlab-ci 等 | 15 | 有管线+自动化→15；有管线→10；无→0 |
+| 文档完整 | README + CLAUDE.md + API 文档 | 15 | 3+文档齐全→15；1-2文档→8；无→0 |
+| 依赖管理 | lockfile + 版本策略 + 审计 | 10 | lockfile+定期审计→10；有 lockfile→5；无→0 |
+| Git 纪律 | 分支策略 + commit 规范 + PR 模板 | 10 | 全部具备→10；部分→5；无→0 |
+
+**7b. 综合评分**：
+- 各维度加权求和得出工程化成熟度分数（满分 100）
+- 评级：A ≥ 85、B ≥ 70、C ≥ 55、D < 55
+- 识别低于 60% 的维度作为改进建议
+
+**7c. 生成健康报告**（强制）：
+```
+node skills/rui-bot/send.mjs health --html
+```
+生成 `docs/健康报告/health-<date>-<ts>.html` 并更新 `docs/健康报告/index.html`。健康报告包含工程化成熟度维度。
+
+**7d. 生成自循环报告**（强制）：
+```
+node skills/rui-bot/lib/loop-report.mjs --skill=rui-init --status=<pass|warn> --summary="工程化成熟度 <score> 分 (<grade> 级)，<n> 项改进建议" --findings='[{"level":"<warn|info>","title":"<维度> 得分偏低","detail":"当前 <score> 分，建议..."}]'
+```
+生成 `docs/自循环报告/rui-init-<date>-<ts>.html` 并更新 `docs/自循环报告/index.html`。
+
+> `--status` 判定：总分 ≥ 70 为 `pass`，≥ 55 为 `warn`，< 55 为 `fail`。
+
+## 8. trigger — 自动触发
+
+验证 + 工程化评估通过后**自动执行**。此步骤必须实际创建 cron 任务（调用 CronCreate），不可仅记录在规约中。
+
+1. **启动自循环任务** — 按以下规格写入 8 个持久化 cron 任务到 `.claude/scheduled_tasks.json`（使用 CronCreate，`durable=true`）：
+
+   | 任务 | cron | prompt |
+   |------|------|--------|
+   | rui-bot 通知轮询 | `7 * * * *` | `/rui-bot health — 通知队列轮询：扫描待发通知，批量推送，汇总自循环报告状态。如无待发条目则静默跳过。` |
+   | rui-bot 健康报告生成 | `17 * * * *` | `node skills/rui-bot/send.mjs health --html — 定时生成项目健康报告到 docs/健康报告/，更新索引页。` |
+   | rui-bot 失败队列重试 | `3,33 * * * *` | `node skills/rui-bot/send.mjs flush — 重试失败队列中的待发通知，成功则移除，连续 3 次失败则标记 dead。` |
+   | rui-import 文档巡检 | `37 * * * *` | `/rui-import sync workspace=true mode=list — 文档同步巡检：检测本地文档变更，与远端 API 比对，输出待同步清单。` |
+   | rui-story 状态轮询 | `*/7 * * * *` | `/rui-story status — 故事面板状态轮询：检测所有故事任务的最新状态变更，更新故事面板索引。` |
+   | rui-claude 配置巡检 | `7 10 * * *` | `/rui-claude health — 配置健康巡检：检查所有 .claude/ 目录配置完整性，对比远端基线，输出健康报告。` |
+   | self-improve 自改进 | `3 9 * * 1` | `/rui yry — 自改进闭环：扫描执行记忆 → D0-D7 诊断 → 生成改进提案 → 评估效果。深度 3 全自主模式。` |
+   | rui-analysis 健康看门狗 | `3 8 * * 1,4` | `/rui-analysis — 代码健康看门狗：分析项目代码健康度，检测退化信号，输出健康趋势报告。` |
+
 2. **同步文档到远端** — `node skills/rui-import/sync.mjs workspace=true`（缺 token 跳过，网络失败告警不阻断）
 3. **发送完成通知** — `node skills/rui-bot/send.mjs --story=<project>-self-test --status=complete --rich`（缺 webhook 仅写日志）
 
-> 第 1 步为强制，第 2、3 步依赖外部服务时降级不阻断。
+> 第 1 步为强制（必须创建所有 8 个 cron 任务），第 2、3 步依赖外部服务时降级不阻断。健康报告和自循环报告已在 §7 maturity 步骤生成，trigger 不重复执行。8 个 cron 任务确保自循环体系在 init 后即刻自主运转，无需人工干预。
 
 ## 产物
 
@@ -150,11 +192,14 @@ flowchart TD
 - `docs/故事任务面板/<project>-self-test/` — 项目自主测试方案，每次全量重生
 - `.claude/skills/rui-bot/config.json` — 每次覆盖
 - `docs/故事任务面板/.init-memory.json` — 每次覆盖
+- `docs/健康报告/health-<date>-<ts>.html` — 含工程化成熟度评分的健康报告（§7 生成）
+- `docs/自循环报告/rui-init-<date>-<ts>.html` — rui-init 自循环报告（§7 生成）
 
 ## 生效标志
 
 | 标志 | 验证方式 |
 |------|---------|
 | CLAUDE.md 含标记段 + 项目名 | grep rui:project-start CLAUDE.md |
-| 7 项就绪检查全部通过 | 逐项验证 |
+| 11 项就绪检查全部通过 | 逐项验证 |
+| 工程化成熟度已评估 + 报告已生成 | ls docs/健康报告/ 和 docs/自循环报告/rui-init-* |
 | arch 和 self-test 故事目录存在且文档基线完整 | ls docs/故事任务面板/<project>-*/ |

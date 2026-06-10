@@ -25,6 +25,14 @@ const DIM_ICONS = {
   diagnostics: "🔬",
   git:         "📦",
   security:    "🛡️",
+  // Engineering maturity (from rui-init §7)
+  em_testing:  "🧪",
+  em_types:    "🛡️",
+  em_linting:  "📏",
+  em_cicd:     "🔄",
+  em_docs:     "📚",
+  em_deps:     "📦",
+  em_git:      "🌿",
 };
 
 const DIM_LABELS = {
@@ -37,10 +45,19 @@ const DIM_LABELS = {
   diagnostics: "D0-D7 诊断",
   git:         "Git 仓库状态",
   security:    "安全扫描",
+  // Engineering maturity
+  em_testing:  "测试体系",
+  em_types:    "类型安全",
+  em_linting:  "代码规范",
+  em_cicd:     "CI/CD",
+  em_docs:     "文档完整",
+  em_deps:     "依赖管理",
+  em_git:      "Git 纪律",
 };
 
 const DIM_WEIGHTS = {
   token: 15, config: 10, robots: 10, api: 15, reports: 10, format: 10, diagnostics: 10, git: 10, security: 10,
+  em_testing: 20, em_types: 15, em_linting: 15, em_cicd: 15, em_docs: 15, em_deps: 10, em_git: 10,
 };
 
 const GRADE_STYLE = {
@@ -282,7 +299,12 @@ export function generateHealthReport(hr) {
   const dimCount = Object.keys(DIM_LABELS).length;
   const dimHistory = getDimensionHistory();
 
-  const dimCards = Object.entries(DIM_LABELS).map(([dim, label]) => {
+  // Separate into operational vs engineering maturity
+  const opsDims = ["token", "config", "robots", "api", "reports", "format", "diagnostics", "git", "security"];
+  const emDims = ["em_testing", "em_types", "em_linting", "em_cicd", "em_docs", "em_deps", "em_git"];
+  const hasEmDims = emDims.some((d) => hr.scores[d] !== undefined);
+
+  function buildDimCard(dim, label) {
     const score = hr.scores[dim] ?? 0;
     const icon = DIM_ICONS[dim] || "📌";
     const weight = DIM_WEIGHTS[dim] || 0;
@@ -307,7 +329,19 @@ export function generateHealthReport(hr) {
         ${sparkline}
       </div>
     </div>`;
-  }).join("\n");
+  }
+
+  const opsCards = opsDims.map((dim) => buildDimCard(dim, DIM_LABELS[dim])).join("\n");
+  let emCardsHtml = "";
+  if (hasEmDims) {
+    emCardsHtml = `
+    <div class="h-section">
+      <h2>🏗️ 工程化成熟度 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">rui-init §7</span></h2>
+      <div class="h-dim-grid">${emDims.map((dim) => buildDimCard(dim, DIM_LABELS[dim])).join("\n")}</div>
+    </div>`;
+  }
+
+  const dimCardsHtml = opsCards;
 
   let diagSection = "";
   if (hr.diagnostics && !hr.diagnostics.skip) {
@@ -522,9 +556,11 @@ body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-sy
 ${buildSummaryCard(hr, prev, recommendations)}
 
 <div class="h-section">
-  <h2>📊 七维度健康评分</h2>
-  <div class="h-dim-grid">${dimCards}</div>
+  <h2>📊 运维健康评分</h2>
+  <div class="h-dim-grid">${dimCardsHtml}</div>
 </div>
+
+${emCardsHtml}
 
 <div class="h-section">
   <h2>📋 检查详情</h2>
@@ -705,15 +741,26 @@ function buildSummaryCard(hr, prev, recommendations) {
   const overallLabel = hr.grade === "A" ? "优秀" : hr.grade === "B" ? "良好" : hr.grade === "C" ? "需关注" : "告警";
 
   // Weakest dimension
-  const weakest = Object.entries(hr.scores || {})
-    .sort(([, a], [, b]) => a - b)[0];
+  const sortedDims = Object.entries(hr.scores || {})
+    .sort(([, a], [, b]) => a - b);
+  const weakest = sortedDims[0];
   const weakLabel = weakest ? `${DIM_LABELS[weakest[0]] || weakest[0]} ${weakest[1]}分` : "—";
+  const strongest = sortedDims[sortedDims.length - 1];
+  const strongLabel = strongest ? `${DIM_LABELS[strongest[0]] || strongest[0]} ${strongest[1]}分` : "—";
 
   // Trend
   let trendText = "";
   if (prev) {
     const diff = hr.composite - prev.score;
     trendText = diff > 3 ? `↑${diff}` : diff < -3 ? `↓${Math.abs(diff)}` : "→0";
+  }
+
+  // Dimension status counts
+  let dimPass = 0, dimWarn = 0, dimFail = 0;
+  for (const s of Object.values(hr.scores || {})) {
+    if (s >= 80) dimPass++;
+    else if (s >= 60) dimWarn++;
+    else dimFail++;
   }
 
   // Most critical recommendation
@@ -730,15 +777,28 @@ function buildSummaryCard(hr, prev, recommendations) {
         <div class="h-summary-lbl">诊断触发${hr.diagnostics?.bootstrapped ? ' (引导)' : ''}</div>
       </div>
       <div class="h-summary-item">
+        <div class="h-summary-val"><span style="color:#22c55e">${dimPass}</span> <span style="color:#f59e0b">${dimWarn}</span> <span style="color:#ef4444">${dimFail}</span></div>
+        <div class="h-summary-lbl">维度过关/告警/失败</div>
+      </div>
+      <div class="h-summary-item">
         <div class="h-summary-val">${weakLabel}${trendText ? ` ${trendText}` : ""}</div>
         <div class="h-summary-lbl">最弱维度${trendText ? ' · 趋势' : ''}</div>
+      </div>
+    </div>
+    <div class="h-summary-row" style="margin-top:8px">
+      <div class="h-summary-item">
+        <div class="h-summary-val" style="color:#22c55e">${strongLabel}</div>
+        <div class="h-summary-lbl">最强维度</div>
       </div>
       <div class="h-summary-item">
         <div class="h-summary-val">${recommendations.length} 项</div>
         <div class="h-summary-lbl">改进建议</div>
       </div>
+      <div class="h-summary-item" style="flex:2;min-width:160px">
+        <div class="h-summary-val" style="font-size:.75rem;text-align:left">${topRec ? '💡 '+topRec.slice(0,50)+(topRec.length>50?'…':'') : '—'}</div>
+        <div class="h-summary-lbl">首项建议</div>
+      </div>
     </div>
-    ${topRec ? `<div class="h-summary-rec">💡 ${topRec}</div>` : ""}
   </div>`;
 }
 

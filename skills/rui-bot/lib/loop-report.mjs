@@ -6,7 +6,7 @@
  *   node skills/rui-bot/lib/loop-report.mjs --skill=<name> --status=<pass|warn|fail> [--summary=<text>]
  */
 
-import { writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
+import { writeFileSync, mkdirSync, existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -27,6 +27,20 @@ function nowTime() {
 
 function nowTimestamp() {
   return Date.now().toString(36);
+}
+
+/**
+ * Read latest health score for cross-report context.
+ */
+function getLatestHealthContext() {
+  try {
+    const trendPath = ".memory/health-trend.jsonl";
+    if (!existsSync(trendPath)) return null;
+    const lines = readFileSync(trendPath, "utf-8").trim().split("\n").filter(Boolean);
+    if (lines.length === 0) return null;
+    const latest = JSON.parse(lines[lines.length - 1]);
+    return { score: latest.composite, grade: latest.grade, date: latest.timestamp?.slice(0, 10) };
+  } catch { return null; }
 }
 
 const SKILL_META = {
@@ -64,6 +78,15 @@ export function generateReport({ skill, status, summary, details, findings }) {
       ${f.detail ? `<div class="yry-finding-body">${f.detail}</div>` : ""}
     </div>`
   ).join("\n");
+
+  const hc = getLatestHealthContext();
+  const healthStatHtml = hc ? `
+  <div class="yry-stat">
+    <a href="${CDN_DEPTH}docs/健康报告/" style="text-decoration:none;color:inherit">
+      <div class="yry-val ${hc.grade === 'A' || hc.grade === 'B' ? 'pass' : hc.grade === 'C' ? 'warn' : 'fail'}">${hc.score}</div>
+      <div class="yry-lbl">🩺 健康度 ${hc.grade} 级</div>
+    </a>
+  </div>` : "";
 
   const html = `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -151,6 +174,7 @@ body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-sy
     <div class="yry-val fail">${(findings || []).filter(f => f.level === 'fail').length}</div>
     <div class="yry-lbl">异常</div>
   </div>
+  ${healthStatHtml}
 </div>
 
 ${summary ? `<div class="yry-summary">${summary}</div>` : ""}

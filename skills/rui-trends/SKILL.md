@@ -4,7 +4,9 @@ description: |
   Query GitHub Trending, OSS Insight, TrendShift, and Top-Starred repositories to
   discover technology trends. User-invocable or auto-invoked during the self-improve
   phase for technology selection, architecture validation, and dependency health checks.
-  Agent skill discovery moved to rui-skills.
+  Agent skill discovery delegated to rui-skills; find-skills sub-command retained as
+  convenience bridge. Executable: node skills/rui-trends/rui-trends.mjs [command] [options].
+  Help: node skills/rui-trends/help.mjs.
 user_invocable: true
 lifecycle: default-pipeline
 ---
@@ -13,9 +15,9 @@ lifecycle: default-pipeline
 
 > **--help / -h**：执行 `node skills/rui-trends/help.mjs` 输出完整帮助（含数据源全景 + 场景示例）。用户输入 `/rui-trends --help` 或 `/rui-trends -h` 或 `/rui-trends help` 时，直接运行脚本。
 
-技术趋势发现。查询 GitHub Trending、OSS Insight、TrendShift、Top-Starred 四个数据源，输出结构化趋势报告。规约驱动（specification-only），由 implementing agent 执行 WebFetch + 结构化提取 + 格式化输出。
+技术趋势发现。查询 GitHub Trending、OSS Insight、TrendShift、Top-Starred 四个数据源，输出结构化趋势报告。可执行脚本：`node skills/rui-trends/rui-trends.mjs <command>`；Claude 上下文中由 implementing agent 执行 WebFetch + 结构化提取 + 格式化输出。
 
-[数据源全景](#数据源全景) · [命令](#命令) · [工作流](#工作流) · [输出格式](#输出格式) · [自改进集成](#自改进集成) · [计划集成](#计划集成) · [降级策略](#降级策略) · [数据新鲜度](#数据新鲜度)
+[数据源全景](#数据源全景) · [命令](#命令) · [工作流](#工作流) · [输出格式](#输出格式) · [自改进集成](#自改进集成) · [计划集成](#计划集成) · [降级策略](#降级策略) · [数据新鲜度](#数据新鲜度) · [通知面板集成](#通知面板集成)
 
 ## 数据源全景
 
@@ -63,6 +65,7 @@ flowchart LR
 | `/rui-trends oss-insight [--metric stars\|forks\|contributors] [--limit N]` | 查询 OSS Insight 仓库排名 | 技术选型数据支撑 |
 | `/rui-trends trendshift [--range 7\|30\|90]` | 查询 TrendShift 趋势变化 | 识别快速上升项目 |
 | `/rui-trends top-starred [--min-stars N]` | 查询 GitHub 高星项目 | 社区验证参照 |
+| `/rui-trends find-skills [--lang <L>]` | 从 GitHub Trending 发现可能的 Agent/技能仓库（桥接至 rui-skills） | 技能发现 · 自改进 D6 |
 | `/rui-trends all` | 依次查询全部四个数据源 | 全面趋势扫描 |
 
 ## 工作流
@@ -102,6 +105,29 @@ flowchart LR
 步骤 3: 格式化为表格输出
 步骤 4: 附带来源 URL
 ```
+
+### find-skills
+
+> Agent 技能发现已委托给 rui-skills 技能。此子命令作为桥接，从 GitHub Trending 中发现可能相关的 Agent/技能仓库，并引导用户使用 `/rui-skills` 进行安装。
+
+```
+步骤 1: WebFetch https://github.com/trending(?lang=<L>)
+步骤 2: 按关键词过滤（agent, skill, plugin, tool, cli, sdk, framework, ai, llm, claude, assistant）
+步骤 3: 输出匹配仓库列表，标注语言和描述
+步骤 4: 提示使用 /rui-skills 进行技能发现和安装
+```
+
+## 故障排查
+
+| 现象 | 可能原因 | 处理方案 |
+|------|---------|---------|
+| `github-trending` 无数据 | GitHub 限速（未认证请求 60 req/h） | 等待后重试；或使用 `GITHUB_TOKEN` 环境变量 |
+| `oss-insight` 无数据 | 页面为 JS 渲染，HTML 提取不到内容 | 降级为引导用户直接访问 ossinsight.io |
+| `trendshift` 无数据 | TrendShift CDN 变更或反爬保护 | 降级输出 URL，标注需手动访问 |
+| `top-starred` 无数据 | GitHub Search 需要登录 | 设置 `GITHUB_TOKEN` 环境变量，或降级输出 URL |
+| 所有数据源不可达 | 网络限制 / 防火墙 | 标注 `no-metrics`，D5 诊断跳过 |
+| `rui-trends.mjs` 执行报错 | Node.js < 18（无全局 fetch） | 升级至 Node 18+，或使用 Claude WebFetch 工具替代 |
+| 脚本超时 | 网络延迟高 | 增大 `HTTP_TIMEOUT_MS`（默认 30s），或逐个数据源查询 |
 
 ## 输出格式
 
@@ -311,6 +337,34 @@ flowchart LR
 | 诊断集成：D5 诊断引用趋势发现 | 补趋势快照注入诊断 |
 | 不落盘：无本地缓存，无文件写入 | 删除意外生成的文件 |
 | 降级策略：单源或不可达时有明确回退行为 | 审查降级日志，确认合乎预期 |
+
+## 通知面板集成
+
+> 趋势数据通过 `reports.json` 清单注入 `docs/index.html` 通知面板。面板第三个 tab「趋势发现」展示趋势快照历史，通知铃铛计入趋势报告总数。
+
+| 集成点 | 位置 | 数据 |
+|--------|------|------|
+| 通知铃铛 Badge | `docs/index.html` 右上角 🔔 | 健康 + 循环 + 趋势报告总数 |
+| 趋势 Tab | 浮动面板第三个 tab | 趋势快照列表（可达/不可达、趋势方向、条目数） |
+| Footer 链接 | 面板底部 | `查看全部趋势报告` → `docs/趋势报告/` |
+| 摘要栏 | Tab 内容顶部 | 可达数/不可达数 + 上升趋势统计 |
+| 报告详情 | 点击列表项 | 打开 `docs/趋势报告/trend-*.html` |
+
+### HTML 报告生成
+
+```
+# 单源趋势快照
+node skills/rui-trends/rui-trends.mjs github-trending --html
+node skills/rui-trends/rui-trends.mjs trendshift --range 90 --html
+
+# 全量综合报告（推荐）
+node skills/rui-trends/rui-trends.mjs all --html
+```
+
+每次 `--html` 执行：
+1. 查询数据源 → 生成 `docs/趋势报告/trend-{source}-{date}-{ts}.html`
+2. 追加条目到 `docs/趋势报告/reports.json`（最多 50 条）
+3. 前端面板刷新后自动展示最新快照
 
 ## 自循环
 

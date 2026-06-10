@@ -2,7 +2,8 @@
 name: rui-bot
 description: |
   Send WeChat Work (WeCom) bot messages and append matching entries to the
-  story panel notification log. Manual trigger only.
+  story panel notification log. Auto-trigger via cron (notification polling,
+  health report generation, failure queue flush) + manual trigger.
   Executable: node skills/rui-bot/send.mjs [options].
 user_invocable: true
 lifecycle: default-pipeline
@@ -12,9 +13,18 @@ lifecycle: default-pipeline
 
 > **--help / -h**：执行 `node skills/rui-bot/help.mjs` 输出完整帮助（含消息格式 + 场景示例）。用户输入 `/rui-bot --help` 或 `/rui-bot -h` 或 `/rui-bot help` 时，跳过逻辑，直接运行脚本。
 
-企业微信机器人通知。手动触发，通过 `send.mjs` 发送通知或追加日志。
+企业微信机器人通知。支持手动触发 + 自动触发（cron 轮询 + 健康报告定时生成 + 自循环报告汇总推送）。通过 `send.mjs` 发送通知或追加日志。
 
 **可执行入口**: `node skills/rui-bot/send.mjs [options]` — 发送通知或健康检查。`--no-send` 仅追加日志不发 HTTP。
+
+**自动触发机制**：
+
+| 触发方式 | 间隔 | 动作 |
+|---------|------|------|
+| 通知队列轮询 | 每小时 :07 | 扫描待发通知 → 批量推送 → 更新发送状态 |
+| 健康报告自动生成 | 每小时 :17 | `send.mjs health --html` → `docs/健康报告/` + 更新索引 |
+| 失败队列重试 | 每 30 分钟 | `send.mjs flush` — 重试 `send-failed.json` 中的失败条目 |
+| 健康趋势持久化 | 每次健康检查后 | 追加 `.memory/health-trend.jsonl` |
 
 [工作流全景](#工作流全景) · [调用形态](#调用形态) · [消息格式](#消息格式) · [消息通知列表](#消息通知列表) · [API 契约](#api-契约) · [安全](#安全) · [空输入](#空输入) · [生效标志](#生效标志)
 
@@ -329,6 +339,33 @@ flowchart TD
 | 消息超过 2000 字符 | 自动截断并追加 `…` |
 | 网络超时 | 重试 1 次，仍失败则记录并跳过 |
 | 内置配置缺失 | 仅使用环境变量 token 模式 |
+
+## 失败队列与自动重试
+
+> 发送失败的条目写入 `.claude/skills/rui-bot/send-failed.json`，由自动 cron（每 30 分钟 :03, :33）和手动 `flush` 命令重试。
+
+```mermaid
+flowchart LR
+    FAIL["发送失败"]:::fail --> QUEUE["入队 send-failed.json<br/>记录 retries + lastError"]:::op
+    QUEUE --> CRON["cron :03,:33<br/>node send.mjs flush"]:::auto
+    CRON --> RETRY{"重试发送"}
+    RETRY -->|"成功"| REMOVE["移除条目"]:::done
+    RETRY -->|"失败"| INC["retries++"]
+    INC --> CHECK{"retries ≥ 3?"}
+    CHECK -->|"是"| DEAD["标记 dead<br/>发送告警通知"]:::dead
+    CHECK -->|"否"| QUEUE
+
+    classDef fail fill:#2a1a1a,stroke:#ef4444,color:#ef4444
+    classDef auto fill:#1a2a2a,stroke:#22d3ee,color:#22d3ee
+    classDef dead fill:#2a1a1a,stroke:#f59e0b,color:#f59e0b
+```
+
+| 字段 | 说明 |
+|------|------|
+| `retries` | 已重试次数，达到 3 次标记 dead |
+| `lastError` | 最近一次失败的错误信息 |
+| `queuedAt` | 首次入队时间 |
+| `dead` | true 时不再自动重试，需手动 `flush --force` |
 
 ## 生效标志
 
