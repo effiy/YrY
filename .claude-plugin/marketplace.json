@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "故事驱动的 SDLC 编排系统——需求拆分→文档管线→代码管线→交付",
-    "version": "5.3.0"
+    "version": "5.3.1"
   },
   "plugins": [
     {
@@ -15,7 +15,7 @@
         "repo": "effiy/YrY"
       },
       "description": "故事驱动的 SDLC 编排系统。17 技能 + 9 Agent 协同，Gate A/B 强制验证，每故事完整文档基线。",
-      "version": "5.3.0",
+      "version": "5.3.1",
       "author": {
         "name": "YrY"
       },
