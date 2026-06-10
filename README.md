@@ -1,8 +1,8 @@
-# YrY <sub>v4.8.2</sub>
+# YrY <sub>v5.1.0</sub>
 
-> 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。共享 `lib/` 消除 491 行跨文件重复。
+> 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。18 技能 + 10 Agent + 12 规则 + 18 共享库 + 9 维度健康检查 + 企微通知。
 
-[系统全景](#系统全景) · [管线](#管线) · [快速开始](#快速开始) · [命令](#命令) · [/rui](#rui) · [/rui-story](#rui-story) · [/rui-claude](#rui-claude) · [/rui-npm](#rui-npm) · [Agent 角色](#agent-角色) · [规则](#规则) · [技能](#技能) · [目录结构](#目录结构) · [领域语言](#领域语言) · [技术趋势](#技术趋势)
+[系统全景](#系统全景) · [管线](#管线) · [快速开始](#快速开始) · [命令](#命令) · [/rui](#rui) · [/rui-story](#rui-story) · [/rui-claude](#rui-claude) · [/rui-docs](#rui-docs) · [/rui-npm](#rui-npm) · [Agent 角色](#agent-角色) · [规则](#规则) · [技能](#技能) · [目录结构](#目录结构) · [领域语言](#领域语言) · [技术趋势](#技术趋势)
 
 ## 系统全景
 
@@ -18,15 +18,14 @@
 flowchart TD
     CMD["/rui · /rui-story · /rui-claude"]
 
-    subgraph Skills[七技能]
+    subgraph Skills[十八技能]
         direction TB
-        RUI[rui]:::skill
-        RS[rui-story]:::skill
-        RC[rui-claude]:::skill
-        ID[rui-import]:::skill
-        WW[rui-bot]:::skill
-        TD[rui-trends]:::skill
-        RN[rui-npm]:::skill
+        CORE["主线: rui · rui-code · rui-init · rui-update · rui-yry"]:::skill
+        MGMT["管理: rui-story · rui-claude · rui-skills"]:::skill
+        BOT["通知: rui-bot · rui-import"]:::skill
+        DOCS["文档: rui-html · rui-doc · rui-reporter"]:::skill
+        DISC["发现: rui-trends · rui-analysis · rui-npm"]:::skill
+        EVO["演进: rui-version · rui-plan · self-improve"]:::skill
     end
 
     subgraph Agents[九角色]
@@ -114,16 +113,15 @@ flowchart TD
 | 命令 | 类型 | 作用 |
 |------|------|------|
 | `/rui` | 只读 | 5 层管线评分排序，推荐下一步任务 |
-| `/rui init` | 写入 | 建立基线：detect → explore → generate → setup → verify → trigger |
-| `/rui <需求>` | 写入 | 端到端：doc + code 自动串联，逐故事串行 |
-| `/rui doc <需求>` | 写入 | 拆需求出文档：生成 01/02/03/04，不改源码 |
-| `/rui code <name>` | 写入 | 实现故事：Gate A → 逐模块 → Gate B → 复盘 → 交付 |
-| `/rui update <name> [ctx]` | 写入 | 增量更新：T1/T2/T3 自动裁剪 |
-| `/rui yry [--depth N]` | 写入 | 自改进闭环：全自主扫描→诊断→实现→验证→版本升级，循环至无改进空间或达到深度上限（默认 3） |
-| `/rui version --up` | 写入 | 版本升级：自主判定 → 更新文件 → git commit → 合并 main → 推送 + tag |
-| `/rui version --rollback <name>` | 写入 | 版本回退：基于 git 版本链回退故事文档到历史版本（需确认） |
-| `/rui doc --from-code 需求` | 写入 | 从源码反推完整 5 文档基线到故事目录（源码只读） |
-| `/rui code --from-doc <name>` | 只读 | 从文档反推码：禁止改源码 |
+| `/rui doc <需求>` | 写入 | 拆需求出文档：生成故事文档基线，不改源码 |
+| `/rui doc --from-code 需求` | 写入 | 从源码反推完整文档基线到故事目录（源码只读） |
+| `/rui version --up` | 写入 | 版本升级：自主判定 → 更新文件 → git commit → 推送 + tag |
+| `/rui version --rollback <name>` | 写入 | 版本回退：基于 git 版本链回退故事文档到历史版本 |
+| `/rui-code <name>` | 写入 | 源码实现：Gate A → 逐模块 P0 清零 → Gate B → 复盘 → 交付 |
+| `/rui-init` | 写入 | 项目初始化：detect → explore → generate → architect → setup → verify → trigger |
+| `/rui-update <name> [ctx]` | 写入 | 增量更新：T1/T2/T3 自动裁剪管线 |
+| `/rui-yry [--depth N]` | 写入 | 自主自改进：全扫描→诊断→实现→验证→版本升级，循环至无改进空间 |
+| `/rui-skills` | 只读 | 技能市场：发现和安装 Claude/Agent 技能包 |
 
 <a id="rui-story"></a>
 
@@ -222,25 +220,64 @@ flowchart LR
 - **code-pipeline** — 源码改动：分支隔离 · Gate A/B · 逐模块清零，支撑技术含根因追溯/纵深防御/反馈回路/深度模块/垂直切片
 - **delivery-gate** — 交付收口：日志 → 同步 → 通知，手动触发
 - **doc-generation** — 文档产出：目录命名 · 骨架模板 · 附属数据存放
-- **architecture-diagram** — 架构图约束：故事文档中 HTML 架构图的生成与规范
-- **knowledge-graph** — 知识图谱：故事文档中 JSON 知识图谱的结构与查询
-- **security-guardrails** — 安全护栏：代码文件的安全约束检查与注入防护
-- **self-improve** — 复盘改进：数据采集 → 诊断 → 提案，`no-metrics` 降级不阻断
+- **architecture-diagram** — 架构图约束：自包含 HTML+SVG 深色主题
+- **knowledge-graph** — 知识图谱：三层 schema（story → scene → source）
+- **mermaid-theme** — Mermaid 统一配色：项目唯一色板真相源
+- **plan-execution** — 计划执行：创建→审查→执行→验证管线
+- **security-guardrails** — 安全护栏：防线在信任边界处，输入必校验
+- **self-improve** — 自改进闭环：D0-D7 诊断 · 经验技能化 · 记忆压缩注入 · 效果评估 E1-E4
 - **rui-claude** — .claude/ 管理：仅限 `.claude/` · 禁自动 commit/push
 
 详见 [`rules/`](./rules/)。
 
 ## 技能
 
-- **rui** (`/rui init · doc · code · update · yry · version --up · --rollback · --from-code`) — 故事驱动 SDLC 主线，含诊断纪律、架构深化、交接纪律、版本管理
-- **rui-story** (`/rui-story list · health · sync · remove`) — 故事面板远端查询、进度管理、文档同步、本地删除
-- **rui-claude** (`/rui-claude sync · retro · history`) — .claude/ 配置远端同步与复盘
-- **rui-import** — 手动触发：批量同步故事文档到远端 API
-- **rui-bot** — 手动触发：企微机器人推送管线状态通知
-- **rui-trends** — 按需：查询 GitHub Trending / OSS Insight / TrendShift / Top-Starred，输出结构化趋势报告。自改进 D5 诊断集成
-- **rui-npm** (`/rui-npm search · install · update · list · info · uninstall · publish · npx · audit`) — 个人 npm 包管理：搜索、增删改查、本地发布即发即用
+### 主线
 
-详见 [`skills/`](./skills/)。所有脚本通过 [`lib/`](./lib/) 共享 TTY 格式化、项目工具函数和常量定义。
+- **rui** (`/rui doc · version --up · --rollback · --from-code`) — 故事驱动 SDLC 编排入口。需求解析、文档生成、版本管理
+- **rui-code** (`/rui-code <name>`) — 源码实现管线：Gate A → 逐模块 P0 清零 → Gate B → 复盘 → 交付
+- **rui-init** (`/rui-init`) — 项目初始化：detect → explore → generate → architect → setup → verify → trigger
+- **rui-update** (`/rui-update <name> [ctx]`) — 增量更新：T1/T2/T3 自动裁剪管线
+- **rui-yry** (`/rui-yry [--depth N]`) — 自主自改进循环：全扫描 → 诊断 → 实现 → 验证 → 版本升级，循环至无改进空间
+- **rui-story** (`/rui-story list · health · sync · remove`) — 故事面板远端查询、进度管理、同步、删除
+- **rui-claude** (`/rui-claude sync · retro · history`) — .claude/ 配置远端同步与复盘
+- **rui-skills** (`/rui-skills`) — 技能市场：发现和安装 Claude/Agent 技能包
+
+### 自动化与通知
+
+- **rui-bot** — 企微通知推送（3 场景：完成/阻断/门禁失败）+ Rich/Verbose 格式 + Dry-Run 预览 + 失败队列自动重试
+  - `health` 子命令：9 维度综合健康检查（Token/配置/机器人/API/报告/格式/D0-D7/Git/安全）
+  - D0-D7 引导诊断：无执行记忆时从 git 历史 + 场景文档新鲜度 + 提案闭合率推导诊断信号，覆盖全部 8 维度
+  - `health --html` 生成 `docs/健康报告/` 仪表板 HTML（摘要卡 + 趋势对比 + ⚡新增/恶化标记 + 维度历史迷你图 + 评级火花图 + 改进建议）
+  - `health --diff` 仅输出与上次检查的差异（维度变化 + 新增/已解决诊断 + 综合评分变化）
+  - `health --alert` 评分低于阈值 (70) 自动发送分级告警（🔴 严重 / 🟡 警告），同诊断不重复通知
+  - `health --short` 单行摘要输出，适合脚本和 cron 集成
+  - `health --notify` 发送健康摘要通知到企微
+  - `flush` 子命令：重试失败队列中的通知
+  - 健康趋势持久化到 `.memory/health-trend.jsonl`，驱动维度变化指示（↑↓→ + 数值）
+  - 通知投递日志 `.memory/notification-log.jsonl`，记录每次发送的时间/状态/结果
+  - 自循环报告系统（12 技能定期巡检 → HTML 报告 → 企微通知，附带健康评分 + 触发诊断）
+
+### 文档与报告
+
+- **rui-html** — 场景 HTML 文档生成：markdown → 7 类标准 HTML（计划清单/架构图/知识图谱/源码/测试面板/演示/审查）
+- **rui-doc** — 文档新鲜度检查，自动检测过期文档
+- **rui-reporter** — 知识策展与过程报告：故事进度/知识图谱一致性/交付摘要/跨故事趋势
+
+### 分析与发现
+
+- **rui-trends** — 技术趋势监控：GitHub Trending / OSS Insight / TrendShift 结构化报告
+- **rui-analysis** — 代码健康看门狗：复杂度/耦合/文件膨胀/依赖健康/架构边界检测
+- **rui-npm** (`/rui-npm search · install · update · list · info · uninstall · publish · npx · audit`) — npm 包管理全生命周期
+
+### 质量与演进
+
+- **rui-version** — 版本漂移检测与自动升级
+- **rui-plan** — 计划新鲜度检查与执行追踪
+- **rui-import** — 文档远端同步（per-document instant + batch safety-net）
+- **self-improve** — 持续自改进闭环：D0-D7 诊断 → 提案生成 → 物化为故事 → 效果评估 (E1-E4)
+
+详见 [`skills/`](./skills/)。所有脚本通过 [`lib/`](./lib/)（18 文件含 `lib/engine/` 诊断/评估/物化/升级引擎）共享 TTY 格式化、项目工具、诊断引擎、Mermaid 主题和常量定义。
 
 ## 目录结构
 
@@ -252,48 +289,64 @@ YrY/
 │   ├── code-reviewer.md / tester.md
 │   ├── reporter.md / security.md
 │   └── self-improve.md
-├── rules/                   # 10 组约束规则
+├── rules/                   # 12 组约束规则
 │   ├── code-pipeline.md     #   分支隔离 · Gate A/B
 │   ├── delivery-gate.md     #   三步 hook
 │   ├── doc-generation.md    #   文档生成规范
 │   ├── architecture-diagram.md # 架构图约束
 │   ├── knowledge-graph.md   #   知识图谱约束
-│   ├── security-guardrails.md  # 安全护栏
-│   ├── self-improve.md      #   自改进流程
-│   ├── rui-claude.md        #   .claude/ 管理约束
 │   ├── mermaid-theme.md     #   Mermaid 统一主题配置
-│   └── plan-execution.md    #   计划执行与验证管线
-├── skills/                  # 7 项技能规约
-│   ├── rui/                 #   SDLC 编排
-│   │   ├── formulas.md      #     故事文档公式
-│   │   ├── coder.md         #     工作手册·数据契约
-│   │   └── ranking.md       #     推荐评分框架
+│   ├── plan-execution.md    #   计划执行与验证管线
+│   ├── security-guardrails.md  # 安全护栏
+│   ├── self-improve.md      #   自改进闭环
+│   └── rui-claude.md        #   .claude/ 管理约束
+├── skills/                  # 18 项技能规约
+│   ├── rui/                 #   SDLC 编排入口 (doc · version)
+│   ├── rui-code/            #   源码实现管线 (Gate A/B · P0 清零)
+│   ├── rui-init/            #   项目初始化
+│   ├── rui-update/          #   增量更新 (T1/T2/T3)
+│   ├── rui-yry/             #   自主自改进循环
 │   ├── rui-story/           #   故事面板管理
 │   ├── rui-claude/          #   .claude/ 配置管理
-│   ├── rui-import/         #   文档远端同步
-│   ├── rui-bot/          #   企微通知
-│   ├── rui-trends/          #   技术趋势发现
-│   └── rui-npm/             #   个人 npm 包管理
+│   ├── rui-skills/          #   技能市场发现与安装
+│   ├── rui-import/          #   文档远端同步
+│   ├── rui-bot/             #   企微通知 + 9维健康检查 + 自循环报告
+│   ├── rui-html/            #   场景 HTML 文档生成 (7 类)
+│   ├── rui-doc/             #   文档新鲜度检查
+│   ├── rui-reporter/        #   知识策展与过程报告
+│   ├── rui-trends/          #   技术趋势监控
+│   ├── rui-analysis/        #   代码健康看门狗
+│   ├── rui-npm/             #   npm 包管理
+│   ├── rui-version/         #   版本漂移检测
+│   ├── rui-plan/            #   计划执行追踪
+│   └── self-improve/        #   自改进闭环
 ├── docs/
 │   ├── index.html           #   文档中心着陆页
-│   └── 故事任务面板/        #   故事产出目录
+│   ├── 健康报告/             #   9 维度健康仪表板 + 历史趋势
+│   ├── 自循环报告/           #   12 技能定期巡检报告
+│   └── 故事任务面板/         #   故事产出目录
 │       └── <name>/
 │           ├── 故事任务.md  #     故事定义与 AC
-│           ├── plan.html         #   计划总览
 │           └── 场景-<N>-<slug>/
 │               ├── 计划清单.html  # 实施清单
 │               ├── 架构图.html    # SVG 架构图
 │               ├── 知识图谱.html  # 知识图谱可视化
+│               ├── 源码.html      # 源码交叉引用
 │               ├── 测试面板.html  # 测试仪表盘
-│               └── 演示.html      # 交互演示
-├── templates/               # 管线模板
-│   ├── docs/                 #   故事文档模板
-│   └── README.md
-├── lib/                     # 项目级共享库（消除跨文件重复）
-│   ├── tty.mjs              #   TTY/ANSI 格式化函数
-│   ├── fs.mjs               #   文件系统与项目工具
+│               ├── 演示.html      # 交互演示
+│               └── 审查.html      # D0-D7 审查报告
+├── lib/                     # 18 文件共享库（消除跨文件重复）
 │   ├── constants.mjs        #   共享常量（超时/并发/阈值/路径）
-│   └── help-layout.mjs      #   help 文件布局函数
+│   ├── tty.mjs / fs.mjs     #   TTY 格式化 / 文件系统工具
+│   ├── network.mjs          #   网络请求封装
+│   ├── audit.mjs            #   工具调用审计
+│   ├── branch-check.mjs     #   分支隔离强制
+│   ├── proposals.mjs        #   改进提案编排
+│   └── engine/              #   诊断引擎
+│       ├── diagnostics.mjs  #     D0-D7 诊断（纯逻辑）
+│       ├── evaluate.mjs     #     E1-E4 效果评估
+│       ├── materialize.mjs  #     提案→故事物化
+│       └── upgrade.mjs      #     经验→规则升级检测
 ├── tests/                   # 自检测试套件
 │   ├── run.mjs              #   测试运行器
 │   ├── skills/ agents/ rules/ integration/

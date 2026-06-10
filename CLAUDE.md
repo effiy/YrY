@@ -57,9 +57,9 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 |------|-----|
 | 项目名 | YrY |
 | 类型 | **meta** — Claude Code 插件，纯规约驱动 |
-| 版本 | 4.8.2 |
-| 架构 | plugin — 7 技能 + 9 Agent + 10 规则 + 4 共享库（lib/） |
-| 生态 | 无 package.json，markdown 规约 + node 辅助脚本 + 共享 lib/ 消除重复 |
+| 版本 | 5.1.0 |
+| 架构 | plugin — 18 技能 + 10 Agent + 12 规则 + 18 共享库（lib/） + 9 维度健康检查 |
+| 生态 | root package.json (仅 devDependencies: vitest + @vitest/ui)，markdown 规约 + node 辅助脚本 + 共享 lib/ 消除重复 |
 | 自托管 | 是 — YrY 用自身管线管理自身演进 |
 
 ## 项目约束
@@ -127,6 +127,17 @@ flowchart LR
 | 安全防护基线（防线在信任边界处） | [rules/security-guardrails.md](./rules/security-guardrails.md) |
 | 角色拓扑 · 行为纪律 · 设计原则 · 执行准则 · ADR · 多 Agent 协作模式 | [agents/AGENT.md](./agents/AGENT.md) |
 | 自改进闭环（诊断 D0-D7 · 经验技能化 · 记忆压缩注入 · 效果评估 E1-E4） | [rules/self-improve.md](./rules/self-improve.md) · [agents/self-improve.md](./agents/self-improve.md) |
-| 共享库（TTY · FS · 常量 · help 布局） | [lib/](./lib/) |
+| 共享库（TTY · FS · 常量 · help 布局 · 诊断 · Mermaid 主题 · 插件工具 · 网络） | [lib/](./lib/) |
+| rui-code 源码实现管线（Gate A/B · 逐模块 P0 清零） | [skills/rui-code/SKILL.md](./skills/rui-code/SKILL.md) |
+| rui-init 项目初始化 | [skills/rui-init/SKILL.md](./skills/rui-init/SKILL.md) |
+| rui-update 增量更新（T1/T2/T3 裁剪） | [skills/rui-update/SKILL.md](./skills/rui-update/SKILL.md) |
+| rui-yry 自主自改进循环 | [skills/rui-yry/SKILL.md](./skills/rui-yry/SKILL.md) |
+| rui-skills 技能市场（发现与安装） | [skills/rui-skills/SKILL.md](./skills/rui-skills/SKILL.md) |
+| rui-html 文档生成（markdown → 7 HTML） | [skills/rui-html/SKILL.md](./skills/rui-html/SKILL.md) |
+| 项目健康检查（9 维度 + Git 引导 D0-D7 + `--diff` 变化摘要 + `--alert` 智能告警 + `--short` 单行摘要 + `--notify` 企微推送） | `node skills/rui-bot/send.mjs health` |
+| 健康报告仪表板（HTML 摘要卡 + 趋势对比 + 维度变化指示 + 历史迷你图 + 评级火花图 + 改进建议） | `docs/健康报告/` (由 `health --html` 生成) |
+| 健康趋势持久化（每次检查追加 `.memory/health-trend.jsonl`） | 自动启用，无需参数 |
+| rui-bot 通知（3 场景 + Rich/Verbose 格式 + Dry-Run 预览 + 失败队列 + `flush` 重试） | [skills/rui-bot/SKILL.md](./skills/rui-bot/SKILL.md) |
+| 自循环报告系统（12 技能定期巡检 → HTML → 企微通知 + 健康评分） | [skills/rui-bot/lib/loop-report.mjs](./skills/rui-bot/lib/loop-report.mjs) |
 | 领域语言（术语定义） | [领域语言](./README.md#领域语言) |
 | 故事文档公式 | [formulas.md](./skills/rui/formulas.md) |
