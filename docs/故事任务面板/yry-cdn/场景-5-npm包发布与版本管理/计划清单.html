@@ -144,14 +144,15 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 
 <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../故事任务.md">yry-cdn · CDN 共享前端资源管理</a><span class="bc-sep">/</span><span class="bc-current">场景 5 · npm 包发布与版本管理</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
 
-<div class="cross-nav">
-  <span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
-  <a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
-  <a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
-              <a href="源码.html" class="cross-link">📄 源码</a><span class="cross-sep">·</span>
-              <a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span>
-  <a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a>
-</div>
+<nav class="cross-nav">
+<span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
 
 <div class="header">
   <h1>📦 场景-5<span class="accent"> · npm 包发布与版本管理</span></h1>
@@ -182,7 +183,7 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
   <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">1</span><span class="step-title">验证 cdn/package.json 规范完整性</span><span class="step-status status-done">✅ 完成</span>
-</div><div class="step-body open">
+</div><div class="step-body">
   <p>验证 cdn/package.json 的 8 个必填字段（name/version/description/main/files/license/repository/author）全部存在且格式正确。验证 files 清单中包含 5 个 CJS 文件 + 1 个 README.md。验证版本号符合 semver 格式。</p>
   <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node -e "const p=require('./cdn/package.json'); ..."</code>逐字段检查</div>
   <div class="code-block">// 逐字段验证 package.json
@@ -460,7 +461,6 @@ function toast(msg) {
   document.querySelectorAll('.step-checkbox').forEach((cb, i) => {
     if (saved['step-' + (i + 1)]) {
       cb.checked = true;
-      cb.closest('.step').querySelector('.step-body').classList.add('open');
     }
   });
   updateProgress();

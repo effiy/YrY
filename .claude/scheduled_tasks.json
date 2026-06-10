@@ -1,0 +1,67 @@
+{
+  "tasks": [
+    {
+      "id": "47c82eb0",
+      "cron": "7 * * * *",
+      "prompt": "/rui-bot health — 通知队列轮询：扫描待发通知，批量推送，汇总自循环报告状态。如无待发条目则静默跳过。",
+      "createdAt": 1781059570471,
+      "lastFiredAt": 1781064924806,
+      "recurring": true,
+      "createdBySessionId": "5534d646-d730-4f48-a7db-bfaa52179eb8",
+      "createdByPid": 3178,
+      "createdByProcStart": "11282"
+    },
+    {
+      "id": "cb898262",
+      "cron": "37 * * * *",
+      "prompt": "/rui-import sync workspace=true mode=list — 文档同步巡检：检测本地文档变更，与远端 API 比对，输出待同步清单。仅 list 模式不实际同步。",
+      "createdAt": 1781059570529,
+      "lastFiredAt": 1781064051874,
+      "recurring": true,
+      "createdBySessionId": "5534d646-d730-4f48-a7db-bfaa52179eb8",
+      "createdByPid": 3178,
+      "createdByProcStart": "11282"
+    },
+    {
+      "id": "4be96299",
+      "cron": "3 9 * * 1",
+      "prompt": "/rui yry — 自改进闭环：扫描执行记忆 → D0-D7 诊断 → 生成改进提案 → 评估效果。深度 3 全自主模式。",
+      "createdAt": 1781059570547,
+      "recurring": true,
+      "createdBySessionId": "5534d646-d730-4f48-a7db-bfaa52179eb8",
+      "createdByPid": 3178,
+      "createdByProcStart": "11282"
+    },
+    {
+      "id": "b00afbff",
+      "cron": "7 10 * * *",
+      "prompt": "/rui-claude health — 配置健康巡检：检查所有 .claude/ 目录配置完整性，对比远端基线，输出健康报告。",
+      "createdAt": 1781059570569,
+      "recurring": true,
+      "createdBySessionId": "5534d646-d730-4f48-a7db-bfaa52179eb8",
+      "createdByPid": 3178,
+      "createdByProcStart": "11282"
+    },
+    {
+      "id": "8075badf",
+      "cron": "*/7 * * * *",
+      "prompt": "/rui-story status — 故事面板状态轮询：检测所有故事任务的最新状态变更，更新故事面板索引。",
+      "createdAt": 1781059578043,
+      "lastFiredAt": 1781065365636,
+      "recurring": true,
+      "createdBySessionId": "5534d646-d730-4f48-a7db-bfaa52179eb8",
+      "createdByPid": 3178,
+      "createdByProcStart": "11282"
+    },
+    {
+      "id": "80c9ea9c",
+      "cron": "3 8 * * 1,4",
+      "prompt": "/rui-analysis — 代码健康看门狗：分析项目代码健康度，检测退化信号，输出健康趋势报告到 docs/自循环报告/。",
+      "createdAt": 1781059578059,
+      "recurring": true,
+      "createdBySessionId": "5534d646-d730-4f48-a7db-bfaa52179eb8",
+      "createdByPid": 3178,
+      "createdByProcStart": "11282"
+    }
+  ]
+}

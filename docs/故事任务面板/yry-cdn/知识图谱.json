@@ -1,0 +1,42 @@
+{
+  "version": "1.0.0",
+  "story": "yry-cdn",
+  "name": "YrY CDN 共享资源库",
+  "nodes": [
+    {"id": "story-yry-cdn", "type": "domain", "label": "yry-cdn", "desc": "YrY CDN 共享资源库 — 样式/脚本/字体/组件库"},
+    {"id": "scene-1", "type": "scene", "label": "场景1: CDN资源加载与页面渲染", "desc": "CDN CSS/JS 加载链稳定，页面渲染正常，Category A/B 页面视觉一致"},
+    {"id": "scene-2", "type": "scene", "label": "场景2: 双主题系统设计", "desc": "两套主题 CSS 完整覆盖各自页面类型 — Mono 等宽主题 vs System 系统主题"},
+    {"id": "scene-3", "type": "scene", "label": "场景3: 组件库与JS工具API", "desc": "14 个可复用 UI 组件 + 9 个 YrY.* 交互 API 方法"},
+    {"id": "scene-4", "type": "scene", "label": "场景4: 存量页面迁移", "desc": "按迁移指南逐步替换内联样式/脚本为 CDN 引用，验证视觉一致性"},
+    {"id": "scene-5", "type": "scene", "label": "场景5: npm包发布与版本管理", "desc": "yry-cdn npm 包规范维护 — semantic versioning + 文件清单 + 独立分发"},
+    {"id": "flow-loading", "type": "flow", "label": "CDN资源加载链", "desc": "shared.css → theme.css/theme-mono.css → shared.js 顺序加载，Category A/B 自动判定"},
+    {"id": "flow-theme", "type": "flow", "label": "双主题系统", "desc": "System 主题（深紫黑底+系统字体）vs Mono 主题（深蓝黑底+JetBrains Mono）设计令牌"},
+    {"id": "flow-component", "type": "flow", "label": "组件库与交互工具", "desc": "14 组件 CSS 定义 + 9 个 YrY.* API 实现 — Toast/复制/面板/折叠/统计卡/进度条"},
+    {"id": "step-css-load", "type": "step", "label": "FP1 共享基础样式加载"},
+    {"id": "step-js-load", "type": "step", "label": "FP2 共享脚本加载"},
+    {"id": "step-system-theme", "type": "step", "label": "FP3 System 主题加载"},
+    {"id": "step-mono-theme", "type": "step", "label": "FP4 Mono 主题加载"},
+    {"id": "step-toast", "type": "step", "label": "FP5 Toast 通知"},
+    {"id": "step-clipboard", "type": "step", "label": "FP6 剪贴板复制"},
+    {"id": "step-tabpanel", "type": "step", "label": "FP7 标签面板切换"},
+    {"id": "step-suite", "type": "step", "label": "FP8 折叠套件切换"}
+  ],
+  "edges": [
+    {"from": "story-yry-cdn", "to": "scene-1", "label": "contains"},
+    {"from": "story-yry-cdn", "to": "scene-2", "label": "contains"},
+    {"from": "story-yry-cdn", "to": "scene-3", "label": "contains"},
+    {"from": "story-yry-cdn", "to": "scene-4", "label": "contains"},
+    {"from": "story-yry-cdn", "to": "scene-5", "label": "contains"},
+    {"from": "scene-1", "to": "flow-loading", "label": "implements"},
+    {"from": "scene-2", "to": "flow-theme", "label": "implements"},
+    {"from": "scene-3", "to": "flow-component", "label": "implements"},
+    {"from": "flow-loading", "to": "step-css-load", "label": "step"},
+    {"from": "flow-loading", "to": "step-js-load", "label": "step"},
+    {"from": "flow-theme", "to": "step-system-theme", "label": "step"},
+    {"from": "flow-theme", "to": "step-mono-theme", "label": "step"},
+    {"from": "flow-component", "to": "step-toast", "label": "step"},
+    {"from": "flow-component", "to": "step-clipboard", "label": "step"},
+    {"from": "flow-component", "to": "step-tabpanel", "label": "step"},
+    {"from": "flow-component", "to": "step-suite", "label": "step"}
+  ]
+}

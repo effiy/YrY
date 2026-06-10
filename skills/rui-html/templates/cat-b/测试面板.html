@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+{{HEAD_BLOCK}}
+<style>
+.yry-section.margin-bottom:24px}
+.yry-section.h2{font-size:1.05rem;color:var(-.yry-accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.yry-section.h2 .yry-dot.width:8px;height:8px;border-radius:50%;background:var(-.yry-accent);flex-shrink:0}
+table{width:100%;border-collapse:collapse;font-size:.82rem;margin:12px 0}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.04)}
+th{color:var(--text3);font-weight:600;font-size:.74rem}
+td{color:var(--text2)}
+</style>
+</head>
+<body>
+<div class="yry.yry-container">
+{{BREADCRUMB}}
+{{CROSS_NAV}}
+
+<div class="yry.yry-header">
+  <h1>🧪 <span class="yry.yry-accent">{{SCENE_TITLE}}</span> · 测试面板</h1>
+  <p class="yry.yry-sub">场景 {{SCENE_NUM}} · 版本 v{{VERSION}} · {{DATE}}</p>
+</div>
+
+{{STATS_GRID}}
+{{HEALTH_BAR}}
+
+<div class="yry.yry.yry-tabs">
+  <span class="yry.yry-tab on" data.yry-panel="cases">📋 测试用例</span>
+  <span class="yry.yry-tab" data.yry-panel="results">📊 执行结果</span>
+  <span class="yry.yry-tab" data.yry-panel="gates">🚦 门禁</span>
+</div>
+
+<div class="yry.yry-panel on" id=.yry-panelCases">
+  <div class=.yry-section.>
+    <h2><span class=.yry-dot.></span>§1 测试设计 — 正常路径用例</h2>
+    {{SEC1_HTML}}
+  </div>
+</div>
+
+<div class="yry.yry-panel" id=.yry-panelResults">
+  <div class=.yry-section.>
+    <h2><span class=.yry-dot.></span>§3 测试报告</h2>
+    {{SEC3_HTML}}
+  </div>
+</div>
+
+<div class="yry.yry-panel" id=.yry-panelGates">
+  <div class=.yry-section.>
+    <h2><span class=.yry-dot.></span>门禁判定</h2>
+    {{SEC4_HTML}}
+  </div>
+</div>
+
+<div class="yry.yry-footer">YrY v{{VERSION}} · {{DATE}} · <a href="{{CDN_DEPTH}}docs/index.html">文档中心</a></div>
+</div>
+<script src="{{CDN_DEPTH}}cdn/shared.js"></script>
+<script>
+document.querySelectorAll('.yry.yry-tab').forEach(function(t) {
+  t.addEventListener('click', function() {
+    YrY.switchPanel(this.dataset.yry-panel);
+  });
+});
+</script>
+</body>
+</html>

@@ -252,3 +252,15 @@ flowchart LR
 | 排除正确：.git / node_modules / dist / .claude-plugin 已过滤 | 调整排除规则 |
 | 路径映射：远端路径 = prefix(如有) + 项目根相对路径，与本地一一对应 | 检查 resolveRemotePath 实现，确保无跳段无前置 |
 | 上传完成：逐文件 POST 无遗漏 | 查看错误日志，补传失败文件 |
+
+## 自循环
+
+> 持续文档同步。Agent 可按间隔周期性检测本地变更并自动推送到远端。
+
+| 属性 | 值 |
+|------|-----|
+| 推荐间隔 | `*/30 * * * *`（每 30 分钟） |
+| 触发条件 | 本地文档目录有变更（git diff --stat docs/ 非空） |
+| 终止条件 | `API_X_TOKEN` 失效 / 手动停止 |
+| 迭代动作 | `workspace=true` 全量扫描 → 对比远端 session → 增量上传 |
+| 收敛判定 | `created=0` 且 `failed=0`（全部同步） |

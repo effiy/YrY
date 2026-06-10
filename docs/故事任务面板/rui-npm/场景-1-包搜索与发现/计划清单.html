@@ -21,7 +21,15 @@
 .footer{margin-top:40px;padding-top:16px;border-top:var(--border);color:var(--text3);font-size:0.72rem;text-align:center}a[target="_blank"]::after{content:" ↗";font-size:0.7em;opacity:0.5}@media(max-width:640px){.container{padding:20px 12px 60px}.header h1{font-size:1.3rem}.step-body{padding:0 10px 12px 40px}.cmd-grid,.link-grid{grid-template-columns:1fr}.stat-grid{flex-direction:column}}
 </style></head><body><div class="container">
 <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · 个人 npm 包管理</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 包搜索与发现 + CDN 引用</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
-<div class="cross-nav"><span class="cross-link on">📋 清单</span><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
+<nav class="cross-nav">
+<span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
 
 <div class="header"><h1>📋 <span class="accent">场景-1 · 包搜索与发现 + CDN 引用</span></h1><p class="sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p><div class="meta">📌 v1.2.0 · 📅 2026-06-06 · 🏷️ rui-npm</div></div>
 
@@ -36,7 +44,7 @@
 <div class="panel on" id="panelChecklist">
 
 <div class="section"><h2><span class="dot"></span>§0 命令设计<span class="s-done">— 已完成</span></h2>
-<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">1</span><span class="step-title">实现 search 子命令</span><span class="step-status status-done">✅ 完成</span></div><div class="step-body open"><p>封装 npm search：参数校验 → registry 查询 → JSON 解析 → 按 downloads 排序 → 表格输出。</p><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node skills/rui-npm/rui-npm.mjs search react</code> 验证命令流</div><div class="code-block">spawnSync('npm',['search','react','--json','--long']) → JSON.parse → sort by downloads → 表格输出</div><div class="verify-cmd">node skills/rui-npm/rui-npm.mjs search react</div><div class="expected">输出含包名/描述/版本/周下载量/更新时间的 5 列表格</div><div class="log-entry"><span class="log-time">2026-06-05 10:20</span> 完成 — 实现 /rui-npm search 子命令</div></div></div>
+<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">1</span><span class="step-title">实现 search 子命令</span><span class="step-status status-done">✅ 完成</span></div><div class="step-body"><p>封装 npm search：参数校验 → registry 查询 → JSON 解析 → 按 downloads 排序 → 表格输出。</p><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node skills/rui-npm/rui-npm.mjs search react</code> 验证命令流</div><div class="code-block">spawnSync('npm',['search','react','--json','--long']) → JSON.parse → sort by downloads → 表格输出</div><div class="verify-cmd">node skills/rui-npm/rui-npm.mjs search react</div><div class="expected">输出含包名/描述/版本/周下载量/更新时间的 5 列表格</div><div class="log-entry"><span class="log-time">2026-06-05 10:20</span> 完成 — 实现 /rui-npm search 子命令</div></div></div>
 
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">2</span><span class="step-title">参数支持 — --json / --limit</span><span class="step-status status-done">✅ 完成</span></div><div class="step-body"><p>--json 标志输出原始 JSON 数组供脚本消费；--limit N 控制结果数量（默认 20）。</p><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui-npm search react --json --limit 5</code> 验证参数组合</div><div class="step-deps"><span class="dep-label">关联页面:</span><a href="演示.html" class="dep-badge">💡 演示</a></div><div class="verify-cmd">node skills/rui-npm/rui-npm.mjs search react --json --limit 5</div><div class="expected">输出合法 JSON 数组，length ≤ 5</div></div></div>
 
@@ -132,6 +140,6 @@ const ovDone=document.getElementById('ov-done');const ovPending=document.getElem
 const state={};checks.forEach((cb,i)=>{state['step-'+(i+1)]=cb.checked});localStorage.setItem(SCENE_KEY,JSON.stringify(state))}
 function copyCmd(btn,cmd){navigator.clipboard.writeText(cmd).then(()=>{btn.textContent='✅';btn.style.opacity='1';setTimeout(()=>{btn.textContent='📋';btn.style.opacity=''},1500)}).catch(()=>toast('复制失败'))}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1800)}
-(function(){const saved=JSON.parse(localStorage.getItem(SCENE_KEY)||'{}');document.querySelectorAll('.step-checkbox').forEach((cb,i)=>{if(saved['step-'+(i+1)]){cb.checked=true;cb.closest('.step').querySelector('.step-body').classList.add('open')}});updateProgress();const activeTab=localStorage.getItem(SCENE_KEY+'-tab')||'checklist';switchPanel(activeTab)})();
+(function(){const saved=JSON.parse(localStorage.getItem(SCENE_KEY)||'{}');document.querySelectorAll('.step-checkbox').forEach((cb,i)=>{if(saved['step-'+(i+1)]){cb.checked=true}});updateProgress();const activeTab=localStorage.getItem(SCENE_KEY+'-tab')||'checklist';switchPanel(activeTab)})();
 </script>
 </body></html>

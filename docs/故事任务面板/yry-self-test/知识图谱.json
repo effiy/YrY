@@ -1,0 +1,42 @@
+{
+  "version": "1.0.0",
+  "story": "yry-self-test",
+  "name": "YrY 自主测试方案",
+  "nodes": [
+    {"id": "story-yry-self-test", "type": "domain", "label": "yry-self-test", "desc": "项目自主测试方案 — 管线健康自检 + 文档基线完整性"},
+    {"id": "scene-1", "type": "scene", "label": "场景1: init后全量自检", "desc": "六项自检规则 → 全量验证"},
+    {"id": "scene-2", "type": "scene", "label": "场景2: commit前增量自检", "desc": "增量变更 → 快速验证"},
+    {"id": "scene-3", "type": "scene", "label": "场景3: 文档代码一致性", "desc": "文档声明 → 实际代码对照"},
+    {"id": "scene-4", "type": "scene", "label": "场景4: 安全面回归自检", "desc": "安全基线 → 回归验证"},
+    {"id": "scene-5", "type": "scene", "label": "场景5: 跨故事集成回归", "desc": "多故事联动 → 集成验证"},
+    {"id": "scene-6", "type": "scene", "label": "场景6: 第三方框架与服务", "desc": "vitest + CDN + npm Registry → 可达性验证"},
+    {"id": "flow-self-check", "type": "flow", "label": "自检流水线", "desc": "trigger → detect → check → report → fix"},
+    {"id": "flow-dual-track", "type": "flow", "label": "双轨测试", "desc": "vitest 工程化 + 遗留 harness"},
+    {"id": "step-branch", "type": "step", "label": "分支隔离检查"},
+    {"id": "step-gate-a", "type": "step", "label": "Gate A 测试先行"},
+    {"id": "step-handoff", "type": "step", "label": "交接信号完整性"},
+    {"id": "step-evidence", "type": "step", "label": "证据链闭合"},
+    {"id": "step-p0", "type": "step", "label": "P0 逐模块清零"},
+    {"id": "step-delivery", "type": "step", "label": "交付收口"},
+    {"id": "step-vitest", "type": "step", "label": "vitest 框架检查"},
+    {"id": "step-cdn", "type": "step", "label": "CDN 可达性"}
+  ],
+  "edges": [
+    {"from": "story-yry-self-test", "to": "scene-1", "label": "contains"},
+    {"from": "story-yry-self-test", "to": "scene-2", "label": "contains"},
+    {"from": "story-yry-self-test", "to": "scene-3", "label": "contains"},
+    {"from": "story-yry-self-test", "to": "scene-4", "label": "contains"},
+    {"from": "story-yry-self-test", "to": "scene-5", "label": "contains"},
+    {"from": "story-yry-self-test", "to": "scene-6", "label": "contains"},
+    {"from": "scene-1", "to": "flow-self-check", "label": "implements"},
+    {"from": "scene-6", "to": "flow-dual-track", "label": "implements"},
+    {"from": "flow-self-check", "to": "step-branch", "label": "step"},
+    {"from": "flow-self-check", "to": "step-gate-a", "label": "step"},
+    {"from": "flow-self-check", "to": "step-handoff", "label": "step"},
+    {"from": "flow-self-check", "to": "step-evidence", "label": "step"},
+    {"from": "flow-self-check", "to": "step-p0", "label": "step"},
+    {"from": "flow-self-check", "to": "step-delivery", "label": "step"},
+    {"from": "flow-dual-track", "to": "step-vitest", "label": "step"},
+    {"from": "flow-dual-track", "to": "step-cdn", "label": "step"}
+  ]
+}

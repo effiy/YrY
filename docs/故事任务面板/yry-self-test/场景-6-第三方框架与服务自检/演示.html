@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>场景 6 · 第三方框架与服务自检 — 演示</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+  <style>
+    :root { --bg:rgba(22,22,32,1); --bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%); --bg-flat:rgba(34,34,46,1); --bg-raised:rgba(42,42,56,1); --accent:#FFC107; --cyan:#22d3ee; --pass:#22c55e; --fail:#ef4444; --text:rgba(250,250,252,1); --text2:rgba(160,160,164,1); --text3:rgba(110,110,114,1); --shadow:0 4px 20px rgba(0,0,0,0.3); --shadow-lg:0 12px 32px rgba(0,0,0,0.45); --warn:#f59e0b; --info:#6b7280; --radius:12px; --border:1px solid rgba(255,255,255,0.06); }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeInDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes slideDown { from{opacity:0;max-height:0} to{opacity:1;max-height:800px} }
+    @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)} 50%{box-shadow:0 0 0 8px rgba(255,193,7,0)} }
+    @keyframes stepIn { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes glowPulse { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.3)} }
+    * { box-sizing:border-box;margin:0;padding:0 }
+    body { background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6 }
+    .container { max-width:960px;margin:0 auto;padding:40px 24px 80px }
+    .tabs { display:flex;gap:0;border-bottom:var(--border);margin-bottom:28px;animation:fadeInDown .5s .1s ease both }
+    .tab { padding:8px 18px;cursor:pointer;font-size:.82rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none }
+    .tab:hover { color:var(--text2) } .tab.on { color:var(--accent);border-bottom-color:var(--accent) }
+    .panel { display:none;animation:fadeInUp .4s ease both }
+    .panel.on { display:block }
+    .section { margin-bottom:32px }
+    .section h2 { font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px }
+    .section h2 .dot { width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0 }
+    .cmd-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px }
+    .cmd-card { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s }
+    .cmd-card:hover { transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.35) }
+    .cmd-card .name { font-weight:700;font-size:.88rem;color:var(--accent);font-family:monospace }
+    .cmd-card .desc { font-size:.76rem;color:var(--text2);margin:4px 0 8px;line-height:1.5 }
+    .cmd-card .stage { font-size:.64rem;color:var(--text3);margin-bottom:4px }
+    pre { background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer }
+    pre .cb { position:absolute;top:6px;right:6px;background:var(--bg-flat);border:var(--border);border-radius:4px;color:var(--text3);font-size:.62rem;padding:2px 7px;cursor:pointer;opacity:0;transition:opacity .15s;font-family:inherit }
+    pre:hover .cb { opacity:1 } pre .cb.done { color:var(--pass) }
+    .flow-row { display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0 }
+    .flow-chip { background:var(--bg-flat);border:var(--border);border-radius:20px;padding:6px 14px;font-size:.78rem;transition:all .15s }
+    .flow-chip:hover { border-color:rgba(255,193,7,.3) }
+    .flow-chip .n { font-weight:700;color:var(--accent) }
+    .flow-arrow { color:var(--text3);font-size:.8rem }
+    .file-list { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px }
+    .file-item { background:var(--bg-flat);border:var(--border);border-radius:6px;padding:8px 12px;font-size:.74rem;font-family:monospace;color:var(--text2) }
+    .links-row { display:flex;gap:8px;flex-wrap:wrap;margin-top:16px }
+    .links-row a { font-size:.76rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:6px;padding:6px 12px;transition:all .15s }
+    .links-row a:hover { border-color:var(--accent);color:var(--accent);text-decoration:underline }
+    .toast { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:0 12px 32px rgba(0,0,0,.45);opacity:0;transition:opacity .2s;pointer-events:none }
+    .toast.show { opacity:1 }
+    .walkthrough { counter-reset:step }
+    .walkthrough .step { counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both }
+    .walkthrough .step::before { content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0 }
+    .walkthrough .step .s-body { flex:1 } .walkthrough .step .s-title { font-weight:600;font-size:.88rem } .walkthrough .step .s-desc { font-size:.76rem;color:var(--text2);margin:3px 0 6px }
+    .walkthrough .step .s-result { font-size:.74rem;color:var(--pass);margin-top:6px }
+    .walkthrough .step .s-result .r-label { font-weight:600 }
+    .walkthrough .step .s-result-desc { font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.5;padding:6px 10px;background:rgba(34,211,238,.04);border-left:2px solid var(--cyan);border-radius:0 4px 4px 0 }
+    .kbd-hint { font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.03);border-radius:3px;padding:1px 5px;margin-left:4px }
+    @media (max-width:640px) { .container { padding:20px 12px 60px } h1 { font-size:1.4rem } .cmd-grid { grid-template-columns:1fr } }
+  a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+
+  .header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
+  .header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+  .header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
+  .breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+  .breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+  .breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+  .breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+  .breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+  .cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
+  .cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}
+  .cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
+  .cross-link.on{color:var(--accent);font-weight:600}
+  .cross-sep{color:var(--text3);font-size:0.5rem;opacity:0.35;user-select:none}
+  .stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+  .stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+  .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+  .stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
+  .stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}.stat-card .val.accent{color:var(--accent)}
+  .stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
+  .bar-wrap{margin-bottom:28px;animation:fadeInDown .5s .12s ease both}
+  .bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
+  .bar-outer .seg{height:100%;transition:width .5s ease;min-width:3px}
+  .bar-outer .seg.strength{background:var(--pass)}.bar-outer .seg.gap{background:var(--fail)}.bar-outer .seg.suggestion{background:var(--warn)}.bar-outer .seg.neutral{background:var(--info)}
+  .tip-box{background:rgba(255,193,7,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:10px 0;font-size:.78rem;color:var(--text2);line-height:1.5}
+  .tip-box strong{color:var(--accent)}
+  .inline-code{background:rgba(0,0,0,.3);color:var(--cyan);padding:1px 6px;border-radius:3px;font-size:.8rem;font-family:'SF Mono',monospace}
+  </style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自主测试方案</span><span class="bc-sep">/</span><span class="bc-current">场景 6 · 第三方框架与服务自检</span><span class="bc-sep">/</span><span class="bc-current">💡 演示</span></nav>
+
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<span class="cross-link on">💡 演示</span><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
+
+<div class="header">
+  <h1>🛡️ 场景-6<span class="accent"> · 第三方框架与服务自检</span></h1>
+  <p class="sub">双轨自检演练：vitest 框架验证 → CDN 可达性检查 → 双轨独立运行 — <span class="kbd-hint">1-4</span> 数字键切换 Tab</p>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="val health">3</div><div class="lbl">📋 走查步骤</div></div>
+  <div class="stat-card"><div class="val health">25</div><div class="lbl">✅ 断言通过</div></div>
+  <div class="stat-card"><div class="val health">0</div><div class="lbl">❌ 失败</div></div>
+  <div class="stat-card"><div class="val accent">~7s</div><div class="lbl">⏱ 执行耗时</div></div>
+</div>
+
+<div class="tabs">
+  <span class="tab on" data-panel="walkthrough">🚶 走查</span>
+  <span class="tab" data-panel="commands">⚡ 命令参考</span>
+  <span class="tab" data-panel="links">🔗 快速链接</span>
+  <span class="tab" data-panel="files">📁 文件</span>
+</div>
+
+<!-- ═══ Panel 1: Walkthrough ═══ -->
+<div class="panel on" id="panelWalkthrough">
+  <div class="walkthrough">
+    <div class="step"><div class="s-body"><div class="s-title">步骤 1: 验证 vitest 框架安装与配置</div><div class="s-desc">安装依赖后执行 framework-presence 测试，验证 package.json、vitest.config.mjs、vitest 模块、适配层、node_modules gitignore、遗留保留等 19 项检查。</div><pre>npm install
+npx vitest run tests/infrastructure/framework-presence.test.mjs<span class="cb" onclick="YrY.copyCmd(this,'npx vitest run tests/infrastructure/framework-presence.test.mjs')">📋</span></pre><div class="s-result-desc">💡 说明: framework-presence.test.mjs 检查 6 个维度：package.json (5项) + vitest.config.mjs (3项) + vitest 模块 (2项) + node_modules gitignore (1项) + 适配层 (4项) + 遗留保留 (4项)。全部为阻断级 —— 任一项失败则 vitest 不可用。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 19/19 通过 — package.json 存在且合法，vitest.config.mjs 含 include/exclude 配置，vitest 模块可 import()，适配层 9 个断言方法可用，node_modules 已 gitignored，遗留测试基础设施完整。</div></div></div>
+    <div class="step"><div class="s-body"><div class="s-title">步骤 2: 验证 CDN 三路源及 npm Registry 可达性</div><div class="s-desc">执行 third-party-reachability 测试，对 npm Registry（HEAD + vitest 包存在性）、CDN 三路源（unpkg/jsDelivr/esm.sh HEAD）、npm Search API 逐一做 HTTP HEAD 检查。</div><pre>npx vitest run tests/infrastructure/third-party-reachability.test.mjs<span class="cb" onclick="YrY.copyCmd(this,'npx vitest run tests/infrastructure/third-party-reachability.test.mjs')">📋</span></pre><div class="s-result-desc">💡 说明: 单项服务不可达标记为警告（不影响 core flow），全部服务不可达标记为阻断。每项含备选 CDN 源提示（如 jsDelivr 不可达时提示使用 unpkg 或 esm.sh）。当前三路源全部可达。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 6/6 通过 — npm Registry (800ms)、vitest 包存在 (550ms)、unpkg (630ms)、jsDelivr (1585ms)、esm.sh (800ms)、npm Search API (710ms)。三路源响应时间在可接受范围。</div></div></div>
+    <div class="step"><div class="s-body"><div class="s-title">步骤 3: 双轨独立运行验证</div><div class="s-desc">分别执行 vitest 工程化轨道和遗留自定义 harness 轨道，验证两个轨道可独立运行且互不影响。使用 npm run test:all 触发全量。</div><pre>npm test && npm run test:legacy
+# 或一次性全量:
+npm run test:all<span class="cb" onclick="YrY.copyCmd(this,'npm run test:all')">📋</span></pre><div class="s-result-desc">💡 说明: 双轨架构保证零风险迁移：vitest 仅管理 tests/infrastructure/ 测试（25 项），遗留运行器保持零依赖兜底（171+ 断言）。一个轨道失效不影响另一个。vitest 提供了更好的错误 diff、watch 模式、并行执行等工程化能力。</div><div class="s-result"><span class="r-label">✅ 结果:</span> vitest 轨道: 25/25 通过 (~7s) · 遗留轨道: node tests/run.mjs 正常执行 · 双轨兼容验证: ✅ · 零风险迁移: 遗留测试零变更。</div></div></div>
+  </div>
+</div>
+
+<!-- ═══ Panel 2: 命令参考 ═══ -->
+<div class="panel" id="panelCommands">
+  <div class="cmd-grid">
+    <div class="cmd-card"><div class="stage">步骤 1</div><div class="name">npm install</div><div class="desc">安装 vitest + @vitest/ui devDependencies</div><pre>npm install<span class="cb" onclick="YrY.copyCmd(this,'npm install')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">步骤 1</div><div class="name">npx vitest run</div><div class="desc">执行 framework-presence 19 项检查</div><pre>npx vitest run tests/infrastructure/framework-presence.test.mjs<span class="cb" onclick="YrY.copyCmd(this,'npx vitest run tests/infrastructure/framework-presence.test.mjs')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">步骤 2</div><div class="name">third-party-reachability</div><div class="desc">执行外部服务 6 项可达性检查</div><pre>npx vitest run tests/infrastructure/third-party-reachability.test.mjs<span class="cb" onclick="YrY.copyCmd(this,'npx vitest run tests/infrastructure/third-party-reachability.test.mjs')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">步骤 3</div><div class="name">npm test (vitest 轨道)</div><div class="desc">工程化轨道：vitest run</div><pre>npm test<span class="cb" onclick="YrY.copyCmd(this,'npm test')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">步骤 3</div><div class="name">npm run test:legacy</div><div class="desc">遗留轨道：node tests/run.mjs</div><pre>npm run test:legacy<span class="cb" onclick="YrY.copyCmd(this,'npm run test:legacy')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">步骤 3</div><div class="name">npm run test:all</div><div class="desc">双轨全量自检</div><pre>npm run test:all<span class="cb" onclick="YrY.copyCmd(this,'npm run test:all')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">watch 模式</div><div class="name">npm run test:watch</div><div class="desc">vitest watch 模式（工程化轨道）</div><pre>npm run test:watch<span class="cb" onclick="YrY.copyCmd(this,'npm run test:watch')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">coverage</div><div class="name">npm run test:coverage</div><div class="desc">vitest v8 coverage 报告</div><pre>npm run test:coverage<span class="cb" onclick="YrY.copyCmd(this,'npm run test:coverage')">📋</span></pre></div>
+  </div>
+</div>
+
+<!-- ═══ Panel 3: 快速链接 ═══ -->
+<div class="panel" id="panelLinks">
+  <div class="section"><h2><span class="dot"></span>基础设施测试</h2>
+    <div class="links-row">
+      <a href="../../../../tests/infrastructure/framework-presence.test.mjs" target="_blank">framework-presence.test.mjs</a>
+      <a href="../../../../tests/infrastructure/third-party-reachability.test.mjs" target="_blank">third-party-reachability.test.mjs</a>
+    </div>
+  </div>
+  <div class="section"><h2><span class="dot"></span>配置与适配</h2>
+    <div class="links-row">
+      <a href="../../../../package.json" target="_blank">package.json</a>
+      <a href="../../../../vitest.config.mjs" target="_blank">vitest.config.mjs</a>
+      <a href="../../../../tests/lib/vitest-adapter.mjs" target="_blank">vitest-adapter.mjs</a>
+    </div>
+  </div>
+  <div class="section"><h2><span class="dot"></span>外部服务</h2>
+    <div class="links-row">
+      <a href="https://registry.npmjs.org/" target="_blank">npm Registry</a>
+      <a href="https://unpkg.com/" target="_blank">unpkg CDN</a>
+      <a href="https://cdn.jsdelivr.net/" target="_blank">jsDelivr CDN</a>
+      <a href="https://esm.sh/" target="_blank">esm.sh CDN</a>
+    </div>
+  </div>
+  <div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="测试面板.html">🧪 测试面板</a></div>
+</div>
+
+<!-- ═══ Panel 4: 文件 ═══ -->
+<div class="panel" id="panelFiles">
+  <div class="section"><h2><span class="dot"></span>相关文件</h2>
+    <div class="file-list">
+      <div class="file-item">📦 package.json</div>
+      <div class="file-item">⚙️ vitest.config.mjs</div>
+      <div class="file-item">🔌 tests/lib/vitest-adapter.mjs</div>
+      <div class="file-item">🧪 framework-presence.test.mjs</div>
+      <div class="file-item">🧪 third-party-reachability.test.mjs</div>
+      <div class="file-item">📜 tests/run.mjs (遗留)</div>
+    </div>
+  </div>
+  <div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="测试面板.html">🧪 测试面板</a></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+</div>
+
+<script>
+/* ═══ Tab switching with YrY API + localStorage ═══ */
+(function() {
+  var SCENE_KEY = 'yry-self-test-s6-demo';
+
+  document.querySelector('.tabs').addEventListener('click', function(e) {
+    var tab = e.target.closest('.tab');
+    if (!tab) return;
+    switchPanel(tab.dataset.panel);
+  });
+
+  window.switchPanel = function(name) {
+    YrY.switchPanel(name, '.tab', '.panel');
+    try { localStorage.setItem(SCENE_KEY + '-tab', name); } catch(e) {}
+  };
+
+  document.addEventListener('keydown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    var m = {'1':'walkthrough','2':'commands','3':'links','4':'files'};
+    if (m[e.key]) { e.preventDefault(); switchPanel(m[e.key]); }
+  });
+
+  try {
+    var saved = localStorage.getItem(SCENE_KEY + '-tab');
+    if (saved) switchPanel(saved);
+  } catch(e) {}
+})();
+</script>
+
+<div class="footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY · 场景 6 演示</div>
+<script src="../../../../cdn/shared.js"></script>
+</body>
+</html>

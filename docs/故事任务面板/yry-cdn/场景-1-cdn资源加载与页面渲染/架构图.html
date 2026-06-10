@@ -28,7 +28,7 @@ h1{font-size:1.5rem;font-weight:700}
 .diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
 .diagram-container svg{width:100%;min-width:900px;display:block}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
-.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
+.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}.card:hover{border-color:#334155;background:rgba(15,23,42,.8);transform:translateY(-1px)}
 .card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
 .card-dot{width:8px;height:8px;border-radius:50%}
 .card-dot.cyan{background:#22d3ee}.card-dot.emerald{background:#34d399}
@@ -55,11 +55,15 @@ h1{font-size:1.5rem;font-weight:700}
 .cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
 </style></head><body><div class="container" id="rc">
 <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../故事任务.md">yry-cdn · CDN 共享前端资源管理</a><span class="bc-sep">/</span><span class="bc-current">场景 1 · CDN 资源加载与页面渲染</span><span class="bc-sep">/</span><span class="bc-current">📐 架构图</span></nav>
-<div class="cross-nav">
-<a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><span class="cross-link on">📐 架构</span><span class="cross-sep">·</span><a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
-              <a href="源码.html" class="cross-link">📄 源码</a><span class="cross-sep">·</span>
-              <a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a>
-</div>
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<span class="cross-link on">📐 架构</span><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
 <div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>CDN 资源加载与页面渲染 — 架构图</h1>
 <div class="toolbar"><div class="toolbar-actions">
 <button onclick="copyAsImage(this)">📋 Copy</button>
@@ -93,8 +97,8 @@ h1{font-size:1.5rem;font-weight:700}
 <text x="820" y="160" text-anchor="middle" fill="#fbbf24" font-size="10">Category B</text>
 <!-- Step 1: Google Fonts (Cat A only) -->
 <rect x="40" y="230" width="280" height="56" rx="8" fill="#1a2a2a" stroke="#f59e0b" stroke-width="1"/>
-<text x="180" y="252" text-anchor="middle" fill="#f59e0b" font-size="11" font-weight="600">① Google Fonts (仅 Cat A)</text>
-<text x="180" y="272" text-anchor="middle" fill="#64748b" font-size="9">fonts.googleapis.com</text>
+<text x="180" y="252" text-anchor="middle" fill="#f59e0b" font-size="11" font-weight="600">① Self-Hosted Fonts (仅 Cat A)</text>
+<text x="180" y="272" text-anchor="middle" fill="#64748b" font-size="9">cdn/fonts.css</text>
 <text x="180" y="284" text-anchor="middle" fill="#64748b" font-size="9">JetBrains Mono woff2</text>
 <line x1="180" y1="286" x2="180" y2="340" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)"/>
 <!-- Step 2: shared.css -->

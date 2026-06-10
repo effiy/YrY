@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0",
+  "story": "rui-npm",
+  "name": "rui-npm npm 包管理技能",
+  "nodes": [
+    {"id": "story-rui-npm", "type": "domain", "label": "rui-npm", "desc": "个人 npm 包全生命周期管理 — 搜索/安装/发布/审计/账号管理"},
+    {"id": "scene-1", "type": "scene", "label": "场景1: 包搜索与发现", "desc": "关键词搜索 npm registry → 结构化表格输出 + CDN 三源引用地址生成"},
+    {"id": "scene-2", "type": "scene", "label": "场景2: 包安装与版本管理", "desc": "install/update/list 操作当前项目依赖，package.json ↔ node_modules"},
+    {"id": "scene-3", "type": "scene", "label": "场景3: 本地发布与npx使用", "desc": "本地文件/目录一键 publish 为 npm 包，即刻通过包名或 npx 直接使用"},
+    {"id": "scene-4", "type": "scene", "label": "场景4: 包信息审计与卸载", "desc": "npm view 元数据查询 + npm audit 漏洞审计 + npm uninstall 依赖清理"},
+    {"id": "scene-5", "type": "scene", "label": "场景5: 账号级包管理", "desc": "my-packages 列出个人所有包 + deprecate 废弃版本 + unpublish 删除误发布"},
+    {"id": "flow-search", "type": "flow", "label": "包搜索与发现", "desc": "npm search → JSON 解析 → 排序 → 表格/JSON 输出 · 降级处理 + CDN 三源引用"},
+    {"id": "flow-install", "type": "flow", "label": "包安装与版本管理", "desc": "install（前置校验 → npm install → 确认版本）· update（版本对比）· list（扁平化）"},
+    {"id": "flow-publish", "type": "flow", "label": "本地发布与npx", "desc": "publish（路径验证 → 登录检查 → 生成 package.json → 冲突检测 → npm publish）· npx 流式执行"},
+    {"id": "step-search", "type": "step", "label": "FP1 包搜索"},
+    {"id": "step-cdn", "type": "step", "label": "FP2 CDN引用查询"},
+    {"id": "step-install", "type": "step", "label": "FP3 包安装"},
+    {"id": "step-update", "type": "step", "label": "FP4 包更新"},
+    {"id": "step-list", "type": "step", "label": "FP5 包列表"},
+    {"id": "step-publish", "type": "step", "label": "FP6 本地发布"},
+    {"id": "step-npx", "type": "step", "label": "FP7 npx执行"}
+  ],
+  "edges": [
+    {"from": "story-rui-npm", "to": "scene-1", "label": "contains"},
+    {"from": "story-rui-npm", "to": "scene-2", "label": "contains"},
+    {"from": "story-rui-npm", "to": "scene-3", "label": "contains"},
+    {"from": "story-rui-npm", "to": "scene-4", "label": "contains"},
+    {"from": "story-rui-npm", "to": "scene-5", "label": "contains"},
+    {"from": "scene-1", "to": "flow-search", "label": "implements"},
+    {"from": "scene-2", "to": "flow-install", "label": "implements"},
+    {"from": "scene-3", "to": "flow-publish", "label": "implements"},
+    {"from": "flow-search", "to": "step-search", "label": "step"},
+    {"from": "flow-search", "to": "step-cdn", "label": "step"},
+    {"from": "flow-install", "to": "step-install", "label": "step"},
+    {"from": "flow-install", "to": "step-update", "label": "step"},
+    {"from": "flow-install", "to": "step-list", "label": "step"},
+    {"from": "flow-publish", "to": "step-publish", "label": "step"},
+    {"from": "flow-publish", "to": "step-npx", "label": "step"}
+  ]
+}

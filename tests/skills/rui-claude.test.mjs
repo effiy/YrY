@@ -80,14 +80,9 @@ describe('rui-claude skill', () => {
   });
 
   describe('executables', () => {
-    it('update-version.mjs exists', () => {
-      assert.ok(fileExists(`${SKILL_DIR}/update-version.mjs`), 'update-version.mjs must exist');
-    });
-
-    it('update-version.mjs is executable JavaScript', () => {
-      const content = readFile(`${SKILL_DIR}/update-version.mjs`);
-      assert.ok(content.length > 200, 'update-version.mjs should have substantial content');
-      assert.ok(content.includes('import') || content.includes('require'), 'must have imports');
+    // update-version functionality migrated to rui-version skill
+    it('SKILL.md exists', () => {
+      assert.ok(fileExists(`${SKILL_DIR}/SKILL.md`), 'SKILL.md must exist');
     });
   });
 

@@ -1,0 +1,27 @@
+{
+  "name": "yry",
+  "version": "4.8.2",
+  "private": true,
+  "type": "module",
+  "description": "YrY — story-driven SDLC orchestrator (Claude Code plugin)",
+  "scripts": {
+    "test": "vitest run",
+    "test:all": "vitest run && node tests/run.mjs",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:legacy": "node tests/run.mjs"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4",
+    "@vitest/ui": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/effiyichengliang/YrY.git"
+  }
+}

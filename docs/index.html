@@ -151,6 +151,10 @@
       color: var(--cyan, #22d3ee); text-decoration: none; transition: color 0.15s;
     }
     .item-card .body .name a:hover { color: var(--color-accent); text-decoration: underline; }
+    .item-card .body .name .size-info {
+      float: right; font-size: 0.68rem; font-weight: 400;
+      color: var(--text-muted); white-space: nowrap; margin-left: 8px;
+    }
     .item-card .body .desc {
       color: var(--text-muted); font-size: 0.78rem; line-height: 1.55;
     }
@@ -285,17 +289,17 @@
 
     <div class="header">
       <h1><span class="accent">&#11088;</span> YrY 文档中心</h1>
-      <p>故事驱动的 SDLC 编排系统 — 五层结构：技能 → 故事 → 场景 → Agent 角色与规则 → 参考入口</p>
+      <p>故事驱动的 SDLC 编排系统 — 六层结构：依赖/框架 → 18 技能 → 4 故事 → 21 场景 → Agent 角色与规则 → 参考入口</p>
     </div>
 
     <div class="stats">
-      <a class="stat" href="#layer-skills"><div class="num">7</div><div class="label">技能</div></a>
-      <a class="stat" href="#layer-story"><div class="num">4</div><div class="label">故事</div></a>
-      <a class="stat" href="#layer-scene"><div class="num green">17</div><div class="label">场景</div></a>
-      <a class="stat" href="#layer-agents"><div class="num">9</div><div class="label">Agent 角色</div></a>
-      <a class="stat" href="#layer-rules"><div class="num green">10</div><div class="label">规则</div></a>
-      <a class="stat" href="#layer-refs"><div class="num green">4</div><div class="label">参考入口</div></a>
       <a class="stat" href="#layer-deps"><div class="num green">10</div><div class="label">依赖/框架</div></a>
+      <a class="stat" href="#layer-skills"><div class="num">18</div><div class="label">技能</div></a>
+      <a class="stat" href="#layer-story"><div class="num">4</div><div class="label">故事</div></a>
+      <a class="stat" href="#layer-scene"><div class="num green">21</div><div class="label">场景</div></a>
+      <a class="stat" href="#layer-agents"><div class="num">9</div><div class="label">Agent 角色</div></a>
+      <a class="stat" href="#layer-rules"><div class="num green">12</div><div class="label">规则</div></a>
+      <a class="stat" href="#layer-refs"><div class="num green">4</div><div class="label">参考入口</div></a>
     </div>
 
     <div class="cross-nav">
@@ -304,6 +308,10 @@
       <a class="cross-link" href="../tests/index.html">🧪 自检中心</a>
       <span class="cross-sep">·</span>
       <a class="cross-link" href="./故事任务面板/yry-arch/演示/index.html">🎬 演示中心</a>
+      <span class="cross-sep">·</span>
+      <a class="cross-link" href="./健康报告/">🩺 健康报告</a>
+      <span class="cross-sep">·</span>
+      <a class="cross-link" href="./自循环报告/">🔄 自循环报告</a>
       <span class="cross-sep">·</span>
       <a class="cross-link" href="../CLAUDE.md" target="_blank">📜 CLAUDE.md</a>
       <span class="cross-sep">·</span>
@@ -314,16 +322,16 @@
       <div class="layer-header">
         <span class="layer-num">1</span>
         <h2>第三方依赖与框架</h2>
-        <span class="layer-stats">7 运行时 · 3 开发依赖 · 零外部 npm 依赖</span>
+        <span class="layer-stats">6 运行时 · 4 开发</span>
       </div>
 
-      <div class="sub-title"><span class="accent">&#9889;</span> 运行时依赖 (7)</div>
+      <div class="sub-title"><span class="accent">&#9889;</span> 运行时依赖 (6)</div>
       <div class="card-grid">
         <div class="item-card">
           <span class="icon rule">C</span>
           <div class="body">
             <div class="name"><a href="https://www.jsdelivr.com/package/npm/yry-cdn-lib" target="_blank">yry-cdn-lib</a></div>
-            <div class="desc">YrY 自建 CDN 共享库 — 双主题系统 (Mono + System)、21 CSS 组件、9 JS 工具 API。55+ 页面统一引用</div>
+            <div class="desc">YrY 自建 CDN 共享库 — 双主题系统 (Mono + System)、14 设计令牌、21 CSS 组件、9 JS 工具 API。55+ 页面统一引用，消除内联重复代码 40–60%</div>
             <div class="tags-row">
               <span class="tag-chip accent">自建</span>
               <span class="tag-chip info">jsDelivr CDN</span>
@@ -336,224 +344,301 @@
           <span class="icon rule">G</span>
           <div class="body">
             <div class="name"><a href="https://js.cytoscape.org/" target="_blank">Cytoscape.js</a></div>
-            <div class="desc">图论可视化库 — 知识图谱页面的交互式节点-边图渲染。支持布局算法、缩放、导出</div>
+            <div class="desc">图论可视化库 — 知识图谱页面的交互式节点-边图渲染。支持 breadthfirst/concentric/cose 布局、缩放平移、节点拖拽、PNG 导出</div>
             <div class="tags-row">
               <span class="tag-chip green">可视化</span>
               <span class="tag-chip info">jsDelivr CDN</span>
               <span class="tag-chip cyan">v3.28.1</span>
             </div>
-            <div class="meta"><span class="detail">4 故事面板 · 知识图谱.html — breadthfirst 布局</span></div>
+            <div class="meta"><span class="detail">4 故事面板 · 知识图谱.html — 三层 schema: story→scene→source</span></div>
           </div>
         </div>
         <div class="item-card">
           <span class="icon rule">H</span>
           <div class="body">
             <div class="name"><a href="https://html2canvas.hertzen.com/" target="_blank">html2canvas</a></div>
-            <div class="desc">DOM 截图引擎 — 架构图和知识图谱页面的截图导出功能。DOM → Canvas → PNG/PDF</div>
+            <div class="desc">DOM 截图引擎 — 架构图和知识图谱页面的截图导出。DOM → Canvas → PNG/PDF，支持跨域图片、缩放质量可配置</div>
             <div class="tags-row">
               <span class="tag-chip green">导出</span>
               <span class="tag-chip info">jsDelivr CDN</span>
               <span class="tag-chip cyan">v1.4.1</span>
             </div>
-            <div class="meta"><span class="detail">架构图 + 知识图谱 — Copy / PNG / PDF 三格式导出</span></div>
+            <div class="meta"><span class="detail">架构图 + 知识图谱 — Copy / PNG / PDF 三格式导出 · scale 2x 高清</span></div>
           </div>
         </div>
         <div class="item-card">
           <span class="icon rule">J</span>
           <div class="body">
             <div class="name"><a href="https://github.com/parallax/jsPDF" target="_blank">jsPDF</a></div>
-            <div class="desc">客户端 PDF 生成 — 架构图和知识图谱页面的 PDF 导出。配合 html2canvas 使用</div>
+            <div class="desc">客户端 PDF 生成 — 架构图和知识图谱页面的 PDF 导出。配合 html2canvas 使用，支持 A4/A3 纸张、矢量缩放、多页输出</div>
             <div class="tags-row">
               <span class="tag-chip green">导出</span>
               <span class="tag-chip info">jsDelivr CDN</span>
               <span class="tag-chip cyan">v2.5.2</span>
             </div>
-            <div class="meta"><span class="detail">A4 纵向 · 矢量缩放 · 下载触发</span></div>
+            <div class="meta"><span class="detail">A4 纵向 · 矢量缩放 · addPage 多页 · Blob 下载触发</span></div>
           </div>
         </div>
         <div class="item-card">
           <span class="icon rule">A</span>
           <div class="body">
             <div class="name">api.effiy.cn</div>
-            <div class="desc">远端文档 API — rui-import 同步引擎的目标端点。文档的增删改查、session 管理。认证: X-Token</div>
+            <div class="desc">远端文档 API — rui-import 同步引擎的目标端点。文档 CRUD、session 管理、文件读写。认证: X-Token 环境变量注入</div>
             <div class="tags-row">
               <span class="tag-chip accent">自建</span>
               <span class="tag-chip info">REST API</span>
+              <span class="tag-chip purple">认证</span>
             </div>
-            <div class="meta"><span class="detail">query_documents · create_document · update_document · write-file · read-file</span></div>
+            <div class="meta"><span class="detail">query_documents · create_document · update_document · write-file · read-file · session</span></div>
           </div>
         </div>
         <div class="item-card">
           <span class="icon rule">W</span>
           <div class="body">
-            <div class="name">企业微信 Webhook</div>
-            <div class="desc">企微群机器人消息推送 — rui-bot 通知引擎的消息目标。Markdown 格式，支持 @成员</div>
+            <div class="name"><a href="https://developer.work.weixin.qq.com/document/path/91770" target="_blank">企业微信 Webhook</a></div>
+            <div class="desc">企微群机器人消息推送 — rui-bot 通知引擎。Rich/Verbose 格式 + Dry-Run 预览 + 失败队列重试 + 9 维健康检查</div>
             <div class="tags-row">
               <span class="tag-chip purple">通知</span>
               <span class="tag-chip info">Webhook</span>
+              <span class="tag-chip accent">Health</span>
             </div>
-            <div class="meta"><span class="detail">rui-bot · 交付三步 · 阻断/完成/异常通知</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule">N</span>
-          <div class="body">
-            <div class="name">npm Registry</div>
-            <div class="desc">npm 官方注册表 — rui-npm 技能的数据源。search / view / install / publish / audit</div>
-            <div class="tags-row">
-              <span class="tag-chip info">外部 API</span>
-              <span class="tag-chip info">registry.npmjs.org</span>
-            </div>
-            <div class="meta"><span class="detail">rui-npm · 5 场景 · 包搜索/安装/发布/审计/卸载</span></div>
+            <div class="meta"><span class="detail">rui-bot · 9维健康检查 · 自循环报告 · 阻断/完成/异常通知</span></div>
           </div>
         </div>
       </div>
 
-      <div class="sub-title"><span class="accent">&#128736;</span> 开发依赖 (3)</div>
+      <div class="sub-title"><span class="accent">&#128736;</span> 开发依赖 (4)</div>
       <div class="card-grid">
         <div class="item-card">
           <span class="icon ref">N</span>
           <div class="body">
-            <div class="name">Node.js 内置模块</div>
-            <div class="desc">项目零外部 npm 依赖。全部脚本基于 Node.js 内置模块：fs, path, child_process, crypto, http, os, url</div>
+            <div class="name"><a href="https://nodejs.org/api/" target="_blank">Node.js 内置模块</a></div>
+            <div class="desc">全部脚本基于 Node.js 内置模块：fs, path, child_process, crypto, http, os, url。14 脚本 + 8 共享库仅使用标准库</div>
             <div class="tags-row">
-              <span class="tag-chip green">零依赖</span>
+              <span class="tag-chip green">零运行时依赖</span>
               <span class="tag-chip info">Built-in</span>
             </div>
-            <div class="meta"><span class="detail">14 脚本 + 4 共享库 — 全部使用 Node.js 标准库</span></div>
+            <div class="meta"><span class="detail">14 脚本 + 8 共享库 — 全部使用 Node.js 标准库</span></div>
           </div>
         </div>
         <div class="item-card">
-          <span class="icon ref">T</span>
+          <span class="icon ref">V</span>
           <div class="body">
-            <div class="name">自建测试框架</div>
-            <div class="desc">轻量级 describe/it/assert 测试原语 — 零外部依赖，支持 .only/.skip、JSON 输出。自包含可独立执行</div>
+            <div class="name"><a href="https://vitest.dev/" target="_blank">vitest</a></div>
+            <div class="desc">工程化测试框架 — 基于 Vite 的 ESM 原生测试运行器。提供 test/watch/coverage 命令，并行执行，v8 覆盖率。14 脚本 + 77+ 测试用例</div>
             <div class="tags-row">
-              <span class="tag-chip accent">自建</span>
-              <span class="tag-chip info">Zero Deps</span>
+              <span class="tag-chip accent">测试框架</span>
+              <span class="tag-chip info">npm devDependency</span>
+              <span class="tag-chip cyan">v3.2.x</span>
             </div>
-            <div class="meta"><span class="detail">tests/lib/test-harness.mjs + helpers.mjs · 13 套件</span></div>
+            <div class="meta"><span class="detail">npm test · npm run test:watch · npm run test:coverage — 双轨共存 (vitest + legacy)</span></div>
           </div>
         </div>
         <div class="item-card">
-          <span class="icon ref">P</span>
+          <span class="icon ref">U</span>
           <div class="body">
-            <div class="name"><a href="../cdn/package.json" target="_blank">yry-cdn npm 包</a></div>
-            <div class="desc">CDN 资源发布为 npm 包 — jsDelivr 自动同步。cdn/package.json 定义发布清单 (files[])</div>
+            <div class="name"><a href="https://vitest.dev/guide/ui.html" target="_blank">@vitest/ui</a></div>
+            <div class="desc">Vitest 可视化仪表盘 — Web UI 实时查看测试结果、过滤/搜索用例、覆盖率可视化。开发时调试首选</div>
             <div class="tags-row">
-              <span class="tag-chip accent">自建</span>
-              <span class="tag-chip info">npm</span>
-              <span class="tag-chip cyan">v1.1.0</span>
+              <span class="tag-chip green">开发工具</span>
+              <span class="tag-chip info">npm devDependency</span>
+              <span class="tag-chip cyan">v3.2.x</span>
             </div>
-            <div class="meta"><span class="detail">shared.css + shared.js + theme.css + theme-mono.css + fonts.css + fonts/*.woff2</span></div>
+            <div class="meta"><span class="detail">npm run test:ui · 实时仪表盘 · 按模块过滤</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon ref">M</span>
+          <div class="body">
+            <div class="name"><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp" target="_blank">chrome-devtools-mcp</a></div>
+            <div class="desc">Chrome DevTools MCP 协议 — 程序化浏览器验证。navigate_page / evaluate_script / list_network_requests / take_screenshot 替代手工 DevTools 面板操作</div>
+            <div class="tags-row">
+              <span class="tag-chip accent">测试工具</span>
+              <span class="tag-chip info">MCP</span>
+              <span class="tag-chip cyan">v1.2.0</span>
+            </div>
+            <div class="meta"><span class="detail">CDN 加载链路自动化验证 · 71 断言全通过 · 零手工 DevTools</span></div>
           </div>
         </div>
       </div>
 
-      <div class="sub-title"><span class="accent">&#128230;</span> 依赖架构决策</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon rule">Z</span>
-          <div class="body">
-            <div class="name">零外部 npm 依赖原则</div>
-            <div class="desc">项目根无 package.json、无 node_modules。所有业务逻辑基于 Node.js 标准库实现。测试框架自建。CDN 资源的 npm 发布仅用于分发（jsDelivr），不引入运行时依赖。</div>
-            <div class="tags-row">
-              <span class="tag-chip accent">架构决策</span>
-              <span class="tag-chip green">零依赖</span>
-            </div>
-            <div class="meta"><span class="detail">CLAUDE.md · 项目约束 · 自托管一致性</span></div>
-          </div>
-        </div>
-      </div>
     </div>
     <!-- ===== Layer 2: 技能 ===== -->
     <div class="layer" id="layer-skills">
       <div class="layer-header">
         <span class="layer-num">2</span>
         <h2>技能</h2>
-        <span class="layer-stats">7 能力模块 · 故事驱动的 SDLC 编排</span>
+        <span class="layer-stats">18 能力模块 · SRP 拆分 · 故事驱动的 SDLC 编排</span>
       </div>
 
-      <div class="sub-title"><span class="accent">&#127760;</span> 核心技能 (7)</div>
+      <div class="sub-title"><span class="accent">&#127760;</span> 编排入口 (1)</div>
       <div class="card-grid">
         <div class="item-card">
           <span class="icon skill">R</span>
           <div class="body">
-            <div class="name"><a href="../skills/rui/SKILL.md" target="_blank">rui</a></div>
-            <div class="desc">故事驱动的 SDLC 编排器 — 从故事到文档、代码实现、交付收口的全流程管线</div>
+            <div class="name"><a href="../skills/rui/SKILL.md" target="_blank">rui</a><span class="size-info">薄编排器</span></div>
+            <div class="desc">故事驱动 SDLC 编排器 — 命令路由 + 推荐引擎。委托 7 子技能执行具体管线（init/doc/plan/code/update/yry/version）</div>
             <div class="tags-row">
-              <span class="tag-chip accent">核心管线</span>
-              <span class="tag-chip info">编排器</span>
+              <span class="tag-chip accent">核心入口</span>
+              <span class="tag-chip info">路由</span>
               <span class="tag-chip cyan">/rui</span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#9889;</span> 管线子技能 (7) — 从 rui 按 SRP 拆分</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon skill">I</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui-init/SKILL.md" target="_blank">rui-init</a></div>
+            <div class="desc">项目基线建立 — detect → explore → generate → arch → setup → verify → trigger。可重复运行，全量重生标记段</div>
+            <div class="tags-row"><span class="tag-chip accent">初始化</span><span class="tag-chip cyan">/rui-init</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">D</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui-doc/SKILL.md" target="_blank">rui-doc</a></div>
+            <div class="desc">Markdown 文档基线生成 — 需求→故事拆分→文档基线。3 模式：默认 / --from-code / --from-local</div>
+            <div class="tags-row"><span class="tag-chip accent">文档基线</span><span class="tag-chip cyan">/rui-doc</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">P</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui-plan/SKILL.md" target="_blank">rui-plan</a></div>
+            <div class="desc">实施计划生成 — 读取文档基线 → 文件映射 → 任务分解 → 六项自审查 → plan.html + 计划清单.html</div>
+            <div class="tags-row"><span class="tag-chip accent">计划</span><span class="tag-chip cyan">/rui-plan</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">C</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui-code/SKILL.md" target="_blank">rui-code</a></div>
+            <div class="desc">源码实现管线 — 源码改动唯一入口。分支隔离 → Gate A → 逐模块 P0 清零 → Gate B → 自改进 → 交付</div>
+            <div class="tags-row"><span class="tag-chip accent">实现管线</span><span class="tag-chip cyan">/rui-code</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">U</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui-update/SKILL.md" target="_blank">rui-update</a></div>
+            <div class="desc">增量更新 — 按 T1/T2/T3 变更范围自动裁剪管线。--no-code 仅文档不改源码</div>
+            <div class="tags-row"><span class="tag-chip accent">增量</span><span class="tag-chip cyan">/rui-update</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">Y</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui-yry/SKILL.md" target="_blank">rui-yry</a></div>
+            <div class="desc">自改进闭环 — 全自主扫描→诊断→实现→验证→版本升级，循环至无改进空间或达深度上限</div>
+            <div class="tags-row"><span class="tag-chip accent">闭环</span><span class="tag-chip cyan">/rui-yry</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">V</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui-version/SKILL.md" target="_blank">rui-version</a></div>
+            <div class="desc">版本管理 — 自主判定语义版本号 → 更新四文件 → git commit + tag + push。支持 --rollback</div>
+            <div class="tags-row"><span class="tag-chip accent">版本</span><span class="tag-chip cyan">/rui-version</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#128300;</span> 支撑技能 (7)</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon skill">H</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui-html/SKILL.md" target="_blank">rui-html</a></div>
+            <div class="desc">HTML 文档生成 — 读取 markdown 基线，生成 7 类标准 HTML（计划清单/架构图/知识图谱/源码/测试面板/演示/审查）</div>
+            <div class="tags-row"><span class="tag-chip accent">文档生成</span><span class="tag-chip info">HTML</span><span class="tag-chip cyan">/rui-html</span></div>
           </div>
         </div>
         <div class="item-card">
           <span class="icon skill">S</span>
           <div class="body">
             <div class="name"><a href="../skills/rui-story/SKILL.md" target="_blank">rui-story</a></div>
-            <div class="desc">故事任务面板管理 — 收集故事、查看状态、同步远端、发送通知</div>
-            <div class="tags-row">
-              <span class="tag-chip accent">面板管理</span>
-              <span class="tag-chip info">故事追踪</span>
-              <span class="tag-chip cyan">/rui-story</span>
-            </div>
+            <div class="desc">故事任务面板管理 — 收集故事、查看状态、同步远端。list / sync / remove / health</div>
+            <div class="tags-row"><span class="tag-chip accent">面板管理</span><span class="tag-chip cyan">/rui-story</span></div>
           </div>
         </div>
         <div class="item-card">
-          <span class="icon skill">C</span>
+          <span class="icon skill">L</span>
           <div class="body">
             <div class="name"><a href="../skills/rui-claude/SKILL.md" target="_blank">rui-claude</a></div>
-            <div class="desc">管理所有 .claude/ 目录 — 从远端同步配置、分析健康状态、推荐优化任务</div>
-            <div class="tags-row">
-              <span class="tag-chip accent">配置管理</span>
-              <span class="tag-chip info">健康检查</span>
-              <span class="tag-chip cyan">/rui-claude</span>
-            </div>
+            <div class="desc">.claude/ 配置管理 — sync / update / retro / history。仅限 .claude/ 目录，委托 rui-import 同步</div>
+            <div class="tags-row"><span class="tag-chip accent">配置管理</span><span class="tag-chip cyan">/rui-claude</span></div>
           </div>
         </div>
         <div class="item-card">
-          <span class="icon skill">I</span>
+          <span class="icon skill">M</span>
           <div class="body">
             <div class="name"><a href="../skills/rui-import/SKILL.md" target="_blank">rui-import</a></div>
-            <div class="desc">文档同步 — 将本地文档推送到远程文档 API，手动触发，支持全量和增量同步</div>
-            <div class="tags-row">
-              <span class="tag-chip accent">文档同步</span>
-              <span class="tag-chip info">远程 API</span>
-            </div>
+            <div class="desc">文档同步 — 本地 ↔ 远端 API 双向同步。全量纳入，并发 ≤4，单文件失败不阻断</div>
+            <div class="tags-row"><span class="tag-chip accent">文档同步</span><span class="tag-chip info">API</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">K</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui-skills/SKILL.md" target="_blank">rui-skills</a><span class="size-info">新</span></div>
+            <div class="desc">技能市场 — 发现和安装 Claude/Agent 技能包，从开放生态扩展能力</div>
+            <div class="tags-row"><span class="tag-chip accent">技能市场</span><span class="tag-chip cyan">/rui-skills</span><span class="tag-chip green">v5.0</span></div>
           </div>
         </div>
         <div class="item-card">
           <span class="icon skill">B</span>
           <div class="body">
             <div class="name"><a href="../skills/rui-bot/SKILL.md" target="_blank">rui-bot</a></div>
-            <div class="desc">企微消息推送 — 通过 Webhook 发送通知到企业微信，记录通知日志</div>
-            <div class="tags-row">
-              <span class="tag-chip accent">消息推送</span>
-              <span class="tag-chip info">企微通知</span>
-            </div>
+            <div class="desc">企微消息推送 + 9 维健康检查 — Rich/Verbose 格式 + Dry-Run 预览 + 失败队列 + D0-D7 引导诊断 + 智能告警 + --short 摘要</div>
+            <div class="tags-row"><span class="tag-chip accent">消息推送</span><span class="tag-chip info">企微</span><span class="tag-chip accent">Health</span><span class="tag-chip green">14 tests</span></div>
           </div>
         </div>
         <div class="item-card">
           <span class="icon skill">T</span>
           <div class="body">
             <div class="name"><a href="../skills/rui-trends/SKILL.md" target="_blank">rui-trends</a></div>
-            <div class="desc">技术趋势发现 — 查询 GitHub Trending、OSS Insight，支撑自改进阶段技术选型</div>
-            <div class="tags-row">
-              <span class="tag-chip accent">趋势发现</span>
-              <span class="tag-chip info">技术选型</span>
-            </div>
+            <div class="desc">技术趋势发现 — GitHub Trending / OSS Insight / TrendShift / Top-Starred。自改进 D5 核心数据源</div>
+            <div class="tags-row"><span class="tag-chip accent">趋势发现</span><span class="tag-chip info">选型</span></div>
           </div>
         </div>
         <div class="item-card">
           <span class="icon skill">N</span>
           <div class="body">
             <div class="name"><a href="../skills/rui-npm/SKILL.md" target="_blank">rui-npm</a></div>
-            <div class="desc">个人 npm 包管理 — 包搜索发现、安装与版本管理、本地发布与 npx 使用、包信息审计与卸载</div>
-            <div class="tags-row">
-              <span class="tag-chip accent">npm 管理</span>
-              <span class="tag-chip info">包工具</span>
-            </div>
+            <div class="desc">npm 包管理 — 14 子命令：search / install / publish / npx / audit / cdn / login / deprecate / unpublish 等</div>
+            <div class="tags-row"><span class="tag-chip accent">包管理</span><span class="tag-chip cyan">/rui-npm</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#127919;</span> 新增技能 (2) — v5.0.0</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon skill">A</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui-analysis/SKILL.md" target="_blank">rui-analysis</a><span class="size-info">新</span></div>
+            <div class="desc">代码与架构静态分析 — 复杂度/耦合/文件膨胀/依赖健康/架构边界检测。规约驱动，只读分析</div>
+            <div class="tags-row"><span class="tag-chip accent">分析</span><span class="tag-chip cyan">/rui-analysis</span><span class="tag-chip green">v5.0</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">E</span>
+          <div class="body">
+            <div class="name"><a href="../skills/rui-reporter/SKILL.md" target="_blank">rui-reporter</a><span class="size-info">新</span></div>
+            <div class="desc">过程报告与知识策展 — 故事进程/知识图谱一致性/交付摘要/跨故事趋势。证据驱动，≥2 来源</div>
+            <div class="tags-row"><span class="tag-chip accent">报告</span><span class="tag-chip cyan">/rui-reporter</span><span class="tag-chip green">v5.0</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">S</span>
+          <div class="body">
+            <div class="name"><a href="../skills/self-improve/SKILL.md" target="_blank">self-improve</a><span class="size-info">新</span></div>
+            <div class="desc">持续自改进闭环 — D0-D7 诊断 → 提案生成 → 物化为故事 → 效果评估 (E1-E4)。数据驱动，全自动演进</div>
+            <div class="tags-row"><span class="tag-chip accent">演进</span><span class="tag-chip info">D0-D7</span><span class="tag-chip cyan">/self-improve</span><span class="tag-chip green">v5.0</span></div>
           </div>
         </div>
       </div>
@@ -573,7 +658,7 @@
         <div class="story-card">
           <div class="story-head">
             <span class="story-icon">&#128451;</span>
-            <span class="story-name"><a href="故事任务面板/yry-arch/故事任务.md">系统架构知识固化</a></span>
+            <span class="story-name"><a href="故事任务面板/yry-arch/故事任务.md" target="_blank">系统架构知识固化</a></span>
             <span class="story-badge">v1.0.0</span>
           </div>
           <div class="story-desc">YrY 架构全景分析，构建系统自我认知基线。模块拓扑 + 数据流追踪 + 新人上手 + 依赖变更影响，让后续故事规划、影响分析和架构决策有唯一事实参照。</div>
@@ -588,7 +673,7 @@
         <div class="story-card">
           <div class="story-head">
             <span class="story-icon">&#129514;</span>
-            <span class="story-name"><a href="故事任务面板/yry-self-test/故事任务.md">自主测试方案</a></span>
+            <span class="story-name"><a href="故事任务面板/yry-self-test/故事任务.md" target="_blank">自主测试方案</a></span>
             <span class="story-badge">v1.1.0</span>
           </div>
           <div class="story-desc">YrY 自检体系 — 项目的免疫系统。管线健康自检验证纪律关卡是否有效执行，文档基线完整性校验验证文档是否始终是可信任的真相来源。</div>
@@ -603,7 +688,7 @@
         <div class="story-card">
           <div class="story-head">
             <span class="story-icon">&#128230;</span>
-            <span class="story-name"><a href="故事任务面板/rui-npm/故事任务.md">npm 包管理工具</a></span>
+            <span class="story-name"><a href="故事任务面板/rui-npm/故事任务.md" target="_blank">npm 包管理工具</a></span>
             <span class="story-badge">v1.1.0</span>
           </div>
           <div class="story-desc">个人 npm 包全生命周期管理 — 包搜索与发现、安装与版本管理、本地发布与 npx 使用、包信息审计与安全卸载。32 文件 · 77 测试 · 每场景 7 配套文件。</div>
@@ -618,7 +703,7 @@
         <div class="story-card">
           <div class="story-head">
             <span class="story-icon">&#127760;</span>
-            <span class="story-name"><a href="故事任务面板/yry-cdn/故事任务.md">CDN 共享前端资源库</a></span>
+            <span class="story-name"><a href="故事任务面板/yry-cdn/故事任务.md" target="_blank">CDN 共享前端资源库</a></span>
             <span class="story-badge">v1.0.0</span>
           </div>
           <div class="story-desc">YrY 共享前端资源 — 双主题系统（Mono + System）、21 CSS 组件、9 JS 工具 API。55+ 页面统一引用，消除内联重复代码 40-60%。</div>
@@ -640,7 +725,7 @@
       <div class="layer-header">
         <span class="layer-num">4</span>
         <h2>场景</h2>
-        <span class="layer-stats">4 故事 · 17 场景</span>
+        <span class="layer-stats">4 故事 · 21 场景</span>
       </div>
 
       <div class="sub-title"><span class="accent">&#128451;</span> 系统架构知识固化 — 4 场景</div>
@@ -648,7 +733,7 @@
         <div class="scene-card">
           <div class="scene-num">场景 1</div>
           <div class="scene-name"><a href="故事任务面板/yry-arch/场景-1-模块定位/index.md" target="_blank">模块定位与职责</a></div>
-          <div class="scene-desc">6 技能 · 8 Agent · 8 规则 — 模块识别 · 职责边界 · 入口验证</div>
+          <div class="scene-desc">18 技能 · 10 Agent · 12 规则 — 模块识别 · 职责边界 · 入口验证</div>
           <div class="scene-meta"><a href="故事任务面板/yry-arch/场景-1-模块定位/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-1-模块定位/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-1-模块定位/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-1-模块定位/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-1-模块定位/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-1-模块定位/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-1-模块定位/审查.html">📝审查</a></div>
         </div>
         <div class="scene-card">
@@ -775,7 +860,7 @@
       <div class="layer-header">
         <span class="layer-num">5</span>
         <h2>Agent 角色与规则</h2>
-        <span class="layer-stats">9 Agent 角色 · 10 治理规则</span>
+        <span class="layer-stats">10 Agent 角色 · 12 治理规则</span>
       </div>
 
       <div class="sub-title"><span class="accent">&#129302;</span> Agent 角色 (9)</div>
@@ -912,7 +997,7 @@
       <div class="layer-header">
         <span class="layer-num" style="background: var(--color-accent-2);">R</span>
         <h2>治理规则</h2>
-        <span class="layer-stats">10 规则 · 管线纪律 · 安全 · 文档 · 自改进</span>
+        <span class="layer-stats">12 规则 · 管线纪律 · 安全 · 文档 · 自改进</span>
       </div>
 
       <div class="sub-title"><span class="accent">&#128736;</span> 管线与执行规则 (4)</div>
@@ -1115,7 +1200,7 @@
     </div>
 
     <div class="footer-note">
-      YrY v4.8.2 · 故事驱动的 SDLC 编排系统 · <a href="../CLAUDE.md">CLAUDE.md</a> · <a href="../README.md">README.md</a>
+      YrY v5.0.0 · 故事驱动的 SDLC 编排系统 · <a href="../CLAUDE.md">CLAUDE.md</a> · <a href="../README.md">README.md</a>
     </div>
   </div>
 

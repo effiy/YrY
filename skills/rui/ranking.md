@@ -21,7 +21,7 @@
 flowchart LR
     SYNC["§0 面板同步<br/>远端+本地故事面板<br/>冲突检测 + 覆盖分析"]:::sync --> INFRA{"L-1 基建检查<br/>项目基建完整?"}:::gate
     INFRA -->|"不完整"| INFRA_REC["优先推荐基建故事<br/>错误码·状态·日志·配置"]:::infra
-    INFRA -->|"完整"| SCAN["node skills/rui/recommend.mjs<br/>扫描源码 → 故事候选"]:::tool
+    INFRA -->|"完整"| SCAN["node lib/recommend.mjs<br/>扫描源码 → 故事候选"]:::tool
     SCAN --> EVAL["PM 按 5 层评分<br/>每层评估一个故事任务"]:::llm
     EVAL --> CONFLICT{"已有故事冲突?"}
     CONFLICT -->|"是"| MARK["标注冲突警告<br/>建议 merge / update"]:::warn

@@ -23,7 +23,7 @@ h1{font-size:1.5rem;font-weight:700}
 .diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
 .diagram-container svg{width:100%;min-width:900px;display:block}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
-.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
+.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}.card:hover{border-color:#334155;background:rgba(15,23,42,.8);transform:translateY(-1px)}
 .card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
 .card-dot{width:8px;height:8px;border-radius:50%}
 .card-dot.cyan{background:#22d3ee}.card-dot.emerald{background:#34d399}
@@ -50,11 +50,15 @@ h1{font-size:1.5rem;font-weight:700}
 .cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
 </style></head><body><div class="container">
 <nav class="breadcrumb"><a href="../../../index.html">文档中心</a> / <a href="../故事任务.md">yry-self-test</a> / 场景 5 · 跨故事集成回归自检 / 架构图</nav>
-<div class="cross-nav">
-  <a href="计划清单.html">清单</a><span>·</span><span class="on">架构</span><span>·</span>
-  <a href="知识图谱.html">图谱</a><span>·</span><a href="测试面板.html">测试</a><span>·</span>
-  <a href="演示.html">演示</a><span>·</span><a href="审查.html">审查</a><span>·</span><a href="源码.html">源码</a>
-</div>
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<span class="cross-link on">📐 架构</span><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
 <div class="header"><h1>场景-5<span class="accent"> · 跨故事集成回归自检</span></h1><p class="subtitle">三阶段回归流程 — 单故事并行 → 跨故事集成 → 全局一致性</p></div>
 <div class="diagram">
 <svg viewBox="0 0 1000 480" xmlns="http://www.w3.org/2000/svg">

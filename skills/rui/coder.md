@@ -50,7 +50,7 @@ flowchart LR
 | 知识图谱.json | ✓ | pm → coder 更新 | 文档生成 + 实现 |
 | 知识图谱.html | ✓ | coder | 文档生成（基于知识图谱.json 渲染） |
 
-补充文档按需触发，决策树见 [rules/doc-generation.md](../../rules/doc-generation.md#补充文档)，公式见 [formulas.md](./formulas.md#补充文档公式)。
+补充文档按需触发，决策树见 [rules/doc-generation.md](../../rules/doc-generation.md#补充文档)，公式见 [formulas/supplement.md](./formulas/supplement.md)。
 
 附属（rui 管线维护，不入库审查）：
 

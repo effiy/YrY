@@ -1,6 +1,6 @@
 ---
 name: reporter
-description: Produces process reports and curates knowledge with evidence-based standards
+description: Produces process reports and curates knowledge with evidence-based standards. User-invocable via /rui-reporter.
 tools: Read, Grep, Glob
 ---
 

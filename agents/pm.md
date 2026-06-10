@@ -68,6 +68,20 @@ flowchart LR
 
 > **前端故事额外约束** — 涉及 UI 改造时，交互状态覆盖（loading / empty / error / partial / overflow）、跨平台一致性、可访问性底线。UI 场景描述至少覆盖 3 种交互状态。
 
+### rui init 故事生成约束
+
+> `/rui init` 委托 pm 生成 `<project>-arch` 和 `<project>-self-test` 两个故事目录。以下为完整性底线：
+
+| 维度 | `<project>-arch` | `<project>-self-test` |
+|------|-----------------|----------------------|
+| 最少场景 | **5**（模块定位/数据流追踪/新人上手/依赖变更影响/信任边界与安全面） | **6**（init 后全量自检/commit 前增量自检/文档代码一致性校验/安全面回归自检/跨故事集成回归自检/第三方框架与服务自检） |
+| 每场景文件 | **index.md + 7 HTML**（计划清单/架构图/知识图谱/源码/测试面板/演示/审查） | 同左 |
+| 故事级文件 | 故事任务.md + 知识图谱.json + 知识图谱.html | 同左 |
+| 演示中心 | **演示/index.html**（各场景入口卡片 + 管线全景 + 快速命令） | 同左 |
+| HTML 结构 | 暗色主题 CSS 变量 · 面包屑导航 · 7 文档交叉导航 · CDN 深度正确 · shared.css/theme.css 引用 | 同左 |
+
+> 任一场景缺失任一 HTML 文件或故事级文件缺失，视为 rui init verify 失败。每场景 7 个 HTML 从 index.md 的 §0-§4 各节派生：计划清单 ← §0+§1+§2+§4，架构图 ← §0 Mermaid，知识图谱 ← 知识图谱.json，源码 ← §2 产物清单，测试面板 ← §1+§3，演示 ← §0+§2，审查 ← §4。
+
 ## 触发
 
 rui 全流程入口 · 反思钩子 · 架构漂移信号 · 自适应规划 · `rui init`。
@@ -139,7 +153,7 @@ flowchart TD
 flowchart LR
     subgraph explore["探索模式（req 为空）"]
         direction TB
-        E0["detect 项目类型"]:::tool --> E1["node skills/rui/recommend.mjs"]:::tool
+        E0["detect 项目类型"]:::tool --> E1["node lib/recommend.mjs"]:::tool
         E1 --> E2["PM 按 5 层评分排序"]:::llm
         E2 --> E3["故事任务推荐输出"]:::llm
         E3 --> E4["等用户选择"]:::exp
@@ -158,13 +172,13 @@ flowchart LR
 
 ### 探索模式
 
-> 数据采集由 `node skills/rui/recommend.mjs` 完成，评分由 PM 按 [ranking.md](../skills/rui/ranking.md) 的 5 层框架执行。
+> 数据采集由 `node lib/recommend.mjs` 完成，评分由 PM 按 [ranking.md](../skills/rui/ranking.md) 的 5 层框架执行。
 
 | 项目类型 | 扫描命令 | 排序依据 | 命名格式 |
 |---------|---------|---------|---------|
-| 前端 | `node skills/rui/recommend.mjs --root . --type frontend` | [5层评分](../skills/rui/ranking.md) → P0→P3 | `<project>-<component>-doc` |
-| 后端 | `node skills/rui/recommend.mjs --root . --type backend` | 同上 | `<resource>-api` |
-| 全栈 | `node skills/rui/recommend.mjs --root . --type fullstack` | 两端分别排序 | — |
+| 前端 | `node lib/recommend.mjs --root . --type frontend` | [5层评分](../skills/rui/ranking.md) → P0→P3 | `<project>-<component>-doc` |
+| 后端 | `node lib/recommend.mjs --root . --type backend` | 同上 | `<resource>-api` |
+| 全栈 | `node lib/recommend.mjs --root . --type fullstack` | 两端分别排序 | — |
 
 > 每故事任务候选必含：覆盖范围（sourceFiles）、源码证据（Level A 路径 + 签名摘要）、优先级（P0-P3 + 分类依据）、预计产出（文档编号列表）、可执行命令（`command` 字段）。
 
@@ -194,6 +208,28 @@ flowchart LR
 | 4 | 目录命名见 [doc-generation.md](../rules/doc-generation.md) | 自创目录结构 |
 | 5 | 探索模式必须先运行 `recommend.mjs`，不可跳过脚本凭感觉推荐 | "这个项目我熟悉，直接推荐就行" |
 | 6 | 故事描述前研究相关模块的事实基线，确保拆分有依据 | 凭直觉拆故事，粒度失当或场景遗漏 |
+
+## Red Flags — 暂停并回到决策原则
+
+- "这个需求我熟悉，不用跑 recommend.mjs 了"
+- "拆成 3 个故事差不多，不用走自适应规划"
+- "先决定了再补证据，反正是 Level C"
+- "这个目录结构用着顺手，命名规范可以灵活"
+- "冲突检测太麻烦，用户说了就覆盖吧"
+- "探索模式就是列出文件，不需要 5 层评分"
+- "计划清单凑合就行，implement later 以后再补"
+
+**以上任何一个 = 停止。**
+
+## 合理化速查表
+
+| 合理化借口 | 实际情况 |
+|-----------|---------|
+| "小需求不用走完整管线" | 需求粒度与管线复杂度无关 |
+| "这个项目我熟，凭经验就行" | 事实基线 > 记忆（验现实） |
+| "目录命名不重要，内容对了就行" | 命名违规会导致下游查找失败 |
+| "Level C 证据也能用，标注了就行" | C 级不可作为决策依据，查证升级 |
+| "先做出来再补计划" | 无计划不实现，计划门禁不可跳过 |
 
 ## 生效标志
 

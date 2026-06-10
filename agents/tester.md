@@ -1,9 +1,6 @@
 ---
 name: tester
 description: Ensures quality with test-first approach, acceptance criteria, and gate enforcement
-paths:
-  - "**/*.test.js"
-  - "**/*.spec.js"
 tools: Read, Grep, Glob, Bash
 ---
 

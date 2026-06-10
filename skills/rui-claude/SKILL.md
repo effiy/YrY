@@ -11,9 +11,9 @@ lifecycle: default-pipeline
 
 作用范围：当前项目的 `.claude/` 目录。sync / retro 均以 `.claude/` 为操作边界。
 
-[命令族全景](#命令族全景) · [操作边界](#操作边界) · [sync](#sync) · [update](#update) · [update-version](#update-version) · [retro](#retro) · [history](#history) · [核心规则](#核心规则) · [参考模式](#参考模式) · [生效标志](#生效标志)
+[命令族全景](#命令族全景) · [操作边界](#操作边界) · [sync](#sync) · [update](#update) · [retro](#retro) · [history](#history) · [核心规则](#核心规则) · [参考模式](#参考模式) · [生效标志](#生效标志)
 
-> **`version --up` 已迁移至 [`/rui version --up`](../rui/SKILL.md#version---up)。**
+> **`version --up` 已迁移至 [`/rui-version --up`](../rui-version/SKILL.md)。**
 
 ## 命令族全景
 
@@ -31,14 +31,12 @@ flowchart TB
 
     Q1 -->|"sync"| SYNC["覆盖式同步<br/>API pull → 本地覆盖"]:::cmd
     Q1 -->|"update"| UPDATE["插件升级<br/>git pull → sync .claude/"]:::cmd
-    Q1 -->|"update-version"| UV["版本收敛升级<br/>合并所有分支→升版→推送"]:::cmd
     Q1 -->|"retro"| RETRO["健康度分析<br/>三节复盘"]:::cmd
     Q1 -->|"history"| HIST["操作历史<br/>list / stats"]:::cmd
     Q1 -->|"&lt;req&gt;"| REQ["需求管线<br/>doc + code → 交付"]:::cmd
     Q1 -->|"空输入"| LIST["推荐任务<br/>5~10 条"]:::cmd
 
     SYNC --> S_OUT[".claude/ 全量覆盖"]:::out
-    UV --> UV_OUT["所有分支合一<br/>版本号递增<br/>推送 + tag"]:::out
     RETRO --> R_OUT["docs/自改进故事面板/<br/>&lt;project&gt;-&lt;date&gt;.md"]:::out
     HIST --> H_OUT[".claude/.history/<br/>rui-claude-history.jsonl"]:::out
     REQ --> PIPE["rui code 管线<br/>仅限 .claude/ 内"]:::pipe
@@ -51,7 +49,7 @@ flowchart TB
 |------|------|------|
 | `/rui-claude sync` | 查询远端 API → 逐文件 pull 覆盖本地 | `.claude/` 全量覆盖 |
 | `/rui-claude update` | git pull 最新 YrY 插件 → 清除旧版本缓存 → sync 远端 .claude/ | 插件升级 + 缓存清除 + `.claude/` 刷新 |
-| `/rui-claude update-version` | 合并所有分支到 main → 自主判定版本号 → 更新版本文件 → 推送远端 + tag | 版本收敛升级 |
+| `/rui-claude update-version` | **已废弃** → 使用 [`/rui-version --up`](../rui-version/SKILL.md#version---up) | 版本收敛升级（已迁移至 rui-version） |
 | `/rui-claude retro` | 分析 .claude/ 结构健康度 → 三节复盘 | `docs/自改进故事面板/<date>.md` |
 | `/rui-claude history` | 查看操作历史：`list [--limit N]` / `stats [--json]` | 终端输出 |
 | `/rui-claude 需求` | 需求解析→故事拆分→逐故事 doc+code 管线→交付 | `.claude/` 内文件变更 |
@@ -117,75 +115,11 @@ flowchart LR
 | 降级 | git pull 失败时中止并提示手动重试；sync 失败时遵循 sync 自身的降级策略 |
 | 完成后 | 自动记录 history |
 
-## update-version — 版本收敛升级
+## update-version — 已废弃
 
-> 将所有分支内容合并到 main → 自主判定下一版本号 → 更新版本文件 → git commit → 推送远端 + tag。
-> **一键收敛所有 feat 分支并升级版本，全自主操作。**
-
-```mermaid
-flowchart LR
-    TRIGGER["/rui-claude update-version"]:::src --> FETCH["git fetch --all<br/>获取所有远端分支"]:::op
-    FETCH --> LIST["列出非 main 分支<br/>feat/* fix/* 等"]:::op
-    LIST --> MERGE{"逐分支合并到 main"}
-    MERGE -->|"成功"| NEXT["下一分支"]:::op
-    MERGE -->|"冲突"| ABORT["中止 + 报告冲突<br/>用户手动解决"]:::abort
-    NEXT --> ALL{"所有分支已合并?"}
-    ALL -->|"否"| MERGE
-    ALL -->|"是"| ANALYZE["分析变更范围<br/>git diff 判定版本类型"]:::op
-    ANALYZE --> BUMP["自主升级版本号<br/>PATCH / MINOR / MAJOR"]:::op
-    BUMP --> WRITE["更新版本文件<br/>plugin.json · marketplace.json<br/>CLAUDE.md · README.md"]:::op
-    WRITE --> COMMIT["git commit<br/>含版本号 + 变更摘要"]:::op
-    COMMIT --> PUSH["git push origin main<br/>+ git tag + push --tags"]:::op
-    PUSH --> REPORT["输出升级摘要<br/>合并分支数 · 旧版本→新版本<br/>·变更类型·commit·tag"]:::out
-
-
-```
-
-| 项目 | 说明 |
-|------|------|
-| 触发方式 | `/rui-claude update-version`，一键分支收敛 + 版本升级 + 推送 |
-| 步骤 1 | `git fetch --all` — 获取所有远端分支最新状态 |
-| 步骤 2 | 列出所有非 main 分支（`feat/*`、`fix/*` 等），按创建时间排序 |
-| 步骤 3 | 逐分支 `git merge --no-ff <branch>` 到 main，冲突时中止并列出冲突文件 |
-| 步骤 4 | `git diff` 分析合并后的变更范围，按规则判定 PATCH / MINOR / MAJOR |
-| 步骤 5 | 更新 `plugin.json` + `marketplace.json` + `CLAUDE.md` + `README.md` 版本号 |
-| 步骤 6 | `git commit -m "chore: bump version X.Y.Z → A.B.C"` 含变更摘要 |
-| 步骤 7 | `git push origin main && git tag vX.Y.Z && git push --tags` |
-| 步骤 8 | 输出升级摘要：合并分支数、版本变更、commit hash、tag |
-| 前置条件 | 工作区干净（无未提交变更），网络可达 origin |
-| 冲突处理 | 任一分支合并冲突时立即中止，列出冲突文件，提示用户手动解决后重新执行 |
-| 降级 | git fetch 失败时提示检查网络；版本文件更新失败时回滚 commit |
-| 完成后 | 自动记录 history |
-
-### 版本判定规则
-
-| 变更信号 | 版本升级 | 示例 |
-|---------|---------|------|
-| 仅文档措辞/格式调整 | PATCH | `1.30.0` → `1.30.1` |
-| 新增 skill/agent/rule/命令 | MINOR | `1.30.0` → `1.31.0` |
-| 删除/重命名命令或接口 | MINOR | `1.30.0` → `1.31.0` |
-| 架构重构/破坏性变更 | MAJOR | `1.30.0` → `2.0.0` |
-
-### 版本文件同步清单
-
-| 文件 | 路径 | 字段 |
-|------|------|------|
-| plugin.json | `.claude-plugin/plugin.json` | `.version` |
-| marketplace.json | `.claude-plugin/marketplace.json` | `.metadata.version` + `.plugins[0].version` |
-| CLAUDE.md | `CLAUDE.md` | 项目画像表 `版本` 行 |
-| README.md | `README.md` | 版本引用 |
-
-### 约束
-
-| 约束 | 规则 |
-|------|------|
-| 不降级 | 新版本号必须 > 旧版本号 |
-| 四文件同步 | plugin.json / marketplace.json / CLAUDE.md / README.md 版本号一致 |
-| 不跳号 | 版本号严格递增 |
-| git 强制 | 必须产生 git commit + tag |
-| 仅 main | 在 main 分支上操作，推送目标为 origin/main |
-| 工作区干净 | 执行前检查 `git status --porcelain`，有未提交变更时中止 |
-| 冲突即停 | 任一分支合并冲突立即中止，不跳过不忽略 |
+> **此命令已迁移至 [`/rui-version --up`](../rui-version/SKILL.md#version---up)。**
+> 请使用 `/rui version --up` 或 `/rui-version --up` 执行版本收敛升级。
+> 功能完全等价：合并分支 → 判定版本 → 更新 4 文件 → commit → push → tag。
 
 ```mermaid
 flowchart LR
@@ -271,6 +205,16 @@ flowchart LR
 | 需求管线 | 安全约束、验证门禁、仅限 `.claude/` 边界 |
 | 趋势跟踪 | `.claude/` 配置演进方向、新兴工具采纳 |
 
+## 降级策略
+
+| 情况 | 降级行为 |
+|------|---------|
+| 远程配置不可达 | 记录告警，继续使用本地配置 |
+| sync 冲突（本地+远程均有修改） | 提示用户手动选择保留策略 |
+| health 检查发现配置漂移 | 输出差异报告，建议 sync |
+| 本地 .claude/ 目录缺失 | 标记为首次初始化，建议 sync |
+| 版本不一致 | 建议执行 `/rui-version --up` |
+
 ## 生效标志
 
 ```mermaid
@@ -288,3 +232,15 @@ flowchart LR
 | sync 前确认用户意图 | 补确认后重新执行 |
 | 变更走 rui code 管线 | 切分支重走管线 |
 | history 仅本地不入库 | 从 git 暂存区移除 history 文件 |
+
+## 自循环
+
+> 配置健康持续监控。Agent 可按间隔周期性检查 .claude/ 目录健康度。
+
+| 属性 | 值 |
+|------|-----|
+| 推荐间隔 | `0 10 * * *`（每天早 10 点） |
+| 触发条件 | 最近 24 小时有远程配置更新 |
+| 终止条件 | 连续 3 次检查无漂移 |
+| 迭代动作 | health 全量检查 → 对比上次快照 → 有漂移时建议 sync |
+| 收敛判定 | 无配置漂移 + 版本一致 |

@@ -2,59 +2,10 @@
 /**
  * rui-npm — personal npm package manager help
  * 用法: node skills/rui-npm/help.mjs 或 /rui-npm --help
- *
- * 对应场景文档:
- *   - docs/故事任务面板/rui-npm/场景-1-包搜索与发现/
- *   - docs/故事任务面板/rui-npm/场景-2-包安装与版本管理/
- *   - docs/故事任务面板/rui-npm/场景-3-本地发布与npx使用/
- *   - docs/故事任务面板/rui-npm/场景-4-包信息审计与卸载/
- *   - docs/故事任务面板/rui-npm/场景-5-账号级包管理/
  */
 
-const ANSI_BOLD = 1;
-const ANSI_DIM = 2;
-const ANSI_UNDERLINE = 4;
-const ANSI_YELLOW = 33;
-const ANSI_CYAN = 36;
-
-const { bold, underline, dim, yellow, cyan } = (() => {
-  const make = (code) => (s) => `\x1b[${code}m${s}\x1b[0m`;
-  const e = {
-    bold: make(ANSI_BOLD), underline: make(ANSI_UNDERLINE), dim: make(ANSI_DIM),
-    yellow: make(ANSI_YELLOW), cyan: make(ANSI_CYAN),
-  };
-  if (!process.stdout.isTTY) {
-    for (const k of Object.keys(e)) e[k] = (s) => s;
-  }
-  return e;
-})();
-
-const INDENT = "  ";
-const SUB_INDENT = "    ";
-const LEFT_COLUMN_WIDTH = 56;
-const COLUMN_MIN_PADDING = 2;
-
-function hdr(text) {
-  return `\n${bold(text)}\n`;
-}
-
-function subhdr(text) {
-  return `\n${INDENT}${bold(text)}\n`;
-}
-
-function item(cmd, desc, colorFn) {
-  const left = `${SUB_INDENT}${cmd}`;
-  const pad = Math.max(COLUMN_MIN_PADDING, LEFT_COLUMN_WIDTH - left.length);
-  return `${colorFn ? colorFn(left) : left}${" ".repeat(pad)}${desc}`;
-}
-
-function flag(name, desc) {
-  return item(`  --${name}`, desc, yellow);
-}
-
-function scene(title) {
-  return `\n${SUB_INDENT}${bold(title)}\n`;
-}
+import { bold, underline, dim, yellow, cyan } from '../../lib/tty.mjs';
+import { hdr, subhdr, item, flag, scene } from '../../lib/help-layout.mjs';
 
 const help = `
 ${bold("# rui-npm — 个人 npm packages 管理器")}

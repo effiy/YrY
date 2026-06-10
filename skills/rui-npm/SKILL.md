@@ -13,7 +13,7 @@ lifecycle: default-pipeline
 >
 > 哲学源自 [CLAUDE.md](../../CLAUDE.md)。
 
-[命令族全景](#命令族全景) · [子命令](#子命令) · [search](#search) · [install](#install) · [update](#update) · [list](#list) · [info](#info) · [uninstall](#uninstall) · [publish](#publish) · [npx](#npx) · [audit](#audit) · [cdn](#cdn) · [login](#login) · [my-packages](#my-packages) · [deprecate](#deprecate) · [unpublish-子命令](#unpublish-子命令) · [核心规则](#核心规则) · [降级策略](#降级策略) · [生效标志](#生效标志)
+[命令族全景](#命令族全景) · [子命令](#子命令) · [核心规则](#核心规则) · [降级策略](#降级策略) · [生效标志](#生效标志)
 
 ## 命令族全景
 
@@ -51,399 +51,43 @@ flowchart TD
     classDef run fill:#60a5fa,color:#000
 ```
 
-| 命令 | 类型 | 作用 |
-|------|------|------|
-| `/rui-npm search <keyword>` | 只读 | 按关键词搜索 npm registry，结构化展示结果 |
-| `/rui-npm install <pkg>[@version]` | 写入 | 安装包到当前项目 |
-| `/rui-npm update <pkg>` | 写入 | 更新指定包到兼容最新版本 |
-| `/rui-npm list [--depth N]` | 只读 | 列出当前项目已安装的包 |
-| `/rui-npm info <pkg>` | 只读 | 查看包的完整元数据 |
-| `/rui-npm uninstall <pkg>` | 写入 | 从当前项目卸载包 |
-| `/rui-npm publish <path>` | 写入 | 发布本地文件或目录到 npm registry |
-| `/rui-npm npx <pkg>[@version]` | 执行 | 通过 npx 直接运行 npm 包 |
-| `/rui-npm audit` | 只读 | 审计已安装依赖的安全漏洞 |
-| `/rui-npm cdn <pkg>[@version]` | 只读 | 查看包在 unpkg/jsDelivr/esm.sh 的 CDN 引用地址 |
-| `/rui-npm login [--token <token>]` | 写入 | 通过 Access Token 配置 npm registry 认证 |
-| `/rui-npm my-packages [--limit N]` | 只读 | 列出当前登录用户拥有的所有 npm 包 |
-| `/rui-npm deprecate <pkg>[@version] "<msg>"` | 写入 | 标记指定包或版本为 deprecated |
-| `/rui-npm unpublish <pkg>[@version] [--force]` | 写入 | 从 registry 删除指定包或版本 |
-| `/rui-npm --help` | 只读 | 显示完整帮助 |
+| 命令 | 类型 | 作用 | 详情 |
+|------|------|------|------|
+| `/rui-npm search <keyword>` | 只读 | 按关键词搜索 npm registry | [read](commands/read.md#search) |
+| `/rui-npm install <pkg>[@version]` | 写入 | 安装包到当前项目 | [write](commands/write.md#install) |
+| `/rui-npm update <pkg>` | 写入 | 更新指定包 | [write](commands/write.md#update) |
+| `/rui-npm list [--depth N]` | 只读 | 列出已安装的包 | [read](commands/read.md#list) |
+| `/rui-npm info <pkg>` | 只读 | 查看包元数据 | [read](commands/read.md#info) |
+| `/rui-npm uninstall <pkg>` | 写入 | 卸载包 | [write](commands/write.md#uninstall) |
+| `/rui-npm publish <path>` | 写入 | 发布本地文件/目录 | [publish](commands/publish.md) |
+| `/rui-npm npx <pkg>[@version]` | 执行 | npx 运行包 | [tools](commands/tools.md#npx) |
+| `/rui-npm audit` | 只读 | 安全漏洞审计 | [tools](commands/tools.md#audit) |
+| `/rui-npm cdn <pkg>[@version]` | 只读 | CDN 引用地址 | [tools](commands/tools.md#cdn) |
+| `/rui-npm login [--token <token>]` | 写入 | npm 认证 | [account](commands/account.md#login) |
+| `/rui-npm my-packages [--limit N]` | 只读 | 我的包列表 | [account](commands/account.md#my-packages) |
+| `/rui-npm deprecate <pkg> "<msg>"` | 写入 | 标记废弃 | [account](commands/account.md#deprecate) |
+| `/rui-npm unpublish <pkg> [--force]` | 写入 | 删除包/版本 | [account](commands/account.md#unpublish) |
+| `/rui-npm --help` | 只读 | 显示完整帮助 | — |
+
+## 职责分组
+
+| 组 | 子命令 | 职责域 | 代码 | 文档 |
+|----|--------|--------|------|------|
+| 包管理（读） | search, list, info | npm registry 包发现 | `lib/read.mjs` | [commands/read.md](commands/read.md) |
+| 包管理（写） | install, update, uninstall | 包生命周期管理 | `lib/write.mjs` | [commands/write.md](commands/write.md) |
+| 发布 | publish | 本地发布 | `lib/publish.mjs` | [commands/publish.md](commands/publish.md) |
+| 账号 | login, my-packages, deprecate, unpublish | 认证与包所有权管理 | `lib/auth.mjs` + `lib/account.mjs` | [commands/account.md](commands/account.md) |
+| 工具 | npx, audit, cdn | 执行、安全、CDN | `lib/tools.mjs` | [commands/tools.md](commands/tools.md) |
 
 ## 子命令
 
-### search — 包搜索
-
-> 按关键词搜索 npm registry，返回结构化结果。
-
-```
-步骤 1: 验证关键词非空
-步骤 2: npm search <keyword> --json --long
-步骤 3: 按周下载量降序排列，取前 20 条
-步骤 4: 格式化为表格输出（名称/描述/版本/周下载量/更新时间）
-步骤 5: 附带搜索时间戳
-```
-
-**参数**：
-
-| 参数 | 必需 | 说明 |
-|------|------|------|
-| `<keyword>` | 是 | 搜索关键词，1-64 字符 |
-| `--json` | 否 | 输出 JSON 格式 |
-| `--limit N` | 否 | 结果数量限制，默认 20 |
-
-**输出格式**：
-
-```markdown
-## npm 搜索结果 — "{keyword}"（YYYY-MM-DD HH:MM）
-
-| # | 包名 | 描述 | 版本 | 周下载量 | 更新 |
-|---|------|------|------|---------|------|
-| 1 | pkg-name | Short description | 2.1.0 | 1.2M/w | 2026-06-01 |
-```
-
-### install — 包安装
-
-> 安装 npm 包到当前项目的 dependencies。
-
-```
-步骤 1: 验证当前目录有 package.json
-步骤 2: 解析包名和可选版本号
-步骤 3: npm install <pkg>[@version] --save
-步骤 4: 输出安装结果和版本信息
-```
-
-**参数**：
-
-| 参数 | 必需 | 说明 |
-|------|------|------|
-| `<pkg>[@version]` | 是 | 包名，可选版本号（如 `lodash@4.17.21`） |
-| `--dev` / `-D` | 否 | 安装为 devDependency |
-| `--global` / `-g` | 否 | 全局安装 |
-
-**前置条件**：当前目录存在 `package.json`。
-
-### update — 包更新
-
-> 更新指定包到兼容最新版本。
-
-```
-步骤 1: 验证包已在 package.json 中声明
-步骤 2: 记录更新前版本
-步骤 3: npm update <pkg>
-步骤 4: 对比更新前后版本，输出变更
-```
-
-### list — 已安装列表
-
-> 列出当前项目已安装的依赖。
-
-```
-步骤 1: npm list --json [--depth N]
-步骤 2: 解析 JSON 为平面列表
-步骤 3: 格式化为表格（名称/声明版本/实际安装版本/层级）
-```
-
-**参数**：
-
-| 参数 | 必需 | 说明 |
-|------|------|------|
-| `--depth N` | 否 | 依赖树深度，默认 0（仅直接依赖） |
-| `--json` | 否 | 输出 JSON 格式 |
-
-### info — 包信息
-
-> 查看指定包的完整元数据。
-
-```
-步骤 1: npm view <pkg> --json
-步骤 2: 提取关键字段：name/description/version/license/maintainers/keywords/dependencies/homepage/repository
-步骤 3: 格式化为分区展示
-```
-
-**输出分区**：
-
-| 分区 | 内容 |
-|------|------|
-| 基本信息 | 名称/描述/最新版本/许可证 |
-| 版本历史 | 最近 10 个版本及发布时间 |
-| 维护信息 | 维护者/主页/仓库链接 |
-| 依赖 | 自身依赖列表 |
-| 下载统计 | 周下载量（如可获取） |
-
-### uninstall — 包卸载
-
-> 从当前项目移除指定包。
-
-```
-步骤 1: 验证包已在 package.json 中声明
-步骤 2: npm uninstall <pkg>
-步骤 3: 输出卸载确认
-```
-
-### publish — 本地发布
-
-> 将本地文件或目录发布为 npm 包。支持单文件和目录两种模式。
-
-```
-步骤 1: 验证路径存在（文件或目录）
-步骤 2: 验证 npm 登录状态（npm whoami）
-步骤 3a（文件）: 创建临时目录 → 复制文件为 index.js → 交互式生成 package.json
-步骤 3b（目录）: 验证 package.json 存在，缺失时交互式生成
-步骤 4: 检查 npm registry 是否存在同名包（冲突检测）
-步骤 5: npm publish [--access public]
-步骤 6: 输出包名 + 版本 + 发布确认
-步骤 7: 清理临时目录（文件模式）
-```
-
-**参数**：
-
-| 参数 | 必需 | 说明 |
-|------|------|------|
-| `<path>` | 是 | 本地文件路径或目录路径 |
-| `--name <name>` | 否 | 指定包名（默认从目录名/文件名推导） |
-| `--version <ver>` | 否 | 指定版本号（默认 1.0.0） |
-| `--description <desc>` | 否 | 包描述 |
-| `--access public` | 否 | 发布为公开包（scope 包默认 private） |
-| `--dry-run` | 否 | 模拟发布，不实际上传 |
-
-**前置条件**：`npm whoami` 成功（已登录 npm）。
-
-**自动生成 package.json（文件模式）**：
-
-```json
-{
-  "name": "<derived-or-specified>",
-  "version": "1.0.0",
-  "description": "<user-provided-or-auto>",
-  "main": "index.js",
-  "bin": { "<name>": "./index.js" },
-  "license": "MIT"
-}
-```
-
-### npx — npx 执行
-
-> 通过 npx 直接运行 npm 包，无需安装。
-
-```
-步骤 1: 验证包名非空
-步骤 2: npx <pkg>[@version] [-- args...]
-步骤 3: 流式输出 stdout/stderr
-步骤 4: 返回执行结果的退出码
-```
-
-**参数**：
-
-| 参数 | 必需 | 说明 |
-|------|------|------|
-| `<pkg>[@version]` | 是 | 要执行的 npm 包名，可选版本 |
-| `-- args...` | 否 | 传递给包的命令行参数（`--` 之后） |
-
-### audit — 安全审计
-
-> 审计当前项目已安装依赖的已知安全漏洞。
-
-```
-步骤 1: npm audit --json
-步骤 2: 解析漏洞数据
-步骤 3: 按严重级别分组（critical/high/moderate/low）
-步骤 4: 格式化摘要表格 + 修复建议
-```
-
-**输出格式**：
-
-```markdown
-## 安全审计结果 — YYYY-MM-DD HH:MM
-
-| 严重级别 | 数量 |
-|---------|------|
-| 💀 Critical | 0 |
-| 🔴 High | 2 |
-| 🟡 Moderate | 5 |
-| 🟢 Low | 3 |
-
-### 修复建议
-- `npm audit fix` — 自动修复兼容的漏洞
-- `npm audit fix --force` — 强制修复（可能包含破坏性变更）
-```
-
-### cdn — CDN 引用
-
-> 查看 npm 包在主流 CDN 的引用地址，方便直接在浏览器中通过 `<script>` 或 `import` 使用。
-
-```
-步骤 1: 验证包名非空
-步骤 2: 解析包名和可选版本号（无版本则使用 latest）
-步骤 3: npm view <pkg> version 验证包存在
-步骤 4: 生成 unpkg / jsDelivr / esm.sh 三条 CDN 地址
-步骤 5: 格式化为表格输出
-```
-
-**参数**：
-
-| 参数 | 必需 | 说明 |
-|------|------|------|
-| `<pkg>[@version]` | 是 | 包名，可选版本号（如 `react@18.2.0`） |
-| `--json` | 否 | 输出 JSON 格式 |
-
-**输出格式**：
-
-```markdown
-## react@18.2.0 — CDN 引用地址
-
-| CDN | URL |
-|-----|-----|
-| unpkg    | https://unpkg.com/react@18.2.0/ |
-| jsDelivr | https://cdn.jsdelivr.net/npm/react@18.2.0/ |
-| esm.sh   | https://esm.sh/react@18.2.0 |
-```
-
-**CDN 选用指南**：
-
-| CDN | 特点 | 适用场景 |
-|-----|------|---------|
-| unpkg | 原始 npm 文件直出，URL 即 npm 路径 | 查看包内文件、调试 |
-| jsDelivr | 全球 CDN 加速，支持多文件合并 | 生产环境 `<script>` 引用 |
-| esm.sh | 自动转 ESM 格式，支持 TypeScript/JSX | `<script type="module">` 或 `import` |
-
-### login — npm 认证
-
-> 通过 Access Token 配置 npm registry 认证，无需交互式登录。
-
-```
-步骤 1: 获取 token — --token 标志或 NPM_TOKEN 环境变量
-步骤 2: 验证 token 非空且长度 ≥ 20
-步骤 3: npm config set //registry.npmjs.org/:_authToken <token>
-步骤 4: npm whoami 验证 token 有效性
-步骤 5: 输出认证成功信息（含 masked token 和用户名）
-步骤 6: token 无效时自动清除配置
-```
-
-**参数**：
-
-| 参数 | 必需 | 说明 |
-|------|------|------|
-| `--token <token>` | 否* | npm Access Token（Automation 类型推荐）。未提供时从 `NPM_TOKEN` 环境变量读取 |
-
-> \* `--token` 和 `NPM_TOKEN` 必须至少提供一个。
-
-**Token 格式期望**：npm Access Token 通常以 `npm_` 开头，长度 > 30 字符。建议使用 Automation 类型 token（适用于 CI/CD 和非交互场景）。
-
-**成功输出**：
-
-```markdown
-🔑 配置 Access Token (npm_****abcd) ...
-🔍 验证 token ...
-✅ 认证成功！
-   用户: your-username
-   token: npm_****abcd
-   已配置到: npm config //registry.npmjs.org/:_authToken
-```
-
-**安全特性**：
-- token 在所有输出中仅显示前 4 + 后 4 字符（如 `npm_****abcd`）
-- token 通过 npm config 存储，由 npm 自身的 .npmrc 权限保护
-- 验证失败时自动清除已配置的无效 token
-
-### my-packages — 我的包列表
-
-> 列出当前登录用户拥有的所有 npm 包。需 npm 认证。
-
-```
-步骤 1: 验证 npm 登录状态（npm whoami）
-步骤 2: 调用 registry search API（maintainer:<username>）获取包列表
-步骤 3: 按周下载量降序排列
-步骤 4: 格式化为表格输出（名称/描述/版本/周下载量）
-步骤 5: registry API 不可达时降级使用 npm access ls-packages
-```
-
-**参数**：
-
-| 参数 | 必需 | 说明 |
-|------|------|------|
-| `--json` | 否 | 输出 JSON 格式 |
-| `--limit N` | 否 | 结果数量限制，默认 100 |
-
-**前置条件**：`npm whoami` 成功（已通过 `rui-npm login` 配置 token 或 `npm login` 登录）。
-
-**输出格式**：
-
-```markdown
-## <username> 的 npm 包（N 个）— YYYY-MM-DD HH:MM
-
-| # | 包名 | 版本 | 周下载量 | 描述 |
-|---|------|------|---------|------|
-| 1 | my-util | 2.1.0 | 1.2k/w | A useful utility library |
-```
-
-### deprecate — 废弃版本
-
-> 标记指定包或版本为 deprecated。需 npm 认证且为包所有者。
-
-```
-步骤 1: 验证 npm 登录状态（npm whoami）
-步骤 2: 解析包名和可选版本号
-步骤 3: 验证当前用户是包的所有者（npm view <pkg> maintainers）
-步骤 4: 非所有者拒绝操作并输出当前所有者信息
-步骤 5: npm deprecate <pkg>[@version] "<message>"
-步骤 6: 输出废弃确认 + npm 页面链接
-```
-
-**参数**：
-
-| 参数 | 必需 | 说明 |
-|------|------|------|
-| `<pkg>[@version]` | 是 | 包名，可选版本号（如 `my-util@1.0.0`） |
-| `"<message>"` | 是 | 废弃消息，说明原因和替代方案（1-256 字符） |
-
-**前置条件**：`npm whoami` 成功 + 当前用户是目标包的所有者。
-
-**输出示例**：
-
-```markdown
-⚠️  废弃 my-util@1.0.0 ...
-   消息: Use 2.0.0 instead
-✅ my-util@1.0.0 已标记为 deprecated
-   查看: https://www.npmjs.com/package/my-util/v/1.0.0
-```
-
-### unpublish — 删除包/版本 {#unpublish-子命令}
-
-> 从 npm registry 删除指定包或版本。需 npm 认证且为包所有者。执行前展示安全警告。
-
-```
-步骤 1: 验证 npm 登录状态（npm whoami）
-步骤 2: 解析包名和可选版本号
-步骤 3: 验证当前用户是包的所有者（npm view <pkg> maintainers）
-步骤 4: 非所有者拒绝操作并输出当前所有者信息
-步骤 5: 展示安全警告（删除不可逆 · 72h 恢复窗口 · 包名可能被他人注册 · 建议优先 deprecate）
-步骤 6: npm unpublish <pkg>[@version] [--force]
-步骤 7: 输出删除确认 + npm support 链接
-```
-
-**参数**：
-
-| 参数 | 必需 | 说明 |
-|------|------|------|
-| `<pkg>[@version]` | 是 | 包名，可选版本号（如 `my-util@1.0.0`）。无版本号时删除整个包 |
-| `--force` / `-f` | 否 | 强制删除（绕过 72 小时限制） |
-
-**前置条件**：`npm whoami` 成功 + 当前用户是目标包的所有者。
-
-**安全警告输出**：
-
-```markdown
-⚠️  ═══════════════════════════════════════
-⚠️  即将从 npm registry 删除: my-util@1.0.0
-⚠️  包现有版本数: 3
-⚠️  
-⚠️  注意事项:
-⚠️  - 删除后 72 小时内可联系 npm support 恢复
-⚠️  - 超过 72 小时的版本删除可能被拒绝（需 --force）
-⚠️  - 删除后该包名可能被他人注册
-⚠️  - npm 官方建议优先使用 deprecate 而非 unpublish
-⚠️  ═══════════════════════════════════════
-```
+子命令详细规约已按职责分组提取到 `commands/` 目录：
+
+- **[commands/read.md](commands/read.md)** — search, list, info
+- **[commands/write.md](commands/write.md)** — install, update, uninstall
+- **[commands/publish.md](commands/publish.md)** — publish
+- **[commands/account.md](commands/account.md)** — login, my-packages, deprecate, unpublish
+- **[commands/tools.md](commands/tools.md)** — npx, audit, cdn
 
 ## 核心规则
 
@@ -472,7 +116,7 @@ flowchart LR
 | # | 规则 | 违反行为 |
 |---|------|---------|
 | 1 | install/uninstall/update/list/audit 前验证 package.json 存在 | 提示用户先执行 `npm init` |
-| 2 | publish/deprecate/unpublish 前验证 `npm whoami` 成功；login 配置 Access Token | 提示用户先执行 `rui-npm login --token <token>` 或 `npm login` |
+| 2 | publish/deprecate/unpublish 前验证 `npm whoami` 成功 | 提示用户先执行 `rui-npm login --token <token>` |
 | 3 | deprecate/unpublish 前验证当前用户是包所有者 | 提示用户非所有者无法操作，展示当前维护者列表 |
 | 4 | 网络不可达时输出友好提示和手动 URL | 标注 `网络不可达` |
 | 5 | 包不存在 registry 时建议搜索确认拼写 | 输出 `包不存在，建议 /rui-npm search <kw>` |
@@ -485,17 +129,15 @@ flowchart LR
 | 情况 | 降级行为 |
 |------|---------|
 | npm CLI 不可用 | 输出 `未检测到 npm，请先安装 Node.js` |
-| npm 版本 < 7.0.0 | 警告 `npm 版本过旧，建议升级至 7.x+`，降级使用兼容参数 |
+| npm 版本 < 7.0.0 | 警告 `npm 版本过旧，建议升级至 7.x+` |
 | npm registry 不可达 | 输出错误详情 + 手动访问 `https://www.npmjs.com/` 引导 |
-| npm 未认证（publish/deprecate/unpublish/my-packages） | 提示 `请先执行 rui-npm login --token <token> 或 npm login 认证` |
+| npm 未认证（写操作） | 提示 `请先执行 rui-npm login --token <token>` |
 | package.json 不存在（写操作） | 提示 `当前目录无 package.json，请先执行 npm init` |
 | 目录无 package.json（publish 目录模式） | 交互式生成 package.json 后继续 |
 | npm audit 无网络 | 跳过审计，标注 `无网络连接，跳过安全审计` |
-| deprecate 非包所有者 | 提示 `你不是包的所有者`，展示当前维护者列表，拒绝操作 |
-| unpublish 非包所有者 | 提示 `你不是包的所有者`，展示当前维护者列表，拒绝操作 |
-| unpublish 超 72 小时无 --force | 提示 `超过 72 小时的版本需 --force 标志`，引导使用 deprecate |
-| my-packages registry API 不可达 | 降级使用 `npm access ls-packages`；两者均不可达时引导手动访问 npm 网站 |
-| my-packages 未认证 | 提示 `请先执行 rui-npm login 或设置 NPM_TOKEN` |
+| deprecate/unpublish 非包所有者 | 展示当前维护者列表，拒绝操作 |
+| unpublish 超 72 小时无 --force | 提示需 --force 标志，引导使用 deprecate |
+| my-packages registry API 不可达 | 降级使用 `npm access ls-packages` |
 
 ## 生效标志
 
@@ -504,7 +146,7 @@ flowchart LR
     S1["命令入口统一<br/>所有操作通过 rui-npm.mjs"]:::sig --> S2["输出结构化<br/>表格优先，JSON 可选"]:::sig
     S2 --> S3["错误友好<br/>每种失败有明确提示和恢复建议"]:::sig
     S3 --> S4["本地发布闭环<br/>publish → npx 可用"]:::sig
-    S4 --> S5["认证闭环<br/>login → publish/my-packages/deprecate/unpublish 可用"]:::sig
+    S4 --> S5["认证闭环<br/>login → 写操作可用"]:::sig
     S5 --> S6["账号级管理闭环<br/>my-packages → deprecate → unpublish"]:::sig
 
     classDef sig fill:#34d399,color:#000
@@ -515,6 +157,18 @@ flowchart LR
 | 全部子命令可通过 `node skills/rui-npm/rui-npm.mjs <cmd>` 执行 | 检查脚本入口和参数解析 |
 | help.mjs 输出覆盖全部子命令和场景 | 补全缺失的文档段 |
 | publish 后立即可通过 npx 执行 | 检查 npm registry 同步延迟 |
-| login 成功后 publish/my-packages/deprecate/unpublish 可直接使用（无需重复认证） | 验证 npm whoami 返回正确用户名 |
+| login 成功后写操作可直接使用 | 验证 npm whoami 返回正确用户名 |
 | deprecate/unpublish 前所有权验证不绕过 | 验证非所有者操作被正确拒绝 |
 | 所有错误路径有明确提示 | 补充错误处理分支 |
+
+## 自循环
+
+> 依赖健康看门狗。Agent 可按间隔周期性审计依赖安全漏洞和版本过期。
+
+| 属性 | 值 |
+|------|-----|
+| 推荐间隔 | `0 8 * * 1`（每周一早 8 点） |
+| 触发条件 | 当前目录存在 package.json |
+| 终止条件 | 连续 2 次 audit 无新增漏洞 |
+| 迭代动作 | `npm audit` → 对比上次结果 → 有新增漏洞时告警 |
+| 收敛判定 | 无 Critical/High 新增漏洞 |

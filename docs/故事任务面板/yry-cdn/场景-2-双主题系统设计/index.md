@@ -350,7 +350,7 @@ flowchart LR
 | 600 | `fonts/jetbrains-mono-latin-600-normal.woff2` | 21.9 KB | ✅ |
 | 700 | `fonts/jetbrains-mono-latin-700-normal.woff2` | 21.9 KB | ✅ |
 
-自托管替代 Google Fonts 外部依赖: Cat A 页面加载 `fonts.css` 替代 `https://fonts.googleapis.com/css2?family=JetBrains+Mono`。
+自托管字体: Cat A 页面加载 `fonts.css` 提供 JetBrains Mono 字体，无需外部依赖。
 
 ## 回溯链
 

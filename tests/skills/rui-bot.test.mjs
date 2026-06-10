@@ -53,10 +53,76 @@ describe('rui-bot skill', () => {
         assert.ok(out.length > 50 || out.includes('用法') || out.includes('Usage') || out.includes('rui-bot'),
           '--help should output usage info');
       } catch (e) {
-        // --help with no token may fail but should still print help before error
         const output = (e.stdout || '') + (e.stderr || '');
         assert.ok(output.length > 20, '--help should produce output even on error');
       }
+    });
+  });
+
+  describe('health check', () => {
+    it('runs health command without crashing', () => {
+      try {
+        const out = execSync('node skills/rui-bot/send.mjs health 2>&1', {
+          cwd: process.cwd(), encoding: 'utf-8', timeout: 15_000,
+        });
+        assert.ok(out.length > 100, 'health command should produce output');
+      } catch (e) {
+        assert.fail(`health command crashed: ${e.stderr || e.message}`);
+      }
+    });
+
+    it('outputs all 9 health dimensions', () => {
+      const out = execSync('node skills/rui-bot/send.mjs health 2>&1', {
+        cwd: process.cwd(), encoding: 'utf-8', timeout: 15_000,
+      });
+      const dims = ['Token 凭据', '配置文件', '机器人配置', 'API 可达性', '自循环报告', '消息格式合规', 'D0-D7 诊断', 'Git 仓库状态', '安全扫描'];
+      for (const dim of dims) {
+        assert.ok(out.includes(dim), `health output must include dimension: ${dim}`);
+      }
+    });
+
+    it('outputs composite score and grade', () => {
+      const out = execSync('node skills/rui-bot/send.mjs health 2>&1', {
+        cwd: process.cwd(), encoding: 'utf-8', timeout: 15_000,
+      });
+      assert.ok(out.includes('综合健康度'), 'must include composite health score');
+      assert.ok(/[ABCD] 级/.test(out), 'must include grade A/B/C/D');
+    });
+
+    it('generates HTML report with --html flag', () => {
+      const out = execSync('node skills/rui-bot/send.mjs health --html 2>&1', {
+        cwd: process.cwd(), encoding: 'utf-8', timeout: 15_000,
+      });
+      assert.ok(out.includes('健康报告已生成') || out.includes('健康报告'), 'must confirm HTML report generation');
+    });
+
+    it('flush command works', () => {
+      const out = execSync('node skills/rui-bot/send.mjs flush 2>&1', {
+        cwd: process.cwd(), encoding: 'utf-8', timeout: 10_000,
+      });
+      assert.ok(out.includes('队列'), 'flush must reference notification queue');
+    });
+
+    it('--short outputs one-line summary', () => {
+      const out = execSync('node skills/rui-bot/send.mjs health --short 2>&1', {
+        cwd: process.cwd(), encoding: 'utf-8', timeout: 15_000,
+      });
+      // Format: {icon} {score}/{grade} | 触发: ... | 弱项: ...
+      assert.ok(/[ABCD]/.test(out), 'must include grade letter');
+      assert.ok(/\d+\/[ABCD]/.test(out), 'must include score/grade');
+      assert.ok(out.includes('弱项') || out.includes('通过'), 'must include weak dimensions or pass');
+      assert.ok(out.split('\n').filter(Boolean).length <= 3, 'short mode should output few lines');
+    });
+
+    it('--alert runs without crash', () => {
+      const out = execSync('node skills/rui-bot/send.mjs health --alert 2>&1', {
+        cwd: process.cwd(), encoding: 'utf-8', timeout: 15_000,
+      });
+      // Should either send alert, suppress it, or report score above threshold
+      assert.ok(
+        out.includes('告警') || out.includes('无需告警') || out.includes('Token') || out.includes('webhook'),
+        'alert must produce meaningful output'
+      );
     });
   });
 });

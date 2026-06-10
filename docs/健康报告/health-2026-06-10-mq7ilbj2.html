@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>健康报告 · 2026-06-10</title>
+<link rel="stylesheet" href="../../cdn/shared.css">
+<link rel="stylesheet" href="../../cdn/theme.css">
+<style>
+:root {
+  --yry-bg: rgba(22,22,32,1); --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
+  --yry-accent: #FFC107; --yry-pass: #22c55e; --yry-fail: #ef4444; --yry-warn: #f59e0b;
+  --yry-info: #3b82f6; --yry-cyan: #22d3ee;
+  --yry-text: rgba(250,250,252,1); --yry-text2: rgba(160,160,164,1); --yry-text3: rgba(110,110,114,1);
+  --yry-radius: 12px; --yry-border: 1px solid rgba(255,255,255,0.06);
+  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3); --yry-shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
+.h-container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+/* Breadcrumb */
+.h-bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
+.h-bc a { color: var(--yry-cyan); text-decoration: none; }
+.h-bc a:hover { color: var(--yry-accent); }
+.h-bc .h-bc-sep { color: var(--yry-text3); opacity: .4; }
+.h-bc .h-bc-cur { color: var(--yry-text2); }
+
+/* Header */
+.h-header { text-align: center; margin-bottom: 32px; }
+.h-header h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+.h-header .h-date { color: var(--yry-text3); font-size: .82rem; }
+
+/* Hero score */
+.h-hero { display: flex; justify-content: center; align-items: center; gap: 32px; margin-bottom: 32px; flex-wrap: wrap; }
+.h-score-ring { width: 140px; height: 140px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 4px solid; }
+.h-score-num { font-size: 2.4rem; font-weight: 800; line-height: 1; }
+.h-score-grade { font-size: 1.1rem; font-weight: 700; margin-top: 2px; }
+.h-score-label { font-size: .72rem; color: var(--yry-text3); margin-top: 2px; }
+
+.h-hero-stats { display: flex; flex-direction: column; gap: 8px; }
+.h-hero-stat { display: flex; align-items: center; gap: 8px; font-size: .85rem; }
+.h-hero-stat .h-hs-icon { font-size: 1.1rem; }
+.h-hero-stat .h-hs-val { font-weight: 600; color: var(--yry-accent); }
+
+/* Section */
+.h-section { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
+.h-section h2 { font-size: 1.1rem; margin-bottom: 16px; color: var(--yry-accent); display: flex; align-items: center; gap: 8px; }
+
+/* Dimension cards */
+.h-dim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 0; }
+.h-dim-card { background: rgba(15,23,42,.4); border: var(--yry-border); border-radius: 10px; padding: 16px 18px; }
+.h-dim-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.h-dim-icon { font-size: 1.1rem; }
+.h-dim-label { font-size: .84rem; font-weight: 500; flex: 1; }
+.h-dim-score { font-size: 1.2rem; font-weight: 700; }
+.h-dim-bar { height: 5px; border-radius: 3px; background: rgba(255,255,255,.06); overflow: hidden; margin-bottom: 4px; }
+.h-dim-bar-inner { height: 100%; border-radius: 3px; transition: width .6s ease; }
+.h-dim-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; }
+.h-dim-weight { font-size: .68rem; color: var(--yry-text3); }
+.h-trend { font-size: .75rem; margin-left: -2px; }
+.h-trend.up { color: var(--yry-pass); }
+.h-trend.down { color: var(--yry-fail); }
+.h-trend.stable { color: var(--yry-text3); }
+.h-sparkline { display: flex; align-items: flex-end; gap: 1px; height: 16px; }
+.h-spark-bar { width: 3px; border-radius: 1px; min-height: 2px; transition: height .3s; }
+.h-spark-bar:hover { opacity: .7; }
+.h-grade-spark { display: inline-flex; align-items: center; gap: 3px; padding: 4px 12px; background: rgba(255,255,255,.03); border-radius: 16px; }
+.h-grade-dot { border-radius: 50%; display: inline-block; transition: transform .2s; }
+.h-grade-dot:hover { transform: scale(1.5); }
+.h-boot-badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: .7rem; font-weight: 600; background: rgba(59,130,246,.15); color: var(--yry-cyan); margin-right: 6px; }
+.h-rec-list { display: flex; flex-direction: column; gap: 8px; }
+.h-rec-item { display: flex; gap: 10px; padding: 12px 14px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); }
+.h-rec-prio { font-size: .85rem; flex-shrink: 0; margin-top: 1px; }
+.h-rec-body { flex: 1; }
+.h-rec-source { font-size: .72rem; color: var(--yry-text3); margin-bottom: 2px; font-weight: 600; text-transform: uppercase; }
+.h-rec-text { font-size: .82rem; color: var(--yry-text2); line-height: 1.5; }
+
+/* Diagnostic rows */
+.h-diag-summary { font-size: .78rem; color: var(--yry-text3); font-weight: 400; margin-left: 8px; }
+.h-diag-list { display: flex; flex-direction: column; gap: 8px; }
+.h-diag-row { padding: 14px 16px; border-radius: 8px; border: var(--yry-border); }
+.h-diag-row.ok { background: rgba(34,197,94,.03); }
+.h-diag-row.triggered { background: rgba(245,158,11,.04); border-left: 3px solid var(--yry-warn); }
+.h-diag-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.h-diag-id { font-weight: 700; font-size: .85rem; }
+.h-diag-label { font-size: .82rem; color: var(--yry-text2); }
+.h-diag-confidence { font-size: .7rem; color: var(--yry-text3); margin-left: auto; }
+.h-diag-evidence { font-size: .78rem; color: var(--yry-text2); margin-top: 4px; padding-left: 4px; }
+.h-diag-suggestion { font-size: .78rem; color: var(--yry-cyan); margin-top: 4px; padding-left: 4px; }
+.h-diag-empty { text-align: center; color: var(--yry-text3); padding: 20px; font-size: .84rem; }
+.h-placeholder { text-align: center; color: var(--yry-text3); padding: 24px; font-size: .84rem; }
+
+/* Detail items */
+.h-detail-list { display: flex; flex-direction: column; gap: 6px; }
+.h-detail-item { display: flex; align-items: flex-start; gap: 8px; font-size: .82rem; color: var(--yry-text2); padding: 6px 0; }
+.h-detail-icon { flex-shrink: 0; margin-top: 1px; }
+
+/* Footer */
+.h-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
+.h-footer a { color: var(--yry-cyan); text-decoration: none; }
+.h-footer a:hover { color: var(--yry-accent); }
+
+/* Health bar */
+.h-bar-wrap { margin-bottom: 4px; }
+.h-bar-outer { height: 10px; border-radius: 5px; overflow: hidden; background: rgba(255,255,255,.06); }
+.h-bar-seg { height: 100%; transition: width .6s ease; }
+
+/* Links */
+.h-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+.h-link { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.15); color: var(--yry-cyan); text-decoration: none; font-size: .82rem; transition: all .15s; }
+.h-link:hover { background: rgba(59,130,246,.15); border-color: rgba(59,130,246,.3); }
+
+@media (max-width: 640px) {
+  .h-hero { flex-direction: column; gap: 20px; }
+  .h-dim-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="h-container">
+
+<nav class="h-bc">
+  <a href="../../docs/index.html">📄 文档中心</a>
+  <span class="h-bc-sep">/</span>
+  <a href="../../docs/健康报告/">🩺 健康报告</a>
+  <span class="h-bc-sep">/</span>
+  <span class="h-bc-cur">2026-06-10</span>
+</nav>
+
+<div class="h-header">
+  <h1>🩺 项目健康报告</h1>
+  <div class="h-date">2026-06-10 03:34:01 · 综合评估</div>
+</div>
+
+<div class="h-hero">
+  <div class="h-score-ring" style="border-color:#f59e0b;background:rgba(245,158,11,.08)">
+    <div class="h-score-num" style="color:#f59e0b">70</div>
+    <div class="h-score-grade" style="color:#f59e0b">C 级</div>
+    <div class="h-score-label">综合健康度</div>
+  </div>
+  <div class="h-hero-stats">
+    <div class="h-hero-stat"><span class="h-hs-icon">🔬</span> D0-D7: <span class="h-hs-val">2/8 触发</span></div>
+    <div class="h-hero-stat"><span class="h-hs-icon">📊</span> 评分维度: <span class="h-hs-val">9 项</span></div>
+    <div class="h-hero-stat"><span class="h-hs-icon">📋</span> 执行记忆: <span class="h-hs-val">0 条</span></div>
+    <div class="h-hero-stat"><span class="h-hs-icon">🤖</span> 机器人: <span class="h-hs-val">0/1 就绪</span></div>
+    <div class="h-hero-stat"><span class="h-hs-icon">📊</span> 对比上次 (2026-06-10): <span class="h-hs-val" style="color:var(--yry-text2)">持平</span></div>
+  </div>
+  <div style="text-align:center;margin-bottom:8px"><div class="h-grade-spark"><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 65 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 65 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 65 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 65 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 65 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 65 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 65 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 65 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 65 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 65 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 65 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 65 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 62 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 62 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 62 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 62 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 62 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 62 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 62 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 70 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 70 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 70 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 70 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 70 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 70 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 70 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 70 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 70 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 70 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:6px;height:6px" title="C 级 · 70 分 · 2026-06-10"></span><span class="h-grade-dot" style="background:#f59e0b;width:10px;height:10px" title="C 级 · 70 分 · 2026-06-10"></span></div></div>
+</div>
+
+<div class="h-section">
+  <h2>📊 七维度健康评分</h2>
+  <div class="h-dim-grid"><div class="h-dim-card">
+      <div class="h-dim-head">
+        <span class="h-dim-icon">🔑</span>
+        <span class="h-dim-label">Token 凭据</span>
+        
+        <span class="h-dim-score" style="color:var(--yry-pass)">100 分</span>
+      </div>
+      <div class="h-dim-bar"><div class="h-dim-bar-inner" style="width:100%;background:var(--yry-pass)"></div></div>
+      <div class="h-dim-foot">
+        <div class="h-dim-weight">权重 15%</div>
+        
+      </div>
+    </div>
+<div class="h-dim-card">
+      <div class="h-dim-head">
+        <span class="h-dim-icon">⚙️</span>
+        <span class="h-dim-label">配置文件</span>
+        
+        <span class="h-dim-score" style="color:var(--yry-pass)">100 分</span>
+      </div>
+      <div class="h-dim-bar"><div class="h-dim-bar-inner" style="width:100%;background:var(--yry-pass)"></div></div>
+      <div class="h-dim-foot">
+        <div class="h-dim-weight">权重 10%</div>
+        
+      </div>
+    </div>
+<div class="h-dim-card">
+      <div class="h-dim-head">
+        <span class="h-dim-icon">🤖</span>
+        <span class="h-dim-label">机器人配置</span>
+        
+        <span class="h-dim-score" style="color:var(--yry-fail)">0 分</span>
+      </div>
+      <div class="h-dim-bar"><div class="h-dim-bar-inner" style="width:0%;background:var(--yry-fail)"></div></div>
+      <div class="h-dim-foot">
+        <div class="h-dim-weight">权重 10%</div>
+        
+      </div>
+    </div>
+<div class="h-dim-card">
+      <div class="h-dim-head">
+        <span class="h-dim-icon">🌐</span>
+        <span class="h-dim-label">API 可达性</span>
+        
+        <span class="h-dim-score" style="color:var(--yry-fail)">50 分</span>
+      </div>
+      <div class="h-dim-bar"><div class="h-dim-bar-inner" style="width:50%;background:var(--yry-fail)"></div></div>
+      <div class="h-dim-foot">
+        <div class="h-dim-weight">权重 15%</div>
+        
+      </div>
+    </div>
+<div class="h-dim-card">
+      <div class="h-dim-head">
+        <span class="h-dim-icon">📊</span>
+        <span class="h-dim-label">自循环报告</span>
+        
+        <span class="h-dim-score" style="color:var(--yry-warn)">60 分</span>
+      </div>
+      <div class="h-dim-bar"><div class="h-dim-bar-inner" style="width:60%;background:var(--yry-warn)"></div></div>
+      <div class="h-dim-foot">
+        <div class="h-dim-weight">权重 10%</div>
+        
+      </div>
+    </div>
+<div class="h-dim-card">
+      <div class="h-dim-head">
+        <span class="h-dim-icon">📋</span>
+        <span class="h-dim-label">消息格式合规</span>
+        
+        <span class="h-dim-score" style="color:var(--yry-pass)">100 分</span>
+      </div>
+      <div class="h-dim-bar"><div class="h-dim-bar-inner" style="width:100%;background:var(--yry-pass)"></div></div>
+      <div class="h-dim-foot">
+        <div class="h-dim-weight">权重 10%</div>
+        
+      </div>
+    </div>
+<div class="h-dim-card">
+      <div class="h-dim-head">
+        <span class="h-dim-icon">🔬</span>
+        <span class="h-dim-label">D0-D7 诊断</span>
+        
+        <span class="h-dim-score" style="color:var(--yry-warn)">70 分</span>
+      </div>
+      <div class="h-dim-bar"><div class="h-dim-bar-inner" style="width:70%;background:var(--yry-warn)"></div></div>
+      <div class="h-dim-foot">
+        <div class="h-dim-weight">权重 10%</div>
+        
+      </div>
+    </div>
+<div class="h-dim-card">
+      <div class="h-dim-head">
+        <span class="h-dim-icon">📦</span>
+        <span class="h-dim-label">Git 仓库状态</span>
+        
+        <span class="h-dim-score" style="color:var(--yry-fail)">40 分</span>
+      </div>
+      <div class="h-dim-bar"><div class="h-dim-bar-inner" style="width:40%;background:var(--yry-fail)"></div></div>
+      <div class="h-dim-foot">
+        <div class="h-dim-weight">权重 10%</div>
+        
+      </div>
+    </div>
+<div class="h-dim-card">
+      <div class="h-dim-head">
+        <span class="h-dim-icon">🛡️</span>
+        <span class="h-dim-label">安全扫描</span>
+        
+        <span class="h-dim-score" style="color:var(--yry-pass)">100 分</span>
+      </div>
+      <div class="h-dim-bar"><div class="h-dim-bar-inner" style="width:100%;background:var(--yry-pass)"></div></div>
+      <div class="h-dim-foot">
+        <div class="h-dim-weight">权重 10%</div>
+        
+      </div>
+    </div></div>
+</div>
+
+<div class="h-section">
+  <h2>📋 检查详情</h2>
+  <div class="h-detail-list"><div class="h-detail-item">
+      <span class="h-detail-icon">✅</span>
+      <span class="h-detail-text">已配置 (8 字符)</span>
+    </div>
+<div class="h-detail-item">
+      <span class="h-detail-icon">✅</span>
+      <span class="h-detail-text">存在 — 1 机器人, 4/4 通知开关已启用</span>
+    </div>
+<div class="h-detail-item">
+      <span class="h-detail-icon">❌</span>
+      <span class="h-detail-text">0/1 webhook 就绪 (general)</span>
+    </div>
+<div class="h-detail-item">
+      <span class="h-detail-icon">⚠️</span>
+      <span class="h-detail-text">可达 (HTTP 400)</span>
+    </div>
+<div class="h-detail-item">
+      <span class="h-detail-icon">⚠️</span>
+      <span class="h-detail-text">3 份报告, 0 份近 7 天</span>
+    </div>
+<div class="h-detail-item">
+      <span class="h-detail-icon">✅</span>
+      <span class="h-detail-text">SKILL.md 格式约束全部满足</span>
+    </div>
+<div class="h-detail-item">
+      <span class="h-detail-icon">⚠️</span>
+      <span class="h-detail-text">0 条记录, 2/8 诊断触发</span>
+    </div>
+<div class="h-detail-item">
+      <span class="h-detail-icon">❌</span>
+      <span class="h-detail-text">feat/yry-self-test · 248 个未提交文件</span>
+    </div>
+<div class="h-detail-item">
+      <span class="h-detail-icon">✅</span>
+      <span class="h-detail-text">未发现风险</span>
+    </div></div>
+</div>
+
+
+    <div class="h-section">
+      <h2>🔬 D0-D7 诊断详情 <span class="h-boot-badge" title="诊断信号从 Git 历史和项目数据推导，非精确执行记忆">⚡ Git 引导</span><span class="h-diag-summary">6/8 通过</span></h2>
+      <div class="h-diag-list"><div class="h-diag-row triggered">
+        <div class="h-diag-head">
+          <span class="h-diag-id">⚠️ D0</span>
+          <span class="h-diag-label">基线偏离</span>
+          <span class="h-diag-confidence">置信度: 10</span>
+        </div>
+        <div class="h-diag-evidence">📎 248 个未提交文件 — 基线可能漂移</div><div class="h-diag-suggestion">💡 大量未提交文件增加基线偏离风险，建议分批提交并推送</div>
+      </div>
+<div class="h-diag-row ok">
+        <div class="h-diag-head">
+          <span class="h-diag-id">✅ D1</span>
+          <span class="h-diag-label">效率退化</span>
+          
+        </div>
+        
+      </div>
+<div class="h-diag-row triggered">
+        <div class="h-diag-head">
+          <span class="h-diag-id">⚠️ D2</span>
+          <span class="h-diag-label">质量退化</span>
+          <span class="h-diag-confidence">置信度: 204</span>
+        </div>
+        <div class="h-diag-evidence">📎 204 个高频修改文件 (>5 次/月) — 质量热点</div><div class="h-diag-suggestion">💡 高频修改文件可能是质量热点，建议增加单元测试覆盖和代码审查</div>
+      </div>
+<div class="h-diag-row ok">
+        <div class="h-diag-head">
+          <span class="h-diag-id">✅ D3</span>
+          <span class="h-diag-label">复杂度增长</span>
+          
+        </div>
+        
+      </div>
+<div class="h-diag-row ok">
+        <div class="h-diag-head">
+          <span class="h-diag-id">✅ D4</span>
+          <span class="h-diag-label">流程退化</span>
+          
+        </div>
+        
+      </div>
+<div class="h-diag-row ok">
+        <div class="h-diag-head">
+          <span class="h-diag-id">✅ D5</span>
+          <span class="h-diag-label">依赖退化</span>
+          
+        </div>
+        
+      </div>
+<div class="h-diag-row ok">
+        <div class="h-diag-head">
+          <span class="h-diag-id">✅ D6</span>
+          <span class="h-diag-label">文档过时</span>
+          
+        </div>
+        
+      </div>
+<div class="h-diag-row ok">
+        <div class="h-diag-head">
+          <span class="h-diag-id">✅ D7</span>
+          <span class="h-diag-label">配置漂移</span>
+          
+        </div>
+        
+      </div></div>
+    </div>
+
+<div class="h-section">
+    <h2>💡 改进建议 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">5 项</span></h2>
+    <div class="h-rec-list"><div class="h-rec-item">
+      <span class="h-rec-prio" style="color:var(--yry-fail)">🔴</span>
+      <div class="h-rec-body">
+        <div class="h-rec-source">D0 基线偏离</div>
+        <div class="h-rec-text">大量未提交文件增加基线偏离风险，建议分批提交并推送</div>
+      </div>
+    </div>
+<div class="h-rec-item">
+      <span class="h-rec-prio" style="color:var(--yry-fail)">🔴</span>
+      <div class="h-rec-body">
+        <div class="h-rec-source">D2 质量退化</div>
+        <div class="h-rec-text">高频修改文件可能是质量热点，建议增加单元测试覆盖和代码审查</div>
+      </div>
+    </div>
+<div class="h-rec-item">
+      <span class="h-rec-prio" style="color:var(--yry-warn)">🟡</span>
+      <div class="h-rec-body">
+        <div class="h-rec-source">机器人配置</div>
+        <div class="h-rec-text">在 config.json 中配置至少一个机器人的 webhook_url</div>
+      </div>
+    </div>
+<div class="h-rec-item">
+      <span class="h-rec-prio" style="color:var(--yry-warn)">🟡</span>
+      <div class="h-rec-body">
+        <div class="h-rec-source">API 可达性</div>
+        <div class="h-rec-text">检查 API_X_TOKEN 环境变量和 API 服务可达性</div>
+      </div>
+    </div>
+<div class="h-rec-item">
+      <span class="h-rec-prio" style="color:var(--yry-warn)">🟡</span>
+      <div class="h-rec-body">
+        <div class="h-rec-source">Git 仓库状态</div>
+        <div class="h-rec-text">提交并推送未提交的更改，保持工作区干净</div>
+      </div>
+    </div></div>
+  </div>
+
+<div class="h-section">
+      <h2>📦 Git 仓库状态 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">❌ feat/yry-self-test · 248 个未提交文件</span></h2>
+      <div class="h-detail-list">
+        <div class="h-detail-item"><span class="h-detail-icon">🌿</span><span class="h-detail-text">分支: <strong>feat/yry-self-test</strong></span></div>
+        <div class="h-detail-item"><span class="h-detail-icon">📝</span><span class="h-detail-text">未提交文件: 248 个</span></div>
+        
+        
+      </div>
+    </div>
+<div class="h-section">
+      <h2>🛡️ 安全扫描 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">✅ 未发现风险</span></h2>
+      <div class="h-placeholder">未发现安全风险 — 未检测到硬编码凭据、密钥或 Token 泄露</div>
+    </div>
+
+<div class="h-section">
+  <h2>🔗 相关资源</h2>
+  <div class="h-links">
+    <a class="h-link" href="../../docs/自循环报告/">📊 自循环报告</a>
+    <a class="h-link" href="../../docs/故事任务面板/">📋 故事任务面板</a>
+    <a class="h-link" href="../../docs/index.html">📄 文档中心</a>
+    <a class="h-link" href="../../docs/健康报告/">📈 历史报告</a>
+  </div>
+</div>
+
+<div class="h-footer">
+  健康报告 · 2026-06-10 03:34:01<br>
+  <span style="color:var(--yry-text3)">由 rui-bot health 自动生成 · </span>
+  <a href="../../docs/健康报告/">查看历史</a>
+</div>
+
+</div>
+<script src="../../cdn/shared.js"></script>
+</body>
+</html>

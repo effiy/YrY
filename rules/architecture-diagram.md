@@ -36,7 +36,7 @@ paths:
 使用 JetBrains Mono（等宽，技术美学）：
 
 ```html
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../../cdn/fonts.css">
 ```
 
 | 元素 | 字号 | 字重 | 颜色 |

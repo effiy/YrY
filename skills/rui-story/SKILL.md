@@ -255,55 +255,9 @@ flowchart LR
 
 ## `/rui-story remove <name>` — 删除故事本地目录
 
-> **仅操作本地文件系统。`<name>` 必填。**
+> 详细规约见 **[commands/remove.md](commands/remove.md)**。
 >
-> 删除 `docs/故事任务面板/<name>/` 整个目录及其所有内容。不查询远端 API、不删除远端文档、不触发任何网络请求。
-> **破坏性操作，执行前需确认。远端数据不受 remove 任何影响。**
-
-```mermaid
-flowchart LR
-    PARSE["解析 name（必填）"]:::op --> CHECK["检查本地目录是否存在<br/>docs/故事任务面板/&lt;name&gt;/"]:::op
-    CHECK -->|"不存在"| NOTFOUND["提示目录不存在<br/>终止操作"]:::out
-    CHECK -->|"存在"| SCAN["扫描目录内容<br/>文件数 + 总大小"]:::op
-    SCAN --> SHOW["列出待删除文件清单"]:::out
-    SHOW --> CONFIRM{"用户确认?"}
-    CONFIRM -->|"是"| DEL["删除整个目录<br/>docs/故事任务面板/&lt;name&gt;/"]:::danger
-    CONFIRM -->|"否"| ABORT["取消操作"]:::out
-    DEL --> REPORT["输出删除摘要"]:::out
-
-
-```
-
-**执行流程**：
-
-1. **解析 name（必填）** — `<name>` 为纯语义 kebab-case，不加项目名前缀。无 name 时提示用法后终止
-2. **检查本地目录** — 确认 `docs/故事任务面板/<name>/` 存在。不存在则提示并终止，**不查询远端**
-3. **扫描内容** — 统计目录内文件数、总大小，列出所有文件清单
-4. **展示清单** — 列出待删除的全部文件（路径 + 大小）+ 目录本身
-5. **等待确认** — 用户明确确认后才执行删除，不可跳过，不可默认 yes
-6. **执行删除** — `rm -rf docs/故事任务面板/<name>/`，删除整个目录及所有内容
-7. **输出摘要** — 已删除文件数、释放空间、删除的目录路径
-
-**输出示例**：
-
-```
-🔍 检查 docs/故事任务面板/rui-story/...
-
-待删除目录:
-  docs/故事任务面板/rui-story/
-
-目录内容 (5 个文件，约 87K):
-  故事任务.md             (20.2K)
-  场景-1-登录流程/index.md        (16.5K)
-  场景-1-登录流程.html      (12.8K)
-  知识图谱.json           (10.9K)
-  知识图谱.html           (7.3K)
-
-⚠️  即将删除整个目录及 5 个文件，释放约 87K。此操作不可撤销。确认？(y/n)
-
-✅ 已删除 docs/故事任务面板/rui-story/，释放 87K。
-💡 远端文档不受影响，可通过 /rui-story sync rui-story 重新拉取。
-```
+> 仅操作本地文件系统。破坏性操作，执行前需确认。远端数据不受影响。
 
 ## 核心规则
 
@@ -338,6 +292,17 @@ flowchart LR
 | 9 | 每次 rui/rui-story 写入操作必须更新故事版本号，追加 version_history 记录 | 操作无效 |
 | 10 | 每次 rui 操作（doc/code/update/yry）必须生成或更新对应故事的任务内容 | 操作不完整 |
 
+## 降级策略
+
+| 情况 | 降级行为 |
+|------|---------|
+| `API_X_TOKEN` 缺失 | overview/list/show/health → 提示配置 token，不阻断 |
+| 远端 API 不可达 | 输出错误详情，标注 `远端不可达` |
+| 远端无匹配故事 | show → 列出已知故事名；sync → 提示使用 recommend |
+| sync 脚本不存在 | 提示 rui-import 未安装 |
+| merge-to-main 合并冲突 | 提示手动解决冲突后 push |
+| merge-to-main stash 失败 | 终止操作，不丢失未提交变更 |
+
 ## 生效标志
 
 ```mermaid
@@ -368,5 +333,19 @@ flowchart LR
     RUI["/rui<br/>SDLC 编排"]:::rui -->|"doc 创建文档"| PANEL["远端 故事任务面板/"]:::panel
     RS["/rui-story<br/>面板管理"]:::story -->|"查询 + 同步"| PANEL
 
-
+    classDef rui fill:#3d59a1,color:#fff
+    classDef panel fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
+    classDef story fill:#34d399,color:#000
 ```
+
+## 自循环
+
+> 故事面板状态轮询。Agent 可按间隔周期性查询远端故事状态变更。
+
+| 属性 | 值 |
+|------|-----|
+| 推荐间隔 | `*/5 * * * *`（每 5 分钟） |
+| 触发条件 | 有活跃故事（状态非"完成"） |
+| 终止条件 | 所有故事状态为"完成" / `API_X_TOKEN` 失效 |
+| 迭代动作 | `overview` 查询远端 → 对比上次状态 → 有变化时输出变更摘要 |
+| 收敛判定 | 无状态变更或全部故事闭合 |

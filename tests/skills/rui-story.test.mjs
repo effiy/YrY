@@ -36,16 +36,11 @@ describe('rui-story skill', () => {
       assert.ok(content.length > 100, 'rui-story.mjs should have content');
     });
 
-    it('collect.mjs exists and parses', () => {
-      assert.ok(fileExists(`${SKILL_DIR}/collect.mjs`), 'collect.mjs must exist');
-      const content = readFile(`${SKILL_DIR}/collect.mjs`);
-      assert.ok(content.length > 50, 'collect.mjs should have content');
-    });
-
-    it('status.mjs exists and parses', () => {
-      assert.ok(fileExists(`${SKILL_DIR}/status.mjs`), 'status.mjs must exist');
-      const content = readFile(`${SKILL_DIR}/status.mjs`);
-      assert.ok(content.length > 50, 'status.mjs should have content');
+    // collect/status functionality merged into lib/extract.mjs + lib/format.mjs
+    it('lib/extract.mjs exists and parses', () => {
+      assert.ok(fileExists(`${SKILL_DIR}/lib/extract.mjs`), 'lib/extract.mjs must exist');
+      const content = readFile(`${SKILL_DIR}/lib/extract.mjs`);
+      assert.ok(content.length > 50, 'lib/extract.mjs should have content');
     });
 
     it('rui-story.mjs --help outputs usage', () => {

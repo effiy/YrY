@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>🧩 场景-4-存量页面迁移 · 测试面板</title>
 <!-- ═══ CDN: YrY 共享样式 ═══ -->
-<link rel="stylesheet" href="../../../../../cdn/shared.css">
-<link rel="stylesheet" href="../../../../../cdn/theme.css">
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
 <style>:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--skip:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
@@ -115,19 +115,22 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 .footer-note{text-align:center;color:var(--text3);font-size:.74rem;margin-top:32px;padding-bottom:16px}
 .footer-note a{color:var(--accent);text-decoration:none}
 .footer-note a:hover{text-decoration:underline}
-.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}</style>
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}.tab .tab-kbd{font-size:.58rem;color:var(--text3);background:rgba(255,255,255,.06);border-radius:3px;padding:1px 5px;margin-left:5px;vertical-align:middle;font-family:monospace}
+.tab.on .tab-kbd{background:rgba(255,193,7,.15);color:var(--accent)}
+</style>
 </head>
 <body>
 <div class="container">
 
   <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-cdn · CDN 共享前端资源管理</span><span class="bc-sep">/</span><span class="bc-current">场景 4 · 存量页面迁移</span><span class="bc-sep">/</span><span class="bc-current">🧪 测试面板</span></nav>
 <nav class="cross-nav">
-<a class="cross-link" href="计划清单.html">📋 计划清单</a><span class="cross-sep">·</span>
-<a class="cross-link" href="架构图.html">📐 架构图</a><span class="cross-sep">·</span>
-<a class="cross-link" href="知识图谱.html">🔗 知识图谱</a><span class="cross-sep">·</span>
-<span class="cross-link on">🧪 测试面板</span><span class="cross-sep">·</span>
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<span class="cross-link on">🧪 测试</span><span class="cross-sep">·</span>
 <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
-<a class="cross-link" href="审查.html">📝 审查</a>
+<a class="cross-link" href="审查.html">📝 审计</a>
 </nav>
   <div class="header">
     <h1>🧩 <span class="accent">场景-4-存量页面迁移 · 测试面板</span></h1>
@@ -136,15 +139,23 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 
   <div class="stats-grid" id="statsRow"></div>
   <div class="bar-wrap"><div class="bar-outer" id="bar" title="点击进度条筛选状态"></div></div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both" id="toolbar">
+    <div class="search-wrap"><span class="si">🔍</span><input id="searchInput" type="text" placeholder="搜索测试…" oninput="onSearch(this.value)"></div>
+    <button class="btn" onclick="expandAllSuites()">📂 展开全部</button>
+    <button class="btn" onclick="collapseAllSuites()">📁 收起全部</button>
+    <button class="btn" id="btnSortDur" onclick="toggleSort()">⏱ 耗时排序</button>
+    <button class="btn" onclick="copyResultsMd()">📋 复制 MD</button>
+    <span style="font-size:.72rem;color:var(--text3);margin-left:auto;white-space:nowrap" id="navStatus"></span>
+  </div>
 
   <div class="tabs">
-    <span class="tab on" data-panel="files">📁 测试文件</span>
-    <span class="tab" data-panel="results">📊 执行结果</span>
-    <span class="tab" data-panel="normal">✅ 正常路径</span>
-    <span class="tab" data-panel="boundary">⚠️ 边界/异常</span>
-    <span class="tab" data-panel="slow">🐢 慢测试</span>
-    <span class="tab" data-panel="perf">📈 性能测试</span>
-    <span class="tab" data-panel="gate">🚦 门禁</span>
+    <span class="tab on" data-panel="files">📁 测试文件<span class="tab-kbd">1</span></span>
+    <span class="tab" data-panel="results">📊 执行结果<span class="tab-kbd">2</span></span>
+    <span class="tab" data-panel="normal">✅ 正常路径<span class="tab-kbd">3</span></span>
+    <span class="tab" data-panel="boundary">⚠️ 边界/异常<span class="tab-kbd">4</span></span>
+    <span class="tab" data-panel="slow">🐢 慢测试<span class="tab-kbd">5</span></span>
+    <span class="tab" data-panel="perf">📈 性能测试<span class="tab-kbd">6</span></span>
+    <span class="tab" data-panel="gate">🚦 门禁<span class="tab-kbd">7</span></span>
   </div>
 
   <div class="panel on" id="panelFiles">
@@ -205,6 +216,8 @@ function renderStats(){
   document.getElementById('statsRow').innerHTML='<div class="stat-card" onclick="filterByStatus(\'all\')" id="statAll"><div class="val t">'+t+'</div><div class="lbl">总计断言</div></div><div class="stat-card" onclick="filterByStatus(\'passed\')" id="statPassed"><div class="val p">'+p+'</div><div class="lbl">✅ 通过 · '+passPct+'%</div></div><div class="stat-card" onclick="filterByStatus(\'failed\')" id="statFailed"><div class="val f">'+f+'</div><div class="lbl">❌ 失败</div></div><div class="stat-card" onclick="filterByStatus(\'skipped\')" id="statSkipped"><div class="val s">'+sk+'</div><div class="lbl">⏭️ 跳过</div></div><div class="stat-card"><div class="val d">'+dur+'</div><div class="lbl">⏱ 耗时</div></div>';
   var pp=t>0?(p/t*100):0,fp=t>0?(f/t*100):0,sp=t>0?(sk/t*100):0;
   document.getElementById('bar').innerHTML='<div class="seg p" style="width:'+pp+'%"></div><div class="seg f" style="width:'+fp+'%"></div><div class="seg s" style="width:'+sp+'%"></div>';
+  var ns=document.getElementById('navStatus');if(ns)ns.textContent='🧪 测试 · '+p+'/'+t+' 通过'
+
 }
 
 var CAT_ICONS={skills:'⚙️',agents:'🤖',rules:'📏',integration:'🔗',lib:'📦'};
@@ -236,7 +249,7 @@ function renderResults(){
     if(resultQuery){var mn=name.toLowerCase().includes(resultQuery),mt=r.tests.some(function(t){return t.name.toLowerCase().includes(resultQuery)||(t.error&&t.error.toLowerCase().includes(resultQuery))});if(!mn&&!mt)continue}
     var hasFail=r.failed>0,tests=r.tests;if(sortByDur)tests=[].concat(tests).sort(function(a,b){return(b.duration||0)-(a.duration||0)});
     var maxDur=Math.max.apply(null,tests.map(function(t){return t.duration||0}).concat([1]));
-    html+='<div class="suite'+(hasFail?' open':'')+'"><div class="suite-head" data-action="toggle"><span class="suite-arrow">▶</span><span class="suite-name">🧪 '+esc(name)+'</span><span class="s-meta">'+(r.passed>0?'<span class="sm p">✅ '+r.passed+'</span>':'')+(r.failed>0?'<span class="sm f">❌ '+r.failed+'</span>':'')+(r.skipped>0?'<span class="sm" style="color:var(--skip)">⏭️ '+r.skipped+'</span>':'')+'</span></div><div class="suite-body">';
+    html+='<div class="suite'+(hasFail?' open':'')+'"><div class="s-head" ><span class="s-arrow">▶</span><span class="s-name">🧪 '+esc(name)+'</span><span class="s-meta">'+(r.passed>0?'<span class="sm p">✅ '+r.passed+'</span>':'')+(r.failed>0?'<span class="sm f">❌ '+r.failed+'</span>':'')+(r.skipped>0?'<span class="sm" style="color:var(--skip)">⏭️ '+r.skipped+'</span>':'')+'</span></div><div class="s-body">';
     for(var j=0;j<tests.length;j++){var t=tests[j];if(resultQuery&&!t.name.toLowerCase().includes(resultQuery)&&!(t.error&&t.error.toLowerCase().includes(resultQuery)))continue;
       var durMs=t.duration||0,barPct=maxDur>0?Math.round(durMs/maxDur*100):0,durClass=durMs>500?'very-slow':durMs>SLOW_THRESHOLD?'slow':'';
       html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'" onclick="copyTestName(\''+esc(t.name)+'\')" title="点击复制测试名"><span class="t-icon">'+(t.status==='passed'?'✅':t.status==='failed'?'❌':t.status==='skipped'?'⏭️':'⬜')+'</span><span class="t-name">'+esc(t.name)+'</span>'+(t.error?'<span class="t-err" title="'+esc(t.error)+'">'+esc(t.error)+'</span>':'')+'<span class="t-dur '+durClass+'"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(t.duration)+(durMs>SLOW_THRESHOLD?'<span class="slow-warn">🐢</span>':'')+'</span></div>'}
@@ -278,8 +291,10 @@ function renderBoundary(){
   container.innerHTML=html
 }
 
-function viewSource(relPath){var overlay=document.getElementById('modalOverlay');document.getElementById('modalTitle').textContent=relPath;document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>';overlay.classList.add('show');fetch('../../../../../'+relPath).then(function(resp){if(!resp.ok)throw new Error('HTTP '+resp.status);return resp.text()}).then(function(text){var lines=text.split('\n');document.getElementById('modalBody').innerHTML='<pre>'+lines.map(function(l,i){return'<span class="ln">'+(i+1)+'</span>'+esc(l)}).join('\n')+'</pre>'}).catch(function(e){document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(e.message)+'</div>'})}
+function viewSource(relPath){var overlay=document.getElementById('modalOverlay');document.getElementById('modalTitle').textContent=relPath;document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>';overlay.classList.add('show');fetch('../../../../'+relPath).then(function(resp){if(!resp.ok)throw new Error('HTTP '+resp.status);return resp.text()}).then(function(text){var lines=text.split('\n');document.getElementById('modalBody').innerHTML='<pre>'+lines.map(function(l,i){return'<span class="ln">'+(i+1)+'</span>'+esc(l)}).join('\n')+'</pre>'}).catch(function(e){document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(relPath)+'<br><small style="display:block;margin-top:8px;color:var(--text3)">'+esc(e.message)+'</small><br><a href="../../../../'+relPath+'" target="_blank" style="display:inline-block;margin-top:14px;color:var(--cyan);text-decoration:none;font-size:.82rem">在新标签页中打开 \u2197</a></div>'})}
 function closeModal(){document.getElementById('modalOverlay').classList.remove('show')}
+function onSearch(q){var lq=q.toLowerCase();statusFilter='';var cards=document.querySelectorAll('.stat-card');for(var i=0;i<cards.length;i++){cards[i].classList.remove('active-filter')};if(activePanel==='results'){resultQuery=lq;renderResults()}else if(activePanel==='files'){fileQuery=lq;renderFiles()}else{resultQuery=lq;fileQuery=lq;renderResults();renderFiles()}}
+function resetFilters(){resultQuery='';fileQuery='';statusFilter='';var inp=document.getElementById('searchInput');if(inp)inp.value='';var cards=document.querySelectorAll('.stat-card');for(var i=0;i<cards.length;i++){cards[i].classList.remove('active-filter')}}
 
 function expandAllSuites(){document.querySelectorAll('#resultsContent .suite').forEach(function(c){c.classList.add('open')})}
 function collapseAllSuites(){document.querySelectorAll('#resultsContent .suite').forEach(function(c){c.classList.remove('open')})}
@@ -313,6 +328,6 @@ document.getElementById('modalOverlay').addEventListener('click',function(e){if(
 document.getElementById('bar').addEventListener('click',function(e){var rect=this.getBoundingClientRect(),pct=(e.clientX-rect.left)/rect.width;if(pct<.33)filterByStatus('passed');else if(pct<.66)filterByStatus('failed');else filterByStatus('skipped')});
 window.addEventListener('DOMContentLoaded',function(){renderStats();switchPanel('files')});
 </script>
-<script src="../../../../../cdn/shared.js"></script>
+<script src="../../../../cdn/shared.js"></script>
 </body>
 </html>

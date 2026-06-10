@@ -20,7 +20,7 @@ cdn/
 
 **加载顺序**:
 ```html
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../../cdn/fonts.css">
 <link rel="stylesheet" href="../../../../cdn/shared.css">
 <link rel="stylesheet" href="../../../../cdn/theme-mono.css">
 <script src="../../../../cdn/shared.js"></script>

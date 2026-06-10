@@ -56,7 +56,7 @@ flowchart TB
 | ③ 改进 | 诊断结论 | proposals.jsonl（append-only） | 否 |
 | ④ 评估 | proposals.jsonl + 前后记忆 | E1–E4 闭合/退化 | 否（单次不阻断） |
 
-**可执行工具**: `node skills/rui/proposals.mjs` — D0-D7 诊断引擎 + 提案生成 + E1-E4 评估。`node skills/rui-story/collect.mjs` — 指标采集 + 异常检测。
+**可执行工具**: `node lib/proposals.mjs` — D0-D7 诊断引擎 + 提案生成 + E1-E4 评估。`node skills/rui-story/collect.mjs` — 指标采集 + 异常检测。
 
 ## 适用
 

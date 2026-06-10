@@ -22,7 +22,7 @@ describe('rui skill', () => {
 
     it('has command reference section', () => {
       const content = readFile(`${SKILL_DIR}/SKILL.md`);
-      assert.ok(hasSection(content, '选哪条命令'), 'must have command selection guide');
+      assert.ok(hasSection(content, '命令路由'), 'must have command routing table');
     });
 
     it('has pipeline overview', () => {
@@ -32,7 +32,7 @@ describe('rui skill', () => {
 
     it('has core constraints', () => {
       const content = readFile(`${SKILL_DIR}/SKILL.md`);
-      assert.ok(hasSection(content, '核心约束'), 'must have core constraints');
+      assert.ok(hasSection(content, '核心规则'), 'must have core rules');
     });
 
     it('has at least one mermaid diagram', () => {
@@ -67,27 +67,31 @@ describe('rui skill', () => {
     });
 
     it('branch-check.mjs exists and parses', () => {
-      assert.ok(fileExists(`${SKILL_DIR}/branch-check.mjs`), 'branch-check.mjs must exist');
-      const content = readFile(`${SKILL_DIR}/branch-check.mjs`);
+      const LIB_DIR = 'lib';
+      assert.ok(fileExists(`${LIB_DIR}/branch-check.mjs`), 'lib/branch-check.mjs must exist');
+      const content = readFile(`${LIB_DIR}/branch-check.mjs`);
       assert.ok(content.includes('feat/'), 'must reference feat/ branch pattern');
     });
 
     it('recommend.mjs exists and parses', () => {
-      assert.ok(fileExists(`${SKILL_DIR}/recommend.mjs`), 'recommend.mjs must exist');
-      const content = readFile(`${SKILL_DIR}/recommend.mjs`);
-      assert.ok(content.length > 100, 'recommend.mjs should have content');
+      const LIB_DIR = 'lib';
+      assert.ok(fileExists(`${LIB_DIR}/recommend.mjs`), 'lib/recommend.mjs must exist');
+      const content = readFile(`${LIB_DIR}/recommend.mjs`);
+      assert.ok(content.length > 100, 'lib/recommend.mjs should have content');
     });
 
     it('audit.mjs exists and parses', () => {
-      assert.ok(fileExists(`${SKILL_DIR}/audit.mjs`), 'audit.mjs must exist');
-      const content = readFile(`${SKILL_DIR}/audit.mjs`);
-      assert.ok(content.length > 50, 'audit.mjs should have content');
+      const LIB_DIR = 'lib';
+      assert.ok(fileExists(`${LIB_DIR}/audit.mjs`), 'lib/audit.mjs must exist');
+      const content = readFile(`${LIB_DIR}/audit.mjs`);
+      assert.ok(content.length > 50, 'lib/audit.mjs should have content');
     });
 
     it('proposals.mjs exists and parses', () => {
-      assert.ok(fileExists(`${SKILL_DIR}/proposals.mjs`), 'proposals.mjs must exist');
-      const content = readFile(`${SKILL_DIR}/proposals.mjs`);
-      assert.ok(content.length > 50, 'proposals.mjs should have content');
+      const LIB_DIR = 'lib';
+      assert.ok(fileExists(`${LIB_DIR}/proposals.mjs`), 'lib/proposals.mjs must exist');
+      const content = readFile(`${LIB_DIR}/proposals.mjs`);
+      assert.ok(content.length > 50, 'lib/proposals.mjs should have content');
     });
   });
 

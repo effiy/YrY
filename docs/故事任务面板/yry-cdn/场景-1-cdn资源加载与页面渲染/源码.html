@@ -28,7 +28,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .bar-wrap{margin-bottom:32px;animation:fadeInDown .5s .12s ease both}
 .bar-outer{height:8px;border-radius:4px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
 .bar-outer .seg{height:100%;transition:width .5s ease;min-width:2px}
-.bar-outer .seg.css{background:var(--accent)}.bar-outer .seg.js{background:var(--pass)}.bar-outer .seg.font{background:var(--cyan)}.bar-outer .seg.doc{background:var(--skip)}
 .tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:0;animation:fadeInDown .5s .18s ease both}
 .tab{padding:10px 20px;cursor:pointer;font-size:.84rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none;position:relative}
 .tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
@@ -67,11 +66,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .file-card .fc-desc{font-size:.74rem;color:var(--text2);margin-top:4px;line-height:1.4}
 .file-card .fc-meta{display:flex;gap:12px;margin-top:6px;font-size:.7rem;color:var(--text3);flex-wrap:wrap}
 .file-card .fc-badge{font-size:.66rem;padding:2px 8px;border-radius:10px;font-weight:600}
-.file-card .fc-badge.css{background:rgba(255,193,7,.12);color:var(--accent)}
-.file-card .fc-badge.js{background:rgba(34,197,94,.12);color:var(--pass)}
-.file-card .fc-badge.font{background:rgba(34,211,238,.12);color:var(--cyan)}
-.file-card .fc-badge.doc{background:rgba(107,114,128,.12);color:var(--skip)}
-.file-card .fc-badge.meta{background:rgba(255,255,255,.04);color:var(--text3)}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.show{display:flex}
 .modal{background:var(--bg-raised);border:var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);width:100%;max-width:900px;max-height:85vh;display:flex;flex-direction:column;animation:modalIn .2s ease}
@@ -99,23 +93,26 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .gate-lines .ok{color:var(--pass)}.gate-lines .warn{color:var(--warn)}
 .footer-note{text-align:center;color:var(--text3);font-size:.74rem;margin-top:32px;padding-bottom:16px}
 .footer-note a{color:var(--accent);text-decoration:none}.footer-note a:hover{text-decoration:underline}
-a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+a[target="_blank"]::after{content:" \2197";font-size:.7em;opacity:.5}
 @media(max-width:640px){.container{padding:24px 12px 60px}.header h1{font-size:1.5rem}.stats-grid{gap:6px}.stat-card{padding:12px 14px;min-width:65px}.stat-card .val{font-size:1.3rem}.file-grid{grid-template-columns:1fr}.dep-graph{flex-direction:column}}
 .checklist{list-style:none;padding:0}.checklist li{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;margin-bottom:4px;font-size:.8rem;color:var(--text2);border-radius:6px}
 .checklist li .chk{color:var(--pass);flex-shrink:0}
-.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}</style>
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
+.bar-outer .seg.css{background:var(--accent)}.bar-outer .seg.js{background:#22c55e}.bar-outer .seg.font{background:var(--cyan)}.bar-outer .seg.config{background:#c084fc}.bar-outer .seg.test{background:#f59e0b}
+.file-card .fc-badge.css{background:rgba(255,193,7,.12);color:var(--accent)}.file-card .fc-badge.js{background:rgba(34,197,94,.12);color:#22c55e}.file-card .fc-badge.font{background:rgba(34,211,238,.12);color:var(--cyan)}.file-card .fc-badge.config{background:rgba(192,132,252,.12);color:#c084fc}.file-card .fc-badge.test{background:rgba(245,158,11,.12);color:#f59e0b}
+</style>
 </head>
 <body>
 <div class="container">
 <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-cdn · CDN 共享前端资源管理</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · CDN 资源加载与页面渲染</span><span class="bc-sep">/</span><span class="bc-current">📄 源码</span></nav>
 <nav class="cross-nav">
-<a class="cross-link" href="计划清单.html">📋 计划清单</a><span class="cross-sep">·</span>
-<a class="cross-link" href="架构图.html">📐 架构图</a><span class="cross-sep">·</span>
-<a class="cross-link" href="知识图谱.html">🔗 知识图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
 <span class="cross-link on">📄 源码</span><span class="cross-sep">·</span>
-<a class="cross-link" href="测试面板.html">🧪 测试面板</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
 <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
-<a class="cross-link" href="审查.html">📝 审查</a>
+<a class="cross-link" href="审查.html">📝 审计</a>
 </nav>
 <div class="header">
   <h1>📄 <span class="accent">CDN资源加载 · 源码</span></h1>
@@ -128,115 +125,103 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <div class="tabs">
   <span class="tab on" data-panel="files">📁 文件清单</span>
   <span class="tab" data-panel="browse">📂 目录浏览</span>
-  <span class="tab" data-panel="deps">🔗 加载依赖</span>
-  <span class="tab" data-panel="spec">📋 规范清单</span>
+  <span class="tab" data-panel="deps">🔗 模块拓扑</span>
+  <span class="tab" data-panel="spec">📋 模块清单</span>
 </div>
 
-<div class="panel on" id="panelFiles"><div id="filesContent"></div></div>
+<div class="panel on" id="panelFiles"><div style="margin-bottom:12px;display:flex;gap:8px"><div class="search-wrap"><span class="si">🔍</span><input id="fileSearch" placeholder="搜索文件…" oninput="onSearch(this.value)"></div></div><div id="filesContent"></div></div>
 <div class="panel" id="panelBrowse"><div id="browseContent"></div></div>
 <div class="panel" id="panelDeps">
-  <div class="card"><h2>Cat B (System) 加载链</h2>
-    <div class="dep-graph"><span class="dep-node root">fonts.css</span><span class="dep-arrow">→</span><span class="dep-node">shared.css</span><span class="dep-arrow">→</span><span class="dep-node">theme.css</span><span class="dep-arrow">→</span><span class="dep-node leaf">shared.js</span></div>
-  </div>
-  <div class="card"><h2>Cat A (Mono) 加载链</h2>
-    <div class="dep-graph"><span class="dep-node root">fonts.css</span><span class="dep-arrow">→</span><span class="dep-node">shared.css</span><span class="dep-arrow">→</span><span class="dep-node" style="border-color:rgba(34,211,238,.3);color:var(--cyan)">theme-mono.css</span><span class="dep-arrow">→</span><span class="dep-node leaf">shared.js</span></div>
-  </div>
-  <div class="card"><h2>⚠️ 加载顺序约束</h2>
-    <ul class="checklist">
-      <li><span class="chk">①</span> fonts.css 最先 — @font-face 声明使浏览器尽早开始字体下载 (Cat A)</li>
-      <li><span class="chk">②</span> shared.css 先于主题 — CSS Reset 必须在组件样式之前应用</li>
-      <li><span class="chk">③</span> 主题 CSS 在 shared.js 前 — JS 操纵 .yry-* 类名需 CSS 已定义</li>
-      <li><span class="chk">④</span> shared.js 最后 — 事件委托绑定在 DOM + CSS 就绪后</li>
-    </ul>
-  </div>
+
+    <div class="card"><h2>Cat B (System) 加载链</h2>
+      <div class="dep-graph"><span class="dep-node root">fonts.css</span><span class="dep-arrow">→</span><span class="dep-node">shared.css</span><span class="dep-arrow">→</span><span class="dep-node">theme.css</span><span class="dep-arrow">→</span><span class="dep-node leaf">shared.js</span></div>
+    </div>
+    <div class="card"><h2>Cat A (Mono) 加载链</h2>
+      <div class="dep-graph"><span class="dep-node root">fonts.css</span><span class="dep-arrow">→</span><span class="dep-node">shared.css</span><span class="dep-arrow">→</span><span class="dep-node" style="border-color:rgba(34,211,238,.3);color:var(--cyan)">theme-mono.css</span><span class="dep-arrow">→</span><span class="dep-node leaf">shared.js</span></div>
+    </div>
+    <div class="card"><h2>加载顺序约束</h2>
+      <ul class="checklist">
+        <li><span class="chk">①</span> fonts.css 最先 — @font-face 声明使浏览器尽早开始字体下载</li>
+        <li><span class="chk">②</span> shared.css 先于主题 — CSS Reset 必须在组件样式之前应用</li>
+        <li><span class="chk">③</span> 主题 CSS 在 shared.js 前 — JS 操纵 .yry-* 类名需 CSS 已定义</li>
+        <li><span class="chk">④</span> shared.js 最后 — 事件委托绑定在 DOM + CSS 就绪后</li>
+      </ul></div>
 </div>
 <div class="panel" id="panelSpec">
-  <div class="card"><h2>📋 文件规范检查</h2>
-    <ul class="checklist">
-      <li><span class="chk">✅</span> shared.css — Reset + 6 @keyframes + 面包屑 + 导航 + Toolbar + Toast · 94行</li>
-      <li><span class="chk">✅</span> shared.js — YrY IIFE · 9 API · textContent 防 XSS · 100行</li>
-      <li><span class="chk">✅</span> theme.css — :root 14 变量 + 14 System 组件 + @media ≤768px · 224行</li>
-      <li><span class="chk">✅</span> theme-mono.css — #020617 + JetBrains Mono + 7 Mono 组件 · 108行</li>
-      <li><span class="chk">✅</span> fonts.css — 4 @font-face · font-display: swap · woff2 · 30行</li>
-      <li><span class="chk">✅</span> fonts/ — 4 woff2 字重齐全 (400/500/600/700) · ~86 KB</li>
-      <li><span class="chk">✅</span> package.json — 8 字段 · files 含 fonts · v1.1.0</li>
-      <li><span class="chk">✅</span> README.md — 使用指南 + 组件速查 + API 参考 + 迁移步骤 · 117行</li>
-    </ul>
-  </div>
+
+    <div class="card"><h2>📋 文件规范检查</h2>
+      <ul class="checklist">
+        <li><span class="chk">✅</span> shared.css — Reset + 6 @keyframes + 面包屑 + 导航 + Toolbar + Toast · 98行</li>
+        <li><span class="chk">✅</span> shared.js — YrY IIFE · 9 API · textContent 防 XSS · 106行</li>
+        <li><span class="chk">✅</span> theme.css — :root 14 变量 + 14 System 组件 + @media · 254行</li>
+        <li><span class="chk">✅</span> theme-mono.css — #020617 + JetBrains Mono + 7 Mono 组件 · 162行</li>
+        <li><span class="chk">✅</span> fonts.css — 4 @font-face · font-display:swap · woff2 · 35行</li>
+        <li><span class="chk">✅</span> fonts/ — 4 woff2 字重齐全 (400/500/600/700) · ~87 KB</li>
+      </ul>
+    </div>
 </div>
 
-<div class="footer-note">YrY 自检体系 · 场景源码 · <a href="../../../index.html">文档中心</a></div>
+<div class="footer-note">YrY CDN 资源 · 场景源码 · <a href="../../../index.html">文档中心</a></div>
 </div>
 
 <div class="modal-overlay" id="modalOverlay"><div class="modal"><div class="m-head"><span class="m-title" id="modalTitle"></span><button class="m-close" onclick="closeModal()">✕</button></div><div class="m-body" id="modalBody"></div></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
+
 var activePanel='files',fileQuery='',focusIdx=-1;
-var manifest={"files":[
-  {"name":"shared.css","path":"cdn/shared.css","cat":"css","lines":94,"size":5900,"desc":"全局基础样式 — Reset · 6 动画 · 面包屑 · cross-nav · Toolbar · Toast","loadOrder":2,"dept":"所有页面"},
-  {"name":"shared.js","path":"cdn/shared.js","cat":"js","lines":100,"size":5100,"desc":"YrY IIFE — 9 API: toast/copyCmd/switchPanel/initSuiteToggle/expandAllSuites/collapseAllSuites/fmtDur/esc/clipboardWrite","loadOrder":4,"dept":"所有页面"},
-  {"name":"theme.css","path":"cdn/theme.css","cat":"css","lines":224,"size":11300,"desc":"System 主题 (Cat B) — :root 14 令牌 + 14 组件 + @media ≤768px","loadOrder":3,"dept":"Cat B 页面"},
-  {"name":"theme-mono.css","path":"cdn/theme-mono.css","cat":"css","lines":108,"size":6100,"desc":"Mono 主题 (Cat A) — 深蓝黑底 #020617 · JetBrains Mono · 7 组件","loadOrder":3,"dept":"Cat A 页面"},
-  {"name":"fonts.css","path":"cdn/fonts.css","cat":"font","lines":30,"size":800,"desc":"自托管 JetBrains Mono — 4 @font-face · font-display: swap","loadOrder":1,"dept":"Cat A 页面"},
-  {"name":"jetbrains-mono-400.woff2","path":"cdn/fonts/jetbrains-mono-latin-400-normal.woff2","cat":"font","lines":"—","size":21200,"desc":"JetBrains Mono 400 字重 woff2","loadOrder":1,"dept":"Cat A"},
-  {"name":"jetbrains-mono-500.woff2","path":"cdn/fonts/jetbrains-mono-latin-500-normal.woff2","cat":"font","lines":"—","size":21800,"desc":"JetBrains Mono 500 字重 woff2","loadOrder":1,"dept":"Cat A"},
-  {"name":"jetbrains-mono-600.woff2","path":"cdn/fonts/jetbrains-mono-latin-600-normal.woff2","cat":"font","lines":"—","size":21900,"desc":"JetBrains Mono 600 字重 woff2","loadOrder":1,"dept":"Cat A"},
-  {"name":"jetbrains-mono-700.woff2","path":"cdn/fonts/jetbrains-mono-latin-700-normal.woff2","cat":"font","lines":"—","size":21900,"desc":"JetBrains Mono 700 字重 woff2","loadOrder":1,"dept":"Cat A"},
-  {"name":"README.md","path":"cdn/README.md","cat":"doc","lines":117,"size":5000,"desc":"使用指南 — 文件清单 · Cat A/B 分类 · 组件速查 · JS API · 迁移步骤","loadOrder":"—","dept":"文档"},
-  {"name":"package.json","path":"cdn/package.json","cat":"meta","lines":28,"size":614,"desc":"npm 包清单 — yry-cdn v1.1.0 · 8 字段 · 11 发布文件","loadOrder":"—","dept":"发布"}
-]};
+var manifest={"files":[{"name":"shared.css","path":"cdn/shared.css","cat":"css","lines":98,"size":5900,"desc":"全局基础样式 — Reset · 6 动画 · 面包屑 · cross-nav · Toolbar · Toast"},{"name":"theme.css","path":"cdn/theme.css","cat":"css","lines":254,"size":11300,"desc":"System 主题 (Cat B) — :root 14 令牌 + 14 组件 + @media"},{"name":"theme-mono.css","path":"cdn/theme-mono.css","cat":"css","lines":162,"size":6100,"desc":"Mono 主题 (Cat A) — 深蓝黑底 · JetBrains Mono · 7 组件"},{"name":"fonts.css","path":"cdn/fonts.css","cat":"css","lines":35,"size":800,"desc":"自托管字体 — 4 @font-face · font-display:swap"},{"name":"yry-checklist.css","path":"cdn/yry-checklist.css","cat":"css","lines":337,"size":16000,"desc":"自检面板样式 — pass/fail/warn/skip 状态 · 条目布局"},{"name":"shared.js","path":"cdn/shared.js","cat":"js","lines":106,"size":5100,"desc":"YrY IIFE — 9 API · toast/copyCmd/switchPanel/initSuiteToggle"},{"name":"fonts/ (4 woff2)","path":"cdn/fonts/","cat":"font","lines":0,"size":86800,"desc":"JetBrains Mono 400/500/600/700 · woff2 格式"},{"name":"package.json","path":"cdn/package.json","cat":"config","lines":28,"size":614,"desc":"npm 包清单 — yry-cdn v1.1.0 · 8 字段"},{"name":"README.md","path":"cdn/README.md","cat":"config","lines":117,"size":5000,"desc":"使用指南 · 文件清单 · Cat A/B · 组件速查 · 迁移步骤"},{"name":".npmignore","path":"cdn/.npmignore","cat":"config","lines":8,"size":120,"desc":"npm 发布忽略规则"},{"name":"cat-a-theme.test.mjs","path":"tests/skills/cat-a-theme.test.mjs","cat":"test","lines":62,"size":2100,"desc":"Cat A Mono 主题测试 — 颜色令牌/组件样式"},{"name":"cat-b-theme.test.mjs","path":"tests/skills/cat-b-theme.test.mjs","cat":"test","lines":75,"size":2500,"desc":"Cat B System 主题测试"},{"name":"cdn-degrade.test.mjs","path":"tests/skills/cdn-degrade.test.mjs","cat":"test","lines":140,"size":4800,"desc":"CDN 降级测试 — 离线/超时/回退"},{"name":"cdn-load-order.test.mjs","path":"tests/skills/cdn-load-order.test.mjs","cat":"test","lines":155,"size":5200,"desc":"加载顺序测试 — 4 阶段依赖"},{"name":"theme-components.test.mjs","path":"tests/skills/theme-components.test.mjs","cat":"test","lines":74,"size":2500,"desc":"组件样式测试 — 14 组件渲染"},{"name":"theme-tokens.test.mjs","path":"tests/skills/theme-tokens.test.mjs","cat":"test","lines":98,"size":3200,"desc":"CSS 变量令牌测试 — :root 变量完整性"},{"name":"shared-global.test.mjs","path":"tests/skills/shared-global.test.mjs","cat":"test","lines":83,"size":2800,"desc":"全局 API 测试 — YrY 9 API 功能"},{"name":"shared-js-api.test.mjs","path":"tests/skills/shared-js-api.test.mjs","cat":"test","lines":82,"size":2700,"desc":"JS API 测试 — 每个公开函数"},{"name":"npm-package.test.mjs","path":"tests/skills/npm-package.test.mjs","cat":"test","lines":87,"size":2900,"desc":"npm 包测试 — 发布/安装/版本"}]};
 
 function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function fmtSize(b){if(!b||b===0)return'—';if(b<1024)return b+'B';return (b/1024).toFixed(1)+'KB'}
-var CAT_ICONS={css:'🎨',js:'⚡',font:'🔤',doc:'📖',meta:'📦'};
-var CAT_LABELS={css:'CSS 样式',js:'JavaScript',font:'字体文件',doc:'文档',meta:'元数据'};
+var CAT_ICONS={"css":"🎨","js":"⚡","font":"🔤","config":"📦","test":"🧪"};
+var CAT_LABELS={"css":"CSS 样式","js":"JavaScript","font":"字体文件","config":"配置文件","test":"测试套件"};
+var CAT_ORDER=["css","js","font","config","test"];
 
 function renderStats(){
-  var files=manifest.files,total=files.length,cssLines=0,jsLines=0,totalSize=0;
-  var cc={css:0,js:0,font:0,doc:0,meta:0},cs={css:0,js:0,font:0,doc:0,meta:0};
-  for(var i=0;i<files.length;i++){var f=files[i];cc[f.cat]=(cc[f.cat]||0)+1;cs[f.cat]=(cs[f.cat]||0)+(f.size||0);if(f.cat==='css')cssLines+=f.lines||0;if(f.cat==='js')jsLines+=f.lines||0;totalSize+=f.size||0}
-  document.getElementById('statsRow').innerHTML=
-    '<div class="stat-card" onclick="filterByCat(\'all\')" id="statAll"><div class="val c">'+total+'</div><div class="lbl">📄 文件总数</div></div>'+
-    '<div class="stat-card" onclick="filterByCat(\'css\')" id="statCSS"><div class="val a">'+cc.css+'</div><div class="lbl">🎨 CSS ('+cssLines+' 行)</div></div>'+
-    '<div class="stat-card" onclick="filterByCat(\'js\')" id="statJS"><div class="val p">'+cc.js+'</div><div class="lbl">⚡ JS ('+jsLines+' 行)</div></div>'+
-    '<div class="stat-card" onclick="filterByCat(\'font\')" id="statFont"><div class="val c">'+cc.font+'</div><div class="lbl">🔤 字体 ('+fmtSize(cs.font)+')</div></div>'+
-    '<div class="stat-card"><div class="val a">'+fmtSize(totalSize)+'</div><div class="lbl">📦 总大小</div></div>';
-  var ts=totalSize||1;
-  document.getElementById('bar').innerHTML=
-    '<div class="seg css" style="width:'+(cs.css/ts*100)+'%" title="CSS: '+fmtSize(cs.css)+'"></div>'+
-    '<div class="seg js" style="width:'+(cs.js/ts*100)+'%" title="JS: '+fmtSize(cs.js)+'"></div>'+
-    '<div class="seg font" style="width:'+(cs.font/ts*100)+'%" title="字体: '+fmtSize(cs.font)+'"></div>'+
-    '<div class="seg doc" style="width:'+((cs.doc+cs.meta)/ts*100)+'%" title="文档/元数据"></div>';
+  var files=manifest.files,total=files.length,totalLines=0;
+  var cc={},cs={},cl={};
+  for(var i=0;i<CAT_ORDER.length;i++){cc[CAT_ORDER[i]]=0;cs[CAT_ORDER[i]]=0;cl[CAT_ORDER[i]]=0}
+  for(var i=0;i<files.length;i++){var f=files[i];cc[f.cat]=(cc[f.cat]||0)+1;cs[f.cat]=(cs[f.cat]||0)+(f.size||0);cl[f.cat]=(cl[f.cat]||0)+(f.lines||0);totalLines+=f.lines||0}
+  var rowHtml='<div class="stat-card" onclick="filterByCat(\'all\')" id="statAll"><div class="val c">'+total+'</div><div class="lbl">📄 文件总数</div></div>';
+  for(var o=0;o<CAT_ORDER.length;o++){var c=CAT_ORDER[o];if(!cc[c])continue;rowHtml+='<div class="stat-card" onclick="filterByCat(\''+c+'\')" id="stat'+c.charAt(0).toUpperCase()+c.slice(1)+'"><div class="val a">'+cc[c]+'</div><div class="lbl">'+(CAT_ICONS[c]||'')+' '+(CAT_LABELS[c]||c)+' ('+cl[c]+' 行)</div></div>'}
+  document.getElementById('statsRow').innerHTML=rowHtml;
+  var ts=totalLines||1,barHtml='';
+  for(var o=0;o<CAT_ORDER.length;o++){var c=CAT_ORDER[o];if(!cl[c])continue;barHtml+='<div class="seg '+c+'" style="width:'+(cl[c]/ts*100)+'%" title="'+(CAT_LABELS[c]||c)+': '+cl[c]+' 行"></div>'}
+  document.getElementById('bar').innerHTML=barHtml;
 }
 
 function renderFiles(){
   var container=document.getElementById('filesContent');
   if(!manifest||!manifest.files.length){container.innerHTML='<div class="state-msg"><div class="icon">📁</div><h3>暂无文件</h3></div>';return}
   var groups={};for(var i=0;i<manifest.files.length;i++){var f=manifest.files[i],cat=f.cat||'other';if(!groups[cat])groups[cat]=[];groups[cat].push(f)}
-  var order=['css','js','font','doc','meta'],html='';
-  for(var o=0;o<order.length;o++){var cat=order[o],files=groups[cat];if(!files||!files.length)continue;
+  var html='';
+  for(var o=0;o<CAT_ORDER.length;o++){var cat=CAT_ORDER[o],files=groups[cat];if(!files||!files.length)continue;
     html+='<div class="suite open"><div class="s-head" data-action="toggle"><span class="s-arrow">▶</span><span class="s-name">'+(CAT_ICONS[cat]||'')+' '+(CAT_LABELS[cat]||cat)+'</span><span class="s-meta">'+files.length+' 文件</span></div><div class="s-body"><div class="file-grid">';
     for(var j=0;j<files.length;j++){var f=files[j];if(fileQuery&&!f.name.toLowerCase().includes(fileQuery)&&!f.path.toLowerCase().includes(fileQuery)&&!(f.desc&&f.desc.toLowerCase().includes(fileQuery)))continue;
-      var badge='';if(f.cat==='css')badge='<span class="fc-badge css">CSS</span>';else if(f.cat==='js')badge='<span class="fc-badge js">JS</span>';else if(f.cat==='font')badge='<span class="fc-badge font">FONT</span>';else if(f.cat==='doc')badge='<span class="fc-badge doc">DOC</span>';else badge='<span class="fc-badge meta">META</span>';
-      html+='<div class="file-card" data-path="'+esc(f.path)+'" data-text="'+(f.cat!=='font'?'1':'0')+'" onclick="viewSource(\''+esc(f.path)+'\','+(f.cat!=='font')+')"><span class="fc-icon">'+(f.cat==='font'?'🔤':f.cat==='doc'?'📖':f.cat==='meta'?'📦':f.cat==='css'?'🎨':'⚡')+'</span><div class="fc-body"><div class="fc-name">'+esc(f.name)+' '+badge+'</div><div class="fc-path">'+esc(f.path)+'</div>'+(f.desc?'<div class="fc-desc">'+esc(f.desc)+'</div>':'')+'<div class="fc-meta">'+(f.lines&&f.lines!=='—'?'<span>📏 '+f.lines+' 行</span>':'')+'<span>📦 '+fmtSize(f.size)+'</span>'+(f.loadOrder!=='—'?'<span>🔢 加载序 #'+f.loadOrder+'</span>':'')+'<span>🎯 '+esc(f.dept)+'</span></div></div></div>'}
+      var badge='<span class="fc-badge '+f.cat+'">'+f.cat.toUpperCase()+'</span>';
+      html+='<div class="file-card" data-path="'+esc(f.path)+'" onclick="viewSource(\''+esc(f.path)+'\')"><span class="fc-icon">'+(CAT_ICONS[f.cat]||'📄')+'</span><div class="fc-body"><div class="fc-name">'+esc(f.name)+' '+badge+'</div><div class="fc-path">'+esc(f.path)+'</div>'+(f.desc?'<div class="fc-desc">'+esc(f.desc)+'</div>':'')+'<div class="fc-meta">'+(f.lines?'<span>📏 '+f.lines+' 行</span>':'')+'<span>📦 '+fmtSize(f.size)+'</span></div></div></div>'}
     html+='</div></div></div>'}
   container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配文件</h3></div>'
 }
 
 function renderBrowse(){
   var container=document.getElementById('browseContent');
-  var html='<div class="suite open"><div class="s-head" data-action="toggle"><span class="s-arrow">▶</span><span class="s-name">📁 cdn/</span><span class="s-meta">'+manifest.files.length+' 文件</span></div><div class="s-body">';
-  for(var i=0;i<manifest.files.length;i++){var f=manifest.files[i];var depth=(f.path.match(/\//g)||[]).length;var pad=18+depth*16;var icon=f.cat==='font'?'🔤':f.cat==='css'?'🎨':f.cat==='js'?'⚡':f.cat==='doc'?'📖':'📦';
-    html+='<div class="t-row" style="padding-left:'+pad+'px" onclick="viewSource(\''+esc(f.path)+'\','+(f.cat!=='font')+')"><span class="t-icon">'+icon+'</span><span class="t-name">'+esc(f.name)+'</span><span class="t-path">'+esc(f.path)+'</span><span class="t-meta">'+fmtSize(f.size)+'</span></div>'}
-  html+='</div></div>';container.innerHTML=html
+  var html='';
+  var dirs=["cdn/","tests/skills/"];
+  for(var d=0;d<dirs.length;d++){var dir=dirs[d];var children=manifest.files.filter(function(f){return f.path.startsWith(dir)});
+    if(!children.length)continue;
+    html+='<div class="suite open"><div class="s-head" data-action="toggle"><span class="s-arrow">▶</span><span class="s-name">📁 '+dir+'</span><span class="s-meta">'+children.length+' 文件</span></div><div class="s-body">';
+    for(var i=0;i<children.length;i++){var f=children[i];
+      html+='<div class="t-row" onclick="viewSource(\''+esc(f.path)+'\')"><span class="t-icon">'+(CAT_ICONS[f.cat]||'📄')+'</span><span class="t-name">'+esc(f.name)+'</span><span class="t-path">'+esc(f.path)+'</span><span class="t-meta">'+fmtSize(f.size)+'</span></div>'}
+    html+='</div></div>'}
+  container.innerHTML=html
 }
 
-function viewSource(relPath,isText){
+function viewSource(relPath){
   var overlay=document.getElementById('modalOverlay');
   document.getElementById('modalTitle').textContent=relPath;
   var body=document.getElementById('modalBody');
-  if(!isText){body.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)"><div style="font-size:3rem">🔤</div><p>二进制字体文件</p><p style="font-size:.74rem;margin-top:8px;font-family:monospace">'+esc(relPath)+'</p><p style="font-size:.7rem;color:var(--text3);margin-top:4px">woff2 格式 · 浏览器直接加载</p></div>';overlay.classList.add('show');return}
   body.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>';overlay.classList.add('show');
   fetch('../../../../'+relPath).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.text()})
     .then(function(t){var lines=t.split('\n');body.innerHTML='<pre>'+lines.map(function(l,i){return'<span class="ln">'+(i+1)+'</span>'+esc(l)}).join('\n')+'</pre>'})
@@ -249,9 +234,24 @@ function switchPanel(name){
   document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1))});
   if(name==='files')renderFiles();else if(name==='browse')renderBrowse()
 }
-function filterByCat(cat){fileQuery=cat==='all'?'':cat;document.querySelectorAll('.stat-card').forEach(function(c){c.classList.remove('active-filter')});var el=document.getElementById(cat==='all'?'statAll':cat==='css'?'statCSS':cat==='js'?'statJS':cat==='font'?'statFont':null);if(el)el.classList.add('active-filter');switchPanel('files');renderFiles()}
+function filterByCat(cat){
+  fileQuery=cat==='all'?'':'';document.querySelectorAll('.stat-card').forEach(function(c){c.classList.remove('active-filter')});
+  var el=document.getElementById(cat==='all'?'statAll':'stat'+cat.charAt(0).toUpperCase()+cat.slice(1));if(el)el.classList.add('active-filter');
+  if(cat!=='all'){window._filterCat=cat;switchPanel('files');renderFilesFiltered()}else{window._filterCat=null;switchPanel('files');renderFiles()}
+}
+function renderFilesFiltered(){
+  var container=document.getElementById('filesContent'),cat=window._filterCat||'all',html='';
+  var files=cat==='all'?manifest.files:manifest.files.filter(function(f){return f.cat===cat});
+  var groups={};for(var i=0;i<files.length;i++){var f=files[i],c=f.cat||'other';if(!groups[c])groups[c]=[];groups[c].push(f)}
+  for(var o=0;o<CAT_ORDER.length;o++){var c=CAT_ORDER[o];if(!groups[c]||!groups[c].length)continue;
+    html+='<div class="suite open"><div class="s-head" data-action="toggle"><span class="s-arrow">▶</span><span class="s-name">'+(CAT_ICONS[c]||'')+' '+(CAT_LABELS[c]||c)+'</span><span class="s-meta">'+groups[c].length+' 文件</span></div><div class="s-body"><div class="file-grid">';
+    for(var j=0;j<groups[c].length;j++){var f=groups[c][j];var badge='<span class="fc-badge '+f.cat+'">'+f.cat.toUpperCase()+'</span>';
+      html+='<div class="file-card" onclick="viewSource(\''+esc(f.path)+'\')"><span class="fc-icon">'+(CAT_ICONS[f.cat]||'📄')+'</span><div class="fc-body"><div class="fc-name">'+esc(f.name)+' '+badge+'</div><div class="fc-path">'+esc(f.path)+'</div>'+(f.desc?'<div class="fc-desc">'+esc(f.desc)+'</div>':'')+'<div class="fc-meta"><span>📏 '+(f.lines||'—')+' 行</span></div></div></div>'}
+    html+='</div></div></div>'}
+  container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配文件</h3></div>'
+}
+function onSearch(q){fileQuery=q.toLowerCase().trim();renderFiles()}
 function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show')},1800)}
-function copyFilePath(path){navigator.clipboard.writeText(path).then(function(){toast('已复制: '+path)}).catch(function(){toast('复制失败')})}
 
 document.addEventListener('keydown',function(e){
   if(document.activeElement.tagName==='INPUT')return;

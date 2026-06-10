@@ -66,7 +66,7 @@ flowchart LR
 
 | # | 规则 | 阻断标识 | 触发条件 |
 |---|------|---------|---------|
-| 0 | **任何 Edit/Write 前必须先运行 `node skills/rui/branch-check.mjs --story=<name> --mode=write`**，通过后方可写操作。agent 手动 `git branch --show-current` 为兜底 | `no-branch-isolation` / `no-doc-isolation` | 当前分支非 `feat/<name>` 时执行写操作 |
+| 0 | **任何 Edit/Write 前必须先运行 `node lib/branch-check.mjs --story=<name> --mode=write`**，通过后方可写操作。agent 手动 `git branch --show-current` 为兜底 | `no-branch-isolation` / `no-doc-isolation` | 当前分支非 `feat/<name>` 时执行写操作 |
 | 1 | 源码改动唯一入口 `/rui code` | — | 旁路直接改码 |
 | 2 | 功能分支从 main 创建 | `bad-branch` | 分支非从 main 分出或混入非本故事代码 |
 | 3 | 改源码前已切到 `feat/<name>` | `no-checkout` | 未切分支即改源码 |
@@ -75,7 +75,7 @@ flowchart LR
 | 6 | 影响链未闭合不声称闭合 | `chain-broken` | 声称闭合但二级传递有未标注点 |
 | 7 | 不创建设计文档外的文件 | — | 产出文件不在故事文档清单或补充文档清单中 |
 
-> **规则 0 是 coder 启动时的第一道门禁。** 首选方式：`node skills/rui/branch-check.mjs --story=<name> --mode=write` 确定性强制检查。兜底：手动运行 `git branch --show-current` 并确认输出为 `feat/<name>`。输出为 `main` 或其他非 feat 分支时，立即阻断并报告 `no-branch-isolation`。
+> **规则 0 是 coder 启动时的第一道门禁。** 首选方式：`node lib/branch-check.mjs --story=<name> --mode=write` 确定性强制检查。兜底：手动运行 `git branch --show-current` 并确认输出为 `feat/<name>`。输出为 `main` 或其他非 feat 分支时，立即阻断并报告 `no-branch-isolation`。
 
 ## 审查维度
 
@@ -186,13 +186,18 @@ flowchart LR
 
 ### 架构图生成
 
-> 每个使用场景（含交互/数据流时）生成对应架构图。使用 `skills/rui/resources/architecture-template.html` 模板渲染。
+> 每个场景必须生成 7 个 HTML 文件（计划清单/架构图/知识图谱/源码/测试面板/演示/审查），委托 [`rui-html`](../skills/rui-html/SKILL.md) 生成，不自实现。
 
 生成规则：
-- 场景-N-&lt;slug&gt;.md 含组件关系/API 调用/数据流 → 生成 `架构图/&lt;场景-slug&gt;.html`
-- 首个场景生成时 → 同时生成 `架构图/index.html`（故事总览）
-- 纯文字场景（无交互） → 跳过
-- 模板引用：`skills/rui/resources/architecture-template.html`（深色主题 + 导出工具栏）
+- 每场景从 index.md 的 §0-§4 派生全部 7 个 HTML
+- 架构图.html：自包含 SVG（深色主题 #020617，导出工具栏，信息卡片）
+- 知识图谱.html：Cytoscape.js 交互图（CDN 加载，5 类型图例，breadthfirst 布局）
+- 计划清单.html：步骤卡片 + 5 Tab + localStorage 持久化
+- 源码.html：文件清单 + 4 Tab（文件清单/目录浏览/模块拓扑/规范清单）
+- 测试面板.html：测试套件 + 5 Tab（测试套件/报告/门禁/趋势/详情）
+- 演示.html：走查步骤 + 4 Tab + 可复制命令
+- 审查.html：健康度统计 + 3 Tab（发现/案例/改进）+ D0-D7
+- HTML 结构约束：暗色主题 CSS 变量 · 面包屑导航 · 7 文档交叉导航 · CDN 深度正确
 - 色板：按 [rules/architecture-diagram.md](../../rules/architecture-diagram.md) 语义映射
 
 ## 触发

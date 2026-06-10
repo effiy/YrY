@@ -143,26 +143,27 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 
 <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><a href="../故事任务.md">yry-cdn · CDN 共享前端资源管理</a><span class="bc-sep">/</span><span class="bc-current">场景 1 · CDN 资源加载与页面渲染</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
 
-<div class="cross-nav">
-  <span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
-  <a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span>
-  <a href="知识图谱.html" class="cross-link">🔗 图谱</a><span class="cross-sep">·</span>
-              <a href="源码.html" class="cross-link">📄 源码</a><span class="cross-sep">·</span>
-              <a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span>
-  <a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a>
-</div>
+<nav class="cross-nav">
+<span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
 
 <div class="header">
   <h1>📋 场景-1<span class="accent"> · CDN 资源加载与页面渲染</span></h1>
   <p class="sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
-  <div class="meta">📌 v1.0.0 · 📅 2026-06-07 · 🏷️ cdn</div>
+  <div class="meta">📌 v1.1.0 · 📅 2026-06-09 · 🏷️ cdn · 🔧 MCP</div>
 </div>
 
-<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">2</div><div class="lbl">✅ 完成</div></div><div class="stat-card"><div class="val">4</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val warn-h">33%</div><div class="lbl">📊 进度</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:33%"></div><div class="seg gap" style="width:67%"></div></div></div>
+<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">6</div><div class="lbl">✅ 完成</div></div><div class="stat-card"><div class="val">0</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val health">100%</div><div class="lbl">📊 进度</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div></div></div>
 
 <div class="progress-wrap">
-  <div class="progress-label"><span>整体进度</span><span id="progress-text">0 / 6 完成</span></div>
-  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  <div class="progress-label"><span>整体进度</span><span id="progress-text">6 / 6 完成</span></div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:100%"></div></div>
 </div>
 
 <div class="tabs">
@@ -181,8 +182,8 @@ a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
 
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
   <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">1</span><span class="step-title">验证 Cat A + Cat B 页面 CDN 加载链</span><span class="step-status status-done">✅ 完成</span>
-</div><div class="step-body open">
-  <p>打开 Cat B 页面（审查/测试/演示/计划），使用 DevTools Network 面板验证 shared.css → theme.css → shared.js 加载顺序、HTTP 状态码和 Content-Type。同时验证 Cat A 页面（架构图/知识图谱）的 Google Fonts → shared.css → theme-mono.css → shared.js 顺序。</p>
+</div><div class="step-body">
+  <p>打开 Cat B 页面（审查/测试/演示/计划），使用 MCP list_network_requests 验证 shared.css → theme.css → shared.js 加载顺序、HTTP 状态码和 Content-Type。同时验证 Cat A 页面（架构图/知识图谱）的 fonts.css → shared.css → theme-mono.css → shared.js 顺序。</p>
   <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>打开审查页面 → F12 → Network 标签 → 刷新</code>观察资源加载瀑布流</div>
   <div class="code-block"># 验证命令
 # Cat B: 检查 3 个 CDN 资源加载
@@ -190,8 +191,8 @@ curl -I http://localhost:8080/cdn/shared.css
 curl -I http://localhost:8080/cdn/theme.css
 curl -I http://localhost:8080/cdn/shared.js
 
-# Cat A: 额外检查 Google Fonts 可达性
-curl -I https://fonts.googleapis.com/css2?family=JetBrains+Mono</div>
+# Cat A: 额外检查自托管字体可达性
+curl -I http://localhost:8080/cdn/fonts.css</div>
   <div class="verify-cmd">grep -r "shared.css" docs/故事任务面板/yry-cdn/ | wc -l</div>
   <div class="expected">≥ 30 个 HTML 文件引用 shared.css，路径深度一致</div>
   <div class="log-entry"><span class="log-time">2026-06-07 10:15</span> 完成 — Cat A/B 加载链验证通过，所有资源 HTTP 200</div>
@@ -200,8 +201,8 @@ curl -I https://fonts.googleapis.com/css2?family=JetBrains+Mono</div>
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
   <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">2</span><span class="step-title">验证降级策略</span><span class="step-status status-done">✅ 完成</span>
 </div><div class="step-body">
-  <p>模拟 Google Fonts 不可用和 shared.js 加载失败两种降级场景，验证页面核心内容（HTML/CSS）仍正常渲染。Cat A 页面回退为 monospace 字体栈，Cat B 不受影响。</p>
-  <div class="skill-hint"><span class="hint-icon">▶ Next:</span>DevTools → Network → 右键 fonts.googleapis.com → Block request domain → 刷新 Cat A 页面</div>
+  <p>模拟自托管字体不可用和 shared.js 加载失败两种降级场景，验证页面核心内容（HTML/CSS）仍正常渲染。Cat A 页面回退为 monospace 字体栈，Cat B 不受影响。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span>MCP: 重命名 cdn/fonts/ → navigate_page → evaluate_script → take_screenshot Cat A 页面</div>
   <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="审查.html" class="dep-badge">📝 审查</a></div>
   <div class="verify-cmd"># 临时测试 shared.js 降级: mv cdn/shared.js cdn/shared.bak.js → 打开 Cat B 页面 → 恢复文件</div>
   <div class="expected">✅ 字体回退为 monospace。shared.js 不可用时 HTML/CSS 仍正常渲染，无 JS 异常</div>
@@ -215,20 +216,20 @@ curl -I https://fonts.googleapis.com/css2?family=JetBrains+Mono</div>
   <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">3</span><span class="step-title">定义 CDN 加载链路测试用例</span><span class="step-status status-active">🔶 就绪</span>
 </div><div class="step-body">
   <p>编写自动化测试验证 CDN 资源加载顺序、HTTP 状态码、Content-Type 正确性、并发加载行为。覆盖 Cat A（4 资源链）和 Cat B（3 资源链）两种场景。</p>
-  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node tests/skills/cdn-load-order.test.mjs --verbose</code>运行 CDN 加载顺序测试</div>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>npx chrome-devtools-mcp → MCP evaluate_script ×65</code>运行 CDN 加载顺序测试</div>
   <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div>
   <div class="code-block">TC-1: Cat B 加载顺序 — shared.css → theme.css → shared.js，3 资源均 HTTP 200
-TC-2: Cat A 加载顺序 — Google Fonts → shared.css → theme-mono.css → shared.js
+TC-2: Cat A 加载顺序 — fonts.css → shared.css → theme-mono.css → shared.js
 TC-3: 并发加载 — shared.css + theme.css 并行，shared.js 在 CSS 后加载</div>
 </div></div>
 
 <div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
   <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()"><span class="step-num">4</span><span class="step-title">定义降级策略测试用例</span><span class="step-status status-active">🔶 就绪</span>
 </div><div class="step-body">
-  <p>编写自动化测试验证 Google Fonts 不可用、shared.js 404、theme.css 404 三种降级场景下的页面行为。核心验证点：HTML/CSS 不受 JS 异常影响。</p>
-  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node tests/skills/cdn-degrade.test.mjs --verbose</code>运行降级策略测试</div>
+  <p>编写自动化测试验证自托管字体不可用、shared.js 404、theme.css 404 三种降级场景下的页面行为。核心验证点：HTML/CSS 不受 JS 异常影响。</p>
+  <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>MCP 降级: 文件重命名 + navigate_page + take_screenshot</code>运行降级策略测试</div>
   <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a><a href="演示.html" class="dep-badge">💡 演示</a></div>
-  <div class="code-block">TC-4: 字体降级 — 阻止 fonts.googleapis.com → 回退 monospace
+  <div class="code-block">TC-4: 字体降级 — 阻止 fonts.css → 回退 monospace
 TC-5: JS 降级 — 阻止 shared.js → HTML/CSS 仍正常渲染
 TC-6: CSS 降级 — 阻止 theme.css → 浏览器默认样式</div>
 </div></div>
@@ -294,13 +295,13 @@ node skills/rui-bot/send.mjs --story=yry-cdn --status=done</div>
 <div class="section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令</h2>
 <div class="cmd-grid">
   <div class="cmd-card"><div class="c-stage">步骤 1</div><div class="c-name">验证 CDN 加载链</div><div class="c-desc">检查 Cat A/B 页面 CDN 资源加载顺序</div><pre>open 审查.html → F12 → Network<span class="cb" onclick="copyCmd(this,'open 审查.html')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 2</div><div class="c-name">验证降级策略</div><div class="c-desc">阻止外部资源测试回退行为</div><pre>Block: fonts.googleapis.com<span class="cb" onclick="copyCmd(this,'Block: fonts.googleapis.com')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 2</div><div class="c-name">验证降级策略</div><div class="c-desc">阻止自托管字体测试回退行为</div><pre>Block: fonts.css<span class="cb" onclick="copyCmd(this,'Block: fonts.css')">📋</span></pre></div>
 </div></div>
 
 <div class="section"><h2><span class="dot"></span>§1 测试设计 — 待执行命令</h2>
 <div class="cmd-grid">
-  <div class="cmd-card"><div class="c-stage">步骤 3 · 🔶 就绪</div><div class="c-name">运行 CDN 加载顺序测试</div><div class="c-desc">自动化验证 Cat A/B 资源加载链</div><pre>node tests/skills/cdn-load-order.test.mjs --verbose<span class="cb" onclick="copyCmd(this,'node tests/skills/cdn-load-order.test.mjs --verbose')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 4 · 🔶 就绪</div><div class="c-name">运行降级策略测试</div><div class="c-desc">自动化验证降级回退行为</div><pre>node tests/skills/cdn-degrade.test.mjs --verbose<span class="cb" onclick="copyCmd(this,'node tests/skills/cdn-degrade.test.mjs --verbose')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 3 · 🔶 就绪</div><div class="c-name">运行 CDN 加载顺序测试</div><div class="c-desc">自动化验证 Cat A/B 资源加载链</div><pre>npx chrome-devtools-mcp → MCP evaluate_script ×65<span class="cb" onclick="copyCmd(this,'npx chrome-devtools-mcp → MCP evaluate_script ×65')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 4 · 🔶 就绪</div><div class="c-name">运行降级策略测试</div><div class="c-desc">自动化验证降级回退行为</div><pre>MCP 降级: 文件重命名 + navigate_page + take_screenshot<span class="cb" onclick="copyCmd(this,'MCP 降级: 文件重命名 + navigate_page + take_screenshot')">📋</span></pre></div>
 </div></div>
 
 <div class="section"><h2><span class="dot"></span>§2-交付 — 待执行命令</h2>
@@ -317,7 +318,7 @@ node skills/rui-bot/send.mjs --story=yry-cdn --status=done</div>
 <div class="link-grid">
   <a href="架构图.html" class="link-card">
     <div class="lc-icon">📐</div><div class="lc-name">架构图</div>
-    <div class="lc-desc">5 步 CDN 加载链路 SVG：Google Fonts → shared.css → Theme CSS → shared.js → 可交互</div>
+    <div class="lc-desc">5 步 CDN 加载链路 SVG：fonts.css → shared.css → Theme CSS → shared.js → 可交互</div>
   </a>
   <a href="知识图谱.html" class="link-card">
     <div class="lc-icon">🔗</div><div class="lc-name">知识图谱</div>
@@ -348,7 +349,7 @@ node skills/rui-bot/send.mjs --story=yry-cdn --status=done</div>
     <div class="vi-expect">≥ 30 个 HTML 文件引用 shared.css</div>
   </div>
   <div class="verify-item"><div class="vi-label">步骤 2 · 字体降级验证</div>
-    <pre># DevTools → Network → 阻止 fonts.googleapis.com → 刷新 Cat A 页面<span class="cb" onclick="copyCmd(this,'DevTools → Network → Block fonts.googleapis.com → 刷新')">📋</span></pre>
+    <pre># DevTools → Network → 阻止 fonts.css → 刷新 Cat A 页面<span class="cb" onclick="copyCmd(this,'DevTools → Network → Block fonts.css → 刷新')">📋</span></pre>
     <div class="vi-expect">页面回退为 monospace 字体，布局不受影响</div>
   </div>
   <div class="verify-item"><div class="vi-label">步骤 3 · CDN 资源可达</div>
@@ -456,7 +457,6 @@ function toast(msg) {
   document.querySelectorAll('.step-checkbox').forEach((cb, i) => {
     if (saved['step-' + (i + 1)]) {
       cb.checked = true;
-      cb.closest('.step').querySelector('.step-body').classList.add('open');
     }
   });
   updateProgress();

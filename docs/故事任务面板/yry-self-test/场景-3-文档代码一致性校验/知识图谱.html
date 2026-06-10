@@ -1,8 +1,8 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>📄 文档代码一致性校验 · 知识图谱</title>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>文档代码一致性校验 · 知识图谱</title>
 <link rel="stylesheet" href="../../../../cdn/fonts.css">
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
@@ -27,18 +27,17 @@ h1{font-size:1.5rem;font-weight:700}
 .card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
 .card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
 .card-dot{width:8px;height:8px;border-radius:50%}
-.card-dot.domain{background:#EC4899}.card-dot.flow{background:#34d399}.card-dot.step{background:#3B82F6}.card-dot.skill{background:#22d3ee}.card-dot.scene{background:#8B5CF6}
+.card-dot.scene{background:#8B5CF6}.card-dot.layer{background:#EC4899}.card-dot.source{background:#3B82F6}.card-dot.validates{background:#22c55e}
 .card h3{font-size:.875rem;font-weight:600}
 .card ul{list-style:none;color:#94a3b8;font-size:.75rem}
 .card li{margin-bottom:.375rem}
 .legend{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:.75rem;padding:.75rem;background:rgba(15,23,42,.5);border-radius:.5rem;border:1px solid #1e293b;font-size:.75rem;color:#94a3b8}
 .legend-item{display:flex;align-items:center;gap:.375rem}
 .legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid}
-.legend-dot.domain{background:rgba(236,72,153,.3);border-color:#EC4899}
-.legend-dot.flow{background:rgba(52,211,153,.3);border-color:#34d399}
-.legend-dot.step{background:rgba(59,130,246,.3);border-color:#3B82F6}
-.legend-dot.skill{background:rgba(34,211,238,.3);border-color:#22d3ee}
 .legend-dot.scene{background:rgba(139,92,246,.3);border-color:#8B5CF6}
+.legend-dot.layer{background:rgba(236,72,153,.3);border-color:#EC4899}
+.legend-dot.source{background:rgba(59,130,246,.3);border-color:#3B82F6}
+.legend-dot.validates{background:rgba(34,197,94,.3);border-color:#22c55e}
 .breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
 .breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
 .breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
@@ -54,18 +53,29 @@ h1{font-size:1.5rem;font-weight:700}
 .cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
 </style></head><body><div class="container" id="report-container">
 <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自主测试方案</span><span class="bc-sep">/</span><span class="bc-current">场景 3 · 文档代码一致性校验</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
-<div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><span class="cross-link on">🔗 图谱</span><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<span class="cross-link on">🔗 图谱</span><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
 <div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>📄 文档代码一致性校验 · 知识图谱</h1>
 <div class="toolbar"><div class="toolbar-actions">
 <button onclick="copyAsImage(this)">📋 Copy</button>
 <button onclick="downloadPNG(this)">🖼️ PNG</button>
 <button onclick="downloadPDF(this)">📄 PDF</button>
 </div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
-</div><p class="subtitle">yry-self-test · 场景-3 · 文档与代码的交叉验证：章节·引用·回溯链</p></div>
+</div><p class="subtitle">yry-self-test · 场景-3 · 四层校验: L1 引用可达性 → L2 实施匹配 → L3 测试对齐 → L4 图谱有效性</p></div>
 
 <div class="legend">
 <span style="color:#94a3b8;font-weight:600;">节点:</span>
 <span class="legend-item"><span class="legend-dot scene"></span>场景</span>
+<span class="legend-item"><span class="legend-dot layer"></span>校验层</span>
+<span class="legend-item"><span class="legend-dot source"></span>源文件</span>
+<span class="legend-item"><span class="legend-dot validates"></span>验证节点</span>
 <span style="margin-left:1rem;color:#94a3b8;font-weight:600;">操作:</span>
 <span style="color:#64748b;">🖱 拖拽 · 滚轮缩放 · 点击节点高亮邻域</span>
 </div>
@@ -73,21 +83,122 @@ h1{font-size:1.5rem;font-weight:700}
 <div class="graph-container"><div id="cy"></div></div>
 
 <div class="cards">
-<div class="card"><div class="card-header"><div class="card-dot scene"></div><h3>场景状态</h3></div><ul><li>源文件数据待补充 — 暂无关联源码文件</li><li>图谱节点待补充 — 暂无领域/流程/步骤节点</li></ul></div>
+<div class="card"><div class="card-header"><div class="card-dot layer"></div><h3>四层校验架构</h3></div><ul>
+<li><b>L1 文件引用可达性</b> — 文档中引用的文件是否存在？断裂即阻断</li>
+<li><b>L2 实施报告匹配度</b> — §2 变更记录与实际代码变更是否一致？不匹配则警告</li>
+<li><b>L3 测试报告对齐度</b> — §3 测试结果与实际执行是否一致？偏差则警告</li>
+<li><b>L4 知识图谱有效性</b> — 图谱节点和边是否映射到存在的文件？失效则警告</li>
+</ul></div>
+<div class="card"><div class="card-header"><div class="card-dot source"></div><h3>源文件映射 (6)</h3></div><ul>
+<li><code>scripts/validate-doc-consistency.mjs</code> — L1 引用可达性校验</li>
+<li><code>scripts/validate-module-topology.mjs</code> — L1+L4 依赖图+循环检测</li>
+<li><code>tests/integration/knowledge-graph.test.mjs</code> — L4 图谱结构验证</li>
+<li><code>tests/integration/cross-references.test.mjs</code> — L1+L2 跨引用+故事一致性</li>
+<li><code>tests/rules/rules.test.mjs</code> — L2 规则完整性验证</li>
+<li><code>tests/agents/agents.test.mjs</code> — L2+L3 Agent 定义完整性</li>
+</ul></div>
+<div class="card"><div class="card-header"><div class="card-dot validates"></div><h3>测试结果 (2026-06-08)</h3></div><ul>
+<li>知识图谱结构: 12/12 断言通过 — 节点·边·层完整</li>
+<li>跨引用一致性: 7/7 断言通过 — 故事目录·场景·KG 齐全</li>
+<li>规则完整性: 48/48 断言通过 — 8 规则 ×5 通用 + 7 关键</li>
+<li>Agent 完整性: 45/45 断言通过 — AGENT.md + 8 agents ×5</li>
+<li>L1 引用扫描: 176 文档 · 224 唯一引用</li>
+<li>L4 模块拓扑: 10 Agent · 10 Rule · 10 Skill · 82 引用</li>
+</ul></div>
+<div class="card"><div class="card-header"><div class="card-dot scene"></div><h3>场景状态</h3></div><ul>
+<li>版本: v1.2.0 · 更新: 2026-06-08</li>
+<li>§0 技术评审: ✅ 含 2 mermaid 图 + 基线溯源表</li>
+<li>§1 测试设计: ✅ 4 正常用例 + 7 边界/异常用例</li>
+<li>§2 实施报告: ✅ 6 项实现 + 架构决策</li>
+<li>§3 测试报告: ✅ 112 断言全部通过</li>
+<li>§4 自改进: ✅ D0-D3 全部通过 · L1/L4 已完成</li>
+<li>清单进度: 11/14 步骤完成</li>
+</ul></div>
 </div>
 
-<p class="footer">YrY v1.1.0 · self-test · 场景-3: 文档代码一致性校验 · 知识图谱 v2.0.0</p>
+<p class="footer">YrY v4.8.2 · self-test · 场景-3: 文档代码一致性校验 · 知识图谱 v2.0.0</p>
 </div>
 <script>
 const cy=cytoscape({container:document.getElementById('cy'),style:[
-{selector:'node',style:{'label':'data(label)','font-family':'JetBrains Mono,monospace','font-size':'10px','color':'#e2e8f0','text-valign':'center','text-halign':'center','text-wrap':'wrap','text-max-width':'90px','border-width':2,'width':66,'height':66,'background-opacity':0.9}},
-{selector:'node[type="scene"]',style:{'background-color':'rgba(139,92,246,.35)','border-color':'#8B5CF6','font-size':'11px','font-weight':'700','shape':'round-rectangle'}},
-{selector:'node:selected',style:{'border-width':3,'border-color':'#fff','z-index':999}}
+{selector:'node',style:{'label':'data(label)','font-family':'JetBrains Mono,monospace','font-size':'9px','color':'#e2e8f0','text-valign':'center','text-halign':'center','text-wrap':'wrap','text-max-width':'100px','border-width':2,'width':52,'height':52,'background-opacity':0.9,'transition-property':'background-color,border-color,width,height','transition-duration':'0.2s'}},
+{selector:'node[type="scene"]',style:{'background-color':'rgba(139,92,246,.35)','border-color':'#8B5CF6','width':72,'height':72,'font-size':'10px','font-weight':'700','shape':'round-rectangle'}},
+{selector:'node[type="layer"]',style:{'background-color':'rgba(236,72,153,.3)','border-color':'#EC4899','width':64,'height':64,'font-size':'9px','font-weight':'600','shape':'rectangle'}},
+{selector:'node[type="source"]',style:{'background-color':'rgba(59,130,246,.3)','border-color':'#3B82F6','width':56,'height':56,'font-size':'8px','shape':'ellipse'}},
+{selector:'node[type="validate"]',style:{'background-color':'rgba(34,197,94,.25)','border-color':'#22c55e','width':44,'height':44,'font-size':'8px','shape':'diamond'}},
+{selector:'edge',style:{'width':1.2,'line-color':'#334155','target-arrow-color':'#334155','target-arrow-shape':'triangle','arrow-scale':0.8,'curve-style':'bezier','opacity':0.6}},
+{selector:'edge[type="contains"]',style:{'line-color':'#8B5CF6','target-arrow-color':'#8B5CF6','width':1.5,'opacity':0.7}},
+{selector:'edge[type="validates"]',style:{'line-color':'#22c55e','target-arrow-color':'#22c55e','width':1.2,'opacity':0.65}},
+{selector:'edge[type="feeds_into"]',style:{'line-color':'#f59e0b','target-arrow-color':'#f59e0b','width':1.5,'opacity':0.6,'line-style':'dashed'}},
+{selector:'edge[type="depends_on"]',style:{'line-color':'#64748B','target-arrow-color':'#64748B','width':1,'opacity':0.5,'line-style':'dotted'}},
+{selector:'node:selected',style:{'border-width':3,'border-color':'#fff','z-index':999}},
+{selector:'edge:selected',style:{'width':3,'line-color':'#fff','target-arrow-color':'#fff','opacity':1,'z-index':999}}
 ],
 elements:{nodes:[
-{data:{id:'s3',label:'场景-3\n文档代码\n一致性校验',type:'scene'}}
-],edges:[]},
-layout:{name:'breadthfirst',directed:true,spacingFactor:1.6,padding:30},
+// Scene root
+{data:{id:'s3',label:'场景-3\n文档代码\n一致性校验',type:'scene'}},
+
+// Four validation layers
+{data:{id:'l1',label:'L1\n文件引用\n可达性',type:'layer'}},
+{data:{id:'l2',label:'L2\n实施报告\n匹配度',type:'layer'}},
+{data:{id:'l3',label:'L3\n测试报告\n对齐度',type:'layer'}},
+{data:{id:'l4',label:'L4\n知识图谱\n有效性',type:'layer'}},
+
+// Source files — scripts
+{data:{id:'src-vdc',label:'validate-doc-\nconsistency\n.mjs',type:'source'}},
+{data:{id:'src-vmt',label:'validate-\nmodule-\ntopology.mjs',type:'source'}},
+
+// Source files — tests
+{data:{id:'tst-kg',label:'knowledge-\ngraph.test\n.mjs',type:'source'}},
+{data:{id:'tst-xref',label:'cross-\nreferences\n.test.mjs',type:'source'}},
+{data:{id:'tst-rules',label:'rules.test\n.mjs',type:'source'}},
+{data:{id:'tst-agents',label:'agents.test\n.mjs',type:'source'}},
+
+// Validation result nodes
+{data:{id:'v-l1',label:'176 docs\n224 refs',type:'validate'}},
+{data:{id:'v-l4',label:'10A 10R\n10S 82ref',type:'validate'}},
+{data:{id:'v-all',label:'112\nassertions\nALL PASS',type:'validate'}}
+],
+edges:[
+// Scene contains four layers
+{data:{id:'e-s3-l1',source:'s3',target:'l1',type:'contains'}},
+{data:{id:'e-s3-l2',source:'s3',target:'l2',type:'contains'}},
+{data:{id:'e-s3-l3',source:'s3',target:'l3',type:'contains'}},
+{data:{id:'e-s3-l4',source:'s3',target:'l4',type:'contains'}},
+
+// Layer cascade: L1 → L2 → L3 → L4
+{data:{id:'e-l1-l2',source:'l1',target:'l2',type:'feeds_into'}},
+{data:{id:'e-l2-l3',source:'l2',target:'l3',type:'feeds_into'}},
+{data:{id:'e-l3-l4',source:'l3',target:'l4',type:'feeds_into'}},
+
+// L1 validates: doc-consistency, module-topology, cross-references
+{data:{id:'e-l1-vdc',source:'l1',target:'src-vdc',type:'validates'}},
+{data:{id:'e-l1-vmt',source:'l1',target:'src-vmt',type:'validates'}},
+{data:{id:'e-l1-xref',source:'l1',target:'tst-xref',type:'validates'}},
+
+// L2 validates: cross-references, rules, agents
+{data:{id:'e-l2-xref',source:'l2',target:'tst-xref',type:'validates'}},
+{data:{id:'e-l2-rules',source:'l2',target:'tst-rules',type:'validates'}},
+{data:{id:'e-l2-agents',source:'l2',target:'tst-agents',type:'validates'}},
+
+// L3 validates: agents tests
+{data:{id:'e-l3-agents',source:'l3',target:'tst-agents',type:'validates'}},
+
+// L4 validates: module-topology, knowledge-graph tests
+{data:{id:'e-l4-vmt',source:'l4',target:'src-vmt',type:'validates'}},
+{data:{id:'e-l4-kg',source:'l4',target:'tst-kg',type:'validates'}},
+
+// Cross-source dependencies
+{data:{id:'e-vdc-vmt',source:'src-vdc',target:'src-vmt',type:'depends_on'}},
+{data:{id:'e-kg-xref',source:'tst-kg',target:'tst-xref',type:'depends_on'}},
+{data:{id:'e-xref-rules',source:'tst-xref',target:'tst-rules',type:'depends_on'}},
+{data:{id:'e-rules-agents',source:'tst-rules',target:'tst-agents',type:'depends_on'}},
+
+// Validation results
+{data:{id:'e-vdc-vl1',source:'src-vdc',target:'v-l1',type:'validates'}},
+{data:{id:'e-vmt-vl4',source:'src-vmt',target:'v-l4',type:'validates'}},
+{data:{id:'e-all-vall',source:'tst-agents',target:'v-all',type:'validates'}}
+]},
+layout:{name:'breadthfirst',directed:true,spacingFactor:1.5,padding:30,avoidOverlap:true,nodeDimensionsIncludeLabels:true},
 wheelSensitivity:0.3,minZoom:0.3,maxZoom:3});
 
 cy.on('tap','node',function(evt){const node=evt.target;const hood=node.closedNeighborhood();cy.elements().style('opacity',0.15);hood.style('opacity',1);node.style('opacity',1)});

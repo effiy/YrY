@@ -63,7 +63,8 @@ h1{font-size:1.5rem;font-weight:700}
 <a class="cross-link" href="场景-1-init后全量自检/架构图.html">场景-1</a><span class="cross-sep">|</span>
 <a class="cross-link" href="场景-2-commit前增量自检/架构图.html">场景-2</a><span class="cross-sep">|</span>
 <a class="cross-link" href="场景-3-文档代码一致性校验/架构图.html">场景-3</a><span class="cross-sep">|</span>
-<a class="cross-link" href="场景-4-安全面回归自检/架构图.html">场景-4</a>
+<a class="cross-link" href="场景-4-安全面回归自检/架构图.html">场景-4</a><span class="cross-sep">|</span>
+<a class="cross-link" href="场景-5-跨故事集成回归自检/架构图.html">场景-5</a>
 </div>
 <div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>🔧 self-test · 知识图谱</h1>
 <div class="toolbar"><div class="toolbar-actions">
@@ -71,7 +72,7 @@ h1{font-size:1.5rem;font-weight:700}
 <button onclick="downloadPNG(this)">🖼️ PNG</button>
 <button onclick="downloadPDF(this)">📄 PDF</button>
 </div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
-</div><p class="subtitle">yry-self-test v1.1.0 · 4 场景 · 12 功能点 · 10 测试套件 · 171 断言 · 自主测试方案基线</p></div>
+</div><p class="subtitle">yry-self-test v1.3.0 · 5 场景 · 12 功能点 · 10 测试套件 · 171 断言 · 自主测试方案基线</p></div>
 
 <div class="legend">
 <span style="color:#94a3b8;font-weight:600;">节点:</span>
@@ -109,15 +110,16 @@ h1{font-size:1.5rem;font-weight:700}
 <li>integration/ — 2 集成测试</li>
 <li>总计 171 断言 · 全部通过</li>
 </ul></div>
-<div class="card"><div class="card-header"><div class="card-dot scene"></div><h3>4 场景覆盖</h3></div><ul>
+<div class="card"><div class="card-header"><div class="card-dot scene"></div><h3>5 场景覆盖</h3></div><ul>
 <li>场景-1: init后全量自检 — 覆盖 FP1-12 全部检查项</li>
 <li>场景-2: commit前增量自检 — 仅检查变更影响的关卡</li>
 <li>场景-3: 文档代码一致性校验 — 规约声明与实现的对齐验证</li>
 <li>场景-4: 安全面回归自检 — STRIDE 六面安全审计</li>
+<li>场景-5: 跨故事集成回归自检 — 多故事协同一致性验证</li>
 </ul></div>
 </div>
 
-<p class="footer">YrY v1.1.0 · self-test · 自主测试方案基线 · 知识图谱 v2.0.0</p>
+<p class="footer">YrY v4.8.2 · self-test · 自主测试方案基线 · 知识图谱 v2.0.0</p>
 </div>
 <script>
 const cy=cytoscape({container:document.getElementById('cy'),style:[
@@ -143,6 +145,7 @@ elements:{nodes:[
 {data:{id:'s2',label:'场景-2\ncommit增量自检',type:'scene'}},
 {data:{id:'s3',label:'场景-3\n文档代码一致性',type:'scene'}},
 {data:{id:'s4',label:'场景-4\n安全面回归',type:'scene'}},
+{data:{id:'s5',label:'场景-5\n跨故事集成',type:'scene'}},
 
 // 3 Domain nodes
 {data:{id:'d-pipeline',label:'管线健康\nFP1-6',type:'domain'}},
@@ -175,6 +178,7 @@ edges:[
 {data:{id:'e-story-s2',source:'story',target:'s2',type:'contains'}},
 {data:{id:'e-story-s3',source:'story',target:'s3',type:'contains'}},
 {data:{id:'e-story-s4',source:'story',target:'s4',type:'contains'}},
+{data:{id:'e-story-s5',source:'story',target:'s5',type:'contains'}},
 
 // Story references domains
 {data:{id:'e-story-pipe',source:'story',target:'d-pipeline',type:'references'}},
@@ -191,6 +195,8 @@ edges:[
 {data:{id:'e-s3-engine',source:'s3',target:'d-engine',type:'references'}},
 {data:{id:'e-s4-pipe',source:'s4',target:'d-pipeline',type:'references'}},
 {data:{id:'e-s4-engine',source:'s4',target:'d-engine',type:'references'}},
+{data:{id:'e-s5-doc',source:'s5',target:'d-doc',type:'references'}},
+{data:{id:'e-s5-engine',source:'s5',target:'d-engine',type:'references'}},
 
 // Domain defines flows
 {data:{id:'e-pipe-flow',source:'d-pipeline',target:'f-pipeline',type:'defines'}},

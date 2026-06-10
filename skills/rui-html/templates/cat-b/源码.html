@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+{{HEAD_BLOCK}}
+<style>
+.yry-stat .yry-val.c{color:var(--cyan)}.yry-stat .yry-val.a{color:var(-.yry-accent)}
+.yry-section.margin-bottom:24px}
+.yry-section.h2{font-size:1.05rem;color:var(-.yry-accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.yry-section.h2 .yry-dot.width:8px;height:8px;border-radius:50%;background:var(-.yry-accent);flex-shrink:0}
+table{width:100%;border-collapse:collapse;font-size:.82rem;margin:12px 0}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.04)}
+th{color:var(--text3);font-weight:600;font-size:.74rem;text-transform:uppercase}
+td{color:var(--text2)}
+</style>
+</head>
+<body>
+<div class="yry.yry-container">
+{{BREADCRUMB}}
+{{CROSS_NAV}}
+
+<div class="yry.yry-header">
+  <h1>📄 <span class="yry.yry-accent">{{SCENE_TITLE}}</span> · 源码</h1>
+  <p class="yry.yry-sub">场景 {{SCENE_NUM}} · 版本 v{{VERSION}} · {{DATE}}</p>
+</div>
+
+{{STATS_GRID}}
+
+<div class="yry.yry.yry-tabs">
+  <span class="yry.yry-tab on" data.yry-panel="files">📁 文件清单</span>
+  <span class="yry.yry-tab" data.yry-panel="structure">🗂 目录浏览</span>
+  <span class="yry.yry-tab" data.yry-panel="topology">🔗 模块拓扑</span>
+</div>
+
+<div class="yry.yry-panel on" id=.yry-panelFiles">
+  <div class=.yry-section.>
+    <h2><span class=.yry-dot.></span>产物文件</h2>
+    {{SEC2_HTML}}
+  </div>
+</div>
+
+<div class="yry.yry-panel" id=.yry-panelStructure">
+  {{SEC0_HTML}}
+</div>
+
+<div class="yry.yry-panel" id=.yry-panelTopology">
+  {{MERMAID_BLOCKS}}
+</div>
+
+<div class="yry.yry-footer">YrY v{{VERSION}} · {{DATE}} · <a href="{{CDN_DEPTH}}docs/index.html">文档中心</a></div>
+</div>
+<script src="{{CDN_DEPTH}}cdn/shared.js"></script>
+<script>
+document.querySelectorAll('.yry-tab').forEach(function(t) {
+  t.addEventListener('click', function() {
+    YrY.switchPanel(this.dataset.yry-panel, '.yry-tab', '.yry-panel');
+  });
+});
+</script>
+</body>
+</html>

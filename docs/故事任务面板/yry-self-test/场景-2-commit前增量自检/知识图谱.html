@@ -1,8 +1,8 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>📋 commit前增量自检 · 知识图谱</title>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>commit前增量自检 · 知识图谱</title>
 <link rel="stylesheet" href="../../../../cdn/fonts.css">
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
@@ -27,25 +27,23 @@ h1{font-size:1.5rem;font-weight:700}
 .card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
 .card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
 .card-dot{width:8px;height:8px;border-radius:50%}
-.card-dot.domain{background:#EC4899}.card-dot.flow{background:#34d399}.card-dot.step{background:#3B82F6}.card-dot.skill{background:#22d3ee}.card-dot.scene{background:#8B5CF6}
+.card-dot.scene{background:#8B5CF6}.card-dot.gate{background:#f59e0b}.card-dot.source{background:#3B82F6}.card-dot.block{background:#ef4444}.card-dot.pass{background:#22c55e}
 .card h3{font-size:.875rem;font-weight:600}
 .card ul{list-style:none;color:#94a3b8;font-size:.75rem}
 .card li{margin-bottom:.375rem}
 .legend{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:.75rem;padding:.75rem;background:rgba(15,23,42,.5);border-radius:.5rem;border:1px solid #1e293b;font-size:.75rem;color:#94a3b8}
 .legend-item{display:flex;align-items:center;gap:.375rem}
 .legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid}
-.legend-dot.domain{background:rgba(236,72,153,.3);border-color:#EC4899}
-.legend-dot.flow{background:rgba(52,211,153,.3);border-color:#34d399}
-.legend-dot.step{background:rgba(59,130,246,.3);border-color:#3B82F6}
-.legend-dot.skill{background:rgba(34,211,238,.3);border-color:#22d3ee}
 .legend-dot.scene{background:rgba(139,92,246,.3);border-color:#8B5CF6}
+.legend-dot.gate{background:rgba(245,158,11,.3);border-color:#f59e0b}
+.legend-dot.source{background:rgba(59,130,246,.3);border-color:#3B82F6}
+.legend-dot.block{background:rgba(239,68,68,.3);border-color:#ef4444}
 .breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
 .breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
 .breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
 .breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
 .breadcrumb .bc-current{color:#94a3b8;font-weight:500}
 .footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
-
 @media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
 .cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
 .cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
@@ -54,18 +52,29 @@ h1{font-size:1.5rem;font-weight:700}
 .cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
 </style></head><body><div class="container" id="report-container">
 <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自主测试方案</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · commit 前增量自检</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
-<div class="cross-nav"><a href="计划清单.html" class="cross-link">📋 清单</a><span class="cross-sep">·</span><a href="架构图.html" class="cross-link">📐 架构</a><span class="cross-sep">·</span><span class="cross-link on">🔗 图谱</span><span class="cross-sep">·</span><a href="测试面板.html" class="cross-link">🧪 测试</a><span class="cross-sep">·</span><a href="演示.html" class="cross-link">💡 演示</a><span class="cross-sep">·</span><a href="审查.html" class="cross-link">📝 审查</a></div>
-<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>📋 commit前增量自检 · 知识图谱</h1>
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<span class="cross-link on">🔗 图谱</span><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>🚦 commit前增量自检 · 知识图谱</h1>
 <div class="toolbar"><div class="toolbar-actions">
 <button onclick="copyAsImage(this)">📋 Copy</button>
 <button onclick="downloadPNG(this)">🖼️ PNG</button>
 <button onclick="downloadPDF(this)">📄 PDF</button>
 </div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
-</div><p class="subtitle">yry-self-test · 场景-2 · commit 前的增量自检：变更识别·影响面·门禁</p></div>
+</div><p class="subtitle">yry-self-test · 场景-2 · 五步门禁: 范围识别 → 分支隔离 → 范围约束 → P0 回归 → 文档一致性</p></div>
 
 <div class="legend">
 <span style="color:#94a3b8;font-weight:600;">节点:</span>
 <span class="legend-item"><span class="legend-dot scene"></span>场景</span>
+<span class="legend-item"><span class="legend-dot gate"></span>门禁关卡</span>
+<span class="legend-item"><span class="legend-dot source"></span>源文件</span>
+<span class="legend-item"><span class="legend-dot block"></span>阻断/警告</span>
 <span style="margin-left:1rem;color:#94a3b8;font-weight:600;">操作:</span>
 <span style="color:#64748b;">🖱 拖拽 · 滚轮缩放 · 点击节点高亮邻域</span>
 </div>
@@ -73,21 +82,99 @@ h1{font-size:1.5rem;font-weight:700}
 <div class="graph-container"><div id="cy"></div></div>
 
 <div class="cards">
-<div class="card"><div class="card-header"><div class="card-dot scene"></div><h3>场景状态</h3></div><ul><li>源文件数据待补充 — 暂无关联源码文件</li><li>图谱节点待补充 — 暂无领域/流程/步骤节点</li></ul></div>
+<div class="card"><div class="card-header"><div class="card-dot gate"></div><h3>五步增量门禁</h3></div><ul>
+<li><b>① 变更范围识别</b> — git diff 检测修改/新增/删除文件，映射受影响模块</li>
+<li><b>② 分支隔离检查</b> — 验证当前在 feat/&lt;name&gt; 分支，主分支变更立即阻断</li>
+<li><b>③ 变更范围约束</b> — 变更文件全部在本故事目录内，跨故事污染阻断</li>
+<li><b>④ P0 回归检查</b> — 变更前后阻断标识数对比，新 P0 出现立即阻断</li>
+<li><b>⑤ 文档一致性</b> — 代码变更时验证关联场景文档是否同步更新</li>
+</ul></div>
+<div class="card"><div class="card-header"><div class="card-dot source"></div><h3>源文件映射 (7)</h3></div><ul>
+<li><code>scripts/self-test.mjs</code> — 全量/增量自检入口，--quick 增量模式</li>
+<li><code>scripts/detect-impact.mjs</code> — 变更范围自动识别，--since 读取 git diff</li>
+<li><code>skills/rui/branch-check.mjs</code> — P0 分支隔离强制门禁</li>
+<li><code>tests/run.mjs</code> — 测试发现 + 筛选 (--skills/--agents/--rules)</li>
+<li><code>tests/integration/cross-references.test.mjs</code> — 跨模块一致性 + 安全基线</li>
+<li><code>tests/integration/knowledge-graph.test.mjs</code> — KG 结构验证</li>
+<li><code>tests/rules/rules.test.mjs</code> — 8 规则完整性验证</li>
+</ul></div>
+<div class="card"><div class="card-header"><div class="card-dot block"></div><h3>阻断判定规则</h3></div><ul>
+<li>🔴 <b>阻断</b>: 分支隔离绕过 · 跨故事污染 · 新 P0 出现</li>
+<li>🟡 <b>警告</b>: 文档未同步 · 变更范围异常大 · 分支名不规范</li>
+<li>🟢 <b>通过</b>: 五步全部无阻断 · 允许提交</li>
+<li>纯文档变更跳过代码检查 · 纯代码变更触发文档同步检查</li>
+</ul></div>
+<div class="card"><div class="card-header"><div class="card-dot scene"></div><h3>场景状态 (v1.1.0)</h3></div><ul>
+<li>增量执行耗时: &lt;1s (全部 10 套件)</li>
+<li>单文件执行耗时: &lt;100ms</li>
+<li>筛选支持: --skills / --agents / --rules / --integration</li>
+<li>独立运行: 每个 test.mjs 可单独执行</li>
+<li>待实现: git hook 集成 (P1) · CI 集成 (P2)</li>
+<li>Gate A 测试先行: ✅ 放行</li>
+</ul></div>
 </div>
 
-<p class="footer">YrY v1.1.0 · self-test · 场景-2: commit前增量自检 · 知识图谱 v2.0.0</p>
+<p class="footer">YrY v4.8.2 · self-test · 场景-2: commit前增量自检 · 知识图谱 v2.0.0</p>
 </div>
 <script>
 const cy=cytoscape({container:document.getElementById('cy'),style:[
-{selector:'node',style:{'label':'data(label)','font-family':'JetBrains Mono,monospace','font-size':'10px','color':'#e2e8f0','text-valign':'center','text-halign':'center','text-wrap':'wrap','text-max-width':'90px','border-width':2,'width':66,'height':66,'background-opacity':0.9}},
-{selector:'node[type="scene"]',style:{'background-color':'rgba(139,92,246,.35)','border-color':'#8B5CF6','font-size':'11px','font-weight':'700','shape':'round-rectangle'}},
-{selector:'node:selected',style:{'border-width':3,'border-color':'#fff','z-index':999}}
+{selector:'node',style:{'label':'data(label)','font-family':'JetBrains Mono,monospace','font-size':'9px','color':'#e2e8f0','text-valign':'center','text-halign':'center','text-wrap':'wrap','text-max-width':'100px','border-width':2,'width':52,'height':52,'background-opacity':0.9,'transition-property':'background-color,border-color,width,height','transition-duration':'0.2s'}},
+{selector:'node[type="scene"]',style:{'background-color':'rgba(139,92,246,.35)','border-color':'#8B5CF6','width':72,'height':72,'font-size':'10px','font-weight':'700','shape':'round-rectangle'}},
+{selector:'node[type="gate"]',style:{'background-color':'rgba(245,158,11,.3)','border-color':'#f59e0b','width':62,'height':62,'font-size':'8px','font-weight':'600','shape':'rectangle'}},
+{selector:'node[type="source"]',style:{'background-color':'rgba(59,130,246,.3)','border-color':'#3B82F6','width':54,'height':54,'font-size':'8px','shape':'ellipse'}},
+{selector:'node[type="block"]',style:{'background-color':'rgba(239,68,68,.3)','border-color':'#ef4444','width':50,'height':50,'font-size':'8px','font-weight':'600','shape':'diamond'}},
+{selector:'node[type="pass"]',style:{'background-color':'rgba(34,197,94,.25)','border-color':'#22c55e','width':48,'height':48,'font-size':'8px','shape':'diamond'}},
+{selector:'edge',style:{'width':1.2,'line-color':'#334155','target-arrow-color':'#334155','target-arrow-shape':'triangle','arrow-scale':0.8,'curve-style':'bezier','opacity':0.6}},
+{selector:'edge[type="contains"]',style:{'line-color':'#8B5CF6','target-arrow-color':'#8B5CF6','width':1.5,'opacity':0.7}},
+{selector:'edge[type="guards"]',style:{'line-color':'#f59e0b','target-arrow-color':'#f59e0b','width':1.3,'opacity':0.65}},
+{selector:'edge[type="verified_by"]',style:{'line-color':'#22c55e','target-arrow-color':'#22c55e','width':1.2,'opacity':0.6}},
+{selector:'edge[type="blocks"]',style:{'line-color':'#ef4444','target-arrow-color':'#ef4444','width':1.3,'opacity':0.6}},
+{selector:'edge[type="warns"]',style:{'line-color':'#f59e0b','target-arrow-color':'#f59e0b','width':1,'opacity':0.5,'line-style':'dashed'}},
+{selector:'node:selected',style:{'border-width':3,'border-color':'#fff','z-index':999}},
+{selector:'edge:selected',style:{'width':3,'line-color':'#fff','target-arrow-color':'#fff','opacity':1,'z-index':999}}
 ],
 elements:{nodes:[
-{data:{id:'s2',label:'场景-2\ncommit前\n增量自检',type:'scene'}}
-],edges:[]},
-layout:{name:'breadthfirst',directed:true,spacingFactor:1.6,padding:30},
+{data:{id:'s2',label:'场景-2\ncommit前\n增量自检',type:'scene'}},
+{data:{id:'g1',label:'① 变更\n范围识别\ngit diff',type:'gate'}},
+{data:{id:'g2',label:'② 分支\n隔离检查\nfeat/<name>',type:'gate'}},
+{data:{id:'g3',label:'③ 变更\n范围约束\n目录内',type:'gate'}},
+{data:{id:'g4',label:'④ P0\n回归检查\n无新阻断',type:'gate'}},
+{data:{id:'g5',label:'⑤ 文档\n一致性\n代码↔文档',type:'gate'}},
+{data:{id:'src-self',label:'self-test\n.mjs\n--quick',type:'source'}},
+{data:{id:'src-impact',label:'detect-\nimpact.mjs\n--since',type:'source'}},
+{data:{id:'src-branch',label:'branch-\ncheck.mjs\nP0 gate',type:'source'}},
+{data:{id:'src-run',label:'run.mjs\n--skills\n--agents',type:'source'}},
+{data:{id:'src-xref',label:'cross-refs\n.test.mjs\n安全基线',type:'source'}},
+{data:{id:'b-branch',label:'BRANCH\nBLOCK\n主分支阻断',type:'block'}},
+{data:{id:'b-range',label:'RANGE\nBLOCK\n跨故事污染',type:'block'}},
+{data:{id:'b-p0',label:'P0 REGR\nBLOCK\n新P0出现',type:'block'}},
+{data:{id:'w-doc',label:'DOC\nWARN\n文档滞后',type:'block'}},
+{data:{id:'p-pass',label:'PASS\n允许\n提交',type:'pass'}}
+],
+edges:[
+{data:{id:'e-s2-g1',source:'s2',target:'g1',type:'contains'}},
+{data:{id:'e-s2-g2',source:'s2',target:'g2',type:'contains'}},
+{data:{id:'e-s2-g3',source:'s2',target:'g3',type:'contains'}},
+{data:{id:'e-s2-g4',source:'s2',target:'g4',type:'contains'}},
+{data:{id:'e-s2-g5',source:'s2',target:'g5',type:'contains'}},
+{data:{id:'e-g1-g2',source:'g1',target:'g2',type:'guards'}},
+{data:{id:'e-g2-g3',source:'g2',target:'g3',type:'guards'}},
+{data:{id:'e-g3-g4',source:'g3',target:'g4',type:'guards'}},
+{data:{id:'e-g4-g5',source:'g4',target:'g5',type:'guards'}},
+{data:{id:'e-g1-impact',source:'g1',target:'src-impact',type:'verified_by'}},
+{data:{id:'e-g2-branch',source:'g2',target:'src-branch',type:'verified_by'}},
+{data:{id:'e-g1-self',source:'g1',target:'src-self',type:'verified_by'}},
+{data:{id:'e-g4-run',source:'g4',target:'src-run',type:'verified_by'}},
+{data:{id:'e-g5-xref',source:'g5',target:'src-xref',type:'verified_by'}},
+{data:{id:'e-impact-self',source:'src-impact',target:'src-self',type:'guards'}},
+{data:{id:'e-branch-self',source:'src-branch',target:'src-self',type:'guards'}},
+{data:{id:'e-g2-bblock',source:'g2',target:'b-branch',type:'blocks'}},
+{data:{id:'e-g3-brange',source:'g3',target:'b-range',type:'blocks'}},
+{data:{id:'e-g4-bp0',source:'g4',target:'b-p0',type:'blocks'}},
+{data:{id:'e-g5-wdoc',source:'g5',target:'w-doc',type:'warns'}},
+{data:{id:'e-g5-pass',source:'g5',target:'p-pass',type:'verified_by'}}
+]},
+layout:{name:'breadthfirst',directed:true,spacingFactor:1.5,padding:30,avoidOverlap:true,nodeDimensionsIncludeLabels:true},
 wheelSensitivity:0.3,minZoom:0.3,maxZoom:3});
 
 cy.on('tap','node',function(evt){const node=evt.target;const hood=node.closedNeighborhood();cy.elements().style('opacity',0.15);hood.style('opacity',1);node.style('opacity',1)});

@@ -8,7 +8,7 @@ import { hdr, subhdr, item, flag, scene } from '../../lib/help-layout.mjs';
 const help = `
 ${bold("# rui-trends — 技术趋势发现")}
 
-${dim("GitHub Trending · OSS Insight · TrendShift · Top-Starred · Agent 技能发现")}
+${dim("GitHub Trending · OSS Insight · TrendShift · Top-Starred")}
 
 ${hdr("快速入门")}
 ${item("/rui-trends status", "数据源可达性检查 + 最近查询时间", green)}
@@ -38,10 +38,6 @@ ${subhdr("top-starred — 高星项目发现")}
 ${item("/rui-trends top-starred", "查询 GitHub 高星项目", green)}
 ${flag("min-stars N", "最小 star 数过滤，默认 1000")}
 
-${subhdr("find-skills — Agent 技能发现")}
-${item("/rui-trends find-skills", "搜索开放生态中的 Agent 技能", green)}
-${flag("query <q>", "搜索关键词（如 react, testing, deploy）")}
-
 ${subhdr("all — 全量趋势扫描")}
 ${item("/rui-trends all", "依次查询全部四个数据源，输出综合报告", cyan)}
 
@@ -58,10 +54,8 @@ ${item("/rui-trends oss-insight --metric stars", "评估候选依赖的社区认
 ${item("/rui-trends trendshift --range 30", "识别快速衰退或上升的依赖项目", green)}
 ${scene("自改进 — 新兴工具发现（D6 诊断）")}
 ${item("/rui-trends all", "全量扫描生成综合趋势报告，输入自改进闭环", cyan)}
-${item("/rui-trends find-skills", "发现可安装的 Agent 技能扩展能力", green)}
 ${scene("新项目技术栈初始化")}
 ${item("/rui-trends top-starred --min-stars 10000", "了解最受社区认可的项目作为技术栈候选", green)}
-${item("/rui-trends find-skills react", "搜索 React 生态相关技能", green)}
 `;
 
 console.log(help);

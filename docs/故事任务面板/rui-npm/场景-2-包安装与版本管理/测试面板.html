@@ -133,12 +133,13 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 
   <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">rui-npm · 个人 npm 包管理</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · 包安装与版本管理</span><span class="bc-sep">/</span><span class="bc-current">🧪 测试面板</span></nav>
 <nav class="cross-nav">
-  <a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
-  <span class="cross-link on">🧪 测试</span><span class="cross-sep">·</span>
-  <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="审查.html">📝 审查</a>
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<span class="cross-link on">🧪 测试</span><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
 </nav>
   <div class="header">
     <h1>🧪 <span class="accent">包安装与版本管理 · 测试面板</span></h1>
@@ -329,7 +330,7 @@ function renderPerf(){
   container.innerHTML=html}
 
 /* ═══ Source modal ═══ */
-function viewSource(relPath){var overlay=document.getElementById('modalOverlay');document.getElementById('modalTitle').textContent=relPath;document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>';overlay.classList.add('show');fetch('../../../../'+relPath).then(function(resp){if(!resp.ok)throw new Error('HTTP '+resp.status);return resp.text()}).then(function(text){var lines=text.split('\n');document.getElementById('modalBody').innerHTML='<pre>'+lines.map(function(l,i){return'<span class="ln">'+(i+1)+'</span>'+esc(l)}).join('\n')+'</pre>'}).catch(function(e){document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(e.message)+'</div>'})}
+function viewSource(relPath){var overlay=document.getElementById('modalOverlay');document.getElementById('modalTitle').textContent=relPath;document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>';overlay.classList.add('show');fetch('../../../../'+relPath).then(function(resp){if(!resp.ok)throw new Error('HTTP '+resp.status);return resp.text()}).then(function(text){var lines=text.split('\n');document.getElementById('modalBody').innerHTML='<pre>'+lines.map(function(l,i){return'<span class="ln">'+(i+1)+'</span>'+esc(l)}).join('\n')+'</pre>'}).catch(function(e){document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(relPath)+'<br><small style="display:block;margin-top:8px;color:var(--text3)">'+esc(e.message)+'</small><br><a href="../../../../'+relPath+'" target="_blank" style="display:inline-block;margin-top:14px;color:var(--cyan);text-decoration:none;font-size:.82rem">在新标签页中打开 \u2197</a></div>'})}
 function closeModal(){document.getElementById('modalOverlay').classList.remove('show')}
 
 /* ═══ Actions ═══ */
