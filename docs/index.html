@@ -280,6 +280,317 @@
     }
     .notify-bell .badge:empty { display: none; }
 
+    /* ── Cron (scheduled tasks) bell ────────── */
+    .cron-bell {
+      position: fixed; top: 28px; right: 80px; z-index: 200;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card-flat); border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-secondary); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; box-shadow: var(--shadow-card);
+      transition: all 0.2s ease;
+    }
+    .cron-bell:hover { border-color: var(--color-accent-2); color: var(--color-accent-2); }
+    .cron-bell .badge {
+      position: absolute; top: -4px; right: -4px;
+      min-width: 18px; height: 18px; border-radius: 9px;
+      background: var(--color-accent-2); color: #0a0a12; font-size: 0.65rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 4px; line-height: 1;
+    }
+    .cron-bell .badge:empty { display: none; }
+
+    /* ── Cron panel ────────────────────────── */
+    .cron-overlay {
+      position: fixed; inset: 0; z-index: 299;
+      background: rgba(0,0,0,0.3);
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .cron-overlay.open { opacity: 1; pointer-events: auto; }
+    .cron-panel {
+      position: fixed; top: 80px; right: 28px; z-index: 300;
+      width: 540px; max-height: 75vh;
+      background: var(--bg-card, #1e1f2b); border: var(--border-subtle);
+      border-radius: 12px; box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+      display: flex; flex-direction: column;
+      opacity: 0; pointer-events: none; transform: translateY(-8px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .cron-panel.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .cron-panel .panel-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 16px 20px; flex-shrink: 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .cron-panel .panel-header .cron-title {
+      font-size: 0.9rem; font-weight: 600; color: var(--text-primary);
+      flex: 1;
+    }
+    .cron-panel .panel-header .cron-count {
+      font-size: 0.7rem; color: var(--text-muted);
+    }
+    .cron-panel .panel-refresh {
+      padding: 4px 10px; font-size: 1rem; cursor: pointer;
+      background: none; border: none; color: var(--text-muted);
+      border-radius: 4px; transition: all 0.15s;
+    }
+    .cron-panel .panel-refresh:hover { color: var(--color-accent-2); background: rgba(255,255,255,0.03); }
+    .cron-panel .panel-refresh.spinning { animation: spin .6s linear; }
+    .cron-panel .panel-body {
+      flex: 1; overflow-y: auto; padding: 0;
+      max-height: calc(75vh - 56px);
+    }
+    .cron-panel .panel-loading {
+      text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.82rem;
+    }
+    .cron-panel .panel-empty {
+      text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.82rem;
+    }
+    .cron-panel .cron-list { list-style: none; }
+    .cron-panel .cron-item {
+      padding: 16px 20px; transition: background 0.12s;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .cron-panel .cron-item:last-child { border-bottom: none; }
+    .cron-panel .cron-item:hover { background: rgba(255,255,255,0.04); }
+    .cron-panel .cron-item .cr-row1 {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+    }
+    .cron-panel .cron-item .cr-icon {
+      font-size: 1rem; flex-shrink: 0; width: 24px; text-align: center;
+    }
+    .cron-panel .cron-item .cr-cron {
+      flex: 1; min-width: 0; font-size: 0.82rem; font-weight: 600; color: var(--color-accent-2);
+      font-family: 'JetBrains Mono', 'Fira Code', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .cron-panel .cron-item .cr-badge {
+      flex-shrink: 0; font-size: 0.66rem; font-weight: 600; padding: 2px 8px; border-radius: 8px;
+      white-space: nowrap;
+    }
+    .cron-panel .cron-item .cr-badge.active { background: rgba(34,197,94,0.15); color: #22c55e; }
+    .cron-panel .cron-item .cr-badge.idle { background: rgba(148,163,184,0.12); color: #94a3b8; }
+    .cron-panel .cron-item .cr-row2 {
+      padding-left: 34px; font-size: 0.78rem; color: var(--text-primary); line-height: 1.5;
+      margin-bottom: 6px;
+    }
+    .cron-panel .cron-item .cr-row3 {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+      padding-left: 34px; font-size: 0.68rem; color: var(--text-muted);
+    }
+    .cron-panel .cron-item .cr-row3 .cr-dot { opacity: 0.4; }
+    .cron-panel .cron-item .cr-prompt {
+      margin-left: 34px; margin-top: 6px; font-size: 0.72rem; color: var(--text-secondary);
+      background: rgba(255,255,255,0.02); border-radius: 6px; padding: 8px 12px;
+      border: 1px solid rgba(255,255,255,0.04); white-space: pre-wrap; word-break: break-all;
+      line-height: 1.5;
+    }
+    .cron-panel .panel-footer {
+      padding: 10px 20px; border-top: 1px solid rgba(255,255,255,0.06);
+      text-align: center; flex-shrink: 0;
+    }
+    .cron-panel .panel-footer span {
+      color: var(--text-muted); font-size: 0.7rem;
+    }
+    @media (max-width: 768px) {
+      .cron-bell { top: 16px; right: 64px; width: 36px; height: 36px; font-size: 1rem; }
+      .cron-panel { top: 60px; right: 8px; left: 8px; width: auto; max-height: 65vh; }
+      .cron-panel .panel-body { max-height: calc(65vh - 56px); }
+    }
+
+    /* ── Cron item enhancements ───────────── */
+    .cron-panel .cron-item.active-item { border-left: 2px solid rgba(34,197,94,0.4); }
+    .cron-panel .cron-item .cr-next {
+      padding-left: 34px; font-size: 0.68rem; color: var(--color-accent-2);
+      margin-top: 2px;
+    }
+    @keyframes pulseDot {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+      50% { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+    }
+    .pulse-dot {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: #22c55e; margin-right: 4px; flex-shrink: 0;
+      animation: pulseDot 1.8s ease infinite;
+    }
+    .cron-panel .cron-item .cr-dot-idle {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+      background: #555; margin-right: 4px; flex-shrink: 0;
+    }
+    .cron-panel .cron-item .cr-desc {
+      flex: 1; font-size: 0.84rem; font-weight: 600; color: var(--text-primary);
+    }
+    .cron-panel .cron-item .cr-raw {
+      color: var(--text-muted);
+    }
+    .cron-panel .cron-item .cr-prompt.collapsed {
+      max-height: 2.8em; overflow: hidden; position: relative; cursor: pointer;
+    }
+    .cron-panel .cron-item .cr-prompt.collapsed::after {
+      content: '…'; position: absolute; right: 8px; bottom: 0;
+      color: var(--text-muted); background: rgba(30,31,43,0.9); padding-left: 4px;
+    }
+    .cron-panel .cron-item .cr-prompt.expanded { max-height: none; cursor: pointer; }
+
+    /* ── Score hero (health cards) ────────── */
+    .dim-breadcrumb-wrap { margin-top: 4px; }
+    .dim-breadcrumb {
+      display: flex; height: 7px; border-radius: 4px; overflow: hidden;
+      gap: 2px; max-width: 100%; cursor: default;
+    }
+    .dim-breadcrumb .seg {
+      flex: 1; height: 100%; min-width: 4px; border-radius: 3px;
+      transition: filter 0.12s, transform 0.12s;
+      position: relative;
+    }
+    .dim-breadcrumb .seg.pass { background: #22c55e; }
+    .dim-breadcrumb .seg.warn { background: #f59e0b; }
+    .dim-breadcrumb .seg.fail { background: #ef4444; }
+    .dim-breadcrumb .seg:hover { filter: brightness(1.35); transform: scaleY(1.5); z-index: 1; }
+    .dim-breadcrumb-summary {
+      display: flex; gap: 8px; margin-top: 3px; font-size: 0.6rem; color: var(--text-muted);
+      align-items: center;
+    }
+    .dim-breadcrumb-summary .dbs-chip {
+      display: flex; align-items: center; gap: 3px;
+    }
+    .dim-breadcrumb-summary .dbs-dot {
+      width: 5px; height: 5px; border-radius: 2px; flex-shrink: 0;
+    }
+    .dim-breadcrumb-summary .dbs-dot.pass { background: #22c55e; }
+    .dim-breadcrumb-summary .dbs-dot.warn { background: #f59e0b; }
+    .dim-breadcrumb-summary .dbs-dot.fail { background: #ef4444; }
+    .dim-breadcrumb-summary .dbs-divider { color: var(--text-muted); opacity: 0.3; }
+
+    /* 通知面板内约束宽度，避免 9 段 bar 在 480px 面板中过度拉伸 */
+    .notify-panel .dim-breadcrumb { max-width: 240px; }
+    .notify-panel .dim-breadcrumb-summary { max-width: 240px; }
+    .notify-panel .dim-breadcrumb-wrap { padding-left: 34px; }
+
+    /* ── Finding distribution bar ─────────── */
+    .finding-bar {
+      display: flex; height: 4px; border-radius: 2px; overflow: hidden;
+      gap: 1px; margin-top: 3px; max-width: 120px;
+    }
+    .finding-bar .fseg { height: 100%; border-radius: 1px; }
+    .finding-bar .fseg.fail { background: #ef4444; }
+    .finding-bar .fseg.warn { background: #f59e0b; }
+    .finding-bar .fseg.info { background: #60a5fa; }
+
+    /* ── Trend source color accents ───────── */
+    .report-item.src-github  { border-left: 2px solid rgba(139,92,246,0.3); }
+    .report-item.src-oss     { border-left: 2px solid rgba(59,130,246,0.3); }
+    .report-item.src-trendshift { border-left: 2px solid rgba(34,211,238,0.3); }
+    .report-item.src-topstar { border-left: 2px solid rgba(245,158,11,0.3); }
+    .report-item.src-all     { border-left: 2px solid rgba(255,193,7,0.3); }
+    .report-item.src-github:hover  { border-left-color: rgba(139,92,246,0.6); }
+    .report-item.src-oss:hover     { border-left-color: rgba(59,130,246,0.6); }
+    .report-item.src-trendshift:hover { border-left-color: rgba(34,211,238,0.6); }
+    .report-item.src-topstar:hover { border-left-color: rgba(245,158,11,0.6); }
+    .report-item.src-all:hover     { border-left-color: rgba(255,193,7,0.6); }
+
+    /* ── Trend items preview ─────────────── */
+    .trend-items-preview {
+      font-size: 0.66rem; color: var(--text-muted); line-height: 1.5;
+      padding-left: 0; margin-top: 3px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* ── Cron countdown ──────────────────── */
+    .cr-countdown {
+      font-size: 0.66rem; font-weight: 600; padding: 2px 8px; border-radius: 8px;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .cr-countdown.soon { background: rgba(34,197,94,0.1); color: #22c55e; }
+    .cr-countdown.later { background: rgba(148,163,184,0.08); color: #94a3b8; }
+
+    /* ── Score delta ──────────────────────── */
+    .score-delta {
+      font-size: 0.63rem; font-weight: 600; margin-left: 2px;
+    }
+    .score-delta.up { color: #22c55e; }
+    .score-delta.down { color: #ef4444; }
+
+    /* ── Loop interval badge ──────────────── */
+    .loop-interval {
+      font-size: 0.6rem; padding: 1px 6px; border-radius: 6px;
+      background: rgba(34,211,238,0.08); color: var(--color-accent-2);
+      border: 1px solid rgba(34,211,238,0.12); white-space: nowrap; flex-shrink: 0;
+    }
+
+    /* ── Trend stat chips ────────────────── */
+    .trend-stat-row {
+      display: flex; gap: 6px; flex-wrap: wrap; padding-left: 0; margin-top: 4px;
+    }
+    .trend-stat {
+      font-size: 0.63rem; color: var(--text-muted);
+      display: flex; align-items: center; gap: 3px;
+    }
+    .trend-stat .ts-dot {
+      width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+    }
+    .ts-dot-green { background: #22c55e; }
+    .ts-dot-blue  { background: #60a5fa; }
+
+    /* ── Card layout utilities ─────────────── */
+    .r-chips-row { margin-top: 2px; }
+    .r-placeholder-badge {
+      opacity: 0.35; background: transparent;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .r-date-sub {
+      font-weight: 400; font-size: 0.72rem; color: var(--text-muted);
+    }
+    .cr-badge-meta {
+      background: rgba(148,163,184,0.08); color: #94a3b8; font-size: 0.63rem;
+    }
+    .cr-badge-durable {
+      background: rgba(34,211,238,0.1); color: var(--color-accent-2);
+      font-size: 0.63rem; margin-left: 2px;
+    }
+    .t-green  { color: #22c55e; }
+    .t-yellow { color: #f59e0b; }
+    .t-red    { color: #ef4444; }
+    .t-blue   { color: #60a5fa; }
+
+    /* Health: hero score display */
+    .r-hero-score {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 3px;
+    }
+    .r-hero-num {
+      font-size: 2rem; font-weight: 700; line-height: 1;
+      font-family: 'JetBrains Mono','Fira Code',monospace;
+    }
+    .r-hero-num.high { color: #22c55e; }
+    .r-hero-num.mid  { color: #f59e0b; }
+    .r-hero-num.low  { color: #ef4444; }
+    .r-hero-grade {
+      font-size: 0.72rem; font-weight: 700; padding: 2px 10px; border-radius: 8px;
+    }
+    .r-hero-grade.A { background: rgba(34,197,94,0.12); color: #22c55e; }
+    .r-hero-grade.B { background: rgba(34,197,94,0.08); color: #4ade80; }
+    .r-hero-grade.C { background: rgba(245,158,11,0.12); color: #f59e0b; }
+    .r-hero-grade.D { background: rgba(239,68,68,0.12); color: #ef4444; }
+
+    /* Loop: status-led card */
+    .r-status-led {
+      display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px;
+      flex-shrink: 0;
+    }
+    .r-status-led.pass { background: #22c55e; }
+    .r-status-led.warn { background: #f59e0b; box-shadow: 0 0 4px rgba(245,158,11,0.4); }
+    .r-status-led.fail { background: #ef4444; box-shadow: 0 0 4px rgba(239,68,68,0.4); }
+
+    /* Trend: source icon badge */
+    .r-source-icon {
+      font-size: 1.2rem; flex-shrink: 0; width: 30px; height: 30px;
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    }
+    .r-source-icon.github  { background: rgba(139,92,246,0.12); }
+    .r-source-icon.oss     { background: rgba(59,130,246,0.12); }
+    .r-source-icon.trendshift { background: rgba(34,211,238,0.12); }
+    .r-source-icon.topstar { background: rgba(245,158,11,0.12); }
+    .r-source-icon.all     { background: rgba(255,193,7,0.1); }
+
     /* ── Floating panel ────────────────────── */
     .notify-overlay {
       position: fixed; inset: 0; z-index: 299;
@@ -408,6 +719,10 @@
     .notify-panel .panel-empty {
       text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.82rem;
     }
+    .panel-empty .hint {
+      font-size: 0.7rem; color: var(--text-muted); margin-top: 8px; display: block;
+    }
+    .panel-empty .hint code { color: var(--cyan); }
     .notify-panel .panel-footer {
       padding: 10px 20px; border-top: 1px solid rgba(255,255,255,0.06);
       text-align: center; flex-shrink: 0;
@@ -1375,6 +1690,29 @@
     <span class="badge" id="notifyBadge"></span>
   </button>
 
+  <!-- Cron (scheduled tasks) bell -->
+  <button class="cron-bell" id="cronBell" title="调度任务" aria-label="调度任务">
+    &#9200;
+    <span class="badge" id="cronBadge"></span>
+  </button>
+
+  <!-- Cron overlay -->
+  <div class="cron-overlay" id="cronOverlay"></div>
+
+  <!-- Cron panel -->
+  <div class="cron-panel" id="cronPanel">
+    <div class="panel-header">
+      <span class="cron-title">&#9200; 调度任务</span>
+      <span class="cron-count" id="cronTaskCount"></span>
+      <button class="panel-refresh" id="cronRefresh" title="刷新任务列表">&#x21bb;</button>
+    </div>
+    <div class="panel-body" id="cronPanelBody">
+      <div class="panel-loading">加载中...</div>
+    </div>
+    <div class="panel-footer">
+      <span>数据来源: .claude/scheduled_tasks.json</span>
+    </div>
+  </div>
   <!-- Notification overlay -->
   <div class="notify-overlay" id="notifyOverlay"></div>
 
@@ -1416,6 +1754,13 @@
     }
     window.addEventListener('scroll', toggleBackTop, { passive: true });
     backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    /* ── Shared XSS escape ─────────────────── */
+    function escHtml(s) {
+      var d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
 
     /* ── Notification bell + floating panel ─── */
     (function() {
@@ -1596,6 +1941,9 @@
         // Meta line (date + interval + status)
         var mline = html.match(/yry-header[^>]*meta[^>]*>([^<]+)</);
         if (mline) meta.metaLine = mline[1];
+        // Interval
+        var intv = html.match(/间隔:?\s*(\d+\s*(?:分钟|小时|天|min|hour|day|hr)[^\s<]*)/i);
+        if (intv) meta.interval = intv[1];
         // Findings — extract titles
         var findingTitles = [];
         var fre = /yry-finding-head[^>]*>[\d]+\.\s*([^<]+)</g;
@@ -1685,6 +2033,7 @@
               items: r.items,
               reachable: r.reachable,
               total: r.total,
+              keywords: r.keywords || [],
               label: r.source,
               meta: {
                 ok: r.ok,
@@ -1692,7 +2041,8 @@
                 items: r.items,
                 source: r.source,
                 reachable: r.reachable,
-                total: r.total
+                total: r.total,
+                keywords: r.keywords || []
               }
             };
           });
@@ -1741,6 +2091,19 @@
           enrichItems(healthItems, 'health', 8),
           enrichItems(loopItems, 'loop', 8)
         ]);
+        // Compute health score deltas between consecutive reports
+        for (var hi = 0; hi < _b[0].length; hi++) {
+          var cur = _b[0][hi];
+          if (cur.meta && cur.meta.score !== undefined) {
+            // Find previous report with a score
+            for (var hj = hi + 1; hj < _b[0].length; hj++) {
+              if (_b[0][hj].meta && _b[0][hj].meta.score !== undefined) {
+                cur.prevScore = _b[0][hj].meta.score;
+                break;
+              }
+            }
+          }
+        }
         reportData.health = _b[0];
         reportData.loop = _b[1];
         renderList();
@@ -1752,7 +2115,7 @@
           var hintCmd = activeTab === 'health' ? 'node skills/rui-bot/send.mjs health --html' :
                         activeTab === 'loop' ? 'node skills/rui-bot/lib/loop-report.mjs' :
                         'node skills/rui-trends/rui-trends.mjs all --html';
-          panelBody.innerHTML = '<div class="panel-empty">暂无报告<br><span style="font-size:.7rem;color:var(--text-muted);margin-top:8px;display:block">运行 <code style="color:var(--cyan)">' + hintCmd + '</code> 生成首份报告</span></div>';
+          panelBody.innerHTML = '<div class="panel-empty">暂无报告<br><span class="hint">运行 <code>' + hintCmd + '</code> 生成首份报告</span></div>';
           return;
         }
         var isHealth = activeTab === 'health';
@@ -1836,124 +2199,463 @@
       }
 
       function renderItem(item, isHealth, isLatest) {
+        if (isHealth) return renderHealthItem(item, isLatest);
+        if (activeTab === 'trend') return renderTrendItem(item, isLatest);
+        return renderLoopItem(item, isLatest);
+      }
+
+      /* ── Health report card ──────────────── */
+      function renderHealthItem(item, isLatest) {
         var href = item.basePath + item.href;
         var meta = item.meta;
-        var row1 = '', row2 = '';
-        var chips = '';
-        var desc = '';
+        var title = (meta && meta.pageTitle) ? meta.pageTitle : ('健康报告 · ' + item.date);
+        var relTime = relativeTime(item.date);
+        var cls = isLatest ? ' r-latest' : '';
 
-        if (isHealth) {
-          // Title: use page title or fall back to date
-          var titleText = (meta && meta.pageTitle) ? meta.pageTitle : ('🩺 健康报告 · ' + item.date);
-          row1 = '<span class="r-icon">🩺</span>'
-            + '<span class="r-title"><a href="' + href + '" target="_blank">' + escHtml(titleText) + '</a></span>';
-          if (meta && meta.score !== undefined) {
-            row1 += '<span class="r-badge score">' + meta.score + '分</span>';
-            if (meta.grade) row1 += '<span class="r-badge ' + meta.grade + '">' + meta.grade + '级</span>';
-          } else if (!meta) {
-            row1 += '<span class="r-badge" style="opacity:.35;background:transparent;border:1px solid rgba(255,255,255,.08)">…</span>';
+        // Score hero
+        var hero = '';
+        if (meta && meta.score !== undefined) {
+          var lvl = meta.score >= 80 ? 'high' : meta.score >= 60 ? 'mid' : 'low';
+          var grade = meta.grade || '';
+          var delta = '';
+          if (item.prevScore !== undefined && meta.score !== item.prevScore) {
+            var d = meta.score - item.prevScore;
+            delta = '<span class="score-delta ' + (d > 0 ? 'up' : 'down') + '">' + (d > 0 ? '+' : '') + d + '</span>';
           }
-          // Row 2: metadata with relative time
-          var relTime = relativeTime(item.date);
-          row2 = '<span class="r-reltime">' + escHtml(relTime) + '</span>';
-          if (meta) {
-            if (meta.triggers !== undefined) row2 += '<span class="r-dot">·</span><span>' + meta.triggers + '/8 触发</span>';
-            if (meta.recs !== undefined) row2 += '<span class="r-dot">·</span><span>' + meta.recs + ' 项建议</span>';
-            if (meta.trendLabel) row2 += '<span class="r-dot">·</span><span style="color:' + (meta.trendLabel.indexOf('提升') !== -1 ? '#22c55e' : meta.trendLabel.indexOf('下降') !== -1 ? '#ef4444' : '') + '">' + escHtml(meta.trendLabel) + '</span>';
-            // Dimension highlights — best + worst
-            if (meta.dimStats && meta.dimStats.best.dim) {
-              chips += '<div class="r-chips">';
-              chips += '<span class="r-chip pass" title="最高分维度">' + escHtml(meta.dimStats.best.dim) + ' ' + meta.dimStats.best.score + '分</span>';
-              if (meta.dimStats.worst.score < 100) {
-                chips += '<span class="r-chip ' + (meta.dimStats.worst.score < 60 ? 'fail' : 'warn') + '" title="最低分维度">' + escHtml(meta.dimStats.worst.dim) + ' ' + meta.dimStats.worst.score + '分</span>';
-              }
-              // Dim status counts
-              chips += '<span class="r-chip info" title="' + meta.dimStats.pass + '项≥80 / ' + meta.dimStats.warn + '项60-79 / ' + meta.dimStats.fail + '项<60">' + meta.dimStats.pass + 'P ' + (meta.dimStats.warn > 0 ? meta.dimStats.warn + 'W ' : '') + (meta.dimStats.fail > 0 ? meta.dimStats.fail + 'F' : '') + '</span>';
-              chips += '</div>';
-            }
-            // Top recommendation as description
-            if (meta.topRec) {
-              desc = '<div class="r-summary">💡 ' + escHtml(meta.topRec) + '</div>';
-            } else if (meta.overall) {
-              desc = '<div class="r-summary">' + escHtml(meta.overall) + '</div>';
-            }
-          }
-        } else if (activeTab === 'trend') {
-          var sourceIcon = { 'all': '📡', 'github-trending': '🐙', 'oss-insight': '📊', 'trendshift': '📈', 'top-starred': '⭐' };
-          var sourceLabels = { 'all': '全量扫描', 'github-trending': 'GitHub Trending', 'oss-insight': 'OSS Insight', 'trendshift': 'TrendShift', 'top-starred': 'Top-Starred' };
-          var icon = sourceIcon[item.source] || '📡';
-          var label = sourceLabels[item.source] || item.source;
-          var titleText = icon + ' ' + label + ' · ' + item.date;
-          row1 = '<span class="r-icon">📡</span>'
-            + '<span class="r-title"><a href="' + href + '" target="_blank">' + escHtml(titleText) + '</a></span>';
-          if (meta && meta.ok !== undefined) {
-            row1 += '<span class="r-badge ' + (meta.ok ? 'pass' : 'fail') + '">' + (meta.ok ? '可达' : '不可达') + '</span>';
-          }
-          // Trend direction badge
-          if (meta && meta.trend) {
-            var trLabel = meta.trend === 'rise' ? '↑ 上升' : meta.trend === 'fall' ? '↓ 下降' : '→ 持平';
-            var trCls = meta.trend === 'rise' ? 'pass' : meta.trend === 'fall' ? 'fail' : '';
-            if (trCls) row1 += '<span class="r-badge ' + trCls + '">' + trLabel + '</span>';
-          }
-          var relTime = relativeTime(item.date);
-          row2 = '<span class="r-reltime">' + escHtml(relTime) + '</span>';
-          if (meta && meta.items !== undefined) row2 += '<span class="r-dot">·</span><span>' + meta.items + ' 条目</span>';
-          if (meta && meta.reachable !== undefined) {
-            row2 += '<span class="r-dot">·</span><span style="color:#22c55e">' + meta.reachable + '/' + meta.total + ' 可达</span>';
-          }
-          // Chips for trend
-          chips += '<div class="r-chips">';
-          if (meta && meta.ok) chips += '<span class="r-chip pass">数据源可达</span>';
-          else if (meta) chips += '<span class="r-chip fail">数据源不可达</span>';
-          chips += '<span class="r-chip info">趋势快照</span>';
-          chips += '</div>';
-        } else {
-          // Loop: use page title, or heading, or skill name
-          var loopTitle = (meta && meta.pageTitle) ? meta.pageTitle.replace('自循环报告 · ', '') : (item.skill || item.label);
-          row1 = '<span class="r-icon">🔄</span>'
-            + '<span class="r-title"><a href="' + href + '" target="_blank">' + escHtml(loopTitle) + '</a></span>';
-          if (meta && meta.status) {
-            var sb = { pass: '通过', warn: '告警', fail: '异常' };
-            row1 += '<span class="r-badge ' + meta.status + '">' + (sb[meta.status] || meta.status) + '</span>';
-          }
-          // Row 2: relative time + health context
-          var relTime = relativeTime(item.date);
-          row2 = '<span class="r-reltime">' + escHtml(relTime) + '</span>';
-          if (item.timeId) row2 += '<span class="r-dot">·</span><span>' + escHtml(item.timeId) + '</span>';
-          if (meta && meta.healthScore !== undefined) {
-            var hg = meta.healthGrade || '';
-            var hc = meta.healthScore >= 80 ? '#22c55e' : meta.healthScore >= 60 ? '#f59e0b' : '#ef4444';
-            row2 += '<span class="r-dot">·</span><span style="color:' + hc + '">🩺 ' + meta.healthScore + '分 ' + hg + '级</span>';
-          }
-          // Findings chips
-          if (meta && meta.findings) {
-            var f = meta.findings;
-            chips += '<div class="r-chips">';
-            if (f.fail > 0) chips += '<span class="r-chip fail">' + f.fail + ' 异常</span>';
-            if (f.warn > 0) chips += '<span class="r-chip warn">' + f.warn + ' 告警</span>';
-            if (f.info > 0) chips += '<span class="r-chip info">' + f.info + ' 信息</span>';
-            chips += '</div>';
-          }
-          // Finding titles or summary
-          if (meta && meta.findingTitles && meta.findingTitles.length > 0) {
-            desc = '<div class="r-summary">' + escHtml(meta.findingTitles.slice(0, 2).join(' · ')) + '</div>';
-          } else if (meta && meta.summary) {
-            desc = '<div class="r-summary">' + escHtml(meta.summary) + '</div>';
+          hero = '<div class="r-hero-score">'
+            + '<span class="r-hero-num ' + lvl + '">' + meta.score + '</span>'
+            + (grade ? '<span class="r-hero-grade ' + grade + '">' + grade + '级</span>' : '')
+            + delta
+            + '</div>';
+        }
+
+        // Secondary stats
+        var stats = '<span class="r-reltime">' + escHtml(relTime) + '</span>';
+        if (meta) {
+          if (meta.triggers !== undefined) stats += '<span class="r-dot">·</span>' + meta.triggers + '/8 触发';
+          if (meta.recs !== undefined) stats += '<span class="r-dot">·</span>' + meta.recs + ' 项建议';
+          if (meta.trendLabel) {
+            var up = meta.trendLabel.indexOf('提升') !== -1;
+            var tCls = up ? 't-green' : meta.trendLabel.indexOf('下降') !== -1 ? 't-red' : '';
+            stats += '<span class="r-dot">·</span><span class="' + tCls + '">' + escHtml(meta.trendLabel) + '</span>';
           }
         }
 
-        return '<li class="report-item' + (isLatest ? ' r-latest' : '') + '" onclick="window.open(\'' + href + '\',\'_blank\')">'
-          + '<div class="r-row1">' + row1 + '</div>'
-          + '<div class="r-row2">' + row2 + '</div>'
-          + chips
-          + desc
+        // Dimension breadcrumb + chips
+        var dims = '';
+        if (meta && meta.dimStats && meta.dimStats.best.dim) {
+          var ds = meta.dimStats;
+          dims += '<div class="r-chips r-chips-row">';
+          dims += '<span class="r-chip pass">' + escHtml(ds.best.dim) + ' ' + ds.best.score + '分</span>';
+          if (ds.worst.score < 100) {
+            dims += '<span class="r-chip ' + (ds.worst.score < 60 ? 'fail' : 'warn') + '">' + escHtml(ds.worst.dim) + ' ' + ds.worst.score + '分</span>';
+          }
+          dims += '<span class="r-chip info">' + ds.pass + 'P ' + (ds.warn > 0 ? ds.warn + 'W ' : '') + (ds.fail > 0 ? ds.fail + 'F' : '') + '</span>';
+          dims += '</div>';
+          // Per-dimension breadcrumb bar
+          if (meta.dimScores && ds.total > 0) {
+            var sdims = [];
+            var sdkeys = Object.keys(meta.dimScores);
+            for (var si = 0; si < sdkeys.length; si++) {
+              sdims.push({ name: sdkeys[si], score: meta.dimScores[sdkeys[si]] });
+            }
+            sdims.sort(function(a, b) { return a.score - b.score; }); // worst first
+            dims += '<div class="dim-breadcrumb-wrap">';
+            dims += '<div class="dim-breadcrumb" title="' + sdims.length + ' 维度 · 悬停查看详情">';
+            for (var sj = 0; sj < sdims.length; sj++) {
+              var sd = sdims[sj];
+              var lvl = sd.score >= 80 ? 'pass' : sd.score >= 60 ? 'warn' : 'fail';
+              dims += '<div class="seg ' + lvl + '" title="' + escHtml(sd.name) + ': ' + sd.score + '分"></div>';
+            }
+            dims += '</div>';
+            // Compact summary
+            dims += '<div class="dim-breadcrumb-summary">';
+            if (ds.pass > 0) dims += '<span class="dbs-chip"><span class="dbs-dot pass"></span>' + ds.pass + ' 达标</span>';
+            if (ds.warn > 0) dims += '<span class="dbs-chip"><span class="dbs-dot warn"></span>' + ds.warn + ' 告警</span>';
+            if (ds.fail > 0) dims += '<span class="dbs-chip"><span class="dbs-dot fail"></span>' + ds.fail + ' 异常</span>';
+            dims += '</div></div>';
+          }
+        }
+
+        // Recommendation
+        var detail = '';
+        if (meta && meta.topRec) detail = '<div class="r-summary">💡 ' + escHtml(meta.topRec) + '</div>';
+        else if (meta && meta.overall) detail = '<div class="r-summary">' + escHtml(meta.overall) + '</div>';
+
+        return '<li class="report-item' + cls + '" onclick="window.open(\'' + href + '\',\'_blank\')">'
+          + '<div class="r-row1"><span class="r-icon">🩺</span>'
+          + '<span class="r-title"><a href="' + href + '" target="_blank">' + escHtml(title) + '</a></span></div>'
+          + hero
+          + '<div class="r-row2">' + stats + '</div>'
+          + dims + detail
           + '</li>';
       }
 
-      function escHtml(s) {
-        var d = document.createElement('div');
-        d.textContent = s;
-        return d.innerHTML;
+      /* ── Loop report card ────────────────── */
+      function renderLoopItem(item, isLatest) {
+        var href = item.basePath + item.href;
+        var meta = item.meta;
+        var skillIcons = { 'rui-bot': '🔔', 'rui-trends': '📡', 'rui-story': '📋', 'rui-claude': '⚙️', 'rui-import': '📥', 'rui-html': '📄', 'rui-init': '🚀', 'rui-code': '💻', 'rui-yry': '🔄', 'self-improve': '🧬' };
+        var loopSkill = item.skill || '';
+        var icon = skillIcons[loopSkill] || '🔄';
+        var title = (meta && meta.pageTitle) ? meta.pageTitle.replace('自循环报告 · ', '') : (loopSkill || '自循环报告');
+        var relTime = relativeTime(item.date);
+        var cls = isLatest ? ' r-latest' : '';
+
+        // Status-led header
+        var statusBadge = '';
+        if (meta && meta.status) {
+          var led = '<span class="r-status-led ' + meta.status + '"></span>';
+          var label = { pass: '通过', warn: '告警', fail: '异常' }[meta.status] || meta.status;
+          statusBadge = '<span class="r-badge ' + meta.status + '">' + led + label + '</span>';
+        }
+
+        // Interval badge
+        var intervalBadge = '';
+        if (meta && meta.interval) {
+          intervalBadge = '<span class="loop-interval">' + escHtml(meta.interval) + '</span>';
+        }
+
+        // Stats row
+        var stats = '<span class="r-reltime">' + escHtml(relTime) + '</span>';
+        if (item.timeId) stats += '<span class="r-dot">·</span>' + escHtml(item.timeId);
+        if (meta && meta.healthScore !== undefined) {
+          var hCls = meta.healthScore >= 80 ? 't-green' : meta.healthScore >= 60 ? 't-yellow' : 't-red';
+          stats += '<span class="r-dot">·</span><span class="' + hCls + '">🩺 ' + meta.healthScore + '分 ' + (meta.healthGrade || '') + '级</span>';
+        }
+
+        // Findings
+        var findings = '';
+        if (meta && meta.findings) {
+          var f = meta.findings;
+          var fTotal = f.fail + f.warn + f.info;
+          findings += '<div class="r-chips r-chips-row">';
+          if (f.fail > 0) findings += '<span class="r-chip fail">' + f.fail + ' 异常</span>';
+          if (f.warn > 0) findings += '<span class="r-chip warn">' + f.warn + ' 告警</span>';
+          if (f.info > 0) findings += '<span class="r-chip info">' + f.info + ' 信息</span>';
+          findings += '</div>';
+          if (fTotal > 0) {
+            findings += '<div class="finding-bar">';
+            if (f.fail > 0) findings += '<div class="fseg fail" style="flex:' + f.fail + '"></div>';
+            if (f.warn > 0) findings += '<div class="fseg warn" style="flex:' + f.warn + '"></div>';
+            if (f.info > 0) findings += '<div class="fseg info" style="flex:' + f.info + '"></div>';
+            findings += '</div>';
+          }
+        }
+
+        var detail = '';
+        if (meta && meta.findingTitles && meta.findingTitles.length > 0) {
+          detail = '<div class="r-summary">' + escHtml(meta.findingTitles.slice(0, 2).join(' · ')) + '</div>';
+        } else if (meta && meta.summary) {
+          detail = '<div class="r-summary">' + escHtml(meta.summary) + '</div>';
+        }
+
+        return '<li class="report-item' + cls + '" onclick="window.open(\'' + href + '\',\'_blank\')">'
+          + '<div class="r-row1"><span class="r-icon">' + icon + '</span>'
+          + '<span class="r-title"><a href="' + href + '" target="_blank">' + escHtml(title) + '</a></span>'
+          + intervalBadge + statusBadge + '</div>'
+          + '<div class="r-row2">' + stats + '</div>'
+          + findings + detail
+          + '</li>';
+      }
+
+      /* ── Trend report card ────────────────── */
+      function renderTrendItem(item, isLatest) {
+        var href = item.basePath + item.href;
+        var meta = item.meta;
+        var sourceIcons = { 'all': '📡', 'github-trending': '🐙', 'oss-insight': '📊', 'trendshift': '📈', 'top-starred': '⭐' };
+        var sourceLabels = { 'all': '全量扫描', 'github-trending': 'GitHub Trending', 'oss-insight': 'OSS Insight', 'trendshift': 'TrendShift', 'top-starred': 'Top-Starred' };
+        var srcClasses = { 'all': 'src-all', 'github-trending': 'src-github', 'oss-insight': 'src-oss', 'trendshift': 'src-trendshift', 'top-starred': 'src-topstar' };
+        var srcCls = srcClasses[item.source] || '';
+        var sicon = sourceIcons[item.source] || '📡';
+        var slabel = sourceLabels[item.source] || item.source;
+        var relTime = relativeTime(item.date);
+        var cls = (isLatest ? ' r-latest' : '') + (srcCls ? ' ' + srcCls : '');
+
+        // Source icon badge
+        var iconBadge = '<span class="r-source-icon ' + (item.source === 'github-trending' ? 'github' : item.source === 'oss-insight' ? 'oss' : item.source === 'trendshift' ? 'trendshift' : item.source === 'top-starred' ? 'topstar' : 'all') + '">' + sicon + '</span>';
+
+        // Status badges
+        var badges = '';
+        if (meta && meta.ok !== undefined) {
+          badges += '<span class="r-badge ' + (meta.ok ? 'pass' : 'fail') + '">' + (meta.ok ? '可达' : '不可达') + '</span>';
+        }
+        if (meta && meta.trend && meta.trend !== 'flat') {
+          badges += '<span class="r-badge ' + (meta.trend === 'rise' ? 'pass' : 'fail') + '">' + (meta.trend === 'rise' ? '↑ 上升' : '↓ 下降') + '</span>';
+        }
+
+        // Stats
+        var stats = '<span class="r-reltime">' + escHtml(relTime) + '</span>';
+        if (meta && meta.items !== undefined) stats += '<span class="r-dot">·</span>' + meta.items + ' 条目';
+        if (meta && meta.reachable !== undefined && meta.total !== undefined) {
+          var pct = meta.total > 0 ? Math.round(meta.reachable / meta.total * 100) : 0;
+          var pclr = pct >= 80 ? 't-green' : pct >= 50 ? 't-yellow' : 't-red';
+          stats += '<span class="r-dot">·</span><span class="' + pclr + '">' + meta.reachable + '/' + meta.total + ' 可达</span>';
+        }
+
+        // Trend stat row
+        var statRow = '';
+        if (meta && meta.items !== undefined) {
+          statRow += '<div class="trend-stat-row">';
+          statRow += '<span class="trend-stat"><span class="ts-dot ts-dot-green"></span>' + meta.items + ' 条目</span>';
+          if (meta.reachable !== undefined && meta.total !== undefined) {
+            statRow += '<span class="trend-stat"><span class="ts-dot ts-dot-blue"></span>' + meta.reachable + '/' + meta.total + ' 可达</span>';
+          }
+          statRow += '</div>';
+        }
+
+        // Hot keywords
+        var kwPreview = '';
+        if (item.keywords && item.keywords.length > 0) {
+          kwPreview = '<div class="trend-items-preview">🔥 ' + escHtml(item.keywords.slice(0, 4).join(' · ')) + '</div>';
+        }
+
+        return '<li class="report-item' + cls + '" onclick="window.open(\'' + href + '\',\'_blank\')">'
+          + '<div class="r-row1">' + iconBadge
+          + '<span class="r-title"><a href="' + href + '" target="_blank">' + escHtml(slabel) + ' <span class="r-date-sub">' + escHtml(item.date) + '</span></a></span>'
+          + badges + '</div>'
+          + '<div class="r-row2">' + stats + '</div>'
+          + statRow + kwPreview
+          + '</li>';
+      }
+
+    })();
+    /* ── Cron (scheduled tasks) bell + panel ─── */
+    (function() {
+      var cronBell = document.getElementById('cronBell');
+      var cronBadge = document.getElementById('cronBadge');
+      var cronPanel = document.getElementById('cronPanel');
+      var cronOverlay = document.getElementById('cronOverlay');
+      var cronPanelBody = document.getElementById('cronPanelBody');
+      var cronTaskCount = document.getElementById('cronTaskCount');
+      var cronData = [];
+      var cronLoaded = false;
+      var refreshSpinning = false;
+
+      function openCron() { cronPanel.classList.add('open'); cronOverlay.classList.add('open'); if (!cronLoaded) fetchCron(); }
+      function closeCron() { cronPanel.classList.remove('open'); cronOverlay.classList.remove('open'); }
+      function toggleCron() { cronPanel.classList.contains('open') ? closeCron() : openCron(); }
+
+      cronBell.addEventListener('click', toggleCron);
+      cronOverlay.addEventListener('click', closeCron);
+
+      var cronRefreshBtn = document.getElementById('cronRefresh');
+      if (cronRefreshBtn) {
+        cronRefreshBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          cronRefreshBtn.classList.add('spinning');
+          cronData = [];
+          cronLoaded = false;
+          fetchCron().finally(function() { cronRefreshBtn.classList.remove('spinning'); });
+        });
+      }
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && cronPanel.classList.contains('open')) closeCron();
+      });
+
+      // Close cron panel if notify panel opens (prevent overlap)
+      var notifyBell = document.getElementById('notifyBell');
+      if (notifyBell) {
+        notifyBell.addEventListener('click', function() {
+          if (cronPanel.classList.contains('open')) closeCron();
+        });
+      }
+
+      // Event delegation: prompt collapse/expand
+      cronPanelBody.addEventListener('click', function(e) {
+        var prompt = e.target.closest('.cr-prompt');
+        if (prompt) {
+          e.stopPropagation();
+          prompt.classList.toggle('collapsed');
+          prompt.classList.toggle('expanded');
+        }
+      });
+
+      function cronDescription(expr) {
+        var parts = expr.trim().split(/\s+/);
+        if (parts.length !== 5) return expr;
+        var m = parts[0], h = parts[1], dom = parts[2], mon = parts[3], dow = parts[4];
+        if (m.startsWith('*/')) {
+          var n = parseInt(m.substring(2));
+          if (n && h === '*' && dom === '*' && mon === '*') return '每 ' + n + ' 分钟';
+        }
+        if (m.indexOf(',') !== -1 && h === '*' && dom === '*' && mon === '*') {
+          return '每小时第 ' + m + ' 分';
+        }
+        if (m.match(/^\d+$/) && h === '*' && dom === '*' && mon === '*') {
+          return '每小时第 ' + m + ' 分';
+        }
+        if (m.match(/^\d+$/) && h.match(/^\d+$/) && dom === '*' && mon === '*') {
+          return '每天 ' + h + ':' + m.padStart(2, '0');
+        }
+        if (m.match(/^\d+$/) && h.match(/^\d+$/) && dom.match(/^\d+$/) && mon.match(/^\d+$/)) {
+          return mon + '月' + dom + '日 ' + h + ':' + m.padStart(2, '0');
+        }
+        if (m.match(/^\d+$/) && h.match(/^\d+$/) && dom === '*' && mon === '*' && dow !== '*') {
+          var days = { '0': '日', '1': '一', '2': '二', '3': '三', '4': '四', '5': '五', '6': '六' };
+          var dows = dow.split(',').map(function(d) { return days[d] || d; }).join(',');
+          return '每周' + dows + ' ' + h + ':' + m.padStart(2, '0');
+        }
+        return expr;
+      }
+
+      function cronStatus(item) {
+        if (!item.lastFiredAt) return 'idle';
+        var now = Date.now();
+        var diff = now - item.lastFiredAt;
+        // Parse cron to estimate next fire
+        try {
+          var parts = item.cron.trim().split(/\s+/);
+          if (parts.length === 5 && parts[0].startsWith('*/')) {
+            var intervalMin = parseInt(parts[0].substring(2));
+            if (diff < intervalMin * 60000 * 2) return 'active';
+          }
+          if (parts.length === 5 && parts[0].indexOf(',') !== -1) {
+            // e.g. "3,33" — every 30 min at those minutes
+            if (diff < 3600000) return 'active';
+          }
+          if (parts.length === 5 && parts[0].match(/^\d+$/)) {
+            // fixed minute — assume hourly
+            if (diff < 7200000) return 'active';
+          }
+          if (diff > 86400000) return 'idle';
+          return 'active';
+        } catch(e) { return 'idle'; }
+      }
+
+      /* Estimate next fire time from cron expression */
+      function nextFireEstimate(cronExpr, lastFiredAt) {
+        try {
+          var parts = cronExpr.trim().split(/\s+/);
+          if (parts.length !== 5) return '';
+          var m = parts[0], h = parts[1], dom = parts[2], mon = parts[3], dow = parts[4];
+          var now = new Date();
+          var base = lastFiredAt ? new Date(lastFiredAt) : now;
+          // Handle "*/N" recurring minutes
+          if (m.startsWith('*/') && h === '*' && dom === '*' && mon === '*') {
+            var interval = parseInt(m.substring(2)) || 5;
+            var next = new Date(base.getTime() + interval * 60000);
+            return next.toISOString().slice(0, 16).replace('T', ' ');
+          }
+          // Handle comma-separated minutes (e.g. "3,33")
+          if (m.indexOf(',') !== -1 && h === '*' && dom === '*' && mon === '*') {
+            var mins = m.split(',').map(Number);
+            var curMin = now.getMinutes();
+            var nextMin = mins.find(function(x) { return x > curMin; });
+            if (nextMin === undefined) nextMin = mins[0]; // wrap to next hour
+            var next = new Date(now);
+            next.setMinutes(nextMin, 0, 0);
+            if (nextMin <= curMin) next.setHours(next.getHours() + 1);
+            return next.toISOString().slice(0, 16).replace('T', ' ');
+          }
+          // Fixed minute, hourly
+          if (m.match(/^\d+$/) && h === '*' && dom === '*' && mon === '*') {
+            var fm = parseInt(m);
+            var next2 = new Date(now);
+            next2.setMinutes(fm, 0, 0);
+            if (fm <= now.getMinutes()) next2.setHours(next2.getHours() + 1);
+            return next2.toISOString().slice(0, 16).replace('T', ' ');
+          }
+          // Fixed hour:minute daily
+          if (m.match(/^\d+$/) && h.match(/^\d+$/) && dom === '*' && mon === '*') {
+            var next3 = new Date(now);
+            next3.setHours(parseInt(h), parseInt(m), 0, 0);
+            if (next3 <= now) next3.setDate(next3.getDate() + 1);
+            return next3.toISOString().slice(0, 16).replace('T', ' ');
+          }
+          // Weekday-based
+          if (m.match(/^\d+$/) && h.match(/^\d+$/) && dom === '*' && mon === '*' && dow !== '*') {
+            var days = dow.split(',').map(Number);
+            var next4 = new Date(now);
+            next4.setHours(parseInt(h), parseInt(m), 0, 0);
+            var curDay = now.getDay();
+            var found = false;
+            for (var di = 0; di < 7; di++) {
+              var checkDay = (curDay + di) % 7;
+              if (days.indexOf(checkDay) !== -1) {
+                next4.setDate(next4.getDate() + di);
+                if (di === 0 && next4 <= now) continue;
+                found = true; break;
+              }
+            }
+            if (found) return next4.toISOString().slice(0, 16).replace('T', ' ');
+          }
+          return '';
+        } catch(e) { return ''; }
+      }
+
+      async function fetchCron() {
+        cronLoaded = true;
+        cronPanelBody.innerHTML = '<div class="panel-loading">加载中...</div>';
+        try {
+          var resp = await fetch('../.claude/scheduled_tasks.json');
+          if (!resp.ok) throw new Error('HTTP ' + resp.status);
+          var data = await resp.json();
+          cronData = (data.tasks || []).sort(function(a, b) {
+            var aAt = a.lastFiredAt || a.createdAt || 0;
+            var bAt = b.lastFiredAt || b.createdAt || 0;
+            return bAt - aAt;
+          });
+        } catch(e) {
+          cronData = [];
+        }
+        renderCron();
+      }
+
+      function renderCron() {
+        if (cronTaskCount) cronTaskCount.textContent = cronData.length + ' 个任务';
+        if (cronBadge) {
+          cronBadge.textContent = cronData.length > 0 ? String(cronData.length) : '';
+        }
+        if (cronData.length === 0) {
+          cronPanelBody.innerHTML = '<div class="panel-empty">暂无调度任务<br><span class="hint">使用 Claude Code 的 <code>/loop</code> 命令创建定时任务</span></div>';
+          return;
+        }
+        var html = '<ul class="cron-list">';
+        for (var i = 0; i < cronData.length; i++) {
+          var item = cronData[i];
+          var status = cronStatus(item);
+          var isActive = status === 'active';
+          var dotCls = isActive ? 'pulse-dot' : 'cr-dot-idle';
+          var desc = cronDescription(item.cron);
+          var created = item.createdAt ? new Date(item.createdAt).toISOString().slice(0, 16).replace('T', ' ') : '';
+          var lastFired = item.lastFiredAt ? new Date(item.lastFiredAt).toISOString().slice(0, 16).replace('T', ' ') : '未触发';
+          var recurring = item.recurring ? '循环' : '单次';
+          var durable = item.durable;
+          var nextFire = (isActive && item.recurring) ? nextFireEstimate(item.cron, item.lastFiredAt) : '';
+          var prompt = item.prompt || '';
+          var promptLong = prompt.length > 80;
+          var itemCls = 'cron-item' + (isActive ? ' active-item' : '');
+
+          var cdHtml = '';
+          if (nextFire) {
+            var diffMs = new Date(nextFire) - new Date();
+            var diffMin = Math.floor(diffMs / 60000);
+            var cdLabel = diffMin < 1 ? '即将触发' : diffMin < 60 ? diffMin + '分钟后' : diffMin < 1440 ? Math.floor(diffMin/60) + '小时后' : Math.floor(diffMin/1440) + '天后';
+            cdHtml = '<span class="cr-countdown ' + (diffMin < 5 ? 'soon' : 'later') + '">⏱ ' + cdLabel + '</span>';
+          }
+
+          html += '<li class="' + itemCls + '">'
+            + '<div class="cr-row1">'
+            + '<span class="' + dotCls + '"></span>'
+            + '<span class="cr-desc">' + escHtml(desc) + '</span>'
+            + '<span class="cr-badge ' + (isActive ? 'active' : 'idle') + '">' + (isActive ? '活跃' : '空闲') + '</span>'
+            + (durable ? '<span class="cr-badge cr-badge-durable">💾持久</span>' : '')
+            + cdHtml
+            + '</div>'
+            + '<div class="cr-row2 cr-raw">' + escHtml(item.cron) + '</div>'
+            + '<div class="cr-row3">'
+            + '<span class="cr-badge cr-badge-meta">' + recurring + '</span>'
+            + '<span class="cr-dot">·</span><span>创建: ' + escHtml(created) + '</span>'
+            + '<span class="cr-dot">·</span><span>上次: ' + escHtml(lastFired) + '</span>'
+            + '</div>'
+            + (nextFire ? '<div class="cr-next">⏭ 预计下次: ' + escHtml(nextFire) + '</div>' : '')
+            + (prompt ? '<div class="cr-prompt' + (promptLong ? ' collapsed' : '') + '" title="' + escHtml(prompt) + '">' + escHtml(prompt) + '</div>' : '')
+            + '</li>';
+        }
+        html += '</ul>';
+        cronPanelBody.innerHTML = html;
       }
     })();
   </script>
