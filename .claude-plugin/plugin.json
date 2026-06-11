@@ -13,37 +13,7 @@
     "agent",
     "pipeline"
   ],
-  "skills": [
-    "rui",
-    "rui-analysis",
-    "rui-bot",
-    "rui-claude",
-    "rui-code",
-    "rui-doc",
-    "rui-html",
-    "rui-import",
-    "rui-init",
-    "rui-npm",
-    "rui-plan",
-    "rui-reporter",
-    "rui-story",
-    "rui-skills",
-    "rui-trends",
-    "rui-update",
-    "rui-version",
-    "rui-health",
-    "rui-yry"
-  ],
-  "agents": [
-    "architect",
-    "code-reviewer",
-    "coder",
-    "planner",
-    "pm",
-    "reporter",
-    "security",
-    "self-improve",
-    "tester"
-  ],
+  "skills": ["./skills"],
+  "agents": ["./agents"],
   "license": "MIT"
 }
