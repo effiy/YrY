@@ -58,8 +58,19 @@ const SKILL_META = {
   "rui-plan":      { icon: "📐", label: "计划新鲜度检查", interval: "工作日早 8 点" },
 };
 
+const CROSS_REFS = {
+  "rui-trends":   { dim: "自循环报告", desc: "趋势数据影响自循环报告新鲜度和 D5 诊断信号，过时趋势可能导致技术选型决策失误" },
+  "rui-analysis":  { dim: "D2 质量退化", desc: "代码分析结果直接输入 D2 质量退化检测，高频修改文件和复杂度热点是质量热点的核心信号" },
+  "rui-import":    { dim: "API 可达性", desc: "文档同步依赖 API 可达性，失败时导致远端与本地文档基线不一致" },
+  "rui-story":     { dim: "Git 仓库状态", desc: "故事状态变更涉及 Git 分支和索引更新，分支隔离违规为 P0 事件" },
+  "rui-claude":    { dim: "配置文件", desc: "配置健康直接影响 .claude/ 完整性评分，多目录配置漂移触发 D6 诊断" },
+  "rui-bot":       { dim: "机器人配置", desc: "通知投递依赖机器人 webhook 配置和 API 可达性，失败队列堆积影响消息时效" },
+  "rui-npm":       { dim: "依赖管理", desc: "依赖安全审计结果输入工程化成熟度-依赖管理维度，已知漏洞触发 P0 安全告警" },
+  "self-improve":  { dim: "D0-D7 诊断", desc: "自改进闭环是 D0-D7 诊断的主要触发源，驱动全维度健康检查" },
+};
+
 /**
- * Generate a self-loop HTML report.
+ * Generate a self-loop HTML report with enhanced detail.
  */
 export function generateReport({ skill, status, summary, details, findings }) {
   const meta = SKILL_META[skill] || { icon: "🔄", label: skill, interval: "—" };
@@ -72,12 +83,14 @@ export function generateReport({ skill, status, summary, details, findings }) {
     fail: '<span class="yry-badge fail">🚫 异常</span>',
   }[status] || '<span class="yry-badge">—</span>';
 
-  const findingsHtml = (findings || []).map((f, i) =>
-    `<div class="yry-finding ${f.level || 'info'}">
+  const findingsHtml = (findings || []).map((f, i) => {
+    const resolution = resolutionForFinding(f);
+    return `<div class="yry-finding ${f.level || 'info'}">
       <div class="yry-finding-head">${i + 1}. ${f.title || f.message}</div>
       ${f.detail ? `<div class="yry-finding-body">${f.detail}</div>` : ""}
-    </div>`
-  ).join("\n");
+      ${resolution ? `<div class="yry-finding-resolution"><span class="yry-resolution-badge ${f.level || 'info'}">🔧 建议措施</span>${resolution}</div>` : ""}
+    </div>`;
+  }).join("\n");
 
   const hc = getLatestHealthContext();
   const healthStatHtml = hc ? `
@@ -133,11 +146,27 @@ body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-sy
 .yry-finding.fail { background: rgba(239,68,68,.04); border-left: 3px solid var(--yry-fail); }
 .yry-finding-head { font-weight: 600; font-size: .9rem; }
 .yry-finding-body { margin-top: 6px; color: var(--yry-text2); font-size: .82rem; }
+.yry-finding-resolution { margin-top: 8px; padding: 8px 12px; background: rgba(15,23,42,.4); border-radius: 6px; font-size: .78rem; color: var(--yry-text2); line-height: 1.5; display: flex; gap: 8px; align-items: flex-start; }
+.yry-resolution-badge { flex-shrink: 0; font-size: .66rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+.yry-resolution-badge.fail { background: rgba(239,68,68,.12); color: var(--yry-fail); }
+.yry-resolution-badge.warn { background: rgba(245,158,11,.12); color: var(--yry-warn); }
+.yry-resolution-badge.info { background: rgba(59,130,246,.1); color: var(--yry-info); }
 .yry-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
 .yry-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
 .yry-breadcrumb a { color: #7aa2f7; text-decoration: none; }
 .yry-breadcrumb .yry-bc-sep { color: #53576c; opacity: .5; }
 .yry-breadcrumb .yry-bc-current { color: #94a3b8; }
+/* Enhanced sections */
+.yry-impact-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.yry-impact-badge { display: inline-block; padding: 4px 14px; border-radius: 6px; color: #fff; font-size: .8rem; font-weight: 600; }
+.yry-impact-summary { font-size: .84rem; color: var(--yry-text2); }
+.yry-impact-detail { padding: 12px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); margin-top: 8px; }
+.yry-hist-dot { transition: transform .15s; }
+.yry-hist-dot:hover { transform: scale(1.8); }
+.yry-cross-item { flex: 1; min-width: 200px; }
+.yry-cross-label { font-size: .78rem; color: var(--yry-text3); margin-bottom: 4px; }
+.yry-cross-desc { font-size: .88rem; font-weight: 600; color: var(--yry-accent); line-height: 1.5; }
+.yry-cross-badge { text-align: center; padding: 8px 16px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); flex-shrink: 0; min-width: 80px; }
 </style>
 </head>
 <body>
@@ -186,12 +215,18 @@ ${findingsHtml ? `
 </div>
 ` : ""}
 
+${buildImpactAssessment(findings || [], status)}
+
+${buildSkillHistoryCard(skill)}
+
 ${details ? `
 <div class="yry-card">
   <h2>📊 详细数据</h2>
   <pre style="color:var(--yry-text2);font-size:.82rem;white-space:pre-wrap;overflow-x:auto">${details}</pre>
 </div>
 ` : ""}
+
+${buildCrossReferenceCard(skill, status)}
 
 <div class="yry-footer">
   自循环报告 · ${skill} · ${ts}<br>
@@ -212,6 +247,120 @@ ${details ? `
   writeFileSync(filePath, html, "utf-8");
 
   return { filePath, filename };
+}
+
+/* ═══ Enhanced section builders ═══ */
+
+function resolutionForFinding(finding) {
+  const title = (finding.title || finding.message || "").toLowerCase();
+  if (title.includes("不可达") || title.includes("unreachable") || title.includes("timeout")) {
+    return "检查网络连接和目标服务状态，验证 URL 配置是否正确；如为外部服务故障，等待恢复后重试";
+  }
+  if (title.includes("空数据") || title.includes("empty") || title.includes("返回空")) {
+    return "数据源页面结构可能已变更，需更新 HTML 解析选择器；检查目标页面是否改版，调整提取逻辑";
+  }
+  if (title.includes("失败") || title.includes("error") || title.includes("异常")) {
+    return "查看详细错误日志定位根因；如为临时性故障，系统将在下次轮询自动重试";
+  }
+  if (title.includes("高") || title.includes("过高") || title.includes("频繁")) {
+    return "审查相关维度的当前配置和阈值，评估是否需要调整参数或增加资源分配";
+  }
+  if (title.includes("低") || title.includes("过低") || title.includes("不足")) {
+    return "识别瓶颈资源或缺失配置，制定改进计划并设定目标值；可参考健康报告建议";
+  }
+  if (title.includes("过时") || title.includes("stale") || title.includes("过期") || title.includes("未更新")) {
+    return "触发对应的刷新或重生成流程；检查自动化调度是否正常，必要时手动触发更新";
+  }
+  if (title.includes("安全") || title.includes("security") || title.includes("漏洞")) {
+    return "立即评估风险等级，优先修复高危漏洞；更新依赖版本或应用安全补丁";
+  }
+  if (title.includes("配置") || title.includes("config") || title.includes("缺失")) {
+    return "补齐缺失的配置项，参考项目规约文档确保配置完整性；验证配置格式合规";
+  }
+  return null;
+}
+
+function buildImpactAssessment(findings, status) {
+  if (!findings || findings.length === 0) return "";
+  const failCount = findings.filter(f => f.level === 'fail').length;
+  const warnCount = findings.filter(f => f.level === 'warn').length;
+  const infoCount = findings.filter(f => f.level === 'info').length;
+  const severityLabel = failCount > 0 ? '需立即关注' : warnCount > 0 ? '需关注' : '正常';
+  const severityColor = failCount > 0 ? 'var(--yry-fail)' : warnCount > 0 ? 'var(--yry-warn)' : 'var(--yry-pass)';
+  const topIssues = findings.filter(f => f.level === 'fail' || f.level === 'warn').slice(0, 5);
+  const suggestion = failCount > 0
+    ? '优先处理异常项，防止管线阻塞或数据丢失。建议在下一轮迭代中分配修复任务。'
+    : warnCount > 0
+    ? '计划性修复告警项，避免升级为异常。可在例行维护窗口处理。'
+    : '继续监控，维持当前良好状态。';
+  return `<div class="yry-card">
+    <h2>🎯 影响评估 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">${failCount + warnCount} 项需关注</span></h2>
+    <div class="yry-impact-header">
+      <span class="yry-impact-badge" style="background:${severityColor}">${severityLabel}</span>
+      <span class="yry-impact-summary">异常 ${failCount} · 告警 ${warnCount} · 信息 ${infoCount}</span>
+    </div>
+    ${topIssues.length > 0 ? `<div class="yry-impact-detail"><strong>关键问题:</strong><ul style="margin-top:6px;padding-left:20px;color:var(--yry-text2);font-size:.84rem">${topIssues.map(f => `<li>${f.title || f.message}${f.detail ? `<br><span style="color:var(--yry-text3);font-size:.76rem">${f.detail}</span>` : ''}</li>`).join('')}</ul></div>` : ''}
+    <div style="margin-top:10px;font-size:.78rem;color:var(--yry-text3)">📌 ${suggestion}</div>
+  </div>`;
+}
+
+function buildSkillHistoryCard(skill) {
+  try {
+    if (!existsSync(REPORT_DIR)) return "";
+    const files = readdirSync(REPORT_DIR)
+      .filter(f => f.startsWith(skill + '-') && f.endsWith('.html'))
+      .sort().reverse();
+    if (files.length < 2) {
+      return `<div class="yry-card">
+        <h2>📈 历史趋势</h2>
+        <div style="text-align:center;color:var(--yry-text3);padding:20px;font-size:.84rem">仅 1 份报告 — 积累更多数据后启用趋势对比</div>
+      </div>`;
+    }
+    const recent = files.slice(0, 10);
+    const dots = recent.map((f, i) => {
+      const parts = f.replace('.html', '').split('-');
+      const date = parts.slice(1, 4).join('-');
+      const isLatest = i === 0;
+      const size = isLatest ? '10px' : '6px';
+      return `<span style="display:inline-block;width:${size};height:${size};border-radius:50%;background:var(--yry-pass);margin:0 2px;transition:transform .15s;cursor:default" title="${date}" onmouseover="this.style.transform='scale(1.8)'" onmouseout="this.style.transform='scale(1)'"></span>`;
+    }).join('');
+    return `<div class="yry-card">
+      <h2>📈 历史趋势 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">最近 ${Math.min(files.length, 10)} 次执行</span></h2>
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 0">
+        <span style="font-size:.7rem;color:var(--yry-text3)">最早</span>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px">${dots}</div>
+        <span style="font-size:.7rem;color:var(--yry-text3)">最新</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:var(--yry-border)">
+        <span style="font-size:.74rem;color:var(--yry-text3)">共 ${files.length} 份历史报告</span>
+        <span style="font-size:.7rem;color:var(--yry-text3)">执行频率: ${SKILL_META[skill]?.interval || '—'}</span>
+      </div>
+    </div>`;
+  } catch { return ""; }
+}
+
+function buildCrossReferenceCard(skill, status) {
+  const ref = CROSS_REFS[skill];
+  if (!ref) return "";
+  const statusIcon = status === 'pass' ? '✓' : status === 'warn' ? '⚠' : '✗';
+  const statusColor = status === 'pass' ? 'var(--yry-pass)' : status === 'warn' ? 'var(--yry-warn)' : 'var(--yry-fail)';
+  return `<div class="yry-card">
+    <h2>🔗 关联分析 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">对项目健康的影响</span></h2>
+    <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+      <div class="yry-cross-item">
+        <div class="yry-cross-label">关联维度</div>
+        <div class="yry-cross-desc">${ref.dim}</div>
+      </div>
+      <div class="yry-cross-item">
+        <div class="yry-cross-label">影响机制</div>
+        <div class="yry-cross-desc">${ref.desc}</div>
+      </div>
+      <div class="yry-cross-badge">
+        <div style="font-size:.7rem;color:var(--yry-text3)">当前状态</div>
+        <div style="font-size:1.1rem;font-weight:700;color:${statusColor}">${statusIcon} ${status === 'pass' ? '正常' : status === 'warn' ? '告警' : '异常'}</div>
+      </div>
+    </div>
+  </div>`;
 }
 
 /**

@@ -1,6 +1,6 @@
 # YrY <sub>v5.3.1</sub>
 
-> 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。18 技能 + 10 Agent + 12 规则 + 18 共享库 + 9 维度健康检查 + 企微通知。
+> 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。19 技能 + 9 Agent + 16 规则 + 14 共享库 + 9 维度健康检查 + 4 实时监控面板。
 
 [系统全景](#系统全景) · [管线](#管线) · [快速开始](#快速开始) · [命令](#命令) · [/rui](#rui) · [/rui-story](#rui-story) · [/rui-claude](#rui-claude) · [/rui-docs](#rui-docs) · [/rui-npm](#rui-npm) · [Agent 角色](#agent-角色) · [规则](#规则) · [技能](#技能) · [目录结构](#目录结构) · [领域语言](#领域语言) · [技术趋势](#技术趋势)
 
@@ -18,7 +18,7 @@
 flowchart TD
     CMD["/rui · /rui-story · /rui-claude"]
 
-    subgraph Skills[十八技能]
+    subgraph Skills[十九技能]
         direction TB
         CORE["主线: rui · rui-code · rui-init · rui-update · rui-yry"]:::skill
         MGMT["管理: rui-story · rui-claude · rui-skills"]:::skill
@@ -26,6 +26,7 @@ flowchart TD
         DOCS["文档: rui-html · rui-doc · rui-reporter"]:::skill
         DISC["发现: rui-trends · rui-analysis · rui-npm"]:::skill
         EVO["演进: rui-version · rui-plan · self-improve"]:::skill
+        HEALTH["健康: rui-health"]:::skill
     end
 
     subgraph Agents[九角色]
@@ -217,16 +218,22 @@ flowchart LR
 
 ```
 
-- **code-pipeline** — 源码改动：分支隔离 · Gate A/B · 逐模块清零，支撑技术含根因追溯/纵深防御/反馈回路/深度模块/垂直切片
+- **code-pipeline** — 源码改动：分支隔离 · Gate A/B · 逐模块清零
+- **code-pipeline-techniques** — 10 项支撑技术：根因追溯/纵深防御/反馈回路/深度模块/垂直切片
 - **delivery-gate** — 交付收口：日志 → 同步 → 通知，手动触发
 - **doc-generation** — 文档产出：目录命名 · 骨架模板 · 附属数据存放
+- **doc-generation-lifecycle** — 补充文档触发器和策展步骤
+- **doc-quality** — 文档质量：A/B/C/D 证据等级 · 统一模版 · 退化检测
 - **architecture-diagram** — 架构图约束：自包含 HTML+SVG 深色主题
 - **knowledge-graph** — 知识图谱：三层 schema（story → scene → source）
+- **knowledge-graph-ownership** — KG 所有权：单点写入 · pm/coder/reporter 三方解耦
 - **mermaid-theme** — Mermaid 统一配色：项目唯一色板真相源
 - **plan-execution** — 计划执行：创建→审查→执行→验证管线
 - **security-guardrails** — 安全护栏：防线在信任边界处，输入必校验
-- **self-improve** — 自改进闭环：D0-D7 诊断 · 经验技能化 · 记忆压缩注入 · 效果评估 E1-E4
+- **self-improve** — 自改进闭环：D0-D7 诊断 · E1-E4 评估
 - **rui-claude** — .claude/ 管理：仅限 `.claude/` · 禁自动 commit/push
+- **design-principles** — 九条工程原则：SRP/高内聚/低耦合/DIP/OCP/ISP/DRY/YAGNI/组合
+- **agent-handoff** — Agent 交接规范：5 对契约 · 交接信号格式 · 阻断条件
 
 详见 [`rules/`](./rules/)。
 
@@ -245,18 +252,7 @@ flowchart LR
 
 ### 自动化与通知
 
-- **rui-bot** — 企微通知推送（3 场景：完成/阻断/门禁失败）+ Rich/Verbose 格式 + Dry-Run 预览 + 失败队列自动重试
-  - `health` 子命令：9 维度综合健康检查（Token/配置/机器人/API/报告/格式/D0-D7/Git/安全）
-  - D0-D7 引导诊断：无执行记忆时从 git 历史 + 场景文档新鲜度 + 提案闭合率推导诊断信号，覆盖全部 8 维度
-  - `health --html` 生成 `docs/健康报告/` 仪表板 HTML（摘要卡 + 趋势对比 + ⚡新增/恶化标记 + 维度历史迷你图 + 评级火花图 + 改进建议）
-  - `health --diff` 仅输出与上次检查的差异（维度变化 + 新增/已解决诊断 + 综合评分变化）
-  - `health --alert` 评分低于阈值 (70) 自动发送分级告警（🔴 严重 / 🟡 警告），同诊断不重复通知
-  - `health --short` 单行摘要输出，适合脚本和 cron 集成
-  - `health --notify` 发送健康摘要通知到企微
-  - `flush` 子命令：重试失败队列中的通知
-  - 健康趋势持久化到 `.memory/health-trend.jsonl`，驱动维度变化指示（↑↓→ + 数值）
-  - 通知投递日志 `.memory/notification-log.jsonl`，记录每次发送的时间/状态/结果
-  - 自循环报告系统（12 技能定期巡检 → HTML 报告 → 企微通知，附带健康评分 + 触发诊断）
+- **rui-bot** — 企微通知推送（3 场景：完成/阻断/门禁失败）+ Rich/Verbose 格式 + Dry-Run 预览 + 失败队列自动重试 + 自循环报告系统
 
 ### 文档与报告
 
@@ -270,6 +266,10 @@ flowchart LR
 - **rui-analysis** — 代码健康看门狗：复杂度/耦合/文件膨胀/依赖健康/架构边界检测
 - **rui-npm** (`/rui-npm search · install · update · list · info · uninstall · publish · npx · audit`) — npm 包管理全生命周期
 
+### 健康与监控
+
+- **rui-health** — 系统健康诊断（从 rui-bot 按 SRP 拆分）：16 维度评分 + HTML 报告 + D0-D7 诊断 + 趋势持久化
+
 ### 质量与演进
 
 - **rui-version** — 版本漂移检测与自动升级
@@ -277,7 +277,7 @@ flowchart LR
 - **rui-import** — 文档远端同步（per-document instant + batch safety-net）
 - **self-improve** — 持续自改进闭环：D0-D7 诊断 → 提案生成 → 物化为故事 → 效果评估 (E1-E4)
 
-详见 [`skills/`](./skills/)。所有脚本通过 [`lib/`](./lib/)（18 文件含 `lib/engine/` 诊断/评估/物化/升级引擎）共享 TTY 格式化、项目工具、诊断引擎、Mermaid 主题和常量定义。
+详见 [`skills/`](./skills/)。所有脚本通过 [`lib/`](./lib/)（14 文件含 `lib/engine/` 诊断/评估/物化/升级引擎）共享 TTY 格式化、项目工具、诊断引擎、Mermaid 主题和常量定义。
 
 ## 目录结构
 
@@ -289,18 +289,24 @@ YrY/
 │   ├── code-reviewer.md / tester.md
 │   ├── reporter.md / security.md
 │   └── self-improve.md
-├── rules/                   # 12 组约束规则
+├── rules/                   # 16 组约束规则
 │   ├── code-pipeline.md     #   分支隔离 · Gate A/B
+│   ├── code-pipeline-techniques.md # 10 项支撑技术
 │   ├── delivery-gate.md     #   三步 hook
 │   ├── doc-generation.md    #   文档生成规范
+│   ├── doc-generation-lifecycle.md # 补充文档与策展
+│   ├── doc-quality.md       #   文档质量标准
 │   ├── architecture-diagram.md # 架构图约束
 │   ├── knowledge-graph.md   #   知识图谱约束
+│   ├── knowledge-graph-ownership.md # KG 所有权模型
 │   ├── mermaid-theme.md     #   Mermaid 统一主题配置
 │   ├── plan-execution.md    #   计划执行与验证管线
 │   ├── security-guardrails.md  # 安全护栏
 │   ├── self-improve.md      #   自改进闭环
-│   └── rui-claude.md        #   .claude/ 管理约束
-├── skills/                  # 18 项技能规约
+│   ├── rui-claude.md        #   .claude/ 管理约束
+│   ├── design-principles.md #   九条工程原则
+│   └── agent-handoff.md     #   Agent 交接规范
+├── skills/                  # 19 项技能规约
 │   ├── rui/                 #   SDLC 编排入口 (doc · version)
 │   ├── rui-code/            #   源码实现管线 (Gate A/B · P0 清零)
 │   ├── rui-init/            #   项目初始化
@@ -310,7 +316,8 @@ YrY/
 │   ├── rui-claude/          #   .claude/ 配置管理
 │   ├── rui-skills/          #   技能市场发现与安装
 │   ├── rui-import/          #   文档远端同步
-│   ├── rui-bot/             #   企微通知 + 9维健康检查 + 自循环报告
+│   ├── rui-bot/             #   企微通知 + 失败队列 + 自循环报告
+│   ├── rui-health/          #   16 维度健康诊断 (从 rui-bot 拆分)
 │   ├── rui-html/            #   场景 HTML 文档生成 (7 类)
 │   ├── rui-doc/             #   文档新鲜度检查
 │   ├── rui-reporter/        #   知识策展与过程报告
@@ -321,9 +328,12 @@ YrY/
 │   ├── rui-plan/            #   计划执行追踪
 │   └── self-improve/        #   自改进闭环
 ├── docs/
-│   ├── index.html           #   文档中心着陆页
+│   ├── index.html           #   文档中心着陆页 + 4 面板 (通知/调度/自改进/FAQ)
+│   ├── css/index.css        #   面板样式 (1,382 行)
+│   ├── js/                  #   5 面板 JS 模块 (panel-hub + 4 面板)
 │   ├── 健康报告/             #   9 维度健康仪表板 + 历史趋势
 │   ├── 自循环报告/           #   12 技能定期巡检报告
+│   ├── 自我改进/             #   健康趋势摘要和聚合数据
 │   └── 故事任务面板/         #   故事产出目录
 │       └── <name>/
 │           ├── 故事任务.md  #     故事定义与 AC
@@ -335,7 +345,7 @@ YrY/
 │               ├── 测试面板.html  # 测试仪表盘
 │               ├── 演示.html      # 交互演示
 │               └── 审查.html      # D0-D7 审查报告
-├── lib/                     # 18 文件共享库（消除跨文件重复）
+├── lib/                     # 14 文件共享库（消除跨文件重复）
 │   ├── constants.mjs        #   共享常量（超时/并发/阈值/路径）
 │   ├── tty.mjs / fs.mjs     #   TTY 格式化 / 文件系统工具
 │   ├── network.mjs          #   网络请求封装

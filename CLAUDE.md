@@ -58,7 +58,7 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 | 项目名 | YrY |
 | 类型 | **meta** — Claude Code 插件，纯规约驱动 |
 | 版本 | 5.3.1 |
-| 架构 | plugin — 18 技能 + 10 Agent + 12 规则 + 18 共享库（lib/） + 9 维度健康检查 |
+| 架构 | plugin — 19 技能 + 9 Agent + 16 规则 + 14 共享库（lib/） + 9 维度健康检查 + 4 实时监控面板 |
 | 生态 | root package.json (仅 devDependencies: vitest + @vitest/ui)，markdown 规约 + node 辅助脚本 + 共享 lib/ 消除重复 |
 | 自托管 | 是 — YrY 用自身管线管理自身演进 |
 
@@ -110,6 +110,7 @@ flowchart LR
 - 自身 `.claude/` 配置通过 `/rui-claude` 管理
 - 技能规约修改后必须重跑 init 验证
 - 跨文件共享代码放 `lib/`，禁止 copy-paste；各脚本从 `lib/` 导入通用函数/常量
+- 设计决策遵循 `rules/design-principles.md` 九条原则（SRP · 高内聚 · 低耦合 · DIP · OCP · ISP · DRY · YAGNI · 组合优于继承）
 <!-- rui:project-end -->
 
 ## 引导
@@ -125,6 +126,10 @@ flowchart LR
 | 计划执行（创建→审查→执行→验证） | [rules/plan-execution.md](./rules/plan-execution.md) |
 | rui-claude 操作约束（仅限 .claude/） | [rules/rui-claude.md](./rules/rui-claude.md) |
 | 安全防护基线（防线在信任边界处） | [rules/security-guardrails.md](./rules/security-guardrails.md) |
+| 设计原则（SRP · 高内聚 · 低耦合 · DIP · OCP · ISP · DRY · YAGNI · 组合） | [rules/design-principles.md](./rules/design-principles.md) |
+| Agent 交接规范（交接信号格式 · Agent 间契约 · 阻断条件） | [rules/agent-handoff.md](./rules/agent-handoff.md) |
+| 文档质量标准（A/B/C/D 证据等级 · 统一模版 · 退化检测） | [rules/doc-quality.md](./rules/doc-quality.md) |
+| 知识图谱所有权（单点写入 · pm/coder/reporter 三方解耦） | [rules/knowledge-graph-ownership.md](./rules/knowledge-graph-ownership.md) |
 | 角色拓扑 · 行为纪律 · 设计原则 · 执行准则 · ADR · 多 Agent 协作模式 | [agents/AGENT.md](./agents/AGENT.md) |
 | 自改进闭环（诊断 D0-D7 · 经验技能化 · 记忆压缩注入 · 效果评估 E1-E4） | [rules/self-improve.md](./rules/self-improve.md) · [agents/self-improve.md](./agents/self-improve.md) |
 | 共享库（TTY · FS · 常量 · help 布局 · 诊断 · Mermaid 主题 · 插件工具 · 网络） | [lib/](./lib/) |

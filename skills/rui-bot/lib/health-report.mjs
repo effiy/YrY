@@ -68,7 +68,9 @@ const GRADE_STYLE = {
 };
 
 function nowISO() {
-  return new Date().toISOString().replace(/T/, " ").slice(0, 19);
+  const d = new Date();
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}年${p(d.getMonth() + 1)}月${p(d.getDate())}日 ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
 }
 
 function nowDate() {
@@ -76,7 +78,12 @@ function nowDate() {
 }
 
 function nowTimestamp() {
-  return Date.now().toString(36);
+  const now = new Date();
+  return [
+    String(now.getHours()).padStart(2, "0"),
+    String(now.getMinutes()).padStart(2, "0"),
+    String(now.getSeconds()).padStart(2, "0"),
+  ].join("");
 }
 
 /**
@@ -297,6 +304,12 @@ export function generateHealthReport(hr) {
   }
 
   const dimCount = Object.keys(DIM_LABELS).length;
+  let dimPass = 0, dimWarn = 0, dimFail = 0;
+  for (const s of Object.values(hr.scores || {})) {
+    if (s >= 80) dimPass++;
+    else if (s >= 60) dimWarn++;
+    else dimFail++;
+  }
   const dimHistory = getDimensionHistory();
 
   // Separate into operational vs engineering maturity
@@ -306,27 +319,37 @@ export function generateHealthReport(hr) {
 
   function buildDimCard(dim, label) {
     const score = hr.scores[dim] ?? 0;
-    const icon = DIM_ICONS[dim] || "📌";
+    const icon = DIM_ICONS[dim] || "\u{1F4CC}";
     const weight = DIM_WEIGHTS[dim] || 0;
-    const pct = score;
     const barColor = score >= 80 ? "var(--yry-pass)" : score >= 60 ? "var(--yry-warn)" : "var(--yry-fail)";
+    const barColorRaw = score >= 80 ? "#22c55e" : score >= 60 ? "#f59e0b" : "#ef4444";
+    const statusTier = score >= 80 ? "pass" : score >= 60 ? "warn" : "fail";
     const trend = dimTrendIcon(label, score, dimHistory);
     const sparkline = dimSparkline(label, dimHistory);
     const prevScore = prevScores[dim];
-    const worsened = prevScore !== undefined && score < prevScore - 10;
-    const worsenBadge = worsened ? '<span class="h-new-badge warn">⚡ 恶化</span>' : "";
-    return `<div class="h-dim-card">
-      <div class="h-dim-head">
+    const contribution = Math.round(score * weight / 100);
+    const delta = prevScore !== undefined ? score - prevScore : null;
+    const deltaIcon = delta !== null ? (delta > 0 ? "↑" : delta < 0 ? "↓" : "→") : "";
+    const deltaCls = delta !== null ? (delta > 0 ? "up" : delta < 0 ? "down" : "flat") : "";
+
+    return `<div class="h-dim-card ${statusTier}" style="--dc-color:${barColorRaw}">
+      <div class="h-dim-top">
         <span class="h-dim-icon">${icon}</span>
         <span class="h-dim-label">${label}</span>
-        ${worsenBadge}
+        ${delta !== null && delta < -5 ? '<span class="h-dim-warn-chip">⚡ 恶化</span>' : ''}
         ${trend}
-        <span class="h-dim-score" style="color:${barColor}">${score} 分</span>
+        <span class="h-dim-score" style="color:${barColor}">${score}<span class="h-dim-score-sm">分</span></span>
+        ${delta !== null ? `<span class="h-dim-delta-badge ${deltaCls}">${deltaIcon}${Math.abs(delta)}</span>` : ''}
       </div>
-      <div class="h-dim-bar"><div class="h-dim-bar-inner" style="width:${pct}%;background:${barColor}"></div></div>
+      <div class="h-dim-bar-row">
+        <div class="h-dim-bar"><div class="h-dim-bar-fill" style="width:${score}%;background:${barColor}"></div></div>
+        ${sparkline ? `<div class="h-dim-spark-wrap">${sparkline}</div>` : ''}
+      </div>
       <div class="h-dim-foot">
-        <div class="h-dim-weight">权重 ${weight}%</div>
-        ${sparkline}
+        <span class="h-dim-chip ${statusTier}">${score >= 80 ? '优秀' : score >= 60 ? '一般' : '告警'}</span>
+        <span class="h-dim-note">权重 ${weight}%</span>
+        <span class="h-dim-note">贡献 ${contribution} 分</span>
+        ${prevScore !== undefined ? `<span class="h-dim-note">上次 ${prevScore} 分</span>` : ''}
       </div>
     </div>`;
   }
@@ -415,6 +438,20 @@ export function generateHealthReport(hr) {
 body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
 .h-container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
 
+/* Tabs */
+.h-tabs { display: flex; gap: 0; border-bottom: var(--yry-border); margin-bottom: 28px; animation: fadeInDown .5s .1s ease both; }
+.h-tab { padding: 10px 22px; cursor: pointer; font-size: .84rem; color: var(--yry-text3); border-bottom: 2px solid transparent; transition: all .15s; user-select: none; display: flex; align-items: center; gap: 6px; }
+.h-tab:hover { color: var(--yry-text2); }
+.h-tab.on { color: var(--yry-accent); border-bottom-color: var(--yry-accent); }
+.h-tab .h-tab-badge { font-size: .62rem; padding: 1px 7px; border-radius: 8px; font-weight: 600; }
+.h-tab .h-tab-badge.warn { background: rgba(245,158,11,.15); color: var(--yry-warn); }
+.h-tab .h-tab-badge.fail { background: rgba(239,68,68,.15); color: var(--yry-fail); }
+.h-panel { display: none; animation: fadeInUp .4s ease both; }
+.h-panel.on { display: block; }
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
 /* Breadcrumb */
 .h-bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
 .h-bc a { color: var(--yry-cyan); text-decoration: none; }
@@ -444,23 +481,38 @@ body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-sy
 .h-section h2 { font-size: 1.1rem; margin-bottom: 16px; color: var(--yry-accent); display: flex; align-items: center; gap: 8px; }
 
 /* Dimension cards */
-.h-dim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 0; }
-.h-dim-card { background: rgba(15,23,42,.4); border: var(--yry-border); border-radius: 10px; padding: 16px 18px; }
-.h-dim-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.h-dim-icon { font-size: 1.1rem; }
-.h-dim-label { font-size: .84rem; font-weight: 500; flex: 1; }
-.h-dim-score { font-size: 1.2rem; font-weight: 700; }
-.h-dim-bar { height: 5px; border-radius: 3px; background: rgba(255,255,255,.06); overflow: hidden; margin-bottom: 4px; }
-.h-dim-bar-inner { height: 100%; border-radius: 3px; transition: width .6s ease; }
-.h-dim-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; }
-.h-dim-weight { font-size: .68rem; color: var(--yry-text3); }
-.h-trend { font-size: .75rem; margin-left: -2px; }
-.h-trend.up { color: var(--yry-pass); }
-.h-trend.down { color: var(--yry-fail); }
-.h-trend.stable { color: var(--yry-text3); }
-.h-sparkline { display: flex; align-items: flex-end; gap: 1px; height: 16px; }
+.h-dim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; margin-bottom: 0; }
+.h-dim-card { display: flex; flex-direction: column; gap: 10px; background: rgba(15,23,42,.3); border: var(--yry-border); border-radius: 10px; padding: 14px 18px; transition: transform .15s, box-shadow .15s, border-color .15s; position: relative; overflow: hidden; }
+.h-dim-card:hover { transform: translateY(-1px); box-shadow: var(--yry-shadow-lg); border-color: rgba(255,255,255,.08); }
+.h-dim-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--dc-color, #666); border-radius: 0 3px 3px 0; transition: opacity .3s; }
+.h-dim-card::after { content: ''; position: absolute; inset: 0; background: var(--dc-color, #666); opacity: .03; pointer-events: none; }
+
+.h-dim-top { display: flex; align-items: center; gap: 8px; }
+.h-dim-icon { font-size: .9rem; flex-shrink: 0; line-height: 1; }
+.h-dim-label { font-size: .8rem; font-weight: 600; flex: 1; color: var(--yry-text); }
+.h-dim-warn-chip { font-size: .6rem; font-weight: 700; padding: 1px 6px; border-radius: 6px; background: rgba(239,68,68,.15); color: var(--yry-fail); }
+.h-dim-score { font-size: 1.15rem; font-weight: 800; font-family: 'JetBrains Mono', 'Fira Code', monospace; line-height: 1; }
+.h-dim-score-sm { font-size: .58rem; font-weight: 500; opacity: .6; margin-left: 1px; }
+.h-dim-delta-badge { font-size: .64rem; font-weight: 700; padding: 1px 7px; border-radius: 6px; margin-left: -2px; }
+.h-dim-delta-badge.up { background: rgba(34,197,94,.12); color: var(--yry-pass); }
+.h-dim-delta-badge.down { background: rgba(239,68,68,.12); color: var(--yry-fail); }
+.h-dim-delta-badge.flat { background: rgba(255,255,255,.05); color: var(--yry-text3); }
+
+.h-dim-bar-row { display: flex; align-items: center; gap: 8px; }
+.h-dim-bar { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,.05); overflow: hidden; }
+.h-dim-bar-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
+.h-dim-spark-wrap { flex-shrink: 0; }
+
+.h-dim-foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-top: 2px; border-top: 1px solid rgba(255,255,255,.03); }
+.h-dim-chip { font-size: .6rem; font-weight: 700; padding: 1px 8px; border-radius: 4px; letter-spacing: .3px; text-transform: uppercase; }
+.h-dim-chip.pass { background: rgba(34,197,94,.12); color: var(--yry-pass); }
+.h-dim-chip.warn { background: rgba(245,158,11,.12); color: var(--yry-warn); }
+.h-dim-chip.fail { background: rgba(239,68,68,.12); color: var(--yry-fail); }
+.h-dim-note { font-size: .62rem; color: var(--yry-text3); opacity: .65; }
+
+.h-sparkline { display: flex; align-items: flex-end; gap: 2px; height: 16px; padding: 1px 4px; background: rgba(0,0,0,.15); border-radius: 3px; }
 .h-spark-bar { width: 3px; border-radius: 1px; min-height: 2px; transition: height .3s; }
-.h-spark-bar:hover { opacity: .7; }
+.h-spark-bar:hover { opacity: .7; transform: scaleY(1.3); }
 .h-grade-spark { display: inline-flex; align-items: center; gap: 3px; padding: 4px 12px; background: rgba(255,255,255,.03); border-radius: 16px; }
 .h-grade-dot { border-radius: 50%; display: inline-block; transition: transform .2s; }
 .h-grade-dot:hover { transform: scale(1.5); }
@@ -479,6 +531,16 @@ body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-sy
 .h-summary-val { font-size: 1rem; font-weight: 700; }
 .h-summary-lbl { font-size: .65rem; color: var(--yry-text3); margin-top: 2px; text-transform: uppercase; letter-spacing: .5px; }
 .h-summary-rec { margin-top: 10px; padding: 8px 12px; font-size: .8rem; color: var(--yry-cyan); background: rgba(59,130,246,.06); border-radius: 6px; }
+
+/* Score composition */
+.h-comp-list { display: flex; flex-direction: column; gap: 6px; }
+.h-comp-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(15,23,42,.3); border-radius: 6px; }
+.h-comp-rank { font-size: .7rem; font-weight: 700; color: var(--yry-text3); min-width: 20px; text-align: center; }
+.h-comp-label { font-size: .8rem; font-weight: 500; min-width: 80px; color: var(--yry-text2); }
+.h-comp-score { font-size: .72rem; font-weight: 600; min-width: 85px; font-family: 'JetBrains Mono', monospace; }
+.h-comp-bar-wrap { flex: 1; height: 8px; border-radius: 4px; background: rgba(255,255,255,.05); overflow: hidden; }
+.h-comp-bar-inner { height: 100%; border-radius: 4px; transition: width .6s ease; }
+.h-comp-val { font-size: .78rem; font-weight: 700; color: var(--yry-accent); min-width: 28px; text-align: right; font-family: 'JetBrains Mono', monospace; }
 
 /* Diagnostic rows */
 .h-diag-summary { font-size: .78rem; color: var(--yry-text3); font-weight: 400; margin-left: 8px; }
@@ -553,34 +615,52 @@ body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-sy
   ${gradeSparkline ? `<div style="text-align:center;margin-bottom:8px">${gradeSparkline}</div>` : ""}
 </div>
 
-${buildSummaryCard(hr, prev, recommendations)}
-
-<div class="h-section">
-  <h2>📊 运维健康评分</h2>
-  <div class="h-dim-grid">${dimCardsHtml}</div>
+<!-- Tabs -->
+<div class="h-tabs">
+  <div class="h-tab on" data-panel="overview">📊 概览</div>
+  <div class="h-tab" data-panel="scores">📈 评分<span class="h-tab-badge ${dimFail > 0 ? 'fail' : dimWarn > 0 ? 'warn' : ''}">${dimPass}/${dimPass+dimWarn+dimFail}</span></div>
+  <div class="h-tab" data-panel="diagnostics">🔬 诊断<span class="h-tab-badge ${(hr.diagnostics?.triggered?.length ?? 0) > 0 ? 'warn' : ''}">${hr.diagnostics?.triggered?.length ?? 0}/8</span></div>
+  <div class="h-tab" data-panel="actions">💡 行动<span class="h-tab-badge">${recommendations.length}</span></div>
 </div>
 
-${emCardsHtml}
-
-<div class="h-section">
-  <h2>📋 检查详情</h2>
-  <div class="h-detail-list">${detailItems}</div>
-</div>
-
-${diagSection}
-
-${recommendations.length > 0 ? buildRecommendationsSection(recommendations) : ""}
-
-${buildGitSecuritySection(hr)}
-
-<div class="h-section">
-  <h2>🔗 相关资源</h2>
-  <div class="h-links">
-    <a class="h-link" href="${CDN_DEPTH}docs/自循环报告/">📊 自循环报告</a>
-    <a class="h-link" href="${CDN_DEPTH}docs/故事任务面板/">📋 故事任务面板</a>
-    <a class="h-link" href="${CDN_DEPTH}docs/index.html">📄 文档中心</a>
-    <a class="h-link" href="${CDN_DEPTH}docs/健康报告/">📈 历史报告</a>
+<!-- Panel 1: Overview -->
+<div class="h-panel on" id="overview">
+  ${buildSummaryCard(hr, prev, recommendations)}
+  ${buildScoreBreakdown(hr)}
+  ${buildScoreTrend(healthTrend)}
+  <div class="h-section">
+    <h2>🔗 相关资源</h2>
+    <div class="h-links">
+      <a class="h-link" href="${CDN_DEPTH}docs/自循环报告/">📊 自循环报告</a>
+      <a class="h-link" href="${CDN_DEPTH}docs/故事任务面板/">📋 故事任务面板</a>
+      <a class="h-link" href="${CDN_DEPTH}docs/index.html">📄 文档中心</a>
+      <a class="h-link" href="${CDN_DEPTH}docs/健康报告/">📈 历史报告</a>
+    </div>
   </div>
+</div>
+
+<!-- Panel 2: Scores -->
+<div class="h-panel" id="scores">
+  <div class="h-section">
+    <h2>📊 运维健康评分</h2>
+    <div class="h-dim-grid">${dimCardsHtml}</div>
+  </div>
+  ${emCardsHtml}
+  <div class="h-section">
+    <h2>📋 检查详情</h2>
+    <div class="h-detail-list">${detailItems}</div>
+  </div>
+</div>
+
+<!-- Panel 3: Diagnostics -->
+<div class="h-panel" id="diagnostics">
+  ${diagSection}
+</div>
+
+<!-- Panel 4: Actions -->
+<div class="h-panel" id="actions">
+  ${recommendations.length > 0 ? buildRecommendationsSection(recommendations) : '<div class="h-section"><h2>💡 改进建议</h2><div class="h-placeholder">暂无建议 — 所有维度均处于健康状态</div></div>'}
+  ${buildGitSecuritySection(hr)}
 </div>
 
 <div class="h-footer">
@@ -591,6 +671,16 @@ ${buildGitSecuritySection(hr)}
 
 </div>
 <script src="${CDN_DEPTH}cdn/shared.js"></script>
+<script>
+document.querySelectorAll('.h-tab').forEach(function(t) {
+  t.addEventListener('click', function() {
+    document.querySelectorAll('.h-tab').forEach(function(x) { x.classList.remove('on'); });
+    document.querySelectorAll('.h-panel').forEach(function(p) { p.classList.remove('on'); });
+    this.classList.add('on');
+    document.getElementById(this.dataset.panel).classList.add('on');
+  });
+});
+</script>
 </body>
 </html>`;
 
@@ -734,6 +824,31 @@ ${latestInfo}
 }
 
 /**
+ * Build a score trend bar chart from health trend history.
+ */
+function buildScoreTrend(history) {
+  if (!history || history.length < 2) return "";
+  const recent = history.slice(-10);
+  const maxScore = 100;
+  const bars = recent.map((h, i) => {
+    const hPx = Math.max(4, Math.round((h.composite / maxScore) * 60));
+    const color = h.grade === "A" ? "var(--yry-pass)" : h.grade === "B" ? "var(--yry-pass)" : h.grade === "C" ? "var(--yry-warn)" : "var(--yry-fail)";
+    const date = h.timestamp?.slice(0, 10) || "";
+    const isLatest = i === recent.length - 1;
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:20px">
+      <span style="font-size:.65rem;font-weight:${isLatest ? '700' : '400'};color:var(--yry-accent)">${h.composite}</span>
+      <div style="width:100%;max-width:40px;height:${hPx}px;background:${color};border-radius:3px 3px 0 0;opacity:${isLatest ? '1' : '.6'};transition:opacity .2s" title="${date}: ${h.composite} 分 (${h.grade})" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='${isLatest ? '1' : '.6'}'"></div>
+      <span style="font-size:.58rem;color:var(--yry-text3)">${date.slice(5)}</span>
+    </div>`;
+  }).join("");
+  return `<div class="h-section">
+    <h2>📈 健康趋势 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">最近 ${recent.length} 次</span></h2>
+    <div style="display:flex;align-items:flex-end;gap:4px;padding:16px 0 8px;overflow-x:auto">${bars}</div>
+    <div style="font-size:.68rem;color:var(--yry-text3);text-align:center;margin-top:4px">▲ 综合健康度变化趋势 — 高分高柱，绿色=优秀 黄色=需关注 红色=告警</div>
+  </div>`;
+}
+
+/**
  * Build a compact summary card for at-a-glance assessment.
  */
 function buildSummaryCard(hr, prev, recommendations) {
@@ -799,6 +914,41 @@ function buildSummaryCard(hr, prev, recommendations) {
         <div class="h-summary-lbl">首项建议</div>
       </div>
     </div>
+  </div>`;
+}
+
+/**
+ * Build a weighted score composition breakdown showing contribution of each dimension.
+ */
+function buildScoreBreakdown(hr) {
+  const entries = [];
+  for (const [dim, score] of Object.entries(hr.scores || {})) {
+    const label = DIM_LABELS[dim] || dim;
+    const weight = DIM_WEIGHTS[dim] || 0;
+    const contribution = Math.round(score * weight / 100);
+    entries.push({ dim, label, score, weight, contribution });
+  }
+  entries.sort((a, b) => b.contribution - a.contribution);
+
+  const totalWeight = entries.reduce((s, e) => s + e.weight, 0);
+  const totalContribution = entries.reduce((s, e) => s + e.contribution, 0);
+
+  const bars = entries.map((e, i) => {
+    const barColor = e.score >= 80 ? "var(--yry-pass)" : e.score >= 60 ? "var(--yry-warn)" : "var(--yry-fail)";
+    const barPct = ((e.contribution / totalContribution) * 100).toFixed(0);
+    return `<div class="h-comp-row">
+      <span class="h-comp-rank">${i + 1}</span>
+      <span class="h-comp-label">${e.label}</span>
+      <span class="h-comp-score" style="color:${barColor}">${e.score}分 × ${e.weight}%</span>
+      <div class="h-comp-bar-wrap"><div class="h-comp-bar-inner" style="width:${barPct}%;background:${barColor}"></div></div>
+      <span class="h-comp-val">${e.contribution}</span>
+    </div>`;
+  }).join("");
+
+  return `<div class="h-section">
+    <h2>🔢 评分构成 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">加权分解 · 合计 ${totalContribution}/${totalWeight * 100 / totalWeight} 分</span></h2>
+    <div class="h-comp-list">${bars}</div>
+    <div style="margin-top:10px;font-size:.68rem;color:var(--yry-text3)">计算公式: 综合评分 = Σ(维度得分 × 权重%) / Σ权重% · 按贡献值降序排列</div>
   </div>`;
 }
 

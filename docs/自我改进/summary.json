@@ -1,0 +1,1238 @@
+{
+  "updated": "2026-06-11T01:53:48.296Z",
+  "totalEntries": 101,
+  "dateRange": {
+    "from": "2026-06-10",
+    "to": "2026-06-11"
+  },
+  "latest": {
+    "timestamp": "2026-06-11T01:27:13.349Z",
+    "composite": 66,
+    "grade": "C",
+    "scores": {
+      "token": 100,
+      "config": 100,
+      "robots": 100,
+      "api": 50,
+      "reports": 60,
+      "format": 100,
+      "diagnostics": 70,
+      "git": 40,
+      "security": 100,
+      "em_testing": 60,
+      "em_types": 0,
+      "em_linting": 0,
+      "em_cicd": 0,
+      "em_docs": 100,
+      "em_deps": 70,
+      "em_git": 60
+    },
+    "bootstrapped": true,
+    "triggeredDiags": [
+      "D6",
+      "D2"
+    ],
+    "gitBranch": "main",
+    "gitUncommitted": 46
+  },
+  "daily": [
+    {
+      "date": "2026-06-10",
+      "entries": 99,
+      "avgScore": 69,
+      "minScore": 62,
+      "maxScore": 87,
+      "topGrade": "C",
+      "gradeDist": {
+        "C": 97,
+        "B": 2
+      },
+      "topDiags": [
+        {
+          "id": "D2",
+          "count": 87,
+          "label": "质量退化",
+          "rate": 88
+        },
+        {
+          "id": "D0",
+          "count": 52,
+          "label": "基线偏离",
+          "rate": 53
+        },
+        {
+          "id": "D6",
+          "count": 30,
+          "label": "文档过时",
+          "rate": 30
+        }
+      ],
+      "branches": [
+        "feat/yry-self-test",
+        "main",
+        "feat/yry-self-improve"
+      ],
+      "avgUncommitted": 168,
+      "firstTs": "2026-06-10T03:15:55.018Z",
+      "lastTs": "2026-06-10T15:39:45.620Z",
+      "dimAvgs": {
+        "token": 100,
+        "config": 85,
+        "robots": 35,
+        "api": 50,
+        "reports": 60,
+        "format": 100,
+        "diagnostics": 74,
+        "git": 52,
+        "security": 100,
+        "em_testing": 60,
+        "em_types": 0,
+        "em_linting": 0,
+        "em_cicd": 0,
+        "em_docs": 100,
+        "em_deps": 70,
+        "em_git": 60
+      },
+      "delta": null
+    },
+    {
+      "date": "2026-06-11",
+      "entries": 2,
+      "avgScore": 66,
+      "minScore": 66,
+      "maxScore": 66,
+      "topGrade": "C",
+      "gradeDist": {
+        "C": 2
+      },
+      "topDiags": [
+        {
+          "id": "D6",
+          "count": 2,
+          "label": "文档过时",
+          "rate": 100
+        },
+        {
+          "id": "D2",
+          "count": 2,
+          "label": "质量退化",
+          "rate": 100
+        }
+      ],
+      "branches": [
+        "main"
+      ],
+      "avgUncommitted": 46,
+      "firstTs": "2026-06-11T01:22:58.169Z",
+      "lastTs": "2026-06-11T01:27:13.349Z",
+      "dimAvgs": {
+        "token": 100,
+        "config": 100,
+        "robots": 100,
+        "api": 50,
+        "reports": 60,
+        "format": 100,
+        "diagnostics": 70,
+        "git": 40,
+        "security": 100,
+        "em_testing": 60,
+        "em_types": 0,
+        "em_linting": 0,
+        "em_cicd": 0,
+        "em_docs": 100,
+        "em_deps": 70,
+        "em_git": 60
+      },
+      "delta": {
+        "score": -3,
+        "gradeChange": null
+      }
+    }
+  ],
+  "weekly": [
+    {
+      "week": "2026-06-08",
+      "weekEnd": "2026-06-14",
+      "entries": 101,
+      "avgScore": 69,
+      "minScore": 62,
+      "maxScore": 87,
+      "topGrade": "C",
+      "gradeDist": {
+        "C": 99,
+        "B": 2
+      },
+      "topDiags": [
+        {
+          "id": "D2",
+          "count": 89,
+          "label": "质量退化",
+          "rate": 88
+        },
+        {
+          "id": "D0",
+          "count": 52,
+          "label": "基线偏离",
+          "rate": 51
+        },
+        {
+          "id": "D6",
+          "count": 32,
+          "label": "文档过时",
+          "rate": 32
+        }
+      ],
+      "branches": [
+        "feat/yry-self-test",
+        "main",
+        "feat/yry-self-improve"
+      ],
+      "avgUncommitted": 166,
+      "firstTs": "2026-06-10T03:15:55.018Z",
+      "lastTs": "2026-06-11T01:27:13.349Z",
+      "dimAvgs": {
+        "token": 100,
+        "config": 85,
+        "robots": 37,
+        "api": 50,
+        "reports": 60,
+        "format": 100,
+        "diagnostics": 74,
+        "git": 52,
+        "security": 100,
+        "em_testing": 60,
+        "em_types": 0,
+        "em_linting": 0,
+        "em_cicd": 0,
+        "em_docs": 100,
+        "em_deps": 70,
+        "em_git": 60
+      },
+      "delta": null
+    }
+  ],
+  "monthly": [
+    {
+      "month": "2026-06",
+      "entries": 101,
+      "avgScore": 69,
+      "minScore": 62,
+      "maxScore": 87,
+      "topGrade": "C",
+      "gradeDist": {
+        "C": 99,
+        "B": 2
+      },
+      "topDiags": [
+        {
+          "id": "D2",
+          "count": 89,
+          "label": "质量退化",
+          "rate": 88
+        },
+        {
+          "id": "D0",
+          "count": 52,
+          "label": "基线偏离",
+          "rate": 51
+        },
+        {
+          "id": "D6",
+          "count": 32,
+          "label": "文档过时",
+          "rate": 32
+        }
+      ],
+      "branches": [
+        "feat/yry-self-test",
+        "main",
+        "feat/yry-self-improve"
+      ],
+      "avgUncommitted": 166,
+      "firstTs": "2026-06-10T03:15:55.018Z",
+      "lastTs": "2026-06-11T01:27:13.349Z",
+      "dimAvgs": {
+        "token": 100,
+        "config": 85,
+        "robots": 37,
+        "api": 50,
+        "reports": 60,
+        "format": 100,
+        "diagnostics": 74,
+        "git": 52,
+        "security": 100,
+        "em_testing": 60,
+        "em_types": 0,
+        "em_linting": 0,
+        "em_cicd": 0,
+        "em_docs": 100,
+        "em_deps": 70,
+        "em_git": 60
+      },
+      "delta": null
+    }
+  ],
+  "scoreTrend": [
+    {
+      "date": "2026-06-10",
+      "time": "03:15",
+      "score": 65,
+      "grade": "C",
+      "triggered": 0
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:15",
+      "score": 65,
+      "grade": "C",
+      "triggered": 0
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:16",
+      "score": 65,
+      "grade": "C",
+      "triggered": 0
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:16",
+      "score": 65,
+      "grade": "C",
+      "triggered": 0
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:16",
+      "score": 65,
+      "grade": "C",
+      "triggered": 0
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:16",
+      "score": 65,
+      "grade": "C",
+      "triggered": 0
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:16",
+      "score": 65,
+      "grade": "C",
+      "triggered": 0
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:16",
+      "score": 65,
+      "grade": "C",
+      "triggered": 0
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:16",
+      "score": 65,
+      "grade": "C",
+      "triggered": 0
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:16",
+      "score": 65,
+      "grade": "C",
+      "triggered": 0
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:16",
+      "score": 65,
+      "grade": "C",
+      "triggered": 0
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:21",
+      "score": 65,
+      "grade": "C",
+      "triggered": 0
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:23",
+      "score": 62,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:23",
+      "score": 62,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:23",
+      "score": 62,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:23",
+      "score": 62,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:23",
+      "score": 62,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:24",
+      "score": 62,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:24",
+      "score": 62,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:24",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:33",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:33",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:33",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:33",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:33",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:33",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:33",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:33",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:33",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:33",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:34",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:43",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:43",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:43",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:43",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:43",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:43",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:43",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:52",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:53",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:53",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:53",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:53",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:53",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:53",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:53",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:54",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:54",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:54",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:54",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:54",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:54",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "03:54",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "04:02",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "04:02",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "04:04",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "04:04",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "04:04",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "04:04",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "04:04",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "04:04",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "04:04",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "04:04",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "04:15",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "04:48",
+      "score": 87,
+      "grade": "B",
+      "triggered": 1
+    },
+    {
+      "date": "2026-06-10",
+      "time": "04:57",
+      "score": 85,
+      "grade": "B",
+      "triggered": 1
+    },
+    {
+      "date": "2026-06-10",
+      "time": "05:05",
+      "score": 69,
+      "grade": "C",
+      "triggered": 1
+    },
+    {
+      "date": "2026-06-10",
+      "time": "05:06",
+      "score": 69,
+      "grade": "C",
+      "triggered": 1
+    },
+    {
+      "date": "2026-06-10",
+      "time": "05:15",
+      "score": 69,
+      "grade": "C",
+      "triggered": 1
+    },
+    {
+      "date": "2026-06-10",
+      "time": "05:28",
+      "score": 66,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "06:15",
+      "score": 66,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "06:19",
+      "score": 66,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "07:15",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "07:19",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "08:15",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "08:19",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "09:15",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "09:19",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "10:15",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "10:19",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "11:15",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "11:19",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "12:15",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "12:19",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "13:15",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "13:19",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "14:15",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "14:19",
+      "score": 70,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "15:16",
+      "score": 66,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "15:17",
+      "score": 66,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "15:18",
+      "score": 66,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "15:19",
+      "score": 66,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "15:22",
+      "score": 66,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "15:24",
+      "score": 66,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "15:26",
+      "score": 66,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "15:29",
+      "score": 66,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "15:31",
+      "score": 66,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "15:37",
+      "score": 66,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-10",
+      "time": "15:39",
+      "score": 66,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-11",
+      "time": "01:22",
+      "score": 66,
+      "grade": "C",
+      "triggered": 2
+    },
+    {
+      "date": "2026-06-11",
+      "time": "01:27",
+      "score": 66,
+      "grade": "C",
+      "triggered": 2
+    }
+  ],
+  "diagSummary": [
+    {
+      "id": "D2",
+      "count": 89,
+      "label": "质量退化",
+      "rate": 88
+    },
+    {
+      "id": "D0",
+      "count": 52,
+      "label": "基线偏离",
+      "rate": 51
+    },
+    {
+      "id": "D6",
+      "count": 32,
+      "label": "文档过时",
+      "rate": 32
+    },
+    {
+      "id": "D1",
+      "count": 0,
+      "label": "效率退化",
+      "rate": 0
+    },
+    {
+      "id": "D3",
+      "count": 0,
+      "label": "复杂度增长",
+      "rate": 0
+    },
+    {
+      "id": "D4",
+      "count": 0,
+      "label": "流程退化",
+      "rate": 0
+    },
+    {
+      "id": "D5",
+      "count": 0,
+      "label": "依赖退化",
+      "rate": 0
+    },
+    {
+      "id": "D7",
+      "count": 0,
+      "label": "配置漂移",
+      "rate": 0
+    }
+  ],
+  "diagLabels": {
+    "D0": "基线偏离",
+    "D1": "效率退化",
+    "D2": "质量退化",
+    "D3": "复杂度增长",
+    "D4": "流程退化",
+    "D5": "依赖退化",
+    "D6": "文档过时",
+    "D7": "配置漂移"
+  },
+  "dimSummary": [
+    {
+      "dim": "em_types",
+      "label": "类型",
+      "avgScore": 0,
+      "recentAvg": 0,
+      "entries": 35,
+      "min": 0,
+      "max": 0,
+      "trend": 0
+    },
+    {
+      "dim": "em_linting",
+      "label": "检查",
+      "avgScore": 0,
+      "recentAvg": 0,
+      "entries": 35,
+      "min": 0,
+      "max": 0,
+      "trend": 0
+    },
+    {
+      "dim": "em_cicd",
+      "label": "CI/CD",
+      "avgScore": 0,
+      "recentAvg": 0,
+      "entries": 35,
+      "min": 0,
+      "max": 0,
+      "trend": 0
+    },
+    {
+      "dim": "robots",
+      "label": "机器人",
+      "avgScore": 37,
+      "recentAvg": 100,
+      "entries": 101,
+      "min": 0,
+      "max": 100,
+      "trend": 63
+    },
+    {
+      "dim": "api",
+      "label": "API",
+      "avgScore": 50,
+      "recentAvg": 50,
+      "entries": 101,
+      "min": 50,
+      "max": 50,
+      "trend": 0
+    },
+    {
+      "dim": "git",
+      "label": "Git",
+      "avgScore": 52,
+      "recentAvg": 40,
+      "entries": 101,
+      "min": 40,
+      "max": 100,
+      "trend": -12
+    },
+    {
+      "dim": "reports",
+      "label": "报告",
+      "avgScore": 60,
+      "recentAvg": 60,
+      "entries": 101,
+      "min": 60,
+      "max": 60,
+      "trend": 0
+    },
+    {
+      "dim": "em_testing",
+      "label": "测试",
+      "avgScore": 60,
+      "recentAvg": 60,
+      "entries": 35,
+      "min": 60,
+      "max": 60,
+      "trend": 0
+    },
+    {
+      "dim": "em_git",
+      "label": "Git实践",
+      "avgScore": 60,
+      "recentAvg": 60,
+      "entries": 35,
+      "min": 60,
+      "max": 60,
+      "trend": 0
+    },
+    {
+      "dim": "em_deps",
+      "label": "依赖",
+      "avgScore": 70,
+      "recentAvg": 70,
+      "entries": 35,
+      "min": 70,
+      "max": 70,
+      "trend": 0
+    },
+    {
+      "dim": "diagnostics",
+      "label": "诊断",
+      "avgScore": 74,
+      "recentAvg": 70,
+      "entries": 101,
+      "min": 70,
+      "max": 100,
+      "trend": -4
+    },
+    {
+      "dim": "config",
+      "label": "配置",
+      "avgScore": 85,
+      "recentAvg": 100,
+      "entries": 101,
+      "min": 20,
+      "max": 100,
+      "trend": 15
+    },
+    {
+      "dim": "token",
+      "label": "Token",
+      "avgScore": 100,
+      "recentAvg": 100,
+      "entries": 101,
+      "min": 100,
+      "max": 100,
+      "trend": 0
+    },
+    {
+      "dim": "format",
+      "label": "格式",
+      "avgScore": 100,
+      "recentAvg": 100,
+      "entries": 101,
+      "min": 100,
+      "max": 100,
+      "trend": 0
+    },
+    {
+      "dim": "security",
+      "label": "安全",
+      "avgScore": 100,
+      "recentAvg": 100,
+      "entries": 101,
+      "min": 100,
+      "max": 100,
+      "trend": 0
+    },
+    {
+      "dim": "em_docs",
+      "label": "文档",
+      "avgScore": 100,
+      "recentAvg": 100,
+      "entries": 35,
+      "min": 100,
+      "max": 100,
+      "trend": 0
+    }
+  ],
+  "branchSummary": [
+    {
+      "name": "feat/yry-self-test",
+      "count": 63,
+      "avgScore": 68,
+      "avgUncommitted": 249
+    },
+    {
+      "name": "main",
+      "count": 35,
+      "avgScore": 69,
+      "avgUncommitted": 29
+    },
+    {
+      "name": "feat/yry-self-improve",
+      "count": 3,
+      "avgScore": 66,
+      "avgUncommitted": 27
+    }
+  ],
+  "signals": [
+    {
+      "type": "warning",
+      "msg": "D2 质量退化 触发率 88%",
+      "icon": "⚠️"
+    },
+    {
+      "type": "regression",
+      "msg": "类型 维度持续偏低 (0分)",
+      "icon": "🔻"
+    }
+  ]
+}
