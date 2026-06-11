@@ -1,3 +1,8 @@
+---
+name: agent-overview
+description: Agent role topology, shared baselines, behavioral disciplines, execution guidelines, and ADR conventions — reference document, not an executable agent
+---
+
 # Agents
 
 > 每条决策必有人负责，每个结论必有证据，每个变更必收闭环。
