@@ -814,7 +814,20 @@ function saveHealthTrend(result, projectRoot) {
     const trendPath = join(projectRoot, HEALTH_TREND_FILE);
     const dir = join(projectRoot, ".memory");
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-    appendFileSync(trendPath, JSON.stringify(entry) + "\n", "utf-8");
+    const currentDate = entry.timestamp.slice(0, 10);
+    const existingLines = existsSync(trendPath)
+      ? readFileSync(trendPath, "utf-8").split("\n").filter(Boolean)
+      : [];
+    const retainedLines = existingLines.filter((line) => {
+      try {
+        const parsed = JSON.parse(line);
+        return parsed?.timestamp?.slice(0, 10) !== currentDate;
+      } catch {
+        return true;
+      }
+    });
+    retainedLines.push(JSON.stringify(entry));
+    writeFileSync(trendPath, retainedLines.join("\n") + "\n", "utf-8");
   } catch { /* best effort */ }
 }
 

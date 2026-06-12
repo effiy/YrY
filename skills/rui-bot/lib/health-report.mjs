@@ -8,7 +8,7 @@
  *   generateHealthIndex();
  */
 
-import { writeFileSync, mkdirSync, existsSync, readdirSync, readFileSync } from "node:fs";
+import { writeFileSync, mkdirSync, existsSync, readdirSync, readFileSync, statSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 
 
@@ -89,25 +89,80 @@ function nowTimestamp() {
   ].join("");
 }
 
+function extractReportMeta(filename) {
+  const match = filename.match(/^health-(\d{4}-\d{2}-\d{2})(?:-(\d{6}))?\.html$/);
+  if (!match) return null;
+  const [, date, timeRaw = ""] = match;
+  const time = timeRaw
+    ? `${timeRaw.slice(0, 2)}:${timeRaw.slice(2, 4)}:${timeRaw.slice(4, 6)}`
+    : "—";
+  return { file: filename, date, time, timeRaw };
+}
+
+function compareReportMeta(a, b) {
+  if (!a) return -1;
+  if (!b) return 1;
+  if (!a.timeRaw && b.timeRaw) return 1;
+  if (a.timeRaw && !b.timeRaw) return -1;
+  if (a.date !== b.date) return a.date.localeCompare(b.date);
+  return a.timeRaw.localeCompare(b.timeRaw);
+}
+
+function listReportFiles() {
+  if (!existsSync(REPORT_DIR)) return [];
+  return readdirSync(REPORT_DIR)
+    .filter((f) => f.endsWith(".html") && f !== "index.html")
+    .map((file) => {
+      const meta = extractReportMeta(file);
+      if (!meta) return null;
+      let mtimeMs = 0;
+      try {
+        mtimeMs = statSync(join(REPORT_DIR, file)).mtimeMs;
+      } catch { /* ignore unreadable files */ }
+      return { ...meta, mtimeMs };
+    })
+    .filter(Boolean);
+}
+
+function pickLatestReportsByDate(files) {
+  const latestByDate = new Map();
+  for (const file of files) {
+    const existing = latestByDate.get(file.date);
+    if (!existing || compareReportMeta(file, existing) > 0 || (compareReportMeta(file, existing) === 0 && file.mtimeMs > existing.mtimeMs)) {
+      latestByDate.set(file.date, file);
+    }
+  }
+  return [...latestByDate.values()].sort((a, b) => {
+    if (a.date !== b.date) return b.date.localeCompare(a.date);
+    return b.mtimeMs - a.mtimeMs;
+  });
+}
+
+function removeReportsForDate(date, keepFile = "") {
+  for (const report of listReportFiles()) {
+    if (report.date === date && report.file !== keepFile) {
+      try {
+        unlinkSync(join(REPORT_DIR, report.file));
+      } catch { /* best effort cleanup */ }
+    }
+  }
+}
+
 /**
  * Read previous health report score for trend comparison.
  */
 function getPreviousScore() {
-  if (!existsSync(REPORT_DIR)) return null;
+  const today = nowDate();
   try {
-    const files = readdirSync(REPORT_DIR)
-      .filter((f) => f.endsWith(".html") && f !== "index.html")
-      .sort()
-      .reverse();
+    const files = pickLatestReportsByDate(listReportFiles())
+      .filter((f) => f.date !== today);
     if (files.length === 0) return null;
 
-    // Read the latest report (which is the most recent before this one)
-    // Since we haven't written the current one yet, files[0] is the previous
-    const content = readFileSync(join(REPORT_DIR, files[0]), "utf-8");
+    const content = readFileSync(join(REPORT_DIR, files[0].file), "utf-8");
     const scoreMatch = content.match(/h-score-num[^>]*>(\d+)</);
     const gradeMatch = content.match(/h-score-grade[^>]*>([ABCD]) 级</);
     if (scoreMatch) {
-      return { score: parseInt(scoreMatch[1], 10), grade: gradeMatch ? gradeMatch[1] : null, date: files[0].replace("health-", "").replace(".html", "").split("-").slice(0, 3).join("-") };
+      return { score: parseInt(scoreMatch[1], 10), grade: gradeMatch ? gradeMatch[1] : null, date: files[0].date };
     }
     return null;
   } catch {
@@ -257,7 +312,8 @@ function dimSparkline(dimLabel, history) {
  */
 export function generateHealthReport(hr) {
   const ts = nowISO();
-  const filename = `health-${nowDate()}-${nowTimestamp()}.html`;
+  const reportDate = nowDate();
+  const filename = `health-${reportDate}.html`;
   const gradeInfo = GRADE_STYLE[hr.grade] || GRADE_STYLE.D;
 
   // Dimension score cards
@@ -560,6 +616,7 @@ document.querySelectorAll('.h-tab').forEach(function(t) {
     mkdirSync(REPORT_DIR, { recursive: true });
   }
 
+  removeReportsForDate(reportDate, filename);
   const filePath = join(REPORT_DIR, filename);
   // Compact HTML: strip whitespace, remove blank lines, merge only short adjacent lines
   let lines = html.replace(/<!--.*?-->/gs, '').split('\n').map(l => l.trim()).filter(l => l);
@@ -605,28 +662,20 @@ export function generateHealthIndex() {
     mkdirSync(REPORT_DIR, { recursive: true });
   }
 
-  const files = readdirSync(REPORT_DIR)
-    .filter((f) => f.endsWith(".html") && f !== "index.html")
-    .sort()
-    .reverse();
+  const files = pickLatestReportsByDate(listReportFiles());
 
   // Extract metadata from each report into a JSON data file
   const reports = [];
-  for (const f of files) {
-    const name = f.replace(".html", "");
-    const parts = name.split("-");
-    const date = parts.slice(1, 4).join("-");
-    const timeRaw = parts.slice(4).join("");
-    const time = timeRaw ? `${timeRaw.slice(0, 2)}:${timeRaw.slice(2, 4)}:${timeRaw.slice(4, 6)}` : "—";
+  for (const report of files) {
     let score = null, grade = null;
     try {
-      const content = readFileSync(join(REPORT_DIR, f), "utf-8");
+      const content = readFileSync(join(REPORT_DIR, report.file), "utf-8");
       const sm = content.match(/h-score-num[^>]*>(\d+)</);
       const gm = content.match(/h-score-grade[^>]*>([ABCD]) 级</);
       if (sm) score = parseInt(sm[1], 10);
       if (gm) grade = gm[1];
     } catch { /* skip */ }
-    reports.push({ file: f, date, time, score, grade });
+    reports.push({ file: report.file, date: report.date, time: report.time, score, grade });
   }
 
   // Write data file for JS to fetch

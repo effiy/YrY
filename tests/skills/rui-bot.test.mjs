@@ -3,8 +3,12 @@
  */
 
 import { execSync } from 'node:child_process';
+import { mkdtempSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, it, assert, run } from '../lib/test-harness.mjs';
-import { fileExists, readFile, hasSection } from '../lib/helpers.mjs';
+import { fileExists, readFile } from '../lib/helpers.mjs';
+import { generateHealthReport, generateHealthIndex } from '../../skills/rui-bot/lib/health-report.mjs';
 
 const SKILL_DIR = 'skills/rui-bot';
 
@@ -94,6 +98,47 @@ describe('rui-bot skill', () => {
         cwd: process.cwd(), encoding: 'utf-8', timeout: 15_000,
       });
       assert.ok(out.includes('健康报告已生成') || out.includes('健康报告'), 'must confirm HTML report generation');
+    });
+
+    it('overwrites same-day HTML report and index entry', () => {
+      const prevCwd = process.cwd();
+      const testRoot = mkdtempSync(join(tmpdir(), 'rui-bot-health-'));
+      try {
+        mkdirSync(join(testRoot, 'docs'), { recursive: true });
+        writeFileSync(join(testRoot, 'package.json'), JSON.stringify({ name: 'tmp-health-test', type: 'module' }), 'utf-8');
+        process.chdir(testRoot);
+
+        const first = {
+          composite: 61,
+          grade: 'C',
+          scores: { token: 100, config: 60, robots: 60, api: 60, reports: 60, format: 60, diagnostics: 60, git: 60, security: 60 },
+          details: [],
+          diagnostics: { triggered: [], diagnostics: [], execCount: 0 },
+          compScores: { skills: [], agents: [], rules: [], scripts: [] },
+          robotOkCount: 0,
+          robotNames: [],
+        };
+        const second = { ...first, composite: 92, grade: 'A' };
+
+        generateHealthReport(first);
+        generateHealthReport(second);
+        generateHealthIndex();
+
+        const reportDir = join(testRoot, 'docs', '健康报告');
+        const htmlFiles = readdirSync(reportDir).filter((file) => file.endsWith('.html') && file !== 'index.html');
+        assert.equal(htmlFiles.length, 1, 'same day should keep only one HTML report');
+        assert.ok(/^health-\d{4}-\d{2}-\d{2}\.html$/.test(htmlFiles[0]), 'report filename should use date only');
+
+        const reportHtml = readFileSync(join(reportDir, htmlFiles[0]), 'utf-8');
+        assert.ok(reportHtml.includes('92'), 'latest report content should overwrite previous score');
+
+        const reports = JSON.parse(readFileSync(join(reportDir, 'reports.json'), 'utf-8'));
+        assert.equal(reports.length, 1, 'index should keep one report entry per day');
+        assert.equal(reports[0].time, '—', 'date-based report should not expose intra-day time');
+      } finally {
+        process.chdir(prevCwd);
+        rmSync(testRoot, { recursive: true, force: true });
+      }
     });
 
     it('flush command works', () => {
