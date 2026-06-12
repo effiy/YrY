@@ -1,1 +1,0 @@
-{"timestamp":"2026-06-12T14:29:36.971Z","archComposite":100,"archGrade":"A","archScores":{"arch_kernel":100,"arch_paradigm":100,"arch_imports":100,"arch_srp":100,"dry":100,"yagni":100,"arch_extensions":100,"arch_isp":100,"arch_frontmatter":100},"archFailedDims":[],"totalChecks":14,"passedChecks":14,"gitBranch":"main"}
