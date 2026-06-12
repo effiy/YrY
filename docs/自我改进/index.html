@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自我改进分析</title>
+<link rel="stylesheet" href="../../cdn/shared.css">
+<link rel="stylesheet" href="../../cdn/theme.css">
+<style>
+:root {
+  --yry-bg: rgba(22,22,32,1);
+  --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
+  --yry-accent: #FFC107;
+  --yry-pass: #22c55e; --yry-fail: #ef4444; --yry-warn: #f59e0b;
+  --yry-text: rgba(250,250,252,1); --yry-text2: rgba(160,160,164,1); --yry-text3: rgba(110,110,114,1);
+  --yry-radius: 12px; --yry-border: 1px solid rgba(255,255,255,0.06);
+  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
+.si-container { max-width: 800px; margin: 0 auto; padding: 48px 24px 80px; }
+.si-bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
+.si-bc a { color: #22d3ee; text-decoration: none; }
+.si-bc a:hover { color: var(--yry-accent); }
+.si-bc .si-bc-sep { color: var(--yry-text3); opacity: .4; }
+.si-bc .si-bc-cur { color: var(--yry-text2); }
+.si-header { text-align: center; margin-bottom: 32px; }
+.si-header h1 { font-size: 1.6rem; }
+.si-header .desc { color: var(--yry-text2); font-size: .84rem; margin-top: 8px; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto; }
+.si-header .meta { color: var(--yry-text3); font-size: .82rem; margin-top: 6px; }
+.si-intro { padding: 16px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 20px; color: var(--yry-text2); font-size: .84rem; line-height: 1.7; }
+.si-intro strong { color: var(--yry-accent); }
+.si-intro code { background: rgba(59,130,246,.1); padding: 1px 6px; border-radius: 4px; font-size: .82em; color: #22d3ee; }
+.si-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+.si-stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 16px 20px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 100px; cursor: default; }
+.si-stat .si-val { font-size: 1.4rem; font-weight: 700; }
+.si-stat .si-val.pass { color: var(--yry-pass); }
+.si-stat .si-val.warn { color: var(--yry-warn); }
+.si-stat .si-val.fail { color: var(--yry-fail); }
+.si-stat .si-val.info { color: #22d3ee; }
+.si-stat .si-lbl { font-size: .68rem; color: var(--yry-text3); margin-top: 4px; }
+.si-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
+.si-card h2 { font-size: 1.1rem; margin-bottom: 12px; color: var(--yry-accent); }
+.si-diag-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; }
+.si-diag-item { padding: 12px; border-radius: 8px; border: var(--yry-border); text-align: center; background: rgba(15,23,42,.4); }
+.si-diag-item .si-diag-id { font-size: .7rem; color: var(--yry-text3); }
+.si-diag-item .si-diag-name { font-size: .78rem; font-weight: 600; margin-top: 2px; }
+.si-diag-item .si-diag-badge { display: inline-block; margin-top: 4px; padding: 2px 8px; border-radius: 4px; font-size: .64rem; font-weight: 600; }
+.si-diag-item .si-diag-badge.triggered { background: rgba(245,158,11,.15); color: var(--yry-warn); }
+.si-diag-item .si-diag-badge.clear { background: rgba(34,197,94,.15); color: var(--yry-pass); }
+.si-dim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
+.si-dim-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
+.si-dim-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.si-dim-dot.pass { background: var(--yry-pass); }
+.si-dim-dot.warn { background: var(--yry-warn); }
+.si-dim-dot.fail { background: var(--yry-fail); }
+.si-dim-name { flex: 1; font-size: .78rem; }
+.si-dim-score { font-weight: 700; font-size: .82rem; }
+.si-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; justify-content: center; }
+.si-link { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.15); color: #22d3ee; text-decoration: none; font-size: .82rem; transition: all .15s; }
+.si-link:hover { background: rgba(59,130,246,.15); color: var(--yry-accent); }
+.si-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
+.si-empty { text-align: center; padding: 48px 24px; color: var(--yry-text3); }
+.si-empty code { color: #22d3ee; }
+.si-daily-card { padding: 12px 16px; margin-bottom: 8px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.si-daily-card .si-dc-date { font-weight: 600; font-size: .84rem; min-width: 80px; }
+.si-daily-card .si-dc-avg { font-size: 1rem; font-weight: 700; }
+.si-daily-card .si-dc-bar { flex: 1; min-width: 100px; height: 6px; border-radius: 3px; background: rgba(30,30,44,1); overflow: hidden; }
+.si-daily-card .si-dc-bar-fill { height: 100%; border-radius: 3px; }
+#loading { text-align: center; color: var(--yry-text3); padding: 40px; }
+</style>
+</head>
+<body>
+<div class="si-container">
+
+<nav class="si-bc">
+  <a href="../../docs/index.html">📄 文档中心</a>
+  <span class="si-bc-sep">/</span>
+  <span class="si-bc-cur">🧬 自我改进分析</span>
+</nav>
+
+<div class="si-header">
+  <h1>🧬 自我改进分析</h1>
+  <div class="desc">持续自改进闭环的数据仪表板 — 读取 <code>.memory/health-trend.jsonl</code> 和 <code>docs/自我改进/summary.json</code>，展示健康趋势、D0-D7 诊断覆盖率、等级分布与分支健康对比。</div>
+  <div class="meta" id="siCount">加载中...</div>
+</div>
+
+<div class="si-intro">
+  <strong>四段闭环</strong>：观察 → 诊断 → 改进 → 评估 · <strong>八级诊断</strong>：D0 基线偏离 · D1 缓存退化 · D2 质量退化 · D3 上下文退化 · D4 依赖过期 · D5 外部趋势 · D6 文档过时 · D7 测试缺口<br>
+  <strong>四级评估</strong>：E1 即时验证 · E2 短期观察 · E3 长期趋势 · E4 经验技能化<br>
+  <strong>数据源</strong>：<code>.memory/health-trend.jsonl</code> (原始趋势线) + <code>docs/自我改进/summary.json</code> (预聚合摘要)
+</div>
+
+<div class="si-stats" id="stats">
+  <div class="si-stat"><div class="si-val info">—</div><div class="si-lbl">数据条目</div></div>
+  <div class="si-stat"><div class="si-val pass">—</div><div class="si-lbl">最新评分</div></div>
+  <div class="si-stat"><div class="si-val info">—</div><div class="si-lbl">最新等级</div></div>
+  <div class="si-stat"><div class="si-val info">—</div><div class="si-lbl">诊断触发</div></div>
+  <div class="si-stat"><div class="si-val info">—</div><div class="si-lbl">日期范围</div></div>
+</div>
+
+<div class="si-card" id="latestCard">
+  <h2>📊 最新快照</h2>
+  <div id="latestBody"><span id="loading">加载中...</span></div>
+</div>
+
+<div class="si-card">
+  <h2>🔬 D0-D7 诊断状态</h2>
+  <div class="si-diag-grid" id="diagGrid"></div>
+</div>
+
+<div class="si-card">
+  <h2>📈 维度评分</h2>
+  <div class="si-dim-grid" id="dimGrid"></div>
+</div>
+
+<div class="si-card">
+  <h2>📅 日趋势</h2>
+  <div id="dailyList"></div>
+</div>
+
+<div class="si-links">
+  <a class="si-link" href="../健康报告/index.html">🩺 健康报告</a>
+  <a class="si-link" href="../自循环报告/index.html">🔄 自循环报告</a>
+  <a class="si-link" href="../趋势报告/index.html">📡 趋势报告</a>
+  <a class="si-link" href="../index.html" onclick="window.openPanel&&window.openPanel('selfimprove')">🧬 自改进面板</a>
+  <a class="si-link" href="../index.html">📄 文档中心</a>
+</div>
+
+<div class="si-footer">
+  自我改进分析仪表板<br>
+  <span style="color:var(--yry-text3)">数据: .memory/health-trend.jsonl + summary.json · D0-D7 诊断 · E1-E4 评估</span>
+</div>
+
+</div>
+
+<script>
+(function() {
+  var DIAG_LABELS = {
+    D0: '基线偏离', D1: '缓存退化', D2: '质量退化', D3: '上下文退化',
+    D4: '依赖过期', D5: '外部趋势', D6: '文档过时', D7: '测试缺口'
+  };
+  var DIAG_DESCS = {
+    D0: '配置/规约偏离基线',
+    D1: '缓存/记忆文件退化',
+    D2: '代码质量指标下降',
+    D3: '上下文/文档膨胀',
+    D4: '依赖版本过期风险',
+    D5: '外部技术趋势变化',
+    D6: '文档与代码不一致',
+    D7: '测试覆盖率不足'
+  };
+
+  fetch('summary.json')
+    .then(function(r) { return r.ok ? r.json() : null; })
+    .then(function(data) {
+      if (!data) {
+        document.getElementById('siCount').textContent = '数据不可用';
+        return;
+      }
+
+      var latest = data.latest;
+      var dateRange = data.dateRange;
+
+      document.getElementById('siCount').textContent = data.totalEntries + ' 条记录 · ' + dateRange.from + ' ~ ' + dateRange.to;
+
+      // Stats
+      var scClr = latest.composite >= 80 ? 'pass' : latest.composite >= 60 ? 'warn' : 'fail';
+      var gradeClr = {A:'pass', B:'pass', C:'warn', D:'fail'}[latest.grade] || 'info';
+      var trigCount = (latest.triggeredDiags || []).length;
+      var trigClr = trigCount === 0 ? 'pass' : 'warn';
+
+      document.getElementById('stats').innerHTML =
+        '<div class="si-stat"><div class="si-val info">' + data.totalEntries + '</div><div class="si-lbl">数据条目</div></div>' +
+        '<div class="si-stat"><div class="si-val ' + scClr + '">' + latest.composite + '</div><div class="si-lbl">最新评分</div></div>' +
+        '<div class="si-stat"><div class="si-val ' + gradeClr + '">' + latest.grade + ' 级</div><div class="si-lbl">最新等级</div></div>' +
+        '<div class="si-stat"><div class="si-val ' + trigClr + '">' + trigCount + '/8</div><div class="si-lbl">诊断触发</div></div>' +
+        '<div class="si-stat"><div class="si-val info">' + (dateRange.to || '—') + '</div><div class="si-lbl">最新日期</div></div>';
+
+      // Latest snapshot
+      var triggeredHtml = '';
+      if (latest.triggeredDiags && latest.triggeredDiags.length > 0) {
+        triggeredHtml = '<div style="margin-top:8px"><strong>触发诊断:</strong> ' +
+          latest.triggeredDiags.map(function(d) { return '<span style="display:inline-block;padding:2px 8px;border-radius:4px;background:rgba(245,158,11,.15);color:var(--yry-warn);margin:2px;font-size:.76rem">' + d + '</span>'; }).join('') +
+          '</div>';
+      } else {
+        triggeredHtml = '<div style="margin-top:8px;color:var(--yry-pass)">✅ 无诊断触发</div>';
+      }
+
+      var branchInfo = (latest.gitBranch ? ' · 分支: ' + latest.gitBranch : '') + (latest.gitUncommitted ? ' · 未提交: ' + latest.gitUncommitted + ' 文件' : '');
+      document.getElementById('latestBody').innerHTML =
+        '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">' +
+        '<div style="font-size:2rem;font-weight:800;color:' + (latest.composite >= 80 ? 'var(--yry-pass)' : latest.composite >= 60 ? 'var(--yry-warn)' : 'var(--yry-fail)') + '">' + latest.composite + ' 分</div>' +
+        '<div style="font-size:1.2rem;font-weight:700;color:' + (latest.grade === 'A' || latest.grade === 'B' ? 'var(--yry-pass)' : latest.grade === 'C' ? 'var(--yry-warn)' : 'var(--yry-fail)') + '">' + latest.grade + ' 级</div>' +
+        '<div style="font-size:.72rem;color:var(--yry-text3)">' + (latest.timestamp || '') + branchInfo + '</div>' +
+        '</div>' + triggeredHtml;
+
+      // D0-D7 diagnostic grid
+      var allDiags = ['D0','D1','D2','D3','D4','D5','D6','D7'];
+      var triggeredSet = {};
+      (latest.triggeredDiags || []).forEach(function(d) { triggeredSet[d] = true; });
+
+      document.getElementById('diagGrid').innerHTML = allDiags.map(function(d) {
+        var isTriggered = !!triggeredSet[d];
+        var badge = isTriggered
+          ? '<span class="si-diag-badge triggered">⚠ 触发</span>'
+          : '<span class="si-diag-badge clear">✓ 正常</span>';
+        return '<div class="si-diag-item">' +
+          '<div class="si-diag-id">' + d + '</div>' +
+          '<div class="si-diag-name">' + (DIAG_LABELS[d] || '') + '</div>' +
+          badge +
+          '<div style="font-size:.6rem;color:var(--yry-text3);margin-top:2px">' + (DIAG_DESCS[d] || '') + '</div>' +
+          '</div>';
+      }).join('');
+
+      // Dimension scores
+      var scores = latest.scores || {};
+      var dimEntries = Object.keys(scores).map(function(k) { return { name: k, score: scores[k] }; });
+      dimEntries.sort(function(a, b) { return a.score - b.score; });
+      document.getElementById('dimGrid').innerHTML = dimEntries.map(function(d) {
+        var cls = d.score >= 80 ? 'pass' : d.score >= 60 ? 'warn' : 'fail';
+        var clr = d.score >= 80 ? 'var(--yry-pass)' : d.score >= 60 ? 'var(--yry-warn)' : 'var(--yry-fail)';
+        return '<div class="si-dim-item">' +
+          '<span class="si-dim-dot ' + cls + '"></span>' +
+          '<span class="si-dim-name">' + d.name + '</span>' +
+          '<span class="si-dim-score" style="color:' + clr + '">' + d.score + '</span>' +
+          '</div>';
+      }).join('');
+
+      // Daily trends
+      var daily = data.daily || [];
+      if (daily.length > 0) {
+        document.getElementById('dailyList').innerHTML = daily.slice(0, 7).map(function(d, i) {
+          var barClr = d.avgScore >= 80 ? 'var(--yry-pass)' : d.avgScore >= 60 ? 'var(--yry-warn)' : 'var(--yry-fail)';
+          return '<div class="si-daily-card">' +
+            '<span class="si-dc-date">📅 日 ' + (i + 1) + '</span>' +
+            '<span class="si-dc-avg" style="color:' + barClr + '">' + d.avgScore + '</span>' +
+            '<span style="font-size:.68rem;color:var(--yry-text3)">' + d.entries + ' 条</span>' +
+            '<div class="si-dc-bar"><div class="si-dc-bar-fill" style="width:' + Math.max(d.avgScore, 5) + '%;background:' + barClr + '"></div></div>' +
+            '<span style="font-size:.68rem;color:var(--yry-text3)">' + d.minScore + '–' + d.maxScore + '</span>' +
+            '</div>';
+        }).join('');
+      } else {
+        document.getElementById('dailyList').innerHTML = '<div class="si-empty">暂无日趋势数据</div>';
+      }
+    })
+    .catch(function(e) {
+      document.getElementById('siCount').textContent = '加载失败: ' + e.message;
+    });
+})();
+</script>
+</body>
+</html>

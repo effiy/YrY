@@ -44,6 +44,8 @@
       <span class="cross-sep">·</span>
       <a class="cross-link" href="./趋势报告/index.html">📡 趋势报告</a>
       <span class="cross-sep">·</span>
+      <a class="cross-link" href="./自我改进/index.html">🧬 自我改进</a>
+      <span class="cross-sep">·</span>
       <a class="cross-link" href="../CLAUDE.md" target="_blank">📜 CLAUDE.md</a>
       <span class="cross-sep">·</span>
       <a class="cross-link" href="../README.md" target="_blank">📖 README.md</a>
@@ -52,7 +54,7 @@
     <!-- ── Panel hub ──────────────────────────── -->
     <div class="panel-hub" id="panelHub">
       <span class="panel-hub-label" id="liveHealthLabel" style="cursor:pointer" onclick="PanelHub.open('selfimprove')" title="点击打开自改进面板查看详情">🩺 —</span>
-      <button class="panel-hub-btn" onclick="window.openPanel('notify')" title="通知中心 — 健康检查报告、自循环巡检、趋势扫描三类通知统一汇总。支持按类型筛选、最新评分趋势、诊断触发追踪。">
+      <button class="panel-hub-btn" onclick="window.openPanel('notify')" title="通知中心 — 健康检查报告、自循环巡检、趋势扫描三类通知统一汇总。健康报告按日期展示最新一份，支持按类型筛选、最新评分趋势、诊断触发追踪。">
         <span class="panel-hub-icon" style="color:#ef4444">🔔</span>
         <span class="panel-hub-name">通知</span>
         <span class="panel-hub-desc">健康·循环·趋势</span>
@@ -62,7 +64,7 @@
         <span class="panel-hub-name">调度</span>
         <span class="panel-hub-desc">定时·触发·编排</span>
       </button>
-      <button class="panel-hub-btn" onclick="window.openPanel('selfimprove')" title="自改进分析 — 读取 .memory/health-trend.jsonl 和 summary.json，按日/周/月/全景四个视角展示健康趋势、D0-D7 诊断覆盖率、等级分布、分支健康对比。">
+      <button class="panel-hub-btn" onclick="window.openPanel('selfimprove')" title="自改进分析 — 读取 .memory/health-trend.jsonl 和 summary.json，按日/周/月/全景四个视角展示健康趋势、D0-D7 诊断覆盖率、等级分布、分支健康对比；健康数据按日期覆盖，每天保留一个快照。">
         <span class="panel-hub-icon" style="color:#a78bfa">🧬</span>
         <span class="panel-hub-name">自改进</span>
         <span class="panel-hub-desc">趋势·诊断·评估</span>
@@ -1147,7 +1149,7 @@
           <span class="icon ref">H</span>
           <div class="body">
             <div class="name"><a href="./健康报告/index.html">🩺 健康报告</a></div>
-            <div class="desc">系统综合健康度量 — 9 核心维度 + 7 工程成熟度评分 · HTML 仪表板 · 趋势持久化至 .memory/health-trend.jsonl · D0-D7 诊断触发</div>
+            <div class="desc">系统综合健康度量 — 9 核心维度 + 7 工程成熟度评分 · HTML 仪表板 · 趋势写入 .memory/health-trend.jsonl 并按日期覆盖 · D0-D7 诊断触发</div>
             <div class="tags-row">
               <span class="tag-chip accent">Health</span>
               <span class="tag-chip info">9 核 + 7 工</span>
@@ -1186,7 +1188,7 @@
           <span class="icon ref">S</span>
           <div class="body">
             <div class="name"><a href="#" onclick="event.preventDefault();window.openPanel('selfimprove')">🧬 自改进分析</a></div>
-            <div class="desc">持续自改进可视化 — 读取 .memory/health-trend.jsonl + docs/自我改进/summary.json，按日/周/月/全景四视角展示健康趋势、D0-D7 诊断覆盖率、等级分布、分支健康对比</div>
+            <div class="desc">持续自改进可视化 — 读取 .memory/health-trend.jsonl + docs/自我改进/summary.json，按日/周/月/全景四视角展示健康趋势、D0-D7 诊断覆盖率、等级分布、分支健康对比；健康数据以日期为单位覆盖</div>
             <div class="tags-row">
               <span class="tag-chip accent">演进</span>
               <span class="tag-chip info">4 视角</span>
@@ -1199,13 +1201,13 @@
           <span class="icon ref">N</span>
           <div class="body">
             <div class="name"><a href="#" onclick="event.preventDefault();window.openPanel('notify')">🔔 通知中心</a></div>
-            <div class="desc">三类通知统一汇总 — 健康检查报告 (🩺) + 自循环巡检 (🔄) + 趋势扫描 (📡)。按类型筛选、最新评分趋势追踪、诊断触发追踪、企微推送记录</div>
+            <div class="desc">三类通知统一汇总 — 健康检查报告 (🩺) + 自循环巡检 (🔄) + 趋势扫描 (📡)。其中健康报告按日期保留最新一份；支持按类型筛选、最新评分趋势追踪、诊断触发追踪、企微推送记录</div>
             <div class="tags-row">
               <span class="tag-chip accent">通知汇总</span>
               <span class="tag-chip info">3 类通知</span>
               <span class="tag-chip purple">企微</span>
             </div>
-            <div class="meta"><span class="detail">面板: docs/js/notify-panel.js · 实时数据快照</span></div>
+            <div class="meta"><span class="detail">面板: docs/js/notify-panel.js · 健康报告按日期汇总展示</span></div>
           </div>
         </div>
       </div>
@@ -1282,8 +1284,12 @@
       </div>
       <div class="panel-body" id="notifyPanelBody">
         <div class="np-context" style="padding:10px 20px;font-size:.64rem;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,.04);line-height:1.6">
-          <strong>数据源</strong>：健康报告 (<code>docs/健康报告/</code>) + 自循环报告 (<code>docs/自循环报告/</code>) + 趋势清单 (<code>docs/趋势报告/reports.json</code>)<br>
-          <strong>更新</strong>：面板内容为静态快照；新增报告后需同步更新 <code>docs/js/notify-panel.js</code> 中的列表。
+          <strong>数据源</strong>：动态读取 <code>docs/健康报告/reports.json</code> + <code>docs/自循环报告/reports.json</code> + <code>docs/趋势报告/reports.json</code> 三个清单文件<br>
+          <strong>健康报告</strong>：按日期去重（同一天仅保留最新一份），用于展示最新评分与趋势变化<br>
+          <strong>自循环报告</strong>：按技能维度展示巡检结果（pass/warn/fail），用于定位“哪一个技能在告警/异常”并一键打开对应报告<br>
+          <strong>趋势报告</strong>：按数据源展示可达性、趋势方向与条目数（items），用于识别外部信号变化与数据源异常（不可达）<br>
+          <strong>生成命令</strong>：健康: <code>node skills/rui-bot/send.mjs health --html</code> · 自循环: <code>node skills/rui-bot/lib/loop-report.mjs</code> · 趋势: <code>node skills/rui-trends/rui-trends.mjs all</code><br>
+          <strong>更新机制</strong>：每次打开/刷新面板自动从 JSON 清单拉取最新数据；只要对应 <code>reports.json</code> 更新完成，无需手工改面板脚本
         </div>
         <div class="panel-loading">加载中...</div>
       </div>
@@ -1324,8 +1330,8 @@
     </div>
     <div class="panel-body" id="siPanelBody">
       <div style="padding:10px 20px;font-size:.64rem;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,.04);line-height:1.6">
-        <strong>数据源</strong>：<code>.memory/health-trend.jsonl</code>（原始趋势线）+ <code>docs/自我改进/summary.json</code>（预聚合摘要）<br>
-        <strong>视角</strong>：日报 — 当日检查记录 ｜ 周报 — 本周趋势汇总 ｜ 月报 — 月度健康演变 ｜ 全景 — 全维度矩阵 + 分支对比<br>
+        <strong>数据源</strong>：<code>.memory/health-trend.jsonl</code>（按日期覆盖的原始趋势线）+ <code>docs/自我改进/summary.json</code>（预聚合摘要）<br>
+        <strong>视角</strong>：日报 — 当日健康快照 ｜ 周报 — 本周趋势汇总 ｜ 月报 — 月度健康演变 ｜ 全景 — 全维度矩阵 + 分支对比<br>
         <strong>D0-D7 诊断</strong>：悬停诊断卡片查看描述和建议措施
       </div>
       <div class="panel-loading">加载中...</div>

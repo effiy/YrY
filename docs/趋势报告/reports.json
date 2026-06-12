@@ -6,7 +6,7 @@
     "ok": true,
     "trend": "rise",
     "items": 62,
-    "file": "trend-all-2026-06-12-mk3x29.html"
+    "file": "trend-all-2026-06-12.html"
   },
   {
     "date": "2026-06-12",
@@ -15,7 +15,7 @@
     "ok": true,
     "trend": "rise",
     "items": 25,
-    "file": "trend-github-trending-2026-06-12-mk3x29.html"
+    "file": "trend-github-trending-2026-06-12.html"
   },
   {
     "date": "2026-06-12",
@@ -24,7 +24,7 @@
     "ok": true,
     "trend": "flat",
     "items": 12,
-    "file": "trend-oss-insight-2026-06-12-mk3x29.html"
+    "file": "trend-oss-insight-2026-06-12.html"
   },
   {
     "date": "2026-06-12",
@@ -33,7 +33,7 @@
     "ok": true,
     "trend": "rise",
     "items": 16,
-    "file": "trend-trendshift-2026-06-12-mk3x29.html"
+    "file": "trend-trendshift-2026-06-12.html"
   },
   {
     "date": "2026-06-12",
@@ -42,7 +42,7 @@
     "ok": true,
     "trend": "fall",
     "items": 9,
-    "file": "trend-top-starred-2026-06-12-mk3x29.html"
+    "file": "trend-top-starred-2026-06-12.html"
   },
   {
     "date": "2026-06-09",
@@ -51,6 +51,6 @@
     "ok": true,
     "trend": "flat",
     "items": 48,
-    "file": "trend-all-2026-06-09-mj2w17.html"
+    "file": "trend-all-2026-06-09.html"
   }
 ]

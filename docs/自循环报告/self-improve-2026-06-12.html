@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自循环报告 · 持续自改进闭环</title>
+<link rel="stylesheet" href="../../cdn/shared.css">
+<link rel="stylesheet" href="../../cdn/theme.css">
+<style>
+:root {
+  --yry-bg: rgba(22,22,32,1);
+  --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
+  --yry-accent: #FFC107;
+  --yry-pass: #22c55e; --yry-fail: #ef4444; --yry-warn: #f59e0b;
+  --yry-text: rgba(250,250,252,1); --yry-text2: rgba(160,160,164,1); --yry-text3: rgba(110,110,114,1);
+  --yry-radius: 12px; --yry-border: 1px solid rgba(255,255,255,0.06);
+  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
+.yry-container { max-width: 800px; margin: 0 auto; padding: 48px 24px 80px; }
+.yry-header { text-align: center; margin-bottom: 32px; }
+.yry-header .icon { font-size: 2.5rem; }
+.yry-header h1 { font-size: 1.6rem; margin: 12px 0 6px; }
+.yry-header .meta { color: var(--yry-text3); font-size: .82rem; }
+.yry-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
+.yry-card h2 { font-size: 1.1rem; margin-bottom: 12px; color: var(--yry-accent); }
+.yry-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+.yry-stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 16px 20px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 100px; }
+.yry-stat .yry-val { font-size: 1.6rem; font-weight: 700; }
+.yry-stat .yry-val.pass { color: var(--yry-pass); }
+.yry-stat .yry-val.warn { color: var(--yry-warn); }
+.yry-stat .yry-val.fail { color: var(--yry-fail); }
+.yry-stat .yry-lbl { font-size: .72rem; color: var(--yry-text3); margin-top: 4px; }
+.yry-badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: .85rem; font-weight: 600; }
+.yry-badge.pass { background: rgba(34,197,94,.15); color: var(--yry-pass); }
+.yry-badge.warn { background: rgba(245,158,11,.15); color: var(--yry-warn); }
+.yry-badge.fail { background: rgba(239,68,68,.15); color: var(--yry-fail); }
+.yry-summary { padding: 16px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 20px; color: var(--yry-text2); font-size: .9rem; }
+.yry-finding { padding: 14px 18px; margin-bottom: 8px; border-radius: 8px; border: var(--yry-border); }
+.yry-finding.info { background: rgba(59,130,246,.04); }
+.yry-finding.warn { background: rgba(245,158,11,.04); border-left: 3px solid var(--yry-warn); }
+.yry-finding.fail { background: rgba(239,68,68,.04); border-left: 3px solid var(--yry-fail); }
+.yry-finding-head { font-weight: 600; font-size: .9rem; }
+.yry-finding-body { margin-top: 6px; color: var(--yry-text2); font-size: .82rem; }
+.yry-finding-resolution { margin-top: 8px; padding: 8px 12px; background: rgba(15,23,42,.4); border-radius: 6px; font-size: .78rem; color: var(--yry-text2); line-height: 1.5; display: flex; gap: 8px; align-items: flex-start; }
+.yry-resolution-badge { flex-shrink: 0; font-size: .66rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+.yry-resolution-badge.fail { background: rgba(239,68,68,.12); color: var(--yry-fail); }
+.yry-resolution-badge.warn { background: rgba(245,158,11,.12); color: var(--yry-warn); }
+.yry-resolution-badge.info { background: rgba(59,130,246,.1); color: var(--yry-info); }
+.yry-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
+.yry-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
+.yry-breadcrumb a { color: #7aa2f7; text-decoration: none; }
+.yry-breadcrumb .yry-bc-sep { color: #53576c; opacity: .5; }
+.yry-breadcrumb .yry-bc-current { color: #94a3b8; }
+/* Enhanced sections */
+.yry-impact-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.yry-impact-badge { display: inline-block; padding: 4px 14px; border-radius: 6px; color: #fff; font-size: .8rem; font-weight: 600; }
+.yry-impact-summary { font-size: .84rem; color: var(--yry-text2); }
+.yry-impact-detail { padding: 12px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); margin-top: 8px; }
+.yry-hist-dot { transition: transform .15s; }
+.yry-hist-dot:hover { transform: scale(1.8); }
+.yry-cross-item { flex: 1; min-width: 200px; }
+.yry-cross-label { font-size: .78rem; color: var(--yry-text3); margin-bottom: 4px; }
+.yry-cross-desc { font-size: .88rem; font-weight: 600; color: var(--yry-accent); line-height: 1.5; }
+.yry-cross-badge { text-align: center; padding: 8px 16px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); flex-shrink: 0; min-width: 80px; }
+</style>
+</head>
+<body>
+<div class="yry-container">
+
+<nav class="yry-breadcrumb">
+  <a href="../../docs/index.html">📄 文档中心</a>
+  <span class="yry-bc-sep">/</span>
+  <a href="../../docs/自循环报告/">🔄 自循环报告</a>
+  <span class="yry-bc-sep">/</span>
+  <span class="yry-bc-current">持续自改进闭环</span>
+</nav>
+
+<div class="yry-header">
+  <div class="icon">🔄</div>
+  <h1>自循环报告 · 持续自改进闭环</h1>
+  <div class="meta">2026-06-12 16:35:39 · 每周一早 9 点 · <span class="yry-badge pass">✅ 通过</span></div>
+</div>
+
+<div class="yry-stats">
+  <div class="yry-stat">
+    <div class="yry-val pass">✓</div>
+    <div class="yry-lbl">状态</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val pass">3</div>
+    <div class="yry-lbl">信息</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val warn">0</div>
+    <div class="yry-lbl">告警</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val fail">0</div>
+    <div class="yry-lbl">异常</div>
+  </div>
+  
+  <div class="yry-stat">
+    <a href="../../docs/健康报告/" style="text-decoration:none;color:inherit">
+      <div class="yry-val pass">97</div>
+      <div class="yry-lbl">🩺 健康度 A 级</div>
+    </a>
+  </div>
+</div>
+
+<div class="yry-summary">摘要已更新 2026-06-12 14:29:57 · latest 97/A · 诊断触发 0/8</div>
+
+
+<div class="yry-card">
+  <h2>📋 检查详情</h2>
+  <div class="yry-finding info">
+      <div class="yry-finding-head">1. 摘要元信息</div>
+      <div class="yry-finding-body">entries=141 · range=2026-06-10~2026-06-12</div>
+      
+    </div>
+<div class="yry-finding info">
+      <div class="yry-finding-head">2. 最新诊断</div>
+      <div class="yry-finding-body">无触发</div>
+      
+    </div>
+<div class="yry-finding info">
+      <div class="yry-finding-head">3. 日级热点诊断</div>
+      <div class="yry-finding-body">D2(87), D0(52), D6(30)</div>
+      
+    </div>
+</div>
+
+
+<div class="yry-card">
+    <h2>🎯 影响评估 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">0 项需关注</span></h2>
+    <div class="yry-impact-header">
+      <span class="yry-impact-badge" style="background:var(--yry-pass)">正常</span>
+      <span class="yry-impact-summary">异常 0 · 告警 0 · 信息 3</span>
+    </div>
+    
+    <div style="margin-top:10px;font-size:.78rem;color:var(--yry-text3)">📌 继续监控，维持当前良好状态。</div>
+  </div>
+
+<div class="yry-card">
+      <h2>📈 历史趋势 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">最近 2 次执行</span></h2>
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 0">
+        <span style="font-size:.7rem;color:var(--yry-text3)">最早</span>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--yry-pass);margin:0 2px;transition:transform .15s;cursor:default" title="2026-06-12" onmouseover="this.style.transform='scale(1.8)'" onmouseout="this.style.transform='scale(1)'"></span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--yry-pass);margin:0 2px;transition:transform .15s;cursor:default" title="2026-06-12" onmouseover="this.style.transform='scale(1.8)'" onmouseout="this.style.transform='scale(1)'"></span></div>
+        <span style="font-size:.7rem;color:var(--yry-text3)">最新</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px;border-top:var(--yry-border)">
+        <span style="font-size:.74rem;color:var(--yry-text3)">共 2 份历史报告</span>
+        <span style="font-size:.7rem;color:var(--yry-text3)">执行频率: 每周一早 9 点</span>
+      </div>
+    </div>
+
+
+<div class="yry-card">
+  <h2>📊 详细数据</h2>
+  <pre style="color:var(--yry-text2);font-size:.82rem;white-space:pre-wrap;overflow-x:auto">latest:
+- branch=main
+- uncommitted=6
+- bootstrapped=true</pre>
+</div>
+
+
+<div class="yry-card">
+    <h2>🔗 关联分析 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">对项目健康的影响</span></h2>
+    <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+      <div class="yry-cross-item">
+        <div class="yry-cross-label">关联维度</div>
+        <div class="yry-cross-desc">D0-D7 诊断</div>
+      </div>
+      <div class="yry-cross-item">
+        <div class="yry-cross-label">影响机制</div>
+        <div class="yry-cross-desc">自改进闭环是 D0-D7 诊断的主要触发源，驱动全维度健康检查</div>
+      </div>
+      <div class="yry-cross-badge">
+        <div style="font-size:.7rem;color:var(--yry-text3)">当前状态</div>
+        <div style="font-size:1.1rem;font-weight:700;color:var(--yry-pass)">✓ 正常</div>
+      </div>
+    </div>
+  </div>
+
+<div class="yry-footer">
+  自循环报告 · self-improve · 2026-06-12 16:35:39<br>
+  <span style="color:var(--yry-text3)">由 rui-bot loop-report 自动生成</span>
+</div>
+
+</div>
+<script src="../../cdn/shared.js"></script>
+</body>
+</html>

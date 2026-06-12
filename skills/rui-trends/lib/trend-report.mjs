@@ -291,7 +291,7 @@ function buildTechRecommendations(analysis) {
 export function generateTrendReport({ source, url, data, trend, findings, ok }) {
   const meta = SOURCE_META[source] || { icon: '📡', label: source, url: '' };
   const ts = nowISO();
-  const filename = `trend-${source}-${nowDate()}-${nowTimestamp()}.html`;
+  const filename = `trend-${source}-${nowDate()}.html`;
 
   const statusBadge = ok
     ? '<span class="yry-badge pass">✅ 可达</span>'
@@ -493,13 +493,206 @@ export function updateTrendManifest(entry) {
     } catch { manifest = []; }
   }
 
-  manifest.unshift(entry);
+  const normalized = { ...entry };
+  const date = normalized.date || nowDate();
+  normalized.date = date;
+  if (normalized.source) {
+    normalized.file = `trend-${normalized.source}-${date}.html`;
+  }
+
+  manifest = manifest.filter((m) => !(m && m.source === normalized.source && m.date === normalized.date));
+  manifest.unshift(normalized);
   if (manifest.length > MAX_MANIFEST_ENTRIES) {
     manifest = manifest.slice(0, MAX_MANIFEST_ENTRIES);
   }
 
   writeFileSync(MANIFEST_FILE, JSON.stringify(manifest, null, 2), 'utf-8');
   return manifest;
+}
+
+function normalizeDate(s) {
+  const str = String(s || '').trim();
+  const m = str.match(/\d{4}-\d{2}-\d{2}/);
+  return m ? m[0] : nowDate();
+}
+
+function normalizeTime(s) {
+  const str = String(s || '').trim();
+  if (!str) return '';
+  const m = str.match(/\d{2}:\d{2}(:\d{2})?/);
+  return m ? m[0] : '';
+}
+
+export function materializeTrendReportFromManifest(entry) {
+  const source = entry?.source || "all";
+  const meta = SOURCE_META[source] || { icon: "📡", label: source, url: "" };
+  const date = normalizeDate(entry?.date || entry?.time || "");
+  const time = normalizeTime(entry?.time || "");
+  const ts = entry?.time ? String(entry.time) : `${date}${time ? " " + time : ""}`;
+  const ok = entry?.ok !== false;
+  const trend = entry?.trend || "flat";
+  const items = entry?.items ?? 0;
+  const filename = `trend-${source}-${date}.html`;
+
+  const statusBadge = ok
+    ? '<span class="yry-badge pass">✅ 可达</span>'
+    : '<span class="yry-badge fail">🚫 不可达</span>';
+
+  const trendIcon = trend === "rise" ? "↑" : trend === "fall" ? "↓" : "→";
+  const trendLabel = trend === "rise" ? "上升" : trend === "fall" ? "下降" : "持平";
+
+  const sourceDescMap = {
+    all: "聚合扫描多个趋势源，用于快速判断“外部信号是否异常”和“数据源是否可达”。",
+    "github-trending": "反映当日开发者社区关注焦点，适合发现短周期爆发的新工具与框架。",
+    "oss-insight": "偏长期指标与洞察，适合评估技术采用率、社区活跃度与生态健康度。",
+    trendshift: "追踪相对热度变化，适合识别上升/衰退期技术与候选方向。",
+    "top-starred": "从高星项目中发现成熟组件与基础设施方向，适合做技术底座选型参考。",
+  };
+  const sourceDesc = sourceDescMap[source] || "趋势快照来源。";
+  const sourceUrlHtml = meta.url
+    ? `<a href="${escHtml(meta.url)}" target="_blank" rel="noopener noreferrer">${escHtml(meta.url)}</a>`
+    : "—";
+
+  const findings = [];
+  if (!ok) {
+    findings.push({ level: "fail", title: `${meta.label} 不可达`, detail: "历史快照仅保留了可达性结果，建议重新运行趋势扫描生成完整报告。" });
+  } else if (!items) {
+    findings.push({ level: "warn", title: "条目数为 0", detail: "可能是数据源返回空数据或抓取逻辑未提取到条目，建议重新运行趋势扫描。" });
+  } else {
+    findings.push({ level: "info", title: "快照元信息", detail: `记录了可达性、趋势方向与条目数（items=${items}）。如需仓库明细，请重新生成完整报告。` });
+  }
+
+  const findingsHtml = findings.map((f, i) =>
+    `<div class="yry-finding ${f.level}">
+      <div class="yry-finding-head">${i + 1}. ${escHtml(f.title)}</div>
+      ${f.detail ? `<div class="yry-finding-body">${escHtml(f.detail)}</div>` : ""}
+    </div>`
+  ).join("\n");
+
+  const regenCmdHtml = source === "all"
+    ? `<code>node skills/rui-trends/rui-trends.mjs all --html</code>`
+    : `<code>node skills/rui-trends/rui-trends.mjs ${escHtml(source)} --html</code> 或 <code>node skills/rui-trends/rui-trends.mjs all --html</code>`;
+
+  const html = `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>趋势报告 · ${escHtml(meta.label)}</title>
+<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared.css">
+<link rel="stylesheet" href="${CDN_DEPTH}cdn/theme.css">
+<style>
+:root {
+  --yry-bg: rgba(22,22,32,1);
+  --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
+  --yry-accent: #FFC107;
+  --yry-pass: #22c55e; --yry-fail: #ef4444; --yry-warn: #f59e0b;
+  --yry-text: rgba(250,250,252,1); --yry-text2: rgba(160,160,164,1); --yry-text3: rgba(110,110,114,1);
+  --yry-radius: 12px; --yry-border: 1px solid rgba(255,255,255,0.06);
+  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
+.yry-container { max-width: 900px; margin: 0 auto; padding: 48px 24px 80px; }
+.yry-header { text-align: center; margin-bottom: 32px; }
+.yry-header .icon { font-size: 2.5rem; }
+.yry-header h1 { font-size: 1.6rem; margin: 12px 0 6px; }
+.yry-header .meta { color: var(--yry-text3); font-size: .82rem; }
+.yry-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
+.yry-card h2 { font-size: 1.1rem; margin-bottom: 12px; color: var(--yry-accent); }
+.yry-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+.yry-stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 16px 20px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 120px; }
+.yry-stat .yry-val { font-size: 1.6rem; font-weight: 700; }
+.yry-stat .yry-val.pass { color: var(--yry-pass); }
+.yry-stat .yry-val.warn { color: var(--yry-warn); }
+.yry-stat .yry-val.fail { color: var(--yry-fail); }
+.yry-stat .yry-lbl { font-size: .72rem; color: var(--yry-text3); margin-top: 4px; }
+.yry-badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: .85rem; font-weight: 600; }
+.yry-badge.pass { background: rgba(34,197,94,.15); color: var(--yry-pass); }
+.yry-badge.warn { background: rgba(245,158,11,.15); color: var(--yry-warn); }
+.yry-badge.fail { background: rgba(239,68,68,.15); color: var(--yry-fail); }
+.yry-summary { padding: 16px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 20px; color: var(--yry-text2); font-size: .9rem; }
+.yry-finding { padding: 14px 18px; margin-bottom: 8px; border-radius: 8px; border: var(--yry-border); }
+.yry-finding.info { background: rgba(59,130,246,.04); }
+.yry-finding.warn { background: rgba(245,158,11,.04); border-left: 3px solid var(--yry-warn); }
+.yry-finding.fail { background: rgba(239,68,68,.04); border-left: 3px solid var(--yry-fail); }
+.yry-finding-head { font-weight: 600; font-size: .9rem; }
+.yry-finding-body { margin-top: 6px; color: var(--yry-text2); font-size: .82rem; }
+.yry-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
+.yry-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
+.yry-breadcrumb a { color: #7aa2f7; text-decoration: none; }
+.yry-breadcrumb .yry-bc-sep { color: #53576c; opacity: .5; }
+.yry-breadcrumb .yry-bc-current { color: #94a3b8; }
+</style>
+</head>
+<body>
+<div class="yry-container">
+<nav class="yry-breadcrumb">
+  <a href="${CDN_DEPTH}docs/index.html">📄 文档中心</a>
+  <span class="yry-bc-sep">/</span>
+  <a href="${CDN_DEPTH}docs/趋势报告/">📡 趋势报告</a>
+  <span class="yry-bc-sep">/</span>
+  <span class="yry-bc-current">${escHtml(meta.label)} · ${escHtml(date)}</span>
+</nav>
+
+<div class="yry-header">
+  <div class="icon">${meta.icon}</div>
+  <h1>趋势报告 · ${escHtml(meta.label)}</h1>
+  <div class="meta">${escHtml(ts)} · ${statusBadge}</div>
+</div>
+
+<div class="yry-stats">
+  <div class="yry-stat">
+    <div class="yry-val ${ok ? "pass" : "fail"}">${ok ? "✓" : "✗"}</div>
+    <div class="yry-lbl">可达性</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val ${trend === "rise" ? "pass" : trend === "fall" ? "fail" : "warn"}">${trendIcon}</div>
+    <div class="yry-lbl">趋势 ${escHtml(trendLabel)}</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val pass">${escHtml(items)}</div>
+    <div class="yry-lbl">条目数 (items)</div>
+  </div>
+  <div class="yry-stat">
+    <div class="yry-val pass">${escHtml(source)}</div>
+    <div class="yry-lbl">来源 (source)</div>
+  </div>
+</div>
+
+<div class="yry-summary">该页面由 <code>reports.json</code> 清单元信息回填生成，用于保证通知中心/索引中的历史链接可访问；如需完整项目列表与洞察分析，请重新运行趋势扫描生成完整报告。</div>
+
+<div class="yry-card">
+  <h2>🧭 数据源说明</h2>
+  <div style="font-size:.84rem;color:var(--yry-text2);line-height:1.7">
+    <div><span style="color:var(--yry-text3)">来源：</span><strong>${escHtml(meta.label)}</strong>（<code>${escHtml(source)}</code>）</div>
+    <div><span style="color:var(--yry-text3)">入口：</span>${sourceUrlHtml}</div>
+    <div style="margin-top:10px;padding:10px 12px;border-radius:8px;background:rgba(15,23,42,.4);border:var(--yry-border);color:var(--yry-text2)">${escHtml(sourceDesc)}</div>
+  </div>
+</div>
+
+<div class="yry-card">
+  <h2>📋 快照说明</h2>
+  ${findingsHtml}
+  <div style="margin-top:10px;font-size:.78rem;color:var(--yry-text3)">
+    重新生成：${regenCmdHtml}
+  </div>
+</div>
+
+<div class="yry-footer">
+  趋势报告 · ${escHtml(source)} · ${escHtml(ts)}<br>
+  <span style="color:var(--yry-text3)">由 rui-trends trend-report 生成（manifest 回填）</span>
+</div>
+</div>
+</body>
+</html>`;
+
+  if (!existsSync(REPORT_DIR)) {
+    mkdirSync(REPORT_DIR, { recursive: true });
+  }
+  const filePath = join(REPORT_DIR, filename);
+  writeFileSync(filePath, html, "utf-8");
+  return { filePath, filename };
 }
 
 /**

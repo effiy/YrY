@@ -18,12 +18,83 @@
   var activeFilter = 'all';
   var allItems = [];
   var loaded = false;
-  var STATIC_HEALTH_REPORTS = [
-    { file: 'health-2026-06-12-214625.html', date: '2026-06-12', time: '21:46:25', score: 100, grade: 'A' },
-    { file: 'health-2026-06-12-214213.html', date: '2026-06-12', time: '21:42:13', score: 99, grade: 'A' }
-  ];
+  var STATIC_HEALTH_REPORTS = [];
   var STATIC_LOOP_REPORTS = [];
   var STATIC_TREND_REPORTS = [];
+
+  /**
+   * Fetch health reports dynamically from docs/健康报告/reports.json.
+   * Falls back to STATIC_HEALTH_REPORTS if fetch fails.
+   */
+  async function fetchHealthReports() {
+    try {
+      var resp = await fetch('./健康报告/reports.json');
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      var data = await resp.json();
+      if (!Array.isArray(data) || data.length === 0) return STATIC_HEALTH_REPORTS;
+      // Deduplicate by date, keep only the latest per day
+      var seen = {};
+      var deduped = [];
+      for (var i = 0; i < data.length; i++) {
+        var d = data[i].date;
+        if (!seen[d]) { seen[d] = true; deduped.push(data[i]); }
+      }
+      return deduped;
+    } catch (e) {
+      console.warn('[notify-panel] 健康报告 fetch 失败，使用静态数据: ' + e.message);
+      return STATIC_HEALTH_REPORTS;
+    }
+  }
+
+  /**
+   * Fetch self-loop reports dynamically from docs/自循环报告/reports.json.
+   */
+  async function fetchLoopReports() {
+    try {
+      var resp = await fetch('./自循环报告/reports.json');
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      var data = await resp.json();
+      if (!Array.isArray(data)) return STATIC_LOOP_REPORTS;
+      return data.map(function(r) {
+        return {
+          file: r.file,
+          date: r.date,
+          label: (r.icon || '🔄') + ' ' + (r.skillLabel || r.skill),
+          meta: { status: r.status, summary: r.summary, findings: r.findings, skill: r.skill }
+        };
+      });
+    } catch (e) {
+      console.warn('[notify-panel] 自循环报告 fetch 失败: ' + e.message);
+      return STATIC_LOOP_REPORTS;
+    }
+  }
+
+  /**
+   * Fetch trend reports dynamically from docs/趋势报告/reports.json.
+   */
+  async function fetchTrendReports() {
+    try {
+      var resp = await fetch('./趋势报告/reports.json');
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      var data = await resp.json();
+      if (!Array.isArray(data)) return STATIC_TREND_REPORTS;
+      var iconMap = { all: '📡', 'github-trending': '🐙', 'oss-insight': '📊', trendshift: '📈', 'top-starred': '⭐' };
+      return data.map(function(r) {
+        var src = r.source || '';
+        var icon = iconMap[src] || '📡';
+        return {
+          file: r.file,
+          date: r.date,
+          source: r.source,
+          label: icon + ' ' + (src || 'trend') + ' · ' + r.date,
+          meta: { ok: r.ok, trend: r.trend, items: r.items }
+        };
+      });
+    } catch (e) {
+      console.warn('[notify-panel] 趋势报告 fetch 失败: ' + e.message);
+      return STATIC_TREND_REPORTS;
+    }
+  }
 
   /* ── Registration ───────────────────────── */
   H.register('notify', null, 'notifyPanel', 'notifyOverlay', function() {
@@ -55,9 +126,17 @@
   async function fetchAll() {
     loaded = true;
     panelBody.innerHTML = '<div class="panel-loading">加载中...</div>';
+
+    // Dynamic fetch from reports.json manifests (with static fallback)
+    var [healthData, loopData, trendData] = await Promise.all([
+      fetchHealthReports(),
+      fetchLoopReports(),
+      fetchTrendReports()
+    ]);
+
     var unified = [];
-    for (var i = 0; i < STATIC_HEALTH_REPORTS.length; i++) {
-      var r = STATIC_HEALTH_REPORTS[i];
+    for (var i = 0; i < healthData.length; i++) {
+      var r = healthData[i];
       unified.push({
         type: 'health',
         href: r.file,
@@ -69,8 +148,8 @@
         meta: { score: r.score, grade: r.grade }
       });
     }
-    for (var j = 0; j < STATIC_LOOP_REPORTS.length; j++) {
-      var lr = STATIC_LOOP_REPORTS[j];
+    for (var j = 0; j < loopData.length; j++) {
+      var lr = loopData[j];
       unified.push({
         type: 'loop',
         href: lr.file,
@@ -81,8 +160,8 @@
         meta: lr.meta || null
       });
     }
-    for (var k = 0; k < STATIC_TREND_REPORTS.length; k++) {
-      var tr = STATIC_TREND_REPORTS[k];
+    for (var k = 0; k < trendData.length; k++) {
+      var tr = trendData[k];
       unified.push({
         type: 'trend',
         href: tr.file,
@@ -95,7 +174,7 @@
       });
     }
 
-    var hc = STATIC_HEALTH_REPORTS.length, lc = STATIC_LOOP_REPORTS.length, tc = STATIC_TREND_REPORTS.length;
+    var hc = healthData.length, lc = loopData.length, tc = trendData.length;
     var elAll = document.getElementById('npBadgeAll'), elH = document.getElementById('npBadgeHealth'),
         elL = document.getElementById('npBadgeLoop'), elT = document.getElementById('npBadgeTrend');
     if (elAll) elAll.textContent = unified.length;

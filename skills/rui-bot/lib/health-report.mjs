@@ -667,21 +667,28 @@ export function generateHealthIndex() {
   // Extract metadata from each report into a JSON data file
   const reports = [];
   for (const report of files) {
-    let score = null, grade = null;
+    let score = null, grade = null, triggers = null, dimTotal = null;
     try {
       const content = readFileSync(join(REPORT_DIR, report.file), "utf-8");
       const sm = content.match(/h-score-num[^>]*>(\d+)</);
       const gm = content.match(/h-score-grade[^>]*>([ABCD]) 级</);
+      const tm = content.match(/D0-D7:\s*<span[^>]*>(\d+)\/8/);
+      const dm = content.match(/评分维度:\s*<span[^>]*>(\d+)\s*项/);
       if (sm) score = parseInt(sm[1], 10);
       if (gm) grade = gm[1];
+      if (tm) triggers = parseInt(tm[1], 10);
+      if (dm) dimTotal = parseInt(dm[1], 10);
     } catch { /* skip */ }
-    reports.push({ file: report.file, date: report.date, time: report.time, score, grade });
+    reports.push({ file: report.file, date: report.date, time: report.time, score, grade, triggers, dimTotal });
   }
 
   // Write data file for JS to fetch
   writeFileSync(join(REPORT_DIR, "reports.json"), JSON.stringify(reports), "utf-8");
 
-  // Generate static shell that loads data via JS
+  // Generate enhanced static shell that loads data via JS
+  const reportCount = files.length;
+  const latestReport = reports[0] || null;
+
   const html = `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -691,28 +698,59 @@ export function generateHealthIndex() {
 <link rel="stylesheet" href="${CDN_DEPTH}cdn/shared.css">
 <link rel="stylesheet" href="${CDN_DEPTH}cdn/theme.css">
 <style>
-:root{--yry-bg:rgba(22,22,32,1);--yry-accent:#FFC107;--yry-pass:#22c55e;--yry-fail:#ef4444;--yry-text:rgba(250,250,252,1);--yry-text2:rgba(160,160,164,1);--yry-text3:rgba(110,110,114,1);--yry-border:1px solid rgba(255,255,255,.06);--yry-shadow:0 4px 20px rgba(0,0,0,.3)}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--yry-bg);color:var(--yry-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
-.c{max-width:800px;margin:0 auto;padding:48px 24px 80px}
-.bc{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:24px;font-size:.76rem}
-.bc a{color:#22d3ee;text-decoration:none}.bc a:hover{color:var(--yry-accent)}
-.bc .sep{color:var(--yry-text3);opacity:.4}.bc .cur{color:var(--yry-text2)}
-.hd{text-align:center;margin-bottom:32px}.hd h1{font-size:1.6rem}.hd .meta{color:var(--yry-text3);font-size:.82rem;margin-top:6px}
-.card{background:linear-gradient(159deg,rgba(38,38,52,1)0%,rgba(34,34,46,1)100%);border:var(--yry-border);border-radius:12px;padding:24px;box-shadow:var(--yry-shadow)}
-.latest{text-align:center;padding:16px 16px 12px;margin-bottom:20px;background:rgba(255,193,7,.05);border-radius:10px;border:var(--yry-border)}
-.latest .score{font-size:2rem;font-weight:800;color:var(--yry-accent)}.latest .grade{font-size:1.1rem;font-weight:700;margin-left:8px}
-.latest .date{display:block;font-size:.72rem;color:var(--yry-text3);margin-top:4px}
-.latest .meta-row{font-size:.68rem;color:var(--yry-text3);margin-top:6px}
-table{width:100%;border-collapse:collapse}th,td{padding:10px 16px;text-align:left;border-bottom:var(--yry-border);font-size:.88rem}
-th{color:var(--yry-text3);font-size:.76rem;text-transform:uppercase}
-td a{color:#22d3ee;text-decoration:none}td a:hover{color:var(--yry-accent)}
-td .s{font-weight:700;font-size:.82rem}td .s.A,td .s.B{color:var(--yry-pass)}td .s.C{color:#f59e0b}td .s.D{color:var(--yry-fail)}
-.links{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;justify-content:center}
-.links a{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.15);color:#22d3ee;text-decoration:none;font-size:.82rem;transition:all .15s}
-.links a:hover{background:rgba(59,130,246,.15)}
-.ft{text-align:center;color:var(--yry-text3);font-size:.74rem;margin-top:48px;padding-top:20px;border-top:var(--yry-border)}
-#loading{text-align:center;color:var(--yry-text3);padding:40px}
+:root {
+  --yry-bg: rgba(22,22,32,1);
+  --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
+  --yry-accent: #FFC107;
+  --yry-pass: #22c55e; --yry-fail: #ef4444; --yry-warn: #f59e0b;
+  --yry-text: rgba(250,250,252,1); --yry-text2: rgba(160,160,164,1); --yry-text3: rgba(110,110,114,1);
+  --yry-radius: 12px; --yry-border: 1px solid rgba(255,255,255,0.06);
+  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
+.c { max-width: 800px; margin: 0 auto; padding: 48px 24px 80px; }
+.bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
+.bc a { color: #22d3ee; text-decoration: none; } .bc a:hover { color: var(--yry-accent); }
+.bc .sep { color: var(--yry-text3); opacity: .4; } .bc .cur { color: var(--yry-text2); }
+.hd { text-align: center; margin-bottom: 32px; }
+.hd h1 { font-size: 1.6rem; }
+.hd .desc { color: var(--yry-text2); font-size: .84rem; margin-top: 8px; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto; }
+.hd .meta { color: var(--yry-text3); font-size: .82rem; margin-top: 6px; }
+.h-intro { padding: 16px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 20px; color: var(--yry-text2); font-size: .84rem; line-height: 1.7; }
+.h-intro strong { color: var(--yry-accent); }
+.h-intro code { background: rgba(59,130,246,.1); padding: 1px 6px; border-radius: 4px; font-size: .82em; color: #22d3ee; }
+.h-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+.h-stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 16px 20px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 90px; cursor: default; }
+.h-stat .h-val { font-size: 1.4rem; font-weight: 700; }
+.h-stat .h-val.pass { color: var(--yry-pass); }
+.h-stat .h-val.warn { color: var(--yry-warn); }
+.h-stat .h-val.fail { color: var(--yry-fail); }
+.h-stat .h-val.info { color: #22d3ee; }
+.h-stat .h-lbl { font-size: .68rem; color: var(--yry-text3); margin-top: 4px; }
+.latest { text-align: center; padding: 16px 16px 12px; margin-bottom: 20px; background: rgba(255,193,7,.05); border-radius: 10px; border: var(--yry-border); }
+.latest .score { font-size: 2rem; font-weight: 800; color: var(--yry-accent); }
+.latest .grade { font-size: 1.1rem; font-weight: 700; margin-left: 8px; }
+.latest .date { display: block; font-size: .72rem; color: var(--yry-text3); margin-top: 4px; }
+.latest .meta-row { font-size: .68rem; color: var(--yry-text3); margin-top: 6px; }
+.card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
+.card h2 { font-size: 1.1rem; margin-bottom: 12px; color: var(--yry-accent); }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px 16px; text-align: left; border-bottom: var(--yry-border); font-size: .88rem; }
+th { color: var(--yry-text3); font-size: .76rem; text-transform: uppercase; }
+td a { color: #22d3ee; text-decoration: none; } td a:hover { color: var(--yry-accent); }
+td .s { font-weight: 700; font-size: .82rem; } td .s.A, td .s.B { color: var(--yry-pass); } td .s.C { color: #f59e0b; } td .s.D { color: var(--yry-fail); }
+.yry-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: .72rem; font-weight: 600; }
+.yry-badge.A, .yry-badge.B { background: rgba(34,197,94,.15); color: var(--yry-pass); }
+.yry-badge.C { background: rgba(245,158,11,.15); color: var(--yry-warn); }
+.yry-badge.D { background: rgba(239,68,68,.15); color: var(--yry-fail); }
+.links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; justify-content: center; }
+.links a { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.15); color: #22d3ee; text-decoration: none; font-size: .82rem; transition: all .15s; }
+.links a:hover { background: rgba(59,130,246,.15); color: var(--yry-accent); }
+.ft { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
+.yry-empty { text-align: center; padding: 48px 24px; color: var(--yry-text3); }
+.yry-empty code { color: #22d3ee; }
+#loading { text-align: center; color: var(--yry-text3); padding: 40px; }
 </style>
 </head>
 <body>
@@ -726,66 +764,69 @@ td .s{font-weight:700;font-size:.82rem}td .s.A,td .s.B{color:var(--yry-pass)}td 
 
 <div class="hd">
   <h1>🩺 健康报告</h1>
-  <div class="meta"><span id="count">—</span> 份历史报告</div>
+  <div class="desc">系统综合健康度量仪表板 — 覆盖 9 核心维度 + 7 工程成熟度评分 + D0-D7 诊断触发。每次运行自动生成 HTML 报告并持久化趋势数据至 <code>.memory/health-trend.jsonl</code>。</div>
+  <div class="meta"><span id="count">${reportCount}</span> 份历史报告</div>
 </div>
 
-<div class="latest" id="latest">
-  <span id="loading">加载中…</span>
+<div class="h-intro">
+  <strong>评估体系</strong>：<strong>9 核心维度</strong>（Token 安全、配置健康、机器人就绪、API 可达性、报告质量、格式规范、诊断引擎、Git 纪律、安全基线）+ <strong>7 工程成熟度</strong>（测试、类型、Lint、CI/CD、文档、依赖、Git 实践）<br>
+  <strong>诊断联动</strong>：评分过低自动触发 <strong>D0-D7</strong> 分级诊断 · 趋势数据输入自改进分析面板 · 企微通知推送<br>
+  <strong>生成命令</strong>：<code>node skills/rui-bot/send.mjs health --html</code>
+</div>
+
+<div class="h-stats" id="stats">
+  <div class="h-stat"><div class="h-val info">${reportCount}</div><div class="h-lbl">报告总数</div></div>
+  <div class="h-stat"><div class="h-val pass">${latestReport && latestReport.score >= 80 ? latestReport.score : '—'}</div><div class="h-lbl">最新评分</div></div>
+  <div class="h-stat"><div class="h-val ${latestReport && latestReport.grade === 'A' ? 'pass' : latestReport && latestReport.grade === 'B' ? 'pass' : latestReport && latestReport.grade === 'C' ? 'warn' : 'fail'}">${latestReport ? latestReport.grade || '?' : '—'}</div><div class="h-lbl">最新等级</div></div>
+  <div class="h-stat"><div class="h-val info">${latestReport && latestReport.dimTotal ? latestReport.dimTotal : '—'}</div><div class="h-lbl">评分维度</div></div>
+  <div class="h-stat"><div class="h-val ${latestReport && latestReport.triggers === 0 ? 'pass' : 'warn'}">${latestReport && latestReport.triggers !== null ? latestReport.triggers : '—'}</div><div class="h-lbl">诊断触发</div></div>
 </div>
 
 <div class="card">
+  <h2>📋 报告历史</h2>
   <table>
-    <thead><tr><th>日期</th><th>时间</th><th>评分</th><th>操作</th></tr></thead>
+    <thead><tr><th>日期</th><th>时间</th><th>评分</th><th>等级</th><th>诊断</th><th>操作</th></tr></thead>
     <tbody id="tbody"></tbody>
   </table>
 </div>
 
 <div class="links">
-  <a href="${CDN_DEPTH}docs/自循环报告/">📊 自循环报告</a>
+  <a href="${CDN_DEPTH}docs/自循环报告/">🔄 自循环报告</a>
+  <a href="${CDN_DEPTH}docs/趋势报告/">📡 趋势报告</a>
+  <a href="${CDN_DEPTH}docs/自我改进/">🧬 自我改进</a>
   <a href="${CDN_DEPTH}docs/故事任务面板/">📋 故事任务面板</a>
   <a href="${CDN_DEPTH}docs/index.html">📄 文档中心</a>
 </div>
 
 <div class="ft">
   健康报告索引<br>
-  <span style="color:var(--yry-text3)">由 rui-bot health-report 自动生成 · 数据实时读取</span>
+  <span style="color:var(--yry-text3)">由 rui-bot health-report 自动生成 · 9 核心 + 7 工程维度 · D0-D7 诊断</span>
 </div>
 
 </div>
 <script>
 (async function() {
   try {
-    const res = await fetch('reports.json');
+    var res = await fetch('reports.json');
     if (!res.ok) throw new Error('HTTP ' + res.status);
-    const reports = await res.json();
+    var reports = await res.json();
     document.getElementById('count').textContent = reports.length;
 
-    // Latest report
-    const latest = reports[0];
-    const ldiv = document.getElementById('latest');
-    if (latest && latest.score) {
-      const gc = latest.grade === 'A' || latest.grade === 'B' ? 'var(--yry-pass)' : latest.grade === 'C' ? '#f59e0b' : 'var(--yry-fail)';
-      ldiv.innerHTML = '<span style="font-size:.78rem;color:var(--yry-text3)">最新评估:</span> '
-        + '<span class="score">' + latest.score + ' 分</span>'
-        + '<span class="grade" style="color:' + gc + '">' + (latest.grade || '?') + ' 级</span>'
-        + '<span class="date">' + latest.date + '</span>'
-        + '<div class="meta-row">综合健康度 · ' + reports.length + ' 份历史报告</div>';
-    } else {
-      ldiv.innerHTML = '<span style="color:var(--yry-text3)">暂无报告数据</span>';
-    }
-
-    // Report table
-    const tbody = document.getElementById('tbody');
+    // Table
+    var tbody = document.getElementById('tbody');
     if (reports.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" style="color:var(--yry-text3)">暂无报告 — 运行 <code>node skills/rui-bot/send.mjs health --html</code> 生成首份报告</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6"><div class="yry-empty">暂无报告<br><span style="font-size:.7rem;margin-top:8px;display:block">运行 <code>node skills/rui-bot/send.mjs health --html</code> 生成首份报告</span></div></td></tr>';
     } else {
       tbody.innerHTML = reports.map(function(r) {
-        var sc = r.score ? '<span class="s ' + (r.grade || '') + '">' + r.score + ' 分 ' + (r.grade || '') + '</span>' : '—';
-        return '<tr><td><a href="' + r.file + '">🩺 ' + r.date + '</a></td><td>' + r.time + '</td><td>' + sc + '</td><td><a href="' + r.file + '">查看</a></td></tr>';
+        var scHtml = r.score ? '<span class="s ' + (r.grade || '') + '">' + r.score + ' 分</span>' : '—';
+        var gradeHtml = r.grade ? '<span class="yry-badge ' + r.grade + '">' + r.grade + ' 级</span>' : '—';
+        var trigHtml = r.triggers !== null ? (r.triggers > 0 ? '<span style="color:var(--yry-warn)">' + r.triggers + '/8</span>' : '<span style="color:var(--yry-pass)">0/8</span>') : '—';
+        var timeHtml = r.time && r.time !== '—' ? r.time : '—';
+        return '<tr><td><a href="' + r.file + '">🩺 ' + r.date + '</a></td><td>' + timeHtml + '</td><td>' + scHtml + '</td><td>' + gradeHtml + '</td><td>' + trigHtml + '</td><td><a href="' + r.file + '">查看</a></td></tr>';
       }).join('');
     }
   } catch(e) {
-    document.getElementById('loading').textContent = '加载失败: ' + e.message;
+    document.getElementById('tbody').innerHTML = '<tr><td colspan="6"><div class="yry-empty">加载失败: ' + e.message + '</div></td></tr>';
   }
 })();
 </script>

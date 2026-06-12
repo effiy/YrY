@@ -75,7 +75,7 @@ const CROSS_REFS = {
 export function generateReport({ skill, status, summary, details, findings }) {
   const meta = SKILL_META[skill] || { icon: "🔄", label: skill, interval: "—" };
   const ts = nowISO();
-  const filename = `${skill}-${nowDate()}-${nowTimestamp()}.html`;
+  const filename = `${skill}-${nowDate()}.html`;
 
   const statusBadge = {
     pass: '<span class="yry-badge pass">✅ 通过</span>',
@@ -318,8 +318,8 @@ function buildSkillHistoryCard(skill) {
     }
     const recent = files.slice(0, 10);
     const dots = recent.map((f, i) => {
-      const parts = f.replace('.html', '').split('-');
-      const date = parts.slice(1, 4).join('-');
+      const dm = f.match(/(\d{4}-\d{2}-\d{2})/);
+      const date = dm ? dm[1] : '';
       const isLatest = i === 0;
       const size = isLatest ? '10px' : '6px';
       return `<span style="display:inline-block;width:${size};height:${size};border-radius:50%;background:var(--yry-pass);margin:0 2px;transition:transform .15s;cursor:default" title="${date}" onmouseover="this.style.transform='scale(1.8)'" onmouseout="this.style.transform='scale(1)'"></span>`;
@@ -375,20 +375,52 @@ export function generateManifest() {
     .sort()
     .reverse();
 
-  const reports = files.map(f => {
-    const parts = f.replace(".html", "").split("-");
-    const skill = parts.slice(0, -2).join("-");
-    const date = parts[parts.length - 2];
+  function parseLoopFilename(name) {
+    const m1 = name.match(/^(.+)-(\d{4}-\d{2}-\d{2})\.html$/);
+    if (m1) return { skill: m1[1], date: m1[2] };
+    const m2 = name.match(/^(.+)-(\d{4}-\d{2}-\d{2})-(.+)\.html$/);
+    if (m2) return { skill: m2[1], date: m2[2] };
+    return { skill: name.replace(/\.html$/, ""), date: "" };
+  }
+
+  const seen = new Set();
+  const reports = [];
+
+  for (const f of files) {
+    const parsed = parseLoopFilename(f);
+    const skill = parsed.skill;
+    const date = parsed.date;
+    const key = `${skill}::${date}`;
+    if (date && seen.has(key)) continue;
+    if (date) seen.add(key);
+
     const meta = SKILL_META[skill] || { icon: "🔄", label: skill };
-    return {
+    let status = "pass";
+    let summary = "";
+    let findings = null;
+    try {
+      const html = readFileSync(join(REPORT_DIR, f), "utf-8");
+      const badgeMatch = html.match(/class="yry-badge\s+(pass|warn|fail)"/);
+      if (badgeMatch) status = badgeMatch[1];
+      const summaryMatch = html.match(/<div class="yry-summary">([\s\S]*?)<\/div>/);
+      if (summaryMatch) summary = summaryMatch[1].replace(/<[^>]+>/g, "").trim();
+      const infoCount = (html.match(/class="yry-finding\s+info"/g) || []).length;
+      const warnCount = (html.match(/class="yry-finding\s+warn"/g) || []).length;
+      const failCount = (html.match(/class="yry-finding\s+fail"/g) || []).length;
+      findings = { info: infoCount, warn: warnCount, fail: failCount };
+    } catch { /* skip */ }
+
+    reports.push({
       file: f,
       skill,
       skillLabel: meta.label,
       icon: meta.icon,
       date,
-      status: "pass",
-    };
-  });
+      status,
+      summary,
+      findings,
+    });
+  }
 
   writeFileSync(join(REPORT_DIR, "reports.json"), JSON.stringify(reports), "utf-8");
 }
@@ -576,7 +608,8 @@ export async function notifyReport({ skill, status, filename, summary, findings 
   ].filter(Boolean).join("\n");
 
   try {
-    const { sendNotification, findProjectRoot } = await import("../send.mjs");
+    const { sendNotification } = await import("../send.mjs");
+    const { findProjectRoot } = await import("../../../lib/fs.mjs");
     const projectRoot = findProjectRoot(process.cwd());
     const result = await sendNotification(projectRoot, {
       skill,
@@ -596,7 +629,7 @@ export async function notifyReport({ skill, status, filename, summary, findings 
  */
 async function main() {
   const args = process.argv.slice(2);
-  const opts = { findings: [] };
+  const opts = { skill: "", status: "", summary: "", details: "", findings: [] };
 
   for (const arg of args) {
     const eq = arg.indexOf("=");
