@@ -1160,10 +1160,25 @@ async function cmdHealth(projectRoot, opts = {}) {
     const indexOk = existsSync(join(reportDir, "index.html"));
     const recentCount = reportFiles.filter(f => {
       try {
-        const parts = f.replace(".html", "").split("-");
-        const dateStr = parts[parts.length - 2];
-        if (!dateStr || dateStr.length !== 10) return false;
-        const fileDate = new Date(dateStr);
+        // Support both legacy (date as second-to-last segment) and loop-report
+        // format: skill-YYYY-MM-DD-timestamp.html — scan for date triple
+        const base = f.replace(".html", "");
+        const parts = base.split("-");
+        let fileDate = null;
+        // Try legacy: second-to-last segment is a full date string (length 10)
+        const legacyCandidate = parts[parts.length - 2];
+        if (legacyCandidate && legacyCandidate.length === 10 && /^\d{4}-\d{2}-\d{2}$/.test(legacyCandidate)) {
+          fileDate = new Date(legacyCandidate);
+        } else {
+          // Try loop-report format: scan for YYYY-MM-DD triple
+          for (let i = 0; i <= parts.length - 3; i++) {
+            if (/^\d{4}$/.test(parts[i]) && /^\d{2}$/.test(parts[i+1]) && /^\d{2}$/.test(parts[i+2])) {
+              fileDate = new Date(`${parts[i]}-${parts[i+1]}-${parts[i+2]}`);
+              break;
+            }
+          }
+        }
+        if (!fileDate || isNaN(fileDate.getTime())) return false;
         const daysOld = (Date.now() - fileDate.getTime()) / 86400000;
         return daysOld <= 7;
       } catch { return false; }

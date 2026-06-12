@@ -10,7 +10,8 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "test:legacy": "node tests/run.mjs"
+    "test:legacy": "node tests/run.mjs",
+    "version": "node -e \"console.log(require('./package.json').version)\""
   },
   "devDependencies": {
     "vitest": "^3.2.4",
