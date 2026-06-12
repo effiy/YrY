@@ -1134,8 +1134,10 @@ async function cmdHealth(projectRoot, opts = {}) {
         body: JSON.stringify({ webhook_url: "", content: "health-check" }),
       });
       clearTimeout(timer);
-      apiScore = res.ok ? 100 : 50;
-      apiStatus = res.ok ? "pass" : "warn";
+      // Any HTTP response (even 4xx/5xx) means the API is reachable.
+      // The status code reflects request validity, not reachability.
+      apiScore = 100;
+      apiStatus = "pass";
       apiDetail = `可达 (HTTP ${res.status})`;
       console.log(`  ✅ API 可达性:       ${apiDetail}`);
     } catch (err) {
