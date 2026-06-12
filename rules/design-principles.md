@@ -1,8 +1,10 @@
 # design-principles — 设计原则
 
-> 每一条设计决策的默认起点。YrY 的模块（Agent \ Skill \ Rule \ Lib）均以此九条为审查基准。
+> 每一条设计决策的默认起点。YrY 的模块（Agent \ Skill \ Rule \ Lib）均以此十一条为审查基准。
+>
+> 系统级架构原则（内核/扩展边界 · 配置 API · 代码范式 · 健康检测集成）见 [architecture-principles.md](./architecture-principles.md)。
 
-[SRP](#srp-单一职责) · [高内聚](#高内聚) · [低耦合](#低耦合) · [DIP](#dip-依赖倒置) · [OCP](#ocp-开闭原则) · [ISP](#isp-接口隔离) · [DRY](#dry) · [YAGNI](#yagni) · [组合优于继承](#组合优于继承)
+[SRP](#srp-单一职责) · [高内聚](#高内聚) · [低耦合](#低耦合) · [DIP](#dip-依赖倒置) · [OCP](#ocp-开闭原则) · [ISP](#isp-接口隔离) · [DRY](#dry) · [YAGNI](#yagni) · [组合优于继承](#组合优于继承) · [扩展至上](#扩展至上) · [可健康检测](#可健康检测)
 
 ---
 
@@ -142,6 +144,78 @@ flowchart LR
 
 ---
 
+## 扩展至上
+
+> 新功能默认以扩展形式存在，内核保持最小。系统能力通过添加而非修改来增长。
+
+| 决策层级 | 默认位置 | 进入内核的条件 |
+|---------|---------|--------------|
+| 新能力 | skills/ 目录（Skill） | 被 ≥ 3 个 Skill 依赖 + 不可妥协 + 不能以扩展存在 |
+| 新角色 | agents/ 目录（Agent） | 需要新的决策视角，不可由现有 Agent 组合 |
+| 新约束 | rules/ 目录（Rule） | 跨 ≥ 3 个 Skill 的通用约束 |
+| 新工具函数 | lib/ 目录 | 被 ≥ 2 个 Skill 实际调用（YAGNI） |
+
+**核心理念**：
+- **内核轻量** — 内核（rui 编排器 + lib/ + Iron Laws）只放不可妥协的底线和编排逻辑
+- **扩展丰富** — 一切能力以 Skill/Agent/Rule 扩展形式存在，可独立安装、升级、替换
+- **扩展互不修改** — 新增扩展不修改已有扩展或内核文件
+
+**反例**：
+- 新功能直接写到 rui 编排器中，而非创建独立 Skill
+- 为单一 Skill 的功能修改 lib/ 中的通用函数签名
+- "这个功能太小，不值得单独建 Skill"→ 小功能独立为 Skill 的成本为零（就是一个目录 + SKILL.md）
+
+**验证标准**：
+- 过去 10 次功能新增，`skills/rui/SKILL.md` 的修改次数为 0
+- 内核文件数（lib/ + 核心 rules/）在约束上限内
+
+---
+
+## 可健康检测
+
+> 每条设计原则必须有对应的自动化验证手段。"写下来的原则"不产生价值，"可检测的原则"产生价值。
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    P["设计原则"]:::src --> C{"有验证手段?"}
+    C -->|"是 ✅"| V["可自动检测<br/>grep / wc -l / 脚本"]:::ok
+    C -->|"否 ❌"| X["降级为建议<br/>不作为审查基准"]:::warn
+
+    classDef src fill:#3d59a1,color:#fff
+    classDef ok fill:#1a2a1a,stroke:#34d399,color:#a9b1d6
+    classDef warn fill:#2a2a1a,stroke:#fbbf24,color:#fbbf24
+```
+
+| 原则 | 验证方式 | 验证命令 |
+|------|---------|---------|
+| SRP | description 不含"和/与/也" | `grep -l "和\|与\|也" skills/*/SKILL.md` |
+| 高内聚 | story 改动集中在 ≤ 1 个 skill + ≤ 1 个 lib | git diff 范围分析 |
+| 低耦合 | skill 间无直接 import | `grep -r "from.*skills/" skills/` |
+| DIP | agent 不 import skill 内部 | `grep -r "from.*skills/" agents/` |
+| OCP | 新增 skill 不改编排器 | `git log -- skills/rui/SKILL.md` |
+| ISP | agent tools ≤ 职责所需 | frontmatter 审查 |
+| DRY | 无重复定义（≥2 处） | 相似度检测脚本 |
+| YAGNI | 每个 lib export ≥ 2 调用方 | `grep -r "export\|from.*lib/" lib/` |
+| 组合 | 无 class/extends | `grep -r "class \|extends " lib/ skills/` |
+| 扩展至上 | 内核文件数在约束内 | `ls lib/*.mjs | wc -l` |
+| 可健康检测 | 新原则有验证命令 | 审查 |
+
+**反例**：
+- "建议使用函数式风格" — 无检测手段，不是原则
+- "代码应该清晰" — 无客观标准，不可验证
+
+**向本条原则的回归**：本原则自身也必须可验证 — 十一条原则的验证命令全部可执行，无一条仅靠"审查"判定。
+
+---
+
 ## 设计审查清单
 
 代码审查时对照此清单：
@@ -157,3 +231,5 @@ flowchart LR
 | 7 | DRY | 无重复常量/配置/逻辑（≥2 处 = 提取） |
 | 8 | YAGNI | 每个抽象有 ≥2 个调用方 |
 | 9 | 组合 | 无 extends / 继承层次 |
+| 10 | 扩展至上 | 新功能以扩展形式存在，未修改内核 |
+| 11 | 可健康检测 | 新原则/约束有对应的自动化验证手段 |

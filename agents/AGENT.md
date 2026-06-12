@@ -264,7 +264,7 @@ flowchart LR
 | **释义** 说清楚 | 惜注意 | 人看不懂，正确也没意义 | 一段话三层从句解释一件事 |
 | **对等** 称轻重 | 全部 | 投入与改动量、风险等级匹配 | 改注释和重写核心循环走同套流程 |
 
-> 以上六条为 YrY 自有设计哲学。工程层面的九条设计原则（SRP · 高内聚 · 低耦合 · DIP · OCP · ISP · DRY · YAGNI · 组合优于继承）见 [rules/design-principles.md](../rules/design-principles.md)。Agent/Skill/Lib 审查时两套原则并用：六条定方向，九条定结构。
+> 以上六条为 YrY 自有设计哲学。工程层面的十一条设计原则（SRP · 高内聚 · 低耦合 · DIP · OCP · ISP · DRY · YAGNI · 组合优于继承 · 扩展至上 · 可健康检测）见 [rules/design-principles.md](../rules/design-principles.md)，系统级架构原则见 [rules/architecture-principles.md](../rules/architecture-principles.md)。Agent/Skill/Lib 审查时三套原则并用：六条定方向，十一条定结构，架构宪法定边界。
 
 ## 行为纪律
 
