@@ -24,6 +24,7 @@ rui-yry 是编排器，各阶段委托专门子技能，不自行实现任何子
 | §1 故事扫描与冲突检测 | rui-story | 远端 + 本地故事面板查询 |
 | §1.1–§1.2 合并/拆分 | rui-story | 故事面板管理 |
 | §2 文档更新 | rui-doc / rui-update | 增量文档修改 |
+| §2.1 架构健康检测 | arch-check | D8 架构退化诊断 + 趋势持久化 |
 | §3 代码实现 | rui-code | 源码变更管线（Gate A/B） |
 | §4 趋势验证 | rui-trends | D5 诊断数据源 |
 | §4 静态分析 | rui-analysis | D3/D5 代码健康度 |
@@ -46,7 +47,10 @@ flowchart TD
     AUTO_MERGE --> DIAG
     SPLIT_CHECK -->|"否"| DIAG["§2 诊断排序 D0-D7"]:::s
     AUTO_SPLIT --> DIAG
-    DIAG --> CHECK{"有改进空间?"}
+    DIAG --> ARCH_CHECK{"§2.1 架构合规?"}
+    ARCH_CHECK -->|"D8 触发"| ARCH_FIX["架构修复<br/>范式/耦合/内核蠕变"]:::s
+    ARCH_CHECK -->|"通过"| CHECK{"有改进空间?"}
+    ARCH_FIX --> VERIFY
     CHECK -->|"否"| DONE["输出健康声明"]:::out
     CHECK -->|"是"| PICK["§3 选取最优改进项"]:::s
     PICK --> IMPL["§4 自主实现<br/>rui-update 或 rui-code"]:::s
@@ -88,10 +92,10 @@ flowchart TD
 | 优先级 | 条件 | 说明 |
 |--------|------|------|
 | 1 | 达到深度上限 | `round >= --depth`（默认 3） |
-| 2 | 无改进空间 | 所有 D0-D7 诊断通过，无待处理提案 |
+| 2 | 无改进空间 | 所有 D0-D8 诊断通过，无待处理提案，架构 A 级 |
 | 3 | 连续 3 轮无效 | 连续 3 轮无实质性变更 |
 | 4 | 用户中断 | Ctrl+C |
-| 5 | 阻断不可自愈 | `doc-p0` / `code-p0` 需人工决策 |
+| 5 | 阻断不可自愈 | `doc-p0` / `code-p0` / 架构 C 级以下需人工决策 |
 
 ## 核心规则
 
@@ -102,13 +106,17 @@ flowchart TD
 | 分支隔离 | 每故事自动创建/切换到 `feat/<name>` |
 | 版本强制 | 每次闭环完成必须 bump 版本号 |
 | 防死循环 | 同一改进项失败 ≥ 2 次 → skip + 记录 |
+| 架构合规 | 每轮闭环前运行 `node lib/arch-check.mjs --append-trend`，D8 触发时优先修复架构退化 |
+| 内核守护 | 内核体积达 80% 阈值时，新增功能必须以扩展形式存在，禁止向内核添加代码 |
 | 交付收口 | rui-import + rui-bot 手动触发 |
 
 ## 生效标志
 
 | 标志 | 验证方式 |
 |------|---------|
-| D0–D7 诊断覆盖全部故事 | 诊断输出含每个故事的判定 |
+| D0–D8 诊断覆盖全部故事 | 诊断输出含每个故事的判定 |
+| 架构合规 A/B 级 | `node lib/arch-check.mjs --short` 输出 A 级或 B 级 |
+| 架构趋势已记录 | `.memory/arch-trend.jsonl` 含本轮条目 |
 | 改进项有实现记录 | git log 含对应 commit |
 | 版本号已升级 | version_history 有新条目 |
-| 闭环摘要完整 | 含轮数、改进数、版本变更、耗时 |
+| 闭环摘要完整 | 含轮数、改进数、版本变更、耗时、架构等级 |

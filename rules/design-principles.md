@@ -24,6 +24,43 @@
 - Skill 既发消息又做健康检查又管失败队列（rui-bot 三合一，应拆为 rui-bot + rui-health）
 - 一个函数既获取数据又渲染 HTML（应分层：data → render）
 
+### 最小可用边界
+
+> 每个模块类型有明确的最小—最大边界。低于下限 = 不值得独立存在，高于上限 = 需拆分。
+
+| 模块类型 | 最小可用（低于此值 → 合并） | 最大边界（高于此值 → 拆分） | 当前基准 |
+|---------|--------------------------|--------------------------|---------|
+| **Skill SKILL.md** | ≥ 3 个章（触发 + 工作流 + 规则） | ≤ 500 行 | rui 编排器 188 行 |
+| **Skill 脚本** | ≥ 1 个独立可执行入口 | ≤ 600 行/文件 | send.mjs（最大单文件） |
+| **Agent .md** | ≥ 角色定义 + 工具集 + 交接契约 | ≤ 300 行 | AGENT.md 是索引，非单体 |
+| **Rule .md** | ≥ 1 条可验证约束 | ≤ 500 行 | code-pipeline.md 325 行 |
+| **Lib 函数** | ≥ 2 个调用方（YAGNI） | ≤ 60 行/函数 | 大部分函数 10-40 行 |
+| **Lib 文件** | ≥ 2 个 export | ≤ 500 行/文件 | constants.mjs 280 行 |
+
+### 拆分决策树
+
+```
+模块超过最大边界？
+  ├─ 是 → 能否按"一个职责一句话"拆为 ≥2 个独立模块？
+  │        ├─ 能 → 拆分，每个独立命名
+  │        └─ 不能 → 先理清职责边界，再拆分
+  └─ 否 → 模块低于最小可用？
+           ├─ 是 → 是否有 ≥2 个调用方？
+           │        ├─ 是 → 保留（虽小但有用）
+           │        └─ 否 → 合并到最近的同类模块或删除
+           └─ 否 → ✅ 在健康范围内
+```
+
+### 职责边界判定
+
+| 信号 | 判定 | 动作 |
+|------|------|------|
+| 文件含 ≥ 3 个不相关的 export 组 | 多职责 | 按抽象层拆分为多个文件 |
+| description 含"和/与/也/并/及" | 多职责 | 拆分为多个 Skill/Agent |
+| 一个函数处理 ≥ 2 种数据结构 | 多职责 | 拆分为独立的数据处理函数 |
+| 一个 Skill 依赖 ≥ 5 个 Agent | 可能过大 | 检查是否能拆为子技能 |
+| 修改一个需求涉及 ≥ 3 个 Skill 目录 | 耦合过高 | 检查职责边界是否清晰 |
+
 ---
 
 ## 高内聚
@@ -92,11 +129,15 @@ flowchart LR
 
 | Agent | 允许的工具 | 禁止 |
 |-------|----------|------|
+| pm | Read, Grep, Glob, Bash | Edit, Write |
+| planner | Read, Grep, Glob, Bash | Edit, Write |
 | coder | Read, Grep, Glob, Edit, Write, Bash | — |
 | tester | Read, Grep, Glob, Bash | Edit, Write |
 | code-reviewer | Read, Grep, Glob, Bash | Edit, Write |
 | architect | Read, Grep, Glob | Edit, Write, Bash |
-| pm | Read, Grep, Glob, Bash | Edit, Write |
+| security | Read, Grep, Glob | Edit, Write, Bash |
+| reporter | Read, Grep, Glob | Edit, Write, Bash |
+| self-improve | Read, Grep, Glob, Bash | Edit, Write |
 
 **Skill 暴露最小化**：每个 Skill 只暴露一个入口命令（如 `/rui-code`），内部实现细节不对外可见。
 

@@ -38,11 +38,11 @@
       <span class="cross-sep">·</span>
       <a class="cross-link" href="./故事任务面板/架构/演示/index.html">🎬 演示中心</a>
       <span class="cross-sep">·</span>
-      <a class="cross-link" href="./健康报告/">🩺 健康报告</a>
+      <a class="cross-link" href="./健康报告/index.html">🩺 健康报告</a>
       <span class="cross-sep">·</span>
-      <a class="cross-link" href="./自循环报告/">🔄 自循环报告</a>
+      <a class="cross-link" href="./自循环报告/index.html">🔄 自循环报告</a>
       <span class="cross-sep">·</span>
-      <a class="cross-link" href="./趋势报告/">📡 趋势报告</a>
+      <a class="cross-link" href="./趋势报告/index.html">📡 趋势报告</a>
       <span class="cross-sep">·</span>
       <a class="cross-link" href="../CLAUDE.md" target="_blank">📜 CLAUDE.md</a>
       <span class="cross-sep">·</span>
@@ -1185,35 +1185,43 @@
     </div>
   </div>
 
-  <!-- Notification overlay + panel -->
-  <div class="notify-overlay" id="notifyOverlay"></div>
-  <div class="notify-panel" id="notifyPanel">
-    <div class="panel-header">
-      <span class="np-title">&#128276; 通知中心</span>
-      <span class="np-count" id="npTotalCount">—</span>
-      <button class="panel-refresh" id="panelRefresh" title="刷新">&#x21bb;</button>
-    </div>
-    <div class="np-filters" id="npFilters">
-      <span class="np-filter-chip active" data-filter="all">全部<span class="np-filter-badge" id="npBadgeAll">0</span></span>
-      <span class="np-filter-chip" data-filter="health">🩺 健康<span class="np-filter-badge" id="npBadgeHealth">0</span></span>
-      <span class="np-filter-chip" data-filter="loop">🔄 自循环<span class="np-filter-badge" id="npBadgeLoop">0</span></span>
-      <span class="np-filter-chip" data-filter="trend">📡 趋势<span class="np-filter-badge" id="npBadgeTrend">0</span></span>
-    </div>
-    <div class="panel-body" id="panelBody">
-      <div class="np-context" style="padding:10px 20px;font-size:.64rem;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,.04);line-height:1.6">
-        <strong>数据源</strong>：健康报告 (<code>docs/健康报告/</code>) + 自循环报告 (<code>docs/自循环报告/</code>) + 趋势清单 (<code>docs/趋势报告/reports.json</code>)<br>
-        <strong>更新</strong>：每次打开面板自动拉取最新索引，点击 🔄 手动刷新。Cron 调度任务定时生成新报告。
+  <template id="notifyPanelComponent">
+    <div class="notify-overlay" id="notifyOverlay"></div>
+    <div class="notify-panel" id="notifyPanel">
+      <div class="panel-header">
+        <span class="np-title">&#128276; 通知中心</span>
+        <span class="np-count" id="npTotalCount">—</span>
+        <button class="panel-refresh" id="notifyRefresh" title="刷新">&#x21bb;</button>
       </div>
-      <div class="panel-loading">加载中...</div>
+      <div class="np-filters" id="npFilters">
+        <span class="np-filter-chip active" data-filter="all">全部<span class="np-filter-badge" id="npBadgeAll">0</span></span>
+        <span class="np-filter-chip" data-filter="health">🩺 健康<span class="np-filter-badge" id="npBadgeHealth">0</span></span>
+        <span class="np-filter-chip" data-filter="loop">🔄 自循环<span class="np-filter-badge" id="npBadgeLoop">0</span></span>
+        <span class="np-filter-chip" data-filter="trend">📡 趋势<span class="np-filter-badge" id="npBadgeTrend">0</span></span>
+      </div>
+      <div class="panel-body" id="notifyPanelBody">
+        <div class="np-context" style="padding:10px 20px;font-size:.64rem;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,.04);line-height:1.6">
+          <strong>数据源</strong>：健康报告 (<code>docs/健康报告/</code>) + 自循环报告 (<code>docs/自循环报告/</code>) + 趋势清单 (<code>docs/趋势报告/reports.json</code>)<br>
+          <strong>更新</strong>：每次打开面板自动拉取最新索引，点击 🔄 手动刷新。Cron 调度任务定时生成新报告。
+        </div>
+        <div class="panel-loading">加载中...</div>
+      </div>
+      <div class="panel-footer">
+        <span id="npUpdateTime" style="font-size:.64rem;color:var(--text-muted)"></span>
+        <a href="#" onclick="event.preventDefault();window.openPanel('faq')" style="color:#22c55e;text-decoration:none;font-size:.72rem">❓ FAQ</a>
+        <a href="./健康报告/index.html">🩺 健康报告</a>
+        <a href="./自循环报告/index.html">🔄 自循环报告</a>
+        <a href="./趋势报告/index.html">📡 趋势报告</a>
+      </div>
     </div>
-    <div class="panel-footer">
-      <span id="npUpdateTime" style="font-size:.64rem;color:var(--text-muted)"></span>
-      <a href="#" onclick="event.preventDefault();window.openPanel('faq')" style="color:#22c55e;text-decoration:none;font-size:.72rem">❓ FAQ</a>
-      <a href="./健康报告/">🩺 健康报告</a>
-      <a href="./自循环报告/">🔄 自循环报告</a>
-      <a href="./趋势报告/">📡 趋势报告</a>
-    </div>
-  </div>
+  </template>
+  <script>
+    (function() {
+      var tpl = document.getElementById('notifyPanelComponent');
+      if (!tpl) return;
+      document.body.appendChild(tpl.content.cloneNode(true));
+    })();
+  </script>
 
   <!-- Self-improvement overlay + panel -->
   <div class="selfimprove-overlay" id="selfimproveOverlay"></div>

@@ -10,8 +10,9 @@
   var H = window.PanelHub;
   if (!H) { console.error('notify-panel: PanelHub required'); return; }
 
-  var panelBody = document.getElementById('panelBody');
-  var filterChips = document.querySelectorAll('.np-filter-chip');
+  var notifyPanel = document.getElementById('notifyPanel');
+  var panelBody = document.getElementById('notifyPanelBody');
+  var filterChips = notifyPanel ? notifyPanel.querySelectorAll('.np-filter-chip[data-filter]') : [];
   var totalCount = document.getElementById('npTotalCount');
   var badge = document.getElementById('notifyBadge');
   var activeFilter = 'all';
@@ -35,7 +36,7 @@
   });
 
   /* ── Refresh ────────────────────────────── */
-  var refreshBtn = document.getElementById('panelRefresh');
+  var refreshBtn = document.getElementById('notifyRefresh');
   if (refreshBtn) {
     refreshBtn.addEventListener('click', function(e) {
       e.stopPropagation();
@@ -348,6 +349,17 @@
     return '<div class="np-summary-bar">' + parts.join('') + '</div>';
   }
 
+  function formatTimeId(timeId) {
+    if (!timeId) return '';
+    var s = String(timeId).replace(/\D/g, '');
+    if (s.length < 4) return '';
+    var hh = s.slice(0, 2);
+    var mm = s.slice(2, 4);
+    var ss = s.length >= 6 ? s.slice(4, 6) : '';
+    if (!/^\d{2}$/.test(hh) || !/^\d{2}$/.test(mm)) return '';
+    return ss && /^\d{2}$/.test(ss) ? (hh + ':' + mm + ':' + ss) : (hh + ':' + mm);
+  }
+
   function renderCard(item, isLatest) {
     var href = item.basePath + item.href;
     var cls = isLatest ? ' np-latest' : '';
@@ -370,7 +382,8 @@
 
     var title = '';
     if (item.type === 'health') {
-      title = (item.meta && item.meta.pageTitle) ? item.meta.pageTitle : ('健康报告 · ' + item.date);
+      var t = formatTimeId(item.timeId);
+      title = '健康报告 · ' + item.date + (t ? (' ' + t) : '');
     } else if (item.type === 'loop') {
       title = (item.meta && item.meta.pageTitle) ? item.meta.pageTitle.replace('自循环报告 · ', '') : (item.skill || '自循环报告');
     } else {
@@ -593,7 +606,7 @@
         + '</div>'
         + '<div class="np-latest-main">'
         + '<div class="np-latest-head"><span class="np-type ' + typeCls + '">' + typeLabel + '</span>'
-        + '<span class="np-latest-title"><a href="' + href + '" target="_blank">' + H.escHtml(title) + '</a></span>'
+      + '<span class="np-latest-title"><a href="' + href + '" target="_blank" onclick="event.stopPropagation()">' + H.escHtml(title) + '</a></span>'
         + timeHtml
         + '</div>'
         + (metaParts.length ? '<div class="np-latest-meta">' + metaParts.join('') + '</div>' : '')
@@ -608,7 +621,7 @@
       + '<span class="np-dot ' + dotCls + '"></span>'
       + '<div class="np-body">'
       + '<div class="np-head"><span class="np-type ' + typeCls + '">' + typeLabel + '</span>'
-      + '<span class="np-title"><a href="' + href + '" target="_blank">' + H.escHtml(title) + '</a></span></div>'
+      + '<span class="np-title"><a href="' + href + '" target="_blank" onclick="event.stopPropagation()">' + H.escHtml(title) + '</a></span></div>'
       + (detailSections.length ? '<div class="np-detail">' + detailSections.join('') + '</div>' : '')
       + '</div>'
       + timeHtml

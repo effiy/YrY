@@ -1,12 +1,12 @@
 {
-  "updated": "2026-06-12T14:01:16.270Z",
-  "totalEntries": 140,
+  "updated": "2026-06-12T14:29:57.003Z",
+  "totalEntries": 141,
   "dateRange": {
     "from": "2026-06-10",
     "to": "2026-06-12"
   },
   "latest": {
-    "timestamp": "2026-06-12T14:01:02.823Z",
+    "timestamp": "2026-06-12T14:01:35.586Z",
     "composite": 97,
     "grade": "A",
     "scores": {
@@ -31,7 +31,7 @@
     "bootstrapped": true,
     "triggeredDiags": [],
     "gitBranch": "main",
-    "gitUncommitted": 5
+    "gitUncommitted": 6
   },
   "daily": [
     {
@@ -194,13 +194,13 @@
       "date": "2026-06-11"
     },
     {
-      "entries": 37,
+      "entries": 38,
       "avgScore": 90,
       "minScore": 55,
       "maxScore": 100,
       "topGrade": "B",
       "gradeDist": {
-        "A": 15,
+        "A": 16,
         "B": 20,
         "C": 0,
         "D": 2
@@ -210,13 +210,13 @@
           "id": "D2",
           "count": 31,
           "label": "质量退化",
-          "rate": 84
+          "rate": 82
         },
         {
           "id": "D6",
           "count": 19,
           "label": "文档过时",
-          "rate": 51
+          "rate": 50
         },
         {
           "id": "D0",
@@ -240,7 +240,7 @@
       "branches": [
         {
           "name": "main",
-          "count": 35
+          "count": 36
         },
         {
           "name": "master",
@@ -252,19 +252,19 @@
         "token": 100,
         "config": 96,
         "robots": 95,
-        "api": 62,
+        "api": 63,
         "reports": 75,
         "format": 100,
-        "diagnostics": 79,
-        "git": 92,
+        "diagnostics": 80,
+        "git": 93,
         "security": 100,
         "em_testing": 98,
         "em_types": 95,
         "em_linting": 95,
         "em_cicd": 95,
         "em_docs": 100,
-        "em_deps": 81,
-        "em_git": 75,
+        "em_deps": 82,
+        "em_git": 76,
         "comp_qual": 88
       },
       "delta": {
@@ -272,19 +272,19 @@
         "gradeChange": "C→B"
       },
       "firstTs": "2026-06-12T08:58:34.388Z",
-      "lastTs": "2026-06-12T14:01:02.823Z",
+      "lastTs": "2026-06-12T14:01:35.586Z",
       "date": "2026-06-12"
     }
   ],
   "weekly": [
     {
-      "entries": 140,
+      "entries": 141,
       "avgScore": 74,
       "minScore": 55,
       "maxScore": 100,
       "topGrade": "C",
       "gradeDist": {
-        "A": 15,
+        "A": 16,
         "B": 22,
         "C": 101,
         "D": 2
@@ -324,7 +324,7 @@
       "branches": [
         {
           "name": "main",
-          "count": 72
+          "count": 73
         },
         {
           "name": "feat/yry-self-test",
@@ -339,21 +339,21 @@
           "count": 2
         }
       ],
-      "avgUncommitted": 123,
+      "avgUncommitted": 122,
       "dimAvgs": {
         "token": 100,
         "config": 88,
         "robots": 53,
-        "api": 53,
+        "api": 54,
         "reports": 64,
         "format": 100,
         "diagnostics": 76,
-        "git": 62,
+        "git": 63,
         "security": 100,
         "em_testing": 79,
-        "em_types": 47,
-        "em_linting": 47,
-        "em_cicd": 47,
+        "em_types": 48,
+        "em_linting": 48,
+        "em_cicd": 48,
         "em_docs": 100,
         "em_deps": 76,
         "em_git": 68,
@@ -361,20 +361,20 @@
       },
       "delta": null,
       "firstTs": "2026-06-10T03:15:55.018Z",
-      "lastTs": "2026-06-12T14:01:02.823Z",
+      "lastTs": "2026-06-12T14:01:35.586Z",
       "week": "2026-06-07",
       "weekEnd": "2026-06-12"
     }
   ],
   "monthly": [
     {
-      "entries": 140,
+      "entries": 141,
       "avgScore": 74,
       "minScore": 55,
       "maxScore": 100,
       "topGrade": "C",
       "gradeDist": {
-        "A": 15,
+        "A": 16,
         "B": 22,
         "C": 101,
         "D": 2
@@ -414,7 +414,7 @@
       "branches": [
         {
           "name": "main",
-          "count": 72
+          "count": 73
         },
         {
           "name": "feat/yry-self-test",
@@ -429,21 +429,21 @@
           "count": 2
         }
       ],
-      "avgUncommitted": 123,
+      "avgUncommitted": 122,
       "dimAvgs": {
         "token": 100,
         "config": 88,
         "robots": 53,
-        "api": 53,
+        "api": 54,
         "reports": 64,
         "format": 100,
         "diagnostics": 76,
-        "git": 62,
+        "git": 63,
         "security": 100,
         "em_testing": 79,
-        "em_types": 47,
-        "em_linting": 47,
-        "em_cicd": 47,
+        "em_types": 48,
+        "em_linting": 48,
+        "em_cicd": 48,
         "em_docs": 100,
         "em_deps": 76,
         "em_git": 68,
@@ -451,7 +451,7 @@
       },
       "delta": null,
       "firstTs": "2026-06-10T03:15:55.018Z",
-      "lastTs": "2026-06-12T14:01:02.823Z",
+      "lastTs": "2026-06-12T14:01:35.586Z",
       "month": "2026-06"
     }
   ],
@@ -1435,6 +1435,13 @@
       "score": 97,
       "grade": "A",
       "triggered": 0
+    },
+    {
+      "date": "2026-06-12",
+      "time": "14:01",
+      "score": 97,
+      "grade": "A",
+      "triggered": 0
     }
   ],
   "diagSummary": [
@@ -1485,6 +1492,12 @@
       "count": 0,
       "label": "配置漂移",
       "rate": 0
+    },
+    {
+      "id": "D8",
+      "count": 0,
+      "label": "架构退化",
+      "rate": 0
     }
   ],
   "diagLabels": {
@@ -1495,25 +1508,26 @@
     "D4": "流程退化",
     "D5": "依赖退化",
     "D6": "文档过时",
-    "D7": "配置漂移"
+    "D7": "配置漂移",
+    "D8": "架构退化"
   },
   "dimSummary": [
     {
       "dim": "api",
       "label": "API",
-      "avgScore": 53,
+      "avgScore": 54,
       "recentAvg": 100,
-      "entries": 140,
+      "entries": 141,
       "min": 50,
       "max": 100,
-      "trend": 49
+      "trend": 48
     },
     {
       "dim": "comp_qual",
       "label": "组件质量",
       "avgScore": 88,
       "recentAvg": 88,
-      "entries": 33,
+      "entries": 34,
       "min": 88,
       "max": 88,
       "trend": 0
@@ -1523,7 +1537,7 @@
       "label": "配置",
       "avgScore": 88,
       "recentAvg": 100,
-      "entries": 140,
+      "entries": 141,
       "min": 20,
       "max": 100,
       "trend": 12
@@ -1532,28 +1546,28 @@
       "dim": "diagnostics",
       "label": "诊断",
       "avgScore": 76,
-      "recentAvg": 97,
-      "entries": 140,
+      "recentAvg": 100,
+      "entries": 141,
       "min": 70,
       "max": 100,
-      "trend": 22
+      "trend": 25
     },
     {
       "dim": "em_cicd",
       "label": "CI/CD",
-      "avgScore": 47,
+      "avgScore": 48,
       "recentAvg": 100,
-      "entries": 74,
+      "entries": 75,
       "min": 0,
       "max": 100,
-      "trend": 57
+      "trend": 56
     },
     {
       "dim": "em_deps",
       "label": "依赖",
       "avgScore": 76,
       "recentAvg": 100,
-      "entries": 74,
+      "entries": 75,
       "min": 70,
       "max": 100,
       "trend": 26
@@ -1563,7 +1577,7 @@
       "label": "文档",
       "avgScore": 100,
       "recentAvg": 100,
-      "entries": 74,
+      "entries": 75,
       "min": 100,
       "max": 100,
       "trend": 0
@@ -1573,47 +1587,47 @@
       "label": "Git实践",
       "avgScore": 68,
       "recentAvg": 100,
-      "entries": 74,
+      "entries": 75,
       "min": 60,
       "max": 100,
-      "trend": 35
+      "trend": 34
     },
     {
       "dim": "em_linting",
       "label": "检查",
-      "avgScore": 47,
+      "avgScore": 48,
       "recentAvg": 100,
-      "entries": 74,
+      "entries": 75,
       "min": 0,
       "max": 100,
-      "trend": 57
+      "trend": 56
     },
     {
       "dim": "em_testing",
       "label": "测试",
       "avgScore": 79,
       "recentAvg": 100,
-      "entries": 74,
+      "entries": 75,
       "min": 60,
       "max": 100,
-      "trend": 23
+      "trend": 22
     },
     {
       "dim": "em_types",
       "label": "类型",
-      "avgScore": 47,
+      "avgScore": 48,
       "recentAvg": 100,
-      "entries": 74,
+      "entries": 75,
       "min": 0,
       "max": 100,
-      "trend": 57
+      "trend": 56
     },
     {
       "dim": "format",
       "label": "格式",
       "avgScore": 100,
       "recentAvg": 100,
-      "entries": 140,
+      "entries": 141,
       "min": 100,
       "max": 100,
       "trend": 0
@@ -1621,9 +1635,9 @@
     {
       "dim": "git",
       "label": "Git",
-      "avgScore": 62,
+      "avgScore": 63,
       "recentAvg": 96,
-      "entries": 140,
+      "entries": 141,
       "min": 40,
       "max": 100,
       "trend": 35
@@ -1632,18 +1646,18 @@
       "dim": "reports",
       "label": "报告",
       "avgScore": 64,
-      "recentAvg": 92,
-      "entries": 140,
+      "recentAvg": 84,
+      "entries": 141,
       "min": 60,
       "max": 100,
-      "trend": 29
+      "trend": 21
     },
     {
       "dim": "robots",
       "label": "机器人",
       "avgScore": 53,
       "recentAvg": 100,
-      "entries": 140,
+      "entries": 141,
       "min": 0,
       "max": 100,
       "trend": 49
@@ -1653,7 +1667,7 @@
       "label": "安全",
       "avgScore": 100,
       "recentAvg": 100,
-      "entries": 140,
+      "entries": 141,
       "min": 100,
       "max": 100,
       "trend": 0
@@ -1663,7 +1677,7 @@
       "label": "Token",
       "avgScore": 100,
       "recentAvg": 100,
-      "entries": 140,
+      "entries": 141,
       "min": 100,
       "max": 100,
       "trend": 0
@@ -1672,9 +1686,9 @@
   "branchSummary": [
     {
       "name": "main",
-      "count": 72,
+      "count": 73,
       "avgScore": 80,
-      "avgUncommitted": 19
+      "avgUncommitted": 18
     },
     {
       "name": "feat/yry-self-test",
@@ -1703,7 +1717,7 @@
     },
     {
       "type": "improvement",
-      "msg": "API 改善 +49",
+      "msg": "API 改善 +48",
       "icon": "📈"
     },
     {
@@ -1713,12 +1727,12 @@
     },
     {
       "type": "improvement",
-      "msg": "诊断 改善 +22",
+      "msg": "诊断 改善 +25",
       "icon": "📈"
     },
     {
       "type": "improvement",
-      "msg": "CI/CD 改善 +57",
+      "msg": "CI/CD 改善 +56",
       "icon": "📈"
     },
     {
@@ -1728,22 +1742,22 @@
     },
     {
       "type": "improvement",
-      "msg": "Git实践 改善 +35",
+      "msg": "Git实践 改善 +34",
       "icon": "📈"
     },
     {
       "type": "improvement",
-      "msg": "检查 改善 +57",
+      "msg": "检查 改善 +56",
       "icon": "📈"
     },
     {
       "type": "improvement",
-      "msg": "测试 改善 +23",
+      "msg": "测试 改善 +22",
       "icon": "📈"
     },
     {
       "type": "improvement",
-      "msg": "类型 改善 +57",
+      "msg": "类型 改善 +56",
       "icon": "📈"
     },
     {
@@ -1753,7 +1767,7 @@
     },
     {
       "type": "improvement",
-      "msg": "报告 改善 +29",
+      "msg": "报告 改善 +21",
       "icon": "📈"
     },
     {
@@ -1781,5 +1795,69 @@
     },
     "overallAvg": 91,
     "totalComponents": 96
+  },
+  "archHealth": {
+    "latest": {
+      "timestamp": "2026-06-12T14:29:36.971Z",
+      "composite": 100,
+      "grade": "A",
+      "scores": {
+        "arch_kernel": 100,
+        "arch_paradigm": 100,
+        "arch_imports": 100,
+        "arch_srp": 100,
+        "dry": 100,
+        "yagni": 100,
+        "arch_extensions": 100,
+        "arch_isp": 100,
+        "arch_frontmatter": 100
+      },
+      "failedDims": [],
+      "totalChecks": 14,
+      "passedChecks": 14
+    },
+    "totalEntries": 1,
+    "dimTrends": {
+      "arch_kernel": {
+        "label": "内核体积",
+        "recentAvg": 100,
+        "trend": 100
+      },
+      "arch_srp": {
+        "label": "SRP 合规",
+        "recentAvg": 100,
+        "trend": 100
+      },
+      "arch_imports": {
+        "label": "导入规范",
+        "recentAvg": 100,
+        "trend": 100
+      },
+      "arch_extensions": {
+        "label": "扩展隔离",
+        "recentAvg": 100,
+        "trend": 100
+      },
+      "arch_isp": {
+        "label": "ISP 合规",
+        "recentAvg": 100,
+        "trend": 100
+      },
+      "arch_frontmatter": {
+        "label": "配置完整性",
+        "recentAvg": 100,
+        "trend": 100
+      },
+      "arch_paradigm": {
+        "label": "范式合规",
+        "recentAvg": 100,
+        "trend": 100
+      },
+      "arch_healthcheck": {
+        "label": "原则可验证",
+        "recentAvg": 0,
+        "trend": 0
+      }
+    }
   }
 }
