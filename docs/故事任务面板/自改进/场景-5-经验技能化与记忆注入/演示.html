@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>经验技能化与记忆注入 · 演示</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+<style>
+/* ═══ shared-b.css — Common styles for all Category B documents ═══ */
+/* Inlined by rui-html/lib/templates.mjs buildHeadBlock() during generation */
+/* Uses yry- prefixed CSS variables matching cdn/theme.css conventions */
+
+:root {
+  --yry-bg: rgba(22,22,32,1);
+  --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
+  --yry-bg-flat: rgba(34,34,46,1);
+  --yry-bg-raised: rgba(42,42,56,1);
+  --yry-accent: #FFC107;
+  --yry-cyan: #22d3ee;
+  --yry-pass: #22c55e;
+  --yry-fail: #ef4444;
+  --yry-warn: #f59e0b;
+  --yry-skip: #6b7280;
+  --yry-text: rgba(250,250,252,1);
+  --yry-text2: rgba(160,160,164,1);
+  --yry-text3: rgba(110,110,114,1);
+  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  --yry-shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
+  --yry-radius: 12px;
+  --yry-border: 1px solid rgba(255,255,255,0.06);
+}
+
+@keyframes yry-fadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes yry-fadeInDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--yry-bg);
+  color: var(--yry-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+.yry-container { max-width: 1120px; margin: 0 auto; padding: 48px 24px 80px; }
+
+.yry-header { text-align: center; margin-bottom: 24px; animation: yry-fadeInDown .5s ease both; }
+.yry-header h1 { font-size: 2.1rem; font-weight: 700; }
+.yry-header h1 .yry-accent { color: var(--yry-accent); }
+.yry-header .yry-sub { color: var(--yry-text2); font-size: .9rem; }
+
+.yry-stats { display: flex; gap: 14px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; animation: yry-fadeInDown .5s .1s ease both; }
+.yry-stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 18px 22px; text-align: center; box-shadow: var(--yry-shadow); min-width: 90px; }
+.yry-stat .yry-val { font-size: 1.8rem; font-weight: 700; line-height: 1.1; }
+.yry-stat .yry-val.t { color: var(--yry-text); }
+.yry-stat .yry-val.p { color: var(--yry-pass); }
+.yry-stat .yry-val.f { color: var(--yry-fail); }
+.yry-stat .yry-val.s { color: var(--yry-skip); }
+.yry-stat .yry-val.d { color: var(--yry-cyan); font-size: 1.25rem; }
+.yry-stat .yry-lbl { font-size: .72rem; color: var(--yry-text3); margin-top: 2px; text-transform: uppercase; letter-spacing: .5px; }
+
+.yry-bar-wrap { margin-bottom: 24px; }
+.yry-bar-outer { height: 8px; border-radius: 4px; overflow: hidden; display: flex; background: rgba(255,255,255,.04); }
+.yry-bar-outer .yry-seg { height: 100%; transition: width .5s ease; min-width: 2px; }
+.yry-bar-outer .yry-seg.p { background: var(--yry-pass); }
+.yry-bar-outer .yry-seg.f { background: var(--yry-fail); }
+.yry-bar-outer .yry-seg.s { background: var(--yry-skip); }
+
+.yry-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 1.25rem; font-size: 0.76rem; }
+.yry-breadcrumb a { color: #7aa2f7; text-decoration: none; }
+.yry-breadcrumb a:hover { color: #fbbf24; }
+.yry-breadcrumb .yry-bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
+.yry-breadcrumb .yry-bc-current { color: #94a3b8; font-weight: 500; }
+
+.yry-cross-nav { display: flex; gap: 4px; justify-content: center; align-items: center; margin-bottom: 24px; flex-wrap: wrap; animation: yry-fadeInDown .5s .15s ease both; }
+.yry-cross-nav .yry-cross-link { color: var(--yry-cyan); text-decoration: none; font-size: .74rem; padding: 3px 10px; border-radius: 4px; }
+.yry-cross-nav .yry-cross-link:hover { color: var(--yry-accent); background: rgba(255,193,7,.06); }
+.yry-cross-nav .yry-cross-link.on { color: var(--yry-accent); font-weight: 600; }
+.yry-cross-nav .yry-cross-sep { color: var(--yry-text3); font-size: .5rem; opacity: .35; user-select: none; }
+
+.yry-tabs { display: flex; gap: 0; border-bottom: var(--yry-border); margin-bottom: 0; }
+.yry-tab { padding: 10px 20px; cursor: pointer; font-size: .84rem; color: var(--yry-text3); border-bottom: 2px solid transparent; transition: all .15s; user-select: none; }
+.yry-tab:hover { color: var(--yry-text2); }
+.yry-tab.on { color: var(--yry-accent); border-bottom-color: var(--yry-accent); }
+
+.yry-panel { display: none; animation: yry-fadeInUp .4s ease both; padding-top: 28px; }
+.yry-panel.on { display: block; }
+
+.yry-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
+
+.yry-suite { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); overflow: hidden; margin-bottom: 20px; }
+.yry-suite summary { padding: 18px 24px; cursor: pointer; font-weight: 600; color: var(--yry-accent); user-select: none; }
+.yry-suite .yry-suite-body { padding: 0 24px 18px; }
+
+.yry-btn { padding: 8px 16px; border-radius: 6px; border: var(--yry-border); background: var(--yry-bg-raised); color: var(--yry-text2); cursor: pointer; font-size: .8rem; transition: all .15s; }
+.yry-btn:hover { background: var(--yry-accent); color: #000; border-color: var(--yry-accent); }
+
+.yry-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
+</style>
+
+<style>
+@keyframes stepIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+body{line-height:1.6}
+.yry-container{max-width:960px;padding:40px 24px 80px}
+.yry-header h1{font-size:1.8rem}
+.yry-header .yry-sub{margin-top:4px}
+.yry-stats{gap:12px;margin-bottom:20px}
+.yry-stat{padding:16px 20px;min-width:80px}
+.yry-stat .yry-val{font-size:1.6rem}.yry-stat .yry-val.health{color:var(--pass)}.yry-stat .yry-val.warn-h{color:var(--warn)}
+.yry-stat .yry-lbl{font-size:.68rem;letter-spacing:.5px}
+.yry.yry-tabs{margin-bottom:24px}
+.yry-tab{padding:8px 18px;font-size:.82rem}
+.yry-panel{padding-top:0}
+.yry-section.margin-bottom:24px}
+.yry-section.h2{font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.yry-section.h2 .yry-dot.width:8px;height:8px;border-radius:50%;background:var(-.yry-accent);flex-shrink:0}
+.walkthrough{counter-reset:step}
+.walkthrough .step{counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both}
+.walkthrough .step::before{content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(-.yry-accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.walkthrough .step .s-title{font-weight:600;font-size:.88rem}
+.walkthrough .step .s-desc{font-size:.76rem;color:var(--text2);margin:3px 0 6px}
+pre{background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer;margin:6px 0}
+.mermaid-wrap{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);overflow-x:auto;margin-bottom:16px}
+.cmd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+.cmd-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.cmd.yry-card .name{font-weight:700;font-size:.88rem;color:var(-.yry-accent);font-family:monospace}
+.cmd.yry-card .desc{font-size:.76rem;color:var(--text2);margin:4px 0 8px;line-height:1.5}
+.flow-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0}
+.flow-chip{background:var(--bg-flat);border:var(--border);border-radius:20px;padding:6px 14px;font-size:.78rem}
+.flow-chip .n{font-weight:700;color:var(-.yry-accent)}
+.flow-arrow{color:var(--text3);font-size:.8rem}
+</style>
+</head>
+<body>
+<div class="yry.yry-container">
+<nav class="yry-breadcrumb"><a href="../../../../docs/index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">自改进 · 故事任务</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 5 · 经验技能化与记忆注入</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">💡 演示</span></nav>
+<div class="yry-cross-nav"><a class="yry-cross-link" href="计划清单.html">📋 清单</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="架构图.html">📐 架构</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="知识图谱.html">🔗 图谱</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="源码.html">📄 源码</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="测试面板.html">🧪 测试</a><span class="yry-cross-sep">·</span><span class="yry-cross-link on">💡 演示</span><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="审查.html">📝 审查</a></div>
+
+<div class="yry.yry-header">
+  <h1>💡 <span class="yry.yry-accent">经验技能化与记忆注入</span> — 演示</h1>
+  <p class="yry.yry-sub">场景 5 · 版本 vv5.1.0 · 2026-06-10</p>
+</div>
+
+<div class="yry-stats">
+        <div class="yry-stat"><div class="yry-valc">2</div><div class="yry-lbl">流程图</div></div>
+        <div class="yry-stat"><div class="yry-vala">85</div><div class="yry-lbl">数据表</div></div>
+        <div class="yry-stat"><div class="yry-val">vv5.1.0</div><div class="yry-lbl">版本</div></div>
+      </div>
+
+<div class="yry.yry.yry-tabs">
+  <span class="yry.yry-tab on" data.yry-panel="walkthrough">🚶 演示</span>
+  <span class="yry.yry-tab" data.yry-panel="overview">📊 概览</span>
+  <span class="yry.yry-tab" data.yry-panel="commands">⚡ 命令</span>
+</div>
+
+<div class="yry.yry-panel on" id=.yry-panelWalkthrough">
+  <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
+</div>
+
+<div class="yry.yry-panel" id=.yry-panelOverview">
+  <p><b>角色</b>: 系统自改进循环 · <b>目标</b>: 当同类型提案连续触发达到升级阈值时，自动提示经验技能化（从一次性提案升级为项目规则或 skill）；同时管理跨会话记忆的压缩、检索注入和过期清理，确保关键历史决策在新会话中自动呈现 · <b>优先级</b>: P0</p><h3>主要价值</h3>
+<ul><li>🔄 <b>经验可固化</b> — 重复改进模式自动从提案升级为规约，防止同一问题反复出现</li>
+<li>🧠 <b>跨会话可记忆</b> — 关键决策压缩后自动注入后续上下文，不因会话切换丢失认知</li>
+<li>📉 <b>记忆可控膨胀</b> — 滚动窗口 + 归档策略，记忆文件保持在合理大小</li>
+<li>🎯 <b>注入可精准</b> — 相似检索基于模块路径和错误模式，非纯关键词匹配</li>
+</ul>
+<h3>图谱定位</h3><table><thead><tr><th>图层</th><th>本场景节点</th><th>上游</th><th>下游</th></tr></thead><tbody><tr><td>领域层</td><td>scene: skillification-and-memory</td><td>story: yry-self-improve (contains)</td><td>maps_to → domain: self-improve-loop</td></tr><tr><td>结构层</td><td>flow: upgrade-pipeline + flow: memory-pipeline</td><td>flows_from → flow: evaluate-pipeline</td><td>— (末端)</td></tr><tr><td>内容层</td><td>step: upgrade:detect · step: upgrade:promote · step: memory:compress · step: memory:inject · step: memory:expire</td><td>—</td><td>—</td></tr></tbody></table>
+  <div class=.yry-section.>
+    <h2><span class=.yry-dot.></span>执行流程</h2>
+    <div class="mermaid-wrap"><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart TD
+    subgraph 升级["经验技能化"]
+        PROP["proposals.jsonl"]:::src --&gt; DETECT{"同类型提案&lt;br/&gt;连续触发?"}
+        DETECT --&gt;|"process/quality/refactor&lt;br/&gt;连续 ≥ UPGRADE_STORIES_PROCESS 故事"| UP1["升级至 rules/ 或 agents/"]:::up
+        DETECT --&gt;|"skill 类型&lt;br/&gt;连续 ≥ UPGRADE_STORIES_SKILL 故事"| UP2["创建 skills/ 或 rules/ 新条目"]:::up
+        DETECT --&gt;|"未达阈值"| TRACK["继续跟踪"]:::wait
+        UP1 &amp; UP2 --&gt; CHECK_DUP{"目标已含类似规则?"}
+        CHECK_DUP --&gt;|"是"| UPDATE["更新现有规则&lt;br/&gt;标注来源提案 ID"]:::up
+        CHECK_DUP --&gt;|"否"| WRITE["写入新规则&lt;br/&gt;标注来源提案 ID"]:::up
+    end
+
+    subgraph 记忆["记忆压缩与注入"]
+        MEM["原始记忆"]:::src --&gt; AGE{"记忆年龄"}
+        AGE --&gt;|"≤ RETENTION_PROPOSAL_EFFECTS 故事"| FULL_M["完整保留"]:::good
+        AGE --&gt;|"3-6 故事"| COMPRESS["压缩为摘要"]:::warn
+        AGE --&gt;|"6-12 故事"| STAT["降级为统计"]:::fade
+        AGE --&gt;|"&gt; RETENTION_BLOCK_EVENTS 故事"| ARCHIVE["归档"]:::fade
+    end
+
+    subgraph 注入["上下文注入触发"]
+        TRIGGER["触发条件&lt;br/&gt;同类型阻断 · 相似模块变更&lt;br/&gt;新提案 · 自改进阶段"]:::trigger --&gt; SEARCH["相似检索&lt;br/&gt;模块路径 + 错误模式"]
+        SEARCH --&gt; PRIORITY["优先级排序&lt;br/&gt;相关性 → 时效性 → 严重性"]
+        PRIORITY --&gt; BUDGET{"上下文预算?"}
+        BUDGET --&gt;|"在预算内"| INJECT["全量注入"]:::good
+        BUDGET --&gt;|"超出预算"| TRIM["裁剪低优先级项&lt;br/&gt;保留摘要行"]:::warn
+    end
+
+    classDef src fill:#1e1f2b,stroke:#3d59a1,color:#a9b1d6
+    classDef up fill:#06b6d4,color:#000
+    classDef good fill:#34d399,color:#000
+    classDef warn fill:#fbbf24,color:#000
+    classDef fade fill:#9CA3AF,color:#000
+    classDef wait fill:#f59e0b,color:#000
+    classDef trigger fill:#3B82F6,color:#fff</pre>
+<pre class="mermaid">sequenceDiagram
+    actor EVAL as 评估引擎
+    participant UPGRADE as 升级检测器
+    participant PROP as proposals.jsonl
+    participant TARGET as 目标规约文件
+    participant MEM as 记忆管理器
+    participant SESSION as 新会话
+
+    EVAL-&gt;&gt;UPGRADE: 传入闭合提案列表
+    UPGRADE-&gt;&gt;PROP: 统计同类型提案连续触发次数
+    PROP--&gt;&gt;UPGRADE: process 类型 × N · quality 类型 × M ...
+
+    alt 达到升级阈值
+        UPGRADE-&gt;&gt;TARGET: 检查目标文件是否已有类似规则
+        TARGET--&gt;&gt;UPGRADE: 相似度检测结果
+        UPGRADE-&gt;&gt;TARGET: 更新现有或写入新规则（标注来源提案 ID）
+    else 未达阈值
+        UPGRADE-&gt;&gt;UPGRADE: 记录跟踪计数，下次评估再检
+    end
+
+    Note over MEM,SESSION: 跨会话记忆流
+
+    SESSION-&gt;&gt;MEM: 会话启动，请求恢复状态
+    MEM-&gt;&gt;MEM: 加载压缩记忆 + rui-state
+    MEM--&gt;&gt;SESSION: 恢复的状态摘要
+
+    SESSION-&gt;&gt;MEM: 执行操作（编辑文件 / 遇到阻断 / 起草提案）
+    MEM-&gt;&gt;MEM: 相似检索历史模式
+    MEM--&gt;&gt;SESSION: 注入匹配的上下文片段
+
+    SESSION-&gt;&gt;MEM: 新记忆写入
+    MEM-&gt;&gt;MEM: 检查过期策略
+    MEM-&gt;&gt;MEM: 超窗口记忆降级或归档</pre></div>
+  </div>
+</div>
+
+<div class="yry.yry-panel" id=.yry-panelCommands">
+  <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
+</div>
+
+<div class="yry.yry-footer">YrY vv5.1.0 · 2026-06-10 · <a href="../../../../docs/index.html">文档中心</a></div>
+</div>
+<script src="../../../../cdn/shared.js"></script>
+<script>
+document.querySelectorAll('.yry-tab').forEach(function(t) {
+  t.addEventListener('click', function() {
+    YrY.switchPanel(this.dataset.yry-panel, '.yry-tab', '.yry-panel');
+  });
+});
+document.querySelectorAll('pre').forEach(p => { p.addEventListener('click', function() {
+  var text = this.textContent || '';
+  navigator.clipboard.writeText(text.replace(/📋$/,'').trim()).then(() => {});
+})});
+</script>
+</body>
+</html>

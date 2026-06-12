@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>架构漂移持续监测 · 审查</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+<style>
+/* ═══ shared-b.css — Common styles for all Category B documents ═══ */
+/* Inlined by rui-html/lib/templates.mjs buildHeadBlock() during generation */
+/* Uses yry- prefixed CSS variables matching cdn/theme.css conventions */
+
+:root {
+  --yry-bg: rgba(22,22,32,1);
+  --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
+  --yry-bg-flat: rgba(34,34,46,1);
+  --yry-bg-raised: rgba(42,42,56,1);
+  --yry-accent: #FFC107;
+  --yry-cyan: #22d3ee;
+  --yry-pass: #22c55e;
+  --yry-fail: #ef4444;
+  --yry-warn: #f59e0b;
+  --yry-skip: #6b7280;
+  --yry-text: rgba(250,250,252,1);
+  --yry-text2: rgba(160,160,164,1);
+  --yry-text3: rgba(110,110,114,1);
+  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  --yry-shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
+  --yry-radius: 12px;
+  --yry-border: 1px solid rgba(255,255,255,0.06);
+}
+
+@keyframes yry-fadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes yry-fadeInDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--yry-bg);
+  color: var(--yry-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+.yry-container { max-width: 1120px; margin: 0 auto; padding: 48px 24px 80px; }
+
+.yry-header { text-align: center; margin-bottom: 24px; animation: yry-fadeInDown .5s ease both; }
+.yry-header h1 { font-size: 2.1rem; font-weight: 700; }
+.yry-header h1 .yry-accent { color: var(--yry-accent); }
+.yry-header .yry-sub { color: var(--yry-text2); font-size: .9rem; }
+
+.yry-stats { display: flex; gap: 14px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; animation: yry-fadeInDown .5s .1s ease both; }
+.yry-stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 18px 22px; text-align: center; box-shadow: var(--yry-shadow); min-width: 90px; }
+.yry-stat .yry-val { font-size: 1.8rem; font-weight: 700; line-height: 1.1; }
+.yry-stat .yry-val.t { color: var(--yry-text); }
+.yry-stat .yry-val.p { color: var(--yry-pass); }
+.yry-stat .yry-val.f { color: var(--yry-fail); }
+.yry-stat .yry-val.s { color: var(--yry-skip); }
+.yry-stat .yry-val.d { color: var(--yry-cyan); font-size: 1.25rem; }
+.yry-stat .yry-lbl { font-size: .72rem; color: var(--yry-text3); margin-top: 2px; text-transform: uppercase; letter-spacing: .5px; }
+
+.yry-bar-wrap { margin-bottom: 24px; }
+.yry-bar-outer { height: 8px; border-radius: 4px; overflow: hidden; display: flex; background: rgba(255,255,255,.04); }
+.yry-bar-outer .yry-seg { height: 100%; transition: width .5s ease; min-width: 2px; }
+.yry-bar-outer .yry-seg.p { background: var(--yry-pass); }
+.yry-bar-outer .yry-seg.f { background: var(--yry-fail); }
+.yry-bar-outer .yry-seg.s { background: var(--yry-skip); }
+
+.yry-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 1.25rem; font-size: 0.76rem; }
+.yry-breadcrumb a { color: #7aa2f7; text-decoration: none; }
+.yry-breadcrumb a:hover { color: #fbbf24; }
+.yry-breadcrumb .yry-bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
+.yry-breadcrumb .yry-bc-current { color: #94a3b8; font-weight: 500; }
+
+.yry-cross-nav { display: flex; gap: 4px; justify-content: center; align-items: center; margin-bottom: 24px; flex-wrap: wrap; animation: yry-fadeInDown .5s .15s ease both; }
+.yry-cross-nav .yry-cross-link { color: var(--yry-cyan); text-decoration: none; font-size: .74rem; padding: 3px 10px; border-radius: 4px; }
+.yry-cross-nav .yry-cross-link:hover { color: var(--yry-accent); background: rgba(255,193,7,.06); }
+.yry-cross-nav .yry-cross-link.on { color: var(--yry-accent); font-weight: 600; }
+.yry-cross-nav .yry-cross-sep { color: var(--yry-text3); font-size: .5rem; opacity: .35; user-select: none; }
+
+.yry-tabs { display: flex; gap: 0; border-bottom: var(--yry-border); margin-bottom: 0; }
+.yry-tab { padding: 10px 20px; cursor: pointer; font-size: .84rem; color: var(--yry-text3); border-bottom: 2px solid transparent; transition: all .15s; user-select: none; }
+.yry-tab:hover { color: var(--yry-text2); }
+.yry-tab.on { color: var(--yry-accent); border-bottom-color: var(--yry-accent); }
+
+.yry-panel { display: none; animation: yry-fadeInUp .4s ease both; padding-top: 28px; }
+.yry-panel.on { display: block; }
+
+.yry-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
+
+.yry-suite { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); overflow: hidden; margin-bottom: 20px; }
+.yry-suite summary { padding: 18px 24px; cursor: pointer; font-weight: 600; color: var(--yry-accent); user-select: none; }
+.yry-suite .yry-suite-body { padding: 0 24px 18px; }
+
+.yry-btn { padding: 8px 16px; border-radius: 6px; border: var(--yry-border); background: var(--yry-bg-raised); color: var(--yry-text2); cursor: pointer; font-size: .8rem; transition: all .15s; }
+.yry-btn:hover { background: var(--yry-accent); color: #000; border-color: var(--yry-accent); }
+
+.yry-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
+</style>
+
+<style>
+.yry-container{max-width:1120px;margin:0 auto;padding:48px 24px 80px}
+.yry-header{text-align:center;margin-bottom:24px;animation:fadeInDown .5s ease both}
+.yry-header h1{font-size:1.8rem;font-weight:700}
+.yry-header h1 .yry-accent{color:var(-.yry-accent)}
+.yry-header .yry-sub{color:var(--text2);font-size:.9rem;margin-top:4px}
+.yry-stats{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+.yry-stat{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px}
+.yry-stat .yry-val{font-size:1.6rem;font-weight:700;line-height:1.1}
+.yry-stat .yry-val.health{color:var(--pass)}.yry-stat .yry-val.warn-h{color:var(--warn)}
+.yry-stat .yry-lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
+.yry-bar-wrap{margin-bottom:24px}
+.yry-bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
+.yry-bar-outer .yry-seg.height:100%;transition:width .5s ease;min-width:3px}
+.yry-bar-outer .yry-seg.strength{background:var(--pass)}.yry-bar-outer .yry-seg.gap{background:var(--fail)}.yry-bar-outer .yry-seg.suggestion{background:var(--warn)}
+.yry.yry-tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:0}
+.yry-tab{padding:10px 20px;cursor:pointer;font-size:.84rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none}
+.yry-tab:hover{color:var(--text2)}.yry-tab.on{color:var(-.yry-accent);border-bottom-color:var(-.yry-accent)}
+.yry-panel{display:none;animation:fadeInUp .4s ease both;padding-top:28px}
+.yry-panel.on{display:block}
+.dim-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:10px;box-shadow:var(--shadow)}
+.dim.yry-card h3{font-size:.9rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.dim.yry-card .dim-score{font-size:1.4rem;font-weight:700;margin-left:auto}
+.dim.yry-card .dim-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.04);overflow:hidden;margin-bottom:8px}
+.dim.yry-card .dim-bar-inner{height:100%;border-radius:3px}
+.dim.yry-card ul{list-style:none;color:var(--text2);font-size:.78rem;margin-top:6px}
+.dim.yry-card ul li{margin-bottom:4px;padding-left:16px;position:relative}
+.dim.yry-card ul li::before{content:'•';position:absolute;left:2px;color:var(--text3)}
+.case-card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem;margin-bottom:12px}
+.case-card.good{border-left:3px solid var(--pass)}
+.case-card.bad{border-left:3px solid var(--fail)}
+.case.yry-card h4{font-size:.85rem;font-weight:600;margin-bottom:.5rem;display:flex;align-items:center;gap:6px}
+.case-tag{font-size:.65rem;font-weight:600;padding:2px 8px;border-radius:3px}
+.case-tag.good{background:rgba(34,197,94,.1);color:var(--pass)}
+.case-tag.bad{background:rgba(239,68,68,.1);color:var(--fail)}
+.case.yry-card .case-loc{font-size:.7rem;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:6px}
+.case.yry-card .case-desc{color:var(--text2);font-size:.78rem;line-height:1.6;margin-bottom:6px}
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px}
+.rec-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.rec-card.p1{border-left:3px solid var(--fail)}.rec-card.p2{border-left:3px solid var(--warn)}.rec-card.p3{border-left:3px solid var(--info)}
+.rec-pri{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:3px;display:inline-block;margin-bottom:6px}
+.rec-pri.p1{background:rgba(239,68,68,.12);color:var(--fail)}
+.rec-pri.p2{background:rgba(245,158,11,.12);color:var(--warn)}
+.rec-pri.p3{background:rgba(107,114,128,.12);color:var(--info)}
+.rec.yry-card h4{font-size:.82rem;font-weight:600;margin-bottom:4px}
+.rec.yry-card p{color:var(--text2);font-size:.74rem;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="yry.yry-container">
+<nav class="yry-breadcrumb"><a href="../../../../docs/index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">架构 · 故事任务</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 7 · 架构漂移持续监测</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">📝 审查</span></nav>
+<div class="yry-cross-nav"><a class="yry-cross-link" href="计划清单.html">📋 清单</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="架构图.html">📐 架构</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="知识图谱.html">🔗 图谱</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="源码.html">📄 源码</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="测试面板.html">🧪 测试</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="演示.html">💡 演示</a><span class="yry-cross-sep">·</span><span class="yry-cross-link on">📝 审查</span></div>
+
+<div class="yry.yry-header">
+  <h1>📝 <span class="yry.yry-accent">架构漂移持续监测</span> — 审查报告</h1>
+  <p class="yry.yry-sub">审查日期 2026-06-12 · 版本 vv1.0.0 · 场景 7</p>
+</div>
+
+<div class="yry-stats">
+        <div class="yry-stat"><div class="yry-valhealth">4/8</div><div class="yry-lbl">诊断通过</div></div>
+        <div class="yry-stat"><div class="yry-val">D0-D7</div><div class="yry-lbl">覆盖范围</div></div>
+        <div class="yry-stat"><div class="yry-valwarn-h">4</div><div class="yry-lbl">改进建议</div></div>
+      </div>
+<div class="yry-bar-wrap"><div class="yry-bar-outer"><div class="yry-seg strength" style="width:50%"></div><div class="yry-seg gap" style="width:50%"></div></div></div>
+
+<div class="yry.yry.yry-tabs">
+  <span class="yry.yry-tab on" data.yry-panel="overview">📊 总览</span>
+  <span class="yry.yry-tab" data.yry-panel="good">✅ 好案例</span>
+  <span class="yry.yry-tab" data.yry-panel="bad">❌ 坏案例</span>
+  <span class="yry.yry-tab" data.yry-panel="recommendations">📝 改进建议</span>
+  <span class="yry.yry-tab" data.yry-panel="evidence">📎 证据链</span>
+</div>
+
+<div class="yry.yry-panel on" id=.yry-panelOverview">
+  <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
+</div>
+
+<div class="yry.yry-panel" id=.yry-panelGood">
+  <div class="case.yry-card good">
+    <h4>✅ <span class="case-tag good">好案例</span> 文档基线完整</h4>
+    <div class="case-loc">📁 docs/故事任务面板/架构/场景-7-架构漂移持续监测/index.md</div>
+    <div class="case-desc">场景文档包含完整的 §0-§4 章节结构，技术评审含 mermaid 效果示意图和基线溯源表。</div>
+  </div>
+</div>
+
+<div class="yry.yry-panel" id=.yry-panelBad">
+  <div class="case.yry-card bad">
+    <h4>❌ <span class="case-tag bad">待审查</span> 需运行 /rui code 生成实施数据</h4>
+    <div class="case-loc">📁 docs/故事任务面板/架构/场景-7-架构漂移持续监测/index.md §2-§4</div>
+    <div class="case-desc">§2 实施报告、§3 测试报告、§4 自改进章节数据待填充。运行 /rui code 后重新审查。</div>
+  </div>
+</div>
+
+<div class="yry.yry-panel" id=.yry-panelRecommendations">
+  <div class="rec-grid">
+    <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
+  </div>
+</div>
+
+<div class="yry.yry-panel" id=.yry-panelEvidence">
+  <div class="dim-card">
+    <h3>📎 审查证据清单</h3>
+    <ul>
+      <li><strong>场景文档:</strong> index.md 存在，含 §0-§4 章节</li>
+      <li><strong>版本:</strong> vv1.0.0 · 2026-06-12</li>
+      <li><strong>故事:</strong> 架构 · 故事任务</li>
+    </ul>
+  </div>
+</div>
+
+<div class="yry.yry-footer">YrY vv1.0.0 · 2026-06-12 · <a href="../../../../docs/index.html">文档中心</a></div>
+</div>
+<script src="../../../../cdn/shared.js"></script>
+<script>
+document.querySelectorAll('.yry-tab').forEach(function(t) {
+  t.addEventListener('click', function() {
+    YrY.switchPanel(this.dataset.yry-panel, '.yry-tab', '.yry-panel');
+  });
+});
+</script>
+</body>
+</html>
