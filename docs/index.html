@@ -22,7 +22,7 @@
     </div>
 
     <div class="stats">
-      <a class="stat" href="#layer-deps"><div class="num green">10</div><div class="label">依赖/框架</div></a>
+      <a class="stat" href="#layer-deps"><div class="num green">12</div><div class="label">依赖/框架</div></a>
       <a class="stat" href="#layer-skills"><div class="num">19</div><div class="label">技能</div></a>
       <a class="stat" href="#layer-story"><div class="num">5</div><div class="label">故事</div></a>
       <a class="stat" href="#layer-scene"><div class="num green">29</div><div class="label">场景</div></a>
@@ -32,8 +32,6 @@
     </div>
 
     <div class="cross-nav">
-      <a class="cross-link" href="#layer-deps">📦 依赖/框架</a>
-      <span class="cross-sep">·</span>
       <a class="cross-link" href="../tests/index.html">🧪 自检中心</a>
       <span class="cross-sep">·</span>
       <a class="cross-link" href="./故事任务面板/架构/演示/index.html">🎬 演示中心</a>
@@ -54,15 +52,15 @@
     <!-- ── Panel hub ──────────────────────────── -->
     <div class="panel-hub" id="panelHub">
       <span class="panel-hub-label" id="liveHealthLabel" style="cursor:pointer" onclick="PanelHub.open('selfimprove')" title="点击打开自改进面板查看详情">🩺 —</span>
-      <button class="panel-hub-btn" onclick="window.openPanel('notify')" title="通知中心 — 健康检查报告、自循环巡检、趋势扫描三类通知统一汇总。健康报告按日期展示最新一份，支持按类型筛选、最新评分趋势、诊断触发追踪。">
-        <span class="panel-hub-icon" style="color:#ef4444">🔔</span>
-        <span class="panel-hub-name">通知</span>
-        <span class="panel-hub-desc">健康·循环·趋势</span>
-      </button>
       <button class="panel-hub-btn" onclick="window.openPanel('cron')" title="调度任务 — 展示 .claude/scheduled_tasks.json 中所有定时任务。包含 cron 表达式、人类可读描述、活跃/空闲状态、下次触发预估。">
         <span class="panel-hub-icon" style="color:var(--color-accent-2)">⏰</span>
         <span class="panel-hub-name">调度</span>
         <span class="panel-hub-desc">定时·触发·编排</span>
+      </button>
+      <button class="panel-hub-btn" onclick="window.openPanel('notify')" title="通知中心 — 健康检查报告、自循环巡检、趋势扫描三类通知统一汇总。健康报告按日期展示最新一份，支持按类型筛选、最新评分趋势、诊断触发追踪。">
+        <span class="panel-hub-icon" style="color:#ef4444">🔔</span>
+        <span class="panel-hub-name">通知</span>
+        <span class="panel-hub-desc">健康·循环·趋势</span>
       </button>
       <button class="panel-hub-btn" onclick="window.openPanel('selfimprove')" title="自改进分析 — 读取 .memory/health-trend.jsonl 和 summary.json，按日/周/月/全景四个视角展示健康趋势、D0-D7 诊断覆盖率、等级分布、分支健康对比；健康数据按日期覆盖，每天保留一个快照。">
         <span class="panel-hub-icon" style="color:#a78bfa">🧬</span>
@@ -81,7 +79,7 @@
       <div class="layer-header">
         <span class="layer-num">1</span>
         <h2>第三方依赖与框架</h2>
-        <span class="layer-stats">6 运行时 · 4 开发</span>
+        <span class="layer-stats">6 运行时 · 6 开发</span>
         <span class="layer-panels" title="依赖与框架详情">
           <span class="lp-dot" style="background:#22d3ee" title="查看依赖详情" onclick="event.stopPropagation();layerInfo.show('deps')">📦</span>
         </span>
@@ -169,7 +167,7 @@
         </div>
       </div>
 
-      <div class="sub-title"><span class="accent">&#128736;</span> 开发依赖 (4)</div>
+      <div class="sub-title"><span class="accent">&#128736;</span> 开发依赖 (6)</div>
       <div class="card-grid">
         <div class="item-card">
           <span class="icon ref">N</span>
@@ -220,6 +218,32 @@
               <span class="tag-chip cyan">v1.2.0</span>
             </div>
             <div class="meta"><span class="detail">CDN 加载链路自动化验证 · 71 断言全通过 · 零手工 DevTools</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon ref">C</span>
+          <div class="body">
+            <div class="name"><a href="https://code.claude.com/docs/en/overview" target="_blank">Claude Code</a></div>
+            <div class="desc">Agentic 编程工具 — 在终端/IDE 中读取仓库上下文、编辑文件、执行命令与测试；支撑 YrY 的实现/验证闭环</div>
+            <div class="tags-row">
+              <span class="tag-chip green">开发工具</span>
+              <span class="tag-chip info">AI Agent</span>
+              <span class="tag-chip purple">CLI/IDE</span>
+            </div>
+            <div class="meta"><span class="detail">多文件改动 · 命令执行 · 计划/审查工作流 · 与 .claude/ 协同</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon ref">T</span>
+          <div class="body">
+            <div class="name"><a href="https://www.trae.ai/" target="_blank">TRAE</a></div>
+            <div class="desc">AI IDE — 代码理解 + 生成/编辑 + 终端/预览联动，面向端到端开发流程的 Agent 协作环境</div>
+            <div class="tags-row">
+              <span class="tag-chip green">开发工具</span>
+              <span class="tag-chip info">IDE</span>
+              <span class="tag-chip accent">Agent</span>
+            </div>
+            <div class="meta"><span class="detail">IDE 内协作式开发 · 任务拆解与执行 · 预览验证 · 可扩展工具接入</span></div>
           </div>
         </div>
       </div>
