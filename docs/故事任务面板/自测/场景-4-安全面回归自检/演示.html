@@ -1,408 +1,258 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>场景 4 · 安全面回归自检 — 演示</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>安全面回归自检 · 演示</title>
 <link rel="stylesheet" href="../../../../cdn/shared.css">
 <link rel="stylesheet" href="../../../../cdn/theme.css">
-  <style>
-    :root { --bg:rgba(22,22,32,1); --bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%); --bg-flat:rgba(34,34,46,1); --bg-raised:rgba(42,42,56,1); --accent:#FFC107; --cyan:#22d3ee; --pass:#22c55e; --fail:#ef4444; --text:rgba(250,250,252,1); --text2:rgba(160,160,164,1); --text3:rgba(110,110,114,1); --shadow:0 4px 20px rgba(0,0,0,0.3); --shadow-lg:0 12px 32px rgba(0,0,0,0.45); --warn:#f59e0b; --info:#6b7280; --radius:12px; --border:1px solid rgba(255,255,255,0.06); }
-    @keyframes fadeInUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes fadeInDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)} 50%{box-shadow:0 0 0 8px rgba(255,193,7,0)} }
-    @keyframes stepIn { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
-    @keyframes glowPulse { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.3)} }
-    @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
-    @keyframes countUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-    * { box-sizing:border-box;margin:0;padding:0 }
-    body { background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6 }
-    .container { max-width:960px;margin:0 auto;padding:40px 24px 80px }
-    .tabs { display:flex;gap:0;border-bottom:var(--border);margin-bottom:28px;animation:fadeInDown .5s .1s ease both;flex-wrap:wrap }
-    .tab { padding:8px 14px;cursor:pointer;font-size:.82rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none }
-    .tab:hover { color:var(--text2) } .tab.on { color:var(--accent);border-bottom-color:var(--accent) }
-    .panel { display:none;animation:fadeInUp .4s ease both }
-    .panel.on { display:block }
-    .section { margin-bottom:32px }
-    .section h2 { font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px }
-    .section h2 .dot { width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0 }
-    .cmd-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px }
-    .cmd-card { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s }
-    .cmd-card:hover { transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.35) }
-    .cmd-card .name { font-weight:700;font-size:.88rem;color:var(--accent);font-family:monospace }
-    .cmd-card .desc { font-size:.76rem;color:var(--text2);margin:4px 0 8px;line-height:1.5 }
-    .cmd-card .stage { font-size:.64rem;color:var(--text3);margin-bottom:4px }
-    pre { background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer }
-    pre .cb { position:absolute;top:6px;right:6px;background:var(--bg-flat);border:var(--border);border-radius:4px;color:var(--text3);font-size:.62rem;padding:2px 7px;cursor:pointer;opacity:0;transition:opacity .15s;font-family:inherit }
-    pre:hover .cb { opacity:1 } pre .cb.done { color:var(--pass) }
-    .flow-row { display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0 }
-    .flow-chip { background:var(--bg-flat);border:var(--border);border-radius:20px;padding:6px 14px;font-size:.78rem;transition:all .15s }
-    .flow-chip:hover { border-color:rgba(255,193,7,.3) }
-    .flow-chip .n { font-weight:700;color:var(--accent) }
-    .flow-arrow { color:var(--text3);font-size:.8rem }
-    .file-list { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px }
-    .file-item { background:var(--bg-flat);border:var(--border);border-radius:6px;padding:8px 12px;font-size:.74rem;font-family:monospace;color:var(--text2) }
-    .links-row { display:flex;gap:8px;flex-wrap:wrap;margin-top:16px }
-    .links-row a { font-size:.76rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:6px;padding:6px 12px;transition:all .15s }
-    .links-row a:hover { border-color:var(--accent);color:var(--accent);text-decoration:underline }
-    .toast { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:0 12px 32px rgba(0,0,0,.45);opacity:0;transition:opacity .2s;pointer-events:none }
-    .toast.show { opacity:1 }
-    .walkthrough { counter-reset:step }
-    .walkthrough .step { counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both }
-    .walkthrough .step::before { content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0 }
-    .walkthrough .step .s-body { flex:1 } .walkthrough .step .s-title { font-weight:600;font-size:.88rem } .walkthrough .step .s-desc { font-size:.76rem;color:var(--text2);margin:3px 0 6px }
-    .walkthrough .step .s-result { font-size:.74rem;color:var(--pass);margin-top:6px }
-    .walkthrough .step .s-result .r-label { font-weight:600 }
-    .walkthrough .step .s-result-desc { font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.5;padding:6px 10px;background:rgba(34,211,238,.04);border-left:2px solid var(--cyan);border-radius:0 4px 4px 0 }
-    .kbd-hint { font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.03);border-radius:3px;padding:1px 5px;margin-left:4px }
-    @media (max-width:640px) { .container { padding:20px 12px 60px } h1 { font-size:1.4rem } .cmd-grid { grid-template-columns:1fr } }
-  a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+<style>
+/* ═══ shared-b.css — Common styles for all Category B documents ═══ */
+/* Inlined by rui-html/lib/templates.mjs buildHeadBlock() during generation */
+/* Uses yry- prefixed CSS variables matching cdn/theme.css conventions */
 
-  .header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
-  .header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
-  .header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
+:root {
+  --yry-bg: rgba(22,22,32,1);
+  --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
+  --yry-bg-flat: rgba(34,34,46,1);
+  --yry-bg-raised: rgba(42,42,56,1);
+  --yry-accent: #FFC107;
+  --yry-cyan: #22d3ee;
+  --yry-pass: #22c55e;
+  --yry-fail: #ef4444;
+  --yry-warn: #f59e0b;
+  --yry-skip: #6b7280;
+  --yry-text: rgba(250,250,252,1);
+  --yry-text2: rgba(160,160,164,1);
+  --yry-text3: rgba(110,110,114,1);
+  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  --yry-shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
+  --yry-radius: 12px;
+  --yry-border: 1px solid rgba(255,255,255,0.06);
+}
 
-  .breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
-  .breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
-  .breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
-  .breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
-  .breadcrumb .bc-current{color:#94a3b8;font-weight:500}
-  .cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
-  .cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}
-  .cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
-  .cross-link.on{color:var(--accent);font-weight:600}
-  .cross-sep{color:var(--text3);font-size:0.5rem;opacity:0.35;user-select:none}
+@keyframes yry-fadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes yry-fadeInDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 
-  .stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
-  .stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}
-  .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
-  .stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
-  .stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}.stat-card .val.accent{color:var(--accent)}
-  .stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  .live-bar{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;font-size:.72rem;color:var(--text3);animation:fadeInDown .5s .14s ease both}
-  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--pass);animation:glowPulse 2s infinite;flex-shrink:0}
-  .live-resource{display:flex;align-items:center;gap:4px;background:var(--bg-flat);border:var(--border);border-radius:12px;padding:3px 10px;font-family:monospace;font-size:.68rem}
-  .live-resource .lr-name{color:var(--text2)}.live-resource .lr-status{color:var(--pass);font-weight:700}.live-resource .lr-size{color:var(--text3)}
+body {
+  background: var(--yry-bg);
+  color: var(--yry-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
 
-  .play-bar{display:flex;gap:12px;align-items:center;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
-  .btn-play{background:var(--accent);color:#000;border:none;border-radius:24px;padding:10px 28px;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;display:flex;align-items:center;gap:8px}
-  .btn-play:hover{filter:brightness(1.1);transform:translateY(-1px)}.btn-play:active{transform:scale(.97)}
-  .btn-play.running{animation:pulse 1.5s infinite;pointer-events:none;opacity:.7}
-  .btn-reset{background:var(--bg-flat);color:var(--text2);border:var(--border);border-radius:24px;padding:10px 20px;font-size:.82rem;cursor:pointer;transition:all .15s;font-family:inherit}
-  .btn-reset:hover{color:var(--text);border-color:rgba(255,255,255,.15)}
-  .speed-select{display:flex;gap:4px;align-items:center;font-size:.7rem;color:var(--text3)}
-  .speed-select button{background:var(--bg-flat);border:var(--border);color:var(--text3);padding:3px 8px;border-radius:4px;cursor:pointer;font-family:inherit;font-size:.66rem;transition:all .15s}
-  .speed-select button.on{color:var(--accent);border-color:rgba(255,193,7,.3);background:rgba(255,193,7,.06)}
+.yry-container { max-width: 1120px; margin: 0 auto; padding: 48px 24px 80px; }
 
-  .stage-list{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
-  .stage-row{display:flex;align-items:center;gap:12px;background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);transition:all .35s;position:relative;overflow:hidden}
-  .stage-row.done{border-color:rgba(34,197,94,.15)}.stage-row.active{border-color:rgba(255,193,7,.25);animation:pulse 2s infinite}
-  .stage-row.failed{border-color:rgba(239,68,68,.2)}
-  .stage-row .st-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;flex-shrink:0;background:rgba(255,255,255,.04);color:var(--text3);transition:all .35s}
-  .stage-row.done .st-num{background:rgba(34,197,94,.12);color:var(--pass)}
-  .stage-row.active .st-num{background:rgba(255,193,7,.12);color:var(--accent)}
-  .stage-row.failed .st-num{background:rgba(239,68,68,.12);color:var(--fail)}
-  .stage-row .st-info{flex:1;min-width:0}.stage-row .st-name{font-weight:600;font-size:.84rem}
-  .stage-row .st-detail{font-size:.7rem;color:var(--text3);margin-top:2px;font-family:monospace}
-  .stage-row .st-status{font-size:.72rem;flex-shrink:0;padding:3px 10px;border-radius:12px;white-space:nowrap}
-  .stage-row .st-status.waiting{color:var(--text3);background:rgba(110,110,114,.1)}
-  .stage-row .st-status.loading{color:var(--accent);background:rgba(255,193,7,.1)}
-  .stage-row .st-status.ok{color:var(--pass);background:rgba(34,197,94,.1)}
-  .stage-row .st-status.err{color:var(--fail);background:rgba(239,68,68,.1)}
-  .stage-row .st-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--accent);transition:width .2s linear;border-radius:0 1px 1px 0}
+.yry-header { text-align: center; margin-bottom: 24px; animation: yry-fadeInDown .5s ease both; }
+.yry-header h1 { font-size: 2.1rem; font-weight: 700; }
+.yry-header h1 .yry-accent { color: var(--yry-accent); }
+.yry-header .yry-sub { color: var(--yry-text2); font-size: .9rem; }
 
-  .log-box{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);font-family:'SF Mono',monospace;font-size:.7rem;max-height:260px;overflow-y:auto;line-height:1.7}
-  .log-box .log-line{padding:1px 0;display:flex;gap:8px}.log-box .log-time{color:var(--text3);flex-shrink:0}.log-box .log-icon{width:14px;text-align:center;flex-shrink:0}
+.yry-stats { display: flex; gap: 14px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; animation: yry-fadeInDown .5s .1s ease both; }
+.yry-stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 18px 22px; text-align: center; box-shadow: var(--yry-shadow); min-width: 90px; }
+.yry-stat .yry-val { font-size: 1.8rem; font-weight: 700; line-height: 1.1; }
+.yry-stat .yry-val.t { color: var(--yry-text); }
+.yry-stat .yry-val.p { color: var(--yry-pass); }
+.yry-stat .yry-val.f { color: var(--yry-fail); }
+.yry-stat .yry-val.s { color: var(--yry-skip); }
+.yry-stat .yry-val.d { color: var(--yry-cyan); font-size: 1.25rem; }
+.yry-stat .yry-lbl { font-size: .72rem; color: var(--yry-text3); margin-top: 2px; text-transform: uppercase; letter-spacing: .5px; }
 
-  .tip-box{background:rgba(255,193,7,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:10px 0;font-size:.78rem;color:var(--text2);line-height:1.5}
-  .tip-box strong{color:var(--accent)}
-  .inline-code{background:rgba(0,0,0,.3);color:var(--cyan);padding:1px 6px;border-radius:3px;font-size:.8rem;font-family:'SF Mono',monospace}
-  </style>
+.yry-bar-wrap { margin-bottom: 24px; }
+.yry-bar-outer { height: 8px; border-radius: 4px; overflow: hidden; display: flex; background: rgba(255,255,255,.04); }
+.yry-bar-outer .yry-seg { height: 100%; transition: width .5s ease; min-width: 2px; }
+.yry-bar-outer .yry-seg.p { background: var(--yry-pass); }
+.yry-bar-outer .yry-seg.f { background: var(--yry-fail); }
+.yry-bar-outer .yry-seg.s { background: var(--yry-skip); }
+
+.yry-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 1.25rem; font-size: 0.76rem; }
+.yry-breadcrumb a { color: #7aa2f7; text-decoration: none; }
+.yry-breadcrumb a:hover { color: #fbbf24; }
+.yry-breadcrumb .yry-bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
+.yry-breadcrumb .yry-bc-current { color: #94a3b8; font-weight: 500; }
+
+.yry-cross-nav { display: flex; gap: 4px; justify-content: center; align-items: center; margin-bottom: 24px; flex-wrap: wrap; animation: yry-fadeInDown .5s .15s ease both; }
+.yry-cross-nav .yry-cross-link { color: var(--yry-cyan); text-decoration: none; font-size: .74rem; padding: 3px 10px; border-radius: 4px; }
+.yry-cross-nav .yry-cross-link:hover { color: var(--yry-accent); background: rgba(255,193,7,.06); }
+.yry-cross-nav .yry-cross-link.on { color: var(--yry-accent); font-weight: 600; }
+.yry-cross-nav .yry-cross-sep { color: var(--yry-text3); font-size: .5rem; opacity: .35; user-select: none; }
+
+.yry-tabs { display: flex; gap: 0; border-bottom: var(--yry-border); margin-bottom: 0; }
+.yry-tab { padding: 10px 20px; cursor: pointer; font-size: .84rem; color: var(--yry-text3); border-bottom: 2px solid transparent; transition: all .15s; user-select: none; }
+.yry-tab:hover { color: var(--yry-text2); }
+.yry-tab.on { color: var(--yry-accent); border-bottom-color: var(--yry-accent); }
+
+.yry-panel { display: none; animation: yry-fadeInUp .4s ease both; padding-top: 28px; }
+.yry-panel.on { display: block; }
+
+.yry-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
+
+.yry-suite { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); overflow: hidden; margin-bottom: 20px; }
+.yry-suite summary { padding: 18px 24px; cursor: pointer; font-weight: 600; color: var(--yry-accent); user-select: none; }
+.yry-suite .yry-suite-body { padding: 0 24px 18px; }
+
+.yry-btn { padding: 8px 16px; border-radius: 6px; border: var(--yry-border); background: var(--yry-bg-raised); color: var(--yry-text2); cursor: pointer; font-size: .8rem; transition: all .15s; }
+.yry-btn:hover { background: var(--yry-accent); color: #000; border-color: var(--yry-accent); }
+
+.yry-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
+</style>
+
+<style>
+@keyframes stepIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+body{line-height:1.6}
+.yry-container{max-width:960px;padding:40px 24px 80px}
+.yry-header h1{font-size:1.8rem}
+.yry-header .yry-sub{margin-top:4px}
+.yry-stats{gap:12px;margin-bottom:20px}
+.yry-stat{padding:16px 20px;min-width:80px}
+.yry-stat .yry-val{font-size:1.6rem}.yry-stat .yry-val.health{color:var(--pass)}.yry-stat .yry-val.warn-h{color:var(--warn)}
+.yry-stat .yry-lbl{font-size:.68rem;letter-spacing:.5px}
+.yry.yry-tabs{margin-bottom:24px}
+.yry-tab{padding:8px 18px;font-size:.82rem}
+.yry-panel{padding-top:0}
+.yry-section.margin-bottom:24px}
+.yry-section.h2{font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.yry-section.h2 .yry-dot.width:8px;height:8px;border-radius:50%;background:var(-.yry-accent);flex-shrink:0}
+.walkthrough{counter-reset:step}
+.walkthrough .step{counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both}
+.walkthrough .step::before{content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(-.yry-accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.walkthrough .step .s-title{font-weight:600;font-size:.88rem}
+.walkthrough .step .s-desc{font-size:.76rem;color:var(--text2);margin:3px 0 6px}
+pre{background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer;margin:6px 0}
+.mermaid-wrap{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);overflow-x:auto;margin-bottom:16px}
+.cmd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+.cmd-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.cmd.yry-card .name{font-weight:700;font-size:.88rem;color:var(-.yry-accent);font-family:monospace}
+.cmd.yry-card .desc{font-size:.76rem;color:var(--text2);margin:4px 0 8px;line-height:1.5}
+.flow-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0}
+.flow-chip{background:var(--bg-flat);border:var(--border);border-radius:20px;padding:6px 14px;font-size:.78rem}
+.flow-chip .n{font-weight:700;color:var(-.yry-accent)}
+.flow-arrow{color:var(--text3);font-size:.8rem}
+</style>
 </head>
 <body>
-<div class="container">
+<div class="yry.yry-container">
+<nav class="yry-breadcrumb"><a href="../../../../docs/index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">自测 · 故事任务</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 4 · 安全面回归自检</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">💡 演示</span></nav>
+<div class="yry-cross-nav"><a class="yry-cross-link" href="计划清单.html">📋 清单</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="架构图.html">📐 架构</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="知识图谱.html">🔗 图谱</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="源码.html">📄 源码</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="测试面板.html">🧪 测试</a><span class="yry-cross-sep">·</span><span class="yry-cross-link on">💡 演示</span><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="审查.html">📝 审查</a></div>
 
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自主测试方案</span><span class="bc-sep">/</span><span class="bc-current">场景 4 · 安全面回归自检</span><span class="bc-sep">/</span><span class="bc-current">💡 演示</span></nav>
-
-<nav class="cross-nav">
-<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
-<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
-<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
-<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
-<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
-<span class="cross-link on">💡 演示</span><span class="cross-sep">·</span>
-<a class="cross-link" href="审查.html">📝 审计</a>
-</nav>
-
-<div class="header">
-  <h1>🔒 场景-4<span class="accent"> · 安全面回归自检</span></h1>
-  <p class="sub">密钥泄漏扫描 · XSS 注入点检测 · 认证绕过检查 · 输入校验覆盖 · 分支隔离验证 — <span class="kbd-hint">1-6</span> 数字键切换 Tab</p>
+<div class="yry.yry-header">
+  <h1>💡 <span class="yry.yry-accent">安全面回归自检</span> — 演示</h1>
+  <p class="yry.yry-sub">场景 4 · 版本 vv1.0.0 · 2026-06-05</p>
 </div>
 
-<div class="live-bar" id="liveBar">
-  <span class="live-dot"></span> 本页 CDN 加载状态：
-  <span class="live-resource"><span class="lr-name">shared.css</span><span class="lr-status" id="lrCss">检测中</span><span class="lr-size">6.0KB</span></span>
-  <span class="live-resource"><span class="lr-name">theme.css</span><span class="lr-status" id="lrTheme">检测中</span><span class="lr-size">12.1KB</span></span>
-  <span class="live-resource"><span class="lr-name">shared.js</span><span class="lr-status" id="lrJs">检测中</span><span class="lr-size">5.3KB</span></span>
-  <span class="kbd-hint">1-6</span> 数字键切换 Tab
+<div class="yry-stats">
+        <div class="yry-stat"><div class="yry-valc">2</div><div class="yry-lbl">流程图</div></div>
+        <div class="yry-stat"><div class="yry-vala">78</div><div class="yry-lbl">数据表</div></div>
+        <div class="yry-stat"><div class="yry-val">vv1.0.0</div><div class="yry-lbl">版本</div></div>
+      </div>
+
+<div class="yry.yry.yry-tabs">
+  <span class="yry.yry-tab on" data.yry-panel="walkthrough">🚶 演示</span>
+  <span class="yry.yry-tab" data.yry-panel="overview">📊 概览</span>
+  <span class="yry.yry-tab" data.yry-panel="commands">⚡ 命令</span>
 </div>
 
-<div class="stats-grid">
-  <div class="stat-card"><div class="val health">5</div><div class="lbl">📋 检查项</div></div>
-  <div class="stat-card"><div class="val health" id="statPassed">5</div><div class="lbl">✅ 安全</div></div>
-  <div class="stat-card"><div class="val" style="color:var(--text3)" id="statPending">0</div><div class="lbl">⏳ 待扫描</div></div>
-  <div class="stat-card"><div class="val accent" id="statTiming">—</div><div class="lbl">⏱ 加载耗时</div></div>
+<div class="yry.yry-panel on" id=.yry-panelWalkthrough">
+  <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
 </div>
 
-<div class="tabs">
-  <span class="tab on" data-panel="walkthrough">🚶 演示</span>
-  <span class="tab" data-panel="simulator">🧪 模拟自检</span>
-  <span class="tab" data-panel="overview">📊 概览</span>
-  <span class="tab" data-panel="commands">⚡ 命令</span>
-  <span class="tab" data-panel="files">📁 文件</span>
-  <span class="tab" data-panel="tests">🧪 测试</span>
-</div>
+<div class="yry.yry-panel" id=.yry-panelOverview">
+  <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
+  <div class=.yry-section.>
+    <h2><span class=.yry-dot.></span>执行流程</h2>
+    <div class="mermaid-wrap"><pre class="mermaid">%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart TD
+    TRIGGER["触发安全面回归自检"]:::src --&gt; S1["第一面：密钥扫描&lt;br/&gt;源码和配置中是否存在硬编码凭据?"]
 
-<div class="panel on" id="panelWalkthrough">
-  <div class="walkthrough">
-    <div class="step"><div class="s-body"><div class="s-title">密钥泄漏扫描</div><div class="s-desc">扫描所有源码和配置文件中的 API_KEY/TOKEN/SECRET 模式，确保无硬编码凭据。API_X_TOKEN 仅通过环境变量传入。</div><pre>grep -rn "API_KEY\|TOKEN\|SECRET\|api_key\|sk-\|Bearer" --include="*.mjs" --include="*.json" --include="*.html" . | grep -v node_modules | grep -v process.env<span class="cb" onclick="YrY.copyCmd(this,'grep -rn "API_KEY\\|TOKEN\\|SECRET\\|api_key\\|sk-\\|Bearer" --include="*.mjs" --include="*.json" --include="*.html" . | grep -v node_modules | grep -v process.env')">📋</span></pre><div class="s-result-desc">💡 说明: 密钥不落盘是不可妥协底线 #2。grep 扫描常见密钥模式 → 排除 process.env 引用（合法）→ 排除文档中的示意代码 → 任何剩余匹配 = P0。</div><div class="s-result"><span class="r-label">✅ 结果:</span> process.env.API_X_TOKEN 合法引用: 4 处 / 硬编码: 0 处 ✅ / plugin.json 无 token ✅ → 密钥不落盘 100% 合规。</div></div></div>
-    <div class="step"><div class="s-body"><div class="s-title">XSS 注入点检测</div><div class="s-desc">检测所有危险 DOM 操作：innerHTML / document.write / eval / Function()。任何未转义的 HTML 内容插入为 P0。</div><pre>grep -rn "innerHTML\|document\.write\|eval(\|Function(" --include="*.mjs" --include="*.html" . | grep -v node_modules<span class="cb" onclick="YrY.copyCmd(this,'grep -rn "innerHTML\\|document\\.write\\|eval(\\|Function(" --include="*.mjs" --include="*.html" . | grep -v node_modules')">📋</span></pre><div class="s-result-desc">💡 说明: XSS 注入点检测是输入必校验的具体落地。innerHTML 直接插入未转义 HTML = XSS 入口、document.write 页面加载后写入 = 注入点、eval/Function() = 任意代码执行。合法使用需配合 escapeHtml().</div><div class="s-result"><span class="r-label">✅ 结果:</span> innerHTML: 6 处（均使用 YrY.escapeHtml() 转义 ✅）/ document.write: 0 ✅ / eval/Function(): 0 ✅ → XSS 风险: 0。</div></div></div>
-    <div class="step"><div class="s-body"><div class="s-title">认证绕过检查</div><div class="s-desc">验证所有涉及 API 调用的路径都有认证保护。检查是否有跳过认证的条件分支或未授权路径访问。</div><pre>grep -rn "auth\|认证\|bypass\|skip.*auth\|fetch\|axios" --include="*.mjs" . | grep -v node_modules<span class="cb" onclick="YrY.copyCmd(this,'grep -rn "auth\\|认证\\|bypass\\|skip.*auth\\|fetch\\|axios" --include="*.mjs" . | grep -v node_modules')">📋</span></pre><div class="s-result-desc">💡 说明: 认证不可绕过是不可妥协底线 #1。检查: (1) 所有 fetch/axios/http 调用是否附带 API_X_TOKEN header，(2) 是否有 if(DEBUG) skipAuth() 条件分支，(3) 是否有未授权路径直接访问敏感端点。</div><div class="s-result"><span class="r-label">✅ 结果:</span> API 调用点: 4 处（全部附带 API_X_TOKEN header ✅）/ 0 bypass 条件 / 0 debug 跳过 / 0 未授权直接访问 → 认证覆盖 100%。</div></div></div>
-    <div class="step"><div class="s-body"><div class="s-title">输入校验覆盖</div><div class="s-desc">验证所有外部输入入口（CLI 参数/API 响应/文件读取）都有对应的校验逻辑。边界 case 处理完整。</div><pre>grep -rn "validate\|sanitize\|escape\|process\.argv\|process\.env" --include="*.mjs" . | grep -v node_modules<span class="cb" onclick="YrY.copyCmd(this,'grep -rn "validate\\|sanitize\\|escape\\|process\\.argv\\|process\\.env" --include="*.mjs" . | grep -v node_modules')">📋</span></pre><div class="s-result-desc">💡 说明: 输入必校验是不可妥协底线 #3。检查: (1) process.argv 入口是否有 validate/sanitize，(2) 文件读取是否有路径遍历防护，(3) API 响应是否有 try-catch，(4) 边界 case: 空字符串/超长输入/特殊字符。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 外部入口: 8 处（均含校验 ✅）/ 校验覆盖: 8/8 有防护 / 12/12 边界 case 通过。</div></div></div>
-    <div class="step"><div class="s-body"><div class="s-title">分支隔离验证</div><div class="s-desc">验证 feat/ 分支保护机制有效。检查跨分支状态共享、主分支保护、缓存隔离。</div><pre>node skills/rui/branch-check.mjs --story=yry-self-test --mode=write<span class="cb" onclick="YrY.copyCmd(this,'node skills/rui/branch-check.mjs --story=yry-self-test --mode=write')">📋</span></pre><div class="s-result-desc">💡 说明: 分支隔离不可绕过是不可妥协底线 #7。检查: 当前分支是否为 feat/&lt;name&gt;、main 是否受保护、.memory/ .claude/ 缓存是否跨分支共享、pre-commit hook 是否有 branch-check。</div><div class="s-result"><span class="r-label">✅ 结果:</span> branch-check.mjs — feat/enhance-s2-s5-simulators ✅ / main 保护 ✓ / 缓存隔离 ✓ / pre-commit hook 已配置 ✓ → 全合规。</div></div></div>
+    S1 --&gt; S1_OK{"密钥洁净?"}
+    S1_OK --&gt;|"❌ 发现硬编码密钥"| B1["阻断：密钥落盘&lt;br/&gt;列出文件·行号·密钥模式"]:::block
+    S1_OK --&gt;|"✅"| S2["第二面：认证检查&lt;br/&gt;认证路径是否存在可绕过通道?"]
+
+    S2 --&gt; S2_OK{"认证完整?"}
+    S2_OK --&gt;|"❌ 认证绕过"| B2["阻断：认证可绕过&lt;br/&gt;列出绕过路径·缺失的检查点"]:::block
+    S2_OK --&gt;|"✅"| S3["第三面：输入校验&lt;br/&gt;外部输入点是否有对应的校验逻辑?"]
+
+    S3 --&gt; S3_OK{"校验覆盖?"}
+    S3_OK --&gt;|"❌ 输入点未校验"| W3["警告：输入校验缺口&lt;br/&gt;列出未校验的输入点和类型"]:::warn
+    S3_OK --&gt;|"✅"| S4["第四面：配置安全&lt;br/&gt;敏感配置是否通过环境变量传入?"]
+
+    S4 --&gt; S4_OK{"配置安全?"}
+    S4_OK --&gt;|"❌ 敏感值硬编码"| W4["警告：配置暴露&lt;br/&gt;列出硬编码的敏感配置项"]:::warn
+    S4_OK --&gt;|"✅"| S5["第五面：依赖安全&lt;br/&gt;外部依赖是否包含已知漏洞?"]
+
+    S5 --&gt; S5_OK{"依赖干净?"}
+    S5_OK --&gt;|"❌ 已知漏洞"| W5["警告：依赖风险&lt;br/&gt;列出漏洞编号和影响版本"]:::warn
+    S5_OK --&gt;|"✅"| S6["第六面：安全约束退化&lt;br/&gt;项目安全底线是否在最新变更中被削弱?"]
+
+    S6 --&gt; S6_OK{"约束完整?"}
+    S6_OK --&gt;|"❌ 约束退化"| B6["阻断：安全约束退化&lt;br/&gt;列出被削弱的约束和变更来源"]:::block
+    S6_OK --&gt;|"✅"| PASS["✅ 安全面自检通过&lt;br/&gt;项目安全底线完整"]:::pass
+
+    B1 --&gt; BLOCK["汇总阻断清单&lt;br/&gt;含精确位置和修复指引"]:::block
+    B2 --&gt; BLOCK
+    B6 --&gt; BLOCK
+    W3 --&gt; WARN["汇总警告清单"]:::warn
+    W4 --&gt; WARN
+    W5 --&gt; WARN</pre>
+<pre class="mermaid">sequenceDiagram
+    actor U as 维护者
+    participant SC as 自检引擎
+    participant SRC as 源码树
+    participant CFG as 配置文件
+    participant DEP as 依赖清单
+    participant RPT as 结果报告
+
+    U-&gt;&gt;SC: 触发安全面回归自检
+    SC-&gt;&gt;SRC: 扫描全部源码文件
+    SRC--&gt;&gt;SC: 文件内容
+    SC-&gt;&gt;SC: 匹配密钥模式（令牌、密码、私钥）
+    SC-&gt;&gt;SRC: 扫描认证相关代码
+    SRC--&gt;&gt;SC: 认证逻辑
+    SC-&gt;&gt;SC: 检查认证路径是否完整
+    SC-&gt;&gt;SRC: 扫描外部输入点
+    SRC--&gt;&gt;SC: 输入点清单
+    SC-&gt;&gt;SC: 逐点验证校验逻辑存在性
+    SC-&gt;&gt;CFG: 读取全部配置文件
+    CFG--&gt;&gt;SC: 配置内容
+    SC-&gt;&gt;SC: 检查敏感值是否通过环境变量
+    SC-&gt;&gt;DEP: 读取依赖声明
+    DEP--&gt;&gt;SC: 依赖树
+    SC-&gt;&gt;SC: 对比已知漏洞数据库
+    SC-&gt;&gt;SRC: 读取安全底线声明文档
+    SRC--&gt;&gt;SC: 安全约束定义
+    SC-&gt;&gt;SC: 对比当前代码与约束是否一致
+    SC-&gt;&gt;RPT: 汇总六面结果
+    RPT--&gt;&gt;U: 输出安全自检报告</pre></div>
   </div>
 </div>
 
-<div class="panel" id="panelSimulator">
-
-<div class="section">
-  <h2><span class="dot"></span>安全面回归模拟器</h2>
-  <p style="font-size:.76rem;color:var(--text3);margin-bottom:14px">模拟 <span class="inline-code">security-scan.mjs</span> 的 5 项安全面回归自检。点击「开始自检」观察密钥扫描 → XSS 检测 → 认证检查 → 输入校验 → 分支隔离的全过程。</p>
-
-  <div class="play-bar">
-    <button class="btn-play" id="btnPlay" onclick="startCheck()">▶ 开始自检</button>
-    <button class="btn-reset" onclick="resetCheck()">↺ 重置</button>
-    <span class="speed-select">
-      速度
-      <button class="on" data-speed="1" onclick="setSpeed(1, this)">1×</button>
-      <button data-speed="2" onclick="setSpeed(2, this)">2×</button>
-      <button data-speed="4" onclick="setSpeed(4, this)">4×</button>
-    </span>
-  </div>
-
-  <div class="stage-list" id="stageList">
-    <div class="stage-row" id="st0"><div class="st-num">①</div><div class="st-info"><div class="st-name">密钥泄漏扫描</div><div class="st-detail">grep API_KEY/TOKEN/SECRET → 扫描 .mjs .json .html → 排除 process.env</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
-    <div class="stage-row" id="st1"><div class="st-num">②</div><div class="st-info"><div class="st-name">XSS 注入点检测</div><div class="st-detail">grep innerHTML/document.write/eval/Function() → 危险 DOM 操作</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
-    <div class="stage-row" id="st2"><div class="st-num">③</div><div class="st-info"><div class="st-name">认证绕过检查</div><div class="st-detail">grep auth/bypass/fetch → 所有 API 调用验证认证 header</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
-    <div class="stage-row" id="st3"><div class="st-num">④</div><div class="st-info"><div class="st-name">输入校验覆盖</div><div class="st-detail">validate/sanitize/escape 覆盖率 → 8 外部输入入口</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
-    <div class="stage-row" id="st4"><div class="st-num">⑤</div><div class="st-info"><div class="st-name">分支隔离验证</div><div class="st-detail">branch-check.mjs → feat/ 分支保护 → 缓存隔离</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
-  </div>
-
-  <div class="section" id="logSection" style="display:none">
-    <h2><span class="dot"></span>实时日志</h2>
-    <div class="log-box" id="logBox"><div class="log-line" style="color:var(--text3)">等待模拟开始...</div></div>
-  </div>
+<div class="yry.yry-panel" id=.yry-panelCommands">
+  <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
 </div>
 
-<div class="section">
-  <h2><span class="dot"></span>安全面回归流程</h2>
-  <div class="flow-row">
-    <div class="flow-chip"><span class="n">密钥扫描</span> 硬编码检测</div><span class="flow-arrow">→</span>
-    <div class="flow-chip"><span class="n">XSS 检测</span> 注入点扫描</div><span class="flow-arrow">→</span>
-    <div class="flow-chip"><span class="n">认证检查</span> 绕过防护</div><span class="flow-arrow">→</span>
-    <div class="flow-chip"><span class="n">输入校验</span> 覆盖率</div><span class="flow-arrow">→</span>
-    <div class="flow-chip"><span class="n">分支隔离</span> feat/ 保护</div>
-  </div>
-  <div class="tip-box" style="margin-top:16px"><strong>🔒 安全底线：</strong>以上五项均为 P0 不可妥协。任何一项失败 = <span class="inline-code">exit 1</span> 阻断 commit。实际脚本: <span class="inline-code">node scripts/security-scan.mjs --all --output=json</span>。</div>
+<div class="yry.yry-footer">YrY vv1.0.0 · 2026-06-05 · <a href="../../../../docs/index.html">文档中心</a></div>
 </div>
-
-</div>
-
-<div class="panel" id="panelOverview">
-  <div class="section"><h2><span class="dot"></span>安全五不妥协</h2>
-    <div class="flow-row">
-      <div class="flow-chip"><span class="n">密钥不落盘</span></div><span class="flow-arrow">→</span>
-      <div class="flow-chip"><span class="n">XSS 防护</span></div><span class="flow-arrow">→</span>
-      <div class="flow-chip"><span class="n">认证不可绕过</span></div><span class="flow-arrow">→</span>
-      <div class="flow-chip"><span class="n">输入必校验</span></div><span class="flow-arrow">→</span>
-      <div class="flow-chip"><span class="n">分支隔离</span></div>
-    </div>
-  </div>
-  <div class="section"><h2><span class="dot"></span>安全审查链</h2>
-    <div class="flow-row">
-      <div class="flow-chip"><span class="n">security Agent</span> 威胁建模</div><span class="flow-arrow">→</span>
-      <div class="flow-chip"><span class="n">coder</span> 注入安全任务</div><span class="flow-arrow">→</span>
-      <div class="flow-chip"><span class="n">tester</span> 安全测试</div><span class="flow-arrow">→</span>
-      <div class="flow-chip"><span class="n">P0</span> 阻断</div>
-    </div>
-  </div>
-</div>
-
-<div class="panel" id="panelCommands">
-  <div class="cmd-grid">
-    <div class="cmd-card"><div class="stage">密钥扫描</div><div class="name">grep API_KEY/TOKEN</div><div class="desc">扫描硬编码凭据。排除 process.env 合法引用。任何发现 = P0。</div><pre>grep -rn "API_KEY\|TOKEN\|SECRET\|sk-\|Bearer" --include="*.mjs" --include="*.json" . | grep -v node_modules | grep -v process.env<span class="cb" onclick="YrY.copyCmd(this,'grep -rn "API_KEY\\|TOKEN\\|SECRET\\|sk-\\|Bearer" --include="*.mjs" --include="*.json" . | grep -v node_modules | grep -v process.env')">📋</span></pre></div>
-    <div class="cmd-card"><div class="stage">XSS 检测</div><div class="name">grep innerHTML/eval</div><div class="desc">检测危险 DOM 操作。innerHTML 无转义 = P0。</div><pre>grep -rn "innerHTML\|document\.write\|eval(\|Function(" --include="*.mjs" --include="*.html" . | grep -v node_modules<span class="cb" onclick="YrY.copyCmd(this,'grep -rn "innerHTML\\|document\\.write\\|eval(\\|Function(" --include="*.mjs" --include="*.html" . | grep -v node_modules')">📋</span></pre></div>
-    <div class="cmd-card"><div class="stage">认证检查</div><div class="name">grep auth/bypass</div><div class="desc">验证所有 API 调用有认证头。绕过 = P0。</div><pre>grep -rn "auth\|bypass\|skip.*auth" --include="*.mjs" . | grep -v node_modules<span class="cb" onclick="YrY.copyCmd(this,'grep -rn "auth\\|bypass\\|skip.*auth" --include="*.mjs" . | grep -v node_modules')">📋</span></pre></div>
-    <div class="cmd-card"><div class="stage">输入校验</div><div class="name">grep validate/sanitize</div><div class="desc">检查输入校验函数的覆盖范围。无校验入口 = P0。</div><pre>grep -rn "validate\|sanitize\|escape" --include="*.mjs" . | grep -v node_modules<span class="cb" onclick="YrY.copyCmd(this,'grep -rn "validate\\|sanitize\\|escape" --include="*.mjs" . | grep -v node_modules')">📋</span></pre></div>
-    <div class="cmd-card"><div class="stage">分支隔离</div><div class="name">branch-check.mjs</div><div class="desc">验证 feat/ 分支保护、主分支保护、缓存隔离。</div><pre>node skills/rui/branch-check.mjs --mode=write<span class="cb" onclick="YrY.copyCmd(this,'node skills/rui/branch-check.mjs --mode=write')">📋</span></pre></div>
-    <div class="cmd-card"><div class="stage">安全测试套件</div><div class="name">node test --security</div><div class="desc">运行安全专项测试套件，生成五维度安全报告。</div><pre>node tests/skills/rui.test.mjs --security-only<span class="cb" onclick="YrY.copyCmd(this,'node tests/skills/rui.test.mjs --security-only')">📋</span></pre></div>
-  </div>
-</div>
-
-<div class="panel" id="panelFiles">
-  <div class="section"><h2><span class="dot"></span>相关文件</h2>
-    <div class="file-list">
-      <div class="file-item">📐 security-guardrails.md</div><div class="file-item">📐 security.md Agent</div>
-      <div class="file-item">📐 code-pipeline.md</div><div class="file-item">⚡ branch-check.mjs</div><div class="file-item">⚡ audit.mjs</div><div class="file-item">🧪 rui.test.mjs</div>
-    </div>
-  </div>
-  <div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="测试面板.html">🧪 测试面板</a></div>
-</div>
-
-<div class="panel" id="panelTests">
-  <div class="section"><h2><span class="dot"></span>测试覆盖</h2>
-    <div class="cmd-grid">
-      <div class="cmd-card"><div class="name">0 密钥泄露</div><div class="desc">验证源码和配置文件中 0 硬编码凭据。仅 process.env。</div></div>
-      <div class="cmd-card"><div class="name">0 XSS 注入点</div><div class="desc">验证 innerHTML/document.write/eval 均有 escapeHtml 防护。</div></div>
-      <div class="cmd-card"><div class="name">0 认证绕过</div><div class="desc">验证所有 API 调用有认证保护，0 跳过分支。</div></div>
-      <div class="cmd-card"><div class="name">100% 输入校验</div><div class="desc">验证所有外部输入入口有 validate/sanitize 覆盖。</div></div>
-      <div class="cmd-card"><div class="name">分支隔离有效</div><div class="desc">验证 feat/ 分支保护、缓存隔离、main 保护。</div></div>
-    </div>
-  </div>
-  <div class="links-row"><a href="测试面板.html">🧪 打开测试面板</a><a href="../../../index.html">📄 返回文档中心</a></div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-</div>
-
-<script>
-(function() {
-  var SCENE_KEY = 'yry-self-test-s4-demo';
-  document.querySelector('.tabs').addEventListener('click', function(e) {
-    var tab = e.target.closest('.tab'); if (!tab) return; switchPanel(tab.dataset.panel);
-  });
-  window.switchPanel = function(name) {
-    YrY.switchPanel(name, '.tab', '.panel');
-    try { localStorage.setItem(SCENE_KEY + '-tab', name); } catch(e) {}
-  };
-  document.addEventListener('keydown', function(e) {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-    var m = {'1':'walkthrough','2':'simulator','3':'overview','4':'commands','5':'files','6':'tests'};
-    if (m[e.key]) { e.preventDefault(); switchPanel(m[e.key]); }
-  });
-  try { var saved = localStorage.getItem(SCENE_KEY + '-tab'); if (saved) switchPanel(saved); } catch(e) {}
-})();
-
-(function detectCDN() {
-  var resources = performance.getEntriesByType('resource');
-  var cdnEntries = resources.filter(function(r) { return r.name.indexOf('/cdn/') !== -1; });
-  var found = { css: false, theme: false, js: false }; var totalDuration = 0;
-  cdnEntries.forEach(function(r) {
-    var name = r.name.split('/').pop().split('?')[0];
-    if (name === 'shared.css') found.css = r; if (name === 'theme.css') found.theme = r; if (name === 'shared.js') found.js = r;
-    totalDuration += r.duration;
-  });
-  function updateBadge(elId, entry) {
-    var el = document.getElementById(elId);
-    if (entry) { el.textContent = '✓ ' + Math.round(entry.duration) + 'ms'; el.style.color = 'var(--pass)'; }
-    else { el.textContent = '已缓存'; el.style.color = 'var(--text3)'; }
-  }
-  updateBadge('lrCss', found.css); updateBadge('lrTheme', found.theme); updateBadge('lrJs', found.js);
-  var timingEl = document.getElementById('statTiming');
-  if (cdnEntries.length >= 3) { timingEl.textContent = Math.round(totalDuration) + 'ms'; timingEl.style.color = totalDuration < 100 ? 'var(--pass)' : 'var(--accent)'; }
-  else if (cdnEntries.length > 0) { timingEl.textContent = Math.round(totalDuration) + 'ms'; timingEl.style.color = 'var(--cyan)'; }
-  else { timingEl.textContent = '已缓存'; timingEl.style.color = 'var(--text3)'; }
-})();
-
-var checkRunning = false; var checkSpeed = 1;
-var checkDefs = [
-  { id:'st0', name:'密钥泄漏扫描', status:'0 硬编码 / 4 合法 env 引用 ✅', ok:true },
-  { id:'st1', name:'XSS 注入点检测', status:'6 innerHTML(均已转义) / 0 风险 ✅', ok:true },
-  { id:'st2', name:'认证绕过检查', status:'4 API 调用均有认证 / 0 绕过 ✅', ok:true },
-  { id:'st3', name:'输入校验覆盖', status:'8/8 入口有防护 / 12/12 边界 case ✅', ok:true },
-  { id:'st4', name:'分支隔离验证', status:'feat/ 保护 ✓ / main 保护 ✓ / 缓存隔离 ✓ ✅', ok:true }
-];
-
-function setSpeed(speed, btn) {
-  checkSpeed = speed;
-  document.querySelectorAll('.speed-select button').forEach(function(b) { b.classList.remove('on'); });
-  btn.classList.add('on');
-}
-
-function log(msg, color) {
-  var box = document.getElementById('logBox'); if (!box) return;
-  var div = document.createElement('div'); div.className = 'log-line';
-  var now = new Date();
-  var time = ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2) + ':' + ('0' + now.getSeconds()).slice(-2) + '.' + ('00' + now.getMilliseconds()).slice(-3);
-  div.innerHTML = '<span class="log-time">' + time + '</span><span class="log-icon" style="color:' + (color || 'var(--text2)') + '">●</span><span style="color:' + (color || 'var(--text2)') + '">' + msg + '</span>';
-  box.appendChild(div); box.scrollTop = box.scrollHeight;
-}
-
-function updateStage(idx, statusCls, statusText, barPct) {
-  var s = checkDefs[idx]; var row = document.getElementById(s.id);
-  row.classList.remove('done', 'active', 'failed');
-  if (statusCls === 'ok') row.classList.add('done');
-  if (statusCls === 'loading') row.classList.add('active');
-  if (statusCls === 'err') row.classList.add('failed');
-  var st = row.querySelector('.st-status'); st.textContent = statusText; st.className = 'st-status ' + statusCls;
-  row.querySelector('.st-bar').style.width = (barPct || 0) + '%';
-}
-
-function resetCheck() {
-  if (checkRunning) return;
-  checkDefs.forEach(function(_, i) { updateStage(i, 'waiting', '等待中', 0); });
-  var box = document.getElementById('logBox'); if (box) box.innerHTML = '<div class="log-line" style="color:var(--text3)">等待模拟开始...</div>';
-  document.getElementById('logSection').style.display = 'none';
-  var btn = document.getElementById('btnPlay'); btn.classList.remove('running'); btn.textContent = '▶ 开始自检';
-  document.getElementById('statPassed').textContent = '5'; document.getElementById('statPending').textContent = '0';
-}
-
-function startCheck() {
-  if (checkRunning) return; checkRunning = true;
-  var btn = document.getElementById('btnPlay'); btn.classList.add('running'); btn.textContent = '⏳ 自检中...';
-  document.getElementById('logSection').style.display = '';
-  var box = document.getElementById('logBox'); box.innerHTML = '';
-  var passed = 0;
-  document.getElementById('statPassed').textContent = '0'; document.getElementById('statPending').textContent = '5';
-  log('🔒 安全面回归自检开始 — security-scan.mjs', 'var(--accent)');
-  log('  扫描 5 维度: 密钥 · XSS · 认证 · 输入 · 分支', 'var(--text3)');
-  var i = 0;
-  function next() {
-    if (i >= checkDefs.length) {
-      setTimeout(function() {
-        log('✅ 全部 5 项安全自检完成 — ' + passed + '/5 安全', 'var(--pass)');
-        log('  🔒 安全评分: 100/100 — 0 P0 阻断', 'var(--pass)');
-        btn.classList.remove('running'); btn.textContent = '✓ 自检完成'; checkRunning = false;
-        document.getElementById('statPending').textContent = '0'; document.getElementById('statPassed').textContent = passed;
-        setTimeout(function() { btn.textContent = '▶ 重新自检'; }, 2000);
-      }, 400 / checkSpeed); return;
-    }
-    var s = checkDefs[i];
-    log('⏳ ' + s.name, 'var(--cyan)'); updateStage(i, 'loading', '扫描中...', 0);
-    var start = Date.now(); var duration = (400 + Math.random() * 300) / checkSpeed;
-    var tick = setInterval(function() {
-      var pct = Math.min(100, ((Date.now() - start) / duration) * 100);
-      var el = document.getElementById(s.id); if (el) el.querySelector('.st-bar').style.width = pct + '%';
-      if (pct >= 100) clearInterval(tick);
-    }, 16);
-    setTimeout(function() {
-      clearInterval(tick);
-      if (s.ok) {
-        updateStage(i, 'ok', s.status, 100); log('  ✓ ' + s.status, 'var(--pass)');
-        passed++; document.getElementById('statPassed').textContent = passed; document.getElementById('statPending').textContent = 5 - i - 1;
-      } else {
-        updateStage(i, 'err', '风险 ⚠️', 100); log('  ⚠️ 发现安全问题 — P0 阻断', 'var(--fail)');
-        document.getElementById('statPending').textContent = 5 - i - 1;
-      }
-      i++; setTimeout(next, 200 / checkSpeed);
-    }, duration);
-  }
-  setTimeout(next, 400);
-}
-</script>
-
-<div class="footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY · 场景演示</div>
 <script src="../../../../cdn/shared.js"></script>
+<script>
+document.querySelectorAll('.yry-tab').forEach(function(t) {
+  t.addEventListener('click', function() {
+    YrY.switchPanel(this.dataset.yry-panel, '.yry-tab', '.yry-panel');
+  });
+});
+document.querySelectorAll('pre').forEach(p => { p.addEventListener('click', function() {
+  var text = this.textContent || '';
+  navigator.clipboard.writeText(text.replace(/📋$/,'').trim()).then(() => {});
+})});
+</script>
 </body>
 </html>

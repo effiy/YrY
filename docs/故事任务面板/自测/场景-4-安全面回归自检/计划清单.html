@@ -1,455 +1,191 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>安全面回归自检 · 计划清单</title>
-<!-- ═══ CDN: YrY 共享样式 ═══ -->
 <link rel="stylesheet" href="../../../../cdn/shared.css">
 <link rel="stylesheet" href="../../../../cdn/theme.css">
 <style>
+/* ═══ shared-b.css — Common styles for all Category B documents ═══ */
+/* Inlined by rui-html/lib/templates.mjs buildHeadBlock() during generation */
+/* Uses yry- prefixed CSS variables matching cdn/theme.css conventions */
+
 :root {
-  --bg: rgba(22,22,32,1);
-  --bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
-  --bg-flat: rgba(34,34,46,1); --bg-raised: rgba(42,42,56,1);
-  --accent: #FFC107; --cyan: #22d3ee; --pass: #22c55e; --fail: #ef4444; --warn: #f59e0b; --info: #6b7280; --skip: #6b7280;
-  --text: rgba(250,250,252,1); --text2: rgba(160,160,164,1); --text3: rgba(110,110,114,1);
-  --shadow: 0 4px 20px rgba(0,0,0,0.3); --shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
-  --radius: 12px; --border: 1px solid rgba(255,255,255,0.06);
+  --yry-bg: rgba(22,22,32,1);
+  --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
+  --yry-bg-flat: rgba(34,34,46,1);
+  --yry-bg-raised: rgba(42,42,56,1);
+  --yry-accent: #FFC107;
+  --yry-cyan: #22d3ee;
+  --yry-pass: #22c55e;
+  --yry-fail: #ef4444;
+  --yry-warn: #f59e0b;
+  --yry-skip: #6b7280;
+  --yry-text: rgba(250,250,252,1);
+  --yry-text2: rgba(160,160,164,1);
+  --yry-text3: rgba(110,110,114,1);
+  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  --yry-shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
+  --yry-radius: 12px;
+  --yry-border: 1px solid rgba(255,255,255,0.06);
 }
-@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-* { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior:smooth; }
-body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif; line-height:1.6; min-height:100vh; }
-.container { max-width:960px; margin:0 auto; padding:40px 24px 80px; }
 
-.breadcrumb { display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:1.25rem; font-size:0.76rem; }
-.breadcrumb a { color:#7aa2f7; text-decoration:none; transition:color 0.15s; }
-.breadcrumb a:hover { color:#fbbf24; text-decoration:underline; }
-.breadcrumb .bc-sep { color:#53576c; opacity:0.5; user-select:none; }
-.breadcrumb .bc-current { color:#94a3b8; font-weight:500; }
+@keyframes yry-fadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes yry-fadeInDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 
-.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
-.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}
-.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
-.cross-link.on{color:var(--accent);font-weight:600}
-.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
-/* Stats */
-.stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
-.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}
-.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
-.stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
-.stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}
-.stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Health bar */
-.bar-wrap{margin-bottom:28px;animation:fadeInDown .5s .12s ease both}
-.bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
-.bar-outer .seg{height:100%;transition:width .5s ease;min-width:3px}
-.bar-outer .seg.strength{background:var(--pass)}.bar-outer .seg.gap{background:var(--fail)}.bar-outer .seg.suggestion{background:var(--warn)}.bar-outer .seg.neutral{background:var(--info)}
+body {
+  background: var(--yry-bg);
+  color: var(--yry-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
 
-.header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
-.header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
-.header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
-.header .meta{color:var(--text3);font-size:.75rem;margin-top:6px}
+.yry-container { max-width: 1120px; margin: 0 auto; padding: 48px 24px 80px; }
 
-.progress-wrap { margin-bottom:20px; }
-.progress-label { display:flex; justify-content:space-between; font-size:0.78rem; margin-bottom:6px; color:var(--text2); }
-.progress-bar { width:100%; height:6px; background:var(--bg-flat); border-radius:3px; overflow:hidden; }
-.progress-fill { height:100%; background:linear-gradient(90deg, #3d59a1, var(--accent)); border-radius:3px; transition:width 0.4s ease; }
+.yry-header { text-align: center; margin-bottom: 24px; animation: yry-fadeInDown .5s ease both; }
+.yry-header h1 { font-size: 2.1rem; font-weight: 700; }
+.yry-header h1 .yry-accent { color: var(--yry-accent); }
+.yry-header .yry-sub { color: var(--yry-text2); font-size: .9rem; }
 
-.tabs { display:flex; gap:0; border-bottom:var(--border); margin-bottom:24px; }
-.tab { padding:8px 18px; cursor:pointer; font-size:0.82rem; color:var(--text3); border-bottom:2px solid transparent; transition:all 0.15s; user-select:none; }
-.tab:hover { color:var(--text2); }
-.tab.on { color:var(--accent); border-bottom-color:var(--accent); }
+.yry-stats { display: flex; gap: 14px; justify-content: center; margin-bottom: 24px; flex-wrap: wrap; animation: yry-fadeInDown .5s .1s ease both; }
+.yry-stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 18px 22px; text-align: center; box-shadow: var(--yry-shadow); min-width: 90px; }
+.yry-stat .yry-val { font-size: 1.8rem; font-weight: 700; line-height: 1.1; }
+.yry-stat .yry-val.t { color: var(--yry-text); }
+.yry-stat .yry-val.p { color: var(--yry-pass); }
+.yry-stat .yry-val.f { color: var(--yry-fail); }
+.yry-stat .yry-val.s { color: var(--yry-skip); }
+.yry-stat .yry-val.d { color: var(--yry-cyan); font-size: 1.25rem; }
+.yry-stat .yry-lbl { font-size: .72rem; color: var(--yry-text3); margin-top: 2px; text-transform: uppercase; letter-spacing: .5px; }
 
-.panel { display:none; }
-.panel.on { display:block; }
+.yry-bar-wrap { margin-bottom: 24px; }
+.yry-bar-outer { height: 8px; border-radius: 4px; overflow: hidden; display: flex; background: rgba(255,255,255,.04); }
+.yry-bar-outer .yry-seg { height: 100%; transition: width .5s ease; min-width: 2px; }
+.yry-bar-outer .yry-seg.p { background: var(--yry-pass); }
+.yry-bar-outer .yry-seg.f { background: var(--yry-fail); }
+.yry-bar-outer .yry-seg.s { background: var(--yry-skip); }
 
-.section { margin-bottom:24px; }
-.section h2 { font-size:0.95rem; color:var(--accent); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
-.section h2 .dot { width:7px; height:7px; border-radius:50%; background:var(--accent); flex-shrink:0; }
-.section h2 .s-done { color:var(--text3); font-size:0.72rem; font-weight:400; margin-left:2px; }
+.yry-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 1.25rem; font-size: 0.76rem; }
+.yry-breadcrumb a { color: #7aa2f7; text-decoration: none; }
+.yry-breadcrumb a:hover { color: #fbbf24; }
+.yry-breadcrumb .yry-bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
+.yry-breadcrumb .yry-bc-current { color: #94a3b8; font-weight: 500; }
 
-.step { background:var(--bg-card); border:var(--border); border-radius:var(--radius); margin:10px 0; overflow:hidden; box-shadow:var(--shadow); transition:border-color 0.2s; }
-.step:hover { border-color:rgba(255,193,7,0.12); }
-.step-header { display:flex; align-items:center; gap:10px; padding:12px 16px; cursor:pointer; user-select:none; transition:background 0.15s; }
-.step-header:hover { background:rgba(255,193,7,0.04); }
-.step-checkbox { width:18px; height:18px; accent-color:var(--accent); cursor:pointer; flex-shrink:0; }
-.step-num { font-weight:700; color:var(--accent); min-width:26px; font-size:0.88rem; }
-.step-title { flex:1; font-size:0.92rem; }
-.step-status { font-size:0.72rem; padding:3px 10px; border-radius:12px; flex-shrink:0; white-space:nowrap; }
-.status-done { background:rgba(34,197,94,0.12); color:var(--pass); }
-.status-pending { background:rgba(110,110,114,0.18); color:var(--text3); }
-.status-active { background:rgba(245,158,11,0.12); color:var(--warn); }
+.yry-cross-nav { display: flex; gap: 4px; justify-content: center; align-items: center; margin-bottom: 24px; flex-wrap: wrap; animation: yry-fadeInDown .5s .15s ease both; }
+.yry-cross-nav .yry-cross-link { color: var(--yry-cyan); text-decoration: none; font-size: .74rem; padding: 3px 10px; border-radius: 4px; }
+.yry-cross-nav .yry-cross-link:hover { color: var(--yry-accent); background: rgba(255,193,7,.06); }
+.yry-cross-nav .yry-cross-link.on { color: var(--yry-accent); font-weight: 600; }
+.yry-cross-nav .yry-cross-sep { color: var(--yry-text3); font-size: .5rem; opacity: .35; user-select: none; }
 
-.step-body { display:none; padding:0 16px 16px 52px; font-size:0.84rem; border-top:var(--border); }
-.step-body.open { display:block; }
-.step-body p { color:var(--text2); margin:4px 0; }
+.yry-tabs { display: flex; gap: 0; border-bottom: var(--yry-border); margin-bottom: 0; }
+.yry-tab { padding: 10px 20px; cursor: pointer; font-size: .84rem; color: var(--yry-text3); border-bottom: 2px solid transparent; transition: all .15s; user-select: none; }
+.yry-tab:hover { color: var(--yry-text2); }
+.yry-tab.on { color: var(--yry-accent); border-bottom-color: var(--yry-accent); }
 
-.skill-hint { background:rgba(255,193,7,0.06); border-left:3px solid var(--accent); border-radius:0 6px 6px 0; padding:8px 14px; margin:10px 0; font-size:0.82rem; color:var(--text); display:flex; align-items:flex-start; gap:6px; }
-.skill-hint .hint-icon { color:var(--accent); font-weight:700; flex-shrink:0; }
-.skill-hint code { background:rgba(0,0,0,0.3); color:var(--cyan); padding:2px 6px; border-radius:4px; font-size:0.78rem; font-family:'SF Mono','Fira Code',monospace; }
+.yry-panel { display: none; animation: yry-fadeInUp .4s ease both; padding-top: 28px; }
+.yry-panel.on { display: block; }
 
-.step-deps { display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.04); }
-.step-deps .dep-label { font-size:0.7rem; color:var(--text3); margin-right:2px; }
-.dep-badge { font-size:0.7rem; color:var(--cyan); text-decoration:none; background:var(--bg-flat); border:1px solid rgba(34,211,238,0.12); border-radius:12px; padding:2px 10px; transition:all 0.15s; }
-.dep-badge:hover { border-color:var(--accent); color:var(--accent); transform:translateY(-1px); }
+.yry-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
 
-.code-block { background:rgba(0,0,0,0.3); border:var(--border); border-radius:6px; padding:10px 14px; margin:8px 0; font-size:0.76rem; overflow-x:auto; white-space:pre-wrap; font-family:'SF Mono','Fira Code',monospace; color:var(--cyan); }
-.verify-cmd { background:rgba(34,197,94,0.06); border-left:3px solid var(--pass); border-radius:0 4px 4px 0; padding:6px 10px; margin:6px 0; font-size:0.8rem; }
-.verify-cmd::before { content:"▶ 验证: "; color:var(--pass); font-weight:600; }
-.expected { color:var(--text3); font-size:0.78rem; margin:2px 0; }
-.expected::before { content:"✓ 期望: "; color:var(--accent); font-weight:600; }
-.log-entry { font-size:0.74rem; color:var(--text3); border-left:2px solid var(--border); padding-left:8px; margin:4px 0; }
-.log-time { color:#7aa2f7; }
+.yry-suite { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); overflow: hidden; margin-bottom: 20px; }
+.yry-suite summary { padding: 18px 24px; cursor: pointer; font-weight: 600; color: var(--yry-accent); user-select: none; }
+.yry-suite .yry-suite-body { padding: 0 24px 18px; }
 
-.stat-grid { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
-.stat-mini { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:14px 18px; text-align:center; box-shadow:var(--shadow); min-width:80px; flex:1; }
-.stat-mini .sv { font-size:1.4rem; font-weight:700; }
-.stat-mini .sv.g { color:var(--pass); } .stat-mini .sv.y { color:var(--accent); } .stat-mini .sv.c { color:var(--cyan); }
-.stat-mini .sl { font-size:0.64rem; color:var(--text3); margin-top:2px; text-transform:uppercase; letter-spacing:0.4px; }
-.section-stat { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:12px 16px; margin:8px 0; box-shadow:var(--shadow); display:flex; align-items:center; gap:12px; }
-.section-stat .ss-label { font-size:0.82rem; font-weight:600; min-width:100px; }
-.section-stat .ss-bar-wrap { flex:1; height:6px; background:var(--bg-flat); border-radius:3px; overflow:hidden; }
-.section-stat .ss-bar { height:100%; border-radius:3px; transition:width 0.4s; }
-.section-stat .ss-pct { font-size:0.76rem; color:var(--text2); min-width:44px; text-align:right; }
+.yry-btn { padding: 8px 16px; border-radius: 6px; border: var(--yry-border); background: var(--yry-bg-raised); color: var(--yry-text2); cursor: pointer; font-size: .8rem; transition: all .15s; }
+.yry-btn:hover { background: var(--yry-accent); color: #000; border-color: var(--yry-accent); }
 
-.cmd-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:10px; }
-.cmd-card { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:16px 18px; box-shadow:var(--shadow); transition:transform 0.15s,box-shadow 0.15s; }
-.cmd-card:hover { transform:translateY(-1px); box-shadow:0 6px 24px rgba(0,0,0,0.35); }
-.cmd-card .c-stage { font-size:0.64rem; color:var(--text3); margin-bottom:4px; }
-.cmd-card .c-name { font-weight:700; font-size:0.84rem; color:var(--accent); font-family:monospace; margin-bottom:2px; }
-.cmd-card .c-desc { font-size:0.74rem; color:var(--text2); line-height:1.5; }
-.cmd-card pre { background:rgba(0,0,0,0.3); border-radius:6px; padding:8px 12px; margin-top:8px; font-size:0.74rem; color:var(--cyan); overflow-x:auto; font-family:'SF Mono',monospace; cursor:pointer; position:relative; }
-.cmd-card pre .cb { position:absolute; top:4px; right:6px; background:var(--bg-flat); border:var(--border); border-radius:4px; color:var(--text3); font-size:0.6rem; padding:1px 6px; cursor:pointer; opacity:0; transition:opacity 0.15s; font-family:inherit; }
-.cmd-card pre:hover .cb { opacity:1; }
+.yry-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
+</style>
+<link rel="stylesheet" href="../../../../cdn/yry-checklist.css">
 
-.link-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; }
-.link-card { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); text-decoration:none; color:inherit; display:block; transition:transform 0.15s,border-color 0.15s; }
-.link-card:hover { transform:translateY(-2px); border-color:rgba(255,193,7,0.25); }
-.link-card .lc-icon { font-size:1.2rem; margin-bottom:6px; }
-.link-card .lc-name { font-weight:700; font-size:0.88rem; color:var(--accent); }
-.link-card .lc-desc { font-size:0.74rem; color:var(--text2); margin-top:4px; line-height:1.5; }
-
-.verify-list { display:flex; flex-direction:column; gap:10px; }
-.verify-item { background:var(--bg-card); border:var(--border); border-radius:var(--radius); padding:14px 18px; box-shadow:var(--shadow); }
-.verify-item .vi-label { font-size:0.78rem; color:var(--text2); margin-bottom:6px; }
-.verify-item pre { background:rgba(0,0,0,0.3); border-radius:6px; padding:8px 36px 8px 12px; font-size:0.76rem; color:var(--cyan); overflow-x:auto; font-family:'SF Mono',monospace; cursor:pointer; position:relative; }
-.verify-item pre .cb { position:absolute; top:4px; right:6px; background:var(--bg-flat); border:var(--border); border-radius:4px; color:var(--text3); font-size:0.6rem; padding:1px 6px; cursor:pointer; opacity:0; transition:opacity 0.15s; font-family:inherit; }
-.verify-item pre:hover .cb { opacity:1; }
-.verify-item .vi-expect { font-size:0.74rem; color:var(--text3); margin-top:4px; }
-.verify-item .vi-expect::before { content:"✓ "; color:var(--accent); }
-
-.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--bg-raised); border:1px solid rgba(255,193,7,0.3); border-radius:8px; color:var(--text); padding:10px 20px; font-size:0.82rem; z-index:300; box-shadow:var(--shadow-lg); opacity:0; transition:opacity 0.2s; pointer-events:none; }
-.toast.show { opacity:1; }
-
-.footer { margin-top:40px; padding-top:16px; border-top:var(--border); color:var(--text3); font-size:0.72rem; text-align:center; }
-
-a[target="_blank"]::after { content:" ↗"; font-size:0.7em; opacity:0.5; }
-@media (max-width:640px) { .container { padding:20px 12px 60px; } .header h1 { font-size:1.3rem; } .step-body { padding:0 10px 12px 40px; } .cmd-grid,.link-grid { grid-template-columns:1fr; } .stat-grid { flex-direction:column; } }
+<style>
+.yry-container{max-width:960px;padding:40px 24px 80px}
+.yry-header h1{font-size:1.8rem}
+.yry-header .yry-sub{margin-top:4px}
+.yry-header .meta{color:var(--text3);font-size:.75rem;margin-top:6px}
+.yry-stats{gap:12px;margin-bottom:20px}
+.yry-stat{padding:16px 20px;min-width:80px}
+.yry-stat .yry-val{font-size:1.6rem}.yry-stat .yry-val.health{color:var(--pass)}
+.yry-stat .yry-lbl{font-size:.68rem;letter-spacing:.5px}
+.progress-wrap{margin-bottom:20px}
+.progress-label{display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:6px;color:var(--text2)}
+.progress-bar{width:100%;height:6px;background:var(--bg-flat);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#3d59a1,var(-.yry-accent));border-radius:3px;transition:width 0.4s ease}
+.yry.yry-tabs{margin-bottom:24px}
+.yry-tab{padding:8px 18px;font-size:0.82rem}
+.yry-panel{padding-top:0;animation:none}
+.yry-section.margin-bottom:24px}
+.yry-section.h2{font-size:0.95rem;color:var(-.yry-accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.yry-section.h2 .yry-dot.width:7px;height:7px;border-radius:50%;background:var(-.yry-accent);flex-shrink:0}
+.step{background:var(--bg-card);border:var(--border);border-radius:var(--radius);margin:10px 0;overflow:hidden;box-shadow:var(--shadow)}
+.step.yry-header{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer}
+.step.yry-header:hover{background:rgba(255,193,7,0.04)}
+.step-checkbox{width:18px;height:18px.yry-accent-color:var(-.yry-accent);cursor:pointer;flex-shrink:0}
+.step-num{font-weight:700;color:var(-.yry-accent);min-width:26px;font-size:0.88rem}
+.step-title{flex:1;font-size:0.92rem}
+.step-status{font-size:0.72rem;padding:3px 10px;border-radius:12px;flex-shrink:0}
+.status-done{background:rgba(34,197,94,0.12);color:var(--pass)}
+.status-pending{background:rgba(110,110,114,0.18);color:var(--text3)}
+.status-active{background:rgba(245,158,11,0.12);color:var(--warn)}
+.step-body{display:none;padding:0 16px 16px 52px;font-size:0.84rem;border-top:var(--border)}
+.step-body.open{display:block}
+.step-body p{color:var(--text2);margin:4px 0}
 </style>
 </head>
 <body>
-<div class="container">
+<div class="yry.yry-container">
+<nav class="yry-breadcrumb"><a href="../../../../docs/index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">自测 · 故事任务</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 4 · 安全面回归自检</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">📋 计划清单</span></nav>
+<div class="yry-cross-nav"><span class="yry-cross-link on">📋 清单</span><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="架构图.html">📐 架构</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="知识图谱.html">🔗 图谱</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="源码.html">📄 源码</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="测试面板.html">🧪 测试</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="演示.html">💡 演示</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="审查.html">📝 审查</a></div>
 
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自主测试方案</span><span class="bc-sep">/</span><span class="bc-current">场景 4 · 安全面回归自检</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
-
-<nav class="cross-nav">
-<span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
-<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
-<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
-<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
-<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
-<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
-<a class="cross-link" href="审查.html">📝 审计</a>
-</nav>
-
-<div class="header">
-  <h1>📋 场景-4<span class="accent"> · 安全面回归自检</span></h1>
-  <p class="sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
-  <div class="meta">📌 v1.1.0 · 📅 2026-06-05 · 🏷️ self-test</div>
+<div class="yry.yry-header">
+  <h1>📋 <span class="yry.yry-accent">安全面回归自检</span> · 计划清单</h1>
+  <p class="yry.yry-sub">场景 4 · 版本 vv1.0.0 · 2026-06-05</p>
 </div>
+
+<div class="yry-stats">
+        <div class="yry-stat"><div class="yry-valhealth">4</div><div class="yry-lbl">场景序号</div></div>
+        <div class="yry-stat"><div class="yry-val">11</div><div class="yry-lbl">测试用例</div></div>
+        <div class="yry-stat"><div class="yry-val">vv1.0.0</div><div class="yry-lbl">版本</div></div>
+      </div>
 
 <div class="progress-wrap">
-  <div class="progress-label"><span>整体进度</span><span id="progress-text">0 / 14 完成</span></div>
-  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  <div class="progress-label"><span>总体进度</span><span>0/0 步骤完成</span></div>
+  <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
 </div>
 
-<div class="tabs">
-  <span class="tab on" data-panel="checklist">📋 清单</span>
-  <span class="tab" data-panel="commands">⚡ 命令</span>
-  <span class="tab" data-panel="related">📁 关联</span>
-  <span class="tab" data-panel="verify">🧪 验证</span>
+<div class="yry.yry.yry-tabs">
+  <span class="yry.yry-tab on" data.yry-panel="checklist">📋 清单</span>
+  <span class="yry.yry-tab" data.yry-panel="overview">📊 概览</span>
+  <span class="yry.yry-tab" data.yry-panel="verify">✅ 验证</span>
 </div>
 
-<!-- ═══ Tab 1: Checklist ═══ -->
-<div class="panel on" id="panelChecklist">
-
-<div class="section">
-<h2><span class="dot"></span>§0 技术评审<span class="s-done">— 已完成</span></h2>
-
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
-    <span class="step-num">1</span>
-    <span class="step-title">构建 STRIDE 六类威胁模型</span>
-    <span class="step-status status-done">✅ 完成</span>
-  </div>
-  <div class="step-body">
-    <p>STRIDE: Spoofing · Tampering · Repudiation · Information Disclosure · Denial of Service · Elevation of Privilege。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story self-test --scene 4</code>生成 STRIDE 威胁模型文档</div>
-    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
-    <div class="code-block">| 威胁 | YrY 场景 | 检测规则 |
-|------|---------|---------|
-| Spoofing | 伪造的 user identity | API_X_TOKEN 校验 |
-| Tampering | 文档被篡改 | git diff + hash 校验 |
-| Repudiation | 操作不可追溯 | git commit 链完整性 |
-| Info Disclosure | 密钥泄露 | grep 扫描 token/密钥 |
-| DoS | WebFetch 超量调用 | 并发限制 + 超时 |
-| EoP | 跨分支状态共享 | memory 隔离检查 |</div>
-  </div>
-<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">0</div><div class="lbl">✅ 完成</div></div><div class="stat-card"><div class="val">6</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val">0%</div><div class="lbl">📊 进度</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:0%"></div><div class="seg gap" style="width:100%"></div></div></div>
-
+<div class="yry.yry-panel on" id=.yry-panelChecklist">
+  <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
 </div>
 
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" onchange="updateProgress()">
-    <span class="step-num">2</span>
-    <span class="step-title">设计安全扫描 mermaid 流程图</span>
-    <span class="step-status status-active">🔶 就绪</span>
-  </div>
-  <div class="step-body">
-    <p>六类威胁的扫描流程：触发→每类检测→结果汇总→风险评级。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story self-test --output 架构图.html</code>生成安全扫描流程图</div>
-    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a></div>
-  </div>
-</div>
+<div class="yry.yry-panel" id=.yry-panelOverview">
+  <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
 </div>
 
-<div class="section">
-<h2><span class="dot"></span>§1 测试设计</h2>
-
-<div class="step">
-  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
-    <input type="checkbox" class="step-checkbox" onchange="updateProgress()">
-    <span class="step-num">3</span>
-    <span class="step-title">定义 STRIDE 六类安全测试用例</span>
-    <span class="step-status status-pending">⏳ 待开始</span>
-  </div>
-  <div class="step-body">
-    <p>每类 ≥ 2 个测试用例：已知漏洞模式 + 边界条件。</p>
-    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story self-test</code>让 security agent 生成安全测试用例</div>
-    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div>
-  </div>
-</div>
+<div class="yry.yry-panel" id=.yry-panelVerify">
+  <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
 </div>
 
-<div class="section">
-<h2><span class="dot"></span>§2 实施报告<span class="s-done">— 进行中</span></h2>
-
-<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">4</span><span class="step-title">实现密钥检测扫描器</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui-claude check</code>扫描 .claude/ 配置中的敏感信息</div><div class="verify-cmd">grep -rn "API_KEY\|token\|secret\|password" --include="*.{js,ts,md,json}" | grep -v "node_modules\|\.git"</div><div class="expected">仅匹配环境变量引用和文档说明，无硬编码密钥</div></div></div>
-<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">5</span><span class="step-title">实现注入模式检测</span><span class="step-status status-pending">⏳ 待开始</span></div></div>
-<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">6</span><span class="step-title">实现认证绕过检查</span><span class="step-status status-pending">⏳ 待开始</span></div></div>
-<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">7</span><span class="step-title">实现分支隔离绕过检查</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui-claude check</code>检查分支隔离配置</div></div></div>
-<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">8</span><span class="step-title">实现静默失败猎杀</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="verify-cmd">grep -rn "catch\s*{" --include="*.{mjs,js}" | grep -v "node_modules"</div></div></div>
+<div class="yry.yry-footer">YrY vv1.0.0 · 2026-06-05 · <a href="../../../../docs/index.html">文档中心</a></div>
 </div>
-
-<div class="section">
-<h2><span class="dot"></span>§3 测试报告</h2>
-
-<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">9</span><span class="step-title">运行安全全量扫描</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node scripts/security-scan.mjs --all --output=json</code>运行安全全量扫描</div><div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div><div class="verify-cmd">node scripts/security-scan.mjs --all --output=json</div></div></div>
-<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">10</span><span class="step-title">记录漏洞检出率与误报率</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node skills/rui-bot/send.mjs --story=yry-self-test --status=security-report</code>推送安全扫描报告</div></div></div>
-</div>
-
-<div class="section">
-<h2><span class="dot"></span>§4 自改进</h2>
-
-<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">11</span><span class="step-title">新威胁模式自动追加机制</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui-trends</code>分析安全趋势发现新威胁模式</div><div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div></div></div>
-<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">12</span><span class="step-title">安全规则自动更新</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story self-test --output 知识图谱.html</code>更新安全知识图谱</div></div></div>
-</div>
-
-<div class="section">
-<h2><span class="dot"></span>交付</h2>
-
-<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">13</span><span class="step-title">P0 验证 + 架构图</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story self-test --check p0 --output 架构图.html</code>P0 验证并生成安全架构图</div><div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="演示.html" class="dep-badge">💡 演示</a></div></div></div>
-<div class="step"><div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')"><input type="checkbox" class="step-checkbox" onchange="updateProgress()"><span class="step-num">14</span><span class="step-title">git commit + 交付收口</span><span class="step-status status-pending">⏳ 待开始</span></div><div class="step-body"><div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>git add docs/故事任务面板/自测/ && git commit</code>然后 <code>node skills/rui-import/sync.mjs workspace=true</code>最后 <code>node skills/rui-bot/send.mjs --story=yry-self-test --status=done</code></div><div class="code-block">git add docs/故事任务面板/自测/
-git commit -m "docs: 场景-4 安全面回归自检完成"
-node skills/rui-import/sync.mjs workspace=true
-node skills/rui-bot/send.mjs --story=yry-self-test --status=done</div></div></div>
-</div>
-
-</div><!-- /panelChecklist -->
-
-
-<!-- ═══ Tab 3: Commands ═══ -->
-<div class="panel" id="panelCommands">
-
-<div class="section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令</h2>
-<div class="cmd-grid">
-  <div class="cmd-card"><div class="c-stage">步骤 1</div><div class="c-name">生成 STRIDE 威胁模型文档</div><div class="c-desc">六类威胁模型：S·T·R·I·D·E</div><pre>/rui doc --story self-test --scene 4<span class="cb" onclick="copyCmd(this,'/rui doc --story self-test --scene 4')">📋</span></pre></div>
-</div></div>
-
-<div class="section"><h2><span class="dot"></span>§0-§1 — 待执行命令</h2>
-<div class="cmd-grid">
-  <div class="cmd-card"><div class="c-stage">步骤 2 · 🔶 就绪</div><div class="c-name">生成安全扫描流程图</div><div class="c-desc">六类威胁扫描流程 mermaid → HTML+SVG</div><pre>/rui doc --story self-test --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story self-test --output 架构图.html')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 3</div><div class="c-name">生成安全测试用例</div><div class="c-desc">security agent 生成 STRIDE 六类测试用例</div><pre>/rui doc --story self-test<span class="cb" onclick="copyCmd(this,'/rui doc --story self-test')">📋</span></pre></div>
-</div></div>
-
-<div class="section"><h2><span class="dot"></span>§2-交付 — 待执行命令</h2>
-<div class="cmd-grid">
-  <div class="cmd-card"><div class="c-stage">步骤 4</div><div class="c-name">扫描敏感信息</div><div class="c-desc">检查 .claude/ 配置中的密钥泄露</div><pre>/rui-claude check<span class="cb" onclick="copyCmd(this,'/rui-claude check')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 7</div><div class="c-name">检查分支隔离配置</div><div class="c-desc">验证 EoP 威胁防护</div><pre>/rui-claude check<span class="cb" onclick="copyCmd(this,'/rui-claude check')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 9</div><div class="c-name">运行安全全量扫描</div><div class="c-desc">STRIDE 六类全量扫描 JSON 输出</div><pre>node scripts/security-scan.mjs --all --output=json<span class="cb" onclick="copyCmd(this,'node scripts/security-scan.mjs --all --output=json')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 10</div><div class="c-name">推送安全扫描报告</div><div class="c-desc">企微通知漏洞检出率与误报率</div><pre>node skills/rui-bot/send.mjs --story=yry-self-test --status=security-report<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=yry-self-test --status=security-report')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 11</div><div class="c-name">分析安全趋势</div><div class="c-desc">发现新威胁模式</div><pre>/rui-trends<span class="cb" onclick="copyCmd(this,'/rui-trends')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 12</div><div class="c-name">更新安全知识图谱</div><div class="c-desc">自动更新安全规则和图谱节点</div><pre>/rui doc --story self-test --output 知识图谱.html<span class="cb" onclick="copyCmd(this,'/rui doc --story self-test --output 知识图谱.html')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 13</div><div class="c-name">P0 验证 + 安全架构图</div><div class="c-desc">P0 验证并生成安全架构图</div><pre>/rui doc --story self-test --check p0 --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story self-test --check p0 --output 架构图.html')">📋</span></pre></div>
-  <div class="cmd-card"><div class="c-stage">步骤 14</div><div class="c-name">交付收口</div><div class="c-desc">git commit → rui-import 同步 → rui-bot 通知</div><pre>git add . && git commit<span class="cb" onclick="copyCmd(this,'git add . && git commit')">📋</span></pre></div>
-</div></div>
-
-</div><!-- /panelCommands -->
-
-<!-- ═══ Tab 4: Related Pages ═══ -->
-<div class="panel" id="panelRelated">
-
-<div class="link-grid">
-  <a href="架构图.html" class="link-card">
-    <div class="lc-icon">📐</div><div class="lc-name">架构图</div>
-    <div class="lc-desc">STRIDE 六类安全扫描流程 SVG 图：触发→六类检测→风险评级→阻断/放行</div>
-  </a>
-  <a href="知识图谱.html" class="link-card">
-    <div class="lc-icon">🔗</div><div class="lc-name">知识图谱</div>
-    <div class="lc-desc">威胁-模块关系图谱：STRIDE 各威胁与 YrY 模块/规则的映射关系</div>
-  </a>
-  <a href="测试面板.html" class="link-card">
-    <div class="lc-icon">🧪</div><div class="lc-name">测试面板</div>
-    <div class="lc-desc">安全扫描执行结果：六类威胁逐项通过/阻断，漏洞检出率与误报率统计</div>
-  </a>
-  <a href="演示.html" class="link-card">
-    <div class="lc-icon">💡</div><div class="lc-name">演示</div>
-    <div class="lc-desc">交互式安全面回归演练：注入模拟 → 密钥扫描 → 认证绕过检测 → 修复</div>
-  </a>
-</div>
-
-</div><!-- /panelRelated -->
-
-<!-- ═══ Tab 5: Verify ═══ -->
-<div class="panel" id="panelVerify">
-
-<div class="verify-list">
-  <div class="verify-item"><div class="vi-label">步骤 4 · 密钥检测扫描</div>
-    <pre>grep -rn "API_KEY\|token\|secret\|password" --include="*.{js,ts,md,json}" | grep -v "node_modules\|\.git"<span class="cb" onclick="copyCmd(this,'grep -rn \"API_KEY\\|token\\|secret\\|password\" --include=\"*.{js,ts,md,json}\" | grep -v \"node_modules\\|\\.git\"')">📋</span></pre>
-    <div class="vi-expect">仅匹配环境变量引用和文档说明，无硬编码密钥</div>
-  </div>
-  <div class="verify-item"><div class="vi-label">步骤 8 · 静默失败猎杀</div>
-    <pre>grep -rn "catch\s*{" --include="*.{mjs,js}" | grep -v "node_modules"<span class="cb" onclick="copyCmd(this,'grep -rn \"catch\\s*{\" --include=\"*.{mjs,js}\" | grep -v \"node_modules\"')">📋</span></pre>
-    <div class="vi-expect">所有 catch 块有明确的错误处理逻辑</div>
-  </div>
-  <div class="verify-item"><div class="vi-label">步骤 9 · 安全全量扫描</div>
-    <pre>node scripts/security-scan.mjs --all --output=json<span class="cb" onclick="copyCmd(this,'node scripts/security-scan.mjs --all --output=json')">📋</span></pre>
-    <div class="vi-expect">STRIDE 六类全部通过，0 高危漏洞</div>
-  </div>
-</div>
-
-</div><!-- /panelVerify -->
-
-<div class="footer"><p>🤖 Generated with planner agent | scene: 安全面回归自检 | updated: 2026-06-05</p></div>
-
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-const SCENE_KEY = 'yry-self-test-s4-checklist';
-
-document.querySelector('.tabs').addEventListener('click', e => {
-  const tab = e.target.closest('.tab');
-  if (!tab) return;
-  switchPanel(tab.dataset.panel);
-});
-
-function switchPanel(name) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.panel === name));
-  document.querySelectorAll('.panel').forEach(p => {
-    p.classList.toggle('on', p.id === 'panel' + name.charAt(0).toUpperCase() + name.slice(1));
-  });
-  localStorage.setItem(SCENE_KEY + '-tab', name);
-}
-
-document.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT') return;
-  const m = {'1':'checklist','2':'overview','3':'commands','4':'related','5':'verify'};
-  if (m[e.key]) { e.preventDefault(); switchPanel(m[e.key]); }
-});
-
-function updateProgress() {
-  const checks = document.querySelectorAll('.step-checkbox');
-  const done = Array.from(checks).filter(c => c.checked).length;
-  const total = checks.length;
-  const pct = Math.round((done / total) * 100);
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('progress-text').textContent = done + ' / ' + total + ' 完成';
-
-  checks.forEach(cb => {
-    const status = cb.closest('.step').querySelector('.step-status');
-    if (cb.checked) {
-      status.textContent = '✅ 完成'; status.className = 'step-status status-done';
-    } else {
-      const allChecks = Array.from(checks);
-      const idx = allChecks.indexOf(cb);
-      const prevDone = idx === 0 || allChecks[idx - 1].checked;
-      status.textContent = prevDone ? '🔶 就绪' : '⏳ 待开始';
-      status.className = prevDone ? 'step-status status-active' : 'step-status status-pending';
-    }
-  });
-
-  const pending = total - done;
-  const ready = Array.from(checks).filter((c, i) => {
-    if (c.checked) return false;
-    const allChecks = Array.from(checks);
-    return i === 0 || allChecks[i - 1].checked;
-  }).length;
-  const ovDone = document.getElementById('ov-done');
-  const ovReady = document.getElementById('ov-ready');
-  const ovPending = document.getElementById('ov-pending');
-  if (ovDone) ovDone.textContent = done;
-  if (ovReady) ovReady.textContent = ready;
-  if (ovPending) ovPending.textContent = pending - ready;
-
-  const state = {};
-  checks.forEach((cb, i) => { state['step-' + (i + 1)] = cb.checked; });
-  localStorage.setItem(SCENE_KEY, JSON.stringify(state));
-}
-
-function copyCmd(btn, cmd) {
-  navigator.clipboard.writeText(cmd).then(() => {
-    btn.textContent = '✅'; btn.style.opacity = '1';
-    setTimeout(() => { btn.textContent = '📋'; btn.style.opacity = ''; }, 1500);
-  }).catch(() => toast('复制失败'));
-}
-
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove('show'), 1800);
-}
-
-(function() {
-  const saved = JSON.parse(localStorage.getItem(SCENE_KEY) || '{}');
-  document.querySelectorAll('.step-checkbox').forEach((cb, i) => {
-    if (saved['step-' + (i + 1)]) {
-      cb.checked = true;
-    }
-  });
-  updateProgress();
-
-  const activeTab = localStorage.getItem(SCENE_KEY + '-tab') || 'checklist';
-  switchPanel(activeTab);
-})();
-</script>
 <script src="../../../../cdn/shared.js"></script>
+<script>
+document.querySelectorAll('.yry.yry-tab').forEach(function(t) {
+  t.addEventListener('click', function() {
+    YrY.switchPanel(this.dataset.yry-panel);
+  });
+});
+document.querySelectorAll('.step.yry-header').forEach(h => h.addEventListener('click', function() {
+  this.parentElement.querySelector('.step-body').classList.toggle('open');
+}));
+</script>
 </body>
 </html>

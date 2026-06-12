@@ -1,8 +1,17 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>安全面回归自检 · 知识图谱</title>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>安全面回归自检 · 知识图谱</title>
 <link rel="stylesheet" href="../../../../cdn/fonts.css">
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme-mono.css">
+<style>body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}</style>
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
@@ -27,7 +36,7 @@ h1{font-size:1.5rem;font-weight:700}
 .card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
 .card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
 .card-dot{width:8px;height:8px;border-radius:50%}
-.card-dot.scene{background:#8B5CF6}.card-dot.face{background:#ef4444}.card-dot.source{background:#3B82F6}.card-dot.pass{background:#22c55e}.card-dot.warn{background:#f59e0b}
+.card-dot.scene{background:#8B5CF6}.card-dot.check{background:#EC4899}.card-dot.source{background:#3B82F6}.card-dot.domain{background:#22d3ee}
 .card h3{font-size:.875rem;font-weight:600}
 .card ul{list-style:none;color:#94a3b8;font-size:.75rem}
 .card li{margin-bottom:.375rem}
@@ -35,164 +44,74 @@ h1{font-size:1.5rem;font-weight:700}
 .legend-item{display:flex;align-items:center;gap:.375rem}
 .legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid}
 .legend-dot.scene{background:rgba(139,92,246,.3);border-color:#8B5CF6}
-.legend-dot.face{background:rgba(239,68,68,.3);border-color:#ef4444}
+.legend-dot.check{background:rgba(236,72,153,.3);border-color:#EC4899}
 .legend-dot.source{background:rgba(59,130,246,.3);border-color:#3B82F6}
-.legend-dot.impl{background:rgba(34,197,94,.3);border-color:#22c55e}
-.legend-dot.plan{background:rgba(245,158,11,.3);border-color:#f59e0b}
+.legend-dot.domain{background:rgba(34,211,238,.3);border-color:#22d3ee}
 .breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
-.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
-.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb a{color:#7aa2f7;text-decoration:none}
+.breadcrumb a:hover{color:#fbbf24}
 .breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
 .breadcrumb .bc-current{color:#94a3b8;font-weight:500}
-.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
-@media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
 .cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
-.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
+.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px}
 .cross-link:hover{color:#fbbf24;background:rgba(251,191,36,0.06)}
 .cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
 .cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
-</style></head><body><div class="container" id="report-container">
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-self-test · 自主测试方案</span><span class="bc-sep">/</span><span class="bc-current">场景 4 · 安全面回归自检</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
-<nav class="cross-nav">
-<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
-<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
-<span class="cross-link on">🔗 图谱</span><span class="cross-sep">·</span>
-<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
-<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
-<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
-<a class="cross-link" href="审查.html">📝 审计</a>
-</nav>
-<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>🛡️ 安全面回归自检 · 知识图谱</h1>
-<div class="toolbar"><div class="toolbar-actions">
-<button onclick="copyAsImage(this)">📋 Copy</button>
-<button onclick="downloadPNG(this)">🖼️ PNG</button>
-<button onclick="downloadPDF(this)">📄 PDF</button>
-</div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
-</div><p class="subtitle">yry-self-test · 场景-4 · STRIDE 六面安全: S1密钥 → S2认证 → S3输入 → S4配置 → S5依赖 → S6退化</p></div>
+.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
+@media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
+</style>
+</head>
+<body>
+<div class="container" id="report-container">
+<nav class="yry-breadcrumb"><a href="../../../../docs/index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">自测 · 故事任务</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 4 · 安全面回归自检</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">🔗 知识图谱</span></nav>
+<div class="yry-cross-nav"><a class="yry-cross-link" href="计划清单.html">📋 清单</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="架构图.html">📐 架构</a><span class="yry-cross-sep">·</span><span class="yry-cross-link on">🔗 图谱</span><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="源码.html">📄 源码</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="测试面板.html">🧪 测试</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="演示.html">💡 演示</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="审查.html">📝 审查</a></div>
+
+<div class="header">
+  <div class="header-row">
+    <div class="pulse-dot"></div>
+    <h1>🔗 安全面回归自检 · 知识图谱</h1>
+    <div class="toolbar">
+      <div class="toolbar-actions">
+        <button onclick="copyAsImage(this)">📋 Copy</button>
+        <button onclick="downloadPNG(this)">🖼 PNG</button>
+        <button onclick="downloadPDF(this)">📄 PDF</button>
+      </div>
+      <button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')">⋯</button>
+    </div>
+  </div>
+  <p class="subtitle">自测 · 场景 4 · vv1.0.0</p>
+</div>
 
 <div class="legend">
-<span style="color:#94a3b8;font-weight:600;">节点:</span>
-<span class="legend-item"><span class="legend-dot scene"></span>场景</span>
-<span class="legend-item"><span class="legend-dot face"></span>安全面</span>
-<span class="legend-item"><span class="legend-dot source"></span>源文件</span>
-<span class="legend-item"><span class="legend-dot impl"></span>已实现</span>
-<span class="legend-item"><span class="legend-dot plan"></span>已规划</span>
-<span style="margin-left:1rem;color:#94a3b8;font-weight:600;">操作:</span>
-<span style="color:#64748b;">🖱 拖拽 · 滚轮缩放 · 点击节点高亮邻域</span>
+  <span style="color:#94a3b8;font-weight:600;">节点:</span>
+  <span class="legend-item"><span class="legend-dot scene"></span>场景</span>
+  <span class="legend-item"><span class="legend-dot check"></span>检查/功能</span>
+  <span class="legend-item"><span class="legend-dot source"></span>源文件</span>
+  <span class="legend-item"><span class="legend-dot domain"></span>概念域</span>
+  <span style="margin-left:1rem;color:#94a3b8;font-weight:600;">操作:</span>
+  <span style="color:#64748b;">🖱 拖拽 · 滚轮缩放 · 点击节点高亮邻域</span>
 </div>
 
 <div class="graph-container"><div id="cy"></div></div>
 
 <div class="cards">
-<div class="card"><div class="card-header"><div class="card-dot face"></div><h3>STRIDE 六面安全</h3></div><ul>
-<li><b>S1 密钥扫描</b> ✅ — 6 种密钥模式: API key/token/password/private key</li>
-<li><b>S2 认证检查</b> 📋 — CLI 插件无传统认证路径，需检查 API_X_TOKEN 传递链路</li>
-<li><b>S3 输入校验</b> ✅ — XSS 向量检测: innerHTML/dangerouslySetInnerHTML/document.write/eval</li>
-<li><b>S4 配置安全</b> ✅ — 验证 API_X_TOKEN 仅通过环境变量引用</li>
-<li><b>S5 依赖安全</b> ✅ — npm audit --json 集成，高危/严重漏洞检测</li>
-<li><b>S6 约束退化</b> 🔄 — 部分实现: detect-impact.mjs 变更检测 + 待建基线快照</li>
-</ul></div>
-<div class="card"><div class="card-header"><div class="card-dot source"></div><h3>源文件映射 (6)</h3></div><ul>
-<li><code>scripts/security-scan.mjs</code> — 覆盖 S1+S3+S5 三面扫描</li>
-<li><code>scripts/detect-impact.mjs</code> — S6 变更影响分析，--since 读取 git diff</li>
-<li><code>tests/integration/cross-references.test.mjs</code> — §安全基线: S1 密钥扫描 + S4 配置</li>
-<li><code>skills/rui-bot/config.json</code> — S4 配置安全: ENV 占位符模板</li>
-<li><code>CLAUDE.md §项目不可妥协底线</code> — 四条安全底线定义</li>
-<li><code>agents/security.md</code> — STRIDE 六面覆盖规约</li>
-</ul></div>
-<div class="card"><div class="card-header"><div class="card-dot pass"></div><h3>已验证结果</h3></div><ul>
-<li>S1 密钥扫描: ✅ 通过 — 排除文档引用后无真实泄漏</li>
-<li>S3 输入校验: ✅ 通过 — security-scan.mjs XSS 向量检测</li>
-<li>S4 配置安全: ✅ 通过 — API_X_TOKEN 仅环境变量引用</li>
-<li>S5 依赖安全: ✅ 通过 — npm audit 无高危/严重漏洞</li>
-<li>扫描耗时: &lt;30ms — 轻量级 grep，适合高频执行</li>
-<li>Gate A 测试先行: ✅ 放行 — 4 TC-N + 7 TC-B 覆盖六面</li>
-</ul></div>
-<div class="card"><div class="card-header"><div class="card-dot warn"></div><h3>待推进 (P1-P2)</h3></div><ul>
-<li><b>P1</b> 安全约束基线快照 tests/fixtures/security-baseline.json</li>
-<li><b>P1</b> commit hook 安全扫描阻断 (硬编码密钥阻止提交)</li>
-<li><b>P2</b> S2 认证路径检查: API_X_TOKEN 传递链路验证</li>
-<li><b>P2</b> 扩展密钥扫描模式: AWS/GCP/Azure 云凭据</li>
-<li><b>P2</b> 添加 tests/run.mjs --security 专用筛选参数</li>
-<li><b>已知局限</b>: 仅正则模式匹配，未做语义分析，未扫描二进制文件</li>
-</ul></div>
+  <div class="card">
+    <div class="card-header"><div class="card-dot scene"></div><h3>场景</h3></div>
+    <ul><li><b>安全面回归自检</b> — 场景 4</li></ul>
+  </div>
+  <div class="placeholder">数据待填充 — 运行 /rui code 生成</div>
 </div>
 
-<p class="footer">YrY v4.8.2 · self-test · 场景-4: 安全面回归自检 · 知识图谱 v2.0.0</p>
+<div class="footer">YrY vv1.0.0 · 2026-06-05</div>
 </div>
+<script src="../../../../cdn/shared.js"></script>
 <script>
-const cy=cytoscape({container:document.getElementById('cy'),style:[
-{selector:'node',style:{'label':'data(label)','font-family':'JetBrains Mono,monospace','font-size':'9px','color':'#e2e8f0','text-valign':'center','text-halign':'center','text-wrap':'wrap','text-max-width':'100px','border-width':2,'width':52,'height':52,'background-opacity':0.9,'transition-property':'background-color,border-color,width,height','transition-duration':'0.2s'}},
-{selector:'node[type="scene"]',style:{'background-color':'rgba(139,92,246,.35)','border-color':'#8B5CF6','width':72,'height':72,'font-size':'10px','font-weight':'700','shape':'round-rectangle'}},
-{selector:'node[type="face"]',style:{'background-color':'rgba(239,68,68,.3)','border-color':'#ef4444','width':60,'height':60,'font-size':'9px','font-weight':'600','shape':'rectangle'}},
-{selector:'node[type="source"]',style:{'background-color':'rgba(59,130,246,.3)','border-color':'#3B82F6','width':56,'height':56,'font-size':'8px','shape':'ellipse'}},
-{selector:'node[type="implemented"]',style:{'background-color':'rgba(34,197,94,.25)','border-color':'#22c55e','width':46,'height':46,'font-size':'8px','font-weight':'600','shape':'diamond'}},
-{selector:'node[type="planned"]',style:{'background-color':'rgba(245,158,11,.25)','border-color':'#f59e0b','width':46,'height':46,'font-size':'8px','shape':'diamond'}},
-{selector:'edge',style:{'width':1.2,'line-color':'#334155','target-arrow-color':'#334155','target-arrow-shape':'triangle','arrow-scale':0.8,'curve-style':'bezier','opacity':0.6}},
-{selector:'edge[type="contains"]',style:{'line-color':'#8B5CF6','target-arrow-color':'#8B5CF6','width':1.5,'opacity':0.7}},
-{selector:'edge[type="scans"]',style:{'line-color':'#ef4444','target-arrow-color':'#ef4444','width':1.3,'opacity':0.65}},
-{selector:'edge[type="verified_by"]',style:{'line-color':'#22c55e','target-arrow-color':'#22c55e','width':1.2,'opacity':0.6}},
-{selector:'edge[type="blocks"]',style:{'line-color':'#ef4444','target-arrow-color':'#ef4444','width':1.3,'opacity':0.6}},
-{selector:'edge[type="warns"]',style:{'line-color':'#f59e0b','target-arrow-color':'#f59e0b','width':1,'opacity':0.5,'line-style':'dashed'}},
-{selector:'edge[type="planned_for"]',style:{'line-color':'#f59e0b','target-arrow-color':'#f59e0b','width':1,'opacity':0.5,'line-style':'dotted'}},
-{selector:'node:selected',style:{'border-width':3,'border-color':'#fff','z-index':999}},
-{selector:'edge:selected',style:{'width':3,'line-color':'#fff','target-arrow-color':'#fff','opacity':1,'z-index':999}}
-],
-elements:{nodes:[
-{data:{id:'s4',label:'场景-4\n安全面\n回归自检',type:'scene'}},
-{data:{id:'s1',label:'S1 密钥\n扫描\n硬编码凭据',type:'face'}},
-{data:{id:'s2',label:'S2 认证\n检查\n可绕过路径',type:'face'}},
-{data:{id:'s3',label:'S3 输入\n校验\nXSS/注入',type:'face'}},
-{data:{id:'s4_face',label:'S4 配置\n安全\n环境变量',type:'face'}},
-{data:{id:'s5',label:'S5 依赖\n安全\n已知漏洞',type:'face'}},
-{data:{id:'s6',label:'S6 约束\n退化\n安全底线',type:'face'}},
-{data:{id:'src-secscan',label:'security-\nscan.mjs\nS1+S3+S5',type:'source'}},
-{data:{id:'src-impact',label:'detect-\nimpact.mjs\nS6变更',type:'source'}},
-{data:{id:'src-xref',label:'cross-refs\n.test.mjs\nS1+S4',type:'source'}},
-{data:{id:'src-config',label:'config\n.json\nENV tmpl',type:'source'}},
-{data:{id:'src-claude',label:'CLAUDE.md\n安全底线\n4条规则',type:'source'}},
-{data:{id:'src-secagent',label:'security\n.md\nSTRIDE规约',type:'source'}},
-{data:{id:'st-impl',label:'S1 S3\nS4 S5\nIMPLEMENTED',type:'implemented'}},
-{data:{id:'st-plan',label:'S2 auth\nS6 baseline\nPLANNED',type:'planned'}}
-],
-edges:[
-{data:{id:'e-s4-s1',source:'s4',target:'s1',type:'contains'}},
-{data:{id:'e-s4-s2',source:'s4',target:'s2',type:'contains'}},
-{data:{id:'e-s4-s3',source:'s4',target:'s3',type:'contains'}},
-{data:{id:'e-s4-s4f',source:'s4',target:'s4_face',type:'contains'}},
-{data:{id:'e-s4-s5',source:'s4',target:'s5',type:'contains'}},
-{data:{id:'e-s4-s6',source:'s4',target:'s6',type:'contains'}},
-{data:{id:'e-s1-s2',source:'s1',target:'s2',type:'scans'}},
-{data:{id:'e-s2-s3',source:'s2',target:'s3',type:'scans'}},
-{data:{id:'e-s3-s4f',source:'s3',target:'s4_face',type:'scans'}},
-{data:{id:'e-s4f-s5',source:'s4_face',target:'s5',type:'scans'}},
-{data:{id:'e-s5-s6',source:'s5',target:'s6',type:'scans'}},
-{data:{id:'e-s1-secscan',source:'s1',target:'src-secscan',type:'verified_by'}},
-{data:{id:'e-s1-xref',source:'s1',target:'src-xref',type:'verified_by'}},
-{data:{id:'e-s3-secscan',source:'s3',target:'src-secscan',type:'verified_by'}},
-{data:{id:'e-s4f-xref',source:'s4_face',target:'src-xref',type:'verified_by'}},
-{data:{id:'e-s4f-config',source:'s4_face',target:'src-config',type:'verified_by'}},
-{data:{id:'e-s4f-claude',source:'s4_face',target:'src-claude',type:'verified_by'}},
-{data:{id:'e-s5-secscan',source:'s5',target:'src-secscan',type:'verified_by'}},
-{data:{id:'e-s6-impact',source:'s6',target:'src-impact',type:'verified_by'}},
-{data:{id:'e-s6-secagent',source:'s6',target:'src-secagent',type:'verified_by'}},
-{data:{id:'e-s2-plan',source:'s2',target:'st-plan',type:'planned_for'}},
-{data:{id:'e-s6-plan',source:'s6',target:'st-plan',type:'planned_for'}},
-{data:{id:'e-s1-impl',source:'s1',target:'st-impl',type:'verified_by'}},
-{data:{id:'e-s3-impl',source:'s3',target:'st-impl',type:'verified_by'}},
-{data:{id:'e-s4f-impl',source:'s4_face',target:'st-impl',type:'verified_by'}},
-{data:{id:'e-s5-impl',source:'s5',target:'st-impl',type:'verified_by'}},
-{data:{id:'e-claude-secscan',source:'src-claude',target:'src-secscan',type:'scans'}},
-{data:{id:'e-secagent-impact',source:'src-secagent',target:'src-impact',type:'scans'}}
-]},
-layout:{name:'breadthfirst',directed:true,spacingFactor:1.5,padding:30,avoidOverlap:true,nodeDimensionsIncludeLabels:true},
-wheelSensitivity:0.3,minZoom:0.3,maxZoom:3});
-
-cy.on('tap','node',function(evt){const node=evt.target;const hood=node.closedNeighborhood();cy.elements().style('opacity',0.15);hood.style('opacity',1);node.style('opacity',1)});
-cy.on('tap',function(evt){if(evt.target===cy)cy.elements().style('opacity',0.85)});
-
-async function copyAsImage(btn){const orig=btn.textContent;try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),blob=await new Promise(r=>canvas.toBlob(r,'image/png'));await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);btn.textContent='✓ Copied!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
-async function downloadPNG(btn){const orig=btn.textContent;btn.textContent='⏳...';try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),link=document.createElement('a');link.download='知识图谱-安全面回归自检.png';link.href=canvas.toDataURL('image/png');link.click();btn.textContent='✓ Done!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
-async function downloadPDF(btn){const orig=btn.textContent;btn.textContent='⏳...';try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),imgData=canvas.toDataURL('image/png');const{jsPDF}=window.jspdf,orientation=canvas.width>canvas.height?'landscape':'portrait',pdf=new jsPDF({orientation,unit:'px',format:[canvas.width,canvas.height],hotfixes:['px_scaling']});pdf.addImage(imgData,'PNG',0,0,canvas.width,canvas.height);pdf.save('知识图谱-安全面回归自检.pdf');btn.textContent='✓ Done!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
-</script><script src="../../../../cdn/shared.js"></script>
-</body></html>
+(function(){
+  if(typeof cytoscape==='undefined'){document.getElementById('cy').innerHTML='<p style="color:#475569;text-align:center;padding:2rem;">Cytoscape.js 未加载 — 知识图谱数据待生成</p>';return}
+  var cy=cytoscape({container:document.getElementById('cy'),style:[{selector:'node',style:{label:'data(label)',color:'white','font-size':'10px','font-family':'JetBrains Mono,monospace','text-valign':'center','text-halign':'center','background-color':'#1e293b',border:'2px solid #475569'}}],elements:{nodes:[{data:{id:'placeholder',label:'数据待填充'}}],edges:[]},layout:{name:'grid'}});
+  document.querySelector('.toolbar-actions button:nth-child(1)').onclick=function(){navigator.clipboard.writeText(JSON.stringify(cy.json())).then(()=>{this.textContent='✅ Copied';setTimeout(()=>this.textContent='📋 Copy',1500)})};
+  document.querySelector('.toolbar-actions button:nth-child(2)').onclick=function(){if(typeof html2canvas==='undefined')return;html2canvas(document.getElementById('cy'),{backgroundColor:'#020617'}).then(c=>{var a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='自测-scene4-kg.png';a.click()})};
+})();
+</script>
+</body>
+</html>
