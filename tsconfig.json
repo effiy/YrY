@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "checkJs": true,
+    "allowJs": true,
+    "noEmit": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "#lib/*": ["lib/*"]
+    }
+  },
+  "include": ["lib/**/*.mjs", "lib/**/*.js", "skills/**/*.mjs", "skills/**/*.js"],
+  "exclude": ["node_modules", ".claude", "dist"]
+}
