@@ -33,6 +33,7 @@ const DIM_ICONS = {
   em_docs:     "📚",
   em_deps:     "📦",
   em_git:      "🌿",
+  comp_qual:   "📦",
 };
 
 const DIM_LABELS = {
@@ -53,11 +54,13 @@ const DIM_LABELS = {
   em_docs:     "文档完整",
   em_deps:     "依赖管理",
   em_git:      "Git 纪律",
+  comp_qual:   "组件质量",
 };
 
 const DIM_WEIGHTS = {
   token: 15, config: 10, robots: 10, api: 15, reports: 10, format: 10, diagnostics: 10, git: 10, security: 10,
   em_testing: 20, em_types: 15, em_linting: 15, em_cicd: 15, em_docs: 15, em_deps: 10, em_git: 10,
+  comp_qual: 10,
 };
 
 const GRADE_STYLE = {
@@ -134,9 +137,11 @@ function buildGradeSparkline(history) {
   if (history.length < 2) return "";
 
   const gradeColors = { A: "#22c55e", B: "#22c55e", C: "#f59e0b", D: "#ef4444" };
-  const dots = history.map((h, i) => {
+  // Sample to max 20 dots to keep HTML compact
+  const sampled = history.length <= 20 ? history : history.filter((_, i) => i % Math.ceil(history.length / 20) === 0 || i === history.length - 1);
+  const dots = sampled.map((h, i) => {
     const color = gradeColors[h.grade] || "#666";
-    const last = i === history.length - 1;
+    const last = i === sampled.length - 1;
     const size = last ? "10px" : "6px";
     return `<span class="h-grade-dot" style="background:${color};width:${size};height:${size}" title="${h.grade} 级 · ${h.composite} 分 · ${h.timestamp?.slice(0,10) || ""}"></span>`;
   }).join("");
@@ -268,6 +273,9 @@ export function generateHealthReport(hr) {
     trendHtml = `<div class="h-hero-stat"><span class="h-hs-icon">${trendIcon}</span> 对比上次 (${prev.date}): <span class="h-hs-val" style="color:${trendColor}">${trendLabel}</span></div>`;
   }
 
+  // Component scores
+  const compScores = hr.compScores;
+
   // Build recommendations from triggered diagnostics + low scores
   const recommendations = [];
   if (hr.diagnostics?.triggered?.length > 0) {
@@ -288,6 +296,19 @@ export function generateHealthReport(hr) {
     if (s !== undefined && s < 60 && !recommendations.some((r) => r.source.includes(label))) {
       const rec = lowDimRecs[dim];
       if (rec) recommendations.push({ source: label, text: rec, priority: "medium" });
+    }
+  }
+  // Add low-score component recommendations
+  if (compScores) {
+    const allComps = [...(compScores.skills||[]), ...(compScores.agents||[]), ...(compScores.rules||[]), ...(compScores.scripts||[])];
+    for (const c of allComps) {
+      if (c.score < 60 && c.recommendations?.length > 0) {
+        recommendations.push({
+          source: `组件: ${c.name} (${c.score}分)`,
+          text: c.recommendations[0],
+          priority: c.score < 40 ? "high" : "medium",
+        });
+      }
     }
   }
 
@@ -313,7 +334,7 @@ export function generateHealthReport(hr) {
   const dimHistory = getDimensionHistory();
 
   // Separate into operational vs engineering maturity
-  const opsDims = ["token", "config", "robots", "api", "reports", "format", "diagnostics", "git", "security"];
+  const opsDims = ["token", "config", "robots", "api", "reports", "format", "diagnostics", "git", "security", "comp_qual"];
   const emDims = ["em_testing", "em_types", "em_linting", "em_cicd", "em_docs", "em_deps", "em_git"];
   const hasEmDims = emDims.some((d) => hr.scores[d] !== undefined);
 
@@ -325,7 +346,7 @@ export function generateHealthReport(hr) {
     const barColorRaw = score >= 80 ? "#22c55e" : score >= 60 ? "#f59e0b" : "#ef4444";
     const statusTier = score >= 80 ? "pass" : score >= 60 ? "warn" : "fail";
     const trend = dimTrendIcon(label, score, dimHistory);
-    const sparkline = dimSparkline(label, dimHistory);
+    const sparkline = ''; // dimSparkline(label, dimHistory);
     const prevScore = prevScores[dim];
     const contribution = Math.round(score * weight / 100);
     const delta = prevScore !== undefined ? score - prevScore : null;
@@ -343,7 +364,7 @@ export function generateHealthReport(hr) {
       </div>
       <div class="h-dim-bar-row">
         <div class="h-dim-bar"><div class="h-dim-bar-fill" style="width:${score}%;background:${barColor}"></div></div>
-        ${sparkline ? `<div class="h-dim-spark-wrap">${sparkline}</div>` : ''}
+        
       </div>
       <div class="h-dim-foot">
         <span class="h-dim-chip ${statusTier}">${score >= 80 ? '优秀' : score >= 60 ? '一般' : '告警'}</span>
@@ -425,186 +446,7 @@ export function generateHealthReport(hr) {
 <title>健康报告 · ${nowDate()}</title>
 <link rel="stylesheet" href="${CDN_DEPTH}cdn/shared.css">
 <link rel="stylesheet" href="${CDN_DEPTH}cdn/theme.css">
-<style>
-:root {
-  --yry-bg: rgba(22,22,32,1); --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
-  --yry-accent: #FFC107; --yry-pass: #22c55e; --yry-fail: #ef4444; --yry-warn: #f59e0b;
-  --yry-info: #3b82f6; --yry-cyan: #22d3ee;
-  --yry-text: rgba(250,250,252,1); --yry-text2: rgba(160,160,164,1); --yry-text3: rgba(110,110,114,1);
-  --yry-radius: 12px; --yry-border: 1px solid rgba(255,255,255,0.06);
-  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3); --yry-shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
-.h-container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
-
-/* Tabs */
-.h-tabs { display: flex; gap: 0; border-bottom: var(--yry-border); margin-bottom: 28px; animation: fadeInDown .5s .1s ease both; }
-.h-tab { padding: 10px 22px; cursor: pointer; font-size: .84rem; color: var(--yry-text3); border-bottom: 2px solid transparent; transition: all .15s; user-select: none; display: flex; align-items: center; gap: 6px; }
-.h-tab:hover { color: var(--yry-text2); }
-.h-tab.on { color: var(--yry-accent); border-bottom-color: var(--yry-accent); }
-.h-tab .h-tab-badge { font-size: .62rem; padding: 1px 7px; border-radius: 8px; font-weight: 600; }
-.h-tab .h-tab-badge.warn { background: rgba(245,158,11,.15); color: var(--yry-warn); }
-.h-tab .h-tab-badge.fail { background: rgba(239,68,68,.15); color: var(--yry-fail); }
-.h-panel { display: none; animation: fadeInUp .4s ease both; }
-.h-panel.on { display: block; }
-
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes fadeInDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-
-/* Breadcrumb */
-.h-bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
-.h-bc a { color: var(--yry-cyan); text-decoration: none; }
-.h-bc a:hover { color: var(--yry-accent); }
-.h-bc .h-bc-sep { color: var(--yry-text3); opacity: .4; }
-.h-bc .h-bc-cur { color: var(--yry-text2); }
-
-/* Header */
-.h-header { text-align: center; margin-bottom: 32px; }
-.h-header h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
-.h-header .h-date { color: var(--yry-text3); font-size: .82rem; }
-
-/* Hero score */
-.h-hero { display: flex; justify-content: center; align-items: center; gap: 32px; margin-bottom: 32px; flex-wrap: wrap; }
-.h-score-ring { width: 140px; height: 140px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 4px solid; }
-.h-score-num { font-size: 2.4rem; font-weight: 800; line-height: 1; }
-.h-score-grade { font-size: 1.1rem; font-weight: 700; margin-top: 2px; }
-.h-score-label { font-size: .72rem; color: var(--yry-text3); margin-top: 2px; }
-
-.h-hero-stats { display: flex; flex-direction: column; gap: 8px; }
-.h-hero-stat { display: flex; align-items: center; gap: 8px; font-size: .85rem; }
-.h-hero-stat .h-hs-icon { font-size: 1.1rem; }
-.h-hero-stat .h-hs-val { font-weight: 600; color: var(--yry-accent); }
-
-/* Section */
-.h-section { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
-.h-section h2 { font-size: 1.1rem; margin-bottom: 16px; color: var(--yry-accent); display: flex; align-items: center; gap: 8px; }
-
-/* Dimension cards */
-.h-dim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; margin-bottom: 0; }
-.h-dim-card { display: flex; flex-direction: column; gap: 10px; background: rgba(15,23,42,.3); border: var(--yry-border); border-radius: 10px; padding: 14px 18px; transition: transform .15s, box-shadow .15s, border-color .15s; position: relative; overflow: hidden; }
-.h-dim-card:hover { transform: translateY(-1px); box-shadow: var(--yry-shadow-lg); border-color: rgba(255,255,255,.08); }
-.h-dim-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--dc-color, #666); border-radius: 0 3px 3px 0; transition: opacity .3s; }
-.h-dim-card::after { content: ''; position: absolute; inset: 0; background: var(--dc-color, #666); opacity: .03; pointer-events: none; }
-
-.h-dim-top { display: flex; align-items: center; gap: 8px; }
-.h-dim-icon { font-size: .9rem; flex-shrink: 0; line-height: 1; }
-.h-dim-label { font-size: .8rem; font-weight: 600; flex: 1; color: var(--yry-text); }
-.h-dim-warn-chip { font-size: .6rem; font-weight: 700; padding: 1px 6px; border-radius: 6px; background: rgba(239,68,68,.15); color: var(--yry-fail); }
-.h-dim-score { font-size: 1.15rem; font-weight: 800; font-family: 'JetBrains Mono', 'Fira Code', monospace; line-height: 1; }
-.h-dim-score-sm { font-size: .58rem; font-weight: 500; opacity: .6; margin-left: 1px; }
-.h-dim-delta-badge { font-size: .64rem; font-weight: 700; padding: 1px 7px; border-radius: 6px; margin-left: -2px; }
-.h-dim-delta-badge.up { background: rgba(34,197,94,.12); color: var(--yry-pass); }
-.h-dim-delta-badge.down { background: rgba(239,68,68,.12); color: var(--yry-fail); }
-.h-dim-delta-badge.flat { background: rgba(255,255,255,.05); color: var(--yry-text3); }
-
-.h-dim-bar-row { display: flex; align-items: center; gap: 8px; }
-.h-dim-bar { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,.05); overflow: hidden; }
-.h-dim-bar-fill { height: 100%; border-radius: 3px; transition: width .6s ease; }
-.h-dim-spark-wrap { flex-shrink: 0; }
-
-.h-dim-foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-top: 2px; border-top: 1px solid rgba(255,255,255,.03); }
-.h-dim-chip { font-size: .6rem; font-weight: 700; padding: 1px 8px; border-radius: 4px; letter-spacing: .3px; text-transform: uppercase; }
-.h-dim-chip.pass { background: rgba(34,197,94,.12); color: var(--yry-pass); }
-.h-dim-chip.warn { background: rgba(245,158,11,.12); color: var(--yry-warn); }
-.h-dim-chip.fail { background: rgba(239,68,68,.12); color: var(--yry-fail); }
-.h-dim-note { font-size: .62rem; color: var(--yry-text3); opacity: .65; }
-
-.h-sparkline { display: flex; align-items: flex-end; gap: 2px; height: 16px; padding: 1px 4px; background: rgba(0,0,0,.15); border-radius: 3px; }
-.h-spark-bar { width: 3px; border-radius: 1px; min-height: 2px; transition: height .3s; }
-.h-spark-bar:hover { opacity: .7; transform: scaleY(1.3); }
-.h-grade-spark { display: inline-flex; align-items: center; gap: 3px; padding: 4px 12px; background: rgba(255,255,255,.03); border-radius: 16px; }
-.h-grade-dot { border-radius: 50%; display: inline-block; transition: transform .2s; }
-.h-grade-dot:hover { transform: scale(1.5); }
-.h-boot-badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: .7rem; font-weight: 600; background: rgba(59,130,246,.15); color: var(--yry-cyan); margin-right: 6px; }
-.h-new-badge { display: inline-block; padding: 1px 8px; border-radius: 8px; font-size: .65rem; font-weight: 700; background: rgba(239,68,68,.15); color: var(--yry-fail); margin-left: 4px; animation: fadeInDown .3s ease; }
-.h-new-badge.warn { background: rgba(245,158,11,.15); color: var(--yry-warn); }
-.h-rec-list { display: flex; flex-direction: column; gap: 8px; }
-.h-rec-item { display: flex; gap: 10px; padding: 12px 14px; background: rgba(15,23,42,.4); border-radius: 8px; border: var(--yry-border); }
-.h-rec-prio { font-size: .85rem; flex-shrink: 0; margin-top: 1px; }
-.h-rec-body { flex: 1; }
-.h-rec-source { font-size: .72rem; color: var(--yry-text3); margin-bottom: 2px; font-weight: 600; text-transform: uppercase; }
-.h-rec-text { font-size: .82rem; color: var(--yry-text2); line-height: 1.5; }
-.h-summary-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 16px 20px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
-.h-summary-row { display: flex; gap: 16px; flex-wrap: wrap; }
-.h-summary-item { flex: 1; min-width: 90px; text-align: center; padding: 8px 12px; background: rgba(15,23,42,.4); border-radius: 8px; }
-.h-summary-val { font-size: 1rem; font-weight: 700; }
-.h-summary-lbl { font-size: .65rem; color: var(--yry-text3); margin-top: 2px; text-transform: uppercase; letter-spacing: .5px; }
-.h-summary-rec { margin-top: 10px; padding: 8px 12px; font-size: .8rem; color: var(--yry-cyan); background: rgba(59,130,246,.06); border-radius: 6px; }
-
-/* Score composition */
-.h-comp-list { display: flex; flex-direction: column; gap: 6px; }
-.h-comp-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(15,23,42,.3); border-radius: 6px; }
-.h-comp-rank { font-size: .7rem; font-weight: 700; color: var(--yry-text3); min-width: 20px; text-align: center; }
-.h-comp-label { font-size: .8rem; font-weight: 500; min-width: 80px; color: var(--yry-text2); }
-.h-comp-score { font-size: .72rem; font-weight: 600; min-width: 85px; font-family: 'JetBrains Mono', monospace; }
-.h-comp-bar-wrap { flex: 1; height: 8px; border-radius: 4px; background: rgba(255,255,255,.05); overflow: hidden; }
-.h-comp-bar-inner { height: 100%; border-radius: 4px; transition: width .6s ease; }
-.h-comp-val { font-size: .78rem; font-weight: 700; color: var(--yry-accent); min-width: 28px; text-align: right; font-family: 'JetBrains Mono', monospace; }
-
-/* Diagnostic rows */
-.h-diag-summary { font-size: .78rem; color: var(--yry-text3); font-weight: 400; margin-left: 8px; }
-.h-diag-list { display: flex; flex-direction: column; gap: 8px; }
-.h-diag-row { padding: 14px 16px; border-radius: 8px; border: var(--yry-border); }
-.h-diag-row.ok { background: rgba(34,197,94,.03); }
-.h-diag-row.triggered { background: rgba(245,158,11,.04); border-left: 3px solid var(--yry-warn); }
-.h-diag-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-.h-diag-id { font-weight: 700; font-size: .85rem; }
-.h-diag-label { font-size: .82rem; color: var(--yry-text2); }
-.h-diag-confidence { font-size: .7rem; color: var(--yry-text3); margin-left: auto; }
-.h-diag-evidence { font-size: .78rem; color: var(--yry-text2); margin-top: 4px; padding-left: 4px; }
-.h-diag-suggestion { font-size: .78rem; color: var(--yry-cyan); margin-top: 4px; padding-left: 4px; }
-.h-diag-empty { text-align: center; color: var(--yry-text3); padding: 20px; font-size: .84rem; }
-.h-placeholder { text-align: center; color: var(--yry-text3); padding: 24px; font-size: .84rem; }
-
-/* Detail items */
-.h-detail-list { display: flex; flex-direction: column; gap: 6px; }
-.h-detail-item { display: flex; align-items: flex-start; gap: 8px; font-size: .82rem; color: var(--yry-text2); padding: 6px 0; }
-.h-detail-icon { flex-shrink: 0; margin-top: 1px; }
-
-/* Footer */
-.h-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
-.h-footer a { color: var(--yry-cyan); text-decoration: none; }
-.h-footer a:hover { color: var(--yry-accent); }
-
-/* Health bar */
-.h-bar-wrap { margin-bottom: 4px; }
-.h-bar-outer { height: 10px; border-radius: 5px; overflow: hidden; background: rgba(255,255,255,.06); }
-.h-bar-seg { height: 100%; transition: width .6s ease; }
-
-/* Links */
-.h-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
-.h-link { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.15); color: var(--yry-cyan); text-decoration: none; font-size: .82rem; transition: all .15s; }
-.h-link:hover { background: rgba(59,130,246,.15); border-color: rgba(59,130,246,.3); }
-
-@media (max-width: 640px) {
-  .h-hero { flex-direction: column; gap: 20px; }
-  .h-dim-grid { grid-template-columns: 1fr; }
-  .h-struct-table { font-size: .72rem; }
-  .h-struct-path { max-width: 180px; }
-}
-
-/* Structure section */
-.h-struct-sub { font-size: .86rem; font-weight: 600; color: var(--yry-text); margin: 18px 0 10px; display: flex; align-items: center; gap: 8px; }
-.h-struct-sub-note { font-size: .68rem; font-weight: 400; color: var(--yry-text3); }
-.h-struct-table { width: 100%; border-collapse: collapse; font-size: .78rem; }
-.h-struct-table th { text-align: left; font-size: .68rem; color: var(--yry-text3); text-transform: uppercase; letter-spacing: .3px; padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,.06); font-weight: 600; }
-.h-struct-table td { padding: 7px 8px; border-bottom: 1px solid rgba(255,255,255,.03); color: var(--yry-text2); vertical-align: middle; }
-.h-struct-table tbody tr:hover { background: rgba(255,255,255,.02); }
-.h-struct-rank { width: 28px; color: var(--yry-text3); font-family: 'JetBrains Mono', monospace; font-size: .72rem; }
-.h-struct-path { max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: .72rem; color: var(--yry-cyan); }
-.h-struct-ext { color: var(--yry-text3); font-size: .7rem; text-transform: lowercase; }
-.h-struct-lines { font-weight: 600; color: var(--yry-text); text-align: right; font-variant-numeric: tabular-nums; }
-.h-struct-bar-cell { width: 140px; }
-.h-struct-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,.05); overflow: hidden; }
-.h-struct-bar-fill { height: 100%; border-radius: 3px; transition: width .5s ease; }
-.h-struct-max { font-size: .7rem; color: var(--yry-text3); font-family: 'JetBrains Mono', monospace; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.h-struct-chip { display: inline-block; font-size: .58rem; font-weight: 700; padding: 1px 7px; border-radius: 4px; letter-spacing: .3px; text-transform: uppercase; }
-.h-struct-chip.pass { background: rgba(34,197,94,.12); color: var(--yry-pass); }
-.h-struct-chip.warn { background: rgba(245,158,11,.12); color: var(--yry-warn); }
-.h-struct-chip.fail { background: rgba(239,68,68,.12); color: var(--yry-fail); }
-.h-struct-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.04); }
-</style>
+<style>.h-crit{color:var(--yry-fail);font-weight:700}.h-trend{font-size:.64rem;margin-left:4px}.h-trend.up{color:var(--yry-pass)}.h-trend.down{color:var(--yry-fail)}.h-trend.stable{color:var(--yry-text3)}.h-new-badge{display:inline-block;padding:1px 8px;border-radius:8px;font-size:.65rem;font-weight:700;background:rgba(239,68,68,.15);color:var(--yry-fail);margin-left:4px}</style>
 </head>
 <body>
 <div class="h-container">
@@ -642,6 +484,7 @@ body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-sy
 <div class="h-tabs">
   <div class="h-tab on" data-panel="overview">📊 概览</div>
   <div class="h-tab" data-panel="scores">📈 评分<span class="h-tab-badge ${dimFail > 0 ? 'fail' : dimWarn > 0 ? 'warn' : ''}">${dimPass}/${dimPass+dimWarn+dimFail}</span></div>
+  <div class="h-tab" data-panel="components">📦 组件<span class="h-tab-badge">${compScores ? compScores.skills.length + compScores.agents.length + compScores.rules.length + compScores.scripts.length : 0}</span></div>
   <div class="h-tab" data-panel="diagnostics">🔬 诊断<span class="h-tab-badge ${(hr.diagnostics?.triggered?.length ?? 0) > 0 ? 'warn' : ''}">${hr.diagnostics?.triggered?.length ?? 0}/8</span></div>
   <div class="h-tab" data-panel="actions">💡 行动<span class="h-tab-badge">${recommendations.length}</span></div>
 </div>
@@ -676,12 +519,17 @@ body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-sy
   </div>
 </div>
 
-<!-- Panel 3: Diagnostics -->
+<!-- Panel 3: Components -->
+<div class="h-panel" id="components">
+  ${buildComponentSections(compScores)}
+</div>
+
+<!-- Panel 4: Diagnostics -->
 <div class="h-panel" id="diagnostics">
   ${diagSection}
 </div>
 
-<!-- Panel 4: Actions -->
+<!-- Panel 5: Actions -->
 <div class="h-panel" id="actions">
   ${recommendations.length > 0 ? buildRecommendationsSection(recommendations) : '<div class="h-section"><h2>💡 改进建议</h2><div class="h-placeholder">暂无建议 — 所有维度均处于健康状态</div></div>'}
   ${buildGitSecuritySection(hr)}
@@ -713,10 +561,41 @@ document.querySelectorAll('.h-tab').forEach(function(t) {
   }
 
   const filePath = join(REPORT_DIR, filename);
-  writeFileSync(filePath, html, "utf-8");
+  // Compact HTML: strip whitespace, remove blank lines, merge only short adjacent lines
+  let lines = html.replace(/<!--.*?-->/gs, '').split('\n').map(l => l.trim()).filter(l => l);
+  const merged = [];
+  for (const line of lines) {
+    const prev = merged[merged.length - 1];
+    if (prev && line.length < 80 && prev.length < 120 && (prev + line).length < 200) {
+      merged[merged.length - 1] = prev + line;
+    } else {
+      merged.push(line);
+    }
+  }
+  const compactHtml = merged.join('\n');
+  writeFileSync(filePath, compactHtml, "utf-8");
 
   return { filePath, filename };
 }
+
+/**
+ * Build component scoring sections (skills, agents, rules, scripts).
+ * Shows per-component scores + detailed criteria breakdowns + recommendations.
+ */
+function buildComponentSections(compScores) {
+  if (!compScores) return "";
+  function sc(s){return s>=80?"var(--yry-pass)":s>=60?"var(--yry-warn)":"var(--yry-fail)"}
+  function chip(s){return s>=80?'<span class="h-comp-chip pass">优秀</span>':s>=60?'<span class="h-comp-chip warn">一般</span>':'<span class="h-comp-chip fail">待改进</span>'}
+  function tbl(items,showMeta){
+    if(!items||!items.length)return'<div class="h-placeholder">暂无数据</div>';
+    const s=[...items].sort((a,b)=>b.score-a.score);
+    return`<table class="h-comp-table"><thead><tr><th>#</th><th>名称</th>${showMeta?'<th>属性</th>':''}<th>评分</th><th>等级</th></tr></thead><tbody>${s.map((x,i)=>{const m=[];if(x.hasSkillMd!==undefined)m.push(x.hasSkillMd?'📄':'❌SKILL.md');if(x.hasLib)m.push('📦lib');if(x.mjsCount>0)m.push('📜'+x.mjsCount);if(x.category)m.push('📂'+x.category);return`<tr><td class="h-comp-rank">${i+1}</td><td class="h-comp-name">${x.name}</td>${showMeta?`<td class="h-comp-meta">${m.join(' ')||'—'}</td>`:''}<td class="h-comp-score-cell"><div class="h-comp-score-bar"><div class="h-comp-score-fill" style="width:${x.score}%;background:${sc(x.score)}"></div></div><span class="h-comp-score-num" style="color:${sc(x.score)}">${x.score} 分</span></td><td>${chip(x.score)}</td></tr>`}).join('')}</tbody></table>`}
+  const avg=a=>a.length?Math.round(a.reduce((p,c)=>p+c.score,0)/a.length):0;
+  const all=[...(compScores.skills||[]),...(compScores.agents||[]),...(compScores.rules||[]),...(compScores.scripts||[])];
+  const lo=all.filter(c=>c.score<60);
+  return`<div class="h-section"><h2>📦 组件评分总览</h2><div class="h-comp-summary"><div class="h-comp-sum-item"><div class="h-comp-sum-val" style="color:${sc(avg(all))}">${avg(all)}</div><div class="h-comp-sum-lbl">综合均分 · ${all.length} 组件</div></div><div class="h-comp-sum-item"><div class="h-comp-sum-val" style="color:${sc(avg(compScores.skills))}">${avg(compScores.skills)}</div><div class="h-comp-sum-lbl">Skills · ${compScores.skills.length} 个</div></div><div class="h-comp-sum-item"><div class="h-comp-sum-val" style="color:${sc(avg(compScores.agents))}">${avg(compScores.agents)}</div><div class="h-comp-sum-lbl">Agents · ${compScores.agents.length} 个</div></div><div class="h-comp-sum-item"><div class="h-comp-sum-val" style="color:${sc(avg(compScores.rules))}">${avg(compScores.rules)}</div><div class="h-comp-sum-lbl">Rules · ${compScores.rules.length} 个</div></div><div class="h-comp-sum-item"><div class="h-comp-sum-val" style="color:${sc(avg(compScores.scripts))}">${avg(compScores.scripts)}</div><div class="h-comp-sum-lbl">Scripts · ${compScores.scripts.length} 个</div></div></div></div>${lo.length?`<div class="h-section" style="border-left:3px solid var(--yry-fail)"><h2>⚠️ 低分组件 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">${lo.length} 个</span></h2><div class="h-rec-list">${lo.map(c=>`<div class="h-rec-item"><span class="h-rec-prio" style="color:var(--yry-fail)">🔴</span><div class="h-rec-body"><div class="h-rec-source">${c.name} · ${c.score} 分</div><div class="h-rec-text">${(c.recommendations||['补充完善']).join('；')}</div></div></div>`).join('')}</div></div>`:''}<div class="h-section"><h2>🤖 Skills <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">${compScores.skills.length} 个 · 均分 ${avg(compScores.skills)}</span></h2>${tbl(compScores.skills,true)}</div><div class="h-section"><h2>👥 Agents <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">${compScores.agents.length} 个 · 均分 ${avg(compScores.agents)}</span></h2>${tbl(compScores.agents,false)}</div><div class="h-section"><h2>📏 Rules <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">${compScores.rules.length} 个 · 均分 ${avg(compScores.rules)}</span></h2>${tbl(compScores.rules,false)}</div><div class="h-section"><h2>📜 Scripts <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">${compScores.scripts.length} 个 · 均分 ${avg(compScores.scripts)}</span></h2>${tbl(compScores.scripts,true)}</div>`;
+
+} // end buildComponentSections
 
 /**
  * Generate/update the health report index page.
@@ -731,40 +610,29 @@ export function generateHealthIndex() {
     .sort()
     .reverse();
 
-  let latestInfo = "";
-  if (files.length > 0) {
-    const latest = files[0];
-    const latestPath = join(REPORT_DIR, latest);
-    try {
-      const content = readFileSync(latestPath, "utf-8");
-      const scoreMatch = content.match(/h-score-num[^>]*>(\d+)</);
-      const gradeMatch = content.match(/h-score-grade[^>]*>([ABCD]) 级</);
-      if (scoreMatch) {
-        latestInfo = `<div class="hi-latest">
-          <span class="hi-latest-label">最新评估:</span>
-          <span class="hi-latest-score">${scoreMatch[1]} 分</span>
-          ${gradeMatch ? `<span class="hi-latest-grade">${gradeMatch[1]} 级</span>` : ""}
-          <span class="hi-latest-date">${latest.replace("health-", "").replace(".html", "").split("-").slice(0, 3).join("-")}</span>
-        </div>`;
-      }
-    } catch { /* skip */ }
-  }
-
-  const rows = files.map((f) => {
+  // Extract metadata from each report into a JSON data file
+  const reports = [];
+  for (const f of files) {
     const name = f.replace(".html", "");
     const parts = name.split("-");
     const date = parts.slice(1, 4).join("-");
     const timeRaw = parts.slice(4).join("");
-    const time = timeRaw
-      ? `${timeRaw.slice(0, 2)}:${timeRaw.slice(2, 4)}:${timeRaw.slice(4, 6)}`
-      : "—";
-    return `<tr>
-      <td><a href="${f}">🩺 ${date}</a></td>
-      <td>${time}</td>
-      <td><a href="${f}">查看</a></td>
-    </tr>`;
-  }).join("\n");
+    const time = timeRaw ? `${timeRaw.slice(0, 2)}:${timeRaw.slice(2, 4)}:${timeRaw.slice(4, 6)}` : "—";
+    let score = null, grade = null;
+    try {
+      const content = readFileSync(join(REPORT_DIR, f), "utf-8");
+      const sm = content.match(/h-score-num[^>]*>(\d+)</);
+      const gm = content.match(/h-score-grade[^>]*>([ABCD]) 级</);
+      if (sm) score = parseInt(sm[1], 10);
+      if (gm) grade = gm[1];
+    } catch { /* skip */ }
+    reports.push({ file: f, date, time, score, grade });
+  }
 
+  // Write data file for JS to fetch
+  writeFileSync(join(REPORT_DIR, "reports.json"), JSON.stringify(reports), "utf-8");
+
+  // Generate static shell that loads data via JS
   const html = `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -774,76 +642,104 @@ export function generateHealthIndex() {
 <link rel="stylesheet" href="${CDN_DEPTH}cdn/shared.css">
 <link rel="stylesheet" href="${CDN_DEPTH}cdn/theme.css">
 <style>
-:root {
-  --yry-bg: rgba(22,22,32,1); --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
-  --yry-accent: #FFC107; --yry-pass: #22c55e;
-  --yry-text: rgba(250,250,252,1); --yry-text2: rgba(160,160,164,1); --yry-text3: rgba(110,110,114,1);
-  --yry-radius: 12px; --yry-border: 1px solid rgba(255,255,255,0.06);
-  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
-.hi-container { max-width: 800px; margin: 0 auto; padding: 48px 24px 80px; }
-.hi-bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
-.hi-bc a { color: var(--yry-cyan); text-decoration: none; }
-.hi-bc a:hover { color: var(--yry-accent); }
-.hi-bc .hi-bc-sep { color: var(--yry-text3); opacity: .4; }
-.hi-bc .hi-bc-cur { color: var(--yry-text2); }
-.hi-header { text-align: center; margin-bottom: 32px; }
-.hi-header h1 { font-size: 1.6rem; }
-.hi-header .hi-meta { color: var(--yry-text3); font-size: .82rem; margin-top: 6px; }
-.hi-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); }
-.hi-latest { text-align: center; padding: 16px; margin-bottom: 20px; background: rgba(255,193,7,.05); border-radius: 10px; border: var(--yry-border); }
-.hi-latest-label { font-size: .78rem; color: var(--yry-text3); }
-.hi-latest-score { font-size: 1.8rem; font-weight: 800; color: var(--yry-accent); margin: 0 4px; }
-.hi-latest-grade { font-size: 1rem; font-weight: 700; color: var(--yry-pass); }
-.hi-latest-date { display: block; font-size: .72rem; color: var(--yry-text3); margin-top: 4px; }
-table { width: 100%; border-collapse: collapse; }
-th, td { padding: 10px 16px; text-align: left; border-bottom: var(--yry-border); font-size: .88rem; }
-th { color: var(--yry-text3); font-size: .76rem; text-transform: uppercase; }
-td a { color: var(--yry-cyan); text-decoration: none; }
-td a:hover { color: var(--yry-accent); }
-.hi-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; justify-content: center; }
-.hi-link { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.15); color: var(--yry-cyan); text-decoration: none; font-size: .82rem; transition: all .15s; }
-.hi-link:hover { background: rgba(59,130,246,.15); }
-.hi-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
+:root{--yry-bg:rgba(22,22,32,1);--yry-accent:#FFC107;--yry-pass:#22c55e;--yry-fail:#ef4444;--yry-text:rgba(250,250,252,1);--yry-text2:rgba(160,160,164,1);--yry-text3:rgba(110,110,114,1);--yry-border:1px solid rgba(255,255,255,.06);--yry-shadow:0 4px 20px rgba(0,0,0,.3)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--yry-bg);color:var(--yry-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
+.c{max-width:800px;margin:0 auto;padding:48px 24px 80px}
+.bc{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:24px;font-size:.76rem}
+.bc a{color:#22d3ee;text-decoration:none}.bc a:hover{color:var(--yry-accent)}
+.bc .sep{color:var(--yry-text3);opacity:.4}.bc .cur{color:var(--yry-text2)}
+.hd{text-align:center;margin-bottom:32px}.hd h1{font-size:1.6rem}.hd .meta{color:var(--yry-text3);font-size:.82rem;margin-top:6px}
+.card{background:linear-gradient(159deg,rgba(38,38,52,1)0%,rgba(34,34,46,1)100%);border:var(--yry-border);border-radius:12px;padding:24px;box-shadow:var(--yry-shadow)}
+.latest{text-align:center;padding:16px 16px 12px;margin-bottom:20px;background:rgba(255,193,7,.05);border-radius:10px;border:var(--yry-border)}
+.latest .score{font-size:2rem;font-weight:800;color:var(--yry-accent)}.latest .grade{font-size:1.1rem;font-weight:700;margin-left:8px}
+.latest .date{display:block;font-size:.72rem;color:var(--yry-text3);margin-top:4px}
+.latest .meta-row{font-size:.68rem;color:var(--yry-text3);margin-top:6px}
+table{width:100%;border-collapse:collapse}th,td{padding:10px 16px;text-align:left;border-bottom:var(--yry-border);font-size:.88rem}
+th{color:var(--yry-text3);font-size:.76rem;text-transform:uppercase}
+td a{color:#22d3ee;text-decoration:none}td a:hover{color:var(--yry-accent)}
+td .s{font-weight:700;font-size:.82rem}td .s.A,td .s.B{color:var(--yry-pass)}td .s.C{color:#f59e0b}td .s.D{color:var(--yry-fail)}
+.links{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;justify-content:center}
+.links a{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.15);color:#22d3ee;text-decoration:none;font-size:.82rem;transition:all .15s}
+.links a:hover{background:rgba(59,130,246,.15)}
+.ft{text-align:center;color:var(--yry-text3);font-size:.74rem;margin-top:48px;padding-top:20px;border-top:var(--yry-border)}
+#loading{text-align:center;color:var(--yry-text3);padding:40px}
 </style>
 </head>
 <body>
-<div class="hi-container">
+<div class="c">
 
-<nav class="hi-bc">
+<nav class="bc">
   <a href="${CDN_DEPTH}docs/index.html">📄 文档中心</a>
-  <span class="hi-bc-sep">/</span>
-  <span class="hi-bc-cur">🩺 健康报告</span>
+  <span class="sep">/</span>
+  <span class="cur">🩺 健康报告</span>
 </nav>
 
-<div class="hi-header">
+<div class="hd">
   <h1>🩺 健康报告</h1>
-  <div class="hi-meta">${files.length} 份历史报告</div>
+  <div class="meta"><span id="count">—</span> 份历史报告</div>
 </div>
 
-${latestInfo}
+<div class="latest" id="latest">
+  <span id="loading">加载中…</span>
+</div>
 
-<div class="hi-card">
+<div class="card">
   <table>
-    <thead><tr><th>日期</th><th>时间</th><th>操作</th></tr></thead>
-    <tbody>${rows || '<tr><td colspan="3" style="color:var(--yry-text3)">暂无报告 — 运行 <code>node skills/rui-bot/send.mjs health --html</code> 生成首份报告</td></tr>'}</tbody>
+    <thead><tr><th>日期</th><th>时间</th><th>评分</th><th>操作</th></tr></thead>
+    <tbody id="tbody"></tbody>
   </table>
 </div>
 
-<div class="hi-links">
-  <a class="hi-link" href="${CDN_DEPTH}docs/自循环报告/">📊 自循环报告</a>
-  <a class="hi-link" href="${CDN_DEPTH}docs/故事任务面板/">📋 故事任务面板</a>
-  <a class="hi-link" href="${CDN_DEPTH}docs/index.html">📄 文档中心</a>
+<div class="links">
+  <a href="${CDN_DEPTH}docs/自循环报告/">📊 自循环报告</a>
+  <a href="${CDN_DEPTH}docs/故事任务面板/">📋 故事任务面板</a>
+  <a href="${CDN_DEPTH}docs/index.html">📄 文档中心</a>
 </div>
 
-<div class="hi-footer">
+<div class="ft">
   健康报告索引<br>
-  <span style="color:var(--yry-text3)">由 rui-bot health-report 自动生成</span>
+  <span style="color:var(--yry-text3)">由 rui-bot health-report 自动生成 · 数据实时读取</span>
 </div>
 
 </div>
+<script>
+(async function() {
+  try {
+    const res = await fetch('reports.json');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const reports = await res.json();
+    document.getElementById('count').textContent = reports.length;
+
+    // Latest report
+    const latest = reports[0];
+    const ldiv = document.getElementById('latest');
+    if (latest && latest.score) {
+      const gc = latest.grade === 'A' || latest.grade === 'B' ? 'var(--yry-pass)' : latest.grade === 'C' ? '#f59e0b' : 'var(--yry-fail)';
+      ldiv.innerHTML = '<span style="font-size:.78rem;color:var(--yry-text3)">最新评估:</span> '
+        + '<span class="score">' + latest.score + ' 分</span>'
+        + '<span class="grade" style="color:' + gc + '">' + (latest.grade || '?') + ' 级</span>'
+        + '<span class="date">' + latest.date + '</span>'
+        + '<div class="meta-row">综合健康度 · ' + reports.length + ' 份历史报告</div>';
+    } else {
+      ldiv.innerHTML = '<span style="color:var(--yry-text3)">暂无报告数据</span>';
+    }
+
+    // Report table
+    const tbody = document.getElementById('tbody');
+    if (reports.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" style="color:var(--yry-text3)">暂无报告 — 运行 <code>node skills/rui-bot/send.mjs health --html</code> 生成首份报告</td></tr>';
+    } else {
+      tbody.innerHTML = reports.map(function(r) {
+        var sc = r.score ? '<span class="s ' + (r.grade || '') + '">' + r.score + ' 分 ' + (r.grade || '') + '</span>' : '—';
+        return '<tr><td><a href="' + r.file + '">🩺 ' + r.date + '</a></td><td>' + r.time + '</td><td>' + sc + '</td><td><a href="' + r.file + '">查看</a></td></tr>';
+      }).join('');
+    }
+  } catch(e) {
+    document.getElementById('loading').textContent = '加载失败: ' + e.message;
+  }
+})();
+</script>
 </body>
 </html>`;
 
@@ -1036,7 +932,8 @@ function buildStructureSection(hr) {
   // Large files table
   let filesHtml = "";
   if (si.largeFiles && si.largeFiles.length > 0) {
-    const rows = si.largeFiles.map((f, i) => {
+    const topFiles = si.largeFiles.slice(0, 5);
+    const rows = topFiles.map((f, i) => {
       const tier = f.lines >= 1000 ? "fail" : "warn";
       const tierLabel = f.lines >= 1000 ? "巨型" : "大型";
       const tierColor = f.lines >= 1000 ? "var(--yry-fail)" : "var(--yry-warn)";
@@ -1051,7 +948,7 @@ function buildStructureSection(hr) {
       </tr>`;
     }).join("");
     filesHtml = `
-      <h3 class="h-struct-sub">📄 大文件 TOP ${si.largeFiles.length} <span class="h-struct-sub-note">≥500 行 · 按行数降序</span></h3>
+      <h3 class="h-struct-sub">📄 大文件 TOP 5 <span class="h-struct-sub-note">≥500 行 · 按行数降序 · 共 ${si.largeFiles.length} 个</span></h3>
       <table class="h-struct-table">
         <thead><tr><th>#</th><th>路径</th><th>类型</th><th>行数</th><th>规模</th><th>级别</th></tr></thead>
         <tbody>${rows}</tbody>
@@ -1063,7 +960,8 @@ function buildStructureSection(hr) {
   // Modules table
   let modulesHtml = "";
   if (si.modules && si.modules.length > 0) {
-    const rows = si.modules.map((m, i) => {
+    const topMods = si.modules.slice(0, 5);
+    const rows = topMods.map((m, i) => {
       const hot = m.lines >= 3000 || m.fileCount >= 30;
       const pct = Math.min(100, (m.lines / 10000) * 100);
       const barColor = hot ? "var(--yry-warn)" : "var(--yry-pass)";
@@ -1079,7 +977,7 @@ function buildStructureSection(hr) {
       </tr>`;
     }).join("");
     modulesHtml = `
-      <h3 class="h-struct-sub">📦 顶层模块 TOP ${si.modules.length} <span class="h-struct-sub-note">按总行数降序 · 最大文件行数附后</span></h3>
+      <h3 class="h-struct-sub">📦 顶层模块 TOP 5 <span class="h-struct-sub-note">按总行数降序 · 共 ${si.modules.length} 个模块</span></h3>
       <table class="h-struct-table">
         <thead><tr><th>#</th><th>模块</th><th>文件数</th><th>总行数</th><th>均行数</th><th>规模</th><th>最大文件</th><th>状态</th></tr></thead>
         <tbody>${rows}</tbody>

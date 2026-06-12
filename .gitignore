@@ -43,3 +43,4 @@ skills/rui-bot/config.local.json
 
 # Claude Code local settings (may contain secrets)
 .claude/settings.local.json
+docs/健康报告/reports.json

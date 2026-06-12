@@ -743,6 +743,7 @@ const HEALTH_DIMENSIONS = {
   em_docs:    { label: "文档完整", weight: 8 },
   em_deps:    { label: "依赖管理", weight: 5 },
   em_git:     { label: "Git 纪律", weight: 5 },
+  comp_qual:  { label: "组件质量", weight: 10 },
 };
 
 const HEALTH_GRADE = [
@@ -1274,6 +1275,25 @@ async function cmdHealth(projectRoot, opts = {}) {
   console.log("  └──────────────────────────────────────┘");
   console.log("");
 
+  // ── Component quality dimension (before display loop) ────
+  const compScores = scanComponentScores(projectRoot);
+  const allComps = [...compScores.skills, ...compScores.agents, ...compScores.rules, ...compScores.scripts];
+  const compQualScore = allComps.length > 0
+    ? Math.round(allComps.reduce((a, c) => a + c.score, 0) / allComps.length)
+    : 0;
+  const compPassCount = allComps.filter((c) => c.score >= 80).length;
+  const compWarnCount = allComps.filter((c) => c.score >= 60 && c.score < 80).length;
+  const compFailCount = allComps.filter((c) => c.score < 60).length;
+  scores.comp_qual = compQualScore;
+  details.push({
+    dim: "comp_qual",
+    label: "组件质量",
+    status: compQualScore >= 80 ? "pass" : compQualScore >= 60 ? "warn" : "fail",
+    detail: `${allComps.length} 组件均分 ${compQualScore} · 优秀 ${compPassCount} / 一般 ${compWarnCount} / 待改进 ${compFailCount}`,
+    score: compQualScore,
+  });
+  console.log(`  ${compQualScore >= 80 ? "✅" : compQualScore >= 60 ? "⚠️" : "❌"} 组件质量:         ${compQualScore} 分 — ${allComps.length} 组件 (Skills ${compScores.skills.length} · Agents ${compScores.agents.length} · Rules ${compScores.rules.length} · Scripts ${compScores.scripts.length})`);
+
   // Dimension breakdown
   console.log("  维度得分:");
   for (const [dim, cfg] of Object.entries(HEALTH_DIMENSIONS)) {
@@ -1283,7 +1303,7 @@ async function cmdHealth(projectRoot, opts = {}) {
   }
   console.log("");
 
-  const result = { composite, grade: grade.grade, scores, details, diagnostics: diagResult, config, tokenOk, robotOkCount, robotNames, gitInfo, secInfo, structInfo };
+  const result = { composite, grade: grade.grade, scores, details, diagnostics: diagResult, config, tokenOk, robotOkCount, robotNames, gitInfo, secInfo, structInfo, compScores };
   saveHealthTrend(result, projectRoot);
   return result;
 }
@@ -1408,6 +1428,267 @@ function assessEngineeringMaturity(projectRoot) {
   details.push({ dim: "em_git", label: "Git 纪律", status: emGitScore >= 80 ? "pass" : emGitScore >= 60 ? "warn" : "fail", detail: `${gitDiscCount} 项: ${gitItems.join(", ") || "无"}`, score: emGitScore });
 
   return { scores, details, summaries };
+}
+
+/**
+ * Scan all project components (skills, agents, rules, scripts) and compute
+ * per-component quality scores with detailed criteria breakdowns and
+ * recommendations for low-scoring components.
+ */
+function scanComponentScores(projectRoot) {
+  const results = { skills: [], agents: [], rules: [], scripts: [] };
+
+  // ── Skills ───────────────────────────────────────────────
+  const skillsDir = join(projectRoot, "skills");
+  if (existsSync(skillsDir)) {
+    const skillDirs = readdirSync(skillsDir, { withFileTypes: true })
+      .filter((d) => d.isDirectory());
+    for (const sd of skillDirs) {
+      const criteria = {};
+      const recs = [];
+      let score = 0;
+      const skillPath = join(skillsDir, sd.name);
+      const skillMd = join(skillPath, "SKILL.md");
+
+      // C1: SKILL.md exists (40 pts)
+      criteria["SKILL.md 存在"] = existsSync(skillMd);
+      if (criteria["SKILL.md 存在"]) {
+        score += 40;
+        let content = "";
+        let lines = 0;
+        try { content = readFileSync(skillMd, "utf-8"); lines = content.split("\n").length; } catch {}
+
+        // C2: frontmatter (10 pts)
+        criteria["YAML frontmatter"] = /^---/m.test(content);
+        if (criteria["YAML frontmatter"]) score += 10;
+        else recs.push("添加 YAML frontmatter (name + description)");
+
+        // C3: comprehensive docs (20 pts)
+        criteria[`文档 ≥100 行 (当前 ${lines})`] = lines >= 100;
+        if (lines >= 100) score += 20;
+        else if (lines >= 50) { score += 10; recs.push(`SKILL.md 仅 ${lines} 行，建议扩充到 ≥100 行`); }
+        else recs.push(`SKILL.md 仅 ${lines} 行，建议扩充到 ≥100 行`);
+
+        // C4: diagrams (5 pts)
+        criteria["含 Mermaid 图表"] = /mermaid|```mermaid/.test(content);
+        if (criteria["含 Mermaid 图表"]) score += 5;
+
+        // C5: modular lib/ (15 pts)
+        criteria["lib/ 子目录"] = existsSync(join(skillPath, "lib"));
+        if (criteria["lib/ 子目录"]) score += 15;
+        else if (lines >= 150) recs.push("建议抽取共享逻辑到 lib/ 子目录");
+
+        // Count scripts and help entry
+        let mjsCount = 0, hasHelp = false;
+        try {
+          const files = readdirSync(skillPath, { recursive: true, withFileTypes: true });
+          for (const f of files) {
+            if (f.isFile() && f.name.endsWith(".mjs")) { mjsCount++; if (f.name === "help.mjs") hasHelp = true; }
+          }
+        } catch {}
+
+        // C6: help entry (5 pts)
+        criteria["help.mjs 入口"] = hasHelp;
+        if (hasHelp) score += 5;
+        else recs.push("添加 help.mjs 作为技能帮助入口");
+
+        // C7: rich scripts (5 pts)
+        criteria[`≥3 个 .mjs (当前 ${mjsCount})`] = mjsCount >= 3;
+        if (mjsCount >= 3) score += 5;
+      } else {
+        recs.push("创建 SKILL.md — 技能无规约文件");
+      }
+
+      results.skills.push({
+        name: sd.name,
+        score: Math.min(100, score),
+        criteria,
+        recommendations: recs,
+        hasSkillMd: criteria["SKILL.md 存在"],
+        hasLib: criteria["lib/ 子目录"],
+        mjsCount: Object.entries(criteria).find(([k]) => k.includes(".mjs"))?.[1] || 0,
+      });
+    }
+  }
+
+  // ── Agents ───────────────────────────────────────────────
+  const agentsDir = join(projectRoot, "agents");
+  if (existsSync(agentsDir)) {
+    try {
+      const agentFiles = readdirSync(agentsDir).filter((f) => f.endsWith(".md"));
+      for (const af of agentFiles) {
+        const criteria = {};
+        const recs = [];
+        const agentPath = join(agentsDir, af);
+        let score = 0;
+        try {
+          const content = readFileSync(agentPath, "utf-8");
+          const lines = content.split("\n").length;
+
+          // C1: file exists (40)
+          score = 40;
+
+          // C2: frontmatter + description (20)
+          const hasFM = /^---/m.test(content);
+          const hasDesc = /description:/m.test(content);
+          criteria["frontmatter + description"] = hasFM && hasDesc;
+          if (hasFM && hasDesc) score += 20;
+          else if (hasFM) { score += 10; recs.push("frontmatter 缺少 description 字段"); }
+          else recs.push("添加 YAML frontmatter");
+
+          // C3: line count (20)
+          criteria[`≥200 行 (当前 ${lines})`] = lines >= 200;
+          if (lines >= 200) score += 20;
+          else if (lines >= 100) { score += 10; recs.push(`仅 ${lines} 行，建议扩充到 ≥200 行`); }
+          else recs.push(`仅 ${lines} 行，建议扩充到 ≥200 行`);
+
+          // C4: Red Flags (10)
+          criteria["含 Red Flags / 合理化速查"] = /Red Flag|red flag|合理化/.test(content);
+          if (criteria["含 Red Flags / 合理化速查"]) score += 10;
+          else recs.push("添加 Red Flags 和合理化速查表");
+
+          // C5: Mermaid (5)
+          criteria["含 Mermaid 图表"] = /mermaid|```mermaid/.test(content);
+          if (criteria["含 Mermaid 图表"]) score += 5;
+
+          // C6: structured sections (5)
+          criteria["含结构化章节"] = /##\s+(触发|规则|操作|生效)/.test(content);
+          if (criteria["含结构化章节"]) score += 5;
+          else recs.push("添加结构化章节 (触发/规则/操作/生效标志)");
+        } catch {}
+        results.agents.push({
+          name: af.replace(".md", ""),
+          score: Math.min(100, score),
+          criteria,
+          recommendations: recs,
+        });
+      }
+    } catch {}
+  }
+
+  // ── Rules ───────────────────────────────────────────────
+  const rulesDir = join(projectRoot, "rules");
+  if (existsSync(rulesDir)) {
+    try {
+      const ruleFiles = readdirSync(rulesDir).filter((f) => f.endsWith(".md"));
+      for (const rf of ruleFiles) {
+        const criteria = {};
+        const recs = [];
+        const rulePath = join(rulesDir, rf);
+        let score = 0;
+        try {
+          const content = readFileSync(rulePath, "utf-8");
+          const lines = content.split("\n").length;
+
+          // C1: file exists (40)
+          score = 40;
+
+          // C2: frontmatter (15)
+          criteria["YAML frontmatter"] = /^---/m.test(content);
+          if (criteria["YAML frontmatter"]) score += 15;
+          else recs.push("添加 YAML frontmatter");
+
+          // C3: paths or description (15)
+          criteria["paths / description 字段"] = /paths:|description:/m.test(content);
+          if (criteria["paths / description 字段"]) score += 15;
+          else recs.push("frontmatter 添加 paths 或 description 字段");
+
+          // C4: line count (20)
+          criteria[`≥150 行 (当前 ${lines})`] = lines >= 150;
+          if (lines >= 150) score += 20;
+          else if (lines >= 80) { score += 10; recs.push(`仅 ${lines} 行，建议扩充到 ≥150 行`); }
+          else recs.push(`仅 ${lines} 行，建议扩充到 ≥150 行`);
+
+          // C5: Mermaid (5)
+          criteria["含 Mermaid 图表"] = /mermaid|```mermaid/.test(content);
+          if (criteria["含 Mermaid 图表"]) score += 5;
+
+          // C6: structured (5)
+          criteria["含结构化章节"] = /##\s+|###\s+/.test(content);
+          if (criteria["含结构化章节"]) score += 5;
+        } catch {}
+        results.rules.push({
+          name: rf.replace(".md", ""),
+          score: Math.min(100, score),
+          criteria,
+          recommendations: recs,
+        });
+      }
+    } catch {}
+  }
+
+  // ── Scripts (lib/ + lib/engine/ + skills/*/lib/) ─────────
+  const scriptDirs = [join(projectRoot, "lib"), join(projectRoot, "lib", "engine")];
+  if (existsSync(skillsDir)) {
+    try {
+      for (const sd of readdirSync(skillsDir, { withFileTypes: true }).filter((d) => d.isDirectory())) {
+        const skillLib = join(skillsDir, sd.name, "lib");
+        if (existsSync(skillLib)) scriptDirs.push(skillLib);
+      }
+    } catch {}
+  }
+
+  for (const dir of scriptDirs) {
+    if (!existsSync(dir)) continue;
+    try {
+      const files = readdirSync(dir, { recursive: true, withFileTypes: true });
+      for (const f of files) {
+        if (!f.isFile() || !f.name.endsWith(".mjs")) continue;
+        const filePath = join(f.path || dir, f.name);
+        const criteria = {};
+        const recs = [];
+        let score = 0;
+        try {
+          const content = readFileSync(filePath, "utf-8");
+          const lines = content.split("\n").length;
+
+          // C1: file exists (40)
+          score = 40;
+
+          // C2: JSDoc (20)
+          criteria["含 JSDoc 注释"] = /\/\*\*[\s\S]*?\*\//.test(content);
+          if (criteria["含 JSDoc 注释"]) score += 20;
+          else recs.push("添加 JSDoc 注释说明函数用途和参数");
+
+          // C3: exports (15)
+          criteria["含 export 导出"] = /\bexport\s+(default\s+)?(function|class|const|let|var|async)/.test(content);
+          if (criteria["含 export 导出"]) score += 15;
+          else recs.push("添加 export 语句使函数可被导入复用");
+
+          // C4: line count (15)
+          criteria[`≥100 行 (当前 ${lines})`] = lines >= 100;
+          if (lines >= 100) score += 15;
+          else if (lines >= 30) score += 10;
+
+          // C5: test coverage (10)
+          const baseName = f.name.replace(".mjs", "");
+          const hasTest = existsSync(join(projectRoot, "tests", `${baseName}.test.mjs`))
+            || existsSync(join(projectRoot, "tests", "skills", `${baseName}.test.mjs`));
+          criteria["有对应测试文件"] = hasTest;
+          if (hasTest) score += 10;
+          else if (lines >= 50) recs.push(`创建 tests/${baseName}.test.mjs 增加测试覆盖`);
+        } catch {}
+
+        // Derive category from path
+        let category = "lib";
+        if (dir.includes("/engine")) category = "engine";
+        else if (dir.includes("skills/")) {
+          const parts = dir.split("/");
+          const skillIdx = parts.indexOf("skills");
+          category = parts[skillIdx + 1] || "skill-lib";
+        }
+        results.scripts.push({
+          name: f.name,
+          category,
+          score: Math.min(100, score),
+          criteria,
+          recommendations: recs,
+        });
+      }
+    } catch {}
+  }
+
+  return results;
 }
 
 /**

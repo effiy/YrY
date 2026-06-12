@@ -7,94 +7,103 @@
 <link rel="stylesheet" href="../../cdn/shared.css">
 <link rel="stylesheet" href="../../cdn/theme.css">
 <style>
-:root {
-  --yry-bg: rgba(22,22,32,1); --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
-  --yry-accent: #FFC107; --yry-pass: #22c55e;
-  --yry-text: rgba(250,250,252,1); --yry-text2: rgba(160,160,164,1); --yry-text3: rgba(110,110,114,1);
-  --yry-radius: 12px; --yry-border: 1px solid rgba(255,255,255,0.06);
-  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
-.hi-container { max-width: 800px; margin: 0 auto; padding: 48px 24px 80px; }
-.hi-bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
-.hi-bc a { color: var(--yry-cyan); text-decoration: none; }
-.hi-bc a:hover { color: var(--yry-accent); }
-.hi-bc .hi-bc-sep { color: var(--yry-text3); opacity: .4; }
-.hi-bc .hi-bc-cur { color: var(--yry-text2); }
-.hi-header { text-align: center; margin-bottom: 32px; }
-.hi-header h1 { font-size: 1.6rem; }
-.hi-header .hi-meta { color: var(--yry-text3); font-size: .82rem; margin-top: 6px; }
-.hi-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); }
-.hi-latest { text-align: center; padding: 16px; margin-bottom: 20px; background: rgba(255,193,7,.05); border-radius: 10px; border: var(--yry-border); }
-.hi-latest-label { font-size: .78rem; color: var(--yry-text3); }
-.hi-latest-score { font-size: 1.8rem; font-weight: 800; color: var(--yry-accent); margin: 0 4px; }
-.hi-latest-grade { font-size: 1rem; font-weight: 700; color: var(--yry-pass); }
-.hi-latest-date { display: block; font-size: .72rem; color: var(--yry-text3); margin-top: 4px; }
-table { width: 100%; border-collapse: collapse; }
-th, td { padding: 10px 16px; text-align: left; border-bottom: var(--yry-border); font-size: .88rem; }
-th { color: var(--yry-text3); font-size: .76rem; text-transform: uppercase; }
-td a { color: var(--yry-cyan); text-decoration: none; }
-td a:hover { color: var(--yry-accent); }
-.hi-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; justify-content: center; }
-.hi-link { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.15); color: var(--yry-cyan); text-decoration: none; font-size: .82rem; transition: all .15s; }
-.hi-link:hover { background: rgba(59,130,246,.15); }
-.hi-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
+:root{--yry-bg:rgba(22,22,32,1);--yry-accent:#FFC107;--yry-pass:#22c55e;--yry-fail:#ef4444;--yry-text:rgba(250,250,252,1);--yry-text2:rgba(160,160,164,1);--yry-text3:rgba(110,110,114,1);--yry-border:1px solid rgba(255,255,255,.06);--yry-shadow:0 4px 20px rgba(0,0,0,.3)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--yry-bg);color:var(--yry-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
+.c{max-width:800px;margin:0 auto;padding:48px 24px 80px}
+.bc{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:24px;font-size:.76rem}
+.bc a{color:#22d3ee;text-decoration:none}.bc a:hover{color:var(--yry-accent)}
+.bc .sep{color:var(--yry-text3);opacity:.4}.bc .cur{color:var(--yry-text2)}
+.hd{text-align:center;margin-bottom:32px}.hd h1{font-size:1.6rem}.hd .meta{color:var(--yry-text3);font-size:.82rem;margin-top:6px}
+.card{background:linear-gradient(159deg,rgba(38,38,52,1)0%,rgba(34,34,46,1)100%);border:var(--yry-border);border-radius:12px;padding:24px;box-shadow:var(--yry-shadow)}
+.latest{text-align:center;padding:16px 16px 12px;margin-bottom:20px;background:rgba(255,193,7,.05);border-radius:10px;border:var(--yry-border)}
+.latest .score{font-size:2rem;font-weight:800;color:var(--yry-accent)}.latest .grade{font-size:1.1rem;font-weight:700;margin-left:8px}
+.latest .date{display:block;font-size:.72rem;color:var(--yry-text3);margin-top:4px}
+.latest .meta-row{font-size:.68rem;color:var(--yry-text3);margin-top:6px}
+table{width:100%;border-collapse:collapse}th,td{padding:10px 16px;text-align:left;border-bottom:var(--yry-border);font-size:.88rem}
+th{color:var(--yry-text3);font-size:.76rem;text-transform:uppercase}
+td a{color:#22d3ee;text-decoration:none}td a:hover{color:var(--yry-accent)}
+td .s{font-weight:700;font-size:.82rem}td .s.A,td .s.B{color:var(--yry-pass)}td .s.C{color:#f59e0b}td .s.D{color:var(--yry-fail)}
+.links{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;justify-content:center}
+.links a{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.15);color:#22d3ee;text-decoration:none;font-size:.82rem;transition:all .15s}
+.links a:hover{background:rgba(59,130,246,.15)}
+.ft{text-align:center;color:var(--yry-text3);font-size:.74rem;margin-top:48px;padding-top:20px;border-top:var(--yry-border)}
+#loading{text-align:center;color:var(--yry-text3);padding:40px}
 </style>
 </head>
 <body>
-<div class="hi-container">
+<div class="c">
 
-<nav class="hi-bc">
+<nav class="bc">
   <a href="../../docs/index.html">📄 文档中心</a>
-  <span class="hi-bc-sep">/</span>
-  <span class="hi-bc-cur">🩺 健康报告</span>
+  <span class="sep">/</span>
+  <span class="cur">🩺 健康报告</span>
 </nav>
 
-<div class="hi-header">
+<div class="hd">
   <h1>🩺 健康报告</h1>
-  <div class="hi-meta">3 份历史报告</div>
+  <div class="meta"><span id="count">—</span> 份历史报告</div>
 </div>
 
-<div class="hi-latest">
-          <span class="hi-latest-label">最新评估:</span>
-          <span class="hi-latest-score">88 分</span>
-          <span class="hi-latest-grade">B 级</span>
-          <span class="hi-latest-date">2026-06-12</span>
-        </div>
+<div class="latest" id="latest">
+  <span id="loading">加载中…</span>
+</div>
 
-<div class="hi-card">
+<div class="card">
   <table>
-    <thead><tr><th>日期</th><th>时间</th><th>操作</th></tr></thead>
-    <tbody><tr>
-      <td><a href="health-2026-06-12-204355.html">🩺 2026-06-12</a></td>
-      <td>20:43:55</td>
-      <td><a href="health-2026-06-12-204355.html">查看</a></td>
-    </tr>
-<tr>
-      <td><a href="health-2026-06-12-170055.html">🩺 2026-06-12</a></td>
-      <td>17:00:55</td>
-      <td><a href="health-2026-06-12-170055.html">查看</a></td>
-    </tr>
-<tr>
-      <td><a href="health-2026-06-11-101947.html">🩺 2026-06-11</a></td>
-      <td>10:19:47</td>
-      <td><a href="health-2026-06-11-101947.html">查看</a></td>
-    </tr></tbody>
+    <thead><tr><th>日期</th><th>时间</th><th>评分</th><th>操作</th></tr></thead>
+    <tbody id="tbody"></tbody>
   </table>
 </div>
 
-<div class="hi-links">
-  <a class="hi-link" href="../../docs/自循环报告/">📊 自循环报告</a>
-  <a class="hi-link" href="../../docs/故事任务面板/">📋 故事任务面板</a>
-  <a class="hi-link" href="../../docs/index.html">📄 文档中心</a>
+<div class="links">
+  <a href="../../docs/自循环报告/">📊 自循环报告</a>
+  <a href="../../docs/故事任务面板/">📋 故事任务面板</a>
+  <a href="../../docs/index.html">📄 文档中心</a>
 </div>
 
-<div class="hi-footer">
+<div class="ft">
   健康报告索引<br>
-  <span style="color:var(--yry-text3)">由 rui-bot health-report 自动生成</span>
+  <span style="color:var(--yry-text3)">由 rui-bot health-report 自动生成 · 数据实时读取</span>
 </div>
 
 </div>
+<script>
+(async function() {
+  try {
+    const res = await fetch('reports.json');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const reports = await res.json();
+    document.getElementById('count').textContent = reports.length;
+
+    // Latest report
+    const latest = reports[0];
+    const ldiv = document.getElementById('latest');
+    if (latest && latest.score) {
+      const gc = latest.grade === 'A' || latest.grade === 'B' ? 'var(--yry-pass)' : latest.grade === 'C' ? '#f59e0b' : 'var(--yry-fail)';
+      ldiv.innerHTML = '<span style="font-size:.78rem;color:var(--yry-text3)">最新评估:</span> '
+        + '<span class="score">' + latest.score + ' 分</span>'
+        + '<span class="grade" style="color:' + gc + '">' + (latest.grade || '?') + ' 级</span>'
+        + '<span class="date">' + latest.date + '</span>'
+        + '<div class="meta-row">综合健康度 · ' + reports.length + ' 份历史报告</div>';
+    } else {
+      ldiv.innerHTML = '<span style="color:var(--yry-text3)">暂无报告数据</span>';
+    }
+
+    // Report table
+    const tbody = document.getElementById('tbody');
+    if (reports.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" style="color:var(--yry-text3)">暂无报告 — 运行 <code>node skills/rui-bot/send.mjs health --html</code> 生成首份报告</td></tr>';
+    } else {
+      tbody.innerHTML = reports.map(function(r) {
+        var sc = r.score ? '<span class="s ' + (r.grade || '') + '">' + r.score + ' 分 ' + (r.grade || '') + '</span>' : '—';
+        return '<tr><td><a href="' + r.file + '">🩺 ' + r.date + '</a></td><td>' + r.time + '</td><td>' + sc + '</td><td><a href="' + r.file + '">查看</a></td></tr>';
+      }).join('');
+    }
+  } catch(e) {
+    document.getElementById('loading').textContent = '加载失败: ' + e.message;
+  }
+})();
+</script>
 </body>
 </html>
