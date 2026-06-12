@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新人上手 · 计划清单</title>
+<!-- ═══ CDN: YrY 共享样式 ═══ -->
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+<link rel="stylesheet" href="../../../../cdn/yry-checklist.css">
+<style>
+/* Page-specific overrides — all shared styles loaded from CDN */
+.container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+.scene-nav { display:flex; align-items:center; flex-wrap:wrap; gap:8px; justify-content:center; padding:12px 16px; margin:24px 0; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:8px; }
+.scene-nav-link { color:var(--text2); text-decoration:none; font-size:.76rem; padding:5px 12px; border-radius:14px; transition:all .15s; white-space:nowrap; }
+.scene-nav-link:hover { color:var(--accent); background:rgba(255,193,7,.08); }
+.scene-nav-link.active { color:var(--accent); font-weight:600; background:rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); cursor:default; }
+.scene-nav-link.story { color:var(--cyan); }
+.scene-nav-link.story:hover { color:var(--accent); background:rgba(34,211,238,.08); }
+.scene-nav-sep { color:var(--text3); font-size:.6rem; opacity:.3; user-select:none; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 新人上手与开发指南</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
+
+<nav class="cross-nav">
+<span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
+
+<div class="header">
+  <h1>📋 场景-1<span class="accent"> · 新人上手与开发指南</span></h1>
+  <p class="sub">逐步执行 → 勾选完成 → 下一项自动就绪 — <span style="color:var(--text3);font-size:0.7rem;background:rgba(255,255,255,0.03);border-radius:3px;padding:1px 5px;">1-5</span> 数字键切换 Tab</p>
+  <div class="meta">📌 v1.0.0 · 📅 2026-06-05 · 🏷️ arch</div>
+</div>
+
+<nav class="scene-nav">
+  <a class="scene-nav-link active" href="计划清单.html">📋 场景1 · 新人上手</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-2-模块定位/计划清单.html">📋 场景2 · 模块定位</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-3-数据流追踪/计划清单.html">📋 场景3 · 数据流追踪</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-4-依赖变更影响/计划清单.html">📋 场景4 · 依赖变更影响</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link story" href="../故事任务.md">📖 故事任务</a>
+</nav>
+
+<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">16</div><div class="lbl">✅ 完成</div></div><div class="stat-card"><div class="val">0</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val">100%</div><div class="lbl">📊 进度</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div></div>
+  <div style="display:flex;justify-content:center;gap:20px;margin-top:6px;font-size:.68rem;color:var(--text3)"><span>✅ 16 完成</span><span>⏳ 0 待执行</span></div>
+
+<!-- Progress bar always visible -->
+<div class="progress-wrap">
+  <div class="progress-label"><span>整体进度</span><span id="progress-text">16 / 16 完成</span></div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <span class="tab on" data-panel="checklist">📋 清单</span>
+  <span class="tab" data-panel="commands">⚡ 命令</span>
+  <span class="tab" data-panel="related">📁 关联</span>
+  <span class="tab" data-panel="verify">🧪 验证</span>
+</div>
+
+<!-- ═══ Tab 1: Checklist ═══ -->
+<div class="panel on" id="panelChecklist">
+
+<div class="section">
+<h2><span class="dot"></span>§0 技术评审<span class="s-done">— 已完成</span></h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">1</span>
+    <span class="step-title">构建新人学习路径图（mermaid）</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>从 README.md → CLAUDE.md → 核心规则 → Agent 角色 → 技能手册，构建推荐阅读顺序。</p>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui init</code>生成项目基线，自动建立学习路径索引</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
+    <div class="code-block">README.md (领域语言) → CLAUDE.md (信念+铁律)
+→ rules/code-pipeline.md (管线)
+→ agents/AGENT.md (角色拓扑)
+→ skills/rui/SKILL.md (命令面)</div>
+    <div class="log-entry"><span class="log-time">2026-06-05 10:34</span> 完成</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">2</span>
+    <span class="step-title">编写 30 秒导航索引</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>"我想了解X" → "去看Y文件的Z章节" 的快速索引表。覆盖 ≥ 10 个常见问题。</p>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --scene 3</code>生成新人导航索引表</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a><a href="演示.html" class="dep-badge">💡 演示</a></div>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>§1 测试设计</h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">3</span>
+    <span class="step-title">定义上手路径测试用例</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>TC-O-1: 首次阅读 30 秒内找到核心概念。TC-O-2: 按学习路径 10 分钟内理解管线。TC-O-3: 新人能独立完成第一个 /rui init。</p>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch</code>让 tester agent 生成上手路径测试用例</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>§2 实施报告<span class="s-done">— 已完成</span></h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">4</span>
+    <span class="step-title">编写新人指南内容</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>编写覆盖"从零到第一个 /rui init"的完整新人指南，包含每一步的说明和截图。</p>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --scene 3</code>生成新人指南文档</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="演示.html" class="dep-badge">💡 演示</a></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">5</span>
+    <span class="step-title">构建常见问题 FAQ 表</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>收集 ≥ 15 个新人常见问题及解答，按主题分组。</p>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui-story sync</code>同步故事面板中的 FAQ 条目</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">6</span>
+    <span class="step-title">绘制学习路径 HTML+SVG 架构图</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>生成可视化的学习路径图，展示阅读顺序和模块依赖关系。</p>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --output 架构图.html</code>生成学习路径架构图</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="演示.html" class="dep-badge">💡 演示</a></div>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>§3 测试报告</h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">7</span>
+    <span class="step-title">新人上手路径验证</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>模拟新人：从 README 开始，按 30 秒索引找到目标，验证所有导航链接可达。</p>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node tests/skills/rui.test.mjs --verbose</code>运行上手路径验证</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div>
+    <div class="verify-cmd">grep -c "领域语言" README.md && grep -c "铁律" CLAUDE.md</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">8</span>
+    <span class="step-title">记录文档路径可达性</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>验证新人指南中所有文档引用路径可达，记录断链并修复。</p>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node skills/rui-bot/send.mjs --story=yry-arch --status=test-report</code>推送上手路径验证报告</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>§4 自改进</h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">9</span>
+    <span class="step-title">收集上手摩擦点</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>收集新人上手过程中遇到的所有困惑和摩擦点，按严重程度排序。</p>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui-claude check</code>检查配置是否可以降低上手门槛</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">10</span>
+    <span class="step-title">更新导航索引</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>根据收集的摩擦点，更新 30 秒导航索引和 FAQ 表。</p>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --output 知识图谱.html</code>更新知识图谱中的导航节点</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>交付</h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">11</span>
+    <span class="step-title">P0 检查清单验证</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>验证：学习路径覆盖所有核心文件 · FAQ 覆盖 ≥ 15 个问题 · 架构图为 HTML+SVG · 所有链接可达。</p>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --check p0</code>逐项验证 P0 约束</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">12</span>
+    <span class="step-title">生成 HTML+SVG 架构图</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>生成学习路径可视化架构图。</p>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --output 架构图.html</code>生成完整架构图</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">13</span>
+    <span class="step-title">P0 交叉引用验证</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>验证新人指南中所有交叉引用和文档链接可达，确保无死链。</p>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --check p0</code>验证所有交叉引用</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">14</span>
+    <span class="step-title">git commit + 交付收口</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>提交所有场景产物，同步文档，发送通知。</p>
+    <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>git add docs/故事任务面板/架构/ && git commit</code>然后 <code>node skills/rui-import/sync.mjs workspace=true</code>最后 <code>node skills/rui-bot/send.mjs --story=yry-arch --status=done</code></div>
+    <div class="code-block">git add docs/故事任务面板/架构/
+git commit -m "docs: 场景-1 新人上手完成"
+node skills/rui-import/sync.mjs workspace=true
+node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
+  </div>
+</div>
+</div>
+
+</div><!-- /panelChecklist -->
+
+
+<!-- ═══ Tab 3: Commands ═══ -->
+<div class="panel" id="panelCommands">
+
+<div class="section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令</h2>
+<div class="cmd-grid">
+  <div class="cmd-card"><div class="c-stage">步骤 1</div><div class="c-name">生成学习路径索引</div><div class="c-desc">生成项目基线，自动建立从 README 到技能手册的学习路径</div><pre>/rui init<span class="cb" onclick="copyCmd(this,'/rui init')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 2 · 🔶 就绪</div><div class="c-name">生成新人导航索引表</div><div class="c-desc">"我想了解X" → "去看Y文件Z章节" 快速索引</div><pre>/rui doc --story arch --scene 3<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --scene 3')">📋</span></pre></div>
+</div></div>
+
+<div class="section"><h2><span class="dot"></span>§1-§2 测试设计与实施 — 待执行命令</h2>
+<div class="cmd-grid">
+  <div class="cmd-card"><div class="c-stage">步骤 3</div><div class="c-name">生成上手路径测试</div><div class="c-desc">tester agent 生成 TC-O 系列测试用例</div><pre>/rui doc --story arch<span class="cb" onclick="copyCmd(this,'/rui doc --story arch')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 4</div><div class="c-name">生成新人指南文档</div><div class="c-desc">从零到第一个 /rui init 的完整指南</div><pre>/rui doc --story arch --scene 3<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --scene 3')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 5</div><div class="c-name">同步 FAQ 条目</div><div class="c-desc">用故事面板同步 FAQ 数据</div><pre>/rui-story sync<span class="cb" onclick="copyCmd(this,'/rui-story sync')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 6</div><div class="c-name">生成学习路径架构图</div><div class="c-desc">可视化阅读顺序和模块依赖</div><pre>/rui doc --story arch --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --output 架构图.html')">📋</span></pre></div>
+</div></div>
+
+<div class="section"><h2><span class="dot"></span>§3-交付 — 待执行命令</h2>
+<div class="cmd-grid">
+  <div class="cmd-card"><div class="c-stage">步骤 7</div><div class="c-name">运手上路路径验证</div><div class="c-desc">模拟新人：按 30 秒索引验证所有导航链接</div><pre>node tests/skills/rui.test.mjs --verbose<span class="cb" onclick="copyCmd(this,'node tests/skills/rui.test.mjs --verbose')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 8</div><div class="c-name">推送测试报告</div><div class="c-desc">企微通知上手路径验证报告</div><pre>node skills/rui-bot/send.mjs --story=yry-arch --status=test-report<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=yry-arch --status=test-report')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 9</div><div class="c-name">检查配置漂移</div><div class="c-desc">检查 .claude/ 配置是否有上手门槛影响</div><pre>/rui-claude check<span class="cb" onclick="copyCmd(this,'/rui-claude check')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 10</div><div class="c-name">更新知识图谱导航节点</div><div class="c-desc">根据摩擦点更新导航索引和 FAQ</div><pre>/rui doc --story arch --output 知识图谱.html<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --output 知识图谱.html')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 11</div><div class="c-name">P0 约束验证</div><div class="c-desc">逐项验证 P0 检查清单</div><pre>/rui doc --story arch --check p0<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --check p0')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 12</div><div class="c-name">生成架构图</div><div class="c-desc">完整学习路径 HTML+SVG 架构图</div><pre>/rui doc --story arch --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --output 架构图.html')">📋</span></pre></div>
+  <div class="cmd-card"><div class="c-stage">步骤 14</div><div class="c-name">交付收口</div><div class="c-desc">git commit → rui-import 同步 → rui-bot 通知</div><pre>git add . && git commit<span class="cb" onclick="copyCmd(this,'git add . && git commit')">📋</span></pre></div>
+</div></div>
+
+</div><!-- /panelCommands -->
+
+<!-- ═══ Tab 4: Related Pages ═══ -->
+<div class="panel" id="panelRelated">
+
+<div class="link-grid">
+  <a href="架构图.html" class="link-card">
+    <div class="lc-icon">📐</div><div class="lc-name">架构图</div>
+    <div class="lc-desc">学习路径可视化 SVG 图：README → CLAUDE → Rules → Agents → Skills 五层阅读顺序</div>
+  </a>
+  <a href="知识图谱.html" class="link-card">
+    <div class="lc-icon">🔗</div><div class="lc-name">知识图谱</div>
+    <div class="lc-desc">Cytoscape 交互式导航：新手路径节点 × 模块关系，含 30 秒导航索引入口</div>
+  </a>
+  <a href="测试面板.html" class="link-card">
+    <div class="lc-icon">🧪</div><div class="lc-name">测试面板</div>
+    <div class="lc-desc">TC-O 上手路径测试：首次阅读速度 · 路径可达性 · 导航完整性</div>
+  </a>
+  <a href="演示.html" class="link-card">
+    <div class="lc-icon">💡</div><div class="lc-name">演示</div>
+    <div class="lc-desc">新人互动式演练：从零到 /rui init 的 6 步实践，含可复制命令和路径导航</div>
+  </a>
+</div>
+
+</div><!-- /panelRelated -->
+
+<!-- ═══ Tab 5: Verify ═══ -->
+<div class="panel" id="panelVerify">
+
+<div class="verify-list">
+  <div class="verify-item"><div class="vi-label">步骤 7 · 上手路径验证</div>
+    <pre>grep -c "领域语言" README.md && grep -c "铁律" CLAUDE.md<span class="cb" onclick="copyCmd(this,'grep -c \"领域语言\" README.md && grep -c \"铁律\" CLAUDE.md')">📋</span></pre>
+    <div class="vi-expect">核心概念可被 grep 定位</div>
+  </div>
+</div>
+
+</div><!-- /panelVerify -->
+
+<div class="footer">
+  <p>🤖 Generated with planner agent | scene: 新人上手与开发指南 | updated: 2026-06-05</p>
+</div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SCENE_KEY = 'yry-arch-s3-checklist';
+
+// ── Tab Switching ─────────────────────────
+document.querySelector('.tabs').addEventListener('click', e => {
+  const tab = e.target.closest('.tab');
+  if (!tab) return;
+  switchPanel(tab.dataset.panel);
+});
+
+function switchPanel(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.panel === name));
+  document.querySelectorAll('.panel').forEach(p => {
+    p.classList.toggle('on', p.id === 'panel' + name.charAt(0).toUpperCase() + name.slice(1));
+  });
+  localStorage.setItem(SCENE_KEY + '-tab', name);
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  const m = {'1':'checklist','2':'overview','3':'commands','4':'related','5':'verify'};
+  if (m[e.key]) { e.preventDefault(); switchPanel(m[e.key]); }
+});
+
+// ── Progress ─────────────────────────────
+function updateProgress() {
+  const checks = document.querySelectorAll('.step-checkbox');
+  const done = Array.from(checks).filter(c => c.checked).length;
+  const total = checks.length;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = done + ' / ' + total + ' 完成';
+
+  checks.forEach(cb => {
+    const status = cb.closest('.step').querySelector('.step-status');
+    if (cb.checked) {
+      status.textContent = '✅ 完成'; status.className = 'step-status status-done';
+    } else {
+      const allChecks = Array.from(checks);
+      const idx = allChecks.indexOf(cb);
+      const prevDone = idx === 0 || allChecks[idx - 1].checked;
+      status.textContent = prevDone ? '🔶 就绪' : '⏳ 待开始';
+      status.className = prevDone ? 'step-status status-active' : 'step-status status-pending';
+    }
+  });
+
+  // Update overview tab stats
+  const pending = total - done;
+  const ready = Array.from(checks).filter((c, i) => {
+    if (c.checked) return false;
+    const allChecks = Array.from(checks);
+    return i === 0 || allChecks[i - 1].checked;
+  }).length;
+  const ovDone = document.getElementById('ov-done');
+  const ovReady = document.getElementById('ov-ready');
+  const ovPending = document.getElementById('ov-pending');
+  if (ovDone) ovDone.textContent = done;
+  if (ovReady) ovReady.textContent = ready;
+  if (ovPending) ovPending.textContent = pending - ready;
+
+  // Persist
+  const state = {};
+  checks.forEach((cb, i) => { state['step-' + (i + 1)] = cb.checked; });
+  localStorage.setItem(SCENE_KEY, JSON.stringify(state));
+}
+
+// ── Copy ─────────────────────────────────
+function copyCmd(btn, cmd) {
+  navigator.clipboard.writeText(cmd).then(() => {
+    btn.textContent = '✅'; btn.style.opacity = '1';
+    setTimeout(() => { btn.textContent = '📋'; btn.style.opacity = ''; }, 1500);
+  }).catch(() => toast('复制失败'));
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+// ── Init ──────────────────────────────────
+(function() {
+  const saved = JSON.parse(localStorage.getItem(SCENE_KEY) || '{}');
+  document.querySelectorAll('.step-checkbox').forEach((cb, i) => {
+    if (saved['step-' + (i + 1)]) {
+      cb.checked = true;
+    }
+  });
+  updateProgress();
+
+  // Restore last active tab
+  const activeTab = localStorage.getItem(SCENE_KEY + '-tab') || 'checklist';
+  switchPanel(activeTab);
+})();
+</script>
+<script src="../../../../cdn/shared.js"></script>
+</body>
+</html>

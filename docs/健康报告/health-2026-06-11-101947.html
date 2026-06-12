@@ -161,7 +161,21 @@ body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-sy
 @media (max-width: 640px) {
   .h-hero { flex-direction: column; gap: 20px; }
   .h-dim-grid { grid-template-columns: 1fr; }
+  .h-trend-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Trend comparison */
+.h-trend-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.h-trend-card { background: rgba(15,23,42,.3); border: var(--yry-border); border-radius: 10px; padding: 14px; text-align: center; }
+.h-trend-label { font-size: .72rem; color: var(--yry-text3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+.h-trend-val { font-size: 1.3rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+.h-trend-delta { font-size: .7rem; font-weight: 700; margin-top: 4px; padding: 2px 8px; border-radius: 6px; display: inline-block; }
+.h-trend-delta.up { background: rgba(34,197,94,.12); color: var(--yry-pass); }
+.h-trend-delta.down { background: rgba(239,68,68,.12); color: var(--yry-fail); }
+.h-trend-delta.flat { background: rgba(255,255,255,.05); color: var(--yry-text3); }
+.h-trend-delta.peak { background: rgba(34,197,94,.15); color: var(--yry-pass); }
+.h-trend-bars { display: flex; align-items: flex-end; gap: 2px; height: 32px; justify-content: center; margin-top: 8px; }
+.h-trend-bar { width: 5px; border-radius: 2px; min-height: 3px; transition: height .3s; }
 </style>
 </head>
 <body>
@@ -240,6 +254,127 @@ body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-sy
       </div>
     </div>
   </div>
+
+  <!-- 历史趋势对比 -->
+  <div class="h-section">
+    <h2>📈 历史趋势对比 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">基于 103 次健康检查 · 2026-06-10 ~ 06-11</span></h2>
+    <div class="h-trend-grid">
+      <div class="h-trend-card">
+        <div class="h-trend-label">综合健康度</div>
+        <div class="h-trend-val" style="color:#f59e0b">66</div>
+        <div class="h-trend-delta flat">→ 持平</div>
+        <div class="h-trend-bars">
+          <div class="h-trend-bar" style="height:21px;background:#f59e0b" title="06-10 03:15: 65"></div>
+          <div class="h-trend-bar" style="height:19px;background:#f59e0b" title="06-10 03:23: 62"></div>
+          <div class="h-trend-bar" style="height:22px;background:#f59e0b" title="06-10 03:24: 70"></div>
+          <div class="h-trend-bar" style="height:28px;background:#22c55e" title="06-10 04:48: 87"></div>
+          <div class="h-trend-bar" style="height:22px;background:#f59e0b" title="06-10 05:05: 69"></div>
+          <div class="h-trend-bar" style="height:21px;background:#f59e0b" title="06-10 05:28: 66"></div>
+          <div class="h-trend-bar" style="height:22px;background:#f59e0b" title="06-10 07:15: 70"></div>
+          <div class="h-trend-bar" style="height:21px;background:#f59e0b" title="06-10 15:16: 66"></div>
+          <div class="h-trend-bar" style="height:21px;background:#f59e0b" title="06-11 02:19: 66"></div>
+        </div>
+      </div>
+      <div class="h-trend-card">
+        <div class="h-trend-label">Token 凭据</div>
+        <div class="h-trend-val" style="color:#22c55e">100</div>
+        <div class="h-trend-delta flat">→ 稳定</div>
+        <div class="h-trend-bars">
+          <div class="h-trend-bar" style="height:28px;background:#22c55e" title="100"></div>
+          <div class="h-trend-bar" style="height:28px;background:#22c55e" title="100"></div>
+          <div class="h-trend-bar" style="height:28px;background:#22c55e" title="100"></div>
+          <div class="h-trend-bar" style="height:28px;background:#22c55e" title="100"></div>
+          <div class="h-trend-bar" style="height:28px;background:#22c55e" title="100"></div>
+          <div class="h-trend-bar" style="height:28px;background:#22c55e" title="100"></div>
+          <div class="h-trend-bar" style="height:28px;background:#22c55e" title="100"></div>
+          <div class="h-trend-bar" style="height:28px;background:#22c55e" title="100"></div>
+          <div class="h-trend-bar" style="height:28px;background:#22c55e" title="100"></div>
+        </div>
+      </div>
+      <div class="h-trend-card">
+        <div class="h-trend-label">API 可达性</div>
+        <div class="h-trend-val" style="color:#ef4444">50</div>
+        <div class="h-trend-delta flat">→ 持续</div>
+        <div class="h-trend-bars">
+          <div class="h-trend-bar" style="height:14px;background:#ef4444" title="50"></div>
+          <div class="h-trend-bar" style="height:14px;background:#ef4444" title="50"></div>
+          <div class="h-trend-bar" style="height:14px;background:#ef4444" title="50"></div>
+          <div class="h-trend-bar" style="height:14px;background:#ef4444" title="50"></div>
+          <div class="h-trend-bar" style="height:14px;background:#ef4444" title="50"></div>
+          <div class="h-trend-bar" style="height:14px;background:#ef4444" title="50"></div>
+          <div class="h-trend-bar" style="height:14px;background:#ef4444" title="50"></div>
+          <div class="h-trend-bar" style="height:14px;background:#ef4444" title="50"></div>
+          <div class="h-trend-bar" style="height:14px;background:#ef4444" title="50"></div>
+        </div>
+      </div>
+      <div class="h-trend-card">
+        <div class="h-trend-label">Git 仓库状态</div>
+        <div class="h-trend-val" style="color:#ef4444">40</div>
+        <div class="h-trend-delta down">↓ -60</div>
+        <div class="h-trend-bars">
+          <div class="h-trend-bar" style="height:11px;background:#ef4444" title="06-10: 40"></div>
+          <div class="h-trend-bar" style="height:11px;background:#ef4444" title="06-10: 40"></div>
+          <div class="h-trend-bar" style="height:28px;background:#22c55e" title="06-10 04:48: 100"></div>
+          <div class="h-trend-bar" style="height:22px;background:#22c55e" title="06-10 05:05: 80"></div>
+          <div class="h-trend-bar" style="height:28px;background:#22c55e" title="06-10 07:15: 100"></div>
+          <div class="h-trend-bar" style="height:28px;background:#22c55e" title="06-10 08:15: 100"></div>
+          <div class="h-trend-bar" style="height:11px;background:#ef4444" title="06-10 15:16: 40"></div>
+          <div class="h-trend-bar" style="height:11px;background:#ef4444" title="06-11 01:22: 40"></div>
+          <div class="h-trend-bar" style="height:11px;background:#ef4444" title="06-11 02:19: 40"></div>
+        </div>
+      </div>
+      <div class="h-trend-card">
+        <div class="h-trend-label">自循环报告</div>
+        <div class="h-trend-val" style="color:#f59e0b">60</div>
+        <div class="h-trend-delta flat">→ 持平</div>
+        <div class="h-trend-bars">
+          <div class="h-trend-bar" style="height:17px;background:#f59e0b" title="60"></div>
+          <div class="h-trend-bar" style="height:17px;background:#f59e0b" title="60"></div>
+          <div class="h-trend-bar" style="height:17px;background:#f59e0b" title="60"></div>
+          <div class="h-trend-bar" style="height:17px;background:#f59e0b" title="60"></div>
+          <div class="h-trend-bar" style="height:17px;background:#f59e0b" title="60"></div>
+          <div class="h-trend-bar" style="height:17px;background:#f59e0b" title="60"></div>
+          <div class="h-trend-bar" style="height:17px;background:#f59e0b" title="60"></div>
+          <div class="h-trend-bar" style="height:17px;background:#f59e0b" title="60"></div>
+          <div class="h-trend-bar" style="height:17px;background:#f59e0b" title="60"></div>
+        </div>
+      </div>
+      <div class="h-trend-card">
+        <div class="h-trend-label">类型安全</div>
+        <div class="h-trend-val" style="color:#ef4444">0</div>
+        <div class="h-trend-delta flat">→ 未启用</div>
+        <div class="h-trend-bars">
+          <div class="h-trend-bar" style="height:3px;background:#ef4444" title="0"></div>
+          <div class="h-trend-bar" style="height:3px;background:#ef4444" title="0"></div>
+          <div class="h-trend-bar" style="height:3px;background:#ef4444" title="0"></div>
+          <div class="h-trend-bar" style="height:3px;background:#ef4444" title="0"></div>
+          <div class="h-trend-bar" style="height:3px;background:#ef4444" title="0"></div>
+          <div class="h-trend-bar" style="height:3px;background:#ef4444" title="0"></div>
+          <div class="h-trend-bar" style="height:3px;background:#ef4444" title="0"></div>
+          <div class="h-trend-bar" style="height:3px;background:#ef4444" title="0"></div>
+          <div class="h-trend-bar" style="height:3px;background:#ef4444" title="0"></div>
+        </div>
+      </div>
+      <div class="h-trend-card">
+        <div class="h-trend-label">历史峰值</div>
+        <div class="h-trend-val" style="color:#22c55e">87</div>
+        <div class="h-trend-delta peak">🏆 B 级</div>
+        <div class="h-trend-bars">
+          <div class="h-trend-bar" style="height:21px;background:rgba(34,197,94,.3)" title="65"></div>
+          <div class="h-trend-bar" style="height:19px;background:rgba(34,197,94,.3)" title="62"></div>
+          <div class="h-trend-bar" style="height:22px;background:rgba(34,197,94,.3)" title="70"></div>
+          <div class="h-trend-bar" style="height:28px;background:#22c55e" title="87 峰值"></div>
+          <div class="h-trend-bar" style="height:22px;background:rgba(34,197,94,.3)" title="69"></div>
+          <div class="h-trend-bar" style="height:21px;background:rgba(34,197,94,.3)" title="66"></div>
+          <div class="h-trend-bar" style="height:22px;background:rgba(34,197,94,.3)" title="70"></div>
+          <div class="h-trend-bar" style="height:21px;background:rgba(34,197,94,.3)" title="66"></div>
+          <div class="h-trend-bar" style="height:21px;background:rgba(245,158,11,.5)" title="66 当前"></div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:.68rem;color:var(--yry-text3);text-align:center;margin-top:12px">📊 Git 仓库状态从峰值 100 降至 40（未提交文件 46 个）· 建议提交清理 · API 可达性持续 50 分需排查</div>
+  </div>
+
   <div class="h-section">
     <h2>🔢 评分构成 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">加权分解 · 合计 120/100 分</span></h2>
     <div class="h-comp-list"><div class="h-comp-row">

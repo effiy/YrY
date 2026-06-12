@@ -910,6 +910,143 @@ function runSecurityScan(projectRoot) {
   return { score, summary, icon, findings };
 }
 
+// --- structure analysis ---
+const STRUCT_LARGE_FILE_WARN = 500;
+const STRUCT_LARGE_FILE_CRIT = 1000;
+const STRUCT_MODULE_FILE_WARN = 30;
+const STRUCT_MODULE_LINE_WARN = 3000;
+const STRUCT_TOP_FILES = 20;
+const STRUCT_TOP_MODULES = 10;
+const STRUCT_SOURCE_EXT = new Set([
+  "js", "mjs", "cjs", "ts", "tsx", "jsx", "py", "rb", "go", "rs",
+  "java", "kt", "scala", "sh", "bash", "zsh", "md", "json", "yml", "yaml",
+  "html", "css", "scss", "vue", "svelte",
+]);
+
+function countFileLines(filePath) {
+  try {
+    const buf = readFileSync(filePath);
+    if (buf.length > 2 * 1024 * 1024) {
+      return String(buf).split("\n").length;
+    }
+    let count = 0;
+    let cr = false;
+    for (const b of buf) {
+      if (b === 0x0a) { count++; cr = false; }
+      else if (b === 0x0d) { cr = true; }
+      else if (cr) { count++; cr = false; }
+    }
+    if (cr || (buf.length > 0 && buf[buf.length - 1] !== 0x0a)) count++;
+    return count;
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * Analyze project structure: large files and large modules.
+ * Returns { largeFiles, modules, totals, score, summary, icon }.
+ */
+function getStructureHealth(projectRoot) {
+  const largeFiles = [];
+  const modules = new Map();
+
+  try {
+    const tracked = execSync("git ls-files --cached --others --exclude-standard", {
+      cwd: projectRoot, encoding: "utf-8", timeout: 8000,
+    }).trim().split("\n").filter(Boolean);
+
+    let fileCount = 0;
+    let totalLines = 0;
+    let skipped = 0;
+
+    for (const rel of tracked) {
+      if (
+        rel.startsWith(".git/") ||
+        rel.startsWith("node_modules/") ||
+        rel.startsWith(".memory/") ||
+        rel.startsWith("dist/") ||
+        rel.startsWith("build/") ||
+        rel.startsWith("coverage/") ||
+        rel.startsWith("cdn/")
+      ) continue;
+      const dot = rel.lastIndexOf(".");
+      const ext = dot > 0 ? rel.slice(dot + 1).toLowerCase() : "";
+      if (!STRUCT_SOURCE_EXT.has(ext)) continue;
+
+      const abs = join(projectRoot, rel);
+      const lines = countFileLines(abs);
+      if (lines <= 0) continue;
+
+      fileCount++;
+      totalLines += lines;
+
+      if (lines >= STRUCT_LARGE_FILE_WARN) {
+        largeFiles.push({ path: rel, lines, ext });
+      }
+
+      const topDir = rel.includes("/") ? rel.split("/")[0] : "(root)";
+      const mod = modules.get(topDir) || { name: topDir, fileCount: 0, lines: 0, maxLines: 0, maxFile: "" };
+      mod.fileCount++;
+      mod.lines += lines;
+      if (lines > mod.maxLines) { mod.maxLines = lines; mod.maxFile = rel; }
+      modules.set(topDir, mod);
+    }
+
+    largeFiles.sort((a, b) => b.lines - a.lines);
+    const topFiles = largeFiles.slice(0, STRUCT_TOP_FILES);
+
+    const topModules = [...modules.values()]
+      .sort((a, b) => b.lines - a.lines)
+      .slice(0, STRUCT_TOP_MODULES)
+      .map((m) => ({
+        ...m,
+        avgLines: m.fileCount > 0 ? Math.round(m.lines / m.fileCount) : 0,
+      }));
+
+    const critFiles = largeFiles.filter((f) => f.lines >= STRUCT_LARGE_FILE_CRIT).length;
+    const warnFiles = largeFiles.length - critFiles;
+    const hotModules = topModules.filter(
+      (m) => m.lines >= STRUCT_MODULE_LINE_WARN || m.fileCount >= STRUCT_MODULE_FILE_WARN,
+    );
+
+    let score = 100;
+    score -= critFiles * 8;
+    score -= warnFiles * 3;
+    score -= hotModules.length * 4;
+    score = Math.max(0, Math.min(100, score));
+
+    const summary =
+      `${fileCount} 源文件 · ${totalLines.toLocaleString()} 行` +
+      (largeFiles.length > 0 ? ` · ${largeFiles.length} 大文件` : "") +
+      (hotModules.length > 0 ? ` · ${hotModules.length} 热模块` : "");
+
+    const icon = score >= 80 ? "✅" : score >= 60 ? "⚠️" : "❌";
+
+    return {
+      largeFiles: topFiles,
+      allLargeFileCount: largeFiles.length,
+      critFileCount: critFiles,
+      modules: topModules,
+      totals: { fileCount, totalLines },
+      score,
+      summary,
+      icon,
+    };
+  } catch (err) {
+    return {
+      largeFiles: [],
+      allLargeFileCount: 0,
+      critFileCount: 0,
+      modules: [],
+      totals: { fileCount: 0, totalLines: 0 },
+      score: 0,
+      summary: `分析失败: ${err.message?.slice(0, 40) || "unknown"}`,
+      icon: "❌",
+    };
+  }
+}
+
 // --- health check ---
 async function cmdHealth(projectRoot, opts = {}) {
   const config = loadConfig(projectRoot);
@@ -1114,6 +1251,10 @@ async function cmdHealth(projectRoot, opts = {}) {
     console.log(`  ${icon} ${label}:${" ".repeat(Math.max(0, 12 - label.length))} ${info} 分 — ${emResult.summaries[dim] || ""}`);
   }
 
+  // ── 17. Structure analysis (大模块/大文件) ──────────────
+  const structInfo = getStructureHealth(projectRoot);
+  console.log(`  ${structInfo.icon} 结构健康:         ${structInfo.summary}`);
+
   // ── Composite score ───────────────────────────────────
   let totalScore = 0;
   let totalWeight = 0;
@@ -1142,7 +1283,7 @@ async function cmdHealth(projectRoot, opts = {}) {
   }
   console.log("");
 
-  const result = { composite, grade: grade.grade, scores, details, diagnostics: diagResult, config, tokenOk, robotOkCount, robotNames, gitInfo, secInfo };
+  const result = { composite, grade: grade.grade, scores, details, diagnostics: diagResult, config, tokenOk, robotOkCount, robotNames, gitInfo, secInfo, structInfo };
   saveHealthTrend(result, projectRoot);
   return result;
 }

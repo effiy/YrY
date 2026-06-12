@@ -18,14 +18,14 @@
 
     <div class="header">
       <h1><span class="accent">&#11088;</span> YrY 文档中心</h1>
-      <p>故事驱动的 SDLC 编排系统 — 六层结构：依赖/框架 → 19 技能 → 4 故事 → 21 场景 → Agent 角色与规则 → 参考入口</p>
+      <p>故事驱动的 SDLC 编排系统 — 六层结构：依赖/框架 → 19 技能 → 5 故事 → 29 场景 → Agent 角色与规则 → 参考入口</p>
     </div>
 
     <div class="stats">
       <a class="stat" href="#layer-deps"><div class="num green">10</div><div class="label">依赖/框架</div></a>
       <a class="stat" href="#layer-skills"><div class="num">19</div><div class="label">技能</div></a>
-      <a class="stat" href="#layer-story"><div class="num">4</div><div class="label">故事</div></a>
-      <a class="stat" href="#layer-scene"><div class="num green">21</div><div class="label">场景</div></a>
+      <a class="stat" href="#layer-story"><div class="num">5</div><div class="label">故事</div></a>
+      <a class="stat" href="#layer-scene"><div class="num green">29</div><div class="label">场景</div></a>
       <a class="stat" href="#layer-agents"><div class="num">9</div><div class="label">Agent 角色</div></a>
       <a class="stat" href="#layer-rules"><div class="num green">16</div><div class="label">规则</div></a>
       <a class="stat" href="#layer-refs"><div class="num green">4</div><div class="label">参考入口</div></a>
@@ -36,7 +36,7 @@
       <span class="cross-sep">·</span>
       <a class="cross-link" href="../tests/index.html">🧪 自检中心</a>
       <span class="cross-sep">·</span>
-      <a class="cross-link" href="./故事任务面板/yry-arch/演示/index.html">🎬 演示中心</a>
+      <a class="cross-link" href="./故事任务面板/架构/演示/index.html">🎬 演示中心</a>
       <span class="cross-sep">·</span>
       <a class="cross-link" href="./健康报告/">🩺 健康报告</a>
       <span class="cross-sep">·</span>
@@ -426,7 +426,7 @@
       <div class="layer-header">
         <span class="layer-num">3</span>
         <h2>故事</h2>
-        <span class="layer-stats">4 故事 · 架构基线 + 自检体系 + npm 管理 + CDN 共享库</span>
+        <span class="layer-stats">5 故事 · 架构基线 + 自检体系 + npm 管理 + CDN 共享库 + 自改进闭环</span>
         <span class="layer-panels" title="故事详情">
           <span class="lp-dot" style="background:#ffc107" title="查看故事详情" onclick="event.stopPropagation();layerInfo.show('story')">📖</span>
         </span>
@@ -436,22 +436,26 @@
         <div class="story-card">
           <div class="story-head">
             <span class="story-icon">&#128451;</span>
-            <span class="story-name"><a href="故事任务面板/yry-arch/故事任务.md" target="_blank">系统架构知识固化</a></span>
-            <span class="story-badge">v1.0.0</span>
+            <span class="story-name"><a href="故事任务面板/架构/故事任务.md" target="_blank">系统架构知识固化</a></span>
+            <span class="story-badge">v1.3.0</span>
           </div>
-          <div class="story-desc">YrY 架构全景分析，构建系统自我认知基线。模块拓扑 + 数据流追踪 + 新人上手 + 依赖变更影响，让后续故事规划、影响分析和架构决策有唯一事实参照。</div>
+          <div class="story-desc">YrY 架构全景分析，构建系统自我认知基线。模块拓扑 + 数据流追踪 + 新人上手 + 依赖变更影响 + 信任边界 + 工程化建设（校验脚本化 · 漂移监测 · 健康仪表板），让后续故事规划、影响分析和架构决策有唯一事实参照。</div>
           <div class="story-scenes">
-            <span class="scene-tag">1. 模块定位与职责</span>
-            <span class="scene-tag">2. 数据流与追踪</span>
-            <span class="scene-tag">3. 新人上手与开发指南</span>
+            <span class="scene-tag">1. 新人上手与开发指南</span>
+            <span class="scene-tag">2. 模块定位与职责</span>
+            <span class="scene-tag">3. 数据流与追踪</span>
             <span class="scene-tag">4. 依赖变更影响分析</span>
+            <span class="scene-tag">5. 信任边界与安全面</span>
+            <span class="scene-tag">6. 架构断言脚本化校验</span>
+            <span class="scene-tag">7. 架构漂移持续监测</span>
+            <span class="scene-tag">8. 架构健康度量仪表板</span>
           </div>
         </div>
 
         <div class="story-card">
           <div class="story-head">
             <span class="story-icon">&#129514;</span>
-            <span class="story-name"><a href="故事任务面板/yry-self-test/故事任务.md" target="_blank">自主测试方案</a></span>
+            <span class="story-name"><a href="故事任务面板/自测/故事任务.md" target="_blank">自主测试方案</a></span>
             <span class="story-badge">v1.1.0</span>
           </div>
           <div class="story-desc">YrY 自检体系 — 项目的免疫系统。管线健康自检验证纪律关卡是否有效执行，文档基线完整性校验验证文档是否始终是可信任的真相来源。</div>
@@ -460,13 +464,15 @@
             <span class="scene-tag">2. commit 前增量自检</span>
             <span class="scene-tag">3. 文档代码一致性校验</span>
             <span class="scene-tag">4. 安全面回归自检</span>
+            <span class="scene-tag">5. 跨故事集成回归自检</span>
+            <span class="scene-tag">6. 第三方框架与服务自检</span>
           </div>
         </div>
 
         <div class="story-card">
           <div class="story-head">
             <span class="story-icon">&#128230;</span>
-            <span class="story-name"><a href="故事任务面板/rui-npm/故事任务.md" target="_blank">npm 包管理工具</a></span>
+            <span class="story-name"><a href="故事任务面板/npm包管理/故事任务.md" target="_blank">npm 包管理工具</a></span>
             <span class="story-badge">v1.1.0</span>
           </div>
           <div class="story-desc">个人 npm 包全生命周期管理 — 包搜索与发现、安装与版本管理、本地发布与 npx 使用、包信息审计与安全卸载。32 文件 · 77 测试 · 每场景 7 配套文件。</div>
@@ -475,13 +481,14 @@
             <span class="scene-tag">2. 包安装与版本管理</span>
             <span class="scene-tag">3. 本地发布与 npx 使用</span>
             <span class="scene-tag">4. 包信息审计与卸载</span>
+            <span class="scene-tag">5. 账号级包管理</span>
           </div>
         </div>
 
         <div class="story-card">
           <div class="story-head">
             <span class="story-icon">&#127760;</span>
-            <span class="story-name"><a href="故事任务面板/yry-cdn/故事任务.md" target="_blank">CDN 共享前端资源库</a></span>
+            <span class="story-name"><a href="故事任务面板/cdn/故事任务.md" target="_blank">CDN 共享前端资源库</a></span>
             <span class="story-badge">v1.0.0</span>
           </div>
           <div class="story-desc">YrY 共享前端资源 — 双主题系统（Mono + System）、21 CSS 组件、9 JS 工具 API。55+ 页面统一引用，消除内联重复代码 40-60%。</div>
@@ -491,6 +498,22 @@
             <span class="scene-tag">3. 组件库与JS工具API</span>
             <span class="scene-tag">4. 存量页面迁移</span>
             <span class="scene-tag">5. npm包发布与版本管理</span>
+          </div>
+        </div>
+
+        <div class="story-card">
+          <div class="story-head">
+            <span class="story-icon">&#129516;</span>
+            <span class="story-name"><a href="故事任务面板/自改进/故事任务.md" target="_blank">自改进闭环</a></span>
+            <span class="story-badge">v5.1.0</span>
+          </div>
+          <div class="story-desc">自改进机制场景化 — 将 rules/self-improve.md + agents/self-improve.md 中的规则转化为可操作执行场景。四段闭环（观察→诊断→改进→评估）+ 八级诊断 D0-D7 + 四级效果评估 E1-E4 + 经验技能化升级路径。</div>
+          <div class="story-scenes">
+            <span class="scene-tag">1. 数据采集与观察</span>
+            <span class="scene-tag">2. 诊断引擎</span>
+            <span class="scene-tag">3. 提案生成与路由</span>
+            <span class="scene-tag">4. 效果评估与闭环</span>
+            <span class="scene-tag">5. 经验技能化与记忆注入</span>
           </div>
         </div>
       </div>
@@ -503,65 +526,101 @@
       <div class="layer-header">
         <span class="layer-num">4</span>
         <h2>场景</h2>
-        <span class="layer-stats">4 故事 · 21 场景</span>
+        <span class="layer-stats">5 故事 · 29 场景</span>
         <span class="layer-panels" title="场景详情">
           <span class="lp-dot" style="background:#22c55e" title="查看场景详情" onclick="event.stopPropagation();layerInfo.show('scene')">🎬</span>
         </span>
       </div>
 
-      <div class="sub-title"><span class="accent">&#128451;</span> 系统架构知识固化 — 4 场景</div>
+      <div class="sub-title"><span class="accent">&#128451;</span> 系统架构知识固化 — 8 场景</div>
       <div class="scene-grid">
         <div class="scene-card">
           <div class="scene-num">场景 1</div>
-          <div class="scene-name"><a href="故事任务面板/yry-arch/场景-1-模块定位/index.md" target="_blank">模块定位与职责</a></div>
-          <div class="scene-desc">19 技能 · 9 Agent · 16 规则 — 模块识别 · 职责边界 · 入口验证</div>
-          <div class="scene-meta"><a href="故事任务面板/yry-arch/场景-1-模块定位/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-1-模块定位/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-1-模块定位/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-1-模块定位/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-1-模块定位/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-1-模块定位/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-1-模块定位/审查.html">📝审查</a></div>
+          <div class="scene-name"><a href="故事任务面板/架构/场景-1-新人上手/index.md" target="_blank">新人上手与开发指南</a></div>
+          <div class="scene-desc">环境搭建 · 调试方法 · 常见任务 — 新人可独立完成首修</div>
+          <div class="scene-meta"><a href="故事任务面板/架构/场景-1-新人上手/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-1-新人上手/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-1-新人上手/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-1-新人上手/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-1-新人上手/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-1-新人上手/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-1-新人上手/审查.html">📝审查</a></div>
         </div>
         <div class="scene-card">
           <div class="scene-num">场景 2</div>
-          <div class="scene-name"><a href="故事任务面板/yry-arch/场景-2-数据流追踪/index.md" target="_blank">数据流与追踪</a></div>
-          <div class="scene-desc">从用户输入到交付收口 — 每阶段输入/输出/触发条件可追溯</div>
-          <div class="scene-meta"><a href="故事任务面板/yry-arch/场景-2-数据流追踪/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-2-数据流追踪/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-2-数据流追踪/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-2-数据流追踪/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-2-数据流追踪/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-2-数据流追踪/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-2-数据流追踪/审查.html">📝审查</a></div>
+          <div class="scene-name"><a href="故事任务面板/架构/场景-2-模块定位/index.md" target="_blank">模块定位与职责</a></div>
+          <div class="scene-desc">19 技能 · 9 Agent · 16 规则 — 模块识别 · 职责边界 · 入口验证</div>
+          <div class="scene-meta"><a href="故事任务面板/架构/场景-2-模块定位/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-2-模块定位/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-2-模块定位/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-2-模块定位/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-2-模块定位/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-2-模块定位/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-2-模块定位/审查.html">📝审查</a></div>
         </div>
         <div class="scene-card">
           <div class="scene-num">场景 3</div>
-          <div class="scene-name"><a href="故事任务面板/yry-arch/场景-3-新人上手/index.md" target="_blank">新人上手与开发指南</a></div>
-          <div class="scene-desc">环境搭建 · 调试方法 · 常见任务 — 新人可独立完成首修</div>
-          <div class="scene-meta"><a href="故事任务面板/yry-arch/场景-3-新人上手/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-3-新人上手/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-3-新人上手/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-3-新人上手/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-3-新人上手/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-3-新人上手/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-3-新人上手/审查.html">📝审查</a></div>
+          <div class="scene-name"><a href="故事任务面板/架构/场景-3-数据流追踪/index.md" target="_blank">数据流与追踪</a></div>
+          <div class="scene-desc">从用户输入到交付收口 — 每阶段输入/输出/触发条件可追溯</div>
+          <div class="scene-meta"><a href="故事任务面板/架构/场景-3-数据流追踪/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-3-数据流追踪/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-3-数据流追踪/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-3-数据流追踪/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-3-数据流追踪/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-3-数据流追踪/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-3-数据流追踪/审查.html">📝审查</a></div>
         </div>
         <div class="scene-card">
           <div class="scene-num">场景 4</div>
-          <div class="scene-name"><a href="故事任务面板/yry-arch/场景-4-依赖变更影响/index.md" target="_blank">依赖变更影响分析</a></div>
+          <div class="scene-name"><a href="故事任务面板/架构/场景-4-依赖变更影响/index.md" target="_blank">依赖变更影响分析</a></div>
           <div class="scene-desc">依赖图 · 影响分析 · 破坏性变更检测 — 变更影响可量化可追溯</div>
-          <div class="scene-meta"><a href="故事任务面板/yry-arch/场景-4-依赖变更影响/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-4-依赖变更影响/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-4-依赖变更影响/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-4-依赖变更影响/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-4-依赖变更影响/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-4-依赖变更影响/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-arch/场景-4-依赖变更影响/审查.html">📝审查</a></div>
+          <div class="scene-meta"><a href="故事任务面板/架构/场景-4-依赖变更影响/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-4-依赖变更影响/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-4-依赖变更影响/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-4-依赖变更影响/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-4-依赖变更影响/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-4-依赖变更影响/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-4-依赖变更影响/审查.html">📝审查</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 5</div>
+          <div class="scene-name"><a href="故事任务面板/架构/场景-5-信任边界与安全面/index.md" target="_blank">信任边界与安全面</a></div>
+          <div class="scene-desc">识别全部信任边界 — 用户输入、API 调用、文件系统、外部服务，逐边界标注安全约束与验证机制</div>
+          <div class="scene-meta"><a href="故事任务面板/架构/场景-5-信任边界与安全面/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-5-信任边界与安全面/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-5-信任边界与安全面/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-5-信任边界与安全面/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-5-信任边界与安全面/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-5-信任边界与安全面/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/架构/场景-5-信任边界与安全面/审查.html">📝审查</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 6</div>
+          <div class="scene-name"><a href="故事任务面板/架构/场景-6-架构断言脚本化校验/index.md" target="_blank">架构断言脚本化校验</a></div>
+          <div class="scene-desc">R1–R13 规则可机验 — 转化为可执行校验脚本，嵌入 CI/pre-commit 管线，架构违规在合入前拦截</div>
+          <div class="scene-meta"><a href="故事任务面板/架构/场景-6-架构断言脚本化校验/index.md">📄规约</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 7</div>
+          <div class="scene-name"><a href="故事任务面板/架构/场景-7-架构漂移持续监测/index.md" target="_blank">架构漂移持续监测</a></div>
+          <div class="scene-desc">基于知识图谱基线快照 — 持续检测架构状态与基线的差异，量化漂移度并追踪趋势</div>
+          <div class="scene-meta"><a href="故事任务面板/架构/场景-7-架构漂移持续监测/index.md">📄规约</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 8</div>
+          <div class="scene-name"><a href="故事任务面板/架构/场景-8-架构健康度量仪表板/index.md" target="_blank">架构健康度量仪表板</a></div>
+          <div class="scene-desc">汇聚校验结果与漂移数据 — 生成可视化健康仪表板，为团队决策和自改进循环提供数据支撑</div>
+          <div class="scene-meta"><a href="故事任务面板/架构/场景-8-架构健康度量仪表板/index.md">📄规约</a></div>
         </div>
       </div>
 
-      <div class="sub-title"><span class="accent">&#129514;</span> 自主测试方案 — 4 场景</div>
+      <div class="sub-title"><span class="accent">&#129514;</span> 自主测试方案 — 6 场景</div>
       <div class="scene-grid">
         <div class="scene-card">
           <div class="scene-num">场景 1</div>
-          <div class="scene-name"><a href="故事任务面板/yry-self-test/场景-1-init后全量自检/index.md" target="_blank">init 后全量自检</a></div>
+          <div class="scene-name"><a href="故事任务面板/自测/场景-1-init后全量自检/index.md" target="_blank">init 后全量自检</a></div>
           <div class="scene-desc">全量基线校验：CLAUDE.md markers · README 领域语言 · 故事面板完整性</div>
-          <div class="scene-meta"><a href="故事任务面板/yry-self-test/场景-1-init后全量自检/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-1-init后全量自检/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-1-init后全量自检/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-1-init后全量自检/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-1-init后全量自检/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-1-init后全量自检/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-1-init后全量自检/审查.html">📝审查</a></div>
+          <div class="scene-meta"><a href="故事任务面板/自测/场景-1-init后全量自检/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-1-init后全量自检/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-1-init后全量自检/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-1-init后全量自检/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-1-init后全量自检/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-1-init后全量自检/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-1-init后全量自检/审查.html">📝审查</a></div>
         </div>
         <div class="scene-card">
           <div class="scene-num">场景 2</div>
-          <div class="scene-name"><a href="故事任务面板/yry-self-test/场景-2-commit前增量自检/index.md" target="_blank">commit 前增量自检</a></div>
+          <div class="scene-name"><a href="故事任务面板/自测/场景-2-commit前增量自检/index.md" target="_blank">commit 前增量自检</a></div>
           <div class="scene-desc">增量变更检测：分支隔离 · 铁律合规 · 文件变更范围验证</div>
-          <div class="scene-meta"><a href="故事任务面板/yry-self-test/场景-2-commit前增量自检/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-2-commit前增量自检/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-2-commit前增量自检/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-2-commit前增量自检/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-2-commit前增量自检/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-2-commit前增量自检/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-2-commit前增量自检/审查.html">📝审查</a></div>
+          <div class="scene-meta"><a href="故事任务面板/自测/场景-2-commit前增量自检/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-2-commit前增量自检/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-2-commit前增量自检/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-2-commit前增量自检/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-2-commit前增量自检/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-2-commit前增量自检/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-2-commit前增量自检/审查.html">📝审查</a></div>
         </div>
         <div class="scene-card">
           <div class="scene-num">场景 3</div>
-          <div class="scene-name"><a href="故事任务面板/yry-self-test/场景-3-文档代码一致性校验/index.md" target="_blank">文档代码一致性校验</a></div>
+          <div class="scene-name"><a href="故事任务面板/自测/场景-3-文档代码一致性校验/index.md" target="_blank">文档代码一致性校验</a></div>
           <div class="scene-desc">规约 vs 实际：章节完整性 · 交叉引用有效性 · 知识图谱节点覆盖</div>
-          <div class="scene-meta"><a href="故事任务面板/yry-self-test/场景-3-文档代码一致性校验/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-3-文档代码一致性校验/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-3-文档代码一致性校验/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-3-文档代码一致性校验/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-3-文档代码一致性校验/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-3-文档代码一致性校验/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-3-文档代码一致性校验/审查.html">📝审查</a></div>
+          <div class="scene-meta"><a href="故事任务面板/自测/场景-3-文档代码一致性校验/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-3-文档代码一致性校验/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-3-文档代码一致性校验/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-3-文档代码一致性校验/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-3-文档代码一致性校验/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-3-文档代码一致性校验/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-3-文档代码一致性校验/审查.html">📝审查</a></div>
         </div>
         <div class="scene-card">
           <div class="scene-num">场景 4</div>
-          <div class="scene-name"><a href="故事任务面板/yry-self-test/场景-4-安全面回归自检/index.md" target="_blank">安全面回归自检</a></div>
+          <div class="scene-name"><a href="故事任务面板/自测/场景-4-安全面回归自检/index.md" target="_blank">安全面回归自检</a></div>
           <div class="scene-desc">认证不可绕过 · 密钥不落盘 · 输入必校验 — 安全面全量覆盖</div>
-          <div class="scene-meta"><a href="故事任务面板/yry-self-test/场景-4-安全面回归自检/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-4-安全面回归自检/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-4-安全面回归自检/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-4-安全面回归自检/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-4-安全面回归自检/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-4-安全面回归自检/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-self-test/场景-4-安全面回归自检/审查.html">📝审查</a></div>
+          <div class="scene-meta"><a href="故事任务面板/自测/场景-4-安全面回归自检/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-4-安全面回归自检/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-4-安全面回归自检/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-4-安全面回归自检/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-4-安全面回归自检/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-4-安全面回归自检/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-4-安全面回归自检/审查.html">📝审查</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 5</div>
+          <div class="scene-name"><a href="故事任务面板/自测/场景-5-跨故事集成回归自检/index.md" target="_blank">跨故事集成回归自检</a></div>
+          <div class="scene-desc">多故事协同验证 — 跨故事接口契约、共享资源一致性、集成场景端到端回归</div>
+          <div class="scene-meta"><a href="故事任务面板/自测/场景-5-跨故事集成回归自检/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-5-跨故事集成回归自检/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-5-跨故事集成回归自检/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-5-跨故事集成回归自检/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-5-跨故事集成回归自检/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-5-跨故事集成回归自检/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-5-跨故事集成回归自检/审查.html">📝审查</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 6</div>
+          <div class="scene-name"><a href="故事任务面板/自测/场景-6-第三方框架与服务自检/index.md" target="_blank">第三方框架与服务自检</a></div>
+          <div class="scene-desc">外部依赖验证 — CDN 加载链、API 可达性、Webhook 推送、第三方框架兼容性自检</div>
+          <div class="scene-meta"><a href="故事任务面板/自测/场景-6-第三方框架与服务自检/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-6-第三方框架与服务自检/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-6-第三方框架与服务自检/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-6-第三方框架与服务自检/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-6-第三方框架与服务自检/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-6-第三方框架与服务自检/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/自测/场景-6-第三方框架与服务自检/审查.html">📝审查</a></div>
         </div>
       </div>
 
@@ -569,33 +628,33 @@
       <div class="scene-grid">
         <div class="scene-card">
           <div class="scene-num">场景 1</div>
-          <div class="scene-name"><a href="故事任务面板/rui-npm/场景-1-包搜索与发现/index.md" target="_blank">包搜索与发现</a></div>
+          <div class="scene-name"><a href="故事任务面板/npm包管理/场景-1-包搜索与发现/index.md" target="_blank">包搜索与发现</a></div>
           <div class="scene-desc">npm search · registry 查询 · 包详情获取 — 快速发现和评估 npm 包</div>
-          <div class="scene-meta"><a href="故事任务面板/rui-npm/场景-1-包搜索与发现/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-1-包搜索与发现/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-1-包搜索与发现/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-1-包搜索与发现/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-1-包搜索与发现/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-1-包搜索与发现/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-1-包搜索与发现/审查.html">📝审查</a></div>
+          <div class="scene-meta"><a href="故事任务面板/npm包管理/场景-1-包搜索与发现/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-1-包搜索与发现/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-1-包搜索与发现/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-1-包搜索与发现/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-1-包搜索与发现/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-1-包搜索与发现/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-1-包搜索与发现/审查.html">📝审查</a></div>
         </div>
         <div class="scene-card">
           <div class="scene-num">场景 2</div>
-          <div class="scene-name"><a href="故事任务面板/rui-npm/场景-2-包安装与版本管理/index.md" target="_blank">包安装与版本管理</a></div>
+          <div class="scene-name"><a href="故事任务面板/npm包管理/场景-2-包安装与版本管理/index.md" target="_blank">包安装与版本管理</a></div>
           <div class="scene-desc">npm install · 版本锁定 · 依赖树管理 — 安全可靠的包安装</div>
-          <div class="scene-meta"><a href="故事任务面板/rui-npm/场景-2-包安装与版本管理/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-2-包安装与版本管理/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-2-包安装与版本管理/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-2-包安装与版本管理/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-2-包安装与版本管理/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-2-包安装与版本管理/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-2-包安装与版本管理/审查.html">📝审查</a></div>
+          <div class="scene-meta"><a href="故事任务面板/npm包管理/场景-2-包安装与版本管理/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-2-包安装与版本管理/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-2-包安装与版本管理/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-2-包安装与版本管理/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-2-包安装与版本管理/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-2-包安装与版本管理/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-2-包安装与版本管理/审查.html">📝审查</a></div>
         </div>
         <div class="scene-card">
           <div class="scene-num">场景 3</div>
-          <div class="scene-name"><a href="故事任务面板/rui-npm/场景-3-本地发布与npx使用/index.md" target="_blank">本地发布与 npx 使用</a></div>
+          <div class="scene-name"><a href="故事任务面板/npm包管理/场景-3-本地发布与npx使用/index.md" target="_blank">本地发布与 npx 使用</a></div>
           <div class="scene-desc">npm pack · npm link · npx 执行 — 本地开发与测试工作流</div>
-          <div class="scene-meta"><a href="故事任务面板/rui-npm/场景-3-本地发布与npx使用/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-3-本地发布与npx使用/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-3-本地发布与npx使用/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-3-本地发布与npx使用/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-3-本地发布与npx使用/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-3-本地发布与npx使用/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-3-本地发布与npx使用/审查.html">📝审查</a></div>
+          <div class="scene-meta"><a href="故事任务面板/npm包管理/场景-3-本地发布与npx使用/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-3-本地发布与npx使用/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-3-本地发布与npx使用/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-3-本地发布与npx使用/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-3-本地发布与npx使用/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-3-本地发布与npx使用/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-3-本地发布与npx使用/审查.html">📝审查</a></div>
         </div>
         <div class="scene-card">
           <div class="scene-num">场景 4</div>
-          <div class="scene-name"><a href="故事任务面板/rui-npm/场景-4-包信息审计与卸载/index.md" target="_blank">包信息审计与卸载</a></div>
+          <div class="scene-name"><a href="故事任务面板/npm包管理/场景-4-包信息审计与卸载/index.md" target="_blank">包信息审计与卸载</a></div>
           <div class="scene-desc">npm audit · npm ls · npm uninstall — 安全审计与清理</div>
-          <div class="scene-meta"><a href="故事任务面板/rui-npm/场景-4-包信息审计与卸载/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-4-包信息审计与卸载/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-4-包信息审计与卸载/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-4-包信息审计与卸载/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-4-包信息审计与卸载/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-4-包信息审计与卸载/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-4-包信息审计与卸载/审查.html">📝审查</a></div>
+          <div class="scene-meta"><a href="故事任务面板/npm包管理/场景-4-包信息审计与卸载/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-4-包信息审计与卸载/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-4-包信息审计与卸载/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-4-包信息审计与卸载/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-4-包信息审计与卸载/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-4-包信息审计与卸载/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-4-包信息审计与卸载/审查.html">📝审查</a></div>
         </div>
         <div class="scene-card">
           <div class="scene-num">场景 5</div>
-          <div class="scene-name"><a href="故事任务面板/rui-npm/场景-5-账号级包管理/index.md" target="_blank">账号级包管理</a></div>
+          <div class="scene-name"><a href="故事任务面板/npm包管理/场景-5-账号级包管理/index.md" target="_blank">账号级包管理</a></div>
           <div class="scene-desc">my-packages · deprecate · unpublish — 个人 npm 资产 CRUD</div>
-          <div class="scene-meta"><a href="故事任务面板/rui-npm/场景-5-账号级包管理/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-5-账号级包管理/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-5-账号级包管理/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-5-账号级包管理/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-5-账号级包管理/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-5-账号级包管理/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/rui-npm/场景-5-账号级包管理/审查.html">📝审查</a></div>
+          <div class="scene-meta"><a href="故事任务面板/npm包管理/场景-5-账号级包管理/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-5-账号级包管理/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-5-账号级包管理/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-5-账号级包管理/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-5-账号级包管理/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-5-账号级包管理/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/npm包管理/场景-5-账号级包管理/审查.html">📝审查</a></div>
         </div>
       </div>
 
@@ -603,33 +662,67 @@
       <div class="scene-grid">
         <div class="scene-card">
           <div class="scene-num">场景 1</div>
-          <div class="scene-name"><a href="故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/index.md" target="_blank">CDN资源加载与页面渲染</a></div>
+          <div class="scene-name"><a href="故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/index.md" target="_blank">CDN资源加载与页面渲染</a></div>
           <div class="scene-desc">5 步加载链 · shared.css + 主题 CSS + shared.js — 55 页面统一渲染</div>
-          <div class="scene-meta"><a href="故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/审查.html">📝审查</a></div>
+          <div class="scene-meta"><a href="故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/审查.html">📝审查</a></div>
         </div>
         <div class="scene-card">
           <div class="scene-num">场景 2</div>
-          <div class="scene-name"><a href="故事任务面板/yry-cdn/场景-2-双主题系统设计/index.md" target="_blank">双主题系统设计</a></div>
+          <div class="scene-name"><a href="故事任务面板/cdn/场景-2-双主题系统设计/index.md" target="_blank">双主题系统设计</a></div>
           <div class="scene-desc">Cat A (Mono) vs Cat B (System) · 14 设计令牌 · 21 组件 · 7 动画</div>
-          <div class="scene-meta"><a href="故事任务面板/yry-cdn/场景-2-双主题系统设计/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-2-双主题系统设计/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-2-双主题系统设计/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-2-双主题系统设计/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-2-双主题系统设计/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-2-双主题系统设计/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-2-双主题系统设计/审查.html">📝审查</a></div>
+          <div class="scene-meta"><a href="故事任务面板/cdn/场景-2-双主题系统设计/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-2-双主题系统设计/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-2-双主题系统设计/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-2-双主题系统设计/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-2-双主题系统设计/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-2-双主题系统设计/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-2-双主题系统设计/审查.html">📝审查</a></div>
         </div>
         <div class="scene-card">
           <div class="scene-num">场景 3</div>
-          <div class="scene-name"><a href="故事任务面板/yry-cdn/场景-3-组件库与JS工具API/index.md" target="_blank">组件库与JS工具API</a></div>
+          <div class="scene-name"><a href="故事任务面板/cdn/场景-3-组件库与JS工具API/index.md" target="_blank">组件库与JS工具API</a></div>
           <div class="scene-desc">21 CSS 组件 · 9 YrY.* API — Toast/复制/面板切换/折叠套件/剪贴板</div>
-          <div class="scene-meta"><a href="故事任务面板/yry-cdn/场景-3-组件库与JS工具API/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-3-组件库与JS工具API/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-3-组件库与JS工具API/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-3-组件库与JS工具API/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-3-组件库与JS工具API/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-3-组件库与JS工具API/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-3-组件库与JS工具API/审查.html">📝审查</a></div>
+          <div class="scene-meta"><a href="故事任务面板/cdn/场景-3-组件库与JS工具API/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-3-组件库与JS工具API/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-3-组件库与JS工具API/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-3-组件库与JS工具API/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-3-组件库与JS工具API/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-3-组件库与JS工具API/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-3-组件库与JS工具API/审查.html">📝审查</a></div>
         </div>
         <div class="scene-card">
           <div class="scene-num">场景 4</div>
-          <div class="scene-name"><a href="故事任务面板/yry-cdn/场景-4-存量页面迁移/index.md" target="_blank">存量页面迁移</a></div>
+          <div class="scene-name"><a href="故事任务面板/cdn/场景-4-存量页面迁移/index.md" target="_blank">存量页面迁移</a></div>
           <div class="scene-desc">6 步迁移指南 · 可删除清单 · 类名替换 · JS 函数替换 · 截图验证</div>
-          <div class="scene-meta"><a href="故事任务面板/yry-cdn/场景-4-存量页面迁移/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-4-存量页面迁移/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-4-存量页面迁移/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-4-存量页面迁移/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-4-存量页面迁移/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-4-存量页面迁移/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-4-存量页面迁移/审查.html">📝审查</a></div>
+          <div class="scene-meta"><a href="故事任务面板/cdn/场景-4-存量页面迁移/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-4-存量页面迁移/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-4-存量页面迁移/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-4-存量页面迁移/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-4-存量页面迁移/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-4-存量页面迁移/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-4-存量页面迁移/审查.html">📝审查</a></div>
         </div>
         <div class="scene-card">
           <div class="scene-num">场景 5</div>
-          <div class="scene-name"><a href="故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/index.md" target="_blank">npm包发布与版本管理</a></div>
+          <div class="scene-name"><a href="故事任务面板/cdn/场景-5-npm包发布与版本管理/index.md" target="_blank">npm包发布与版本管理</a></div>
           <div class="scene-desc">package.json 规范 · PATCH/MINOR/MAJOR 策略 · dry-run · git tag 版本链</div>
-          <div class="scene-meta"><a href="故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/审查.html">📝审查</a></div>
+          <div class="scene-meta"><a href="故事任务面板/cdn/场景-5-npm包发布与版本管理/计划清单.html">📋清单</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-5-npm包发布与版本管理/架构图.html">📐架构</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-5-npm包发布与版本管理/知识图谱.html">🔗图谱</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-5-npm包发布与版本管理/源码.html">📄源码</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-5-npm包发布与版本管理/测试面板.html">🧪测试</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-5-npm包发布与版本管理/演示.html">💡演示</a> <span class="sep">·</span>  <a href="故事任务面板/cdn/场景-5-npm包发布与版本管理/审查.html">📝审查</a></div>
+        </div>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#129516;</span> 自改进闭环 — 5 场景</div>
+      <div class="scene-grid">
+        <div class="scene-card">
+          <div class="scene-num">场景 1</div>
+          <div class="scene-name"><a href="故事任务面板/自改进/场景-1-数据采集与观察/index.md" target="_blank">数据采集与观察</a></div>
+          <div class="scene-desc">契约与源端定义 — 健康趋势、诊断信号、执行记忆的采集链路与数据质量标准</div>
+          <div class="scene-meta"><a href="故事任务面板/自改进/场景-1-数据采集与观察/index.md">📄规约</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 2</div>
+          <div class="scene-name"><a href="故事任务面板/自改进/场景-2-诊断引擎/index.md" target="_blank">诊断引擎</a></div>
+          <div class="scene-desc">D0-D7 规则可判定 — 每级诊断的触发条件、证据来源、置信度计算方法</div>
+          <div class="scene-meta"><a href="故事任务面板/自改进/场景-2-诊断引擎/index.md">📄规约</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 3</div>
+          <div class="scene-name"><a href="故事任务面板/自改进/场景-3-提案生成与路由/index.md" target="_blank">提案生成与路由</a></div>
+          <div class="scene-desc">类型路由与生成约束 — 五种提案类型、触发条件、生成边界、委派目标</div>
+          <div class="scene-meta"><a href="故事任务面板/自改进/场景-3-提案生成与路由/index.md">📄规约</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 4</div>
+          <div class="scene-name"><a href="故事任务面板/自改进/场景-4-效果评估与闭环/index.md" target="_blank">效果评估与闭环</a></div>
+          <div class="scene-desc">E1-E4 评估基准 — 改进前后对比、指标变化量化、闭合标准、回溯报告</div>
+          <div class="scene-meta"><a href="故事任务面板/自改进/场景-4-效果评估与闭环/index.md">📄规约</a></div>
+        </div>
+        <div class="scene-card">
+          <div class="scene-num">场景 5</div>
+          <div class="scene-name"><a href="故事任务面板/自改进/场景-5-经验技能化与记忆注入/index.md" target="_blank">经验技能化与记忆注入</a></div>
+          <div class="scene-desc">跨会话持久化 — 记忆压缩策略、相似检索注入、经验技能化升级路径</div>
+          <div class="scene-meta"><a href="故事任务面板/自改进/场景-5-经验技能化与记忆注入/index.md">📄规约</a></div>
         </div>
       </div>
     </div>

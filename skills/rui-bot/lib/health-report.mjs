@@ -580,7 +580,30 @@ body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-sy
 @media (max-width: 640px) {
   .h-hero { flex-direction: column; gap: 20px; }
   .h-dim-grid { grid-template-columns: 1fr; }
+  .h-struct-table { font-size: .72rem; }
+  .h-struct-path { max-width: 180px; }
 }
+
+/* Structure section */
+.h-struct-sub { font-size: .86rem; font-weight: 600; color: var(--yry-text); margin: 18px 0 10px; display: flex; align-items: center; gap: 8px; }
+.h-struct-sub-note { font-size: .68rem; font-weight: 400; color: var(--yry-text3); }
+.h-struct-table { width: 100%; border-collapse: collapse; font-size: .78rem; }
+.h-struct-table th { text-align: left; font-size: .68rem; color: var(--yry-text3); text-transform: uppercase; letter-spacing: .3px; padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,.06); font-weight: 600; }
+.h-struct-table td { padding: 7px 8px; border-bottom: 1px solid rgba(255,255,255,.03); color: var(--yry-text2); vertical-align: middle; }
+.h-struct-table tbody tr:hover { background: rgba(255,255,255,.02); }
+.h-struct-rank { width: 28px; color: var(--yry-text3); font-family: 'JetBrains Mono', monospace; font-size: .72rem; }
+.h-struct-path { max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: .72rem; color: var(--yry-cyan); }
+.h-struct-ext { color: var(--yry-text3); font-size: .7rem; text-transform: lowercase; }
+.h-struct-lines { font-weight: 600; color: var(--yry-text); text-align: right; font-variant-numeric: tabular-nums; }
+.h-struct-bar-cell { width: 140px; }
+.h-struct-bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,.05); overflow: hidden; }
+.h-struct-bar-fill { height: 100%; border-radius: 3px; transition: width .5s ease; }
+.h-struct-max { font-size: .7rem; color: var(--yry-text3); font-family: 'JetBrains Mono', monospace; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.h-struct-chip { display: inline-block; font-size: .58rem; font-weight: 700; padding: 1px 7px; border-radius: 4px; letter-spacing: .3px; text-transform: uppercase; }
+.h-struct-chip.pass { background: rgba(34,197,94,.12); color: var(--yry-pass); }
+.h-struct-chip.warn { background: rgba(245,158,11,.12); color: var(--yry-warn); }
+.h-struct-chip.fail { background: rgba(239,68,68,.12); color: var(--yry-fail); }
+.h-struct-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.04); }
 </style>
 </head>
 <body>
@@ -626,6 +649,7 @@ body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-sy
 <!-- Panel 1: Overview -->
 <div class="h-panel on" id="overview">
   ${buildSummaryCard(hr, prev, recommendations)}
+  ${buildStructureSection(hr)}
   ${buildScoreBreakdown(hr)}
   ${buildScoreTrend(healthTrend)}
   <div class="h-section">
@@ -730,10 +754,13 @@ export function generateHealthIndex() {
     const name = f.replace(".html", "");
     const parts = name.split("-");
     const date = parts.slice(1, 4).join("-");
-    const time = parts.slice(4).join(":");
+    const timeRaw = parts.slice(4).join("");
+    const time = timeRaw
+      ? `${timeRaw.slice(0, 2)}:${timeRaw.slice(2, 4)}:${timeRaw.slice(4, 6)}`
+      : "—";
     return `<tr>
       <td><a href="${f}">🩺 ${date}</a></td>
-      <td>${time || "—"}</td>
+      <td>${time}</td>
       <td><a href="${f}">查看</a></td>
     </tr>`;
   }).join("\n");
@@ -970,6 +997,105 @@ function buildRecommendationsSection(recs) {
   return `<div class="h-section">
     <h2>💡 改进建议 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">${recs.length} 项</span></h2>
     <div class="h-rec-list">${items}</div>
+  </div>`;
+}
+
+/**
+ * Build structure health section: large files and hot modules.
+ */
+function buildStructureSection(hr) {
+  const si = hr.structInfo;
+  if (!si) return "";
+
+  const score = si.score ?? 0;
+  const icon = si.icon || "📐";
+  const barColor = score >= 80 ? "var(--yry-pass)" : score >= 60 ? "var(--yry-warn)" : "var(--yry-fail)";
+
+  const totals = si.totals || { fileCount: 0, totalLines: 0 };
+
+  // Summary card
+  const summaryHtml = `<div class="h-summary-row">
+    <div class="h-summary-item">
+      <div class="h-summary-val">${totals.fileCount}</div>
+      <div class="h-summary-lbl">源文件</div>
+    </div>
+    <div class="h-summary-item">
+      <div class="h-summary-val">${totals.totalLines.toLocaleString()}</div>
+      <div class="h-summary-lbl">总行数</div>
+    </div>
+    <div class="h-summary-item">
+      <div class="h-summary-val" style="color:${si.critFileCount > 0 ? 'var(--yry-fail)' : si.allLargeFileCount > 0 ? 'var(--yry-warn)' : 'var(--yry-pass)'}">${si.allLargeFileCount || 0}</div>
+      <div class="h-summary-lbl">大文件 ≥500 行${si.critFileCount > 0 ? ` (≥1000: ${si.critFileCount})` : ""}</div>
+    </div>
+    <div class="h-summary-item">
+      <div class="h-summary-val" style="color:${barColor}">${score}</div>
+      <div class="h-summary-lbl">结构健康分</div>
+    </div>
+  </div>`;
+
+  // Large files table
+  let filesHtml = "";
+  if (si.largeFiles && si.largeFiles.length > 0) {
+    const rows = si.largeFiles.map((f, i) => {
+      const tier = f.lines >= 1000 ? "fail" : "warn";
+      const tierLabel = f.lines >= 1000 ? "巨型" : "大型";
+      const tierColor = f.lines >= 1000 ? "var(--yry-fail)" : "var(--yry-warn)";
+      const pct = Math.min(100, (f.lines / 2000) * 100);
+      return `<tr class="h-struct-row">
+        <td class="h-struct-rank">${i + 1}</td>
+        <td class="h-struct-path" title="${f.path}">${f.path}</td>
+        <td class="h-struct-ext">${f.ext || "—"}</td>
+        <td class="h-struct-lines" style="font-family:'JetBrains Mono',monospace">${f.lines.toLocaleString()}</td>
+        <td class="h-struct-bar-cell"><div class="h-struct-bar"><div class="h-struct-bar-fill" style="width:${pct}%;background:${tierColor}"></div></div></td>
+        <td><span class="h-struct-chip ${tier}">${tierLabel}</span></td>
+      </tr>`;
+    }).join("");
+    filesHtml = `
+      <h3 class="h-struct-sub">📄 大文件 TOP ${si.largeFiles.length} <span class="h-struct-sub-note">≥500 行 · 按行数降序</span></h3>
+      <table class="h-struct-table">
+        <thead><tr><th>#</th><th>路径</th><th>类型</th><th>行数</th><th>规模</th><th>级别</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  } else {
+    filesHtml = `<div class="h-placeholder">✅ 未发现 ≥500 行的大文件</div>`;
+  }
+
+  // Modules table
+  let modulesHtml = "";
+  if (si.modules && si.modules.length > 0) {
+    const rows = si.modules.map((m, i) => {
+      const hot = m.lines >= 3000 || m.fileCount >= 30;
+      const pct = Math.min(100, (m.lines / 10000) * 100);
+      const barColor = hot ? "var(--yry-warn)" : "var(--yry-pass)";
+      return `<tr>
+        <td class="h-struct-rank">${i + 1}</td>
+        <td class="h-struct-path"><strong>${m.name}</strong></td>
+        <td class="h-struct-lines">${m.fileCount}</td>
+        <td class="h-struct-lines" style="font-family:'JetBrains Mono',monospace">${m.lines.toLocaleString()}</td>
+        <td class="h-struct-lines">${m.avgLines}</td>
+        <td class="h-struct-bar-cell"><div class="h-struct-bar"><div class="h-struct-bar-fill" style="width:${pct}%;background:${barColor}"></div></div></td>
+        <td class="h-struct-max" title="${m.maxFile}">${m.maxLines.toLocaleString()} 行</td>
+        <td>${hot ? '<span class="h-struct-chip warn">热</span>' : '<span class="h-struct-chip pass">正常</span>'}</td>
+      </tr>`;
+    }).join("");
+    modulesHtml = `
+      <h3 class="h-struct-sub">📦 顶层模块 TOP ${si.modules.length} <span class="h-struct-sub-note">按总行数降序 · 最大文件行数附后</span></h3>
+      <table class="h-struct-table">
+        <thead><tr><th>#</th><th>模块</th><th>文件数</th><th>总行数</th><th>均行数</th><th>规模</th><th>最大文件</th><th>状态</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  return `<div class="h-section">
+    <h2>📐 结构健康 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">${icon} ${si.summary || ""}</span></h2>
+    ${summaryHtml}
+    ${filesHtml}
+    ${modulesHtml}
+    <div class="h-struct-legend">
+      <span class="h-struct-chip fail">巨型 ≥1000 行</span>
+      <span class="h-struct-chip warn">大型 ≥500 行 · 热模块 ≥3000 行或 ≥30 文件</span>
+      <span class="h-struct-chip pass">正常</span>
+    </div>
   </div>`;
 }
 

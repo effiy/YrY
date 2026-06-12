@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>场景 1 · 新人上手 — 演示</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+<style>
+:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--warn:#f59e0b;--info:#6b7280;--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)}50%{box-shadow:0 0 0 8px rgba(255,193,7,0)}}
+@keyframes stepIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+@keyframes glowPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes checkPop{0%{transform:scale(0)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6}
+.container{max-width:960px;margin:0 auto;padding:40px 24px 80px}
+.tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:28px;overflow-x:auto;animation:fadeInDown .5s .1s ease both}
+.tab{padding:8px 14px;cursor:pointer;font-size:.78rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none;white-space:nowrap;flex-shrink:0}
+.tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.panel{display:none;animation:fadeInUp .4s ease both}.panel.on{display:block}
+.section{margin-bottom:32px}
+.section h2{font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.cmd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+.cmd-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s}
+.cmd-card:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.cmd-card .name{font-weight:700;font-size:.88rem;color:var(--accent);font-family:monospace}
+.cmd-card .desc{font-size:.76rem;color:var(--text2);margin:4px 0 8px;line-height:1.5}
+.cmd-card .stage{font-size:.64rem;color:var(--text3);margin-bottom:4px}
+pre{background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer}
+pre .cb{position:absolute;top:6px;right:6px;background:var(--bg-flat);border:var(--border);border-radius:4px;color:var(--text3);font-size:.62rem;padding:2px 7px;cursor:pointer;opacity:0;transition:opacity .15s;font-family:inherit}
+pre:hover .cb{opacity:1}pre .cb.done{color:var(--pass)}
+.flow-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0}
+.flow-chip{background:var(--bg-flat);border:var(--border);border-radius:20px;padding:6px 14px;font-size:.78rem;transition:all .15s}
+.flow-chip:hover{border-color:rgba(255,193,7,.3)}.flow-chip .n{font-weight:700;color:var(--accent)}
+.flow-arrow{color:var(--text3);font-size:.8rem}
+.file-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px}
+.file-item{background:var(--bg-flat);border:var(--border);border-radius:6px;padding:8px 12px;font-size:.74rem;font-family:monospace;color:var(--text2)}
+.links-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.links-row a{font-size:.76rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:6px;padding:6px 12px;transition:all .15s}
+.links-row a:hover{border-color:var(--accent);color:var(--accent);text-decoration:underline}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:0 12px 32px rgba(0,0,0,.45);opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+.walkthrough{counter-reset:step}
+.walkthrough .step{counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both}
+.walkthrough .step::before{content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.walkthrough .step .s-body{flex:1}.walkthrough .step .s-title{font-weight:600;font-size:.88rem}.walkthrough .step .s-desc{font-size:.76rem;color:var(--text2);margin:3px 0 6px}
+.walkthrough .step .s-result{font-size:.74rem;color:var(--pass);margin-top:6px}
+.walkthrough .step .s-result .r-label{font-weight:600}
+.walkthrough .step .s-result-desc{font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.5;padding:6px 10px;background:rgba(34,211,238,.04);border-left:2px solid var(--cyan);border-radius:0 4px 4px 0}
+.kbd-hint{font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.03);border-radius:3px;padding:1px 5px;margin-left:4px}
+@media(max-width:640px){.container{padding:20px 12px 60px}h1{font-size:1.4rem}.cmd-grid{grid-template-columns:1fr}}
+a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+.header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
+.header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+.header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
+.stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
+.stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}.stat-card .val.accent{color:var(--accent)}
+.stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
+.live-bar{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;font-size:.72rem;color:var(--text3);animation:fadeInDown .5s .14s ease both}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--pass);animation:glowPulse 2s infinite;flex-shrink:0}
+.live-resource{display:flex;align-items:center;gap:4px;background:var(--bg-flat);border:var(--border);border-radius:12px;padding:3px 10px;font-family:monospace;font-size:.68rem}
+.live-resource .lr-name{color:var(--text2)}.live-resource .lr-status{color:var(--pass);font-weight:700}.live-resource .lr-size{color:var(--text3)}
+.checklist{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.check-item{display:flex;align-items:flex-start;gap:12px;background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);transition:all .25s;cursor:pointer}
+.check-item:hover{border-color:rgba(255,255,255,.1)}.check-item.checked{border-color:rgba(34,197,94,.15);opacity:.8}
+.check-item .ci-box{width:24px;height:24px;border-radius:6px;border:2px solid var(--text3);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;margin-top:2px}
+.check-item.checked .ci-box{border-color:var(--pass);background:rgba(34,197,94,.15)}
+.check-item .ci-check{color:var(--pass);font-size:.9rem;opacity:0;transform:scale(0)}.check-item.checked .ci-check{opacity:1;animation:checkPop .3s ease}
+.check-item .ci-body{flex:1}.check-item .ci-name{font-weight:600;font-size:.86rem}.check-item .ci-desc{font-size:.72rem;color:var(--text3);margin-top:2px;line-height:1.4}
+.check-item .ci-time{font-size:.64rem;color:var(--text3);padding:2px 8px;border-radius:8px;background:rgba(255,255,255,.03)}
+.check-progress{margin-bottom:20px}.check-progress .prog-text{display:flex;justify-content:space-between;font-size:.74rem;color:var(--text2);margin-bottom:6px}
+.check-progress .prog-bar{height:8px;border-radius:4px;background:rgba(255,255,255,.04);overflow:hidden}
+.check-progress .prog-fill{height:100%;border-radius:4px;background:var(--pass);transition:width .5s ease}
+.btn-clear-checks{background:var(--bg-flat);color:var(--text3);border:var(--border);border-radius:20px;padding:6px 16px;font-size:.72rem;cursor:pointer;transition:all .15s;font-family:inherit}
+.btn-clear-checks:hover{color:var(--fail);border-color:rgba(239,68,68,.3)}
+.play-bar{display:flex;gap:12px;align-items:center;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+.btn-play{background:var(--accent);color:#000;border:none;border-radius:24px;padding:10px 28px;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;display:flex;align-items:center;gap:8px}
+.btn-play:hover{filter:brightness(1.1);transform:translateY(-1px)}.btn-play:active{transform:scale(.97)}
+.btn-play.running{animation:pulse 1.5s infinite;pointer-events:none;opacity:.7}
+.btn-reset{background:var(--bg-flat);color:var(--text2);border:var(--border);border-radius:24px;padding:10px 20px;font-size:.82rem;cursor:pointer;transition:all .15s;font-family:inherit}
+.btn-reset:hover{color:var(--text);border-color:rgba(255,255,255,.15)}
+.speed-select{background:var(--bg-flat);color:var(--text2);border:var(--border);border-radius:20px;padding:8px 14px;font-size:.76rem;cursor:pointer;font-family:inherit;outline:none}
+.speed-select:focus{border-color:rgba(255,193,7,.3)}
+.log-box{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);font-family:'SF Mono',monospace;font-size:.7rem;max-height:240px;overflow-y:auto;line-height:1.7;display:none}
+.log-box .log-line{padding:1px 0;display:flex;gap:8px}.log-box .log-time{color:var(--text3);flex-shrink:0}.log-box .log-icon{flex-shrink:0;width:16px;text-align:center}
+.tip-box{background:rgba(255,193,7,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:10px 0;font-size:.78rem;color:var(--text2);line-height:1.5}
+.tip-box strong{color:var(--accent)}
+.inline-code{font-family:'SF Mono',monospace;font-size:.82em;background:rgba(255,255,255,.04);padding:1px 5px;border-radius:3px;color:var(--cyan)}
+.stage-list{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+.stage-row{display:flex;align-items:center;gap:12px;background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow);transition:all .35s;position:relative;overflow:hidden}
+.stage-row.done{border-color:rgba(34,197,94,.15)}.stage-row.active{border-color:rgba(255,193,7,.25);animation:pulse 2s infinite}.stage-row.failed{border-color:rgba(239,68,68,.2)}
+.stage-row .st-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;flex-shrink:0;background:rgba(255,255,255,.04);color:var(--text3);transition:all .35s}
+.stage-row.done .st-num{background:rgba(34,197,94,.12);color:var(--pass)}.stage-row.active .st-num{background:rgba(255,193,7,.12);color:var(--accent)}.stage-row.failed .st-num{background:rgba(239,68,68,.12);color:var(--fail)}
+.stage-row .st-info{flex:1;min-width:0}.stage-row .st-name{font-weight:600;font-size:.84rem}.stage-row .st-detail{font-size:.7rem;color:var(--text3);margin-top:2px}
+.stage-row .st-status{font-size:.72rem;flex-shrink:0;padding:3px 10px;border-radius:12px;white-space:nowrap}
+.stage-row .st-status.waiting{color:var(--text3);background:rgba(110,110,114,.1)}.stage-row .st-status.loading{color:var(--accent);background:rgba(255,193,7,.1)}.stage-row .st-status.ok{color:var(--pass);background:rgba(34,197,94,.1)}.stage-row .st-status.err{color:var(--fail);background:rgba(239,68,68,.1)}
+.stage-row .st-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--accent);transition:width .2s linear;border-radius:0 1px 1px 0}
+</style>
+</head>
+<body>
+<div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 新人上手与开发指南</span><span class="bc-sep">/</span><span class="bc-current">💡 演示</span></nav>
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<span class="cross-link on">💡 演示</span><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
+
+<div class="header">
+  <h1>🌱 <span class="accent">新人上手与开发指南</span> — 演示</h1>
+  <p class="sub">环境搭建 → 调试方法 → 常见任务 — 新人可独立完成首修 — <span class="kbd-hint">1-7</span> 数字键切换 Tab</p>
+</div>
+
+<div class="live-bar" id="liveBar">
+  <span class="live-dot"></span> 本页 CDN 加载状态：
+  <span class="live-resource"><span class="lr-name">shared.css</span><span class="lr-status" id="lrCss">检测中</span><span class="lr-size">6.0KB</span></span>
+  <span class="live-resource"><span class="lr-name">theme.css</span><span class="lr-status" id="lrTheme">检测中</span><span class="lr-size">12.1KB</span></span>
+  <span class="live-resource"><span class="lr-name">shared.js</span><span class="lr-status" id="lrJs">检测中</span><span class="lr-size">5.3KB</span></span>
+  <span class="kbd-hint">1-7</span> 数字键切换 Tab
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div>
+  <div class="stat-card"><div class="val accent">5</div><div class="lbl">🧭 上手路径</div></div>
+  <div class="stat-card"><div class="val health" id="statCheckDone">0</div><div class="lbl">✅ 已完成</div></div>
+  <div class="stat-card"><div class="val accent" id="statCheckPct">0%</div><div class="lbl">📊 进度</div></div>
+  <div class="stat-card"><div class="val" style="color:var(--cyan)" id="statTiming">—</div><div class="lbl">⏱ CDN 加载</div></div>
+</div>
+
+<div class="tabs">
+  <span class="tab on" data-panel="walkthrough">🚶 演示</span>
+  <span class="tab" data-panel="overview">📊 概览</span>
+  <span class="tab" data-panel="commands">⚡ 命令</span>
+  <span class="tab" data-panel="files">📁 文件</span>
+  <span class="tab" data-panel="tests">🧪 测试</span>
+  <span class="tab" data-panel="checklist">✅ 上手清单</span>
+  <span class="tab" data-panel="simulator">🎬 模拟演练</span>
+</div>
+
+<div class="panel on" id="panelWalkthrough">
+  <div class="walkthrough">
+    <div class="step"><div class="suite-body"><div class="s-title">了解项目全貌</div><div class="s-desc">阅读 README.md 了解系统全景和领域语言（20 个术语）。CLAUDE.md 定义四大铁律和不可妥协底线。</div><pre>cat README.md CLAUDE.md<span class="cb" onclick="YrY.copyCmd(this,'cat README.md CLAUDE.md')">📋</span></pre><div class="s-result-desc">💡 说明: 这两个文件是新人必读的「第一小时文档」。README 回答「这是什么」，CLAUDE.md 回答「怎么操作」。领域语言的 Avoid 列特别重要 — 列出了历史中曾使用但已废弃的术语别名，防止新旧概念混淆（退化对策 L2 重生机制）。</div><div class="s-result"><span class="r-label">✅ 结果:</span> README.md: YrY 全景图 + 20 个领域语言术语定义（含 Avoid 禁用别名列）+ 6 个技能入口 + 角色拓扑概览。CLAUDE.md: 3 基础信念 + 4 铁律 + 项目约束 + 6 不可妥协底线 + 4 层退化对策。</div></div></div>
+    <div class="step"><div class="suite-body"><div class="s-title">搭建开发环境</div><div class="s-desc">克隆仓库 → 配置 API_X_TOKEN 环境变量 → 运行 /rui init 初始化项目基线。</div><pre>export API_X_TOKEN=your_token && /rui init<span class="cb" onclick="YrY.copyCmd(this,'export API_X_TOKEN=your_token && /rui init')">📋</span></pre><div class="s-result-desc">💡 说明: API_X_TOKEN 必须通过环境变量传入，禁止硬编码在源码或配置文件中（不可妥协底线 #2）。init 命令是幂等的 — 多次运行不会产生重复或冲突，marker 段每次全量重生。首次运行建议在 clone 后立即执行。</div><div class="s-result"><span class="r-label">✅ 结果:</span> API_X_TOKEN 从环境变量注入（密钥不落盘验证通过）→ /rui init 六阶段全部通过 → detect(6技能+9Agent+8规则) → generate(12个基线文件) → verify(PASS)。所有 rui marker 段已生成。</div></div></div>
+    <div class="step"><div class="suite-body"><div class="s-title">从源码反推理解</div><div class="s-desc">如果项目已有代码但缺少文档，用 --from-code 从源码反推故事文档基线，全程只读不修改。</div><pre>/rui doc --from-code<span class="cb" onclick="YrY.copyCmd(this,'/rui doc --from-code')">📋</span></pre><div class="s-result-desc">💡 说明: --from-code 模式对新人理解存量代码库尤其有用 — 不需要手动写文档，系统从源码自动提取结构和关系，生成人类可读的故事文档。全过程只读（EACCES 检查），不会修改任何源文件。生成文档的证据级别为 Level B（源码路径 + grep 可验证），不如 Level A（运行验证）强但适合快速建立基线。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 只读扫描 skills/ agents/ rules/ lib/ → 识别 6 技能 + 9 Agent + 8 规则 + 4 共享库 → 生成故事任务.md + 4 场景文档 + 知识图谱.json (含源码路径引用) → 证据 Level B（源码路径可追溯）。</div></div></div>
+    <div class="step"><div class="suite-body"><div class="s-title">完成首次修改</div><div class="s-desc">走完整管线：需求 → doc → code → test → deliver。分支隔离保护，Gate A/B 确保质量。</div><pre>/rui 修复文档中的错别字<span class="cb" onclick="YrY.copyCmd(this,'/rui 修复文档中的错别字')">📋</span></pre><div class="s-result-desc">💡 说明: 首次修改走完整管线体验全流程。T1 级变更（措辞/格式）自动跳过深度分析，流程更快（约 2 分钟 vs T3 的 15 分钟）。分支隔离策略确保 main 分支始终可交付，feat 分支的实验不会污染主分支。这是理解管线运作的最佳方式 — 做一个真实的小修改。</div><div class="s-result"><span class="r-label">✅ 结果:</span> pm 识别为 T1 措辞变更 → doc 生成场景卡片（影响范围: 仅 2 个 .md 文件）→ code 创建 feat/fix-typo 分支 → Gate A 通过 → 修改 2 处 → Gate B 1 轮通过 → deliver 合并到 main。</div></div></div>
+    <div class="step"><div class="suite-body"><div class="s-title">理解管线纪律</div><div class="s-desc">阅读 code-pipeline.md 理解分支隔离策略、Gate A/B 关卡、逐模块 P0 清零流程。</div><pre>cat rules/code-pipeline.md<span class="cb" onclick="YrY.copyCmd(this,'cat rules/code-pipeline.md')">📋</span></pre><div class="s-result-desc">💡 说明: 管线纪律是 YrY 最核心的治理机制。逐模块 P0 清零是「清先于进」铁律的直接体现 — P0 代表阻断级问题（安全漏洞/数据丢失/规约不一致），未清不得进入下个模块。不是鼓励完美主义（P1/P2 可以后续迭代），而是防止 P0 积累。</div><div class="s-result"><span class="r-label">✅ 结果:</span> code-pipeline.md 定义完整管线纪律 — 分支隔离（feat/ 前缀强制 + main 保护）→ Gate A 准入（测试先行 + 安全约束注入 + 分支验证）→ 逐模块 P0 清零（Modules: N→1，Module: M→1 子任务，当前模块 P0 未清 → 阻断下一模块）→ Gate B 交付（≤2 轮修复 + 交付 hook 三步）。</div></div></div>
+    <div class="step"><div class="suite-body"><div class="s-title">同步团队配置</div><div class="s-desc">rui-claude sync 从远端同步 .claude/ 配置，确保团队使用一致的 Agent 和规则。</div><pre>/rui-claude sync<span class="cb" onclick="YrY.copyCmd(this,'/rui-claude sync')">📋</span></pre><div class="s-result-desc">💡 说明: sync 确保团队成员使用统一的 Claude Code 配置（权限规则、钩子、MCP 服务器等），避免「在我机器上能跑」问题。首次入职或配置更新后必须运行。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 远端 .claude/ 配置 → 本地覆盖 — 同步 settings.json / hooks.json / MCP 服务器列表。diff 显示 3 个文件更新，0 冲突。</div></div></div>
+  </div>
+</div>
+
+<div class="panel" id="panelOverview">
+  <div class="section"><h2><span class="dot"></span>新人上手路径</h2>
+    <div class="flow-row"><div class="flow-chip"><span class="n">阅读</span> CLAUDE.md</div><span class="flow-arrow">→</span><div class="flow-chip"><span class="n">搭建</span> 环境</div><span class="flow-arrow">→</span><div class="flow-chip"><span class="n">反推</span> 文档</div><span class="flow-arrow">→</span><div class="flow-chip"><span class="n">首修</span> /rui</div><span class="flow-arrow">→</span><div class="flow-chip"><span class="n">同步</span> 配置</div></div>
+  </div>
+  <div class="section"><h2><span class="dot"></span>关键概念</h2>
+    <div class="flow-row"><div class="flow-chip"><span class="n">铁律</span> 4 条不可妥协</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">Gate A/B</span> 准入/交付关卡</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">P0 清零</span> 逐模块执行</div><span class="flow-arrow">·</span><div class="flow-chip"><span class="n">表达优先</span> 图→文→表</div></div>
+  </div>
+</div>
+
+<div class="panel" id="panelCommands">
+  <div class="cmd-grid">
+    <div class="cmd-card"><div class="stage">初始化</div><div class="name">/rui init</div><div class="desc">六步建立项目骨架。detect→explore→generate→arch→setup→verify。</div><pre>/rui init<span class="cb" onclick="YrY.copyCmd(this,'/rui init')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">文档反推</div><div class="name">/rui doc --from-code</div><div class="desc">存量代码库生成故事文档基线。全程只读源码，证据 Level B + 源码路径。</div><pre>/rui doc --from-code<span class="cb" onclick="YrY.copyCmd(this,'/rui doc --from-code')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">端到端首修</div><div class="name">/rui 需求描述</div><div class="desc">= /rui doc 需求 → /rui code name，无中断一气呵成。</div><pre>/rui 添加代码注释<span class="cb" onclick="YrY.copyCmd(this,'/rui 添加代码注释')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">配置同步</div><div class="name">/rui-claude sync</div><div class="desc">远端 → 本地覆盖 .claude/ 配置。适合初始化新环境或同步团队更新。</div><pre>/rui-claude sync<span class="cb" onclick="YrY.copyCmd(this,'/rui-claude sync')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">插件升级</div><div class="name">/rui-claude update</div><div class="desc">git pull 最新 YrY → 清除插件缓存 → sync 远端配置双刷新。</div><pre>/rui-claude update<span class="cb" onclick="YrY.copyCmd(this,'/rui-claude update')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">任务推荐</div><div class="name">/rui</div><div class="desc">空输入触发 5 层链式管线评分排序，输出推荐任务列表。</div><pre>/rui<span class="cb" onclick="YrY.copyCmd(this,'/rui')">📋</span></pre></div>
+  </div>
+</div>
+
+<div class="panel" id="panelFiles">
+  <div class="section"><h2><span class="dot"></span>相关文件</h2>
+    <div class="file-list"><div class="file-item">📄 README.md</div><div class="file-item">📄 CLAUDE.md</div><div class="file-item">📐 code-pipeline.md</div><div class="file-item">📐 AGENT.md</div><div class="file-item">📄 formulas.md</div><div class="file-item">⚡ help.mjs</div></div>
+  </div>
+  <div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="测试面板.html">🧪 测试面板</a></div>
+</div>
+
+<div class="panel" id="panelTests">
+  <div class="section"><h2><span class="dot"></span>测试覆盖</h2>
+    <div class="cmd-grid">
+      <div class="cmd-card"><div class="name">环境可达性</div><div class="desc">验证 init 命令可执行、CLAUDE.md 可解析、skills 目录结构完整。</div></div>
+      <div class="cmd-card"><div class="name">新人路径可走通</div><div class="desc">验证从 clone 到首次 /rui 完整流程可执行，Gate A/B 正确触发。</div></div>
+      <div class="cmd-card"><div class="name">文档覆盖完整</div><div class="desc">验证 README/CLAUDE.md/formulas.md 涵盖新人所需全部信息。</div></div>
+    </div>
+  </div>
+  <div class="links-row"><a href="测试面板.html">🧪 打开测试面板</a><a href="../../../index.html">📄 返回文档中心</a></div>
+</div>
+
+<div class="panel" id="panelChecklist">
+  <div class="section">
+    <h2><span class="dot"></span>新人上手任务清单</h2>
+    <p style="font-size:.76rem;color:var(--text3);margin-bottom:14px">逐项完成打勾。进度自动保存到浏览器，刷新不丢失。</p>
+    <div class="check-progress"><div class="prog-text"><span>完成进度</span><span id="progLabel">0 / 12</span></div><div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div></div>
+    <div class="checklist" id="checkList">
+      <div class="check-item" data-id="s1-intro"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">1. 阅读 README.md</div><div class="ci-desc">了解 YrY 系统全景、领域语言、Avoid 禁用别名列</div></div><div class="ci-time">~10 min</div></div>
+      <div class="check-item" data-id="s2-code"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">2. 阅读 CLAUDE.md</div><div class="ci-desc">理解四大铁律、不可妥协底线、退化对策、引导入口</div></div><div class="ci-time">~15 min</div></div>
+      <div class="check-item" data-id="s3-agent"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">3. 阅读 AGENT.md</div><div class="ci-desc">掌握 9 Agent 角色拓扑、协作模式、信号协议、行为纪律</div></div><div class="ci-time">~20 min</div></div>
+      <div class="check-item" data-id="s4-pipeline"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">4. 阅读 code-pipeline.md</div><div class="ci-desc">理解分支隔离、Gate A/B 关卡、逐模块 P0 清零管线纪律</div></div><div class="ci-time">~15 min</div></div>
+      <div class="check-item" data-id="s5-clone"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">5. 克隆仓库 & 安装依赖</div><div class="ci-desc">git clone + token 配置 + npm install + 环境变量设置</div></div><div class="ci-time">~5 min</div></div>
+      <div class="check-item" data-id="s6-init"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">6. 运行 /rui init</div><div class="ci-desc">六阶段建立项目基线，验证 detect → verify 全部通过</div></div><div class="ci-time">~2 min</div></div>
+      <div class="check-item" data-id="s7-explore"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">7. 浏览 skills/ 目录</div><div class="ci-desc">逐一阅读 6 个技能的 SKILL.md，理解每个技能的功能边界</div></div><div class="ci-time">~30 min</div></div>
+      <div class="check-item" data-id="s8-fromcode"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">8. 运行 /rui doc --from-code</div><div class="ci-desc">从存量代码反推文档基线，体验只读分析流程</div></div><div class="ci-time">~3 min</div></div>
+      <div class="check-item" data-id="s9-firstfix"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">9. 完成首次修改</div><div class="ci-desc">走完整管线：/rui 需求 → doc → code → test → deliver</div></div><div class="ci-time">~10 min</div></div>
+      <div class="check-item" data-id="s10-sync"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">10. 同步团队配置</div><div class="ci-desc">运行 /rui-claude sync，确保 .claude/ 配置与团队一致</div></div><div class="ci-time">~1 min</div></div>
+      <div class="check-item" data-id="s11-review"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">11. 浏览故事面板</div><div class="ci-desc">打开 docs/故事任务面板/，了解现有故事结构和文档体系</div></div><div class="ci-time">~15 min</div></div>
+      <div class="check-item" data-id="s12-security"><div class="ci-box"><span class="ci-check">✓</span></div><div class="ci-body"><div class="ci-name">12. 阅读安全护栏</div><div class="ci-desc">了解 security-guardrails.md 五大防线和 P0 阻断规则</div></div><div class="ci-time">~10 min</div></div>
+    </div>
+    <button class="btn-clear-checks" onclick="clearAllChecks()">🗑 清除所有勾选</button>
+  </div>
+  <div class="tip-box"><strong>💡 预计总耗时:</strong> ~2 小时 15 分钟完成全部 12 项。进度自动保存到 localStorage，跨会话持久化。新人建议每天 1-2 小时，3 天内完成。</div>
+</div>
+
+<div class="panel" id="panelSimulator">
+  <div class="section">
+    <h2><span class="dot"></span>新人上手模拟演练</h2>
+    <p style="font-size:.76rem;color:var(--text3);margin-bottom:14px">交互式模拟新人上手的五个核心阶段。点击播放观察从阅读文档到完成首修的完整流程。</p>
+    <div class="play-bar">
+      <button class="btn-play" id="btnSimPlay" onclick="startSim()">▶ 开始模拟</button>
+      <button class="btn-reset" onclick="resetSim()">↺ 重置</button>
+      <select class="speed-select" id="speedSelect" onchange="setSpeed(this.value)">
+        <option value="1">1x 速度</option><option value="2">2x 快速</option><option value="0.5">0.5x 慢速</option><option value="3">3x 极速</option>
+      </select>
+    </div>
+    <div class="stage-list" id="stageList">
+      <div class="stage-row" id="stg0"><div class="st-num">①</div><div class="st-info"><div class="st-name">阅读 CLAUDE.md</div><div class="st-detail">项目画像 + 4 铁律 + 6 不可妥协底线 + 4 层退化对策</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
+      <div class="stage-row" id="stg1"><div class="st-num">②</div><div class="st-info"><div class="st-name">阅读 AGENT.md</div><div class="st-detail">9 Agent 角色拓扑 + 6 行为纪律 + 4 设计原则 + 信号协议</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
+      <div class="stage-row" id="stg2"><div class="st-num">③</div><div class="st-info"><div class="st-name">跟随 /rui init 六步初始化</div><div class="st-detail">detect → explore → generate → arch → setup → verify</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
+      <div class="stage-row" id="stg3"><div class="st-num">④</div><div class="st-info"><div class="st-name">打开架构图理解模块关系</div><div class="st-detail">SVG 三层拓扑: 6 Skills → 9 Agents → 8 Rules</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
+      <div class="stage-row" id="stg4"><div class="st-num">⑤</div><div class="st-info"><div class="st-name">浏览故事面板了解 SDLC 流程</div><div class="st-detail">docs/故事任务面板/ → 现有故事结构 + 文档体系</div></div><div class="st-status waiting">等待中</div><div class="st-bar" style="width:0%"></div></div>
+    </div>
+    <div class="log-box" id="simLogBox"><div style="color:var(--text3)">等待模拟开始...</div></div>
+  </div>
+  <div class="tip-box"><strong>💡 新人上手:</strong> 推荐顺序阅读 <span class="inline-code">CLAUDE.md</span> → <span class="inline-code">AGENT.md</span> → 运行 <span class="inline-code">/rui init</span> → 浏览架构图 → 访问故事面板。预计总耗时 ~1 小时建立完整认知。</div>
+</div>
+
+<div class="toast" id="toast"></div></div>
+
+<script>
+(function(){var SCENE_KEY='yry-arch-s3-demo';
+document.querySelector('.tabs').addEventListener('click',function(e){var tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
+window.switchPanel=function(name){YrY.switchPanel(name,'.tab','.panel');try{localStorage.setItem(SCENE_KEY+'-tab',name)}catch(e){}};
+document.addEventListener('keydown',function(e){if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;var m={'1':'walkthrough','2':'overview','3':'commands','4':'files','5':'tests','6':'checklist','7':'simulator'};if(m[e.key]){e.preventDefault();switchPanel(m[e.key])}});
+try{var saved=localStorage.getItem(SCENE_KEY+'-tab');if(saved)switchPanel(saved)}catch(e){}})();
+
+(function detectCDN(){var resources=performance.getEntriesByType('resource');var cdnEntries=resources.filter(function(r){return r.name.indexOf('/cdn/')!==-1});var found={css:false,theme:false,js:false};var totalDuration=0;cdnEntries.forEach(function(r){var name=r.name.split('/').pop().split('?')[0];if(name==='shared.css')found.css=r;if(name==='theme.css')found.theme=r;if(name==='shared.js')found.js=r;totalDuration+=r.duration});function updateBadge(elId,entry){var el=document.getElementById(elId);if(entry){el.textContent='✓ '+Math.round(entry.duration)+'ms';el.style.color='var(--pass)'}else{el.textContent='—';el.style.color='var(--text3)'}}updateBadge('lrCss',found.css);updateBadge('lrTheme',found.theme);updateBadge('lrJs',found.js);var timingEl=document.getElementById('statTiming');if(cdnEntries.length>=3){timingEl.textContent=Math.round(totalDuration)+'ms';timingEl.style.color=totalDuration<100?'var(--pass)':'var(--accent)'}else if(cdnEntries.length>0){timingEl.textContent=Math.round(totalDuration)+'ms';timingEl.style.color='var(--cyan)'}else{timingEl.textContent='已缓存';timingEl.style.color='var(--text3)'}})();
+
+(function initChecklist(){var CK_KEY='yry-arch-s3-checklist';var checked={};try{var raw=localStorage.getItem(CK_KEY);if(raw)checked=JSON.parse(raw)}catch(e){}function updateUI(){var items=document.querySelectorAll('.check-item');var count=0;items.forEach(function(item){var id=item.dataset.id;if(checked[id]){item.classList.add('checked');count++}else{item.classList.remove('checked')}});document.getElementById('progFill').style.width=(count/items.length*100)+'%';document.getElementById('progLabel').textContent=count+' / '+items.length;document.getElementById('statCheckDone').textContent=count;document.getElementById('statCheckPct').textContent=Math.round(count/items.length*100)+'%'}document.getElementById('checkList').addEventListener('click',function(e){var item=e.target.closest('.check-item');if(!item)return;var id=item.dataset.id;if(checked[id]){delete checked[id];YrY.toast('取消勾选: '+item.querySelector('.ci-name').textContent,1200)}else{checked[id]=true;YrY.toast('已完成: '+item.querySelector('.ci-name').textContent,1500)}try{localStorage.setItem(CK_KEY,JSON.stringify(checked))}catch(e){}updateUI()});window.clearAllChecks=function(){checked={};try{localStorage.removeItem(CK_KEY)}catch(e){}updateUI();YrY.toast('已清除所有勾选',1200)};updateUI()})();
+
+var simRunning=false,simSpeed=1,simStageIds=['stg0','stg1','stg2','stg3','stg4'];
+var stageDefsS3=[{name:'阅读 CLAUDE.md',detail:'项目画像 + 4 铁律 + 6 不可妥协底线',logLines:['📖 打开 CLAUDE.md — 项目总纲文档 ...','  ✓ 基础信念: 信模型 · 惜注意 · 验现实','  ✓ 四大铁律: 验先于称 · 溯先于修 · 清先于进 · 表达优先','  ✓ 6 不可妥协底线: 认证不绕过 · 密钥不落盘 · 输入必校验 · 规约完整性 · 自托管一致性 · 分支隔离','  ✓ 退化对策: L1 自包含 · L2 重生机制 · L3 铁律+Red Flags · L4 上下文工程','  ✓ CLAUDE.md 阅读完成 — 项目运行规则已建立']},{name:'阅读 AGENT.md',detail:'9 Agent 角色拓扑 + 行为纪律',logLines:['📖 打开 AGENT.md — 角色拓扑与协作总纲 ...','  ✓ Agent 正向流水线: pm → architect → coder → tester','  ✓ 旁路审计: security + code-reviewer 结果注入 coder 任务列表','  ✓ 信号协议: 每个 Agent 输入/输出信号有明确格式和验证方法','  ✓ 行为纪律: Red Flags 8 类合理化借口速查表','  ✓ AGENT.md 阅读完成 — 角色职责和协作模式已掌握']},{name:'跟随 /rui init 六步初始化',detail:'detect → explore → generate → arch → setup → verify',logLines:['🚀 运行 /rui init — 六步建立项目基线 ...','  ✓ Step 1/6 — detect: 检测到 6 技能 + 9 Agent + 8 规则','  ✓ Step 2/6 — explore: 扫描 skills/ agents/ rules/ lib/ 目录','  ✓ Step 3/6 — generate: 生成 12 个基线文件','  ✓ Step 4/6 — arch: 生成 SVG 三层架构拓扑','  ✓ Step 5/6 — setup: 同步 .claude/ 配置','  ✓ Step 6/6 — verify: PASS — 所有 marker 段验证通过','  ✓ /rui init 完成 — 项目基线已建立']},{name:'打开架构图理解模块关系',detail:'SVG 三层拓扑: Skills → Agents → Rules',logLines:['📐 打开 架构图.html — 自包含 SVG 三层拓扑 ...','  ✓ Layer 1 — Skills: 6 技能 (rui / rui-story / rui-claude / rui-import / rui-bot / rui-npm)','  ✓ Layer 2 — Agents: 9 Agent (pm / architect / coder / tester ...)','  ✓ Layer 3 — Rules: 8 规则 (管线纪律 / 交付门禁 / 安全护栏 ...)','  ✓ 交互边: 标注信号方向和类型，svg-pan-zoom 支持缩放','  ✓ 架构图理解完成 — 模块边界和交互关系清晰']},{name:'浏览故事面板了解 SDLC 流程',detail:'docs/故事任务面板/ → 现有故事 + 文档体系',logLines:['📋 浏览 docs/故事任务面板/ — SDLC 管理中枢 ...','  ✓ 发现活跃故事: yry-arch (系统架构知识固化)','  ✓ yry-arch 场景: 5 场景 (模块定位/数据流/新人上手/依赖变更/信任边界)','  ✓ 每个场景含 7 文档: 清单 → 架构 → 图谱 → 源码 → 测试 → 演示 → 审计','  ✓ 文档中心 docs/index.html 作为导航入口','  ✅ 故事面板浏览完成 — SDLC 管理流程已理解']}];
+function simLog(msg,color){var box=document.getElementById('simLogBox');if(!box)return;box.style.display='block';var div=document.createElement('div');div.className='log-line';var now=new Date();var time=('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2)+':'+('0'+now.getSeconds()).slice(-2)+'.'+('00'+now.getMilliseconds()).slice(-3);div.innerHTML='<span class="log-time">'+time+'</span><span class="log-icon" style="color:'+(color||'var(--text2)')+'">●</span><span style="color:'+(color||'var(--text2)')+'">'+msg+'</span>';box.appendChild(div);box.scrollTop=box.scrollHeight}
+function updateStage(idx,statusCls,statusText,barPct){var row=document.getElementById(simStageIds[idx]);if(!row)return;row.classList.remove('done','active','failed');if(statusCls==='ok')row.classList.add('done');if(statusCls==='loading')row.classList.add('active');if(statusCls==='err')row.classList.add('failed');var st=row.querySelector('.st-status');st.textContent=statusText;st.className='st-status '+statusCls;row.querySelector('.st-bar').style.width=(barPct||0)+'%'}
+function resetSim(){if(simRunning)return;simStageIds.forEach(function(id,i){updateStage(i,'waiting','等待中',0)});var box=document.getElementById('simLogBox');if(box){box.innerHTML='<div style="color:var(--text3)">等待模拟开始...</div>';box.style.display='none'}var btn=document.getElementById('btnSimPlay');btn.classList.remove('running');btn.textContent='▶ 开始模拟'}
+function setSpeed(val){simSpeed=parseFloat(val)}
+function startSim(){if(simRunning)return;simRunning=true;var btn=document.getElementById('btnSimPlay');btn.classList.add('running');btn.textContent='⏳ 模拟中...';var box=document.getElementById('simLogBox');box.style.display='block';box.innerHTML='';simLog('🚀 开始新人上手模拟演练','var(--accent)');var baseDur=1000;var i=0;function next(){if(i>=stageDefsS3.length){setTimeout(function(){simLog('✅ 5 阶段模拟完成 — 新人已具备独立开发能力','var(--pass)');btn.classList.remove('running');btn.textContent='✓ 模拟完成';simRunning=false;YrY.toast('新人上手模拟完成',2500);setTimeout(function(){btn.textContent='▶ 重新模拟'},2000)},400/simSpeed);return}var def=stageDefsS3[i];updateStage(i,'loading','学习中...',0);simLog('⏳ '+def.name+' — '+def.detail,'var(--cyan)');var start=Date.now();var duration=baseDur/simSpeed;var tick=setInterval(function(){var pct=Math.min(100,((Date.now()-start)/duration)*100);var el=document.getElementById(simStageIds[i]);if(el)el.querySelector('.st-bar').style.width=pct+'%';if(pct>=100)clearInterval(tick)},16);var logDelay=duration/(def.logLines.length+2);def.logLines.forEach(function(line,li){setTimeout(function(){simLog(line,line.indexOf('✓')!==-1||line.indexOf('✅')!==-1?'var(--pass)':'var(--text2)')},logDelay*(li+1))});setTimeout(function(){clearInterval(tick);updateStage(i,'ok','完成 ✓',100);simLog('  ✅ '+def.name+' — 阶段完成','var(--pass)');i++;setTimeout(next,300/simSpeed)},duration)}setTimeout(next,300/simSpeed)}
+</script>
+<div class="footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY · 场景演示</div>
+<script src="../../../../cdn/shared.js"></script>
+</body>
+</html>

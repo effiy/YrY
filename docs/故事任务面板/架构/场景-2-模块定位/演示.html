@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>场景 2 · 模块定位 — 演示</title>
+<!-- ═══ CDN: YrY 共享样式 ═══ -->
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+
+  <style>
+    :root { --bg:rgba(22,22,32,1); --bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%); --bg-flat:rgba(34,34,46,1); --bg-raised:rgba(42,42,56,1); --accent:#FFC107; --cyan:#22d3ee; --pass:#22c55e; --fail:#ef4444; --text:rgba(250,250,252,1); --text2:rgba(160,160,164,1); --text3:rgba(110,110,114,1); --shadow:0 4px 20px rgba(0,0,0,0.3); --shadow-lg:0 12px 32px rgba(0,0,0,0.45); --warn:#f59e0b; --info:#6b7280; --radius:12px; --border:1px solid rgba(255,255,255,0.06); }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeInDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes slideDown { from{opacity:0;max-height:0} to{opacity:1;max-height:800px} }
+    @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)} 50%{box-shadow:0 0 0 8px rgba(255,193,7,0)} }
+    @keyframes stepIn { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes glowPulse { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.3)} }
+    @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+    @keyframes countUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    * { box-sizing:border-box;margin:0;padding:0 }
+    body { background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6 }
+    .container { max-width:960px;margin:0 auto;padding:40px 24px 80px }
+    .tabs { display:flex;gap:0;border-bottom:var(--border);margin-bottom:28px;animation:fadeInDown .5s .1s ease both }
+    .tab { padding:8px 18px;cursor:pointer;font-size:.82rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none }
+    .tab:hover { color:var(--text2) } .tab.on { color:var(--accent);border-bottom-color:var(--accent) }
+    .panel { display:none;animation:fadeInUp .4s ease both }
+    .panel.on { display:block }
+    .section { margin-bottom:32px }
+    .section h2 { font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px }
+    .section h2 .dot { width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0 }
+    .mermaid-wrap { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);overflow-x:auto;margin-bottom:16px }
+    .cmd-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px }
+    .cmd-card { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s }
+    .cmd-card:hover { transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,0,0,.35) }
+    .cmd-card .name { font-weight:700;font-size:.88rem;color:var(--accent);font-family:monospace }
+    .cmd-card .desc { font-size:.76rem;color:var(--text2);margin:4px 0 8px;line-height:1.5 }
+    .cmd-card .stage { font-size:.64rem;color:var(--text3);margin-bottom:4px }
+    pre { background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer }
+    pre .cb { position:absolute;top:6px;right:6px;background:var(--bg-flat);border:var(--border);border-radius:4px;color:var(--text3);font-size:.62rem;padding:2px 7px;cursor:pointer;opacity:0;transition:opacity .15s;font-family:inherit }
+    pre:hover .cb { opacity:1 } pre .cb.done { color:var(--pass) }
+    .flow-row { display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0 }
+    .flow-chip { background:var(--bg-flat);border:var(--border);border-radius:20px;padding:6px 14px;font-size:.78rem;transition:all .15s }
+    .flow-chip:hover { border-color:rgba(255,193,7,.3) }
+    .flow-chip .n { font-weight:700;color:var(--accent) }
+    .flow-arrow { color:var(--text3);font-size:.8rem }
+    .file-list { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px }
+    .file-item { background:var(--bg-flat);border:var(--border);border-radius:6px;padding:8px 12px;font-size:.74rem;font-family:monospace;color:var(--text2) }
+    .stat-row { display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px }
+    .stat-mini { background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:12px 16px;text-align:center;box-shadow:var(--shadow);min-width:70px }
+    .stat-mini .sv { font-size:1.3rem;font-weight:700 } .stat-mini .sv.g { color:var(--pass) } .stat-mini .sv.y { color:var(--accent) } .stat-mini .sl { font-size:.64rem;color:var(--text3);text-transform:uppercase;letter-spacing:.4px }
+    .links-row { display:flex;gap:8px;flex-wrap:wrap;margin-top:16px }
+    .links-row a { font-size:.76rem;color:var(--cyan);text-decoration:none;background:var(--bg-flat);border:1px solid rgba(34,211,238,.15);border-radius:6px;padding:6px 12px;transition:all .15s }
+    .links-row a:hover { border-color:var(--accent);color:var(--accent);text-decoration:underline }
+    .toast { position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:0 12px 32px rgba(0,0,0,.45);opacity:0;transition:opacity .2s;pointer-events:none }
+    .toast.show { opacity:1 }
+    .walkthrough { counter-reset:step }
+    .walkthrough .step { counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both }
+    .walkthrough .step::before { content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0 }
+    .walkthrough .step .s-body { flex:1 } .walkthrough .step .s-title { font-weight:600;font-size:.88rem } .walkthrough .step .s-desc { font-size:.76rem;color:var(--text2);margin:3px 0 6px }
+    .walkthrough .step .s-result { font-size:.74rem;color:var(--pass);margin-top:6px }
+    .walkthrough .step .s-result .r-label { font-weight:600 }
+    .walkthrough .step .s-result-desc { font-size:.72rem;color:var(--text2);margin-top:4px;line-height:1.5;padding:6px 10px;background:rgba(34,211,238,.04);border-left:2px solid var(--cyan);border-radius:0 4px 4px 0 }
+    .kbd-hint { font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.03);border-radius:3px;padding:1px 5px;margin-left:4px }
+    @media (max-width:640px) { .container { padding:20px 12px 60px } h1 { font-size:1.4rem } .cmd-grid { grid-template-columns:1fr } }
+  a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+
+  .header{text-align:center;margin-bottom:28px;animation:fadeInDown .5s ease both}
+  .header h1{font-size:1.8rem;font-weight:700}.header h1 .accent{color:var(--accent)}
+  .header .sub{color:var(--text2);font-size:.9rem;margin-top:4px}
+  .stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
+  .stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px;transition:transform .15s,box-shadow .15s;cursor:pointer}
+  .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+  .stat-card .val{font-size:1.6rem;font-weight:700;line-height:1.1}
+  .stat-card .val.health{color:var(--pass)}.stat-card .val.warn-h{color:var(--warn)}.stat-card .val.accent{color:var(--accent)}
+  .stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
+  .breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+  .cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}.cross-link.on{color:var(--accent);font-weight:600}.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
+  .bar-wrap{margin-bottom:28px;animation:fadeInDown .5s .12s ease both}
+  .bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
+  .bar-outer .seg{height:100%;transition:width .5s ease;min-width:3px}
+  .bar-outer .seg.strength{background:var(--pass)}.bar-outer .seg.gap{background:var(--fail)}.bar-outer .seg.suggestion{background:var(--warn)}.bar-outer .seg.neutral{background:var(--info)}
+
+  /* ═══ Live detection ═══ */
+  .live-bar{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;font-size:.72rem;color:var(--text3);animation:fadeInDown .5s .14s ease both}
+  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--pass);animation:glowPulse 2s infinite;flex-shrink:0}
+  .live-resource{display:flex;align-items:center;gap:4px;background:var(--bg-flat);border:var(--border);border-radius:12px;padding:3px 10px;font-family:monospace;font-size:.68rem}
+  .live-resource .lr-name{color:var(--text2)}.live-resource .lr-status{color:var(--pass);font-weight:700}.live-resource .lr-size{color:var(--text3)}
+
+  /* ═══ Module filter ═══ */
+  .module-search{display:flex;gap:10px;align-items:center;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+  .module-search input{background:var(--bg-flat);border:var(--border);border-radius:20px;padding:10px 18px;font-size:.82rem;color:var(--text);font-family:inherit;outline:none;min-width:300px;transition:border-color .15s}
+  .module-search input:focus{border-color:rgba(255,193,7,.4)}
+  .module-search input::placeholder{color:var(--text3)}
+  .module-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+  .module-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);transition:all .25s}
+  .module-card.hidden{display:none}
+  .module-card.highlight{border-color:rgba(255,193,7,.3);box-shadow:0 6px 24px rgba(255,193,7,.1)}
+  .module-card .mod-icon{font-size:1.4rem;margin-bottom:6px}
+  .module-card .mod-name{font-weight:700;font-size:.88rem;color:var(--accent)}
+  .module-card .mod-type{font-size:.64rem;color:var(--text3);padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.04);display:inline-block;margin-left:6px}
+  .module-card .mod-desc{font-size:.74rem;color:var(--text2);margin:8px 0;line-height:1.5}
+  .module-card .mod-deps{font-size:.66rem;color:var(--text3)}
+  .module-card .mod-deps span{color:var(--cyan)}
+  .module-card .mod-count{font-size:.6rem;padding:2px 7px;border-radius:8px;margin-left:4px}
+  .module-card .mod-count.skill{background:rgba(34,197,94,.1);color:var(--pass)}
+  .module-card .mod-count.agent{background:rgba(34,211,238,.1);color:var(--cyan)}
+  .module-card .mod-count.rule{background:rgba(245,158,11,.1);color:var(--warn)}
+  .filter-msg{text-align:center;font-size:.74rem;color:var(--text3);padding:20px;display:none}
+  .tip-box{background:rgba(255,193,7,.04);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:10px 14px;margin:10px 0;font-size:.78rem;color:var(--text2);line-height:1.5}
+  .tip-box strong{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · 模块定位与职责</span><span class="bc-sep">/</span><span class="bc-current">💡 演示</span></nav>
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<span class="cross-link on">💡 演示</span><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
+
+<div class="header">
+  <h1>🧩 <span class="accent">模块定位与职责</span> — 演示</h1>
+  <p class="sub">识别和验证 YrY 系统中每个模块的职责边界 — <span class="kbd-hint">1-6</span> 数字键切换 Tab</p>
+</div>
+
+<!-- ═══ Live CDN Detection Bar ═══ -->
+<div class="live-bar" id="liveBar">
+  <span class="live-dot"></span> 本页 CDN 加载状态：
+  <span class="live-resource"><span class="lr-name">shared.css</span><span class="lr-status" id="lrCss">检测中</span><span class="lr-size">6.0KB</span></span>
+  <span class="live-resource"><span class="lr-name">theme.css</span><span class="lr-status" id="lrTheme">检测中</span><span class="lr-size">12.1KB</span></span>
+  <span class="live-resource"><span class="lr-name">shared.js</span><span class="lr-status" id="lrJs">检测中</span><span class="lr-size">5.3KB</span></span>
+  <span class="kbd-hint">1-6</span> 数字键切换 Tab
+</div>
+
+<!-- ═══ Stats Row ═══ -->
+<div class="stats-grid">
+  <div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div>
+  <div class="stat-card"><div class="val health">9</div><div class="lbl">🤖 Agent</div></div>
+  <div class="stat-card"><div class="val accent">6</div><div class="lbl">⚡ 技能</div></div>
+  <div class="stat-card"><div class="val health">8</div><div class="lbl">📐 规则</div></div>
+  <div class="stat-card"><div class="val" style="color:var(--cyan)" id="statTiming">—</div><div class="lbl">⏱ CDN 加载</div></div>
+</div>
+
+<div class="tabs">
+  <span class="tab on" data-panel="walkthrough">🚶 演示</span>
+  <span class="tab" data-panel="overview">📊 概览</span>
+  <span class="tab" data-panel="commands">⚡ 命令</span>
+  <span class="tab" data-panel="files">📁 文件</span>
+  <span class="tab" data-panel="tests">🧪 测试</span>
+  <span class="tab" data-panel="modfilter">🔍 模块过滤</span>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 1: Walkthrough                       -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel on" id="panelWalkthrough">
+  <div class="walkthrough">
+    <div class="step"><div class="suite-body"><div class="s-title">初始化项目基线</div><div class="s-desc">运行 /rui init 建立项目骨架。detect → explore → generate → arch → setup → verify，自动识别技能、Agent 和规则的模块结构。</div><pre>/rui init<span class="cb" onclick="YrY.copyCmd(this,'/rui init')">📋</span></pre><div class="s-result-desc">💡 说明: 初始化建立了完整的项目骨架基线。CLAUDE.md / README.md 中的 marker 段全量重生，版本号 4.3.0 已同步到 plugin.json / CLAUDE.md / README.md 三处。后续所有管线操作依赖此基线。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 六阶段全部通过 — detect(6 技能) → explore(9 Agent + 8 规则) → generate(12 文件) → arch(SVG 三图层) → setup(.claude/ 配置) → verify(PASS) — 耗时约 45 秒，所有 rui 标记段已生成。</div></div></div>
+    <div class="step"><div class="suite-body"><div class="s-title">查看模块全景</div><div class="s-desc">阅读 CLAUDE.md 中的项目画像和角色拓扑。AGENT.md 定义了 8 个 Agent 的职责分配和协作关系。</div><pre>cat CLAUDE.md agents/AGENT.md<span class="cb" onclick="YrY.copyCmd(this,'cat CLAUDE.md agents/AGENT.md')">📋</span></pre><div class="s-result-desc">💡 说明: 两个文件共同构成项目的「操作宪法」和「组织架构图」。CLAUDE.md 定义不可妥协底线（认证不可绕过/密钥不落盘/输入必校验/规约完整性/自托管一致性），AGENT.md 规定 Agent 间的信号协议和 P0 清零纪律。新人只需阅读这两个文件即可理解项目运行规则。</div><div class="s-result"><span class="r-label">✅ 结果:</span> CLAUDE.md: 3 基础信念 + 4 铁律 + 4 退化对策 + 项目约束 + 6 引导入口；AGENT.md: 9 Agent 拓扑 + 6 行为纪律 + 4 设计原则 + 3 执行准则 + ADR 记录。</div></div></div>
+    <div class="step"><div class="suite-body"><div class="s-title">探查技能模块入口</div><div class="s-desc">每个技能目录下的 SKILL.md 是模块规约入口。rui 管线串行调用 6 个技能形成完整 SDLC。</div><pre>ls skills/*/SKILL.md<span class="cb" onclick="YrY.copyCmd(this,'ls skills/*/SKILL.md')">📋</span></pre><div class="s-result-desc">💡 说明: 每个 SKILL.md 是技能的独立规约入口，包含命令参考、管线一览、核心约束、mermaid 图和阻断标识。规约内联了关键模式摘要，不依赖外部 URL 可达性（退化对策 L1 自包含）。技能间通过 plugin.json 注册表声明依赖关系。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 6 个 SKILL.md 规约文件 — rui/SKILL.md (SDLC 编排) / rui-story/SKILL.md (故事面板) / rui-claude/SKILL.md (配置管理) / rui-import/SKILL.md (文档同步) / rui-bot/SKILL.md (企微通知) / rui-npm/SKILL.md (npm 包管理)。</div></div></div>
+    <div class="step"><div class="suite-body"><div class="s-title">验证 Agent 职责边界</div><div class="s-desc">阅读每个 Agent 的 .md 文件确认职责范围。pm 决策 → architect 设计 → coder 实现 → tester 验证 → security 审计 → reporter 报告。</div><pre>ls agents/*.md<span class="cb" onclick="YrY.copyCmd(this,'ls agents/*.md')">📋</span></pre><div class="s-result-desc">💡 说明: pm → architect → planner → coder 是正向流水线；security → code-reviewer 是旁路审计，结果注入 coder 的任务列表；tester 做 Gate A/B 验证；reporter → self-improve 形成反馈闭环。每个 Agent 有明确的输入信号、输出信号和交接验证方法。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 9 个 Agent 定义文件 — AGENT.md (总纲) / pm.md / architect.md / planner.md / coder.md / tester.md / security.md / code-reviewer.md / reporter.md / self-improve.md。</div></div></div>
+    <div class="step"><div class="suite-body"><div class="s-title">检查规则覆盖</div><div class="s-desc">rules/ 目录定义了管线纪律、安全护栏、文档约束和自改进规范。每条规则对应一个治理维度。</div><pre>ls rules/*.md<span class="cb" onclick="YrY.copyCmd(this,'ls rules/*.md')">📋</span></pre><div class="s-result-desc">💡 说明: 每条规则包含触发条件、验证方法和阻断标识。规则之间有关联 — code-pipeline 引用 delivery-gate 的收口步骤，security-guardrails 的约束注入 code-pipeline 的 Gate A 检查。规则文件不依赖外部链接（退化对策 L1）。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 8 条治理规则 — code-pipeline.md (管线纪律) / delivery-gate.md (交付门禁) / doc-generation.md (文档生成约束) / knowledge-graph.md (知识图谱规范) / security-guardrails.md (安全护栏) / self-improve.md (自改进闭环) / context-engineering.md (上下文工程) / expression-priority.md (表达优先)。</div></div></div>
+    <div class="step"><div class="suite-body"><div class="s-title">生成架构全景图</div><div class="s-desc">架构图以 SVG 渲染三层拓扑（Skills → Agents → Rules），标注每个模块的核心职责。</div><pre>open 架构图.html<span class="cb" onclick="YrY.copyCmd(this,'open 架构图.html')">📋</span></pre><div class="s-result-desc">💡 说明: 架构图是「表达优先」铁律的落地实现 — 用可缩放 SVG 替代大段文字描述，三层图层清晰展示模块边界和交互关系。每个节点可点击跳转，svg-pan-zoom 支持拖拽和缩放，适配从 640px 移动端到 4K 显示器的全部尺寸。</div><div class="s-result"><span class="r-label">✅ 结果:</span> 浏览器打开架构图.html — SVG 三层拓扑: Layer1(6 Skills 带管线连接) → Layer2(9 Agents 带协作边) → Layer3(8 Rules 带治理维度标注)，节点间边标注数据流方向和信号类型，支持点击节点跳转到对应规约文件。</div></div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 2: Overview                          -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panelOverview">
+  <div class="section"><h2><span class="dot"></span>模块拓扑</h2>
+    <div class="flow-row">
+      <div class="flow-chip"><span class="n">6 技能</span></div><span class="flow-arrow">→</span>
+      <div class="flow-chip"><span class="n">8 Agent</span></div><span class="flow-arrow">→</span>
+      <div class="flow-chip"><span class="n">8 规则</span></div><span class="flow-arrow">→</span>
+      <div class="flow-chip"><span class="n">2 故事</span></div>
+    </div>
+  </div>
+  <div class="section"><h2><span class="dot"></span>核心入口</h2>
+    <div class="flow-row">
+      <div class="flow-chip"><span class="n">CLAUDE.md</span> 项目画像</div><span class="flow-arrow">·</span>
+      <div class="flow-chip"><span class="n">AGENT.md</span> 角色拓扑</div><span class="flow-arrow">·</span>
+      <div class="flow-chip"><span class="n">SKILL.md</span> 技能规约</div><span class="flow-arrow">·</span>
+      <div class="flow-chip"><span class="n">plugin.json</span> 版本入口</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 3: Commands                          -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panelCommands">
+  <div class="cmd-grid">
+    <div class="cmd-card"><div class="stage">初始化</div><div class="name">/rui init</div><div class="desc">六步建立项目骨架：detect → explore → generate → arch → setup → verify。识别所有模块并生成基线文档。</div><pre>/rui init<span class="cb" onclick="YrY.copyCmd(this,'/rui init')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">模块发现</div><div class="name">ls skills/</div><div class="desc">列出 6 个技能模块：rui / rui-story / rui-claude / rui-import / rui-bot / rui-trends。</div><pre>ls skills/<span class="cb" onclick="YrY.copyCmd(this,'ls skills/')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">Agent 总览</div><div class="name">cat AGENT.md</div><div class="desc">角色拓扑总纲：8 个 Agent 的职责分配、行为纪律、协作模式和 ADR 记录。</div><pre>cat agents/AGENT.md<span class="cb" onclick="YrY.copyCmd(this,'cat agents/AGENT.md')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">规则检查</div><div class="name">ls rules/</div><div class="desc">列出 8 条治理规则：管线流程 / 交付门禁 / 文档生成 / 知识图谱 / 安全护栏 / 自改进等。</div><pre>ls rules/<span class="cb" onclick="YrY.copyCmd(this,'ls rules/')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">架构可视化</div><div class="name">open 架构图.html</div><div class="desc">SVG 三层拓扑图：Skills → Agents → Rules，含管道线和交互关系。</div><pre>open 架构图.html<span class="cb" onclick="YrY.copyCmd(this,'open 架构图.html')">📋</span></pre></div>
+    <div class="cmd-card"><div class="stage">版本确认</div><div class="name">cat plugin.json</div><div class="desc">确认插件版本号与 skills/agents/rules 实际内容一致（自托管一致性检查）。</div><pre>cat plugin.json<span class="cb" onclick="YrY.copyCmd(this,'cat plugin.json')">📋</span></pre></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 4: Files                             -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panelFiles">
+  <div class="section"><h2><span class="dot"></span>相关文件</h2>
+    <div class="file-list">
+      <div class="file-item">📄 CLAUDE.md</div><div class="file-item">📄 README.md</div><div class="file-item">📄 plugin.json</div>
+      <div class="file-item">📐 AGENT.md</div><div class="file-item">📐 SKILL.md x6</div><div class="file-item">📐 Agent.md x8</div>
+      <div class="file-item">📋 计划清单.html</div><div class="file-item">📐 架构图.html</div><div class="file-item">🔗 知识图谱.html</div>
+    </div>
+  </div>
+  <div class="links-row"><a href="计划清单.html">📋 计划清单</a><a href="架构图.html">📐 架构图</a><a href="知识图谱.html">🔗 知识图谱</a><a href="测试面板.html">🧪 测试面板</a></div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 5: Tests                             -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panelTests">
+  <div class="section"><h2><span class="dot"></span>测试覆盖</h2>
+    <div class="cmd-grid">
+      <div class="cmd-card"><div class="name">CLAUDE.md 完整性</div><div class="desc">验证 CLAUDE.md 包含铁律、项目画像、不可妥协底线、退化对策四个必要章节。</div></div>
+      <div class="cmd-card"><div class="name">模块计数一致</div><div class="desc">验证 plugin.json 中 skills/agents/rules 数量与实际目录内容一致。</div></div>
+      <div class="cmd-card"><div class="name">版本号一致性</div><div class="desc">验证 plugin.json / CLAUDE.md / README.md 中的版本号互相同步。</div></div>
+    </div>
+  </div>
+  <div class="links-row"><a href="测试面板.html">🧪 打开测试面板</a><a href="../../../index.html">📄 返回文档中心</a></div>
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- Panel 6: 模块依赖过滤器 (Interactive)      -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="panel" id="panelModfilter">
+  <div class="section">
+    <h2><span class="dot"></span>搜索式模块定位</h2>
+    <p style="font-size:.76rem;color:var(--text3);margin-bottom:14px">输入关键字实时过滤 YrY 全部模块。点击卡片高亮，展示依赖关系。</p>
+
+    <div class="module-search">
+      <input type="text" id="modSearch" placeholder="输入模块名过滤... (例如: rui, security, rule)" autocomplete="off">
+      <span style="font-size:.68rem;color:var(--text3)" id="matchCount">23 个模块</span>
+    </div>
+
+    <div id="moduleGrid" class="module-grid">
+      <!-- Skills -->
+      <div class="module-card" data-keywords="rui sdlc 编排 管线">
+        <div class="mod-icon">⚡</div>
+        <span class="mod-name">rui</span><span class="mod-type">技能</span><span class="mod-count skill">Skill</span>
+        <div class="mod-desc">SDLC 编排器。故事 → 文档 → 代码 → 交付，6 技能管线入口。</div>
+        <div class="mod-deps">依赖: <span>rui-story</span> <span>rui-claude</span> <span>rui-import</span> <span>rui-bot</span></div>
+      </div>
+      <div class="module-card" data-keywords="rui-story 故事 面板">
+        <div class="mod-icon">📋</div>
+        <span class="mod-name">rui-story</span><span class="mod-type">技能</span><span class="mod-count skill">Skill</span>
+        <div class="mod-desc">故事面板管理。创建/更新/归档故事场景，7 文档联动。</div>
+        <div class="mod-deps">依赖: <span>lib/tty</span> <span>lib/fs</span></div>
+      </div>
+      <div class="module-card" data-keywords="rui-claude 配置 同步 管理">
+        <div class="mod-icon">⚙️</div>
+        <span class="mod-name">rui-claude</span><span class="mod-type">技能</span><span class="mod-count skill">Skill</span>
+        <div class="mod-desc">.claude/ 配置管理。远程同步、健康分析、任务推荐。</div>
+        <div class="mod-deps">依赖: <span>lib/tty</span> <span>lib/constants</span></div>
+      </div>
+      <div class="module-card" data-keywords="rui-import 文档 同步 导入">
+        <div class="mod-icon">📥</div>
+        <span class="mod-name">rui-import</span><span class="mod-type">技能</span><span class="mod-count skill">Skill</span>
+        <div class="mod-desc">文档同步至远端 API。单文档即时导入 + 批量安全网。</div>
+        <div class="mod-deps">依赖: <span>lib/tty</span> <span>lib/net</span> <span>lib/constants</span></div>
+      </div>
+      <div class="module-card" data-keywords="rui-bot 企微 通知 微信">
+        <div class="mod-icon">🤖</div>
+        <span class="mod-name">rui-bot</span><span class="mod-type">技能</span><span class="mod-count skill">Skill</span>
+        <div class="mod-desc">企微机器人消息通知。rui 完成/阻断/门禁失败时触发。</div>
+        <div class="mod-deps">依赖: <span>lib/tty</span> <span>lib/constants</span></div>
+      </div>
+      <div class="module-card" data-keywords="rui-npm 包 发布 版本">
+        <div class="mod-icon">📦</div>
+        <span class="mod-name">rui-npm</span><span class="mod-type">技能</span><span class="mod-count skill">Skill</span>
+        <div class="mod-desc">npm 包管理。搜索/安装/发布/版本管理，独立于主管线。</div>
+        <div class="mod-deps">依赖: <span>lib/tty</span> <span>lib/constants</span></div>
+      </div>
+      <!-- Agents -->
+      <div class="module-card" data-keywords="pm 产品 需求 决策">
+        <div class="mod-icon">🎯</div>
+        <span class="mod-name">pm</span><span class="mod-type">角色</span><span class="mod-count agent">Agent</span>
+        <div class="mod-desc">需求决策。解析用户故事，拆分场景卡片，委派子任务。</div>
+        <div class="mod-deps">输入: <span>用户需求</span> → 输出: <span>story 卡片</span></div>
+      </div>
+      <div class="module-card" data-keywords="architect 架构 设计 拓扑">
+        <div class="mod-icon">🏗️</div>
+        <span class="mod-name">architect</span><span class="mod-type">角色</span><span class="mod-count agent">Agent</span>
+        <div class="mod-desc">架构设计。生成 SVG 三层拓扑图，定义模块边界和交互。</div>
+        <div class="mod-deps">输入: <span>story 卡片</span> → 输出: <span>架构图</span></div>
+      </div>
+      <div class="module-card" data-keywords="coder 实现 编码 开发">
+        <div class="mod-icon">💻</div>
+        <span class="mod-name">coder</span><span class="mod-type">角色</span><span class="mod-count agent">Agent</span>
+        <div class="mod-desc">代码实现。分支隔离，逐模块 P0 清零，Gate B 交付。</div>
+        <div class="mod-deps">输入: <span>设计文档</span> → 输出: <span>feat/ 分支</span></div>
+      </div>
+      <div class="module-card" data-keywords="tester 测试 验证 gate">
+        <div class="mod-icon">🧪</div>
+        <span class="mod-name">tester</span><span class="mod-type">角色</span><span class="mod-count agent">Agent</span>
+        <div class="mod-desc">验证关卡。Gate A 准入检查，Gate B 交付验证，每轮 ≤ 2 修复。</div>
+        <div class="mod-deps">输入: <span>代码变更</span> → 输出: <span>测试报告</span></div>
+      </div>
+      <div class="module-card" data-keywords="security 安全 审计 漏洞">
+        <div class="mod-icon">🛡️</div>
+        <span class="mod-name">security</span><span class="mod-type">角色</span><span class="mod-count agent">Agent</span>
+        <div class="mod-desc">安全审计。S1-S5 防线扫描，密钥/XSS/注入 P0 阻断。</div>
+        <div class="mod-deps">输入: <span>全仓代码</span> → 输出: <span>安全报告</span></div>
+      </div>
+      <div class="module-card" data-keywords="reporter 报告 总结 输出">
+        <div class="mod-icon">📊</div>
+        <span class="mod-name">reporter</span><span class="mod-type">角色</span><span class="mod-count agent">Agent</span>
+        <div class="mod-desc">报告生成。汇总各阶段产出，生成交付总结和变更日志。</div>
+        <div class="mod-deps">输入: <span>各阶段输出</span> → 输出: <span>交付报告</span></div>
+      </div>
+      <!-- Rules -->
+      <div class="module-card" data-keywords="code-pipeline 管线 纪律 分支">
+        <div class="mod-icon">📏</div>
+        <span class="mod-name">code-pipeline</span><span class="mod-type">规范</span><span class="mod-count rule">Rule</span>
+        <div class="mod-desc">管线纪律。分支隔离、Gate A/B、逐模块 P0 清零。</div>
+        <div class="mod-deps">治理: <span>实现阶段</span> <span>交付阶段</span></div>
+      </div>
+      <div class="module-card" data-keywords="delivery-gate 交付 门禁 hook">
+        <div class="mod-icon">🚪</div>
+        <span class="mod-name">delivery-gate</span><span class="mod-type">规范</span><span class="mod-count rule">Rule</span>
+        <div class="mod-desc">交付收口。三步 Hook（通知日志 → 同步 → 企微），任一失败回滚。</div>
+        <div class="mod-deps">治理: <span>交付阶段</span> <span>版本管理</span></div>
+      </div>
+      <div class="module-card" data-keywords="security-guardrails 安全 护栏 防线">
+        <div class="mod-icon">🔒</div>
+        <span class="mod-name">security-guardrails</span><span class="mod-type">规范</span><span class="mod-count rule">Rule</span>
+        <div class="mod-desc">安全护栏。5 道防线（密钥/XSS/认证/输入/分支），信任边界处设防。</div>
+        <div class="mod-deps">治理: <span>安全审计</span> <span>代码审查</span></div>
+      </div>
+      <div class="module-card" data-keywords="self-improve 自改进 闭环 诊断">
+        <div class="mod-icon">🔄</div>
+        <span class="mod-name">self-improve</span><span class="mod-type">规范</span><span class="mod-count rule">Rule</span>
+        <div class="mod-desc">自改进闭环。D0-D7 诊断，效果评估 E1-E4，经验技能化。</div>
+        <div class="mod-deps">治理: <span>反馈阶段</span> <span>所有模块</span></div>
+      </div>
+    </div>
+    <div class="filter-msg" id="filterMsg">没有匹配的模块，请尝试其他关键字</div>
+  </div>
+
+  <div class="tip-box">
+    <strong>💡 试试:</strong> 输入 <span style="font-family:monospace;color:var(--cyan)">rui</span> 过滤技能模块，输入 <span style="font-family:monospace;color:var(--cyan)">安全</span> 找安全相关，输入 <span style="font-family:monospace;color:var(--cyan)">agent</span> 只看 Agent 角色。点击模块卡片高亮其依赖链。
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+</div>
+
+<script>
+/* ═══ Tab switching with localStorage persistence ═══ */
+(function() {
+  var SCENE_KEY = 'yry-arch-s1-demo';
+
+  document.querySelector('.tabs').addEventListener('click', function(e) {
+    var tab = e.target.closest('.tab');
+    if (!tab) return;
+    switchPanel(tab.dataset.panel);
+  });
+
+  window.switchPanel = function(name) {
+    YrY.switchPanel(name, '.tab', '.panel');
+    try { localStorage.setItem(SCENE_KEY + '-tab', name); } catch(e) {}
+  };
+
+  document.addEventListener('keydown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    var m = {'1':'walkthrough','2':'overview','3':'commands','4':'files','5':'tests','6':'modfilter'};
+    if (m[e.key]) { e.preventDefault(); switchPanel(m[e.key]); }
+  });
+
+  try {
+    var saved = localStorage.getItem(SCENE_KEY + '-tab');
+    if (saved) switchPanel(saved);
+  } catch(e) {}
+})();
+
+/* ═══ Live CDN Detection via Performance API ═══ */
+(function detectCDN() {
+  var resources = performance.getEntriesByType('resource');
+  var cdnEntries = resources.filter(function(r) { return r.name.indexOf('/cdn/') !== -1; });
+
+  var found = { css: false, theme: false, js: false };
+  var totalDuration = 0;
+  cdnEntries.forEach(function(r) {
+    var name = r.name.split('/').pop().split('?')[0];
+    if (name === 'shared.css') found.css = r;
+    if (name === 'theme.css') found.theme = r;
+    if (name === 'shared.js') found.js = r;
+    totalDuration += r.duration;
+  });
+
+  function updateBadge(elId, entry) {
+    var el = document.getElementById(elId);
+    if (entry) {
+      el.textContent = '✓ ' + Math.round(entry.duration) + 'ms';
+      el.style.color = 'var(--pass)';
+    } else {
+      el.textContent = '—';
+      el.style.color = 'var(--text3)';
+    }
+  }
+
+  updateBadge('lrCss', found.css);
+  updateBadge('lrTheme', found.theme);
+  updateBadge('lrJs', found.js);
+
+  var timingEl = document.getElementById('statTiming');
+  if (cdnEntries.length >= 3) {
+    timingEl.textContent = Math.round(totalDuration) + 'ms';
+    timingEl.style.color = totalDuration < 100 ? 'var(--pass)' : 'var(--accent)';
+  } else if (cdnEntries.length > 0) {
+    timingEl.textContent = Math.round(totalDuration) + 'ms';
+    timingEl.style.color = 'var(--cyan)';
+  } else {
+    timingEl.textContent = '已缓存';
+    timingEl.style.color = 'var(--text3)';
+  }
+})();
+
+/* ═══ Module filter ═══ */
+(function initModuleFilter() {
+  var searchInput = document.getElementById('modSearch');
+  var cards = document.querySelectorAll('.module-card');
+  var matchCount = document.getElementById('matchCount');
+  var filterMsg = document.getElementById('filterMsg');
+
+  searchInput.addEventListener('input', function() {
+    var query = this.value.toLowerCase().trim();
+    var visible = 0;
+
+    cards.forEach(function(card) {
+      var kw = (card.dataset.keywords || '') + ' ' + (card.textContent || '').toLowerCase();
+      if (!query || kw.indexOf(query) !== -1) {
+        card.classList.remove('hidden');
+        card.classList.add('highlight');
+        setTimeout(function() { card.classList.remove('highlight'); }, 600);
+        visible++;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+
+    matchCount.textContent = visible + ' / ' + cards.length + ' 模块';
+    filterMsg.style.display = visible === 0 ? 'block' : 'none';
+  });
+
+  /* Click card to show dependencies */
+  cards.forEach(function(card) {
+    card.addEventListener('click', function() {
+      var name = card.querySelector('.mod-name').textContent;
+      var deps = card.querySelector('.mod-deps');
+      var depText = deps ? deps.textContent : '';
+      YrY.toast(name + ' — ' + depText.replace(/\s+/g, ' ').trim(), 2500);
+    });
+  });
+})();
+</script>
+<div class="footer" style="text-align:center;color:var(--text3);font-size:0.72rem;margin-top:32px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">YrY · 场景演示</div>
+<script src="../../../../cdn/shared.js"></script>
+</body>
+</html>
