@@ -1189,9 +1189,17 @@
     <div class="notify-overlay" id="notifyOverlay"></div>
     <div class="notify-panel" id="notifyPanel">
       <div class="panel-header">
-        <span class="np-title">&#128276; 通知中心</span>
-        <span class="np-count" id="npTotalCount">—</span>
-        <button class="panel-refresh" id="notifyRefresh" title="刷新">&#x21bb;</button>
+        <div class="np-header-main">
+          <div class="np-title-row">
+            <span class="np-title">&#128276; 通知中心</span>
+            <span class="np-count" id="npTotalCount">—</span>
+          </div>
+          <div class="np-subtitle">统一汇总健康检查、自循环巡检与趋势扫描结果</div>
+        </div>
+        <div class="np-header-actions">
+          <button class="panel-refresh" id="notifyRefresh" title="刷新">&#x21bb;</button>
+          <button class="panel-close" type="button" onclick="PanelHub.close('notify')" title="关闭">✕</button>
+        </div>
       </div>
       <div class="np-filters" id="npFilters">
         <span class="np-filter-chip active" data-filter="all">全部<span class="np-filter-badge" id="npBadgeAll">0</span></span>
@@ -1207,11 +1215,15 @@
         <div class="panel-loading">加载中...</div>
       </div>
       <div class="panel-footer">
-        <span id="npUpdateTime" style="font-size:.64rem;color:var(--text-muted)"></span>
-        <a href="#" onclick="event.preventDefault();window.openPanel('faq')" style="color:#22c55e;text-decoration:none;font-size:.72rem">❓ FAQ</a>
-        <a href="./健康报告/index.html">🩺 健康报告</a>
-        <a href="./自循环报告/index.html">🔄 自循环报告</a>
-        <a href="./趋势报告/index.html">📡 趋势报告</a>
+        <div class="np-footer-meta">
+          <span id="npUpdateTime"></span>
+          <a href="#" onclick="event.preventDefault();window.openPanel('faq')" class="np-footer-faq">❓ FAQ</a>
+        </div>
+        <div class="np-footer-links">
+          <a href="./健康报告/index.html">🩺 健康报告</a>
+          <a href="./自循环报告/index.html">🔄 自循环报告</a>
+          <a href="./趋势报告/index.html">📡 趋势报告</a>
+        </div>
       </div>
     </div>
   </template>
