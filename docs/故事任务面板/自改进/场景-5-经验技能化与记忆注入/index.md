@@ -252,7 +252,133 @@ sequenceDiagram
 <a id="sec4"></a>
 ## §4 自改进
 
-> 自改进阶段填充（self-improve）。
+> 自改进阶段填充（self-improve）。本场景覆盖 FP5 经验技能化 + FP6–FP10 跨会话记忆压缩与注入，是自改进闭环的末端——将重复模式固化为规则，将历史决策压缩为可检索的记忆。
+
+### §4.1 经验升级路径
+
+| 提案类型 | 升级阈值 | 升级目标 | 升级动作 | 去重策略 |
+|---------|---------|---------|---------|---------|
+| `process` | ≥ `UPGRADE_THRESHOLDS.process` (3) 故事触发 | `rules/code-pipeline.md` 或 `agents/AGENT.md` | 追加流程步骤或调整阶段顺序 | 扫描目标文件检测相似规则 |
+| `quality` | ≥ `UPGRADE_THRESHOLDS.quality` (3) 故事触发 | `agents/tester.md` 或 `agents/coder.md` | 追加审查检查项或测试用例模板 | 同上 |
+| `refactor` | ≥ `UPGRADE_THRESHOLDS.refactor` (3) 故事触发 | `rules/code-pipeline.md` §深度模块 | 追加模块行数上限或拆分规则 | 同上 |
+| `security` | ≥ `UPGRADE_THRESHOLDS.security` (1) 故事触发 | `agents/security.md` P0 约束 | 追加安全威胁检查项 | 同上 |
+| `skill` | ≥ `UPGRADE_THRESHOLDS.skill` (2) 故事触发 | `skills/` 或 `rules/` 新条目 | 创建专项 skill 或 Red Flag | 检查是否已有同名 skill |
+
+> 阈值常量：`lib/constants.mjs:UPGRADE_THRESHOLDS`。升级目标：`lib/constants.mjs:UPGRADE_TARGETS`。升级检测：`lib/engine/upgrade.mjs:cmdUpgradeCandidates()`。
+
+### §4.2 升级触发逻辑
+
+`lib/engine/upgrade.mjs:cmdUpgradeCandidates()` 的实现流程：
+
+1. 扫描所有故事目录的 `proposals.jsonl`
+2. 按提案类型分组，统计每类跨故事触发次数（用 Set 去重故事名）
+3. 对比 `UPGRADE_THRESHOLDS` 判定是否达到升级条件
+4. 达标则输出升级建议（类型 · 触发故事数 · 升级目标）
+
+```javascript
+// 核心逻辑（简化）
+const typeStoryCounts = {};
+for (const p of allProposals) {
+  if (!typeStoryCounts[p.type]) typeStoryCounts[p.type] = new Set();
+  typeStoryCounts[p.type].add(p._dir || p.story_name);
+}
+for (const [type, stories] of Object.entries(typeStoryCounts)) {
+  if (stories.size >= UPGRADE_THRESHOLDS[type]) {
+    // → 触发升级提示，建议写入 UPGRADE_TARGETS[type]
+  }
+}
+```
+
+### §4.3 提案实例化（Materialize）
+
+升级提示产生后，通过 `materialize` 命令将 open 提案转化为可执行的故事任务：
+
+| 步骤 | 操作 | 代码位置 |
+|------|------|---------|
+| 1. 筛选候选 | open + 未实例化 + 满足优先级 | `cmdMaterialize()` L221-228 |
+| 2. 生成目录名 | `improve-{story}-{diagId}-{titleSlug}` | `deriveStoryDirName()` |
+| 3. 创建 rui-state | 写入 `.memory/rui-state.json` | `createRuiState()` |
+| 4. 生成基线文档 | 自改进溯源文档（含诊断证据 + 目标状态 + 可执行命令） | `generateBaselineDoc()` |
+| 5. 更新提案记录 | 标记 `materialized_story_dir` + `materialized_at` | `updateProposalRecord()` |
+| 6. 同步索引 | `rui-import sync` | `cmdMaterialize()` L255-261 |
+
+### §4.4 记忆压缩策略对照
+
+| 记忆类型 | 压缩方式 | 保留窗口 | 过期动作 | 注入触发 | 代码状态 |
+|---------|---------|---------|---------|---------|:--:|
+| 阻断事件 | 根因 + 解决方式摘要 | 12 故事 | 降级为统计数字 | 同类型阻断复现 | 规约定义 |
+| P0 模式 | 完整模式 + 修复 diff | 6 故事（修复后） | 归档不删除 | 相似模块变更 | 规约定义 |
+| 提案效果 | 效果评估 + 关联 bad_case | 3 故事（闭合后） | 归档保留摘要 | 新提案起草 | 规约定义 |
+| 阶段耗时 | 均值/方差/趋势 | 滚动 12 窗口 | 窗口外丢弃 | 自改进阶段 | 规约定义 |
+
+> 当前压缩策略在规约层完整定义（`rules/self-improve.md` §记忆压缩与注入 + `agents/self-improve.md` §跨会话记忆注入），代码实现中 `computeMetrics()` 已覆盖阶段耗时的统计聚合，其余三类记忆的自动压缩和注入为规约驱动，由 self-improve agent 按触发条件执行。
+
+### §4.5 跨会话状态恢复
+
+新会话启动时的状态恢复流程：
+
+| 步骤 | 数据源 | 恢复内容 | 降级行为 |
+|------|--------|---------|---------|
+| 1. 加载压缩记忆 | `.memory/compressed-memory.json` | 关键决策摘要 · P0 模式 · 提案闭合记录 | 文件不可读 → 空白状态 + `no-memory` 标注 |
+| 2. 恢复管线进度 | `.memory/rui-state.json` | 当前阶段 · 阻断状态 · 待评估提案 | 文件不可读 → 从故事目录重新扫描 |
+| 3. 注入历史上下文 | 相似检索匹配 | 当前任务相关的 P0 模式 · 阻断解决方案 | 无匹配 → 不注入 |
+
+### §4.6 注入优先级排序
+
+当多类记忆同时触发注入且超出上下文预算时，排序规则：
+
+```
+优先级 = 相关性（模块路径匹配度）
+       → 时效性（故事距离，越近越高）
+       → 严重性（P0 > P1 > P2）
+
+裁剪策略：低优先级记忆裁剪为单行摘要（保留类型 + 结论），不丢弃
+```
+
+| 注入触发 | 优先级 | 预算占比上限 |
+|---------|--------|------------|
+| 同类型阻断复现 | 最高 | 40% |
+| 相似模块 P0 模式 | 高 | 30% |
+| 新提案起草参考 | 中 | 20% |
+| 阶段耗时趋势 | 低 | 10% |
+
+### §4.7 记忆生命周期
+
+```
+写入（每故事管线结束）
+  ↓
+活跃保留（≤ 3 故事）— 完整字段
+  ↓
+压缩（3–6 故事）— 保留根因 + diff + 评估
+  ↓
+统计降级（6–12 故事）— 仅保留均值/趋势
+  ↓
+归档（> 12 故事）— 仅保留摘要行
+  ↓
+清理（归档后周期性）— 移除详细内容
+```
+
+### §4.8 闭环自检
+
+| 检查项 | 状态 | 说明 |
+|--------|:--:|------|
+| 五条升级路径全部定义并有阈值 | ✅ | `UPGRADE_THRESHOLDS` + `UPGRADE_TARGETS` |
+| 升级检测跨故事统计 | ✅ | `cmdUpgradeCandidates()` 按 story_name Set 去重 |
+| 提案实例化链路完整 | ✅ | materialize → rui-state → baseline doc → sync |
+| 四类记忆压缩策略完整 | ✅ | `rules/self-improve.md` §记忆压缩与注入 |
+| 注入优先级排序定义 | ✅ | 相关性 → 时效性 → 严重性 |
+| 上下文预算控制 | ✅ | 超预算裁剪低优先级，保留摘要行 |
+| 跨会话恢复降级 | ✅ | `.memory/` 不可读 → 空白状态不阻断 |
+
+### §4.9 改进空间
+
+- **升级检测自动化**：当前 `cmdUpgradeCandidates()` 仅输出升级建议，升级动作（写入目标规约文件）需人工或 Agent 执行。建议增加 `--apply` 参数实现自动升级写入
+- **记忆压缩自动化**：当前记忆压缩策略定义在规约层，实际压缩由 self-improve agent 按触发条件执行。建议在 `lib/engine/` 下增加 `compress.mjs` 实现定时自动压缩
+- **相似检索实现**：当前注入触发条件定义的相似检索（模块路径 + 错误模式匹配）尚未有独立可执行工具。建议在 `lib/engine/` 下增加 `retrieve.mjs` 实现结构化相似检索
+- **过期清理自动化**：记忆过期清理（FP9）当前依赖 Agent 按保留窗口手动执行，建议增加 cron 式自动清理脚本
+- **升级去重检测增强**：当前规约定义升级前需检测目标文件已有类似规则，但无自动化相似度计算。建议增加文本相似度检测（如基于编辑距离或语义向量）
+
+> **代码锚点**：`lib/engine/upgrade.mjs:cmdUpgradeCandidates()` — 经验技能化候选检测，跨故事统计同类型提案触发次数。`lib/engine/materialize.mjs:cmdMaterialize()` — 提案实例化为故事任务目录。`lib/constants.mjs:UPGRADE_THRESHOLDS / UPGRADE_TARGETS` — 升级阈值和路径映射。
 
 ---
 

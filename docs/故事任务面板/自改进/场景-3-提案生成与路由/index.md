@@ -239,7 +239,87 @@ sequenceDiagram
 <a id="sec4"></a>
 ## §4 自改进
 
-> 自改进阶段填充（self-improve）。
+> 自改进阶段填充（self-improve）。本场景覆盖 FP3 提案生成与路由，核心是诊断→提案类型映射、snapshot 证据强制和 append-only 约束。
+
+### §4.1 提案路由矩阵
+
+| 诊断 ID | 提案类型 | 触发条件 | 优先级判定 | 去重策略 |
+|---------|---------|---------|-----------|---------|
+| D0 | `process` | 基线偏离触发 | `confidence ≥ 5 → P0, ≥ 3 → P1, else P2` | 已有 open 提案则跳过 |
+| D1 | `refactor` | 阻断率超阈值 | 同上 | 同上 |
+| D2 | `quality` | P0 密度超阈值 | 同上 | 同上 |
+| D3 | `security` | T3 占比超阈值 | 同上 | 同上 |
+| D4 | `quality` | Gate B 超轮次 | 同上 | 同上 |
+| D5 | `refactor` | 工具失败率超阈值 | 同上 | 同上 |
+| D6 | `process` | 文档过时 | 同上 | 同上 |
+| D7 | `process` | 闭合率低于阈值 | 同上 | 同上 |
+
+> 路由表定义在 `lib/constants.mjs:DIAGNOSTIC_PROPOSAL_TYPE`，优先级判定在 `lib/proposals.mjs:generateProposals()`。
+
+### §4.2 提案要素模板
+
+| 提案类型 | 核心问题域 | 证据要求 | 建议方向模板 | 示例 |
+|---------|-----------|---------|-------------|------|
+| `process` | 流程环节偏离/过时/漂移 | 偏离值与基线对比数据 | 调整 {阶段} 的 {步骤} | "Gate A 阶段耗时 3 倍基线，建议增加预检脚本" |
+| `refactor` | 模块结构导致效率/依赖退化 | 耗时对比 / 依赖版本数据 | 拆分 {模块} 为 {N} 个子模块 | "规约文件行数超限，建议拆为 detect/generate/verify" |
+| `quality` | 审查盲点导致质量退化 | P0 密度趋势 / Gate B 轮次 | 强化 {角色} 的 {检查项} | "P0 密度上升，建议 coder 自审查增加 SQL 注入项" |
+| `security` | 复杂度增长暴露边界模糊 | 大文件列表 / 循环依赖路径 | 加固 {边界} 的 {校验} | "第三方脚本无 SRI，建议添加 integrity 校验" |
+| `skill` | Agent 反复犯同类错误 | 重复模式 + 发生频率 | 创建 {skill/rule} 专项检查 | "Agent 反复犯错 → 创建专项 Red Flag" |
+
+### §4.3 证据门禁验证
+
+| 门禁 | 规则来源 | 代码实现 | 校验方式 |
+|------|---------|---------|---------|
+| Snapshot 证据 | `rules/self-improve.md` R1 | `generateProposals()` 检查 `hasGitSnapshot \|\| hasCodeSnapshot` | 无 snapshot 则跳过全部提案生成 |
+| 去重检测 | — | `generateProposals()` 收集 `openDiags` Set | 同诊断已有 open 提案则跳过 |
+| Append-only | `rules/self-improve.md` R2 | `appendFileSync()` 追加写入 | 使用 `appendFileSync` 而非 `writeFileSync` |
+| 提案 ID 唯一性 | — | `${storyName}-${diagId}-${timestamp}` | 故事名 + 诊断 ID + 时间戳组合 |
+| 低置信度过滤 | `rules/self-improve.md` §诊断规则 | `DIAGNOSTIC_MIN_CONFIDENCE` 控制诊断触发 | 置信度不足的诊断不生成，不进入提案阶段 |
+
+### §4.4 提案状态机
+
+```
+open → in_progress → done       (闭合 — E4 改善 > 退化)
+  ↓        ↓
+  └──→ rolled_back              (退化 — E4 退化 > 改善)
+  └──→ superseded               (被后续提案替代)
+```
+
+| 状态 | 含义 | 变更方式 |
+|------|------|---------|
+| `open` | 待执行 | 诊断触发时创建 |
+| `in_progress` | 执行中 | 实例化 (materialize) 后 |
+| `done` | 已闭合 | E4 综合判定改善后 |
+| `rolled_back` | 已回退 | E4 综合判定退化后 |
+| `superseded` | 已被替代 | 新提案覆盖同一问题时 |
+
+### §4.5 代码实现对照
+
+| 功能 | 文件:函数 | 关键逻辑 |
+|------|---------|---------|
+| 提案生成 | `lib/proposals.mjs:generateProposals()` | 诊断去重 → 快照证据校验 → 类型路由 → 优先级判定 → append |
+| 提案序列化 | `lib/proposals.mjs:generateProposals()` → `appendFileSync()` | 每条提案一行 JSON，追加到 proposals.jsonl |
+| 提案列表 | `lib/proposals.mjs:cmdList()` | 按状态过滤，统计状态分布 |
+| 实例化 | `lib/engine/materialize.mjs:materializeProposal()` | open 提案 → 故事任务目录 + rui-state.json + 基线文档 |
+| 升级检测 | `lib/engine/upgrade.mjs:cmdUpgradeCandidates()` | 统计同类型提案跨故事触发次数 vs 升级阈值 |
+
+### §4.6 提案同步状态
+
+| 检查项 | 状态 | 说明 |
+|--------|:--:|------|
+| 五种提案类型模板完整 | ✅ | process · quality · refactor · security · skill |
+| 诊断→提案路由完整覆盖 D0-D7 | ✅ | `DIAGNOSTIC_PROPOSAL_TYPE` 8/8 映射 |
+| 无证据阻止提案生成 | ✅ | `generateProposals()` 前置快照检查 |
+| Append-only 写入 | ✅ | 使用 `appendFileSync` |
+| 同诊断去重 | ✅ | 检查已有 open 提案的 `openDiags` Set |
+
+### §4.7 改进空间
+
+- **提案相似度去重**：当前仅按诊断 ID 去重，未按提案内容相似度检测。同一诊断的两次触发可能建议不同方向，应增加语义相似度判断
+- **提案优先级动态调整**：当前优先级根据 confidence 一次性判定，未根据提案滞留时间或重复触发次数动态升级
+- **提案效果预估**：当前提案生成时无效果预估，建议在提案模板中增加预期改善幅度字段，便于后续 E1-E4 评估时对比预期 vs 实际
+
+> **代码锚点**：`lib/proposals.mjs:generateProposals()` — 提案生成入口，包含快照校验、去重、路由、优先级判定全流程。`lib/constants.mjs:DIAGNOSTIC_PROPOSAL_TYPE` — 诊断→提案类型路由表。
 
 ---
 

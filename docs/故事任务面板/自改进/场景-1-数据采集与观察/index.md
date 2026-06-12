@@ -186,7 +186,55 @@ sequenceDiagram
 <a id="sec4"></a>
 ## §4 自改进
 
-> 自改进阶段填充（self-improve）。
+> 自改进阶段填充（self-improve）。本场景覆盖 FP1 数据采集与观察，诊断信号关注 D0（基线偏离）和 D7（配置漂移）。
+
+### §4.1 数据源健康
+
+| 数据源 | 路径 | 采集状态 | 最近写入 | 字段完整性 |
+|--------|------|---------|---------|-----------|
+| 执行记忆 | `.memory/execution-memory.jsonl` | 待采集 | — | 阶段耗时 · 阻断率 · P0 密度 · 变更级别 |
+| 管线状态 | `.memory/rui-state.json` | 待采集 | — | 进度 · 阻断原因 · 当前阶段 |
+| 提案历史 | `.improvement/proposals.jsonl` | 待采集 | — | 提案 ID · 类型 · 状态 · 闭合率 |
+| Git 快照 | `git diff --stat HEAD` | 待采集 | — | 变更文件 · churn 率 |
+| 基线文件 | `CLAUDE.md` · `rules/` · `agents/` | 待采集 | — | 规约完整性 |
+
+### §4.2 采集契约验证
+
+| 契约项 | 校验规则 | 代码实现 | 状态 |
+|--------|---------|---------|:--:|
+| 采集时机 | 管线完成后自动触发 | `lib/proposals.mjs:collectStoryData()` | ✅ |
+| 完整性校验 | 五类源全部可读取 | `lib/proposals.mjs:cmdGenerate()` 检查 `allExec.length` | ✅ |
+| 降级策略 | `no-metrics` 标注，不阻断 | `lib/proposals.mjs:cmdGenerate()` 数据不足降级为观察 | ✅ |
+| Snapshot 证据 | Git diff + 代码快照 | `lib/proposals.mjs:collectStoryData()` gitSnapshot + codeSnapshot | ✅ |
+| D6 文档检测 | 扫描场景文档 §4 章节存在性 | `lib/proposals.mjs:computeDocIssues()` | ✅ |
+
+### §4.3 诊断锚点
+
+本场景作为数据供给端，是 D0–D7 诊断的上游依赖。数据采集的完整性直接影响下游诊断的可信度：
+
+| 诊断 | 依赖本场景的数据 | 数据不足时的行为 |
+|------|-----------------|----------------|
+| D0 基线偏离 | rui-state.json + CLAUDE.md | 基线不可达时 D0 跳过 |
+| D1 效率退化 | execution-memory.jsonl 阻断率 | < 5 条记忆时 D1 跳过 |
+| D2 质量退化 | execution-memory.jsonl P0 密度 | < 3 条记忆时 D2 跳过 |
+| D3 复杂度增长 | Git diff + 代码快照 | Git diff 为空时跳过代码复杂度检测 |
+| D7 配置漂移 | proposals.jsonl 闭合率 | < 5 个提案时 D7 跳过 |
+
+### §4.4 改进建议
+
+- **采集时机前置化**：当前数据采集在自改进阶段执行，可考虑在 Gate B 完成后立即采集，减少数据丢失窗口
+- **Snapshots 持久化**：Git 快照和代码快照当前仅为瞬时采集，可考虑写入 `.memory/` 作为历史基线
+- **字段 Schema 校验**：execution-memory.jsonl 写入无 schema 约束，建议在写入端增加必填字段校验
+
+### §4.5 诊断决策记录
+
+| 诊断 | 触发状态 | 证据 | 基线引用 |
+|------|---------|------|---------|
+| D0 基线偏离 | 待诊断 | — | CLAUDE.md · agents/ |
+| D6 文档过时 | 待诊断 | — | CLAUDE.md |
+| D7 配置漂移 | 待诊断 | — | rules/self-improve.md |
+
+> **代码锚点**：数据采集逻辑在 `lib/proposals.mjs:collectStoryData()` — 该函数聚合五类数据源，为诊断引擎提供统一输入。D6 文档检测在 `lib/proposals.mjs:computeDocIssues()` — 扫描场景文档的 §4 章节和证据引用完整性。
 
 ---
 

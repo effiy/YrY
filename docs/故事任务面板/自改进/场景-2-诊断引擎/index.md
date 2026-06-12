@@ -203,7 +203,63 @@ sequenceDiagram
 <a id="sec4"></a>
 ## §4 自改进
 
-> 自改进阶段填充（self-improve）。
+> 自改进阶段填充（self-improve）。本场景覆盖 FP2 诊断引擎，核心是 D0–D7 八级诊断规则的信号判定与基线锚定。
+
+### §4.1 D0–D7 诊断决策表
+
+| # | 标签 | 信号源 | 阈值 | 当前值 | 触发 | 置信度 | 基线依据 |
+|---|------|--------|------|--------|:--:|--------|---------|
+| **D0** | 基线偏离 | rui-state.json vs CLAUDE.md | 当前阶段不在管线序列中 | — | — | ≥1 条记忆 | CLAUDE.md · agents/ |
+| **D1** | 效率退化 | execution-memory.jsonl 阻断率 | `BLOCK_RATE_THRESHOLD` (20%) | — | — | ≥5 条记忆 | rules/code-pipeline.md |
+| **D2** | 质量退化 | execution-memory.jsonl P0 密度 | P0 密度 > 50% | — | — | ≥3 条记忆 | rules/doc-generation.md |
+| **D3** | 复杂度增长 | Git diff + 代码快照 | T3 占比 > `T3_PROPORTION_THRESHOLD` (30%) | — | — | ≥3 条记忆 | agents/pm.md |
+| **D4** | 流程退化 | execution-memory.jsonl Gate B 轮次 | Gate B > `GATE_B_MAX_ROUNDS` (2) | — | — | Gate B 计数 ≥2 | rules/code-pipeline.md |
+| **D5** | 依赖退化 | tool-audit.jsonl 工具调用 | 失败率 > `TOOL_ERROR_RATE_THRESHOLD` (30%) | — | — | ≥3 条记忆 | agents/ |
+| **D6** | 文档过时 | 场景文档 §4 章节 + 复盘文件 | 连续 2 窗口退化 | — | — | ≥2 条记忆 | CLAUDE.md |
+| **D7** | 配置漂移 | proposals.jsonl 闭合率 | 闭合率 < `PROPOSAL_CLOSURE_MIN_RATE` (50%) | — | — | ≥5 个提案 | rules/self-improve.md |
+
+> 阈值常量定义在 `lib/constants.mjs`，诊断逻辑实现在 `lib/engine/diagnostics.mjs`。文档中引用常量名而非裸数字（铁律：禁止魔法数字）。
+
+### §4.2 诊断路由映射
+
+| 诊断组 | 触发信号 | 路由提案类型 | 路由依据 |
+|--------|---------|------------|---------|
+| D0 / D6 / D7 | 基线偏离 / 文档过时 / 配置漂移 | `process` | `lib/constants.mjs:DIAGNOSTIC_PROPOSAL_TYPE` |
+| D1 / D5 | 阻断率上升 / 工具失败率上升 | `refactor` | 同上 |
+| D2 / D4 | P0 密度上升 / Gate B 多轮 | `quality` | 同上 |
+| D3 | T3 占比偏高 / 复杂度增长 | `security` | 同上 |
+
+### §4.3 代码实现对照
+
+| 诊断 | 实现函数 | 关键逻辑 | 降级行为 |
+|------|---------|---------|---------|
+| D0 | `runDiagnostics()` | 扫描 `was_blocked` 无原因 + `stage === "unknown"` | `conflicts > 0` 才触发 |
+| D1 | `runDiagnostics()` | `blockedCount / execCount > BLOCK_RATE_THRESHOLD` | `execCount < 5` 跳过 |
+| D2 | `runDiagnostics()` | `totalP0 / totalIssues > 0.5` | `execCount < 3` 跳过 |
+| D3 | `runDiagnostics()` | `t3Count / execCount > T3_PROPORTION_THRESHOLD` | `execCount < 3` 跳过 |
+| D4 | `runD4Diagnostic()` | 双路径：statusHistory 回溯 / deliveryTrack 失败计数 | 无状态历史时用 deliveryTrack 代理 |
+| D5 | `runD5Diagnostic()` | `toolErrors / toolAudit.length > TOOL_ERROR_RATE_THRESHOLD` | `toolAudit.length < 3` 跳过 |
+| D6 | `runD6Diagnostic()` | `computeDocIssues()` 预计算 docIssues | `execCount < 2` 跳过 |
+| D7 | `runD7Diagnostic()` | `closed / proposals.length < PROPOSAL_CLOSURE_MIN_RATE` | `proposals.length < 5` 跳过 |
+
+### §4.4 诊断覆盖率自检
+
+| 检查项 | 状态 | 说明 |
+|--------|:--:|------|
+| D0–D7 全部实现为纯函数可独立测试 | ✅ | `lib/engine/diagnostics.mjs` — 无 FS/I/O |
+| 每条诊断有明确信号阈值 | ✅ | 阈值全部从 `lib/constants.mjs` 导入 |
+| 每条诊断有基线文件引用 | ✅ | `DIAGNOSTIC_BASELINES` 映射到规约文件 |
+| 低置信度诊断仅生成观察不生成提案 | ✅ | `DIAGNOSTIC_MIN_CONFIDENCE` 控制最低记忆条数 |
+| 诊断结果可被下游提案路由消费 | ✅ | 返回结构化 `diagnostics[]` 数组 |
+| D6 文档检测覆盖场景文档 + 复盘文件 + 提案记录 | ✅ | `computeDocIssues()` 三重检测 |
+
+### §4.5 改进空间
+
+- **D4 双路径统一**：当前 D4 有 statusHistory 和 deliveryTrack 两条路径，数据不完整时自动降级到 deliveryTrack 代理。建议在 rui-state 写入端统一记录，减少双路径复杂度
+- **D6 检测粒度**：当前 D6 检测 §4 章节存在性和 §2 证据引用，但未检测 §4 内容质量（如诊断决策表是否完整、E1-E4 是否已填写）。可增加内容完整性评分
+- **D5 依赖退化扩展**：当前 D5 仅统计工具调用失败率，`agents/self-improve.md` 还定义了趋势查询（rui-trends 外部参考新鲜度），建议在 D5 诊断中增加外部依赖版本过期检测
+
+> **代码锚点**：诊断引擎 `lib/engine/diagnostics.mjs:runDiagnostics()` — 纯函数式八级诊断，数据入结果出。常量映射 `lib/constants.mjs:DIAGNOSTIC_PROPOSAL_TYPE` — 诊断 ID → 提案类型的路由表。
 
 ---
 

@@ -215,7 +215,91 @@ sequenceDiagram
 <a id="sec4"></a>
 ## §4 自改进
 
-> 自改进阶段填充（self-improve）。
+> 自改进阶段填充（self-improve）。本场景覆盖 FP4 效果评估与闭环，核心是 E1–E4 四级量化评估、数据门禁和闭合/退化判定。
+
+### §4.1 E1–E4 评估矩阵
+
+| # | 指标 | 计算方式 | 改善判定 | 退化判定 | 数据源 | 最低记忆条数 |
+|---|------|---------|---------|---------|--------|-------------|
+| **E1** | 阻断率 | `blockedCount / totalCount` | `post < pre` | `post > pre` | execution-memory.jsonl | 前后各 ≥ `MIN_EXEC_MEMORIES` (3) |
+| **E2** | P0 密度 | `totalP0 / totalIssues` | `post < pre` | `post > pre` | execution-memory.jsonl | 前后各 ≥ 3 |
+| **E3** | bad_case 关联 | `preBadCases ∩ postBadCases` | 消失（`resolved > 0`） | 仍出现（`stillPresent > 0`） | proposals.jsonl bad_case 标识 | 前后有 bad_case 记录 |
+| **E4** | 综合判定 | `improvements vs degradations` | `improvements > degradations` | `degradations > improvements` | E1+E2+E3 汇总 | 同 E1/E2 |
+
+### §4.2 判定逻辑（代码实现）
+
+```
+E1 改善 = postMetrics.block_rate < preMetrics.block_rate
+E1 退化 = postMetrics.block_rate > preMetrics.block_rate
+
+E2 改善 = postMetrics.p0_density < preMetrics.p0_density
+E2 退化 = postMetrics.p0_density > preMetrics.p0_density
+
+E3 改善 = resolved.length > 0  (前窗口 bad_case 在后窗口消失)
+E3 退化 = stillPresent.length > 0 (前窗口 bad_case 在后窗口仍存在)
+
+E4 综合 = 改善计数 > 退化计数 → "improved" (闭合 ✅)
+        = 退化计数 > 改善计数 → "degraded" (回退 🔄)
+        = 改善计数 = 退化计数 → "neutral"   (观察)
+```
+
+> 实现：`lib/engine/evaluate.mjs:evaluateProposal()` + `cmdEvaluate()`。
+
+### §4.3 数据门禁
+
+| 条件 | 行为 | 代码位置 |
+|------|------|---------|
+| `preCount < MIN_EXEC_MEMORIES` 或 `postCount < MIN_EXEC_MEMORIES` | 跳过 E1–E4，仅生成观察记录，提案保持 open | `cmdEvaluate()` L141-155 |
+| `preCount = 0` 且 `postCount = 0` | 无法评估，标注 `insufficient_data` | `proposals.mjs:cmdGenerate()` L307-316 |
+| 记忆充足 | 全量 E1–E4 计算 + 闭合/退化判定 | `cmdEvaluate()` L157-228 |
+
+### §4.4 闭合与退化处理
+
+| 结论 | 条件 | 操作 | 提案状态变更 |
+|------|------|------|------------|
+| **闭合** | `E4 = improved` | 归档效果摘要，标注 resolved bad_cases | `open → done` |
+| **退化** | `E4 = degraded` | 触发重提案流程，标注 still_present bad_cases | `open → rolled_back` |
+| **中性** | `E4 = neutral` | 继续观察，下次评估再检 | `open` 不变 |
+| **数据不足** | 记忆条数不达标 | 记录观察，提案状态保持 open，标注 `insufficient_data` | `open` 不变 |
+
+### §4.5 评估窗口策略
+
+| 参数 | 值 | 说明 |
+|------|-----|------|
+| 前窗口 | 提案日期之前的最近 12 条记忆 | `allExec.filter(ts < proposalDate).slice(-12)` |
+| 后窗口 | 提案日期之后的最早 12 条记忆 | `allExec.filter(ts >= proposalDate).slice(0, 12)` |
+| 最低门禁 | 前后各 ≥ 3 条 | `MIN_EXEC_MEMORIES = 3` |
+| 记忆来源 | 故事本地 + 项目根 `.memory/` | 合并搜索，优先故事本地 |
+
+### §4.6 指标聚合函数
+
+`lib/engine/evaluate.mjs:computeMetrics()` 从执行记忆数组计算四项指标：
+
+| 指标 | 计算 | 用途 |
+|------|------|------|
+| `block_rate` | `blockedCount / count` | E1 |
+| `p0_density` | `totalP0 / totalIssues` (P0+P1+P2) | E2 |
+| `t3_proportion` | `t3Count / count` | D3 诊断辅助 |
+| `agent_participation` | Agent 调用频率分布 | D5 诊断辅助 |
+
+### §4.7 闭环自检
+
+| 检查项 | 状态 | 说明 |
+|--------|:--:|------|
+| E1–E4 四级指标全部定义并有改善/退化判定 | ✅ | `evaluateProposal()` 四维独立计算 |
+| 数据门禁明确且不退让 | ✅ | `MIN_EXEC_MEMORIES = 3`，不足跳过 |
+| 闭合时更新提案状态并记录效果 | ✅ | `cmdEvaluate()` 更新 proposals.jsonl |
+| 退化时标记 rolled_back | ✅ | `eval_result = "degraded"` |
+| 中性（持平）不强制闭合 | ✅ | `neutral` 保持 open |
+| 评估窗口不可手动调整 | ✅ | 按提案日期自动框定 |
+
+### §4.8 改进空间
+
+- **E3 bad_case 检测依赖 proposals.jsonl 中显式标注**：当前 bad_case 从 `execution-memory.jsonl` 的 `bad_cases[].lesson` 字段提取，但该字段非必填。建议在 memory 写入端增加 bad_case 的结构化记录模板
+- **评估窗口大小自适应**：当前前后窗口固定为 12 条记忆，高频故事可能跨度过短，低频故事可能跨度过长。建议根据故事频率动态调整窗口大小
+- **多提案交互效应检测**：当前逐条提案独立评估，未检测多个同时执行的提案之间的干扰效应。建议增加提案交互分析
+
+> **代码锚点**：`lib/engine/evaluate.mjs:cmdEvaluate()` — E1–E4 评估入口，包含数据门禁、前后窗口计算、综合判定和 proposals.jsonl 更新。`lib/constants.mjs:MIN_EXEC_MEMORIES` — 评估最低记忆条数阈值。
 
 ---
 
