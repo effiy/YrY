@@ -804,6 +804,12 @@ function saveHealthTrend(result, projectRoot) {
       triggeredDiags: (result.diagnostics?.triggered || []).map((d) => d.id),
       gitBranch: result.gitInfo?.branch || "",
       gitUncommitted: result.gitInfo?.uncommitted || 0,
+      compScoreSummary: result.compScores ? {
+        skills:  { count: result.compScores.skills.length,  avgScore: Math.round(result.compScores.skills.reduce((a,c) => a + c.score, 0) / Math.max(1, result.compScores.skills.length)) },
+        agents:  { count: result.compScores.agents.length,  avgScore: Math.round(result.compScores.agents.reduce((a,c) => a + c.score, 0) / Math.max(1, result.compScores.agents.length)) },
+        rules:   { count: result.compScores.rules.length,   avgScore: Math.round(result.compScores.rules.reduce((a,c) => a + c.score, 0) / Math.max(1, result.compScores.rules.length)) },
+        scripts: { count: result.compScores.scripts.length, avgScore: Math.round(result.compScores.scripts.reduce((a,c) => a + c.score, 0) / Math.max(1, result.compScores.scripts.length)) },
+      } : null,
     };
     const trendPath = join(projectRoot, HEALTH_TREND_FILE);
     const dir = join(projectRoot, ".memory");
@@ -1322,6 +1328,13 @@ async function cmdHealth(projectRoot, opts = {}) {
 
   const result = { composite, grade: grade.grade, scores, details, diagnostics: diagResult, config, tokenOk, robotOkCount, robotNames, gitInfo, secInfo, structInfo, compScores };
   saveHealthTrend(result, projectRoot);
+
+  // Regenerate self-improve summary after each health check
+  try {
+    const { generateSummary } = await import("../../../lib/selfimprove-generator.mjs");
+    generateSummary(projectRoot);
+  } catch { /* best effort — summary generation is non-critical */ }
+
   return result;
 }
 

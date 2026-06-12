@@ -108,55 +108,220 @@
   function scoreCls(s)  { return s >= 80 ? 'ok' : s >= 60 ? 'warn' : 'bad'; }
   function mxCls(s)     { return s >= 80 ? 'mx-pass' : s >= 60 ? 'mx-warn' : 'mx-fail'; }
 
+  /* ── Hero section ────────────────────────── */
+  function renderHero() {
+    if (!siData || !siData.latest) return '';
+    var l = siData.latest, s = l.composite, g = l.grade;
+    var gradeInfo = { A: { color: '#22c55e', bg: 'rgba(34,197,94,.1)', label: '优秀' },
+                      B: { color: '#22c55e', bg: 'rgba(34,197,94,.08)', label: '良好' },
+                      C: { color: '#f59e0b', bg: 'rgba(245,158,11,.1)', label: '需关注' },
+                      D: { color: '#ef4444', bg: 'rgba(239,68,68,.1)', label: '告警' } };
+    var gi = gradeInfo[g] || gradeInfo.C;
+
+    // Compute trend vs previous from raw data
+    var trendHtml = '';
+    if (siRaw.length >= 2) {
+      var prev = siRaw[siRaw.length - 2];
+      var diff = s - (prev.composite || s);
+      var trendIcon = diff > 3 ? '📈' : diff < -3 ? '📉' : '📊';
+      var trendLabel = diff > 3 ? '↑' + diff : diff < -3 ? '↓' + Math.abs(diff) : '→0';
+      var trendColor = diff > 3 ? '#22c55e' : diff < -3 ? '#ef4444' : 'var(--text-muted)';
+      trendHtml = '<div class="si-hero-stat"><span class="si-hs-icon">' + trendIcon + '</span> vs 上次: <span style="color:' + trendColor + ';font-weight:700">' + H.escHtml(trendLabel) + ' 分</span></div>';
+    }
+
+    // Grade sparkline from raw data (last 20)
+    var sparkHtml = '';
+    if (siRaw.length > 1) {
+      var gradeColors = { A: '#22c55e', B: '#22c55e', C: '#f59e0b', D: '#ef4444' };
+      var sampled = siRaw.slice(-20);
+      sparkHtml = '<div class="si-grade-spark">';
+      sampled.forEach(function(e, i) {
+        var last = i === sampled.length - 1;
+        var size = last ? '10px' : '5px';
+        sparkHtml += '<span class="si-grade-dot" style="background:' + (gradeColors[e.grade] || '#555') + ';width:' + size + ';height:' + size + '" title="' + (e.grade||'?') + '级 · ' + (e.composite||'?') + '分 · ' + ((e.timestamp||'').slice(0,10)) + '"></span>';
+      });
+      sparkHtml += '</div>';
+    }
+
+    var diagCount = siData.diagSummary ? siData.diagSummary.filter(function(d) { return d.count > 0; }).length : 0;
+
+    var html = '';
+    html += '<div class="si-hero">';
+    html += '<div class="si-hero-ring" style="border-color:' + gi.color + ';background:' + gi.bg + '">';
+    html += '<div class="si-hero-score" style="color:' + gi.color + '">' + s + '</div>';
+    html += '<div class="si-hero-grade" style="background:' + gi.color + '">' + gi.label + '</div>';
+    html += '</div>';
+    html += '<div class="si-hero-info">';
+    html += '<div class="si-hero-label">' + g + ' 级 · 综合健康度</div>';
+    html += '<div class="si-hero-stats">';
+    html += trendHtml;
+    html += '<div class="si-hero-stat"><span class="si-hs-icon">🔬</span> D0-D7: <span style="font-weight:700">' + diagCount + '/8</span> 触发</div>';
+    html += '<div class="si-hero-stat"><span class="si-hs-icon">📊</span> ' + (siData.dimSummary ? siData.dimSummary.length : 0) + ' 维度</div>';
+    html += '<div class="si-hero-stat"><span class="si-hs-icon">📋</span> ' + (siData.totalEntries||0) + ' 条记录</div>';
+    html += '</div></div>';
+    if (sparkHtml) html += sparkHtml;
+    html += '</div>';
+    return html;
+  }
+
+  /* ── Summary card ────────────────────────── */
+  function renderSummaryCard() {
+    if (!siData) return '';
+    var latest = siData.latest;
+    if (!latest) return '';
+
+    // Overall assessment
+    var gradeLabel = { A:'优秀', B:'良好', C:'需关注', D:'告警' };
+    var overall = gradeLabel[latest.grade] || '未知';
+    var overallIcon = latest.grade === 'A' || latest.grade === 'B' ? '✅' : latest.grade === 'C' ? '⚠️' : '🚫';
+
+    // Diagnostic trigger count
+    var diagCount = siData.diagSummary ? siData.diagSummary.filter(function(d) { return d.count > 0; }).length : 0;
+
+    // Dimension pass/warn/fail from dimSummary
+    var dimPass = 0, dimWarn = 0, dimFail = 0;
+    if (siData.dimSummary) {
+      siData.dimSummary.forEach(function(d) {
+        if (d.avgScore >= 80) dimPass++;
+        else if (d.avgScore >= 60) dimWarn++;
+        else dimFail++;
+      });
+    }
+
+    // Weakest / strongest dimensions
+    var sortedDims = siData.dimSummary ? siData.dimSummary.slice().sort(function(a, b) { return a.avgScore - b.avgScore; }) : [];
+    var weakest = sortedDims[0];
+    var strongest = sortedDims[sortedDims.length - 1];
+    var weakLabel = weakest ? H.escHtml(weakest.label) + ' ' + weakest.avgScore : '—';
+    var strongLabel = strongest ? H.escHtml(strongest.label) + ' ' + strongest.avgScore : '—';
+    var weakTrend = weakest && weakest.trend !== 0 ? (weakest.trend > 0 ? ' ↑' : ' ↓') : '';
+    var weakTrendClr = weakest && weakest.trend < -3 ? '#ef4444' : 'inherit';
+
+    // Recommendations count
+    var recCount = (siData.signals ? siData.signals.length : 0) + diagCount;
+
+    // Top recommendation
+    var topRec = '';
+    if (siData.signals && siData.signals.length > 0) {
+      var firstSig = siData.signals[0];
+      topRec = firstSig.msg || '';
+    } else if (diagCount > 0) {
+      topRec = diagCount + ' 项诊断触发需处理';
+    } else {
+      topRec = '系统运行健康，无紧急事项';
+    }
+
+    var html = '<div class="si-summary-card">';
+    // Row 1
+    html += '<div class="si-summary-row">';
+    html += '<div class="si-summary-item"><div class="si-summary-val">' + overallIcon + ' ' + overall + '</div><div class="si-summary-lbl">综合评估</div></div>';
+    html += '<div class="si-summary-item"><div class="si-summary-val">' + diagCount + '/8</div><div class="si-summary-lbl">诊断触发</div></div>';
+    html += '<div class="si-summary-item"><div class="si-summary-val"><span style="color:#22c55e">' + dimPass + '</span> <span style="color:#f59e0b">' + dimWarn + '</span> <span style="color:#ef4444">' + dimFail + '</span></div><div class="si-summary-lbl">维度过/警/败</div></div>';
+    html += '<div class="si-summary-item"><div class="si-summary-val" style="color:' + weakTrendClr + '">' + weakLabel + weakTrend + '</div><div class="si-summary-lbl">最弱维度</div></div>';
+    html += '</div>';
+    // Row 2
+    html += '<div class="si-summary-row">';
+    html += '<div class="si-summary-item"><div class="si-summary-val" style="color:#22c55e">' + strongLabel + '</div><div class="si-summary-lbl">最强维度</div></div>';
+    html += '<div class="si-summary-item"><div class="si-summary-val">' + recCount + ' 项</div><div class="si-summary-lbl">改进建议</div></div>';
+    html += '<div class="si-summary-item" style="flex:2;min-width:140px"><div class="si-summary-val" style="font-size:.7rem;text-align:left">💡 ' + H.escHtml(topRec.slice(0, 50)) + (topRec.length > 50 ? '…' : '') + '</div><div class="si-summary-lbl">首项建议</div></div>';
+    html += '</div>';
+    html += '</div>';
+    return html;
+  }
+
+  /* ── Recommendations ─────────────────────── */
+  function renderRecommendations() {
+    if (!siData) return '';
+    var recs = [];
+
+    // From signals
+    if (siData.signals) {
+      siData.signals.forEach(function(s) {
+        var prio = s.type === 'regression' ? 'high' : s.type === 'warning' ? 'high' : 'medium';
+        recs.push({ source: s.type === 'regression' ? '维度退化' : s.type === 'warning' ? '诊断告警' : '改进信号', text: s.msg, priority: prio });
+      });
+    }
+
+    // From triggered diagnostics with recommendations
+    if (siData.diagSummary) {
+      siData.diagSummary.forEach(function(d) {
+        if (d.count > 0) {
+          var di = DIAG_INFO[d.id] || {};
+          if (di.rec) {
+            var alreadyCovered = recs.some(function(r) { return r.text.indexOf(d.id) >= 0; });
+            if (!alreadyCovered) {
+              recs.push({ source: d.id + ' ' + (d.label || ''), text: di.rec, priority: d.rate >= 50 ? 'high' : 'medium' });
+            }
+          }
+        }
+      });
+    }
+
+    if (recs.length === 0) {
+      return '<div class="si-section-title">💡 改进建议</div><div style="padding:4px 16px 8px;font-size:.64rem;color:var(--text-muted)">✅ 暂无建议 — 所有指标健康</div>';
+    }
+
+    // Deduplicate by text
+    var seen = {};
+    var uniq = [];
+    recs.forEach(function(r) {
+      var key = r.text.slice(0, 30);
+      if (!seen[key]) { seen[key] = true; uniq.push(r); }
+    });
+    // Sort high priority first
+    uniq.sort(function(a, b) { return a.priority === 'high' ? -1 : b.priority === 'high' ? 1 : 0; });
+    var top = uniq.slice(0, 6);
+
+    var html = '<div class="si-section-title">💡 改进建议 (' + top.length + ' 项)</div><div class="si-rec-list">';
+    top.forEach(function(r) {
+      var prioColor = r.priority === 'high' ? '#ef4444' : '#f59e0b';
+      var prioIcon = r.priority === 'high' ? '🔴' : '🟡';
+      html += '<div class="si-rec-item"><span class="si-rec-prio" style="color:' + prioColor + '">' + prioIcon + '</span>';
+      html += '<div class="si-rec-body"><div class="si-rec-source">' + H.escHtml(r.source) + '</div>';
+      html += '<div class="si-rec-text">' + H.escHtml(r.text) + '</div></div></div>';
+    });
+    html += '</div>';
+    return html;
+  }
+
+  /* ── Component health ────────────────────── */
+  function renderComponentHealth() {
+    if (!siData || !siData.componentHealth) return '';
+    var ch = siData.componentHealth;
+    var types = [
+      { key: 'skills',  icon: '🤖', label: 'Skills' },
+      { key: 'agents',  icon: '👥', label: 'Agents' },
+      { key: 'rules',   icon: '📏', label: 'Rules' },
+      { key: 'scripts', icon: '📜', label: 'Scripts' },
+    ];
+    var html = '<div class="si-section-title">📦 组件健康</div><div class="si-comp-section">';
+    types.forEach(function(t) {
+      var data = ch[t.key];
+      if (!data || data.count === 0) return;
+      var s = data.avgScore || 0;
+      var barW = Math.max(3, s);
+      html += '<div class="si-comp-row"><span class="si-comp-icon">' + t.icon + '</span>';
+      html += '<span class="si-comp-label">' + t.label + '</span>';
+      html += '<div class="si-comp-bar-wrap"><div class="si-comp-bar" style="width:' + barW + '%;background:' + scoreColor(s) + '"></div></div>';
+      html += '<span class="si-comp-score" style="color:' + scoreColor(s) + '">' + s + ' 分</span>';
+      html += '<span class="si-comp-count">' + data.count + ' 个</span></div>';
+    });
+    if (ch.overallAvg !== undefined) {
+      html += '<div class="si-comp-summary">综合均分: <span style="color:' + scoreColor(ch.overallAvg) + ';font-weight:700">' + ch.overallAvg + ' 分</span> · 共 <span style="font-weight:700">' + (ch.totalComponents||0) + '</span> 组件</div>';
+    }
+    html += '</div>';
+    return html;
+  }
+
   /* ── Overview render ────────────────────── */
   function renderOverview() {
     if (!siData) return;
     var html = '';
-    var latest = siData.latest;
-    if (latest) {
-      var lScore = latest.composite, lGrade = latest.grade;
-      var lTime = latest.timestamp ? new Date(latest.timestamp) : null;
-      var lTimeStr = lTime ? lTime.toLocaleString('zh-CN', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
-      html += '<div class="si-snapshot">';
-      html += '<div class="si-snap-score" style="color:' + scoreColor(lScore) + '">' + lScore + '</div>';
-      html += '<div class="si-snap-info"><span class="si-snap-grade ' + lGrade + '">' + lGrade + ' 级</span>';
-      html += '<div class="si-snap-time">最近检查: ' + H.escHtml(lTimeStr) + '</div>';
-      html += '<div class="si-snap-detail">';
-      if (latest.triggeredDiags && latest.triggeredDiags.length > 0) {
-        html += '🔬 触发诊断: ' + latest.triggeredDiags.map(function(d) {
-          var di = DIAG_INFO[d] || {};
-          return '<span class="np-trigger t-warm" title="' + H.escHtml(di.desc || '') + ': ' + H.escHtml(di.rec || '') + '">' + d + '</span>';
-        }).join(' ');
-      } else { html += '✅ 无诊断触发'; }
-      html += ' · 🌿 ' + (latest.gitBranch || '?');
-      if (latest.gitUncommitted !== undefined) {
-        var ucClr = latest.gitUncommitted > 20 ? '#f59e0b' : latest.gitUncommitted > 5 ? '#94a3b8' : '#22c55e';
-        html += ' · <span style="color:' + ucClr + '">' + latest.gitUncommitted + ' 未提交</span>';
-      }
-      html += '</div></div>';
-      html += '<div class="si-snap-meta">';
-      html += '<span>📊 总记录 ' + (siData.totalEntries||0) + ' 条</span>';
-      html += '<span>📅 ' + (siData.dateRange ? siData.dateRange.from + ' → ' + siData.dateRange.to : '—') + '</span>';
-      var gradeOrder = ['D','C','B','A'];
-      var topGrade = lGrade || '';
-      var index = gradeOrder.indexOf(topGrade);
-      var assessment = index >= 3 ? '优秀，系统运行健康' : index >= 2 ? '良好，少量维度需关注' : index >= 1 ? '告警，多项指标异常' : '严重，需要立即干预';
-      html += '<span style="font-size:.62rem;color:' + scoreColor(lScore) + '">' + assessment + '</span>';
-      html += '</div>';
-      html += '</div>';
-    }
 
-    if (siRaw.length > 0) {
-      var gDist = { A: 0, B: 0, C: 0, D: 0 };
-      siRaw.forEach(function(e) { if (e.grade) gDist[e.grade] = (gDist[e.grade]||0) + 1; });
-      var gTotal = siRaw.length;
-      html += '<div class="si-grade-dist"><span style="font-size:.6rem;color:var(--text-muted)">等级分布</span>';
-      ['A','B','C','D'].forEach(function(g) {
-        var cnt = gDist[g]||0;
-        if (cnt > 0) html += '<span class="si-gd-chip ' + g + '">' + g + '级: ' + cnt + '次 (' + Math.round(cnt/gTotal*100) + '%)</span>';
-      });
-      html += '</div>';
-    }
+    // New: hero + summary card + recommendations
+    html += renderHero();
+    html += renderSummaryCard();
+    html += renderRecommendations();
 
     if (siData.dimSummary && siData.dimSummary.length > 0) {
       html += '<div class="si-section-title">📐 维度健康矩阵（全部 ' + siData.dimSummary.length + ' 维）</div>';
@@ -173,6 +338,9 @@
       });
       html += '</div>';
     }
+
+    // New: component health
+    html += renderComponentHealth();
 
     if (siData.diagSummary && siData.diagSummary.length > 0) {
       html += '<div class="si-section-title">🔬 诊断触发概览</div>';
@@ -264,6 +432,18 @@
     if (current.gradeDist) {
       html += '<div class="si-grade-dist">';
       ['A','B','C','D'].forEach(function(g) { var cnt = current.gradeDist[g] || 0; if (cnt > 0) html += '<span class="si-gd-chip ' + g + '">' + g + '×' + cnt + '</span>'; });
+      html += '</div>';
+    }
+    // Grade sparkline for period
+    if (siRaw.length > 1) {
+      var gradeColors = { A: '#22c55e', B: '#22c55e', C: '#f59e0b', D: '#ef4444' };
+      var periodSampled = siRaw.slice(-20);
+      html += '<div class="si-grade-spark" style="justify-content:flex-start;padding:2px 0">';
+      periodSampled.forEach(function(e, i) {
+        var last = i === periodSampled.length - 1;
+        var size = last ? '10px' : '5px';
+        html += '<span class="si-grade-dot" style="background:' + (gradeColors[e.grade] || '#555') + ';width:' + size + ';height:' + size + '" title="' + (e.grade||'?') + '级 · ' + (e.composite||'?') + '分"></span>';
+      });
       html += '</div>';
     }
     html += '</div>';
