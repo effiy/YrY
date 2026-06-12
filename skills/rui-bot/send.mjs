@@ -1879,14 +1879,19 @@ function getBootstrapDiagnostics(projectRoot) {
     }
 
     // Per-file churn for D2 quality proxy
+    // Only track source files (.mjs/.js), excluding help files (docs, not code)
     try {
       const nameLog = execSync(
         `git log --since="${since}" --name-only --format="" 2>/dev/null || true`,
         { cwd: projectRoot, encoding: "utf-8", timeout: 5000 }
       );
       for (const f of nameLog.split("\n")) {
-        if (!f.trim()) continue;
-        fileChurn.set(f, (fileChurn.get(f) || 0) + 1);
+        const path = f.trim();
+        if (!path) continue;
+        // Only source code churn; help.mjs is documentation, not quality-relevant
+        if (/\.(mjs|js)$/i.test(path) && !/help\.mjs$/.test(path)) {
+          fileChurn.set(path, (fileChurn.get(path) || 0) + 1);
+        }
       }
       for (const [, count] of fileChurn) {
         if (count > 5) highChurnFiles++;
@@ -2013,14 +2018,15 @@ function getBootstrapDiagnostics(projectRoot) {
     });
   }
 
-  // D2: Quality degradation — high churn files
-  if (gitActivity >= 3 && highChurnFiles > 3) {
+  // D2: Quality degradation — high churn source files (>5 changes/month)
+  // Excludes help.mjs (documentation). Threshold at ~8% of source files.
+  if (gitActivity >= 3 && highChurnFiles > 15) {
     triggered.push({
       id: "D2", label: DIAGNOSTIC_LABELS.D2, triggered: true,
       confidence: highChurnFiles,
-      evidence: `${highChurnFiles} 个高频修改文件 (>5 次/月) — 质量热点`,
+      evidence: `${highChurnFiles} 个源码文件月修改 >5 次 — 质量热点`,
       baseline: DIAGNOSTIC_BASELINES.D2,
-      suggestion: "高频修改文件可能是质量热点，建议增加单元测试覆盖和代码审查",
+      suggestion: "高频修改源码文件占比偏高，建议增加单元测试覆盖和代码审查",
     });
   }
 
