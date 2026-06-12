@@ -18,6 +18,12 @@
   var activeFilter = 'all';
   var allItems = [];
   var loaded = false;
+  var STATIC_HEALTH_REPORTS = [
+    { file: 'health-2026-06-12-214625.html', date: '2026-06-12', time: '21:46:25', score: 100, grade: 'A' },
+    { file: 'health-2026-06-12-214213.html', date: '2026-06-12', time: '21:42:13', score: 99, grade: 'A' }
+  ];
+  var STATIC_LOOP_REPORTS = [];
+  var STATIC_TREND_REPORTS = [];
 
   /* ── Registration ───────────────────────── */
   H.register('notify', null, 'notifyPanel', 'notifyOverlay', function() {
@@ -46,205 +52,50 @@
     });
   }
 
-  /* ── Parsing helpers ────────────────────── */
-  function parseHealthFilename(href) {
-    var name = href.replace('.html', '').replace('health-', '');
-    var parts = name.split('-');
-    return { date: parts.slice(0, 3).join('-'), timeId: parts.slice(3).join('') };
-  }
-
-  function parseLoopFilename(href) {
-    var name = href.replace('.html', '');
-    var parts = name.split('-');
-    var dateIdx = -1;
-    for (var i = 0; i < parts.length - 2; i++) {
-      if (/^\d{4}$/.test(parts[i]) && /^\d{2}$/.test(parts[i+1]) && /^\d{2}$/.test(parts[i+2])) {
-        dateIdx = i; break;
-      }
-    }
-    var skill = dateIdx > 0 ? parts.slice(0, dateIdx).join('-') : parts.slice(0, -4).join('-');
-    var date = dateIdx > 0 ? parts.slice(dateIdx, dateIdx + 3).join('-') : '';
-    var timeId = parts.slice(dateIdx > 0 ? dateIdx + 3 : -4).join('');
-    return { skill: skill, date: date, timeId: timeId };
-  }
-
-  function parseIndex(html, basePath) {
-    var items = [];
-    var re = /<a\s+href="([^"]+)">([^<]+)<\/a>\s*<\/td>\s*<td[^>]*>([^<]*)<\/td>/gi;
-    var m;
-    while ((m = re.exec(html)) !== null) {
-      items.push({ href: m[1], label: m[2].replace(/<[^>]+>/g, ''), col2: m[3].trim(), basePath: basePath });
-    }
-    if (items.length === 0) {
-      var re2 = /<tr[^>]*>\s*<td[^>]*><a\s+href="([^"]+)">([^<]+)<\/a>/gi;
-      while ((m = re2.exec(html)) !== null) {
-        items.push({ href: m[1], label: m[2].replace(/<[^>]+>/g, ''), col2: '', basePath: basePath });
-      }
-    }
-    items.sort(function(a, b) { return b.href.localeCompare(a.href); });
-    return items;
-  }
-
-  /* ── Metadata extraction ────────────────── */
-  function extractHealthMeta(html) {
-    var meta = {};
-    var sm = html.match(/h-score-num[^>]*>(\d+)</);
-    if (sm) meta.score = parseInt(sm[1], 10);
-    var gm = html.match(/h-score-grade[^>]*>([ABCD]) 级</);
-    if (gm) meta.grade = gm[1];
-    var tm = html.match(/h-hs-val[^>]*>(\d+)\/8 触发</);
-    if (tm) meta.triggers = parseInt(tm[1], 10);
-    var rec = html.match(/h-rec-text">([^<]+)</);
-    if (rec) meta.topRec = rec[1];
-    var recMatch = html.match(/h-rec-item/g);
-    if (recMatch) meta.recs = recMatch.length;
-    var pt = html.match(/<title>([^<]+)<\/title>/);
-    if (pt) meta.pageTitle = pt[1];
-    var robMatch = html.match(/机器人:\s*<span[^>]*>(\d+)\/(\d+)\s*就绪</);
-    if (robMatch) { meta.robotsOk = parseInt(robMatch[1], 10); meta.robotsTotal = parseInt(robMatch[2], 10); }
-    var execMatch = html.match(/执行记忆:\s*<span[^>]*>(\d+)\s*条</);
-    if (execMatch) meta.execCount = parseInt(execMatch[1], 10);
-    var assessMatch = html.match(/h-summary-val[^>]*>([^<]+)<\/div>\s*<div[^>]*h-summary-lbl[^>]*>综合评估</);
-    if (assessMatch) meta.overallAssess = assessMatch[1].replace(/<[^>]+>/g, '').trim();
-    var summaryMatch = html.match(/h-summary-desc[^>]*>([^<]+)</);
-    if (!summaryMatch) summaryMatch = html.match(/h-summary-text[^>]*>([^<]+)</);
-    if (!summaryMatch) summaryMatch = html.match(/h-rec-body[^>]*>\s*<p[^>]*>([^<]+)</);
-    if (summaryMatch) meta.summaryText = summaryMatch[1].trim();
-    var trigIds = [];
-    var trigRe = /h-trigger-chip[^>]*>([A-Z]\d+)</g;
-    var trm;
-    while ((trm = trigRe.exec(html)) !== null) { if (trigIds.indexOf(trm[1]) === -1) trigIds.push(trm[1]); }
-    if (trigIds.length > 0) meta.triggeredIds = trigIds;
-    var dimScores = {};
-    var dimRe = /h-dim-label[^>]*>([^<]+)<\/span>[\s\S]*?h-dim-score[^>]*>(\d+) 分</g;
-    var dm;
-    while ((dm = dimRe.exec(html)) !== null) dimScores[dm[1]] = parseInt(dm[2], 10);
-    if (Object.keys(dimScores).length > 0) {
-      meta.dimScores = dimScores;
-      var pass = 0, warn = 0, fail = 0, bestScore = 0, worstScore = 100, bestDim = '', worstDim = '';
-      Object.keys(dimScores).forEach(function(k) {
-        var s = dimScores[k];
-        if (s >= 80) pass++; else if (s >= 60) warn++; else fail++;
-        if (s > bestScore)  { bestScore = s; bestDim = k; }
-        if (s < worstScore) { worstScore = s; worstDim = k; }
-      });
-      meta.dimStats = { pass: pass, warn: warn, fail: fail, total: Object.keys(dimScores).length, best: { dim: bestDim, score: bestScore }, worst: { dim: worstDim, score: worstScore } };
-    }
-    return meta;
-  }
-
-  function extractLoopMeta(html) {
-    var meta = {};
-    var sm = html.match(/yry-badge\s+(pass|warn|fail)/);
-    if (sm) meta.status = sm[1];
-    var sum = html.match(/yry-summary">([^<]+)</);
-    if (sum) meta.summary = sum[1];
-    var pt = html.match(/<title>([^<]+)<\/title>/);
-    if (pt) meta.pageTitle = pt[1];
-    var intv = html.match(/间隔:?\s*(\d+\s*(?:分钟|小时|天|min|hour|day|hr)[^\s<]*)/i);
-    if (intv) meta.interval = intv[1];
-    var infoCount = (html.match(/yry-finding\s+info/g) || []).length;
-    var warnCount = (html.match(/yry-finding\s+warn/g) || []).length;
-    var failCount = (html.match(/yry-finding\s+fail/g) || []).length;
-    if (infoCount + warnCount + failCount > 0) {
-      meta.findings = { info: infoCount, warn: warnCount, fail: failCount };
-    }
-    var hc = html.match(/yry-val[^>]*>(\d+)<\/div>\s*<div[^>]*yry-lbl[^>]*>🩺 健康度 ([ABCD]) 级</);
-    if (hc) { meta.healthScore = parseInt(hc[1], 10); meta.healthGrade = hc[2]; }
-    var findingTitles = [];
-    var ftRe = /yry-finding-head[^>]*>\d+\.\s*([^<]+)</g;
-    var ftm;
-    while ((ftm = ftRe.exec(html)) !== null && findingTitles.length < 8) {
-      findingTitles.push(ftm[1]);
-    }
-    if (findingTitles.length > 0) meta.findingTitles = findingTitles;
-    var findingLevels = [];
-    var flRe = /yry-finding\s+(info|warn|fail)/g;
-    var flm;
-    while ((flm = flRe.exec(html)) !== null && findingLevels.length < 8) {
-      findingLevels.push(flm[1]);
-    }
-    if (findingLevels.length > 0) meta.findingLevels = findingLevels;
-    var descMatch = html.match(/yry-desc[^>]*>([^<]+)</);
-    if (!descMatch) descMatch = html.match(/yry-overview[^>]*>([^<]+)</);
-    if (descMatch) meta.description = descMatch[1].trim();
-    return meta;
-  }
-
-  /* ── Data fetching ──────────────────────── */
-  async function fetchIndex(url, key) {
-    try {
-      var resp = await fetch(url);
-      if (!resp.ok) return [];
-      var html = await resp.text();
-      var basePath = key === 'health' ? './健康报告/' : './自循环报告/';
-      return parseIndex(html, basePath);
-    } catch (e) { return []; }
-  }
-
-  async function fetchTrendItems() {
-    try {
-      var resp = await fetch(H.PATHS.trendManifest);
-      if (!resp.ok) return [];
-      var manifest = await resp.json();
-      return manifest.map(function(r) {
-        return {
-          href: r.file || '', basePath: './趋势报告/', date: r.date,
-          source: r.source, ok: r.ok, trend: r.trend,
-          items: r.items, reachable: r.reachable, total: r.total,
-          keywords: r.keywords || [],
-          meta: { ok: r.ok, trend: r.trend, items: r.items, source: r.source, reachable: r.reachable, total: r.total, keywords: r.keywords || [] }
-        };
-      });
-    } catch(e) { return []; }
-  }
-
   async function fetchAll() {
     loaded = true;
     panelBody.innerHTML = '<div class="panel-loading">加载中...</div>';
-
-    try {
-      var _a = await Promise.all([
-        fetchIndex(H.PATHS.healthIndex, 'health'),
-        fetchIndex(H.PATHS.loopIndex, 'loop'),
-        fetchTrendItems()
-      ]);
-    } catch(e) {
-      panelBody.innerHTML = '<div class="panel-empty">数据加载失败<br><span class="hint">请检查网络连接后重试</span></div>';
-      return;
-    }
-    var healthRaw = _a[0], loopRaw = _a[1], trendItems = _a[2];
-
     var unified = [];
-    for (var i = 0; i < healthRaw.length; i++) {
-      var hp = parseHealthFilename(healthRaw[i].href);
+    for (var i = 0; i < STATIC_HEALTH_REPORTS.length; i++) {
+      var r = STATIC_HEALTH_REPORTS[i];
       unified.push({
-        type: 'health', href: healthRaw[i].href, basePath: healthRaw[i].basePath,
-        date: hp.date, timeId: hp.timeId, meta: null
+        type: 'health',
+        href: r.file,
+        basePath: './健康报告/',
+        label: '🩺 ' + r.date,
+        date: r.date,
+        timeText: r.time,
+        timeId: String(r.time || '').replace(/\D/g, ''),
+        meta: { score: r.score, grade: r.grade }
       });
     }
-    for (var j = 0; j < loopRaw.length; j++) {
-      var lp = parseLoopFilename(loopRaw[j].href);
+    for (var j = 0; j < STATIC_LOOP_REPORTS.length; j++) {
+      var lr = STATIC_LOOP_REPORTS[j];
       unified.push({
-        type: 'loop', href: loopRaw[j].href, basePath: loopRaw[j].basePath,
-        skill: lp.skill, date: lp.date, timeId: lp.timeId, meta: null
+        type: 'loop',
+        href: lr.file,
+        basePath: './自循环报告/',
+        label: lr.label || '',
+        date: lr.date || '',
+        timeId: lr.timeId || '',
+        meta: lr.meta || null
       });
     }
-    for (var k = 0; k < trendItems.length; k++) {
+    for (var k = 0; k < STATIC_TREND_REPORTS.length; k++) {
+      var tr = STATIC_TREND_REPORTS[k];
       unified.push({
-        type: 'trend', href: trendItems[k].href, basePath: trendItems[k].basePath,
-        date: trendItems[k].date, meta: trendItems[k].meta,
-        source: trendItems[k].source, keywords: trendItems[k].keywords
+        type: 'trend',
+        href: tr.file,
+        basePath: './趋势报告/',
+        label: tr.label || '',
+        date: tr.date || '',
+        source: tr.source || '',
+        keywords: tr.keywords || [],
+        meta: tr.meta || null
       });
     }
 
-    unified.sort(function(a, b) {
-      var dc = (b.date || '').localeCompare(a.date || '');
-      if (dc !== 0) return dc;
-      return (b.href || '').localeCompare(a.href || '');
-    });
-
-    var hc = healthRaw.length, lc = loopRaw.length, tc = trendItems.length;
+    var hc = STATIC_HEALTH_REPORTS.length, lc = STATIC_LOOP_REPORTS.length, tc = STATIC_TREND_REPORTS.length;
     var elAll = document.getElementById('npBadgeAll'), elH = document.getElementById('npBadgeHealth'),
         elL = document.getElementById('npBadgeLoop'), elT = document.getElementById('npBadgeTrend');
     if (elAll) elAll.textContent = unified.length;
@@ -253,42 +104,6 @@
     if (elT) elT.textContent = tc;
     if (totalCount) totalCount.textContent = '共 ' + unified.length + ' 条';
     if (badge && unified.length > 0) badge.textContent = unified.length > 99 ? '99+' : String(unified.length);
-
-    allItems = unified;
-    renderList();
-
-    var enrichLimit = 20;
-    var fetches = [];
-    for (var n = 0; n < Math.min(enrichLimit, unified.length); n++) {
-      fetches.push(
-        fetch(unified[n].basePath + unified[n].href)
-          .then(function(r) { return r.ok ? r.text() : ''; })
-          .catch(function() { return ''; })
-      );
-    }
-    var results = await Promise.all(fetches);
-    for (var m = 0; m < results.length; m++) {
-      if (!results[m]) continue;
-      var item = unified[m];
-      if (item.type === 'health') {
-        item.meta = extractHealthMeta(results[m]);
-      } else if (item.type === 'loop') {
-        item.meta = extractLoopMeta(results[m]);
-      }
-    }
-
-    var healthItems = unified.filter(function(it) { return it.type === 'health'; });
-    for (var hi = 0; hi < healthItems.length; hi++) {
-      var cur = healthItems[hi];
-      if (cur.meta && cur.meta.score !== undefined) {
-        for (var hj = hi + 1; hj < healthItems.length; hj++) {
-          if (healthItems[hj].meta && healthItems[hj].meta.score !== undefined) {
-            cur.prevScore = healthItems[hj].meta.score;
-            break;
-          }
-        }
-      }
-    }
 
     allItems = unified;
     renderList();
@@ -388,7 +203,29 @@
     var safeTitle = H.escHtml(title || '—');
     var cls = clsName || 'np-title';
     if (!href) return '<span class="' + cls + '">' + safeTitle + '</span>';
-    return '<span class="' + cls + '"><a href="' + href + '" target="_blank" onclick="event.stopPropagation()">' + safeTitle + '</a></span>';
+    var rawHref = String(href).trim();
+    var isExternal = /^(https?:)?\/\//i.test(rawHref) || /^(mailto:|tel:)/i.test(rawHref);
+    var finalHref = rawHref;
+    try { finalHref = encodeURI(rawHref); } catch (e) { finalHref = rawHref; }
+    var safeHref = H.escHtml(finalHref);
+    var targetAttr = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
+    return '<span class="' + cls + '"><a href="' + safeHref + '"' + targetAttr + ' onclick="event.stopPropagation()">' + safeTitle + '</a></span>';
+  }
+
+  function escapeJsSingleQuoted(s) {
+    return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  }
+
+  function cardOnclickAttr(href) {
+    if (!href) return '';
+    var rawHref = String(href).trim();
+    var isExternal = /^(https?:)?\/\//i.test(rawHref) || /^(mailto:|tel:)/i.test(rawHref);
+    var finalHref = rawHref;
+    try { finalHref = encodeURI(rawHref); } catch (e) { finalHref = rawHref; }
+    var safe = escapeJsSingleQuoted(finalHref);
+    return isExternal
+      ? ' onclick="window.open(\'' + safe + '\',\'_blank\',\'noopener\')"'
+      : ' onclick="location.href=\'' + safe + '\'"';
   }
 
   /* ── Shared rendering atoms ──────────────── */
@@ -429,15 +266,19 @@
 
   function renderTimeTag(item) {
     if (!item.date) return '';
+    if (item.type === 'health' && item.timeText) {
+      return '<span class="np-time" title="' + H.escHtml(item.date + ' ' + item.timeText) + '">' + H.escHtml(item.timeText) + '</span>';
+    }
     return '<span class="np-time" title="' + H.escHtml(item.date) + '">' + H.escHtml(H.relativeTime(item.date)) + '</span>';
   }
 
   /** Resolve display title, always derived from the item's filename on disk. */
   function resolveTitle(item) {
+    if (item && item.label) return String(item.label).trim();
     // Health: title is the filename on disk (without .html)
     if (item.type === 'health') {
-      var fn = getDisplayFilename(item);
-      if (fn) return fn;
+      if (item.label) return String(item.label).trim();
+      if (item.date) return '🩺 ' + item.date;
       // Reconstruct from date+timeId using naming convention: health-YYYY-MM-DD-HHMMSS
       if (item.date && item.timeId) return 'health-' + item.date + '-' + item.timeId;
       return '健康报告（文件缺失）';
@@ -662,7 +503,7 @@
       recHtml = '<div class="np-latest-rec">&#128203; ' + H.escHtml(m.summaryText.length > 140 ? m.summaryText.slice(0, 140) + '…' : m.summaryText) + '</div>';
     }
 
-    var onclick = href ? ' onclick="window.open(\'' + href + '\',\'_blank\')"' : '';
+    var onclick = cardOnclickAttr(href);
     return '<div class="np-card np-latest-featured"' + onclick + '>'
       + '<div class="np-latest-score">'
       + '<span class="npl-badge">最新</span>'
@@ -681,7 +522,7 @@
   /* ── Standard card ───────────────────────── */
   function renderStandardCard(item, href, isLatest, dotCls, typeLabel, typeCls, title, timeHtml, detailHtml) {
     var cls = isLatest ? ' np-latest' : '';
-    var onclick = href ? ' onclick="window.open(\'' + href + '\',\'_blank\')"' : '';
+    var onclick = cardOnclickAttr(href);
     return '<div class="np-card' + cls + '"' + onclick + '>'
       + '<span class="np-dot ' + dotCls + '"></span>'
       + '<div class="np-body">'

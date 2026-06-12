@@ -364,7 +364,38 @@ function buildCrossReferenceCard(skill, status) {
 }
 
 /**
- * Generate an index page for all loop reports.
+ * Generate reports.json manifest for the self-loop report index page.
+ * Scans all HTML report files and writes metadata as JSON.
+ */
+export function generateManifest() {
+  if (!existsSync(REPORT_DIR)) return;
+
+  const files = readdirSync(REPORT_DIR)
+    .filter(f => f.endsWith(".html") && f !== "index.html")
+    .sort()
+    .reverse();
+
+  const reports = files.map(f => {
+    const parts = f.replace(".html", "").split("-");
+    const skill = parts.slice(0, -2).join("-");
+    const date = parts[parts.length - 2];
+    const meta = SKILL_META[skill] || { icon: "🔄", label: skill };
+    return {
+      file: f,
+      skill,
+      skillLabel: meta.label,
+      icon: meta.icon,
+      date,
+      status: "pass",
+    };
+  });
+
+  writeFileSync(join(REPORT_DIR, "reports.json"), JSON.stringify(reports), "utf-8");
+}
+
+/**
+ * Generate an index page for all loop reports — dynamic client-side version.
+ * Reads reports.json at page load for live data.
  */
 export function generateIndex() {
   if (!existsSync(REPORT_DIR)) return;
@@ -374,30 +405,20 @@ export function generateIndex() {
     .sort()
     .reverse();
 
-  const rows = files.map(f => {
-    const parts = f.replace(".html", "").split("-");
-    const skill = parts.slice(0, -2).join("-");
-    const date = parts[parts.length - 2];
-    const meta = SKILL_META[skill] || { icon: "🔄", label: skill };
-    return `<tr>
-      <td><a href="${f}">${meta.icon} ${meta.label}</a></td>
-      <td>${date}</td>
-      <td><a href="${f}">查看</a></td>
-    </tr>`;
-  }).join("\n");
-
   const html = `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>自循环报告索引</title>
-<link rel="stylesheet" href="../cdn/shared.css">
-<link rel="stylesheet" href="../cdn/theme.css">
+<link rel="stylesheet" href="../../cdn/shared.css">
+<link rel="stylesheet" href="../../cdn/theme.css">
 <style>
 :root {
   --yry-bg: rgba(22,22,32,1);
   --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
   --yry-accent: #FFC107;
+  --yry-pass: #22c55e; --yry-fail: #ef4444; --yry-warn: #f59e0b;
   --yry-text: rgba(250,250,252,1); --yry-text2: rgba(160,160,164,1); --yry-text3: rgba(110,110,114,1);
   --yry-radius: 12px; --yry-border: 1px solid rgba(255,255,255,0.06);
   --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
@@ -405,32 +426,110 @@ export function generateIndex() {
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
 .yry-container { max-width: 800px; margin: 0 auto; padding: 48px 24px 80px; }
+.yry-bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
+.yry-bc a { color: #22d3ee; text-decoration: none; }
+.yry-bc a:hover { color: var(--yry-accent); }
+.yry-bc .yry-bc-sep { color: var(--yry-text3); opacity: .4; }
+.yry-bc .yry-bc-cur { color: var(--yry-text2); }
 .yry-header { text-align: center; margin-bottom: 32px; }
 .yry-header h1 { font-size: 1.6rem; }
-.yry-header .meta { color: var(--yry-text3); font-size: .82rem; }
-.yry-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); }
+.yry-header .desc { color: var(--yry-text2); font-size: .84rem; margin-top: 8px; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto; }
+.yry-header .meta { color: var(--yry-text3); font-size: .82rem; margin-top: 6px; }
+.yry-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+.yry-stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 16px 20px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 100px; cursor: default; }
+.yry-stat .yry-val { font-size: 1.6rem; font-weight: 700; }
+.yry-stat .yry-val.pass { color: var(--yry-pass); }
+.yry-stat .yry-val.warn { color: var(--yry-warn); }
+.yry-stat .yry-val.fail { color: var(--yry-fail); }
+.yry-stat .yry-val.info { color: #22d3ee; }
+.yry-stat .yry-lbl { font-size: .72rem; color: var(--yry-text3); margin-top: 4px; }
+.yry-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
+.yry-card h2 { font-size: 1.1rem; margin-bottom: 12px; color: var(--yry-accent); }
+.yry-intro { padding: 16px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 20px; color: var(--yry-text2); font-size: .84rem; line-height: 1.7; }
+.yry-intro strong { color: var(--yry-accent); }
+.yry-intro code { background: rgba(59,130,246,.1); padding: 1px 6px; border-radius: 4px; font-size: .82em; color: #22d3ee; }
 table { width: 100%; border-collapse: collapse; }
 th, td { padding: 10px 16px; text-align: left; border-bottom: var(--yry-border); font-size: .88rem; }
 th { color: var(--yry-text3); font-size: .76rem; text-transform: uppercase; }
 td a { color: #7aa2f7; text-decoration: none; }
 td a:hover { color: var(--yry-accent); }
+.yry-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: .72rem; font-weight: 600; }
+.yry-badge.pass { background: rgba(34,197,94,.15); color: var(--yry-pass); }
+.yry-badge.warn { background: rgba(245,158,11,.15); color: var(--yry-warn); }
+.yry-badge.fail { background: rgba(239,68,68,.15); color: var(--yry-fail); }
+.yry-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; justify-content: center; }
+.yry-link { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.15); color: #22d3ee; text-decoration: none; font-size: .82rem; transition: all .15s; }
+.yry-link:hover { background: rgba(59,130,246,.15); color: var(--yry-accent); }
 .yry-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
+.yry-skill-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.yry-skill-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; background: rgba(59,130,246,.06); border: 1px solid rgba(59,130,246,.1); font-size: .74rem; color: var(--yry-text2); }
+.yry-skill-chip .si { font-size: .9rem; }
+.yry-empty { text-align: center; padding: 48px 24px; color: var(--yry-text3); }
+.yry-empty code { color: #22d3ee; }
+#loading { text-align: center; color: var(--yry-text3); padding: 40px; }
 </style>
 </head>
 <body>
 <div class="yry-container">
+<nav class="yry-bc">
+  <a href="../../docs/index.html">📄 文档中心</a>
+  <span class="yry-bc-sep">/</span>
+  <span class="yry-bc-cur">🔄 自循环报告</span>
+</nav>
 <div class="yry-header">
   <h1>🔄 自循环报告</h1>
+  <div class="desc">12 技能定期巡检，由 Cron 定时触发，报告自动生成并推送企微通知。覆盖趋势监控、代码健康、文档同步、故事轮询、配置检查、依赖审计、自改进闭环等全维度。</div>
   <div class="meta">${files.length} 份报告</div>
 </div>
+<div class="yry-intro">
+  <strong>工作原理</strong>：Cron 定时任务按预设间隔触发技能执行 → 每轮执行生成自循环报告 HTML → <code>rui-bot loop-report</code> 汇总并推送企微通知 → 关联维度数据输入 D0-D7 诊断引擎。<br>
+  <strong>报告位置</strong>：<code>docs/自循环报告/</code> · <strong>生成工具</strong>：<code>node skills/rui-bot/lib/loop-report.mjs</code> · <strong>通知渠道</strong>：企业微信 Webhook
+</div>
 <div class="yry-card">
+  <h2>📋 报告列表</h2>
   <table>
-    <thead><tr><th>模块</th><th>日期</th><th>操作</th></tr></thead>
-    <tbody>${rows || '<tr><td colspan="3" style="color:var(--yry-text3)">暂无报告</td></tr>'}</tbody>
+    <thead><tr><th>技能模块</th><th>日期</th><th>状态</th><th>摘要</th><th>操作</th></tr></thead>
+    <tbody id="tbody"></tbody>
   </table>
 </div>
-<div class="yry-footer">由 rui-bot loop-report 自动生成</div>
+<div class="yry-links">
+  <a class="yry-link" href="../../skills/rui-bot/SKILL.md" target="_blank">📋 rui-bot 规约</a>
+  <a class="yry-link" href="../健康报告/index.html">🩺 健康报告</a>
+  <a class="yry-link" href="../趋势报告/index.html">📡 趋势报告</a>
+  <a class="yry-link" href="../index.html">📄 文档中心</a>
 </div>
+<div class="yry-footer">
+  由 rui-bot loop-report 自动生成 · 数据实时读取<br>
+  <span style="color:var(--yry-text3)">12 技能 · 定时巡检 · 企微通知</span>
+</div>
+</div>
+<script>
+(async function() {
+  var tbody = document.getElementById('tbody');
+  try {
+    var resp = await fetch('reports.json');
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var reports = await resp.json();
+    if (reports.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5"><div class="yry-empty">暂无自循环报告<br><span style="font-size:.7rem;margin-top:8px;display:block">运行 <code>node skills/rui-bot/lib/loop-report.mjs --skill=&lt;name&gt; --status=&lt;pass|warn|fail&gt;</code> 生成首份报告</span></div></td></tr>';
+      return;
+    }
+    var badgeMap = { pass: '✅ 通过', warn: '⚠️ 告警', fail: '🚫 异常' };
+    tbody.innerHTML = reports.map(function(r) {
+      var badge = '<span class="yry-badge ' + (r.status || 'pass') + '">' + (badgeMap[r.status] || r.status) + '</span>';
+      return '<tr>' +
+        '<td><a href="' + (r.file || '#') + '">' + (r.icon || '🔄') + ' ' + (r.skillLabel || r.skill) + '</a></td>' +
+        '<td>' + r.date + '</td>' +
+        '<td>' + badge + '</td>' +
+        '<td style="font-size:.82rem;color:var(--yry-text2)">' + (r.summary || '—') + '</td>' +
+        '<td><a href="' + (r.file || '#') + '">查看</a></td>' +
+        '</tr>';
+    }).join('');
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="5"><div class="yry-empty">暂无自循环报告<br><span style="font-size:.7rem;margin-top:8px;display:block">运行 <code>node skills/rui-bot/lib/loop-report.mjs --skill=&lt;name&gt; --status=&lt;pass|warn|fail&gt;</code> 生成首份报告</span></div></td></tr>';
+  }
+})();
+</script>
 </body>
 </html>`;
 
@@ -518,6 +617,9 @@ async function main() {
 
   const { filePath, filename } = generateReport(opts);
   console.log(`[loop-report] 报告已生成: ${filePath}`);
+
+  generateManifest();
+  console.log("[loop-report] 清单已更新: docs/自循环报告/reports.json");
 
   generateIndex();
   console.log("[loop-report] 索引已更新: docs/自循环报告/index.html");

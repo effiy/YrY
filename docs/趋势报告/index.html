@@ -8,8 +8,10 @@
 <link rel="stylesheet" href="../../cdn/theme.css">
 <style>
 :root {
-  --yry-bg: rgba(22,22,32,1); --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
-  --yry-accent: #FFC107; --yry-pass: #22c55e; --yry-warn: #f59e0b;
+  --yry-bg: rgba(22,22,32,1);
+  --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
+  --yry-accent: #FFC107;
+  --yry-pass: #22c55e; --yry-fail: #ef4444; --yry-warn: #f59e0b;
   --yry-text: rgba(250,250,252,1); --yry-text2: rgba(160,160,164,1); --yry-text3: rgba(110,110,114,1);
   --yry-radius: 12px; --yry-border: 1px solid rgba(255,255,255,0.06);
   --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
@@ -18,20 +20,33 @@
 body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
 .ti-container { max-width: 800px; margin: 0 auto; padding: 48px 24px 80px; }
 .ti-bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
-.ti-bc a { color: var(--yry-cyan); text-decoration: none; }
+.ti-bc a { color: #22d3ee; text-decoration: none; }
 .ti-bc a:hover { color: var(--yry-accent); }
 .ti-bc .ti-bc-sep { color: var(--yry-text3); opacity: .4; }
 .ti-bc .ti-bc-cur { color: var(--yry-text2); }
 .ti-header { text-align: center; margin-bottom: 32px; }
 .ti-header h1 { font-size: 1.6rem; }
-.ti-header .ti-meta { color: var(--yry-text3); font-size: .82rem; margin-top: 6px; }
-.ti-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); }
+.ti-header .desc { color: var(--yry-text2); font-size: .84rem; margin-top: 8px; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto; }
+.ti-header .meta { color: var(--yry-text3); font-size: .82rem; margin-top: 6px; }
+.ti-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+.ti-stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 16px 20px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 100px; cursor: default; }
+.ti-stat .ti-val { font-size: 1.6rem; font-weight: 700; }
+.ti-stat .ti-val.pass { color: var(--yry-pass); }
+.ti-stat .ti-val.warn { color: var(--yry-warn); }
+.ti-stat .ti-val.fail { color: var(--yry-fail); }
+.ti-stat .ti-val.info { color: #22d3ee; }
+.ti-stat .ti-lbl { font-size: .72rem; color: var(--yry-text3); margin-top: 4px; }
+.ti-intro { padding: 16px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 20px; color: var(--yry-text2); font-size: .84rem; line-height: 1.7; }
+.ti-intro strong { color: var(--yry-accent); }
+.ti-intro code { background: rgba(59,130,246,.1); padding: 1px 6px; border-radius: 4px; font-size: .82em; color: #22d3ee; }
+.ti-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
+.ti-card h2 { font-size: 1.1rem; margin-bottom: 12px; color: var(--yry-accent); }
 table { width: 100%; border-collapse: collapse; }
 th, td { padding: 10px 16px; text-align: left; border-bottom: var(--yry-border); font-size: .88rem; }
 th { color: var(--yry-text3); font-size: .76rem; text-transform: uppercase; }
-td a { color: var(--yry-cyan); text-decoration: none; }
+td a { color: #7aa2f7; text-decoration: none; }
 td a:hover { color: var(--yry-accent); }
-.ti-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: .72rem; font-weight: 600; }
+.ti-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: .72rem; font-weight: 600; }
 .ti-badge.ok { background: rgba(34,197,94,.15); color: #22c55e; }
 .ti-badge.warn { background: rgba(245,158,11,.15); color: #f59e0b; }
 .ti-badge.err { background: rgba(239,68,68,.15); color: #ef4444; }
@@ -39,58 +54,151 @@ td a:hover { color: var(--yry-accent); }
 .ti-badge.fall { background: rgba(239,68,68,.12); color: #ef4444; }
 .ti-badge.flat { background: rgba(255,255,255,.05); color: var(--yry-text3); }
 .ti-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; justify-content: center; }
-.ti-link { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.15); color: var(--yry-cyan); text-decoration: none; font-size: .82rem; transition: all .15s; }
+.ti-link { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.15); color: #22d3ee; text-decoration: none; font-size: .82rem; transition: all .15s; }
 .ti-link:hover { background: rgba(59,130,246,.15); color: var(--yry-accent); }
 .ti-empty { text-align: center; padding: 48px 24px; color: var(--yry-text3); }
+.ti-empty code { color: #22d3ee; }
+.ti-source-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.ti-source-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; background: rgba(59,130,246,.06); border: 1px solid rgba(59,130,246,.1); font-size: .74rem; color: var(--yry-text2); }
+.ti-source-chip .si { font-size: .9rem; }
+.ti-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
 </style>
 </head>
 <body>
 <div class="ti-container">
   <nav class="ti-bc">
-    <a href="../index.html">首页</a>
-    <span class="ti-bc-sep">▸</span>
-    <span class="ti-bc-cur">趋势报告</span>
+    <a href="../../docs/index.html">📄 文档中心</a>
+    <span class="ti-bc-sep">/</span>
+    <span class="ti-bc-cur">📡 趋势报告</span>
   </nav>
 
   <div class="ti-header">
     <h1>📡 技术趋势报告</h1>
-    <div class="ti-meta">GitHub Trending · OSS Insight · TrendShift · Top-Starred</div>
+    <div class="desc">定期扫描 GitHub Trending、OSS Insight、TrendShift、Top-Starred 四大数据源，追踪技术趋势变化。数据输入自改进 D5 诊断，支撑技术选型决策。</div>
+    <div class="meta" id="tiCount">— 份报告</div>
+  </div>
+
+  <div class="ti-intro">
+    <strong>数据源</strong>：<code>🐙 GitHub Trending</code> — 每日热门仓库 · <code>📊 OSS Insight</code> — 开源项目分析 · <code>📈 TrendShift</code> — 趋势转换追踪 · <code>⭐ Top-Starred</code> — 高星项目发现<br>
+    <strong>工作原理</strong>：Cron 每周一早 9 点触发 <code>rui-trends all</code> → 并行抓取四源 → 分类打标 (AI/Web/后端/DevOps/语言/安全) → 生成 HTML 报告 → 更新趋势清单<br>
+    <strong>诊断关联</strong>：趋势数据输入 <strong>D5 外部趋势</strong> 诊断，过时趋势信号可能导致技术选型决策失误。
+  </div>
+
+  <div class="ti-stats" id="tiStats">
+    <div class="ti-stat"><div class="ti-val info">—</div><div class="ti-lbl">报告总数</div></div>
+    <div class="ti-stat"><div class="ti-val pass">—</div><div class="ti-lbl">可达源</div></div>
+    <div class="ti-stat"><div class="ti-val warn">—</div><div class="ti-lbl">部分可达</div></div>
+    <div class="ti-stat"><div class="ti-val fail">—</div><div class="ti-lbl">不可达</div></div>
+    <div class="ti-stat"><div class="ti-val info">—</div><div class="ti-lbl">最新条目</div></div>
   </div>
 
   <div class="ti-card">
+    <h2>📋 报告列表</h2>
     <table>
-      <thead><tr><th>日期</th><th>数据源</th><th>可达</th><th>趋势</th></tr></thead>
-      <tbody id="ti-tbody">
-      </tbody>
+      <thead><tr><th>日期</th><th>数据源</th><th>可达</th><th>条目</th><th>趋势</th><th>操作</th></tr></thead>
+      <tbody id="ti-tbody"></tbody>
     </table>
+  </div>
+
+  <div class="ti-card" id="tiSourcesCard" style="display:none">
+    <h2>🔍 已覆盖数据源</h2>
+    <div class="ti-source-list" id="tiSourceList"></div>
   </div>
 
   <div class="ti-links">
     <a class="ti-link" href="../../skills/rui-trends/SKILL.md" target="_blank">📋 rui-trends 规约</a>
-    <a class="ti-link" href="../index.html">🏠 返回首页</a>
+    <a class="ti-link" href="../自循环报告/index.html">🔄 自循环报告</a>
+    <a class="ti-link" href="../健康报告/index.html">🩺 健康报告</a>
+    <a class="ti-link" href="../index.html">📄 文档中心</a>
+  </div>
+
+  <div class="ti-footer">
+    由 rui-trends trend-report 自动生成 · 数据实时读取<br>
+    <span style="color:var(--yry-text3)">4 数据源 · 每周一早 9 点 · D5 诊断输入</span>
   </div>
 </div>
 
 <script>
-(async function() {
+(function() {
   var tbody = document.getElementById('ti-tbody');
-  try {
-    var resp = await fetch('./reports.json');
-    if (!resp.ok) throw new Error('no data');
-    var reports = await resp.json();
-    if (!reports.length) throw new Error('empty');
-    tbody.innerHTML = reports.map(function(r) {
-      var okBadge = r.ok ? '<span class="ti-badge ok">可达</span>' : '<span class="ti-badge err">不可达</span>';
-      var trendBadge = '';
-      if (r.trend === 'rise') trendBadge = '<span class="ti-badge rise">↑ 上升</span>';
-      else if (r.trend === 'fall') trendBadge = '<span class="ti-badge fall">↓ 下降</span>';
-      else trendBadge = '<span class="ti-badge flat">→ 持平</span>';
-      var href = r.file ? '<a href="' + r.file + '">' + r.date + '</a>' : r.date;
-      return '<tr><td>' + href + '</td><td>' + r.source + '</td><td>' + okBadge + '</td><td>' + trendBadge + '</td></tr>';
-    }).join('');
-  } catch(e) {
-    tbody.innerHTML = '<tr><td colspan="4"><div class="ti-empty">暂无趋势报告<br><span style="font-size:.7rem;margin-top:8px;display:block">运行 <code style="color:var(--yry-cyan)">node skills/rui-trends/rui-trends.mjs all</code> 生成首份报告</span></div></td></tr>';
-  }
+  var countEl = document.getElementById('tiCount');
+  var sourcesCard = document.getElementById('tiSourcesCard');
+  var sourceList = document.getElementById('tiSourceList');
+
+  // Data source metadata
+  var SOURCE_ICONS = {
+    'github-trending': '🐙',
+    'oss-insight': '📊',
+    'trendshift': '📈',
+    'top-starred': '⭐',
+    'all': '📡'
+  };
+  var SOURCE_LABELS = {
+    'github-trending': 'GitHub Trending',
+    'oss-insight': 'OSS Insight',
+    'trendshift': 'TrendShift',
+    'top-starred': 'Top-Starred',
+    'all': '全量扫描'
+  };
+
+  fetch('reports.json')
+    .then(function(r) { return r.ok ? r.json() : []; })
+    .then(function(reports) {
+      countEl.textContent = reports.length + ' 份报告';
+
+      if (!reports.length) {
+        tbody.innerHTML = '<tr><td colspan="6"><div class="ti-empty">暂无趋势报告<br><span style="font-size:.7rem;margin-top:8px;display:block">运行 <code>node skills/rui-trends/rui-trends.mjs all</code> 生成首份报告</span></div></td></tr>';
+        return;
+      }
+
+      // Stats
+      var sourcesSeen = {};
+      var totalOk = 0, totalFail = 0, totalItems = 0;
+      reports.forEach(function(r) {
+        sourcesSeen[r.source] = true;
+        if (r.ok) { totalOk++; totalItems += (r.items || 0); }
+        else { totalFail++; }
+      });
+      var uniqueSources = Object.keys(sourcesSeen).length;
+
+      document.getElementById('tiStats').innerHTML =
+        '<div class="ti-stat"><div class="ti-val info">' + reports.length + '</div><div class="ti-lbl">报告总数</div></div>' +
+        '<div class="ti-stat"><div class="ti-val pass">' + totalOk + '</div><div class="ti-lbl">✅ 可达源</div></div>' +
+        '<div class="ti-stat"><div class="ti-val warn">0</div><div class="ti-lbl">⚠️ 部分可达</div></div>' +
+        '<div class="ti-stat"><div class="ti-val fail">' + totalFail + '</div><div class="ti-lbl">🚫 不可达</div></div>' +
+        '<div class="ti-stat"><div class="ti-val info">' + totalItems + '</div><div class="ti-lbl">最新条目</div></div>';
+
+      // Source coverage
+      if (uniqueSources > 0) {
+        sourcesCard.style.display = 'block';
+        sourceList.innerHTML = Object.keys(sourcesSeen).map(function(s) {
+          return '<span class="ti-source-chip"><span class="si">' + (SOURCE_ICONS[s] || '📡') + '</span> ' + (SOURCE_LABELS[s] || s) + '</span>';
+        }).join('');
+      }
+
+      // Table
+      tbody.innerHTML = reports.map(function(r) {
+        var okBadge = r.ok
+          ? '<span class="ti-badge ok">✅ 可达</span>'
+          : '<span class="ti-badge err">🚫 不可达</span>';
+        var trendBadge = '';
+        if (r.trend === 'rise') trendBadge = '<span class="ti-badge rise">↑ 上升</span>';
+        else if (r.trend === 'fall') trendBadge = '<span class="ti-badge fall">↓ 下降</span>';
+        else trendBadge = '<span class="ti-badge flat">→ 持平</span>';
+        var href = r.file ? '<a href="' + r.file + '">' + (SOURCE_ICONS[r.source] || '📡') + ' ' + (SOURCE_LABELS[r.source] || r.source) + '</a>' : (SOURCE_LABELS[r.source] || r.source);
+        return '<tr>' +
+          '<td>' + r.date + '</td>' +
+          '<td>' + href + '</td>' +
+          '<td>' + okBadge + '</td>' +
+          '<td>' + (r.items || '—') + '</td>' +
+          '<td>' + trendBadge + '</td>' +
+          '<td><a href="' + (r.file || '#') + '">查看</a></td>' +
+          '</tr>';
+      }).join('');
+    })
+    .catch(function(e) {
+      tbody.innerHTML = '<tr><td colspan="6"><div class="ti-empty">暂无趋势报告<br><span style="font-size:.7rem;margin-top:8px;display:block">运行 <code>node skills/rui-trends/rui-trends.mjs all</code> 生成首份报告</span></div></td></tr>';
+    });
 })();
 </script>
 </body>

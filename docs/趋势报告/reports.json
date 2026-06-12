@@ -1,0 +1,56 @@
+[
+  {
+    "date": "2026-06-12",
+    "time": "2026-06-12 09:00:00",
+    "source": "all",
+    "ok": true,
+    "trend": "rise",
+    "items": 62,
+    "file": "trend-all-2026-06-12-mk3x29.html"
+  },
+  {
+    "date": "2026-06-12",
+    "time": "2026-06-12 09:00:00",
+    "source": "github-trending",
+    "ok": true,
+    "trend": "rise",
+    "items": 25,
+    "file": "trend-github-trending-2026-06-12-mk3x29.html"
+  },
+  {
+    "date": "2026-06-12",
+    "time": "2026-06-12 09:00:00",
+    "source": "oss-insight",
+    "ok": true,
+    "trend": "flat",
+    "items": 12,
+    "file": "trend-oss-insight-2026-06-12-mk3x29.html"
+  },
+  {
+    "date": "2026-06-12",
+    "time": "2026-06-12 09:00:00",
+    "source": "trendshift",
+    "ok": true,
+    "trend": "rise",
+    "items": 16,
+    "file": "trend-trendshift-2026-06-12-mk3x29.html"
+  },
+  {
+    "date": "2026-06-12",
+    "time": "2026-06-12 09:00:00",
+    "source": "top-starred",
+    "ok": true,
+    "trend": "fall",
+    "items": 9,
+    "file": "trend-top-starred-2026-06-12-mk3x29.html"
+  },
+  {
+    "date": "2026-06-09",
+    "time": "2026-06-09 09:00:00",
+    "source": "all",
+    "ok": true,
+    "trend": "flat",
+    "items": 48,
+    "file": "trend-all-2026-06-09-mj2w17.html"
+  }
+]
