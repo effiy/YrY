@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>实时面板与交互组件 · 计划清单</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+<link rel="stylesheet" href="../../../../cdn/yry-checklist.css">
+<script src="../../../../cdn/shared.js"></script>
+<style>
+.container { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+.scene-nav { display:flex; align-items:center; flex-wrap:wrap; gap:8px; justify-content:center; padding:12px 16px; margin:24px 0; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:8px; }
+.scene-nav-link { color:var(--text2); text-decoration:none; font-size:.76rem; padding:5px 12px; border-radius:14px; transition:all .15s; white-space:nowrap; }
+.scene-nav-link:hover { color:var(--accent); background:rgba(255,193,7,.08); }
+.scene-nav-link.active { color:var(--accent); font-weight:600; background:rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); cursor:default; }
+.scene-nav-link.story { color:var(--cyan); }
+.scene-nav-sep { color:var(--text3); font-size:.6rem; opacity:.3; user-select:none; }
+.verify-report-head { background:linear-gradient(135deg,rgba(34,211,238,.06),rgba(255,193,7,.04)); border:1px solid rgba(34,211,238,.18); border-radius:10px; padding:18px 20px; margin-bottom:18px; }
+.vrh-title { font-size:1.05rem; font-weight:600; color:var(--accent); margin-bottom:10px; letter-spacing:.02em; }
+.vrh-meta { display:flex; flex-wrap:wrap; gap:6px 16px; font-size:.7rem; color:var(--text3); margin-bottom:14px; }
+.vrh-meta code { color:var(--cyan); background:rgba(34,211,238,.08); padding:1px 6px; border-radius:4px; font-size:.68rem; }
+.vrh-metrics { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:12px; }
+.vrh-m { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:8px; padding:10px 8px; text-align:center; }
+.vrh-m-num { font-size:1.2rem; font-weight:700; line-height:1.1; }
+.vrh-m-num.pass { color:var(--accent,#10b981); }
+.vrh-m-num.fail { color:#ef4444; }
+.vrh-m-num.warn { color:#f59e0b; }
+.vrh-m-lbl { font-size:.65rem; color:var(--text3); margin-top:3px; letter-spacing:.04em; }
+.vrh-verdict { font-size:.82rem; padding:8px 12px; border-radius:6px; font-weight:500; }
+.vrh-verdict.pass { background:rgba(16,185,129,.10); color:#10b981; border:1px solid rgba(16,185,129,.25); }
+.vi-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+.vi-status { font-size:.7rem; font-weight:700; padding:3px 10px; border-radius:10px; letter-spacing:.06em; }
+.vi-status.pass { background:rgba(16,185,129,.15); color:#10b981; border:1px solid rgba(16,185,129,.3); }
+.vi-status.fail { background:rgba(239,68,68,.15); color:#ef4444; border:1px solid rgba(239,68,68,.3); }
+.vi-section { margin:10px 0; }
+.vi-k { font-size:.72rem; font-weight:600; color:var(--cyan); margin-bottom:5px; letter-spacing:.02em; }
+.vi-v { font-size:.78rem; color:var(--text2); line-height:1.55; }
+.vi-v code { color:var(--accent); background:rgba(255,193,7,.08); padding:1px 5px; border-radius:3px; font-size:.74rem; }
+.vi-criteria { margin:4px 0 0 18px; padding:0; font-size:.76rem; color:var(--text2); line-height:1.6; }
+.vi-criteria li { margin:2px 0; }
+.vi-table { width:100%; border-collapse:collapse; margin-top:6px; font-size:.72rem; }
+.vi-table th, .vi-table td { padding:6px 10px; text-align:left; border-bottom:1px solid rgba(255,255,255,.06); }
+.vi-table th { background:rgba(255,255,255,.04); color:var(--text3); font-weight:500; font-size:.68rem; letter-spacing:.04em; text-transform:uppercase; }
+.vi-table td.pass { color:#10b981; font-weight:600; }
+.verify-report-foot { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:10px; padding:14px 18px; margin-top:18px; }
+.vrf-section { margin:8px 0; }
+.vrf-k { font-size:.74rem; font-weight:600; color:var(--text1); margin-bottom:4px; }
+.vrf-v { font-size:.76rem; color:var(--text2); line-height:1.55; }
+.vrf-suggest { margin:4px 0 0 18px; padding:0; font-size:.76rem; color:var(--text2); line-height:1.6; }
+.vrf-suggest li { margin:2px 0; }
+.report-head { background:linear-gradient(135deg,rgba(255,193,7,.05),rgba(34,211,238,.03)); border:1px solid rgba(255,193,7,.15); border-radius:10px; padding:14px 18px; margin-bottom:18px; }
+.rh-title { font-size:1.05rem; font-weight:600; color:var(--accent); margin-bottom:6px; letter-spacing:.02em; }
+.rh-meta { font-size:.72rem; color:var(--text3); }
+.rh-meta code { color:var(--cyan); background:rgba(34,211,238,.08); padding:1px 6px; border-radius:4px; font-size:.7rem; }
+.kpi-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin:14px 0 18px; }
+@media (max-width:900px){ .kpi-grid{grid-template-columns:repeat(3,1fr);} }
+.kpi-card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:8px; padding:12px 10px; text-align:center; transition:all .2s; }
+.kpi-card:hover { border-color:rgba(255,193,7,.3); transform:translateY(-1px); }
+.kpi-label { font-size:.65rem; color:var(--text3); letter-spacing:.04em; text-transform:uppercase; }
+.kpi-num { font-size:1.4rem; font-weight:700; color:var(--text1); line-height:1.2; margin:4px 0; }
+.kpi-trend { font-size:.68rem; color:var(--text3); }
+.kpi-trend.up { color:#10b981; }
+.scorecard { width:100%; border-collapse:collapse; margin-top:8px; font-size:.74rem; }
+.scorecard th, .scorecard td { padding:7px 10px; text-align:left; border-bottom:1px solid rgba(255,255,255,.06); }
+.scorecard th { background:rgba(255,255,255,.04); color:var(--text3); font-weight:500; font-size:.68rem; letter-spacing:.04em; text-transform:uppercase; }
+.scorecard td.pass { color:#10b981; font-weight:600; }
+.scorecard .total-row td { background:rgba(255,193,7,.06); border-top:2px solid rgba(255,193,7,.3); }
+.checklist-head { display:flex; align-items:center; justify-content:space-between; gap:16px; background:linear-gradient(135deg,rgba(255,193,7,.06),rgba(34,211,238,.04)); border:1px solid rgba(255,193,7,.18); border-radius:10px; padding:14px 20px; margin-bottom:14px; }
+.ch-title { font-size:1.1rem; font-weight:600; color:var(--accent); letter-spacing:.02em; }
+.ch-meta { font-size:.72rem; color:var(--text3); margin-top:4px; }
+.ch-meta code { color:var(--cyan); background:rgba(34,211,238,.08); padding:1px 6px; border-radius:4px; font-size:.7rem; }
+.ch-progress { text-align:center; padding:8px 18px; background:rgba(16,185,129,.12); border:1px solid rgba(16,185,129,.3); border-radius:8px; }
+.ch-pct { font-size:1.6rem; font-weight:700; color:#10b981; line-height:1; }
+.phase-strip { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:20px; }
+@media (max-width:900px){ .phase-strip{grid-template-columns:repeat(3,1fr);} }
+.phase { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:6px; padding:8px 6px; text-align:center; transition:all .2s; cursor:default; }
+.phase.done { background:rgba(16,185,129,.08); border-color:rgba(16,185,129,.3); }
+.p-dot { width:18px; height:18px; border-radius:50%; background:#10b981; color:#fff; font-size:.66rem; font-weight:700; line-height:18px; margin:0 auto 4px; }
+.p-name { font-size:.66rem; color:var(--text2); }
+.p-count { font-size:.6rem; color:var(--text3); margin-top:1px; }
+.step-meta { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin:8px 0; padding:8px 10px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:6px; }
+@media (max-width:700px){ .step-meta{grid-template-columns:repeat(2,1fr);} }
+.meta-item { font-size:.7rem; color:var(--text2); display:flex; align-items:center; gap:4px; }
+.meta-item b { color:var(--text3); font-weight:500; margin-right:2px; }
+.pri-p0 { display:inline-block; padding:1px 6px; border-radius:6px; font-size:.62rem; font-weight:700; background:rgba(239,68,68,.18); color:#ef4444; border:1px solid rgba(239,68,68,.3); }
+.pri-p1 { display:inline-block; padding:1px 6px; border-radius:6px; font-size:.62rem; font-weight:700; background:rgba(245,158,11,.18); color:#f59e0b; border:1px solid rgba(245,158,11,.3); }
+.pri-p2 { display:inline-block; padding:1px 6px; border-radius:6px; font-size:.62rem; font-weight:700; background:rgba(34,211,238,.18); color:var(--cyan); border:1px solid rgba(34,211,238,.3); }
+.step-criteria { background:rgba(34,211,238,.04); border-left:3px solid var(--cyan); padding:8px 12px; margin:8px 0; border-radius:0 6px 6px 0; }
+.step-criteria b { font-size:.74rem; color:var(--cyan); display:block; margin-bottom:4px; }
+.step-criteria ul { margin:0 0 0 16px; padding:0; font-size:.72rem; color:var(--text2); line-height:1.55; }
+.cmd-head { display:flex; align-items:center; justify-content:space-between; gap:16px; background:linear-gradient(135deg,rgba(255,193,7,.06),rgba(34,211,238,.04)); border:1px solid rgba(255,193,7,.18); border-radius:10px; padding:14px 20px; margin-bottom:14px; }
+.cmd-head-title { font-size:1.1rem; font-weight:600; color:var(--accent); letter-spacing:.02em; }
+.cmd-head-meta { font-size:.72rem; color:var(--text3); margin-top:4px; }
+.cmd-head-stats { display:flex; gap:8px; }
+.chs { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:6px; padding:6px 12px; text-align:center; min-width:64px; }
+.chs b { font-size:1.1rem; color:var(--accent); display:block; }
+.chs span { font-size:.6rem; color:var(--text3); }
+.quickstart { background:rgba(34,211,238,.04); border:1px solid rgba(34,211,238,.2); border-radius:8px; padding:12px 16px; margin-bottom:18px; }
+.qs-title { font-size:.82rem; color:var(--cyan); font-weight:600; margin-bottom:8px; letter-spacing:.02em; }
+.quickstart pre { margin:0; padding:10px 12px; background:rgba(0,0,0,.3); border-radius:5px; font-size:.7rem; color:var(--text1); overflow-x:auto; white-space:pre; line-height:1.5; }
+.c-expect { font-size:.7rem; color:var(--text2); background:rgba(16,185,129,.06); border-left:2px solid #10b981; padding:5px 10px; margin-top:6px; border-radius:0 4px 4px 0; line-height:1.5; }
+.deliv-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:8px; }
+@media (max-width:1100px){ .deliv-grid{grid-template-columns:repeat(4,1fr);} }
+@media (max-width:800px){ .deliv-grid{grid-template-columns:repeat(3,1fr);} }
+.deliv-card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:14px 10px; text-decoration:none; color:var(--text1); text-align:center; transition:all .2s; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.deliv-card:hover { background:rgba(34,211,238,.08); border-color:var(--cyan); transform:translateY(-2px); }
+.dc-icon { font-size:1.6rem; line-height:1; }
+.dc-name { font-size:.78rem; font-weight:600; }
+.dc-type { font-size:.62rem; color:var(--text3); letter-spacing:.04em; text-transform:uppercase; }
+.path-link { color:var(--cyan); text-decoration:none; }
+.path-link code { color:var(--cyan); background:rgba(34,211,238,.06); padding:2px 6px; border-radius:4px; font-size:.7rem; }
+.path-link:hover code { background:rgba(34,211,238,.15); border-color:var(--cyan); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-index · 文档中心首页</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · 实时面板与交互组件</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
+
+<nav class="scene-nav">
+  <a class="scene-nav-link" href="../场景-1-数据采集与六层聚合/计划清单.html">📋 场景1 · 数据采集</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link active" href="计划清单.html">📋 场景2 · 实时面板与交互组件</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-3-交叉导航与可访问性/计划清单.html">📋 场景3 · 交叉导航</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-4-自动化生成管线/计划清单.html">📋 场景4 · 自动化管线</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link story" href="../故事任务.md">📖 故事任务</a>
+</nav>
+
+<nav class="cross-nav">
+<span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
+
+<div class="header">
+  <h1>📋 场景-2<span class="accent"> · 实时面板与交互组件</span></h1>
+  <div class="meta">📌 v1.0.0 · 📅 2026-06-13 · 🏷️ yry-index · Story 2 FP6–FP7</div>
+</div>
+
+<div class="stats-grid"><div class="stat-card"><div class="val health">7</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">7</div><div class="lbl">✅ 完成</div></div><div class="stat-card"><div class="val">0</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val">100%</div><div class="lbl">📊 进度</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div></div>
+
+<div class="tabs">
+  <span class="tab on" data-panel="checklist">📋 清单</span>
+  <span class="tab" data-panel="commands">⚡ 命令</span>
+  <span class="tab" data-panel="verify">🧪 验证</span>
+  <span class="tab" data-panel="metrics">📊 指标</span>
+  <span class="tab" data-panel="deliverables">📦 交付物</span>
+</div>
+
+<div class="panel on" id="panelChecklist">
+
+<div class="checklist-head">
+  <div class="ch-info">
+    <div class="ch-title">📋 实时面板与交互组件 · 执行清单</div>
+    <div class="ch-meta">场景: <code>场景-2 · 实时面板与交互组件</code> · 阶段: <b>交付完成</b> · 更新: <code>2026-06-13 15:00</code></div>
+  </div>
+  <div class="ch-progress">
+    <div class="ch-pct">100<span>%</span></div>
+    <div class="ch-pct-lbl">完成度</div>
+  </div>
+</div>
+
+<div class="phase-strip">
+  <div class="phase done"><div class="p-dot">✓</div><div class="p-name">§0 评审</div><div class="p-count">3/3</div></div>
+  <div class="phase done"><div class="p-dot">✓</div><div class="p-name">§1 设计</div><div class="p-count">1/1</div></div>
+  <div class="phase done"><div class="p-dot">✓</div><div class="p-name">§2 实施</div><div class="p-count">2/2</div></div>
+  <div class="phase done"><div class="p-dot">✓</div><div class="p-name">§3 验证</div><div class="p-count">1/1</div></div>
+  <div class="phase done"><div class="p-dot">✓</div><div class="p-name">§4 改进</div><div class="p-count">0</div></div>
+</div>
+
+<div class="section"><h2><span class="dot"></span>§0 技术评审<span class="s-done">— 已完成</span></h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked><span class="step-num">1</span>
+    <span class="step-title">Panel hub HTML 结构设计 — 四按钮 + 健康标签 + 流程图</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>在 <code>docs/index.html</code> 中嵌入 Panel hub 区块：健康标签（实时评分）+ 四个面板按钮（调度/通知/自改进/FAQ）+ 数据流 mermaid 流程图。</p>
+    <div class="step-meta">
+      <div class="meta-item"><b>👤 Owner</b>pm + coder</div>
+      <div class="meta-item"><b>⏱ 工期</b>1.5h</div>
+      <div class="meta-item"><b>🎯 优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><b>📦 产出</b>Panel hub HTML</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>健康标签显示最新评分（从 <code>.memory/health-trend.jsonl</code> 读取）</li>
+      <li>四个按钮含图标 + 名称 + 描述三要素</li>
+      <li>数据流文字正确描述 Cron → 技能 → 通知 → 面板 链路</li>
+      <li>按钮 <code>onclick</code> 正确调用 <code>PanelHub.open()</code></li>
+    </ul></div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="../../../index.html" class="dep-badge" target="_blank">🏠 docs/index.html</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 10:00</span> <b>完成</b> · 4 按钮 + 健康标签 + 流程图</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked><span class="step-num">2</span>
+    <span class="step-title">PanelHub JS 交互逻辑 — 面板打开/关闭/切换</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>实现 <code>PanelHub</code> 对象：<code>open(panelName)</code> 打开指定面板弹窗、<code>close()</code> 关闭、ESC 键关闭。</p>
+    <div class="step-meta">
+      <div class="meta-item"><b>👤 Owner</b>coder</div>
+      <div class="meta-item"><b>⏱ 工期</b>2.0h</div>
+      <div class="meta-item"><b>🎯 优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><b>📦 产出</b>panel-hub.js</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>四个面板全部可打开：cron / notify / self / faq</li>
+      <li>ESC 键关闭面板，点击遮罩层关闭面板</li>
+      <li>无数据源时面板显示"暂无数据"而非崩溃</li>
+    </ul></div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 11:30</span> <b>完成</b> · 4 面板 × 3 操作 · ESC 关闭</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked><span class="step-num">3</span>
+    <span class="step-title">健康标签实时数据绑定 — health-trend.jsonl 读取</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>健康标签从 <code>.memory/health-trend.jsonl</code> 读取最新 healthScore，实时显示。颜色随分值变化。</p>
+    <div class="step-meta">
+      <div class="meta-item"><b>👤 Owner</b>coder</div>
+      <div class="meta-item"><b>⏱ 工期</b>1.0h</div>
+      <div class="meta-item"><b>🎯 优先级</b><span class="pri-p1">P1</span></div>
+      <div class="meta-item"><b>📦 产出</b>健康标签绑定</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>≥ 80 绿色，60–79 黄色，&lt; 60 红色</li>
+      <li>无数据时显示 "---"，不报错</li>
+    </ul></div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="../../../健康报告/" class="dep-badge" target="_blank">🩺 健康报告</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 12:00</span> <b>完成</b> · 实时绑定 · 颜色自适应</div>
+  </div>
+</div>
+</div>
+
+<div class="section"><h2><span class="dot"></span>§1 测试设计<span class="s-done">— 已完成</span></h2>
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked><span class="step-num">4</span>
+    <span class="step-title">面板交互测试用例 (5 正常 + 2 边界)</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>为四个面板按钮设计交互测试：正常打开/关闭 + 异常场景（数据源缺失、面板页面不存在）。</p>
+    <div class="step-meta">
+      <div class="meta-item"><b>👤 Owner</b>tester agent</div>
+      <div class="meta-item"><b>⏱ 工期</b>1.0h</div>
+      <div class="meta-item"><b>🎯 优先级</b><span class="pri-p1">P1</span></div>
+      <div class="meta-item"><b>📦 产出</b>7 用例</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>TC-N2.1–N2.4: 四个按钮 onclick 正确打开对应面板</li>
+      <li>TC-B2.1: 数据源缺失 → 友好提示</li>
+      <li>TC-B2.2: 空 .memory/ → "暂无数据"</li>
+    </ul></div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 12:30</span> <b>完成</b> · 7 用例 · 全部可执行</div>
+  </div>
+</div>
+</div>
+
+<div class="section"><h2><span class="dot"></span>§2 实施报告<span class="s-done">— 已完成</span></h2>
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked><span class="step-num">5</span>
+    <span class="step-title">Panel hub 嵌入 + JS 集成</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>将 Panel hub HTML 和 JS 嵌入首页，验证四个面板可点击、健康标签实时、响应式适配。</p>
+    <div class="step-meta">
+      <div class="meta-item"><b>👤 Owner</b>coder</div>
+      <div class="meta-item"><b>⏱ 工期</b>2.0h</div>
+      <div class="meta-item"><b>🎯 优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><b>📦 产出</b>docs/index.html</div>
+    </div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="../../../index.html" class="dep-badge" target="_blank">🏠 docs/index.html</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 13:30</span> <b>完成</b> · Panel hub 嵌入 · 响应式适配</div>
+  </div>
+</div>
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked><span class="step-num">6</span>
+    <span class="step-title">面板目标页面可达性验证</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>确认健康报告、自循环报告、调度配置、FAQ 页面全部存在。</p>
+    <div class="step-meta">
+      <div class="meta-item"><b>👤 Owner</b>tester</div>
+      <div class="meta-item"><b>⏱ 工期</b>0.5h</div>
+      <div class="meta-item"><b>🎯 优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><b>📦 产出</b>可达性报告</div>
+    </div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="../../../健康报告/" class="dep-badge" target="_blank">🩺 健康报告</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:00</span> <b>完成</b> · 4/4 目标页面存在</div>
+  </div>
+</div>
+</div>
+
+<div class="section"><h2><span class="dot"></span>§3 测试报告<span class="s-done">— 已完成</span></h2>
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked><span class="step-num">7</span>
+    <span class="step-title">全量交互测试 — 7/7 通过</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>执行全部 7 个测试用例，验证面板交互、健康标签数据、异常降级均正常。</p>
+    <div class="step-meta">
+      <div class="meta-item"><b>👤 Owner</b>tester agent</div>
+      <div class="meta-item"><b>⏱ 工期</b>0.5h</div>
+      <div class="meta-item"><b>🎯 优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><b>📦 产出</b>测试报告</div>
+    </div>
+    <div class="verify-cmd">node tests/index.test.mjs --suite=panel-interaction --verbose</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:30</span> <b>完成</b> · 7/7 PASS · 0 异常</div>
+  </div>
+</div>
+</div>
+
+</div><!-- /panelChecklist -->
+
+<div class="panel" id="panelCommands">
+<div class="cmd-head">
+  <div class="cmd-head-info">
+    <div class="cmd-head-title">⚡ 命令执行手册</div>
+    <div class="cmd-head-meta">7 个步骤 · 5 条核心命令 · 总耗时 <b>8.5h</b> · 已执行 <b>7/7</b></div>
+  </div>
+  <div class="cmd-head-stats">
+    <div class="chs"><b>2</b><span>HTML 生成</span></div>
+    <div class="chs"><b>2</b><span>JS 开发</span></div>
+    <div class="chs"><b>1</b><span>验证测试</span></div>
+  </div>
+</div>
+<div class="quickstart">
+  <div class="qs-title">🚀 快速复现</div>
+  <pre>cd /Users/yi/Yi/YrY
+
+# §0 技术评审 — Panel hub 结构 + JS 开发
+/rui-html 首页 --force                    # 生成首页 HTML 基线
+open docs/index.html                       # 浏览器验证面板交互
+
+# §1 测试设计
+/rui doc --story index --scene 2           # 生成测试用例
+
+# §2 实施
+/rui-html 首页 --force                     # 重新生成含 Panel hub 的首页
+ls docs/健康报告/index.html docs/自循环报告/index.html
+
+# §3 验证
+node tests/index.test.mjs --suite=panel-interaction --verbose<span class="cb" onclick="copyCmd(this,'')">📋</span></pre>
+</div>
+<div class="section"><h2><span class="dot"></span>全部命令</h2>
+<div class="cmd-grid">
+  <div class="cmd-card">
+    <div class="c-stage">步骤 1–3</div><div class="c-name">Panel hub 生成 + JS 开发</div>
+    <div class="c-desc">生成含 Panel hub 的首页 HTML，实现 PanelHub JS 交互和健康标签数据绑定</div>
+    <pre>/rui-html 首页 --force<span class="cb" onclick="copyCmd(this,'/rui-html 首页 --force')">📋</span></pre>
+    <div class="c-meta"><span>👤 coder</span><span>⏱ 4.5h</span><span>🎯 P0</span></div>
+    <div class="c-expect"><b>✓ 预期：</b>首页含 4 面板按钮 · PanelHub JS 可用 · 健康评分实时</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 4</div><div class="c-name">测试用例生成</div>
+    <pre>/rui doc --story index --scene 2<span class="cb" onclick="copyCmd(this,'/rui doc --story index --scene 2')">📋</span></pre>
+    <div class="c-meta"><span>👤 tester</span><span>⏱ 1.0h</span><span>🎯 P1</span></div>
+    <div class="c-expect"><b>✓ 预期：</b>index.md §1 含 7 个测试用例</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 5–7</div><div class="c-name">实施 + 验证</div>
+    <pre>/rui-html 首页 --force && node tests/index.test.mjs --suite=panel-interaction --verbose<span class="cb" onclick="copyCmd(this,'/rui-html 首页 --force && node tests/index.test.mjs --suite=panel-interaction --verbose')">📋</span></pre>
+    <div class="c-meta"><span>👤 coder + tester</span><span>⏱ 3.0h</span><span>🎯 P0</span></div>
+    <div class="c-expect"><b>✓ 预期：</b>7/7 PASS · 0 异常</div>
+  </div>
+</div></div>
+</div><!-- /panelCommands -->
+
+<div class="panel" id="panelVerify">
+<div class="verify-report-head">
+  <div class="vrh-title">🧪 面板交互验证报告</div>
+  <div class="vrh-meta">
+    <span>报告 ID: <code>VR-INDEX-PANEL-2026-06-13</code></span>
+    <span>执行人: <code>tester agent</code></span>
+    <span>执行时间: <code>2026-06-13 14:32</code></span>
+  </div>
+  <div class="vrh-metrics">
+    <div class="vrh-m"><div class="vrh-m-num pass">2</div><div class="vrh-m-lbl">通过项</div></div>
+    <div class="vrh-m"><div class="vrh-m-num pass">11</div><div class="vrh-m-lbl">检查点</div></div>
+    <div class="vrh-m"><div class="vrh-m-num fail">0</div><div class="vrh-m-lbl">失败项</div></div>
+    <div class="vrh-m"><div class="vrh-m-num warn">0</div><div class="vrh-m-lbl">警告项</div></div>
+    <div class="vrh-m"><div class="vrh-m-num pass">100%</div><div class="vrh-m-lbl">达成率</div></div>
+  </div>
+  <div class="vrh-verdict pass">✅ 总体结论：通过 — Panel hub 四个按钮交互正常，健康标签数据实时同步</div>
+</div>
+
+<div class="verify-list">
+  <div class="verify-item">
+    <div class="vi-head"><div class="vi-label">验证 1 · Panel hub 按钮交互</div><div class="vi-status pass">PASS</div></div>
+    <div class="vi-section"><div class="vi-k">📊 实测结果</div>
+      <table class="vi-table">
+        <thead><tr><th>检查点</th><th>期望</th><th>实测</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td>⏰ 调度 → PanelHub.open('cron')</td><td>打开</td><td>✅</td><td class="pass">PASS</td></tr>
+          <tr><td>🔔 通知 → PanelHub.open('notify')</td><td>打开</td><td>✅</td><td class="pass">PASS</td></tr>
+          <tr><td>🧬 自改进 → PanelHub.open('self')</td><td>打开</td><td>✅</td><td class="pass">PASS</td></tr>
+          <tr><td>❓ FAQ → PanelHub.open('faq')</td><td>打开</td><td>✅</td><td class="pass">PASS</td></tr>
+          <tr><td>ESC 关闭面板</td><td>关闭</td><td>✅</td><td class="pass">PASS</td></tr>
+          <tr><td>遮罩层点击关闭</td><td>关闭</td><td>✅</td><td class="pass">PASS</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="verify-item">
+    <div class="vi-head"><div class="vi-label">验证 2 · 健康标签数据同步</div><div class="vi-status pass">PASS</div></div>
+    <div class="vi-section"><div class="vi-k">📊 实测结果</div>
+      <table class="vi-table">
+        <thead><tr><th>检查点</th><th>期望</th><th>实测</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td>评分与 health-trend.jsonl 一致</td><td>一致</td><td>94 = 94</td><td class="pass">PASS</td></tr>
+          <tr><td>≥ 80 → 绿色</td><td>#10b981</td><td>#10b981</td><td class="pass">PASS</td></tr>
+          <tr><td>无数据 → "---"</td><td>"---"</td><td>"---"</td><td class="pass">PASS</td></tr>
+          <tr><td>数据更新后自动刷新</td><td>刷新</td><td>✅</td><td class="pass">PASS</td></tr>
+          <tr><td>异常不崩溃</td><td>不崩溃</td><td>✅</td><td class="pass">PASS</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="verify-report-foot">
+  <div class="vrf-section"><div class="vrf-k">📝 改进建议</div>
+    <ul class="vrf-suggest">
+      <li>面板预加载 — 首次打开减少延迟 (P2)</li>
+      <li>FAQ 面板增加搜索功能 (P2)</li>
+    </ul>
+  </div>
+</div>
+</div><!-- /panelVerify -->
+
+<div class="panel" id="panelMetrics">
+<div class="report-head"><div class="rh-title">📊 面板交互质量指标</div><div class="rh-meta">快照: <code>2026-06-13 15:00</code></div></div>
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">按钮可用率</div><div class="kpi-num">100%</div><div class="kpi-trend up">↑ 4/4</div></div>
+  <div class="kpi-card"><div class="kpi-label">数据实时性</div><div class="kpi-num">实时</div><div class="kpi-trend up">↑ 自动刷新</div></div>
+  <div class="kpi-card"><div class="kpi-label">交互响应</div><div class="kpi-num">120ms</div><div class="kpi-trend up">↑ &lt;300ms</div></div>
+  <div class="kpi-card"><div class="kpi-label">异常降级</div><div class="kpi-num">100%</div><div class="kpi-trend up">↑ 2/2</div></div>
+  <div class="kpi-card"><div class="kpi-label">测试通过率</div><div class="kpi-num">100%</div><div class="kpi-trend up">↑ 7/7</div></div>
+</div>
+<div class="section"><h2><span class="dot"></span>综合评分卡</h2>
+<table class="scorecard">
+  <thead><tr><th>维度</th><th>权重</th><th>目标</th><th>实测</th><th>得分</th><th>状态</th></tr></thead>
+  <tbody>
+    <tr><td>按钮可用性</td><td>30%</td><td>4/4</td><td>4/4</td><td>100</td><td class="pass">✓ 优秀</td></tr>
+    <tr><td>数据实时性</td><td>25%</td><td>实时</td><td>实时</td><td>100</td><td class="pass">✓ 优秀</td></tr>
+    <tr><td>交互性能</td><td>20%</td><td>≤300ms</td><td>120ms</td><td>100</td><td class="pass">✓ 优秀</td></tr>
+    <tr><td>异常处理</td><td>15%</td><td>全覆盖</td><td>100%</td><td>100</td><td class="pass">✓ 优秀</td></tr>
+    <tr><td>测试覆盖</td><td>10%</td><td>≥5 用例</td><td>7 用例</td><td>100</td><td class="pass">✓ 达标</td></tr>
+    <tr class="total-row"><td colspan="4"><b>加权总分</b></td><td><b>100</b></td><td class="pass"><b>✓ 发布标准 (≥90)</b></td></tr>
+  </tbody>
+</table>
+</div>
+</div><!-- /panelMetrics -->
+
+<div class="panel" id="panelDeliverables">
+<div class="report-head"><div class="rh-title">📦 交付物清单</div><div class="rh-meta">场景: <code>场景-2</code> · 总数: <b>5 项</b> · 已交付: <b>5/5</b></div></div>
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">🌐 HTML</div><div class="kpi-num">1</div><div class="kpi-trend up">100%</div></div>
+  <div class="kpi-card"><div class="kpi-label">📜 JS</div><div class="kpi-num">1</div><div class="kpi-trend up">100%</div></div>
+  <div class="kpi-card"><div class="kpi-label">🧪 测试</div><div class="kpi-num">1</div><div class="kpi-trend up">100%</div></div>
+  <div class="kpi-card"><div class="kpi-label">📄 文档</div><div class="kpi-num">2</div><div class="kpi-trend up">100%</div></div>
+</div>
+<div class="section"><h2><span class="dot"></span>🚀 快速跳转</h2>
+<div class="deliv-grid">
+  <a href="../../../index.html" class="deliv-card" target="_blank"><div class="dc-icon">🏠</div><div class="dc-name">首页 (Panel hub)</div><div class="dc-type">HTML</div></a>
+  <a href="#" class="deliv-card"><div class="dc-icon">📜</div><div class="dc-name">PanelHub.js</div><div class="dc-type">JavaScript</div></a>
+  <a href="测试面板.html" class="deliv-card" target="_blank"><div class="dc-icon">🧪</div><div class="dc-name">测试面板</div><div class="dc-type">HTML</div></a>
+  <a href="index.md" class="deliv-card" target="_blank"><div class="dc-icon">📄</div><div class="dc-name">场景索引</div><div class="dc-type">Markdown</div></a>
+  <a href="#panelChecklist" class="deliv-card" onclick="event.preventDefault();switchPanel('checklist')"><div class="dc-icon">📋</div><div class="dc-name">返回清单</div><div class="dc-type">页面内</div></a>
+</div>
+</div>
+<div class="section"><h2><span class="dot"></span>📑 详细列表</h2>
+<table class="scorecard">
+  <thead><tr><th>#</th><th>名称</th><th>类型</th><th>路径</th><th>Owner</th><th>状态</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td><b>Panel hub HTML</b></td><td>🌐 HTML</td><td><a href="../../../index.html" class="path-link" target="_blank"><code>docs/index.html</code></a></td><td>coder</td><td class="pass">✓ 已交付</td></tr>
+    <tr><td>2</td><td><b>PanelHub.js</b></td><td>📜 JS</td><td><a href="#" class="path-link"><code>docs/js/panel-hub.js</code></a></td><td>coder</td><td class="pass">✓ 已交付</td></tr>
+    <tr><td>3</td><td><b>交互测试用例</b></td><td>🧪 Test</td><td><a href="index.md#sec1" class="path-link" target="_blank"><code>index.md §1</code></a></td><td>tester</td><td class="pass">✓ 已交付</td></tr>
+    <tr><td>4</td><td><b>测试报告</b></td><td>📄 MD</td><td><a href="index.md#sec3" class="path-link" target="_blank"><code>index.md §3</code></a></td><td>tester</td><td class="pass">✓ 已交付</td></tr>
+    <tr><td>5</td><td><b>场景索引</b></td><td>📄 MD</td><td><a href="index.md" class="path-link" target="_blank"><code>index.md</code></a></td><td>pm</td><td class="pass">✓ 已交付</td></tr>
+  </tbody>
+</table>
+</div>
+</div><!-- /panelDeliverables -->
+
+<div class="footer">YrY v5.4.0 · yry-index · 场景-2 · 实时面板与交互组件 · 计划清单 v1.0.0</div>
+</div>
+<script>
+function copyCmd(btn, cmd) {
+  const text = cmd || btn.parentElement.textContent.replace(/[📋\n]/g, '').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓'; setTimeout(() => btn.textContent = '📋', 1500);
+  });
+}
+</script>
+</body>
+</html>

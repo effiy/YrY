@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>实时面板 — 源码</title>
+<link rel="stylesheet" href="../../../../cdn/fonts.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#020617;--card:rgba(15,23,42,.5);--card2:rgba(15,23,42,.8);--border:#1e293b;--border2:#334155;--text:#fff;--text2:#94a3b8;--text3:#64748b;--cyan:#22d3ee;--emerald:#34d399;--violet:#a78bfa;--amber:#fbbf24;--rose:#fb7185;--blue:#3B82F6}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);min-height:100vh;padding:2rem;color:var(--text);background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(34,211,238,.08),transparent);background-attachment:fixed}
+.container{max-width:1240px;margin:0 auto}.header{margin-bottom:1.25rem}
+.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
+.pulse-dot{width:12px;height:12px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+h1{font-size:1.5rem;font-weight:700}.subtitle{color:var(--text2);font-size:.85rem;margin-left:1.75rem}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none}.breadcrumb a:hover{color:var(--amber)}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5}.breadcrumb .bc-current{color:var(--text2);font-weight:500}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap}
+.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px}
+.cross-link:hover{color:var(--amber)}.cross-link.on{color:var(--amber);font-weight:600}
+.cross-sep{color:#475569;font-size:0.5rem;opacity:0.35}
+.src-table{width:100%;border-collapse:collapse;font-size:.72rem;margin-bottom:1.25rem}
+.src-table th,.src-table td{padding:.6rem .75rem;text-align:left;border-bottom:1px solid var(--border)}
+.src-table th{font-size:.62rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);font-weight:600;background:rgba(0,0,0,.2)}
+.src-table tbody tr:hover{background:rgba(34,211,238,.04)}
+.src-table td:first-child{font-weight:600;color:var(--cyan);white-space:nowrap}
+.src-table code{background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:3px;padding:1px 4px;font-size:.66rem;color:var(--cyan)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:.85rem}
+.card{background:var(--card);border-radius:.75rem;border:1px solid var(--border);padding:1.1rem 1.2rem}
+.card h3{font-size:.82rem;font-weight:600;margin-bottom:.5rem}
+.card ul{list-style:none;color:var(--text2);font-size:.72rem;line-height:1.55}
+.card li{padding-left:.85rem;position:relative}
+.card li::before{content:'▸';position:absolute;left:0;color:var(--cyan);font-size:.7rem}
+.footer{text-align:center;color:var(--text3);font-size:.72rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)}
+</style></head><body><div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-index · 场景 2</span><span class="bc-sep">/</span><span class="bc-current">📄 源码</span></nav>
+<nav class="cross-nav"><a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span><a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span><a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span><span class="cross-link on">📄 源码</span><span class="cross-sep">·</span><a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span><a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span><a class="cross-link" href="审查.html">📝 审计</a></nav>
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>实时面板与交互组件 — 源码</h1></div><p class="subtitle">4 面板按钮 · PanelHub API · 5 数据源</p></div>
+<table class="src-table">
+<thead><tr><th>节点 ID</th><th>文件路径</th><th>类型</th><th>关键接口</th><th>逻辑摘要</th></tr></thead>
+<tbody>
+<tr><td>panel-hub-html</td><td><code>docs/index.html:52-76</code></td><td>html</td><td>Panel hub DOM</td><td>健康标签 + 四个按钮 + 数据流描述</td></tr>
+<tr><td>panel-js</td><td><code>docs/js/panel-hub.js</code></td><td>js</td><td>PanelHub.open(name)</td><td>面板打开/关闭/切换逻辑</td></tr>
+<tr><td>shared-js</td><td><code>yry-cdn-lib/shared.js</code></td><td>js</td><td>9 YrY.* API</td><td>PanelHub · Toast · 复制 · 切换</td></tr>
+<tr><td>cron-data</td><td><code>.claude/scheduled_tasks.json</code></td><td>json</td><td>定时任务配置</td><td>调度面板数据源</td></tr>
+<tr><td>health-report</td><td><code>docs/健康报告/index.html</code></td><td>html</td><td>健康报告主页</td><td>通知面板数据源</td></tr>
+<tr><td>health-trend</td><td><code>.memory/health-trend.jsonl</code></td><td>jsonl</td><td>健康趋势数据</td><td>自改进面板数据源</td></tr>
+</tbody>
+</table>
+<div class="cards">
+<div class="card"><h3>🔌 PanelHub.open() API</h3><ul>
+<li><b>open('cron')</b> — 读取 scheduled_tasks.json → 渲染调度面板</li>
+<li><b>open('notify')</b> — 读取健康/循环/趋势报告 → 渲染通知面板</li>
+<li><b>open('selfimprove')</b> — 读取 health-trend.jsonl → 渲染自改进面板</li>
+<li><b>open('faq')</b> — 渲染静态 FAQ 知识库</li>
+</ul></div>
+<div class="card"><h3>📊 数据流链路</h3><ul>
+<li>⏰ Cron 定时触发 → 技能执行 → 通知产出</li>
+<li>→ 🔔 通知面板展示（健康报告/自循环报告）</li>
+<li>→ .memory/ 写入数据（health-trend.jsonl）</li>
+<li>→ 🧬 自改进面板分析消费</li>
+</ul></div>
+</div>
+<div class="footer">YrY v5.3.0 · yry-index · 场景-2 · 源码 v1.0.0</div>
+</div></body></html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>实时面板 — 演示</title><link rel="stylesheet" href="../../../../cdn/fonts.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#020617;--card:rgba(15,23,42,.5);--border:#1e293b;--border2:#334155;--text:#fff;--text2:#94a3b8;--text3:#64748b;--cyan:#22d3ee;--emerald:#34d399;--violet:#a78bfa;--amber:#fbbf24;--rose:#fb7185}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);min-height:100vh;padding:2rem;color:var(--text);background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(34,211,238,.08),transparent);background-attachment:fixed}
+.container{max-width:1240px;margin:0 auto}.header{margin-bottom:1.25rem}
+.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
+.pulse-dot{width:12px;height:12px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+h1{font-size:1.5rem;font-weight:700}.subtitle{color:var(--text2);font-size:.85rem;margin-left:1.75rem}
+.breadcrumb,.cross-nav{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none}.breadcrumb a:hover{color:var(--amber)}
+.breadcrumb .bc-sep,.cross-nav .cross-sep{color:#53576c;opacity:0.5}.breadcrumb .bc-current{color:var(--text2);font-weight:500}
+.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px}
+.cross-link:hover{color:var(--amber)}.cross-link.on{color:var(--amber);font-weight:600}
+.demo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:.85rem}
+.demo-card{background:var(--card);border-radius:.75rem;border:1px solid var(--border);padding:1.1rem 1.2rem;transition:all .2s}
+.demo-card:hover{border-color:var(--border2);background:rgba(15,23,42,.8)}
+.demo-card h3{font-size:.82rem;font-weight:600;margin-bottom:.5rem}
+.demo-card .demo-cmd{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:.5rem;padding:.75rem;font-size:.68rem;color:var(--cyan);line-height:1.6;margin-bottom:.5rem}
+.demo-card .demo-output{font-size:.65rem;color:var(--emerald);line-height:1.5}
+.footer{text-align:center;color:var(--text3);font-size:.72rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)}
+</style></head><body><div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-index · 场景 2 · 💡 演示</span></nav>
+<nav class="cross-nav"><a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span><a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span><a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span><a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span><a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span><span class="cross-link on">💡 演示</span><span class="cross-sep">·</span><a class="cross-link" href="审查.html">📝 审计</a></nav>
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>实时面板与交互组件 — 演示</h1></div><p class="subtitle">Panel hub 四个面板按钮 · 数据流可视化</p></div>
+<div class="demo-grid">
+<div class="demo-card"><h3>⏰ 调度面板</h3><div class="demo-cmd">&lt;button onclick="PanelHub.open('cron')"&gt;⏰ 调度 · 定时·触发·编排&lt;/button&gt;</div><div class="demo-output">→ 读取 .claude/scheduled_tasks.json → 渲染 cron 表达式列表</div></div>
+<div class="demo-card"><h3>🔔 通知面板</h3><div class="demo-cmd">&lt;button onclick="PanelHub.open('notify')"&gt;🔔 通知 · 健康·循环·趋势&lt;/button&gt;</div><div class="demo-output">→ 读取健康报告/自循环报告 → 按日期展示最新通知</div></div>
+<div class="demo-card"><h3>🧬 自改进面板</h3><div class="demo-cmd">&lt;button onclick="PanelHub.open('selfimprove')"&gt;🧬 自改进 · 趋势·诊断·评估&lt;/button&gt;</div><div class="demo-output">→ 读取 .memory/health-trend.jsonl → 日/周/月/全景四视角</div></div>
+<div class="demo-card"><h3>❓ FAQ 面板</h3><div class="demo-cmd">&lt;button onclick="PanelHub.open('faq')"&gt;❓ FAQ · 知识·指南·解惑&lt;/button&gt;</div><div class="demo-output">→ 渲染静态 FAQ 知识库 → YrY 概念 · 命令使用 · 面板关系</div></div>
+</div>
+<div class="footer">YrY v5.3.0 · yry-index · 场景-2 · 演示 v1.0.0</div>
+</div></body></html>

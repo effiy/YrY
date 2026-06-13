@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>交叉导航 — 源码</title><link rel="stylesheet" href="../../../../cdn/fonts.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#020617;--card:rgba(15,23,42,.5);--border:#1e293b;--border2:#334155;--text:#fff;--text2:#94a3b8;--text3:#64748b;--cyan:#22d3ee;--emerald:#34d399;--amber:#fbbf24}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);min-height:100vh;padding:2rem;color:var(--text);background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(34,211,238,.08),transparent);background-attachment:fixed}
+.container{max-width:1240px;margin:0 auto}.header{margin-bottom:1.25rem}
+.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
+.pulse-dot{width:12px;height:12px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+h1{font-size:1.5rem;font-weight:700}.subtitle{color:var(--text2);font-size:.85rem;margin-left:1.75rem}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none}.breadcrumb a:hover{color:var(--amber)}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5}.breadcrumb .bc-current{color:var(--text2);font-weight:500}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap}
+.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px}
+.cross-link:hover{color:var(--amber)}.cross-link.on{color:var(--amber);font-weight:600}
+.cross-sep{color:#475569;font-size:0.5rem;opacity:0.35}
+.src-table{width:100%;border-collapse:collapse;font-size:.72rem;margin-bottom:1.25rem}
+.src-table th,.src-table td{padding:.6rem .75rem;text-align:left;border-bottom:1px solid var(--border)}
+.src-table th{font-size:.62rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);font-weight:600;background:rgba(0,0,0,.2)}
+.src-table tbody tr:hover{background:rgba(34,211,238,.04)}
+.src-table td:first-child{font-weight:600;color:var(--cyan)}.src-table code{background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:3px;padding:1px 4px;font-size:.66rem;color:var(--cyan)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:.85rem}
+.card{background:var(--card);border-radius:.75rem;border:1px solid var(--border);padding:1.1rem 1.2rem}
+.card h3{font-size:.82rem;font-weight:600;margin-bottom:.5rem}
+.card table{width:100%;font-size:.7rem;color:var(--text2);line-height:1.6}
+.card table td:first-child{color:var(--cyan)}
+.footer{text-align:center;color:var(--text3);font-size:.72rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)}
+</style></head><body><div class="container">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-index · 场景 3</span><span class="bc-sep">/</span><span class="bc-current">📄 源码</span></nav>
+<nav class="cross-nav"><a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span><a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span><a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span><span class="cross-link on">📄 源码</span><span class="cross-sep">·</span><a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span><a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span><a class="cross-link" href="审查.html">📝 审计</a></nav>
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>交叉导航与可访问性 — 源码</h1></div><p class="subtitle">breadcrumb · cross-nav · 6层 anchor · 响应式 CSS</p></div>
+<table class="src-table">
+<thead><tr><th>节点 ID</th><th>文件路径</th><th>类型</th><th>行数</th><th>关键内容</th></tr></thead>
+<tbody>
+<tr><td>breadcrumb</td><td><code>docs/index.html:15-17</code></td><td>html</td><td>3</td><td>当前位置：文档中心</td></tr>
+<tr><td>cross-nav</td><td><code>docs/index.html:34-50</code></td><td>html</td><td>16</td><td>9 个交叉导航链接：自检中心·演示中心·健康报告·自循环报告·趋势报告·自我改进·CLAUDE·README</td></tr>
+<tr><td>layer-anchors</td><td><code>docs/index.html:78,252,452,554,762,905</code></td><td>html</td><td>—</td><td>6 个 id: layer-deps, layer-skills, layer-story, layer-scene, layer-agents, layer-rules</td></tr>
+<tr><td>responsive-css</td><td><code>docs/css/index.css</code></td><td>css</td><td>~20</td><td>@media max-width:720px — 4列→2列统计卡片</td></tr>
+<tr><td>theme-css</td><td><code>yry-cdn-lib/theme.css</code></td><td>css</td><td>~300</td><td>14 设计令牌 · 双主题系统（Mono + System）</td></tr>
+</tbody>
+</table>
+<div class="cards">
+<div class="card"><h3>🔗 交叉导航链接清单</h3><table>
+<tr><td>🧪 自检中心</td><td><code>../tests/index.html</code></td></tr>
+<tr><td>🎬 演示中心</td><td><code>./故事任务面板/架构/演示/index.html</code></td></tr>
+<tr><td>🩺 健康报告</td><td><code>./健康报告/index.html</code></td></tr>
+<tr><td>🔄 自循环报告</td><td><code>./自循环报告/index.html</code></td></tr>
+<tr><td>📡 趋势报告</td><td><code>./趋势报告/index.html</code></td></tr>
+<tr><td>🧬 自我改进</td><td><code>./自我改进/index.html</code></td></tr>
+<tr><td>📜 CLAUDE.md</td><td><code>../CLAUDE.md</code> (target=_blank)</td></tr>
+<tr><td>📖 README.md</td><td><code>../README.md</code> (target=_blank)</td></tr>
+</table></div>
+<div class="card"><h3>📱 响应式断点</h3><table>
+<tr><td>桌面端</td><td>> 720px — 4 列统计卡片 · 完整布局</td></tr>
+<tr><td>移动端</td><td>≤ 720px — 2 列统计卡片 · 场景网格自适应</td></tr>
+</table></div>
+</div>
+<div class="footer">YrY v5.3.0 · yry-index · 场景-3 · 源码 v1.0.0</div>
+</div></body></html>

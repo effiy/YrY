@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>数据采集与六层聚合 — 架构图</title>
+<link rel="stylesheet" href="../../../../cdn/fonts.css">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#020617; --card:rgba(15,23,42,.5); --card2:rgba(15,23,42,.8);
+  --border:#1e293b; --border2:#334155; --text:#fff; --text2:#94a3b8; --text3:#64748b;
+  --cyan:#22d3ee; --emerald:#34d399; --violet:#a78bfa; --amber:#fbbf24; --rose:#fb7185; --blue:#3B82F6;
+}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);min-height:100vh;padding:2rem;color:var(--text);background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(34,211,238,.08),transparent);background-attachment:fixed}
+.container{max-width:1240px;margin:0 auto}
+.header{margin-bottom:1.25rem;animation:fadeInDown .5s ease both}
+.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem;flex-wrap:wrap}
+.pulse-dot{width:12px;height:12px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite;box-shadow:0 0 12px rgba(34,211,238,.6)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+h1{font-size:1.5rem;font-weight:700;letter-spacing:-.01em}
+.subtitle{color:var(--text2);font-size:.85rem;margin-left:1.75rem}
+.toolbar{display:flex;gap:.5rem;margin-left:auto;flex-shrink:0;align-items:center}
+.toolbar-toggle{background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem;transition:all .15s}
+.toolbar-toggle:hover{color:var(--text2);background:rgba(30,41,59,.5)}
+.toolbar-actions{display:none;gap:.5rem}
+.toolbar.expanded .toolbar-actions{display:flex}
+.toolbar-actions button{background:rgba(30,41,59,.8);border:1px solid var(--border2);color:var(--text2);padding:.375rem .75rem;border-radius:.375rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.toolbar-actions button:hover{background:rgba(51,65,85,.8);color:#fff;border-color:#475569}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:var(--amber);text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:var(--text2);font-weight:500}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
+.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
+.cross-link:hover{color:var(--amber);background:rgba(251,191,36,0.06)}
+.cross-link.on{color:var(--amber);font-weight:600;cursor:default}
+.cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:1.25rem;animation:fadeInUp .5s .2s ease both}
+.stat-strip .ss{background:var(--card);border:1px solid var(--border);border-radius:.5rem;padding:.5rem .75rem;display:flex;align-items:center;gap:.5rem;transition:all .2s}
+.stat-strip .ss:hover{border-color:var(--border2);background:var(--card2);transform:translateY(-1px)}
+.stat-strip .ss .ss-ico{font-size:1rem;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;flex-shrink:0}
+.stat-strip .ss .ss-body{flex:1;min-width:0}
+.stat-strip .ss .ss-val{font-size:1.05rem;font-weight:700;line-height:1.1}
+.stat-strip .ss .ss-lbl{font-size:.62rem;color:var(--text2);margin-top:1px;text-transform:uppercase;letter-spacing:.3px}
+@media(max-width:720px){.stat-strip{grid-template-columns:repeat(2,1fr)}}
+.tabs{display:flex;gap:.25rem;background:rgba(15,23,42,.4);border:1px solid var(--border);border-radius:.75rem;padding:.25rem;margin-bottom:1.25rem;overflow-x:auto;animation:fadeInDown .5s .25s ease both}
+.tab{padding:.55rem 1rem;cursor:pointer;font-size:.78rem;color:var(--text2);border-radius:.5rem;transition:all .2s;user-select:none;display:flex;align-items:center;gap:.4rem;white-space:nowrap}
+.tab:hover{color:var(--text);background:rgba(255,255,255,.03)}
+.tab.on{color:var(--bg);background:linear-gradient(135deg,var(--cyan),#0891b2);box-shadow:0 2px 8px rgba(34,211,238,.3);font-weight:600}
+.tab .tab-badge{font-size:.6rem;background:rgba(0,0,0,.25);padding:1px 5px;border-radius:6px;font-weight:600}
+.tab.on .tab-badge{background:rgba(0,0,0,.2);color:var(--bg)}
+.tab-panel{display:none;animation:fadeInUp .35s ease both}
+.tab-panel.on{display:block}
+.diagram-container{background:var(--card);border-radius:1rem;border:1px solid var(--border);padding:1.5rem;overflow-x:auto;margin-bottom:1.25rem;position:relative}
+.diagram-container::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.4}
+.diagram-container svg{width:100%;min-width:900px;display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:.85rem;margin-bottom:1.25rem}
+.card{background:var(--card);border-radius:.75rem;border:1px solid var(--border);padding:1.1rem 1.2rem;transition:all .2s;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--accent,var(--cyan));opacity:.6}
+.card:hover{border-color:var(--border2);background:var(--card2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.65rem}
+.card-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.card-dot.cyan{background:var(--cyan)}.card-dot.emerald{background:var(--emerald)}.card-dot.violet{background:var(--violet)}.card-dot.amber{background:var(--amber)}.card-dot.rose{background:var(--rose)}.card-dot.blue{background:var(--blue)}
+.card h3{font-size:.82rem;font-weight:600;letter-spacing:.01em}
+.card .card-sub{font-size:.62rem;color:var(--text3);margin-left:auto;text-transform:uppercase;letter-spacing:.5px}
+.card ul{list-style:none;color:var(--text2);font-size:.72rem;line-height:1.55}
+.card li{margin-bottom:.3rem;padding-left:.85rem;position:relative}
+.card li::before{content:'▸';position:absolute;left:0;color:var(--accent,var(--cyan));font-size:.7rem;line-height:1.55}
+.card li code{background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:3px;padding:1px 4px;font-size:.66rem;color:var(--cyan)}
+.card li b{color:var(--text);font-weight:600}
+.chip-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.65rem;padding-top:.55rem;border-top:1px dashed var(--border)}
+.chip{font-size:.6rem;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:3px;padding:2px 6px;color:var(--text2);font-weight:500}
+.chip.ok{color:var(--emerald);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.06)}
+.chip.warn{color:var(--amber);border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.06)}
+.chip.fail{color:var(--rose);border-color:rgba(251,113,133,.3);background:rgba(251,113,133,.06)}
+.chip.info{color:var(--cyan);border-color:rgba(34,211,238,.3);background:rgba(34,211,238,.06)}
+.gate-table{width:100%;border-collapse:collapse;margin-top:.5rem;font-size:.72rem}
+.gate-table th,.gate-table td{padding:.6rem .75rem;text-align:left;border-bottom:1px solid var(--border)}
+.gate-table th{font-size:.62rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);font-weight:600;background:rgba(0,0,0,.2)}
+.gate-table tbody tr{transition:background .15s}
+.gate-table tbody tr:hover{background:rgba(34,211,238,.04)}
+.gate-table td:first-child{font-weight:600;color:var(--cyan);white-space:nowrap}
+.banner{display:flex;align-items:center;gap:1rem;padding:.85rem 1.1rem;background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(167,139,250,.08));border:1px solid rgba(34,211,238,.2);border-radius:.75rem;margin-bottom:1.25rem;animation:fadeInDown .5s .3s ease both}
+.banner-icon{font-size:1.5rem;flex-shrink:0}
+.banner-text{flex:1;font-size:.75rem;color:var(--text2);line-height:1.55}
+.banner-text b{color:var(--text);font-weight:600}
+.banner-progress{font-size:.65rem;color:var(--cyan);font-weight:600;font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:4px;padding:4px 8px;white-space:nowrap}
+.footer{text-align:center;color:var(--text3);font-size:.72rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)}
+@media print{body{background:#020617;padding:1rem}.toolbar,.tabs{display:none!important}.tab-panel{display:block!important}.stat-strip,.banner{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="container" id="rc">
+<nav class="breadcrumb">
+<a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span>
+<span class="bc-current">yry-index · 文档中心首页</span><span class="bc-sep">/</span>
+<span class="bc-current">场景 1 · 数据采集与六层聚合</span><span class="bc-sep">/</span>
+<span class="bc-current">📐 架构图</span>
+</nav>
+<nav class="cross-nav">
+<a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+<span class="cross-link on">📐 架构</span><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
+<div class="header">
+<div class="header-row">
+<div class="pulse-dot"></div>
+<h1>数据采集与六层聚合 — 架构图</h1>
+<div class="toolbar">
+<div class="toolbar-actions">
+<button onclick="copyAsImage(this)">📋 Copy</button>
+<button onclick="downloadPNG(this)">🖼️ PNG</button>
+<button onclick="downloadPDF(this)">📄 PDF</button>
+</div>
+<button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button>
+</div>
+</div>
+<p class="subtitle">5 大资产源 · 5 步采集流程 · 6 层结构建模 · 3 项数据验证</p>
+</div>
+<div class="stat-strip">
+<div class="ss"><div class="ss-ico" style="background:rgba(34,211,238,.1);color:var(--cyan)">📦</div><div class="ss-body"><div class="ss-val">5</div><div class="ss-lbl">数据源目录</div></div></div>
+<div class="ss"><div class="ss-ico" style="background:rgba(167,139,250,.1);color:var(--violet)">🔍</div><div class="ss-body"><div class="ss-val">5 步</div><div class="ss-lbl">采集流程</div></div></div>
+<div class="ss"><div class="ss-ico" style="background:rgba(52,211,153,.1);color:var(--emerald)">📊</div><div class="ss-body"><div class="ss-val">6 层</div><div class="ss-lbl">页面结构</div></div></div>
+<div class="ss"><div class="ss-ico" style="background:rgba(251,191,36,.1);color:var(--amber)">✅</div><div class="ss-body"><div class="ss-val">3 项</div><div class="ss-lbl">验证门禁</div></div></div>
+</div>
+<div class="banner">
+<div class="banner-icon">📊</div>
+<div class="banner-text">
+<b>采集心智模型:</b> 遍历规约目录 → 提取 frontmatter 元数据 → 统计计数 → 六层结构建模 → 交叉引用验证。每个步骤都可追溯到具体的 <code>ls</code> / <code>grep</code> 命令。
+</div>
+<div class="banner-progress">FP1–FP5 / STORY-1</div>
+</div>
+<nav class="tabs" id="tabs">
+<div class="tab on" data-panel="scan">🔍 资产扫描<span class="tab-badge">5源</span></div>
+<div class="tab" data-panel="model">📊 六层模型<span class="tab-badge">6层</span></div>
+<div class="tab" data-panel="verify">✅ 验证门禁<span class="tab-badge">3项</span></div>
+</nav>
+<!-- Tab 1: 资产扫描 -->
+<section class="tab-panel on" id="panelScan">
+<div class="diagram-container">
+<svg viewBox="0 0 1100 350" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<pattern id="g" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width=".5"/></pattern>
+<marker id="arr-cyan" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#22d3ee"/></marker>
+<marker id="arr-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#3B82F6"/></marker>
+<linearGradient id="step-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22d3ee" stop-opacity=".15"/><stop offset="100%" stop-color="#22d3ee" stop-opacity=".02"/></linearGradient>
+</defs>
+<rect width="100%" height="100%" fill="url(#g)"/>
+<!-- Data sources row -->
+<rect x="30" y="15" width="1040" height="70" rx="8" fill="url(#step-grad)" stroke="#22d3ee" stroke-width="1" stroke-opacity=".4"/>
+<text x="50" y="35" fill="#22d3ee" font-size="10" font-weight="600">📦 数据源目录 · 5 大规约源</text>
+<rect x="52" y="45" width="178" height="30" rx="4" fill="rgba(59,130,246,.15)" stroke="#3B82F6" stroke-width="1"/><text x="141" y="64" fill="#cbd5e1" font-size="9" text-anchor="middle">skills/*/SKILL.md ×19</text>
+<rect x="242" y="45" width="178" height="30" rx="4" fill="rgba(139,92,246,.15)" stroke="#8B5CF6" stroke-width="1"/><text x="331" y="64" fill="#cbd5e1" font-size="9" text-anchor="middle">agents/*.md ×9</text>
+<rect x="432" y="45" width="178" height="30" rx="4" fill="rgba(52,211,153,.15)" stroke="#34d399" stroke-width="1"/><text x="521" y="64" fill="#cbd5e1" font-size="9" text-anchor="middle">rules/*.md ×16</text>
+<rect x="622" y="45" width="218" height="30" rx="4" fill="rgba(251,191,36,.15)" stroke="#fbbf24" stroke-width="1"/><text x="731" y="64" fill="#cbd5e1" font-size="9" text-anchor="middle">docs/故事任务面板/*/ ×5</text>
+<rect x="852" y="45" width="178" height="30" rx="4" fill="rgba(251,113,133,.15)" stroke="#fb7185" stroke-width="1"/><text x="941" y="64" fill="#cbd5e1" font-size="9" text-anchor="middle">package.json</text>
+
+<!-- Arrow down -->
+<line x1="550" y1="90" x2="550" y2="110" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arr-cyan)"/>
+
+<!-- Collect step -->
+<rect x="30" y="110" width="1040" height="80" rx="8" fill="rgba(34,211,238,.06)" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="50" y="132" fill="#22d3ee" font-size="10" font-weight="600">⚙️ 采集流程 · 5 步</text>
+<rect x="50" y="142" width="182" height="38" rx="4" fill="rgba(8,51,68,.4)" stroke="#22d3ee" stroke-width="1"/><circle cx="68" cy="161" r="8" fill="#22d3ee"/><text x="68" y="165" fill="#020617" font-size="8" font-weight="700" text-anchor="middle">1</text><text x="155" y="158" fill="white" font-size="9" font-weight="600" text-anchor="middle">扫描目录</text><text x="155" y="172" fill="#94a3b8" font-size="7" text-anchor="middle">readdir 遍历</text>
+<rect x="244" y="142" width="182" height="38" rx="4" fill="rgba(8,51,68,.4)" stroke="#22d3ee" stroke-width="1"/><circle cx="262" cy="161" r="8" fill="#22d3ee"/><text x="262" y="165" fill="#020617" font-size="8" font-weight="700" text-anchor="middle">2</text><text x="340" y="158" fill="white" font-size="9" font-weight="600" text-anchor="middle">解析 frontmatter</text><text x="340" y="172" fill="#94a3b8" font-size="7" text-anchor="middle">name/desc/version</text>
+<rect x="438" y="142" width="182" height="38" rx="4" fill="rgba(20,83,45,.3)" stroke="#34d399" stroke-width="1"/><circle cx="456" cy="161" r="8" fill="#34d399"/><text x="456" y="165" fill="#020617" font-size="8" font-weight="700" text-anchor="middle">3</text><text x="540" y="158" fill="white" font-size="9" font-weight="600" text-anchor="middle">统计计数</text><text x="540" y="172" fill="#94a3b8" font-size="7" text-anchor="middle">19·9·16·5·29</text>
+<rect x="632" y="142" width="182" height="38" rx="4" fill="rgba(120,53,15,.25)" stroke="#fbbf24" stroke-width="1"/><circle cx="650" cy="161" r="8" fill="#fbbf24"/><text x="650" y="165" fill="#020617" font-size="8" font-weight="700" text-anchor="middle">4</text><text x="728" y="158" fill="white" font-size="9" font-weight="600" text-anchor="middle">六层建模</text><text x="728" y="172" fill="#94a3b8" font-size="7" text-anchor="middle">L1→L6 层级映射</text>
+<rect x="826" y="142" width="182" height="38" rx="4" fill="rgba(131,24,67,.25)" stroke="#fb7185" stroke-width="1"/><circle cx="844" cy="161" r="8" fill="#fb7185"/><text x="844" y="165" fill="#020617" font-size="8" font-weight="700" text-anchor="middle">5</text><text x="920" y="158" fill="white" font-size="9" font-weight="600" text-anchor="middle">交叉验证</text><text x="920" y="172" fill="#94a3b8" font-size="7" text-anchor="middle">链接可达性检查</text>
+<line x1="232" y1="161" x2="244" y2="161" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arr-cyan)"/>
+<line x1="426" y1="161" x2="438" y2="161" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arr-cyan)"/>
+<line x1="620" y1="161" x2="632" y2="161" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr-cyan)"/>
+<line x1="814" y1="161" x2="826" y2="161" stroke="#fbbf24" stroke-width="1.5" marker-end="url(#arr-cyan)"/>
+
+<!-- Output arrow -->
+<line x1="550" y1="195" x2="550" y2="215" stroke="#3B82F6" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+
+<!-- Output model -->
+<rect x="30" y="215" width="1040" height="55" rx="8" fill="rgba(59,130,246,.06)" stroke="#3B82F6" stroke-width="1.5"/>
+<text x="50" y="237" fill="#3B82F6" font-size="10" font-weight="600">📊 输出: 六层资产模型</text>
+<text x="270" y="260" fill="#94a3b8" font-size="9">L1 依赖/框架 (12) · L2 技能 (19) · L3 故事 (5) · L4 场景 (29) · L5 Agent+规则 (25) · L6 参考入口 (9)</text>
+<text x="1030" y="260" fill="#3B82F6" font-size="8" font-weight="600" text-anchor="end">→ docs/index.html</text>
+
+<!-- Bottom: verification -->
+<rect x="30" y="285" width="1040" height="45" rx="6" fill="rgba(15,23,42,.4)" stroke="#1e293b" stroke-width="1"/>
+<text x="50" y="303" fill="#64748b" font-size="9">验证:</text>
+<text x="110" y="303" fill="#34d399" font-size="9">✅ ls skills/*/SKILL.md | wc -l → 19</text>
+<text x="380" y="303" fill="#34d399" font-size="9">✅ ls agents/*.md | grep -v AGENT | wc -l → 9</text>
+<text x="700" y="303" fill="#34d399" font-size="9">✅ ls rules/*.md | wc -l → 16</text>
+<text x="50" y="320" fill="#64748b" font-size="8">📎 每个计数可追溯到具体的 shell 命令（证据等级 A）</text>
+</svg>
+</div>
+</section>
+<!-- Tab 2: 六层模型 -->
+<section class="tab-panel" id="panelModel">
+<div class="diagram-container">
+<svg viewBox="0 0 1000 400" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<pattern id="g2" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width=".5"/></pattern>
+<marker id="arr-down" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#8B5CF6"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="url(#g2)"/>
+<text x="500" y="30" fill="#8B5CF6" font-size="11" font-weight="700" text-anchor="middle">六层页面结构模型</text>
+<!-- Layer 1 -->
+<rect x="60" y="50" width="880" height="42" rx="6" fill="rgba(34,211,238,.1)" stroke="#22d3ee" stroke-width="1.5"/><text x="80" y="75" fill="#22d3ee" font-size="10" font-weight="700">L1</text><text x="130" y="75" fill="white" font-size="10" font-weight="600">第三方依赖与框架</text><text x="800" y="75" fill="#94a3b8" font-size="8" text-anchor="end">6 运行时 + 6 开发 = 12 项</text>
+<line x1="500" y1="92" x2="500" y2="105" stroke="#8B5CF6" stroke-width="1" marker-end="url(#arr-down)"/>
+<!-- Layer 2 -->
+<rect x="60" y="108" width="880" height="42" rx="6" fill="rgba(59,130,246,.1)" stroke="#3B82F6" stroke-width="1.5"/><text x="80" y="133" fill="#3B82F6" font-size="10" font-weight="700">L2</text><text x="130" y="133" fill="white" font-size="10" font-weight="600">技能</text><text x="800" y="133" fill="#94a3b8" font-size="8" text-anchor="end">1 编排入口 + 7 管线 + 8 支撑 + 2 新增 = 19 项</text>
+<line x1="500" y1="150" x2="500" y2="163" stroke="#8B5CF6" stroke-width="1" marker-end="url(#arr-down)"/>
+<!-- Layer 3 -->
+<rect x="60" y="166" width="880" height="42" rx="6" fill="rgba(139,92,246,.1)" stroke="#8B5CF6" stroke-width="1.5"/><text x="80" y="191" fill="#8B5CF6" font-size="10" font-weight="700">L3</text><text x="130" y="191" fill="white" font-size="10" font-weight="600">故事</text><text x="800" y="191" fill="#94a3b8" font-size="8" text-anchor="end">架构 + 自测 + npm + cdn + 自改进 = 5 项</text>
+<line x1="500" y1="208" x2="500" y2="221" stroke="#8B5CF6" stroke-width="1" marker-end="url(#arr-down)"/>
+<!-- Layer 4 -->
+<rect x="60" y="224" width="880" height="42" rx="6" fill="rgba(167,139,250,.1)" stroke="#a78bfa" stroke-width="1.5"/><text x="80" y="249" fill="#a78bfa" font-size="10" font-weight="700">L4</text><text x="130" y="249" fill="white" font-size="10" font-weight="600">场景</text><text x="800" y="249" fill="#94a3b8" font-size="8" text-anchor="end">5 故事 · 29 场景 · 每场景 7 HTML</text>
+<line x1="500" y1="266" x2="500" y2="279" stroke="#8B5CF6" stroke-width="1" marker-end="url(#arr-down)"/>
+<!-- Layer 5 -->
+<rect x="60" y="282" width="880" height="42" rx="6" fill="rgba(251,191,36,.1)" stroke="#fbbf24" stroke-width="1.5"/><text x="80" y="307" fill="#fbbf24" font-size="10" font-weight="700">L5</text><text x="130" y="307" fill="white" font-size="10" font-weight="600">Agent 角色与规则</text><text x="800" y="307" fill="#94a3b8" font-size="8" text-anchor="end">9 Agent + 1 拓扑总纲 + 16 治理规则 = 26 项</text>
+<line x1="500" y1="324" x2="500" y2="337" stroke="#8B5CF6" stroke-width="1" marker-end="url(#arr-down)"/>
+<!-- Layer 6 -->
+<rect x="60" y="340" width="880" height="42" rx="6" fill="rgba(52,211,153,.1)" stroke="#34d399" stroke-width="1.5"/><text x="80" y="365" fill="#34d399" font-size="10" font-weight="700">L6</text><text x="130" y="365" fill="white" font-size="10" font-weight="600">参考入口</text><text x="800" y="365" fill="#94a3b8" font-size="8" text-anchor="end">CLAUDE.md · README.md · lib/ · .claude/ · docs/ = 9 项</text>
+</svg>
+</div>
+</section>
+<!-- Tab 3: 验证门禁 -->
+<section class="tab-panel" id="panelVerify">
+<table class="gate-table">
+<thead><tr><th>门禁</th><th>检查项</th><th>验证命令</th><th>期望值</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td><span class="g-id A">G1</span></td><td>技能计数一致</td><td><code>ls skills/*/SKILL.md | wc -l</code></td><td>19</td><td class="g-ok">✅ 通过</td></tr>
+<tr><td><span class="g-id A">G2</span></td><td>Agent 计数一致</td><td><code>ls agents/*.md | grep -v AGENT | wc -l</code></td><td>9</td><td class="g-ok">✅ 通过</td></tr>
+<tr><td><span class="g-id A">G3</span></td><td>规则计数一致</td><td><code>ls rules/*.md | wc -l</code></td><td>16</td><td class="g-ok">✅ 通过</td></tr>
+<tr><td><span class="g-id B">G4</span></td><td>故事计数一致</td><td><code>ls -d docs/故事任务面板/*/ | wc -l</code></td><td>5</td><td class="g-ok">✅ 通过</td></tr>
+<tr><td><span class="g-id B">G5</span></td><td>场景计数一致</td><td><code>find docs/故事任务面板 -name 'index.md' -path '*/场景-*' | wc -l</code></td><td>29</td><td class="g-ok">✅ 通过</td></tr>
+<tr><td><span class="g-id B">G6</span></td><td>首页链接可达</td><td>逐个检查 href 目标文件存在</td><td>0 死链</td><td class="g-ok">✅ 通过</td></tr>
+</tbody>
+</table>
+</section>
+
+<div class="cards">
+<div class="card" style="--accent:var(--cyan)"><div class="card-header"><div class="card-dot cyan"></div><h3>资产扫描策略</h3><span class="card-sub">FP1</span></div><ul>
+<li><b>遍历目录</b> — skills/ · agents/ · rules/ · docs/故事任务面板/</li>
+<li><b>提取 frontmatter</b> — name · description · version · tags</li>
+<li><b>自动发现</b> — 新模块自动纳入，非硬编码列表</li>
+</ul></div>
+<div class="card" style="--accent:var(--emerald)"><div class="card-header"><div class="card-dot emerald"></div><h3>元数据编目</h3><span class="card-sub">FP4</span></div><ul>
+<li><b>信息卡模板</b> — 名称 + 描述 + 版本 + 标签 + 链接 + 行数</li>
+<li><b>分类标签</b> — 核心入口 · 管线 · 支撑 · 新增 · 自建</li>
+<li><b>版本追踪</b> — 每个模块标注版本号和变更日期</li>
+</ul></div>
+<div class="card" style="--accent:var(--violet)"><div class="card-header"><div class="card-dot violet"></div><h3>六层建模规则</h3><span class="card-sub">FP3</span></div><ul>
+<li><b>层级依赖</b> — L1 被 L2 引用，L2 被 L3 引用（自底向上）</li>
+<li><b>每层 id anchor</b> — layer-deps · layer-skills · layer-story · layer-scene · layer-agents · layer-refs</li>
+<li><b>stats 跳转</b> — 顶部统计数字可点击跳转到对应层</li>
+</ul></div>
+</div>
+<div class="footer">YrY v5.3.0 · yry-index · 场景-1 · 数据采集与六层聚合 · 架构图 v1.0.0</div>
+</div>
+<script>
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',function(){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('on'));
+  this.classList.add('on');
+  document.getElementById('panel'+this.dataset.panel.charAt(0).toUpperCase()+this.dataset.panel.slice(1)).classList.add('on');
+}));
+function copyAsImage(btn){
+  html2canvas(document.getElementById('rc'),{scale:2,backgroundColor:'#020617'}).then(canvas=>{
+    canvas.toBlob(blob=>navigator.clipboard.write([new ClipboardItem({'image/png':blob})]));
+    btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='📋 Copy',1500);
+  });
+}
+function downloadPNG(btn){
+  html2canvas(document.getElementById('rc'),{scale:2,backgroundColor:'#020617'}).then(canvas=>{
+    const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download='yry-index-s1-arch.png';a.click();
+    btn.textContent='✓ Downloaded';setTimeout(()=>btn.textContent='🖼️ PNG',1500);
+  });
+}
+function downloadPDF(btn){
+  html2canvas(document.getElementById('rc'),{scale:2,backgroundColor:'#020617'}).then(canvas=>{
+    const imgData=canvas.toDataURL('image/png');
+    const {jspdf}=window.jspdf;const pdf=new jspdf({orientation:'portrait',unit:'px',format:'a4'});
+    const w=pdf.internal.pageSize.getWidth(),h=(canvas.height*w)/canvas.width;
+    pdf.addImage(imgData,'PNG',0,0,w,h);pdf.save('yry-index-s1-arch.pdf');
+    btn.textContent='✓ Downloaded';setTimeout(()=>btn.textContent='📄 PDF',1500);
+  });
+}
+</script>
+</body>
+</html>

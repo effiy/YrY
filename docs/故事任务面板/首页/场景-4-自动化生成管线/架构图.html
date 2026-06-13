@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>自动化生成管线 — 架构图</title>
+<link rel="stylesheet" href="../../../../cdn/fonts.css">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#020617;--card:rgba(15,23,42,.5);--card2:rgba(15,23,42,.8);--border:#1e293b;--border2:#334155;--text:#fff;--text2:#94a3b8;--text3:#64748b;--cyan:#22d3ee;--emerald:#34d399;--violet:#a78bfa;--amber:#fbbf24;--rose:#fb7185;--blue:#3B82F6}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);min-height:100vh;padding:2rem;color:var(--text);background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(34,211,238,.08),transparent);background-attachment:fixed}
+.container{max-width:1240px;margin:0 auto}
+.header{margin-bottom:1.25rem;animation:fadeInDown .5s ease both}
+.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem;flex-wrap:wrap}
+.pulse-dot{width:12px;height:12px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite;box-shadow:0 0 12px rgba(34,211,238,.6)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+h1{font-size:1.5rem;font-weight:700}.subtitle{color:var(--text2);font-size:.85rem;margin-left:1.75rem}
+.toolbar{display:flex;gap:.5rem;margin-left:auto;flex-shrink:0;align-items:center}
+.toolbar-toggle{background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem}
+.toolbar-toggle:hover{color:var(--text2);background:rgba(30,41,59,.5)}
+.toolbar-actions{display:none;gap:.5rem}
+.toolbar.expanded .toolbar-actions{display:flex}
+.toolbar-actions button{background:rgba(30,41,59,.8);border:1px solid var(--border2);color:var(--text2);padding:.375rem .75rem;border-radius:.375rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.toolbar-actions button:hover{background:rgba(51,65,85,.8);color:#fff;border-color:#475569}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none}.breadcrumb a:hover{color:var(--amber)}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5}.breadcrumb .bc-current{color:var(--text2);font-weight:500}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap}
+.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px}
+.cross-link:hover{color:var(--amber)}.cross-link.on{color:var(--amber);font-weight:600}
+.cross-sep{color:#475569;font-size:0.5rem;opacity:0.35}
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:1.25rem}
+.stat-strip .ss{background:var(--card);border:1px solid var(--border);border-radius:.5rem;padding:.5rem .75rem;display:flex;align-items:center;gap:.5rem}
+.stat-strip .ss .ss-val{font-size:1.05rem;font-weight:700}.stat-strip .ss .ss-lbl{font-size:.62rem;color:var(--text2);text-transform:uppercase}
+.diagram-container{background:var(--card);border-radius:1rem;border:1px solid var(--border);padding:1.5rem;overflow-x:auto;margin-bottom:1.25rem;position:relative}
+.diagram-container::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.4}
+.diagram-container svg{width:100%;min-width:900px;display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:.85rem;margin-bottom:1.25rem}
+.card{background:var(--card);border-radius:.75rem;border:1px solid var(--border);padding:1.1rem 1.2rem;transition:all .2s;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--accent,var(--cyan));opacity:.6}
+.card:hover{border-color:var(--border2);background:var(--card2)}
+.card h3{font-size:.82rem;font-weight:600;margin-bottom:.65rem}
+.card ul{list-style:none;color:var(--text2);font-size:.72rem;line-height:1.55}
+.card li{margin-bottom:.3rem;padding-left:.85rem;position:relative}
+.card li::before{content:'▸';position:absolute;left:0;color:var(--accent,var(--cyan));font-size:.7rem}
+.footer{text-align:center;color:var(--text3);font-size:.72rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)}
+</style></head><body><div class="container" id="rc">
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-index · 场景 4</span><span class="bc-sep">/</span><span class="bc-current">📐 架构图</span></nav>
+<nav class="cross-nav"><a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span><span class="cross-link on">📐 架构</span><span class="cross-sep">·</span><a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span><a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span><a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span><a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span><a class="cross-link" href="审查.html">📝 审计</a></nav>
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>自动化生成管线 — 架构图</h1><div class="toolbar"><div class="toolbar-actions"><button onclick="copyAsImage(this)">📋 Copy</button><button onclick="downloadPNG(this)">🖼️ PNG</button><button onclick="downloadPDF(this)">📄 PDF</button></div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')">⋯</button></div></div><p class="subtitle">3 条触发路径 · 7 类标准 HTML · 1 个新增"首页"类型 · 3 道验证门禁</p></div>
+<div class="stat-strip">
+<div class="ss"><div class="ss-val" style="color:var(--cyan)">3</div><div class="ss-lbl">触发路径</div></div>
+<div class="ss"><div class="ss-val" style="color:var(--violet)">8</div><div class="ss-lbl">HTML 类型 (7+1)</div></div>
+<div class="ss"><div class="ss-val" style="color:var(--emerald)">3</div><div class="ss-lbl">验证门禁</div></div>
+<div class="ss"><div class="ss-val" style="color:var(--amber)">1 cmd</div><div class="ss-lbl">rui-html 首页</div></div>
+</div>
+
+<div class="diagram-container">
+<svg viewBox="0 0 1000 350" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<pattern id="g" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width=".5"/></pattern>
+<marker id="arr-cyan" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#22d3ee"/></marker>
+<marker id="arr-emerald" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#34d399"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="url(#g)"/>
+<text x="500" y="28" fill="#34d399" font-size="12" font-weight="700" text-anchor="middle">自动化生成管线 — rui-html 集成 · 首页类型 · 验证门禁</text>
+
+<!-- Trigger row -->
+<rect x="30" y="48" width="940" height="70" rx="8" fill="rgba(34,211,238,.06)" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="50" y="68" fill="#22d3ee" font-size="10" font-weight="600">🚀 触发源 · 3 条路径</text>
+
+<rect x="50" y="80" width="270" height="28" rx="4" fill="rgba(59,130,246,.15)" stroke="#3B82F6" stroke-width="1"/><text x="185" y="98" fill="#cbd5e1" font-size="9" text-anchor="middle">手动: /rui-html 首页</text>
+<rect x="340" y="80" width="270" height="28" rx="4" fill="rgba(139,92,246,.15)" stroke="#8B5CF6" stroke-width="1"/><text x="475" y="98" fill="#cbd5e1" font-size="9" text-anchor="middle">init: /rui-init arch 步骤</text>
+<rect x="630" y="80" width="320" height="28" rx="4" fill="rgba(52,211,153,.15)" stroke="#34d399" stroke-width="1"/><text x="790" y="98" fill="#cbd5e1" font-size="9" text-anchor="middle">增量: 项目结构变更触发</text>
+
+<!-- Arrow -->
+<line x1="500" y1="120" x2="500" y2="140" stroke="#22d3ee" stroke-width="1.5" marker-end="url(#arr-cyan)"/>
+
+<!-- Pipeline steps -->
+<rect x="30" y="145" width="940" height="70" rx="8" fill="rgba(52,211,153,.06)" stroke="#34d399" stroke-width="1.5"/>
+<text x="50" y="165" fill="#34d399" font-size="10" font-weight="600">⚙️ rui-html 生成管线</text>
+
+<rect x="50" y="175" width="170" height="30" rx="4" fill="rgba(8,51,68,.4)" stroke="#22d3ee" stroke-width="1"/><text x="135" y="194" fill="#cbd5e1" font-size="9" text-anchor="middle">Step 1: 资产扫描</text>
+<rect x="240" y="175" width="170" height="30" rx="4" fill="rgba(8,51,68,.4)" stroke="#22d3ee" stroke-width="1"/><text x="325" y="194" fill="#cbd5e1" font-size="9" text-anchor="middle">Step 2: 元数据提取</text>
+<rect x="430" y="175" width="170" height="30" rx="4" fill="rgba(20,83,45,.3)" stroke="#34d399" stroke-width="1"/><text x="515" y="194" fill="#cbd5e1" font-size="9" text-anchor="middle">Step 3: 六层渲染</text>
+<rect x="620" y="175" width="170" height="30" rx="4" fill="rgba(120,53,15,.25)" stroke="#fbbf24" stroke-width="1"/><text x="705" y="194" fill="#cbd5e1" font-size="9" text-anchor="middle">Step 4: 验证门禁</text>
+<rect x="810" y="175" width="140" height="30" rx="4" fill="rgba(131,24,67,.25)" stroke="#fb7185" stroke-width="1"/><text x="880" y="194" fill="#cbd5e1" font-size="9" text-anchor="middle">Step 5: 输出文件</text>
+
+<!-- Output -->
+<line x1="500" y1="218" x2="500" y2="240" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr-emerald)"/>
+<rect x="200" y="243" width="600" height="35" rx="6" fill="rgba(52,211,153,.1)" stroke="#34d399" stroke-width="1.5"/>
+<text x="500" y="265" fill="#34d399" font-size="11" font-weight="700" text-anchor="middle">📄 输出: docs/index.html（数据驱动的六层页面）</text>
+
+<!-- Bottom: verification gate -->
+<rect x="30" y="293" width="940" height="40" rx="6" fill="rgba(15,23,42,.4)" stroke="var(--border)" stroke-width="1"/>
+<text x="50" y="312" fill="#64748b" font-size="9">验证: ① 链接可达性检查 → ② 资产计数一致性 → ③ HTML 有效性 → 全部通过 → 交付</text>
+</svg>
+</div>
+
+<div class="cards">
+<div class="card" style="--accent:var(--cyan)"><h3>🎯 命令接口</h3><ul>
+<li><b>/rui-html 首页</b> — 生成 docs/index.html</li>
+<li><b>/rui-html 首页 --force</b> — 强制覆盖已有文件</li>
+<li><b>/rui-html 首页 --dry-run</b> — 预览不写入</li>
+</ul></div>
+<div class="card" style="--accent:var(--emerald)"><h3>✅ 验证门禁</h3><ul>
+<li><b>G1 链接可达性</b> — 所有 href 目标文件存在</li>
+<li><b>G2 资产计数一致</b> — 与 ls/grep -c 结果一致</li>
+<li><b>G3 HTML 有效性</b> — 浏览器正常渲染无 JS 错误</li>
+</ul></div>
+<div class="card" style="--accent:var(--violet)"><h3>📋 待实现</h3><ul>
+<li>rui-html 扩展"首页"类型分支</li>
+<li>资产数据采集脚本</li>
+<li>增量生成（文件变更触发）</li>
+<li>pre-commit hook 集成</li>
+</ul></div>
+</div>
+<div class="footer">YrY v5.3.0 · yry-index · 场景-4 · 架构图 v1.0.0</div>
+</div>
+<script>
+function copyAsImage(btn){html2canvas(document.getElementById('rc'),{scale:2,backgroundColor:'#020617'}).then(c=>{c.toBlob(b=>navigator.clipboard.write([new ClipboardItem({'image/png':b})]));btn.textContent='✓';setTimeout(()=>btn.textContent='📋 Copy',1500)})}
+function downloadPNG(btn){html2canvas(document.getElementById('rc'),{scale:2,backgroundColor:'#020617'}).then(c=>{const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='yry-index-s4-arch.png';a.click();btn.textContent='✓';setTimeout(()=>btn.textContent='🖼️ PNG',1500)})}
+function downloadPDF(btn){html2canvas(document.getElementById('rc'),{scale:2,backgroundColor:'#020617'}).then(c=>{const {jspdf}=window.jspdf;const pdf=new jspdf({orientation:'portrait',unit:'px',format:'a4'});const w=pdf.internal.pageSize.getWidth(),h=(c.height*w)/c.width;pdf.addImage(c.toDataURL('image/png'),'PNG',0,0,w,h);pdf.save('yry-index-s4-arch.pdf');btn.textContent='✓';setTimeout(()=>btn.textContent='📄 PDF',1500)})}
+</script>
+</body>
+</html>
