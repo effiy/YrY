@@ -1,0 +1,18 @@
+{
+  "stories": [
+    {
+      "id": "yry-checklist",
+      "title": "计划清单生成技能",
+      "description": "从 markdown 到 HTML 清单的自动化生成管线 — 模板架构·数据提取·组件交互·验证集成·批量自循环",
+      "version": "1.0.0",
+      "date": "2026-06-13",
+      "scenes": [
+        { "num": 1, "slug": "模板架构与CSS设计系统", "title": "模板架构与CSS设计系统" },
+        { "num": 2, "slug": "markdown解析与数据提取管线", "title": "markdown解析与数据提取管线" },
+        { "num": 3, "slug": "清单交互组件实现", "title": "清单交互组件实现" },
+        { "num": 4, "slug": "验证报告与健康面板集成", "title": "验证报告与健康面板集成" },
+        { "num": 5, "slug": "批量生成与自循环机制", "title": "批量生成与自循环机制" }
+      ]
+    }
+  ]
+}

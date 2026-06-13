@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>计划清单生成 · 知识图谱</title>
+<link rel="stylesheet" href="../../../cdn/fonts.css">
+<link rel="stylesheet" href="../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../cdn/theme-mono.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+<style>
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px; }
+#cy { width: 100%; height: 600px; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; margin: 20px 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; padding: 10px 0; font-size: .74rem; color: var(--text2); }
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-checklist · 计划清单生成技能</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
+
+<nav class="cross-nav">
+<a class="cross-link" href="故事任务.md">📖 故事</a><span class="cross-sep">·</span>
+<span class="cross-link on">🔗 图谱</span>
+</nav>
+
+<div class="header">
+  <h1>🔗 计划清单生成<span class="accent"> · 知识图谱</span></h1>
+  <div class="meta">📌 v1.0.0 · 📅 2026-06-13 · 🏷️ checklist</div>
+</div>
+
+<div id="cy"></div>
+
+<div class="legend">
+  <span class="legend-item"><span class="legend-dot" style="background:#3B82F6"></span>Domain 领域层</span>
+  <span class="legend-item"><span class="legend-dot" style="background:#8B5CF6"></span>Flow 数据流</span>
+  <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>Scene 场景</span>
+  <span class="legend-item"><span class="legend-dot" style="background:#34d399"></span>FP 功能点</span>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="val health">5</div><div class="lbl">🔵 领域层</div></div>
+  <div class="stat-card"><div class="val health">5</div><div class="lbl">🟣 数据流</div></div>
+  <div class="stat-card"><div class="val">5</div><div class="lbl">🟡 场景</div></div>
+  <div class="stat-card"><div class="val">20</div><div class="lbl">🟢 功能点</div></div>
+</div>
+
+<div class="footer"><p>🤖 Generated with rui-html | story: yry-checklist | updated: 2026-06-13</p></div>
+</div>
+
+<script>
+const cy = cytoscape({
+  container: document.getElementById('cy'),
+  style: [
+    { selector: 'node', style: {
+      'label': 'data(label)',
+      'text-valign': 'center', 'text-halign': 'center',
+      'font-size': '10px', 'color': '#a9b1d6',
+      'background-color': '#3B82F6', 'border-color': '#3d59a1',
+      'border-width': 1, 'width': 80, 'height': 50,
+      'shape': 'roundrectangle'
+    }},
+    { selector: 'node[type="domain"]', style: { 'background-color': '#3B82F6', 'width': 100, 'height': 60, 'font-size': '11px' }},
+    { selector: 'node[type="flow"]', style: { 'background-color': '#8B5CF6', 'width': 90, 'height': 55, 'font-size': '10px' }},
+    { selector: 'node[type="scene"]', style: { 'background-color': '#f59e0b', 'color': '#000', 'width': 100, 'height': 55, 'font-size': '10px' }},
+    { selector: 'node[type="fp"]', style: { 'background-color': '#34d399', 'color': '#000', 'width': 70, 'height': 40, 'font-size': '9px' }},
+    { selector: 'edge', style: { 'width': 1.5, 'line-color': '#3d59a1', 'target-arrow-color': '#3d59a1', 'target-arrow-shape': 'triangle', 'curve-style': 'bezier', 'font-size': '8px', 'color': '#6B7280' }},
+    { selector: 'edge[type="supply"]', style: { 'line-color': '#22d3ee', 'target-arrow-color': '#22d3ee', 'line-style': 'dashed' }},
+    { selector: 'edge[type="depend"]', style: { 'line-color': '#f59e0b', 'target-arrow-color': '#f59e0b' }}
+  ],
+  elements: {
+    nodes: [
+      { data: { id: 'd-template', label: '模板架构层', type: 'domain' }},
+      { data: { id: 'd-extract', label: '数据提取层', type: 'domain' }},
+      { data: { id: 'd-interact', label: '组件交互层', type: 'domain' }},
+      { data: { id: 'd-visualize', label: '验证可视化层', type: 'domain' }},
+      { data: { id: 'd-pipeline', label: '批量生成层', type: 'domain' }},
+      { data: { id: 'f-template', label: '模板定义流程', type: 'flow' }},
+      { data: { id: 'f-extract', label: '数据提取流程', type: 'flow' }},
+      { data: { id: 'f-interact', label: '交互逻辑流程', type: 'flow' }},
+      { data: { id: 'f-visualize', label: '可视化渲染流程', type: 'flow' }},
+      { data: { id: 'f-pipeline', label: '批量生成流程', type: 'flow' }},
+      { data: { id: 's1', label: '场景1\n模板架构', type: 'scene' }},
+      { data: { id: 's2', label: '场景2\n数据提取', type: 'scene' }},
+      { data: { id: 's3', label: '场景3\n组件交互', type: 'scene' }},
+      { data: { id: 's4', label: '场景4\n验证集成', type: 'scene' }},
+      { data: { id: 's5', label: '场景5\n批量自循环', type: 'scene' }},
+      { data: { id: 'fp1', label: 'FP1\nHTML骨架', type: 'fp' }},
+      { data: { id: 'fp5', label: 'FP5\n章节拆分', type: 'fp' }},
+      { data: { id: 'fp9', label: 'FP9\n清单勾选', type: 'fp' }},
+      { data: { id: 'fp13', label: 'FP13\n验证摘要', type: 'fp' }},
+      { data: { id: 'fp17', label: 'FP17\n批量引擎', type: 'fp' }}
+    ],
+    edges: [
+      { data: { source: 'd-template', target: 'f-template', type: 'supply' }},
+      { data: { source: 'd-extract', target: 'f-extract', type: 'supply' }},
+      { data: { source: 'd-interact', target: 'f-interact', type: 'supply' }},
+      { data: { source: 'd-visualize', target: 'f-visualize', type: 'supply' }},
+      { data: { source: 'd-pipeline', target: 'f-pipeline', type: 'supply' }},
+      { data: { source: 'f-template', target: 'f-extract', label: '模板供给', type: 'supply' }},
+      { data: { source: 'f-extract', target: 'f-interact', label: '数据驱动', type: 'supply' }},
+      { data: { source: 'f-extract', target: 'f-visualize', label: '数据驱动', type: 'supply' }},
+      { data: { source: 'f-interact', target: 'f-pipeline', label: '组件就绪', type: 'supply' }},
+      { data: { source: 'f-visualize', target: 'f-pipeline', label: '可视化就绪', type: 'supply' }},
+      { data: { source: 's1', target: 's2', label: '依赖', type: 'depend' }},
+      { data: { source: 's2', target: 's3', label: '依赖', type: 'depend' }},
+      { data: { source: 's2', target: 's4', label: '依赖', type: 'depend' }},
+      { data: { source: 's3', target: 's5', label: '依赖', type: 'depend' }},
+      { data: { source: 's4', target: 's5', label: '依赖', type: 'depend' }}
+    ]
+  },
+  layout: { name: 'breadthfirst', directed: true, padding: 30, spacingFactor: 1.2 }
+});
+</script>
+<script src="../../../cdn/shared.js"></script>
+</body>
+</html>

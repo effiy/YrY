@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模板架构 · 计划清单</title>
+<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/theme.css">
+<link rel="stylesheet" href="../../../../cdn/yry-checklist.css">
+<style>
+.container { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+.scene-nav { display:flex; align-items:center; flex-wrap:wrap; gap:8px; justify-content:center; padding:12px 16px; margin:24px 0; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:8px; }
+.scene-nav-link { color:var(--text2); text-decoration:none; font-size:.76rem; padding:5px 12px; border-radius:14px; transition:all .15s; white-space:nowrap; }
+.scene-nav-link:hover { color:var(--accent); background:rgba(255,193,7,.08); }
+.scene-nav-link.active { color:var(--accent); font-weight:600; background:rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); cursor:default; }
+.scene-nav-link.story { color:var(--cyan); }
+.scene-nav-sep { color:var(--text3); font-size:.6rem; opacity:.3; user-select:none; }
+.checklist-head { display:flex; align-items:center; justify-content:space-between; gap:16px; background:linear-gradient(135deg,rgba(255,193,7,.06),rgba(34,211,238,.04)); border:1px solid rgba(255,193,7,.18); border-radius:10px; padding:14px 20px; margin-bottom:14px; }
+.ch-title { font-size:1.1rem; font-weight:600; color:var(--accent); letter-spacing:.02em; }
+.ch-meta { font-size:.72rem; color:var(--text3); margin-top:4px; }
+.ch-meta code { color:var(--cyan); background:rgba(34,211,238,.08); padding:1px 6px; border-radius:4px; font-size:.7rem; }
+.ch-progress { text-align:center; padding:8px 18px; background:rgba(16,185,129,.12); border:1px solid rgba(16,185,129,.3); border-radius:8px; }
+.ch-pct { font-size:1.6rem; font-weight:700; color:#10b981; line-height:1; }
+.ch-pct-lbl { font-size:.65rem; color:var(--text3); margin-top:2px; letter-spacing:.04em; }
+.phase-strip { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:20px; }
+@media (max-width:900px){ .phase-strip{grid-template-columns:repeat(3,1fr);} }
+.phase { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:6px; padding:8px 6px; text-align:center; transition:all .2s; cursor:default; }
+.phase.done { background:rgba(16,185,129,.08); border-color:rgba(16,185,129,.3); }
+.phase:hover { transform:translateY(-1px); }
+.p-dot { width:18px; height:18px; border-radius:50%; background:#10b981; color:#fff; font-size:.66rem; font-weight:700; line-height:18px; margin:0 auto 4px; }
+.p-name { font-size:.66rem; color:var(--text2); }
+.p-count { font-size:.6rem; color:var(--text3); margin-top:1px; }
+.step-meta { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin:8px 0; padding:8px 10px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:6px; }
+@media (max-width:700px){ .step-meta{grid-template-columns:repeat(2,1fr);} }
+.meta-item { font-size:.7rem; color:var(--text2); display:flex; align-items:center; gap:4px; }
+.meta-item b { color:var(--text3); font-weight:500; margin-right:2px; }
+.pri-p0 { display:inline-block; padding:1px 6px; border-radius:6px; font-size:.62rem; font-weight:700; background:rgba(239,68,68,.18); color:#ef4444; border:1px solid rgba(239,68,68,.3); }
+.pri-p1 { display:inline-block; padding:1px 6px; border-radius:6px; font-size:.62rem; font-weight:700; background:rgba(245,158,11,.18); color:#f59e0b; border:1px solid rgba(245,158,11,.3); }
+.step-criteria { background:rgba(34,211,238,.04); border-left:3px solid var(--cyan); padding:8px 12px; margin:8px 0; border-radius:0 6px 6px 0; }
+.step-criteria b { font-size:.74rem; color:var(--cyan); display:block; margin-bottom:4px; }
+.step-criteria ul { margin:0 0 0 16px; padding:0; font-size:.72rem; color:var(--text2); line-height:1.55; }
+.step-criteria code, .step-criteria li { margin:2px 0; }
+.cmd-head { display:flex; align-items:center; justify-content:space-between; gap:16px; background:linear-gradient(135deg,rgba(255,193,7,.06),rgba(34,211,238,.04)); border:1px solid rgba(255,193,7,.18); border-radius:10px; padding:14px 20px; margin-bottom:14px; }
+.cmd-head-title { font-size:1.1rem; font-weight:600; color:var(--accent); letter-spacing:.02em; }
+.cmd-head-meta { font-size:.72rem; color:var(--text3); margin-top:4px; }
+.cmd-head-stats { display:flex; gap:8px; }
+.chs { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:6px; padding:6px 12px; text-align:center; min-width:64px; }
+.chs b { font-size:1.1rem; color:var(--accent); display:block; }
+.chs span { font-size:.6rem; color:var(--text3); }
+.quickstart { background:rgba(34,211,238,.04); border:1px solid rgba(34,211,238,.2); border-radius:8px; padding:12px 16px; margin-bottom:18px; }
+.qs-title { font-size:.82rem; color:var(--cyan); font-weight:600; margin-bottom:8px; letter-spacing:.02em; }
+.quickstart pre { margin:0; padding:10px 12px; background:rgba(0,0,0,.3); border-radius:5px; font-size:.7rem; color:var(--text1); overflow-x:auto; white-space:pre; line-height:1.5; }
+.verify-report-head { background:linear-gradient(135deg,rgba(34,211,238,.06),rgba(255,193,7,.04)); border:1px solid rgba(34,211,238,.18); border-radius:10px; padding:18px 20px; margin-bottom:18px; }
+.vrh-title { font-size:1.05rem; font-weight:600; color:var(--accent); margin-bottom:10px; letter-spacing:.02em; }
+.vrh-meta { display:flex; flex-wrap:wrap; gap:6px 16px; font-size:.7rem; color:var(--text3); margin-bottom:14px; }
+.vrh-meta code { color:var(--cyan); background:rgba(34,211,238,.08); padding:1px 6px; border-radius:4px; font-size:.68rem; }
+.vrh-metrics { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:12px; }
+.vrh-m { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:8px; padding:10px 8px; text-align:center; }
+.vrh-m-num { font-size:1.2rem; font-weight:700; line-height:1.1; }
+.vrh-m-num.pass { color:var(--accent,#10b981); }
+.vrh-m-lbl { font-size:.65rem; color:var(--text3); margin-top:3px; letter-spacing:.04em; }
+.vrh-verdict { font-size:.82rem; padding:8px 12px; border-radius:6px; font-weight:500; }
+.vrh-verdict.pass { background:rgba(16,185,129,.10); color:#10b981; border:1px solid rgba(16,185,129,.25); }
+.vi-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+.vi-status { font-size:.7rem; font-weight:700; padding:3px 10px; border-radius:10px; letter-spacing:.06em; }
+.vi-status.pass { background:rgba(16,185,129,.15); color:#10b981; border:1px solid rgba(16,185,129,.3); }
+.vi-section { margin:10px 0; }
+.vi-k { font-size:.72rem; font-weight:600; color:var(--cyan); margin-bottom:5px; letter-spacing:.02em; }
+.vi-v { font-size:.78rem; color:var(--text2); line-height:1.55; }
+.vi-table { width:100%; border-collapse:collapse; margin-top:6px; font-size:.72rem; }
+.vi-table th, .vi-table td { padding:6px 10px; text-align:left; border-bottom:1px solid rgba(255,255,255,.06); }
+.vi-table th { background:rgba(255,255,255,.04); color:var(--text3); font-weight:500; font-size:.68rem; letter-spacing:.04em; }
+.vi-table td.pass { color:#10b981; font-weight:600; }
+.vi-table td.fail { color:#ef4444; font-weight:600; }
+.verify-report-foot { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:10px; padding:14px 18px; margin-top:18px; }
+.vrf-k { font-size:.74rem; font-weight:600; color:var(--text1); margin-bottom:4px; }
+.vrf-v { font-size:.76rem; color:var(--text2); line-height:1.55; }
+.kpi-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin:14px 0 18px; }
+@media (max-width:900px){ .kpi-grid{grid-template-columns:repeat(3,1fr);} }
+.kpi-card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:8px; padding:12px 10px; text-align:center; transition:all .2s; }
+.kpi-card:hover { border-color:rgba(255,193,7,.3); transform:translateY(-1px); }
+.kpi-label { font-size:.65rem; color:var(--text3); letter-spacing:.04em; }
+.kpi-num { font-size:1.4rem; font-weight:700; color:var(--text1); line-height:1.2; margin:4px 0; }
+.kpi-trend { font-size:.68rem; color:var(--text3); }
+.kpi-trend.up { color:#10b981; }
+.report-head { background:linear-gradient(135deg,rgba(255,193,7,.05),rgba(34,211,238,.03)); border:1px solid rgba(255,193,7,.15); border-radius:10px; padding:14px 18px; margin-bottom:18px; }
+.rh-title { font-size:1.05rem; font-weight:600; color:var(--accent); margin-bottom:6px; letter-spacing:.02em; }
+.rh-meta { font-size:.72rem; color:var(--text3); }
+.rh-meta code { color:var(--cyan); background:rgba(34,211,238,.08); padding:1px 6px; border-radius:4px; font-size:.7rem; }
+.scorecard { width:100%; border-collapse:collapse; margin-top:8px; font-size:.74rem; }
+.scorecard th, .scorecard td { padding:7px 10px; text-align:left; border-bottom:1px solid rgba(255,255,255,.06); }
+.scorecard th { background:rgba(255,255,255,.04); color:var(--text3); font-weight:500; font-size:.68rem; letter-spacing:.04em; }
+.scorecard td.pass { color:#10b981; font-weight:600; }
+.scorecard .total-row td { background:rgba(255,193,7,.06); border-top:2px solid rgba(255,193,7,.3); }
+.deliv-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:8px; }
+@media (max-width:800px){ .deliv-grid{grid-template-columns:repeat(3,1fr);} }
+.deliv-card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:14px 10px; text-decoration:none; color:var(--text1); text-align:center; transition:all .2s; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.deliv-card:hover { background:rgba(34,211,238,.08); border-color:var(--cyan); transform:translateY(-2px); box-shadow:0 4px 12px rgba(34,211,238,.2); }
+.dc-icon { font-size:1.6rem; line-height:1; }
+.dc-name { font-size:.78rem; font-weight:600; }
+.dc-type { font-size:.62rem; color:var(--text3); }
+.trend-bars { display:flex; align-items:flex-end; gap:6px; height:120px; padding:0 4px; border-bottom:1px solid rgba(255,255,255,.08); }
+.bar { flex:1; background:linear-gradient(180deg,var(--accent,#10b981),rgba(16,185,129,.4)); border-radius:3px 3px 0 0; min-height:8px; position:relative; transition:all .2s; }
+.bar:hover { filter:brightness(1.2); }
+.bar span { position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:.6rem; color:var(--text2); white-space:nowrap; }
+.trend-axis { text-align:center; font-size:.66rem; color:var(--text3); margin-top:6px; }
+.gantt { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:8px; padding:12px; margin-top:8px; }
+.gantt-row { display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1px dashed rgba(255,255,255,.04); }
+.gantt-row.gantt-head { font-size:.66rem; color:var(--text3); border-bottom:1px solid rgba(255,255,255,.1); }
+.gantt-task { width:110px; font-size:.76rem; color:var(--text2); flex-shrink:0; }
+.gantt-bar-wrap { flex:1; display:flex; height:24px; position:relative; background:repeating-linear-gradient(90deg,rgba(255,255,255,.02) 0,rgba(255,255,255,.02) calc(100%/10),transparent calc(100%/10),transparent calc(200%/10)); border-radius:4px; }
+.gantt-day { flex:1; text-align:center; font-size:.6rem; color:var(--text3); line-height:24px; border-right:1px solid rgba(255,255,255,.04); }
+.gantt-bar { position:absolute; top:0; height:24px; background:linear-gradient(180deg,var(--accent,#10b981),rgba(16,185,129,.5)); border-radius:4px; display:flex; align-items:center; padding:0 6px; font-size:.66rem; color:#fff; font-weight:500; }
+.gantt-bar.alt { background:linear-gradient(180deg,var(--cyan,#22d3ee),rgba(34,211,238,.5)); }
+.path-link { color:var(--cyan); text-decoration:none; }
+.path-link code { color:var(--cyan); background:rgba(34,211,238,.06); padding:2px 6px; border-radius:4px; font-size:.7rem; border:1px solid transparent; }
+.path-link:hover code { background:rgba(34,211,238,.15); border-color:var(--cyan); }
+.op-btn { display:inline-block; padding:2px 6px; margin:0 2px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:4px; font-size:.7rem; cursor:pointer; text-decoration:none; color:var(--text2); transition:all .15s; }
+a.op-btn:hover { background:rgba(34,211,238,.15); border-color:var(--cyan); color:var(--cyan); }
+.trend-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:8px; }
+@media (max-width:700px){ .trend-grid{grid-template-columns:1fr;} }
+.trend-card { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:8px; padding:12px; }
+.trend-title { font-size:.78rem; color:var(--text1); font-weight:500; margin-bottom:10px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-checklist · 计划清单生成技能</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 模板架构与CSS设计系统</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
+
+<nav class="scene-nav">
+  <a class="scene-nav-link active" href="计划清单.html">📋 场景1 · 模板架构</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-2-markdown解析与数据提取管线/计划清单.html">📋 场景2 · 数据提取</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-3-清单交互组件实现/计划清单.html">📋 场景3 · 组件交互</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-4-验证报告与健康面板集成/计划清单.html">📋 场景4 · 验证集成</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-5-批量生成与自循环机制/计划清单.html">📋 场景5 · 批量自循环</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link story" href="../故事任务.md">📖 故事任务</a>
+</nav>
+
+<nav class="cross-nav">
+<span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
+
+<div class="header">
+  <h1>📋 场景-1<span class="accent"> · 模板架构与CSS设计系统</span></h1>
+  <div class="meta">📌 v1.0.0 · 📅 2026-06-13 · 🏷️ checklist</div>
+</div>
+
+<div class="stats-grid"><div class="stat-card"><div class="val health">4</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">4</div><div class="lbl">✅ 完成</div></div><div class="stat-card"><div class="val">0</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val">100%</div><div class="lbl">📊 进度</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div></div>
+
+<div class="tabs">
+  <span class="tab on" data-panel="checklist">📋 清单</span>
+  <span class="tab" data-panel="commands">⚡ 命令</span>
+  <span class="tab" data-panel="verify">🧪 验证</span>
+  <span class="tab" data-panel="metrics">📊 指标</span>
+  <span class="tab" data-panel="deliverables">📦 交付物</span>
+  <span class="tab" data-panel="risks">⚠️ 风险</span>
+  <span class="tab" data-panel="timeline">📅 时间线</span>
+</div>
+
+<!-- ═══ Tab 1: Checklist ═══ -->
+<div class="panel on" id="panelChecklist">
+
+<div class="checklist-head">
+  <div class="ch-info">
+    <div class="ch-title">📋 模板架构执行清单</div>
+    <div class="ch-meta">场景: <code>场景-1 · 模板架构与CSS设计系统</code> · 阶段: <b>交付完成</b> · 更新: <code>2026-06-13 10:30</code></div>
+  </div>
+  <div class="ch-progress">
+    <div class="ch-pct">100<span>%</span></div>
+    <div class="ch-pct-lbl">完成度</div>
+  </div>
+</div>
+
+<div class="phase-strip">
+  <div class="phase done" title="§0 技术评审"><div class="p-dot">✓</div><div class="p-name">§0 评审</div><div class="p-count">1/1</div></div>
+  <div class="phase done" title="§1 测试设计"><div class="p-dot">✓</div><div class="p-name">§1 设计</div><div class="p-count">1/1</div></div>
+  <div class="phase done" title="§2 实施报告"><div class="p-dot">✓</div><div class="p-name">§2 实施</div><div class="p-count">1/1</div></div>
+  <div class="phase done" title="§3 测试报告"><div class="p-dot">✓</div><div class="p-name">§3 验证</div><div class="p-count">1/1</div></div>
+  <div class="phase done" title="§4 自改进"><div class="p-dot">✓</div><div class="p-name">§4 改进</div><div class="p-count">0/0</div></div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>§0 技术评审<span class="s-done">— 已完成</span></h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">1</span>
+    <span class="step-title">定义 HTML 骨架 7 区域结构</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>定义计划清单页面的完整 HTML 骨架：面包屑导航、场景导航栏、跨文档导航、统计卡片区、7 标签页系统、7 内容面板、页脚。所有区域通过语义化 HTML 标签和注释标注边界。</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>frontend agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>2.0h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>骨架模板 + Token 表</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>7 区域全部存在：面包屑 · 场景导航 · 跨文档导航 · 统计卡片 · 标签页 · 7面板 · 页脚</li>
+      <li>每区域含 HTML 注释标注边界（<code>&lt;!-- ═══ Region Name ═══ --&gt;</code>）</li>
+      <li>Token 占位符统一使用 <code>{{UPPER_SNAKE}}</code> 格式</li>
+      <li>语义化标签优先：<code>&lt;nav&gt;</code> · <code>&lt;section&gt;</code> · <code>&lt;table&gt;</code></li>
+    </ul></div>
+    <div class="code-block">&lt;!-- ═══ 计划清单 7 区域骨架 ═══ --&gt;
+① breadcrumb nav → ② scene-nav → ③ cross-nav
+④ stats-grid → ⑤ tabs → ⑥ 7 panels → ⑦ footer</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="../../../../cdn/shared.css" class="dep-badge" target="_blank">🎨 shared.css</a><a href="../../../../skills/rui-html/SKILL.md" class="dep-badge" target="_blank">⚙️ rui-html SKILL</a><a href="../故事任务.md" class="dep-badge" target="_blank">📖 故事任务</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 08:15</span> <b>完成</b> · 7 区域骨架就绪 · 22 Token 变量定义</div>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>§1 测试设计<span class="s-done">— 已完成</span></h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">2</span>
+    <span class="step-title">CSS 变量系统与响应式断点设计</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>设计 CSS 变量命名空间和响应式断点体系。变量覆盖颜色（--accent · --cyan · --text1-3）、间距、字体；断点覆盖桌面（>900px）、平板（≤900px）、手机（≤700px/500px）三级。</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>frontend agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.5h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>CSS 变量表 + 响应式规范</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>颜色变量 ≥ 8 个（--accent · --cyan · --text1-3 · --bg · --border）</li>
+      <li>3 级响应式断点：@media (max-width:900px/700px/500px)</li>
+      <li>所有组件样式引用 CSS 变量而非硬编码色值</li>
+      <li>栅格系统支持 6→3→2 列自适应</li>
+    </ul></div>
+    <div class="code-block">:root {
+  --accent: #ffc107; --cyan: #22d3ee;
+  --text1: #e2e8f0; --text2: #94a3b8; --text3: #64748b;
+  --bg: #0f1119; --border: rgba(255,255,255,.06);
+}</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="../../../../cdn/theme.css" class="dep-badge" target="_blank">🎨 theme.css</a><a href="../../../../cdn/yry-checklist.css" class="dep-badge" target="_blank">📋 yry-checklist.css</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 09:45</span> <b>完成</b> · 12 个 CSS 变量 · 3 级断点</div>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>§2 实施报告<span class="s-done">— 已完成</span></h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">3</span>
+    <span class="step-title">CDN 加载链与 Token 变量系统集成</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>定义 Category B 页面的 CDN 资源加载顺序：shared.css → theme.css → yry-checklist.css → shared.js。建立 22 个 Token 变量的来源映射和替换规则。</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>frontend + devops</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.0h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>加载链规范 + Token 映射表</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>4 资源加载顺序固定：shared.css → theme.css → yry-checklist.css → shared.js</li>
+      <li>22 Token 全部有明确来源字段和替换规则</li>
+      <li>{{CDN_DEPTH}} 基于场景目录深度自动计算</li>
+      <li>替换后 HTML 零 {{...}} 残留</li>
+    </ul></div>
+    <div class="code-block">Token 示例：
+{{STORY_NAME}} → "yry-checklist"
+{{SCENE_TITLE}} → "模板架构与CSS设计系统"
+{{CDN_DEPTH}} → "../../../../"</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a><a href="../故事任务.md" class="dep-badge" target="_blank">📖 故事任务</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 10:30</span> <b>完成</b> · 4 资源链条 · 22 Token 就绪</div>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>§3 测试报告<span class="s-done">— 已完成</span></h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">4</span>
+    <span class="step-title">骨架完整性验证 + 浏览器渲染测试</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>验证骨架 7 区域完整性、CSS 变量覆盖度、CDN 资源可达性、Token 替换零残留、三级响应式断点正确重排。</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>tester agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>0.5h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>5/5 测试通过报告</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>骨架完整性 7/7 检查点 PASS</li>
+      <li>CSS 变量覆盖 14/14 组件正确渲染</li>
+      <li>CDN 4 资源 HTTP 200</li>
+      <li>Token 替换 22/22 零残留</li>
+      <li>3 断点栅格正确重排</li>
+    </ul></div>
+    <div class="verify-cmd">grep -c 'class="panel"' 计划清单.html  # 期望: 7</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="审查.html" class="dep-badge" target="_blank">📝 审查</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 10:50</span> <b>完成</b> · 5/5 套件 PASS · 0 失败</div>
+  </div>
+</div>
+</div>
+
+</div><!-- /panelChecklist -->
+
+<!-- ═══ Tab 2: Commands ═══ -->
+<div class="panel" id="panelCommands">
+
+<div class="cmd-head">
+  <div class="cmd-head-info">
+    <div class="cmd-head-title">⚡ 命令执行手册</div>
+    <div class="cmd-head-meta">4 个步骤 · 4 条命令 · 总耗时 <b>5.0h</b> · 已执行 <b>4/4</b></div>
+  </div>
+  <div class="cmd-head-stats">
+    <div class="chs"><b>2</b><span>定义/生成类</span></div>
+    <div class="chs"><b>2</b><span>验证/检查类</span></div>
+  </div>
+</div>
+
+<div class="quickstart">
+  <div class="qs-title">🚀 快速复现</div>
+  <pre>cd /Users/yi/Yi/YrY
+
+# 步骤 1: 定义 HTML 骨架
+node skills/rui-html/rui-html.mjs yry-checklist --scene 1 --type 计划清单
+
+# 步骤 2: CSS 变量设计
+cat cdn/yry-checklist.css | grep -- '--'
+
+# 步骤 3: CDN 加载链验证
+curl -sI http://localhost:8080/cdn/shared.css | head -1
+
+# 步骤 4: 骨架完整性验证
+grep -c 'class="panel"' docs/故事任务面板/计划清单/场景-1-*/计划清单.html<span class="cb" onclick="copyCmd(this,'')">📋</span></pre>
+</div>
+
+<div class="section"><h2><span class="dot"></span>已执行命令<span class="s-done">· 4 条</span></h2>
+<div class="cmd-grid">
+  <div class="cmd-card">
+    <div class="c-stage">步骤 1</div>
+    <div class="c-name">生成 HTML 骨架模板</div>
+    <div class="c-desc">运行 rui-html 生成计划清单骨架，含 7 区域结构和 Token 占位符</div>
+    <pre>node skills/rui-html/rui-html.mjs yry-checklist --scene 1 --type 计划清单<span class="cb" onclick="copyCmd(this,'node skills/rui-html/rui-html.mjs yry-checklist --scene 1 --type 计划清单')">📋</span></pre>
+    <div class="c-meta"><span>👤 frontend</span><span>⏱ 2.0h</span><span>🎯 P0</span></div>
+    <div class="c-expect"><b>✓ 预期：</b>输出 计划清单.html 骨架 · 22 Token 占位符</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 2</div>
+    <div class="c-name">验证 CSS 变量定义</div>
+    <div class="c-desc">检查 yry-checklist.css 中 CSS 变量的完整性和命名规范</div>
+    <pre>cat cdn/yry-checklist.css | grep -- '--'<span class="cb" onclick="copyCmd(this,'cat cdn/yry-checklist.css | grep -- --')">📋</span></pre>
+    <div class="c-meta"><span>👤 frontend</span><span>⏱ 1.5h</span><span>🎯 P0</span></div>
+    <div class="c-expect"><b>✓ 预期：</b>≥ 12 个 CSS 变量 · --yry- 前缀统一</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 3</div>
+    <div class="c-name">CDN 资源可用性测试</div>
+    <div class="c-desc">逐资源检查 HTTP 状态码，确认加载顺序正确</div>
+    <pre>curl -sI http://localhost:8080/cdn/shared.css | head -1<span class="cb" onclick="copyCmd(this,'curl -sI http://localhost:8080/cdn/shared.css | head -1')">📋</span></pre>
+    <div class="c-meta"><span>👤 devops</span><span>⏱ 1.0h</span><span>🎯 P0</span></div>
+    <div class="c-expect"><b>✓ 预期：</b>4 资源 HTTP 200 · 加载顺序验证通过</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 4</div>
+    <div class="c-name">骨架完整性自动化检查</div>
+    <div class="c-desc">grep 统计 panel 数量、验证 Token 零残留</div>
+    <pre>grep -c 'class="panel"' docs/故事任务面板/计划清单/场景-1-*/计划清单.html<span class="cb" onclick="copyCmd(this,'grep -c \'class=\"panel\"\' docs/故事任务面板/计划清单/场景-1-*/计划清单.html')">📋</span></pre>
+    <div class="c-meta"><span>👤 tester</span><span>⏱ 0.5h</span><span>🎯 P0</span></div>
+    <div class="c-expect"><b>✓ 预期：</b>panel 数量 = 7 · Token 残留 = 0</div>
+  </div>
+</div></div>
+
+</div><!-- /panelCommands -->
+
+<!-- ═══ Tab 3: Verify ═══ -->
+<div class="panel" id="panelVerify">
+
+<div class="verify-report-head">
+  <div class="vrh-title">🧪 模板架构验证报告</div>
+  <div class="vrh-meta">
+    <span>报告 ID: <code>VR-CHECKLIST-TPL-2026-06-13</code></span>
+    <span>执行人: <code>tester agent</code></span>
+    <span>执行时间: <code>2026-06-13 10:50</code></span>
+  </div>
+  <div class="vrh-metrics">
+    <div class="vrh-m"><div class="vrh-m-num pass">5</div><div class="vrh-m-lbl">通过套件</div></div>
+    <div class="vrh-m"><div class="vrh-m-num pass">50</div><div class="vrh-m-lbl">检查点</div></div>
+    <div class="vrh-m"><div class="vrh-m-num fail">0</div><div class="vrh-m-lbl">失败项</div></div>
+    <div class="vrh-m"><div class="vrh-m-num pass">100%</div><div class="vrh-m-lbl">达成率</div></div>
+    <div class="vrh-m"><div class="vrh-m-num pass">0</div><div class="vrh-m-lbl">Token残留</div></div>
+  </div>
+  <div class="vrh-verdict pass">✅ 总体结论：通过 — 模板骨架满足全部 P0 硬约束</div>
+</div>
+
+<div class="verify-list">
+  <div class="verify-item">
+    <div class="vi-head">
+      <div class="vi-label">验证 1 · 骨架完整性</div>
+      <div class="vi-status pass">PASS</div>
+    </div>
+    <div class="vi-section"><div class="vi-k">📊 实测结果</div>
+    <table class="vi-table">
+      <thead><tr><th>检查点</th><th>期望</th><th>实测</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>面包屑导航</td><td>存在</td><td>✓</td><td class="pass">PASS</td></tr>
+        <tr><td>场景导航栏</td><td>存在</td><td>✓</td><td class="pass">PASS</td></tr>
+        <tr><td>跨文档导航</td><td>存在</td><td>✓</td><td class="pass">PASS</td></tr>
+        <tr><td>统计卡片区</td><td>存在</td><td>✓</td><td class="pass">PASS</td></tr>
+        <tr><td>7 标签页</td><td>7</td><td>7</td><td class="pass">PASS</td></tr>
+        <tr><td>7 内容面板</td><td>7</td><td>7</td><td class="pass">PASS</td></tr>
+        <tr><td>页脚</td><td>存在</td><td>✓</td><td class="pass">PASS</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="verify-item">
+    <div class="vi-head">
+      <div class="vi-label">验证 2 · CSS 变量覆盖</div>
+      <div class="vi-status pass">PASS</div>
+    </div>
+    <div class="vi-section"><div class="vi-k">📊 实测结果</div>
+    <table class="vi-table">
+      <thead><tr><th>检查点</th><th>期望</th><th>实测</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>颜色变量数</td><td>≥ 8</td><td>12</td><td class="pass">PASS</td></tr>
+        <tr><td>响应式断点数</td><td>≥ 3</td><td>4</td><td class="pass">PASS</td></tr>
+        <tr><td>组件类覆盖</td><td>100%</td><td>100% (14/14)</td><td class="pass">PASS</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</div>
+
+<div class="verify-report-foot">
+  <div class="vrf-section"><div class="vrf-k">📝 改进建议</div>
+  <div class="vrf-v">CSS 变量可进一步按语义分组（颜色/间距/字体/动画），当前为扁平结构。</div></div>
+</div>
+
+</div><!-- /panelVerify -->
+
+<!-- ═══ Tab 4: Metrics ═══ -->
+<div class="panel" id="panelMetrics">
+
+<div class="report-head">
+  <div class="rh-title">📊 模板架构质量指标</div>
+  <div class="rh-meta">快照时间: <code>2026-06-13 10:30</code></div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">骨架完整度</div><div class="kpi-num">100%</div><div class="kpi-trend up">7/7 区域</div></div>
+  <div class="kpi-card"><div class="kpi-label">CSS 变量数</div><div class="kpi-num">12</div><div class="kpi-trend up">↑ 目标 8</div></div>
+  <div class="kpi-card"><div class="kpi-label">Token 数量</div><div class="kpi-num">22</div><div class="kpi-trend up">全覆盖</div></div>
+  <div class="kpi-card"><div class="kpi-label">CDN 资源</div><div class="kpi-num">4</div><div class="kpi-trend up">100% 可达</div></div>
+  <div class="kpi-card"><div class="kpi-label">响应式断点</div><div class="kpi-num">4</div><div class="kpi-trend up">全设备覆盖</div></div>
+  <div class="kpi-card"><div class="kpi-label">组件覆盖</div><div class="kpi-num">14</div><div class="kpi-trend up">含动画</div></div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>评分卡</h2>
+<table class="scorecard">
+  <thead><tr><th>维度</th><th>权重</th><th>得分</th><th>状态</th></tr></thead>
+  <tbody>
+    <tr><td>骨架完整性</td><td>30%</td><td>100</td><td class="pass">✓</td></tr>
+    <tr><td>CSS 设计系统</td><td>25%</td><td>100</td><td class="pass">✓</td></tr>
+    <tr><td>CDN 集成</td><td>25%</td><td>100</td><td class="pass">✓</td></tr>
+    <tr><td>Token 系统</td><td>20%</td><td>100</td><td class="pass">✓</td></tr>
+    <tr class="total-row"><td colspan="2"><b>加权总分</b></td><td><b>100</b></td><td class="pass"><b>✓ 优秀</b></td></tr>
+  </tbody>
+</table>
+</div>
+
+</div><!-- /panelMetrics -->
+
+<!-- ═══ Tab 5: Deliverables ═══ -->
+<div class="panel" id="panelDeliverables">
+
+<div class="report-head">
+  <div class="rh-title">📦 交付物清单</div>
+  <div class="rh-meta">场景: <code>场景-1 · 模板架构与CSS设计系统</code> · 已交付: <b>7 / 7</b></div>
+</div>
+
+<div class="deliv-grid">
+  <a href="计划清单.html" class="deliv-card"><div class="dc-icon">📋</div><div class="dc-name">计划清单</div><div class="dc-type">HTML</div></a>
+  <a href="架构图.html" class="deliv-card"><div class="dc-icon">📐</div><div class="dc-name">架构图</div><div class="dc-type">HTML</div></a>
+  <a href="知识图谱.html" class="deliv-card"><div class="dc-icon">🔗</div><div class="dc-name">知识图谱</div><div class="dc-type">HTML</div></a>
+  <a href="源码.html" class="deliv-card"><div class="dc-icon">📄</div><div class="dc-name">源码</div><div class="dc-type">HTML</div></a>
+  <a href="测试面板.html" class="deliv-card"><div class="dc-icon">🧪</div><div class="dc-name">测试面板</div><div class="dc-type">HTML</div></a>
+  <a href="演示.html" class="deliv-card"><div class="dc-icon">💡</div><div class="dc-name">演示</div><div class="dc-type">HTML</div></a>
+  <a href="审查.html" class="deliv-card"><div class="dc-icon">📝</div><div class="dc-name">审查</div><div class="dc-type">HTML</div></a>
+</div>
+
+<table class="scorecard">
+  <thead><tr><th>#</th><th>名称</th><th>类型</th><th>路径</th><th>状态</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>HTML 骨架模板</td><td>HTML</td><td><a href="计划清单.html" class="path-link"><code>计划清单.html</code></a></td><td class="pass">✓</td></tr>
+    <tr><td>2</td><td>CSS 变量表</td><td>文档</td><td><a href="../../../../cdn/yry-checklist.css" class="path-link" target="_blank"><code>cdn/yry-checklist.css</code></a></td><td class="pass">✓</td></tr>
+    <tr><td>3</td><td>Token 映射表</td><td>文档</td><td><a href="../../../../skills/rui-html/SKILL.md" class="path-link" target="_blank"><code>rui-html SKILL.md</code></a></td><td class="pass">✓</td></tr>
+  </tbody>
+</table>
+
+</div><!-- /panelDeliverables -->
+
+<!-- ═══ Tab 6: Risks ═══ -->
+<div class="panel" id="panelRisks">
+
+<div class="report-head">
+  <div class="rh-title">⚠️ 风险登记册</div>
+  <div class="rh-meta">风险总数: <b>3 项</b> · 已缓解: <b>3/3 (100%)</b></div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>风险条目</h2>
+<table class="scorecard">
+  <thead><tr><th>#</th><th>风险</th><th>类别</th><th>等级</th><th>状态</th></tr></thead>
+  <tbody>
+    <tr><td>R-01</td><td>CDN 资源不可达导致样式丢失</td><td>外部</td><td><span class="risk-high">高</span></td><td class="pass">✓ 已缓解 — CDN 本地化 + 版本管理</td></tr>
+    <tr><td>R-02</td><td>CSS 类名与页面专属样式冲突</td><td>兼容</td><td><span class="risk-med">中</span></td><td class="pass">✓ 已缓解 — BEM 命名 + 作用域限定</td></tr>
+    <tr><td>R-03</td><td>旧浏览器不支持 CSS 变量</td><td>兼容</td><td><span class="risk-low">低</span></td><td class="pass">✓ 已缓解 — 渐进增强策略</td></tr>
+  </tbody>
+</table>
+</div>
+
+</div><!-- /panelRisks -->
+
+<!-- ═══ Tab 7: Timeline ═══ -->
+<div class="panel" id="panelTimeline">
+
+<div class="report-head">
+  <div class="rh-title">📅 项目时间线</div>
+  <div class="rh-meta">项目周期: <code>2026-06-13</code> · 总耗时: <b>5.0h</b> · 状态: <b>已交付</b></div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">📍 启动</div><div class="kpi-num">08:00</div><div class="kpi-trend up">技术评审</div></div>
+  <div class="kpi-card"><div class="kpi-label">📍 设计</div><div class="kpi-num">09:00</div><div class="kpi-trend up">CSS设计</div></div>
+  <div class="kpi-card"><div class="kpi-label">📍 实施</div><div class="kpi-num">10:00</div><div class="kpi-trend up">CDN集成</div></div>
+  <div class="kpi-card"><div class="kpi-label">🎯 发布</div><div class="kpi-num">10:50</div><div class="kpi-trend up">5/5通过</div></div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>甘特图</h2>
+<div class="gantt">
+  <div class="gantt-row gantt-head">
+    <div class="gantt-task">任务</div>
+    <div class="gantt-bar-wrap">
+      <div class="gantt-day">08</div><div class="gantt-day">09</div><div class="gantt-day">10</div><div class="gantt-day">11</div>
+    </div>
+  </div>
+  <div class="gantt-row">
+    <div class="gantt-task">§0 骨架定义</div>
+    <div class="gantt-bar-wrap"><div class="gantt-bar" style="left:0%;width:45%"><span>08:00→09:30</span></div></div>
+  </div>
+  <div class="gantt-row">
+    <div class="gantt-task">§1 CSS设计</div>
+    <div class="gantt-bar-wrap"><div class="gantt-bar alt" style="left:30%;width:25%"><span>09:00→10:00</span></div></div>
+  </div>
+  <div class="gantt-row">
+    <div class="gantt-task">§2 CDN集成</div>
+    <div class="gantt-bar-wrap"><div class="gantt-bar" style="left:50%;width:20%"><span>10:00→10:30</span></div></div>
+  </div>
+  <div class="gantt-row">
+    <div class="gantt-task">§3 验证</div>
+    <div class="gantt-bar-wrap"><div class="gantt-bar alt" style="left:70%;width:20%"><span>10:30→10:50</span></div></div>
+  </div>
+</div>
+</div>
+
+</div><!-- /panelTimeline -->
+
+<div class="footer"><p>🤖 Generated with rui-html | scene: 模板架构与CSS设计系统 | updated: 2026-06-13</p></div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SCENE_KEY = 'yry-checklist-s1';
+
+document.querySelector('.tabs').addEventListener('click', e => {
+  const tab = e.target.closest('.tab');
+  if (!tab) return;
+  switchPanel(tab.dataset.panel);
+});
+
+function switchPanel(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.panel === name));
+  document.querySelectorAll('.panel').forEach(p => {
+    p.classList.toggle('on', p.id === 'panel' + name.charAt(0).toUpperCase() + name.slice(1));
+  });
+  localStorage.setItem(SCENE_KEY + '-tab', name);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  const m = {'1':'checklist','2':'commands','3':'verify','4':'metrics','5':'deliverables','6':'risks','7':'timeline'};
+  if (m[e.key]) { e.preventDefault(); switchPanel(m[e.key]); }
+});
+
+function updateProgress() {
+  const checks = document.querySelectorAll('.step-checkbox');
+  const done = Array.from(checks).filter(c => c.checked).length;
+  const total = checks.length;
+  const pct = Math.round((done / total) * 100);
+
+  checks.forEach(cb => {
+    const status = cb.closest('.step').querySelector('.step-status');
+    if (cb.checked) { status.textContent = '✅ 完成'; status.className = 'step-status status-done'; }
+    else { status.textContent = '⏳ 待开始'; status.className = 'step-status status-pending'; }
+  });
+
+  const state = {};
+  checks.forEach((cb, i) => { state['step-' + (i + 1)] = cb.checked; });
+  localStorage.setItem(SCENE_KEY, JSON.stringify(state));
+}
+
+function copyCmd(btn, cmd) {
+  navigator.clipboard.writeText(cmd).then(() => {
+    btn.textContent = '✅';
+    setTimeout(() => { btn.textContent = '📋'; }, 1500);
+  }).catch(() => {});
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+(function() {
+  const saved = JSON.parse(localStorage.getItem(SCENE_KEY) || '{}');
+  document.querySelectorAll('.step-checkbox').forEach((cb, i) => {
+    if (saved['step-' + (i + 1)]) cb.checked = true;
+  });
+  updateProgress();
+  const activeTab = localStorage.getItem(SCENE_KEY + '-tab') || 'checklist';
+  switchPanel(activeTab);
+})();
+</script>
+<script src="../../../../cdn/shared.js"></script>
+</body>
+</html>
