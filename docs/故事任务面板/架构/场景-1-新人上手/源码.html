@@ -34,10 +34,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
 .panel{display:none;animation:fadeInUp .4s ease both;padding-top:28px}
 .panel.on{display:block}
-.search-wrap{position:relative;flex:1;min-width:180px;max-width:320px;margin-bottom:16px}
-.search-wrap input{width:100%;background:var(--bg-flat);border:var(--border);border-radius:20px;color:var(--text);padding:7px 14px 7px 34px;font-size:.82rem;outline:none;transition:border-color .15s;font-family:inherit}
-.search-wrap input:focus{border-color:rgba(255,193,7,.4)}.search-wrap input::placeholder{color:var(--text3)}
-.search-wrap .si{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.8rem;color:var(--text3);pointer-events:none}
 .suite{background:var(--bg-card);border:var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow);overflow:hidden;transition:border-color .2s}
 .suite.open{border-color:rgba(255,255,255,.08)}
 .suite.focused{border-color:rgba(255,193,7,.4)}
@@ -131,7 +127,7 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
   <span class="tab" data-panel="spec">📋 模块清单</span>
 </div>
 
-<div class="panel on" id="panelFiles"><div style="margin-bottom:12px;display:flex;gap:8px"><div class="search-wrap"><span class="si">🔍</span><input id="fileSearch" placeholder="搜索文件…" oninput="onSearch(this.value)"></div></div><div id="filesContent"></div></div>
+<div class="panel on" id="panelFiles"><div id="filesContent"></div></div>
 <div class="panel" id="panelBrowse"><div id="browseContent"></div></div>
 <div class="panel" id="panelDeps">
   <div class="card"><h2>新人上手路径</h2>

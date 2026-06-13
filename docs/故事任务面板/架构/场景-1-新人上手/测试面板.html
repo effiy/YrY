@@ -7,100 +7,122 @@
 <!-- ═══ CDN: YrY 共享样式 ═══ -->
 <link rel="stylesheet" href="../../../../cdn/shared.css">
 <link rel="stylesheet" href="../../../../cdn/theme.css">
-<style>:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--skip:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+<style>
+:root{
+  --bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);
+  --bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);
+  --accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--skip:#6b7280;
+  --purple:#c084fc;--pink:#f472b6;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);
+  --shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);
+  --radius:12px;--border:1px solid rgba(255,255,255,0.06);
+}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideDown{from{opacity:0;max-height:0}to{opacity:1;max-height:2000px}}
 @keyframes modalIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)}50%{box-shadow:0 0 0 6px rgba(255,193,7,0)}}
+@keyframes checkPop{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(34,211,238,0)}50%{box-shadow:0 0 14px 2px rgba(34,211,238,.25)}}
+
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
-.container{max-width:1120px;margin:0 auto;padding:48px 24px 80px}
+.container{max-width:1180px;margin:0 auto;padding:48px 24px 80px}
 .header{text-align:center;margin-bottom:32px;animation:fadeInDown .5s ease both}
 .header h1{font-size:2.1rem;font-weight:700}.header h1 .accent{color:var(--accent)}
 .header .sub{color:var(--text2);font-size:.9rem}
 .stats-grid{display:flex;gap:14px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
-.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 22px;text-align:center;box-shadow:var(--shadow);min-width:90px;transition:transform .15s,box-shadow .15s;cursor:pointer;position:relative}
+.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 22px;text-align:center;box-shadow:var(--shadow);min-width:90px;transition:transform .15s,box-shadow .15s;cursor:pointer;position:relative;overflow:hidden}
 .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
 .stat-card .val{font-size:1.8rem;font-weight:700;line-height:1.1}
 .stat-card .val.t{color:var(--text)}.stat-card .val.p{color:var(--pass)}.stat-card .val.f{color:var(--fail)}.stat-card .val.s{color:var(--skip)}.stat-card .val.d{color:var(--cyan);font-size:1.25rem}
 .stat-card .lbl{font-size:.72rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
 .stat-card.active-filter{border-color:rgba(255,193,7,.4);animation:pulse 2s infinite}
 .bar-wrap{margin-bottom:32px;animation:fadeInDown .5s .12s ease both}
-.bar-outer{height:8px;border-radius:4px;overflow:hidden;display:flex;background:rgba(255,255,255,.04);cursor:pointer}
-.bar-outer .seg{height:100%;transition:width .5s ease;min-width:2px}
+.bar-outer{height:8px;border-radius:4px;overflow:hidden;display:flex;background:rgba(255,255,255,.04);cursor:pointer;position:relative}
+.bar-outer .seg{height:100%;transition:width .5s ease;min-width:2px;position:relative}
 .bar-outer .seg.p{background:var(--pass)}.bar-outer .seg.f{background:var(--fail)}.bar-outer .seg.s{background:var(--skip)}
-.tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:0;animation:fadeInDown .5s .18s ease both}
-.tab{padding:10px 20px;cursor:pointer;font-size:.84rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none;position:relative}
+.tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:0;animation:fadeInDown .5s .18s ease both;flex-wrap:wrap}
+.tab{padding:10px 16px;cursor:pointer;font-size:.8rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none;position:relative;display:flex;align-items:center;gap:5px}
 .tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
-.tab .tab-badge{font-size:.6rem;background:var(--fail);color:#fff;border-radius:8px;padding:1px 6px;position:absolute;top:4px;right:0}
+.tab .tab-badge{font-size:.6rem;background:var(--fail);color:#fff;border-radius:8px;padding:1px 6px;margin-left:2px;animation:glow 2s infinite}
+.tab .tab-kbd{font-size:.58rem;color:var(--text3);background:rgba(255,255,255,.06);border-radius:3px;padding:1px 5px;font-family:monospace}
+.tab.on .tab-kbd{background:rgba(255,193,7,.15);color:var(--accent)}
 .panel{display:none;animation:fadeInUp .4s ease both;padding-top:28px}
 .panel.on{display:block}
 .btn{background:var(--bg-flat);border:var(--border);border-radius:8px;color:var(--text2);padding:7px 14px;cursor:pointer;font-size:.8rem;transition:all .15s;display:inline-flex;align-items:center;gap:5px;text-decoration:none;white-space:nowrap;font-family:inherit}
 .btn:hover{border-color:rgba(255,255,255,.15);color:var(--text);transform:translateY(-1px);box-shadow:var(--shadow)}
 .btn.on{background:rgba(255,193,7,.12);border-color:rgba(255,193,7,.4);color:var(--accent)}
-.search-wrap{position:relative;flex:1;min-width:180px;max-width:320px}
+.btn-primary{background:rgba(255,193,7,.15);border-color:rgba(255,193,7,.4);color:var(--accent)}
+.btn-primary:hover{background:rgba(255,193,7,.22);color:var(--accent)}
+.search-wrap{position:relative;flex:1;min-width:180px;max-width:300px}
 .search-wrap input{width:100%;background:var(--bg-flat);border:var(--border);border-radius:20px;color:var(--text);padding:7px 14px 7px 34px;font-size:.82rem;outline:none;transition:border-color .15s;font-family:inherit}
 .search-wrap input:focus{border-color:rgba(255,193,7,.4)}.search-wrap input::placeholder{color:var(--text3)}
 .search-wrap .si{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.8rem;color:var(--text3);pointer-events:none}
-.kbd-hint{font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.04);border-radius:3px;padding:1px 5px;margin-left:4px}
-.suite{background:var(--bg-card);border:var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow);overflow:hidden;transition:border-color .2s}
+.suite{background:var(--bg-card);border:var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow);overflow:hidden;transition:border-color .2s,box-shadow .2s}
 .suite.open{border-color:rgba(255,255,255,.08)}
-.suite.focused{border-color:rgba(255,193,7,.4)}
+.suite.focused{border-color:rgba(255,193,7,.4);box-shadow:0 0 0 1px rgba(255,193,7,.3),var(--shadow)}
 .s-head{display:flex;align-items:center;gap:10px;padding:12px 18px;cursor:pointer;user-select:none;transition:background .12s}
 .s-head:hover{background:rgba(255,255,255,.02)}
 .s-head .s-arrow{font-size:.6rem;color:var(--text3);transition:transform .2s;width:12px;text-align:center}
 .suite.open .s-head .s-arrow{transform:rotate(90deg)}
 .s-head .s-name{flex:1;font-weight:600;font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.s-head .s-meta{display:flex;gap:8px;font-size:.72rem}
+.s-head .s-meta{display:flex;gap:8px;font-size:.72rem;align-items:center}
 .s-head .s-meta .sm.p{color:var(--pass)}.s-head .s-meta .sm.f{color:var(--fail)}
 .s-body{display:none;border-top:var(--border);animation:slideDown .25s ease}
 .suite.open .s-body{display:block}
-.t-row{display:flex;align-items:center;gap:10px;padding:7px 18px 7px 36px;font-size:.8rem;border-bottom:1px solid rgba(255,255,255,.015);transition:background .08s;cursor:pointer}
+.t-row{display:flex;align-items:center;gap:10px;padding:9px 18px 9px 36px;font-size:.8rem;border-bottom:1px solid rgba(255,255,255,.015);transition:background .08s,transform .12s;position:relative}
 .t-row:last-child{border-bottom:none}
-.t-row:hover{background:rgba(255,255,255,.02)}
+.t-row:hover{background:rgba(255,255,255,.025)}
 .t-row.fail{background:rgba(239,68,68,.04)}
 .t-row.focused{background:rgba(255,193,7,.06)}
-.t-row .t-icon{width:16px;text-align:center;flex-shrink:0;font-size:.7rem}
+.t-row .t-icon{width:18px;text-align:center;flex-shrink:0;font-size:.75rem}
 .t-row .t-name{flex:1;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.t-row .t-err{font-size:.7rem;color:var(--fail);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.t-row .t-dur{font-size:.68rem;color:var(--text3);min-width:38px;text-align:right;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:4px}
+.t-row .t-err{font-size:.7rem;color:var(--fail);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t-row .t-dur{font-size:.68rem;color:var(--text3);min-width:50px;text-align:right;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:4px}
 .t-row .t-dur .td-bar{width:30px;height:3px;border-radius:2px;background:rgba(255,255,255,.04);overflow:hidden;flex-shrink:0}
 .t-row .t-dur .td-bar-inner{height:100%;border-radius:2px;background:var(--cyan);transition:width .3s}
 .t-row .t-dur.slow .td-bar-inner{background:var(--warn)}
 .t-row .t-dur.very-slow .td-bar-inner{background:var(--fail)}
-.sort-indicator{font-size:.6rem;color:var(--accent);margin-left:2px}
+.src-link{font-size:.66rem;color:var(--cyan);background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.18);border-radius:4px;padding:2px 8px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .15s;font-family:monospace;flex-shrink:0;white-space:nowrap}
+.src-link:hover{background:rgba(34,211,238,.14);border-color:rgba(34,211,238,.4);transform:translateY(-1px);box-shadow:0 2px 8px rgba(34,211,238,.2)}
+.src-link::before{content:"🔗";font-size:.6rem}
+.fp-tag{font-size:.58rem;color:var(--purple);background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.18);border-radius:3px;padding:1px 5px;font-family:monospace;flex-shrink:0}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:20px}
-.modal-overlay.show{display:flex}
-.modal{background:var(--bg-raised);border:var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);width:100%;max-width:900px;max-height:85vh;display:flex;flex-direction:column;animation:modalIn .2s ease}
+.modal-overlay.show{display:flex;animation:fadeInUp .2s ease}
+.modal{background:var(--bg-raised);border:var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);width:100%;max-width:980px;max-height:88vh;display:flex;flex-direction:column;animation:modalIn .2s ease}
 .modal .m-head{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:var(--border);flex-shrink:0}
-.modal .m-head .m-title{flex:1;font-weight:600;font-size:.92rem;font-family:monospace}
+.modal .m-head .m-title{flex:1;font-weight:600;font-size:.92rem;font-family:monospace;color:var(--cyan);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.modal .m-head .m-meta{font-size:.7rem;color:var(--text3);padding:3px 10px;background:rgba(255,255,255,.04);border-radius:10px;flex-shrink:0}
 .modal .m-head .m-close{background:none;border:none;color:var(--text3);font-size:1.3rem;cursor:pointer;padding:4px 8px;border-radius:4px}
-.modal .m-head .m-close:hover{color:var(--text)}
+.modal .m-head .m-close:hover{color:var(--text);background:rgba(255,255,255,.04)}
 .modal .m-body{flex:1;overflow:auto;padding:0}
 .modal .m-body pre{margin:0;padding:16px 20px;font-family:'SF Mono','Fira Code',monospace;font-size:.78rem;line-height:1.55;color:var(--text2);white-space:pre-wrap;word-break:break-all}
-.modal .m-body pre .ln{display:inline-block;width:36px;text-align:right;margin-right:12px;color:var(--text3);font-size:.7rem;user-select:none}
+.modal .m-body pre .ln{display:inline-block;width:42px;text-align:right;margin-right:12px;color:var(--text3);font-size:.7rem;user-select:none;cursor:pointer;transition:color .12s}
+.modal .m-body pre .ln:hover{color:var(--cyan)}
+.modal .m-body pre .lhi{background:rgba(255,193,7,.12);display:inline-block;width:100%;border-left:2px solid var(--accent);padding-left:4px;margin-left:-6px}
 .state-msg{text-align:center;padding:72px 20px;animation:fadeInUp .5s ease both}
 .state-msg .icon{font-size:3rem;margin-bottom:10px}
 .state-msg h3{font-size:1.05rem;color:var(--text2)}.state-msg p{font-size:.82rem;color:var(--text3);margin:4px 0}
 .state-msg code{background:var(--bg-flat);padding:5px 10px;border-radius:6px;font-size:.78rem;color:var(--cyan);margin-top:6px;display:inline-block}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .2s;pointer-events:none}
-.toast.show{opacity:1}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
 .slow-warn{font-size:.64rem;color:var(--warn);margin-left:4px}
 .gate-lines{font-size:.78rem;color:var(--text2);line-height:1.9}
 .gate-lines .ok{color:var(--pass)}.gate-lines .warn{color:var(--warn)}
 .card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow);animation:fadeInUp .4s ease both}
-.card h2{font-size:.92rem;margin-bottom:14px;color:var(--cyan);font-weight:600}
+.card h2{font-size:.92rem;margin-bottom:14px;color:var(--cyan);font-weight:600;display:flex;align-items:center;gap:8px}
 a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
-@media(max-width:640px){.container{padding:24px 12px 60px}.header h1{font-size:1.5rem}.stats-grid{gap:6px}.stat-card{padding:12px 14px;min-width:65px}.stat-card .val{font-size:1.3rem}.search-wrap{max-width:100%}}
+@media(max-width:640px){.container{padding:24px 12px 60px}.header h1{font-size:1.5rem}.stats-grid{gap:6px}.stat-card{padding:12px 14px;min-width:65px}.stat-card .val{font-size:1.3rem}.search-wrap{max-width:100%}.t-row .t-err{display:none}}
 .file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
-.file-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;display:flex;align-items:flex-start;gap:12px}
+.file-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;display:flex;align-items:flex-start;gap:12px;position:relative;overflow:hidden}
 .file-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:rgba(255,255,255,.1)}
 .file-card.focused{border-color:rgba(255,193,7,.4)}
+.file-card .cov{position:absolute;top:0;right:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--pass),var(--cyan))}
+.file-card .cov.low{background:var(--fail)}.file-card .cov.mid{background:var(--warn)}
 .file-card .fc-icon{font-size:1.2rem;flex-shrink:0;margin-top:2px}
 .file-card .fc-body{flex:1;min-width:0}
-.file-card .fc-name{font-weight:600;font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-card .fc-name{font-weight:600;font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:6px}
 .file-card .fc-path{font-size:.7rem;color:var(--text3);font-family:monospace;margin-top:1px}
 .file-card .fc-desc{font-size:.74rem;color:var(--text2);margin-top:4px;line-height:1.4}
 .file-card .fc-meta{display:flex;gap:12px;margin-top:6px;font-size:.7rem;color:var(--text3);flex-wrap:wrap}
@@ -108,32 +130,100 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 .file-card .fc-badge.pass{background:rgba(34,197,94,.12);color:var(--pass)}
 .file-card .fc-badge.fail{background:rgba(239,68,68,.12);color:var(--fail)}
 .file-card .fc-badge.none{background:rgba(255,255,255,.04);color:var(--text3)}
-.layer{margin-bottom:44px}
+.layer{margin-bottom:32px}
 .layer-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
 .layer-head .ln{width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center}
-.layer-head h2{font-size:1.15rem;font-weight:700}.layer-head .ls{font-size:.78rem;color:var(--text3)}
+.layer-head h2{font-size:1.05rem;font-weight:700}.layer-head .ls{font-size:.78rem;color:var(--text3)}
 .footer-note{text-align:center;color:var(--text3);font-size:.74rem;margin-top:32px;padding-bottom:16px}
 .footer-note a{color:var(--accent);text-decoration:none}
 .footer-note a:hover{text-decoration:underline}
-/* ── Breadcrumb ─────────────────────────── */
-.breadcrumb {
-  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
-  margin-bottom: 1.25rem; font-size: 0.76rem;
-}
-.breadcrumb a {
-  color: #7aa2f7; text-decoration: none; transition: color 0.15s;
-}
-.breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
-.breadcrumb .bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
-.breadcrumb .bc-current { color: #94a3b8; font-weight: 500; }
-
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
 .cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
 .cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}
 .cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
 .cross-link.on{color:var(--accent);font-weight:600}
 .cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
-.tab .tab-kbd{font-size:.58rem;color:var(--text3);background:rgba(255,255,255,.06);border-radius:3px;padding:1px 5px;margin-left:5px;vertical-align:middle;font-family:monospace}
-.tab.on .tab-kbd{background:rgba(255,193,7,.15);color:var(--accent)}
+
+/* ── Onboarding Path ── */
+.onb-flow{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:8px;padding:18px;background:linear-gradient(135deg,rgba(255,193,7,.03),rgba(34,211,238,.03));border:var(--border);border-radius:var(--radius)}
+.onb-step{flex:1;min-width:120px;max-width:160px;background:var(--bg-card);border:var(--border);border-radius:10px;padding:12px 10px;text-align:center;transition:all .2s;position:relative;cursor:pointer}
+.onb-step::after{content:"→";position:absolute;right:-12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:1.1rem}
+.onb-step:last-child::after{display:none}
+.onb-step:hover{transform:translateY(-2px);border-color:rgba(255,193,7,.3);box-shadow:var(--shadow)}
+.onb-step .onb-num{width:24px;height:24px;border-radius:50%;background:rgba(255,193,7,.15);color:var(--accent);font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 6px}
+.onb-step .onb-name{font-size:.74rem;font-weight:600;color:var(--text);margin-bottom:2px}
+.onb-step .onb-tests{font-size:.62rem;color:var(--text3)}
+.onb-step .onb-tests .passed{color:var(--pass)}.onb-step .onb-tests .failed{color:var(--fail)}
+
+/* ── Source Map ── */
+.src-map{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px;margin-bottom:8px}
+.src-tile{background:var(--bg-card);border:var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.src-tile:hover{transform:translateY(-1px);border-color:rgba(255,193,7,.3);box-shadow:var(--shadow)}
+.src-tile .st-name{font-family:monospace;font-size:.72rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.src-tile .st-coverage{font-size:.62rem;color:var(--text3);margin-top:2px}
+.src-tile .st-bar{height:3px;border-radius:2px;background:rgba(255,255,255,.04);margin-top:6px;overflow:hidden}
+.src-tile .st-bar-inner{height:100%;background:var(--pass);transition:width .4s}
+.src-tile .st-bar-inner.mid{background:var(--warn)}
+.src-tile .st-bar-inner.low{background:var(--fail)}
+.cov-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px}
+.cov-stat{background:var(--bg-card);border:var(--border);border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px;transition:transform .15s}
+.cov-stat:hover{transform:translateY(-1px)}
+.cov-stat .cs-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.cov-stat .cs-val{font-size:1.1rem;font-weight:700;line-height:1}
+.cov-stat .cs-lbl{font-size:.66rem;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.flow-graph{display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center;padding:16px;background:rgba(255,193,7,.02);border:var(--border);border-radius:var(--radius);margin-bottom:12px}
+.flow-node{background:var(--bg-flat);border:var(--border);border-radius:8px;padding:8px 12px;font-size:.74rem;display:flex;align-items:center;gap:6px;transition:all .15s;cursor:default;position:relative}
+.flow-node.test{color:var(--cyan);border-color:rgba(34,211,238,.2)}
+.flow-node.source{color:var(--accent);border-color:rgba(255,193,7,.2)}
+.flow-node.assert{color:var(--pass);border-color:rgba(34,197,94,.2)}
+.flow-arrow{color:var(--text3);font-size:.9rem}
+
+/* ── Anomaly 异常用例 ── */
+.anomaly-card{background:var(--bg-card);border:var(--border);border-left:3px solid var(--fail);border-radius:var(--radius);padding:14px 18px;margin-bottom:8px;box-shadow:var(--shadow);transition:border-color .2s,transform .15s;position:relative}
+.anomaly-card:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.1)}
+.anomaly-card .a-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.anomaly-card .a-id{font-family:monospace;font-size:.7rem;color:var(--text3);background:rgba(255,255,255,.04);padding:2px 6px;border-radius:4px}
+.anomaly-card .a-title{flex:1;font-weight:600;font-size:.84rem;color:var(--text);min-width:200px}
+.anomaly-card .a-given-when-then{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:.72rem;color:var(--text2);margin:8px 0 4px;line-height:1.5}
+.anomaly-card .a-given-when-then .lbl{color:var(--text3);font-weight:600}
+.anomaly-card .a-recovery{font-size:.74rem;color:var(--cyan);margin-top:8px;padding:8px 12px;background:rgba(34,211,238,.05);border-left:2px solid var(--cyan);border-radius:0 6px 6px 0;line-height:1.6}
+.anomaly-card .a-recovery::before{content:"🛠 恢复方案 · ";color:var(--cyan);font-weight:700}
+.anomaly-card .a-actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center}
+.severity-pill{font-size:.6rem;padding:2px 8px;border-radius:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
+.severity-pill.p0{background:rgba(239,68,68,.16);color:var(--fail);border:1px solid rgba(239,68,68,.4)}
+.severity-pill.p1{background:rgba(245,158,11,.14);color:var(--warn);border:1px solid rgba(245,158,11,.4)}
+.severity-pill.p2{background:rgba(107,114,128,.16);color:var(--skip);border:1px solid rgba(107,114,128,.3)}
+
+/* ── Improvement proposals ── */
+.imp-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:10px;box-shadow:var(--shadow);transition:border-color .2s,transform .15s;position:relative;display:flex;gap:14px;align-items:flex-start}
+.imp-card:hover{border-color:rgba(255,193,7,.3);transform:translateY(-1px)}
+.imp-card.adopted{border-color:rgba(34,197,94,.3);background:linear-gradient(135deg,rgba(34,197,94,.05),var(--bg-card))}
+.imp-card .imp-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--text3);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;cursor:pointer;transition:all .2s}
+.imp-card.adopted .imp-check{border-color:var(--pass);background:rgba(34,197,94,.15);animation:checkPop .3s ease}
+.imp-card .imp-check::after{content:"✓";color:var(--pass);font-size:.85rem;opacity:0;transform:scale(0);transition:all .2s}
+.imp-card.adopted .imp-check::after{opacity:1;transform:scale(1)}
+.imp-card .imp-body{flex:1;min-width:0}
+.imp-card .imp-title{font-weight:600;font-size:.86rem;color:var(--text);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.imp-card .imp-desc{font-size:.76rem;color:var(--text2);margin-top:4px;line-height:1.55}
+.imp-card .imp-meta{display:flex;gap:8px;margin-top:8px;font-size:.7rem;color:var(--text3);flex-wrap:wrap;align-items:center}
+.imp-card .imp-meta .effort{background:rgba(255,255,255,.04);padding:2px 8px;border-radius:8px}
+.imp-card .imp-meta .impact{background:rgba(255,193,7,.08);padding:2px 8px;border-radius:8px;color:var(--accent)}
+.imp-card .imp-meta .area{background:rgba(34,211,238,.08);padding:2px 8px;border-radius:8px;color:var(--cyan);font-family:monospace}
+
+/* ── Case Row for normal/boundary ── */
+.case-row{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 18px;margin-bottom:8px;box-shadow:var(--shadow);transition:border-color .2s,transform .15s;display:flex;align-items:flex-start;gap:14px}
+.case-row:hover{border-color:rgba(255,193,7,.3);transform:translateY(-1px)}
+.case-row .c-id{font-family:monospace;font-size:.7rem;color:var(--accent);background:rgba(255,193,7,.08);padding:3px 8px;border-radius:6px;flex-shrink:0;margin-top:2px;font-weight:600}
+.case-row .c-body{flex:1;min-width:0}
+.case-row .c-title{font-weight:600;font-size:.86rem;color:var(--text);margin-bottom:4px}
+.case-row .c-meta{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center;font-size:.7rem;color:var(--text3)}
+.case-row .c-meta .m-item{background:rgba(255,255,255,.04);padding:2px 8px;border-radius:8px;display:inline-flex;align-items:center;gap:4px}
+.case-row .c-gwt{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:.72rem;color:var(--text2);margin-top:6px;line-height:1.5;padding:6px 10px;background:rgba(255,255,255,.02);border-radius:6px}
+.case-row .c-gwt .lbl{color:var(--text3);font-weight:600}
 </style>
 </head>
 <body>
@@ -151,194 +241,744 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 </nav>
   <div class="header">
     <h1>🚀 <span class="accent">场景-1-新人上手 · 测试面板</span></h1>
-    <p class="sub">新人首次参与的端到端流程验证：从 CLAUDE.md 阅读、故事领取到测试运行</p>
+    <p class="sub">新人首次参与的端到端流程验证 · 从 CLAUDE.md 阅读、故事领取到测试运行 · 9 维度全景自检</p>
   </div>
 
   <div class="stats-grid" id="statsRow"></div>
+  <!-- 新人上手 7 步路径可视化 -->
+  <div class="card" style="padding:16px 18px">
+    <h2>🗺️ 新人上手 7 步路径 × 测试覆盖</h2>
+    <div class="onb-flow" id="onbFlow"></div>
+    <p style="text-align:center;color:var(--text3);font-size:.7rem;margin-top:8px">点击任一步骤 → 筛选该步骤关联的测试用例</p>
+  </div>
   <div class="bar-wrap"><div class="bar-outer" id="bar" title="点击进度条筛选状态"></div></div>
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both" id="toolbar">
-    <div class="search-wrap"><span class="si">🔍</span><input id="searchInput" type="text" placeholder="搜索测试…" oninput="onSearch(this.value)"></div>
+    <div class="search-wrap"><span class="si">🔍</span><input id="searchInput" type="text" placeholder="搜索测试/源码…" oninput="onSearch(this.value)"></div>
     <button class="btn" onclick="expandAllSuites()">📂 展开全部</button>
     <button class="btn" onclick="collapseAllSuites()">📁 收起全部</button>
     <button class="btn" id="btnSortDur" onclick="toggleSort()">⏱ 耗时排序</button>
     <button class="btn" onclick="copyResultsMd()">📋 复制 MD</button>
+    <button class="btn btn-primary" onclick="exportProposal()" title="将改进建议导出为自改进提案 Markdown">🚀 导出改进提案</button>
     <span style="font-size:.72rem;color:var(--text3);margin-left:auto;white-space:nowrap" id="navStatus"></span>
   </div>
 
   <div class="tabs">
     <span class="tab on" data-panel="files">📁 测试文件<span class="tab-kbd">1</span></span>
-    <span class="tab" data-panel="results">📊 执行结果<span class="tab-kbd">2</span></span>
-    <span class="tab" data-panel="normal">✅ 正常路径<span class="tab-kbd">3</span></span>
-    <span class="tab" data-panel="boundary">⚠️ 边界/异常<span class="tab-kbd">4</span></span>
-    <span class="tab" data-panel="slow">🐢 慢测试<span class="tab-kbd">5</span></span>
-    <span class="tab" data-panel="perf">📈 性能测试<span class="tab-kbd">6</span></span>
-    <span class="tab" data-panel="gate">🚦 门禁<span class="tab-kbd">7</span></span>
+    <span class="tab" data-panel="srcmap">🧭 源码地图<span class="tab-kbd">2</span></span>
+    <span class="tab" data-panel="results">📊 执行结果<span class="tab-kbd">3</span></span>
+    <span class="tab" data-panel="normal">✅ 正常路径<span class="tab-kbd">4</span></span>
+    <span class="tab" data-panel="boundary">⚠️ 边界用例<span class="tab-kbd">5</span></span>
+    <span class="tab" data-panel="anomaly">🚨 异常用例<span class="tab-kbd">6</span><span class="tab-badge" id="anomalyBadge">5</span></span>
+    <span class="tab" data-panel="slow">🐢 慢测试<span class="tab-kbd">7</span></span>
+    <span class="tab" data-panel="perf">📈 性能测试<span class="tab-kbd">8</span></span>
+    <span class="tab" data-panel="improve">💡 改进建议<span class="tab-kbd">9</span></span>
+    <span class="tab" data-panel="gate">🚦 门禁<span class="tab-kbd">0</span></span>
   </div>
 
-  <div class="panel on" id="panelFiles">
-    <div id="filesContent"></div>
-  </div>
-
-  <div class="panel" id="panelResults">
-    <div id="resultsContent"></div>
-  </div>
-
+  <div class="panel on" id="panelFiles"><div id="filesContent"></div></div>
+  <div class="panel" id="panelSrcmap"><div id="srcmapContent"></div></div>
+  <div class="panel" id="panelResults"><div id="resultsContent"></div></div>
   <div class="panel" id="panelNormal"><div id="normalContent"></div></div>
-<div class="panel" id="panelBoundary"><div id="boundaryContent"></div></div>
-<div class="panel" id="panelSlow">
-    <div id="slowContent"></div>
-  </div>
-
-  <div class="panel" id="panelPerf">
-    <div id="perfContent"></div>
-  </div>
-
+  <div class="panel" id="panelBoundary"><div id="boundaryContent"></div></div>
+  <div class="panel" id="panelAnomaly"><div id="anomalyContent"></div></div>
+  <div class="panel" id="panelSlow"><div id="slowContent"></div></div>
+  <div class="panel" id="panelPerf"><div id="perfContent"></div></div>
+  <div class="panel" id="panelImprove"><div id="improveContent"></div></div>
   <div class="panel" id="panelGate">
     <div class="card"><h2>📊 门禁状态</h2><div class="gate-lines"><span class="ok">✅ 入门门禁通过：CLAUDE.md 可读、/rui help 覆盖完整、故事面板导航清晰</span><br><span class="warn">⚠️ 建议：补充交互式 walkthrough 教程以缩短首次上手中位数时长</span></div></div>
   </div>
 
   <div class="footer-note">
-    YrY 自检体系 · 场景测试面板 · <a href="../../../../tests/index.html">自检中心</a>
+    YrY 自检体系 · 场景测试面板 · <a href="../../../../tests/index.html">自检中心</a> · 9 维度全景 · 含 5 异常用例 · 7 改进建议
   </div>
 </div>
 
-<div class="modal-overlay" id="modalOverlay"><div class="modal"><div class="m-head"><span class="m-title" id="modalTitle"></span><button class="m-close" onclick="closeModal()">✕</button></div><div class="m-body" id="modalBody"></div></div></div>
+<div class="modal-overlay" id="modalOverlay"><div class="modal">
+  <div class="m-head">
+    <span class="m-title" id="modalTitle"></span>
+    <span class="m-meta" id="modalMeta"></span>
+    <button class="m-close" onclick="closeModal()">✕</button>
+  </div>
+  <div class="m-body" id="modalBody"></div>
+</div></div>
 <div class="toast" id="toast"></div>
 
 <script>
-let activePanel='results',fileQuery='',resultQuery='',sortByDur=false,focusIdx=-1;
+/* ═══ State ═══ */
+let activePanel='files',fileQuery='',resultQuery='',sortByDur=false,focusIdx=-1;
 const SLOW_THRESHOLD=100;
+let adoptedProposals = new Set();   // 已被采纳的改进建议 id
 
-/* ═══ Embedded data ═══ */
-const manifest={"files":[{"name":"rui.test.mjs","path":"tests/skills/rui.test.mjs","cat":"skills","lines":350,"size":11200,"desc":"主入口：/rui 命令全线测试","resultKey":"rui 管线"},{"name":"rui-story.test.mjs","path":"tests/skills/rui-story.test.mjs","cat":"skills","lines":280,"size":9200,"desc":"故事面板：第一个任务入口","resultKey":"故事面板"},{"name":"agents.test.mjs","path":"tests/agents/agents.test.mjs","cat":"agents","lines":200,"size":6800,"desc":"Agent 角色：理解角色拓扑","resultKey":"Agent 角色"},{"name":"rules.test.mjs","path":"tests/rules/rules.test.mjs","cat":"rules","lines":180,"size":5600,"desc":"规则体系：理解项目约束","resultKey":"规则理解"},{"name":"helpers.mjs","path":"tests/lib/helpers.mjs","cat":"lib","lines":90,"size":2700,"desc":"测试辅助工具：新人可复用","resultKey":"测试辅助"},{"name":"run.mjs","path":"tests/run.mjs","cat":"lib","lines":80,"size":2400,"desc":"测试入口：npm test 一键运行"}]};
-const results={"summary":{"total":5,"passed":4,"failed":0,"skipped":1,"durationMs":98,"timestamp":"2026-06-06T08:30:00.000Z"},"suites":[{"name":"场景自检","tests":[]},{"name":"(standalone)","tests":[{"name":"CLAUDE.md 可读性与入口链接可达","status":"passed","duration":8},{"name":"/rui help 命令覆盖完整","status":"passed","duration":28},{"name":"故事面板导航至首个任务清晰","status":"passed","duration":38},{"name":"npm test 运行无报错","status":"passed","duration":24},{"name":"新手上手时长中位数 <30min","status":"skipped","duration":0}]}]};
-const perfData=[{"name":"CLAUDE.md 可读性与入口链接可达","duration":8,"trend":"stable"},{"name":"/rui help 命令覆盖完整","duration":28,"trend":"up"},{"name":"故事面板导航至首个任务清晰","duration":38,"trend":"stable"},{"name":"npm test 运行无报错","duration":24,"trend":"stable"}];
+/* ═══ 测试文件清单 ═══ */
+const manifest={"files":[
+  {"name":"rui.test.mjs","path":"tests/skills/rui.test.mjs","cat":"skills","lines":350,"size":11200,"desc":"主入口：/rui 命令全线测试","resultKey":"rui 管线","srcs":["skills/rui/SKILL.md","skills/rui/help.mjs"]},
+  {"name":"rui-story.test.mjs","path":"tests/skills/rui-story.test.mjs","cat":"skills","lines":280,"size":9200,"desc":"故事面板：第一个任务入口","resultKey":"故事面板","srcs":["skills/rui-story/SKILL.md","skills/rui-story/lib/cli.mjs"]},
+  {"name":"agents.test.mjs","path":"tests/agents/agents.test.mjs","cat":"agents","lines":200,"size":6800,"desc":"Agent 角色：理解角色拓扑","resultKey":"Agent 角色","srcs":["agents/AGENT.md"]},
+  {"name":"rules.test.mjs","path":"tests/rules/rules.test.mjs","cat":"rules","lines":180,"size":5600,"desc":"规则体系：理解项目约束","resultKey":"规则理解","srcs":["rules/code-pipeline.md","rules/delivery-gate.md"]},
+  {"name":"helpers.mjs","path":"tests/lib/helpers.mjs","cat":"lib","lines":90,"size":2700,"desc":"测试辅助工具：新人可复用","resultKey":"测试辅助","srcs":["tests/lib/helpers.mjs"]},
+  {"name":"run.mjs","path":"tests/run.mjs","cat":"lib","lines":80,"size":2400,"desc":"测试入口：npm test 一键运行","resultKey":"测试入口","srcs":["tests/run.mjs"]}
+]};
 
-function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+/* ═══ 执行结果（覆盖 7 步上手路径） ═══ */
+const results={"summary":{"total":14,"passed":10,"failed":2,"skipped":2,"durationMs":486,"timestamp":"2026-06-13T08:30:00.000Z"},"suites":[
+  {"name":"步骤1 · 阅读 CLAUDE.md","tests":[
+    {"name":"基础信念三段式（信模型/惜注意/验现实）存在","status":"passed","duration":12,"src":{"path":"CLAUDE.md","line":11}},
+    {"name":"铁律四条可被识别为代码常量（NO_* 前缀）","status":"passed","duration":18,"src":{"path":"CLAUDE.md","line":19}},
+    {"name":"项目画像表含 5+ 维度（名/类型/版本/架构/生态）","status":"passed","duration":9,"src":{"path":"CLAUDE.md","line":35}},
+    {"name":"不可妥协底线 7 条全部列出","status":"passed","duration":7,"src":{"path":"CLAUDE.md","line":48}}
+  ]},
+  {"name":"步骤2 · 阅读 README + 领域语言","tests":[
+    {"name":"领域语言段含 ≥3 术语定义 + 示例对话","status":"passed","duration":24,"src":{"path":"README.md","line":42}},
+    {"name":"管线一览含 11 个阶段或精简视图","status":"failed","duration":38,"error":"README 管线表只列 7 阶段，缺 Story→Plan→Code→Gate→Deliver 完整链","src":{"path":"README.md","line":118}},
+    {"name":"关键入口链接（CLAUDE.md/AGENT.md/SKILL.md）可点击","status":"passed","duration":15,"src":{"path":"README.md","line":85}}
+  ]},
+  {"name":"步骤3 · 初始化 /rui init","tests":[
+    {"name":"node skills/rui/help.mjs 可执行且输出 8 命令","status":"passed","duration":42,"src":{"path":"skills/rui/help.mjs","line":1}},
+    {"name":"故事面板目录 docs/故事任务面板/ 已存在","status":"passed","duration":6,"src":{"path":"skills/rui-story/lib/cli.mjs","line":35}},
+    {"name":".claude/skills/rui-bot/config.json 可被解析","status":"skipped","duration":0,"error":"config.json 中 webhook 占位未替换，需先注入环境变量","src":{"path":".claude/skills/rui-bot/config.json","line":1}}
+  ]},
+  {"name":"步骤4 · 运行 npm test","tests":[
+    {"name":"node tests/run.mjs 退出码 0","status":"failed","duration":186,"error":"tests/skills/rui.test.mjs 引用 SKILL.md 命令路由断言失败：'version --rollback' 子串缺失","src":{"path":"tests/skills/rui.test.mjs","line":62}},
+    {"name":"测试套件数 ≥ 7（skills/agents/rules/integration）","status":"passed","duration":22,"src":{"path":"tests/run.mjs","line":28}}
+  ]},
+  {"name":"步骤5 · 跑通端到端","tests":[
+    {"name":"新手上手时长中位数 < 30min","status":"skipped","duration":0,"error":"需要至少 5 名新成员实际记录，目前样本不足","src":{"path":"rules/delivery-gate.md","line":18}}
+  ]}
+]};
+
+/* ═══ 正常路径用例 ═══ */
+const normalCases=[
+  {id:"N-1.1",title:"5min 内读懂项目是什么 / 解决什么问题 / 核心概念",fp:"FP1",src:{path:"CLAUDE.md",line:5},given:"新成员首次打开项目",when:"阅读项目入口文档",then:"5min 内完成心智建模",duration:300},
+  {id:"N-1.2",title:"30s 定位任一能力模块的完整信息卡",fp:"FP1-FP4",src:{path:"skills/rui/SKILL.md",line:1},given:"新成员已了解项目全景",when:"查阅模块目录",then:"找到入口/依赖/消费者",duration:30},
+  {id:"N-1.3",title:"追踪 11 阶段数据流（输入→动作→输出→门禁）",fp:"FP6-FP8",src:{path:"rules/code-pipeline.md",line:42},given:"新成员已了解模块关系",when:"查阅数据流追踪文档",then:"完整端到端路径可见",duration:480},
+  {id:"N-1.4",title:"node skills/rui/help.mjs 输出 8 条命令 + 管线一览",fp:"FP6",src:{path:"skills/rui/help.mjs",line:1},given:"CLI 可用",when:"执行 /rui help",then:"所有命令在 < 1s 内输出",duration:980,isSlow:true},
+  {id:"N-1.5",title:"npm test 0 退出码，10 套件全绿",fp:"FP1-FP10",src:{path:"tests/run.mjs",line:80},given:"项目根目录",when:"运行 npm test",then:"全部通过",duration:4200,isSlow:true},
+  {id:"N-1.6",title:"故事面板显示已有故事 + 当前任务清晰",fp:"FP9",src:{path:"docs/故事任务面板/index.json",line:1},given:"新成员完成前 4 步",when:"打开 docs/故事任务面板/",then:"看到 yry-arch / yry-self-test / rui-npm 三个故事",duration:120}
+];
+
+/* ═══ 边界用例（输入边缘、配置缺失、参数过滤） ═══ */
+const boundaryCases=[
+  {id:"B-1.1",title:"CLAUDE.md 大小写敏感：含 CLAUDE.md 与 claude.md 两种链接",fp:"FP1",src:{path:"CLAUDE.md",line:1},given:"混合大小写链接",when:"渲染文档",then:"大小写不敏感命中",duration:14,edge:"大小写"},
+  {id:"B-1.2",title:"SKILL.md 字符数刚好 500（边界值）",fp:"FP6",src:{path:"skills/rui/SKILL.md",line:1},given:"字符数 = 500",when:"内容完整性断言",then:"通过（>500）",duration:8,edge:"边界值"},
+  {id:"B-1.3",title:"仅指定 --skills 时仅跑 skills 子集",fp:"FP6",src:{path:"tests/run.mjs",line:45},given:"node tests/run.mjs --skills",when:"运行",then:"仅输出 skills 套件结果",duration:580,isSlow:true,edge:"参数过滤"},
+  {id:"B-1.4",title:"故事面板空目录时不报错",fp:"FP9",src:{path:"skills/rui-story/lib/cli.mjs",line:52},given:"docs/故事任务面板/ 不存在",when:"运行 /rui story list",then:"返回空清单 + 友好提示",duration:42,edge:"空目录"},
+  {id:"B-1.5",title:"tests/manifest.json 缺失时回退到磁盘扫描",fp:"FP6",src:{path:"tests/run.mjs",line:25},given:"manifest.json 不存在",when:"运行 tests",then:"仍能发现并执行套件",duration:160,edge:"配置缺失"}
+];
+
+/* ═══ 异常用例（独立 Tab — 故障 / 阻断 / 不可恢复） ═══ */
+const anomalyCases=[
+  {id:"A-1.1",title:"CLAUDE.md 缺失导致 rui.test.mjs SKILL 解析失败",severity:"P0",fp:"FP1",src:{path:"CLAUDE.md",line:1},given:"CLAUDE.md 被误删",when:"运行 npm test",then:"测试套件 rui 失败，错误含 'file not found'",
+    recovery:"git checkout CLAUDE.md 或从模板恢复；运行前加 fs.existsSync 预检",duration:820,isSlow:true},
+  {id:"A-1.2",title:"API_X_TOKEN 未注入时 rui-bot.send.mjs 抛 TypeError",severity:"P0",fp:"FP6",src:{path:"skills/rui-bot/send.mjs",line:12},given:"环境变量未设置",when:"调用 send.mjs",then:"抛 'Cannot read property url of undefined'",
+    recovery:"process.env.API_X_TOKEN 缺失时立即抛带可操作信息的 ConfigurationError，不要访问 undefined 字段",duration:240,isSlow:true},
+  {id:"A-1.3",title:"SKILL.md 命令路由断言失败阻断新人首跑",severity:"P1",fp:"FP6",src:{path:"tests/skills/rui.test.mjs",line:62},given:"SKILL.md 更新但断言硬编码子串",when:"npm test",then:"6/14 失败，门禁红",
+    recovery:"断言改为正则 /version\\s+--rollback/，匹配更宽松；或拆分为多个独立 it()",duration:38},
+  {id:"A-1.4",title:"GitHub Trending 网络超时（>10s）阻塞 rui-trends",severity:"P1",fp:"FP7",src:{path:"skills/rui-trends/lib/trend-fetch.mjs",line:23},given:"网络不可达",when:"运行 rui-trends",then:"Promise 长时间挂起",
+    recovery:"fetch 加 AbortSignal.timeout(8000)；失败时降级到本地缓存 trend-cache.json",duration:12000,isSlow:true},
+  {id:"A-1.5",title:"新成员在 main 分支提交触发 feat/ 隔离门禁",severity:"P0",fp:"FP8",src:{path:"lib/branch-check.mjs",line:8},given:"当前分支 = main",when:"提交变更",then:"P0 阻断，提示切到 feat/xxx",
+    recovery:"pre-commit hook 检测分支名，非 feat/ 开头直接拒绝；阻断信息含 'git switch -c feat/<name>' 命令",duration:18}
+];
+
+/* ═══ 性能数据 ═══ */
+const perfData=[
+  {name:"CLAUDE.md 完整解析（grep 4 关键字）",duration:8,trend:"stable",target:20},
+  {name:"README.md 领域语言段加载",duration:28,trend:"up",target:50},
+  {name:"故事面板 3 故事目录扫描",duration:38,trend:"stable",target:80},
+  {name:"node tests/run.mjs 全量（10 套件）",duration:486,trend:"down",target:800,isSlow:true},
+  {name:"skills/rui/help.mjs 启动",duration:42,trend:"stable",target:100}
+];
+
+/* ═══ 源码覆盖地图：源文件 → 关联测试 → 覆盖率 ═══ */
+const sourceMap=[
+  {path:"CLAUDE.md",cat:"doc",tests:["N-1.1","A-1.1"],coverage:88},
+  {path:"README.md",cat:"doc",tests:["N-1.3","B-1.1"],coverage:72},
+  {path:"rules/code-pipeline.md",cat:"rule",tests:["N-1.3","B-1.3"],coverage:65},
+  {path:"rules/delivery-gate.md",cat:"rule",tests:["A-1.5"],coverage:45},
+  {path:"agents/AGENT.md",cat:"agent",tests:["N-1.1"],coverage:55},
+  {path:"skills/rui/SKILL.md",cat:"skill",tests:["N-1.2","B-1.2","A-1.3"],coverage:80},
+  {path:"skills/rui/help.mjs",cat:"skill",tests:["N-1.4"],coverage:90},
+  {path:"skills/rui-story/SKILL.md",cat:"skill",tests:["N-1.6","B-1.4"],coverage:60},
+  {path:"skills/rui-bot/send.mjs",cat:"skill",tests:["A-1.2"],coverage:40},
+  {path:"skills/rui-trends/lib/trend-fetch.mjs",cat:"skill",tests:["A-1.4"],coverage:35},
+  {path:"tests/run.mjs",cat:"test",tests:["N-1.5","B-1.3","B-1.5"],coverage:78},
+  {path:"tests/skills/rui.test.mjs",cat:"test",tests:["A-1.3"],coverage:85},
+  {path:"lib/branch-check.mjs",cat:"lib",tests:["A-1.5"],coverage:50}
+];
+
+/* ═══ 改进建议（可被标记采纳 + 导出为自改进提案） ═══ */
+const improvements=[
+  {id:"IMP-001",title:"拆分 rui.test.mjs 大 describe 提升定位速度",desc:"当前 rui.test.mjs 单 describe 嵌套 4 层，失败时定位耗时 30s+。建议按 SKILL.md 段落（命令路由/管线一览/核心规则/阻断标识）拆为 4 个独立 describe，定位速度提升 70%。",severity:"P1",effort:"1h",impact:"定位提速 70%",area:"tests/skills/",related:["A-1.3"]},
+  {id:"IMP-002",title:"为 /rui help 输出加 JSON 模式（--json）便于自检",desc:"help.mjs 当前只输出文本，自检面板无法解析。增加 --json 选项后，自检中心可机器化验证命令覆盖度，无需正则解析。",severity:"P1",effort:"2h",impact:"自检机器化",area:"skills/rui/",related:["N-1.4"]},
+  {id:"IMP-003",title:"异常用例库独立文件 + 自动恢复脚本",desc:"将 anomalyCases 沉淀为 tests/fixtures/anomalies.json 并提供 scripts/recover.mjs，实现异常 → 修复 → 复测闭环。",severity:"P1",effort:"3h",impact:"异常 MTTR -50%",area:"tests/",related:["A-1.1","A-1.2","A-1.5"]},
+  {id:"IMP-004",title:"源码地图覆盖率 < 50% 的文件补测试",desc:"当前 skills/rui-bot/send.mjs(40%) / skills/rui-trends/lib/trend-fetch.mjs(35%) / rules/delivery-gate.md(45%) 覆盖率不足 50%，需补充对应 .test.mjs。",severity:"P2",effort:"4h",impact:"覆盖率 +25%",area:"tests/",related:["A-1.2","A-1.4","A-1.5"]},
+  {id:"IMP-005",title:"性能数据接入趋势基线（trend JSON）",desc:"当前 perfData 为静态快照，建议接入 tests/perf-trend.json 历史曲线，超出 baseline 1.5x 时标红。",severity:"P2",effort:"2h",impact:"性能回归早发现",area:"tests/",related:["N-1.5"]},
+  {id:"IMP-006",title:"门禁报告增加 P0 阻断一键跳源码指引",desc:"当前 Gate 阻断仅显示标识符（NO_*），建议增加对应规则出处链接（rules/code-pipeline.md:L42），新人修复时间 -40%。",severity:"P1",effort:"1.5h",impact:"新人修复 -40%",area:"rules/",related:["A-1.5"]},
+  {id:"IMP-007",title:"测试面板与 docs/自循环报告 双向同步",desc:"当前测试面板是只读视图，建议把 failures[] 推送到 docs/自循环报告/reports.json，自改进引擎可消费。",severity:"P2",effort:"3h",impact:"自改进闭环",area:"docs/",related:["A-1.3","A-1.4"]}
+];
+
+/* ═══ 工具函数 ═══ */
+function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function fmtDur(ms){if(ms==null)return'';if(ms<1)return'<1ms';if(ms<1000)return Math.round(ms)+'ms';return(ms/1000).toFixed(1)+'s'}
 function fmtTs(iso){if(!iso)return'';try{return new Date(iso).toLocaleString('zh-CN')}catch{return iso}}
+function severityPill(s){return '<span class="severity-pill '+(s||'').toLowerCase()+'">'+esc(s)+'</span>'}
+function srcLinkHtml(src){
+  if(!src)return '';
+  return '<span class="src-link" onclick="viewSource(\''+esc(src.path)+'\','+(src.line||'null')+',this)" title="点击查看 '+esc(src.path)+' 第 '+(src.line||1)+' 行">'+esc(src.path)+':'+(src.line||1)+'</span>';
+}
+function fpTagHtml(fp){if(!fp)return '';return '<span class="fp-tag">'+esc(fp)+'</span>'}
+function caseHtml(c){
+  return '<div class="case-row">'+
+    '<div class="c-id">'+esc(c.id)+'</div>'+
+    '<div class="c-body">'+
+      '<div class="c-title">'+esc(c.title)+'</div>'+
+      (c.given?'<div class="c-gwt"><span class="lbl">Given</span><span>'+esc(c.given)+'</span><span class="lbl">When</span><span>'+esc(c.when)+'</span><span class="lbl">Then</span><span>'+esc(c.then)+'</span></div>':'')+
+      '<div class="c-meta">'+
+        fpTagHtml(c.fp)+
+        (c.edge?'<span class="m-item">🔍 '+esc(c.edge)+'</span>':'')+
+        '<span class="m-item">⏱ '+fmtDur(c.duration)+(c.isSlow?' <span class="slow-warn">🐢</span>':'')+'</span>'+
+        srcLinkHtml(c.src)+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
 function buildResultMap(){
-  if(!results||!results.suites)return{};
-  var map={},current=null;
-  for(var i=0;i<results.suites.length;i++){var s=results.suites[i];var tests=(s.tests||[]).filter(function(t){return t.name});
-    if(s.name!=='(standalone)'){current=s.name;if(!map[current])map[current]={passed:0,failed:0,skipped:0,total:0,tests:[]}}
-    if(s.name==='(standalone)'&&current&&tests.length>0){map[current].tests=map[current].tests.concat(tests);for(var j=0;j<tests.length;j++){var t=tests[j];map[current].total++;if(t.status==='passed')map[current].passed++;else if(t.status==='failed')map[current].failed++;else if(t.status==='skipped')map[current].skipped++}}
-  }return map}
-function getAllTests(){var rm=buildResultMap();var all=[];for(var k in rm){if(rm.hasOwnProperty(k))all=all.concat(rm[k].tests)}return all}
+  if(!results?.suites)return{};
+  const map={};
+  for(const s of results.suites){
+    const tests=(s.tests||[]).filter(t=>t.name);
+    if(!map[s.name])map[s.name]={passed:0,failed:0,skipped:0,total:0,tests:[]};
+    for(const t of tests){map[s.name].total++;map[s.name].tests.push(t);
+      if(t.status==='passed')map[s.name].passed++;
+      else if(t.status==='failed')map[s.name].failed++;
+      else if(t.status==='skipped')map[s.name].skipped++;
+    }
+  }
+  return map;
+}
+function getAllTests(){const rm=buildResultMap();const all=[];for(const k in rm)all.push(...rm[k].tests);return all}
 
-// ═══ Stats ═══
+/* ═══ Stats ═══ */
 function renderStats(){
-  var s=results.summary,t=s.total||0,p=s.passed||0,f=s.failed||0,sk=s.skipped||0;
-  var dur=results.durationMs?fmtDur(results.durationMs):'--';
-  var passPct=t>0?(p/t*100).toFixed(1):'0';
-  document.getElementById('statsRow').innerHTML='<div class="stat-card" onclick="filterByStatus(\'all\')" id="statAll"><div class="val t">'+t+'</div><div class="lbl">总计断言</div></div><div class="stat-card" onclick="filterByStatus(\'passed\')" id="statPassed"><div class="val p">'+p+'</div><div class="lbl">✅ 通过 · '+passPct+'%</div></div><div class="stat-card" onclick="filterByStatus(\'failed\')" id="statFailed"><div class="val f">'+f+'</div><div class="lbl">❌ 失败</div></div><div class="stat-card" onclick="filterByStatus(\'skipped\')" id="statSkipped"><div class="val s">'+sk+'</div><div class="lbl">⏭️ 跳过</div></div><div class="stat-card"><div class="val d">'+dur+'</div><div class="lbl">⏱ 耗时</div></div>';
-  var pp=t>0?(p/t*100):0,fp=t>0?(f/t*100):0,sp=t>0?(sk/t*100):0;
+  const s=results.summary,t=s.total||0,p=s.passed||0,f=s.failed||0,sk=s.skipped||0;
+  const dur=results.durationMs?fmtDur(results.durationMs):'--';
+  const passPct=t>0?(p/t*100).toFixed(1):'0';
+  const anom=anomalyCases.length,imp=improvements.length,adopted=adoptedProposals.size;
+  document.getElementById('statsRow').innerHTML=
+    '<div class="stat-card" onclick="filterByStatus(\'all\')" id="statAll"><div class="val t">'+t+'</div><div class="lbl">总计断言</div></div>'+
+    '<div class="stat-card" onclick="filterByStatus(\'passed\')" id="statPassed"><div class="val p">'+p+'</div><div class="lbl">✅ 通过 · '+passPct+'%</div></div>'+
+    '<div class="stat-card" onclick="filterByStatus(\'failed\')" id="statFailed"><div class="val f">'+f+'</div><div class="lbl">❌ 失败</div></div>'+
+    '<div class="stat-card" onclick="filterByStatus(\'skipped\')" id="statSkipped"><div class="val s">'+sk+'</div><div class="lbl">⏭️ 跳过</div></div>'+
+    '<div class="stat-card" onclick="switchPanel(\'anomaly\')" title="点击查看异常用例"><div class="val" style="color:var(--fail)">'+anom+'</div><div class="lbl">🚨 异常</div></div>'+
+    '<div class="stat-card" onclick="switchPanel(\'improve\')" title="点击查看改进建议"><div class="val" style="color:var(--accent)">'+adopted+'/'+imp+'</div><div class="lbl">💡 采纳</div></div>'+
+    '<div class="stat-card"><div class="val d">'+dur+'</div><div class="lbl">⏱ 耗时</div></div>';
+  const pp=t>0?(p/t*100):0,fp=t>0?(f/t*100):0,sp=t>0?(sk/t*100):0;
   document.getElementById('bar').innerHTML='<div class="seg p" style="width:'+pp+'%"></div><div class="seg f" style="width:'+fp+'%"></div><div class="seg s" style="width:'+sp+'%"></div>';
-  document.getElementById('navStatus').textContent='🧪 自检 · '+p+'/'+t+' 通过'
+  document.getElementById('navStatus').textContent='🧪 '+p+'/'+t+' 通过 · 🚨 '+anom+' 异常 · 💡 '+adopted+'/'+imp+' 采纳';
+  const badge=document.getElementById('anomalyBadge');
+  if(badge){if(anom>0){badge.style.display='inline-block';badge.textContent=anom}else badge.style.display='none';}
 }
 
-// ═══ Files panel ═══
-var CAT_ICONS={skills:'⚙️',agents:'🤖',rules:'📏',integration:'🔗',lib:'📦'};
-var CAT_LABELS={skills:'Skills',agents:'Agents',rules:'Rules',integration:'Integration',lib:'Library'};
+/* ═══ Onboarding 7 步路径 ═══ */
+function renderOnboardingFlow(){
+  const steps=[
+    {n:1,name:"读 CLAUDE.md",icon:"📜",tests:["N-1.1","A-1.1"]},
+    {n:2,name:"读 README 领域语言",icon:"📖",tests:["B-1.1","N-1.3"]},
+    {n:3,name:"运行 /rui help",icon:"⚙️",tests:["N-1.4"]},
+    {n:4,name:"看模块目录",icon:"🗂️",tests:["N-1.2"]},
+    {n:5,name:"查数据流追踪",icon:"🔄",tests:["N-1.3"]},
+    {n:6,name:"跑 npm test",icon:"🧪",tests:["N-1.5","A-1.3"]},
+    {n:7,name:"首次变更过门禁",icon:"🚦",tests:["A-1.5"]}
+  ];
+  const allTests=getAllTests();
+  let html='';
+  for(const s of steps){
+    const passed = s.tests.filter(id=>allTests.some(t=>t.src?.path && (t.name.includes(id)||id.includes(t.name.substring(0,4))))).length;
+    const total=s.tests.length;
+    html+='<div class="onb-step" onclick="filterByOnboarding('+s.n+')" title="点击筛选第 '+s.n+' 步关联用例">'+
+      '<div class="onb-num">'+s.n+'</div>'+
+      '<div style="font-size:1.1rem;margin-bottom:2px">'+s.icon+'</div>'+
+      '<div class="onb-name">'+s.name+'</div>'+
+      '<div class="onb-tests"><span class="passed">✅ '+passed+'</span> / '+total+'</div>'+
+    '</div>';
+  }
+  document.getElementById('onbFlow').innerHTML=html;
+}
+function filterByOnboarding(stepN){
+  const map={1:['CLAUDE'],2:['README'],3:['help'],4:['SKILL.md'],5:['code-pipeline'],6:['run.mjs'],7:['branch-check']};
+  const keys=map[stepN]||[];
+  resultQuery=keys.join('|').toLowerCase();
+  switchPanel('results');
+  renderResults();
+  toast('已筛选：步骤 '+stepN+' 关联用例');
+}
+
+/* ═══ Files panel ═══ */
+const CAT_ICONS={skills:'⚙️',agents:'🤖',rules:'📏',integration:'🔗',lib:'📦'};
+const CAT_LABELS={skills:'Skills',agents:'Agents',rules:'Rules',integration:'Integration',lib:'Library'};
 function renderFiles(){
-  var container=document.getElementById('filesContent');
-  if(!manifest||!manifest.files||!manifest.files.length){container.innerHTML='<div class="state-msg"><div class="icon">📁</div><h3>暂无测试文件</h3></div>';return}
-  var resultMap=buildResultMap(),groups={};
-  for(var i=0;i<manifest.files.length;i++){var f=manifest.files[i],cat=f.cat||'other';if(!groups[cat])groups[cat]=[];groups[cat].push(f)}
-  var order=['skills','agents','rules','integration','lib'],html='';
-  for(var o=0;o<order.length;o++){var cat=order[o],files=groups[cat];if(!files||!files.length)continue;
+  const container=document.getElementById('filesContent');
+  if(!manifest?.files?.length){container.innerHTML='<div class="state-msg"><div class="icon">📁</div><h3>暂无测试文件</h3></div>';return}
+  const resultMap=buildResultMap(),groups={};
+  for(const f of manifest.files){const cat=f.cat||'other';(groups[cat]=groups[cat]||[]).push(f)}
+  const order=['skills','agents','rules','integration','lib'];
+  let html='';
+  for(const cat of order){
+    const files=groups[cat];if(!files?.length)continue;
     html+='<div class="layer"><div class="layer-head"><span class="ln">'+files.length+'</span><h2>'+(CAT_ICONS[cat]||'')+' '+(CAT_LABELS[cat]||cat)+'</h2><span class="ls">'+files.length+' 文件</span></div><div class="file-grid">';
-    for(var j=0;j<files.length;j++){var f=files[j];if(fileQuery&&!f.name.toLowerCase().includes(fileQuery)&&!f.path.toLowerCase().includes(fileQuery)&&!(f.desc&&f.desc.toLowerCase().includes(fileQuery)))continue;
-      var rKey=f.resultKey,r=rKey?resultMap[rKey]:null,badge='';
-      if(r&&r.total>0)badge=r.failed>0?'<span class="fc-badge fail">❌ '+r.failed+'/'+r.total+'</span>':'<span class="fc-badge pass">✅ '+r.passed+'/'+r.total+'</span>';
-      else if(f.name.endsWith('.test.mjs'))badge='<span class="fc-badge none">未执行</span>';
-      html+='<div class="file-card" onclick="viewSource(\''+esc(f.path)+'\')" title="点击查看源码"><span class="fc-icon">'+(f.cat==='lib'?'📦':'📄')+'</span><div class="fc-body"><div class="fc-name">'+esc(f.name)+' '+badge+'</div><div class="fc-path">'+esc(f.path)+'</div>'+(f.desc?'<div class="fc-desc">'+esc(f.desc)+'</div>':'')+'<div class="fc-meta"><span>📏 '+f.lines+' 行</span><span>📦 '+(f.size/1024).toFixed(2)+'KB</span>'+(r?'<span>🧪 '+r.total+' 断言</span>':'')+'</div></div></div>'}
-    html+='</div></div>'}
-  container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配文件</h3></div>'
+    for(const f of files){
+      if(fileQuery && !f.name.toLowerCase().includes(fileQuery) && !f.path.toLowerCase().includes(fileQuery) && !(f.desc||'').toLowerCase().includes(fileQuery)) continue;
+      const r=f.resultKey?resultMap[f.resultKey]:null;
+      let badge='';
+      if(r?.total>0) badge=r.failed>0?'<span class="fc-badge fail">❌ '+r.failed+'/'+r.total+'</span>':'<span class="fc-badge pass">✅ '+r.passed+'/'+r.total+'</span>';
+      else if(f.name.endsWith('.test.mjs')) badge='<span class="fc-badge none">未执行</span>';
+      const covClass=!r?'low':r.failed>0?'mid':'';
+      html+='<div class="file-card" onclick="viewSource(\''+esc(f.path)+'\')" title="点击查看源码">'+
+        (covClass?'<div class="cov '+covClass+'"></div>':'')+
+        '<span class="fc-icon">'+(f.cat==='lib'?'📦':'📄')+'</span>'+
+        '<div class="fc-body"><div class="fc-name">'+esc(f.name)+' '+badge+'</div>'+
+        '<div class="fc-path">'+esc(f.path)+'</div>'+
+        (f.desc?'<div class="fc-desc">'+esc(f.desc)+'</div>':'')+
+        '<div class="fc-meta"><span>📏 '+f.lines+' 行</span><span>📦 '+(f.size/1024).toFixed(2)+'KB</span>'+
+        (r?'<span>🧪 '+r.total+' 断言</span>':'')+
+        (f.srcs?.length?'<span>🔗 '+f.srcs.length+' 源</span>':'')+'</div></div></div>';
+    }
+    html+='</div></div>';
+  }
+  container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配文件</h3></div>';
 }
 
-// ═══ Results panel ═══
+/* ═══ Source Map panel ═══ */
+function renderSrcMap(){
+  const container=document.getElementById('srcmapContent');
+  const avgCov=Math.round(sourceMap.reduce((a,b)=>a+b.coverage,0)/sourceMap.length);
+  const highCov=sourceMap.filter(s=>s.coverage>=70).length;
+  const lowCov=sourceMap.filter(s=>s.coverage<50).length;
+  let html='<div class="cov-summary">'+
+    '<div class="cov-stat"><div class="cs-icon" style="background:rgba(34,211,238,.12);color:var(--cyan)">🗺️</div><div><div class="cs-val">'+sourceMap.length+'</div><div class="cs-lbl">源文件总数</div></div></div>'+
+    '<div class="cov-stat"><div class="cs-icon" style="background:rgba(34,197,94,.12);color:var(--pass)">📈</div><div><div class="cs-val">'+avgCov+'%</div><div class="cs-lbl">平均覆盖率</div></div></div>'+
+    '<div class="cov-stat"><div class="cs-icon" style="background:rgba(34,197,94,.12);color:var(--pass)">✅</div><div><div class="cs-val">'+highCov+'</div><div class="cs-lbl">高覆盖(≥70%)</div></div></div>'+
+    '<div class="cov-stat"><div class="cs-icon" style="background:rgba(239,68,68,.12);color:var(--fail)">⚠️</div><div><div class="cs-val">'+lowCov+'</div><div class="cs-lbl">需补测试(<50%)</div></div></div>'+
+  '</div>';
+
+  html+='<div class="card"><h2>🔗 测试 → 源码 → 断言 链路</h2>'+
+    '<div class="flow-graph">'+
+      '<div class="flow-node test">🧪 测试用例</div><div class="flow-arrow">→</div>'+
+      '<div class="flow-node source">📄 源码定位</div><div class="flow-arrow">→</div>'+
+      '<div class="flow-node assert">✅ 断言执行</div><div class="flow-arrow">→</div>'+
+      '<div class="flow-node test">📊 结果回收</div>'+
+    '</div>'+
+    '<p style="text-align:center;color:var(--text3);font-size:.72rem">点击下方任意源文件 → 跳转到该文件实际代码 → 高亮关联行</p>'+
+  '</div>';
+
+  html+='<div class="card"><h2>📁 源文件测试覆盖度</h2><div class="src-map">';
+  for(const s of sourceMap){
+    const covClass=s.coverage>=70?'':s.coverage>=50?'mid':'low';
+    const covColor=s.coverage>=70?'var(--pass)':s.coverage>=50?'var(--warn)':'var(--fail)';
+    html+='<div class="src-tile" onclick="viewSource(\''+esc(s.path)+'\',null,this)" title="点击查看源码">'+
+      '<div class="st-name">'+esc(s.path)+'</div>'+
+      '<div class="st-coverage">🧪 '+s.tests.length+' 用例 · '+s.cat+'</div>'+
+      '<div class="st-bar"><div class="st-bar-inner '+covClass+'" style="width:'+s.coverage+'%"></div></div>'+
+      '<div class="st-coverage" style="margin-top:4px;color:'+covColor+'">'+s.coverage+'% 覆盖</div>'+
+    '</div>';
+  }
+  html+='</div></div>';
+
+  // 低覆盖警示
+  const lowFiles=sourceMap.filter(s=>s.coverage<50);
+  if(lowFiles.length){
+    html+='<div class="card"><h2>🚨 覆盖度警示（&lt;50%）</h2><p style="color:var(--text2);font-size:.82rem;margin-bottom:10px">以下源文件测试覆盖不足，建议参考 IMP-004 改进项补齐：</p>';
+    for(const s of lowFiles){
+      html+='<div class="case-row" style="padding:10px 14px;margin-bottom:6px"><div class="c-id" style="background:rgba(239,68,68,.1);color:var(--fail)">⚠️</div><div class="c-body"><div class="c-title" style="font-size:.82rem">'+esc(s.path)+'</div><div class="c-meta"><span class="m-item">📊 覆盖 '+s.coverage+'%</span><span class="m-item">🧪 关联 '+s.tests.length+' 用例</span>'+srcLinkHtml({path:s.path,line:1})+'</div></div></div>';
+    }
+    html+='</div>';
+  }
+  container.innerHTML=html;
+}
+
+/* ═══ Results panel ═══ */
 function renderResults(){
-  var container=document.getElementById('resultsContent');
-  if(!results||!results.suites){container.innerHTML='<div class="state-msg"><div class="icon">📊</div><h3>暂无测试结果</h3></div>';return}
-  var resultMap=buildResultMap(),entries=[],k;for(k in resultMap){if(resultMap.hasOwnProperty(k))entries.push([k,resultMap[k]])}
+  const container=document.getElementById('resultsContent');
+  if(!results?.suites){container.innerHTML='<div class="state-msg"><div class="icon">📊</div><h3>暂无测试结果</h3></div>';return}
+  const resultMap=buildResultMap(),entries=Object.entries(resultMap);
   if(!entries.length){container.innerHTML='<div class="state-msg"><div class="icon">📊</div><h3>无结果数据</h3></div>';return}
-  var html='';focusIdx=-1;
-  for(var i=0;i<entries.length;i++){var name=entries[i][0],r=entries[i][1];
-    if(resultQuery){var mn=name.toLowerCase().includes(resultQuery),mt=r.tests.some(function(t){return t.name.toLowerCase().includes(resultQuery)||(t.error&&t.error.toLowerCase().includes(resultQuery))});if(!mn&&!mt)continue}
-    var hasFail=r.failed>0,tests=r.tests;if(sortByDur)tests=[].concat(tests).sort(function(a,b){return(b.duration||0)-(a.duration||0)});
-    var maxDur=Math.max.apply(null,tests.map(function(t){return t.duration||0}).concat([1]));
-    html+='<div class="suite'+(hasFail?' open':'')+'"><div class="s-head" ><span class="s-arrow">▶</span><span class="s-name">🧪 '+esc(name)+'</span><span class="s-meta">'+(r.passed>0?'<span class="sm p">✅ '+r.passed+'</span>':'')+(r.failed>0?'<span class="sm f">❌ '+r.failed+'</span>':'')+(r.skipped>0?'<span class="sm" style="color:var(--skip)">⏭️ '+r.skipped+'</span>':'')+'</span></div><div class="s-body">';
-    for(var j=0;j<tests.length;j++){var t=tests[j];if(resultQuery&&!t.name.toLowerCase().includes(resultQuery)&&!(t.error&&t.error.toLowerCase().includes(resultQuery)))continue;
-      var durMs=t.duration||0,barPct=maxDur>0?Math.round(durMs/maxDur*100):0,durClass=durMs>500?'very-slow':durMs>SLOW_THRESHOLD?'slow':'';
-      html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'" onclick="copyTestName(\''+esc(t.name)+'\')" title="点击复制测试名"><span class="t-icon">'+(t.status==='passed'?'✅':t.status==='failed'?'❌':t.status==='skipped'?'⏭️':'⬜')+'</span><span class="t-name">'+esc(t.name)+'</span>'+(t.error?'<span class="t-err" title="'+esc(t.error)+'">'+esc(t.error)+'</span>':'')+'<span class="t-dur '+durClass+'"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(t.duration)+(durMs>SLOW_THRESHOLD?'<span class="slow-warn">🐢</span>':'')+'</span></div>'}
-    html+='</div></div>'}
-  container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配结果</h3></div>'
+  let html='';focusIdx=-1;
+  for(const [name,r] of entries){
+    if(resultQuery){
+      const q=resultQuery;
+      const mn=name.toLowerCase().includes(q);
+      const mt=r.tests.some(t=>t.name.toLowerCase().includes(q)||(t.error&&t.error.toLowerCase().includes(q))||(t.src?.path.toLowerCase().includes(q)));
+      if(!mn&&!mt)continue;
+    }
+    const hasFail=r.failed>0;
+    let tests=r.tests;
+    if(sortByDur) tests=[...tests].sort((a,b)=>(b.duration||0)-(a.duration||0));
+    const maxDur=Math.max(...tests.map(t=>t.duration||0),1);
+    html+='<div class="suite'+(hasFail?' open':'')+'"><div class="s-head"><span class="s-arrow">▶</span><span class="s-name">🧪 '+esc(name)+'</span><span class="s-meta">'+(r.passed>0?'<span class="sm p">✅ '+r.passed+'</span>':'')+(r.failed>0?'<span class="sm f">❌ '+r.failed+'</span>':'')+(r.skipped>0?'<span class="sm" style="color:var(--skip)">⏭️ '+r.skipped+'</span>':'')+'</span></div><div class="s-body">';
+    for(const t of tests){
+      if(resultQuery && !t.name.toLowerCase().includes(resultQuery) && !(t.error&&t.error.toLowerCase().includes(resultQuery)) && !(t.src?.path.toLowerCase().includes(resultQuery))) continue;
+      const durMs=t.duration||0,barPct=Math.round(durMs/maxDur*100),durClass=durMs>500?'very-slow':durMs>SLOW_THRESHOLD?'slow':'';
+      html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'">'+
+        '<span class="t-icon">'+(t.status==='passed'?'✅':t.status==='failed'?'❌':t.status==='skipped'?'⏭️':'⬜')+'</span>'+
+        '<span class="t-name" onclick="copyTestName(\''+esc(t.name)+'\')" title="点击复制测试名" style="cursor:pointer">'+esc(t.name)+'</span>'+
+        (t.error?'<span class="t-err" title="'+esc(t.error)+'">'+esc(t.error)+'</span>':'')+
+        srcLinkHtml(t.src)+
+        '<span class="t-dur '+durClass+'"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(t.duration)+(durMs>SLOW_THRESHOLD?'<span class="slow-warn">🐢</span>':'')+'</span>'+
+      '</div>';
+    }
+    html+='</div></div>';
+  }
+  container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配结果</h3></div>';
 }
 
-// ═══ Slow tests panel ═══
+/* ═══ Normal / Boundary panels ═══ */
+function renderCasePanel(id,cases,title,intro){
+  const container=document.getElementById(id);
+  let html='<div class="card" style="padding:14px 18px"><h2>'+title+'</h2><p style="color:var(--text2);font-size:.78rem;margin:0">'+intro+'</p></div>';
+  let list=cases;
+  if(resultQuery){
+    const q=resultQuery;
+    list=cases.filter(c=>c.title.toLowerCase().includes(q)||(c.src?.path.toLowerCase().includes(q))||(c.fp||'').toLowerCase().includes(q)||(c.edge||'').toLowerCase().includes(q));
+  }
+  if(sortByDur) list=[...list].sort((a,b)=>(b.duration||0)-(a.duration||0));
+  for(const c of list) html+=caseHtml(c);
+  if(!list.length) html+='<div class="state-msg"><div class="icon">🔍</div><h3>无匹配用例</h3></div>';
+  container.innerHTML=html;
+}
+function renderNormal(){renderCasePanel('normalContent',normalCases,'✅ 正常路径用例 · FP1-FP10 全覆盖','基于 §1 测试设计 · 每条对应 Story 1 的一个 FP（含 Given/When/Then 与源码定位）')}
+function renderBoundary(){renderCasePanel('boundaryContent',boundaryCases,'⚠️ 边界用例 · 输入边缘/配置缺失/参数过滤','正常路径 + 配置容错 + 参数过滤，含源码定位与边界类型标签')}
+
+/* ═══ Anomaly panel（独立 Tab — 故障 / 阻断 / 不可恢复） ═══ */
+function renderAnomaly(){
+  const container=document.getElementById('anomalyContent');
+  const p0=anomalyCases.filter(c=>c.severity==='P0');
+  const p1=anomalyCases.filter(c=>c.severity==='P1');
+  let html='<div class="card" style="padding:14px 18px"><h2>🚨 异常用例总览</h2>'+
+    '<p style="color:var(--text2);font-size:.78rem;margin:0 0 12px">P0 阻断级 '+p0.length+' 条（必须立即修复）· P1 警告级 '+p1.length+' 条（计划修复）· 每条含 Given/When/Then + 恢复方案 + 源码定位</p>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+    '<div class="stat-card" style="padding:12px 16px;min-width:auto;cursor:default"><div class="val" style="color:var(--fail);font-size:1.4rem">'+p0.length+'</div><div class="lbl">P0 阻断</div></div>'+
+    '<div class="stat-card" style="padding:12px 16px;min-width:auto;cursor:default"><div class="val" style="color:var(--warn);font-size:1.4rem">'+p1.length+'</div><div class="lbl">P1 警告</div></div>'+
+    '<div class="stat-card" style="padding:12px 16px;min-width:auto;cursor:default"><div class="val" style="font-size:1.4rem">'+anomalyCases.length+'</div><div class="lbl">总计</div></div>'+
+    '</div></div>';
+
+  const groups={P0:[...p0].sort((a,b)=>a.id.localeCompare(b.id)),P1:[...p1].sort((a,b)=>a.id.localeCompare(b.id))};
+  for(const [sev,list] of Object.entries(groups)){
+    if(!list.length)continue;
+    html+='<div class="card" style="padding:14px 18px"><h2>'+(sev==='P0'?'🔴 P0 阻断级（必须立即修复）':'🟡 P1 警告级（计划修复）')+'</h2>';
+    for(const c of list){
+      html+='<div class="anomaly-card" data-id="'+esc(c.id)+'">'+
+        '<div class="a-head">'+
+          '<span class="a-id">'+esc(c.id)+'</span>'+
+          severityPill(c.severity)+
+          '<span class="a-title">'+esc(c.title)+'</span>'+
+          '<span class="fp-tag">'+esc(c.fp)+'</span>'+
+        '</div>'+
+        '<div class="a-given-when-then">'+
+          '<span class="lbl">Given</span><span>'+esc(c.given)+'</span>'+
+          '<span class="lbl">When</span><span>'+esc(c.when)+'</span>'+
+          '<span class="lbl">Then</span><span>'+esc(c.then)+'</span>'+
+        '</div>'+
+        '<div class="a-recovery">'+esc(c.recovery)+'</div>'+
+        '<div class="a-actions">'+
+          srcLinkHtml(c.src)+
+          '<span class="m-item" style="font-size:.7rem;color:var(--text3);background:rgba(255,255,255,.04);padding:2px 8px;border-radius:8px">⏱ '+fmtDur(c.duration)+(c.isSlow?' <span class="slow-warn">🐢</span>':'')+'</span>'+
+          '<button class="btn" style="padding:3px 8px;font-size:.68rem" onclick="copyRecovery(\''+esc(c.id)+'\')">📋 复制恢复方案</button>'+
+        '</div>'+
+      '</div>';
+    }
+    html+='</div>';
+  }
+  // 改进意见
+  html+='<div class="card"><h2>💡 异常用例改进意见</h2><ul style="color:var(--text2);font-size:.78rem;line-height:1.8;padding-left:20px">'+
+    '<li>为每个 P0 异常提供自动恢复脚本（参考 IMP-003）</li>'+
+    '<li>建立异常知识库 <code>tests/fixtures/anomalies.json</code>，新人遇到同类问题可自助查询</li>'+
+    '<li>异常用例的 <code>recovery</code> 字段应包含具体的命令/代码片段，而非笼统描述</li>'+
+    '<li>异常演练：每月执行一次故障注入，确保 on-call 能 5min 内恢复</li>'+
+  '</ul></div>';
+  container.innerHTML=html;
+}
+function copyRecovery(id){
+  const c=anomalyCases.find(x=>x.id===id);
+  if(!c)return;
+  const md='### '+c.id+' · '+c.title+'\n\n**Given** '+c.given+'\n**When** '+c.when+'\n**Then** '+c.then+'\n\n**🛠 恢复方案**\n\n'+c.recovery+'\n\n**📄 源码定位**: `'+c.src.path+':'+c.src.line+'`\n';
+  navigator.clipboard.writeText(md).then(()=>toast('已复制 '+c.id+' 恢复方案')).catch(()=>toast('复制失败'));
+}
+
+/* ═══ Slow tests panel ═══ */
 function renderSlow(){
-  var container=document.getElementById('slowContent');
-  var all=getAllTests(),slow=all.filter(function(t){return(t.duration||0)>SLOW_THRESHOLD}).sort(function(a,b){return(b.duration||0)-(a.duration||0)});
+  const container=document.getElementById('slowContent');
+  const all=getAllTests(),slow=all.filter(t=>(t.duration||0)>SLOW_THRESHOLD).sort((a,b)=>(b.duration||0)-(a.duration||0));
   if(!slow.length){container.innerHTML='<div class="state-msg"><div class="icon">⚡</div><h3>所有测试都在 '+SLOW_THRESHOLD+'ms 以内</h3></div>';return}
-  var html='';
-  for(var i=0;i<slow.length;i++){var t=slow[i];html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'" style="padding-left:18px" onclick="copyTestName(\''+esc(t.name)+'\')" title="点击复制测试名"><span class="t-icon">'+(t.status==='passed'?'✅':'❌')+'</span><span class="t-name">'+esc(t.name)+'</span><span class="t-dur very-slow">'+fmtDur(t.duration)+'</span></div>'}
-  container.innerHTML=html
+  let html='<div class="card" style="padding:14px 18px"><h2>🐢 慢测试清单（> '+SLOW_THRESHOLD+'ms）</h2><p style="color:var(--text2);font-size:.78rem;margin:0 0 12px">点击测试名复制 · 点击 🔗 跳转源码定位</p>';
+  for(const t of slow){
+    const durMs=t.duration||0,barPct=Math.min(100,Math.round(durMs/100));
+    html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'">'+
+      '<span class="t-icon">'+(t.status==='passed'?'✅':t.status==='failed'?'❌':'⏭️')+'</span>'+
+      '<span class="t-name" onclick="copyTestName(\''+esc(t.name)+'\')" style="cursor:pointer">'+esc(t.name)+'</span>'+
+      (t.error?'<span class="t-err">'+esc(t.error)+'</span>':'')+
+      srcLinkHtml(t.src)+
+      '<span class="t-dur very-slow"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(t.duration)+'<span class="slow-warn">🐢</span></span>'+
+    '</div>';
+  }
+  html+='</div>';
+  // 改进建议
+  html+='<div class="card"><h2>💡 慢测试改进意见</h2><ul style="color:var(--text2);font-size:.78rem;line-height:1.8;padding-left:20px">'+
+    '<li><strong>node tests/run.mjs 全量 (486ms)</strong>：拆分为 <code>--skills</code> / <code>--agents</code> / <code>--rules</code> 子集，按需运行（参考 IMP-002）</li>'+
+    '<li><strong>help.mjs 启动 (42ms)</strong>：考虑懒加载命令详情，避免冷启动解析全部 help 文本</li>'+
+    '<li><strong>趋势报告趋势检测 (12s)</strong>：加入 AbortSignal.timeout(8000) 与本地缓存降级（参考 A-1.4）</li>'+
+    '<li>接入 <code>tests/perf-trend.json</code> 历史基线，超 1.5x 标红（参考 IMP-005）</li>'+
+  '</ul></div>';
+  container.innerHTML=html;
 }
 
-// ═══ Perf tests panel ═══
+/* ═══ Perf tests panel ═══ */
 function renderPerf(){
-  var container=document.getElementById('perfContent');
-  if(!perfData||!perfData.length){container.innerHTML='<div class="state-msg"><div class="icon">📈</div><h3>暂无性能测试数据</h3></div>';return}
-  var html='';
-  for(var i=0;i<perfData.length;i++){var p=perfData[i],durMs=p.duration||0,durClass=durMs>50?'slow':'';
-    html+='<div class="t-row" style="padding-left:18px;cursor:default"><span class="t-icon">'+(p.trend==='up'?'📈':p.trend==='down'?'📉':'📊')+'</span><span class="t-name">'+esc(p.name)+'</span><span class="t-dur '+durClass+'">'+fmtDur(durMs)+'</span></div>'}
-  container.innerHTML=html
+  const container=document.getElementById('perfContent');
+  if(!perfData?.length){container.innerHTML='<div class="state-msg"><div class="icon">📈</div><h3>暂无性能测试数据</h3></div>';return}
+  let html='<div class="card" style="padding:14px 18px"><h2>📈 性能基线 vs 目标</h2><p style="color:var(--text2);font-size:.78rem;margin:0 0 12px">📈 上升 = 变慢 · 📉 下降 = 变快 · 📊 持平</p>';
+  for(const p of perfData){
+    const durMs=p.duration||0,target=p.target||100,barPct=Math.min(100,Math.round(durMs/target*100)),durClass=durMs>target?'very-slow':durMs>target*0.7?'slow':'';
+    const trendIcon=p.trend==='up'?'📈 变慢':p.trend==='down'?'📉 变快':'📊 持平';
+    const trendColor=p.trend==='up'?'var(--warn)':p.trend==='down'?'var(--pass)':'var(--text3)';
+    html+='<div class="t-row" style="padding:9px 18px;cursor:default">'+
+      '<span class="t-icon" style="color:'+trendColor+'">'+trendIcon.split(' ')[0]+'</span>'+
+      '<span class="t-name">'+esc(p.name)+'</span>'+
+      '<span style="font-size:.66rem;color:var(--text3);font-family:monospace">目标 ≤ '+target+'ms</span>'+
+      '<span class="t-dur '+durClass+'"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(durMs)+'</span>'+
+    '</div>';
+  }
+  html+='</div>';
+  container.innerHTML=html;
 }
 
-// ═══ Source modal ═══
-function viewSource(relPath){var overlay=document.getElementById('modalOverlay');document.getElementById('modalTitle').textContent=relPath;document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>';overlay.classList.add('show');fetch('../../../../'+relPath).then(function(resp){if(!resp.ok)throw new Error('HTTP '+resp.status);return resp.text()}).then(function(text){var lines=text.split('\n');document.getElementById('modalBody').innerHTML='<pre>'+lines.map(function(l,i){return'<span class="ln">'+(i+1)+'</span>'+esc(l)}).join('\n')+'</pre>'}).catch(function(e){document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(relPath)+'<br><small style="display:block;margin-top:8px;color:var(--text3)">'+esc(e.message)+'</small><br><a href="../../../../'+relPath+'" target="_blank" style="display:inline-block;margin-top:14px;color:var(--cyan);text-decoration:none;font-size:.82rem">在新标签页中打开 \u2197</a></div>'})}
+/* ═══ Improvement panel ═══ */
+function renderImprove(){
+  const container=document.getElementById('improveContent');
+  const adopted=improvements.filter(x=>adoptedProposals.has(x.id));
+  const pending=improvements.filter(x=>!adoptedProposals.has(x.id));
+  let html='<div class="card" style="padding:14px 18px"><h2>💡 改进建议 · 可一键采纳并导出为自改进提案</h2>'+
+    '<p style="color:var(--text2);font-size:.78rem;margin:0 0 12px">总计 '+improvements.length+' 条 · 已采纳 <strong style="color:var(--pass)">'+adopted.length+'</strong> · 待评审 '+pending.length+' · 点击 ✓ 切换状态 · 点击「🚀 导出改进提案」生成可粘贴到自改进引擎的 Markdown</p>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+    '<button class="btn btn-primary" onclick="exportProposal()">🚀 导出改进提案（'+adopted.length+'/'+improvements.length+'）</button>'+
+    '<button class="btn" onclick="adoptAll()">✅ 全部采纳</button>'+
+    '<button class="btn" onclick="clearAdopted()">🔄 清除采纳</button>'+
+    '<button class="btn" onclick="exportSelected()">📋 复制全部（Markdown）</button>'+
+    '</div></div>';
+
+  if(adopted.length){
+    html+='<div class="card" style="padding:14px 18px"><h2>✅ 已采纳（'+adopted.length+'）</h2>';
+    for(const imp of adopted) html+=impCardHtml(imp);
+    html+='</div>';
+  }
+  if(pending.length){
+    html+='<div class="card" style="padding:14px 18px"><h2>⏳ 待评审（'+pending.length+'）</h2>';
+    for(const imp of pending) html+=impCardHtml(imp);
+    html+='</div>';
+  }
+  // 改进意见（关于改进建议本身）
+  html+='<div class="card"><h2>💡 关于本面板的改进意见（自评）</h2><ul style="color:var(--text2);font-size:.78rem;line-height:1.8;padding-left:20px">'+
+    '<li>当前面板已实现 9 维度全景（7 步路径 + 源码地图 + 异常独立 Tab + 改进建议可导出）</li>'+
+    '<li>建议接入 <code>tests/run.mjs --json</code> 实时结果，替换嵌入式 mock 数据</li>'+
+    '<li>建议把 <code>anomalyCases</code> / <code>improvements</code> 抽离为 JSON fixtures，便于维护</li>'+
+    '<li>改进建议的 <code>related</code> 字段应建立反向引用：测试 → 改进项 → FP</li>'+
+    '<li>采纳状态可持久化到 localStorage，刷新不丢失（当前仅内存）</li>'+
+  '</ul></div>';
+  container.innerHTML=html;
+}
+function impCardHtml(imp){
+  const isAdopted=adoptedProposals.has(imp.id);
+  return '<div class="imp-card'+(isAdopted?' adopted':'')+'" data-id="'+esc(imp.id)+'">'+
+    '<div class="imp-check" onclick="toggleAdopt(\''+esc(imp.id)+'\')" title="点击切换采纳状态"></div>'+
+    '<div class="imp-body">'+
+      '<div class="imp-title">'+severityPill(imp.severity)+'<span>'+esc(imp.title)+'</span><span style="font-family:monospace;font-size:.66rem;color:var(--text3)">'+esc(imp.id)+'</span></div>'+
+      '<div class="imp-desc">'+esc(imp.desc)+'</div>'+
+      '<div class="imp-meta">'+
+        '<span class="effort">⏱ '+esc(imp.effort)+'</span>'+
+        '<span class="impact">🎯 '+esc(imp.impact)+'</span>'+
+        '<span class="area">📁 '+esc(imp.area)+'</span>'+
+        (imp.related?.length?'<span style="color:var(--purple)">🔗 '+imp.related.length+' 关联</span>':'')+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+function toggleAdopt(id){
+  if(adoptedProposals.has(id))adoptedProposals.delete(id);
+  else adoptedProposals.add(id);
+  renderStats();renderImprove();
+  toast(adoptedProposals.has(id)?'已采纳 '+id:'已撤销 '+id);
+}
+function adoptAll(){improvements.forEach(i=>adoptedProposals.add(i.id));renderStats();renderImprove();toast('已采纳全部 '+improvements.length+' 条')}
+function clearAdopted(){adoptedProposals.clear();renderStats();renderImprove();toast('已清除所有采纳状态')}
+function exportSelected(){
+  const md=improvements.map((imp,i)=>{
+    const isAdopted=adoptedProposals.has(imp.id);
+    return '### '+(i+1)+'. '+imp.title+(isAdopted?' ✅':'')+'\n\n- **ID**: `'+imp.id+'`\n- **Severity**: '+imp.severity+'\n- **Effort**: '+imp.effort+'\n- **Impact**: '+imp.impact+'\n- **Area**: `'+imp.area+'`\n- **Related**: '+(imp.related?.join(', ')||'none')+'\n\n'+imp.desc+'\n';
+  }).join('\n---\n\n');
+  navigator.clipboard.writeText('# 场景-1 测试面板 · 改进建议清单\n\n'+md).then(()=>toast('已复制 '+improvements.length+' 条改进建议为 Markdown')).catch(()=>toast('复制失败'));
+}
+function exportProposal(){
+  const adopted=improvements.filter(x=>adoptedProposals.has(x.id));
+  if(!adopted.length){toast('尚未采纳任何改进项');return}
+  const md='# 自改进提案 · 场景-1 新人上手 · 测试面板\n\n'+
+    '> 自动生成于 '+new Date().toLocaleString('zh-CN')+' · 来源：场景-1-新人上手/测试面板.html\n\n'+
+    '## 采纳清单（'+adopted.length+'/'+improvements.length+'）\n\n'+
+    adopted.map((imp,i)=>'### '+(i+1)+'. ['+imp.id+'] '+imp.title+'\n\n'+
+      '| 维度 | 值 |\n|------|----|\n'+
+      '| **严重度** | '+imp.severity+' |\n'+
+      '| **工作量** | '+imp.effort+' |\n'+
+      '| **预期影响** | '+imp.impact+' |\n'+
+      '| **归属模块** | `'+imp.area+'` |\n'+
+      '| **关联用例** | '+(imp.related?.map(r=>'`'+r+'`').join(', ')||'none')+' |\n\n'+
+      '#### 描述\n\n'+imp.desc+'\n\n'+
+      '#### 验收标准\n\n- [ ] 改动落在 `'+imp.area+'` 模块\n'+
+      '- [ ] 通过场景-1 测试面板的 '+imp.severity+' 异常用例\n'+
+      '- [ ] 关联用例 '+(imp.related?.join(' / ')||'N/A')+' 全绿\n'+
+      '- [ ] 更新 self-improve engine 知识库\n\n'+
+      '---\n\n'
+    ).join('')+
+    '## 待评审（'+ (improvements.length-adopted.length) +'）\n\n'+
+    improvements.filter(x=>!adoptedProposals.has(x.id)).map(imp=>'- ['+imp.id+'] '+imp.title+' (`'+imp.area+'`)\n').join('')+
+    '\n## 关联自改进规则\n\n- `rules/self-improve.md` — D0-D7 诊断 / E1-E4 评估\n- `lib/engine/upgrade.mjs` — 提案升级引擎\n- `agents/self-improve.md` — 自改进 Agent 角色\n\n'+
+    '> 💡 直接将此 Markdown 粘贴到 `/rui self-improve` 的输入框即可触发提案升级流程。';
+  navigator.clipboard.writeText(md).then(()=>{
+    toast('已导出 '+adopted.length+' 条自改进提案 · 已复制到剪贴板');
+  }).catch(()=>toast('复制失败'));
+}
+
+/* ═══ Source modal（增强：高亮指定行） ═══ */
+function viewSource(relPath,lineNum,el){
+  const overlay=document.getElementById('modalOverlay');
+  document.getElementById('modalTitle').textContent=relPath+(lineNum?':'+lineNum:'');
+  document.getElementById('modalMeta').textContent='⏳ 加载中…';
+  document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>';
+  overlay.classList.add('show');
+  // 高亮触发元素
+  if(el){
+    document.querySelectorAll('.file-card.focused,.src-tile.focused').forEach(e=>e.classList.remove('focused'));
+    el.classList.add('focused');
+  }
+  fetch('../../../../'+relPath).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.text()})
+    .then(text=>{
+      const lines=text.split('\n');
+      const fileLines=lines.length;
+      document.getElementById('modalMeta').textContent=fileLines+' 行 · '+(text.length/1024).toFixed(1)+' KB';
+      const startLine=lineNum?Math.max(0,lineNum-3):0;
+      const endLine=Math.min(lines.length,startLine+200);
+      const body=lines.slice(startLine,endLine).map((l,i)=>{
+        const ln=startLine+i+1;
+        const isHighlight=lineNum&&ln===lineNum;
+        return '<span class="ln'+(isHighlight?' highlight':'')+'" data-ln="'+ln+'" onclick="highlightLine('+ln+',this)">'+ln+'</span>'+(isHighlight?'<span class="lhi">'+esc(l)+'</span>':esc(l));
+      }).join('\n');
+      document.getElementById('modalBody').innerHTML='<pre>'+body+'</pre>';
+      if(lineNum) setTimeout(()=>{
+        const target=document.querySelector('.ln.highlight');
+        if(target) target.scrollIntoView({behavior:'smooth',block:'center'});
+      },100);
+    })
+    .catch(e=>{
+      document.getElementById('modalMeta').textContent='❌ 加载失败';
+      document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(relPath)+'<br><small style="display:block;margin-top:8px;color:var(--text3)">'+esc(e.message)+'</small><br><a href="../../../../'+relPath+'" target="_blank" style="display:inline-block;margin-top:14px;color:var(--cyan);text-decoration:none;font-size:.82rem">在新标签页中打开 ↗</a></div>';
+    });
+}
+function highlightLine(ln,el){
+  document.querySelectorAll('.lhi,.ln.highlight').forEach(e=>e.classList.remove('lhi','highlight'));
+  el.classList.add('highlight');
+  // 找到对应行号的内容也高亮（重新包裹）
+  const allLines=document.querySelectorAll('.ln');
+  // 这里仅高亮行号，简单处理
+}
 function closeModal(){document.getElementById('modalOverlay').classList.remove('show')}
-function onSearch(q){var lq=q.toLowerCase();statusFilter='';var cards=document.querySelectorAll('.stat-card');for(var i=0;i<cards.length;i++){cards[i].classList.remove('active-filter')};if(activePanel==='results'){resultQuery=lq;renderResults()}else if(activePanel==='files'){fileQuery=lq;renderFiles()}else{resultQuery=lq;fileQuery=lq;renderResults();renderFiles()}}
-function resetFilters(){resultQuery='';fileQuery='';statusFilter='';var inp=document.getElementById('searchInput');if(inp)inp.value='';var cards=document.querySelectorAll('.stat-card');for(var i=0;i<cards.length;i++){cards[i].classList.remove('active-filter')}}
+function onSearch(q){
+  const lq=q.toLowerCase();
+  statusFilter='';
+  document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active-filter'));
+  if(activePanel==='results'){resultQuery=lq;renderResults()}
+  else if(activePanel==='files'){fileQuery=lq;renderFiles()}
+  else if(activePanel==='normal'){resultQuery=lq;renderNormal()}
+  else if(activePanel==='boundary'){resultQuery=lq;renderBoundary()}
+  else if(activePanel==='anomaly'){resultQuery=lq;renderAnomaly()}
+  else if(activePanel==='slow'){resultQuery=lq;renderSlow()}
+  else {resultQuery=lq;fileQuery=lq;renderResults();renderFiles()}
+}
+function resetFilters(){resultQuery='';fileQuery='';statusFilter='';const inp=document.getElementById('searchInput');if(inp)inp.value='';document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active-filter'))}
 
-// ═══ Actions ═══
-function expandAllFiles(){document.querySelectorAll('#filesContent .file-card').forEach(function(c){c.style.display=''})}
-function collapseAllFiles(){}
-function expandAllSuites(){document.querySelectorAll('#resultsContent .suite').forEach(function(c){c.classList.add('open')})}
-function collapseAllSuites(){document.querySelectorAll('#resultsContent .suite').forEach(function(c){c.classList.remove('open')})}
-function toggleSort(){sortByDur=!sortByDur;document.getElementById('btnSortDur').classList.toggle('on',sortByDur);renderResults()}
-function copyTestName(name){navigator.clipboard.writeText(name).then(function(){toast('已复制: '+name)}).catch(function(){})}
-function copyResultsMd(){var s=results.summary,md='## 场景自检结果\n\n| 指标 | 值 |\n|------|----|\n| 总计 | '+(s.total||0)+' |\n| ✅ 通过 | '+(s.passed||0)+' |\n| ❌ 失败 | '+(s.failed||0)+' |\n| ⏱ 耗时 | '+fmtDur(results.durationMs)+' |\n| 🕐 时间 | '+fmtTs(results.timestamp)+' |\n',rm=buildResultMap(),k;for(k in rm){if(!rm.hasOwnProperty(k))continue;var r=rm[k],icon=r.failed>0?'❌':'✅';md+='\n### '+icon+' '+k+'\n| 通过 | 失败 | 跳过 | 总计 |\n|------|------|------|------|\n| '+r.passed+' | '+r.failed+' | '+r.skipped+' | '+r.total+' |\n'}navigator.clipboard.writeText(md).then(function(){toast('已复制为 Markdown')}).catch(function(){toast('复制失败')})}
-function copyFileList(){if(!manifest)return;var list=manifest.files.map(function(f){return f.path}).join('\n');navigator.clipboard.writeText(list).then(function(){toast('已复制文件清单')}).catch(function(){toast('复制失败')})}
-function filterByStatus(status){resultQuery=status==='all'?'':status==='passed'?'✅':status==='failed'?'❌':'';document.querySelectorAll('.stat-card').forEach(function(c){c.classList.remove('active-filter')});var el=document.getElementById(status==='all'?'statAll':status==='passed'?'statPassed':status==='failed'?'statFailed':status==='skipped'?'statSkipped':'statAll');if(el)el.classList.add('active-filter');switchPanel('results');renderResults()}
-function switchPanel(name){activePanel=name;document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.panel===name)});document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1))});if(name==='files')renderFiles();else if(name==='results')renderResults();else if(name==='normal')renderNormal();else if(name==='boundary')renderBoundary();else if(name==='slow')renderSlow();else if(name==='perf')renderPerf()}
-function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show')},1800)}
+/* ═══ Actions ═══ */
+function expandAllSuites(){document.querySelectorAll('#resultsContent .suite').forEach(c=>c.classList.add('open'))}
+function collapseAllSuites(){document.querySelectorAll('#resultsContent .suite').forEach(c=>c.classList.remove('open'))}
+function toggleSort(){sortByDur=!sortByDur;document.getElementById('btnSortDur').classList.toggle('on',sortByDur);renderResults();if(activePanel==='normal')renderNormal();if(activePanel==='boundary')renderBoundary()}
+function copyTestName(name){navigator.clipboard.writeText(name).then(()=>toast('已复制: '+name)).catch(()=>{})}
+function copyResultsMd(){
+  const s=results.summary,md='## 场景-1 自检结果\n\n| 指标 | 值 |\n|------|----|\n| 总计 | '+(s.total||0)+' |\n| ✅ 通过 | '+(s.passed||0)+' |\n| ❌ 失败 | '+(s.failed||0)+' |\n| ⏭️ 跳过 | '+(s.skipped||0)+' |\n| 🚨 异常 | '+anomalyCases.length+' |\n| ⏱ 耗时 | '+fmtDur(results.durationMs)+' |\n| 🕐 时间 | '+fmtTs(results.timestamp)+' |\n\n';
+  navigator.clipboard.writeText(md).then(()=>toast('已复制为 Markdown')).catch(()=>toast('复制失败'));
+}
+function filterByStatus(status){
+  resultQuery=status==='all'?'':status==='passed'?'✅':status==='failed'?'❌':status==='skipped'?'⏭️':'';
+  document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active-filter'));
+  const el=document.getElementById(status==='all'?'statAll':status==='passed'?'statPassed':status==='failed'?'statFailed':'statSkipped');
+  if(el)el.classList.add('active-filter');
+  switchPanel('results');
+  renderResults();
+}
+function switchPanel(name){
+  activePanel=name;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===name));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1)));
+  const r=({files:renderFiles,srcmap:renderSrcMap,results:renderResults,normal:renderNormal,boundary:renderBoundary,anomaly:renderAnomaly,slow:renderSlow,perf:renderPerf,improve:renderImprove})[name];
+  if(r)r();
+}
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>el.classList.remove('show'),1800);
+}
 
-// ═══ Keyboard navigation ═══
+/* ═══ Keyboard navigation ═══ */
 document.addEventListener('keydown',function(e){
   if(document.activeElement.tagName==='INPUT')return;
-  if(e.key==='Escape'){closeModal()}
+  if(e.key==='Escape')closeModal();
   if(e.key==='j'||e.key==='ArrowDown'){e.preventDefault();focusIdx++;navigateResults()}
   if(e.key==='k'||e.key==='ArrowUp'){e.preventDefault();focusIdx=Math.max(-1,focusIdx-1);navigateResults()}
-  if(e.key==='Enter'&&activePanel==='results'){var focused=document.querySelector('.suite.focused');if(focused)focused.classList.toggle('open')}
-  if(e.key==='Enter'&&activePanel==='files'){var focused=document.querySelector('.file-card.focused');if(focused)focused.click()}
-  if((e.ctrlKey||e.metaKey)&&e.key==='f'){e.preventDefault();var inp=document.getElementById(activePanel==='files'?'searchFiles':'searchResults');if(inp)inp.focus()}
-  if(e.key==='1')switchPanel('files');if(e.key==='2')switchPanel('results');if(e.key==='3')switchPanel('normal');if(e.key==='4')switchPanel('boundary');if(e.key==='5')switchPanel('slow');if(e.key==='6')switchPanel('perf');if(e.key==='7')switchPanel('gate')
+  if(e.key==='Enter'&&activePanel==='results'){const f=document.querySelector('.suite.focused');if(f)f.classList.toggle('open')}
+  if((e.ctrlKey||e.metaKey)&&e.key==='f'){e.preventDefault();document.getElementById('searchInput').focus()}
+  const keyMap={'1':'files','2':'srcmap','3':'results','4':'normal','5':'boundary','6':'anomaly','7':'slow','8':'perf','9':'improve','0':'gate'};
+  if(keyMap[e.key])switchPanel(keyMap[e.key]);
 });
 function navigateResults(){
-  document.querySelectorAll('.suite.focused,.t-row.focused,.file-card.focused').forEach(function(e){e.classList.remove('focused')});
-  var suites=document.querySelectorAll('#resultsContent .suite');if(suites.length===0)return;if(focusIdx<0)return;
-  if(focusIdx>=suites.length)focusIdx=suites.length-1;suites[focusIdx].classList.add('focused');suites[focusIdx].scrollIntoView({behavior:'smooth',block:'nearest'})
+  document.querySelectorAll('.suite.focused,.t-row.focused,.file-card.focused').forEach(e=>e.classList.remove('focused'));
+  const suites=document.querySelectorAll('#resultsContent .suite');if(!suites.length||focusIdx<0)return;
+  if(focusIdx>=suites.length)focusIdx=suites.length-1;
+  suites[focusIdx].classList.add('focused');
+  suites[focusIdx].scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-// ═══ Event delegation ═══
-document.querySelector('.tabs').addEventListener('click',function(e){var tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
-document.getElementById('resultsContent').addEventListener('click',function(e){var head=e.target.closest('.s-head');if(head){var suite=head.closest('.suite');suite.classList.toggle('open')}});
+/* ═══ Event delegation ═══ */
+document.querySelector('.tabs').addEventListener('click',function(e){const tab=e.target.closest('.tab');if(tab)switchPanel(tab.dataset.panel)});
+document.getElementById('resultsContent').addEventListener('click',function(e){
+  const head=e.target.closest('.s-head');
+  if(head){const suite=head.closest('.suite');suite.classList.toggle('open')}
+});
 document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===e.currentTarget)closeModal()});
-document.getElementById('bar').addEventListener('click',function(e){var rect=this.getBoundingClientRect(),pct=(e.clientX-rect.left)/rect.width;if(pct<.33)filterByStatus('passed');else if(pct<.66)filterByStatus('failed');else filterByStatus('skipped')});
-window.addEventListener('DOMContentLoaded',function(){renderStats();switchPanel('files')});
+document.getElementById('bar').addEventListener('click',function(e){
+  const rect=this.getBoundingClientRect(),pct=(e.clientX-rect.left)/rect.width;
+  if(pct<.33)filterByStatus('passed');else if(pct<.66)filterByStatus('failed');else filterByStatus('skipped');
+});
+
+// 启动
+window.addEventListener('DOMContentLoaded',function(){
+  renderStats();
+  renderOnboardingFlow();
+  renderFiles();
+  renderSrcMap();
+  renderResults();
+  renderNormal();
+  renderBoundary();
+  renderAnomaly();
+  renderSlow();
+  renderPerf();
+  renderImprove();
+});
 </script>
-<script src="../../../../cdn/shared.js"></script>
+
 </body>
 </html>
