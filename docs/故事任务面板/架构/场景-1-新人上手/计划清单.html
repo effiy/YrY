@@ -50,6 +50,14 @@
   <span class="scene-nav-sep">·</span>
   <a class="scene-nav-link" href="../场景-4-依赖变更影响/计划清单.html">📋 场景4 · 依赖变更影响</a>
   <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-5-信任边界与安全面/计划清单.html">📋 场景5 · 信任边界与安全面</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-6-架构断言脚本化校验/计划清单.html">📋 场景6 · 架构断言脚本化校验</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-7-架构漂移持续监测/计划清单.html">📋 场景7 · 架构漂移持续监测</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-8-架构健康度量仪表板/计划清单.html">📋 场景8 · 架构健康度量仪表板</a>
+  <span class="scene-nav-sep">·</span>
   <a class="scene-nav-link story" href="../故事任务.md">📖 故事任务</a>
 </nav>
 
@@ -86,7 +94,7 @@
   <div class="step-body">
     <p>从 README.md → CLAUDE.md → 核心规则 → Agent 角色 → 技能手册，构建推荐阅读顺序。</p>
     <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui init</code>生成项目基线，自动建立学习路径索引</div>
-    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="../../../../README.md" class="dep-badge" target="_blank">📖 README.md</a><a href="../../../../CLAUDE.md" class="dep-badge" target="_blank">📜 CLAUDE.md</a><a href="../../../../rules/code-pipeline.md" class="dep-badge" target="_blank">� code-pipeline.md</a><a href="../../../../agents/AGENT.md" class="dep-badge" target="_blank">🤖 AGENT.md</a><a href="../../../../skills/rui/SKILL.md" class="dep-badge" target="_blank">⚙️ rui/SKILL.md</a></div>
     <div class="code-block">README.md (领域语言) → CLAUDE.md (信念+铁律)
 → rules/code-pipeline.md (管线)
 → agents/AGENT.md (角色拓扑)
@@ -105,7 +113,7 @@
   <div class="step-body">
     <p>"我想了解X" → "去看Y文件的Z章节" 的快速索引表。覆盖 ≥ 10 个常见问题。</p>
     <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --scene 3</code>生成新人导航索引表</div>
-    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a><a href="演示.html" class="dep-badge">💡 演示</a></div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge" target="_blank">🔗 知识图谱</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="../../../../README.md" class="dep-badge" target="_blank">📖 README.md</a></div>
   </div>
 </div>
 </div>
@@ -123,7 +131,7 @@
   <div class="step-body">
     <p>TC-O-1: 首次阅读 30 秒内找到核心概念。TC-O-2: 按学习路径 10 分钟内理解管线。TC-O-3: 新人能独立完成第一个 /rui init。</p>
     <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch</code>让 tester agent 生成上手路径测试用例</div>
-    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="../../../../CLAUDE.md" class="dep-badge" target="_blank">📜 CLAUDE.md</a></div>
   </div>
 </div>
 </div>
@@ -141,7 +149,7 @@
   <div class="step-body">
     <p>编写覆盖"从零到第一个 /rui init"的完整新人指南，包含每一步的说明和截图。</p>
     <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --scene 3</code>生成新人指南文档</div>
-    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="演示.html" class="dep-badge">💡 演示</a></div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a><a href="知识图谱.html" class="dep-badge" target="_blank">🔗 知识图谱</a></div>
   </div>
 </div>
 
@@ -155,7 +163,7 @@
   <div class="step-body">
     <p>收集 ≥ 15 个新人常见问题及解答，按主题分组。</p>
     <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui-story sync</code>同步故事面板中的 FAQ 条目</div>
-    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge" target="_blank">🔗 知识图谱</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="../../../../README.md" class="dep-badge" target="_blank">📖 README.md</a></div>
   </div>
 </div>
 
@@ -169,7 +177,7 @@
   <div class="step-body">
     <p>生成可视化的学习路径图，展示阅读顺序和模块依赖关系。</p>
     <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --output 架构图.html</code>生成学习路径架构图</div>
-    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a><a href="演示.html" class="dep-badge">💡 演示</a></div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
   </div>
 </div>
 </div>
@@ -187,7 +195,7 @@
   <div class="step-body">
     <p>模拟新人：从 README 开始，按 30 秒索引找到目标，验证所有导航链接可达。</p>
     <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node tests/skills/rui.test.mjs --verbose</code>运行上手路径验证</div>
-    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="../../../../README.md" class="dep-badge" target="_blank">📖 README.md</a><a href="../../../../CLAUDE.md" class="dep-badge" target="_blank">📜 CLAUDE.md</a></div>
     <div class="verify-cmd">grep -c "领域语言" README.md && grep -c "铁律" CLAUDE.md</div>
   </div>
 </div>
@@ -202,7 +210,7 @@
   <div class="step-body">
     <p>验证新人指南中所有文档引用路径可达，记录断链并修复。</p>
     <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>node skills/rui-bot/send.mjs --story=yry-arch --status=test-report</code>推送上手路径验证报告</div>
-    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge">🧪 测试面板</a></div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="审查.html" class="dep-badge" target="_blank">📝 审查</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
   </div>
 </div>
 </div>
@@ -220,7 +228,7 @@
   <div class="step-body">
     <p>收集新人上手过程中遇到的所有困惑和摩擦点，按严重程度排序。</p>
     <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui-claude check</code>检查配置是否可以降低上手门槛</div>
-    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge" target="_blank">🔗 知识图谱</a><a href="审查.html" class="dep-badge" target="_blank">📝 审查</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a></div>
   </div>
 </div>
 
@@ -234,7 +242,7 @@
   <div class="step-body">
     <p>根据收集的摩擦点，更新 30 秒导航索引和 FAQ 表。</p>
     <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --output 知识图谱.html</code>更新知识图谱中的导航节点</div>
-    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge">🔗 知识图谱</a></div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="知识图谱.html" class="dep-badge" target="_blank">🔗 知识图谱</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a></div>
   </div>
 </div>
 </div>
@@ -252,6 +260,7 @@
   <div class="step-body">
     <p>验证：学习路径覆盖所有核心文件 · FAQ 覆盖 ≥ 15 个问题 · 架构图为 HTML+SVG · 所有链接可达。</p>
     <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --check p0</code>逐项验证 P0 约束</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="审查.html" class="dep-badge" target="_blank">📝 审查</a><a href="../../../../CLAUDE.md" class="dep-badge" target="_blank">📜 CLAUDE.md</a></div>
   </div>
 </div>
 
@@ -265,7 +274,7 @@
   <div class="step-body">
     <p>生成学习路径可视化架构图。</p>
     <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --output 架构图.html</code>生成完整架构图</div>
-    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge">📐 架构图</a></div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="知识图谱.html" class="dep-badge" target="_blank">🔗 知识图谱</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
   </div>
 </div>
 
@@ -279,6 +288,7 @@
   <div class="step-body">
     <p>验证新人指南中所有交叉引用和文档链接可达，确保无死链。</p>
     <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>/rui doc --story arch --check p0</code>验证所有交叉引用</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="审查.html" class="dep-badge" target="_blank">📝 审查</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
   </div>
 </div>
 
@@ -292,6 +302,7 @@
   <div class="step-body">
     <p>提交所有场景产物，同步文档，发送通知。</p>
     <div class="skill-hint"><span class="hint-icon">▶ Next:</span><code>git add docs/故事任务面板/架构/ && git commit</code>然后 <code>node skills/rui-import/sync.mjs workspace=true</code>最后 <code>node skills/rui-bot/send.mjs --story=yry-arch --status=done</code></div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="审查.html" class="dep-badge" target="_blank">📝 审查</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a></div>
     <div class="code-block">git add docs/故事任务面板/架构/
 git commit -m "docs: 场景-1 新人上手完成"
 node skills/rui-import/sync.mjs workspace=true
@@ -362,7 +373,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done</div>
 
 <div class="verify-list">
   <div class="verify-item"><div class="vi-label">步骤 7 · 上手路径验证</div>
-    <pre>grep -c "领域语言" README.md && grep -c "铁律" CLAUDE.md<span class="cb" onclick="copyCmd(this,'grep -c \"领域语言\" README.md && grep -c \"铁律\" CLAUDE.md')">📋</span></pre>
+    <pre>grep -c 领域语言 README.md && grep -c 铁律 CLAUDE.md<span class="cb" onclick="copyCmd(this,'grep -c 领域语言 README.md && grep -c 铁律 CLAUDE.md')">📋</span></pre>
     <div class="vi-expect">核心概念可被 grep 定位</div>
   </div>
 </div>
