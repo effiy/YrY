@@ -27,7 +27,7 @@
       <a class="stat" href="#layer-story"><div class="num green">6</div><div class="label">故事</div></a>
       <a class="stat" href="#layer-scene"><div class="num green">33</div><div class="label">场景</div></a>
       <a class="stat" href="#layer-agents"><div class="num">9</div><div class="label">Agent 角色</div></a>
-      <a class="stat" href="#layer-rules"><div class="num green">16</div><div class="label">规则</div></a>
+      <a class="stat" href="#layer-rules"><div class="num green">18</div><div class="label">规则</div></a>
       <a class="stat" href="#layer-refs"><div class="num green">9</div><div class="label">参考入口</div></a>
     </div>
 
@@ -803,7 +803,7 @@
       <div class="layer-header">
         <span class="layer-num">5</span>
         <h2>Agent 角色与规则</h2>
-        <span class="layer-stats">9 Agent 角色 + 1 拓扑总纲 · 16 治理规则</span>
+        <span class="layer-stats">9 Agent 角色 + 1 拓扑总纲 · 18 治理规则</span>
         <span class="layer-panels" title="Agent 行为受规则约束，规则合规性由健康检查监控">
           <span class="lp-dot" style="background:#ffc107" title="Agent 角色详情" onclick="event.stopPropagation();layerInfo.show('agents')">🤖</span>
           <span class="lp-dot" style="background:#a78bfa" title="自改进诊断" onclick="event.stopPropagation();PanelHub.open('selfimprove')">🧬</span>
@@ -947,13 +947,13 @@
       <div class="layer-header">
         <span class="layer-num" style="background: var(--color-accent-2);">R</span>
         <h2>治理规则</h2>
-        <span class="layer-stats">16 规则 · 管线纪律 · 安全 · 文档 · 自改进 · 设计原则</span>
+        <span class="layer-stats">18 规则 · 管线纪律 · 安全 · 文档 · 自改进 · 设计原则</span>
         <span class="layer-panels" title="规则详情">
           <span class="lp-dot" style="background:#64DCB4" title="查看规则详情" onclick="event.stopPropagation();layerInfo.show('rules')">📋</span>
         </span>
       </div>
 
-      <div class="sub-title"><span class="accent">&#128736;</span> 管线与执行规则 (4)</div>
+      <div class="sub-title"><span class="accent">&#128736;</span> 管线与执行规则 (5)</div>
       <div class="card-grid">
         <div class="item-card">
           <span class="icon rule">P</span>
@@ -965,6 +965,18 @@
               <span class="tag-chip info">流程规范</span>
             </div>
             <div class="meta"><span class="detail">30KB · Gate A/B · 分支隔离 · 逐模块</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">T</span>
+          <div class="body">
+            <div class="name"><a href="../rules/code-pipeline-techniques.md" target="_blank">code-pipeline-techniques.md</a></div>
+            <div class="desc">管线支撑技术模式 — 贯穿管线各阶段的实战技术模式，每项对应一条 Iron Law</div>
+            <div class="tags-row">
+              <span class="tag-chip green">核心管线</span>
+              <span class="tag-chip info">技术模式</span>
+            </div>
+            <div class="meta"><span class="detail">支撑技术 · Iron Law 实战 · 研究优先开发</span></div>
           </div>
         </div>
         <div class="item-card">
@@ -1005,7 +1017,7 @@
         </div>
       </div>
 
-      <div class="sub-title"><span class="accent">&#128214;</span> 文档规则 (3)</div>
+      <div class="sub-title"><span class="accent">&#128214;</span> 文档规则 (4)</div>
       <div class="card-grid">
         <div class="item-card">
           <span class="icon rule">D</span>
@@ -1017,6 +1029,18 @@
               <span class="tag-chip info">文档规范</span>
             </div>
             <div class="meta"><span class="detail">21KB · 图→文→表 · 不可降级</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">L</span>
+          <div class="body">
+            <div class="name"><a href="../rules/doc-generation-lifecycle.md" target="_blank">doc-generation-lifecycle.md</a></div>
+            <div class="desc">文档生命周期 — 补充文档触发条件 · 文档策展策略 · 例外处理 · 生效标志</div>
+            <div class="tags-row">
+              <span class="tag-chip green">表达优先</span>
+              <span class="tag-chip info">生命周期</span>
+            </div>
+            <div class="meta"><span class="detail">触发·策展·例外·生效标志</span></div>
           </div>
         </div>
         <div class="item-card">
@@ -1089,8 +1113,20 @@
         </div>
       </div>
 
-      <div class="sub-title"><span class="accent">&#128207;</span> 设计与质量管理 (4)</div>
+      <div class="sub-title"><span class="accent">&#128207;</span> 设计与质量管理 (6)</div>
       <div class="card-grid">
+        <div class="item-card">
+          <span class="icon rule">A</span>
+          <div class="body">
+            <div class="name"><a href="../rules/architecture-principles.md" target="_blank">architecture-principles.md</a></div>
+            <div class="desc">架构宪法 — 内核与扩展边界定义、配置 API 规范、代码范式约束、可健康检测的架构基线</div>
+            <div class="tags-row">
+              <span class="tag-chip green">架构宪法</span>
+              <span class="tag-chip info">架构</span>
+            </div>
+            <div class="meta"><span class="detail">内核轻量·扩展丰富·配置API·健康检测</span></div>
+          </div>
+        </div>
         <div class="item-card">
           <span class="icon rule">D</span>
           <div class="body">
@@ -1101,6 +1137,18 @@
               <span class="tag-chip info">架构</span>
             </div>
             <div class="meta"><span class="detail">2.8KB · 9 原则 · 验证标准 · 反例</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">C</span>
+          <div class="body">
+            <div class="name"><a href="../rules/code-paradigm.md" target="_blank">code-paradigm.md</a></div>
+            <div class="desc">代码编程范式约束 — 模块范式、函数范式、错误处理、导入规范、常量定义。可 grep 验证的硬约束，非风格建议</div>
+            <div class="tags-row">
+              <span class="tag-chip green">代码范式</span>
+              <span class="tag-chip info">硬约束</span>
+            </div>
+            <div class="meta"><span class="detail">模块·函数·错误·导入·常量 — 正反例</span></div>
           </div>
         </div>
         <div class="item-card">
