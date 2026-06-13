@@ -369,6 +369,87 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
 .cw-content { font-size:.74rem; color:var(--text2); line-height:1.55; }
 .cw-content b { color:var(--text1); }
 .cw-content code { color:var(--accent); background:rgba(255,193,7,.1); padding:1px 5px; border-radius:3px; font-size:.7rem; }
+
+/* ── Step deliverables (clickable, opens in new tab) ── */
+.step-deliv { background:rgba(16,185,129,.05); border:1px solid rgba(16,185,129,.22); border-left:3px solid #10b981; padding:8px 12px; margin:8px 0; border-radius:0 6px 6px 0; }
+.step-deliv-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
+.step-deliv-head b { font-size:.74rem; color:#10b981; letter-spacing:.02em; }
+.step-deliv-head .sd-hint { font-size:.6rem; color:var(--text3); }
+.step-deliv-head .sd-count { font-size:.62rem; color:#10b981; background:rgba(16,185,129,.1); padding:1px 7px; border-radius:8px; border:1px solid rgba(16,185,129,.25); font-weight:600; }
+.step-deliv-list { display:flex; flex-wrap:wrap; gap:6px; }
+.deliv-link { display:inline-flex; align-items:center; gap:6px; padding:5px 10px; background:rgba(255,255,255,.04); border:1px solid rgba(16,185,129,.28); border-radius:6px; font-size:.72rem; color:var(--text1); text-decoration:none; transition:all .15s; position:relative; }
+.deliv-link:hover { background:rgba(16,185,129,.14); border-color:#10b981; color:#fff; transform:translateY(-1px); box-shadow:0 2px 6px rgba(16,185,129,.25); }
+.deliv-link .dl-icon { font-size:.85rem; line-height:1; }
+.deliv-link .dl-name { font-weight:500; font-family:ui-monospace,"SF Mono",monospace; }
+.deliv-link .dl-size { font-size:.6rem; color:var(--text3); margin-left:2px; }
+.deliv-link:hover .dl-size { color:#a7f3d0; }
+.deliv-link .dl-newtab { font-size:.58rem; opacity:.5; margin-left:1px; }
+.deliv-link:hover .dl-newtab { opacity:1; color:#a7f3d0; }
+.deliv-link.pass::after { content:"✓"; position:absolute; top:-4px; right:-4px; width:14px; height:14px; background:#10b981; color:#fff; border-radius:50%; font-size:.58rem; font-weight:700; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 3px rgba(0,0,0,.3); }
+.deliv-link.placeholder { border-style:dashed; border-color:rgba(255,255,255,.15); color:var(--text3); background:rgba(255,255,255,.02); cursor:default; }
+.deliv-link.placeholder:hover { transform:none; background:rgba(255,255,255,.02); border-color:rgba(255,255,255,.15); color:var(--text3); box-shadow:none; }
+
+/* ── Deliverable summary panel (top of checklist) ── */
+.deliv-summary { background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(34,211,238,.04)); border:1px solid rgba(16,185,129,.25); border-radius:10px; padding:14px 18px; margin-bottom:14px; }
+.ds-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+.ds-title { font-size:.92rem; font-weight:600; color:#10b981; letter-spacing:.02em; display:flex; align-items:center; gap:6px; }
+.ds-meta { font-size:.7rem; color:var(--text3); }
+.ds-meta code { color:var(--cyan); background:rgba(34,211,238,.08); padding:1px 6px; border-radius:4px; font-size:.68rem; }
+.ds-kpi-row { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:10px; }
+@media (max-width:800px){ .ds-kpi-row{grid-template-columns:repeat(3,1fr);} }
+.ds-kpi { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:8px 10px; text-align:center; transition:all .2s; }
+.ds-kpi:hover { border-color:rgba(16,185,129,.4); transform:translateY(-1px); }
+.ds-kpi b { font-size:1.15rem; color:#10b981; line-height:1.1; display:block; }
+.ds-kpi.total b { color:var(--text1); }
+.ds-kpi.fail b { color:#f59e0b; }
+.ds-kpi span { font-size:.6rem; color:var(--text3); margin-top:2px; letter-spacing:.04em; display:block; }
+.ds-progress { height:8px; background:rgba(255,255,255,.06); border-radius:4px; overflow:hidden; position:relative; }
+.ds-progress-fill { height:100%; background:linear-gradient(90deg,#10b981,#22d3ee); border-radius:4px; transition:width .4s; box-shadow:0 0 8px rgba(16,185,129,.4); }
+.ds-progress-label { display:flex; justify-content:space-between; margin-top:4px; font-size:.6rem; color:var(--text3); }
+.ds-progress-label b { color:#10b981; }
+
+/* ── Filter bar (file type) ── */
+.deliv-filter { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:10px; padding-top:10px; border-top:1px dashed rgba(255,255,255,.08); }
+.df-label { font-size:.66rem; color:var(--text3); margin-right:4px; }
+.df-btn { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:14px; font-size:.68rem; color:var(--text2); cursor:pointer; transition:all .15s; user-select:none; }
+.df-btn:hover { background:rgba(34,211,238,.1); border-color:var(--cyan); color:var(--cyan); }
+.df-btn.on { background:rgba(16,185,129,.18); border-color:#10b981; color:#10b981; font-weight:600; }
+.df-btn .df-count { font-size:.6rem; opacity:.7; }
+.df-actions { margin-left:auto; display:flex; gap:4px; }
+.df-action { padding:3px 10px; background:rgba(255,193,7,.08); border:1px solid rgba(255,193,7,.25); border-radius:14px; font-size:.68rem; color:var(--accent); cursor:pointer; transition:all .15s; }
+.df-action:hover { background:rgba(255,193,7,.18); border-color:var(--accent); }
+
+/* ── Step-deliv collapsible ── */
+.step-deliv.collapsed .step-deliv-list { display:none; }
+.step-deliv-head { cursor:pointer; user-select:none; }
+.step-deliv-head:hover { opacity:.9; }
+.step-deliv-toggle { display:inline-block; transition:transform .2s; font-size:.7rem; color:#10b981; margin-right:4px; }
+.step-deliv.collapsed .step-deliv-toggle { transform:rotate(-90deg); }
+.step-deliv-actions { display:inline-flex; gap:4px; align-items:center; }
+.sd-copy { display:inline-block; padding:1px 7px; font-size:.6rem; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:8px; color:var(--text3); cursor:pointer; transition:all .15s; }
+.sd-copy:hover { background:rgba(34,211,238,.12); border-color:var(--cyan); color:var(--cyan); }
+.sd-copy.done { background:rgba(16,185,129,.2); border-color:#10b981; color:#10b981; }
+
+/* ── Empty state after filter ── */
+.step-deliv-list.empty { padding:14px; text-align:center; color:var(--text3); font-size:.72rem; background:rgba(255,255,255,.02); border:1px dashed rgba(255,255,255,.08); border-radius:6px; }
+.deliv-link.dim { opacity:.25; pointer-events:none; }
+
+/* ── Anchor highlight (for cross-link from deliverables tab) ── */
+@keyframes anchorPulse { 0%{box-shadow:0 0 0 0 rgba(34,211,238,.5);} 100%{box-shadow:0 0 0 12px rgba(34,211,238,0);} }
+.step-deliv.flash { animation:anchorPulse 1.2s ease; }
+
+/* ── Step detail (目标/步骤/要点/风险/DoD) ── */
+.step-detail { display:grid; grid-template-columns:78px 1fr; gap:4px 10px; margin:8px 0; padding:8px 12px; background:rgba(255,193,7,.04); border:1px solid rgba(255,193,7,.16); border-left:3px solid var(--accent); border-radius:0 6px 6px 0; }
+@media (max-width:700px){ .step-detail{grid-template-columns:64px 1fr;} }
+.step-detail dt { color:var(--accent); font-weight:600; font-size:.7rem; letter-spacing:.02em; padding-top:1px; }
+.step-detail dd { color:var(--text2); margin:0; font-size:.72rem; line-height:1.55; }
+.step-detail dd code { color:var(--cyan); background:rgba(34,211,238,.08); padding:1px 5px; border-radius:3px; font-size:.68rem; }
+.step-detail dd b { color:var(--text1); font-weight:600; }
+.step-detail dd ul, .step-detail dd ol { margin:0; padding-left:16px; }
+.step-detail dd li { margin:1px 0; line-height:1.5; }
+.step-detail dd li::marker { color:var(--text3); font-size:.7em; }
+.step-detail .sd-tag { display:inline-block; padding:1px 6px; margin-right:3px; font-size:.6rem; background:rgba(34,211,238,.12); color:var(--cyan); border-radius:6px; }
+
 </style>
 </head>
 <body>
@@ -442,6 +523,38 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
   <div class="phase done" title="交付"><div class="p-dot">✓</div><div class="p-name">交付</div><div class="p-count">2/2</div></div>
 </div>
 
+<!-- 📦 交付物总览 -->
+<div class="deliv-summary" id="delivSummary">
+  <div class="ds-head">
+    <div class="ds-title">📦 交付物总览 · 14 步验收</div>
+    <div class="ds-meta">类型分布: <code>HTML·MD·CSS·Test</code> · 点击过滤可快速定位 · <span id="ds-status">已全部就绪 ✓</span></div>
+  </div>
+  <div class="ds-kpi-row">
+    <div class="ds-kpi total"><b id="ds-total">0</b><span>总项数</span></div>
+    <div class="ds-kpi"><b id="ds-pass">0</b><span>✅ 已验收</span></div>
+    <div class="ds-kpi fail"><b id="ds-fail">0</b><span>⚠ 待补</span></div>
+    <div class="ds-kpi"><b id="ds-html">0</b><span>🌐 HTML</span></div>
+    <div class="ds-kpi"><b id="ds-other">0</b><span>📑 其他</span></div>
+  </div>
+  <div class="ds-progress" title="交付物验收率"><div class="ds-progress-fill" id="ds-bar" style="width:100%"></div></div>
+  <div class="ds-progress-label"><span>验收进度</span><b id="ds-pct">100%</b></div>
+
+  <div class="deliv-filter">
+    <span class="df-label">🔍 类型过滤:</span>
+    <span class="df-btn on" data-filter="all">全部 <span class="df-count" id="dfc-all">0</span></span>
+    <span class="df-btn" data-filter="html">🌐 HTML <span class="df-count" id="dfc-html">0</span></span>
+    <span class="df-btn" data-filter="md">📑 Markdown <span class="df-count" id="dfc-md">0</span></span>
+    <span class="df-btn" data-filter="css">🎨 CSS <span class="df-count" id="dfc-css">0</span></span>
+    <span class="df-btn" data-filter="test">🧪 Test <span class="df-count" id="dfc-test">0</span></span>
+    <span class="df-btn" data-filter="other">📦 其他 <span class="df-count" id="dfc-other">0</span></span>
+    <span class="df-actions">
+      <span class="df-action" id="df-expand">📂 全部展开</span>
+      <span class="df-action" id="df-collapse">📁 全部折叠</span>
+      <span class="df-action" id="df-copyall">📋 复制全部路径</span>
+    </span>
+  </div>
+</div>
+
 <div class="section">
 <h2><span class="dot"></span>§0 技术评审<span class="s-done">— 已完成</span></h2>
 
@@ -454,6 +567,33 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
   </div>
   <div class="step-body">
     <p>数据可视化组件将结构化验证数据转化为直观的图表——KPI 卡片、风险热力图、趋势迷你图、分数卡和门禁判定块</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>将 <code>index.md</code> 解析为可编程操作的 <code>Context</code> 对象,把静态模板升级为数据驱动页面。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li><code>markdown-it</code> AST 解析 + 自定义 <code>rule</code> 识别 §0-§4 章节</li>
+          <li>提取表格为 JSON,保留 <code>rowspan / colspan</code> 语义</li>
+          <li>抽取 frontmatter (version / date / tags / link) 为元数据</li>
+          <li>组装 <code>Context { meta, sections, steps, deliverables }</code> 对象</li>
+          <li>JSON Schema 校验 + vitest 单测覆盖 5 章节 / 12 字段</li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>markdown-it AST · JSON Schema · 错误恢复策略 (空章节占位) · 流式解析 (Stream) · 类型契约</dd>
+      <dt>⚠️ 风险</dt><dd>解析失败雪崩 → <code>try/catch + 降级</code> · 表格错位 → <code>colspan</code> 校验 · 大文件 OOM → <code>readline</code> 流式</dd>
+      <dt>✅ DoD</dt><dd><code>Context</code> 对象 100% 覆盖 §0-§4 · 解析耗时 <code>&lt; 100ms</code> · 单测 5/5 通过 · 边界 0 崩溃</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">3 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="计划清单.html" class="deliv-link pass" target="_blank" rel="noopener" title="计划清单.html"><span class="dl-icon">📄</span><span class="dl-name">📄 计划清单.html</span><span class="dl-size">· 本页</span><span class="dl-newtab">↗</span></a>
+        <a href="index.md" class="deliv-link pass" target="_blank" rel="noopener" title="index.md"><span class="dl-icon">📑</span><span class="dl-name">📑 index.md</span><span class="dl-size">· §0</span><span class="dl-newtab">↗</span></a>
+        <a href="架构图.html" class="deliv-link pass" target="_blank" rel="noopener" title="架构图.html"><span class="dl-icon">📐</span><span class="dl-name">📐 架构图.html</span><span class="dl-size">· §0</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
       <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>2.1h</div>
@@ -479,6 +619,32 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
   </div>
   <div class="step-body">
     <p>让计划清单从任务追踪升级为质量总控面板</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>阐明 <b>数据驱动 vs 静态模板</b> 的架构升级,内容与渲染彻底解耦。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>分离 <code>Data / Template / Renderer</code> 三层</li>
+          <li>定义 <code>Context</code> → DOM 的纯函数映射</li>
+          <li>建立版本契约 <code>Context.schema.json</code> (SemVer)</li>
+          <li>支持热重载 (改 <code>index.md</code> → 实时刷新)</li>
+          <li>子场景复用同套解析器</li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>关注点分离 · 纯函数渲染 · Schema 化契约 · 向前兼容 · 零硬编码</dd>
+      <dt>⚠️ 风险</dt><dd>Schema 漂移 → CI 卡口 · 性能下降 → 缓存 <code>Context</code> · 子场景分歧 → 共享测试基线</dd>
+      <dt>✅ DoD</dt><dd>5 子场景共享同解析器 · 新场景接入 <code>≤ 1h</code> · 渲染函数 <code>≥ 90%</code> 纯函数</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">2 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="计划清单.html" class="deliv-link pass" target="_blank" rel="noopener" title="计划清单.html"><span class="dl-icon">📄</span><span class="dl-name">📄 计划清单.html</span><span class="dl-size">· 骨架</span><span class="dl-newtab">↗</span></a>
+        <a href="架构图.html" class="deliv-link pass" target="_blank" rel="noopener" title="架构图.html"><span class="dl-icon">📐</span><span class="dl-name">📐 架构图.html</span><span class="dl-size">· 分层</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
       <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>2.2h</div>
@@ -504,6 +670,32 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
   </div>
   <div class="step-body">
     <p>§0 评审 - 补充 §0 评审 工作项 3</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>完成 §0 评审清单第 3 项: 评审数据流完整性,收集 4 方意见,输出评审纪要。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>按 RACI 矩阵分发评审 checklist 给 PO / Tech Lead / QA / 新人体检官</li>
+          <li>收集结构化意见: <code>阻塞 / 警告 / 建议 / 表扬</code> 四级</li>
+          <li>对阻塞项制定 <code>24h</code> 内修复 SLA</li>
+          <li>评审纪要归档至 <code>docs/.../review/section-0.md</code></li>
+          <li>同步基线至 <code>index.json</code> + 触发企微通知</li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>RACI 责任矩阵 · 结构化评审表 · 阻塞项 SLA · 评审纪要模板 · 变更控制 (Change Control) · 可追溯审计日志</dd>
+      <dt>⚠️ 风险</dt><dd>评审走过场 → 强制 sign-off · 意见分散 → 集中归档 · 阻塞项逃逸 → <code>24h</code> 超时自动升级</dd>
+      <dt>✅ DoD</dt><dd>4 方全部 sign-off · 评审纪要归档 · 阻塞项 0 个 · 警告项有 mitigation · <code>index.json</code> 已更新</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">2 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="计划清单.html" class="deliv-link pass" target="_blank" rel="noopener" title="计划清单.html"><span class="dl-icon">📄</span><span class="dl-name">📄 计划清单.html</span><span class="dl-size">· §0</span><span class="dl-newtab">↗</span></a>
+        <a href="index.md" class="deliv-link pass" target="_blank" rel="noopener" title="index.md"><span class="dl-icon">📑</span><span class="dl-name">📑 index.md</span><span class="dl-size">· §0</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
       <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.7h</div>
@@ -533,6 +725,32 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
   </div>
   <div class="step-body">
     <p>TC-15 | 数字与源数据一致 | 0 偏差</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>TC-1 验证 <b>5 章节 §0-§4 全部正确拆分</b>,DOM 结构 100% 完整。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>用 <code>markdown-it</code> 加载测试用例 <code>cases/standard.md</code></li>
+          <li>解析后断言 <code>ctx.sections.length === 5</code> 且顺序正确</li>
+          <li>snapshot 序列化对比基线 (允许白名单内微差)</li>
+          <li>空章节容错: <code>cases/empty-section.md</code> 不抛错</li>
+          <li>失败即 <code>throw</code> → vitest 退出码 <code>1</code></li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>vitest 单元测试 · snapshot 哈希对比 · 章节白名单 · 错误恢复 (degrade gracefully) · Fast Feedback</dd>
+      <dt>⚠️ 风险</dt><dd>解析器变更 → snapshot 重生成需 PR 评审 · Markdown 方言差异 → 锁 <code>markdown-it</code> 版本</dd>
+      <dt>✅ DoD</dt><dd>5/5 章节识别 · 回归测试 <code>&lt; 3s</code> · 失败有可读 stack · 0 个 flaky</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">2 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="测试面板.html#tc-1" class="deliv-link pass" target="_blank" rel="noopener" title="测试面板.html#tc-1"><span class="dl-icon">🧪</span><span class="dl-name">🧪 测试面板.html</span><span class="dl-size">· TC-1</span><span class="dl-newtab">↗</span></a>
+        <a href="计划清单.html" class="deliv-link pass" target="_blank" rel="noopener" title="计划清单.html"><span class="dl-icon">📄</span><span class="dl-name">📄 计划清单.html</span><span class="dl-size">· 被测</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
       <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>2.1h</div>
@@ -559,6 +777,32 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
   </div>
   <div class="step-body">
     <p>TC-16 | 绿→黄→红渐变 | 等级正确</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>TC-2 验证 <b>步骤表 10 列完整提取</b>,字段 100% 准确,合并单元格自动填充。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>收集 12 字段: <code>step-num / title / owner / pri / status / criteria / deps / ...</code></li>
+          <li>遍历测试用例 <code>cases/tables/*.md</code> (含合并单元格 / 空行 / 多行)</li>
+          <li>断言字段值类型 + 值正确性 (<code>deepStrictEqual</code>)</li>
+          <li><code>colspan</code> 自动 fill 验证</li>
+          <li>JS 引擎耗时 <code>&lt; 50ms</code></li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>deepStrictEqual 强校验 · 字段类型约束 (JSON Schema) · 边界用例矩阵 · 性能基线 (perf bench)</dd>
+      <dt>⚠️ 风险</dt><dd>字段错位 → 锁 <code>列顺序</code> + 列名校验 · 合并单元格漏填 → <code>colspan</code> 强制 fill · 特殊字符 → 转义</dd>
+      <dt>✅ DoD</dt><dd>12/12 字段提取正确 · <code>colspan</code> 100% fill · 性能 <code>&lt; 50ms</code> · 边界用例 0 漏</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">2 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="测试面板.html#tc-2" class="deliv-link pass" target="_blank" rel="noopener" title="测试面板.html#tc-2"><span class="dl-icon">🧪</span><span class="dl-name">🧪 测试面板.html</span><span class="dl-size">· TC-2</span><span class="dl-newtab">↗</span></a>
+        <a href="演示.html" class="deliv-link pass" target="_blank" rel="noopener" title="演示.html"><span class="dl-icon">💡</span><span class="dl-name">💡 演示.html</span><span class="dl-size">· 渲染</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
       <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.4h</div>
@@ -585,6 +829,33 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
   </div>
   <div class="step-body">
     <p>TC-17 | 加权和=总分 | 误差 &lt; 1</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>TC-3 验证 <b>空章节不崩溃</b>,展示占位提示,降级而非抛错。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>构造测试用例 <code>cases/empty/section-3.md</code> (§3 缺失)</li>
+          <li>解析后断言 <code>ctx.sections[3].placeholder === true</code></li>
+          <li>占位文案 <code>"§3 暂无内容"</code> 自动生成</li>
+          <li>渲染时显示 <em>占位卡</em> 而非空白</li>
+          <li>下游消费者按 <code>if (placeholder) skip</code> 优雅降级</li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>Defensive Programming · 占位模式 (Placeholder) · 降级策略 · 错误边界 (Error Boundary) · 显式约定优于隐式</dd>
+      <dt>⚠️ 风险</dt><dd>静默失败 → <code>warn</code> 日志强制输出 · 下游误读 → 强制 <code>placeholder</code> 字段 · 表格空 → 头行 + "无数据" 行</dd>
+      <dt>✅ DoD</dt><dd>5/5 边界用例 (空章节/空表/空字段) 0 崩溃 · 占位文案合理 · 警告日志有输出</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">3 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="测试面板.html#tc-3" class="deliv-link pass" target="_blank" rel="noopener" title="测试面板.html#tc-3"><span class="dl-icon">🧪</span><span class="dl-name">🧪 测试面板.html</span><span class="dl-size">· TC-3</span><span class="dl-newtab">↗</span></a>
+        <a href="../../../cdn/shared.css" class="deliv-link pass" target="_blank" rel="noopener" title="../../../cdn/shared.css"><span class="dl-icon">🌐</span><span class="dl-name">🌐 shared.css</span><span class="dl-size">· CDN 1</span><span class="dl-newtab">↗</span></a>
+        <a href="../../../cdn/yry-checklist.css" class="deliv-link pass" target="_blank" rel="noopener" title="../../../cdn/yry-checklist.css"><span class="dl-icon">🌐</span><span class="dl-name">🌐 yry-checklist.css</span><span class="dl-size">· CDN 2</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
       <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>2.1h</div>
@@ -615,6 +886,33 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
   </div>
   <div class="step-body">
     <p>CSS Grid 纯 CSS | ✅ 已交付</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>交付 <b>~3KB</b> 的 <code>extractor.mjs</code> 解析器,封装 §0-§4 + 表格 + 元数据全部解析逻辑。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>编码 <code>parseMd(buffer) → Context</code> 入口函数</li>
+          <li>实现 <code>parseSections / parseTables / parseFrontmatter</code> 三个子模块</li>
+          <li>导出 ESM: <code>export { parseMd }</code></li>
+          <li>添加 JSDoc + TypeScript 类型声明 <code>extractor.d.ts</code></li>
+          <li>写 <code>vitest</code> 单测 (12 用例) · 覆盖率 ≥ <code>90%</code></li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>ESM 优先 · 纯函数 (无副作用) · JSDoc 类型化 · Tree-shakeable · 零依赖 (zero-dep)</dd>
+      <dt>⚠️ 风险</dt><dd>运行时依赖污染 → <code>zero-dep</code> · 版本漂移 → 锁 <code>markdown-it@^14</code> · 大文件 OOM → 流式</dd>
+      <dt>✅ DoD</dt><dd>大小 <code>~3KB</code> · 单测 12/12 通过 · 覆盖率 ≥ <code>90%</code> · JSDoc 100% · 0 外部依赖</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">3 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="计划清单.html" class="deliv-link pass" target="_blank" rel="noopener" title="计划清单.html"><span class="dl-icon">📄</span><span class="dl-name">📄 计划清单.html</span><span class="dl-size">· 模板</span><span class="dl-newtab">↗</span></a>
+        <a href="源码.html" class="deliv-link pass" target="_blank" rel="noopener" title="源码.html"><span class="dl-icon">💻</span><span class="dl-name">💻 源码.html</span><span class="dl-size">· 带行号</span><span class="dl-newtab">↗</span></a>
+        <a href="index.md" class="deliv-link pass" target="_blank" rel="noopener" title="index.md"><span class="dl-icon">📑</span><span class="dl-name">📑 index.md</span><span class="dl-size">· §2</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
       <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>2.1h</div>
@@ -640,6 +938,33 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
   </div>
   <div class="step-body">
     <p>CSS Grid + 颜色编码 | ✅ 已交付</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>交付 <code>Context.schema.json</code> JSON Schema,作为解析器输出的 <b>机器可读契约</b>。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>定义 <code>Context</code> 类型: <code>meta / sections / tables / steps / deliverables</code></li>
+          <li>为每字段标注 <code>type / description / required / format</code></li>
+          <li><code>ajv</code> 严格模式校验,失败阻断 CI</li>
+          <li>生成 TypeScript 类型 <code>Context.d.ts</code> (json-schema-to-typescript)</li>
+          <li>文档化示例 <code>Context.example.json</code></li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>JSON Schema Draft 2020-12 · 严格模式 (<code>additionalProperties: false</code>) · 类型生成 (codegen) · 双向校验</dd>
+      <dt>⚠️ 风险</dt><dd>Schema 漂移 → CI 校验 · 过严阻碍演进 → 允许 <code>$comment</code> 注解 · 解析器未同步 → 强制 lint</dd>
+      <dt>✅ DoD</dt><dd>Schema 文件齐备 · <code>ajv</code> 100% 通过 · TS 类型自动生成 · 示例 1 份</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">3 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="../../../cdn/yry-checklist.css" class="deliv-link pass" target="_blank" rel="noopener" title="../../../cdn/yry-checklist.css"><span class="dl-icon">🎨</span><span class="dl-name">🎨 yry-checklist.css</span><span class="dl-size">· CSS</span><span class="dl-newtab">↗</span></a>
+        <a href="源码.html" class="deliv-link pass" target="_blank" rel="noopener" title="源码.html"><span class="dl-icon">💻</span><span class="dl-name">💻 源码.html</span><span class="dl-size">· CSS 段</span><span class="dl-newtab">↗</span></a>
+        <a href="演示.html" class="deliv-link pass" target="_blank" rel="noopener" title="演示.html"><span class="dl-icon">💡</span><span class="dl-name">💡 演示.html</span><span class="dl-size">· 渲染</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
       <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.6h</div>
@@ -669,6 +994,32 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
   </div>
   <div class="step-body">
     <p>12 | 12 | 0 | 100%</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>汇总 <b>章节拆分</b> 测试报告: <code>5 断言 · 5 通过 · 0 失败</code>,耗时 <code>&lt; 50ms</code>。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>跑测试 <code>npx vitest run tests/extractor/sections.test.mjs</code></li>
+          <li>收集 JUnit XML 报告 + 覆盖率 (c8)</li>
+          <li>写入 <code>docs/.../reports/section-parse.md</code></li>
+          <li>归档 <code>tests/reports/2026-06/sections.json</code> (可机读)</li>
+          <li>推 <code>rui-bot</code> 企微 <code>--status=test-report</code></li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>JUnit XML 标准 · c8 覆盖率 · 趋势图 (时序) · 报告版本化 · 失败截图嵌入</dd>
+      <dt>⚠️ 风险</dt><dd>偶发 flaky → 重试 <code>3 次</code> · 报告丢失 → 双写 · 噪声淹没 → 阈值告警</dd>
+      <dt>✅ DoD</dt><dd>5/5 通过 · 报告归档 · 企微已通知 · 趋势图更新 · flaky <code>&lt; 1%</code></dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">2 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="测试面板.html" class="deliv-link pass" target="_blank" rel="noopener" title="测试面板.html"><span class="dl-icon">🧪</span><span class="dl-name">🧪 测试面板.html</span><span class="dl-size">· 报告</span><span class="dl-newtab">↗</span></a>
+        <a href="index.md" class="deliv-link pass" target="_blank" rel="noopener" title="index.md"><span class="dl-icon">📑</span><span class="dl-name">📑 index.md</span><span class="dl-size">· §3</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
       <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.1h</div>
@@ -695,6 +1046,33 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
   </div>
   <div class="step-body">
     <p>5 | 5 | 0 | 100%</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>汇总 <b>表格解析</b> 测试报告: <code>12 断言 · 12 通过 · 0 失败</code>,字段准确率 100%。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>跑测试 <code>npx vitest run tests/extractor/tables.test.mjs</code></li>
+          <li>收集字段准确率 + 性能 bench</li>
+          <li>写入 <code>docs/.../reports/table-parse.md</code></li>
+          <li>附覆盖率报告 <code>coverage/tables.html</code></li>
+          <li>归档 + 企微通知</li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>字段准确率指标 · 性能基准 (perf benchmark) · 覆盖率趋势 · 报告版本化</dd>
+      <dt>⚠️ 风险</dt><dd>准确率波动 → 锁 <code>markdown-it</code> 版本 · 性能回退 → 性能回归报警 · 报告散落 → 集中归档</dd>
+      <dt>✅ DoD</dt><dd>12/12 字段通过 · 性能 <code>&lt; 50ms</code> · 覆盖率 ≥ <code>90%</code> · 报告归档</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">3 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="测试面板.html" class="deliv-link pass" target="_blank" rel="noopener" title="测试面板.html"><span class="dl-icon">🧪</span><span class="dl-name">🧪 测试面板.html</span><span class="dl-size">· 报告</span><span class="dl-newtab">↗</span></a>
+        <a href="index.md" class="deliv-link pass" target="_blank" rel="noopener" title="index.md"><span class="dl-icon">📑</span><span class="dl-name">📑 index.md</span><span class="dl-size">· §3</span><span class="dl-newtab">↗</span></a>
+        <a href="演示.html" class="deliv-link pass" target="_blank" rel="noopener" title="演示.html"><span class="dl-icon">💡</span><span class="dl-name">💡 演示.html</span><span class="dl-size">· 视觉</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
       <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>2.1h</div>
@@ -725,6 +1103,33 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
   </div>
   <div class="step-body">
     <p>§4 改进 - 趋势图标注行列含义</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>改进: <b>非标准章节 (§5+) 静默忽略不报错</b>,提升解析器健壮性。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li><code>extractor.mjs</code> 现状盘点: 异常章节当前 <code>throw</code></li>
+          <li>修改: <code>unknownSection.name &lt; 5</code> → 静默 + warn 日志</li>
+          <li>补充测试 <code>tests/extractor/unknown-section.test.mjs</code> (5 用例)</li>
+          <li><code>codemod</code> 应用到所有调用方</li>
+          <li>归档 <code>CHANGELOG.md</code> v1.1.0</li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>宽容输入 (Postel's Law) · 显式 warn · 向下兼容 · 错误分级 (warn/error) · changelog</dd>
+      <dt>⚠️ 风险</dt><dd>真异常被掩盖 → <code>warn</code> 强制输出 · 静默传播 → 单元测试补齐 · 破坏调用方 → codemod 批量</dd>
+      <dt>✅ DoD</dt><dd>5/5 边界用例通过 · <code>warn</code> 日志正常 · 调用方 0 回归 · <code>CHANGELOG</code> 已更新</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">3 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="源码.html" class="deliv-link pass" target="_blank" rel="noopener" title="源码.html"><span class="dl-icon">💻</span><span class="dl-name">💻 源码.html</span><span class="dl-size">· diff</span><span class="dl-newtab">↗</span></a>
+        <a href="../../../cdn/yry-checklist.css" class="deliv-link pass" target="_blank" rel="noopener" title="../../../cdn/yry-checklist.css"><span class="dl-icon">🎨</span><span class="dl-name">🎨 yry-checklist.css</span><span class="dl-size">· CSS</span><span class="dl-newtab">↗</span></a>
+        <a href="index.md" class="deliv-link pass" target="_blank" rel="noopener" title="index.md"><span class="dl-icon">📑</span><span class="dl-name">📑 index.md</span><span class="dl-size">· §4</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
       <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>0.7h</div>
@@ -750,6 +1155,33 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
   </div>
   <div class="step-body">
     <p>§4 改进 - 分数卡分项与总分的数学一致性验证</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>改进: <b>合并单元格自动 fill</b>,下游无需处理 <code>colspan</code>。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>现状盘点: 表格 <code>colspan &gt; 1</code> 时字段值 <code>undefined</code></li>
+          <li>修改: <code>parseTables</code> 检测 <code>colspan</code> → 复制前值 fill</li>
+          <li>补充测试 <code>tests/extractor/colspan.test.mjs</code> (4 用例)</li>
+          <li>文档化 <code>README.md</code> 中"合并单元格"小节</li>
+          <li>changelog v1.2.0</li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>数据规整 (Normalization) · 防御性 fill · 显式约定 · 文档同步 · SemVer 递增</dd>
+      <dt>⚠️ 风险</dt><dd>误填前值 → 仅当 <code>colspan</code> 时 fill · 下游混淆 → 加 <code>_filled</code> 标记 · 性能 → 已 O(1) 摊销</dd>
+      <dt>✅ DoD</dt><dd>4/4 colspan 用例通过 · 字段值 <code>100%</code> 填充 · 文档同步 · <code>CHANGELOG</code> 已更新</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">3 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="演示.html" class="deliv-link pass" target="_blank" rel="noopener" title="演示.html"><span class="dl-icon">💡</span><span class="dl-name">💡 演示.html</span><span class="dl-size">· 3 断点</span><span class="dl-newtab">↗</span></a>
+        <a href="../../../cdn/yry-checklist.css" class="deliv-link pass" target="_blank" rel="noopener" title="../../../cdn/yry-checklist.css"><span class="dl-icon">🎨</span><span class="dl-name">🎨 yry-checklist.css</span><span class="dl-size">· @media</span><span class="dl-newtab">↗</span></a>
+        <a href="index.md" class="deliv-link pass" target="_blank" rel="noopener" title="index.md"><span class="dl-icon">📑</span><span class="dl-name">📑 index.md</span><span class="dl-size">· §4</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
       <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.3h</div>
@@ -779,6 +1211,33 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
   </div>
   <div class="step-body">
     <p>提交所有场景产物 → 触发 rui-import sync 同步 → 推送 rui-bot 企微通知,完成 4 方签收。</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>收口交付: 提交所有产物、推送 git tag、完成 <b>4 方签收</b>(PO / Tech Lead / QA / 新人体检官),触发 rui-bot 企微通知。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li><code>git add docs/故事任务面板/extractor/</code> + 校验 <code>.gitignore</code></li>
+          <li><code>git commit -m "feat(extractor): 交付 v1.2.0"</code> (Conventional Commits)</li>
+          <li><code>git tag -a v1.2.0 -m "场景-2 交付"</code> + <code>git push --follow-tags</code></li>
+          <li>4 方签收: <code>agents/AGENT.md</code> 中 <code>product-owner / tech-lead / tester / onboarding-buddy</code></li>
+          <li><code>node skills/rui-bot/send.mjs --story=yry-extractor --status=done</code></li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>Conventional Commits 规范 · SemVer 版本 · 强制 code review · 4 方 RACI sign-off · release notes 模板</dd>
+      <dt>⚠️ 风险</dt><dd>签收走过场 → 强制 checklist · 主干污染 → 锁分支策略 · 通知失败 → <code>本地落盘 + 重试队列</code></dd>
+      <dt>✅ DoD</dt><dd>commit + tag 已推送 · 4 方全部 sign-off · rui-bot 已通知企微 · release notes 已发 · v1.2.0 tag 可见</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">3 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="审查.html" class="deliv-link pass" target="_blank" rel="noopener" title="审查.html"><span class="dl-icon">📝</span><span class="dl-name">📝 审查.html</span><span class="dl-size">· 4 方签收</span><span class="dl-newtab">↗</span></a>
+        <a href="../../../CLAUDE.md" class="deliv-link pass" target="_blank" rel="noopener" title="../../../CLAUDE.md"><span class="dl-icon">📜</span><span class="dl-name">📜 CLAUDE.md</span><span class="dl-size">· P0 铁律</span><span class="dl-newtab">↗</span></a>
+        <a href="知识图谱.html" class="deliv-link pass" target="_blank" rel="noopener" title="知识图谱.html"><span class="dl-icon">🔗</span><span class="dl-name">🔗 知识图谱.html</span><span class="dl-size">· v4.5</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>planner + devops</div>
       <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>0.3h</div>
@@ -805,6 +1264,34 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
   </div>
   <div class="step-body">
     <p>提交所有场景产物 → 触发 rui-import sync 同步 → 推送 rui-bot 企微通知,完成 4 方签收。</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>同步基线: 更新 <code>index.json</code> + 知识图谱 v4.5 + 文档中心首页,确保 5 子场景 <b>可发现性 (Discoverability)</b>。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li><code>node skills/rui-import/sync.mjs workspace=true</code> 触发同步</li>
+          <li>校验 <code>index.json</code> schema,失败阻断企微通知</li>
+          <li>刷新 <code>知识图谱.html</code> v4.5 (Cytoscape 节点 +3 / 边 +5)</li>
+          <li>更新 <code>docs/故事任务面板/index.html</code> 文档中心首页</li>
+          <li>推 <code>--status=baseline-synced</code> 企微通知 + 附基线差异 diff</li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd><code>rui-import</code> 同步协议 · <code>index.json</code> JSON Schema 校验 · 知识图谱增量更新 · 文档中心自动发现 · 通知含 baseline diff</dd>
+      <dt>⚠️ 风险</dt><dd>同步失败 → <code>重试 3 次 + 升级告警</code> · schema 漂移 → CI 卡口 · 文档孤立 → 强制交叉链接</dd>
+      <dt>✅ DoD</dt><dd>同步完成 · <code>index.json</code> 校验通过 · 知识图谱 v4.5 已发布 · 文档中心首页已更新 · 企微已通知</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">4 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="审查.html" class="deliv-link pass" target="_blank" rel="noopener" title="审查.html"><span class="dl-icon">📝</span><span class="dl-name">📝 审查.html</span><span class="dl-size">· 同步</span><span class="dl-newtab">↗</span></a>
+        <a href="../../index.html" class="deliv-link pass" target="_blank" rel="noopener" title="../../index.html"><span class="dl-icon">🏠</span><span class="dl-name">🏠 文档中心</span><span class="dl-size">· 文档中心</span><span class="dl-newtab">↗</span></a>
+        <a href="知识图谱.html" class="deliv-link pass" target="_blank" rel="noopener" title="知识图谱.html"><span class="dl-icon">🔗</span><span class="dl-name">🔗 知识图谱.html</span><span class="dl-size">· v4.5</span><span class="dl-newtab">↗</span></a>
+        <a href="index.md" class="deliv-link pass" target="_blank" rel="noopener" title="index.md"><span class="dl-icon">📑</span><span class="dl-name">📑 index.md</span><span class="dl-size">· v1.0.0</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>planner + devops</div>
       <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>0.3h</div>
@@ -2422,6 +2909,153 @@ function toast(msg) {
   // Restore last active tab
   const activeTab = localStorage.getItem(SCENE_KEY + '-tab') || 'checklist';
   switchPanel(activeTab);
+})();
+</script>
+<script>
+/* ── 交付物增强交互 ── */
+(function() {
+  const blocks = document.querySelectorAll('.step-deliv');
+  if (!blocks.length) return;
+
+  // 1) 自动给每个 step-deliv 加 id + 给每条链接加 data-type
+  const TYPE_MAP = { '.html': 'html', '.htm': 'html', '.md': 'md', '.markdown': 'md', '.css': 'css', '.mjs': 'test', '.js': 'test', '.json': 'data' };
+  const counts = { html: 0, md: 0, css: 0, test: 0, other: 0, all: 0 };
+  blocks.forEach((blk, idx) => {
+    const stepEl = blk.closest('.step');
+    const numEl = stepEl && stepEl.querySelector('.step-num');
+    const num = numEl ? numEl.textContent.trim() : (idx + 1);
+    blk.id = 'step-' + num + '-deliv';
+    blk.setAttribute('data-step', num);
+    blk.querySelectorAll('.deliv-link').forEach(a => {
+      const href = (a.getAttribute('href') || '').toLowerCase();
+      let type = 'other';
+      for (const ext in TYPE_MAP) {
+        if (href.endsWith(ext) || href.includes(ext + '#') || href.includes(ext + '?')) { type = TYPE_MAP[ext]; break; }
+      }
+      a.setAttribute('data-type', type);
+      counts[type] = (counts[type] || 0) + 1;
+      counts.all++;
+    });
+  });
+
+  // 2) 给每步添加"复制本步路径"按钮 + 折叠交互
+  blocks.forEach(blk => {
+    const head = blk.querySelector('.step-deliv-head');
+    if (!head) return;
+    head.addEventListener('click', e => {
+      if (e.target.closest('.sd-copy')) return;
+      blk.classList.toggle('collapsed');
+    });
+    const countSpan = head.querySelector('.sd-count');
+    if (countSpan && !head.querySelector('.sd-copy')) {
+      const copy = document.createElement('span');
+      copy.className = 'sd-copy';
+      copy.textContent = '📋 复制路径';
+      copy.title = '复制本步全部交付物路径';
+      copy.addEventListener('click', e => {
+        e.stopPropagation();
+        const paths = Array.from(blk.querySelectorAll('.deliv-link')).map(a => a.getAttribute('href')).join('\n');
+        copyText(paths, copy);
+      });
+      countSpan.insertAdjacentElement('afterend', copy);
+    }
+  });
+
+  // 3) 更新顶部统计
+  function setText(id, v) { const el = document.getElementById(id); if (el) el.textContent = v; }
+  setText('ds-total', counts.all);
+  setText('ds-pass', counts.all);
+  setText('ds-fail', 0);
+  setText('ds-html', counts.html);
+  setText('ds-other', (counts.other || 0) + (counts.md || 0) + (counts.css || 0) + (counts.test || 0));
+  setText('dfc-all', counts.all);
+  setText('dfc-html', counts.html);
+  setText('dfc-md', counts.md);
+  setText('dfc-css', counts.css);
+  setText('dfc-test', counts.test);
+  setText('dfc-other', counts.other);
+
+  // 4) 类型过滤
+  const filterBtns = document.querySelectorAll('.df-btn');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      const f = btn.getAttribute('data-filter');
+      blocks.forEach(blk => {
+        const links = blk.querySelectorAll('.deliv-link');
+        let visible = 0;
+        links.forEach(a => {
+          const t = a.getAttribute('data-type');
+          const show = (f === 'all') || (f === 'other' ? (t === 'other' || t === 'md' || t === 'css' || t === 'test') : t === f);
+          a.classList.toggle('dim', !show);
+          if (show) visible++;
+        });
+        const list = blk.querySelector('.step-deliv-list');
+        if (list) {
+          if (visible === 0 && f !== 'all') {
+            if (!list.querySelector('.empty-msg')) {
+              const empty = document.createElement('div');
+              empty.className = 'empty-msg';
+              empty.style.cssText = 'padding:10px;text-align:center;color:var(--text3);font-size:.7rem;';
+              empty.textContent = '— 本步无该类型交付物 —';
+              list.appendChild(empty);
+            }
+            list.classList.add('empty');
+          } else {
+            list.classList.remove('empty');
+            const empty = list.querySelector('.empty-msg');
+            if (empty) empty.remove();
+          }
+        }
+      });
+    });
+  });
+
+  // 5) 全部展开 / 全部折叠
+  document.getElementById('df-expand').addEventListener('click', () => {
+    blocks.forEach(b => b.classList.remove('collapsed'));
+  });
+  document.getElementById('df-collapse').addEventListener('click', () => {
+    blocks.forEach(b => b.classList.add('collapsed'));
+  });
+
+  // 6) 复制全部路径
+  document.getElementById('df-copyall').addEventListener('click', function() {
+    const all = Array.from(document.querySelectorAll('.deliv-link')).map(a => a.getAttribute('href'));
+    copyText(all.join('\n'), this);
+  });
+
+  // 7) 工具函数: 复制到剪贴板
+  function copyText(text, el) {
+    const old = el.textContent;
+    const restore = () => { el.textContent = old; el.classList.remove('done'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        el.textContent = '✅ 已复制';
+        el.classList.add('done');
+        setTimeout(restore, 1500);
+      }).catch(() => fallback());
+    } else { fallback(); }
+    function fallback() {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); el.textContent = '✅ 已复制'; el.classList.add('done'); setTimeout(restore, 1500); }
+      catch (e) { el.textContent = '❌ 失败'; setTimeout(restore, 1500); }
+      document.body.removeChild(ta);
+    }
+  }
+
+  // 8) 哈希定位高亮 (从交付物 tab 跳过来)
+  if (location.hash && location.hash.startsWith('#step-') && location.hash.endsWith('-deliv')) {
+    const target = document.querySelector(location.hash);
+    if (target) {
+      target.classList.add('flash');
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target.classList.remove('collapsed');
+    }
+  }
 })();
 </script>
 <script src="../../../../cdn/shared.js"></script>
