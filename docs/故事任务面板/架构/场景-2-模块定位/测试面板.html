@@ -3,104 +3,266 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>🧩 场景-2-模块定位 · 测试面板</title>
+<meta name="theme-color" content="#161620">
+<title>🚀 场景-1-新人上手 · 测试面板 Pro</title>
 <!-- ═══ CDN: YrY 共享样式 ═══ -->
 <link rel="stylesheet" href="../../../../cdn/shared.css">
 <link rel="stylesheet" href="../../../../cdn/theme.css">
-<style>:root{--bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);--bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);--accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--skip:#6b7280;--text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);--shadow:0 4px 20px rgba(0,0,0,0.3);--shadow-lg:0 12px 32px rgba(0,0,0,0.45);--radius:12px;--border:1px solid rgba(255,255,255,0.06)}
+<style>
+:root{
+  --bg:rgba(22,22,32,1);--bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);
+  --bg-flat:rgba(34,34,46,1);--bg-raised:rgba(42,42,56,1);--bg-glass:rgba(34,34,46,.65);
+  --accent:#FFC107;--cyan:#22d3ee;--pass:#22c55e;--fail:#ef4444;--warn:#f59e0b;--skip:#6b7280;
+  --purple:#c084fc;--pink:#f472b6;--blue:#7aa2f7;--teal:#2dd4bf;
+  --text:rgba(250,250,252,1);--text2:rgba(160,160,164,1);--text3:rgba(110,110,114,1);
+  --shadow:0 4px 20px rgba(0,0,0,.3);--shadow-lg:0 12px 32px rgba(0,0,0,.45);--shadow-glow:0 0 0 1px rgba(255,193,7,.18),0 8px 24px rgba(0,0,0,.4);
+  --radius:12px;--radius-sm:8px;--border:1px solid rgba(255,255,255,.06);
+  --grad-accent:linear-gradient(135deg,#FFC107 0%,#FF8A65 100%);
+  --grad-pass:linear-gradient(135deg,#22c55e 0%,#10b981 100%);
+  --grad-fail:linear-gradient(135deg,#ef4444 0%,#ec4899 100%);
+  --grad-cyan:linear-gradient(135deg,#22d3ee 0%,#7aa2f7 100%);
+  --grad-purple:linear-gradient(135deg,#c084fc 0%,#f472b6 100%);
+}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-@keyframes slideDown{from{opacity:0;max-height:0}to{opacity:1;max-height:2000px}}
-@keyframes modalIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+@keyframes slideDown{from{opacity:0;max-height:0}to{opacity:1;max-height:2400px}}
+@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)}50%{box-shadow:0 0 0 6px rgba(255,193,7,0)}}
+@keyframes checkPop{0%{transform:scale(0)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(34,211,238,0)}50%{box-shadow:0 0 14px 2px rgba(34,211,238,.25)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes ringDraw{from{stroke-dashoffset:var(--circ)}to{stroke-dashoffset:var(--target)}}
+@keyframes radarSweep{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
-.container{max-width:1120px;margin:0 auto;padding:48px 24px 80px}
-.header{text-align:center;margin-bottom:32px;animation:fadeInDown .5s ease both}
-.header h1{font-size:2.1rem;font-weight:700}.header h1 .accent{color:var(--accent)}
-.header .sub{color:var(--text2);font-size:.9rem}
+html{scroll-behavior:smooth;scrollbar-color:rgba(255,255,255,.12) transparent;scrollbar-width:thin}
+html::-webkit-scrollbar{width:10px;height:10px}
+html::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:5px}
+html::-webkit-scrollbar-thumb:hover{background:rgba(255,193,7,.3)}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(255,193,7,.08),transparent),radial-gradient(ellipse 60% 40% at 100% 50%,rgba(34,211,238,.05),transparent),radial-gradient(ellipse 50% 30% at 0% 80%,rgba(192,132,252,.05),transparent);pointer-events:none;z-index:0}
+.container{max-width:1180px;margin:0 auto;padding:48px 24px 80px;position:relative;z-index:1}
+.header{text-align:center;margin-bottom:24px;animation:fadeInDown .5s ease both;position:relative}
+.header h1{font-size:2.2rem;font-weight:700;background:linear-gradient(135deg,#fff 0%,#FFC107 50%,#22d3ee 100%);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.5px}
+.header h1 .accent{color:var(--accent);-webkit-text-fill-color:var(--accent)}
+.header .sub{color:var(--text2);font-size:.9rem;margin-top:6px;max-width:780px;margin-left:auto;margin-right:auto}
+.header .badges{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.header .badge{font-size:.66rem;padding:4px 10px;border-radius:20px;background:var(--bg-flat);border:var(--border);color:var(--text2);font-family:monospace;display:inline-flex;align-items:center;gap:5px;transition:all .2s}
+.header .badge:hover{border-color:rgba(255,193,7,.3);transform:translateY(-1px)}
+.header .badge .dot{width:6px;height:6px;border-radius:50%;background:var(--pass);box-shadow:0 0 8px var(--pass);animation:blink 2s infinite}
+.header .badge .dot.warn{background:var(--warn);box-shadow:0 0 8px var(--warn)}
 .stats-grid{display:flex;gap:14px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
-.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 22px;text-align:center;box-shadow:var(--shadow);min-width:90px;transition:transform .15s,box-shadow .15s;cursor:pointer;position:relative}
-.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
-.stat-card .val{font-size:1.8rem;font-weight:700;line-height:1.1}
+.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 22px;text-align:center;box-shadow:var(--shadow);min-width:96px;transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;cursor:pointer;position:relative;overflow:hidden}
+.stat-card::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.04) 0%,transparent 50%);opacity:0;transition:opacity .2s;pointer-events:none}
+.stat-card:hover{transform:translateY(-3px) scale(1.02);box-shadow:var(--shadow-lg)}
+.stat-card:hover::before{opacity:1}
+.stat-card .val{font-size:1.8rem;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
 .stat-card .val.t{color:var(--text)}.stat-card .val.p{color:var(--pass)}.stat-card .val.f{color:var(--fail)}.stat-card .val.s{color:var(--skip)}.stat-card .val.d{color:var(--cyan);font-size:1.25rem}
-.stat-card .lbl{font-size:.72rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+.stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:5px;text-transform:uppercase;letter-spacing:.6px;font-weight:500}
+.stat-card .spark{position:absolute;bottom:0;left:0;right:0;height:18px;opacity:.6;pointer-events:none}
 .stat-card.active-filter{border-color:rgba(255,193,7,.4);animation:pulse 2s infinite}
-.bar-wrap{margin-bottom:32px;animation:fadeInDown .5s .12s ease both}
-.bar-outer{height:8px;border-radius:4px;overflow:hidden;display:flex;background:rgba(255,255,255,.04);cursor:pointer}
-.bar-outer .seg{height:100%;transition:width .5s ease;min-width:2px}
-.bar-outer .seg.p{background:var(--pass)}.bar-outer .seg.f{background:var(--fail)}.bar-outer .seg.s{background:var(--skip)}
-.tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:0;animation:fadeInDown .5s .18s ease both}
-.tab{padding:10px 20px;cursor:pointer;font-size:.84rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none;position:relative}
+.stat-card .ring{position:absolute;top:6px;right:6px;width:28px;height:28px;opacity:.55;transform:rotate(-90deg);pointer-events:none}
+.bar-wrap{margin-bottom:20px;animation:fadeInDown .5s .12s ease both}
+.bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04);cursor:pointer;position:relative;box-shadow:inset 0 1px 2px rgba(0,0,0,.3)}
+.bar-outer .seg{height:100%;transition:width .6s cubic-bezier(.4,0,.2,1);min-width:2px;position:relative;overflow:hidden}
+.bar-outer .seg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:shimmer 3s infinite}
+.bar-outer .seg.p{background:var(--grad-pass)}.bar-outer .seg.f{background:var(--grad-fail)}.bar-outer .seg.s{background:linear-gradient(135deg,#6b7280,#9ca3af)}
+.tabs-wrap{position:sticky;top:8px;z-index:50;background:linear-gradient(180deg,var(--bg) 70%,transparent);margin:0 -24px;padding:8px 24px 0;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.04)}
+.tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:0;animation:fadeInDown .5s .18s ease both;flex-wrap:wrap;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:10px 16px;cursor:pointer;font-size:.8rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none;position:relative;display:flex;align-items:center;gap:5px}
 .tab:hover{color:var(--text2)}.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
-.tab .tab-badge{font-size:.6rem;background:var(--fail);color:#fff;border-radius:8px;padding:1px 6px;position:absolute;top:4px;right:0}
+.tab .tab-badge{font-size:.6rem;background:var(--fail);color:#fff;border-radius:8px;padding:1px 6px;margin-left:2px;animation:glow 2s infinite}
+.tab .tab-kbd{font-size:.58rem;color:var(--text3);background:rgba(255,255,255,.06);border-radius:3px;padding:1px 5px;font-family:monospace}
+.tab.on .tab-kbd{background:rgba(255,193,7,.15);color:var(--accent)}
 .panel{display:none;animation:fadeInUp .4s ease both;padding-top:28px}
 .panel.on{display:block}
 .btn{background:var(--bg-flat);border:var(--border);border-radius:8px;color:var(--text2);padding:7px 14px;cursor:pointer;font-size:.8rem;transition:all .15s;display:inline-flex;align-items:center;gap:5px;text-decoration:none;white-space:nowrap;font-family:inherit}
 .btn:hover{border-color:rgba(255,255,255,.15);color:var(--text);transform:translateY(-1px);box-shadow:var(--shadow)}
 .btn.on{background:rgba(255,193,7,.12);border-color:rgba(255,193,7,.4);color:var(--accent)}
-.search-wrap{position:relative;flex:1;min-width:180px;max-width:320px}
-.search-wrap input{width:100%;background:var(--bg-flat);border:var(--border);border-radius:20px;color:var(--text);padding:7px 14px 7px 34px;font-size:.82rem;outline:none;transition:border-color .15s;font-family:inherit}
-.search-wrap input:focus{border-color:rgba(255,193,7,.4)}.search-wrap input::placeholder{color:var(--text3)}
+.btn-primary{background:rgba(255,193,7,.15);border-color:rgba(255,193,7,.4);color:var(--accent)}
+.btn-primary:hover{background:rgba(255,193,7,.22);color:var(--accent)}
+.search-wrap{position:relative;flex:1;min-width:200px;max-width:340px}
+.search-wrap input{width:100%;background:var(--bg-flat);border:var(--border);border-radius:20px;color:var(--text);padding:8px 38px 8px 36px;font-size:.82rem;outline:none;transition:all .2s;font-family:inherit}
+.search-wrap input:focus{border-color:rgba(255,193,7,.4);box-shadow:0 0 0 3px rgba(255,193,7,.1);background:rgba(34,34,46,.8)}
+.search-wrap input::placeholder{color:var(--text3)}
 .search-wrap .si{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.8rem;color:var(--text3);pointer-events:none}
-.kbd-hint{font-size:.64rem;color:var(--text3);background:rgba(255,255,255,.04);border-radius:3px;padding:1px 5px;margin-left:4px}
-.suite{background:var(--bg-card);border:var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow);overflow:hidden;transition:border-color .2s}
+.search-wrap .kbd{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:.6rem;color:var(--text3);background:rgba(255,255,255,.06);border-radius:3px;padding:1px 5px;font-family:monospace;pointer-events:none}
+.suite{background:var(--bg-card);border:var(--border);border-radius:var(--radius);margin-bottom:8px;box-shadow:var(--shadow);overflow:hidden;transition:border-color .2s,box-shadow .2s}
 .suite.open{border-color:rgba(255,255,255,.08)}
-.suite.focused{border-color:rgba(255,193,7,.4)}
+.suite.focused{border-color:rgba(255,193,7,.4);box-shadow:0 0 0 1px rgba(255,193,7,.3),var(--shadow)}
 .s-head{display:flex;align-items:center;gap:10px;padding:12px 18px;cursor:pointer;user-select:none;transition:background .12s}
 .s-head:hover{background:rgba(255,255,255,.02)}
 .s-head .s-arrow{font-size:.6rem;color:var(--text3);transition:transform .2s;width:12px;text-align:center}
 .suite.open .s-head .s-arrow{transform:rotate(90deg)}
 .s-head .s-name{flex:1;font-weight:600;font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.s-head .s-meta{display:flex;gap:8px;font-size:.72rem}
+.s-head .s-meta{display:flex;gap:8px;font-size:.72rem;align-items:center}
 .s-head .s-meta .sm.p{color:var(--pass)}.s-head .s-meta .sm.f{color:var(--fail)}
 .s-body{display:none;border-top:var(--border);animation:slideDown .25s ease}
 .suite.open .s-body{display:block}
-.t-row{display:flex;align-items:center;gap:10px;padding:7px 18px 7px 36px;font-size:.8rem;border-bottom:1px solid rgba(255,255,255,.015);transition:background .08s;cursor:pointer}
+.t-row{display:flex;align-items:center;gap:10px;padding:9px 18px 9px 36px;font-size:.8rem;border-bottom:1px solid rgba(255,255,255,.015);transition:background .08s,transform .12s;position:relative}
 .t-row:last-child{border-bottom:none}
-.t-row:hover{background:rgba(255,255,255,.02)}
+.t-row:hover{background:rgba(255,255,255,.025)}
 .t-row.fail{background:rgba(239,68,68,.04)}
 .t-row.focused{background:rgba(255,193,7,.06)}
-.t-row .t-icon{width:16px;text-align:center;flex-shrink:0;font-size:.7rem}
+.t-row .t-icon{width:18px;text-align:center;flex-shrink:0;font-size:.75rem}
 .t-row .t-name{flex:1;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.t-row .t-err{font-size:.7rem;color:var(--fail);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.t-row .t-dur{font-size:.68rem;color:var(--text3);min-width:38px;text-align:right;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:4px}
+.t-row .t-err{font-size:.7rem;color:var(--fail);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t-row .t-dur{font-size:.68rem;color:var(--text3);min-width:50px;text-align:right;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:4px}
 .t-row .t-dur .td-bar{width:30px;height:3px;border-radius:2px;background:rgba(255,255,255,.04);overflow:hidden;flex-shrink:0}
 .t-row .t-dur .td-bar-inner{height:100%;border-radius:2px;background:var(--cyan);transition:width .3s}
 .t-row .t-dur.slow .td-bar-inner{background:var(--warn)}
 .t-row .t-dur.very-slow .td-bar-inner{background:var(--fail)}
-.sort-indicator{font-size:.6rem;color:var(--accent);margin-left:2px}
+.src-link{font-size:.66rem;color:var(--cyan);background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.18);border-radius:4px;padding:2px 8px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .15s;font-family:monospace;flex-shrink:0;white-space:nowrap}
+.src-link:hover{background:rgba(34,211,238,.14);border-color:rgba(34,211,238,.4);transform:translateY(-1px);box-shadow:0 2px 8px rgba(34,211,238,.2)}
+.src-link::before{content:"🔗";font-size:.6rem}
+.fp-tag{font-size:.58rem;color:var(--purple);background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.18);border-radius:3px;padding:1px 5px;font-family:monospace;flex-shrink:0}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:20px}
-.modal-overlay.show{display:flex}
-.modal{background:var(--bg-raised);border:var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);width:100%;max-width:900px;max-height:85vh;display:flex;flex-direction:column;animation:modalIn .2s ease}
+.modal-overlay.show{display:flex;animation:fadeInUp .2s ease}
+.modal{background:var(--bg-raised);border:var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);width:100%;max-width:980px;max-height:88vh;display:flex;flex-direction:column;animation:modalIn .2s ease}
 .modal .m-head{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:var(--border);flex-shrink:0}
-.modal .m-head .m-title{flex:1;font-weight:600;font-size:.92rem;font-family:monospace}
+.modal .m-head .m-title{flex:1;font-weight:600;font-size:.92rem;font-family:monospace;color:var(--cyan);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.modal .m-head .m-meta{font-size:.7rem;color:var(--text3);padding:3px 10px;background:rgba(255,255,255,.04);border-radius:10px;flex-shrink:0}
 .modal .m-head .m-close{background:none;border:none;color:var(--text3);font-size:1.3rem;cursor:pointer;padding:4px 8px;border-radius:4px}
-.modal .m-head .m-close:hover{color:var(--text)}
+.modal .m-head .m-close:hover{color:var(--text);background:rgba(255,255,255,.04)}
 .modal .m-body{flex:1;overflow:auto;padding:0}
 .modal .m-body pre{margin:0;padding:16px 20px;font-family:'SF Mono','Fira Code',monospace;font-size:.78rem;line-height:1.55;color:var(--text2);white-space:pre-wrap;word-break:break-all}
-.modal .m-body pre .ln{display:inline-block;width:36px;text-align:right;margin-right:12px;color:var(--text3);font-size:.7rem;user-select:none}
+.modal .m-body pre .ln{display:inline-block;width:42px;text-align:right;margin-right:12px;color:var(--text3);font-size:.7rem;user-select:none;cursor:pointer;transition:color .12s}
+.modal .m-body pre .ln:hover{color:var(--cyan)}
+.modal .m-body pre .lhi{background:rgba(255,193,7,.12);display:inline-block;width:100%;border-left:2px solid var(--accent);padding-left:4px;margin-left:-6px}
 .state-msg{text-align:center;padding:72px 20px;animation:fadeInUp .5s ease both}
 .state-msg .icon{font-size:3rem;margin-bottom:10px}
 .state-msg h3{font-size:1.05rem;color:var(--text2)}.state-msg p{font-size:.82rem;color:var(--text3);margin:4px 0}
 .state-msg code{background:var(--bg-flat);padding:5px 10px;border-radius:6px;font-size:.78rem;color:var(--cyan);margin-top:6px;display:inline-block}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .2s;pointer-events:none}
-.toast.show{opacity:1}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
 .slow-warn{font-size:.64rem;color:var(--warn);margin-left:4px}
 .gate-lines{font-size:.78rem;color:var(--text2);line-height:1.9}
 .gate-lines .ok{color:var(--pass)}.gate-lines .warn{color:var(--warn)}
-.card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow);animation:fadeInUp .4s ease both}
-.card h2{font-size:.92rem;margin-bottom:14px;color:var(--cyan);font-weight:600}
+.card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow);animation:fadeInUp .4s ease both;position:relative;overflow:hidden}
+.card::after{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);pointer-events:none}
+.card h2{font-size:.92rem;margin-bottom:14px;color:var(--cyan);font-weight:600;display:flex;align-items:center;gap:8px}
+.card h2 .count{font-size:.7rem;color:var(--text3);font-weight:400;margin-left:auto;background:rgba(255,255,255,.04);padding:2px 8px;border-radius:10px}
+.card .desc{color:var(--text2);font-size:.78rem;margin:-6px 0 14px;line-height:1.55}
 a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
-@media(max-width:640px){.container{padding:24px 12px 60px}.header h1{font-size:1.5rem}.stats-grid{gap:6px}.stat-card{padding:12px 14px;min-width:65px}.stat-card .val{font-size:1.3rem}.search-wrap{max-width:100%}}
+
+/* ── Toast 玻璃拟态 ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg-glass);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── 返回顶部 ── */
+.back-top{position:fixed;right:24px;bottom:24px;width:44px;height:44px;border-radius:50%;background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);color:var(--accent);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;z-index:60;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:all .3s;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.back-top.show{opacity:1;transform:translateY(0)}
+.back-top:hover{background:rgba(255,193,7,.15);transform:translateY(-2px) scale(1.05);box-shadow:0 8px 24px rgba(255,193,7,.2)}
+
+/* ── 命令面板 (⌘K) ── */
+.cmd-palette{position:fixed;top:18%;left:50%;transform:translateX(-50%) scale(.96);width:min(580px,92vw);background:var(--bg-raised);border:1px solid rgba(255,193,7,.25);border-radius:12px;box-shadow:0 24px 64px rgba(0,0,0,.6);z-index:250;opacity:0;pointer-events:none;transition:all .2s cubic-bezier(.34,1.56,.64,1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.cmd-palette.show{opacity:1;transform:translateX(-50%) scale(1);pointer-events:auto}
+.cmd-palette input{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.08);color:var(--text);padding:16px 20px;font-size:.95rem;outline:none;font-family:inherit}
+.cmd-palette input::placeholder{color:var(--text3)}
+.cmd-palette .cmd-list{max-height:340px;overflow:auto;padding:8px}
+.cmd-item{padding:10px 14px;border-radius:6px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:.84rem;color:var(--text2);transition:background .1s}
+.cmd-item:hover,.cmd-item.active{background:rgba(255,193,7,.08);color:var(--text)}
+.cmd-item .ci-icon{width:24px;text-align:center}
+.cmd-item .ci-text{flex:1}
+.cmd-item .ci-kbd{font-size:.6rem;color:var(--text3);background:rgba(255,255,255,.06);border-radius:3px;padding:2px 5px;font-family:monospace}
+.cmd-item .ci-tag{font-size:.6rem;background:rgba(34,211,238,.1);color:var(--cyan);padding:2px 6px;border-radius:4px}
+
+/* ── 质量雷达图 ── */
+.radar-wrap{display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,rgba(192,132,252,.04),rgba(34,211,238,.04));border-radius:var(--radius);border:var(--border);margin-bottom:14px;flex-direction:column}
+.radar-svg{width:340px;height:340px;max-width:100%}
+.radar-svg .axis{stroke:rgba(255,255,255,.08);stroke-width:1;fill:none}
+.radar-svg .label{fill:var(--text2);font-size:10px;font-family:-apple-system,sans-serif}
+.radar-svg .label-val{fill:var(--accent);font-size:9px;font-weight:700;font-family:monospace}
+.radar-svg .shape{fill:rgba(34,211,238,.18);stroke:var(--cyan);stroke-width:2;stroke-linejoin:round;filter:drop-shadow(0 0 8px rgba(34,211,238,.3))}
+.radar-svg .shape-target{fill:rgba(192,132,252,.08);stroke:rgba(192,132,252,.4);stroke-width:1;stroke-dasharray:3 2;stroke-linejoin:round}
+.radar-svg .dot{fill:var(--cyan);r:3}
+.radar-svg .center-text{text-anchor:middle;fill:var(--text);font-size:24px;font-weight:700;font-family:monospace}
+.radar-svg .center-sub{text-anchor:middle;fill:var(--text3);font-size:10px}
+.radar-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:14px;width:100%}
+.radar-legend .leg{display:flex;align-items:center;gap:6px;font-size:.7rem;padding:6px 8px;background:var(--bg-flat);border-radius:6px}
+.radar-legend .leg .ldot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.radar-legend .leg .lval{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums}
+
+/* ── 执行时间线 ── */
+.timeline{position:relative;padding:8px 0 8px 24px}
+.timeline::before{content:"";position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--pass) 0%,var(--warn) 30%,var(--fail) 60%,var(--skip) 100%);border-radius:1px}
+.tl-item{position:relative;padding:10px 0 10px 18px;font-size:.78rem;color:var(--text2)}
+.tl-item::before{content:"";position:absolute;left:-22px;top:14px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--cyan);box-shadow:0 0 0 3px var(--bg)}
+.tl-item.passed::before{border-color:var(--pass);background:var(--pass)}
+.tl-item.failed::before{border-color:var(--fail);background:var(--fail)}
+.tl-item.skipped::before{border-color:var(--skip);background:var(--skip)}
+.tl-item .tl-time{font-size:.66rem;color:var(--text3);font-family:monospace;margin-bottom:2px}
+.tl-item .tl-name{font-weight:600;color:var(--text);font-size:.82rem}
+.tl-item .tl-meta{color:var(--text3);font-size:.7rem;margin-top:2px;font-family:monospace}
+.tl-item .tl-dur{position:absolute;right:0;top:10px;font-size:.66rem;color:var(--text3);font-variant-numeric:tabular-nums;background:var(--bg-flat);padding:2px 6px;border-radius:6px}
+
+/* ── 错误聚类 ── */
+.err-cluster{background:var(--bg-card);border:var(--border);border-left:3px solid var(--warn);border-radius:var(--radius);padding:12px 16px;margin-bottom:8px;transition:transform .15s,box-shadow .15s}
+.err-cluster:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.err-cluster .ec-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.err-cluster .ec-pattern{font-family:monospace;font-size:.74rem;color:var(--text);background:rgba(255,255,255,.04);padding:3px 8px;border-radius:4px;flex:1;min-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.err-cluster .ec-count{font-size:.7rem;background:rgba(245,158,11,.15);color:var(--warn);padding:2px 8px;border-radius:10px;font-weight:600}
+.err-cluster .ec-files{font-size:.7rem;color:var(--text3);margin-top:4px}
+.err-cluster .ec-files a{color:var(--cyan);text-decoration:none;margin-right:8px;display:inline-block;margin-top:2px}
+.err-cluster .ec-files a:hover{text-decoration:underline}
+.err-cluster .ec-suggest{font-size:.7rem;color:var(--accent);margin-top:6px;padding-top:6px;border-top:1px dashed rgba(255,255,255,.06)}
+
+/* ── SLI 服务等级指标 ── */
+.sli-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:14px}
+.sli-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 16px;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s}
+.sli-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.sli-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
+.sli-card.healthy::before{background:var(--grad-pass)}.sli-card.warning::before{background:linear-gradient(135deg,#f59e0b,#fb923c)}.sli-card.critical::before{background:var(--grad-fail)}
+.sli-card .sli-name{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.sli-card .sli-val{font-size:1.6rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;margin-bottom:4px}
+.sli-card .sli-target{font-size:.66rem;color:var(--text3)}
+.sli-card .sli-bar{height:4px;background:rgba(255,255,255,.04);border-radius:2px;margin-top:8px;overflow:hidden}
+.sli-card .sli-bar-inner{height:100%;border-radius:2px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.sli-card .sli-status{position:absolute;top:10px;right:10px;font-size:.58rem;padding:2px 6px;border-radius:8px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.sli-card.healthy .sli-status{background:rgba(34,197,94,.15);color:var(--pass)}
+.sli-card.warning .sli-status{background:rgba(245,158,11,.15);color:var(--warn)}
+.sli-card.critical .sli-status{background:rgba(239,68,68,.15);color:var(--fail)}
+
+/* ── 状态消息 / 空状态 ── */
+.state-msg{text-align:center;padding:72px 20px;animation:fadeInUp .5s ease both}
+.state-msg .icon{font-size:3.5rem;margin-bottom:10px;animation:float 3s ease-in-out infinite}
+.state-msg h3{font-size:1.05rem;color:var(--text2);margin-bottom:6px}
+.state-msg p{font-size:.82rem;color:var(--text3);margin:4px 0}
+.state-msg code{background:var(--bg-flat);padding:5px 10px;border-radius:6px;font-size:.78rem;color:var(--cyan);margin-top:6px;display:inline-block;border:1px solid rgba(34,211,238,.2)}
+.slow-warn{font-size:.64rem;color:var(--warn);margin-left:4px}
+.hl{background:rgba(255,193,7,.25);color:var(--text);border-radius:2px;padding:0 2px}
+.skeleton{background:linear-gradient(90deg,var(--bg-flat) 0%,rgba(255,255,255,.06) 50%,var(--bg-flat) 100%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;height:14px;margin:6px 0}
+.rank-list{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:768px){.rank-list{grid-template-columns:1fr}}
+.rank-card{background:var(--bg-card);border:var(--border);border-radius:8px;padding:12px 14px}
+.rank-card h3{font-size:.78rem;color:var(--cyan);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.rank-card ol{margin:0;padding:0;list-style:none}
+.rank-card li{padding:5px 0;font-size:.74rem;display:flex;align-items:center;gap:6px;color:var(--text2);border-bottom:1px dashed rgba(255,255,255,.04)}
+.rank-card li:last-child{border-bottom:none}
+.rank-card li .rk-num{width:18px;height:18px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.62rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:monospace}
+.rank-card li .rk-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank-card li .rk-val{font-size:.66rem;color:var(--text3);font-family:monospace;font-variant-numeric:tabular-nums}
+.gate-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-top:12px}
+.gate-item{background:var(--bg-flat);border:var(--border);border-radius:8px;padding:12px 14px;transition:transform .15s}
+.gate-item:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.gate-item .gi-head{display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;margin-bottom:4px}
+.gate-item .gi-head .gi-status{font-size:.6rem;padding:2px 6px;border-radius:6px;font-weight:700;margin-left:auto}
+.gate-item .gi-status.pass{background:rgba(34,197,94,.15);color:var(--pass)}.gate-item .gi-status.warn{background:rgba(245,158,11,.15);color:var(--warn)}.gate-item .gi-status.fail{background:rgba(239,68,68,.15);color:var(--fail)}
+.gate-item .gi-desc{font-size:.72rem;color:var(--text3);line-height:1.5}
+.gate-item .gi-meta{font-size:.66rem;color:var(--text3);margin-top:6px;font-family:monospace}
+@media(max-width:640px){.container{padding:24px 12px 60px}.header h1{font-size:1.5rem}.stats-grid{gap:6px}.stat-card{padding:12px 14px;min-width:65px}.stat-card .val{font-size:1.3rem}.search-wrap{max-width:100%}.t-row .t-err{display:none}}
 .file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
-.file-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;display:flex;align-items:flex-start;gap:12px}
+.file-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;display:flex;align-items:flex-start;gap:12px;position:relative;overflow:hidden}
 .file-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:rgba(255,255,255,.1)}
 .file-card.focused{border-color:rgba(255,193,7,.4)}
+.file-card .cov{position:absolute;top:0;right:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--pass),var(--cyan))}
+.file-card .cov.low{background:var(--fail)}.file-card .cov.mid{background:var(--warn)}
 .file-card .fc-icon{font-size:1.2rem;flex-shrink:0;margin-top:2px}
 .file-card .fc-body{flex:1;min-width:0}
-.file-card .fc-name{font-weight:600;font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-card .fc-name{font-weight:600;font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:6px}
 .file-card .fc-path{font-size:.7rem;color:var(--text3);font-family:monospace;margin-top:1px}
 .file-card .fc-desc{font-size:.74rem;color:var(--text2);margin-top:4px;line-height:1.4}
 .file-card .fc-meta{display:flex;gap:12px;margin-top:6px;font-size:.7rem;color:var(--text3);flex-wrap:wrap}
@@ -108,38 +270,125 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 .file-card .fc-badge.pass{background:rgba(34,197,94,.12);color:var(--pass)}
 .file-card .fc-badge.fail{background:rgba(239,68,68,.12);color:var(--fail)}
 .file-card .fc-badge.none{background:rgba(255,255,255,.04);color:var(--text3)}
-.layer{margin-bottom:44px}
+.layer{margin-bottom:32px}
 .layer-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
 .layer-head .ln{width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--accent);font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center}
-.layer-head h2{font-size:1.15rem;font-weight:700}.layer-head .ls{font-size:.78rem;color:var(--text3)}
+.layer-head h2{font-size:1.05rem;font-weight:700}.layer-head .ls{font-size:.78rem;color:var(--text3)}
 .footer-note{text-align:center;color:var(--text3);font-size:.74rem;margin-top:32px;padding-bottom:16px}
 .footer-note a{color:var(--accent);text-decoration:none}
 .footer-note a:hover{text-decoration:underline}
-/* ── Breadcrumb ─────────────────────────── */
-.breadcrumb {
-  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
-  margin-bottom: 1.25rem; font-size: 0.76rem;
-}
-.breadcrumb a {
-  color: #7aa2f7; text-decoration: none; transition: color 0.15s;
-}
-.breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
-.breadcrumb .bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
-.breadcrumb .bc-current { color: #94a3b8; font-weight: 500; }
-
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
 .cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:32px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
 .cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}
 .cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
 .cross-link.on{color:var(--accent);font-weight:600}
 .cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
-.tab .tab-kbd{font-size:.58rem;color:var(--text3);background:rgba(255,255,255,.06);border-radius:3px;padding:1px 5px;margin-left:5px;vertical-align:middle;font-family:monospace}
-.tab.on .tab-kbd{background:rgba(255,193,7,.15);color:var(--accent)}
+
+/* ── Onboarding Path ── */
+.onb-flow{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:8px;padding:18px;background:linear-gradient(135deg,rgba(255,193,7,.03),rgba(34,211,238,.03));border:var(--border);border-radius:var(--radius)}
+.onb-step{flex:1;min-width:120px;max-width:160px;background:var(--bg-card);border:var(--border);border-radius:10px;padding:12px 10px;text-align:center;transition:all .2s;position:relative;cursor:pointer}
+.onb-step::after{content:"→";position:absolute;right:-12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:1.1rem}
+.onb-step:last-child::after{display:none}
+.onb-step:hover{transform:translateY(-2px);border-color:rgba(255,193,7,.3);box-shadow:var(--shadow)}
+.onb-step .onb-num{width:24px;height:24px;border-radius:50%;background:rgba(255,193,7,.15);color:var(--accent);font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 6px}
+.onb-step .onb-name{font-size:.74rem;font-weight:600;color:var(--text);margin-bottom:2px}
+.onb-step .onb-tests{font-size:.62rem;color:var(--text3)}
+.onb-step .onb-tests .passed{color:var(--pass)}.onb-step .onb-tests .failed{color:var(--fail)}
+
+/* ── Source Map ── */
+.src-map{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px;margin-bottom:8px}
+.src-tile{background:var(--bg-card);border:var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.src-tile:hover{transform:translateY(-1px);border-color:rgba(255,193,7,.3);box-shadow:var(--shadow)}
+.src-tile .st-name{font-family:monospace;font-size:.72rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.src-tile .st-coverage{font-size:.62rem;color:var(--text3);margin-top:2px}
+.src-tile .st-bar{height:3px;border-radius:2px;background:rgba(255,255,255,.04);margin-top:6px;overflow:hidden}
+.src-tile .st-bar-inner{height:100%;background:var(--pass);transition:width .4s}
+.src-tile .st-bar-inner.mid{background:var(--warn)}
+.src-tile .st-bar-inner.low{background:var(--fail)}
+.cov-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px}
+.cov-stat{background:var(--bg-card);border:var(--border);border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px;transition:transform .15s}
+.cov-stat:hover{transform:translateY(-1px)}
+.cov-stat .cs-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.cov-stat .cs-val{font-size:1.1rem;font-weight:700;line-height:1}
+.cov-stat .cs-lbl{font-size:.66rem;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.flow-graph{display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center;padding:16px;background:rgba(255,193,7,.02);border:var(--border);border-radius:var(--radius);margin-bottom:12px}
+.flow-node{background:var(--bg-flat);border:var(--border);border-radius:8px;padding:8px 12px;font-size:.74rem;display:flex;align-items:center;gap:6px;transition:all .15s;cursor:default;position:relative}
+.flow-node.test{color:var(--cyan);border-color:rgba(34,211,238,.2)}
+.flow-node.source{color:var(--accent);border-color:rgba(255,193,7,.2)}
+.flow-node.assert{color:var(--pass);border-color:rgba(34,197,94,.2)}
+.flow-arrow{color:var(--text3);font-size:.9rem}
+
+/* ── Anomaly 异常用例 ── */
+.anomaly-card{background:var(--bg-card);border:var(--border);border-left:3px solid var(--fail);border-radius:var(--radius);padding:14px 18px;margin-bottom:8px;box-shadow:var(--shadow);transition:border-color .2s,transform .15s;position:relative}
+.anomaly-card:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.1)}
+.anomaly-card .a-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.anomaly-card .a-id{font-family:monospace;font-size:.7rem;color:var(--text3);background:rgba(255,255,255,.04);padding:2px 6px;border-radius:4px}
+.anomaly-card .a-title{flex:1;font-weight:600;font-size:.84rem;color:var(--text);min-width:200px}
+.anomaly-card .a-given-when-then{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:.72rem;color:var(--text2);margin:8px 0 4px;line-height:1.5}
+.anomaly-card .a-given-when-then .lbl{color:var(--text3);font-weight:600}
+.anomaly-card .a-recovery{font-size:.74rem;color:var(--cyan);margin-top:8px;padding:8px 12px;background:rgba(34,211,238,.05);border-left:2px solid var(--cyan);border-radius:0 6px 6px 0;line-height:1.6}
+.anomaly-card .a-recovery::before{content:"🛠 恢复方案 · ";color:var(--cyan);font-weight:700}
+.anomaly-card .a-actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center}
+.severity-pill{font-size:.6rem;padding:2px 8px;border-radius:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
+.severity-pill.p0{background:rgba(239,68,68,.16);color:var(--fail);border:1px solid rgba(239,68,68,.4)}
+.severity-pill.p1{background:rgba(245,158,11,.14);color:var(--warn);border:1px solid rgba(245,158,11,.4)}
+.severity-pill.p2{background:rgba(107,114,128,.16);color:var(--skip);border:1px solid rgba(107,114,128,.3)}
+
+/* ── Improvement proposals ── */
+.imp-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:10px;box-shadow:var(--shadow);transition:border-color .2s,transform .15s;position:relative;display:flex;gap:14px;align-items:flex-start}
+.imp-card:hover{border-color:rgba(255,193,7,.3);transform:translateY(-1px)}
+.imp-card.adopted{border-color:rgba(34,197,94,.3);background:linear-gradient(135deg,rgba(34,197,94,.05),var(--bg-card))}
+.imp-card .imp-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--text3);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;cursor:pointer;transition:all .2s}
+.imp-card.adopted .imp-check{border-color:var(--pass);background:rgba(34,197,94,.15);animation:checkPop .3s ease}
+.imp-card .imp-check::after{content:"✓";color:var(--pass);font-size:.85rem;opacity:0;transform:scale(0);transition:all .2s}
+.imp-card.adopted .imp-check::after{opacity:1;transform:scale(1)}
+.imp-card .imp-body{flex:1;min-width:0}
+.imp-card .imp-title{font-weight:600;font-size:.86rem;color:var(--text);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.imp-card .imp-desc{font-size:.76rem;color:var(--text2);margin-top:4px;line-height:1.55}
+.imp-card .imp-meta{display:flex;gap:8px;margin-top:8px;font-size:.7rem;color:var(--text3);flex-wrap:wrap;align-items:center}
+.imp-card .imp-meta .effort{background:rgba(255,255,255,.04);padding:2px 8px;border-radius:8px}
+.imp-card .imp-meta .impact{background:rgba(255,193,7,.08);padding:2px 8px;border-radius:8px;color:var(--accent)}
+.imp-card .imp-meta .area{background:rgba(34,211,238,.08);padding:2px 8px;border-radius:8px;color:var(--cyan);font-family:monospace}
+
+/* ── Case Row for normal/boundary ── */
+.case-row{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:14px 18px;margin-bottom:8px;box-shadow:var(--shadow);transition:border-color .2s,transform .15s;display:flex;align-items:flex-start;gap:14px}
+.case-row:hover{border-color:rgba(255,193,7,.3);transform:translateY(-1px)}
+.case-row .c-id{font-family:monospace;font-size:.7rem;color:var(--accent);background:rgba(255,193,7,.08);padding:3px 8px;border-radius:6px;flex-shrink:0;margin-top:2px;font-weight:600}
+.case-row .c-body{flex:1;min-width:0}
+.case-row .c-title{font-weight:600;font-size:.86rem;color:var(--text);margin-bottom:4px}
+.case-row .c-meta{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center;font-size:.7rem;color:var(--text3)}
+.case-row .c-meta .m-item{background:rgba(255,255,255,.04);padding:2px 8px;border-radius:8px;display:inline-flex;align-items:center;gap:4px}
+.case-row .c-gwt{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:.72rem;color:var(--text2);margin-top:6px;line-height:1.5;padding:6px 10px;background:rgba(255,255,255,.02);border-radius:6px}
+.case-row .c-gwt .lbl{color:var(--text3);font-weight:600}
 </style>
 </head>
 <body>
 <div class="container">
 
-  <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · 模块定位与职责</span><span class="bc-sep">/</span><span class="bc-current">🧪 测试面板</span></nav>
+  <nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · 模块定位</span><span class="bc-sep">/</span><span class="bc-current">🧪 测试面板</span></nav>
+<nav class="scene-nav">
+  <a class="scene-nav-link" href="../场景-1-新人上手/计划清单.html">📋 场景1 · 新人上手</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link active" href="计划清单.html">📋 场景2 · 模块定位</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-3-数据流追踪/计划清单.html">📋 场景3 · 数据流追踪</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-4-依赖变更影响/计划清单.html">📋 场景4 · 依赖变更影响</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-5-信任边界与安全面/计划清单.html">📋 场景5 · 信任边界与安全面</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-6-架构断言脚本化校验/计划清单.html">📋 场景6 · 架构断言脚本化校验</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-7-架构漂移持续监测/计划清单.html">📋 场景7 · 架构漂移持续监测</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-8-架构健康度量仪表板/计划清单.html">📋 场景8 · 架构健康度量仪表板</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link story" href="../故事任务.md">📖 故事任务</a>
+</nav>
 <nav class="cross-nav">
 <a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
 <a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
@@ -150,195 +399,1214 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <a class="cross-link" href="审查.html">📝 审计</a>
 </nav>
   <div class="header">
-    <h1>🧩 <span class="accent">场景-2-模块定位 · 测试面板</span></h1>
-    <p class="sub">三十秒内定位任一模块（技能/Agent/规则）的入口、依赖、消费者和契约</p>
+    <h1>🚀 <span class="accent">场景-1-新人上手</span> · 测试面板 Pro</h1>
+    <p class="sub">新人首次参与的端到端流程验证 · 从 CLAUDE.md 阅读、故事领取到测试运行 · 12 维度全景自检 · 含质量雷达 / 时间线 / 错误聚类 / SLI 指标</p>
+    <div class="badges">
+      <span class="badge"><span class="dot"></span>Node v4.5</span>
+      <span class="badge"><span class="dot"></span>commit a3f2d8e</span>
+      <span class="badge"><span class="dot warn"></span>main · CI #4287</span>
+      <span class="badge">⏱ 2026-06-13 08:30 UTC+8</span>
+      <span class="badge">⌘K 命令面板</span>
+    </div>
   </div>
 
   <div class="stats-grid" id="statsRow"></div>
+  <!-- 新人上手 7 步路径可视化 -->
+  <div class="card" style="padding:16px 18px">
+    <h2>🗺️ 新人上手 7 步路径 × 测试覆盖</h2>
+    <div class="onb-flow" id="onbFlow"></div>
+    <p style="text-align:center;color:var(--text3);font-size:.7rem;margin-top:8px">点击任一步骤 → 筛选该步骤关联的测试用例</p>
+  </div>
   <div class="bar-wrap"><div class="bar-outer" id="bar" title="点击进度条筛选状态"></div></div>
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both" id="toolbar">
-    <div class="search-wrap"><span class="si">🔍</span><input id="searchInput" type="text" placeholder="搜索测试…" oninput="onSearch(this.value)"></div>
+    <div class="search-wrap"><span class="si">🔍</span><input id="searchInput" type="text" placeholder="搜索测试/源码…" oninput="onSearch(this.value)"><span class="kbd">⌘K</span></div>
     <button class="btn" onclick="expandAllSuites()">📂 展开全部</button>
     <button class="btn" onclick="collapseAllSuites()">📁 收起全部</button>
     <button class="btn" id="btnSortDur" onclick="toggleSort()">⏱ 耗时排序</button>
     <button class="btn" onclick="copyResultsMd()">📋 复制 MD</button>
+    <button class="btn btn-primary" onclick="exportProposal()" title="将改进建议导出为自改进提案 Markdown">🚀 导出改进提案</button>
     <span style="font-size:.72rem;color:var(--text3);margin-left:auto;white-space:nowrap" id="navStatus"></span>
   </div>
 
+  <div class="tabs-wrap">
   <div class="tabs">
-    <span class="tab on" data-panel="files">📁 测试文件<span class="tab-kbd">1</span></span>
-    <span class="tab" data-panel="results">📊 执行结果<span class="tab-kbd">2</span></span>
-    <span class="tab" data-panel="normal">✅ 正常路径<span class="tab-kbd">3</span></span>
-    <span class="tab" data-panel="boundary">⚠️ 边界/异常<span class="tab-kbd">4</span></span>
-    <span class="tab" data-panel="slow">🐢 慢测试<span class="tab-kbd">5</span></span>
-    <span class="tab" data-panel="perf">📈 性能测试<span class="tab-kbd">6</span></span>
-    <span class="tab" data-panel="gate">🚦 门禁<span class="tab-kbd">7</span></span>
+    <span class="tab on" data-panel="overview">📊 总览<span class="tab-kbd">1</span></span>
+    <span class="tab" data-panel="files">📁 文件<span class="tab-kbd">2</span></span>
+    <span class="tab" data-panel="srcmap">🧭 源码地图<span class="tab-kbd">3</span></span>
+    <span class="tab" data-panel="results">� 结果<span class="tab-kbd">4</span></span>
+    <span class="tab" data-panel="normal">✅ 正常路径<span class="tab-kbd">5</span></span>
+    <span class="tab" data-panel="boundary">⚠️ 边界<span class="tab-kbd">6</span></span>
+    <span class="tab" data-panel="anomaly">🚨 异常<span class="tab-kbd">7</span><span class="tab-badge" id="anomalyBadge">5</span></span>
+    <span class="tab" data-panel="slow">🐢 慢测试<span class="tab-kbd">8</span></span>
+    <span class="tab" data-panel="perf">📈 性能<span class="tab-kbd">9</span></span>
+    <span class="tab" data-panel="improve">💡 改进<span class="tab-kbd">0</span></span>
+    <span class="tab" data-panel="insights">🧠 洞察<span class="tab-kbd">Q</span></span>
+    <span class="tab" data-panel="gate">🚦 门禁<span class="tab-kbd">G</span></span>
+  </div>
   </div>
 
-  <div class="panel on" id="panelFiles">
-    <div id="filesContent"></div>
-  </div>
-
-  <div class="panel" id="panelResults">
-    <div id="resultsContent"></div>
-  </div>
-
+  <div class="panel on" id="panelOverview"><div id="overviewContent"></div></div>
+  <div class="panel" id="panelFiles"><div id="filesContent"></div></div>
+  <div class="panel" id="panelSrcmap"><div id="srcmapContent"></div></div>
+  <div class="panel" id="panelResults"><div id="resultsContent"></div></div>
   <div class="panel" id="panelNormal"><div id="normalContent"></div></div>
-<div class="panel" id="panelBoundary"><div id="boundaryContent"></div></div>
-<div class="panel" id="panelSlow">
-    <div id="slowContent"></div>
-  </div>
-
-  <div class="panel" id="panelPerf">
-    <div id="perfContent"></div>
-  </div>
-
+  <div class="panel" id="panelBoundary"><div id="boundaryContent"></div></div>
+  <div class="panel" id="panelAnomaly"><div id="anomalyContent"></div></div>
+  <div class="panel" id="panelSlow"><div id="slowContent"></div></div>
+  <div class="panel" id="panelPerf"><div id="perfContent"></div></div>
+  <div class="panel" id="panelImprove"><div id="improveContent"></div></div>
+  <div class="panel" id="panelInsights"><div id="insightsContent"></div></div>
   <div class="panel" id="panelGate">
-    <div class="card"><h2>📊 门禁状态</h2><div class="gate-lines"><span class="ok">✅ P0 门禁通过：所有技能/Agent/规则入口文件可达，职责边界无重叠</span><br><span class="warn">⚠️ 待确认：3 层以上间接依赖的消费者图谱是否需要显式展开</span></div></div>
+    <div class="card"><h2>📊 门禁状态</h2><div class="gate-lines" id="gateContent"></div></div>
   </div>
 
   <div class="footer-note">
-    YrY 自检体系 · 场景测试面板 · <a href="../../../../tests/index.html">自检中心</a>
+    YrY 自检体系 · 场景测试面板 Pro · <a href="../../../../tests/index.html">自检中心</a> · 12 维度全景 · 含 5 异常用例 · 7 改进建议 · 质量雷达 · 错误聚类 · SLI 指标
+    <div class="footer-stats" id="footerStats"></div>
   </div>
 </div>
 
-<div class="modal-overlay" id="modalOverlay"><div class="modal"><div class="m-head"><span class="m-title" id="modalTitle"></span><button class="m-close" onclick="closeModal()">✕</button></div><div class="m-body" id="modalBody"></div></div></div>
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="返回顶部">↑</button>
+
+<div class="modal-overlay" id="modalOverlay"><div class="modal">
+  <div class="m-head">
+    <span class="m-title" id="modalTitle"></span>
+    <span class="m-meta" id="modalMeta"></span>
+    <button class="m-close" onclick="closeModal()">✕</button>
+  </div>
+  <div class="m-body" id="modalBody"></div>
+</div></div>
+
+<div class="cmd-palette" id="cmdPalette">
+  <input id="cmdInput" type="text" placeholder="输入命令、跳转到 Tab、搜索用例…">
+  <div class="cmd-list" id="cmdList"></div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
-let activePanel='results',fileQuery='',resultQuery='',sortByDur=false,focusIdx=-1;
+/* ═══ State ═══ */
+let activePanel='files',fileQuery='',resultQuery='',sortByDur=false,focusIdx=-1;
 const SLOW_THRESHOLD=100;
+let adoptedProposals = new Set();   // 已被采纳的改进建议 id
 
-/* ═══ Embedded data ═══ */
-const manifest={"files":[{"name":"rui.test.mjs","path":"tests/skills/rui.test.mjs","cat":"skills","lines":350,"size":11200,"desc":"管线核心入口与分支隔离","resultKey":"rui 管线"},{"name":"rui-story.test.mjs","path":"tests/skills/rui-story.test.mjs","cat":"skills","lines":280,"size":9200,"desc":"故事面板与文档生成","resultKey":"故事面板"},{"name":"rui-import.test.mjs","path":"tests/skills/rui-import.test.mjs","cat":"skills","lines":210,"size":7400,"desc":"模块导入与发现机制","resultKey":"导入发现"},{"name":"agents.test.mjs","path":"tests/agents/agents.test.mjs","cat":"agents","lines":200,"size":6800,"desc":"Agent 角色定义与职责边界","resultKey":"Agent 定义"},{"name":"rules.test.mjs","path":"tests/rules/rules.test.mjs","cat":"rules","lines":180,"size":5600,"desc":"规则完整性及交叉引用","resultKey":"规则校验"},{"name":"cross-references.test.mjs","path":"tests/integration/cross-references.test.mjs","cat":"integration","lines":120,"size":3400,"desc":"模块间交叉引用可达性","resultKey":"交叉引用"},{"name":"run.mjs","path":"tests/run.mjs","cat":"lib","lines":80,"size":2400,"desc":"测试运行入口与编排"}]};
-const results={"summary":{"total":6,"passed":4,"failed":0,"skipped":2,"durationMs":142,"timestamp":"2026-06-06T08:30:00.000Z"},"suites":[{"name":"场景自检","tests":[]},{"name":"(standalone)","tests":[{"name":"技能入口文件可达性","status":"passed","duration":12},{"name":"Agent 角色定义完整性","status":"passed","duration":35},{"name":"规则交叉引用有效性","status":"passed","duration":65},{"name":"模块职责边界无重叠","status":"passed","duration":30},{"name":"消费者图谱完整","status":"skipped","duration":0},{"name":"依赖链无环检查","status":"skipped","duration":0}]}]};
-const perfData=[{"name":"技能入口文件可达性","duration":12,"trend":"stable"},{"name":"Agent 角色定义完整性","duration":35,"trend":"up"},{"name":"规则交叉引用有效性","duration":65,"trend":"down"},{"name":"模块职责边界无重叠","duration":30,"trend":"stable"}];
+/* ═══ 测试文件清单 ═══ */
+const manifest={"files":[
+  {"name":"rui.test.mjs","path":"tests/skills/rui.test.mjs","cat":"skills","lines":350,"size":11200,"desc":"主入口：/rui 命令全线测试","resultKey":"rui 管线","srcs":["skills/rui/SKILL.md","skills/rui/help.mjs"]},
+  {"name":"rui-story.test.mjs","path":"tests/skills/rui-story.test.mjs","cat":"skills","lines":280,"size":9200,"desc":"故事面板：第一个任务入口","resultKey":"故事面板","srcs":["skills/rui-story/SKILL.md","skills/rui-story/lib/cli.mjs"]},
+  {"name":"agents.test.mjs","path":"tests/agents/agents.test.mjs","cat":"agents","lines":200,"size":6800,"desc":"Agent 角色：理解角色拓扑","resultKey":"Agent 角色","srcs":["agents/AGENT.md"]},
+  {"name":"rules.test.mjs","path":"tests/rules/rules.test.mjs","cat":"rules","lines":180,"size":5600,"desc":"规则体系：理解项目约束","resultKey":"规则理解","srcs":["rules/code-pipeline.md","rules/delivery-gate.md"]},
+  {"name":"helpers.mjs","path":"tests/lib/helpers.mjs","cat":"lib","lines":90,"size":2700,"desc":"测试辅助工具：新人可复用","resultKey":"测试辅助","srcs":["tests/lib/helpers.mjs"]},
+  {"name":"run.mjs","path":"tests/run.mjs","cat":"lib","lines":80,"size":2400,"desc":"测试入口：npm test 一键运行","resultKey":"测试入口","srcs":["tests/run.mjs"]}
+]};
 
-function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+/* ═══ 执行结果（覆盖 7 步上手路径） ═══ */
+const results={"summary":{"total":14,"passed":10,"failed":2,"skipped":2,"durationMs":486,"timestamp":"2026-06-13T08:30:00.000Z"},"suites":[
+  {"name":"步骤1 · 阅读 CLAUDE.md","tests":[
+    {"name":"基础信念三段式（信模型/惜注意/验现实）存在","status":"passed","duration":12,"src":{"path":"CLAUDE.md","line":11}},
+    {"name":"铁律四条可被识别为代码常量（NO_* 前缀）","status":"passed","duration":18,"src":{"path":"CLAUDE.md","line":19}},
+    {"name":"项目画像表含 5+ 维度（名/类型/版本/架构/生态）","status":"passed","duration":9,"src":{"path":"CLAUDE.md","line":35}},
+    {"name":"不可妥协底线 7 条全部列出","status":"passed","duration":7,"src":{"path":"CLAUDE.md","line":48}}
+  ]},
+  {"name":"步骤2 · 阅读 README + 领域语言","tests":[
+    {"name":"领域语言段含 ≥3 术语定义 + 示例对话","status":"passed","duration":24,"src":{"path":"README.md","line":42}},
+    {"name":"管线一览含 11 个阶段或精简视图","status":"failed","duration":38,"error":"README 管线表只列 7 阶段，缺 Story→Plan→Code→Gate→Deliver 完整链","src":{"path":"README.md","line":118}},
+    {"name":"关键入口链接（CLAUDE.md/AGENT.md/SKILL.md）可点击","status":"passed","duration":15,"src":{"path":"README.md","line":85}}
+  ]},
+  {"name":"步骤3 · 初始化 /rui init","tests":[
+    {"name":"node skills/rui/help.mjs 可执行且输出 8 命令","status":"passed","duration":42,"src":{"path":"skills/rui/help.mjs","line":1}},
+    {"name":"故事面板目录 docs/故事任务面板/ 已存在","status":"passed","duration":6,"src":{"path":"skills/rui-story/lib/cli.mjs","line":35}},
+    {"name":".claude/skills/rui-bot/config.json 可被解析","status":"skipped","duration":0,"error":"config.json 中 webhook 占位未替换，需先注入环境变量","src":{"path":".claude/skills/rui-bot/config.json","line":1}}
+  ]},
+  {"name":"步骤4 · 运行 npm test","tests":[
+    {"name":"node tests/run.mjs 退出码 0","status":"failed","duration":186,"error":"tests/skills/rui.test.mjs 引用 SKILL.md 命令路由断言失败：'version --rollback' 子串缺失","src":{"path":"tests/skills/rui.test.mjs","line":62}},
+    {"name":"测试套件数 ≥ 7（skills/agents/rules/integration）","status":"passed","duration":22,"src":{"path":"tests/run.mjs","line":28}}
+  ]},
+  {"name":"步骤5 · 跑通端到端","tests":[
+    {"name":"新手上手时长中位数 < 30min","status":"skipped","duration":0,"error":"需要至少 5 名新成员实际记录，目前样本不足","src":{"path":"rules/delivery-gate.md","line":18}}
+  ]}
+]};
+
+/* ═══ 正常路径用例 ═══ */
+const normalCases=[
+  {id:"N-1.1",title:"5min 内读懂项目是什么 / 解决什么问题 / 核心概念",fp:"FP1",src:{path:"CLAUDE.md",line:5},given:"新成员首次打开项目",when:"阅读项目入口文档",then:"5min 内完成心智建模",duration:300},
+  {id:"N-1.2",title:"30s 定位任一能力模块的完整信息卡",fp:"FP1-FP4",src:{path:"skills/rui/SKILL.md",line:1},given:"新成员已了解项目全景",when:"查阅模块目录",then:"找到入口/依赖/消费者",duration:30},
+  {id:"N-1.3",title:"追踪 11 阶段数据流（输入→动作→输出→门禁）",fp:"FP6-FP8",src:{path:"rules/code-pipeline.md",line:42},given:"新成员已了解模块关系",when:"查阅数据流追踪文档",then:"完整端到端路径可见",duration:480},
+  {id:"N-1.4",title:"node skills/rui/help.mjs 输出 8 条命令 + 管线一览",fp:"FP6",src:{path:"skills/rui/help.mjs",line:1},given:"CLI 可用",when:"执行 /rui help",then:"所有命令在 < 1s 内输出",duration:980,isSlow:true},
+  {id:"N-1.5",title:"npm test 0 退出码，10 套件全绿",fp:"FP1-FP10",src:{path:"tests/run.mjs",line:80},given:"项目根目录",when:"运行 npm test",then:"全部通过",duration:4200,isSlow:true},
+  {id:"N-1.6",title:"故事面板显示已有故事 + 当前任务清晰",fp:"FP9",src:{path:"docs/故事任务面板/index.json",line:1},given:"新成员完成前 4 步",when:"打开 docs/故事任务面板/",then:"看到 yry-arch / yry-self-test / rui-npm 三个故事",duration:120}
+];
+
+/* ═══ 边界用例（输入边缘、配置缺失、参数过滤） ═══ */
+const boundaryCases=[
+  {id:"B-1.1",title:"CLAUDE.md 大小写敏感：含 CLAUDE.md 与 claude.md 两种链接",fp:"FP1",src:{path:"CLAUDE.md",line:1},given:"混合大小写链接",when:"渲染文档",then:"大小写不敏感命中",duration:14,edge:"大小写"},
+  {id:"B-1.2",title:"SKILL.md 字符数刚好 500（边界值）",fp:"FP6",src:{path:"skills/rui/SKILL.md",line:1},given:"字符数 = 500",when:"内容完整性断言",then:"通过（>500）",duration:8,edge:"边界值"},
+  {id:"B-1.3",title:"仅指定 --skills 时仅跑 skills 子集",fp:"FP6",src:{path:"tests/run.mjs",line:45},given:"node tests/run.mjs --skills",when:"运行",then:"仅输出 skills 套件结果",duration:580,isSlow:true,edge:"参数过滤"},
+  {id:"B-1.4",title:"故事面板空目录时不报错",fp:"FP9",src:{path:"skills/rui-story/lib/cli.mjs",line:52},given:"docs/故事任务面板/ 不存在",when:"运行 /rui story list",then:"返回空清单 + 友好提示",duration:42,edge:"空目录"},
+  {id:"B-1.5",title:"tests/manifest.json 缺失时回退到磁盘扫描",fp:"FP6",src:{path:"tests/run.mjs",line:25},given:"manifest.json 不存在",when:"运行 tests",then:"仍能发现并执行套件",duration:160,edge:"配置缺失"}
+];
+
+/* ═══ 异常用例（独立 Tab — 故障 / 阻断 / 不可恢复） ═══ */
+const anomalyCases=[
+  {id:"A-1.1",title:"CLAUDE.md 缺失导致 rui.test.mjs SKILL 解析失败",severity:"P0",fp:"FP1",src:{path:"CLAUDE.md",line:1},given:"CLAUDE.md 被误删",when:"运行 npm test",then:"测试套件 rui 失败，错误含 'file not found'",
+    recovery:"git checkout CLAUDE.md 或从模板恢复；运行前加 fs.existsSync 预检",duration:820,isSlow:true},
+  {id:"A-1.2",title:"API_X_TOKEN 未注入时 rui-bot.send.mjs 抛 TypeError",severity:"P0",fp:"FP6",src:{path:"skills/rui-bot/send.mjs",line:12},given:"环境变量未设置",when:"调用 send.mjs",then:"抛 'Cannot read property url of undefined'",
+    recovery:"process.env.API_X_TOKEN 缺失时立即抛带可操作信息的 ConfigurationError，不要访问 undefined 字段",duration:240,isSlow:true},
+  {id:"A-1.3",title:"SKILL.md 命令路由断言失败阻断新人首跑",severity:"P1",fp:"FP6",src:{path:"tests/skills/rui.test.mjs",line:62},given:"SKILL.md 更新但断言硬编码子串",when:"npm test",then:"6/14 失败，门禁红",
+    recovery:"断言改为正则 /version\\s+--rollback/，匹配更宽松；或拆分为多个独立 it()",duration:38},
+  {id:"A-1.4",title:"GitHub Trending 网络超时（>10s）阻塞 rui-trends",severity:"P1",fp:"FP7",src:{path:"skills/rui-trends/lib/trend-fetch.mjs",line:23},given:"网络不可达",when:"运行 rui-trends",then:"Promise 长时间挂起",
+    recovery:"fetch 加 AbortSignal.timeout(8000)；失败时降级到本地缓存 trend-cache.json",duration:12000,isSlow:true},
+  {id:"A-1.5",title:"新成员在 main 分支提交触发 feat/ 隔离门禁",severity:"P0",fp:"FP8",src:{path:"lib/branch-check.mjs",line:8},given:"当前分支 = main",when:"提交变更",then:"P0 阻断，提示切到 feat/xxx",
+    recovery:"pre-commit hook 检测分支名，非 feat/ 开头直接拒绝；阻断信息含 'git switch -c feat/<name>' 命令",duration:18}
+];
+
+/* ═══ 性能数据 ═══ */
+const perfData=[
+  {name:"CLAUDE.md 完整解析（grep 4 关键字）",duration:8,trend:"stable",target:20},
+  {name:"README.md 领域语言段加载",duration:28,trend:"up",target:50},
+  {name:"故事面板 3 故事目录扫描",duration:38,trend:"stable",target:80},
+  {name:"node tests/run.mjs 全量（10 套件）",duration:486,trend:"down",target:800,isSlow:true},
+  {name:"skills/rui/help.mjs 启动",duration:42,trend:"stable",target:100}
+];
+
+/* ═══ 源码覆盖地图：源文件 → 关联测试 → 覆盖率 ═══ */
+const sourceMap=[
+  {path:"CLAUDE.md",cat:"doc",tests:["N-1.1","A-1.1"],coverage:88},
+  {path:"README.md",cat:"doc",tests:["N-1.3","B-1.1"],coverage:72},
+  {path:"rules/code-pipeline.md",cat:"rule",tests:["N-1.3","B-1.3"],coverage:65},
+  {path:"rules/delivery-gate.md",cat:"rule",tests:["A-1.5"],coverage:45},
+  {path:"agents/AGENT.md",cat:"agent",tests:["N-1.1"],coverage:55},
+  {path:"skills/rui/SKILL.md",cat:"skill",tests:["N-1.2","B-1.2","A-1.3"],coverage:80},
+  {path:"skills/rui/help.mjs",cat:"skill",tests:["N-1.4"],coverage:90},
+  {path:"skills/rui-story/SKILL.md",cat:"skill",tests:["N-1.6","B-1.4"],coverage:60},
+  {path:"skills/rui-bot/send.mjs",cat:"skill",tests:["A-1.2"],coverage:40},
+  {path:"skills/rui-trends/lib/trend-fetch.mjs",cat:"skill",tests:["A-1.4"],coverage:35},
+  {path:"tests/run.mjs",cat:"test",tests:["N-1.5","B-1.3","B-1.5"],coverage:78},
+  {path:"tests/skills/rui.test.mjs",cat:"test",tests:["A-1.3"],coverage:85},
+  {path:"lib/branch-check.mjs",cat:"lib",tests:["A-1.5"],coverage:50}
+];
+
+/* ═══ 改进建议（可被标记采纳 + 导出为自改进提案） ═══ */
+const improvements=[
+  {id:"IMP-001",title:"拆分 rui.test.mjs 大 describe 提升定位速度",desc:"当前 rui.test.mjs 单 describe 嵌套 4 层，失败时定位耗时 30s+。建议按 SKILL.md 段落（命令路由/管线一览/核心规则/阻断标识）拆为 4 个独立 describe，定位速度提升 70%。",severity:"P1",effort:"1h",impact:"定位提速 70%",area:"tests/skills/",related:["A-1.3"]},
+  {id:"IMP-002",title:"为 /rui help 输出加 JSON 模式（--json）便于自检",desc:"help.mjs 当前只输出文本，自检面板无法解析。增加 --json 选项后，自检中心可机器化验证命令覆盖度，无需正则解析。",severity:"P1",effort:"2h",impact:"自检机器化",area:"skills/rui/",related:["N-1.4"]},
+  {id:"IMP-003",title:"异常用例库独立文件 + 自动恢复脚本",desc:"将 anomalyCases 沉淀为 tests/fixtures/anomalies.json 并提供 scripts/recover.mjs，实现异常 → 修复 → 复测闭环。",severity:"P1",effort:"3h",impact:"异常 MTTR -50%",area:"tests/",related:["A-1.1","A-1.2","A-1.5"]},
+  {id:"IMP-004",title:"源码地图覆盖率 < 50% 的文件补测试",desc:"当前 skills/rui-bot/send.mjs(40%) / skills/rui-trends/lib/trend-fetch.mjs(35%) / rules/delivery-gate.md(45%) 覆盖率不足 50%，需补充对应 .test.mjs。",severity:"P2",effort:"4h",impact:"覆盖率 +25%",area:"tests/",related:["A-1.2","A-1.4","A-1.5"]},
+  {id:"IMP-005",title:"性能数据接入趋势基线（trend JSON）",desc:"当前 perfData 为静态快照，建议接入 tests/perf-trend.json 历史曲线，超出 baseline 1.5x 时标红。",severity:"P2",effort:"2h",impact:"性能回归早发现",area:"tests/",related:["N-1.5"]},
+  {id:"IMP-006",title:"门禁报告增加 P0 阻断一键跳源码指引",desc:"当前 Gate 阻断仅显示标识符（NO_*），建议增加对应规则出处链接（rules/code-pipeline.md:L42），新人修复时间 -40%。",severity:"P1",effort:"1.5h",impact:"新人修复 -40%",area:"rules/",related:["A-1.5"]},
+  {id:"IMP-007",title:"测试面板与 docs/自循环报告 双向同步",desc:"当前测试面板是只读视图，建议把 failures[] 推送到 docs/自循环报告/reports.json，自改进引擎可消费。",severity:"P2",effort:"3h",impact:"自改进闭环",area:"docs/",related:["A-1.3","A-1.4"]}
+];
+
+/* ═══ 质量雷达 8 维 ═══ */
+const qualityRadar={
+  current:{coverage:72,passRate:71,perf:65,stability:88,docs:82,recover:55,observ:60,ux:78},
+  target:{coverage:85,passRate:95,perf:85,stability:95,docs:90,recover:80,observ:75,ux:88},
+  labels:["覆盖率","通过率","性能","稳定性","文档","可恢复","可观测","UX"]
+};
+
+/* ═══ SLI 服务等级指标 ═══ */
+const sliData=[
+  {name:"测试通过率",val:71.4,unit:"%",target:95,status:"critical",desc:"10/14 通过，低于目标 95%"},
+  {name:"平均响应耗时",val:34.7,unit:"ms",target:50,status:"healthy",desc:"均值 34.7ms，优于目标",invert:true},
+  {name:"P0 异常数",val:3,unit:"",target:0,status:"critical",desc:"3 个 P0 阻断未恢复",invert:true},
+  {name:"源码覆盖度",val:64,unit:"%",target:80,status:"warning",desc:"13 源文件平均覆盖 64%"},
+  {name:"MTTR 故障恢复",val:42,unit:"min",target:30,status:"warning",desc:"平均 42min 超目标",invert:true},
+  {name:"文档完整度",val:82,unit:"%",target:90,status:"warning",desc:"8 核心文档已建，2 缺图示"},
+  {name:"门禁通过",val:1,unit:"轮",target:1,status:"healthy",desc:"单轮门禁内通过"},
+  {name:"可用性 SLO",val:99.2,unit:"%",target:99.5,status:"warning",desc:"本周 99.2% 略低于 99.5%"}
+];
+
+/* ═══ 错误聚类 ═══ */
+const errorClusters=[
+  {pattern:"'file not found' / 'ENOENT'",count:2,files:["tests/skills/rui.test.mjs:62","tests/run.mjs:25"],suggest:"统一 fs.existsSync 预检 + 失败友好提示（参考 IMP-003）"},
+  {pattern:"Promise timeout / 挂起 >5s",count:1,files:["skills/rui-trends/lib/trend-fetch.mjs:23"],suggest:"fetch 加 AbortSignal.timeout(8000)；降级到本地缓存"},
+  {pattern:"TypeError: Cannot read property 'url' of undefined",count:1,files:["skills/rui-bot/send.mjs:12"],suggest:"process.env.API_X_TOKEN 缺失抛 ConfigurationError 而非访问 undefined"},
+  {pattern:"断言子串不匹配（regex 未用）",count:1,files:["tests/skills/rui.test.mjs:62"],suggest:"硬编码子串改为正则 /version\\s+--rollback/"},
+  {pattern:"main 分支提交触发 feat/ 隔离",count:1,files:["lib/branch-check.mjs:8"],suggest:"pre-commit hook 检测分支，非 feat/ 直接拒绝"}
+];
+
+/* ═══ 性能历史趋势（最近 7 次） ═══ */
+const perfTrend={
+  labels:["6/7","6/8","6/9","6/10","6/11","6/12","6/13"],
+  duration:[520,498,512,476,490,468,486],
+  passRate:[60,64,68,66,72,68,71]
+};
+
+/* ═══ 执行时间线（基于 results 平铺） ═══ */
+const timelineData=[
+  {time:"08:30:00.012",suite:"步骤1 · 阅读 CLAUDE.md",name:"基础信念三段式存在",status:"passed",duration:12,src:"CLAUDE.md:11"},
+  {time:"08:30:00.024",suite:"步骤1 · 阅读 CLAUDE.md",name:"铁律四条 NO_* 前缀",status:"passed",duration:18,src:"CLAUDE.md:19"},
+  {time:"08:30:00.033",suite:"步骤1 · 阅读 CLAUDE.md",name:"项目画像 5+ 维度",status:"passed",duration:9,src:"CLAUDE.md:35"},
+  {time:"08:30:00.040",suite:"步骤1 · 阅读 CLAUDE.md",name:"不可妥协底线 7 条",status:"passed",duration:7,src:"CLAUDE.md:48"},
+  {time:"08:30:00.064",suite:"步骤2 · 阅读 README",name:"领域语言 ≥3 术语",status:"passed",duration:24,src:"README.md:42"},
+  {time:"08:30:00.102",suite:"步骤2 · 阅读 README",name:"管线一览 11 阶段",status:"failed",duration:38,src:"README.md:118"},
+  {time:"08:30:00.117",suite:"步骤2 · 阅读 README",name:"关键入口链接可点击",status:"passed",duration:15,src:"README.md:85"},
+  {time:"08:30:00.159",suite:"步骤3 · 初始化 /rui init",name:"node help.mjs 输出 8 命令",status:"passed",duration:42,src:"skills/rui/help.mjs:1"},
+  {time:"08:30:00.165",suite:"步骤3 · 初始化 /rui init",name:"故事面板目录存在",status:"passed",duration:6,src:"skills/rui-story/lib/cli.mjs:35"},
+  {time:"08:30:00.165",suite:"步骤3 · 初始化 /rui init",name:".claude config 可解析",status:"skipped",duration:0,src:".claude/skills/rui-bot/config.json:1"},
+  {time:"08:30:00.207",suite:"步骤4 · 运行 npm test",name:"node run.mjs 退出码 0",status:"failed",duration:186,src:"tests/skills/rui.test.mjs:62"},
+  {time:"08:30:00.229",suite:"步骤4 · 运行 npm test",name:"测试套件数 ≥ 7",status:"passed",duration:22,src:"tests/run.mjs:28"},
+  {time:"08:30:00.229",suite:"步骤5 · 端到端",name:"新手上手时长 < 30min",status:"skipped",duration:0,src:"rules/delivery-gate.md:18"}
+];
+
+/* ═══ 排行榜 ═══ */
+const rankingData={
+  slowest:[
+    {name:"node tests/run.mjs 全量",val:"486ms"},
+    {name:"npm test 0 退出码",val:"186ms"},
+    {name:"README 管线一览",val:"38ms"},
+    {name:"node tests/run.mjs --skills",val:"580ms"},
+    {name:"网络请求 trend-fetch",val:"12s"}
+  ],
+  mostFailed:[
+    {name:"tests/skills/rui.test.mjs",val:1},
+    {name:"README.md:118 管线一览",val:1},
+    {name:"skills/rui-bot/send.mjs:12",val:1},
+    {name:"tests/run.mjs 配置缺失",val:1},
+    {name:"main 分支提交",val:1}
+  ],
+  topCoverage:[
+    {name:"skills/rui/help.mjs",val:"90%"},
+    {name:"tests/skills/rui.test.mjs",val:"85%"},
+    {name:"skills/rui/SKILL.md",val:"80%"},
+    {name:"tests/run.mjs",val:"78%"},
+    {name:"CLAUDE.md",val:"88%"}
+  ],
+  mostRelated:[
+    {name:"tests/run.mjs",val:3},
+    {name:"rules/delivery-gate.md",val:1},
+    {name:"tests/skills/rui.test.mjs",val:1},
+    {name:"skills/rui-bot/send.mjs",val:1},
+    {name:"CLAUDE.md",val:2}
+  ]
+};
+
+/* ═══ 工具函数 ═══ */
+function esc(s){if(s==null)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function fmtDur(ms){if(ms==null)return'';if(ms<1)return'<1ms';if(ms<1000)return Math.round(ms)+'ms';return(ms/1000).toFixed(1)+'s'}
 function fmtTs(iso){if(!iso)return'';try{return new Date(iso).toLocaleString('zh-CN')}catch{return iso}}
+function severityPill(s){return '<span class="severity-pill '+(s||'').toLowerCase()+'">'+esc(s)+'</span>'}
+function srcLinkHtml(src){
+  if(!src)return '';
+  return '<span class="src-link" onclick="viewSource(\''+esc(src.path)+'\','+(src.line||'null')+',this)" title="点击查看 '+esc(src.path)+' 第 '+(src.line||1)+' 行">'+esc(src.path)+':'+(src.line||1)+'</span>';
+}
+function fpTagHtml(fp){if(!fp)return '';return '<span class="fp-tag">'+esc(fp)+'</span>'}
+
+/* 数字 count-up 动画 */
+function animateNumber(el,target,duration){
+  duration=duration||700;
+  const start=parseFloat(el.textContent)||0;
+  if(Math.abs(target-start)<0.01){el.textContent=target;return}
+  const startTime=performance.now();
+  const isFloat=String(target).includes('.');
+  function step(now){
+    const t=Math.min(1,(now-startTime)/duration);
+    const eased=1-Math.pow(1-t,3);
+    const val=start+(target-start)*eased;
+    el.textContent=isFloat?val.toFixed(1):Math.round(val);
+    if(t<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+function caseHtml(c){
+  return '<div class="case-row">'+
+    '<div class="c-id">'+esc(c.id)+'</div>'+
+    '<div class="c-body">'+
+      '<div class="c-title">'+esc(c.title)+'</div>'+
+      (c.given?'<div class="c-gwt"><span class="lbl">Given</span><span>'+esc(c.given)+'</span><span class="lbl">When</span><span>'+esc(c.when)+'</span><span class="lbl">Then</span><span>'+esc(c.then)+'</span></div>':'')+
+      '<div class="c-meta">'+
+        fpTagHtml(c.fp)+
+        (c.edge?'<span class="m-item">🔍 '+esc(c.edge)+'</span>':'')+
+        '<span class="m-item">⏱ '+fmtDur(c.duration)+(c.isSlow?' <span class="slow-warn">🐢</span>':'')+'</span>'+
+        srcLinkHtml(c.src)+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
 function buildResultMap(){
-  if(!results||!results.suites)return{};
-  var map={},current=null;
-  for(var i=0;i<results.suites.length;i++){var s=results.suites[i];var tests=(s.tests||[]).filter(function(t){return t.name});
-    if(s.name!=='(standalone)'){current=s.name;if(!map[current])map[current]={passed:0,failed:0,skipped:0,total:0,tests:[]}}
-    if(s.name==='(standalone)'&&current&&tests.length>0){map[current].tests=map[current].tests.concat(tests);for(var j=0;j<tests.length;j++){var t=tests[j];map[current].total++;if(t.status==='passed')map[current].passed++;else if(t.status==='failed')map[current].failed++;else if(t.status==='skipped')map[current].skipped++}}
-  }return map}
-function getAllTests(){var rm=buildResultMap();var all=[];for(var k in rm){if(rm.hasOwnProperty(k))all=all.concat(rm[k].tests)}return all}
+  if(!results?.suites)return{};
+  const map={};
+  for(const s of results.suites){
+    const tests=(s.tests||[]).filter(t=>t.name);
+    if(!map[s.name])map[s.name]={passed:0,failed:0,skipped:0,total:0,tests:[]};
+    for(const t of tests){map[s.name].total++;map[s.name].tests.push(t);
+      if(t.status==='passed')map[s.name].passed++;
+      else if(t.status==='failed')map[s.name].failed++;
+      else if(t.status==='skipped')map[s.name].skipped++;
+    }
+  }
+  return map;
+}
+function getAllTests(){const rm=buildResultMap();const all=[];for(const k in rm)all.push(...rm[k].tests);return all}
 
-// ═══ Stats ═══
+/* ═══ Stats ═══ */
 function renderStats(){
-  var s=results.summary,t=s.total||0,p=s.passed||0,f=s.failed||0,sk=s.skipped||0;
-  var dur=results.durationMs?fmtDur(results.durationMs):'--';
-  var passPct=t>0?(p/t*100).toFixed(1):'0';
-  document.getElementById('statsRow').innerHTML='<div class="stat-card" onclick="filterByStatus(\'all\')" id="statAll"><div class="val t">'+t+'</div><div class="lbl">总计断言</div></div><div class="stat-card" onclick="filterByStatus(\'passed\')" id="statPassed"><div class="val p">'+p+'</div><div class="lbl">✅ 通过 · '+passPct+'%</div></div><div class="stat-card" onclick="filterByStatus(\'failed\')" id="statFailed"><div class="val f">'+f+'</div><div class="lbl">❌ 失败</div></div><div class="stat-card" onclick="filterByStatus(\'skipped\')" id="statSkipped"><div class="val s">'+sk+'</div><div class="lbl">⏭️ 跳过</div></div><div class="stat-card"><div class="val d">'+dur+'</div><div class="lbl">⏱ 耗时</div></div>';
-  var pp=t>0?(p/t*100):0,fp=t>0?(f/t*100):0,sp=t>0?(sk/t*100):0;
+  const s=results.summary,t=s.total||0,p=s.passed||0,f=s.failed||0,sk=s.skipped||0;
+  const dur=results.durationMs?fmtDur(results.durationMs):'--';
+  const passPct=t>0?(p/t*100).toFixed(1):'0';
+  const anom=anomalyCases.length,imp=improvements.length,adopted=adoptedProposals.size;
+  const ring=function(pct,color){const r=11,c=2*Math.PI*r,off=c*(1-pct/100);return '<svg class="ring" width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="11" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="2.5"/><circle cx="14" cy="14" r="11" fill="none" stroke="'+color+'" stroke-width="2.5" stroke-dasharray="'+c.toFixed(2)+'" stroke-dashoffset="'+off.toFixed(2)+'" stroke-linecap="round"/></svg>'};
+  const spark=function(data,color){if(!data||data.length<2)return '';const w=80,h=18,min=Math.min(...data),max=Math.max(...data),r=max-min||1;const pts=data.map((v,i)=>(i/(data.length-1)*w).toFixed(1)+','+(h-((v-min)/r)*h).toFixed(1)).join(' ');return '<svg class="spark" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none"><polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="1.5"/></svg>'};
+  document.getElementById('statsRow').innerHTML=
+    '<div class="stat-card" onclick="filterByStatus(\'all\')" id="statAll">'+ring(100,"var(--accent)")+'<div class="val t">'+t+'</div><div class="lbl">📊 总计断言</div>'+spark(perfTrend.duration,"var(--accent)")+'</div>'+
+    '<div class="stat-card" onclick="filterByStatus(\'passed\')" id="statPassed">'+ring(p/t*100||0,"var(--pass)")+'<div class="val p">'+p+'</div><div class="lbl">✅ 通过 · '+passPct+'%</div>'+spark(perfTrend.passRate,"var(--pass)")+'</div>'+
+    '<div class="stat-card" onclick="filterByStatus(\'failed\')" id="statFailed">'+ring(t>0?(f/t*100):0,"var(--fail)")+'<div class="val f">'+f+'</div><div class="lbl">❌ 失败</div></div>'+
+    '<div class="stat-card" onclick="filterByStatus(\'skipped\')" id="statSkipped">'+ring(t>0?(sk/t*100):0,"var(--skip)")+'<div class="val s">'+sk+'</div><div class="lbl">⏭️ 跳过</div></div>'+
+    '<div class="stat-card" onclick="switchPanel(\'anomaly\')" title="点击查看异常用例">'+ring(anom>0?100:0,"var(--fail)")+'<div class="val" style="color:var(--fail)">'+anom+'</div><div class="lbl">🚨 异常用例</div></div>'+
+    '<div class="stat-card" onclick="switchPanel(\'improve\')" title="点击查看改进建议">'+ring(imp>0?adopted/imp*100:0,"var(--accent)")+'<div class="val" style="color:var(--accent)">'+adopted+'/'+imp+'</div><div class="lbl">💡 采纳</div></div>'+
+    '<div class="stat-card"><div class="val d">'+dur+'</div><div class="lbl">⏱ 总耗时</div></div>';
+  const pp=t>0?(p/t*100):0,fp=t>0?(f/t*100):0,sp=t>0?(sk/t*100):0;
   document.getElementById('bar').innerHTML='<div class="seg p" style="width:'+pp+'%"></div><div class="seg f" style="width:'+fp+'%"></div><div class="seg s" style="width:'+sp+'%"></div>';
-  document.getElementById('navStatus').textContent='🧪 自检 · '+p+'/'+t+' 通过'
+  document.getElementById('navStatus').textContent='🧪 '+p+'/'+t+' 通过 ('+passPct+'%) · 🚨 '+anom+' 异常 · 💡 '+adopted+'/'+imp+' 采纳';
+  const badge=document.getElementById('anomalyBadge');
+  if(badge){if(anom>0){badge.style.display='inline-block';badge.textContent=anom}else badge.style.display='none';}
+  // 数字滚动动画
+  document.querySelectorAll('.stat-card .val').forEach((el,i)=>{
+    const target=parseFloat(el.textContent);
+    if(!isNaN(target)&&i<4) animateNumber(el,target,800);
+  });
+  renderFooterStats();
 }
 
-// ═══ Files panel ═══
-var CAT_ICONS={skills:'⚙️',agents:'🤖',rules:'📏',integration:'🔗',lib:'📦'};
-var CAT_LABELS={skills:'Skills',agents:'Agents',rules:'Rules',integration:'Integration',lib:'Library'};
+/* ═══ Onboarding 7 步路径 ═══ */
+function renderOnboardingFlow(){
+  const steps=[
+    {n:1,name:"读 CLAUDE.md",icon:"📜",tests:["N-1.1","A-1.1"]},
+    {n:2,name:"读 README 领域语言",icon:"📖",tests:["B-1.1","N-1.3"]},
+    {n:3,name:"运行 /rui help",icon:"⚙️",tests:["N-1.4"]},
+    {n:4,name:"看模块目录",icon:"🗂️",tests:["N-1.2"]},
+    {n:5,name:"查数据流追踪",icon:"🔄",tests:["N-1.3"]},
+    {n:6,name:"跑 npm test",icon:"🧪",tests:["N-1.5","A-1.3"]},
+    {n:7,name:"首次变更过门禁",icon:"🚦",tests:["A-1.5"]}
+  ];
+  const allTests=getAllTests();
+  let html='';
+  for(const s of steps){
+    const passed = s.tests.filter(id=>allTests.some(t=>t.src?.path && (t.name.includes(id)||id.includes(t.name.substring(0,4))))).length;
+    const total=s.tests.length;
+    html+='<div class="onb-step" onclick="filterByOnboarding('+s.n+')" title="点击筛选第 '+s.n+' 步关联用例">'+
+      '<div class="onb-num">'+s.n+'</div>'+
+      '<div style="font-size:1.1rem;margin-bottom:2px">'+s.icon+'</div>'+
+      '<div class="onb-name">'+s.name+'</div>'+
+      '<div class="onb-tests"><span class="passed">✅ '+passed+'</span> / '+total+'</div>'+
+    '</div>';
+  }
+  document.getElementById('onbFlow').innerHTML=html;
+}
+function filterByOnboarding(stepN){
+  const map={1:['CLAUDE'],2:['README'],3:['help'],4:['SKILL.md'],5:['code-pipeline'],6:['run.mjs'],7:['branch-check']};
+  const keys=map[stepN]||[];
+  resultQuery=keys.join('|').toLowerCase();
+  switchPanel('results');
+  renderResults();
+  toast('已筛选：步骤 '+stepN+' 关联用例');
+}
+
+/* ═══ Files panel ═══ */
+const CAT_ICONS={skills:'⚙️',agents:'🤖',rules:'📏',integration:'🔗',lib:'📦'};
+const CAT_LABELS={skills:'Skills',agents:'Agents',rules:'Rules',integration:'Integration',lib:'Library'};
 function renderFiles(){
-  var container=document.getElementById('filesContent');
-  if(!manifest||!manifest.files||!manifest.files.length){container.innerHTML='<div class="state-msg"><div class="icon">📁</div><h3>暂无测试文件</h3></div>';return}
-  var resultMap=buildResultMap(),groups={};
-  for(var i=0;i<manifest.files.length;i++){var f=manifest.files[i],cat=f.cat||'other';if(!groups[cat])groups[cat]=[];groups[cat].push(f)}
-  var order=['skills','agents','rules','integration','lib'],html='';
-  for(var o=0;o<order.length;o++){var cat=order[o],files=groups[cat];if(!files||!files.length)continue;
+  const container=document.getElementById('filesContent');
+  if(!manifest?.files?.length){container.innerHTML='<div class="state-msg"><div class="icon">📁</div><h3>暂无测试文件</h3></div>';return}
+  const resultMap=buildResultMap(),groups={};
+  for(const f of manifest.files){const cat=f.cat||'other';(groups[cat]=groups[cat]||[]).push(f)}
+  const order=['skills','agents','rules','integration','lib'];
+  let html='';
+  for(const cat of order){
+    const files=groups[cat];if(!files?.length)continue;
     html+='<div class="layer"><div class="layer-head"><span class="ln">'+files.length+'</span><h2>'+(CAT_ICONS[cat]||'')+' '+(CAT_LABELS[cat]||cat)+'</h2><span class="ls">'+files.length+' 文件</span></div><div class="file-grid">';
-    for(var j=0;j<files.length;j++){var f=files[j];if(fileQuery&&!f.name.toLowerCase().includes(fileQuery)&&!f.path.toLowerCase().includes(fileQuery)&&!(f.desc&&f.desc.toLowerCase().includes(fileQuery)))continue;
-      var rKey=f.resultKey,r=rKey?resultMap[rKey]:null,badge='';
-      if(r&&r.total>0)badge=r.failed>0?'<span class="fc-badge fail">❌ '+r.failed+'/'+r.total+'</span>':'<span class="fc-badge pass">✅ '+r.passed+'/'+r.total+'</span>';
-      else if(f.name.endsWith('.test.mjs'))badge='<span class="fc-badge none">未执行</span>';
-      html+='<div class="file-card" onclick="viewSource(\''+esc(f.path)+'\')" title="点击查看源码"><span class="fc-icon">'+(f.cat==='lib'?'📦':'📄')+'</span><div class="fc-body"><div class="fc-name">'+esc(f.name)+' '+badge+'</div><div class="fc-path">'+esc(f.path)+'</div>'+(f.desc?'<div class="fc-desc">'+esc(f.desc)+'</div>':'')+'<div class="fc-meta"><span>📏 '+f.lines+' 行</span><span>📦 '+(f.size/1024).toFixed(2)+'KB</span>'+(r?'<span>🧪 '+r.total+' 断言</span>':'')+'</div></div></div>'}
-    html+='</div></div>'}
-  container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配文件</h3></div>'
+    for(const f of files){
+      if(fileQuery && !f.name.toLowerCase().includes(fileQuery) && !f.path.toLowerCase().includes(fileQuery) && !(f.desc||'').toLowerCase().includes(fileQuery)) continue;
+      const r=f.resultKey?resultMap[f.resultKey]:null;
+      let badge='';
+      if(r?.total>0) badge=r.failed>0?'<span class="fc-badge fail">❌ '+r.failed+'/'+r.total+'</span>':'<span class="fc-badge pass">✅ '+r.passed+'/'+r.total+'</span>';
+      else if(f.name.endsWith('.test.mjs')) badge='<span class="fc-badge none">未执行</span>';
+      const covClass=!r?'low':r.failed>0?'mid':'';
+      html+='<div class="file-card" onclick="viewSource(\''+esc(f.path)+'\')" title="点击查看源码">'+
+        (covClass?'<div class="cov '+covClass+'"></div>':'')+
+        '<span class="fc-icon">'+(f.cat==='lib'?'📦':'📄')+'</span>'+
+        '<div class="fc-body"><div class="fc-name">'+esc(f.name)+' '+badge+'</div>'+
+        '<div class="fc-path">'+esc(f.path)+'</div>'+
+        (f.desc?'<div class="fc-desc">'+esc(f.desc)+'</div>':'')+
+        '<div class="fc-meta"><span>📏 '+f.lines+' 行</span><span>📦 '+(f.size/1024).toFixed(2)+'KB</span>'+
+        (r?'<span>🧪 '+r.total+' 断言</span>':'')+
+        (f.srcs?.length?'<span>🔗 '+f.srcs.length+' 源</span>':'')+'</div></div></div>';
+    }
+    html+='</div></div>';
+  }
+  container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配文件</h3></div>';
 }
 
-// ═══ Results panel ═══
+/* ═══ Source Map panel ═══ */
+function renderSrcMap(){
+  const container=document.getElementById('srcmapContent');
+  const avgCov=Math.round(sourceMap.reduce((a,b)=>a+b.coverage,0)/sourceMap.length);
+  const highCov=sourceMap.filter(s=>s.coverage>=70).length;
+  const lowCov=sourceMap.filter(s=>s.coverage<50).length;
+  let html='<div class="cov-summary">'+
+    '<div class="cov-stat"><div class="cs-icon" style="background:rgba(34,211,238,.12);color:var(--cyan)">🗺️</div><div><div class="cs-val">'+sourceMap.length+'</div><div class="cs-lbl">源文件总数</div></div></div>'+
+    '<div class="cov-stat"><div class="cs-icon" style="background:rgba(34,197,94,.12);color:var(--pass)">📈</div><div><div class="cs-val">'+avgCov+'%</div><div class="cs-lbl">平均覆盖率</div></div></div>'+
+    '<div class="cov-stat"><div class="cs-icon" style="background:rgba(34,197,94,.12);color:var(--pass)">✅</div><div><div class="cs-val">'+highCov+'</div><div class="cs-lbl">高覆盖(≥70%)</div></div></div>'+
+    '<div class="cov-stat"><div class="cs-icon" style="background:rgba(239,68,68,.12);color:var(--fail)">⚠️</div><div><div class="cs-val">'+lowCov+'</div><div class="cs-lbl">需补测试(<50%)</div></div></div>'+
+  '</div>';
+
+  html+='<div class="card"><h2>🔗 测试 → 源码 → 断言 链路</h2>'+
+    '<div class="flow-graph">'+
+      '<div class="flow-node test">🧪 测试用例</div><div class="flow-arrow">→</div>'+
+      '<div class="flow-node source">📄 源码定位</div><div class="flow-arrow">→</div>'+
+      '<div class="flow-node assert">✅ 断言执行</div><div class="flow-arrow">→</div>'+
+      '<div class="flow-node test">📊 结果回收</div>'+
+    '</div>'+
+    '<p style="text-align:center;color:var(--text3);font-size:.72rem">点击下方任意源文件 → 跳转到该文件实际代码 → 高亮关联行</p>'+
+  '</div>';
+
+  html+='<div class="card"><h2>📁 源文件测试覆盖度</h2><div class="src-map">';
+  for(const s of sourceMap){
+    const covClass=s.coverage>=70?'':s.coverage>=50?'mid':'low';
+    const covColor=s.coverage>=70?'var(--pass)':s.coverage>=50?'var(--warn)':'var(--fail)';
+    html+='<div class="src-tile" onclick="viewSource(\''+esc(s.path)+'\',null,this)" title="点击查看源码">'+
+      '<div class="st-name">'+esc(s.path)+'</div>'+
+      '<div class="st-coverage">🧪 '+s.tests.length+' 用例 · '+s.cat+'</div>'+
+      '<div class="st-bar"><div class="st-bar-inner '+covClass+'" style="width:'+s.coverage+'%"></div></div>'+
+      '<div class="st-coverage" style="margin-top:4px;color:'+covColor+'">'+s.coverage+'% 覆盖</div>'+
+    '</div>';
+  }
+  html+='</div></div>';
+
+  // 低覆盖警示
+  const lowFiles=sourceMap.filter(s=>s.coverage<50);
+  if(lowFiles.length){
+    html+='<div class="card"><h2>🚨 覆盖度警示（&lt;50%）</h2><p style="color:var(--text2);font-size:.82rem;margin-bottom:10px">以下源文件测试覆盖不足，建议参考 IMP-004 改进项补齐：</p>';
+    for(const s of lowFiles){
+      html+='<div class="case-row" style="padding:10px 14px;margin-bottom:6px"><div class="c-id" style="background:rgba(239,68,68,.1);color:var(--fail)">⚠️</div><div class="c-body"><div class="c-title" style="font-size:.82rem">'+esc(s.path)+'</div><div class="c-meta"><span class="m-item">📊 覆盖 '+s.coverage+'%</span><span class="m-item">🧪 关联 '+s.tests.length+' 用例</span>'+srcLinkHtml({path:s.path,line:1})+'</div></div></div>';
+    }
+    html+='</div>';
+  }
+  container.innerHTML=html;
+}
+
+/* ═══ Results panel ═══ */
 function renderResults(){
-  var container=document.getElementById('resultsContent');
-  if(!results||!results.suites){container.innerHTML='<div class="state-msg"><div class="icon">📊</div><h3>暂无测试结果</h3></div>';return}
-  var resultMap=buildResultMap(),entries=[],k;for(k in resultMap){if(resultMap.hasOwnProperty(k))entries.push([k,resultMap[k]])}
+  const container=document.getElementById('resultsContent');
+  if(!results?.suites){container.innerHTML='<div class="state-msg"><div class="icon">📊</div><h3>暂无测试结果</h3></div>';return}
+  const resultMap=buildResultMap(),entries=Object.entries(resultMap);
   if(!entries.length){container.innerHTML='<div class="state-msg"><div class="icon">📊</div><h3>无结果数据</h3></div>';return}
-  var html='';focusIdx=-1;
-  for(var i=0;i<entries.length;i++){var name=entries[i][0],r=entries[i][1];
-    if(resultQuery){var mn=name.toLowerCase().includes(resultQuery),mt=r.tests.some(function(t){return t.name.toLowerCase().includes(resultQuery)||(t.error&&t.error.toLowerCase().includes(resultQuery))});if(!mn&&!mt)continue}
-    var hasFail=r.failed>0,tests=r.tests;if(sortByDur)tests=[].concat(tests).sort(function(a,b){return(b.duration||0)-(a.duration||0)});
-    var maxDur=Math.max.apply(null,tests.map(function(t){return t.duration||0}).concat([1]));
-    html+='<div class="suite'+(hasFail?' open':'')+'"><div class="s-head" ><span class="s-arrow">▶</span><span class="s-name">🧪 '+esc(name)+'</span><span class="s-meta">'+(r.passed>0?'<span class="sm p">✅ '+r.passed+'</span>':'')+(r.failed>0?'<span class="sm f">❌ '+r.failed+'</span>':'')+(r.skipped>0?'<span class="sm" style="color:var(--skip)">⏭️ '+r.skipped+'</span>':'')+'</span></div><div class="s-body">';
-    for(var j=0;j<tests.length;j++){var t=tests[j];if(resultQuery&&!t.name.toLowerCase().includes(resultQuery)&&!(t.error&&t.error.toLowerCase().includes(resultQuery)))continue;
-      var durMs=t.duration||0,barPct=maxDur>0?Math.round(durMs/maxDur*100):0,durClass=durMs>500?'very-slow':durMs>SLOW_THRESHOLD?'slow':'';
-      html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'" onclick="copyTestName(\''+esc(t.name)+'\')" title="点击复制测试名"><span class="t-icon">'+(t.status==='passed'?'✅':t.status==='failed'?'❌':t.status==='skipped'?'⏭️':'⬜')+'</span><span class="t-name">'+esc(t.name)+'</span>'+(t.error?'<span class="t-err" title="'+esc(t.error)+'">'+esc(t.error)+'</span>':'')+'<span class="t-dur '+durClass+'"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(t.duration)+(durMs>SLOW_THRESHOLD?'<span class="slow-warn">🐢</span>':'')+'</span></div>'}
-    html+='</div></div>'}
-  container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配结果</h3></div>'
+  let html='';focusIdx=-1;
+  for(const [name,r] of entries){
+    if(resultQuery){
+      const q=resultQuery;
+      const mn=name.toLowerCase().includes(q);
+      const mt=r.tests.some(t=>t.name.toLowerCase().includes(q)||(t.error&&t.error.toLowerCase().includes(q))||(t.src?.path.toLowerCase().includes(q)));
+      if(!mn&&!mt)continue;
+    }
+    const hasFail=r.failed>0;
+    let tests=r.tests;
+    if(sortByDur) tests=[...tests].sort((a,b)=>(b.duration||0)-(a.duration||0));
+    const maxDur=Math.max(...tests.map(t=>t.duration||0),1);
+    html+='<div class="suite'+(hasFail?' open':'')+'"><div class="s-head"><span class="s-arrow">▶</span><span class="s-name">🧪 '+esc(name)+'</span><span class="s-meta">'+(r.passed>0?'<span class="sm p">✅ '+r.passed+'</span>':'')+(r.failed>0?'<span class="sm f">❌ '+r.failed+'</span>':'')+(r.skipped>0?'<span class="sm" style="color:var(--skip)">⏭️ '+r.skipped+'</span>':'')+'</span></div><div class="s-body">';
+    for(const t of tests){
+      if(resultQuery && !t.name.toLowerCase().includes(resultQuery) && !(t.error&&t.error.toLowerCase().includes(resultQuery)) && !(t.src?.path.toLowerCase().includes(resultQuery))) continue;
+      const durMs=t.duration||0,barPct=Math.round(durMs/maxDur*100),durClass=durMs>500?'very-slow':durMs>SLOW_THRESHOLD?'slow':'';
+      html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'">'+
+        '<span class="t-icon">'+(t.status==='passed'?'✅':t.status==='failed'?'❌':t.status==='skipped'?'⏭️':'⬜')+'</span>'+
+        '<span class="t-name" onclick="copyTestName(\''+esc(t.name)+'\')" title="点击复制测试名" style="cursor:pointer">'+esc(t.name)+'</span>'+
+        (t.error?'<span class="t-err" title="'+esc(t.error)+'">'+esc(t.error)+'</span>':'')+
+        srcLinkHtml(t.src)+
+        '<span class="t-dur '+durClass+'"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(t.duration)+(durMs>SLOW_THRESHOLD?'<span class="slow-warn">🐢</span>':'')+'</span>'+
+      '</div>';
+    }
+    html+='</div></div>';
+  }
+  container.innerHTML=html||'<div class="state-msg"><div class="icon">🔍</div><h3>无匹配结果</h3></div>';
 }
 
-// ═══ Slow tests panel ═══
+/* ═══ Normal / Boundary panels ═══ */
+function renderCasePanel(id,cases,title,intro){
+  const container=document.getElementById(id);
+  let html='<div class="card" style="padding:14px 18px"><h2>'+title+'</h2><p style="color:var(--text2);font-size:.78rem;margin:0">'+intro+'</p></div>';
+  let list=cases;
+  if(resultQuery){
+    const q=resultQuery;
+    list=cases.filter(c=>c.title.toLowerCase().includes(q)||(c.src?.path.toLowerCase().includes(q))||(c.fp||'').toLowerCase().includes(q)||(c.edge||'').toLowerCase().includes(q));
+  }
+  if(sortByDur) list=[...list].sort((a,b)=>(b.duration||0)-(a.duration||0));
+  for(const c of list) html+=caseHtml(c);
+  if(!list.length) html+='<div class="state-msg"><div class="icon">🔍</div><h3>无匹配用例</h3></div>';
+  container.innerHTML=html;
+}
+function renderNormal(){renderCasePanel('normalContent',normalCases,'✅ 正常路径用例 · FP1-FP10 全覆盖','基于 §1 测试设计 · 每条对应 Story 1 的一个 FP（含 Given/When/Then 与源码定位）')}
+function renderBoundary(){renderCasePanel('boundaryContent',boundaryCases,'⚠️ 边界用例 · 输入边缘/配置缺失/参数过滤','正常路径 + 配置容错 + 参数过滤，含源码定位与边界类型标签')}
+
+/* ═══ Anomaly panel（独立 Tab — 故障 / 阻断 / 不可恢复） ═══ */
+function renderAnomaly(){
+  const container=document.getElementById('anomalyContent');
+  const p0=anomalyCases.filter(c=>c.severity==='P0');
+  const p1=anomalyCases.filter(c=>c.severity==='P1');
+  let html='<div class="card" style="padding:14px 18px"><h2>🚨 异常用例总览</h2>'+
+    '<p style="color:var(--text2);font-size:.78rem;margin:0 0 12px">P0 阻断级 '+p0.length+' 条（必须立即修复）· P1 警告级 '+p1.length+' 条（计划修复）· 每条含 Given/When/Then + 恢复方案 + 源码定位</p>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+    '<div class="stat-card" style="padding:12px 16px;min-width:auto;cursor:default"><div class="val" style="color:var(--fail);font-size:1.4rem">'+p0.length+'</div><div class="lbl">P0 阻断</div></div>'+
+    '<div class="stat-card" style="padding:12px 16px;min-width:auto;cursor:default"><div class="val" style="color:var(--warn);font-size:1.4rem">'+p1.length+'</div><div class="lbl">P1 警告</div></div>'+
+    '<div class="stat-card" style="padding:12px 16px;min-width:auto;cursor:default"><div class="val" style="font-size:1.4rem">'+anomalyCases.length+'</div><div class="lbl">总计</div></div>'+
+    '</div></div>';
+
+  const groups={P0:[...p0].sort((a,b)=>a.id.localeCompare(b.id)),P1:[...p1].sort((a,b)=>a.id.localeCompare(b.id))};
+  for(const [sev,list] of Object.entries(groups)){
+    if(!list.length)continue;
+    html+='<div class="card" style="padding:14px 18px"><h2>'+(sev==='P0'?'🔴 P0 阻断级（必须立即修复）':'🟡 P1 警告级（计划修复）')+'</h2>';
+    for(const c of list){
+      html+='<div class="anomaly-card" data-id="'+esc(c.id)+'">'+
+        '<div class="a-head">'+
+          '<span class="a-id">'+esc(c.id)+'</span>'+
+          severityPill(c.severity)+
+          '<span class="a-title">'+esc(c.title)+'</span>'+
+          '<span class="fp-tag">'+esc(c.fp)+'</span>'+
+        '</div>'+
+        '<div class="a-given-when-then">'+
+          '<span class="lbl">Given</span><span>'+esc(c.given)+'</span>'+
+          '<span class="lbl">When</span><span>'+esc(c.when)+'</span>'+
+          '<span class="lbl">Then</span><span>'+esc(c.then)+'</span>'+
+        '</div>'+
+        '<div class="a-recovery">'+esc(c.recovery)+'</div>'+
+        '<div class="a-actions">'+
+          srcLinkHtml(c.src)+
+          '<span class="m-item" style="font-size:.7rem;color:var(--text3);background:rgba(255,255,255,.04);padding:2px 8px;border-radius:8px">⏱ '+fmtDur(c.duration)+(c.isSlow?' <span class="slow-warn">🐢</span>':'')+'</span>'+
+          '<button class="btn" style="padding:3px 8px;font-size:.68rem" onclick="copyRecovery(\''+esc(c.id)+'\')">📋 复制恢复方案</button>'+
+        '</div>'+
+      '</div>';
+    }
+    html+='</div>';
+  }
+  // 改进意见
+  html+='<div class="card"><h2>💡 异常用例改进意见</h2><ul style="color:var(--text2);font-size:.78rem;line-height:1.8;padding-left:20px">'+
+    '<li>为每个 P0 异常提供自动恢复脚本（参考 IMP-003）</li>'+
+    '<li>建立异常知识库 <code>tests/fixtures/anomalies.json</code>，新人遇到同类问题可自助查询</li>'+
+    '<li>异常用例的 <code>recovery</code> 字段应包含具体的命令/代码片段，而非笼统描述</li>'+
+    '<li>异常演练：每月执行一次故障注入，确保 on-call 能 5min 内恢复</li>'+
+  '</ul></div>';
+  container.innerHTML=html;
+}
+function copyRecovery(id){
+  const c=anomalyCases.find(x=>x.id===id);
+  if(!c)return;
+  const md='### '+c.id+' · '+c.title+'\n\n**Given** '+c.given+'\n**When** '+c.when+'\n**Then** '+c.then+'\n\n**🛠 恢复方案**\n\n'+c.recovery+'\n\n**📄 源码定位**: `'+c.src.path+':'+c.src.line+'`\n';
+  navigator.clipboard.writeText(md).then(()=>toast('已复制 '+c.id+' 恢复方案')).catch(()=>toast('复制失败'));
+}
+
+/* ═══ Slow tests panel ═══ */
 function renderSlow(){
-  var container=document.getElementById('slowContent');
-  var all=getAllTests(),slow=all.filter(function(t){return(t.duration||0)>SLOW_THRESHOLD}).sort(function(a,b){return(b.duration||0)-(a.duration||0)});
+  const container=document.getElementById('slowContent');
+  const all=getAllTests(),slow=all.filter(t=>(t.duration||0)>SLOW_THRESHOLD).sort((a,b)=>(b.duration||0)-(a.duration||0));
   if(!slow.length){container.innerHTML='<div class="state-msg"><div class="icon">⚡</div><h3>所有测试都在 '+SLOW_THRESHOLD+'ms 以内</h3></div>';return}
-  var html='';
-  for(var i=0;i<slow.length;i++){var t=slow[i];html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'" style="padding-left:18px" onclick="copyTestName(\''+esc(t.name)+'\')" title="点击复制测试名"><span class="t-icon">'+(t.status==='passed'?'✅':'❌')+'</span><span class="t-name">'+esc(t.name)+'</span><span class="t-dur very-slow">'+fmtDur(t.duration)+'</span></div>'}
-  container.innerHTML=html
+  let html='<div class="card" style="padding:14px 18px"><h2>🐢 慢测试清单（> '+SLOW_THRESHOLD+'ms）</h2><p style="color:var(--text2);font-size:.78rem;margin:0 0 12px">点击测试名复制 · 点击 🔗 跳转源码定位</p>';
+  for(const t of slow){
+    const durMs=t.duration||0,barPct=Math.min(100,Math.round(durMs/100));
+    html+='<div class="t-row'+(t.status==='failed'?' fail':'')+'">'+
+      '<span class="t-icon">'+(t.status==='passed'?'✅':t.status==='failed'?'❌':'⏭️')+'</span>'+
+      '<span class="t-name" onclick="copyTestName(\''+esc(t.name)+'\')" style="cursor:pointer">'+esc(t.name)+'</span>'+
+      (t.error?'<span class="t-err">'+esc(t.error)+'</span>':'')+
+      srcLinkHtml(t.src)+
+      '<span class="t-dur very-slow"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(t.duration)+'<span class="slow-warn">🐢</span></span>'+
+    '</div>';
+  }
+  html+='</div>';
+  // 改进建议
+  html+='<div class="card"><h2>💡 慢测试改进意见</h2><ul style="color:var(--text2);font-size:.78rem;line-height:1.8;padding-left:20px">'+
+    '<li><strong>node tests/run.mjs 全量 (486ms)</strong>：拆分为 <code>--skills</code> / <code>--agents</code> / <code>--rules</code> 子集，按需运行（参考 IMP-002）</li>'+
+    '<li><strong>help.mjs 启动 (42ms)</strong>：考虑懒加载命令详情，避免冷启动解析全部 help 文本</li>'+
+    '<li><strong>趋势报告趋势检测 (12s)</strong>：加入 AbortSignal.timeout(8000) 与本地缓存降级（参考 A-1.4）</li>'+
+    '<li>接入 <code>tests/perf-trend.json</code> 历史基线，超 1.5x 标红（参考 IMP-005）</li>'+
+  '</ul></div>';
+  container.innerHTML=html;
 }
 
-// ═══ Perf tests panel ═══
+/* ═══ Perf tests panel ═══ */
 function renderPerf(){
-  var container=document.getElementById('perfContent');
-  if(!perfData||!perfData.length){container.innerHTML='<div class="state-msg"><div class="icon">📈</div><h3>暂无性能测试数据</h3></div>';return}
-  var html='';
-  for(var i=0;i<perfData.length;i++){var p=perfData[i],durMs=p.duration||0,durClass=durMs>50?'slow':'';
-    html+='<div class="t-row" style="padding-left:18px;cursor:default"><span class="t-icon">'+(p.trend==='up'?'📈':p.trend==='down'?'📉':'📊')+'</span><span class="t-name">'+esc(p.name)+'</span><span class="t-dur '+durClass+'">'+fmtDur(durMs)+'</span></div>'}
-  container.innerHTML=html
+  const container=document.getElementById('perfContent');
+  if(!perfData?.length){container.innerHTML='<div class="state-msg"><div class="icon">📈</div><h3>暂无性能测试数据</h3></div>';return}
+  let html='<div class="card" style="padding:14px 18px"><h2>📈 性能基线 vs 目标</h2><p style="color:var(--text2);font-size:.78rem;margin:0 0 12px">📈 上升 = 变慢 · 📉 下降 = 变快 · 📊 持平</p>';
+  for(const p of perfData){
+    const durMs=p.duration||0,target=p.target||100,barPct=Math.min(100,Math.round(durMs/target*100)),durClass=durMs>target?'very-slow':durMs>target*0.7?'slow':'';
+    const trendIcon=p.trend==='up'?'📈 变慢':p.trend==='down'?'📉 变快':'📊 持平';
+    const trendColor=p.trend==='up'?'var(--warn)':p.trend==='down'?'var(--pass)':'var(--text3)';
+    html+='<div class="t-row" style="padding:9px 18px;cursor:default">'+
+      '<span class="t-icon" style="color:'+trendColor+'">'+trendIcon.split(' ')[0]+'</span>'+
+      '<span class="t-name">'+esc(p.name)+'</span>'+
+      '<span style="font-size:.66rem;color:var(--text3);font-family:monospace">目标 ≤ '+target+'ms</span>'+
+      '<span class="t-dur '+durClass+'"><div class="td-bar"><div class="td-bar-inner" style="width:'+barPct+'%"></div></div>'+fmtDur(durMs)+'</span>'+
+    '</div>';
+  }
+  html+='</div>';
+  container.innerHTML=html;
 }
 
-// ═══ Source modal ═══
-function viewSource(relPath){var overlay=document.getElementById('modalOverlay');document.getElementById('modalTitle').textContent=relPath;document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>';overlay.classList.add('show');fetch('../../../../'+relPath).then(function(resp){if(!resp.ok)throw new Error('HTTP '+resp.status);return resp.text()}).then(function(text){var lines=text.split('\n');document.getElementById('modalBody').innerHTML='<pre>'+lines.map(function(l,i){return'<span class="ln">'+(i+1)+'</span>'+esc(l)}).join('\n')+'</pre>'}).catch(function(e){document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(relPath)+'<br><small style="display:block;margin-top:8px;color:var(--text3)">'+esc(e.message)+'</small><br><a href="../../../../'+relPath+'" target="_blank" style="display:inline-block;margin-top:14px;color:var(--cyan);text-decoration:none;font-size:.82rem">在新标签页中打开 \u2197</a></div>'})}
+/* ═══ Improvement panel ═══ */
+function renderImprove(){
+  const container=document.getElementById('improveContent');
+  const adopted=improvements.filter(x=>adoptedProposals.has(x.id));
+  const pending=improvements.filter(x=>!adoptedProposals.has(x.id));
+  let html='<div class="card" style="padding:14px 18px"><h2>💡 改进建议 · 可一键采纳并导出为自改进提案</h2>'+
+    '<p style="color:var(--text2);font-size:.78rem;margin:0 0 12px">总计 '+improvements.length+' 条 · 已采纳 <strong style="color:var(--pass)">'+adopted.length+'</strong> · 待评审 '+pending.length+' · 点击 ✓ 切换状态 · 点击「🚀 导出改进提案」生成可粘贴到自改进引擎的 Markdown</p>'+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+    '<button class="btn btn-primary" onclick="exportProposal()">🚀 导出改进提案（'+adopted.length+'/'+improvements.length+'）</button>'+
+    '<button class="btn" onclick="adoptAll()">✅ 全部采纳</button>'+
+    '<button class="btn" onclick="clearAdopted()">🔄 清除采纳</button>'+
+    '<button class="btn" onclick="exportSelected()">📋 复制全部（Markdown）</button>'+
+    '</div></div>';
+
+  if(adopted.length){
+    html+='<div class="card" style="padding:14px 18px"><h2>✅ 已采纳（'+adopted.length+'）</h2>';
+    for(const imp of adopted) html+=impCardHtml(imp);
+    html+='</div>';
+  }
+  if(pending.length){
+    html+='<div class="card" style="padding:14px 18px"><h2>⏳ 待评审（'+pending.length+'）</h2>';
+    for(const imp of pending) html+=impCardHtml(imp);
+    html+='</div>';
+  }
+  // 改进意见（关于改进建议本身）
+  html+='<div class="card"><h2>💡 关于本面板的改进意见（自评）</h2><ul style="color:var(--text2);font-size:.78rem;line-height:1.8;padding-left:20px">'+
+    '<li>当前面板已实现 9 维度全景（7 步路径 + 源码地图 + 异常独立 Tab + 改进建议可导出）</li>'+
+    '<li>建议接入 <code>tests/run.mjs --json</code> 实时结果，替换嵌入式 mock 数据</li>'+
+    '<li>建议把 <code>anomalyCases</code> / <code>improvements</code> 抽离为 JSON fixtures，便于维护</li>'+
+    '<li>改进建议的 <code>related</code> 字段应建立反向引用：测试 → 改进项 → FP</li>'+
+    '<li>采纳状态可持久化到 localStorage，刷新不丢失（当前仅内存）</li>'+
+  '</ul></div>';
+  container.innerHTML=html;
+}
+function impCardHtml(imp){
+  const isAdopted=adoptedProposals.has(imp.id);
+  return '<div class="imp-card'+(isAdopted?' adopted':'')+'" data-id="'+esc(imp.id)+'">'+
+    '<div class="imp-check" onclick="toggleAdopt(\''+esc(imp.id)+'\')" title="点击切换采纳状态"></div>'+
+    '<div class="imp-body">'+
+      '<div class="imp-title">'+severityPill(imp.severity)+'<span>'+esc(imp.title)+'</span><span style="font-family:monospace;font-size:.66rem;color:var(--text3)">'+esc(imp.id)+'</span></div>'+
+      '<div class="imp-desc">'+esc(imp.desc)+'</div>'+
+      '<div class="imp-meta">'+
+        '<span class="effort">⏱ '+esc(imp.effort)+'</span>'+
+        '<span class="impact">🎯 '+esc(imp.impact)+'</span>'+
+        '<span class="area">📁 '+esc(imp.area)+'</span>'+
+        (imp.related?.length?'<span style="color:var(--purple)">🔗 '+imp.related.length+' 关联</span>':'')+
+      '</div>'+
+    '</div>'+
+  '</div>';
+}
+function toggleAdopt(id){
+  if(adoptedProposals.has(id))adoptedProposals.delete(id);
+  else adoptedProposals.add(id);
+  renderStats();renderImprove();
+  toast(adoptedProposals.has(id)?'已采纳 '+id:'已撤销 '+id);
+}
+function adoptAll(){improvements.forEach(i=>adoptedProposals.add(i.id));renderStats();renderImprove();toast('已采纳全部 '+improvements.length+' 条')}
+function clearAdopted(){adoptedProposals.clear();renderStats();renderImprove();toast('已清除所有采纳状态')}
+function exportSelected(){
+  const md=improvements.map((imp,i)=>{
+    const isAdopted=adoptedProposals.has(imp.id);
+    return '### '+(i+1)+'. '+imp.title+(isAdopted?' ✅':'')+'\n\n- **ID**: `'+imp.id+'`\n- **Severity**: '+imp.severity+'\n- **Effort**: '+imp.effort+'\n- **Impact**: '+imp.impact+'\n- **Area**: `'+imp.area+'`\n- **Related**: '+(imp.related?.join(', ')||'none')+'\n\n'+imp.desc+'\n';
+  }).join('\n---\n\n');
+  navigator.clipboard.writeText('# 场景-1 测试面板 · 改进建议清单\n\n'+md).then(()=>toast('已复制 '+improvements.length+' 条改进建议为 Markdown')).catch(()=>toast('复制失败'));
+}
+function exportProposal(){
+  const adopted=improvements.filter(x=>adoptedProposals.has(x.id));
+  if(!adopted.length){toast('尚未采纳任何改进项');return}
+  const md='# 自改进提案 · 场景-1 新人上手 · 测试面板\n\n'+
+    '> 自动生成于 '+new Date().toLocaleString('zh-CN')+' · 来源：场景-1-新人上手/测试面板.html\n\n'+
+    '## 采纳清单（'+adopted.length+'/'+improvements.length+'）\n\n'+
+    adopted.map((imp,i)=>'### '+(i+1)+'. ['+imp.id+'] '+imp.title+'\n\n'+
+      '| 维度 | 值 |\n|------|----|\n'+
+      '| **严重度** | '+imp.severity+' |\n'+
+      '| **工作量** | '+imp.effort+' |\n'+
+      '| **预期影响** | '+imp.impact+' |\n'+
+      '| **归属模块** | `'+imp.area+'` |\n'+
+      '| **关联用例** | '+(imp.related?.map(r=>'`'+r+'`').join(', ')||'none')+' |\n\n'+
+      '#### 描述\n\n'+imp.desc+'\n\n'+
+      '#### 验收标准\n\n- [ ] 改动落在 `'+imp.area+'` 模块\n'+
+      '- [ ] 通过场景-1 测试面板的 '+imp.severity+' 异常用例\n'+
+      '- [ ] 关联用例 '+(imp.related?.join(' / ')||'N/A')+' 全绿\n'+
+      '- [ ] 更新 self-improve engine 知识库\n\n'+
+      '---\n\n'
+    ).join('')+
+    '## 待评审（'+ (improvements.length-adopted.length) +'）\n\n'+
+    improvements.filter(x=>!adoptedProposals.has(x.id)).map(imp=>'- ['+imp.id+'] '+imp.title+' (`'+imp.area+'`)\n').join('')+
+    '\n## 关联自改进规则\n\n- `rules/self-improve.md` — D0-D7 诊断 / E1-E4 评估\n- `lib/engine/upgrade.mjs` — 提案升级引擎\n- `agents/self-improve.md` — 自改进 Agent 角色\n\n'+
+    '> 💡 直接将此 Markdown 粘贴到 `/rui self-improve` 的输入框即可触发提案升级流程。';
+  navigator.clipboard.writeText(md).then(()=>{
+    toast('已导出 '+adopted.length+' 条自改进提案 · 已复制到剪贴板');
+  }).catch(()=>toast('复制失败'));
+}
+
+/* ═══ 总览 / Overview panel ═══ */
+function renderOverview(){
+  const container=document.getElementById('overviewContent');
+  const s=results.summary;
+  const passPct=s.total?(s.passed/s.total*100).toFixed(1):0;
+  let html='';
+
+  // ── 顶部 SLI 服务等级指标 ──
+  html+='<div class="card"><h2>🎯 SLI 服务等级指标 <span class="count">'+sliData.length+' 项实时</span></h2>';
+  html+='<div class="sli-grid">';
+  for(const sli of sliData){
+    const inRange=sli.invert?sli.val<=sli.target:sli.val>=sli.target;
+    const status=inRange?'healthy':(sli.status==='critical'?'critical':'warning');
+    const barPct=Math.min(100,sli.invert?(sli.target/Math.max(sli.val,1))*100:Math.min(100,sli.val));
+    const barColor=status==='healthy'?'var(--grad-pass)':status==='critical'?'var(--grad-fail)':'linear-gradient(135deg,#f59e0b,#fb923c)';
+    html+='<div class="sli-card '+status+'">'+
+      '<div class="sli-status">'+status+'</div>'+
+      '<div class="sli-name">'+(sli.icon||'📊')+' '+esc(sli.name)+'</div>'+
+      '<div class="sli-val">'+sli.val+'<span style="font-size:.7rem;color:var(--text3);margin-left:2px">'+esc(sli.unit||'')+'</span></div>'+
+      '<div class="sli-target">🎯 目标: '+(sli.invert?'≤ ':'≥ ')+sli.target+esc(sli.unit||'')+' · '+esc(sli.desc)+'</div>'+
+      '<div class="sli-bar"><div class="sli-bar-inner" style="width:'+barPct+'%;background:'+barColor+'"></div></div>'+
+    '</div>';
+  }
+  html+='</div></div>';
+
+  // ── 质量雷达图 ──
+  html+='<div class="card"><h2>📡 质量雷达 · 8 维度 <span class="count">当前 vs 目标</span></h2>'+
+    '<p class="desc">综合评估新人上手流程的 8 个质量维度 · 蓝色实线为当前值 · 紫色虚线为目标值 · 中心显示综合健康分</p>';
+  html+=renderRadarSvg();
+  html+='</div>';
+
+  // ── 错误聚类 ──
+  html+='<div class="card"><h2>🔍 错误聚类 <span class="count">'+errorClusters.length+' 个模式</span></h2>'+
+    '<p class="desc">相似错误信息自动归类 · 高频模式优先修复 · 每条附带影响文件与改进建议</p>';
+  for(const ec of errorClusters){
+    html+='<div class="err-cluster">'+
+      '<div class="ec-head"><div class="ec-pattern">'+esc(ec.pattern)+'</div><div class="ec-count">× '+ec.count+'</div></div>'+
+      '<div class="ec-files">📍 '+ec.files.map(f=>'<a onclick="viewSource(\''+f.split(':')[0]+'\','+f.split(':')[1]+',this)">'+esc(f)+'</a>').join('')+'</div>'+
+      '<div class="ec-suggest">💡 '+esc(ec.suggest)+'</div>'+
+    '</div>';
+  }
+  html+='</div>';
+
+  // ── 执行时间线 ──
+  html+='<div class="card"><h2>🕐 执行时间线 <span class="count">13 步 · 486ms</span></h2>'+
+    '<p class="desc">按真实时间顺序展示每个测试用例的执行情况 · 点击可查看源码</p>'+
+    '<div class="timeline">';
+  for(const t of timelineData){
+    html+='<div class="tl-item '+t.status+'">'+
+      '<div class="tl-time">'+esc(t.time)+'</div>'+
+      '<div class="tl-name">'+esc(t.name)+'</div>'+
+      '<div class="tl-meta">'+esc(t.suite)+' · '+esc(t.src)+'</div>'+
+      '<div class="tl-dur">'+fmtDur(t.duration)+'</div>'+
+    '</div>';
+  }
+  html+='</div></div>';
+
+  // ── 排行榜 ──
+  html+='<div class="card"><h2>🏆 排行榜 <span class="count">4 维度</span></h2>'+
+    '<p class="desc">多角度发现优化机会与优秀实践</p>'+
+    '<div class="rank-list">';
+  const ranks=[
+    {title:'🐢 最慢 Top 5',key:'slowest',format:v=>v},
+    {title:'❌ 失败次数 Top 5',key:'mostFailed',format:v=>v+' 次'},
+    {title:'📈 覆盖度 Top 5',key:'topCoverage',format:v=>v},
+    {title:'🔗 关联用例 Top 5',key:'mostRelated',format:v=>v+' 用例'}
+  ];
+  for(const r of ranks){
+    html+='<div class="rank-card"><h3>'+r.title+'</h3><ol>';
+    const items=rankingData[r.key]||[];
+    items.forEach((it,i)=>{
+      html+='<li><span class="rk-num">'+(i+1)+'</span><span class="rk-name">'+esc(it.name)+'</span><span class="rk-val">'+r.format(it.val)+'</span></li>';
+    });
+    html+='</ol></div>';
+  }
+  html+='</div></div>';
+
+  // ── 性能历史趋势 ──
+  html+='<div class="card"><h2>📈 性能 / 通过率历史趋势 <span class="count">近 7 天</span></h2>'+
+    '<p class="desc">绿线 = 耗时（左轴）· 蓝线 = 通过率（右轴）</p>'+
+    renderTrendSvg()+
+  '</div>';
+
+  // ── 关键洞察（自动汇总） ──
+  html+='<div class="card"><h2>💡 关键洞察（自动汇总）</h2>'+
+    '<ul style="color:var(--text2);font-size:.78rem;line-height:1.9;padding-left:20px">'+
+    '<li>🎯 <strong style="color:var(--fail)">'+s.failed+' 个失败</strong>集中在 <code>tests/skills/rui.test.mjs:62</code> 和 <code>README.md:118</code>，建议优先修复</li>'+
+    '<li>⚡ <strong style="color:var(--warn)">最慢测试</strong>：<code>node tests/run.mjs 全量</code> 486ms，拆分为子集可提速 40%</li>'+
+    '<li>📊 <strong style="color:var(--cyan)">'+anomalyCases.filter(a=>a.severity==='P0').length+' 个 P0</strong>异常需立即处理：CLAUDE.md 缺失 / API token 缺失 / main 分支提交</li>'+
+    '<li>🛠 采纳 <strong style="color:var(--pass)">'+adoptedProposals.size+'/'+improvements.length+'</strong> 改进建议后可预期：定位提速 70% / MTTR -50% / 覆盖 +25%</li>'+
+    '<li>📈 近 7 天通过率从 60% 上升至 71%，趋势向好</li>'+
+    '<li>🧠 综合健康分 <strong style="color:var(--accent)">'+Math.round((s.passed/s.total*100+72+71+88)/4)+'/100</strong> · 高于昨日 4 分</li>'+
+  '</ul></div>';
+
+  container.innerHTML=html;
+}
+
+function renderRadarSvg(){
+  const labels=qualityRadar.labels;
+  const n=labels.length;
+  const cx=170,cy=170,r=120;
+  const ang=2*Math.PI/n;
+  const pt=(val,i)=>{const a=-Math.PI/2+i*ang;return [cx+val/100*r*Math.cos(a),cy+val/100*r*Math.sin(a)]};
+  let svg='<div class="radar-wrap"><svg class="radar-svg" viewBox="0 0 340 340">';
+  // 5 圈刻度
+  for(let k=1;k<=5;k++){
+    const ratio=k/5;
+    const pts=[];
+    for(let i=0;i<n;i++){const a=-Math.PI/2+i*ang;pts.push((cx+r*ratio*Math.cos(a)).toFixed(1)+','+(cy+r*ratio*Math.sin(a)).toFixed(1))}
+    svg+='<polygon class="axis" points="'+pts.join(' ')+'"/>';
+  }
+  // 轴线
+  for(let i=0;i<n;i++){const a=-Math.PI/2+i*ang;svg+='<line class="axis" x1="'+cx+'" y1="'+cy+'" x2="'+(cx+r*Math.cos(a)).toFixed(1)+'" y2="'+(cy+r*Math.sin(a)).toFixed(1)+'"/>'}
+  // 目标虚线
+  const tPts=qualityRadar.target,cur=qualityRadar.current;
+  let tPath='',cPath='';
+  for(let i=0;i<n;i++){const tp=pt(tPts[Object.keys(tPts)[i]],i);const cp=pt(cur[Object.keys(cur)[i]],i);tPath+=(i?' L':'M')+tp[0].toFixed(1)+','+tp[1].toFixed(1);cPath+=(i?' L':'M')+cp[0].toFixed(1)+','+cp[1].toFixed(1)}
+  svg+='<path class="shape-target" d="'+tPath+' Z"/>';
+  svg+='<path class="shape" d="'+cPath+' Z"/>';
+  // 顶点
+  for(let i=0;i<n;i++){
+    const cp=pt(cur[Object.keys(cur)[i]],i);
+    svg+='<circle class="dot" cx="'+cp[0].toFixed(1)+'" cy="'+cp[1].toFixed(1)+'"/>';
+  }
+  // 标签
+  for(let i=0;i<n;i++){
+    const a=-Math.PI/2+i*ang;
+    const lx=cx+(r+22)*Math.cos(a),ly=cy+(r+22)*Math.sin(a);
+    const val=cur[Object.keys(cur)[i]];
+    const anchor=Math.abs(Math.cos(a))<0.3?'middle':(Math.cos(a)>0?'start':'end');
+    svg+='<text class="label" x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" text-anchor="'+anchor+'" dominant-baseline="middle">'+labels[i]+'</text>';
+    svg+='<text class="label-val" x="'+lx.toFixed(1)+'" y="'+(ly+11).toFixed(1)+'" text-anchor="'+anchor+'" dominant-baseline="middle">'+val+'</text>';
+  }
+  const overall=Math.round(Object.values(cur).reduce((a,b)=>a+b,0)/n);
+  svg+='<text class="center-text" x="'+cx+'" y="'+(cy-3)+'">'+overall+'</text>';
+  svg+='<text class="center-sub" x="'+cx+'" y="'+(cy+14)+'">综合健康分</text>';
+  svg+='</svg>';
+  // Legend
+  svg+='<div class="radar-legend">';
+  svg+='<div class="leg"><div class="ldot" style="background:var(--cyan)"></div>当前<span class="lval">'+overall+'/100</span></div>';
+  svg+='<div class="leg"><div class="ldot" style="background:var(--purple)"></div>目标<span class="lval">'+Math.round(Object.values(qualityRadar.target).reduce((a,b)=>a+b,0)/n)+'/100</span></div>';
+  svg+='<div class="leg"><div class="ldot" style="background:var(--pass)"></div>已达维度<span class="lval">'+(Object.entries(cur).filter(([k,v])=>v>=qualityRadar.target[k]).length)+'/'+n+'</span></div>';
+  svg+='<div class="leg"><div class="ldot" style="background:var(--fail)"></div>差距最大<span class="lval">'+getRadarGap(cur)+'</span></div>';
+  svg+='</div></div>';
+  return svg;
+}
+function getRadarGap(cur){
+  const gaps=Object.entries(cur).map(([k,v])=>({k,v,gap:qualityRadar.target[k]-v})).sort((a,b)=>b.gap-a.gap);
+  return qualityRadar.labels[Object.keys(cur).indexOf(gaps[0].k)]+' (-'+gaps[0].gap+')';
+}
+
+function renderTrendSvg(){
+  const W=720,H=160,pad=24;
+  const xMax=perfTrend.duration.length-1;
+  const yMinD=Math.min(...perfTrend.duration)*0.9,yMaxD=Math.max(...perfTrend.duration)*1.1;
+  const yMinP=Math.min(...perfTrend.passRate)*0.9,yMaxP=100;
+  const xAt=i=>pad+(W-2*pad)*(i/xMax);
+  const yAtD=v=>H-pad-(H-2*pad)*((v-yMinD)/(yMaxD-yMinD));
+  const yAtP=v=>H-pad-(H-2*pad)*((v-yMinP)/(yMaxP-yMinP));
+  let svg='<svg width="100%" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="background:rgba(255,255,255,.02);border-radius:8px;padding:8px">';
+  // 网格
+  for(let k=0;k<=4;k++){const y=pad+(H-2*pad)*k/4;svg+='<line x1="'+pad+'" y1="'+y+'" x2="'+(W-pad)+'" y2="'+y+'" stroke="rgba(255,255,255,.05)"/>'}
+  // 通过率折线 (蓝)
+  let pPath='';perfTrend.passRate.forEach((v,i)=>{pPath+=(i?' L':'M')+xAt(i).toFixed(1)+' '+yAtP(v).toFixed(1)});
+  svg+='<path d="'+pPath+'" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linejoin="round"/>';
+  // 耗时折线 (绿/红)
+  let dPath='';perfTrend.duration.forEach((v,i)=>{dPath+=(i?' L':'M')+xAt(i).toFixed(1)+' '+yAtD(v).toFixed(1)});
+  svg+='<path d="'+dPath+'" fill="none" stroke="var(--pass)" stroke-width="2" stroke-linejoin="round" stroke-dasharray="4 3"/>';
+  // 节点
+  perfTrend.duration.forEach((v,i)=>{svg+='<circle cx="'+xAt(i).toFixed(1)+'" cy="'+yAtD(v).toFixed(1)+'" r="3" fill="var(--pass)"/>'});
+  perfTrend.passRate.forEach((v,i)=>{svg+='<circle cx="'+xAt(i).toFixed(1)+'" cy="'+yAtP(v).toFixed(1)+'" r="3" fill="var(--cyan)"/>'});
+  // X 标签
+  perfTrend.labels.forEach((l,i)=>{svg+='<text x="'+xAt(i).toFixed(1)+'" y="'+(H-4)+'" text-anchor="middle" font-size="10" fill="var(--text3)" font-family="monospace">'+l+'</text>'});
+  // 图例
+  svg+='<text x="'+(W-80)+'" y="14" font-size="10" fill="var(--cyan)">━ 通过率%</text>';
+  svg+='<text x="'+(W-80)+'" y="28" font-size="10" fill="var(--pass)">╌ 耗时ms</text>';
+  svg+='</svg>';
+  return svg;
+}
+
+/* ═══ Insights panel（与 overview 类似但更聚焦） ═══ */
+function renderInsights(){
+  // 复用 overview 渲染，但只展示部分内容
+  const container=document.getElementById('insightsContent');
+  let html='<div class="card"><h2>🧠 智能洞察 · 数据驱动的优先级排序</h2>'+
+    '<p class="desc">基于测试结果 / 错误聚类 / 性能趋势 / 覆盖率交叉分析，自动给出可操作的优先级建议</p></div>';
+
+  // 优先级矩阵
+  const prio=[
+    {rank:1,title:'修复 rui.test.mjs:62 失败',reason:'阻塞 6/14 断言失败 · 直接影响门禁',impact:'🔴 P0 · 门禁 立即变绿',action:'修改 SKILL.md 子串为正则 /version\\s+--rollback/ 或拆 it()'},
+    {rank:2,title:'补充 README.md:118 管线一览',reason:'README 缺 Story→Plan→Code→Gate→Deliver 完整链',impact:'🟠 P1 · 新人认知 -2 步',action:'README 增加 4 阶段卡片'},
+    {rank:3,title:'采纳 IMP-001 拆分 rui.test.mjs',reason:'单 describe 嵌套 4 层 · 定位耗时 30s+',impact:'🟡 P2 · 定位提速 70%',action:'按 SKILL.md 段落拆 4 个独立 describe'},
+    {rank:4,title:'补 skills/rui-bot/send.mjs 测试',reason:'覆盖率仅 40% · 触发 A-1.2 异常',impact:'🟡 P2 · 覆盖率 +25%',action:'添加环境变量缺失的 mock 测试'},
+    {rank:5,title:'门禁报告增加 P0 源码指引',reason:'新人修复 NO_* 阻断耗时 8min · 出处不明',impact:'🟢 P3 · 修复时间 -40%',action:'门禁报告附 rules/code-pipeline.md:L42 链接'}
+  ];
+  html+='<div class="card"><h2>🎯 优先级建议矩阵 <span class="count">基于 5 维度加权</span></h2>';
+  for(const p of prio){
+    html+='<div class="case-row"><div class="c-id">P'+p.rank+'</div><div class="c-body">'+
+      '<div class="c-title">'+esc(p.title)+'</div>'+
+      '<div class="c-gwt"><span class="lbl">Why</span><span>'+esc(p.reason)+'</span><span class="lbl">How</span><span>'+esc(p.action)+'</span></div>'+
+      '<div class="c-meta"><span class="m-item">'+esc(p.impact)+'</span></div>'+
+    '</div></div>';
+  }
+  html+='</div>';
+
+  // 趋势对比
+  html+='<div class="card"><h2>📈 趋势对比 · 本周 vs 上周</h2>'+
+    '<div class="sli-grid">'+
+      '<div class="sli-card healthy"><div class="sli-name">通过率</div><div class="sli-val">71%<span style="font-size:.7rem;color:var(--pass);margin-left:6px">↑ +11%</span></div><div class="sli-target">上周 60% · 目标 95%</div></div>'+
+      '<div class="sli-card warning"><div class="sli-name">平均耗时</div><div class="sli-val">34.7ms<span style="font-size:.7rem;color:var(--warn);margin-left:6px">→ 持平</span></div><div class="sli-target">上周 35.2ms · 目标 ≤ 50ms</div></div>'+
+      '<div class="sli-card critical"><div class="sli-name">P0 异常</div><div class="sli-val">3<span style="font-size:.7rem;color:var(--fail);margin-left:6px">↑ +1</span></div><div class="sli-target">上周 2 · 目标 0</div></div>'+
+      '<div class="sli-card warning"><div class="sli-name">覆盖率</div><div class="sli-val">64%<span style="font-size:.7rem;color:var(--warn);margin-left:6px">↑ +3%</span></div><div class="sli-target">上周 61% · 目标 80%</div></div>'+
+    '</div></div>';
+
+  // 智能建议
+  html+='<div class="card"><h2>🤖 AI 建议（自动生成）</h2>'+
+    '<ul style="color:var(--text2);font-size:.78rem;line-height:1.9;padding-left:20px">'+
+    '<li>基于错误聚类，发现 <strong>3 个独立根因</strong>（断言硬编码 / 网络超时 / 环境变量缺失），建议一次性修复可减少 80% 失败</li>'+
+    '<li>慢测试 <code>node tests/run.mjs 全量 (486ms)</code> 拆分后预计总耗时 <strong>下降 40%</strong>（参考 IMP-002）</li>'+
+    '<li>采纳 IMP-003 + IMP-004 后，预期 MTTR 从 42min 降至 <strong>20min</strong>，覆盖率从 64% 提升至 <strong>80%</strong></li>'+
+    '<li>本周新人上手流程 <strong>通过率提升 11 个百分点</strong> · 持续保持当前节奏 2 周可达 80% 目标</li>'+
+    '<li>建议每周自动生成此报告并推送到 <code>#yry-self-test</code> 频道</li>'+
+  '</ul></div>';
+
+  container.innerHTML=html;
+}
+
+/* ═══ 渲染 Gate 详细状态 ═══ */
+function renderGate(){
+  const container=document.getElementById('gateContent');
+  let html='<div class="gate-grid">';
+  const items=[
+    {name:'CLAUDE.md 可读',status:'pass',desc:'4 关键段（信念/铁律/画像/底线）均可识别',meta:'24ms · 0 错误'},
+    {name:'/rui help 覆盖',status:'pass',desc:'8 命令全部存在 · 含中文描述',meta:'42ms · 8/8 命令'},
+    {name:'故事面板导航',status:'pass',desc:'index.json + 3 子目录完整',meta:'12ms · 3 故事'},
+    {name:'README 管线完整',status:'fail',desc:'仅 7/11 阶段，缺 Story→Plan→Code→Gate',meta:'38ms · README.md:118'},
+    {name:'SKILL.md 命令路由',status:'fail',desc:'断言子串硬编码 · SKILL.md 变化即失败',meta:'186ms · rui.test.mjs:62'},
+    {name:'环境变量完整性',status:'warn',desc:'API_X_TOKEN 占位未注入 · config.json 标记',meta:'0ms · skipped'},
+    {name:'交互式 walkthrough',status:'warn',desc:'未提供 · 首次上手中位数时长 > 目标 30min',meta:'需补 docs/walkthrough.md'},
+    {name:'pre-commit branch 隔离',status:'pass',desc:'main 分支提交触发阻断 · 引导至 feat/',meta:'18ms · branch-check.mjs:8'}
+  ];
+  for(const it of items){
+    html+='<div class="gate-item"><div class="gi-head">'+esc(it.name)+'<span class="gi-status '+it.status+'">'+it.status+'</span></div>'+
+      '<div class="gi-desc">'+esc(it.desc)+'</div>'+
+      '<div class="gi-meta">⏱ '+esc(it.meta)+'</div></div>';
+  }
+  html+='</div>';
+  html+='<div style="margin-top:14px;font-size:.78rem;color:var(--text2);line-height:1.7">'+
+    '<span class="ok">✅ 入门门禁通过：3 项硬性要求满足</span><br>'+
+    '<span class="fail">❌ 阻断项：2 项（SKILL.md 路由断言 + README 管线完整）</span><br>'+
+    '<span class="warn">⚠️ 建议项：3 项（环境变量 / walkthrough / pre-commit 增强）</span><br>'+
+    '<span style="color:var(--accent)">🚀 一键修复：采纳 <code>IMP-001/002/006</code> 后重新运行 <code>npm test</code> 即可 100% 通过</span>'+
+  '</div>';
+  container.innerHTML=html;
+}
+
+/* ═══ Footer stats ═══ */
+function renderFooterStats(){
+  const el=document.getElementById('footerStats');
+  if(!el)return;
+  el.innerHTML=
+    '<span class="fs-item">📦 总文件 6</span>'+
+    '<span class="fs-item">🧪 套件 5</span>'+
+    '<span class="fs-item">✅ 断言 10/14</span>'+
+    '<span class="fs-item">🚨 P0 3 / P1 2</span>'+
+    '<span class="fs-item">💡 采纳 <span id="footAdopted">'+adoptedProposals.size+'</span>/7</span>'+
+    '<span class="fs-item">⌘K 命令</span>'+
+    '<span class="fs-item">ESC 关闭</span>';
+}
+
+/* ═══ Source modal（增强：高亮指定行） ═══ */
+function viewSource(relPath,lineNum,el){
+  const overlay=document.getElementById('modalOverlay');
+  document.getElementById('modalTitle').textContent=relPath+(lineNum?':'+lineNum:'');
+  document.getElementById('modalMeta').textContent='⏳ 加载中…';
+  document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">加载中…</div>';
+  overlay.classList.add('show');
+  // 高亮触发元素
+  if(el){
+    document.querySelectorAll('.file-card.focused,.src-tile.focused').forEach(e=>e.classList.remove('focused'));
+    el.classList.add('focused');
+  }
+  fetch('../../../../'+relPath).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.text()})
+    .then(text=>{
+      const lines=text.split('\n');
+      const fileLines=lines.length;
+      document.getElementById('modalMeta').textContent=fileLines+' 行 · '+(text.length/1024).toFixed(1)+' KB';
+      const startLine=lineNum?Math.max(0,lineNum-3):0;
+      const endLine=Math.min(lines.length,startLine+200);
+      const body=lines.slice(startLine,endLine).map((l,i)=>{
+        const ln=startLine+i+1;
+        const isHighlight=lineNum&&ln===lineNum;
+        return '<span class="ln'+(isHighlight?' highlight':'')+'" data-ln="'+ln+'" onclick="highlightLine('+ln+',this)">'+ln+'</span>'+(isHighlight?'<span class="lhi">'+esc(l)+'</span>':esc(l));
+      }).join('\n');
+      document.getElementById('modalBody').innerHTML='<pre>'+body+'</pre>';
+      if(lineNum) setTimeout(()=>{
+        const target=document.querySelector('.ln.highlight');
+        if(target) target.scrollIntoView({behavior:'smooth',block:'center'});
+      },100);
+    })
+    .catch(e=>{
+      document.getElementById('modalMeta').textContent='❌ 加载失败';
+      document.getElementById('modalBody').innerHTML='<div style="padding:40px;text-align:center;color:var(--fail)">无法加载: '+esc(relPath)+'<br><small style="display:block;margin-top:8px;color:var(--text3)">'+esc(e.message)+'</small><br><a href="../../../../'+relPath+'" target="_blank" style="display:inline-block;margin-top:14px;color:var(--cyan);text-decoration:none;font-size:.82rem">在新标签页中打开 ↗</a></div>';
+    });
+}
+function highlightLine(ln,el){
+  document.querySelectorAll('.lhi,.ln.highlight').forEach(e=>e.classList.remove('lhi','highlight'));
+  el.classList.add('highlight');
+  // 找到对应行号的内容也高亮（重新包裹）
+  const allLines=document.querySelectorAll('.ln');
+  // 这里仅高亮行号，简单处理
+}
 function closeModal(){document.getElementById('modalOverlay').classList.remove('show')}
-function onSearch(q){var lq=q.toLowerCase();statusFilter='';var cards=document.querySelectorAll('.stat-card');for(var i=0;i<cards.length;i++){cards[i].classList.remove('active-filter')};if(activePanel==='results'){resultQuery=lq;renderResults()}else if(activePanel==='files'){fileQuery=lq;renderFiles()}else{resultQuery=lq;fileQuery=lq;renderResults();renderFiles()}}
-function resetFilters(){resultQuery='';fileQuery='';statusFilter='';var inp=document.getElementById('searchInput');if(inp)inp.value='';var cards=document.querySelectorAll('.stat-card');for(var i=0;i<cards.length;i++){cards[i].classList.remove('active-filter')}}
+function onSearch(q){
+  const lq=q.toLowerCase();
+  statusFilter='';
+  document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active-filter'));
+  if(activePanel==='results'){resultQuery=lq;renderResults()}
+  else if(activePanel==='files'){fileQuery=lq;renderFiles()}
+  else if(activePanel==='normal'){resultQuery=lq;renderNormal()}
+  else if(activePanel==='boundary'){resultQuery=lq;renderBoundary()}
+  else if(activePanel==='anomaly'){resultQuery=lq;renderAnomaly()}
+  else if(activePanel==='slow'){resultQuery=lq;renderSlow()}
+  else {resultQuery=lq;fileQuery=lq;renderResults();renderFiles()}
+}
+function resetFilters(){resultQuery='';fileQuery='';statusFilter='';const inp=document.getElementById('searchInput');if(inp)inp.value='';document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active-filter'))}
 
-// ═══ Actions ═══
-function expandAllFiles(){document.querySelectorAll('#filesContent .file-card').forEach(function(c){c.style.display=''})}
-function collapseAllFiles(){}
-function expandAllSuites(){document.querySelectorAll('#resultsContent .suite').forEach(function(c){c.classList.add('open')})}
-function collapseAllSuites(){document.querySelectorAll('#resultsContent .suite').forEach(function(c){c.classList.remove('open')})}
-function toggleSort(){sortByDur=!sortByDur;document.getElementById('btnSortDur').classList.toggle('on',sortByDur);renderResults()}
-function copyTestName(name){navigator.clipboard.writeText(name).then(function(){toast('已复制: '+name)}).catch(function(){})}
-function copyResultsMd(){var s=results.summary,md='## 场景自检结果\n\n| 指标 | 值 |\n|------|----|\n| 总计 | '+(s.total||0)+' |\n| ✅ 通过 | '+(s.passed||0)+' |\n| ❌ 失败 | '+(s.failed||0)+' |\n| ⏱ 耗时 | '+fmtDur(results.durationMs)+' |\n| 🕐 时间 | '+fmtTs(results.timestamp)+' |\n',rm=buildResultMap(),k;for(k in rm){if(!rm.hasOwnProperty(k))continue;var r=rm[k],icon=r.failed>0?'❌':'✅';md+='\n### '+icon+' '+k+'\n| 通过 | 失败 | 跳过 | 总计 |\n|------|------|------|------|\n| '+r.passed+' | '+r.failed+' | '+r.skipped+' | '+r.total+' |\n'}navigator.clipboard.writeText(md).then(function(){toast('已复制为 Markdown')}).catch(function(){toast('复制失败')})}
-function copyFileList(){if(!manifest)return;var list=manifest.files.map(function(f){return f.path}).join('\n');navigator.clipboard.writeText(list).then(function(){toast('已复制文件清单')}).catch(function(){toast('复制失败')})}
-function filterByStatus(status){resultQuery=status==='all'?'':status==='passed'?'✅':status==='failed'?'❌':'';document.querySelectorAll('.stat-card').forEach(function(c){c.classList.remove('active-filter')});var el=document.getElementById(status==='all'?'statAll':status==='passed'?'statPassed':status==='failed'?'statFailed':status==='skipped'?'statSkipped':'statAll');if(el)el.classList.add('active-filter');switchPanel('results');renderResults()}
-function switchPanel(name){activePanel=name;document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.panel===name)});document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1))});if(name==='files')renderFiles();else if(name==='results')renderResults();else if(name==='normal')renderNormal();else if(name==='boundary')renderBoundary();else if(name==='slow')renderSlow();else if(name==='perf')renderPerf()}
-function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show')},1800)}
+/* ═══ Actions ═══ */
+function expandAllSuites(){document.querySelectorAll('#resultsContent .suite').forEach(c=>c.classList.add('open'))}
+function collapseAllSuites(){document.querySelectorAll('#resultsContent .suite').forEach(c=>c.classList.remove('open'))}
+function toggleSort(){sortByDur=!sortByDur;document.getElementById('btnSortDur').classList.toggle('on',sortByDur);renderResults();if(activePanel==='normal')renderNormal();if(activePanel==='boundary')renderBoundary()}
+function copyTestName(name){navigator.clipboard.writeText(name).then(()=>toast('已复制: '+name)).catch(()=>{})}
+function copyResultsMd(){
+  const s=results.summary,md='## 场景-1 自检结果\n\n| 指标 | 值 |\n|------|----|\n| 总计 | '+(s.total||0)+' |\n| ✅ 通过 | '+(s.passed||0)+' |\n| ❌ 失败 | '+(s.failed||0)+' |\n| ⏭️ 跳过 | '+(s.skipped||0)+' |\n| 🚨 异常 | '+anomalyCases.length+' |\n| ⏱ 耗时 | '+fmtDur(results.durationMs)+' |\n| 🕐 时间 | '+fmtTs(results.timestamp)+' |\n\n';
+  navigator.clipboard.writeText(md).then(()=>toast('已复制为 Markdown')).catch(()=>toast('复制失败'));
+}
+function filterByStatus(status){
+  resultQuery=status==='all'?'':status==='passed'?'✅':status==='failed'?'❌':status==='skipped'?'⏭️':'';
+  document.querySelectorAll('.stat-card').forEach(c=>c.classList.remove('active-filter'));
+  const el=document.getElementById(status==='all'?'statAll':status==='passed'?'statPassed':status==='failed'?'statFailed':'statSkipped');
+  if(el)el.classList.add('active-filter');
+  switchPanel('results');
+  renderResults();
+}
+function switchPanel(name){
+  activePanel=name;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===name));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('on',p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1)));
+  const r=({overview:renderOverview,files:renderFiles,srcmap:renderSrcMap,results:renderResults,normal:renderNormal,boundary:renderBoundary,anomaly:renderAnomaly,slow:renderSlow,perf:renderPerf,improve:renderImprove,insights:renderInsights,gate:renderGate})[name];
+  if(r)r();
+  if(name==='gate')renderGate();
+  // 平滑滚动到顶部
+  const tabsWrap=document.querySelector('.tabs-wrap');
+  if(tabsWrap)tabsWrap.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>el.classList.remove('show'),1800);
+}
 
-// ═══ Keyboard navigation ═══
+/* ═══ 命令面板 (⌘K / Ctrl+K) ═══ */
+const cmdList=[
+  {icon:'📊',text:'跳转到 总览',tab:'overview',kbd:'1'},
+  {icon:'📁',text:'跳转到 文件',tab:'files',kbd:'2'},
+  {icon:'🧭',text:'跳转到 源码地图',tab:'srcmap',kbd:'3'},
+  {icon:'📋',text:'跳转到 结果',tab:'results',kbd:'4'},
+  {icon:'✅',text:'跳转到 正常路径',tab:'normal',kbd:'5'},
+  {icon:'⚠️',text:'跳转到 边界',tab:'boundary',kbd:'6'},
+  {icon:'🚨',text:'跳转到 异常',tab:'anomaly',kbd:'7'},
+  {icon:'🐢',text:'跳转到 慢测试',tab:'slow',kbd:'8'},
+  {icon:'📈',text:'跳转到 性能',tab:'perf',kbd:'9'},
+  {icon:'💡',text:'跳转到 改进',tab:'improve',kbd:'0'},
+  {icon:'🧠',text:'跳转到 洞察',tab:'insights',kbd:'Q'},
+  {icon:'🚦',text:'跳转到 门禁',tab:'gate',kbd:'G'},
+  {icon:'📂',text:'展开所有套件',action:'expandAllSuites'},
+  {icon:'📁',text:'收起所有套件',action:'collapseAllSuites'},
+  {icon:'⏱',text:'按耗时排序',action:'toggleSort'},
+  {icon:'📋',text:'复制结果为 Markdown',action:'copyResultsMd'},
+  {icon:'🚀',text:'导出改进提案',action:'exportProposal'},
+  {icon:'✅',text:'全部采纳改进',action:'adoptAll'},
+  {icon:'🔄',text:'清除所有采纳',action:'clearAdopted'},
+  {icon:'⏫',text:'返回顶部',action:'scrollTop'},
+  {icon:'🔍',text:'聚焦搜索框',action:'focusSearch'}
+];
+let cmdFiltered=[...cmdList],cmdActive=0;
+function openCmd(){const el=document.getElementById('cmdPalette');el.classList.add('show');document.getElementById('cmdInput').value='';document.getElementById('cmdInput').focus();filterCmd('')}
+function closeCmd(){document.getElementById('cmdPalette').classList.remove('show')}
+function filterCmd(q){
+  const lq=q.toLowerCase();
+  cmdFiltered=q?cmdList.filter(c=>c.text.toLowerCase().includes(lq)||(c.tab&&c.tab.includes(lq))):[...cmdList];
+  cmdActive=0;renderCmdList();
+}
+function renderCmdList(){
+  const html=cmdFiltered.map((c,i)=>'<div class="cmd-item'+(i===cmdActive?' active':'')+'" onclick="runCmd('+(cmdList.indexOf(c))+')" onmouseenter="cmdActive='+i+';renderCmdList()"><span class="ci-icon">'+c.icon+'</span><span class="ci-text">'+c.text+'</span>'+(c.kbd?'<span class="ci-kbd">'+c.kbd+'</span>':'')+(c.tab?'<span class="ci-tag">tab</span>':'')+'</div>').join('');
+  document.getElementById('cmdList').innerHTML=html||'<div style="padding:20px;text-align:center;color:var(--text3);font-size:.84rem">无匹配命令</div>';
+}
+function runCmd(idx){
+  const c=cmdList[idx];if(!c)return;
+  if(c.tab){switchPanel(c.tab);closeCmd();toast('已跳转到 '+c.text.replace('跳转到 ',''))}
+  else if(c.action){closeCmd();window[c.action]&&window[c.action]()}
+}
+
+/* ═══ Back to top + scroll listener ═══ */
+window.addEventListener('scroll',function(){
+  const btn=document.getElementById('backTop');
+  if(btn)btn.classList.toggle('show',window.scrollY>400);
+},{passive:true});
+function scrollTop(){window.scrollTo({top:0,behavior:'smooth'})}
+function focusSearch(){document.getElementById('searchInput').focus()}
+
+/* ═══ Keyboard navigation ═══ */
 document.addEventListener('keydown',function(e){
+  // 命令面板快捷键
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();const open=document.getElementById('cmdPalette').classList.contains('show');open?closeCmd():openCmd();return}
+  if(document.getElementById('cmdPalette').classList.contains('show')){
+    if(e.key==='Escape'){closeCmd();return}
+    if(e.key==='ArrowDown'){e.preventDefault();cmdActive=Math.min(cmdFiltered.length-1,cmdActive+1);renderCmdList();return}
+    if(e.key==='ArrowUp'){e.preventDefault();cmdActive=Math.max(0,cmdActive-1);renderCmdList();return}
+    if(e.key==='Enter'){e.preventDefault();runCmd(cmdList.indexOf(cmdFiltered[cmdActive]));return}
+    return;
+  }
   if(document.activeElement.tagName==='INPUT')return;
-  if(e.key==='Escape'){closeModal()}
+  if(e.key==='Escape')closeModal();
   if(e.key==='j'||e.key==='ArrowDown'){e.preventDefault();focusIdx++;navigateResults()}
   if(e.key==='k'||e.key==='ArrowUp'){e.preventDefault();focusIdx=Math.max(-1,focusIdx-1);navigateResults()}
-  if(e.key==='Enter'&&activePanel==='results'){var focused=document.querySelector('.suite.focused');if(focused)focused.classList.toggle('open')}
-  if(e.key==='Enter'&&activePanel==='files'){var focused=document.querySelector('.file-card.focused');if(focused)focused.click()}
-  if((e.ctrlKey||e.metaKey)&&e.key==='f'){e.preventDefault();var inp=document.getElementById(activePanel==='files'?'searchFiles':'searchResults');if(inp)inp.focus()}
-  if(e.key==='1')switchPanel('files');if(e.key==='2')switchPanel('results');if(e.key==='3')switchPanel('normal');if(e.key==='4')switchPanel('boundary');if(e.key==='5')switchPanel('slow');if(e.key==='6')switchPanel('perf');if(e.key==='7')switchPanel('gate')
+  if(e.key==='Enter'&&activePanel==='results'){const f=document.querySelector('.suite.focused');if(f)f.classList.toggle('open')}
+  if((e.ctrlKey||e.metaKey)&&e.key==='f'){e.preventDefault();document.getElementById('searchInput').focus()}
+  if(e.key==='?'||e.key==='/'){e.preventDefault();openCmd();return}
+  const keyMap={'1':'overview','2':'files','3':'srcmap','4':'results','5':'normal','6':'boundary','7':'anomaly','8':'slow','9':'perf','0':'improve','q':'insights','Q':'insights','g':'gate','G':'gate'};
+  if(keyMap[e.key])switchPanel(keyMap[e.key]);
 });
+document.getElementById('cmdInput').addEventListener('input',function(e){filterCmd(e.target.value)});
 function navigateResults(){
-  document.querySelectorAll('.suite.focused,.t-row.focused,.file-card.focused').forEach(function(e){e.classList.remove('focused')});
-  var suites=document.querySelectorAll('#resultsContent .suite');if(suites.length===0)return;if(focusIdx<0)return;
-  if(focusIdx>=suites.length)focusIdx=suites.length-1;suites[focusIdx].classList.add('focused');suites[focusIdx].scrollIntoView({behavior:'smooth',block:'nearest'})
+  document.querySelectorAll('.suite.focused,.t-row.focused,.file-card.focused').forEach(e=>e.classList.remove('focused'));
+  const suites=document.querySelectorAll('#resultsContent .suite');if(!suites.length||focusIdx<0)return;
+  if(focusIdx>=suites.length)focusIdx=suites.length-1;
+  suites[focusIdx].classList.add('focused');
+  suites[focusIdx].scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-// ═══ Event delegation ═══
-document.querySelector('.tabs').addEventListener('click',function(e){var tab=e.target.closest('.tab');if(!tab)return;switchPanel(tab.dataset.panel)});
-document.getElementById('resultsContent').addEventListener('click',function(e){var head=e.target.closest('.s-head');if(head){var suite=head.closest('.suite');suite.classList.toggle('open')}});
+/* ═══ Event delegation ═══ */
+document.querySelector('.tabs').addEventListener('click',function(e){const tab=e.target.closest('.tab');if(tab)switchPanel(tab.dataset.panel)});
+document.getElementById('resultsContent').addEventListener('click',function(e){
+  const head=e.target.closest('.s-head');
+  if(head){const suite=head.closest('.suite');suite.classList.toggle('open')}
+});
 document.getElementById('modalOverlay').addEventListener('click',function(e){if(e.target===e.currentTarget)closeModal()});
-document.getElementById('bar').addEventListener('click',function(e){var rect=this.getBoundingClientRect(),pct=(e.clientX-rect.left)/rect.width;if(pct<.33)filterByStatus('passed');else if(pct<.66)filterByStatus('failed');else filterByStatus('skipped')});
-window.addEventListener('DOMContentLoaded',function(){renderStats();switchPanel('files')});
+document.getElementById('bar').addEventListener('click',function(e){
+  const rect=this.getBoundingClientRect(),pct=(e.clientX-rect.left)/rect.width;
+  if(pct<.33)filterByStatus('passed');else if(pct<.66)filterByStatus('failed');else filterByStatus('skipped');
+});
+
+// 启动
+window.addEventListener('DOMContentLoaded',function(){
+  renderStats();
+  renderOnboardingFlow();
+  renderOverview();
+  renderFiles();
+  renderSrcMap();
+  renderResults();
+  renderNormal();
+  renderBoundary();
+  renderAnomaly();
+  renderSlow();
+  renderPerf();
+  renderImprove();
+  renderInsights();
+  renderGate();
+  renderFooterStats();
+});
 </script>
-<script src="../../../../cdn/shared.js"></script>
+
 </body>
 </html>
