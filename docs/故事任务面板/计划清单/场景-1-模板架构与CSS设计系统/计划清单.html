@@ -92,6 +92,13 @@
 .scorecard .total-row td { background:rgba(255,193,7,.06); border-top:2px solid rgba(255,193,7,.3); }
 .scorecard tr:hover td { background:rgba(255,255,255,.02); }
 
+/* Deliverable summary bar */
+.deliv-summary { display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin-top:10px; padding:8px 12px; background:rgba(16,185,129,.06); border:1px solid rgba(16,185,129,.22); border-radius:8px; font-size:.72rem; color:var(--text2); }
+.deliv-summary .ds-item { display:inline-flex; align-items:center; gap:4px; }
+.deliv-summary .ds-item b { color:var(--text1); font-weight:600; }
+.deliv-summary .ds-sep { color:var(--text3); opacity:.5; }
+@media (max-width:600px){ .deliv-summary{font-size:.66rem;} }
+
 /* Trend chart */
 .trend-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:8px; }
 @media (max-width:700px){ .trend-grid{grid-template-columns:1fr;} }
@@ -1960,112 +1967,206 @@ grep -Eho '\[.+\]\(.+\)' 架构图.html | wc -l<span class="cb" onclick="copyCmd
 
 <!-- 详细列表 (路径可点击) -->
 <div class="section">
-<h2><span class="dot"></span>📑 交付物详细列表 <span style="font-weight:400;font-size:.7rem;color:var(--text3)">· 点击路径直接跳转</span></h2>
+<h2><span class="dot"></span>📑 交付物详细列表 <span style="font-weight:400;font-size:.7rem;color:var(--text3)">· 点击路径/图标直接跳转 · 📂 打开 · 📋 复制绝对路径</span></h2>
 <table class="scorecard">
-  <thead><tr><th>#</th><th>名称</th><th>类型</th><th>路径 (可点击)</th><th>大小</th><th>Owner</th><th>状态</th><th>操作</th></tr></thead>
+  <thead><tr><th>#</th><th>名称</th><th>类型</th><th>路径 (可点击)</th><th>说明</th><th>大小</th><th>Owner</th><th>状态</th><th>操作</th></tr></thead>
   <tbody>
+    <!-- 一、HTML 模板骨架 -->
     <tr>
       <td>1</td>
-      <td><b>新人学习路径图</b></td>
-      <td>📊 Mermaid</td>
-      <td><a href="学习路径.md" class="path-link" target="_blank"><code>docs/.../场景-1-新人上手/学习路径.md</code></a></td>
-      <td>3.2 KB</td>
+      <td><b>计划清单模板</b></td>
+      <td>📄 HTML</td>
+      <td><a href="计划清单.html" class="path-link" target="_blank"><code>docs/.../计划清单.html</code></a></td>
+      <td>7 区域骨架 + 8 Tab 面板 + CSS 变量体系</td>
+      <td>188 KB</td>
       <td>planner</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="学习路径.md" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/架构/场景-1-新人上手/学习路径.md',this)">📋</span></td>
+      <td class="op-cell"><a href="计划清单.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html',this)">📋</span></td>
     </tr>
     <tr>
       <td>2</td>
-      <td><b>30 秒导航索引</b></td>
-      <td>📄 Markdown</td>
-      <td><a href="30秒索引.md" class="path-link" target="_blank"><code>docs/.../场景-1-新人上手/30秒索引.md</code></a></td>
-      <td>1.8 KB</td>
+      <td><b>架构图 (骨架分层)</b></td>
+      <td>📐 HTML+SVG</td>
+      <td><a href="架构图.html" class="path-link" target="_blank"><code>docs/.../架构图.html</code></a></td>
+      <td>HTML→CDN→CSS Vars→Components→Token 分层可视化</td>
+      <td>60 KB</td>
       <td>planner</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="30秒索引.md" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/架构/场景-1-新人上手/30秒索引.md',this)">📋</span></td>
+      <td class="op-cell"><a href="架构图.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/架构图.html',this)">📋</span></td>
     </tr>
     <tr>
       <td>3</td>
-      <td><b>新人上手测试用例</b></td>
-      <td>🧪 Test</td>
-      <td><a href="../../../../tests/skills/onboarding.test.mjs" class="path-link" target="_blank"><code>tests/skills/onboarding.test.mjs</code></a></td>
-      <td>4.5 KB</td>
-      <td>tester</td>
+      <td><b>知识图谱导航</b></td>
+      <td>🕸 HTML+SVG</td>
+      <td><a href="知识图谱.html" class="path-link" target="_blank"><code>docs/.../知识图谱.html</code></a></td>
+      <td>CSS 变量 / 组件 / Token 关系图谱</td>
+      <td>55 KB</td>
+      <td>planner</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="../../../../tests/skills/onboarding.test.mjs" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('tests/skills/onboarding.test.mjs',this)">📋</span></td>
+      <td class="op-cell"><a href="知识图谱.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/知识图谱.html',this)">📋</span></td>
     </tr>
     <tr>
       <td>4</td>
-      <td><b>新人指南文档</b></td>
-      <td>📄 Markdown</td>
-      <td><a href="新人指南.md" class="path-link" target="_blank"><code>docs/.../场景-1-新人上手/新人指南.md</code></a></td>
-      <td>18.4 KB</td>
+      <td><b>演示演练页</b></td>
+      <td>💡 Interactive</td>
+      <td><a href="演示.html" class="path-link" target="_blank"><code>docs/.../演示.html</code></a></td>
+      <td>实时切换主题 / 变量滑块 / 组件预览</td>
+      <td>122 KB</td>
       <td>planner</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="新人指南.md" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/架构/场景-1-新人上手/新人指南.md',this)">📋</span></td>
+      <td class="op-cell"><a href="演示.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/演示.html',this)">📋</span></td>
     </tr>
     <tr>
       <td>5</td>
-      <td><b>常见问题 FAQ</b></td>
-      <td>📄 Markdown</td>
-      <td><a href="FAQ.md" class="path-link" target="_blank"><code>docs/.../场景-1-新人上手/FAQ.md</code></a></td>
-      <td>6.7 KB</td>
-      <td>planner</td>
+      <td><b>审查报告</b></td>
+      <td>📝 HTML</td>
+      <td><a href="审查.html" class="path-link" target="_blank"><code>docs/.../审查.html</code></a></td>
+      <td>代码审查清单 / 规范符合度评分</td>
+      <td>35 KB</td>
+      <td>reviewer</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="FAQ.md" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/架构/场景-1-新人上手/FAQ.md',this)">📋</span></td>
+      <td class="op-cell"><a href="审查.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/审查.html',this)">📋</span></td>
     </tr>
     <tr>
       <td>6</td>
-      <td><b>学习路径架构图</b></td>
-      <td>📊 HTML+SVG</td>
-      <td><a href="架构图.html" class="path-link" target="_blank"><code>docs/.../场景-1-新人上手/架构图.html</code></a></td>
-      <td>24.1 KB</td>
+      <td><b>源码查看器</b></td>
+      <td>💻 HTML</td>
+      <td><a href="源码.html" class="path-link" target="_blank"><code>docs/.../源码.html</code></a></td>
+      <td>骨架源码高亮 + 行号 + 折叠面板</td>
+      <td>81 KB</td>
       <td>planner</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="架构图.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/架构/场景-1-新人上手/架构图.html',this)">📋</span></td>
+      <td class="op-cell"><a href="源码.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/源码.html',this)">📋</span></td>
     </tr>
     <tr>
       <td>7</td>
-      <td><b>链接可达性测试</b></td>
-      <td>🧪 Test</td>
-      <td><a href="../../../../tests/skills/check-links.mjs" class="path-link" target="_blank"><code>tests/skills/check-links.mjs</code></a></td>
-      <td>2.3 KB</td>
+      <td><b>测试面板</b></td>
+      <td>🧪 HTML</td>
+      <td><a href="测试面板.html" class="path-link" target="_blank"><code>docs/.../测试面板.html</code></a></td>
+      <td>5 套件 / 49 断言 / 通过率 100%</td>
+      <td>123 KB</td>
       <td>tester</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="../../../../tests/skills/check-links.mjs" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('tests/skills/check-links.mjs',this)">📋</span></td>
+      <td class="op-cell"><a href="测试面板.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/测试面板.html',this)">📋</span></td>
     </tr>
     <tr>
       <td>8</td>
-      <td><b>上手摩擦点清单</b></td>
-      <td>📋 Data</td>
-      <td><a href="摩擦点.json" class="path-link" target="_blank"><code>docs/.../场景-1-新人上手/摩擦点.json</code></a></td>
-      <td>1.5 KB</td>
+      <td><b>场景索引</b></td>
+      <td>📑 Markdown</td>
+      <td><a href="index.md" class="path-link" target="_blank"><code>docs/.../index.md</code></a></td>
+      <td>§0 评审 / §1 用例 / §2 报告 / §3 测试 / §4 自改进</td>
+      <td>2.1 KB</td>
       <td>planner</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="摩擦点.json" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/架构/场景-1-新人上手/摩擦点.json',this)">📋</span></td>
+      <td class="op-cell"><a href="index.md" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/index.md',this)">📋</span></td>
     </tr>
+    <!-- 二、CDN 资源 -->
     <tr>
       <td>9</td>
-      <td><b>知识图谱导航</b></td>
-      <td>📊 Interactive</td>
-      <td><a href="知识图谱.html" class="path-link" target="_blank"><code>docs/.../场景-1-新人上手/知识图谱.html</code></a></td>
-      <td>32.8 KB</td>
-      <td>planner</td>
+      <td><b>设计系统 CSS (核心)</b></td>
+      <td>🎨 CSS</td>
+      <td><a href="../../../../cdn/yry-checklist.css" class="path-link" target="_blank"><code>cdn/yry-checklist.css</code></a></td>
+      <td>30+ Token / 14 组件 / 5 断点 / <code>--yry-</code> 命名</td>
+      <td>18.8 KB</td>
+      <td>designer</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="知识图谱.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/架构/场景-1-新人上手/知识图谱.html',this)">📋</span></td>
+      <td class="op-cell"><a href="../../../../cdn/yry-checklist.css" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/yry-checklist.css',this)">📋</span></td>
     </tr>
     <tr>
       <td>10</td>
-      <td><b>演示演练页面</b></td>
-      <td>💡 Interactive</td>
-      <td><a href="演示.html" class="path-link" target="_blank"><code>docs/.../场景-1-新人上手/演示.html</code></a></td>
-      <td>15.6 KB</td>
-      <td>planner</td>
+      <td><b>CDN 共享 CSS</b></td>
+      <td>🌐 CSS</td>
+      <td><a href="../../../../cdn/shared.css" class="path-link" target="_blank"><code>cdn/shared.css</code></a></td>
+      <td>基础 reset + 通用原子类</td>
+      <td>20.1 KB</td>
+      <td>designer</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="演示.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/架构/场景-1-新人上手/演示.html',this)">📋</span></td>
+      <td class="op-cell"><a href="../../../../cdn/shared.css" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/shared.css',this)">📋</span></td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td><b>CDN 主题 CSS</b></td>
+      <td>🎭 CSS</td>
+      <td><a href="../../../../cdn/theme.css" class="path-link" target="_blank"><code>cdn/theme.css</code></a></td>
+      <td>Tokyo Night 主题色 + 暗色变量</td>
+      <td>12.1 KB</td>
+      <td>designer</td>
+      <td class="pass">✓ 已交付</td>
+      <td class="op-cell"><a href="../../../../cdn/theme.css" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/theme.css',this)">📋</span></td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td><b>CDN 共享 JS</b></td>
+      <td>⚙️ JS</td>
+      <td><a href="../../../../cdn/shared.js" class="path-link" target="_blank"><code>cdn/shared.js</code></a></td>
+      <td>Tab 切换 / 折叠 / 复制 / 工具函数</td>
+      <td>5.3 KB</td>
+      <td>designer</td>
+      <td class="pass">✓ 已交付</td>
+      <td class="op-cell"><a href="../../../../cdn/shared.js" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/shared.js',this)">📋</span></td>
+    </tr>
+    <!-- 三、测试脚本 -->
+    <tr>
+      <td>13</td>
+      <td><b>CDN 加载链测试</b></td>
+      <td>🧪 Test</td>
+      <td><a href="../../../../tests/skills/cdn-load-order.test.mjs" class="path-link" target="_blank"><code>tests/skills/cdn-load-order.test.mjs</code></a></td>
+      <td>验证 <code>shared→theme→yry-checklist</code> 顺序与 200 OK</td>
+      <td>6.2 KB</td>
+      <td>tester</td>
+      <td class="pass">✓ 已交付</td>
+      <td class="op-cell"><a href="../../../../tests/skills/cdn-load-order.test.mjs" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('tests/skills/cdn-load-order.test.mjs',this)">📋</span></td>
+    </tr>
+    <tr>
+      <td>14</td>
+      <td><b>CDN 降级测试</b></td>
+      <td>🧪 Test</td>
+      <td><a href="../../../../tests/skills/cdn-degrade.test.mjs" class="path-link" target="_blank"><code>tests/skills/cdn-degrade.test.mjs</code></a></td>
+      <td>离线状态下骨架可读 / 关键 CSS 内联</td>
+      <td>6.4 KB</td>
+      <td>tester</td>
+      <td class="pass">✓ 已交付</td>
+      <td class="op-cell"><a href="../../../../tests/skills/cdn-degrade.test.mjs" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('tests/skills/cdn-degrade.test.mjs',this)">📋</span></td>
+    </tr>
+    <tr>
+      <td>15</td>
+      <td><b>Token 完整性测试</b></td>
+      <td>🧪 Test</td>
+      <td><a href="../../../../tests/skills/theme-tokens.test.mjs" class="path-link" target="_blank"><code>tests/skills/theme-tokens.test.mjs</code></a></td>
+      <td>20 Token 全部定义 / 无 <code>{{}}</code> 残留</td>
+      <td>4.2 KB</td>
+      <td>tester</td>
+      <td class="pass">✓ 已交付</td>
+      <td class="op-cell"><a href="../../../../tests/skills/theme-tokens.test.mjs" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('tests/skills/theme-tokens.test.mjs',this)">📋</span></td>
+    </tr>
+    <tr>
+      <td>16</td>
+      <td><b>组件渲染测试</b></td>
+      <td>🧪 Test</td>
+      <td><a href="../../../../tests/skills/theme-components.test.mjs" class="path-link" target="_blank"><code>tests/skills/theme-components.test.mjs</code></a></td>
+      <td>step / phase / scorecard / risk-matrix 渲染校验</td>
+      <td>2.3 KB</td>
+      <td>tester</td>
+      <td class="pass">✓ 已交付</td>
+      <td class="op-cell"><a href="../../../../tests/skills/theme-components.test.mjs" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('tests/skills/theme-components.test.mjs',this)">📋</span></td>
     </tr>
   </tbody>
 </table>
+
+<!-- 汇总小条 -->
+<div class="deliv-summary">
+  <span class="ds-item">📦 共 <b>16</b> 项交付物</span>
+  <span class="ds-sep">·</span>
+  <span class="ds-item">📄 HTML 模板 <b>7</b></span>
+  <span class="ds-sep">·</span>
+  <span class="ds-item">🎨 CDN 资源 <b>4</b></span>
+  <span class="ds-sep">·</span>
+  <span class="ds-item">🧪 测试脚本 <b>4</b></span>
+  <span class="ds-sep">·</span>
+  <span class="ds-item">📑 索引 <b>1</b></span>
+  <span class="ds-sep">·</span>
+  <span class="ds-item">✅ 全部 <span class="pass">已交付</span></span>
+</div>
 </div>
 
 <!-- 验收签收 -->
