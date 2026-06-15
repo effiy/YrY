@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>YrY 自主测试方案 · 演示中心</title>
+  <meta name="description" content="YrY 自主测试方案演示 — 6 场景 · 管线健康自检 + 文档基线校验 · 171 断言全量覆盖 · 点击展开内联预览">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/theme.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.css">
   <style>
@@ -200,14 +201,14 @@
   </div>
 
   <div style="text-align:center;padding:20px 0;color:var(--text3);font-size:.78rem">
-    YrY v5.0.0 · <a href="../../../CLAUDE.md" style="color:var(--accent)">CLAUDE.md</a> · <a href="../../../README.md" style="color:var(--accent)">README.md</a>
+    YrY v5.4.0 · <a href="../../../CLAUDE.md" style="color:var(--accent)">CLAUDE.md</a> · <a href="../../../README.md" style="color:var(--accent)">README.md</a>
   </div>
 </div>
 
-<script src="../../../../cdn/shared.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.js"></script>
 <script>
 // Delegates to CDN YrY.* utilities
-function copyCmd(btn, cmd) { YrY.copyCmd(btn, cmd); }
+function copyCmd(btn, cmd) { if (window.YrY) YrY.copyCmd(btn, cmd); else navigator.clipboard.writeText(cmd).catch(function() {}); }
 
 // Scene demo URLs for double-click and keyboard navigation
 const SCENE_URLS = [
@@ -249,7 +250,7 @@ document.addEventListener('keydown', e => {
 // Live test status
 (async () => {
   try {
-    const r = await (await fetch('../tests/results.json')).json();
+    const r = await (await fetch('../../../../tests/results.json')).json();
     const s = r.summary || {};
     document.getElementById('testNav').textContent = `🧪 自检中心 · ${s.passed || 0}/${s.total || 0} 通过`;
   } catch(e) {}

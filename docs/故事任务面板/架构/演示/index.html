@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>YrY Demos · 演示中心</title>
+  <meta name="description" content="YrY 技能交互演示中心 — 7 技能管线可视化 · 点击展开内联预览 · 双击全屏演示 · 实时数据联动">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/theme.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.css">
   <style>
@@ -215,14 +216,14 @@
   </div>
 
   <div style="text-align:center;padding:20px 0;color:var(--text3);font-size:.78rem">
-    YrY v4.7.0 · <a href="../../../../CLAUDE.md" style="color:var(--accent)">CLAUDE.md</a> · <a href="../../../../README.md" style="color:var(--accent)">README.md</a>
+    YrY v5.4.0 · <a href="../../../../CLAUDE.md" style="color:var(--accent)">CLAUDE.md</a> · <a href="../../../../README.md" style="color:var(--accent)">README.md</a>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.js"></script>
 <script>
 // ═══ Delegates to CDN YrY.* utilities ═══
-function copyCmd(btn, cmd) { YrY.copyCmd(btn, cmd); }
+function copyCmd(btn, cmd) { if (window.YrY) YrY.copyCmd(btn, cmd); else navigator.clipboard.writeText(cmd).catch(function() {}); }
 
 // ═══ Card expand/collapse & double-click navigation ═══
 const SKILL_URLS = ['rui.html','rui-story.html','rui-claude.html','rui-import.html','rui-bot.html','rui-trends.html','../../rui-npm/演示/rui-npm.html'];
@@ -235,7 +236,7 @@ skillGrid.addEventListener('click', e => {
 skillGrid.addEventListener('dblclick', e => {
   if (e.target.closest('a') || e.target.closest('.copy-btn') || e.target.closest('pre')) return;
   const card = e.target.closest('.card'); if (!card || !card.dataset.skill) return;
-  	  const idx = SKILL_URLS.findIndex(u => u.endsWith(card.dataset.skill + '.html'));
+  const idx = SKILL_URLS.findIndex(u => u.endsWith(card.dataset.skill + '.html'));
   if (idx >= 0) location.href = SKILL_URLS[idx];
 });
 
@@ -257,7 +258,7 @@ document.addEventListener('keydown', e => {
 // ═══ Live test status ═══
 (async () => {
   try {
-    const r = await (await fetch('../tests/results.json')).json();
+    const r = await (await fetch('../../../../tests/results.json')).json();
     const s = r.summary || {};
     document.getElementById('testNav').textContent = `🧪 自检中心 · ${s.passed || 0}/${s.total || 0} 通过`;
   } catch(e) {}

@@ -7,13 +7,14 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/theme.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.css">
   <title>YrY 文档中心</title>
+  <meta name="description" content="YrY 故事驱动 SDLC 编排系统 — 六层结构：依赖/框架 → 19 技能 → 7 故事 → 38 场景 → Agent 角色与规则 → 参考入口">
   <link rel="stylesheet" href="../cdn/yry-home.css">
 </head>
 <body>
   <div class="container">
     <!-- ── Breadcrumb ──────────────────────────── -->
     <nav class="breadcrumb">
-      <span class="current">&#128451; 文档中心</span>
+      <span class="current" aria-current="page">&#128451; 文档中心</span>
     </nav>
 
     <div class="header">
@@ -52,8 +53,8 @@
     <!-- ── Panel hub ──────────────────────────── -->
     <div class="panel-hub" id="panelHub">
       <span class="panel-hub-label" id="liveHealthLabel" style="cursor:pointer" onclick="PanelHub.open('selfimprove')" title="点击打开自改进面板查看详情">🩺 —</span>
-      <button class="panel-hub-btn" onclick="window.openPanel('cron')" title="调度任务 — 展示 .claude/scheduled_tasks.json 中所有定时任务。包含 cron 表达式、人类可读描述、活跃/空闲状态、下次触发预估。">
-        <span class="panel-hub-icon" style="color:var(--color-accent-2)">⏰</span>
+      <button class="panel-hub-btn" onclick="window.openPanel&amp;&amp;window.openPanel('cron')" title="调度任务 — 展示 .claude/scheduled_tasks.json 中所有定时任务。包含 cron 表达式、人类可读描述、活跃/空闲状态、下次触发预估。">
+        <span class="panel-hub-icon" style="color:var(--yry-cyan)">⏰</span>
         <span class="panel-hub-name">调度</span>
         <span class="panel-hub-desc">定时·触发·编排</span>
       </button>
@@ -416,7 +417,7 @@
         </div>
       </div>
 
-      <div class="sub-title"><span class="accent">&#127919;</span> 新增技能 (2) — v5.0.0</div>
+      <div class="sub-title"><span class="accent">&#127919;</span> 新增技能 (3) — v5.0.0</div>
       <div class="card-grid">
         <div class="item-card">
           <span class="icon skill">A</span>
@@ -994,7 +995,7 @@
 
     <div class="layer" id="layer-rules" style="margin-top:36px;">
       <div class="layer-header">
-        <span class="layer-num" style="background: var(--color-accent-2);">R</span>
+        <span class="layer-num" style="background: var(--yry-cyan);">R</span>
         <h2>治理规则</h2>
         <span class="layer-stats">18 规则 · 管线纪律 · 安全 · 文档 · 自改进 · 设计原则</span>
         <span class="layer-panels" title="规则详情">
@@ -1403,7 +1404,7 @@
     <div class="panel-footer">
       <span>数据来源: .claude/scheduled_tasks.json</span>
       <span style="margin: 0 8px;opacity:.3">|</span>
-      <a href="#" onclick="event.preventDefault();window.openPanel('faq')" style="color:var(--color-accent-2);text-decoration:none;font-size:.72rem">❓ 什么是调度任务？</a>
+      <a href="#" onclick="event.preventDefault();window.openPanel('faq')" style="color:var(--yry-cyan);text-decoration:none;font-size:.72rem">❓ 什么是调度任务？</a>
     </div>
   </div>
 
@@ -1418,7 +1419,7 @@
       <span style="font-size:.7rem;color:var(--text-muted)">快捷打开：</span>
       <a href="#" onclick="event.preventDefault();window.openPanel('notify')" style="color:#ef4444;text-decoration:none;font-size:.7rem">🔔 通知</a>
       <span style="opacity:.3">·</span>
-      <a href="#" onclick="event.preventDefault();window.openPanel('cron')" style="color:var(--color-accent-2);text-decoration:none;font-size:.7rem">⏰ 调度</a>
+      <a href="#" onclick="event.preventDefault();window.openPanel('cron')" style="color:var(--yry-cyan);text-decoration:none;font-size:.7rem">⏰ 调度</a>
       <span style="opacity:.3">·</span>
       <a href="#" onclick="event.preventDefault();window.openPanel('selfimprove')" style="color:#a78bfa;text-decoration:none;font-size:.7rem">🧬 自改进</a>
     </div>
