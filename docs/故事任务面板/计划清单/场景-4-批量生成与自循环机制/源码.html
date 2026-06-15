@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>模板架构与 CSS 设计系统 · 源码</title>
+<title>场景-1-新人上手 · 源码</title>
 <link rel="stylesheet" href="../../../../cdn/shared.css">
 <link rel="stylesheet" href="../../../../cdn/theme.css">
 <style>
@@ -300,15 +300,15 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <body>
 <div class="container">
 
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-checklist · 清单与自循环</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 模板架构与 CSS 设计系统</span><span class="bc-sep">/</span><span class="bc-current">📜 源码</span></nav>
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-checklist · 清单与自循环</span><span class="bc-sep">/</span><span class="bc-current">场景 4 · 批量生成与自循环机制</span><span class="bc-sep">/</span><span class="bc-current">📜 源码</span></nav>
 <nav class="scene-nav">
-  <a class="scene-nav-link active" href="源码.html">🎨 场景1 · 模板架构与 CSS 设计系统</a>
+  <a class="scene-nav-link" href="../场景-1-模板架构与CSS设计系统/源码.html">📋 场景1 · 模板架构与 CSS 设计系统</a>
   <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-2-清单交互组件实现/源码.html">🧩 场景2 · 清单交互组件实现</a>
+  <a class="scene-nav-link" href="../场景-2-清单交互组件实现/源码.html">📋 场景2 · 清单交互组件实现</a>
   <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-3-验证报告与健康面板集成/源码.html">✅ 场景3 · 验证报告与健康面板集成</a>
+  <a class="scene-nav-link" href="../场景-3-验证报告与健康面板集成/源码.html">📋 场景3 · 验证报告与健康面板集成</a>
   <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-4-批量生成与自循环机制/源码.html">� 场景4 · 批量生成与自循环机制</a>
+  <a class="scene-nav-link active" href="源码.html">📋 场景4 · 批量生成与自循环机制</a>
   <span class="scene-nav-sep">·</span>
   <a class="scene-nav-link story" href="index.md">📖 场景说明</a>
 </nav>
@@ -324,13 +324,13 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 </nav>
 
 <div class="header">
-  <h1>📄 模板架构与 CSS 设计系统 · 源码中心</h1>
-  <p class="sub">CDN 资源 + 模板主文件 + 测试套件 — 骨架完整性 · CSS 变量覆盖 · CDN 可达性 · Token 替换无残留</p>
+  <h1>📄 新人上手 · 源码中心</h1>
+  <p class="sub">YrY 系统 33 份核心源文件 — 环境搭建 · 阅读路径 · 调试方法 · 首个 PR 全流程</p>
   <div class="badges">
-    <span class="badge">v1.0.0</span>
+    <span class="badge">v4.5</span>
     <span class="badge">📅 2026-06-13</span>
     <span class="badge">🌿 feat/yry-arch</span>
-    <span class="badge">⏱ 12 文件 / 4 套件 / 45 断言</span>
+    <span class="badge">⏱ 30min 上手</span>
     <span class="badge">🎯 P0</span>
   </div>
 </div>
@@ -350,21 +350,21 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 
 <div class="tabs">
   <span class="tab on" data-panel="overview">🎯 概览</span>
-  <span class="tab" data-panel="files">📁 文件清单 <span class="tab-count" id="cntFiles">12</span></span>
+  <span class="tab" data-panel="files">📁 文件清单 <span class="tab-count" id="cntFiles">33</span></span>
   <span class="tab" data-panel="browse">📂 目录浏览</span>
-  <span class="tab" data-panel="learn">🗺️ 验收路径</span>
+  <span class="tab" data-panel="learn">🗺️ 学习路径</span>
   <span class="tab" data-panel="tasks">🛠️ 调试任务</span>
-  <span class="tab" data-panel="deps">🔗 加载拓扑</span>
-  <span class="tab" data-panel="spec">📋 术语速查</span>
+  <span class="tab" data-panel="deps">🔗 模块拓扑</span>
+  <span class="tab" data-panel="spec">📋 模块清单</span>
 </div>
 
 <!-- ── 概览 ─────────────────────────────────────────────────────────── -->
 <div class="panel on" id="panelOverview">
   <div class="info-box">
-    <div class="ib-icon">🏗️</div>
+    <div class="ib-icon">👋</div>
     <div class="ib-body">
-      <div class="ib-title">模板架构与 CSS 设计系统 · 源码导航</div>
-      <div class="ib-desc">本页面聚合了场景 1 的 8 份核心源文件（4 CDN 资源 + 1 模板主文件 + 3 测试套件），按"必读 / 推荐 / 参考"三级重要度组织，并提供 4 套件验收路径、调试清单与设计 token 速查表。建议按 <b>验收路径</b> 标签页的五步走，每步约 2 分钟，全流程约 10 分钟即可理解模板架构的全貌。</div>
+      <div class="ib-title">欢迎加入 YrY 贡献者行列</div>
+      <div class="ib-desc">本页面聚合了 33 份核心源文件，按"必读 / 推荐 / 参考"三级重要度组织，并提供完整的学习路径、调试任务清单和首个 PR 流程指引。建议按 <b>学习路径</b> 标签页的七步走，每步约 4 分钟，全流程约 30 分钟即可独立完成首次变更。</div>
     </div>
   </div>
 
@@ -372,24 +372,24 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
     <h2>📊 源码全景速览 <span class="h2-tag">实时统计 · 4 大类</span></h2>
     <div class="role-grid">
       <div class="role-mini" onclick="filterCat('skill')">
-        <div class="rm-name">🎨 CDN 资源 <span style="margin-left:auto;font-size:.7rem;color:var(--accent)" id="ov-skill"></span></div>
-        <div class="rm-desc">样式入口 · 加载链 · 4 份资源</div>
-        <div class="rm-files">shared.css · theme.css · yry-checklist.css · shared.js</div>
+        <div class="rm-name">⚙️ 技能 Skills <span style="margin-left:auto;font-size:.7rem;color:var(--accent)" id="ov-skill"></span></div>
+        <div class="rm-desc">用户入口 · 编排管线 · 7 个独立技能模块</div>
+        <div class="rm-files">rui · rui-story · rui-批量生成与自循环机制 · rui-import · rui-bot · rui-trends · rui-npm</div>
       </div>
       <div class="role-mini" onclick="filterCat('agent')">
-        <div class="rm-name">📋 模板主文件 <span style="margin-left:auto;font-size:.7rem;color:var(--purple)" id="ov-agent"></span></div>
-        <div class="rm-desc">7 区域骨架 · Token 占位符</div>
-        <div class="rm-files">计划清单.html · 架构图.html · 知识图谱.html · 测试面板.html</div>
+        <div class="rm-name">🤖 Agent 角色 <span style="margin-left:auto;font-size:.7rem;color:var(--purple)" id="ov-agent"></span></div>
+        <div class="rm-desc">协作拓扑 · 行为纪律 · 9 类角色边界</div>
+        <div class="rm-files">AGENT · pm · planner · architect · coder · reviewer · tester · reporter · security · self-improve</div>
       </div>
       <div class="role-mini" onclick="filterCat('rule')">
-        <div class="rm-name">🧪 测试套件 <span style="margin-left:auto;font-size:.7rem;color:var(--pass)" id="ov-rule"></span></div>
-        <div class="rm-desc">4 套件 · 45 断言 · 全绿</div>
-        <div class="rm-files">skel.test.mjs · css-vars.test.mjs · token.test.mjs · token.schema.json</div>
+        <div class="rm-name">📜 治理规则 <span style="margin-left:auto;font-size:.7rem;color:var(--pass)" id="ov-rule"></span></div>
+        <div class="rm-desc">管线纪律 · 安全护栏 · 10 套约束规则</div>
+        <div class="rm-files">code-pipeline · delivery-gate · architecture-diagram · plan-execution · doc-generation · knowledge-graph · mermaid-theme · security-guardrails · rui-批量生成与自循环机制 · self-improve</div>
       </div>
       <div class="role-mini" onclick="filterCat('lib')">
-        <div class="rm-name">�️ 设计 Token <span style="margin-left:auto;font-size:.7rem;color:var(--cyan)" id="ov-lib"></span></div>
-        <div class="rm-desc">20 占位符 · CSS 变量 · 断点</div>
-        <div class="rm-files">--yry-bg/-accent/-cyan/-pass/-fail/-warn · spacing-8 · radius-5 · breakpoint-3</div>
+        <div class="rm-name">📦 共享库 Lib <span style="margin-left:auto;font-size:.7rem;color:var(--cyan)" id="ov-lib"></span></div>
+        <div class="rm-desc">基础设施 · 工具复用 · 4 个共享模块</div>
+        <div class="rm-files">constants · fs · help-layout · tty</div>
       </div>
     </div>
   </div>
@@ -398,57 +398,57 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
     <h2>🎯 重要度分级 <span class="h2-tag">按优先级阅读</span></h2>
     <p style="margin-bottom:10px">所有源文件按重要度分为三级，建议按优先级阅读：</p>
     <ul class="checklist">
-      <li><span class="chk" style="color:var(--fail)">★</span> <b style="color:var(--fail)">必读 (Must-Read)</b> — 模板架构核心，缺失则无法理解设计系统：<code>cdn/shared.css</code> · <code>cdn/theme.css</code> · <code>cdn/yry-checklist.css</code> · <code>计划清单.html</code></li>
-      <li><span class="chk partial">◆</span> <b style="color:var(--warn)">推荐 (Recommended)</b> — 进入实操前需了解：<code>cdn/shared.js</code> · <code>tests/yry-checklist/skel.test.mjs</code> · <code>tests/yry-checklist/css-vars.test.mjs</code></li>
-      <li><span class="chk" style="color:var(--cyan)">○</span> <b style="color:var(--cyan)">参考 (Reference)</b> — 按需查阅：<code>tests/yry-checklist/token.test.mjs</code> · <code>架构图.html</code> · <code>知识图谱.html</code></li>
+      <li><span class="chk" style="color:var(--fail)">★</span> <b style="color:var(--fail)">必读 (Must-Read)</b> — 首次上手必读，缺失则无法理解系统全貌：<code>CLAUDE.md</code> · <code>README.md</code> · <code>agents/AGENT.md</code> · <code>rules/code-pipeline.md</code></li>
+      <li><span class="chk partial">◆</span> <b style="color:var(--warn)">推荐 (Recommended)</b> — 进入实操前需了解：<code>skills/rui/SKILL.md</code> · <code>rules/delivery-gate.md</code> · <code>rules/security-guardrails.md</code> · <code>agents/coder.md</code></li>
+      <li><span class="chk" style="color:var(--cyan)">○</span> <b style="color:var(--cyan)">参考 (Reference)</b> — 按需查阅，常作为实现/排错时的工具书：其余 25 份</li>
     </ul>
   </div>
 
   <div class="card">
     <h2>⚡ 快速操作台 <span class="h2-tag">点击复制命令</span></h2>
-    <p style="margin-bottom:12px">下列命令覆盖 80% 的模板架构日常操作，点击卡片即可复制：</p>
+    <p style="margin-bottom:12px">下列命令覆盖 80% 的新人日常操作，点击卡片即可复制：</p>
     <div class="task-grid">
-      <div class="task-card" onclick="copyText('cat cdn/shared.css cdn/theme.css cdn/yry-checklist.css')">
+      <div class="task-card" onclick="copyText('git clone &lt;repo&gt; &amp;&amp; cd YrY')">
         <span class="t-diff easy">EASY</span>
-        <span class="t-icon">�</span>
-        <div class="t-title">查看 CDN 三件套</div>
-        <div class="t-desc">合并查看 3 个 CSS 资源</div>
-        <div class="t-cmd">cat cdn/shared.css cdn/theme.css cdn/yry-checklist.css</div>
+        <span class="t-icon">📥</span>
+        <div class="t-title">克隆项目</div>
+        <div class="t-desc">从仓库克隆代码到本地</div>
+        <div class="t-cmd">git clone &lt;repo&gt; &amp;&amp; cd YrY</div>
       </div>
-      <div class="task-card" onclick="copyText('node tests/yry-checklist/skel.test.mjs')">
+      <div class="task-card" onclick="copyText('node tests/run.mjs')">
         <span class="t-diff easy">EASY</span>
         <span class="t-icon">🧪</span>
-        <div class="t-title">跑骨架完整性 TC-1</div>
-        <div class="t-desc">验证 7 区域 DOM 选择器</div>
-        <div class="t-cmd">node tests/yry-checklist/skel.test.mjs</div>
+        <div class="t-title">运行测试</div>
+        <div class="t-desc">执行 7 组测试套件，验证基线</div>
+        <div class="t-cmd">node tests/run.mjs</div>
       </div>
-      <div class="task-card" onclick="copyText('curl -I http://localhost:8000/cdn/shared.css')">
+      <div class="task-card" onclick="copyText('node skills/rui/help.mjs')">
         <span class="t-diff easy">EASY</span>
-        <span class="t-icon">�</span>
-        <div class="t-title">验证 CDN 200</div>
-        <div class="t-desc">检查 shared.css HTTP 状态</div>
-        <div class="t-cmd">curl -I http://localhost:8000/cdn/shared.css</div>
+        <span class="t-icon">📖</span>
+        <div class="t-title">查看帮助</div>
+        <div class="t-desc">列出 8 条可用命令 + 管线一览</div>
+        <div class="t-cmd">node skills/rui/help.mjs</div>
       </div>
-      <div class="task-card" onclick="copyText('grep -rn &quot;{{&quot; docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/*.html')">
+      <div class="task-card" onclick="copyText('ls .claude/ && ls .claude/commands/')">
+        <span class="t-diff easy">EASY</span>
+        <span class="t-icon">⚙️</span>
+        <div class="t-title">检查配置</div>
+        <div class="t-desc">验证 .claude/ 配置目录结构</div>
+        <div class="t-cmd">ls .claude/ &amp;&amp; ls .claude/commands/</div>
+      </div>
+      <div class="task-card" onclick="copyText('git checkout -b feat/<your-task>')">
+        <span class="t-diff medium">MED</span>
+        <span class="t-icon">🌿</span>
+        <div class="t-title">创建分支</div>
+        <div class="t-desc">按 Gate 0 规约创建特性分支</div>
+        <div class="t-cmd">git checkout -b feat/&lt;task&gt;</div>
+      </div>
+      <div class="task-card" onclick="copyText('grep -rn 术语 README.md')">
         <span class="t-diff easy">EASY</span>
         <span class="t-icon">🔍</span>
-        <div class="t-title">检查 Token 残留</div>
-        <div class="t-desc">grep {{ 找出未替换占位符</div>
-        <div class="t-cmd">grep -rn "{{" docs/.../场景-1-*.html</div>
-      </div>
-      <div class="task-card" onclick="copyText('node tests/yry-checklist/css-vars.test.mjs')">
-        <span class="t-diff medium">MED</span>
-        <span class="t-icon">�</span>
-        <div class="t-title">跑 CSS 变量覆盖 TC-2</div>
-        <div class="t-desc">验证 14 个 --yry-* 变量可解析</div>
-        <div class="t-cmd">node tests/yry-checklist/css-vars.test.mjs</div>
-      </div>
-      <div class="task-card" onclick="copyText('grep -n &quot;@layer\\|@media\\|--yry-&quot; cdn/yry-checklist.css')">
-        <span class="t-diff easy">EASY</span>
-        <span class="t-icon">�</span>
-        <div class="t-title">查看 @layer 优先级</div>
-        <div class="t-desc">检查 5 层 @layer 显式声明</div>
-        <div class="t-cmd">grep -n "@layer\|@media\|--yry-" cdn/yry-checklist.css</div>
+        <div class="t-title">检索术语</div>
+        <div class="t-desc">在领域语言段查找关键术语</div>
+        <div class="t-cmd">grep -rn "术语" README.md</div>
       </div>
     </div>
   </div>
@@ -463,38 +463,50 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <!-- ── 学习路径 ──────────────────────────────────────────────────────── -->
 <div class="panel" id="panelLearn">
   <div class="card">
-    <h2>🗺️ 模板架构 5 步验收路径 <span class="h2-tag">建议严格按序</span></h2>
-    <p style="margin-bottom:14px">每步约 2 分钟，全程 ~10 分钟。每步有明确的入口文件、测试用例和可验证的完成标志，可中断可恢复。</p>
+    <h2>🗺️ 七步上手路径 <span class="h2-tag">建议严格按序</span></h2>
+    <p style="margin-bottom:14px">每步约 4 分钟，全程 ~30 分钟。每步有明确的入口文档和可验证的完成标志，可中断可恢复。</p>
     <div class="timeline">
       <div class="t-step">
-        <div class="step-title"><span class="step-num">STEP 1 · 2 min</span> TC-1 骨架完整性</div>
-        <div class="step-desc">打开 <code>计划清单.html</code>，验证 7 区域（breadcrumb / scene-nav / cross-nav / head / stats / tabs / footer）选择器均存在。运行 <code>node tests/yry-checklist/skel.test.mjs</code> 应输出 7/7 通过。</div>
-        <div class="step-action">→ 骨架 7 区域 DOM 选择器断言</div>
-        <div class="step-time">✅ 完成标志：7 区域选择器全部命中 · 0 失败</div>
+        <div class="step-title"><span class="step-num">STEP 1 · 4 min</span> 阅读项目入口</div>
+        <div class="step-desc">打开 <code>CLAUDE.md</code>，理解项目画像、四大铁律、领域语言指引。知道"项目是什么"和"不可妥协什么"。</div>
+        <div class="step-action">→ 阅读项目级指令文档</div>
+        <div class="step-time">✅ 完成标志：能用三句话向他人介绍本项目</div>
       </div>
       <div class="t-step s2">
-        <div class="step-title"><span class="step-num">STEP 2 · 2 min</span> TC-2 CSS 变量覆盖</div>
-        <div class="step-desc">阅读 <code>cdn/theme.css</code> + <code>cdn/yry-checklist.css</code>。理解 14 个 <code>--yry-*</code> 变量（4 surface / 2 brand / 5 semantic / 3 text）在 <code>:root</code> 定义，在 yry-checklist.css 通过 alias 桥接。</div>
-        <div class="step-action">→ 14 个变量 + 6 大组件类 + 5 层 @layer 断言</div>
-        <div class="step-time">✅ 完成标志：DevTools 中 14 变量全部可解析 · 14/14 通过</div>
+        <div class="step-title"><span class="step-num">STEP 2 · 5 min</span> 了解系统全景</div>
+        <div class="step-desc">阅读 <code>README.md</code>，掌握六能力 · 八角色 · 管线十一阶段。理解"系统由什么组成"和"它们如何协作"。</div>
+        <div class="step-action">→ 重点看 20 术语表和架构示意图</div>
+        <div class="step-time">✅ 完成标志：能解释 6 能力 / 8 角色 / 11 阶段各自含义</div>
       </div>
       <div class="t-step s3">
-        <div class="step-title"><span class="step-num">STEP 3 · 2 min</span> TC-3 CDN 加载链</div>
-        <div class="step-desc">检查 <code>&lt;head&gt;</code> 中 link 顺序：<code>shared.css → theme.css → yry-checklist.css</code>，最后加载 <code>shared.js</code>。在 DevTools Network 面板确认 4 资源均 HTTP 200，0 个 404。</div>
-        <div class="step-action">→ 4 资源 200 OK · 加载顺序正确 · 无 FOUC</div>
-        <div class="step-time">✅ 完成标志：Network 面板 4/4 资源 200 · 顺序正确</div>
+        <div class="step-title"><span class="step-num">STEP 3 · 4 min</span> 学习角色拓扑</div>
+        <div class="step-desc">打开 <code>agents/AGENT.md</code>，理解 PM/Planner/Architect/Coder/Reviewer/Tester/Reporter/Security/Self-Improve 九类角色的边界和交接信号。</div>
+        <div class="step-action">→ 重点看 ADR 段（架构决策记录）</div>
+        <div class="step-time">✅ 完成标志：知道变更触发哪个角色、谁负责审查</div>
       </div>
       <div class="t-step s4">
-        <div class="step-title"><span class="step-num">STEP 4 · 2 min</span> TC-4 Token 无残留</div>
-        <div class="step-desc">检查 <code>计划清单.html</code> 中 20 个 <code>{{ }}</code> 占位符（<code>{{STORY}}</code> / <code>{{SCENE}}</code> / <code>{{VERSION}}</code> 等）是否全部替换。运行 <code>grep -r '{{' docs/...</code> 断言命中为 0。</div>
-        <div class="step-action">→ 20 个 Token 全部替换 · 0 残留</div>
-        <div class="step-time">✅ 完成标志：grep {{ 命中 0 · 20/20 通过</div>
+        <div class="step-title"><span class="step-num">STEP 4 · 5 min</span> 掌握管线纪律</div>
+        <div class="step-desc">精读 <code>rules/code-pipeline.md</code>，理解分支隔离、Gate A/B、逐模块清零的工程纪律。知道"如何不破坏系统"。</div>
+        <div class="step-action">→ 重点看 Gate 判定矩阵和"四不妥协"清单</div>
+        <div class="step-time">✅ 完成标志：能列出 5 个核心门禁和对应的修复路径</div>
       </div>
       <div class="t-step">
-        <div class="step-title"><span class="step-num">STEP 5 · 2 min</span> TC-5 响应式断点</div>
-        <div class="step-desc">在 DevTools 切到 ≤900 / ≤700 / ≤500px 三档断点。KPI 栅格 5 列 → 3 列 → 1 列；阶段环 7 段 4 列；卡片不溢出。@media 媒体查询均在 <code>cdn/yry-checklist.css:340</code> 集中声明。</div>
-        <div class="step-action">→ 3 断点 100% 自适应 · 6 组件重排正确</div>
-        <div class="step-time">✅ 完成标志：3 断点视觉回归全过</div>
+        <div class="step-title"><span class="step-num">STEP 5 · 3 min</span> 熟悉核心技能</div>
+        <div class="step-desc">浏览 <code>skills/rui/SKILL.md</code>，了解编排器如何把需求转化为可执行管线。学习调用 <code>/rui</code> 命令族。</div>
+        <div class="step-action">→ 跑一遍 node skills/rui/help.mjs 验证帮助输出</div>
+        <div class="step-time">✅ 完成标志：能说出 8 条命令的用途</div>
+      </div>
+      <div class="t-step s2">
+        <div class="step-title"><span class="step-num">STEP 6 · 6 min</span> 运行初始化 + 测试基线</div>
+        <div class="step-desc">执行 <code>node tests/run.mjs</code>，确认 7 组测试全部通过。基线即建立——后续变更都要保证不退化。</div>
+        <div class="step-action">→ 若失败：检查 .claude/ 目录、Node 版本、依赖完整性</div>
+        <div class="step-time">✅ 完成标志：测试输出 PASS/7 套件 · 0 失败</div>
+      </div>
+      <div class="t-step s3">
+        <div class="step-title"><span class="step-num">STEP 7 · 8 min</span> 完成首个 PR</div>
+        <div class="step-desc">从 <code>feat/&lt;task&gt;</code> 分支开始 → 编写/修改代码 → 本地测试 → 文档同步 → 企微通知 → 合并。完整跑通一次"小变更 + 全管线"。</div>
+        <div class="step-action">→ 推荐任务：修正一个 typo、新增一条测试用例</div>
+        <div class="step-time">✅ 完成标志：PR 通过 Gate A/B + 同步 + 通知全部触发</div>
       </div>
     </div>
   </div>
@@ -502,41 +514,41 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
   <div class="card">
     <h2>📚 阅读顺序推荐 <span class="h2-tag">按依赖深度</span></h2>
     <div class="dep-graph">
-      <span class="dep-node root" onclick="viewSource('cdn/shared.css')">shared.css</span>
+      <span class="dep-node root" onclick="viewSource('CLAUDE.md')">CLAUDE.md</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('cdn/theme.css')">theme.css</span>
+      <span class="dep-node" onclick="viewSource('README.md')">README.md</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('cdn/yry-checklist.css')">yry-checklist.css</span>
+      <span class="dep-node" onclick="viewSource('agents/AGENT.md')">agents/AGENT.md</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('计划清单.html')">计划清单.html</span>
+      <span class="dep-node" onclick="viewSource('rules/code-pipeline.md')">rules/code-pipeline.md</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node leaf" onclick="viewSource('cdn/shared.js')">shared.js</span>
+      <span class="dep-node leaf" onclick="viewSource('skills/rui/SKILL.md')">skills/rui/SKILL.md</span>
     </div>
-    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">共享样式 → 主题令牌 → 组件样式 → 模板主文件 → 命令面板 JS（点击节点可直接查看）</p>
+    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">基础信念 → 系统全景 → 角色拓扑 → 管线纪律 → 核心技能（点击节点可直接查看）</p>
   </div>
 
   <div class="card">
-    <h2>💡 模板架构常见误区 <span class="h2-tag">避坑指南</span></h2>
+    <h2>💡 新人常见误区 <span class="h2-tag">避坑指南</span></h2>
     <div class="tip-list">
       <div class="tip warn">
         <span class="tip-icon">⚠️</span>
         <div class="tip-body">
-          <div class="tip-title">不要打乱 head 中 link 顺序</div>
-          <div class="tip-desc">yry-checklist.css 必须在 theme.css 之后加载，否则 <code>--yry-*</code> 变量在 alias 时尚未定义，整个页面颜色变黑。CDN 顺序：shared → theme → yry-checklist → shared.js。</div>
+          <div class="tip-title">不要直接读代码，先读规约</div>
+          <div class="tip-desc">新人常见错误是直接打开 .mjs 文件"看实现"，但本系统的核心是规约驱动的——先读 SKILL.md / AGENT.md / rules/*.md 理解"为什么这样设计"，再看代码才能事半功倍。</div>
         </div>
       </div>
       <div class="tip danger">
         <span class="tip-icon">🚫</span>
         <div class="tip-body">
-          <div class="tip-title">不要把 <code>{{CDN_DEPTH}}</code> 写成硬编码 <code>../</code></div>
-          <div class="tip-desc">场景目录深度变化时，硬编码路径立即 404。让模板引擎按 <code>__dirname.split('/').length</code> 动态计算（{{CDN_DEPTH}} → <code>../../../../</code>）。</div>
+          <div class="tip-title">不要跳过 Gate A 直接进 Gate B</div>
+          <div class="tip-desc">Gate A（设计/测试）未通过就提交 Gate B（实现/验证）会触发"管线跳跃"阻断，必须先有"设计可验证 + 测试覆盖断言"，再写实现。</div>
         </div>
       </div>
       <div class="tip success">
         <span class="tip-icon">✅</span>
         <div class="tip-body">
-          <div class="tip-title">善用 @layer 显式优先级</div>
-          <div class="tip-desc">yry-checklist.css 显式声明 5 层 @layer：reset → base → components → utilities → overrides。组件类在 components 层定义，utilities 层可被覆盖。新增组件时严格落层。</div>
+          <div class="tip-title">利用故事面板追踪进度</div>
+          <div class="tip-desc">每个变更都有对应的故事卡片（位于 <code>docs/故事任务面板/</code>），开发过程中应同步更新状态、留痕决策、附上测试报告——这是"可追溯"的基础。</div>
         </div>
       </div>
     </div>
@@ -546,145 +558,145 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <!-- ── 调试任务 ──────────────────────────────────────────────────────── -->
 <div class="panel" id="panelTasks">
   <div class="card">
-    <h2>🛠️ 模板架构调试任务 <span class="h2-tag">场景化命令 · 点击复制</span></h2>
-    <p style="margin-bottom:12px">下列任务覆盖模板架构 80% 的日常操作。每个卡片包含命令、说明、难度标识，点击卡片即可复制命令。</p>
+    <h2>🛠️ 常见调试任务 <span class="h2-tag">场景化命令 · 点击复制</span></h2>
+    <p style="margin-bottom:12px">下列任务覆盖新人 80% 的日常操作。每个卡片包含命令、说明、难度标识，点击卡片即可复制命令。</p>
     <div class="task-grid">
-      <div class="task-card" onclick="copyText('find cdn/ -name &quot;*.css&quot; -o -name &quot;*.js&quot;')">
+      <div class="task-card" onclick="copyText('find . -name &quot;*.md&quot; -path &quot;*/skills/*&quot;')">
         <span class="t-diff easy">EASY</span>
         <span class="t-icon">🔍</span>
-        <div class="t-title">定位 CDN 资源</div>
-        <div class="t-desc">在 cdn/ 目录快速列出所有 CSS/JS</div>
-        <div class="t-cmd">find cdn/ -name "*.css" -o -name "*.js"</div>
+        <div class="t-title">定位某个模块</div>
+        <div class="t-desc">在 33 份源文件中快速定位目标文件</div>
+        <div class="t-cmd">find . -name "*.md" -path "*/skills/*"</div>
       </div>
-      <div class="task-card" onclick="copyText('node tests/yry-checklist/skel.test.mjs')">
+      <div class="task-card" onclick="copyText('node tests/run.mjs --suite <name>')">
         <span class="t-diff easy">EASY</span>
         <span class="t-icon">🧪</span>
-        <div class="t-title">跑 TC-1 骨架完整性</div>
-        <div class="t-desc">验证 7 区域 DOM 选择器</div>
-        <div class="t-cmd">node tests/yry-checklist/skel.test.mjs</div>
+        <div class="t-title">运行单测</div>
+        <div class="t-desc">执行单个测试套件，快速验证</div>
+        <div class="t-cmd">node tests/run.mjs --suite &lt;name&gt;</div>
       </div>
-      <div class="task-card" onclick="copyText('git checkout -b feat/<token-or-css-task>')">
+      <div class="task-card" onclick="copyText('git checkout -b feat/<task-name>')">
         <span class="t-diff medium">MED</span>
         <span class="t-icon">🌿</span>
         <div class="t-title">创建特性分支</div>
-        <div class="t-desc">为模板架构变更开新分支</div>
-        <div class="t-cmd">git checkout -b feat/&lt;token-or-css-task&gt;</div>
+        <div class="t-desc">按 Gate 0 规约创建隔离分支</div>
+        <div class="t-cmd">git checkout -b feat/&lt;task&gt;</div>
       </div>
-      <div class="task-card" onclick="copyText('cd docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/')">
+      <div class="task-card" onclick="copyText('cd docs/故事任务面板/<story>')">
         <span class="t-diff medium">MED</span>
         <span class="t-icon">📝</span>
-        <div class="t-title">进入场景 1 目录</div>
-        <div class="t-desc">定位到模板架构的场景目录</div>
-        <div class="t-cmd">cd docs/.../场景-1-模板架构与CSS设计系统/</div>
+        <div class="t-title">进入故事面板</div>
+        <div class="t-desc">定位到当前任务的故事卡片目录</div>
+        <div class="t-cmd">cd docs/故事任务面板/&lt;story&gt;</div>
       </div>
-      <div class="task-card" onclick="copyText('node lib/template-engine/render.mjs')">
+      <div class="task-card" onclick="copyText('node skills/rui-批量生成与自循环机制/sync.mjs')">
         <span class="t-diff medium">MED</span>
         <span class="t-icon">🔗</span>
-        <div class="t-title">模板引擎渲染</div>
-        <div class="t-desc">将 {{STORY}} {{SCENE}} 等 Token 替换为实际值</div>
-        <div class="t-cmd">node lib/template-engine/render.mjs</div>
+        <div class="t-title">同步到 .claude/</div>
+        <div class="t-desc">本地配置同步到 Claude 环境</div>
+        <div class="t-cmd">node skills/rui-批量生成与自循环机制/sync.mjs</div>
       </div>
-      <div class="task-card" onclick="copyText('grep -r &quot;{{&quot; cdn/ docs/ --include=&quot;*.html&quot; --include=&quot;*.css&quot;')">
+      <div class="task-card" onclick="copyText('node tests/run.mjs --verbose')">
         <span class="t-diff hard">HARD</span>
         <span class="t-icon">🐛</span>
-        <div class="t-title">定位 Token 残留</div>
-        <div class="t-desc">全文 grep 找出未替换的 {{ }} 占位符</div>
-        <div class="t-cmd">grep -r "{{" cdn/ docs/ --include="*.html"</div>
+        <div class="t-title">定位门禁阻断</div>
+        <div class="t-desc">详细输出分析 Gate A/B 阻断原因</div>
+        <div class="t-cmd">node tests/run.mjs --verbose</div>
       </div>
-      <div class="task-card" onclick="copyText('cat docs/.../场景-1-*.html | wc -l')">
+      <div class="task-card" onclick="copyText('node skills/rui-import/import.mjs --graph')">
         <span class="t-diff hard">HARD</span>
         <span class="t-icon">📊</span>
-        <div class="t-title">统计模板行数</div>
-        <div class="t-desc">检查模板主文件行数（应 ≤ 480）</div>
-        <div class="t-cmd">cat docs/.../场景-1-*.html | wc -l</div>
+        <div class="t-title">生成知识图谱</div>
+        <div class="t-desc">从源码生成模块依赖图</div>
+        <div class="t-cmd">node skills/rui-import/import.mjs</div>
       </div>
-      <div class="task-card" onclick="copyText('curl -I http://localhost:8000/cdn/shared.css')">
+      <div class="task-card" onclick="copyText('node skills/rui-bot/notify.mjs --test')">
         <span class="t-diff easy">EASY</span>
         <span class="t-icon">📨</span>
-        <div class="t-title">验证 CDN 200</div>
-        <div class="t-desc">本地起 server 后检查 CDN 资源 200</div>
-        <div class="t-cmd">curl -I http://localhost:8000/cdn/shared.css</div>
+        <div class="t-title">测试企微通知</div>
+        <div class="t-desc">验证 Webhook 推送连通性</div>
+        <div class="t-cmd">node skills/rui-bot/notify.mjs --test</div>
       </div>
-      <div class="task-card" onclick="copyText('chromium --headless --window-size=320,800 --screenshot=out.png docs/.../计划清单.html')">
+      <div class="task-card" onclick="copyText('node skills/rui-trends/fetch.mjs')">
         <span class="t-diff medium">MED</span>
         <span class="t-icon">📈</span>
-        <div class="t-title">响应式视觉回归</div>
-        <div class="t-desc">用 headless chrome 截 320/700/900 三档</div>
-        <div class="t-cmd">chromium --headless --window-size=320,800</div>
+        <div class="t-title">拉取技术趋势</div>
+        <div class="t-desc">从 GitHub Trending 发现新依赖</div>
+        <div class="t-cmd">node skills/rui-trends/fetch.mjs</div>
       </div>
-      <div class="task-card" onclick="copyText('node tests/yry-checklist/css-vars.test.mjs --suite=vars')">
+      <div class="task-card" onclick="copyText('node skills/rui-npm/audit.mjs')">
         <span class="t-diff medium">MED</span>
         <span class="t-icon">🔒</span>
-        <div class="t-title">跑 CSS 变量子集</div>
-        <div class="t-desc">仅验证 14 个 --yry-* 变量可解析</div>
-        <div class="t-cmd">node tests/.../css-vars.test.mjs --suite=vars</div>
+        <div class="t-title">npm 安全审计</div>
+        <div class="t-desc">检查依赖已知漏洞</div>
+        <div class="t-cmd">node skills/rui-npm/audit.mjs</div>
       </div>
-      <div class="task-card" onclick="copyText('node tests/yry-checklist/token.test.mjs --strict')">
+      <div class="task-card" onclick="copyText('node skills/rui-story/status.mjs')">
         <span class="t-diff easy">EASY</span>
         <span class="t-icon">📖</span>
-        <div class="t-title">严格 Token 校验</div>
-        <div class="t-desc">Token 漏替换直接抛 ConfigurationError</div>
-        <div class="t-cmd">node tests/.../token.test.mjs --strict</div>
+        <div class="t-title">查看故事状态</div>
+        <div class="t-desc">列出所有故事的当前状态</div>
+        <div class="t-cmd">node skills/rui-story/status.mjs</div>
       </div>
-      <div class="task-card" onclick="copyText('cat cdn/yry-checklist.css | grep -E &quot;@media|max-width&quot; | head -10')">
+      <div class="task-card" onclick="copyText('node tests/run.mjs --coverage')">
         <span class="t-diff hard">HARD</span>
         <span class="t-icon">🎯</span>
-        <div class="t-title">检查断点声明</div>
-        <div class="t-desc">列出所有 @media 媒体查询</div>
-        <div class="t-cmd">grep -E "@media\|max-width" cdn/yry-checklist.css</div>
+        <div class="t-title">覆盖率分析</div>
+        <div class="t-desc">生成测试覆盖率报告</div>
+        <div class="t-cmd">node tests/run.mjs --coverage</div>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <h2>🐞 模板架构排错速查 <span class="h2-tag">高频问题</span></h2>
+    <h2>🐞 排错速查 <span class="h2-tag">高频问题</span></h2>
     <div class="tip-list">
       <div class="tip">
         <span class="tip-icon">🔧</span>
         <div class="tip-body">
-          <div class="tip-title">页面打开后无样式（FOUC）</div>
-          <div class="tip-desc">症状：HTML 裸奔 · 控制台 404。CDN 顺序错位或路径错。检查项：</div>
-          <div class="tip-code">curl -I ../../../../cdn/shared.css</div>
+          <div class="tip-title">测试运行时缺少模块</div>
+          <div class="tip-desc">症状：<code>Cannot find module 'xxx'</code>。修复：</div>
+          <div class="tip-code">npm install &amp;&amp; node tests/run.mjs</div>
         </div>
       </div>
       <div class="tip warn">
         <span class="tip-icon">⏱</span>
         <div class="tip-body">
-          <div class="tip-title">--yry-* 变量未定义导致颜色变黑</div>
-          <div class="tip-desc">症状：DevTools Computed 中 <code>--yry-bg</code> 值为空。yry-checklist.css 加载在 theme.css 之前。修复：</div>
-          <div class="tip-code">mv &lt;head&gt; 中两个 link 标签的顺序</div>
+          <div class="tip-title">Node 版本不匹配</div>
+          <div class="tip-desc">症状：<code>SyntaxError: Unexpected token</code> 或 ESM 加载失败。本项目要求 Node ≥18。</div>
+          <div class="tip-code">node --version &amp;&amp; nvm use 18</div>
         </div>
       </div>
       <div class="tip danger">
         <span class="tip-icon">🔒</span>
         <div class="tip-body">
-          <div class="tip-title">{{CDN_DEPTH}} 漏替换 · 链接全 404</div>
-          <div class="tip-desc">症状：所有 CSS/JS 链接变成 <code>{{CDN_DEPTH}}/cdn/xxx</code>。模板渲染器未跑。</div>
-          <div class="tip-code">node lib/template-engine/render.mjs --strict</div>
+          <div class="tip-title">企微通知未触发</div>
+          <div class="tip-desc">症状：<code>WECHAT_WEBHOOK</code> 环境变量缺失。检查项：</div>
+          <div class="tip-code">echo $WECHAT_WEBHOOK &amp;&amp; ls .env*</div>
         </div>
       </div>
       <div class="tip success">
         <span class="tip-icon">🧭</span>
         <div class="tip-body">
-          <div class="tip-title">响应式断点不生效</div>
-          <div class="tip-desc">症状：viewport 缩到 500px 卡片仍溢出。@media 查询缺失或断点值错。查看：</div>
-          <div class="tip-code">grep -n "@media" cdn/yry-checklist.css</div>
+          <div class="tip-title">不确定该改哪个文件</div>
+          <div class="tip-desc">使用知识图谱反向查询：先看"我要改的功能属于哪个能力" → 再看"该能力由哪个模块实现"。</div>
+          <div class="tip-code">open 知识图谱.html</div>
         </div>
       </div>
       <div class="tip">
         <span class="tip-icon">📐</span>
         <div class="tip-body">
-          <div class="tip-title">@layer 顺序被破坏 · 字号回退</div>
-          <div class="tip-desc">症状：.kpi-card 字号变 16px。有人把 components 层放到了 reset 之前。修复：</div>
-          <div class="tip-code">cat cdn/yry-checklist.css | head -5</div>
+          <div class="tip-title">架构图渲染异常</div>
+          <div class="tip-desc">症状：Mermaid 图不显示。本系统使用暗色主题，详见 <code>rules/mermaid-theme.md</code>。</div>
+          <div class="tip-code">cat rules/mermaid-theme.md</div>
         </div>
       </div>
       <div class="tip warn">
         <span class="tip-icon">🔄</span>
         <div class="tip-body">
-          <div class="tip-title">修改 yry-checklist.css 后浏览器无变化</div>
-          <div class="tip-desc">症状：明明改过了，但浏览器还显示旧样式。可能是 HTTP 缓存。</div>
-          <div class="tip-code">Ctrl+Shift+R 强刷 / 或加 ?v=2 后缀</div>
+          <div class="tip-title">修改后测试仍报旧错</div>
+          <div class="tip-desc">症状：明明改过了，但测试还是报旧的错误。可能是缓存未刷新。</div>
+          <div class="tip-code">rm -rf node_modules/.cache &amp;&amp; node tests/run.mjs</div>
         </div>
       </div>
     </div>
@@ -694,37 +706,39 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <!-- ── 模块拓扑 ──────────────────────────────────────────────────────── -->
 <div class="panel" id="panelDeps">
   <div class="card">
-    <h2>🧭 模板架构加载拓扑 <span class="h2-tag">点击节点可查看源码</span></h2>
+    <h2>🧭 新人上手路径 <span class="h2-tag">点击节点可查看源码</span></h2>
     <div class="dep-graph">
-      <span class="dep-node root" onclick="viewSource('cdn/shared.css')">shared.css</span>
+      <span class="dep-node root" onclick="viewSource('CLAUDE.md')">CLAUDE.md</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('cdn/theme.css')">theme.css</span>
+      <span class="dep-node" onclick="viewSource('README.md')">README.md</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('cdn/yry-checklist.css')">yry-checklist.css</span>
+      <span class="dep-node" onclick="viewSource('agents/AGENT.md')">agents/AGENT.md</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node leaf" onclick="viewSource('计划清单.html')">计划清单.html</span>
+      <span class="dep-node" onclick="viewSource('rules/code-pipeline.md')">rules/code-pipeline.md</span>
+      <span class="dep-arrow">→</span>
+      <span class="dep-node leaf" onclick="viewSource('skills/rui/SKILL.md')">skills/rui/SKILL.md</span>
     </div>
-    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">基础样式 → 主题令牌 → 组件样式 → 模板主文件</p>
+    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">基础信念 → 系统全景 → 角色拓扑 → 管线纪律 → 核心技能</p>
   </div>
 
   <div class="card">
     <h2>🔑 关键入口文件 <span class="h2-tag">4 份必读</span></h2>
     <ul class="checklist">
-      <li><span class="chk">★</span> <code>cdn/shared.css</code> — 共享样式 · Reset · Animations · Breadcrumb · Cross-Nav</li>
-      <li><span class="chk">★</span> <code>cdn/theme.css</code> — Category B 主题令牌 · 14 个 --yry-* 变量</li>
-      <li><span class="chk">★</span> <code>cdn/yry-checklist.css</code> — 6 大组件类 · 5 层 @layer · 3 断点响应式</li>
-      <li><span class="chk">★</span> <code>计划清单.html</code> — 模板主文件 · 7 区域骨架 · 20 Token 占位符</li>
+      <li><span class="chk">★</span> <code>CLAUDE.md</code> — 项目指令 · 四大铁律 · 不可妥协底线</li>
+      <li><span class="chk">★</span> <code>README.md</code> — 系统全景图 · 管线架构 · 20 术语</li>
+      <li><span class="chk">★</span> <code>agents/AGENT.md</code> — 角色拓扑 · 行为纪律 · ADR</li>
+      <li><span class="chk">★</span> <code>rules/code-pipeline.md</code> — 分支隔离 · Gate A/B · 逐模块清零</li>
     </ul>
   </div>
 
   <div class="card">
     <h2>🔄 模块依赖矩阵 <span class="h2-tag">谁依赖谁</span></h2>
-    <p style="margin-bottom:12px">以下矩阵揭示模块间的主要引用关系，开发者可据此理解"改动一个文件可能影响哪些下游"：</p>
+    <p style="margin-bottom:12px">以下矩阵揭示模块间的主要引用关系，新人可据此理解"改动一个文件可能影响哪些下游"：</p>
     <ul class="checklist">
-      <li><span class="chk">→</span> <code>计划清单.html</code> → 引用 <code>shared.css</code> · <code>theme.css</code> · <code>yry-checklist.css</code> · <code>shared.js</code>（4 个 head link）</li>
-      <li><span class="chk">→</span> <code>cdn/yry-checklist.css</code> → 引用 <code>cdn/theme.css</code> 的 <code>--yry-*</code> 变量 · 通过 alias 桥接为 <code>--bg / --accent / --text</code></li>
-      <li><span class="chk">→</span> <code>cdn/shared.js</code> → 提供 ⌘K 命令面板 · 工具函数 · 跨页导航（不影响样式）</li>
-      <li><span class="chk">→</span> <code>tests/yry-checklist/*</code> → 调用 <code>计划清单.html</code> 与 3 个 CSS 进行端到端验证</li>
+      <li><span class="chk">→</span> <code>skills/rui/*</code> → 依赖 <code>lib/*.mjs</code>（共享库） · <code>agents/*.md</code>（角色定义）</li>
+      <li><span class="chk">→</span> <code>agents/*.md</code> → 引用 <code>rules/*.md</code>（纪律约束）</li>
+      <li><span class="chk">→</span> <code>rules/*.md</code> → 引用 <code>agents/AGENT.md</code>（角色职责）</li>
+      <li><span class="chk">→</span> <code>tests/run.mjs</code> → 调用 <code>skills/rui/*</code>（端到端验证）</li>
     </ul>
   </div>
 </div>
@@ -732,33 +746,33 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <!-- ── 模块清单 ──────────────────────────────────────────────────────── -->
 <div class="panel" id="panelSpec">
   <div class="card">
-    <h2>📋 模块职责清单 <span class="h2-tag">4 大类 12 文件</span></h2>
+    <h2>📋 模块职责清单 <span class="h2-tag">4 大类 33 文件</span></h2>
     <ul class="checklist">
-      <li><span class="chk">🎨</span> <b>CDN 资源</b> — 4 份样式/脚本 · 共享基础 · 主题令牌 · 组件样式 · 命令面板</li>
-      <li><span class="chk">📋</span> <b>模板主文件</b> — 1 份计划清单.html · 7 区域骨架 · 20 Token 占位符</li>
-      <li><span class="chk">🧪</span> <b>测试套件</b> — 3 份 .test.mjs · TC-1/2/3/4 4 套件 · 45 断言全绿</li>
-      <li><span class="chk">�️</span> <b>设计 Token</b> — 14 CSS 变量 · 20 占位符 · 5 层 @layer · 3 断点</li>
+      <li><span class="chk">⚙️</span> <b>skills/</b> — 7 技能模块 · 用户入口 · 编排管线</li>
+      <li><span class="chk">🤖</span> <b>agents/</b> — 9 Agent 角色 · 协作拓扑 · 行为纪律</li>
+      <li><span class="chk">📜</span> <b>rules/</b> — 10 治理规则 · 管线纪律 · 安全护栏</li>
+      <li><span class="chk">📦</span> <b>lib/</b> — 4 共享库 · TTY · FS · 常量 · help 布局</li>
     </ul>
-    <p style="margin-top:12px;font-size:.76rem;color:var(--text3)">👉 切换到 <b>文件清单</b> 标签查看完整的 8 份文件详情与描述。</p>
+    <p style="margin-top:12px;font-size:.76rem;color:var(--text3)">👉 切换到 <b>文件清单</b> 标签查看完整的 33 份文件详情与描述。</p>
   </div>
 
   <div class="card">
-    <h2>🎓 模板架构关键术语 <span class="h2-tag">术语速查</span></h2>
+    <h2>🎓 关键术语对照 <span class="h2-tag">新人避坑</span></h2>
     <ul class="checklist">
-      <li><span class="chk">→</span> <b>CDN 加载链</b> — head 中 link 顺序：shared → theme → yry-checklist → shared.js（共 4 资源）</li>
-      <li><span class="chk">→</span> <b>@layer 优先级</b> — 显式声明 5 层：reset → base → components → utilities → overrides</li>
-      <li><span class="chk">→</span> <b>Token 替换</b> — 模板引擎将 <code>{{STORY}}</code> / <code>{{SCENE}}</code> / <code>{{VERSION}}</code> 等 20 占位符替换为实际值</li>
-      <li><span class="chk">→</span> <b>CDN_DEPTH</b> — 动态计算场景目录到 cdn/ 的相对深度（<code>../../../../</code>）</li>
-      <li><span class="chk">→</span> <b>--yry-* 变量</b> — Category B 主题令牌 · 14 个 · 4 surface + 2 brand + 5 semantic + 3 text</li>
-      <li><span class="chk">→</span> <b>alias 桥接</b> — yry-checklist.css 通过 <code>--bg: var(--yry-bg)</code> 等别名引用主题变量</li>
-      <li><span class="chk">→</span> <b>6 大组件类</b> — .step / .phase-strip / .scorecard / .risk-matrix / .gantt / .trend</li>
-      <li><span class="chk">→</span> <b>3 断点响应式</b> — ≤900 / ≤700 / ≤500px · KPI/phase-strip 栅格重排</li>
+      <li><span class="chk">→</span> <b>SDLC</b> — Software Development Life Cycle，软件开发生命周期（本系统主线）</li>
+      <li><span class="chk">→</span> <b>Gate A / Gate B</b> — 管线两阶段关卡：设计测试关 / 实现验证关</li>
+      <li><span class="chk">→</span> <b>ADR</b> — Architecture Decision Record，架构决策记录</li>
+      <li><span class="chk">→</span> <b>P0 清零</b> — 最高优先级事项必须 100% 处理完才能进入下一阶段</li>
+      <li><span class="chk">→</span> <b>逐模块</b> — 不批量跳进，每次只完整处理一个模块的"设计→实现→验证"</li>
+      <li><span class="chk">→</span> <b>分支隔离</b> — 每个变更独立分支，互不污染，便于回滚和审查</li>
+      <li><span class="chk">→</span> <b>门禁矩阵</b> — 定义哪些 Gate 阻断哪些操作 + 修复路径</li>
+      <li><span class="chk">→</span> <b>知识图谱</b> — 模块依赖和领域关系的可视化结构（JSON Schema 表达）</li>
     </ul>
   </div>
 </div>
 
 <div class="footer-note">
-  模板架构与 CSS 设计系统 · 源码中心 · <a href="../../../index.html">文档中心</a> · <a href="index.md">📄 Markdown 源</a> · 12 份核心源文件 · 4 套件 45 断言 · 最后更新 2026-06-13
+  YrY 系统架构 · 场景 1 源码中心 · <a href="../../../index.html">文档中心</a> · <a href="index.md">📄 Markdown 源</a> · 最后更新 2026-06-13
 </div>
 </div>
 
@@ -804,23 +818,45 @@ var activePanel='overview',fileQuery='',filterCatState=null;
 var currentSourcePath=null,currentSourceText=null;
 
 var manifest={"files":[
-  {"name":"shared.css","path":"cdn/shared.css","cat":"skill","lines":520,"size":18800,"desc":"YrY 共享样式 · Reset / Animations / Breadcrumb / Cross-Nav · 必须第一个加载","importance":"must","icon":"🎨"},
-  {"name":"theme.css","path":"cdn/theme.css","cat":"skill","lines":180,"size":7200,"desc":"Category B 主题令牌 · 14 个 --yry-* 变量（4 surface + 2 brand + 5 semantic + 3 text）","importance":"must","icon":"🎨"},
-  {"name":"yry-checklist.css","path":"cdn/yry-checklist.css","cat":"skill","lines":360,"size":12400,"desc":"计划清单组件样式 · 6 大组件类 · 5 层 @layer · 3 断点响应式 · alias 桥接","importance":"must","icon":"🎨"},
-  {"name":"shared.js","path":"cdn/shared.js","cat":"skill","lines":220,"size":8400,"desc":"共享 JS · ⌘K 命令面板 · 工具函数 · 跨页导航（不阻塞样式）","importance":"recommend","icon":"🎨"},
-  {"name":"计划清单.html","path":"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html","cat":"agent","lines":480,"size":45200,"desc":"模板主文件 · 7 区域骨架 · 20 个 {{ }} Token 占位符 · Stage 7 + 演示 + 审查子页","importance":"must","icon":"📋"},
-  {"name":"架构图.html","path":"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/架构图.html","cat":"agent","lines":320,"size":28600,"desc":"模板架构 Mermaid 架构图 · 4 场景关系 + CDN 加载链 + 7 区域映射","importance":"reference","icon":"📋"},
-  {"name":"知识图谱.html","path":"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/知识图谱.html","cat":"agent","lines":280,"size":24100,"desc":"模板架构知识图谱 · 节点/边/概念卡 · 与架构图互补","importance":"reference","icon":"📋"},
-  {"name":"skel.test.mjs","path":"tests/yry-checklist/skel.test.mjs","cat":"rule","lines":140,"size":4400,"desc":"TC-1 骨架完整性 · 7 区域选择器 + DOM 存在性断言","importance":"recommend","icon":"�"},
-  {"name":"css-vars.test.mjs","path":"tests/yry-checklist/css-vars.test.mjs","cat":"rule","lines":120,"size":3800,"desc":"TC-2 CSS 变量覆盖 · 14 个 --yry-* 变量在 :root 可解析","importance":"recommend","icon":"🧪"},
-  {"name":"token.test.mjs","path":"tests/yry-checklist/token.test.mjs","cat":"rule","lines":160,"size":5200,"desc":"TC-4 Token 完整性 · grep 校验 {{ }} 占位符为 0 · 20 项 schema","importance":"reference","icon":"🧪"},
-  {"name":"token.schema.json","path":"tests/yry-checklist/token.schema.json","cat":"lib","lines":80,"size":2400,"desc":"Token JSON Schema · name/type/required/regex · 新增 Token 时 CI 校验","importance":"reference","icon":"�️"},
-  {"name":"yry-cdn-order.json","path":".yry-cdn-order.json","cat":"lib","lines":12,"size":380,"desc":"CDN 加载顺序约束配置 · shared → theme → yry-checklist → shared.js","importance":"reference","icon":"�️"}
+  {"name":"rui/SKILL.md","path":"skills/rui/SKILL.md","cat":"skill","lines":210,"size":11800,"desc":"核心编排器 — 故事驱动的 SDLC 编排，全流程管线","importance":"recommend","icon":"⚙️"},
+  {"name":"rui/formulas.md","path":"skills/rui/formulas.md","cat":"skill","lines":520,"size":28500,"desc":"故事文档公式 — 生成模板与公式定义","importance":"reference","icon":"⚙️"},
+  {"name":"rui/coder.md","path":"skills/rui/coder.md","cat":"skill","lines":120,"size":6200,"desc":"Coder 编码规范 — 实现约束","importance":"reference","icon":"⚙️"},
+  {"name":"rui/ranking.md","path":"skills/rui/ranking.md","cat":"skill","lines":95,"size":4800,"desc":"排序规则 — 提案优先级排序","importance":"reference","icon":"⚙️"},
+  {"name":"rui-story/SKILL.md","path":"skills/rui-story/SKILL.md","cat":"skill","lines":180,"size":9400,"desc":"故事面板管理 — 收集/状态/同步/通知","importance":"reference","icon":"⚙️"},
+  {"name":"rui-批量生成与自循环机制/SKILL.md","path":"skills/rui-批量生成与自循环机制/SKILL.md","cat":"skill","lines":140,"size":7200,"desc":".claude/ 配置管理 — 同步/健康分析","importance":"reference","icon":"⚙️"},
+  {"name":"rui-import/SKILL.md","path":"skills/rui-import/SKILL.md","cat":"skill","lines":100,"size":5100,"desc":"文档同步 — 本地到远程 API","importance":"reference","icon":"⚙️"},
+  {"name":"rui-bot/SKILL.md","path":"skills/rui-bot/SKILL.md","cat":"skill","lines":90,"size":4600,"desc":"企微通知 — Webhook 消息推送","importance":"reference","icon":"⚙️"},
+  {"name":"rui-trends/SKILL.md","path":"skills/rui-trends/SKILL.md","cat":"skill","lines":80,"size":4200,"desc":"技术趋势发现 — GitHub Trending","importance":"reference","icon":"⚙️"},
+  {"name":"rui-npm/SKILL.md","path":"skills/rui-npm/SKILL.md","cat":"skill","lines":110,"size":5600,"desc":"npm 包管理 — 搜索/安装/发布/审计","importance":"reference","icon":"⚙️"},
+  {"name":"AGENT.md","path":"agents/AGENT.md","cat":"agent","lines":140,"size":22000,"desc":"角色拓扑总纲 — 行为纪律/设计原则/ADR","importance":"must","icon":"🤖"},
+  {"name":"pm.md","path":"agents/pm.md","cat":"agent","lines":80,"size":4200,"desc":"产品决策者 — 需求解析/委派子PM","importance":"reference","icon":"🤖"},
+  {"name":"planner.md","path":"agents/planner.md","cat":"agent","lines":75,"size":3900,"desc":"实施规划者 — 步骤拆分/方案评估","importance":"reference","icon":"🤖"},
+  {"name":"architect.md","path":"agents/architect.md","cat":"agent","lines":65,"size":3400,"desc":"系统架构设计者 — ADR/影响分析","importance":"reference","icon":"🤖"},
+  {"name":"coder.md","path":"agents/coder.md","cat":"agent","lines":90,"size":4700,"desc":"代码实现者 — 逐模块/P0清零","importance":"recommend","icon":"🤖"},
+  {"name":"code-reviewer.md","path":"agents/code-reviewer.md","cat":"agent","lines":70,"size":3600,"desc":"代码审查者 — 正确性/简化/复用","importance":"reference","icon":"🤖"},
+  {"name":"tester.md","path":"agents/tester.md","cat":"agent","lines":85,"size":4400,"desc":"质量保障者 — Gate A/B 关卡","importance":"reference","icon":"🤖"},
+  {"name":"reporter.md","path":"agents/reporter.md","cat":"agent","lines":60,"size":3100,"desc":"过程报告者 — 复盘/知识资产","importance":"reference","icon":"🤖"},
+  {"name":"security.md","path":"agents/security.md","cat":"agent","lines":75,"size":3900,"desc":"安全专家 — 威胁建模/约束注入","importance":"reference","icon":"🤖"},
+  {"name":"self-improve.md","path":"agents/self-improve.md","cat":"agent","lines":100,"size":5200,"desc":"自改进引擎 — D0-D7诊断/E1-E4评估","importance":"reference","icon":"🤖"},
+  {"name":"code-pipeline.md","path":"rules/code-pipeline.md","cat":"rule","lines":530,"size":30700,"desc":"管线全流程 — 分支隔离/Gate A/B/逐模块","importance":"must","icon":"📜"},
+  {"name":"delivery-gate.md","path":"rules/delivery-gate.md","cat":"rule","lines":120,"size":7500,"desc":"交付收口 — 三步Hook","importance":"recommend","icon":"📜"},
+  {"name":"architecture-diagram.md","path":"rules/architecture-diagram.md","cat":"rule","lines":170,"size":9700,"desc":"架构图规范 — Mermaid语法/颜色语义","importance":"reference","icon":"📜"},
+  {"name":"plan-execution.md","path":"rules/plan-execution.md","cat":"rule","lines":100,"size":5900,"desc":"计划执行 — 逐步骤验证/P0清零","importance":"reference","icon":"📜"},
+  {"name":"doc-generation.md","path":"rules/doc-generation.md","cat":"rule","lines":340,"size":21500,"desc":"文档生成约束 — 表达优先 图→文→表","importance":"reference","icon":"📜"},
+  {"name":"knowledge-graph.md","path":"rules/knowledge-graph.md","cat":"rule","lines":110,"size":6600,"desc":"知识图谱规范 — JSON Schema","importance":"reference","icon":"📜"},
+  {"name":"mermaid-theme.md","path":"rules/mermaid-theme.md","cat":"rule","lines":40,"size":2100,"desc":"Mermaid 主题 — 暗色标准","importance":"reference","icon":"📜"},
+  {"name":"security-guardrails.md","path":"rules/security-guardrails.md","cat":"rule","lines":150,"size":8900,"desc":"安全护栏 — 四不妥协","importance":"recommend","icon":"📜"},
+  {"name":"rui-批量生成与自循环机制.md","path":"rules/rui-批量生成与自循环机制.md","cat":"rule","lines":110,"size":5700,"desc":"配置管理规则 — .claude/同步策略","importance":"reference","icon":"📜"},
+  {"name":"self-improve.md","path":"rules/self-improve.md","cat":"rule","lines":180,"size":11200,"desc":"自改进闭环 — D0-D7/E1-E4","importance":"reference","icon":"📜"},
+  {"name":"constants.mjs","path":"lib/constants.mjs","cat":"lib","lines":30,"size":800,"desc":"共享常量 — 语义化常量定义","importance":"reference","icon":"📦"},
+  {"name":"fs.mjs","path":"lib/fs.mjs","cat":"lib","lines":50,"size":1400,"desc":"文件系统工具 — 读写/遍历","importance":"reference","icon":"📦"},
+  {"name":"help-layout.mjs","path":"lib/help-layout.mjs","cat":"lib","lines":40,"size":1100,"desc":"Help 布局 — 格式化输出","importance":"reference","icon":"📦"},
+  {"name":"tty.mjs","path":"lib/tty.mjs","cat":"lib","lines":35,"size":900,"desc":"终端工具 — 颜色/样式","importance":"reference","icon":"📦"}
 ]};
 
-var CAT_ICONS={skill:'🎨',agent:'📋',rule:'🧪',lib:'�️'};
-var CAT_LABELS={skill:'CDN 资源',agent:'模板主文件',rule:'测试套件',lib:'设计 Token'};
-var CAT_BADGE={skill:'CDN',agent:'TPL',rule:'TEST',lib:'TOK'};
+var CAT_ICONS={skill:'⚙️',agent:'🤖',rule:'📜',lib:'📦'};
+var CAT_LABELS={skill:'技能 Skills',agent:'Agent 角色',rule:'规则 Rules',lib:'共享库 Lib'};
+var CAT_BADGE={skill:'SKILL',agent:'AGENT',rule:'RULE',lib:'LIB'};
 var IMPORTANCE_BADGES={must:{cls:'must',label:'必读'},recommend:{cls:'recommend',label:'推荐'},reference:{cls:'reference',label:'参考'}};
 var IMPORTANCE_PRIORITY={must:0,recommend:1,reference:2};
 
@@ -838,10 +874,10 @@ function renderStats(){
 
   document.getElementById('statsRow').innerHTML=
     '<div class="stat-card" onclick="filterCat(\'all\')" id="statAll"><div class="val c">'+total+'</div><div class="lbl">📄 文件总数</div></div>'+
-    '<div class="stat-card" onclick="filterCat(\'skill\')" id="statSkill"><div class="val a">'+cc.skill+'</div><div class="lbl">🎨 CDN ('+cl.skill+' 行)</div></div>'+
-    '<div class="stat-card" onclick="filterCat(\'agent\')" id="statAgent"><div class="val p">'+cc.agent+'</div><div class="lbl">📋 模板 ('+cl.agent+' 行)</div></div>'+
-    '<div class="stat-card" onclick="filterCat(\'rule\')" id="statRule"><div class="val g">'+cc.rule+'</div><div class="lbl">🧪 测试 ('+cl.rule+' 行)</div></div>'+
-    '<div class="stat-card" onclick="filterCat(\'lib\')" id="statLib"><div class="val c">'+cc.lib+'</div><div class="lbl">�️ Token ('+cl.lib+' 行)</div></div>';
+    '<div class="stat-card" onclick="filterCat(\'skill\')" id="statSkill"><div class="val a">'+cc.skill+'</div><div class="lbl">⚙️ 技能 ('+cl.skill+' 行)</div></div>'+
+    '<div class="stat-card" onclick="filterCat(\'agent\')" id="statAgent"><div class="val p">'+cc.agent+'</div><div class="lbl">🤖 Agent ('+cl.agent+' 行)</div></div>'+
+    '<div class="stat-card" onclick="filterCat(\'rule\')" id="statRule"><div class="val g">'+cc.rule+'</div><div class="lbl">📜 规则 ('+cl.rule+' 行)</div></div>'+
+    '<div class="stat-card" onclick="filterCat(\'lib\')" id="statLib"><div class="val c">'+cc.lib+'</div><div class="lbl">📦 共享库 ('+cl.lib+' 行)</div></div>';
 
   var ts=totalLines||1;
   var skillCount=files.filter(function(f){return f.cat==='skill'}).length;
@@ -849,10 +885,10 @@ function renderStats(){
   var ruleCount=files.filter(function(f){return f.cat==='rule'}).length;
   var libCount=files.filter(function(f){return f.cat==='lib'}).length;
   document.getElementById('bar').innerHTML=
-    '<div class="seg skill" style="width:'+(cl.skill/ts*100)+'%" data-tip="CDN '+cl.skill+' 行 '+skillCount+' 文件" onclick="filterCat(\'skill\')"></div>'+
-    '<div class="seg agent" style="width:'+(cl.agent/ts*100)+'%" data-tip="模板 '+cl.agent+' 行 '+agentCount+' 文件" onclick="filterCat(\'agent\')"></div>'+
-    '<div class="seg rule" style="width:'+(cl.rule/ts*100)+'%" data-tip="测试 '+cl.rule+' 行 '+ruleCount+' 文件" onclick="filterCat(\'rule\')"></div>'+
-    '<div class="seg lib" style="width:'+(cl.lib/ts*100)+'%" data-tip="Token '+cl.lib+' 行 '+libCount+' 文件" onclick="filterCat(\'lib\')"></div>';
+    '<div class="seg skill" style="width:'+(cl.skill/ts*100)+'%" data-tip="技能 '+cl.skill+' 行 '+skillCount+' 文件" onclick="filterCat(\'skill\')"></div>'+
+    '<div class="seg agent" style="width:'+(cl.agent/ts*100)+'%" data-tip="Agent '+cl.agent+' 行 '+agentCount+' 文件" onclick="filterCat(\'agent\')"></div>'+
+    '<div class="seg rule" style="width:'+(cl.rule/ts*100)+'%" data-tip="规则 '+cl.rule+' 行 '+ruleCount+' 文件" onclick="filterCat(\'rule\')"></div>'+
+    '<div class="seg lib" style="width:'+(cl.lib/ts*100)+'%" data-tip="Lib '+cl.lib+' 行 '+libCount+' 文件" onclick="filterCat(\'lib\')"></div>';
 
   // 概览页统计
   var ovSkill=document.getElementById('ov-skill');if(ovSkill)ovSkill.textContent=cc.skill+' 文件';
@@ -945,10 +981,10 @@ function renderBrowse(){
   var container=document.getElementById('browseContent');
   var html='';
   var dirs=[
-    {path:'cdn/',label:'🎨 CDN 资源',desc:'样式 / 主题令牌 / 组件类 / 命令面板'},
-    {path:'docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/',label:'📋 模板主文件',desc:'计划清单 / 架构图 / 知识图谱 / 测试 / 演示 / 审查'},
-    {path:'tests/yry-checklist/',label:'🧪 测试套件',desc:'TC-1 骨架 / TC-2 CSS 变量 / TC-4 Token · 45 断言'},
-    {path:'tests/fixtures/',label:'�️ 设计 Token',desc:'token.schema.json · yry-cdn-order.json'}
+    {path:'skills/',label:'⚙️ 技能模块',desc:'用户入口与编排管线'},
+    {path:'agents/',label:'🤖 Agent 角色',desc:'协作拓扑与行为纪律'},
+    {path:'rules/',label:'📜 治理规则',desc:'管线纪律与安全护栏'},
+    {path:'lib/',label:'📦 共享库',desc:'基础设施与工具复用'}
   ];
   for(var d=0;d<dirs.length;d++){
     var dir=dirs[d];

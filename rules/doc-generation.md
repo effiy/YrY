@@ -6,10 +6,10 @@ paths:
 
 # doc-generation
 
-> 文档生成的八条强制约束。表达优先：图 → 结构化文本 → 表。编号即顺序；不可提前创建。
+> 文档生成的九条强制约束。表达优先：图 → 结构化文本 → 表。编号即顺序；不可提前创建。
 
 
-[铁律](#iron-law) · [八约束全景](#eight-constraints) · [适用](#scope) · [① 版头齐](#meta-nav) · [② 表达优先](#diagram-first) · [③ 目录清](#dir-clean) · [④ 证据足](#evidence) · [⑤ 产出聚](#output-cohesion) · [⑥ 裁剪准](#precision-cut) · [⑦ 无魔数](#no-magic) · [⑧ 效果证](#proof) · [补充文档](#supplementary) · [策展](#curation) · [例外](#exceptions) · [生效标志](#effectiveness)
+[铁律](#iron-law) · [九约束全景](#eight-constraints) · [适用](#scope) · [① 版头齐](#meta-nav) · [② 表达优先](#diagram-first) · [③ 目录清](#dir-clean) · [④ 证据足](#evidence) · [⑤ 产出聚](#output-cohesion) · [⑥ 裁剪准](#precision-cut) · [⑦ 无魔数](#no-magic) · [⑧ 效果证](#proof) · [⑨ 单源生](#single-source) · [补充文档](#supplementary) · [策展](#curation) · [例外](#exceptions) · [生效标志](#effectiveness)
 
 <a id="iron-law"></a>
 ## 铁律
@@ -27,7 +27,7 @@ NO MAGIC NUMBERS — EVERY NUMERIC LITERAL MUST BE SEMANTICALLY NAMED
 故事文档公式见 [formulas.md](../skills/rui/formulas.md)；目录与数据契约见 [coder.md](../skills/rui/coder.md)。
 
 <a id="eight-constraints"></a>
-## 八约束全景
+## 九约束全景
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {
@@ -71,7 +71,18 @@ flowchart TB
         V3["实施报告 → 可操作验证步骤"]:::c
     end
 
-    C1 --> C2 --> C3 --> C4 --> C5 --> C6 --> C7 --> C8
+    C1 --> C2 --> C3 --> C4 --> C5 --> C6 --> C7 --> C8 --> C9
+
+    subgraph C8["⑧ 效果证"]
+        V1["技术评审 → 效果示意"]:::c
+        V2["实施报告 → 实施截图"]:::c
+        V3["实施报告 → 可操作验证步骤"]:::c
+    end
+    subgraph C9["⑨ 单源生"]
+        S1["HTML 唯一数据源<br/>= 场景 index.md"]:::c
+        S2["HTML 不可脱离 index.md<br/>独立编写或硬编码"]:::c
+        S3["index.md 变更 → HTML 必重生"]:::c
+    end
 
 
 ```
@@ -86,6 +97,7 @@ flowchart TB
 | ⑥ 裁剪准 | 增量更新按 T1/T2/T3 自动裁剪管线 | T1 措辞修正跑完整管线 |
 | ⑦ 无魔数 | 硬编码数值必须语义化：代码用命名常量，文档用语义描述 | `Math.max(2, 28)` / "最近 5 个故事" |
 | ⑧ 效果证 | 技术评审必含效果示意，实施报告必含截图+可操作验证步骤（后端 curl，前端操作路径） | 实施报告只有文字无截图无验证命令 |
+| ⑨ 单源生 | 场景 7 类 HTML 的唯一数据源是对应场景的 `index.md`；HTML 不可独立创作，index.md 变更后必须重生 | 直接写一份「演示.html」文案而不从 index.md 提取 |
 
 <a id="scope"></a>
 ## 适用
@@ -413,6 +425,105 @@ flowchart LR
 |------|---------|---------|
 | 实施报告（后端） | fenced code block (`bash`)，每接口一块 | 完整 curl 命令（含 URL、method、headers、body）、预期响应摘要。不可用 `localhost`，使用可配置的基础 URL 占位符 `${BASE_URL}` |
 | 实施报告（前端） | 编号操作步骤列表 | 起始页面 → 每步操作（点击/输入）→ 预期显示。步骤可被独立复现，不依赖上下文记忆 |
+
+<a id="single-source"></a>
+## ⑨ 单源生
+
+> **场景 7 类 HTML 的唯一数据源 = 对应场景的 `index.md`。** HTML 不可独立创作；`index.md` 变更后必须重生 HTML。
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart LR
+    MD["场景-N-&lt;slug&gt;/<br/>index.md<br/>§0–§4 五章节"]:::src --> EXTRACT["rui-html<br/>extractor.mjs<br/>提取结构化数据"]:::tool
+    EXTRACT --> GEN["generator.mjs<br/>模板渲染"]:::tool
+    GEN --> H1["计划清单.html"]:::out
+    GEN --> H2["架构图.html"]:::out
+    GEN --> H3["知识图谱.html"]:::out
+    GEN --> H4["源码.html"]:::out
+    GEN --> H5["测试面板.html"]:::out
+    GEN --> H6["演示.html"]:::out
+    GEN --> H7["审查.html"]:::out
+
+    classDef src fill:#3d59a1,color:#fff
+    classDef tool fill:#fbbf24,color:#000
+    classDef out fill:#34d399,color:#000
+```
+
+### 核心原则
+
+| # | 规则 | 反例 | 处置 |
+|---|------|------|------|
+| 18 | **唯一数据源** — 场景目录下 7 类 HTML（计划清单/架构图/知识图谱/源码/测试面板/演示/审查）必须从 `index.md` §0–§4 五章节提取生成，不可独立创作 | 直接写一份「演示.html」文案，与 index.md 无对应关系 | 删除 HTML，重跑 `/rui-html <story> --force` |
+| 19 | **不可硬编码场景内容** — HTML 中的文字、表格、mermaid 图必须能在 `index.md` 中找到对应来源；占位符、虚构示例不得写入 HTML | 演示.html 含「此功能由张三在 2024 年开发」等 index.md 之外的内容 | 删除虚构内容，重新生成 |
+| 20 | **章节一一对应** — `index.md` 每一节（§0/§1/§2/§3/§4）映射到特定 HTML 类型：§0→架构图/演示，§1→测试面板，§2→计划清单/源码，§3→测试面板，§4→审查 | 把 §3 测试报告的内容写入 审查.html（应属测试面板） | 按映射表调整模板选择 |
+| 21 | **变更即重生** — `index.md` 任一章节发生内容变更（不限于格式/措辞），对应的 HTML 必须用 `/rui-html <story> --force` 重新生成 | index.md 已更新但 HTML 未变，存在内容漂移 | 重跑生成命令，覆盖旧文件 |
+| 22 | **模板为壳，markdown 为核** — 模板（`skills/rui-html/templates/`）只承载样式、布局、组件；所有场景特异性内容（标题、版本号、模块名、表格数据、mermaid 图）一律来自 `index.md` | 模板里直接写「本场景展示 XX 模块的初始化流程」 | 模板回归为通用壳 |
+| 23 | **不可手改 HTML** — 生成后人工编辑 HTML 文件不被允许（除调试用临时改动并已还原） | 手动修改演示.html 字号/颜色/段落顺序 | 还原修改；如需改样式，改模板而非 HTML |
+
+### 章节—HTML 映射表
+
+| `index.md` 章节 | 主要 HTML 文档 | 次要 HTML 文档 | 数据用途 |
+|----------------|---------------|---------------|---------|
+| §0 技术评审 | 架构图.html · 演示.html | — | mermaid 架构图 · 效果示意 |
+| §1 测试设计 | 测试面板.html | — | TC-N/TC-B 用例表 · Gate A 交接 |
+| §2 实施报告 | 计划清单.html · 源码.html | 演示.html | 步骤清单 · 产物清单 · 架构决策 |
+| §3 测试报告 | 测试面板.html | 审查.html | 套件结果 · 门禁判定 |
+| §4 自改进 | 审查.html | — | D0–D7 诊断 · 改进建议 |
+| 元数据（首行 + 版本行） | 全部 7 份 | — | 标题 · 版本号 · 日期 |
+
+### 反例与处置
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart TD
+    BAD["❌ 违规形态"]:::bad
+    BAD --> B1["HTML 凭空编写<br/>无 index.md 来源"]:::bad
+    BAD --> B2["HTML 含 index.md<br/>不存在的内容"]:::bad
+    BAD --> B3["index.md 更新<br/>HTML 未重生"]:::bad
+    BAD --> B4["模板里硬编码<br/>场景特异性内容"]:::bad
+    B1 & B2 & B3 & B4 --> FIX["重跑 /rui-html &lt;story&gt; --force<br/>或修正模板"]:::fix
+
+    classDef bad fill:#7f1d1d,color:#fff
+    classDef fix fill:#34d399,color:#000
+```
+
+| 违规形态 | 检测方法 | 修复 |
+|---------|---------|------|
+| HTML 内容无 index.md 来源 | 抽取 HTML 文本，grep 不到 `index.md` | 删除 HTML 重生 |
+| HTML 含 index.md 之外的事实断言 | 文本溯源，证据 Level A/B 验证失败 | 删虚构内容重生 |
+| index.md 变更后 HTML 未更新 | 比对 git diff 中 index.md 与 HTML 改动是否同步 | 跑 `--force` 重生 |
+| 模板硬编码场景内容 | 模板路径 `skills/rui-html/templates/` 下 grep 场景专有名词 | 模板改通用壳 |
+
+### 适用范围
+
+| 包含 | 不包含 |
+|------|--------|
+| `docs/故事任务面板/<story>/场景-N-<slug>/*.html` | `docs/故事任务面板/<story>/演示/*.html`（独立演示页，可手写） |
+| 7 类文档：计划清单/架构图/知识图谱/源码/测试面板/演示/审查 | `docs/故事任务面板/<story>/知识图谱.html`（汇总页，从 json 生成） |
+| 模板：`skills/rui-html/templates/cat-a/` 与 `cat-b/` | 模板目录内的示例 HTML（仅作模板参考源） |
+
+### 与其他约束的协同
+
+| 约束 | 协同方式 |
+|------|---------|
+| ④ 证据足 | HTML 中所有断言必须能在 `index.md` 找到 Level A/B 证据 |
+| ⑤ 产出聚 | HTML 在实现/验证阶段由 `/rui-html` 生成，遵循管线阶段 |
+| ⑥ 裁剪准 | T1 措辞修正 → index.md 修改后 HTML 必须 `--force` 重生 |
+| ⑦ 无魔数 | HTML 内的数值与配置也来自 `index.md`，无独立魔数来源 |
 
 ---
 

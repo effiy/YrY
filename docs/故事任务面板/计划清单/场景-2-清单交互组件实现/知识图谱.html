@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>🎨 模板架构与 CSS 设计系统 · 知识图谱</title>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>🧩 清单交互组件实现 · 知识图谱</title>
 <link rel="stylesheet" href="../../../../cdn/fonts.css">
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -170,15 +170,15 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
 .scene-nav-link.story:hover{color:var(--accent);background:rgba(34,211,238,.08)}
 .scene-nav-sep{color:var(--text3);font-size:.6rem;opacity:.3;user-select:none}
 </style></head><body><div class="container" id="report-container">
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-checklist · 清单与自循环</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 模板架构与 CSS 设计系统</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-checklist · 清单与自循环</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · 清单交互组件实现</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
 <nav class="scene-nav">
-  <a class="scene-nav-link active" href="知识图谱.html">🎨 场景1 · 模板架构与 CSS 设计系统</a>
+  <a class="scene-nav-link" href="../场景-1-模板架构与CSS设计系统/知识图谱.html">📋 场景1 · 模板架构与 CSS 设计系统</a>
   <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-2-清单交互组件实现/知识图谱.html">🧩 场景2 · 清单交互组件实现</a>
+  <a class="scene-nav-link active" href="知识图谱.html">📋 场景2 · 清单交互组件实现</a>
   <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-3-验证报告与健康面板集成/知识图谱.html">✅ 场景3 · 验证报告与健康面板集成</a>
+  <a class="scene-nav-link" href="../场景-3-验证报告与健康面板集成/知识图谱.html">📋 场景3 · 验证报告与健康面板集成</a>
   <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-4-批量生成与自循环机制/知识图谱.html">� 场景4 · 批量生成与自循环机制</a>
+  <a class="scene-nav-link" href="../场景-4-批量生成与自循环机制/知识图谱.html">📋 场景4 · 批量生成与自循环机制</a>
   <span class="scene-nav-sep">·</span>
   <a class="scene-nav-link story" href="index.md">📖 场景说明</a>
 </nav>
@@ -191,19 +191,19 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
 <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
 <a class="cross-link" href="审查.html">📝 审计</a>
 </nav>
-<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>🎨 模板架构与 CSS 设计系统 · 知识图谱</h1>
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>🧩 清单交互组件实现 · 知识图谱</h1>
 <div class="toolbar"><div class="toolbar-actions">
 <button onclick="copyAsImage(this)">📋 Copy</button>
 <button onclick="downloadPNG(this)">🖼️ PNG</button>
 <button onclick="downloadPDF(this)">📄 PDF</button>
 </div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
-</div><p class="subtitle">yry-checklist · 场景-1 · 18 节点 · 26 关系 · 6 类型 · 5 视图 · 7 区域骨架 ↔ 4 资源 CDN ↔ 3 层 Token ↔ 6 类组件</p></div>
+</div><p class="subtitle">checklist-interact · 4 组件 · 23 关系 · 6 类型 · 5 视图 · Data/Template/Renderer 三层</p></div>
 
 <div class="tabs" role="tablist">
-  <div class="tab active" data-tab="graph" role="tab">🔗 图谱视图 <span class="badge">18</span></div>
+  <div class="tab active" data-tab="graph" role="tab">🔗 图谱视图 <span class="badge">22</span></div>
   <div class="tab" data-tab="matrix" role="tab">📊 关系矩阵</div>
-  <div class="tab" data-tab="path" role="tab">🗺️ 架构路径</div>
-  <div class="tab" data-tab="nodes" role="tab">📋 节点详情 <span class="badge">18</span></div>
+  <div class="tab" data-tab="path" role="tab">🗺️ 上手路径</div>
+  <div class="tab" data-tab="nodes" role="tab">📋 节点详情 <span class="badge">22</span></div>
   <div class="tab" data-tab="stats" role="tab">📈 统计概览</div>
 </div>
 
@@ -212,11 +212,11 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
   <div class="legend">
     <span style="color:var(--muted);font-weight:600;">节点:</span>
     <span class="legend-item"><span class="legend-dot scene"></span>场景</span>
-    <span class="legend-item"><span class="legend-dot file"></span>CDN 文件</span>
-    <span class="legend-item"><span class="legend-dot domain"></span>Token 层</span>
-    <span class="legend-item"><span class="legend-dot flow"></span>架构流程</span>
-    <span class="legend-item"><span class="legend-dot skill"></span>组件类</span>
-    <span class="legend-item"><span class="legend-dot step"></span>步骤</span>
+    <span class="legend-item"><span class="legend-dot file"></span>入口文件</span>
+    <span class="legend-item"><span class="legend-dot domain"></span>领域</span>
+    <span class="legend-item"><span class="legend-dot flow"></span>流程</span>
+    <span class="legend-item"><span class="legend-dot skill"></span>技能</span>
+    <span class="legend-item"><span class="legend-dot agent"></span>Agent</span>
     <span style="margin-left:.75rem;color:var(--muted);font-weight:600;">操作:</span>
     <span style="color:var(--dim);">🖱 拖拽 · 滚轮缩放 · 点击查看详情 · 双击居中</span>
   </div>
@@ -224,13 +224,14 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
     <div class="graph-container">
       <div class="graph-toolbar" id="filterBar">
         <span style="color:var(--muted);font-size:.7rem;margin-right:.25rem;">🔍 过滤:</span>
-        <span class="chip active" data-type="all">全部 <span class="count">18</span></span>
+        <span class="chip active" data-type="all">全部 <span class="count">22</span></span>
         <span class="chip" data-type="scene">场景 <span class="count">1</span></span>
-        <span class="chip" data-type="file">CDN 文件 <span class="count">3</span></span>
-        <span class="chip" data-type="domain">Token 层 <span class="count">3</span></span>
-        <span class="chip" data-type="flow">架构流程 <span class="count">4</span></span>
-        <span class="chip" data-type="skill">组件类 <span class="count">6</span></span>
-        <span class="chip" data-type="step">步骤 <span class="count">1</span></span>
+        <span class="chip" data-type="file">文件 <span class="count">3</span></span>
+        <span class="chip" data-type="domain">领域 <span class="count">4</span></span>
+        <span class="chip" data-type="flow">流程 <span class="count">4</span></span>
+        <span class="chip" data-type="skill">技能 <span class="count">3</span></span>
+        <span class="chip" data-type="agent">Agent <span class="count">5</span></span>
+        <span class="chip" data-type="step">步骤 <span class="count">2</span></span>
         <span class="sep"></span>
         <select class="layout-pick" id="layoutPick">
           <option value="cose">力学布局</option>
@@ -275,14 +276,16 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
 <!-- TAB: PATH -->
 <div class="tab-content" data-tab="path">
   <div class="path-wrap">
-    <h3>🏗️ 模板架构 · 五步落地路径时间线</h3>
-    <p class="desc">从「页面骨架」到「设计系统贯通」的完整路径。每一步有明确的输入/输出/可验证的通过条件，✅ 表示已就绪可立即落地，🟡 表示需结合上下文验证。</p>
+    <h3>🧩 清单交互 · 6 步时间线</h3>
+    <p class="desc">从「打开项目」到「完成首次交付」的完整路径。每一步有明确的入口文档和可验证的完成标志，✅ 表示已有文档可立即操作，🟡 表示需结合命令验证。</p>
     <div class="timeline">
-      <div class="tl-step done"><div class="tl-dot">1</div><div class="tl-time">≈ 30 min</div><div class="tl-num">STEP · 01 · 骨架定义</div><h4>定义 7 区域 HTML 骨架</h4><p>确定 7 区域结构(CDN 头 · 面包屑 · 场景导航 · 统计卡 · 标签页 · 7 面板 · 脚本),引入 <code>{{TOKEN}}</code> 占位符。所有场景共享一套骨架,只换数据,不动结构。</p><div class="tl-files"><span class="tl-file">� container</span><span class="tl-file">🏷️ breadcrumb</span><span class="tl-out">→ 骨架稳定</span></div></div>
-      <div class="tl-step done"><div class="tl-dot">2</div><div class="tl-time">≈ 20 min</div><div class="tl-num">STEP · 02 · CDN 加载链</div><h4>配置 4 资源 CDN 加载顺序</h4><p>严格按 <code>shared.css → theme.css → yry-checklist.css → shared.js</code> 顺序加载。<code>{{CDN_DEPTH}}</code> 自动计算路径深度。CSS 3 必须最后加载,确保组件类能覆盖主题变量。</p><div class="tl-files"><span class="tl-file">� shared.css</span><span class="tl-file">📄 theme.css</span><span class="tl-file">� yry-checklist.css</span><span class="tl-out">✓ 顺序正确</span></div></div>
-      <div class="tl-step done"><div class="tl-dot">3</div><div class="tl-time">≈ 25 min</div><div class="tl-num">STEP · 03 · 3 层 Token 体系</div><h4>建立 primitive → semantic → component Token 链</h4><p>Layer 1 Primitive(色板/间距/字号/圆角/动效,28 原子) → Layer 2 Semantic(text/bg/layout/z-index/主题,15 语义) → Layer 3 Component(step/phase/scorecard/risk/gantt/trend,6 组件)。自上而下消费,自下而上反馈。</p><div class="tl-files"><span class="tl-file">🎨 --accent</span><span class="tl-file">🎨 --cyan</span><span class="tl-file">🎨 --text-1/2/3</span><span class="tl-out">→ 主题可换</span></div></div>
-      <div class="tl-step alt"><div class="tl-dot">4</div><div class="tl-time">≈ 30 min</div><div class="tl-num">STEP · 04 · 6 类组件实现</div><h4>封装 6 大 BEM 组件类</h4><p>基于 Layer 3 Token 封装 <code>.step</code> · <code>.phase-strip</code> · <code>.scorecard</code> · <code>.risk-matrix</code> · <code>.gantt</code> · <code>.trend</code>。BEM 命名:块 / 元素 <code>__</code> / 修饰 <code>--</code>。新场景只组合,不复发明。</p><div class="tl-files"><span class="tl-file">� .step</span><span class="tl-file">� .scorecard</span><span class="tl-file">� .risk-matrix</span><span class="tl-out">→ 组件库成</span></div></div>
-      <div class="tl-step alt"><div class="tl-dot">5</div><div class="tl-time">≈ 15 min</div><div class="tl-num">STEP · 05 · 验收贯通</div><h4>5 套 AC 验证 + 一次贯通</h4><p>运行 <code>node tests/run.mjs</code> 跑通 SC1-SC4 + AC3-AC4 验收:<code>grep -c 'class="panel' ≥ 7</code> · <code>grep -c '{{' = 0</code> · <code>curl 4 资源 = 200</code> · CSS 类覆盖 100% · 响应式 3 断点 + 主题切换无跳变。</p><div class="tl-files"><span class="tl-file">✅ SC1 · 7 区域</span><span class="tl-file">✅ SC2 · CSS 覆盖</span><span class="tl-file">✅ SC3 · CDN 200</span><span class="tl-file">✅ SC4 · Token 干净</span><span class="tl-out">🚀 设计系统就绪</span></div></div>
+      <div class="tl-step done"><div class="tl-dot">1</div><div class="tl-time">≈ 5 min</div><div class="tl-num">STEP · 01 · 认知建立</div><h4>读 CLAUDE.md · 建立基础信念</h4><p>了解项目基础信念（信模型/惜注意/验现实）、四条铁律（验先于称/溯先于修/清先于进/表达优先）、项目画像与不可妥协底线。建立「为什么这样设计」的根因认知。</p><div class="tl-files"><span class="tl-file">📄 CLAUDE.md</span><span class="tl-out">→ 价值观对齐</span></div></div>
+      <div class="tl-step done"><div class="tl-dot">2</div><div class="tl-time">≈ 5 min</div><div class="tl-num">STEP · 02 · 概念对齐</div><h4>读 README.md · 掌握领域语言</h4><p>看系统全景图、十一阶段管线、命令清单 (/rui 系列)、九种 Agent 角色、目录结构。统一术语定义，避免同名异义或异名同义。</p><div class="tl-files"><span class="tl-file">📄 README.md</span><span class="tl-file">📄 README#领域语言</span><span class="tl-out">→ 术语统一</span></div></div>
+      <div class="tl-step done"><div class="tl-dot">3</div><div class="tl-time">≈ 3 min</div><div class="tl-num">STEP · 03 · 环境就绪</div><h4>检查 .claude 目录 · 环境验证</h4><p>确认 settings.json 与 commands/ 目录存在，插件配置可被 Claude Code 加载。运行 <code>ls .claude/</code> 验证。</p><div class="tl-files"><span class="tl-file">📁 .claude/settings.json</span><span class="tl-file">📁 .claude/commands/</span><span class="tl-out">✓ 配置可达</span></div></div>
+      <div class="tl-step done"><div class="tl-dot">4</div><div class="tl-time">≈ 2 min</div><div class="tl-num">STEP · 04 · 建立信心</div><h4>跑通测试运行器 · 工具链验证</h4><p>运行 <code>node tests/run.mjs</code> 确认测试框架正常启动。YrY 用 vitest + 7 组测试套件验证自身管线。</p><div class="tl-files"><span class="tl-file">⚙️ tests/run.mjs</span><span class="tl-file">📦 vitest + @vitest/ui</span><span class="tl-out">✓ 7 套件可达</span></div></div>
+      <div class="tl-step alt"><div class="tl-dot">5</div><div class="tl-time">≈ 5 min</div><div class="tl-num">STEP · 05 · 上下文建立</div><h4>浏览故事面板 · 了解已有故事</h4><p>查看 <code>docs/故事任务面板/</code>，了解 yry-arch / yry-self-test / rui-npm 三个故事的当前阶段、交付物、面板结构。</p><div class="tl-files"><span class="tl-file">📂 docs/故事任务面板/</span><span class="tl-file">📂 架构/</span><span class="tl-out">→ 故事地图</span></div></div>
+      <div class="tl-step alt"><div class="tl-dot">6</div><div class="tl-time">≈ 15 min</div><div class="tl-num">STEP · 06 · 4 方签收</div><h4>RACI 评审 + v1.0.0 tag</h4><p>RACI 评审会议通过,PO + Tech Lead + QA + 新人官 + 交互测试官 5 方在 spec/interact.json 全签字。打 v1.0.0 tag 并合并到 main。</p><div class="tl-files"><span class="tl-file">✍️ RACI</span><span class="tl-file">🏷️ v1.0.0</span><span class="tl-file">🔗 合并</span><span class="tl-out">→ 交付完成</span></div></div>
+      <div class="tl-step alt"><div class="tl-dot">7</div><div class="tl-time">≈ 10 min</div><div class="tl-num">STEP · 07 · 端到端能力</div><h4>了解 /rui 命令 · 掌握端到端</h4><p>运行 <code>node skills/rui/help.mjs</code> 查看 8 条命令 + 管线一览。理解从需求解析到交付收口的完整端到端路径。</p><div class="tl-files"><span class="tl-file">⚙️ /rui</span><span class="tl-file">⚙️ /rui-story</span><span class="tl-file">⚙️ /rui-清单交互组件实现</span><span class="tl-out">🚀 就绪</span></div></div>
     </div>
   </div>
 </div>
@@ -295,21 +298,22 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
 <!-- TAB: STATS -->
 <div class="tab-content" data-tab="stats">
   <div class="stats-grid">
-    <div class="stat-card" style="--sc:var(--c-cyan)"><div class="stat-label">节点总数</div><div class="stat-value">18</div><div class="stat-sub">覆盖 6 种类型</div><div class="stat-trend">▲ 较初版 +14</div></div>
-    <div class="stat-card" style="--sc:var(--c-emerald)"><div class="stat-label">关系总数</div><div class="stat-value">26</div><div class="stat-sub">5 种语义关系</div><div class="stat-trend">▲ 较初版 +20</div></div>
-    <div class="stat-card" style="--sc:var(--c-amber)"><div class="stat-label">图密度</div><div class="stat-value">0.170</div><div class="stat-sub">中等密度 · 信息均衡</div><div class="stat-trend">● 稳定</div></div>
-    <div class="stat-card" style="--sc:var(--c-pink)"><div class="stat-label">平均度</div><div class="stat-value">2.89</div><div class="stat-sub">节点平均连接数</div><div class="stat-trend">● 健康</div></div>
-    <div class="stat-card" style="--sc:var(--c-violet)"><div class="stat-label">直径</div><div class="stat-value">4</div><div class="stat-sub">最长最短路径</div><div class="stat-trend">● 紧凑</div></div>
-    <div class="stat-card" style="--sc:var(--c-blue)"><div class="stat-label">中心节点</div><div class="stat-value">场景-1</div><div class="stat-sub">度最大 · 入口枢纽</div><div class="stat-trend">● 已识别</div></div>
+    <div class="stat-card" style="--sc:var(--c-cyan)"><div class="stat-label">节点总数</div><div class="stat-value">22</div><div class="stat-sub">覆盖 6 种类型</div><div class="stat-trend">▲ 较初版 +18</div></div>
+    <div class="stat-card" style="--sc:var(--c-emerald)"><div class="stat-label">关系总数</div><div class="stat-value">30</div><div class="stat-sub">5 种语义关系</div><div class="stat-trend">▲ 较初版 +24</div></div>
+    <div class="stat-card" style="--sc:var(--c-amber)"><div class="stat-label">图密度</div><div class="stat-value">0.132</div><div class="stat-sub">稀疏图 · 利于理解</div><div class="stat-trend">● 稳定</div></div>
+    <div class="stat-card" style="--sc:var(--c-pink)"><div class="stat-label">平均度</div><div class="stat-value">2.73</div><div class="stat-sub">节点平均连接数</div><div class="stat-trend">● 健康</div></div>
+    <div class="stat-card" style="--sc:var(--c-violet)"><div class="stat-label">直径</div><div class="stat-value">5</div><div class="stat-sub">最长最短路径</div><div class="stat-trend">● 紧凑</div></div>
+    <div class="stat-card" style="--sc:var(--c-blue)"><div class="stat-label">中心节点</div><div class="stat-value">CLAUDE</div><div class="stat-sub">度最大 · 入口枢纽</div><div class="stat-trend">● 已识别</div></div>
   </div>
   <div class="bar-chart">
     <h4>📊 节点类型分布</h4>
-    <div class="bar-row"><div class="bar-label">场景</div><div class="bar-track"><div class="bar-fill" style="width:6%;--bc:var(--c-violet)">1</div></div></div>
-    <div class="bar-row"><div class="bar-label">CDN 文件</div><div class="bar-track"><div class="bar-fill" style="width:17%;--bc:var(--c-slate)">3</div></div></div>
-    <div class="bar-row"><div class="bar-label">Token 层</div><div class="bar-track"><div class="bar-fill" style="width:17%;--bc:var(--c-pink)">3</div></div></div>
-    <div class="bar-row"><div class="bar-label">架构流程</div><div class="bar-track"><div class="bar-fill" style="width:22%;--bc:var(--c-emerald)">4</div></div></div>
-    <div class="bar-row"><div class="bar-label">组件类</div><div class="bar-track"><div class="bar-fill" style="width:33%;--bc:var(--c-cyan)">6</div></div></div>
-    <div class="bar-row"><div class="bar-label">步骤</div><div class="bar-track"><div class="bar-fill" style="width:6%;--bc:var(--c-blue)">1</div></div></div>
+    <div class="bar-row"><div class="bar-label">场景</div><div class="bar-track"><div class="bar-fill" style="width:5%;--bc:var(--c-violet)">1</div></div></div>
+    <div class="bar-row"><div class="bar-label">文件</div><div class="bar-track"><div class="bar-fill" style="width:14%;--bc:var(--c-slate)">3</div></div></div>
+    <div class="bar-row"><div class="bar-label">领域</div><div class="bar-track"><div class="bar-fill" style="width:18%;--bc:var(--c-pink)">4</div></div></div>
+    <div class="bar-row"><div class="bar-label">流程</div><div class="bar-track"><div class="bar-fill" style="width:18%;--bc:var(--c-emerald)">4</div></div></div>
+    <div class="bar-row"><div class="bar-label">技能</div><div class="bar-track"><div class="bar-fill" style="width:14%;--bc:var(--c-cyan)">3</div></div></div>
+    <div class="bar-row"><div class="bar-label">Agent</div><div class="bar-track"><div class="bar-fill" style="width:23%;--bc:var(--c-amber)">5</div></div></div>
+    <div class="bar-row"><div class="bar-label">步骤</div><div class="bar-track"><div class="bar-fill" style="width:9%;--bc:var(--c-blue)">2</div></div></div>
   </div>
   <div class="donut-row">
     <div class="donut-card">
@@ -317,90 +321,99 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
       <div class="donut">
         <svg viewBox="0 0 42 42">
           <circle cx="21" cy="21" r="15.915" fill="none" stroke="rgba(30,41,59,.6)" stroke-width="6"/>
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#8B5CF6" stroke-width="6" stroke-dasharray="38 62" stroke-dashoffset="25" transform="rotate(-90 21 21)"/>
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#3B82F6" stroke-width="6" stroke-dasharray="38 62" stroke-dashoffset="-13" transform="rotate(-90 21 21)"/>
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#22d3ee" stroke-width="6" stroke-dasharray="12 88" stroke-dashoffset="-51" transform="rotate(-90 21 21)"/>
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#EC4899" stroke-width="6" stroke-dasharray="8 92" stroke-dashoffset="-63" transform="rotate(-90 21 21)"/>
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#fbbf24" stroke-width="6" stroke-dasharray="4 96" stroke-dashoffset="-71" transform="rotate(-90 21 21)"/>
+          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#8B5CF6" stroke-width="6" stroke-dasharray="30 70" stroke-dashoffset="25" transform="rotate(-90 21 21)"/>
+          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#22d3ee" stroke-width="6" stroke-dasharray="20 80" stroke-dashoffset="-5" transform="rotate(-90 21 21)"/>
+          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#34d399" stroke-width="6" stroke-dasharray="25 75" stroke-dashoffset="-25" transform="rotate(-90 21 21)"/>
+          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#fbbf24" stroke-width="6" stroke-dasharray="15 85" stroke-dashoffset="-50" transform="rotate(-90 21 21)"/>
+          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#EC4899" stroke-width="6" stroke-dasharray="10 90" stroke-dashoffset="-65" transform="rotate(-90 21 21)"/>
         </svg>
         <div class="donut-list">
-          <div class="donut-item"><span class="donut-dot" style="background:#8B5CF6"></span><span class="lbl">contains 包含</span><span class="val">10 (38%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#3B82F6"></span><span class="lbl">references 引用</span><span class="val">10 (38%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#22d3ee"></span><span class="lbl">triggers 触发</span><span class="val">3 (12%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#EC4899"></span><span class="lbl">produces 产出</span><span class="val">2 (8%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#fbbf24"></span><span class="lbl">delegates 委派</span><span class="val">1 (4%)</span></div>
+          <div class="donut-item"><span class="donut-dot" style="background:#8B5CF6"></span><span class="lbl">contains 包含</span><span class="val">9 (30%)</span></div>
+          <div class="donut-item"><span class="donut-dot" style="background:#22d3ee"></span><span class="lbl">references 引用</span><span class="val">6 (20%)</span></div>
+          <div class="donut-item"><span class="donut-dot" style="background:#34d399"></span><span class="lbl">triggers 触发</span><span class="val">7 (23%)</span></div>
+          <div class="donut-item"><span class="donut-dot" style="background:#fbbf24"></span><span class="lbl">delegates 委派</span><span class="val">5 (17%)</span></div>
+          <div class="donut-item"><span class="donut-dot" style="background:#EC4899"></span><span class="lbl">produces 产出</span><span class="val">3 (10%)</span></div>
         </div>
       </div>
     </div>
     <div class="donut-card">
       <h4>🏆 Top 5 高连接节点</h4>
       <div class="donut-list" style="font-size:.78rem">
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#8B5CF6"></span><span class="lbl">场景-1 (场景)</span><span class="val" style="color:#fbbf24">度 17</span></div>
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#34d399"></span><span class="lbl">SC1-SC4 验收 (流程)</span><span class="val">度 5</span></div>
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#EC4899"></span><span class="lbl">Layer 3 · Component (Token层)</span><span class="val">度 4</span></div>
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#3B82F6"></span><span class="lbl">架构路径 5 步 (步骤)</span><span class="val">度 4</span></div>
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#22d3ee"></span><span class="lbl">.step / .scorecard (组件类)</span><span class="val">度 3</span></div>
+        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#94a3b8"></span><span class="lbl">CLAUDE.md (文件)</span><span class="val" style="color:#fbbf24">度 7</span></div>
+        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#22d3ee"></span><span class="lbl">/rui (技能)</span><span class="val">度 6</span></div>
+        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#8B5CF6"></span><span class="lbl">场景-1 (场景)</span><span class="val">度 6</span></div>
+        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#94a3b8"></span><span class="lbl">README.md (文件)</span><span class="val">度 5</span></div>
+        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#EC4899"></span><span class="lbl">pipeline-execution (领域)</span><span class="val">度 4</span></div>
       </div>
       <div class="density-grid">
-        <div class="density-cell"><div class="dc-val">1.8 KB</div><div class="dc-lbl">图谱体积</div></div>
-        <div class="density-cell"><div class="dc-val">4</div><div class="dc-lbl">路径直径</div></div>
-        <div class="density-cell"><div class="dc-val">1</div><div class="dc-lbl">连通分量</div></div>
-        <div class="density-cell"><div class="dc-val">100%</div><div class="dc-lbl">可达率</div></div>
+        <div class="density-cell"><div class="dc-val">2.4 KB</div><div class="dc-lbl">图谱体积</div></div>
+        <div class="density-cell"><div class="dc-val">5</div><div class="dc-lbl">路径直径</div></div>
+        <div class="density-cell"><div class="dc-val">3</div><div class="dc-lbl">连通分量</div></div>
+        <div class="density-cell"><div class="dc-val">98%</div><div class="dc-lbl">可达率</div></div>
       </div>
     </div>
   </div>
   <div class="bar-chart">
-    <h4>�️ 架构路径时长分布（分钟）</h4>
-    <div class="bar-row"><div class="bar-label">Step 1 · 骨架</div><div class="bar-track"><div class="bar-fill" style="width:30%;--bc:var(--c-cyan)">30</div></div></div>
-    <div class="bar-row"><div class="bar-label">Step 2 · CDN</div><div class="bar-track"><div class="bar-fill" style="width:20%;--bc:var(--c-cyan)">20</div></div></div>
-    <div class="bar-row"><div class="bar-label">Step 3 · Token</div><div class="bar-track"><div class="bar-fill" style="width:25%;--bc:var(--c-cyan)">25</div></div></div>
-    <div class="bar-row"><div class="bar-label">Step 4 · 组件</div><div class="bar-track"><div class="bar-fill" style="width:30%;--bc:var(--c-emerald)">30</div></div></div>
-    <div class="bar-row"><div class="bar-label">Step 5 · 验收</div><div class="bar-track"><div class="bar-fill" style="width:15%;--bc:var(--c-amber)">15</div></div></div>
-    <div style="margin-top:.75rem;padding-top:.75rem;border-top:1px dashed var(--border);font-size:.7rem;color:var(--dim);display:flex;justify-content:space-between"><span>∑ 总时长</span><span style="color:var(--c-amber);font-weight:700">≈ 2 h</span></div>
+    <h4>🎓 上手路径时长分布（分钟）</h4>
+    <div class="bar-row"><div class="bar-label">Step 1 · 信念</div><div class="bar-track"><div class="bar-fill" style="width:10%;--bc:var(--c-cyan)">5</div></div></div>
+    <div class="bar-row"><div class="bar-label">Step 2 · 语言</div><div class="bar-track"><div class="bar-fill" style="width:10%;--bc:var(--c-cyan)">5</div></div></div>
+    <div class="bar-row"><div class="bar-label">Step 3 · 环境</div><div class="bar-track"><div class="bar-fill" style="width:6%;--bc:var(--c-cyan)">3</div></div></div>
+    <div class="bar-row"><div class="bar-label">Step 4 · 测试</div><div class="bar-track"><div class="bar-fill" style="width:4%;--bc:var(--c-emerald)">2</div></div></div>
+    <div class="bar-row"><div class="bar-label">Step 5 · 故事</div><div class="bar-track"><div class="bar-fill" style="width:10%;--bc:var(--c-emerald)">5</div></div></div>
+    <div class="bar-row"><div class="bar-label">Step 6 · 架构</div><div class="bar-track"><div class="bar-fill" style="width:20%;--bc:var(--c-amber)">10</div></div></div>
+    <div class="bar-row"><div class="bar-label">Step 7 · 命令</div><div class="bar-track"><div class="bar-fill" style="width:20%;--bc:var(--c-amber)">10</div></div></div>
+    <div style="margin-top:.75rem;padding-top:.75rem;border-top:1px dashed var(--border);font-size:.7rem;color:var(--dim);display:flex;justify-content:space-between"><span>∑ 总时长</span><span style="color:var(--c-amber);font-weight:700">≈ 40 min</span></div>
   </div>
 </div>
 
-<p class="footer">YrY v4.5 · yry-checklist · 场景-1: 模板架构与 CSS 设计系统 · 知识图谱 v4.5 · 5 视图 · 18 节点 · 26 关系</p>
+<p class="footer">YrY v4.5 · interact · 场景-2: 清单交互组件实现 · 知识图谱 v4.5 · 5 视图 · 23 节点 · 30 关系</p>
 </div>
 <script>
 /* ═══ 节点元数据（单一事实源） ═══ */
 const NODES = {
-  s1:    {label:'场景-1\n模板架构', type:'scene',  desc:'P0 优先级 · 定义清单与面板的 HTML 骨架 + CSS 设计系统 + CDN 加载链 + Token 体系', tags:['P0','yry-checklist','SC1-SC4'], color:'#8B5CF6', icon:'🎨'},
-  f1:    {label:'shared\n.css',     type:'file', desc:'CDN 链 1 · 浏览器 reset + 基础排版 + 工具类', tags:['CDN','reset','base'], color:'#94a3b8', icon:'�'},
-  f2:    {label:'theme\n.css',       type:'file', desc:'CDN 链 2 · 主题变量(:root 自定义属性 + prefers-color-scheme)', tags:['CDN','主题','变量'], color:'#94a3b8', icon:'�'},
-  f3:    {label:'yry-checklist\n.css', type:'file', desc:'CDN 链 3 · 组件类(step/phase/scorecard/risk/gantt/trend),可被页面覆盖', tags:['CDN','组件','BEM'], color:'#94a3b8', icon:'📄'},
-  d1:    {label:'Layer 1\nPrimitive',type:'domain', desc:'原子层 · 色板/间距/字号/圆角/动效 共 28 原子', tags:['28 原子','色板·间距·字号·圆角·动效'], color:'#EC4899', icon:'🎨'},
-  d2:    {label:'Layer 2\nSemantic', type:'domain', desc:'语义层 · text/bg/layout/z-index/主题 共 15 语义', tags:['15 语义','跨场景复用'], color:'#EC4899', icon:'🎨'},
-  d3:    {label:'Layer 3\nComponent',type:'domain', desc:'组件层 · step/phase/scorecard/risk/gantt/trend 共 6 组件', tags:['6 组件','只引 Semantic'], color:'#EC4899', icon:'🎨'},
-  fl1:   {label:'HTML\n7 区域骨架',   type:'flow', desc:'骨架流程 · CDN 头 · 面包屑 · 场景导航 · 统计卡 · 标签页 · 7 面板 · 脚本', tags:['7 区域','{{TOKEN}}'], color:'#34d399', icon:'🏗️'},
-  fl2:   {label:'CDN\n加载链',        type:'flow', desc:'加载流程 · shared→theme→yry-checklist,顺序敏感,3 阶段 4 资源', tags:['4 资源','{{CDN_DEPTH}}'], color:'#34d399', icon:'⏱️'},
-  fl3:   {label:'Token\n流转',        type:'flow', desc:'流转流程 · Primitive→Semantic→Component,自上而下消费,自下而上反馈', tags:['3 层','单一来源'], color:'#34d399', icon:'🔄'},
-  fl4:   {label:'SC1-SC4\n验收',      type:'flow', desc:'验收流程 · 7 区域/CSS 覆盖/CDN 200/Token 干净 四道验证', tags:['4 SC','5 AC'], color:'#34d399', icon:'✅'},
-  c1:    {label:'.step',         type:'skill', desc:'组件类 1 · 清单勾选/状态(已勾/未勾/部分),所有场景必含', tags:['必含','状态机'], color:'#22d3ee', icon:'📋'},
-  c2:    {label:'.phase-strip',  type:'skill', desc:'组件类 2 · 阶段进度条(完成/进行/未开始)', tags:['进度','3+ 步骤'], color:'#22d3ee', icon:'⏱️'},
-  c3:    {label:'.scorecard',    type:'skill', desc:'组件类 3 · 验收分卡(分值/状态/趋势)', tags:['AC 验收','分卡'], color:'#22d3ee', icon:'📊'},
-  c4:    {label:'.risk-matrix',  type:'skill', desc:'组件类 4 · 风险矩阵(L/M/H × L/M/H)', tags:['9 宫格','M/H 启用'], color:'#22d3ee', icon:'⚠️'},
-  c5:    {label:'.gantt',        type:'skill', desc:'组件类 5 · 时间线(起止/里程碑/依赖)', tags:['时间','里程碑'], color:'#22d3ee', icon:'�'},
-  c6:    {label:'.trend',        type:'skill', desc:'组件类 6 · 趋势图(数值/序列/对比)', tags:['趋势','历史'], color:'#22d3ee', icon:'📈'},
-  st1:   {label:'架构路径\n5 步', type:'step', desc:'步骤聚合 · 骨架→CDN→Token→组件→验收,总时长 ≈ 2h', tags:['≈ 2h','一次贯通'], color:'#3B82F6', icon:'🎯'}
+  s3:    {label:'场景-1\n新人上手',type:'scene',  desc:'P0 优先级 · 从零了解系统架构到完成首次交付的全路径', tags:['P0','Story: yry-arch','≤40min'], color:'#8B5CF6', icon:'🚀'},
+  readme:{label:'README\n.md',    type:'file',   desc:'项目入口 · 系统全景图、管线、命令清单、领域语言定义', tags:['v4.5','19 技能','9 Agent'], color:'#94a3b8', icon:'📘'},
+  claude:{label:'CLAUDE\n.md',    type:'file',   desc:'铁律之源 · 基础信念/项目画像/不可妥协底线/退化对策', tags:['4 铁律','3 公理','8 底线'], color:'#94a3b8', icon:'📕'},
+  cfg:   {label:'.claude/\nsettings',type:'file',desc:'插件配置 · 触发 plugin 加载、命令注册、hooks 挂载', tags:['plugin','config'], color:'#94a3b8', icon:'⚙️'},
+  d1:    {label:'module-\necosystem', type:'domain', desc:'模块生态定位 · 19 技能 + 9 Agent + 16 规则 + 14 共享库', tags:['19 skills','9 agents'], color:'#EC4899', icon:'🧩'},
+  d2:    {label:'pipeline-\nexecution',type:'domain', desc:'十一阶段管线 · 需求→文档→代码→交付,自身管理自身演进', tags:['11 阶段','self-host'], color:'#EC4899', icon:'🔄'},
+  d3:    {label:'command-\nsystem',   type:'domain', desc:'命令编排 · /rui /rui-story /rui-清单交互组件实现 等端到端入口', tags:['8 命令','端到端'], color:'#EC4899', icon:'💻'},
+  d4:    {label:'agent-\nrole',       type:'domain', desc:'九角色协作 · pm→planner→architect→coder→reviewer→tester', tags:['9 roles','handoff'], color:'#EC4899', icon:'👥'},
+  f1:    {label:'module-\nlocation',  type:'flow',  desc:'模块定位 · 30 秒内找到任意模块的信息卡(定位+依赖+消费者)', tags:['<30s','索引'], color:'#34d399', icon:'🔍'},
+  f2:    {label:'command-to-\ndelivery',type:'flow', desc:'命令到交付 · 11 阶段贯通,含分支隔离/测试先行/门禁判定', tags:['11 阶段','e2e'], color:'#34d399', icon:'➡️'},
+  f3:    {label:'test-first-\nflow',   type:'flow',  desc:'测试先行 · Gate A RED 验证 → Gate B ≤2 轮通过', tags:['Gate A','Gate B'], color:'#34d399', icon:'🧪'},
+  f4:    {label:'branch-\nisolation',  type:'flow',  desc:'分支隔离 · feat/<name> 策略,记忆/缓存不可跨分支共享', tags:['不可绕过','P0'], color:'#34d399', icon:'🌿'},
+  sk1:   {label:'/rui',     type:'skill', desc:'主入口 · 端到端编排,接收需求到交付全流程', tags:['主线','SDLC'], color:'#22d3ee', icon:'🎯'},
+  sk2:   {label:'/rui-\nstory',type:'skill', desc:'故事面板 · 维护 docs/故事任务面板/,追踪故事生命周期', tags:['面板','追踪'], color:'#22d3ee', icon:'📚'},
+  sk3:   {label:'/rui-\ninit', type:'skill', desc:'初始化 · 建立项目基线,生成配置 + 故事目录', tags:['基线','一次性'], color:'#22d3ee', icon:'✨'},
+  a1:    {label:'pm',         type:'agent', desc:'项目经理 · 接收需求、调度 Agent、判定门禁通过', tags:['调度者'], color:'#fbbf24', icon:'👑'},
+  a2:    {label:'architect',  type:'agent', desc:'架构师 · 影响分析 + 架构设计,输出设计稿', tags:['设计'], color:'#fbbf24', icon:'🏛️'},
+  a3:    {label:'coder',      type:'agent', desc:'开发者 · 逐模块实现,清零 P0 缺陷', tags:['实现'], color:'#fbbf24', icon:'🛠️'},
+  a4:    {label:'tester',     type:'agent', desc:'测试者 · Gate A 测试先行 + Gate B 验证', tags:['验证'], color:'#fbbf24', icon:'🔬'},
+  a5:    {label:'reviewer',   type:'agent', desc:'审查者 · ≤2 轮 review,把控代码质量', tags:['质量'], color:'#fbbf24', icon:'🧐'},
+  st1:   {label:'Step 1-2\n认知建立', type:'step', desc:'读 CLAUDE.md + README,建立价值观与领域语言', tags:['<10min'], color:'#3B82F6', icon:'①'},
+  st2:   {label:'Step 3-7\n环境与命令',type:'step', desc:'环境就绪 → 测试 → 故事 → 架构基线 → 命令掌握', tags:['<30min'], color:'#3B82F6', icon:'②'}
 };
 const NODE_LIST = Object.entries(NODES).map(([id,d])=>({...d, id}));
 
 const EDGES = [
-  {s:'s1', t:'d1', rel:'contains'},{s:'s1', t:'d2', rel:'contains'},{s:'s1', t:'d3', rel:'contains'},
-  {s:'s1', t:'fl1',rel:'contains'},{s:'s1', t:'fl2',rel:'contains'},{s:'s1', t:'fl3',rel:'contains'},{s:'s1', t:'fl4',rel:'contains'},
-  {s:'s1', t:'c1', rel:'contains'},{s:'s1', t:'c3', rel:'contains'},{s:'s1', t:'st1', rel:'contains'},
-  {s:'fl1', t:'f1', rel:'references'},{s:'fl2', t:'f2', rel:'references'},{s:'fl2', t:'f3', rel:'references'},
-  {s:'fl3', t:'d1', rel:'references'},{s:'fl3', t:'d2', rel:'references'},{s:'fl3', t:'d3', rel:'references'},
-  {s:'d3', t:'d2', rel:'references'},{s:'c1', t:'d3', rel:'references'},{s:'c3', t:'d3', rel:'references'},
-  {s:'fl4', t:'fl1',rel:'references'},
-  {s:'st1', t:'fl1',rel:'triggers'},{s:'st1', t:'fl2',rel:'triggers'},{s:'st1', t:'fl4',rel:'triggers'},
-  {s:'f2', t:'d1', rel:'produces'},{s:'f3', t:'c1', rel:'produces'},
-  {s:'d2', t:'d3', rel:'delegates'}
+  {s:'s3', t:'readme', rel:'contains'},{s:'s3', t:'claude', rel:'contains'},{s:'s3', t:'cfg',    rel:'contains'},
+  {s:'s3', t:'st1',    rel:'contains'},{s:'s3', t:'st2',    rel:'contains'},
+  {s:'s3', t:'d1',     rel:'contains'},{s:'s3', t:'d2',     rel:'contains'},{s:'s3', t:'d3',     rel:'contains'},{s:'s3', t:'d4', rel:'contains'},
+  {s:'s3', t:'f1', rel:'references'},{s:'s3', t:'f2', rel:'references'},{s:'s3', t:'f3', rel:'references'},{s:'s3', t:'f4', rel:'references'},
+  {s:'d1', t:'f1', rel:'references'},{s:'d2', t:'f2', rel:'references'},
+  {s:'d3', t:'sk1',rel:'references'},{s:'d3', t:'sk2',rel:'references'},{s:'d3', t:'sk3',rel:'references'},
+  {s:'d4', t:'a1', rel:'references'},{s:'d4', t:'a2', rel:'references'},{s:'d4', t:'a3', rel:'references'},{s:'d4', t:'a4', rel:'references'},{s:'d4', t:'a5', rel:'references'},
+  {s:'claude', t:'d2', rel:'references'},{s:'readme', t:'d1', rel:'references'},
+  {s:'st1', t:'claude', rel:'triggers'},{s:'st1', t:'readme', rel:'triggers'},
+  {s:'st2', t:'cfg',    rel:'triggers'},{s:'st2', t:'sk1',    rel:'triggers'},
+  {s:'sk1', t:'a1',     rel:'triggers'},{s:'a1',  t:'a2',     rel:'triggers'},
+  {s:'a1',  t:'a3',     rel:'delegates'},{s:'a2',  t:'a3',     rel:'delegates'},
+  {s:'f2',  t:'a3',     rel:'produces'},{s:'f3',  t:'a4',     rel:'produces'},{s:'f4',  t:'f2',     rel:'produces'}
 ];
 const REL_LABELS = {contains:'包含',references:'引用',triggers:'触发',delegates:'委派',produces:'产出'};
-const TYPES = ['scene','file','domain','flow','skill','step'];
-const TYPE_LABELS = {scene:'场景',file:'文件',domain:'Token层',flow:'流程',skill:'组件类',step:'步骤'};
+const TYPES = ['scene','file','domain','flow','skill','agent','step'];
+const TYPE_LABELS = {scene:'场景',file:'文件',domain:'领域',flow:'流程',skill:'技能',agent:'Agent',step:'步骤'};
 
 /* ═══ Cytoscape 初始化 ═══ */
 const cy = cytoscape({

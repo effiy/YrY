@@ -33,7 +33,7 @@ html { scroll-behavior: smooth; }
   color: #7aa2f7; text-decoration: none; transition: color 0.15s;
 }
 .yry-breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
-.yry-breadcrumb .yry-bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
+.yry-breadcrumb .yry-bc-sep { color: #53576c; opacity: 0.5; -webkit-user-select: none; user-select: none; }
 .yry-breadcrumb .yry-bc-current { color: #94a3b8; font-weight: 500; }
 
 /* ── Cross-Nav ──────────────────────────────────────────────────────────── */
@@ -52,7 +52,7 @@ html { scroll-behavior: smooth; }
   text-decoration: underline;
 }
 .yry-cross-link.on { color: var(--yry-accent, #FFC107); font-weight: 600; }
-.yry-cross-sep { color: var(--yry-text3, #475569); font-size: .5rem; opacity: .35; user-select: none; }
+.yry-cross-sep { color: var(--yry-text3, #475569); font-size: .5rem; opacity: .35; -webkit-user-select: none; user-select: none; }
 
 /* ── Toolbar (export buttons) ───────────────────────────────────────────── */
 .yry-toolbar { display: flex; gap: .5rem; align-items: center; }
@@ -98,7 +98,7 @@ html { scroll-behavior: smooth; }
 /* ── Health Report ───────────────────────────────────────────────────────── */
 .h-container { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
 .h-tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 28px; animation: yry-fadeInDown .5s .1s ease both; }
-.h-tab { padding: 10px 22px; cursor: pointer; font-size: .84rem; color: #6e6e72; border-bottom: 2px solid transparent; transition: all .15s; user-select: none; display: flex; align-items: center; gap: 6px; }
+.h-tab { padding: 10px 22px; cursor: pointer; font-size: .84rem; color: #6e6e72; border-bottom: 2px solid transparent; transition: all .15s; -webkit-user-select: none; user-select: none; display: flex; align-items: center; gap: 6px; }
 .h-tab:hover { color: #a0a0a4; }
 .h-tab.on { color: #FFC107; border-bottom-color: #FFC107; }
 .h-tab .h-tab-badge { font-size: .62rem; padding: 1px 7px; border-radius: 8px; font-weight: 600; }

@@ -1,0 +1,142 @@
+/**
+ * bot-health-structure — Git snapshot, security scan, structure analysis.
+ * Extracted from send.mjs for module decomposition.
+ */
+
+import { join } from "node:path";
+import { readFileSync } from "node:fs";
+import { execSync } from "node:child_process";
+
+const STRUCT_LARGE_FILE_WARN = 500;
+const STRUCT_LARGE_FILE_CRIT = 1000;
+const STRUCT_MODULE_FILE_WARN = 30;
+const STRUCT_MODULE_LINE_WARN = 3000;
+const STRUCT_TOP_FILES = 20;
+const STRUCT_TOP_MODULES = 10;
+const STRUCT_SOURCE_EXT = new Set([
+  "js", "mjs", "cjs", "ts", "tsx", "jsx", "py", "rb", "go", "rs",
+  "java", "kt", "scala", "sh", "bash", "zsh", "md", "json", "yml", "yaml",
+  "html", "css", "scss", "vue", "svelte",
+]);
+
+export function getGitSnapshot(projectRoot) {
+  try {
+    const branch = execSync("git rev-parse --abbrev-ref HEAD", {
+      cwd: projectRoot, encoding: "utf-8", timeout: 5000,
+    }).trim();
+    const status = execSync("git status --porcelain", {
+      cwd: projectRoot, encoding: "utf-8", timeout: 5000,
+    });
+    const uncommitted = status.trim().split("\n").filter(Boolean).length;
+    const behindAhead = execSync("git rev-list --left-right --count origin/$(git rev-parse --abbrev-ref HEAD)...HEAD 2>/dev/null || echo '0\t0'", {
+      cwd: projectRoot, encoding: "utf-8", timeout: 5000, shell: true,
+    }).trim();
+    const [behind, ahead] = behindAhead.split("\t").map(Number);
+    const issues = [];
+    if (uncommitted > 10) issues.push(`${uncommitted} 个未提交文件`);
+    if (!isNaN(behind) && behind > 0) issues.push(`落后 origin ${behind} 个提交`);
+    if (!isNaN(ahead) && ahead > 5) issues.push(`领先 origin ${ahead} 个提交（建议推送）`);
+    const score = issues.length === 0 ? 100 : uncommitted > 20 ? 40 : issues.length >= 2 ? 60 : 80;
+    const summary = issues.length > 0
+      ? `${branch} · ${issues.join("; ")}`
+      : `${branch} · ${uncommitted > 0 ? `${uncommitted} 个未提交文件` : "工作区干净"}`;
+    const icon = score >= 80 ? "✅" : score >= 60 ? "⚠️" : "❌";
+    return { score, summary, icon, branch, uncommitted, behind, ahead };
+  } catch {
+    return { score: 0, summary: "Git 信息获取失败", icon: "⏭️", branch: "?", uncommitted: 0, behind: 0, ahead: 0 };
+  }
+}
+
+export function runSecurityScan(projectRoot) {
+  const findings = [];
+  const secretPatterns = [
+    { pattern: /(['"])(x?-?token|x?-?key|x?-?secret|password|passwd)\1\s*[:=]\s*['"][^'"]{8,}['"]/gi, label: "硬编码凭据" },
+    { pattern: /sk-[a-zA-Z0-9]{20,}/g, label: "疑似 OpenAI/API 密钥" },
+    { pattern: /ghp_[a-zA-Z0-9]{36}/g, label: "疑似 GitHub Token" },
+    { pattern: /AKIA[0-9A-Z]{16}/g, label: "疑似 AWS Access Key" },
+  ];
+  try {
+    const trackedFiles = execSync("git ls-files --cached --others --exclude-standard", {
+      cwd: projectRoot, encoding: "utf-8", timeout: 5000,
+    }).trim().split("\n").filter(Boolean);
+    const scannable = trackedFiles.filter((f) =>
+      !f.startsWith(".git/") && !f.startsWith("node_modules/") && !f.startsWith(".memory/")
+      && /\.(js|mjs|ts|json|yml|yaml|md|env|toml|sh|py|rb)$/.test(f)
+    );
+    for (const file of scannable.slice(0, 200)) {
+      try {
+        const content = readFileSync(join(projectRoot, file), "utf-8");
+        for (const { pattern, label } of secretPatterns) {
+          pattern.lastIndex = 0;
+          const matches = content.match(pattern);
+          if (matches) findings.push(`${file}: ${label} (${matches.length} 处)`);
+        }
+      } catch { /* skip unreadable */ }
+    }
+  } catch { /* git ls-files failed */ }
+  try {
+    const envFiles = execSync("git ls-files --others .env* 2>/dev/null || true", {
+      cwd: projectRoot, encoding: "utf-8", timeout: 3000,
+    }).trim();
+    if (envFiles) findings.push(`未追踪的 .env 文件: ${envFiles.split("\n").join(", ")}`);
+  } catch { /* skip */ }
+  const score = findings.length === 0 ? 100 : findings.length <= 2 ? 70 : findings.length <= 5 ? 40 : 20;
+  const summary = findings.length === 0 ? "未发现风险"
+    : `${findings.length} 项发现: ${findings.slice(0, 2).join("; ")}${findings.length > 2 ? ` +${findings.length - 2} 项` : ""}`;
+  const icon = score >= 80 ? "✅" : score >= 60 ? "⚠️" : "❌";
+  return { score, summary, icon, findings };
+}
+
+function countFileLines(filePath) {
+  try {
+    const buf = readFileSync(filePath);
+    if (buf.length > 2 * 1024 * 1024) return String(buf).split("\n").length;
+    let count = 0, cr = false;
+    for (const b of buf) {
+      if (b === 0x0a) { count++; cr = false; }
+      else if (b === 0x0d) { cr = true; }
+      else if (cr) { count++; cr = false; }
+    }
+    if (cr || (buf.length > 0 && buf[buf.length - 1] !== 0x0a)) count++;
+    return count;
+  } catch { return 0; }
+}
+
+export function getStructureHealth(projectRoot) {
+  const largeFiles = [], modules = new Map();
+  try {
+    const tracked = execSync("git ls-files --cached --others --exclude-standard", {
+      cwd: projectRoot, encoding: "utf-8", timeout: 8000,
+    }).trim().split("\n").filter(Boolean);
+    let fileCount = 0, totalLines = 0;
+    for (const rel of tracked) {
+      if (rel.startsWith(".git/") || rel.startsWith("node_modules/") || rel.startsWith(".memory/") || rel.startsWith("dist/") || rel.startsWith("build/") || rel.startsWith("coverage/") || rel.startsWith("cdn/")) continue;
+      const dot = rel.lastIndexOf(".");
+      const ext = dot > 0 ? rel.slice(dot + 1).toLowerCase() : "";
+      if (!STRUCT_SOURCE_EXT.has(ext)) continue;
+      const abs = join(projectRoot, rel);
+      const lines = countFileLines(abs);
+      if (lines <= 0) continue;
+      fileCount++; totalLines += lines;
+      if (lines >= STRUCT_LARGE_FILE_WARN) largeFiles.push({ path: rel, lines, ext });
+      const topDir = rel.includes("/") ? rel.split("/")[0] : "(root)";
+      const mod = modules.get(topDir) || { name: topDir, fileCount: 0, lines: 0, maxLines: 0, maxFile: "" };
+      mod.fileCount++; mod.lines += lines;
+      if (lines > mod.maxLines) { mod.maxLines = lines; mod.maxFile = rel; }
+      modules.set(topDir, mod);
+    }
+    largeFiles.sort((a, b) => b.lines - a.lines);
+    const topFiles = largeFiles.slice(0, STRUCT_TOP_FILES);
+    const topModules = [...modules.values()].sort((a, b) => b.lines - a.lines).slice(0, STRUCT_TOP_MODULES).map((m) => ({ ...m, avgLines: m.fileCount > 0 ? Math.round(m.lines / m.fileCount) : 0 }));
+    const critFiles = largeFiles.filter((f) => f.lines >= STRUCT_LARGE_FILE_CRIT).length;
+    const warnFiles = largeFiles.length - critFiles;
+    const hotModules = topModules.filter((m) => m.lines >= STRUCT_MODULE_LINE_WARN || m.fileCount >= STRUCT_MODULE_FILE_WARN);
+    let score = 100; score -= critFiles * 8; score -= warnFiles * 3; score -= hotModules.length * 4;
+    score = Math.max(0, Math.min(100, score));
+    const summary = `${fileCount} 源文件 · ${totalLines.toLocaleString()} 行` + (largeFiles.length > 0 ? ` · ${largeFiles.length} 大文件` : "") + (hotModules.length > 0 ? ` · ${hotModules.length} 热模块` : "");
+    const icon = score >= 80 ? "✅" : score >= 60 ? "⚠️" : "❌";
+    return { largeFiles: topFiles, allLargeFileCount: largeFiles.length, critFileCount: critFiles, modules: topModules, totals: { fileCount, totalLines }, score, summary, icon };
+  } catch (err) {
+    return { largeFiles: [], allLargeFileCount: 0, critFileCount: 0, modules: [], totals: { fileCount: 0, totalLines: 0 }, score: 0, summary: `分析失败: ${err.message?.slice(0, 40) || "unknown"}`, icon: "❌" };
+  }
+}

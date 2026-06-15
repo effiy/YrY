@@ -13,7 +13,22 @@ lifecycle: default-pipeline
 >
 > 模板参考源：`docs/故事任务面板/yry-self-test/场景-1-init后全量自检/` 下的 7 份 HTML 文件。
 
-[命令族全景](#命令族全景) · [7 文档全景](#7-文档全景) · [数据源](#数据源) · [操作边界](#操作边界) · [/rui-html](#rui-html) · [模板系统](#模板系统) · [核心规则](#核心规则) · [生效标志](#生效标志)
+<a id="iron-law"></a>
+## 铁律
+
+```
+EACH SCENE'S 7 HTML DOCS MUST BE GENERATED FROM ITS index.md — NO INDEPENDENT AUTHORING
+```
+
+场景目录下 7 类 HTML（计划清单/架构图/知识图谱/源码/测试面板/演示/审查）的**唯一数据源**是对应场景的 `index.md`。HTML 不可独立创作；`index.md` 任一章节变更后必须重跑 `/rui-html <story> --force` 覆盖。
+
+| 铁律 | 含义 | 违反信号 | 处置 |
+|------|------|---------|------|
+| **单源生** | 7 类 HTML = `index.md` §0–§4 的结构化投影 | HTML 出现 `index.md` 不存在的事实；`index.md` 更新后 HTML 未变；模板里硬编码场景专有名词 | 删除虚构内容，回归模板通用壳，跑 `--force` 重生 |
+
+> 本约束在 [rules/doc-generation.md §⑨ 单源生](../../rules/doc-generation.md#single-source) 中以强制规则形式记录；本 SKILL.md 与之等价。
+
+[命令族全景](#命令族全景) · [7 文档全景](#7-文档全景) · [数据源](#数据源) · [操作边界](#操作边界) · [/rui-html](#rui-html) · [模板系统](#模板系统) · [核心规则](#核心规则) · [生效标志](#effectiveness)
 
 ## 命令族全景
 
@@ -210,8 +225,8 @@ flowchart TD
     R3 --> R4["④ 表达优先 — 生成的 HTML 含结构化内容"]:::rule
     R4 --> R5["⑤ 类别正确 — A/Mono vs B/System 加载链不可混"]:::rule
     R5 --> R6["⑥ CDN 相对路径 — 基于场景深度计算"]:::rule
-    R6 --> R7["⑦ 占位诚实 — 缺数据标注而非编造"]:::rule
-    R7 --> R8["⑧ 分支隔离 — 写入走标准 feat/<name> 门禁"]:::rule
+    R6 --> R7["⑦ 占位诚实 — 缺数据标注而非编造"]:::rule --> R8["⑧ 分支隔离 — 写入走标准 feat/<name> 门禁"]:::rule
+    R8 --> R9["⑨ 单源生 — 7 类 HTML = index.md §0–§4 的结构化投影"]:::rule
 ```
 
 | # | 规则 | 违反处理 |
@@ -224,6 +239,7 @@ flowchart TD
 | 6 | CDN 路径基于场景目录深度计算 | 检查链接可达性 |
 | 7 | 缺数据时标注而非编造 | P0 — 替换编造内容 |
 | 8 | 写入操作走分支隔离 | `no-branch-isolation` 阻断 |
+| 9 | 7 类 HTML 唯一数据源 = 对应场景 `index.md`；不可独立创作；`index.md` 变更后必须 `--force` 重生 | 删除虚构内容，跑 `/rui-html <story> --force` |
 
 ## 生效标志
 
@@ -234,6 +250,8 @@ flowchart TD
 | 浏览器打开生成的 HTML，CDN 资源正常加载 | 路径计算正确 |
 | 同场景 7 文件 breadcrumb 完全一致 | 一致性保证生效 |
 | `--force` 覆盖前生成 `.bak` 备份 | 安全覆盖生效 |
+| 7 份 HTML 内的场景特异性内容（标题/版本/模块名/表格/mermaid）均能在 `index.md` 中找到来源 | 单源生原则生效 |
+| `index.md` mtime ≥ 对应 HTML mtime 时，自动触发 `--force` 覆盖 | 变更即重生链路生效 |
 
 ## 与 rui 的关系
 

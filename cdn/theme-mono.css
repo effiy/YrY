@@ -107,7 +107,7 @@ body {
   color: #7aa2f7; text-decoration: none; transition: color 0.15s;
 }
 .yry-mono-container .breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
-.yry-mono-container .breadcrumb .bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
+.yry-mono-container .breadcrumb .bc-sep { color: #53576c; opacity: 0.5; -webkit-user-select: none; user-select: none; }
 .yry-mono-container .breadcrumb .bc-current { color: #94a3b8; font-weight: 500; }
 
 /* ── Cross-nav (mono theme) ──────────────────────────────────────────── */
@@ -118,7 +118,7 @@ body {
 .yry-mono-container .cross-link { color: #7aa2f7; font-size: 0.76rem; text-decoration: none; padding: 3px 10px; border-radius: 4px; transition: color 0.15s, background 0.15s; }
 .yry-mono-container .cross-link:hover { color: #fbbf24; background: rgba(251,191,36,0.06); }
 .yry-mono-container .cross-link.on { color: #fbbf24; font-weight: 600; cursor: default; }
-.yry-mono-container .cross-sep { color: #475569; font-size: 0.5rem; opacity: 0.35; user-select: none; }
+.yry-mono-container .cross-sep { color: #475569; font-size: 0.5rem; opacity: 0.35; -webkit-user-select: none; user-select: none; }
 
 /* ── Cross-nav overrides (mono theme uses different link colors) ────────── */
 .yry-mono-container .yry-cross-link { color: #7aa2f7; font-size: 0.76rem; }

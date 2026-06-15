@@ -82,6 +82,7 @@ flowchart LR
     S5 --> S6["策展完成<br/>git commit 已提交"]:::sig
     S6 --> S7["无魔数<br/>命名常量 + 语义描述"]:::sig
     S7 --> S8["效果证<br/>效果图 + 可操作验证"]:::sig
+    S8 --> S9["单源生<br/>HTML 来自 index.md"]:::sig
 
     classDef sig fill:#34d399,color:#000
 ```
@@ -97,3 +98,4 @@ flowchart LR
 | 基线溯源：技术评审～自改进复盘 均有 §0 基线溯源且链接有效 | 补基线溯源表 |
 | 无魔数：代码中裸数值已提取为命名常量，文档中硬编码量级/阈值已语义化 | 代码提取常量，文档改写语义描述 |
 | 效果证：§0 技术评审有效果示意，§2 实施报告有截图+可操作验证步骤 | 补效果图，补 curl/操作步骤 |
+| 单源生：场景 7 类 HTML 内容可溯源至对应 `index.md`，无独立创作内容；`index.md` 变更后 HTML 已 `--force` 重生 | 删除 HTML 中 index.md 之外的事实断言；跑 `/rui-html <story> --force` 覆盖 |

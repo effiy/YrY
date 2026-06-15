@@ -10,6 +10,8 @@
     "theme-mono.css",
     "fonts.css",
     "fonts/*.woff2",
+    "yry-checklist.css",
+    "yry-home.css",
     "README.md"
   ],
   "keywords": [
