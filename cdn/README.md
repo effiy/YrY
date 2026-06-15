@@ -6,21 +6,28 @@
 
 ```
 cdn/
-├── shared.css              # ★ 所有页面通用 — CSS Reset · 动画 · 面包屑 · 横向导航 · 工具栏 · Toast
-├── shared.js               # ★ 所有页面通用 — YrY.toast() · YrY.copyCmd() · YrY.switchPanel() · 折叠/展开
-├── yry-breadcrumb/         # ★ Vue 3 组件 — 面包屑 (3 文件拆分 + 5 场景任务故事)
-│   ├── index.html          #   模板源 + Demo 预览页 (<script type="text/x-template">)
-│   ├── index.js            #   Loader: fetch 模板 → 注册 window.YryBreadcrumb → 派发 ready 事件
-│   ├── index.css           #   组件样式 (.breadcrumb · .bc-sep · .bc-current)
-│   └── 任务故事/           #   组件任务故事 (5 场景 · 8 交付物 / 场景 = 40 文件)
-│       ├── README.md       #     任务故事总览 + 5 场景导航
-│       ├── 场景-1-需求与设计/   #     需求 / 5 项设计决策 / Props 草案
-│       ├── 场景-2-模板与样式/   #     Vue template + CSS 设计令牌
-│       ├── 场景-3-Loader实现/   #     fetch + DOMParser + ready 事件 + 5s 超时
-│       ├── 场景-4-页面集成/     #     4 文件引用顺序 + 4 种 items 模式
-│       └── 场景-5-测试与发布/   #     7 项自测 + npm 集成
-├── theme.css               # Category B 页面 — 设计令牌(:root变量) · 统计卡片 · 标签页 · 折叠套件 · 进度条
-└── theme-mono.css          # Category A 页面 — JetBrains Mono 主题 · 图表容器 · 图例 · 卡片圆点
+├── index.html               # ★ CDN 库首页 — 文件清单 · 主题系统 · CSS 组件 · JS API · YryBreadcrumb
+├── shared.css               # ★ 所有页面通用 — CSS Reset · 动画 · 面包屑 · 横向导航 · 工具栏 · Toast
+├── shared.js                # ★ 所有页面通用 — YrY.toast() · YrY.copyCmd() · YrY.switchPanel() · 折叠/展开
+├── theme.css                # Category B 页面 — 设计令牌(:root变量) · 统计卡片 · 标签页 · 折叠套件 · 进度条
+├── theme-mono.css           # Category A 页面 — JetBrains Mono 主题 · 图表容器 · 图例 · 脉冲圆点
+├── yry-home.css             # 文档首页专属样式 — 六层结构布局 · 统计卡片 · 场景网格 · 面板系统
+├── yry-checklist.css        # 计划清单专属样式 — 勾选交互 · 进度条 · 风险行 · 标签页 · 批量操作栏
+├── yry-scene.css            # ★ 场景文档共享样式 — 35 场景页统一引用：设计令牌 · 排版 · 代码块 · 表格 · 徽章
+├── fonts.css + fonts/       # JetBrains Mono 字体 (woff2, 4 字重)
+├── yry-breadcrumb/          # ★ Vue 3 组件 — 面包屑 (3 文件拆分 + 5 场景任务故事)
+│   ├── index.html           #   模板源 + Demo 预览页 (暗色主题, <script type="text/x-template">)
+│   ├── index.js             #   Loader: fetch 模板 → 注册 window.YryBreadcrumb → 派发 ready 事件
+│   ├── index.css            #   组件样式 (.breadcrumb · .bc-sep · .bc-current, 依赖 --yry-* token)
+│   └── (Demo 含 3 个示例: href+icon / 纯文本 / 8 级长路径)
+└── 任务故事/yry-breadcrumb/ #   组件任务故事 (5 场景 × 8 交付物 = 40 文件, 含 index.html + README.md)
+    ├── index.html           #     任务故事总览 (5 场景 · 3 组件文件 · 40 交付物)
+    ├── README.md            #     组件 README
+    ├── 场景-1-需求与设计/   #     需求 / 5 项设计决策 / Props 草案 (× 8 交付物)
+    ├── 场景-2-模板与样式/   #     Vue template + CSS 设计令牌 (× 8 交付物)
+    ├── 场景-3-Loader实现/   #     fetch + DOMParser + ready 事件 + 5s 超时 (× 8 交付物)
+    ├── 场景-4-页面集成/     #     4 文件引用顺序 + 4 种 items 模式 (× 8 交付物)
+    └── 场景-5-测试与发布/   #     7 项自测 + npm 集成 (× 8 交付物)
 ```
 
 ## 页面分类
