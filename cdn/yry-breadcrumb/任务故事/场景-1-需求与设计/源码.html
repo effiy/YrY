@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>需求与设计 · 关键源码 · YryBreadcrumb 任务故事</title>
+<title>需求与设计 · 源码 · YryBreadcrumb 任务故事</title>
 <link rel="stylesheet" href="../../../shared.css">
 <link rel="stylesheet" href="../../../theme.css">
 <link rel="stylesheet" href="../../../yry-checklist.css">
@@ -12,100 +12,195 @@
 <script src="../../../shared.js"></script>
 <script src="../../../yry-breadcrumb/index.js"></script>
 <style>
-  body { padding: 40px 24px 80px; max-width: 1100px; margin: 0 auto; }
-  .scene-header { padding: 16px 0 24px; border-bottom: 1px solid rgba(255,255,255,.05); margin-bottom: 24px; }
-  .scene-tag { display: inline-block; padding: 3px 10px; background: #22d3ee22; border: 1px solid #22d3ee55; border-radius: 12px; color: #22d3ee; font-size: .72rem; font-weight: 600; }
-  .scene-title { margin: 8px 0 4px; font-size: 1.4rem; color: var(--yry-color-text-1, #f5f5f5); }
-  .scene-en { font-size: .85rem; color: var(--yry-color-text-3, #888); }
-  .scene-desc { font-size: .88rem; color: var(--yry-color-text-2, #d4d4d4); margin: 12px 0 0; line-height: 1.6; }
-  .scene-nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:8px; margin: 16px 0 24px; }
-  .scene-nav a, .scene-nav span { font-size:.74rem; padding:4px 10px; border-radius:12px; text-decoration:none; }
-  .scene-nav a { color: var(--yry-color-text-2, #d4d4d4); }
-  .scene-nav a:hover { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.08); }
-  .scene-nav .active { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); }
-  .scene-nav-sep { color: var(--yry-color-text-3, #888); opacity:.3; user-select:none; }
-  h2 { font-size: 1.05rem; margin: 28px 0 12px; color: var(--yry-color-text-1); border-left: 3px solid #22d3ee; padding-left: 10px; }
-  h3 { font-size: .9rem; margin: 20px 0 8px; color: var(--yry-color-text-1); }
-  p, li { font-size: .86rem; line-height: 1.7; color: var(--yry-color-text-2); }
-  code, pre { font-family: 'JetBrains Mono', Menlo, monospace; font-size: .8rem; }
-  pre { background: #1a1b26; border: 1px solid #2b2d3b; border-radius: 6px; padding: 12px 14px; overflow-x: auto; line-height: 1.5; color: #c0caf5; }
-  code { background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 3px; color: #e0af68; }
-  pre code { background: none; padding: 0; color: #c0caf5; }
-  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .8rem; }
-  th, td { padding: 8px 12px; border: 1px solid rgba(255,255,255,.08); text-align: left; }
-  th { background: rgba(255,255,255,.04); font-weight: 600; color: var(--yry-color-text-1); }
-  tr:hover { background: rgba(255,255,255,.02); }
-  .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.05); font-size: .74rem; color: var(--yry-color-text-3); }
-  .footer a { color: var(--yry-color-text-2); }
-  .demo-block { padding: 14px; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; margin: 12px 0; }
-  .checklist { padding-left: 0; list-style: none; }
-  .checklist li { padding-left: 24px; position: relative; }
-  .checklist li::before { content: '☐'; position: absolute; left: 4px; color: #22d3ee; }
-  .checklist li.done::before { content: '☑'; color: #10b981; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: .68rem; font-weight: 600; }
-  .badge-ok { background: #10b98122; color: #10b981; border: 1px solid #10b98155; }
-  .badge-warn { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b55; }
-  .badge-pending { background: #6b728022; color: #9ca3af; border: 1px solid #6b728055; }
+@layer tokens {
+  :root {
+    --yry-color-accent: #ffc107; --yry-color-cyan: #22d3ee;
+    --yry-color-pass: #10b981; --yry-color-warn: #f59e0b; --yry-color-fail: #ef4444;
+    --yry-color-text-1: #f5f5f5; --yry-color-text-2: #d4d4d4; --yry-color-text-3: #888;
+    --yry-color-text-inverse: #000; --yry-color-bg: #0a0a0a;
+    --yry-color-surface-1: rgba(255,255,255,.03); --yry-color-surface-2: rgba(255,255,255,.05);
+    --yry-color-border: rgba(255,255,255,.08); --yry-color-border-strong: rgba(255,255,255,.12);
+    --yry-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --yry-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --yry-fs-xs: .62rem; --yry-fs-sm: .72rem; --yry-fs-md: .78rem; --yry-fs-lg: .92rem; --yry-fs-xl: 1.1rem; --yry-fs-2xl: 1.4rem;
+    --yry-radius-sm: 4px; --yry-radius-md: 6px; --yry-radius-lg: 8px; --yry-radius-xl: 12px;
+    --yry-dur-fast: .12s; --yry-dur-base: .2s; --yry-dur-slow: .4s;
+    --yry-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --yry-z-toast: 1000; --yry-container-max: 1100px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --yry-color-bg: #fafafa; --yry-color-text-1: #1a1a1a;
+      --yry-color-text-2: #333; --yry-color-text-3: #666;
+      --yry-color-surface-1: rgba(0,0,0,.03); --yry-color-surface-2: rgba(0,0,0,.05);
+      --yry-color-border: rgba(0,0,0,.08); --yry-color-border-strong: rgba(0,0,0,.12);
+    }
+  }
+}
+@layer reset, base, components, utilities, overrides;
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+.skip-link { position:fixed; top:-100px; left:8px; z-index:var(--yry-z-toast); background:var(--yry-color-accent); color:var(--yry-color-text-inverse); padding:10px 16px; border-radius:var(--yry-radius-md); font-weight:600; text-decoration:none; transition:top var(--yry-dur-base) var(--yry-ease-out); font-size:.85rem; box-shadow:0 4px 12px rgba(0,0,0,.3); }
+.skip-link:focus { top:8px; outline:none; }
+:focus-visible { outline:2px solid var(--yry-color-cyan); outline-offset:2px; border-radius:var(--yry-radius-sm); }
+body { background:var(--yry-color-bg); color:var(--yry-color-text-1); font-family:var(--yry-font-sans); line-height:1.6; margin:0; }
+.container { max-width:var(--yry-container-max); margin:0 auto; padding:40px 24px 80px; }
+.scene-header { padding:16px 0 24px; border-bottom:1px solid var(--yry-color-border); margin-bottom:24px; }
+.scene-tag { display:inline-block; padding:3px 10px; background:rgba(34,211,238,.13); border:1px solid rgba(34,211,238,.33); border-radius:12px; color:#22d3ee; font-size:.72rem; font-weight:600; }
+.scene-title { margin:8px 0 4px; font-size:1.4rem; color:var(--yry-color-text-1); }
+.scene-en { font-size:.85rem; color:var(--yry-color-text-3); }
+.scene-desc { font-size:.88rem; color:var(--yry-color-text-2); margin:12px 0 0; line-height:1.6; }
+.scene-nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; background:var(--yry-color-surface-1); border:1px solid var(--yry-color-border); border-radius:8px; margin:16px 0 24px; }
+.scene-nav a, .scene-nav span { font-size:.74rem; padding:4px 10px; border-radius:12px; text-decoration:none; }
+.scene-nav a { color:var(--yry-color-text-2); }
+.scene-nav a:hover { color:var(--yry-color-accent); background:rgba(255,193,7,.08); }
+.scene-nav .active { color:var(--yry-color-accent); background:rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); }
+h2 { font-size:1.05rem; margin:28px 0 12px; color:var(--yry-color-text-1); border-left:3px solid #22d3ee; padding-left:10px; }
+h3 { font-size:.9rem; margin:20px 0 8px; color:var(--yry-color-text-1); }
+p, li { font-size:.86rem; line-height:1.7; color:var(--yry-color-text-2); }
+code, pre { font-family:var(--yry-font-mono); font-size:.8rem; }
+pre { background:#1a1b26; border:1px solid #2b2d3b; border-radius:6px; padding:12px 14px; overflow-x:auto; line-height:1.5; color:#c0caf5; }
+code { background:rgba(255,255,255,.06); padding:2px 6px; border-radius:3px; color:#e0af68; }
+pre code { background:none; padding:0; color:#c0caf5; }
+table { width:100%; border-collapse:collapse; margin:12px 0; font-size:.8rem; }
+th, td { padding:8px 12px; border:1px solid rgba(255,255,255,.08); text-align:left; }
+th { background:rgba(255,255,255,.04); font-weight:600; color:var(--yry-color-text-1); }
+tr:hover { background:rgba(255,255,255,.02); }
+.footer { margin-top:48px; padding-top:16px; border-top:1px solid var(--yry-color-border); font-size:.74rem; color:var(--yry-color-text-3); }
+.footer a { color:var(--yry-color-text-2); }
+.checklist { padding-left:0; list-style:none; }
+.checklist li { padding-left:24px; position:relative; }
+.checklist li::before { content:'☐'; position:absolute; left:4px; color:#22d3ee; }
+.checklist li.done::before { content:'☑'; color:#10b981; }
+.badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:.68rem; font-weight:600; }
+.badge-ok { background:rgba(16,185,129,.13); color:#10b981; border:1px solid rgba(16,185,129,.33); }
+.badge-warn { background:rgba(245,158,11,.13); color:#f59e0b; border:1px solid rgba(245,158,11,.33); }
+.badge-pending { background:rgba(107,114,128,.13); color:#9ca3af; border:1px solid rgba(107,114,128,.33); }
+.back-top { position:fixed; bottom:28px; right:28px; width:42px; height:42px; border-radius:50%; background:var(--yry-color-surface-2); border:1px solid rgba(255,255,255,.1); color:var(--yry-color-text-2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 2px 8px rgba(0,0,0,.25); transition:all .2s; opacity:0; pointer-events:none; z-index:100; }
+.back-top.visible { opacity:1; pointer-events:auto; }
+.back-top:hover { border-color:var(--yry-color-accent); color:var(--yry-color-accent); }
+@keyframes fadeInUp { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+@keyframes fadeInDown { from{opacity:0;transform:translateY(-8px);} to{opacity:1;transform:translateY(0);} }
 </style>
 </head>
 <body>
+<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
+<div class="container" id="main">
 <div id="breadcrumb-app"></div>
-
 <div class="scene-header">
-  <span class="scene-tag">场景 1 · 关键源码</span>
-  <h1 class="scene-title">📐 需求与设计 · 关键源码</h1>
-  <div class="scene-en">YryBreadcrumb 任务故事 · 场景 1 · Requirements & Design · 关键源码</div>
-  <p class="scene-desc">梳理面包屑组件的需求来源,确定 3 文件拆分 / 异步加载 / a11y 等关键设计决策,产出 Props API 草案。</p>
+  <span class="scene-tag">场景 1 · 源码</span>
+  <h1 class="scene-title">📄 需求与设计 · 源码</h1>
+  <div class="scene-en">YryBreadcrumb 任务故事 · 场景 1 · Requirements & Design · 源码</div>
+  <p class="scene-desc">梳理面包屑组件的需求来源，确定 3 文件拆分 / 异步加载 / a11y 等关键设计决策，产出 Props API 草案。</p>
 </div>
-
 <div class="scene-nav">
   <a href="../README.md">📋 任务故事</a>
-  <span class="scene-nav-sep">/</span>
+  <span>/</span>
   <a href="./index.md">需求与设计</a>
-  <span class="scene-nav-sep">/</span>
-  <span class="active">关键源码</span>
+  <span>/</span>
+  <span class="active">源码</span>
 </div>
 
-<h2>关键源码</h2>
-<p>摘录场景 1 · <strong>需求与设计</strong> 的关键源码片段 + 行号引用。</p>
-<p>完整文件: <a href="../../../yry-breadcrumb/index.html">index.html</a> · <a href="../../../yry-breadcrumb/index.js">index.js</a> · <a href="../../../yry-breadcrumb/index.css">index.css</a> · <a href="../README.md">任务故事 README</a></p>
-<pre><code><!-- cdn/yry-breadcrumb/index.html (模板源, 第 95-115 行) -->
-<script type="text/x-template" id="yry-breadcrumb-tpl">
-  <nav class="breadcrumb" :aria-label="ariaLabel">
-    <template v-for="(item, i) in items" :key="i">
-      <span v-if="i > 0" class="bc-sep" aria-hidden="true">/</span>
-      <a v-if="item.href" :href="item.href">
-        <template v-if="item.icon">{{ item.icon }}&nbsp;</template>{{ item.label }}
-      </a>
-      <span v-else class="bc-current" :aria-current="i === items.length - 1 ? 'page' : null">
-        <template v-if="item.icon">{{ item.icon }}&nbsp;</template>{{ item.label }}
-      </span>
-    </template>
-  </nav>
-</script></code></pre>
+<p>摘录场景 1 · <strong>需求与设计</strong> 的关键源码片段。完整文件见: <a href="../../../yry-breadcrumb/index.html">index.html</a> · <a href="../../../yry-breadcrumb/index.js">index.js</a> · <a href="../../../yry-breadcrumb/index.css">index.css</a>。</p>
+
+<h2>index.html — 模板片段</h2>
+<p>Vue 3 模板源，定义面包屑的 DOM 结构。含 <code>aria-label</code>、<code>aria-current</code>、<code>aria-hidden</code> 可访问性标注。</p>
+<pre><code>&lt;script type="text/x-template" id="yry-breadcrumb-tpl"&gt;
+  &lt;nav class="breadcrumb" :aria-label="ariaLabel"&gt;
+    &lt;template v-for="(item, i) in items" :key="i"&gt;
+      &lt;span v-if="i &gt; 0" class="bc-sep" aria-hidden="true"&gt;/&lt;/span&gt;
+      &lt;a v-if="item.href" :href="item.href"&gt;
+        &lt;template v-if="item.icon"&gt;{{ item.icon }}&amp;nbsp;&lt;/template&gt;{{ item.label }}
+      &lt;/a&gt;
+      &lt;span v-else class="bc-current" :aria-current="i === items.length - 1 ? 'page' : null"&gt;
+        &lt;template v-if="item.icon"&gt;{{ item.icon }}&amp;nbsp;&lt;/template&gt;{{ item.label }}
+      &lt;/span&gt;
+    &lt;/template&gt;
+  &lt;/nav&gt;
+&lt;/script&gt;</code></pre>
+
+<h2>index.js — 核心逻辑</h2>
+<p>异步加载流程：fetch 获取 index.html → DOMParser 提取模板 → Vue.createApp 挂载。</p>
+<pre><code>// 异步加载模板并注册全局组件
+(async function init() {
+  try {
+    // 1. 确定脚本所在目录，拼接 index.html 路径
+    const scriptSrc = document.currentScript.src;
+    const base = scriptSrc.substring(0, scriptSrc.lastIndexOf('/'));
+    const htmlUrl = base + '/index.html';
+
+    // 2. 异步 fetch HTML，通过 DOMParser 提取模板
+    const resp = await fetch(htmlUrl);
+    const text = await resp.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, 'text/html');
+    const tpl = doc.querySelector('#yry-breadcrumb-tpl');
+
+    // 3. 注册为全局 Vue 组件
+    window.YryBreadcrumb = {
+      template: tpl ? tpl.outerHTML : '&lt;nav class="breadcrumb"&gt;&lt;/nav&gt;',
+      props: {
+        items: { type: Array, default: () => [] },
+        ariaLabel: { type: String, default: '面包屑导航' },
+        separator: { type: String, default: '/' }
+      }
+    };
+
+    // 4. 通知等待中的页面
+    window.dispatchEvent(new CustomEvent('yry-breadcrumb-ready'));
+  } catch (e) {
+    console.warn('YryBreadcrumb: 模板加载失败，使用降级渲染', e);
+  }
+})();</code></pre>
+
+<h2>index.css — 设计令牌使用</h2>
+<p>样式层使用 CSS 自定义属性 <code>var(--yry-*, #fallback)</code> 实现跨主题可移植，无自定义属性时降级为默认深色主题。</p>
+<pre><code>/* 设计令牌驱动：所有颜色通过 var(--yry-*, fallback) 引用 */
+.breadcrumb {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+  padding: 6px 0; font-size: .82rem; line-height: 1.5;
+  color: var(--yry-color-text-2, #d4d4d4);
+}
+.breadcrumb a {
+  color: var(--yry-color-text-2, #d4d4d4); text-decoration: none;
+  border-radius: 4px; padding: 2px 6px;
+  transition: color .15s, background .15s;
+}
+.breadcrumb a:hover {
+  color: var(--yry-color-accent, #ffc107);
+  background: rgba(255,193,7,.08);
+}
+.bc-sep {
+  color: var(--yry-color-text-3, #888); user-select: none;
+}
+.bc-current {
+  color: var(--yry-color-accent, #ffc107); font-weight: 600;
+}</code></pre>
 
 <div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-1-需求与设计/关键源码</code><br>
+  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-1-需求与设计/源码.html</code><br>
   🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
 </div>
-
-
-
+</div>
+<button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">↑</button>
 <script>
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 1 · 需求与设计' },
-        { label: '关键源码', icon: '📄' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
+const backTopBtn=document.getElementById('backTop');
+function toggleBackTop(){backTopBtn.classList.toggle('visible',window.scrollY>400);}
+window.addEventListener('scroll',toggleBackTop,{passive:true});
+backTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+function mountBreadcrumb(){
+  if(!window.Vue||!window.YryBreadcrumb)return;
+  Vue.createApp(window.YryBreadcrumb,{
+    ariaLabel:'面包屑导航',
+    items:[
+      {label:'YryBreadcrumb',href:'../../../index.html',icon:'🍞'},
+      {label:'任务故事',href:'../README.md'},
+      {label:'场景 1 · 需求与设计'},
+      {label:'源码',icon:'📄'}
+    ]
+  }).mount('#breadcrumb-app');
+}
+if(window.YryBreadcrumb)mountBreadcrumb();
+else document.addEventListener('yry-breadcrumb-ready',mountBreadcrumb,{once:true});
 </script>
 </body>
 </html>

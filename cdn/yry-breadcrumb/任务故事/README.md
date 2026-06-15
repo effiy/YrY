@@ -1,6 +1,8 @@
 # YryBreadcrumb · Vue 3 面包屑组件
 
 > 一个**零打包** (build-free) 的 Vue 3 单文件组件,按 `index.html` / `index.js` / `index.css` 三文件拆分,模板/逻辑/样式各司其职。
+>
+> 所有 HTML 页面统一采用 **YrY CSS 设计系统**：`@layer` 级联 · 22 设计令牌 (`--yry-color-*`) · 亮/暗双模自适应 · `prefers-reduced-motion` a11y 动效克制 · skip-link 键盘可达性。CSS 资源通过 CDN 加载 (`shared.css` / `theme.css` / `yry-checklist.css`)。
 
 ## 文件结构
 
@@ -11,6 +13,7 @@ yry-breadcrumb/
 ├── index.css                        # 组件样式 (使用 --yry-color-* 设计令牌)
 └── 任务故事/                        # 组件任务故事 (5 场景 · 8 交付物 / 场景)
     ├── README.md                    # 本文件
+    ├── index.html                   # 任务故事总览 (5 场景导航 · 组件结构 · 交付物索引)
     ├── 场景-1-需求与设计/
     │   ├── index.md                 #   场景正文 (5 章节 + Mermaid)
     │   ├── 审查.html                #   技术评审 (7 项清单)

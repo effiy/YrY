@@ -12,40 +12,70 @@
 <script src="../../../shared.js"></script>
 <script src="../../../yry-breadcrumb/index.js"></script>
 <style>
-  body { padding: 40px 24px 80px; max-width: 1100px; margin: 0 auto; }
-  .scene-header { padding: 16px 0 24px; border-bottom: 1px solid rgba(255,255,255,.05); margin-bottom: 24px; }
-  .scene-tag { display: inline-block; padding: 3px 10px; background: #10b98122; border: 1px solid #10b98155; border-radius: 12px; color: #10b981; font-size: .72rem; font-weight: 600; }
-  .scene-title { margin: 8px 0 4px; font-size: 1.4rem; color: var(--yry-color-text-1, #f5f5f5); }
-  .scene-en { font-size: .85rem; color: var(--yry-color-text-3, #888); }
-  .scene-desc { font-size: .88rem; color: var(--yry-color-text-2, #d4d4d4); margin: 12px 0 0; line-height: 1.6; }
-  .scene-nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:8px; margin: 16px 0 24px; }
-  .scene-nav a, .scene-nav span { font-size:.74rem; padding:4px 10px; border-radius:12px; text-decoration:none; }
-  .scene-nav a { color: var(--yry-color-text-2, #d4d4d4); }
-  .scene-nav a:hover { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.08); }
-  .scene-nav .active { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); }
-  .scene-nav-sep { color: var(--yry-color-text-3, #888); opacity:.3; user-select:none; }
-  h2 { font-size: 1.05rem; margin: 28px 0 12px; color: var(--yry-color-text-1); border-left: 3px solid #10b981; padding-left: 10px; }
-  h3 { font-size: .9rem; margin: 20px 0 8px; color: var(--yry-color-text-1); }
-  p, li { font-size: .86rem; line-height: 1.7; color: var(--yry-color-text-2); }
-  code, pre { font-family: 'JetBrains Mono', Menlo, monospace; font-size: .8rem; }
-  pre { background: #1a1b26; border: 1px solid #2b2d3b; border-radius: 6px; padding: 12px 14px; overflow-x: auto; line-height: 1.5; color: #c0caf5; }
-  code { background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 3px; color: #e0af68; }
-  pre code { background: none; padding: 0; color: #c0caf5; }
-  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .8rem; }
-  th, td { padding: 8px 12px; border: 1px solid rgba(255,255,255,.08); text-align: left; }
-  th { background: rgba(255,255,255,.04); font-weight: 600; color: var(--yry-color-text-1); }
-  tr:hover { background: rgba(255,255,255,.02); }
-  .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.05); font-size: .74rem; color: var(--yry-color-text-3); }
-  .footer a { color: var(--yry-color-text-2); }
-  .demo-block { padding: 14px; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; margin: 12px 0; }
-  .checklist { padding-left: 0; list-style: none; }
-  .checklist li { padding-left: 24px; position: relative; }
-  .checklist li::before { content: '☐'; position: absolute; left: 4px; color: #10b981; }
-  .checklist li.done::before { content: '☑'; color: #10b981; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: .68rem; font-weight: 600; }
-  .badge-ok { background: #10b98122; color: #10b981; border: 1px solid #10b98155; }
-  .badge-warn { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b55; }
-  .badge-pending { background: #6b728022; color: #9ca3af; border: 1px solid #6b728055; }
+@layer tokens {
+  :root {
+    --yry-color-accent: #ffc107; --yry-color-cyan: #22d3ee;
+    --yry-color-pass: #10b981; --yry-color-warn: #f59e0b; --yry-color-fail: #ef4444;
+    --yry-color-text-1: #f5f5f5; --yry-color-text-2: #d4d4d4; --yry-color-text-3: #888;
+    --yry-color-text-inverse: #000; --yry-color-bg: #0a0a0a;
+    --yry-color-surface-1: rgba(255,255,255,.03); --yry-color-surface-2: rgba(255,255,255,.05);
+    --yry-color-border: rgba(255,255,255,.08); --yry-color-border-strong: rgba(255,255,255,.12);
+    --yry-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --yry-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --yry-fs-xs: .62rem; --yry-fs-sm: .72rem; --yry-fs-md: .78rem; --yry-fs-lg: .92rem; --yry-fs-xl: 1.1rem; --yry-fs-2xl: 1.4rem;
+    --yry-radius-sm: 4px; --yry-radius-md: 6px; --yry-radius-lg: 8px; --yry-radius-xl: 12px;
+    --yry-dur-fast: .12s; --yry-dur-base: .2s; --yry-dur-slow: .4s;
+    --yry-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --yry-z-toast: 1000; --yry-container-max: 1100px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --yry-color-bg: #fafafa; --yry-color-text-1: #1a1a1a;
+      --yry-color-text-2: #333; --yry-color-text-3: #666;
+      --yry-color-surface-1: rgba(0,0,0,.03); --yry-color-surface-2: rgba(0,0,0,.05);
+      --yry-color-border: rgba(0,0,0,.08); --yry-color-border-strong: rgba(0,0,0,.12);
+    }
+  }
+}
+@layer reset, base, components, utilities, overrides;
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+.skip-link { position:fixed; top:-100px; left:8px; z-index:var(--yry-z-toast); background:var(--yry-color-accent); color:var(--yry-color-text-inverse); padding:10px 16px; border-radius:var(--yry-radius-md); font-weight:600; text-decoration:none; transition:top var(--yry-dur-base) var(--yry-ease-out); font-size:.85rem; box-shadow:0 4px 12px rgba(0,0,0,.3); }
+.skip-link:focus { top:8px; outline:none; }
+:focus-visible { outline:2px solid var(--yry-color-cyan); outline-offset:2px; border-radius:var(--yry-radius-sm); }
+body { background:var(--yry-color-bg); color:var(--yry-color-text-1); font-family:var(--yry-font-sans); line-height:1.6; margin:0; padding: 40px 24px 80px; max-width: 1100px; margin-left: auto; margin-right: auto; }
+.scene-header { padding:16px 0 24px; border-bottom:1px solid var(--yry-color-border); margin-bottom:24px; }
+.scene-tag { display:inline-block; padding:3px 10px; background:#10b98122; border:1px solid #10b98155; border-radius:12px; color:#10b981; font-size:.72rem; font-weight:600; }
+.scene-title { margin:8px 0 4px; font-size:1.4rem; color:var(--yry-color-text-1); }
+.scene-en { font-size:.85rem; color:var(--yry-color-text-3); }
+.scene-desc { font-size:.88rem; color:var(--yry-color-text-2); margin:12px 0 0; line-height:1.6; }
+.scene-nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; background:var(--yry-color-surface-1); border:1px solid var(--yry-color-border); border-radius:8px; margin:16px 0 24px; }
+.scene-nav a, .scene-nav span { font-size:.74rem; padding:4px 10px; border-radius:12px; text-decoration:none; }
+.scene-nav a { color:var(--yry-color-text-2); }
+.scene-nav a:hover { color:var(--yry-color-accent); background:rgba(255,193,7,.08); }
+.scene-nav .active { color:var(--yry-color-accent); background:rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); }
+.scene-nav-sep { color:var(--yry-color-text-3); opacity:.3; user-select:none; }
+h2 { font-size:1.05rem; margin:28px 0 12px; color:var(--yry-color-text-1); border-left:3px solid #10b981; padding-left:10px; }
+h3 { font-size:.9rem; margin:20px 0 8px; color:var(--yry-color-text-1); }
+p, li { font-size:.86rem; line-height:1.7; color:var(--yry-color-text-2); }
+code, pre { font-family:var(--yry-font-mono); font-size:.8rem; }
+pre { background:#1a1b26; border:1px solid #2b2d3b; border-radius:6px; padding:12px 14px; overflow-x:auto; line-height:1.5; color:#c0caf5; }
+code { background:rgba(255,255,255,.06); padding:2px 6px; border-radius:3px; color:#e0af68; }
+pre code { background:none; padding:0; color:#c0caf5; }
+table { width:100%; border-collapse:collapse; margin:12px 0; font-size:.8rem; }
+th, td { padding:8px 12px; border:1px solid rgba(255,255,255,.08); text-align:left; }
+th { background:rgba(255,255,255,.04); font-weight:600; color:var(--yry-color-text-1); }
+tr:hover { background:rgba(255,255,255,.02); }
+.footer { margin-top:48px; padding-top:16px; border-top:1px solid var(--yry-color-border); font-size:.74rem; color:var(--yry-color-text-3); }
+.footer a { color:var(--yry-color-text-2); }
+.checklist { padding-left:0; list-style:none; }
+.checklist li { padding-left:24px; position:relative; }
+.checklist li::before { content:'☐'; position:absolute; left:4px; color:#10b981; }
+.checklist li.done::before { content:'☑'; color:#10b981; }
+.back-top { position:fixed; bottom:28px; right:28px; width:42px; height:42px; border-radius:50%; background:var(--yry-color-surface-2); border:1px solid rgba(255,255,255,.1); color:var(--yry-color-text-2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 2px 8px rgba(0,0,0,.25); transition:all .2s; opacity:0; pointer-events:none; z-index:100; }
+.back-top.visible { opacity:1; pointer-events:auto; }
+.back-top:hover { border-color:var(--yry-color-accent); color:var(--yry-color-accent); }
+@keyframes fadeInUp { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+@keyframes fadeInDown { from{opacity:0;transform:translateY(-8px);} to{opacity:1;transform:translateY(0);} }
 </style>
 </head>
 <body>
@@ -53,9 +83,9 @@
 
 <div class="scene-header">
   <span class="scene-tag">场景 4 · 关键源码</span>
-  <h1 class="scene-title">🔌 页面集成 · 关键源码</h1>
-  <div class="scene-en">YryBreadcrumb 任务故事 · 场景 4 · Page Integration · 关键源码</div>
-  <p class="scene-desc">将组件接入到现有页面 (计划清单 · 场景 1),涉及 4 文件引用顺序 / mount 脚本 / items 配置 4 种典型模式。</p>
+  <h1 class="scene-title">📄 页面集成 · 关键源码</h1>
+  <div class="scene-en">YryBreadcrumb 任务故事 · 场景 4 · Page Integration · Source Code</div>
+  <p class="scene-desc">集成到 计划清单.html + 28 场景页 · 4 文件引用顺序 · 4 种 items 模式 (含 href/纯文本/长路径/图标) — 核心代码片段。</p>
 </div>
 
 <div class="scene-nav">
@@ -66,35 +96,92 @@
   <span class="active">关键源码</span>
 </div>
 
-<h2>关键源码</h2>
-<p>摘录场景 4 · <strong>页面集成</strong> 的关键源码片段 + 行号引用。</p>
-<p>完整文件: <a href="../../../yry-breadcrumb/index.html">index.html</a> · <a href="../../../yry-breadcrumb/index.js">index.js</a> · <a href="../../../yry-breadcrumb/index.css">index.css</a> · <a href="../README.md">任务故事 README</a></p>
-<pre><code><!-- docs/.../计划清单.html (页面集成示例) -->
-<head>
-  <link rel="stylesheet" href="../../../../cdn/yry-breadcrumb/index.css">
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-</head>
-<body>
-  <div id="breadcrumb-app"></div>
-  <script src="../../../../cdn/yry-breadcrumb/index.js"></script>
-  <script>
-    function mountBreadcrumb() {
-      Vue.createApp(window.YryBreadcrumb, {
-        items: [
-          { label: '文档中心', href: '../../../index.html', icon: '📄' },
-          { label: 'yry-checklist · 清单与自循环' },
-          { label: '场景 1 · 模板架构与 CSS 设计系统' },
-          { label: '计划清单', icon: '📋' }
-        ]
-      }).mount('#breadcrumb-app');
-    }
-    if (window.YryBreadcrumb) mountBreadcrumb();
-    else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-  </script>
-</body></code></pre>
+<p>场景 4 · <strong>页面集成</strong> 的关键源码片段。完整文件: <a href="../../../yry-breadcrumb/index.html">index.html</a> · <a href="../../../yry-breadcrumb/index.js">index.js</a> · <a href="../../../yry-breadcrumb/index.css">index.css</a></p>
+
+<h2>1. 页面集成模板 (5 步加载模式)</h2>
+<p>任意目标页面引入 YryBreadcrumb 的标准模板 — 4 文件引用 + mount 脚本。</p>
+<pre><code>&lt;!-- ============ 步骤 1: CSS (head 首位) ============ --&gt;
+&lt;link rel="stylesheet" href="path/to/cdn/yry-breadcrumb/index.css"&gt;
+
+&lt;!-- ============ 步骤 2: Vue 3 运行时 ============ --&gt;
+&lt;script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"&gt;&lt;/script&gt;
+
+&lt;!-- ============ 步骤 3: 挂载点 (body 合适位置) ============ --&gt;
+&lt;div id="breadcrumb-app"&gt;&lt;/div&gt;
+
+&lt;!-- ============ 步骤 4: Loader 脚本 ============ --&gt;
+&lt;script src="path/to/cdn/yry-breadcrumb/index.js"&gt;&lt;/script&gt;
+
+&lt;!-- ============ 步骤 5: mount 执行 ============ --&gt;
+&lt;script&gt;
+  function mountBreadcrumb() {
+    if (!window.Vue || !window.YryBreadcrumb) return;
+    Vue.createApp(window.YryBreadcrumb, {
+      ariaLabel: '面包屑导航',
+      items: [ /* ... */ ]
+    }).mount('#breadcrumb-app');
+  }
+  // 缓存命中直接挂载，否则监听 ready 事件
+  if (window.YryBreadcrumb) mountBreadcrumb();
+  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
+&lt;/script&gt;</code></pre>
+
+<h2>2. Mount 脚本示例</h2>
+<p>典型的 mount 调用，包含 ariaLabel 和无障碍属性。</p>
+<pre><code>// 本页实际使用的 mount 脚本
+function mountBreadcrumb() {
+  if (!window.Vue || !window.YryBreadcrumb) return;
+  Vue.createApp(window.YryBreadcrumb, {
+    ariaLabel: '面包屑导航',
+    items: [
+      { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
+      { label: '任务故事', href: '../README.md' },
+      { label: '场景 4 · 页面集成' },
+      { label: '关键源码', icon: '📄' }
+    ]
+  }).mount('#breadcrumb-app');
+}
+if (window.YryBreadcrumb) mountBreadcrumb();
+else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });</code></pre>
+
+<h2>3. 4 种 items 模式代码示例</h2>
+<p>覆盖 href+icon、纯文本、长路径(5+)、图标混用四种典型场景。</p>
+<pre><code>// 模式 1: href + icon (带链接 + emoji 图标)
+items: [
+  { label: '文档中心', href: '../../../index.html', icon: '📄' },
+  { label: '组件库' },
+  { label: '导航类' },
+  { label: '面包屑', icon: '🍞' }
+]
+
+// 模式 2: 纯文本 (全部无 href/icon, span 渲染)
+items: [
+  { label: 'YrY' },
+  { label: '故事面板' },
+  { label: '场景 4' },
+  { label: '页面集成' }
+]
+
+// 模式 3: 长路径 (5+ 层级, 深度回溯)
+items: [
+  { label: '首页', href: '/', icon: '🏠' },
+  { label: '文档中心', href: '/docs' },
+  { label: '故事面板', href: '/docs/stories' },
+  { label: '计划清单' },
+  { label: '场景 1 · 模板架构' },
+  { label: 'CSS 设计系统', icon: '🎨' }
+]
+
+// 模式 4: 图标混用 (多种 emoji 图标组合)
+items: [
+  { label: 'YryBreadcrumb', href: '../index.html', icon: '🍞' },
+  { label: '任务故事', icon: '📋' },
+  { label: '场景 4', icon: '🔌' },
+  { label: '演示', icon: '🎮' }
+]</code></pre>
 
 <div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-4-页面集成/关键源码</code><br>
+  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-4-页面集成/源码.html</code><br>
   🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
 </div>
 

@@ -12,88 +12,158 @@
 <script src="../../../shared.js"></script>
 <script src="../../../yry-breadcrumb/index.js"></script>
 <style>
-  body { padding: 40px 24px 80px; max-width: 1100px; margin: 0 auto; }
-  .scene-header { padding: 16px 0 24px; border-bottom: 1px solid rgba(255,255,255,.05); margin-bottom: 24px; }
-  .scene-tag { display: inline-block; padding: 3px 10px; background: #ffc10722; border: 1px solid #ffc10755; border-radius: 12px; color: #ffc107; font-size: .72rem; font-weight: 600; }
-  .scene-title { margin: 8px 0 4px; font-size: 1.4rem; color: var(--yry-color-text-1, #f5f5f5); }
-  .scene-en { font-size: .85rem; color: var(--yry-color-text-3, #888); }
-  .scene-desc { font-size: .88rem; color: var(--yry-color-text-2, #d4d4d4); margin: 12px 0 0; line-height: 1.6; }
-  .scene-nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:8px; margin: 16px 0 24px; }
-  .scene-nav a, .scene-nav span { font-size:.74rem; padding:4px 10px; border-radius:12px; text-decoration:none; }
-  .scene-nav a { color: var(--yry-color-text-2, #d4d4d4); }
-  .scene-nav a:hover { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.08); }
-  .scene-nav .active { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); }
-  .scene-nav-sep { color: var(--yry-color-text-3, #888); opacity:.3; user-select:none; }
-  h2 { font-size: 1.05rem; margin: 28px 0 12px; color: var(--yry-color-text-1); border-left: 3px solid #ffc107; padding-left: 10px; }
-  h3 { font-size: .9rem; margin: 20px 0 8px; color: var(--yry-color-text-1); }
-  p, li { font-size: .86rem; line-height: 1.7; color: var(--yry-color-text-2); }
-  code, pre { font-family: 'JetBrains Mono', Menlo, monospace; font-size: .8rem; }
-  pre { background: #1a1b26; border: 1px solid #2b2d3b; border-radius: 6px; padding: 12px 14px; overflow-x: auto; line-height: 1.5; color: #c0caf5; }
-  code { background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 3px; color: #e0af68; }
-  pre code { background: none; padding: 0; color: #c0caf5; }
-  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .8rem; }
-  th, td { padding: 8px 12px; border: 1px solid rgba(255,255,255,.08); text-align: left; }
-  th { background: rgba(255,255,255,.04); font-weight: 600; color: var(--yry-color-text-1); }
-  tr:hover { background: rgba(255,255,255,.02); }
-  .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.05); font-size: .74rem; color: var(--yry-color-text-3); }
-  .footer a { color: var(--yry-color-text-2); }
-  .demo-block { padding: 14px; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; margin: 12px 0; }
-  .checklist { padding-left: 0; list-style: none; }
-  .checklist li { padding-left: 24px; position: relative; }
-  .checklist li::before { content: '☐'; position: absolute; left: 4px; color: #ffc107; }
-  .checklist li.done::before { content: '☑'; color: #10b981; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: .68rem; font-weight: 600; }
-  .badge-ok { background: #10b98122; color: #10b981; border: 1px solid #10b98155; }
-  .badge-warn { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b55; }
-  .badge-pending { background: #6b728022; color: #9ca3af; border: 1px solid #6b728055; }
+@layer tokens {
+  :root {
+    --yry-color-accent: #ffc107; --yry-color-cyan: #22d3ee;
+    --yry-color-pass: #10b981; --yry-color-warn: #f59e0b; --yry-color-fail: #ef4444;
+    --yry-color-text-1: #f5f5f5; --yry-color-text-2: #d4d4d4; --yry-color-text-3: #888;
+    --yry-color-text-inverse: #000; --yry-color-bg: #0a0a0a;
+    --yry-color-surface-1: rgba(255,255,255,.03); --yry-color-surface-2: rgba(255,255,255,.05);
+    --yry-color-border: rgba(255,255,255,.08); --yry-color-border-strong: rgba(255,255,255,.12);
+    --yry-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --yry-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --yry-fs-xs: .62rem; --yry-fs-sm: .72rem; --yry-fs-md: .78rem; --yry-fs-lg: .92rem; --yry-fs-xl: 1.1rem; --yry-fs-2xl: 1.4rem;
+    --yry-radius-sm: 4px; --yry-radius-md: 6px; --yry-radius-lg: 8px; --yry-radius-xl: 12px;
+    --yry-dur-fast: .12s; --yry-dur-base: .2s; --yry-dur-slow: .4s;
+    --yry-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --yry-z-toast: 1000; --yry-container-max: 1100px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --yry-color-bg: #fafafa; --yry-color-text-1: #1a1a1a;
+      --yry-color-text-2: #333; --yry-color-text-3: #666;
+      --yry-color-surface-1: rgba(0,0,0,.03); --yry-color-surface-2: rgba(0,0,0,.05);
+      --yry-color-border: rgba(0,0,0,.08); --yry-color-border-strong: rgba(0,0,0,.12);
+    }
+  }
+}
+@layer reset, base, components, utilities, overrides;
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+.skip-link { position:fixed; top:-100px; left:8px; z-index:var(--yry-z-toast); background:var(--yry-color-accent); color:var(--yry-color-text-inverse); padding:10px 16px; border-radius:var(--yry-radius-md); font-weight:600; text-decoration:none; transition:top var(--yry-dur-base) var(--yry-ease-out); font-size:.85rem; box-shadow:0 4px 12px rgba(0,0,0,.3); }
+.skip-link:focus { top:8px; outline:none; }
+:focus-visible { outline:2px solid var(--yry-color-cyan); outline-offset:2px; border-radius:var(--yry-radius-sm); }
+body { background:var(--yry-color-bg); color:var(--yry-color-text-1); font-family:var(--yry-font-sans); line-height:1.6; margin:0; }
+.container { max-width:var(--yry-container-max); margin:0 auto; padding:40px 24px 80px; }
+.scene-header { padding:16px 0 24px; border-bottom:1px solid var(--yry-color-border); margin-bottom:24px; }
+.scene-tag { display:inline-block; padding:3px 10px; background:rgba(34,211,238,.13); border:1px solid rgba(34,211,238,.33); border-radius:12px; color:#22d3ee; font-size:.72rem; font-weight:600; }
+.scene-title { margin:8px 0 4px; font-size:1.4rem; color:var(--yry-color-text-1); }
+.scene-en { font-size:.85rem; color:var(--yry-color-text-3); }
+.scene-desc { font-size:.88rem; color:var(--yry-color-text-2); margin:12px 0 0; line-height:1.6; }
+.scene-nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; background:var(--yry-color-surface-1); border:1px solid var(--yry-color-border); border-radius:8px; margin:16px 0 24px; }
+.scene-nav a, .scene-nav span { font-size:.74rem; padding:4px 10px; border-radius:12px; text-decoration:none; }
+.scene-nav a { color:var(--yry-color-text-2); }
+.scene-nav a:hover { color:var(--yry-color-accent); background:rgba(255,193,7,.08); }
+.scene-nav .active { color:var(--yry-color-accent); background:rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); }
+.scene-nav-sep { color:var(--yry-color-text-3); opacity:.3; user-select:none; }
+h2 { font-size:1.05rem; margin:28px 0 12px; color:var(--yry-color-text-1); border-left:3px solid #22d3ee; padding-left:10px; }
+h3 { font-size:.9rem; margin:20px 0 8px; color:var(--yry-color-text-1); }
+p, li { font-size:.86rem; line-height:1.7; color:var(--yry-color-text-2); }
+code, pre { font-family:var(--yry-font-mono); font-size:.8rem; }
+pre { background:#1a1b26; border:1px solid #2b2d3b; border-radius:6px; padding:12px 14px; overflow-x:auto; line-height:1.5; color:#c0caf5; }
+code { background:rgba(255,255,255,.06); padding:2px 6px; border-radius:3px; color:#e0af68; }
+pre code { background:none; padding:0; color:#c0caf5; }
+table { width:100%; border-collapse:collapse; margin:12px 0; font-size:.8rem; }
+th, td { padding:8px 12px; border:1px solid rgba(255,255,255,.08); text-align:left; }
+th { background:rgba(255,255,255,.04); font-weight:600; color:var(--yry-color-text-1); }
+tr:hover { background:rgba(255,255,255,.02); }
+.footer { margin-top:48px; padding-top:16px; border-top:1px solid var(--yry-color-border); font-size:.74rem; color:var(--yry-color-text-3); }
+.footer a { color:var(--yry-color-text-2); }
+.checklist { padding-left:0; list-style:none; }
+.checklist li { padding-left:24px; position:relative; }
+.checklist li::before { content:'☐'; position:absolute; left:4px; color:#22d3ee; }
+.checklist li.done::before { content:'☑'; color:#10b981; }
+.badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:.68rem; font-weight:600; }
+.badge-ok { background:rgba(16,185,129,.13); color:#10b981; border:1px solid rgba(16,185,129,.33); }
+.badge-warn { background:rgba(245,158,11,.13); color:#f59e0b; border:1px solid rgba(245,158,11,.33); }
+.badge-pending { background:rgba(107,114,128,.13); color:#9ca3af; border:1px solid rgba(107,114,128,.33); }
+.back-top { position:fixed; bottom:28px; right:28px; width:42px; height:42px; border-radius:50%; background:var(--yry-color-surface-2); border:1px solid rgba(255,255,255,.1); color:var(--yry-color-text-2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 2px 8px rgba(0,0,0,.25); transition:all .2s; opacity:0; pointer-events:none; z-index:100; }
+.back-top.visible { opacity:1; pointer-events:auto; }
+.back-top:hover { border-color:var(--yry-color-accent); color:var(--yry-color-accent); }
+@keyframes fadeInUp { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+@keyframes fadeInDown { from{opacity:0;transform:translateY(-8px);} to{opacity:1;transform:translateY(0);} }
+
+/* === Scene 2 amber overrides === */
+.scene-tag { background:#ffc10722; border-color:#ffc10755; color:#ffc107; }
+h2 { border-left-color:#ffc107; }
+.checklist li::before { color:#ffc107; }
 </style>
 </head>
 <body>
+<div class="container">
+
 <div id="breadcrumb-app"></div>
 
 <div class="scene-header">
-  <span class="scene-tag">场景 2 · 架构图</span>
-  <h1 class="scene-title">🎨 模板与样式 · 架构图</h1>
+  <span class="scene-tag">场景 2 · 模板与样式</span>
+  <h1 class="scene-title">模板与样式 · 架构图</h1>
   <div class="scene-en">YryBreadcrumb 任务故事 · 场景 2 · Template & Style · 架构图</div>
-  <p class="scene-desc">实现 Vue template (a11y 标记 / v-for / v-if) 与 CSS (设计令牌 / hover / 当前项样式),产物为 index.html + index.css。</p>
+  <p class="scene-desc">Vue 3 template 编写 · v-for / v-if / :class 设计 · CSS 设计令牌 + fallback 决策 · 5 视觉模式覆盖</p>
 </div>
 
-<div class="scene-nav">
-  <a href="../README.md">📋 任务故事</a>
+<nav class="scene-nav">
+  <a href="../README.md">任务故事</a>
   <span class="scene-nav-sep">/</span>
   <a href="./index.md">模板与样式</a>
   <span class="scene-nav-sep">/</span>
   <span class="active">架构图</span>
-</div>
+</nav>
 
 <h2>架构图</h2>
+<p>以下流程图展示模板 (Template) 经 Loader 加载后与样式 (Style) 合并渲染到页面的完整路径。</p>
+
 <pre class="mermaid">
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#ffc107','lineColor': '#ffc107','secondaryColor': '#2b2d3b'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#ffc107','lineColor': '#ffc107','secondaryColor': '#2b2d3b','tertiaryColor': '#21232f'}}}%%
 flowchart TB
-    subgraph T["index.html"]
-      TP["<script type=text/x-template>"]:::tpl
+    subgraph Template["Template 模板层"]
+        T1["v-for 迭代 items"]:::tpl
+        T2["v-if 条件渲染"]:::tpl
+        T3[":class 动态绑定"]:::tpl
+        T4["aria-label / aria-current a11y"]:::tpl
     end
-    subgraph S["index.css"]
-      CS[".breadcrumb · .bc-sep · .bc-current"]:::css
+    subgraph Style["Style 样式层"]
+        S1["--yry-color-* 设计令牌"]:::css
+        S2[".bc-sep / .bc-current BEM"]:::css
+        S3["var() fallback 降级值"]:::css
+        S4["prefers-color-scheme 双模式"]:::css
     end
-    TP --> R[Vue 渲染]
-    CS --> R
-    R --> P[#breadcrumb-app]
+    subgraph Loader["Loader 加载层"]
+        L1["index.js Loader 脚本"]:::js
+        L2["Vue 3 createApp 挂载"]:::js
+        L3["异步 ready 事件派发"]:::js
+    end
+    Template --> Loader
+    Style --> Loader
+    Loader --> Page["#breadcrumb-app 页面渲染"]
+    Page --> Output["浏览器最终输出"]
+
+    classDef tpl fill:#ffc10722,stroke:#ffc107,color:#ffc107
+    classDef css fill:#22d3ee22,stroke:#22d3ee,color:#22d3ee
+    classDef js fill:#10b98122,stroke:#10b981,color:#10b981
 </pre>
 
 <h2>说明</h2>
-<p>上图展示场景 2 · <strong>模板与样式</strong> 的关键模块 / 数据流 / 时序关系。</p>
-<p>颜色 <code style="background:#ffc10722;padding:1px 6px;border-radius:3px;color:#ffc107">#ffc107</code> 为本场景主色,与侧边栏 tag 一致。</p>
+<p>上图展示场景 2 · <strong>模板与样式</strong> 的三层架构与数据流向。</p>
+
+<h3>Template 层</h3>
+<p><code>v-for</code> 指令遍历 <code>items</code> 数组生成面包屑项；<code>v-if</code> 控制分隔符 '/' 的插入时机 (i &gt; 0) 及链接/当前项的切换；<code>:class</code> 动态绑定当前页样式；<code>aria-label</code> 与 <code>aria-current</code> 保证可访问性。</p>
+
+<h3>Style 层</h3>
+<p>所有颜色值通过 <code>--yry-color-*</code> CSS 自定义属性驱动，支持 <code>prefers-color-scheme: light</code> 自动切换；每个 <code>var()</code> 均附带硬编码后备值，确保令牌不可用时仍可渲染。BEM 命名 <code>.bc-sep</code> / <code>.bc-current</code> 保持低特异性，易于覆盖。</p>
+
+<h3>Loader 层</h3>
+<p><code>index.js</code> 异步加载 Vue 3 并通过 <code>createApp</code> 挂载组件；当组件定义就绪时派发 <code>yry-breadcrumb-ready</code> 自定义事件，页面监听此事件后执行挂载，实现解耦加载。</p>
+
+<p>颜色 <code style="background:#ffc10722;padding:1px 6px;border-radius:3px;color:#ffc107">#ffc107</code> 为本场景主色 (amber/gold)，与场景 tag 一致。</p>
 
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({startOnLoad:true, theme:'dark'});</script>
 
 <div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-2-模板与样式/架构图</code><br>
-  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
+  <p>位置: <code>cdn/yry-breadcrumb/任务故事/场景-2-模板与样式/架构图.html</code></p>
+  <p>本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件</p>
 </div>
 
-
+</div>
 
 <script>
   function mountBreadcrumb() {
@@ -104,7 +174,7 @@ flowchart TB
         { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
         { label: '任务故事', href: '../README.md' },
         { label: '场景 2 · 模板与样式' },
-        { label: '架构图', icon: '📄' }
+        { label: '架构图', icon: '📐' }
       ]
     }).mount('#breadcrumb-app');
   }

@@ -12,105 +12,213 @@
 <script src="../../../shared.js"></script>
 <script src="../../../yry-breadcrumb/index.js"></script>
 <style>
-  body { padding: 40px 24px 80px; max-width: 1100px; margin: 0 auto; }
-  .scene-header { padding: 16px 0 24px; border-bottom: 1px solid rgba(255,255,255,.05); margin-bottom: 24px; }
-  .scene-tag { display: inline-block; padding: 3px 10px; background: #a78bfa22; border: 1px solid #a78bfa55; border-radius: 12px; color: #a78bfa; font-size: .72rem; font-weight: 600; }
-  .scene-title { margin: 8px 0 4px; font-size: 1.4rem; color: var(--yry-color-text-1, #f5f5f5); }
-  .scene-en { font-size: .85rem; color: var(--yry-color-text-3, #888); }
-  .scene-desc { font-size: .88rem; color: var(--yry-color-text-2, #d4d4d4); margin: 12px 0 0; line-height: 1.6; }
-  .scene-nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:8px; margin: 16px 0 24px; }
-  .scene-nav a, .scene-nav span { font-size:.74rem; padding:4px 10px; border-radius:12px; text-decoration:none; }
-  .scene-nav a { color: var(--yry-color-text-2, #d4d4d4); }
-  .scene-nav a:hover { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.08); }
-  .scene-nav .active { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); }
-  .scene-nav-sep { color: var(--yry-color-text-3, #888); opacity:.3; user-select:none; }
-  h2 { font-size: 1.05rem; margin: 28px 0 12px; color: var(--yry-color-text-1); border-left: 3px solid #a78bfa; padding-left: 10px; }
-  h3 { font-size: .9rem; margin: 20px 0 8px; color: var(--yry-color-text-1); }
-  p, li { font-size: .86rem; line-height: 1.7; color: var(--yry-color-text-2); }
-  code, pre { font-family: 'JetBrains Mono', Menlo, monospace; font-size: .8rem; }
-  pre { background: #1a1b26; border: 1px solid #2b2d3b; border-radius: 6px; padding: 12px 14px; overflow-x: auto; line-height: 1.5; color: #c0caf5; }
-  code { background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 3px; color: #e0af68; }
-  pre code { background: none; padding: 0; color: #c0caf5; }
-  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .8rem; }
-  th, td { padding: 8px 12px; border: 1px solid rgba(255,255,255,.08); text-align: left; }
-  th { background: rgba(255,255,255,.04); font-weight: 600; color: var(--yry-color-text-1); }
-  tr:hover { background: rgba(255,255,255,.02); }
-  .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.05); font-size: .74rem; color: var(--yry-color-text-3); }
-  .footer a { color: var(--yry-color-text-2); }
-  .demo-block { padding: 14px; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; margin: 12px 0; }
-  .checklist { padding-left: 0; list-style: none; }
-  .checklist li { padding-left: 24px; position: relative; }
-  .checklist li::before { content: '☐'; position: absolute; left: 4px; color: #a78bfa; }
-  .checklist li.done::before { content: '☑'; color: #10b981; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: .68rem; font-weight: 600; }
-  .badge-ok { background: #10b98122; color: #10b981; border: 1px solid #10b98155; }
-  .badge-warn { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b55; }
-  .badge-pending { background: #6b728022; color: #9ca3af; border: 1px solid #6b728055; }
+@layer tokens {
+  :root {
+    --yry-color-accent: #ffc107; --yry-color-cyan: #22d3ee;
+    --yry-color-pass: #10b981; --yry-color-warn: #f59e0b; --yry-color-fail: #ef4444;
+    --yry-color-text-1: #f5f5f5; --yry-color-text-2: #d4d4d4; --yry-color-text-3: #888;
+    --yry-color-text-inverse: #000; --yry-color-bg: #0a0a0a;
+    --yry-color-surface-1: rgba(255,255,255,.03); --yry-color-surface-2: rgba(255,255,255,.05);
+    --yry-color-border: rgba(255,255,255,.08); --yry-color-border-strong: rgba(255,255,255,.12);
+    --yry-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --yry-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --yry-fs-xs: .62rem; --yry-fs-sm: .72rem; --yry-fs-md: .78rem; --yry-fs-lg: .92rem; --yry-fs-xl: 1.1rem; --yry-fs-2xl: 1.4rem;
+    --yry-radius-sm: 4px; --yry-radius-md: 6px; --yry-radius-lg: 8px; --yry-radius-xl: 12px;
+    --yry-dur-fast: .12s; --yry-dur-base: .2s; --yry-dur-slow: .4s;
+    --yry-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --yry-z-toast: 1000; --yry-container-max: 1100px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --yry-color-bg: #fafafa; --yry-color-text-1: #1a1a1a;
+      --yry-color-text-2: #333; --yry-color-text-3: #666;
+      --yry-color-surface-1: rgba(0,0,0,.03); --yry-color-surface-2: rgba(0,0,0,.05);
+      --yry-color-border: rgba(0,0,0,.08); --yry-color-border-strong: rgba(0,0,0,.12);
+    }
+  }
+}
+@layer reset, base, components, utilities, overrides;
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+.skip-link { position:fixed; top:-100px; left:8px; z-index:var(--yry-z-toast); background:var(--yry-color-accent); color:var(--yry-color-text-inverse); padding:10px 16px; border-radius:var(--yry-radius-md); font-weight:600; text-decoration:none; transition:top var(--yry-dur-base) var(--yry-ease-out); font-size:.85rem; box-shadow:0 4px 12px rgba(0,0,0,.3); }
+.skip-link:focus { top:8px; outline:none; }
+:focus-visible { outline:2px solid var(--yry-color-cyan); outline-offset:2px; border-radius:var(--yry-radius-sm); }
+body { background:var(--yry-color-bg); color:var(--yry-color-text-1); font-family:var(--yry-font-sans); line-height:1.6; margin:0; }
+.container { max-width:var(--yry-container-max); margin:0 auto; padding:40px 24px 80px; }
+.scene-header { padding:16px 0 24px; border-bottom:1px solid var(--yry-color-border); margin-bottom:24px; }
+.scene-tag { display:inline-block; padding:3px 10px; background:rgba(167,139,250,.13); border:1px solid rgba(167,139,250,.33); border-radius:12px; color:#a78bfa; font-size:.72rem; font-weight:600; }
+.scene-title { margin:8px 0 4px; font-size:1.4rem; color:var(--yry-color-text-1); }
+.scene-en { font-size:.85rem; color:var(--yry-color-text-3); }
+.scene-desc { font-size:.88rem; color:var(--yry-color-text-2); margin:12px 0 0; line-height:1.6; }
+.scene-nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; background:var(--yry-color-surface-1); border:1px solid var(--yry-color-border); border-radius:8px; margin:16px 0 24px; }
+.scene-nav a, .scene-nav span { font-size:.74rem; padding:4px 10px; border-radius:12px; text-decoration:none; }
+.scene-nav a { color:var(--yry-color-text-2); }
+.scene-nav a:hover { color:var(--yry-color-accent); background:rgba(255,193,7,.08); }
+.scene-nav .active { color:var(--yry-color-accent); background:rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); }
+h2 { font-size:1.05rem; margin:28px 0 12px; color:var(--yry-color-text-1); border-left:3px solid #a78bfa; padding-left:10px; }
+h3 { font-size:.9rem; margin:20px 0 8px; color:var(--yry-color-text-1); }
+p, li { font-size:.86rem; line-height:1.7; color:var(--yry-color-text-2); }
+code, pre { font-family:var(--yry-font-mono); font-size:.8rem; }
+pre { background:#1a1b26; border:1px solid #2b2d3b; border-radius:6px; padding:12px 14px; overflow-x:auto; line-height:1.5; color:#c0caf5; }
+code { background:rgba(255,255,255,.06); padding:2px 6px; border-radius:3px; color:#e0af68; }
+pre code { background:none; padding:0; color:#c0caf5; }
+table { width:100%; border-collapse:collapse; margin:12px 0; font-size:.8rem; }
+th, td { padding:8px 12px; border:1px solid var(--yry-color-border); text-align:left; }
+th { background:rgba(255,255,255,.04); font-weight:600; color:var(--yry-color-text-1); }
+tr:hover { background:rgba(255,255,255,.02); }
+.footer { margin-top:48px; padding-top:16px; border-top:1px solid var(--yry-color-border); font-size:.74rem; color:var(--yry-color-text-3); }
+.footer a { color:var(--yry-color-text-2); }
+.checklist { padding-left:0; list-style:none; }
+.checklist li { padding-left:24px; position:relative; }
+.checklist li::before { content:'☐'; position:absolute; left:4px; color:#a78bfa; }
+.checklist li.done::before { content:'☑'; color:#10b981; }
+.badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:.68rem; font-weight:600; }
+.badge-ok { background:rgba(16,185,129,.13); color:#10b981; border:1px solid rgba(16,185,129,.33); }
+.badge-warn { background:rgba(245,158,11,.13); color:#f59e0b; border:1px solid rgba(245,158,11,.33); }
+.badge-pending { background:rgba(107,114,128,.13); color:#9ca3af; border:1px solid rgba(107,114,128,.33); }
+.back-top { position:fixed; bottom:28px; right:28px; width:42px; height:42px; border-radius:50%; background:var(--yry-color-surface-2); border:1px solid rgba(255,255,255,.1); color:var(--yry-color-text-2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 2px 8px rgba(0,0,0,.25); transition:all .2s; opacity:0; pointer-events:none; z-index:100; }
+.back-top.visible { opacity:1; pointer-events:auto; }
+.back-top:hover { border-color:var(--yry-color-accent); color:var(--yry-color-accent); }
+@keyframes fadeInUp { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+@keyframes fadeInDown { from{opacity:0;transform:translateY(-8px);} to{opacity:1;transform:translateY(0);} }
+.kpi-row { display:flex; flex-wrap:wrap; gap:12px; margin:16px 0 24px; }
+.kpi-card { flex:1; min-width:120px; padding:16px; background:var(--yry-color-surface-1); border:1px solid var(--yry-color-border); border-radius:var(--yry-radius-lg); text-align:center; }
+.kpi-value { font-size:1.8rem; font-weight:700; color:#a78bfa; }
+.kpi-label { font-size:.72rem; color:var(--yry-color-text-3); margin-top:4px; }
 </style>
 </head>
 <body>
+<a href="#main" class="skip-link">跳过导航</a>
+<div class="container" id="main">
 <div id="breadcrumb-app"></div>
-
 <div class="scene-header">
-  <span class="scene-tag">场景 3 · 计划清单</span>
-  <h1 class="scene-title">⚙️ Loader 实现 · 计划清单</h1>
-  <div class="scene-en">YryBreadcrumb 任务故事 · 场景 3 · Loader Implementation · 计划清单</div>
-  <p class="scene-desc">实现异步 fetch index.html → DOMParser 提取 template → 注册组件 → 派发 ready 事件的完整流程,处理超时与降级。</p>
+  <span class="scene-tag">场景 3 · Loader 实现</span>
+  <h1 class="scene-title">计划清单</h1>
+  <div class="scene-en">YryBreadcrumb 任务故事 · 场景 3 · Loader Implementation · Plan Checklist</div>
+  <p class="scene-desc">fetch + DOMParser + ready 事件 + 5s 超时 · 4 文件引用顺序 · 错误处理与降级 · 错误用例与诊断</p>
+</div>
+<div class="scene-nav">
+  <a href="../README.md">任务故事</a>
+  <span>/</span>
+  <a href="./index.md">场景 3 · Loader 实现</a>
+  <span>/</span>
+  <span class="active">计划清单</span>
 </div>
 
-<div class="scene-nav">
-  <a href="../README.md">📋 任务故事</a>
-  <span class="scene-nav-sep">/</span>
-  <a href="./index.md">Loader 实现</a>
-  <span class="scene-nav-sep">/</span>
-  <span class="active">计划清单</span>
+<h2>KPI 概览</h2>
+<div class="kpi-row">
+  <div class="kpi-card">
+    <div class="kpi-value">5</div>
+    <div class="kpi-label">任务完成</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">0</div>
+    <div class="kpi-label">进行中</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">0</div>
+    <div class="kpi-label">待开始</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">100%</div>
+    <div class="kpi-label">完成率</div>
+  </div>
 </div>
 
 <h2>任务清单</h2>
 <table>
-  <thead><tr><th>ID</th><th>任务</th><th>状态</th><th>证据 / 链接</th></tr></thead>
+  <thead><tr><th>ID</th><th>任务</th><th>描述</th><th>状态</th><th>证据 / 链接</th></tr></thead>
   <tbody>
-    <tr><td><code>T3.1</code></td><td>fetch + DOMParser 实现</td><td>✅</td><td><a href="./源码.html">源码.html</a></td></tr>
-    <tr><td><code>T3.2</code></td><td>5 秒超时保护</td><td>✅</td><td>index.js 64-66 行</td></tr>
-    <tr><td><code>T3.3</code></td><td>Vue 缺失降级</td><td>✅</td><td>index.js 14-17 行</td></tr>
-    <tr><td><code>T3.4</code></td><td>ready 事件派发</td><td>✅</td><td><a href="./测试面板.html">测试面板 TC-3.4</a></td></tr>
-    <tr><td><code>T3.5</code></td><td>评审通过 → 进入场景 4</td><td>✅</td><td>[场景 4](./../场景-4-页面集成/index.md)</td></tr>
+    <tr>
+      <td><code>T3.1</code></td>
+      <td>IIFE 加载器框架</td>
+      <td>IIFE 包装，'use strict'，Vue 环境检测，document.currentScript 路径解析</td>
+      <td><span class="badge badge-ok">PASS</span></td>
+      <td><a href="./源码.html">源码.html</a></td>
+    </tr>
+    <tr>
+      <td><code>T3.2</code></td>
+      <td>fetch + DOMParser 模板提取</td>
+      <td>fetch index.html → DOMParser.parseFromString → getElementById 提取 template</td>
+      <td><span class="badge badge-ok">PASS</span></td>
+      <td><a href="./源码.html">源码.html</a></td>
+    </tr>
+    <tr>
+      <td><code>T3.3</code></td>
+      <td>CustomEvent ready 事件</td>
+      <td>模板解析成功后 dispatchEvent('yry-breadcrumb-ready')，页面用 {once:true} 监听</td>
+      <td><span class="badge badge-ok">PASS</span></td>
+      <td><a href="./测试面板.html">测试面板 TC1</a></td>
+    </tr>
+    <tr>
+      <td><code>T3.4</code></td>
+      <td>5s 超时 + 错误降级</td>
+      <td>setTimeout 5s 超时保护，fetch catch 错误降级，console.warn/error 诊断</td>
+      <td><span class="badge badge-ok">PASS</span></td>
+      <td><a href="./审查.html">审查 R2/R5/R6</a></td>
+    </tr>
+    <tr>
+      <td><code>T3.5</code></td>
+      <td>跨页面引用顺序验证</td>
+      <td>4 文件引用顺序 (CSS→CSS→CSS→JS) 正确，各页面 YryBreadcrumb 正常渲染</td>
+      <td><span class="badge badge-ok">PASS</span></td>
+      <td><a href="./演示.html">演示.html</a></td>
+    </tr>
   </tbody>
 </table>
 
 <h2>验收标准</h2>
 <ul class="checklist">
-  <li class="done">所有任务状态 = ✅</li>
-  <li class="done">源码 / 演示 / 测试 3 类产物可打开</li>
-  <li class="done">跨页跳转 (回到 README / 跳到下一场景) 链接全部有效</li>
-  <li class="done">本页用 YryBreadcrumb 组件自身渲染面包屑 (dogfooding)</li>
+  <li class="done">所有 5 个任务状态 PASS</li>
+  <li class="done">Loader 在 Vue 3 环境下正常加载并注册组件</li>
+  <li class="done">Vue 3 缺失时 console.warn 并静默跳过</li>
+  <li class="done">5s 超时触发 console.error 且不注册组件</li>
+  <li class="done">fetch 失败时 console.error 且页面继续运行</li>
+  <li class="done">ready 事件正确派发，页面能监听到</li>
+  <li class="done">并发 mount 安全（{once:true} 机制）</li>
+  <li class="done">4 文件引用顺序经所有页面验证一致</li>
 </ul>
 
 <h2>交付清单</h2>
-<p>8 个标准文件: <code>index.md</code> · <code>审查.html</code> · <code>架构图.html</code> · <code>测试面板.html</code> · <code>源码.html</code> · <code>演示.html</code> · <code>知识图谱.html</code> · <code>计划清单.html</code></p>
+<p>8 个标准文件:</p>
+<table>
+  <thead><tr><th>文件</th><th>类型</th><th>链接</th></tr></thead>
+  <tbody>
+    <tr><td>index.md</td><td>场景概述</td><td><a href="./index.md">index.md</a></td></tr>
+    <tr><td>审查.html</td><td>技术评审</td><td><a href="./审查.html">审查.html</a></td></tr>
+    <tr><td>架构图.html</td><td>时序图</td><td><a href="./架构图.html">架构图.html</a></td></tr>
+    <tr><td>测试面板.html</td><td>测试用例</td><td><a href="./测试面板.html">测试面板.html</a></td></tr>
+    <tr><td>源码.html</td><td>关键源码</td><td><a href="./源码.html">源码.html</a></td></tr>
+    <tr><td>演示.html</td><td>演示说明</td><td><a href="./演示.html">演示.html</a></td></tr>
+    <tr><td>知识图谱.html</td><td>概念关联</td><td><a href="./知识图谱.html">知识图谱.html</a></td></tr>
+    <tr><td>计划清单.html</td><td>计划追踪</td><td><a href="./计划清单.html">计划清单.html</a></td></tr>
+  </tbody>
+</table>
 
 <div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-3-Loader实现/计划清单</code><br>
-  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
+  位置: <code>cdn/yry-breadcrumb/任务故事/场景-3-Loader实现/计划清单.html</code><br>
+  本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
 </div>
-
-
-
+</div>
+<button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">&uarr;</button>
 <script>
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 3 · Loader 实现' },
-        { label: '计划清单', icon: '📄' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
+const backTopBtn=document.getElementById('backTop');
+function toggleBackTop(){backTopBtn.classList.toggle('visible',window.scrollY>400);}
+window.addEventListener('scroll',toggleBackTop,{passive:true});
+backTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+function mountBreadcrumb(){
+  if(!window.Vue||!window.YryBreadcrumb)return;
+  Vue.createApp(window.YryBreadcrumb,{
+    ariaLabel:'面包屑导航',
+    items:[
+      {label:'YryBreadcrumb',href:'../../../index.html',icon:'🍞'},
+      {label:'任务故事',href:'../README.md'},
+      {label:'场景 3 · Loader 实现'},
+      {label:'计划清单',icon:'📋'}
+    ]
+  }).mount('#breadcrumb-app');
+}
+if(window.YryBreadcrumb)mountBreadcrumb();
+else document.addEventListener('yry-breadcrumb-ready',mountBreadcrumb,{once:true});
 </script>
 </body>
 </html>

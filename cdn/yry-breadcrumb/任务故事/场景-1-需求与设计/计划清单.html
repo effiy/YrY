@@ -12,105 +12,196 @@
 <script src="../../../shared.js"></script>
 <script src="../../../yry-breadcrumb/index.js"></script>
 <style>
-  body { padding: 40px 24px 80px; max-width: 1100px; margin: 0 auto; }
-  .scene-header { padding: 16px 0 24px; border-bottom: 1px solid rgba(255,255,255,.05); margin-bottom: 24px; }
-  .scene-tag { display: inline-block; padding: 3px 10px; background: #22d3ee22; border: 1px solid #22d3ee55; border-radius: 12px; color: #22d3ee; font-size: .72rem; font-weight: 600; }
-  .scene-title { margin: 8px 0 4px; font-size: 1.4rem; color: var(--yry-color-text-1, #f5f5f5); }
-  .scene-en { font-size: .85rem; color: var(--yry-color-text-3, #888); }
-  .scene-desc { font-size: .88rem; color: var(--yry-color-text-2, #d4d4d4); margin: 12px 0 0; line-height: 1.6; }
-  .scene-nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:8px; margin: 16px 0 24px; }
-  .scene-nav a, .scene-nav span { font-size:.74rem; padding:4px 10px; border-radius:12px; text-decoration:none; }
-  .scene-nav a { color: var(--yry-color-text-2, #d4d4d4); }
-  .scene-nav a:hover { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.08); }
-  .scene-nav .active { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); }
-  .scene-nav-sep { color: var(--yry-color-text-3, #888); opacity:.3; user-select:none; }
-  h2 { font-size: 1.05rem; margin: 28px 0 12px; color: var(--yry-color-text-1); border-left: 3px solid #22d3ee; padding-left: 10px; }
-  h3 { font-size: .9rem; margin: 20px 0 8px; color: var(--yry-color-text-1); }
-  p, li { font-size: .86rem; line-height: 1.7; color: var(--yry-color-text-2); }
-  code, pre { font-family: 'JetBrains Mono', Menlo, monospace; font-size: .8rem; }
-  pre { background: #1a1b26; border: 1px solid #2b2d3b; border-radius: 6px; padding: 12px 14px; overflow-x: auto; line-height: 1.5; color: #c0caf5; }
-  code { background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 3px; color: #e0af68; }
-  pre code { background: none; padding: 0; color: #c0caf5; }
-  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .8rem; }
-  th, td { padding: 8px 12px; border: 1px solid rgba(255,255,255,.08); text-align: left; }
-  th { background: rgba(255,255,255,.04); font-weight: 600; color: var(--yry-color-text-1); }
-  tr:hover { background: rgba(255,255,255,.02); }
-  .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.05); font-size: .74rem; color: var(--yry-color-text-3); }
-  .footer a { color: var(--yry-color-text-2); }
-  .demo-block { padding: 14px; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; margin: 12px 0; }
-  .checklist { padding-left: 0; list-style: none; }
-  .checklist li { padding-left: 24px; position: relative; }
-  .checklist li::before { content: '☐'; position: absolute; left: 4px; color: #22d3ee; }
-  .checklist li.done::before { content: '☑'; color: #10b981; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: .68rem; font-weight: 600; }
-  .badge-ok { background: #10b98122; color: #10b981; border: 1px solid #10b98155; }
-  .badge-warn { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b55; }
-  .badge-pending { background: #6b728022; color: #9ca3af; border: 1px solid #6b728055; }
+@layer tokens {
+  :root {
+    --yry-color-accent: #ffc107; --yry-color-cyan: #22d3ee;
+    --yry-color-pass: #10b981; --yry-color-warn: #f59e0b; --yry-color-fail: #ef4444;
+    --yry-color-text-1: #f5f5f5; --yry-color-text-2: #d4d4d4; --yry-color-text-3: #888;
+    --yry-color-text-inverse: #000; --yry-color-bg: #0a0a0a;
+    --yry-color-surface-1: rgba(255,255,255,.03); --yry-color-surface-2: rgba(255,255,255,.05);
+    --yry-color-border: rgba(255,255,255,.08); --yry-color-border-strong: rgba(255,255,255,.12);
+    --yry-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --yry-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --yry-fs-xs: .62rem; --yry-fs-sm: .72rem; --yry-fs-md: .78rem; --yry-fs-lg: .92rem; --yry-fs-xl: 1.1rem; --yry-fs-2xl: 1.4rem;
+    --yry-radius-sm: 4px; --yry-radius-md: 6px; --yry-radius-lg: 8px; --yry-radius-xl: 12px;
+    --yry-dur-fast: .12s; --yry-dur-base: .2s; --yry-dur-slow: .4s;
+    --yry-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --yry-z-toast: 1000; --yry-container-max: 1100px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --yry-color-bg: #fafafa; --yry-color-text-1: #1a1a1a;
+      --yry-color-text-2: #333; --yry-color-text-3: #666;
+      --yry-color-surface-1: rgba(0,0,0,.03); --yry-color-surface-2: rgba(0,0,0,.05);
+      --yry-color-border: rgba(0,0,0,.08); --yry-color-border-strong: rgba(0,0,0,.12);
+    }
+  }
+}
+@layer reset, base, components, utilities, overrides;
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+.skip-link { position:fixed; top:-100px; left:8px; z-index:var(--yry-z-toast); background:var(--yry-color-accent); color:var(--yry-color-text-inverse); padding:10px 16px; border-radius:var(--yry-radius-md); font-weight:600; text-decoration:none; transition:top var(--yry-dur-base) var(--yry-ease-out); font-size:.85rem; box-shadow:0 4px 12px rgba(0,0,0,.3); }
+.skip-link:focus { top:8px; outline:none; }
+:focus-visible { outline:2px solid var(--yry-color-cyan); outline-offset:2px; border-radius:var(--yry-radius-sm); }
+body { background:var(--yry-color-bg); color:var(--yry-color-text-1); font-family:var(--yry-font-sans); line-height:1.6; margin:0; }
+.container { max-width:var(--yry-container-max); margin:0 auto; padding:40px 24px 80px; }
+.scene-header { padding:16px 0 24px; border-bottom:1px solid var(--yry-color-border); margin-bottom:24px; }
+.scene-tag { display:inline-block; padding:3px 10px; background:rgba(34,211,238,.13); border:1px solid rgba(34,211,238,.33); border-radius:12px; color:#22d3ee; font-size:.72rem; font-weight:600; }
+.scene-title { margin:8px 0 4px; font-size:1.4rem; color:var(--yry-color-text-1); }
+.scene-en { font-size:.85rem; color:var(--yry-color-text-3); }
+.scene-desc { font-size:.88rem; color:var(--yry-color-text-2); margin:12px 0 0; line-height:1.6; }
+.scene-nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; background:var(--yry-color-surface-1); border:1px solid var(--yry-color-border); border-radius:8px; margin:16px 0 24px; }
+.scene-nav a, .scene-nav span { font-size:.74rem; padding:4px 10px; border-radius:12px; text-decoration:none; }
+.scene-nav a { color:var(--yry-color-text-2); }
+.scene-nav a:hover { color:var(--yry-color-accent); background:rgba(255,193,7,.08); }
+.scene-nav .active { color:var(--yry-color-accent); background:rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); }
+h2 { font-size:1.05rem; margin:28px 0 12px; color:var(--yry-color-text-1); border-left:3px solid #22d3ee; padding-left:10px; }
+h3 { font-size:.9rem; margin:20px 0 8px; color:var(--yry-color-text-1); }
+p, li { font-size:.86rem; line-height:1.7; color:var(--yry-color-text-2); }
+code, pre { font-family:var(--yry-font-mono); font-size:.8rem; }
+pre { background:#1a1b26; border:1px solid #2b2d3b; border-radius:6px; padding:12px 14px; overflow-x:auto; line-height:1.5; color:#c0caf5; }
+code { background:rgba(255,255,255,.06); padding:2px 6px; border-radius:3px; color:#e0af68; }
+pre code { background:none; padding:0; color:#c0caf5; }
+table { width:100%; border-collapse:collapse; margin:12px 0; font-size:.8rem; }
+th, td { padding:8px 12px; border:1px solid rgba(255,255,255,.08); text-align:left; }
+th { background:rgba(255,255,255,.04); font-weight:600; color:var(--yry-color-text-1); }
+tr:hover { background:rgba(255,255,255,.02); }
+.footer { margin-top:48px; padding-top:16px; border-top:1px solid var(--yry-color-border); font-size:.74rem; color:var(--yry-color-text-3); }
+.footer a { color:var(--yry-color-text-2); }
+.checklist { padding-left:0; list-style:none; }
+.checklist li { padding-left:24px; position:relative; }
+.checklist li::before { content:'☐'; position:absolute; left:4px; color:#22d3ee; }
+.checklist li.done::before { content:'☑'; color:#10b981; }
+.badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:.68rem; font-weight:600; }
+.badge-ok { background:rgba(16,185,129,.13); color:#10b981; border:1px solid rgba(16,185,129,.33); }
+.badge-warn { background:rgba(245,158,11,.13); color:#f59e0b; border:1px solid rgba(245,158,11,.33); }
+.badge-pending { background:rgba(107,114,128,.13); color:#9ca3af; border:1px solid rgba(107,114,128,.33); }
+.back-top { position:fixed; bottom:28px; right:28px; width:42px; height:42px; border-radius:50%; background:var(--yry-color-surface-2); border:1px solid rgba(255,255,255,.1); color:var(--yry-color-text-2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 2px 8px rgba(0,0,0,.25); transition:all .2s; opacity:0; pointer-events:none; z-index:100; }
+.back-top.visible { opacity:1; pointer-events:auto; }
+.back-top:hover { border-color:var(--yry-color-accent); color:var(--yry-color-accent); }
+@keyframes fadeInUp { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+@keyframes fadeInDown { from{opacity:0;transform:translateY(-8px);} to{opacity:1;transform:translateY(0);} }
+
+/* KPI 统计卡片 */
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0 24px; }
+.stat-card { padding: 16px 14px; background: var(--yry-color-surface-1); border: 1px solid var(--yry-color-border); border-radius: var(--yry-radius-lg); text-align: center; }
+.stat-card .stat-num { font-size: 1.6rem; font-weight: 700; color: var(--yry-color-text-1); line-height: 1.2; }
+.stat-card .stat-label { font-size: var(--yry-fs-sm); color: var(--yry-color-text-3); margin-top: 4px; }
+.stat-card.stat-done .stat-num { color: #10b981; }
+.stat-card.stat-progress .stat-num { color: #f59e0b; }
+.stat-card.stat-pending .stat-num { color: #9ca3af; }
+.stat-card.stat-percent .stat-num { color: #22d3ee; }
+
+/* 交付清单链接 */
+.deliver-list { list-style: none; padding-left: 0; }
+.deliver-list li { padding: 6px 0; border-bottom: 1px solid var(--yry-color-border); }
+.deliver-list li:last-child { border-bottom: none; }
+.deliver-list a { color: var(--yry-color-cyan); text-decoration: none; font-weight: 500; }
+.deliver-list a:hover { text-decoration: underline; }
+
+@media (max-width: 640px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
+<div class="container" id="main">
 <div id="breadcrumb-app"></div>
-
 <div class="scene-header">
   <span class="scene-tag">场景 1 · 计划清单</span>
-  <h1 class="scene-title">📐 需求与设计 · 计划清单</h1>
+  <h1 class="scene-title">📋 需求与设计 · 计划清单</h1>
   <div class="scene-en">YryBreadcrumb 任务故事 · 场景 1 · Requirements & Design · 计划清单</div>
-  <p class="scene-desc">梳理面包屑组件的需求来源,确定 3 文件拆分 / 异步加载 / a11y 等关键设计决策,产出 Props API 草案。</p>
+  <p class="scene-desc">梳理面包屑组件的需求来源，确定 3 文件拆分 / 异步加载 / a11y 等关键设计决策，产出 Props API 草案。</p>
 </div>
-
 <div class="scene-nav">
   <a href="../README.md">📋 任务故事</a>
-  <span class="scene-nav-sep">/</span>
+  <span>/</span>
   <a href="./index.md">需求与设计</a>
-  <span class="scene-nav-sep">/</span>
+  <span>/</span>
   <span class="active">计划清单</span>
+</div>
+
+<h2>KPI 概览</h2>
+<div class="stat-grid">
+  <div class="stat-card stat-done">
+    <div class="stat-num">5</div>
+    <div class="stat-label">已完成</div>
+  </div>
+  <div class="stat-card stat-progress">
+    <div class="stat-num">0</div>
+    <div class="stat-label">进行中</div>
+  </div>
+  <div class="stat-card stat-pending">
+    <div class="stat-num">0</div>
+    <div class="stat-label">待开始</div>
+  </div>
+  <div class="stat-card stat-percent">
+    <div class="stat-num">100%</div>
+    <div class="stat-label">完成进度</div>
+  </div>
 </div>
 
 <h2>任务清单</h2>
 <table>
   <thead><tr><th>ID</th><th>任务</th><th>状态</th><th>证据 / 链接</th></tr></thead>
   <tbody>
-    <tr><td><code>T1.1</code></td><td>梳理需求来源 (计划清单 + 28 场景页)</td><td>✅</td><td>[计划清单 · 场景 1](file:///.../计划清单.html)</td></tr>
-    <tr><td><code>T1.2</code></td><td>选型 Vue 3 + 3 文件拆分</td><td>✅</td><td>本节 §1</td></tr>
-    <tr><td><code>T1.3</code></td><td>a11y 优先级决策</td><td>✅</td><td>本节 §1</td></tr>
-    <tr><td><code>T1.4</code></td><td>Props API 草案</td><td>✅</td><td>本节 §3</td></tr>
-    <tr><td><code>T1.5</code></td><td>评审通过 → 进入场景 2</td><td>✅</td><td>[场景 2](./../场景-2-模板与样式/index.md)</td></tr>
+    <tr><td><code>T1.1</code></td><td>梳理需求来源 (计划清单 · 场景 1 + 28 场景页)</td><td>✅</td><td><a href="./index.md">index.md §1</a></td></tr>
+    <tr><td><code>T1.2</code></td><td>选型 Vue 3 + 3 文件拆分</td><td>✅</td><td><a href="./index.md">index.md §1 设计决策表</a></td></tr>
+    <tr><td><code>T1.3</code></td><td>a11y 优先级决策 (aria-current + aria-hidden)</td><td>✅</td><td><a href="./源码.html">源码.html 模板片段</a></td></tr>
+    <tr><td><code>T1.4</code></td><td>Props API 草案 (items / ariaLabel / separator)</td><td>✅</td><td><a href="./审查.html">审查.html R1 评审项</a></td></tr>
+    <tr><td><code>T1.5</code></td><td>评审通过 → 进入场景 2 · 模板与样式</td><td>✅</td><td><a href="./../场景-2-模板与样式/index.md">场景 2 index.md</a></td></tr>
   </tbody>
 </table>
 
 <h2>验收标准</h2>
 <ul class="checklist">
-  <li class="done">所有任务状态 = ✅</li>
-  <li class="done">源码 / 演示 / 测试 3 类产物可打开</li>
+  <li class="done">所有任务状态 = ✅ (5/5)</li>
+  <li class="done">8 个标准交付物齐全且可独立打开</li>
+  <li class="done">源码 / 演示 / 测试 3 类产物交叉验证通过</li>
   <li class="done">跨页跳转 (回到 README / 跳到下一场景) 链接全部有效</li>
-  <li class="done">本页用 YryBreadcrumb 组件自身渲染面包屑 (dogfooding)</li>
+  <li class="done">本页使用 YryBreadcrumb 组件自身渲染面包屑 (dogfooding)</li>
+  <li class="done">架构图 Mermaid 在暗色主题下正常渲染</li>
+  <li class="done">演示页 3 种模式 (href+icon / 纯文本 / 长路径) 全部渲染</li>
 </ul>
 
 <h2>交付清单</h2>
-<p>8 个标准文件: <code>index.md</code> · <code>审查.html</code> · <code>架构图.html</code> · <code>测试面板.html</code> · <code>源码.html</code> · <code>演示.html</code> · <code>知识图谱.html</code> · <code>计划清单.html</code></p>
+<p>场景 1 共 8 个标准交付物，逐一列明路径与用途。</p>
+<ul class="deliver-list">
+  <li><strong>1.</strong> <a href="./index.md">index.md</a> — 场景主文档 (概述 / 关键内容 / 实施 / 验证 / 自改进)</li>
+  <li><strong>2.</strong> <a href="./审查.html">审查.html</a> — 技术评审清单 (7 项 R1-R7 + 5 项决策记录)</li>
+  <li><strong>3.</strong> <a href="./架构图.html">架构图.html</a> — Mermaid 流程图 (REQ → DEC → API)</li>
+  <li><strong>4.</strong> <a href="./测试面板.html">测试面板.html</a> — 测试用例表 (TC1-TC4) + 验证清单</li>
+  <li><strong>5.</strong> <a href="./源码.html">源码.html</a> — 关键源码片段 (模板 / 逻辑 / 样式)</li>
+  <li><strong>6.</strong> <a href="./演示.html">演示.html</a> — 3 种面包屑 demo (链接 / 纯文本 / 长路径)</li>
+  <li><strong>7.</strong> <a href="./知识图谱.html">知识图谱.html</a> — 概念映射表 + Mermaid 关系图</li>
+  <li><strong>8.</strong> <a href="./计划清单.html">计划清单.html</a> — KPI 概览 + 任务表 + 验收 + 交付清单</li>
+</ul>
 
 <div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-1-需求与设计/计划清单</code><br>
+  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-1-需求与设计/计划清单.html</code><br>
   🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
 </div>
-
-
-
+</div>
+<button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">↑</button>
 <script>
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 1 · 需求与设计' },
-        { label: '计划清单', icon: '📄' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
+const backTopBtn=document.getElementById('backTop');
+function toggleBackTop(){backTopBtn.classList.toggle('visible',window.scrollY>400);}
+window.addEventListener('scroll',toggleBackTop,{passive:true});
+backTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+function mountBreadcrumb(){
+  if(!window.Vue||!window.YryBreadcrumb)return;
+  Vue.createApp(window.YryBreadcrumb,{
+    ariaLabel:'面包屑导航',
+    items:[
+      {label:'YryBreadcrumb',href:'../../../index.html',icon:'🍞'},
+      {label:'任务故事',href:'../README.md'},
+      {label:'场景 1 · 需求与设计'},
+      {label:'计划清单',icon:'📋'}
+    ]
+  }).mount('#breadcrumb-app');
+}
+if(window.YryBreadcrumb)mountBreadcrumb();
+else document.addEventListener('yry-breadcrumb-ready',mountBreadcrumb,{once:true});
 </script>
 </body>
 </html>

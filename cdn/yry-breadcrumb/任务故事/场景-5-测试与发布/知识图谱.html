@@ -12,83 +12,238 @@
 <script src="../../../shared.js"></script>
 <script src="../../../yry-breadcrumb/index.js"></script>
 <style>
-  body { padding: 40px 24px 80px; max-width: 1100px; margin: 0 auto; }
-  .scene-header { padding: 16px 0 24px; border-bottom: 1px solid rgba(255,255,255,.05); margin-bottom: 24px; }
-  .scene-tag { display: inline-block; padding: 3px 10px; background: #f472b622; border: 1px solid #f472b655; border-radius: 12px; color: #f472b6; font-size: .72rem; font-weight: 600; }
-  .scene-title { margin: 8px 0 4px; font-size: 1.4rem; color: var(--yry-color-text-1, #f5f5f5); }
-  .scene-en { font-size: .85rem; color: var(--yry-color-text-3, #888); }
-  .scene-desc { font-size: .88rem; color: var(--yry-color-text-2, #d4d4d4); margin: 12px 0 0; line-height: 1.6; }
-  .scene-nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:8px; margin: 16px 0 24px; }
-  .scene-nav a, .scene-nav span { font-size:.74rem; padding:4px 10px; border-radius:12px; text-decoration:none; }
-  .scene-nav a { color: var(--yry-color-text-2, #d4d4d4); }
-  .scene-nav a:hover { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.08); }
-  .scene-nav .active { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); }
-  .scene-nav-sep { color: var(--yry-color-text-3, #888); opacity:.3; user-select:none; }
-  h2 { font-size: 1.05rem; margin: 28px 0 12px; color: var(--yry-color-text-1); border-left: 3px solid #f472b6; padding-left: 10px; }
-  h3 { font-size: .9rem; margin: 20px 0 8px; color: var(--yry-color-text-1); }
-  p, li { font-size: .86rem; line-height: 1.7; color: var(--yry-color-text-2); }
-  code, pre { font-family: 'JetBrains Mono', Menlo, monospace; font-size: .8rem; }
-  pre { background: #1a1b26; border: 1px solid #2b2d3b; border-radius: 6px; padding: 12px 14px; overflow-x: auto; line-height: 1.5; color: #c0caf5; }
-  code { background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 3px; color: #e0af68; }
-  pre code { background: none; padding: 0; color: #c0caf5; }
-  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .8rem; }
-  th, td { padding: 8px 12px; border: 1px solid rgba(255,255,255,.08); text-align: left; }
-  th { background: rgba(255,255,255,.04); font-weight: 600; color: var(--yry-color-text-1); }
-  tr:hover { background: rgba(255,255,255,.02); }
-  .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.05); font-size: .74rem; color: var(--yry-color-text-3); }
-  .footer a { color: var(--yry-color-text-2); }
-  .demo-block { padding: 14px; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; margin: 12px 0; }
-  .checklist { padding-left: 0; list-style: none; }
-  .checklist li { padding-left: 24px; position: relative; }
-  .checklist li::before { content: '☐'; position: absolute; left: 4px; color: #f472b6; }
-  .checklist li.done::before { content: '☑'; color: #10b981; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: .68rem; font-weight: 600; }
-  .badge-ok { background: #10b98122; color: #10b981; border: 1px solid #10b98155; }
-  .badge-warn { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b55; }
-  .badge-pending { background: #6b728022; color: #9ca3af; border: 1px solid #6b728055; }
+@layer tokens {
+  :root {
+    --yry-color-accent: #ffc107; --yry-color-cyan: #22d3ee;
+    --yry-color-pass: #10b981; --yry-color-warn: #f59e0b; --yry-color-fail: #ef4444;
+    --yry-color-text-1: #f5f5f5; --yry-color-text-2: #d4d4d4; --yry-color-text-3: #888;
+    --yry-color-text-inverse: #000; --yry-color-bg: #0a0a0a;
+    --yry-color-surface-1: rgba(255,255,255,.03); --yry-color-surface-2: rgba(255,255,255,.05);
+    --yry-color-border: rgba(255,255,255,.08); --yry-color-border-strong: rgba(255,255,255,.12);
+    --yry-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --yry-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --yry-fs-xs: .62rem; --yry-fs-sm: .72rem; --yry-fs-md: .78rem; --yry-fs-lg: .92rem; --yry-fs-xl: 1.1rem; --yry-fs-2xl: 1.4rem;
+    --yry-radius-sm: 4px; --yry-radius-md: 6px; --yry-radius-lg: 8px; --yry-radius-xl: 12px;
+    --yry-dur-fast: .12s; --yry-dur-base: .2s; --yry-dur-slow: .4s;
+    --yry-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --yry-z-toast: 1000; --yry-container-max: 1100px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --yry-color-bg: #fafafa; --yry-color-text-1: #1a1a1a;
+      --yry-color-text-2: #333; --yry-color-text-3: #666;
+      --yry-color-surface-1: rgba(0,0,0,.03); --yry-color-surface-2: rgba(0,0,0,.05);
+      --yry-color-border: rgba(0,0,0,.08); --yry-color-border-strong: rgba(0,0,0,.12);
+    }
+  }
+}
+@layer reset, base, components, utilities, overrides;
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+.skip-link { position:fixed; top:-100px; left:8px; z-index:var(--yry-z-toast); background:var(--yry-color-accent); color:var(--yry-color-text-inverse); padding:10px 16px; border-radius:var(--yry-radius-md); font-weight:600; text-decoration:none; transition:top var(--yry-dur-base) var(--yry-ease-out); font-size:.85rem; box-shadow:0 4px 12px rgba(0,0,0,.3); }
+.skip-link:focus { top:8px; outline:none; }
+:focus-visible { outline:2px solid var(--yry-color-cyan); outline-offset:2px; border-radius:var(--yry-radius-sm); }
+body { background:var(--yry-color-bg); color:var(--yry-color-text-1); font-family:var(--yry-font-sans); line-height:1.6; margin:0; padding:40px 24px 80px; max-width:1100px; margin-left:auto; margin-right:auto; }
+.scene-header { padding:16px 0 24px; border-bottom:1px solid var(--yry-color-border); margin-bottom:24px; }
+.scene-tag { display:inline-block; padding:3px 10px; background:#f472b622; border:1px solid #f472b655; border-radius:12px; color:#f472b6; font-size:.72rem; font-weight:600; }
+.scene-title { margin:8px 0 4px; font-size:1.4rem; color:var(--yry-color-text-1); }
+.scene-en { font-size:.85rem; color:var(--yry-color-text-3); }
+.scene-desc { font-size:.88rem; color:var(--yry-color-text-2); margin:12px 0 0; line-height:1.6; }
+.scene-nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; background:var(--yry-color-surface-1); border:1px solid var(--yry-color-border); border-radius:8px; margin:16px 0 24px; }
+.scene-nav a, .scene-nav span { font-size:.74rem; padding:4px 10px; border-radius:12px; text-decoration:none; }
+.scene-nav a { color:var(--yry-color-text-2); }
+.scene-nav a:hover { color:var(--yry-color-accent); background:rgba(255,193,7,.08); }
+.scene-nav .active { color:var(--yry-color-accent); background:rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); }
+.scene-nav-sep { color:var(--yry-color-text-3); opacity:.3; user-select:none; }
+h2 { font-size:1.05rem; margin:28px 0 12px; color:var(--yry-color-text-1); border-left:3px solid #f472b6; padding-left:10px; }
+h3 { font-size:.9rem; margin:20px 0 8px; color:var(--yry-color-text-1); }
+p, li { font-size:.86rem; line-height:1.7; color:var(--yry-color-text-2); }
+code, pre { font-family:var(--yry-font-mono); font-size:.8rem; }
+pre { background:#1a1b26; border:1px solid #2b2d3b; border-radius:6px; padding:12px 14px; overflow-x:auto; line-height:1.5; color:#c0caf5; }
+code { background:rgba(255,255,255,.06); padding:2px 6px; border-radius:3px; color:#e0af68; }
+pre code { background:none; padding:0; color:#c0caf5; }
+table { width:100%; border-collapse:collapse; margin:12px 0; font-size:.8rem; }
+th, td { padding:8px 12px; border:1px solid var(--yry-color-border); text-align:left; }
+th { background:rgba(255,255,255,.04); font-weight:600; color:var(--yry-color-text-1); }
+tr:hover { background:rgba(255,255,255,.02); }
+.footer { margin-top:48px; padding-top:16px; border-top:1px solid var(--yry-color-border); font-size:.74rem; color:var(--yry-color-text-3); }
+.footer a { color:var(--yry-color-text-2); }
+.checklist { padding-left:0; list-style:none; }
+.checklist li { padding-left:24px; position:relative; }
+.checklist li::before { content:'☐'; position:absolute; left:4px; color:#f472b6; }
+.checklist li.done::before { content:'☑'; color:#10b981; }
+.badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:.68rem; font-weight:600; }
+.badge-ok { background:rgba(16,185,129,.13); color:#10b981; border:1px solid rgba(16,185,129,.33); }
+.badge-warn { background:rgba(245,158,11,.13); color:#f59e0b; border:1px solid rgba(245,158,11,.33); }
+.badge-pending { background:rgba(107,114,128,.13); color:#9ca3af; border:1px solid rgba(107,114,128,.33); }
+.back-top { position:fixed; bottom:28px; right:28px; width:42px; height:42px; border-radius:50%; background:var(--yry-color-surface-2); border:1px solid rgba(255,255,255,.1); color:var(--yry-color-text-2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 2px 8px rgba(0,0,0,.25); transition:all .2s; opacity:0; pointer-events:none; z-index:100; }
+.back-top.visible { opacity:1; pointer-events:auto; }
+.back-top:hover { border-color:var(--yry-color-accent); color:var(--yry-color-accent); }
+@keyframes fadeInUp { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+@keyframes fadeInDown { from{opacity:0;transform:translateY(-8px);} to{opacity:1;transform:translateY(0);} }
+.mermaid-wrapper { background:#1a1b26; border:1px solid #2b2d3b; border-radius:8px; padding:20px; margin:16px 0; overflow-x:auto; }
 </style>
 </head>
 <body>
+<a href="#main-content" class="skip-link">跳到主内容</a>
 <div id="breadcrumb-app"></div>
 
 <div class="scene-header">
-  <span class="scene-tag">场景 5 · 知识图谱</span>
-  <h1 class="scene-title">✅ 测试与发布 · 知识图谱</h1>
-  <div class="scene-en">YryBreadcrumb 任务故事 · 场景 5 · Testing & Publishing · 知识图谱</div>
-  <p class="scene-desc">覆盖 7 项自测清单,集成到 npm 包 yry-cdn,确保 cdn/package.json files[] 包含全部 4 个新文件。</p>
+  <span class="scene-tag">场景 5 · 测试与发布</span>
+  <h1 class="scene-title">知识图谱</h1>
+  <div class="scene-en">YryBreadcrumb 任务故事 · 场景 5 · Testing & Publishing · Knowledge Graph</div>
+  <p class="scene-desc">场景 5 概念关联图谱 — 测试域与发布域的概念节点及依赖关系可视化。</p>
 </div>
 
 <div class="scene-nav">
+  <a href="../../../index.html">🍞 YryBreadcrumb</a>
+  <span class="scene-nav-sep">/</span>
   <a href="../README.md">📋 任务故事</a>
   <span class="scene-nav-sep">/</span>
-  <a href="./index.md">测试与发布</a>
+  <a href="./index.md">场景 5 · 测试与发布</a>
   <span class="scene-nav-sep">/</span>
-  <span class="active">知识图谱</span>
+  <span class="active">🔗 知识图谱</span>
 </div>
 
-<h2>知识图谱</h2>
-<p>本页以节点-边图形式展示场景 5 的关键概念关联。</p>
+<main id="main-content">
+
+<h2>概念表</h2>
+<p>场景 5 涉及的核心概念及其归属域。</p>
+
+<table>
+  <thead><tr><th>概念</th><th>所属域</th><th>关联产物</th><th>状态</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>测试</strong></td>
+      <td>测试域</td>
+      <td><a href="./测试面板.html">测试面板</a> · <a href="./审查.html">审查</a></td>
+      <td><span class="badge badge-ok">已覆盖</span></td>
+    </tr>
+    <tr>
+      <td>7 项自测</td>
+      <td>测试域 → 子概念</td>
+      <td><code>node --check</code> · demo 渲染 · console · 硬刷新 · mount · Tab · SR</td>
+      <td><span class="badge badge-ok">全部 PASS</span></td>
+    </tr>
+    <tr>
+      <td>跨页面验证</td>
+      <td>测试域 → 子概念</td>
+      <td>场景 1-5 全部 HTML 页面</td>
+      <td><span class="badge badge-ok">已验证</span></td>
+    </tr>
+    <tr>
+      <td>兼容性测试</td>
+      <td>测试域 → 子概念</td>
+      <td>Chrome · Firefox · Safari · VoiceOver · NVDA</td>
+      <td><span class="badge badge-ok">已验证</span></td>
+    </tr>
+    <tr>
+      <td><strong>发布</strong></td>
+      <td>发布域</td>
+      <td><a href="./源码.html">源码</a> · <a href="./审查.html">审查</a></td>
+      <td><span class="badge badge-ok">就绪</span></td>
+    </tr>
+    <tr>
+      <td>npm 包</td>
+      <td>发布域 → 子概念</td>
+      <td><code>yry-cdn@1.1.0</code></td>
+      <td><span class="badge badge-ok">配置完成</span></td>
+    </tr>
+    <tr>
+      <td>package.json</td>
+      <td>发布域 → 子概念</td>
+      <td><code>cdn/package.json</code> — files[] 含 4 个路径</td>
+      <td><span class="badge badge-ok">字段完整</span></td>
+    </tr>
+    <tr>
+      <td>版本号</td>
+      <td>发布域 → 子概念</td>
+      <td>v1.1.0 — minor 升级，无破坏性变更</td>
+      <td><span class="badge badge-ok">语义化合规</span></td>
+    </tr>
+    <tr>
+      <td>git tag</td>
+      <td>发布域 → 子概念</td>
+      <td><code>git tag v1.1.0</code></td>
+      <td><span class="badge badge-ok">已创建</span></td>
+    </tr>
+    <tr>
+      <td>cdn-yry-checklist</td>
+      <td>跨域</td>
+      <td>场景 1-5 全部 HTML 引用 <code>yry-checklist.css</code></td>
+      <td><span class="badge badge-ok">类名复用</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>概念关联图</h2>
+<p>以下 Mermaid 图展示场景 5 测试域与发布域的概念节点及依赖关系。颜色 <code style="background:#f472b622;padding:1px 6px;border-radius:3px;color:#f472b6">#f472b6</code> 为本场景主色。</p>
+
+<div class="mermaid-wrapper">
 <pre class="mermaid">
-%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#f472b6','lineColor': '#f472b6','secondaryColor': '#2b2d3b'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#f472b6','lineColor': '#f472b6','secondaryColor': '#2b2d3b','tertiaryColor': '#21232f'}}}%%
 flowchart TB
-    CHECK[node --check] --> TC[测试面板]
-    TC --> BROWSER[浏览器目视]
-    TC --> A11Y[SR 测试]
-    BROWSER --> PUB[publish]
-    A11Y --> PUB
-    PACK[npm pack] --> PUB
-    TAG[git tag] --> PUB
+    subgraph 测试域["测试域"]
+        SELF["7 项自测<br/>node --check · demo · console<br/>硬刷新 · mount · Tab · SR"]
+        CROSS["跨页面验证<br/>场景 1-5"]
+        COMPAT["兼容性<br/>Chrome · Firefox · Safari<br/>VoiceOver · NVDA"]
+    end
+    subgraph 发布域["发布域"]
+        NPM["npm 包<br/>yry-cdn@1.1.0"]
+        PKG["package.json<br/>files[] 4 路径"]
+        SEMVER["版本号<br/>v1.1.0 minor"]
+        TAG["git tag<br/>v1.1.0"]
+        PUB["npm publish<br/>灰度 → 稳定"]
+    end
+    CHECKLIST["cdn-yry-checklist<br/>类名复用"]
+
+    SELF -->|全 PASS| CROSS
+    SELF -->|目视通过| COMPAT
+    CROSS -->|链接有效| NPM
+    COMPAT -->|多浏览器| NPM
+    NPM -->|配置| PKG
+    PKG -->|版本| SEMVER
+    SEMVER -->|标注| TAG
+    TAG -->|触发| PUB
+    CROSS -.->|类名验证| CHECKLIST
+    COMPAT -.->|样式一致| CHECKLIST
+    CHECKLIST -.->|复用确认| PUB
 </pre>
+</div>
+
+<h2>关系矩阵</h2>
+<table>
+  <thead><tr><th>源节点</th><th>关系</th><th>目标节点</th><th>说明</th></tr></thead>
+  <tbody>
+    <tr><td>测试</td><td>包含</td><td>7 项自测</td><td>自测是测试域的核心验证手段</td></tr>
+    <tr><td>测试</td><td>包含</td><td>跨页面验证</td><td>确保组件在全部 5 个场景中一致渲染</td></tr>
+    <tr><td>测试</td><td>包含</td><td>兼容性测试</td><td>覆盖主流浏览器 + 辅助技术</td></tr>
+    <tr><td>发布</td><td>依赖</td><td>npm 包</td><td>发布以 npm 包为载体</td></tr>
+    <tr><td>发布</td><td>依赖</td><td>package.json</td><td>files[] 决定包内容</td></tr>
+    <tr><td>发布</td><td>依赖</td><td>版本号</td><td>语义化版本指导升级策略</td></tr>
+    <tr><td>发布</td><td>依赖</td><td>git tag</td><td>tag 标记发布点，可回溯</td></tr>
+    <tr><td>测试</td><td>门禁</td><td>发布</td><td>测试全部通过是发布的前提条件</td></tr>
+    <tr><td>cdn-yry-checklist</td><td>验证</td><td>测试</td><td>类名复用由测试域验证</td></tr>
+    <tr><td>cdn-yry-checklist</td><td>前置</td><td>发布</td><td>类名复用确认是发布的前置条件</td></tr>
+  </tbody>
+</table>
+
+</main>
 
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({startOnLoad:true, theme:'dark'});</script>
 
 <div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-5-测试与发布/知识图谱</code><br>
+  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-5-测试与发布/知识图谱.html</code><br>
   🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
 </div>
 
-
+<button class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="回到顶部">↑</button>
+<script>
+(function(){
+  var btn = document.querySelector('.back-top');
+  if(btn){ window.addEventListener('scroll',function(){ btn.classList.toggle('visible', window.scrollY > 300); }); }
+})();
+</script>
 
 <script>
   function mountBreadcrumb() {
@@ -99,7 +254,7 @@ flowchart TB
         { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
         { label: '任务故事', href: '../README.md' },
         { label: '场景 5 · 测试与发布' },
-        { label: '知识图谱', icon: '📄' }
+        { label: '知识图谱', icon: '🔗' }
       ]
     }).mount('#breadcrumb-app');
   }

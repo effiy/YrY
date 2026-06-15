@@ -12,105 +12,165 @@
 <script src="../../../shared.js"></script>
 <script src="../../../yry-breadcrumb/index.js"></script>
 <style>
-  body { padding: 40px 24px 80px; max-width: 1100px; margin: 0 auto; }
-  .scene-header { padding: 16px 0 24px; border-bottom: 1px solid rgba(255,255,255,.05); margin-bottom: 24px; }
-  .scene-tag { display: inline-block; padding: 3px 10px; background: #a78bfa22; border: 1px solid #a78bfa55; border-radius: 12px; color: #a78bfa; font-size: .72rem; font-weight: 600; }
-  .scene-title { margin: 8px 0 4px; font-size: 1.4rem; color: var(--yry-color-text-1, #f5f5f5); }
-  .scene-en { font-size: .85rem; color: var(--yry-color-text-3, #888); }
-  .scene-desc { font-size: .88rem; color: var(--yry-color-text-2, #d4d4d4); margin: 12px 0 0; line-height: 1.6; }
-  .scene-nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:8px; margin: 16px 0 24px; }
-  .scene-nav a, .scene-nav span { font-size:.74rem; padding:4px 10px; border-radius:12px; text-decoration:none; }
-  .scene-nav a { color: var(--yry-color-text-2, #d4d4d4); }
-  .scene-nav a:hover { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.08); }
-  .scene-nav .active { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); }
-  .scene-nav-sep { color: var(--yry-color-text-3, #888); opacity:.3; user-select:none; }
-  h2 { font-size: 1.05rem; margin: 28px 0 12px; color: var(--yry-color-text-1); border-left: 3px solid #a78bfa; padding-left: 10px; }
-  h3 { font-size: .9rem; margin: 20px 0 8px; color: var(--yry-color-text-1); }
-  p, li { font-size: .86rem; line-height: 1.7; color: var(--yry-color-text-2); }
-  code, pre { font-family: 'JetBrains Mono', Menlo, monospace; font-size: .8rem; }
-  pre { background: #1a1b26; border: 1px solid #2b2d3b; border-radius: 6px; padding: 12px 14px; overflow-x: auto; line-height: 1.5; color: #c0caf5; }
-  code { background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 3px; color: #e0af68; }
-  pre code { background: none; padding: 0; color: #c0caf5; }
-  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .8rem; }
-  th, td { padding: 8px 12px; border: 1px solid rgba(255,255,255,.08); text-align: left; }
-  th { background: rgba(255,255,255,.04); font-weight: 600; color: var(--yry-color-text-1); }
-  tr:hover { background: rgba(255,255,255,.02); }
-  .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.05); font-size: .74rem; color: var(--yry-color-text-3); }
-  .footer a { color: var(--yry-color-text-2); }
-  .demo-block { padding: 14px; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; margin: 12px 0; }
-  .checklist { padding-left: 0; list-style: none; }
-  .checklist li { padding-left: 24px; position: relative; }
-  .checklist li::before { content: '☐'; position: absolute; left: 4px; color: #a78bfa; }
-  .checklist li.done::before { content: '☑'; color: #10b981; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: .68rem; font-weight: 600; }
-  .badge-ok { background: #10b98122; color: #10b981; border: 1px solid #10b98155; }
-  .badge-warn { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b55; }
-  .badge-pending { background: #6b728022; color: #9ca3af; border: 1px solid #6b728055; }
+@layer tokens {
+  :root {
+    --yry-color-accent: #ffc107; --yry-color-cyan: #22d3ee;
+    --yry-color-pass: #10b981; --yry-color-warn: #f59e0b; --yry-color-fail: #ef4444;
+    --yry-color-text-1: #f5f5f5; --yry-color-text-2: #d4d4d4; --yry-color-text-3: #888;
+    --yry-color-text-inverse: #000; --yry-color-bg: #0a0a0a;
+    --yry-color-surface-1: rgba(255,255,255,.03); --yry-color-surface-2: rgba(255,255,255,.05);
+    --yry-color-border: rgba(255,255,255,.08); --yry-color-border-strong: rgba(255,255,255,.12);
+    --yry-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --yry-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --yry-fs-xs: .62rem; --yry-fs-sm: .72rem; --yry-fs-md: .78rem; --yry-fs-lg: .92rem; --yry-fs-xl: 1.1rem; --yry-fs-2xl: 1.4rem;
+    --yry-radius-sm: 4px; --yry-radius-md: 6px; --yry-radius-lg: 8px; --yry-radius-xl: 12px;
+    --yry-dur-fast: .12s; --yry-dur-base: .2s; --yry-dur-slow: .4s;
+    --yry-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --yry-z-toast: 1000; --yry-container-max: 1100px;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --yry-color-bg: #fafafa; --yry-color-text-1: #1a1a1a;
+      --yry-color-text-2: #333; --yry-color-text-3: #666;
+      --yry-color-surface-1: rgba(0,0,0,.03); --yry-color-surface-2: rgba(0,0,0,.05);
+      --yry-color-border: rgba(0,0,0,.08); --yry-color-border-strong: rgba(0,0,0,.12);
+    }
+  }
+}
+@layer reset, base, components, utilities, overrides;
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+.skip-link { position:fixed; top:-100px; left:8px; z-index:var(--yry-z-toast); background:var(--yry-color-accent); color:var(--yry-color-text-inverse); padding:10px 16px; border-radius:var(--yry-radius-md); font-weight:600; text-decoration:none; transition:top var(--yry-dur-base) var(--yry-ease-out); font-size:.85rem; box-shadow:0 4px 12px rgba(0,0,0,.3); }
+.skip-link:focus { top:8px; outline:none; }
+:focus-visible { outline:2px solid var(--yry-color-cyan); outline-offset:2px; border-radius:var(--yry-radius-sm); }
+body { background:var(--yry-color-bg); color:var(--yry-color-text-1); font-family:var(--yry-font-sans); line-height:1.6; margin:0; }
+.container { max-width:var(--yry-container-max); margin:0 auto; padding:40px 24px 80px; }
+.scene-header { padding:16px 0 24px; border-bottom:1px solid var(--yry-color-border); margin-bottom:24px; }
+.scene-tag { display:inline-block; padding:3px 10px; background:rgba(167,139,250,.13); border:1px solid rgba(167,139,250,.33); border-radius:12px; color:#a78bfa; font-size:.72rem; font-weight:600; }
+.scene-title { margin:8px 0 4px; font-size:1.4rem; color:var(--yry-color-text-1); }
+.scene-en { font-size:.85rem; color:var(--yry-color-text-3); }
+.scene-desc { font-size:.88rem; color:var(--yry-color-text-2); margin:12px 0 0; line-height:1.6; }
+.scene-nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; background:var(--yry-color-surface-1); border:1px solid var(--yry-color-border); border-radius:8px; margin:16px 0 24px; }
+.scene-nav a, .scene-nav span { font-size:.74rem; padding:4px 10px; border-radius:12px; text-decoration:none; }
+.scene-nav a { color:var(--yry-color-text-2); }
+.scene-nav a:hover { color:var(--yry-color-accent); background:rgba(255,193,7,.08); }
+.scene-nav .active { color:var(--yry-color-accent); background:rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); }
+h2 { font-size:1.05rem; margin:28px 0 12px; color:var(--yry-color-text-1); border-left:3px solid #a78bfa; padding-left:10px; }
+h3 { font-size:.9rem; margin:20px 0 8px; color:var(--yry-color-text-1); }
+p, li { font-size:.86rem; line-height:1.7; color:var(--yry-color-text-2); }
+code, pre { font-family:var(--yry-font-mono); font-size:.8rem; }
+pre { background:#1a1b26; border:1px solid #2b2d3b; border-radius:6px; padding:12px 14px; overflow-x:auto; line-height:1.5; color:#c0caf5; }
+code { background:rgba(255,255,255,.06); padding:2px 6px; border-radius:3px; color:#e0af68; }
+pre code { background:none; padding:0; color:#c0caf5; }
+table { width:100%; border-collapse:collapse; margin:12px 0; font-size:.8rem; }
+th, td { padding:8px 12px; border:1px solid var(--yry-color-border); text-align:left; }
+th { background:rgba(255,255,255,.04); font-weight:600; color:var(--yry-color-text-1); }
+tr:hover { background:rgba(255,255,255,.02); }
+.footer { margin-top:48px; padding-top:16px; border-top:1px solid var(--yry-color-border); font-size:.74rem; color:var(--yry-color-text-3); }
+.footer a { color:var(--yry-color-text-2); }
+.checklist { padding-left:0; list-style:none; }
+.checklist li { padding-left:24px; position:relative; }
+.checklist li::before { content:'☐'; position:absolute; left:4px; color:#a78bfa; }
+.checklist li.done::before { content:'☑'; color:#10b981; }
+.badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:.68rem; font-weight:600; }
+.badge-ok { background:rgba(16,185,129,.13); color:#10b981; border:1px solid rgba(16,185,129,.33); }
+.badge-warn { background:rgba(245,158,11,.13); color:#f59e0b; border:1px solid rgba(245,158,11,.33); }
+.badge-pending { background:rgba(107,114,128,.13); color:#9ca3af; border:1px solid rgba(107,114,128,.33); }
+.back-top { position:fixed; bottom:28px; right:28px; width:42px; height:42px; border-radius:50%; background:var(--yry-color-surface-2); border:1px solid rgba(255,255,255,.1); color:var(--yry-color-text-2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 2px 8px rgba(0,0,0,.25); transition:all .2s; opacity:0; pointer-events:none; z-index:100; }
+.back-top.visible { opacity:1; pointer-events:auto; }
+.back-top:hover { border-color:var(--yry-color-accent); color:var(--yry-color-accent); }
+@keyframes fadeInUp { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+@keyframes fadeInDown { from{opacity:0;transform:translateY(-8px);} to{opacity:1;transform:translateY(0);} }
 </style>
 </head>
 <body>
+<a href="#main" class="skip-link">跳过导航</a>
+<div class="container" id="main">
 <div id="breadcrumb-app"></div>
-
 <div class="scene-header">
-  <span class="scene-tag">场景 3 · 架构图</span>
-  <h1 class="scene-title">⚙️ Loader 实现 · 架构图</h1>
-  <div class="scene-en">YryBreadcrumb 任务故事 · 场景 3 · Loader Implementation · 架构图</div>
-  <p class="scene-desc">实现异步 fetch index.html → DOMParser 提取 template → 注册组件 → 派发 ready 事件的完整流程,处理超时与降级。</p>
+  <span class="scene-tag">场景 3 · Loader 实现</span>
+  <h1 class="scene-title">架构图</h1>
+  <div class="scene-en">YryBreadcrumb 任务故事 · 场景 3 · Loader Implementation · Architecture</div>
+  <p class="scene-desc">fetch + DOMParser + ready 事件 + 5s 超时 · 4 文件引用顺序 · 错误处理与降级 · 错误用例与诊断</p>
 </div>
-
 <div class="scene-nav">
-  <a href="../README.md">📋 任务故事</a>
-  <span class="scene-nav-sep">/</span>
-  <a href="./index.md">Loader 实现</a>
-  <span class="scene-nav-sep">/</span>
+  <a href="../README.md">任务故事</a>
+  <span>/</span>
+  <a href="./index.md">场景 3 · Loader 实现</a>
+  <span>/</span>
   <span class="active">架构图</span>
 </div>
 
-<h2>架构图</h2>
+<h2>Loader 时序图</h2>
 <pre class="mermaid">
 %%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#a78bfa','lineColor': '#a78bfa','secondaryColor': '#2b2d3b'}}}%%
 sequenceDiagram
-    participant P as 页面
-    participant L as index.js
-    participant H as index.html
-    P->>L: <script src>
-    L->>L: currentScript.src
-    L->>H: fetch
-    H-->>L: HTML text
-    L->>L: DOMParser + getElementById
-    L->>P: window.YryBreadcrumb
-    L->>P: dispatchEvent(ready)
+    participant Browser as 浏览器
+    participant IndexJS as index.js
+    participant Network as Network
+    participant IndexHTML as index.html
+    participant DOMP as DOMParser
+    participant Vue as Vue.createApp
+
+    Browser->>IndexJS: &lt;script src="index.js"&gt;
+    IndexJS->>IndexJS: document.currentScript.src
+    IndexJS->>IndexJS: setTimeout(5s) 超时计时器
+    IndexJS->>Network: fetch(index.html)
+    Network-->>IndexJS: HTML text
+    IndexJS->>DOMP: parseFromString(htmlText, 'text/html')
+    DOMP-->>IndexJS: Document
+    IndexJS->>IndexJS: getElementById('yry-breadcrumb-tpl')
+    IndexJS->>IndexJS: window.YryBreadcrumb = {...}
+    IndexJS->>Vue: dispatchEvent('yry-breadcrumb-ready')
+    Vue->>Vue: mount(breadcrumb-app)
 </pre>
 
+<h2>关键流程说明</h2>
+<table>
+  <thead><tr><th>步骤</th><th>参与者</th><th>操作</th><th>错误处理</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Browser</td><td>加载 index.js (IIFE 自执行)</td><td>Vue 缺失时 warn 并 return</td></tr>
+    <tr><td>2</td><td>index.js</td><td>document.currentScript 定位脚本 URL</td><td>—</td></tr>
+    <tr><td>3</td><td>index.js</td><td>new URL('index.html', scriptUrl) 推导模板路径</td><td>—</td></tr>
+    <tr><td>4</td><td>index.js</td><td>setTimeout 5000ms 超时保护</td><td>超时时设 timedOut=true，console.error</td></tr>
+    <tr><td>5</td><td>Network</td><td>fetch(templateUrl, {credentials:'same-origin'})</td><td>catch → console.error 不注册</td></tr>
+    <tr><td>6</td><td>DOMParser</td><td>parseFromString(htmlText, 'text/html')</td><td>解析失败抛异常，由 catch 捕获</td></tr>
+    <tr><td>7</td><td>index.js</td><td>getElementById('yry-breadcrumb-tpl')</td><td>id 缺失时 tpl 为 null</td></tr>
+    <tr><td>8</td><td>Vue</td><td>createApp + mount('#breadcrumb-app')</td><td>由页面 mountBreadcrumb 函数处理</td></tr>
+  </tbody>
+</table>
+
 <h2>说明</h2>
-<p>上图展示场景 3 · <strong>Loader 实现</strong> 的关键模块 / 数据流 / 时序关系。</p>
-<p>颜色 <code style="background:#a78bfa22;padding:1px 6px;border-radius:3px;color:#a78bfa">#a78bfa</code> 为本场景主色,与侧边栏 tag 一致。</p>
+<p>上图展示场景 3 · <strong>Loader 实现</strong> 的完整时序：从 index.js 加载到 Vue 挂载。</p>
+<p>场景主色 <code style="background:rgba(167,139,250,.13);padding:1px 6px;border-radius:3px;color:#a78bfa">#a78bfa</code>，与场景 tag 一致。</p>
 
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({startOnLoad:true, theme:'dark'});</script>
 
 <div class="footer">
-  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-3-Loader实现/架构图</code><br>
-  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
+  位置: <code>cdn/yry-breadcrumb/任务故事/场景-3-Loader实现/架构图.html</code><br>
+  本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
 </div>
-
-
-
+</div>
+<button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">&uarr;</button>
 <script>
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 3 · Loader 实现' },
-        { label: '架构图', icon: '📄' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
+const backTopBtn=document.getElementById('backTop');
+function toggleBackTop(){backTopBtn.classList.toggle('visible',window.scrollY>400);}
+window.addEventListener('scroll',toggleBackTop,{passive:true});
+backTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+function mountBreadcrumb(){
+  if(!window.Vue||!window.YryBreadcrumb)return;
+  Vue.createApp(window.YryBreadcrumb,{
+    ariaLabel:'面包屑导航',
+    items:[
+      {label:'YryBreadcrumb',href:'../../../index.html',icon:'🍞'},
+      {label:'任务故事',href:'../README.md'},
+      {label:'场景 3 · Loader 实现'},
+      {label:'架构图',icon:'📐'}
+    ]
+  }).mount('#breadcrumb-app');
+}
+if(window.YryBreadcrumb)mountBreadcrumb();
+else document.addEventListener('yry-breadcrumb-ready',mountBreadcrumb,{once:true});
 </script>
 </body>
 </html>
