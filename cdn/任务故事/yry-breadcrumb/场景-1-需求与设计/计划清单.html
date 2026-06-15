@@ -6,81 +6,13 @@
 <title>需求与设计 · 计划清单 · YryBreadcrumb 任务故事</title>
 <link rel="stylesheet" href="../../../shared.css">
 <link rel="stylesheet" href="../../../theme.css">
+<link rel="stylesheet" href="../../../yry-scene.css">
 <link rel="stylesheet" href="../../../yry-checklist.css">
 <link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <script src="../../../shared.js"></script>
 <script src="../../../yry-breadcrumb/index.js"></script>
 <style>
-@layer tokens {
-  :root {
-    --yry-color-accent: #ffc107; --yry-color-cyan: #22d3ee;
-    --yry-color-pass: #10b981; --yry-color-warn: #f59e0b; --yry-color-fail: #ef4444;
-    --yry-color-text-1: #f5f5f5; --yry-color-text-2: #d4d4d4; --yry-color-text-3: #888;
-    --yry-color-text-inverse: #000; --yry-color-bg: #0a0a0a;
-    --yry-color-surface-1: rgba(255,255,255,.03); --yry-color-surface-2: rgba(255,255,255,.05);
-    --yry-color-border: rgba(255,255,255,.08); --yry-color-border-strong: rgba(255,255,255,.12);
-    --yry-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-    --yry-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    --yry-fs-xs: .62rem; --yry-fs-sm: .72rem; --yry-fs-md: .78rem; --yry-fs-lg: .92rem; --yry-fs-xl: 1.1rem; --yry-fs-2xl: 1.4rem;
-    --yry-radius-sm: 4px; --yry-radius-md: 6px; --yry-radius-lg: 8px; --yry-radius-xl: 12px;
-    --yry-dur-fast: .12s; --yry-dur-base: .2s; --yry-dur-slow: .4s;
-    --yry-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-    --yry-z-toast: 1000; --yry-container-max: 1100px;
-  }
-  @media (prefers-color-scheme: light) {
-    :root {
-      --yry-color-bg: #fafafa; --yry-color-text-1: #1a1a1a;
-      --yry-color-text-2: #333; --yry-color-text-3: #666;
-      --yry-color-surface-1: rgba(0,0,0,.03); --yry-color-surface-2: rgba(0,0,0,.05);
-      --yry-color-border: rgba(0,0,0,.08); --yry-color-border-strong: rgba(0,0,0,.12);
-    }
-  }
-}
-@layer reset, base, components, utilities, overrides;
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
-.skip-link { position:fixed; top:-100px; left:8px; z-index:var(--yry-z-toast); background:var(--yry-color-accent); color:var(--yry-color-text-inverse); padding:10px 16px; border-radius:var(--yry-radius-md); font-weight:600; text-decoration:none; transition:top var(--yry-dur-base) var(--yry-ease-out); font-size:.85rem; box-shadow:0 4px 12px rgba(0,0,0,.3); }
-.skip-link:focus { top:8px; outline:none; }
-:focus-visible { outline:2px solid var(--yry-color-cyan); outline-offset:2px; border-radius:var(--yry-radius-sm); }
-body { background:var(--yry-color-bg); color:var(--yry-color-text-1); font-family:var(--yry-font-sans); line-height:1.6; margin:0; }
-.container { max-width:var(--yry-container-max); margin:0 auto; padding:40px 24px 80px; }
-.scene-header { padding:16px 0 24px; border-bottom:1px solid var(--yry-color-border); margin-bottom:24px; }
-.scene-tag { display:inline-block; padding:3px 10px; background:rgba(34,211,238,.13); border:1px solid rgba(34,211,238,.33); border-radius:12px; color:#22d3ee; font-size:.72rem; font-weight:600; }
-.scene-title { margin:8px 0 4px; font-size:1.4rem; color:var(--yry-color-text-1); }
-.scene-en { font-size:.85rem; color:var(--yry-color-text-3); }
-.scene-desc { font-size:.88rem; color:var(--yry-color-text-2); margin:12px 0 0; line-height:1.6; }
-.scene-nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; background:var(--yry-color-surface-1); border:1px solid var(--yry-color-border); border-radius:8px; margin:16px 0 24px; }
-.scene-nav a, .scene-nav span { font-size:.74rem; padding:4px 10px; border-radius:12px; text-decoration:none; }
-.scene-nav a { color:var(--yry-color-text-2); }
-.scene-nav a:hover { color:var(--yry-color-accent); background:rgba(255,193,7,.08); }
-.scene-nav .active { color:var(--yry-color-accent); background:rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); }
-h2 { font-size:1.05rem; margin:28px 0 12px; color:var(--yry-color-text-1); border-left:3px solid #22d3ee; padding-left:10px; }
-h3 { font-size:.9rem; margin:20px 0 8px; color:var(--yry-color-text-1); }
-p, li { font-size:.86rem; line-height:1.7; color:var(--yry-color-text-2); }
-code, pre { font-family:var(--yry-font-mono); font-size:.8rem; }
-pre { background:#1a1b26; border:1px solid #2b2d3b; border-radius:6px; padding:12px 14px; overflow-x:auto; line-height:1.5; color:#c0caf5; }
-code { background:rgba(255,255,255,.06); padding:2px 6px; border-radius:3px; color:#e0af68; }
-pre code { background:none; padding:0; color:#c0caf5; }
-table { width:100%; border-collapse:collapse; margin:12px 0; font-size:.8rem; }
-th, td { padding:8px 12px; border:1px solid rgba(255,255,255,.08); text-align:left; }
-th { background:rgba(255,255,255,.04); font-weight:600; color:var(--yry-color-text-1); }
-tr:hover { background:rgba(255,255,255,.02); }
-.footer { margin-top:48px; padding-top:16px; border-top:1px solid var(--yry-color-border); font-size:.74rem; color:var(--yry-color-text-3); }
-.footer a { color:var(--yry-color-text-2); }
-.checklist { padding-left:0; list-style:none; }
-.checklist li { padding-left:24px; position:relative; }
-.checklist li::before { content:'☐'; position:absolute; left:4px; color:#22d3ee; }
-.checklist li.done::before { content:'☑'; color:#10b981; }
-.badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:.68rem; font-weight:600; }
-.badge-ok { background:rgba(16,185,129,.13); color:#10b981; border:1px solid rgba(16,185,129,.33); }
-.badge-warn { background:rgba(245,158,11,.13); color:#f59e0b; border:1px solid rgba(245,158,11,.33); }
-.badge-pending { background:rgba(107,114,128,.13); color:#9ca3af; border:1px solid rgba(107,114,128,.33); }
-.back-top { position:fixed; bottom:28px; right:28px; width:42px; height:42px; border-radius:50%; background:var(--yry-color-surface-2); border:1px solid rgba(255,255,255,.1); color:var(--yry-color-text-2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; box-shadow:0 2px 8px rgba(0,0,0,.25); transition:all .2s; opacity:0; pointer-events:none; z-index:100; }
-.back-top.visible { opacity:1; pointer-events:auto; }
-.back-top:hover { border-color:var(--yry-color-accent); color:var(--yry-color-accent); }
-@keyframes fadeInUp { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
-@keyframes fadeInDown { from{opacity:0;transform:translateY(-8px);} to{opacity:1;transform:translateY(0);} }
-
 /* KPI 统计卡片 */
 .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0 24px; }
 .stat-card { padding: 16px 14px; background: var(--yry-color-surface-1); border: 1px solid var(--yry-color-border); border-radius: var(--yry-radius-lg); text-align: center; }

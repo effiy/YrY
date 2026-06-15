@@ -15,6 +15,7 @@
     "fonts.css",
     "fonts/*.woff2",
     "yry-checklist.css",
+    "yry-scene.css",
     "yry-home.css",
     "README.md"
   ],
