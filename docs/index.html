@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- ═══ 第三方依赖 + 框架层 ═══ -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/theme.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.css">
+  <link rel="stylesheet" href="../cdn/theme.css">
+  <link rel="stylesheet" href="../cdn/shared.css">
   <title>YrY 文档中心</title>
   <meta name="description" content="YrY 故事驱动 SDLC 编排系统 — 六层结构：依赖/框架 → 19 技能 → 7 故事 → 38 场景 → Agent 角色与规则 → 参考入口">
   <link rel="stylesheet" href="../cdn/yry-home.css">
@@ -53,7 +53,7 @@
     <!-- ── Panel hub ──────────────────────────── -->
     <div class="panel-hub" id="panelHub">
       <span class="panel-hub-label" id="liveHealthLabel" style="cursor:pointer" onclick="PanelHub.open('selfimprove')" title="点击打开自改进面板查看详情">🩺 —</span>
-      <button class="panel-hub-btn" onclick="window.openPanel&amp;&amp;window.openPanel('cron')" title="调度任务 — 展示 .claude/scheduled_tasks.json 中所有定时任务。包含 cron 表达式、人类可读描述、活跃/空闲状态、下次触发预估。">
+      <button class="panel-hub-btn" onclick="window.openPanel('cron')" title="调度任务 — 展示 .claude/scheduled_tasks.json 中所有定时任务。包含 cron 表达式、人类可读描述、活跃/空闲状态、下次触发预估。">
         <span class="panel-hub-icon" style="color:var(--yry-cyan)">⏰</span>
         <span class="panel-hub-name">调度</span>
         <span class="panel-hub-desc">定时·触发·编排</span>
@@ -438,7 +438,7 @@
         <div class="item-card">
           <span class="icon rule">S</span>
           <div class="body">
-            <div class="name"><a href="../skills/self-improve/SKILL.md" target="_blank">self-improve</a><span class="size-info">新</span></div>
+            <div class="name"><a href="../rules/self-improve.md" target="_blank">self-improve</a><span class="size-info">新</span></div>
             <div class="desc">持续自改进闭环 — D0-D7 诊断 → 提案生成 → 物化为故事 → 效果评估 (E1-E4)。数据驱动，全自动演进</div>
             <div class="tags-row"><span class="tag-chip accent">演进</span><span class="tag-chip info">D0-D7</span><span class="tag-chip cyan">/self-improve</span><span class="tag-chip green">v5.0</span></div>
           </div>
@@ -1522,7 +1522,7 @@
   <button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">&uarr;</button>
 
   <!-- ═══ 第三方依赖 + 框架层 ═══ -->
-  <script src="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.js"></script>
+  <script src="../cdn/shared.js"></script>
 
   <!-- ═══ Panel JS modules (extracted from index.html) ═══ -->
   <script src="js/panel-hub.js"></script>
