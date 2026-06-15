@@ -108,7 +108,7 @@
       <div class="flow-chip"><a href="rui-claude.html">⚙️ rui-claude</a></div><span class="flow-arrow">→</span>
       <div class="flow-chip"><a href="rui-import.html">📤 rui-import</a></div><span class="flow-arrow">→</span>
       <div class="flow-chip"><a href="rui-bot.html">📢 rui-bot</a></div><span class="flow-arrow">→</span>
-      <div class="flow-chip"><a href="../../rui-npm/演示/rui-npm.html">📦 rui-npm</a></div><span class="flow-arrow">→</span>
+      <div class="flow-chip"><a href="../../npm包管理/演示/rui-npm.html">📦 rui-npm</a></div><span class="flow-arrow">→</span>
       <div class="flow-chip"><a href="rui-trends.html">📈 rui-trends</a></div>
     </div>
   </div>
@@ -174,7 +174,7 @@
           <pre>/rui-npm publish ./my-cli.mjs --name my-util<span class="copy-btn" onclick="copyCmd(this,'/rui-npm publish ./my-cli.mjs --name my-util')">📋 复制</span></pre>
           <pre>/rui-npm npx my-util<span class="copy-btn" onclick="copyCmd(this,'/rui-npm npx my-util')">📋 复制</span></pre>
           <pre>/rui-npm audit<span class="copy-btn" onclick="copyCmd(this,'/rui-npm audit')">📋 复制</span></pre>
-          <div class="c-links" style="margin-top:8px"><a href="../../rui-npm/演示/rui-npm.html">🎬 全屏演示</a><a href="../../../../skills/rui-npm/SKILL.md">📄 SKILL.md</a><a href="../../../../tests/skills/rui-npm.test.mjs">🧪 测试</a></div>
+          <div class="c-links" style="margin-top:8px"><a href="../../npm包管理/演示/rui-npm.html">🎬 全屏演示</a><a href="../../../../skills/rui-npm/SKILL.md">📄 SKILL.md</a><a href="../../../../tests/skills/rui-npm.test.mjs">🧪 测试</a></div>
         </div>
       </div>
 
@@ -226,7 +226,7 @@
 function copyCmd(btn, cmd) { if (window.YrY) YrY.copyCmd(btn, cmd); else navigator.clipboard.writeText(cmd).catch(function() {}); }
 
 // ═══ Card expand/collapse & double-click navigation ═══
-const SKILL_URLS = ['rui.html','rui-story.html','rui-claude.html','rui-import.html','rui-bot.html','rui-trends.html','../../rui-npm/演示/rui-npm.html'];
+const SKILL_URLS = ['rui.html','rui-story.html','rui-claude.html','rui-import.html','rui-bot.html','rui-trends.html','../../npm包管理/演示/rui-npm.html'];
 const skillGrid = document.getElementById('skillGrid');
 skillGrid.addEventListener('click', e => {
   if (e.target.closest('a') || e.target.closest('.copy-btn') || e.target.closest('pre')) return;
