@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>页面集成 · 计划清单 · YryBreadcrumb 任务故事</title>
+<link rel="stylesheet" href="../../../shared.css">
+<link rel="stylesheet" href="../../../theme.css">
+<link rel="stylesheet" href="../../../yry-checklist.css">
+<link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../../../shared.js"></script>
+<script src="../../../yry-breadcrumb/index.js"></script>
+<style>
+  body { padding: 40px 24px 80px; max-width: 1100px; margin: 0 auto; }
+  .scene-header { padding: 16px 0 24px; border-bottom: 1px solid rgba(255,255,255,.05); margin-bottom: 24px; }
+  .scene-tag { display: inline-block; padding: 3px 10px; background: #10b98122; border: 1px solid #10b98155; border-radius: 12px; color: #10b981; font-size: .72rem; font-weight: 600; }
+  .scene-title { margin: 8px 0 4px; font-size: 1.4rem; color: var(--yry-color-text-1, #f5f5f5); }
+  .scene-en { font-size: .85rem; color: var(--yry-color-text-3, #888); }
+  .scene-desc { font-size: .88rem; color: var(--yry-color-text-2, #d4d4d4); margin: 12px 0 0; line-height: 1.6; }
+  .scene-nav { display:flex; flex-wrap:wrap; gap:6px; padding:10px 14px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:8px; margin: 16px 0 24px; }
+  .scene-nav a, .scene-nav span { font-size:.74rem; padding:4px 10px; border-radius:12px; text-decoration:none; }
+  .scene-nav a { color: var(--yry-color-text-2, #d4d4d4); }
+  .scene-nav a:hover { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.08); }
+  .scene-nav .active { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); }
+  .scene-nav-sep { color: var(--yry-color-text-3, #888); opacity:.3; user-select:none; }
+  h2 { font-size: 1.05rem; margin: 28px 0 12px; color: var(--yry-color-text-1); border-left: 3px solid #10b981; padding-left: 10px; }
+  h3 { font-size: .9rem; margin: 20px 0 8px; color: var(--yry-color-text-1); }
+  p, li { font-size: .86rem; line-height: 1.7; color: var(--yry-color-text-2); }
+  code, pre { font-family: 'JetBrains Mono', Menlo, monospace; font-size: .8rem; }
+  pre { background: #1a1b26; border: 1px solid #2b2d3b; border-radius: 6px; padding: 12px 14px; overflow-x: auto; line-height: 1.5; color: #c0caf5; }
+  code { background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 3px; color: #e0af68; }
+  pre code { background: none; padding: 0; color: #c0caf5; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .8rem; }
+  th, td { padding: 8px 12px; border: 1px solid rgba(255,255,255,.08); text-align: left; }
+  th { background: rgba(255,255,255,.04); font-weight: 600; color: var(--yry-color-text-1); }
+  tr:hover { background: rgba(255,255,255,.02); }
+  .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.05); font-size: .74rem; color: var(--yry-color-text-3); }
+  .footer a { color: var(--yry-color-text-2); }
+  .demo-block { padding: 14px; background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06); border-radius: 8px; margin: 12px 0; }
+  .checklist { padding-left: 0; list-style: none; }
+  .checklist li { padding-left: 24px; position: relative; }
+  .checklist li::before { content: '☐'; position: absolute; left: 4px; color: #10b981; }
+  .checklist li.done::before { content: '☑'; color: #10b981; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: .68rem; font-weight: 600; }
+  .badge-ok { background: #10b98122; color: #10b981; border: 1px solid #10b98155; }
+  .badge-warn { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b55; }
+  .badge-pending { background: #6b728022; color: #9ca3af; border: 1px solid #6b728055; }
+</style>
+</head>
+<body>
+<div id="breadcrumb-app"></div>
+
+<div class="scene-header">
+  <span class="scene-tag">场景 4 · 计划清单</span>
+  <h1 class="scene-title">🔌 页面集成 · 计划清单</h1>
+  <div class="scene-en">YryBreadcrumb 任务故事 · 场景 4 · Page Integration · 计划清单</div>
+  <p class="scene-desc">将组件接入到现有页面 (计划清单 · 场景 1),涉及 4 文件引用顺序 / mount 脚本 / items 配置 4 种典型模式。</p>
+</div>
+
+<div class="scene-nav">
+  <a href="../README.md">📋 任务故事</a>
+  <span class="scene-nav-sep">/</span>
+  <a href="./index.md">页面集成</a>
+  <span class="scene-nav-sep">/</span>
+  <span class="active">计划清单</span>
+</div>
+
+<h2>任务清单</h2>
+<table>
+  <thead><tr><th>ID</th><th>任务</th><th>状态</th><th>证据 / 链接</th></tr></thead>
+  <tbody>
+    <tr><td><code>T4.1</code></td><td>页面 link + script 4 文件引用</td><td>✅</td><td><a href="./源码.html">源码.html</a></td></tr>
+    <tr><td><code>T4.2</code></td><td>mount 脚本 ready 事件处理</td><td>✅</td><td><a href="./源码.html">源码.html</a></td></tr>
+    <tr><td><code>T4.3</code></td><td>4 种 items 模式示例</td><td>✅</td><td><a href="./演示.html">演示.html</a></td></tr>
+    <tr><td><code>T4.4</code></td><td>计划清单 · 场景 1 集成验证</td><td>✅</td><td><a href="./测试面板.html">测试面板 TC-4.1</a></td></tr>
+    <tr><td><code>T4.5</code></td><td>评审通过 → 进入场景 5</td><td>✅</td><td>[场景 5](./../场景-5-测试与发布/index.md)</td></tr>
+  </tbody>
+</table>
+
+<h2>验收标准</h2>
+<ul class="checklist">
+  <li class="done">所有任务状态 = ✅</li>
+  <li class="done">源码 / 演示 / 测试 3 类产物可打开</li>
+  <li class="done">跨页跳转 (回到 README / 跳到下一场景) 链接全部有效</li>
+  <li class="done">本页用 YryBreadcrumb 组件自身渲染面包屑 (dogfooding)</li>
+</ul>
+
+<h2>交付清单</h2>
+<p>8 个标准文件: <code>index.md</code> · <code>审查.html</code> · <code>架构图.html</code> · <code>测试面板.html</code> · <code>源码.html</code> · <code>演示.html</code> · <code>知识图谱.html</code> · <code>计划清单.html</code></p>
+
+<div class="footer">
+  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-4-页面集成/计划清单</code><br>
+  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
+</div>
+
+
+
+<script>
+  function mountBreadcrumb() {
+    if (!window.Vue || !window.YryBreadcrumb) return;
+    Vue.createApp(window.YryBreadcrumb, {
+      ariaLabel: '面包屑导航',
+      items: [
+        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
+        { label: '任务故事', href: '../README.md' },
+        { label: '场景 4 · 页面集成' },
+        { label: '计划清单', icon: '📄' }
+      ]
+    }).mount('#breadcrumb-app');
+  }
+  if (window.YryBreadcrumb) mountBreadcrumb();
+  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
+</script>
+</body>
+</html>

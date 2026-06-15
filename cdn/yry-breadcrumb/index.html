@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  YryBreadcrumb · 模板源 + Demo 预览页
+
+  本文件有 2 个用途:
+    1) **模板源** — index.js 通过 fetch 拉取本文件,提取 <script type="text/x-template"
+       id="yry-breadcrumb-tpl"> 内容作为 Vue 组件的 template。
+    2) **Demo 预览** — 直接用浏览器打开本文件,即可看到 YryBreadcrumb 的实际渲染效果。
+
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryBreadcrumb · Demo & Template</title>
+  <link rel="stylesheet" href="index.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    body {
+      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", sans-serif;
+      background: #fafafa;
+      color: #1a1a1a;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.1rem; margin: 0 0 4px; }
+    .demo-hint { font-size: .8rem; color: #666; margin: 0 0 16px; }
+    hr { border: none; border-top: 1px solid #e5e5e5; margin: 24px 0; }
+    .demo-row { margin: 12px 0; }
+    .demo-row h3 { font-size: .8rem; font-weight: 600; margin: 0 0 6px; color: #444; }
+  </style>
+</head>
+<body>
+  <h1>🍞 YryBreadcrumb · Vue 3 面包屑组件</h1>
+  <p class="demo-hint">以下 3 个 demo 演示了不同的 items 配置 · 模板源见下方 <code>&lt;script type="text/x-template"&gt;</code> 块</p>
+
+  <div class="demo-row">
+    <h3>Demo 1 · 含 href + icon (链接项带图标)</h3>
+    <div id="demo-1"></div>
+  </div>
+
+  <div class="demo-row">
+    <h3>Demo 2 · 纯文本路径 (无 href,全部为当前项)</h3>
+    <div id="demo-2"></div>
+  </div>
+
+  <div class="demo-row">
+    <h3>Demo 3 · 长路径 (8 级)</h3>
+    <div id="demo-3"></div>
+  </div>
+
+  <hr>
+  <p class="demo-hint">↓ 以下 <code>&lt;script type="text/x-template"&gt;</code> 即为组件的 <strong>template 源</strong>,index.js 会 fetch 本文件并提取此块</p>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TEMPLATE SOURCE OF TRUTH · YryBreadcrumb 的 template
+       修改此块即可更新组件,index.js 会在加载时 fetch 本文件并提取 innerHTML
+       ════════════════════════════════════════════════════════════════════ -->
+  <script type="text/x-template" id="yry-breadcrumb-tpl">
+    <nav class="breadcrumb" :aria-label="ariaLabel">
+      <template v-for="(item, i) in items" :key="i">
+        <span v-if="i > 0" class="bc-sep" aria-hidden="true">/</span>
+        <a v-if="item.href" :href="item.href">
+          <template v-if="item.icon">{{ item.icon }}&nbsp;</template>{{ item.label }}
+        </a>
+        <span v-else class="bc-current" :aria-current="i === items.length - 1 ? 'page' : null">
+          <template v-if="item.icon">{{ item.icon }}&nbsp;</template>{{ item.label }}
+        </span>
+      </template>
+    </nav>
+  </script>
+
+  <!-- 加载组件 (异步 fetch 模板,完成后派发 yry-breadcrumb-ready 事件) -->
+  <script src="index.js"></script>
+
+  <!-- Demo 挂载脚本 -->
+  <script>
+    function mountDemo(id, items) {
+      if (!window.Vue || !window.YryBreadcrumb) return;
+      Vue.createApp(window.YryBreadcrumb, { items: items }).mount('#' + id);
+    }
+    function mountAll() {
+      mountDemo('demo-1', [
+        { label: '文档中心',   href: '#home',     icon: '📄' },
+        { label: '组件库',     href: '#lib' },
+        { label: '导航类' },
+        { label: '面包屑',     icon: '🍞' }
+      ]);
+      mountDemo('demo-2', [
+        { label: 'YrY' },
+        { label: '故事面板' },
+        { label: '场景 1' },
+        { label: '模板架构' }
+      ]);
+      mountDemo('demo-3', [
+        { label: '根',     href: '#',     icon: '🌳' },
+        { label: '设计',   href: '#' },
+        { label: '前端',   href: '#' },
+        { label: '组件',   href: '#' },
+        { label: '导航',   href: '#' },
+        { label: '面包屑', href: '#' },
+        { label: '样式' },
+        { label: '最终',   icon: '🎯' }
+      ]);
+    }
+    if (window.YryBreadcrumb) mountAll();
+    else document.addEventListener('yry-breadcrumb-ready', mountAll, { once: true });
+  </script>
+</body>
+</html>

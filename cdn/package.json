@@ -1,11 +1,15 @@
 {
   "name": "yry-cdn",
   "version": "1.1.0",
-  "description": "YrY CDN — shared frontend resources: themes, CSS components, animations, JS utilities for story panel HTML pages",
+  "description": "YrY CDN — shared frontend resources: themes, CSS components, animations, JS utilities, Vue 3 components for story panel HTML pages",
   "main": "shared.js",
   "files": [
     "shared.css",
     "shared.js",
+    "yry-breadcrumb/index.html",
+    "yry-breadcrumb/index.js",
+    "yry-breadcrumb/index.css",
+    "yry-breadcrumb/任务故事",
     "theme.css",
     "theme-mono.css",
     "fonts.css",

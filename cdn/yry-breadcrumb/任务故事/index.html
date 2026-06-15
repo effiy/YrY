@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryBreadcrumb · 任务故事</title>
+  <link rel="stylesheet" href="../../shared.css">
+  <link rel="stylesheet" href="../../theme.css">
+  <link rel="stylesheet" href="../../fonts.css">
+  <link rel="stylesheet" href="../../yry-checklist.css">
+  <link rel="stylesheet" href="../index.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    /* ── 设计令牌 (与 docs/index.html + yry-home.css 一致) ── */
+    :root {
+      --bg-content: var(--yry-bg);
+      --bg-card: var(--yry-bg-card);
+      --bg-card-flat: var(--yry-bg-flat);
+      --color-accent: var(--yry-color-accent, #ffc107);
+      --color-accent-2: var(--yry-cyan, #22d3ee);
+      --text-primary: var(--yry-color-text-1, #f5f5f5);
+      --text-secondary: var(--yry-color-text-2, #d4d4d4);
+      --text-muted: var(--yry-color-text-3, #888);
+      --shadow-card: 0 2px 8px rgba(0,0,0,.25);
+      --shadow-hover: 0 6px 24px rgba(0,0,0,.4);
+      --radius-card: 10px;
+      --border-subtle: 1px solid rgba(255,255,255,.06);
+      --cyan: var(--yry-cyan, #22d3ee);
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 12px rgba(255,193,7,.12); }
+      50%      { box-shadow: 0 0 24px rgba(255,193,7,.28); }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg-content);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   "PingFang SC", "Hiragino Sans GB", sans-serif;
+      line-height: 1.6;
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px 80px; }
+
+    /* ── Header ── */
+    .header { text-align: center; margin-bottom: 32px; animation: fadeInDown 0.5s ease both; }
+    .header h1 { font-size: 2.2rem; font-weight: 700; }
+    .header h1 .accent { color: var(--color-accent); }
+    .header p { color: var(--text-secondary); margin-top: 8px; font-size: 0.92rem; }
+
+    /* ── Stats ── */
+    .stats {
+      display: flex; gap: 14px; justify-content: center; margin-bottom: 36px;
+      flex-wrap: wrap; animation: fadeInDown 0.5s 0.1s ease both;
+    }
+    .stat {
+      background: var(--bg-card); border: var(--border-subtle);
+      border-radius: var(--radius-card); padding: 16px 24px; text-align: center;
+      box-shadow: var(--shadow-card); min-width: 110px;
+      text-decoration: none; color: inherit; display: block;
+      transition: transform .15s, box-shadow .15s, border-color .15s;
+    }
+    .stat:hover {
+      transform: translateY(-2px); box-shadow: var(--shadow-hover);
+      border-color: rgba(255,193,7,.35);
+    }
+    .stat .num { font-size: 1.7rem; font-weight: 700; color: var(--color-accent); }
+    .stat .num.green { color: var(--color-accent-2); }
+    .stat .label { font-size: .78rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Cross-nav ── */
+    .cross-nav {
+      display: flex; gap: 4px; justify-content: center; align-items: center;
+      margin-bottom: 40px; flex-wrap: wrap; animation: fadeInDown 0.5s 0.15s ease both;
+    }
+    .cross-link {
+      color: var(--cyan, #22d3ee); text-decoration: none; font-size: .74rem;
+      padding: 3px 10px; border-radius: 4px; transition: color .15s, background .15s;
+    }
+    .cross-link:hover {
+      color: var(--color-accent); background: rgba(255,193,7,.06);
+      text-decoration: underline;
+    }
+    .cross-sep { color: var(--text-muted); font-size: .5rem; opacity: .35; user-select: none; }
+
+    /* ── Layer ── */
+    .layer { margin-bottom: 36px; }
+    .layer-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+      padding-bottom: 8px; border-bottom: 2px solid var(--color-accent);
+    }
+    .layer-header .layer-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--color-accent); color: #1a1a2a;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem; font-weight: 700; flex-shrink: 0;
+    }
+    .layer-header .layer-num.cyan {
+      background: var(--color-accent-2);
+    }
+    .layer-header h2 { font-size: 1.2rem; margin: 0; flex: 1; }
+    .layer-header .layer-stats { font-size: .78rem; color: var(--text-muted); }
+
+    .sub-title {
+      font-size: .95rem; font-weight: 600; color: var(--text-secondary);
+      margin: 16px 0 10px; padding-left: 10px; border-left: 3px solid rgba(255,193,7,.4);
+    }
+    .sub-title .accent { color: var(--color-accent); }
+
+    /* ── Card grid (3 files) ── */
+    .card-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 14px; margin-bottom: 12px;
+    }
+    .item-card {
+      background: var(--bg-card); border: var(--border-subtle);
+      border-radius: 10px; padding: 18px 20px; box-shadow: var(--shadow-card);
+      transition: transform .15s, box-shadow .15s, border-color .15s;
+      display: flex; gap: 14px; align-items: flex-start;
+      animation: fadeInUp 0.4s ease both; position: relative; overflow: hidden;
+    }
+    .item-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px; background: transparent; border-radius: 0 3px 3px 0;
+      transition: background .2s;
+    }
+    .item-card:hover {
+      transform: translateY(-2px); box-shadow: var(--shadow-hover);
+      border-color: rgba(255,193,7,.18);
+    }
+    .item-card:hover::before { background: var(--color-accent); }
+    .item-card .icon {
+      width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; font-weight: 700; margin-top: 1px;
+    }
+    .item-card .icon.tpl    { background: rgba(255,193,7,.15); color: var(--color-accent); }
+    .item-card .icon.js     { background: rgba(34,211,238,.15); color: var(--color-accent-2); }
+    .item-card .icon.css    { background: rgba(192,132,252,.15); color: #c084fc; }
+    .item-card .body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+    .item-card .name {
+      color: var(--text-primary); font-weight: 600; font-size: .95rem;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .item-card .name a { color: var(--cyan, #22d3ee); text-decoration: none; }
+    .item-card .name a:hover { color: var(--color-accent); text-decoration: underline; }
+    .item-card .name .badge {
+      font-size: .62rem; font-weight: 600; padding: 1px 7px; border-radius: 4px;
+      background: rgba(255,193,7,.12); color: var(--color-accent);
+      border: 1px solid rgba(255,193,7,.25);
+    }
+    .item-card .desc { color: var(--text-muted); font-size: .78rem; line-height: 1.55; }
+    .item-card .tags-row { display: flex; flex-wrap: wrap; gap: 5px; }
+    .item-card .tag-chip {
+      font-size: .66rem; font-weight: 500; padding: 2px 8px; border-radius: 4px;
+      white-space: nowrap; line-height: 1.4;
+    }
+    .tag-chip.accent { background: rgba(255,193,7,.08); color: var(--color-accent); border: 1px solid rgba(255,193,7,.12); }
+    .tag-chip.info   { background: rgba(148,163,184,.06); color: var(--text-muted); border: 1px solid rgba(148,163,184,.1); }
+    .tag-chip.cyan   { background: rgba(34,211,238,.08); color: var(--color-accent-2); border: 1px solid rgba(34,211,238,.12); }
+    .tag-chip.purple { background: rgba(192,132,252,.08); color: #c084fc; border: 1px solid rgba(192,132,252,.12); }
+    .tag-chip.green  { background: rgba(100,220,180,.08); color: #64DCB4; border: 1px solid rgba(100,220,180,.12); }
+    .item-card .meta {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+      font-size: .7rem; color: var(--text-muted);
+    }
+    .item-card .meta code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      color: #e0af68; font-family: 'JetBrains Mono', monospace; font-size: .68rem;
+    }
+
+    /* ── Scene grid (5 scenes) ── */
+    .scene-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 14px; margin-bottom: 12px;
+    }
+    .scene-card {
+      background: var(--bg-card); border: var(--border-subtle);
+      border-radius: 10px; padding: 16px 18px; box-shadow: var(--shadow-card);
+      transition: transform .15s, box-shadow .15s, border-color .15s;
+      animation: fadeInUp 0.4s ease both;
+    }
+    .scene-card:hover {
+      transform: translateY(-2px); box-shadow: var(--shadow-hover);
+      border-color: rgba(255,193,7,.2);
+    }
+    .scene-card .scene-head {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+    }
+    .scene-card .scene-num {
+      font-size: .68rem; font-weight: 700; color: var(--color-accent);
+      background: rgba(255,193,7,.1); border: 1px solid rgba(255,193,7,.25);
+      border-radius: 4px; padding: 2px 8px;
+    }
+    .scene-card .scene-color-dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    }
+    .scene-card .scene-name { font-size: .98rem; font-weight: 700; flex: 1; }
+    .scene-card .scene-name a { color: var(--cyan, #22d3ee); text-decoration: none; }
+    .scene-card .scene-name a:hover { color: var(--color-accent); text-decoration: underline; }
+    .scene-card .scene-desc { color: var(--text-muted); font-size: .78rem; line-height: 1.55; margin: 4px 0 10px; }
+    .scene-card .scene-meta {
+      padding-top: 8px; border-top: 1px solid rgba(255,255,255,.05);
+      display: flex; flex-wrap: wrap; gap: 2px;
+    }
+    .scene-card .scene-meta a {
+      font-size: .68rem; color: var(--cyan, #22d3ee); text-decoration: none;
+      transition: color .15s;
+    }
+    .scene-card .scene-meta a:hover { color: var(--color-accent); text-decoration: underline; }
+    .scene-card .scene-meta .sep { color: var(--text-muted); margin: 0 2px; user-select: none; }
+
+    /* ── Deliverables row (8 types) ── */
+    .deliv-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px; margin-bottom: 8px;
+    }
+    .deliv-card {
+      background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.05);
+      border-radius: 8px; padding: 12px 14px; transition: all .15s;
+      animation: fadeInUp 0.4s ease both;
+    }
+    .deliv-card:hover {
+      background: rgba(255,255,255,.05); border-color: rgba(255,193,7,.18);
+    }
+    .deliv-card .deliv-icon { font-size: 1.1rem; margin-bottom: 4px; }
+    .deliv-card .deliv-name { font-size: .82rem; font-weight: 600; color: var(--text-primary); }
+    .deliv-card .deliv-desc { font-size: .68rem; color: var(--text-muted); margin-top: 2px; line-height: 1.5; }
+
+    /* ── Flow strip ── */
+    .flow-strip {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      flex-wrap: wrap; margin: 0 0 36px;
+      padding: 12px 18px;
+      background: var(--bg-card); border: var(--border-subtle);
+      border-radius: 10px; box-shadow: var(--shadow-card);
+      animation: fadeInDown 0.5s 0.2s ease both;
+      font-size: .68rem; color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .flow-strip .flow-step { color: var(--text-secondary); }
+    .flow-strip .flow-arrow { color: var(--color-accent); opacity: .6; }
+    .flow-strip .flow-tag {
+      padding: 2px 8px; border-radius: 4px;
+      background: rgba(255,193,7,.08); color: var(--color-accent);
+      border: 1px solid rgba(255,193,7,.15);
+    }
+
+    hr { border-color: rgba(255,255,255,.08); margin: 8px 0 24px; }
+
+    .footer-note {
+      text-align: center; color: var(--text-muted); font-size: .78rem;
+      margin-top: 8px; padding-bottom: 20px;
+    }
+    .footer-note a { color: var(--color-accent); text-decoration: none; }
+    .footer-note a:hover { text-decoration: underline; }
+
+    /* ── Back to top ── */
+    .back-top {
+      position: fixed; bottom: 28px; right: 28px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--bg-card-flat); border: 1px solid rgba(255,255,255,.1);
+      color: var(--text-secondary); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; box-shadow: var(--shadow-card);
+      transition: all .2s ease;
+      opacity: 0; pointer-events: none; z-index: 100;
+    }
+    .back-top.visible { opacity: 1; pointer-events: auto; }
+    .back-top:hover { border-color: var(--color-accent); color: var(--color-accent); }
+
+    @media (max-width: 720px) {
+      .header h1 { font-size: 1.6rem; }
+      .stat { min-width: 90px; padding: 12px 16px; }
+      .stat .num { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- ── YryBreadcrumb · dogfooding ──────────────────────────── -->
+    <div id="breadcrumb-app"></div>
+
+    <!-- ── Header ──────────────────────────────────────────────── -->
+    <div class="header">
+      <h1><span class="accent">🍞</span> YryBreadcrumb · 任务故事</h1>
+      <p>零打包 · Vue 3 单文件组件 — 1 组件 / 3 文件 / 5 场景 / 40 交付物 · 故事驱动 SDLC 落地</p>
+    </div>
+
+    <!-- ── Stats ───────────────────────────────────────────────── -->
+    <div class="stats">
+      <a class="stat" href="#layer-component">
+        <div class="num">3</div>
+        <div class="label">组件文件</div>
+      </a>
+      <a class="stat" href="#layer-scenes">
+        <div class="num green">5</div>
+        <div class="label">实现场景</div>
+      </a>
+      <a class="stat" href="#layer-deliverables">
+        <div class="num">40</div>
+        <div class="label">标准交付物</div>
+      </a>
+      <a class="stat" href="#layer-flow">
+        <div class="num green">7</div>
+        <div class="label">设计决策</div>
+      </a>
+      <a class="stat" href="../index.html">
+        <div class="num">0</div>
+        <div class="label">打包步骤</div>
+      </a>
+    </div>
+
+    <!-- ── Cross-nav ───────────────────────────────────────────── -->
+    <div class="cross-nav">
+      <a class="cross-link" href="../../../docs/index.html">📚 文档中心</a>
+      <span class="cross-sep">·</span>
+      <a class="cross-link" href="../../../docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html">📋 原始触发页</a>
+      <span class="cross-sep">·</span>
+      <a class="cross-link" href="../index.html">🍞 组件 Demo</a>
+      <span class="cross-sep">·</span>
+      <a class="cross-link" href="./README.md">📖 组件 README</a>
+      <span class="cross-sep">·</span>
+      <a class="cross-link" href="https://github.com" target="_blank" rel="noopener">📜 CLAUDE.md</a>
+      <span class="cross-sep">·</span>
+      <a class="cross-link" href="https://github.com" target="_blank" rel="noopener">📖 README.md</a>
+    </div>
+
+    <!-- ── Flow strip ─────────────────────────────────────────── -->
+    <div class="flow-strip" id="layer-flow">
+      <span class="flow-step">📝 静态 HTML</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">🍞 YryBreadcrumb 组件</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">📦 cdn/</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">🎬 任务故事 5 场景</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-step">📋 8 交付物 × 5</span>
+      <span class="flow-arrow">=</span>
+      <span class="flow-tag">40 文件</span>
+    </div>
+
+    <!-- ═══ Layer 1: 组件结构 ═══ -->
+    <div class="layer" id="layer-component">
+      <div class="layer-header">
+        <span class="layer-num">1</span>
+        <h2>组件结构</h2>
+        <span class="layer-stats">3 文件 · 模板 / 加载器 / 样式 · 职责单一 · 各改各的不打架</span>
+      </div>
+
+      <div class="sub-title"><span class="accent">📐</span> 核心文件 (3)</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon tpl">T</span>
+          <div class="body">
+            <div class="name">
+              <a href="../index.html">index.html</a>
+              <span class="badge">模板源</span>
+            </div>
+            <div class="desc">
+              <code>&lt;script type="text/x-template" id="yry-breadcrumb-tpl"&gt;</code> 块的唯一定义点。<br>
+              <strong>设计 / 前端</strong> 改这里 → <code>index.js</code> 启动时自动 fetch 同步。
+            </div>
+            <div class="tags-row">
+              <span class="tag-chip accent">唯一来源</span>
+              <span class="tag-chip info">Vue template</span>
+              <span class="tag-chip cyan">a11y</span>
+            </div>
+            <div class="meta"><code>~ 30 行 template</code> · <code>8 行 demo</code> · <code>× 3 mount 点</code></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon js">L</span>
+          <div class="body">
+            <div class="name">
+              <a href="../index.js">index.js</a>
+              <span class="badge">Loader</span>
+            </div>
+            <div class="desc">
+              IIFE 加载器: <code>document.currentScript.src</code> 解析自身 URL →
+              <code>fetch()</code> 拉取 <code>index.html</code> → <code>DOMParser</code> 提取模板 →
+              <code>Vue.createApp().mount()</code> → 派发 <code>yry-breadcrumb-ready</code> 事件。
+            </div>
+            <div class="tags-row">
+              <span class="tag-chip accent">运行时入口</span>
+              <span class="tag-chip info">fetch</span>
+              <span class="tag-chip purple">DOMParser</span>
+              <span class="tag-chip cyan">5s 超时</span>
+            </div>
+            <div class="meta"><code>~ 5 KB</code> · <code>no-bundler</code> · <code>CustomEvent</code></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon css">S</span>
+          <div class="body">
+            <div class="name">
+              <a href="../index.css">index.css</a>
+              <span class="badge">样式</span>
+            </div>
+            <div class="desc">
+              使用 <code>--yry-color-*</code> 设计令牌 + fallback。link href 引入 →
+              全局作用域 <code>.breadcrumb / .bc-sep / .bc-current</code>。修改不影响模板与逻辑。
+            </div>
+            <div class="tags-row">
+              <span class="tag-chip accent">设计令牌</span>
+              <span class="tag-chip info">fallback</span>
+              <span class="tag-chip purple">全局类</span>
+            </div>
+            <div class="meta"><code>~ 1 KB</code> · <code>BEM 命名</code> · <code>--yry-*</code></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- ═══ Layer 2: 5 场景 ═══ -->
+    <div class="layer" id="layer-scenes">
+      <div class="layer-header">
+        <span class="layer-num">2</span>
+        <h2>5 场景 · 完整链路</h2>
+        <span class="layer-stats">从需求到发布 · 8 交付物 / 场景 · 全 40 文件</span>
+      </div>
+
+      <div class="sub-title"><span class="accent">🎬</span> 5 场景 · 任务故事</div>
+      <div class="scene-grid">
+        <div class="scene-card">
+          <div class="scene-head">
+            <span class="scene-num">场景 1</span>
+            <span class="scene-color-dot" style="background:#22d3ee"></span>
+            <span class="scene-name"><a href="./场景-1-需求与设计/index.md">需求与设计</a></span>
+          </div>
+          <div class="scene-desc">梳理面包屑组件的需求来源,确定 3 文件拆分 / 异步加载 / a11y 等关键设计决策,产出 Props API 草案。</div>
+          <div class="scene-meta">
+            <a href="./场景-1-需求与设计/计划清单.html">📋清单</a><span class="sep">·</span>
+            <a href="./场景-1-需求与设计/架构图.html">📐架构</a><span class="sep">·</span>
+            <a href="./场景-1-需求与设计/知识图谱.html">🔗图谱</a><span class="sep">·</span>
+            <a href="./场景-1-需求与设计/测试面板.html">🧪测试</a><span class="sep">·</span>
+            <a href="./场景-1-需求与设计/源码.html">📄源码</a><span class="sep">·</span>
+            <a href="./场景-1-需求与设计/演示.html">💡演示</a><span class="sep">·</span>
+            <a href="./场景-1-需求与设计/审查.html">📝审查</a>
+          </div>
+        </div>
+
+        <div class="scene-card">
+          <div class="scene-head">
+            <span class="scene-num">场景 2</span>
+            <span class="scene-color-dot" style="background:#ffc107"></span>
+            <span class="scene-name"><a href="./场景-2-模板与样式/index.md">模板与样式</a></span>
+          </div>
+          <div class="scene-desc">Vue 3 template 编写 · v-for / v-if / :class 设计 · CSS 设计令牌 + fallback 决策 · 5 视觉模式覆盖。</div>
+          <div class="scene-meta">
+            <a href="./场景-2-模板与样式/计划清单.html">📋清单</a><span class="sep">·</span>
+            <a href="./场景-2-模板与样式/架构图.html">📐架构</a><span class="sep">·</span>
+            <a href="./场景-2-模板与样式/知识图谱.html">🔗图谱</a><span class="sep">·</span>
+            <a href="./场景-2-模板与样式/测试面板.html">🧪测试</a><span class="sep">·</span>
+            <a href="./场景-2-模板与样式/源码.html">📄源码</a><span class="sep">·</span>
+            <a href="./场景-2-模板与样式/演示.html">💡演示</a><span class="sep">·</span>
+            <a href="./场景-2-模板与样式/审查.html">📝审查</a>
+          </div>
+        </div>
+
+        <div class="scene-card">
+          <div class="scene-head">
+            <span class="scene-num">场景 3</span>
+            <span class="scene-color-dot" style="background:#a78bfa"></span>
+            <span class="scene-name"><a href="./场景-3-Loader实现/index.md">Loader 实现</a></span>
+          </div>
+          <div class="scene-desc">fetch + DOMParser + ready 事件 + 5s 超时 · 4 文件引用顺序 · 错误处理与降级 · 错误用例与诊断。</div>
+          <div class="scene-meta">
+            <a href="./场景-3-Loader实现/计划清单.html">📋清单</a><span class="sep">·</span>
+            <a href="./场景-3-Loader实现/架构图.html">📐架构</a><span class="sep">·</span>
+            <a href="./场景-3-Loader实现/知识图谱.html">🔗图谱</a><span class="sep">·</span>
+            <a href="./场景-3-Loader实现/测试面板.html">🧪测试</a><span class="sep">·</span>
+            <a href="./场景-3-Loader实现/源码.html">📄源码</a><span class="sep">·</span>
+            <a href="./场景-3-Loader实现/演示.html">💡演示</a><span class="sep">·</span>
+            <a href="./场景-3-Loader实现/审查.html">📝审查</a>
+          </div>
+        </div>
+
+        <div class="scene-card">
+          <div class="scene-head">
+            <span class="scene-num">场景 4</span>
+            <span class="scene-color-dot" style="background:#10b981"></span>
+            <span class="scene-name"><a href="./场景-4-页面集成/index.md">页面集成</a></span>
+          </div>
+          <div class="scene-desc">集成到 计划清单.html + 28 场景页 · 4 文件引用顺序 · 4 种 items 模式 (含 href/纯文本/长路径/图标)。</div>
+          <div class="scene-meta">
+            <a href="./场景-4-页面集成/计划清单.html">📋清单</a><span class="sep">·</span>
+            <a href="./场景-4-页面集成/架构图.html">📐架构</a><span class="sep">·</span>
+            <a href="./场景-4-页面集成/知识图谱.html">🔗图谱</a><span class="sep">·</span>
+            <a href="./场景-4-页面集成/测试面板.html">🧪测试</a><span class="sep">·</span>
+            <a href="./场景-4-页面集成/源码.html">📄源码</a><span class="sep">·</span>
+            <a href="./场景-4-页面集成/演示.html">💡演示</a><span class="sep">·</span>
+            <a href="./场景-4-页面集成/审查.html">📝审查</a>
+          </div>
+        </div>
+
+        <div class="scene-card">
+          <div class="scene-head">
+            <span class="scene-num">场景 5</span>
+            <span class="scene-color-dot" style="background:#f472b6"></span>
+            <span class="scene-name"><a href="./场景-5-测试与发布/index.md">测试与发布</a></span>
+          </div>
+          <div class="scene-desc">7 项自测清单 · 跨页面验证 · npm 集成 · package.json 字段 · cdn-yry-checklist 类名复用验证。</div>
+          <div class="scene-meta">
+            <a href="./场景-5-测试与发布/计划清单.html">📋清单</a><span class="sep">·</span>
+            <a href="./场景-5-测试与发布/架构图.html">📐架构</a><span class="sep">·</span>
+            <a href="./场景-5-测试与发布/知识图谱.html">🔗图谱</a><span class="sep">·</span>
+            <a href="./场景-5-测试与发布/测试面板.html">🧪测试</a><span class="sep">·</span>
+            <a href="./场景-5-测试与发布/源码.html">📄源码</a><span class="sep">·</span>
+            <a href="./场景-5-测试与发布/演示.html">💡演示</a><span class="sep">·</span>
+            <a href="./场景-5-测试与发布/审查.html">📝审查</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- ═══ Layer 3: 8 交付物 ═══ -->
+    <div class="layer" id="layer-deliverables">
+      <div class="layer-header">
+        <span class="layer-num cyan">3</span>
+        <h2>8 交付物 · 标准模版</h2>
+        <span class="layer-stats">每场景 8 文件 · 5 场景 × 8 = 40 个标准产出</span>
+      </div>
+
+      <div class="sub-title"><span class="accent">📋</span> 8 类标准交付物</div>
+      <div class="deliv-grid">
+        <div class="deliv-card">
+          <div class="deliv-icon">📄</div>
+          <div class="deliv-name">index.md</div>
+          <div class="deliv-desc">场景正文 · 5 章节 + Mermaid 图</div>
+        </div>
+        <div class="deliv-card">
+          <div class="deliv-icon">📋</div>
+          <div class="deliv-name">计划清单.html</div>
+          <div class="deliv-desc">任务 / 验收 / 交付 · yry-checklist 组件</div>
+        </div>
+        <div class="deliv-card">
+          <div class="deliv-icon">📐</div>
+          <div class="deliv-name">架构图.html</div>
+          <div class="deliv-desc">关键流程图 · Mermaid · sequenceDiagram</div>
+        </div>
+        <div class="deliv-card">
+          <div class="deliv-icon">🔗</div>
+          <div class="deliv-name">知识图谱.html</div>
+          <div class="deliv-desc">概念节点-边图 · Cytoscape 可视化</div>
+        </div>
+        <div class="deliv-card">
+          <div class="deliv-icon">🧪</div>
+          <div class="deliv-name">测试面板.html</div>
+          <div class="deliv-desc">测试用例 · 自动化入口 · 验证记录</div>
+        </div>
+        <div class="deliv-card">
+          <div class="deliv-icon">📜</div>
+          <div class="deliv-name">源码.html</div>
+          <div class="deliv-desc">关键源码片段 + 行号 · 三文件全文</div>
+        </div>
+        <div class="deliv-card">
+          <div class="deliv-icon">💡</div>
+          <div class="deliv-name">演示.html</div>
+          <div class="deliv-desc">3 种 items 模式可交互演示</div>
+        </div>
+        <div class="deliv-card">
+          <div class="deliv-icon">📝</div>
+          <div class="deliv-name">审查.html</div>
+          <div class="deliv-desc">技术评审 · 7 项清单 + 决策记录</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Footer ─────────────────────────────────────────────── -->
+    <div class="footer-note">
+      🍞 YryBreadcrumb v1.0.0 · 零打包 Vue 3 组件 ·
+      <a href="../../../docs/index.html">文档中心</a> ·
+      <a href="./README.md">组件 README</a> ·
+      <a href="../index.html">Demo</a> ·
+      <a href="../../../README.md" target="_blank">根 README</a>
+    </div>
+  </div>
+
+  <!-- ── Back to top ──────────────────────────────────────────── -->
+  <button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">↑</button>
+
+  <!-- ── Loader ───────────────────────────────────────────────── -->
+  <script src="../index.js"></script>
+  <script>
+    /* Staggered card animations */
+    document.querySelectorAll('.card-grid .item-card, .scene-grid .scene-card, .deliv-grid .deliv-card').forEach((card, i) => {
+      card.style.animationDelay = `${0.01 + (i % 20) * 0.012}s`;
+    });
+
+    /* Back to top */
+    const backTopBtn = document.getElementById('backTop');
+    function toggleBackTop() {
+      backTopBtn.classList.toggle('visible', window.scrollY > 400);
+    }
+    window.addEventListener('scroll', toggleBackTop, { passive: true });
+    backTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    /* Mount YryBreadcrumb (dogfooding) */
+    function mountBreadcrumb() {
+      if (!window.Vue || !window.YryBreadcrumb) return;
+      Vue.createApp(window.YryBreadcrumb, {
+        items: [
+          { label: '文档中心',  href: '../../../docs/index.html',         icon: '📚' },
+          { label: 'CDN 共享库', href: '../../README.md',                 icon: '🌐' },
+          { label: 'YryBreadcrumb', href: '../index.html',              icon: '🍞' },
+          { label: '任务故事',   href: './README.md' },
+          { label: '总览' }
+        ]
+      }).mount('#breadcrumb-app');
+    }
+    if (window.YryBreadcrumb) mountBreadcrumb();
+    else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
+  </script>
+</body>
+</html>

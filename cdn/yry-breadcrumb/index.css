@@ -1,0 +1,44 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryBreadcrumb · Vue 3 面包屑组件 样式
+   适用: 审查 · 测试面板 · 演示 · 计划清单 · 架构图 · 知识图谱
+
+   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+     --yry-color-text-1 / --yry-color-text-2 / --yry-color-text-3
+     --yry-color-accent
+     --yry-ease-out
+
+   所有颜色都带 fallback,即使页面未加载主题也能正常显示。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 1.25rem;
+  font-size: .76rem;
+  line-height: 1.4;
+}
+
+.breadcrumb a {
+  color: var(--yry-color-text-2, #d4d4d4);
+  text-decoration: none;
+  transition: color .15s var(--yry-ease-out, ease);
+}
+
+.breadcrumb a:hover {
+  color: var(--yry-color-accent, #ffc107);
+  text-decoration: underline;
+}
+
+.bc-sep {
+  color: var(--yry-color-text-3, #888);
+  opacity: .4;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.bc-current {
+  color: var(--yry-color-text-1, #f5f5f5);
+  font-weight: 500;
+}

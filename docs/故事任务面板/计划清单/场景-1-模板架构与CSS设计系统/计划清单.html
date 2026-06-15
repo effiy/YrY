@@ -8,6 +8,10 @@
 <link rel="stylesheet" href="../../../../cdn/shared.css">
 <link rel="stylesheet" href="../../../../cdn/theme.css">
 <link rel="stylesheet" href="../../../../cdn/yry-checklist.css">
+<!-- ═══ CDN: YryBreadcrumb 组件样式 ═══ -->
+<link rel="stylesheet" href="../../../../cdn/yry-breadcrumb/index.css">
+<!-- ═══ CDN: Vue 3 (生产构建,用于面包屑组件) ═══ -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
 /* Page-specific overrides — all shared styles loaded from CDN */
 
@@ -562,7 +566,8 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
 
 <div class="container" role="main" id="main">
 
-<nav class="breadcrumb" aria-label="面包屑导航"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-checklist · 清单与自循环</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 模板架构与 CSS 设计系统</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
+<!-- ═══ Breadcrumb (Vue 3 组件 · 挂载点) ═══ -->
+<div id="breadcrumb-app"></div>
 <nav class="scene-nav" aria-label="场景导航">
   <a class="scene-nav-link active" href="计划清单.html" aria-current="page">📋 场景1 · 模板架构与 CSS 设计系统</a>
   <span class="scene-nav-sep" aria-hidden="true">·</span>
@@ -3425,5 +3430,30 @@ function toast(msg) {
 })();
 </script>
 <script src="../../../../cdn/shared.js"></script>
+
+<!-- ═══ CDN: YryBreadcrumb 组件 loader (fetch index.html → 提取 template → 注册) ═══ -->
+<script src="../../../../cdn/yry-breadcrumb/index.js"></script>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+   页面级挂载 · 面包屑条目 (与组件解耦,条目由本页决定)
+   index.js 异步加载模板后派发 'yry-breadcrumb-ready' 事件
+   ════════════════════════════════════════════════════════════════════════ -->
+<script>
+  function mountBreadcrumb() {
+    if (!window.Vue || !window.YryBreadcrumb) return;
+    if (!document.getElementById('breadcrumb-app')) return;
+    Vue.createApp(window.YryBreadcrumb, {
+      ariaLabel: '面包屑导航',
+      items: [
+        { label: '文档中心',                        href: '../../../index.html', icon: '📄' },
+        { label: 'yry-checklist · 清单与自循环' },
+        { label: '场景 1 · 模板架构与 CSS 设计系统' },
+        { label: '计划清单',                        icon: '📋' }
+      ]
+    }).mount('#breadcrumb-app');
+  }
+  if (window.YryBreadcrumb) mountBreadcrumb();
+  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
+</script>
 </body>
 </html>

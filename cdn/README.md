@@ -6,10 +6,21 @@
 
 ```
 cdn/
-├── shared.css       # ★ 所有页面通用 — CSS Reset · 动画 · 面包屑 · 横向导航 · 工具栏 · Toast
-├── shared.js        # ★ 所有页面通用 — YrY.toast() · YrY.copyCmd() · YrY.switchPanel() · 折叠/展开
-├── theme.css        # Category B 页面 — 设计令牌(:root变量) · 统计卡片 · 标签页 · 折叠套件 · 进度条
-└── theme-mono.css   # Category A 页面 — JetBrains Mono 主题 · 图表容器 · 图例 · 卡片圆点
+├── shared.css              # ★ 所有页面通用 — CSS Reset · 动画 · 面包屑 · 横向导航 · 工具栏 · Toast
+├── shared.js               # ★ 所有页面通用 — YrY.toast() · YrY.copyCmd() · YrY.switchPanel() · 折叠/展开
+├── yry-breadcrumb/         # ★ Vue 3 组件 — 面包屑 (3 文件拆分 + 5 场景任务故事)
+│   ├── index.html          #   模板源 + Demo 预览页 (<script type="text/x-template">)
+│   ├── index.js            #   Loader: fetch 模板 → 注册 window.YryBreadcrumb → 派发 ready 事件
+│   ├── index.css           #   组件样式 (.breadcrumb · .bc-sep · .bc-current)
+│   └── 任务故事/           #   组件任务故事 (5 场景 · 8 交付物 / 场景 = 40 文件)
+│       ├── README.md       #     任务故事总览 + 5 场景导航
+│       ├── 场景-1-需求与设计/   #     需求 / 5 项设计决策 / Props 草案
+│       ├── 场景-2-模板与样式/   #     Vue template + CSS 设计令牌
+│       ├── 场景-3-Loader实现/   #     fetch + DOMParser + ready 事件 + 5s 超时
+│       ├── 场景-4-页面集成/     #     4 文件引用顺序 + 4 种 items 模式
+│       └── 场景-5-测试与发布/   #     7 项自测 + npm 集成
+├── theme.css               # Category B 页面 — 设计令牌(:root变量) · 统计卡片 · 标签页 · 折叠套件 · 进度条
+└── theme-mono.css          # Category A 页面 — JetBrains Mono 主题 · 图表容器 · 图例 · 卡片圆点
 ```
 
 ## 页面分类
@@ -79,6 +90,65 @@ YrY.fmtDur(142)                                // → "142ms"
 YrY.esc('<script>')                            // → "&lt;script&gt;"
 YrY.clipboardWrite(text, onSuccess, onFail)    // 写入剪贴板
 ```
+
+## Vue 3 组件 (`YryBreadcrumb`)
+
+`cdn/yry-breadcrumb/` 目录下 3 文件拆分,loader (`index.js`) 运行时 fetch `index.html` 提取模板,注册到 `window.YryBreadcrumb` 后派发 `yry-breadcrumb-ready` 事件。
+
+> 📖 详细架构/修改指南/自测清单见 [cdn/yry-breadcrumb/任务故事/README.md](yry-breadcrumb/%E4%BB%BB%E5%8A%A1%E6%95%85%E4%BA%8B/README.md)
+
+**文件结构**:
+```
+cdn/yry-breadcrumb/
+├── index.html   # 模板源 + Demo 预览页 (含 <script type="text/x-template" id="yry-breadcrumb-tpl">)
+├── index.js     # Loader: fetch index.html → 提取 template → 注册组件 → 派发 ready 事件
+├── index.css    # 组件样式 (.breadcrumb · .bc-sep · .bc-current),依赖 --yry-color-* token
+└── 任务故事/
+    ├── README.md           # 任务故事总览 + 5 场景导航
+    ├── 场景-1-需求与设计/   (× 8 标准交付物: index.md / 审查 / 架构图 / 测试面板 / 源码 / 演示 / 知识图谱 / 计划清单)
+    ├── 场景-2-模板与样式/   (× 8)
+    ├── 场景-3-Loader实现/   (× 8)
+    ├── 场景-4-页面集成/     (× 8)
+    └── 场景-5-测试与发布/   (× 8)
+```
+
+**加载顺序**:
+```html
+<link rel="stylesheet" href="../../../../cdn/yry-breadcrumb/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../../../../cdn/yry-breadcrumb/index.js"></script>
+```
+
+**使用方式** (模板异步加载,所以 mount 脚本需等待 `yry-breadcrumb-ready` 事件):
+```html
+<div id="breadcrumb-app"></div>
+<script>
+  function mountBreadcrumb() {
+    Vue.createApp(window.YryBreadcrumb, {
+      ariaLabel: '面包屑导航',  // 可选,默认 '面包屑导航'
+      items: [
+        { label: '文档中心',   href: '../../../index.html', icon: '📄' },
+        { label: 'yry-checklist · 清单与自循环' },
+        { label: '场景 1 · 模板架构与 CSS 设计系统' },
+        { label: '计划清单',   icon: '📋' }
+      ]
+    }).mount('#breadcrumb-app');
+  }
+  if (window.YryBreadcrumb) mountBreadcrumb();
+  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
+</script>
+```
+
+**Props**:
+| 名称 | 类型 | 必填 | 默认 | 说明 |
+|------|------|------|------|------|
+| `items` | `Array<{label, href?, icon?}>` | ✅ | — | 面包屑条目,有 `href` 渲染为链接,无 `href` 渲染为当前项 |
+| `ariaLabel` | `string` | | `'面包屑导航'` | `<nav>` 的 `aria-label` |
+| `separator` | `string` | | `'/'` | 分隔符文本(预留) |
+
+**a11y**: 链接项为 `<a>`、当前项为 `<span class="bc-current" aria-current="page">`、分隔符 `aria-hidden="true"`。
+
+**Demo 预览**: 直接浏览器打开 `cdn/yry-breadcrumb/index.html` 可看到 3 个示例 (含 href+icon / 纯文本 / 8 级长路径)。
 
 ## 设计令牌 (CSS 变量)
 
