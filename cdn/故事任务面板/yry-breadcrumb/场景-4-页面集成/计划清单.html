@@ -13,25 +13,28 @@
 <script src="../../../shared.js"></script>
 <script src="../../../yry-breadcrumb/index.js"></script>
 <style>
-/* KPI 统计卡片 */
+/* KPI 统计卡片网格 (stat-card 样式由 yry-scene.css 提供) */
 .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0 24px; }
-.stat-card { padding: 16px 14px; background: var(--yry-color-surface-1); border: 1px solid var(--yry-color-border); border-radius: var(--yry-radius-lg); text-align: center; }
-.stat-card .stat-num { font-size: 1.6rem; font-weight: 700; color: var(--yry-color-text-1); line-height: 1.2; }
-.stat-card .stat-label { font-size: var(--yry-fs-sm); color: var(--yry-color-text-3); margin-top: 4px; }
-.stat-card.stat-done .stat-num { color: #10b981; }
-.stat-card.stat-progress .stat-num { color: #f59e0b; }
-.stat-card.stat-pending .stat-num { color: #9ca3af; }
-.stat-card.stat-percent .stat-num { color: #22d3ee; }
 
-/* 交付清单链接 */
-.deliver-list { list-style: none; padding-left: 0; }
-.deliver-list li { padding: 6px 0; border-bottom: 1px solid var(--yry-color-border); }
-.deliver-list li:last-child { border-bottom: none; }
-.deliver-list a { color: var(--yry-color-cyan); text-decoration: none; font-weight: 500; }
-.deliver-list a:hover { text-decoration: underline; }
+/* 交付网格增强 */
+.delivery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin: 12px 0; }
+.delivery-grid a {
+  display: block; padding: 14px 16px;
+  background: var(--yry-color-surface-1); border: 1px solid var(--yry-color-border);
+  border-radius: var(--yry-radius-lg); color: var(--yry-color-cyan);
+  text-decoration: none; font-size: .82rem; font-weight: 500; text-align: center;
+  transition: all .15s;
+}
+.delivery-grid a:hover {
+  border-color: rgba(255,193,7,.18); color: var(--yry-color-accent);
+  transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.2);
+}
+.delivery-grid a small { display: block; font-size: .64rem; color: var(--yry-color-text-3); margin-top: 2px; font-weight: 400; }
 
 @media (max-width: 640px) {
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .delivery-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
@@ -53,11 +56,22 @@
   <span class="active">计划清单</span>
 </div>
 
+<h2>进度概览</h2>
+<div class="stat-grid">
+  <div class="stat-card"><div class="val pass">5</div><div class="lbl">任务完成</div></div>
+  <div class="stat-card"><div class="val warn">0</div><div class="lbl">进行中</div></div>
+  <div class="stat-card"><div class="val info">0</div><div class="lbl">阻塞</div></div>
+  <div class="stat-card"><div class="val accent">100%</div><div class="lbl">完成率</div></div>
+</div>
+
+<div class="tip-box success"><strong>场景完成</strong> 5/5 页面集成任务全部完成，29 页 dogfooding 验证通过，4 种 items 模式全部渲染正确。</div>
+
+<h2>KPI 指标</h2>
 <div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-num" style="color:#10b981">5</div><div class="kpi-label">任务总数</div></div>
-  <div class="kpi-card"><div class="kpi-num" style="color:#10b981">0</div><div class="kpi-label">未完成</div></div>
-  <div class="kpi-card"><div class="kpi-num" style="color:#9ca3af">0</div><div class="kpi-label">阻塞</div></div>
-  <div class="kpi-card"><div class="kpi-num" style="color:#10b981">100%</div><div class="kpi-label">完成率</div></div>
+  <div class="kpi-card"><div class="kpi-val pass">5</div><div class="kpi-label">任务条目</div></div>
+  <div class="kpi-card"><div class="kpi-val info">29</div><div class="kpi-label">集成页面</div></div>
+  <div class="kpi-card"><div class="kpi-val pass">4</div><div class="kpi-label">Items 模式</div></div>
+  <div class="kpi-card"><div class="kpi-val accent">100%</div><div class="kpi-label">审查通过率</div></div>
 </div>
 
 <div class="cross-nav">
@@ -74,6 +88,28 @@
   <a class="cross-link" href="演示.html">💡 演示</a>
   <span class="cross-sep">·</span>
   <a class="cross-link" href="审查.html">📝 审查</a>
+</div>
+
+<h2>任务管线</h2>
+<div class="stage-list">
+  <div class="stage-row done">
+    <div class="st-num">1</div>
+    <div class="st-info"><div class="st-name">引用规范</div><div class="st-detail">4 文件引用顺序文档化 + FOUC 防护验证，CSS 在 head 首位加载</div></div>
+    <span class="st-status ok">✓ 完成</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">2</div>
+    <div class="st-info"><div class="st-name">模式实现</div><div class="st-detail">4 种 items 模式：href+icon / 纯文本 / 长路径 / 图标混用</div></div>
+    <span class="st-status ok">✓ 完成</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">3</div>
+    <div class="st-info"><div class="st-name">集成验证</div><div class="st-detail">29 页 dogfooding + 跨页面兼容性测试全部通过</div></div>
+    <span class="st-status ok">✓ 完成</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
 </div>
 
 <h2>📋 任务清单</h2>
@@ -118,6 +154,66 @@
   </tbody>
 </table>
 
+<h2>验收清单</h2>
+<div class="check-list">
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T4.1: 4 文件引用顺序文档化</div>
+      <div class="vi-desc">在 index.md §1 中记录 link css → script vue → script loader → mount script 的标准顺序。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T4.2: 4 种 items 模式实现</div>
+      <div class="vi-desc">实现并演示 href+icon / 纯文本 / 长路径 5+ / 图标混用四种模式，演示页 4 demo-block。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T4.3: 目标页面集成 (dogfooding)</div>
+      <div class="vi-desc">在计划清单 + 场景 1-5 共 29 个 HTML 页面中挂载 YryBreadcrumb 组件。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T4.4: FOUC 防护验证</div>
+      <div class="vi-desc">CSS 在 head 首位加载，breadcrumb 渲染前无样式闪烁，验证通过。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T4.5: 跨页面兼容性测试</div>
+      <div class="vi-desc">验证多实例隔离、缓存命中、降级友好、a11y 一致性，TC1-TC7 全部 PASS。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">V1: 审查与测试全通过</div>
+      <div class="vi-desc">审查 R1-R7 全部通过，测试 TC1-TC7 全部 PASS，跨页交叉链接有效。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">V2: 降级与 a11y 保障</div>
+      <div class="vi-desc">无 Vue 时不抛错，ariaLabel 在各页面一致，dogfooding 面包屑正常。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+</div>
+
 <h2>📋 验收标准</h2>
 <ul class="checklist">
   <li class="done">所有 5 个任务状态 = ✅</li>
@@ -129,6 +225,18 @@
   <li class="done">降级友好: 无 Vue 时不抛错</li>
   <li class="done">a11y: ariaLabel 在各页面一致</li>
 </ul>
+
+<h2>交付物</h2>
+<div class="deliver-grid">
+  <a class="deliver-item" href="./index.md"><span class="di-icon">📄</span><div><div class="di-name">index.md</div><div class="di-desc">场景概述</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./审查.html"><span class="di-icon">📝</span><div><div class="di-name">审查</div><div class="di-desc">R1-R7 评审</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./架构图.html"><span class="di-icon">📐</span><div><div class="di-name">架构图</div><div class="di-desc">Mermaid 流程图</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./测试面板.html"><span class="di-icon">🧪</span><div><div class="di-name">测试面板</div><div class="di-desc">TC1-TC7</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./源码.html"><span class="di-icon">📄</span><div><div class="di-name">源码</div><div class="di-desc">集成代码片段</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./演示.html"><span class="di-icon">💡</span><div><div class="di-name">演示</div><div class="di-desc">4 种模式</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./知识图谱.html"><span class="di-icon">🔗</span><div><div class="di-name">知识图谱</div><div class="di-desc">概念关联</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./计划清单.html"><span class="di-icon">📋</span><div><div class="di-name">计划清单</div><div class="di-desc">← 本页</div></div><span class="di-status done">✓</span></a>
+</div>
 
 <h2>📋 交付清单</h2>
 <div class="delivery-grid">

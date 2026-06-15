@@ -48,7 +48,12 @@
 </div>
 
 <h2>概念关联表</h2>
-<table>
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-val info">9</div><div class="kpi-label">核心实体</div></div>
+  <div class="kpi-card"><div class="kpi-val accent">9</div><div class="kpi-label">关联关系</div></div>
+  <div class="kpi-card"><div class="kpi-val pass">4</div><div class="kpi-label">覆盖域</div></div>
+</div>
+<table class="table-highlight">
   <thead><tr><th>概念</th><th>类型</th><th>关联</th><th>说明</th></tr></thead>
   <tbody>
     <tr><td>Loader</td><td>核心模块</td><td>fetch, DOMParser, ready 事件, 超时, 降级</td><td>YryBreadcrumb 异步加载器 (index.js)</td></tr>
@@ -63,8 +68,65 @@
   </tbody>
 </table>
 
+<div class="entity-card">
+  <div class="ec-head">
+    <span class="ec-icon">⚙️</span>
+    <span class="ec-name">Loader (index.js)</span>
+    <span class="ec-type">核心编排器</span>
+  </div>
+  <div class="ec-desc">YryBreadcrumb 异步加载器，IIFE 自执行格式，通过 document.currentScript 自定位推导模板路径，统一编排 fetch → DOMParser → 注册 → ready 事件全流程。</div>
+  <div class="ec-links">
+    <a href="./架构图.html">📐 架构图</a>
+    <a href="./源码.html">📄 源码</a>
+  </div>
+</div>
+<div class="entity-card">
+  <div class="ec-head">
+    <span class="ec-icon">🌐</span>
+    <span class="ec-name">fetch + DOMParser</span>
+    <span class="ec-type">数据获取与解析</span>
+  </div>
+  <div class="ec-desc">fetch(index.html) 以 same-origin 凭证获取模板 HTML 文本；DOMParser.parseFromString 将文本转为 DOM Document；getElementById 提取 yry-breadcrumb-tpl 模板节点。每步均有 catch 错误捕获。</div>
+  <div class="ec-links">
+    <a href="./架构图.html">📐 架构图</a>
+    <a href="./测试面板.html">🧪 测试</a>
+  </div>
+</div>
+<div class="entity-card">
+  <div class="ec-head">
+    <span class="ec-icon">📡</span>
+    <span class="ec-name">ready 事件</span>
+    <span class="ec-type">事件机制</span>
+  </div>
+  <div class="ec-desc">CustomEvent('yry-breadcrumb-ready') + dispatchEvent 实现加载与挂载的解耦通信。页面通过 {once:true} 监听器接收信号后执行 Vue.createApp mount，无轮询检查。</div>
+  <div class="ec-links">
+    <a href="./架构图.html">📐 架构图</a>
+    <a href="./演示.html">💡 演示</a>
+  </div>
+</div>
+<div class="entity-card">
+  <div class="ec-head">
+    <span class="ec-icon">🛡️</span>
+    <span class="ec-name">超时保护</span>
+    <span class="ec-type">防御策略</span>
+  </div>
+  <div class="ec-desc">setTimeout 5000ms + timedOut 标志，防止网络异常时无限等待。超时后 console.error 记录日志、不注册组件、不抛异常，页面其余内容正常显示 — 静默降级策略。</div>
+  <div class="ec-links">
+    <a href="./审查.html">📝 审查</a>
+    <a href="./测试面板.html">🧪 测试</a>
+  </div>
+</div>
+
+<div class="live-bar">
+  <span class="live-dot"></span> 概念图谱已就绪
+  <span class="live-resource"><span class="lr-name">Mermaid</span><span class="lr-status">OK</span></span>
+  <span class="live-resource"><span class="lr-name">实体节点</span><span class="lr-status">9</span></span>
+</div>
+
 <h2>概念关系图</h2>
-<pre class="mermaid">
+<div class="diagram-wrap">
+  <span class="dm-badge">知识图谱</span>
+  <pre class="mermaid">
 %%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#a78bfa','lineColor': '#a78bfa','secondaryColor': '#2b2d3b'}}}%%
 flowchart TB
     Loader["Loader (index.js)"]
@@ -104,10 +166,79 @@ flowchart TB
     css1 --> css2 --> css3 --> js
     js --> Loader
 </pre>
+  <div class="dm-caption">图: Loader 实现 — 概念关联图谱</div>
+</div>
 
 <h2>说明</h2>
 <p>上图展示场景 3 · <strong>Loader 实现</strong> 的概念关联。实线表示核心流程依赖，虚线表示防御策略。右侧为 4 文件引用顺序链。</p>
 <p>场景主色 <code style="background:rgba(167,139,250,.13);padding:1px 6px;border-radius:3px;color:#a78bfa">#a78bfa</code>，与场景 tag 一致。</p>
+
+<div class="concept-grid">
+  <div class="concept-card">
+    <div class="cc-icon">⚙️</div>
+    <div class="cc-name">Loader</div>
+    <div class="cc-domain">核心模块</div>
+    <div class="cc-desc">YryBreadcrumb 异步加载器 (index.js)，通过 document.currentScript 定位脚本 URL 推导模板路径，统一编排 fetch → 解析 → 注册 → 通知全流程。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ fetch · DOMParser · ready</span>
+      <span class="cc-rel in">← 4 文件引用链</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🌐</div>
+    <div class="cc-name">fetch</div>
+    <div class="cc-domain">api</div>
+    <div class="cc-desc">fetch(index.html) 获取模板 HTML 文本，作为 Loader 核心流程的第一步，失败时触发降级策略。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ DOMParser</span>
+      <span class="cc-rel in">← Loader</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">📡</div>
+    <div class="cc-name">ready 事件</div>
+    <div class="cc-domain">事件机制</div>
+    <div class="cc-desc">CustomEvent('yry-breadcrumb-ready') + dispatchEvent，配合 {once:true} 监听器实现加载与挂载的解耦通信。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ Vue.createApp mount</span>
+      <span class="cc-rel in">← 组件注册完成</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🛡️</div>
+    <div class="cc-name">超时保护</div>
+    <div class="cc-domain">防御</div>
+    <div class="cc-desc">setTimeout 5s + timedOut 标志，防止网络异常时无限等待。超时后不注册组件，页面其余内容正常显示。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ 降级策略</span>
+      <span class="cc-rel in">← Loader 防御层</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🔄</div>
+    <div class="cc-name">降级策略</div>
+    <div class="cc-domain">策略</div>
+    <div class="cc-desc">任何加载/解析/注册失败时静默降级 — console.error 记录日志、不注册组件、不抛异常，确保页面其余功能正常。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ 页面继续运行</span>
+      <span class="cc-rel in">← 超时 · fetch 失败</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">📋</div>
+    <div class="cc-name">4 文件引用顺序</div>
+    <div class="cc-domain">约束</div>
+    <div class="cc-desc">CSS → CSS → CSS → JS 严格加载顺序：shared.css → theme.css → index.css → index.js，确保样式优先、无 FOUC 闪烁。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ Loader 执行</span>
+      <span class="cc-rel in">← shared.css 起始</span>
+    </div>
+  </div>
+</div>
+
+<div class="tip-box info">
+  <strong>图谱洞察</strong> — 场景 3 的知识图谱以 Loader 为核心枢纽：实线链路 fetch → DOMParser → register → ready → mount 构成正常加载管线；虚线链路连接超时、降级、Vue 检测三个防御节点。4 文件引用顺序作为外部约束，保证 CSS 优先加载防止 FOUC。覆盖域：核心模块域 → API 域 → 事件机制域 → 防御策略域。
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({startOnLoad:true, theme:'dark'});</script>

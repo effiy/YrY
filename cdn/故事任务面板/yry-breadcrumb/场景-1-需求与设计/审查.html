@@ -47,18 +47,32 @@
   <span class="cross-link on">📝 审查</span>
 </div>
 
+<div class="verdict-row">
+  <div class="vr-title">📝 技术评审报告</div>
+  <div class="vr-meta">
+    <span>审查场景: <code>场景 1 · 需求与设计</code></span>
+    <span>审查时间: <code>2026-06</code></span>
+  </div>
+  <div class="vr-metrics">
+    <div class="stat-card"><div class="val pass">7/7</div><div class="lbl">通过项</div></div>
+    <div class="stat-card"><div class="val info">0</div><div class="lbl">警告项</div></div>
+    <div class="stat-card"><div class="val info">0</div><div class="lbl">失败项</div></div>
+  </div>
+  <span class="vr-verdict pass">✅ 评审通过</span>
+</div>
+
 <h2>评审清单</h2>
 <p>本页是 YryBreadcrumb 任务故事 · 场景 1 的技术评审清单，逐项核实设计决策与可交付物质量。</p>
-<table>
+<table class="table-highlight">
   <thead><tr><th>#</th><th>评审项</th><th>通过标准</th><th>状态</th><th>证据</th></tr></thead>
   <tbody>
-    <tr><td>R1</td><td>Props API 草案完整性</td><td>items/ariaLabel/separator 三参数定义清晰</td><td><span class="badge badge-ok">PASS</span></td><td><a href="./index.md">index.md §1</a></td></tr>
-    <tr><td>R2</td><td>3 文件拆分职责清晰</td><td>HTML 模板 / JS 逻辑 / CSS 样式各自独立</td><td><span class="badge badge-ok">PASS</span></td><td><a href="./源码.html">源码.html</a></td></tr>
-    <tr><td>R3</td><td>a11y 设计 (aria-label, aria-current)</td><td>nav 有 aria-label，末项有 aria-current="page"</td><td><span class="badge badge-ok">PASS</span></td><td><a href="./测试面板.html">测试面板.html</a></td></tr>
-    <tr><td>R4</td><td>异步加载与降级策略</td><td>fetch + DOMParser 异步加载，失败时静默降级</td><td><span class="badge badge-ok">PASS</span></td><td><a href="./index.md">index.md §1</a></td></tr>
-    <tr><td>R5</td><td>设计令牌命名空间 (--yry-*)</td><td>所有颜色变量使用 --yry- 前缀，含 fallback</td><td><span class="badge badge-ok">PASS</span></td><td><a href="./架构图.html">架构图.html</a></td></tr>
-    <tr><td>R6</td><td>需求来源可追溯</td><td>计划清单 · 场景 1 + 28 场景页引用明确</td><td><span class="badge badge-ok">PASS</span></td><td><a href="./计划清单.html">计划清单.html</a></td></tr>
-    <tr><td>R7</td><td>跨场景链接有效</td><td>所有场景间链接可正常跳转</td><td><span class="badge badge-ok">PASS</span></td><td><a href="../README.md">任务故事 README</a></td></tr>
+    <tr class="row-pass"><td>R1</td><td>Props API 草案完整性</td><td>items/ariaLabel/separator 三参数定义清晰</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./index.md">index.md §1</a></td></tr>
+    <tr class="row-pass"><td>R2</td><td>3 文件拆分职责清晰</td><td>HTML 模板 / JS 逻辑 / CSS 样式各自独立</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./源码.html">源码.html</a></td></tr>
+    <tr class="row-pass"><td>R3</td><td>a11y 设计 (aria-label, aria-current)</td><td>nav 有 aria-label，末项有 aria-current="page"</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./测试面板.html">测试面板.html</a></td></tr>
+    <tr class="row-pass"><td>R4</td><td>异步加载与降级策略</td><td>fetch + DOMParser 异步加载，失败时静默降级</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./index.md">index.md §1</a></td></tr>
+    <tr class="row-pass"><td>R5</td><td>设计令牌命名空间 (--yry-*)</td><td>所有颜色变量使用 --yry- 前缀，含 fallback</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./架构图.html">架构图.html</a></td></tr>
+    <tr class="row-pass"><td>R6</td><td>需求来源可追溯</td><td>计划清单 · 场景 1 + 28 场景页引用明确</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./计划清单.html">计划清单.html</a></td></tr>
+    <tr class="row-pass"><td>R7</td><td>跨场景链接有效</td><td>所有场景间链接可正常跳转</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="../README.md">任务故事 README</a></td></tr>
   </tbody>
 </table>
 
@@ -74,6 +88,134 @@
     <tr><td>a11y</td><td>aria-current="page" + aria-hidden</td><td>仅视觉</td><td>屏幕阅读器友好</td></tr>
   </tbody>
 </table>
+
+<h2>审查维度评分</h2>
+
+<div class="dim-card">
+  <div class="dim-head">
+    <span class="dim-icon">📐</span>
+    <span class="dim-title">架构设计</span>
+    <span class="dim-score pass">95</span>
+  </div>
+  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:95%"></div></div>
+  <div class="dim-detail">3 文件拆分职责清晰，Vue 3 全局变量模式与项目生态一致，异步加载 + 设计令牌分层合理。</div>
+</div>
+
+<div class="dim-card">
+  <div class="dim-head">
+    <span class="dim-icon">📝</span>
+    <span class="dim-title">需求规约</span>
+    <span class="dim-score pass">92</span>
+  </div>
+  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:92%"></div></div>
+  <div class="dim-detail">Props API 草案三参数定义清晰，需求来源可追溯至计划清单，跨场景链接有效。</div>
+</div>
+
+<div class="dim-card">
+  <div class="dim-head">
+    <span class="dim-icon">♿</span>
+    <span class="dim-title">可访问性</span>
+    <span class="dim-score pass">90</span>
+  </div>
+  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:90%"></div></div>
+  <div class="dim-detail">aria-label / aria-current="page" / aria-hidden 完整覆盖，屏幕阅读器友好。</div>
+</div>
+
+<div class="dim-card">
+  <div class="dim-head">
+    <span class="dim-icon">📄</span>
+    <span class="dim-title">文档完整性</span>
+    <span class="dim-score pass">93</span>
+  </div>
+  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:93%"></div></div>
+  <div class="dim-detail">5 项关键决策均有记录，选型理由与替代方案对照清晰，证据链完整。</div>
+</div>
+
+<h2>审查管线</h2>
+<div class="stage-list">
+  <div class="stage-row done">
+    <div class="st-num">1</div>
+    <div class="st-info"><div class="st-name">需求与架构审查</div><div class="st-detail">验证设计决策合理性、架构合规性、技术选型恰当性</div></div>
+    <span class="st-status ok">✓ 通过</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">2</div>
+    <div class="st-info"><div class="st-name">实现质量审查</div><div class="st-detail">代码规范、错误处理、性能考量、安全审查</div></div>
+    <span class="st-status ok">✓ 通过</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">3</div>
+    <div class="st-info"><div class="st-name">交付与文档审查</div><div class="st-detail">交付物完整性、文档质量、可维护性评估</div></div>
+    <span class="st-status ok">✓ 通过</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+</div>
+
+<h2>逐项验证</h2>
+<div class="check-list">
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R1: Props API 草案完整性</div>
+      <div class="vi-desc">items/ariaLabel/separator 三参数定义清晰，证据: <a href="./index.md">index.md §1</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R2: 3 文件拆分职责清晰</div>
+      <div class="vi-desc">HTML 模板 / JS 逻辑 / CSS 样式各自独立，证据: <a href="./源码.html">源码.html</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R3: a11y 设计</div>
+      <div class="vi-desc">nav 有 aria-label，末项有 aria-current="page"，证据: <a href="./测试面板.html">测试面板.html</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R4: 异步加载与降级策略</div>
+      <div class="vi-desc">fetch + DOMParser 异步加载，失败时静默降级，证据: <a href="./index.md">index.md §1</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R5: 设计令牌命名空间</div>
+      <div class="vi-desc">所有颜色变量使用 --yry- 前缀，含 fallback，证据: <a href="./架构图.html">架构图.html</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R6: 需求来源可追溯</div>
+      <div class="vi-desc">计划清单场景 1 + 28 场景页引用明确，证据: <a href="./计划清单.html">计划清单.html</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R7: 跨场景链接有效</div>
+      <div class="vi-desc">所有场景间链接可正常跳转，证据: <a href="../README.md">任务故事 README</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+</div>
+
+<div class="tip-box success">
+  <strong>✅ 场景 1 评审结论</strong> — 7 项审查全部通过。需求分析透彻，设计决策有理有据，Props API 定义清晰，a11y 策略完整。5 项决策记录为后续实现提供了坚实的设计基线。可进入场景 2。
+</div>
 
 <div class="footer">
   📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-1-需求与设计/审查.html</code><br>

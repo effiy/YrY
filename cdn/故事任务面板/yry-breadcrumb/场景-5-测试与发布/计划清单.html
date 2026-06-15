@@ -13,25 +13,28 @@
 <script src="../../../shared.js"></script>
 <script src="../../../yry-breadcrumb/index.js"></script>
 <style>
-/* KPI 统计卡片 */
+/* KPI 统计卡片网格 (stat-card 样式由 yry-scene.css 提供) */
 .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0 24px; }
-.stat-card { padding: 16px 14px; background: var(--yry-color-surface-1); border: 1px solid var(--yry-color-border); border-radius: var(--yry-radius-lg); text-align: center; }
-.stat-card .stat-num { font-size: 1.6rem; font-weight: 700; color: var(--yry-color-text-1); line-height: 1.2; }
-.stat-card .stat-label { font-size: var(--yry-fs-sm); color: var(--yry-color-text-3); margin-top: 4px; }
-.stat-card.stat-done .stat-num { color: #10b981; }
-.stat-card.stat-progress .stat-num { color: #f59e0b; }
-.stat-card.stat-pending .stat-num { color: #9ca3af; }
-.stat-card.stat-percent .stat-num { color: #22d3ee; }
 
-/* 交付清单链接 */
-.deliver-list { list-style: none; padding-left: 0; }
-.deliver-list li { padding: 6px 0; border-bottom: 1px solid var(--yry-color-border); }
-.deliver-list li:last-child { border-bottom: none; }
-.deliver-list a { color: var(--yry-color-cyan); text-decoration: none; font-weight: 500; }
-.deliver-list a:hover { text-decoration: underline; }
+/* 交付网格增强 */
+.delivery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin: 12px 0; }
+.delivery-item {
+  padding: 12px 14px;
+  background: var(--yry-color-surface-1); border: 1px solid var(--yry-color-border);
+  border-radius: var(--yry-radius-lg); text-align: center;
+  transition: all .15s;
+}
+.delivery-item:hover {
+  border-color: rgba(255,193,7,.18);
+  transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.2);
+}
+.delivery-item a { color: var(--yry-color-cyan); text-decoration: none; font-size: .82rem; font-weight: 500; }
+.delivery-item a:hover { color: var(--yry-color-accent); text-decoration: underline; }
 
 @media (max-width: 640px) {
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .delivery-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
@@ -59,23 +62,21 @@
 <main id="main-content">
 
 <h2>KPI 摘要</h2>
+<div class="stat-grid">
+  <div class="stat-card"><div class="val pass">5</div><div class="lbl">任务完成</div></div>
+  <div class="stat-card"><div class="val warn">0</div><div class="lbl">进行中</div></div>
+  <div class="stat-card"><div class="val info">0</div><div class="lbl">阻塞</div></div>
+  <div class="stat-card"><div class="val accent">100%</div><div class="lbl">完成率</div></div>
+</div>
+
+<div class="tip-box success"><strong>场景完成</strong> 5/5 测试与发布任务全部完成，7 项自测 PASS，v1.1.0 发布就绪。</div>
+
+<h2>KPI 指标</h2>
 <div class="kpi-grid">
-  <div class="kpi-card kpi-done">
-    <div class="kpi-num">5</div>
-    <div class="kpi-label">任务完成</div>
-  </div>
-  <div class="kpi-card kpi-progress">
-    <div class="kpi-num">0</div>
-    <div class="kpi-label">进行中</div>
-  </div>
-  <div class="kpi-card kpi-blocked">
-    <div class="kpi-num">0</div>
-    <div class="kpi-label">阻塞</div>
-  </div>
-  <div class="kpi-card kpi-rate">
-    <div class="kpi-num">100%</div>
-    <div class="kpi-label">完成率</div>
-  </div>
+  <div class="kpi-card"><div class="kpi-val pass">5</div><div class="kpi-label">任务条目</div></div>
+  <div class="kpi-card"><div class="kpi-val info">7</div><div class="kpi-label">自测项</div></div>
+  <div class="kpi-card"><div class="kpi-val pass">8</div><div class="kpi-label">交付物</div></div>
+  <div class="kpi-card"><div class="kpi-val accent">v1.1.0</div><div class="kpi-label">版本号</div></div>
 </div>
 
 <div class="cross-nav">
@@ -92,6 +93,28 @@
   <a class="cross-link" href="演示.html">💡 演示</a>
   <span class="cross-sep">·</span>
   <a class="cross-link" href="审查.html">📝 审查</a>
+</div>
+
+<h2>任务管线</h2>
+<div class="stage-list">
+  <div class="stage-row done">
+    <div class="st-num">1</div>
+    <div class="st-info"><div class="st-name">自测验证</div><div class="st-detail">7 项自测清单逐项验证：语法检查、渲染、a11y、console 清洁</div></div>
+    <span class="st-status ok">✓ 完成</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">2</div>
+    <div class="st-info"><div class="st-name">集成与兼容</div><div class="st-detail">跨页面兼容性测试 + npm 集成 + 类名体系复用验证</div></div>
+    <span class="st-status ok">✓ 完成</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">3</div>
+    <div class="st-info"><div class="st-name">发布就绪</div><div class="st-detail">v1.1.0 语义化版本 + git tag + CHANGELOG + npm pack 干跑通过</div></div>
+    <span class="st-status ok">✓ 完成</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
 </div>
 
 <h2>任务清单</h2>
@@ -136,6 +159,66 @@
   </tbody>
 </table>
 
+<h2>验收清单</h2>
+<div class="check-list">
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T5.1: 7 项自测清单验证</div>
+      <div class="vi-desc">逐项执行 node --check、3 demo 渲染、console 清洁、硬刷新、键盘 Tab、屏幕阅读器等全部 7 项自测。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T5.2: 跨页面兼容性测试</div>
+      <div class="vi-desc">场景 1-5 全部 HTML 页面面包屑正常渲染，交叉链接有效，无样式丢失。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T5.3: npm 集成 (package.json)</div>
+      <div class="vi-desc">cdn/package.json files[] 包含 yry-breadcrumb/ 下 3 个核心文件 + 任务故事 README。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T5.4: 类名体系复用验证</div>
+      <div class="vi-desc">场景 1-5 全部页面引用 yry-checklist.css，统一使用 .checklist / .badge 类名体系。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T5.5: 发布流程验证</div>
+      <div class="vi-desc">语义化版本 v1.1.0，git tag 已创建，CHANGELOG 就绪，npm pack --dry-run 通过。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">V1: 全场景交叉验证</div>
+      <div class="vi-desc">7 项自测全部 PASS，测试面板报告 100% 通过率，8 个交付物齐全。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">V2: 发布就绪与 dogfooding</div>
+      <div class="vi-desc">v1.1.0 语义化版本合规，本页 YryBreadcrumb 自举渲染正常，git tag 可追溯。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+</div>
+
 <h2>验收标准</h2>
 <ul class="checklist">
   <li class="done">全部 5 项任务状态 = 完成，100% 完成率</li>
@@ -147,6 +230,18 @@
   <li class="done">8 个标准交付物齐全：index.md + 7 个 HTML 文件</li>
   <li class="done">本页使用 YryBreadcrumb 组件自身渲染面包屑（dogfooding 自举验证）</li>
 </ul>
+
+<h2>交付物</h2>
+<div class="deliver-grid">
+  <a class="deliver-item" href="./index.md"><span class="di-icon">📄</span><div><div class="di-name">index.md</div><div class="di-desc">场景概述</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./审查.html"><span class="di-icon">📝</span><div><div class="di-name">审查</div><div class="di-desc">技术审查清单</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./架构图.html"><span class="di-icon">📐</span><div><div class="di-name">架构图</div><div class="di-desc">流程架构图</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./测试面板.html"><span class="di-icon">🧪</span><div><div class="di-name">测试面板</div><div class="di-desc">7 项自测用例</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./源码.html"><span class="di-icon">📄</span><div><div class="di-name">源码</div><div class="di-desc">关键源码片段</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./演示.html"><span class="di-icon">💡</span><div><div class="di-name">演示</div><div class="di-desc">验证结果汇总</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./知识图谱.html"><span class="di-icon">🔗</span><div><div class="di-name">知识图谱</div><div class="di-desc">概念关联图</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./计划清单.html"><span class="di-icon">📋</span><div><div class="di-name">计划清单</div><div class="di-desc">当前页面</div></div><span class="di-status done">✓</span></a>
+</div>
 
 <h2>交付清单</h2>
 <div class="delivery-grid">

@@ -13,22 +13,17 @@
 <script src="../../../shared.js"></script>
 <script src="../../../yry-breadcrumb/index.js"></script>
 <style>
-/* KPI 统计卡片 */
+/* KPI 统计卡片网格 (stat-card 样式由 yry-scene.css 提供) */
 .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0 24px; }
-.stat-card { padding: 16px 14px; background: var(--yry-color-surface-1); border: 1px solid var(--yry-color-border); border-radius: var(--yry-radius-lg); text-align: center; }
-.stat-card .stat-num { font-size: 1.6rem; font-weight: 700; color: var(--yry-color-text-1); line-height: 1.2; }
-.stat-card .stat-label { font-size: var(--yry-fs-sm); color: var(--yry-color-text-3); margin-top: 4px; }
-.stat-card.stat-done .stat-num { color: #10b981; }
-.stat-card.stat-progress .stat-num { color: #f59e0b; }
-.stat-card.stat-pending .stat-num { color: #9ca3af; }
-.stat-card.stat-percent .stat-num { color: #22d3ee; }
 
 /* 交付清单链接 */
-.deliver-list { list-style: none; padding-left: 0; }
-.deliver-list li { padding: 6px 0; border-bottom: 1px solid var(--yry-color-border); }
+.deliver-list { list-style: none; padding-left: 0; display: flex; flex-direction: column; gap: 2px; }
+.deliver-list li { padding: 10px 14px; border-bottom: 1px solid var(--yry-color-border); border-radius: var(--yry-radius-md); transition: background .15s, border-color .15s; }
 .deliver-list li:last-child { border-bottom: none; }
+.deliver-list li:hover { background: var(--yry-color-surface-1); border-color: rgba(255,193,7,.12); }
 .deliver-list a { color: var(--yry-color-cyan); text-decoration: none; font-weight: 500; }
 .deliver-list a:hover { text-decoration: underline; }
+.deliver-list strong { color: var(--yry-color-text-2); }
 
 @media (max-width: 640px) {
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
@@ -71,21 +66,41 @@
 
 <h2>KPI 概览</h2>
 <div class="stat-grid">
-  <div class="stat-card stat-done">
-    <div class="stat-num">5</div>
-    <div class="stat-label">已完成</div>
+  <div class="stat-card"><div class="val pass">5</div><div class="lbl">已完成</div></div>
+  <div class="stat-card"><div class="val warn">0</div><div class="lbl">进行中</div></div>
+  <div class="stat-card"><div class="val info">0</div><div class="lbl">待开始</div></div>
+  <div class="stat-card"><div class="val accent">100%</div><div class="lbl">完成进度</div></div>
+</div>
+
+<div class="tip-box success"><strong>场景完成</strong> 5/5 任务全部完成，8 个交付物齐全，验收标准全部通过。</div>
+
+<h2>KPI 指标</h2>
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-val pass">5</div><div class="kpi-label">任务条目</div></div>
+  <div class="kpi-card"><div class="kpi-val info">8</div><div class="kpi-label">交付物</div></div>
+  <div class="kpi-card"><div class="kpi-val pass">7</div><div class="kpi-label">验收项</div></div>
+  <div class="kpi-card"><div class="kpi-val accent">100%</div><div class="kpi-label">审查通过率</div></div>
+</div>
+
+<h2>任务管线</h2>
+<div class="stage-list">
+  <div class="stage-row done">
+    <div class="st-num">1</div>
+    <div class="st-info"><div class="st-name">需求梳理</div><div class="st-detail">分析需求来源与场景页分布，确定组件边界与功能范围</div></div>
+    <span class="st-status ok">✓ 完成</span>
+    <div class="st-bar" style="width:100%"></div>
   </div>
-  <div class="stat-card stat-progress">
-    <div class="stat-num">0</div>
-    <div class="stat-label">进行中</div>
+  <div class="stage-row done">
+    <div class="st-num">2</div>
+    <div class="st-info"><div class="st-name">设计决策</div><div class="st-detail">技术选型 Vue 3、3 文件拆分、a11y 优先、Props API 草案</div></div>
+    <span class="st-status ok">✓ 完成</span>
+    <div class="st-bar" style="width:100%"></div>
   </div>
-  <div class="stat-card stat-pending">
-    <div class="stat-num">0</div>
-    <div class="stat-label">待开始</div>
-  </div>
-  <div class="stat-card stat-percent">
-    <div class="stat-num">100%</div>
-    <div class="stat-label">完成进度</div>
+  <div class="stage-row done">
+    <div class="st-num">3</div>
+    <div class="st-info"><div class="st-name">评审通过</div><div class="st-detail">设计评审通过，8 个交付物齐全，移交场景 2</div></div>
+    <span class="st-status ok">✓ 完成</span>
+    <div class="st-bar" style="width:100%"></div>
   </div>
 </div>
 
@@ -101,6 +116,66 @@
   </tbody>
 </table>
 
+<h2>验收清单</h2>
+<div class="check-list">
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T1.1: 梳理需求来源</div>
+      <div class="vi-desc">确认面包屑组件需求来自计划清单场景 1 及 28 个场景页的导航一致性诉求，输出需求边界文档。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T1.2: 技术选型 Vue 3 + 3 文件拆分</div>
+      <div class="vi-desc">确定 Vue 3 Options API 实现，index.js + index.css + template.html 三文件架构，设计决策记录完整。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T1.3: a11y 优先级决策</div>
+      <div class="vi-desc">aria-current="page" 标记当前页、aria-hidden="true" 隐藏分隔符，无障碍访问优先级明确。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T1.4: Props API 草案</div>
+      <div class="vi-desc">items (label/href/icon)、ariaLabel、separator 等 Props 接口定义清晰，正向用例覆盖完整。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T1.5: 场景 1 评审通过</div>
+      <div class="vi-desc">设计评审 7 项全部通过，移交进入场景 2 模板与样式，上下游链接完整。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">V1: 交付物完整性</div>
+      <div class="vi-desc">8 个标准交付物齐全，每个可独立打开且内容与场景匹配，交叉验证通过。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">V2: 视觉与架构一致性</div>
+      <div class="vi-desc">架构图 Mermaid 暗色主题正常渲染，演示页 3 种模式全部通过，dogfooding 面包屑正常。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+</div>
+
 <h2>验收标准</h2>
 <ul class="checklist">
   <li class="done">所有任务状态 = ✅ (5/5)</li>
@@ -111,6 +186,18 @@
   <li class="done">架构图 Mermaid 在暗色主题下正常渲染</li>
   <li class="done">演示页 3 种模式 (href+icon / 纯文本 / 长路径) 全部渲染</li>
 </ul>
+
+<h2>交付物</h2>
+<div class="deliver-grid">
+  <a class="deliver-item" href="./index.md"><span class="di-icon">📄</span><div><div class="di-name">index.md</div><div class="di-desc">场景主文档</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./审查.html"><span class="di-icon">📝</span><div><div class="di-name">审查</div><div class="di-desc">技术评审清单</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./架构图.html"><span class="di-icon">📐</span><div><div class="di-name">架构图</div><div class="di-desc">Mermaid 流程图</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./测试面板.html"><span class="di-icon">🧪</span><div><div class="di-name">测试面板</div><div class="di-desc">测试用例与验证</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./源码.html"><span class="di-icon">📄</span><div><div class="di-name">源码</div><div class="di-desc">关键源码片段</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./演示.html"><span class="di-icon">💡</span><div><div class="di-name">演示</div><div class="di-desc">3 种模式 Demo</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./知识图谱.html"><span class="di-icon">🔗</span><div><div class="di-name">知识图谱</div><div class="di-desc">概念映射关系图</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./计划清单.html"><span class="di-icon">📋</span><div><div class="di-name">计划清单</div><div class="di-desc">KPI 任务与验收</div></div><span class="di-status done">✓</span></a>
+</div>
 
 <h2>交付清单</h2>
 <p>场景 1 共 8 个标准交付物，逐一列明路径与用途。</p>

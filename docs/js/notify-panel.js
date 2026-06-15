@@ -125,7 +125,7 @@
 
   async function fetchAll() {
     loaded = true;
-    panelBody.innerHTML = '<div class="panel-loading">加载中...</div>';
+    panelBody.innerHTML = '<div class="panel-loading yry-panel-loading">加载中...</div>';
 
     // Dynamic fetch from reports.json manifests (with static fallback)
     var [healthData, loopData, trendData] = await Promise.all([
@@ -692,7 +692,7 @@
       var info = hintMap[activeFilter] || hintMap.all;
       var emptyMsg = activeFilter === 'all' ? '暂无通知 — 尚无可显示的报告或通知数据' : '该类型暂无报告数据';
       var extraHtml = info.extra ? '<br><span style="font-size:.62rem;color:var(--text-muted)">' + info.extra + '</span>' : '';
-      panelBody.innerHTML = '<div class="panel-empty">'
+      panelBody.innerHTML = '<div class="panel-empty yry-panel-empty">'
         + '<div style="font-size:1.8rem;margin-bottom:12px;opacity:.4">📭</div>'
         + '<div>' + emptyMsg + '</div>'
         + '<span class="hint">' + info.desc + '<br><code style="user-select:all;cursor:pointer" title="点击选中复制">' + info.cmd + '</code></span>'

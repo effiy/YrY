@@ -14,6 +14,8 @@
 <script src="../../../yry-breadcrumb/index.js"></script>
 </head>
 <body>
+<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
+<div class="container" id="main">
 <div id="breadcrumb-app"></div>
 
 <div class="scene-header">
@@ -47,9 +49,45 @@
   <a class="cross-link" href="审查.html">📝 审查</a>
 </div>
 
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-val info">8</div><div class="kpi-label">关键模块</div></div>
+  <div class="kpi-card"><div class="kpi-val accent">9</div><div class="kpi-label">数据流边</div></div>
+  <div class="kpi-card"><div class="kpi-val pass">1</div><div class="kpi-label">渲染出口</div></div>
+</div>
+
+<div class="stage-list">
+  <div class="stage-row done">
+    <div class="st-num">1</div>
+    <div class="st-info"><div class="st-name">引入</div><div class="st-detail">4 文件按序加载：CSS → Vue → Loader → mount script</div></div>
+    <span class="st-status ok">&#10003;</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">2</div>
+    <div class="st-info"><div class="st-name">挂载</div><div class="st-detail">yry-breadcrumb-ready 事件驱动 → Vue.createApp mount</div></div>
+    <span class="st-status ok">&#10003;</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">3</div>
+    <div class="st-info"><div class="st-name">渲染</div><div class="st-detail">nav.breadcrumb DOM → 4 种 items 模式 → 28+ 场景页</div></div>
+    <span class="st-status ok">&#10003;</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+</div>
+
+<div class="live-bar">
+  <span class="live-dot"></span> Mermaid 图表已渲染
+  <span class="live-resource"><span class="lr-name">flowchart</span><span class="lr-status">OK</span></span>
+  <span class="live-resource"><span class="lr-name">sequence</span><span class="lr-status">OK</span></span>
+  <span class="live-resource"><span class="lr-name">暗色主题</span><span class="lr-status">OK</span></span>
+</div>
+
 <h2>📐 总体架构</h2>
 <p>页面 HTML 经过 4 文件加载 → YryBreadcrumb 挂载 → 面包屑渲染的完整流程。</p>
-<pre class="mermaid">
+<div class="diagram-wrap glass-card">
+  <span class="dm-badge">FLOWCHART</span>
+  <pre class="mermaid">
 %%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#10b981','lineColor': '#10b981','secondaryColor': '#2b2d3b'}}}%%
 flowchart LR
     PH["Page HTML"]:::page --> L1["1. link css<br/>yry-breadcrumb/index.css"]:::css
@@ -69,10 +107,14 @@ flowchart LR
     classDef comp fill:#2a1a2a,stroke:#a78bfa,color:#a78bfa
     classDef mount fill:#1a1a2a,stroke:#ffc107,color:#ffc107
     classDef ui fill:#2a1a1a,stroke:#ef4444,color:#ef4444
-</pre>
+  </pre>
+  <div class="dm-caption">图: 4 文件加载 → 组件注册 → DOM 渲染 — 页面集成架构流</div>
+</div>
 
 <h2>📐 时序图</h2>
-<pre class="mermaid">
+<div class="diagram-wrap">
+  <span class="dm-badge">SEQUENCE</span>
+  <pre class="mermaid">
 %%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#10b981','lineColor': '#10b981','secondaryColor': '#2b2d3b'}}}%%
 sequenceDiagram
     participant P as Page HTML
@@ -93,7 +135,59 @@ sequenceDiagram
     M->>V: Vue.createApp(YryBreadcrumb, props)
     V->>R: mount → render nav
     R-->>P: 面包屑可见
-</pre>
+  </pre>
+  <div class="dm-caption">图: 页面集成时序 — 6 参与者 × 10 步消息交换</div>
+</div>
+
+<div class="tip-box info">
+  <strong>架构洞察:</strong> 这是一个 <strong>多阶段管道 (Multi-Stage Pipeline)</strong> 模式 — 页面集成分 4 个顺序阶段：Stage 1 (CSS 加载防 FOUC) → Stage 2 (Vue 3 运行时就绪) → Stage 3 (Loader 注册组件 + 派发 ready 事件) → Stage 4 (mount 脚本创建 Vue app 并挂载)。关键设计特征：<strong>4 文件固定加载顺序</strong>（CSS → Vue → Loader → mount 不可重排）、<strong>事件驱动解耦</strong>（yry-breadcrumb-ready 自定义事件异步通知页面挂载时机）、<strong>color-coded 节点分类</strong>（7 种类别通过 classDef 着色：page/css/js/dom/comp/mount/ui）。
+</div>
+
+<h2>概念视图</h2>
+<div class="concept-grid">
+  <div class="concept-card">
+    <div class="cc-icon">📄</div>
+    <div class="cc-name">Page HTML</div>
+    <div class="cc-domain">入口节点</div>
+    <div class="cc-desc">所有场景页面的 HTML 入口，通过 &lt;head&gt; 中的 link/script 标签声明对 CSS、Vue 运行时的依赖，通过 &lt;body&gt; 中的 #breadcrumb-app 占位符预留挂载点。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ CSS · Vue · Loader</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">📦</div>
+    <div class="cc-name">三文件依赖链</div>
+    <div class="cc-domain">加载阶段</div>
+    <div class="cc-desc">CSS (index.css) 先加载防 FOUC；Vue 3 (vue.global.prod.js) 提供运行时；Loader (index.js) 注册组件并派发 ready 事件。三者按序加载，CSS 和 Vue 在 head 中，Loader 在 body 底部。</div>
+    <div class="cc-rels">
+      <span class="cc-rel in">← Page HTML</span>
+      <span class="cc-rel out">→ DOM Ready · Ready Event</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🔗</div>
+    <div class="cc-name">事件驱动挂载</div>
+    <div class="cc-domain">编排层</div>
+    <div class="cc-desc">yry-breadcrumb-ready 自定义事件作为 Loader 与页面的解耦信号。页面监听此事件 (once: true)，收到后执行 mountBreadcrumb() → Vue.createApp(props).mount('#breadcrumb-app')。</div>
+    <div class="cc-rels">
+      <span class="cc-rel in">← Loader (ready event)</span>
+      <span class="cc-rel out">→ nav.breadcrumb</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🍞</div>
+    <div class="cc-name">nav.breadcrumb 渲染</div>
+    <div class="cc-domain">出口节点</div>
+    <div class="cc-desc">Vue 3 模板引擎将 props.items 渲染为可交互的 nav.breadcrumb DOM，包含正确的 href 链接、aria-current 标注、CSS 过渡动画，支持 4 种 items 模式 (href/纯文本/长路径/图标)。</div>
+    <div class="cc-rels">
+      <span class="cc-rel in">← Vue.createApp mount</span>
+    </div>
+  </div>
+</div>
+
+<div class="tip-box success">
+  <strong>架构完整性:</strong> 场景 4 的页面集成流程展现了 <strong>声明式依赖 + 事件驱动挂载</strong> 的双重解耦：文件依赖通过 HTML 标签声明（无 JS 模块系统依赖），组件挂载通过自定义事件触发（无轮询检查）。4 文件固定顺序保证 CSS 先于 DOM 渲染、Vue 先于组件注册、Loader 先于挂载脚本，形成不可逆的单向管道。7 种节点颜色分类 (page/css/js/dom/comp/mount/ui) 使架构图中的关注点一目了然。
+</div>
 
 <h2>📐 4 文件加载顺序</h2>
 <ol class="seq-list">
@@ -115,9 +209,15 @@ sequenceDiagram
   🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
 </div>
 
+</div>
 
+<button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">↑</button>
 
 <script>
+const backTopBtn=document.getElementById('backTop');
+function toggleBackTop(){backTopBtn.classList.toggle('visible',window.scrollY>400);}
+window.addEventListener('scroll',toggleBackTop,{passive:true});
+backTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
   function mountBreadcrumb() {
     if (!window.Vue || !window.YryBreadcrumb) return;
     Vue.createApp(window.YryBreadcrumb, {

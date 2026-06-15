@@ -62,7 +62,7 @@
   /* ── Data ───────────────────────────────── */
   async function fetchData() {
     siLoaded = true;
-    siBody.innerHTML = '<div class="panel-loading">加载中...</div>';
+    siBody.innerHTML = '<div class="panel-loading yry-panel-loading">加载中...</div>';
     try {
       var _a = await Promise.all([
         fetch(H.PATHS.summaryJson).then(function(r) { return r.ok ? r.json() : null; }),
@@ -97,7 +97,7 @@
         siFooterTime.textContent = '更新 ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
       }
     } catch(e) {
-      siBody.innerHTML = '<div class="panel-empty">数据加载失败<br><span class="hint">运行 <code>node lib/proposals.mjs generate</code> 生成自改进数据</span></div>';
+      siBody.innerHTML = '<div class="panel-empty yry-panel-empty">数据加载失败<br><span class="hint">运行 <code>node lib/proposals.mjs generate</code> 生成自改进数据</span></div>';
       siData = null; siRaw = [];
       return;
     }
@@ -408,7 +408,7 @@
     if (!siData) return;
     var buckets = siPeriod === 'daily' ? siData.daily : siPeriod === 'weekly' ? siData.weekly : siData.monthly;
     if (!buckets || buckets.length === 0) {
-      siBody.innerHTML = '<div class="panel-empty">暂无' + (siPeriod === 'daily' ? '日' : siPeriod === 'weekly' ? '周' : '月') + '报数据<br><span class="hint">积累更多数据后自动生成</span></div>';
+      siBody.innerHTML = '<div class="panel-empty yry-panel-empty">暂无' + (siPeriod === 'daily' ? '日' : siPeriod === 'weekly' ? '周' : '月') + '报数据<br><span class="hint">积累更多数据后自动生成</span></div>';
       return;
     }
 

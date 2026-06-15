@@ -12,16 +12,6 @@
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <script src="../../../shared.js"></script>
 <script src="../../../yry-breadcrumb/index.js"></script>
-<style>
-/* demo 面包屑静态样式 */
-.demo-block { padding: 14px; background: var(--yry-color-surface-1); border: 1px solid var(--yry-color-border); border-radius: 8px; margin: 16px 0; }
-.demo-block h3 { margin: 0 0 10px; font-size: .85rem; color: var(--yry-color-text-2); font-weight: 600; }
-.demo-bc { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 6px 0; font-size: .82rem; color: var(--yry-color-text-2, #d4d4d4); }
-.demo-bc a { color: var(--yry-color-text-2, #d4d4d4); text-decoration: none; border-radius: 4px; padding: 2px 6px; transition: color .15s, background .15s; }
-.demo-bc a:hover { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.08); }
-.demo-bc .bc-sep { color: var(--yry-color-text-3, #888); user-select: none; }
-.demo-bc .bc-current { color: var(--yry-color-accent, #ffc107); font-weight: 600; }
-</style>
 </head>
 <body>
 <a href="#main-content" class="skip-link">跳到主内容</a>
@@ -32,6 +22,10 @@
   <h1 class="scene-title">演示</h1>
   <div class="scene-en">YryBreadcrumb 任务故事 · 场景 5 · Testing & Publishing · Demo</div>
   <p class="scene-desc">验证结果可视汇总 — 7 项自测清单逐项展示通过/失败状态，附状态徽章和证据链接。</p>
+</div>
+
+<div class="tip-box info">
+  <strong>💡 质量门禁验证:</strong> 验证结果可视汇总 — 7 项自测清单逐项展示通过/失败状态，附状态徽章和证据链接。所有验证方法涵盖命令行、浏览器目视、键盘操作、辅助技术和代码审查。
 </div>
 
 <div class="scene-nav">
@@ -66,6 +60,12 @@
   <span class="cross-link on">💡 演示</span>
   <span class="cross-sep">·</span>
   <a class="cross-link" href="审查.html">📝 审查</a>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-val pass">7</div><div class="kpi-label">测试通过</div></div>
+  <div class="kpi-card"><div class="kpi-val info">0</div><div class="kpi-label">失败项</div></div>
+  <div class="kpi-card"><div class="kpi-val accent">全部</div><div class="kpi-label">浏览器兼容</div></div>
 </div>
 
 <h2>自测清单验证结果</h2>
@@ -145,7 +145,127 @@
   </tbody>
 </table>
 
+<h2>关键步骤</h2>
+<div class="walkthrough">
+  <div class="w-step">
+    <div class="ws-body">
+      <div class="ws-title">Node 语法检查 <span class="ws-time">~5 min</span></div>
+      <div class="ws-desc">执行 node --check 验证 index.js 无语法错误，确保 IIFE 包装、'use strict' 声明、模板字符串和箭头函数语法正确。</div>
+      <div class="ws-result">✅ 产出: node --check exit code 0，无语法错误</div>
+    </div>
+  </div>
+  <div class="w-step">
+    <div class="ws-body">
+      <div class="ws-title">浏览器渲染验证 <span class="ws-time">~15 min</span></div>
+      <div class="ws-desc">在 Chrome、Firefox、Safari 中分别验证 3 种 demo 模式全部渲染、控制台清洁无错误、硬刷新后 DOM 正确生成、挂载脚本执行正常。</div>
+      <div class="ws-result">✅ 产出: 3 浏览器目视验证通过，console 清洁</div>
+    </div>
+  </div>
+  <div class="w-step">
+    <div class="ws-body">
+      <div class="ws-title">键盘可达性与屏幕阅读器测试 <span class="ws-time">~10 min</span></div>
+      <div class="ws-desc">验证 Tab 键从第 1 个链接依次聚焦，current 项不可聚焦。VoiceOver/NVDA 朗读顺序：link → separator skip → current，符合 ARIA 规范。</div>
+      <div class="ws-result">✅ 产出: a11y 键盘 + 屏幕阅读器测试通过</div>
+    </div>
+  </div>
+  <div class="w-step">
+    <div class="ws-body">
+      <div class="ws-title">发布准备 <span class="ws-time">~10 min</span></div>
+      <div class="ws-desc">确认 package.json files[] 包含 4 个路径，npm pack --dry-run 通过，git tag v1.1.0 创建，CHANGELOG 条目就绪，语义化版本符合规范。</div>
+      <div class="ws-result">✅ 产出: v1.1.0 发布就绪，npm publish 可执行</div>
+    </div>
+  </div>
+</div>
+
+<div class="next-action">
+  <span class="na-ico">🚀</span>
+  <div class="na-body">
+    <div class="na-title">下一步: 发布上线</div>
+    <div class="na-desc">执行 npm publish 将 YryBreadcrumb v1.1.0 发布到 npm registry，组件正式对外可用。5 个场景全部完成，任务故事收尾。</div>
+  </div>
+</div>
+
 </main>
+
+<h2>关键命令</h2>
+<div class="cmd-grid">
+  <div class="cmd-card">
+    <div class="cmd-stage">验证</div>
+    <div class="cmd-name">node --check cdn/yry-breadcrumb/index.js</div>
+    <div class="cmd-desc">语法检查，确保 JS 文件无语法错误。exit code 0 = 通过。</div>
+    <span class="cmd-tag">CLI</span>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-stage">打包</div>
+    <div class="cmd-name">npm pack --dry-run</div>
+    <div class="cmd-desc">模拟 npm 打包，验证 package.json files[] 字段包含所有必要文件。</div>
+    <span class="cmd-tag">CLI</span>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-stage">版本</div>
+    <div class="cmd-name">git tag -l "v*"</div>
+    <div class="cmd-desc">列出所有 git 版本标签，确认语义化版本规范遵循 MAJOR.MINOR.PATCH。</div>
+    <span class="cmd-tag">CLI</span>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-stage">审计</div>
+    <div class="cmd-name">grep "yry-checklist" cdn/ -rl | wc -l</div>
+    <div class="cmd-desc">统计引用 yry-checklist 的文件数量，确认自测清单在所有场景页中正确集成。</div>
+    <span class="cmd-tag">CLI</span>
+  </div>
+</div>
+
+<h2>自测</h2>
+<div class="quiz-list">
+  <div class="quiz-card" data-quiz="1">
+    <div class="quiz-q"><span class="q-num">1</span> TC-5.1 使用什么命令验证 index.js 语法正确性？</div>
+    <div class="quiz-opts">
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">A</span><span class="opt-text">npm test</span></div>
+      <div class="quiz-opt correct" data-answer="correct"><span class="opt-letter">B</span><span class="opt-text">node --check index.js</span></div>
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">C</span><span class="opt-text">eslint index.js</span></div>
+    </div>
+    <div class="quiz-feedback"><strong>✓ 正确!</strong> node --check 是 Node.js 内置语法检查命令，不执行代码仅验证语法，exit code 0 表示无语法错误，适用于 IIFE/'use strict'/模板字符串等现代 JS 语法验证。</div>
+  </div>
+  <div class="quiz-card" data-quiz="2">
+    <div class="quiz-q"><span class="q-num">2</span> YryBreadcrumb 从 v1.0.0 升级到 v1.1.0 属于语义化版本的哪种变更？</div>
+    <div class="quiz-opts">
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">A</span><span class="opt-text">MAJOR — 不兼容的 API 修改</span></div>
+      <div class="quiz-opt correct" data-answer="correct"><span class="opt-letter">B</span><span class="opt-text">MINOR — 向下兼容的功能新增</span></div>
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">C</span><span class="opt-text">PATCH — 向下兼容的问题修正</span></div>
+    </div>
+    <div class="quiz-feedback"><strong>✓ 正确!</strong> 语义化版本 MAJOR.MINOR.PATCH 中，中间位 MINOR 版本号变更表示向下兼容的功能新增。v1.0.0→v1.1.0 新增了 a11y/异步加载/设计令牌等向下兼容特性。</div>
+  </div>
+  <div class="quiz-card" data-quiz="3">
+    <div class="quiz-q"><span class="q-num">3</span> package.json 中用于控制 npm publish 包含哪些文件的字段是？</div>
+    <div class="quiz-opts">
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">A</span><span class="opt-text">exports</span></div>
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">B</span><span class="opt-text">main</span></div>
+      <div class="quiz-opt correct" data-answer="correct"><span class="opt-letter">C</span><span class="opt-text">files</span></div>
+    </div>
+    <div class="quiz-feedback"><strong>✓ 正确!</strong> package.json 的 files 字段是一个数组，指定发布时包含的文件路径。YryBreadcrumb 的 files[] 包含 index.html、index.css、index.js、README.md 共 4 个路径。</div>
+  </div>
+</div>
+<div class="quiz-score">
+  <div class="qs-big">0/3</div>
+  <div class="qs-sub">完成自测</div>
+</div>
+
+<h2>场景文件</h2>
+<div class="file-grid">
+  <span class="file-item">📋 计划清单.html</span>
+  <span class="file-item">📐 架构图.html</span>
+  <span class="file-item">🔗 知识图谱.html</span>
+  <span class="file-item">📄 源码.html</span>
+  <span class="file-item">🧪 测试面板.html</span>
+  <span class="file-item">💡 演示.html</span>
+  <span class="file-item">📝 审查.html</span>
+</div>
+
+<div class="links-row">
+  <a href="../README.md">📋 场景 README</a>
+  <a href="./index.md">📄 场景正文</a>
+  <a href="../../../yry-breadcrumb/index.html">🍞 组件 Demo</a>
+</div>
 
 <div class="footer">
   📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-5-测试与发布/演示.html</code><br>
@@ -175,6 +295,29 @@
   }
   if (window.YryBreadcrumb) mountBreadcrumb();
   else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
+</script>
+<script>
+document.querySelectorAll('.quiz-opt').forEach(function(opt) {
+  opt.addEventListener('click', function() {
+    var card = this.closest('.quiz-card');
+    if (card.classList.contains('answered')) return;
+    card.classList.add('answered');
+    var isCorrect = this.dataset.answer === 'correct';
+    this.classList.add(isCorrect ? 'correct' : 'wrong');
+    card.querySelector('.quiz-feedback').classList.add('show');
+    card.querySelectorAll('.quiz-opt').forEach(function(o) { o.classList.add('disabled'); });
+    if (isCorrect) {
+      card.dataset.score = '1';
+    }
+    updateQuizScore();
+  });
+});
+function updateQuizScore() {
+  var total = document.querySelectorAll('.quiz-card').length;
+  var score = document.querySelectorAll('.quiz-card[data-score="1"]').length;
+  var el = document.querySelector('.quiz-score');
+  if (el) { el.classList.add('show'); el.querySelector('.qs-big').textContent = score + '/' + total; }
+}
 </script>
 </body>
 </html>

@@ -49,7 +49,9 @@
 
 <h2>🔗 概念关联图</h2>
 <p>场景 4 · 页面集成的核心概念及其关联关系。</p>
-<pre class="mermaid">
+<div class="diagram-wrap">
+  <span class="dm-badge">知识图谱</span>
+  <pre class="mermaid">
 %%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#10b981','lineColor': '#10b981','secondaryColor': '#2b2d3b'}}}%%
 flowchart LR
     PI["🔌 页面集成<br/>Scene 4"]:::root --> A["4 文件引用顺序"]:::tech
@@ -84,9 +86,16 @@ flowchart LR
     classDef detail fill:#1a1a2a,stroke:#3d59a1,color:#a9b1d6
     classDef target fill:#2a1a2a,stroke:#a78bfa,color:#a78bfa
 </pre>
+  <div class="dm-caption">图: 页面集成 — 概念关联图谱</div>
+</div>
 
 <h2>🔗 概念对照表</h2>
-<table>
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-val info">8</div><div class="kpi-label">核心实体</div></div>
+  <div class="kpi-card"><div class="kpi-val accent">8</div><div class="kpi-label">关联关系</div></div>
+  <div class="kpi-card"><div class="kpi-val pass">4</div><div class="kpi-label">覆盖域</div></div>
+</div>
+<table class="table-highlight">
   <thead><tr><th>概念</th><th>英文</th><th>定义</th><th>关联产物</th></tr></thead>
   <tbody>
     <tr>
@@ -140,6 +149,128 @@ flowchart LR
   </tbody>
 </table>
 
+<div class="entity-card">
+  <div class="ec-head">
+    <span class="ec-icon">📐</span>
+    <span class="ec-name">4 文件引用顺序</span>
+    <span class="ec-type">加载管线</span>
+  </div>
+  <div class="ec-desc">CSS → Vue → Loader → Mount 的严格加载顺序，不可重排。link css 防 FOUC 闪烁，script vue 提供运行时，script loader 注册组件并派发 ready，mount script 创建 Vue app 挂载实例。</div>
+  <div class="ec-links">
+    <a href="./架构图.html">📐 架构图</a>
+    <a href="./源码.html">📄 源码</a>
+  </div>
+</div>
+<div class="entity-card">
+  <div class="ec-head">
+    <span class="ec-icon">📦</span>
+    <span class="ec-name">4 种 items 模式</span>
+    <span class="ec-type">数据模式</span>
+  </div>
+  <div class="ec-desc">href+icon / 纯文本 / 长路径 5+ / 图标混用 — 4 种实际使用模式覆盖全部页面场景的数据变体，确保组件在不同场景中的一致渲染。</div>
+  <div class="ec-links">
+    <a href="./演示.html">💡 演示</a>
+    <a href="./测试面板.html">🧪 测试</a>
+  </div>
+</div>
+<div class="entity-card">
+  <div class="ec-head">
+    <span class="ec-icon">🔌</span>
+    <span class="ec-name">mount 脚本</span>
+    <span class="ec-type">挂载模式</span>
+  </div>
+  <div class="ec-desc">Vue.createApp(YryBreadcrumb, props).mount('#breadcrumb-app') + yry-breadcrumb-ready 事件监听的解耦挂载模式。页面监听 ready 事件 (once:true)，收到后执行挂载。</div>
+  <div class="ec-links">
+    <a href="./架构图.html">📐 架构图</a>
+    <a href="./审查.html">📝 审查</a>
+  </div>
+</div>
+<div class="entity-card">
+  <div class="ec-head">
+    <span class="ec-icon">🏗️</span>
+    <span class="ec-name">dogfooding 自举</span>
+    <span class="ec-type">质量验证</span>
+  </div>
+  <div class="ec-desc">YryBreadcrumb 所有文档页面（场景 1-5 共 36 页）均使用自身组件渲染面包屑导航，实现自举验证闭环。每个页面都有独立的 mountBreadcrumb() 脚本。</div>
+  <div class="ec-links">
+    <a href="./审查.html">📝 审查</a>
+    <a href="./演示.html">💡 演示</a>
+  </div>
+</div>
+
+<div class="live-bar">
+  <span class="live-dot"></span> 概念图谱已就绪
+  <span class="live-resource"><span class="lr-name">Mermaid</span><span class="lr-status">OK</span></span>
+  <span class="live-resource"><span class="lr-name">实体节点</span><span class="lr-status">8</span></span>
+</div>
+
+<div class="concept-grid">
+  <div class="concept-card">
+    <div class="cc-icon">🔌</div>
+    <div class="cc-name">页面集成</div>
+    <div class="cc-domain">integration</div>
+    <div class="cc-desc">YryBreadcrumb 集成到计划清单.html + 28 场景页的核心编排，包含 4 文件引用顺序和 mount 脚本模式。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ 4 文件引用 · 4 种 items 模式</span>
+      <span class="cc-rel in">← Scene 1-3 产物</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">📐</div>
+    <div class="cc-name">4 文件引用顺序</div>
+    <div class="cc-domain">loading</div>
+    <div class="cc-desc">CSS → Vue → Loader → Mount 的严格顺序，link css 防 FOUC，script vue 提供运行时，script loader 注册组件，mount script 挂载实例。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ FOUC 防护</span>
+      <span class="cc-rel in">← shared.css 起始</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">📦</div>
+    <div class="cc-name">4 种 items 模式</div>
+    <div class="cc-domain">data</div>
+    <div class="cc-desc">href+icon / 纯文本 / 长路径 5+ / 图标混用 — 4 种实际使用模式覆盖所有页面场景的数据变体。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ Demo 演示 · 测试验证</span>
+      <span class="cc-rel in">← 页面集成</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🏗️</div>
+    <div class="cc-name">dogfooding 自举</div>
+    <div class="cc-domain">quality</div>
+    <div class="cc-desc">YryBreadcrumb 所有文档页面（场景 1-5 共 36 页）均使用自身组件渲染面包屑，实现自举验证。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ 36 个场景页</span>
+      <span class="cc-rel in">← mount 脚本模式</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🛡️</div>
+    <div class="cc-name">FOUC 防护</div>
+    <div class="cc-domain">quality</div>
+    <div class="cc-desc">CSS 在 head 首位加载确保面包屑渲染前无样式闪烁，link 标签优先于任何 script 标签。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ 无闪烁渲染</span>
+      <span class="cc-rel in">← 4 文件引用顺序</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🔄</div>
+    <div class="cc-name">跨页面隔离</div>
+    <div class="cc-domain">quality</div>
+    <div class="cc-desc">同一页面内多个 YryBreadcrumb 实例独立挂载到不同 DOM 容器，互不干扰，支持同一页面多面包屑场景。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ 多实例共存</span>
+      <span class="cc-rel in">← Vue.createApp 隔离</span>
+    </div>
+  </div>
+</div>
+
+<div class="tip-box info">
+  <strong>图谱洞察</strong> — 场景 4 以「页面集成」为枢纽，向左展开 4 文件引用顺序和 FOUC 防护的加载管线，向右辐射 4 种 items 数据模式和 mount 脚本挂载方式。dogfooding 自举覆盖全部 36 个场景页面作为质量验证闭环。跨页面隔离和降级友好确保健壮性。覆盖域：加载域 → 数据域 → 质量域 → 集成域。
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({startOnLoad:true, theme:'dark'});</script>
 
@@ -148,7 +279,7 @@ flowchart LR
   🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
 </div>
 
-
+<button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">↑</button>
 
 <script>
   function mountBreadcrumb() {
@@ -165,6 +296,12 @@ flowchart LR
   }
   if (window.YryBreadcrumb) mountBreadcrumb();
   else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
+</script>
+<script>
+const backTopBtn=document.getElementById('backTop');
+function toggleBackTop(){backTopBtn.classList.toggle('visible',window.scrollY>400);}
+window.addEventListener('scroll',toggleBackTop,{passive:true});
+backTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
 </script>
 </body>
 </html>

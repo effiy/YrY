@@ -33,68 +33,207 @@
   <span class="active">技术审查</span>
 </nav>
 
+<div class="verdict-row">
+  <div class="vr-title">📝 技术评审报告</div>
+  <div class="vr-meta">
+    <span>审查场景: <code>场景 2 · 模板与样式</code></span>
+    <span>审查时间: <code>2026-06</code></span>
+  </div>
+  <div class="vr-metrics">
+    <div class="stat-card"><div class="val pass">7/7</div><div class="lbl">通过项</div></div>
+    <div class="stat-card"><div class="val info">0</div><div class="lbl">警告项</div></div>
+    <div class="stat-card"><div class="val info">0</div><div class="lbl">失败项</div></div>
+  </div>
+  <span class="vr-verdict pass">✅ 评审通过</span>
+</div>
+
 <h2>审查清单</h2>
 <p>逐项评审场景 2 模板与样式实现的 7 个关键维度。所有项目均已通过。</p>
 
-<table>
+<table class="table-highlight">
   <thead>
     <tr><th>#</th><th>审查项</th><th>审查要点</th><th>状态</th><th>证据</th></tr>
   </thead>
   <tbody>
-    <tr>
+    <tr class="row-pass">
       <td><code>R1</code></td>
       <td>模板结构正确性</td>
       <td>语义化 <code>&lt;nav&gt;</code> · a11y 标记 (<code>aria-label</code> / <code>aria-current</code>) · 结构层级清晰</td>
-      <td><span class="badge badge-ok">PASS</span></td>
+      <td><span class="verdict pass">✅ 通过</span></td>
       <td><a href="./index.md#sec1">index.md §1 模板结构</a></td>
     </tr>
-    <tr>
+    <tr class="row-pass">
       <td><code>R2</code></td>
       <td>v-for / v-if 指令用法</td>
       <td><code>v-for="(item, i) in items"</code> 正确迭代 · <code>v-if="i &gt; 0"</code> 分隔符条件 · <code>v-if="item.href"</code> 区分链接/当前项</td>
-      <td><span class="badge badge-ok">PASS</span></td>
+      <td><span class="verdict pass">✅ 通过</span></td>
       <td><a href="./源码.html">源码.html</a></td>
     </tr>
-    <tr>
+    <tr class="row-pass">
       <td><code>R3</code></td>
       <td>CSS 设计令牌使用</td>
       <td><code>--yry-color-*</code> 变量全面应用 · <code>--yry-dur-*</code> 动画时长 · <code>--yry-ease-out</code> 缓动函数</td>
-      <td><span class="badge badge-ok">PASS</span></td>
+      <td><span class="verdict pass">✅ 通过</span></td>
       <td><a href="./源码.html">源码.html</a> · <a href="../../../yry-breadcrumb/index.css">index.css</a></td>
     </tr>
-    <tr>
+    <tr class="row-pass">
       <td><code>R4</code></td>
       <td>BEM 命名规范</td>
       <td><code>.breadcrumb</code> 块 · <code>.bc-sep</code> 分隔符元素 · <code>.bc-current</code> 当前项元素 · 无深层嵌套</td>
-      <td><span class="badge badge-ok">PASS</span></td>
+      <td><span class="verdict pass">✅ 通过</span></td>
       <td><a href="../../../yry-breadcrumb/index.css">index.css</a></td>
     </tr>
-    <tr>
+    <tr class="row-pass">
       <td><code>R5</code></td>
       <td>Fallback 值决策</td>
       <td>所有 <code>var()</code> 均有后备值 · token 不可用时仍可渲染 · 降级策略清晰</td>
-      <td><span class="badge badge-ok">PASS</span></td>
+      <td><span class="verdict pass">✅ 通过</span></td>
       <td><a href="./测试面板.html">测试面板.html</a> · TC3</td>
     </tr>
-    <tr>
+    <tr class="row-pass">
       <td><code>R6</code></td>
       <td>响应式设计</td>
       <td><code>flex-wrap: wrap</code> 自动换行 · <code>gap: 6px</code> 合理间距 · 长路径不溢出</td>
-      <td><span class="badge badge-ok">PASS</span></td>
+      <td><span class="verdict pass">✅ 通过</span></td>
       <td><a href="./演示.html">演示.html</a> · 模式 3 长路径</td>
     </tr>
-    <tr>
+    <tr class="row-pass">
       <td><code>R7</code></td>
       <td>深色/浅色模式</td>
       <td><code>prefers-color-scheme</code> 媒体查询 · 背景/文字色同步切换 · 设计令牌驱动</td>
-      <td><span class="badge badge-ok">PASS</span></td>
+      <td><span class="verdict pass">✅ 通过</span></td>
       <td><a href="./架构图.html">架构图.html</a> · 令牌层</td>
     </tr>
   </tbody>
 </table>
 
-<h2>评审结论</h2>
-<p>场景 2 · <strong>模板与样式</strong> 7 项审查全部通过。模板结构语义清晰，v-for/v-if 指令使用正确，CSS 设计令牌体系完整，BEM 命名规范一致，fallback 降级策略完善，响应式与双模式适配到位。可进入场景 3。</p>
+<h2>审查维度评分</h2>
+
+<div class="dim-card">
+  <div class="dim-head">
+    <span class="dim-icon">📐</span>
+    <span class="dim-title">模板架构</span>
+    <span class="dim-score pass">94</span>
+  </div>
+  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:94%"></div></div>
+  <div class="dim-detail">语义化 nav 标签，v-for/v-if 指令用法正确，模板结构层级清晰，分隔符条件渲染逻辑合理。</div>
+</div>
+
+<div class="dim-card">
+  <div class="dim-head">
+    <span class="dim-icon">🎨</span>
+    <span class="dim-title">样式系统</span>
+    <span class="dim-score pass">93</span>
+  </div>
+  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:93%"></div></div>
+  <div class="dim-detail">CSS 设计令牌 --yry-color-* 全面应用，BEM 命名规范一致，fallback 降级策略完善。</div>
+</div>
+
+<div class="dim-card">
+  <div class="dim-head">
+    <span class="dim-icon">📱</span>
+    <span class="dim-title">响应式与主题</span>
+    <span class="dim-score pass">91</span>
+  </div>
+  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:91%"></div></div>
+  <div class="dim-detail">flex-wrap 自动换行，深色/浅色模式 media query 同步切换，设计令牌驱动跨主题一致。</div>
+</div>
+
+<div class="dim-card">
+  <div class="dim-head">
+    <span class="dim-icon">♿</span>
+    <span class="dim-title">可访问性</span>
+    <span class="dim-score pass">90</span>
+  </div>
+  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:90%"></div></div>
+  <div class="dim-detail">aria-label / aria-current 完整标注，focus-visible 键盘可达，屏幕阅读器适配到位。</div>
+</div>
+
+<h2>审查管线</h2>
+<div class="stage-list">
+  <div class="stage-row done">
+    <div class="st-num">1</div>
+    <div class="st-info"><div class="st-name">模板与结构审查</div><div class="st-detail">验证模板语义化、v-for/v-if 指令用法、BEM 命名规范</div></div>
+    <span class="st-status ok">✓ 通过</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">2</div>
+    <div class="st-info"><div class="st-name">样式系统审查</div><div class="st-detail">CSS 设计令牌使用、fallback 降级、响应式与双模式适配</div></div>
+    <span class="st-status ok">✓ 通过</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">3</div>
+    <div class="st-info"><div class="st-name">可访问性与交付审查</div><div class="st-detail">a11y 标注完整性、交付物就位、跨场景链接有效</div></div>
+    <span class="st-status ok">✓ 通过</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+</div>
+
+<h2>逐项验证</h2>
+<div class="check-list">
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R1: 模板结构正确性</div>
+      <div class="vi-desc">语义化 nav 标签，a11y 标记 (aria-label / aria-current)，结构层级清晰。证据: <a href="./index.md#sec1">index.md §1</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R2: v-for / v-if 指令用法</div>
+      <div class="vi-desc">v-for="(item, i) in items" 正确迭代，v-if 分隔符条件与链接/当前项区分正确。证据: <a href="./源码.html">源码.html</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R3: CSS 设计令牌使用</div>
+      <div class="vi-desc">--yry-color-* / --yry-dur-* / --yry-ease-out 变量全面应用。证据: <a href="../../../yry-breadcrumb/index.css">index.css</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R4: BEM 命名规范</div>
+      <div class="vi-desc">.breadcrumb 块 / .bc-sep 分隔符 / .bc-current 当前项，无深层嵌套。证据: <a href="../../../yry-breadcrumb/index.css">index.css</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R5: Fallback 值决策</div>
+      <div class="vi-desc">所有 var() 均有后备值，token 不可用时仍可渲染，降级策略清晰。证据: <a href="./测试面板.html">测试面板 TC3</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R6: 响应式设计</div>
+      <div class="vi-desc">flex-wrap: wrap 自动换行，gap: 6px 合理间距，长路径不溢出。证据: <a href="./演示.html">演示 模式 3</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R7: 深色/浅色模式</div>
+      <div class="vi-desc">prefers-color-scheme 媒体查询，背景/文字色同步切换，设计令牌驱动。证据: <a href="./架构图.html">架构图</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+</div>
+
+<div class="tip-box success">
+  <strong>✅ 场景 2 评审结论</strong> — 7 项审查全部通过。模板结构语义清晰，v-for/v-if 指令使用正确，CSS 设计令牌体系完整，BEM 命名规范一致，fallback 降级策略完善，响应式与双模式适配到位。可进入场景 3。
+</div>
 
 <div class="footer">
   <p>位置: <code>cdn/yry-breadcrumb/任务故事/场景-2-模板与样式/审查.html</code></p>

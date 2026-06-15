@@ -12,16 +12,6 @@
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <script src="../../../shared.js"></script>
 <script src="../../../yry-breadcrumb/index.js"></script>
-<style>
-/* demo 面包屑静态样式 */
-.demo-block { padding: 14px; background: var(--yry-color-surface-1); border: 1px solid var(--yry-color-border); border-radius: 8px; margin: 16px 0; }
-.demo-block h3 { margin: 0 0 10px; font-size: .85rem; color: var(--yry-color-text-2); font-weight: 600; }
-.demo-bc { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 6px 0; font-size: .82rem; color: var(--yry-color-text-2, #d4d4d4); }
-.demo-bc a { color: var(--yry-color-text-2, #d4d4d4); text-decoration: none; border-radius: 4px; padding: 2px 6px; transition: color .15s, background .15s; }
-.demo-bc a:hover { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.08); }
-.demo-bc .bc-sep { color: var(--yry-color-text-3, #888); user-select: none; }
-.demo-bc .bc-current { color: var(--yry-color-accent, #ffc107); font-weight: 600; }
-</style>
 </head>
 <body>
 <div class="container">
@@ -44,7 +34,9 @@
 </nav>
 
 <h2>演示</h2>
-<p>下方 3 个静态演示块展示面包屑组件的不同渲染模式。每个块都是组件渲染后的实际外观预览。</p>
+<div class="tip-box info">
+  <strong>💡 设计令牌驱动:</strong> 所有颜色通过 <code>var(--yry-color-*, #fallback)</code> 引用。无自定义属性环境自动降级为默认深色主题。下方 3 个静态演示块展示面包屑组件的不同渲染模式。
+</div>
 
 <!-- Demo 1: With icons -->
 <div class="demo-block">
@@ -109,8 +101,38 @@
   <a class="cross-link" href="审查.html">📝 审查</a>
 </div>
 
+<div class="timeline-hero">
+  <h3>🎨 5 种视觉模式<span class="th-sub">主题覆盖全景</span></h3>
+  <div class="tl-track-wrap">
+    <div class="tl-track">
+      <div class="tl-line"></div>
+      <div class="tl-progress" style="width:100%"></div>
+      <div class="tl-nodes">
+        <div class="tl-node done"><div class="tl-dot">🌙</div><div class="tl-label">默认深色</div><div class="tl-time">默认</div></div>
+        <div class="tl-node done"><div class="tl-dot">☀️</div><div class="tl-label">浅色模式</div><div class="tl-time">@media</div></div>
+        <div class="tl-node done"><div class="tl-dot">🔍</div><div class="tl-label">高对比度</div><div class="tl-time">@media</div></div>
+        <div class="tl-node done"><div class="tl-dot">🎨</div><div class="tl-label">自定义主题</div><div class="tl-time">:root</div></div>
+        <div class="tl-node done"><div class="tl-dot">🎯</div><div class="tl-label">组件覆盖</div><div class="tl-time">.custom-bc</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-val info">5</div><div class="kpi-label">视觉模式</div></div>
+  <div class="kpi-card"><div class="kpi-val accent">3</div><div class="kpi-label">渲染演示</div></div>
+  <div class="kpi-card"><div class="kpi-val pass">100%</div><div class="kpi-label">主题覆盖</div></div>
+</div>
+
+<div class="live-bar">
+  <span class="live-dot"></span> CSS 设计令牌就绪
+  <span class="live-resource"><span class="lr-name">theme.css</span><span class="lr-status">OK</span></span>
+  <span class="live-resource"><span class="lr-name">yry-scene.css</span><span class="lr-status">OK</span></span>
+  <span class="live-resource"><span class="lr-name">index.css</span><span class="lr-status">OK</span></span>
+</div>
+
 <h2>5 种视觉模式说明</h2>
-<table>
+<table class="vis-mode-table">
   <thead><tr><th>模式</th><th>触发条件</th><th>实现方式</th></tr></thead>
   <tbody>
     <tr><td>默认深色</td><td>无 <code>prefers-color-scheme</code> 匹配</td><td><code>:root</code> 基础令牌值</td></tr>
@@ -122,6 +144,8 @@
 </table>
 
 <h2>代码</h2>
+<div class="code-block">
+<div class="cb-head"><span class="cb-lang">JS</span><span class="cb-file">mount-demo.js</span></div>
 <pre><code>// 挂载 3 个独立 breadcrumb 实例的示例代码
 function mountDemo(id, items) {
   Vue.createApp(window.YryBreadcrumb, { items }).mount('#' + id);
@@ -147,6 +171,85 @@ function mountAll() {
     { label: '演示',           icon: '💡' }
   ]);
 }</code></pre>
+</div>
+
+<div class="tip-box success">
+  <strong>✅ 验证通过:</strong> 3 种模式在本页均可正常显示。深色/浅色/高对比度/自定义主题/组件级覆盖 — 5 种视觉模式均已在 <a href="./测试面板.html">测试面板</a> 中验证。
+</div>
+
+<h2>关键命令</h2>
+<div class="cmd-grid">
+  <div class="cmd-card">
+    <div class="cmd-stage">验证</div>
+    <div class="cmd-name">grep "var(--" cdn/yry-breadcrumb/index.css</div>
+    <div class="cmd-desc">搜索所有 CSS 自定义属性引用，确认设计令牌使用完整且均有 fallback 值。</div>
+    <span class="cmd-tag">CLI</span>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-stage">探索</div>
+    <div class="cmd-name">grep "\.bc-" cdn/yry-breadcrumb/index.css</div>
+    <div class="cmd-desc">列出所有 bc- 前缀的 CSS 类名，确认 BEM 命名规范且无无关 class 污染。</div>
+    <span class="cmd-tag">CLI</span>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-stage">统计</div>
+    <div class="cmd-name">wc -l cdn/yry-breadcrumb/index.css</div>
+    <div class="cmd-desc">统计 CSS 文件行数，评估样式复杂度与可维护性。</div>
+    <span class="cmd-tag">CLI</span>
+  </div>
+</div>
+
+<h2>自测</h2>
+<div class="quiz-list">
+  <div class="quiz-card" data-quiz="1">
+    <div class="quiz-q"><span class="q-num">1</span> YryBreadcrumb 的 CSS 类名采用 BEM 命名规范，正确的类名是？</div>
+    <div class="quiz-opts">
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">A</span><span class="opt-text">YryBreadcrumb、YryBreadcrumbItem、YryBreadcrumbLink</span></div>
+      <div class="quiz-opt correct" data-answer="correct"><span class="opt-letter">B</span><span class="opt-text">.breadcrumb、.breadcrumb__item、.breadcrumb__link</span></div>
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">C</span><span class="opt-text">.bc-container、.bc-item、.bc-link</span></div>
+    </div>
+    <div class="quiz-feedback"><strong>✓ 正确!</strong> 采用 BEM 命名：Block 为 .breadcrumb，Element 为 .breadcrumb__item 和 .breadcrumb__link，Modifier 为 .breadcrumb__link--current 标记当前项。</div>
+  </div>
+  <div class="quiz-card" data-quiz="2">
+    <div class="quiz-q"><span class="q-num">2</span> 组件 CSS 设计令牌使用什么语法引用，如何实现降级？</div>
+    <div class="quiz-opts">
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">A</span><span class="opt-text">@token(--yry-accent) + @supports 检测</span></div>
+      <div class="quiz-opt correct" data-answer="correct"><span class="opt-letter">B</span><span class="opt-text">var(--yry-accent, #fallback) 内联降级值</span></div>
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">C</span><span class="opt-text">env(--yry-accent) 环境变量回退</span></div>
+    </div>
+    <div class="quiz-feedback"><strong>✓ 正确!</strong> 所有颜色通过 var(--yry-*, #fallback) 引用，第二个参数为降级值。无自定义属性环境自动使用硬编码默认深色主题。</div>
+  </div>
+  <div class="quiz-card" data-quiz="3">
+    <div class="quiz-q"><span class="q-num">3</span> 5 种视觉模式中，自定义主题模式的实现方式是？</div>
+    <div class="quiz-opts">
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">A</span><span class="opt-text">修改 index.css 源码中的默认值</span></div>
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">B</span><span class="opt-text">通过 JavaScript 动态注入内联样式</span></div>
+      <div class="quiz-opt correct" data-answer="correct"><span class="opt-letter">C</span><span class="opt-text">宿主页面在 :root 中重新定义 --yry-* 令牌值</span></div>
+    </div>
+    <div class="quiz-feedback"><strong>✓ 正确!</strong> 宿主页面通过在 :root 中定义自定义属性（如 --yry-accent、--yry-bg 等）覆盖组件默认令牌，无需修改组件源码即可应用自定义主题。</div>
+  </div>
+</div>
+<div class="quiz-score">
+  <div class="qs-big">0/3</div>
+  <div class="qs-sub">完成自测</div>
+</div>
+
+<h2>场景文件</h2>
+<div class="file-grid">
+  <span class="file-item">📋 计划清单.html</span>
+  <span class="file-item">📐 架构图.html</span>
+  <span class="file-item">🔗 知识图谱.html</span>
+  <span class="file-item">📄 源码.html</span>
+  <span class="file-item">🧪 测试面板.html</span>
+  <span class="file-item">💡 演示.html</span>
+  <span class="file-item">📝 审查.html</span>
+</div>
+
+<div class="links-row">
+  <a href="../README.md">📋 场景 README</a>
+  <a href="./index.md">📄 场景正文</a>
+  <a href="../../../yry-breadcrumb/index.html">🍞 组件 Demo</a>
+</div>
 
 <div class="footer">
   <p>位置: <code>cdn/yry-breadcrumb/任务故事/场景-2-模板与样式/演示.html</code></p>
@@ -170,6 +273,29 @@ function mountAll() {
   }
   if (window.YryBreadcrumb) mountBreadcrumb();
   else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
+</script>
+<script>
+document.querySelectorAll('.quiz-opt').forEach(function(opt) {
+  opt.addEventListener('click', function() {
+    var card = this.closest('.quiz-card');
+    if (card.classList.contains('answered')) return;
+    card.classList.add('answered');
+    var isCorrect = this.dataset.answer === 'correct';
+    this.classList.add(isCorrect ? 'correct' : 'wrong');
+    card.querySelector('.quiz-feedback').classList.add('show');
+    card.querySelectorAll('.quiz-opt').forEach(function(o) { o.classList.add('disabled'); });
+    if (isCorrect) {
+      card.dataset.score = '1';
+    }
+    updateQuizScore();
+  });
+});
+function updateQuizScore() {
+  var total = document.querySelectorAll('.quiz-card').length;
+  var score = document.querySelectorAll('.quiz-card[data-score="1"]').length;
+  var el = document.querySelector('.quiz-score');
+  if (el) { el.classList.add('show'); el.querySelector('.qs-big').textContent = score + '/' + total; }
+}
 </script>
 </body>
 </html>

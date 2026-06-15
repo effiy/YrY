@@ -35,8 +35,13 @@
 
 <h2>概念关联表</h2>
 <p>场景 2 的关键概念分布在 Template、CSS、Integration 三个域中。</p>
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-val info">3</div><div class="kpi-label">概念域</div></div>
+  <div class="kpi-card"><div class="kpi-val accent">12</div><div class="kpi-label">关联关系</div></div>
+  <div class="kpi-card"><div class="kpi-val pass">3</div><div class="kpi-label">覆盖域</div></div>
+</div>
 
-<table>
+<table class="table-highlight">
   <thead>
     <tr><th>域</th><th>关键节点</th><th>关联关系</th></tr>
   </thead>
@@ -59,10 +64,55 @@
   </tbody>
 </table>
 
+<div class="entity-card">
+  <div class="ec-head">
+    <span class="ec-icon">📄</span>
+    <span class="ec-name">Template 域</span>
+    <span class="ec-type">Vue 指令层</span>
+  </div>
+  <div class="ec-desc">Vue 3 声明式模板集合：v-for 迭代 items 生成面包屑项，v-if 控制分隔符与链接切换，:class 动态绑定当前页样式，:key 稳定列表渲染，aria-label/aria-current 保证无障碍语义。</div>
+  <div class="ec-links">
+    <a href="./架构图.html">📐 架构图</a>
+    <a href="./源码.html">📄 源码</a>
+  </div>
+</div>
+<div class="entity-card">
+  <div class="ec-head">
+    <span class="ec-icon">🎨</span>
+    <span class="ec-name">CSS 域</span>
+    <span class="ec-type">设计令牌层</span>
+  </div>
+  <div class="ec-desc">设计令牌体系统一管理色值/圆角/动效时长：--yry-color-* / --yry-radius-* / --yry-dur-*；BEM 命名 .bc-sep / .bc-current 保持低特异性；所有 var() 引用均带硬编码 fallback 降级值。</div>
+  <div class="ec-links">
+    <a href="./架构图.html">📐 架构图</a>
+    <a href="./演示.html">💡 演示</a>
+  </div>
+</div>
+<div class="entity-card">
+  <div class="ec-head">
+    <span class="ec-icon">🔗</span>
+    <span class="ec-name">Integration 域</span>
+    <span class="ec-type">集成层</span>
+  </div>
+  <div class="ec-desc">4 文件严格加载链 — index.html (模板定义) → index.css (样式注入) → index.js (运行时挂载) → shared.js (共享工具)，构成不可逆的单向渲染管线，确保 FOUC 防护。</div>
+  <div class="ec-links">
+    <a href="./架构图.html">📐 架构图</a>
+    <a href="./审查.html">📝 审查</a>
+  </div>
+</div>
+
+<div class="live-bar">
+  <span class="live-dot"></span> 概念图谱已就绪
+  <span class="live-resource"><span class="lr-name">Mermaid</span><span class="lr-status">OK</span></span>
+  <span class="live-resource"><span class="lr-name">实体节点</span><span class="lr-status">12</span></span>
+</div>
+
 <h2>概念图谱</h2>
 <p>以下 Mermaid 图展示 Template / CSS / Integration 三个概念域之间的关系。</p>
 
-<pre class="mermaid">
+<div class="diagram-wrap">
+  <span class="dm-badge">知识图谱</span>
+  <pre class="mermaid">
 %%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#ffc107','lineColor': '#ffc107','secondaryColor': '#2b2d3b','tertiaryColor': '#21232f'}}}%%
 flowchart TB
     subgraph TPL["Template 域"]
@@ -95,6 +145,8 @@ flowchart TB
     classDef int fill:#10b98122,stroke:#10b981,color:#10b981
     classDef out fill:#f59e0b22,stroke:#f59e0b,color:#f59e0b
 </pre>
+  <div class="dm-caption">图: 模板与样式 — 概念关联图谱</div>
+</div>
 
 <h2>4 文件加载顺序</h2>
 <table>
@@ -107,6 +159,63 @@ flowchart TB
   </tbody>
 </table>
 
+<div class="concept-grid">
+  <div class="concept-card">
+    <div class="cc-icon">📄</div>
+    <div class="cc-name">Template 域</div>
+    <div class="cc-domain">template</div>
+    <div class="cc-desc">Vue 指令集合 — v-for 迭代 items、v-if 条件渲染、:class 动态绑定、:key 列表稳定、aria-* 无障碍语义标注，全部驱动 DOM 生成。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ index.html</span>
+      <span class="cc-rel in">← Props API (场景 1)</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🎨</div>
+    <div class="cc-name">CSS 域</div>
+    <div class="cc-domain">css</div>
+    <div class="cc-desc">设计令牌体系 — --yry-color-* / --yry-radius-* / --yry-dur-* 统一管理色值、圆角、动效时长，BEM 命名 .bc-sep / .bc-current 保持低特异性，所有 var() 引用均带 fallback 降级。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ index.css</span>
+      <span class="cc-rel in">← shared.css · theme.css</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🔗</div>
+    <div class="cc-name">Integration 域</div>
+    <div class="cc-domain">integration</div>
+    <div class="cc-desc">4 文件加载链 — index.html (模板定义) → index.css (样式注入) → index.js (运行时挂载) → shared.js (共享工具)，构成完整渲染管线。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ #breadcrumb-app</span>
+      <span class="cc-rel in">← Template · CSS · Shared</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🎯</div>
+    <div class="cc-name">渲染输出</div>
+    <div class="cc-domain">output</div>
+    <div class="cc-desc">最终挂载到 #breadcrumb-app 的 DOM 节点，prefers-color-scheme 双模式适配，5 种视觉模式覆盖全部使用场景。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ 黑暗/明亮双主题</span>
+      <span class="cc-rel in">← Integration 域</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">♿</div>
+    <div class="cc-name">a11y 语义</div>
+    <div class="cc-domain">accessibility</div>
+    <div class="cc-desc">通过 aria-label 标注导航角色、aria-current="page" 标识当前页、BC-sep aria-hidden 隐藏分隔符装饰，确保屏幕阅读器可理解。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ 屏幕阅读器</span>
+      <span class="cc-rel in">← Template 域</span>
+    </div>
+  </div>
+</div>
+
+<div class="tip-box info">
+  <strong>图谱洞察</strong> — 场景 2 展示 Template / CSS / Integration 三域分离的架构：模板域定义结构语义，CSS 域管理视觉令牌，集成域串联加载顺序。三者通过 index.html → CSS → JS 的严格加载链汇聚到最终 DOM 输出。所有设计令牌均配备 var() fallback 降级策略，确保跨主题兼容。
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>mermaid.initialize({startOnLoad:true, theme:'dark'});</script>
 
@@ -114,6 +223,8 @@ flowchart TB
   <p>位置: <code>cdn/yry-breadcrumb/任务故事/场景-2-模板与样式/知识图谱.html</code></p>
   <p>本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件</p>
 </div>
+
+<button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">↑</button>
 
 </div>
 
@@ -132,6 +243,12 @@ flowchart TB
   }
   if (window.YryBreadcrumb) mountBreadcrumb();
   else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
+</script>
+<script>
+const backTopBtn=document.getElementById('backTop');
+function toggleBackTop(){backTopBtn.classList.toggle('visible',window.scrollY>400);}
+window.addEventListener('scroll',toggleBackTop,{passive:true});
+backTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
 </script>
 </body>
 </html>

@@ -13,25 +13,27 @@
 <script src="../../../shared.js"></script>
 <script src="../../../yry-breadcrumb/index.js"></script>
 <style>
-/* KPI 统计卡片 */
+/* KPI 统计卡片网格 (stat-card 样式由 yry-scene.css 提供) */
 .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0 24px; }
-.stat-card { padding: 16px 14px; background: var(--yry-color-surface-1); border: 1px solid var(--yry-color-border); border-radius: var(--yry-radius-lg); text-align: center; }
-.stat-card .stat-num { font-size: 1.6rem; font-weight: 700; color: var(--yry-color-text-1); line-height: 1.2; }
-.stat-card .stat-label { font-size: var(--yry-fs-sm); color: var(--yry-color-text-3); margin-top: 4px; }
-.stat-card.stat-done .stat-num { color: #10b981; }
-.stat-card.stat-progress .stat-num { color: #f59e0b; }
-.stat-card.stat-pending .stat-num { color: #9ca3af; }
-.stat-card.stat-percent .stat-num { color: #22d3ee; }
 
-/* 交付清单链接 */
-.deliver-list { list-style: none; padding-left: 0; }
-.deliver-list li { padding: 6px 0; border-bottom: 1px solid var(--yry-color-border); }
-.deliver-list li:last-child { border-bottom: none; }
-.deliver-list a { color: var(--yry-color-cyan); text-decoration: none; font-weight: 500; }
-.deliver-list a:hover { text-decoration: underline; }
+/* 交付链接网格 */
+.delivery-links { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.delivery-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 10px 16px;
+  background: var(--yry-color-surface-1); border: 1px solid var(--yry-color-border);
+  border-radius: var(--yry-radius-lg); color: var(--yry-color-cyan);
+  text-decoration: none; font-size: .8rem; font-weight: 500;
+  transition: all .15s;
+}
+.delivery-link:hover {
+  border-color: rgba(255,193,7,.18); color: var(--yry-color-accent);
+  transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.2);
+}
 
 @media (max-width: 640px) {
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
@@ -56,23 +58,21 @@
 </nav>
 
 <h2>进度概览</h2>
+<div class="stat-grid">
+  <div class="stat-card"><div class="val pass">5</div><div class="lbl">已完成</div></div>
+  <div class="stat-card"><div class="val warn">0</div><div class="lbl">进行中</div></div>
+  <div class="stat-card"><div class="val info">0</div><div class="lbl">待开始</div></div>
+  <div class="stat-card"><div class="val accent">100%</div><div class="lbl">完成率</div></div>
+</div>
+
+<div class="tip-box success"><strong>场景完成</strong> 5/5 模板与样式任务全部完成，7 个交付物就位，设计令牌 fallback 策略验证通过。</div>
+
+<h2>KPI 指标</h2>
 <div class="kpi-grid">
-  <div class="kpi-card kpi-done">
-    <span class="kpi-num">5</span>
-    <span class="kpi-label">已完成</span>
-  </div>
-  <div class="kpi-card kpi-progress">
-    <span class="kpi-num">0</span>
-    <span class="kpi-label">进行中</span>
-  </div>
-  <div class="kpi-card kpi-pending">
-    <span class="kpi-num">0</span>
-    <span class="kpi-label">待开始</span>
-  </div>
-  <div class="kpi-card kpi-rate">
-    <span class="kpi-num">100%</span>
-    <span class="kpi-label">完成率</span>
-  </div>
+  <div class="kpi-card"><div class="kpi-val pass">5</div><div class="kpi-label">任务条目</div></div>
+  <div class="kpi-card"><div class="kpi-val info">8</div><div class="kpi-label">交付物</div></div>
+  <div class="kpi-card"><div class="kpi-val pass">5</div><div class="kpi-label">验收项</div></div>
+  <div class="kpi-card"><div class="kpi-val accent">100%</div><div class="kpi-label">样式覆盖</div></div>
 </div>
 
 <div class="cross-nav">
@@ -89,6 +89,28 @@
   <a class="cross-link" href="演示.html">💡 演示</a>
   <span class="cross-sep">·</span>
   <a class="cross-link" href="审查.html">📝 审查</a>
+</div>
+
+<h2>任务管线</h2>
+<div class="stage-list">
+  <div class="stage-row done">
+    <div class="st-num">1</div>
+    <div class="st-info"><div class="st-name">模板编写</div><div class="st-detail">Vue 3 template: v-for / v-if / :class 动态绑定，aria-label / aria-current 标注</div></div>
+    <span class="st-status ok">✓ 完成</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">2</div>
+    <div class="st-info"><div class="st-name">样式设计</div><div class="st-detail">设计令牌体系 + BEM 命名 + 5 视觉模式覆盖 + fallback 后备值</div></div>
+    <span class="st-status ok">✓ 完成</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">3</div>
+    <div class="st-info"><div class="st-name">一致性验证</div><div class="st-detail">7 交付物样式交叉比对通过，移交场景 3</div></div>
+    <span class="st-status ok">✓ 完成</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
 </div>
 
 <h2>任务清单</h2>
@@ -135,6 +157,66 @@
   </tbody>
 </table>
 
+<h2>验收清单</h2>
+<div class="check-list">
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T2.1: Vue 3 template 编写</div>
+      <div class="vi-desc">v-for 迭代 items 数组，v-if 区分链接/当前项，:class 动态绑定，aria-label / aria-current a11y 标注。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T2.2: CSS 设计令牌体系</div>
+      <div class="vi-desc">定义 --yry-color-* / --yry-dur-* / --yry-ease-out 令牌，所有 var() 引用包含 fallback 后备值。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T2.3: BEM 命名规范</div>
+      <div class="vi-desc">.breadcrumb 块 + .bc-sep 分隔符 + .bc-current 当前项，低特异性，避免深层嵌套。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T2.4: 5 视觉模式覆盖</div>
+      <div class="vi-desc">默认深色 / 浅色 / 高对比度 / 自定义主题 / 组件级覆盖，均通过设计令牌 + 媒体查询实现。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T2.5: 样式一致性验证</div>
+      <div class="vi-desc">7 个交付物样式交叉比对，令牌名 / BEM 类名 / fallback 值一致，无孤立或未定义引用。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">V1: 交付物就位</div>
+      <div class="vi-desc">7 个标准交付物全部就位且可独立打开，跨页跳转链接全部有效。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">V2: dogfooding 与 fallback 验证</div>
+      <div class="vi-desc">本页使用 YryBreadcrumb 组件自举渲染，移除 :root 令牌后组件仍可渲染。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+</div>
+
 <h2>验收标准</h2>
 <ul class="checklist">
   <li class="done">所有 5 个任务状态均为 DONE (完成率 100%)</li>
@@ -143,6 +225,18 @@
   <li class="done">本页使用 YryBreadcrumb 组件自身渲染面包屑 (dogfooding 自举验证)</li>
   <li class="done">设计令牌 fallback 策略验证通过: 移除 :root 令牌后组件仍可渲染</li>
 </ul>
+
+<h2>交付物</h2>
+<div class="deliver-grid">
+  <a class="deliver-item" href="./index.md"><span class="di-icon">📄</span><div><div class="di-name">index.md</div><div class="di-desc">场景主文档</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./审查.html"><span class="di-icon">📝</span><div><div class="di-name">审查</div><div class="di-desc">样式审查清单</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./架构图.html"><span class="di-icon">📐</span><div><div class="di-name">架构图</div><div class="di-desc">模板-样式流程图</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./测试面板.html"><span class="di-icon">🧪</span><div><div class="di-name">测试面板</div><div class="di-desc">5 模式覆盖测试</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./源码.html"><span class="di-icon">📄</span><div><div class="di-name">源码</div><div class="di-desc">模板与样式源码</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./演示.html"><span class="di-icon">💡</span><div><div class="di-name">演示</div><div class="di-desc">5 视觉模式 Demo</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./知识图谱.html"><span class="di-icon">🔗</span><div><div class="di-name">知识图谱</div><div class="di-desc">样式概念映射</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./计划清单.html"><span class="di-icon">📋</span><div><div class="di-name">计划清单</div><div class="di-desc">任务与验收标准</div></div><span class="di-status done">✓</span></a>
+</div>
 
 <h2>交付清单</h2>
 <p>场景 2 共 8 个标准文件 (1 markdown + 7 HTML):</p>

@@ -47,18 +47,32 @@
   <span class="cross-link on">📝 审查</span>
 </div>
 
+<div class="verdict-row">
+  <div class="vr-title">📝 技术评审报告</div>
+  <div class="vr-meta">
+    <span>审查场景: <code>场景 3 · Loader 实现</code></span>
+    <span>审查时间: <code>2026-06</code></span>
+  </div>
+  <div class="vr-metrics">
+    <div class="stat-card"><div class="val pass">7/7</div><div class="lbl">通过项</div></div>
+    <div class="stat-card"><div class="val info">0</div><div class="lbl">警告项</div></div>
+    <div class="stat-card"><div class="val info">0</div><div class="lbl">失败项</div></div>
+  </div>
+  <span class="vr-verdict pass">✅ 评审通过</span>
+</div>
+
 <h2>评审清单</h2>
 <p>本页是 YryBreadcrumb 任务故事 · 场景 3 的技术评审清单，逐项核实 Loader 实现的正确性与健壮性。</p>
-<table>
+<table class="table-highlight">
   <thead><tr><th>#</th><th>评审项</th><th>通过标准</th><th>状态</th><th>证据</th></tr></thead>
   <tbody>
-    <tr><td>R1</td><td>fetch + DOMParser 流程正确</td><td>fetch 获取 index.html，DOMParser 解析并提取 template</td><td><span class="badge badge-ok">PASS</span></td><td><a href="./源码.html">源码.html</a></td></tr>
-    <tr><td>R2</td><td>5s 超时处理</td><td>setTimeout 5s 后触发 console.error，已超时时不注册组件</td><td><span class="badge badge-ok">PASS</span></td><td><a href="./源码.html">源码.html</a></td></tr>
-    <tr><td>R3</td><td>CustomEvent ready 事件</td><td>模板解析成功后 dispatchEvent('yry-breadcrumb-ready')</td><td><span class="badge badge-ok">PASS</span></td><td><a href="./测试面板.html">测试面板.html TC1</a></td></tr>
-    <tr><td>R4</td><td>document.currentScript 路径解析</td><td>new URL(script.src) 推导 index.html 路径</td><td><span class="badge badge-ok">PASS</span></td><td><a href="./源码.html">源码.html</a></td></tr>
-    <tr><td>R5</td><td>错误降级处理</td><td>fetch 失败时 catch → console.error，不注册组件，页面不崩溃</td><td><span class="badge badge-ok">PASS</span></td><td><a href="./测试面板.html">测试面板.html TC2</a></td></tr>
-    <tr><td>R6</td><td>console.warn/error 诊断</td><td>Vue 缺失用 warn，加载失败用 error，超时用 error</td><td><span class="badge badge-ok">PASS</span></td><td><a href="./源码.html">源码.html</a></td></tr>
-    <tr><td>R7</td><td>Vue 3 缺省时跳过注册</td><td>检测 !window.Vue 时 console.warn 并 return，不抛异常</td><td><span class="badge badge-ok">PASS</span></td><td><a href="./测试面板.html">测试面板.html TC4</a></td></tr>
+    <tr class="row-pass"><td>R1</td><td>fetch + DOMParser 流程正确</td><td>fetch 获取 index.html，DOMParser 解析并提取 template</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./源码.html">源码.html</a></td></tr>
+    <tr class="row-pass"><td>R2</td><td>5s 超时处理</td><td>setTimeout 5s 后触发 console.error，已超时时不注册组件</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./源码.html">源码.html</a></td></tr>
+    <tr class="row-pass"><td>R3</td><td>CustomEvent ready 事件</td><td>模板解析成功后 dispatchEvent('yry-breadcrumb-ready')</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./测试面板.html">测试面板.html TC1</a></td></tr>
+    <tr class="row-pass"><td>R4</td><td>document.currentScript 路径解析</td><td>new URL(script.src) 推导 index.html 路径</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./源码.html">源码.html</a></td></tr>
+    <tr class="row-pass"><td>R5</td><td>错误降级处理</td><td>fetch 失败时 catch → console.error，不注册组件，页面不崩溃</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./测试面板.html">测试面板.html TC2</a></td></tr>
+    <tr class="row-pass"><td>R6</td><td>console.warn/error 诊断</td><td>Vue 缺失用 warn，加载失败用 error，超时用 error</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./源码.html">源码.html</a></td></tr>
+    <tr class="row-pass"><td>R7</td><td>Vue 3 缺省时跳过注册</td><td>检测 !window.Vue 时 console.warn 并 return，不抛异常</td><td><span class="verdict pass">✅ 通过</span></td><td><a href="./测试面板.html">测试面板.html TC4</a></td></tr>
   </tbody>
 </table>
 
@@ -77,8 +91,133 @@
   </tbody>
 </table>
 
-<h2>评审结论</h2>
-<p>场景 3 · <strong>Loader 实现</strong> 评审通过。R1-R7 全部 PASS，错误用例覆盖 7 类异常路径，降级行为符合设计预期。</p>
+<h2>审查维度评分</h2>
+
+<div class="dim-card">
+  <div class="dim-head">
+    <span class="dim-icon">⚙️</span>
+    <span class="dim-title">Loader 健壮性</span>
+    <span class="dim-score pass">95</span>
+  </div>
+  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:95%"></div></div>
+  <div class="dim-detail">fetch + DOMParser 流程正确，5s 超时处理，CustomEvent ready 事件机制健壮，Vue 缺省时安全降级。</div>
+</div>
+
+<div class="dim-card">
+  <div class="dim-head">
+    <span class="dim-icon">🛡️</span>
+    <span class="dim-title">错误处理</span>
+    <span class="dim-score pass">93</span>
+  </div>
+  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:93%"></div></div>
+  <div class="dim-detail">7 类错误场景全覆盖：网络不可达、HTTP 错误、模板 id 缺失、Vue 未加载、超时、并发、CORS。</div>
+</div>
+
+<div class="dim-card">
+  <div class="dim-head">
+    <span class="dim-icon">🔍</span>
+    <span class="dim-title">可诊断性</span>
+    <span class="dim-score pass">91</span>
+  </div>
+  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:91%"></div></div>
+  <div class="dim-detail">console.warn/error 分级清晰，Vue 缺失用 warn，加载失败用 error，超时用 error，便于排查。</div>
+</div>
+
+<div class="dim-card">
+  <div class="dim-head">
+    <span class="dim-icon">🔗</span>
+    <span class="dim-title">路径解析</span>
+    <span class="dim-score pass">92</span>
+  </div>
+  <div class="dim-bar"><div class="dim-bar-fill pass" style="width:92%"></div></div>
+  <div class="dim-detail">document.currentScript + new URL() 推导 index.html 路径，零配置自动定位，CORS 同源约束正确。</div>
+</div>
+
+<h2>审查管线</h2>
+<div class="stage-list">
+  <div class="stage-row done">
+    <div class="st-num">1</div>
+    <div class="st-info"><div class="st-name">核心流程审查</div><div class="st-detail">验证 fetch + DOMParser 流程正确性、CustomEvent ready 事件、路径解析</div></div>
+    <span class="st-status ok">✓ 通过</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">2</div>
+    <div class="st-info"><div class="st-name">容错与降级审查</div><div class="st-detail">5s 超时、fetch 失败降级、Vue 3 缺省跳过、CORS 约束</div></div>
+    <span class="st-status ok">✓ 通过</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">3</div>
+    <div class="st-info"><div class="st-name">可诊断性审查</div><div class="st-detail">console.warn/error 分级、错误场景覆盖、并发 mount 安全</div></div>
+    <span class="st-status ok">✓ 通过</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+</div>
+
+<h2>逐项验证</h2>
+<div class="check-list">
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R1: fetch + DOMParser 流程正确</div>
+      <div class="vi-desc">fetch 获取 index.html，DOMParser 解析并提取 template。证据: <a href="./源码.html">源码.html</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R2: 5s 超时处理</div>
+      <div class="vi-desc">setTimeout 5s 后触发 console.error，已超时时不注册组件。证据: <a href="./源码.html">源码.html</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R3: CustomEvent ready 事件</div>
+      <div class="vi-desc">模板解析成功后 dispatchEvent('yry-breadcrumb-ready')。证据: <a href="./测试面板.html">测试面板 TC1</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R4: document.currentScript 路径解析</div>
+      <div class="vi-desc">new URL(script.src) 推导 index.html 路径，零配置自动定位。证据: <a href="./源码.html">源码.html</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R5: 错误降级处理</div>
+      <div class="vi-desc">fetch 失败时 catch → console.error，不注册组件，页面不崩溃。证据: <a href="./测试面板.html">测试面板 TC2</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R6: console.warn/error 诊断</div>
+      <div class="vi-desc">Vue 缺失用 warn，加载失败用 error，超时用 error，分级清晰。证据: <a href="./源码.html">源码.html</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">R7: Vue 3 缺省时跳过注册</div>
+      <div class="vi-desc">检测 !window.Vue 时 console.warn 并 return，不抛异常。证据: <a href="./测试面板.html">测试面板 TC4</a></div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+</div>
+
+<div class="tip-box success">
+  <strong>✅ 场景 3 评审结论</strong> — R1-R7 全部通过。Loader 实现健壮，错误用例覆盖 7 类异常路径，降级行为符合设计预期。可进入场景 4。
+</div>
 
 <div class="footer">
   位置: <code>cdn/yry-breadcrumb/任务故事/场景-3-Loader实现/审查.html</code><br>

@@ -35,11 +35,62 @@
 </div>
 
 <main id="main-content">
+
+<div class="cross-nav">
+  <a class="cross-link" href="计划清单.html">📋 清单</a>
+  <span class="cross-sep">·</span>
+  <span class="cross-link on">📐 架构</span>
+  <span class="cross-sep">·</span>
+  <a class="cross-link" href="知识图谱.html">🔗 图谱</a>
+  <span class="cross-sep">·</span>
+  <a class="cross-link" href="源码.html">📄 源码</a>
+  <span class="cross-sep">·</span>
+  <a class="cross-link" href="测试面板.html">🧪 测试</a>
+  <span class="cross-sep">·</span>
+  <a class="cross-link" href="演示.html">💡 演示</a>
+  <span class="cross-sep">·</span>
+  <a class="cross-link" href="审查.html">📝 审查</a>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-val info">8</div><div class="kpi-label">流程阶段</div></div>
+  <div class="kpi-card"><div class="kpi-val accent">8</div><div class="kpi-label">门禁边</div></div>
+  <div class="kpi-card"><div class="kpi-val pass">1</div><div class="kpi-label">发布出口</div></div>
+</div>
+
+<div class="stage-list">
+  <div class="stage-row done">
+    <div class="st-num">1</div>
+    <div class="st-info"><div class="st-name">构建</div><div class="st-detail">7 项自测清单 / node --check / demo 渲染 / console 无错</div></div>
+    <span class="st-status ok">&#10003;</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">2</div>
+    <div class="st-info"><div class="st-name">验证</div><div class="st-detail">跨页面验证 场景 1-5 / npm pack --dry-run / 类名复用</div></div>
+    <span class="st-status ok">&#10003;</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">3</div>
+    <div class="st-info"><div class="st-name">发布</div><div class="st-detail">semver v1.1.0 → git tag → npm publish 灰度→稳定</div></div>
+    <span class="st-status ok">&#10003;</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+</div>
+
+<div class="live-bar">
+  <span class="live-dot"></span> Mermaid 图表已渲染
+  <span class="live-resource"><span class="lr-name">pipeline</span><span class="lr-status">OK</span></span>
+  <span class="live-resource"><span class="lr-name">暗色主题</span><span class="lr-status">OK</span></span>
+</div>
+
 <h2>测试与发布流程架构</h2>
 <p>下图展示场景 5 从自测验证到最终发布的完整流程链路。</p>
 
-<div class="mermaid-wrapper">
-<pre class="mermaid">
+<div class="diagram-wrap glass-card">
+  <span class="dm-badge">PIPELINE</span>
+  <pre class="mermaid">
 %%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#f472b6','lineColor': '#f472b6','secondaryColor': '#2b2d3b','tertiaryColor': '#21232f'}}}%%
 flowchart TB
     SELF["7 项自测清单<br/>node --check · 3 demo · console<br/>硬刷新 · mount · Tab · SR"]
@@ -59,23 +110,58 @@ flowchart TB
     CLASS -->|复用通过| SEMVER
     SEMVER -->|版本合规| TAG
     TAG -->|tag 就绪| PUB
-</pre>
+  </pre>
+  <div class="dm-caption">图: 7 项自测 → npm publish — 8 阶段发布流水线</div>
 </div>
 
-<div class="cross-nav">
-  <a class="cross-link" href="计划清单.html">📋 清单</a>
-  <span class="cross-sep">·</span>
-  <span class="cross-link on">📐 架构</span>
-  <span class="cross-sep">·</span>
-  <a class="cross-link" href="知识图谱.html">🔗 图谱</a>
-  <span class="cross-sep">·</span>
-  <a class="cross-link" href="源码.html">📄 源码</a>
-  <span class="cross-sep">·</span>
-  <a class="cross-link" href="测试面板.html">🧪 测试</a>
-  <span class="cross-sep">·</span>
-  <a class="cross-link" href="演示.html">💡 演示</a>
-  <span class="cross-sep">·</span>
-  <a class="cross-link" href="审查.html">📝 审查</a>
+<div class="tip-box info">
+  <strong>架构洞察:</strong> 这是一个 <strong>门禁流水线 (Gated Pipeline)</strong> 模式 — 每个阶段都是后续阶段的前置条件，通过边标签 (全 PASS / 链接有效 / files[] 齐全 / 字段完整 / 复用通过 / 版本合规 / tag 就绪) 明确门禁标准。关键设计特征：<strong>NPM 扇出为两条并行验证路径</strong>（PKG 字段完整性 + CLASS 类名复用验证），两条路径在 SEMVER 处汇聚收敛，体现了 <strong>并行门禁 → 汇聚决策</strong> 的发布前多重校验策略。
+</div>
+
+<h2>概念视图</h2>
+<div class="concept-grid">
+  <div class="concept-card">
+    <div class="cc-icon">✅</div>
+    <div class="cc-name">7 项自测清单</div>
+    <div class="cc-domain">入口阶段</div>
+    <div class="cc-desc">发布流水线的第一道关卡：node --check 语法检查、3 demo 目视验证、console 无错误、硬刷新验证、mount 挂载验证、Tab 键盘导航、SR 屏幕阅读器测试。全部 PASS 才能进入下一阶段。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ 跨页面验证</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">📦</div>
+    <div class="cc-name">npm 集成 (扇出点)</div>
+    <div class="cc-domain">并行验证枢纽</div>
+    <div class="cc-desc">流水线的关键分叉点：从 NPM 节点分叉为两条并行验证路径 — left: package.json 字段完整性检查 (name/version/description/files/publishConfig)，right: 类名复用验证 (.checklist/.badge 跨模块一致性)。</div>
+    <div class="cc-rels">
+      <span class="cc-rel in">← 跨页面验证</span>
+      <span class="cc-rel out">→ PKG 字段 · CLASS 类名</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🔖</div>
+    <div class="cc-name">版本号与 Tag</div>
+    <div class="cc-domain">汇聚决策</div>
+    <div class="cc-desc">PKG 和 CLASS 两条并行路径在 SEMVER 处汇聚：验证版本号语义化合规 (v1.1.0 minor，无破坏性变更)，通过后打 git tag 附发布说明，作为 npm publish 的前置条件。</div>
+    <div class="cc-rels">
+      <span class="cc-rel in">← PKG · CLASS</span>
+      <span class="cc-rel out">→ git tag → npm publish</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🚀</div>
+    <div class="cc-name">npm publish 发布</div>
+    <div class="cc-domain">出口阶段</div>
+    <div class="cc-desc">流水线终点：灰度发布 → 稳定发布。所有前置门禁 (7 项自测 → 跨页面验证 → npm 集成 → 字段完整 → 版本合规 → tag 就绪) 均通过后执行 npm publish，将组件推送到 npm registry。</div>
+    <div class="cc-rels">
+      <span class="cc-rel in">← git tag (tag 就绪)</span>
+    </div>
+  </div>
+</div>
+
+<div class="tip-box success">
+  <strong>架构完整性:</strong> 场景 5 的发布流水线展现了 <strong>线性管道 + 并行验证 + 汇聚发布</strong> 的复合拓扑：前 3 阶段为严格线性 (SELF→CROSS→NPM)，中段 NPM→(PKG||CLASS)→SEMVER 为并行扇出/扇入，后 2 阶段 (SEMVER→TAG→PUB) 再次收敛为严格线性。每条边标注门禁条件 (如 "全 PASS" / "链接有效" / "files[] 齐全")，使流水线的每个决策点都可自动验证。8 阶段 8 门禁形成完整的 CI/CD 发布前置信链。
 </div>
 
 <h2>阶段说明</h2>
@@ -102,12 +188,12 @@ flowchart TB
   🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
 </div>
 
-<button class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="回到顶部">↑</button>
+<button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">↑</button>
 <script>
-(function(){
-  var btn = document.querySelector('.back-top');
-  if(btn){ window.addEventListener('scroll',function(){ btn.classList.toggle('visible', window.scrollY > 300); }); }
-})();
+const backTopBtn=document.getElementById('backTop');
+function toggleBackTop(){backTopBtn.classList.toggle('visible',window.scrollY>400);}
+window.addEventListener('scroll',toggleBackTop,{passive:true});
+backTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
 </script>
 
 <script>

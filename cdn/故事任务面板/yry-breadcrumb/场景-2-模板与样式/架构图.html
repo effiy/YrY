@@ -14,7 +14,8 @@
 <script src="../../../yry-breadcrumb/index.js"></script>
 </head>
 <body>
-<div class="container">
+<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
+<div class="container" id="main">
 
 <div id="breadcrumb-app"></div>
 
@@ -33,10 +34,61 @@
   <span class="active">架构图</span>
 </nav>
 
+<div class="cross-nav">
+  <a class="cross-link" href="计划清单.html">📋 清单</a>
+  <span class="cross-sep">·</span>
+  <span class="cross-link on">📐 架构</span>
+  <span class="cross-sep">·</span>
+  <a class="cross-link" href="知识图谱.html">🔗 图谱</a>
+  <span class="cross-sep">·</span>
+  <a class="cross-link" href="源码.html">📄 源码</a>
+  <span class="cross-sep">·</span>
+  <a class="cross-link" href="测试面板.html">🧪 测试</a>
+  <span class="cross-sep">·</span>
+  <a class="cross-link" href="演示.html">💡 演示</a>
+  <span class="cross-sep">·</span>
+  <a class="cross-link" href="审查.html">📝 审查</a>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-val info">13</div><div class="kpi-label">关键节点</div></div>
+  <div class="kpi-card"><div class="kpi-val accent">4</div><div class="kpi-label">层间数据流</div></div>
+  <div class="kpi-card"><div class="kpi-val pass">1</div><div class="kpi-label">最终输出</div></div>
+</div>
+
+<div class="stage-list">
+  <div class="stage-row done">
+    <div class="st-num">1</div>
+    <div class="st-info"><div class="st-name">模板定义</div><div class="st-detail">Vue 3 声明式模板：v-for / v-if / :class / aria-*</div></div>
+    <span class="st-status ok">&#10003;</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">2</div>
+    <div class="st-info"><div class="st-name">样式注入</div><div class="st-detail">CSS 设计令牌 / BEM 命名 / var() fallback / 双模式</div></div>
+    <span class="st-status ok">&#10003;</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">3</div>
+    <div class="st-info"><div class="st-name">渲染输出</div><div class="st-detail">Loader 挂载 #breadcrumb-app → 浏览器最终呈现</div></div>
+    <span class="st-status ok">&#10003;</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+</div>
+
+<div class="live-bar">
+  <span class="live-dot"></span> Mermaid 图表已渲染
+  <span class="live-resource"><span class="lr-name">flowchart</span><span class="lr-status">OK</span></span>
+  <span class="live-resource"><span class="lr-name">暗色主题</span><span class="lr-status">OK</span></span>
+</div>
+
 <h2>架构图</h2>
 <p>以下流程图展示模板 (Template) 经 Loader 加载后与样式 (Style) 合并渲染到页面的完整路径。</p>
 
-<pre class="mermaid">
+<div class="diagram-wrap glass-card">
+  <span class="dm-badge">MERMAID</span>
+  <pre class="mermaid">
 %%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#ffc107','lineColor': '#ffc107','secondaryColor': '#2b2d3b','tertiaryColor': '#21232f'}}}%%
 flowchart TB
     subgraph Template["Template 模板层"]
@@ -64,7 +116,58 @@ flowchart TB
     classDef tpl fill:#ffc10722,stroke:#ffc107,color:#ffc107
     classDef css fill:#22d3ee22,stroke:#22d3ee,color:#22d3ee
     classDef js fill:#10b98122,stroke:#10b981,color:#10b981
-</pre>
+  </pre>
+  <div class="dm-caption">图: Template + Style → Loader → Page → 浏览器输出 — 三层架构数据流</div>
+</div>
+
+<div class="tip-box info">
+  <strong>架构洞察:</strong> 这是一个 <strong>三层管道 (Three-Layer Pipeline)</strong> 模式 — Template (Vue 指令) 和 Style (CSS 令牌) 作为两个并行的上游输入层，在 Loader (index.js) 处汇合，经 Vue 3 createApp 挂载后注入到 Page DOM，最终输出至浏览器。关键设计特征：<strong>CSS 令牌驱动</strong>（所有颜色通过 --yry-color-* 控制，支持 prefers-color-scheme 自动切换）、<strong>BEM 低特异性</strong>（.bc-sep / .bc-current 易覆盖）、<strong>var() fallback</strong>（每个 CSS 变量均附带硬编码降级值）。
+</div>
+
+<h2>概念视图</h2>
+<div class="concept-grid">
+  <div class="concept-card">
+    <div class="cc-icon">🖼️</div>
+    <div class="cc-name">Template 模板层</div>
+    <div class="cc-domain">Vue 指令层</div>
+    <div class="cc-desc">Vue 3 声明式模板：v-for 迭代 items 数组生成面包屑项，v-if 控制分隔符插入时机与链接/当前项切换，:class 动态绑定当前页样式，aria-label/aria-current 保证 a11y。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ Loader</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🎨</div>
+    <div class="cc-name">Style 样式层</div>
+    <div class="cc-domain">CSS 令牌层</div>
+    <div class="cc-desc">所有颜色通过 --yry-color-* CSS 自定义属性驱动，支持 prefers-color-scheme: light 自动切换；每个 var() 附带硬编码降级值保证令牌不可用时仍可渲染；BEM 命名 .bc-sep/.bc-current 保持低特异性。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ Loader</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">⚙️</div>
+    <div class="cc-name">Loader 加载层</div>
+    <div class="cc-domain">组件注册层</div>
+    <div class="cc-desc">index.js 异步加载 Vue 3 并通过 createApp 挂载组件；当组件定义就绪时派发 yry-breadcrumb-ready 自定义事件，页面监听此事件后执行挂载，实现解耦加载。</div>
+    <div class="cc-rels">
+      <span class="cc-rel in">← Template · Style</span>
+      <span class="cc-rel out">→ #breadcrumb-app</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🌐</div>
+    <div class="cc-name">浏览器最终输出</div>
+    <div class="cc-domain">出口节点</div>
+    <div class="cc-desc">三层管道的最终输出：nav.breadcrumb 渲染为可交互的 DOM 元素，包含正确的 href 链接、aria 属性、CSS 过渡动画，在全平台浏览器中一致呈现。</div>
+    <div class="cc-rels">
+      <span class="cc-rel in">← 页面渲染</span>
+    </div>
+  </div>
+</div>
+
+<div class="tip-box success">
+  <strong>架构完整性:</strong> 场景 2 的三层管道展现了清晰的 <strong>关注点分离</strong>：Template 管结构 (HTML 语义)，Style 管表现 (CSS 变量体系)，Loader 管行为 (Vue 生命周期 + 事件派发)。三层之间通过标准化接口 (Vue props + CSS 变量 + 自定义事件) 耦合，各层可独立演化而不影响其他层。subgraph 隔离了 Template / Style / Loader 各自的 4+4+3 内部节点，对外仅暴露层间数据流边。
+</div>
 
 <h2>说明</h2>
 <p>上图展示场景 2 · <strong>模板与样式</strong> 的三层架构与数据流向。</p>
@@ -90,21 +193,27 @@ flowchart TB
 
 </div>
 
+<button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">↑</button>
+
 <script>
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 2 · 模板与样式' },
-        { label: '架构图', icon: '📐' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
+const backTopBtn=document.getElementById('backTop');
+function toggleBackTop(){backTopBtn.classList.toggle('visible',window.scrollY>400);}
+window.addEventListener('scroll',toggleBackTop,{passive:true});
+backTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+function mountBreadcrumb() {
+  if (!window.Vue || !window.YryBreadcrumb) return;
+  Vue.createApp(window.YryBreadcrumb, {
+    ariaLabel: '面包屑导航',
+    items: [
+      { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
+      { label: '任务故事', href: '../README.md' },
+      { label: '场景 2 · 模板与样式' },
+      { label: '架构图', icon: '📐' }
+    ]
+  }).mount('#breadcrumb-app');
+}
+if (window.YryBreadcrumb) mountBreadcrumb();
+else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
 </script>
 </body>
 </html>

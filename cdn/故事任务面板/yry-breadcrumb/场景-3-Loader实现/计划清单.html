@@ -13,25 +13,20 @@
 <script src="../../../shared.js"></script>
 <script src="../../../yry-breadcrumb/index.js"></script>
 <style>
-/* KPI 统计卡片 */
+/* KPI 统计卡片网格 (stat-card 样式由 yry-scene.css 提供) */
 .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0 24px; }
-.stat-card { padding: 16px 14px; background: var(--yry-color-surface-1); border: 1px solid var(--yry-color-border); border-radius: var(--yry-radius-lg); text-align: center; }
-.stat-card .stat-num { font-size: 1.6rem; font-weight: 700; color: var(--yry-color-text-1); line-height: 1.2; }
-.stat-card .stat-label { font-size: var(--yry-fs-sm); color: var(--yry-color-text-3); margin-top: 4px; }
-.stat-card.stat-done .stat-num { color: #10b981; }
-.stat-card.stat-progress .stat-num { color: #f59e0b; }
-.stat-card.stat-pending .stat-num { color: #9ca3af; }
-.stat-card.stat-percent .stat-num { color: #22d3ee; }
 
-/* 交付清单链接 */
-.deliver-list { list-style: none; padding-left: 0; }
-.deliver-list li { padding: 6px 0; border-bottom: 1px solid var(--yry-color-border); }
-.deliver-list li:last-child { border-bottom: none; }
-.deliver-list a { color: var(--yry-color-cyan); text-decoration: none; font-weight: 500; }
-.deliver-list a:hover { text-decoration: underline; }
+/* 交付表格增强 */
+.deliver-table-wrap {
+  background: var(--yry-color-surface-1); border: 1px solid var(--yry-color-border);
+  border-radius: var(--yry-radius-lg); padding: 4px 0; margin: 12px 0;
+}
+.deliver-table-wrap table { margin: 0; }
+.deliver-table-wrap th { border-top: none; }
 
 @media (max-width: 640px) {
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
@@ -70,22 +65,42 @@
 </div>
 
 <h2>KPI 概览</h2>
-<div class="kpi-row">
-  <div class="kpi-card">
-    <div class="kpi-value">5</div>
-    <div class="kpi-label">任务完成</div>
+<div class="stat-grid">
+  <div class="stat-card"><div class="val pass">5</div><div class="lbl">任务完成</div></div>
+  <div class="stat-card"><div class="val warn">0</div><div class="lbl">进行中</div></div>
+  <div class="stat-card"><div class="val info">0</div><div class="lbl">待开始</div></div>
+  <div class="stat-card"><div class="val accent">100%</div><div class="lbl">完成率</div></div>
+</div>
+
+<div class="tip-box success"><strong>场景完成</strong> 5/5 Loader 实现任务全部 PASS，ready 事件 / 5s 超时 / fetch 降级全部验证通过。</div>
+
+<h2>KPI 指标</h2>
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-val pass">5</div><div class="kpi-label">任务条目</div></div>
+  <div class="kpi-card"><div class="kpi-val info">8</div><div class="kpi-label">交付物</div></div>
+  <div class="kpi-card"><div class="kpi-val pass">8</div><div class="kpi-label">验收项</div></div>
+  <div class="kpi-card"><div class="kpi-val accent">100%</div><div class="kpi-label">审查通过率</div></div>
+</div>
+
+<h2>任务管线</h2>
+<div class="stage-list">
+  <div class="stage-row done">
+    <div class="st-num">1</div>
+    <div class="st-info"><div class="st-name">Loader 框架</div><div class="st-detail">IIFE 包装 + Vue 环境检测 + document.currentScript 路径解析 + 引用顺序设计</div></div>
+    <span class="st-status ok">✓ 完成</span>
+    <div class="st-bar" style="width:100%"></div>
   </div>
-  <div class="kpi-card">
-    <div class="kpi-value">0</div>
-    <div class="kpi-label">进行中</div>
+  <div class="stage-row done">
+    <div class="st-num">2</div>
+    <div class="st-info"><div class="st-name">异步加载实现</div><div class="st-detail">fetch + DOMParser 模板提取 + CustomEvent ready 事件派发</div></div>
+    <span class="st-status ok">✓ 完成</span>
+    <div class="st-bar" style="width:100%"></div>
   </div>
-  <div class="kpi-card">
-    <div class="kpi-value">0</div>
-    <div class="kpi-label">待开始</div>
-  </div>
-  <div class="kpi-card">
-    <div class="kpi-value">100%</div>
-    <div class="kpi-label">完成率</div>
+  <div class="stage-row done">
+    <div class="st-num">3</div>
+    <div class="st-info"><div class="st-name">容错与验证</div><div class="st-detail">5s 超时保护 + fetch 降级 + 跨页面引用顺序验证通过</div></div>
+    <span class="st-status ok">✓ 完成</span>
+    <div class="st-bar" style="width:100%"></div>
   </div>
 </div>
 
@@ -131,6 +146,66 @@
   </tbody>
 </table>
 
+<h2>验收清单</h2>
+<div class="check-list">
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T3.1: IIFE 加载器框架</div>
+      <div class="vi-desc">IIFE 包装，'use strict' 严格模式，Vue 环境检测，document.currentScript 路径解析。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T3.2: fetch + DOMParser 模板提取</div>
+      <div class="vi-desc">fetch index.html → DOMParser.parseFromString → getElementById 提取 template 内容。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T3.3: CustomEvent ready 事件</div>
+      <div class="vi-desc">模板解析成功后 dispatchEvent('yry-breadcrumb-ready')，页面使用 {once:true} 安全监听。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T3.4: 5s 超时 + 错误降级</div>
+      <div class="vi-desc">setTimeout 5s 超时保护，fetch catch 错误降级，console.warn/error 诊断输出。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">T3.5: 跨页面引用顺序验证</div>
+      <div class="vi-desc">4 文件引用顺序 (CSS→CSS→CSS→JS) 正确，各页面 YryBreadcrumb 正常渲染。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">V1: Vue 缺失静默降级</div>
+      <div class="vi-desc">Vue 3 缺失时 console.warn 并静默跳过，不抛异常不阻塞页面。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+  <div class="verify-item checked">
+    <div class="vi-box"><span class="vi-check">✓</span></div>
+    <div class="vi-body">
+      <div class="vi-name">V2: 并发 mount 安全</div>
+      <div class="vi-desc">{once:true} 机制防止重复 mount，ready 事件正确派发，交付物齐全。</div>
+    </div>
+    <span class="vi-time">✅ PASS</span>
+  </div>
+</div>
+
 <h2>验收标准</h2>
 <ul class="checklist">
   <li class="done">所有 5 个任务状态 PASS</li>
@@ -143,8 +218,21 @@
   <li class="done">4 文件引用顺序经所有页面验证一致</li>
 </ul>
 
+<h2>交付物</h2>
+<div class="deliver-grid">
+  <a class="deliver-item" href="./index.md"><span class="di-icon">📄</span><div><div class="di-name">index.md</div><div class="di-desc">场景概述</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./审查.html"><span class="di-icon">📝</span><div><div class="di-name">审查</div><div class="di-desc">技术评审清单</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./架构图.html"><span class="di-icon">📐</span><div><div class="di-name">架构图</div><div class="di-desc">Loader 时序图</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./测试面板.html"><span class="di-icon">🧪</span><div><div class="di-name">测试面板</div><div class="di-desc">错误用例测试</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./源码.html"><span class="di-icon">📄</span><div><div class="di-name">源码</div><div class="di-desc">Loader 关键源码</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./演示.html"><span class="di-icon">💡</span><div><div class="di-name">演示</div><div class="di-desc">加载流程演示</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./知识图谱.html"><span class="di-icon">🔗</span><div><div class="di-name">知识图谱</div><div class="di-desc">概念关联映射</div></div><span class="di-status done">✓</span></a>
+  <a class="deliver-item" href="./计划清单.html"><span class="di-icon">📋</span><div><div class="di-name">计划清单</div><div class="di-desc">计划追踪</div></div><span class="di-status done">✓</span></a>
+</div>
+
 <h2>交付清单</h2>
 <p>8 个标准文件:</p>
+<div class="deliver-table-wrap">
 <table>
   <thead><tr><th>文件</th><th>类型</th><th>链接</th></tr></thead>
   <tbody>
@@ -158,6 +246,7 @@
     <tr><td>计划清单.html</td><td>计划追踪</td><td><a href="./计划清单.html">计划清单.html</a></td></tr>
   </tbody>
 </table>
+</div>
 
 <div class="footer">
   位置: <code>cdn/yry-breadcrumb/任务故事/场景-3-Loader实现/计划清单.html</code><br>

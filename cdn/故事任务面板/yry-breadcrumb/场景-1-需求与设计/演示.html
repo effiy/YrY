@@ -12,16 +12,6 @@
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <script src="../../../shared.js"></script>
 <script src="../../../yry-breadcrumb/index.js"></script>
-<style>
-/* demo 面包屑静态样式 */
-.demo-block { padding: 14px; background: var(--yry-color-surface-1); border: 1px solid var(--yry-color-border); border-radius: 8px; margin: 16px 0; }
-.demo-block h3 { margin: 0 0 10px; font-size: .85rem; color: var(--yry-color-text-2); font-weight: 600; }
-.demo-bc { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 6px 0; font-size: .82rem; color: var(--yry-color-text-2, #d4d4d4); }
-.demo-bc a { color: var(--yry-color-text-2, #d4d4d4); text-decoration: none; border-radius: 4px; padding: 2px 6px; transition: color .15s, background .15s; }
-.demo-bc a:hover { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.08); }
-.demo-bc .bc-sep { color: var(--yry-color-text-3, #888); user-select: none; }
-.demo-bc .bc-current { color: var(--yry-color-accent, #ffc107); font-weight: 600; }
-</style>
 </head>
 <body>
 <a href="#main" class="skip-link">⏩ 跳到主要内容</a>
@@ -32,6 +22,9 @@
   <h1 class="scene-title">💡 需求与设计 · 演示</h1>
   <div class="scene-en">YryBreadcrumb 任务故事 · 场景 1 · Requirements & Design · 演示</div>
   <p class="scene-desc">梳理面包屑组件的需求来源，确定 3 文件拆分 / 异步加载 / a11y 等关键设计决策，产出 Props API 草案。</p>
+</div>
+<div class="tip-box info">
+  <strong>💡 需求驱动的设计决策:</strong> 梳理面包屑组件的需求来源，确定 3 文件拆分 / 异步加载 / a11y 等关键设计决策，产出 Props API 草案。下方 3 个静态演示展示面包屑组件的不同渲染模式。
 </div>
 <div class="scene-nav">
   <a href="../README.md">📋 任务故事</a>
@@ -57,12 +50,18 @@
   <a class="cross-link" href="审查.html">📝 审查</a>
 </div>
 
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-val info">3</div><div class="kpi-label">演示模式</div></div>
+  <div class="kpi-card"><div class="kpi-val accent">1</div><div class="kpi-label">Vue 组件</div></div>
+  <div class="kpi-card"><div class="kpi-val pass">全部</div><div class="kpi-label">浏览器兼容</div></div>
+</div>
+
 <h2>演示</h2>
 <p>下方 3 个 demo 展示静态渲染的面包屑样式。顶部的真实面包屑导航由 YryBreadcrumb Vue 组件动态渲染。</p>
 
 <div class="demo-block">
   <h3>Demo 1 · 含 href + icon (可点击链接带 emoji 图标)</h3>
-  <nav class="demo-bc" aria-label="演示面包屑-含链接">
+  <nav class="static-bc" aria-label="演示面包屑-含链接">
     <a href="#">📄 文档中心</a>
     <span class="bc-sep" aria-hidden="true">/</span>
     <a href="#">📦 CDN</a>
@@ -73,7 +72,7 @@
 
 <div class="demo-block">
   <h3>Demo 2 · 纯文本路径 (无 href，仅展示层级)</h3>
-  <nav class="demo-bc" aria-label="演示面包屑-纯文本">
+  <nav class="static-bc" aria-label="演示面包屑-纯文本">
     <span>YrY</span>
     <span class="bc-sep" aria-hidden="true">/</span>
     <span>任务故事</span>
@@ -84,7 +83,7 @@
 
 <div class="demo-block">
   <h3>Demo 3 · 长路径 (5+ 层级嵌套)</h3>
-  <nav class="demo-bc" aria-label="演示面包屑-长路径">
+  <nav class="static-bc" aria-label="演示面包屑-长路径">
     <a href="#">🏠 首页</a>
     <span class="bc-sep" aria-hidden="true">/</span>
     <a href="#">📋 文档中心</a>
@@ -97,6 +96,120 @@
     <span class="bc-sep" aria-hidden="true">/</span>
     <span class="bc-current" aria-current="page">✨ 当前场景</span>
   </nav>
+</div>
+
+<h2>关键步骤</h2>
+<div class="walkthrough">
+  <div class="w-step">
+    <div class="ws-body">
+      <div class="ws-title">梳理需求来源 <span class="ws-time">~15 min</span></div>
+      <div class="ws-desc">从项目结构和使用场景出发，分析面包屑组件的实际需求：3 种渲染模式（含链接、纯文本、长路径）、异步加载、键盘可达性。</div>
+      <div class="ws-result">✅ 产出: 需求来源文档，明确 3 种 items 配置模式</div>
+    </div>
+  </div>
+  <div class="w-step">
+    <div class="ws-body">
+      <div class="ws-title">确定 3 文件拆分方案 <span class="ws-time">~10 min</span></div>
+      <div class="ws-desc">将组件拆分为 index.html（Vue 模板）、index.css（样式 + 设计令牌）、index.js（Loader 自举）三个独立文件，支持 CDN 直接引用。</div>
+      <div class="ws-result">✅ 产出: 3 文件架构图，明确各文件职责</div>
+    </div>
+  </div>
+  <div class="w-step">
+    <div class="ws-body">
+      <div class="ws-title">设计 Props API <span class="ws-time">~20 min</span></div>
+      <div class="ws-desc">定义 items 数组结构（label 必填、href/icon 可选）、ariaLabel 可访问性属性，确保 API 简洁且覆盖所有使用场景。</div>
+      <div class="ws-result">✅ 产出: Props API 草案，含类型定义与示例</div>
+    </div>
+  </div>
+  <div class="w-step">
+    <div class="ws-body">
+      <div class="ws-title">设计评审通过 <span class="ws-time">~10 min</span></div>
+      <div class="ws-desc">与团队评审 Props API 设计，确认 3 文件拆分方案可行，异步加载策略合理，a11y 覆盖完整。</div>
+      <div class="ws-result">✅ 产出: 评审通过的 API 草案，进入场景 2 模板与样式</div>
+    </div>
+  </div>
+</div>
+
+<div class="next-action">
+  <span class="na-ico">🚀</span>
+  <div class="na-body">
+    <div class="na-title">下一步: 场景 2 · 模板与样式</div>
+    <div class="na-desc">编写 Vue 3 模板和 CSS 设计令牌，定义 5 种视觉模式（深色/浅色/高对比度/自定义主题/组件级覆盖）。</div>
+  </div>
+</div>
+
+<h2>关键命令</h2>
+<div class="cmd-grid">
+  <div class="cmd-card">
+    <div class="cmd-stage">验证</div>
+    <div class="cmd-name">grep -r "breadcrumb" docs/</div>
+    <div class="cmd-desc">搜索所有文档中对 breadcrumb 组件的引用，确认需求来源覆盖完整。</div>
+    <span class="cmd-tag">CLI</span>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-stage">探索</div>
+    <div class="cmd-name">cat cdn/yry-breadcrumb/index.html</div>
+    <div class="cmd-desc">查看组件 HTML 模板的完整内容，确认模板结构包含 script type="text/x-template"。</div>
+    <span class="cmd-tag">CLI</span>
+  </div>
+  <div class="cmd-card">
+    <div class="cmd-stage">统计</div>
+    <div class="cmd-name">wc -l cdn/yry-breadcrumb/index.*</div>
+    <div class="cmd-desc">统计 3 个核心文件（index.html / index.css / index.js）的行数，评估复杂度。</div>
+    <span class="cmd-tag">CLI</span>
+  </div>
+</div>
+
+<h2>自测</h2>
+<div class="quiz-list">
+  <div class="quiz-card" data-quiz="1">
+    <div class="quiz-q"><span class="q-num">1</span> YryBreadcrumb 采用 3 文件拆分方案，这 3 个文件分别是？</div>
+    <div class="quiz-opts">
+      <div class="quiz-opt correct" data-answer="correct"><span class="opt-letter">A</span><span class="opt-text">index.html + index.css + index.js</span></div>
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">B</span><span class="opt-text">template.html + style.css + main.js</span></div>
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">C</span><span class="opt-text">app.vue + app.css + app.js</span></div>
+    </div>
+    <div class="quiz-feedback"><strong>✓ 正确!</strong> 组件拆分为 index.html（Vue 模板）、index.css（样式+设计令牌）、index.js（Loader IIFE 自举）三个独立文件，支持 CDN 直接引用。</div>
+  </div>
+  <div class="quiz-card" data-quiz="2">
+    <div class="quiz-q"><span class="q-num">2</span> Props API 中 items 数组的每个元素包含哪些字段？</div>
+    <div class="quiz-opts">
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">A</span><span class="opt-text">name / url / emoji</span></div>
+      <div class="quiz-opt correct" data-answer="correct"><span class="opt-letter">B</span><span class="opt-text">label(必填) + href(可选) + icon(可选)</span></div>
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">C</span><span class="opt-text">title / link / image</span></div>
+    </div>
+    <div class="quiz-feedback"><strong>✓ 正确!</strong> label 为必填字段显示文本，href 可选提供链接跳转，icon 可选提供 emoji 图标装饰。</div>
+  </div>
+  <div class="quiz-card" data-quiz="3">
+    <div class="quiz-q"><span class="q-num">3</span> 面包屑组件的 a11y 无障碍标记使用了哪些 ARIA 属性？</div>
+    <div class="quiz-opts">
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">A</span><span class="opt-text">role="link" + aria-hidden="true"</span></div>
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">B</span><span class="opt-text">tabindex="0" + role="navigation"</span></div>
+      <div class="quiz-opt correct" data-answer="correct"><span class="opt-letter">C</span><span class="opt-text">aria-label + aria-current="page" + aria-hidden</span></div>
+    </div>
+    <div class="quiz-feedback"><strong>✓ 正确!</strong> nav 元素使用 aria-label 描述导航用途，当前页使用 aria-current="page" 标记，分隔符使用 aria-hidden="true" 对屏幕阅读器隐藏。</div>
+  </div>
+</div>
+<div class="quiz-score">
+  <div class="qs-big">0/3</div>
+  <div class="qs-sub">完成自测</div>
+</div>
+
+<h2>场景文件</h2>
+<div class="file-grid">
+  <span class="file-item">📋 计划清单.html</span>
+  <span class="file-item">📐 架构图.html</span>
+  <span class="file-item">🔗 知识图谱.html</span>
+  <span class="file-item">📄 源码.html</span>
+  <span class="file-item">🧪 测试面板.html</span>
+  <span class="file-item">💡 演示.html</span>
+  <span class="file-item">📝 审查.html</span>
+</div>
+
+<div class="links-row">
+  <a href="../README.md">📋 场景 README</a>
+  <a href="./index.md">📄 场景正文</a>
+  <a href="../../../yry-breadcrumb/index.html">🍞 组件 Demo</a>
 </div>
 
 <div class="footer">
@@ -124,6 +237,29 @@ function mountBreadcrumb(){
 }
 if(window.YryBreadcrumb)mountBreadcrumb();
 else document.addEventListener('yry-breadcrumb-ready',mountBreadcrumb,{once:true});
+</script>
+<script>
+document.querySelectorAll('.quiz-opt').forEach(function(opt) {
+  opt.addEventListener('click', function() {
+    var card = this.closest('.quiz-card');
+    if (card.classList.contains('answered')) return;
+    card.classList.add('answered');
+    var isCorrect = this.dataset.answer === 'correct';
+    this.classList.add(isCorrect ? 'correct' : 'wrong');
+    card.querySelector('.quiz-feedback').classList.add('show');
+    card.querySelectorAll('.quiz-opt').forEach(function(o) { o.classList.add('disabled'); });
+    if (isCorrect) {
+      card.dataset.score = '1';
+    }
+    updateQuizScore();
+  });
+});
+function updateQuizScore() {
+  var total = document.querySelectorAll('.quiz-card').length;
+  var score = document.querySelectorAll('.quiz-card[data-score="1"]').length;
+  var el = document.querySelector('.quiz-score');
+  if (el) { el.classList.add('show'); el.querySelector('.qs-big').textContent = score + '/' + total; }
+}
 </script>
 </body>
 </html>

@@ -47,8 +47,43 @@
   <a class="cross-link" href="审查.html">📝 审查</a>
 </div>
 
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-val info">6</div><div class="kpi-label">交互参与者</div></div>
+  <div class="kpi-card"><div class="kpi-val accent">11</div><div class="kpi-label">消息交换</div></div>
+  <div class="kpi-card"><div class="kpi-val pass">1</div><div class="kpi-label">挂载出口</div></div>
+</div>
+
+<div class="stage-list">
+  <div class="stage-row done">
+    <div class="st-num">1</div>
+    <div class="st-info"><div class="st-name">初始化</div><div class="st-detail">IIFE 自执行 / currentScript 自定位 / 5s 超时保护</div></div>
+    <span class="st-status ok">&#10003;</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">2</div>
+    <div class="st-info"><div class="st-name">加载</div><div class="st-detail">fetch(index.html) → DOMParser → getElementById 提取模板</div></div>
+    <span class="st-status ok">&#10003;</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">3</div>
+    <div class="st-info"><div class="st-name">就绪</div><div class="st-detail">注册 window.YryBreadcrumb → dispatchEvent ready → mount</div></div>
+    <span class="st-status ok">&#10003;</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+</div>
+
+<div class="live-bar">
+  <span class="live-dot"></span> Mermaid 图表已渲染
+  <span class="live-resource"><span class="lr-name">sequence</span><span class="lr-status">OK</span></span>
+  <span class="live-resource"><span class="lr-name">暗色主题</span><span class="lr-status">OK</span></span>
+</div>
+
 <h2>Loader 时序图</h2>
-<pre class="mermaid">
+<div class="diagram-wrap glass-card">
+  <span class="dm-badge">SEQUENCE</span>
+  <pre class="mermaid">
 %%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#a78bfa','lineColor': '#a78bfa','secondaryColor': '#2b2d3b'}}}%%
 sequenceDiagram
     participant Browser as 浏览器
@@ -69,7 +104,59 @@ sequenceDiagram
     IndexJS->>IndexJS: window.YryBreadcrumb = {...}
     IndexJS->>Vue: dispatchEvent('yry-breadcrumb-ready')
     Vue->>Vue: mount(breadcrumb-app)
-</pre>
+  </pre>
+  <div class="dm-caption">图: Loader 完整时序 — 从 index.js 加载到 Vue 挂载的 11 步消息交换</div>
+</div>
+
+<div class="tip-box info">
+  <strong>架构洞察:</strong> 这是一个 <strong>异步编排 (Async Orchestrator)</strong> 模式 — index.js 作为中央编排器，依次执行：自定位 (currentScript) → 超时保护 (setTimeout 5s) → 网络请求 (fetch) → HTML 解析 (DOMParser) → 组件注册 (window.YryBreadcrumb) → 事件派发 (dispatchEvent) → Vue 挂载。关键设计特征：<strong>5s 超时熔断</strong>防止无限等待、<strong>IIFE 自执行</strong>保证加载即注册、<strong>自定义事件解耦</strong>（页面与 Loader 通过 yry-breadcrumb-ready 事件通信）、<strong>fetch same-origin</strong> 安全策略。
+</div>
+
+<h2>概念视图</h2>
+<div class="concept-grid">
+  <div class="concept-card">
+    <div class="cc-icon">🌐</div>
+    <div class="cc-name">浏览器</div>
+    <div class="cc-domain">入口参与者</div>
+    <div class="cc-desc">通过 &lt;script src="index.js"&gt; 触发整个加载链。IIFE 格式保证脚本加载后立即自执行，无需外部调用。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ index.js</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">⚙️</div>
+    <div class="cc-name">index.js 编排器</div>
+    <div class="cc-domain">中央编排者</div>
+    <div class="cc-desc">Loader 核心：document.currentScript 自定位 → setTimeout 5s 超时保护 → fetch 模板 → DOMParser 解析 → getElementById 提取模板 → window.YryBreadcrumb 注册 → dispatchEvent 派发 ready。</div>
+    <div class="cc-rels">
+      <span class="cc-rel in">← 浏览器</span>
+      <span class="cc-rel out">→ Network · DOMParser · Vue</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">📡</div>
+    <div class="cc-name">Network + DOMParser</div>
+    <div class="cc-domain">数据获取与解析</div>
+    <div class="cc-desc">fetch(index.html) 以 same-origin 凭证获取模板 HTML 文本；DOMParser.parseFromString 将文本转为 DOM Document；getElementById('yry-breadcrumb-tpl') 提取模板节点。每步均有错误捕获。</div>
+    <div class="cc-rels">
+      <span class="cc-rel in">← index.js</span>
+      <span class="cc-rel out">→ 组件注册</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🖥️</div>
+    <div class="cc-name">Vue 挂载出口</div>
+    <div class="cc-domain">最终参与者</div>
+    <div class="cc-desc">接收 yry-breadcrumb-ready 事件后，Vue.createApp(YryBreadcrumb, props).mount('#breadcrumb-app') 将组件渲染到 DOM。props 包含 ariaLabel 和 items[{label,href,icon}]。</div>
+    <div class="cc-rels">
+      <span class="cc-rel in">← index.js (ready event)</span>
+    </div>
+  </div>
+</div>
+
+<div class="tip-box success">
+  <strong>架构完整性:</strong> 场景 3 的 Loader 时序展现了 <strong>单一编排者</strong> 模式：index.js 是唯一的主动参与者，其他参与者 (Network/DOMParser/Vue) 均为被动响应。每个步骤都有明确的错误处理路径（超时 → console.error / fetch 失败 → catch 不注册 / 解析失败 → 异常捕获 / id 缺失 → null 检查）。时序图中的双向消息 (实线箭头 = 同步调用，虚线箭头 = 异步返回) 清晰区分了阻塞与非阻塞操作。
+</div>
 
 <h2>关键流程说明</h2>
 <table>

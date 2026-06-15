@@ -142,7 +142,7 @@
   /* ── Data ───────────────────────────────── */
   async function fetchCron() {
     cronLoaded = true;
-    cronPanelBody.innerHTML = '<div class="panel-loading">加载中...</div>';
+    cronPanelBody.innerHTML = '<div class="panel-loading yry-panel-loading">加载中...</div>';
     try {
       var resp = await fetch(H.PATHS.scheduledTasks);
       if (!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -162,7 +162,7 @@
     if (cronTaskCount) cronTaskCount.textContent = cronData.length + ' 个任务';
     if (cronBadge) cronBadge.textContent = cronData.length > 0 ? String(cronData.length) : '';
     if (cronData.length === 0) {
-      cronPanelBody.innerHTML = '<div class="panel-empty">暂无调度任务<br><span class="hint">使用 Claude Code 的 <code>/loop</code> 命令创建定时任务</span></div>';
+      cronPanelBody.innerHTML = '<div class="panel-empty yry-panel-empty">暂无调度任务<br><span class="hint">使用 Claude Code 的 <code>/loop</code> 命令创建定时任务</span></div>';
       return;
     }
     var html = '<ul class="cron-list">';

@@ -47,8 +47,43 @@
   <a class="cross-link" href="审查.html">📝 审查</a>
 </div>
 
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-val info">6</div><div class="kpi-label">关键节点</div></div>
+  <div class="kpi-card"><div class="kpi-val accent">7</div><div class="kpi-label">决策路径</div></div>
+  <div class="kpi-card"><div class="kpi-val pass">1</div><div class="kpi-label">出口节点</div></div>
+</div>
+
+<div class="stage-list">
+  <div class="stage-row done">
+    <div class="st-num">1</div>
+    <div class="st-info"><div class="st-name">需求收集</div><div class="st-detail">多场景复用 / 异步加载 / a11y / 轻量无依赖</div></div>
+    <span class="st-status ok">&#10003;</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">2</div>
+    <div class="st-info"><div class="st-name">设计决策</div><div class="st-detail">3 文件拆分 / fetch+DOMParser / aria-current / Props API</div></div>
+    <span class="st-status ok">&#10003;</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+  <div class="stage-row done">
+    <div class="st-num">3</div>
+    <div class="st-info"><div class="st-name">接口定义</div><div class="st-detail">Props API 草案 — items[] / ariaLabel / separator</div></div>
+    <span class="st-status ok">&#10003;</span>
+    <div class="st-bar" style="width:100%"></div>
+  </div>
+</div>
+
+<div class="live-bar">
+  <span class="live-dot"></span> Mermaid 图表已渲染
+  <span class="live-resource"><span class="lr-name">flowchart</span><span class="lr-status">OK</span></span>
+  <span class="live-resource"><span class="lr-name">暗色主题</span><span class="lr-status">OK</span></span>
+</div>
+
 <h2>架构图</h2>
-<pre class="mermaid">
+<div class="diagram-wrap glass-card">
+  <span class="dm-badge">MERMAID</span>
+  <pre class="mermaid">
 %%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#1e1f2b','primaryTextColor': '#a9b1d6','primaryBorderColor': '#22d3ee','lineColor': '#22d3ee','secondaryColor': '#2b2d3b'}}}%%
 flowchart LR
     REQ[📋 需求来源] --> DEC[🎯 设计决策]
@@ -58,7 +93,59 @@ flowchart LR
     SPLIT --> API[Props API 草案]
     ASYNC --> API
     A11Y --> API
-</pre>
+  </pre>
+  <div class="dm-caption">图: 需求→设计→Props API 草案 — 关键架构流程</div>
+</div>
+
+<div class="tip-box info">
+  <strong>架构洞察:</strong> 这是一个 <strong>fan-out / fan-in</strong> 模式 — 设计决策 (DEC) 作为扇出点分叉为三条并行设计路径，三条路径各自独立推进互不阻塞，最终在 Props API 草案 (API) 处汇聚收敛。这种模式体现了<strong>关注点分离</strong>原则：物理结构 (3 文件拆分)、加载策略 (异步加载)、可访问性 (a11y) 在设计阶段即可并行决策，无需相互等待。
+</div>
+
+<h2>概念视图</h2>
+<div class="concept-grid">
+  <div class="concept-card">
+    <div class="cc-icon">📋</div>
+    <div class="cc-name">需求来源</div>
+    <div class="cc-domain">入口节点</div>
+    <div class="cc-desc">收集 YryBreadcrumb 的初始需求：多场景复用、异步加载、a11y 合规、轻量无依赖。作为架构设计的驱动力。</div>
+    <div class="cc-rels">
+      <span class="cc-rel out">→ 设计决策</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🎯</div>
+    <div class="cc-name">设计决策</div>
+    <div class="cc-domain">扇出枢纽</div>
+    <div class="cc-desc">架构的中央决策点，将需求拆分为三条并行设计路径：文件拆分策略、异步加载机制、可访问性方案。</div>
+    <div class="cc-rels">
+      <span class="cc-rel in">← 需求来源</span>
+      <span class="cc-rel out">→ 3 文件拆分 · 异步加载 · a11y</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">🔀</div>
+    <div class="cc-name">三路并行分支</div>
+    <div class="cc-domain">并行执行</div>
+    <div class="cc-desc">三条独立设计路径：物理文件组织 (HTML/JS/CSS)、fetch + DOMParser 异步模板加载、aria-current + aria-hidden a11y 标注。互不阻塞，并行推进。</div>
+    <div class="cc-rels">
+      <span class="cc-rel in">← 设计决策</span>
+      <span class="cc-rel out">→ Props API</span>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-icon">📝</div>
+    <div class="cc-name">Props API 草案</div>
+    <div class="cc-domain">出口节点</div>
+    <div class="cc-desc">三条并行路径的汇聚点，定义组件对外接口：ariaLabel、items[{label,href,icon}]。后续场景的模板、Loader、集成均以此 API 为契约。</div>
+    <div class="cc-rels">
+      <span class="cc-rel in">← 3 文件拆分 · 异步加载 · a11y</span>
+    </div>
+  </div>
+</div>
+
+<div class="tip-box success">
+  <strong>架构完整性:</strong> 场景 1 的架构流体现了清晰的 <strong>发散→收敛</strong> 拓扑：单一入口 → 扇形分叉 → 并行独立 → 统一出口。每个节点职责明确 (SRP)，节点间通过单向边耦合 (DIP 方向由抽象→具体)，无循环依赖。Props API 作为唯一出口契约，为下游 4 个场景提供了稳定的接口基线。
+</div>
 
 <h2>说明</h2>
 <p>上图展示场景 1 · <strong>需求与设计</strong> 的关键决策流：从需求来源出发，经过设计决策阶段，分叉为三条并行路径（3 文件拆分、异步加载、a11y），最终汇聚到 Props API 草案。</p>
