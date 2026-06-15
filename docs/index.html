@@ -52,7 +52,7 @@
 
     <!-- ── Panel hub ──────────────────────────── -->
     <div class="panel-hub" id="panelHub">
-      <span class="panel-hub-label" id="liveHealthLabel" style="cursor:pointer" onclick="PanelHub.open('selfimprove')" title="点击打开自改进面板查看详情">🩺 —</span>
+      <span class="panel-hub-label" id="liveHealthLabel" onclick="PanelHub.open('selfimprove')" title="点击打开自改进面板查看详情">🩺 —</span>
       <button class="panel-hub-btn" onclick="window.openPanel('cron')" title="调度任务 — 展示 .claude/scheduled_tasks.json 中所有定时任务。包含 cron 表达式、人类可读描述、活跃/空闲状态、下次触发预估。">
         <span class="panel-hub-icon" style="color:var(--yry-cyan)">⏰</span>
         <span class="panel-hub-name">调度</span>
@@ -1394,7 +1394,7 @@
       <button class="panel-refresh" id="cronRefresh" title="刷新任务列表">&#x21bb;</button>
     </div>
     <div class="panel-body" id="cronPanelBody">
-      <div style="padding:10px 20px;font-size:.64rem;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,.04);line-height:1.6">
+      <div class="panel-context">
         <strong>数据源</strong>：<code>.claude/scheduled_tasks.json</code><br>
         <strong>状态</strong>：🟢 活跃 — 定时触发中 ｜ ⚫ 空闲 — 超过 24h 未触发 ｜ 💾 持久 — 写入磁盘，会话重启不丢失<br>
         <strong>管理</strong>：使用 <code>/loop</code> 命令创建/删除定时任务
@@ -1403,8 +1403,8 @@
     </div>
     <div class="panel-footer">
       <span>数据来源: .claude/scheduled_tasks.json</span>
-      <span style="margin: 0 8px;opacity:.3">|</span>
-      <a href="#" onclick="event.preventDefault();window.openPanel('faq')" style="color:var(--yry-cyan);text-decoration:none;font-size:.72rem">❓ 什么是调度任务？</a>
+      <span class="panel-footer-sep">|</span>
+      <a href="#" onclick="event.preventDefault();window.openPanel('faq')" class="panel-footer-link">❓ 什么是调度任务？</a>
     </div>
   </div>
 
@@ -1418,9 +1418,9 @@
     <div class="panel-footer">
       <span style="font-size:.7rem;color:var(--text-muted)">快捷打开：</span>
       <a href="#" onclick="event.preventDefault();window.openPanel('notify')" style="color:#ef4444;text-decoration:none;font-size:.7rem">🔔 通知</a>
-      <span style="opacity:.3">·</span>
-      <a href="#" onclick="event.preventDefault();window.openPanel('cron')" style="color:var(--yry-cyan);text-decoration:none;font-size:.7rem">⏰ 调度</a>
-      <span style="opacity:.3">·</span>
+      <span class="panel-footer-sep">·</span>
+      <a href="#" onclick="event.preventDefault();window.openPanel('cron')" class="panel-footer-link">⏰ 调度</a>
+      <span class="panel-footer-sep">·</span>
       <a href="#" onclick="event.preventDefault();window.openPanel('selfimprove')" style="color:#a78bfa;text-decoration:none;font-size:.7rem">🧬 自改进</a>
     </div>
   </div>
@@ -1448,7 +1448,7 @@
         <span class="np-filter-chip" data-filter="trend">📡 趋势<span class="np-filter-badge" id="npBadgeTrend">0</span></span>
       </div>
       <div class="panel-body" id="notifyPanelBody">
-        <div class="np-context" style="padding:10px 20px;font-size:.64rem;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,.04);line-height:1.6">
+        <div class="np-context panel-context">
           <strong>数据源</strong>：动态读取 <code>docs/健康报告/reports.json</code> + <code>docs/自循环报告/reports.json</code> + <code>docs/趋势报告/reports.json</code> 三个清单文件<br>
           <strong>健康报告</strong>：按日期去重（同一天仅保留最新一份），用于展示最新评分与趋势变化<br>
           <strong>自循环报告</strong>：按技能维度展示巡检结果（pass/warn/fail），用于定位“哪一个技能在告警/异常”并一键打开对应报告<br>
@@ -1494,14 +1494,14 @@
       <span class="np-filter-chip" data-period="overview">全景</span>
     </div>
     <div class="panel-body" id="siPanelBody">
-      <div style="padding:10px 20px;font-size:.64rem;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,.04);line-height:1.6">
+      <div class="panel-context">
         <strong>数据源</strong>：<code>.memory/health-trend.jsonl</code>（按日期覆盖的原始趋势线）+ <code>docs/自我改进/summary.json</code>（预聚合摘要）<br>
         <strong>视角</strong>：日报 — 当日健康快照 ｜ 周报 — 本周趋势汇总 ｜ 月报 — 月度健康演变 ｜ 全景 — 全维度矩阵 + 分支对比<br>
         <strong>D0-D7 诊断</strong>：悬停诊断卡片查看描述和建议措施
       </div>
       <div class="panel-loading">加载中...</div>
     </div>
-    <div class="panel-footer" style="font-size:.64rem;color:var(--text-muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px">
+    <div class="panel-footer panel-footer-row">
       <span>数据: .memory/health-trend.jsonl + summary.json</span>
       <span><a href="#" onclick="event.preventDefault();window.openPanel('faq')" style="color:#22c55e;text-decoration:none;font-size:.64rem">❓ FAQ</a> · <a href="#" onclick="event.preventDefault();window.openPanel('notify')" style="color:#ef4444;text-decoration:none;font-size:.64rem">🔔 通知</a></span>
       <span id="siFooterTime"></span>
@@ -1509,19 +1509,19 @@
   </div>
 
   <!-- Layer info overlay + panel -->
-  <div class="layer-info-overlay" id="layerInfoOverlay" style="position:fixed;inset:0;z-index:299;background:rgba(0,0,0,0.3);opacity:0;pointer-events:none;transition:opacity .2s"></div>
-  <div class="layer-info-panel" id="layerInfoPanel" style="position:fixed;top:100px;left:50%;margin-left:-320px;z-index:300;width:640px;max-height:75vh;background:var(--bg-card,#1e1f2b);border:var(--border-subtle);border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:translateY(-8px);transition:opacity .2s,transform .2s">
-    <div class="panel-header" style="display:flex;align-items:center;gap:10px;padding:16px 20px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06)">
-      <span id="layerInfoTitle" style="font-size:.9rem;font-weight:600;color:var(--text-primary);flex:1">层级详情</span>
-      <button onclick="layerInfo.close()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;padding:4px 8px;border-radius:4px" title="关闭">✕</button>
+  <div class="layer-info-overlay" id="layerInfoOverlay"></div>
+  <div class="yry-layer-info-panel layer-info-panel" id="layerInfoPanel">
+    <div class="panel-header">
+      <span class="panel-title" id="layerInfoTitle">层级详情</span>
+      <button onclick="layerInfo.close()" class="panel-close-btn" title="关闭">✕</button>
     </div>
-    <div class="panel-body" id="layerInfoBody" style="flex:1;overflow-y:auto;padding:16px 20px;max-height:calc(75vh - 56px)"></div>
+    <div class="panel-body" id="layerInfoBody"></div>
   </div>
 
   <!-- Back to top button -->
   <button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">&uarr;</button>
 
-  <!-- ═══ 第三方依赖 + 框架层 ═══ -->
+  <!-- ═══ JS 脚本 ═══ -->
   <script src="../cdn/shared.js"></script>
 
   <!-- ═══ Panel JS modules (extracted from index.html) ═══ -->
@@ -1544,42 +1544,14 @@
     }
     window.addEventListener('scroll', toggleBackTop, { passive: true });
     backTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    toggleBackTop();  // initial check for hash-anchor / restored scroll position
 
-    /* Live health indicator — reads latest score from JSONL and updates panel-hub label */
+    /* Live health indicator — 已移除对 .memory/health-trend.jsonl 的网络请求, 仅保留占位标签 */
     (function() {
       var label = document.getElementById('liveHealthLabel');
       if (!label) return;
-      var gradeColors = { A: '#22c55e', B: '#4ade80', C: '#f59e0b', D: '#ef4444' };
-
-      function updateLabel(data) {
-        if (!data || data.composite === undefined) { label.textContent = '🩺 —'; return; }
-        var g = data.grade || '?';
-        var clr = gradeColors[g] || 'var(--text-muted)';
-        label.innerHTML = '<span style="color:' + clr + ';font-weight:700">🩺 ' + data.composite + '</span> ' + g;
-        label.title = '最新: ' + data.composite + '分 ' + g + '级 | ' + (data.timestamp||'') + ' | 点击查看趋势';
-      }
-
-      fetch('../.memory/health-trend.jsonl', {cache: 'no-store'})
-        .then(function(r) { return r.ok ? r.text() : ''; })
-        .then(function(t) {
-          if (!t) return;
-          var lines = t.trim().split('\n').filter(Boolean);
-          if (!lines.length) return;
-          try { updateLabel(JSON.parse(lines[lines.length-1])); } catch(e) {}
-        })
-        .catch(function() {});
-
-      // Re-poll every 5 minutes
-      setInterval(function() {
-        fetch('../.memory/health-trend.jsonl', {cache: 'no-store'})
-          .then(function(r) { return r.ok ? r.text() : ''; })
-          .then(function(t) {
-            if (!t) return;
-            var lines = t.trim().split('\n').filter(Boolean);
-            if (lines.length) updateLabel(JSON.parse(lines[lines.length-1]));
-          })
-          .catch(function() {});
-      }, 300000);
+      label.textContent = '🩺 —';
+      label.title = '点击打开自改进面板查看详情';
     })();
   </script>
 </body>
