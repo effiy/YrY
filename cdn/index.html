@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ═══ CDN 资源 ═══ -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/theme.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.css">
   <title>YrY CDN — 共享前端资源库</title>
-  <link rel="stylesheet" href="theme.css">
-  <link rel="stylesheet" href="shared.css">
   <link rel="stylesheet" href="yry-home.css">
 </head>
 <body>
@@ -16,17 +17,17 @@
     </nav>
 
     <div class="header">
-      <h1><span class="accent">&#127760;</span> YrY CDN</h1>
-      <p>yry-cdn-lib v1.1.0 — 共享前端资源：双主题系统、21 CSS 组件、9 JS 工具 API、Vue 3 面包屑组件。55+ 页面统一引用，消除内联重复代码 40–60%</p>
+      <h1><span class="accent">&#127760;</span> YrY CDN 共享前端资源库</h1>
+      <p>yry-cdn-lib v1.1.0 — 双主题系统（Mono + System）、14 设计令牌、21 CSS 组件、9 JS 工具 API、Vue 3 面包屑组件。55+ 页面统一引用，消除内联重复代码 40–60%</p>
     </div>
 
     <div class="stats">
-      <div class="stat"><div class="num">2</div><div class="label">主题系统</div></div>
-      <div class="stat"><div class="num green">21</div><div class="label">CSS 组件</div></div>
-      <div class="stat"><div class="num green">9</div><div class="label">JS API</div></div>
-      <div class="stat"><div class="num">14</div><div class="label">设计令牌</div></div>
-      <div class="stat"><div class="num green">1</div><div class="label">Vue 3 组件</div></div>
-      <div class="stat"><div class="num green">55+</div><div class="label">覆盖页面</div></div>
+      <a class="stat" href="#layer-files"><div class="num green">12</div><div class="label">资源文件</div></a>
+      <a class="stat" href="#layer-themes"><div class="num">2</div><div class="label">主题系统</div></a>
+      <a class="stat" href="#layer-components"><div class="num green">21</div><div class="label">CSS 组件</div></a>
+      <a class="stat" href="#layer-api"><div class="num green">9</div><div class="label">JS API</div></a>
+      <a class="stat" href="#layer-breadcrumb"><div class="num">1</div><div class="label">Vue 3 组件</div></a>
+      <a class="stat" href="#layer-quickstart"><div class="num green">2</div><div class="label">加载路径</div></a>
     </div>
 
     <div class="cross-nav">
@@ -41,12 +42,12 @@
       <a class="cross-link" href="../docs/故事任务面板/cdn/故事任务.md">📋 任务故事</a>
     </div>
 
-    <!-- ===== 文件清单 ===== -->
+    <!-- ===== Layer 1: 文件清单 ===== -->
     <div class="layer" id="layer-files">
       <div class="layer-header">
         <span class="layer-num">1</span>
         <h2>文件清单</h2>
-        <span class="layer-stats">12 文件 · 2 目录</span>
+        <span class="layer-stats">7 核心资源 · 1 Vue 3 组件 · 2 目录</span>
       </div>
 
       <div class="sub-title"><span class="accent">&#9889;</span> 核心资源 (7)</div>
@@ -54,7 +55,7 @@
         <div class="item-card">
           <span class="icon rule">S</span>
           <div class="body">
-            <div class="name"><code>shared.css</code> <span class="size-info">20.7 KB</span></div>
+            <div class="name"><code>shared.css</code><span class="size-info">20.7 KB</span></div>
             <div class="desc">所有页面通用 — CSS Reset · 动画 · 面包屑 · 横向导航 · 工具栏 · Toast · 折叠套件</div>
             <div class="tags-row">
               <span class="tag-chip accent">核心</span>
@@ -65,7 +66,7 @@
         <div class="item-card">
           <span class="icon rule">J</span>
           <div class="body">
-            <div class="name"><code>shared.js</code> <span class="size-info">5.5 KB</span></div>
+            <div class="name"><code>shared.js</code><span class="size-info">5.5 KB</span></div>
             <div class="desc">所有页面通用 — YrY.toast() · YrY.copyCmd() · YrY.switchPanel() · 折叠/展开 · 剪贴板</div>
             <div class="tags-row">
               <span class="tag-chip accent">核心</span>
@@ -76,7 +77,7 @@
         <div class="item-card">
           <span class="icon rule">T</span>
           <div class="body">
-            <div class="name"><code>theme.css</code> <span class="size-info">12.4 KB</span></div>
+            <div class="name"><code>theme.css</code><span class="size-info">12.4 KB</span></div>
             <div class="desc">Category B (System) 主题 — 14 设计令牌 · 统计卡片 · 标签页 · 折叠套件 · 进度条 · 按钮</div>
             <div class="tags-row">
               <span class="tag-chip green">B 主题</span>
@@ -87,7 +88,7 @@
         <div class="item-card">
           <span class="icon rule">M</span>
           <div class="body">
-            <div class="name"><code>theme-mono.css</code> <span class="size-info">9.1 KB</span></div>
+            <div class="name"><code>theme-mono.css</code><span class="size-info">9.1 KB</span></div>
             <div class="desc">Category A (Mono) 主题 — JetBrains Mono 字体 · 图表容器 · 图例 · 脉冲圆点 · 深蓝黑底</div>
             <div class="tags-row">
               <span class="tag-chip green">A 主题</span>
@@ -109,7 +110,7 @@
         <div class="item-card">
           <span class="icon rule">H</span>
           <div class="body">
-            <div class="name"><code>yry-home.css</code> <span class="size-info">81.5 KB</span></div>
+            <div class="name"><code>yry-home.css</code><span class="size-info">81.5 KB</span></div>
             <div class="desc">文档中心首页专属样式 — 六层结构布局 · 统计卡片 · 场景网格 · 面板系统</div>
             <div class="tags-row">
               <span class="tag-chip info">首页</span>
@@ -120,7 +121,7 @@
         <div class="item-card">
           <span class="icon rule">C</span>
           <div class="body">
-            <div class="name"><code>yry-checklist.css</code> <span class="size-info">19.4 KB</span></div>
+            <div class="name"><code>yry-checklist.css</code><span class="size-info">19.4 KB</span></div>
             <div class="desc">计划清单专属样式 — 勾选交互 · 进度条 · 风险行 · 标签页 · 折叠面板 · 批量操作栏</div>
             <div class="tags-row">
               <span class="tag-chip info">清单</span>
@@ -130,211 +131,20 @@
         </div>
       </div>
 
-      <div class="sub-title"><span class="accent">&#128736;</span> Vue 3 组件 (1)</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon skill">B</span>
-          <div class="body">
-            <div class="name"><a href="yry-breadcrumb/index.html"><code>yry-breadcrumb/</code></a></div>
-            <div class="desc">Vue 3 面包屑组件 — 3 文件拆分 (index.html 模板 + index.js Loader + index.css 样式)。运行时 fetch 模板 → 注册 window.YryBreadcrumb → 派发 ready 事件。支持 items[] prop、aria 可访问性、5s 超时容错</div>
-            <div class="tags-row">
-              <span class="tag-chip accent">Vue 3</span>
-              <span class="tag-chip info">组件</span>
-              <span class="tag-chip purple">a11y</span>
-            </div>
-            <div class="meta"><span class="detail">index.html (模板+Demo) · index.js (Loader) · index.css (样式) · 任务故事/ (5 场景 × 8 交付物)</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== 主题系统 ===== -->
-    <div class="layer" id="layer-themes">
-      <div class="layer-header">
-        <span class="layer-num">2</span>
-        <h2>双主题系统</h2>
-        <span class="layer-stats">Category A (Mono) · Category B (System) · 14 设计令牌</span>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#128208;</span> Category A — Mono 主题</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon ref">A</span>
-          <div class="body">
-            <div class="name">深蓝黑底 + JetBrains Mono</div>
-            <div class="desc">适用页面：架构图、知识图谱。CSS 类名前缀 .yry-mono-*（容器/卡片/圆点/图例/页脚）</div>
-            <div class="tags-row">
-              <span class="tag-chip info">等宽字体</span>
-              <span class="tag-chip green">架构图</span>
-              <span class="tag-chip green">知识图谱</span>
-            </div>
-            <div class="meta"><span class="detail">加载: fonts.css → shared.css → theme-mono.css → shared.js</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#127912;</span> Category B — System 主题</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon ref">B</span>
-          <div class="body">
-            <div class="name">深紫黑底 + 系统字体</div>
-            <div class="desc">适用页面：审查、测试面板、演示、计划清单、plan(计划总览)。CSS 类名前缀 .yry-*（容器/统计卡/标签页/折叠套件/进度条/按钮）</div>
-            <div class="tags-row">
-              <span class="tag-chip info">系统字体</span>
-              <span class="tag-chip green">审查</span>
-              <span class="tag-chip green">测试</span>
-              <span class="tag-chip green">演示</span>
-            </div>
-            <div class="meta"><span class="detail">加载: shared.css → theme.css → shared.js</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#127991;</span> 设计令牌 (14 CSS 变量 — theme.css 定义)</div>
-      <div class="card-grid">
-        <div class="item-card"><span class="icon rule">S</span><div class="body"><div class="name">Surfaces (4)</div><div class="desc"><code>--yry-bg</code> · <code>--yry-bg-card</code> · <code>--yry-bg-flat</code> · <code>--yry-bg-raised</code></div></div></div>
-        <div class="item-card"><span class="icon rule">B</span><div class="body"><div class="name">Brand (2)</div><div class="desc"><code>--yry-accent</code> (#FFC107) · <code>--yry-cyan</code> (#22d3ee)</div></div></div>
-        <div class="item-card"><span class="icon rule">C</span><div class="body"><div class="name">Semantic (3)</div><div class="desc"><code>--yry-pass</code> (#22c55e) · <code>--yry-fail</code> (#ef4444) · <code>--yry-warn</code> (#f59e0b)</div></div></div>
-        <div class="item-card"><span class="icon rule">T</span><div class="body"><div class="name">Text (3)</div><div class="desc"><code>--yry-text</code> · <code>--yry-text2</code> · <code>--yry-text3</code></div></div></div>
-        <div class="item-card"><span class="icon rule">E</span><div class="body"><div class="name">Elevation (2)</div><div class="desc"><code>--yry-shadow</code> · <code>--yry-radius</code> (12px) · <code>--yry-border</code></div></div></div>
-      </div>
-    </div>
-
-    <!-- ===== CSS 组件 ===== -->
-    <div class="layer" id="layer-components">
-      <div class="layer-header">
-        <span class="layer-num">3</span>
-        <h2>CSS 组件速查</h2>
-        <span class="layer-stats">21 组件 · shared.css + theme.css</span>
-      </div>
-
-      <div class="card-grid">
-        <div class="item-card"><span class="icon rule">B</span><div class="body"><div class="name">面包屑</div><div class="desc"><code>.yry-breadcrumb</code> — 全部页面</div></div></div>
-        <div class="item-card"><span class="icon rule">N</span><div class="body"><div class="name">横向导航</div><div class="desc"><code>.yry-cross-nav</code> / <code>.yry-cross-link</code> — 全部页面</div></div></div>
-        <div class="item-card"><span class="icon rule">T</span><div class="body"><div class="name">导出工具栏</div><div class="desc"><code>.yry-toolbar</code> / <code>.yry-toolbar-actions</code> — 全部页面</div></div></div>
-        <div class="item-card"><span class="icon rule">M</span><div class="body"><div class="name">Toast 提示</div><div class="desc"><code>.yry-toast</code> — 全部页面</div></div></div>
-        <div class="item-card"><span class="icon rule">C</span><div class="body"><div class="name">页面容器</div><div class="desc"><code>.yry-container</code> / <code>.yry-container-sm</code> — B 主题</div></div></div>
-        <div class="item-card"><span class="icon rule">H</span><div class="body"><div class="name">页面头部</div><div class="desc"><code>.yry-header</code> / <code>.yry-sub</code> — B 主题</div></div></div>
-        <div class="item-card"><span class="icon rule">S</span><div class="body"><div class="name">统计卡片</div><div class="desc"><code>.yry-stats</code> / <code>.yry-stat</code> — B 主题</div></div></div>
-        <div class="item-card"><span class="icon rule">G</span><div class="body"><div class="name">健康条</div><div class="desc"><code>.yry-bar-wrap</code> / <code>.yry-bar-outer</code> / <code>.yry-seg</code> — B 主题</div></div></div>
-        <div class="item-card"><span class="icon rule">P</span><div class="body"><div class="name">标签页</div><div class="desc"><code>.yry-tabs</code> / <code>.yry-tab</code> / <code>.yry-panel</code> — B 主题</div></div></div>
-        <div class="item-card"><span class="icon rule">F</span><div class="body"><div class="name">折叠套件</div><div class="desc"><code>.yry-suite</code> / <code>.yry-suite-head</code> / <code>.yry-suite-body</code> — B 主题</div></div></div>
-        <div class="item-card"><span class="icon rule">R</span><div class="body"><div class="name">进度条</div><div class="desc"><code>.yry-progress-wrap</code> / <code>.yry-progress-fill</code> — B 主题</div></div></div>
-        <div class="item-card"><span class="icon rule">U</span><div class="body"><div class="name">按钮</div><div class="desc"><code>.yry-btn</code> — B 主题</div></div></div>
-        <div class="item-card"><span class="icon rule">L</span><div class="body"><div class="name">链接卡</div><div class="desc"><code>.yry-link-grid</code> / <code>.yry-link-card</code> — B 主题</div></div></div>
-        <div class="item-card"><span class="icon rule">D</span><div class="body"><div class="name">图表容器</div><div class="desc"><code>.yry-diagram-wrap</code> — A 主题</div></div></div>
-        <div class="item-card"><span class="icon rule">K</span><div class="body"><div class="name">图谱容器</div><div class="desc"><code>.yry-graph-wrap</code> — A 主题</div></div></div>
-        <div class="item-card"><span class="icon rule">O</span><div class="body"><div class="name">脉冲圆点</div><div class="desc"><code>.yry-pulse-dot</code> — A 主题</div></div></div>
-        <div class="item-card"><span class="icon rule">W</span><div class="body"><div class="name">图例</div><div class="desc"><code>.yry-mono-legend</code> — A 主题</div></div></div>
-      </div>
-    </div>
-
-    <!-- ===== JS API ===== -->
-    <div class="layer" id="layer-api">
-      <div class="layer-header">
-        <span class="layer-num">4</span>
-        <h2>JS API</h2>
-        <span class="layer-stats">9 函数 · window.YrY.* 命名空间</span>
-      </div>
-
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon skill">T</span>
-          <div class="body">
-            <div class="name"><code>YrY.toast(msg, duration?)</code></div>
-            <div class="desc">显示 Toast 提示，默认 1800ms 自动消失</div>
-            <div class="meta"><span class="detail">YrY.toast('复制成功') · YrY.toast('已保存', 3000)</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill">C</span>
-          <div class="body">
-            <div class="name"><code>YrY.copyCmd(btn, cmd)</code></div>
-            <div class="desc">复制按钮交互 — 📋→✅→📋，写入剪贴板 + 视觉反馈</div>
-            <div class="meta"><span class="detail">YrY.copyCmd(this, 'npm install yry-cdn-lib')</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill">S</span>
-          <div class="body">
-            <div class="name"><code>YrY.switchPanel(name, tabSel?, panelSel?)</code></div>
-            <div class="desc">标签面板切换，默认选择器 .yry-tab / .yry-panel</div>
-            <div class="meta"><span class="detail">YrY.switchPanel('overview')</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill">I</span>
-          <div class="body">
-            <div class="name"><code>YrY.initSuiteToggle(containerSel?)</code></div>
-            <div class="desc">初始化折叠套件点击切换，默认 .yry-container</div>
-            <div class="meta"><span class="detail">YrY.initSuiteToggle('.yry-container')</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill">E</span>
-          <div class="body">
-            <div class="name"><code>YrY.expandAllSuites(scope?)</code></div>
-            <div class="desc">展开全部折叠套件</div>
-            <div class="meta"><span class="detail">YrY.expandAllSuites()</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill">L</span>
-          <div class="body">
-            <div class="name"><code>YrY.collapseAllSuites(scope?)</code></div>
-            <div class="desc">收起全部折叠套件</div>
-            <div class="meta"><span class="detail">YrY.collapseAllSuites()</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill">F</span>
-          <div class="body">
-            <div class="name"><code>YrY.fmtDur(ms)</code></div>
-            <div class="desc">毫秒 → 人类可读 (&lt;1ms / 142ms / 1.2s)</div>
-            <div class="meta"><span class="detail">YrY.fmtDur(142) → "142ms"</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill">X</span>
-          <div class="body">
-            <div class="name"><code>YrY.esc(s)</code></div>
-            <div class="desc">HTML 转义 (&lt; &gt; &amp; &quot;)</div>
-            <div class="meta"><span class="detail">YrY.esc('&lt;script&gt;') → "&amp;lt;script&amp;gt;"</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill">W</span>
-          <div class="body">
-            <div class="name"><code>YrY.clipboardWrite(text, onSuccess, onFail)</code></div>
-            <div class="desc">写入剪贴板，支持成功/失败回调</div>
-            <div class="meta"><span class="detail">YrY.clipboardWrite('hello', () => toast('ok'), () => toast('fail'))</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== YryBreadcrumb ===== -->
-    <div class="layer" id="layer-breadcrumb">
-      <div class="layer-header">
-        <span class="layer-num">5</span>
-        <h2>YryBreadcrumb — Vue 3 组件</h2>
-        <span class="layer-stats">3 文件拆分 · 异步加载 · a11y 完备</span>
-      </div>
-
+      <div class="sub-title"><span class="accent">&#128736;</span> Vue 3 组件 — yry-breadcrumb (3 文件)</div>
       <div class="card-grid">
         <div class="item-card">
           <span class="icon skill">H</span>
           <div class="body">
-            <div class="name"><code>index.html</code></div>
-            <div class="desc">Vue 3 模板源 (<code>&lt;script type="text/x-template"&gt;</code>) + Demo 预览页。3 个示例：href+icon / 纯文本 / 8 级长路径</div>
+            <div class="name"><a href="yry-breadcrumb/index.html"><code>index.html</code></a></div>
+            <div class="desc">Vue 3 模板源 + Demo 预览页。含 <code>&lt;script type="text/x-template"&gt;</code> 和 3 个示例（href+icon / 纯文本 / 8 级长路径）</div>
             <div class="tags-row"><span class="tag-chip accent">模板</span><span class="tag-chip info">Demo</span></div>
           </div>
         </div>
         <div class="item-card">
           <span class="icon skill">J</span>
           <div class="body">
-            <div class="name"><code>index.js</code></div>
+            <div class="name"><a href="yry-breadcrumb/index.js"><code>index.js</code></a></div>
             <div class="desc">Loader — fetch index.html → DOMParser 提取 template → Vue.createApp 注册 → 派发 yry-breadcrumb-ready 事件。5s 超时容错</div>
             <div class="tags-row"><span class="tag-chip accent">Loader</span><span class="tag-chip info">异步</span></div>
           </div>
@@ -342,43 +152,322 @@
         <div class="item-card">
           <span class="icon skill">C</span>
           <div class="body">
-            <div class="name"><code>index.css</code></div>
+            <div class="name"><a href="yry-breadcrumb/index.css"><code>index.css</code></a></div>
             <div class="desc">组件样式 — .breadcrumb · .bc-sep (aria-hidden) · .bc-current (aria-current="page")。依赖 --yry-color-* token</div>
             <div class="tags-row"><span class="tag-chip green">样式</span><span class="tag-chip purple">a11y</span></div>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="sub-title"><span class="accent">&#128295;</span> Props</div>
-      <div class="card-grid">
-        <div class="item-card"><span class="icon rule">I</span><div class="body"><div class="name"><code>items</code> (必填)</div><div class="desc">Array&lt;{label, href?, icon?}&gt; — 有 href 渲染为链接，无 href 渲染为当前项</div></div></div>
-        <div class="item-card"><span class="icon rule">A</span><div class="body"><div class="name"><code>ariaLabel</code> (可选)</div><div class="desc">默认 '面包屑导航' — nav 的 aria-label</div></div></div>
-        <div class="item-card"><span class="icon rule">S</span><div class="body"><div class="name"><code>separator</code> (可选)</div><div class="desc">默认 '/' — 分隔符文本 (预留)</div></div></div>
+    <hr>
+
+    <!-- ===== Layer 2: 主题系统 ===== -->
+    <div class="layer" id="layer-themes">
+      <div class="layer-header">
+        <span class="layer-num">2</span>
+        <h2>双主题系统</h2>
+        <span class="layer-stats">Category A (Mono) · Category B (System) · 14 设计令牌</span>
       </div>
 
-      <div class="sub-title"><span class="accent">&#128268;</span> 加载顺序</div>
+      <div class="sub-title"><span class="accent">&#128208;</span> Category A — Mono 主题（架构图 · 知识图谱）</div>
       <div class="card-grid">
         <div class="item-card">
-          <span class="icon ref">L</span>
+          <span class="icon ref">A</span>
           <div class="body">
-            <div class="name">三步加载</div>
-            <div class="desc">
-              1. <code>&lt;link href="cdn/yry-breadcrumb/index.css"&gt;</code><br>
-              2. <code>&lt;script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"&gt;</code><br>
-              3. <code>&lt;script src="cdn/yry-breadcrumb/index.js"&gt;</code>
+            <div class="name">深蓝黑底 + JetBrains Mono 等宽字体</div>
+            <div class="desc">CSS 类名前缀 <code>.yry-mono-*</code> — 图表容器 · 图谱容器 · 脉冲圆点 · 图例 · 页脚。适用页面：架构图、知识图谱</div>
+            <div class="tags-row">
+              <span class="tag-chip info">等宽字体</span>
+              <span class="tag-chip green">架构图</span>
+              <span class="tag-chip green">知识图谱</span>
             </div>
-            <div class="tags-row"><span class="tag-chip info">Vue 3</span><span class="tag-chip accent">CDN</span></div>
+            <div class="meta"><span class="detail">加载链: fonts.css → shared.css → theme-mono.css → shared.js</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#127912;</span> Category B — System 主题（审查 · 测试 · 演示 · 清单）</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon ref">B</span>
+          <div class="body">
+            <div class="name">深紫黑底 + 系统字体</div>
+            <div class="desc">CSS 类名前缀 <code>.yry-*</code> — 容器 · 统计卡 · 标签页 · 折叠套件 · 进度条 · 按钮 · 链接卡。适用页面：审查、测试面板、演示、计划清单、plan</div>
+            <div class="tags-row">
+              <span class="tag-chip info">系统字体</span>
+              <span class="tag-chip green">审查</span>
+              <span class="tag-chip green">测试</span>
+              <span class="tag-chip green">演示</span>
+            </div>
+            <div class="meta"><span class="detail">加载链: shared.css → theme.css → shared.js</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#127991;</span> 设计令牌 — 14 CSS 变量（theme.css :root 定义）</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon rule">S</span>
+          <div class="body">
+            <div class="name">Surfaces 表面 (4)</div>
+            <div class="desc"><code>--yry-bg</code> · <code>--yry-bg-card</code> · <code>--yry-bg-flat</code> · <code>--yry-bg-raised</code></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">B</span>
+          <div class="body">
+            <div class="name">Brand 品牌 (2)</div>
+            <div class="desc"><code>--yry-accent</code> (#FFC107) · <code>--yry-cyan</code> (#22d3ee)</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">C</span>
+          <div class="body">
+            <div class="name">Semantic 语义 (3)</div>
+            <div class="desc"><code>--yry-pass</code> (#22c55e) · <code>--yry-fail</code> (#ef4444) · <code>--yry-warn</code> (#f59e0b)</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">T</span>
+          <div class="body">
+            <div class="name">Text 文本 (3)</div>
+            <div class="desc"><code>--yry-text</code> (255,255,252) · <code>--yry-text2</code> (160,160,164) · <code>--yry-text3</code> (110,110,114)</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">E</span>
+          <div class="body">
+            <div class="name">Elevation 层级 (2)</div>
+            <div class="desc"><code>--yry-shadow</code> (0 4px 20px rgba(0,0,0,0.3)) · <code>--yry-radius</code> (12px) · <code>--yry-border</code></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ===== 快速开始 ===== -->
+    <hr>
+
+    <!-- ===== Layer 3: CSS 组件 ===== -->
+    <div class="layer" id="layer-components">
+      <div class="layer-header">
+        <span class="layer-num">3</span>
+        <h2>CSS 组件速查</h2>
+        <span class="layer-stats">21 组件 · 6 通用 (shared.css) + 9 B 主题 (theme.css) + 6 A 主题 (theme-mono.css)</span>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#127760;</span> 通用组件 — shared.css (全部页面)</div>
+      <div class="card-grid">
+        <div class="item-card"><span class="icon rule">B</span><div class="body"><div class="name">面包屑</div><div class="desc"><code>.yry-breadcrumb</code></div></div></div>
+        <div class="item-card"><span class="icon rule">N</span><div class="body"><div class="name">横向导航</div><div class="desc"><code>.yry-cross-nav</code> / <code>.yry-cross-link</code></div></div></div>
+        <div class="item-card"><span class="icon rule">T</span><div class="body"><div class="name">导出工具栏</div><div class="desc"><code>.yry-toolbar</code> / <code>.yry-toolbar-actions</code></div></div></div>
+        <div class="item-card"><span class="icon rule">M</span><div class="body"><div class="name">Toast 提示</div><div class="desc"><code>.yry-toast</code> — 底部浮层</div></div></div>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#127912;</span> B 主题组件 — theme.css</div>
+      <div class="card-grid">
+        <div class="item-card"><span class="icon rule">C</span><div class="body"><div class="name">页面容器</div><div class="desc"><code>.yry-container</code> / <code>.yry-container-sm</code></div></div></div>
+        <div class="item-card"><span class="icon rule">H</span><div class="body"><div class="name">页面头部</div><div class="desc"><code>.yry-header</code> / <code>.yry-sub</code></div></div></div>
+        <div class="item-card"><span class="icon rule">S</span><div class="body"><div class="name">统计卡片</div><div class="desc"><code>.yry-stats</code> / <code>.yry-stat</code></div></div></div>
+        <div class="item-card"><span class="icon rule">G</span><div class="body"><div class="name">健康条</div><div class="desc"><code>.yry-bar-wrap</code> / <code>.yry-bar-outer</code> / <code>.yry-seg</code></div></div></div>
+        <div class="item-card"><span class="icon rule">P</span><div class="body"><div class="name">标签页</div><div class="desc"><code>.yry-tabs</code> / <code>.yry-tab</code> / <code>.yry-panel</code></div></div></div>
+        <div class="item-card"><span class="icon rule">F</span><div class="body"><div class="name">折叠套件</div><div class="desc"><code>.yry-suite</code> / <code>.yry-suite-head</code> / <code>.yry-suite-body</code></div></div></div>
+        <div class="item-card"><span class="icon rule">R</span><div class="body"><div class="name">进度条</div><div class="desc"><code>.yry-progress-wrap</code> / <code>.yry-progress-fill</code></div></div></div>
+        <div class="item-card"><span class="icon rule">U</span><div class="body"><div class="name">按钮</div><div class="desc"><code>.yry-btn</code></div></div></div>
+        <div class="item-card"><span class="icon rule">L</span><div class="body"><div class="name">链接卡</div><div class="desc"><code>.yry-link-grid</code> / <code>.yry-link-card</code></div></div></div>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#128208;</span> A 主题组件 — theme-mono.css</div>
+      <div class="card-grid">
+        <div class="item-card"><span class="icon rule">D</span><div class="body"><div class="name">图表容器</div><div class="desc"><code>.yry-diagram-wrap</code></div></div></div>
+        <div class="item-card"><span class="icon rule">K</span><div class="body"><div class="name">图谱容器</div><div class="desc"><code>.yry-graph-wrap</code></div></div></div>
+        <div class="item-card"><span class="icon rule">O</span><div class="body"><div class="name">脉冲圆点</div><div class="desc"><code>.yry-pulse-dot</code></div></div></div>
+        <div class="item-card"><span class="icon rule">W</span><div class="body"><div class="name">图例</div><div class="desc"><code>.yry-mono-legend</code></div></div></div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- ===== Layer 4: JS API ===== -->
+    <div class="layer" id="layer-api">
+      <div class="layer-header">
+        <span class="layer-num">4</span>
+        <h2>JS API</h2>
+        <span class="layer-stats">9 函数 · window.YrY.* 命名空间 · 全部页面可用</span>
+      </div>
+
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon skill">T</span>
+          <div class="body">
+            <div class="name"><code>YrY.toast(msg, duration?)</code></div>
+            <div class="desc">显示 Toast 提示，默认 1800ms 自动消失。底部居中浮层，带入场/离场动画</div>
+            <div class="tags-row"><span class="tag-chip info">UI</span><span class="tag-chip green">动画</span></div>
+            <div class="meta"><span class="detail">YrY.toast('复制成功') · YrY.toast('已保存', 3000)</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">C</span>
+          <div class="body">
+            <div class="name"><code>YrY.copyCmd(btn, cmd)</code></div>
+            <div class="desc">复制按钮交互 — 点击 📋→✅ (1.5s)→📋，写入剪贴板 + done 类名反馈</div>
+            <div class="tags-row"><span class="tag-chip info">剪贴板</span><span class="tag-chip green">视觉反馈</span></div>
+            <div class="meta"><span class="detail">YrY.copyCmd(this, 'npm install yry-cdn-lib')</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">S</span>
+          <div class="body">
+            <div class="name"><code>YrY.switchPanel(name, tabSel?, panelSel?)</code></div>
+            <div class="desc">标签面板切换 — 匹配 data-panel 属性。默认选择器 .yry-tab / .yry-panel</div>
+            <div class="tags-row"><span class="tag-chip info">标签页</span><span class="tag-chip green">切换</span></div>
+            <div class="meta"><span class="detail">YrY.switchPanel('overview')</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">I</span>
+          <div class="body">
+            <div class="name"><code>YrY.initSuiteToggle(containerSel?)</code></div>
+            <div class="desc">初始化折叠套件点击切换 — 事件委托监听 .yry-suite-head 点击，切换父级 .yry-suite.open</div>
+            <div class="tags-row"><span class="tag-chip info">折叠</span><span class="tag-chip green">事件委托</span></div>
+            <div class="meta"><span class="detail">YrY.initSuiteToggle('.yry-container')</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">E</span>
+          <div class="body">
+            <div class="name"><code>YrY.expandAllSuites(scope?)</code></div>
+            <div class="desc">展开全部折叠套件 — 为 scope 内所有 .yry-suite 添加 .open 类</div>
+            <div class="meta"><span class="detail">YrY.expandAllSuites()</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">L</span>
+          <div class="body">
+            <div class="name"><code>YrY.collapseAllSuites(scope?)</code></div>
+            <div class="desc">收起全部折叠套件 — 移除 scope 内所有 .yry-suite 的 .open 类</div>
+            <div class="meta"><span class="detail">YrY.collapseAllSuites()</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">F</span>
+          <div class="body">
+            <div class="name"><code>YrY.fmtDur(ms)</code></div>
+            <div class="desc">毫秒 → 人类可读 — &lt;1ms / 142ms / 1.2s。null/undefined 返回空串</div>
+            <div class="meta"><span class="detail">YrY.fmtDur(142) → "142ms" · YrY.fmtDur(1500) → "1.5s"</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">X</span>
+          <div class="body">
+            <div class="name"><code>YrY.esc(s)</code></div>
+            <div class="desc">HTML 转义 — &amp; &lt; &gt; &quot;，防止 XSS。空值返回空串</div>
+            <div class="tags-row"><span class="tag-chip purple">安全</span></div>
+            <div class="meta"><span class="detail">YrY.esc('&lt;script&gt;') → "&amp;lt;script&amp;gt;"</span></div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon skill">W</span>
+          <div class="body">
+            <div class="name"><code>YrY.clipboardWrite(text, onSuccess, onFail)</code></div>
+            <div class="desc">写入剪贴板 — navigator.clipboard API，支持成功/失败回调。失败回退 toast 提示</div>
+            <div class="meta"><span class="detail">YrY.clipboardWrite('hello', () => toast('ok'), () => toast('fail'))</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- ===== Layer 5: YryBreadcrumb ===== -->
+    <div class="layer" id="layer-breadcrumb">
+      <div class="layer-header">
+        <span class="layer-num">5</span>
+        <h2>YryBreadcrumb — Vue 3 面包屑组件</h2>
+        <span class="layer-stats">3 文件拆分 · 异步模板加载 · a11y 完备 · 5s 超时容错</span>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#128268;</span> 加载顺序</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon ref">1</span>
+          <div class="body">
+            <div class="name"><code>&lt;link rel="stylesheet" href="cdn/yry-breadcrumb/index.css"&gt;</code></div>
+            <div class="desc">组件样式 — 依赖 --yry-color-* CSS 变量，需在 shared.css/theme.css 之后加载</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon ref">2</span>
+          <div class="body">
+            <div class="name"><code>&lt;script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"&gt;</code></div>
+            <div class="desc">Vue 3 运行时 — 全局 Vue.createApp API，供 index.js Loader 使用</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon ref">3</span>
+          <div class="body">
+            <div class="name"><code>&lt;script src="cdn/yry-breadcrumb/index.js"&gt;</code></div>
+            <div class="desc">Loader 自动执行 — fetch 模板 → 注册 window.YryBreadcrumb → 派发 yry-breadcrumb-ready</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#128295;</span> Props 定义</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon rule">I</span>
+          <div class="body">
+            <div class="name"><code>items</code> (必填)</div>
+            <div class="desc">Array&lt;{label: string, href?: string, icon?: string}&gt; — 有 href 渲染为 &lt;a&gt;，无 href 渲染为 &lt;span aria-current="page"&gt;</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">A</span>
+          <div class="body">
+            <div class="name"><code>ariaLabel</code> (可选)</div>
+            <div class="desc">默认 '面包屑导航' — &lt;nav&gt; 的 aria-label 属性值</div>
+          </div>
+        </div>
+        <div class="item-card">
+          <span class="icon rule">S</span>
+          <div class="body">
+            <div class="name"><code>separator</code> (可选)</div>
+            <div class="desc">默认 '/' — 分隔符文本，渲染为 aria-hidden="true" 的 &lt;span&gt;</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-title"><span class="accent">&#127760;</span> 使用示例</div>
+      <div class="card-grid">
+        <div class="item-card">
+          <span class="icon skill">U</span>
+          <div class="body">
+            <div class="name">挂载代码</div>
+            <div class="desc">
+              <code>function mount() {</code><br>
+              <code>&nbsp;&nbsp;Vue.createApp(window.YryBreadcrumb, {</code><br>
+              <code>&nbsp;&nbsp;&nbsp;&nbsp;ariaLabel: '面包屑导航',</code><br>
+              <code>&nbsp;&nbsp;&nbsp;&nbsp;items: [</code><br>
+              <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ label: '文档中心', href: 'index.html', icon: '&#128451;' },</code><br>
+              <code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ label: '场景 1 · 模板架构' }</code><br>
+              <code>&nbsp;&nbsp;&nbsp;&nbsp;]</code><br>
+              <code>&nbsp;&nbsp;}).mount('#breadcrumb-app');</code><br>
+              <code>}</code><br>
+              <code>window.YryBreadcrumb ? mount() : document.addEventListener('yry-breadcrumb-ready', mount, { once: true });</code>
+            </div>
+            <div class="tags-row"><span class="tag-chip accent">Vue 3</span><span class="tag-chip info">异步挂载</span><span class="tag-chip purple">a11y</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- ===== Layer 6: 快速开始 ===== -->
     <div class="layer" id="layer-quickstart">
       <div class="layer-header">
         <span class="layer-num">6</span>
         <h2>快速开始</h2>
-        <span class="layer-stats">2 种主题加载路径 · npm 安装</span>
+        <span class="layer-stats">2 种 CDN 加载路径 · npm 安装</span>
       </div>
 
       <div class="sub-title"><span class="accent">&#128722;</span> jsDelivr CDN (推荐)</div>
@@ -386,24 +475,26 @@
         <div class="item-card">
           <span class="icon ref">A</span>
           <div class="body">
-            <div class="name">Category A — Mono 主题页面</div>
+            <div class="name">Category A — Mono 主题（架构图 · 知识图谱）</div>
             <div class="desc">
-              <code>&lt;link href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/fonts.css"&gt;</code><br>
-              <code>&lt;link href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.css"&gt;</code><br>
-              <code>&lt;link href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/theme-mono.css"&gt;</code><br>
-              <code>&lt;script src="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.js"&gt;</code>
+              <code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/fonts.css"&gt;</code><br>
+              <code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.css"&gt;</code><br>
+              <code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/theme-mono.css"&gt;</code><br>
+              <code>&lt;script src="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.js"&gt;&lt;/script&gt;</code>
             </div>
+            <div class="tags-row"><span class="tag-chip green">A 主题</span><span class="tag-chip info">4 文件</span></div>
           </div>
         </div>
         <div class="item-card">
           <span class="icon ref">B</span>
           <div class="body">
-            <div class="name">Category B — System 主题页面</div>
+            <div class="name">Category B — System 主题（审查 · 测试 · 演示 · 清单）</div>
             <div class="desc">
-              <code>&lt;link href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.css"&gt;</code><br>
-              <code>&lt;link href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/theme.css"&gt;</code><br>
-              <code>&lt;script src="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.js"&gt;</code>
+              <code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.css"&gt;</code><br>
+              <code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/theme.css"&gt;</code><br>
+              <code>&lt;script src="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.js"&gt;&lt;/script&gt;</code>
             </div>
+            <div class="tags-row"><span class="tag-chip green">B 主题</span><span class="tag-chip info">3 文件</span></div>
           </div>
         </div>
       </div>
@@ -413,8 +504,8 @@
         <div class="item-card">
           <span class="icon rule">N</span>
           <div class="body">
-            <div class="name"><code>npm install yry-cdn-lib</code></div>
-            <div class="desc">npm 包名 yry-cdn-lib · 版本 1.1.0 · MIT 许可 · jsDelivr 自动同步</div>
+            <div class="name"><a href="https://www.npmjs.com/package/yry-cdn-lib" target="_blank" rel="noopener noreferrer"><code>npm install yry-cdn-lib</code></a></div>
+            <div class="desc">npm 包名 yry-cdn-lib · 版本 1.1.0 · MIT 许可 · jsDelivr 自动同步。本地引用路径：<code>node_modules/yry-cdn-lib/shared.css</code> 等</div>
             <div class="tags-row">
               <span class="tag-chip accent">npm</span>
               <span class="tag-chip info">v1.1.0</span>
@@ -426,10 +517,28 @@
     </div>
 
     <div class="footer-note">
-      yry-cdn-lib v1.1.0 · <a href="https://www.jsdelivr.com/package/npm/yry-cdn-lib" target="_blank" rel="noopener noreferrer">jsDelivr</a> · <a href="../docs/故事任务面板/cdn/故事任务.md">任务故事</a> · <a href="README.md">README.md</a>
+      yry-cdn-lib v1.1.0 · <a href="https://www.jsdelivr.com/package/npm/yry-cdn-lib" target="_blank" rel="noopener noreferrer">jsDelivr</a> · <a href="https://www.npmjs.com/package/yry-cdn-lib" target="_blank" rel="noopener noreferrer">npm</a> · <a href="../docs/故事任务面板/cdn/故事任务.md">任务故事</a> · <a href="README.md">README.md</a>
     </div>
   </div>
 
-  <script src="shared.js"></script>
+  <!-- Back to top button -->
+  <button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">&uarr;</button>
+
+  <!-- ═══ CDN 资源 ═══ -->
+  <script src="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.js"></script>
+  <script>
+    /* Staggered card animations */
+    document.querySelectorAll('.card-grid .item-card').forEach(function(card, i) {
+      card.style.animationDelay = (0.01 + (i % 20) * 0.012).toFixed(3) + 's';
+    });
+
+    /* Back to top */
+    (function() {
+      var btn = document.getElementById('backTop');
+      function toggle() { btn.classList.toggle('visible', window.scrollY > 400); }
+      window.addEventListener('scroll', toggle, { passive: true });
+      btn.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    })();
+  </script>
 </body>
 </html>

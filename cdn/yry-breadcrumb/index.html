@@ -8,6 +8,7 @@
        id="yry-breadcrumb-tpl"> 内容作为 Vue 组件的 template。
     2) **Demo 预览** — 直接用浏览器打开本文件,即可看到 YryBreadcrumb 的实际渲染效果。
 
+  加载链: ../shared.css → ../theme.css → index.css → Vue 3 → index.js
   ═══════════════════════════════════════════════════════════════════════════
 -->
 <html lang="zh-CN">
@@ -15,46 +16,132 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YryBreadcrumb · Demo & Template</title>
+  <!-- ═══ CDN: YrY 共享样式 ═══ -->
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <!-- ═══ 组件样式 ═══ -->
   <link rel="stylesheet" href="index.css">
+  <!-- ═══ Vue 3 ═══ -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <style>
+    /* ═══ Demo 专属样式 — 组件样式在 index.css,共享样式在 ../shared.css + ../theme.css ═══ */
     body {
-      padding: 24px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-                   "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", sans-serif;
-      background: #fafafa;
-      color: #1a1a1a;
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
       max-width: 920px;
       margin: 0 auto;
+      line-height: 1.55;
     }
-    h1 { font-size: 1.1rem; margin: 0 0 4px; }
-    .demo-hint { font-size: .8rem; color: #666; margin: 0 0 16px; }
-    hr { border: none; border-top: 1px solid #e5e5e5; margin: 24px 0; }
-    .demo-row { margin: 12px 0; }
-    .demo-row h3 { font-size: .8rem; font-weight: 600; margin: 0 0 6px; color: #444; }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint {
+      font-size: .78rem;
+      color: var(--yry-text3, #888);
+      margin: 0 0 20px;
+      line-height: 1.6;
+    }
+    .demo-hint code {
+      background: rgba(255,255,255,.06);
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: .72rem;
+      color: #e0af68;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,.08);
+      margin: 28px 0 24px;
+    }
+    .demo-section {
+      margin: 20px 0;
+      background: var(--yry-bg-flat, rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .demo-section:hover {
+      border-color: rgba(255,193,7,.15);
+      box-shadow: 0 4px 16px rgba(0,0,0,.3);
+    }
+    .demo-section h3 {
+      font-size: .82rem;
+      font-weight: 600;
+      margin: 0 0 12px;
+      color: var(--yry-text2, #d4d4d4);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .demo-section h3 .demo-badge {
+      font-size: .62rem;
+      font-weight: 600;
+      padding: 1px 7px;
+      border-radius: 4px;
+      background: rgba(255,193,7,.08);
+      color: var(--yry-accent, #ffc107);
+      border: 1px solid rgba(255,193,7,.15);
+    }
+    .demo-footer {
+      margin-top: 28px;
+      text-align: center;
+      font-size: .72rem;
+      color: var(--yry-text3, #888);
+    }
+    .demo-footer a {
+      color: var(--yry-accent, #ffc107);
+      text-decoration: none;
+    }
+    .demo-footer a:hover { text-decoration: underline; }
+
+    /* ── Back to top ── */
+    .back-top {
+      position: fixed; bottom: 28px; right: 28px; width: 42px; height: 42px;
+      border-radius: 50%; background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.1); color: var(--yry-text2, #d4d4d4);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; box-shadow: 0 2px 8px rgba(0,0,0,.25);
+      transition: all .2s ease; opacity: 0; pointer-events: none; z-index: 100;
+    }
+    .back-top.visible { opacity: 1; pointer-events: auto; }
+    .back-top:hover { border-color: var(--yry-accent, #ffc107); color: var(--yry-accent, #ffc107); }
+
+    /* ── Animations ── */
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .demo-section { animation: fadeInUp .4s ease both; }
   </style>
 </head>
 <body>
-  <h1>🍞 YryBreadcrumb · Vue 3 面包屑组件</h1>
-  <p class="demo-hint">以下 3 个 demo 演示了不同的 items 配置 · 模板源见下方 <code>&lt;script type="text/x-template"&gt;</code> 块</p>
 
-  <div class="demo-row">
-    <h3>Demo 1 · 含 href + icon (链接项带图标)</h3>
+  <h1><span class="accent">&#127838;</span> YryBreadcrumb · Vue 3 面包屑组件</h1>
+  <p class="demo-hint">
+    以下 3 个 demo 演示了不同的 <code>items</code> 配置。<br>
+    模板源见下方 <code>&lt;script type="text/x-template" id="yry-breadcrumb-tpl"&gt;</code> 块 — <code>index.js</code> 启动时 fetch 本文件并自动提取。
+  </p>
+
+  <div class="demo-section" style="animation-delay: .05s">
+    <h3><span class="demo-badge">Demo 1</span> 含 href + icon — 链接项带图标</h3>
     <div id="demo-1"></div>
   </div>
 
-  <div class="demo-row">
-    <h3>Demo 2 · 纯文本路径 (无 href,全部为当前项)</h3>
+  <div class="demo-section" style="animation-delay: .1s">
+    <h3><span class="demo-badge">Demo 2</span> 纯文本路径 — 无 href，全部为当前项</h3>
     <div id="demo-2"></div>
   </div>
 
-  <div class="demo-row">
-    <h3>Demo 3 · 长路径 (8 级)</h3>
+  <div class="demo-section" style="animation-delay: .15s">
+    <h3><span class="demo-badge">Demo 3</span> 长路径 — 8 级嵌套</h3>
     <div id="demo-3"></div>
   </div>
 
   <hr>
-  <p class="demo-hint">↓ 以下 <code>&lt;script type="text/x-template"&gt;</code> 即为组件的 <strong>template 源</strong>,index.js 会 fetch 本文件并提取此块</p>
+  <p class="demo-hint">
+    &#128071; 以下 <code>&lt;script type="text/x-template"&gt;</code> 即为组件的 <strong>template 源</strong>，<code>index.js</code> 会 fetch 本文件并提取此块
+  </p>
 
   <!-- ════════════════════════════════════════════════════════════════════
        TEMPLATE SOURCE OF TRUTH · YryBreadcrumb 的 template
@@ -85,10 +172,10 @@
     }
     function mountAll() {
       mountDemo('demo-1', [
-        { label: '文档中心',   href: '#home',     icon: '📄' },
-        { label: '组件库',     href: '#lib' },
+        { label: '文档中心', href: '#home',  icon: '📄' },
+        { label: '组件库',   href: '#lib' },
         { label: '导航类' },
-        { label: '面包屑',     icon: '🍞' }
+        { label: '面包屑',   icon: '🍞' }
       ]);
       mountDemo('demo-2', [
         { label: 'YrY' },
@@ -97,18 +184,38 @@
         { label: '模板架构' }
       ]);
       mountDemo('demo-3', [
-        { label: '根',     href: '#',     icon: '🌳' },
-        { label: '设计',   href: '#' },
-        { label: '前端',   href: '#' },
-        { label: '组件',   href: '#' },
-        { label: '导航',   href: '#' },
-        { label: '面包屑', href: '#' },
+        { label: '根',       href: '#',      icon: '🌳' },
+        { label: '设计',     href: '#' },
+        { label: '前端',     href: '#' },
+        { label: '组件',     href: '#' },
+        { label: '导航',     href: '#' },
+        { label: '面包屑',   href: '#' },
         { label: '样式' },
-        { label: '最终',   icon: '🎯' }
+        { label: '最终',     icon: '🎯' }
       ]);
     }
     if (window.YryBreadcrumb) mountAll();
     else document.addEventListener('yry-breadcrumb-ready', mountAll, { once: true });
+  </script>
+
+  <div class="demo-footer">
+    &#127838; YryBreadcrumb v1.0.0 ·
+    <a href="../index.html">CDN 首页</a> ·
+    <a href="../README.md">README</a> ·
+    <a href="%E4%BB%BB%E5%8A%A1%E6%95%85%E4%BA%8B/index.html">任务故事</a>
+  </div>
+
+  <!-- Back to top -->
+  <button class="back-top" id="backTop" title="回到顶部" aria-label="回到顶部">&uarr;</button>
+
+  <script>
+    /* Back to top */
+    (function() {
+      var btn = document.getElementById('backTop');
+      function toggle() { btn.classList.toggle('visible', window.scrollY > 400); }
+      window.addEventListener('scroll', toggle, { passive: true });
+      btn.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    })();
   </script>
 </body>
 </html>
