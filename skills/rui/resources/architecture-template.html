@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>[PROJECT NAME] Architecture Diagram</title>
   <link rel="stylesheet" href="../../../cdn/fonts.css">
+  <link rel="stylesheet" href="../../../cdn/yry-export-toolbar/index.css">
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js" integrity="sha384-en/ztfPSRkGfME4KIm05joYXynqzUgbsG5nMrj/xEFAHXkeZfO3yMK8QQ+mP7p1/" crossorigin="anonymous"></script>
   <style>
@@ -187,13 +188,10 @@
       <div class="header-row">
         <div class="pulse-dot"></div>
         <h1>[PROJECT NAME] Architecture</h1>
-        <div class="toolbar">
-          <div class="toolbar-actions">
-            <button onclick="copyAsImage(this)">📋 Copy</button>
-            <button onclick="downloadPNG(this)">🖼️ PNG</button>
-            <button onclick="downloadPDF(this)">📄 PDF</button>
-          </div>
-          <button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export options" aria-label="Export options">⋯</button>
+        <div class="yry-export-toolbar toolbar" data-target="#report-container" data-filename="diagram" data-bg="#020617">
+          <button data-action="copy-png">📋 Copy</button>
+          <button data-action="download-png">🖼️ PNG</button>
+          <button data-action="download-pdf">📄 PDF</button>
         </div>
       </div>
       <p class="subtitle">[Subtitle description]</p>
@@ -373,62 +371,6 @@
     </p>
   </div>
 
-  <script>
-    async function copyAsImage(btn) {
-      const orig = btn.textContent;
-      try {
-        const el = document.getElementById('report-container');
-        const r = el.getBoundingClientRect();
-        const pad = 32;
-        const canvas = await html2canvas(document.body, { backgroundColor: '#020617', scale: 2, useCORS: true, ignoreElements: (e) => e.classList && e.classList.contains('toolbar'), x: r.left + window.scrollX - pad, y: r.top + window.scrollY - pad, width: r.width + pad * 2, height: r.height + pad * 2 });
-        const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-        btn.textContent = '✓ Copied!';
-      } catch (e) {
-        btn.textContent = '✗ Failed';
-      }
-      setTimeout(() => btn.textContent = orig, 2000);
-    }
-
-    async function downloadPNG(btn) {
-      const orig = btn.textContent;
-      btn.textContent = '⏳ ...';
-      try {
-        const el = document.getElementById('report-container');
-        const r = el.getBoundingClientRect();
-        const pad = 32;
-        const canvas = await html2canvas(document.body, { backgroundColor: '#020617', scale: 2, useCORS: true, ignoreElements: (e) => e.classList && e.classList.contains('toolbar'), x: r.left + window.scrollX - pad, y: r.top + window.scrollY - pad, width: r.width + pad * 2, height: r.height + pad * 2 });
-        const link = document.createElement('a');
-        link.download = 'diagram.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-        btn.textContent = '✓ Done!';
-      } catch (e) {
-        btn.textContent = '✗ Failed';
-      }
-      setTimeout(() => btn.textContent = orig, 2000);
-    }
-
-    async function downloadPDF(btn) {
-      const orig = btn.textContent;
-      btn.textContent = '⏳ ...';
-      try {
-        const el = document.getElementById('report-container');
-        const r = el.getBoundingClientRect();
-        const pad = 32;
-        const canvas = await html2canvas(document.body, { backgroundColor: '#020617', scale: 2, useCORS: true, ignoreElements: (e) => e.classList && e.classList.contains('toolbar'), x: r.left + window.scrollX - pad, y: r.top + window.scrollY - pad, width: r.width + pad * 2, height: r.height + pad * 2 });
-        const imgData = canvas.toDataURL('image/png');
-        const { jsPDF } = window.jspdf;
-        const orientation = canvas.width > canvas.height ? 'landscape' : 'portrait';
-        const pdf = new jsPDF({ orientation, unit: 'px', format: [canvas.width, canvas.height], hotfixes: ['px_scaling'] });
-        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-        pdf.save('diagram.pdf');
-        btn.textContent = '✓ Done!';
-      } catch (e) {
-        btn.textContent = '✗ Failed';
-      }
-      setTimeout(() => btn.textContent = orig, 2000);
-    }
-  </script>
+  <script src="../../../cdn/yry-export-toolbar/index.js"></script>
 </body>
 </html>

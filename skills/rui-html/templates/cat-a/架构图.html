@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
 {{HEAD_BLOCK}}
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-export-toolbar/index.css">
 <style>
 /* Page-specific overrides — shared patterns in shared-a.css */
 .diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
@@ -18,13 +19,10 @@
   <div class="yry-header-row">
     <div class="yry-pulse-dot"></div>
     <h1>{{STORY_NAME}} — 场景 {{SCENE_NUM}}: {{SCENE_TITLE}}</h1>
-    <div class="yry-toolbar">
-      <div class="yry-toolbar-actions">
-        <button onclick="copySVG(this)">📋 Copy SVG</button>
-        <button onclick="downloadPNG(this)">🖼 PNG</button>
-        <button onclick="downloadSVG(this)">📄 SVG</button>
-      </div>
-      <button class="yry-toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button>
+    <div class="yry-export-toolbar yry-toolbar" data-target=".diagram-container" data-filename="{{STORY_NAME}}-scene{{SCENE_NUM}}-architecture" data-bg="#020617">
+      <button data-action="copy-svg">📋 Copy SVG</button>
+      <button data-action="download-png">🖼 PNG</button>
+      <button data-action="download-svg">📄 SVG</button>
     </div>
   </div>
   <p class="yry-subtitle">{{SCENE_TITLE}} · v{{VERSION}} · {{DATE}}</p>
@@ -68,10 +66,6 @@
 <div class="yry-footer">YrY v{{VERSION}} · {{DATE}}</div>
 </div>
 <script src="{{CDN_DEPTH}}cdn/shared.js"></script>
-<script>
-function copySVG(btn){const svg=document.querySelector('.diagram-container svg').outerHTML;navigator.clipboard.writeText(svg).then(()=>{btn.textContent='✅ Copied';setTimeout(()=>btn.textContent='📋 Copy SVG',1500)})}
-function downloadSVG(btn){const svg=document.querySelector('.diagram-container svg').outerHTML;const b=new Blob([svg],{type:'image/svg+xml'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='{{STORY_NAME}}-scene{{SCENE_NUM}}-architecture.svg';a.click();btn.textContent='✅ Downloaded';setTimeout(()=>btn.textContent='📄 SVG',1500)}
-function downloadPNG(btn){if(typeof html2canvas==='undefined'){alert('html2canvas not loaded');return}const el=document.querySelector('.diagram-container');html2canvas(el,{backgroundColor:'#020617'}).then(c=>{const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='{{STORY_NAME}}-scene{{SCENE_NUM}}-architecture.png';a.click();btn.textContent='✅ Downloaded';setTimeout(()=>btn.textContent='🖼 PNG',1500)})}
-</script>
+<script src="{{CDN_DEPTH}}cdn/yry-export-toolbar/index.js"></script>
 </body>
 </html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>yry-export-toolbar — Export Toolbar Component</title>
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="index.css">
+</head>
+<body style="padding:40px;display:flex;justify-content:center;align-items:center;min-height:100vh">
+
+<div class="demo-container" id="demo-container">
+  <h2 style="margin-bottom:16px;color:var(--yry-text)">Export Toolbar Demo</h2>
+  <p style="color:var(--yry-text2);margin-bottom:24px">Click buttons below to test export functions. The toolbar captures <code>#demo-container</code>.</p>
+
+  <!-- The toolbar auto-initializes on any .yry-export-toolbar element -->
+  <div class="yry-export-toolbar" data-target="#demo-container" data-filename="demo-export">
+    <button data-action="copy-png" title="Copy as PNG to clipboard">📋 Copy PNG</button>
+    <button data-action="download-png" title="Download as PNG">🖼 PNG</button>
+    <button data-action="download-pdf" title="Download as PDF">📄 PDF</button>
+  </div>
+
+  <div style="margin-top:24px;padding:24px;background:var(--yry-bg-card);border:var(--yry-border);border-radius:var(--yry-radius)">
+    <p style="color:var(--yry-pass)">✅ Target content area</p>
+    <p style="color:var(--yry-text2);font-size:.82rem;margin-top:8px">This is the content that will be captured by html2canvas.</p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<script src="index.js"></script>
+</body>
+</html>

@@ -2,18 +2,12 @@
 <html lang="zh-CN">
 <head>
 {{HEAD_BLOCK}}
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-cytoscape-graph/index.css">
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-export-toolbar/index.css">
 <style>
 /* Page-specific overrides — shared patterns in shared-a.css */
-.graph-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1rem;margin-bottom:1.5rem}
-#cy{width:100%;height:550px;border-radius:.5rem}
 .yry-container{max-width:1400px}
-.legend{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:.75rem;padding:.75rem;background:rgba(15,23,42,.5);border-radius:.5rem;border:1px solid #1e293b;font-size:.75rem;color:#94a3b8}
-.legend-item{display:flex;align-items:center;gap:.375rem}
-.legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid}
-.legend-dot.scene{background:rgba(139,92,246,.3);border-color:#8B5CF6}
-.legend-dot.check{background:rgba(236,72,153,.3);border-color:#EC4899}
-.legend-dot.source{background:rgba(59,130,246,.3);border-color:#3B82F6}
-.legend-dot.domain{background:rgba(34,211,238,.3);border-color:#22d3ee}
+/* Legend is now handled by yry-cytoscape-graph component via JS */
 </style>
 </head>
 <body>
@@ -25,13 +19,10 @@
   <div class="yry-header-row">
     <div class="yry-pulse-dot"></div>
     <h1>🔗 {{SCENE_TITLE}} · 知识图谱</h1>
-    <div class="yry-toolbar">
-      <div class="yry-toolbar-actions">
-        <button onclick="copyAsImage(this)">📋 Copy</button>
-        <button onclick="downloadPNG(this)">🖼 PNG</button>
-        <button onclick="downloadPDF(this)">📄 PDF</button>
-      </div>
-      <button class="yry-toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')">⋯</button>
+    <div class="yry-export-toolbar yry-toolbar" data-target=".yry-cy-container" data-filename="{{STORY_NAME}}-scene{{SCENE_NUM}}-kg" data-bg="#020617">
+      <button data-action="copy-png">📋 Copy</button>
+      <button data-action="download-png">🖼 PNG</button>
+      <button data-action="download-pdf">📄 PDF</button>
     </div>
   </div>
   <p class="yry-subtitle">{{STORY_NAME}} · 场景 {{SCENE_NUM}} · v{{VERSION}}</p>
@@ -47,7 +38,7 @@
   <span style="color:#64748b;">🖱 拖拽 · 滚轮缩放 · 点击节点高亮邻域</span>
 </div>
 
-<div class="graph-container"><div id="cy"></div></div>
+<div class="yry-cytoscape-graph graph-container" id="cy-graph" data-filename="{{STORY_NAME}}-scene{{SCENE_NUM}}-kg" data-layout="breadthfirst" data-legend="false" style="height:550px"></div>
 
 <div class="yry-cards">
   <div class="yry-card">
@@ -60,13 +51,7 @@
 <div class="yry-footer">YrY v{{VERSION}} · {{DATE}}</div>
 </div>
 <script src="{{CDN_DEPTH}}cdn/shared.js"></script>
-<script>
-(function(){
-  if(typeof cytoscape==='undefined'){document.getElementById('cy').innerHTML='<p style="color:#475569;text-align:center;padding:2rem;">Cytoscape.js 未加载 — 知识图谱数据待生成</p>';return}
-  var cy=cytoscape({container:document.getElementById('cy'),style:[{selector:'node',style:{label:'data(label)',color:'white','font-size':'10px','font-family':'JetBrains Mono,monospace','text-valign':'center','text-halign':'center','background-color':'#1e293b',border:'2px solid #475569'}}],elements:{nodes:[{data:{id:'placeholder',label:'数据待填充'}}],edges:[]},layout:{name:'grid'}});
-  document.querySelector('.toolbar-actions button:nth-child(1)').onclick=function(){navigator.clipboard.writeText(JSON.stringify(cy.json())).then(()=>{this.textContent='✅ Copied';setTimeout(()=>this.textContent='📋 Copy',1500)})};
-  document.querySelector('.toolbar-actions button:nth-child(2)').onclick=function(){if(typeof html2canvas==='undefined')return;html2canvas(document.getElementById('cy'),{backgroundColor:'#020617'}).then(c=>{var a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='{{STORY_NAME}}-scene{{SCENE_NUM}}-kg.png';a.click()})};
-})();
-</script>
+<script src="{{CDN_DEPTH}}cdn/yry-cytoscape-graph/index.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-export-toolbar/index.js"></script>
 </body>
 </html>

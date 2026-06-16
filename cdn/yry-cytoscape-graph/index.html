@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>yry-cytoscape-graph — Knowledge Graph Component</title>
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="index.css">
+</head>
+<body style="padding:20px;background:var(--yry-bg);min-height:100vh">
+
+<h2 style="color:var(--yry-text);margin-bottom:8px">yry-cytoscape-graph Demo</h2>
+<p style="color:var(--yry-text2);font-size:.82rem;margin-bottom:20px">
+  A zero-config Cytoscape.js wrapper with YrY dark theme, neighborhood highlight, and export toolbar.
+</p>
+
+<!-- Example 1: With inline data -->
+<div class="yry-cytoscape-graph"
+     id="demo-graph"
+     data-filename="demo-graph"
+     data-layout="breadthfirst"
+     style="width:100%;height:550px;margin-bottom:24px">
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+
+<!-- Set inline graph data before loading the component -->
+<script>
+document.getElementById('demo-graph').graphData = {
+  nodes: [
+    { data: { id: 'story', label: 'YrY Main Story', type: 'story' } },
+    { data: { id: 's1', label: 'Scene 1: Init', type: 'scene' } },
+    { data: { id: 's2', label: 'Scene 2: Code', type: 'scene' } },
+    { data: { id: 's3', label: 'Scene 3: Verify', type: 'scene' } },
+    { data: { id: 'skill-init', label: 'rui-init', type: 'skill' } },
+    { data: { id: 'skill-code', label: 'rui-code', type: 'skill' } },
+    { data: { id: 'skill-verify', label: 'verify', type: 'skill' } },
+    { data: { id: 'agent-pm', label: 'pm Agent', type: 'agent' } },
+    { data: { id: 'agent-coder', label: 'coder Agent', type: 'agent' } },
+    { data: { id: 'rule-pipeline', label: 'code-pipeline', type: 'rule' } },
+    { data: { id: 'lib-fs', label: 'lib/fs.mjs', type: 'source' } },
+    { data: { id: 'lib-tty', label: 'lib/tty.mjs', type: 'source' } },
+    { data: { id: 'doc-readme', label: 'README.md', type: 'doc' } },
+    { data: { id: 'ext-gh', label: 'GitHub API', type: 'external' } }
+  ],
+  edges: [
+    { data: { id: 'e1', source: 'story', target: 's1', label: 'contains' } },
+    { data: { id: 'e2', source: 'story', target: 's2', label: 'contains' } },
+    { data: { id: 'e3', source: 'story', target: 's3', label: 'contains' } },
+    { data: { id: 'e4', source: 's1', target: 'skill-init', type: 'generates' } },
+    { data: { id: 'e5', source: 's2', target: 'skill-code', type: 'generates' } },
+    { data: { id: 'e6', source: 's3', target: 'skill-verify', type: 'generates' } },
+    { data: { id: 'e7', source: 'skill-init', target: 'agent-pm', type: 'triggers' } },
+    { data: { id: 'e8', source: 'skill-code', target: 'agent-coder', type: 'triggers' } },
+    { data: { id: 'e9', source: 'skill-code', target: 'rule-pipeline', type: 'depends' } },
+    { data: { id: 'e10', source: 'skill-init', target: 'lib-fs', type: 'references' } },
+    { data: { id: 'e11', source: 'skill-code', target: 'lib-tty', type: 'references' } },
+    { data: { id: 'e12', source: 's1', target: 'doc-readme', type: 'generates' } },
+    { data: { id: 'e13', source: 's2', target: 'ext-gh', type: 'depends' } },
+    { data: { id: 'e14', source: 'agent-pm', target: 'agent-coder', type: 'references' } }
+  ]
+};
+</script>
+
+<script src="index.js"></script>
+<script src="../yry-export-toolbar/index.js"></script>
+
+</body>
+</html>
