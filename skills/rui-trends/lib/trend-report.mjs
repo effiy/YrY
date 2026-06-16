@@ -12,17 +12,15 @@
 import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { nowISO, nowDate } from '../../../lib/fs.mjs';
+
 const REPORT_DIR = 'docs/趋势报告';
 const CDN_DEPTH = '../../';
 const MANIFEST_FILE = join(REPORT_DIR, 'reports.json');
 const MAX_MANIFEST_ENTRIES = 50;
 
-function nowISO() {
-  return new Date().toISOString().replace('T', ' ').slice(0, 19);
-}
-
-function nowDate() {
-  return new Date().toISOString().slice(0, 10);
+function fmtDisplay(iso) {
+  return iso.replace('T', ' ').slice(0, 19);
 }
 
 function nowTimestamp() {
@@ -290,7 +288,7 @@ function buildTechRecommendations(analysis) {
  */
 export function generateTrendReport({ source, url, data, trend, findings, ok }) {
   const meta = SOURCE_META[source] || { icon: '📡', label: source, url: '' };
-  const ts = nowISO();
+  const ts = fmtDisplay(nowISO());
   const filename = `trend-${source}-${nowDate()}.html`;
 
   const statusBadge = ok
@@ -528,7 +526,7 @@ export function materializeTrendReportFromManifest(entry) {
   const meta = SOURCE_META[source] || { icon: "📡", label: source, url: "" };
   const date = normalizeDate(entry?.date || entry?.time || "");
   const time = normalizeTime(entry?.time || "");
-  const ts = entry?.time ? String(entry.time) : `${date}${time ? " " + time : ""}`;
+  const ts = entry?.time ? fmtDisplay(String(entry.time)) : `${date}${time ? " " + time : ""}`;
   const ok = entry?.ok !== false;
   const trend = entry?.trend || "flat";
   const items = entry?.items ?? 0;

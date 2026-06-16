@@ -9,16 +9,13 @@
 import { writeFileSync, mkdirSync, existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { nowISO, nowDate } from "../../../lib/fs.mjs";
 
 const REPORT_DIR = "docs/自循环报告";
 const CDN_DEPTH = "../../";
 
-function nowISO() {
-  return new Date().toISOString().replace(/T/, " ").slice(0, 19);
-}
-
-function nowDate() {
-  return new Date().toISOString().slice(0, 10);
+function fmtDisplay(iso) {
+  return iso.replace('T', ' ').slice(0, 19);
 }
 
 function nowTime() {
@@ -74,7 +71,7 @@ const CROSS_REFS = {
  */
 export function generateReport({ skill, status, summary, details, findings }) {
   const meta = SKILL_META[skill] || { icon: "🔄", label: skill, interval: "—" };
-  const ts = nowISO();
+  const ts = fmtDisplay(nowISO());
   const filename = `${skill}-${nowDate()}.html`;
 
   const statusBadge = {

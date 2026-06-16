@@ -8,7 +8,7 @@ import { join } from "node:path";
 
 import { REPORT_DIR, DIM_LABELS } from "./report-constants.mjs";
 
-export function nowISO() {
+export function nowChinese() {
   const d = new Date();
   const p = (n) => String(n).padStart(2, "0");
   return `${d.getFullYear()}年${p(d.getMonth() + 1)}月${p(d.getDate())}日 ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;

@@ -16,7 +16,7 @@ import {
 } from "./report-constants.mjs";
 
 import {
-  nowISO, nowDate, getPreviousScore, getHealthTrend,
+  nowChinese, nowDate, getPreviousScore, getHealthTrend,
   buildGradeSparkline, getDimensionHistory, dimTrendIcon,
   listReportFiles, pickLatestReportsByDate, removeReportsForDate,
 } from "./report-trend.mjs";
@@ -28,7 +28,7 @@ import {
 } from "./report-sections.mjs";
 
 export function generateHealthReport(hr) {
-  const ts = nowISO();
+  const ts = nowChinese();
   const reportDate = nowDate();
   const filename = `health-${reportDate}.html`;
   const gradeInfo = GRADE_STYLE[hr.grade] || GRADE_STYLE.D;

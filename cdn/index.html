@@ -11,39 +11,38 @@
   <meta name="description" content="YrY CDN 共享前端资源库 — 2 故事 10 场景">
   <link rel="stylesheet" href="yry-home.css">
   <link rel="stylesheet" href="yry-inline-helpers.css">
+  <!-- 组件样式 (YryBreadcrumb / YryStatsGrid / YryPanelHub) -->
+  <link rel="stylesheet" href="yry-breadcrumb/index.css">
+  <link rel="stylesheet" href="yry-stats-grid/index.css">
+  <link rel="stylesheet" href="yry-panel-hub/index.css">
+  <!-- 组件样式 (YryLayer / YrySubTitle / YryCardGrid / YryItemCard / YryTagChip) -->
+  <link rel="stylesheet" href="yry-layer/index.css">
+  <link rel="stylesheet" href="yry-sub-title/index.css">
+  <link rel="stylesheet" href="yry-card-grid/index.css">
+  <link rel="stylesheet" href="yry-item-card/index.css">
+  <link rel="stylesheet" href="yry-tag-chip/index.css">
+  <!-- Vue 3 (3 个组件的运行时依赖) -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <style>
     .layer { scroll-margin-top: 24px; }
+    #breadcrumb-app .breadcrumb { animation: fadeInDown 0.4s ease both; }
   </style>
 </head>
 <body>
   <div class="container">
-    <nav class="breadcrumb" aria-label="面包屑导航">
-      <span class="current yry-current" aria-current="page">&#128451; CDN 共享库</span>
-    </nav>
+    <!-- 面包屑 (YryBreadcrumb) -->
+    <div id="breadcrumb-app"></div>
 
     <div class="header">
       <h1><span class="accent">&#127760;</span> YrY CDN 共享前端资源库</h1>
       <p>yry-cdn-lib v1.1.0 — 以「2 故事 10 场景」形式管理 CDN 资源库的架构决策与演进</p>
     </div>
 
-    <div class="stats">
-      <a class="stat" href="#layer-stories"><div class="num green">2</div><div class="label">故事</div></a>
-      <a class="stat" href="#layer-stories"><div class="num green">10</div><div class="label">场景</div></a>
-    </div>
+    <!-- 统计卡组 (YryStatsGrid) -->
+    <div id="stats-app"></div>
 
-    <div class="cross-nav yry-cross-nav">
-      <a class="cross-link" href="../docs/index.html">📑 文档中心</a>
-      <span class="cross-sep" aria-hidden="true">·</span>
-      <a class="cross-link" href="yry-breadcrumb/index.html">📐 Breadcrumb Demo</a>
-      <span class="cross-sep" aria-hidden="true">·</span>
-      <a class="cross-link" href="https://www.jsdelivr.com/package/npm/yry-cdn-lib" target="_blank" rel="noopener noreferrer">🌐 jsDelivr</a>
-      <span class="cross-sep" aria-hidden="true">·</span>
-      <a class="cross-link" href="https://www.npmjs.com/package/yry-cdn-lib" target="_blank" rel="noopener noreferrer">📦 npm</a>
-      <span class="cross-sep" aria-hidden="true">·</span>
-      <a class="cross-link" href="../docs/故事任务面板/cdn/故事任务.md" target="_blank" rel="noopener noreferrer">📋 CDN 任务故事</a>
-      <span class="cross-sep" aria-hidden="true">·</span>
-      <a class="cross-link" href="../docs/故事任务面板/cdn/知识图谱.html">🕸 知识图谱</a>
-    </div>
+    <!-- 跨页导航 (YryPanelHub) -->
+    <div id="panel-hub-app"></div>
 
     <!-- 故事与场景 -->
     <div class="layer" id="layer-stories">
@@ -164,17 +163,84 @@
   <button type="button" class="back-top yry-back-top" id="backTop" title="回到顶部" aria-label="回到顶部">&uarr;</button>
 
   <script src="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.js" defer></script>
+
+  <!-- 组件加载器 (YryBreadcrumb / YryStatsGrid / YryPanelHub) -->
+  <script src="yry-breadcrumb/index.js"></script>
+  <script src="yry-stats-grid/index.js"></script>
+  <script src="yry-panel-hub/index.js"></script>
+
   <script>
-    document.querySelectorAll('.card-grid .item-card, .yry-scene-grid .yry-scene-card').forEach((card, i) => {
-      card.style.animationDelay = `${(0.01 + (i % 20) * 0.012).toFixed(3)}s`;
+    /* ── 1. YryBreadcrumb 挂载 ─────────────────────────────────────── */
+    function mountBreadcrumb() {
+      Vue.createApp(window.YryBreadcrumb, {
+        items: [{ label: 'CDN 共享库', icon: '📋' }]
+      }).mount('#breadcrumb-app');
+    }
+    if (window.YryBreadcrumb) mountBreadcrumb();
+    else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
+
+    /* ── 2. YryStatsGrid 挂载 (点击统计卡 → 滚到故事与场景) ────────── */
+    function mountStats() {
+      var root = Vue.createApp(window.YryStatsGrid, {
+        items: [
+          { value: 2,  label: '故事', modifier: 'health' },
+          { value: 10, label: '场景', modifier: 'health' }
+        ]
+      }).mount('#stats-app');
+      root.querySelectorAll('.stat-card').forEach(function (card) {
+        card.addEventListener('click', function () {
+          var target = document.getElementById('layer-stories');
+          if (target) target.scrollIntoView({ behavior: 'smooth' });
+        });
+      });
+    }
+    if (window.YryStatsGrid) mountStats();
+    else document.addEventListener('yry-stats-grid-ready', mountStats, { once: true });
+
+    /* ── 3. YryPanelHub 挂载 (跨页导航,事件 → 跳转) ───────────────── */
+    var PANEL_HUB_URLS = {
+      docs:       '../docs/index.html',
+      breadcrumb: 'yry-breadcrumb/index.html',
+      jsdelivr:   'https://www.jsdelivr.com/package/npm/yry-cdn-lib',
+      npm:        'https://www.npmjs.com/package/yry-cdn-lib',
+      cdnstory:   '../docs/故事任务面板/cdn/故事任务.md',
+      knowledge:  '../docs/故事任务面板/cdn/知识图谱.html'
+    };
+    function mountPanelHub() {
+      var root = Vue.createApp(window.YryPanelHub, {
+        label: { text: '🌐 —', panel: 'docs', title: '点击打开文档中心' },
+        buttons: [
+          { icon: '📑', name: '文档',    desc: 'docs',       panel: 'docs',       color: 'var(--yry-cyan, #22d3ee)' },
+          { icon: '📐', name: '面包屑',  desc: 'breadcrumb', panel: 'breadcrumb', color: '#a78bfa' },
+          { icon: '🌐', name: 'jsDelivr', desc: 'cdn',       panel: 'jsdelivr',   color: '#22c55e' },
+          { icon: '📦', name: 'npm',     desc: 'package',    panel: 'npm',        color: '#ef4444' },
+          { icon: '📋', name: '任务',    desc: 'story',      panel: 'cdnstory',   color: '#ffc107' },
+          { icon: '🕸', name: '图谱',    desc: 'graph',      panel: 'knowledge',  color: '#f472b6' }
+        ],
+        flow: 'CDN 库 → 文档 · 演示 · npm · jsDelivr · 任务 · 图谱'
+      }).mount('#panel-hub-app');
+
+      root.addEventListener('panel-hub-select', function (e) {
+        var url = PANEL_HUB_URLS[e.detail.panel];
+        if (!url) return;
+        if (/^https?:/i.test(url)) window.open(url, '_blank', 'noopener,noreferrer');
+        else window.location.href = url;
+      });
+    }
+    if (window.YryPanelHub) mountPanelHub();
+    else document.addEventListener('yry-panel-hub-ready', mountPanelHub, { once: true });
+
+    /* ── 卡片入场动画 + Back to top (保留原逻辑) ────────────────────── */
+    document.querySelectorAll('.card-grid .item-card, .yry-scene-grid .yry-scene-card').forEach(function (card, i) {
+      card.style.animationDelay = (0.01 + (i % 20) * 0.012).toFixed(3) + 's';
     });
 
     {
-      const btn = document.getElementById('backTop');
+      var btn = document.getElementById('backTop');
       if (btn) {
-        const toggle = () => btn.classList.toggle('visible', window.scrollY > 400);
+        var toggle = function () { btn.classList.toggle('visible', window.scrollY > 400); };
         window.addEventListener('scroll', toggle, { passive: true });
-        btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+        btn.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
         toggle();
       }
     }
