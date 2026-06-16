@@ -91,6 +91,9 @@
 /* ── 元数据 chip ── */
 .yry-m-chip   { font-size: 0.7rem; color: var(--text3, #888); background: rgba(255,255,255,.04); padding: 2px 8px; border-radius: 8px; }
 
+/* ── 元数据链接(取代 desc 内的 style="display:inline-block;margin-top:8px") ── */
+.yry-desc-meta-link { display: inline-block; margin-top: 8px; }
+
 /* ── 工具栏容器 ── */
 .yry-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; animation: fadeInDown .5s .15s ease both; }
 

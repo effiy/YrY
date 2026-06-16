@@ -20,12 +20,11 @@
   <link rel="stylesheet" href="yry-card-grid/index.css">
   <link rel="stylesheet" href="yry-item-card/index.css">
   <link rel="stylesheet" href="yry-tag-chip/index.css">
+  <link rel="stylesheet" href="yry-story-card/index.css">
+  <link rel="stylesheet" href="yry-scene-card/index.css">
+  <link rel="stylesheet" href="yry-doc-layer/index.css">
   <!-- Vue 3 (Yry* 自定义元素的运行时依赖) -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-  <style>
-    .layer { scroll-margin-top: 24px; }
-    yry-breadcrumb .breadcrumb { animation: fadeInDown 0.4s ease both; }
-  </style>
 </head>
 <body>
   <div class="container">
@@ -43,16 +42,8 @@
     <!-- ── Cross-Nav (YryPanelHub) ── -->
     <yry-panel-hub id="panel-hub-app"></yry-panel-hub>
 
-    <!-- ═══ Layer: 故事与场景 (YryLayer + slot 子内容) ═══ -->
-    <yry-layer id="layer-stories-app">
-      <yry-sub-title id="sub-title-a"></yry-sub-title>
-      <p class="yry-story-intro">CDN 共享库的所有架构决策以「故事任务」形式管理，每个场景包含 <strong>index.md · 审查 · 架构图 · 测试面板 · 源码 · 演示 · 知识图谱 · 计划清单</strong> 共 8 个标准交付物。完整场景列表见 <a href="../docs/index.html#layer-scene">文档中心 Layer 4</a>。</p>
-      <yry-card-grid id="card-grid-a"></yry-card-grid>
-
-      <yry-sub-title id="sub-title-b"></yry-sub-title>
-      <p class="yry-story-intro">YryBreadcrumb 组件的独立故事任务，跟踪 5 个组件演化场景：<strong>需求与设计 → 模板与样式 → Loader 实现 → 页面集成 → 测试与发布</strong>。路径：<code>cdn/故事任务面板/yry-breadcrumb/</code>。</p>
-      <yry-card-grid id="card-grid-b"></yry-card-grid>
-    </yry-layer>
+    <!-- ═══ Layer: 故事与场景 (YryDocLayer · 内含 2 sub-section: 故事 + 场景) ═══ -->
+    <yry-doc-layer id="layer-stories-app"></yry-doc-layer>
 
     <div class="footer-note">yry-cdn-lib v1.1.0</div>
   </div>
@@ -70,6 +61,9 @@
   <script src="yry-panel-hub/index.js"></script>
   <script src="yry-sub-title/index.js"></script>
   <script src="yry-layer/index.js"></script>
+  <script src="yry-story-card/index.js"></script>
+  <script src="yry-scene-card/index.js"></script>
+  <script src="yry-doc-layer/index.js"></script>
 
   <script>
     /* ═══ 概述 ═══
@@ -78,6 +72,19 @@
          1) 内联脚本立即赋值 (覆盖元素先于组件定义出现的场景)
          2) 监听 *-ready 事件,组件定义完成后再赋一次 (覆盖组件晚于元素出现的场景)
     */
+
+    /* ── 场景标准交付物链接生成器 (7 件套,sceneMeta 与 docs-data.js 同构) ── */
+    function sceneMeta(basePath) {
+      return [
+        { icon: '📋', label: '清单', href: basePath + '/计划清单.html' },
+        { icon: '📐', label: '架构', href: basePath + '/架构图.html' },
+        { icon: '🔗', label: '图谱', href: basePath + '/知识图谱.html' },
+        { icon: '🧪', label: '测试', href: basePath + '/测试面板.html' },
+        { icon: '📄', label: '源码', href: basePath + '/源码.html' },
+        { icon: '💡', label: '演示', href: basePath + '/演示.html' },
+        { icon: '📝', label: '审查', href: basePath + '/审查.html' }
+      ];
+    }
 
     /* ── 数据容器 ────────────────────────────────────────────── */
     var CDN_DATA = {
@@ -112,86 +119,101 @@
         }
       },
 
-      /* Layer: 故事与场景 */
-      layer: {
+      /* Layer: 故事与场景 (YryDocLayer · 与 docs/index.html 的 4 个 doc-layer 同构) */
+      docLayer: {
         layerId:     'layer-stories',
         num:         '1',
+        titleIcon:   '📖',
         titlePrefix: '',
         titleAccent: '故事与场景',
-        stats:       ['2 故事', '10 场景', '8 交付物/场景', '80+ 文件']
-      },
-
-      /* SubTitle × 2 */
-      subTitleA: { icon: '📝', text: '主故事 A — CDN 共享库 (1 故事 · 5 场景)' },
-      subTitleB: { icon: '📝', text: '组件子故事 B — YryBreadcrumb (1 故事 · 5 场景)' },
-
-      /* CardGrid A · CDN 共享库 5 个场景 */
-      cardGridA: [
-        { icon: '1', iconModifier: 'rule',
-          name: 'CDN 资源加载与页面渲染',
-          nameHref: '../docs/故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/index.md',
-          nameTarget: '_blank',
-          desc: 'jsDelivr URL 规范 · 加载顺序约束 · 字体/动画延迟 · shared.css 必备基线' +
-                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">8 项交付物 → 文档中心</a>' },
-        { icon: '2', iconModifier: 'rule',
-          name: '双主题系统设计',
-          nameHref: '../docs/故事任务面板/cdn/场景-2-双主题系统设计/index.md',
-          nameTarget: '_blank',
-          desc: 'Category A (Mono) vs Category B (System) 选型 · 14 设计令牌 · CSS 变量分层' +
-                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">8 项交付物 → 文档中心</a>' },
-        { icon: '3', iconModifier: 'rule',
-          name: '组件库与 JS 工具 API',
-          nameHref: '../docs/故事任务面板/cdn/场景-3-组件库与JS工具API/index.md',
-          nameTarget: '_blank',
-          desc: '22 CSS 组件类名约定 · 9 个 YrY.* 工具函数 · 命名空间与语义化' +
-                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">8 项交付物 → 文档中心</a>' },
-        { icon: '4', iconModifier: 'rule',
-          name: '存量页面迁移',
-          nameHref: '../docs/故事任务面板/cdn/场景-4-存量页面迁移/index.md',
-          nameTarget: '_blank',
-          desc: '删除内联样式 → 替换 <code>.yry-*</code> 类名 · 保留页面专属 CSS · 6 步迁移清单' +
-                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">8 项交付物 → 文档中心</a>' },
-        { icon: '5', iconModifier: 'rule',
-          name: 'npm 包发布与版本管理',
-          nameHref: '../docs/故事任务面板/cdn/场景-5-npm包发布与版本管理/index.md',
-          nameTarget: '_blank',
-          desc: 'package.json 字段 · <code>files</code> 白名单 · jsDelivr 同步 · 版本号策略' +
-                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">8 项交付物 → 文档中心</a>' }
-      ],
-
-      /* CardGrid B · YryBreadcrumb 组件子故事 5 个场景 */
-      cardGridB: [
-        { icon: 'S1', iconModifier: 'ref',
-          name: '需求与设计',
-          nameHref: '故事任务面板/yry-breadcrumb/场景-1-需求与设计/index.md',
-          nameTarget: '_blank',
-          desc: '5 项设计决策 · Props 草案 · a11y 完备性约束' +
-                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">7 项交付物 → 文档中心</a>' },
-        { icon: 'S2', iconModifier: 'ref',
-          name: '模板与样式',
-          nameHref: '故事任务面板/yry-breadcrumb/场景-2-模板与样式/index.md',
-          nameTarget: '_blank',
-          desc: 'Vue template + CSS 设计令牌 · 3 个 Demo 示例' +
-                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">7 项交付物 → 文档中心</a>' },
-        { icon: 'S3', iconModifier: 'ref',
-          name: 'Loader 实现',
-          nameHref: '故事任务面板/yry-breadcrumb/场景-3-Loader实现/index.md',
-          nameTarget: '_blank',
-          desc: 'fetch + DOMParser + ready 事件 + 5s 超时容错' +
-                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">7 项交付物 → 文档中心</a>' },
-        { icon: 'S4', iconModifier: 'ref',
-          name: '页面集成',
-          nameHref: '故事任务面板/yry-breadcrumb/场景-4-页面集成/index.md',
-          nameTarget: '_blank',
-          desc: '4 文件引用顺序 · 4 种 items 模式 · 异步挂载' +
-                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">7 项交付物 → 文档中心</a>' },
-        { icon: 'S5', iconModifier: 'ref',
-          name: '测试与发布',
-          nameHref: '故事任务面板/yry-breadcrumb/场景-5-测试与发布/index.md',
-          nameTarget: '_blank',
-          desc: '7 项自测 · npm 集成 · jsDelivr 同步验证' +
-                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">7 项交付物 → 文档中心</a>' }
-      ]
+        titleSuffix: '',
+        stats:       ['2 故事 · 10 场景', '8 交付物/场景 · 80+ 文件'],
+        panels:      [],
+        sections:    [
+          /* Section 1 — 故事 (YryStoryCard) */
+          {
+            subTitle: { icon: '📖', text: '故事', count: '2 个' },
+            grid: 'story',
+            items: [
+              {
+                icon: '🌐', name: 'CDN 共享前端资源库',
+                nameHref: '故事任务面板/cdn/故事任务.md', nameTarget: '_blank',
+                badge: 'v1.1.0',
+                desc: 'YrY 共享前端资源 — 双主题系统 (Mono + System)、22 CSS 组件、9 JS 工具 API。55+ 页面统一引用,消除内联重复代码 40-60%。<a href="../docs/index.html#layer-scene">详情 → 文档中心 Layer 4</a>',
+                scenes: [
+                  'CDN 资源加载与页面渲染',
+                  '双主题系统设计',
+                  '组件库与 JS 工具 API',
+                  '存量页面迁移',
+                  'npm 包发布与版本管理'
+                ]
+              },
+              {
+                icon: '📐', name: 'YryBreadcrumb 组件',
+                nameHref: '故事任务面板/yry-breadcrumb/README.md', nameTarget: '_blank',
+                badge: 'v1.0.0',
+                desc: 'YryBreadcrumb 组件的独立故事 — 跟踪 5 个组件演化场景,从需求到发布的全生命周期。',
+                scenes: [
+                  '需求与设计',
+                  '模板与样式',
+                  'Loader 实现',
+                  '页面集成',
+                  '测试与发布'
+                ]
+              }
+            ]
+          },
+          /* Section 2 — 场景 (YrySceneCard · 每张卡 7 个标准交付物链接) */
+          {
+            subTitle: { icon: '🎬', text: '场景', count: '10 个' },
+            grid: 'scene',
+            items: [
+              /* 主故事 A · CDN 共享库 — 场景 1-5 */
+              { num: '场景 1', name: 'CDN 资源加载与页面渲染',
+                nameHref: '故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/index.md', nameTarget: '_blank',
+                desc: 'jsDelivr URL 规范 · 加载顺序约束 · 字体/动画延迟 · shared.css 必备基线',
+                meta: sceneMeta('故事任务面板/cdn/场景-1-cdn资源加载与页面渲染') },
+              { num: '场景 2', name: '双主题系统设计',
+                nameHref: '故事任务面板/cdn/场景-2-双主题系统设计/index.md', nameTarget: '_blank',
+                desc: 'Category A (Mono) vs Category B (System) 选型 · 14 设计令牌 · CSS 变量分层',
+                meta: sceneMeta('故事任务面板/cdn/场景-2-双主题系统设计') },
+              { num: '场景 3', name: '组件库与 JS 工具 API',
+                nameHref: '故事任务面板/cdn/场景-3-组件库与JS工具API/index.md', nameTarget: '_blank',
+                desc: '22 CSS 组件类名约定 · 9 个 YrY.* 工具函数 · 命名空间与语义化',
+                meta: sceneMeta('故事任务面板/cdn/场景-3-组件库与JS工具API') },
+              { num: '场景 4', name: '存量页面迁移',
+                nameHref: '故事任务面板/cdn/场景-4-存量页面迁移/index.md', nameTarget: '_blank',
+                desc: '删除内联样式 → 替换 .yry-* 类名 · 保留页面专属 CSS · 6 步迁移清单',
+                meta: sceneMeta('故事任务面板/cdn/场景-4-存量页面迁移') },
+              { num: '场景 5', name: 'npm 包发布与版本管理',
+                nameHref: '故事任务面板/cdn/场景-5-npm包发布与版本管理/index.md', nameTarget: '_blank',
+                desc: 'package.json 字段 · files 白名单 · jsDelivr 同步 · 版本号策略',
+                meta: sceneMeta('故事任务面板/cdn/场景-5-npm包发布与版本管理') },
+              /* 组件子故事 B · YryBreadcrumb — 场景 1-5 */
+              { num: '场景 1', name: '需求与设计',
+                nameHref: '故事任务面板/yry-breadcrumb/场景-1-需求与设计/index.md', nameTarget: '_blank',
+                desc: '5 项设计决策 · Props 草案 · a11y 完备性约束',
+                meta: sceneMeta('故事任务面板/yry-breadcrumb/场景-1-需求与设计') },
+              { num: '场景 2', name: '模板与样式',
+                nameHref: '故事任务面板/yry-breadcrumb/场景-2-模板与样式/index.md', nameTarget: '_blank',
+                desc: 'Vue template + CSS 设计令牌 · 3 个 Demo 示例',
+                meta: sceneMeta('故事任务面板/yry-breadcrumb/场景-2-模板与样式') },
+              { num: '场景 3', name: 'Loader 实现',
+                nameHref: '故事任务面板/yry-breadcrumb/场景-3-Loader实现/index.md', nameTarget: '_blank',
+                desc: 'fetch + DOMParser + ready 事件 + 5s 超时容错',
+                meta: sceneMeta('故事任务面板/yry-breadcrumb/场景-3-Loader实现') },
+              { num: '场景 4', name: '页面集成',
+                nameHref: '故事任务面板/yry-breadcrumb/场景-4-页面集成/index.md', nameTarget: '_blank',
+                desc: '4 文件引用顺序 · 4 种 items 模式 · 异步挂载',
+                meta: sceneMeta('故事任务面板/yry-breadcrumb/场景-4-页面集成') },
+              { num: '场景 5', name: '测试与发布',
+                nameHref: '故事任务面板/yry-breadcrumb/场景-5-测试与发布/index.md', nameTarget: '_blank',
+                desc: '7 项自测 · npm 集成 · jsDelivr 同步验证',
+                meta: sceneMeta('故事任务面板/yry-breadcrumb/场景-5-测试与发布') }
+            ]
+          }
+        ]
+      }
     };
 
     /* ── 立即设置 (双设策略:第 1 次,元素已在 DOM,组件可能尚未定义) ── */
@@ -209,31 +231,27 @@
         ph.flow    = CDN_DATA.panelHub.flow;
       }
 
-      var layer = document.getElementById('layer-stories-app');
-      if (layer) {
-        layer.layerId     = CDN_DATA.layer.layerId;
-        layer.num         = CDN_DATA.layer.num;
-        layer.titleAccent = CDN_DATA.layer.titleAccent;
-        layer.stats       = CDN_DATA.layer.stats;
+      /* YryDocLayer · 与 docs/index.html 4 个 doc-layer 同构:layerId / num / titleIcon /
+         titlePrefix / titleAccent / titleSuffix / stats / panels / sections */
+      var doc = document.getElementById('layer-stories-app');
+      if (doc) {
+        var L = CDN_DATA.docLayer;
+        doc.layerId     = L.layerId;
+        doc.num         = L.num;
+        doc.titleIcon   = L.titleIcon;
+        doc.titlePrefix = L.titlePrefix;
+        doc.titleAccent = L.titleAccent;
+        doc.titleSuffix = L.titleSuffix;
+        doc.stats       = L.stats;
+        doc.panels      = L.panels;
+        doc.sections    = L.sections;
       }
-
-      var subA = document.getElementById('sub-title-a');
-      if (subA) { subA.icon = CDN_DATA.subTitleA.icon; subA.text = CDN_DATA.subTitleA.text; }
-
-      var subB = document.getElementById('sub-title-b');
-      if (subB) { subB.icon = CDN_DATA.subTitleB.icon; subB.text = CDN_DATA.subTitleB.text; }
-
-      var cardA = document.getElementById('card-grid-a');
-      if (cardA) cardA.items = CDN_DATA.cardGridA;
-
-      var cardB = document.getElementById('card-grid-b');
-      if (cardB) cardB.items = CDN_DATA.cardGridB;
     }
     applyAll();
 
     /* ── 组件 ready 后再设一次 (双设策略:第 2 次,此时元素已升级) ── */
     ['yry-breadcrumb-ready', 'yry-stats-grid-ready', 'yry-panel-hub-ready',
-     'yry-layer-ready',      'yry-sub-title-ready',  'yry-card-grid-ready'].forEach(function (ev) {
+     'yry-doc-layer-ready'].forEach(function (ev) {
       document.addEventListener(ev, applyAll, { once: true });
     });
 
