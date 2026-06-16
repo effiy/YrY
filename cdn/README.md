@@ -52,7 +52,8 @@ cdn/
 ├── yry-scene.css             # 场景文档共享 — 35 场景页统一引用 · 排版 · 代码块 · 表格 · 徽章
 ├── yry-home.css              # 文档首页专属 — 六层结构布局 · 统计卡片 · 场景网格
 ├── yry-inline-helpers.css    # 内联工具类 — 文字色 · 背景色 · 间距等 demo 辅助
-├── shared-reports.css        # 健康报告专属样式 (由 h-container 命名空间)
+├── shared-reports.css        # 报告页面公共样式 (5 个报告 index 页共享)
+├── shared-reports.js         # 报告 JS 工具库 (YrYReports.* — 20+ 函数)
 ├── package.json              # npm 包元数据 (files 白名单、keywords、仓库地址)
 ├── .npmignore                # npm 排除文件清单
 ├── fonts.css + fonts/        # JetBrains Mono 字体声明 + 4 个 woff2 文件
@@ -74,6 +75,8 @@ cdn/
 ├── yry-sub-title/            # Vue 3 组件 — 子节标题 (icon + 文字 + 计数)
 ├── yry-tabs-panel/           # Vue 3 组件 — 标签页+面板 (受控切换)
 ├── yry-tag-chip/             # Vue 3 组件 — 标签芯片 (icon + 文字)
+├── yry-export-toolbar/       # Vanilla JS 组件 — 导出工具栏 (5 种格式, 零配置)
+├── yry-cytoscape-graph/      # Vanilla JS 组件 — 知识图谱 (Cytoscape + YrY 主题)
 │   (每个 yry-* 组件目录都遵循相同结构:)
 │   ├── index.html            #   模板源 (<script type="text/x-template">) + Demo 预览页
 │   ├── index.js              #   Loader: fetch → DOMParser → 注册 → ready 事件
@@ -345,7 +348,33 @@ yry-<name>/
 | 16 | YryTabsPanel | `<yry-tabs-panel>` | `window.YryTabsPanel` | 标签页+面板 |
 | 17 | YryTagChip | `<yry-tag-chip>` | `window.YryTagChip` | 标签芯片 |
 
+**Vanilla JS 工具组件 (无 Vue 依赖, 零配置自初始化):**
+
+| # | 组件 | 选择器 | 全局变量 | 用途 |
+|---|------|--------|----------|------|
+| 18 | YryExportToolbar | `.yry-export-toolbar` | `window.YrYExportToolbar` | 导出工具栏 (Copy PNG / PNG / PDF / SVG) |
+| 19 | YryCytoscapeGraph | `.yry-cytoscape-graph` | `window.YrYCytoscapeGraph` | 知识图谱 (Cytoscape.js + YrY 深色主题) |
+
 > 📖 每个组件的详细 Props/事件/Demo 参见其 `index.html` 顶部注释 + 同目录 `任务故事/` 下的 5 场景 × 8 交付物。
+>
+> 🧩 **工具组件使用方法** (无需 Vue, 引入即用):
+> ```html
+> <!-- Export Toolbar -->
+> <link rel="stylesheet" href="yry-export-toolbar/index.css">
+> <div class="yry-export-toolbar" data-target="#capture" data-filename="export">
+>   <button data-action="copy-png">📋 Copy</button>
+>   <button data-action="download-png">🖼 PNG</button>
+> </div>
+> <script src="yry-export-toolbar/index.js"></script>
+>
+> <!-- Knowledge Graph -->
+> <link rel="stylesheet" href="yry-cytoscape-graph/index.css">
+> <div class="yry-cytoscape-graph" id="graph" data-layout="breadthfirst"></div>
+> <script>
+>   document.getElementById('graph').graphData = { nodes: [...], edges: [...] };
+> </script>
+> <script src="yry-cytoscape-graph/index.js"></script>
+> ```
 
 ### 「双设」挂载策略
 

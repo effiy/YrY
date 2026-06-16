@@ -1,15 +1,23 @@
 {
   "name": "yry-cdn",
-  "version": "1.1.0",
-  "description": "YrY CDN — shared frontend resources: themes, CSS components, animations, JS utilities, Vue 3 components for story panel HTML pages",
+  "version": "1.2.0",
+  "description": "YrY CDN — shared frontend resources: themes, CSS components, animations, JS utilities, Vue 3 components, vanilla JS tool components for story panel HTML pages",
   "main": "shared.js",
   "files": [
     "shared.css",
     "shared.js",
+    "shared-reports.css",
+    "shared-reports.js",
     "yry-breadcrumb/index.html",
     "yry-breadcrumb/index.js",
     "yry-breadcrumb/index.css",
     "yry-breadcrumb/任务故事",
+    "yry-export-toolbar/index.html",
+    "yry-export-toolbar/index.js",
+    "yry-export-toolbar/index.css",
+    "yry-cytoscape-graph/index.html",
+    "yry-cytoscape-graph/index.js",
+    "yry-cytoscape-graph/index.css",
     "theme.css",
     "theme-mono.css",
     "fonts.css",
@@ -17,6 +25,7 @@
     "yry-checklist.css",
     "yry-scene.css",
     "yry-home.css",
+    "yry-inline-helpers.css",
     "README.md"
   ],
   "keywords": [

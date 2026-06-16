@@ -28,6 +28,9 @@
   <link rel="stylesheet" href="yry-cytoscape-graph/index.css">
   <!-- Vue 3 (Yry* 自定义元素的运行时依赖) -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <!-- 工具组件外部依赖 (html2canvas 用于 export, cytoscape 用于 graph) -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
 </head>
 <body>
   <div class="container">
@@ -36,7 +39,7 @@
 
     <div class="header">
       <h1><span class="accent">&#127760;</span> YrY CDN 共享前端资源库</h1>
-      <p>yry-cdn-lib v1.1.0 — 以「2 故事 10 场景」形式管理 CDN 资源库的架构决策与演进</p>
+      <p>yry-cdn-lib v1.2.0 — 以「2 故事 10 场景」形式管理 CDN 资源库的架构决策与演进</p>
     </div>
 
     <!-- ── Stats (YryStatsGrid) ── -->
@@ -48,7 +51,54 @@
     <!-- ═══ Layer: 故事与场景 (YryDocLayer · 内含 2 sub-section: 故事 + 场景) ═══ -->
     <yry-doc-layer id="layer-stories-app"></yry-doc-layer>
 
-    <div class="footer-note">yry-cdn-lib v1.1.0</div>
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         Vanilla JS 工具组件展示 (无 Vue 依赖, 零配置自初始化)
+         ════════════════════════════════════════════════════════════════════ -->
+    <section class="card" style="margin-top:24px">
+      <h2>🧩 工具组件 (Vanilla JS · 零配置)</h2>
+      <p style="color:var(--yry-text2);font-size:.82rem;margin-bottom:18px">
+        以下组件为纯 JavaScript 实现，不依赖 Vue。引入 CSS + JS 即可使用，无需手动初始化。
+      </p>
+
+      <!-- ── yry-export-toolbar demo ── -->
+      <div class="card" style="background:rgba(15,23,42,.4);margin-bottom:16px">
+        <h3 style="font-size:.92rem;margin-bottom:12px;color:var(--yry-text)">
+          📋 yry-export-toolbar — 导出工具栏
+        </h3>
+        <p style="color:var(--yry-text3);font-size:.76rem;margin-bottom:14px">
+          支持 Copy PNG / Download PNG / Download PDF / Copy SVG / Download SVG 五种操作。
+          通过 <code>data-target</code> 指定截图目标，<code>data-filename</code> 设置文件名。
+        </p>
+        <div style="padding:20px;background:var(--yry-bg);border-radius:8px;border:var(--yry-border)" id="export-demo-target">
+          <p style="color:var(--yry-pass);font-weight:600">📸 截图目标区域</p>
+          <p style="color:var(--yry-text2);font-size:.78rem;margin-top:4px">点击下方按钮导出此区域</p>
+        </div>
+        <div class="yry-export-toolbar" data-target="#export-demo-target" data-filename="cdn-demo" style="margin-top:12px">
+          <button data-action="copy-png">📋 Copy</button>
+          <button data-action="download-png">🖼 PNG</button>
+          <button data-action="download-pdf">📄 PDF</button>
+        </div>
+      </div>
+
+      <!-- ── yry-cytoscape-graph demo ── -->
+      <div class="card" style="background:rgba(15,23,42,.4)">
+        <h3 style="font-size:.92rem;margin-bottom:12px;color:var(--yry-text)">
+          🔗 yry-cytoscape-graph — 知识图谱
+        </h3>
+        <p style="color:var(--yry-text3);font-size:.76rem;margin-bottom:14px">
+          封装 Cytoscape.js，自带 YrY 深色主题、8 种节点类型 × 4 种边类型样式、邻域高亮交互、
+          图例自动生成。支持 <code>data-elements-url</code> 异步加载或 <code>element.graphData</code> 内联数据。
+        </p>
+        <div class="yry-cytoscape-graph"
+             id="cdn-demo-graph"
+             data-filename="cdn-demo-graph"
+             data-layout="breadthfirst"
+             style="height:400px">
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note">yry-cdn-lib v1.2.0</div>
   </div>
 
   <button type="button" class="back-top yry-back-top" id="backTop" title="回到顶部" aria-label="回到顶部">&uarr;</button>
@@ -69,6 +119,45 @@
   <script src="yry-doc-layer/index.js"></script>
   <!-- ═══ 工具组件 (vanilla JS) ═══ -->
   <script src="yry-export-toolbar/index.js"></script>
+  <script src="yry-cytoscape-graph/index.js"></script>
+
+  <!-- Demo graph inline data (必须在 yry-cytoscape-graph 初始化前设置) -->
+  <script>
+    (function() {
+      var demoEl = document.getElementById('cdn-demo-graph');
+      if (!demoEl) return;
+      demoEl.graphData = {
+        nodes: [
+          { data: { id: 'story', label: 'CDN Story', type: 'story' } },
+          { data: { id: 's1', label: '双主题', type: 'scene' } },
+          { data: { id: 's2', label: '组件库', type: 'scene' } },
+          { data: { id: 's3', label: '存量迁移', type: 'scene' } },
+          { data: { id: 's4', label: 'npm 发布', type: 'scene' } },
+          { data: { id: 'comp-bc', label: 'breadcrumb', type: 'source' } },
+          { data: { id: 'comp-ec', label: 'export-toolbar', type: 'source' } },
+          { data: { id: 'comp-cg', label: 'cytoscape-graph', type: 'source' } },
+          { data: { id: 'skill-html', label: 'rui-html', type: 'skill' } },
+          { data: { id: 'agent-pm', label: 'pm', type: 'agent' } },
+          { data: { id: 'rule-pipe', label: 'code-pipeline', type: 'rule' } },
+          { data: { id: 'doc-readme', label: 'CDN README', type: 'doc' } }
+        ],
+        edges: [
+          { data: { id: 'e0', source: 'story', target: 's1' } },
+          { data: { id: 'e1', source: 'story', target: 's2' } },
+          { data: { id: 'e2', source: 'story', target: 's3' } },
+          { data: { id: 'e3', source: 'story', target: 's4' } },
+          { data: { id: 'e4', source: 's2', target: 'comp-bc', type: 'generates' } },
+          { data: { id: 'e5', source: 's2', target: 'comp-ec', type: 'generates' } },
+          { data: { id: 'e6', source: 's2', target: 'comp-cg', type: 'generates' } },
+          { data: { id: 'e7', source: 's2', target: 'skill-html', type: 'depends' } },
+          { data: { id: 'e8', source: 's3', target: 'agent-pm', type: 'triggers' } },
+          { data: { id: 'e9', source: 's1', target: 'rule-pipe', type: 'references' } },
+          { data: { id: 'e10', source: 's4', target: 'doc-readme', type: 'generates' } },
+          { data: { id: 'e11', source: 'comp-ec', target: 'comp-cg', type: 'references' } }
+        ]
+      };
+    })();
+  </script>
 
   <script>
     /* ═══ 概述 ═══
