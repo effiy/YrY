@@ -1,0 +1,33 @@
+<div class="section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令<span class="s-done">· 3 条</span></h2>
+<div class="cmd-grid">
+  <div class="cmd-card">
+    <div class="c-stage">步骤 1</div>
+    <div class="c-name">6 组件交互拆分</div>
+    <div class="c-desc">将清单交互拆为勾选/折叠/标签/风险/过滤/复制 6 组件,定义每个组件的事件 + 状态 + DOM hook</div>
+    <pre>node skills/codegen/interact-decompose.mjs --components=4 --output=spec/interact.json<span class="cb" onclick="copyCmd(this,'node skills/codegen/interact-decompose.mjs --components=4 --output=spec/interact.json')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 coder agent</span><span>⏱ 1.5h</span><span>🎯 P0</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b><code>spec/interact.json</code> · 6 组件 · 12 事件 · 6 状态机</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 2</div>
+    <div class="c-name">数据驱动 vs 静态模板</div>
+    <div class="c-desc">分离 <code>Data / Template / Renderer</code> 三层,定义 <code>Context → DOM</code> 纯函数映射,Schema 化契约</div>
+    <pre>node skills/codegen/data-driven.mjs --layers=data,template,renderer --schema=Context.schema.json<span class="cb" onclick="copyCmd(this,'node skills/codegen/data-driven.mjs --layers=data,template,renderer --schema=Context.schema.json')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 coder agent</span><span>⏱ 1.2h</span><span>🎯 P0</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>Schema 5 子场景共享 · 新场景接入 ≤ 1h · 纯函数率 ≥ 90%</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 3</div>
+    <div class="c-name">RACI 评审 4 方签收</div>
+    <div class="c-desc">PO / Tech Lead / QA / 交互测试官 4 方评审 6 组件拆分,阻塞 24h SLA,归档 review/section-0.md</div>
+    <pre>node skills/review/raci.mjs --scene=interact --sign-off=4 --output=review/section-0.md<span class="cb" onclick="copyCmd(this,'node skills/review/raci.mjs --scene=interact --sign-off=4 --output=review/section-0.md')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 coder agent</span><span>⏱ 1.3h</span><span>🎯 P0</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>4 方 sign-off · 阻塞 0 · 警告有 mitigation · <code>index.json</code> 已更新</div>
+  </div>
+</div></div>

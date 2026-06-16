@@ -16,7 +16,13 @@
 <link rel="stylesheet" href="../../yry-scene.css">
 <!-- ═══ CDN: YryBreadcrumb 组件样式 ═══ -->
 <link rel="stylesheet" href="../../yry-breadcrumb/index.css">
-<!-- ═══ CDN: Vue 3 ═══ -->
+<link rel="stylesheet" href="../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../yry-stats-grid/index.css">
+<link rel="stylesheet" href="../../yry-inline-helpers.css">
+  <!-- ═══ CDN: Vue 3 ═══ -->
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 
 <!-- ═══ 结构化数据 (SEO / 索引) ═══ -->
@@ -441,6 +447,8 @@
   .flow-strip, .timeline-strip { background: white !important; }
   body { color: black !important; background: white !important; }
 }
+
+.container { max-width: 1100px; }
 </style>
 </head>
 <body>
@@ -455,7 +463,7 @@
 <!-- ── Header ── -->
 <div class="header">
   <h1><span class="accent">&#127828;</span> YryBreadcrumb · 任务故事</h1>
-  <p><span class="pulse-dot" style="vertical-align:middle;margin-right:6px" title="实时数据"></span>零打包 · Vue 3 单文件组件 — 1 组件 / 3 文件 / 5 场景 / 40 交付物 · 故事驱动 SDLC 落地</p>
+  <p><span class="pulse-dot yry-pulse-wrap" title="实时数据"></span>零打包 · Vue 3 单文件组件 — 1 组件 / 3 文件 / 5 场景 / 40 交付物 · 故事驱动 SDLC 落地</p>
 </div>
 
 <!-- ── Page meta (阅读时间 / 更新时间) ── -->
@@ -481,7 +489,7 @@
   <a class="stat" href="../../yry-breadcrumb/index.html"><div class="num">0</div><div class="label">打包步骤</div></a>
 </div>
 
-<div style="text-align:center;margin:0 0 16px;font-size:.68rem;color:var(--yry-text3,#888)">
+<div class="yry-center-meta">
   <span class="kbd">Alt</span>+<span class="kbd">↑</span> 回到顶部 · 点击场景状态标记循环进度 · <span class="kbd">Esc</span> 清空搜索
 </div>
 
@@ -515,7 +523,7 @@
   <span class="flow-tag">40 文件</span>
 </div>
 
-<div class="tw-demo" style="margin:0 0 24px">
+<div class="tw-demo yry-mb-24">
   <div class="tw-head">
     <span class="tw-btn r"></span><span class="tw-btn y"></span><span class="tw-btn g"></span>
     <span class="tw-title">quick-start — YryBreadcrumb</span>
@@ -555,7 +563,7 @@
   </div>
 </div>
 
-<h2 style="margin:24px 0 12px;font-size:1.05rem;color:var(--yry-text,#f5f5f5);border-left:3px solid #22d3ee;padding-left:10px">📅 场景日程</h2>
+<h2 class="yry-h2-section">&#128197; 场景日程</h2>
 <div class="day-grid">
   <div class="day-card d1">
     <div class="d-head">
@@ -622,7 +630,7 @@
   </div>
 </div>
 
-<div class="links-row" style="justify-content:center">
+<div class="links-row yry-justify-center">
   <a href="../../yry-breadcrumb/index.html">🍞 组件 Demo</a>
   <a href="./README.md">📖 组件 README</a>
   <a href="./场景-1-需求与设计/演示.html">💡 场景 1 演示</a>
@@ -638,7 +646,7 @@
   <button type="button" id="psReset" title="清除本地进度数据">重置</button>
 </div>
 
-<div class="tip-box info" style="margin:0 0 20px">
+<div class="tip-box info yry-mb-20">
   <strong>📖 阅读引导:</strong> 本页是 YryBreadcrumb 组件的<strong>任务故事总览</strong>。5 个场景按顺序递进 — 从需求分析到测试发布，每个场景产出 8 类标准交付物。点击场景卡片进入详情，点击右上角状态标记循环切换进度。
 </div>
 
@@ -742,7 +750,7 @@
   </div>
 </div>
 
-<div class="log-box" style="margin:0 0 20px">
+<div class="log-box yry-mb-20">
   <div class="log-line"><span class="log-time">T+0ms</span><span class="log-icon log-info">⬇</span><span>fetch cdn/yry-breadcrumb/index.html</span></div>
   <div class="log-line"><span class="log-time">T+85ms</span><span class="log-icon log-pass">✓</span><span>DOMParser 提取模板成功</span></div>
   <div class="log-line"><span class="log-time">T+92ms</span><span class="log-icon log-pass">✓</span><span>window.YryBreadcrumb 已注册</span></div>
@@ -770,9 +778,20 @@
 </div>
 
 <!-- ── Back to top ── -->
-<button class="back-top" id="backTop" title="回到顶部 (Alt+↑)" aria-label="回到顶部">&uarr;</button>
+<button class="back-top" id="backTop" title="回到顶部 (Alt+↑)" aria-label="回到顶部">↑</button>
 
 <!-- ── Loader ── -->
+<script src="../../shared.js"></script>
+<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
+<script src="../../yry-scene-nav/index.js"></script>
+<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
+<script src="../../yry-cross-nav/index.js"></script>
+<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
+<script src="../../yry-back-top/index.js"></script>
+<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
+<script src="../../yry-scene-header/index.js"></script>
+<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
+<script src="../../yry-stats-grid/index.js"></script>
 <script src="../../yry-breadcrumb/index.js"></script>
 <script>
 /* ════════════════════════════════════════════════════════════════

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryDocLayer · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="../yry-layer/index.css">
+  <link rel="stylesheet" href="../yry-sub-title/index.css">
+  <link rel="stylesheet" href="../yry-item-card/index.css">
+  <link rel="stylesheet" href="../yry-story-card/index.css">
+  <link rel="stylesheet" href="../yry-scene-card/index.css">
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../yry-inline-helpers.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">📚</span> YryDocLayer · Vue 3 文档层级包装</h1>
+  <p class="demo-hint">
+    在 <code>YryLayer</code> 之上封装,自动渲染多个 sub-section · 3 种 grid 类型: <code>card</code> / <code>story</code> / <code>scene</code>。<br>
+    依赖: YryLayer, YrySubTitle, YryItemCard / YryStoryCard / YrySceneCard
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo — 单个 layer · 含 2 个 sub-section (不同 grid 类型)</h3>
+    <div id="demo-1"></div>
+  </div>
+
+  <hr>
+  <p class="demo-hint">👇 以下 <code>&lt;script type="text/x-template"&gt;</code> 即为组件的 <strong>template 源</strong></p>
+
+  <script type="text/x-template" id="yry-doc-layer-tpl">
+    <div class="doc-layer">
+      <yry-layer
+        :layer-id="layerId"
+        :num="num"
+        :title-icon="titleIcon"
+        :title-prefix="titlePrefix"
+        :title-accent="titleAccent"
+        :title-suffix="titleSuffix"
+        :stats="stats"
+        :panels="panels"
+        :panels-title="panelsTitle"
+        :panels-container-title="panelsContainerTitle"
+        :style="style"
+        :num-style="numStyle" />
+      <div v-for="(s, i) in sections" :key="i" class="doc-section">
+        <yry-sub-title
+          v-if="s.subTitle"
+          :icon="s.subTitle.icon || ''"
+          :text="s.subTitle.text"
+          :count="s.subTitle.count || ''" />
+        <div :class="s.grid + '-grid'">
+          <component
+            v-for="(item, j) in s.items" :key="j"
+            :is="componentFor(s.grid)"
+            v-bind="item" />
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <script src="../yry-layer/index.js"></script>
+  <script src="../yry-sub-title/index.js"></script>
+  <script src="../yry-tag-chip/index.js"></script>
+  <script src="../yry-item-card/index.js"></script>
+  <script src="../yry-story-card/index.js"></script>
+  <script src="../yry-scene-card/index.js"></script>
+  <script src="index.js"></script>
+
+  <script>
+    function mountAll() {
+      if (!window.Vue || !window.YryDocLayer) return;
+      Vue.createApp(window.YryDocLayer, {
+        layerId: 'demo-layer',
+        num: '1',
+        titleIcon: '📚',
+        titlePrefix: 'Layer 1 · ',
+        titleAccent: '依赖 / 框架',
+        stats: ['6 运行时 · 6 开发'],
+        panels: [
+          { icon: '🔍', label: '依赖详情', panel: 'deps', title: '查看' }
+        ],
+        sections: [
+          {
+            subTitle: { icon: '⚡', text: '运行时依赖 (6)', count: '6 项' },
+            grid: 'card',
+            items: [
+              { icon: 'C', iconModifier: 'rule', name: 'yry-cdn-lib', nameHref: '#', desc: 'YrY 自建 CDN 共享库', tags: [{ text: '自建', modifier: 'accent' }], meta: 'shared.css + theme.css' }
+            ]
+          },
+          {
+            subTitle: { icon: '🎬', text: '场景列表', count: '3 个' },
+            grid: 'scene',
+            items: [
+              { num: '场景 1', name: '新人上手', desc: '环境搭建', meta: [{ icon: '📋', label: '清单', href: '#' }] }
+            ]
+          }
+        ]
+      }).mount('#demo-1');
+    }
+    if (window.YryDocLayer) mountAll();
+    else document.addEventListener('yry-doc-layer-ready', mountAll, { once: true });
+  </script>
+
+  <div class="demo-footer">📚 YryDocLayer v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

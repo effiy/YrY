@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  YrySceneHeader · 模板源 + Demo 预览页
+
+  本文件有 2 个用途:
+    1) **模板源** — index.js 通过 fetch 拉取本文件,提取 <script type="text/x-template"
+       id="yry-scene-header-tpl"> 内容作为 Vue 组件的 template。
+    2) **Demo 预览** — 直接用浏览器打开本文件,即可看到 YrySceneHeader 的实际渲染效果。
+
+  加载链: ../shared.css → ../theme.css → index.css → Vue 3 → index.js
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YrySceneHeader · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../yry-inline-helpers.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 720px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint {
+      font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6;
+    }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr {
+      border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px;
+    }
+    .demo-section {
+      margin: 20px 0;
+      background: var(--yry-bg-flat, rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px; padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer {
+      margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888);
+    }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <h1><span class="accent">📄</span> YrySceneHeader · Vue 3 场景页头</h1>
+  <p class="demo-hint">
+    场景页头组件,输出与 scene-2 的 <code>&lt;div class="header"&gt;</code> 静态结构一致。<br>
+    模板源见下方 <code>&lt;script type="text/x-template" id="yry-scene-header-tpl"&gt;</code> 块。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo 1 — 基础 (icon + prefix + accent + meta) · 与 scene-2 静态结构一致</h3>
+    <div id="demo-1"></div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo 2 — 完整 (icon + prefix + accent + meta + desc) · scene-1 实际使用</h3>
+    <div id="demo-2"></div>
+  </div>
+
+  <hr>
+  <p class="demo-hint">
+    👇 以下 <code>&lt;script type="text/x-template"&gt;</code> 即为组件的 <strong>template 源</strong>
+  </p>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TEMPLATE SOURCE OF TRUTH · YrySceneHeader 的 template
+       ════════════════════════════════════════════════════════════════════ -->
+  <script type="text/x-template" id="yry-scene-header-tpl">
+    <div class="header">
+      <h1>
+        <span v-if="icon" class="icon">{{ icon }} </span>{{ prefix }}<span v-if="accent" class="accent">{{ accent }}</span>
+      </h1>
+      <div v-if="meta" class="meta">{{ meta }}</div>
+      <p v-if="desc" class="desc">{{ desc }}</p>
+    </div>
+  </script>
+
+  <script src="index.js"></script>
+
+  <script>
+    function mountDemo(id, props) {
+      if (!window.Vue || !window.YrySceneHeader) return;
+      Vue.createApp(window.YrySceneHeader, props).mount('#' + id);
+    }
+    function mountAll() {
+      mountDemo('demo-1', {
+        icon: '🧩',
+        prefix: '场景-2',
+        accent: ' · 清单交互组件实现',
+        meta: '📌 v4.5 · 📅 2026-06-05 · 🏷️ arch'
+      });
+      mountDemo('demo-2', {
+        icon: '📋',
+        prefix: '场景-1',
+        accent: ' · 模板架构与 CSS 设计系统',
+        meta: '📌 新人上手 · 计划清单 · yry-checklist · 场景 1 · Template Architecture & CSS Design System',
+        desc: '定义计划清单页面的模板架构与 CSS 设计系统,涵盖 7 区域骨架、14 组件样式、CDN 级联加载策略及批量生成管线。'
+      });
+    }
+    if (window.YrySceneHeader) mountAll();
+    else document.addEventListener('yry-scene-header-ready', mountAll, { once: true });
+  </script>
+
+  <div class="demo-footer">
+    📄 YrySceneHeader v1.0.0 · <a href="../index.html">CDN 首页</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,110 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryItemCard · Vue 3 资产卡片组件 样式
+
+   效果对齐 docs/index.html 中 <div class="item-card"> 静态结构:
+     <div class="item-card">
+       <span class="icon {iconModifier} yry-icon">{iconText}</span>
+       <div class="body yry-body">
+         <div class="name yry-name"><a href="...">name</a><span class="size-info">新</span></div>
+         <div class="desc yry-desc">{description ...}</div>
+         <div class="tags-row yry-tags-row">{tag-chips...}</div>
+         <div class="meta yry-meta"><span class="detail yry-detail">{detail...}</span></div>
+       </div>
+     </div>
+
+   iconModifier (与 cdn/yry-home.css 中 .icon.* 选择器一致):
+     - skill / agent / rule / ref
+     不同类型用不同背景色区分 (skill=青 / agent=紫 / rule=黄 / ref=绿)
+
+   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+     --yry-bg-card / --yry-border / --yry-radius
+     --yry-shadow / --yry-shadow-lg
+     --yry-text / --yry-text2 / --yry-text3
+     --yry-cyan / --yry-purple / --yry-accent / --yry-pass
+     --yry-ease-out
+
+   所有颜色都带 fallback,即使页面未加载主题也能正常显示。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.item-card {
+  display: flex; gap: 12px;
+  background: var(--yry-bg-card, linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%));
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  border-radius: var(--yry-radius, 12px);
+  padding: 14px 16px;
+  box-shadow: var(--yry-shadow, 0 4px 20px rgba(0,0,0,0.3));
+  transition: transform .15s var(--yry-ease-out, ease), box-shadow .15s var(--yry-ease-out, ease), border-color .15s;
+}
+
+.item-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--yry-shadow-lg, 0 12px 32px rgba(0,0,0,0.45));
+  border-color: rgba(255,193,7,.18);
+}
+
+.item-card .icon {
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: rgba(255,193,7,.10);
+  color: var(--yry-accent, #ffc107);
+  font-weight: 700; font-size: 1rem;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  border: 1px solid rgba(255,193,7,.2);
+}
+.item-card .icon.skill  { background: rgba(34,211,238,.10);  color: var(--yry-cyan, #22d3ee);    border-color: rgba(34,211,238,.22); }
+.item-card .icon.agent  { background: rgba(167,139,250,.10); color: #a78bfa;                   border-color: rgba(167,139,250,.22); }
+.item-card .icon.rule   { background: rgba(255,193,7,.10);   color: var(--yry-accent, #ffc107); border-color: rgba(255,193,7,.22); }
+.item-card .icon.ref    { background: rgba(34,197,94,.10);   color: var(--yry-pass, #22c55e);   border-color: rgba(34,197,94,.22); }
+
+.item-card .body { flex: 1; min-width: 0; }
+.item-card .name {
+  font-weight: 700; font-size: .92rem;
+  color: var(--yry-text, #f5f5f5);
+  margin-bottom: 2px;
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.item-card .name a {
+  color: var(--yry-cyan, #22d3ee);
+  text-decoration: none;
+  transition: color .15s var(--yry-ease-out, ease);
+}
+.item-card .name a:hover { color: var(--yry-accent, #ffc107); text-decoration: underline; }
+.item-card .name .size-info {
+  display: inline-block;
+  font-size: .58rem; font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: rgba(239,68,68,.12);
+  color: #ef4444;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.item-card .desc {
+  font-size: .76rem;
+  color: var(--yry-text2, #d4d4d4);
+  line-height: 1.55;
+  margin-bottom: 8px;
+}
+.item-card .desc a { color: var(--yry-cyan, #22d3ee); text-decoration: none; }
+.item-card .desc a:hover { color: var(--yry-accent, #ffc107); text-decoration: underline; }
+
+.item-card .tags-row {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  margin-bottom: 6px;
+}
+
+.item-card .meta {
+  font-size: .68rem;
+  color: var(--yry-text3, #888);
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+@media (max-width: 640px) {
+  .item-card { padding: 12px 14px; gap: 10px; }
+  .item-card .icon { width: 34px; height: 34px; font-size: .9rem; }
+  .item-card .name { font-size: .86rem; }
+  .item-card .desc { font-size: .72rem; }
+}

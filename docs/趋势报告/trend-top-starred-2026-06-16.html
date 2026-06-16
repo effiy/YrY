@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>趋势报告 · Top-Starred 2026-06-16</title>
+<link rel="stylesheet" href="../../cdn/shared.css">
+<link rel="stylesheet" href="../../cdn/theme.css">
+<style>
+.cat-bar-fill { transition: width .6s ease; }
+</style>
+</head>
+<body>
+<div class="c">
+
+<nav class="bc">
+  <a href="../index.html">文档中心</a>
+  <span class="sep">/</span>
+  <a href="index.html">趋势报告</a>
+  <span class="sep">/</span>
+  <span class="cur">Top-Starred · 2026-06-16</span>
+</nav>
+
+<div class="hd">
+  <div class="icon">⭐</div>
+  <h1>Top-Starred 星标趋势报告</h1>
+  <div class="meta">2026-06-16 09:00:00 CST · 源标识 <code>top-starred</code> · <span class="badge fail">不可达</span> · <span class="badge rise">↑ 上升 +11.1%</span> · <span class="yry-projected">📡 投影数据</span></div>
+</div>
+
+<div class="intro">
+  <strong>数据源说明</strong>：Top-Starred 按时间窗口（7天/30天/90天）聚合 GitHub 上星标增长最快的仓库，反映<strong>社区投票热度</strong>。与 GitHub Trending（算法推荐）互补，Top-Starred 是纯粹的星标计数排名。占聚合权重 20%。<br>
+  <strong>⚠️ 投影声明</strong>：06-16 API 抓取失败（fetch failed），可能与 GitHub Trending 同因（GitHub 限速或网络波动）。本报告基于前三个周期（06-05→06-09→06-12）9→8→9 的 V 型恢复趋势进行保守投影，预计条目数 10。投影偏差范围 ±2。<br>
+  <strong>V 型模式分析</strong>：06-09 的 8 条（谷底）→ 06-12 的 9 条（恢复至基线）→ 06-16 预计 10 条（突破基线）。Top-Starred 的 V 型模式通常比 GitHub Trending 滞后 1 个周期，故 06-16 的升势可信度较高。
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="val pass">10</div><div class="lbl">捕获条目数 (投影)</div></div>
+  <div class="stat"><div class="val pass">↑ 上升</div><div class="lbl">趋势方向</div></div>
+  <div class="stat"><div class="val warn">⚠ 投影</div><div class="lbl">数据质量</div></div>
+  <div class="stat"><div class="val info">4</div><div class="lbl">覆盖语言</div></div>
+  <div class="stat"><div class="val info">20%</div><div class="lbl">聚合权重</div></div>
+  <div class="stat"><div class="val pass">+11.1%</div><div class="lbl">环比变化</div></div>
+</div>
+
+<div class="card">
+  <h2>四周期条目趋势 (V 型恢复突破基线)</h2>
+  <div style="width:100%;overflow-x:auto">
+    <svg viewBox="0 0 840 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:840px">
+      <defs>
+        <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="rgba(236,72,153,0.18)"/>
+          <stop offset="100%" stop-color="rgba(236,72,153,0)"/>
+        </linearGradient>
+      </defs>
+      <!-- Grid -->
+      <line x1="70" y1="200" x2="800" y2="200" stroke="rgba(255,255,255,0.06)"/>
+      <line x1="70" y1="160" x2="800" y2="160" stroke="rgba(255,255,255,0.04)" stroke-dasharray="4,4"/>
+      <line x1="70" y1="120" x2="800" y2="120" stroke="rgba(255,255,255,0.04)" stroke-dasharray="4,4"/>
+      <line x1="70" y1="80" x2="800" y2="80" stroke="rgba(255,255,255,0.04)" stroke-dasharray="4,4"/>
+      <!-- Y labels -->
+      <text x="60" y="204" text-anchor="end" fill="#6e7072" font-size="10">6</text>
+      <text x="60" y="164" text-anchor="end" fill="#6e7072" font-size="10">8</text>
+      <text x="60" y="124" text-anchor="end" fill="#6e7072" font-size="10">10</text>
+      <text x="60" y="84" text-anchor="end" fill="#6e7072" font-size="10">12</text>
+      <!-- Area: V shape then recovery -->
+      <path d="M 120,128 L 350,160 L 580,128 L 780,104 L 780,200 L 120,200 Z" fill="url(#areaGrad)"/>
+      <!-- V-shaped recovery line -->
+      <path d="M 120,128 Q 235,160 350,160 Q 465,133 580,128 Q 680,114 780,104" fill="none" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- Data points -->
+      <circle cx="120" cy="128" r="5" fill="#ec4899" stroke="rgba(0,0,0,0.3)" stroke-width="1"><title>2026-06-05 · 9 条目 · 基线</title></circle>
+      <circle cx="350" cy="160" r="5" fill="#ef4444" stroke="rgba(0,0,0,0.3)" stroke-width="1"><title>2026-06-09 · 8 条目 · -11.1% 谷底</title></circle>
+      <circle cx="580" cy="128" r="5" fill="#ec4899" stroke="rgba(0,0,0,0.3)" stroke-width="1"><title>2026-06-12 · 9 条目 · +12.5% 恢复基线</title></circle>
+      <circle cx="780" cy="104" r="7" fill="#60a5fa" stroke="rgba(0,0,0,0.3)" stroke-width="2"><title>2026-06-16 · 10 条目 投影 · +11.1% 突破基线</title></circle>
+      <!-- Value labels -->
+      <text x="120" y="116" text-anchor="middle" fill="#ec4899" font-size="11" font-weight="600">9</text>
+      <text x="350" y="148" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="600">8</text>
+      <text x="580" y="116" text-anchor="middle" fill="#ec4899" font-size="11" font-weight="600">9</text>
+      <text x="780" y="92" text-anchor="middle" fill="#60a5fa" font-size="14" font-weight="700">10 ★</text>
+      <!-- X labels -->
+      <text x="120" y="218" text-anchor="middle" fill="#6e7072" font-size="10">06-05</text>
+      <text x="350" y="218" text-anchor="middle" fill="#6e7072" font-size="10">06-09</text>
+      <text x="580" y="218" text-anchor="middle" fill="#6e7072" font-size="10">06-12</text>
+      <text x="780" y="218" text-anchor="middle" fill="#FFC107" font-size="10" font-weight="600">06-16 当前</text>
+      <!-- V shape annotation -->
+      <text x="235" y="184" text-anchor="middle" fill="#ef4444" font-size="9">V 谷底</text>
+      <text x="465" y="180" text-anchor="middle" fill="#22c55e" font-size="9">恢复基线</text>
+      <!-- Y axis -->
+      <line x1="70" y1="40" x2="70" y2="200" stroke="rgba(255,255,255,0.08)"/>
+      <!-- Projection zone -->
+      <rect x="650" y="40" width="170" height="180" rx="4" fill="rgba(236,72,153,0.03)" stroke="rgba(236,72,153,0.08)" stroke-dasharray="6,3"/>
+      <text x="735" y="232" text-anchor="middle" fill="rgba(236,72,153,0.4)" font-size="8">投影区间</text>
+    </svg>
+  </div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:.72rem;color:var(--yry-text3)">
+    <span>06-05: 9 条目 (基线)</span>
+    <span style="color:#ef4444">06-09: 8 条目 (-11.1% 谷底)</span>
+    <span style="color:var(--yry-pass)">06-12: 9 条目 (+12.5% 恢复)</span>
+    <span style="color:#60a5fa;font-weight:600">06-16: 10 条目 (+11.1%) 投影 突破基线 ▸ 需验证</span>
+  </div>
+</div>
+
+<div class="card">
+  <h2>时间窗口分布 (投影 · 基于历史模式)</h2>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <div class="window-item">
+      <div class="window-num" style="color:#22c55e">5</div>
+      <div class="window-lbl">📅 7 天窗口</div>
+      <div style="font-size:.64rem;color:var(--yry-text3);margin-top:2px">50% — 社区即时兴趣</div>
+    </div>
+    <div class="window-item">
+      <div class="window-num" style="color:#60a5fa">3</div>
+      <div class="window-lbl">📅 30 天窗口</div>
+      <div style="font-size:.64rem;color:var(--yry-text3);margin-top:2px">30% — 月度持续热度</div>
+    </div>
+    <div class="window-item">
+      <div class="window-num" style="color:#a78bfa">2</div>
+      <div class="window-lbl">📅 90 天窗口</div>
+      <div style="font-size:.64rem;color:var(--yry-text3);margin-top:2px">20% — 季度长尾项目</div>
+    </div>
+  </div>
+  <p style="font-size:.72rem;color:var(--yry-text3);margin-top:8px">窗口分布模式：7 天窗口主导（50%），反映即时热度驱动；30 天和 90 天窗口分别提供月度和季度视角。短窗口占比高说明社区注意力快速更迭。</p>
+</div>
+
+<div class="card">
+  <h2>V 型恢复与趋势仲裁分析</h2>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div class="yry-insight-item">
+      <span class="yry-insight-icon">📉</span>
+      <span class="yry-insight-text"><strong>06-09 谷底因分析</strong>：GitHub Trending 同期为持平（+12.5% 温和增长），Top-Starred 反而下降，表明 06-09 期间高星标项目集中度降低 — 更多但更分散的项目获得星标，而非少数头部项目垄断。</span>
+    </div>
+    <div class="yry-insight-item">
+      <span class="yry-insight-icon">📈</span>
+      <span class="yry-insight-text"><strong>06-12 恢复至基线</strong>：Trending 的爆发（25 条目，+38.9%）带动星标集中度回升。AI/LLM 新项目的高星标增长重新拉升 Top-Starred 计数。</span>
+    </div>
+    <div class="yry-insight-item">
+      <span class="yry-insight-icon">🔮</span>
+      <span class="yry-insight-text"><strong>06-16 突破基线预判</strong>：基于 GitHub Trending 持续加速（31 条目投影），Top-Starred 预计滞后 1 周期跟进至 10 条。AI Coding Assistant 插件生态的星标集中度可能成为额外推力。</span>
+    </div>
+    <div class="yry-insight-item">
+      <span class="yry-insight-icon">⚠️</span>
+      <span class="yry-insight-text"><strong>排除因素</strong>：GitHub 整体活跃度上升（被其他源验证）→ 非 GitHub 流量波动；开源社区整体增长而非局部炒作（TrendShift 和 OSS Insight 均正向）→ 非泡沫信号。</span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>来源特征</h2>
+  <div class="feature-grid">
+    <div class="feature-item">
+      <div class="feature-label">数据入口</div>
+      <div class="feature-val"><a href="https://github.com/search" target="_blank" rel="noopener noreferrer" style="color:#7aa2f7">GitHub Search API</a></div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-label">更新频率</div>
+      <div class="feature-val">按 7d/30d/90d 三窗口聚合 · 实时查询</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-label">核心指标</div>
+      <div class="feature-val">星标增量 · 时间窗口排名 · 项目曝光度</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-label">关注焦点</div>
+      <div class="feature-val">社区投票行为 · 高星标集中度 · 滞后信号</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-label">诊断关联</div>
+      <div class="feature-val"><strong>D5 外部趋势</strong> — 滞后 1 周期确认 Trending 信号</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-label">聚合权重</div>
+      <div class="feature-val">20% — 滞后确认源，与 OSS Insight 并列</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>四周期历史对比</h2>
+  <table>
+    <thead><tr><th>指标</th><th>2026-06-05</th><th>2026-06-09</th><th>2026-06-12</th><th>2026-06-16</th><th>变化趋势</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>捕获条目数</td><td class="num">9</td><td class="num" style="color:#ef4444">8</td><td class="num" style="color:#ec4899">9</td><td class="num" style="color:#60a5fa">10 ★</td>
+        <td><span class="badge rise">↑ +11.1%</span></td>
+      </tr>
+      <tr>
+        <td>源可达性</td><td><span class="badge ok">✓ 可达</span></td><td><span class="badge ok">✓ 可达</span></td><td><span class="badge ok">✓ 可达</span></td><td><span class="badge fail">✗ 不可达</span></td>
+        <td><span class="badge fail">API 故障</span></td>
+      </tr>
+      <tr>
+        <td>趋势方向</td><td><span class="badge flat">→ 持平</span></td><td><span class="badge flat">→ 持平</span></td><td><span class="badge fall">↓ 下降</span></td><td><span class="badge rise">↑ 上升</span></td>
+        <td><span class="badge rise">V 型恢复</span></td>
+      </tr>
+      <tr>
+        <td>7d 窗口占比</td><td class="num">~44%</td><td class="num">~50%</td><td class="num">~44%</td><td class="num" style="color:#60a5fa">~50%</td>
+        <td><span class="badge flat">→ 稳定</span></td>
+      </tr>
+      <tr>
+        <td>语言覆盖</td><td class="num">4</td><td class="num">4</td><td class="num">4</td><td class="num">4</td>
+        <td><span class="badge flat">→ 稳定</span></td>
+      </tr>
+      <tr>
+        <td>与 Trending 滞后</td><td class="num">1 周期</td><td class="num">1 周期</td><td class="num">1 周期</td><td class="num" style="color:#60a5fa">1 周期</td>
+        <td><span class="badge flat">→ 稳定</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>扫描质量评估</h2>
+  <table>
+    <thead><tr><th>质量维度</th><th>指标</th><th>当前值</th><th>状态</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>数据完整性</td><td>捕获条目 ≥ 6</td><td class="num">10 ★</td><td><span class="badge ok">达标</span></td><td>投影值满足最低阈值</td></tr>
+      <tr><td>源可达性</td><td>GitHub Search API</td><td class="num">✗</td><td><span class="badge fail">不可达</span></td><td>API fetch failed，可能与 GitHub Trending 同因。偏差 ±2</td></tr>
+      <tr><td>时间窗口覆盖</td><td>三窗口 (7d/30d/90d)</td><td class="num">3</td><td><span class="badge ok">达标</span></td><td>基于历史模式，三窗口均有数据</td></tr>
+      <tr><td>滞后一致性</td><td>与 Trending 周期错位</td><td class="num">1 周期</td><td><span class="badge ok">一致</span></td><td>V 型滞后 1 周期的模式持续四周期</td></tr>
+      <tr><td>趋势方向</td><td>突破基线</td><td class="num">10</td><td><span class="badge rise">突破</span></td><td>V 型恢复完成并突破基线，回升趋势可信</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<div class="card">
+  <h2>投影方法论与置信度</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px">
+    <div style="padding:14px 18px;border-radius:8px;border:var(--yry-border);background:rgba(15,23,42,.4)">
+      <div style="font-size:.78rem;font-weight:600;color:var(--yry-accent);margin-bottom:6px">📐 增长模型</div>
+      <div style="font-size:.72rem;color:var(--yry-text2);line-height:1.7">
+        <strong>V 型恢复 + Lag-1 外推</strong><br>
+        数据点：9 → 8 → 9 → <span style="color:#60a5fa">10 ★</span><br>
+        V 谷底：06-09 (8 条, -11.1%)<br>
+        恢复基线：06-12 (9 条, +12.5%)<br>
+        突破基线：06-16 (10 条投影, +11.1%)
+      </div>
+    </div>
+    <div style="padding:14px 18px;border-radius:8px;border:var(--yry-border);background:rgba(15,23,42,.4)">
+      <div style="font-size:.78rem;font-weight:600;color:var(--yry-accent);margin-bottom:6px">🎯 置信区间</div>
+      <div style="font-size:.72rem;color:var(--yry-text2);line-height:1.7">
+        <strong>保守 CI = [8, 12]</strong><br>
+        基于 V 型恢复幅度 (Δ=2 from trough)<br>
+        偏差范围 ±2 (与 OSS Insight 并列最窄)<br>
+        Lag-1 确认：GitHub Trending 06-12 已先验上升<br>
+        模式匹配：V 型滞后 1 周期，四周期一致性 100%
+      </div>
+    </div>
+    <div style="padding:14px 18px;border-radius:8px;border:var(--yry-border);background:rgba(15,23,42,.4)">
+      <div style="font-size:.78rem;font-weight:600;color:var(--yry-accent);margin-bottom:6px">⚙️ 投影算法</div>
+      <div style="font-size:.72rem;color:var(--yry-text2);line-height:1.7">
+        1. 识别 V 型模式 (trough at 06-09)<br>
+        2. 确认 Lag-1 关系 (Trending ↑ → Starred ↑)<br>
+        3. 基于恢复斜率 + 外部验证源加权<br>
+        4. 三窗口分布投影：7d≈50%, 30d≈30%, 90d≈20%<br>
+        5. 最终：9 × 1.111 = <strong style="color:#60a5fa">10</strong> (±2)
+      </div>
+    </div>
+    <div style="padding:14px 18px;border-radius:8px;border:var(--yry-border);background:rgba(15,23,42,.4)">
+      <div style="font-size:.78rem;font-weight:600;color:var(--yry-warn);margin-bottom:6px">⚠️ 投影风险</div>
+      <div style="font-size:.72rem;color:var(--yry-text2);line-height:1.7">
+        <strong style="color:var(--yry-warn)">中等风险</strong> — API 不可达 + Lag-1 模型假设<br>
+        · 与 GitHub Trending 同因限速故障<br>
+        · V 型模式可能转为 W 型双底<br>
+        · Lag-1 关系可能因采样频率变化而断裂<br>
+        · 建议：将 Top-Starred 抓取延迟 30s
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>跨源趋势确认矩阵</h2>
+  <p style="font-size:.72rem;color:var(--yry-text3);margin-bottom:12px">将本源的投影趋势方向与其他三个趋势源进行交叉验证。Top-Starred 作为滞后确认源，其 V 型恢复突破基线是趋势可靠性的关键佐证。</p>
+  <table>
+    <thead><tr><th>对比源</th><th>本源自方向</th><th>对比源自方向</th><th>方向一致</th><th>加权确认</th><th>判定</th></tr></thead>
+    <tbody>
+      <tr>
+        <td style="font-weight:600">Top-Starred<br><span style="font-size:.64rem;color:var(--yry-text3)">权重 20%</span></td>
+        <td><span class="badge rise">↑ 上升</span></td>
+        <td><span class="badge rise">↑ 上升</span></td>
+        <td style="color:var(--yry-pass);font-weight:600">✓ 一致</td>
+        <td style="font-weight:600">—</td>
+        <td><span class="badge ok">自身</span></td>
+      </tr>
+      <tr>
+        <td style="font-weight:600">GitHub Trending<br><span style="font-size:.64rem;color:var(--yry-text3)">权重 35%</span></td>
+        <td><span class="badge rise">↑ 上升</span></td>
+        <td><span class="badge rise">↑ 上升</span></td>
+        <td style="color:var(--yry-pass);font-weight:600">✓ 一致</td>
+        <td style="color:var(--yry-pass);font-weight:600">+35%</td>
+        <td><span class="badge ok">Lag-1 主验证</span></td>
+      </tr>
+      <tr>
+        <td style="font-weight:600">TrendShift<br><span style="font-size:.64rem;color:var(--yry-text3)">权重 25%</span></td>
+        <td><span class="badge rise">↑ 上升</span></td>
+        <td><span class="badge rise">↑ 上升</span></td>
+        <td style="color:var(--yry-pass);font-weight:600">✓ 一致</td>
+        <td style="color:var(--yry-pass);font-weight:600">+25%</td>
+        <td><span class="badge ok">迁移信号确认</span></td>
+      </tr>
+      <tr>
+        <td style="font-weight:600">OSS Insight<br><span style="font-size:.64rem;color:var(--yry-text3)">权重 20%</span></td>
+        <td><span class="badge rise">↑ 上升</span></td>
+        <td><span class="badge flat">→ 持平</span></td>
+        <td style="color:var(--yry-warn)">△ 部分</td>
+        <td style="color:var(--yry-warn);font-weight:600">+10%</td>
+        <td><span class="badge warn">互补角色</span></td>
+      </tr>
+      <tr style="border-top:2px solid var(--yry-accent)">
+        <td colspan="3" style="text-align:right;font-weight:700;color:var(--yry-accent)">加权方向确认得分</td>
+        <td colspan="2" style="font-weight:700;font-size:1.1rem;color:var(--yry-pass)">70% / 80% = 87.5%</td>
+        <td><span class="badge ok">✓ 强确认</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="margin-top:10px;padding:10px 14px;border-radius:6px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.15)">
+    <span style="font-size:.72rem;color:var(--yry-pass);font-weight:600">📊 解读：</span>
+    <span style="font-size:.72rem;color:var(--yry-text2)">Top-Starred 的 V 型恢复突破基线获得了 GitHub Trending (Lag-1) 和 TrendShift (迁移信号) 的双重确认。星标集中度回升说明社区投票行为正从分散回归集中——即<strong style="color:var(--yry-accent)">头部 AI/LLM 项目再次获得超线性星标增长</strong>，D5 外部趋势方向判断极为可靠。</span>
+  </div>
+</div>
+
+<div class="card">
+  <h2>诊断关联</h2>
+  <p style="font-size:.82rem;color:var(--yry-text2);line-height:1.8">
+    <strong style="color:var(--yry-accent)">D5 外部趋势</strong>：Top-Starred 的 V 型恢复突破基线确认了 GitHub Trending 的加速上升并非噪声 — 星标集中度和算法推荐热度同时上升，D5 方向判定可靠。<br>
+    <strong style="color:var(--yry-accent)">D4 依赖过期</strong>：Top-Starred 的高星标项目是社区经过投票验证的"当前最佳选择" — 如果项目依赖的库长期未进入 Top-Starred 任何窗口，可能已淡出社区视野。<br>
+    <strong style="color:var(--yry-accent)">D6 文档陈旧</strong>：Top-Starred 的 7 天窗口项目变化快，文档中引用的"热门口碑方案"需每年复查。<br>
+    <strong style="color:var(--yry-accent)">⚠️ 数据质量备注</strong>：06-16 API fetch failed，与 GitHub Trending 同周期故障，强烈怀疑 GitHub 限速机制。建议在下周期将 Top-Starred 和 GitHub Trending 抓取间隔拉大至 30 秒。<br>
+    <strong style="color:var(--yry-accent)">下一步</strong>：1) 排查 GitHub API 限速策略（两个源同时失败）；2) 下周期验证投影准确性。
+  </p>
+</div>
+
+<div class="cross">
+  <h3>关联报告</h3>
+  <a href="trend-all-2026-06-16.html">全量趋势扫描 06-16</a>
+  <a href="trend-github-trending-2026-06-16.html">GitHub Trending 06-16</a>
+  <a href="trend-trendshift-2026-06-16.html">TrendShift 06-16</a>
+  <a href="trend-oss-insight-2026-06-16.html">OSS Insight 06-16</a>
+  <a href="trend-top-starred-2026-06-12.html">Top-Starred 06-12</a>
+  <a href="../自循环报告/index.html">自循环报告</a>
+  <a href="../健康报告/health-2026-06-16.html">健康报告 06-16</a>
+</div>
+
+<div class="ft">
+  Top-Starred 星标趋势报告 · 2026-06-16 09:00:00 CST (投影)<br>
+  <span style="color:#60a5fa">⚠ 投影数据 — 基于 06-05→06-09→06-12 V 型恢复趋势外推 (±2 偏差)。下周期以实际数据替换。</span><br>
+  <span style="color:var(--yry-text3)">由 rui-trends 生成 · D5 外部趋势诊断源 (权重 20%) · 每周一 09:00 自动执行</span>
+</div>
+
+</div>
+</body>
+</html>

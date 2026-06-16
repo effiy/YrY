@@ -1,0 +1,30 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YrySceneHeader · Vue 3 场景页头组件 样式
+
+   效果对齐 docs/故事任务面板/计划清单/场景-2-清单交互组件实现/计划清单.html
+   中的 <div class="header"> 静态结构:
+     <h1>{icon} {prefix}<span class="accent">{accent}</span></h1>
+     <div class="meta">{meta}</div>
+     <p class="desc">{desc}</p>      ← 扩展(可选,scene-2 没有)
+
+   依赖 design tokens (来自 cdn/yry-checklist.css :root 或 cdn/theme.css):
+     --accent / --text2 / --text3
+
+   所有颜色都带 fallback,即使页面未加载主题也能正常显示。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.header { text-align: center; margin-bottom: 28px; animation: yry-fadeInDown .5s ease both; }
+.header h1 { font-size: 1.8rem; font-weight: 700; margin: 0; line-height: 1.25; }
+.header h1 .icon { display: inline-block; margin-right: 2px; }
+.header h1 .accent { color: var(--accent, var(--yry-accent, #ffc107)); }
+.header .sub { color: var(--text2, var(--yry-text2, rgba(160,160,164,1))); font-size: .9rem; margin-top: 4px; }
+.header .meta { color: var(--text3, var(--yry-text3, rgba(110,110,114,1))); font-size: .75rem; margin-top: 6px; letter-spacing: .04em; }
+.header .desc {
+  color: var(--text2, var(--yry-text2, rgba(160,160,164,1)));
+  font-size: .84rem; margin: 10px auto 0; line-height: 1.6; max-width: 640px;
+}
+
+@media (max-width: 640px) {
+  .header h1 { font-size: 1.4rem; }
+  .header .desc { font-size: .78rem; }
+}

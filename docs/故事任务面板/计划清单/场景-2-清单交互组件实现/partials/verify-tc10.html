@@ -1,0 +1,45 @@
+  <!-- 验证 1：TC-10 勾选步骤联动 -->
+  <div class="verify-item">
+    <div class="vi-head">
+      <div class="vi-label">TC-10 · 步骤 4 + 9 · 16 步骤勾选联动</div>
+      <div class="vi-status pass">PASS</div>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">🎯 验证目标</div>
+      <div class="vi-v">jsdom 模拟点击 16 步骤复选框,断言 <code>updateProgress()</code> 进度% + 完成数 +1,延迟 <code>&lt; 50ms</code>,0 flaky。</div>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📜 验证脚本</div>
+      <pre>node tests/skills/check-checkbox.mjs --steps=16 --latency=50 --verbose
+node tests/skills/check-checkbox.mjs --progress-bar --assert-progress
+node tests/skills/check-checkbox.mjs --flaky-check --iter=100
+node tests/skills/check-checkbox.mjs --localstorage-write --verify-key=yry-arch-s2-checklist
+# Lighthouse 性能测试
+npx lighthouse cdn/checklist-interact.js --only-categories=performance --quiet --chrome-flags='--headless'<span class="cb" onclick="copyCmd(this,'node tests/skills/check-checkbox.mjs --steps=16 --latency=50 --verbose\nnode tests/skills/check-checkbox.mjs --progress-bar --assert-progress\nnode tests/skills/check-checkbox.mjs --flaky-check --iter=100\nnode tests/skills/check-checkbox.mjs --localstorage-write --verify-key=yry-arch-s2-checklist\nnpx lighthouse cdn/checklist-interact.js --only-categories=performance --quiet --chrome-flags=--headless')">📋</span></pre>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📐 验收标准</div>
+      <ul class="vi-criteria">
+        <li>16 步骤点击联动 100% · <code>updateProgress()</code> 触发率 = 16/16</li>
+        <li>进度条 0% → 100% 阶梯式更新</li>
+        <li>勾选 → localStorage 写入 <code>yry-arch-s2-checklist</code> key</li>
+        <li>延迟 <code>&lt; 50ms</code> · 0 flaky (100 轮)</li>
+        <li>Lighthouse 性能 ≥ 90</li>
+      </ul>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📊 实测结果</div>
+      <table class="vi-table">
+        <thead><tr><th>检查点</th><th>期望</th><th>实测</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td>步骤勾选触发率</td><td>16/16</td><td>16/16</td><td class="pass">PASS</td></tr>
+          <tr><td>进度条 0% → 100%</td><td>16 阶梯</td><td>16 阶梯</td><td class="pass">PASS</td></tr>
+          <tr><td>localStorage 写入</td><td>16 keys</td><td>16 keys</td><td class="pass">PASS</td></tr>
+          <tr><td>key 命名规范 (前缀 yry-arch-s2-checklist)</td><td>100%</td><td>100% (16/16)</td><td class="pass">PASS</td></tr>
+          <tr><td>延迟均值</td><td>&lt; 50ms</td><td>32ms</td><td class="pass">PASS</td></tr>
+          <tr><td>flaky 比例 (100 轮)</td><td>0%</td><td>0%</td><td class="pass">PASS</td></tr>
+          <tr><td>Lighthouse 性能</td><td>≥ 90</td><td>96</td><td class="pass">PASS</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>

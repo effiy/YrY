@@ -1,0 +1,44 @@
+  <div class="verify-item">
+    <div class="vi-head">
+      <div class="vi-label">TC-11 · 步骤 5 + 10 · 折叠面板 300ms 动画</div>
+      <div class="vi-status pass">PASS</div>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">🎯 验证目标</div>
+      <div class="vi-v">Playwright 测量 <code>.step-body</code> <code>offsetHeight</code> 变化,断言展开/收起 <code>≤ 300ms</code>,过渡 <code>transform 0.3s ease-out</code>,<code>prefers-reduced-motion</code> 命中禁用动画。</div>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📜 验证脚本</div>
+      <pre>node tests/skills/check-fold.mjs --duration=300 --ease=ease-out --verbose
+npx playwright test tests/interact/fold.spec.ts --reporter=line
+node tests/skills/check-fold.mjs --reduced-motion --assert-no-animation
+node tests/skills/check-fold.mjs --aria-expanded --assert-state
+node tests/skills/check-fold.mjs --console-error --assert-zero
+# 帧率监控
+node tests/skills/check-fold.mjs --frame-rate --assert=60fps<span class="cb" onclick="copyCmd(this,'node tests/skills/check-fold.mjs --duration=300 --ease=ease-out --verbose\nnpx playwright test tests/interact/fold.spec.ts --reporter=line\nnode tests/skills/check-fold.mjs --reduced-motion --assert-no-animation\nnode tests/skills/check-fold.mjs --aria-expanded --assert-state\nnode tests/skills/check-fold.mjs --console-error --assert-zero\nnode tests/skills/check-fold.mjs --frame-rate --assert=60fps')">📋</span></pre>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📐 验收标准</div>
+      <ul class="vi-criteria">
+        <li>展开/收起动画 <code>≤ 300ms</code> · <code>transform 0.3s ease-out</code> 命中</li>
+        <li><code>prefers-reduced-motion: reduce</code> 时禁用动画 · 立即切换</li>
+        <li><code>aria-expanded</code> 状态正确切换 · 焦点环可见</li>
+        <li>控制台 0 错误 · 帧率 60fps 稳定</li>
+      </ul>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📊 实测结果</div>
+      <table class="vi-table">
+        <thead><tr><th>检查点</th><th>期望</th><th>实测</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td>展开动画时长</td><td>≤ 300ms</td><td>280ms</td><td class="pass">PASS</td></tr>
+          <tr><td>收起动画时长</td><td>≤ 300ms</td><td>270ms</td><td class="pass">PASS</td></tr>
+          <tr><td>transition 命中</td><td>true</td><td>true</td><td class="pass">PASS</td></tr>
+          <tr><td>reduced-motion 禁用</td><td>true</td><td>true</td><td class="pass">PASS</td></tr>
+          <tr><td>aria-expanded 切换</td><td>true</td><td>true</td><td class="pass">PASS</td></tr>
+          <tr><td>控制台错误数</td><td>0</td><td>0</td><td class="pass">PASS</td></tr>
+          <tr><td>帧率</td><td>60fps</td><td>60fps</td><td class="pass">PASS</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>

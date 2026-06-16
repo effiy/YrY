@@ -117,6 +117,10 @@ html::-webkit-scrollbar-track { background: transparent; }
   color: var(--yry-color-accent); background: rgba(255,193,7,.12);
   border: 1px solid rgba(255,193,7,.25);
 }
+.scene-nav .scene-nav-sep {
+  padding: 0; border-radius: 0; background: none;
+  color: var(--yry-color-text-3, #6b7280); font-size: .6rem; opacity: .35; user-select: none;
+}
 
 /* ── Typography ── */
 h2 { font-size: 1.05rem; margin: 28px 0 12px; color: var(--yry-color-text-1); border-left: 3px solid #22d3ee; padding-left: 10px; }

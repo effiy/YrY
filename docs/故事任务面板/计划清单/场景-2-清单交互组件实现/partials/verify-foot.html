@@ -1,0 +1,29 @@
+<div class="verify-report-foot">
+  <div class="vrf-section">
+    <div class="vrf-k">🛡 遗留风险</div>
+    <div class="vrf-v">无。TC-10~16 全部通过 (26 检查点 · 0 失败 · 0 警告),v1.0.0 stable 标记成立。</div>
+  </div>
+  <div class="vrf-section">
+    <div class="vrf-k">📝 改进建议（非阻塞）</div>
+    <ul class="vrf-suggest">
+      <li>将 TC-10/11/12/13/14 纳入 CI pre-commit hook,变更时自动触发 &lt; 30s 回归</li>
+      <li>对 6 组件逐月做 1 次交互基线刷新 (5 设备矩阵 + 5 浏览器)</li>
+      <li>把 post-release-monitor 接入监控告警,交互成功率 &lt; 99% 立即 P2 通知</li>
+      <li>localStorage key 变更需更新到 <code>cdn/localstorage-schema.json</code> 并触发迁移</li>
+    </ul>
+  </div>
+  <div class="vrf-section">
+    <div class="vrf-k">📦 报告产物</div>
+    <div class="vrf-v">
+      <a href="验证报告-2026-06-13.json" class="dep-badge" target="_blank">📄 JSON 报告</a>
+      <a href="验证报告-2026-06-13.html" class="dep-badge" target="_blank">🌐 HTML 报告</a>
+      <a href="tests/reports/2026-06/checkbox.json" class="dep-badge" target="_blank">🧪 TC-10 报告</a>
+      <a href="tests/reports/2026-06/fold.json" class="dep-badge" target="_blank">🧪 TC-11 报告</a>
+      <a href="tests/reports/2026-06/tab.json" class="dep-badge" target="_blank">🧪 TC-12 报告</a>
+      <a href="tests/reports/2026-06/persist.json" class="dep-badge" target="_blank">🧪 TC-13 报告</a>
+      <a href="tests/reports/2026-06/risk-row.json" class="dep-badge" target="_blank">🧪 TC-14 报告</a>
+      <a href="tests/reports/2026-06/v4.6-patch.json" class="dep-badge" target="_blank">🧪 v4.6 报告</a>
+      <a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a>
+    </div>
+  </div>
+</div>

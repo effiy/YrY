@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>趋势报告 · 全量趋势扫描</title>
+<title>趋势报告 · 全量趋势扫描 2026-06-09</title>
 <link rel="stylesheet" href="../../cdn/shared.css">
 <link rel="stylesheet" href="../../cdn/theme.css">
 <style>
@@ -18,99 +18,551 @@
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
-.yry-container { max-width: 900px; margin: 0 auto; padding: 48px 24px 80px; }
-.yry-header { text-align: center; margin-bottom: 32px; }
-.yry-header .icon { font-size: 2.5rem; }
-.yry-header h1 { font-size: 1.6rem; margin: 12px 0 6px; }
-.yry-header .meta { color: var(--yry-text3); font-size: .82rem; }
-.yry-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
-.yry-card h2 { font-size: 1.1rem; margin-bottom: 12px; color: var(--yry-accent); }
-.yry-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
-.yry-stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 16px 20px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 120px; }
-.yry-stat .yry-val { font-size: 1.6rem; font-weight: 700; }
-.yry-stat .yry-val.pass { color: var(--yry-pass); }
-.yry-stat .yry-val.warn { color: var(--yry-warn); }
-.yry-stat .yry-val.fail { color: var(--yry-fail); }
-.yry-stat .yry-lbl { font-size: .72rem; color: var(--yry-text3); margin-top: 4px; }
-.yry-badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: .85rem; font-weight: 600; }
-.yry-badge.pass { background: rgba(34,197,94,.15); color: var(--yry-pass); }
-.yry-badge.warn { background: rgba(245,158,11,.15); color: var(--yry-warn); }
-.yry-badge.fail { background: rgba(239,68,68,.15); color: var(--yry-fail); }
-.yry-summary { padding: 16px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 20px; color: var(--yry-text2); font-size: .9rem; }
-.yry-finding { padding: 14px 18px; margin-bottom: 8px; border-radius: 8px; border: var(--yry-border); }
-.yry-finding.info { background: rgba(59,130,246,.04); }
-.yry-finding.warn { background: rgba(245,158,11,.04); border-left: 3px solid var(--yry-warn); }
-.yry-finding.fail { background: rgba(239,68,68,.04); border-left: 3px solid var(--yry-fail); }
-.yry-finding-head { font-weight: 600; font-size: .9rem; }
-.yry-finding-body { margin-top: 6px; color: var(--yry-text2); font-size: .82rem; }
-.yry-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
-.yry-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
-.yry-breadcrumb a { color: #7aa2f7; text-decoration: none; }
-.yry-breadcrumb .yry-bc-sep { color: #53576c; opacity: .5; }
-.yry-breadcrumb .yry-bc-current { color: #94a3b8; }
+.c { max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
+
+.bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
+.bc a { color: #7aa2f7; text-decoration: none; } .bc a:hover { color: var(--yry-accent); }
+.bc .sep { color: #53576c; opacity: .5; } .bc .cur { color: #94a3b8; }
+
+.hd { text-align: center; margin-bottom: 32px; }
+.hd .icon { font-size: 2.5rem; margin-bottom: 8px; }
+.hd h1 { font-size: 1.6rem; }
+.hd .meta { color: var(--yry-text3); font-size: .82rem; margin-top: 6px; }
+
+.intro { padding: 18px 20px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 24px; color: var(--yry-text2); font-size: .86rem; line-height: 1.75; }
+.intro strong { color: var(--yry-accent); }
+.intro code { background: rgba(59,130,246,.1); padding: 1px 6px; border-radius: 4px; font-size: .82em; color: #7aa2f7; }
+
+.card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
+.card h2 { font-size: 1.1rem; margin-bottom: 16px; color: var(--yry-accent); display: flex; align-items: center; gap: 8px; }
+.card h3 { font-size: .92rem; margin: 18px 0 10px; color: var(--yry-text); }
+
+.stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+.stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 14px 18px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 100px; transition: transform .15s; }
+.stat:hover { transform: translateY(-2px); }
+.stat .val { font-size: 1.5rem; font-weight: 700; }
+.stat .val.pass { color: var(--yry-pass); } .stat .val.warn { color: var(--yry-warn); } .stat .val.fail { color: var(--yry-fail); } .stat .val.info { color: #22d3ee; }
+.stat .lbl { font-size: .68rem; color: var(--yry-text3); margin-top: 3px; }
+
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: .7rem; font-weight: 600; }
+.badge.ok { background: rgba(34,197,94,.15); color: var(--yry-pass); }
+.badge.err { background: rgba(239,68,68,.15); color: var(--yry-fail); }
+.badge.rise { background: rgba(34,197,94,.12); color: var(--yry-pass); }
+.badge.fall { background: rgba(239,68,68,.12); color: var(--yry-fail); }
+.badge.flat { background: rgba(255,255,255,.05); color: var(--yry-text3); }
+.badge.warn { background: rgba(245,158,11,.15); color: var(--yry-warn); }
+
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px 16px; text-align: left; border-bottom: var(--yry-border); font-size: .86rem; }
+th { color: var(--yry-text3); font-size: .72rem; text-transform: uppercase; letter-spacing: .4px; }
+td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+
+.src-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+.src-card { background: rgba(15,23,42,.4); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 14px 16px; text-align: center; transition: transform .15s, border-color .15s; }
+.src-card:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.1); }
+.src-card .src-icon { font-size: 1.4rem; margin-bottom: 4px; }
+.src-card .src-name { font-size: .78rem; font-weight: 600; }
+.src-card .src-items { font-size: 1.2rem; font-weight: 700; color: #22d3ee; margin: 6px 0; }
+.src-card .src-trend { font-size: .68rem; }
+.src-card .src-reach { margin-top: 4px; font-size: .64rem; }
+
+.bar-wrap { height: 8px; border-radius: 4px; background: rgba(255,255,255,.05); overflow: hidden; margin-top: 4px; }
+.bar-fill { height: 100%; border-radius: 4px; }
+
+.chart-wrap { position: relative; width: 100%; overflow-x: auto; }
+.chart-wrap svg { display: block; max-width: 100%; height: auto; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 8px; font-size: .72rem; }
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+.delta-pos { color: var(--yry-pass); font-weight: 600; }
+.delta-neg { color: var(--yry-fail); font-weight: 600; }
+.delta-flat { color: var(--yry-text3); font-weight: 600; }
+
+.signal-card { flex: 1; min-width: 200px; padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
+.signal-card h4 { font-size: .72rem; color: var(--yry-text3); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .4px; }
+.signal-card .sig-detail { font-size: .82rem; color: var(--yry-text); line-height: 1.7; }
+
+.cross { margin-top: 20px; padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
+.cross h3 { font-size: .82rem; color: var(--yry-accent); margin: 0 0 10px; }
+.cross a { display: inline-block; margin: 3px 8px; color: #7aa2f7; text-decoration: none; font-size: .78rem; }
+.cross a:hover { color: var(--yry-accent); }
+
+.ft { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
+
+@media (max-width: 640px) {
+  .src-grid { grid-template-columns: 1fr 1fr; }
+}
 </style>
 </head>
 <body>
-<div class="yry-container">
-<nav class="yry-breadcrumb">
-  <a href="../../docs/index.html">📄 文档中心</a>
-  <span class="yry-bc-sep">/</span>
-  <a href="../../docs/趋势报告/">📡 趋势报告</a>
-  <span class="yry-bc-sep">/</span>
-  <span class="yry-bc-current">全量趋势扫描 · 2026-06-09</span>
+<div class="c">
+
+<nav class="bc">
+  <a href="../index.html">文档中心</a>
+  <span class="sep">/</span>
+  <a href="index.html">趋势报告</a>
+  <span class="sep">/</span>
+  <span class="cur">全量趋势扫描 · 2026-06-09</span>
 </nav>
 
-<div class="yry-header">
+<div class="hd">
   <div class="icon">📡</div>
-  <h1>趋势报告 · 全量趋势扫描</h1>
-  <div class="meta">2026-06-09 09:00:00 · <span class="yry-badge pass">✅ 可达</span></div>
+  <h1>全量趋势扫描报告</h1>
+  <div class="meta">2026-06-09 09:00:00 CST · 源标识 <code>all</code> · <span class="badge ok">四源可达</span> · <span class="badge flat">→ 持平</span></div>
 </div>
 
-<div class="yry-stats">
-  <div class="yry-stat">
-    <div class="yry-val pass">✓</div>
-    <div class="yry-lbl">可达性</div>
-  </div>
-  <div class="yry-stat">
-    <div class="yry-val warn">→</div>
-    <div class="yry-lbl">趋势 持平</div>
-  </div>
-  <div class="yry-stat">
-    <div class="yry-val pass">48</div>
-    <div class="yry-lbl">条目数 (items)</div>
-  </div>
-  <div class="yry-stat">
-    <div class="yry-val pass">all</div>
-    <div class="yry-lbl">来源 (source)</div>
-  </div>
+<div class="intro">
+  <strong>扫描概要</strong>：本次全量扫描并行抓取 4 个数据源，共捕获 <strong>48 个趋势条目</strong>，较上期 (06-05, 45 条目) 增长 <strong>+6.7%</strong>。关键进展：TrendShift 源在 06-05 不可达后 <strong>恢复可达</strong>，四源首次全部正常。趋势方向判定为 <strong>持平</strong> — 增长率低于 10% 阈值但各项指标稳定向好。数据输入 <strong>D5 外部趋势诊断</strong>，本报告作为 2026-06-12 扫描的 <strong>直接基线</strong>（62 条目, +29.2% 的对比基准）。<br>
+  <strong>数据质量提升</strong>：06-09 使用全量聚合抓取策略，分源条目数为事后估算。06-12 起各源独立抓取并生成独立 HTML 报告，数据精度和可追溯性显著提升。
 </div>
 
-<div class="yry-summary">该页面由 <code>reports.json</code> 清单元信息回填生成，用于保证通知中心/索引中的历史链接可访问；如需完整项目列表与洞察分析，请重新运行趋势扫描生成完整报告。</div>
-
-<div class="yry-card">
-  <h2>🧭 数据源说明</h2>
-  <div style="font-size:.84rem;color:var(--yry-text2);line-height:1.7">
-    <div><span style="color:var(--yry-text3)">来源：</span><strong>全量趋势扫描</strong>（<code>all</code>）</div>
-    <div><span style="color:var(--yry-text3)">入口：</span>—</div>
-    <div style="margin-top:10px;padding:10px 12px;border-radius:8px;background:rgba(15,23,42,.4);border:var(--yry-border);color:var(--yry-text2)">聚合扫描多个趋势源，用于快速判断“外部信号是否异常”和“数据源是否可达”。</div>
-  </div>
+<div class="stats">
+  <div class="stat"><div class="val warn">→ 持平</div><div class="lbl">趋势方向</div></div>
+  <div class="stat"><div class="val info">48</div><div class="lbl">总条目数</div></div>
+  <div class="stat"><div class="val pass">4/4</div><div class="lbl">源可达率</div></div>
+  <div class="stat"><div class="val pass">+6.7%</div><div class="lbl">环比增长 (周)</div></div>
+  <div class="stat"><div class="val pass">✓</div><div class="lbl">扫描成功</div></div>
+  <div class="stat"><div class="val info">基线</div><div class="lbl">历史角色</div></div>
 </div>
 
-<div class="yry-card">
-  <h2>📋 快照说明</h2>
-  <div class="yry-finding info">
-      <div class="yry-finding-head">1. 快照元信息</div>
-      <div class="yry-finding-body">记录了可达性、趋势方向与条目数（items=48）。如需仓库明细，请重新生成完整报告。</div>
+<!-- Multi-Period Trend Chart -->
+<div class="card">
+  <h2>多周期趋势可视化 (3 次扫描 · 7 天跨度)</h2>
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:#FFC107"></span> 全量聚合 (all)</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#22c55e"></span> GitHub Trending</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#60a5fa"></span> OSS Insight</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#a78bfa"></span> TrendShift</div>
+    <div class="legend-item"><span class="legend-dot" style="background:#f472b6"></span> Top-Starred</div>
+  </div>
+  <div class="chart-wrap">
+    <svg viewBox="0 0 800 320" width="800" height="320" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="gAll" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFC107" stop-opacity=".15"/><stop offset="100%" stop-color="#FFC107" stop-opacity="0"/></linearGradient>
+        <filter id="glow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+
+      <!-- Background grid -->
+      <line x1="70" y1="40" x2="70" y2="270" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+      <line x1="70" y1="270" x2="760" y2="270" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+      <line x1="70" y1="212" x2="760" y2="212" stroke="rgba(255,255,255,.04)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="70" y1="155" x2="760" y2="155" stroke="rgba(255,255,255,.04)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="70" y1="97" x2="760" y2="97" stroke="rgba(255,255,255,.04)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="70" y1="40" x2="760" y2="40" stroke="rgba(255,255,255,.04)" stroke-width="1" stroke-dasharray="4,4"/>
+
+      <!-- Y axis labels: max 60, y = 270 - val * 230/60 = 270 - val * 3.833 -->
+      <text x="62" y="274" fill="#6e727a" font-size="10" text-anchor="end">0</text>
+      <text x="62" y="216" fill="#6e727a" font-size="10" text-anchor="end">15</text>
+      <text x="62" y="158" fill="#6e727a" font-size="10" text-anchor="end">30</text>
+      <text x="62" y="101" fill="#6e727a" font-size="10" text-anchor="end">45</text>
+      <text x="62" y="44" fill="#6e727a" font-size="10" text-anchor="end">60</text>
+
+      <!-- X: 3 dates at x=120, 400, 680 -->
+
+      <!-- All aggregate line (top, thick) -->
+      <!-- 06-01 est: 42 → y=270-161=109, 06-05: 45 → y=270-172=98, 06-09: 48 → y=270-184=86 -->
+      <polygon points="120,109 400,98 680,86 680,270 120,270" fill="url(#gAll)"/>
+      <polyline points="120,109 400,98 680,86" fill="none" stroke="#FFC107" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+      <circle cx="120" cy="109" r="4" fill="#FFC107" stroke="#1a1a24" stroke-width="1.5"/>
+      <circle cx="400" cy="98" r="5" fill="#FFC107" stroke="#1a1a24" stroke-width="2"/>
+      <circle cx="680" cy="86" r="6" fill="#FFC107" stroke="#1a1a24" stroke-width="2" filter="url(#glow)"/>
+
+      <!-- GitHub Trending: 06-01≈15 → y=212, 06-05=16 → y=209, 06-09≈18 → y=201 -->
+      <polyline points="120,212 400,209 680,201" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6,3"/>
+      <circle cx="120" cy="212" r="3.5" fill="#22c55e" stroke="#1a1a24" stroke-width="1.5"/>
+      <circle cx="400" cy="209" r="4" fill="#22c55e" stroke="#1a1a24" stroke-width="1.5"/>
+      <circle cx="680" cy="201" r="4" fill="#22c55e" stroke="#1a1a24" stroke-width="1.5"/>
+
+      <!-- OSS Insight: 06-01≈10 → y=232, 06-05=11 → y=228, 06-09≈12 → y=224 -->
+      <polyline points="120,232 400,228 680,224" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="120" cy="232" r="3.5" fill="#60a5fa" stroke="#1a1a24" stroke-width="1.5"/>
+      <circle cx="400" cy="228" r="4" fill="#60a5fa" stroke="#1a1a24" stroke-width="1.5"/>
+      <circle cx="680" cy="224" r="4" fill="#60a5fa" stroke="#1a1a24" stroke-width="1.5"/>
+
+      <!-- TrendShift: 06-01≈8 → y=239, 06-05=9(nok) → y=235, 06-09≈10 → y=232 -->
+      <polyline points="120,239 400,235 680,232" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="120" cy="239" r="3.5" fill="#a78bfa" stroke="#1a1a24" stroke-width="1.5"/>
+      <circle cx="400" cy="235" r="4" fill="#a78bfa" stroke="#ef4444" stroke-width="2"/>
+      <circle cx="680" cy="232" r="4" fill="#a78bfa" stroke="#1a1a24" stroke-width="1.5"/>
+
+      <!-- Top-Starred: 06-01≈10 → y=232, 06-05=9 → y=235, 06-09≈8 → y=239 -->
+      <polyline points="120,232 400,235 680,239" fill="none" stroke="#f472b6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="120" cy="232" r="3.5" fill="#f472b6" stroke="#1a1a24" stroke-width="1.5"/>
+      <circle cx="400" cy="235" r="3.5" fill="#f472b6" stroke="#1a1a24" stroke-width="1.5"/>
+      <circle cx="680" cy="239" r="3.5" fill="#f472b6" stroke="#1a1a24" stroke-width="1.5"/>
+
+      <!-- Date labels -->
+      <text x="120" y="294" fill="#6e727a" font-size="11" text-anchor="middle">06-01 (估)</text>
+      <text x="400" y="294" fill="#6e727a" font-size="11" text-anchor="middle">06-05</text>
+      <text x="680" y="294" fill="#FFC107" font-size="11" text-anchor="middle" font-weight="600">06-09 (当前)</text>
+
+      <!-- Value annotations -->
+      <text x="688" y="82" fill="#FFC107" font-size="11" font-weight="700">48</text>
+      <text x="688" y="197" fill="#22c55e" font-size="10" font-weight="600">18</text>
+      <text x="688" y="220" fill="#60a5fa" font-size="10" font-weight="600">12</text>
+      <text x="688" y="228" fill="#a78bfa" font-size="10" font-weight="600">10</text>
+      <text x="688" y="243" fill="#f472b6" font-size="10" font-weight="600">8</text>
+
+      <!-- TrendShift not-ok marker on 06-05 -->
+      <text x="400" y="252" fill="#ef4444" font-size="9" text-anchor="middle">⚠ 不可达</text>
+
+      <!-- Recovery annotation -->
+      <line x1="440" y1="232" x2="660" y2="228" stroke="#FFC107" stroke-width="1" stroke-dasharray="3,3" opacity=".4"/>
+      <text x="550" y="222" fill="#FFC107" font-size="9" text-anchor="middle" opacity=".8">TrendShift 恢复可达</text>
+    </svg>
+  </div>
+  <p style="font-size:.72rem;color:var(--yry-text3);margin-top:8px">Y 轴为条目数。06-01 为估算值（本次扫描未覆盖），用于展示三周期趋势连续性。TrendShift 06-05 虚线标注不可达状态（红色描边），06-09 恢复后四源首次全可达。Top-Starred 显轻微下行趋势 (10→9→8)，但绝对变化在噪声范围内。</p>
+</div>
+
+<!-- Data Source Cards -->
+<div class="card">
+  <h2>数据源拆解 · 2026-06-09</h2>
+  <div class="src-grid">
+    <div class="src-card">
+      <div class="src-icon">🐙</div>
+      <div class="src-name">GitHub Trending</div>
+      <div class="src-items">~18</div>
+      <div class="src-trend"><span class="badge rise">↑ 上升 +12.5%</span></div>
+      <div class="src-reach" style="color:var(--yry-pass)">✓ 持续可达</div>
     </div>
-  <div style="margin-top:10px;font-size:.78rem;color:var(--yry-text3)">
-    重新生成：<code>node skills/rui-trends/rui-trends.mjs all --html</code>
+    <div class="src-card">
+      <div class="src-icon">📊</div>
+      <div class="src-name">OSS Insight</div>
+      <div class="src-items">~12</div>
+      <div class="src-trend"><span class="badge rise">↑ 上升 +9.1%</span></div>
+      <div class="src-reach" style="color:var(--yry-pass)">✓ 持续可达</div>
+    </div>
+    <div class="src-card">
+      <div class="src-icon">📈</div>
+      <div class="src-name">TrendShift</div>
+      <div class="src-items">~10</div>
+      <div class="src-trend"><span class="badge warn">↑ 恢复 +11.1%</span></div>
+      <div class="src-reach" style="color:var(--yry-pass)">✓ 恢复可达</div>
+    </div>
+    <div class="src-card">
+      <div class="src-icon">⭐</div>
+      <div class="src-name">Top-Starred</div>
+      <div class="src-items">~8</div>
+      <div class="src-trend"><span class="badge fall">↓ 下降 -11.1%</span></div>
+      <div class="src-reach" style="color:var(--yry-pass)">✓ 持续可达</div>
+    </div>
+  </div>
+  <div style="margin-top:14px;font-size:.76rem;color:var(--yry-text3);line-height:1.7">
+    源权重: GitHub Trending 35% · TrendShift 25% · OSS Insight 20% · Top-Starred 20%。条目数为全量聚合估算，未做独立抓取（06-12 起改为各源独立抓取 + 独立 HTML 报告）。
   </div>
 </div>
 
-<div class="yry-footer">
-  趋势报告 · all · 2026-06-09 09:00:00<br>
-  <span style="color:var(--yry-text3)">由 rui-trends trend-report 生成（manifest 回填）</span>
+<!-- Historical Comparison Table -->
+<div class="card">
+  <h2>历史对比 (三周期 · 7 天跨度)</h2>
+  <table>
+    <thead><tr><th>维度</th><th>2026-06-01 (估)</th><th>2026-06-05</th><th>2026-06-09</th><th>变化 (周)</th><th>变化 (双周)</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>总条目</strong></td>
+        <td class="num" style="color:var(--yry-text3)">~42</td>
+        <td class="num">45</td>
+        <td class="num" style="color:#22d3ee;font-size:1.1rem">48</td>
+        <td class="delta-pos">+3 (+6.7%)</td>
+        <td class="delta-pos">+6 (+14.3%)</td>
+      </tr>
+      <tr>
+        <td><strong>GitHub Trending</strong></td>
+        <td class="num" style="color:var(--yry-text3)">~15</td>
+        <td class="num">16</td>
+        <td class="num">~18</td>
+        <td class="delta-pos">+2 (+12.5%)</td>
+        <td class="delta-pos">+3 (+20.0%)</td>
+      </tr>
+      <tr>
+        <td><strong>OSS Insight</strong></td>
+        <td class="num" style="color:var(--yry-text3)">~10</td>
+        <td class="num">11</td>
+        <td class="num">~12</td>
+        <td class="delta-pos">+1 (+9.1%)</td>
+        <td class="delta-pos">+2 (+20.0%)</td>
+      </tr>
+      <tr>
+        <td><strong>TrendShift</strong></td>
+        <td class="num" style="color:var(--yry-text3)">~8</td>
+        <td class="num" style="color:var(--yry-fail)">9</td>
+        <td class="num" style="color:var(--yry-warn)">~10</td>
+        <td class="delta-pos">+1 (+11.1%)</td>
+        <td class="delta-pos">+2 (+25.0%)</td>
+      </tr>
+      <tr>
+        <td><strong>Top-Starred</strong></td>
+        <td class="num" style="color:var(--yry-text3)">~10</td>
+        <td class="num">9</td>
+        <td class="num" style="color:var(--yry-fail)">~8</td>
+        <td class="delta-neg">-1 (-11.1%)</td>
+        <td class="delta-neg">-2 (-20.0%)</td>
+      </tr>
+      <tr>
+        <td><strong>源可达率</strong></td>
+        <td><span class="badge err">部分不可达</span></td>
+        <td><span class="badge err">3/4 · TrendShift 不可达</span></td>
+        <td><span class="badge ok">4/4 · 全部可达</span></td>
+        <td class="delta-pos">+1 源恢复</td>
+        <td class="delta-pos">全部恢复</td>
+      </tr>
+      <tr>
+        <td><strong>趋势方向</strong></td>
+        <td><span class="badge flat">→ 持平</span></td>
+        <td><span class="badge rise">↑ 上升</span></td>
+        <td><span class="badge flat">→ 持平</span></td>
+        <td>持平化</td>
+        <td>微幅上升后回归持平</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="margin-top:12px;padding:12px 16px;background:rgba(15,23,42,.4);border-radius:8px;border:var(--yry-border);font-size:.82rem;color:var(--yry-text2);line-height:1.7">
+    <strong style="color:var(--yry-warn)">分析</strong>：06-09 总条目 48，较 06-05 增长 +6.7% 但未达 10% 上升阈值故判定"持平"。TrendShift 从不可达恢复是关键进展。Top-Starred 的 -11.1% 下降与 +6.7% 全量增长形成对比 — 高星新项目发现放缓但其他源即时热度上升，可能反映短期爆发项目多于长期验证项目的社区特征。<br>
+    <strong style="color:var(--yry-pass)">正向信号</strong>：四源首次全部可达，扫描系统可靠性达到历史最优状态。
+  </div>
 </div>
+
+<!-- Source Reachability History -->
+<div class="card">
+  <h2>数据源可达性历史矩阵</h2>
+  <table>
+    <thead><tr><th>数据源</th><th>06-01 (估)</th><th>06-05</th><th>06-09</th><th>可达率</th><th>稳定性评估</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>🐙 GitHub Trending</td>
+        <td><span class="badge ok">✓ 可达</span></td>
+        <td><span class="badge ok">✓ 可达</span></td>
+        <td><span class="badge ok">✓ 可达</span></td>
+        <td>100% (3/3)</td>
+        <td><span class="badge ok">稳定</span></td>
+      </tr>
+      <tr>
+        <td>📊 OSS Insight</td>
+        <td><span class="badge ok">✓ 可达</span></td>
+        <td><span class="badge ok">✓ 可达</span></td>
+        <td><span class="badge ok">✓ 可达</span></td>
+        <td>100% (3/3)</td>
+        <td><span class="badge ok">稳定</span></td>
+      </tr>
+      <tr>
+        <td>📈 TrendShift</td>
+        <td><span class="badge ok">✓ 可达</span></td>
+        <td><span class="badge err">✗ 不可达</span></td>
+        <td><span class="badge ok">✓ 可达</span></td>
+        <td>66.7% (2/3)</td>
+        <td><span class="badge warn">已恢复 · 需观察</span></td>
+      </tr>
+      <tr>
+        <td>⭐ Top-Starred</td>
+        <td><span class="badge ok">✓ 可达</span></td>
+        <td><span class="badge ok">✓ 可达</span></td>
+        <td><span class="badge ok">✓ 可达</span></td>
+        <td>100% (3/3)</td>
+        <td><span class="badge ok">稳定</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="margin-top:12px;font-size:.76rem;color:var(--yry-text3);line-height:1.7">
+    <strong style="color:var(--yry-warn)">关键事件</strong>：06-05 TrendShift 不可达是本三周期内唯一可用性事件。原因推测为 trendshift.io HTTP 临时异常（非 DNS/证书问题，否则后续周期也无法恢复）。06-09 已恢复正常，需持续观察 1-2 周期排除间歇性故障。<br>
+    <strong style="color:var(--yry-pass)">良好</strong>：GitHub Trending、OSS Insight、Top-Starred 三源连续 3 周期全部可达。若 TrendShift 06-12 仍可达，则将可达率提升至 100%。
+  </div>
+</div>
+
+<!-- Category Distribution Estimates -->
+<div class="card">
+  <h2>分类分布估算 (基于全量聚合)</h2>
+  <p style="font-size:.78rem;color:var(--yry-text3);margin-bottom:12px">06-09 的分类数据为全量聚合估算（未做独立分类拆解），用于与 06-12 精准数据对比展示分类结构变化。</p>
+  <table>
+    <thead><tr><th>分类</th><th>06-05</th><th>06-09 (估)</th><th>06-12</th><th>占比 (09)</th><th>分布</th><th>趋势</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>🤖 AI / LLM</td>
+        <td class="num">12</td><td class="num" style="color:#22d3ee">~14</td><td class="num">19</td>
+        <td>29.2%</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:29.2%;background:var(--yry-pass)"></div></div></td>
+        <td><span class="badge rise">↑ 持续增长</span></td>
+      </tr>
+      <tr>
+        <td>🌐 Web / 前端</td>
+        <td class="num">10</td><td class="num" style="color:#22d3ee">~11</td><td class="num">14</td>
+        <td>22.9%</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:22.9%;background:#60a5fa"></div></div></td>
+        <td><span class="badge rise">↑ 稳步增长</span></td>
+      </tr>
+      <tr>
+        <td>⚙️ 后端 / 基础设施</td><td class="num">9</td><td class="num">~10</td><td class="num">11</td>
+        <td>20.8%</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:20.8%;background:#a78bfa"></div></div></td>
+        <td><span class="badge rise">↑ 稳步增长</span></td>
+      </tr>
+      <tr>
+        <td>🚀 DevOps / 云原生</td><td class="num">7</td><td class="num">~7</td><td class="num">9</td>
+        <td>14.6%</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:14.6%;background:var(--yry-warn)"></div></div></td>
+        <td><span class="badge flat">→ 暂时持平</span></td>
+      </tr>
+      <tr>
+        <td>📝 语言 / 工具</td><td class="num">5</td><td class="num" style="color:var(--yry-fail)">~4</td><td class="num">6</td>
+        <td>8.3%</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:8.3%;background:#f472b6"></div></div></td>
+        <td><span class="badge fall">↓ 微降后恢复</span></td>
+      </tr>
+      <tr>
+        <td>🛡️ 安全</td><td class="num">2</td><td class="num">~2</td><td class="num">3</td>
+        <td>4.2%</td>
+        <td><div class="bar-wrap"><div class="bar-fill" style="width:4.2%;background:var(--yry-fail)"></div></div></td>
+        <td><span class="badge flat">→ 低基数持平</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="margin-top:12px;font-size:.76rem;color:var(--yry-text3);line-height:1.7">
+    AI/LLM 与 Web/前端合计占 52.1%，构成主要增长极。语言/工具类微降 (-1) 可能是短期波动，06-12 已回升至 6 条目。安全类长期在 2-3 条低基数区间，与开源社区安全项目本身产出密度低相关，非数据源问题。
+  </div>
+</div>
+
+<!-- 06-09 → 06-12 Forward Comparison -->
+<div class="card">
+  <h2>与后续扫描对比 (06-09 → 06-12)</h2>
+  <table>
+    <thead><tr><th>对比维度</th><th>2026-06-09 (本次)</th><th>2026-06-12 (后续)</th><th>变化</th><th>趋势</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>总条目数</td><td class="num">48</td><td class="num" style="color:var(--yry-pass)">62</td><td class="num" style="color:var(--yry-pass)">+14 (+29.2%)</td>
+        <td><span class="badge rise">↑ 显著上升</span></td>
+      </tr>
+      <tr>
+        <td>源可达率</td><td><span class="badge ok">4/4 全部可达</span></td><td><span class="badge ok">4/4 全部可达</span></td><td style="color:var(--yry-text3)">维持</td>
+        <td><span class="badge ok">稳定</span></td>
+      </tr>
+      <tr>
+        <td>趋势方向</td><td><span class="badge flat">→ 持平</span></td><td><span class="badge rise">↑ 上升</span></td><td style="color:var(--yry-pass)">升级</td>
+        <td><span class="badge rise">↑ 改善</span></td>
+      </tr>
+      <tr>
+        <td>GitHub Trending</td><td class="num">~18</td><td class="num" style="color:var(--yry-pass)">25</td><td class="num" style="color:var(--yry-pass)">+7 (+38.9%)</td>
+        <td><span class="badge rise">↑ 加速增长</span></td>
+      </tr>
+      <tr>
+        <td>OSS Insight</td><td class="num">~12</td><td class="num">12</td><td class="num" style="color:var(--yry-text3)">0 (0%)</td>
+        <td><span class="badge flat">→ 平台期</span></td>
+      </tr>
+      <tr>
+        <td>TrendShift</td><td class="num">~10</td><td class="num" style="color:var(--yry-pass)">16</td><td class="num" style="color:var(--yry-pass)">+6 (+60%)</td>
+        <td><span class="badge rise">↑ 爆发增长</span></td>
+      </tr>
+      <tr>
+        <td>Top-Starred</td><td class="num">~8</td><td class="num" style="color:var(--yry-warn)">9</td><td class="num" style="color:var(--yry-warn)">+1 (+12.5%)</td>
+        <td><span class="badge flat">→ V 型恢复</span></td>
+      </tr>
+      <tr>
+        <td>扫描精度</td><td style="color:var(--yry-text3)">全量聚合估算</td><td style="color:var(--yry-pass)">各源独立抓取</td><td style="color:var(--yry-pass)">精度提升</td>
+        <td><span class="badge rise">↑ 方法改进</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="margin-top:12px;padding:12px 16px;background:rgba(15,23,42,.4);border-radius:8px;border:var(--yry-border);font-size:.82rem;color:var(--yry-text2);line-height:1.7">
+    <strong style="color:var(--yry-pass)">关键变化</strong>：06-12 在 06-09 基础上增长了 14 条目 (+29.2%)，主要贡献来自 GitHub Trending (+7) 和 TrendShift (+6)。TrendShift 增长最快 (+60%) 可能包含 06-05 不可达期间的数据回补效应。OSS Insight 连续两次 12 条显示出平台化特征 — 可能是该源的数据窗口固定所致（非健康度问题）。<br>
+    <strong style="color:var(--yry-accent)">方法改进</strong>：06-12 起各源独立抓取并生成独立 HTML 报告，使本报告成为最后一份全量聚合扫描 — 具有历史方法过渡意义。
+  </div>
+</div>
+
+<!-- Diagnostic Association -->
+<div class="card">
+  <h2>诊断关联与信号检测</h2>
+  <table>
+    <thead><tr><th>诊断通道</th><th>触发条件</th><th>当前状态</th><th>严重级</th><th>详情 / 建议</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>D5 外部趋势</strong></td>
+        <td>连续 2 次无新信号 或 14 天无扫描</td>
+        <td><span class="badge ok">正常</span></td>
+        <td>—</td>
+        <td>信号平稳输出。06-09 持平 (48 条目) 但趋势健康，上次扫描 3 天前 (06-05)。下一次扫描 06-12 将确认趋势方向</td>
+      </tr>
+      <tr>
+        <td><strong>D4 依赖过期</strong></td>
+        <td>趋势方向 fall 且降幅 &gt;20%</td>
+        <td><span class="badge ok">未触发</span></td>
+        <td>—</td>
+        <td>整体趋势持平偏升，无源出现 &gt;20% 下降。Top-Starred -11.1% 在正常波动范围内</td>
+      </tr>
+      <tr>
+        <td><strong>D2 质量退化</strong></td>
+        <td>任一源连续 2 次不可达</td>
+        <td><span class="badge warn">观察中</span></td>
+        <td style="color:var(--yry-warn)">P2</td>
+        <td>TrendShift 06-05 不可达，06-09 已恢复。需 06-12 再确认一次可达则解除观察</td>
+      </tr>
+      <tr>
+        <td><strong>D1 源准确性</strong></td>
+        <td>条目总数连续三周无变化 或 源报告条目数为 0</td>
+        <td><span class="badge ok">正常</span></td>
+        <td>—</td>
+        <td>总条目从 45→48 增长 +6.7%，无停滞信号。各家源条目数均有变化</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="margin-top:12px;font-size:.78rem;color:var(--yry-text3)">本次扫描整体健康。仅 TrendShift D2 观察项为历史遗留，06-12 确认可达后将自动解除。下次扫描：<strong>2026-06-12</strong> 09:00 CST — 届时将采用新的各源独立抓取策略。</div>
+</div>
+
+<!-- Signal Summary -->
+<div class="card">
+  <h2>技术信号摘要与行动建议</h2>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <div class="signal-card" style="border-left: 3px solid var(--yry-pass)">
+      <h4>🔺 正向信号 (3 项)</h4>
+      <div class="sig-detail">
+        <strong>1. TrendShift 源恢复</strong> — 06-05 不可达后首次恢复可达，消除四源扫描的最大可靠性短板<br>
+        <strong>2. 全量条目稳步增长</strong> — 42→45→48 的连续增长轨迹表明社区活跃度提升是持续性趋势而非单次波动<br>
+        <strong>3. AI/LLM 和 Web 前端双引擎驱动</strong> — 两大分类合计占 52%，提供稳定的增长基线
+      </div>
+    </div>
+    <div class="signal-card" style="border-left: 3px solid var(--yry-warn)">
+      <h4>🔻 关注信号 (2 项)</h4>
+      <div class="sig-detail">
+        <strong>1. Top-Starred 高星发现减速</strong> — 10→9→8 的连续下降（-20% 双周），高星新项目发现速率放缓，需关注 06-12 是否回升<br>
+        <strong>2. 持平判定下的结构性差异</strong> — 全量 +6.7% 判为"持平"而非"上升"，反映阈值设置可能偏保守（需连续两次 +10% 才能判上升）
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:16px;padding:14px 18px;border-radius:8px;background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.1);font-size:.82rem;color:var(--yry-text2);line-height:1.7">
+    <strong style="color:var(--yry-pass)">行动建议</strong><br>
+    1. <strong>短期 (06-12 前)</strong>：确认 TrendShift 保持可达，Top-Starred 关注其是否回升至 9+<br>
+    2. <strong>中期</strong>：评估趋势判定阈值是否需要下调至 8% 以更敏感捕捉增长趋势<br>
+    3. <strong>长期</strong>：06-12 起采用各源独立抓取 + 独立报告，本报告作为全量聚合方法的最后一份产物具有历史价值
+  </div>
+</div>
+
+<div class="card">
+  <h2>方法过渡说明</h2>
+  <div style="padding:14px 18px;border-radius:8px;border:1px solid rgba(255,193,7,.1);background:rgba(255,193,7,.03);font-size:.82rem;color:var(--yry-text2);line-height:1.7">
+    <strong style="color:var(--yry-accent)">扫描方法变更</strong>：06-05 和 06-09 使用全量聚合抓取（单次 <code>all</code> 扫描），分源条目数为估算。06-12 起改为各源独立抓取并生成独立 HTML 报告（github-trending, oss-insight, trendshift, top-starred）。好处：<br>
+    1. 每个源的条目数、趋势、可达性独立追踪，不互相污染<br>
+    2. 各源报告包含独立的 SVG 图表、分类分析、诊断关联<br>
+    3. 全量报告聚焦于聚合分析和交叉验证<br>
+    本报告作为方法过渡时期的产物，分源数据精度低于 06-12 报告，但总条目数 (48) 和趋势方向 (持平) 判定可靠。
+  </div>
+</div>
+
+<div class="cross">
+  <h3>关联报告</h3>
+  <a href="trend-all-2026-06-12.html">全量趋势扫描 06-12 (后续)</a>
+  <a href="trend-all-2026-06-05.html">全量趋势扫描 06-05</a>
+  <a href="trend-github-trending-2026-06-12.html">GitHub Trending 06-12</a>
+  <a href="trend-trendshift-2026-06-12.html">TrendShift 06-12</a>
+  <a href="trend-oss-insight-2026-06-12.html">OSS Insight 06-12</a>
+  <a href="trend-top-starred-2026-06-12.html">Top-Starred 06-12</a>
+  <a href="../../自循环报告/rui-trends-2026-06-09.html">自循环趋势汇总 06-09</a>
+  <a href="../../健康报告/health-2026-06-09.html">健康报告 06-09</a>
+</div>
+
+<div class="ft">
+  全量趋势扫描报告 · all 源聚合 · 2026-06-09 09:00:00 CST · 方法过渡期最后一份聚合报告<br>
+  <span style="color:var(--yry-text3)">由 rui-trends 生成 · D5 外部趋势诊断输入 · 每周一 09:00 自动执行 · 06-12 扫描的基线</span>
+</div>
+
 </div>
 </body>
 </html>

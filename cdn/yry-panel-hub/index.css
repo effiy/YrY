@@ -1,0 +1,87 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryPanelHub · Vue 3 浮动面板工具栏组件 样式
+
+   效果对齐 docs/index.html 中的 <div class="panel-hub"> 静态结构:
+     <div class="panel-hub">
+       <span class="panel-hub-label" />         ← 可选 · 点击打开指定面板
+       <button class="panel-hub-btn">           ×N · 点击触发 panel-hub-select
+         <span class="panel-hub-icon" />
+         <span class="panel-hub-name" />
+         <span class="panel-hub-desc" />
+       </button>
+       <span class="panel-hub-flow" />          ← 可选 · 流程说明文字
+     </div>
+
+   点击事件:
+     - 按钮/label 点击 → 组件在根元素上派发 CustomEvent('panel-hub-select',
+       { detail: { panel: <name> }, bubbles: true })
+     - 页面通过 addEventListener('panel-hub-select', ...) 接收后调用自己的面板 API
+
+   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+     --yry-bg-card / --yry-border / --yry-radius
+     --yry-shadow / --yry-shadow-lg
+     --yry-text / --yry-text2 / --yry-text3 / --yry-cyan
+     --yry-ease-out
+
+   所有颜色都带 fallback,即使页面未加载主题也能正常显示。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.panel-hub {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin-bottom: 36px; flex-wrap: wrap; padding: 12px 16px;
+  background: var(--yry-bg-card, linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%));
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  border-radius: 10px;
+  box-shadow: var(--yry-shadow, 0 4px 20px rgba(0,0,0,0.3));
+  animation: yry-fadeInDown .5s .2s ease both;
+}
+
+.panel-hub-label {
+  font-size: .64rem; font-weight: 600;
+  color: var(--yry-text3, rgba(110,110,114,1));
+  text-transform: uppercase; letter-spacing: .05em; margin-right: 4px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: color .15s var(--yry-ease-out, ease);
+}
+.panel-hub-label:hover { color: var(--yry-accent, #ffc107); }
+
+.panel-hub-btn {
+  display: flex; align-items: center; gap: 5px; padding: 6px 12px;
+  background: rgba(255,255,255,.02);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 8px; cursor: pointer;
+  transition: all .2s var(--yry-ease-out, ease);
+  color: var(--yry-text2, rgba(160,160,164,1));
+  font-size: .72rem;
+  font-family: inherit;
+}
+.panel-hub-btn:hover {
+  background: rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.15);
+  transform: translateY(-2px);
+  box-shadow: var(--yry-shadow-lg, 0 12px 32px rgba(0,0,0,0.45));
+}
+.panel-hub-btn:focus-visible {
+  outline: 2px solid var(--yry-accent, #ffc107);
+  outline-offset: 2px;
+}
+.panel-hub-btn .panel-hub-icon { font-size: .9rem; flex-shrink: 0; }
+.panel-hub-btn .panel-hub-name { font-weight: 600; }
+.panel-hub-btn .panel-hub-desc {
+  font-size: .6rem; color: var(--yry-text3, rgba(110,110,114,1)); margin-left: 2px;
+}
+
+.panel-hub-flow {
+  font-size: .6rem; color: var(--yry-text3, rgba(110,110,114,1)); opacity: .7;
+  font-family: 'JetBrains Mono', ui-monospace, monospace; margin-left: 4px;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .panel-hub { gap: 4px; padding: 10px 8px; }
+  .panel-hub-btn { padding: 4px 8px; gap: 3px; }
+  .panel-hub-btn .panel-hub-desc { display: none; }
+  .panel-hub-flow { display: none; }
+}

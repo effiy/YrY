@@ -1,0 +1,91 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryStoryCard · Vue 3 故事任务卡片组件 样式
+
+   效果对齐 docs/index.html 中 <div class="story-card yry-story-card"> 静态结构:
+     <div class="story-card">
+       <div class="story-head">
+         <span class="story-icon">📑</span>
+         <span class="story-name"><a href="...">name</a></span>
+         <span class="story-badge">v1.3.0</span>
+       </div>
+       <div class="story-desc">desc</div>
+       <div class="story-scenes">
+         <span class="scene-tag">1. ...</span>
+         <span class="scene-tag">2. ...</span>
+         ...
+       </div>
+     </div>
+
+   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+     --yry-bg-card / --yry-border / --yry-radius
+     --yry-shadow / --yry-shadow-lg
+     --yry-text / --yry-text2 / --yry-text3
+     --yry-cyan / --yry-accent
+     --yry-ease-out
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.story-card {
+  background: var(--yry-bg-card, linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%));
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  border-radius: var(--yry-radius, 12px);
+  padding: 14px 16px;
+  box-shadow: var(--yry-shadow, 0 4px 20px rgba(0,0,0,0.3));
+  transition: transform .15s var(--yry-ease-out, ease), box-shadow .15s var(--yry-ease-out, ease), border-color .15s;
+}
+.story-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--yry-shadow-lg, 0 12px 32px rgba(0,0,0,0.45));
+  border-color: rgba(255,193,7,.18);
+}
+
+.story-card .story-head {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.story-card .story-icon {
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.story-card .story-name {
+  font-size: .92rem; font-weight: 700;
+  color: var(--yry-text, #f5f5f5);
+  flex: 1; min-width: 100px;
+}
+.story-card .story-name a {
+  color: var(--yry-cyan, #22d3ee);
+  text-decoration: none;
+  transition: color .15s var(--yry-ease-out, ease);
+}
+.story-card .story-name a:hover { color: var(--yry-accent, #ffc107); text-decoration: underline; }
+.story-card .story-badge {
+  display: inline-block;
+  font-size: .6rem; font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: rgba(255,193,7,.12);
+  color: var(--yry-accent, #ffc107);
+  border: 1px solid rgba(255,193,7,.25);
+  white-space: nowrap;
+}
+
+.story-card .story-desc {
+  font-size: .76rem;
+  color: var(--yry-text2, #d4d4d4);
+  line-height: 1.55;
+  margin-bottom: 10px;
+}
+.story-card .story-desc a { color: var(--yry-cyan, #22d3ee); text-decoration: none; }
+.story-card .story-desc a:hover { color: var(--yry-accent, #ffc107); text-decoration: underline; }
+
+.story-card .story-scenes {
+  display: flex; flex-wrap: wrap; gap: 5px;
+}
+.story-card .scene-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: .68rem; font-weight: 500;
+  background: rgba(34,197,94,.08);
+  color: var(--yry-pass, #22c55e);
+  border: 1px solid rgba(34,197,94,.18);
+  white-space: nowrap;
+}

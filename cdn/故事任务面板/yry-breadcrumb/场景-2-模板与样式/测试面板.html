@@ -9,32 +9,60 @@
 <link rel="stylesheet" href="../../../yry-scene.css">
 <link rel="stylesheet" href="../../../yry-checklist.css">
 <link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
+<link rel="stylesheet" href="../../../yry-inline-helpers.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<script src="../../../shared.js"></script>
-<script src="../../../yry-breadcrumb/index.js"></script>
+<style>
+
+/* ═══ a11y · prefers-reduced-motion ═══ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* ═══ a11y · Skip Link ═══ */
+.skip-link {
+  position: fixed; top: -100px; left: 8px; z-index: 1000;
+  background: var(--accent, #ffc107); color: #000;
+  padding: 10px 16px; border-radius: 6px; font-weight: 600;
+  text-decoration: none; transition: top .2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: .85rem; box-shadow: 0 4px 12px rgba(0,0,0,.3);
+  border: 2px solid transparent;
+}
+.skip-link:focus { top: 8px; outline: none; border-color: var(--cyan, #22d3ee); }
+.skip-link:focus-visible { top: 8px; outline: 3px solid var(--cyan, #22d3ee); outline-offset: 2px; }
+/* ═══ a11y · Focus Ring ═══ */
+:focus-visible {
+  outline: 2px solid var(--cyan, #22d3ee);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* ═══ a11y · Semantic Container ═══ */
+[role="main"] { scroll-margin-top: 16px; }
+.container { max-width: 1100px; }
+</style>
 </head>
 <body>
-<div class="container">
+<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
+<div class="container" id="main">
 
 <div id="breadcrumb-app"></div>
 
-<div class="scene-header">
-  <span class="scene-tag">场景 2 · 模板与样式</span>
-  <h1 class="scene-title">模板与样式 · 测试面板</h1>
-  <div class="scene-en">YryBreadcrumb 任务故事 · 场景 2 · Template & Style · 测试面板</div>
-  <p class="scene-desc">Vue 3 template 编写 · v-for / v-if / :class 设计 · CSS 设计令牌 + fallback 决策 · 5 视觉模式覆盖</p>
-</div>
+<div id="scene-header-app"></div>
 
-<nav class="scene-nav">
-  <a href="../README.md">任务故事</a>
-  <span class="scene-nav-sep">/</span>
-  <a href="./index.md">模板与样式</a>
-  <span class="scene-nav-sep">/</span>
-  <span class="active">测试面板</span>
-</nav>
+<div id="scene-nav-app"></div>
+
+<div id="cross-nav-app"></div>
 
 <h2>测试摘要</h2>
-<div class="summary-card" style="align-items:center;gap:20px">
+<div class="summary-card yry-summary-row">
   <div class="ring-wrap">
     <svg viewBox="0 0 80 80">
       <circle class="ring-bg" cx="40" cy="40" r="34"/>
@@ -42,7 +70,7 @@
     </svg>
     <div class="ring-center">100%</div>
   </div>
-  <div style="flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px">
+  <div class="yry-flex-grid-80">
     <div class="stat-card"><div class="val pass">5</div><div class="lbl">测试项总计</div></div>
     <div class="stat-card"><div class="val pass">5</div><div class="lbl">PASS</div></div>
     <div class="stat-card"><div class="val">0</div><div class="lbl">FAIL</div></div>
@@ -51,8 +79,8 @@
 </div>
 <div class="seg-bar-wrap">
   <div class="seg-bar-outer">
-    <div class="seg pass" style="width:100%"></div>
-    <div class="seg fail" style="width:0%"></div>
+    <div class="seg pass seg--full"></div>
+    <div class="seg fail seg--empty"></div>
   </div>
   <div class="seg-bar-legend">
     <span><span class="dot pass"></span>PASS 100%</span>
@@ -62,7 +90,7 @@
 
 <div class="check-progress">
   <div class="cp-text"><span>自测进度</span><span class="cp-pct">100%</span></div>
-  <div class="cp-bar"><div class="cp-fill" style="width:100%"></div></div>
+  <div class="cp-bar"><div class="cp-fill cp-fill--full"></div></div>
 </div>
 <button class="btn-clear-checks" onclick="document.querySelectorAll('.check-item').forEach(function(el){el.classList.add('checked')});updateCheckProgress();">🔄 重置全部为通过</button>
 
@@ -80,7 +108,7 @@
     ↻ 重置
   </button>
 </div>
-<div class="log-box" id="testLog" style="display:none">
+<div class="log-box log-box--hidden" id="testLog">
   <div class="log-line"><span class="log-time">T+0ms</span><span class="log-icon log-info">▶</span><span>启动测试套件...</span></div>
 </div>
 <p>以下是场景 2 模板与样式的 5 个测试用例，覆盖模板结构、指令正确性、样式令牌和响应式布局。</p>
@@ -202,28 +230,12 @@
 <p>令牌验证: 浏览器 DevTools 中删除 <code>:root</code> 规则，确认 fallback 颜色生效。</p>
 
 <div class="footer">
-  <p>位置: <code>cdn/yry-breadcrumb/任务故事/场景-2-模板与样式/测试面板.html</code></p>
-  <p>本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件</p>
+  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-2-模板与样式/测试面板.html</code><br>
+  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
 </div>
 
 </div>
 
-<script>
-  function mountBreadcrumb() {
-    if (!window.Vue || !window.YryBreadcrumb) return;
-    Vue.createApp(window.YryBreadcrumb, {
-      ariaLabel: '面包屑导航',
-      items: [
-        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
-        { label: '任务故事', href: '../README.md' },
-        { label: '场景 2 · 模板与样式' },
-        { label: '测试面板', icon: '🧪' }
-      ]
-    }).mount('#breadcrumb-app');
-  }
-  if (window.YryBreadcrumb) mountBreadcrumb();
-  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-</script>
 <script>
 document.querySelectorAll('.check-item').forEach(function(item) {
   item.addEventListener('click', function() {
@@ -291,5 +303,95 @@ function updateCheckProgress() {
   });
 })();
 </script>
+
+<script src="../../../shared.js"></script>
+<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
+<script src="../../../yry-scene-nav/index.js"></script>
+<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
+<script src="../../../yry-cross-nav/index.js"></script>
+<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
+<script src="../../../yry-back-top/index.js"></script>
+<!-- ═══ CDN: YryBreadcrumb 组件 loader ═══ -->
+<script src="../../../yry-breadcrumb/index.js"></script>
+<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
+<script src="../../../yry-scene-header/index.js"></script>
+<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
+<script src="../../../yry-stats-grid/index.js"></script>
+
+  <!-- ════════════════════════════════════════════════════════════
+       页面级挂载 · 场景导航 + 交叉导航 + 面包屑 + 统计网格
+       index.js 异步加载模板后派发 yry-*-ready 事件
+       ════════════════════════════════════════════════════════════ -->
+  <script>
+
+  /* ── YryCrossNav 挂载 ── */
+  function mountCrossNav() {
+    if (!window.Vue || !window.YryCrossNav) return;
+    if (!document.getElementById('cross-nav-app')) return;
+    Vue.createApp(window.YryCrossNav, {
+      basePath: './',
+      active: '清单',
+      pages: [
+        { id: '清单', icon: '📋', href: '计划清单.html' },
+        { id: '架构', icon: '📐', href: '架构图.html' },
+        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
+        { id: '源码', icon: '📄', href: '源码.html' },
+        { id: '测试', icon: '🧪', href: '测试面板.html' },
+        { id: '演示', icon: '💡', href: '演示.html' },
+        { id: '审查', icon: '📝', href: '审查.html' }
+      ]
+    }).mount('#cross-nav-app');
+  }
+  if (window.YryCrossNav) mountCrossNav();
+  else document.addEventListener('yry-cross-nav-ready', mountCrossNav, { once: true });
+
+  /* ── YrySceneNav 挂载 ── */
+  function mountSceneNav() {
+    if (!window.Vue || !window.YrySceneNav) return;
+    if (!document.getElementById('scene-nav-app')) return;
+    Vue.createApp(window.YrySceneNav, {
+      items: [
+        { label: '任务故事', href: '../README.md' },
+        { label: '模板与样式', href: './index.md' },
+        { label: '测试面板', active: true }
+      ]
+    }).mount('#scene-nav-app');
+  }
+  if (window.YrySceneNav) mountSceneNav();
+  else document.addEventListener('yry-scene-nav-ready', mountSceneNav, { once: true });
+
+  /* ── YrySceneHeader 挂载 ── */
+  function mountSceneHeader() {
+    if (!window.Vue || !window.YrySceneHeader) return;
+    if (!document.getElementById('scene-header-app')) return;
+    Vue.createApp(window.YrySceneHeader, {
+      icon: '🧪',
+      prefix: '场景 2',
+      accent: ' · 模板与样式',
+      meta: 'YryBreadcrumb 任务故事 · 场景 2 · Template & Style · 测试面板',
+      desc: 'Vue 3 template 编写 · v-for / v-if / :class 设计 · CSS 设计令牌 + fallback 决策 · 5 视觉模式覆盖'
+    }).mount('#scene-header-app');
+  }
+  if (window.YrySceneHeader) mountSceneHeader();
+  else document.addEventListener('yry-scene-header-ready', mountSceneHeader, { once: true });
+
+  /* ── YryBreadcrumb 挂载 ── */
+  function mountBreadcrumb() {
+    if (!window.Vue || !window.YryBreadcrumb) return;
+    if (!document.getElementById('breadcrumb-app')) return;
+    Vue.createApp(window.YryBreadcrumb, {
+      ariaLabel: '面包屑导航',
+      items: [
+        { label: 'YryBreadcrumb', href: '../../../index.html', icon: '🍞' },
+        { label: '任务故事', href: '../README.md' },
+        { label: '场景 2 · 模板与样式' },
+        { label: '测试面板', icon: '🧪' }
+      ]
+    }).mount('#breadcrumb-app');
+  }
+  if (window.YryBreadcrumb) mountBreadcrumb();
+  else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
+  </script>
+
 </body>
 </html>

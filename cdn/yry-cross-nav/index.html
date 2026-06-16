@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  YryCrossNav · 模板源 + Demo 预览页
+
+  本文件有 2 个用途:
+    1) **模板源** — index.js 通过 fetch 拉取本文件,提取 <script type="text/x-template"
+       id="yry-cross-nav-tpl"> 内容作为 Vue 组件的 template。
+    2) **Demo 预览** — 直接用浏览器打开本文件,即可看到 YryCrossNav 的实际渲染效果。
+
+  加载链: ../shared.css → ../theme.css → index.css → Vue 3 → index.js
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryCrossNav · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../yry-inline-helpers.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 720px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint {
+      font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6;
+    }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr {
+      border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px;
+    }
+    .demo-section {
+      margin: 20px 0;
+      background: var(--yry-bg-flat, rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px; padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer {
+      margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888);
+    }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <h1><span class="accent">&#128279;</span> YryCrossNav · Vue 3 交叉导航组件</h1>
+  <p class="demo-hint">
+    场景页 7 种交付物类型间的快速跳转导航。<br>
+    模板源见下方 <code>&lt;script type="text/x-template" id="yry-cross-nav-tpl"&gt;</code> 块。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo 1 — 默认 (清单页高亮)</h3>
+    <div id="demo-1"></div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo 2 — 架构图页高亮</h3>
+    <div id="demo-2"></div>
+  </div>
+
+  <hr>
+  <p class="demo-hint">
+    &#128071; 以下 <code>&lt;script type="text/x-template"&gt;</code> 即为组件的 <strong>template 源</strong>
+  </p>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TEMPLATE SOURCE OF TRUTH · YryCrossNav 的 template
+       ════════════════════════════════════════════════════════════════════ -->
+  <script type="text/x-template" id="yry-cross-nav-tpl">
+    <nav class="cross-nav">
+      <template v-for="(page, i) in pages" :key="i">
+        <span v-if="i > 0" class="cross-sep" aria-hidden="true">·</span>
+        <a v-if="page.id !== active"
+           :href="basePath + page.href"
+           class="cross-link">
+          {{ page.icon }} {{ page.id }}
+        </a>
+        <span v-else class="cross-link on">
+          {{ page.icon }} {{ page.id }}
+        </span>
+      </template>
+    </nav>
+  </script>
+
+  <script src="index.js"></script>
+
+  <script>
+    function mountDemo(id, active, pages) {
+      if (!window.Vue || !window.YryCrossNav) return;
+      Vue.createApp(window.YryCrossNav, { basePath: './', active: active, pages: pages }).mount('#' + id);
+    }
+    function mountAll() {
+      var pages = [
+        { id: '清单', icon: '📋', href: '计划清单.html' },
+        { id: '架构', icon: '📐', href: '架构图.html' },
+        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
+        { id: '源码', icon: '📄', href: '源码.html' },
+        { id: '测试', icon: '🧪', href: '测试面板.html' },
+        { id: '演示', icon: '💡', href: '演示.html' },
+        { id: '审查', icon: '📝', href: '审查.html' }
+      ];
+      mountDemo('demo-1', '清单', pages);
+      mountDemo('demo-2', '架构', pages);
+    }
+    if (window.YryCrossNav) mountAll();
+    else document.addEventListener('yry-cross-nav-ready', mountAll, { once: true });
+  </script>
+
+  <div class="demo-footer">
+    &#128279; YryCrossNav v1.0.0 · <a href="../index.html">CDN 首页</a>
+  </div>
+</body>
+</html>

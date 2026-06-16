@@ -1,0 +1,37 @@
+<div class="quickstart">
+  <div class="qs-title">🚀 快速复现 (一键执行所有命令)</div>
+  <pre>cd /Users/yi/Yi/YrY
+
+# §0 技术评审 (3 步 · 6 组件拆分 + 数据驱动 + RACI)
+node skills/codegen/interact-decompose.mjs --components=4
+node skills/codegen/data-driven.mjs --layers=data,template,renderer
+node skills/review/raci.mjs --scene=interact --sign-off=4
+
+# §1 测试设计 (3 步 · TC-10/11/12/13/14)
+node tests/skills/check-checkbox.mjs --init --latency=50
+node tests/skills/check-fold.mjs --init --duration=300
+node tests/skills/check-tab.mjs --init --panels=7
+node tests/skills/check-persist.mjs --init --storage=localStorage
+
+# §2 实施 (2 步 · checklist-interact.js + localStorage schema)
+node skills/codegen/interact.mjs --output=cdn/checklist-interact.js
+node skills/codegen/localstorage-schema.mjs --output=cdn/localstorage-schema.json
+
+# §3 验证 (2 步 · 跑测试 + 写报告)
+node tests/skills/check-interact.mjs --suite=full --verbose
+node skills/rui-bot/send.mjs --story=yry-interact --status=test-report
+
+# §4 自改进 (2 步 · key 加场景前缀 + 全选 100% 边界)
+node skills/codemod/storage-key.mjs --prefix=yry-arch-s2-checklist
+node skills/codemod/boundary-check.mjs --case=full-100pct
+
+# 交付 (2 步 · commit + sync)
+git add docs/故事任务面板/计划清单/场景-2-清单交互组件实现/
+git commit -m "feat(interact): 交付 v1.0.0 · 场景-2 清单交互组件实现"
+node skills/rui-import/sync.mjs workspace=true
+node skills/rui-bot/send.mjs --story=yry-interact --status=done
+
+# §R 复盘 (2 步 · 48h 监控 + v4.6 patch)
+node tests/skills/post-release-monitor.mjs --window=48h
+git tag -a v1.0.1 -m "场景-2 v4.6 patch"<span class="cb" onclick="copyCmd(this,this.previousSibling ? this.parentNode.textContent : '')">📋</span></pre>
+</div>

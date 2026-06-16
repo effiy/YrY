@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YrySceneCard · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../yry-inline-helpers.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">🎬</span> YrySceneCard · Vue 3 场景卡片</h1>
+  <p class="demo-hint">
+    场景卡片 — scene-num(场景序号) + scene-name(链接) + scene-desc(描述) + scene-meta(7 个交付物链接)。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo — 2 张场景卡片</h3>
+    <div class="demo-grid" id="demo-1"></div>
+  </div>
+
+  <hr>
+  <p class="demo-hint">👇 以下 <code>&lt;script type="text/x-template"&gt;</code> 即为组件的 <strong>template 源</strong></p>
+
+  <script type="text/x-template" id="yry-scene-card-tpl">
+    <div class="scene-card">
+      <div v-if="num" class="scene-num">{{ num }}</div>
+      <div class="scene-name">
+        <a v-if="nameHref" :href="nameHref" :target="nameTarget || null" :rel="nameTarget ? 'noopener noreferrer' : null">{{ name }}</a>
+        <span v-else>{{ name }}</span>
+      </div>
+      <div v-if="desc" class="scene-desc" v-html="desc"></div>
+      <div v-if="meta && meta.length" class="scene-meta">
+        <template v-for="(m, i) in meta">
+          <a v-if="m.href" :key="'a' + i" :href="m.href" :target="m.target || null" :rel="m.target ? 'noopener noreferrer' : null">{{ m.icon }} {{ m.label }}</a>
+          <span v-else :key="'s' + i">{{ m.icon }} {{ m.label }}</span>
+        </template>
+      </div>
+    </div>
+  </script>
+
+  <script src="index.js"></script>
+
+  <script>
+    function mountDemo(id, items) {
+      if (!window.Vue || !window.YrySceneCard) return;
+      const root = document.getElementById(id);
+      items.forEach(function (item) {
+        const el = document.createElement('div');
+        root.appendChild(el);
+        Vue.createApp(window.YrySceneCard, item).mount(el);
+      });
+    }
+    function mountAll() {
+      mountDemo('demo-1', [
+        {
+          num: '场景 1',
+          name: '新人上手与开发指南', nameHref: '故事任务面板/架构/场景-1-新人上手/index.md',
+          desc: '环境搭建 · 调试方法 · 常见任务 — 新人可独立完成首修',
+          meta: [
+            { icon: '📋', label: '清单', href: '故事任务面板/架构/场景-1-新人上手/计划清单.html' },
+            { icon: '📐', label: '架构', href: '故事任务面板/架构/场景-1-新人上手/架构图.html' },
+            { icon: '🧪', label: '测试', href: '故事任务面板/架构/场景-1-新人上手/测试面板.html' }
+          ]
+        },
+        {
+          num: '场景 2',
+          name: '模块定位与职责',
+          desc: '19 技能 · 9 Agent · 16 规则 — 模块识别 · 职责边界 · 入口验证',
+          meta: [{ icon: '📋', label: '清单', href: '#' }]
+        }
+      ]);
+    }
+    if (window.YrySceneCard) mountAll();
+    else document.addEventListener('yry-scene-card-ready', mountAll, { once: true });
+  </script>
+
+  <div class="demo-footer">🎬 YrySceneCard v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

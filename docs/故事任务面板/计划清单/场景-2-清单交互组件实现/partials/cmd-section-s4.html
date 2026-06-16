@@ -1,0 +1,25 @@
+<div class="section"><h2><span class="dot"></span>§4 自改进 — 已执行命令<span class="s-done">· 2 条</span></h2>
+<div class="cmd-grid">
+  <div class="cmd-card">
+    <div class="c-stage">步骤 11</div>
+    <div class="c-name">localStorage key 加场景前缀</div>
+    <div class="c-desc">codemod 批量重命名为 <code>yry-arch-s2-checklist</code> 格式，5 子场景互不冲突，旧 key 兼容 7 天</div>
+    <pre>node skills/codemod/storage-key.mjs --prefix=yry-arch-s2-checklist --scenes=5 --compat=7d<span class="cb" onclick="copyCmd(this,'node skills/codemod/storage-key.mjs --prefix=yry-arch-s2-checklist --scenes=5 --compat=7d')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 coder agent</span><span>⏱ 1.3h</span><span>🎯 P1</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>5/5 子场景 key 唯一 · 旧 key 7 天兼容 · 0 冲突 · e2e 通过</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 12</div>
+    <div class="c-name">全选 100% 边界场景验证</div>
+    <div class="c-desc">边界场景: 全选 → 进度条 = 100% + 进度徽章显示"已完成" + 复制到剪贴板可用 + localStorage <code>progress=100</code></div>
+    <pre>node skills/codemod/boundary-check.mjs --case=full-100pct --assertions=8
+node tests/skills/check-interact.mjs --suite=boundary --case=full-100pct
+node tests/skills/check-interact.mjs --case=zero-percent --assertions=4<span class="cb" onclick="copyCmd(this,'node skills/codemod/boundary-check.mjs --case=full-100pct --assertions=8\nnode tests/skills/check-interact.mjs --suite=boundary --case=full-100pct\nnode tests/skills/check-interact.mjs --case=zero-percent --assertions=4')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 coder agent</span><span>⏱ 0.9h</span><span>🎯 P1</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>全选 → 进度=100% + 已完成徽章 + 复制 OK · 零选 → 进度=0% + 提示文案</div>
+  </div>
+</div></div>

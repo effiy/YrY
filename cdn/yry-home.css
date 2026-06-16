@@ -725,6 +725,19 @@
     .t-red    { color: #ef4444; }
     .t-blue   { color: #60a5fa; }
 
+    /* ── Story intro paragraph ──────────── */
+    .yry-story-intro {
+      color: var(--text-secondary);
+      font-size: .8rem;
+      margin: 6px 0 12px;
+      line-height: 1.55;
+      padding: 8px 12px;
+      background: rgba(255,193,7,0.04);
+      border-left: 3px solid rgba(255,193,7,0.35);
+      border-radius: 0 4px 4px 0;
+    }
+    .yry-story-intro code { font-size: .78rem; }
+
     /* ── Floating panel ────────────────────── */
     .yry-notify-overlay {
       position: fixed; inset: 0; z-index: 299;

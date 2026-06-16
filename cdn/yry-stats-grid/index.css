@@ -1,0 +1,61 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryStatsGrid · Vue 3 统计卡组组件 样式
+
+   效果对齐 docs/故事任务面板/计划清单/场景-2-清单交互组件实现/计划清单.html
+   中的 <div class="stats-grid"> 静态结构:
+     <div class="stats-grid">
+       <div class="stat-card">
+         <div class="val {modifier}">{value}</div>
+         <div class="lbl">{label}</div>
+       </div>
+       ...
+     </div>
+
+   支持的 modifier (与 scene-2 .val.* 选择器一致):
+     - health : 绿色 (通过/健康)
+     - warn-h : 橙色 (警告)
+     - info   : 灰色 (信息)
+     - accent : 主题黄 (强调)
+
+   依赖 design tokens (来自 cdn/yry-checklist.css :root 或 cdn/theme.css):
+     --bg-card / --border / --radius / --shadow / --shadow-lg
+     --pass / --warn / --info / --accent / --text3
+
+   所有颜色都带 fallback,即使页面未加载主题也能正常显示。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.stats-grid {
+  display: flex; gap: 12px; justify-content: center; margin-bottom: 20px;
+  flex-wrap: wrap; animation: yry-fadeInDown .5s .1s ease both;
+}
+
+.stat-card {
+  background: var(--bg-card, var(--yry-bg-card, linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%)));
+  border: var(--border, var(--yry-border, 1px solid rgba(255,255,255,.06)));
+  border-radius: var(--radius, var(--yry-radius, 12px));
+  padding: 16px 20px; text-align: center;
+  box-shadow: var(--shadow, var(--yry-shadow, 0 4px 20px rgba(0,0,0,0.3)));
+  min-width: 80px;
+  transition: transform .15s, box-shadow .15s; cursor: pointer;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg, var(--yry-shadow-lg, 0 12px 32px rgba(0,0,0,0.45)));
+}
+.stat-card .val {
+  font-size: 1.6rem; font-weight: 700; line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.stat-card .val.health { color: var(--pass, var(--yry-pass, #22c55e)); }
+.stat-card .val.warn-h { color: var(--warn, var(--yry-warn, #f59e0b)); }
+.stat-card .val.info   { color: var(--info, var(--yry-info, #6b7280)); }
+.stat-card .val.accent { color: var(--accent, var(--yry-accent, #ffc107)); }
+.stat-card .lbl {
+  font-size: .68rem; color: var(--text3, var(--yry-text3, rgba(110,110,114,1)));
+  margin-top: 2px; letter-spacing: .5px;
+}
+
+@media (max-width: 640px) {
+  .stat-card { min-width: 72px; padding: 12px 14px; }
+  .stat-card .val { font-size: 1.35rem; }
+}

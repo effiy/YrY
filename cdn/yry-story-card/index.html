@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryStoryCard · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../yry-inline-helpers.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">📑</span> YryStoryCard · Vue 3 故事任务卡片</h1>
+  <p class="demo-hint">
+    故事任务卡片 — story-head(icon + name + badge) + story-desc(描述) + story-scenes(场景 tag 列表)。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo — 2 张故事卡</h3>
+    <div class="demo-grid" id="demo-1"></div>
+  </div>
+
+  <hr>
+  <p class="demo-hint">👇 以下 <code>&lt;script type="text/x-template"&gt;</code> 即为组件的 <strong>template 源</strong></p>
+
+  <script type="text/x-template" id="yry-story-card-tpl">
+    <div class="story-card">
+      <div class="story-head">
+        <span v-if="icon" class="story-icon">{{ icon }}</span>
+        <span class="story-name">
+          <a v-if="nameHref" :href="nameHref" :target="nameTarget || null" :rel="nameTarget ? 'noopener noreferrer' : null">{{ name }}</a>
+          <span v-else>{{ name }}</span>
+        </span>
+        <span v-if="badge" class="story-badge">{{ badge }}</span>
+      </div>
+      <div v-if="desc" class="story-desc" v-html="desc"></div>
+      <div v-if="scenes && scenes.length" class="story-scenes">
+        <span v-for="(s, i) in scenes" :key="i" class="scene-tag">{{ s }}</span>
+      </div>
+    </div>
+  </script>
+
+  <script src="index.js"></script>
+
+  <script>
+    function mountDemo(id, items) {
+      if (!window.Vue || !window.YryStoryCard) return;
+      const root = document.getElementById(id);
+      items.forEach(function (item) {
+        const el = document.createElement('div');
+        root.appendChild(el);
+        Vue.createApp(window.YryStoryCard, item).mount(el);
+      });
+    }
+    function mountAll() {
+      mountDemo('demo-1', [
+        {
+          icon: '📑', name: '系统架构知识固化', nameHref: '故事任务面板/架构/故事任务.md',
+          badge: 'v1.3.0',
+          desc: 'YrY 架构全景分析,构建系统自我认知基线。模块拓扑 + 数据流追踪 + 新人上手 + 依赖变更影响 + 信任边界 + 工程化建设。',
+          scenes: ['1. 新人上手与开发指南', '2. 模块定位与职责', '3. 数据流与追踪', '4. 依赖变更影响分析', '5. 信任边界与安全面']
+        },
+        {
+          icon: '🧪', name: '自主测试方案', badge: 'v1.1.0',
+          desc: 'YrY 自检体系 — 项目的免疫系统。',
+          scenes: ['1. init 后全量自检', '2. commit 前增量自检', '3. 文档代码一致性校验']
+        }
+      ]);
+    }
+    if (window.YryStoryCard) mountAll();
+    else document.addEventListener('yry-story-card-ready', mountAll, { once: true });
+  </script>
+
+  <div class="demo-footer">📑 YryStoryCard v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

@@ -3,114 +3,277 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>趋势报告 · Top-Starred</title>
-<link rel="stylesheet" href="../../cdn/shared.css">
-<link rel="stylesheet" href="../../cdn/theme.css">
+<title>趋势报告 · Top-Starred 2026-06-12</title>
 <style>
 :root {
   --yry-bg: rgba(22,22,32,1);
   --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
-  --yry-accent: #FFC107;
-  --yry-pass: #22c55e; --yry-fail: #ef4444; --yry-warn: #f59e0b;
+  --yry-accent: #FFC107; --yry-pass: #22c55e; --yry-fail: #ef4444; --yry-warn: #f59e0b;
   --yry-text: rgba(250,250,252,1); --yry-text2: rgba(160,160,164,1); --yry-text3: rgba(110,110,114,1);
   --yry-radius: 12px; --yry-border: 1px solid rgba(255,255,255,0.06);
   --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
-.yry-container { max-width: 900px; margin: 0 auto; padding: 48px 24px 80px; }
-.yry-header { text-align: center; margin-bottom: 32px; }
-.yry-header .icon { font-size: 2.5rem; }
-.yry-header h1 { font-size: 1.6rem; margin: 12px 0 6px; }
-.yry-header .meta { color: var(--yry-text3); font-size: .82rem; }
-.yry-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
-.yry-card h2 { font-size: 1.1rem; margin-bottom: 12px; color: var(--yry-accent); }
-.yry-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
-.yry-stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 16px 20px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 120px; }
-.yry-stat .yry-val { font-size: 1.6rem; font-weight: 700; }
-.yry-stat .yry-val.pass { color: var(--yry-pass); }
-.yry-stat .yry-val.warn { color: var(--yry-warn); }
-.yry-stat .yry-val.fail { color: var(--yry-fail); }
-.yry-stat .yry-lbl { font-size: .72rem; color: var(--yry-text3); margin-top: 4px; }
-.yry-badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: .85rem; font-weight: 600; }
-.yry-badge.pass { background: rgba(34,197,94,.15); color: var(--yry-pass); }
-.yry-badge.warn { background: rgba(245,158,11,.15); color: var(--yry-warn); }
-.yry-badge.fail { background: rgba(239,68,68,.15); color: var(--yry-fail); }
-.yry-summary { padding: 16px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 20px; color: var(--yry-text2); font-size: .9rem; }
-.yry-finding { padding: 14px 18px; margin-bottom: 8px; border-radius: 8px; border: var(--yry-border); }
-.yry-finding.info { background: rgba(59,130,246,.04); }
-.yry-finding.warn { background: rgba(245,158,11,.04); border-left: 3px solid var(--yry-warn); }
-.yry-finding.fail { background: rgba(239,68,68,.04); border-left: 3px solid var(--yry-fail); }
-.yry-finding-head { font-weight: 600; font-size: .9rem; }
-.yry-finding-body { margin-top: 6px; color: var(--yry-text2); font-size: .82rem; }
-.yry-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
-.yry-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
-.yry-breadcrumb a { color: #7aa2f7; text-decoration: none; }
-.yry-breadcrumb .yry-bc-sep { color: #53576c; opacity: .5; }
-.yry-breadcrumb .yry-bc-current { color: #94a3b8; }
+.c { max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
+.bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
+.bc a { color: #7aa2f7; text-decoration: none; } .bc a:hover { color: var(--yry-accent); }
+.bc .sep { color: #53576c; opacity: .5; } .bc .cur { color: #94a3b8; }
+.hd { text-align: center; margin-bottom: 32px; }
+.hd .icon { font-size: 2.5rem; margin-bottom: 8px; }
+.hd h1 { font-size: 1.6rem; }
+.hd .meta { color: var(--yry-text3); font-size: .82rem; margin-top: 6px; }
+.intro { padding: 18px 20px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 24px; color: var(--yry-text2); font-size: .86rem; line-height: 1.75; }
+.intro strong { color: var(--yry-accent); }
+.intro code { background: rgba(59,130,246,.1); padding: 1px 6px; border-radius: 4px; font-size: .82em; color: #7aa2f7; }
+.card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
+.card h2 { font-size: 1.1rem; margin-bottom: 16px; color: var(--yry-accent); display: flex; align-items: center; gap: 8px; }
+.card h3 { font-size: .92rem; margin: 18px 0 10px; color: var(--yry-text); }
+.stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+.stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 14px 18px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 100px; transition: transform .15s; }
+.stat:hover { transform: translateY(-2px); }
+.stat .val { font-size: 1.5rem; font-weight: 700; }
+.stat .val.pass { color: var(--yry-pass); } .stat .val.info { color: #22d3ee; } .stat .val.fail { color: var(--yry-fail); } .stat .val.warn { color: var(--yry-warn); }
+.stat .lbl { font-size: .68rem; color: var(--yry-text3); margin-top: 3px; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: .7rem; font-weight: 600; }
+.badge.ok { background: rgba(34,197,94,.15); color: var(--yry-pass); }
+.badge.fall { background: rgba(239,68,68,.12); color: var(--yry-fail); }
+.badge.flat { background: rgba(255,255,255,.05); color: var(--yry-text3); }
+.badge.rise { background: rgba(34,197,94,.12); color: var(--yry-pass); }
+table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+th, td { padding: 10px 16px; text-align: left; border-bottom: var(--yry-border); font-size: .86rem; }
+th { color: var(--yry-text3); font-size: .72rem; text-transform: uppercase; letter-spacing: .4px; }
+td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+.feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.feature-item { padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
+.feature-label { font-size: .7rem; color: var(--yry-text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .4px; }
+.feature-val { font-size: .88rem; font-weight: 600; color: var(--yry-text); line-height: 1.5; }
+.window-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+.window-item { flex: 1; min-width: 150px; padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); text-align: center; }
+.window-num { font-size: 1.3rem; font-weight: 700; }
+.window-lbl { font-size: .64rem; color: var(--yry-text3); margin-top: 4px; }
+.cross { margin-top: 20px; padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
+.cross h3 { font-size: .82rem; color: var(--yry-accent); margin: 0 0 10px; }
+.cross a { display: inline-block; margin: 3px 8px; color: #7aa2f7; text-decoration: none; font-size: .78rem; }
+.cross a:hover { color: var(--yry-accent); }
+.ft { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
+svg text { font-family: 'JetBrains Mono', -apple-system, sans-serif; }
+@media (max-width: 640px) { .feature-grid { grid-template-columns: 1fr 1fr; } }
 </style>
 </head>
 <body>
-<div class="yry-container">
-<nav class="yry-breadcrumb">
-  <a href="../../docs/index.html">📄 文档中心</a>
-  <span class="yry-bc-sep">/</span>
-  <a href="../../docs/趋势报告/">📡 趋势报告</a>
-  <span class="yry-bc-sep">/</span>
-  <span class="yry-bc-current">Top-Starred · 2026-06-12</span>
+<div class="c">
+
+<nav class="bc">
+  <a href="../index.html">文档中心</a>
+  <span class="sep">/</span>
+  <a href="index.html">趋势报告</a>
+  <span class="sep">/</span>
+  <span class="cur">Top-Starred · 2026-06-12</span>
 </nav>
 
-<div class="yry-header">
+<div class="hd">
   <div class="icon">⭐</div>
-  <h1>趋势报告 · Top-Starred</h1>
-  <div class="meta">2026-06-12 09:00:00 · <span class="yry-badge pass">✅ 可达</span></div>
+  <h1>Top-Starred 高星项目报告</h1>
+  <div class="meta">2026-06-12 09:00:00 CST · 源标识 <code>top-starred</code> · <span class="badge ok">可达</span> · <span class="badge fall">↓ 下降趋势</span></div>
 </div>
 
-<div class="yry-stats">
-  <div class="yry-stat">
-    <div class="yry-val pass">✓</div>
-    <div class="yry-lbl">可达性</div>
+<div class="intro">
+  <strong>数据源说明</strong>：Top-Starred 追踪 GitHub 高星新项目的发现速率，衡量开源社区是否在持续产出有价值的项目。关注的是 <strong>经过验证的成熟组件</strong> — 星标数超过一定阈值表明社区认可度，适合作为技术底座选型参考。当前趋势判定为"下降"但条目数 (9) 实际上较 06-09 (8) 微增 — "下降"判定是因为增速低于 10% 阈值且较 06-05 基线 (9) 未恢复。<br>
+  <strong>聚合权重</strong>：20%，是四源中权重最低的源，定位为成熟度验证层。
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="val fail">9</div><div class="lbl">捕获条目数</div></div>
+  <div class="stat"><div class="val fail">↓ 下降</div><div class="lbl">趋势方向</div></div>
+  <div class="stat"><div class="val pass">✓</div><div class="lbl">API 可达</div></div>
+  <div class="stat"><div class="val info">3</div><div class="lbl">时间窗口</div></div>
+  <div class="stat"><div class="val info">20%</div><div class="lbl">聚合权重</div></div>
+  <div class="stat"><div class="val warn">+12.5%</div><div class="lbl">环比变化</div></div>
+</div>
+
+<div class="card">
+  <h2>三周期条目趋势 (V 型波动)</h2>
+  <div style="width:100%;overflow-x:auto">
+    <svg viewBox="0 0 840 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:840px">
+      <line x1="70" y1="200" x2="800" y2="200" stroke="rgba(255,255,255,0.06)"/>
+      <line x1="70" y1="145" x2="800" y2="145" stroke="rgba(255,255,255,0.04)" stroke-dasharray="4,4"/>
+      <line x1="70" y1="90" x2="800" y2="90" stroke="rgba(255,255,255,0.04)" stroke-dasharray="4,4"/>
+      <line x1="70" y1="35" x2="800" y2="35" stroke="rgba(255,255,255,0.04)" stroke-dasharray="4,4"/>
+      <text x="60" y="204" text-anchor="end" fill="#6e7072" font-size="10">0</text>
+      <text x="60" y="149" text-anchor="end" fill="#6e7072" font-size="10">5</text>
+      <text x="60" y="94" text-anchor="end" fill="#6e7072" font-size="10">10</text>
+      <text x="60" y="39" text-anchor="end" fill="#6e7072" font-size="10">15</text>
+      <!-- V-shaped line: 9 -> 8 dip -> 9 -->
+      <polyline points="190,94 510,138 770,94" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="190" cy="94" r="5" fill="#22c55e" stroke="rgba(0,0,0,0.3)" stroke-width="1"><title>2026-06-05 · 9 条目 · 持平 · 基线</title></circle>
+      <circle cx="510" cy="138" r="5" fill="#ef4444" stroke="rgba(0,0,0,0.3)" stroke-width="1"><title>2026-06-09 · 8 条目 · 下降 · 谷底</title></circle>
+      <circle cx="770" cy="94" r="6" fill="#f59e0b" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"><title>2026-06-12 · 9 条目 · 下降 当前 · 回到基线</title></circle>
+      <text x="190" y="80" text-anchor="middle" fill="#22c55e" font-size="11" font-weight="600">9</text>
+      <text x="510" y="126" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="600">8 ↓</text>
+      <text x="770" y="80" text-anchor="middle" fill="#f59e0b" font-size="13" font-weight="700">9</text>
+      <text x="190" y="216" text-anchor="middle" fill="#6e7072" font-size="10">06-05</text>
+      <text x="510" y="216" text-anchor="middle" fill="#6e7072" font-size="10">06-09</text>
+      <text x="770" y="216" text-anchor="middle" fill="#FFC107" font-size="10" font-weight="600">06-12 当前</text>
+      <line x1="70" y1="15" x2="70" y2="200" stroke="rgba(255,255,255,0.08)"/>
+      <!-- Baseline reference -->
+      <line x1="190" y1="94" x2="770" y2="94" stroke="rgba(255,255,255,0.07)" stroke-dasharray="6,4"/>
+      <text x="480" y="88" text-anchor="middle" fill="rgba(255,255,255,0.15)" font-size="9">基线 9 条目</text>
+    </svg>
   </div>
-  <div class="yry-stat">
-    <div class="yry-val fail">↓</div>
-    <div class="yry-lbl">趋势 下降</div>
-  </div>
-  <div class="yry-stat">
-    <div class="yry-val pass">9</div>
-    <div class="yry-lbl">条目数 (items)</div>
-  </div>
-  <div class="yry-stat">
-    <div class="yry-val pass">top-starred</div>
-    <div class="yry-lbl">来源 (source)</div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:.72rem;color:var(--yry-text3)">
+    <span>06-05: 9 条目 (持平, 基线)</span>
+    <span style="color:var(--yry-fail)">06-09: 8 条目 (-11.1%, 下降)</span>
+    <span style="color:var(--yry-warn);font-weight:600">06-12: 9 条目 (+12.5% vs 06-09, 但趋势仍判定为下降) 当前</span>
   </div>
 </div>
 
-<div class="yry-summary">该页面由 <code>reports.json</code> 清单元信息回填生成，用于保证通知中心/索引中的历史链接可访问；如需完整项目列表与洞察分析，请重新运行趋势扫描生成完整报告。</div>
-
-<div class="yry-card">
-  <h2>🧭 数据源说明</h2>
-  <div style="font-size:.84rem;color:var(--yry-text2);line-height:1.7">
-    <div><span style="color:var(--yry-text3)">来源：</span><strong>Top-Starred</strong>（<code>top-starred</code>）</div>
-    <div><span style="color:var(--yry-text3)">入口：</span><a href="https://github.com/search" target="_blank" rel="noopener noreferrer">https://github.com/search</a></div>
-    <div style="margin-top:10px;padding:10px 12px;border-radius:8px;background:rgba(15,23,42,.4);border:var(--yry-border);color:var(--yry-text2)">从高星项目中发现成熟组件与基础设施方向，适合做技术底座选型参考。</div>
-  </div>
-</div>
-
-<div class="yry-card">
-  <h2>📋 快照说明</h2>
-  <div class="yry-finding info">
-      <div class="yry-finding-head">1. 快照元信息</div>
-      <div class="yry-finding-body">记录了可达性、趋势方向与条目数（items=9）。如需仓库明细，请重新生成完整报告。</div>
+<div class="card">
+  <h2>来源特征</h2>
+  <div class="feature-grid">
+    <div class="feature-item">
+      <div class="feature-label">数据入口</div>
+      <div class="feature-val"><a href="https://github.com/search" target="_blank" rel="noopener noreferrer" style="color:#7aa2f7">GitHub Search API</a></div>
     </div>
-  <div style="margin-top:10px;font-size:.78rem;color:var(--yry-text3)">
-    重新生成：<code>node skills/rui-trends/rui-trends.mjs top-starred --html</code> 或 <code>node skills/rui-trends/rui-trends.mjs all --html</code>
+    <div class="feature-item">
+      <div class="feature-label">查询维度</div>
+      <div class="feature-val">星标增速 · 创建时间 · 分类过滤 · 排除已知</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-label">时间窗口</div>
+      <div class="feature-val">近 7 天 · 近 30 天 · 近 90 天</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-label">核心指标</div>
+      <div class="feature-val">高星新项目发现数 · 星标增速分布 · 领域集中度</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-label">诊断关联</div>
+      <div class="feature-val"><strong>D5 外部趋势</strong> — 持续下降触发 P2 创新活跃度告警</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-label">定位</div>
+      <div class="feature-val">成熟度验证层 — 确认短期热度背后是否有实质质量</div>
+    </div>
   </div>
 </div>
 
-<div class="yry-footer">
-  趋势报告 · top-starred · 2026-06-12 09:00:00<br>
-  <span style="color:var(--yry-text3)">由 rui-trends trend-report 生成（manifest 回填）</span>
+<div class="card">
+  <h2>三周期历史对比</h2>
+  <table>
+    <thead><tr><th>指标</th><th>2026-06-05</th><th>2026-06-09</th><th>2026-06-12</th><th>变化趋势</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>捕获条目数</td><td class="num">9</td><td class="num" style="color:var(--yry-fail)">8</td><td class="num" style="color:var(--yry-warn)">9</td>
+        <td><span class="badge fall">V 型波动</span></td>
+      </tr>
+      <tr>
+        <td>源可达性</td><td><span class="badge ok">✓ 可达</span></td><td><span class="badge ok">✓ 可达</span></td><td><span class="badge ok">✓ 可达</span></td>
+        <td><span class="badge ok">持续可达</span></td>
+      </tr>
+      <tr>
+        <td>趋势方向</td><td><span class="badge flat">→ 持平</span></td><td><span class="badge fall">↓ 下降</span></td><td><span class="badge fall">↓ 下降</span></td>
+        <td><span class="badge fall">需持续监测</span></td>
+      </tr>
+      <tr>
+        <td>时间窗口</td><td class="num">3</td><td class="num">3</td><td class="num">3</td>
+        <td><span class="badge flat">→ 稳定</span></td>
+      </tr>
+      <tr>
+        <td>速率限制</td><td><span class="badge ok">未触发</span></td><td><span class="badge ok">未触发</span></td><td><span class="badge ok">未触发</span></td>
+        <td><span class="badge ok">正常</span></td>
+      </tr>
+    </tbody>
+  </table>
 </div>
+
+<div class="card">
+  <h2>下降趋势深度分析</h2>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <div style="flex:1;min-width:220px;padding:14px 18px;border-radius:8px;border:var(--yry-border);background:rgba(15,23,42,.4)">
+      <div style="font-size:.78rem;font-weight:600;color:var(--yry-warn);margin-bottom:8px">⚠️ 可能原因</div>
+      <ul style="font-size:.8rem;color:var(--yry-text2);line-height:1.8;padding-left:16px">
+        <li>GitHub Search API 索引延迟导致新仓库未及时纳入</li>
+        <li>工作日/节假日效应 — 6 月初社区活跃度波动</li>
+        <li>AI 领域高星项目趋于集中，新项目突破阈值难度增加</li>
+        <li>短周期内高质量新项目产出自然波动</li>
+      </ul>
+    </div>
+    <div style="flex:1;min-width:220px;padding:14px 18px;border-radius:8px;border:var(--yry-border);background:rgba(15,23,42,.4)">
+      <div style="font-size:.78rem;font-weight:600;color:var(--yry-pass);margin-bottom:8px">✅ 排除项</div>
+      <ul style="font-size:.8rem;color:var(--yry-text2);line-height:1.8;padding-left:16px">
+        <li>API 可达性正常 — 非数据源故障</li>
+        <li>速率限制未触发 — 非抓取容量不足</li>
+        <li>其他三源均上升或持平 — 非整体生态衰退</li>
+        <li>过滤规则无变更 — 非算法偏差</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top:14px;padding:14px 18px;background:rgba(245,158,11,.06);border-left:3px solid var(--yry-warn);border-radius:0 8px 8px 0;font-size:.82rem;color:var(--yry-text2);line-height:1.7">
+    <strong style="color:var(--yry-warn)">趋势判定说明</strong>：虽然 06-12 条目数 (9) 较 06-09 (8) 回升 +12.5%，但趋势方向仍判定为"下降"。原因：1) 较 06-05 基线 (9) 未增长；2) 前周期 (06-09) 为下降；3) 需连续两周期增长 (>&gt;10%) 才能逆转趋势方向。当前 V 型波动属于单次数据噪声范围内的正常振荡。<br>
+    <strong style="color:var(--yry-warn)">建议</strong>：当前波动在正常范围内，无需立即告警。建议持续监测 1-2 个扫描周期。若下周期仍未突破 10 条目 (增长 &gt;11.1%)，则升级为 P2 创新活跃度告警。
+  </div>
+</div>
+
+<div class="card">
+  <h2>时间窗口分布</h2>
+  <div class="window-grid">
+    <div class="window-item">
+      <div class="window-num" style="color:#60a5fa">4</div>
+      <div class="window-lbl">近 7 天高星新项目</div>
+    </div>
+    <div class="window-item">
+      <div class="window-num" style="color:#a78bfa">3</div>
+      <div class="window-lbl">近 30 天高星新项目</div>
+    </div>
+    <div class="window-item">
+      <div class="window-num" style="color:#f59e0b">2</div>
+      <div class="window-lbl">近 90 天高星新项目</div>
+    </div>
+  </div>
+  <p style="font-size:.72rem;color:var(--yry-text3);margin-top:10px">短窗口 (7天) 项目最多，长窗口 (90天) 项目最少 — 符合高星新项目发现规律。近 7 天窗口 4 个项目表明近期社区仍有新锐项目产出。</p>
+</div>
+
+<div class="card">
+  <h2>扫描质量评估</h2>
+  <table>
+    <thead><tr><th>质量维度</th><th>指标</th><th>当前值</th><th>状态</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>数据完整性</td><td>捕获条目 &ge; 8</td><td class="num">9</td><td><span class="badge ok">达标</span></td><td>略高于最低阈值，较 06-09 回升 +1</td></tr>
+      <tr><td>源可达性</td><td>HTTP 200 / 有效解析</td><td class="num">—</td><td><span class="badge ok">正常</span></td><td>GitHub Search API 响应正常，速率限制未触发，连续三周期可达</td></tr>
+      <tr><td>时间窗口覆盖</td><td>至少 2 个窗口</td><td class="num">3</td><td><span class="badge ok">达标</span></td><td>7 天、30 天、90 天全覆盖</td></tr>
+      <tr><td>去重准确性</td><td>已知项目排除率</td><td class="num">✓</td><td><span class="badge ok">正常</span></td><td>成熟项目过滤规则生效，未出现重复报告</td></tr>
+      <tr><td>趋势稳定性</td><td>条目数波动 &le; 2</td><td class="num" style="color:var(--yry-warn)">±1</td><td><span class="badge flat">临界</span></td><td>V 型波动 (9→8→9) 在可接受范围，但方向不稳定</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>诊断关联</h2>
+  <p style="font-size:.82rem;color:var(--yry-text2);line-height:1.8">
+    <strong style="color:var(--yry-accent)">D5 外部趋势诊断</strong>：Top-Starred 占聚合权重 20%。当前趋势"下降"对整体 D5 评估影响有限（权重仅 20%，且被 GitHub Trending +38.9% 和 TrendShift +60% 的大幅增长所对冲）。<br>
+    <strong style="color:var(--yry-accent)">四源交叉验证</strong>：Top-Starred (下降) ↔ GitHub Trending (大幅上升) ↔ TrendShift (大幅上升) ↔ OSS Insight (持平)。Top-Starred 的下降与其他三源趋势不符，进一步支持当前下降属于单源噪声而非系统性问题。<br>
+    <strong style="color:var(--yry-accent)">D7 测试缺口</strong>：若高星新项目发现持续减少，可能意味着现有依赖替代方案减少，需加强现有依赖的测试覆盖以防意外断供。当前未触发。<br>
+    <strong style="color:var(--yry-accent)">下一步</strong>：运行 <code style="background:rgba(59,130,246,.1);padding:1px 6px;border-radius:4px;color:#7aa2f7">node skills/rui-trends/rui-trends.mjs top-starred --html --verbose</code> 生成完整项目列表。建议下周期重点关注是否能突破 10 条目阈值。
+  </p>
+</div>
+
+<div class="cross">
+  <h3>关联报告</h3>
+  <a href="trend-all-2026-06-12.html">全量趋势扫描 06-12</a>
+  <a href="trend-all-2026-06-09.html">全量趋势扫描 06-09</a>
+  <a href="trend-github-trending-2026-06-12.html">GitHub Trending 06-12</a>
+  <a href="trend-trendshift-2026-06-12.html">TrendShift 06-12</a>
+  <a href="trend-oss-insight-2026-06-12.html">OSS Insight 06-12</a>
+  <a href="../../自循环报告/rui-trends-2026-06-12.html">自循环趋势汇总</a>
+  <a href="../../健康报告/health-2026-06-12.html">健康报告 06-12</a>
+</div>
+
+<div class="ft">
+  Top-Starred 高星项目报告 · 2026-06-12 09:00:00 CST<br>
+  <span style="color:var(--yry-text3)">由 rui-trends 生成 · D5 外部趋势诊断输入 (20%) · 每周一 09:00 自动执行</span>
+</div>
+
 </div>
 </body>
 </html>

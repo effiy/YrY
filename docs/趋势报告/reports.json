@@ -1,5 +1,62 @@
 [
   {
+    "date": "2026-06-16",
+    "time": "2026-06-16 09:00:00",
+    "source": "oss-insight",
+    "ok": false,
+    "projected": true,
+    "trend": "flat",
+    "items": 13,
+    "deviation": "±2",
+    "file": "trend-oss-insight-2026-06-16.html"
+  },
+  {
+    "date": "2026-06-16",
+    "time": "2026-06-16 09:00:00",
+    "source": "top-starred",
+    "ok": false,
+    "projected": true,
+    "trend": "rise",
+    "items": 10,
+    "deviation": "±2",
+    "file": "trend-top-starred-2026-06-16.html"
+  },
+  {
+    "date": "2026-06-16",
+    "time": "2026-06-16 09:00:00",
+    "source": "trendshift",
+    "ok": false,
+    "projected": true,
+    "trend": "rise",
+    "items": 20,
+    "deviation": "±3",
+    "file": "trend-trendshift-2026-06-16.html"
+  },
+  {
+    "date": "2026-06-16",
+    "time": "2026-06-16 09:00:00",
+    "source": "github-trending",
+    "ok": false,
+    "projected": true,
+    "trend": "rise",
+    "items": 31,
+    "deviation": "±4",
+    "file": "trend-github-trending-2026-06-16.html"
+  },
+  {
+    "date": "2026-06-16",
+    "time": "2026-06-16 09:00:00",
+    "source": "all",
+    "ok": false,
+    "projected": true,
+    "trend": "rise",
+    "items": 74,
+    "reachable": 0,
+    "total": 4,
+    "deviation": "±11",
+    "file": "trend-all-2026-06-16.html"
+  },
+  {
     "date": "2026-06-12",
     "time": "2026-06-12 09:00:00",
     "source": "all",
@@ -52,5 +109,86 @@
     "trend": "flat",
     "items": 48,
     "file": "trend-all-2026-06-09.html"
+  },
+  {
+    "date": "2026-06-09",
+    "time": "2026-06-09 09:00:00",
+    "source": "github-trending",
+    "ok": true,
+    "trend": "flat",
+    "items": 18,
+    "file": "trend-github-trending-2026-06-09.html"
+  },
+  {
+    "date": "2026-06-09",
+    "time": "2026-06-09 09:00:00",
+    "source": "oss-insight",
+    "ok": true,
+    "trend": "flat",
+    "items": 12,
+    "file": "trend-oss-insight-2026-06-09.html"
+  },
+  {
+    "date": "2026-06-09",
+    "time": "2026-06-09 09:00:00",
+    "source": "trendshift",
+    "ok": true,
+    "trend": "rise",
+    "items": 10,
+    "file": "trend-trendshift-2026-06-09.html"
+  },
+  {
+    "date": "2026-06-09",
+    "time": "2026-06-09 09:00:00",
+    "source": "top-starred",
+    "ok": true,
+    "trend": "flat",
+    "items": 8,
+    "file": "trend-top-starred-2026-06-09.html"
+  },
+  {
+    "date": "2026-06-05",
+    "time": "2026-06-05 09:00:00",
+    "source": "all",
+    "ok": true,
+    "trend": "rise",
+    "items": 45,
+    "file": "trend-all-2026-06-05.html"
+  },
+  {
+    "date": "2026-06-05",
+    "time": "2026-06-05 09:00:00",
+    "source": "github-trending",
+    "ok": true,
+    "trend": "rise",
+    "items": 16,
+    "file": "trend-github-trending-2026-06-05.html"
+  },
+  {
+    "date": "2026-06-05",
+    "time": "2026-06-05 09:00:00",
+    "source": "oss-insight",
+    "ok": true,
+    "trend": "rise",
+    "items": 11,
+    "file": "trend-oss-insight-2026-06-05.html"
+  },
+  {
+    "date": "2026-06-05",
+    "time": "2026-06-05 09:00:00",
+    "source": "trendshift",
+    "ok": false,
+    "trend": "flat",
+    "items": 9,
+    "file": "trend-trendshift-2026-06-05.html"
+  },
+  {
+    "date": "2026-06-05",
+    "time": "2026-06-05 09:00:00",
+    "source": "top-starred",
+    "ok": true,
+    "trend": "flat",
+    "items": 9,
+    "file": "trend-top-starred-2026-06-05.html"
   }
 ]

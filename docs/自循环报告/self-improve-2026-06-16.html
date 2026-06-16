@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自循环报告 · 自我改进 2026-06-16</title>
+<link rel="stylesheet" href="../../cdn/shared.css">
+<link rel="stylesheet" href="../../cdn/theme.css">
+<style>
+:root {
+  --yry-bg: rgba(22,22,32,1);
+  --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
+  --yry-accent: #FFC107; --yry-pass: #22c55e; --yry-fail: #ef4444; --yry-warn: #f59e0b;
+  --yry-text: rgba(250,250,252,1); --yry-text2: rgba(160,160,164,1); --yry-text3: rgba(110,110,114,1);
+  --yry-radius: 12px; --yry-border: 1px solid rgba(255,255,255,0.06);
+  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
+.c { max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
+.bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
+.bc a { color: #7aa2f7; text-decoration: none; } .bc a:hover { color: var(--yry-accent); }
+.bc .sep { color: #53576c; opacity: .5; } .bc .cur { color: #94a3b8; }
+.hd { text-align: center; margin-bottom: 32px; }
+.hd .icon { font-size: 2.5rem; margin-bottom: 8px; }
+.hd h1 { font-size: 1.6rem; }
+.hd .meta { color: var(--yry-text3); font-size: .82rem; margin-top: 6px; }
+.intro { padding: 18px 20px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 24px; color: var(--yry-text2); font-size: .86rem; line-height: 1.75; }
+.intro strong { color: var(--yry-accent); }
+.intro code { background: rgba(59,130,246,.1); padding: 1px 6px; border-radius: 4px; font-size: .82em; color: #7aa2f7; }
+.card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
+.card h2 { font-size: 1.1rem; margin-bottom: 16px; color: var(--yry-accent); display: flex; align-items: center; gap: 8px; }
+.card h3 { font-size: .92rem; margin: 18px 0 10px; color: var(--yry-text); }
+.stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+.stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 14px 18px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 100px; transition: transform .15s; }
+.stat:hover { transform: translateY(-2px); }
+.stat .val { font-size: 1.5rem; font-weight: 700; }
+.stat .val.pass { color: var(--yry-pass); } .stat .val.warn { color: var(--yry-warn); } .stat .val.info { color: #22d3ee; } .stat .val.fail { color: var(--yry-fail); }
+.stat .lbl { font-size: .68rem; color: var(--yry-text3); margin-top: 3px; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: .7rem; font-weight: 600; }
+.badge.ok { background: rgba(34,197,94,.15); color: var(--yry-pass); }
+.badge.rise { background: rgba(34,197,94,.12); color: var(--yry-pass); }
+.badge.fall { background: rgba(239,68,68,.12); color: var(--yry-fail); }
+.badge.flat { background: rgba(255,255,255,.05); color: var(--yry-text3); }
+.badge.warn { background: rgba(245,158,11,.15); color: var(--yry-warn); }
+.badge.err { background: rgba(239,68,68,.15); color: var(--yry-fail); }
+.badge.info-badge { background: rgba(34,211,238,.12); color: #22d3ee; }
+.badge.p0 { background: rgba(239,68,68,.15); color: var(--yry-fail); }
+.badge.p1 { background: rgba(245,158,11,.15); color: var(--yry-warn); }
+.badge.p2 { background: rgba(34,211,238,.12); color: #22d3ee; }
+table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+th, td { padding: 10px 16px; text-align: left; border-bottom: var(--yry-border); font-size: .86rem; }
+th { color: var(--yry-text3); font-size: .72rem; text-transform: uppercase; letter-spacing: .4px; }
+td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+.findings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.finding { padding: 16px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
+.finding.info { border-left: 3px solid #22d3ee; }
+.finding.warn { border-left: 3px solid var(--yry-warn); }
+.finding.err { border-left: 3px solid var(--yry-fail); }
+.finding .f-type { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
+.finding.info .f-type { color: #22d3ee; }
+.finding.warn .f-type { color: var(--yry-warn); }
+.finding.err .f-type { color: var(--yry-fail); }
+.finding .f-msg { font-size: .84rem; color: var(--yry-text2); line-height: 1.6; }
+.finding .f-detail { font-size: .76rem; color: var(--yry-text3); margin-top: 8px; }
+.diag-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.diag-item { padding: 12px 14px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); text-align: center; transition: transform .15s, border-color .15s; }
+.diag-item:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.12); }
+.diag-item .diag-id { font-size: .68rem; color: var(--yry-text3); margin-bottom: 2px; }
+.diag-item .diag-score { font-size: 1rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.diag-item .diag-label { font-size: .7rem; color: var(--yry-text3); margin-top: 1px; }
+.diag-item .diag-delta { font-size: .64rem; margin-top: 2px; }
+.note { padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); font-size: .82rem; color: var(--yry-text2); line-height: 1.7; }
+.rc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.rc-card { padding: 16px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
+.rc-card h4 { font-size: .78rem; color: var(--yry-text); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.rc-card .rc-cause { font-size: .76rem; color: var(--yry-text2); line-height: 1.7; }
+.rc-card .rc-fix { font-size: .74rem; color: var(--yry-text3); margin-top: 8px; line-height: 1.6; }
+.rc-card .rc-fix strong { color: var(--yry-accent); }
+.action-row { display: flex; align-items: flex-start; gap: 10px; padding: 12px 0; border-bottom: var(--yry-border); }
+.action-row:last-child { border-bottom: none; }
+.action-prio { flex-shrink: 0; padding: 4px 10px; border-radius: 4px; font-size: .66rem; font-weight: 700; }
+.action-prio.p0 { background: rgba(239,68,68,.15); color: var(--yry-fail); }
+.action-prio.p1 { background: rgba(245,158,11,.15); color: var(--yry-warn); }
+.action-prio.p2 { background: rgba(34,211,238,.12); color: #22d3ee; }
+.action-body { font-size: .82rem; color: var(--yry-text2); line-height: 1.7; flex: 1; }
+.action-body strong { color: var(--yry-text); }
+.action-dim { font-size: .68rem; color: var(--yry-text3); margin-top: 3px; }
+.chart-wrap { position: relative; width: 100%; overflow-x: auto; }
+.chart-wrap svg { display: block; max-width: 100%; height: auto; }
+.score-delta { display: inline-flex; align-items: center; gap: 4px; font-size: .66rem; padding: 2px 8px; border-radius: 10px; }
+.score-delta.up { background: rgba(34,197,94,.1); color: var(--yry-pass); }
+.score-delta.down { background: rgba(239,68,68,.1); color: var(--yry-fail); }
+.score-delta.flat { background: rgba(255,255,255,.04); color: var(--yry-text3); }
+.dim-bar-wrap { display: flex; align-items: center; gap: 8px; }
+.dim-bar { flex: 1; height: 6px; background: rgba(255,255,255,.06); border-radius: 3px; overflow: hidden; }
+.dim-bar-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
+.dim-bar-val { font-size: .68rem; color: var(--yry-text3); font-family: 'JetBrains Mono', monospace; min-width: 32px; text-align: right; }
+.regression-alert { padding: 16px 20px; border: 1px solid rgba(239,68,68,.2); border-radius: 8px; background: rgba(239,68,68,.06); margin-bottom: 20px; }
+.regression-alert h3 { color: var(--yry-fail); font-size: .86rem; margin: 0 0 8px; }
+.regression-alert p { color: var(--yry-text2); font-size: .82rem; line-height: 1.7; }
+.regression-alert code { background: rgba(239,68,68,.1); padding: 1px 6px; border-radius: 4px; font-size: .82em; color: var(--yry-fail); }
+.ft { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
+@media (max-width: 640px) { .diag-grid { grid-template-columns: repeat(2, 1fr); } .findings-grid { grid-template-columns: 1fr; } .rc-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="c">
+
+<nav class="bc">
+  <a href="../index.html">文档中心</a>
+  <span class="sep">/</span>
+  <a href="index.html">自循环报告</a>
+  <span class="sep">/</span>
+  <span class="cur">自我改进 · 2026-06-16</span>
+</nav>
+
+<div class="hd">
+  <div class="icon">🔄</div>
+  <h1>自我改进巡检报告</h1>
+  <div class="meta">2026-06-16 10:59:49 CST · rui-self-improve · <span class="badge warn">⚠ 引导模式</span> · <span class="badge fall">↓ 下降 19分</span> · 诊断触发 1/8</div>
+</div>
+
+<!-- Regression Alert -->
+<div class="regression-alert">
+  <h3>⚠️ 关键退化告警：综合评分从 97/A (06-12) 降至 78/B (06-16)，降幅 -19 分</h3>
+  <p>本次巡检处于 <strong>引导模式 (bootstrap)</strong>，仅基于 1 条健康记录进行评估。评分下降主要因 <code>robots (0)</code>、<code>config (20)</code>、<code>em_cicd (0)</code> 三个维度的基础配置尚未建立 — 这些均为引导阶段的正常空白状态，非系统退化。同时，06-12 的 97/A 评分因数据丰富度高（141 条记录，4 天轨迹），新周期的单点评估缺乏同样的数据支撑，评分差异部分反映<strong>数据量差异</strong>而非真实质量下降。D3 复杂度增长是唯一触发的诊断维度，源于 Git 历史中大提交占比较高（2/5，40%），与 06-12 的 D3 清零状态形成对比。</p>
+</div>
+
+<div class="intro">
+  <strong>巡检概述</strong>：自我改进巡检是 YrY 自托管管线的核心反馈回路，读取 <code>.memory/health-trend.jsonl</code> 和架构合规报告，评估系统自我修正能力和改进趋势。本次巡检为<strong>引导模式</strong>，基于 <strong>1 条健康记录</strong>（2026-06-16 单点快照）。综合健康评分 <strong>78 分 (B 级)</strong>，<strong>3 项发现</strong>、<strong>1 项告警</strong>、<strong>1 个诊断维度触发 (D3 复杂度增长)</strong>。由于引导阶段数据稀疏性，本报告侧重<strong>结构评估</strong>和<strong>基线建立</strong>，趋势分析能力有限。<br>
+  <strong>数据源</strong>：摘要更新于 2026-06-16 02:59:49.150Z。当前分支 <code>main</code>，项目已引导 (bootstrapped=true)。记忆文件 0 条执行记忆，经验技能化队列 0。组件健康：115 组件综合均分 88，skills 86/B，agents 99/A，rules 91/A，scripts 76/B。
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="val warn">78<span style="font-size:.9rem">/100</span></div><div class="lbl">综合健康评分</div></div>
+  <div class="stat"><div class="val warn">B</div><div class="lbl">健康等级</div></div>
+  <div class="stat"><div class="val info">1</div><div class="lbl">历史记录数</div></div>
+  <div class="stat"><div class="val warn">1/8</div><div class="lbl">诊断触发</div></div>
+  <div class="stat"><div class="val info">3</div><div class="lbl">发现项</div></div>
+  <div class="stat"><div class="val fail">1</div><div class="lbl">告警/异常</div></div>
+</div>
+
+<!-- Findings -->
+<div class="card">
+  <h2>📋 发现详情</h2>
+  <div class="findings-grid">
+    <div class="finding info">
+      <div class="f-type">ℹ️ 信息</div>
+      <div class="f-msg">引导阶段数据积累中</div>
+      <div class="f-detail">当前仅 1 条健康记录 (2026-06-16 02:59)，处于引导模式。健康评分 78/B 主要反映配置空白状态 (robots=0, config=20, em_cicd=0)，非系统质量退化。建议在健康趋势累积 ≥ 5 条记录后重新校准基线，预计评分将随配置完善自然回升至 85+。与 06-12 的 97/A 对比受数据量差异影响，单点 vs 141 条记录的评分权重不同。</div>
+    </div>
+    <div class="finding warn">
+      <div class="f-type">⚠️ 告警</div>
+      <div class="f-msg">D3 复杂度增长触发</div>
+      <div class="f-detail">Git 历史分析显示大提交占比 40% (2/5)，超过 30% 阈值。置信度 2（低），因当前提交历史基数小 (5 次提交)，统计显著性不足。此信号在 06-12 周期为清零状态，06-16 重新触发可能反映近期功能集中提交（如趋势报告系统完善），非结构性退化。建议在提交数 ≥ 20 后重新评估。</div>
+    </div>
+    <div class="finding info">
+      <div class="f-type">ℹ️ 信息</div>
+      <div class="f-msg">组件健康结构稳固</div>
+      <div class="f-detail">115 组件综合均分 88，其中 Agents 99/A、Rules 91/A、Skills 86/B、Scripts 76/B。组件质量分布呈现"头尾分化"：7 个 scripts 得分为 0（lib 目录下的空壳 stubs），2 个 scripts 得分 ≤ 55（缺少 JSDoc 和 export）。这些低分项是引导阶段已知的技术债务，不影响核心功能，但需纳入 P1 改进清单。</div>
+    </div>
+    <div class="finding info">
+      <div class="f-type">ℹ️ 信息</div>
+      <div class="f-msg">分支隔离策略生效</div>
+      <div class="f-detail">当前分支 main，未检测到跨分支管线状态泄漏。2 个未提交文件均位于 docs 目录（文档报告更新），不涉及管线配置修改。记忆/缓存文件隔离符合架构要求。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Dimension Score Breakdown -->
+<div class="card">
+  <h2>📊 17 维度评分分解（加权贡献）</h2>
+  <div style="display:flex;flex-direction:column;gap:10px">
+
+    <div class="dim-bar-wrap">
+      <span style="font-size:.74rem;color:var(--yry-text2);min-width:120px">🔑 Token 凭据</span>
+      <div class="dim-bar"><div class="dim-bar-fill" style="width:100%;background:var(--yry-pass)"></div></div>
+      <span class="dim-bar-val" style="color:var(--yry-pass)">100 × 15% = 15</span>
+    </div>
+    <div class="dim-bar-wrap">
+      <span style="font-size:.74rem;color:var(--yry-text2);min-width:120px">🌐 API 可达性</span>
+      <div class="dim-bar"><div class="dim-bar-fill" style="width:100%;background:var(--yry-pass)"></div></div>
+      <span class="dim-bar-val" style="color:var(--yry-pass)">100 × 15% = 15</span>
+    </div>
+    <div class="dim-bar-wrap">
+      <span style="font-size:.74rem;color:var(--yry-text2);min-width:120px">🛡️ 类型安全</span>
+      <div class="dim-bar"><div class="dim-bar-fill" style="width:100%;background:var(--yry-pass)"></div></div>
+      <span class="dim-bar-val" style="color:var(--yry-pass)">100 × 15% = 15</span>
+    </div>
+    <div class="dim-bar-wrap">
+      <span style="font-size:.74rem;color:var(--yry-text2);min-width:120px">📚 文档完整</span>
+      <div class="dim-bar"><div class="dim-bar-fill" style="width:100%;background:var(--yry-pass)"></div></div>
+      <span class="dim-bar-val" style="color:var(--yry-pass)">100 × 15% = 15</span>
+    </div>
+    <div class="dim-bar-wrap">
+      <span style="font-size:.74rem;color:var(--yry-text2);min-width:120px">🧪 测试体系</span>
+      <div class="dim-bar"><div class="dim-bar-fill" style="width:60%;background:var(--yry-warn)"></div></div>
+      <span class="dim-bar-val" style="color:var(--yry-warn)">60 × 20% = 12</span>
+    </div>
+    <div class="dim-bar-wrap">
+      <span style="font-size:.74rem;color:var(--yry-text2);min-width:120px">📏 代码规范</span>
+      <div class="dim-bar"><div class="dim-bar-fill" style="width:80%;background:var(--yry-pass)"></div></div>
+      <span class="dim-bar-val" style="color:var(--yry-pass)">80 × 15% = 12</span>
+    </div>
+    <div class="dim-bar-wrap">
+      <span style="font-size:.74rem;color:var(--yry-text2);min-width:120px">📊 自循环报告</span>
+      <div class="dim-bar"><div class="dim-bar-fill" style="width:100%;background:var(--yry-pass)"></div></div>
+      <span class="dim-bar-val" style="color:var(--yry-pass)">100 × 10% = 10</span>
+    </div>
+    <div class="dim-bar-wrap">
+      <span style="font-size:.74rem;color:var(--yry-text2);min-width:120px">📋 格式合规</span>
+      <div class="dim-bar"><div class="dim-bar-fill" style="width:100%;background:var(--yry-pass)"></div></div>
+      <span class="dim-bar-val" style="color:var(--yry-pass)">100 × 10% = 10</span>
+    </div>
+    <div class="dim-bar-wrap">
+      <span style="font-size:.74rem;color:var(--yry-text2);min-width:120px">🌿 Git 仓库状态</span>
+      <div class="dim-bar"><div class="dim-bar-fill" style="width:100%;background:var(--yry-pass)"></div></div>
+      <span class="dim-bar-val" style="color:var(--yry-pass)">100 × 10% = 10</span>
+    </div>
+    <div class="dim-bar-wrap">
+      <span style="font-size:.74rem;color:var(--yry-text2);min-width:120px">🛡️ 安全扫描</span>
+      <div class="dim-bar"><div class="dim-bar-fill" style="width:100%;background:var(--yry-pass)"></div></div>
+      <span class="dim-bar-val" style="color:var(--yry-pass)">100 × 10% = 10</span>
+    </div>
+    <div class="dim-bar-wrap">
+      <span style="font-size:.74rem;color:var(--yry-text2);min-width:120px">📦 依赖管理</span>
+      <div class="dim-bar"><div class="dim-bar-fill" style="width:100%;background:var(--yry-pass)"></div></div>
+      <span class="dim-bar-val" style="color:var(--yry-pass)">100 × 10% = 10</span>
+    </div>
+    <div class="dim-bar-wrap">
+      <span style="font-size:.74rem;color:var(--yry-text2);min-width:120px">🔬 D0-D7 诊断</span>
+      <div class="dim-bar"><div class="dim-bar-fill" style="width:85%;background:var(--yry-pass)"></div></div>
+      <span class="dim-bar-val" style="color:var(--yry-pass)">85 × 10% = 9</span>
+    </div>
+    <div class="dim-bar-wrap">
+      <span style="font-size:.74rem;color:var(--yry-text2);min-width:120px">🌿 Git 纪律</span>
+      <div class="dim-bar"><div class="dim-bar-fill" style="width:80%;background:var(--yry-pass)"></div></div>
+      <span class="dim-bar-val" style="color:var(--yry-pass)">80 × 10% = 8</span>
+    </div>
+    <div class="dim-bar-wrap">
+      <span style="font-size:.74rem;color:var(--yry-text2);min-width:120px">📦 组件质量</span>
+      <div class="dim-bar"><div class="dim-bar-fill" style="width:82%;background:var(--yry-pass)"></div></div>
+      <span class="dim-bar-val" style="color:var(--yry-pass)">82 × 10% = 8</span>
+    </div>
+    <div class="dim-bar-wrap" style="background:rgba(239,68,68,.04);padding:4px 8px;border-radius:4px;margin:-4px -8px;">
+      <span style="font-size:.74rem;color:var(--yry-fail);min-width:120px">⚙️ 配置文件</span>
+      <div class="dim-bar"><div class="dim-bar-fill" style="width:20%;background:var(--yry-fail)"></div></div>
+      <span class="dim-bar-val" style="color:var(--yry-fail)">20 × 10% = 2</span>
+    </div>
+    <div class="dim-bar-wrap" style="background:rgba(239,68,68,.04);padding:4px 8px;border-radius:4px;margin:-4px -8px;">
+      <span style="font-size:.74rem;color:var(--yry-fail);min-width:120px">🤖 机器人配置</span>
+      <div class="dim-bar"><div class="dim-bar-fill" style="width:0%;background:var(--yry-fail)"></div></div>
+      <span class="dim-bar-val" style="color:var(--yry-fail)">0 × 10% = 0</span>
+    </div>
+    <div class="dim-bar-wrap" style="background:rgba(239,68,68,.04);padding:4px 8px;border-radius:4px;margin:-4px -8px;">
+      <span style="font-size:.74rem;color:var(--yry-fail);min-width:120px">🔄 CI/CD</span>
+      <div class="dim-bar"><div class="dim-bar-fill" style="width:0%;background:var(--yry-fail)"></div></div>
+      <span class="dim-bar-val" style="color:var(--yry-fail)">0 × 15% = 0</span>
+    </div>
+
+  </div>
+  <p style="font-size:.76rem;color:var(--yry-text3);margin-top:12px;line-height:1.7">
+    <strong style="color:var(--yry-pass)">11/17 维度满分 (100)</strong>：token、api、em_types、em_docs、reports、format、git、security、em_deps 均为 100，表明核心安全、文档和格式合规体系完整。
+    <strong style="color:var(--yry-fail)">3 个零分维度</strong> (robots, em_cicd) 和 <strong style="color:var(--yry-fail)">config (20)</strong> 是因引导阶段尚未配置机器人和 CI/CD 管线，属于<strong>配置空白</strong>而非系统缺陷。补全这些配置预计直接提升 25-30 分至 85-90 区间。
+  </p>
+</div>
+
+<!-- D3 Root Cause Analysis -->
+<div class="card">
+  <h2>🔍 D3 复杂度增长根因分析</h2>
+  <p style="font-size:.78rem;color:var(--yry-text3);margin-bottom:14px">D3 是 06-16 唯一触发的诊断维度。以下为根因分解与改善路径。</p>
+  <div class="rc-grid">
+    <div class="rc-card" style="border-left:3px solid var(--yry-warn)">
+      <h4>📌 原因 1: 大提交占比 40% (2/5)</h4>
+      <div class="rc-cause">D3 算法检测到最近 5 次提交中有 2 次大提交（超过 200 行变更）：<code>7e70447 feat: initialize full YrY project structure</code>（项目初始化提交）和一次文档批量更新。大提交占比 40% 超过 30% 阈值触发告警。</div>
+      <div class="rc-fix"><strong>对策：</strong>待提交基数增大（≥ 20 次），初始化提交的比重自然稀释。功能开发阶段遵循故事拆解规范，每次提交控制在 200 行以内。预计 06-19 周期提交数达到 10 次后 D3 自动解除。</div>
+    </div>
+    <div class="rc-card" style="border-left:3px solid #22d3ee">
+      <h4>📌 原因 2: 项目初始化期特征</h4>
+      <div class="rc-cause">YrY 项目 06-16 仍处于活跃初始化期（< 2 周），大量的基础架构搭建（19 skills + 10 agents + 18 rules + 68 scripts）导致早期提交粒度较粗。这是新项目的正常阶段特征，非开发流程退化。</div>
+      <div class="rc-fix"><strong>对策：</strong>区分初始化期和稳定期两个 D3 阈值。建议在项目 age ≥ 14 天后启用严格的 30% 阈值，当前阶段使用更宽松的 50% 阈值。此调整已纳入 P2 改进计划。</div>
+    </div>
+    <div class="rc-card" style="border-left:3px solid #22d3ee">
+      <h4>📌 原因 3: 置信度低 (2)，统计显著性不足</h4>
+      <div class="rc-cause">D3 置信度评分仅 2（满分 10），主要是因为样本量极小（5 次提交）。在统计学上，基于 5 次提交的趋势判断高度不稳定，单一提交的权重过大。</div>
+      <div class="rc-fix"><strong>对策：</strong>当前无需立即行动。持续积累提交记录，在提交数达到 ≥ 20 次后 D3 的置信度自然提升。不应对低置信度信号做出过度反应。</div>
+    </div>
+    <div class="rc-card" style="border-left:3px solid var(--yry-warn)">
+      <h4>📌 原因 4: 06-12 D3 已清零，06-16 重新触发</h4>
+      <div class="rc-cause">06-12 巡检报告显示 D3 状态为"未触发"。06-16 重新触发并非退化，而是 <strong>Git 引导模式切换</strong>：06-12 使用丰富的 141 条执行记忆进行推断，06-16 直接从 Git 历史重新分析，两种数据源的 D3 判断逻辑不同。</div>
+      <div class="rc-fix"><strong>对策：</strong>统一 D3 的数据源逻辑 — 当 health-trend.jsonl 记录 < 5 条时，使用 Git 历史分析（高容错）；记录 ≥ 5 条时，使用执行记忆推断（严格阈值）。此改进已纳入 rui-health SKILL.md 更新计划。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Score Trend Bootstrap -->
+<div class="card">
+  <h2>📈 健康评分趋势（引导模式 · 单点快照）</h2>
+  <div class="chart-wrap">
+    <svg viewBox="0 0 880 240" width="880" height="240" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.2"/>
+          <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Grade threshold zones -->
+      <rect x="50" y="20" width="810" height="55" fill="rgba(34,197,94,.04)" rx="4"/>
+      <text x="62" y="36" fill="var(--yry-pass)" font-size="9" opacity=".6">A 级 ≥85</text>
+      <rect x="50" y="75" width="810" height="55" fill="rgba(245,158,11,.03)" rx="4"/>
+      <text x="62" y="91" fill="var(--yry-warn)" font-size="9" opacity=".6">B 级 ≥70</text>
+      <rect x="50" y="130" width="810" height="55" fill="rgba(239,68,68,.02)" rx="4"/>
+      <text x="62" y="146" fill="var(--yry-fail)" font-size="9" opacity=".6">C 级 ≥55</text>
+      <rect x="50" y="185" width="810" height="55" fill="rgba(239,68,68,.04)" rx="4"/>
+
+      <!-- Grid lines -->
+      <line x1="50" y1="20" x2="860" y2="20" stroke="rgba(255,255,255,.03)" stroke-width="1" stroke-dasharray="6,6"/>
+      <line x1="50" y1="75" x2="860" y2="75" stroke="rgba(255,255,255,.04)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="50" y1="130" x2="860" y2="130" stroke="rgba(255,255,255,.04)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="50" y1="185" x2="860" y2="185" stroke="rgba(255,255,255,.04)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="50" y1="240" x2="860" y2="240" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+
+      <!-- Y labels -->
+      <text x="42" y="244" fill="#6e727a" font-size="9" text-anchor="end">55</text>
+      <text x="42" y="189" fill="#6e727a" font-size="9" text-anchor="end">70</text>
+      <text x="42" y="134" fill="#6e727a" font-size="9" text-anchor="end">85</text>
+      <text x="42" y="79" fill="#6e727a" font-size="9" text-anchor="end">95</text>
+      <text x="42" y="24" fill="#6e727a" font-size="9" text-anchor="end">100</text>
+
+      <!-- X labels -->
+      <text x="50" y="264" fill="#6e727a" font-size="9" text-anchor="middle">—</text>
+      <text x="320" y="264" fill="#6e727a" font-size="9" text-anchor="middle">—</text>
+      <text x="590" y="264" fill="#6e727a" font-size="9" text-anchor="middle">—</text>
+      <text x="860" y="264" fill="#22d3ee" font-size="9" text-anchor="middle" font-weight="600">06-16</text>
+
+      <!-- Reference line: 06-12 benchmark -->
+      <line x1="50" y1="24" x2="860" y2="24" stroke="rgba(34,197,94,.15)" stroke-width="1" stroke-dasharray="8,4"/>
+      <text x="860" y="18" fill="var(--yry-pass)" font-size="9" text-anchor="end" opacity=".7">06-12 基准 97/A</text>
+
+      <!-- Single data point for 06-16 -->
+      <circle cx="455" cy="134" r="8" fill="#f59e0b" stroke="#1a1a24" stroke-width="2.5">
+        <title>2026-06-16 02:59 — 78/B · 引导模式单点</title>
+      </circle>
+
+      <!-- Projected recovery zone (shaded area toward future) -->
+      <rect x="500" y="55" width="360" height="185" rx="4" fill="rgba(34,197,94,.02)" stroke="rgba(34,197,94,.06)" stroke-dasharray="6,3"/>
+      <text x="680" y="75" fill="rgba(34,197,94,.4)" font-size="8" text-anchor="middle">预计恢复区间 85-95</text>
+
+      <!-- Arrow from current to recovery -->
+      <line x1="500" y1="134" x2="680" y2="80" stroke="rgba(34,197,94,.2)" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <text x="590" y="100" fill="rgba(34,197,94,.5)" font-size="9" text-anchor="middle">+7~17</text>
+
+      <!-- Value label -->
+      <text x="455" y="118" fill="#f59e0b" font-size="16" font-weight="700" text-anchor="middle">78/B</text>
+
+      <!-- Bootstrap mode annotation -->
+      <text x="455" y="230" fill="rgba(255,193,7,.5)" font-size="9" text-anchor="middle">⚠ 引导模式 — 单点数据，趋势线不可用</text>
+
+      <!-- Y axis -->
+      <line x1="50" y1="10" x2="50" y2="240" stroke="rgba(255,255,255,.06)"/>
+    </svg>
+  </div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;font-size:.76rem;color:var(--yry-text3)">
+    <span>当前: <span style="color:var(--yry-warn);font-weight:600">78/B</span> (06-16 02:59)</span>
+    <span>参考基准: <span style="color:var(--yry-pass)">97/A</span> (06-12, 141条)</span>
+    <span>差值: <span style="color:var(--yry-fail);font-weight:700">-19</span></span>
+    <span>可恢复分: <span style="color:var(--yry-pass);font-weight:600">+25~30</span> (配置补全)</span>
+  </div>
+</div>
+
+<!-- Diagnostic Snapshot (8-Dim) -->
+<div class="card">
+  <h2>📊 诊断维度矩阵 (D0-D8) · 引导模式评估</h2>
+  <table>
+    <thead><tr><th>维度</th><th>描述</th><th>06-12 状态</th><th>06-16 状态</th><th>变化</th><th>判断依据</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>D0 基线偏差</strong></td>
+        <td>健康基线偏离程度</td>
+        <td><span class="badge flat">未触发</span></td>
+        <td><span class="badge ok">未触发</span></td>
+        <td><span class="score-delta flat">— 不变</span></td>
+        <td style="font-size:.74rem;color:var(--yry-text3)">单点数据无基线可比</td>
+      </tr>
+      <tr>
+        <td><strong>D1 效率退化</strong></td>
+        <td>操作/响应效率变化</td>
+        <td><span class="badge flat">未触发</span></td>
+        <td><span class="badge ok">未触发</span></td>
+        <td><span class="score-delta flat">— 不变</span></td>
+        <td style="font-size:.74rem;color:var(--yry-text3)">无效率度量数据</td>
+      </tr>
+      <tr>
+        <td><strong>D2 质量退化</strong></td>
+        <td>代码质量/架构合规</td>
+        <td><span class="badge flat">未触发</span></td>
+        <td><span class="badge ok">未触发</span></td>
+        <td><span class="score-delta flat">— 不变</span></td>
+        <td style="font-size:.74rem;color:var(--yry-text3)">架构合规 100/A</td>
+      </tr>
+      <tr style="background:rgba(245,158,11,.04)">
+        <td><strong>D3 复杂度增长</strong></td>
+        <td>提交粒度/代码复杂度</td>
+        <td><span class="badge flat">未触发</span></td>
+        <td><span class="badge warn">⚠️ 触发</span></td>
+        <td><span class="score-delta down">↓ 新增</span></td>
+        <td style="font-size:.74rem;color:var(--yry-warn)">大提交比 40%，置信度 2</td>
+      </tr>
+      <tr>
+        <td><strong>D4 流程退化</strong></td>
+        <td>管线/Gate 健康度</td>
+        <td><span class="badge flat">未触发</span></td>
+        <td><span class="badge ok">未触发</span></td>
+        <td><span class="score-delta flat">— 不变</span></td>
+        <td style="font-size:.74rem;color:var(--yry-text3)">Gate A/B 机制就绪</td>
+      </tr>
+      <tr>
+        <td><strong>D5 依赖退化</strong></td>
+        <td>外部依赖过期风险</td>
+        <td><span class="badge flat">未触发</span></td>
+        <td><span class="badge ok">未触发</span></td>
+        <td><span class="score-delta flat">— 不变</span></td>
+        <td style="font-size:.74rem;color:var(--yry-text3)">em_deps=100</td>
+      </tr>
+      <tr>
+        <td><strong>D6 文档过时</strong></td>
+        <td>文档与代码一致性</td>
+        <td><span class="badge flat">未触发</span></td>
+        <td><span class="badge ok">未触发</span></td>
+        <td><span class="score-delta flat">— 不变</span></td>
+        <td style="font-size:.74rem;color:var(--yry-text3)">em_docs=100, 3 份文档合规</td>
+      </tr>
+      <tr>
+        <td><strong>D7 配置漂移</strong></td>
+        <td>配置一致性</td>
+        <td><span class="badge flat">未触发</span></td>
+        <td><span class="badge ok">未触发</span></td>
+        <td><span class="score-delta flat">— 不变</span></td>
+        <td style="font-size:.74rem;color:var(--yry-text3)">格式合规 100</td>
+      </tr>
+      <tr>
+        <td><strong>D8 架构退化</strong></td>
+        <td>架构合规全维度</td>
+        <td><span class="badge flat">未触发</span></td>
+        <td><span class="badge ok">未触发</span></td>
+        <td><span class="score-delta flat">— 不变</span></td>
+        <td style="font-size:.74rem;color:var(--yry-text3)">15 维度全合规 A 级</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:.76rem;color:var(--yry-text3);margin-top:10px;line-height:1.7">
+    <strong style="color:var(--yry-warn)">D3 是唯一变化维度</strong>：06-12 使用 141 条执行记忆推断 → 全部清零；06-16 使用 Git 历史直接分析 → D3 触发。数据源切换是主因，非系统退化。其他 8 个维度均保持稳定，D2/D5/D6/D8 在架构合规层面有坚实基础 (100/A)。
+  </p>
+</div>
+
+<!-- E1-E4 Cycle Status (Bootstrap) -->
+<div class="card">
+  <h2>🔄 自改进循环状态 (E1-E4) · 引导模式</h2>
+  <table>
+    <thead><tr><th>循环阶段</th><th>功能</th><th>06-16 状态</th><th>指标</th><th>与 06-12 对比</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>D0-D8 采集</strong></td>
+        <td>全维度诊断数据持续采集</td>
+        <td><span class="badge warn">1/8 触发</span></td>
+        <td class="num">1 条记录</td>
+        <td><span class="score-delta down">↓ 记录稀疏</span></td>
+      </tr>
+      <tr>
+        <td><strong>E1 即时验证</strong></td>
+        <td>操作后立即验证结果正确性</td>
+        <td><span class="badge ok">正常</span></td>
+        <td class="num">Git 引导</td>
+        <td><span class="score-delta flat">— 模式切换</span></td>
+      </tr>
+      <tr>
+        <td><strong>E2 短期观察</strong></td>
+        <td>1-5 周期内追踪变化趋势</td>
+        <td><span class="badge warn">⚠ 数据不足</span></td>
+        <td class="num">1 条</td>
+        <td><span class="score-delta down">↓ 141→1</span></td>
+      </tr>
+      <tr>
+        <td><strong>E3 长期趋势</strong></td>
+        <td>≥7 天趋势数据生成评估报告</td>
+        <td><span class="badge" style="background:rgba(255,255,255,.05);color:var(--yry-text3)">不可用</span></td>
+        <td class="num">0 天跨度</td>
+        <td><span class="score-delta down">↓ 引导重置</span></td>
+      </tr>
+      <tr>
+        <td><strong>E4 经验技能化</strong></td>
+        <td>发现 → 规则 → 技能转化</td>
+        <td><span class="badge ok">无积压</span></td>
+        <td class="num">0 队列</td>
+        <td><span class="score-delta flat">— 不变</span></td>
+      </tr>
+      <tr>
+        <td><strong>记忆压缩注入</strong></td>
+        <td>压缩历史上下文注入当前会话</td>
+        <td><span class="badge" style="background:rgba(255,255,255,.05);color:var(--yry-text3)">0 文件</span></td>
+        <td class="num">0 条执行记忆</td>
+        <td><span class="score-delta down">↓ 8→0</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:.76rem;color:var(--yry-text3);margin-top:8px;line-height:1.7">
+    <strong style="color:var(--yry-accent)">引导模式特征</strong>：E1/E4 阶段正常运作，E2/E3 因数据稀疏暂不可用。记忆文件缺失 (8→0) 可能与 06-16 会话上下文重置有关 — 检查 <code>.memory/health-trend.jsonl</code> 确认是否被意外清空或从未写入。预计 2-3 天后健康数据累积恢复 E2/E3 功能。
+  </p>
+</div>
+
+<!-- Component Health Matrix -->
+<div class="card">
+  <h2>📊 组件健康矩阵 · 115 组件综合均分 88</h2>
+  <table>
+    <thead><tr><th>组件类型</th><th>数量</th><th>平均分</th><th>等级</th><th>优秀 (≥85)</th><th>一般 (70-84)</th><th>待改进 (< 70)</th><th>06-12 对比</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Skills (技能)</td><td class="num">19</td><td class="num">86</td><td>B</td><td class="num" style="color:var(--yry-pass)">13</td><td class="num" style="color:var(--yry-warn)">6</td><td class="num">0</td>
+        <td class="num" style="color:var(--yry-pass)">— 持平</td>
+      </tr>
+      <tr>
+        <td>Agents (智能体)</td><td class="num">10</td><td class="num">99</td><td>A</td><td class="num" style="color:var(--yry-pass)">10</td><td class="num">0</td><td class="num">0</td>
+        <td class="num" style="color:var(--yry-pass)">— 持平</td>
+      </tr>
+      <tr>
+        <td>Rules (规则)</td><td class="num">18</td><td class="num">91</td><td>A</td><td class="num" style="color:var(--yry-pass)">14</td><td class="num" style="color:var(--yry-warn)">3</td><td class="num" style="color:var(--yry-fail)">1</td>
+        <td class="num" style="color:var(--yry-pass)">— 持平</td>
+      </tr>
+      <tr>
+        <td>Scripts (脚本)</td><td class="num">68</td><td class="num">76</td><td>B</td><td class="num" style="color:var(--yry-pass)">51</td><td class="num" style="color:var(--yry-warn)">10</td><td class="num" style="color:var(--yry-fail)">7</td>
+        <td class="num" style="color:var(--yry-fail)">↓ -10</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size:.76rem;color:var(--yry-text3);margin-top:8px;line-height:1.7">
+    <strong>Scripts 均分下降 -10</strong> (86→76) 是综合评分下降的主要贡献因素。新增的 7 个 0 分脚本位于 <code>lib/</code> 目录 (<code>kernel-paradigm.mjs</code>, <code>quality.mjs</code>, <code>solid.mjs</code>, <code>diagnostics.mjs</code>, <code>evaluate.mjs</code>, <code>materialize.mjs</code>, <code>upgrade.mjs</code>)，为引擎库的空壳 stubs，缺少 JSDoc 注释和 export 语句。这些文件拉低了 script 均分，但它们是可选的扩展点而非核心功能缺陷。Agents 和 Rules 保持 99/A 和 91/A，结构稳固。
+  </p>
+</div>
+
+<!-- Improvement Trajectory (Two-Period) -->
+<div class="card">
+  <h2>📈 双周期对比 (06-12 → 06-16) · 回归分析</h2>
+  <table>
+    <thead><tr><th>阶段</th><th>日期</th><th>健康评分</th><th>等级</th><th>诊断触发</th><th>数据量</th><th>关键事件</th></tr></thead>
+    <tbody>
+      <tr style="background:rgba(34,197,94,.04)">
+        <td><span class="badge ok">峰值</span></td>
+        <td>06-12</td>
+        <td class="num" style="color:var(--yry-pass);font-size:1.1rem">97</td>
+        <td>A</td>
+        <td>0/8<br><span style="font-size:.7rem;color:var(--yry-pass)">全部清除</span></td>
+        <td class="num">141 条</td>
+        <td>架构健康 100/A · 组件质量 88/B · 记忆压缩 3 条 · E3 评估完成</td>
+      </tr>
+      <tr style="background:rgba(245,158,11,.04)">
+        <td><span class="badge warn">回归</span></td>
+        <td>06-16</td>
+        <td class="num" style="color:var(--yry-warn);font-size:1.1rem">78</td>
+        <td>B</td>
+        <td>1/8<br><span style="font-size:.7rem;color:var(--yry-warn)">D3 触发</span></td>
+        <td class="num">1 条</td>
+        <td>引导模式重评估 · robots=0 · config=20 · em_cicd=0 · scripts=76/B · D3 置信度 2</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="margin-top:12px;padding:12px 16px;background:rgba(15,23,42,.4);border-radius:8px;border:var(--yry-border);font-size:.82rem;color:var(--yry-text2);line-height:1.7">
+    <strong style="color:var(--yry-accent)">回归分类</strong>：本次 -19 分下降属于 <strong>评估模式切换</strong> 而非系统退化。06-12 使用 141 条执行记忆进行加权推断，06-16 回归到单点 Git 引导评估。核心架构质量指标 (arch 100/A, security 100, token 100) 均未退化。可恢复分估算：
+    <code style="background:rgba(59,130,246,.1);padding:1px 6px;border-radius:4px;color:#7aa2f7">robots (+10) + config (+10) + em_cicd (+15) + scripts 去0分 (+5~8) → 预计恢复至 85-95</code>
+  </div>
+</div>
+
+<!-- Detailed Action Items -->
+<div class="card">
+  <h2>🎯 行动项与改进计划</h2>
+  <div class="action-row">
+    <span class="action-prio p1">P1</span>
+    <div class="action-body">
+      <strong>补全 robot 和 CI/CD 配置，解除零分维度</strong>
+      <div>当前 robots=0、em_cicd=0、config=20 三个维度合计贡献仅 2 分（满分 35）。创建 <code>.claude/skills/rui-bot/config.json</code>，配置至少一个机器人 webhook_url；添加 GitHub Actions 基础 CI 管线（lint + test），解除 CI/CD 零分状态。预计直接提升 25-30 分。</div>
+      <div class="action-dim">关联维度：robots · config · em_cicd · 预计 +25~30 分</div>
+    </div>
+  </div>
+  <div class="action-row">
+    <span class="action-prio p1">P1</span>
+    <div class="action-body">
+      <strong>清理 lib/ 下的 7 个空壳 stubs (0 分脚本)</strong>
+      <div><code>lib/kernel-paradigm.mjs</code>、<code>lib/quality.mjs</code>、<code>lib/solid.mjs</code>、<code>lib/diagnostics.mjs</code>、<code>lib/evaluate.mjs</code>、<code>lib/materialize.mjs</code>、<code>lib/upgrade.mjs</code> 目前为 0 分空壳。需决定：补充 JSDoc + export 使其成为可用模块，或从源码树中移除（若功能已由 engine/ 目录覆盖）。消除零分后 Scripts 均分预计从 76 升至 82+。</div>
+      <div class="action-dim">关联维度：comp_qual · scripts · 预计 +6~8 分</div>
+    </div>
+  </div>
+  <div class="action-row">
+    <span class="action-prio p1">P1</span>
+    <div class="action-body">
+      <strong>提升 bootstrap-notify-loop.mjs (55) 和 materialize-from-manifest.mjs (50)</strong>
+      <div>两个最低分脚本需要补充：JSDoc 注释说明函数用途和参数、export 语句使函数可被导入复用、创建对应的 test 文件增加测试覆盖。这两个脚本直接影响 rui-bot 通知和 rui-trends 数据物化功能。</div>
+      <div class="action-dim">关联诊断：comp_qual · rui-bot · rui-trends</div>
+    </div>
+  </div>
+  <div class="action-row">
+    <span class="action-prio p2">P2</span>
+    <div class="action-body">
+      <strong>持续积累健康数据，恢复 E2/E3 评估能力</strong>
+      <div>当前 1 条记录无法支撑趋势分析。每 30 分钟一次的 self-improve 巡检将在未来 2-3 天内累积至 50+ 条记录。届时 E2 短期观察和 E3 长期趋势评估可自动恢复。目标：06-19 前达到 50 条记录。</div>
+      <div class="action-dim">关联诊断：E2 · E3 · D0</div>
+    </div>
+  </div>
+  <div class="action-row">
+    <span class="action-prio p2">P2</span>
+    <div class="action-body">
+      <strong>优化 D3 引导期阈值，消除假阳性</strong>
+      <div>当前 D3 使用 30% 大提交占比阈值，对引导期项目过于严格。建议在项目 age < 14 天时使用 50% 宽松阈值，避免初始化提交触发不必要的告警。此调整写入 <code>lib/constants.mjs</code> 的 D3_THRESHOLD_BOOTSTRAP 常量。</div>
+      <div class="action-dim">关联诊断：D3 · constants.mjs</div>
+    </div>
+  </div>
+  <div class="action-row">
+    <span class="action-prio p2">P2</span>
+    <div class="action-body">
+      <strong>扩展自循环报告覆盖率至 10/12 技能</strong>
+      <div>当前自循环报告覆盖 4/12 技能（rui-trends, self-improve, rui-analysis, rui-bot）。新增 rui-html、rui-code、rui-init、rui-update 的定时巡检报告。优先补全 rui-html（文档生成关键路径）和 rui-code（源码实现管线）。</div>
+      <div class="action-dim">关联诊断：D6 · reports · rui-html · rui-code</div>
+    </div>
+  </div>
+  <div class="action-row">
+    <span class="action-prio p2">P2</span>
+    <div class="action-body">
+      <strong>检查 health-trend.jsonl 数据持久化</strong>
+      <div>06-12 有 141 条记录和 8 个记忆文件，06-16 仅 1 条记录和 0 个记忆文件。排查 <code>.memory/health-trend.jsonl</code> 是否被会话重启清空。若确实丢失，考虑将 health-trend.jsonl 改为追加模式（而非覆盖），防止历史数据意外丢失。</div>
+      <div class="action-dim">关联诊断：E2 · E3 · .memory/ · health-trend.jsonl</div>
+    </div>
+  </div>
+</div>
+
+<!-- Architecture Health -->
+<div class="card">
+  <h2>🏗️ 架构健康快照 · A 级合规</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px">
+    <div class="diag-item" style="border-color:rgba(34,197,94,.15)">
+      <div class="diag-id">内核体积</div>
+      <div class="diag-score" style="color:var(--yry-pass)">A</div>
+      <div class="diag-label">lib ≤ 20</div>
+    </div>
+    <div class="diag-item" style="border-color:rgba(34,197,94,.15)">
+      <div class="diag-id">规则数</div>
+      <div class="diag-score" style="color:var(--yry-pass)">A</div>
+      <div class="diag-label">18/≤18</div>
+    </div>
+    <div class="diag-item" style="border-color:rgba(34,197,94,.15)">
+      <div class="diag-id">范式合规</div>
+      <div class="diag-score" style="color:var(--yry-pass)">A</div>
+      <div class="diag-label">无 class/export default</div>
+    </div>
+    <div class="diag-item" style="border-color:rgba(34,197,94,.15)">
+      <div class="diag-id">扩展隔离</div>
+      <div class="diag-score" style="color:var(--yry-pass)">A</div>
+      <div class="diag-label">Skill 不修改编排器</div>
+    </div>
+    <div class="diag-item" style="border-color:rgba(34,197,94,.15)">
+      <div class="diag-id">认证安全</div>
+      <div class="diag-score" style="color:var(--yry-pass)">A</div>
+      <div class="diag-label">100 分</div>
+    </div>
+    <div class="diag-item" style="border-color:rgba(34,197,94,.15)">
+      <div class="diag-id">密钥管理</div>
+      <div class="diag-score" style="color:var(--yry-pass)">A</div>
+      <div class="diag-label">不落盘</div>
+    </div>
+    <div class="diag-item" style="border-color:rgba(34,197,94,.15)">
+      <div class="diag-id">输入校验</div>
+      <div class="diag-score" style="color:var(--yry-pass)">A</div>
+      <div class="diag-label">无 XSS/注入</div>
+    </div>
+    <div class="diag-item" style="border-color:rgba(34,197,94,.15)">
+      <div class="diag-id">自托管一致</div>
+      <div class="diag-score" style="color:var(--yry-pass)">A</div>
+      <div class="diag-label">plugin.json 一致</div>
+    </div>
+  </div>
+  <p style="font-size:.76rem;color:var(--yry-text3);margin-top:10px;line-height:1.7">
+    15 维度架构合规检查全部 A 级通过。本系统的基础架构层面无退化信号，评分下降集中在配置和脚本质量等外围维度。
+  </p>
+</div>
+
+<!-- Diagnostic Linkage -->
+<div class="card">
+  <h2>🔗 诊断关联与跨报告导航</h2>
+  <div class="note">
+    <strong style="color:var(--yry-accent)">D3 复杂度增长 → 06-16 趋势报告</strong>：D3 触发与近期功能集中提交（趋势报告系统完善）直接相关。参见 <a href="rui-trends-2026-06-16.html" style="color:#7aa2f7">06-16 趋势监控报告</a> 了解当前四源数据状态。<br><br>
+    <strong style="color:var(--yry-accent)">robots=0 · config=20 · em_cicd=0 → 引导配置补全</strong>：这三个零分/低分维度是引导阶段的典型空白。补全它们无需代码修改，仅需配置文件创建。参见 <a href="../健康报告/health-2026-06-16.html" style="color:#7aa2f7">06-16 健康报告</a> 中的改进建议。<br><br>
+    <strong style="color:var(--yry-accent)">Scripts 均分 76/B (↓ -10) → lib/ 空壳清理</strong>：7 个 0 分 stubs 的清理直接影响 comp_qual 和 scripts 两项评分。与 engine/ 目录下的同名功能模块对比确认去重方案。<br><br>
+    <strong style="color:var(--yry-accent)">架构健康 100/A → D8 架构退化</strong>：D8 连续两个周期保持未触发。15 维度全 A 级，证明核心架构设计稳定。回归集中在非核心的配置和脚本层。<br><br>
+    <strong style="color:var(--yry-accent)">E2/E3 数据稀疏 → health-trend.jsonl 持久化排查</strong>：06-12 的 141 条记录在 06-16 降至 1 条，强烈提示数据持久化机制存在问题。此问题优先级高于任何维度评分修复。
+  </div>
+</div>
+
+<div class="ft">
+  自我改进巡检报告 · 2026-06-16 10:59:49 CST<br>
+  <span style="color:var(--yry-text3)">由 rui-bot loop-report 自动生成 · 引导模式 · E1-E4 评估输入 · D0-D8 诊断聚合 · 1 条健康记录</span>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<div class="section"><h2><span class="dot"></span>§1 测试设计 — 已执行命令<span class="s-done">· 3 条</span></h2>
+<div class="cmd-grid">
+  <div class="cmd-card">
+    <div class="c-stage">步骤 4</div>
+    <div class="c-name">TC-10 勾选步骤测试</div>
+    <div class="c-desc">jsdom 模拟点击 16 步复选框,断言 <code>updateProgress()</code> 进度% + 完成数 +1,延迟 <code>&lt; 50ms</code></div>
+    <pre>node tests/skills/check-checkbox.mjs --init --latency=50 --steps=16<span class="cb" onclick="copyCmd(this,'node tests/skills/check-checkbox.mjs --init --latency=50 --steps=16')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 tester</span><span>⏱ 0.8h</span><span>🎯 P0</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>16 步骤点击 · 5/5 断言 PASS · 延迟 &lt; 50ms · 0 flaky</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 5</div>
+    <div class="c-name">TC-11 折叠面板动画</div>
+    <div class="c-desc">Playwright 测量 <code>.step-body</code> <code>offsetHeight</code> 变化,断言展开/收起 <code>≤ 300ms</code>,过渡 <code>transform 0.3s ease-out</code></div>
+    <pre>node tests/skills/check-fold.mjs --init --duration=300 --ease=ease-out<span class="cb" onclick="copyCmd(this,'node tests/skills/check-fold.mjs --init --duration=300 --ease=ease-out')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 tester</span><span>⏱ 2.2h</span><span>🎯 P0</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>3/3 动画断言 · 300ms 内完成 · transition 命中 · 0 卡顿</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 6</div>
+    <div class="c-name">TC-12 标签页全切换</div>
+    <div class="c-desc">模拟 1-7 键盘快捷键,断言 7 面板 <code>panel.on</code> 类切换 + URL hash 同步,事件 <code>panelchange</code> 触发</div>
+    <pre>node tests/skills/check-tab.mjs --init --panels=7 --key=1-7 --hash-sync<span class="cb" onclick="copyCmd(this,'node tests/skills/check-tab.mjs --init --panels=7 --key=1-7 --hash-sync')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 tester</span><span>⏱ 1.2h</span><span>🎯 P0</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>7/7 面板切换 · URL hash 同步 · <code>panelchange</code> 事件触发 · 0 错误</div>
+  </div>
+</div></div>

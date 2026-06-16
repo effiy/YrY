@@ -1,0 +1,157 @@
+<div class="section">
+<h2><span class="dot"></span>§0 技术评审<span class="s-done">— 已完成</span></h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">1</span>
+    <span class="step-title">交互组件是计划清单从&quot;可读文档&quot;升级为&quot;可操作工具&quot;的核心层</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>交互组件是计划清单从&quot;可读文档&quot;升级为&quot;可操作工具&quot;的核心层</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>将清单页面交互拆为<b>勾选进度联动 · 折叠面板 · 标签页切换 · 风险行展开 · 交付物类型过滤 · 复制路径</b>六大组件,每个组件定义独立的事件 + 状态 + DOM hook。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>梳理 清单页面全部交互点 → 归纳为 6 组件 + 键盘快捷键</li>
+          <li>定义每个组件的 <code>Event → State → DOM</code> 单向数据流</li>
+          <li>设计组件间通信协议: 勾选 → 进度条 + overview 统计 + localStorage</li>
+          <li>确定 localStorage 持久化 schema (key 含场景标识避免冲突)</li>
+          <li>评审 6 组件拆分方案: 零外部依赖,纯内联 JS 实现</li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>6 组件独立可测 · 单向数据流 · localStorage 持久化 · CSS transition 动画 · 键盘可访问性</dd>
+      <dt>⚠️ 风险</dt><dd>组件间状态不一致 → 单一 <code>updateProgress()</code> 数据源 · localStorage 冲突 → key 含场景标识 · 动画卡顿 → CSS <code>transform</code> GPU 加速</dd>
+      <dt>✅ DoD</dt><dd>6 组件接口定义完毕 · 状态流转图完整 · localStorage schema 通过 ajv 校验 · 拆分方案评审通过</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">3 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="计划清单.html" class="deliv-link pass" target="_blank" rel="noopener" title="计划清单.html"><span class="dl-icon">📄</span><span class="dl-name">📄 计划清单.html</span><span class="dl-size">· 本页</span><span class="dl-newtab">↗</span></a>
+        <a href="index.md" class="deliv-link pass" target="_blank" rel="noopener" title="index.md"><span class="dl-icon">📑</span><span class="dl-name">📑 index.md</span><span class="dl-size">· §0</span><span class="dl-newtab">↗</span></a>
+        <a href="架构图.html" class="deliv-link pass" target="_blank" rel="noopener" title="架构图.html"><span class="dl-icon">📐</span><span class="dl-name">📐 架构图.html</span><span class="dl-size">· §0</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.5h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>交互组件是计划清单从&quot;可读文档&quot;升级为&quot;可操作工具&quot;的核心层</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>完成 交互组件是计划清单从&quot;可读文档&quot;升级为&quot;可操作工具&quot;的核心层 的相关工作</li>
+      <li>通过相关 Gate 校验</li>
+    </ul></div>
+
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">2</span>
+    <span class="step-title">勾选进度联动、折叠面板、标签页切换、风险行展开——四个组件覆盖清单页面全部交互场景</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>勾选进度联动、折叠面板、标签页切换、风险行展开——四个组件覆盖清单页面全部交互场景</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>6 大交互组件齐备: <b>勾选进度联动 · 折叠面板 · 标签页切换 · 风险行展开 · 交付物类型过滤 · 路径复制</b>,覆盖清单页面全部交互场景。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>勾选进度联动: checkbox → <code>updateProgress()</code> → 进度条 width + overview 统计 + localStorage 持久化</li>
+          <li>折叠面板: 点击交付物头部 → CSS <code>max-height 0.3s ease-out</code> 过渡动画</li>
+          <li>标签页切换: 点击标签/键盘 1-9 → panel <code>opacity</code> 切换 + URL hash + localStorage tab 记忆</li>
+          <li>风险行展开: 点击风险行 → CSS class <code>open</code> toggle + 缓解步骤详情展开</li>
+          <li>交付物类型过滤: 全部/HTML/MD/CSS/Test/其他 六类 + 展开/折叠全部 + 一键复制路径</li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>零依赖内联 JS · 组件间通过 <code>updateProgress()</code> 收敛状态 · 键盘跳过 input 聚焦防误触发 · 交付物扩展名自动标注</dd>
+      <dt>⚠️ 风险</dt><dd>checkbox 大量勾选 → 一次性批量更新 · 动画冲突 → <code>transitionend</code> 事件防抖 · 哈希定位 → URL 参数二次编码</dd>
+      <dt>✅ DoD</dt><dd>6 组件全部可用 · 键盘 1-9 全映射 · 刷新恢复全部状态 · localStorage 跨场景隔离 · 动画 ≤ 300ms</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">2 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="计划清单.html" class="deliv-link pass" target="_blank" rel="noopener" title="计划清单.html"><span class="dl-icon">📄</span><span class="dl-name">📄 计划清单.html</span><span class="dl-size">· 骨架</span><span class="dl-newtab">↗</span></a>
+        <a href="架构图.html" class="deliv-link pass" target="_blank" rel="noopener" title="架构图.html"><span class="dl-icon">📐</span><span class="dl-name">📐 架构图.html</span><span class="dl-size">· 分层</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.2h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>勾选进度联动、折叠面板、标签页切换、风险行展开——四个组件覆盖清单页面全部交互场景</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>完成 勾选进度联动、折叠面板、标签页切换、风险行展开——四个组件覆盖清单页面全部交互场景 的相关工作</li>
+      <li>通过相关 Gate 校验</li>
+    </ul></div>
+
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">3</span>
+    <span class="step-title">补充 §0 评审 工作项 3</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>§0 评审 - 补充 §0 评审 工作项 3</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>完成 §0 评审清单第 3 项: 评审数据流完整性,收集 4 方意见,输出评审纪要。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>按 RACI 矩阵分发评审 checklist 给 PO / Tech Lead / QA / 新人体检官</li>
+          <li>收集结构化意见: <code>阻塞 / 警告 / 建议 / 表扬</code> 四级</li>
+          <li>对阻塞项制定 <code>24h</code> 内修复 SLA</li>
+          <li>评审纪要归档至 <code>docs/.../review/section-0.md</code></li>
+          <li>同步基线至 <code>index.json</code> + 触发企微通知</li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>RACI 责任矩阵 · 结构化评审表 · 阻塞项 SLA · 评审纪要模板 · 变更控制 (Change Control) · 可追溯审计日志</dd>
+      <dt>⚠️ 风险</dt><dd>评审走过场 → 强制 sign-off · 意见分散 → 集中归档 · 阻塞项逃逸 → <code>24h</code> 超时自动升级</dd>
+      <dt>✅ DoD</dt><dd>4 方全部 sign-off · 评审纪要归档 · 阻塞项 0 个 · 警告项有 mitigation · <code>index.json</code> 已更新</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">2 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="计划清单.html" class="deliv-link pass" target="_blank" rel="noopener" title="计划清单.html"><span class="dl-icon">📄</span><span class="dl-name">📄 计划清单.html</span><span class="dl-size">· §0</span><span class="dl-newtab">↗</span></a>
+        <a href="index.md" class="deliv-link pass" target="_blank" rel="noopener" title="index.md"><span class="dl-icon">📑</span><span class="dl-name">📑 index.md</span><span class="dl-size">· §0</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.3h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>补充 §0 评审 工作项 3</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>完成 补充 §0 评审 工作项 3 的相关工作</li>
+      <li>通过相关 Gate 校验</li>
+    </ul></div>
+
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+</div>

@@ -1,7 +1,7 @@
 /**
  * notify-panel.js — notification center panel
  *
- * Aggregates health reports, self-loop reports, and trend reports
+ * Aggregates health reports, self-loop reports, trend reports, and project analysis
  * into a unified notification feed with filter chips.
  * Depends on: panel-hub.js (loaded first)
  */
@@ -21,6 +21,7 @@
   var STATIC_HEALTH_REPORTS = [];
   var STATIC_LOOP_REPORTS = [];
   var STATIC_TREND_REPORTS = [];
+  var STATIC_ANALYSIS_REPORTS = [];
 
   /**
    * Fetch health reports dynamically from docs/健康报告/reports.json.
@@ -96,6 +97,47 @@
     }
   }
 
+  /**
+   * Fetch project analysis reports from docs/项目分析/reports.json.
+   */
+  async function fetchAnalysisReports() {
+    try {
+      var resp = await fetch('./项目分析/reports.json');
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      var data = await resp.json();
+      if (!Array.isArray(data)) return STATIC_ANALYSIS_REPORTS;
+      return data.map(function(r) {
+        return {
+          file: r.file,
+          date: r.date,
+          source: 'proj-analysis',
+          label: '🔍 项目分析 · ' + r.date,
+          meta: {
+            overallScore: r.overallScore,
+            overallGrade: r.overallGrade,
+            checksPassed: r.checksPassed,
+            checksTotal: r.checksTotal,
+            failedDims: r.failedDims,
+            fileCount: r.fileCount,
+            totalLines: r.totalLines,
+            jsFiles: r.jsFiles,
+            jsLines: r.jsLines,
+            importCount: r.importCount,
+            dimensions: r.dimensions,
+            issues: r.issues,
+            skills: r.skills,
+            rules: r.rules,
+            libFiles: r.libFiles,
+            agents: r.agents
+          }
+        };
+      });
+    } catch (e) {
+      console.warn('[notify-panel] 项目分析 fetch 失败: ' + e.message);
+      return STATIC_ANALYSIS_REPORTS;
+    }
+  }
+
   /* ── Registration ───────────────────────── */
   H.register('notify', null, 'notifyPanel', 'notifyOverlay', function() {
     if (!loaded) fetchAll();
@@ -128,10 +170,11 @@
     panelBody.innerHTML = '<div class="panel-loading yry-panel-loading">加载中...</div>';
 
     // Dynamic fetch from reports.json manifests (with static fallback)
-    var [healthData, loopData, trendData] = await Promise.all([
+    var [healthData, loopData, trendData, analysisData] = await Promise.all([
       fetchHealthReports(),
       fetchLoopReports(),
-      fetchTrendReports()
+      fetchTrendReports(),
+      fetchAnalysisReports()
     ]);
 
     var unified = [];
@@ -173,14 +216,27 @@
         meta: tr.meta || null
       });
     }
+    for (var m = 0; m < analysisData.length; m++) {
+      var ar = analysisData[m];
+      unified.push({
+        type: 'analysis',
+        href: ar.file,
+        basePath: './项目分析/',
+        label: ar.label || '',
+        date: ar.date || '',
+        meta: ar.meta || null
+      });
+    }
 
-    var hc = healthData.length, lc = loopData.length, tc = trendData.length;
+    var hc = healthData.length, lc = loopData.length, tc = trendData.length, ac = analysisData.length;
     var elAll = document.getElementById('npBadgeAll'), elH = document.getElementById('npBadgeHealth'),
-        elL = document.getElementById('npBadgeLoop'), elT = document.getElementById('npBadgeTrend');
+        elL = document.getElementById('npBadgeLoop'), elT = document.getElementById('npBadgeTrend'),
+        elA = document.getElementById('npBadgeAnalysis');
     if (elAll) elAll.textContent = unified.length;
     if (elH) elH.textContent = hc;
     if (elL) elL.textContent = lc;
     if (elT) elT.textContent = tc;
+    if (elA) elA.textContent = ac;
     if (totalCount) totalCount.textContent = '共 ' + unified.length + ' 条';
     if (badge && unified.length > 0) badge.textContent = unified.length > 99 ? '99+' : String(unified.length);
 
@@ -371,12 +427,14 @@
         : (item.skill || '自循环报告');
     }
     var srcLabels = { 'all': '全量扫描', 'github-trending': 'GitHub Trending', 'oss-insight': 'OSS Insight', 'trendshift': 'TrendShift', 'top-starred': 'Top-Starred' };
+    if (item.type === 'analysis') return '🔍 项目分析 · ' + item.date;
     return (srcLabels[item.source] || item.source) + ' · ' + item.date;
   }
 
   function resolveTypeLabel(item) {
     if (item.type === 'health') return { label: '🩺 健康', cls: 'health' };
     if (item.type === 'loop')   return { label: '🔄 自循环', cls: 'loop' };
+    if (item.type === 'analysis') return { label: '🔍 项目分析', cls: 'analysis' };
     var icons = { 'all': '🌐', 'github-trending': '🐙', 'oss-insight': '📊', 'trendshift': '🔥', 'top-starred': '⭐' };
     return { label: (icons[item.source] || '📡') + ' 趋势', cls: 'trend' };
   }
@@ -387,6 +445,7 @@
       return item.meta && item.meta.status
         ? (item.meta.status === 'pass' ? 'ok' : item.meta.status === 'warn' ? 'warn' : 'bad') : 'ok';
     }
+    if (item.type === 'analysis') return item.meta && item.meta.overallScore !== undefined ? dotClass(item.meta.overallScore) : 'ok';
     return item.meta && item.meta.ok === false ? 'bad' : 'ok';
   }
 
@@ -531,6 +590,59 @@
     return parts.length ? parts.join('') : '';
   }
 
+  function renderAnalysisDetail(meta) {
+    if (!meta) return '';
+    var m = meta;
+    var chips = [];
+
+    if (m.overallScore !== undefined) chips.push(renderScorePill(m.overallScore, m.overallGrade));
+    if (m.checksPassed !== undefined && m.checksTotal !== undefined) {
+      var cc = m.failedDims && m.failedDims.length > 0 ? 't-yellow' : 't-green';
+      chips.push(renderMetaChip('✅', m.checksPassed + '/' + m.checksTotal, '检查通过', cc));
+    }
+    if (m.failedDims && m.failedDims.length > 0) {
+      chips.push(renderMetaChip('⚠️', m.failedDims.join(', '), '失败维度', 't-yellow'));
+    }
+    if (m.fileCount !== undefined) chips.push(renderMetaChip('📁', m.fileCount, '文件'));
+    if (m.totalLines !== undefined) {
+      var klines = Math.round(m.totalLines / 1000);
+      chips.push(renderMetaChip('📐', klines + 'K', '代码行'));
+    }
+    if (m.importCount !== undefined) chips.push(renderMetaChip('🔗', m.importCount, '导入'));
+    if (m.skills !== undefined) chips.push(renderMetaChip('⚙️', m.skills, '技能'));
+    if (m.libFiles !== undefined) chips.push(renderMetaChip('📦', m.libFiles, 'lib文件'));
+
+    var parts = [];
+    var row = renderMetaRow(chips);
+    if (row) parts.push(row);
+
+    if (m.dimensions && m.dimensions.length) {
+      var grid = '';
+      var maxShow = Math.min(8, m.dimensions.length);
+      for (var di = 0; di < maxShow; di++) {
+        var dn = m.dimensions[di];
+        var dc = dn.score >= 80 ? 'pass' : dn.score >= 60 ? 'warn' : 'fail';
+        var sc = dn.score >= 80 ? '#22c55e' : dn.score >= 60 ? '#f59e0b' : '#ef4444';
+        grid += '<div class="np-dg-item"><span class="np-dg-dot ' + dc + '"></span><span class="np-dg-name">' + H.escHtml(dn.name) + '</span><span class="np-dg-score" style="color:' + sc + '">' + dn.score + '</span></div>';
+      }
+      if (m.dimensions.length > maxShow) grid += '<div class="np-dg-item" style="font-size:.52rem;color:var(--text-muted)">+' + (m.dimensions.length - maxShow) + ' 维度</div>';
+      parts.push('<div class="np-dim-grid">' + grid + '</div>');
+    }
+
+    if (m.issues && m.issues.length) {
+      var issueHtml = '';
+      for (var i = 0; i < Math.min(m.issues.length, 3); i++) {
+        var iss = m.issues[i];
+        var icls = iss.level === 'fail' ? 'fail' : iss.level === 'warn' ? 'warn' : 'info';
+        issueHtml += '<div class="np-finding-item ' + icls + '">' + H.escHtml(iss.msg) + '</div>';
+      }
+      if (m.issues.length > 3) issueHtml += '<div class="np-finding-item info">…还有 ' + (m.issues.length - 3) + ' 项</div>';
+      parts.push('<div class="np-finding-list">' + issueHtml + '</div>');
+    }
+
+    return parts.length ? parts.join('') : '';
+  }
+
   /* ── Featured card: latest health report ──── */
   function renderFeaturedHealthCard(item, href, typeLabel, typeCls, title, timeHtml) {
     var m = item.meta;
@@ -634,6 +746,8 @@
       detailHtml = renderLoopDetail(item.meta);
     } else if (item.type === 'trend') {
       detailHtml = renderTrendDetail(item.meta, item.keywords);
+    } else if (item.type === 'analysis' && item.meta) {
+      detailHtml = renderAnalysisDetail(item.meta);
     }
 
     return renderStandardCard(item, href, isLatest, dotCls, typeLabel, typeCls, title, timeHtml, detailHtml);
@@ -687,6 +801,7 @@
         health: { desc: '生成最新健康报告并推送到通知中心', cmd: 'node skills/rui-bot/send.mjs health --html', extra: '或检查 ' + H.panelLink('cron', '⏰ 调度面板') + ' 中的健康检查任务是否正常触发' },
         loop: { desc: '运行自循环巡检，生成各技能巡检报告', cmd: 'node skills/rui-bot/lib/loop-report.mjs' },
         trend: { desc: '扫描 GitHub / OSS Insight 等趋势源', cmd: 'node skills/rui-trends/rui-trends.mjs all --html' },
+        analysis: { desc: '运行架构合规检查并生成项目分析报告', cmd: 'node lib/arch-check.mjs --json', extra: '或检查 ' + H.panelLink('cron', '⏰ 调度面板') + ' 中是否有项目分析定时任务' },
         all: { desc: '运行健康检查生成首份报告', cmd: 'node skills/rui-bot/send.mjs health --html', extra: '新项目需先运行 /rui init 建立基线' }
       };
       var info = hintMap[activeFilter] || hintMap.all;

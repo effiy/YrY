@@ -10,6 +10,11 @@
    所有颜色都带 fallback,即使页面未加载主题也能正常显示。
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* ── Demo section animation delays(替代 inline style="animation-delay: .NNs") ── */
+.demo-section--1 { animation-delay: 0.05s; }
+.demo-section--2 { animation-delay: 0.10s; }
+.demo-section--3 { animation-delay: 0.15s; }
+
 .breadcrumb {
   display: flex;
   align-items: center;

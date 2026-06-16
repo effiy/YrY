@@ -6,1380 +6,90 @@
   <!-- ═══ 第三方依赖 + 框架层 ═══ -->
   <link rel="stylesheet" href="../cdn/theme.css">
   <link rel="stylesheet" href="../cdn/shared.css">
+  <link rel="stylesheet" href="../cdn/yry-inline-helpers.css">
   <title>YrY 文档中心</title>
-  <meta name="description" content="YrY 故事驱动 SDLC 编排系统 — 六层结构：依赖/框架 → 19 技能 → 7 故事 → 38 场景 → Agent 角色与规则 → 参考入口">
+  <meta name="description" content="YrY 故事驱动 SDLC 编排系统 — 六层结构：依赖/框架 → 19 技能 → 7 故事 → 37 场景 → Agent 角色与规则 → 参考入口">
   <link rel="stylesheet" href="../cdn/yry-home.css">
+  <!-- ═══ CDN 组件样式(在 yry-home.css 之后加载,确保组件样式优先) ═══ -->
+  <link rel="stylesheet" href="../cdn/yry-breadcrumb/index.css">
+  <link rel="stylesheet" href="../cdn/yry-scene-header/index.css">
+  <link rel="stylesheet" href="../cdn/yry-stats-grid/index.css">
+  <link rel="stylesheet" href="../cdn/yry-cross-nav/index.css">
+  <link rel="stylesheet" href="../cdn/yry-panel-hub/index.css">
+  <link rel="stylesheet" href="../cdn/yry-tag-chip/index.css">
+  <link rel="stylesheet" href="../cdn/yry-item-card/index.css">
+  <link rel="stylesheet" href="../cdn/yry-layer/index.css">
+  <link rel="stylesheet" href="../cdn/yry-sub-title/index.css">
+  <link rel="stylesheet" href="../cdn/yry-story-card/index.css">
+  <link rel="stylesheet" href="../cdn/yry-scene-card/index.css">
+  <link rel="stylesheet" href="../cdn/yry-doc-layer/index.css">
 </head>
 <body>
   <div class="container">
-    <!-- ── Breadcrumb ──────────────────────────── -->
-    <nav class="breadcrumb" aria-label="面包屑导航">
-      <span class="current yry-current" aria-current="page">&#128451; 文档中心</span>
-    </nav>
+    <!-- ── Breadcrumb (YryBreadcrumb) ──────────── -->
+    <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
 
-    <div class="header">
-      <h1><span class="accent">&#11088;</span> YrY 文档中心</h1>
-      <p>故事驱动的 SDLC 编排系统 — 六层结构：依赖/框架 → 19 技能 → 7 故事 → 38 场景 → Agent 角色与规则 → 参考入口</p>
-    </div>
+    <!-- ── Header (YrySceneHeader) ──────────────── -->
+    <yry-scene-header id="scene-header-app"></yry-scene-header>
 
-    <div class="stats">
-      <a class="stat" href="#layer-deps"><div class="num green">12</div><div class="label">依赖/框架</div></a>
-      <a class="stat" href="#layer-skills"><div class="num">19</div><div class="label">技能</div></a>
-      <a class="stat" href="#layer-story"><div class="num green">7</div><div class="label">故事</div></a>
-      <a class="stat" href="#layer-scene"><div class="num green">38</div><div class="label">场景</div></a>
-      <a class="stat" href="#layer-agents"><div class="num">9</div><div class="label">Agent 角色</div></a>
-      <a class="stat" href="#layer-rules"><div class="num green">18</div><div class="label">规则</div></a>
-      <a class="stat" href="#layer-refs"><div class="num green">9</div><div class="label">参考入口</div></a>
-    </div>
+    <!-- ── Stats (YryStatsGrid) ────────────────── -->
+    <yry-stats-grid id="stats-grid-app"></yry-stats-grid>
 
-    <div class="cross-nav yry-cross-nav">
-      <a class="cross-link" href="../tests/index.html">🧪 自检中心</a>
-      <span class="cross-sep" aria-hidden="true">·</span>
-      <a class="cross-link" href="./故事任务面板/架构/场景-1-新人上手/演示.html">🎬 演示中心</a>
-      <span class="cross-sep" aria-hidden="true">·</span>
-      <a class="cross-link" href="./健康报告/index.html">🩺 健康报告</a>
-      <span class="cross-sep" aria-hidden="true">·</span>
-      <a class="cross-link" href="./自循环报告/index.html">🔄 自循环报告</a>
-      <span class="cross-sep" aria-hidden="true">·</span>
-      <a class="cross-link" href="./趋势报告/index.html">📡 趋势报告</a>
-      <span class="cross-sep" aria-hidden="true">·</span>
-      <a class="cross-link" href="./自我改进/index.html">🧬 自我改进</a>
-      <span class="cross-sep" aria-hidden="true">·</span>
-      <a class="cross-link" href="../CLAUDE.md" target="_blank">📜 CLAUDE.md</a>
-      <span class="cross-sep" aria-hidden="true">·</span>
-      <a class="cross-link" href="../README.md" target="_blank">📖 README.md</a>
-    </div>
+    <!-- ── Cross-Nav (YryCrossNav) ──────────────── -->
+    <yry-cross-nav id="cross-nav-app"></yry-cross-nav>
 
-    <!-- ── Panel hub ──────────────────────────── -->
-    <div class="panel-hub" id="panelHub">
-      <span class="panel-hub-label" id="liveHealthLabel" onclick="PanelHub.open('selfimprove')" title="点击打开自改进面板查看详情">🩺 —</span>
-      <button class="panel-hub-btn" onclick="window.openPanel('cron')" title="调度任务 — 展示 .claude/scheduled_tasks.json 中所有定时任务。包含 cron 表达式、人类可读描述、活跃/空闲状态、下次触发预估。">
-        <span class="panel-hub-icon" style="color:var(--yry-cyan)">⏰</span>
-        <span class="panel-hub-name">调度</span>
-        <span class="panel-hub-desc">定时·触发·编排</span>
-      </button>
-      <button class="panel-hub-btn" onclick="window.openPanel('notify')" title="通知中心 — 健康检查报告、自循环巡检、趋势扫描三类通知统一汇总。健康报告按日期展示最新一份，支持按类型筛选、最新评分趋势、诊断触发追踪。">
-        <span class="panel-hub-icon" style="color:#ef4444">🔔</span>
-        <span class="panel-hub-name">通知</span>
-        <span class="panel-hub-desc">健康·循环·趋势</span>
-      </button>
-      <button class="panel-hub-btn" onclick="window.openPanel('selfimprove')" title="自改进分析 — 读取 .memory/health-trend.jsonl 和 summary.json，按日/周/月/全景四个视角展示健康趋势、D0-D7 诊断覆盖率、等级分布、分支健康对比；健康数据按日期覆盖，每天保留一个快照。">
-        <span class="panel-hub-icon" style="color:#a78bfa">🧬</span>
-        <span class="panel-hub-name">自改进</span>
-        <span class="panel-hub-desc">趋势·诊断·评估</span>
-      </button>
-      <button class="panel-hub-btn" onclick="window.openPanel('faq')" title="常见问题 — 系统知识入口：YrY 概念、命令使用、面板关系、健康检查原理、Skill/Agent/Rule 区别。含交叉面板导航链接。">
-        <span class="panel-hub-icon" style="color:#22c55e">❓</span>
-        <span class="panel-hub-name">FAQ</span>
-        <span class="panel-hub-desc">知识·指南·解惑</span>
-      </button>
-      <span class="panel-hub-flow">Cron 定时触发 → 技能执行 → 通知产出 → 🔔 通知面板展示 → 数据写入 .memory/ → 🧬 自改进分析消费</span>
-    </div>
+    <!-- ── Panel hub (YryPanelHub) ──────────────── -->
+    <yry-panel-hub id="panel-hub-app"></yry-panel-hub>
 
-    <div class="layer" id="layer-deps">
-      <div class="layer-header">
-        <span class="layer-num">1</span>
-        <h2>第三方依赖与框架</h2>
-        <span class="layer-stats">6 运行时 · 6 开发</span>
-        <span class="layer-panels" title="依赖与框架详情">
-          <span class="lp-dot" style="background:#22d3ee" title="查看依赖详情" onclick="event.stopPropagation();layerInfo.show('deps')">📦</span>
-        </span>
-      </div>
+    <!-- ===== Layer 1-4: YryDocLayer 动态渲染 (数据源: window.YRY_DOCS_DATA) ===== -->
+    <yry-doc-layer id="layer-deps-app"></yry-doc-layer>
+    <yry-doc-layer id="layer-skills-app"></yry-doc-layer>
+    <yry-doc-layer id="layer-story-app"></yry-doc-layer>
+    <yry-doc-layer id="layer-scene-app"></yry-doc-layer>
 
-      <div class="sub-title"><span class="accent">&#9889;</span> 运行时依赖 (6)</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon rule yry-icon">C</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="https://www.jsdelivr.com/package/npm/yry-cdn-lib" target="_blank" rel="noopener noreferrer">yry-cdn-lib</a></div>
-            <div class="desc yry-desc">YrY 自建 CDN 共享库 — 双主题系统 (Mono + System)、14 设计令牌、21 CSS 组件、9 JS 工具 API。55+ 页面统一引用，消除内联重复代码 40–60%</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip accent yry-tag-chip">自建</span>
-              <span class="tag-chip info yry-tag-chip">jsDelivr CDN</span>
-              <span class="tag-chip cyan yry-tag-chip">v1.1.0</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">shared.css + theme.css + theme-mono.css + fonts.css + shared.js</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">G</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="https://js.cytoscape.org/" target="_blank" rel="noopener noreferrer">Cytoscape.js</a></div>
-            <div class="desc yry-desc">图论可视化库 — 知识图谱页面的交互式节点-边图渲染。支持 breadthfirst/concentric/cose 布局、缩放平移、节点拖拽、PNG 导出</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">可视化</span>
-              <span class="tag-chip info yry-tag-chip">jsDelivr CDN</span>
-              <span class="tag-chip cyan yry-tag-chip">v3.28.1</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">4 故事面板 · 知识图谱.html — 三层 schema: story→scene→source</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">H</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="https://html2canvas.hertzen.com/" target="_blank" rel="noopener noreferrer">html2canvas</a></div>
-            <div class="desc yry-desc">DOM 截图引擎 — 架构图和知识图谱页面的截图导出。DOM → Canvas → PNG/PDF，支持跨域图片、缩放质量可配置</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">导出</span>
-              <span class="tag-chip info yry-tag-chip">jsDelivr CDN</span>
-              <span class="tag-chip cyan yry-tag-chip">v1.4.1</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">架构图 + 知识图谱 — Copy / PNG / PDF 三格式导出 · scale 2x 高清</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">J</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="https://github.com/parallax/jsPDF" target="_blank" rel="noopener noreferrer">jsPDF</a></div>
-            <div class="desc yry-desc">客户端 PDF 生成 — 架构图和知识图谱页面的 PDF 导出。配合 html2canvas 使用，支持 A4/A3 纸张、矢量缩放、多页输出</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">导出</span>
-              <span class="tag-chip info yry-tag-chip">jsDelivr CDN</span>
-              <span class="tag-chip cyan yry-tag-chip">v2.5.2</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">A4 纵向 · 矢量缩放 · addPage 多页 · Blob 下载触发</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">A</span>
-          <div class="body yry-body">
-            <div class="name yry-name">api.effiy.cn</div>
-            <div class="desc yry-desc">远端文档 API — rui-import 同步引擎的目标端点。文档 CRUD、session 管理、文件读写。认证: X-Token 环境变量注入</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip accent yry-tag-chip">自建</span>
-              <span class="tag-chip info yry-tag-chip">REST API</span>
-              <span class="tag-chip purple yry-tag-chip">认证</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">query_documents · create_document · update_document · write-file · read-file · session</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">W</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="https://developer.work.weixin.qq.com/document/path/91770" target="_blank" rel="noopener noreferrer">企业微信 Webhook</a></div>
-            <div class="desc yry-desc">企微群机器人消息推送 — rui-bot 通知引擎。Rich/Verbose 格式 + Dry-Run 预览 + 失败队列重试 + 9 维健康检查</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip purple yry-tag-chip">通知</span>
-              <span class="tag-chip info yry-tag-chip">Webhook</span>
-              <span class="tag-chip accent yry-tag-chip">Health</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">rui-bot · 9维健康检查 · 自循环报告 · 阻断/完成/异常通知</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#128736;</span> 开发依赖 (6)</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon ref yry-icon">N</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="https://nodejs.org/api/" target="_blank" rel="noopener noreferrer">Node.js 内置模块</a></div>
-            <div class="desc yry-desc">全部脚本基于 Node.js 内置模块：fs, path, child_process, crypto, http, os, url。14 脚本 + 8 共享库仅使用标准库</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">零运行时依赖</span>
-              <span class="tag-chip info yry-tag-chip">Built-in</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">14 脚本 + 8 共享库 — 全部使用 Node.js 标准库</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon ref yry-icon">V</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="https://vitest.dev/" target="_blank" rel="noopener noreferrer">vitest</a></div>
-            <div class="desc yry-desc">工程化测试框架 — 基于 Vite 的 ESM 原生测试运行器。提供 test/watch/coverage 命令，并行执行，v8 覆盖率。14 脚本 + 77+ 测试用例</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip accent yry-tag-chip">测试框架</span>
-              <span class="tag-chip info yry-tag-chip">npm devDependency</span>
-              <span class="tag-chip cyan yry-tag-chip">v3.2.x</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">npm test · npm run test:watch · npm run test:coverage — 双轨共存 (vitest + legacy)</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon ref yry-icon">U</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="https://vitest.dev/guide/ui.html" target="_blank" rel="noopener noreferrer">@vitest/ui</a></div>
-            <div class="desc yry-desc">Vitest 可视化仪表盘 — Web UI 实时查看测试结果、过滤/搜索用例、覆盖率可视化。开发时调试首选</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">开发工具</span>
-              <span class="tag-chip info yry-tag-chip">npm devDependency</span>
-              <span class="tag-chip cyan yry-tag-chip">v3.2.x</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">npm run test:ui · 实时仪表盘 · 按模块过滤</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon ref yry-icon">M</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="https://github.com/ChromeDevTools/chrome-devtools-mcp" target="_blank" rel="noopener noreferrer">chrome-devtools-mcp</a></div>
-            <div class="desc yry-desc">Chrome DevTools MCP 协议 — 程序化浏览器验证。navigate_page / evaluate_script / list_network_requests / take_screenshot 替代手工 DevTools 面板操作</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip accent yry-tag-chip">测试工具</span>
-              <span class="tag-chip info yry-tag-chip">MCP</span>
-              <span class="tag-chip cyan yry-tag-chip">v1.2.0</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">CDN 加载链路自动化验证 · 71 断言全通过 · 零手工 DevTools</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon ref yry-icon">C</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="https://code.claude.com/docs/en/overview" target="_blank" rel="noopener noreferrer">Claude Code</a></div>
-            <div class="desc yry-desc">Agentic 编程工具 — 在终端/IDE 中读取仓库上下文、编辑文件、执行命令与测试；支撑 YrY 的实现/验证闭环</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">开发工具</span>
-              <span class="tag-chip info yry-tag-chip">AI Agent</span>
-              <span class="tag-chip purple yry-tag-chip">CLI/IDE</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">多文件改动 · 命令执行 · 计划/审查工作流 · 与 .claude/ 协同</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon ref yry-icon">T</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="https://www.trae.ai/" target="_blank" rel="noopener noreferrer">TRAE</a></div>
-            <div class="desc yry-desc">AI IDE — 代码理解 + 生成/编辑 + 终端/预览联动，面向端到端开发流程的 Agent 协作环境</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">开发工具</span>
-              <span class="tag-chip info yry-tag-chip">IDE</span>
-              <span class="tag-chip accent yry-tag-chip">Agent</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">IDE 内协作式开发 · 任务拆解与执行 · 预览验证 · 可扩展工具接入</span></div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-    <!-- ===== Layer 2: 技能 ===== -->
-    <div class="layer" id="layer-skills">
-      <div class="layer-header">
-        <span class="layer-num">2</span>
-        <h2>技能</h2>
-        <span class="layer-stats">19 能力模块 · SRP 拆分 · 故事驱动的 SDLC 编排</span>
-        <span class="layer-panels" title="监控面板：Cron 调度触发 → 通知中心展示 → 自改进分析消费">
-          <span class="lp-dot" style="background:#ffc107" title="技能详情" onclick="event.stopPropagation();layerInfo.show('skills')">📋</span>
-          <span class="lp-dot" style="background:#22d3ee" title="调度任务" onclick="event.stopPropagation();PanelHub.open('cron')">⏰</span>
-          <span class="lp-dot" style="background:#ef4444" title="通知汇总" onclick="event.stopPropagation();PanelHub.open('notify')">🔔</span>
-          <span class="lp-dot" style="background:#a78bfa" title="健康趋势" onclick="event.stopPropagation();PanelHub.open('selfimprove')">🧬</span>
-          <span class="lp-dot" style="background:#22c55e" title="FAQ" onclick="event.stopPropagation();PanelHub.open('faq')">❓</span>
-        </span>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#127760;</span> 编排入口 (1)</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon skill yry-icon">R</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui/SKILL.md" target="_blank">rui</a><span class="size-info yry-size-info">薄编排器</span></div>
-            <div class="desc yry-desc">故事驱动 SDLC 编排器 — 命令路由 + 推荐引擎。委托 7 子技能执行具体管线（init/doc/plan/code/update/yry/version）</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip accent yry-tag-chip">核心入口</span>
-              <span class="tag-chip info yry-tag-chip">路由</span>
-              <span class="tag-chip cyan yry-tag-chip">/rui</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#9889;</span> 管线子技能 (7) — 从 rui 按 SRP 拆分</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon skill yry-icon">I</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-init/SKILL.md" target="_blank">rui-init</a></div>
-            <div class="desc yry-desc">项目基线建立 — detect → explore → generate → arch → setup → verify → trigger。可重复运行，全量重生标记段</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">初始化</span><span class="tag-chip cyan yry-tag-chip">/rui-init</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill yry-icon">D</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-doc/SKILL.md" target="_blank">rui-doc</a></div>
-            <div class="desc yry-desc">Markdown 文档基线生成 — 需求→故事拆分→文档基线。3 模式：默认 / --from-code / --from-local</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">文档基线</span><span class="tag-chip cyan yry-tag-chip">/rui-doc</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill yry-icon">P</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-plan/SKILL.md" target="_blank">rui-plan</a></div>
-            <div class="desc yry-desc">实施计划生成 — 读取文档基线 → 文件映射 → 任务分解 → 六项自审查 → plan.html + 计划清单.html</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">计划</span><span class="tag-chip cyan yry-tag-chip">/rui-plan</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill yry-icon">C</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-code/SKILL.md" target="_blank">rui-code</a></div>
-            <div class="desc yry-desc">源码实现管线 — 源码改动唯一入口。分支隔离 → Gate A → 逐模块 P0 清零 → Gate B → 自改进 → 交付</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">实现管线</span><span class="tag-chip cyan yry-tag-chip">/rui-code</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill yry-icon">U</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-update/SKILL.md" target="_blank">rui-update</a></div>
-            <div class="desc yry-desc">增量更新 — 按 T1/T2/T3 变更范围自动裁剪管线。--no-code 仅文档不改源码</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">增量</span><span class="tag-chip cyan yry-tag-chip">/rui-update</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill yry-icon">Y</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-yry/SKILL.md" target="_blank">rui-yry</a></div>
-            <div class="desc yry-desc">自改进闭环 — 全自主扫描→诊断→实现→验证→版本升级，循环至无改进空间或达深度上限</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">闭环</span><span class="tag-chip cyan yry-tag-chip">/rui-yry</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill yry-icon">V</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-version/SKILL.md" target="_blank">rui-version</a></div>
-            <div class="desc yry-desc">版本管理 — 自主判定语义版本号 → 更新四文件 → git commit + tag + push。支持 --rollback</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">版本</span><span class="tag-chip cyan yry-tag-chip">/rui-version</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#128300;</span> 支撑技能 (8)</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon skill yry-icon">H</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-html/SKILL.md" target="_blank">rui-html</a></div>
-            <div class="desc yry-desc">HTML 文档生成 — 读取 markdown 基线，生成 7 类标准 HTML（计划清单/架构图/知识图谱/源码/测试面板/演示/审查）</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">文档生成</span><span class="tag-chip info yry-tag-chip">HTML</span><span class="tag-chip cyan yry-tag-chip">/rui-html</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill yry-icon">S</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-story/SKILL.md" target="_blank">rui-story</a></div>
-            <div class="desc yry-desc">故事任务面板管理 — 收集故事、查看状态、同步远端。list / sync / remove / health</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">面板管理</span><span class="tag-chip cyan yry-tag-chip">/rui-story</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill yry-icon">L</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-claude/SKILL.md" target="_blank">rui-claude</a></div>
-            <div class="desc yry-desc">.claude/ 配置管理 — sync / update / retro / history。仅限 .claude/ 目录，委托 rui-import 同步</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">配置管理</span><span class="tag-chip cyan yry-tag-chip">/rui-claude</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill yry-icon">M</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-import/SKILL.md" target="_blank">rui-import</a></div>
-            <div class="desc yry-desc">文档同步 — 本地 ↔ 远端 API 双向同步。全量纳入，并发 ≤4，单文件失败不阻断</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">文档同步</span><span class="tag-chip info yry-tag-chip">API</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill yry-icon">K</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-skills/SKILL.md" target="_blank">rui-skills</a><span class="size-info yry-size-info">新</span></div>
-            <div class="desc yry-desc">技能市场 — 发现和安装 Claude/Agent 技能包，从开放生态扩展能力</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">技能市场</span><span class="tag-chip cyan yry-tag-chip">/rui-skills</span><span class="tag-chip green yry-tag-chip">v5.0</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill yry-icon">B</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-bot/SKILL.md" target="_blank">rui-bot</a></div>
-            <div class="desc yry-desc">企微消息推送 — Rich/Verbose 格式 + Dry-Run 预览 + 失败队列重试。健康诊断已拆分至 rui-health</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">消息推送</span><span class="tag-chip info yry-tag-chip">企微</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill yry-icon">Z</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-health/SKILL.md" target="_blank">rui-health</a><span class="size-info yry-size-info">新</span></div>
-            <div class="desc yry-desc">系统健康诊断 — 9 核心维度 + 7 工程成熟度评分 · HTML 报告生成 · D0-D7 诊断触发 · 趋势持久化</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">Health</span><span class="tag-chip info yry-tag-chip">诊断</span><span class="tag-chip cyan yry-tag-chip">/rui-health</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill yry-icon">T</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-trends/SKILL.md" target="_blank">rui-trends</a></div>
-            <div class="desc yry-desc">技术趋势发现 — GitHub Trending / OSS Insight / TrendShift / Top-Starred。自改进 D5 核心数据源</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">趋势发现</span><span class="tag-chip info yry-tag-chip">选型</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill yry-icon">N</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-npm/SKILL.md" target="_blank">rui-npm</a></div>
-            <div class="desc yry-desc">npm 包管理 — 14 子命令：search / install / publish / npx / audit / cdn / login / deprecate / unpublish 等</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">包管理</span><span class="tag-chip cyan yry-tag-chip">/rui-npm</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#127919;</span> 新增技能 (3) — v5.0.0</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon skill yry-icon">A</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-analysis/SKILL.md" target="_blank">rui-analysis</a><span class="size-info yry-size-info">新</span></div>
-            <div class="desc yry-desc">代码与架构静态分析 — 复杂度/耦合/文件膨胀/依赖健康/架构边界检测。规约驱动，只读分析</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">分析</span><span class="tag-chip cyan yry-tag-chip">/rui-analysis</span><span class="tag-chip green yry-tag-chip">v5.0</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon skill yry-icon">E</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-reporter/SKILL.md" target="_blank">rui-reporter</a><span class="size-info yry-size-info">新</span></div>
-            <div class="desc yry-desc">过程报告与知识策展 — 故事进程/知识图谱一致性/交付摘要/跨故事趋势。证据驱动，≥2 来源</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">报告</span><span class="tag-chip cyan yry-tag-chip">/rui-reporter</span><span class="tag-chip green yry-tag-chip">v5.0</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">S</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/self-improve.md" target="_blank">self-improve</a><span class="size-info yry-size-info">新</span></div>
-            <div class="desc yry-desc">持续自改进闭环 — D0-D7 诊断 → 提案生成 → 物化为故事 → 效果评估 (E1-E4)。数据驱动，全自动演进</div>
-            <div class="tags-row yry-tags-row"><span class="tag-chip accent yry-tag-chip">演进</span><span class="tag-chip info yry-tag-chip">D0-D7</span><span class="tag-chip cyan yry-tag-chip">/self-improve</span><span class="tag-chip green yry-tag-chip">v5.0</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <hr>
 
-    <!-- ===== Layer 3: 故事 ===== -->
-    <div class="layer" id="layer-story">
-      <div class="layer-header">
-        <span class="layer-num">3</span>
-        <h2>故事</h2>
-        <span class="layer-stats">7 故事 · 架构基线 + 自检体系 + npm 管理 + CDN 共享库 + 自改进闭环 + 文档首页 + 计划清单生成</span>
-        <span class="layer-panels" title="故事详情">
-          <span class="lp-dot" style="background:#ffc107" title="查看故事详情" onclick="event.stopPropagation();layerInfo.show('story')">📖</span>
-        </span>
-      </div>
+    <!-- ===== Layer 5: Agent 角色 + 规则 (YryLayer 挂载点,内容为 slot) ===== -->
+    <yry-layer id="layer-agents-app">
+      <yry-sub-title id="sub-title-agent-roles"></yry-sub-title>
+      <yry-card-grid id="agent-roles-grid"></yry-card-grid>
 
-      <div class="story-grid yry-story-grid">
-        <div class="story-card yry-story-card">
-          <div class="story-head yry-story-head">
-            <span class="story-icon yry-story-icon">&#128451;</span>
-            <span class="story-name yry-story-name"><a href="故事任务面板/架构/故事任务.md" target="_blank">系统架构知识固化</a></span>
-            <span class="story-badge yry-story-badge">v1.3.0</span>
-          </div>
-          <div class="story-desc yry-story-desc">YrY 架构全景分析，构建系统自我认知基线。模块拓扑 + 数据流追踪 + 新人上手 + 依赖变更影响 + 信任边界 + 工程化建设（校验脚本化 · 漂移监测 · 健康仪表板），让后续故事规划、影响分析和架构决策有唯一事实参照。</div>
-          <div class="story-scenes yry-story-scenes">
-            <span class="scene-tag yry-scene-tag">1. 新人上手与开发指南</span>
-            <span class="scene-tag yry-scene-tag">2. 模块定位与职责</span>
-            <span class="scene-tag yry-scene-tag">3. 数据流与追踪</span>
-            <span class="scene-tag yry-scene-tag">4. 依赖变更影响分析</span>
-            <span class="scene-tag yry-scene-tag">5. 信任边界与安全面</span>
-            <span class="scene-tag yry-scene-tag">6. 架构断言脚本化校验</span>
-            <span class="scene-tag yry-scene-tag">7. 架构漂移持续监测</span>
-            <span class="scene-tag yry-scene-tag">8. 架构健康度量仪表板</span>
-          </div>
-        </div>
+      <yry-sub-title id="sub-title-agent-topology" class="yry-mt-18"></yry-sub-title>
+      <yry-card-grid id="agent-topology-grid"></yry-card-grid>
+    </yry-layer>
 
-        <div class="story-card yry-story-card">
-          <div class="story-head yry-story-head">
-            <span class="story-icon yry-story-icon">&#129514;</span>
-            <span class="story-name yry-story-name"><a href="故事任务面板/自测/故事任务.md" target="_blank">自主测试方案</a></span>
-            <span class="story-badge yry-story-badge">v1.1.0</span>
-          </div>
-          <div class="story-desc yry-story-desc">YrY 自检体系 — 项目的免疫系统。管线健康自检验证纪律关卡是否有效执行，文档基线完整性校验验证文档是否始终是可信任的真相来源。</div>
-          <div class="story-scenes yry-story-scenes">
-            <span class="scene-tag yry-scene-tag">1. init 后全量自检</span>
-            <span class="scene-tag yry-scene-tag">2. commit 前增量自检</span>
-            <span class="scene-tag yry-scene-tag">3. 文档代码一致性校验</span>
-            <span class="scene-tag yry-scene-tag">4. 安全面回归自检</span>
-            <span class="scene-tag yry-scene-tag">5. 跨故事集成回归自检</span>
-            <span class="scene-tag yry-scene-tag">6. 第三方框架与服务自检</span>
-          </div>
-        </div>
+    <!-- ===== Layer R: 治理规则 (YryLayer 挂载点,内容为 slot) ===== -->
+    <yry-layer id="layer-rules-app">
+      <yry-sub-title id="sub-title-rule-pipeline"></yry-sub-title>
+      <yry-card-grid id="rule-pipeline-grid"></yry-card-grid>
 
-        <div class="story-card yry-story-card">
-          <div class="story-head yry-story-head">
-            <span class="story-icon yry-story-icon">&#128230;</span>
-            <span class="story-name yry-story-name"><a href="故事任务面板/npm包管理/故事任务.md" target="_blank">npm 包管理工具</a></span>
-            <span class="story-badge yry-story-badge">v1.1.0</span>
-          </div>
-          <div class="story-desc yry-story-desc">个人 npm 包全生命周期管理 — 包搜索与发现、安装与版本管理、本地发布与 npx 使用、包信息审计与安全卸载。32 文件 · 77 测试 · 每场景 7 配套文件。</div>
-          <div class="story-scenes yry-story-scenes">
-            <span class="scene-tag yry-scene-tag">1. 包搜索与发现</span>
-            <span class="scene-tag yry-scene-tag">2. 包安装与版本管理</span>
-            <span class="scene-tag yry-scene-tag">3. 本地发布与 npx 使用</span>
-            <span class="scene-tag yry-scene-tag">4. 包信息审计与卸载</span>
-            <span class="scene-tag yry-scene-tag">5. 账号级包管理</span>
-          </div>
-        </div>
+      <yry-sub-title id="sub-title-rule-doc"></yry-sub-title>
+      <yry-card-grid id="rule-doc-grid"></yry-card-grid>
 
-        <div class="story-card yry-story-card">
-          <div class="story-head yry-story-head">
-            <span class="story-icon yry-story-icon">&#127760;</span>
-            <span class="story-name yry-story-name"><a href="故事任务面板/cdn/故事任务.md" target="_blank">CDN 共享前端资源库</a></span>
-            <span class="story-badge yry-story-badge">v1.0.0</span>
-          </div>
-          <div class="story-desc yry-story-desc">YrY 共享前端资源 — 双主题系统（Mono + System）、21 CSS 组件、9 JS 工具 API。55+ 页面统一引用，消除内联重复代码 40-60%。</div>
-          <div class="story-scenes yry-story-scenes">
-            <span class="scene-tag yry-scene-tag">1. CDN资源加载与页面渲染</span>
-            <span class="scene-tag yry-scene-tag">2. 双主题系统设计</span>
-            <span class="scene-tag yry-scene-tag">3. 组件库与JS工具API</span>
-            <span class="scene-tag yry-scene-tag">4. 存量页面迁移</span>
-            <span class="scene-tag yry-scene-tag">5. npm包发布与版本管理</span>
-          </div>
-        </div>
+      <yry-sub-title id="sub-title-rule-security"></yry-sub-title>
+      <yry-card-grid id="rule-security-grid"></yry-card-grid>
 
-        <div class="story-card yry-story-card">
-          <div class="story-head yry-story-head">
-            <span class="story-icon yry-story-icon">&#129516;</span>
-            <span class="story-name yry-story-name"><a href="故事任务面板/自改进/故事任务.md" target="_blank">自改进闭环</a></span>
-            <span class="story-badge yry-story-badge">v5.1.0</span>
-          </div>
-          <div class="story-desc yry-story-desc">自改进机制场景化 — 将 rules/self-improve.md + agents/self-improve.md 中的规则转化为可操作执行场景。四段闭环（观察→诊断→改进→评估）+ 八级诊断 D0-D7 + 四级效果评估 E1-E4 + 经验技能化升级路径。</div>
-          <div class="story-scenes yry-story-scenes">
-            <span class="scene-tag yry-scene-tag">1. 数据采集与观察</span>
-            <span class="scene-tag yry-scene-tag">2. 诊断引擎</span>
-            <span class="scene-tag yry-scene-tag">3. 提案生成与路由</span>
-            <span class="scene-tag yry-scene-tag">4. 效果评估与闭环</span>
-            <span class="scene-tag yry-scene-tag">5. 经验技能化与记忆注入</span>
-          </div>
-        </div>
+      <yry-sub-title id="sub-title-rule-selfimprove"></yry-sub-title>
+      <yry-card-grid id="rule-selfimprove-grid"></yry-card-grid>
 
-        <div class="story-card yry-story-card">
-          <div class="story-head yry-story-head">
-            <span class="story-icon yry-story-icon">&#127968;</span>
-            <span class="story-name yry-story-name"><a href="故事任务面板/首页/故事任务.md" target="_blank">文档中心首页</a></span>
-            <span class="story-badge yry-story-badge">v1.0.0</span>
-          </div>
-          <div class="story-desc yry-story-desc">YrY 文档统一入口页面 — 六层结构（依赖→技能→故事→场景→Agent/规则→参考入口）聚合全部项目资产。数据驱动生成，实时面板集成，全站交叉导航。从手工维护升级为 rui-html 管线自动生成。</div>
-          <div class="story-scenes yry-story-scenes">
-            <span class="scene-tag yry-scene-tag">1. 数据采集与六层聚合</span>
-            <span class="scene-tag yry-scene-tag">2. 实时面板与交互组件</span>
-            <span class="scene-tag yry-scene-tag">3. 交叉导航与可访问性</span>
-            <span class="scene-tag yry-scene-tag">4. 自动化生成管线</span>
-          </div>
-        </div>
-
-        <div class="story-card yry-story-card">
-          <div class="story-head yry-story-head">
-            <span class="story-icon yry-story-icon">&#128203;</span>
-            <span class="story-name yry-story-name"><a href="故事任务面板/计划清单/故事任务.md" target="_blank">计划清单生成技能</a></span>
-            <span class="story-badge yry-story-badge">v1.0.0</span>
-          </div>
-          <div class="story-desc yry-story-desc">从 markdown 到 HTML 清单的自动化生成管线 — 模板架构 · 数据提取 · 组件交互 · 验证集成 · 批量自循环。20 功能点，21 业务规则，5 层管线将计划清单从手工维护升级为数据驱动的可交互工具。</div>
-          <div class="story-scenes yry-story-scenes">
-            <span class="scene-tag yry-scene-tag">1. 模板架构与CSS设计系统</span>
-            <span class="scene-tag yry-scene-tag">2. markdown解析与数据提取管线</span>
-            <span class="scene-tag yry-scene-tag">3. 清单交互组件实现</span>
-            <span class="scene-tag yry-scene-tag">4. 验证报告与健康面板集成</span>
-            <span class="scene-tag yry-scene-tag">5. 批量生成与自循环机制</span>
-          </div>
-        </div>
-      </div>
-    </div>
+      <yry-sub-title id="sub-title-rule-design"></yry-sub-title>
+      <yry-card-grid id="rule-design-grid"></yry-card-grid>
+    </yry-layer>
 
     <hr>
 
-    <!-- ===== Layer 4: 场景 ===== -->
-    <div class="layer" id="layer-scene">
-      <div class="layer-header">
-        <span class="layer-num">4</span>
-        <h2>场景</h2>
-        <span class="layer-stats">7 故事 · 38 场景</span>
-        <span class="layer-panels" title="场景详情">
-          <span class="lp-dot" style="background:#22c55e" title="查看场景详情" onclick="event.stopPropagation();layerInfo.show('scene')">🎬</span>
-        </span>
-      </div>
+    <!-- ===== Layer 6: 参考入口 (YryLayer 挂载点,内容为 slot) ===== -->
+    <yry-layer id="layer-refs-app">
+      <yry-sub-title id="sub-title-ref-doc"></yry-sub-title>
+      <yry-card-grid id="ref-doc-grid"></yry-card-grid>
 
-      <div class="sub-title"><span class="accent">&#128451;</span> 系统架构知识固化 — 8 场景</div>
-      <div class="scene-grid yry-scene-grid">
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 1</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/架构/场景-1-新人上手/index.md" target="_blank">新人上手与开发指南</a></div>
-          <div class="scene-desc yry-scene-desc">环境搭建 · 调试方法 · 常见任务 — 新人可独立完成首修</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/架构/场景-1-新人上手/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-1-新人上手/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-1-新人上手/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-1-新人上手/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-1-新人上手/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-1-新人上手/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-1-新人上手/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 2</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/架构/场景-2-模块定位/index.md" target="_blank">模块定位与职责</a></div>
-          <div class="scene-desc yry-scene-desc">19 技能 · 9 Agent · 16 规则 — 模块识别 · 职责边界 · 入口验证</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/架构/场景-2-模块定位/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-2-模块定位/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-2-模块定位/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-2-模块定位/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-2-模块定位/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-2-模块定位/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-2-模块定位/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 3</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/架构/场景-3-数据流追踪/index.md" target="_blank">数据流与追踪</a></div>
-          <div class="scene-desc yry-scene-desc">从用户输入到交付收口 — 每阶段输入/输出/触发条件可追溯</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/架构/场景-3-数据流追踪/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-3-数据流追踪/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-3-数据流追踪/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-3-数据流追踪/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-3-数据流追踪/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-3-数据流追踪/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-3-数据流追踪/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 4</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/架构/场景-4-依赖变更影响/index.md" target="_blank">依赖变更影响分析</a></div>
-          <div class="scene-desc yry-scene-desc">依赖图 · 影响分析 · 破坏性变更检测 — 变更影响可量化可追溯</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/架构/场景-4-依赖变更影响/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-4-依赖变更影响/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-4-依赖变更影响/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-4-依赖变更影响/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-4-依赖变更影响/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-4-依赖变更影响/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-4-依赖变更影响/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 5</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/架构/场景-5-信任边界与安全面/index.md" target="_blank">信任边界与安全面</a></div>
-          <div class="scene-desc yry-scene-desc">识别全部信任边界 — 用户输入、API 调用、文件系统、外部服务，逐边界标注安全约束与验证机制</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/架构/场景-5-信任边界与安全面/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-5-信任边界与安全面/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-5-信任边界与安全面/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-5-信任边界与安全面/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-5-信任边界与安全面/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-5-信任边界与安全面/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/架构/场景-5-信任边界与安全面/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 6</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/架构/场景-6-架构断言脚本化校验/index.md" target="_blank">架构断言脚本化校验</a></div>
-          <div class="scene-desc yry-scene-desc">R1–R13 规则可机验 — 转化为可执行校验脚本，嵌入 CI/pre-commit 管线，架构违规在合入前拦截</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/架构/场景-6-架构断言脚本化校验/index.md">📄规约</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 7</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/架构/场景-7-架构漂移持续监测/index.md" target="_blank">架构漂移持续监测</a></div>
-          <div class="scene-desc yry-scene-desc">基于知识图谱基线快照 — 持续检测架构状态与基线的差异，量化漂移度并追踪趋势</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/架构/场景-7-架构漂移持续监测/index.md">📄规约</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 8</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/架构/场景-8-架构健康度量仪表板/index.md" target="_blank">架构健康度量仪表板</a></div>
-          <div class="scene-desc yry-scene-desc">汇聚校验结果与漂移数据 — 生成可视化健康仪表板，为团队决策和自改进循环提供数据支撑</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/架构/场景-8-架构健康度量仪表板/index.md">📄规约</a></div>
-        </div>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#129514;</span> 自主测试方案 — 6 场景</div>
-      <div class="scene-grid yry-scene-grid">
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 1</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/自测/场景-1-init后全量自检/index.md" target="_blank">init 后全量自检</a></div>
-          <div class="scene-desc yry-scene-desc">全量基线校验：CLAUDE.md markers · README 领域语言 · 故事面板完整性</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/自测/场景-1-init后全量自检/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-1-init后全量自检/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-1-init后全量自检/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-1-init后全量自检/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-1-init后全量自检/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-1-init后全量自检/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-1-init后全量自检/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 2</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/自测/场景-2-commit前增量自检/index.md" target="_blank">commit 前增量自检</a></div>
-          <div class="scene-desc yry-scene-desc">增量变更检测：分支隔离 · 铁律合规 · 文件变更范围验证</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/自测/场景-2-commit前增量自检/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-2-commit前增量自检/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-2-commit前增量自检/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-2-commit前增量自检/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-2-commit前增量自检/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-2-commit前增量自检/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-2-commit前增量自检/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 3</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/自测/场景-3-文档代码一致性校验/index.md" target="_blank">文档代码一致性校验</a></div>
-          <div class="scene-desc yry-scene-desc">规约 vs 实际：章节完整性 · 交叉引用有效性 · 知识图谱节点覆盖</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/自测/场景-3-文档代码一致性校验/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-3-文档代码一致性校验/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-3-文档代码一致性校验/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-3-文档代码一致性校验/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-3-文档代码一致性校验/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-3-文档代码一致性校验/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-3-文档代码一致性校验/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 4</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/自测/场景-4-安全面回归自检/index.md" target="_blank">安全面回归自检</a></div>
-          <div class="scene-desc yry-scene-desc">认证不可绕过 · 密钥不落盘 · 输入必校验 — 安全面全量覆盖</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/自测/场景-4-安全面回归自检/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-4-安全面回归自检/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-4-安全面回归自检/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-4-安全面回归自检/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-4-安全面回归自检/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-4-安全面回归自检/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-4-安全面回归自检/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 5</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/自测/场景-5-跨故事集成回归自检/index.md" target="_blank">跨故事集成回归自检</a></div>
-          <div class="scene-desc yry-scene-desc">多故事协同验证 — 跨故事接口契约、共享资源一致性、集成场景端到端回归</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/自测/场景-5-跨故事集成回归自检/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-5-跨故事集成回归自检/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-5-跨故事集成回归自检/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-5-跨故事集成回归自检/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-5-跨故事集成回归自检/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-5-跨故事集成回归自检/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-5-跨故事集成回归自检/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 6</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/自测/场景-6-第三方框架与服务自检/index.md" target="_blank">第三方框架与服务自检</a></div>
-          <div class="scene-desc yry-scene-desc">外部依赖验证 — CDN 加载链、API 可达性、Webhook 推送、第三方框架兼容性自检</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/自测/场景-6-第三方框架与服务自检/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-6-第三方框架与服务自检/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-6-第三方框架与服务自检/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-6-第三方框架与服务自检/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-6-第三方框架与服务自检/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-6-第三方框架与服务自检/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/自测/场景-6-第三方框架与服务自检/审查.html">📝审查</a></div>
-        </div>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#128230;</span> npm 包管理工具 — 5 场景</div>
-      <div class="scene-grid yry-scene-grid">
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 1</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/npm包管理/场景-1-包搜索与发现/index.md" target="_blank">包搜索与发现</a></div>
-          <div class="scene-desc yry-scene-desc">npm search · registry 查询 · 包详情获取 — 快速发现和评估 npm 包</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/npm包管理/场景-1-包搜索与发现/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-1-包搜索与发现/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-1-包搜索与发现/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-1-包搜索与发现/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-1-包搜索与发现/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-1-包搜索与发现/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-1-包搜索与发现/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 2</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/npm包管理/场景-2-包安装与版本管理/index.md" target="_blank">包安装与版本管理</a></div>
-          <div class="scene-desc yry-scene-desc">npm install · 版本锁定 · 依赖树管理 — 安全可靠的包安装</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/npm包管理/场景-2-包安装与版本管理/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-2-包安装与版本管理/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-2-包安装与版本管理/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-2-包安装与版本管理/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-2-包安装与版本管理/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-2-包安装与版本管理/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-2-包安装与版本管理/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 3</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/npm包管理/场景-3-本地发布与npx使用/index.md" target="_blank">本地发布与 npx 使用</a></div>
-          <div class="scene-desc yry-scene-desc">npm pack · npm link · npx 执行 — 本地开发与测试工作流</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/npm包管理/场景-3-本地发布与npx使用/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-3-本地发布与npx使用/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-3-本地发布与npx使用/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-3-本地发布与npx使用/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-3-本地发布与npx使用/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-3-本地发布与npx使用/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-3-本地发布与npx使用/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 4</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/npm包管理/场景-4-包信息审计与卸载/index.md" target="_blank">包信息审计与卸载</a></div>
-          <div class="scene-desc yry-scene-desc">npm audit · npm ls · npm uninstall — 安全审计与清理</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/npm包管理/场景-4-包信息审计与卸载/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-4-包信息审计与卸载/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-4-包信息审计与卸载/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-4-包信息审计与卸载/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-4-包信息审计与卸载/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-4-包信息审计与卸载/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-4-包信息审计与卸载/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 5</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/npm包管理/场景-5-账号级包管理/index.md" target="_blank">账号级包管理</a></div>
-          <div class="scene-desc yry-scene-desc">my-packages · deprecate · unpublish — 个人 npm 资产 CRUD</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/npm包管理/场景-5-账号级包管理/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-5-账号级包管理/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-5-账号级包管理/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-5-账号级包管理/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-5-账号级包管理/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-5-账号级包管理/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/npm包管理/场景-5-账号级包管理/审查.html">📝审查</a></div>
-        </div>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#127760;</span> CDN 共享前端资源库 — 5 场景</div>
-      <div class="scene-grid yry-scene-grid">
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 1</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/index.md" target="_blank">CDN资源加载与页面渲染</a></div>
-          <div class="scene-desc yry-scene-desc">5 步加载链 · shared.css + 主题 CSS + shared.js — 55 页面统一渲染</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 2</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/cdn/场景-2-双主题系统设计/index.md" target="_blank">双主题系统设计</a></div>
-          <div class="scene-desc yry-scene-desc">Cat A (Mono) vs Cat B (System) · 14 设计令牌 · 21 组件 · 7 动画</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/cdn/场景-2-双主题系统设计/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-2-双主题系统设计/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-2-双主题系统设计/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-2-双主题系统设计/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-2-双主题系统设计/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-2-双主题系统设计/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-2-双主题系统设计/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 3</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/cdn/场景-3-组件库与JS工具API/index.md" target="_blank">组件库与JS工具API</a></div>
-          <div class="scene-desc yry-scene-desc">21 CSS 组件 · 9 YrY.* API — Toast/复制/面板切换/折叠套件/剪贴板</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/cdn/场景-3-组件库与JS工具API/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-3-组件库与JS工具API/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-3-组件库与JS工具API/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-3-组件库与JS工具API/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-3-组件库与JS工具API/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-3-组件库与JS工具API/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-3-组件库与JS工具API/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 4</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/cdn/场景-4-存量页面迁移/index.md" target="_blank">存量页面迁移</a></div>
-          <div class="scene-desc yry-scene-desc">6 步迁移指南 · 可删除清单 · 类名替换 · JS 函数替换 · 截图验证</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/cdn/场景-4-存量页面迁移/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-4-存量页面迁移/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-4-存量页面迁移/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-4-存量页面迁移/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-4-存量页面迁移/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-4-存量页面迁移/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-4-存量页面迁移/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 5</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/cdn/场景-5-npm包发布与版本管理/index.md" target="_blank">npm包发布与版本管理</a></div>
-          <div class="scene-desc yry-scene-desc">package.json 规范 · PATCH/MINOR/MAJOR 策略 · dry-run · git tag 版本链</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/cdn/场景-5-npm包发布与版本管理/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-5-npm包发布与版本管理/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-5-npm包发布与版本管理/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-5-npm包发布与版本管理/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-5-npm包发布与版本管理/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-5-npm包发布与版本管理/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/cdn/场景-5-npm包发布与版本管理/审查.html">📝审查</a></div>
-        </div>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#129516;</span> 自改进闭环 — 5 场景</div>
-      <div class="scene-grid yry-scene-grid">
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 1</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/自改进/场景-1-数据采集与观察/index.md" target="_blank">数据采集与观察</a></div>
-          <div class="scene-desc yry-scene-desc">契约与源端定义 — 健康趋势、诊断信号、执行记忆的采集链路与数据质量标准</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/自改进/场景-1-数据采集与观察/index.md">📄规约</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 2</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/自改进/场景-2-诊断引擎/index.md" target="_blank">诊断引擎</a></div>
-          <div class="scene-desc yry-scene-desc">D0-D7 规则可判定 — 每级诊断的触发条件、证据来源、置信度计算方法</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/自改进/场景-2-诊断引擎/index.md">📄规约</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 3</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/自改进/场景-3-提案生成与路由/index.md" target="_blank">提案生成与路由</a></div>
-          <div class="scene-desc yry-scene-desc">类型路由与生成约束 — 五种提案类型、触发条件、生成边界、委派目标</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/自改进/场景-3-提案生成与路由/index.md">📄规约</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 4</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/自改进/场景-4-效果评估与闭环/index.md" target="_blank">效果评估与闭环</a></div>
-          <div class="scene-desc yry-scene-desc">E1-E4 评估基准 — 改进前后对比、指标变化量化、闭合标准、回溯报告</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/自改进/场景-4-效果评估与闭环/index.md">📄规约</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 5</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/自改进/场景-5-经验技能化与记忆注入/index.md" target="_blank">经验技能化与记忆注入</a></div>
-          <div class="scene-desc yry-scene-desc">跨会话持久化 — 记忆压缩策略、相似检索注入、经验技能化升级路径</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/自改进/场景-5-经验技能化与记忆注入/index.md">📄规约</a></div>
-        </div>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#127968;</span> 文档中心首页 — 4 场景</div>
-      <div class="scene-grid yry-scene-grid">
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 1</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/首页/场景-1-数据采集与六层聚合/index.md" target="_blank">数据采集与六层聚合</a></div>
-          <div class="scene-desc yry-scene-desc">5 大资产源 · 5 步采集流程 · 6 层页面结构 — 从规约自动采集项目全貌</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/首页/场景-1-数据采集与六层聚合/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-1-数据采集与六层聚合/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-1-数据采集与六层聚合/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-1-数据采集与六层聚合/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-1-数据采集与六层聚合/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-1-数据采集与六层聚合/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-1-数据采集与六层聚合/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 2</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/首页/场景-2-实时面板与交互组件/index.md" target="_blank">实时面板与交互组件</a></div>
-          <div class="scene-desc yry-scene-desc">4 面板按钮 · PanelHub API · 5 步数据流 — 调度/通知/自改进/FAQ 一键可达</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/首页/场景-2-实时面板与交互组件/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-2-实时面板与交互组件/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-2-实时面板与交互组件/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-2-实时面板与交互组件/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-2-实时面板与交互组件/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-2-实时面板与交互组件/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-2-实时面板与交互组件/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 3</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/首页/场景-3-交叉导航与可访问性/index.md" target="_blank">交叉导航与可访问性</a></div>
-          <div class="scene-desc yry-scene-desc">9 交叉导航链接 · breadcrumb · 6 层 id anchor · 响应式 720px — 全站三跳可达</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/首页/场景-3-交叉导航与可访问性/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-3-交叉导航与可访问性/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-3-交叉导航与可访问性/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-3-交叉导航与可访问性/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-3-交叉导航与可访问性/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-3-交叉导航与可访问性/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-3-交叉导航与可访问性/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 4</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/首页/场景-4-自动化生成管线/index.md" target="_blank">自动化生成管线</a></div>
-          <div class="scene-desc yry-scene-desc">/rui-html 首页 · 3 触发路径 · 3 验证门禁 — 项目结构变更时首页自动同步</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/首页/场景-4-自动化生成管线/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-4-自动化生成管线/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-4-自动化生成管线/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-4-自动化生成管线/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-4-自动化生成管线/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-4-自动化生成管线/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/首页/场景-4-自动化生成管线/审查.html">📝审查</a></div>
-        </div>
-      </div>
-      <div class="sub-title"><span class="accent">&#128203;</span> 计划清单生成技能 — 5 场景</div>
-      <div class="scene-grid yry-scene-grid">
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 1</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/index.md" target="_blank">模板架构与CSS设计系统</a></div>
-          <div class="scene-desc yry-scene-desc">HTML 7区域骨架 · 22 Token 变量 · CSS 设计系统 · CDN 加载链 — 从模板到渲染的完整基础</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 2</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/计划清单/场景-2-markdown解析与数据提取管线/index.md" target="_blank">markdown解析与数据提取管线</a></div>
-          <div class="scene-desc yry-scene-desc">§0-§4 章节拆分 · 表格 JSON 解析 · 元数据抽取 · Context 对象组装 — 数据驱动页面生成</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/计划清单/场景-2-markdown解析与数据提取管线/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-2-markdown解析与数据提取管线/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-2-markdown解析与数据提取管线/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-2-markdown解析与数据提取管线/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-2-markdown解析与数据提取管线/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-2-markdown解析与数据提取管线/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-2-markdown解析与数据提取管线/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 3</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/计划清单/场景-3-清单交互组件实现/index.md" target="_blank">清单交互组件实现</a></div>
-          <div class="scene-desc yry-scene-desc">勾选进度联动 · 折叠面板 · 标签页切换 · 风险行展开 — localStorage 持久化 + 键盘快捷键</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/计划清单/场景-3-清单交互组件实现/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-3-清单交互组件实现/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-3-清单交互组件实现/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-3-清单交互组件实现/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-3-清单交互组件实现/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-3-清单交互组件实现/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-3-清单交互组件实现/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 4</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/计划清单/场景-4-验证报告与健康面板集成/index.md" target="_blank">验证报告与健康面板集成</a></div>
-          <div class="scene-desc yry-scene-desc">KPI卡片 · 5×5风险热力图 · 趋势迷你图 · 纯CSS分数卡 — 无JS图表库依赖</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/计划清单/场景-4-验证报告与健康面板集成/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-4-验证报告与健康面板集成/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-4-验证报告与健康面板集成/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-4-验证报告与健康面板集成/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-4-验证报告与健康面板集成/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-4-验证报告与健康面板集成/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-4-验证报告与健康面板集成/审查.html">📝审查</a></div>
-        </div>
-        <div class="scene-card yry-scene-card">
-          <div class="scene-num yry-scene-num">场景 5</div>
-          <div class="scene-name yry-scene-name"><a href="故事任务面板/计划清单/场景-5-批量生成与自循环机制/index.md" target="_blank">批量生成与自循环机制</a></div>
-          <div class="scene-desc yry-scene-desc">/rui-html 全量生成 · mtime增量检测 · 30min自循环调度 · 故障隔离 — 文档自动同步</div>
-          <div class="scene-meta yry-scene-meta"><a href="故事任务面板/计划清单/场景-5-批量生成与自循环机制/计划清单.html">📋清单</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-5-批量生成与自循环机制/架构图.html">📐架构</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-5-批量生成与自循环机制/知识图谱.html">🔗图谱</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-5-批量生成与自循环机制/测试面板.html">🧪测试</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-5-批量生成与自循环机制/源码.html">📄源码</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-5-批量生成与自循环机制/演示.html">💡演示</a> <span class="sep yry-sep" aria-hidden="true">·</span>  <a href="故事任务面板/计划清单/场景-5-批量生成与自循环机制/审查.html">📝审查</a></div>
-        </div>
-      </div>
-    </div>
-
-    <hr>
-
-    <!-- ===== Layer 5: Agent 角色 + 规则 ===== -->
-    <div class="layer" id="layer-agents">
-      <div class="layer-header">
-        <span class="layer-num">5</span>
-        <h2>Agent 角色与规则</h2>
-        <span class="layer-stats">9 Agent 角色 + 1 拓扑总纲 · 18 治理规则</span>
-        <span class="layer-panels" title="Agent 行为受规则约束，规则合规性由健康检查监控">
-          <span class="lp-dot" style="background:#ffc107" title="Agent 角色详情" onclick="event.stopPropagation();layerInfo.show('agents')">🤖</span>
-          <span class="lp-dot" style="background:#a78bfa" title="自改进诊断" onclick="event.stopPropagation();PanelHub.open('selfimprove')">🧬</span>
-          <span class="lp-dot" style="background:#ef4444" title="通知中心" onclick="event.stopPropagation();PanelHub.open('notify')">🔔</span>
-          <span class="lp-dot" style="background:#22c55e" title="Agent FAQ" onclick="event.stopPropagation();PanelHub.open('faq')">❓</span>
-          <span class="lp-dot" style="background:#64DCB4" title="规则详情" onclick="event.stopPropagation();layerInfo.show('rules')">📋</span>
-        </span>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#129302;</span> Agent 角色 (9)</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon agent yry-icon">P</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../agents/pm.md" target="_blank">pm</a></div>
-            <div class="desc yry-desc">产品决策者 — 决定做什么和不做什么，委派给子项目 PM，把控产品方向</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip purple yry-tag-chip">核心角色</span>
-              <span class="tag-chip info yry-tag-chip">决策</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">需求解析 → 自适应规划 → 委派子 PM</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon agent yry-icon">L</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../agents/planner.md" target="_blank">planner</a></div>
-            <div class="desc yry-desc">实施规划者 — 接收 PM 委派，拆分实施步骤为 bite-sized 执行计划，评估技术方案可行性，编排任务执行顺序</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip purple yry-tag-chip">核心角色</span>
-              <span class="tag-chip info yry-tag-chip">规划</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">需求分析 → 步骤拆分 → 方案评估 → 委派 coder</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon agent yry-icon">A</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../agents/architect.md" target="_blank">architect</a></div>
-            <div class="desc yry-desc">系统架构设计者 — 设计系统级架构，评估 trade-off，创建架构决策记录</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip info yry-tag-chip">只读</span>
-              <span class="tag-chip purple yry-tag-chip">架构设计</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">架构设计 → 影响分析 → ADR</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon agent yry-icon">C</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../agents/coder.md" target="_blank">coder</a></div>
-            <div class="desc yry-desc">代码实现者 — 按设计文档逐模块实现，强制 P0 清零，通过审查门禁</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip purple yry-tag-chip">核心角色</span>
-              <span class="tag-chip info yry-tag-chip">实现</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">读写 · 逐模块实现 · P0 强制清零</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon agent yry-icon">R</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../agents/code-reviewer.md" target="_blank">code-reviewer</a></div>
-            <div class="desc yry-desc">代码质量审查者 — 审查正确性、设计模式、反模式，发现简化和复用机会</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip info yry-tag-chip">只读</span>
-              <span class="tag-chip purple yry-tag-chip">审查</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">正确性 · 模式 · 反模式 · 简化</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon agent yry-icon">T</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../agents/tester.md" target="_blank">tester</a></div>
-            <div class="desc yry-desc">质量保障者 — 测试先行方法，定义验收标准，强制 Gate A/B 关卡</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip purple yry-tag-chip">关卡角色</span>
-              <span class="tag-chip info yry-tag-chip">质量保障</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">Gate A 准入 · Gate B 交付</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon agent yry-icon">E</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../agents/reporter.md" target="_blank">reporter</a></div>
-            <div class="desc yry-desc">过程报告者 — 生成过程报告，整理知识资产，遵循证据标准</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip info yry-tag-chip">只读</span>
-              <span class="tag-chip purple yry-tag-chip">报告</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">自改进复盘 → 交付文档生成</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon agent yry-icon">S</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../agents/security.md" target="_blank">security</a></div>
-            <div class="desc yry-desc">安全专家 — 威胁建模分析，执行安全约束，向 coder 注入安全任务</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip info yry-tag-chip">只读</span>
-              <span class="tag-chip purple yry-tag-chip">安全</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">威胁建模 · 约束注入 · 安全审查</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon agent yry-icon">I</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../agents/self-improve.md" target="_blank">self-improve</a></div>
-            <div class="desc yry-desc">自改进引擎 — 数据驱动提案，效果评估，回溯报告，驱动项目持续进化</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip purple yry-tag-chip">闭环角色</span>
-              <span class="tag-chip info yry-tag-chip">进化</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">诊断 D0-D7 · 效果评估 E1-E4</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sub-title" style="margin-top:18px;"><span class="accent">&#128220;</span> Agent 角色拓扑</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon ref yry-icon">T</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../agents/AGENT.md" target="_blank">AGENT.md</a></div>
-            <div class="desc yry-desc">角色拓扑总览 — 行为纪律、设计原则、执行准则、ADR、多 Agent 协作模式</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip accent yry-tag-chip">总纲</span>
-              <span class="tag-chip info yry-tag-chip">角色拓扑</span>
-              <span class="tag-chip purple yry-tag-chip">多 Agent</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">22KB · 角色间委派与反馈回路</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="layer" id="layer-rules" style="margin-top:36px;">
-      <div class="layer-header">
-        <span class="layer-num" style="background: var(--yry-cyan);">R</span>
-        <h2>治理规则</h2>
-        <span class="layer-stats">18 规则 · 管线纪律 · 安全 · 文档 · 自改进 · 设计原则</span>
-        <span class="layer-panels" title="规则详情">
-          <span class="lp-dot" style="background:#64DCB4" title="查看规则详情" onclick="event.stopPropagation();layerInfo.show('rules')">📋</span>
-        </span>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#128736;</span> 管线与执行规则 (5)</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon rule yry-icon">P</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/code-pipeline.md" target="_blank">code-pipeline.md</a></div>
-            <div class="desc yry-desc">管线全流程规范 — 分支隔离策略、Gate A/B 关卡、逐模块清零、研究优先开发</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">核心管线</span>
-              <span class="tag-chip info yry-tag-chip">流程规范</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">30KB · Gate A/B · 分支隔离 · 逐模块</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">T</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/code-pipeline-techniques.md" target="_blank">code-pipeline-techniques.md</a></div>
-            <div class="desc yry-desc">管线支撑技术模式 — 贯穿管线各阶段的实战技术模式，每项对应一条 Iron Law</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">核心管线</span>
-              <span class="tag-chip info yry-tag-chip">技术模式</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">支撑技术 · Iron Law 实战 · 研究优先开发</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">D</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/delivery-gate.md" target="_blank">delivery-gate.md</a></div>
-            <div class="desc yry-desc">交付收口规范 — 三步 Hook：追加日志 → 文档同步 → 企微通知</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">交付门禁</span>
-              <span class="tag-chip info yry-tag-chip">Hook</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">7.5KB · 三步收口 · 交付纪律</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">A</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/architecture-diagram.md" target="_blank">architecture-diagram.md</a></div>
-            <div class="desc yry-desc">架构图规范 — Mermaid 语法约定、颜色语义体系、布局标准</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">表达优先</span>
-              <span class="tag-chip info yry-tag-chip">Mermaid</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">9.7KB · 颜色语义 · 布局约定</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">E</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/plan-execution.md" target="_blank">plan-execution.md</a></div>
-            <div class="desc yry-desc">计划执行与验证管线 — 逐步骤执行、每步验证、P0 强制清零、完成信号定义</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">执行纪律</span>
-              <span class="tag-chip info yry-tag-chip">验证</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">5.9KB · 逐步骤验证 · 完成信号</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#128214;</span> 文档规则 (4)</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon rule yry-icon">D</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/doc-generation.md" target="_blank">doc-generation.md</a></div>
-            <div class="desc yry-desc">文档生成约束 — 表达优先原则（图 → 结构化文本 → 表格），不可降级</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">表达优先</span>
-              <span class="tag-chip info yry-tag-chip">文档规范</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">21KB · 图→文→表 · 不可降级</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">L</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/doc-generation-lifecycle.md" target="_blank">doc-generation-lifecycle.md</a></div>
-            <div class="desc yry-desc">文档生命周期 — 补充文档触发条件 · 文档策展策略 · 例外处理 · 生效标志</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">表达优先</span>
-              <span class="tag-chip info yry-tag-chip">生命周期</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">触发·策展·例外·生效标志</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">K</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/knowledge-graph.md" target="_blank">knowledge-graph.md</a></div>
-            <div class="desc yry-desc">知识图谱规范 — 节点类型定义、边关系约束、JSON Schema、生成标准</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">知识管理</span>
-              <span class="tag-chip info yry-tag-chip">图谱</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">6.6KB · JSON Schema · 节点边规范</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">M</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/mermaid-theme.md" target="_blank">mermaid-theme.md</a></div>
-            <div class="desc yry-desc">Mermaid 统一主题配置 — 全局主题变量、颜色语义、布局约定、暗色主题标准</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">表达优先</span>
-              <span class="tag-chip info yry-tag-chip">主题</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">2.1KB · 主题变量 · 暗色标准</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#128737;</span> 安全与配置规则 (2)</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon rule yry-icon">S</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/security-guardrails.md" target="_blank">security-guardrails.md</a></div>
-            <div class="desc yry-desc">安全护栏 — 认证不可绕过、密钥不落盘、输入必校验、禁止魔法数字</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">安全底线</span>
-              <span class="tag-chip info yry-tag-chip">约束</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">8.9KB · 四不妥协 · 安全面覆盖</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">C</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/rui-claude.md" target="_blank">rui-claude.md</a></div>
-            <div class="desc yry-desc">rui-claude 配置管理规则 — .claude/ 目录同步策略、健康分析标准</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">配置治理</span>
-              <span class="tag-chip info yry-tag-chip">.claude/</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">5.7KB · 同步策略 · 健康分析</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#128260;</span> 自改进规则 (1)</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon rule yry-icon">I</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/self-improve.md" target="_blank">self-improve.md</a></div>
-            <div class="desc yry-desc">自改进闭环 — 诊断 D0-D7、经验技能化、记忆压缩注入、效果评估 E1-E4</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">闭环驱动</span>
-              <span class="tag-chip info yry-tag-chip">进化</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">11KB · D0-D7 诊断 · E1-E4 评估</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#128207;</span> 设计与质量管理 (6)</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon rule yry-icon">A</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/architecture-principles.md" target="_blank">architecture-principles.md</a></div>
-            <div class="desc yry-desc">架构宪法 — 内核与扩展边界定义、配置 API 规范、代码范式约束、可健康检测的架构基线</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">架构宪法</span>
-              <span class="tag-chip info yry-tag-chip">架构</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">内核轻量·扩展丰富·配置API·健康检测</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">D</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/design-principles.md" target="_blank">design-principles.md</a></div>
-            <div class="desc yry-desc">九条工程原则 — SRP · 高内聚 · 低耦合 · DIP · OCP · ISP · DRY · YAGNI · 组合优于继承。每 Agent/Skill/Lib 审查基准</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">设计原则</span>
-              <span class="tag-chip info yry-tag-chip">架构</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">2.8KB · 9 原则 · 验证标准 · 反例</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">C</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/code-paradigm.md" target="_blank">code-paradigm.md</a></div>
-            <div class="desc yry-desc">代码编程范式约束 — 模块范式、函数范式、错误处理、导入规范、常量定义。可 grep 验证的硬约束，非风格建议</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">代码范式</span>
-              <span class="tag-chip info yry-tag-chip">硬约束</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">模块·函数·错误·导入·常量 — 正反例</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">H</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/agent-handoff.md" target="_blank">agent-handoff.md</a></div>
-            <div class="desc yry-desc">Agent 交接规范 — 交接信号格式（from/to/deliverable/acceptance）、Agent 间契约（pm→planner→coder→tester→reporter）、阻断条件</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">协作规范</span>
-              <span class="tag-chip info yry-tag-chip">Agent 交接</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">1.5KB · 5 对契约 · 5 阻断标识</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">Q</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/doc-quality.md" target="_blank">doc-quality.md</a></div>
-            <div class="desc yry-desc">文档质量标准 — A/B/C/D 四级证据 · Agent/Skill/Rule 统一模版 · 禁止 TBD/占位符/无来源断言 · 退化三信号检测</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">质量标准</span>
-              <span class="tag-chip info yry-tag-chip">文档规范</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">2.2KB · 4 等级 · 8 审查项 · 3 退化信号</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">K</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../rules/knowledge-graph-ownership.md" target="_blank">knowledge-graph-ownership.md</a></div>
-            <div class="desc yry-desc">知识图谱所有权模型 — 单点写入多点只读 · story/scene 节点归 pm · file/function 节点归 coder · reporter 只读验证 · 阻断条件</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip green yry-tag-chip">数据治理</span>
-              <span class="tag-chip info yry-tag-chip">所有权</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">1.8KB · 5 阻断标识 · 三方耦合解耦</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <hr>
-
-    <!-- ===== Layer 6: 参考入口 ===== -->
-    <div class="layer" id="layer-refs">
-      <div class="layer-header">
-        <span class="layer-num">6</span>
-        <h2>参考入口</h2>
-        <span class="layer-stats">4 文档入口 + 5 监控仪表板 · 项目元信息与实时监控</span>
-        <span class="layer-panels" title="参考入口与监控面板">
-          <span class="lp-dot" style="background:#94a3b8" title="查看参考详情" onclick="event.stopPropagation();layerInfo.show('refs')">📎</span>
-          <span class="lp-dot" style="background:#ef4444" title="通知中心" onclick="event.stopPropagation();PanelHub.open('notify')">🔔</span>
-          <span class="lp-dot" style="background:#a78bfa" title="自改进分析" onclick="event.stopPropagation();PanelHub.open('selfimprove')">🧬</span>
-          <span class="lp-dot" style="background:#22c55e" title="FAQ" onclick="event.stopPropagation();PanelHub.open('faq')">❓</span>
-        </span>
-      </div>
-
-      <div class="sub-title"><span class="accent">📖</span> 文档入口 (4)</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon ref yry-icon">R</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../README.md" target="_blank">README.md</a></div>
-            <div class="desc yry-desc">项目总览 — 系统全景图、管线架构、快速开始、命令参考、领域语言（20 术语）</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip accent yry-tag-chip">入口文档</span>
-              <span class="tag-chip info yry-tag-chip">总览</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">15KB · 20 术语 · 系统全景</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon ref yry-icon">C</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../CLAUDE.md" target="_blank">CLAUDE.md</a></div>
-            <div class="desc yry-desc">项目指令 — 四大铁律、项目画像、不可妥协底线、退化三因与四层防御</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip accent yry-tag-chip">AI 约束</span>
-              <span class="tag-chip info yry-tag-chip">铁律</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">6KB · 行为规范 · 退化对策</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon ref yry-icon">F</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui/formulas.md" target="_blank">formulas.md</a></div>
-            <div class="desc yry-desc">故事文档公式 — 故事任务、场景、知识图谱、架构图的生成公式与模板规范</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip accent yry-tag-chip">文档模板</span>
-              <span class="tag-chip info yry-tag-chip">公式</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">28KB · 生成模板 · 公式定义</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon ref yry-icon">B</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../skills/rui-bot/SKILL.md" target="_blank">企微 Bot 配置</a></div>
-            <div class="desc yry-desc">企业微信 Webhook 配置 — 消息格式定义、通知触发条件、发送演示</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip info yry-tag-chip">Webhook</span>
-              <span class="tag-chip info yry-tag-chip">消息</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">rui-bot · 交付 Hook 第三步</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sub-title"><span class="accent">📊</span> 监控与报告 (5)</div>
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon ref yry-icon">H</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="./健康报告/index.html">🩺 健康报告</a></div>
-            <div class="desc yry-desc">系统综合健康度量 — 9 核心维度 + 7 工程成熟度评分 · HTML 仪表板 · 趋势写入 .memory/health-trend.jsonl 并按日期覆盖 · D0-D7 诊断触发</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip accent yry-tag-chip">Health</span>
-              <span class="tag-chip info yry-tag-chip">9 核 + 7 工</span>
-              <span class="tag-chip green yry-tag-chip">A 级</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">生成: node skills/rui-bot/send.mjs health --html · 定时: 健康检查 Cron 触发</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon ref yry-icon">L</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="./自循环报告/index.html">🔄 自循环报告</a></div>
-            <div class="desc yry-desc">12 技能定期巡检 — Cron 定时触发技能执行 → 生成 HTML 报告 → 汇总推送企微通知。覆盖趋势监控、代码健康、文档同步、故事轮询、配置检查、依赖审计、自改进闭环</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip accent yry-tag-chip">自循环</span>
-              <span class="tag-chip info yry-tag-chip">12 技能</span>
-              <span class="tag-chip purple yry-tag-chip">企微通知</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">生成: node skills/rui-bot/lib/loop-report.mjs · 索引: docs/自循环报告/</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon ref yry-icon">T</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="./趋势报告/index.html">📡 趋势报告</a></div>
-            <div class="desc yry-desc">技术趋势发现 — GitHub Trending / OSS Insight / TrendShift / Top-Starred 四大数据源定期扫描。分类打标 (AI/Web/后端/DevOps/语言/安全)，数据输入 D5 外部趋势诊断</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip accent yry-tag-chip">趋势发现</span>
-              <span class="tag-chip info yry-tag-chip">4 数据源</span>
-              <span class="tag-chip green yry-tag-chip">D5 诊断</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">生成: node skills/rui-trends/rui-trends.mjs all · 每周一早 9 点</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon ref yry-icon">S</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="#" onclick="event.preventDefault();window.openPanel('selfimprove')">🧬 自改进分析</a></div>
-            <div class="desc yry-desc">持续自改进可视化 — 读取 .memory/health-trend.jsonl + docs/自我改进/summary.json，按日/周/月/全景四视角展示健康趋势、D0-D7 诊断覆盖率、等级分布、分支健康对比；健康数据以日期为单位覆盖</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip accent yry-tag-chip">演进</span>
-              <span class="tag-chip info yry-tag-chip">4 视角</span>
-              <span class="tag-chip purple yry-tag-chip">D0-D7</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">数据: .memory/health-trend.jsonl · summary.json · 实时面板</span></div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon ref yry-icon">N</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="#" onclick="event.preventDefault();window.openPanel('notify')">🔔 通知中心</a></div>
-            <div class="desc yry-desc">三类通知统一汇总 — 健康检查报告 (🩺) + 自循环巡检 (🔄) + 趋势扫描 (📡)。其中健康报告按日期保留最新一份；支持按类型筛选、最新评分趋势追踪、诊断触发追踪、企微推送记录</div>
-            <div class="tags-row yry-tags-row">
-              <span class="tag-chip accent yry-tag-chip">通知汇总</span>
-              <span class="tag-chip info yry-tag-chip">3 类通知</span>
-              <span class="tag-chip purple yry-tag-chip">企微</span>
-            </div>
-            <div class="meta yry-meta"><span class="detail yry-detail">面板: docs/js/notify-panel.js · 健康报告按日期汇总展示</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
+      <yry-sub-title id="sub-title-ref-monitor"></yry-sub-title>
+      <yry-card-grid id="ref-monitor-grid"></yry-card-grid>
+    </yry-layer>
 
     <div class="footer-note">
-      YrY v5.4.0 · 故事驱动的 SDLC 编排系统 · <a href="../CLAUDE.md">CLAUDE.md</a> · <a href="../README.md">README.md</a>
+      YrY v5.4.0 · 故事驱动的 SDLC 编排系统
     </div>
   </div>
 
@@ -1416,12 +126,12 @@
     </div>
     <div class="panel-body yry-panel-body" id="faqPanelBody"></div>
     <div class="panel-footer">
-      <span style="font-size:.7rem;color:var(--text-muted)">快捷打开：</span>
-      <a href="#" onclick="event.preventDefault();window.openPanel('notify')" style="color:#ef4444;text-decoration:none;font-size:.7rem">🔔 通知</a>
+      <span class="yry-mute-7">快捷打开：</span>
+      <a href="#" onclick="event.preventDefault();window.openPanel('notify')" class="yry-clr-fail-7 yry-link-noul">🔔 通知</a>
       <span class="panel-footer-sep">·</span>
       <a href="#" onclick="event.preventDefault();window.openPanel('cron')" class="panel-footer-link">⏰ 调度</a>
       <span class="panel-footer-sep">·</span>
-      <a href="#" onclick="event.preventDefault();window.openPanel('selfimprove')" style="color:#a78bfa;text-decoration:none;font-size:.7rem">🧬 自改进</a>
+      <a href="#" onclick="event.preventDefault();window.openPanel('selfimprove')" class="yry-clr-purp-7 yry-link-noul">🧬 自改进</a>
     </div>
   </div>
 
@@ -1446,14 +156,16 @@
         <span class="np-filter-chip" data-filter="health">🩺 健康<span class="np-filter-badge" id="npBadgeHealth">0</span></span>
         <span class="np-filter-chip" data-filter="loop">🔄 自循环<span class="np-filter-badge" id="npBadgeLoop">0</span></span>
         <span class="np-filter-chip" data-filter="trend">📡 趋势<span class="np-filter-badge" id="npBadgeTrend">0</span></span>
+        <span class="np-filter-chip" data-filter="analysis">🔍 项目分析<span class="np-filter-badge" id="npBadgeAnalysis">0</span></span>
       </div>
       <div class="panel-body yry-panel-body" id="notifyPanelBody">
         <div class="np-context panel-context">
-          <strong>数据源</strong>：动态读取 <code>docs/健康报告/reports.json</code> + <code>docs/自循环报告/reports.json</code> + <code>docs/趋势报告/reports.json</code> 三个清单文件<br>
+          <strong>数据源</strong>：动态读取 <code>docs/健康报告/reports.json</code> + <code>docs/自循环报告/reports.json</code> + <code>docs/趋势报告/reports.json</code> + <code>docs/项目分析/reports.json</code> 四个清单文件<br>
           <strong>健康报告</strong>：按日期去重（同一天仅保留最新一份），用于展示最新评分与趋势变化<br>
-          <strong>自循环报告</strong>：按技能维度展示巡检结果（pass/warn/fail），用于定位“哪一个技能在告警/异常”并一键打开对应报告<br>
+          <strong>自循环报告</strong>：按技能维度展示巡检结果（pass/warn/fail），用于定位”哪一个技能在告警/异常”并一键打开对应报告<br>
           <strong>趋势报告</strong>：按数据源展示可达性、趋势方向与条目数（items），用于识别外部信号变化与数据源异常（不可达）<br>
-          <strong>生成命令</strong>：健康: <code>node skills/rui-bot/send.mjs health --html</code> · 自循环: <code>node skills/rui-bot/lib/loop-report.mjs</code> · 趋势: <code>node skills/rui-trends/rui-trends.mjs all</code><br>
+          <strong>项目分析</strong>：展示项目文件统计（文件数/代码行/类型分布）、架构合规评分、依赖导入分析（import 数/技能数/lib 文件数），用于监控代码库规模与依赖健康<br>
+          <strong>生成命令</strong>：健康: <code>node skills/rui-bot/send.mjs health --html</code> · 自循环: <code>node skills/rui-bot/lib/loop-report.mjs</code> · 趋势: <code>node skills/rui-trends/rui-trends.mjs all</code> · 项目分析: <code>node lib/arch-check.mjs --json</code><br>
           <strong>更新机制</strong>：每次打开/刷新面板自动从 JSON 清单拉取最新数据；只要对应 <code>reports.json</code> 更新完成，无需手工改面板脚本
         </div>
         <div class="panel-loading yry-panel-loading">加载中...</div>
@@ -1467,6 +179,7 @@
           <a href="./健康报告/index.html">🩺 健康报告</a>
           <a href="./自循环报告/index.html">🔄 自循环报告</a>
           <a href="./趋势报告/index.html">📡 趋势报告</a>
+          <a href="./项目分析/index.html">🔍 项目分析</a>
         </div>
       </div>
     </div>
@@ -1502,7 +215,7 @@
     </div>
     <div class="panel-footer panel-footer-row">
       <span>数据: .memory/health-trend.jsonl + summary.json</span>
-      <span><a href="#" onclick="event.preventDefault();window.openPanel('faq')" style="color:#22c55e;text-decoration:none;font-size:.64rem">❓ FAQ</a> · <a href="#" onclick="event.preventDefault();window.openPanel('notify')" style="color:#ef4444;text-decoration:none;font-size:.64rem">🔔 通知</a></span>
+      <span><a href="#" onclick="event.preventDefault();window.openPanel('faq')" class="yry-clr-pass-64 yry-link-noul">❓ FAQ</a> · <a href="#" onclick="event.preventDefault();window.openPanel('notify')" class="yry-clr-fail-64 yry-link-noul">🔔 通知</a></span>
       <span id="siFooterTime"></span>
     </div>
   </div>
@@ -1523,6 +236,27 @@
   <!-- ═══ JS 脚本 ═══ -->
   <script src="../cdn/shared.js"></script>
 
+  <!-- ═══ Vue 3 + 4 个 CDN 组件(Breadcrumb / SceneHeader / StatsGrid / CrossNav) ═══ -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="../cdn/yry-breadcrumb/index.js"></script>
+  <script src="../cdn/yry-scene-header/index.js"></script>
+  <script src="../cdn/yry-stats-grid/index.js"></script>
+  <script src="../cdn/yry-cross-nav/index.js"></script>
+  <script src="../cdn/yry-panel-hub/index.js"></script>
+  <script src="../cdn/yry-tag-chip/index.js"></script>
+  <script src="../cdn/yry-item-card/index.js"></script>
+  <script src="../cdn/yry-card-grid/index.js"></script>
+
+  <!-- ═══ 静态资产卡片数据 + 挂载(替代原 9 个 card-grid 中的静态 .item-card) ═══ -->
+  <script src="js/yry-item-cards.js"></script>
+
+  <script src="../cdn/yry-layer/index.js"></script>
+  <script src="../cdn/yry-sub-title/index.js"></script>
+  <script src="../cdn/yry-story-card/index.js"></script>
+  <script src="../cdn/yry-scene-card/index.js"></script>
+  <script src="../cdn/yry-doc-layer/index.js"></script>
+  <script src="./js/docs-data.js"></script>
+
   <!-- ═══ Panel JS modules (extracted from index.html) ═══ -->
   <script src="js/panel-hub.js"></script>
   <script src="js/notify-panel.js"></script>
@@ -1531,9 +265,19 @@
   <script src="js/faq-panel.js"></script>
   <script src="js/layer-info.js"></script>
   <script>
-    /* Staggered card animations */
+    /* Staggered card animations (静态 HTML 部分) */
     document.querySelectorAll('.card-grid .item-card').forEach((card, i) => {
       card.style.animationDelay = `${0.01 + (i % 20) * 0.012}s`;
+    });
+
+    /* Vue 渲染的卡片 · 等所有 doc-layer 挂载完再补一次 */
+    document.addEventListener('yry-doc-layer-ready', function () {
+      /* 等下一帧,确保 Vue 已完成 patch */
+      requestAnimationFrame(function () {
+        document.querySelectorAll('#layer-deps-app .item-card, #layer-skills-app .item-card, #layer-story-app .story-card, #layer-scene-app .scene-card').forEach(function (card, i) {
+          card.style.animationDelay = (0.01 + (i % 20) * 0.012) + 's';
+        });
+      });
     });
 
     /* Back to top */
@@ -1544,15 +288,238 @@
       btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
       toggle();
     }
+  </script>
 
-    /* Live health indicator — 已移除对 .memory/health-trend.jsonl 的网络请求, 仅保留占位标签 */
-    {
-      const label = document.getElementById('liveHealthLabel');
-      if (label) {
-        label.textContent = '🩺 —';
-        label.title = '点击打开自改进面板查看详情';
+  <!-- ═══ CDN 组件挂载脚本:自定义标签形式 (property 赋值,无需 .mount()) ═══ -->
+  <script>
+    /* ═══ 概述 ═══
+       自定义元素 <yry-xxx> 通过属性(property)方式接收数据。
+       为保证 props 在 Vue 升级时可用,采用"双设"策略:
+         1) 内联脚本立即在元素上设属性 (覆盖大多数情况)
+         2) 监听 *-ready 事件,组件定义完成后再设一次 (覆盖元素晚于组件定义出现的场景)
+       事件 (layer-panel-select / panel-hub-select) 通过 element.addEventListener 监听。
+    */
+
+    /* ── 数据容器 ────────────────────────────────────────────── */
+    var YRY_APP_DATA = {
+      /* 1) Breadcrumb */
+      breadcrumb: function (el) {
+        el.items = [
+          { label: 'YrY', href: '../', icon: '📚' },
+          { label: '文档中心' }
+        ];
+      },
+      /* 2) Scene Header */
+      sceneHeader: function (el) {
+        el.icon   = '⭐';
+        el.prefix = 'YrY ';
+        el.accent = '文档中心';
+        el.meta   = '📌 v4.5 · 📅 2026-06-16 · 🏷️ docs · Documentation Hub';
+        el.desc   = '故事驱动的 SDLC 编排系统 — 六层结构：依赖/框架 → 19 技能 → 7 故事 → 37 场景 → Agent 角色与规则 → 参考入口';
+      },
+      /* 3) Stats Grid */
+      statsGrid: function (el) {
+        el.items = [
+          { value: 12, label: '依赖/框架',   modifier: 'health' },
+          { value: 19, label: '技能' },
+          { value: 7,  label: '故事',        modifier: 'health' },
+          { value: 37, label: '场景',        modifier: 'health' },
+          { value: 9,  label: 'Agent 角色' },
+          { value: 18, label: '规则',        modifier: 'health' },
+          { value: 9,  label: '参考入口',    modifier: 'health' }
+        ];
+      },
+      /* 4) Cross Nav */
+      crossNav: function (el) {
+        el.basePath = '';
+        el.active   = '';
+        el.pages    = [
+          { id: 'CDN 共享库',  icon: '🌐', href: '../cdn/index.html' },
+          { id: '自检中心',    icon: '🧪', href: '../tests/index.html' },
+          { id: '演示中心',    icon: '🎬', href: './故事任务面板/架构/场景-1-新人上手/演示.html' },
+          { id: '健康报告',    icon: '🩺', href: './健康报告/index.html' },
+          { id: '自循环报告',  icon: '🔄', href: './自循环报告/index.html' },
+          { id: '趋势报告',    icon: '📡', href: './趋势报告/index.html' },
+          { id: '自我改进',    icon: '🧬', href: './自我改进/index.html' },
+          { id: 'CLAUDE.md',   icon: '📜', href: '../CLAUDE.md' },
+          { id: 'README.md',   icon: '📖', href: '../README.md' }
+        ];
+      },
+      /* 5) Panel Hub */
+      panelHub: function (el) {
+        el.label = { text: '🩺 —', panel: 'selfimprove', title: '点击打开自改进面板查看详情' };
+        el.buttons = [
+          { icon: '⏰', name: '调度',   desc: '定时·触发·编排', color: 'var(--yry-cyan)', panel: 'cron',        title: '调度任务 — 展示 .claude/scheduled_tasks.json 中所有定时任务。包含 cron 表达式、人类可读描述、活跃/空闲状态、下次触发预估。' },
+          { icon: '🔔', name: '通知',   desc: '健康·循环·趋势', color: '#ef4444',       panel: 'notify',      title: '通知中心 — 健康检查报告、自循环巡检、趋势扫描三类通知统一汇总。健康报告按日期展示最新一份,支持按类型筛选、最新评分趋势、诊断触发追踪。' },
+          { icon: '🧬', name: '自改进', desc: '趋势·诊断·评估', color: '#a78bfa',       panel: 'selfimprove', title: '自改进分析 — 读取 .memory/health-trend.jsonl 和 summary.json,按日/周/月/全景四个视角展示健康趋势、D0-D7 诊断覆盖率、等级分布、分支健康对比;健康数据按日期覆盖,每天保留一个快照。' },
+          { icon: '❓', name: 'FAQ',    desc: '知识·指南·解惑', color: '#22c55e',       panel: 'faq',         title: '常见问题 — 系统知识入口:YrY 概念、命令使用、面板关系、健康检查原理、Skill/Agent/Rule 区别。含交叉面板导航链接。' }
+        ];
+        el.flow = 'Cron 定时触发 → 技能执行 → 通知产出 → 🔔 通知面板展示 → 数据写入 .memory/ → 🧬 自改进分析消费';
+      }
+    };
+
+    /* ── 立即设置 (元素已在 DOM,组件尚未定义) ────────────────── */
+    function applyAll() {
+      var bc  = document.getElementById('breadcrumb-app');
+      var sh  = document.getElementById('scene-header-app');
+      var sg  = document.getElementById('stats-grid-app');
+      var cn  = document.getElementById('cross-nav-app');
+      var ph  = document.getElementById('panel-hub-app');
+      if (bc) YRY_APP_DATA.breadcrumb(bc);
+      if (sh) YRY_APP_DATA.sceneHeader(sh);
+      if (sg) YRY_APP_DATA.statsGrid(sg);
+      if (cn) YRY_APP_DATA.crossNav(cn);
+      if (ph) {
+        YRY_APP_DATA.panelHub(ph);
+        /* 监听 panel-hub-select 事件 → 转发到 PanelHub */
+        ph.addEventListener('panel-hub-select', function (e) {
+          if (window.PanelHub) window.PanelHub.open(e.detail.panel);
+        });
       }
     }
+    applyAll();
+
+    /* ── 在组件 *-ready 事件触发后再设一次 (此时元素已升级) ── */
+    ['yry-breadcrumb-ready', 'yry-scene-header-ready', 'yry-stats-grid-ready',
+     'yry-cross-nav-ready', 'yry-panel-hub-ready'].forEach(function (ev) {
+      document.addEventListener(ev, applyAll, { once: true });
+    });
+
+    /* ── 6) Layer 1-4: YryDocLayer × 4 (从 window.YRY_DOCS_DATA 读取) ── */
+    function setDocLayerData() {
+      if (!window.YRY_DOCS_DATA || !window.YRY_DOCS_DATA.layers) return;
+      var map = {
+        'layer-deps':   'layer-deps-app',
+        'layer-skills': 'layer-skills-app',
+        'layer-story':  'layer-story-app',
+        'layer-scene':  'layer-scene-app'
+      };
+      window.YRY_DOCS_DATA.layers.forEach(function (layer) {
+        var el = document.getElementById(map[layer.id]);
+        if (!el) return;
+        el.layerId             = layer.id;
+        el.num                 = layer.num;
+        el.titleIcon           = layer.titleIcon;
+        el.titleAccent         = layer.titleAccent;
+        el.titlePrefix         = layer.titlePrefix || '';
+        el.titleSuffix         = layer.titleSuffix || '';
+        el.stats               = layer.stats || [];
+        el.panels              = layer.panels || [];
+        el.panelsTitle         = layer.panelsTitle || '';
+        el.sections            = layer.sections || [];
+      });
+    }
+    setDocLayerData();
+    if (window.YRY_DOCS_DATA) setDocLayerData();
+    document.addEventListener('yry-doc-layer-ready', setDocLayerData, { once: true });
+    document.addEventListener('DOMContentLoaded', setDocLayerData, { once: true });
+
+    /* ── 7) SubTitle × 9 (Layer 5 / R / 6 子区块标题) ────────── */
+    var SUB_TITLE_DATA = [
+      { id: 'sub-title-agent-roles',     props: { icon: '🤖', text: 'Agent 角色',         count: '9' } },
+      { id: 'sub-title-agent-topology',  props: { icon: '📜', text: 'Agent 角色拓扑' } },
+      { id: 'sub-title-rule-pipeline',   props: { icon: '🛠', text: '管线与执行规则',     count: '5' } },
+      { id: 'sub-title-rule-doc',        props: { icon: '📄', text: '文档规则',           count: '4' } },
+      { id: 'sub-title-rule-security',   props: { icon: '🛡', text: '安全与配置规则',     count: '2' } },
+      { id: 'sub-title-rule-selfimprove',props: { icon: '🔄', text: '自改进规则',         count: '1' } },
+      { id: 'sub-title-rule-design',     props: { icon: '📏', text: '设计与质量管理',     count: '6' } },
+      { id: 'sub-title-ref-doc',         props: { icon: '📖', text: '文档入口',           count: '4' } },
+      { id: 'sub-title-ref-monitor',     props: { icon: '📊', text: '监控与报告',         count: '5' } }
+    ];
+    function applySubTitles() {
+      SUB_TITLE_DATA.forEach(function (m) {
+        var el = document.getElementById(m.id);
+        if (!el) return;
+        el.icon  = m.props.icon;
+        el.text  = m.props.text;
+        el.count = m.props.count || '';
+      });
+    }
+    applySubTitles();
+    document.addEventListener('yry-sub-title-ready', applySubTitles, { once: true });
+
+    /* ── 8) Static Layer × 3 (Layer 5 / R / 6 容器) ──────────── */
+    var STATIC_LAYER_DATA = [
+      {
+        mountId: 'layer-agents-app',
+        props: {
+          layerId: 'layer-agents',
+          num: '5',
+          titleAccent: 'Agent 角色与规则',
+          stats: ['9 Agent 角色 + 1 拓扑总纲 · 18 治理规则'],
+          panelsContainerTitle: 'Agent 行为受规则约束，规则合规性由健康检查监控',
+          panels: [
+            { icon: '🤖', label: '', style: 'background:#ffc107', title: 'Agent 角色详情',  panel: 'agents',      onPanel: 'layerInfo' },
+            { icon: '🧬', label: '', style: 'background:#a78bfa', title: '自改进诊断',     panel: 'selfimprove', onPanel: 'panel' },
+            { icon: '🔔', label: '', style: 'background:#ef4444', title: '通知中心',       panel: 'notify',      onPanel: 'panel' },
+            { icon: '❓', label: '', style: 'background:#22c55e', title: 'Agent FAQ',      panel: 'faq',         onPanel: 'panel' },
+            { icon: '📋', label: '', style: 'background:#64DCB4', title: '规则详情',       panel: 'rules',       onPanel: 'layerInfo' }
+          ]
+        }
+      },
+      {
+        mountId: 'layer-rules-app',
+        props: {
+          layerId: 'layer-rules',
+          num: 'R',
+          titleAccent: '治理规则',
+          stats: ['18 规则 · 管线纪律 · 安全 · 文档 · 自改进 · 设计原则'],
+          style: 'margin-top:36px;',
+          numStyle: 'background: var(--yry-cyan);',
+          panelsContainerTitle: '规则详情',
+          panels: [
+            { icon: '📋', label: '', style: 'background:#64DCB4', title: '查看规则详情', panel: 'rules', onPanel: 'layerInfo' }
+          ]
+        }
+      },
+      {
+        mountId: 'layer-refs-app',
+        props: {
+          layerId: 'layer-refs',
+          num: '6',
+          titleAccent: '参考入口',
+          stats: ['4 文档入口 + 5 监控仪表板 · 项目元信息与实时监控'],
+          panelsContainerTitle: '参考入口与监控面板',
+          panels: [
+            { icon: '📎', label: '', style: 'background:#94a3b8', title: '查看参考详情', panel: 'refs',        onPanel: 'layerInfo' },
+            { icon: '🔔', label: '', style: 'background:#ef4444', title: '通知中心',     panel: 'notify',      onPanel: 'panel' },
+            { icon: '🧬', label: '', style: 'background:#a78bfa', title: '自改进分析',   panel: 'selfimprove', onPanel: 'panel' },
+            { icon: '❓', label: '', style: 'background:#22c55e', title: 'FAQ',          panel: 'faq',         onPanel: 'panel' }
+          ]
+        }
+      }
+    ];
+    function applyStaticLayers() {
+      STATIC_LAYER_DATA.forEach(function (m) {
+        var el = document.getElementById(m.mountId);
+        if (!el) return;
+        var p = m.props;
+        el.layerId              = p.layerId;
+        el.num                  = p.num;
+        el.titleAccent          = p.titleAccent;
+        el.stats                = p.stats;
+        el.panels               = p.panels;
+        el.panelsContainerTitle = p.panelsContainerTitle;
+        if (p.style)    el.style    = p.style;
+        if (p.numStyle) el.numStyle = p.numStyle;
+      });
+    }
+    applyStaticLayers();
+    document.addEventListener('yry-layer-ready', applyStaticLayers, { once: true });
+
+    /* 路由 layer-panel-select 事件 → 派发到 layerInfo / PanelHub (依 onPanel 字段) */
+    document.addEventListener('layer-panel-select', function (e) {
+      var p = e.detail || {};
+      if (!p.panel) return;
+      if (p.onPanel === 'layerInfo' && window.layerInfo) {
+        window.layerInfo.show(p.panel);
+      } else if (p.onPanel === 'panel' && window.PanelHub) {
+        window.PanelHub.open(p.panel);
+      } else if (!p.onPanel) {
+        if (window.PanelHub) window.PanelHub.open(p.panel);
+        else if (window.layerInfo) window.layerInfo.show(p.panel);
+      }
+    });
   </script>
 </body>
 </html>

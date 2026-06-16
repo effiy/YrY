@@ -3,83 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>新人上手 · 计划清单</title>
+<title>模板架构与 CSS 设计系统 · 计划清单</title>
 <!-- ═══ CDN: YrY 共享样式 ═══ -->
 <link rel="stylesheet" href="../../../../cdn/shared.css">
 <link rel="stylesheet" href="../../../../cdn/theme.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene.css">
 <link rel="stylesheet" href="../../../../cdn/yry-checklist.css">
 <!-- ═══ CDN: YryBreadcrumb 组件样式 ═══ -->
 <link rel="stylesheet" href="../../../../cdn/yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-back-top/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene-header/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-stats-grid/index.css">
 <!-- ═══ CDN: Vue 3 (生产构建,用于面包屑组件) ═══ -->
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <style>
-/* Page-specific overrides — all shared styles loaded from CDN */
+/* Page-specific overrides — base styles + design tokens loaded from CDN
+   ════════════════════════════════════════════════════════════════════════
+   §1.0 设计系统来源 · 全部由 CDN 提供,本文件不再重复声明:
+     ── 主题令牌 ──  cdn/theme.css   (--yry-bg / --yry-accent / --yry-cyan …)
+     ── 组件样式 ──  cdn/yry-scene.css  +  cdn/yry-checklist.css
+     ── 别名桥接 ──  yry-checklist.css :root   (--accent ← --yry-accent, …)
+   下方仅保留:
+     · 页面专属 a11y 工具类 (prefers-reduced-motion / skip-link / focus-visible)
+     · 页面专属布局微调 (.container 宽度、scene-nav-pills、delivery-grid)
+     · 页面专属报告/风险/统计样式 (verify-report / risk-* / kpi / scorecard …)
+   ════════════════════════════════════════════════════════════════════════ */
 
-/* ════════════════════════════════════════════════════════════════
-   §1.0 Design System · CSS Custom Properties (Design Tokens)
-   命名空间:--yry-* · 3 层 token:primitive → semantic → component
-   用途:作为 5 子场景的母模板,所有自定义属性可被子场景继承/覆盖
-   ════════════════════════════════════════════════════════════════ */
-@layer tokens {
-  :root {
-    /* ── Brand Colors (primitive) ── */
-    --yry-color-accent: #ffc107;
-    --yry-color-cyan: #22d3ee;
-    --yry-color-pass: #10b981;
-    --yry-color-warn: #f59e0b;
-    --yry-color-fail: #ef4444;
-    /* ── Text Colors (semantic) ── */
-    --yry-color-text-1: #f5f5f5;
-    --yry-color-text-2: #d4d4d4;
-    --yry-color-text-3: #888;
-    --yry-color-text-inverse: #000;
-    /* ── Surface Colors (semantic) ── */
-    --yry-color-bg: #0a0a0a;
-    --yry-color-surface-1: rgba(255,255,255,.03);
-    --yry-color-surface-2: rgba(255,255,255,.05);
-    --yry-color-border: rgba(255,255,255,.08);
-    --yry-color-border-strong: rgba(255,255,255,.12);
-    /* ── Typography ── */
-    --yry-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-    --yry-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    --yry-fs-xs: .62rem; --yry-fs-sm: .72rem; --yry-fs-md: .78rem;
-    --yry-fs-lg: .92rem; --yry-fs-xl: 1.1rem;  --yry-fs-2xl: 1.4rem;
-    --yry-lh-tight: 1.4; --yry-lh-base: 1.55; --yry-lh-loose: 1.7;
-    /* ── Spacing Scale (4-8-12-16-20-24-32-40) ── */
-    --yry-space-1: 4px;  --yry-space-2: 8px;  --yry-space-3: 12px;
-    --yry-space-4: 16px; --yry-space-5: 20px; --yry-space-6: 24px;
-    --yry-space-8: 32px; --yry-space-10: 40px;
-    /* ── Radius Scale ── */
-    --yry-radius-sm: 4px; --yry-radius-md: 6px;  --yry-radius-lg: 8px;
-    --yry-radius-xl: 12px; --yry-radius-pill: 14px;
-    /* ── Motion ── */
-    --yry-dur-fast: .12s; --yry-dur-base: .2s; --yry-dur-slow: .4s;
-    --yry-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-    --yry-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-    /* ── Z-Index ── */
-    --yry-z-base: 1; --yry-z-sticky: 10; --yry-z-overlay: 100; --yry-z-toast: 1000;
-    /* ── Layout ── */
-    --yry-container-max: 1100px;
-  }
-  /* ── Auto light-mode override (token-based, no theme switch required) ── */
-  @media (prefers-color-scheme: light) {
-    :root {
-      --yry-color-bg: #fafafa;
-      --yry-color-text-1: #1a1a1a;
-      --yry-color-text-2: #333;
-      --yry-color-text-3: #666;
-      --yry-color-surface-1: rgba(0,0,0,.03);
-      --yry-color-surface-2: rgba(0,0,0,.05);
-      --yry-color-border: rgba(0,0,0,.08);
-      --yry-color-border-strong: rgba(0,0,0,.12);
-    }
-  }
-}
-
-/* ═══ §1.0 Design System · Cascade Layers (显式优先级,杜绝特异性战争) ═══ */
-@layer reset, base, components, utilities, overrides;
-
-/* ═══ §1.0 Design System · prefers-reduced-motion (a11y 动效克制) ═══ */
+/* ═══ §1.0 a11y · prefers-reduced-motion (动效克制) ═══ */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important;
@@ -89,36 +41,82 @@
   }
 }
 
-/* ═══ §1.0 Design System · Skip Link (a11y 键盘可达性) ═══ */
+/* ═══ §1.0 a11y · Skip Link (键盘可达性) ═══ */
 .skip-link {
-  position: fixed; top: -100px; left: 8px; z-index: var(--yry-z-toast);
-  background: var(--yry-color-accent); color: var(--yry-color-text-inverse);
-  padding: 10px 16px; border-radius: var(--yry-radius-md); font-weight: 600;
-  text-decoration: none; transition: top var(--yry-dur-base) var(--yry-ease-out);
+  position: fixed; top: -100px; left: 8px; z-index: 1000;
+  background: var(--accent); color: #000;
+  padding: 10px 16px; border-radius: 6px; font-weight: 600;
+  text-decoration: none; transition: top .2s cubic-bezier(0.16, 1, 0.3, 1);
   font-size: .85rem; box-shadow: 0 4px 12px rgba(0,0,0,.3);
   border: 2px solid transparent;
 }
-.skip-link:focus { top: 8px; outline: none; border-color: var(--yry-color-cyan); }
-.skip-link:focus-visible { top: 8px; outline: 3px solid var(--yry-color-cyan); outline-offset: 2px; }
+.skip-link:focus { top: 8px; outline: none; border-color: var(--cyan); }
+.skip-link:focus-visible { top: 8px; outline: 3px solid var(--cyan); outline-offset: 2px; }
+
+/* ═══ §1.0 a11y · Focus Ring (统一键盘焦点) ═══ */
+:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ═══ §1.0 a11y · Semantic Container (role=main fallback) ═══ */
+[role="main"] { scroll-margin-top: 16px; }
+
+/* ── Container: narrower than yry-checklist.css default ── */
+.container { max-width: 1100px; }
+
+/* ═══ §1.0 Design System · Skip Link (a11y 键盘可达性) ═══ */
+.skip-link {
+  position: fixed; top: -100px; left: 8px; z-index: 1000;
+  background: var(--accent); color: #000;
+  padding: 10px 16px; border-radius: 6px; font-weight: 600;
+  text-decoration: none; transition: top .2s ease-out;
+  font-size: .85rem; box-shadow: 0 4px 12px rgba(0,0,0,.3);
+  border: 2px solid transparent;
+}
+.skip-link:focus { top: 8px; outline: none; border-color: var(--cyan); }
+.skip-link:focus-visible { top: 8px; outline: 3px solid var(--cyan); outline-offset: 2px; }
 
 /* ═══ §1.0 Design System · Semantic Container (role=main fallback) ═══ */
 [role="main"] { scroll-margin-top: 16px; }
 
 /* ═══ §1.0 Design System · Focus Ring (统一键盘焦点) ═══ */
 :focus-visible {
-  outline: 2px solid var(--yry-color-cyan);
+  outline: 2px solid var(--cyan);
   outline-offset: 2px;
-  border-radius: var(--yry-radius-sm);
+  border-radius: 4px;
 }
 
-.container { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
-.scene-nav { display:flex; align-items:center; flex-wrap:wrap; gap:8px; justify-content:center; padding:12px 16px; margin:24px 0; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:8px; }
+/* ── Scene nav page-level link pattern (supplements yry-scene.css .scene-nav) ── */
+.scene-nav-pills { display:flex; align-items:center; flex-wrap:wrap; gap:8px; justify-content:center; padding:12px 16px; margin:16px 0 24px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:8px; }
 .scene-nav-link { color:var(--text2); text-decoration:none; font-size:.76rem; padding:5px 12px; border-radius:14px; transition:all .15s; white-space:nowrap; }
 .scene-nav-link:hover { color:var(--accent); background:rgba(255,193,7,.08); }
 .scene-nav-link.active { color:var(--accent); font-weight:600; background:rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); cursor:default; }
 .scene-nav-link.story { color:var(--cyan); }
 .scene-nav-link.story:hover { color:var(--accent); background:rgba(34,211,238,.08); }
+
+/* ── Stat Grid: 4-column grid (overrides yry-checklist.css flex layout) ── */
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0 24px; }
+@media (max-width: 640px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
 .scene-nav-sep { color:var(--text3); font-size:.6rem; opacity:.3; user-select:none; }
+
+/* ── Delivery Grid (second-tier quick links · page-level) ── */
+.delivery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin: 12px 0; }
+.delivery-grid a {
+  display: block; padding: 14px 16px;
+  background: var(--yry-bg-card, linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%));
+  border: 1px solid var(--yry-border, rgba(255,255,255,.06));
+  border-radius: var(--yry-radius, 12px); color: var(--yry-cyan, #22d3ee);
+  text-decoration: none; font-size: .82rem; font-weight: 500; text-align: center;
+  transition: all .15s;
+}
+.delivery-grid a:hover {
+  border-color: rgba(255,193,7,.18); color: var(--yry-accent, #FFC107);
+  transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.2);
+}
+.delivery-grid a small { display: block; font-size: .64rem; color: var(--yry-text-3, rgba(110,110,114,1)); margin-top: 2px; font-weight: 400; }
+@media (max-width: 640px) { .delivery-grid { grid-template-columns: repeat(2, 1fr); } }
 
 /* Verify report — page-specific */
 .verify-report-head { background:linear-gradient(135deg,rgba(34,211,238,.06),rgba(255,193,7,.04)); border:1px solid rgba(34,211,238,.18); border-radius:10px; padding:18px 20px; margin-bottom:18px; }
@@ -172,12 +170,13 @@
 .rh-meta { font-size:.72rem; color:var(--text3); }
 .rh-meta code { color:var(--cyan); background:rgba(34,211,238,.08); padding:1px 6px; border-radius:4px; font-size:.7rem; }
 
-/* KPI grid */
-.kpi-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin:14px 0 18px; }
-@media (max-width:900px){ .kpi-grid{grid-template-columns:repeat(3,1fr);} }
-.kpi-card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:8px; padding:12px 10px; text-align:center; transition:all .2s; }
-.kpi-card:hover { border-color:rgba(255,193,7,.3); transform:translateY(-1px); }
-.kpi-label { font-size:.65rem; color:var(--text3); letter-spacing:.04em; text-transform:uppercase; }
+/* KPI grid — 6-column inside tab panels only; top-level uses yry-scene.css auto-fit */
+.panel .kpi-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin:14px 0 18px; }
+@media (max-width:900px){ .panel .kpi-grid{grid-template-columns:repeat(3,1fr);} }
+/* kpi-card — inside tab panels uses .kpi-num/.kpi-trend; top-level uses yry-scene.css's .kpi-val */
+.panel .kpi-card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:8px; padding:12px 10px; text-align:center; transition:all .2s; }
+.panel .kpi-card:hover { border-color:rgba(255,193,7,.3); transform:translateY(-1px); }
+.panel .kpi-label { font-size:.65rem; color:var(--text3); letter-spacing:.04em; text-transform:uppercase; }
 .kpi-num { font-size:1.4rem; font-weight:700; color:var(--text1); line-height:1.2; margin:4px 0; }
 .kpi-trend { font-size:.68rem; color:var(--text3); }
 .kpi-trend.up { color:#10b981; }
@@ -568,48 +567,35 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
 
 <!-- ═══ Breadcrumb (Vue 3 组件 · 挂载点) ═══ -->
 <div id="breadcrumb-app"></div>
-<nav class="scene-nav" aria-label="场景导航">
-  <a class="scene-nav-link active" href="计划清单.html" aria-current="page">📋 场景1 · 模板架构与 CSS 设计系统</a>
-  <span class="scene-nav-sep" aria-hidden="true">·</span>
-  <a class="scene-nav-link" href="../场景-2-清单交互组件实现/计划清单.html">📋 场景2 · 清单交互组件实现</a>
-  <span class="scene-nav-sep" aria-hidden="true">·</span>
-  <a class="scene-nav-link" href="../场景-3-验证报告与健康面板集成/计划清单.html">📋 场景3 · 验证报告与健康面板集成</a>
-  <span class="scene-nav-sep" aria-hidden="true">·</span>
-  <a class="scene-nav-link" href="../场景-4-批量生成与自循环机制/计划清单.html">📋 场景4 · 批量生成与自循环机制</a>
-  <span class="scene-nav-sep" aria-hidden="true">·</span>
-  <a class="scene-nav-link story" href="index.md">📖 场景说明</a>
-</nav>
 
-<nav class="cross-nav" aria-label="交叉页面导航">
-<span class="cross-link on" aria-current="page">📋 清单</span><span class="cross-sep" aria-hidden="true">·</span>
-<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep" aria-hidden="true">·</span>
-<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep" aria-hidden="true">·</span>
-<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep" aria-hidden="true">·</span>
-<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep" aria-hidden="true">·</span>
-<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep" aria-hidden="true">·</span>
-<a class="cross-link" href="审查.html">📝 审计</a>
-</nav>
+<!-- ═══ Scene Nav (YrySceneNav Vue 3 组件 · 挂载点) ═══ -->
+<div id="scene-nav-app"></div>
 
-<div class="header">
-  <h1>📋 场景-1<span class="accent"> · 模板架构与 CSS 设计系统</span></h1>
-  <div class="meta">📌 v4.6 · 📅 2026-06-15 · 🏷️ arch</div>
-</div>
+<!-- ═══ Cross Nav (YryCrossNav Vue 3 组件 · 挂载点) ═══ -->
+<div id="cross-nav-app"></div>
 
-<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">16</div><div class="lbl">✅ 完成</div></div><div class="stat-card"><div class="val">0</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val">100%</div><div class="lbl">📊 进度</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div></div>
+<!-- ═══ Scene Header (YrySceneHeader Vue 3 组件 · 挂载点) ═══ -->
+<div id="scene-header-app"></div>
+
+<!-- ═══ Stats Grid (YryStatsGrid Vue 3 组件 · 挂载点) ═══ -->
+<div id="stats-grid-app"></div>
+
+<div class="tip-box success"><strong>场景完成</strong> 16/16 工作项全部完成，7 个交付场景齐全，验收标准全部通过。</div>
 
 <!-- Tabs -->
-<div class="tabs">
-  <span class="tab on" data-panel="checklist">📋 清单</span>
-  <span class="tab" data-panel="commands">⚡ 命令</span>
-  <span class="tab" data-panel="verify">🧪 验证</span>
-  <span class="tab" data-panel="metrics">📊 指标</span>
-  <span class="tab" data-panel="deliverables">📦 交付物</span>
-  <span class="tab" data-panel="risks">⚠️ 风险</span>
-  <span class="tab" data-panel="timeline">📅 时间线</span>
+<div class="tabs" role="tablist" aria-label="内容面板">
+  <span class="tab on" data-panel="checklist" role="tab" aria-selected="true">📋 清单</span>
+  <span class="tab" data-panel="commands" role="tab" aria-selected="false">⚡ 命令</span>
+  <span class="tab" data-panel="related" role="tab" aria-selected="false">🔗 相关</span>
+  <span class="tab" data-panel="verify" role="tab" aria-selected="false">🧪 验证</span>
+  <span class="tab" data-panel="metrics" role="tab" aria-selected="false">📊 指标</span>
+  <span class="tab" data-panel="deliverables" role="tab" aria-selected="false">📦 交付物</span>
+  <span class="tab" data-panel="risks" role="tab" aria-selected="false">⚠️ 风险</span>
+  <span class="tab" data-panel="timeline" role="tab" aria-selected="false">📅 时间线</span>
 </div>
 
 <!-- ═══ Tab 1: Checklist ═══ -->
-<div class="panel on" id="panelChecklist" role="region" aria-label="执行清单">
+<div class="panel on" id="panelChecklist" role="tabpanel" aria-labelledby>
 
 <!-- 清单头部：项目元信息 + 完成度环形 -->
 <div class="checklist-head">
@@ -1535,7 +1521,7 @@ git tag -a v1.0.1 -m "场景-1 v4.6 patch"</div>
 
 
 <!-- ═══ Tab 3: Commands ═══ -->
-<div class="panel" id="panelCommands" role="region" aria-label="命令执行手册">
+<div class="panel" id="panelCommands" role="tabpanel" aria-labelledby>
 
 <!-- 命令清单头部 -->
 <div class="cmd-head">
@@ -1790,7 +1776,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=v4.6-patch<span class="cb
 </div><!-- /panelCommands -->
 
 <!-- ═══ Tab 4: Related Pages ═══ -->
-<div class="panel" id="panelRelated" role="region" aria-label="相关页面">
+<div class="panel" id="panelRelated" role="tabpanel" aria-labelledby>
 
 <div class="link-grid">
   <a href="架构图.html" class="link-card">
@@ -1814,7 +1800,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=v4.6-patch<span class="cb
 </div><!-- /panelRelated -->
 
 <!-- ═══ Tab 5: Verify ═══ -->
-<div class="panel" id="panelVerify" role="region" aria-label="验证报告">
+<div class="panel" id="panelVerify" role="tabpanel" aria-labelledby>
 
 <!-- 验证报告概览 -->
 <div class="verify-report-head">
@@ -2057,7 +2043,7 @@ grep -rEho '\{\{[A-Z_]+\}\}' docs/ | wc -l   # 期望 0<span class="cb" onclick=
 </div><!-- /panelVerify -->
 
 <!-- ═══ Tab 6: Metrics ═══ -->
-<div class="panel" id="panelMetrics" role="region" aria-label="质量与效能指标">
+<div class="panel" id="panelMetrics" role="tabpanel" aria-labelledby>
 
 <div class="report-head">
   <div class="rh-title">📊 质量与效能指标</div>
@@ -2178,7 +2164,7 @@ grep -rEho '\{\{[A-Z_]+\}\}' docs/ | wc -l   # 期望 0<span class="cb" onclick=
 </div><!-- /panelMetrics -->
 
 <!-- ═══ Tab 7: Deliverables ═══ -->
-<div class="panel" id="panelDeliverables" role="region" aria-label="交付物清单">
+<div class="panel" id="panelDeliverables" role="tabpanel" aria-labelledby>
 
 <div class="report-head">
   <div class="rh-title">📦 交付物清单 · 一键直达</div>
@@ -2482,7 +2468,7 @@ grep -rEho '\{\{[A-Z_]+\}\}' docs/ | wc -l   # 期望 0<span class="cb" onclick=
 </div><!-- /panelDeliverables -->
 
 <!-- ═══ Tab 8: Risks ═══ -->
-<div class="panel" id="panelRisks" role="region" aria-label="风险登记册">
+<div class="panel" id="panelRisks" role="tabpanel" aria-labelledby>
 
 <div class="report-head">
   <div class="rh-title">⚠️ 风险登记册 · 全周期管理</div>
@@ -3031,7 +3017,7 @@ grep -rEho '\{\{[A-Z_]+\}\}' docs/ | wc -l   # 期望 0<span class="cb" onclick=
 </div><!-- /panelRisks -->
 
 <!-- ═══ Tab 9: Timeline ═══ -->
-<div class="panel" id="panelTimeline" role="region" aria-label="项目时间线">
+<div class="panel" id="panelTimeline" role="tabpanel" aria-labelledby>
 
 <div class="report-head">
   <div class="rh-title">📅 项目时间线</div>
@@ -3141,6 +3127,16 @@ grep -rEho '\{\{[A-Z_]+\}\}' docs/ | wc -l   # 期望 0<span class="cb" onclick=
 
 </div><!-- /panelTimeline -->
 
+<!-- ═══ 关联链接 (prev/next scene navigation) ═══ -->
+<h2>关联链接</h2>
+<table>
+  <thead><tr><th>链接</th><th>目标</th></tr></thead>
+  <tbody>
+    <tr><td><a href="../README.md">← 任务故事 README</a></td><td>任务故事总览</td></tr>
+    <tr><td><a href="../场景-2-清单交互组件实现/index.md">场景 2 · 清单交互组件实现 →</a></td><td>下一场景 (后续)</td></tr>
+  </tbody>
+</table>
+
 <div class="footer">
   <p>🤖 Generated with planner agent | scene: 模板架构与 CSS 设计系统 | updated: 2026-06-15 · v4.6 (post-release patch)</p>
 </div>
@@ -3160,17 +3156,36 @@ document.querySelector('.tabs').addEventListener('click', e => {
 });
 
 function switchPanel(name) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.panel === name));
+  const targetId = 'panel' + name.charAt(0).toUpperCase() + name.slice(1);
+  document.querySelectorAll('.tab').forEach(t => {
+    const active = t.dataset.panel === name;
+    t.classList.toggle('on', active);
+    t.setAttribute('aria-selected', active);
+  });
   document.querySelectorAll('.panel').forEach(p => {
-    p.classList.toggle('on', p.id === 'panel' + name.charAt(0).toUpperCase() + name.slice(1));
+    p.classList.toggle('on', p.id === targetId);
   });
   localStorage.setItem(SCENE_KEY + '-tab', name);
+  // URL hash sync (bidirectional)
+  if (location.hash !== '#' + name) {
+    history.replaceState(null, '', '#' + name);
+  }
+  // Dispatch panelchange event for external listeners / test assertions
+  document.querySelector('.tabs').dispatchEvent(new CustomEvent('panelchange', { detail: { panel: name }, bubbles: true }));
 }
+
+// URL hash → tab (back/forward navigation support)
+window.addEventListener('hashchange', () => {
+  const name = location.hash.replace('#', '');
+  const valid = ['checklist','commands','related','verify','metrics','deliverables','risks','timeline'];
+  if (valid.includes(name)) switchPanel(name);
+});
 
 // Keyboard shortcuts
 document.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT') return;
-  const m = {'1':'checklist','2':'overview','3':'commands','4':'related','5':'verify','6':'metrics','7':'deliverables','8':'risks','9':'timeline'};
+  const tag = e.target.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return;
+  const m = {'1':'checklist','2':'commands','3':'related','4':'verify','5':'metrics','6':'deliverables','7':'risks','8':'timeline'};
   if (m[e.key]) { e.preventDefault(); switchPanel(m[e.key]); }
 });
 
@@ -3197,20 +3212,6 @@ function updateProgress() {
       status.className = prevDone ? 'step-status status-active' : 'step-status status-pending';
     }
   });
-
-  // Update overview tab stats
-  const pending = total - done;
-  const ready = Array.from(checks).filter((c, i) => {
-    if (c.checked) return false;
-    const allChecks = Array.from(checks);
-    return i === 0 || allChecks[i - 1].checked;
-  }).length;
-  const ovDone = document.getElementById('ov-done');
-  const ovReady = document.getElementById('ov-ready');
-  const ovPending = document.getElementById('ov-pending');
-  if (ovDone) ovDone.textContent = done;
-  if (ovReady) ovReady.textContent = ready;
-  if (ovPending) ovPending.textContent = pending - ready;
 
   // Persist
   const state = {};
@@ -3273,8 +3274,10 @@ function toast(msg) {
   });
   updateProgress();
 
-  // Restore last active tab
-  const activeTab = localStorage.getItem(SCENE_KEY + '-tab') || 'checklist';
+  // Restore last active tab (hash takes priority over localStorage)
+  const hashName = location.hash.replace('#', '');
+  const validTabs = ['checklist','commands','related','verify','metrics','deliverables','risks','timeline'];
+  const activeTab = validTabs.includes(hashName) ? hashName : (localStorage.getItem(SCENE_KEY + '-tab') || 'checklist');
   switchPanel(activeTab);
 })();
 </script>
@@ -3431,14 +3434,94 @@ function toast(msg) {
 </script>
 <script src="../../../../cdn/shared.js"></script>
 
+<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
+<script src="../../../../cdn/yry-scene-nav/index.js"></script>
+<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
+<script src="../../../../cdn/yry-cross-nav/index.js"></script>
+<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
+<script src="../../../../cdn/yry-back-top/index.js"></script>
 <!-- ═══ CDN: YryBreadcrumb 组件 loader (fetch index.html → 提取 template → 注册) ═══ -->
 <script src="../../../../cdn/yry-breadcrumb/index.js"></script>
+<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
+<script src="../../../../cdn/yry-scene-header/index.js"></script>
+<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
+<script src="../../../../cdn/yry-stats-grid/index.js"></script>
 
 <!-- ════════════════════════════════════════════════════════════════════════
-   页面级挂载 · 面包屑条目 (与组件解耦,条目由本页决定)
-   index.js 异步加载模板后派发 'yry-breadcrumb-ready' 事件
+   页面级挂载 · 场景面包屑 + 交叉导航 + 面包屑
+   index.js 异步加载模板后派发 'yry-*-ready' 事件
    ════════════════════════════════════════════════════════════════════════ -->
 <script>
+  /* ── YrySceneHeader 挂载 ── */
+  function mountSceneHeader() {
+    if (!window.Vue || !window.YrySceneHeader) return;
+    if (!document.getElementById('scene-header-app')) return;
+    Vue.createApp(window.YrySceneHeader, {
+      icon: '📋',
+      prefix: '场景-1',
+      accent: ' · 模板架构与 CSS 设计系统',
+      meta: '📌 新人上手 · 计划清单 · yry-checklist · 场景 1 · Template Architecture & CSS Design System',
+      desc: '定义计划清单页面的模板架构与 CSS 设计系统，涵盖 7 区域骨架、14 组件样式、CDN 级联加载策略及批量生成管线。'
+    }).mount('#scene-header-app');
+  }
+  if (window.YrySceneHeader) mountSceneHeader();
+  else document.addEventListener('yry-scene-header-ready', mountSceneHeader, { once: true });
+
+  /* ── YryStatsGrid 挂载 ── */
+  function mountStatsGrid() {
+    if (!window.Vue || !window.YryStatsGrid) return;
+    if (!document.getElementById('stats-grid-app')) return;
+    Vue.createApp(window.YryStatsGrid, {
+      items: [
+        { value: 16,     label: '✅ 已完成',   modifier: 'health' },
+        { value: 0,      label: '⏳ 进行中',   modifier: 'warn-h' },
+        { value: 0,      label: '⏳ 待开始' },
+        { value: '100%', label: '📊 完成进度', modifier: 'accent' }
+      ]
+    }).mount('#stats-grid-app');
+  }
+  if (window.YryStatsGrid) mountStatsGrid();
+  else document.addEventListener('yry-stats-grid-ready', mountStatsGrid, { once: true });
+
+  /* ── YrySceneNav 挂载 ── */
+  function mountSceneNav() {
+    if (!window.Vue || !window.YrySceneNav) return;
+    if (!document.getElementById('scene-nav-app')) return;
+    Vue.createApp(window.YrySceneNav, {
+      items: [
+        { label: '📋 场景1 · 模板架构与 CSS 设计系统', href: '计划清单.html', active: true },
+        { label: '📋 场景2 · 清单交互组件实现',     href: '../场景-2-清单交互组件实现/计划清单.html' },
+        { label: '📋 场景3 · 验证报告与健康面板集成', href: '../场景-3-验证报告与健康面板集成/计划清单.html' },
+        { label: '📋 场景4 · 批量生成与自循环机制',   href: '../场景-4-批量生成与自循环机制/计划清单.html' },
+        { label: '📖 场景说明',                     href: 'index.md', class: 'story' }
+      ]
+    }).mount('#scene-nav-app');
+  }
+  if (window.YrySceneNav) mountSceneNav();
+  else document.addEventListener('yry-scene-nav-ready', mountSceneNav, { once: true });
+
+  /* ── YryCrossNav 挂载 ── */
+  function mountCrossNav() {
+    if (!window.Vue || !window.YryCrossNav) return;
+    if (!document.getElementById('cross-nav-app')) return;
+    Vue.createApp(window.YryCrossNav, {
+      basePath: './',
+      active: '清单',
+      pages: [
+        { id: '清单', icon: '📋', href: '计划清单.html' },
+        { id: '架构', icon: '📐', href: '架构图.html' },
+        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
+        { id: '源码', icon: '📄', href: '源码.html' },
+        { id: '测试', icon: '🧪', href: '测试面板.html' },
+        { id: '演示', icon: '💡', href: '演示.html' },
+        { id: '审查', icon: '📝', href: '审查.html' }
+      ]
+    }).mount('#cross-nav-app');
+  }
+  if (window.YryCrossNav) mountCrossNav();
+  else document.addEventListener('yry-cross-nav-ready', mountCrossNav, { once: true });
+
+  /* ── YryBreadcrumb 挂载 ── */
   function mountBreadcrumb() {
     if (!window.Vue || !window.YryBreadcrumb) return;
     if (!document.getElementById('breadcrumb-app')) return;

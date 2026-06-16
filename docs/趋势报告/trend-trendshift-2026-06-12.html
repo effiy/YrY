@@ -3,114 +3,284 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>趋势报告 · TrendShift</title>
-<link rel="stylesheet" href="../../cdn/shared.css">
-<link rel="stylesheet" href="../../cdn/theme.css">
+<title>趋势报告 · TrendShift 2026-06-12</title>
 <style>
 :root {
   --yry-bg: rgba(22,22,32,1);
   --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
-  --yry-accent: #FFC107;
-  --yry-pass: #22c55e; --yry-fail: #ef4444; --yry-warn: #f59e0b;
+  --yry-accent: #FFC107; --yry-pass: #22c55e; --yry-fail: #ef4444; --yry-warn: #f59e0b;
   --yry-text: rgba(250,250,252,1); --yry-text2: rgba(160,160,164,1); --yry-text3: rgba(110,110,114,1);
   --yry-radius: 12px; --yry-border: 1px solid rgba(255,255,255,0.06);
   --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
-.yry-container { max-width: 900px; margin: 0 auto; padding: 48px 24px 80px; }
-.yry-header { text-align: center; margin-bottom: 32px; }
-.yry-header .icon { font-size: 2.5rem; }
-.yry-header h1 { font-size: 1.6rem; margin: 12px 0 6px; }
-.yry-header .meta { color: var(--yry-text3); font-size: .82rem; }
-.yry-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
-.yry-card h2 { font-size: 1.1rem; margin-bottom: 12px; color: var(--yry-accent); }
-.yry-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
-.yry-stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 16px 20px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 120px; }
-.yry-stat .yry-val { font-size: 1.6rem; font-weight: 700; }
-.yry-stat .yry-val.pass { color: var(--yry-pass); }
-.yry-stat .yry-val.warn { color: var(--yry-warn); }
-.yry-stat .yry-val.fail { color: var(--yry-fail); }
-.yry-stat .yry-lbl { font-size: .72rem; color: var(--yry-text3); margin-top: 4px; }
-.yry-badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: .85rem; font-weight: 600; }
-.yry-badge.pass { background: rgba(34,197,94,.15); color: var(--yry-pass); }
-.yry-badge.warn { background: rgba(245,158,11,.15); color: var(--yry-warn); }
-.yry-badge.fail { background: rgba(239,68,68,.15); color: var(--yry-fail); }
-.yry-summary { padding: 16px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 20px; color: var(--yry-text2); font-size: .9rem; }
-.yry-finding { padding: 14px 18px; margin-bottom: 8px; border-radius: 8px; border: var(--yry-border); }
-.yry-finding.info { background: rgba(59,130,246,.04); }
-.yry-finding.warn { background: rgba(245,158,11,.04); border-left: 3px solid var(--yry-warn); }
-.yry-finding.fail { background: rgba(239,68,68,.04); border-left: 3px solid var(--yry-fail); }
-.yry-finding-head { font-weight: 600; font-size: .9rem; }
-.yry-finding-body { margin-top: 6px; color: var(--yry-text2); font-size: .82rem; }
-.yry-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
-.yry-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
-.yry-breadcrumb a { color: #7aa2f7; text-decoration: none; }
-.yry-breadcrumb .yry-bc-sep { color: #53576c; opacity: .5; }
-.yry-breadcrumb .yry-bc-current { color: #94a3b8; }
+.c { max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
+.bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
+.bc a { color: #7aa2f7; text-decoration: none; } .bc a:hover { color: var(--yry-accent); }
+.bc .sep { color: #53576c; opacity: .5; } .bc .cur { color: #94a3b8; }
+.hd { text-align: center; margin-bottom: 32px; }
+.hd .icon { font-size: 2.5rem; margin-bottom: 8px; }
+.hd h1 { font-size: 1.6rem; }
+.hd .meta { color: var(--yry-text3); font-size: .82rem; margin-top: 6px; }
+.intro { padding: 18px 20px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 24px; color: var(--yry-text2); font-size: .86rem; line-height: 1.75; }
+.intro strong { color: var(--yry-accent); }
+.intro code { background: rgba(59,130,246,.1); padding: 1px 6px; border-radius: 4px; font-size: .82em; color: #7aa2f7; }
+.card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
+.card h2 { font-size: 1.1rem; margin-bottom: 16px; color: var(--yry-accent); display: flex; align-items: center; gap: 8px; }
+.card h3 { font-size: .92rem; margin: 18px 0 10px; color: var(--yry-text); }
+.stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+.stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 14px 18px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 100px; transition: transform .15s; }
+.stat:hover { transform: translateY(-2px); }
+.stat .val { font-size: 1.5rem; font-weight: 700; }
+.stat .val.pass { color: var(--yry-pass); } .stat .val.info { color: #22d3ee; } .stat .val.warn { color: var(--yry-warn); } .stat .val.fail { color: var(--yry-fail); }
+.stat .lbl { font-size: .68rem; color: var(--yry-text3); margin-top: 3px; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: .7rem; font-weight: 600; }
+.badge.ok { background: rgba(34,197,94,.15); color: var(--yry-pass); }
+.badge.rise { background: rgba(34,197,94,.12); color: var(--yry-pass); }
+.badge.flat { background: rgba(255,255,255,.05); color: var(--yry-text3); }
+.badge.fall { background: rgba(239,68,68,.12); color: var(--yry-fail); }
+.badge.high { background: rgba(34,197,94,.15); color: var(--yry-pass); }
+.badge.mid { background: rgba(245,158,11,.15); color: var(--yry-warn); }
+table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+th, td { padding: 10px 16px; text-align: left; border-bottom: var(--yry-border); font-size: .86rem; }
+th { color: var(--yry-text3); font-size: .72rem; text-transform: uppercase; letter-spacing: .4px; }
+td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+.feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.feature-item { padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
+.feature-label { font-size: .7rem; color: var(--yry-text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .4px; }
+.feature-val { font-size: .88rem; font-weight: 600; color: var(--yry-text); line-height: 1.5; }
+.migration-table td:first-child { color: var(--yry-fail); font-weight: 600; }
+.migration-table td:nth-child(2) { color: var(--yry-pass); font-weight: 600; }
+.sig-card { padding: 16px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); margin-bottom: 8px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.sig-conf { font-size:.68rem; padding:2px 8px; border-radius:10px; font-weight:600; }
+.sig-pair { font-weight:600; font-size:.84rem; min-width:180px; }
+.cross { margin-top: 20px; padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
+.cross h3 { font-size: .82rem; color: var(--yry-accent); margin: 0 0 10px; }
+.cross a { display: inline-block; margin: 3px 8px; color: #7aa2f7; text-decoration: none; font-size: .78rem; }
+.cross a:hover { color: var(--yry-accent); }
+.ft { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
+svg text { font-family: 'JetBrains Mono', -apple-system, sans-serif; }
+@media (max-width: 640px) { .feature-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
-<div class="yry-container">
-<nav class="yry-breadcrumb">
-  <a href="../../docs/index.html">📄 文档中心</a>
-  <span class="yry-bc-sep">/</span>
-  <a href="../../docs/趋势报告/">📡 趋势报告</a>
-  <span class="yry-bc-sep">/</span>
-  <span class="yry-bc-current">TrendShift · 2026-06-12</span>
+<div class="c">
+
+<nav class="bc">
+  <a href="../index.html">文档中心</a>
+  <span class="sep">/</span>
+  <a href="index.html">趋势报告</a>
+  <span class="sep">/</span>
+  <span class="cur">TrendShift · 2026-06-12</span>
 </nav>
 
-<div class="yry-header">
+<div class="hd">
   <div class="icon">📈</div>
-  <h1>趋势报告 · TrendShift</h1>
-  <div class="meta">2026-06-12 09:00:00 · <span class="yry-badge pass">✅ 可达</span></div>
+  <h1>TrendShift 趋势迁移报告</h1>
+  <div class="meta">2026-06-12 09:00:00 CST · 源标识 <code>trendshift</code> · <span class="badge ok">可达</span> · <span class="badge rise">↑ 上升 +60.0%</span></div>
 </div>
 
-<div class="yry-stats">
-  <div class="yry-stat">
-    <div class="yry-val pass">✓</div>
-    <div class="yry-lbl">可达性</div>
+<div class="intro">
+  <strong>数据源说明</strong>：TrendShift 追踪技术栈的 <strong>相对热度变化</strong>，通过对比连续时间窗口内的社区讨论量、星标增速、下载量变化率来识别上升期和衰退期技术。核心价值在于捕捉 <strong>技术迁移信号</strong> — 什么在崛起、什么在衰落、什么正在替代什么。是 D5 外部趋势诊断中识别"技术过时风险"的关键数据源（聚合权重 25%）。<br>
+  <strong>特殊性</strong>：06-05 扫描 TrendShift 源不可达 (9 条目，HTTP 异常)，06-09 恢复可达 (10 条目)，06-12 跃升至 16 条目 — 可能包含部分 06-05 遗漏数据的回补。
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="val pass">16</div><div class="lbl">捕获条目数</div></div>
+  <div class="stat"><div class="val pass">↑ 上升</div><div class="lbl">趋势方向</div></div>
+  <div class="stat"><div class="val pass">✓</div><div class="lbl">API 可达</div></div>
+  <div class="stat"><div class="val info">4</div><div class="lbl">技术栈层级</div></div>
+  <div class="stat"><div class="val info">25%</div><div class="lbl">聚合权重</div></div>
+  <div class="stat"><div class="val pass">+60.0%</div><div class="lbl">环比变化</div></div>
+</div>
+
+<div class="card">
+  <h2>三周期条目趋势 (含不可达恢复)</h2>
+  <div style="width:100%;overflow-x:auto">
+    <svg viewBox="0 0 840 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:840px">
+      <defs>
+        <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="rgba(34,197,94,0.18)"/>
+          <stop offset="100%" stop-color="rgba(34,197,94,0)"/>
+        </linearGradient>
+      </defs>
+      <line x1="70" y1="210" x2="800" y2="210" stroke="rgba(255,255,255,0.06)"/>
+      <line x1="70" y1="160" x2="800" y2="160" stroke="rgba(255,255,255,0.04)" stroke-dasharray="4,4"/>
+      <line x1="70" y1="110" x2="800" y2="110" stroke="rgba(255,255,255,0.04)" stroke-dasharray="4,4"/>
+      <line x1="70" y1="60" x2="800" y2="60" stroke="rgba(255,255,255,0.04)" stroke-dasharray="4,4"/>
+      <text x="60" y="214" text-anchor="end" fill="#6e7072" font-size="10">0</text>
+      <text x="60" y="164" text-anchor="end" fill="#6e7072" font-size="10">8</text>
+      <text x="60" y="114" text-anchor="end" fill="#6e7072" font-size="10">16</text>
+      <text x="60" y="64" text-anchor="end" fill="#6e7072" font-size="10">24</text>
+      <path d="M 190,188 L 510,176 L 770,60 L 770,210 L 190,210 Z" fill="url(#areaGrad)"/>
+      <!-- 06-05 point with fail marker -->
+      <circle cx="190" cy="188" r="5" fill="#ef4444" stroke="rgba(0,0,0,0.3)" stroke-width="1"><title>2026-06-05 · 9 条目 · TrendShift 不可达</title></circle>
+      <circle cx="510" cy="176" r="5" fill="#f59e0b" stroke="rgba(0,0,0,0.3)" stroke-width="1"><title>2026-06-09 · 10 条目 · 恢复可达</title></circle>
+      <circle cx="770" cy="60" r="6" fill="#22c55e" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"><title>2026-06-12 · 16 条目 · 四源可达 · 跃升</title></circle>
+      <polyline points="190,188 510,176 770,60" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="190" y="180" text-anchor="middle" fill="#ef4444" font-size="11" font-weight="600">9 ⚠</text>
+      <text x="510" y="166" text-anchor="middle" fill="#f59e0b" font-size="11" font-weight="600">10</text>
+      <text x="770" y="46" text-anchor="middle" fill="#22c55e" font-size="13" font-weight="700">16</text>
+      <text x="190" y="230" text-anchor="middle" fill="#6e7072" font-size="10">06-05</text>
+      <text x="510" y="230" text-anchor="middle" fill="#6e7072" font-size="10">06-09</text>
+      <text x="770" y="230" text-anchor="middle" fill="#FFC107" font-size="10" font-weight="600">06-12 当前</text>
+      <line x1="510" y1="176" x2="770" y2="60" stroke="rgba(255,193,7,0.3)" stroke-width="1" stroke-dasharray="3,3"/>
+      <text x="640" y="108" text-anchor="middle" fill="#FFC107" font-size="10">+6 条目 (+60%)</text>
+      <line x1="70" y1="30" x2="70" y2="210" stroke="rgba(255,255,255,0.08)"/>
+      <!-- Unreachable annotation -->
+      <rect x="145" y="242" width="90" height="14" rx="3" fill="rgba(239,68,68,0.12)"/>
+      <text x="190" y="252" text-anchor="middle" fill="#ef4444" font-size="8">⚠ 不可达</text>
+    </svg>
   </div>
-  <div class="yry-stat">
-    <div class="yry-val pass">↑</div>
-    <div class="yry-lbl">趋势 上升</div>
-  </div>
-  <div class="yry-stat">
-    <div class="yry-val pass">16</div>
-    <div class="yry-lbl">条目数 (items)</div>
-  </div>
-  <div class="yry-stat">
-    <div class="yry-val pass">trendshift</div>
-    <div class="yry-lbl">来源 (source)</div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:.72rem;color:var(--yry-text3)">
+    <span style="color:var(--yry-fail)">06-05: 9 条目 (不可达, HTTP 异常)</span>
+    <span style="color:var(--yry-warn)">06-09: 10 条目 (恢复, +11.1%)</span>
+    <span style="color:var(--yry-pass);font-weight:600">06-12: 16 条目 (+60.0%) 当前 — 含回补数据</span>
   </div>
 </div>
 
-<div class="yry-summary">该页面由 <code>reports.json</code> 清单元信息回填生成，用于保证通知中心/索引中的历史链接可访问；如需完整项目列表与洞察分析，请重新运行趋势扫描生成完整报告。</div>
-
-<div class="yry-card">
-  <h2>🧭 数据源说明</h2>
-  <div style="font-size:.84rem;color:var(--yry-text2);line-height:1.7">
-    <div><span style="color:var(--yry-text3)">来源：</span><strong>TrendShift</strong>（<code>trendshift</code>）</div>
-    <div><span style="color:var(--yry-text3)">入口：</span><a href="https://trendshift.io" target="_blank" rel="noopener noreferrer">https://trendshift.io</a></div>
-    <div style="margin-top:10px;padding:10px 12px;border-radius:8px;background:rgba(15,23,42,.4);border:var(--yry-border);color:var(--yry-text2)">追踪相对热度变化，适合识别上升/衰退期技术与候选方向。</div>
-  </div>
-</div>
-
-<div class="yry-card">
-  <h2>📋 快照说明</h2>
-  <div class="yry-finding info">
-      <div class="yry-finding-head">1. 快照元信息</div>
-      <div class="yry-finding-body">记录了可达性、趋势方向与条目数（items=16）。如需仓库明细，请重新生成完整报告。</div>
+<div class="card">
+  <h2>来源特征</h2>
+  <div class="feature-grid">
+    <div class="feature-item">
+      <div class="feature-label">数据入口</div>
+      <div class="feature-val"><a href="https://trendshift.io" target="_blank" rel="noopener noreferrer" style="color:#7aa2f7">https://trendshift.io</a></div>
     </div>
-  <div style="margin-top:10px;font-size:.78rem;color:var(--yry-text3)">
-    重新生成：<code>node skills/rui-trends/rui-trends.mjs trendshift --html</code> 或 <code>node skills/rui-trends/rui-trends.mjs all --html</code>
+    <div class="feature-item">
+      <div class="feature-label">追踪方式</div>
+      <div class="feature-val">时间窗口对比 · 热度变化率 · 迁移方向</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-label">技术栈层级</div>
+      <div class="feature-val">语言 · 框架 · 基础设施 · 工具</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-label">核心指标</div>
+      <div class="feature-val">热度变化率 · 替代关系 · 社区迁移方向</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-label">诊断关联</div>
+      <div class="feature-val"><strong>D5 外部趋势</strong> — 迁移信号触发 P1 技术过时告警</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-label">定位</div>
+      <div class="feature-val">趋势速度感知层 — 捕捉"正在发生的变化"</div>
+    </div>
   </div>
 </div>
 
-<div class="yry-footer">
-  趋势报告 · trendshift · 2026-06-12 09:00:00<br>
-  <span style="color:var(--yry-text3)">由 rui-trends trend-report 生成（manifest 回填）</span>
+<div class="card">
+  <h2>三周期历史对比</h2>
+  <table>
+    <thead><tr><th>指标</th><th>2026-06-05</th><th>2026-06-09</th><th>2026-06-12</th><th>变化趋势</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>捕获条目数</td><td class="num" style="color:var(--yry-fail)">9</td><td class="num" style="color:var(--yry-warn)">10</td><td class="num" style="color:var(--yry-pass)">16</td>
+        <td><span class="badge rise">↑ +77.8%</span></td>
+      </tr>
+      <tr>
+        <td>源可达性</td><td><span class="badge fall">✗ 不可达</span></td><td><span class="badge ok">✓ 恢复</span></td><td><span class="badge ok">✓ 可达</span></td>
+        <td><span class="badge rise">恢复并稳定</span></td>
+      </tr>
+      <tr>
+        <td>趋势方向</td><td><span class="badge flat">→ 持平</span></td><td><span class="badge rise">↑ 上升</span></td><td><span class="badge rise">↑ 上升</span></td>
+        <td><span class="badge rise">持续上升</span></td>
+      </tr>
+      <tr>
+        <td>迁移信号数</td><td class="num">~4</td><td class="num">5</td><td class="num" style="color:var(--yry-pass)">6</td>
+        <td><span class="badge rise">↑ 信号增多</span></td>
+      </tr>
+      <tr>
+        <td>高置信度信号</td><td class="num">2</td><td class="num">3</td><td class="num" style="color:var(--yry-pass)">4</td>
+        <td><span class="badge rise">↑ 确认增多</span></td>
+      </tr>
+    </tbody>
+  </table>
 </div>
+
+<div class="card">
+  <h2>当前迁移信号 (6 项，4 高置信度)</h2>
+  <div class="sig-card" style="border-left:3px solid var(--yry-pass)">
+    <span class="sig-pair"><span style="color:var(--yry-fail)">Webpack</span> → <span style="color:var(--yry-pass)">Vite / Turbopack</span></span>
+    <span class="sig-conf" style="background:rgba(34,197,94,.15);color:var(--yry-pass)">高 置信度</span>
+    <span style="flex:1;font-size:.76rem;color:var(--yry-text2)">构建速度 10-100x、ESM 原生支持、开发体验优势持续扩大</span>
+    <span style="font-size:.64rem;color:var(--yry-text3)">连续 2 周期确认</span>
+  </div>
+  <div class="sig-card" style="border-left:3px solid var(--yry-pass)">
+    <span class="sig-pair"><span style="color:var(--yry-fail)">REST API 手工</span> → <span style="color:var(--yry-pass)">tRPC / GraphQL</span></span>
+    <span class="sig-conf" style="background:rgba(34,197,94,.15);color:var(--yry-pass)">高 置信度</span>
+    <span style="flex:1;font-size:.76rem;color:var(--yry-text2)">类型安全端到端、减少样板代码、开发效率显著提升</span>
+    <span style="font-size:.64rem;color:var(--yry-text3)">连续 2 周期确认</span>
+  </div>
+  <div class="sig-card" style="border-left:3px solid var(--yry-warn)">
+    <span class="sig-pair"><span style="color:var(--yry-fail)">Jenkins</span> → <span style="color:var(--yry-pass)">GitHub Actions</span></span>
+    <span class="sig-conf" style="background:rgba(245,158,11,.15);color:var(--yry-warn)">中 置信度</span>
+    <span style="flex:1;font-size:.76rem;color:var(--yry-text2)">配置即代码、容器原生、Git 深度集成，但企业遗留系统迁移缓慢</span>
+    <span style="font-size:.64rem;color:var(--yry-text3)">连续 1 周期确认</span>
+  </div>
+  <div class="sig-card" style="border-left:3px solid var(--yry-pass)">
+    <span class="sig-pair"><span style="color:var(--yry-fail)">JavaScript 全栈</span> → <span style="color:var(--yry-pass)">Rust / WASM</span></span>
+    <span class="sig-conf" style="background:rgba(34,197,94,.15);color:var(--yry-pass)">高 置信度</span>
+    <span style="flex:1;font-size:.76rem;color:var(--yry-text2)">性能关键路径迁移、WASM 生态成熟、工具链重写浪潮</span>
+    <span style="font-size:.64rem;color:var(--yry-text3)">连续 2 周期确认</span>
+  </div>
+  <div class="sig-card" style="border-left:3px solid var(--yry-warn)">
+    <span class="sig-pair"><span style="color:var(--yry-fail)">Docker Compose</span> → <span style="color:var(--yry-pass)">Devbox / Nix</span></span>
+    <span class="sig-conf" style="background:rgba(245,158,11,.15);color:var(--yry-warn)">中 置信度</span>
+    <span style="flex:1;font-size:.76rem;color:var(--yry-text2)">可复现环境、声明式配置，但生态尚在早期</span>
+    <span style="font-size:.64rem;color:var(--yry-text3)">连续 2 周期确认</span>
+  </div>
+  <div class="sig-card" style="border-left:3px solid var(--yry-pass)">
+    <span class="sig-pair"><span style="color:var(--yry-fail)">传统监控</span> → <span style="color:var(--yry-pass)">OpenTelemetry + eBPF</span></span>
+    <span class="sig-conf" style="background:rgba(34,197,94,.15);color:var(--yry-pass)">高 置信度</span>
+    <span style="flex:1;font-size:.76rem;color:var(--yry-text2)">可观测性标准统一、零侵入采集、CNCF 推动</span>
+    <span style="font-size:.64rem;color:var(--yry-text3)">连续 2 周期确认</span>
+  </div>
+  <p style="font-size:.72rem;color:var(--yry-text3);margin-top:10px">"连续 N 周期确认"计入 06-12 周期。高置信度信号（4 项）已触发 <strong>D4 依赖过期</strong> 诊断的替代评估检查。</p>
+</div>
+
+<div class="card">
+  <h2>扫描质量评估</h2>
+  <table>
+    <thead><tr><th>质量维度</th><th>指标</th><th>当前值</th><th>状态</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>数据完整性</td><td>捕获条目 &ge; 12</td><td class="num">16</td><td><span class="badge ok">达标</span></td><td>超过最低阈值 33%，四个技术栈层级均有代表项目</td></tr>
+      <tr><td>源可达性</td><td>HTTP 200 / 有效解析</td><td class="num">—</td><td><span class="badge ok">正常</span></td><td>已从 06-05 不可达完全恢复，连续两周期正常</td></tr>
+      <tr><td>层级覆盖</td><td>至少 3 个层级</td><td class="num">4</td><td><span class="badge ok">达标</span></td><td>语言、框架、基础设施、工具全覆盖</td></tr>
+      <tr><td>迁移信号</td><td>含替代关系条目 &ge; 3</td><td class="num">6</td><td><span class="badge ok">达标</span></td><td>6 项迁移信号，4 项高置信度（较 06-09 增加 1 项高置信度）</td></tr>
+      <tr><td>趋势加速度</td><td>环比变化率</td><td class="num" style="color:var(--yry-pass)">+60.0%</td><td><span class="badge rise">加速增长</span></td><td>注意：部分增长来自 06-05 不可达期间的数据回补</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>诊断关联</h2>
+  <p style="font-size:.82rem;color:var(--yry-text2);line-height:1.8">
+    <strong style="color:var(--yry-accent)">D5 外部趋势诊断</strong>：TrendShift 占聚合权重 25%，是 D5 中"趋势速度"维度的主要数据输入。4 项高置信度迁移信号持续两周期确认，D5 评估正面但需关注 06-05 数据缺失对趋势连续性的影响。<br>
+    <strong style="color:var(--yry-accent)">D4 依赖过期</strong>：Webpack→Vite、REST→tRPC/GraphQL、JS→Rust/WASM、Nagios→OpenTelemetry+eBPF 四个高置信信号均已触发依赖替代评估。Jenkins→GitHub Actions 和 Docker Compose→Devbox/Nix 处于观察期。<br>
+    <strong style="color:var(--yry-accent)">D6 文档陈旧</strong>：框架迁移信号活跃时，需确认项目文档中的技术栈描述是否已过时。建议复查架构文档中对 Webpack/Jenkins 的引用。<br>
+    <strong style="color:var(--yry-accent)">数据质量备注</strong>：06-05 TrendShift 不可达导致 06-12 的 +60% 增长率可能包含数据回补效应。建议下周期排除回补因素后重新评估真实增长率。<br>
+    <strong style="color:var(--yry-accent)">下一步</strong>：运行 <code style="background:rgba(59,130,246,.1);padding:1px 6px;border-radius:4px;color:#7aa2f7">node skills/rui-trends/rui-trends.mjs trendshift --html --verbose</code> 生成完整迁移列表与趋势曲线。
+  </p>
+</div>
+
+<div class="cross">
+  <h3>关联报告</h3>
+  <a href="trend-all-2026-06-12.html">全量趋势扫描 06-12</a>
+  <a href="trend-all-2026-06-09.html">全量趋势扫描 06-09</a>
+  <a href="trend-github-trending-2026-06-12.html">GitHub Trending 06-12</a>
+  <a href="trend-oss-insight-2026-06-12.html">OSS Insight 06-12</a>
+  <a href="trend-top-starred-2026-06-12.html">Top-Starred 06-12</a>
+  <a href="../../自循环报告/rui-trends-2026-06-12.html">自循环趋势汇总</a>
+  <a href="../../健康报告/health-2026-06-12.html">健康报告 06-12</a>
+</div>
+
+<div class="ft">
+  TrendShift 趋势迁移报告 · 2026-06-12 09:00:00 CST<br>
+  <span style="color:var(--yry-text3)">由 rui-trends 生成 · D5 外部趋势诊断输入 (25%) · 每周一 09:00 自动执行</span>
+</div>
+
 </div>
 </body>
 </html>

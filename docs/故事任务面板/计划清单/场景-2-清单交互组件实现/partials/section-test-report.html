@@ -1,0 +1,108 @@
+<div class="section">
+<h2><span class="dot"></span>§3 测试报告<span class="s-done">— 已完成</span></h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">9</span>
+    <span class="step-title">勾选联动</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>5 | 5 | 0 | 100%</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>汇总 <b>勾选联动</b> 测试报告: <code>5 断言 · 5 通过 · 0 失败</code>,覆盖进度更新 + 步骤状态推导 + localStorage。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>跑测试 <code>npx vitest run tests/interact/checkbox.test.mjs</code></li>
+          <li>收集 JUnit XML 报告 + 覆盖率 (c8)</li>
+          <li>验证: checkbox 勾选 → 进度条 width 更新 → 完成数 +1 → localStorage 写入</li>
+          <li>验证步骤状态推导: 完成✅ / 就绪🔶 / 待开始⏳ 三种状态正确</li>
+          <li>推 <code>rui-bot</code> 企微 <code>--status=test-report</code></li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>JUnit XML 标准 · c8 覆盖率 · 步骤状态推导算法验证 · localStorage 写入断言 · 企微通知</dd>
+      <dt>⚠️ 风险</dt><dd>偶发 flaky → 重试 <code>3 次</code> · localStorage 未清空 → 测试前 reset · 进度计算精度 → 验证整数百分比</dd>
+      <dt>✅ DoD</dt><dd>5/5 通过 · 报告归档 · 企微已通知 · 步骤状态推导 3 态正确 · flaky <code>&lt; 1%</code></dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">2 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="测试面板.html" class="deliv-link pass" target="_blank" rel="noopener" title="测试面板.html"><span class="dl-icon">🧪</span><span class="dl-name">🧪 测试面板.html</span><span class="dl-size">· 报告</span><span class="dl-newtab">↗</span></a>
+        <a href="index.md" class="deliv-link pass" target="_blank" rel="noopener" title="index.md"><span class="dl-icon">📑</span><span class="dl-name">📑 index.md</span><span class="dl-size">· §3</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.0h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p1">P1</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>勾选联动</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>5</li>
+      <li>5</li>
+      <li>0</li>
+    </ul></div>
+
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">10</span>
+    <span class="step-title">折叠面板</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>3 | 3 | 0 | 100%</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>汇总 <b>折叠面板动画</b> 测试报告: <code>3 断言 · 3 通过 · 0 失败</code>,CSS transition ≤ 300ms。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>跑 Playwright 动画测试: <code>npx playwright test tests/interact/fold-animation.spec.ts</code></li>
+          <li>测量 <code>max-height</code> transition from 0 to scrollHeight 的实际耗时</li>
+          <li>验证 <code>transition: max-height 0.3s ease-out</code> 属性命中</li>
+          <li>快速连续点击验证 debounce 无动画冲突</li>
+          <li>归档 + 企微通知</li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>Playwright 动画测量 · CSS transition 属性断言 · max-height 过渡曲线 · 快速点击稳定性 · 动画耗时 ≤ 300ms</dd>
+      <dt>⚠️ 风险</dt><dd>动画测量不稳定 → 取 5 次平均值 · max-height 过渡不平滑 → GPU 加速 fallback · 内容变化 → 重新测量</dd>
+      <dt>✅ DoD</dt><dd>3/3 动画断言 · 300ms 内完成 · transition 属性命中 · 0 卡顿 · 报告归档</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">3 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="测试面板.html" class="deliv-link pass" target="_blank" rel="noopener" title="测试面板.html"><span class="dl-icon">🧪</span><span class="dl-name">🧪 测试面板.html</span><span class="dl-size">· 报告</span><span class="dl-newtab">↗</span></a>
+        <a href="index.md" class="deliv-link pass" target="_blank" rel="noopener" title="index.md"><span class="dl-icon">📑</span><span class="dl-name">📑 index.md</span><span class="dl-size">· §3</span><span class="dl-newtab">↗</span></a>
+        <a href="演示.html" class="deliv-link pass" target="_blank" rel="noopener" title="演示.html"><span class="dl-icon">💡</span><span class="dl-name">💡 演示.html</span><span class="dl-size">· 视觉</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>0.7h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p1">P1</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>折叠面板</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>3</li>
+      <li>3</li>
+      <li>0</li>
+    </ul></div>
+
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+</div>

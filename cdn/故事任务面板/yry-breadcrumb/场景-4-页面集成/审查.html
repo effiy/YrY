@@ -9,43 +9,56 @@
 <link rel="stylesheet" href="../../../yry-scene.css">
 <link rel="stylesheet" href="../../../yry-checklist.css">
 <link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
+<link rel="stylesheet" href="../../../yry-inline-helpers.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<script src="../../../shared.js"></script>
-<script src="../../../yry-breadcrumb/index.js"></script>
+<style>
+
+/* ═══ a11y · prefers-reduced-motion ═══ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* ═══ a11y · Skip Link ═══ */
+.skip-link {
+  position: fixed; top: -100px; left: 8px; z-index: 1000;
+  background: var(--accent, #ffc107); color: #000;
+  padding: 10px 16px; border-radius: 6px; font-weight: 600;
+  text-decoration: none; transition: top .2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: .85rem; box-shadow: 0 4px 12px rgba(0,0,0,.3);
+  border: 2px solid transparent;
+}
+.skip-link:focus { top: 8px; outline: none; border-color: var(--cyan, #22d3ee); }
+.skip-link:focus-visible { top: 8px; outline: 3px solid var(--cyan, #22d3ee); outline-offset: 2px; }
+/* ═══ a11y · Focus Ring ═══ */
+:focus-visible {
+  outline: 2px solid var(--cyan, #22d3ee);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* ═══ a11y · Semantic Container ═══ */
+[role="main"] { scroll-margin-top: 16px; }
+.container { max-width: 1100px; }
+</style>
 </head>
 <body>
+<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
+<div class="container" id="main">
 <div id="breadcrumb-app"></div>
 
-<div class="scene-header">
-  <span class="scene-tag">场景 4 · 技术评审</span>
-  <h1 class="scene-title">📝 页面集成 · 技术评审</h1>
-  <div class="scene-en">YryBreadcrumb 任务故事 · 场景 4 · Page Integration · Review</div>
-  <p class="scene-desc">集成到 计划清单.html + 28 场景页 · 4 文件引用顺序 · 4 种 items 模式 (含 href/纯文本/长路径/图标) — 逐项审查核查。</p>
-</div>
+<div id="scene-header-app"></div>
 
-<div class="scene-nav">
-  <a href="../README.md">📋 任务故事</a>
-  <span class="scene-nav-sep">/</span>
-  <a href="./index.md">页面集成</a>
-  <span class="scene-nav-sep">/</span>
-  <span class="active">技术评审</span>
-</div>
+<div id="scene-nav-app"></div>
 
-<div class="cross-nav">
-  <a class="cross-link" href="计划清单.html">📋 清单</a>
-  <span class="cross-sep">·</span>
-  <a class="cross-link" href="架构图.html">📐 架构</a>
-  <span class="cross-sep">·</span>
-  <a class="cross-link" href="知识图谱.html">🔗 图谱</a>
-  <span class="cross-sep">·</span>
-  <a class="cross-link" href="源码.html">📄 源码</a>
-  <span class="cross-sep">·</span>
-  <a class="cross-link" href="测试面板.html">🧪 测试</a>
-  <span class="cross-sep">·</span>
-  <a class="cross-link" href="演示.html">💡 演示</a>
-  <span class="cross-sep">·</span>
-  <span class="cross-link on">📝 审查</span>
-</div>
+<div id="cross-nav-app"></div>
 
 <div class="verdict-row">
   <div class="vr-title">📝 技术评审报告</div>
@@ -145,19 +158,19 @@
     <div class="st-num">1</div>
     <div class="st-info"><div class="st-name">集成架构审查</div><div class="st-detail">验证 4 文件引用顺序正确性、FOUC 防护、跨页面引用隔离</div></div>
     <span class="st-status ok">✓ 通过</span>
-    <div class="st-bar" style="width:100%"></div>
+    <div class="st-bar"></div>
   </div>
   <div class="stage-row done">
     <div class="st-num">2</div>
     <div class="st-info"><div class="st-name">模式覆盖审查</div><div class="st-detail">4 种 items 模式全量覆盖、dogfooding 自举验证、多实例隔离</div></div>
     <span class="st-status ok">✓ 通过</span>
-    <div class="st-bar" style="width:100%"></div>
+    <div class="st-bar"></div>
   </div>
   <div class="stage-row done">
     <div class="st-num">3</div>
     <div class="st-info"><div class="st-name">质量与可访问性审查</div><div class="st-detail">降级友好验证、a11y 一致性、13 个目标页面全部挂载</div></div>
     <span class="st-status ok">✓ 通过</span>
-    <div class="st-bar" style="width:100%"></div>
+    <div class="st-bar"></div>
   </div>
 </div>
 
@@ -225,16 +238,88 @@
   <strong>✅ 场景 4 评审结论</strong> — R1-R7 全部达标，13 个目标页面全部挂载，4 种 items 模式全覆盖，多实例隔离正确。可进入场景 5（测试与发布）。
 </div>
 
+</div>
 <div class="footer">
   📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-4-页面集成/审查.html</code><br>
   🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
 </div>
 
 
+<script src="../../../shared.js"></script>
+<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
+<script src="../../../yry-scene-nav/index.js"></script>
+<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
+<script src="../../../yry-cross-nav/index.js"></script>
+<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
+<script src="../../../yry-back-top/index.js"></script>
+<!-- ═══ CDN: YryBreadcrumb 组件 loader ═══ -->
+<script src="../../../yry-breadcrumb/index.js"></script>
+<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
+<script src="../../../yry-scene-header/index.js"></script>
+<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
+<script src="../../../yry-stats-grid/index.js"></script>
 
-<script>
+  <!-- ════════════════════════════════════════════════════════════
+       页面级挂载 · 场景导航 + 交叉导航 + 面包屑 + 统计网格
+       index.js 异步加载模板后派发 yry-*-ready 事件
+       ════════════════════════════════════════════════════════════ -->
+  <script>
+
+  /* ── YryCrossNav 挂载 ── */
+  function mountCrossNav() {
+    if (!window.Vue || !window.YryCrossNav) return;
+    if (!document.getElementById('cross-nav-app')) return;
+    Vue.createApp(window.YryCrossNav, {
+      basePath: './',
+      active: '审查',
+      pages: [
+        { id: '清单', icon: '📋', href: '计划清单.html' },
+        { id: '架构', icon: '📐', href: '架构图.html' },
+        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
+        { id: '源码', icon: '📄', href: '源码.html' },
+        { id: '测试', icon: '🧪', href: '测试面板.html' },
+        { id: '演示', icon: '💡', href: '演示.html' },
+        { id: '审查', icon: '📝', href: '审查.html' }
+      ]
+    }).mount('#cross-nav-app');
+  }
+  if (window.YryCrossNav) mountCrossNav();
+  else document.addEventListener('yry-cross-nav-ready', mountCrossNav, { once: true });
+
+  /* ── YrySceneNav 挂载 ── */
+  function mountSceneNav() {
+    if (!window.Vue || !window.YrySceneNav) return;
+    if (!document.getElementById('scene-nav-app')) return;
+    Vue.createApp(window.YrySceneNav, {
+      items: [
+        { label: '📋 任务故事', href: '../README.md' },
+        { label: '页面集成', href: './index.md' },
+        { label: '技术评审', active: true }
+      ]
+    }).mount('#scene-nav-app');
+  }
+  if (window.YrySceneNav) mountSceneNav();
+  else document.addEventListener('yry-scene-nav-ready', mountSceneNav, { once: true });
+
+  /* ── YrySceneHeader 挂载 ── */
+  function mountSceneHeader() {
+    if (!window.Vue || !window.YrySceneHeader) return;
+    if (!document.getElementById('scene-header-app')) return;
+    Vue.createApp(window.YrySceneHeader, {
+      icon: '📝',
+      prefix: '场景 4',
+      accent: ' · 页面集成',
+      meta: 'YryBreadcrumb 任务故事 · 场景 4 · Page Integration · Review',
+      desc: '集成到 计划清单.html + 28 场景页 · 4 文件引用顺序 · 4 种 items 模式 (含 href/纯文本/长路径/图标) — 逐项审查核查。'
+    }).mount('#scene-header-app');
+  }
+  if (window.YrySceneHeader) mountSceneHeader();
+  else document.addEventListener('yry-scene-header-ready', mountSceneHeader, { once: true });
+
+  /* ── YryBreadcrumb 挂载 ── */
   function mountBreadcrumb() {
     if (!window.Vue || !window.YryBreadcrumb) return;
+    if (!document.getElementById('breadcrumb-app')) return;
     Vue.createApp(window.YryBreadcrumb, {
       ariaLabel: '面包屑导航',
       items: [
@@ -247,6 +332,7 @@
   }
   if (window.YryBreadcrumb) mountBreadcrumb();
   else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-</script>
+  </script>
+
 </body>
 </html>

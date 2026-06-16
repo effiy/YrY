@@ -1,0 +1,160 @@
+<div class="section">
+<h2><span class="dot"></span>§1 测试设计<span class="s-done">— 已完成</span></h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">4</span>
+    <span class="step-title">勾选步骤</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>TC-10 | 进度%更新 + 完成数+1 | 延迟 &lt; 50ms</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>TC-10 验证 <b>勾选步骤 → 进度联动</b>: jsdom 模拟点击 checkbox,断言进度条更新 + 完成数 + 步骤状态推导。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>jsdom 加载清单页面,获取全部 14 个 <code>.step-checkbox</code> 元素</li>
+          <li>逐一点击 checkbox,断言每次 <code>updateProgress()</code> 调用后进度%正确更新</li>
+          <li>验证步骤状态推导: 已完成→✅ · 前置全完成→🔶就绪 · 前置未完成→⏳待开始</li>
+          <li>断言进度条 <code>width</code> 更新延迟 <code>&lt; 50ms</code></li>
+          <li>断言 overview 统计 (完成数/总数/百分比) 与 DOM 一致</li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>jsdom 模拟点击 · <code>updateProgress()</code> 数据源唯一 · 步骤状态推导算法 · localStorage 写入验证 · 延迟断言</dd>
+      <dt>⚠️ 风险</dt><dd>checkbox 状态与 localStorage 不同步 → 页面加载时从 localStorage 恢复 · 进度条 0%→100% 跳变 → 验证中间态</dd>
+      <dt>✅ DoD</dt><dd>5/5 断言 PASS · 14 步骤全遍历 · 延迟 &lt; 50ms · 0 flaky · localStorage 写入验证通过</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">2 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="测试面板.html#tc-1" class="deliv-link pass" target="_blank" rel="noopener" title="测试面板.html#tc-1"><span class="dl-icon">🧪</span><span class="dl-name">🧪 测试面板.html</span><span class="dl-size">· TC-1</span><span class="dl-newtab">↗</span></a>
+        <a href="计划清单.html" class="deliv-link pass" target="_blank" rel="noopener" title="计划清单.html"><span class="dl-icon">📄</span><span class="dl-name">📄 计划清单.html</span><span class="dl-size">· 被测</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>0.8h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>TC-10</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>勾选步骤</li>
+      <li>进度%更新 + 完成数+1</li>
+      <li>延迟 &lt; 50ms</li>
+    </ul></div>
+
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">5</span>
+    <span class="step-title">折叠面板动画</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>TC-11 | 展开/收起过渡 | 300ms 内完成</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>TC-11 验证 <b>折叠面板 CSS transition 动画</b>: 点击交付物头部 → 展开/收起过渡 ≤ 300ms。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>Playwright 加载清单页面,定位 <code>.step-deliv-head</code> 点击区域</li>
+          <li>点击触发 <code>.step-body</code> 的 <code>collapsed</code> class toggle</li>
+          <li>测量 <code>max-height</code> 从 0 到完整高度的 transition 耗时</li>
+          <li>断言过渡属性为 <code>max-height 0.3s ease-out</code></li>
+          <li>连续快速点击验证 debounce 不产生动画冲突</li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd>Playwright 动画测量 · CSS transition 属性断言 · max-height 过渡 · 快速点击防抖 · GPU 加速</dd>
+      <dt>⚠️ 风险</dt><dd>max-height 过渡不平滑 → 改用 <code>transform: scaleY</code> · 内容溢出 → <code>overflow: hidden</code> 裁剪</dd>
+      <dt>✅ DoD</dt><dd>3/3 动画断言 · 300ms 内完成 · transition 属性命中 · 0 卡顿 · 快速点击无残留动画</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">2 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="测试面板.html#tc-2" class="deliv-link pass" target="_blank" rel="noopener" title="测试面板.html#tc-2"><span class="dl-icon">🧪</span><span class="dl-name">🧪 测试面板.html</span><span class="dl-size">· TC-2</span><span class="dl-newtab">↗</span></a>
+        <a href="演示.html" class="deliv-link pass" target="_blank" rel="noopener" title="演示.html"><span class="dl-icon">💡</span><span class="dl-name">💡 演示.html</span><span class="dl-size">· 渲染</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>2.2h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>TC-11</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>折叠面板动画</li>
+      <li>展开/收起过渡</li>
+      <li>300ms 内完成</li>
+    </ul></div>
+
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">6</span>
+    <span class="step-title">标签页全切换</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>TC-12 | 7 面板逐一显示 | 7/7 正常</p>
+    <dl class="step-detail">
+      <dt>🎯 目标</dt><dd>TC-12 验证 <b>标签页全切换</b>: 7 面板逐一显示 + 键盘 1-9 映射 + URL hash 同步 + localStorage tab 记忆。</dd>
+      <dt>📐 步骤</dt><dd>
+        <ol>
+          <li>模拟点击 7 个 tab 标签,断言每个 <code>panel.on</code> class 正确切换</li>
+          <li>模拟键盘数字键 1-9,验证 7 面板 + overview 映射正确</li>
+          <li>验证 URL hash 与当前面板同步更新</li>
+          <li>刷新页面后断言 localStorage 恢复最后活跃 tab</li>
+          <li>键盘事件在 input/textarea 聚焦时不触发,防止误操作</li>
+        </ol>
+      </dd>
+      <dt>🔍 要点</dt><dd><code>switchPanel()</code> 单一入口 · <code>dataset.panel</code> 映射 · URL hash <code>location.hash</code> 同步 · input 聚焦跳过 · localStorage tab 记忆</dd>
+      <dt>⚠️ 风险</dt><dd>hash 与 tab 不同步 → <code>hashchange</code> 事件双向绑定 · 键盘冲突 → 跳过 input/textarea/contenteditable · tab 记忆过期 → 默认 checklist</dd>
+      <dt>✅ DoD</dt><dd>7/7 面板切换 · 键盘 1-9 全映射 · URL hash 同步 · 刷新恢复 tab · 输入框聚焦时不触发</dd>
+    </dl>
+    <div class="step-deliv">
+      <div class="step-deliv-head">
+        <span class="step-deliv-toggle">▼</span><b>📦 交付物验收 · 点击在新标签页打开</b>
+        <span class="sd-count">3 项</span>
+      </div>
+      <div class="step-deliv-list">
+        <a href="测试面板.html#tc-3" class="deliv-link pass" target="_blank" rel="noopener" title="测试面板.html#tc-3"><span class="dl-icon">🧪</span><span class="dl-name">🧪 测试面板.html</span><span class="dl-size">· TC-3</span><span class="dl-newtab">↗</span></a>
+        <a href="../../../cdn/shared.css" class="deliv-link pass" target="_blank" rel="noopener" title="../../../cdn/shared.css"><span class="dl-icon">🌐</span><span class="dl-name">🌐 shared.css</span><span class="dl-size">· CDN 1</span><span class="dl-newtab">↗</span></a>
+        <a href="../../../cdn/yry-checklist.css" class="deliv-link pass" target="_blank" rel="noopener" title="../../../cdn/yry-checklist.css"><span class="dl-icon">🌐</span><span class="dl-name">🌐 yry-checklist.css</span><span class="dl-size">· CDN 2</span><span class="dl-newtab">↗</span></a>
+      </div>
+    </div>
+
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.2h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>TC-12</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>标签页全切换</li>
+      <li>7 面板逐一显示</li>
+      <li>7/7 正常</li>
+    </ul></div>
+
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+</div>

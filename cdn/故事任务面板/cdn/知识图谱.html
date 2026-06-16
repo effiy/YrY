@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>yry-cdn 全景 · 知识图谱</title>
+<link rel="stylesheet" href="../../../../cdn/fonts.css">
+<link rel="stylesheet" href="../../../../cdn/yry-inline-helpers.css">
+<script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
+.container{max-width:1400px;margin:0 auto}
+.header{margin-bottom:1.5rem}
+.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
+.pulse-dot{width:12px;height:12px;background:#22d3ee;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+h1{font-size:1.5rem;font-weight:700}
+.subtitle{color:#94a3b8;font-size:.875rem;margin-left:1.75rem}
+.toolbar{display:flex;gap:.5rem;margin-left:auto;flex-shrink:0;align-items:center}
+.toolbar-toggle{background:transparent;border:none;color:#475569;cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem}
+.toolbar-toggle:hover{color:#94a3b8;background:rgba(30,41,59,.5)}
+.toolbar-actions{display:none;gap:.5rem}
+.toolbar.expanded .toolbar-actions{display:flex}
+.toolbar-actions button{background:rgba(30,41,59,.8);border:1px solid #334155;color:#94a3b8;padding:.375rem .75rem;border-radius:.375rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s;white-space:nowrap}
+.toolbar-actions button:hover{background:rgba(51,65,85,.8);color:white;border-color:#475569}
+.graph-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1rem;margin-bottom:1.5rem}
+#cy{width:100%;height:550px;border-radius:.5rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
+.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
+.card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
+.card-dot{width:8px;height:8px;border-radius:50%}
+.card-dot.domain{background:#EC4899}.card-dot.flow{background:#34d399}.card-dot.step{background:#3B82F6}.card-dot.skill{background:#22d3ee}.card-dot.scene{background:#8B5CF6}
+.card h3{font-size:.875rem;font-weight:600}
+.card ul{list-style:none;color:#94a3b8;font-size:.75rem}
+.card li{margin-bottom:.375rem}
+.legend{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:.75rem;padding:.75rem;background:rgba(15,23,42,.5);border-radius:.5rem;border:1px solid #1e293b;font-size:.75rem;color:#94a3b8}
+.legend-item{display:flex;align-items:center;gap:.375rem}
+.legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid}
+.legend-dot.domain{background:rgba(236,72,153,.3);border-color:#EC4899}
+.legend-dot.flow{background:rgba(52,211,153,.3);border-color:#34d399}
+.legend-dot.step{background:rgba(59,130,246,.3);border-color:#3B82F6}
+.legend-dot.skill{background:rgba(34,211,238,.3);border-color:#22d3ee}
+.legend-dot.scene{background:rgba(139,92,246,.3);border-color:#8B5CF6}
+.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
+.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
+.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
+.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
+.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
+
+@media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
+.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
+.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
+.cross-link:hover{color:#fbbf24;background:rgba(251,191,36,0.06)}
+.cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
+.cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
+</style>
+</head><body><div class="container" id="report-container">
+<nav class="breadcrumb"><a href="../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-cdn · CDN 共享前端资源管理</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
+<nav class="cross-nav">
+  <a class="cross-link" href="场景-1-cdn资源加载与页面渲染/架构图.html">场景-1</a><span class="cross-sep">|</span>
+  <a class="cross-link" href="场景-2-双主题系统设计/架构图.html">场景-2</a><span class="cross-sep">|</span>
+  <a class="cross-link" href="场景-3-组件库与JS工具API/架构图.html">场景-3</a><span class="cross-sep">|</span>
+  <a class="cross-link" href="场景-4-存量页面迁移/架构图.html">场景-4</a><span class="cross-sep">|</span>
+  <a class="cross-link" href="场景-5-npm包发布与版本管理/架构图.html">场景-5</a>
+</nav>
+
+<div class="header"><div class="header-row"><div class="pulse-dot"></div><h1>🧩 yry-cdn 全景 · 知识图谱</h1>
+  <div class="toolbar"><div class="toolbar-actions">
+  <button onclick="copyAsImage(this)">📋 Copy</button>
+  <button onclick="downloadPNG(this)">🖼️ PNG</button>
+  <button onclick="downloadPDF(this)">📄 PDF</button>
+  </div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
+</div><p class="subtitle">CDN 共享前端资源管理 — 5 场景 · 11 源文件 · 55 消费者页面 · 交互式知识图谱</p></div>
+
+<div class="legend"><div class="legend-item"><span class="legend-dot a"></span> 场景 (Scene)</div>
+<div class="legend-item"><span class="legend-dot b"></span> 源文件 (Asset)</div>
+<div class="legend-item"><span class="legend-dot c"></span> 组件/API (Component)</div>
+<div class="legend-item"><span class="legend-dot d"></span> 消费者 (Consumer)</div>
+<div class="legend-item"><span class="legend-dot e"></span> 外部系统 (External)</div></div>
+
+<div class="graph-container"><div id="cy"></div></div>
+
+<div class="cards"><div class="card"><div class="card-header"><span class="card-dot a"></span><h3>5 个场景</h3></div><ul><li>场景 1 — CDN 资源加载与页面渲染 · 5 步加载链</li><li>场景 2 — 双主题系统设计 · 18 令牌 + 21 组件</li><li>场景 3 — 组件库与 JS 工具 API · 27 组件 + 9 API</li><li>场景 4 — 存量页面迁移 · 6 步迁移 + 89 页面</li><li>场景 5 — npm 包发布与版本管理 · 11 文件发布</li></ul></div>
+<div class="card"><div class="card-header"><span class="card-dot b"></span><h3>11 个源文件</h3></div><ul><li>4 CSS: shared.css · theme.css · theme-mono.css · fonts.css</li><li>1 JS: shared.js (YrY IIFE · 9 API)</li><li>4 woff2: JetBrains Mono 400/500/600/700</li><li>1 README + 1 package.json + 1 迁移脚本</li></ul></div>
+<div class="card"><div class="card-header"><span class="card-dot c"></span><h3>核心产出</h3></div><ul><li>18 :root CSS 变量 — 设计令牌系统</li><li>21 组件 — 14 System + 7 Mono</li><li>9 YrY API — toast/copyCmd/switchPanel/suite/format/escape/clipboard</li><li>7 @keyframes 动画 — 6 共享 + 1 Mono</li></ul></div>
+<div class="card"><div class="card-header"><span class="card-dot d"></span><h3>55 消费者页面</h3></div><ul><li>Cat A (架构图·知识图谱): mono 主题 + JetBrains Mono</li><li>Cat B (审查·测试·演示·计划): system 主题 + 系统字体</li><li>CDN 引用: shared.css + theme.css/mono + shared.js</li><li>跨页面浏览器缓存 — 0 网络请求</li></ul></div></div>
+
+<div class="footer">🧩 yry-cdn 知识图谱 · yry-cdn · 知识图谱 · Powered by Cytoscape.js</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+
+var cy=cytoscape({container:document.getElementById('cy'),
+style:[{selector:'node',style:{'background-color':'#1e293b','label':'data(label)','color':'#e2e8f0','font-size':'10px','font-family':'JetBrains Mono,monospace','text-valign':'center','text-halign':'center','border-width':2,'width':95,'height':38,'shape':'roundrectangle','text-wrap':'wrap','text-max-width':'90px'}},
+{selector:'node[type="a"]',style:{'background-color':'rgba(236,72,153,.2)','border-color':'#EC4899','width':115,'height':44}},
+{selector:'node[type="b"]',style:{'background-color':'rgba(52,211,153,.2)','border-color':'#34d399'}},
+{selector:'node[type="c"]',style:{'background-color':'rgba(59,130,246,.2)','border-color':'#3B82F6','width':85,'height':34}},
+{selector:'node[type="d"]',style:{'background-color':'rgba(34,211,238,.2)','border-color':'#22d3ee','width':110,'height':42}},
+{selector:'node[type="e"]',style:{'background-color':'rgba(245,158,11,.2)','border-color':'#f59e0b'}},
+{selector:'edge',style:{'curve-style':'bezier','line-color':'#475569','target-arrow-color':'#475569','target-arrow-shape':'triangle','width':1.5,'arrow-scale':1}},
+{selector:'edge[relation="contains"]',style:{'line-color':'#8B5CF6','target-arrow-color':'#8B5CF6','line-style':'dashed'}},
+{selector:'edge[relation="depends_on"]',style:{'line-color':'#34d399','target-arrow-color':'#34d399'}},
+{selector:'edge[relation="consumes"]',style:{'line-color':'#3B82F6','target-arrow-color':'#3B82F6','width':2}},
+{selector:'edge[relation="next"]',style:{'line-color':'#f59e0b','target-arrow-color':'#f59e0b','line-style':'dashed'}}],
+elements:{nodes:[{data:{id:'story',label:'Story
+yry-cdn
+CDN资源库',type:'a'}},
+{data:{id:'s1',label:'场景 1
+CDN加载链路',type:'a'}},
+{data:{id:'s2',label:'场景 2
+双主题系统',type:'a'}},
+{data:{id:'s3',label:'场景 3
+组件库与API',type:'a'}},
+{data:{id:'s4',label:'场景 4
+存量迁移',type:'a'}},
+{data:{id:'s5',label:'场景 5
+npm发布',type:'a'}},
+{data:{id:'shared-css',label:'shared.css
+5.9KB',type:'b'}},
+{data:{id:'shared-js',label:'shared.js
+5.1KB',type:'b'}},
+{data:{id:'theme-css',label:'theme.css
+11.3KB',type:'b'}},
+{data:{id:'mono-css',label:'theme-mono.css
+6.1KB',type:'b'}},
+{data:{id:'fonts-css',label:'fonts.css
+0.8KB',type:'b'}},
+{data:{id:'woff2',label:'fonts/
+4 woff2',type:'b'}},
+{data:{id:'pkg',label:'package.json
+v1.1.0',type:'b'}},
+{data:{id:'readme',label:'README.md
+指南',type:'b'}},
+{data:{id:'script',label:'migrate-to
+-cdn.mjs',type:'b'}},
+{data:{id:'tokens',label:':root
+18 变量',type:'c'}},
+{data:{id:'sys-comp',label:'System
+14 组件',type:'c'}},
+{data:{id:'mono-comp',label:'Mono
+7 组件',type:'c'}},
+{data:{id:'api',label:'YrY
+9 API',type:'c'}},
+{data:{id:'anim',label:'@keyframes
+7 动画',type:'c'}},
+{data:{id:'cat-a',label:'Cat A 页面
+架构·图谱',type:'d'}},
+{data:{id:'cat-b',label:'Cat B 页面
+审查·测试·演示',type:'d'}},
+{data:{id:'npm-reg',label:'npm
+registry',type:'e'}},
+{data:{id:'google',label:'Google
+Fonts',type:'e'}},
+{data:{id:'github',label:'GitHub
+repo',type:'e'}},
+{data:{id:'cdn-unpkg',label:'unpkg
+CDN',type:'e'}},
+{data:{id:'cdn-jsd',label:'jsDelivr
+CDN',type:'e'}}],edges:[{data:{source:'story',target:'s1',relation:'contains'}},
+{data:{source:'story',target:'s2',relation:'contains'}},
+{data:{source:'story',target:'s3',relation:'contains'}},
+{data:{source:'story',target:'s4',relation:'contains'}},
+{data:{source:'story',target:'s5',relation:'contains'}},
+{data:{source:'s1',target:'shared-css',relation:'depends_on'}},
+{data:{source:'s1',target:'shared-js',relation:'depends_on'}},
+{data:{source:'s1',target:'theme-css',relation:'depends_on'}},
+{data:{source:'s1',target:'mono-css',relation:'depends_on'}},
+{data:{source:'s2',target:'theme-css',relation:'depends_on'}},
+{data:{source:'s2',target:'mono-css',relation:'depends_on'}},
+{data:{source:'s2',target:'tokens',relation:'depends_on'}},
+{data:{source:'s2',target:'fonts-css',relation:'depends_on'}},
+{data:{source:'s3',target:'shared-css',relation:'depends_on'}},
+{data:{source:'s3',target:'shared-js',relation:'depends_on'}},
+{data:{source:'s3',target:'sys-comp',relation:'depends_on'}},
+{data:{source:'s3',target:'mono-comp',relation:'depends_on'}},
+{data:{source:'s3',target:'api',relation:'depends_on'}},
+{data:{source:'s4',target:'shared-css',relation:'depends_on'}},
+{data:{source:'s4',target:'theme-css',relation:'depends_on'}},
+{data:{source:'s4',target:'shared-js',relation:'depends_on'}},
+{data:{source:'s4',target:'script',relation:'depends_on'}},
+{data:{source:'s5',target:'pkg',relation:'depends_on'}},
+{data:{source:'s5',target:'npm-reg',relation:'depends_on'}},
+{data:{source:'s5',target:'cdn-unpkg',relation:'depends_on'}},
+{data:{source:'s5',target:'cdn-jsd',relation:'depends_on'}},
+{data:{source:'theme-css',target:'tokens',relation:'contains'}},
+{data:{source:'theme-css',target:'sys-comp',relation:'contains'}},
+{data:{source:'mono-css',target:'mono-comp',relation:'contains'}},
+{data:{source:'shared-js',target:'api',relation:'contains'}},
+{data:{source:'shared-css',target:'anim',relation:'contains'}},
+{data:{source:'cat-a',target:'mono-css',relation:'consumes'}},
+{data:{source:'cat-a',target:'fonts-css',relation:'consumes'}},
+{data:{source:'cat-a',target:'shared-css',relation:'consumes'}},
+{data:{source:'cat-a',target:'shared-js',relation:'consumes'}},
+{data:{source:'cat-b',target:'theme-css',relation:'consumes'}},
+{data:{source:'cat-b',target:'shared-css',relation:'consumes'}},
+{data:{source:'cat-b',target:'shared-js',relation:'consumes'}},
+{data:{source:'pkg',target:'npm-reg',relation:'next'}},
+{data:{source:'pkg',target:'github',relation:'next'}},
+{data:{source:'fonts-css',target:'woff2',relation:'depends_on'}},
+{data:{source:'fonts-css',target:'google',relation:'next'}}]},
+layout:{name:'breadthfirst',directed:true,spacingFactor:1.15,roots:'[id="story"]'},
+minZoom:0.5,maxZoom:2});
+cy.fit(cy.elements(),50);
+cy.on('tap','node',function(evt){const node=evt.target;const hood=node.closedNeighborhood();cy.elements().style('opacity',0.15);hood.style('opacity',1);node.style('opacity',1)});
+cy.on('tap',function(evt){if(evt.target===cy)cy.elements().style('opacity',0.85)});
+});
+async function copyAsImage(btn){const orig=btn.textContent;try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),blob=await new Promise(r=>canvas.toBlob(r,'image/png'));await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);btn.textContent='✓ Copied!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+async function downloadPNG(btn){const orig=btn.textContent;btn.textContent='⏳...';try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),link=document.createElement('a');link.download='知识图谱-yry-cdn全景.png';link.href=canvas.toDataURL('image/png');link.click();btn.textContent='✓ Done!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+async function downloadPDF(btn){const orig=btn.textContent;btn.textContent='⏳...';try{const el=document.getElementById('report-container'),r=el.getBoundingClientRect(),pad=32,canvas=await html2canvas(document.body,{backgroundColor:'#020617',scale:2,useCORS:true,ignoreElements:e=>e.classList&&e.classList.contains('toolbar'),x:r.left+window.scrollX-pad,y:r.top+window.scrollY-pad,width:r.width+pad*2,height:r.height+pad*2}),imgData=canvas.toDataURL('image/png');const{jsPDF}=window.jspdf,orientation=canvas.width>canvas.height?'landscape':'portrait',pdf=new jsPDF({orientation,unit:'px',format:[canvas.width,canvas.height],hotfixes:['px_scaling']});pdf.addImage(imgData,'PNG',0,0,canvas.width,canvas.height);pdf.save('知识图谱-yry-cdn全景.pdf');btn.textContent='✓ Done!'}catch(e){btn.textContent='✗ Failed'}setTimeout(()=>btn.textContent=orig,2000)}
+</script>
+</body></html>

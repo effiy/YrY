@@ -1,0 +1,56 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryTagChip · Vue 3 标签芯片组件 样式
+
+   效果对齐 docs/index.html 中 <span class="tag-chip {modifier}"> 的静态结构:
+     <span class="tag-chip accent">自建</span>
+     <span class="tag-chip info">jsDelivr CDN</span>
+     <span class="tag-chip cyan v3.2.x">v3.2.x</span>
+     ...
+
+   支持的 modifier (与 cdn/yry-home.css / yry-scene.css 中 .tag-chip.* 选择器一致):
+     - accent : 主题黄 (强调)
+     - info   : 灰色 (信息)
+     - cyan   : 青色 (链接/版本)
+     - green  : 绿色 (通过/健康)
+     - purple : 紫色 (角色/通知)
+     - red    : 红色 (异常)
+     - warn   : 橙色 (警告)
+     - blue   : 蓝色
+
+   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+     --yry-accent / --yry-cyan / --yry-pass / --yry-warn / --yry-info / --yry-purple
+     --yry-bg-flat / --yry-text
+
+   所有颜色都带 fallback,即使页面未加载主题也能正常显示。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.tag-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  line-height: 1.4;
+  background: rgba(255,255,255,.06);
+  color: var(--yry-text, #f5f5f5);
+  border: 1px solid rgba(255,255,255,.08);
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background .15s, color .15s, border-color .15s;
+}
+
+a.tag-chip { cursor: pointer; }
+a.tag-chip:hover {
+  background: rgba(255,255,255,.12);
+  text-decoration: none;
+}
+
+.tag-chip.accent { background: rgba(255,193,7,.12); color: var(--yry-accent, #ffc107); border-color: rgba(255,193,7,.25); }
+.tag-chip.info   { background: rgba(160,160,164,.10); color: var(--yry-text2, #d4d4d4); border-color: rgba(160,160,164,.18); }
+.tag-chip.cyan   { background: rgba(34,211,238,.10); color: var(--yry-cyan, #22d3ee); border-color: rgba(34,211,238,.22); }
+.tag-chip.green  { background: rgba(34,197,94,.12);  color: var(--yry-pass, #22c55e); border-color: rgba(34,197,94,.25); }
+.tag-chip.purple { background: rgba(167,139,250,.12); color: #a78bfa;            border-color: rgba(167,139,250,.25); }
+.tag-chip.red    { background: rgba(239,68,68,.12);   color: #ef4444;            border-color: rgba(239,68,68,.25); }
+.tag-chip.warn   { background: rgba(245,158,11,.12); color: var(--yry-warn, #f59e0b); border-color: rgba(245,158,11,.25); }
+.tag-chip.blue   { background: rgba(59,130,246,.12);  color: #60a5fa;            border-color: rgba(59,130,246,.25); }

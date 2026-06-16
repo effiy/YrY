@@ -1,0 +1,44 @@
+  <!-- R-02 -->
+  <div class="risk-row" onclick="toggleRisk(this)">
+    <div class="rr-summary">
+      <div class="rr-id"><code>R-02</code></div>
+      <div class="rr-title">
+        <div class="rr-name">a11y 不达标</div>
+        <div class="rr-sub">屏幕阅读器无法识别折叠状态</div>
+      </div>
+      <div class="rr-cat"><span class="risk-cat cat-度量">度量</span></div>
+      <div class="rr-score">
+        <div class="rr-score-bar"><div class="rr-score-fill med" style="width:60%"></div></div>
+        <div class="rr-score-info">S=2 · L=3 · <b>6</b></div>
+      </div>
+      <div class="rr-deadline"><code>已闭环</code></div>
+      <div class="rr-owner">frontend</div>
+      <div class="rr-status pass">✓ 已缓解</div>
+      <div class="rr-toggle">▼</div>
+    </div>
+    <div class="rr-detail">
+      <div class="rr-grid-4">
+        <div class="rr-cell"><div class="rr-cell-k">🎯 触发条件</div><div class="rr-cell-v"><code>aria-expanded</code> 缺失 · 焦点环 &lt; 2px</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🌍 影响范围</div><div class="rr-cell-v">视障用户 · Lighthouse a11y</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🔍 检测方法</div><div class="rr-cell-v">axe-core + 屏幕阅读器实跑</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">⏱ 残余风险</div><div class="rr-cell-v">评分 1 · 已闭环</div></div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">🛡 缓解计划 (3 步)</div>
+        <div class="rr-steps">
+          <div class="rr-step done">① 8/8 风险行 <code>aria-expanded</code> 添加</div>
+          <div class="rr-step done">② 焦点环升级 2px solid</div>
+          <div class="rr-step done">③ Lighthouse a11y ≥ 95 验证</div>
+        </div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">📅 风险时间线</div>
+        <div class="rr-timeline">
+          <span class="rr-ev"><span class="rr-ev-dot open"></span><b>06-01</b> 发现</span>
+          <span class="rr-ev"><span class="rr-ev-dot proc"></span><b>06-08</b> 缓解中</span>
+          <span class="rr-ev"><span class="rr-ev-dot done"></span><b>06-09</b> 关闭</span>
+        </div>
+      </div>
+    </div>
+  </div>
+

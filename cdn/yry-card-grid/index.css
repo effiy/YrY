@@ -1,0 +1,23 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryCardGrid · 卡片网格容器样式
+
+   与 .item-card (来自 yry-home.css) 配套使用。
+   此处只定义 grid 容器布局,卡片样式由 yry-item-card 提供。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.cg-item {
+  display: contents;
+}
+
+@media (max-width: 640px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}

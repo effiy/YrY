@@ -9,10 +9,43 @@
 <link rel="stylesheet" href="../../../yry-scene.css">
 <link rel="stylesheet" href="../../../yry-checklist.css">
 <link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../../yry-stats-grid/index.css">
+<link rel="stylesheet" href="../../../yry-inline-helpers.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<script src="../../../shared.js"></script>
-<script src="../../../yry-breadcrumb/index.js"></script>
 <style>
+
+/* ═══ a11y · prefers-reduced-motion ═══ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* ═══ a11y · Skip Link ═══ */
+.skip-link {
+  position: fixed; top: -100px; left: 8px; z-index: 1000;
+  background: var(--accent, #ffc107); color: #000;
+  padding: 10px 16px; border-radius: 6px; font-weight: 600;
+  text-decoration: none; transition: top .2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: .85rem; box-shadow: 0 4px 12px rgba(0,0,0,.3);
+  border: 2px solid transparent;
+}
+.skip-link:focus { top: 8px; outline: none; border-color: var(--cyan, #22d3ee); }
+.skip-link:focus-visible { top: 8px; outline: 3px solid var(--cyan, #22d3ee); outline-offset: 2px; }
+/* ═══ a11y · Focus Ring ═══ */
+:focus-visible {
+  outline: 2px solid var(--cyan, #22d3ee);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* ═══ a11y · Semantic Container ═══ */
+[role="main"] { scroll-margin-top: 16px; }
 /* KPI 统计卡片网格 (stat-card 样式由 yry-scene.css 提供) */
 .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0 24px; }
 
@@ -35,61 +68,26 @@
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+.container { max-width: 1100px; }
 </style>
 </head>
 <body>
-<div class="container">
+<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
+<div class="container" id="main">
 
 <div id="breadcrumb-app"></div>
 
-<div class="scene-header">
-  <span class="scene-tag">场景 2 · 模板与样式</span>
-  <h1 class="scene-title">模板与样式 · 计划清单</h1>
-  <div class="scene-en">YryBreadcrumb 任务故事 · 场景 2 · Template & Style · 计划清单</div>
-  <p class="scene-desc">Vue 3 template 编写 · v-for / v-if / :class 设计 · CSS 设计令牌 + fallback 决策 · 5 视觉模式覆盖</p>
-</div>
+<div id="scene-header-app"></div>
 
-<nav class="scene-nav">
-  <a href="../README.md">任务故事</a>
-  <span class="scene-nav-sep">/</span>
-  <a href="./index.md">模板与样式</a>
-  <span class="scene-nav-sep">/</span>
-  <span class="active">计划清单</span>
-</nav>
+<div id="scene-nav-app"></div>
 
 <h2>进度概览</h2>
-<div class="stat-grid">
-  <div class="stat-card"><div class="val pass">5</div><div class="lbl">已完成</div></div>
-  <div class="stat-card"><div class="val warn">0</div><div class="lbl">进行中</div></div>
-  <div class="stat-card"><div class="val info">0</div><div class="lbl">待开始</div></div>
-  <div class="stat-card"><div class="val accent">100%</div><div class="lbl">完成率</div></div>
-</div>
-
 <div class="tip-box success"><strong>场景完成</strong> 5/5 模板与样式任务全部完成，7 个交付物就位，设计令牌 fallback 策略验证通过。</div>
 
 <h2>KPI 指标</h2>
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-val pass">5</div><div class="kpi-label">任务条目</div></div>
-  <div class="kpi-card"><div class="kpi-val info">8</div><div class="kpi-label">交付物</div></div>
-  <div class="kpi-card"><div class="kpi-val pass">5</div><div class="kpi-label">验收项</div></div>
-  <div class="kpi-card"><div class="kpi-val accent">100%</div><div class="kpi-label">样式覆盖</div></div>
-</div>
-
-<div class="cross-nav">
-  <span class="cross-link on">📋 清单</span>
-  <span class="cross-sep">·</span>
-  <a class="cross-link" href="架构图.html">📐 架构</a>
-  <span class="cross-sep">·</span>
-  <a class="cross-link" href="知识图谱.html">🔗 图谱</a>
-  <span class="cross-sep">·</span>
-  <a class="cross-link" href="源码.html">📄 源码</a>
-  <span class="cross-sep">·</span>
-  <a class="cross-link" href="测试面板.html">🧪 测试</a>
-  <span class="cross-sep">·</span>
-  <a class="cross-link" href="演示.html">💡 演示</a>
-  <span class="cross-sep">·</span>
-  <a class="cross-link" href="审查.html">📝 审查</a>
-</div>
+<div id="stats-grid-app"></div>
+<div id="cross-nav-app"></div>
 
 <h2>任务管线</h2>
 <div class="stage-list">
@@ -97,19 +95,19 @@
     <div class="st-num">1</div>
     <div class="st-info"><div class="st-name">模板编写</div><div class="st-detail">Vue 3 template: v-for / v-if / :class 动态绑定，aria-label / aria-current 标注</div></div>
     <span class="st-status ok">✓ 完成</span>
-    <div class="st-bar" style="width:100%"></div>
+    <div class="st-bar"></div>
   </div>
   <div class="stage-row done">
     <div class="st-num">2</div>
     <div class="st-info"><div class="st-name">样式设计</div><div class="st-detail">设计令牌体系 + BEM 命名 + 5 视觉模式覆盖 + fallback 后备值</div></div>
     <span class="st-status ok">✓ 完成</span>
-    <div class="st-bar" style="width:100%"></div>
+    <div class="st-bar"></div>
   </div>
   <div class="stage-row done">
     <div class="st-num">3</div>
     <div class="st-info"><div class="st-name">一致性验证</div><div class="st-detail">7 交付物样式交叉比对通过，移交场景 3</div></div>
     <span class="st-status ok">✓ 完成</span>
-    <div class="st-bar" style="width:100%"></div>
+    <div class="st-bar"></div>
   </div>
 </div>
 
@@ -255,15 +253,88 @@
 <p>场景 2 全部任务完成，进入 <a href="./../场景-3-Loader实现/index.md">场景 3 · Loader 实现</a>，聚焦异步加载逻辑、错误处理与重试机制。</p>
 
 <div class="footer">
-  <p>位置: <code>cdn/yry-breadcrumb/任务故事/场景-2-模板与样式/计划清单.html</code></p>
-  <p>本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件</p>
+  📁 位置: <code>cdn/yry-breadcrumb/任务故事/场景-2-模板与样式/计划清单.html</code><br>
+  🍞 本页使用 <a href="../../../yry-breadcrumb/index.html">YryBreadcrumb</a> 组件
 </div>
 
 </div>
 
-<script>
+
+<script src="../../../shared.js"></script>
+<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
+<script src="../../../yry-scene-nav/index.js"></script>
+<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
+<script src="../../../yry-cross-nav/index.js"></script>
+<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
+<script src="../../../yry-back-top/index.js"></script>
+<!-- ═══ CDN: YryBreadcrumb 组件 loader ═══ -->
+<script src="../../../yry-breadcrumb/index.js"></script>
+<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
+<script src="../../../yry-scene-header/index.js"></script>
+<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
+<script src="../../../yry-stats-grid/index.js"></script>
+
+  <!-- ════════════════════════════════════════════════════════════
+       页面级挂载 · 场景导航 + 交叉导航 + 面包屑 + 统计网格
+       index.js 异步加载模板后派发 yry-*-ready 事件
+       ════════════════════════════════════════════════════════════ -->
+  <script>
+
+  /* ── YryCrossNav 挂载 ── */
+  function mountCrossNav() {
+    if (!window.Vue || !window.YryCrossNav) return;
+    if (!document.getElementById('cross-nav-app')) return;
+    Vue.createApp(window.YryCrossNav, {
+      basePath: './',
+      active: '清单',
+      pages: [
+        { id: '清单', icon: '📋', href: '计划清单.html' },
+        { id: '架构', icon: '📐', href: '架构图.html' },
+        { id: '图谱', icon: '🔗', href: '知识图谱.html' },
+        { id: '源码', icon: '📄', href: '源码.html' },
+        { id: '测试', icon: '🧪', href: '测试面板.html' },
+        { id: '演示', icon: '💡', href: '演示.html' },
+        { id: '审查', icon: '📝', href: '审查.html' }
+      ]
+    }).mount('#cross-nav-app');
+  }
+  if (window.YryCrossNav) mountCrossNav();
+  else document.addEventListener('yry-cross-nav-ready', mountCrossNav, { once: true });
+
+  /* ── YrySceneNav 挂载 ── */
+  function mountSceneNav() {
+    if (!window.Vue || !window.YrySceneNav) return;
+    if (!document.getElementById('scene-nav-app')) return;
+    Vue.createApp(window.YrySceneNav, {
+      items: [
+        { label: '任务故事', href: '../README.md' },
+        { label: '模板与样式', href: './index.md' },
+        { label: '计划清单', active: true }
+      ]
+    }).mount('#scene-nav-app');
+  }
+  if (window.YrySceneNav) mountSceneNav();
+  else document.addEventListener('yry-scene-nav-ready', mountSceneNav, { once: true });
+
+  /* ── YrySceneHeader 挂载 ── */
+  function mountSceneHeader() {
+    if (!window.Vue || !window.YrySceneHeader) return;
+    if (!document.getElementById('scene-header-app')) return;
+    Vue.createApp(window.YrySceneHeader, {
+      icon: '📋',
+      prefix: '场景 2',
+      accent: ' · 模板与样式',
+      meta: 'YryBreadcrumb 任务故事 · 场景 2 · Template & Style · 计划清单',
+      desc: 'Vue 3 template 编写 · v-for / v-if / :class 设计 · CSS 设计令牌 + fallback 决策 · 5 视觉模式覆盖'
+    }).mount('#scene-header-app');
+  }
+  if (window.YrySceneHeader) mountSceneHeader();
+  else document.addEventListener('yry-scene-header-ready', mountSceneHeader, { once: true });
+
+  /* ── YryBreadcrumb 挂载 ── */
   function mountBreadcrumb() {
     if (!window.Vue || !window.YryBreadcrumb) return;
+    if (!document.getElementById('breadcrumb-app')) return;
     Vue.createApp(window.YryBreadcrumb, {
       ariaLabel: '面包屑导航',
       items: [
@@ -276,6 +347,23 @@
   }
   if (window.YryBreadcrumb) mountBreadcrumb();
   else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
-</script>
+
+  /* ── YryStatsGrid 挂载 ── */
+  function mountStatsGrid() {
+    if (!window.Vue || !window.YryStatsGrid) return;
+    if (!document.getElementById('stats-grid-app')) return;
+    Vue.createApp(window.YryStatsGrid, {
+      items: [
+        { value: 5, label: '已完成', modifier: 'health' },
+        { value: 0, label: '进行中', modifier: 'warn-h' },
+        { value: 0, label: '待开始' },
+        { value: '100%', label: '完成率', modifier: 'accent' }
+      ]
+    }).mount('#stats-grid-app');
+  }
+  if (window.YryStatsGrid) mountStatsGrid();
+  else document.addEventListener('yry-stats-grid-ready', mountStatsGrid, { once: true });
+  </script>
+
 </body>
 </html>

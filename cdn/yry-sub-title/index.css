@@ -1,0 +1,25 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YrySubTitle · Vue 3 子区块标题组件 样式
+
+   效果对齐 docs/index.html 中 <div class="sub-title"> 静态结构:
+     <div class="sub-title"><span class="accent">⚡</span> 运行时依赖 (6)</div>
+
+   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+     --yry-accent / --yry-text
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.sub-title {
+  font-size: .82rem;
+  font-weight: 700;
+  margin: 18px 0 10px;
+  color: var(--yry-text, #f5f5f5);
+  letter-spacing: .02em;
+  display: flex; align-items: center; gap: 6px;
+}
+.sub-title .accent { color: var(--yry-accent, #ffc107); }
+.sub-title .sub-title-count {
+  margin-left: auto;
+  font-size: .68rem; font-weight: 600;
+  color: var(--yry-text3, #888);
+  text-transform: uppercase; letter-spacing: .05em;
+}

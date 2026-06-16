@@ -1,0 +1,24 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryCrossNav · Vue 3 交叉导航组件 样式
+
+   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+     --yry-color-cyan / --yry-color-accent / --yry-color-text-3
+
+   所有颜色都带 fallback,即使页面未加载主题也能正常显示。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.cross-nav {
+  display: flex; gap: 4px; justify-content: center; align-items: center;
+  margin-bottom: 24px; flex-wrap: wrap;
+}
+
+.cross-link {
+  color: var(--yry-color-cyan, #22d3ee); text-decoration: none; font-size: .74rem;
+  padding: 3px 10px; border-radius: 4px; transition: color .15s, background .15s;
+}
+
+.cross-link:hover { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.06); text-decoration: underline; }
+
+.cross-link.on { color: var(--yry-color-accent, #ffc107); font-weight: 600; }
+
+.cross-sep { color: var(--yry-color-text-3, #888); font-size: .5rem; opacity: .35; user-select: none; }

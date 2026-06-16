@@ -1,0 +1,23 @@
+<div class="section"><h2><span class="dot"></span>§2 实施 — 已执行命令<span class="s-done">· 2 条</span></h2>
+<div class="cmd-grid">
+  <div class="cmd-card">
+    <div class="c-stage">步骤 7</div>
+    <div class="c-name">生成 checklist-interact.js</div>
+    <div class="c-desc">~3KB 内联 JS,封装 6 组件 + 键盘 1-9 + localStorage 持久化,零依赖 ESM,Terser 压缩至 ≤ 1.5KB</div>
+    <pre>node skills/codegen/interact.mjs --output=cdn/checklist-interact.js --minify --target=es2020<span class="cb" onclick="copyCmd(this,'node skills/codegen/interact.mjs --output=cdn/checklist-interact.js --minify --target=es2020')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 coder agent</span><span>⏱ 1.4h</span><span>🎯 P1</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>原始 3KB · 压缩 ≤ 1.5KB · 6 组件齐备 · 0 外部依赖</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 8</div>
+    <div class="c-name">生成 localStorage schema</div>
+    <div class="c-desc">JSON Schema Draft 2020-12 定义 <code>state.checklist</code> 持久化格式,<code>ajv</code> 严格校验 + 迁移版本号</div>
+    <pre>node skills/codegen/localstorage-schema.mjs --output=cdn/localstorage-schema.json --version=1<span class="cb" onclick="copyCmd(this,'node skills/codegen/localstorage-schema.mjs --output=cdn/localstorage-schema.json --version=1')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 coder agent</span><span>⏱ 2.3h</span><span>🎯 P1</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>Schema 5 字段 · ajv 100% 校验 · 迁移 <code>v1→v2</code> 已设计 · 文档同步</div>
+  </div>
+</div></div>

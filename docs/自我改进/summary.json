@@ -1,228 +1,65 @@
 {
-  "updated": "2026-06-12T14:29:57.003Z",
-  "totalEntries": 141,
+  "updated": "2026-06-16T02:59:49.150Z",
+  "totalEntries": 1,
   "dateRange": {
-    "from": "2026-06-10",
-    "to": "2026-06-12"
+    "from": "2026-06-16",
+    "to": "2026-06-16"
   },
   "latest": {
-    "timestamp": "2026-06-12T14:01:35.586Z",
-    "composite": 97,
-    "grade": "A",
+    "timestamp": "2026-06-16T02:59:49.148Z",
+    "composite": 78,
+    "grade": "B",
     "scores": {
       "token": 100,
-      "config": 100,
-      "robots": 100,
+      "config": 20,
+      "robots": 0,
       "api": 100,
-      "reports": 60,
+      "reports": 100,
       "format": 100,
-      "diagnostics": 100,
+      "diagnostics": 85,
       "git": 100,
       "security": 100,
-      "em_testing": 100,
+      "em_testing": 60,
       "em_types": 100,
-      "em_linting": 100,
-      "em_cicd": 100,
+      "em_linting": 80,
+      "em_cicd": 0,
       "em_docs": 100,
       "em_deps": 100,
-      "em_git": 100,
-      "comp_qual": 88
+      "em_git": 80,
+      "comp_qual": 82
     },
     "bootstrapped": true,
-    "triggeredDiags": [],
+    "triggeredDiags": [
+      "D3"
+    ],
     "gitBranch": "main",
-    "gitUncommitted": 6
+    "gitUncommitted": 2
   },
   "daily": [
     {
-      "entries": 99,
-      "avgScore": 69,
-      "minScore": 62,
-      "maxScore": 87,
-      "topGrade": "C",
-      "gradeDist": {
-        "A": 0,
-        "B": 2,
-        "C": 97,
-        "D": 0
-      },
-      "topDiags": [
-        {
-          "id": "D2",
-          "count": 87,
-          "label": "质量退化",
-          "rate": 88
-        },
-        {
-          "id": "D0",
-          "count": 52,
-          "label": "基线偏离",
-          "rate": 53
-        },
-        {
-          "id": "D6",
-          "count": 30,
-          "label": "文档过时",
-          "rate": 30
-        },
-        {
-          "id": "D1",
-          "count": 0,
-          "label": "效率退化",
-          "rate": 0
-        },
-        {
-          "id": "D3",
-          "count": 0,
-          "label": "复杂度增长",
-          "rate": 0
-        }
-      ],
-      "branches": [
-        {
-          "name": "feat/yry-self-test",
-          "count": 63
-        },
-        {
-          "name": "main",
-          "count": 33
-        },
-        {
-          "name": "feat/yry-self-improve",
-          "count": 3
-        }
-      ],
-      "avgUncommitted": 168,
-      "dimAvgs": {
-        "token": 100,
-        "config": 85,
-        "robots": 35,
-        "api": 50,
-        "reports": 60,
-        "format": 100,
-        "diagnostics": 74,
-        "git": 52,
-        "security": 100,
-        "em_testing": 60,
-        "em_types": 0,
-        "em_linting": 0,
-        "em_cicd": 0,
-        "em_docs": 100,
-        "em_deps": 70,
-        "em_git": 60
-      },
-      "delta": null,
-      "firstTs": "2026-06-10T03:15:55.018Z",
-      "lastTs": "2026-06-10T15:39:45.620Z",
-      "date": "2026-06-10"
-    },
-    {
-      "entries": 4,
-      "avgScore": 66,
-      "minScore": 66,
-      "maxScore": 66,
-      "topGrade": "C",
-      "gradeDist": {
-        "A": 0,
-        "B": 0,
-        "C": 4,
-        "D": 0
-      },
-      "topDiags": [
-        {
-          "id": "D6",
-          "count": 4,
-          "label": "文档过时",
-          "rate": 100
-        },
-        {
-          "id": "D2",
-          "count": 4,
-          "label": "质量退化",
-          "rate": 100
-        },
-        {
-          "id": "D0",
-          "count": 0,
-          "label": "基线偏离",
-          "rate": 0
-        },
-        {
-          "id": "D1",
-          "count": 0,
-          "label": "效率退化",
-          "rate": 0
-        },
-        {
-          "id": "D3",
-          "count": 0,
-          "label": "复杂度增长",
-          "rate": 0
-        }
-      ],
-      "branches": [
-        {
-          "name": "main",
-          "count": 4
-        }
-      ],
-      "avgUncommitted": 46,
-      "dimAvgs": {
-        "token": 100,
-        "config": 100,
-        "robots": 100,
-        "api": 50,
-        "reports": 60,
-        "format": 100,
-        "diagnostics": 70,
-        "git": 40,
-        "security": 100,
-        "em_testing": 60,
-        "em_types": 0,
-        "em_linting": 0,
-        "em_cicd": 0,
-        "em_docs": 100,
-        "em_deps": 70,
-        "em_git": 60
-      },
-      "delta": {
-        "score": -3,
-        "gradeChange": null
-      },
-      "firstTs": "2026-06-11T01:22:58.169Z",
-      "lastTs": "2026-06-11T02:19:47.182Z",
-      "date": "2026-06-11"
-    },
-    {
-      "entries": 38,
-      "avgScore": 90,
-      "minScore": 55,
-      "maxScore": 100,
+      "entries": 1,
+      "avgScore": 78,
+      "minScore": 78,
+      "maxScore": 78,
       "topGrade": "B",
       "gradeDist": {
-        "A": 16,
-        "B": 20,
+        "A": 0,
+        "B": 1,
         "C": 0,
-        "D": 2
+        "D": 0
       },
       "topDiags": [
         {
-          "id": "D2",
-          "count": 31,
-          "label": "质量退化",
-          "rate": 82
-        },
-        {
-          "id": "D6",
-          "count": 19,
-          "label": "文档过时",
-          "rate": 50
+          "id": "D3",
+          "count": 1,
+          "label": "复杂度增长",
+          "rate": 100
         },
         {
           "id": "D0",
-          "count": 1,
+          "count": 0,
           "label": "基线偏离",
-          "rate": 3
+          "rate": 0
         },
         {
           "id": "D1",
@@ -231,82 +68,75 @@
           "rate": 0
         },
         {
-          "id": "D3",
+          "id": "D2",
           "count": 0,
-          "label": "复杂度增长",
+          "label": "质量退化",
+          "rate": 0
+        },
+        {
+          "id": "D4",
+          "count": 0,
+          "label": "流程退化",
           "rate": 0
         }
       ],
       "branches": [
         {
           "name": "main",
-          "count": 36
-        },
-        {
-          "name": "master",
-          "count": 2
+          "count": 1
         }
       ],
-      "avgUncommitted": 9,
+      "avgUncommitted": 2,
       "dimAvgs": {
         "token": 100,
-        "config": 96,
-        "robots": 95,
-        "api": 63,
-        "reports": 75,
+        "config": 20,
+        "robots": 0,
+        "api": 100,
+        "reports": 100,
         "format": 100,
-        "diagnostics": 80,
-        "git": 93,
+        "diagnostics": 85,
+        "git": 100,
         "security": 100,
-        "em_testing": 98,
-        "em_types": 95,
-        "em_linting": 95,
-        "em_cicd": 95,
+        "em_testing": 60,
+        "em_types": 100,
+        "em_linting": 80,
+        "em_cicd": 0,
         "em_docs": 100,
-        "em_deps": 82,
-        "em_git": 76,
-        "comp_qual": 88
+        "em_deps": 100,
+        "em_git": 80,
+        "comp_qual": 82
       },
-      "delta": {
-        "score": 24,
-        "gradeChange": "C→B"
-      },
-      "firstTs": "2026-06-12T08:58:34.388Z",
-      "lastTs": "2026-06-12T14:01:35.586Z",
-      "date": "2026-06-12"
+      "delta": null,
+      "firstTs": "2026-06-16T02:59:49.148Z",
+      "lastTs": "2026-06-16T02:59:49.148Z",
+      "date": "2026-06-16"
     }
   ],
   "weekly": [
     {
-      "entries": 141,
-      "avgScore": 74,
-      "minScore": 55,
-      "maxScore": 100,
-      "topGrade": "C",
+      "entries": 1,
+      "avgScore": 78,
+      "minScore": 78,
+      "maxScore": 78,
+      "topGrade": "B",
       "gradeDist": {
-        "A": 16,
-        "B": 22,
-        "C": 101,
-        "D": 2
+        "A": 0,
+        "B": 1,
+        "C": 0,
+        "D": 0
       },
       "topDiags": [
         {
-          "id": "D2",
-          "count": 122,
-          "label": "质量退化",
-          "rate": 87
+          "id": "D3",
+          "count": 1,
+          "label": "复杂度增长",
+          "rate": 100
         },
         {
           "id": "D0",
-          "count": 53,
+          "count": 0,
           "label": "基线偏离",
-          "rate": 38
-        },
-        {
-          "id": "D6",
-          "count": 53,
-          "label": "文档过时",
-          "rate": 38
+          "rate": 0
         },
         {
           "id": "D1",
@@ -315,88 +145,76 @@
           "rate": 0
         },
         {
-          "id": "D3",
+          "id": "D2",
           "count": 0,
-          "label": "复杂度增长",
+          "label": "质量退化",
+          "rate": 0
+        },
+        {
+          "id": "D4",
+          "count": 0,
+          "label": "流程退化",
           "rate": 0
         }
       ],
       "branches": [
         {
           "name": "main",
-          "count": 73
-        },
-        {
-          "name": "feat/yry-self-test",
-          "count": 63
-        },
-        {
-          "name": "feat/yry-self-improve",
-          "count": 3
-        },
-        {
-          "name": "master",
-          "count": 2
+          "count": 1
         }
       ],
-      "avgUncommitted": 122,
+      "avgUncommitted": 2,
       "dimAvgs": {
         "token": 100,
-        "config": 88,
-        "robots": 53,
-        "api": 54,
-        "reports": 64,
+        "config": 20,
+        "robots": 0,
+        "api": 100,
+        "reports": 100,
         "format": 100,
-        "diagnostics": 76,
-        "git": 63,
+        "diagnostics": 85,
+        "git": 100,
         "security": 100,
-        "em_testing": 79,
-        "em_types": 48,
-        "em_linting": 48,
-        "em_cicd": 48,
+        "em_testing": 60,
+        "em_types": 100,
+        "em_linting": 80,
+        "em_cicd": 0,
         "em_docs": 100,
-        "em_deps": 76,
-        "em_git": 68,
-        "comp_qual": 88
+        "em_deps": 100,
+        "em_git": 80,
+        "comp_qual": 82
       },
       "delta": null,
-      "firstTs": "2026-06-10T03:15:55.018Z",
-      "lastTs": "2026-06-12T14:01:35.586Z",
-      "week": "2026-06-07",
-      "weekEnd": "2026-06-12"
+      "firstTs": "2026-06-16T02:59:49.148Z",
+      "lastTs": "2026-06-16T02:59:49.148Z",
+      "week": "2026-06-14",
+      "weekEnd": "2026-06-19"
     }
   ],
   "monthly": [
     {
-      "entries": 141,
-      "avgScore": 74,
-      "minScore": 55,
-      "maxScore": 100,
-      "topGrade": "C",
+      "entries": 1,
+      "avgScore": 78,
+      "minScore": 78,
+      "maxScore": 78,
+      "topGrade": "B",
       "gradeDist": {
-        "A": 16,
-        "B": 22,
-        "C": 101,
-        "D": 2
+        "A": 0,
+        "B": 1,
+        "C": 0,
+        "D": 0
       },
       "topDiags": [
         {
-          "id": "D2",
-          "count": 122,
-          "label": "质量退化",
-          "rate": 87
+          "id": "D3",
+          "count": 1,
+          "label": "复杂度增长",
+          "rate": 100
         },
         {
           "id": "D0",
-          "count": 53,
+          "count": 0,
           "label": "基线偏离",
-          "rate": 38
-        },
-        {
-          "id": "D6",
-          "count": 53,
-          "label": "文档过时",
-          "rate": 38
+          "rate": 0
         },
         {
           "id": "D1",
@@ -405,1063 +223,71 @@
           "rate": 0
         },
         {
-          "id": "D3",
+          "id": "D2",
           "count": 0,
-          "label": "复杂度增长",
+          "label": "质量退化",
+          "rate": 0
+        },
+        {
+          "id": "D4",
+          "count": 0,
+          "label": "流程退化",
           "rate": 0
         }
       ],
       "branches": [
         {
           "name": "main",
-          "count": 73
-        },
-        {
-          "name": "feat/yry-self-test",
-          "count": 63
-        },
-        {
-          "name": "feat/yry-self-improve",
-          "count": 3
-        },
-        {
-          "name": "master",
-          "count": 2
+          "count": 1
         }
       ],
-      "avgUncommitted": 122,
+      "avgUncommitted": 2,
       "dimAvgs": {
         "token": 100,
-        "config": 88,
-        "robots": 53,
-        "api": 54,
-        "reports": 64,
+        "config": 20,
+        "robots": 0,
+        "api": 100,
+        "reports": 100,
         "format": 100,
-        "diagnostics": 76,
-        "git": 63,
+        "diagnostics": 85,
+        "git": 100,
         "security": 100,
-        "em_testing": 79,
-        "em_types": 48,
-        "em_linting": 48,
-        "em_cicd": 48,
+        "em_testing": 60,
+        "em_types": 100,
+        "em_linting": 80,
+        "em_cicd": 0,
         "em_docs": 100,
-        "em_deps": 76,
-        "em_git": 68,
-        "comp_qual": 88
+        "em_deps": 100,
+        "em_git": 80,
+        "comp_qual": 82
       },
       "delta": null,
-      "firstTs": "2026-06-10T03:15:55.018Z",
-      "lastTs": "2026-06-12T14:01:35.586Z",
+      "firstTs": "2026-06-16T02:59:49.148Z",
+      "lastTs": "2026-06-16T02:59:49.148Z",
       "month": "2026-06"
     }
   ],
   "scoreTrend": [
     {
-      "date": "2026-06-10",
-      "time": "03:15",
-      "score": 65,
-      "grade": "C",
-      "triggered": 0
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:15",
-      "score": 65,
-      "grade": "C",
-      "triggered": 0
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:16",
-      "score": 65,
-      "grade": "C",
-      "triggered": 0
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:16",
-      "score": 65,
-      "grade": "C",
-      "triggered": 0
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:16",
-      "score": 65,
-      "grade": "C",
-      "triggered": 0
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:16",
-      "score": 65,
-      "grade": "C",
-      "triggered": 0
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:16",
-      "score": 65,
-      "grade": "C",
-      "triggered": 0
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:16",
-      "score": 65,
-      "grade": "C",
-      "triggered": 0
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:16",
-      "score": 65,
-      "grade": "C",
-      "triggered": 0
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:16",
-      "score": 65,
-      "grade": "C",
-      "triggered": 0
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:16",
-      "score": 65,
-      "grade": "C",
-      "triggered": 0
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:21",
-      "score": 65,
-      "grade": "C",
-      "triggered": 0
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:23",
-      "score": 62,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:23",
-      "score": 62,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:23",
-      "score": 62,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:23",
-      "score": 62,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:23",
-      "score": 62,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:24",
-      "score": 62,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:24",
-      "score": 62,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:24",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:33",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:33",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:33",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:33",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:33",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:33",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:33",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:33",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:33",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:33",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:34",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:43",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:43",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:43",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:43",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:43",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:43",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:43",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:52",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:53",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:53",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:53",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:53",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:53",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:53",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:53",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:54",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:54",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:54",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:54",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:54",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:54",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "03:54",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "04:02",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "04:02",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "04:04",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "04:04",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "04:04",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "04:04",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "04:04",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "04:04",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "04:04",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "04:04",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "04:15",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "04:48",
-      "score": 87,
+      "date": "2026-06-16",
+      "time": "02:59",
+      "score": 78,
       "grade": "B",
       "triggered": 1
-    },
-    {
-      "date": "2026-06-10",
-      "time": "04:57",
-      "score": 85,
-      "grade": "B",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-10",
-      "time": "05:05",
-      "score": 69,
-      "grade": "C",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-10",
-      "time": "05:06",
-      "score": 69,
-      "grade": "C",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-10",
-      "time": "05:15",
-      "score": 69,
-      "grade": "C",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-10",
-      "time": "05:28",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "06:15",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "06:19",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "07:15",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "07:19",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "08:15",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "08:19",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "09:15",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "09:19",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "10:15",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "10:19",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "11:15",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "11:19",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "12:15",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "12:19",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "13:15",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "13:19",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "14:15",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "14:19",
-      "score": 70,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "15:16",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "15:17",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "15:18",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "15:19",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "15:22",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "15:24",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "15:26",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "15:29",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "15:31",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "15:37",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-10",
-      "time": "15:39",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-11",
-      "time": "01:22",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-11",
-      "time": "01:27",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-11",
-      "time": "02:15",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-11",
-      "time": "02:19",
-      "score": 66,
-      "grade": "C",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "08:58",
-      "score": 55,
-      "grade": "D",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-12",
-      "time": "09:00",
-      "score": 55,
-      "grade": "D",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-12",
-      "time": "12:43",
-      "score": 88,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "12:50",
-      "score": 88,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "12:56",
-      "score": 88,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "12:56",
-      "score": 88,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:02",
-      "score": 88,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:03",
-      "score": 88,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:04",
-      "score": 88,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:04",
-      "score": 88,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:05",
-      "score": 87,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:05",
-      "score": 87,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:06",
-      "score": 87,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:06",
-      "score": 87,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:14",
-      "score": 88,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:19",
-      "score": 88,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:31",
-      "score": 88,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:31",
-      "score": 88,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:33",
-      "score": 88,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:35",
-      "score": 84,
-      "grade": "B",
-      "triggered": 2
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:36",
-      "score": 89,
-      "grade": "B",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:36",
-      "score": 89,
-      "grade": "B",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:37",
-      "score": 92,
-      "grade": "A",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:37",
-      "score": 94,
-      "grade": "A",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:37",
-      "score": 94,
-      "grade": "A",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:37",
-      "score": 94,
-      "grade": "A",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:40",
-      "score": 94,
-      "grade": "A",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:41",
-      "score": 94,
-      "grade": "A",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:42",
-      "score": 99,
-      "grade": "A",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:42",
-      "score": 99,
-      "grade": "A",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:42",
-      "score": 99,
-      "grade": "A",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:45",
-      "score": 99,
-      "grade": "A",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:45",
-      "score": 99,
-      "grade": "A",
-      "triggered": 1
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:46",
-      "score": 100,
-      "grade": "A",
-      "triggered": 0
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:46",
-      "score": 100,
-      "grade": "A",
-      "triggered": 0
-    },
-    {
-      "date": "2026-06-12",
-      "time": "13:46",
-      "score": 99,
-      "grade": "A",
-      "triggered": 0
-    },
-    {
-      "date": "2026-06-12",
-      "time": "14:01",
-      "score": 97,
-      "grade": "A",
-      "triggered": 0
-    },
-    {
-      "date": "2026-06-12",
-      "time": "14:01",
-      "score": 97,
-      "grade": "A",
-      "triggered": 0
     }
   ],
   "diagSummary": [
     {
-      "id": "D2",
-      "count": 122,
-      "label": "质量退化",
-      "rate": 87
+      "id": "D3",
+      "count": 1,
+      "label": "复杂度增长",
+      "rate": 100
     },
     {
       "id": "D0",
-      "count": 53,
+      "count": 0,
       "label": "基线偏离",
-      "rate": 38
-    },
-    {
-      "id": "D6",
-      "count": 53,
-      "label": "文档过时",
-      "rate": 38
+      "rate": 0
     },
     {
       "id": "D1",
@@ -1470,9 +296,9 @@
       "rate": 0
     },
     {
-      "id": "D3",
+      "id": "D2",
       "count": 0,
-      "label": "复杂度增长",
+      "label": "质量退化",
       "rate": 0
     },
     {
@@ -1485,6 +311,12 @@
       "id": "D5",
       "count": 0,
       "label": "依赖退化",
+      "rate": 0
+    },
+    {
+      "id": "D6",
+      "count": 0,
+      "label": "文档过时",
       "rate": 0
     },
     {
@@ -1515,69 +347,69 @@
     {
       "dim": "api",
       "label": "API",
-      "avgScore": 54,
+      "avgScore": 100,
       "recentAvg": 100,
-      "entries": 141,
-      "min": 50,
+      "entries": 1,
+      "min": 100,
       "max": 100,
-      "trend": 48
+      "trend": 0
     },
     {
       "dim": "comp_qual",
       "label": "组件质量",
-      "avgScore": 88,
-      "recentAvg": 88,
-      "entries": 34,
-      "min": 88,
-      "max": 88,
+      "avgScore": 82,
+      "recentAvg": 82,
+      "entries": 1,
+      "min": 82,
+      "max": 82,
       "trend": 0
     },
     {
       "dim": "config",
       "label": "配置",
-      "avgScore": 88,
-      "recentAvg": 100,
-      "entries": 141,
+      "avgScore": 20,
+      "recentAvg": 20,
+      "entries": 1,
       "min": 20,
-      "max": 100,
-      "trend": 12
+      "max": 20,
+      "trend": 0
     },
     {
       "dim": "diagnostics",
       "label": "诊断",
-      "avgScore": 76,
-      "recentAvg": 100,
-      "entries": 141,
-      "min": 70,
-      "max": 100,
-      "trend": 25
+      "avgScore": 85,
+      "recentAvg": 85,
+      "entries": 1,
+      "min": 85,
+      "max": 85,
+      "trend": 0
     },
     {
       "dim": "em_cicd",
       "label": "CI/CD",
-      "avgScore": 48,
-      "recentAvg": 100,
-      "entries": 75,
+      "avgScore": 0,
+      "recentAvg": 0,
+      "entries": 1,
       "min": 0,
-      "max": 100,
-      "trend": 56
+      "max": 0,
+      "trend": 0
     },
     {
       "dim": "em_deps",
       "label": "依赖",
-      "avgScore": 76,
+      "avgScore": 100,
       "recentAvg": 100,
-      "entries": 75,
-      "min": 70,
+      "entries": 1,
+      "min": 100,
       "max": 100,
-      "trend": 26
+      "trend": 0
     },
     {
       "dim": "em_docs",
       "label": "文档",
       "avgScore": 100,
       "recentAvg": 100,
-      "entries": 75,
+      "entries": 1,
       "min": 100,
       "max": 100,
       "trend": 0
@@ -1585,49 +417,49 @@
     {
       "dim": "em_git",
       "label": "Git实践",
-      "avgScore": 68,
-      "recentAvg": 100,
-      "entries": 75,
-      "min": 60,
-      "max": 100,
-      "trend": 34
+      "avgScore": 80,
+      "recentAvg": 80,
+      "entries": 1,
+      "min": 80,
+      "max": 80,
+      "trend": 0
     },
     {
       "dim": "em_linting",
       "label": "检查",
-      "avgScore": 48,
-      "recentAvg": 100,
-      "entries": 75,
-      "min": 0,
-      "max": 100,
-      "trend": 56
+      "avgScore": 80,
+      "recentAvg": 80,
+      "entries": 1,
+      "min": 80,
+      "max": 80,
+      "trend": 0
     },
     {
       "dim": "em_testing",
       "label": "测试",
-      "avgScore": 79,
-      "recentAvg": 100,
-      "entries": 75,
+      "avgScore": 60,
+      "recentAvg": 60,
+      "entries": 1,
       "min": 60,
-      "max": 100,
-      "trend": 22
+      "max": 60,
+      "trend": 0
     },
     {
       "dim": "em_types",
       "label": "类型",
-      "avgScore": 48,
+      "avgScore": 100,
       "recentAvg": 100,
-      "entries": 75,
-      "min": 0,
+      "entries": 1,
+      "min": 100,
       "max": 100,
-      "trend": 56
+      "trend": 0
     },
     {
       "dim": "format",
       "label": "格式",
       "avgScore": 100,
       "recentAvg": 100,
-      "entries": 141,
+      "entries": 1,
       "min": 100,
       "max": 100,
       "trend": 0
@@ -1635,39 +467,39 @@
     {
       "dim": "git",
       "label": "Git",
-      "avgScore": 63,
-      "recentAvg": 96,
-      "entries": 141,
-      "min": 40,
+      "avgScore": 100,
+      "recentAvg": 100,
+      "entries": 1,
+      "min": 100,
       "max": 100,
-      "trend": 35
+      "trend": 0
     },
     {
       "dim": "reports",
       "label": "报告",
-      "avgScore": 64,
-      "recentAvg": 84,
-      "entries": 141,
-      "min": 60,
+      "avgScore": 100,
+      "recentAvg": 100,
+      "entries": 1,
+      "min": 100,
       "max": 100,
-      "trend": 21
+      "trend": 0
     },
     {
       "dim": "robots",
       "label": "机器人",
-      "avgScore": 53,
-      "recentAvg": 100,
-      "entries": 141,
+      "avgScore": 0,
+      "recentAvg": 0,
+      "entries": 1,
       "min": 0,
-      "max": 100,
-      "trend": 49
+      "max": 0,
+      "trend": 0
     },
     {
       "dim": "security",
       "label": "安全",
       "avgScore": 100,
       "recentAvg": 100,
-      "entries": 141,
+      "entries": 1,
       "min": 100,
       "max": 100,
       "trend": 0
@@ -1677,7 +509,7 @@
       "label": "Token",
       "avgScore": 100,
       "recentAvg": 100,
-      "entries": 141,
+      "entries": 1,
       "min": 100,
       "max": 100,
       "trend": 0
@@ -1686,94 +518,16 @@
   "branchSummary": [
     {
       "name": "main",
-      "count": 73,
-      "avgScore": 80,
-      "avgUncommitted": 18
-    },
-    {
-      "name": "feat/yry-self-test",
-      "count": 63,
-      "avgScore": 68,
-      "avgUncommitted": 249
-    },
-    {
-      "name": "feat/yry-self-improve",
-      "count": 3,
-      "avgScore": 66,
-      "avgUncommitted": 27
-    },
-    {
-      "name": "master",
-      "count": 2,
-      "avgScore": 55,
-      "avgUncommitted": 48
+      "count": 1,
+      "avgScore": 78,
+      "avgUncommitted": 2
     }
   ],
   "signals": [
     {
       "type": "warning",
-      "msg": "D2 质量退化 触发率 87%",
+      "msg": "D3 复杂度增长 触发率 100%",
       "icon": "⚠️"
-    },
-    {
-      "type": "improvement",
-      "msg": "API 改善 +48",
-      "icon": "📈"
-    },
-    {
-      "type": "improvement",
-      "msg": "配置 改善 +12",
-      "icon": "📈"
-    },
-    {
-      "type": "improvement",
-      "msg": "诊断 改善 +25",
-      "icon": "📈"
-    },
-    {
-      "type": "improvement",
-      "msg": "CI/CD 改善 +56",
-      "icon": "📈"
-    },
-    {
-      "type": "improvement",
-      "msg": "依赖 改善 +26",
-      "icon": "📈"
-    },
-    {
-      "type": "improvement",
-      "msg": "Git实践 改善 +34",
-      "icon": "📈"
-    },
-    {
-      "type": "improvement",
-      "msg": "检查 改善 +56",
-      "icon": "📈"
-    },
-    {
-      "type": "improvement",
-      "msg": "测试 改善 +22",
-      "icon": "📈"
-    },
-    {
-      "type": "improvement",
-      "msg": "类型 改善 +56",
-      "icon": "📈"
-    },
-    {
-      "type": "improvement",
-      "msg": "Git 改善 +35",
-      "icon": "📈"
-    },
-    {
-      "type": "improvement",
-      "msg": "报告 改善 +21",
-      "icon": "📈"
-    },
-    {
-      "type": "improvement",
-      "msg": "机器人 改善 +49",
-      "icon": "📈"
     }
   ],
   "componentHealth": {
@@ -1786,78 +540,14 @@
       "avgScore": 99
     },
     "rules": {
-      "count": 16,
+      "count": 18,
       "avgScore": 91
     },
     "scripts": {
-      "count": 51,
-      "avgScore": 86
+      "count": 68,
+      "avgScore": 76
     },
-    "overallAvg": 91,
-    "totalComponents": 96
-  },
-  "archHealth": {
-    "latest": {
-      "timestamp": "2026-06-12T14:29:36.971Z",
-      "composite": 100,
-      "grade": "A",
-      "scores": {
-        "arch_kernel": 100,
-        "arch_paradigm": 100,
-        "arch_imports": 100,
-        "arch_srp": 100,
-        "dry": 100,
-        "yagni": 100,
-        "arch_extensions": 100,
-        "arch_isp": 100,
-        "arch_frontmatter": 100
-      },
-      "failedDims": [],
-      "totalChecks": 14,
-      "passedChecks": 14
-    },
-    "totalEntries": 1,
-    "dimTrends": {
-      "arch_kernel": {
-        "label": "内核体积",
-        "recentAvg": 100,
-        "trend": 100
-      },
-      "arch_srp": {
-        "label": "SRP 合规",
-        "recentAvg": 100,
-        "trend": 100
-      },
-      "arch_imports": {
-        "label": "导入规范",
-        "recentAvg": 100,
-        "trend": 100
-      },
-      "arch_extensions": {
-        "label": "扩展隔离",
-        "recentAvg": 100,
-        "trend": 100
-      },
-      "arch_isp": {
-        "label": "ISP 合规",
-        "recentAvg": 100,
-        "trend": 100
-      },
-      "arch_frontmatter": {
-        "label": "配置完整性",
-        "recentAvg": 100,
-        "trend": 100
-      },
-      "arch_paradigm": {
-        "label": "范式合规",
-        "recentAvg": 100,
-        "trend": 100
-      },
-      "arch_healthcheck": {
-        "label": "原则可验证",
-        "recentAvg": 0,
-        "trend": 0
-      }
-    }
+    "overallAvg": 88,
+    "totalComponents": 115
   }
 }

@@ -99,13 +99,15 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
 .node-card .nc-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem}
 .node-card .nc-ico{width:30px;height:30px;border-radius:7px;background:rgba(34,211,238,.12);display:flex;align-items:center;justify-content:center;font-size:.95rem}
 .node-card h4{font-size:.85rem;font-weight:600}
-.node-card .nc-type{font-size:.6rem;padding:1px 6px;border-radius:6px;background:rgba(34,211,238,.15);color:var(--c-cyan);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-left:auto}
-.node-card .nc-type.domain{background:rgba(236,72,153,.15);color:var(--c-pink)}
-.node-card .nc-type.flow{background:rgba(52,211,153,.15);color:var(--c-emerald)}
-.node-card .nc-type.skill{background:rgba(34,211,238,.15);color:var(--c-cyan)}
-.node-card .nc-type.agent{background:rgba(251,191,36,.15);color:var(--c-amber)}
-.node-card .nc-type.file{background:rgba(148,163,184,.18);color:var(--c-slate)}
+.node-card .nc-type{font-size:.6rem;padding:1px 6px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-left:auto}
 .node-card .nc-type.scene{background:rgba(139,92,246,.18);color:var(--c-violet)}
+.node-card .nc-type.component{background:rgba(34,211,238,.15);color:var(--c-cyan)}
+.node-card .nc-type.storage{background:rgba(52,211,153,.15);color:var(--c-emerald)}
+.node-card .nc-type.test{background:rgba(59,130,246,.15);color:var(--c-blue)}
+.node-card .nc-type.file{background:rgba(148,163,184,.18);color:var(--c-slate)}
+.node-card .nc-type.dom{background:rgba(236,72,153,.15);color:var(--c-pink)}
+.node-card .nc-type.style{background:rgba(251,191,36,.15);color:var(--c-amber)}
+.node-card .nc-type.event{background:rgba(251,113,133,.15);color:var(--c-rose)}
 .node-card p{color:var(--muted);font-size:.74rem;line-height:1.55;margin-bottom:.5rem}
 .node-card .nc-edges{font-size:.65rem;color:var(--dim);display:flex;align-items:center;gap:.35rem;padding-top:.5rem;border-top:1px dashed var(--border)}
 .node-card .nc-edges .e-in{color:var(--c-cyan)}.node-card .nc-edges .e-out{color:var(--c-emerald)}
@@ -140,13 +142,14 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
 .legend{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:.85rem;padding:.65rem .85rem;background:var(--panel);border-radius:.5rem;border:1px solid var(--border);font-size:.72rem;color:var(--muted);backdrop-filter:blur(8px)}
 .legend-item{display:flex;align-items:center;gap:.4rem}
 .legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid}
-.legend-dot.domain{background:rgba(236,72,153,.3);border-color:var(--c-pink)}
-.legend-dot.flow{background:rgba(52,211,153,.3);border-color:var(--c-emerald)}
-.legend-dot.step{background:rgba(59,130,246,.3);border-color:var(--c-blue)}
-.legend-dot.skill{background:rgba(34,211,238,.3);border-color:var(--c-cyan)}
 .legend-dot.scene{background:rgba(139,92,246,.3);border-color:var(--c-violet)}
+.legend-dot.component{background:rgba(34,211,238,.3);border-color:var(--c-cyan)}
+.legend-dot.storage{background:rgba(52,211,153,.3);border-color:var(--c-emerald)}
+.legend-dot.test{background:rgba(59,130,246,.3);border-color:var(--c-blue)}
 .legend-dot.file{background:rgba(148,163,184,.3);border-color:var(--c-slate)}
-.legend-dot.agent{background:rgba(251,191,36,.3);border-color:var(--c-amber)}
+.legend-dot.dom{background:rgba(236,72,153,.3);border-color:var(--c-pink)}
+.legend-dot.style{background:rgba(251,191,36,.3);border-color:var(--c-amber)}
+.legend-dot.event{background:rgba(251,113,133,.3);border-color:var(--c-rose)}
 .breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.1rem;font-size:0.76rem}
 .breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
 .breadcrumb a:hover{color:var(--c-amber);text-decoration:underline}
@@ -197,12 +200,12 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
 <button onclick="downloadPNG(this)">🖼️ PNG</button>
 <button onclick="downloadPDF(this)">📄 PDF</button>
 </div><button class="toolbar-toggle" onclick="this.parentElement.classList.toggle('expanded')" title="Export">⋯</button></div>
-</div><p class="subtitle">checklist-interact · 4 组件 · 23 关系 · 6 类型 · 5 视图 · Data/Template/Renderer 三层</p></div>
+</div><p class="subtitle">checklist-interact · 6 组件 · 2 localStorage Key · 7 TC · 8 类型 · 5 视图 · Data/Template/Renderer 三层</p></div>
 
 <div class="tabs" role="tablist">
   <div class="tab active" data-tab="graph" role="tab">🔗 图谱视图 <span class="badge">22</span></div>
   <div class="tab" data-tab="matrix" role="tab">📊 关系矩阵</div>
-  <div class="tab" data-tab="path" role="tab">🗺️ 上手路径</div>
+  <div class="tab" data-tab="path" role="tab">🗺️ 交互流程</div>
   <div class="tab" data-tab="nodes" role="tab">📋 节点详情 <span class="badge">22</span></div>
   <div class="tab" data-tab="stats" role="tab">📈 统计概览</div>
 </div>
@@ -212,11 +215,13 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
   <div class="legend">
     <span style="color:var(--muted);font-weight:600;">节点:</span>
     <span class="legend-item"><span class="legend-dot scene"></span>场景</span>
-    <span class="legend-item"><span class="legend-dot file"></span>入口文件</span>
-    <span class="legend-item"><span class="legend-dot domain"></span>领域</span>
-    <span class="legend-item"><span class="legend-dot flow"></span>流程</span>
-    <span class="legend-item"><span class="legend-dot skill"></span>技能</span>
-    <span class="legend-item"><span class="legend-dot agent"></span>Agent</span>
+    <span class="legend-item"><span class="legend-dot component"></span>组件</span>
+    <span class="legend-item"><span class="legend-dot storage"></span>存储</span>
+    <span class="legend-item"><span class="legend-dot test"></span>测试</span>
+    <span class="legend-item"><span class="legend-dot file"></span>文件</span>
+    <span class="legend-item"><span class="legend-dot dom"></span>DOM</span>
+    <span class="legend-item"><span class="legend-dot style"></span>样式</span>
+    <span class="legend-item"><span class="legend-dot event"></span>事件</span>
     <span style="margin-left:.75rem;color:var(--muted);font-weight:600;">操作:</span>
     <span style="color:var(--dim);">🖱 拖拽 · 滚轮缩放 · 点击查看详情 · 双击居中</span>
   </div>
@@ -226,12 +231,13 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
         <span style="color:var(--muted);font-size:.7rem;margin-right:.25rem;">🔍 过滤:</span>
         <span class="chip active" data-type="all">全部 <span class="count">22</span></span>
         <span class="chip" data-type="scene">场景 <span class="count">1</span></span>
-        <span class="chip" data-type="file">文件 <span class="count">3</span></span>
-        <span class="chip" data-type="domain">领域 <span class="count">4</span></span>
-        <span class="chip" data-type="flow">流程 <span class="count">4</span></span>
-        <span class="chip" data-type="skill">技能 <span class="count">3</span></span>
-        <span class="chip" data-type="agent">Agent <span class="count">5</span></span>
-        <span class="chip" data-type="step">步骤 <span class="count">2</span></span>
+        <span class="chip" data-type="component">组件 <span class="count">6</span></span>
+        <span class="chip" data-type="storage">存储 <span class="count">2</span></span>
+        <span class="chip" data-type="test">测试 <span class="count">7</span></span>
+        <span class="chip" data-type="file">文件 <span class="count">1</span></span>
+        <span class="chip" data-type="dom">DOM <span class="count">3</span></span>
+        <span class="chip" data-type="style">样式 <span class="count">1</span></span>
+        <span class="chip" data-type="event">事件 <span class="count">1</span></span>
         <span class="sep"></span>
         <select class="layout-pick" id="layoutPick">
           <option value="cose">力学布局</option>
@@ -276,16 +282,16 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
 <!-- TAB: PATH -->
 <div class="tab-content" data-tab="path">
   <div class="path-wrap">
-    <h3>🧩 清单交互 · 6 步时间线</h3>
-    <p class="desc">从「打开项目」到「完成首次交付」的完整路径。每一步有明确的入口文档和可验证的完成标志，✅ 表示已有文档可立即操作，🟡 表示需结合命令验证。</p>
+    <h3>🧩 清单交互 · 7 步交互流程</h3>
+    <p class="desc">从「页面加载」到「数据持久化」的完整用户交互路径。每一步对应一个组件触发场景，最终状态写入 localStorage。</p>
     <div class="timeline">
-      <div class="tl-step done"><div class="tl-dot">1</div><div class="tl-time">≈ 5 min</div><div class="tl-num">STEP · 01 · 认知建立</div><h4>读 CLAUDE.md · 建立基础信念</h4><p>了解项目基础信念（信模型/惜注意/验现实）、四条铁律（验先于称/溯先于修/清先于进/表达优先）、项目画像与不可妥协底线。建立「为什么这样设计」的根因认知。</p><div class="tl-files"><span class="tl-file">📄 CLAUDE.md</span><span class="tl-out">→ 价值观对齐</span></div></div>
-      <div class="tl-step done"><div class="tl-dot">2</div><div class="tl-time">≈ 5 min</div><div class="tl-num">STEP · 02 · 概念对齐</div><h4>读 README.md · 掌握领域语言</h4><p>看系统全景图、十一阶段管线、命令清单 (/rui 系列)、九种 Agent 角色、目录结构。统一术语定义，避免同名异义或异名同义。</p><div class="tl-files"><span class="tl-file">📄 README.md</span><span class="tl-file">📄 README#领域语言</span><span class="tl-out">→ 术语统一</span></div></div>
-      <div class="tl-step done"><div class="tl-dot">3</div><div class="tl-time">≈ 3 min</div><div class="tl-num">STEP · 03 · 环境就绪</div><h4>检查 .claude 目录 · 环境验证</h4><p>确认 settings.json 与 commands/ 目录存在，插件配置可被 Claude Code 加载。运行 <code>ls .claude/</code> 验证。</p><div class="tl-files"><span class="tl-file">📁 .claude/settings.json</span><span class="tl-file">📁 .claude/commands/</span><span class="tl-out">✓ 配置可达</span></div></div>
-      <div class="tl-step done"><div class="tl-dot">4</div><div class="tl-time">≈ 2 min</div><div class="tl-num">STEP · 04 · 建立信心</div><h4>跑通测试运行器 · 工具链验证</h4><p>运行 <code>node tests/run.mjs</code> 确认测试框架正常启动。YrY 用 vitest + 7 组测试套件验证自身管线。</p><div class="tl-files"><span class="tl-file">⚙️ tests/run.mjs</span><span class="tl-file">📦 vitest + @vitest/ui</span><span class="tl-out">✓ 7 套件可达</span></div></div>
-      <div class="tl-step alt"><div class="tl-dot">5</div><div class="tl-time">≈ 5 min</div><div class="tl-num">STEP · 05 · 上下文建立</div><h4>浏览故事面板 · 了解已有故事</h4><p>查看 <code>docs/故事任务面板/</code>，了解 yry-arch / yry-self-test / rui-npm 三个故事的当前阶段、交付物、面板结构。</p><div class="tl-files"><span class="tl-file">📂 docs/故事任务面板/</span><span class="tl-file">📂 架构/</span><span class="tl-out">→ 故事地图</span></div></div>
-      <div class="tl-step alt"><div class="tl-dot">6</div><div class="tl-time">≈ 15 min</div><div class="tl-num">STEP · 06 · 4 方签收</div><h4>RACI 评审 + v1.0.0 tag</h4><p>RACI 评审会议通过,PO + Tech Lead + QA + 新人官 + 交互测试官 5 方在 spec/interact.json 全签字。打 v1.0.0 tag 并合并到 main。</p><div class="tl-files"><span class="tl-file">✍️ RACI</span><span class="tl-file">🏷️ v1.0.0</span><span class="tl-file">🔗 合并</span><span class="tl-out">→ 交付完成</span></div></div>
-      <div class="tl-step alt"><div class="tl-dot">7</div><div class="tl-time">≈ 10 min</div><div class="tl-num">STEP · 07 · 端到端能力</div><h4>了解 /rui 命令 · 掌握端到端</h4><p>运行 <code>node skills/rui/help.mjs</code> 查看 8 条命令 + 管线一览。理解从需求解析到交付收口的完整端到端路径。</p><div class="tl-files"><span class="tl-file">⚙️ /rui</span><span class="tl-file">⚙️ /rui-story</span><span class="tl-file">⚙️ /rui-清单交互组件实现</span><span class="tl-out">🚀 就绪</span></div></div>
+      <div class="tl-step done"><div class="tl-dot">1</div><div class="tl-time">~0ms</div><div class="tl-num">STEP · 01 · 页面初始化</div><h4>DOM 扫描 + 状态恢复</h4><p>页面加载时扫描所有 <code>.deliv-link</code> 根据扩展名自动标注 <code>data-type</code>。从 <code>yry-arch-s2-checklist</code> 回读勾选状态，恢复进度条与步骤状态图标。</p><div class="tl-files"><span class="tl-file">📜 checklist-interact.js</span><span class="tl-file">💾 localStorage 回读</span><span class="tl-out">→ 初始化完成</span></div></div>
+      <div class="tl-step done"><div class="tl-dot">2</div><div class="tl-time">&lt;50ms</div><div class="tl-num">STEP · 02 · 勾选进度联动</div><h4>点击 Checkbox → updateProgress() 双向同步</h4><p>勾选/取消步骤 checkbox → 更新进度条 width → 更新 overview 完成统计 → 自动推导步骤状态 (✅完成/🔶就绪/⏳待开始) → 写入 localStorage。</p><div class="tl-files"><span class="tl-file">☑️ input[type=checkbox]</span><span class="tl-file">📊 .progress-bar</span><span class="tl-out">→ 5 断言通过</span></div></div>
+      <div class="tl-step done"><div class="tl-dot">3</div><div class="tl-time">300ms</div><div class="tl-num">STEP · 03 · 折叠面板展开/收起</div><h4>点击交付物头部 → toggle CSS collapsed</h4><p>点击 <code>.deliv-group</code> 头部 → toggle <code>collapsed</code> class → max-height: 0 过渡 300ms ease-out → 交付物列表平滑显隐。</p><div class="tl-files"><span class="tl-file">📂 .deliv-group</span><span class="tl-file">🎨 max-height 0.3s</span><span class="tl-out">→ 3 断言通过</span></div></div>
+      <div class="tl-step done"><div class="tl-dot">4</div><div class="tl-time">~0ms</div><div class="tl-num">STEP · 04 · 标签页切换</div><h4>点击标签 / 键盘 1-9 → 7 面板切换</h4><p>点击标签或按数字键 1-9 → 切换 7 个面板 (overview/清单/命令/验证/指标/交付物/风险/时间线) → 写入 <code>yry-arch-s2-checklist-tab</code>。跳过 input/textarea 聚焦状态避免误触发。</p><div class="tl-files"><span class="tl-file">📑 .tab 7 面板</span><span class="tl-file">⌨️ keydown 1-9</span><span class="tl-out">→ 7 断言通过</span></div></div>
+      <div class="tl-step alt"><div class="tl-dot">5</div><div class="tl-time">~0ms</div><div class="tl-num">STEP · 05 · 风险行展开</div><h4>点击风险行 → toggle open class</h4><p>点击 <code>.risk-row</code> → toggle <code>open</code> class → 缓解步骤详情区展开 → 箭头图标 ↕ 切换方向。</p><div class="tl-files"><span class="tl-file">⚠️ .risk-row.open</span><span class="tl-file">↕ 箭头切换</span><span class="tl-out">→ 切换正常</span></div></div>
+      <div class="tl-step alt"><div class="tl-dot">6</div><div class="tl-time">~0ms</div><div class="tl-num">STEP · 06 · 交付物类型过滤</div><h4>点击过滤按钮 → 6 类过滤 + 展开/折叠</h4><p>点击过滤按钮 (全部/HTML/MD/CSS/Test/其他) → 匹配 <code>data-type</code> 的链接保持可见，其余添加 <code>dim</code> class 变暗。支持哈希定位 <code>#step-N-deliv</code> 自动展开并高亮。</p><div class="tl-files"><span class="tl-file">📦 .deliv-link[data-type]</span><span class="tl-file">🔗 #step-N-deliv</span><span class="tl-out">→ 6 断言通过</span></div></div>
+      <div class="tl-step alt"><div class="tl-dot">7</div><div class="tl-time">1.5s</div><div class="tl-num">STEP · 07 · 路径复制</div><h4>点击复制按钮 → navigator.clipboard → toast</h4><p>点击复制按钮 → <code>navigator.clipboard.writeText()</code> 写入剪贴板 → toast "已复制 N 个路径" 1.5s 后自动消失。支持单步复制 + 全部复制两种模式。</p><div class="tl-files"><span class="tl-file">📋 clipboard API</span><span class="tl-file">💬 .toast 1.5s</span><span class="tl-out">→ 2 断言通过</span></div></div>
     </div>
   </div>
 </div>
@@ -298,22 +304,23 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
 <!-- TAB: STATS -->
 <div class="tab-content" data-tab="stats">
   <div class="stats-grid">
-    <div class="stat-card" style="--sc:var(--c-cyan)"><div class="stat-label">节点总数</div><div class="stat-value">22</div><div class="stat-sub">覆盖 6 种类型</div><div class="stat-trend">▲ 较初版 +18</div></div>
-    <div class="stat-card" style="--sc:var(--c-emerald)"><div class="stat-label">关系总数</div><div class="stat-value">30</div><div class="stat-sub">5 种语义关系</div><div class="stat-trend">▲ 较初版 +24</div></div>
-    <div class="stat-card" style="--sc:var(--c-amber)"><div class="stat-label">图密度</div><div class="stat-value">0.132</div><div class="stat-sub">稀疏图 · 利于理解</div><div class="stat-trend">● 稳定</div></div>
-    <div class="stat-card" style="--sc:var(--c-pink)"><div class="stat-label">平均度</div><div class="stat-value">2.73</div><div class="stat-sub">节点平均连接数</div><div class="stat-trend">● 健康</div></div>
-    <div class="stat-card" style="--sc:var(--c-violet)"><div class="stat-label">直径</div><div class="stat-value">5</div><div class="stat-sub">最长最短路径</div><div class="stat-trend">● 紧凑</div></div>
-    <div class="stat-card" style="--sc:var(--c-blue)"><div class="stat-label">中心节点</div><div class="stat-value">CLAUDE</div><div class="stat-sub">度最大 · 入口枢纽</div><div class="stat-trend">● 已识别</div></div>
+    <div class="stat-card" style="--sc:var(--c-cyan)"><div class="stat-label">节点总数</div><div class="stat-value">22</div><div class="stat-sub">覆盖 8 种类型</div><div class="stat-trend">▲ 6 组件 + 7 TC</div></div>
+    <div class="stat-card" style="--sc:var(--c-emerald)"><div class="stat-label">关系总数</div><div class="stat-value">42</div><div class="stat-sub">7 种语义关系</div><div class="stat-trend">▲ contains → implements → verifies</div></div>
+    <div class="stat-card" style="--sc:var(--c-amber)"><div class="stat-label">图密度</div><div class="stat-value">0.091</div><div class="stat-sub">稀疏图 · 层次清晰</div><div class="stat-trend">● 稳定</div></div>
+    <div class="stat-card" style="--sc:var(--c-pink)"><div class="stat-label">平均度</div><div class="stat-value">3.82</div><div class="stat-sub">节点平均连接数</div><div class="stat-trend">● 健康</div></div>
+    <div class="stat-card" style="--sc:var(--c-violet)"><div class="stat-label">直径</div><div class="stat-value">4</div><div class="stat-sub">最长最短路径</div><div class="stat-trend">● 紧凑</div></div>
+    <div class="stat-card" style="--sc:var(--c-blue)"><div class="stat-label">中心节点</div><div class="stat-value">s2</div><div class="stat-sub">场景根 · 度 16</div><div class="stat-trend">● 已识别</div></div>
   </div>
   <div class="bar-chart">
     <h4>📊 节点类型分布</h4>
     <div class="bar-row"><div class="bar-label">场景</div><div class="bar-track"><div class="bar-fill" style="width:5%;--bc:var(--c-violet)">1</div></div></div>
-    <div class="bar-row"><div class="bar-label">文件</div><div class="bar-track"><div class="bar-fill" style="width:14%;--bc:var(--c-slate)">3</div></div></div>
-    <div class="bar-row"><div class="bar-label">领域</div><div class="bar-track"><div class="bar-fill" style="width:18%;--bc:var(--c-pink)">4</div></div></div>
-    <div class="bar-row"><div class="bar-label">流程</div><div class="bar-track"><div class="bar-fill" style="width:18%;--bc:var(--c-emerald)">4</div></div></div>
-    <div class="bar-row"><div class="bar-label">技能</div><div class="bar-track"><div class="bar-fill" style="width:14%;--bc:var(--c-cyan)">3</div></div></div>
-    <div class="bar-row"><div class="bar-label">Agent</div><div class="bar-track"><div class="bar-fill" style="width:23%;--bc:var(--c-amber)">5</div></div></div>
-    <div class="bar-row"><div class="bar-label">步骤</div><div class="bar-track"><div class="bar-fill" style="width:9%;--bc:var(--c-blue)">2</div></div></div>
+    <div class="bar-row"><div class="bar-label">组件</div><div class="bar-track"><div class="bar-fill" style="width:27%;--bc:var(--c-cyan)">6</div></div></div>
+    <div class="bar-row"><div class="bar-label">存储</div><div class="bar-track"><div class="bar-fill" style="width:9%;--bc:var(--c-emerald)">2</div></div></div>
+    <div class="bar-row"><div class="bar-label">测试</div><div class="bar-track"><div class="bar-fill" style="width:32%;--bc:var(--c-blue)">7</div></div></div>
+    <div class="bar-row"><div class="bar-label">文件</div><div class="bar-track"><div class="bar-fill" style="width:5%;--bc:var(--c-slate)">1</div></div></div>
+    <div class="bar-row"><div class="bar-label">DOM</div><div class="bar-track"><div class="bar-fill" style="width:14%;--bc:var(--c-pink)">3</div></div></div>
+    <div class="bar-row"><div class="bar-label">样式</div><div class="bar-track"><div class="bar-fill" style="width:5%;--bc:var(--c-amber)">1</div></div></div>
+    <div class="bar-row"><div class="bar-label">事件</div><div class="bar-track"><div class="bar-fill" style="width:5%;--bc:var(--c-rose)">1</div></div></div>
   </div>
   <div class="donut-row">
     <div class="donut-card">
@@ -321,118 +328,142 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:.5px}
       <div class="donut">
         <svg viewBox="0 0 42 42">
           <circle cx="21" cy="21" r="15.915" fill="none" stroke="rgba(30,41,59,.6)" stroke-width="6"/>
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#8B5CF6" stroke-width="6" stroke-dasharray="30 70" stroke-dashoffset="25" transform="rotate(-90 21 21)"/>
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#22d3ee" stroke-width="6" stroke-dasharray="20 80" stroke-dashoffset="-5" transform="rotate(-90 21 21)"/>
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#34d399" stroke-width="6" stroke-dasharray="25 75" stroke-dashoffset="-25" transform="rotate(-90 21 21)"/>
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#fbbf24" stroke-width="6" stroke-dasharray="15 85" stroke-dashoffset="-50" transform="rotate(-90 21 21)"/>
-          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#EC4899" stroke-width="6" stroke-dasharray="10 90" stroke-dashoffset="-65" transform="rotate(-90 21 21)"/>
+          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#8B5CF6" stroke-width="6" stroke-dasharray="38 62" stroke-dashoffset="25" transform="rotate(-90 21 21)"/>
+          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#22d3ee" stroke-width="6" stroke-dasharray="14 86" stroke-dashoffset="-13" transform="rotate(-90 21 21)"/>
+          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#34d399" stroke-width="6" stroke-dasharray="19 81" stroke-dashoffset="-27" transform="rotate(-90 21 21)"/>
+          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#fbbf24" stroke-width="6" stroke-dasharray="10 90" stroke-dashoffset="-46" transform="rotate(-90 21 21)"/>
+          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#EC4899" stroke-width="6" stroke-dasharray="10 90" stroke-dashoffset="-56" transform="rotate(-90 21 21)"/>
+          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#3B82F6" stroke-width="6" stroke-dasharray="7 93" stroke-dashoffset="-66" transform="rotate(-90 21 21)"/>
+          <circle cx="21" cy="21" r="15.915" fill="none" stroke="#fb7185" stroke-width="6" stroke-dasharray="2 98" stroke-dashoffset="-73" transform="rotate(-90 21 21)"/>
         </svg>
         <div class="donut-list">
-          <div class="donut-item"><span class="donut-dot" style="background:#8B5CF6"></span><span class="lbl">contains 包含</span><span class="val">9 (30%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#22d3ee"></span><span class="lbl">references 引用</span><span class="val">6 (20%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#34d399"></span><span class="lbl">triggers 触发</span><span class="val">7 (23%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#fbbf24"></span><span class="lbl">delegates 委派</span><span class="val">5 (17%)</span></div>
-          <div class="donut-item"><span class="donut-dot" style="background:#EC4899"></span><span class="lbl">produces 产出</span><span class="val">3 (10%)</span></div>
+          <div class="donut-item"><span class="donut-dot" style="background:#8B5CF6"></span><span class="lbl">contains 包含</span><span class="val">16 (38%)</span></div>
+          <div class="donut-item"><span class="donut-dot" style="background:#22d3ee"></span><span class="lbl">implements 实现</span><span class="val">6 (14%)</span></div>
+          <div class="donut-item"><span class="donut-dot" style="background:#34d399"></span><span class="lbl">verifies 验证</span><span class="val">8 (19%)</span></div>
+          <div class="donut-item"><span class="donut-dot" style="background:#fbbf24"></span><span class="lbl">writes 写入</span><span class="val">4 (10%)</span></div>
+          <div class="donut-item"><span class="donut-dot" style="background:#EC4899"></span><span class="lbl">DOM 操作</span><span class="val">4 (10%)</span></div>
+          <div class="donut-item"><span class="donut-dot" style="background:#3B82F6"></span><span class="lbl">styles 样式</span><span class="val">3 (7%)</span></div>
+          <div class="donut-item"><span class="donut-dot" style="background:#fb7185"></span><span class="lbl">triggers 触发</span><span class="val">1 (2%)</span></div>
         </div>
       </div>
     </div>
     <div class="donut-card">
       <h4>🏆 Top 5 高连接节点</h4>
       <div class="donut-list" style="font-size:.78rem">
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#94a3b8"></span><span class="lbl">CLAUDE.md (文件)</span><span class="val" style="color:#fbbf24">度 7</span></div>
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#22d3ee"></span><span class="lbl">/rui (技能)</span><span class="val">度 6</span></div>
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#8B5CF6"></span><span class="lbl">场景-1 (场景)</span><span class="val">度 6</span></div>
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#94a3b8"></span><span class="lbl">README.md (文件)</span><span class="val">度 5</span></div>
-        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#EC4899"></span><span class="lbl">pipeline-execution (领域)</span><span class="val">度 4</span></div>
+        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#8B5CF6"></span><span class="lbl">场景-2 清单交互 (场景)</span><span class="val" style="color:#fbbf24">度 16</span></div>
+        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#94a3b8"></span><span class="lbl">checklist-interact.js (文件)</span><span class="val">度 12</span></div>
+        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#22d3ee"></span><span class="lbl">勾选进度联动 (组件)</span><span class="val">度 5</span></div>
+        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#22d3ee"></span><span class="lbl">标签页切换 (组件)</span><span class="val">度 4</span></div>
+        <div class="donut-item" style="padding:.4rem 0"><span class="donut-dot" style="background:#34d399"></span><span class="lbl">yry-arch-s2-checklist (存储)</span><span class="val">度 4</span></div>
       </div>
       <div class="density-grid">
-        <div class="density-cell"><div class="dc-val">2.4 KB</div><div class="dc-lbl">图谱体积</div></div>
-        <div class="density-cell"><div class="dc-val">5</div><div class="dc-lbl">路径直径</div></div>
-        <div class="density-cell"><div class="dc-val">3</div><div class="dc-lbl">连通分量</div></div>
-        <div class="density-cell"><div class="dc-val">98%</div><div class="dc-lbl">可达率</div></div>
+        <div class="density-cell"><div class="dc-val">~270 行</div><div class="dc-lbl">JS 规模</div></div>
+        <div class="density-cell"><div class="dc-val">2</div><div class="dc-lbl">localStorage Key</div></div>
+        <div class="density-cell"><div class="dc-val">7</div><div class="dc-lbl">TC 套件</div></div>
+        <div class="density-cell"><div class="dc-val">100%</div><div class="dc-lbl">通过率</div></div>
       </div>
     </div>
   </div>
   <div class="bar-chart">
-    <h4>🎓 上手路径时长分布（分钟）</h4>
-    <div class="bar-row"><div class="bar-label">Step 1 · 信念</div><div class="bar-track"><div class="bar-fill" style="width:10%;--bc:var(--c-cyan)">5</div></div></div>
-    <div class="bar-row"><div class="bar-label">Step 2 · 语言</div><div class="bar-track"><div class="bar-fill" style="width:10%;--bc:var(--c-cyan)">5</div></div></div>
-    <div class="bar-row"><div class="bar-label">Step 3 · 环境</div><div class="bar-track"><div class="bar-fill" style="width:6%;--bc:var(--c-cyan)">3</div></div></div>
-    <div class="bar-row"><div class="bar-label">Step 4 · 测试</div><div class="bar-track"><div class="bar-fill" style="width:4%;--bc:var(--c-emerald)">2</div></div></div>
-    <div class="bar-row"><div class="bar-label">Step 5 · 故事</div><div class="bar-track"><div class="bar-fill" style="width:10%;--bc:var(--c-emerald)">5</div></div></div>
-    <div class="bar-row"><div class="bar-label">Step 6 · 架构</div><div class="bar-track"><div class="bar-fill" style="width:20%;--bc:var(--c-amber)">10</div></div></div>
-    <div class="bar-row"><div class="bar-label">Step 7 · 命令</div><div class="bar-track"><div class="bar-fill" style="width:20%;--bc:var(--c-amber)">10</div></div></div>
-    <div style="margin-top:.75rem;padding-top:.75rem;border-top:1px dashed var(--border);font-size:.7rem;color:var(--dim);display:flex;justify-content:space-between"><span>∑ 总时长</span><span style="color:var(--c-amber);font-weight:700">≈ 40 min</span></div>
+    <h4>⏱️ 交互响应时间分布（毫秒）</h4>
+    <div class="bar-row"><div class="bar-label">页面初始化</div><div class="bar-track"><div class="bar-fill" style="width:10%;--bc:var(--c-cyan)">~5</div></div></div>
+    <div class="bar-row"><div class="bar-label">勾选进度联动</div><div class="bar-track"><div class="bar-fill" style="width:8%;--bc:var(--c-cyan)">&lt;50</div></div></div>
+    <div class="bar-row"><div class="bar-label">折叠面板过渡</div><div class="bar-track"><div class="bar-fill" style="width:60%;--bc:var(--c-emerald)">300</div></div></div>
+    <div class="bar-row"><div class="bar-label">标签页切换</div><div class="bar-track"><div class="bar-fill" style="width:4%;--bc:var(--c-cyan)">~5</div></div></div>
+    <div class="bar-row"><div class="bar-label">风险行展开</div><div class="bar-track"><div class="bar-fill" style="width:2%;--bc:var(--c-cyan)">~5</div></div></div>
+    <div class="bar-row"><div class="bar-label">交付物过滤</div><div class="bar-track"><div class="bar-fill" style="width:2%;--bc:var(--c-cyan)">~5</div></div></div>
+    <div class="bar-row"><div class="bar-label">路径复制 Toast</div><div class="bar-track"><div class="bar-fill" style="width:30%;--bc:var(--c-amber)">1500</div></div></div>
+    <div style="margin-top:.75rem;padding-top:.75rem;border-top:1px dashed var(--border);font-size:.7rem;color:var(--dim);display:flex;justify-content:space-between"><span>∑ 最长交互耗时</span><span style="color:var(--c-amber);font-weight:700">≈ 1.9s (Toast 自消)</span></div>
   </div>
 </div>
 
-<p class="footer">YrY v4.5 · interact · 场景-2: 清单交互组件实现 · 知识图谱 v4.5 · 5 视图 · 23 节点 · 30 关系</p>
+<p class="footer">YrY v5.4 · checklist-interact · 场景-2: 清单交互组件实现 · 知识图谱 · 5 视图 · 22 节点 · 42 关系 · 8 类型</p>
 </div>
 <script>
 /* ═══ 节点元数据（单一事实源） ═══ */
 const NODES = {
-  s3:    {label:'场景-1\n新人上手',type:'scene',  desc:'P0 优先级 · 从零了解系统架构到完成首次交付的全路径', tags:['P0','Story: yry-arch','≤40min'], color:'#8B5CF6', icon:'🚀'},
-  readme:{label:'README\n.md',    type:'file',   desc:'项目入口 · 系统全景图、管线、命令清单、领域语言定义', tags:['v4.5','19 技能','9 Agent'], color:'#94a3b8', icon:'📘'},
-  claude:{label:'CLAUDE\n.md',    type:'file',   desc:'铁律之源 · 基础信念/项目画像/不可妥协底线/退化对策', tags:['4 铁律','3 公理','8 底线'], color:'#94a3b8', icon:'📕'},
-  cfg:   {label:'.claude/\nsettings',type:'file',desc:'插件配置 · 触发 plugin 加载、命令注册、hooks 挂载', tags:['plugin','config'], color:'#94a3b8', icon:'⚙️'},
-  d1:    {label:'module-\necosystem', type:'domain', desc:'模块生态定位 · 19 技能 + 9 Agent + 16 规则 + 14 共享库', tags:['19 skills','9 agents'], color:'#EC4899', icon:'🧩'},
-  d2:    {label:'pipeline-\nexecution',type:'domain', desc:'十一阶段管线 · 需求→文档→代码→交付,自身管理自身演进', tags:['11 阶段','self-host'], color:'#EC4899', icon:'🔄'},
-  d3:    {label:'command-\nsystem',   type:'domain', desc:'命令编排 · /rui /rui-story /rui-清单交互组件实现 等端到端入口', tags:['8 命令','端到端'], color:'#EC4899', icon:'💻'},
-  d4:    {label:'agent-\nrole',       type:'domain', desc:'九角色协作 · pm→planner→architect→coder→reviewer→tester', tags:['9 roles','handoff'], color:'#EC4899', icon:'👥'},
-  f1:    {label:'module-\nlocation',  type:'flow',  desc:'模块定位 · 30 秒内找到任意模块的信息卡(定位+依赖+消费者)', tags:['<30s','索引'], color:'#34d399', icon:'🔍'},
-  f2:    {label:'command-to-\ndelivery',type:'flow', desc:'命令到交付 · 11 阶段贯通,含分支隔离/测试先行/门禁判定', tags:['11 阶段','e2e'], color:'#34d399', icon:'➡️'},
-  f3:    {label:'test-first-\nflow',   type:'flow',  desc:'测试先行 · Gate A RED 验证 → Gate B ≤2 轮通过', tags:['Gate A','Gate B'], color:'#34d399', icon:'🧪'},
-  f4:    {label:'branch-\nisolation',  type:'flow',  desc:'分支隔离 · feat/<name> 策略,记忆/缓存不可跨分支共享', tags:['不可绕过','P0'], color:'#34d399', icon:'🌿'},
-  sk1:   {label:'/rui',     type:'skill', desc:'主入口 · 端到端编排,接收需求到交付全流程', tags:['主线','SDLC'], color:'#22d3ee', icon:'🎯'},
-  sk2:   {label:'/rui-\nstory',type:'skill', desc:'故事面板 · 维护 docs/故事任务面板/,追踪故事生命周期', tags:['面板','追踪'], color:'#22d3ee', icon:'📚'},
-  sk3:   {label:'/rui-\ninit', type:'skill', desc:'初始化 · 建立项目基线,生成配置 + 故事目录', tags:['基线','一次性'], color:'#22d3ee', icon:'✨'},
-  a1:    {label:'pm',         type:'agent', desc:'项目经理 · 接收需求、调度 Agent、判定门禁通过', tags:['调度者'], color:'#fbbf24', icon:'👑'},
-  a2:    {label:'architect',  type:'agent', desc:'架构师 · 影响分析 + 架构设计,输出设计稿', tags:['设计'], color:'#fbbf24', icon:'🏛️'},
-  a3:    {label:'coder',      type:'agent', desc:'开发者 · 逐模块实现,清零 P0 缺陷', tags:['实现'], color:'#fbbf24', icon:'🛠️'},
-  a4:    {label:'tester',     type:'agent', desc:'测试者 · Gate A 测试先行 + Gate B 验证', tags:['验证'], color:'#fbbf24', icon:'🔬'},
-  a5:    {label:'reviewer',   type:'agent', desc:'审查者 · ≤2 轮 review,把控代码质量', tags:['质量'], color:'#fbbf24', icon:'🧐'},
-  st1:   {label:'Step 1-2\n认知建立', type:'step', desc:'读 CLAUDE.md + README,建立价值观与领域语言', tags:['<10min'], color:'#3B82F6', icon:'①'},
-  st2:   {label:'Step 3-7\n环境与命令',type:'step', desc:'环境就绪 → 测试 → 故事 → 架构基线 → 命令掌握', tags:['<30min'], color:'#3B82F6', icon:'②'}
+  s2:          {label:'场景-2\n清单交互',type:'scene',     desc:'6 交互组件 · 2 localStorage Key · 7 TC 套件 · ~270 行零依赖内联 JS · Data/Template/Renderer 三层架构', tags:['P0','yry-arch','场景2'], color:'#8B5CF6', icon:'🧩'},
+  'comp-check':{label:'勾选进度\n联动',  type:'component', desc:'点击 checkbox → updateProgress() → 进度条 width 更新 + overview 统计 + 步骤状态推导 (✅/🔶/⏳) + localStorage 持久化', tags:['checkbox','progress','双向同步'], color:'#22d3ee', icon:'☑️'},
+  'comp-fold': {label:'折叠面板',        type:'component', desc:'点击交付物头部 → toggle CSS class collapsed → max-height: 0 过渡 0.3s ease-out → 交付物列表平滑显隐', tags:['collapsed','max-height','300ms'], color:'#22d3ee', icon:'📂'},
+  'comp-tab':  {label:'标签页\n切换',    type:'component', desc:'点击标签 / 键盘 1-9 → 切换 7 面板 (overview+清单+命令+验证+指标+交付物+风险+时间线) + localStorage tab 记忆', tags:['1-9 映射','7 面板','focus 跳过'], color:'#22d3ee', icon:'📑'},
+  'comp-risk': {label:'风险行\n展开',    type:'component', desc:'点击风险行 → toggle CSS class open → 缓解步骤详情区展开/收起 + 箭头图标 ↕ 方向切换', tags:['toggle','open class','箭头切换'], color:'#22d3ee', icon:'⚠️'},
+  'comp-filter':{label:'交付物\n过滤',   type:'component', desc:'点击过滤按钮 → 6 类过滤 (全部/HTML/MD/CSS/Test/其他) → dim/on CSS class + data-type 自动标注 + 哈希定位 #step-N-deliv', tags:['6 类型','data-type','自动标注'], color:'#22d3ee', icon:'📦'},
+  'comp-copy': {label:'复制路径',        type:'component', desc:'点击复制按钮 → navigator.clipboard.writeText() 写入剪贴板 → toast "已复制 N 个路径" 1.5s 自动消失', tags:['clipboard','toast','1.5s'], color:'#22d3ee', icon:'📋'},
+  'store-chk': {label:'yry-arch-\ns2-checklist',type:'storage', desc:'JSON 键值对 · 步骤勾选状态持久化 · key 含场景标识 s2 避免跨场景冲突 · schema Draft 2020-12', tags:['JSON','localStorage','schema'], color:'#34d399', icon:'💾'},
+  'store-tab': {label:'yry-arch-\ns2-checklist-tab',type:'storage', desc:'字符串 · 记录最后活跃标签页索引 · 刷新后恢复 tab 位置', tags:['string','tab memory'], color:'#34d399', icon:'💾'},
+  'js-main':   {label:'checklist-\ninteract.js',type:'file', desc:'~270 行零依赖内联 JS · 2 个 script 块嵌入 计划清单.html · 6 组件全部 DOM 操作 + localStorage 读写', tags:['~270 行','零依赖','内联'], color:'#94a3b8', icon:'📜'},
+  tc10: {label:'TC-10\n勾选步骤',type:'test', desc:'验证: 进度%更新 + 完成数+1 + 步骤状态推导 (✅/🔶/⏳) · 延迟 < 50ms', tags:['5 断言','100% 通过'], color:'#3B82F6', icon:'🧪'},
+  tc11: {label:'TC-11\n折叠动画',type:'test', desc:'验证: 展开/收起过渡 + 交付物列表显隐 · 300ms 内完成', tags:['3 断言','100% 通过'], color:'#3B82F6', icon:'🧪'},
+  tc12: {label:'TC-12\n标签页切换',type:'test', desc:'验证: 7 面板逐一显示 + 键盘 1-9 映射 + input/textarea 聚焦跳过', tags:['7 断言','100% 通过'], color:'#3B82F6', icon:'🧪'},
+  tc13: {label:'TC-13\n刷新恢复',type:'test', desc:'验证: localStorage 回读勾选状态 + tab 状态 · 全部恢复', tags:['3 断言','100% 通过'], color:'#3B82F6', icon:'🧪'},
+  tc14: {label:'TC-14\n风险行点击',type:'test', desc:'验证: 详情显示/隐藏 + toggle 箭头 ↕ 方向切换', tags:['切换正常','100% 通过'], color:'#3B82F6', icon:'🧪'},
+  tc15: {label:'TC-15\n交付物过滤',type:'test', desc:'验证: 全部/HTML/MD/CSS/Test/其他 六类过滤正确 + 展开/折叠联动', tags:['6 断言','100% 通过'], color:'#3B82F6', icon:'🧪'},
+  tc16: {label:'TC-16\n复制路径',type:'test', desc:'验证: 单步复制 + 全部复制 + navigator.clipboard 写入成功', tags:['2 断言','100% 通过'], color:'#3B82F6', icon:'🧪'},
+  'dom-progress':{label:'进度条\n联动',  type:'dom',  desc:'.progress-bar width transition + .stat-done 完成数文本 + .step-status 状态图标 (✅/🔶/⏳)', tags:['progress-bar','stat-done','step-status'], color:'#EC4899', icon:'📊'},
+  'dom-panel':{label:'折叠面板\n过渡',   type:'dom',  desc:'.deliv-group.collapsed → max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out', tags:['deliv-group','max-height','collapsed'], color:'#EC4899', icon:'📐'},
+  'dom-toast':{label:'Toast\n提示',      type:'dom',  desc:'.toast 绝对定位 fixed · 1.5s 后自动移除 · "已复制 N 个路径" 文本反馈', tags:['toast','1.5s','absolute'], color:'#EC4899', icon:'💬'},
+  'css-anim':{label:'CSS\nTransition',  type:'style', desc:'max-height 0.3s ease-out · opacity 切换 · progress width transition · 所有动画零 JS 仅 CSS', tags:['0.3s','ease-out','纯 CSS'], color:'#fbbf24', icon:'🎨'},
+  'evt-key':{label:'键盘\n快捷键',       type:'event', desc:'keydown 监听 · 数字键 1-9 → 7 面板 + overview 映射 · 跳过 input/textarea/select 聚焦状态', tags:['1-9','keydown','focus check'], color:'#fb7185', icon:'⌨️'},
 };
 const NODE_LIST = Object.entries(NODES).map(([id,d])=>({...d, id}));
 
 const EDGES = [
-  {s:'s3', t:'readme', rel:'contains'},{s:'s3', t:'claude', rel:'contains'},{s:'s3', t:'cfg',    rel:'contains'},
-  {s:'s3', t:'st1',    rel:'contains'},{s:'s3', t:'st2',    rel:'contains'},
-  {s:'s3', t:'d1',     rel:'contains'},{s:'s3', t:'d2',     rel:'contains'},{s:'s3', t:'d3',     rel:'contains'},{s:'s3', t:'d4', rel:'contains'},
-  {s:'s3', t:'f1', rel:'references'},{s:'s3', t:'f2', rel:'references'},{s:'s3', t:'f3', rel:'references'},{s:'s3', t:'f4', rel:'references'},
-  {s:'d1', t:'f1', rel:'references'},{s:'d2', t:'f2', rel:'references'},
-  {s:'d3', t:'sk1',rel:'references'},{s:'d3', t:'sk2',rel:'references'},{s:'d3', t:'sk3',rel:'references'},
-  {s:'d4', t:'a1', rel:'references'},{s:'d4', t:'a2', rel:'references'},{s:'d4', t:'a3', rel:'references'},{s:'d4', t:'a4', rel:'references'},{s:'d4', t:'a5', rel:'references'},
-  {s:'claude', t:'d2', rel:'references'},{s:'readme', t:'d1', rel:'references'},
-  {s:'st1', t:'claude', rel:'triggers'},{s:'st1', t:'readme', rel:'triggers'},
-  {s:'st2', t:'cfg',    rel:'triggers'},{s:'st2', t:'sk1',    rel:'triggers'},
-  {s:'sk1', t:'a1',     rel:'triggers'},{s:'a1',  t:'a2',     rel:'triggers'},
-  {s:'a1',  t:'a3',     rel:'delegates'},{s:'a2',  t:'a3',     rel:'delegates'},
-  {s:'f2',  t:'a3',     rel:'produces'},{s:'f3',  t:'a4',     rel:'produces'},{s:'f4',  t:'f2',     rel:'produces'}
+  // Scene contains all children
+  {s:'s2', t:'comp-check', rel:'contains'},{s:'s2', t:'comp-fold', rel:'contains'},{s:'s2', t:'comp-tab', rel:'contains'},
+  {s:'s2', t:'comp-risk', rel:'contains'},{s:'s2', t:'comp-filter', rel:'contains'},{s:'s2', t:'comp-copy', rel:'contains'},
+  {s:'s2', t:'store-chk', rel:'contains'},{s:'s2', t:'store-tab', rel:'contains'},{s:'s2', t:'js-main', rel:'contains'},
+  {s:'s2', t:'tc10', rel:'contains'},{s:'s2', t:'tc11', rel:'contains'},{s:'s2', t:'tc12', rel:'contains'},
+  {s:'s2', t:'tc13', rel:'contains'},{s:'s2', t:'tc14', rel:'contains'},{s:'s2', t:'tc15', rel:'contains'},{s:'s2', t:'tc16', rel:'contains'},
+  // JS implements all 6 components
+  {s:'js-main', t:'comp-check', rel:'implements'},{s:'js-main', t:'comp-fold', rel:'implements'},{s:'js-main', t:'comp-tab', rel:'implements'},
+  {s:'js-main', t:'comp-risk', rel:'implements'},{s:'js-main', t:'comp-filter', rel:'implements'},{s:'js-main', t:'comp-copy', rel:'implements'},
+  // Components persist to localStorage
+  {s:'comp-check', t:'store-chk', rel:'writes'},{s:'comp-check', t:'store-tab', rel:'writes'},
+  {s:'comp-tab', t:'store-tab', rel:'writes'},
+  // Components update DOM
+  {s:'comp-check', t:'dom-progress', rel:'updates'},
+  {s:'comp-fold', t:'dom-panel', rel:'toggles'},
+  {s:'comp-copy', t:'dom-toast', rel:'shows'},
+  // CSS styles DOM elements
+  {s:'css-anim', t:'dom-progress', rel:'styles'},{s:'css-anim', t:'dom-panel', rel:'styles'},{s:'css-anim', t:'dom-toast', rel:'styles'},
+  // Events trigger components
+  {s:'evt-key', t:'comp-tab', rel:'triggers'},
+  // Tests verify components/storage
+  {s:'tc10', t:'comp-check', rel:'verifies'},{s:'tc11', t:'comp-fold', rel:'verifies'},{s:'tc12', t:'comp-tab', rel:'verifies'},
+  {s:'tc13', t:'store-chk', rel:'verifies'},{s:'tc13', t:'store-tab', rel:'verifies'},
+  {s:'tc14', t:'comp-risk', rel:'verifies'},{s:'tc15', t:'comp-filter', rel:'verifies'},{s:'tc16', t:'comp-copy', rel:'verifies'},
+  // Cross-component references
+  {s:'comp-check', t:'comp-tab', rel:'references'},
+  {s:'comp-filter', t:'comp-copy', rel:'references'},
 ];
-const REL_LABELS = {contains:'包含',references:'引用',triggers:'触发',delegates:'委派',produces:'产出'};
-const TYPES = ['scene','file','domain','flow','skill','agent','step'];
-const TYPE_LABELS = {scene:'场景',file:'文件',domain:'领域',flow:'流程',skill:'技能',agent:'Agent',step:'步骤'};
+const REL_LABELS = {contains:'包含',implements:'实现',writes:'写入',updates:'更新',toggles:'切换',shows:'显示',styles:'样式',triggers:'触发',verifies:'验证',references:'引用'};
+const TYPES = ['scene','component','storage','test','file','dom','style','event'];
+const TYPE_LABELS = {scene:'场景',component:'组件',storage:'存储',test:'测试',file:'文件',dom:'DOM',style:'样式',event:'事件'};
 
 /* ═══ Cytoscape 初始化 ═══ */
 const cy = cytoscape({
   container: document.getElementById('cy'),
   style: [
     {selector:'node', style:{'label':'data(label)','font-family':'JetBrains Mono,monospace','font-size':'9px','color':'#e2e8f0','text-valign':'center','text-halign':'center','text-wrap':'wrap','text-max-width':'90px','border-width':2,'width':54,'height':54,'background-opacity':0.92,'transition-property':'background-color,border-color,width,height,opacity','transition-duration':'0.2s'}},
-    {selector:'node[type="scene"]',  style:{'background-color':'rgba(139,92,246,.32)','border-color':'#8B5CF6','width':70,'height':70,'font-size':'10px','font-weight':'700','shape':'round-rectangle'}},
-    {selector:'node[type="file"]',   style:{'background-color':'rgba(148,163,184,.32)','border-color':'#94a3b8','shape':'rectangle'}},
-    {selector:'node[type="domain"]', style:{'background-color':'rgba(236,72,153,.3)','border-color':'#EC4899','width':62,'height':62,'font-size':'10px','font-weight':'600','shape':'rectangle'}},
-    {selector:'node[type="flow"]',   style:{'background-color':'rgba(52,211,153,.3)','border-color':'#34d399','width':58,'height':58,'font-weight':'600','shape':'round-diamond'}},
-    {selector:'node[type="skill"]',  style:{'background-color':'rgba(34,211,238,.3)','border-color':'#22d3ee','shape':'round-pentagon'}},
-    {selector:'node[type="agent"]',  style:{'background-color':'rgba(251,191,36,.3)','border-color':'#fbbf24','shape':'ellipse','font-size':'10px','font-weight':'600'}},
-    {selector:'node[type="step"]',   style:{'background-color':'rgba(59,130,246,.3)','border-color':'#3B82F6','width':62,'height':62,'shape':'round-octagon'}},
+    {selector:'node[type="scene"]',     style:{'background-color':'rgba(139,92,246,.32)','border-color':'#8B5CF6','width':70,'height':70,'font-size':'10px','font-weight':'700','shape':'round-rectangle'}},
+    {selector:'node[type="component"]', style:{'background-color':'rgba(34,211,238,.3)','border-color':'#22d3ee','width':60,'height':60,'font-size':'9px','font-weight':'600','shape':'round-rectangle'}},
+    {selector:'node[type="storage"]',   style:{'background-color':'rgba(52,211,153,.3)','border-color':'#34d399','shape':'round-diamond','width':62,'height':62,'font-size':'8px','font-weight':'600'}},
+    {selector:'node[type="test"]',      style:{'background-color':'rgba(59,130,246,.3)','border-color':'#3B82F6','shape':'ellipse','width':52,'height':52,'font-size':'8px','font-weight':'600'}},
+    {selector:'node[type="file"]',      style:{'background-color':'rgba(148,163,184,.32)','border-color':'#94a3b8','shape':'rectangle'}},
+    {selector:'node[type="dom"]',       style:{'background-color':'rgba(236,72,153,.3)','border-color':'#EC4899','width':58,'height':58,'shape':'round-octagon','font-weight':'600'}},
+    {selector:'node[type="style"]',     style:{'background-color':'rgba(251,191,36,.3)','border-color':'#fbbf24','shape':'round-pentagon','font-weight':'600'}},
+    {selector:'node[type="event"]',     style:{'background-color':'rgba(251,113,133,.3)','border-color':'#fb7185','shape':'round-pentagon','font-weight':'600'}},
     {selector:'edge', style:{'width':1.3,'line-color':'#334155','target-arrow-color':'#334155','target-arrow-shape':'triangle','arrow-scale':0.85,'curve-style':'bezier','opacity':0.6,'transition-property':'opacity,width,line-color','transition-duration':'0.2s'}},
     {selector:'edge[rel="contains"]',    style:{'line-color':'#8B5CF6','target-arrow-color':'#8B5CF6','width':1.6,'opacity':0.7}},
-    {selector:'edge[rel="references"]',  style:{'line-color':'#3B82F6','target-arrow-color':'#3B82F6','width':1.1,'opacity':0.55,'line-style':'dashed'}},
-    {selector:'edge[rel="triggers"]',    style:{'line-color':'#22d3ee','target-arrow-color':'#22d3ee','width':1.4,'opacity':0.65}},
-    {selector:'edge[rel="delegates"]',   style:{'line-color':'#fbbf24','target-arrow-color':'#fbbf24','width':1.4,'opacity':0.7}},
-    {selector:'edge[rel="produces"]',    style:{'line-color':'#EC4899','target-arrow-color':'#EC4899','width':1.5,'opacity':0.7}},
+    {selector:'edge[rel="implements"]',  style:{'line-color':'#22d3ee','target-arrow-color':'#22d3ee','width':1.4,'opacity':0.65}},
+    {selector:'edge[rel="verifies"]',    style:{'line-color':'#3B82F6','target-arrow-color':'#3B82F6','width':1.3,'opacity':0.6,'line-style':'dashed'}},
+    {selector:'edge[rel="writes"]',      style:{'line-color':'#34d399','target-arrow-color':'#34d399','width':1.4,'opacity':0.7}},
+    {selector:'edge[rel="styles"]',      style:{'line-color':'#fbbf24','target-arrow-color':'#fbbf24','width':1.2,'opacity':0.6}},
+    {selector:'edge[rel="triggers"]',    style:{'line-color':'#fb7185','target-arrow-color':'#fb7185','width':1.5,'opacity':0.7}},
+    {selector:'edge[rel="updates"]',     style:{'line-color':'#EC4899','target-arrow-color':'#EC4899','width':1.3,'opacity':0.6}},
+    {selector:'edge[rel="toggles"]',     style:{'line-color':'#EC4899','target-arrow-color':'#EC4899','width':1.3,'opacity':0.6}},
+    {selector:'edge[rel="shows"]',       style:{'line-color':'#EC4899','target-arrow-color':'#EC4899','width':1.3,'opacity':0.6}},
+    {selector:'edge[rel="references"]',  style:{'line-color':'#94a3b8','target-arrow-color':'#94a3b8','width':1.1,'opacity':0.5,'line-style':'dashed'}},
     {selector:'node:selected', style:{'border-width':3,'border-color':'#fff','width':'72px','height':'72px','font-size':'10px','z-index':999,'box-shadow':'0 0 16px rgba(34,211,238,.7)'}},
     {selector:'edge:selected', style:{'width':3,'line-color':'#fff','target-arrow-color':'#fff','opacity':1,'z-index':999}},
     {selector:'node.dimmed', style:{opacity:0.12}},
@@ -480,7 +511,7 @@ function showNodeDetail(d) {
   const panel = document.getElementById('sidePanel');
   panel.innerHTML =
     '<h3>'+d.label.replace(/\n/g,' ')+' <span class="np-type" style="background:'+d.color+'22;color:'+d.color+'">'+d.type+'</span></h3>'+
-    '<div class="np-id">#'+d.id+' · '+(d.id==='s3'?'根节点':d.id.toUpperCase())+'</div>'+
+    '<div class="np-id">#'+d.id+' · '+(d.id==='s2'?'根节点':d.id.toUpperCase())+'</div>'+
     '<p>'+d.desc+'</p>'+
     (d.tags && d.tags.length ? '<div class="np-section">标签</div><div class="np-tags">'+d.tags.map(t=>'<span class="np-tag">'+t+'</span>').join('')+'</div>' : '')+
     (outEdges.length ? '<div class="np-section">↗ 出向关系 ('+outEdges.length+')</div><ul class="np-rels">'+outEdges.map(e=>'<li data-tgt="'+e.t+'"><span class="rel-arr">→</span><span style="color:var(--dim);font-size:.7rem">'+REL_LABELS[e.rel]+'</span> <strong>'+NODES[e.t].label.replace(/\n/g,' ')+'</strong></li>').join('')+'</ul>' : '')+
@@ -550,10 +581,8 @@ function buildMatrix() {
   if (grid.children.length) return;
   const cols = TYPES.length + 1;
   grid.style.gridTemplateColumns = '120px repeat('+TYPES.length+', minmax(48px, 1fr))';
-  // Header row
   grid.appendChild(elt('mr','head',''));
   TYPES.forEach(t => grid.appendChild(elt('mc','head', TYPE_LABELS[t])));
-  // Data rows
   TYPES.forEach(src => {
     grid.appendChild(elt('mr','head', TYPE_LABELS[src]));
     TYPES.forEach(tgt => {
@@ -605,23 +634,18 @@ function buildNodeCards() {
     card.addEventListener('click', () => {
       const node = cy.getElementById(n.id);
       if (node.length) {
-        // 1. 切到图谱 tab
         document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
         document.querySelector('.tab[data-tab="graph"]').classList.add('active');
         document.querySelector('.tab-content[data-tab="graph"]').classList.add('active');
-        // 2. 等容器尺寸稳定后做自适应聚焦
         setTimeout(() => {
           cy.resize();
           cy.elements().addClass('dimmed');
           const hood = node.neighborhood();
           node.removeClass('dimmed');
           hood.removeClass('dimmed');
-          // 自适应:聚焦节点+其邻域,padding 留白
           const focusSet = node.union(hood);
-          cy.animate({
-            fit: { eles: focusSet, padding: 70 }
-          }, { duration: 500, easing: 'ease-in-out-cubic' });
+          cy.animate({ fit: { eles: focusSet, padding: 70 } }, { duration: 500, easing: 'ease-in-out-cubic' });
           showNodeDetail(n);
         }, 120);
       }

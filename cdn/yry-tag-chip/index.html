@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  YryTagChip · 模板源 + Demo 预览页
+
+  本文件有 2 个用途:
+    1) **模板源** — index.js 通过 fetch 拉取本文件,提取 <script type="text/x-template"
+       id="yry-tag-chip-tpl"> 内容作为 Vue 组件的 template。
+    2) **Demo 预览** — 直接用浏览器打开本文件,即可看到 YryTagChip 的实际渲染效果。
+
+  加载链: ../shared.css → ../theme.css → index.css → Vue 3 → index.js
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryTagChip · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../yry-inline-helpers.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 720px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint {
+      font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6;
+    }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-section .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; }
+    .demo-section .row:last-child { margin-bottom: 0; }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <h1><span class="accent">🏷️</span> YryTagChip · Vue 3 标签芯片</h1>
+  <p class="demo-hint">
+    最小的视觉单元 — 8 种 modifier · 支持纯文本或链接形式。<br>
+    模板源见下方 <code>&lt;script type="text/x-template" id="yry-tag-chip-tpl"&gt;</code> 块。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo 1 — 全部 modifier</h3>
+    <div id="demo-1"></div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo 2 — 可点击链接 (href 形式)</h3>
+    <div id="demo-2"></div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo 3 — 卡片内的 tag 排</h3>
+    <div id="demo-3"></div>
+  </div>
+
+  <hr>
+  <p class="demo-hint">👇 以下 <code>&lt;script type="text/x-template"&gt;</code> 即为组件的 <strong>template 源</strong></p>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TEMPLATE SOURCE OF TRUTH · YryTagChip 的 template
+       ════════════════════════════════════════════════════════════════════ -->
+  <script type="text/x-template" id="yry-tag-chip-tpl">
+    <a v-if="href" :href="href" :class="['tag-chip', modifier]">{{ text }}</a>
+    <span v-else :class="['tag-chip', modifier]">{{ text }}</span>
+  </script>
+
+  <script src="index.js"></script>
+
+  <script>
+    function mountDemo(id, chips) {
+      if (!window.Vue || !window.YryTagChip) return;
+      const root = document.getElementById(id);
+      chips.forEach(function (c) {
+        const el = document.createElement('div');
+        el.style.marginRight = '4px';
+        root.appendChild(el);
+        Vue.createApp(window.YryTagChip, c).mount(el);
+      });
+    }
+    function mountAll() {
+      mountDemo('demo-1', [
+        { text: 'accent', modifier: 'accent' },
+        { text: 'info',   modifier: 'info' },
+        { text: 'cyan',   modifier: 'cyan' },
+        { text: 'green',  modifier: 'green' },
+        { text: 'purple', modifier: 'purple' },
+        { text: 'red',    modifier: 'red' },
+        { text: 'warn',   modifier: 'warn' },
+        { text: 'blue',   modifier: 'blue' }
+      ]);
+      mountDemo('demo-2', [
+        { text: 'GitHub',     modifier: 'info',   href: 'https://github.com' },
+        { text: 'npm',        modifier: 'red',    href: 'https://www.npmjs.com' },
+        { text: 'jsDelivr',   modifier: 'cyan',   href: 'https://www.jsdelivr.com' }
+      ]);
+      mountDemo('demo-3', [
+        { text: '核心入口',  modifier: 'accent' },
+        { text: '路由',      modifier: 'info' },
+        { text: '/rui',      modifier: 'cyan' }
+      ]);
+    }
+    if (window.YryTagChip) mountAll();
+    else document.addEventListener('yry-tag-chip-ready', mountAll, { once: true });
+  </script>
+
+  <div class="demo-footer">🏷️ YryTagChip v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

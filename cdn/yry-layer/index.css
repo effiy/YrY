@@ -1,0 +1,112 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryLayer · Vue 3 分层区块组件 样式
+
+   效果对齐 docs/index.html 中 <div class="layer" id="layer-X"> 静态结构:
+     <div class="layer" id="layer-X">
+       <div class="layer-header">
+         <div class="layer-num">{num}</div>
+         <div class="layer-title">
+           <h2>{title}</h2>
+           <div class="layer-stats">{stats}</div>
+         </div>
+         <div class="layer-panels">
+           <div class="layer-panels-title">{panelsTitle}</div>
+           <div class="lp-dot" onclick="window.openPanel(...)">...</div>
+         </div>
+       </div>
+       <slot/>  <!-- body 内容:sub-section,card-grid,story-grid,scene-grid 等 -->
+     </div>
+
+   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+     --yry-bg-card / --yry-border / --yry-radius
+     --yry-shadow / --yry-shadow-lg
+     --yry-text / --yry-text2 / --yry-text3
+     --yry-cyan / --yry-accent
+     --yry-ease-out
+
+   所有颜色都带 fallback。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.layer {
+  margin-bottom: 40px;
+  scroll-margin-top: 80px;
+}
+
+.layer-header {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  flex-wrap: wrap;
+}
+
+.layer-num {
+  display: flex; align-items: center; justify-content: center;
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(255,193,7,.18), rgba(255,193,7,.06));
+  color: var(--yry-accent, #ffc107);
+  font-size: 1.15rem; font-weight: 800;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  border: 1px solid rgba(255,193,7,.22);
+  flex-shrink: 0;
+}
+
+.layer-title { flex: 1; min-width: 200px; }
+.layer-title h2 {
+  margin: 0 0 2px; font-size: 1.05rem; font-weight: 700;
+  color: var(--yry-text, #f5f5f5);
+}
+.layer-title h2 .accent { color: var(--yry-accent, #ffc107); }
+
+.layer-stats {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  font-size: .7rem;
+  color: var(--yry-text3, #888);
+}
+.layer-stats .stat-sep { opacity: .4; }
+
+.layer-panels {
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap;
+}
+.layer-panels-title {
+  font-size: .68rem; font-weight: 600;
+  color: var(--yry-text3, #888);
+  text-transform: uppercase; letter-spacing: .05em;
+  margin-right: 4px;
+}
+
+.lp-dot {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  color: var(--yry-text2, #d4d4d4);
+  font-size: .68rem; font-weight: 600;
+  cursor: pointer;
+  transition: all .15s var(--yry-ease-out, ease);
+  -webkit-user-select: none;
+  user-select: none;
+  text-decoration: none;
+}
+.lp-dot:hover {
+  background: rgba(255,193,7,.10);
+  border-color: rgba(255,193,7,.3);
+  color: var(--yry-accent, #ffc107);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+.lp-dot:focus-visible {
+  outline: 2px solid var(--yry-accent, #ffc107);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .layer-header { gap: 10px; }
+  .layer-num { width: 36px; height: 36px; font-size: 1rem; }
+  .layer-title h2 { font-size: .95rem; }
+  .layer-stats { font-size: .64rem; }
+  .layer-panels-title { display: none; }
+}

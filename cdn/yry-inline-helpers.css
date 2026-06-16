@@ -1,0 +1,238 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY Inline Helpers — 抽取自 HTML 内联 style 的高频原子类
+
+   目的: 把 cdn/ 目录下 HTML 文件中反复出现的 style="..." 模式抽到 CSS,
+         减少重复 + 提升可维护性 + 统一视觉一致性
+
+   适用: cdn/ 全目录的 HTML (除 yry-* 组件 index.html 外,组件 index.html 自身不需引入)
+
+   加载: 在 shared.css 之后加载即可(无主题依赖)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 排版辅助 ─────────────────────────────────────────────────────── */
+.yry-h2-flex {
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 24px 0 12px;
+}
+.yry-h2-flex .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--yry-accent, #FFC107);
+  flex-shrink: 0;
+}
+.yry-h2-section {
+  font-size: 1.05rem;
+  color: var(--yry-text, #f5f5f5);
+  margin: 24px 0 12px;
+  border-left: 3px solid #22d3ee;
+  padding-left: 10px;
+}
+.yry-h2-section--accent { border-left-color: #FFC107; }
+
+.yry-center-meta {
+  text-align: center;
+  margin: 0 0 16px;
+  font-size: 0.68rem;
+  color: var(--yry-text3, #888);
+}
+.yry-mute-sm     { font-size: 0.62rem; color: var(--yry-color-text-3, #888); }
+.yry-mute-7      { font-size: 0.7rem;  color: var(--yry-text3, #888); }
+.yry-mute-72     { font-size: 0.72rem; color: var(--yry-text3, #888); }
+.yry-mute-76     { font-size: 0.76rem; color: var(--yry-text3, #888); }
+
+.yry-pulse-wrap  { vertical-align: middle; margin-right: 6px; }
+
+/* ── 内联彩色文字(替换大量 style="color:var(--xxx)") ── */
+.yry-clr-accent  { color: var(--yry-accent, #FFC107); }
+.yry-clr-cyan    { color: var(--yry-cyan,   #22d3ee); }
+.yry-clr-pass    { color: var(--yry-pass,   #22c55e); }
+.yry-clr-warn    { color: var(--yry-warn,   #f59e0b); }
+.yry-clr-fail    { color: var(--yry-fail,   #ef4444); }
+.yry-clr-text    { color: var(--yry-text,   #fafafc); }
+.yry-clr-text2   { color: var(--yry-text2,  #d4d4d4); }
+.yry-clr-text3   { color: var(--yry-text3,  #888); }
+.yry-clr-purple  { color: #a78bfa; }
+.yry-clr-pink    { color: #f472b6; }
+
+/* ── 内联彩色小字(常见 size+.7/.64rem) ── */
+.yry-clr-fail-7  { color: #ef4444; font-size: 0.7rem; }
+.yry-clr-fail-64 { color: #ef4444; font-size: 0.64rem; }
+.yry-clr-pass-64 { color: #22c55e; font-size: 0.64rem; }
+.yry-clr-purp-7  { color: #a78bfa; font-size: 0.7rem; }
+.yry-clr-acc-72  { color: var(--yry-accent, #FFC107); font-size: 0.72rem; }
+.yry-clr-acc-7   { color: var(--yry-accent, #FFC107); font-size: 0.7rem; }
+
+/* ── 颜色文字扩展(scheme1: --text2/--pass/--cyan/--warn/--fail/--skip) ── */
+.yry-clr-skip   { color: var(--skip, #94a3b8); }
+
+/* ── 卡片内边距变体 ── */
+.yry-card-pad          { padding: 16px 18px; }
+.yry-card-pad-14       { padding: 14px 18px; }
+.yry-stat-card-compact { padding: 12px 16px; min-width: auto; cursor: default; }
+
+/* ── 文字尺寸独立变体 ── */
+.yry-fs-1-4   { font-size: 1.4rem; }
+.yry-fs-82    { font-size: 0.82rem; }
+.yry-icon-1-1 { font-size: 1.1rem; margin-bottom: 2px; }
+
+/* ── 描述/帮助文字 ── */
+.yry-mute-78-0     { color: var(--text2, #d4d4d4); font-size: 0.78rem; margin: 0; }
+.yry-mute-78-12    { color: var(--text2, #d4d4d4); font-size: 0.78rem; margin: 0 0 12px; }
+.yry-mute-82-10    { color: var(--text2, #d4d4d4); font-size: 0.82rem; margin-bottom: 10px; }
+.yry-mute-72-nw    { font-size: 0.72rem; color: var(--text3, #888); margin-left: auto; white-space: nowrap; }
+.yry-center-help-7 { text-align: center; color: var(--text3, #888); font-size: 0.7rem; margin-top: 8px; }
+.yry-center-help-72{ text-align: center; color: var(--text3, #888); font-size: 0.72rem; }
+.yry-list-78       { color: var(--text2, #d4d4d4); font-size: 0.78rem; line-height: 1.8; padding-left: 20px; }
+
+/* ── 元数据 chip ── */
+.yry-m-chip   { font-size: 0.7rem; color: var(--text3, #888); background: rgba(255,255,255,.04); padding: 2px 8px; border-radius: 8px; }
+
+/* ── 工具栏容器 ── */
+.yry-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; animation: fadeInDown .5s .15s ease both; }
+
+/* ── 按钮紧凑型 ── */
+.yry-btn-compact { padding: 3px 8px; font-size: 0.68rem; }
+
+/* ── 测试名可点击 ── */
+.yry-t-name { cursor: pointer; }
+
+/* ── 案例行警示变体 ── */
+.yry-case-row-warn { padding: 10px 14px; margin-bottom: 6px; }
+
+/* ── cs-icon 覆盖统计图标(cyan/green/red) ── */
+.yry-cs-icon-cyan   { background: rgba(34,211,238,.12); color: var(--cyan, #22d3ee); }
+.yry-cs-icon-green  { background: rgba(34,197,94,.12);  color: var(--pass, #22c55e); }
+.yry-cs-icon-red    { background: rgba(239,68,68,.12);  color: var(--fail, #ef4444); }
+.yry-c-id-fail      { background: rgba(239,68,68,.1);   color: var(--fail, #ef4444); }
+
+/* ── 知识图谱专用辅助类 ── */
+.yry-clr-dim       { color: var(--dim, #888); }
+.yry-clr-fg        { color: var(--fg, #fafafc); }
+.yry-clr-darker    { color: var(--darker, #555); }
+.yry-clr-amber     { color: #fbbf24; }
+.yry-clr-green     { color: #10b981; }
+.yry-clr-warn-2    { color: #f59e0b; }
+.yry-clr-dim-7     { color: var(--dim, #888); font-size: 0.7rem; }
+.yry-clr-amber-700 { color: var(--c-amber, #fbbf24); font-weight: 700; }
+.yry-divider-darker{ margin: 0 0.35rem; color: var(--darker, #555); }
+.yry-fs-1-1        { font-size: 1.1rem; }
+.yry-fs-78         { font-size: 0.78rem; }
+.yry-donut-item    { padding: 0.4rem 0; }
+.yry-h2-hint       { font-weight: 400; font-size: 0.7rem; color: var(--text3, #888); }
+.yry-summary-row-dim {
+  margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed var(--border, #2a2a2a);
+  font-size: 0.7rem; color: var(--dim, #888); display: flex; justify-content: space-between;
+}
+.yry-cat-warning-green { background: rgba(16,185,129,.06); border-color: rgba(16,185,129,.3); }
+
+/* ── rc-icon 渐变(JS 注入) ── */
+.rc-icon   { background: var(--rc-grad); }
+
+/* ── np-type CSS 变量驱动 ── */
+.np-type   { background: var(--np-bg); color: var(--np-fg); }
+
+/* ── rc-prog-fill CSS 变量驱动 ── */
+.rc-prog-fill { width: var(--w, 0%); background: var(--rc-bg, #22c55e); }
+
+/* ── gantt-bar 位置 CSS 变量驱动 ── */
+.gantt-bar { left: var(--left, 0%); width: var(--w, 0%); }
+
+/* ── rm-col-h 背景 CSS 变量驱动 ── */
+.rm-col-h { background: var(--rm-bg, transparent); }
+
+/* ── 进度填充(rr-score-fill) CSS 变量驱动 ── */
+.rr-score-fill { width: var(--w, 0%); }
+
+/* ── 内联无下划线链接(panel footer / inline 链接) ── */
+.yry-link-noul   { text-decoration: none; }
+.yry-link-noul:hover { text-decoration: underline; }
+.yry-link-cyan   { color: var(--yry-cyan, #22d3ee); }
+.yry-link-cyan:hover { text-decoration: underline; }
+
+/* ── 颜色标签(高亮显示主色代码,常见于 <code> 内联) ── */
+.yry-color-tag {
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: inherit;
+  background: var(--yry-tag-bg, rgba(255,255,255,.06));
+  color: var(--yry-tag-fg, #e0af68);
+}
+.yry-color-tag--pink   { --yry-tag-bg: rgba(244,114,182,.13); --yry-tag-fg: #f472b6; }
+.yry-color-tag--green  { --yry-tag-bg: rgba(16,185,129,.13);  --yry-tag-fg: #10b981; }
+.yry-color-tag--purple { --yry-tag-bg: rgba(167,139,250,.13); --yry-tag-fg: #a78bfa; }
+.yry-color-tag--cyan   { --yry-tag-bg: rgba(34,211,238,.13);  --yry-tag-fg: #22d3ee; }
+.yry-color-tag--amber  { --yry-tag-bg: rgba(255,193,7,.13);   --yry-tag-fg: #ffc107; }
+
+/* ── 间距工具类 ───────────────────────────────────────────────────── */
+.yry-mt-8   { margin-top: 8px; }
+.yry-mt-14  { margin-top: 14px; }
+.yry-mt-16  { margin-top: 16px; }
+.yry-mt-18  { margin-top: 18px; }
+.yry-mb-0   { margin-bottom: 0; }
+.yry-mb-14  { margin-bottom: 14px; }
+.yry-mb-16  { margin-bottom: 16px; }
+.yry-mb-20  { margin-bottom: 20px; }
+.yry-mb-24  { margin-bottom: 24px; }
+
+/* ── 布局辅助 ────────────────────────────────────────────────────── */
+.yry-flex-gap8   { display: flex; gap: 8px; flex-wrap: wrap; }
+.yry-flex-center { display: flex; align-items: center; }
+.yry-text-center { text-align: center; }
+.yry-justify-center { justify-content: center; }
+
+/* ── 显示控制 ── */
+.yry-hidden { display: none; }
+
+/* ── 雷达标签(原始内联于 SVG text) ── */
+.yry-radar-label { font-weight: 600; }
+
+/* ── 场景主色点(scene-color-dot 5 个常用色,见 yry-scene.css) ── */
+.yry-bg-cyan   { background-color: #22d3ee; }
+.yry-bg-accent { background-color: #FFC107; }
+.yry-bg-purple { background-color: #a78bfa; }
+.yry-bg-green  { background-color: #10b981; }
+.yry-bg-pink   { background-color: #f472b6; }
+
+/* ── Stage/Bar 进度:done 状态自动 100%(取代大量 style="width:100%") ── */
+.stage-row.done .st-bar,
+.stage-row[data-done] .st-bar { width: 100%; }
+
+/* ── 演示场景默认完成态(取代 dim-bar-fill style="width:XX%") ── */
+.dim-bar-fill--full   { width: 100%; }
+.dim-bar-fill--high   { width: 90%; }
+.dim-bar-fill--mid    { width: 75%; }
+.cp-fill--full        { width: 100%; }
+.cp-fill--empty       { width: 0%; }
+.prog-fill--zero      { width: 0%; }
+.prog-fill--full      { width: 100%; }
+
+/* ── 高度/宽度 CSS 变量驱动(取代 style="height:XX%" / style="width:XX%") ── */
+.bar           { height: var(--h, 100%); }
+.st-bar-inner  { width: var(--w, 100%); }
+.td-bar-inner  { width: var(--w, 100%); }
+.st-coverage   { color: var(--cov-c, var(--text3)); }
+
+/* ── 段(TL 进度条/统计段) 100% / 0% ── */
+.tl-progress--full  { width: 100%; }
+.seg--full          { width: 100%; }
+.seg--empty         { width: 0%; }
+
+/* ── log-box 默认隐藏变体(取代 style="display:none") ── */
+.log-box--hidden { display: none; }
+
+/* ── 常见 flex / grid 容器 ── */
+.yry-flex-grid-80   { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 8px; }
+.yry-summary-row    { display: flex; align-items: center; gap: 20px; }
+
+/* ── 图例点(legend dot) — 青色虚线变体 ── */
+.yry-lg-dot-cyan    { background: rgba(34,211,238,.4); border: 1px dashed rgba(34,211,238,.6); }
+
+/* ── 小字 muted(高复用,7 个变体) ── */
+.yry-mute-64 { font-size: 0.64rem; color: var(--yry-color-text-3, #888); }
+.yry-mute-66 { font-size: 0.66rem; color: var(--yry-text3, #888); }
+.yry-mute-68 { font-size: 0.68rem; color: var(--yry-color-text-3, #888); }
+.yry-mt-20   { margin-top: 20px; }

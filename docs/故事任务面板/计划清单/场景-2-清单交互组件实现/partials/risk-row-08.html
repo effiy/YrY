@@ -1,0 +1,42 @@
+  <!-- R-08 -->
+  <div class="risk-row" onclick="toggleRisk(this)">
+    <div class="rr-summary">
+      <div class="rr-id"><code>R-08</code></div>
+      <div class="rr-title">
+        <div class="rr-name">备份恢复演练</div>
+        <div class="rr-sub">从未做过 DR 演练</div>
+      </div>
+      <div class="rr-cat"><span class="risk-cat cat-安全">安全</span></div>
+      <div class="rr-score">
+        <div class="rr-score-bar"><div class="rr-score-fill low" style="width:10%"></div></div>
+        <div class="rr-score-info">S=1 · L=1 · <b>1</b></div>
+      </div>
+      <div class="rr-deadline"><code>09-30</code></div>
+      <div class="rr-owner">devops</div>
+      <div class="rr-status pass">⟳ 监控中</div>
+      <div class="rr-toggle">▼</div>
+    </div>
+    <div class="rr-detail">
+      <div class="rr-grid-4">
+        <div class="rr-cell"><div class="rr-cell-k">🎯 触发条件</div><div class="rr-cell-v">极端情况:数据丢失</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🌍 影响范围</div><div class="rr-cell-v">整套交付物</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🔍 检测方法</div><div class="rr-cell-v">季度 DR 演练 + RTO 测试</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">⏱ 残余风险</div><div class="rr-cell-v">评分 0 · 长期监控</div></div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">🛡 缓解计划 (3 步)</div>
+        <div class="rr-steps">
+          <div class="rr-step done">① git 远端 + 本地双备份</div>
+          <div class="rr-step plan">② 季度 DR 演练计划中</div>
+          <div class="rr-step plan">③ RPO ≤ 1h, RTO ≤ 4h</div>
+        </div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">📅 风险时间线</div>
+        <div class="rr-timeline">
+          <span class="rr-ev"><span class="rr-ev-dot open"></span><b>06-09</b> 发现</span>
+          <span class="rr-ev"><span class="rr-ev-dot plan"></span><b>09-30</b> 首次 DR 演练</span>
+        </div>
+      </div>
+    </div>
+  </div>

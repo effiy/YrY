@@ -1,0 +1,21 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryBackTop · 回到顶部按钮 样式
+
+   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+     --yry-color-text-2 / --yry-color-accent / --yry-color-surface-2
+
+   所有颜色都带 fallback,即使页面未加载主题也能正常显示。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.back-top {
+  position: fixed; bottom: 28px; right: 28px; width: 42px; height: 42px;
+  border-radius: 50%; background: var(--yry-color-surface-2, rgba(255,255,255,.05));
+  border: 1px solid rgba(255,255,255,.1); color: var(--yry-color-text-2, #d4d4d4);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  transition: all .2s; opacity: 0; pointer-events: none; z-index: 100;
+}
+
+.back-top.visible { opacity: 1; pointer-events: auto; }
+
+.back-top:hover { border-color: var(--yry-color-accent, #ffc107); color: var(--yry-color-accent, #ffc107); }

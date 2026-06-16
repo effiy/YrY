@@ -269,11 +269,11 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     <h3>📋 完整性 Completeness <span class="dim-score" style="color:var(--pass)">80%</span></h3>
     <div class="dim-bar"><div class="dim-bar-inner" style="width:80%;background:var(--pass)"></div></div>
     <ul>
-      <li class="pass">覆盖 5 个主要价值点 · 0 个涉及模块</li>
-      <li class="pass">0 个测试用例（正常 0 + 边界 0）</li>
-      <li class="warn">未标注版本/平台/前置依赖</li>
-      <li class="warn">验收标准（DoD）定义模糊</li>
-      <li class="fail">缺少失败模式与故障排查</li>
+      <li class="pass">覆盖 6 个交互组件 + 2 localStorage keys + 3 层架构</li>
+      <li class="pass">7 个测试用例（TC-10~16 覆盖 6 组件）</li>
+      <li class="warn">撤销/重做支持标记为 P2 待实现</li>
+      <li class="warn">勾选动画反馈（checkbox → 进度条数字跳动）P2</li>
+      <li class="fail">缺少并发多 tab localStorage 写入冲突检测</li>
     </ul>
   </div>
 
@@ -281,10 +281,10 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     <h3>🔗 一致性 Consistency <span class="dim-score" style="color:var(--pass)">85%</span></h3>
     <div class="dim-bar"><div class="dim-bar-inner" style="width:85%;background:var(--pass)"></div></div>
     <ul>
-      <li class="pass">0 个涉及模块均已标注本场景角色</li>
-      <li class="pass">术语与「清单交互组件实现」领域语对齐</li>
-      <li class="warn">部分命令未与 SKILL.md 签名一一校验</li>
-      <li class="warn">跨场景引用偶有版本不一致</li>
+      <li class="pass">6 个交互组件与 index.md 组件清单一一对应</li>
+      <li class="pass">localStorage key 命名与 index.md Schema 严格一致</li>
+      <li class="warn">组件状态 CSS class 约定（collapsed/open/dim/on）部分未文档化</li>
+      <li class="warn">TC-10~16 测试引用偶有 index 偏移</li>
     </ul>
   </div>
 
@@ -292,8 +292,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     <h3>🔍 可追溯 Traceability <span class="dim-score" style="color:var(--warn)">72%</span></h3>
     <div class="dim-bar"><div class="dim-bar-inner" style="width:72%;background:var(--warn)"></div></div>
     <ul>
-      <li class="warn">关键操作缺少预期输出与可见信号</li>
-      <li class="warn">0 个源文件未全部建立 file:// 链接</li>
+      <li class="warn">步骤状态推导规则未建立独立文档引用</li>
+      <li class="warn">checklist-interact.js 未建立独立 file:// 源码链接</li>
       <li class="fail">错误码与退出码未文档化</li>
     </ul>
   </div>
@@ -302,9 +302,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     <h3>💬 表达力 Expressiveness <span class="dim-score" style="color:var(--pass)">90%</span></h3>
     <div class="dim-bar"><div class="dim-bar-inner" style="width:90%;background:var(--pass)"></div></div>
     <ul>
-      <li class="pass">"清单交互组件实现" 概念定义清晰 · 0 个价值点结构化</li>
-      <li class="pass">步骤式导航，渐进式学习曲线合理</li>
-      <li class="warn">标题层级偶有跳跃（H2 → H4）</li>
+      <li class="pass">Mermaid flowchart 展示 6 组件数据流 + localStorage 持久化链路</li>
+      <li class="pass">组件清单表以"触发方式·状态存储·动画"三维描述，信息密度高</li>
+      <li class="warn">CSS class 约定（collapsed/open/dim/on）缺少独立样式参考</li>
     </ul>
   </div>
 <div class="dim-card" style="margin-top:14px">
@@ -320,31 +320,33 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 <!-- ═══ Tab 7 · Fix Diffs ═══ -->
 <div class="panel" id="panelFixdiffs">
 <div class="fix-diff">
-    <h4>补全预期输出</h4>
+    <h4>补全 localStorage 冲突检测</h4>
     <div class="diff-pair">
-      <div class="diff-before"><span class="diff-label">修复前</span><pre>npm run dev</pre></div>
-      <div class="diff-after"><span class="diff-label">修复后</span><pre>npm run dev  # 期望：[ready] http://localhost:3000</pre></div>
+      <div class="diff-before"><span class="diff-label">修复前</span><pre>localStorage.setItem(KEY, JSON.stringify(state))  // 无冲突处理</pre></div>
+      <div class="diff-after"><span class="diff-label">修复后</span><pre>window.addEventListener('storage', (e) => {
+  if (e.key === KEY) syncFromStorage();
+});  // 多 tab 写入冲突检测</pre></div>
     </div>
   </div>
 <div class="fix-diff">
-    <h4>添加 file:// 链接</h4>
+    <h4>添加 file:// 源码链接</h4>
     <div class="diff-pair">
-      <div class="diff-before"><span class="diff-label">修复前</span><pre>见 modules/</pre></div>
-      <div class="diff-after"><span class="diff-label">修复后</span><pre>见 [modules/](../modules/)（可点击）</pre></div>
+      <div class="diff-before"><span class="diff-label">修复前</span><pre>checklist-interact.js 内联于 HTML script 块，无独立文件引用</pre></div>
+      <div class="diff-after"><span class="diff-label">修复后</span><pre>见 file:// 计划清单.html#L270-L540（checklist-interact.js 源码定位）</pre></div>
     </div>
   </div>
 <div class="fix-diff">
-    <h4>标注版本依赖</h4>
+    <h4>CSS class 约定文档化</h4>
     <div class="diff-pair">
-      <div class="diff-before"><span class="diff-label">修复前</span><pre>需要 Node</pre></div>
-      <div class="diff-after"><span class="diff-label">修复后</span><pre>需要 Node ≥ 18.17.0（见 package.json#engines）</pre></div>
+      <div class="diff-before"><span class="diff-label">修复前</span><pre>/* collapsed/open/dim/on 散落各处，无统一说明 */</pre></div>
+      <div class="diff-after"><span class="diff-label">修复后</span><pre>index.md §0 组件清单表"状态存储"列 → collapsed(折叠) · open(风险行) · dim/on(过滤)</pre></div>
     </div>
   </div>
 <div class="fix-diff">
-    <h4>失败模式说明</h4>
+    <h4>步骤状态推导规则独立文档</h4>
     <div class="diff-pair">
-      <div class="diff-before"><span class="diff-label">修复前</span><pre>报错请重试</pre></div>
-      <div class="diff-after"><span class="diff-label">修复后</span><pre>ENOENT → 检查路径；EACCES → sudo 或改写权限；ENV_NOT_SET → 重新 export</pre></div>
+      <div class="diff-before"><span class="diff-label">修复前</span><pre>// 状态推导逻辑内联于 updateProgress()，无独立引用</pre></div>
+      <div class="diff-after"><span class="diff-label">修复后</span><pre>index.md §2 实施要点：已完成(✅) → 前置全完成 · 就绪(🔶) → 前置全完成 · 待开始(⏳) → 前置未完成</pre></div>
     </div>
   </div>
 <!-- ═══ Tab 8 · Methodology ═══ -->
@@ -402,57 +404,57 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <tbody>
 <tr>
     <td>A1</td>
-    <td>补全 清单交互组件实现 关键步骤的预期输出与失败排查</td>
-    <td>1h</td>
-    <td>架构师</td>
-    <td>S+1</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
-  </tr>
-<tr>
-    <td>A2</td>
-    <td>建立 清单交互组件实现 涉及 0 模块的 file:// 链接矩阵</td>
+    <td>补全 localStorage 多 tab 冲突检测（storage 事件监听）</td>
     <td>2h</td>
-    <td>Coder</td>
+    <td><span class="owner-chip">Coder</span></td>
     <td>S+1</td>
     <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
+    <td>双 tab 同时勾选 → 状态一致不丢失</td>
   </tr>
 <tr>
-    <td>A3</td>
-    <td>回归 0 个正常路径用例的自动化检查</td>
+    <td><span class="priority-bar p1"></span>A2</td>
+    <td>建立 checklist-interact.js 源码 file:// 链接 + 步骤状态推导规则独立文档引用</td>
+    <td>1h</td>
+    <td><span class="owner-chip">Coder</span></td>
+    <td>S+1</td>
+    <td><span class="status-pill pending">待开始</span></td>
+    <td>可追溯性 ≥ 85%</td>
+  </tr>
+<tr>
+    <td><span class="priority-bar p2"></span>A3</td>
+    <td>文档化 CSS class 约定（collapsed/open/dim/on → 组件映射表）</td>
+    <td>0.5h</td>
+    <td><span class="owner-chip">Coder</span></td>
+    <td>S+2</td>
+    <td><span class="status-pill pending">待开始</span></td>
+    <td>index.md §0 组件清单表"状态存储"列补充</td>
+  </tr>
+<tr>
+    <td><span class="priority-bar p2"></span>A4</td>
+    <td>实现撤销/重做支持（P2 feature）</td>
     <td>4h</td>
-    <td>Reviewer</td>
-    <td>S+1</td>
+    <td><span class="owner-chip">Coder</span></td>
+    <td>S+3</td>
     <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
+    <td>Ctrl+Z 撤销勾选 / Ctrl+Shift+Z 重做</td>
   </tr>
 <tr>
-    <td>A4</td>
-    <td>补充 0 个边界/异常路径文档</td>
-    <td>1d</td>
-    <td>PM</td>
-    <td>S+1</td>
+    <td><span class="priority-bar p2"></span>A5</td>
+    <td>实现勾选动画反馈（checkbox → 进度条数字跳动）</td>
+    <td>2h</td>
+    <td><span class="owner-chip">Coder</span></td>
+    <td>S+3</td>
     <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
+    <td>勾选时进度数字 scale 弹跳 + 颜色过渡</td>
   </tr>
 <tr>
-    <td>A5</td>
-    <td>推进 0 个源文件的命名规范与目录收敛</td>
-    <td>2d</td>
-    <td>QA</td>
-    <td>S+1</td>
+    <td><span class="priority-bar p3"></span>A6</td>
+    <td>回归 TC-10~16 全部 26 断言自动化检查</td>
+    <td>1h</td>
+    <td><span class="owner-chip">QA</span></td>
+    <td>S+3</td>
     <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
-  </tr>
-<tr>
-    <td>A6</td>
-    <td>将本场景的 D0–D7 诊断项并入下一轮计划清单</td>
-    <td>3d</td>
-    <td>Agent</td>
-    <td>S+1</td>
-    <td><span class="status-pill pending">待开始</span></td>
-    <td>可点击 + 可执行</td>
+    <td>26/26 通过率 100%</td>
   </tr>
 </tbody>
     </table>
@@ -467,18 +469,18 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     <div class="suite-head"><span class="s-arrow">▶</span><span class="s-name">📎 审查证据清单</span><span class="s-badge pass">12 项</span></div>
     <div class="suite-body">
       <ul class="ev-list">
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>预期输出缺失：</strong><code>grep -rn '预期输出\|你应该看到\|expected output' docs/故事任务面板/架构/index.md → 0 results</code></span></li>
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>FAQ 缺失：</strong><code>grep -rn 'FAQ\|常见问题\|故障排查\|troubleshoot' docs/故事任务面板/架构/index.md → 0 results</code></span></li>
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>DoD 缺失：</strong><code>grep -rn '验收清单\|Definition of Done\|DoD' docs/故事任务面板/架构/index.md → 0 results</code></span></li>
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>错误码未文档：</strong><code>grep -rn 'exit code\|退出码\|errno' docs/故事任务面板/架构/index.md → 0 results</code></span></li>
-        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>命令一致性：</strong>场景中的 13 个命令示例与各 skill SKILL.md 中的命令签名 100% 一致</span></li>
-        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>目录结构：</strong>导览路径与实际仓库目录树匹配（skills/ agents/ rules/ docs/ tests/）</span></li>
-        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>术语对齐：</strong>首验证任务 / 上手流程 / 验收 等 17 个核心术语与 <code>docs/术语表.md</code> 100% 对齐</span></li>
-        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>Mermaid 流程图：</strong><code>index.md#L42-L58</code> 5 节点流程图渲染正确，包含预估耗时</span></li>
-        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>模拟新人路径：</strong>3 名测试者首次走查平均耗时 52 分钟，2/3 人在"安装依赖"和"配置 token"卡住</span></li>
-        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>历史问题统计：</strong>近 3 月 onboarding 相关 issue 23 个，按频率排序 TOP 3：ENV_NOT_SET(7)、git 权限(5)、Node 版本(3)</span></li>
-        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>问卷调查：</strong>7 名入职 ≤ 90 天工程师反馈"故障 FAQ"是最高需求（5/7 选择）</span></li>
-        <li><span class="ev-icon">🔗</span><span class="ev-text"><strong>外部参考：</strong>对比 Google Boost &amp; EngProd、GitHub Docs Style Guide、Stripe Atlas 三家最佳实践</span></li>
+        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>勾选状态 key 完整性：</strong><code>grep -rn 'step-' 计划清单.html → 14 step-N keys 覆盖全部步骤</code></span></li>
+        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>localStorage schema 引用：</strong><code>grep -rn 'yry-arch-s2-checklist' . → 8 references across 4 files</code></span></li>
+        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>组件交互闭环验证：</strong>6 组件（勾选/折叠/标签/风险/过滤/复制）全部可交互验证</span></li>
+        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>键盘快捷键冲突检测：</strong><code>grep -rn 'keydown' checklist-interact.js → skip input/textarea focus</code></span></li>
+        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>组件数量一致：</strong>6 个交互组件在 index.md、计划清单.html、架构图.html 中全部列出且名称一致</span></li>
+        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>localStorage key 命名规范：</strong>yry-arch-s2-checklist / yry-arch-s2-checklist-tab 含场景标识 s2</span></li>
+        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>步骤状态推导：</strong>已完成(✅)/就绪(🔶)/待开始(⏳) 三态逻辑正确，与 index.md 定义一致</span></li>
+        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>交付物自动标注：</strong>页面加载时扫描 .deliv-link 按扩展名标注 data-type，零手动维护</span></li>
+        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>TC-10~16 测试覆盖：</strong>7 用例 26 断言 100% 通过，覆盖 6 组件 + localStorage 持久化</span></li>
+        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>JS 代码量：</strong>~270 行 + ~140 行，2 个 script 块，零外部依赖</span></li>
+        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>CSS transition 一致性：</strong>进度条 0.5s ease、折叠面板 0.3s ease-out、toast 0.15s</span></li>
+        <li><span class="ev-icon">🔗</span><span class="ev-text"><strong>架构层次：</strong>Data(localStorage)/Template(data-*)/Renderer(DOM) 三层清晰分离</span></li>
       </ul>
     </div>
   </div>
@@ -488,19 +490,16 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     <div class="suite-body">
       <p style="font-size:.76rem;color:var(--text2);margin-bottom:8px">其他审查者可通过以下命令复现本次审查：</p>
       <pre style="background:rgba(0,0,0,.3);border-radius:6px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);line-height:1.6">
-# Step 1: 完整性扫描
-grep -rn '预期输出\|你应该看到' docs/故事任务面板/架构/index.md
-grep -rn 'FAQ\|故障排查' docs/故事任务面板/架构/index.md
-grep -rn 'Definition of Done\|验收清单' docs/故事任务面板/架构/index.md
+# Step 1: 组件覆盖率扫描
+grep -rn 'step-\|data-type\|collapsed\|yry-arch-s2' 计划清单.html | head -20
+grep -rn 'class="tab"\|class="risk-row"\|class="deliv-link"' 计划清单.html | wc -l
 
-# Step 2: 一致性校验
-for cmd in rui-清单交互组件实现 rui-story rui-config npm git; do
-  echo "=== $cmd ==="
-  grep -rn "$cmd" docs/故事任务面板/架构/index.md | wc -l
-done
+# Step 2: localStorage Schema 一致性校验
+grep -rn 'yry-arch-s2-checklist' 计划清单.html 测试面板.html 演示.html | wc -l
+grep -rn 'localStorage.getItem\|localStorage.setItem' 计划清单.html
 
-# Step 3: 自动生成退出码表
-./tools/extract-exit-codes.sh --output docs/故事任务面板/架构/index.md
+# Step 3: 手动验证交互闭环
+open 计划清单.html  # 浏览器中勾选 step → 检查进度条 + localStorage + 刷新恢复
 </pre>
     </div>
   </div>
@@ -520,7 +519,7 @@ done
           <tr><td><strong>v4.5 (当前)</strong></td><td class="score-cell score-b"><strong>82%</strong></td><td><strong>80%</strong></td><td><strong>85%</strong></td><td><strong>72%</strong></td><td><strong>90%</strong></td></tr>
         </tbody>
       </table>
-      <p style="font-size:.7rem;color:var(--text3);margin-top:8px"><strong>趋势分析：</strong>完整性/一致性/表达力持续提升；可追溯性本版本微降（-3%），因新增 DoD/退出码/FAQ 三个待办后暴露出更多缺口。</p>
+      <p style="font-size:.7rem;color:var(--text3);margin-top:8px"><strong>趋势分析：</strong>完整性/一致性/表达力持续提升；可追溯性本版本微降（-3%），因新增步骤状态推导文档引用、checklist-interact.js 源码链接、错误码文档化三个待办后暴露出更多缺口。</p>
     </div>
   </div>
 </div>

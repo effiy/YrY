@@ -1,0 +1,47 @@
+  <div class="verify-item">
+    <div class="vi-head">
+      <div class="vi-label">TC-12+13 · 步骤 6 + 9 · 7 标签全切换 + 持久化</div>
+      <div class="vi-status pass">PASS</div>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">🎯 验证目标</div>
+      <div class="vi-v">键盘 1-7 切换 7 面板 + URL hash 同步 + 刷新恢复 16 步骤勾选状态 + <code>yry-arch-s2-checklist</code> 跨场景隔离。</div>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📜 验证脚本</div>
+      <pre>node tests/skills/check-tab.mjs --panels=7 --key=1-7 --hash-sync
+node tests/skills/check-persist.mjs --storage=localStorage --key-prefix=yry-arch-s2-checklist
+node tests/skills/check-persist.mjs --refresh --assert-state-restored
+node tests/skills/check-persist.mjs --cross-scene --assert-isolation
+# ajv schema 校验
+node -e "const Ajv=require('ajv');const a=new Ajv();..." # 详见 tests/skills/check-persist.mjs
+# 详见 tests/skills/check-persist.mjs
+ajv.validateSchema(require('./cdn/localstorage-schema.json'))  # schema 校验
+node tests/skills/check-persist.mjs --migration=v1-to-v2 --assert-compat<span class="cb" onclick="copyCmd(this,'node tests/skills/check-tab.mjs --panels=7 --key=1-7 --hash-sync\nnode tests/skills/check-persist.mjs --storage=localStorage --key-prefix=yry-arch-s2-checklist\nnode tests/skills/check-persist.mjs --refresh --assert-state-restored\nnode tests/skills/check-persist.mjs --cross-scene --assert-isolation\najv.validateSchema(require(./cdn/localstorage-schema.json))\nnode tests/skills/check-persist.mjs --migration=v1-to-v2 --assert-compat')">📋</span></pre>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📐 验收标准</div>
+      <ul class="vi-criteria">
+        <li>键盘 1-7 切换 7/7 面板 · <code>panel.on</code> 类正确</li>
+        <li>URL hash 同步 <code>#cmd / #verify / #metrics / ...</code></li>
+        <li>刷新后 16 步骤勾选状态 100% 恢复</li>
+        <li><code>yry-arch-s2-checklist</code> + <code>yry-arch-s2-checklist-tab</code> 场景隔离 0 冲突</li>
+        <li>ajv schema 校验 100% 通过</li>
+      </ul>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📊 实测结果</div>
+      <table class="vi-table">
+        <thead><tr><th>检查点</th><th>期望</th><th>实测</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td>键盘 1-7 切面板</td><td>7/7</td><td>7/7</td><td class="pass">PASS</td></tr>
+          <tr><td>URL hash 同步</td><td>7/7</td><td>7/7</td><td class="pass">PASS</td></tr>
+          <tr><td><code>panelchange</code> 事件触发</td><td>7/7</td><td>7/7</td><td class="pass">PASS</td></tr>
+          <tr><td>刷新恢复 16 步骤</td><td>100%</td><td>100% (16/16)</td><td class="pass">PASS</td></tr>
+          <tr><td>跨场景 key 隔离</td><td>0 冲突</td><td>0 冲突</td><td class="pass">PASS</td></tr>
+          <tr><td>ajv schema 校验</td><td>5/5 字段</td><td>5/5 字段</td><td class="pass">PASS</td></tr>
+          <tr><td>迁移 v1→v2 兼容</td><td>true</td><td>true</td><td class="pass">PASS</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>

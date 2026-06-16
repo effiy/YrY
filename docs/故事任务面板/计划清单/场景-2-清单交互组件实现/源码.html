@@ -67,17 +67,17 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .bar-outer .seg:hover{filter:brightness(1.2)}
 .bar-outer .seg::after{content:attr(data-tip);position:absolute;top:-28px;left:50%;transform:translateX(-50%);background:var(--bg-raised);color:var(--text);padding:3px 8px;border-radius:4px;font-size:.66rem;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;z-index:5}
 .bar-outer .seg:hover::after{opacity:1}
-.bar-outer .seg.skill{background:var(--accent)}
-.bar-outer .seg.agent{background:var(--purple)}
-.bar-outer .seg.rule{background:var(--pass)}
-.bar-outer .seg.lib{background:var(--cyan)}
+.bar-outer .seg.spec{background:var(--accent)}
+.bar-outer .seg.js{background:var(--purple)}
+.bar-outer .seg.test{background:var(--pass)}
+.bar-outer .seg.config{background:var(--cyan)}
 
 .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .14s ease both}
 .search-box{flex:1;min-width:240px;position:relative}
 .search-box input{width:100%;background:var(--bg-flat);border:var(--border);border-radius:8px;padding:9px 14px 9px 36px;color:var(--text);font-size:.84rem;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s}
 .search-box input:focus{border-color:rgba(255,193,7,.4);box-shadow:0 0 0 3px rgba(255,193,7,.08)}
 .search-box input::placeholder{color:var(--text3)}
-.search-box::before{content:'🔍';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.85rem;opacity:.55}
+.search-box::before{content:'\01F50D';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.85rem;opacity:.55}
 .search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:1rem;padding:2px 6px;border-radius:4px;display:none}
 .search-clear:hover{color:var(--text);background:rgba(255,255,255,.05)}
 .search-box.has-value .search-clear{display:block}
@@ -122,12 +122,11 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .file-card .fc-desc{font-size:.74rem;color:var(--text2);margin-top:6px;line-height:1.45}
 .file-card .fc-meta{display:flex;gap:10px;margin-top:8px;font-size:.7rem;color:var(--text3);flex-wrap:wrap;align-items:center}
 .file-card .fc-meta .meta-item{display:inline-flex;align-items:center;gap:3px}
-.file-card .fc-badges{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
 .fc-badge{font-size:.62rem;padding:2px 8px;border-radius:10px;font-weight:600;letter-spacing:.3px}
-.fc-badge.skill{background:rgba(255,193,7,.12);color:var(--accent);border:1px solid rgba(255,193,7,.2)}
-.fc-badge.agent{background:rgba(192,132,252,.12);color:var(--purple);border:1px solid rgba(192,132,252,.2)}
-.fc-badge.rule{background:rgba(34,197,94,.12);color:var(--pass);border:1px solid rgba(34,197,94,.2)}
-.fc-badge.lib{background:rgba(34,211,238,.12);color:var(--cyan);border:1px solid rgba(34,211,238,.2)}
+.fc-badge.spec{background:rgba(255,193,7,.12);color:var(--accent);border:1px solid rgba(255,193,7,.2)}
+.fc-badge.js{background:rgba(192,132,252,.12);color:var(--purple);border:1px solid rgba(192,132,252,.2)}
+.fc-badge.test{background:rgba(34,197,94,.12);color:var(--pass);border:1px solid rgba(34,197,94,.2)}
+.fc-badge.config{background:rgba(34,211,238,.12);color:var(--cyan);border:1px solid rgba(34,211,238,.2)}
 .fc-badge.must{background:rgba(239,68,68,.12);color:var(--fail);border:1px solid rgba(239,68,68,.25)}
 .fc-badge.recommend{background:rgba(245,158,11,.12);color:var(--warn);border:1px solid rgba(245,158,11,.25)}
 .fc-badge.reference{background:rgba(34,211,238,.1);color:var(--cyan);border:1px solid rgba(34,211,238,.2)}
@@ -174,7 +173,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .task-card .t-title{font-weight:600;font-size:.85rem;color:var(--text);margin-bottom:4px}
 .task-card .t-desc{font-size:.74rem;color:var(--text2);line-height:1.5}
 .task-card .t-cmd{margin-top:8px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.05);border-radius:5px;padding:6px 10px;font-family:monospace;font-size:.7rem;color:var(--cyan);overflow-x:auto;white-space:nowrap;position:relative}
-.task-card .t-cmd::before{content:'$ ';color:var(--pass);opacity:.7}
+.task-card .t-cmd::before{content:'> ';color:var(--pass);opacity:.7}
 .task-card .t-diff{position:absolute;top:10px;right:10px;font-size:.6rem;padding:2px 7px;border-radius:8px;font-weight:600}
 .t-diff.easy{background:rgba(34,197,94,.12);color:var(--pass)}
 .t-diff.medium{background:rgba(245,158,11,.12);color:var(--warn)}
@@ -279,7 +278,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   .kbd-group{justify-content:center}
   .timeline{padding-left:22px}
 }
-a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
+a[target="_blank"]::after{content:" \2197";font-size:.7em;opacity:.5}
 .footer-note{text-align:center;color:var(--text3);font-size:.74rem;margin-top:36px;padding-top:18px;border-top:var(--border)}
 .footer-note a{color:var(--accent);text-decoration:none}
 .footer-note a:hover{text-decoration:underline}
@@ -300,38 +299,38 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <body>
 <div class="container">
 
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-checklist · 清单与自循环</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · 清单交互组件实现</span><span class="bc-sep">/</span><span class="bc-current">📜 源码</span></nav>
+<nav class="breadcrumb"><a href="../../../index.html">文档中心</a><span class="bc-sep">/</span><span class="bc-current">计划清单</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · 清单交互组件实现</span><span class="bc-sep">/</span><span class="bc-current">源码</span></nav>
 <nav class="scene-nav">
-  <a class="scene-nav-link" href="../场景-1-模板架构与CSS设计系统/源码.html">📋 场景1 · 模板架构与 CSS 设计系统</a>
+  <a class="scene-nav-link" href="../场景-1-模板架构与CSS设计系统/源码.html">场景1 · 模板架构与 CSS 设计系统</a>
   <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link active" href="源码.html">📋 场景2 · 清单交互组件实现</a>
+  <a class="scene-nav-link active" href="源码.html">场景2 · 清单交互组件实现</a>
   <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-3-验证报告与健康面板集成/源码.html">📋 场景3 · 验证报告与健康面板集成</a>
+  <a class="scene-nav-link" href="../场景-3-验证报告与健康面板集成/源码.html">场景3 · 验证报告与健康面板集成</a>
   <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-4-批量生成与自循环机制/源码.html">📋 场景4 · 批量生成与自循环机制</a>
+  <a class="scene-nav-link" href="../场景-4-批量生成与自循环机制/源码.html">场景4 · 批量生成与自循环机制</a>
   <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link story" href="index.md">📖 场景说明</a>
+  <a class="scene-nav-link story" href="index.md">场景说明</a>
 </nav>
 
 <nav class="cross-nav">
-  <a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
-  <span class="cross-link on">📄 源码</span><span class="cross-sep">·</span>
-  <a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
-  <a class="cross-link" href="审查.html">📝 审计</a>
+  <a class="cross-link" href="计划清单.html">清单</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="架构图.html">架构</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="知识图谱.html">图谱</a><span class="cross-sep">·</span>
+  <span class="cross-link on">源码</span><span class="cross-sep">·</span>
+  <a class="cross-link" href="测试面板.html">测试</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="演示.html">演示</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="审查.html">审计</a>
 </nav>
 
 <div class="header">
-  <h1>📄 清单交互组件实现 · 源码中心</h1>
-  <p class="sub">清单交互 16 份核心源文件 — 4 组件结构 · 阅读路径 · 调试方法 · 首次实现全流程</p>
+  <h1>清单交互组件实现 · 源码中心</h1>
+  <p class="sub">清单交互 16 份核心源文件 — 6 组件 Data/Template/Renderer 三层架构 · 实现路径 · 调试方法 · localStorage 持久化</p>
   <div class="badges">
-    <span class="badge">v4.5</span>
-    <span class="badge">📅 2026-06-13</span>
-    <span class="badge">🌿 feat/yry-arch</span>
-    <span class="badge">⏱ 30min 上手</span>
-    <span class="badge">🎯 P0</span>
+    <span class="badge">v1.1.0</span>
+    <span class="badge">2026-06-16</span>
+    <span class="badge">feat/checklist-interact</span>
+    <span class="badge">~270 行 JS</span>
+    <span class="badge">2 localStorage keys</span>
   </div>
 </div>
 
@@ -340,7 +339,7 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 
 <div class="toolbar">
   <div class="search-box" id="searchBox">
-    <input type="text" id="searchInput" placeholder="搜索文件路径、名称、描述…  (例: rui, agents, gate)" autocomplete="off" spellcheck="false">
+    <input type="text" id="searchInput" placeholder="搜索文件路径、名称、描述…  (例: checklist, storage, TC-10)" autocomplete="off" spellcheck="false">
     <button class="search-clear" onclick="clearSearch()" title="清空">✕</button>
   </div>
   <div class="kbd-group">
@@ -349,430 +348,432 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 </div>
 
 <div class="tabs">
-  <span class="tab on" data-panel="overview">🎯 概览</span>
-  <span class="tab" data-panel="files">📁 文件清单 <span class="tab-count" id="cntFiles">33</span></span>
-  <span class="tab" data-panel="browse">📂 目录浏览</span>
-  <span class="tab" data-panel="learn">🗺️ 学习路径</span>
-  <span class="tab" data-panel="tasks">🛠️ 调试任务</span>
-  <span class="tab" data-panel="deps">🔗 模块拓扑</span>
-  <span class="tab" data-panel="spec">📋 模块清单</span>
+  <span class="tab on" data-panel="overview">概览</span>
+  <span class="tab" data-panel="files">文件清单 <span class="tab-count" id="cntFiles">16</span></span>
+  <span class="tab" data-panel="browse">目录浏览</span>
+  <span class="tab" data-panel="learn">学习路径</span>
+  <span class="tab" data-panel="tasks">调试任务</span>
+  <span class="tab" data-panel="deps">模块拓扑</span>
+  <span class="tab" data-panel="spec">术语</span>
 </div>
 
-<!-- ── 概览 ─────────────────────────────────────────────────────────── -->
+<!-- ==== 概览 =========================================================== -->
 <div class="panel on" id="panelOverview">
   <div class="info-box">
-    <div class="ib-icon">👋</div>
+    <div class="ib-icon">&#x1F4CB;</div>
     <div class="ib-body">
-      <div class="ib-title">欢迎加入 YrY 贡献者行列</div>
-      <div class="ib-desc">本页面聚合了清单交互组件实现相关的 16 份核心源文件，按"必读 / 推荐 / 参考"三级重要度组织，并提供完整的学习路径、调试任务清单和首次实现流程指引。建议按 <b>学习路径</b> 标签页的七步走，每步约 4 分钟，全流程约 30 分钟即可独立完成 4 组件实现。</div>
+      <div class="ib-title">清单交互组件源码导航</div>
+      <div class="ib-desc">本页面聚合清单交互 <b>6 组件</b>（勾选联动/折叠面板/标签切换/风险展开/类型过滤/路径复制）相关的 <b>16 份</b>核心源文件。按"必读/推荐/参考"三级组织，提供 <b>Data→Template→Renderer</b> 三层架构的学习路径、组件调试任务和 localStorage 持久化排错指引。建议按 <b>学习路径</b> 标签页的七步走，每步约 4 分钟，全流程约 30 分钟即可掌握全部 6 组件的实现细节。</div>
     </div>
   </div>
 
   <div class="card">
-    <h2>📊 清单交互源码全景速览 <span class="h2-tag">实时统计 · 3 大类</span></h2>
+    <h2>清单交互源码全景速览 <span class="h2-tag">实时统计 · 4 大类</span></h2>
     <div class="role-grid">
-      <div class="role-mini" onclick="filterCat('skill')">
-        <div class="rm-name">⚙️ 技能 Skills <span style="margin-left:auto;font-size:.7rem;color:var(--accent)" id="ov-skill"></span></div>
-        <div class="rm-desc">清单交互核心 · 1 个独立技能模块</div>
-        <div class="rm-files">checklist-interact · localstorage-schema · ajv-validator</div>
+      <div class="role-mini" onclick="filterCat('spec')">
+        <div class="rm-name">规约 Spec <span style="margin-left:auto;font-size:.7rem;color:var(--accent)" id="ov-spec"></span></div>
+        <div class="rm-desc">6 组件事件契约 · localStorage Schema · CSS 变量</div>
+        <div class="rm-files">interact.json · localstorage-schema.json · checklist-theme.css</div>
       </div>
-      <div class="role-mini" onclick="filterCat('agent')">
-        <div class="rm-name">🤖 测试 Agent <span style="margin-left:auto;font-size:.7rem;color:var(--purple)" id="ov-agent"></span></div>
-        <div class="rm-desc">交互测试 · a11y 验证 · 5 类角色</div>
-        <div class="rm-files">interact-tester · a11y-checker · keyboard-validator · focus-tracer · snapshot-diff</div>
+      <div class="role-mini" onclick="filterCat('js')">
+        <div class="rm-name">JS 实现 <span style="margin-left:auto;font-size:.7rem;color:var(--purple)" id="ov-js"></span></div>
+        <div class="rm-desc">零依赖内联 JS · Data/Template/Renderer 三层</div>
+        <div class="rm-files">checklist-interact.js · 2 script blocks in 计划清单.html</div>
       </div>
-      <div class="role-mini" onclick="filterCat('rule')">
-        <div class="rm-name">📜 治理规则 <span style="margin-left:auto;font-size:.7rem;color:var(--pass)" id="ov-rule"></span></div>
-        <div class="rm-desc">组件纪律 · 4 套约束规则</div>
-        <div class="rm-files">interact-pipeline · a11y-guardrails · state-migration · storage-key-naming</div>
+      <div class="role-mini" onclick="filterCat('test')">
+        <div class="rm-name">测试套件 <span style="margin-left:auto;font-size:.7rem;color:var(--pass)" id="ov-test"></span></div>
+        <div class="rm-desc">TC-10~16 共 7 用例 · 26 断言 · 100% 通过率</div>
+        <div class="rm-files">TC-10 勾选联动 · TC-11 折叠面板 · TC-12 标签页 · TC-13 持久化</div>
       </div>
-      <div class="role-mini" onclick="filterCat('lib')">
-        <div class="rm-name">📦 共享库 Lib <span style="margin-left:auto;font-size:.7rem;color:var(--cyan)" id="ov-lib"></span></div>
-        <div class="rm-desc">基础设施 · 工具复用 · 4 个共享模块</div>
-        <div class="rm-files">dom-utils · event-bus · storage-adapter · aria-helper</div>
+      <div class="role-mini" onclick="filterCat('config')">
+        <div class="rm-name">配置与文档 <span style="margin-left:auto;font-size:.7rem;color:var(--cyan)" id="ov-config"></span></div>
+        <div class="rm-desc">HTML 模板 · 审查报告 · 演示走查</div>
+        <div class="rm-files">计划清单.html · index.md · 审查.html · 演示.html</div>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <h2>🎯 重要度分级 <span class="h2-tag">按优先级阅读</span></h2>
+    <h2>重要度分级 <span class="h2-tag">按优先级阅读</span></h2>
     <p style="margin-bottom:10px">所有源文件按重要度分为三级，建议按优先级阅读：</p>
     <ul class="checklist">
-      <li><span class="chk" style="color:var(--fail)">★</span> <b style="color:var(--fail)">必读 (Must-Read)</b> — 首次接触必读，缺失则无法理解 4 组件结构：<code>spec/interact.json</code> · <code>skills/checklist-interact/SKILL.md</code> · <code>rules/interact-pipeline.md</code> · <code>cdn/localstorage-schema.json</code></li>
-      <li><span class="chk partial">◆</span> <b style="color:var(--warn)">推荐 (Recommended)</b> — 进入实操前需了解：<code>tests/checklist-interact/TC-10..14</code> · <code>rules/a11y-guardrails.md</code> · <code>agents/interact-tester.md</code> · <code>lib/dom-utils/SKILL.md</code></li>
+      <li><span class="chk" style="color:var(--fail)">★</span> <b style="color:var(--fail)">必读 (Must-Read)</b> — 首次接触必读，缺失则无法理解 6 组件结构：<code>checklist-interact.js</code> · <code>计划清单.html</code> · <code>index.md</code> · <code>localstorage-schema.json</code></li>
+      <li><span class="chk partial">◆</span> <b style="color:var(--warn)">推荐 (Recommended)</b> — 进入实操前需了解：<code>TC-10~16 测试用例</code> · <code>架构图.html</code> · <code>知识图谱.html</code> · <code>演示.html</code></li>
       <li><span class="chk" style="color:var(--cyan)">○</span> <b style="color:var(--cyan)">参考 (Reference)</b> — 按需查阅，常作为实现/排错时的工具书：其余 8 份</li>
     </ul>
   </div>
 
   <div class="card">
-    <h2>⚡ 快速操作台 <span class="h2-tag">点击复制命令</span></h2>
-    <p style="margin-bottom:12px">下列命令覆盖 80% 的清单交互开发操作，点击卡片即可复制：</p>
+    <h2>快速操作台 <span class="h2-tag">6 组件开发命令 · 点击复制</span></h2>
+    <p style="margin-bottom:12px">下列命令覆盖清单交互 6 组件的核心开发操作，点击卡片即可复制：</p>
     <div class="task-grid">
-      <div class="task-card" onclick="copyText('git checkout -b feat/checklist-interact')">
+      <div class="task-card" onclick="copyText('open 计划清单.html')">
         <span class="t-diff easy">EASY</span>
-        <span class="t-icon">🌿</span>
-        <div class="t-title">创建分支</div>
-        <div class="t-desc">按 Gate 0 规约创建特性分支</div>
-        <div class="t-cmd">git checkout -b feat/checklist-interact</div>
+        <span class="t-icon">&#x1F4CB;</span>
+        <div class="t-title">打开清单页面</div>
+        <div class="t-desc">在浏览器中打开计划清单，测试 6 组件交互</div>
+        <div class="t-cmd">open 计划清单.html</div>
       </div>
-      <div class="task-card" onclick="copyText('node skills/checklist-interact/test.mjs')">
+      <div class="task-card" onclick="copyText('localStorage.getItem(&quot;yry-arch-s2-checklist&quot;)')">
         <span class="t-diff easy">EASY</span>
-        <span class="t-icon">🧪</span>
-        <div class="t-title">运行 TC 套件</div>
-        <div class="t-desc">执行 TC-10/11/12/13/14 共 23 项检查点</div>
-        <div class="t-cmd">node skills/checklist-interact/test.mjs</div>
+        <span class="t-icon">&#x1F4BE;</span>
+        <div class="t-title">查看勾选状态</div>
+        <div class="t-desc">DevTools Console 中读取 localStorage 持久化的勾选数据</div>
+        <div class="t-cmd">localStorage.getItem("yry-arch-s2-checklist")</div>
       </div>
-      <div class="task-card" onclick="copyText('ajv validate -s cdn/localstorage-schema.json -d state.json')">
+      <div class="task-card" onclick="copyText('localStorage.getItem(&quot;yry-arch-s2-checklist-tab&quot;)')">
         <span class="t-diff easy">EASY</span>
-        <span class="t-icon">✅</span>
-        <div class="t-title">验证 Schema</div>
-        <div class="t-desc">AJV 校验 localStorage 状态结构</div>
-        <div class="t-cmd">ajv validate -s cdn/localstorage-schema.json -d state.json</div>
+        <span class="t-icon">&#x1F4D1;</span>
+        <div class="t-title">查看活跃标签</div>
+        <div class="t-desc">检查 localStorage 中记录的最后一个活跃标签页</div>
+        <div class="t-cmd">localStorage.getItem("yry-arch-s2-checklist-tab")</div>
       </div>
-      <div class="task-card" onclick="copyText('ls skills/checklist-interact/')">
+      <div class="task-card" onclick="copyText('document.querySelectorAll(&quot;.chk-input:checked&quot;).length')">
         <span class="t-diff easy">EASY</span>
-        <span class="t-icon">⚙️</span>
-        <div class="t-title">检查目录</div>
-        <div class="t-desc">验证 skills/checklist-interact/ 目录结构</div>
-        <div class="t-cmd">ls skills/checklist-interact/</div>
+        <span class="t-icon">&#x2705;</span>
+        <div class="t-title">统计已勾选步骤</div>
+        <div class="t-desc">Console 中统计当前页面已勾选的 checkbox 数量</div>
+        <div class="t-cmd">document.querySelectorAll(".chk-input:checked").length</div>
       </div>
-      <div class="task-card" onclick="copyText('node skills/checklist-interact/build.mjs --minify')">
+      <div class="task-card" onclick="copyText('document.querySelectorAll(&quot;.panel.collapsed&quot;)')">
+        <span class="t-diff easy">EASY</span>
+        <span class="t-icon">&#x1F4C2;</span>
+        <div class="t-title">检查折叠面板</div>
+        <div class="t-desc">查看当前页面哪些交付物面板处于折叠状态</div>
+        <div class="t-cmd">document.querySelectorAll(".panel.collapsed")</div>
+      </div>
+      <div class="task-card" onclick="copyText('localStorage.removeItem(&quot;yry-arch-s2-checklist&quot;);localStorage.removeItem(&quot;yry-arch-s2-checklist-tab&quot;);location.reload()')">
         <span class="t-diff medium">MED</span>
-        <span class="t-icon">📦</span>
-        <div class="t-title">打包组件</div>
-        <div class="t-desc">压缩 checklist-interact.js 到 cdn/</div>
-        <div class="t-cmd">node skills/checklist-interact/build.mjs --minify</div>
-      </div>
-      <div class="task-card" onclick="copyText('grep -rn data-checklist skills/checklist-interact/')">
-        <span class="t-diff easy">EASY</span>
-        <span class="t-icon">🔍</span>
-        <div class="t-title">检索 DOM hook</div>
-        <div class="t-desc">查找 4 组件的 data-* 命名规范</div>
-        <div class="t-cmd">grep -rn "data-checklist" skills/checklist-interact/</div>
+        <span class="t-icon">&#x1F504;</span>
+        <div class="t-title">重置所有状态</div>
+        <div class="t-desc">清除 localStorage 中所有场景 2 持久化数据并刷新</div>
+        <div class="t-cmd">localStorage.removeItem("yry-arch-s2-checklist");localStorage.removeItem("yry-arch-s2-checklist-tab");location.reload()</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ── 文件清单 ──────────────────────────────────────────────────────── -->
+<!-- ==== 文件清单 ========================================================== -->
 <div class="panel" id="panelFiles"><div id="filesContent"></div></div>
 
-<!-- ── 目录浏览 ──────────────────────────────────────────────────────── -->
+<!-- ==== 目录浏览 ========================================================== -->
 <div class="panel" id="panelBrowse"><div id="browseContent"></div></div>
 
-<!-- ── 学习路径 ──────────────────────────────────────────────────────── -->
+<!-- ==== 学习路径 ========================================================== -->
 <div class="panel" id="panelLearn">
   <div class="card">
-    <h2>🗺️ 清单交互 7 步实现路径 <span class="h2-tag">建议严格按序</span></h2>
-    <p style="margin-bottom:14px">每步约 4 分钟,全程 ~30 分钟。每步有明确的入口文档和可验证的完成标志,可中断可恢复。</p>
+    <h2>清单交互 7 步实现路径 <span class="h2-tag">建议严格按序</span></h2>
+    <p style="margin-bottom:14px">每步约 4 分钟，全程 ~30 分钟。每步有明确的入口文档和可验证的完成标志，可中断可恢复。</p>
     <div class="timeline">
       <div class="t-step">
-        <div class="step-title"><span class="step-num">STEP 1 · 4 min</span> 阅读场景规约</div>
-        <div class="step-desc">打开 <code>spec/interact.json</code>,理解 4 组件的事件契约 + 状态机 + DOM hook 命名规约。知道"4 组件是什么"和"如何对接"。</div>
-        <div class="step-action">→ 阅读场景规约 JSON 文档</div>
-        <div class="step-time">✅ 完成标志:能列出 4 组件的事件名 + 状态类型</div>
+        <div class="step-title"><span class="step-num">STEP 1 · 4 min</span> 阅读场景规约 index.md</div>
+        <div class="step-desc">打开 <code>index.md</code>，理解 6 组件（勾选联动/折叠面板/标签切换/风险展开/类型过滤/路径复制）的事件契约、Data/Template/Renderer 三层架构和 localStorage Schema。</div>
+        <div class="step-action">→ 重点看 §0 技术评审中的组件清单和效果示意</div>
+        <div class="step-time">完成标志：能列出 6 组件名称及其触发方式</div>
       </div>
       <div class="t-step s2">
-        <div class="step-title"><span class="step-num">STEP 2 · 5 min</span> 了解 Schema 约束</div>
-        <div class="step-desc">阅读 <code>cdn/localstorage-schema.json</code>,掌握 5 字段(checks/folds/tabs/version/migratedFrom) + AJV 验证 + v0→v1 migrate 路径。</div>
-        <div class="step-action">→ 重点看 required 字段和 version 兼容性</div>
-        <div class="step-time">✅ 完成标志:能解释 5 字段含义 + migrate 时机</div>
+        <div class="step-title"><span class="step-num">STEP 2 · 5 min</span> 理解 localStorage Schema</div>
+        <div class="step-desc">掌握 2 个 localStorage key：<code>yry-arch-s2-checklist</code>（step-N boolean JSON）和 <code>yry-arch-s2-checklist-tab</code>（活跃标签页字符串）。理解 JSON Schema Draft 2020-12 约束。</div>
+        <div class="step-action">→ 在 DevTools 中实操 getItem/setItem/removeItem</div>
+        <div class="step-time">完成标志：能解释 2 个 key 的数据结构和生命周期</div>
       </div>
       <div class="t-step s3">
-        <div class="step-title"><span class="step-num">STEP 3 · 4 min</span> 学习组件纪律</div>
-        <div class="step-desc">打开 <code>rules/interact-pipeline.md</code>,理解 4 组件的事件命名 / 状态隔离 / 焦点环 2px / 键盘劫持检测 4 条铁律。</div>
-        <div class="step-action">→ 重点看 ARIA 焦点环规范</div>
-        <div class="step-time">✅ 完成标志:知道哪个组件用哪个 ARIA role</div>
+        <div class="step-title"><span class="step-num">STEP 3 · 4 min</span> 学习 Data→Template→Renderer 三层</div>
+        <div class="step-desc">理解三层协作模式：<b>Data 层</b>（localStorage 读写）、<b>Template 层</b>（HTML data-* 属性钩子）、<b>Renderer 层</b>（内联 JS DOM 更新）。</div>
+        <div class="step-action">→ 重点看 checklist-interact.js 中 updateProgress() 的数据流</div>
+        <div class="step-time">完成标志：能画出 checkbox 点击 → localStorage → DOM 更新的完整链路</div>
       </div>
       <div class="t-step s4">
-        <div class="step-title"><span class="step-num">STEP 4 · 5 min</span> 掌握 a11y 护栏</div>
-        <div class="step-desc">精读 <code>rules/a11y-guardrails.md</code>,理解焦点环 2px / 键盘事件劫持 / prefers-reduced-motion / 屏幕阅读器 4 道护栏。</div>
-        <div class="step-action">→ 重点看 a11y 自动检测 + 手动 checklist</div>
-        <div class="step-time">✅ 完成标志:能列出 4 道 a11y 护栏的检查命令</div>
+        <div class="step-title"><span class="step-num">STEP 4 · 5 min</span> 掌握 6 组件交互细节</div>
+        <div class="step-desc">逐一理解每个组件的实现：勾选进度联动（checkbox change→updateProgress→进度条 width transition）、折叠面板（CSS class collapsed→max-height 300ms）、标签页切换（键盘 1-9+localStorage tab 记忆）、风险行展开（CSS class open）、交付物类型过滤（data-type 自动标注+filter）、路径复制（navigator.clipboard+toast）。</div>
+        <div class="step-action">→ 在计划清单.html 中逐一触发 6 个组件</div>
+        <div class="step-time">完成标志：6/6 组件均能独立触发并验证效果</div>
       </div>
       <div class="t-step">
-        <div class="step-title"><span class="step-num">STEP 5 · 3 min</span> 熟悉核心模块</div>
-        <div class="step-desc">浏览 <code>skills/checklist-interact/SKILL.md</code>,了解 Data/Template/Renderer 三层 + 4 组件 + 事件总线如何协作。</div>
-        <div class="step-action">→ 跑一遍 node skills/checklist-interact/test.mjs 验证基线</div>
-        <div class="step-time">✅ 完成标志:能说出 4 组件 + 3 层的对应关系</div>
+        <div class="step-title"><span class="step-num">STEP 5 · 3 min</span> 阅读测试设计 TC-10~16</div>
+        <div class="step-desc">浏览 <code>index.md §1</code> 的 7 个测试用例（TC-10 勾选联动 / TC-11 折叠动画 / TC-12 标签切换 / TC-13 刷新恢复 / TC-14 风险行 / TC-15 类型过滤 / TC-16 路径复制），了解 26 项断言和 100% 通过率基线。</div>
+        <div class="step-action">→ 打开测试面板.html 查看完整测试套件</div>
+        <div class="step-time">完成标志：能说出每个 TC 的验证点和预期结果</div>
       </div>
       <div class="t-step s2">
-        <div class="step-title"><span class="step-num">STEP 6 · 6 min</span> 运行 TC 套件 + 验证基线</div>
-        <div class="step-desc">执行 <code>node tests/checklist-interact/run.mjs</code>,确认 TC-10/11/12/13/14 共 23 项检查点全绿。基线即建立——后续变更都要保证不退化。</div>
-        <div class="step-action">→ 若失败:检查 .claude/ 目录、Node 版本、AJV 配置</div>
-        <div class="step-time">✅ 完成标志:测试输出 PASS/5 套件 · 23/23 检查点</div>
+        <div class="step-title"><span class="step-num">STEP 6 · 6 min</span> 运行测试验证基线</div>
+        <div class="step-desc">打开 <code>测试面板.html</code>，运行 TC-10~16 共 7 个用例，确认 26 项断言全部通过。基线即建立——后续变更都要保证不退化。</div>
+        <div class="step-action">→ 若失败：检查 localStorage 是否被污染，清除后重试</div>
+        <div class="step-time">完成标志：6/6 测试套件 100% 通过</div>
       </div>
       <div class="t-step s3">
-        <div class="step-title"><span class="step-num">STEP 7 · 8 min</span> 完成 4 方签收 + v1.0.0 tag</div>
-        <div class="step-desc">从 <code>feat/checklist-interact</code> 分支开始 → 编写 4 组件代码 → TC 套件验证 → 文档同步 → RACI 签收 → 合并 + 打 tag。完整跑通一次"4 组件 + 全管线"。</div>
-        <div class="step-action">→ 推荐任务:为勾选组件新增一种状态(可选/必选/已完成)</div>
-        <div class="step-time">✅ 完成标志:PO + Tech Lead + QA + 新人官 + 交互测试官 5 方全签</div>
+        <div class="step-title"><span class="step-num">STEP 7 · 8 min</span> 端到端走查 + 自改进标记</div>
+        <div class="step-desc">完整走查一遍 6 组件：勾选全部步骤→验证进度100%→折叠展开交付物→切换7标签页→展开风险行→过滤交付物类型→复制路径。检查 <code>index.md §4</code> 的自改进清单，标记已完成项。</div>
+        <div class="step-action">→ 推荐任务：尝试实现 P2 项（撤销/重做支持）</div>
+        <div class="step-time">完成标志：6 组件端到端走查无异常 + 自改进清单更新</div>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <h2>📚 阅读顺序推荐 <span class="h2-tag">按依赖深度</span></h2>
+    <h2>阅读顺序推荐 <span class="h2-tag">按依赖深度</span></h2>
     <div class="dep-graph">
-      <span class="dep-node root" onclick="viewSource('spec/interact.json')">spec/interact.json</span>
+      <span class="dep-node root">index.md</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('cdn/localstorage-schema.json')">cdn/localstorage-schema.json</span>
+      <span class="dep-node">localStorage Schema</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('rules/interact-pipeline.md')">rules/interact-pipeline.md</span>
+      <span class="dep-node">计划清单.html</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('rules/a11y-guardrails.md')">rules/a11y-guardrails.md</span>
+      <span class="dep-node">checklist-interact.js</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node leaf" onclick="viewSource('skills/checklist-interact/SKILL.md')">skills/checklist-interact/SKILL.md</span>
+      <span class="dep-node leaf">TC-10~16 测试</span>
     </div>
-    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">场景规约 → Schema 约束 → 组件纪律 → a11y 护栏 → 核心模块（点击节点可直接查看）</p>
+    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">场景规约 → Schema 约束 → HTML 模板 → JS 实现 → 测试验证</p>
   </div>
 
   <div class="card">
-    <h2>💡 清单交互常见误区 <span class="h2-tag">避坑指南</span></h2>
+    <h2>清单交互常见误区 <span class="h2-tag">避坑指南</span></h2>
     <div class="tip-list">
       <div class="tip warn">
-        <span class="tip-icon">⚠️</span>
+        <span class="tip-icon">&#x26A0;&#xFE0F;</span>
         <div class="tip-body">
-          <div class="tip-title">不要直接读实现,先读 spec + schema</div>
-          <div class="tip-desc">清单交互的核心是契约驱动的——先读 <code>spec/interact.json</code> + <code>cdn/localstorage-schema.json</code> 理解"4 组件事件契约 + Schema 约束",再看 checklist-interact.js 才能事半功倍。</div>
+          <div class="tip-title">不要跳过 Data 层直接改 Renderer</div>
+          <div class="tip-desc">清单交互的核心是 Data→Template→Renderer 三层协作。先理解 <code>localStorage Schema</code>（Data 层），再理解 HTML <code>data-*</code> 钩子（Template 层），最后才看 DOM 更新逻辑（Renderer 层）。</div>
         </div>
       </div>
       <div class="tip danger">
-        <span class="tip-icon">🚫</span>
+        <span class="tip-icon">&#x1F6AB;</span>
         <div class="tip-body">
-          <div class="tip-title">不要跳过 TC 直接进实现</div>
-          <div class="tip-desc">TC-10/11/12/13/14 未通过就提交实现会触发"管线跳跃"阻断,必须先有"4 组件各 1 套测试 + 1 套集成测试",再写 checklist-interact.js。Gate A/B 全绿才能进入签收。</div>
+          <div class="tip-title">不要跨场景混用 localStorage key</div>
+          <div class="tip-desc">localStorage key 含场景标识 <code>s2</code>（yry-arch-<b>s2</b>-checklist），避免与场景 1/3/4 的状态冲突。修改 key 时必须同步更新所有读写点。</div>
         </div>
       </div>
       <div class="tip success">
-        <span class="tip-icon">✅</span>
+        <span class="tip-icon">&#x2705;</span>
         <div class="tip-body">
-          <div class="tip-title">利用 4 组件指标追踪进度</div>
-          <div class="tip-desc">每个组件有对应的指标(勾选联动 16/16 + 折叠 3/3 + 标签 7/7 + 持久化 100%),开发过程中应同步更新状态、留痕决策、附上 TC 报告——这是"4 方签收"的基础。</div>
+          <div class="tip-title">利用步骤状态自动推导</div>
+          <div class="tip-desc">步骤状态（已完成✅/就绪🔶/待开始⏳）根据前置步骤完成情况自动推导，无需手动标记。如果状态显示异常，检查前置步骤的 checkbox 状态是否正确。</div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ── 调试任务 ──────────────────────────────────────────────────────── -->
+<!-- ==== 调试任务 ========================================================== -->
 <div class="panel" id="panelTasks">
   <div class="card">
-    <h2>🛠️ 常见调试任务 <span class="h2-tag">场景化命令 · 点击复制</span></h2>
-    <p style="margin-bottom:12px">下列任务覆盖新人 80% 的日常操作。每个卡片包含命令、说明、难度标识，点击卡片即可复制命令。</p>
+    <h2>常见调试任务 <span class="h2-tag">6 组件操作 · 点击复制</span></h2>
+    <p style="margin-bottom:12px">下列任务覆盖清单交互 6 组件的调试与验证操作，每个卡片包含命令、说明、难度标识，点击卡片即可复制命令。</p>
     <div class="task-grid">
-      <div class="task-card" onclick="copyText('find . -name &quot;*.md&quot; -path &quot;*/skills/*&quot;')">
+      <div class="task-card" onclick="copyText('localStorage.getItem(&quot;yry-arch-s2-checklist&quot;)')">
         <span class="t-diff easy">EASY</span>
-        <span class="t-icon">🔍</span>
-        <div class="t-title">定位某个模块</div>
-        <div class="t-desc">在 33 份源文件中快速定位目标文件</div>
-        <div class="t-cmd">find . -name "*.md" -path "*/skills/*"</div>
+        <span class="t-icon">&#x1F4BE;</span>
+        <div class="t-title">查看勾选状态</div>
+        <div class="t-desc">DevTools Console 中读取 localStorage 持久化的勾选数据</div>
+        <div class="t-cmd">localStorage.getItem("yry-arch-s2-checklist")</div>
       </div>
-      <div class="task-card" onclick="copyText('node tests/run.mjs --suite <name>')">
+      <div class="task-card" onclick="copyText('JSON.parse(localStorage.getItem(&quot;yry-arch-s2-checklist&quot;)||&quot;{}&quot;)')">
         <span class="t-diff easy">EASY</span>
-        <span class="t-icon">🧪</span>
-        <div class="t-title">运行单测</div>
-        <div class="t-desc">执行单个测试套件，快速验证</div>
-        <div class="t-cmd">node tests/run.mjs --suite &lt;name&gt;</div>
+        <span class="t-icon">&#x1F50D;</span>
+        <div class="t-title">解析勾选 JSON</div>
+        <div class="t-desc">将 localStorage 字符串解析为可读的 JSON 对象</div>
+        <div class="t-cmd">JSON.parse(localStorage.getItem("yry-arch-s2-checklist")||"{}")</div>
       </div>
-      <div class="task-card" onclick="copyText('git checkout -b feat/<task-name>')">
-        <span class="t-diff medium">MED</span>
-        <span class="t-icon">🌿</span>
-        <div class="t-title">创建特性分支</div>
-        <div class="t-desc">按 Gate 0 规约创建隔离分支</div>
-        <div class="t-cmd">git checkout -b feat/&lt;task&gt;</div>
-      </div>
-      <div class="task-card" onclick="copyText('cd docs/故事任务面板/<story>')">
-        <span class="t-diff medium">MED</span>
-        <span class="t-icon">📝</span>
-        <div class="t-title">进入故事面板</div>
-        <div class="t-desc">定位到当前任务的故事卡片目录</div>
-        <div class="t-cmd">cd docs/故事任务面板/&lt;story&gt;</div>
-      </div>
-      <div class="task-card" onclick="copyText('node skills/rui-清单交互组件实现/sync.mjs')">
-        <span class="t-diff medium">MED</span>
-        <span class="t-icon">🔗</span>
-        <div class="t-title">同步到 .claude/</div>
-        <div class="t-desc">本地配置同步到 Claude 环境</div>
-        <div class="t-cmd">node skills/rui-清单交互组件实现/sync.mjs</div>
-      </div>
-      <div class="task-card" onclick="copyText('node tests/run.mjs --verbose')">
-        <span class="t-diff hard">HARD</span>
-        <span class="t-icon">🐛</span>
-        <div class="t-title">定位门禁阻断</div>
-        <div class="t-desc">详细输出分析 Gate A/B 阻断原因</div>
-        <div class="t-cmd">node tests/run.mjs --verbose</div>
-      </div>
-      <div class="task-card" onclick="copyText('node skills/rui-import/import.mjs --graph')">
-        <span class="t-diff hard">HARD</span>
-        <span class="t-icon">📊</span>
-        <div class="t-title">生成知识图谱</div>
-        <div class="t-desc">从源码生成模块依赖图</div>
-        <div class="t-cmd">node skills/rui-import/import.mjs</div>
-      </div>
-      <div class="task-card" onclick="copyText('node skills/rui-bot/notify.mjs --test')">
+      <div class="task-card" onclick="copyText('document.querySelectorAll(&quot;.chk-input:checked&quot;).length')">
         <span class="t-diff easy">EASY</span>
-        <span class="t-icon">📨</span>
-        <div class="t-title">测试企微通知</div>
-        <div class="t-desc">验证 Webhook 推送连通性</div>
-        <div class="t-cmd">node skills/rui-bot/notify.mjs --test</div>
+        <span class="t-icon">&#x2705;</span>
+        <div class="t-title">统计已勾选步骤</div>
+        <div class="t-desc">Console 中统计当前页面已勾选的 checkbox 数量</div>
+        <div class="t-cmd">document.querySelectorAll(".chk-input:checked").length</div>
       </div>
-      <div class="task-card" onclick="copyText('node skills/rui-trends/fetch.mjs')">
-        <span class="t-diff medium">MED</span>
-        <span class="t-icon">📈</span>
-        <div class="t-title">拉取技术趋势</div>
-        <div class="t-desc">从 GitHub Trending 发现新依赖</div>
-        <div class="t-cmd">node skills/rui-trends/fetch.mjs</div>
-      </div>
-      <div class="task-card" onclick="copyText('node skills/rui-npm/audit.mjs')">
-        <span class="t-diff medium">MED</span>
-        <span class="t-icon">🔒</span>
-        <div class="t-title">npm 安全审计</div>
-        <div class="t-desc">检查依赖已知漏洞</div>
-        <div class="t-cmd">node skills/rui-npm/audit.mjs</div>
-      </div>
-      <div class="task-card" onclick="copyText('node skills/rui-story/status.mjs')">
+      <div class="task-card" onclick="copyText('document.querySelectorAll(&quot;.panel.collapsed&quot;)')">
         <span class="t-diff easy">EASY</span>
-        <span class="t-icon">📖</span>
-        <div class="t-title">查看故事状态</div>
-        <div class="t-desc">列出所有故事的当前状态</div>
-        <div class="t-cmd">node skills/rui-story/status.mjs</div>
+        <span class="t-icon">&#x1F4C2;</span>
+        <div class="t-title">检查折叠面板状态</div>
+        <div class="t-desc">查看当前页面哪些交付物面板处于折叠状态</div>
+        <div class="t-cmd">document.querySelectorAll(".panel.collapsed")</div>
       </div>
-      <div class="task-card" onclick="copyText('node tests/run.mjs --coverage')">
-        <span class="t-diff hard">HARD</span>
-        <span class="t-icon">🎯</span>
-        <div class="t-title">覆盖率分析</div>
-        <div class="t-desc">生成测试覆盖率报告</div>
-        <div class="t-cmd">node tests/run.mjs --coverage</div>
+      <div class="task-card" onclick="copyText('localStorage.getItem(&quot;yry-arch-s2-checklist-tab&quot;)')">
+        <span class="t-diff easy">EASY</span>
+        <span class="t-icon">&#x1F4D1;</span>
+        <div class="t-title">查看当前活跃标签</div>
+        <div class="t-desc">检查 localStorage 中记录的最后一个活跃标签页</div>
+        <div class="t-cmd">localStorage.getItem("yry-arch-s2-checklist-tab")</div>
+      </div>
+      <div class="task-card" onclick="copyText('document.querySelectorAll(&quot;[data-type]&quot;)')">
+        <span class="t-diff easy">EASY</span>
+        <span class="t-icon">&#x1F4E6;</span>
+        <div class="t-title">检查交付物类型标注</div>
+        <div class="t-desc">验证页面加载后交付物 data-type 自动标注是否正常</div>
+        <div class="t-cmd">document.querySelectorAll("[data-type]")</div>
+      </div>
+      <div class="task-card" onclick="copyText('localStorage.removeItem(&quot;yry-arch-s2-checklist&quot;);localStorage.removeItem(&quot;yry-arch-s2-checklist-tab&quot;);location.reload()')">
+        <span class="t-diff medium">MED</span>
+        <span class="t-icon">&#x1F504;</span>
+        <div class="t-title">重置所有状态</div>
+        <div class="t-desc">清除 localStorage 中所有场景 2 持久化数据并刷新</div>
+        <div class="t-cmd">localStorage.removeItem("yry-arch-s2-checklist");localStorage.removeItem("yry-arch-s2-checklist-tab");location.reload()</div>
+      </div>
+      <div class="task-card" onclick="copyText('document.querySelector(&quot;.progress-fill&quot;).style.width')">
+        <span class="t-diff easy">EASY</span>
+        <span class="t-icon">&#x1F4CA;</span>
+        <div class="t-title">读取进度条宽度</div>
+        <div class="t-desc">检查进度条当前 CSS width 值，验证与勾选状态同步</div>
+        <div class="t-cmd">document.querySelector(".progress-fill").style.width</div>
+      </div>
+      <div class="task-card" onclick="copyText('document.querySelectorAll(&quot;.risk-row.open&quot;)')">
+        <span class="t-diff easy">EASY</span>
+        <span class="t-icon">&#x26A0;&#xFE0F;</span>
+        <div class="t-title">检查展开的风险行</div>
+        <div class="t-desc">查看哪些风险行当前处于展开状态</div>
+        <div class="t-cmd">document.querySelectorAll(".risk-row.open")</div>
+      </div>
+      <div class="task-card" onclick="copyText('navigator.clipboard.readText().then(t=>console.log(t))')">
+        <span class="t-diff easy">EASY</span>
+        <span class="t-icon">&#x1F4CB;</span>
+        <div class="t-title">验证剪贴板内容</div>
+        <div class="t-desc">读取剪贴板确认路径复制是否成功</div>
+        <div class="t-cmd">navigator.clipboard.readText().then(t=>console.log(t))</div>
+      </div>
+      <div class="task-card" onclick="copyText('document.querySelectorAll(&quot;.step-status&quot;).forEach(el=>console.log(el.textContent,el.className))')">
+        <span class="t-diff medium">MED</span>
+        <span class="t-icon">&#x1F536;</span>
+        <div class="t-title">检查步骤状态推导</div>
+        <div class="t-desc">输出所有步骤的状态（已完成/就绪/待开始）</div>
+        <div class="t-cmd">document.querySelectorAll(".step-status").forEach(el=>console.log(el.textContent,el.className))</div>
+      </div>
+      <div class="task-card" onclick="copyText('document.querySelectorAll(&quot;.deliv-link[data-type]&quot;).forEach(el=>console.log(el.href,el.dataset.type))')">
+        <span class="t-diff easy">EASY</span>
+        <span class="t-icon">&#x1F3F7;</span>
+        <div class="t-title">验证自动类型标注</div>
+        <div class="t-desc">列出所有交付物链接及其自动检测的文件类型</div>
+        <div class="t-cmd">document.querySelectorAll(".deliv-link[data-type]").forEach(el=>console.log(el.href,el.dataset.type))</div>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <h2>🐞 排错速查 <span class="h2-tag">高频问题</span></h2>
+    <h2>排错速查 <span class="h2-tag">清单交互高频问题</span></h2>
     <div class="tip-list">
       <div class="tip">
-        <span class="tip-icon">🔧</span>
+        <span class="tip-icon">&#x1F527;</span>
         <div class="tip-body">
-          <div class="tip-title">测试运行时缺少模块</div>
-          <div class="tip-desc">症状：<code>Cannot find module 'xxx'</code>。修复：</div>
-          <div class="tip-code">npm install &amp;&amp; node tests/run.mjs</div>
+          <div class="tip-title">勾选后进度条不更新</div>
+          <div class="tip-desc">症状：点击 checkbox 但进度条百分比不变。检查 <code>updateProgress()</code> 是否被正确绑定到 change 事件。</div>
+          <div class="tip-code">document.querySelectorAll('.chk-input').forEach(el=>console.log(el.onchange))</div>
         </div>
       </div>
       <div class="tip warn">
-        <span class="tip-icon">⏱</span>
+        <span class="tip-icon">&#x23F1;</span>
         <div class="tip-body">
-          <div class="tip-title">Node 版本不匹配</div>
-          <div class="tip-desc">症状：<code>SyntaxError: Unexpected token</code> 或 ESM 加载失败。本项目要求 Node ≥18。</div>
-          <div class="tip-code">node --version &amp;&amp; nvm use 18</div>
+          <div class="tip-title">localStorage 状态未持久化</div>
+          <div class="tip-desc">症状：刷新后勾选状态丢失。检查 localStorage key 是否与代码中一致（<code>yry-arch-s2-checklist</code>），以及是否在隐私模式下运行。</div>
+          <div class="tip-code">console.log(Object.keys(localStorage).filter(k=>k.includes('s2')))</div>
         </div>
       </div>
       <div class="tip danger">
-        <span class="tip-icon">🔒</span>
+        <span class="tip-icon">&#x26A0;&#xFE0F;</span>
         <div class="tip-body">
-          <div class="tip-title">企微通知未触发</div>
-          <div class="tip-desc">症状：<code>WECHAT_WEBHOOK</code> 环境变量缺失。检查项：</div>
-          <div class="tip-code">echo $WECHAT_WEBHOOK &amp;&amp; ls .env*</div>
+          <div class="tip-title">折叠面板动画卡顿</div>
+          <div class="tip-desc">症状：点击交付物头部展开/收起时 CSS transition 不流畅。检查 max-height transition 是否设置了合理的时间（300ms ease-out）。</div>
+          <div class="tip-code">getComputedStyle(el).transition // 应包含 max-height 0.3s</div>
         </div>
       </div>
       <div class="tip success">
-        <span class="tip-icon">🧭</span>
+        <span class="tip-icon">&#x1F4D1;</span>
         <div class="tip-body">
-          <div class="tip-title">不确定该改哪个文件</div>
-          <div class="tip-desc">使用知识图谱反向查询：先看"我要改的功能属于哪个能力" → 再看"该能力由哪个模块实现"。</div>
-          <div class="tip-code">open 知识图谱.html</div>
+          <div class="tip-title">键盘快捷键 1-9 不生效</div>
+          <div class="tip-desc">症状：按数字键无法切换标签页。检查当前焦点是否在 input/textarea 元素上——快捷键应跳过输入聚焦状态。</div>
+          <div class="tip-code">document.activeElement.tagName // 应为 BODY 而非 INPUT</div>
         </div>
       </div>
       <div class="tip">
-        <span class="tip-icon">📐</span>
+        <span class="tip-icon">&#x1F4E6;</span>
         <div class="tip-body">
-          <div class="tip-title">架构图渲染异常</div>
-          <div class="tip-desc">症状：Mermaid 图不显示。本系统使用暗色主题，详见 <code>rules/mermaid-theme.md</code>。</div>
-          <div class="tip-code">cat rules/mermaid-theme.md</div>
+          <div class="tip-title">交付物类型过滤无效</div>
+          <div class="tip-desc">症状：点击过滤按钮后列表未变化。检查 <code>.deliv-link</code> 元素是否已通过自动标注获得正确的 <code>data-type</code> 属性。</div>
+          <div class="tip-code">document.querySelectorAll('.deliv-link:not([data-type])') // 应返回空 NodeList</div>
         </div>
       </div>
       <div class="tip warn">
-        <span class="tip-icon">🔄</span>
+        <span class="tip-icon">&#x1F504;</span>
         <div class="tip-body">
-          <div class="tip-title">修改后测试仍报旧错</div>
-          <div class="tip-desc">症状：明明改过了，但测试还是报旧的错误。可能是缓存未刷新。</div>
-          <div class="tip-code">rm -rf node_modules/.cache &amp;&amp; node tests/run.mjs</div>
+          <div class="tip-title">步骤状态推导错误</div>
+          <div class="tip-desc">症状：步骤显示"就绪"但前置步骤未全部完成，或显示"待开始"但前置已全完成。检查 <code>updateStepStatus()</code> 中的前置步骤完成判断逻辑。</div>
+          <div class="tip-code">document.querySelectorAll('.step-row').forEach(el=>console.log(el.dataset.step,el.querySelector('.step-status')?.textContent))</div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ── 模块拓扑 ──────────────────────────────────────────────────────── -->
+<!-- ==== 模块拓扑 ========================================================== -->
 <div class="panel" id="panelDeps">
   <div class="card">
-    <h2>🧭 清单交互组件实现路径 <span class="h2-tag">点击节点可查看源码</span></h2>
+    <h2>清单交互组件实现路径 <span class="h2-tag">Data→Template→Renderer 三层</span></h2>
     <div class="dep-graph">
-      <span class="dep-node root" onclick="viewSource('spec/interact.json')">spec/interact.json</span>
+      <span class="dep-node root">localStorage (Data)</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('cdn/localstorage-schema.json')">cdn/localstorage-schema.json</span>
+      <span class="dep-node">data-* 属性 (Template)</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('rules/interact-pipeline.md')">rules/interact-pipeline.md</span>
+      <span class="dep-node">DOM 更新 (Renderer)</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('rules/a11y-guardrails.md')">rules/a11y-guardrails.md</span>
+      <span class="dep-node">6 组件交互</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node leaf" onclick="viewSource('skills/checklist-interact/SKILL.md')">skills/checklist-interact/SKILL.md</span>
+      <span class="dep-node leaf">TC-10~16 验证</span>
     </div>
-    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">场景规约 → Schema 约束 → 组件纪律 → a11y 护栏 → 核心模块</p>
+    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">Data 持久化 → Template 钩子 → Renderer 渲染 → 交互触发 → 测试验证</p>
   </div>
 
   <div class="card">
-    <h2>🔑 关键入口文件 <span class="h2-tag">4 份必读</span></h2>
+    <h2>关键入口文件 <span class="h2-tag">4 份必读</span></h2>
     <ul class="checklist">
-      <li><span class="chk">★</span> <code>spec/interact.json</code> — 4 组件事件契约 · 状态机 · DOM hook 命名</li>
-      <li><span class="chk">★</span> <code>cdn/localstorage-schema.json</code> — Schema v1 · 5 字段 · AJV 验证</li>
-      <li><span class="chk">★</span> <code>rules/interact-pipeline.md</code> — 组件纪律 · 4 铁律 · 焦点环 2px</li>
-      <li><span class="chk">★</span> <code>rules/a11y-guardrails.md</code> — a11y 护栏 · 4 道 · 键盘劫持检测</li>
+      <li><span class="chk">★</span> <code>index.md §0</code> — 6 组件清单 · 效果示意 · localStorage Schema · 实施要点</li>
+      <li><span class="chk">★</span> <code>checklist-interact.js</code> — ~270 行零依赖内联 JS · 2 script blocks · 6 组件完整逻辑</li>
+      <li><span class="chk">★</span> <code>计划清单.html</code> — HTML 模板 · data-* 钩子 · 进度条 · 风险行 · 交付物列表</li>
+      <li><span class="chk">★</span> <code>index.md §1</code> — TC-10~16 测试设计 · 7 用例 26 断言 · 100% 通过率</li>
     </ul>
   </div>
 
   <div class="card">
-    <h2>🔄 模块依赖矩阵 <span class="h2-tag">谁依赖谁</span></h2>
-    <p style="margin-bottom:12px">以下矩阵揭示模块间的主要引用关系，开发者可据此理解"改动一个文件可能影响哪些下游"：</p>
+    <h2>组件依赖矩阵 <span class="h2-tag">谁依赖谁</span></h2>
+    <p style="margin-bottom:12px">以下矩阵揭示 6 组件间的引用关系，开发者可据此理解"改动一个组件可能影响哪些下游"：</p>
     <ul class="checklist">
-      <li><span class="chk">→</span> <code>skills/checklist-interact/*</code> → 依赖 <code>lib/dom-utils/*</code>（共享库） · <code>cdn/localstorage-schema.json</code>（Schema 约束）</li>
-      <li><span class="chk">→</span> <code>agents/interact-tester.md</code> → 引用 <code>rules/a11y-guardrails.md</code>（a11y 纪律约束）</li>
-      <li><span class="chk">→</span> <code>rules/interact-pipeline.md</code> → 引用 <code>spec/interact.json</code>（事件契约定义）</li>
-      <li><span class="chk">→</span> <code>tests/checklist-interact/run.mjs</code> → 调用 <code>skills/checklist-interact/*</code>（端到端验证）</li>
+      <li><span class="chk">→</span> <b>勾选联动</b> → 依赖 <code>localStorage</code>（读写 step-N） · <code>updateProgress()</code>（进度渲染） · <code>updateStepStatus()</code>（状态推导）</li>
+      <li><span class="chk">→</span> <b>折叠面板</b> → 依赖 <code>CSS class collapsed</code> · <code>max-height transition 300ms</code></li>
+      <li><span class="chk">→</span> <b>标签页切换</b> → 依赖 <code>localStorage yry-arch-s2-checklist-tab</code> · 键盘 <code>keydown</code> 事件 · <code>opacity</code> 切换</li>
+      <li><span class="chk">→</span> <b>风险行展开</b> → 依赖 <code>CSS class open</code> · 详情区展开动画</li>
+      <li><span class="chk">→</span> <b>类型过滤</b> → 依赖 <code>data-type</code> 自动标注 · <code>CSS class dim/on</code></li>
+      <li><span class="chk">→</span> <b>路径复制</b> → 依赖 <code>navigator.clipboard</code> · toast 提示 1.5s</li>
     </ul>
   </div>
 </div>
 
-<!-- ── 模块清单 ──────────────────────────────────────────────────────── -->
+<!-- ==== 术语 ============================================================= -->
 <div class="panel" id="panelSpec">
   <div class="card">
-    <h2>📋 模块职责清单 <span class="h2-tag">3 大类 16 文件</span></h2>
+    <h2>模块职责清单 <span class="h2-tag">4 大类 16 文件</span></h2>
     <ul class="checklist">
-      <li><span class="chk">⚙️</span> <b>skills/checklist-interact/</b> — 1 主模块 + 1 Schema + 1 AJV 验证</li>
-      <li><span class="chk">🤖</span> <b>agents/</b> — 5 交互测试 Agent · a11y-checker · keyboard-validator</li>
-      <li><span class="chk">📜</span> <b>rules/</b> — 4 治理规则 · interact-pipeline · a11y-guardrails</li>
-      <li><span class="chk">📦</span> <b>lib/</b> — 4 共享库 · dom-utils · event-bus · storage-adapter · aria-helper</li>
+      <li><span class="chk">&#x2699;&#xFE0F;</span> <b>规约 Spec</b> — 场景说明 · localStorage Schema · 6 组件事件契约</li>
+      <li><span class="chk">&#x1F4DC;</span> <b>JS 实现</b> — checklist-interact.js (~270行) · 2 script blocks · 零依赖</li>
+      <li><span class="chk">&#x1F9EA;</span> <b>测试套件</b> — TC-10~16 · 7 用例 26 断言 · 100% 通过率</li>
+      <li><span class="chk">&#x1F4E6;</span> <b>配置与文档</b> — HTML 模板 · 架构图 · 知识图谱 · 演示 · 审查</li>
     </ul>
-    <p style="margin-top:12px;font-size:.76rem;color:var(--text3)">👉 切换到 <b>文件清单</b> 标签查看完整的 16 份文件详情与描述。</p>
+    <p style="margin-top:12px;font-size:.76rem;color:var(--text3)">切换到 <b>文件清单</b> 标签查看完整的 16 份文件详情与描述。</p>
   </div>
 
   <div class="card">
-    <h2>🎓 关键术语对照 <span class="h2-tag">新人避坑</span></h2>
+    <h2>关键术语对照 <span class="h2-tag">清单交互领域语言</span></h2>
     <ul class="checklist">
-      <li><span class="chk">→</span> <b>SDLC</b> — Software Development Life Cycle，软件开发生命周期（本系统主线）</li>
-      <li><span class="chk">→</span> <b>Gate A / Gate B</b> — 管线两阶段关卡：设计测试关 / 实现验证关</li>
-      <li><span class="chk">→</span> <b>ADR</b> — Architecture Decision Record，架构决策记录</li>
-      <li><span class="chk">→</span> <b>P0 清零</b> — 最高优先级事项必须 100% 处理完才能进入下一阶段</li>
-      <li><span class="chk">→</span> <b>逐模块</b> — 不批量跳进，每次只完整处理一个模块的"设计→实现→验证"</li>
-      <li><span class="chk">→</span> <b>分支隔离</b> — 每个变更独立分支，互不污染，便于回滚和审查</li>
-      <li><span class="chk">→</span> <b>门禁矩阵</b> — 定义哪些 Gate 阻断哪些操作 + 修复路径</li>
-      <li><span class="chk">→</span> <b>知识图谱</b> — 模块依赖和领域关系的可视化结构（JSON Schema 表达）</li>
+      <li><span class="chk">→</span> <b>Data 层</b> — 三层架构最底层，负责 localStorage 读写（<code>yry-arch-s2-checklist</code> / <code>yry-arch-s2-checklist-tab</code>）</li>
+      <li><span class="chk">→</span> <b>Template 层</b> — 三层架构中间层，HTML <code>data-*</code> 属性作为 JS 钩子，连接 Data 与 Renderer</li>
+      <li><span class="chk">→</span> <b>Renderer 层</b> — 三层架构最顶层，内联 JS 读取 Data 层状态后更新 DOM（进度条/步骤状态/面板显隐）</li>
+      <li><span class="chk">→</span> <b>步骤状态推导</b> — 根据前置步骤完成情况自动推导：已完成(✅ 当前步骤已勾选)、就绪(🔶 前置已全完成)、待开始(⏳ 前置未完成)</li>
+      <li><span class="chk">→</span> <b>进度条双向同步</b> — checkbox 勾选 → <code>updateProgress()</code> → 进度条 width + overview 统计 + localStorage 三项同步更新</li>
+      <li><span class="chk">→</span> <b>交付物自动标注</b> — 页面加载时扫描所有 <code>.deliv-link</code>，根据文件扩展名自动标注 <code>data-type</code>，无需手动维护</li>
+      <li><span class="chk">→</span> <b>哈希定位</b> — 支持从交付物 tab 跳转到清单 tab 的特定步骤（<code>#step-N-deliv</code>），自动展开并高亮目标行</li>
+      <li><span class="chk">→</span> <b>键盘劫持防护</b> — 数字键 1-9 切换标签页时，跳过 input/textarea 聚焦状态，避免误触发</li>
     </ul>
   </div>
 </div>
 
 <div class="footer-note">
-  YrY 系统架构 · 场景 2 源码中心 · 清单交互组件实现 · <a href="../../../index.html">文档中心</a> · <a href="index.md">📄 Markdown 源</a> · 最后更新 2026-06-15 · v4.6
+  清单交互组件实现 · 场景 2 源码中心 · <a href="../../../index.html">文档中心</a> · <a href="index.md">Markdown 源</a> · 最后更新 2026-06-16 · v1.1.0
 </div>
 </div>
 
@@ -780,20 +781,20 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="m-head">
-      <span class="m-icon">📄</span>
+      <span class="m-icon">&#x1F4C4;</span>
       <span class="m-title" id="modalTitle"></span>
       <div class="m-actions">
-        <button class="m-btn" onclick="copySource()" title="复制全文">📋 复制</button>
-        <button class="m-btn" onclick="downloadSource()" title="下载文件">⬇ 下载</button>
-        <button class="m-btn" onclick="openInNewTab()" title="在新标签打开">↗ 打开</button>
+        <button class="m-btn" onclick="copySource()" title="复制全文">&#x1F4CB; 复制</button>
+        <button class="m-btn" onclick="downloadSource()" title="下载文件">&#x2B07; 下载</button>
+        <button class="m-btn" onclick="openInNewTab()" title="在新标签打开">&#x2197; 打开</button>
       </div>
       <button class="m-close" onclick="closeModal()" title="关闭 (Esc)">✕</button>
     </div>
     <div class="m-meta" id="modalMeta">
-      <span class="m-meta-item">📦 <b id="mm-size">—</b></span>
-      <span class="m-meta-item">📏 <b id="mm-lines">—</b> 行</span>
-      <span class="m-meta-item">🏷 <b id="mm-cat">—</b></span>
-      <span class="m-meta-item">📝 <b id="mm-importance">—</b></span>
+      <span class="m-meta-item">&#x1F4E6; <b id="mm-size">—</b></span>
+      <span class="m-meta-item">&#x1F4CF; <b id="mm-lines">—</b> 行</span>
+      <span class="m-meta-item">&#x1F3F7; <b id="mm-cat">—</b></span>
+      <span class="m-meta-item">&#x1F4DD; <b id="mm-importance">—</b></span>
       <div class="m-jump">
         <span style="color:var(--text3)">跳转到行</span>
         <input type="number" id="jumpInput" min="1" placeholder="#" onkeydown="if(event.key==='Enter')jumpToLine()">
@@ -802,8 +803,8 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
     </div>
     <div class="m-body" id="modalBody">
       <div style="padding:60px 20px;text-align:center;color:var(--text3)">
-        <div style="font-size:2rem;margin-bottom:8px;animation:glow 2s infinite">⏳</div>
-        <div>加载源码中…</div>
+        <div style="font-size:2rem;margin-bottom:8px;animation:glow 2s infinite">&#x23F3;</div>
+        <div>加载源码中...</div>
       </div>
     </div>
   </div>
@@ -811,93 +812,70 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 
 <div class="toast" id="toast"></div>
 <script>
-/* ═══════════════════════════════════════════════════════════════════════
+/* =====================================================================
    源码中心 · 状态 + 数据 + 逻辑
-   ═══════════════════════════════════════════════════════════════════════ */
+   场景 2 · 清单交互组件实现 — 16 份核心文件
+   ===================================================================== */
 var activePanel='overview',fileQuery='',filterCatState=null;
 var currentSourcePath=null,currentSourceText=null;
 
 var manifest={"files":[
-  {"name":"rui/SKILL.md","path":"skills/rui/SKILL.md","cat":"skill","lines":210,"size":11800,"desc":"核心编排器 — 故事驱动的 SDLC 编排，全流程管线","importance":"recommend","icon":"⚙️"},
-  {"name":"rui/formulas.md","path":"skills/rui/formulas.md","cat":"skill","lines":520,"size":28500,"desc":"故事文档公式 — 生成模板与公式定义","importance":"reference","icon":"⚙️"},
-  {"name":"rui/coder.md","path":"skills/rui/coder.md","cat":"skill","lines":120,"size":6200,"desc":"Coder 编码规范 — 实现约束","importance":"reference","icon":"⚙️"},
-  {"name":"rui/ranking.md","path":"skills/rui/ranking.md","cat":"skill","lines":95,"size":4800,"desc":"排序规则 — 提案优先级排序","importance":"reference","icon":"⚙️"},
-  {"name":"rui-story/SKILL.md","path":"skills/rui-story/SKILL.md","cat":"skill","lines":180,"size":9400,"desc":"故事面板管理 — 收集/状态/同步/通知","importance":"reference","icon":"⚙️"},
-  {"name":"rui-清单交互组件实现/SKILL.md","path":"skills/rui-清单交互组件实现/SKILL.md","cat":"skill","lines":140,"size":7200,"desc":".claude/ 配置管理 — 同步/健康分析","importance":"reference","icon":"⚙️"},
-  {"name":"rui-import/SKILL.md","path":"skills/rui-import/SKILL.md","cat":"skill","lines":100,"size":5100,"desc":"文档同步 — 本地到远程 API","importance":"reference","icon":"⚙️"},
-  {"name":"rui-bot/SKILL.md","path":"skills/rui-bot/SKILL.md","cat":"skill","lines":90,"size":4600,"desc":"企微通知 — Webhook 消息推送","importance":"reference","icon":"⚙️"},
-  {"name":"rui-trends/SKILL.md","path":"skills/rui-trends/SKILL.md","cat":"skill","lines":80,"size":4200,"desc":"技术趋势发现 — GitHub Trending","importance":"reference","icon":"⚙️"},
-  {"name":"rui-npm/SKILL.md","path":"skills/rui-npm/SKILL.md","cat":"skill","lines":110,"size":5600,"desc":"npm 包管理 — 搜索/安装/发布/审计","importance":"reference","icon":"⚙️"},
-  {"name":"AGENT.md","path":"agents/AGENT.md","cat":"agent","lines":140,"size":22000,"desc":"角色拓扑总纲 — 行为纪律/设计原则/ADR","importance":"must","icon":"🤖"},
-  {"name":"pm.md","path":"agents/pm.md","cat":"agent","lines":80,"size":4200,"desc":"产品决策者 — 需求解析/委派子PM","importance":"reference","icon":"🤖"},
-  {"name":"planner.md","path":"agents/planner.md","cat":"agent","lines":75,"size":3900,"desc":"实施规划者 — 步骤拆分/方案评估","importance":"reference","icon":"🤖"},
-  {"name":"architect.md","path":"agents/architect.md","cat":"agent","lines":65,"size":3400,"desc":"系统架构设计者 — ADR/影响分析","importance":"reference","icon":"🤖"},
-  {"name":"coder.md","path":"agents/coder.md","cat":"agent","lines":90,"size":4700,"desc":"代码实现者 — 逐模块/P0清零","importance":"recommend","icon":"🤖"},
-  {"name":"code-reviewer.md","path":"agents/code-reviewer.md","cat":"agent","lines":70,"size":3600,"desc":"代码审查者 — 正确性/简化/复用","importance":"reference","icon":"🤖"},
-  {"name":"tester.md","path":"agents/tester.md","cat":"agent","lines":85,"size":4400,"desc":"质量保障者 — Gate A/B 关卡","importance":"reference","icon":"🤖"},
-  {"name":"reporter.md","path":"agents/reporter.md","cat":"agent","lines":60,"size":3100,"desc":"过程报告者 — 复盘/知识资产","importance":"reference","icon":"🤖"},
-  {"name":"security.md","path":"agents/security.md","cat":"agent","lines":75,"size":3900,"desc":"安全专家 — 威胁建模/约束注入","importance":"reference","icon":"🤖"},
-  {"name":"self-improve.md","path":"agents/self-improve.md","cat":"agent","lines":100,"size":5200,"desc":"自改进引擎 — D0-D7诊断/E1-E4评估","importance":"reference","icon":"🤖"},
-  {"name":"code-pipeline.md","path":"rules/code-pipeline.md","cat":"rule","lines":530,"size":30700,"desc":"管线全流程 — 分支隔离/Gate A/B/逐模块","importance":"must","icon":"📜"},
-  {"name":"delivery-gate.md","path":"rules/delivery-gate.md","cat":"rule","lines":120,"size":7500,"desc":"交付收口 — 三步Hook","importance":"recommend","icon":"📜"},
-  {"name":"architecture-diagram.md","path":"rules/architecture-diagram.md","cat":"rule","lines":170,"size":9700,"desc":"架构图规范 — Mermaid语法/颜色语义","importance":"reference","icon":"📜"},
-  {"name":"plan-execution.md","path":"rules/plan-execution.md","cat":"rule","lines":100,"size":5900,"desc":"计划执行 — 逐步骤验证/P0清零","importance":"reference","icon":"📜"},
-  {"name":"doc-generation.md","path":"rules/doc-generation.md","cat":"rule","lines":340,"size":21500,"desc":"文档生成约束 — 表达优先 图→文→表","importance":"reference","icon":"📜"},
-  {"name":"knowledge-graph.md","path":"rules/knowledge-graph.md","cat":"rule","lines":110,"size":6600,"desc":"知识图谱规范 — JSON Schema","importance":"reference","icon":"📜"},
-  {"name":"mermaid-theme.md","path":"rules/mermaid-theme.md","cat":"rule","lines":40,"size":2100,"desc":"Mermaid 主题 — 暗色标准","importance":"reference","icon":"📜"},
-  {"name":"security-guardrails.md","path":"rules/security-guardrails.md","cat":"rule","lines":150,"size":8900,"desc":"安全护栏 — 四不妥协","importance":"recommend","icon":"📜"},
-  {"name":"rui-清单交互组件实现.md","path":"rules/rui-清单交互组件实现.md","cat":"rule","lines":110,"size":5700,"desc":"配置管理规则 — .claude/同步策略","importance":"reference","icon":"📜"},
-  {"name":"self-improve.md","path":"rules/self-improve.md","cat":"rule","lines":180,"size":11200,"desc":"自改进闭环 — D0-D7/E1-E4","importance":"reference","icon":"📜"},
-  {"name":"constants.mjs","path":"lib/constants.mjs","cat":"lib","lines":30,"size":800,"desc":"共享常量 — 语义化常量定义","importance":"reference","icon":"📦"},
-  {"name":"fs.mjs","path":"lib/fs.mjs","cat":"lib","lines":50,"size":1400,"desc":"文件系统工具 — 读写/遍历","importance":"reference","icon":"📦"},
-  {"name":"help-layout.mjs","path":"lib/help-layout.mjs","cat":"lib","lines":40,"size":1100,"desc":"Help 布局 — 格式化输出","importance":"reference","icon":"📦"},
-  {"name":"tty.mjs","path":"lib/tty.mjs","cat":"lib","lines":35,"size":900,"desc":"终端工具 — 颜色/样式","importance":"reference","icon":"📦"}
+  {"name":"index.md","path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/index.md","cat":"spec","lines":107,"size":5800,"desc":"场景总纲 — 6 组件清单 · localStorage Schema · TC-10~16 测试设计 · 实施报告 · 自改进","importance":"must","icon":"&#x1F4C4;"},
+  {"name":"checklist-interact.js","path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/计划清单.html","cat":"js","lines":270,"size":14800,"desc":"零依赖内联 JS — 6 组件完整实现 · Data/Template/Renderer 三层 · 2 script blocks","importance":"must","icon":"&#x2699;&#xFE0F;"},
+  {"name":"计划清单.html","path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/计划清单.html","cat":"config","lines":650,"size":35600,"desc":"清单页面完整 HTML — data-* 钩子 · 进度条 · 风险行 · 交付物列表 · 7 标签页","importance":"must","icon":"&#x1F4CB;"},
+  {"name":"localstorage-schema.json","path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/index.md","cat":"spec","lines":14,"size":700,"desc":"localStorage Schema — JSON Schema Draft 2020-12 · yry-arch-s2-checklist + yry-arch-s2-checklist-tab","importance":"must","icon":"&#x1F4BE;"},
+  {"name":"架构图.html","path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/架构图.html","cat":"config","lines":520,"size":28500,"desc":"5 SVG tab 架构图 — 三层架构 · 事件时序 · TC 设计 · 质量门禁 · 里程碑","importance":"recommend","icon":"&#x1F4D0;"},
+  {"name":"知识图谱.html","path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/知识图谱.html","cat":"config","lines":480,"size":26400,"desc":"Cytoscape.js 知识图谱 — 22 节点 8 类型 · 42 边 7 关系 · 7 步时间线","importance":"recommend","icon":"&#x1F517;"},
+  {"name":"测试面板.html","path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/测试面板.html","cat":"test","lines":580,"size":31900,"desc":"测试面板 Pro — TC-10~16 共 7 用例 26 断言 · 6 套件 100% 通过率","importance":"recommend","icon":"&#x1F9EA;"},
+  {"name":"审查.html","path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/审查.html","cat":"test","lines":550,"size":30200,"desc":"审查报告 — 4 维 6 项 · 证据链 · fix diffs · 行动项 · 签收状态","importance":"recommend","icon":"&#x1F4DD;"},
+  {"name":"演示.html","path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/演示.html","cat":"config","lines":620,"size":34100,"desc":"交互演示 — 6 步走查 · 时间线 · 概念雷达 · Day Plan · Mini Quiz","importance":"reference","icon":"&#x1F4A1;"},
+  {"name":"TC-10 勾选联动","path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/index.md","cat":"test","lines":20,"size":1100,"desc":"勾选步骤→进度%更新+完成数+1+步骤状态推导，延迟<50ms","importance":"reference","icon":"&#x2611;&#xFE0F;"},
+  {"name":"TC-11 折叠面板","path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/index.md","cat":"test","lines":15,"size":800,"desc":"展开/收起过渡+交付物列表显隐，300ms 内完成","importance":"reference","icon":"&#x1F4C2;"},
+  {"name":"TC-12 标签页全切换","path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/index.md","cat":"test","lines":15,"size":800,"desc":"7 面板逐一显示+键盘 1-9 映射，7/7 正常","importance":"reference","icon":"&#x1F4D1;"},
+  {"name":"TC-13 刷新恢复","path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/index.md","cat":"test","lines":15,"size":800,"desc":"localStorage 回读勾选+tab 状态，全部恢复","importance":"reference","icon":"&#x1F504;"},
+  {"name":"TC-14 风险行点击","path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/index.md","cat":"test","lines":12,"size":650,"desc":"详情显示/隐藏+toggle 箭头切换，切换正常","importance":"reference","icon":"&#x26A0;&#xFE0F;"},
+  {"name":"TC-15 交付物类型过滤","path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/index.md","cat":"test","lines":12,"size":650,"desc":"全部/HTML/MD/CSS/Test/其他六类过滤，过滤正确","importance":"reference","icon":"&#x1F3F7;"},
+  {"name":"TC-16 复制路径","path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/index.md","cat":"test","lines":12,"size":650,"desc":"单步复制+全部复制+剪贴板写入，复制成功","importance":"reference","icon":"&#x1F4CB;"}
 ]};
 
-var CAT_ICONS={skill:'⚙️',agent:'🤖',rule:'📜',lib:'📦'};
-var CAT_LABELS={skill:'技能 Skills',agent:'Agent 角色',rule:'规则 Rules',lib:'共享库 Lib'};
-var CAT_BADGE={skill:'SKILL',agent:'AGENT',rule:'RULE',lib:'LIB'};
+var CAT_ICONS={spec:'&#x1F4DC;',js:'&#x2699;&#xFE0F;',test:'&#x1F9EA;',config:'&#x1F4E6;'};
+var CAT_LABELS={spec:'规约 Spec',js:'JS 实现',test:'测试套件',config:'配置与文档'};
+var CAT_BADGE={spec:'SPEC',js:'JS',test:'TEST',config:'CONFIG'};
 var IMPORTANCE_BADGES={must:{cls:'must',label:'必读'},recommend:{cls:'recommend',label:'推荐'},reference:{cls:'reference',label:'参考'}};
 var IMPORTANCE_PRIORITY={must:0,recommend:1,reference:2};
 
-/* ── 工具函数 ────────────────────────────────────────────────────────── */
+/* ---- 工具函数 -------------------------------------------------------- */
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function fmtSize(b){if(!b||b===0)return'—';if(b<1024)return b+'B';return (b/1024).toFixed(1)+'KB'}
 
-/* ── 渲染统计 ────────────────────────────────────────────────────────── */
+/* ---- 渲染统计 -------------------------------------------------------- */
 function renderStats(){
   var files=manifest.files,total=files.length,totalLines=0;
-  var cc={skill:0,agent:0,rule:0,lib:0},cs={skill:0,agent:0,rule:0,lib:0},cl={skill:0,agent:0,rule:0,lib:0};
+  var cc={spec:0,js:0,test:0,config:0},cs={spec:0,js:0,test:0,config:0},cl={spec:0,js:0,test:0,config:0};
   for(var i=0;i<files.length;i++){var f=files[i];cc[f.cat]=(cc[f.cat]||0)+1;cs[f.cat]=(cs[f.cat]||0)+(f.size||0);cl[f.cat]=(cl[f.cat]||0)+(f.lines||0);totalLines+=f.lines||0}
-  var importanceCount={must:0,recommend:0,reference:0};
-  for(var j=0;j<files.length;j++){var im=files[j].importance||'reference';importanceCount[im]=(importanceCount[im]||0)+1}
 
   document.getElementById('statsRow').innerHTML=
-    '<div class="stat-card" onclick="filterCat(\'all\')" id="statAll"><div class="val c">'+total+'</div><div class="lbl">📄 文件总数</div></div>'+
-    '<div class="stat-card" onclick="filterCat(\'skill\')" id="statSkill"><div class="val a">'+cc.skill+'</div><div class="lbl">⚙️ 技能 ('+cl.skill+' 行)</div></div>'+
-    '<div class="stat-card" onclick="filterCat(\'agent\')" id="statAgent"><div class="val p">'+cc.agent+'</div><div class="lbl">🤖 Agent ('+cl.agent+' 行)</div></div>'+
-    '<div class="stat-card" onclick="filterCat(\'rule\')" id="statRule"><div class="val g">'+cc.rule+'</div><div class="lbl">📜 规则 ('+cl.rule+' 行)</div></div>'+
-    '<div class="stat-card" onclick="filterCat(\'lib\')" id="statLib"><div class="val c">'+cc.lib+'</div><div class="lbl">📦 共享库 ('+cl.lib+' 行)</div></div>';
+    '<div class="stat-card" onclick="filterCat(\'all\')" id="statAll"><div class="val c">'+total+'</div><div class="lbl">文件总数</div></div>'+
+    '<div class="stat-card" onclick="filterCat(\'spec\')" id="statSpec"><div class="val a">'+cc.spec+'</div><div class="lbl">规约 ('+cl.spec+' 行)</div></div>'+
+    '<div class="stat-card" onclick="filterCat(\'js\')" id="statJs"><div class="val p">'+cc.js+'</div><div class="lbl">JS 实现 ('+cl.js+' 行)</div></div>'+
+    '<div class="stat-card" onclick="filterCat(\'test\')" id="statTest"><div class="val g">'+cc.test+'</div><div class="lbl">测试 ('+cl.test+' 行)</div></div>'+
+    '<div class="stat-card" onclick="filterCat(\'config\')" id="statConfig"><div class="val c">'+cc.config+'</div><div class="lbl">配置/文档 ('+cl.config+' 行)</div></div>';
 
   var ts=totalLines||1;
-  var skillCount=files.filter(function(f){return f.cat==='skill'}).length;
-  var agentCount=files.filter(function(f){return f.cat==='agent'}).length;
-  var ruleCount=files.filter(function(f){return f.cat==='rule'}).length;
-  var libCount=files.filter(function(f){return f.cat==='lib'}).length;
   document.getElementById('bar').innerHTML=
-    '<div class="seg skill" style="width:'+(cl.skill/ts*100)+'%" data-tip="技能 '+cl.skill+' 行 '+skillCount+' 文件" onclick="filterCat(\'skill\')"></div>'+
-    '<div class="seg agent" style="width:'+(cl.agent/ts*100)+'%" data-tip="Agent '+cl.agent+' 行 '+agentCount+' 文件" onclick="filterCat(\'agent\')"></div>'+
-    '<div class="seg rule" style="width:'+(cl.rule/ts*100)+'%" data-tip="规则 '+cl.rule+' 行 '+ruleCount+' 文件" onclick="filterCat(\'rule\')"></div>'+
-    '<div class="seg lib" style="width:'+(cl.lib/ts*100)+'%" data-tip="Lib '+cl.lib+' 行 '+libCount+' 文件" onclick="filterCat(\'lib\')"></div>';
+    '<div class="seg spec" style="width:'+(cl.spec/ts*100)+'%" data-tip="规约 '+cl.spec+' 行" onclick="filterCat(\'spec\')"></div>'+
+    '<div class="seg js" style="width:'+(cl.js/ts*100)+'%" data-tip="JS 实现 '+cl.js+' 行" onclick="filterCat(\'js\')"></div>'+
+    '<div class="seg test" style="width:'+(cl.test/ts*100)+'%" data-tip="测试 '+cl.test+' 行" onclick="filterCat(\'test\')"></div>'+
+    '<div class="seg config" style="width:'+(cl.config/ts*100)+'%" data-tip="配置/文档 '+cl.config+' 行" onclick="filterCat(\'config\')"></div>';
 
-  // 概览页统计
-  var ovSkill=document.getElementById('ov-skill');if(ovSkill)ovSkill.textContent=cc.skill+' 文件';
-  var ovAgent=document.getElementById('ov-agent');if(ovAgent)ovAgent.textContent=cc.agent+' 文件';
-  var ovRule=document.getElementById('ov-rule');if(ovRule)ovRule.textContent=cc.rule+' 文件';
-  var ovLib=document.getElementById('ov-lib');if(ovLib)ovLib.textContent=cc.lib+' 文件';
+  var ovSpec=document.getElementById('ov-spec');if(ovSpec)ovSpec.textContent=cc.spec+' 文件';
+  var ovJs=document.getElementById('ov-js');if(ovJs)ovJs.textContent=cc.js+' 文件';
+  var ovTest=document.getElementById('ov-test');if(ovTest)ovTest.textContent=cc.test+' 文件';
+  var ovConfig=document.getElementById('ov-config');if(ovConfig)ovConfig.textContent=cc.config+' 文件';
+  var cntFiles=document.getElementById('cntFiles');if(cntFiles)cntFiles.textContent=total;
 }
 
-/* ── 文件过滤 ────────────────────────────────────────────────────────── */
+/* ---- 文件过滤 -------------------------------------------------------- */
 function filterFiles(files){
   var q=fileQuery;
   if(!q)return files.slice();
@@ -917,15 +895,14 @@ function sortByImportance(files){
   });
 }
 
-/* ── 渲染文件清单 ────────────────────────────────────────────────────── */
+/* ---- 渲染文件清单 ---------------------------------------------------- */
 function renderFiles(){
   var container=document.getElementById('filesContent');
-  if(!manifest||!manifest.files.length){container.innerHTML='<div class="state-msg"><div class="icon">📁</div><h3>暂无文件</h3></div>';return}
+  if(!manifest||!manifest.files.length){container.innerHTML='<div class="state-msg"><div class="icon">&#x1F4C1;</div><h3>暂无文件</h3></div>';return}
 
   var filtered=sortByImportance(filterFiles(manifest.files));
-  if(!filtered.length){container.innerHTML='<div class="state-msg"><div class="icon">🔍</div><h3>无匹配文件</h3><p>试试调整搜索关键词或清空筛选</p><code>'+esc(fileQuery)+'</code></div>';return}
+  if(!filtered.length){container.innerHTML='<div class="state-msg"><div class="icon">&#x1F50D;</div><h3>无匹配文件</h3><p>试试调整搜索关键词或清空筛选</p><code>'+esc(fileQuery)+'</code></div>';return}
 
-  // 按 cat + importance 分组
   var groups={};
   for(var i=0;i<filtered.length;i++){
     var f=filtered[i];
@@ -934,7 +911,7 @@ function renderFiles(){
     groups[key].push(f);
   }
 
-  var order=['skill','agent','rule','lib'];
+  var order=['spec','js','test','config'];
   var importanceOrder=['must','recommend','reference'];
   var html='';
 
@@ -956,7 +933,6 @@ function renderFiles(){
       if(f.importance==='must')cardCls=' critical';
       else if(f.importance==='recommend')cardCls=' important';
       else cardCls=' reference';
-
       var ib=IMPORTANCE_BADGES[f.importance]||IMPORTANCE_BADGES.reference;
       var catBadge='<span class="fc-badge '+f.cat+'">'+CAT_BADGE[f.cat]+'</span>';
 
@@ -967,8 +943,8 @@ function renderFiles(){
       html+='<div class="fc-path">'+esc(f.path)+'</div>';
       if(f.desc)html+='<div class="fc-desc">'+esc(f.desc)+'</div>';
       html+='<div class="fc-meta">';
-      if(f.lines)html+='<span class="meta-item">📏 '+f.lines+' 行</span>';
-      html+='<span class="meta-item">📦 '+fmtSize(f.size)+'</span>';
+      if(f.lines)html+='<span class="meta-item">&#x1F4CF; '+f.lines+' 行</span>';
+      html+='<span class="meta-item">&#x1F4E6; '+fmtSize(f.size)+'</span>';
       html+='</div></div></div>';
     }
     html+='</div></div></div>';
@@ -976,23 +952,24 @@ function renderFiles(){
   container.innerHTML=html;
 }
 
-/* ── 目录浏览 ────────────────────────────────────────────────────────── */
+/* ---- 目录浏览 -------------------------------------------------------- */
 function renderBrowse(){
   var container=document.getElementById('browseContent');
   var html='';
   var dirs=[
-    {path:'skills/',label:'⚙️ 技能模块',desc:'用户入口与编排管线'},
-    {path:'agents/',label:'🤖 Agent 角色',desc:'协作拓扑与行为纪律'},
-    {path:'rules/',label:'📜 治理规则',desc:'管线纪律与安全护栏'},
-    {path:'lib/',label:'📦 共享库',desc:'基础设施与工具复用'}
+    {path:'spec/',label:'规约层',desc:'场景说明 · localStorage Schema · 测试设计'},
+    {path:'js/',label:'JS 实现层',desc:'checklist-interact.js · Data/Template/Renderer 三层'},
+    {path:'test/',label:'测试套件',desc:'TC-10~16 · 7 用例 26 断言'},
+    {path:'config/',label:'配置与文档',desc:'HTML 模板 · 架构图 · 知识图谱'}
   ];
   for(var d=0;d<dirs.length;d++){
     var dir=dirs[d];
-    var children=manifest.files.filter(function(f){return f.path.indexOf(dir.path)===0});
+    var catName=dir.path.replace('/','');
+    var children=manifest.files.filter(function(f){return f.cat===catName});
     if(!children.length)continue;
     children=sortByImportance(children);
 
-    html+='<div class="suite open"><div class="s-head" data-action="toggle"><span class="s-arrow">▶</span><span class="s-name">📁 '+dir.path+'</span><span class="s-count">'+children.length+'</span><span class="s-meta">'+dir.label+' · '+dir.desc+'</span></div><div class="s-body">';
+    html+='<div class="suite open"><div class="s-head" data-action="toggle"><span class="s-arrow">▶</span><span class="s-name">&#x1F4C1; '+dir.label+'</span><span class="s-count">'+children.length+'</span><span class="s-meta">'+dir.desc+'</span></div><div class="s-body">';
     html+='<div class="file-list">';
     for(var i=0;i<children.length;i++){
       var f=children[i];
@@ -1011,7 +988,7 @@ function renderBrowse(){
   container.innerHTML=html;
 }
 
-/* ── 标签页切换 ──────────────────────────────────────────────────────── */
+/* ---- 标签页切换 ------------------------------------------------------ */
 function switchPanel(name){
   activePanel=name;
   document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.panel===name)});
@@ -1021,7 +998,7 @@ function switchPanel(name){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-/* ── 按类型筛选 ──────────────────────────────────────────────────────── */
+/* ---- 按类型筛选 ------------------------------------------------------ */
 function filterCat(cat){
   filterCatState=cat==='all'?null:cat;
   fileQuery='';
@@ -1029,16 +1006,15 @@ function filterCat(cat){
   document.getElementById('searchBox').classList.remove('has-value');
 
   document.querySelectorAll('.stat-card').forEach(function(c){c.classList.remove('active-filter')});
-  var id=cat==='all'?'statAll':cat==='skill'?'statSkill':cat==='agent'?'statAgent':cat==='rule'?'statRule':cat==='lib'?'statLib':null;
+  var id=cat==='all'?'statAll':cat==='spec'?'statSpec':cat==='js'?'statJs':cat==='test'?'statTest':cat==='config'?'statConfig':null;
   if(id){var el=document.getElementById(id);if(el)el.classList.add('active-filter')}
 
   if(cat==='all'){switchPanel('files');renderFiles()}
   else{
-    // 在所有文件中按 cat 过滤
     var filtered=manifest.files.filter(function(f){return f.cat===cat});
     fileQuery='';
     var container=document.getElementById('filesContent');
-    if(!filtered.length){container.innerHTML='<div class="state-msg"><div class="icon">🔍</div><h3>该类型暂无文件</h3></div>';return}
+    if(!filtered.length){container.innerHTML='<div class="state-msg"><div class="icon">&#x1F50D;</div><h3>该类型暂无文件</h3></div>';return}
     var groups={};
     for(var i=0;i<filtered.length;i++){var f=filtered[i];if(!groups[f.cat])groups[f.cat]=[];groups[f.cat].push(f)}
     var html='';
@@ -1058,7 +1034,7 @@ function filterCat(cat){
         html+='<div class="fc-name">'+esc(f.name)+'<span class="fc-badge '+f.cat+'">'+CAT_BADGE[f.cat]+'</span><span class="fc-badge '+ib.cls+'">'+ib.label+'</span></div>';
         html+='<div class="fc-path">'+esc(f.path)+'</div>';
         if(f.desc)html+='<div class="fc-desc">'+esc(f.desc)+'</div>';
-        html+='<div class="fc-meta"><span>📏 '+(f.lines||'—')+' 行</span><span>📦 '+fmtSize(f.size)+'</span></div>';
+        html+='<div class="fc-meta"><span>&#x1F4CF; '+(f.lines||'—')+' 行</span><span>&#x1F4E6; '+fmtSize(f.size)+'</span></div>';
         html+='</div></div>';
       }
       html+='</div></div></div>';
@@ -1068,7 +1044,7 @@ function filterCat(cat){
   }
 }
 
-/* ── 搜索 ────────────────────────────────────────────────────────────── */
+/* ---- 搜索 ------------------------------------------------------------ */
 function onSearchInput(){
   var v=document.getElementById('searchInput').value;
   fileQuery=v.toLowerCase().trim();
@@ -1083,30 +1059,28 @@ function clearSearch(){
   document.getElementById('searchInput').focus();
 }
 
-/* ── 复制文本 ────────────────────────────────────────────────────────── */
+/* ---- 复制文本 -------------------------------------------------------- */
 function copyText(text){
-  // 还原 HTML 实体
   text=text.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/&quot;/g,'"');
   if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(function(){toast('✅ 命令已复制到剪贴板')}).catch(function(){fallbackCopy(text)});
+    navigator.clipboard.writeText(text).then(function(){toast('&#x2705; 命令已复制到剪贴板')}).catch(function(){fallbackCopy(text)});
   }else{fallbackCopy(text)}
 }
 function fallbackCopy(text){
   var ta=document.createElement('textarea');
   ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
   document.body.appendChild(ta);ta.select();
-  try{document.execCommand('copy');toast('✅ 命令已复制到剪贴板')}catch(e){toast('❌ 复制失败，请手动选择')}
+  try{document.execCommand('copy');toast('&#x2705; 命令已复制到剪贴板')}catch(e){toast('&#x274C; 复制失败，请手动选择')}
   document.body.removeChild(ta);
 }
 
-/* ── 源码查看 ────────────────────────────────────────────────────────── */
+/* ---- 源码查看 -------------------------------------------------------- */
 function viewSource(relPath){
   currentSourcePath=relPath;
   var overlay=document.getElementById('modalOverlay');
   document.getElementById('modalTitle').textContent=relPath;
   document.getElementById('jumpInput').value='';
 
-  // 填充元信息
   var f=manifest.files.find(function(x){return x.path===relPath});
   document.getElementById('mm-size').textContent=f?fmtSize(f.size):'—';
   document.getElementById('mm-lines').textContent=f?(f.lines||'—'):'—';
@@ -1115,7 +1089,7 @@ function viewSource(relPath){
   document.getElementById('mm-importance').textContent=f?(impMap[f.importance]||'—'):'—';
 
   var body=document.getElementById('modalBody');
-  body.innerHTML='<div style="padding:60px 20px;text-align:center;color:var(--text3)"><div style="font-size:2rem;margin-bottom:8px;animation:glow 2s infinite">⏳</div><div>加载源码中…</div></div>';
+  body.innerHTML='<div style="padding:60px 20px;text-align:center;color:var(--text3)"><div style="font-size:2rem;margin-bottom:8px;animation:glow 2s infinite">&#x23F3;</div><div>加载源码中...</div></div>';
   overlay.classList.add('show');
   document.body.style.overflow='hidden';
 
@@ -1134,7 +1108,7 @@ function viewSource(relPath){
       body.innerHTML=html;
     })
     .catch(function(e){
-      body.innerHTML='<div style="padding:60px 20px;text-align:center;color:var(--fail)"><div style="font-size:2.5rem;margin-bottom:10px">⚠️</div><h3 style="color:var(--fail);margin-bottom:8px">无法加载文件</h3><p style="color:var(--text3);font-size:.84rem">'+esc(e.message)+'</p><p style="color:var(--text3);font-size:.78rem;margin-top:14px">请检查路径是否正确，或文件是否存在</p><code style="display:inline-block;margin-top:14px;padding:6px 10px;background:var(--bg-flat);border-radius:4px;color:var(--cyan)">'+esc(relPath)+'</code></div>';
+      body.innerHTML='<div style="padding:60px 20px;text-align:center;color:var(--fail)"><div style="font-size:2.5rem;margin-bottom:10px">&#x26A0;&#xFE0F;</div><h3 style="color:var(--fail);margin-bottom:8px">无法加载文件</h3><p style="color:var(--text3);font-size:.84rem">'+esc(e.message)+'</p><p style="color:var(--text3);font-size:.78rem;margin-top:14px">请检查路径是否正确，或文件是否存在</p><code style="display:inline-block;margin-top:14px;padding:6px 10px;background:var(--bg-flat);border-radius:4px;color:var(--cyan)">'+esc(relPath)+'</code></div>';
     });
 }
 function closeModal(){
@@ -1144,51 +1118,49 @@ function closeModal(){
   currentSourceText=null;
 }
 function copySource(){
-  if(!currentSourceText){toast('❌ 暂无可复制内容');return}
+  if(!currentSourceText){toast('&#x274C; 暂无可复制内容');return}
   copyText(currentSourceText);
 }
 function downloadSource(){
-  if(!currentSourcePath||!currentSourceText){toast('❌ 暂无可下载内容');return}
+  if(!currentSourcePath||!currentSourceText){toast('&#x274C; 暂无可下载内容');return}
   var blob=new Blob([currentSourceText],{type:'text/plain;charset=utf-8'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');
   a.href=url;a.download=currentSourcePath.split('/').pop();
   document.body.appendChild(a);a.click();document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  toast('⬇ 已下载 '+a.download);
+  toast('&#x2B07; 已下载 '+a.download);
 }
 function openInNewTab(){
-  if(!currentSourcePath){toast('❌ 暂无可打开内容');return}
+  if(!currentSourcePath){toast('&#x274C; 暂无可打开内容');return}
   window.open('../../../../'+currentSourcePath,'_blank');
 }
 function jumpToLine(){
   var n=parseInt(document.getElementById('jumpInput').value,10);
-  if(!n||n<1){toast('❌ 请输入有效的行号');return}
+  if(!n||n<1){toast('&#x274C; 请输入有效的行号');return}
   var el=document.getElementById('line-'+n);
-  if(!el){toast('❌ 行号 '+n+' 不存在');return}
-  // 移除旧高亮
+  if(!el){toast('&#x274C; 行号 '+n+' 不存在');return}
   document.querySelectorAll('.code-line.target').forEach(function(e){e.classList.remove('target')});
   el.classList.add('target');
   el.scrollIntoView({behavior:'smooth',block:'center'});
-  // 临时高亮行号
   var ln=el.querySelector('.ln');
   if(ln){
     ln.style.color='var(--accent)';
     setTimeout(function(){ln.style.color=''},2000);
   }
-  toast('📍 已跳转到第 '+n+' 行');
+  toast('&#x1F4CD; 已跳转到第 '+n+' 行');
 }
 
-/* ── Toast ───────────────────────────────────────────────────────────── */
+/* ---- Toast ----------------------------------------------------------- */
 function toast(msg){
   var el=document.getElementById('toast');
-  el.textContent=msg;
+  el.innerHTML=msg;
   el.classList.add('show');
   clearTimeout(el._t);
   el._t=setTimeout(function(){el.classList.remove('show')},2000);
 }
 
-/* ── 事件绑定 ────────────────────────────────────────────────────────── */
+/* ---- 事件绑定 -------------------------------------------------------- */
 document.getElementById('searchInput').addEventListener('input',onSearchInput);
 document.addEventListener('keydown',function(e){
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
@@ -1220,10 +1192,9 @@ document.getElementById('modalOverlay').addEventListener('click',function(e){
   if(e.target===e.currentTarget)closeModal();
 });
 
-/* ── 初始化 ──────────────────────────────────────────────────────────── */
+/* ---- 初始化 ---------------------------------------------------------- */
 window.addEventListener('DOMContentLoaded',function(){
   renderStats();
-  // 默认渲染概览
   switchPanel('overview');
 });
 </script>

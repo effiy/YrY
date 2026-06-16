@@ -37,6 +37,7 @@
   /* ── 常量 ──────────────────────────────────────────────────────────── */
   var TEMPLATE_ID = 'yry-breadcrumb-tpl';
   var READY_EVENT = 'yry-breadcrumb-ready';
+  var TAG_NAME    = 'yry-breadcrumb';
   var LOAD_TIMEOUT_MS = 5000;
 
   /* ── 计算 index.html 的绝对 URL (基于本脚本自身的 src) ────────────── */
@@ -100,6 +101,18 @@
 
       var templateHTML = tpl.innerHTML;
       window.YryBreadcrumb = buildComponent(templateHTML);
+
+      /* ── 注册为自定义元素(允许 <yry-breadcrumb> 标签直接使用) ───── */
+      if (typeof window.Vue.defineCustomElement === 'function') {
+        var YryBreadcrumbCE = window.Vue.defineCustomElement(
+          buildComponent(templateHTML),
+          { shadowRoot: false }
+        );
+        if (!customElements.get(TAG_NAME)) {
+          customElements.define(TAG_NAME, YryBreadcrumbCE);
+        }
+      }
+
       fireReady();
     })
     .catch(function (err) {

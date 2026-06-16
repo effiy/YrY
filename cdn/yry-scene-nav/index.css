@@ -1,0 +1,37 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YrySceneNav · Vue 3 场景层级面包屑导航 样式
+
+   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+     --yry-color-surface-1 / --yry-color-border / --yry-color-text-2
+     --yry-color-accent
+
+   所有颜色都带 fallback,即使页面未加载主题也能正常显示。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.scene-nav {
+  display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 14px;
+  background: var(--yry-color-surface-1, rgba(255,255,255,.03));
+  border: 1px solid var(--yry-color-border, rgba(255,255,255,.08));
+  border-radius: 8px; margin: 16px 0 24px;
+}
+
+.scene-nav a, .scene-nav span { font-size: .74rem; padding: 4px 10px; border-radius: 12px; text-decoration: none; }
+
+.scene-nav a { color: var(--yry-color-text-2, #d4d4d4); }
+
+.scene-nav a:hover { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.08); }
+
+.scene-nav .active {
+  color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.12);
+  border: 1px solid rgba(255,193,7,.25);
+}
+
+.scene-nav .scene-nav-sep {
+  padding: 0; border-radius: 0; background: none;
+  color: var(--yry-color-text-3, #6b7280); font-size: .6rem; opacity: .35; user-select: none;
+}
+
+@media (max-width: 720px) {
+  .scene-nav { gap: 3px; padding: 8px 10px; }
+  .scene-nav a, .scene-nav span { font-size: .7rem; padding: 3px 8px; }
+}

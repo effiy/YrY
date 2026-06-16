@@ -1,0 +1,33 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryDocLayer · Vue 3 文档层级包装组件 样式
+
+   在 YryLayer 之上封装,自动渲染:
+     - layer-header (YryLayer 提供)
+     - sub-titles + grids (本组件提供)
+     - 多种 grid 类型: card / story / scene
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* layer 之间的水平分隔线 */
+.layer-sep {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,.06);
+  margin: 36px 0 32px;
+}
+
+/* grid 容器 */
+.card-grid,
+.story-grid,
+.scene-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.story-grid { grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); }
+.scene-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+
+@media (max-width: 640px) {
+  .card-grid, .story-grid, .scene-grid {
+    grid-template-columns: 1fr;
+  }
+}
