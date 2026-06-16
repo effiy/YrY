@@ -1,0 +1,43 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryTabsPanel · 标签页 + 面板切换 样式
+   适用: 审查 · 测试面板 · 演示 · 计划清单 · 源码 (所有 Category B 文档)
+
+   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+     --yry-accent / --yry-text2 / --yry-text3 / --yry-border
+     --yry-fadeInDown / --yry-fadeInUp (keyframes 定义)
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-tabs-panel/index.css">
+     <div class="yry-tabs">
+       <span class="yry-tab on" data-panel="overview">📊 总览</span>
+       <span class="yry-tab" data-panel="details">📋 详情</span>
+     </div>
+     <div class="yry-panel on" id="panelOverview">...</div>
+     <div class="yry-panel" id="panelDetails">...</div>
+     <script src="../../../../cdn/shared.js"></script>
+     <script>YrY.initTabs();</script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.yry-tabs {
+  display: flex; gap: 0;
+  border-bottom: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  margin-bottom: 0;
+}
+.yry-tab {
+  padding: 10px 20px; cursor: pointer;
+  font-size: .84rem; color: var(--yry-text3, #888);
+  border-bottom: 2px solid transparent;
+  transition: all .15s; user-select: none;
+}
+.yry-tab:hover { color: var(--yry-text2, #d4d4d4); }
+.yry-tab.on {
+  color: var(--yry-accent, #ffc107);
+  border-bottom-color: var(--yry-accent, #ffc107);
+}
+
+.yry-panel {
+  display: none;
+  animation: yry-fadeInUp .4s ease both;
+  padding-top: 28px;
+}
+.yry-panel.on { display: block; }

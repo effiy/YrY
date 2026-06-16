@@ -88,4 +88,32 @@ body {
 .yry-btn { padding: 8px 16px; border-radius: 6px; border: var(--yry-border); background: var(--yry-bg-raised); color: var(--yry-text2); cursor: pointer; font-size: .8rem; transition: all .15s; }
 .yry-btn:hover { background: var(--yry-accent); color: #000; border-color: var(--yry-accent); }
 
+/* ── Section headings (reused across 4 templates) ──────────────────────── */
+.yry-section { margin-bottom: 24px; }
+.yry-section h2 {
+  font-size: 1.05rem; color: var(--yry-accent); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.yry-section h2 .yry-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--yry-accent); flex-shrink: 0;
+}
+
+/* ── Tables (reused across 2+ templates) ──────────────────────────────── */
+table { width: 100%; border-collapse: collapse; font-size: .82rem; margin: 12px 0; }
+th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,.04); }
+th { color: var(--yry-text3); font-weight: 600; font-size: .74rem; text-transform: uppercase; }
+td { color: var(--yry-text2); }
+
+/* ── Stat value color modifiers ──────────────────────────────────────── */
+.yry-stat .yry-val.health  { color: var(--yry-pass); }
+.yry-stat .yry-val.warn-h  { color: var(--yry-warn); }
+.yry-stat .yry-val.c       { color: var(--yry-cyan); }
+.yry-stat .yry-val.a       { color: var(--yry-accent); }
+
+/* ── Bar segment modifiers ───────────────────────────────────────────── */
+.yry-bar-outer .yry-seg.strength   { background: var(--yry-pass); }
+.yry-bar-outer .yry-seg.gap        { background: var(--yry-fail); }
+.yry-bar-outer .yry-seg.suggestion { background: var(--yry-warn); }
+
 .yry-footer { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }

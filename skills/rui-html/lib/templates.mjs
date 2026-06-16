@@ -127,9 +127,10 @@ export function buildHeadBlock(ctx, docType) {
     head += `<link rel="stylesheet" href="${d}cdn/yry-checklist.css">\n`;
   }
 
-  // Cat A needs JetBrains Mono body font
+  // Category A gets shared inline styles (Mono theme, breadcrumb, cross-nav, toolbar, cards)
   if (cat === 'A') {
-    head += '<style>body{font-family:\'JetBrains Mono\',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}</style>\n';
+    const sharedACss = readFileSync(join(__dirname, '..', 'templates', 'shared-a.css'), 'utf-8');
+    head += `<style>\n${sharedACss}</style>\n`;
   }
 
   // External scripts in head

@@ -91,6 +91,42 @@ const YrY = (function() {
     });
   }
 
+  /* ── Tab panel auto-init ──────────────────────────────────────────────── */
+  function initTabs(containerSelector) {
+    var container = document.querySelector(containerSelector || '.yry-container');
+    if (!container) container = document;
+    var tabs = container.querySelectorAll('.yry-tab');
+    tabs.forEach(function(t) {
+      t.addEventListener('click', function() {
+        switchPanel(this.dataset.panel, '.yry-tab', '.yry-panel');
+      });
+    });
+  }
+
+  /* ── Code block click-to-copy ─────────────────────────────────────────── */
+  function initCodeCopy(containerSelector) {
+    var container = document.querySelector(containerSelector || '.yry-container');
+    if (!container) container = document;
+    container.querySelectorAll('pre').forEach(function(p) {
+      p.addEventListener('click', function() {
+        var text = this.textContent || '';
+        clipboardWrite(text.replace(/📋$/,'').trim());
+      });
+    });
+  }
+
+  /* ── Checklist step toggle ────────────────────────────────────────────── */
+  function initStepToggle(containerSelector) {
+    var container = document.querySelector(containerSelector || '.yry-container');
+    if (!container) container = document;
+    container.addEventListener('click', function(e) {
+      var head = e.target.closest('.step-header');
+      if (!head) return;
+      var body = head.parentElement.querySelector('.step-body');
+      if (body) body.classList.toggle('open');
+    });
+  }
+
   /* ── Public API ───────────────────────────────────────────────────────── */
   return {
     toast: toast,
@@ -99,6 +135,9 @@ const YrY = (function() {
     initSuiteToggle: initSuiteToggle,
     expandAllSuites: expandAllSuites,
     collapseAllSuites: collapseAllSuites,
+    initTabs: initTabs,
+    initCodeCopy: initCodeCopy,
+    initStepToggle: initStepToggle,
     fmtDur: fmtDur,
     esc: esc,
     clipboardWrite: clipboardWrite

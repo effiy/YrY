@@ -11,230 +11,255 @@
   <meta name="description" content="YrY CDN 共享前端资源库 — 2 故事 10 场景">
   <link rel="stylesheet" href="yry-home.css">
   <link rel="stylesheet" href="yry-inline-helpers.css">
-  <!-- 组件样式 (YryBreadcrumb / YryStatsGrid / YryPanelHub) -->
+  <!-- ═══ 组件样式 (在 yry-home.css 之后加载,确保组件样式优先) ═══ -->
   <link rel="stylesheet" href="yry-breadcrumb/index.css">
   <link rel="stylesheet" href="yry-stats-grid/index.css">
   <link rel="stylesheet" href="yry-panel-hub/index.css">
-  <!-- 组件样式 (YryLayer / YrySubTitle / YryCardGrid / YryItemCard / YryTagChip) -->
   <link rel="stylesheet" href="yry-layer/index.css">
   <link rel="stylesheet" href="yry-sub-title/index.css">
   <link rel="stylesheet" href="yry-card-grid/index.css">
   <link rel="stylesheet" href="yry-item-card/index.css">
   <link rel="stylesheet" href="yry-tag-chip/index.css">
-  <!-- Vue 3 (3 个组件的运行时依赖) -->
+  <!-- Vue 3 (Yry* 自定义元素的运行时依赖) -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <style>
     .layer { scroll-margin-top: 24px; }
-    #breadcrumb-app .breadcrumb { animation: fadeInDown 0.4s ease both; }
+    yry-breadcrumb .breadcrumb { animation: fadeInDown 0.4s ease both; }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- 面包屑 (YryBreadcrumb) -->
-    <div id="breadcrumb-app"></div>
+    <!-- ── Breadcrumb (YryBreadcrumb) ── -->
+    <yry-breadcrumb id="breadcrumb-app"></yry-breadcrumb>
 
     <div class="header">
       <h1><span class="accent">&#127760;</span> YrY CDN 共享前端资源库</h1>
       <p>yry-cdn-lib v1.1.0 — 以「2 故事 10 场景」形式管理 CDN 资源库的架构决策与演进</p>
     </div>
 
-    <!-- 统计卡组 (YryStatsGrid) -->
-    <div id="stats-app"></div>
+    <!-- ── Stats (YryStatsGrid) ── -->
+    <yry-stats-grid id="stats-app"></yry-stats-grid>
 
-    <!-- 跨页导航 (YryPanelHub) -->
-    <div id="panel-hub-app"></div>
+    <!-- ── Cross-Nav (YryPanelHub) ── -->
+    <yry-panel-hub id="panel-hub-app"></yry-panel-hub>
 
-    <!-- 故事与场景 -->
-    <div class="layer" id="layer-stories">
-      <div class="layer-header">
-        <span class="layer-num">1</span>
-        <h2>故事与场景</h2>
-        <span class="layer-stats">2 故事 · 10 场景 · 8 交付物/场景 · 80+ 文件</span>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#128221;</span> 主故事 A — CDN 共享库 (1 故事 · 5 场景)</div>
+    <!-- ═══ Layer: 故事与场景 (YryLayer + slot 子内容) ═══ -->
+    <yry-layer id="layer-stories-app">
+      <yry-sub-title id="sub-title-a"></yry-sub-title>
       <p class="yry-story-intro">CDN 共享库的所有架构决策以「故事任务」形式管理，每个场景包含 <strong>index.md · 审查 · 架构图 · 测试面板 · 源码 · 演示 · 知识图谱 · 计划清单</strong> 共 8 个标准交付物。完整场景列表见 <a href="../docs/index.html#layer-scene">文档中心 Layer 4</a>。</p>
+      <yry-card-grid id="card-grid-a"></yry-card-grid>
 
-      <div class="card-grid">
-        <div class="item-card">
-          <span class="icon rule yry-icon">1</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../docs/故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/index.md" target="_blank" rel="noopener noreferrer">CDN 资源加载与页面渲染</a></div>
-            <div class="desc yry-desc">jsDelivr URL 规范 · 加载顺序约束 · 字体/动画延迟 · shared.css 必备基线</div>
-            <div class="yry-scene-meta scene-meta yry-mt-8">
-              <a href="../docs/index.html#layer-scene">8 项交付物 → 文档中心</a>
-            </div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">2</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../docs/故事任务面板/cdn/场景-2-双主题系统设计/index.md" target="_blank" rel="noopener noreferrer">双主题系统设计</a></div>
-            <div class="desc yry-desc">Category A (Mono) vs Category B (System) 选型 · 14 设计令牌 · CSS 变量分层</div>
-            <div class="yry-scene-meta scene-meta yry-mt-8">
-              <a href="../docs/index.html#layer-scene">8 项交付物 → 文档中心</a>
-            </div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">3</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../docs/故事任务面板/cdn/场景-3-组件库与JS工具API/index.md" target="_blank" rel="noopener noreferrer">组件库与 JS 工具 API</a></div>
-            <div class="desc yry-desc">22 CSS 组件类名约定 · 9 个 YrY.* 工具函数 · 命名空间与语义化</div>
-            <div class="yry-scene-meta scene-meta yry-mt-8">
-              <a href="../docs/index.html#layer-scene">8 项交付物 → 文档中心</a>
-            </div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">4</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../docs/故事任务面板/cdn/场景-4-存量页面迁移/index.md" target="_blank" rel="noopener noreferrer">存量页面迁移</a></div>
-            <div class="desc yry-desc">删除内联样式 → 替换 <code>.yry-*</code> 类名 · 保留页面专属 CSS · 6 步迁移清单</div>
-            <div class="yry-scene-meta scene-meta yry-mt-8">
-              <a href="../docs/index.html#layer-scene">8 项交付物 → 文档中心</a>
-            </div>
-          </div>
-        </div>
-        <div class="item-card">
-          <span class="icon rule yry-icon">5</span>
-          <div class="body yry-body">
-            <div class="name yry-name"><a href="../docs/故事任务面板/cdn/场景-5-npm包发布与版本管理/index.md" target="_blank" rel="noopener noreferrer">npm 包发布与版本管理</a></div>
-            <div class="desc yry-desc">package.json 字段 · <code>files</code> 白名单 · jsDelivr 同步 · 版本号策略</div>
-            <div class="yry-scene-meta scene-meta yry-mt-8">
-              <a href="../docs/index.html#layer-scene">8 项交付物 → 文档中心</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sub-title"><span class="accent">&#128221;</span> 组件子故事 B — YryBreadcrumb (1 故事 · 5 场景)</div>
+      <yry-sub-title id="sub-title-b"></yry-sub-title>
       <p class="yry-story-intro">YryBreadcrumb 组件的独立故事任务，跟踪 5 个组件演化场景：<strong>需求与设计 → 模板与样式 → Loader 实现 → 页面集成 → 测试与发布</strong>。路径：<code>cdn/故事任务面板/yry-breadcrumb/</code>。</p>
+      <yry-card-grid id="card-grid-b"></yry-card-grid>
+    </yry-layer>
 
-      <div class="yry-scene-grid">
-        <div class="yry-scene-card scene-card">
-          <div class="yry-scene-num">场景 1</div>
-          <div class="yry-scene-name scene-name"><a href="故事任务面板/yry-breadcrumb/场景-1-需求与设计/index.md" target="_blank" rel="noopener noreferrer">需求与设计</a></div>
-          <div class="yry-scene-desc yry-scene-desc">5 项设计决策 · Props 草案 · a11y 完备性约束</div>
-          <div class="yry-scene-meta scene-meta">
-            <a href="../docs/index.html#layer-scene">7 项交付物 → 文档中心</a>
-          </div>
-        </div>
-        <div class="yry-scene-card scene-card">
-          <div class="yry-scene-num">场景 2</div>
-          <div class="yry-scene-name scene-name"><a href="故事任务面板/yry-breadcrumb/场景-2-模板与样式/index.md" target="_blank" rel="noopener noreferrer">模板与样式</a></div>
-          <div class="yry-scene-desc yry-scene-desc">Vue template + CSS 设计令牌 · 3 个 Demo 示例</div>
-          <div class="yry-scene-meta scene-meta">
-            <a href="../docs/index.html#layer-scene">7 项交付物 → 文档中心</a>
-          </div>
-        </div>
-        <div class="yry-scene-card scene-card">
-          <div class="yry-scene-num">场景 3</div>
-          <div class="yry-scene-name scene-name"><a href="故事任务面板/yry-breadcrumb/场景-3-Loader实现/index.md" target="_blank" rel="noopener noreferrer">Loader 实现</a></div>
-          <div class="yry-scene-desc yry-scene-desc">fetch + DOMParser + ready 事件 + 5s 超时容错</div>
-          <div class="yry-scene-meta scene-meta">
-            <a href="../docs/index.html#layer-scene">7 项交付物 → 文档中心</a>
-          </div>
-        </div>
-        <div class="yry-scene-card scene-card">
-          <div class="yry-scene-num">场景 4</div>
-          <div class="yry-scene-name scene-name"><a href="故事任务面板/yry-breadcrumb/场景-4-页面集成/index.md" target="_blank" rel="noopener noreferrer">页面集成</a></div>
-          <div class="yry-scene-desc yry-scene-desc">4 文件引用顺序 · 4 种 items 模式 · 异步挂载</div>
-          <div class="yry-scene-meta scene-meta">
-            <a href="../docs/index.html#layer-scene">7 项交付物 → 文档中心</a>
-          </div>
-        </div>
-        <div class="yry-scene-card scene-card">
-          <div class="yry-scene-num">场景 5</div>
-          <div class="yry-scene-name scene-name"><a href="故事任务面板/yry-breadcrumb/场景-5-测试与发布/index.md" target="_blank" rel="noopener noreferrer">测试与发布</a></div>
-          <div class="yry-scene-desc yry-scene-desc">7 项自测 · npm 集成 · jsDelivr 同步验证</div>
-          <div class="yry-scene-meta scene-meta">
-            <a href="../docs/index.html#layer-scene">7 项交付物 → 文档中心</a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer-note">
-      yry-cdn-lib v1.1.0
-    </div>
+    <div class="footer-note">yry-cdn-lib v1.1.0</div>
   </div>
 
   <button type="button" class="back-top yry-back-top" id="backTop" title="回到顶部" aria-label="回到顶部">&uarr;</button>
 
   <script src="https://cdn.jsdelivr.net/npm/yry-cdn-lib@1.1.0/shared.js" defer></script>
 
-  <!-- 组件加载器 (YryBreadcrumb / YryStatsGrid / YryPanelHub) -->
+  <!-- ═══ 组件加载器 (按依赖顺序: tag-chip → item-card → card-grid → ...) ═══ -->
+  <script src="yry-tag-chip/index.js"></script>
+  <script src="yry-item-card/index.js"></script>
+  <script src="yry-card-grid/index.js"></script>
   <script src="yry-breadcrumb/index.js"></script>
   <script src="yry-stats-grid/index.js"></script>
   <script src="yry-panel-hub/index.js"></script>
+  <script src="yry-sub-title/index.js"></script>
+  <script src="yry-layer/index.js"></script>
 
   <script>
-    /* ── 1. YryBreadcrumb 挂载 ─────────────────────────────────────── */
-    function mountBreadcrumb() {
-      Vue.createApp(window.YryBreadcrumb, {
-        items: [{ label: 'CDN 共享库', icon: '📋' }]
-      }).mount('#breadcrumb-app');
-    }
-    if (window.YryBreadcrumb) mountBreadcrumb();
-    else document.addEventListener('yry-breadcrumb-ready', mountBreadcrumb, { once: true });
+    /* ═══ 概述 ═══
+       与 docs/index.html 一致:所有 yry-* 挂载点都用自定义元素形式,
+       通过属性(property)赋值注入数据,配合 "双设" 策略:
+         1) 内联脚本立即赋值 (覆盖元素先于组件定义出现的场景)
+         2) 监听 *-ready 事件,组件定义完成后再赋一次 (覆盖组件晚于元素出现的场景)
+    */
 
-    /* ── 2. YryStatsGrid 挂载 (点击统计卡 → 滚到故事与场景) ────────── */
-    function mountStats() {
-      var root = Vue.createApp(window.YryStatsGrid, {
-        items: [
-          { value: 2,  label: '故事', modifier: 'health' },
-          { value: 10, label: '场景', modifier: 'health' }
-        ]
-      }).mount('#stats-app');
-      root.querySelectorAll('.stat-card').forEach(function (card) {
-        card.addEventListener('click', function () {
-          var target = document.getElementById('layer-stories');
-          if (target) target.scrollIntoView({ behavior: 'smooth' });
-        });
-      });
-    }
-    if (window.YryStatsGrid) mountStats();
-    else document.addEventListener('yry-stats-grid-ready', mountStats, { once: true });
+    /* ── 数据容器 ────────────────────────────────────────────── */
+    var CDN_DATA = {
+      /* Breadcrumb */
+      breadcrumb: { items: [{ label: 'CDN 共享库', icon: '📋' }] },
 
-    /* ── 3. YryPanelHub 挂载 (跨页导航,事件 → 跳转) ───────────────── */
-    var PANEL_HUB_URLS = {
-      docs:       '../docs/index.html',
-      breadcrumb: 'yry-breadcrumb/index.html',
-      jsdelivr:   'https://www.jsdelivr.com/package/npm/yry-cdn-lib',
-      npm:        'https://www.npmjs.com/package/yry-cdn-lib',
-      cdnstory:   '../docs/故事任务面板/cdn/故事任务.md',
-      knowledge:  '../docs/故事任务面板/cdn/知识图谱.html'
-    };
-    function mountPanelHub() {
-      var root = Vue.createApp(window.YryPanelHub, {
+      /* Stats Grid */
+      stats: { items: [
+        { value: 2,  label: '故事', modifier: 'health' },
+        { value: 10, label: '场景', modifier: 'health' }
+      ] },
+
+      /* Panel Hub (跨页导航) */
+      panelHub: {
         label: { text: '🌐 —', panel: 'docs', title: '点击打开文档中心' },
         buttons: [
-          { icon: '📑', name: '文档',    desc: 'docs',       panel: 'docs',       color: 'var(--yry-cyan, #22d3ee)' },
-          { icon: '📐', name: '面包屑',  desc: 'breadcrumb', panel: 'breadcrumb', color: '#a78bfa' },
-          { icon: '🌐', name: 'jsDelivr', desc: 'cdn',       panel: 'jsdelivr',   color: '#22c55e' },
-          { icon: '📦', name: 'npm',     desc: 'package',    panel: 'npm',        color: '#ef4444' },
-          { icon: '📋', name: '任务',    desc: 'story',      panel: 'cdnstory',   color: '#ffc107' },
-          { icon: '🕸', name: '图谱',    desc: 'graph',      panel: 'knowledge',  color: '#f472b6' }
+          { icon: '📑', name: '文档',     desc: 'docs',       panel: 'docs',       color: 'var(--yry-cyan, #22d3ee)' },
+          { icon: '📐', name: '面包屑',   desc: 'breadcrumb', panel: 'breadcrumb', color: '#a78bfa' },
+          { icon: '🌐', name: 'jsDelivr', desc: 'cdn',        panel: 'jsdelivr',   color: '#22c55e' },
+          { icon: '📦', name: 'npm',      desc: 'package',    panel: 'npm',        color: '#ef4444' },
+          { icon: '📋', name: '任务',     desc: 'story',      panel: 'cdnstory',   color: '#ffc107' },
+          { icon: '🕸', name: '图谱',     desc: 'graph',      panel: 'knowledge',  color: '#f472b6' }
         ],
-        flow: 'CDN 库 → 文档 · 演示 · npm · jsDelivr · 任务 · 图谱'
-      }).mount('#panel-hub-app');
+        flow: 'CDN 库 → 文档 · 演示 · npm · jsDelivr · 任务 · 图谱',
+        urls: {
+          docs:       '../docs/index.html',
+          breadcrumb: 'yry-breadcrumb/index.html',
+          jsdelivr:   'https://www.jsdelivr.com/package/npm/yry-cdn-lib',
+          npm:        'https://www.npmjs.com/package/yry-cdn-lib',
+          cdnstory:   '../docs/故事任务面板/cdn/故事任务.md',
+          knowledge:  '../docs/故事任务面板/cdn/知识图谱.html'
+        }
+      },
 
-      root.addEventListener('panel-hub-select', function (e) {
-        var url = PANEL_HUB_URLS[e.detail.panel];
+      /* Layer: 故事与场景 */
+      layer: {
+        layerId:     'layer-stories',
+        num:         '1',
+        titlePrefix: '',
+        titleAccent: '故事与场景',
+        stats:       ['2 故事', '10 场景', '8 交付物/场景', '80+ 文件']
+      },
+
+      /* SubTitle × 2 */
+      subTitleA: { icon: '📝', text: '主故事 A — CDN 共享库 (1 故事 · 5 场景)' },
+      subTitleB: { icon: '📝', text: '组件子故事 B — YryBreadcrumb (1 故事 · 5 场景)' },
+
+      /* CardGrid A · CDN 共享库 5 个场景 */
+      cardGridA: [
+        { icon: '1', iconModifier: 'rule',
+          name: 'CDN 资源加载与页面渲染',
+          nameHref: '../docs/故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/index.md',
+          nameTarget: '_blank',
+          desc: 'jsDelivr URL 规范 · 加载顺序约束 · 字体/动画延迟 · shared.css 必备基线' +
+                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">8 项交付物 → 文档中心</a>' },
+        { icon: '2', iconModifier: 'rule',
+          name: '双主题系统设计',
+          nameHref: '../docs/故事任务面板/cdn/场景-2-双主题系统设计/index.md',
+          nameTarget: '_blank',
+          desc: 'Category A (Mono) vs Category B (System) 选型 · 14 设计令牌 · CSS 变量分层' +
+                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">8 项交付物 → 文档中心</a>' },
+        { icon: '3', iconModifier: 'rule',
+          name: '组件库与 JS 工具 API',
+          nameHref: '../docs/故事任务面板/cdn/场景-3-组件库与JS工具API/index.md',
+          nameTarget: '_blank',
+          desc: '22 CSS 组件类名约定 · 9 个 YrY.* 工具函数 · 命名空间与语义化' +
+                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">8 项交付物 → 文档中心</a>' },
+        { icon: '4', iconModifier: 'rule',
+          name: '存量页面迁移',
+          nameHref: '../docs/故事任务面板/cdn/场景-4-存量页面迁移/index.md',
+          nameTarget: '_blank',
+          desc: '删除内联样式 → 替换 <code>.yry-*</code> 类名 · 保留页面专属 CSS · 6 步迁移清单' +
+                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">8 项交付物 → 文档中心</a>' },
+        { icon: '5', iconModifier: 'rule',
+          name: 'npm 包发布与版本管理',
+          nameHref: '../docs/故事任务面板/cdn/场景-5-npm包发布与版本管理/index.md',
+          nameTarget: '_blank',
+          desc: 'package.json 字段 · <code>files</code> 白名单 · jsDelivr 同步 · 版本号策略' +
+                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">8 项交付物 → 文档中心</a>' }
+      ],
+
+      /* CardGrid B · YryBreadcrumb 组件子故事 5 个场景 */
+      cardGridB: [
+        { icon: 'S1', iconModifier: 'ref',
+          name: '需求与设计',
+          nameHref: '故事任务面板/yry-breadcrumb/场景-1-需求与设计/index.md',
+          nameTarget: '_blank',
+          desc: '5 项设计决策 · Props 草案 · a11y 完备性约束' +
+                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">7 项交付物 → 文档中心</a>' },
+        { icon: 'S2', iconModifier: 'ref',
+          name: '模板与样式',
+          nameHref: '故事任务面板/yry-breadcrumb/场景-2-模板与样式/index.md',
+          nameTarget: '_blank',
+          desc: 'Vue template + CSS 设计令牌 · 3 个 Demo 示例' +
+                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">7 项交付物 → 文档中心</a>' },
+        { icon: 'S3', iconModifier: 'ref',
+          name: 'Loader 实现',
+          nameHref: '故事任务面板/yry-breadcrumb/场景-3-Loader实现/index.md',
+          nameTarget: '_blank',
+          desc: 'fetch + DOMParser + ready 事件 + 5s 超时容错' +
+                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">7 项交付物 → 文档中心</a>' },
+        { icon: 'S4', iconModifier: 'ref',
+          name: '页面集成',
+          nameHref: '故事任务面板/yry-breadcrumb/场景-4-页面集成/index.md',
+          nameTarget: '_blank',
+          desc: '4 文件引用顺序 · 4 种 items 模式 · 异步挂载' +
+                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">7 项交付物 → 文档中心</a>' },
+        { icon: 'S5', iconModifier: 'ref',
+          name: '测试与发布',
+          nameHref: '故事任务面板/yry-breadcrumb/场景-5-测试与发布/index.md',
+          nameTarget: '_blank',
+          desc: '7 项自测 · npm 集成 · jsDelivr 同步验证' +
+                '<br><a href="../docs/index.html#layer-scene" style="display:inline-block;margin-top:8px;">7 项交付物 → 文档中心</a>' }
+      ]
+    };
+
+    /* ── 立即设置 (双设策略:第 1 次,元素已在 DOM,组件可能尚未定义) ── */
+    function applyAll() {
+      var bc = document.getElementById('breadcrumb-app');
+      if (bc) bc.items = CDN_DATA.breadcrumb.items;
+
+      var sg = document.getElementById('stats-app');
+      if (sg) sg.items = CDN_DATA.stats.items;
+
+      var ph = document.getElementById('panel-hub-app');
+      if (ph) {
+        ph.label   = CDN_DATA.panelHub.label;
+        ph.buttons = CDN_DATA.panelHub.buttons;
+        ph.flow    = CDN_DATA.panelHub.flow;
+      }
+
+      var layer = document.getElementById('layer-stories-app');
+      if (layer) {
+        layer.layerId     = CDN_DATA.layer.layerId;
+        layer.num         = CDN_DATA.layer.num;
+        layer.titleAccent = CDN_DATA.layer.titleAccent;
+        layer.stats       = CDN_DATA.layer.stats;
+      }
+
+      var subA = document.getElementById('sub-title-a');
+      if (subA) { subA.icon = CDN_DATA.subTitleA.icon; subA.text = CDN_DATA.subTitleA.text; }
+
+      var subB = document.getElementById('sub-title-b');
+      if (subB) { subB.icon = CDN_DATA.subTitleB.icon; subB.text = CDN_DATA.subTitleB.text; }
+
+      var cardA = document.getElementById('card-grid-a');
+      if (cardA) cardA.items = CDN_DATA.cardGridA;
+
+      var cardB = document.getElementById('card-grid-b');
+      if (cardB) cardB.items = CDN_DATA.cardGridB;
+    }
+    applyAll();
+
+    /* ── 组件 ready 后再设一次 (双设策略:第 2 次,此时元素已升级) ── */
+    ['yry-breadcrumb-ready', 'yry-stats-grid-ready', 'yry-panel-hub-ready',
+     'yry-layer-ready',      'yry-sub-title-ready',  'yry-card-grid-ready'].forEach(function (ev) {
+      document.addEventListener(ev, applyAll, { once: true });
+    });
+
+    /* ── 统计卡点击 → 滚到 layer-stories (事件委托) ──────────────── */
+    var statsEl = document.getElementById('stats-app');
+    if (statsEl) {
+      statsEl.addEventListener('click', function (e) {
+        var card = e.target.closest('.stat-card');
+        if (!card) return;
+        var target = document.getElementById('layer-stories');
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+    }
+
+    /* ── PanelHub 事件 → URL 跳转 (一次性绑定,事件冒泡到自定义元素根) ── */
+    var panelEl = document.getElementById('panel-hub-app');
+    if (panelEl) {
+      panelEl.addEventListener('panel-hub-select', function (e) {
+        var url = CDN_DATA.panelHub.urls[e.detail.panel];
         if (!url) return;
         if (/^https?:/i.test(url)) window.open(url, '_blank', 'noopener,noreferrer');
         else window.location.href = url;
       });
     }
-    if (window.YryPanelHub) mountPanelHub();
-    else document.addEventListener('yry-panel-hub-ready', mountPanelHub, { once: true });
 
-    /* ── 卡片入场动画 + Back to top (保留原逻辑) ────────────────────── */
-    document.querySelectorAll('.card-grid .item-card, .yry-scene-grid .yry-scene-card').forEach(function (card, i) {
-      card.style.animationDelay = (0.01 + (i % 20) * 0.012).toFixed(3) + 's';
-    });
-
+    /* ── Back to top (保留原逻辑) ───────────────────────────────── */
     {
       var btn = document.getElementById('backTop');
       if (btn) {

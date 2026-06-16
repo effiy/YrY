@@ -4,84 +4,74 @@
 {{HEAD_BLOCK}}
 <style>
 @keyframes stepIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
-body{line-height:1.6}
 .yry-container{max-width:960px;padding:40px 24px 80px}
 .yry-header h1{font-size:1.8rem}
 .yry-header .yry-sub{margin-top:4px}
 .yry-stats{gap:12px;margin-bottom:20px}
 .yry-stat{padding:16px 20px;min-width:80px}
-.yry-stat .yry-val{font-size:1.6rem}.yry-stat .yry-val.health{color:var(--pass)}.yry-stat .yry-val.warn-h{color:var(--warn)}
-.yry-stat .yry-lbl{font-size:.68rem;letter-spacing:.5px}
-.yry.yry-tabs{margin-bottom:24px}
+.yry-stat .yry-val{font-size:1.6rem}
+.yry-tabs{margin-bottom:24px}
 .yry-tab{padding:8px 18px;font-size:.82rem}
 .yry-panel{padding-top:0}
-.yry-section.margin-bottom:24px}
-.yry-section.h2{font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.yry-section.h2 .yry-dot.width:8px;height:8px;border-radius:50%;background:var(-.yry-accent);flex-shrink:0}
+/* ── Walkthrough ── */
 .walkthrough{counter-reset:step}
 .walkthrough .step{counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both}
-.walkthrough .step::before{content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(-.yry-accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.walkthrough .step::before{content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--yry-accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .walkthrough .step .s-title{font-weight:600;font-size:.88rem}
-.walkthrough .step .s-desc{font-size:.76rem;color:var(--text2);margin:3px 0 6px}
-pre{background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer;margin:6px 0}
-.mermaid-wrap{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);overflow-x:auto;margin-bottom:16px}
+.walkthrough .step .s-desc{font-size:.76rem;color:var(--yry-text2);margin:3px 0 6px}
+/* ── Code blocks ── */
+pre{background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--yry-cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer;margin:6px 0}
+/* ── Mermaid diagram wraps ── */
+.mermaid-wrap{background:var(--yry-bg-card);border:var(--yry-border);border-radius:var(--yry-radius);padding:20px;box-shadow:var(--yry-shadow);overflow-x:auto;margin-bottom:16px}
+/* ── Command cards ── */
 .cmd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
-.cmd-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
-.cmd.yry-card .name{font-weight:700;font-size:.88rem;color:var(-.yry-accent);font-family:monospace}
-.cmd.yry-card .desc{font-size:.76rem;color:var(--text2);margin:4px 0 8px;line-height:1.5}
+.cmd-card{background:var(--yry-bg-card);border:var(--yry-border);border-radius:var(--yry-radius);padding:16px 18px;box-shadow:var(--yry-shadow)}
+.cmd-card .name{font-weight:700;font-size:.88rem;color:var(--yry-accent);font-family:monospace}
+.cmd-card .desc{font-size:.76rem;color:var(--yry-text2);margin:4px 0 8px;line-height:1.5}
+/* ── Flow diagram ── */
 .flow-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0}
-.flow-chip{background:var(--bg-flat);border:var(--border);border-radius:20px;padding:6px 14px;font-size:.78rem}
-.flow-chip .n{font-weight:700;color:var(-.yry-accent)}
-.flow-arrow{color:var(--text3);font-size:.8rem}
+.flow-chip{background:var(--yry-bg-flat);border:var(--yry-border);border-radius:20px;padding:6px 14px;font-size:.78rem}
+.flow-chip .n{font-weight:700;color:var(--yry-accent)}
+.flow-arrow{color:var(--yry-text3);font-size:.8rem}
 </style>
 </head>
 <body>
-<div class="yry.yry-container">
+<div class="yry-container">
 {{BREADCRUMB}}
 {{CROSS_NAV}}
 
-<div class="yry.yry-header">
-  <h1>💡 <span class="yry.yry-accent">{{SCENE_TITLE}}</span> — 演示</h1>
-  <p class="yry.yry-sub">场景 {{SCENE_NUM}} · 版本 v{{VERSION}} · {{DATE}}</p>
+<div class="yry-header">
+  <h1>💡 <span class="yry-accent">{{SCENE_TITLE}}</span> — 演示</h1>
+  <p class="yry-sub">场景 {{SCENE_NUM}} · 版本 v{{VERSION}} · {{DATE}}</p>
 </div>
 
 {{STATS_GRID}}
 
-<div class="yry.yry.yry-tabs">
-  <span class="yry.yry-tab on" data.yry-panel="walkthrough">🚶 演示</span>
-  <span class="yry.yry-tab" data.yry-panel="overview">📊 概览</span>
-  <span class="yry.yry-tab" data.yry-panel="commands">⚡ 命令</span>
+<div class="yry-tabs">
+  <span class="yry-tab on" data-panel="walkthrough">🚶 演示</span>
+  <span class="yry-tab" data-panel="overview">📊 概览</span>
+  <span class="yry-tab" data-panel="commands">⚡ 命令</span>
 </div>
 
-<div class="yry.yry-panel on" id=.yry-panelWalkthrough">
+<div class="yry-panel on" id="panelWalkthrough">
   {{SEC0_HTML}}
 </div>
 
-<div class="yry.yry-panel" id=.yry-panelOverview">
+<div class="yry-panel" id="panelOverview">
   {{OVERVIEW}}
-  <div class=.yry-section.>
-    <h2><span class=.yry-dot.></span>执行流程</h2>
+  <div class="yry-section">
+    <h2><span class="yry-dot"></span>执行流程</h2>
     <div class="mermaid-wrap">{{MERMAID_BLOCKS}}</div>
   </div>
 </div>
 
-<div class="yry.yry-panel" id=.yry-panelCommands">
+<div class="yry-panel" id="panelCommands">
   {{SEC2_HTML}}
 </div>
 
-<div class="yry.yry-footer">YrY v{{VERSION}} · {{DATE}} · <a href="{{CDN_DEPTH}}docs/index.html">文档中心</a></div>
+<div class="yry-footer">YrY v{{VERSION}} · {{DATE}} · <a href="{{CDN_DEPTH}}docs/index.html">文档中心</a></div>
 </div>
 <script src="{{CDN_DEPTH}}cdn/shared.js"></script>
-<script>
-document.querySelectorAll('.yry-tab').forEach(function(t) {
-  t.addEventListener('click', function() {
-    YrY.switchPanel(this.dataset.yry-panel, '.yry-tab', '.yry-panel');
-  });
-});
-document.querySelectorAll('pre').forEach(p => { p.addEventListener('click', function() {
-  var text = this.textContent || '';
-  navigator.clipboard.writeText(text.replace(/📋$/,'').trim()).then(() => {});
-})});
-</script>
+<script>YrY.initTabs();YrY.initCodeCopy();</script>
 </body>
 </html>

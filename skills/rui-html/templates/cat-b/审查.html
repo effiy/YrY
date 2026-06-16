@@ -3,101 +3,91 @@
 <head>
 {{HEAD_BLOCK}}
 <style>
-.yry-container{max-width:1120px;margin:0 auto;padding:48px 24px 80px}
-.yry-header{text-align:center;margin-bottom:24px;animation:fadeInDown .5s ease both}
-.yry-header h1{font-size:1.8rem;font-weight:700}
-.yry-header h1 .yry-accent{color:var(-.yry-accent)}
-.yry-header .yry-sub{color:var(--text2);font-size:.9rem;margin-top:4px}
-.yry-stats{display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
-.yry-stat{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:80px}
-.yry-stat .yry-val{font-size:1.6rem;font-weight:700;line-height:1.1}
-.yry-stat .yry-val.health{color:var(--pass)}.yry-stat .yry-val.warn-h{color:var(--warn)}
-.yry-stat .yry-lbl{font-size:.68rem;color:var(--text3);margin-top:2px;letter-spacing:.5px}
-.yry-bar-wrap{margin-bottom:24px}
-.yry-bar-outer{height:10px;border-radius:5px;overflow:hidden;display:flex;background:rgba(255,255,255,.04)}
-.yry-bar-outer .yry-seg.height:100%;transition:width .5s ease;min-width:3px}
-.yry-bar-outer .yry-seg.strength{background:var(--pass)}.yry-bar-outer .yry-seg.gap{background:var(--fail)}.yry-bar-outer .yry-seg.suggestion{background:var(--warn)}
-.yry.yry-tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:0}
-.yry-tab{padding:10px 20px;cursor:pointer;font-size:.84rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none}
-.yry-tab:hover{color:var(--text2)}.yry-tab.on{color:var(-.yry-accent);border-bottom-color:var(-.yry-accent)}
-.yry-panel{display:none;animation:fadeInUp .4s ease both;padding-top:28px}
-.yry-panel.on{display:block}
-.dim-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:10px;box-shadow:var(--shadow)}
-.dim.yry-card h3{font-size:.9rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.dim.yry-card .dim-score{font-size:1.4rem;font-weight:700;margin-left:auto}
-.dim.yry-card .dim-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.04);overflow:hidden;margin-bottom:8px}
-.dim.yry-card .dim-bar-inner{height:100%;border-radius:3px}
-.dim.yry-card ul{list-style:none;color:var(--text2);font-size:.78rem;margin-top:6px}
-.dim.yry-card ul li{margin-bottom:4px;padding-left:16px;position:relative}
-.dim.yry-card ul li::before{content:'•';position:absolute;left:2px;color:var(--text3)}
+.yry-container{max-width:1120px}
+.yry-header h1{font-size:1.8rem}
+.yry-header .yry-sub{margin-top:4px}
+.yry-stats{gap:12px;margin-bottom:20px}
+.yry-stat{padding:16px 20px;min-width:80px}
+.yry-stat .yry-val{font-size:1.6rem}
+.yry-bar-outer{height:10px;border-radius:5px}
+.yry-bar-outer .yry-seg{min-width:3px}
+/* ── Review-specific components ── */
+.dim-card{background:var(--yry-bg-card);border:var(--yry-border);border-radius:var(--yry-radius);padding:20px 22px;margin-bottom:10px;box-shadow:var(--yry-shadow)}
+.dim-card h3{font-size:.9rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.dim-card .dim-score{font-size:1.4rem;font-weight:700;margin-left:auto}
+.dim-card .dim-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.04);overflow:hidden;margin-bottom:8px}
+.dim-card .dim-bar-inner{height:100%;border-radius:3px}
+.dim-card ul{list-style:none;color:var(--yry-text2);font-size:.78rem;margin-top:6px}
+.dim-card ul li{margin-bottom:4px;padding-left:16px;position:relative}
+.dim-card ul li::before{content:'•';position:absolute;left:2px;color:var(--yry-text3)}
 .case-card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem;margin-bottom:12px}
-.case-card.good{border-left:3px solid var(--pass)}
-.case-card.bad{border-left:3px solid var(--fail)}
-.case.yry-card h4{font-size:.85rem;font-weight:600;margin-bottom:.5rem;display:flex;align-items:center;gap:6px}
+.case-card.good{border-left:3px solid var(--yry-pass)}
+.case-card.bad{border-left:3px solid var(--yry-fail)}
+.case-card h4{font-size:.85rem;font-weight:600;margin-bottom:.5rem;display:flex;align-items:center;gap:6px}
 .case-tag{font-size:.65rem;font-weight:600;padding:2px 8px;border-radius:3px}
-.case-tag.good{background:rgba(34,197,94,.1);color:var(--pass)}
-.case-tag.bad{background:rgba(239,68,68,.1);color:var(--fail)}
-.case.yry-card .case-loc{font-size:.7rem;color:var(--text3);font-family:'JetBrains Mono',monospace;margin-bottom:6px}
-.case.yry-card .case-desc{color:var(--text2);font-size:.78rem;line-height:1.6;margin-bottom:6px}
+.case-tag.good{background:rgba(34,197,94,.1);color:var(--yry-pass)}
+.case-tag.bad{background:rgba(239,68,68,.1);color:var(--yry-fail)}
+.case-card .case-loc{font-size:.7rem;color:var(--yry-text3);font-family:'JetBrains Mono',monospace;margin-bottom:6px}
+.case-card .case-desc{color:var(--yry-text2);font-size:.78rem;line-height:1.6;margin-bottom:6px}
 .rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px}
-.rec-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
-.rec-card.p1{border-left:3px solid var(--fail)}.rec-card.p2{border-left:3px solid var(--warn)}.rec-card.p3{border-left:3px solid var(--info)}
+.rec-card{background:var(--yry-bg-card);border:var(--yry-border);border-radius:var(--yry-radius);padding:18px 20px;box-shadow:var(--yry-shadow)}
+.rec-card.p1{border-left:3px solid var(--yry-fail)}.rec-card.p2{border-left:3px solid var(--yry-warn)}.rec-card.p3{border-left:3px solid var(--yry-skip)}
 .rec-pri{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:3px;display:inline-block;margin-bottom:6px}
-.rec-pri.p1{background:rgba(239,68,68,.12);color:var(--fail)}
-.rec-pri.p2{background:rgba(245,158,11,.12);color:var(--warn)}
-.rec-pri.p3{background:rgba(107,114,128,.12);color:var(--info)}
-.rec.yry-card h4{font-size:.82rem;font-weight:600;margin-bottom:4px}
-.rec.yry-card p{color:var(--text2);font-size:.74rem;line-height:1.5}
+.rec-pri.p1{background:rgba(239,68,68,.12);color:var(--yry-fail)}
+.rec-pri.p2{background:rgba(245,158,11,.12);color:var(--yry-warn)}
+.rec-pri.p3{background:rgba(107,114,128,.12);color:var(--yry-skip)}
+.rec-card h4{font-size:.82rem;font-weight:600;margin-bottom:4px}
+.rec-card p{color:var(--yry-text2);font-size:.74rem;line-height:1.5}
 </style>
 </head>
 <body>
-<div class="yry.yry-container">
+<div class="yry-container">
 {{BREADCRUMB}}
 {{CROSS_NAV}}
 
-<div class="yry.yry-header">
-  <h1>📝 <span class="yry.yry-accent">{{SCENE_TITLE}}</span> — 审查报告</h1>
-  <p class="yry.yry-sub">审查日期 {{DATE}} · 版本 v{{VERSION}} · 场景 {{SCENE_NUM}}</p>
+<div class="yry-header">
+  <h1>📝 <span class="yry-accent">{{SCENE_TITLE}}</span> — 审查报告</h1>
+  <p class="yry-sub">审查日期 {{DATE}} · 版本 v{{VERSION}} · 场景 {{SCENE_NUM}}</p>
 </div>
 
 {{STATS_GRID}}
 {{HEALTH_BAR}}
 
-<div class="yry.yry.yry-tabs">
-  <span class="yry.yry-tab on" data.yry-panel="overview">📊 总览</span>
-  <span class="yry.yry-tab" data.yry-panel="good">✅ 好案例</span>
-  <span class="yry.yry-tab" data.yry-panel="bad">❌ 坏案例</span>
-  <span class="yry.yry-tab" data.yry-panel="recommendations">📝 改进建议</span>
-  <span class="yry.yry-tab" data.yry-panel="evidence">📎 证据链</span>
+<div class="yry-tabs">
+  <span class="yry-tab on" data-panel="overview">📊 总览</span>
+  <span class="yry-tab" data-panel="good">✅ 好案例</span>
+  <span class="yry-tab" data-panel="bad">❌ 坏案例</span>
+  <span class="yry-tab" data-panel="recommendations">📝 改进建议</span>
+  <span class="yry-tab" data-panel="evidence">📎 证据链</span>
 </div>
 
-<div class="yry.yry-panel on" id=.yry-panelOverview">
+<div class="yry-panel on" id="panelOverview">
   {{SEC0_HTML}}
 </div>
 
-<div class="yry.yry-panel" id=.yry-panelGood">
-  <div class="case.yry-card good">
+<div class="yry-panel" id="panelGood">
+  <div class="case-card good">
     <h4>✅ <span class="case-tag good">好案例</span> 文档基线完整</h4>
     <div class="case-loc">📁 docs/故事任务面板/{{STORY_NAME}}/场景-{{SCENE_NUM}}-{{SCENE_SLUG}}/index.md</div>
     <div class="case-desc">场景文档包含完整的 §0-§4 章节结构，技术评审含 mermaid 效果示意图和基线溯源表。</div>
   </div>
 </div>
 
-<div class="yry.yry-panel" id=.yry-panelBad">
-  <div class="case.yry-card bad">
+<div class="yry-panel" id="panelBad">
+  <div class="case-card bad">
     <h4>❌ <span class="case-tag bad">待审查</span> 需运行 /rui code 生成实施数据</h4>
     <div class="case-loc">📁 docs/故事任务面板/{{STORY_NAME}}/场景-{{SCENE_NUM}}-{{SCENE_SLUG}}/index.md §2-§4</div>
     <div class="case-desc">§2 实施报告、§3 测试报告、§4 自改进章节数据待填充。运行 /rui code 后重新审查。</div>
   </div>
 </div>
 
-<div class="yry.yry-panel" id=.yry-panelRecommendations">
+<div class="yry-panel" id="panelRecommendations">
   <div class="rec-grid">
     {{SEC4_HTML}}
   </div>
 </div>
 
-<div class="yry.yry-panel" id=.yry-panelEvidence">
+<div class="yry-panel" id="panelEvidence">
   <div class="dim-card">
     <h3>📎 审查证据清单</h3>
     <ul>
@@ -108,15 +98,9 @@
   </div>
 </div>
 
-<div class="yry.yry-footer">YrY v{{VERSION}} · {{DATE}} · <a href="{{CDN_DEPTH}}docs/index.html">文档中心</a></div>
+<div class="yry-footer">YrY v{{VERSION}} · {{DATE}} · <a href="{{CDN_DEPTH}}docs/index.html">文档中心</a></div>
 </div>
 <script src="{{CDN_DEPTH}}cdn/shared.js"></script>
-<script>
-document.querySelectorAll('.yry-tab').forEach(function(t) {
-  t.addEventListener('click', function() {
-    YrY.switchPanel(this.dataset.yry-panel, '.yry-tab', '.yry-panel');
-  });
-});
-</script>
+<script>YrY.initTabs();</script>
 </body>
 </html>

@@ -1,0 +1,70 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryHealthBar · 健康/进度条 样式
+   适用: 审查 · 测试面板 · 计划清单
+
+   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+     --yry-pass / --yry-fail / --yry-warn / --yry-skip
+
+   使用方式:
+     <div class="yry-bar-wrap">
+       <div class="yry-bar-outer">
+         <div class="yry-seg strength" style="width:75%"></div>
+         <div class="yry-seg gap" style="width:20%"></div>
+         <div class="yry-seg suggestion" style="width:5%"></div>
+       </div>
+       <div class="yry-bar-legend">
+         <span><span class="yry-bar-dot strength"></span>Strength 75%</span>
+         <span><span class="yry-bar-dot gap"></span>Gap 20%</span>
+         <span><span class="yry-bar-dot suggestion"></span>Suggestion 5%</span>
+       </div>
+     </div>
+
+   对应场景: docs/故事任务面板/yry-cdn/场景-3-组件库与JS工具API/
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Container ── */
+.yry-bar-wrap { margin-bottom: 24px; }
+.yry-bar-outer {
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  background: rgba(255,255,255,.04);
+}
+.yry-bar-outer .yry-seg {
+  height: 100%;
+  transition: width .5s ease;
+  min-width: 2px;
+}
+
+/* ── Segment modifiers ── */
+.yry-bar-outer .yry-seg.strength   { background: var(--yry-pass, #22c55e); }
+.yry-bar-outer .yry-seg.gap        { background: var(--yry-fail, #ef4444); }
+.yry-bar-outer .yry-seg.suggestion { background: var(--yry-warn, #f59e0b); }
+.yry-bar-outer .yry-seg.p          { background: var(--yry-pass, #22c55e); }
+.yry-bar-outer .yry-seg.f          { background: var(--yry-fail, #ef4444); }
+.yry-bar-outer .yry-seg.s          { background: var(--yry-skip, #6b7280); }
+
+/* ── Legend ── */
+.yry-bar-legend {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 8px;
+  font-size: .7rem;
+  color: var(--yry-text3, #888);
+  flex-wrap: wrap;
+}
+.yry-bar-dot {
+  width: 8px; height: 8px;
+  border-radius: 2px;
+  display: inline-block;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+.yry-bar-dot.strength   { background: var(--yry-pass, #22c55e); }
+.yry-bar-dot.gap        { background: var(--yry-fail, #ef4444); }
+.yry-bar-dot.suggestion { background: var(--yry-warn, #f59e0b); }
+.yry-bar-dot.p          { background: var(--yry-pass, #22c55e); }
+.yry-bar-dot.f          { background: var(--yry-fail, #ef4444); }
+.yry-bar-dot.s          { background: var(--yry-skip, #6b7280); }

@@ -152,26 +152,26 @@ function buildStatsGrid(ctx, docType) {
       const skipped = extractTableValue(tables, '跳过') || '0';
       const duration = extractTableValue(tables, '执行耗时') || '—';
       return `<div class="yry-stats">
-        <div class="yry-stat"><div class="yry-valt">${totalTests}</div><div class="yry-lbl">总断言</div></div>
-        <div class="yry-stat"><div class="yry-valp">${passed}</div><div class="yry-lbl">通过</div></div>
-        <div class="yry-stat"><div class="yry-valf">${failed}</div><div class="yry-lbl">失败</div></div>
-        <div class="yry-stat"><div class="yry-vals">${skipped}</div><div class="yry-lbl">跳过</div></div>
-        <div class="yry-stat"><div class="yry-vald">${duration}</div><div class="yry-lbl">耗时</div></div>
+        <div class="yry-stat"><div class="yry-val t">${totalTests}</div><div class="yry-lbl">总断言</div></div>
+        <div class="yry-stat"><div class="yry-val p">${passed}</div><div class="yry-lbl">通过</div></div>
+        <div class="yry-stat"><div class="yry-val f">${failed}</div><div class="yry-lbl">失败</div></div>
+        <div class="yry-stat"><div class="yry-val s">${skipped}</div><div class="yry-lbl">跳过</div></div>
+        <div class="yry-stat"><div class="yry-val d">${duration}</div><div class="yry-lbl">耗时</div></div>
       </div>`;
     }
     case '审查': {
       // Try to extract D0-D7 diagnostics
       const passCount = countDiagnosticPasses(tables);
       return `<div class="yry-stats">
-        <div class="yry-stat"><div class="yry-valhealth">${passCount}/8</div><div class="yry-lbl">诊断通过</div></div>
+        <div class="yry-stat"><div class="yry-val health">${passCount}/8</div><div class="yry-lbl">诊断通过</div></div>
         <div class="yry-stat"><div class="yry-val">D0-D7</div><div class="yry-lbl">覆盖范围</div></div>
-        <div class="yry-stat"><div class="yry-valwarn-h">${8 - passCount}</div><div class="yry-lbl">改进建议</div></div>
+        <div class="yry-stat"><div class="yry-val warn-h">${8 - passCount}</div><div class="yry-lbl">改进建议</div></div>
       </div>`;
     }
     case '计划清单': {
       const sceneCount = countTableRows(tables, 'TC-');
       return `<div class="yry-stats">
-        <div class="yry-stat"><div class="yry-valhealth">${ctx.sceneNum}</div><div class="yry-lbl">场景序号</div></div>
+        <div class="yry-stat"><div class="yry-val health">${ctx.sceneNum}</div><div class="yry-lbl">场景序号</div></div>
         <div class="yry-stat"><div class="yry-val">${sceneCount || '—'}</div><div class="yry-lbl">测试用例</div></div>
         <div class="yry-stat"><div class="yry-val">v${ctx.version}</div><div class="yry-lbl">版本</div></div>
       </div>`;
@@ -179,21 +179,21 @@ function buildStatsGrid(ctx, docType) {
     case '源码': {
       const artifactCount = countArtifactRows(tables);
       return `<div class="yry-stats">
-        <div class="yry-stat"><div class="yry-valc">${artifactCount || '—'}</div><div class="yry-lbl">产物文件</div></div>
-        <div class="yry-stat"><div class="yry-vala">${ctx.sceneNum}</div><div class="yry-lbl">场景</div></div>
+        <div class="yry-stat"><div class="yry-val c">${artifactCount || '—'}</div><div class="yry-lbl">产物文件</div></div>
+        <div class="yry-stat"><div class="yry-val a">${ctx.sceneNum}</div><div class="yry-lbl">场景</div></div>
         <div class="yry-stat"><div class="yry-val">v${ctx.version}</div><div class="yry-lbl">版本</div></div>
       </div>`;
     }
     case '演示': {
       return `<div class="yry-stats">
-        <div class="yry-stat"><div class="yry-valc">${ctx.mermaidBlocks?.length || 0}</div><div class="yry-lbl">流程图</div></div>
-        <div class="yry-stat"><div class="yry-vala">${countTableRows(tables)}</div><div class="yry-lbl">数据表</div></div>
+        <div class="yry-stat"><div class="yry-val c">${ctx.mermaidBlocks?.length || 0}</div><div class="yry-lbl">流程图</div></div>
+        <div class="yry-stat"><div class="yry-val a">${countTableRows(tables)}</div><div class="yry-lbl">数据表</div></div>
         <div class="yry-stat"><div class="yry-val">v${ctx.version}</div><div class="yry-lbl">版本</div></div>
       </div>`;
     }
     default:
       return `<div class="yry-stats">
-        <div class="yry-stat"><div class="yry-valc">${ctx.sceneNum}</div><div class="yry-lbl">场景</div></div>
+        <div class="yry-stat"><div class="yry-val c">${ctx.sceneNum}</div><div class="yry-lbl">场景</div></div>
         <div class="yry-stat"><div class="yry-val">v${ctx.version}</div><div class="yry-lbl">版本</div></div>
       </div>`;
   }
