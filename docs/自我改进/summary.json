@@ -1,13 +1,13 @@
 {
-  "updated": "2026-06-18T16:27:16.554Z",
+  "updated": "2026-06-18T22:27:06.476Z",
   "totalEntries": 3,
   "dateRange": {
     "from": "2026-06-16",
     "to": "2026-06-18"
   },
   "latest": {
-    "timestamp": "2026-06-18T16:27:16.551Z",
-    "composite": 94,
+    "timestamp": "2026-06-18T22:27:06.473Z",
+    "composite": 92,
     "grade": "A",
     "scores": {
       "token": 100,
@@ -17,7 +17,7 @@
       "reports": 100,
       "format": 100,
       "diagnostics": 100,
-      "git": 80,
+      "git": 40,
       "security": 100,
       "em_testing": 100,
       "em_types": 100,
@@ -28,12 +28,13 @@
       "em_git": 100,
       "file_size": 100,
       "dep_analysis": 9,
+      "notify": 100,
       "comp_qual": 88
     },
     "bootstrapped": true,
     "triggeredDiags": [],
     "gitBranch": "main",
-    "gitUncommitted": 16
+    "gitUncommitted": 33
   },
   "daily": [
     {
@@ -191,9 +192,9 @@
     },
     {
       "entries": 1,
-      "avgScore": 94,
-      "minScore": 94,
-      "maxScore": 94,
+      "avgScore": 92,
+      "minScore": 92,
+      "maxScore": 92,
       "topGrade": "A",
       "gradeDist": {
         "A": 1,
@@ -239,7 +240,7 @@
           "count": 1
         }
       ],
-      "avgUncommitted": 16,
+      "avgUncommitted": 33,
       "dimAvgs": {
         "token": 100,
         "config": 100,
@@ -248,7 +249,7 @@
         "reports": 100,
         "format": 100,
         "diagnostics": 100,
-        "git": 80,
+        "git": 40,
         "security": 100,
         "em_testing": 100,
         "em_types": 100,
@@ -259,14 +260,15 @@
         "em_git": 100,
         "file_size": 100,
         "dep_analysis": 9,
+        "notify": 100,
         "comp_qual": 88
       },
       "delta": {
-        "score": 16,
+        "score": 14,
         "gradeChange": "B→A"
       },
-      "firstTs": "2026-06-18T16:27:16.551Z",
-      "lastTs": "2026-06-18T16:27:16.551Z",
+      "firstTs": "2026-06-18T22:27:06.473Z",
+      "lastTs": "2026-06-18T22:27:06.473Z",
       "date": "2026-06-18"
     }
   ],
@@ -275,7 +277,7 @@
       "entries": 3,
       "avgScore": 83,
       "minScore": 78,
-      "maxScore": 94,
+      "maxScore": 92,
       "topGrade": "B",
       "gradeDist": {
         "A": 1,
@@ -325,7 +327,7 @@
           "count": 1
         }
       ],
-      "avgUncommitted": 9,
+      "avgUncommitted": 14,
       "dimAvgs": {
         "token": 100,
         "config": 47,
@@ -334,7 +336,7 @@
         "reports": 100,
         "format": 100,
         "diagnostics": 90,
-        "git": 93,
+        "git": 80,
         "security": 100,
         "em_testing": 73,
         "em_types": 100,
@@ -345,11 +347,12 @@
         "em_git": 87,
         "comp_qual": 84,
         "file_size": 100,
-        "dep_analysis": 9
+        "dep_analysis": 9,
+        "notify": 100
       },
       "delta": null,
       "firstTs": "2026-06-16T02:59:49.148Z",
-      "lastTs": "2026-06-18T16:27:16.551Z",
+      "lastTs": "2026-06-18T22:27:06.473Z",
       "week": "2026-06-14",
       "weekEnd": "2026-06-19"
     }
@@ -359,7 +362,7 @@
       "entries": 3,
       "avgScore": 83,
       "minScore": 78,
-      "maxScore": 94,
+      "maxScore": 92,
       "topGrade": "B",
       "gradeDist": {
         "A": 1,
@@ -409,7 +412,7 @@
           "count": 1
         }
       ],
-      "avgUncommitted": 9,
+      "avgUncommitted": 14,
       "dimAvgs": {
         "token": 100,
         "config": 47,
@@ -418,7 +421,7 @@
         "reports": 100,
         "format": 100,
         "diagnostics": 90,
-        "git": 93,
+        "git": 80,
         "security": 100,
         "em_testing": 73,
         "em_types": 100,
@@ -429,11 +432,12 @@
         "em_git": 87,
         "comp_qual": 84,
         "file_size": 100,
-        "dep_analysis": 9
+        "dep_analysis": 9,
+        "notify": 100
       },
       "delta": null,
       "firstTs": "2026-06-16T02:59:49.148Z",
-      "lastTs": "2026-06-18T16:27:16.551Z",
+      "lastTs": "2026-06-18T22:27:06.473Z",
       "month": "2026-06"
     }
   ],
@@ -454,8 +458,8 @@
     },
     {
       "date": "2026-06-18",
-      "time": "16:27",
-      "score": 94,
+      "time": "22:27",
+      "score": 92,
       "grade": "A",
       "triggered": 0
     }
@@ -671,10 +675,20 @@
     {
       "dim": "git",
       "label": "Git",
-      "avgScore": 93,
-      "recentAvg": 93,
+      "avgScore": 80,
+      "recentAvg": 80,
       "entries": 3,
-      "min": 80,
+      "min": 40,
+      "max": 100,
+      "trend": 0
+    },
+    {
+      "dim": "notify",
+      "label": "notify",
+      "avgScore": 100,
+      "recentAvg": 100,
+      "entries": 1,
+      "min": 100,
       "max": 100,
       "trend": 0
     },
@@ -723,8 +737,8 @@
     {
       "name": "main",
       "count": 2,
-      "avgScore": 86,
-      "avgUncommitted": 9
+      "avgScore": 85,
+      "avgUncommitted": 18
     },
     {
       "name": "master",
@@ -741,7 +755,7 @@
     },
     {
       "type": "improvement",
-      "msg": "综合评分持续上升 (+56/周, R²=0.75)",
+      "msg": "综合评分持续上升 (+49/周, R²=0.75)",
       "icon": "📈"
     }
   ],
@@ -763,42 +777,144 @@
       "avgScore": 87
     },
     "overallAvg": 91,
-    "totalComponents": 116
+    "totalComponents": 116,
+    "trends": {
+      "skills": {
+        "recentAvg": 86,
+        "olderAvg": 0,
+        "trend": 86,
+        "recentEntries": 3,
+        "totalEntries": 3
+      },
+      "agents": {
+        "recentAvg": 99,
+        "olderAvg": 0,
+        "trend": 99,
+        "recentEntries": 3,
+        "totalEntries": 3
+      },
+      "rules": {
+        "recentAvg": 91,
+        "olderAvg": 0,
+        "trend": 91,
+        "recentEntries": 3,
+        "totalEntries": 3
+      },
+      "scripts": {
+        "recentAvg": 80,
+        "olderAvg": 0,
+        "trend": 80,
+        "recentEntries": 3,
+        "totalEntries": 3
+      }
+    }
   },
   "enhancedTrend": {
     "trend": {
       "direction": "rising",
-      "slope": 8,
-      "slopePerWeek": 56,
+      "slope": 7,
+      "slopePerWeek": 49,
       "r2": 0.75,
       "confidence": "high"
     },
     "forecast": {
-      "forecast": 94,
+      "forecast": 92,
       "range": [
-        84,
-        104
+        82,
+        102
       ],
       "confidence": "low"
     },
     "velocity": {
-      "recent": 16,
-      "weekly": 8,
+      "recent": 14,
+      "weekly": 7,
       "accelerating": true
     },
     "distribution": {
       "min": 78,
-      "max": 94,
-      "mean": 83.3,
+      "max": 92,
+      "mean": 82.7,
       "median": 78,
-      "stddev": 7.5,
+      "stddev": 6.6,
       "p25": 78,
-      "p75": 94,
-      "range": 16
+      "p75": 92,
+      "range": 14
     },
     "sma7": [
       83
     ],
     "anomalies": []
+  },
+  "archHealth": {
+    "latest": {
+      "timestamp": "2026-06-18T22:27:06.464Z",
+      "composite": 94,
+      "grade": "B",
+      "scores": {
+        "arch_kernel": 100,
+        "arch_paradigm": 100,
+        "arch_imports": 100,
+        "arch_srp": 100,
+        "dry": 100,
+        "yagni": 0,
+        "arch_extensions": 100,
+        "arch_isp": 100,
+        "arch_frontmatter": 100,
+        "arch_docs": 100
+      },
+      "failedDims": [
+        "YAGNI 合规"
+      ],
+      "totalChecks": 16,
+      "passedChecks": 15
+    },
+    "totalEntries": 12,
+    "dimTrends": {
+      "arch_kernel": {
+        "label": "内核体积",
+        "recentAvg": 100,
+        "trend": 0
+      },
+      "arch_srp": {
+        "label": "SRP 合规",
+        "recentAvg": 100,
+        "trend": 0
+      },
+      "arch_imports": {
+        "label": "导入规范",
+        "recentAvg": 100,
+        "trend": 0
+      },
+      "arch_extensions": {
+        "label": "扩展隔离",
+        "recentAvg": 100,
+        "trend": 0
+      },
+      "arch_isp": {
+        "label": "ISP 合规",
+        "recentAvg": 100,
+        "trend": 0
+      },
+      "arch_frontmatter": {
+        "label": "配置完整性",
+        "recentAvg": 100,
+        "trend": 0
+      },
+      "arch_paradigm": {
+        "label": "范式合规",
+        "recentAvg": 100,
+        "trend": 0
+      },
+      "arch_docs": {
+        "label": "文档新鲜度",
+        "recentAvg": 100,
+        "trend": 0
+      },
+      "arch_healthcheck": {
+        "label": "原则可验证",
+        "recentAvg": 0,
+        "trend": 0
+      }
+    }
   }
 }

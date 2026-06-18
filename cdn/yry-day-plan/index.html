@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryDayPlan · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">📅</span> YryDayPlan · 每日计划卡片</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-day-plan&gt;</code> — 响应式计划卡片网格。
+    Light DOM 子元素直接放入，每张卡片 <code>.day-card</code> 支持 d1/d2/d3 主题色变体。
+    适用于项目路线图、迭代计划、多日任务分解。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo — 3 日架构迁移计划</h3>
+    <yry-day-plan>
+      <div class="day-card d1">
+        <div class="d-head">
+          <span class="d-tag">DAY 1</span>
+          <span class="d-title">审计与评估</span>
+        </div>
+        <div class="d-meta">
+          <span>📅 2026-06-20</span>
+          <span>⏱️ 预计 6h</span>
+        </div>
+        <ul>
+          <li>运行全量架构合规检查 <span class="li-time">2h</span></li>
+          <li>识别所有空 catch 和 export default <span class="li-time">1.5h</span></li>
+          <li>标注上帝模块和循环依赖 <span class="li-time">1.5h</span></li>
+          <li>生成问题清单并排序优先级 <span class="li-time">1h</span></li>
+        </ul>
+      </div>
+      <div class="day-card d2">
+        <div class="d-head">
+          <span class="d-tag">DAY 2</span>
+          <span class="d-title">修复与重构</span>
+        </div>
+        <div class="d-meta">
+          <span>📅 2026-06-21</span>
+          <span>⏱️ 预计 8h</span>
+        </div>
+        <ul>
+          <li>消除 2 处空 catch 并添加错误处理 <span class="li-time">2h</span></li>
+          <li>替换 export default 为命名导出 <span class="li-time">1.5h</span></li>
+          <li>拆分 1 个超限模块（≥500行） <span class="li-time">3h</span></li>
+          <li>更新共享库引用路径 <span class="li-time">1.5h</span></li>
+        </ul>
+      </div>
+      <div class="day-card d3">
+        <div class="d-head">
+          <span class="d-tag">DAY 3</span>
+          <span class="d-title">验证与收口</span>
+        </div>
+        <div class="d-meta">
+          <span>📅 2026-06-22</span>
+          <span>⏱️ 预计 4h</span>
+        </div>
+        <ul>
+          <li>运行 Gate A/B 全套验证 <span class="li-time">1h</span></li>
+          <li>执行安全面回归自检 <span class="li-time">1h</span></li>
+          <li>生成健康报告并对比趋势 <span class="li-time">1h</span></li>
+          <li>提交 PR 并通过交付收口 <span class="li-time">1h</span></li>
+        </ul>
+      </div>
+    </yry-day-plan>
+  </div>
+
+  <div class="demo-section">
+    <h3>📋 使用方式</h3>
+    <p class="demo-hint">
+      使用 <code>&lt;yry-day-plan&gt;</code> 包裹多个 <code>.day-card</code>。
+      变体：<code>.d1</code> (青色顶栏)、<code>.d2</code> (金色)、<code>.d3</code> (绿色)。
+      每张卡片包含：tag + title + meta + task list。
+    </p>
+  </div>
+
+  <script src="index.js"></script>
+
+  <div class="demo-footer">📅 YryDayPlan v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

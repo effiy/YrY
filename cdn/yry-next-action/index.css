@@ -1,0 +1,86 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryNextAction · 行动号召横幅 样式
+   适用: 页面底部引导 · 关键行动提示 · 下一步操作推荐
+   依赖: theme.css (提供 --yry-* design tokens)
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-next-action/index.css">
+     <yry-next-action>
+       <span class="na-ico">📋</span>
+       <div class="na-body">
+         <div class="na-title">标题</div>
+         <div class="na-desc">描述</div>
+       </div>
+       <button class="na-cta">按钮</button>
+     </yry-next-action>
+     <script src="../../../../cdn/yry-next-action/index.js"></script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: linear-gradient(135deg, rgba(255,193,7,.08) 0%, rgba(34,211,238,.04) 100%);
+  border: 1px solid rgba(255,193,7,.2);
+  border-radius: var(--yry-radius, 12px);
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  box-shadow: 0 0 24px rgba(255,193,7,.05);
+}
+
+/* ── Icon ───────────────────────────────────────────────────────────── */
+.na-ico {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+/* ── Body ───────────────────────────────────────────────────────────── */
+.na-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.na-title {
+  font-size: .86rem;
+  font-weight: 600;
+  color: var(--yry-accent, #ffc107);
+}
+
+.na-desc {
+  font-size: .72rem;
+  color: var(--yry-text2, #d4d4d4);
+  margin-top: 2px;
+}
+
+/* ── CTA Button ─────────────────────────────────────────────────────── */
+.na-cta {
+  background: var(--yry-accent, #ffc107);
+  color: #000;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 18px;
+  font-size: .76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.na-cta:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  :host {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .na-cta {
+    align-self: stretch;
+    text-align: center;
+  }
+}

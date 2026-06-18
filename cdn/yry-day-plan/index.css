@@ -1,0 +1,133 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryDayPlan · 每日计划卡片网格 样式
+   适用: 项目路线图 · 迭代计划 · 多日任务分解
+   依赖: theme.css (提供 --yry-* design tokens)
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-day-plan/index.css">
+     <yry-day-plan>
+       <div class="day-card d1|d2|d3">...</div>
+     </yry-day-plan>
+     <script src="../../../../cdn/yry-day-plan/index.js"></script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* ── Card ──────────────────────────────────────────────────────────── */
+.day-card {
+  background: var(--yry-bg-card, linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%));
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  border-radius: var(--yry-radius, 12px);
+  padding: 18px 20px;
+  box-shadow: var(--yry-shadow, 0 4px 20px rgba(0,0,0,.3));
+  position: relative;
+  overflow: hidden;
+  transition: transform .15s;
+}
+
+.day-card:hover {
+  transform: translateY(-2px);
+}
+
+.day-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--day-color, var(--yry-accent, #ffc107));
+}
+
+.day-card.d1 { --day-color: var(--yry-cyan, #22d3ee); }
+.day-card.d2 { --day-color: var(--yry-accent, #ffc107); }
+.day-card.d3 { --day-color: var(--yry-pass, #22c55e); }
+
+/* ── Head ───────────────────────────────────────────────────────────── */
+.d-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.d-tag {
+  font-size: .6rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.04);
+  color: var(--yry-text2, #d4d4d4);
+  font-weight: 600;
+  letter-spacing: .4px;
+  font-family: monospace;
+}
+
+.d-title {
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--day-color, var(--yry-accent, #ffc107));
+}
+
+/* ── Meta ───────────────────────────────────────────────────────────── */
+.d-meta {
+  font-size: .66rem;
+  color: var(--yry-text3, #888);
+  margin-bottom: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.d-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* ── Task list ──────────────────────────────────────────────────────── */
+.day-card ul {
+  list-style: none;
+  font-size: .74rem;
+  color: var(--yry-text2, #d4d4d4);
+  padding: 0;
+  margin: 0;
+}
+
+.day-card ul li {
+  padding: 6px 0 6px 18px;
+  position: relative;
+  line-height: 1.45;
+  border-bottom: 1px solid rgba(255,255,255,.02);
+}
+
+.day-card ul li:last-child {
+  border-bottom: none;
+}
+
+.day-card ul li::before {
+  content: '▸';
+  position: absolute;
+  left: 4px;
+  top: 6px;
+  color: var(--day-color, var(--yry-accent, #ffc107));
+  font-size: .7rem;
+}
+
+.day-card ul li .li-time {
+  float: right;
+  font-size: .58rem;
+  color: var(--yry-text3, #888);
+  font-family: monospace;
+  background: rgba(255,255,255,.03);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  :host { grid-template-columns: 1fr; }
+  .day-card { padding: 14px 16px; }
+}

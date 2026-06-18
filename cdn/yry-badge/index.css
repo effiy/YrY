@@ -1,0 +1,66 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryBadge · 状态徽章 样式
+   适用: 状态指示 · 评级标签 · 行内标记
+   依赖: theme.css (提供 --yry-* design tokens)
+
+   属性: type=pass|warn|fail|info|neutral, dot
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-badge/index.css">
+     <yry-badge type="pass" dot>A 级</yry-badge>
+     <script src="../../../../cdn/yry-badge/index.js"></script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: .7rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* ── Types ──────────────────────────────────────────────────────────── */
+:host(:not([type])),
+:host([type="neutral"]) {
+  background: rgba(255,255,255,.04);
+  color: var(--yry-text3, #888);
+  border: 1px solid rgba(255,255,255,.06);
+}
+
+:host([type="pass"]) {
+  background: rgba(34,197,94,.12);
+  color: var(--yry-pass, #22c55e);
+  border: 1px solid rgba(34,197,94,.2);
+}
+
+:host([type="warn"]) {
+  background: rgba(245,158,11,.12);
+  color: var(--yry-warn, #f59e0b);
+  border: 1px solid rgba(245,158,11,.2);
+}
+
+:host([type="fail"]) {
+  background: rgba(239,68,68,.12);
+  color: var(--yry-fail, #ef4444);
+  border: 1px solid rgba(239,68,68,.2);
+}
+
+:host([type="info"]) {
+  background: rgba(34,211,238,.12);
+  color: var(--yry-cyan, #22d3ee);
+  border: 1px solid rgba(34,211,238,.2);
+}
+
+/* ── Dot ────────────────────────────────────────────────────────────── */
+:host([dot])::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}

@@ -68,49 +68,119 @@ function buildBadCards(data) {
   return cards.join('\n');
 }
 
+/**
+ * Compute dynamic review quality scores from story data.
+ * Replaces static placeholders (80/85/72/90) with data-driven scoring.
+ *
+ * @param {object} data - { title, valuePoints, modules, testCases, sources, ... }
+ * @returns {{ completeness: number, consistency: number, traceability: number, expressiveness: number }}
+ */
+function computeReviewScores(data) {
+  const { valuePoints: VPS = [], modules: MODS = [], testCases: TCS = { normal: [], boundary: [] }, sources: SRCS = [] } = data;
+  const tcCount = (TCS.normal?.length || 0) + (TCS.boundary?.length || 0);
+
+  // Completeness: VPS coverage + test cases + metadata + DoD + failure modes
+  let completeness = 50; // baseline
+  if (VPS.length >= 5) completeness += 10;
+  else if (VPS.length >= 3) completeness += 5;
+  if (tcCount >= 5) completeness += 10;
+  else if (tcCount >= 2) completeness += 5;
+  if (MODS.length >= 2) completeness += 5;
+  // Metadata: version/platform/deps — default to partial (can be overridden by data)
+  completeness += (data.hasVersionInfo ? 10 : 0);
+  completeness += (data.hasDoD ? 10 : 0);
+  completeness += (data.hasFailureModes ? 10 : 0);
+  // Without explicit metadata, cap at 75
+  completeness = Math.min(100, completeness);
+
+  // Consistency: module roles + terminology + SKILL.md cross-refs + version alignment
+  let consistency = 50;
+  if (MODS.length >= 3) consistency += 10;
+  else if (MODS.length >= 1) consistency += 5;
+  consistency += (data.hasSkillRefs ? 15 : 0);
+  consistency += (data.hasTermAlignment ? 10 : 0);
+  consistency += (data.hasVersionConsistency ? 10 : 0);
+  // Baseline: terminology partial
+  consistency = Math.min(100, consistency + 5);
+
+  // Traceability: expected outputs + file links + error codes + visible signals
+  const srcLinked = SRCS.filter(s => s.link).length;
+  let traceability = 40;
+  if (SRCS.length > 0 && srcLinked === SRCS.length) traceability += 20;
+  else if (srcLinked > 0) traceability += 10;
+  if (tcCount >= 3) traceability += 10;
+  traceability += (data.hasExpectedOutputs ? 15 : 0);
+  traceability += (data.hasErrorDocs ? 15 : 0);
+  traceability = Math.min(100, traceability);
+
+  // Expressiveness: concept clarity + structure + navigation + heading hierarchy
+  let expressiveness = 55;
+  if (VPS.length >= 4) expressiveness += 15;
+  else if (VPS.length >= 2) expressiveness += 8;
+  expressiveness += (data.hasStepNavigation ? 15 : 0);
+  expressiveness += (data.hasCleanHeadings ? 10 : 0);
+  expressiveness += (data.hasMermaidDiagrams ? 10 : 5); // default partial credit
+  expressiveness = Math.min(100, expressiveness);
+
+  return { completeness, consistency, traceability, expressiveness };
+}
+
+function scoreColorDynamic(score) {
+  if (score >= 80) return 'var(--pass)';
+  if (score >= 60) return 'var(--warn)';
+  return 'var(--fail)';
+}
+
+function liClass(score, threshold) {
+  return score >= threshold ? 'pass' : score >= threshold - 20 ? 'warn' : 'fail';
+}
+
 function buildDimCards(data) {
-  const { title: TITLE, valuePoints: VPS, modules: MODS, testCases: TCS, sources: SRCS } = data;
-  const tcCount = TCS.normal.length + TCS.boundary.length;
+  const { title: TITLE, valuePoints: VPS = [], modules: MODS = [], testCases: TCS = { normal: [], boundary: [] }, sources: SRCS = [] } = data;
+  const tcCount = (TCS.normal?.length || 0) + (TCS.boundary?.length || 0);
+  const scores = computeReviewScores(data);
+  const { completeness, consistency, traceability, expressiveness } = scores;
+
   return `  <div class="dim-card">
-    <h3>📋 完整性 Completeness <span class="dim-score" style="color:var(--pass)">80%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:80%;background:var(--pass)"></div></div>
+    <h3>📋 完整性 Completeness <span class="dim-score" style="color:${scoreColorDynamic(completeness)}">${completeness}%</span></h3>
+    <div class="dim-bar"><div class="dim-bar-inner" style="width:${completeness}%;background:${scoreColorDynamic(completeness)}"></div></div>
     <ul>
-      <li class="pass">覆盖 ${VPS.length || 5} 个主要价值点 · ${MODS.length} 个涉及模块</li>
-      <li class="pass">${tcCount} 个测试用例（正常 ${TCS.normal.length} + 边界 ${TCS.boundary.length}）</li>
-      <li class="warn">未标注版本/平台/前置依赖</li>
-      <li class="warn">验收标准（DoD）定义模糊</li>
-      <li class="fail">缺少失败模式与故障排查</li>
+      <li class="${liClass(completeness, 80)}">覆盖 ${VPS.length || 0} 个主要价值点 · ${MODS.length} 个涉及模块</li>
+      <li class="${liClass(completeness, 70)}">${tcCount} 个测试用例（正常 ${TCS.normal?.length || 0} + 边界 ${TCS.boundary?.length || 0}）</li>
+      <li class="${data.hasVersionInfo ? 'pass' : 'warn'}">${data.hasVersionInfo ? '已标注' : '未标注'}版本/平台/前置依赖</li>
+      <li class="${data.hasDoD ? 'pass' : 'warn'}">验收标准（DoD）${data.hasDoD ? '定义清晰' : '定义模糊'}</li>
+      <li class="${data.hasFailureModes ? 'pass' : 'fail'}">${data.hasFailureModes ? '已包含' : '缺少'}失败模式与故障排查</li>
     </ul>
   </div>
 
   <div class="dim-card">
-    <h3>🔗 一致性 Consistency <span class="dim-score" style="color:var(--pass)">85%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:85%;background:var(--pass)"></div></div>
+    <h3>🔗 一致性 Consistency <span class="dim-score" style="color:${scoreColorDynamic(consistency)}">${consistency}%</span></h3>
+    <div class="dim-bar"><div class="dim-bar-inner" style="width:${consistency}%;background:${scoreColorDynamic(consistency)}"></div></div>
     <ul>
-      <li class="pass">${MODS.length} 个涉及模块均已标注本场景角色</li>
-      <li class="pass">术语与「${esc(TITLE)}」领域语对齐</li>
-      <li class="warn">部分命令未与 SKILL.md 签名一一校验</li>
-      <li class="warn">跨场景引用偶有版本不一致</li>
+      <li class="${MODS.length >= 2 ? 'pass' : 'warn'}">${MODS.length} 个涉及模块${MODS.length >= 2 ? '均已' : '未完全'}标注本场景角色</li>
+      <li class="${data.hasTermAlignment ? 'pass' : 'warn'}">术语与「${esc(TITLE)}」领域语${data.hasTermAlignment ? '对齐' : '部分对齐'}</li>
+      <li class="${data.hasSkillRefs ? 'pass' : 'warn'}">${data.hasSkillRefs ? '已与 SKILL.md 签名校验' : '部分命令未与 SKILL.md 签名一一校验'}</li>
+      <li class="${data.hasVersionConsistency ? 'pass' : 'warn'}">跨场景引用${data.hasVersionConsistency ? '版本一致' : '偶有版本不一致'}</li>
     </ul>
   </div>
 
   <div class="dim-card">
-    <h3>🔍 可追溯 Traceability <span class="dim-score" style="color:var(--warn)">72%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:72%;background:var(--warn)"></div></div>
+    <h3>🔍 可追溯 Traceability <span class="dim-score" style="color:${scoreColorDynamic(traceability)}">${traceability}%</span></h3>
+    <div class="dim-bar"><div class="dim-bar-inner" style="width:${traceability}%;background:${scoreColorDynamic(traceability)}"></div></div>
     <ul>
-      <li class="warn">关键操作缺少预期输出与可见信号</li>
-      <li class="warn">${SRCS.length} 个源文件未全部建立 file:// 链接</li>
-      <li class="fail">错误码与退出码未文档化</li>
+      <li class="${data.hasExpectedOutputs ? 'pass' : 'warn'}">${data.hasExpectedOutputs ? '关键操作已标注预期输出' : '关键操作缺少预期输出与可见信号'}</li>
+      <li class="${SRCS.length > 0 ? 'warn' : 'fail'}">${SRCS.length} 个源文件${SRCS.length > 0 ? '未全部建立' : '缺少'} file:// 链接</li>
+      <li class="${data.hasErrorDocs ? 'pass' : 'fail'}">${data.hasErrorDocs ? '已文档化' : '错误码与退出码未文档化'}</li>
     </ul>
   </div>
 
   <div class="dim-card">
-    <h3>💬 表达力 Expressiveness <span class="dim-score" style="color:var(--pass)">90%</span></h3>
-    <div class="dim-bar"><div class="dim-bar-inner" style="width:90%;background:var(--pass)"></div></div>
+    <h3>💬 表达力 Expressiveness <span class="dim-score" style="color:${scoreColorDynamic(expressiveness)}">${expressiveness}%</span></h3>
+    <div class="dim-bar"><div class="dim-bar-inner" style="width:${expressiveness}%;background:${scoreColorDynamic(expressiveness)}"></div></div>
     <ul>
-      <li class="pass">"${esc(TITLE)}" 概念定义清晰 · ${VPS.length} 个价值点结构化</li>
-      <li class="pass">步骤式导航，渐进式学习曲线合理</li>
-      <li class="warn">标题层级偶有跳跃（H2 → H4）</li>
+      <li class="${VPS.length >= 3 ? 'pass' : 'warn'}">"${esc(TITLE)}" 概念定义${VPS.length >= 3 ? '清晰' : '待完善'} · ${VPS.length} 个价值点${VPS.length >= 3 ? '结构化' : ''}</li>
+      <li class="${data.hasStepNavigation ? 'pass' : 'warn'}">${data.hasStepNavigation ? '步骤式导航，渐进式学习曲线合理' : '缺少步骤式导航'}</li>
+      <li class="${data.hasCleanHeadings ? 'pass' : 'warn'}">${data.hasCleanHeadings ? '标题层级规范' : '标题层级偶有跳跃（H2 → H4）'}</li>
     </ul>
   </div>`;
 }

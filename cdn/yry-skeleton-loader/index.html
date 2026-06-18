@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YrySkeletonLoader · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">💀</span> YrySkeletonLoader · 骨架加载组件</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-skeleton-loader&gt;</code> — 内容加载占位。
+    支持 <strong>text / card / list / table</strong> 四种预设变体，以及自定义宽高。
+    shimmer 动画指示加载中状态。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo — 文本骨架</h3>
+    <yry-skeleton-loader variant="text" lines="3"></yry-skeleton-loader>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo — 卡片骨架</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+      <yry-skeleton-loader variant="card"></yry-skeleton-loader>
+      <yry-skeleton-loader variant="card"></yry-skeleton-loader>
+      <yry-skeleton-loader variant="card"></yry-skeleton-loader>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo — 列表骨架</h3>
+    <yry-skeleton-loader variant="list" lines="4"></yry-skeleton-loader>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo — 自定义尺寸</h3>
+    <yry-skeleton-loader width="60%" height="24px" style="margin-bottom:8px"></yry-skeleton-loader>
+    <yry-skeleton-loader width="80%" height="16px" style="margin-bottom:8px"></yry-skeleton-loader>
+    <yry-skeleton-loader width="40%" height="16px" style="margin-bottom:8px"></yry-skeleton-loader>
+    <yry-skeleton-loader width="200px" height="200px" radius="12px"></yry-skeleton-loader>
+  </div>
+
+  <script src="index.js"></script>
+  <div class="demo-footer">💀 YrySkeletonLoader v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

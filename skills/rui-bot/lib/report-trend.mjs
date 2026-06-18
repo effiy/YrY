@@ -22,6 +22,7 @@ import {
   scoreVelocity,
   getGrade,
   classifyScore,
+  pearsonCorrelation,
 } from "../../../lib/scoring.mjs";
 
 export { nowDate };
@@ -386,4 +387,210 @@ export function buildAnomalyAlertHTML(analysis) {
     ).join("")}
     <span style="font-size:12px;color:var(--text3);margin-left:8px">(偏离典型值超过 3.5× 中位绝对偏差)</span>
   </div>`;
+}
+
+// ── Dimension correlation matrix ────────────────────────────────
+
+/**
+ * Build a correlation matrix between health dimensions using historical data.
+ * Uses Pearson correlation on per-dimension score histories.
+ *
+ * @param {object} dimHistory - From getDimensionHistory() — { label: [{date, score}] }
+ * @param {string[]} [focusDims] - Optional subset of dimension labels to include
+ * @returns {{ matrix: number[][], labels: string[], insights: string[] }}
+ */
+export function buildCorrelationMatrix(dimHistory, focusDims) {
+  // Collect labels that have enough data points
+  var candidates = Object.entries(dimHistory)
+    .filter(function(e) { return e[1].length >= 3; })
+    .map(function(e) { return e[0]; });
+
+  if (focusDims && focusDims.length > 0) {
+    candidates = candidates.filter(function(l) { return focusDims.indexOf(l) >= 0; });
+  }
+
+  if (candidates.length < 3) return null;
+
+  // Align scores by date
+  var dateMap = {};
+  for (var _a = 0; _a < candidates.length; _a++) {
+    var label = candidates[_a];
+    var points = dimHistory[label] || [];
+    for (var _b = 0; _b < points.length; _b++) {
+      var p = points[_b];
+      if (!dateMap[p.date]) dateMap[p.date] = {};
+      dateMap[p.date][label] = p.score;
+    }
+  }
+
+  // Build aligned score arrays
+  var dates = Object.keys(dateMap).sort();
+  var scoreArrays = {};
+  for (var _c = 0; _c < candidates.length; _c++) {
+    scoreArrays[candidates[_c]] = [];
+  }
+
+  for (var _d = 0; _d < dates.length; _d++) {
+    var row = dateMap[dates[_d]];
+    for (var _e = 0; _e < candidates.length; _e++) {
+      var lbl = candidates[_e];
+      scoreArrays[lbl].push(row[lbl] !== undefined ? row[lbl] : null);
+    }
+  }
+
+  // Compute correlation matrix
+  var n = candidates.length;
+  var matrix = [];
+  for (var i = 0; i < n; i++) {
+    matrix[i] = [];
+    for (var j = 0; j < n; j++) {
+      if (i === j) {
+        matrix[i][j] = 1.0;
+      } else if (j < i) {
+        matrix[i][j] = matrix[j][i]; // symmetric
+      } else {
+        var xs = [], ys = [];
+        var arrI = scoreArrays[candidates[i]];
+        var arrJ = scoreArrays[candidates[j]];
+        for (var k = 0; k < arrI.length; k++) {
+          if (arrI[k] !== null && arrJ[k] !== null) {
+            xs.push(arrI[k]);
+            ys.push(arrJ[k]);
+          }
+        }
+        matrix[i][j] = xs.length >= 3 ? pearsonCorrelation(xs, ys) : 0;
+      }
+    }
+  }
+
+  // Generate insights
+  var insights = [];
+  var strongPairs = [];
+  for (var _f = 0; _f < n; _f++) {
+    for (var _g = _f + 1; _g < n; _g++) {
+      var r = matrix[_f][_g];
+      if (Math.abs(r) >= 0.7) {
+        strongPairs.push({
+          a: candidates[_f], b: candidates[_g], r: r,
+          direction: r > 0 ? '正相关' : '负相关',
+        });
+      }
+    }
+  }
+  strongPairs.sort(function(a, b) { return Math.abs(b.r) - Math.abs(a.r); });
+
+  var _h = 0;
+  for (; _h < strongPairs.length && _h < 5; _h++) {
+    var sp = strongPairs[_h];
+    var strength = Math.abs(sp.r) >= 0.85 ? '强' : '显著';
+    if (sp.r > 0) {
+      insights.push(sp.a + ' ↔ ' + sp.b + ': ' + strength + '正相关 (r=' + sp.r.toFixed(2) + ') — 改善一方可带动另一方');
+    } else {
+      insights.push(sp.a + ' ↔ ' + sp.b + ': ' + strength + '负相关 (r=' + sp.r.toFixed(2) + ') — 存在权衡关系');
+    }
+  }
+
+  return { matrix: matrix, labels: candidates, insights: insights };
+}
+
+// ── Historical benchmarking ──────────────────────────────────────
+
+/**
+ * Compute historical benchmarks from trend data.
+ * Compares current score against best, worst, and average periods.
+ *
+ * @param {object[]} history - Health trend entries
+ * @param {number} currentComposite - Current composite score
+ * @returns {{ best: object, worst: object, avg: number, percentile: number, periodLabel: string }}
+ */
+export function buildHistoricalBenchmarks(history, currentComposite) {
+  if (!history || history.length < 2) return null;
+
+  var composites = history.map(function(h) { return h.composite; }).filter(function(s) { return typeof s === "number"; });
+  if (composites.length < 2) return null;
+
+  var best = null, worst = null;
+  var sum = 0;
+  for (var i = 0; i < history.length; i++) {
+    var h = history[i];
+    var s = h.composite;
+    if (typeof s !== "number") continue;
+    sum += s;
+    if (!best || s > best.score) best = { score: s, date: (h.timestamp || "").slice(0, 10), grade: h.grade || "" };
+    if (!worst || s < worst.score) worst = { score: s, date: (h.timestamp || "").slice(0, 10), grade: h.grade || "" };
+  }
+
+  var avg = Math.round(sum / composites.length);
+
+  // Percentile rank: what % of historical scores are below current
+  var below = 0;
+  for (var _a = 0; _a < composites.length; _a++) {
+    if (composites[_a] < currentComposite) below++;
+  }
+  var percentile = Math.round((below / composites.length) * 100);
+
+  // Period labels
+  var days = history.length; // approximate data points as daily
+  var periodLabel = days <= 7 ? "近7天" : days <= 30 ? "近30天" : days <= 90 ? "近90天" : "全部历史";
+
+  // Best/average gap
+  var bestGap = currentComposite - (best ? best.score : currentComposite);
+  var avgGap = currentComposite - avg;
+
+  return {
+    best: best,
+    worst: worst,
+    avg: avg,
+    percentile: percentile,
+    bestGap: bestGap,
+    avgGap: avgGap,
+    totalSamples: composites.length,
+    periodLabel: periodLabel,
+  };
+}
+
+/**
+ * Build benchmarking HTML for the report.
+ *
+ * @param {object} benchmarks - From buildHistoricalBenchmarks()
+ * @returns {string} HTML
+ */
+export function buildBenchmarkHTML(benchmarks) {
+  if (!benchmarks || benchmarks.totalSamples < 2) return "";
+
+  var bm = benchmarks;
+  var vsBest = bm.bestGap >= 0 ? '达到历史最佳' : '距最佳差 ' + Math.abs(bm.bestGap) + ' 分';
+  var vsBestColor = bm.bestGap >= 0 ? '#22c55e' : bm.bestGap >= -5 ? '#f59e0b' : '#ef4444';
+  var vsAvgColor = bm.avgGap >= 0 ? '#22c55e' : '#ef4444';
+  var percentileColor = bm.percentile >= 75 ? '#22c55e' : bm.percentile >= 50 ? '#f59e0b' : '#ef4444';
+
+  return '<div class="h-section">' +
+    '<h2>📊 历史基准对比 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">' + bm.periodLabel + ' · ' + bm.totalSamples + ' 次检查</span></h2>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:8px">' +
+    '<div style="text-align:center;padding:12px;background:var(--bg1);border-radius:6px">' +
+    '<div style="font-size:.7rem;color:var(--yry-text3);margin-bottom:4px">历史最佳</div>' +
+    '<div style="font-size:1.4rem;font-weight:700;color:#22c55e">' + bm.best.score + '</div>' +
+    '<div style="font-size:.62rem;color:var(--yry-text3)">' + bm.best.date + ' · ' + bm.best.grade + '级</div>' +
+    '</div>' +
+    '<div style="text-align:center;padding:12px;background:var(--bg1);border-radius:6px">' +
+    '<div style="font-size:.7rem;color:var(--yry-text3);margin-bottom:4px">历史平均</div>' +
+    '<div style="font-size:1.4rem;font-weight:700;color:var(--yry-text2)">' + bm.avg + '</div>' +
+    '<div style="font-size:.62rem;color:var(--yry-text3)">' + bm.totalSamples + ' 次均值</div>' +
+    '</div>' +
+    '<div style="text-align:center;padding:12px;background:var(--bg1);border-radius:6px">' +
+    '<div style="font-size:.7rem;color:var(--yry-text3);margin-bottom:4px">历史最差</div>' +
+    '<div style="font-size:1.4rem;font-weight:700;color:#ef4444">' + bm.worst.score + '</div>' +
+    '<div style="font-size:.62rem;color:var(--yry-text3)">' + bm.worst.date + ' · ' + bm.worst.grade + '级</div>' +
+    '</div>' +
+    '<div style="text-align:center;padding:12px;background:var(--bg1);border-radius:6px">' +
+    '<div style="font-size:.7rem;color:var(--yry-text3);margin-bottom:4px">百分位</div>' +
+    '<div style="font-size:1.4rem;font-weight:700;color:' + percentileColor + '">P' + bm.percentile + '</div>' +
+    '<div style="font-size:.62rem;color:var(--yry-text3)">超越 ' + bm.percentile + '% 历史记录</div>' +
+    '</div>' +
+    '</div>' +
+    '<div style="padding:8px;background:rgba(245,158,11,.06);border-radius:6px;font-size:.7rem;color:var(--yry-text2);text-align:center">' +
+    '📊 对比最佳: <span style="color:' + vsBestColor + ';font-weight:600">' + vsBest + '</span> · ' +
+    '对比均值: <span style="color:' + vsAvgColor + ';font-weight:600">' + (bm.avgGap >= 0 ? '+' : '') + bm.avgGap + ' 分</span>' +
+    '</div>' +
+    '</div>';
 }

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryTooltip · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 80px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+      display: flex; gap: 16px; flex-wrap: wrap; align-items: center; justify-content: center;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); width: 100%; }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+    .demo-target {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 80px; height: 36px;
+      background: var(--yry-bg-flat, rgba(42,42,56,1));
+      border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+      border-radius: 8px; color: var(--yry-text2, #d4d4d4);
+      font-size: .74rem; cursor: default;
+    }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">💬</span> YryTooltip · 悬停提示组件</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-tooltip&gt;</code> — 悬停/聚焦显示提示文本。
+    通过 <code>position</code> 属性控制方向（top/bottom/left/right），<code>text</code> 属性设置内容。
+    也支持 Light DOM 作为复杂提示内容。适用于图标说明、缩写解释、快捷提示。
+  </p>
+
+  <div class="demo-section">
+    <h3>悬停下方元素查看提示</h3>
+
+    <yry-tooltip text="运行全量架构合规检查" position="top">
+      <span class="demo-target">📐 Top</span>
+    </yry-tooltip>
+
+    <yry-tooltip text="生成健康报告并推送通知" position="bottom">
+      <span class="demo-target">🩺 Bottom</span>
+    </yry-tooltip>
+
+    <yry-tooltip text="查看组件使用文档" position="left">
+      <span class="demo-target">📖 Left</span>
+    </yry-tooltip>
+
+    <yry-tooltip text="复制到剪贴板" position="right">
+      <span class="demo-target">📋 Right</span>
+    </yry-tooltip>
+
+    <yry-tooltip position="bottom">
+      <span class="demo-target">🛠 Rich</span>
+      <div slot="content" style="font-size:.72rem;line-height:1.4">
+        <strong style="color:var(--yry-accent,#ffc107)">高级用法</strong><br>
+        支持 <code style="color:var(--yry-cyan,#22d3ee)">富文本</code> 内容
+      </div>
+    </yry-tooltip>
+  </div>
+
+  <script src="index.js"></script>
+  <div class="demo-footer">💬 YryTooltip v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

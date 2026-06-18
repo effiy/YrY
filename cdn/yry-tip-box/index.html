@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryTipBox · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">💬</span> YryTipBox · 提示框组件</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-tip-box&gt;</code> — 多类型提示/警告/信息框。
+    通过 <code>type</code> 属性切换样式：<code>default</code> (金色) · <code>success</code> (绿色) · <code>info</code> (青色) · <code>warn</code> (红色)。
+    适用于文档中的重点提示、警告、最佳实践标注。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo — 四种提示类型</h3>
+
+    <yry-tip-box type="default">
+      <strong>💡 提示：</strong>所有共享代码请放在 <code>lib/</code> 目录，禁止跨文件 copy-paste。各脚本从 lib/ 导入通用函数和常量。
+    </yry-tip-box>
+
+    <yry-tip-box type="success">
+      <strong>✅ 最佳实践：</strong>使用 <code>node lib/arch-check.mjs --fix</code> 可自动修复大部分范式违规（空 catch → console.error、export default → 命名导出）。
+    </yry-tip-box>
+
+    <yry-tip-box type="info">
+      <strong>ℹ️ 说明：</strong>架构合规检查覆盖 15 个维度，目标 A 级。内核体积约束为 lib ≤ 20、rule ≤ 8、编排器 ≤ 500 行。
+    </yry-tip-box>
+
+    <yry-tip-box type="warn">
+      <strong>⚠️ 警告：</strong>认证不可绕过 — 任何涉及 auth/token/session 的绕过路径均为 P0。密钥禁止落盘 — Token/密钥/凭据禁止出现在源码或配置文件中。
+    </yry-tip-box>
+  </div>
+
+  <div class="demo-section">
+    <h3>📋 使用方式</h3>
+    <p class="demo-hint">
+      使用 <code>&lt;yry-tip-box type="default|success|info|warn"&gt;</code>，内容直接放入。
+      默认类型有金色左边框和淡金色背景，<code>success</code> 绿色，<code>info</code> 青色，<code>warn</code> 红色。
+      <code>&lt;strong&gt;</code> 文本自动着色匹配提示类型。
+    </p>
+  </div>
+
+  <script src="index.js"></script>
+
+  <div class="demo-footer">💬 YryTipBox v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

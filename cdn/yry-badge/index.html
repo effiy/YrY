@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryBadge · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68; }
+    .demo-section { margin: 20px 0; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 20px 22px; }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: .78rem; color: var(--yry-text2, #d4d4d4); flex-wrap: wrap; }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">🏷️</span> YryBadge · 状态徽章组件</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-badge&gt;</code> — 内联状态指示器。
+    通过 <code>type</code> 属性切换颜色：<code>pass</code> (绿) · <code>warn</code> (橙) · <code>fail</code> (红) · <code>info</code> (青) · <code>neutral</code> (灰)。
+    支持 <code>dot</code> 属性显示圆点前缀。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo — 类型变体</h3>
+    <div class="demo-row">
+      <yry-badge type="pass">A 级</yry-badge>
+      <yry-badge type="warn">B 级</yry-badge>
+      <yry-badge type="fail">C 级</yry-badge>
+      <yry-badge type="info">进行中</yry-badge>
+      <yry-badge type="neutral">已跳过</yry-badge>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo — 带圆点</h3>
+    <div class="demo-row">
+      <yry-badge type="pass" dot>在线</yry-badge>
+      <yry-badge type="warn" dot>延迟</yry-badge>
+      <yry-badge type="fail" dot>离线</yry-badge>
+      <yry-badge type="info" dot>初始化</yry-badge>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo — 行内使用</h3>
+    <p class="demo-hint">
+      架构合规检查结果：<yry-badge type="pass">15/15 通过</yry-badge>，
+      安全面：<yry-badge type="warn">1 项告警</yry-badge>，
+      测试覆盖：<yry-badge type="fail">2 项失败</yry-badge>
+    </p>
+  </div>
+
+  <script src="index.js"></script>
+  <div class="demo-footer">🏷️ YryBadge v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

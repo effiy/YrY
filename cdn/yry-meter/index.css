@@ -1,0 +1,58 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryMeter · 仪表盘 样式
+   适用: 进度显示 · 评分可视化 · 资源使用率
+   依赖: theme.css (提供 --yry-* design tokens)
+
+   属性: value (当前值), max (最大值, 默认 100), size (sm|md|lg), label
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-meter/index.css">
+     <yry-meter value="85" max="100" label="健康度"></yry-meter>
+     <script src="../../../../cdn/yry-meter/index.js"></script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+/* ── Track ──────────────────────────────────────────────────────────── */
+.mt-track {
+  height: 8px;
+  background: rgba(255,255,255,.06);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+:host([size="sm"]) .mt-track { height: 4px; border-radius: 2px; }
+:host([size="lg"]) .mt-track { height: 14px; border-radius: 7px; }
+
+/* ── Fill ───────────────────────────────────────────────────────────── */
+.mt-fill {
+  height: 100%;
+  border-radius: inherit;
+  transition: width .5s ease;
+  background: var(--mt-color, var(--yry-pass, #22c55e));
+}
+
+/* ── Label ──────────────────────────────────────────────────────────── */
+.mt-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: .68rem;
+  color: var(--yry-text3, #888);
+}
+
+.mt-label .mt-label-text {
+  font-weight: 500;
+}
+
+.mt-label .mt-label-val {
+  font-weight: 700;
+  font-family: monospace;
+  color: var(--mt-color, var(--yry-text, #f5f5f5));
+}

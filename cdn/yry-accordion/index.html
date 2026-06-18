@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryAccordion · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto; line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68; }
+    .demo-section { margin: 20px 0; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 20px 22px; }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">🗂️</span> YryAccordion · 折叠面板组件</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-accordion&gt;</code> — 可折叠内容面板。
+    Light DOM 中使用 <code>&lt;details&gt;</code> / <code>&lt;summary&gt;</code> 结构。
+    通过 CSS 变量和过渡动画实现平滑展开/折叠。支持同时多项展开。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo — 常见问题</h3>
+    <yry-accordion>
+      <details open>
+        <summary>🔧 如何运行架构合规检查？</summary>
+        <div class="ac-body">
+          <p>在项目根目录执行：<code>node lib/arch-check.mjs --all</code></p>
+          <p>这会运行 15 个维度的自动验证，并输出 A/B/C/D 评级。</p>
+        </div>
+      </details>
+      <details>
+        <summary>🩺 健康报告如何生成？</summary>
+        <div class="ac-body">
+          <p>执行：<code>node skills/rui-bot/send.mjs health --html</code></p>
+          <p>报告生成到 <code>docs/健康报告/</code> 目录，包含 9 维度评分和趋势对比。</p>
+        </div>
+      </details>
+      <details>
+        <summary>📦 如何添加新的 CDN 组件？</summary>
+        <div class="ac-body">
+          <p>在 <code>cdn/</code> 目录下创建 <code>yry-新组件名/</code>，包含：</p>
+          <p><code>index.html</code> — 组件 demo 预览</p>
+          <p><code>index.css</code> — 组件样式</p>
+          <p><code>index.js</code> — 组件逻辑（至少注册 Custom Element）</p>
+        </div>
+      </details>
+      <details>
+        <summary>🔒 安全铁律有哪些？</summary>
+        <div class="ac-body">
+          <p>四条不可妥协底线：认证不可绕过 · 密钥不落盘 · 输入必校验 · 规约完整性</p>
+        </div>
+      </details>
+    </yry-accordion>
+  </div>
+
+  <script src="index.js"></script>
+  <div class="demo-footer">🗂️ YryAccordion v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

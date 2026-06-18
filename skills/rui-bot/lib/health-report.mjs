@@ -15,13 +15,14 @@ import {
   REPORT_DIR, CDN_DEPTH, DIM_LABELS, DIM_WEIGHTS, GRADE_STYLE,
 } from "./report-constants.mjs";
 import { HEALTH_SCORING_DIMENSIONS } from "../../../lib/constants.mjs";
-import { categoryScores } from "../../../lib/scoring.mjs";
+import { categoryScores, rankDimensionInfluence, generateExecutiveSummary } from "../../../lib/scoring.mjs";
 
 import {
   nowChinese, nowDate, getPreviousScore, getHealthTrend,
   buildGradeSparkline, getDimensionHistory, dimTrendIcon,
   listReportFiles, pickLatestReportsByDate, removeReportsForDate,
   buildEnhancedTrendAnalysis, buildTrendSummaryHTML, buildAnomalyAlertHTML,
+  buildCorrelationMatrix, buildHistoricalBenchmarks, buildBenchmarkHTML,
 } from "./report-trend.mjs";
 
 import {
@@ -31,6 +32,11 @@ import {
   buildFileSizeSection, buildDependencySection,
   buildContributionGapSection, buildScoreDistributionSection,
   buildCrossReportSection, buildRadarChart, buildHeatMap,
+  buildDimensionDetailPanel, buildScoreDiffSection,
+  buildCorrelationMatrixHTML,
+  buildInfluenceRankingSection,
+  buildExecutiveSummaryHTML,
+  buildScoreTraceabilityPanel,
 } from "./report-sections.mjs";
 
 import { scoreStatus, PASS_THRESHOLD, WARN_THRESHOLD } from "./bot-health-analysis.mjs";
@@ -270,19 +276,31 @@ export function generateHealthReport(hr) {
 </div>
 
 <div class="h-panel on" id="overview">
+  ${buildExecutiveSummaryHTML(generateExecutiveSummary({
+    composite: hr.composite, grade: hr.grade, scores: hr.scores || {},
+    dimensions: HEALTH_SCORING_DIMENSIONS,
+    prev: prev ? { composite: prev.score, date: prev.date } : null,
+    archResult: hr.archResult ? { archFailedDims: hr.archResult.archFailedDims } : null,
+    diagTriggered: hr.diagnostics?.triggered?.length || 0,
+  }), hr.composite, hr.grade)}
   ${buildSummaryCard(hr, prev, recommendations)}
+  ${buildScoreDiffSection(hr, healthTrend.length >= 2 ? healthTrend[healthTrend.length - 2] : null)}
+  ${buildBenchmarkHTML(buildHistoricalBenchmarks(healthTrend, hr.composite))}
   ${buildStructureSection(hr)}
   ${buildFileSizeSection(hr)}
   ${buildDependencySection(hr)}
   ${buildScoreBreakdown(hr)}
   ${buildContributionGapSection(hr)}
+  ${buildInfluenceRankingSection(rankDimensionInfluence(hr.scores || {}, HEALTH_SCORING_DIMENSIONS, getDimensionHistory()))}
   ${buildScoreDistributionSection(hr)}
   ${buildRadarChart(categoryScores(hr.scores || {}, HEALTH_SCORING_DIMENSIONS), { core: "核心运营", structural: "结构健康", engineering: "工程成熟度", quality: "组件质量" })}
   ${buildHeatMap(hr.scores || {}, HEALTH_SCORING_DIMENSIONS)}
+  ${buildCorrelationMatrixHTML(buildCorrelationMatrix(getDimensionHistory()))}
   ${buildScoreTrend(healthTrend)}
   ${enhancedTrend ? buildTrendSummaryHTML(enhancedTrend) : ""}
   ${enhancedTrend ? buildAnomalyAlertHTML(enhancedTrend) : ""}
-  ${buildCrossReportSection(hr, null, compScores)}
+  ${buildCrossReportSection(hr, hr.archResult, compScores)}
+  ${buildScoreTraceabilityPanel(hr.scores || {})}
   <div class="h-section">
     <h2>🔗 相关资源</h2>
     <div class="h-links">
@@ -300,6 +318,7 @@ export function generateHealthReport(hr) {
     <div class="h-dim-grid">${dimCardsHtml}</div>
   </div>
   ${emCardsHtml}
+  ${buildDimensionDetailPanel(hr, getDimensionHistory())}
   <div class="h-section">
     <h2>📋 检查详情</h2>
     <div class="h-detail-list">${detailItems}</div>

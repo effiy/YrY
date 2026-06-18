@@ -1,0 +1,59 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryEmptyState · 空状态组件 样式
+   适用: 搜索无结果 · 列表为空 · 暂无内容
+   依赖: theme.css (提供 --yry-* design tokens)
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-empty-state/index.css">
+     <yry-empty-state icon="🔍" title="未找到" description="提示文本">
+       <button slot="action">操作</button>
+     </yry-empty-state>
+     <script src="../../../../cdn/yry-empty-state/index.js"></script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.es-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  opacity: .6;
+}
+
+.es-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--yry-text2, #d4d4d4);
+  margin: 0 0 6px;
+}
+
+.es-desc {
+  font-size: .78rem;
+  color: var(--yry-text3, #888);
+  max-width: 360px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.es-desc code {
+  background: rgba(0,0,0,.3);
+  color: var(--yry-cyan, #22d3ee);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: 'SF Mono', monospace;
+  font-size: .7rem;
+}
+
+.es-actions {
+  margin-top: 16px;
+}
+
+::slotted([slot="action"]) {
+  /* Inherits from parent page styles */
+}

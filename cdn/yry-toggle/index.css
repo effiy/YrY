@@ -1,0 +1,64 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryToggle · 开关组件 样式
+   适用: 设置面板 · 功能开关 · 选项切换
+   依赖: theme.css (提供 --yry-* design tokens)
+
+   属性: checked, disabled, label
+   事件: yry-change → { checked: boolean }
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-toggle/index.css">
+     <yry-toggle checked label="启用"></yry-toggle>
+     <script src="../../../../cdn/yry-toggle/index.js"></script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+:host([disabled]) {
+  cursor: not-allowed;
+  opacity: .4;
+}
+
+/* ── Track ──────────────────────────────────────────────────────────── */
+.tg-track {
+  position: relative;
+  width: 40px; height: 22px;
+  border-radius: 11px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.08);
+  transition: background .2s, border-color .2s;
+  flex-shrink: 0;
+}
+
+:host([checked]) .tg-track {
+  background: rgba(255,193,7,.25);
+  border-color: rgba(255,193,7,.4);
+}
+
+/* ── Thumb ──────────────────────────────────────────────────────────── */
+.tg-thumb {
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--yry-text2, #d4d4d4);
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 1px 3px rgba(0,0,0,.3);
+}
+
+:host([checked]) .tg-thumb {
+  transform: translateX(18px);
+  background: var(--yry-accent, #ffc107);
+}
+
+/* ── Label ──────────────────────────────────────────────────────────── */
+.tg-label {
+  font-size: .78rem;
+  color: var(--yry-text2, #d4d4d4);
+}

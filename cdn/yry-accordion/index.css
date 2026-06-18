@@ -1,0 +1,95 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryAccordion · 折叠面板 样式
+   适用: FAQ · 文档章节折叠 · 设置面板
+   依赖: theme.css (提供 --yry-* design tokens)
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-accordion/index.css">
+     <yry-accordion>
+       <details><summary>标题</summary><div class="ac-body">内容</div></details>
+     </yry-accordion>
+     <script src="../../../../cdn/yry-accordion/index.js"></script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Details wrapper ────────────────────────────────────────────────── */
+details {
+  background: var(--yry-bg-card, linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%));
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  border-radius: var(--yry-radius, 12px);
+  overflow: hidden;
+  transition: border-color .2s;
+}
+
+details[open] {
+  border-color: rgba(255,193,7,.12);
+}
+
+/* ── Summary header ─────────────────────────────────────────────────── */
+summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  font-size: .84rem;
+  font-weight: 600;
+  color: var(--yry-text, #f5f5f5);
+  cursor: pointer;
+  user-select: none;
+  transition: background .12s;
+  list-style: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+summary:hover {
+  background: rgba(255,193,7,.04);
+}
+
+/* Arrow indicator */
+summary::before {
+  content: '▸';
+  display: inline-block;
+  font-size: .6rem;
+  color: var(--yry-text3, #888);
+  transition: transform .2s;
+  width: 12px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+details[open] > summary {
+  color: var(--yry-accent, #ffc107);
+}
+
+/* ── Body ───────────────────────────────────────────────────────────── */
+.ac-body {
+  padding: 0 16px 14px 36px;
+  font-size: .8rem;
+  color: var(--yry-text2, #d4d4d4);
+  line-height: 1.55;
+}
+
+.ac-body p {
+  margin: 4px 0;
+}
+
+.ac-body code {
+  background: rgba(0,0,0,.3);
+  color: var(--yry-cyan, #22d3ee);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: .72rem;
+}

@@ -1,0 +1,84 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YrySkeletonLoader · 骨架加载 样式
+   适用: 内容加载占位 · 列表/卡片/文本骨架
+   依赖: theme.css (提供 --yry-* design tokens)
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-skeleton-loader/index.css">
+     <yry-skeleton-loader variant="text" lines="3"></yry-skeleton-loader>
+     <yry-skeleton-loader variant="card"></yry-skeleton-loader>
+     <yry-skeleton-loader width="60%" height="20px"></yry-skeleton-loader>
+     <script src="../../../../cdn/yry-skeleton-loader/index.js"></script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes sk-shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+:host {
+  display: block;
+}
+
+.sk-base {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,.04) 25%,
+    rgba(255,255,255,.08) 50%,
+    rgba(255,255,255,.04) 75%
+  );
+  background-size: 800px 100%;
+  animation: sk-shimmer 1.5s infinite linear;
+  border-radius: 4px;
+}
+
+/* ── Text lines ─────────────────────────────────────────────────────── */
+.sk-text {
+  height: 14px;
+  margin-bottom: 8px;
+}
+
+.sk-text:last-child {
+  width: 60%;
+}
+
+/* ── Card ───────────────────────────────────────────────────────────── */
+.sk-card {
+  height: 160px;
+  border-radius: var(--yry-radius, 12px);
+  border: 1px solid rgba(255,255,255,.04);
+}
+
+/* ── List row ───────────────────────────────────────────────────────── */
+.sk-list {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+}
+
+.sk-list:last-child {
+  border-bottom: none;
+}
+
+.sk-list .sk-circle {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,.04) 25%, rgba(255,255,255,.08) 50%, rgba(255,255,255,.04) 75%
+  );
+  background-size: 800px 100%;
+  animation: sk-shimmer 1.5s infinite linear;
+}
+
+.sk-list .sk-line {
+  flex: 1;
+  height: 12px;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,.04) 25%, rgba(255,255,255,.08) 50%, rgba(255,255,255,.04) 75%
+  );
+  background-size: 800px 100%;
+  animation: sk-shimmer 1.5s infinite linear;
+  border-radius: 4px;
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryKeyboard · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto; line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68; }
+    .demo-section { margin: 20px 0; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 20px 22px; }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: .78rem; color: var(--yry-text2, #d4d4d4); flex-wrap: wrap; }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">⌨️</span> YryKeyboard · 键盘按键组件</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-kbd&gt;</code> — 键盘按键样式。
+    通过 <code>keys</code> 属性用空格分隔多个按键，自动渲染为按键序列。
+    支持 <code>size</code> 属性（sm/md）。适用于快捷键文档、帮助面板、操作指南。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo — 快捷键组合</h3>
+    <div class="demo-row">全局搜索：<yry-kbd keys="⌘ K"></yry-kbd></div>
+    <div class="demo-row">关闭面板：<yry-kbd keys="Esc"></yry-kbd></div>
+    <div class="demo-row">复制：<yry-kbd keys="⌘ C"></yry-kbd></div>
+    <div class="demo-row">粘贴：<yry-kbd keys="⌘ V"></yry-kbd></div>
+    <div class="demo-row">切换标签：<yry-kbd keys="← →"></yry-kbd></div>
+    <div class="demo-row">展开全部：<yry-kbd keys="⌘ Shift A"></yry-kbd></div>
+    <div class="demo-row">聚焦搜索：<yry-kbd keys="Ctrl K"></yry-kbd></div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo — 小尺寸</h3>
+    <div class="demo-row">行内快捷键 <yry-kbd keys="? " size="sm"></yry-kbd> 打开帮助，<yry-kbd keys="Esc" size="sm"></yry-kbd> 关闭</div>
+  </div>
+
+  <script src="index.js"></script>
+  <div class="demo-footer">⌨️ YryKeyboard v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

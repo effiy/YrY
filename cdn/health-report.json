@@ -3,14 +3,46 @@
     "scope": "cdn/",
     "description": "YrY CDN 资源库专属健康报告 — 与项目级 docs/健康报告 隔离,只评估 CDN 自身的文件完整性、组件覆盖、加载链、版本同步等",
     "dimensions": [
-      {"id": "D0", "name": "组件完整性",   "desc": "yry-* 目录同时具备 index.{html,css,js} 三件套的比例"},
-      {"id": "D1", "name": "核心文件",     "desc": "shared.css / theme.css / fonts.css / shared.js 4 个基线文件存在"},
-      {"id": "D2", "name": "字体资源",     "desc": "fonts/ 目录 4 个字重 woff2 全部就位 (JetBrains Mono 400/500/600/700)"},
-      {"id": "D3", "name": "发布元数据",   "desc": "package.json + README.md + .npmignore + releases.json 完整"},
-      {"id": "D4", "name": "主题覆盖",     "desc": "System 主题 (theme.css) + Mono 主题 (theme-mono.css) 双主题均可用"},
-      {"id": "D5", "name": "演示覆盖",     "desc": "yry-* 组件含 index.html 演示页的比例"},
-      {"id": "D6", "name": "加载链",       "desc": "5 步加载顺序: shared.css → theme.css → 组件 CSS → Vue 3 → 组件 JS"},
-      {"id": "D7", "name": "jsDelivr 同步", "desc": "package.json 版本与 jsDelivr CDN 可达性"}
+      {
+        "id": "D0",
+        "name": "组件完整性",
+        "desc": "yry-* 目录同时具备 index.{html,css,js} 三件套的比例"
+      },
+      {
+        "id": "D1",
+        "name": "核心文件",
+        "desc": "shared.css / theme.css / fonts.css / shared.js 4 个基线文件存在"
+      },
+      {
+        "id": "D2",
+        "name": "字体资源",
+        "desc": "fonts/ 目录 4 个字重 woff2 全部就位 (JetBrains Mono 400/500/600/700)"
+      },
+      {
+        "id": "D3",
+        "name": "发布元数据",
+        "desc": "package.json + README.md + .npmignore + releases.json 完整"
+      },
+      {
+        "id": "D4",
+        "name": "主题覆盖",
+        "desc": "System 主题 (theme.css) + Mono 主题 (theme-mono.css) 双主题均可用"
+      },
+      {
+        "id": "D5",
+        "name": "演示覆盖",
+        "desc": "yry-* 组件含 index.html 演示页的比例"
+      },
+      {
+        "id": "D6",
+        "name": "加载链",
+        "desc": "5 步加载顺序: shared.css → theme.css → 组件 CSS → Vue 3 → 组件 JS"
+      },
+      {
+        "id": "D7",
+        "name": "jsDelivr 同步",
+        "desc": "package.json 版本与 jsDelivr CDN 可达性"
+      }
     ],
     "gradeRule": {
       "A": "≥ 95 — 系统健康",
@@ -18,9 +50,100 @@
       "C": "70-84 — 需修复",
       "D": "< 70 — 需干预"
     },
-    "updatedAt": "2026-06-16"
+    "updatedAt": "2026-06-18"
   },
   "reports": [
+    {
+      "date": "2026-06-18",
+      "time": "2026-06-18 22:27:06",
+      "type": "project",
+      "score": 92,
+      "grade": "A",
+      "triggers": 0,
+      "dimTotal": 20,
+      "dims": {
+        "token": {
+          "score": 100,
+          "detail": "已配置 (8 字符)"
+        },
+        "config": {
+          "score": 100,
+          "detail": "存在 — 1 机器人, 4/4 通知开关已启用"
+        },
+        "robots": {
+          "score": 100,
+          "detail": "1/1 webhook 就绪 (general)"
+        },
+        "api": {
+          "score": 100,
+          "detail": "可达 (HTTP 400)"
+        },
+        "reports": {
+          "score": 100,
+          "detail": "6 份报告, 6 份近 7 天"
+        },
+        "format": {
+          "score": 100,
+          "detail": "SKILL.md 格式约束全部满足"
+        },
+        "diagnostics": {
+          "score": 100,
+          "detail": "0 条记录, 0/8 诊断触发"
+        },
+        "git": {
+          "score": 40,
+          "detail": "main · 33 个未提交文件"
+        },
+        "security": {
+          "score": 100,
+          "detail": "未发现风险"
+        },
+        "em_testing": {
+          "score": 100,
+          "detail": "vitest, 583 用例"
+        },
+        "em_types": {
+          "score": 100,
+          "detail": "TypeScript strict"
+        },
+        "em_linting": {
+          "score": 100,
+          "detail": "3 工具: ESLint, Prettier, EditorConfig + CI 强制"
+        },
+        "em_cicd": {
+          "score": 100,
+          "detail": "GitHub Actions"
+        },
+        "em_docs": {
+          "score": 100,
+          "detail": "3 文档: README, CLAUDE.md, docs/"
+        },
+        "em_deps": {
+          "score": 100,
+          "detail": "npm lockfile + 版本脚本"
+        },
+        "em_git": {
+          "score": 100,
+          "detail": "3 项: .gitignore, .gitattributes, PR 模板"
+        },
+        "file_size": {
+          "score": 100,
+          "detail": "248 文件 · 1.77 MB · 最大 73.4 KB · 0.0%"
+        },
+        "dep_analysis": {
+          "score": 9,
+          "detail": "168 模块 · 294 依赖边 · 无循环依赖 · 38 孤立文件"
+        },
+        "notify": {
+          "score": 100,
+          "detail": "暂无投递记录"
+        },
+        "comp_qual": {
+          "score": 88,
+          "detail": "116 组件均分 88 · 优秀 102 / 一般 14 / 待改进 0"
+        }
+      }
+    },
     {
       "file": "health-cdn-2026-06-16.html",
       "date": "2026-06-16",
@@ -31,14 +154,38 @@
       "triggers": 0,
       "dimTotal": 8,
       "dims": {
-        "D0": {"score": 86, "detail": "53/62 组件完整 (9 个工具组件仅 CSS+JS,无演示页 — 正常)"},
-        "D1": {"score": 100, "detail": "shared.css / theme.css / fonts.css / shared.js 全部就位"},
-        "D2": {"score": 100, "detail": "4/4 woff2 字体就位 (400/500/600/700)"},
-        "D3": {"score": 100, "detail": "package.json / README.md / .npmignore / releases.json 完整"},
-        "D4": {"score": 100, "detail": "System + Mono 双主题完整,14 设计令牌稳定"},
-        "D5": {"score": 86, "detail": "53/62 组件含 index.html 演示 (工具组件无演示 — 正常)"},
-        "D6": {"score": 100, "detail": "5 步加载链规范,Vue 3 在组件 CSS 之后、组件 JS 之前"},
-        "D7": {"score": 100, "detail": "v1.2.0 已发布到 npm,jsDelivr 同步可达"}
+        "D0": {
+          "score": 86,
+          "detail": "53/62 组件完整 (9 个工具组件仅 CSS+JS,无演示页 — 正常)"
+        },
+        "D1": {
+          "score": 100,
+          "detail": "shared.css / theme.css / fonts.css / shared.js 全部就位"
+        },
+        "D2": {
+          "score": 100,
+          "detail": "4/4 woff2 字体就位 (400/500/600/700)"
+        },
+        "D3": {
+          "score": 100,
+          "detail": "package.json / README.md / .npmignore / releases.json 完整"
+        },
+        "D4": {
+          "score": 100,
+          "detail": "System + Mono 双主题完整,14 设计令牌稳定"
+        },
+        "D5": {
+          "score": 86,
+          "detail": "53/62 组件含 index.html 演示 (工具组件无演示 — 正常)"
+        },
+        "D6": {
+          "score": 100,
+          "detail": "5 步加载链规范,Vue 3 在组件 CSS 之后、组件 JS 之前"
+        },
+        "D7": {
+          "score": 100,
+          "detail": "v1.2.0 已发布到 npm,jsDelivr 同步可达"
+        }
       }
     },
     {
@@ -51,14 +198,38 @@
       "triggers": 1,
       "dimTotal": 8,
       "dims": {
-        "D0": {"score": 84, "detail": "47/56 组件完整"},
-        "D1": {"score": 100, "detail": "基线 4 文件齐备"},
-        "D2": {"score": 100, "detail": "4/4 woff2 就位"},
-        "D3": {"score": 100, "detail": "元数据 4 件齐全"},
-        "D4": {"score": 100, "detail": "双主题就位 (新引入 theme-mono.css)"},
-        "D5": {"score": 84, "detail": "47/56 组件含演示"},
-        "D6": {"score": 100, "detail": "5 步加载链规范"},
-        "D7": {"score": 80, "detail": "v1.1.0 刚发布,jsDelivr 同步延迟 → 已修复"}
+        "D0": {
+          "score": 84,
+          "detail": "47/56 组件完整"
+        },
+        "D1": {
+          "score": 100,
+          "detail": "基线 4 文件齐备"
+        },
+        "D2": {
+          "score": 100,
+          "detail": "4/4 woff2 就位"
+        },
+        "D3": {
+          "score": 100,
+          "detail": "元数据 4 件齐全"
+        },
+        "D4": {
+          "score": 100,
+          "detail": "双主题就位 (新引入 theme-mono.css)"
+        },
+        "D5": {
+          "score": 84,
+          "detail": "47/56 组件含演示"
+        },
+        "D6": {
+          "score": 100,
+          "detail": "5 步加载链规范"
+        },
+        "D7": {
+          "score": 80,
+          "detail": "v1.1.0 刚发布,jsDelivr 同步延迟 → 已修复"
+        }
       }
     },
     {
@@ -71,14 +242,38 @@
       "triggers": 2,
       "dimTotal": 8,
       "dims": {
-        "D0": {"score": 80, "detail": "24/30 组件完整 (首批组件,部分尚在迁移中)"},
-        "D1": {"score": 100, "detail": "基线 4 文件齐备"},
-        "D2": {"score": 100, "detail": "4/4 woff2 就位"},
-        "D3": {"score": 100, "detail": "元数据 4 件齐全"},
-        "D4": {"score": 50, "detail": "仅有 theme.css,Mono 主题尚未引入"},
-        "D5": {"score": 80, "detail": "24/30 组件含演示"},
-        "D6": {"score": 100, "detail": "5 步加载链规范"},
-        "D7": {"score": 100, "detail": "v1.0.0 首版,jsDelivr 同步就绪"}
+        "D0": {
+          "score": 80,
+          "detail": "24/30 组件完整 (首批组件,部分尚在迁移中)"
+        },
+        "D1": {
+          "score": 100,
+          "detail": "基线 4 文件齐备"
+        },
+        "D2": {
+          "score": 100,
+          "detail": "4/4 woff2 就位"
+        },
+        "D3": {
+          "score": 100,
+          "detail": "元数据 4 件齐全"
+        },
+        "D4": {
+          "score": 50,
+          "detail": "仅有 theme.css,Mono 主题尚未引入"
+        },
+        "D5": {
+          "score": 80,
+          "detail": "24/30 组件含演示"
+        },
+        "D6": {
+          "score": 100,
+          "detail": "5 步加载链规范"
+        },
+        "D7": {
+          "score": 100,
+          "detail": "v1.0.0 首版,jsDelivr 同步就绪"
+        }
       }
     }
   ]

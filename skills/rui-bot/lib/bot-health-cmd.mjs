@@ -5,22 +5,27 @@
 
 import { join } from "node:path";
 import { findProjectRoot } from "../../../lib/fs.mjs";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 
 import {
   HTTP_TIMEOUT_SHORT_MS, MAX_RETRIES, MAX_MSG_LENGTH,
   HEALTH_SCORING_DIMENSIONS, HEALTH_DIM_WEIGHTS, HEALTH_DIM_LABELS,
+  getSLOStatus,
 } from "../../../lib/constants.mjs";
 
 import { API_URL_DEFAULT, loadConfig } from "./bot-transport.mjs";
 import { FIELD_EMOJI } from "./bot-message.mjs";
 import { scoreStatus, scoreIcon, PASS_THRESHOLD, WARN_THRESHOLD } from "./bot-health-analysis.mjs";
 import { HEALTH_DIMENSIONS, HEALTH_GRADE, healthBar, saveHealthTrend } from "./bot-health-trend.mjs";
+import { getHealthTrend } from "./report-trend.mjs";
 import { getGitSnapshot, runSecurityScan, getStructureHealth } from "./bot-health-structure.mjs";
 import { assessEngineeringMaturity, scanComponentScores, avgScore } from "./bot-health-analysis.mjs";
 import { getDiagnosticResult } from "./bot-health-diagnostics.mjs";
+import { archScoresForTrend, appendArchTrend } from "../../../lib/arch-check.mjs";
 import {
   contributionAnalysis,
+  rankDimensionInfluence,
+  generateExecutiveSummary,
   categoryScores,
   computeComposite,
   getGrade,
@@ -288,6 +293,52 @@ export async function cmdHealth(projectRoot, opts = {}) {
     }
   }
 
+  // ── Notification delivery quality ──────────────────────
+  const notifLogPath = join(projectRoot, ".memory", "notification-log.jsonl");
+  let notifTotal = 0, notifOk = 0, notifRetries = 0, notifDryRun = 0;
+  let notifLastOk = null, notifLastFail = null;
+  if (existsSync(notifLogPath)) {
+    try {
+      const lines = readFileSync(notifLogPath, "utf-8").trim().split("\n").filter(Boolean);
+      for (const line of lines) {
+        const entry = JSON.parse(line);
+        notifTotal++;
+        if (entry.result === "ok") { notifOk++; notifLastOk = entry.timestamp; }
+        else { notifLastFail = entry.timestamp; }
+        notifRetries += entry.retries || 0;
+        if (entry.dryRun) notifDryRun++;
+      }
+    } catch { /* skip unreadable log */ }
+  }
+  const notifSuccessRate = notifTotal > 0 ? Math.round((notifOk / notifTotal) * 100) : 100;
+  const notifAvgRetries = notifTotal > 0 ? (notifRetries / notifTotal).toFixed(1) : "0";
+  const notifScore = notifTotal === 0 ? 100  // No deliveries yet = full score (no failures)
+    : notifSuccessRate >= 100 ? 100
+    : notifSuccessRate >= 95 ? 90
+    : notifSuccessRate >= 80 ? 70
+    : notifSuccessRate >= 50 ? 40
+    : 20;
+  const notifIcon = notifScore >= 90 ? "✅" : notifScore >= 70 ? "⚠️" : "❌";
+  const notifDetail = notifTotal > 0
+    ? `${notifOk}/${notifTotal} 成功 (${notifSuccessRate}%) · 均重试 ${notifAvgRetries} 次`
+    : "暂无投递记录";
+  scores.notify = notifScore;
+  details.push({
+    dim: "notify",
+    label: "通知投递",
+    status: notifScore >= 80 ? "pass" : notifScore >= 60 ? "warn" : "fail",
+    detail: notifDetail,
+    score: notifScore,
+  });
+  console.log(`  ${notifIcon} 通知投递质量:     ${notifDetail}`);
+
+  // ── Architecture compliance check ──────────────────────
+  let archResult = null;
+  try {
+    archResult = archScoresForTrend(projectRoot);
+    appendArchTrend(projectRoot);
+  } catch { /* best effort — arch check is non-critical */ }
+
   // ── Component quality (computed before composite) ────
   const compScores = scanComponentScores(projectRoot);
   const allComps = [...compScores.skills, ...compScores.agents, ...compScores.rules, ...compScores.scripts];
@@ -300,6 +351,10 @@ export async function cmdHealth(projectRoot, opts = {}) {
   // ── Composite score (weighted average) ─────────────────
   const composite = computeComposite(scores, HEALTH_DIM_WEIGHTS);
   const grade = getGrade(composite);
+
+  // ── Previous trend for comparison ───────────────────────
+  const prevTrendRaw = getHealthTrend();
+  const prevEntry = prevTrendRaw.length >= 2 ? prevTrendRaw[prevTrendRaw.length - 2] : null;
 
   // ── Category sub-scores ──────────────────────────────────
   const catScores = categoryScores(scores, HEALTH_SCORING_DIMENSIONS);
@@ -319,7 +374,9 @@ export async function cmdHealth(projectRoot, opts = {}) {
 
   console.log("");
   console.log("  ┌──────────────────────────────────────────┐");
-  console.log(`  │ 综合健康度: ${grade.ansi}${composite} 分 / ${grade.grade} 级 — ${grade.label}\x1b[0m    │`);
+  const sloStatus = getSLOStatus(composite, { decliningStreak: 0 });
+  const sloExtra = sloStatus.level !== "ok" ? ` ⚡${sloStatus.ansi}${sloStatus.label}\x1b[0m` : "";
+  console.log(`  │ 综合健康度: ${grade.ansi}${composite} 分 / ${grade.grade} 级 — ${grade.label}\x1b[0m${sloExtra}    │`);
   console.log(`  │ ${healthBar(composite, 36)} │`);
   console.log("  ├──────────────────────────────────────────┤");
   // Category breakdown line
@@ -334,6 +391,17 @@ export async function cmdHealth(projectRoot, opts = {}) {
   console.log("  └──────────────────────────────────────────┘");
   console.log("");
 
+  // ── Executive summary ──────────────────────────────────
+  const execSummary = generateExecutiveSummary({
+    composite, grade: grade.grade, scores,
+    dimensions: HEALTH_SCORING_DIMENSIONS,
+    prev: prevEntry ? { composite: prevEntry.composite, date: prevEntry.timestamp?.slice(0, 10) } : null,
+    archResult: archResult ? { archFailedDims: archResult.archFailedDims } : null,
+    diagTriggered: diagResult?.triggered?.length || 0,
+  });
+  console.log(`  📋 ${execSummary.summary}`);
+  console.log("");
+
   // ── Output: Stats row ──────────────────────────────────
   const statColor = (s, t) => s >= 80 ? "\x1b[32m" : s >= 60 ? "\x1b[33m" : "\x1b[31m";
   console.log(`  📊 维度: ${scoreValues.length}项  │  均值 ${dist.mean}  │  中位 ${dist.median}  │  范围 ${dist.min}-${dist.max}  │  标准差 ${dist.stddev}`);
@@ -344,6 +412,14 @@ export async function cmdHealth(projectRoot, opts = {}) {
     const dragStr = top3.map(e => `${HEALTH_DIM_LABELS[e.dim] || e.dim}:${e.score}分`).join(" · ");
     const potential = Math.min(100, composite + Math.round(contrib.dragTotal));
     console.log(`  🎯 拖分 Top3: ${dragStr}  → 修复可达 ${potential} 分`);
+  }
+
+  // Dimension influence ranking
+  const influence = rankDimensionInfluence(scores, HEALTH_SCORING_DIMENSIONS, null);
+  if (influence.length > 0) {
+    const topInf = influence.slice(0, 5);
+    const infStr = topInf.map(e => `${e.label}:${e.influence.toFixed(0)}`).join(" · ");
+    console.log(`  📐 影响力 Top5: ${infStr}`);
   }
   console.log("");
 
@@ -356,6 +432,42 @@ export async function cmdHealth(projectRoot, opts = {}) {
     score: compQualScore,
   });
   console.log(`  ${scoreIcon(compQualScore)} 组件质量:         ${compQualScore} 分 — ${allComps.length} 组件 (Skills ${compScores.skills.length} · Agents ${compScores.agents.length} · Rules ${compScores.rules.length} · Scripts ${compScores.scripts.length})`);
+
+  if (archResult) {
+    const archIcon = archResult.archComposite >= 90 ? "✅" : archResult.archComposite >= 75 ? "⚠️" : "❌";
+    const failedList = archResult.archFailedDims?.length > 0
+      ? ` · 失败: ${archResult.archFailedDims.slice(0, 3).join(", ")}${archResult.archFailedDims.length > 3 ? "…" : ""}`
+      : " · 全部通过";
+    console.log(`  ${archIcon} 架构合规:         ${archResult.archComposite} 分 / ${archResult.archGrade} 级 — ${archResult.archFailedDims?.length || 0} 维度失败${failedList}`);
+  }
+
+  // ── Score diff vs previous check ─────────────────────────
+  if (prevEntry) {
+    const prevComposite = prevEntry.composite;
+    const diff = composite - prevComposite;
+    const diffIcon = diff > 2 ? "📈" : diff < -2 ? "📉" : "➡️";
+    const diffColor = diff > 2 ? "\x1b[32m" : diff < -2 ? "\x1b[31m" : "";
+    console.log(`  ${diffIcon} 对比上次(${prevEntry.timestamp?.slice(0,10) || "?"}): ${diffColor}${diff > 0 ? "+" : ""}${diff}\x1b[0m 分 (${prevComposite} → ${composite})`);
+
+    // Find top 3 dimension changes
+    const dimChanges = [];
+    for (const dim of Object.keys(scores)) {
+      const prevScore = prevEntry.scores?.[dim];
+      if (prevScore !== undefined && scores[dim] !== prevScore) {
+        dimChanges.push({ dim, prev: prevScore, curr: scores[dim], diff: scores[dim] - prevScore });
+      }
+    }
+    dimChanges.sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff));
+    if (dimChanges.length > 0) {
+      const topChanges = dimChanges.slice(0, 3);
+      const changeStr = topChanges.map(c => {
+        const label = HEALTH_DIM_LABELS[c.dim] || c.dim;
+        const arrow = c.diff > 0 ? "↑" : "↓";
+        return `${label}${arrow}${Math.abs(c.diff)}`;
+      }).join(" · ");
+      console.log(`    维度变化: ${changeStr}`);
+    }
+  }
 
   // ── Output: Dimension breakdown by category ─────────────
   const dimByCat = {};
@@ -378,7 +490,7 @@ export async function cmdHealth(projectRoot, opts = {}) {
     console.log("");
   }
 
-  const result = { composite, grade: grade.grade, scores, details, diagnostics: diagResult, config, tokenOk, robotOkCount, robotNames, gitInfo, secInfo, structInfo, fileSizeInfo, depInfo, compScores };
+  const result = { composite, grade: grade.grade, scores, details, diagnostics: diagResult, config, tokenOk, robotOkCount, robotNames, gitInfo, secInfo, structInfo, fileSizeInfo, depInfo, compScores, archResult };
   saveHealthTrend(result, projectRoot);
 
   // Regenerate self-improve summary after each health check
@@ -387,5 +499,56 @@ export async function cmdHealth(projectRoot, opts = {}) {
     generateSummary(projectRoot);
   } catch { /* best effort — summary generation is non-critical */ }
 
+  // Auto-update CDN health report
+  try {
+    updateCdnHealthReport(result, projectRoot);
+  } catch { /* best effort — CDN report is non-critical */ }
+
   return result;
+}
+
+/**
+ * Auto-update cdn/health-report.json with the latest project health data.
+ * Preserves existing entries (dedup by date), keeps at most 10 reports.
+ */
+function updateCdnHealthReport(result, projectRoot) {
+  const cdnPath = join(projectRoot, "cdn", "health-report.json");
+  let report = { _meta: {}, reports: [] };
+
+  if (existsSync(cdnPath)) {
+    try {
+      report = JSON.parse(readFileSync(cdnPath, "utf-8"));
+    } catch { report = { _meta: {}, reports: [] }; }
+  }
+
+  // Map project health dims to CDN-compatible format
+  const dims = {};
+  for (const [dim, score] of Object.entries(result.scores || {})) {
+    dims[dim] = {
+      score,
+      detail: result.details?.find(d => d.dim === dim)?.detail || `${score} 分`,
+    };
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  const entry = {
+    date: today,
+    time: new Date().toISOString().slice(0, 19).replace("T", " "),
+    type: "project",
+    score: result.composite,
+    grade: result.grade,
+    triggers: result.diagnostics?.triggered?.length || 0,
+    dimTotal: Object.keys(dims).length,
+    dims,
+  };
+
+  // Dedup: replace same-date project entry
+  const reports = (report.reports || []).filter(
+    r => !(r.date === today && r.type === "project")
+  );
+  reports.unshift(entry);
+  report.reports = reports.slice(0, 10);
+  report._meta.updatedAt = today;
+
+  writeFileSync(cdnPath, JSON.stringify(report, null, 2) + "\n", "utf-8");
 }

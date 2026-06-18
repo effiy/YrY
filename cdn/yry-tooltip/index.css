@@ -1,0 +1,109 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryTooltip · 悬停提示 样式
+   适用: 图标说明 · 缩写解释 · 快捷提示
+   依赖: theme.css (提供 --yry-* design tokens)
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-tooltip/index.css">
+     <yry-tooltip text="提示文本" position="top|bottom|left|right">
+       <button>悬停我</button>
+     </yry-tooltip>
+     <script src="../../../../cdn/yry-tooltip/index.js"></script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: inline-flex;
+  position: relative;
+}
+
+/* ── Tooltip bubble ─────────────────────────────────────────────────── */
+.tt-bubble {
+  position: absolute;
+  z-index: 600;
+  background: var(--yry-bg-raised, rgba(42,42,56,1));
+  border: 1px solid rgba(255,193,7,.2);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: .68rem;
+  color: var(--yry-text2, #d4d4d4);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s;
+  box-shadow: 0 6px 20px rgba(0,0,0,.5);
+  max-width: 260px;
+}
+
+.tt-bubble.show {
+  opacity: 1;
+}
+
+.tt-bubble code {
+  background: rgba(0,0,0,.3);
+  color: var(--yry-cyan, #22d3ee);
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-family: monospace;
+  font-size: .64rem;
+}
+
+/* ── Positions ─────────────────────────────────────────────────────── */
+.tt-bubble.tt-top {
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tt-bubble.tt-bottom {
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tt-bubble.tt-left {
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tt-bubble.tt-right {
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* ── Arrow ──────────────────────────────────────────────────────────── */
+.tt-bubble::after {
+  content: '';
+  position: absolute;
+  width: 0; height: 0;
+  border: 5px solid transparent;
+}
+
+.tt-bubble.tt-top::after {
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-top-color: rgba(255,193,7,.2);
+}
+
+.tt-bubble.tt-bottom::after {
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-bottom-color: rgba(255,193,7,.2);
+}
+
+.tt-bubble.tt-left::after {
+  left: 100%;
+  top: 50%;
+  margin-top: -5px;
+  border-left-color: rgba(255,193,7,.2);
+}
+
+.tt-bubble.tt-right::after {
+  right: 100%;
+  top: 50%;
+  margin-top: -5px;
+  border-right-color: rgba(255,193,7,.2);
+}

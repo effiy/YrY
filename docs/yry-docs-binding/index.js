@@ -184,7 +184,8 @@
           _ready: false,
           _liveUpdateTimer: null,
           _readyListeners: [],
-          _docListeners: []
+          _docListeners: [],
+          _layersMounted: false
         };
       },
       mounted: function () {
@@ -253,12 +254,18 @@
             });
             // 保留引用以便卸载时清理(panel-hub 是 DOM 元素,卸载文档时由 GC 处理)
           }
+          /* ── Layer / SubTitle / DocLayer 数据注入(此前漏调,导致标题/副标题为空) ── */
+          this._applyDocLayerData();
+          this._applySubTitles();
+          this._applyStaticLayers();
         },
         /* ── 监听组件 *-ready 事件 (升级后再设一次) ────────── */
         _registerReadyListeners: function () {
           var self = this;
           ['yry-breadcrumb-ready', 'yry-scene-header-ready', 'yry-stats-grid-ready',
-           'yry-cross-nav-ready', 'yry-panel-hub-ready'].forEach(function (ev) {
+           'yry-cross-nav-ready', 'yry-panel-hub-ready',
+           'yry-doc-layer-ready', 'yry-sub-title-ready',
+           'yry-layer-agents-ready', 'yry-layer-rules-ready', 'yry-layer-refs-ready'].forEach(function (ev) {
             var h = function () { self._applyAll(); };
             document.addEventListener(ev, h, { once: true });
             self._readyListeners.push({ event: ev, handler: h });
@@ -266,27 +273,36 @@
         },
         /* ── Layer 1-4 数据注入 ─────────────────────────────── */
         _applyDocLayerData: function () {
+          if (this._layersMounted) return;
           if (!window.YRY_DOCS_DATA || !window.YRY_DOCS_DATA.layers) return;
+          if (!window.Vue || !window.YryDocLayer) return; // 组件尚未就绪,等 yry-doc-layer-ready 事件重试
           var map = {
             'layer-deps':   'layer-deps-app',
             'layer-skills': 'layer-skills-app',
             'layer-story':  'layer-story-app',
             'layer-scene':  'layer-scene-app'
           };
+          var self = this;
           window.YRY_DOCS_DATA.layers.forEach(function (layer) {
             var el = document.getElementById(map[layer.id]);
             if (!el) return;
-            el.layerId             = layer.id;
-            el.num                 = layer.num;
-            el.titleIcon           = layer.titleIcon;
-            el.titleAccent         = layer.titleAccent;
-            el.titlePrefix         = layer.titlePrefix || '';
-            el.titleSuffix         = layer.titleSuffix || '';
-            el.stats               = layer.stats || [];
-            el.panels              = layer.panels || [];
-            el.panelsTitle         = layer.panelsTitle || '';
-            el.sections            = layer.sections || [];
+            // Mount Vue app with props data directly — bypasses custom element
+            // property-shadowing issues that occur when properties are set before
+            // a custom element is upgraded.
+            Vue.createApp(window.YryDocLayer, {
+              layerId:     layer.id,
+              num:         layer.num,
+              titleIcon:   layer.titleIcon || '',
+              titlePrefix: layer.titlePrefix || '',
+              titleAccent: layer.titleAccent || '',
+              titleSuffix: layer.titleSuffix || '',
+              stats:       layer.stats || [],
+              panels:      layer.panels || [],
+              panelsTitle: layer.panelsTitle || '',
+              sections:    layer.sections || []
+            }).mount(el);
           });
+          self._layersMounted = true;
         },
         /* ── SubTitle × 9 注入 ───────────────────────────────── */
         _applySubTitles: function () {

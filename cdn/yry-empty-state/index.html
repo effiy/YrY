@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryEmptyState · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">📭</span> YryEmptyState · 空状态组件</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-empty-state&gt;</code> — 无数据/无结果占位。
+    支持 <code>icon</code>、<code>title</code>、<code>description</code> 属性和插槽 <code>slot="action"</code> 操作按钮。
+    适用于搜索无结果、列表为空、暂无内容等场景。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo — 多种空状态</h3>
+
+    <yry-empty-state icon="🔍" title="未找到匹配结果" description="尝试使用其他关键词搜索，或检查筛选条件。">
+      <button slot="action" class="demo-btn" onclick="this.closest('yry-empty-state').setAttribute('title','已重置')">清除筛选</button>
+    </yry-empty-state>
+
+    <yry-empty-state icon="📋" title="暂无检查项" description="当前场景没有待执行的验证步骤。运行 /rui init 生成初始清单。"></yry-empty-state>
+
+    <yry-empty-state icon="📦" title="组件库为空" description="还没有创建任何可复用组件。"></yry-empty-state>
+  </div>
+
+  <script src="index.js"></script>
+  <style>
+    .demo-btn {
+      background: var(--yry-bg-flat, rgba(42,42,56,1)); color: var(--yry-text2, #d4d4d4);
+      border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+      border-radius: 20px; padding: 7px 16px; font-size: .76rem; cursor: pointer;
+      transition: all .15s; font-family: inherit; margin-top: 8px;
+    }
+    .demo-btn:hover { border-color: rgba(255,193,7,.3); color: var(--yry-accent, #ffc107); }
+  </style>
+  <div class="demo-footer">📭 YryEmptyState v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

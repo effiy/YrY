@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryPipelineSimulator · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">⚙️</span> YryPipelineSimulator · 管线模拟器</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-pipeline-simulator&gt;</code> — 交互式管线阶段模拟。
+    从 JSON 数据读取阶段定义，模拟顺序执行的管线流程。
+    每阶段显示进度条、状态标签，日志面板实时输出。
+    支持<strong>开始/重置/速度控制</strong>。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo — Gate A 验证管线</h3>
+    <script type="application/json" id="sim-demo-1">
+    {
+      "title": "🔍 Gate A — 规约完整性 + 架构合规",
+      "stages": [
+        {
+          "name": "规约完整性检查",
+          "detail": "验证 19 个 Skill 的 SKILL.md 完整性",
+          "logLines": [
+            "🔍 扫描 skills/ 目录...",
+            "  发现 19 个技能目录",
+            "  检查 SKILL.md frontmatter...",
+            "  ✓ 19/19 拥有完整 frontmatter",
+            "  ✓ 章节完整性验证通过",
+            "  ✅ 规约完整性: PASS"
+          ]
+        },
+        {
+          "name": "范式合规检查",
+          "detail": "检查 class/extends · export default · 空 catch",
+          "logLines": [
+            "🔍 扫描源码范式...",
+            "  ✓ 无 class/extends 违规",
+            "  ✓ 无 export default 违规",
+            "  ⚠ 发现 2 处空 catch",
+            "  ❌ 范式合规: FAIL — P0 需清零"
+          ]
+        },
+        {
+          "name": "内核体积检查",
+          "detail": "验证 lib ≤ 20 · rule ≤ 8 · orch ≤ 500 行",
+          "logLines": [
+            "🔍 计算内核体积...",
+            "  lib/: 16 模块 ✓ (≤20)",
+            "  rules/: 16 规则 ⚠ (≥8, 注意监控)",
+            "  orch: 487 行 ✓ (≤500)",
+            "  ✅ 内核体积: PASS (接近上限)"
+          ]
+        },
+        {
+          "name": "安全面回归",
+          "detail": "认证 · 密钥 · 注入 · 信任边界",
+          "logLines": [
+            "🔍 安全面检查...",
+            "  ✓ 认证机制完备",
+            "  ✓ 密钥通过环境变量注入",
+            "  ✓ XSS/注入防护覆盖",
+            "  ✓ 信任边界明确",
+            "  ✅ 安全面: PASS"
+          ]
+        },
+        {
+          "name": "生成验证报告",
+          "detail": "汇总结果并输出 HTML 报告",
+          "logLines": [
+            "📊 汇总检查结果...",
+            "  通过: 4/5",
+            "  失败: 1/5 (范式合规)",
+            "📄 生成 HTML 报告...",
+            "  ✅ 报告已生成: docs/验证报告/gate-a-2026-06-19.html"
+          ]
+        }
+      ]
+    }
+    </script>
+    <yry-pipeline-simulator id="sim-demo-1"></yry-pipeline-simulator>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo — 简单 3 阶段管线</h3>
+    <script type="application/json" id="sim-demo-2">
+    {
+      "title": "📦 CDN 组件构建管线",
+      "stages": [
+        {
+          "name": "Lint 检查",
+          "detail": "ESLint + Stylelint 全量检查",
+          "logLines": [
+            "🔍 ESLint 检查 JS 文件...",
+            "  ✓ 0 errors, 0 warnings",
+            "🔍 Stylelint 检查 CSS 文件...",
+            "  ✓ 0 errors, 0 warnings",
+            "  ✅ Lint: PASS"
+          ]
+        },
+        {
+          "name": "构建清单",
+          "detail": "生成 components.manifest.json",
+          "logLines": [
+            "📦 扫描 CDN 组件...",
+            "  72 个组件目录",
+            "  生成 manifest...",
+            "  ✅ components.manifest.json 已更新"
+          ]
+        },
+        {
+          "name": "部署静态资源",
+          "detail": "同步到 CDN 边缘节点",
+          "logLines": [
+            "🚀 部署到 CDN...",
+            "  index.html → /cdn/",
+            "  shared.css → /cdn/",
+            "  shared.js → /cdn/",
+            "  72 组件目录 → /cdn/yry-*/",
+            "  ✅ 部署完成 (2.3s)"
+          ]
+        }
+      ]
+    }
+    </script>
+    <yry-pipeline-simulator id="sim-demo-2"></yry-pipeline-simulator>
+  </div>
+
+  <script src="index.js"></script>
+
+  <div class="demo-footer">⚙️ YryPipelineSimulator v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

@@ -1,0 +1,101 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YrySearchBar · 搜索栏组件 样式
+   适用: 列表过滤 · 内容搜索 · 快速查找
+   依赖: theme.css (提供 --yry-* design tokens)
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-search-bar/index.css">
+     <yry-search-bar placeholder="搜索..."></yry-search-bar>
+     <script src="../../../../cdn/yry-search-bar/index.js"></script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: block;
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+:host([compact]) {
+  max-width: 240px;
+}
+
+/* ── Input ──────────────────────────────────────────────────────────── */
+.sb-input {
+  width: 100%;
+  background: var(--yry-bg-flat, rgba(42,42,56,1));
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  border-radius: 20px;
+  color: var(--yry-text, #f5f5f5);
+  padding: 8px 14px 8px 36px;
+  font-size: .82rem;
+  outline: none;
+  transition: border-color .15s;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.sb-input:focus {
+  border-color: rgba(255,193,7,.4);
+}
+
+.sb-input::placeholder {
+  color: var(--yry-text3, #888);
+}
+
+/* ── Search icon ────────────────────────────────────────────────────── */
+.sb-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: .8rem;
+  color: var(--yry-text3, #888);
+  pointer-events: none;
+}
+
+/* ── Clear button ───────────────────────────────────────────────────── */
+.sb-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--yry-text3, #888);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 50%;
+  line-height: 1;
+  display: none;
+  transition: color .15s;
+}
+
+.sb-clear:hover {
+  color: var(--yry-text, #f5f5f5);
+}
+
+.sb-clear.visible {
+  display: block;
+}
+
+/* ── Shortcut hint ──────────────────────────────────────────────────── */
+.sb-kbd {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: .6rem;
+  color: var(--yry-text3, #888);
+  background: rgba(255,255,255,.04);
+  border-radius: 3px;
+  padding: 1px 5px;
+  pointer-events: none;
+  font-family: monospace;
+}
+
+.sb-input:focus ~ .sb-kbd,
+.sb-input:not(:placeholder-shown) ~ .sb-kbd {
+  display: none;
+}

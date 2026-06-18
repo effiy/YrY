@@ -621,7 +621,8 @@ export function buildCrossReportSection(hr, archResult, compScores) {
   var diagTriggered = (hr.diagnostics && hr.diagnostics.triggered && hr.diagnostics.triggered.length) || 0;
   var diagScore = Math.max(0, 100 - diagTriggered * 15);
 
-  var archScore = (archResult && archResult.composite != null) ? archResult.composite : null;
+  var archScore = (archResult && archResult.archComposite != null) ? archResult.archComposite
+    : (archResult && archResult.composite != null) ? archResult.composite : null;
 
   var indices = [{ label: "运营健康", score: healthScore, weight: 0.4 }];
   if (compAvg !== null) indices.push({ label: "组件质量", score: compAvg, weight: 0.25 });
@@ -827,5 +828,508 @@ export function buildHeatMap(scores, dimensions) {
     '<div style="display:flex;gap:12px;justify-content:center;margin-top:8px;font-size:.65rem;color:var(--yry-text3)">' +
     '<span>🟢 ≥90 优秀</span><span>🟡 ≥70 良好</span><span>🟠 ≥60 一般</span><span>🔴 &lt;60 需关注</span>' +
     '</div>' +
+    '</div>';
+}
+
+// ── Dimension fix guidance and detail panel ─────────────────────
+
+/**
+ * Fix guidance: dimension → specific actionable recommendations.
+ * Each entry lists what to check/fix when the dimension scores below threshold.
+ */
+var DIM_FIX_GUIDANCE = {
+  token: {
+    check: "检查 API_X_TOKEN 环境变量是否正确配置",
+    fix: "在 CI/CD 环境变量或 .env 文件中设置 API_X_TOKEN",
+    impact: "影响所有通知发送功能",
+  },
+  config: {
+    check: "检查 .claude/skills/rui-bot/config.json 文件是否存在",
+    fix: "运行 rui-init 或手动创建配置文件，配置至少一个机器人 webhook",
+    impact: "影响企微通知路由和机器人选择",
+  },
+  robots: {
+    check: "检查每个机器人的 webhook_url 或 webhook_url_env 配置",
+    fix: "在企业微信后台获取 Webhook 地址，填入 config.json 的 robots 字段",
+    impact: "影响消息投递成功率",
+  },
+  api: {
+    check: "检查 API 端点可达性和 Token 有效性",
+    fix: "确认 DEFAULT_API_URL 可访问，或配置自定义 api_url；验证 Token 未过期",
+    impact: "阻断所有通知发送",
+  },
+  reports: {
+    check: "检查 docs/健康报告/ 目录是否存在且包含近期报告",
+    fix: "运行 node skills/rui-bot/send.mjs health --html 生成报告",
+    impact: "影响健康监控可见性和趋势分析",
+  },
+  format: {
+    check: "检查通知消息是否包含必需字段（emoji、story、skill、status）",
+    fix: "发送通知时确保 msgType 和对应字段完整；参考 FIELD_EMOJI 配置",
+    impact: "影响消息格式合规性和可读性",
+  },
+  diagnostics: {
+    check: "检查 .memory/execution-memory.jsonl 是否有足够执行记录",
+    fix: "正常执行 rui 管线积累执行记录；确保 MIN_EXEC_MEMORIES ≥ 3",
+    impact: "影响 D0-D8 诊断准确性和问题发现能力",
+  },
+  git: {
+    check: "检查未提交文件数和分支状态",
+    fix: "提交或暂存未提交文件；确保在正确的功能分支上工作",
+    impact: "影响代码可追溯性和协作效率",
+  },
+  security: {
+    check: "检查代码中是否包含硬编码密钥、Token、密码",
+    fix: "将所有凭据移至环境变量；使用 .gitignore 排除敏感文件；运行安全扫描",
+    impact: "P0 安全问题，可能导致凭据泄露",
+  },
+  file_size: {
+    check: "检查是否有超过 50KB 的大文件或文件数量异常增长",
+    fix: "拆分大文件（>500行）；检查 CDN 资源是否误提交到源码仓库",
+    impact: "影响仓库克隆速度和编辑器性能",
+  },
+  dep_analysis: {
+    check: "检查是否有循环依赖、上帝模块（≥10 依赖）或孤立文件",
+    fix: "打破循环依赖（提取共享接口）；减少上帝模块依赖；清理或归档孤立文件",
+    impact: "影响代码可维护性和模块化程度",
+  },
+  em_testing: {
+    check: "检查测试框架配置和测试用例数量",
+    fix: "安装 vitest/jest；添加测试脚本到 package.json；编写单元测试覆盖核心逻辑",
+    impact: "影响代码质量保障和回归风险",
+  },
+  em_types: {
+    check: "检查 TypeScript 配置和类型严格性",
+    fix: "添加 tsconfig.json 并启用 strict 模式；为核心模块添加类型声明",
+    impact: "影响代码健壮性和 IDE 智能提示",
+  },
+  em_linting: {
+    check: "检查 ESLint、Prettier、EditorConfig 配置",
+    fix: "安装 ESLint + Prettier；添加 .editorconfig；在 CI 中强制执行检查",
+    impact: "影响代码风格一致性和可读性",
+  },
+  em_cicd: {
+    check: "检查 CI/CD 管线配置和工作流数量",
+    fix: "在 .github/workflows/ 中添加测试和部署工作流；配置自动化检查",
+    impact: "影响自动化程度和交付速度",
+  },
+  em_docs: {
+    check: "检查 README.md、CLAUDE.md、docs/ 目录是否齐全",
+    fix: "补充 README 项目说明；完善 CLAUDE.md 开发指南；建立 docs/ 文档目录",
+    impact: "影响新人上手速度和知识传承",
+  },
+  em_deps: {
+    check: "检查 lockfile 存在性和版本管理脚本",
+    fix: "提交 lockfile 到仓库；添加 version/release 脚本；定期更新依赖",
+    impact: "影响构建可复现性和依赖安全",
+  },
+  em_git: {
+    check: "检查 .gitignore、.gitattributes、PR 模板配置",
+    fix: "添加 .gitignore 排除构建产物；配置 .gitattributes 换行符处理；添加 PR 模板",
+    impact: "影响协作规范和代码审查质量",
+  },
+  comp_qual: {
+    check: "检查组件的 SKILL.md/AGENT.md 完整性和代码质量",
+    fix: "补充缺失的 SKILL.md；完善 frontmatter；添加 Mermaid 图表；增加代码注释",
+    impact: "影响 YrY 插件的可发现性和可用性",
+  },
+  notify: {
+    check: "检查 .memory/notification-log.jsonl 中的投递成功率",
+    fix: "核查失败通知的 error 信息；确认 API_X_TOKEN 有效；检查 webhook 配置正确",
+    impact: "影响企微通知的可靠性和监控覆盖",
+  },
+};
+
+/**
+ * Build dimension detail panel for the HTML report.
+ * Shows each dimension with its score, status, fix guidance, and trend.
+ *
+ * @param {object} hr - Health result
+ * @param {object} dimHistory - From getDimensionHistory()
+ * @returns {string} HTML
+ */
+export function buildDimensionDetailPanel(hr, dimHistory) {
+  var scores = hr.scores || {};
+  var entries = [];
+
+  for (var _a = 0, _b = Object.entries(scores); _a < _b.length; _a++) {
+    var _c = _b[_a], dim = _c[0], score = _c[1];
+    var label = DIM_LABELS[dim] || dim;
+    var guidance = DIM_FIX_GUIDANCE[dim] || null;
+    var status = score >= 80 ? "pass" : score >= 60 ? "warn" : "fail";
+    var statusIcon = score >= 80 ? "✅" : score >= 60 ? "⚠️" : "❌";
+    var statusColor = score >= 80 ? "#22c55e" : score >= 60 ? "#f59e0b" : "#ef4444";
+    var statusBg = score >= 80 ? "rgba(34,197,94,.12)" : score >= 60 ? "rgba(245,158,11,.12)" : "rgba(239,68,68,.12)";
+
+    // Trend icon
+    var trendHtml = "";
+    if (dimHistory) {
+      var dh = dimHistory[label] || [];
+      if (dh.length >= 2) {
+        var prev = dh[dh.length - 2];
+        if (prev && prev.score !== undefined) {
+          var diff = score - prev.score;
+          if (diff > 5) trendHtml = '<span style="color:#22c55e;font-size:.75rem" title="上升 ' + diff + ' 分">↑' + diff + '</span>';
+          else if (diff < -5) trendHtml = '<span style="color:#ef4444;font-size:.75rem" title="下降 ' + Math.abs(diff) + ' 分">↓' + Math.abs(diff) + '</span>';
+          else trendHtml = '<span style="color:var(--yry-text3);font-size:.75rem">→</span>';
+        }
+      }
+    }
+
+    entries.push({
+      dim: dim, label: label, score: score, status: status,
+      icon: statusIcon, color: statusColor, bg: statusBg,
+      trendHtml: trendHtml, guidance: guidance,
+    });
+  }
+
+  // Sort: fail first, then warn, then pass
+  entries.sort(function(a, b) { return a.score - b.score; });
+
+  var rows = entries.map(function(e) {
+    var guidanceHtml = "";
+    if (e.guidance && e.score < 90) {
+      guidanceHtml = '<div style="margin-top:6px;padding:8px;background:' + e.bg + ';border-radius:4px;font-size:.72rem">' +
+        '<div><span style="color:var(--yry-text3)">🔍 检查: </span><span style="color:var(--yry-text2)">' + e.guidance.check + '</span></div>' +
+        '<div><span style="color:var(--yry-text3)">🔧 修复: </span><span style="color:var(--yry-text2)">' + e.guidance.fix + '</span></div>' +
+        '<div><span style="color:var(--yry-text3)">⚡ 影响: </span><span style="color:#f59e0b">' + e.guidance.impact + '</span></div>' +
+        '</div>';
+    } else if (e.score >= 90) {
+      guidanceHtml = '<div style="margin-top:4px;font-size:.7rem;color:#22c55e">✅ 该维度健康，无需处理</div>';
+    }
+
+    var barW = Math.max(4, e.score);
+    return '<div style="padding:12px;background:var(--bg1);border-radius:6px;border-left:3px solid ' + e.color + '">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">' +
+      '<span style="font-weight:600;color:var(--yry-text2)">' + e.icon + ' ' + e.label + '</span>' +
+      '<span style="display:flex;align-items:center;gap:8px">' + (e.trendHtml || '') + '<span style="font-size:1.1rem;font-weight:700;color:' + e.color + '">' + e.score + ' 分</span></span>' +
+      '</div>' +
+      '<div style="height:4px;background:var(--border2);border-radius:2px;margin-bottom:6px">' +
+      '<div style="width:' + barW + '%;height:100%;background:' + e.color + ';border-radius:2px"></div>' +
+      '</div>' +
+      guidanceHtml +
+      '</div>';
+  }).join("");
+
+  return '<div class="h-section">' +
+    '<h2>🔍 维度诊断与修复指引 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">' + entries.length + ' 项 · 按评分升序</span></h2>' +
+    '<div style="display:flex;flex-direction:column;gap:8px">' + rows + '</div>' +
+    '</div>';
+}
+
+// ── Score diff / change attribution ────────────────────────────
+
+/**
+ * Build score change attribution section comparing current vs previous.
+ *
+ * @param {object} hr - Current health result
+ * @param {object|null} prev - Previous health entry from trend
+ * @returns {string} HTML
+ */
+export function buildScoreDiffSection(hr, prev) {
+  if (!prev || !prev.scores) return "";
+
+  var currentScores = hr.scores || {};
+  var prevScores = prev.scores || {};
+  var currentComposite = hr.composite || 0;
+  var prevComposite = prev.composite || 0;
+  var diff = currentComposite - prevComposite;
+
+  var diffIcon = diff > 2 ? '📈' : diff < -2 ? '📉' : '➡️';
+  var diffColor = diff > 2 ? '#22c55e' : diff < -2 ? '#ef4444' : 'var(--yry-text2)';
+  var diffSign = diff > 0 ? '+' : '';
+
+  // Per-dimension changes
+  var changes = [];
+  var allDims = new Set();
+  for (var _a = 0, _b = Object.keys(currentScores); _a < _b.length; _a++) { allDims.add(_b[_a]); }
+  for (var _c = 0, _d = Object.keys(prevScores); _c < _d.length; _c++) { allDims.add(_d[_c]); }
+  allDims.forEach(function(dim) {
+    var curr = currentScores[dim];
+    var prevVal = prevScores[dim];
+    if (curr !== undefined && prevVal !== undefined && curr !== prevVal) {
+      changes.push({ dim: dim, label: DIM_LABELS[dim] || dim, prev: prevVal, curr: curr, diff: curr - prevVal });
+    }
+  });
+  changes.sort(function(a, b) { return Math.abs(b.diff) - Math.abs(a.diff); });
+
+  var improved = changes.filter(function(c) { return c.diff > 0; });
+  var declined = changes.filter(function(c) { return c.diff < 0; });
+
+  var changeRows = changes.slice(0, 8).map(function(c) {
+    var arrow = c.diff > 0 ? '↑' : '↓';
+    var color = c.diff > 0 ? '#22c55e' : '#ef4444';
+    return '<div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:.78rem">' +
+      '<span style="min-width:100px;color:var(--yry-text2)">' + c.label + '</span>' +
+      '<span style="color:var(--yry-text3)">' + c.prev + '</span>' +
+      '<span style="color:' + color + ';font-weight:600">' + arrow + Math.abs(c.diff) + '</span>' +
+      '<span style="color:' + color + '">' + c.curr + '</span>' +
+      '<div style="flex:1;height:3px;background:var(--border2);border-radius:2px">' +
+      '<div style="width:' + Math.max(4, Math.abs(c.diff)) + '%;height:100%;background:' + color + ';border-radius:2px"></div>' +
+      '</div>' +
+      '</div>';
+  }).join("");
+
+  var prevDate = (prev.timestamp || '').slice(0, 10) || '?';
+
+  return '<div class="h-section">' +
+    '<h2>' + diffIcon + ' 评分变化归因 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">对比 ' + prevDate + '</span></h2>' +
+    '<div style="margin-bottom:12px;padding:12px;background:var(--bg2);border-radius:6px;border:1px solid var(--border2);display:flex;align-items:center;gap:16px">' +
+    '<div style="text-align:center">' +
+    '<div style="font-size:2rem;font-weight:700;color:' + diffColor + '">' + diffSign + diff + '</div>' +
+    '<div style="font-size:.68rem;color:var(--yry-text3)">综合变化</div>' +
+    '</div>' +
+    '<div style="text-align:center">' +
+    '<div style="font-size:1.2rem;font-weight:700;color:#22c55e">' + improved.length + '</div>' +
+    '<div style="font-size:.68rem;color:var(--yry-text3)">改善维度</div>' +
+    '</div>' +
+    '<div style="text-align:center">' +
+    '<div style="font-size:1.2rem;font-weight:700;color:#ef4444">' + declined.length + '</div>' +
+    '<div style="font-size:.68rem;color:var(--yry-text3)">退化维度</div>' +
+    '</div>' +
+    '<div style="text-align:center">' +
+    '<div style="font-size:1.2rem;font-weight:700;color:var(--yry-text2)">' + (prevComposite) + ' → ' + currentComposite + '</div>' +
+    '<div style="font-size:.68rem;color:var(--yry-text3)">' + prevDate + ' → 本次</div>' +
+    '</div>' +
+    '</div>' +
+    (changeRows ? '<div style="padding:8px 0">' + changeRows + '</div>' : '') +
+    (changes.length > 8 ? '<div style="font-size:.72rem;color:var(--yry-text3);text-align:center">还有 ' + (changes.length - 8) + ' 项变化未列出</div>' : '') +
+    '</div>';
+}
+
+// ── Correlation matrix visualization ────────────────────────────
+
+/**
+ * Build correlation matrix heat map HTML.
+ *
+ * @param {{ matrix: number[][], labels: string[], insights: string[] }} corrData
+ * @returns {string} HTML
+ */
+export function buildCorrelationMatrixHTML(corrData) {
+  if (!corrData || !corrData.labels || corrData.labels.length < 3) return "";
+
+  var labels = corrData.labels;
+  var matrix = corrData.matrix;
+  var n = labels.length;
+
+  // Color function: red for negative, green for positive, intensity = |r|
+  function corrColor(r) {
+    var abs = Math.abs(r);
+    if (r > 0) {
+      if (abs >= 0.8) return 'rgba(34,197,94,' + (0.3 + abs * 0.7).toFixed(2) + ')';
+      if (abs >= 0.5) return 'rgba(34,197,94,' + (0.15 + abs * 0.3).toFixed(2) + ')';
+      return 'rgba(34,197,94,' + (abs * 0.2).toFixed(2) + ')';
+    } else {
+      if (abs >= 0.8) return 'rgba(239,68,68,' + (0.3 + abs * 0.7).toFixed(2) + ')';
+      if (abs >= 0.5) return 'rgba(239,68,68,' + (0.15 + abs * 0.3).toFixed(2) + ')';
+      return 'rgba(239,68,68,' + (abs * 0.2).toFixed(2) + ')';
+    }
+  }
+
+  function textColor(r) {
+    return Math.abs(r) >= 0.6 ? '#fff' : 'var(--yry-text2)';
+  }
+
+  // Header row
+  var headerCells = '<th style="padding:4px 6px;font-size:.65rem;color:var(--yry-text3)"></th>';
+  for (var _a = 0; _a < n; _a++) {
+    headerCells += '<th style="padding:4px 6px;font-size:.6rem;color:var(--yry-text3);max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + labels[_a] + '">' + labels[_a].slice(0, 6) + '</th>';
+  }
+
+  // Data rows
+  var rows = '';
+  for (var i = 0; i < n; i++) {
+    var cells = '<th style="padding:4px 6px;font-size:.6rem;color:var(--yry-text3);text-align:right;max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + labels[i] + '">' + labels[i].slice(0, 6) + '</th>';
+    for (var j = 0; j < n; j++) {
+      var r = matrix[i][j];
+      var bg = i === j ? 'var(--bg2)' : corrColor(r);
+      var tc = i === j ? 'var(--yry-text3)' : textColor(r);
+      cells += '<td style="padding:3px 5px;text-align:center;font-size:.65rem;font-weight:' + (Math.abs(r) >= 0.7 ? '700' : '400') + ';background:' + bg + ';color:' + tc + ';border-radius:2px" title="' + labels[i] + ' × ' + labels[j] + ': r=' + r.toFixed(2) + '">' + (i === j ? '1' : r.toFixed(1)) + '</td>';
+    }
+    rows += '<tr>' + cells + '</tr>';
+  }
+
+  // Insights
+  var insightsHTML = '';
+  if (corrData.insights && corrData.insights.length > 0) {
+    insightsHTML = '<div style="margin-top:12px;padding:10px;background:rgba(245,158,11,.08);border-radius:6px;border:1px solid rgba(245,158,11,.15)">' +
+      '<div style="font-size:.72rem;color:var(--yry-text2);font-weight:600;margin-bottom:6px">🔍 相关性洞察</div>' +
+      corrData.insights.map(function(ins) {
+        return '<div style="font-size:.7rem;color:var(--yry-text2);margin:3px 0">• ' + ins + '</div>';
+      }).join('') +
+      '</div>';
+  }
+
+  return '<div class="h-section">' +
+    '<h2>🔗 维度相关性矩阵 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Pearson r · ' + n + '×' + n + ' 维度</span></h2>' +
+    '<div style="overflow-x:auto;padding:8px 0">' +
+    '<table style="border-collapse:collapse;font-size:.65rem"><thead><tr>' + headerCells + '</tr></thead><tbody>' + rows + '</tbody></table>' +
+    '</div>' +
+    '<div style="display:flex;gap:16px;justify-content:center;margin-top:8px;font-size:.62rem;color:var(--yry-text3)">' +
+    '<span>🟢 正相关 (r>0)</span><span>🔴 负相关 (r<0)</span><span>颜色深浅 = 相关强度</span><span>粗体 = |r|≥0.7</span>' +
+    '</div>' +
+    insightsHTML +
+    '<div style="margin-top:8px;font-size:.62rem;color:var(--yry-text3);text-align:center">基于历史健康检查数据的 Pearson 相关系数矩阵 · 需 ≥3 对数据点方可计算</div>' +
+    '</div>';
+}
+
+// ── Dimension influence ranking section ─────────────────────────
+
+/**
+ * Build dimension influence ranking HTML section.
+ *
+ * @param {Array} influence - From rankDimensionInfluence()
+ * @returns {string} HTML
+ */
+export function buildInfluenceRankingSection(influence) {
+  if (!influence || influence.length < 3) return "";
+
+  var rows = influence.slice(0, 10).map(function(e, i) {
+    var barW = Math.min(100, Math.round((e.influence / (influence[0]?.influence || 1)) * 100));
+    var catIcon = { core: '⚙️', structural: '📏', engineering: '🔧', quality: '🧩' }[e.category] || '📌';
+    var influenceColor = e.influence >= 20 ? '#ef4444' : e.influence >= 12 ? '#f59e0b' : '#22c55e';
+    return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.75rem;border-bottom:1px solid var(--border2)">' +
+      '<span style="min-width:20px;color:var(--yry-text3)">' + (i + 1) + '</span>' +
+      '<span style="min-width:16px">' + catIcon + '</span>' +
+      '<span style="min-width:90px;color:var(--yry-text2);font-weight:500">' + e.label + '</span>' +
+      '<span style="min-width:36px;text-align:right;font-weight:600;color:' + influenceColor + '">' + e.influence.toFixed(1) + '</span>' +
+      '<div style="flex:1;height:4px;background:var(--border2);border-radius:2px">' +
+      '<div style="width:' + barW + '%;height:100%;background:' + influenceColor + ';border-radius:2px"></div>' +
+      '</div>' +
+      '<span style="min-width:56px;text-align:right;font-size:.65rem;color:var(--yry-text3)">权重' + e.weight + '%</span>' +
+      '<span style="min-width:40px;text-align:right;font-size:.65rem;color:var(--yry-text3)">' + e.currentScore + '分</span>' +
+      '</div>';
+  }).join("");
+
+  var topCategory = influence[0]?.category || '';
+  var catLabel = { core: '核心运营', structural: '结构健康', engineering: '工程成熟度', quality: '组件质量' }[topCategory] || topCategory;
+
+  return '<div class="h-section">' +
+    '<h2>📐 维度影响力排名 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Top ' + Math.min(10, influence.length) + ' · 综合权重+方差+缺口</span></h2>' +
+    '<div style="margin-bottom:8px;padding:8px 12px;background:rgba(245,158,11,.06);border-radius:6px;font-size:.7rem;color:var(--yry-text2)">' +
+    '💡 影响力 = 权重(40%) + 历史方差(30%) + 当前缺口(30%) · 排名靠前的维度对综合评分影响最大，改进优先级最高' +
+    '</div>' +
+    '<div style="padding:4px 0">' + rows + '</div>' +
+    '<div style="margin-top:6px;font-size:.62rem;color:var(--yry-text3);text-align:center">' +
+    '影响力最高类别: ' + catLabel + ' · ' + influence.filter(function(e) { return e.influence >= 15; }).length + ' 个高影响力维度 (≥15)' +
+    '</div>' +
+    '</div>';
+}
+
+// ── Executive summary section ───────────────────────────────────
+
+/**
+ * Build executive summary HTML for the report.
+ *
+ * @param {object} execData - From generateExecutiveSummary()
+ * @param {number} composite - Composite score
+ * @param {string} grade - Grade letter
+ * @returns {string} HTML
+ */
+export function buildExecutiveSummaryHTML(execData, composite, grade) {
+  if (!execData) return "";
+
+  var gradeColor = grade === 'A' ? '#22c55e' : grade === 'B' ? '#22c55e' : grade === 'C' ? '#f59e0b' : '#ef4444';
+  var gradeBg = grade === 'A' ? 'rgba(34,197,94,.08)' : grade === 'B' ? 'rgba(34,197,94,.06)' : grade === 'C' ? 'rgba(245,158,11,.08)' : 'rgba(239,68,68,.08)';
+
+  var highlightsHTML = '';
+  if (execData.highlights && execData.highlights.length > 0) {
+    highlightsHTML = '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">' +
+      execData.highlights.map(function(h) {
+        var isWarning = h.indexOf('⚠️') >= 0;
+        var bg = isWarning ? 'rgba(239,68,68,.08)' : 'rgba(34,197,94,.06)';
+        var border = isWarning ? 'rgba(239,68,68,.25)' : 'rgba(34,197,94,.2)';
+        return '<span style="padding:4px 10px;background:' + bg + ';border:1px solid ' + border + ';border-radius:4px;font-size:.7rem;color:var(--yry-text2)">' + h + '</span>';
+      }).join('') +
+      '</div>';
+  }
+
+  var risksHTML = '';
+  if (execData.risks && execData.risks.length > 0) {
+    risksHTML = '<div style="margin-top:8px;padding:8px 12px;background:rgba(239,68,68,.06);border-radius:6px;border:1px solid rgba(239,68,68,.15)">' +
+      '<div style="font-size:.7rem;color:#ef4444;font-weight:600;margin-bottom:4px">⚠️ 风险提示</div>' +
+      execData.risks.map(function(r) {
+        return '<div style="font-size:.7rem;color:var(--yry-text2);margin:2px 0">• ' + r + '</div>';
+      }).join('') +
+      '</div>';
+  }
+
+  return '<div class="h-section" style="border-left:3px solid ' + gradeColor + ';background:' + gradeBg + '">' +
+    '<h2>📋 执行摘要 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Executive Summary</span></h2>' +
+    '<div style="font-size:.85rem;line-height:1.6;color:var(--yry-text2);padding:8px 0">' + execData.summary + '</div>' +
+    highlightsHTML +
+    risksHTML +
+    '</div>';
+}
+
+// ── Score traceability panel ────────────────────────────────────
+
+/**
+ * Score methodology definitions for each dimension.
+ * Documents the scoring formula, data sources, and check items.
+ */
+var SCORE_METHODOLOGY = {
+  token:       { formula: 'API_X_TOKEN 环境变量存在 → 100分，否则 → 0分', source: 'process.env', checks: ['环境变量检查'] },
+  config:      { formula: 'config.json 存在 + robots>0 → 100分；仅存在 → 60分；缺失 → 20分', source: '.claude/skills/rui-bot/config.json', checks: ['文件存在性', '机器人数量'] },
+  robots:      { formula: '已配置webhook的机器人数 / 总机器人数 × 100', source: 'config.json robots字段', checks: ['webhook_url', 'webhook_url_env'] },
+  api:         { formula: 'API POST 可达 → 100分；不可达 → 0分', source: 'HTTP POST 健康检查', checks: ['HTTP响应', '超时控制'] },
+  reports:     { formula: '有索引+近期报告 → 100分；有索引+过期 → 60分；无索引 → 40分；目录缺失 → 0分', source: 'docs/健康报告/', checks: ['目录存在', '报告数量', '报告新鲜度'] },
+  format:      { formula: '全部消息格式约束通过 → 100分；否则 max(0, 100 - 问题数×25)', source: 'FIELD_EMOJI 配置', checks: ['emoji字段', '必填字段完整性'] },
+  diagnostics: { formula: 'max(0, 100 - 触发诊断数×15)', source: '.memory/execution-memory.jsonl', checks: ['D0-D8 8项诊断', '执行记忆数量'] },
+  git:         { formula: 'clean → 100分；1-2问题 → 80分；3+问题 → 60分；20+未提交 → 40分', source: 'git status', checks: ['未提交数', '分支状态', '未推送提交'] },
+  security:    { formula: '无发现 → 100分；1-2项 → 70分；3-5项 → 40分；6+项 → 20分', source: 'grep 模式扫描', checks: ['硬编码密钥', 'Token泄露', '密码明文'] },
+  notify:      { formula: '无记录 → 100分；成功率≥95% → 90分；≥80% → 70分；≥50% → 40分；<50% → 20分', source: '.memory/notification-log.jsonl', checks: ['投递成功率', '平均重试次数'] },
+  file_size:   { formula: '100 - 大文件数×10 - 警告文件×2 - 平均体积惩罚', source: 'lib/ 文件扫描', checks: ['文件数', '总体积', '大文件(>50KB)', '平均体积'] },
+  dep_analysis:{ formula: '100 - 循环依赖×15 - 上帝模块×5 - 孤立文件×2 - 额外惩罚', source: 'import/export 解析', checks: ['循环依赖', '上帝模块(≥10依赖)', '孤立文件'] },
+  em_testing:  { formula: '有框架+≥10用例 → 100分；有框架+少量 → 80分；仅框架或目录 → 60分；仅脚本 → 30分', source: 'package.json + tests/', checks: ['测试框架', '测试目录', '用例数量'] },
+  em_types:    { formula: 'TS strict → 100分；TS宽松 → 70分；Flow/类型声明 → 40分', source: 'tsconfig.json', checks: ['TS配置', 'strict模式', '类型声明'] },
+  em_linting:  { formula: 'ESLint+CI强制 → 100分；2+工具 → 80分；1+工具 → 60分', source: '.eslintrc* + .prettier*', checks: ['ESLint', 'Prettier', 'EditorConfig', 'CI集成'] },
+  em_cicd:     { formula: '有工作流 → 100分；有CI配置 → 70分', source: '.github/workflows/', checks: ['GitHub Actions', 'GitLab CI', 'Jenkins'] },
+  em_docs:     { formula: '3文档齐全 → 100分；2文档 → 80分；1文档 → 50分', source: '根目录文件扫描', checks: ['README.md', 'CLAUDE.md', 'docs/'] },
+  em_deps:     { formula: 'lockfile+版本脚本 → 100分；仅有lockfile → 70分', source: 'package.json + lockfile', checks: ['lockfile', '版本管理脚本'] },
+  em_git:      { formula: 'GitHub+2+项 → 100分；2+项 → 80分；仅.gitignore → 60分', source: '.git* 文件扫描', checks: ['.gitignore', '.gitattributes', 'PR模板'] },
+  comp_qual:   { formula: '全部组件均分: Skills(40+60) + Agents(40+60) + Rules(40+60) + Scripts(40+60)', source: 'skills/ agents/ rules/ lib/ 扫描', checks: ['SKILL.md存在', 'frontmatter', '文档长度', '代码注释', '测试覆盖'] },
+};
+
+/**
+ * Build score traceability panel HTML.
+ *
+ * @param {object} scores - { dimKey: score }
+ * @returns {string} HTML
+ */
+export function buildScoreTraceabilityPanel(scores) {
+  var entries = Object.entries(scores || {})
+    .filter(function(e) { return SCORE_METHODOLOGY[e[0]] !== undefined; })
+    .sort(function(a, b) { return a[1] - b[1]; }); // worst first
+
+  if (entries.length === 0) return '';
+
+  var rows = entries.map(function(e, i) {
+    var dim = e[0], score = e[1];
+    var method = SCORE_METHODOLOGY[dim];
+    var label = DIM_LABELS[dim] || dim;
+    var color = score >= 80 ? '#22c55e' : score >= 60 ? '#f59e0b' : '#ef4444';
+
+    return '<details style="margin-bottom:6px;background:var(--bg1);border-radius:6px;padding:8px 12px">' +
+      '<summary style="cursor:pointer;display:flex;align-items:center;gap:12px;font-size:.78rem">' +
+      '<span style="min-width:90px;color:var(--yry-text2)">' + label + '</span>' +
+      '<span style="min-width:36px;font-weight:700;color:' + color + '">' + score + '</span>' +
+      '<span style="flex:1;height:3px;background:var(--border2);border-radius:2px">' +
+      '<span style="display:block;width:' + Math.max(4, score) + '%;height:100%;background:' + color + ';border-radius:2px"></span>' +
+      '</span>' +
+      '</summary>' +
+      '<div style="margin-top:8px;padding:8px;background:var(--bg2);border-radius:4px;font-size:.7rem">' +
+      '<div style="margin-bottom:4px"><span style="color:var(--yry-text3)">📐 公式: </span><span style="color:var(--yry-text2)">' + method.formula + '</span></div>' +
+      '<div style="margin-bottom:4px"><span style="color:var(--yry-text3)">📂 数据源: </span><span style="color:var(--yry-text2)">' + method.source + '</span></div>' +
+      '<div><span style="color:var(--yry-text3)">✅ 检查项: </span><span style="color:var(--yry-text2)">' + (method.checks || []).join(' · ') + '</span></div>' +
+      '</div>' +
+      '</details>';
+  }).join("");
+
+  return '<div class="h-section">' +
+    '<h2>🔬 评分溯源 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">Score Traceability · ' + entries.length + ' 维度</span></h2>' +
+    '<div style="margin-bottom:8px;font-size:.7rem;color:var(--yry-text3)">点击展开查看每个维度的评分公式、数据源和检查项详情</div>' +
+    rows +
+    '<div style="margin-top:8px;font-size:.62rem;color:var(--yry-text3);text-align:center">评分溯源按得分升序排列 · 所有评分均可通过数据源复现验证</div>' +
     '</div>';
 }

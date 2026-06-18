@@ -1,0 +1,51 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YrySpinner · 加载旋转器 样式
+   适用: 按钮加载态 · 数据加载中 · 异步操作等待
+   依赖: theme.css (提供 --yry-* design tokens)
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-spinner/index.css">
+     <yry-spinner size="sm|md|lg" color="var(--yry-accent)"></yry-spinner>
+     <yry-spinner label="加载中..."></yry-spinner>
+     <script src="../../../../cdn/yry-spinner/index.js"></script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── SVG spinner ────────────────────────────────────────────────────── */
+.sp-svg {
+  animation: sp-rotate .8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes sp-rotate {
+  to { transform: rotate(360deg); }
+}
+
+.sp-track {
+  fill: none;
+  stroke: rgba(255,255,255,.08);
+}
+
+.sp-head {
+  fill: none;
+  stroke: var(--sp-color, var(--yry-accent, #ffc107));
+  stroke-linecap: round;
+  animation: sp-dash 1.2s ease-in-out infinite;
+}
+
+@keyframes sp-dash {
+  0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; }
+  50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; }
+  100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; }
+}
+
+/* ── Label ──────────────────────────────────────────────────────────── */
+.sp-label {
+  font-size: .74rem;
+  color: var(--yry-text3, #888);
+}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryMeter · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68; }
+    .demo-section { margin: 20px 0; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 20px 22px; }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">📊</span> YryMeter · 仪表盘组件</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-meter&gt;</code> — 进度/评分仪表盘。
+    通过 <code>value</code> / <code>max</code> 属性设置数值，自动着色：≥80 绿色、≥50 橙色、&lt;50 红色。
+    支持 <code>label</code> 属性显示文本，<code>size</code> 控制高度。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo — 健康维度评分</h3>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px;font-size:.74rem;color:var(--yry-text2,#d4d4d4)">
+        <span style="width:120px">架构合规</span>
+        <yry-meter value="95" max="100" style="flex:1"></yry-meter>
+        <span style="width:40px;text-align:right;color:var(--yry-pass,#22c55e)">95</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:.74rem;color:var(--yry-text2,#d4d4d4)">
+        <span style="width:120px">测试覆盖</span>
+        <yry-meter value="65" max="100" style="flex:1"></yry-meter>
+        <span style="width:40px;text-align:right;color:var(--yry-warn,#f59e0b)">65</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:.74rem;color:var(--yry-text2,#d4d4d4)">
+        <span style="width:120px">依赖健康</span>
+        <yry-meter value="42" max="100" style="flex:1"></yry-meter>
+        <span style="width:40px;text-align:right;color:var(--yry-fail,#ef4444)">42</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:.74rem;color:var(--yry-text2,#d4d4d4)">
+        <span style="width:120px">代码质量</span>
+        <yry-meter value="88" max="100" style="flex:1"></yry-meter>
+        <span style="width:40px;text-align:right;color:var(--yry-pass,#22c55e)">88</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo — 不同尺寸和标签</h3>
+    <yry-meter value="78" max="100" size="sm" label="内存使用" style="margin-bottom:12px"></yry-meter>
+    <yry-meter value="94" max="100" label="综合健康度" style="margin-bottom:12px"></yry-meter>
+    <yry-meter value="60" max="100" size="lg" label="磁盘使用"></yry-meter>
+  </div>
+
+  <script src="index.js"></script>
+  <div class="demo-footer">📊 YryMeter v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

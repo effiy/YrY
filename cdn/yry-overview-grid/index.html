@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryOverviewGrid · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">🗂️</span> YryOverviewGrid · 概览卡片网格</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-overview-grid&gt;</code> — 响应式概览卡片网格。
+    Light DOM 子元素直接放入，每张卡片 <code>.ov-card</code> 包含图标 + 标题 + 描述 + 统计标签。
+    适用于模块概览、功能列表、项目摘要。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo — YrY 核心模块概览</h3>
+    <yry-overview-grid>
+      <div class="ov-card">
+        <div class="ov-ico">🔧</div>
+        <div class="ov-title">技能系统</div>
+        <div class="ov-desc">19 个可独立执行的能力单元，通过 /rui-* 管线串联为完整流程。每个 Skill 包含 SKILL.md 规约。</div>
+        <div class="ov-stat">
+          <span class="os">19 技能</span>
+          <span class="os accent">100% 覆盖</span>
+        </div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-ico">🤖</div>
+        <div class="ov-title">Agent 系统</div>
+        <div class="ov-desc">9 个专职智能体，通过交接信号通信。支持 subagent 委派与并行协作。</div>
+        <div class="ov-stat">
+          <span class="os">9 智能体</span>
+          <span class="os accent">全部就绪</span>
+        </div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-ico">📋</div>
+        <div class="ov-title">规则引擎</div>
+        <div class="ov-desc">16 条强制执行规则 + 架构合规自动验证。铁律四条的不可妥协底线。</div>
+        <div class="ov-stat">
+          <span class="os">16 规则</span>
+          <span class="os accent">A 级合规</span>
+        </div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-ico">📦</div>
+        <div class="ov-title">共享库</div>
+        <div class="ov-desc">16 个零依赖模块 — 常量 · TTY · FS · 诊断 · 主题 · 网络。遵循 DRY 原则。</div>
+        <div class="ov-stat">
+          <span class="os">16 模块</span>
+          <span class="os">零依赖</span>
+        </div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-ico">🩺</div>
+        <div class="ov-title">健康诊断</div>
+        <div class="ov-desc">9 维度 + D0-D8 诊断引擎。趋势持久化 · 智能告警 · 企微推送。</div>
+        <div class="ov-stat">
+          <span class="os">9 维度</span>
+          <span class="os accent">94 分</span>
+        </div>
+      </div>
+      <div class="ov-card">
+        <div class="ov-ico">🎬</div>
+        <div class="ov-title">CDN 组件库</div>
+        <div class="ov-desc">68 个可复用 Web Component — 零框架 · 深色主题 · 完整 demo。</div>
+        <div class="ov-stat">
+          <span class="os">68 组件</span>
+          <span class="os accent">100% 完整</span>
+        </div>
+      </div>
+    </yry-overview-grid>
+  </div>
+
+  <script src="index.js"></script>
+
+  <div class="demo-footer">🗂️ YryOverviewGrid v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

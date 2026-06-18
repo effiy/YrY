@@ -1,0 +1,255 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryPipelineSimulator · 管线模拟器 样式
+   适用: 管线阶段演示 · 构建过程可视化 · 教学演练
+   依赖: theme.css (提供 --yry-* design tokens)
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-pipeline-simulator/index.css">
+     <yry-pipeline-simulator></yry-pipeline-simulator>
+     <script src="../../../../cdn/yry-pipeline-simulator/index.js"></script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: block;
+}
+
+.sim-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Controls ───────────────────────────────────────────────────────── */
+.sim-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sim-btn {
+  background: var(--yry-bg-flat, rgba(42,42,56,1));
+  color: var(--yry-text2, #d4d4d4);
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: .76rem;
+  cursor: pointer;
+  transition: all .15s;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sim-btn:hover {
+  border-color: rgba(255,193,7,.3);
+  color: var(--yry-accent, #ffc107);
+}
+
+.sim-btn.play-btn {
+  background: rgba(255,193,7,.12);
+  border-color: rgba(255,193,7,.3);
+  color: var(--yry-accent, #ffc107);
+  font-weight: 600;
+}
+
+.sim-btn.play-btn:hover {
+  background: rgba(255,193,7,.2);
+}
+
+.sim-btn.play-btn.running {
+  background: rgba(34,211,238,.12);
+  border-color: rgba(34,211,238,.3);
+  color: var(--yry-cyan, #22d3ee);
+}
+
+.sim-speed {
+  font-size: .68rem;
+  color: var(--yry-text3, #888);
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sim-speed select {
+  background: var(--yry-bg-flat, rgba(42,42,56,1));
+  color: var(--yry-text2, #d4d4d4);
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-size: .68rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ── Stage list ─────────────────────────────────────────────────────── */
+.sim-stages {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sim-stage {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--yry-bg-card, linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%));
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  border-radius: var(--yry-radius, 12px);
+  padding: 14px 18px;
+  box-shadow: var(--yry-shadow, 0 4px 20px rgba(0,0,0,.3));
+  transition: all .35s;
+  position: relative;
+  overflow: hidden;
+}
+
+.sim-stage.done {
+  border-color: rgba(34,197,94,.15);
+}
+
+.sim-stage.active {
+  border-color: rgba(255,193,7,.25);
+  animation: sim-pulse 2s infinite;
+}
+
+.sim-stage.failed {
+  border-color: rgba(239,68,68,.2);
+}
+
+@keyframes sim-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,193,7,.4); }
+  50% { box-shadow: 0 0 0 6px rgba(255,193,7,0); }
+}
+
+/* ── Stage number ───────────────────────────────────────────────────── */
+.sim-stage .st-num {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: .82rem;
+  flex-shrink: 0;
+  background: rgba(255,255,255,.04);
+  color: var(--yry-text3, #888);
+  transition: all .35s;
+}
+
+.sim-stage.done .st-num {
+  background: rgba(34,197,94,.12);
+  color: var(--yry-pass, #22c55e);
+}
+
+.sim-stage.active .st-num {
+  background: rgba(255,193,7,.12);
+  color: var(--yry-accent, #ffc107);
+}
+
+.sim-stage.failed .st-num {
+  background: rgba(239,68,68,.12);
+  color: var(--yry-fail, #ef4444);
+}
+
+/* ── Stage info ─────────────────────────────────────────────────────── */
+.st-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.st-name {
+  font-weight: 600;
+  font-size: .84rem;
+  color: var(--yry-text, #f5f5f5);
+}
+
+.st-detail {
+  font-size: .7rem;
+  color: var(--yry-text3, #888);
+  margin-top: 2px;
+}
+
+/* ── Stage status ───────────────────────────────────────────────────── */
+.st-status {
+  font-size: .72rem;
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.st-status.waiting {
+  color: var(--yry-text3, #888);
+  background: rgba(110,110,114,.1);
+}
+
+.st-status.loading {
+  color: var(--yry-accent, #ffc107);
+  background: rgba(255,193,7,.1);
+}
+
+.st-status.ok {
+  color: var(--yry-pass, #22c55e);
+  background: rgba(34,197,94,.1);
+}
+
+.st-status.err {
+  color: var(--yry-fail, #ef4444);
+  background: rgba(239,68,68,.1);
+}
+
+/* ── Progress bar ───────────────────────────────────────────────────── */
+.st-bar {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 2px;
+  background: var(--yry-accent, #ffc107);
+  transition: width .2s linear;
+  border-radius: 0 1px 1px 0;
+}
+
+/* ── Log box ────────────────────────────────────────────────────────── */
+.sim-log {
+  background: var(--yry-bg-card, linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%));
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  border-radius: var(--yry-radius, 12px);
+  padding: 14px 18px;
+  box-shadow: var(--yry-shadow, 0 4px 20px rgba(0,0,0,.3));
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: .7rem;
+  max-height: 240px;
+  overflow-y: auto;
+  line-height: 1.7;
+  display: none;
+}
+
+.sim-log.show {
+  display: block;
+}
+
+.sim-log .log-line {
+  padding: 1px 0;
+  display: flex;
+  gap: 8px;
+}
+
+.sim-log .log-time {
+  color: var(--yry-text3, #888);
+  flex-shrink: 0;
+}
+
+.sim-log .log-icon {
+  flex-shrink: 0;
+  width: 16px;
+  text-align: center;
+}
+
+.sim-log .log-ms {
+  color: var(--yry-text3, #888);
+  font-size: .58rem;
+  margin-left: auto;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
