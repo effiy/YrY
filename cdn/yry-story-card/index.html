@@ -69,8 +69,10 @@
       </div>
       <div class="story-links">
         <template v-if="links && links.length">
-          <a v-for="(l, i) in links" v-if="l.href" :key="'a' + i" :href="l.href" target="_blank" rel="noopener noreferrer">{{ l.icon }} {{ l.label }}</a>
-          <span v-for="(l, i) in links" v-else :key="'s' + i">{{ l.icon }} {{ l.label }}</span>
+          <template v-for="(l, i) in links" :key="i">
+            <a v-if="l.href" :href="l.href" target="_blank" rel="noopener noreferrer">{{ l.icon }} {{ l.label }}</a>
+            <span v-else>{{ l.icon }} {{ l.label }}</span>
+          </template>
         </template>
         <template v-else>
           <span>📋 清单</span>

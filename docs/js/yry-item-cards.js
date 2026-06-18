@@ -391,7 +391,7 @@
     Object.keys(grids).forEach(function (gridId) {
       var grid = document.getElementById(gridId);
       if (!grid) {
-        console.warn('[YRY_ITEM_CARDS] 未找到挂载点 #' + gridId);
+        /* grid 尚未被 yry-layer-agents/rules/refs 渲染出来 → 静默等待下一次 mountAll */
         return;
       }
 

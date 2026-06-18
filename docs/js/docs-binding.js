@@ -337,6 +337,10 @@
     }
     applySubTitles();
     document.addEventListener('yry-sub-title-ready', applySubTitles, { once: true });
+    /* layer-5/6/R 容器就绪后,内层 <yry-sub-title> 才出现,再补一次 */
+    ['yry-layer-agents-ready', 'yry-layer-rules-ready', 'yry-layer-refs-ready'].forEach(function (ev) {
+      document.addEventListener(ev, applySubTitles, { once: true });
+    });
 
     /* ── 8) Static Layer × 3 (Layer 5 / R / 6 容器) ──────────── */
     var STATIC_LAYER_DATA = [
@@ -406,6 +410,10 @@
     }
     applyStaticLayers();
     document.addEventListener('yry-layer-ready', applyStaticLayers, { once: true });
+    /* layer-5/6/R 容器组件就绪后,内层 <yry-layer> 已被渲染,此时再补一次 */
+    ['yry-layer-agents-ready', 'yry-layer-rules-ready', 'yry-layer-refs-ready'].forEach(function (ev) {
+      document.addEventListener(ev, applyStaticLayers, { once: true });
+    });
 
     /* 路由 layer-panel-select 事件 → 派发到 layerInfo / PanelHub (依 onPanel 字段) */
     document.addEventListener('layer-panel-select', function (e) {
@@ -433,7 +441,7 @@
       }
       function grade(s) { return s >= 80 ? 'A' : s >= 60 ? 'B' : s >= 40 ? 'C' : 'D'; }
       function sc(s) { return s >= 80 ? '#22c55e' : s >= 60 ? '#f59e0b' : '#ef4444'; }
-      
+
       function makeBadge(label, score, base) {
         var g = grade(score);
         var c = sc(score);
