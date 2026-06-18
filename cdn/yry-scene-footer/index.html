@@ -1,0 +1,41 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YrySceneFooter · 场景页脚 Vue 3 组件
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YrySceneFooter · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0e0f1a); color: var(--yry-text, #f5f5f5); padding: 60px 24px; max-width: 600px; margin: 0 auto; text-align: center; font-family: var(--yry-font-sans); }
+  h1 { font-size: 1.1rem; }
+  .demo-hint { font-size: .74rem; color: var(--yry-text3, #888); margin: 0 0 30px; }
+</style>
+</head>
+<body>
+<h1>YrySceneFooter</h1>
+<p class="demo-hint">Vue 3 组件: <code>version</code> · <code>date</code> · <code>docsLink</code></p>
+
+<div id="demo-1"></div>
+<div style="margin-top:20px" id="demo-2"></div>
+
+<script type="text/x-template" id="yry-scene-footer-tpl">
+  <div class="sf-inner">YrY v{{ version }} · {{ date }}<span v-if="docsLink"> · <a :href="docsLink">文档中心</a></span></div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YrySceneFooter) return;
+  Vue.createApp(window.YrySceneFooter, { version: '5.4.0', date: '2026-06-17' }).mount('#demo-1');
+  Vue.createApp(window.YrySceneFooter, { version: '5.4.0', date: '2026-06-17', docsLink: '../../../../docs/index.html' }).mount('#demo-2');
+}
+if (window.YrySceneFooter) mountAll();
+else document.addEventListener('yry-scene-footer-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

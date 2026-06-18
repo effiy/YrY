@@ -3,7 +3,7 @@
 // 用法: node skills/rui-import/help.mjs 或 /rui-import --help
 
 import { bold, dim, yellow, cyan } from '../../lib/tty.mjs';
-import { hdr, subhdr, item, flag, scene } from '../../lib/help-layout.mjs';
+import { hdr, subhdr, item, scene } from '../../lib/help-layout.mjs';
 
 const help = `
 ${bold("# rui-import — 文档批量同步到远端")}

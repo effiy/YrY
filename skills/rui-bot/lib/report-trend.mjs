@@ -7,24 +7,15 @@ import { existsSync, readdirSync, readFileSync, statSync, unlinkSync } from "nod
 import { join } from "node:path";
 
 import { REPORT_DIR, DIM_LABELS } from "./report-constants.mjs";
+import { nowDate } from "../../../lib/fs.mjs";
+import { PASS_THRESHOLD, WARN_THRESHOLD, scoreColor } from "./bot-health-analysis.mjs";
+
+export { nowDate };
 
 export function nowChinese() {
   const d = new Date();
   const p = (n) => String(n).padStart(2, "0");
   return `${d.getFullYear()}年${p(d.getMonth() + 1)}月${p(d.getDate())}日 ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
-}
-
-export function nowDate() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-export function nowTimestamp() {
-  const now = new Date();
-  return [
-    String(now.getHours()).padStart(2, "0"),
-    String(now.getMinutes()).padStart(2, "0"),
-    String(now.getSeconds()).padStart(2, "0"),
-  ].join("");
 }
 
 export function extractReportMeta(filename) {
@@ -204,7 +195,7 @@ export function dimSparkline(dimLabel, history) {
   const max = Math.max(...scores, 100);
   const bars = scores.map((s) => {
     const h = Math.max(2, Math.round((s / max) * 16));
-    const color = s >= 80 ? "var(--yry-pass)" : s >= 60 ? "var(--yry-warn)" : "var(--yry-fail)";
+    const color = scoreColor(s);
     return `<span class="h-spark-bar" style="height:${h}px;background:${color}" title="${s} 分"></span>`;
   }).join("");
 

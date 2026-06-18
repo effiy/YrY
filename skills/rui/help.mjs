@@ -2,7 +2,7 @@
 // rui — Story-driven SDLC orchestrator help
 // 用法: node skills/rui/help.mjs 或 /rui --help
 
-import { bold, dim, yellow, cyan } from '../../lib/tty.mjs';
+import { bold, dim, cyan } from '../../lib/tty.mjs';
 import { hdr, subhdr, item, flag, scene } from '../../lib/help-layout.mjs';
 
 const help = `

@@ -79,6 +79,40 @@
 .story-card .story-scenes {
   display: flex; flex-wrap: wrap; gap: 5px;
 }
+.story-card .story-demo {
+  margin-top: 8px;
+  font-size: .72rem;
+}
+.story-card .story-demo a {
+  color: var(--yry-accent, #ffc107);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color .15s var(--yry-ease-out, ease);
+}
+.story-card .story-demo a:hover {
+  color: var(--yry-cyan, #22d3ee);
+  text-decoration: underline;
+}
+
+.story-card .story-links {
+  margin-top: 8px;
+  display: flex; flex-wrap: wrap; gap: 4px 10px;
+  font-size: .72rem;
+}
+.story-card .story-links a {
+  color: var(--yry-text2, #d4d4d4);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color .15s var(--yry-ease-out, ease);
+}
+.story-card .story-links a:hover {
+  color: var(--yry-accent, #ffc107);
+}
+.story-card .story-links span {
+  color: var(--yry-text3, #888);
+  white-space: nowrap;
+}
+
 .story-card .scene-tag {
   display: inline-block;
   padding: 2px 8px;

@@ -1,9 +1,9 @@
 /**
- * cron-panel.js — scheduled tasks panel
+ * cron-panel.js — scheduled tasks panel (Vue 3)
  *
  * Reads .claude/scheduled_tasks.json and renders a task list
  * with cron descriptions, status indicators, and next-fire estimates.
- * Depends on: panel-hub.js (loaded first)
+ * Depends on: panel-hub.js (loaded first) · Vue 3 (window.Vue)
  */
 (function() {
   'use strict';
@@ -13,34 +13,6 @@
   var cronPanelBody = document.getElementById('cronPanelBody');
   var cronTaskCount = document.getElementById('cronTaskCount');
   var cronBadge = document.getElementById('cronBadge');
-  var cronData = [];
-  var cronLoaded = false;
-
-  /* ── Registration ───────────────────────── */
-  H.register('cron', null, 'cronPanel', 'cronOverlay', function() {
-    if (!cronLoaded) fetchCron();
-  });
-
-  /* ── Refresh ────────────────────────────── */
-  var cronRefreshBtn = document.getElementById('cronRefresh');
-  if (cronRefreshBtn) {
-    cronRefreshBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      cronRefreshBtn.classList.add('spinning');
-      cronData = []; cronLoaded = false;
-      fetchCron().finally(function() { cronRefreshBtn.classList.remove('spinning'); });
-    });
-  }
-
-  /* ── Prompt collapse/expand delegation ──── */
-  cronPanelBody.addEventListener('click', function(e) {
-    var prompt = e.target.closest('.cr-prompt');
-    if (prompt) {
-      e.stopPropagation();
-      prompt.classList.toggle('collapsed');
-      prompt.classList.toggle('expanded');
-    }
-  });
 
   /* ── Cron parsing helpers ───────────────── */
   function cronDescription(expr) {
@@ -139,67 +111,125 @@
     } catch(e) { return ''; }
   }
 
-  /* ── Data ───────────────────────────────── */
+  /* ── Vue reactive state ─────────────────── */
+  var state = Vue.reactive({
+    cronData: [],
+    loading: false,
+    error: null
+  });
+
+  /* ── Vue app ────────────────────────────── */
+  var app = Vue.createApp({
+    data: function() { return state; },
+    computed: {
+      tasks: function() {
+        return this.cronData.map(function(item) {
+          var status = cronStatus(item);
+          var isActive = status === 'active';
+          var desc = cronDescription(item.cron);
+          var created = item.createdAt ? new Date(item.createdAt).toISOString().slice(0, 16).replace('T', ' ') : '';
+          var lastFired = item.lastFiredAt ? new Date(item.lastFiredAt).toISOString().slice(0, 16).replace('T', ' ') : '未触发';
+          var recurring = item.recurring ? '循环' : '单次';
+          var nextFire = (isActive && item.recurring) ? nextFireEstimate(item.cron, item.lastFiredAt) : '';
+          var prompt = item.prompt || '';
+          var promptLong = prompt.length > 80;
+          var cdHtml = null;
+          if (nextFire) {
+            var diffMs = new Date(nextFire) - new Date();
+            var diffMin = Math.floor(diffMs / 60000);
+            var cdLabel = diffMin < 1 ? '即将触发' : diffMin < 60 ? diffMin + '分钟后' : diffMin < 1440 ? Math.floor(diffMin/60) + '小时后' : Math.floor(diffMin/1440) + '天后';
+            cdHtml = { label: '⏱ ' + cdLabel, cls: diffMin < 5 ? 'soon' : 'later' };
+          }
+          return {
+            desc: H.escHtml(desc),
+            status: status,
+            isActive: isActive,
+            created: H.escHtml(created),
+            lastFired: H.escHtml(lastFired),
+            recurring: recurring,
+            durable: item.durable,
+            nextFire: nextFire ? H.escHtml(nextFire) : '',
+            cdHtml: cdHtml,
+            prompt: H.escHtml(prompt),
+            promptLong: promptLong,
+            cron: H.escHtml(item.cron)
+          };
+        });
+      }
+    },
+    template: /* html */'<div v-if="loading" class="panel-loading yry-panel-loading">加载中...</div>'
+      + '<div v-else-if="error" class="panel-empty yry-panel-empty">加载失败<br><span class="hint">{{ error }}</span></div>'
+      + '<div v-else-if="tasks.length === 0" class="panel-empty yry-panel-empty">暂无调度任务<br><span class="hint">使用 Claude Code 的 <code>/loop</code> 命令创建定时任务</span></div>'
+      + '<ul v-else class="cron-list">'
+      +   '<li v-for="(t, i) in tasks" :key="i" :class="\'cron-item\' + (t.isActive ? \' active-item\' : \'\')">'
+      +     '<div class="cr-row1"><span :class="t.isActive ? \'pulse-dot\' : \'cr-dot-idle\'"></span><span class="cr-desc">{{ t.desc }}</span>'
+      +     '<span :class="\'cr-badge \' + (t.isActive ? \'active\' : \'idle\')">{{ t.isActive ? \'活跃\' : \'空闲\' }}</span>'
+      +     '<span v-if="t.durable" class="cr-badge cr-badge-durable">💾持久</span>'
+      +     '<span v-if="t.cdHtml" :class="\'cr-countdown \' + t.cdHtml.cls">{{ t.cdHtml.label }}</span>'
+      +     '</div><div class="cr-row2 cr-raw">{{ t.cron }}</div>'
+      +     '<div class="cr-row3"><span class="cr-badge cr-badge-meta">{{ t.recurring }}</span>'
+      +     '<span class="cr-dot">·</span><span>创建: {{ t.created }}</span>'
+      +     '<span class="cr-dot">·</span><span>上次: {{ t.lastFired }}</span></div>'
+      +     '<div v-if="t.nextFire" class="cr-next">⏭ 预计下次: {{ t.nextFire }}</div>'
+      +     '<div v-if="t.prompt" :class="\'cr-prompt\' + (t.promptLong ? \' collapsed\' : \'\')" :title="t.prompt">{{ t.prompt }}</div>'
+      +   '</li>'
+      + '</ul>'
+  });
+
+  function mountApp() {
+    if (cronPanelBody) { app.mount(cronPanelBody); return; }
+    document.addEventListener('yry-cron-panel-ready', function() {
+      cronPanelBody = document.getElementById('cronPanelBody');
+      if (cronPanelBody) app.mount(cronPanelBody);
+    }, { once: true });
+  }
+  mountApp();
+
+  /* ── PanelHub registration ───────────────── */
+  H.register('cron', null, 'cronPanel', 'cronOverlay', function() {
+    if (state.cronData.length === 0 && !state.loading) fetchCron();
+  });
+
+  /* ── Refresh ────────────────────────────── */
+  var cronRefreshBtn = document.getElementById('cronRefresh');
+  if (cronRefreshBtn) {
+    cronRefreshBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      cronRefreshBtn.classList.add('spinning');
+      state.cronData = []; state.loading = false; state.error = null;
+      fetchCron().finally(function() { cronRefreshBtn.classList.remove('spinning'); });
+    });
+  }
+
+  /* ── Prompt collapse/expand delegation ──── */
+  cronPanelBody.addEventListener('click', function(e) {
+    var prompt = e.target.closest('.cr-prompt');
+    if (prompt) {
+      e.stopPropagation();
+      prompt.classList.toggle('collapsed');
+      prompt.classList.toggle('expanded');
+    }
+  });
+
+  /* ── Data fetching ───────────────────────── */
   async function fetchCron() {
-    cronLoaded = true;
-    cronPanelBody.innerHTML = '<div class="panel-loading yry-panel-loading">加载中...</div>';
+    state.loading = true;
+    state.error = null;
     try {
       var resp = await fetch(H.PATHS.scheduledTasks);
       if (!resp.ok) throw new Error('HTTP ' + resp.status);
       var data = await resp.json();
-      cronData = (data.tasks || []).sort(function(a, b) {
+      state.cronData = (data.tasks || []).sort(function(a, b) {
         var aAt = a.lastFiredAt || a.createdAt || 0;
         var bAt = b.lastFiredAt || b.createdAt || 0;
         return bAt - aAt;
       });
     } catch(e) {
-      cronData = [];
+      state.cronData = [];
+      state.error = e.message;
     }
-    renderCron();
-  }
-
-  function renderCron() {
-    if (cronTaskCount) cronTaskCount.textContent = cronData.length + ' 个任务';
-    if (cronBadge) cronBadge.textContent = cronData.length > 0 ? String(cronData.length) : '';
-    if (cronData.length === 0) {
-      cronPanelBody.innerHTML = '<div class="panel-empty yry-panel-empty">暂无调度任务<br><span class="hint">使用 Claude Code 的 <code>/loop</code> 命令创建定时任务</span></div>';
-      return;
-    }
-    var html = '<ul class="cron-list">';
-    for (var i = 0; i < cronData.length; i++) {
-      var item = cronData[i];
-      var status = cronStatus(item);
-      var isActive = status === 'active';
-      var dotCls = isActive ? 'pulse-dot' : 'cr-dot-idle';
-      var desc = cronDescription(item.cron);
-      var created = item.createdAt ? new Date(item.createdAt).toISOString().slice(0, 16).replace('T', ' ') : '';
-      var lastFired = item.lastFiredAt ? new Date(item.lastFiredAt).toISOString().slice(0, 16).replace('T', ' ') : '未触发';
-      var recurring = item.recurring ? '循环' : '单次';
-      var durable = item.durable;
-      var nextFire = (isActive && item.recurring) ? nextFireEstimate(item.cron, item.lastFiredAt) : '';
-      var prompt = item.prompt || '';
-      var promptLong = prompt.length > 80;
-      var itemCls = 'cron-item' + (isActive ? ' active-item' : '');
-      var cdHtml = '';
-      if (nextFire) {
-        var diffMs = new Date(nextFire) - new Date();
-        var diffMin = Math.floor(diffMs / 60000);
-        var cdLabel = diffMin < 1 ? '即将触发' : diffMin < 60 ? diffMin + '分钟后' : diffMin < 1440 ? Math.floor(diffMin/60) + '小时后' : Math.floor(diffMin/1440) + '天后';
-        cdHtml = '<span class="cr-countdown ' + (diffMin < 5 ? 'soon' : 'later') + '">⏱ ' + cdLabel + '</span>';
-      }
-      html += '<li class="' + itemCls + '">'
-        + '<div class="cr-row1"><span class="' + dotCls + '"></span><span class="cr-desc">' + H.escHtml(desc) + '</span>'
-        + '<span class="cr-badge ' + (isActive ? 'active' : 'idle') + '">' + (isActive ? '活跃' : '空闲') + '</span>'
-        + (durable ? '<span class="cr-badge cr-badge-durable">💾持久</span>' : '') + cdHtml
-        + '</div><div class="cr-row2 cr-raw">' + H.escHtml(item.cron) + '</div>'
-        + '<div class="cr-row3"><span class="cr-badge cr-badge-meta">' + recurring + '</span>'
-        + '<span class="cr-dot">·</span><span>创建: ' + H.escHtml(created) + '</span>'
-        + '<span class="cr-dot">·</span><span>上次: ' + H.escHtml(lastFired) + '</span></div>'
-        + (nextFire ? '<div class="cr-next">⏭ 预计下次: ' + H.escHtml(nextFire) + '</div>' : '')
-        + (prompt ? '<div class="cr-prompt' + (promptLong ? ' collapsed' : '') + '" title="' + H.escHtml(prompt) + '">' + H.escHtml(prompt) + '</div>' : '')
-        + '</li>';
-    }
-    html += '</ul>';
-    cronPanelBody.innerHTML = html;
+    state.loading = false;
+    if (cronTaskCount) cronTaskCount.textContent = state.cronData.length + ' 个任务';
+    if (cronBadge) cronBadge.textContent = state.cronData.length > 0 ? String(state.cronData.length) : '';
   }
 })();

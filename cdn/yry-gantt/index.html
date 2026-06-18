@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryGantt · Demo</title>
+<link rel="stylesheet" href="../shared.css"><link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>body{{background:var(--yry-bg,#0e0f1a);color:var(--yry-text,#f5f5f5);padding:32px;max-width:900px;margin:0 auto;font-family:var(--yry-font-sans)}}h1{{font-size:1.1rem}}.demo-hint{{font-size:.74rem;color:var(--yry-text3,#888);margin:0 0 20px}}</style>
+</head>
+<body>
+<h1>YryGantt</h1><p class="demo-hint">Vue 3: <code>days</code> · <code>labels</code> · <code>tasks</code> (JSON)</p>
+<div id="demo-1"></div>
+
+<script type="text/x-template" id="yry-gantt-tpl">
+  <div class="gantt" :style="{ '--gantt-days': String(days) }">
+    <div class="gantt-row gantt-head">
+      <div class="gantt-task">任务</div>
+      <div class="gantt-bar-wrap">
+        <div v-for="(l, i) in parsedLabels" :key="'dl'+i" class="gantt-day">{{ l }}</div>
+      </div>
+    </div>
+    <div v-for="(t, ti) in parsedTasks" :key="'t'+ti" class="gantt-row">
+      <div class="gantt-task">{{ t.name }}</div>
+      <div class="gantt-bar-wrap">
+        <div :class="'gantt-bar' + (t.alt ? ' alt' : '')" :style="{ '--left': (t.start / days) * 100 + '%', '--w': ((t.span || 1) / days) * 100 + '%' }">
+          <span>{{ t.label || '' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function m(){{if(!window.YryGantt)return;Vue.createApp(window.YryGantt,{{
+  days:15,labels:'["30","31","01","02","03","04","05","06","07","08","09","10","11","12","13"]',
+  tasks:'[{{"name":"§0 评审","start":0,"span":2,"label":"05-30 → 06-01"}},{{"name":"§1 设计","start":2,"span":1,"label":"06-02 → 06-03","alt":true}},{{"name":"§2 实施","start":3,"span":5,"label":"06-04 → 06-09"}},{{"name":"§3 验证","start":8,"span":3,"label":"06-09 → 06-12","alt":true}},{{"name":"§4 交付","start":11,"span":4,"label":"06-12 → 06-16"}}]'
+}}).mount('#demo-1')}}
+if(window.YryGantt)m();else document.addEventListener('yry-gantt-ready',m,{{once:true}});
+</script>
+</body>
+</html>

@@ -89,7 +89,10 @@
     Promise.all(fetches).finally(function() {
       Object.keys(accum).forEach(function(id) {
         var panel = document.getElementById(id);
-        if (panel) panel.innerHTML = accum[id];
+        if (panel) {
+	          panel.textContent = '';
+	          panel.insertAdjacentHTML('beforeend', accum[id]);
+	        }
       });
       if (window.YryChecklistCore) YryChecklistCore.init();
       if (window.YryChecklistDeliv) YryChecklistDeliv.init();

@@ -3,7 +3,7 @@
 
    效果对齐 docs/故事任务面板/计划清单/场景-2-清单交互组件实现/计划清单.html
    中的 <div class="header"> 静态结构:
-     <h1>{icon} {prefix}<span class="accent">{accent}</span></h1>
+     <h1>{icon} {titlePrefix}<span class="accent">{accent}</span></h1>
      <div class="meta">{meta}</div>
      <p class="desc">{desc}</p>      ← 扩展(可选,scene-2 没有)
 

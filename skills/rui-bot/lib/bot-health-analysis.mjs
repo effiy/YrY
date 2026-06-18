@@ -6,6 +6,36 @@
 import { join } from "node:path";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 
+export const PASS_THRESHOLD = 80;
+export const WARN_THRESHOLD = 60;
+
+export function scoreStatus(score) {
+  return score >= PASS_THRESHOLD ? "pass" : score >= WARN_THRESHOLD ? "warn" : "fail";
+}
+
+export function scoreIcon(score) {
+  return score >= PASS_THRESHOLD ? "✅" : score >= WARN_THRESHOLD ? "⚠️" : "❌";
+}
+
+export function scoreColor(score) {
+  return score >= PASS_THRESHOLD ? "var(--yry-pass)" : score >= WARN_THRESHOLD ? "var(--yry-warn)" : "var(--yry-fail)";
+}
+
+export function clampScore(score) {
+  return Math.max(0, Math.min(100, score));
+}
+
+export function avgScore(items, field = "score") {
+  if (!items || items.length === 0) return 0;
+  return Math.round(items.reduce((a, c) => a + (c[field] ?? 0), 0) / items.length);
+}
+
+function emDim(scores, details, summaries, dim, label, score, summary, detail) {
+  scores[dim] = score;
+  summaries[dim] = summary;
+  details.push({ dim, label, status: scoreStatus(score), detail, score });
+}
+
 export function assessEngineeringMaturity(projectRoot) {
   const scores = {};
   const details = [];
@@ -26,9 +56,9 @@ export function assessEngineeringMaturity(projectRoot) {
   else if (hasTestFramework && testCaseCount > 0) emTestScore = 80;
   else if (hasTestFramework || hasTestDir) emTestScore = 60;
   else if (hasTestScript) emTestScore = 30;
-  scores.em_testing = emTestScore;
-  summaries.em_testing = hasTestFramework ? `${testCaseCount} 用例` : "无测试框架";
-  details.push({ dim: "em_testing", label: "测试体系", status: emTestScore >= 80 ? "pass" : emTestScore >= 60 ? "warn" : "fail", detail: `${hasTestFramework ? testFrameworks.find(d => depNames.includes(d)) : "无框架"}, ${testCaseCount} 用例`, score: emTestScore });
+  emDim(scores, details, summaries, "em_testing", "测试体系", emTestScore,
+    hasTestFramework ? `${testCaseCount} 用例` : "无测试框架",
+    `${hasTestFramework ? testFrameworks.find(d => depNames.includes(d)) : "无框架"}, ${testCaseCount} 用例`);
 
   // 2. Type safety
   const isTS = existsSync(join(projectRoot, "tsconfig.json"));
@@ -39,9 +69,9 @@ export function assessEngineeringMaturity(projectRoot) {
   if (isTS && hasStrictTS) emTypeScore = 100;
   else if (isTS) emTypeScore = 70;
   else if (hasFlow || hasTypings) emTypeScore = 40;
-  scores.em_types = emTypeScore;
-  summaries.em_types = isTS ? (hasStrictTS ? "strict" : "宽松") : "纯 JS";
-  details.push({ dim: "em_types", label: "类型安全", status: emTypeScore >= 80 ? "pass" : emTypeScore >= 60 ? "warn" : "fail", detail: isTS ? `TypeScript${hasStrictTS ? " strict" : " (宽松)"}` : "纯 JavaScript", score: emTypeScore });
+  emDim(scores, details, summaries, "em_types", "类型安全", emTypeScore,
+    isTS ? (hasStrictTS ? "strict" : "宽松") : "纯 JS",
+    isTS ? `TypeScript${hasStrictTS ? " strict" : " (宽松)"}` : "纯 JavaScript");
 
   // 3. Linting/code style
   const hasESLint = existsSync(join(projectRoot, ".eslintrc.js")) || existsSync(join(projectRoot, ".eslintrc.json")) || existsSync(join(projectRoot, ".eslintrc.cjs")) || existsSync(join(projectRoot, ".eslintrc")) || existsSync(join(projectRoot, "eslint.config.js")) || existsSync(join(projectRoot, "eslint.config.mjs"));
@@ -53,13 +83,13 @@ export function assessEngineeringMaturity(projectRoot) {
   if (hasCILint) emLintScore = 100;
   else if (lintCount >= 2) emLintScore = 80;
   else if (lintCount >= 1) emLintScore = 60;
-  scores.em_linting = emLintScore;
   const lintTools = [];
   if (hasESLint) lintTools.push("ESLint");
   if (hasPrettier) lintTools.push("Prettier");
   if (hasEditorConfig) lintTools.push("EditorConfig");
-  summaries.em_linting = lintTools.join(",") || "无";
-  details.push({ dim: "em_linting", label: "代码规范", status: emLintScore >= 80 ? "pass" : emLintScore >= 60 ? "warn" : "fail", detail: `${lintCount} 工具: ${lintTools.join(", ") || "无"}${hasCILint ? " + CI 强制" : ""}`, score: emLintScore });
+  emDim(scores, details, summaries, "em_linting", "代码规范", emLintScore,
+    lintTools.join(",") || "无",
+    `${lintCount} 工具: ${lintTools.join(", ") || "无"}${hasCILint ? " + CI 强制" : ""}`);
 
   // 4. CI/CD
   const hasGitHubActions = existsSync(join(projectRoot, ".github", "workflows"));
@@ -70,10 +100,10 @@ export function assessEngineeringMaturity(projectRoot) {
   let emCICDScore = 0;
   if (hasCIWorkflows) emCICDScore = 100;
   else if (hasCICD) emCICDScore = 70;
-  scores.em_cicd = emCICDScore;
   const ciLabel = hasGitHubActions ? "GitHub Actions" : hasGitLabCI ? "GitLab CI" : hasJenkins ? "Jenkins" : "无";
-  summaries.em_cicd = ciLabel;
-  details.push({ dim: "em_cicd", label: "CI/CD", status: emCICDScore >= 80 ? "pass" : emCICDScore >= 60 ? "warn" : "fail", detail: hasCICD ? ciLabel : "无 CI/CD 管线", score: emCICDScore });
+  emDim(scores, details, summaries, "em_cicd", "CI/CD", emCICDScore,
+    ciLabel,
+    hasCICD ? ciLabel : "无 CI/CD 管线");
 
   // 5. Documentation completeness
   const hasReadme = existsSync(join(projectRoot, "README.md"));
@@ -84,13 +114,13 @@ export function assessEngineeringMaturity(projectRoot) {
   if (docCount >= 3) emDocScore = 100;
   else if (docCount >= 2) emDocScore = 80;
   else if (docCount >= 1) emDocScore = 50;
-  scores.em_docs = emDocScore;
   const docList = [];
   if (hasReadme) docList.push("README");
   if (hasClaude) docList.push("CLAUDE.md");
   if (hasAPIDocs) docList.push("docs/");
-  summaries.em_docs = docList.join(",") || "无";
-  details.push({ dim: "em_docs", label: "文档完整", status: emDocScore >= 80 ? "pass" : emDocScore >= 60 ? "warn" : "fail", detail: `${docCount} 文档: ${docList.join(", ") || "无"}`, score: emDocScore });
+  emDim(scores, details, summaries, "em_docs", "文档完整", emDocScore,
+    docList.join(",") || "无",
+    `${docCount} 文档: ${docList.join(", ") || "无"}`);
 
   // 6. Dependency management
   const hasLockfile = existsSync(join(projectRoot, "package-lock.json")) || existsSync(join(projectRoot, "yarn.lock")) || existsSync(join(projectRoot, "pnpm-lock.yaml")) || existsSync(join(projectRoot, "bun.lockb"));
@@ -99,9 +129,9 @@ export function assessEngineeringMaturity(projectRoot) {
   let emDepScore = 0;
   if (hasLockfile && hasNpmScriptVersion) emDepScore = 100;
   else if (hasLockfile) emDepScore = 70;
-  scores.em_deps = emDepScore;
-  summaries.em_deps = hasLockfile ? lockType : "无 lockfile";
-  details.push({ dim: "em_deps", label: "依赖管理", status: emDepScore >= 80 ? "pass" : emDepScore >= 60 ? "warn" : "fail", detail: hasLockfile ? `${lockType} lockfile${hasNpmScriptVersion ? " + 版本脚本" : ""}` : "无锁文件", score: emDepScore });
+  emDim(scores, details, summaries, "em_deps", "依赖管理", emDepScore,
+    hasLockfile ? lockType : "无 lockfile",
+    hasLockfile ? `${lockType} lockfile${hasNpmScriptVersion ? " + 版本脚本" : ""}` : "无锁文件");
 
   // 7. Git discipline
   const hasGitignore = existsSync(join(projectRoot, ".gitignore"));
@@ -113,13 +143,13 @@ export function assessEngineeringMaturity(projectRoot) {
   if (hasBranchProtection) emGitScore = 100;
   else if (gitDiscCount >= 2) emGitScore = 80;
   else if (hasGitignore) emGitScore = 60;
-  scores.em_git = emGitScore;
   const gitItems = [];
   if (hasGitignore) gitItems.push(".gitignore");
   if (hasGitAttributes) gitItems.push(".gitattributes");
   if (hasPRTemplate) gitItems.push("PR 模板");
-  summaries.em_git = gitItems.join(",") || "仅基本";
-  details.push({ dim: "em_git", label: "Git 纪律", status: emGitScore >= 80 ? "pass" : emGitScore >= 60 ? "warn" : "fail", detail: `${gitDiscCount} 项: ${gitItems.join(", ") || "无"}`, score: emGitScore });
+  emDim(scores, details, summaries, "em_git", "Git 纪律", emGitScore,
+    gitItems.join(",") || "仅基本",
+    `${gitDiscCount} 项: ${gitItems.join(", ") || "无"}`);
 
   return { scores, details, summaries };
 }
@@ -150,7 +180,7 @@ export function scanComponentScores(projectRoot) {
         score += 40;
         let content = "";
         let lines = 0;
-        try { content = readFileSync(skillMd, "utf-8"); lines = content.split("\n").length; } catch {}
+        try { content = readFileSync(skillMd, "utf-8"); lines = content.split("\n").length; } catch { /* skip unreadable skill */ }
 
         // C2: frontmatter (10 pts)
         criteria["YAML frontmatter"] = /^---/m.test(content);
@@ -179,9 +209,7 @@ export function scanComponentScores(projectRoot) {
           for (const f of files) {
             if (f.isFile() && f.name.endsWith(".mjs")) { mjsCount++; if (f.name === "help.mjs") hasHelp = true; }
           }
-        } catch {}
-
-        // C6: help entry (5 pts)
+        } catch { /* skip unreadable skill dir */ }
         criteria["help.mjs 入口"] = hasHelp;
         if (hasHelp) score += 5;
         else recs.push("添加 help.mjs 作为技能帮助入口");
@@ -195,7 +223,7 @@ export function scanComponentScores(projectRoot) {
 
       results.skills.push({
         name: sd.name,
-        score: Math.min(100, score),
+        score: clampScore(score),
         criteria,
         recommendations: recs,
         hasSkillMd: criteria["SKILL.md 存在"],
@@ -249,15 +277,15 @@ export function scanComponentScores(projectRoot) {
           criteria["含结构化章节"] = /##\s+(触发|规则|操作|生效)/.test(content);
           if (criteria["含结构化章节"]) score += 5;
           else recs.push("添加结构化章节 (触发/规则/操作/生效标志)");
-        } catch {}
+        } catch { /* skip unreadable agent file */ }
         results.agents.push({
           name: af.replace(".md", ""),
-          score: Math.min(100, score),
+          score: clampScore(score),
           criteria,
           recommendations: recs,
         });
       }
-    } catch {}
+    } catch { /* skip unreadable agents dir */ }
   }
 
   // ── Rules ───────────────────────────────────────────────
@@ -300,18 +328,15 @@ export function scanComponentScores(projectRoot) {
           // C6: structured (5)
           criteria["含结构化章节"] = /##\s+|###\s+/.test(content);
           if (criteria["含结构化章节"]) score += 5;
-        } catch {}
+        } catch { /* skip unreadable rule file */ }
         results.rules.push({
           name: rf.replace(".md", ""),
-          score: Math.min(100, score),
+          score: clampScore(score),
           criteria,
           recommendations: recs,
         });
       }
-    } catch {}
-  }
-
-  // ── Scripts (lib/ + lib/engine/ + skills/*/lib/) ─────────
+    } catch { /* skip unreadable rules dir */ } (lib/ + lib/engine/ + skills/*/lib/) ─────────
   const scriptDirs = [join(projectRoot, "lib"), join(projectRoot, "lib", "engine")];
   if (existsSync(skillsDir)) {
     try {
@@ -319,10 +344,7 @@ export function scanComponentScores(projectRoot) {
         const skillLib = join(skillsDir, sd.name, "lib");
         if (existsSync(skillLib)) scriptDirs.push(skillLib);
       }
-    } catch {}
-  }
-
-  for (const dir of scriptDirs) {
+    } catch { /* skip unreadable skills dir for scripts */ }
     if (!existsSync(dir)) continue;
     try {
       const files = readdirSync(dir, { recursive: true, withFileTypes: true });
@@ -361,7 +383,7 @@ export function scanComponentScores(projectRoot) {
           criteria["有对应测试文件"] = hasTest;
           if (hasTest) score += 10;
           else if (lines >= 50) recs.push(`创建 tests/${baseName}.test.mjs 增加测试覆盖`);
-        } catch {}
+        } catch { /* skip unreadable script file */ }
 
         // Derive category from path
         let category = "lib";
@@ -374,12 +396,12 @@ export function scanComponentScores(projectRoot) {
         results.scripts.push({
           name: f.name,
           category,
-          score: Math.min(100, score),
+          score: clampScore(score),
           criteria,
           recommendations: recs,
         });
       }
-    } catch {}
+    } catch { /* skip unreadable script dir */ }
   }
 
   return results;
@@ -402,10 +424,10 @@ export function countTestCases(projectRoot) {
             const content = readFileSync(join(f.path || p, f.name), "utf-8");
             const matches = content.match(/\b(it|test|describe|def test_|func Test)\b/g);
             if (matches) count += matches.length;
-          } catch {}
+          } catch { /* skip unreadable test file */ }
         }
       }
-    } catch {}
+    } catch { /* skip unreadable test dir */ }
   }
   return count;
 }

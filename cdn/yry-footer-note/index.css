@@ -1,0 +1,18 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryFooterNote · 页脚版权信息样式
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.footer-note {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  margin-top: 8px;
+  padding-bottom: 20px;
+}
+.footer-note a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+.footer-note a:hover {
+  text-decoration: underline;
+}

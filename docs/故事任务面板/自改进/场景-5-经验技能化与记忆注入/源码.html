@@ -3,292 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>场景-1-新人上手 · 源码</title>
+<title>场景-5-经验技能化与记忆注入 · 源码</title>
 <link rel="stylesheet" href="../../../../cdn/shared.css">
 <link rel="stylesheet" href="../../../../cdn/theme.css">
-<style>
-:root{
-  --bg:rgba(22,22,32,1);
-  --bg-card:linear-gradient(159deg,rgba(38,38,52,1) 0%,rgba(34,34,46,1) 100%);
-  --bg-flat:rgba(34,34,46,1);
-  --bg-raised:rgba(42,42,56,1);
-  --accent:#FFC107;
-  --cyan:#22d3ee;
-  --purple:#c084fc;
-  --pass:#22c55e;
-  --fail:#ef4444;
-  --warn:#f59e0b;
-  --skip:#6b7280;
-  --text:rgba(250,250,252,1);
-  --text2:rgba(160,160,164,1);
-  --text3:rgba(110,110,114,1);
-  --shadow:0 4px 20px rgba(0,0,0,0.3);
-  --shadow-lg:0 12px 32px rgba(0,0,0,0.45);
-  --radius:12px;
-  --border:1px solid rgba(255,255,255,0.06);
-}
-
-@keyframes fadeInUp   { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-@keyframes fadeInDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
-@keyframes slideDown  { from{opacity:0;max-height:0} to{opacity:1;max-height:3000px} }
-@keyframes modalIn    { from{opacity:0;transform:scale(.96)} to{opacity:1;transform:scale(1)} }
-@keyframes pulse      { 0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)} 50%{box-shadow:0 0 0 6px rgba(255,193,7,0)} }
-@keyframes stepIn     { from{opacity:0;transform:translateX(-10px)} to{opacity:1;transform:translateX(0)} }
-@keyframes glow       { 0%,100%{filter:drop-shadow(0 0 4px rgba(255,193,7,.3))} 50%{filter:drop-shadow(0 0 8px rgba(255,193,7,.6))} }
-@keyframes countUp    { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;line-height:1.6;min-height:100vh}
-
-.container{max-width:1180px;margin:0 auto;padding:40px 24px 80px}
-.header{text-align:center;margin-bottom:24px;animation:fadeInDown .5s ease both}
-.header h1{font-size:2.2rem;font-weight:700;margin-bottom:6px;background:linear-gradient(135deg,#FFC107 0%,#22d3ee 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.header .sub{color:var(--text2);font-size:.9rem}
-.header .badges{margin-top:10px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
-.header .badge{font-size:.66rem;padding:3px 10px;border-radius:10px;background:rgba(255,255,255,.05);color:var(--text2);border:1px solid rgba(255,255,255,.06)}
-
-.stats-grid{display:flex;gap:12px;justify-content:center;margin-bottom:18px;flex-wrap:wrap;animation:fadeInDown .5s .1s ease both}
-.stat-card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:16px 20px;text-align:center;box-shadow:var(--shadow);min-width:95px;transition:transform .15s,box-shadow .15s,border-color .15s;cursor:pointer;position:relative;overflow:hidden}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity .2s}
-.stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:rgba(255,255,255,.1)}
-.stat-card:hover::before{opacity:1}
-.stat-card .val{font-size:1.7rem;font-weight:700;line-height:1.1;animation:countUp .4s ease both}
-.stat-card .val.c{color:var(--cyan)}
-.stat-card .val.a{color:var(--accent)}
-.stat-card .val.p{color:var(--purple)}
-.stat-card .val.g{color:var(--pass)}
-.stat-card .lbl{font-size:.68rem;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
-.stat-card.active-filter{border-color:rgba(255,193,7,.4);animation:pulse 2s infinite}
-
-.bar-wrap{margin-bottom:24px;animation:fadeInDown .5s .12s ease both}
-.bar-outer{height:8px;border-radius:4px;overflow:hidden;display:flex;background:rgba(255,255,255,.04);position:relative}
-.bar-outer .seg{height:100%;transition:width .5s ease;min-width:2px;position:relative;cursor:pointer}
-.bar-outer .seg:hover{filter:brightness(1.2)}
-.bar-outer .seg::after{content:attr(data-tip);position:absolute;top:-28px;left:50%;transform:translateX(-50%);background:var(--bg-raised);color:var(--text);padding:3px 8px;border-radius:4px;font-size:.66rem;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;z-index:5}
-.bar-outer .seg:hover::after{opacity:1}
-.bar-outer .seg.skill{background:var(--accent)}
-.bar-outer .seg.agent{background:var(--purple)}
-.bar-outer .seg.rule{background:var(--pass)}
-.bar-outer .seg.lib{background:var(--cyan)}
-
-.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;animation:fadeInDown .5s .14s ease both}
-.search-box{flex:1;min-width:240px;position:relative}
-.search-box input{width:100%;background:var(--bg-flat);border:var(--border);border-radius:8px;padding:9px 14px 9px 36px;color:var(--text);font-size:.84rem;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s}
-.search-box input:focus{border-color:rgba(255,193,7,.4);box-shadow:0 0 0 3px rgba(255,193,7,.08)}
-.search-box input::placeholder{color:var(--text3)}
-.search-box::before{content:'🔍';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:.85rem;opacity:.55}
-.search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:1rem;padding:2px 6px;border-radius:4px;display:none}
-.search-clear:hover{color:var(--text);background:rgba(255,255,255,.05)}
-.search-box.has-value .search-clear{display:block}
-.kbd-group{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:.7rem;color:var(--text3)}
-.kbd{font-size:.66rem;color:var(--text3);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:4px;padding:2px 7px;font-family:monospace}
-
-.tabs{display:flex;gap:0;border-bottom:var(--border);margin-bottom:0;overflow-x:auto;animation:fadeInDown .5s .18s ease both;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{padding:10px 18px;cursor:pointer;font-size:.82rem;color:var(--text3);border-bottom:2px solid transparent;transition:all .15s;user-select:none;position:relative;white-space:nowrap;display:flex;align-items:center;gap:6px}
-.tab .tab-count{font-size:.62rem;background:rgba(255,255,255,.06);padding:1px 6px;border-radius:8px;color:var(--text2)}
-.tab:hover{color:var(--text2)}
-.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
-.tab.on .tab-count{background:rgba(255,193,7,.15);color:var(--accent)}
-
-.panel{display:none;animation:fadeInUp .4s ease both;padding-top:24px}
-.panel.on{display:block}
-
-.suite{background:var(--bg-card);border:var(--border);border-radius:var(--radius);margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden;transition:border-color .2s}
-.suite.open{border-color:rgba(255,255,255,.08)}
-.s-head{display:flex;align-items:center;gap:10px;padding:12px 18px;cursor:pointer;user-select:none;transition:background .12s}
-.s-head:hover{background:rgba(255,255,255,.02)}
-.s-head .s-arrow{font-size:.6rem;color:var(--text3);transition:transform .2s;width:12px;text-align:center}
-.suite.open .s-head .s-arrow{transform:rotate(90deg)}
-.s-head .s-name{flex:1;font-weight:600;font-size:.88rem;display:flex;align-items:center;gap:8px}
-.s-head .s-count{font-size:.7rem;color:var(--text3);background:rgba(255,255,255,.04);padding:1px 8px;border-radius:8px}
-.s-head .s-meta{font-size:.72rem;color:var(--text3)}
-.s-body{display:none;border-top:var(--border);animation:slideDown .25s ease;overflow:hidden}
-.suite.open .s-body{display:block}
-
-.file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:10px;padding:14px}
-.file-card{background:var(--bg-flat);border:1px solid rgba(255,255,255,.04);border-radius:10px;padding:14px 16px;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s,background .15s;display:flex;align-items:flex-start;gap:12px;position:relative;overflow:hidden}
-.file-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);opacity:0;transition:opacity .15s}
-.file-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:rgba(255,255,255,.12);background:rgba(40,40,54,1)}
-.file-card:hover::before{opacity:1}
-.file-card.critical::before{background:var(--fail);opacity:1}
-.file-card.important::before{background:var(--warn);opacity:1}
-.file-card.reference::before{background:var(--cyan);opacity:.5}
-.file-card .fc-icon{font-size:1.5rem;flex-shrink:0;margin-top:1px;line-height:1}
-.file-card .fc-body{flex:1;min-width:0}
-.file-card .fc-name{display:flex;align-items:center;gap:6px;font-weight:600;font-size:.86rem;flex-wrap:wrap}
-.file-card .fc-path{font-size:.7rem;color:var(--text3);font-family:monospace;margin-top:2px}
-.file-card .fc-desc{font-size:.74rem;color:var(--text2);margin-top:6px;line-height:1.45}
-.file-card .fc-meta{display:flex;gap:10px;margin-top:8px;font-size:.7rem;color:var(--text3);flex-wrap:wrap;align-items:center}
-.file-card .fc-meta .meta-item{display:inline-flex;align-items:center;gap:3px}
-.file-card .fc-badges{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
-.fc-badge{font-size:.62rem;padding:2px 8px;border-radius:10px;font-weight:600;letter-spacing:.3px}
-.fc-badge.skill{background:rgba(255,193,7,.12);color:var(--accent);border:1px solid rgba(255,193,7,.2)}
-.fc-badge.agent{background:rgba(192,132,252,.12);color:var(--purple);border:1px solid rgba(192,132,252,.2)}
-.fc-badge.rule{background:rgba(34,197,94,.12);color:var(--pass);border:1px solid rgba(34,197,94,.2)}
-.fc-badge.lib{background:rgba(34,211,238,.12);color:var(--cyan);border:1px solid rgba(34,211,238,.2)}
-.fc-badge.must{background:rgba(239,68,68,.12);color:var(--fail);border:1px solid rgba(239,68,68,.25)}
-.fc-badge.recommend{background:rgba(245,158,11,.12);color:var(--warn);border:1px solid rgba(245,158,11,.25)}
-.fc-badge.reference{background:rgba(34,211,238,.1);color:var(--cyan);border:1px solid rgba(34,211,238,.2)}
-
-.file-list{padding:6px 14px 14px}
-.t-row{display:flex;align-items:center;gap:10px;padding:9px 14px;font-size:.8rem;border-bottom:1px solid rgba(255,255,255,.025);transition:background .08s,transform .12s;cursor:pointer;border-radius:6px;margin-bottom:2px}
-.t-row:last-child{border-bottom:none}
-.t-row:hover{background:rgba(255,255,255,.03);transform:translateX(2px)}
-.t-row .t-icon{width:18px;text-align:center;flex-shrink:0;font-size:.85rem}
-.t-row .t-name{flex:1;color:var(--text);font-weight:500;display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.t-row .t-path{font-size:.7rem;color:var(--text3);font-family:monospace;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.t-row .t-meta{font-size:.68rem;color:var(--text3);min-width:80px;text-align:right;display:flex;align-items:center;gap:8px;justify-content:flex-end}
-
-.card{background:var(--bg-card);border:var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow);animation:fadeInUp .4s ease both;position:relative;overflow:hidden}
-.card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:linear-gradient(180deg,var(--accent),transparent);opacity:.6}
-.card h2{font-size:.95rem;margin-bottom:14px;color:var(--cyan);font-weight:600;display:flex;align-items:center;gap:8px}
-.card h2 .h2-tag{font-size:.62rem;color:var(--text3);font-weight:400;margin-left:auto}
-.card p{font-size:.82rem;color:var(--text2);line-height:1.7}
-
-.timeline{position:relative;padding-left:28px;margin-top:8px}
-.timeline::before{content:'';position:absolute;left:11px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,var(--accent),var(--cyan),var(--purple),var(--pass))}
-.t-step{position:relative;padding:12px 0 12px 16px;animation:stepIn .4s ease both}
-.t-step:nth-child(1){animation-delay:.05s}
-.t-step:nth-child(2){animation-delay:.1s}
-.t-step:nth-child(3){animation-delay:.15s}
-.t-step:nth-child(4){animation-delay:.2s}
-.t-step:nth-child(5){animation-delay:.25s}
-.t-step:nth-child(6){animation-delay:.3s}
-.t-step:nth-child(7){animation-delay:.35s}
-.t-step::before{content:'';position:absolute;left:-22px;top:18px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--accent);box-shadow:0 0 0 3px rgba(255,193,7,.15)}
-.t-step.s2::before{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(34,211,238,.15)}
-.t-step.s3::before{border-color:var(--purple);box-shadow:0 0 0 3px rgba(192,132,252,.15)}
-.t-step.s4::before{border-color:var(--pass);box-shadow:0 0 0 3px rgba(34,197,94,.15)}
-.t-step .step-title{font-weight:600;font-size:.86rem;color:var(--text);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.t-step .step-num{font-size:.66rem;background:rgba(255,255,255,.06);color:var(--text2);padding:1px 7px;border-radius:8px;font-weight:500}
-.t-step .step-desc{font-size:.78rem;color:var(--text2);margin-top:4px;line-height:1.55}
-.t-step .step-action{margin-top:6px;font-size:.72rem;color:var(--cyan);font-family:monospace;background:rgba(34,211,238,.06);padding:4px 8px;border-radius:4px;display:inline-block;border-left:2px solid var(--cyan)}
-.t-step .step-time{font-size:.66rem;color:var(--text3);margin-top:4px;font-style:italic}
-
-.task-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:10px}
-.task-card{background:var(--bg-flat);border:var(--border);border-radius:10px;padding:14px 16px;transition:transform .15s,border-color .15s;cursor:pointer;position:relative}
-.task-card:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.12)}
-.task-card .t-icon{font-size:1.4rem;margin-bottom:6px;display:block}
-.task-card .t-title{font-weight:600;font-size:.85rem;color:var(--text);margin-bottom:4px}
-.task-card .t-desc{font-size:.74rem;color:var(--text2);line-height:1.5}
-.task-card .t-cmd{margin-top:8px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.05);border-radius:5px;padding:6px 10px;font-family:monospace;font-size:.7rem;color:var(--cyan);overflow-x:auto;white-space:nowrap;position:relative}
-.task-card .t-cmd::before{content:'$ ';color:var(--pass);opacity:.7}
-.task-card .t-diff{position:absolute;top:10px;right:10px;font-size:.6rem;padding:2px 7px;border-radius:8px;font-weight:600}
-.t-diff.easy{background:rgba(34,197,94,.12);color:var(--pass)}
-.t-diff.medium{background:rgba(245,158,11,.12);color:var(--warn)}
-.t-diff.hard{background:rgba(239,68,68,.12);color:var(--fail)}
-
-.dep-graph{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;padding:16px 0;font-size:.8rem}
-.dep-node{background:var(--bg-flat);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:8px 14px;color:var(--text);font-family:monospace;font-size:.78rem;white-space:nowrap;transition:all .15s;cursor:pointer}
-.dep-node:hover{transform:translateY(-1px);box-shadow:var(--shadow);border-color:var(--accent);color:var(--accent)}
-.dep-arrow{color:var(--text3);font-size:1.1rem;opacity:.5}
-.dep-node.root{border-color:rgba(255,193,7,.4);color:var(--accent);background:rgba(255,193,7,.06);font-weight:600}
-.dep-node.leaf{border-color:rgba(34,211,238,.3);color:var(--cyan);background:rgba(34,211,238,.04)}
-
-.tip-list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
-.tip{background:var(--bg-flat);border:var(--border);border-left:3px solid var(--cyan);border-radius:8px;padding:12px 16px;display:flex;gap:12px;align-items:flex-start;transition:transform .12s}
-.tip:hover{transform:translateX(2px)}
-.tip.warn{border-left-color:var(--warn)}
-.tip.danger{border-left-color:var(--fail)}
-.tip.success{border-left-color:var(--pass)}
-.tip .tip-icon{font-size:1.1rem;flex-shrink:0;line-height:1.4}
-.tip .tip-body{flex:1;min-width:0}
-.tip .tip-title{font-weight:600;font-size:.82rem;color:var(--text);margin-bottom:2px}
-.tip .tip-desc{font-size:.76rem;color:var(--text2);line-height:1.55}
-.tip .tip-code{margin-top:6px;background:rgba(0,0,0,.25);padding:5px 10px;border-radius:4px;font-family:monospace;font-size:.72rem;color:var(--cyan);display:inline-block}
-
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
-.modal-overlay.show{display:flex}
-.modal{background:var(--bg-raised);border:var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg),0 0 0 1px rgba(255,255,255,.04);width:100%;max-width:980px;max-height:88vh;display:flex;flex-direction:column;animation:modalIn .2s ease}
-.modal .m-head{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:var(--border);flex-shrink:0;background:rgba(0,0,0,.15);border-radius:var(--radius) var(--radius) 0 0}
-.modal .m-head .m-icon{font-size:1.1rem;flex-shrink:0}
-.modal .m-head .m-title{flex:1;font-weight:600;font-size:.88rem;font-family:monospace;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.modal .m-head .m-actions{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
-.modal .m-head .m-btn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);color:var(--text2);cursor:pointer;padding:4px 10px;border-radius:5px;font-size:.7rem;font-family:inherit;transition:all .12s;display:flex;align-items:center;gap:4px}
-.modal .m-head .m-btn:hover{background:rgba(255,255,255,.08);color:var(--text);border-color:rgba(255,255,255,.12)}
-.modal .m-head .m-close{background:none;border:none;color:var(--text3);font-size:1.3rem;cursor:pointer;padding:2px 8px;border-radius:4px;line-height:1}
-.modal .m-head .m-close:hover{color:var(--fail);background:rgba(239,68,68,.1)}
-.modal .m-meta{padding:8px 20px;background:rgba(0,0,0,.1);border-bottom:var(--border);font-size:.72rem;color:var(--text3);display:flex;gap:16px;flex-wrap:wrap;align-items:center}
-.modal .m-meta .m-meta-item{display:inline-flex;align-items:center;gap:4px}
-.modal .m-meta .m-meta-item b{color:var(--text2);font-weight:500}
-.modal .m-jump{margin-left:auto;display:flex;align-items:center;gap:6px}
-.modal .m-jump input{width:60px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:3px 6px;color:var(--text);font-size:.7rem;font-family:monospace;outline:none}
-.modal .m-jump input:focus{border-color:rgba(255,193,7,.3)}
-.modal .m-body{flex:1;overflow:auto;padding:0;background:rgba(0,0,0,.18)}
-.modal .m-body pre{margin:0;padding:14px 20px;font-family:'SF Mono','JetBrains Mono','Fira Code','Consolas',monospace;font-size:.76rem;line-height:1.6;color:var(--text2);white-space:pre;word-break:normal}
-.modal .m-body pre .ln{display:inline-block;width:42px;text-align:right;margin-right:14px;color:var(--text3);font-size:.68rem;user-select:none;border-right:1px solid rgba(255,255,255,.04);padding-right:8px;transition:color .12s}
-.modal .m-body pre .code-line{display:block;padding-left:4px;transition:background .12s}
-.modal .m-body pre .code-line:hover{background:rgba(255,255,255,.025)}
-.modal .m-body pre .code-line.target{background:rgba(255,193,7,.1);box-shadow:inset 3px 0 0 var(--accent)}
-
-.state-msg{text-align:center;padding:80px 20px;animation:fadeInUp .5s ease both}
-.state-msg .icon{font-size:3.5rem;margin-bottom:12px;display:inline-block;animation:glow 2.5s ease-in-out infinite}
-.state-msg h3{font-size:1.1rem;color:var(--text2);margin-bottom:6px}
-.state-msg p{font-size:.84rem;color:var(--text3);margin:4px 0}
-.state-msg code{background:var(--bg-flat);padding:5px 10px;border-radius:6px;font-size:.78rem;color:var(--cyan);margin-top:8px;display:inline-block;border:1px solid rgba(34,211,238,.15)}
-
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-raised);border:1px solid rgba(255,193,7,.3);border-radius:8px;color:var(--text);padding:10px 20px;font-size:.82rem;z-index:300;box-shadow:var(--shadow-lg);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
-
-.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
-.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
-.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
-.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
-.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
-.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:28px;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
-.cross-link{color:var(--cyan);text-decoration:none;font-size:.74rem;padding:3px 10px;border-radius:4px;transition:color .15s,background .15s}
-.cross-link:hover{color:var(--accent);background:rgba(255,193,7,.06);text-decoration:underline}
-.cross-link.on{color:var(--accent);font-weight:600;background:rgba(255,193,7,.05)}
-.cross-sep{color:var(--text3);font-size:.5rem;opacity:.35;user-select:none}
-
-.checklist{list-style:none;padding:0}
-.checklist li{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;margin-bottom:4px;font-size:.8rem;color:var(--text2);border-radius:6px;transition:background .12s}
-.checklist li:hover{background:rgba(255,255,255,.02)}
-.checklist li .chk{color:var(--pass);flex-shrink:0;font-weight:bold;min-width:18px}
-.checklist li .chk.partial{color:var(--warn)}
-.checklist li code{background:rgba(34,211,238,.08);color:var(--cyan);padding:1px 6px;border-radius:3px;font-size:.72rem;font-family:monospace}
-
-.role-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:8px}
-.role-mini{background:var(--bg-flat);border:var(--border);border-radius:8px;padding:12px 14px;transition:all .15s;cursor:pointer}
-.role-mini:hover{border-color:rgba(192,132,252,.3);transform:translateY(-1px);box-shadow:var(--shadow)}
-.role-mini .rm-name{font-weight:600;font-size:.82rem;color:var(--purple);margin-bottom:4px;display:flex;align-items:center;gap:6px}
-.role-mini .rm-desc{font-size:.72rem;color:var(--text2);line-height:1.5}
-.role-mini .rm-files{margin-top:6px;font-size:.66rem;color:var(--text3);font-family:monospace;word-break:break-all}
-
-.info-box{background:linear-gradient(135deg,rgba(255,193,7,.06) 0%,rgba(34,211,238,.04) 100%);border:1px solid rgba(255,193,7,.15);border-radius:10px;padding:14px 18px;margin-bottom:12px;display:flex;gap:14px;align-items:flex-start;animation:fadeInUp .4s ease both}
-.info-box .ib-icon{font-size:1.5rem;flex-shrink:0;line-height:1.2}
-.info-box .ib-body{flex:1;min-width:0}
-.info-box .ib-title{font-weight:600;font-size:.84rem;color:var(--accent);margin-bottom:3px}
-.info-box .ib-desc{font-size:.76rem;color:var(--text2);line-height:1.6}
-
-@media(max-width:768px){
-  .container{padding:24px 12px 60px}
-  .header h1{font-size:1.6rem}
-  .stats-grid{gap:6px}
-  .stat-card{padding:12px 14px;min-width:72px}
-  .stat-card .val{font-size:1.2rem}
-  .file-grid,.task-grid,.role-grid{grid-template-columns:1fr}
-  .dep-graph{flex-direction:column}
-  .tab{padding:8px 12px;font-size:.76rem}
-  .modal{max-height:92vh}
-  .modal .m-body pre{font-size:.7rem;padding:10px 14px}
-  .modal .m-body pre .ln{width:32px;margin-right:8px}
-  .toolbar{flex-direction:column;align-items:stretch}
-  .kbd-group{justify-content:center}
-  .timeline{padding-left:22px}
-}
-a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
-.footer-note{text-align:center;color:var(--text3);font-size:.74rem;margin-top:36px;padding-top:18px;border-top:var(--border)}
-.footer-note a{color:var(--accent);text-decoration:none}
-.footer-note a:hover{text-decoration:underline}
-@media print{
-  .toolbar,.tabs,.modal-overlay,.toast,.stat-card{cursor:default!important}
-  .stats-grid{break-inside:avoid}
-  .card{break-inside:avoid;box-shadow:none;border:1px solid #ccc}
-}
-</style>
+<link rel="stylesheet" href="../../../../cdn/yry-source-base.css">
 </head>
 <body>
 <div class="container">
@@ -319,13 +37,13 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 </nav>
 
 <div class="header">
-  <h1>📄 新人上手 · 源码中心</h1>
-  <p class="sub">YrY 系统 33 份核心源文件 — 环境搭建 · 阅读路径 · 调试方法 · 首个 PR 全流程</p>
+  <h1>📄 经验技能化与记忆注入 · 源码中心</h1>
+  <p class="sub">自改进闭环 16 份核心源文件 — 诊断引擎 · 提案路由 · 效果评估 · 五条经验技能化升级路径 · 记忆压缩与注入</p>
   <div class="badges">
-    <span class="badge">v4.5</span>
-    <span class="badge">📅 2026-06-13</span>
+    <span class="badge">v5.4</span>
+    <span class="badge">📅 2026-06-18</span>
     <span class="badge">🌿 feat/yry-arch</span>
-    <span class="badge">⏱ 30min 上手</span>
+    <span class="badge">📦 16 文件</span>
     <span class="badge">🎯 P0</span>
   </div>
 </div>
@@ -335,7 +53,7 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 
 <div class="toolbar">
   <div class="search-box" id="searchBox">
-    <input type="text" id="searchInput" placeholder="搜索文件路径、名称、描述…  (例: rui, agents, gate)" autocomplete="off" spellcheck="false">
+    <input type="text" id="searchInput" placeholder="搜索文件路径、名称、描述…  (例: diagnosis, proposal, recommend)" autocomplete="off" spellcheck="false">
     <button class="search-clear" onclick="clearSearch()" title="清空">✕</button>
   </div>
   <div class="kbd-group">
@@ -345,7 +63,7 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 
 <div class="tabs">
   <span class="tab on" data-panel="overview">🎯 概览</span>
-  <span class="tab" data-panel="files">📁 文件清单 <span class="tab-count" id="cntFiles">33</span></span>
+  <span class="tab" data-panel="files">📁 文件清单 <span class="tab-count" id="cntFiles">16</span></span>
   <span class="tab" data-panel="browse">📂 目录浏览</span>
   <span class="tab" data-panel="learn">🗺️ 学习路径</span>
   <span class="tab" data-panel="tasks">🛠️ 调试任务</span>
@@ -356,35 +74,35 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <!-- ── 概览 ─────────────────────────────────────────────────────────── -->
 <div class="panel on" id="panelOverview">
   <div class="info-box">
-    <div class="ib-icon">👋</div>
+    <div class="ib-icon">🔄</div>
     <div class="ib-body">
-      <div class="ib-title">欢迎加入 YrY 贡献者行列</div>
-      <div class="ib-desc">本页面聚合了 33 份核心源文件，按"必读 / 推荐 / 参考"三级重要度组织，并提供完整的学习路径、调试任务清单和首个 PR 流程指引。建议按 <b>学习路径</b> 标签页的七步走，每步约 4 分钟，全流程约 30 分钟即可独立完成首次变更。</div>
+      <div class="ib-title">自改进闭环核心源码</div>
+      <div class="ib-desc">本页面聚合了 16 份自改进闭环核心源文件，覆盖<B>D0-D8 诊断引擎</B>、<B>E1-E4 效果评估</B>、<B>五条经验技能化升级路径</B>、<B>记忆压缩与跨会话注入</B>四大能力域。按"引擎 → 规则 → Agent → 技能"四层组织，建议按 <b>学习路径</b> 标签页的六步走，每步约 5 分钟，全流程约 30 分钟即可理解自改进闭环全貌。</div>
     </div>
   </div>
 
   <div class="card">
     <h2>📊 源码全景速览 <span class="h2-tag">实时统计 · 4 大类</span></h2>
     <div class="role-grid">
-      <div class="role-mini" onclick="filterCat('skill')">
-        <div class="rm-name">⚙️ 技能 Skills <span style="margin-left:auto;font-size:.7rem;color:var(--accent)" id="ov-skill"></span></div>
-        <div class="rm-desc">用户入口 · 编排管线 · 7 个独立技能模块</div>
-        <div class="rm-files">rui · rui-story · rui-经验技能化与记忆注入 · rui-import · rui-bot · rui-trends · rui-npm</div>
+      <div class="role-mini" onclick="filterCat('rule')">
+        <div class="rm-name">📜 治理规则 <span style="margin-left:auto;font-size:.7rem;color:var(--pass)" id="ov-rule"></span></div>
+        <div class="rm-desc">自改进闭环规则 — D0-D7 诊断 · E1-E4 评估 · 升级路径</div>
+        <div class="rm-files">self-improve.md — 诊断决策表 · 提案类型路由 · 效果评估矩阵 · 经验技能化升级条件</div>
       </div>
       <div class="role-mini" onclick="filterCat('agent')">
         <div class="rm-name">🤖 Agent 角色 <span style="margin-left:auto;font-size:.7rem;color:var(--purple)" id="ov-agent"></span></div>
-        <div class="rm-desc">协作拓扑 · 行为纪律 · 9 类角色边界</div>
-        <div class="rm-files">AGENT · pm · planner · architect · coder · reviewer · tester · reporter · security · self-improve</div>
-      </div>
-      <div class="role-mini" onclick="filterCat('rule')">
-        <div class="rm-name">📜 治理规则 <span style="margin-left:auto;font-size:.7rem;color:var(--pass)" id="ov-rule"></span></div>
-        <div class="rm-desc">管线纪律 · 安全护栏 · 10 套约束规则</div>
-        <div class="rm-files">code-pipeline · delivery-gate · architecture-diagram · plan-execution · doc-generation · knowledge-graph · mermaid-theme · security-guardrails · rui-经验技能化与记忆注入 · self-improve</div>
+        <div class="rm-desc">自改进引擎 — 四段闭环 · 提案矩阵 · 记忆注入</div>
+        <div class="rm-files">self-improve.md — 数据采集→诊断→提案→评估完整行为定义</div>
       </div>
       <div class="role-mini" onclick="filterCat('lib')">
-        <div class="rm-name">📦 共享库 Lib <span style="margin-left:auto;font-size:.7rem;color:var(--cyan)" id="ov-lib"></span></div>
-        <div class="rm-desc">基础设施 · 工具复用 · 4 个共享模块</div>
-        <div class="rm-files">constants · fs · help-layout · tty</div>
+        <div class="rm-name">📦 引擎库 Lib <span style="margin-left:auto;font-size:.7rem;color:var(--cyan)" id="ov-lib"></span></div>
+        <div class="rm-desc">诊断引擎 · 提案生成 · 执行记录 · 推荐系统</div>
+        <div class="rm-files">diagnostics · proposals · record · recommend · selfimprove-generator</div>
+      </div>
+      <div class="role-mini" onclick="filterCat('skill')">
+        <div class="rm-name">⚙️ 技能 Skills <span style="margin-left:auto;font-size:.7rem;color:var(--accent)" id="ov-skill"></span></div>
+        <div class="rm-desc">自改进技能入口 · 关注点注入 · Bot 诊断</div>
+        <div class="rm-files">rui-yry · concerns/diagnostics · concerns/architecture · concerns/integration · concerns/handoff · bot-health-diagnostics</div>
       </div>
     </div>
   </div>
@@ -393,57 +111,57 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
     <h2>🎯 重要度分级 <span class="h2-tag">按优先级阅读</span></h2>
     <p style="margin-bottom:10px">所有源文件按重要度分为三级，建议按优先级阅读：</p>
     <ul class="checklist">
-      <li><span class="chk" style="color:var(--fail)">★</span> <b style="color:var(--fail)">必读 (Must-Read)</b> — 首次上手必读，缺失则无法理解系统全貌：<code>CLAUDE.md</code> · <code>README.md</code> · <code>agents/AGENT.md</code> · <code>rules/code-pipeline.md</code></li>
-      <li><span class="chk partial">◆</span> <b style="color:var(--warn)">推荐 (Recommended)</b> — 进入实操前需了解：<code>skills/rui/SKILL.md</code> · <code>rules/delivery-gate.md</code> · <code>rules/security-guardrails.md</code> · <code>agents/coder.md</code></li>
-      <li><span class="chk" style="color:var(--cyan)">○</span> <b style="color:var(--cyan)">参考 (Reference)</b> — 按需查阅，常作为实现/排错时的工具书：其余 25 份</li>
+      <li><span class="chk" style="color:var(--fail)">★</span> <b style="color:var(--fail)">必读 (Must-Read)</b> — 理解自改进闭环必读：<code>rules/self-improve.md</code> · <code>agents/self-improve.md</code> · <code>lib/engine/diagnostics.mjs</code></li>
+      <li><span class="chk partial">◆</span> <b style="color:var(--warn)">推荐 (Recommended)</b> — 进入实操前需了解：<code>lib/proposals.mjs</code> · <code>lib/record.mjs</code> · <code>lib/recommend.mjs</code> · <code>skills/rui-yry/SKILL.md</code></li>
+      <li><span class="chk" style="color:var(--cyan)">○</span> <b style="color:var(--cyan)">参考 (Reference)</b> — 按需查阅，实现/排错时工具书：其余 9 份</li>
     </ul>
   </div>
 
   <div class="card">
     <h2>⚡ 快速操作台 <span class="h2-tag">点击复制命令</span></h2>
-    <p style="margin-bottom:12px">下列命令覆盖 80% 的新人日常操作，点击卡片即可复制：</p>
+    <p style="margin-bottom:12px">下列命令覆盖自改进闭环的日常操作，点击卡片即可复制：</p>
     <div class="task-grid">
-      <div class="task-card" onclick="copyText('git clone &lt;repo&gt; &amp;&amp; cd YrY')">
+      <div class="task-card" onclick="copyText('node lib/arch-check.mjs')">
         <span class="t-diff easy">EASY</span>
-        <span class="t-icon">📥</span>
-        <div class="t-title">克隆项目</div>
-        <div class="t-desc">从仓库克隆代码到本地</div>
-        <div class="t-cmd">git clone &lt;repo&gt; &amp;&amp; cd YrY</div>
+        <span class="t-icon">🏗️</span>
+        <div class="t-title">架构合规检查</div>
+        <div class="t-desc">15 维度 A 级架构合规自动验证</div>
+        <div class="t-cmd">node lib/arch-check.mjs</div>
       </div>
-      <div class="task-card" onclick="copyText('node tests/run.mjs')">
+      <div class="task-card" onclick="copyText('node skills/rui-bot/send.mjs health')">
         <span class="t-diff easy">EASY</span>
-        <span class="t-icon">🧪</span>
-        <div class="t-title">运行测试</div>
-        <div class="t-desc">执行 7 组测试套件，验证基线</div>
-        <div class="t-cmd">node tests/run.mjs</div>
+        <span class="t-icon">🩺</span>
+        <div class="t-title">健康检查</div>
+        <div class="t-desc">9 维度项目健康 + D0-D7 诊断</div>
+        <div class="t-cmd">node skills/rui-bot/send.mjs health</div>
       </div>
-      <div class="task-card" onclick="copyText('node skills/rui/help.mjs')">
+      <div class="task-card" onclick="copyText('node lib/selfimprove-generator.mjs')">
+        <span class="t-diff medium">MED</span>
+        <span class="t-icon">📊</span>
+        <div class="t-title">生成自改进报告</div>
+        <div class="t-desc">从健康趋势生成自我改进巡检报告</div>
+        <div class="t-cmd">node lib/selfimprove-generator.mjs</div>
+      </div>
+      <div class="task-card" onclick="copyText('node lib/recommend-cli.mjs')">
+        <span class="t-diff medium">MED</span>
+        <span class="t-icon">💡</span>
+        <div class="t-title">推荐检测</div>
+        <div class="t-desc">检测可改进项并生成推荐提案</div>
+        <div class="t-cmd">node lib/recommend-cli.mjs</div>
+      </div>
+      <div class="task-card" onclick="copyText('cat .memory/health-trend.jsonl | tail -5')">
+        <span class="t-diff easy">EASY</span>
+        <span class="t-icon">📈</span>
+        <div class="t-title">查看健康趋势</div>
+        <div class="t-desc">查看最近 5 次健康检查记录</div>
+        <div class="t-cmd">cat .memory/health-trend.jsonl | tail -5</div>
+      </div>
+      <div class="task-card" onclick="copyText('node skills/rui-yry/help.mjs')">
         <span class="t-diff easy">EASY</span>
         <span class="t-icon">📖</span>
-        <div class="t-title">查看帮助</div>
-        <div class="t-desc">列出 8 条可用命令 + 管线一览</div>
-        <div class="t-cmd">node skills/rui/help.mjs</div>
-      </div>
-      <div class="task-card" onclick="copyText('ls .claude/ && ls .claude/commands/')">
-        <span class="t-diff easy">EASY</span>
-        <span class="t-icon">⚙️</span>
-        <div class="t-title">检查配置</div>
-        <div class="t-desc">验证 .claude/ 配置目录结构</div>
-        <div class="t-cmd">ls .claude/ &amp;&amp; ls .claude/commands/</div>
-      </div>
-      <div class="task-card" onclick="copyText('git checkout -b feat/<your-task>')">
-        <span class="t-diff medium">MED</span>
-        <span class="t-icon">🌿</span>
-        <div class="t-title">创建分支</div>
-        <div class="t-desc">按 Gate 0 规约创建特性分支</div>
-        <div class="t-cmd">git checkout -b feat/&lt;task&gt;</div>
-      </div>
-      <div class="task-card" onclick="copyText('grep -rn 术语 README.md')">
-        <span class="t-diff easy">EASY</span>
-        <span class="t-icon">🔍</span>
-        <div class="t-title">检索术语</div>
-        <div class="t-desc">在领域语言段查找关键术语</div>
-        <div class="t-cmd">grep -rn "术语" README.md</div>
+        <div class="t-title">自改进帮助</div>
+        <div class="t-desc">查看 rui-yry 自改进技能帮助</div>
+        <div class="t-cmd">node skills/rui-yry/help.mjs</div>
       </div>
     </div>
   </div>
@@ -458,50 +176,44 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <!-- ── 学习路径 ──────────────────────────────────────────────────────── -->
 <div class="panel" id="panelLearn">
   <div class="card">
-    <h2>🗺️ 七步上手路径 <span class="h2-tag">建议严格按序</span></h2>
-    <p style="margin-bottom:14px">每步约 4 分钟，全程 ~30 分钟。每步有明确的入口文档和可验证的完成标志，可中断可恢复。</p>
+    <h2>🗺️ 六步理解自改进闭环 <span class="h2-tag">建议严格按序</span></h2>
+    <p style="margin-bottom:14px">每步约 5 分钟，全程 ~30 分钟。从规则到引擎到技能，逐层理解自改进闭环的完整运作机制。</p>
     <div class="timeline">
       <div class="t-step">
-        <div class="step-title"><span class="step-num">STEP 1 · 4 min</span> 阅读项目入口</div>
-        <div class="step-desc">打开 <code>CLAUDE.md</code>，理解项目画像、四大铁律、领域语言指引。知道"项目是什么"和"不可妥协什么"。</div>
-        <div class="step-action">→ 阅读项目级指令文档</div>
-        <div class="step-time">✅ 完成标志：能用三句话向他人介绍本项目</div>
+        <div class="step-title"><span class="step-num">STEP 1 · 5 min</span> 阅读自改进规则</div>
+        <div class="step-desc">打开 <code>rules/self-improve.md</code>，理解 D0-D8 诊断维度、E1-E4 效果评估等级、五条经验技能化升级路径的触发条件与目标映射。</div>
+        <div class="step-action">→ 重点看诊断决策表和升级条件阈值</div>
+        <div class="step-time">✅ 完成标志：能列出 5 条升级路径及其触发条件</div>
       </div>
       <div class="t-step s2">
-        <div class="step-title"><span class="step-num">STEP 2 · 5 min</span> 了解系统全景</div>
-        <div class="step-desc">阅读 <code>README.md</code>，掌握六能力 · 八角色 · 管线十一阶段。理解"系统由什么组成"和"它们如何协作"。</div>
-        <div class="step-action">→ 重点看 20 术语表和架构示意图</div>
-        <div class="step-time">✅ 完成标志：能解释 6 能力 / 8 角色 / 11 阶段各自含义</div>
+        <div class="step-title"><span class="step-num">STEP 2 · 5 min</span> 理解 Agent 行为定义</div>
+        <div class="step-desc">阅读 <code>agents/self-improve.md</code>，掌握四段闭环（数据采集→诊断→提案→评估）的完整行为定义、提案矩阵和跨会话记忆注入机制。</div>
+        <div class="step-action">→ 重点看提案矩阵路由表和记忆压缩策略</div>
+        <div class="step-time">✅ 完成标志：能画出四段闭环的数据流图</div>
       </div>
       <div class="t-step s3">
-        <div class="step-title"><span class="step-num">STEP 3 · 4 min</span> 学习角色拓扑</div>
-        <div class="step-desc">打开 <code>agents/AGENT.md</code>，理解 PM/Planner/Architect/Coder/Reviewer/Tester/Reporter/Security/Self-Improve 九类角色的边界和交接信号。</div>
-        <div class="step-action">→ 重点看 ADR 段（架构决策记录）</div>
-        <div class="step-time">✅ 完成标志：知道变更触发哪个角色、谁负责审查</div>
+        <div class="step-title"><span class="step-num">STEP 3 · 5 min</span> 学习诊断引擎</div>
+        <div class="step-desc">打开 <code>lib/engine/diagnostics.mjs</code>，理解 D0-D7 诊断信号的生成逻辑、触发条件和评分计算。结合 <code>skills/rui/concerns/diagnostics.md</code> 了解诊断关注点注入。</div>
+        <div class="step-action">→ 跟踪一个诊断信号从触发到输出的完整路径</div>
+        <div class="step-time">✅ 完成标志：能解释 D0-D7 每个维度的诊断逻辑</div>
       </div>
       <div class="t-step s4">
-        <div class="step-title"><span class="step-num">STEP 4 · 5 min</span> 掌握管线纪律</div>
-        <div class="step-desc">精读 <code>rules/code-pipeline.md</code>，理解分支隔离、Gate A/B、逐模块清零的工程纪律。知道"如何不破坏系统"。</div>
-        <div class="step-action">→ 重点看 Gate 判定矩阵和"四不妥协"清单</div>
-        <div class="step-time">✅ 完成标志：能列出 5 个核心门禁和对应的修复路径</div>
+        <div class="step-title"><span class="step-num">STEP 4 · 5 min</span> 掌握提案与推荐系统</div>
+        <div class="step-desc">依次阅读 <code>lib/proposals.mjs</code> → <code>lib/recommend.mjs</code> → <code>lib/recommend-detect.mjs</code>，理解从诊断信号到改进提案的生成、路由、排序全流程。</div>
+        <div class="step-action">→ 重点看提案类型路由表和推荐排序算法</div>
+        <div class="step-time">✅ 完成标志：能说出 4 种提案类型的路由规则</div>
       </div>
       <div class="t-step">
-        <div class="step-title"><span class="step-num">STEP 5 · 3 min</span> 熟悉核心技能</div>
-        <div class="step-desc">浏览 <code>skills/rui/SKILL.md</code>，了解编排器如何把需求转化为可执行管线。学习调用 <code>/rui</code> 命令族。</div>
-        <div class="step-action">→ 跑一遍 node skills/rui/help.mjs 验证帮助输出</div>
-        <div class="step-time">✅ 完成标志：能说出 8 条命令的用途</div>
+        <div class="step-title"><span class="step-num">STEP 5 · 5 min</span> 理解执行记录与记忆注入</div>
+        <div class="step-desc">阅读 <code>lib/record.mjs</code>，理解执行记忆的写入、压缩、检索和注入机制。了解 <code>.memory/health-trend.jsonl</code> 的数据结构和跨会话恢复流程。</div>
+        <div class="step-action">→ 跟踪一条健康趋势记录的完整生命周期</div>
+        <div class="step-time">✅ 完成标志：能解释记忆压缩策略和相似检索注入</div>
       </div>
       <div class="t-step s2">
-        <div class="step-title"><span class="step-num">STEP 6 · 6 min</span> 运行初始化 + 测试基线</div>
-        <div class="step-desc">执行 <code>node tests/run.mjs</code>，确认 7 组测试全部通过。基线即建立——后续变更都要保证不退化。</div>
-        <div class="step-action">→ 若失败：检查 .claude/ 目录、Node 版本、依赖完整性</div>
-        <div class="step-time">✅ 完成标志：测试输出 PASS/7 套件 · 0 失败</div>
-      </div>
-      <div class="t-step s3">
-        <div class="step-title"><span class="step-num">STEP 7 · 8 min</span> 完成首个 PR</div>
-        <div class="step-desc">从 <code>feat/&lt;task&gt;</code> 分支开始 → 编写/修改代码 → 本地测试 → 文档同步 → 企微通知 → 合并。完整跑通一次"小变更 + 全管线"。</div>
-        <div class="step-action">→ 推荐任务：修正一个 typo、新增一条测试用例</div>
-        <div class="step-time">✅ 完成标志：PR 通过 Gate A/B + 同步 + 通知全部触发</div>
+        <div class="step-title"><span class="step-num">STEP 6 · 5 min</span> 运行自改进技能</div>
+        <div class="step-desc">阅读 <code>skills/rui-yry/SKILL.md</code>，理解自改进技能的入口、参数和输出。执行 <code>node skills/rui-yry/help.mjs</code> 验证帮助输出，然后运行一次完整的自改进巡检。</div>
+        <div class="step-action">→ 运行 node skills/rui-bot/send.mjs health 验证健康检查</div>
+        <div class="step-time">✅ 完成标志：成功生成一份自改进报告并理解其内容</div>
       </div>
     </div>
   </div>
@@ -509,41 +221,41 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
   <div class="card">
     <h2>📚 阅读顺序推荐 <span class="h2-tag">按依赖深度</span></h2>
     <div class="dep-graph">
-      <span class="dep-node root" onclick="viewSource('CLAUDE.md')">CLAUDE.md</span>
+      <span class="dep-node root" onclick="viewSource('rules/self-improve.md')">rules/self-improve.md</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('README.md')">README.md</span>
+      <span class="dep-node" onclick="viewSource('agents/self-improve.md')">agents/self-improve.md</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('agents/AGENT.md')">agents/AGENT.md</span>
+      <span class="dep-node" onclick="viewSource('lib/engine/diagnostics.mjs')">lib/engine/diagnostics.mjs</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('rules/code-pipeline.md')">rules/code-pipeline.md</span>
+      <span class="dep-node" onclick="viewSource('lib/proposals.mjs')">lib/proposals.mjs</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node leaf" onclick="viewSource('skills/rui/SKILL.md')">skills/rui/SKILL.md</span>
+      <span class="dep-node leaf" onclick="viewSource('skills/rui-yry/SKILL.md')">skills/rui-yry/SKILL.md</span>
     </div>
-    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">基础信念 → 系统全景 → 角色拓扑 → 管线纪律 → 核心技能（点击节点可直接查看）</p>
+    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">自改进规则 → Agent 行为 → 诊断引擎 → 提案系统 → 技能入口（点击节点可直接查看）</p>
   </div>
 
   <div class="card">
-    <h2>💡 新人常见误区 <span class="h2-tag">避坑指南</span></h2>
+    <h2>💡 常见误区 <span class="h2-tag">避坑指南</span></h2>
     <div class="tip-list">
       <div class="tip warn">
         <span class="tip-icon">⚠️</span>
         <div class="tip-body">
-          <div class="tip-title">不要直接读代码，先读规约</div>
-          <div class="tip-desc">新人常见错误是直接打开 .mjs 文件"看实现"，但本系统的核心是规约驱动的——先读 SKILL.md / AGENT.md / rules/*.md 理解"为什么这样设计"，再看代码才能事半功倍。</div>
+          <div class="tip-title">不要跳过规则直接看引擎代码</div>
+          <div class="tip-desc">自改进系统是规约驱动的——先读 <code>rules/self-improve.md</code> 理解"为什么这样诊断"和"升级条件是什么"，再看 <code>lib/engine/diagnostics.mjs</code> 才能理解实现细节。</div>
         </div>
       </div>
       <div class="tip danger">
         <span class="tip-icon">🚫</span>
         <div class="tip-body">
-          <div class="tip-title">不要跳过 Gate A 直接进 Gate B</div>
-          <div class="tip-desc">Gate A（设计/测试）未通过就提交 Gate B（实现/验证）会触发"管线跳跃"阻断，必须先有"设计可验证 + 测试覆盖断言"，再写实现。</div>
+          <div class="tip-title">不要混淆 D0-D7 诊断与 E1-E4 评估</div>
+          <div class="tip-desc">D0-D7 是诊断维度（发现问题），E1-E4 是效果评估（衡量改进）。诊断触发提案，评估验证提案效果——两者是闭环的前后两段，不可混用。</div>
         </div>
       </div>
       <div class="tip success">
         <span class="tip-icon">✅</span>
         <div class="tip-body">
-          <div class="tip-title">利用故事面板追踪进度</div>
-          <div class="tip-desc">每个变更都有对应的故事卡片（位于 <code>docs/故事任务面板/</code>），开发过程中应同步更新状态、留痕决策、附上测试报告——这是"可追溯"的基础。</div>
+          <div class="tip-title">经验技能化需要连续触发</div>
+          <div class="tip-desc">五条升级路径有严格的触发条件：process/quality/refactor/security 类型需连续三个故事触发；skill 类型需连续两个故事触发。单次触发不会启动升级。</div>
         </div>
       </div>
     </div>
@@ -554,91 +266,91 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <div class="panel" id="panelTasks">
   <div class="card">
     <h2>🛠️ 常见调试任务 <span class="h2-tag">场景化命令 · 点击复制</span></h2>
-    <p style="margin-bottom:12px">下列任务覆盖新人 80% 的日常操作。每个卡片包含命令、说明、难度标识，点击卡片即可复制命令。</p>
+    <p style="margin-bottom:12px">下列任务覆盖自改进闭环的日常调试操作，每个卡片包含命令、说明、难度标识，点击卡片即可复制命令。</p>
     <div class="task-grid">
-      <div class="task-card" onclick="copyText('find . -name &quot;*.md&quot; -path &quot;*/skills/*&quot;')">
+      <div class="task-card" onclick="copyText('node lib/arch-check.mjs --verbose')">
         <span class="t-diff easy">EASY</span>
         <span class="t-icon">🔍</span>
-        <div class="t-title">定位某个模块</div>
-        <div class="t-desc">在 33 份源文件中快速定位目标文件</div>
-        <div class="t-cmd">find . -name "*.md" -path "*/skills/*"</div>
+        <div class="t-title">详细架构检查</div>
+        <div class="t-desc">输出 15 维度详细合规报告</div>
+        <div class="t-cmd">node lib/arch-check.mjs --verbose</div>
       </div>
-      <div class="task-card" onclick="copyText('node tests/run.mjs --suite <name>')">
-        <span class="t-diff easy">EASY</span>
-        <span class="t-icon">🧪</span>
-        <div class="t-title">运行单测</div>
-        <div class="t-desc">执行单个测试套件，快速验证</div>
-        <div class="t-cmd">node tests/run.mjs --suite &lt;name&gt;</div>
-      </div>
-      <div class="task-card" onclick="copyText('git checkout -b feat/<task-name>')">
+      <div class="task-card" onclick="copyText('node skills/rui-bot/send.mjs health --diff')">
         <span class="t-diff medium">MED</span>
-        <span class="t-icon">🌿</span>
-        <div class="t-title">创建特性分支</div>
-        <div class="t-desc">按 Gate 0 规约创建隔离分支</div>
-        <div class="t-cmd">git checkout -b feat/&lt;task&gt;</div>
-      </div>
-      <div class="task-card" onclick="copyText('cd docs/故事任务面板/<story>')">
-        <span class="t-diff medium">MED</span>
-        <span class="t-icon">📝</span>
-        <div class="t-title">进入故事面板</div>
-        <div class="t-desc">定位到当前任务的故事卡片目录</div>
-        <div class="t-cmd">cd docs/故事任务面板/&lt;story&gt;</div>
-      </div>
-      <div class="task-card" onclick="copyText('node skills/rui-经验技能化与记忆注入/sync.mjs')">
-        <span class="t-diff medium">MED</span>
-        <span class="t-icon">🔗</span>
-        <div class="t-title">同步到 .claude/</div>
-        <div class="t-desc">本地配置同步到 Claude 环境</div>
-        <div class="t-cmd">node skills/rui-经验技能化与记忆注入/sync.mjs</div>
-      </div>
-      <div class="task-card" onclick="copyText('node tests/run.mjs --verbose')">
-        <span class="t-diff hard">HARD</span>
-        <span class="t-icon">🐛</span>
-        <div class="t-title">定位门禁阻断</div>
-        <div class="t-desc">详细输出分析 Gate A/B 阻断原因</div>
-        <div class="t-cmd">node tests/run.mjs --verbose</div>
-      </div>
-      <div class="task-card" onclick="copyText('node skills/rui-import/import.mjs --graph')">
-        <span class="t-diff hard">HARD</span>
         <span class="t-icon">📊</span>
-        <div class="t-title">生成知识图谱</div>
-        <div class="t-desc">从源码生成模块依赖图</div>
-        <div class="t-cmd">node skills/rui-import/import.mjs</div>
+        <div class="t-title">健康变化摘要</div>
+        <div class="t-desc">对比上次健康检查的变化</div>
+        <div class="t-cmd">node skills/rui-bot/send.mjs health --diff</div>
       </div>
-      <div class="task-card" onclick="copyText('node skills/rui-bot/notify.mjs --test')">
-        <span class="t-diff easy">EASY</span>
-        <span class="t-icon">📨</span>
-        <div class="t-title">测试企微通知</div>
-        <div class="t-desc">验证 Webhook 推送连通性</div>
-        <div class="t-cmd">node skills/rui-bot/notify.mjs --test</div>
+      <div class="task-card" onclick="copyText('node skills/rui-bot/send.mjs health --alert')">
+        <span class="t-diff medium">MED</span>
+        <span class="t-icon">🚨</span>
+        <div class="t-title">智能告警检查</div>
+        <div class="t-desc">检测异常并触发告警</div>
+        <div class="t-cmd">node skills/rui-bot/send.mjs health --alert</div>
       </div>
-      <div class="task-card" onclick="copyText('node skills/rui-trends/fetch.mjs')">
+      <div class="task-card" onclick="copyText('node lib/arch-check.mjs --fix')">
+        <span class="t-diff hard">HARD</span>
+        <span class="t-icon">🔧</span>
+        <div class="t-title">自动修复架构问题</div>
+        <div class="t-desc">自动修复可自动处理的架构合规问题</div>
+        <div class="t-cmd">node lib/arch-check.mjs --fix</div>
+      </div>
+      <div class="task-card" onclick="copyText('node lib/arch-check.mjs --append-trend')">
         <span class="t-diff medium">MED</span>
         <span class="t-icon">📈</span>
-        <div class="t-title">拉取技术趋势</div>
-        <div class="t-desc">从 GitHub Trending 发现新依赖</div>
-        <div class="t-cmd">node skills/rui-trends/fetch.mjs</div>
+        <div class="t-title">追加健康趋势</div>
+        <div class="t-desc">将当前检查结果写入趋势文件</div>
+        <div class="t-cmd">node lib/arch-check.mjs --append-trend</div>
       </div>
-      <div class="task-card" onclick="copyText('node skills/rui-npm/audit.mjs')">
+      <div class="task-card" onclick="copyText('node skills/rui-bot/send.mjs health --notify')">
         <span class="t-diff medium">MED</span>
-        <span class="t-icon">🔒</span>
-        <div class="t-title">npm 安全审计</div>
-        <div class="t-desc">检查依赖已知漏洞</div>
-        <div class="t-cmd">node skills/rui-npm/audit.mjs</div>
+        <span class="t-icon">📨</span>
+        <div class="t-title">企微推送健康报告</div>
+        <div class="t-desc">将健康报告推送到企微群</div>
+        <div class="t-cmd">node skills/rui-bot/send.mjs health --notify</div>
       </div>
-      <div class="task-card" onclick="copyText('node skills/rui-story/status.mjs')">
+      <div class="task-card" onclick="copyText('node skills/rui-bot/send.mjs health --html')">
+        <span class="t-diff medium">MED</span>
+        <span class="t-icon">📄</span>
+        <div class="t-title">生成健康 HTML 报告</div>
+        <div class="t-desc">生成可视化健康报告仪表板</div>
+        <div class="t-cmd">node skills/rui-bot/send.mjs health --html</div>
+      </div>
+      <div class="task-card" onclick="copyText('node skills/rui-bot/send.mjs health --short')">
         <span class="t-diff easy">EASY</span>
-        <span class="t-icon">📖</span>
-        <div class="t-title">查看故事状态</div>
-        <div class="t-desc">列出所有故事的当前状态</div>
-        <div class="t-cmd">node skills/rui-story/status.mjs</div>
+        <span class="t-icon">📝</span>
+        <div class="t-title">单行摘要</div>
+        <div class="t-desc">输出单行健康摘要</div>
+        <div class="t-cmd">node skills/rui-bot/send.mjs health --short</div>
       </div>
-      <div class="task-card" onclick="copyText('node tests/run.mjs --coverage')">
+      <div class="task-card" onclick="copyText('node lib/recommend-detect.mjs')">
+        <span class="t-diff medium">MED</span>
+        <span class="t-icon">🔎</span>
+        <div class="t-title">检测改进机会</div>
+        <div class="t-desc">扫描项目检测可改进项</div>
+        <div class="t-cmd">node lib/recommend-detect.mjs</div>
+      </div>
+      <div class="task-card" onclick="copyText('node lib/selfimprove-generator.mjs --verbose')">
         <span class="t-diff hard">HARD</span>
-        <span class="t-icon">🎯</span>
-        <div class="t-title">覆盖率分析</div>
-        <div class="t-desc">生成测试覆盖率报告</div>
-        <div class="t-cmd">node tests/run.mjs --coverage</div>
+        <span class="t-icon">📋</span>
+        <div class="t-title">详细自改进报告</div>
+        <div class="t-desc">生成详细的自改进巡检报告</div>
+        <div class="t-cmd">node lib/selfimprove-generator.mjs --verbose</div>
+      </div>
+      <div class="task-card" onclick="copyText('grep -n "D[0-7]" rules/self-improve.md')">
+        <span class="t-diff easy">EASY</span>
+        <span class="t-icon">🔬</span>
+        <div class="t-title">查看诊断规则</div>
+        <div class="t-desc">快速定位 D0-D7 诊断定义</div>
+        <div class="t-cmd">grep -n "D[0-7]" rules/self-improve.md</div>
+      </div>
+      <div class="task-card" onclick="copyText('grep -n "E[1-4]" rules/self-improve.md')">
+        <span class="t-diff easy">EASY</span>
+        <span class="t-icon">📐</span>
+        <div class="t-title">查看评估等级</div>
+        <div class="t-desc">快速定位 E1-E4 评估定义</div>
+        <div class="t-cmd">grep -n "E[1-4]" rules/self-improve.md</div>
       </div>
     </div>
   </div>
@@ -649,17 +361,17 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
       <div class="tip">
         <span class="tip-icon">🔧</span>
         <div class="tip-body">
-          <div class="tip-title">测试运行时缺少模块</div>
-          <div class="tip-desc">症状：<code>Cannot find module 'xxx'</code>。修复：</div>
-          <div class="tip-code">npm install &amp;&amp; node tests/run.mjs</div>
+          <div class="tip-title">健康检查报错缺少模块</div>
+          <div class="tip-desc">症状：<code>Cannot find module</code>。修复：</div>
+          <div class="tip-code">npm install && node skills/rui-bot/send.mjs health</div>
         </div>
       </div>
       <div class="tip warn">
         <span class="tip-icon">⏱</span>
         <div class="tip-body">
-          <div class="tip-title">Node 版本不匹配</div>
-          <div class="tip-desc">症状：<code>SyntaxError: Unexpected token</code> 或 ESM 加载失败。本项目要求 Node ≥18。</div>
-          <div class="tip-code">node --version &amp;&amp; nvm use 18</div>
+          <div class="tip-title">健康趋势文件为空或损坏</div>
+          <div class="tip-desc">症状：<code>.memory/health-trend.jsonl</code> 解析失败。修复：删除损坏行或重建趋势文件。</div>
+          <div class="tip-code">tail -1 .memory/health-trend.jsonl | node -e "JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'))"</div>
         </div>
       </div>
       <div class="tip danger">
@@ -667,31 +379,31 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
         <div class="tip-body">
           <div class="tip-title">企微通知未触发</div>
           <div class="tip-desc">症状：<code>WECHAT_WEBHOOK</code> 环境变量缺失。检查项：</div>
-          <div class="tip-code">echo $WECHAT_WEBHOOK &amp;&amp; ls .env*</div>
+          <div class="tip-code">echo $WECHAT_WEBHOOK && ls .env*</div>
         </div>
       </div>
       <div class="tip success">
         <span class="tip-icon">🧭</span>
         <div class="tip-body">
-          <div class="tip-title">不确定该改哪个文件</div>
-          <div class="tip-desc">使用知识图谱反向查询：先看"我要改的功能属于哪个能力" → 再看"该能力由哪个模块实现"。</div>
-          <div class="tip-code">open 知识图谱.html</div>
+          <div class="tip-title">诊断维度触发异常</div>
+          <div class="tip-desc">症状：预期触发的诊断维度未触发。检查诊断规则定义和触发条件。</div>
+          <div class="tip-code">grep -A5 "D[0-7]" rules/self-improve.md | head -40</div>
         </div>
       </div>
       <div class="tip">
         <span class="tip-icon">📐</span>
         <div class="tip-body">
-          <div class="tip-title">架构图渲染异常</div>
-          <div class="tip-desc">症状：Mermaid 图不显示。本系统使用暗色主题，详见 <code>rules/mermaid-theme.md</code>。</div>
-          <div class="tip-code">cat rules/mermaid-theme.md</div>
+          <div class="tip-title">架构合规检查失败</div>
+          <div class="tip-desc">症状：arch-check 报告不合规。先用 --verbose 查看详情，再用 --fix 自动修复。</div>
+          <div class="tip-code">node lib/arch-check.mjs --verbose && node lib/arch-check.mjs --fix</div>
         </div>
       </div>
       <div class="tip warn">
         <span class="tip-icon">🔄</span>
         <div class="tip-body">
-          <div class="tip-title">修改后测试仍报旧错</div>
-          <div class="tip-desc">症状：明明改过了，但测试还是报旧的错误。可能是缓存未刷新。</div>
-          <div class="tip-code">rm -rf node_modules/.cache &amp;&amp; node tests/run.mjs</div>
+          <div class="tip-title">升级路径未触发</div>
+          <div class="tip-desc">症状：经验技能化升级条件满足但未触发。检查连续触发计数是否正确累加。</div>
+          <div class="tip-code">grep -n "连续" rules/self-improve.md agents/self-improve.md</div>
         </div>
       </div>
     </div>
@@ -701,39 +413,41 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <!-- ── 模块拓扑 ──────────────────────────────────────────────────────── -->
 <div class="panel" id="panelDeps">
   <div class="card">
-    <h2>🧭 新人上手路径 <span class="h2-tag">点击节点可查看源码</span></h2>
+    <h2>🧭 自改进闭环依赖拓扑 <span class="h2-tag">点击节点可查看源码</span></h2>
     <div class="dep-graph">
-      <span class="dep-node root" onclick="viewSource('CLAUDE.md')">CLAUDE.md</span>
+      <span class="dep-node root" onclick="viewSource('rules/self-improve.md')">rules/self-improve.md</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('README.md')">README.md</span>
+      <span class="dep-node" onclick="viewSource('agents/self-improve.md')">agents/self-improve.md</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('agents/AGENT.md')">agents/AGENT.md</span>
+      <span class="dep-node" onclick="viewSource('lib/engine/diagnostics.mjs')">diagnostics.mjs</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('rules/code-pipeline.md')">rules/code-pipeline.md</span>
+      <span class="dep-node" onclick="viewSource('lib/proposals.mjs')">proposals.mjs</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node leaf" onclick="viewSource('skills/rui/SKILL.md')">skills/rui/SKILL.md</span>
+      <span class="dep-node leaf" onclick="viewSource('lib/recommend.mjs')">recommend.mjs</span>
     </div>
-    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">基础信念 → 系统全景 → 角色拓扑 → 管线纪律 → 核心技能</p>
+    <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">规则定义 → Agent 行为 → 诊断引擎 → 提案生成 → 推荐排序（自改进闭环主链路）</p>
   </div>
 
   <div class="card">
     <h2>🔑 关键入口文件 <span class="h2-tag">4 份必读</span></h2>
     <ul class="checklist">
-      <li><span class="chk">★</span> <code>CLAUDE.md</code> — 项目指令 · 四大铁律 · 不可妥协底线</li>
-      <li><span class="chk">★</span> <code>README.md</code> — 系统全景图 · 管线架构 · 20 术语</li>
-      <li><span class="chk">★</span> <code>agents/AGENT.md</code> — 角色拓扑 · 行为纪律 · ADR</li>
-      <li><span class="chk">★</span> <code>rules/code-pipeline.md</code> — 分支隔离 · Gate A/B · 逐模块清零</li>
+      <li><span class="chk">★</span> <code>rules/self-improve.md</code> — 自改进闭环规则 · D0-D8 诊断 · E1-E4 评估 · 五条升级路径</li>
+      <li><span class="chk">★</span> <code>agents/self-improve.md</code> — 自改进 Agent 行为 · 四段闭环 · 提案矩阵 · 记忆注入</li>
+      <li><span class="chk">★</span> <code>lib/engine/diagnostics.mjs</code> — 诊断引擎实现 · D0-D7 信号生成</li>
+      <li><span class="chk">★</span> <code>lib/proposals.mjs</code> — 提案生成与路由 · 类型映射 · 优先级排序</li>
     </ul>
   </div>
 
   <div class="card">
     <h2>🔄 模块依赖矩阵 <span class="h2-tag">谁依赖谁</span></h2>
-    <p style="margin-bottom:12px">以下矩阵揭示模块间的主要引用关系，新人可据此理解"改动一个文件可能影响哪些下游"：</p>
+    <p style="margin-bottom:12px">以下矩阵揭示自改进模块间的主要引用关系：</p>
     <ul class="checklist">
-      <li><span class="chk">→</span> <code>skills/rui/*</code> → 依赖 <code>lib/*.mjs</code>（共享库） · <code>agents/*.md</code>（角色定义）</li>
-      <li><span class="chk">→</span> <code>agents/*.md</code> → 引用 <code>rules/*.md</code>（纪律约束）</li>
-      <li><span class="chk">→</span> <code>rules/*.md</code> → 引用 <code>agents/AGENT.md</code>（角色职责）</li>
-      <li><span class="chk">→</span> <code>tests/run.mjs</code> → 调用 <code>skills/rui/*</code>（端到端验证）</li>
+      <li><span class="chk">→</span> <code>lib/engine/diagnostics.mjs</code> → 依赖 <code>rules/self-improve.md</code>（诊断规则定义）</li>
+      <li><span class="chk">→</span> <code>lib/proposals.mjs</code> → 依赖 <code>lib/engine/diagnostics.mjs</code>（诊断信号输入）</li>
+      <li><span class="chk">→</span> <code>lib/recommend.mjs</code> → 依赖 <code>lib/proposals.mjs</code>（提案排序） · <code>lib/record.mjs</code>（历史记录）</li>
+      <li><span class="chk">→</span> <code>lib/selfimprove-generator.mjs</code> → 依赖 <code>lib/engine/diagnostics.mjs</code> · <code>lib/recommend.mjs</code> · <code>lib/record.mjs</code></li>
+      <li><span class="chk">→</span> <code>skills/rui-yry/SKILL.md</code> → 引用 <code>rules/self-improve.md</code> · <code>agents/self-improve.md</code></li>
+      <li><span class="chk">→</span> <code>skills/rui-bot/lib/bot-health-diagnostics.mjs</code> → 依赖 <code>lib/arch-check.mjs</code>（架构合规数据）</li>
     </ul>
   </div>
 </div>
@@ -741,33 +455,33 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <!-- ── 模块清单 ──────────────────────────────────────────────────────── -->
 <div class="panel" id="panelSpec">
   <div class="card">
-    <h2>📋 模块职责清单 <span class="h2-tag">4 大类 33 文件</span></h2>
+    <h2>📋 模块职责清单 <span class="h2-tag">4 大类 16 文件</span></h2>
     <ul class="checklist">
-      <li><span class="chk">⚙️</span> <b>skills/</b> — 7 技能模块 · 用户入口 · 编排管线</li>
-      <li><span class="chk">🤖</span> <b>agents/</b> — 9 Agent 角色 · 协作拓扑 · 行为纪律</li>
-      <li><span class="chk">📜</span> <b>rules/</b> — 10 治理规则 · 管线纪律 · 安全护栏</li>
-      <li><span class="chk">📦</span> <b>lib/</b> — 4 共享库 · TTY · FS · 常量 · help 布局</li>
+      <li><span class="chk">📜</span> <b>rules/</b> — 1 规则 · 自改进闭环定义 · D0-D8 诊断 · E1-E4 评估 · 五条升级路径</li>
+      <li><span class="chk">🤖</span> <b>agents/</b> — 1 Agent · 四段闭环行为 · 提案矩阵 · 记忆注入策略</li>
+      <li><span class="chk">📦</span> <b>lib/</b> — 7 引擎库 · 诊断引擎 · 提案生成 · 执行记录 · 推荐系统 · 报告生成</li>
+      <li><span class="chk">⚙️</span> <b>skills/</b> — 7 技能文件 · rui-yry 自改进入口 · 4 关注点注入 · Bot 诊断</li>
     </ul>
-    <p style="margin-top:12px;font-size:.76rem;color:var(--text3)">👉 切换到 <b>文件清单</b> 标签查看完整的 33 份文件详情与描述。</p>
+    <p style="margin-top:12px;font-size:.76rem;color:var(--text3)">👉 切换到 <b>文件清单</b> 标签查看完整的 16 份文件详情与描述。</p>
   </div>
 
   <div class="card">
-    <h2>🎓 关键术语对照 <span class="h2-tag">新人避坑</span></h2>
+    <h2>🎓 关键术语对照 <span class="h2-tag">自改进领域</span></h2>
     <ul class="checklist">
-      <li><span class="chk">→</span> <b>SDLC</b> — Software Development Life Cycle，软件开发生命周期（本系统主线）</li>
-      <li><span class="chk">→</span> <b>Gate A / Gate B</b> — 管线两阶段关卡：设计测试关 / 实现验证关</li>
-      <li><span class="chk">→</span> <b>ADR</b> — Architecture Decision Record，架构决策记录</li>
-      <li><span class="chk">→</span> <b>P0 清零</b> — 最高优先级事项必须 100% 处理完才能进入下一阶段</li>
-      <li><span class="chk">→</span> <b>逐模块</b> — 不批量跳进，每次只完整处理一个模块的"设计→实现→验证"</li>
-      <li><span class="chk">→</span> <b>分支隔离</b> — 每个变更独立分支，互不污染，便于回滚和审查</li>
-      <li><span class="chk">→</span> <b>门禁矩阵</b> — 定义哪些 Gate 阻断哪些操作 + 修复路径</li>
-      <li><span class="chk">→</span> <b>知识图谱</b> — 模块依赖和领域关系的可视化结构（JSON Schema 表达）</li>
+      <li><span class="chk">→</span> <b>D0-D8</b> — 9 个诊断维度：D0 基线偏差 · D1 分支健康 · D2 质量退化 · D3 复杂度增长 · D4 测试覆盖 · D5 安全漏洞 · D6 依赖风险 · D7 文档同步 · D8 架构合规</li>
+      <li><span class="chk">→</span> <b>E1-E4</b> — 4 级效果评估：E1 无效 · E2 部分有效 · E3 有效 · E4 卓越</li>
+      <li><span class="chk">→</span> <b>四段闭环</b> — 数据采集 → 诊断分析 → 提案生成 → 效果评估</li>
+      <li><span class="chk">→</span> <b>五条升级路径</b> — process/quality/refactor/security/skill 五类经验技能化升级</li>
+      <li><span class="chk">→</span> <b>记忆压缩</b> — 将执行记忆从完整记录压缩为摘要向量，减少上下文占用</li>
+      <li><span class="chk">→</span> <b>相似检索注入</b> — 基于当前场景从历史记忆中检索相似经验并注入上下文</li>
+      <li><span class="chk">→</span> <b>提案矩阵</b> — 诊断信号 → 提案类型 → 路由目标的映射表</li>
+      <li><span class="chk">→</span> <b>健康趋势</b> — 每次健康检查追加到 <code>.memory/health-trend.jsonl</code> 的时间序列数据</li>
     </ul>
   </div>
 </div>
 
 <div class="footer-note">
-  YrY 系统架构 · 场景 1 源码中心 · <a href="../../../index.html">文档中心</a> · <a href="index.md">📄 Markdown 源</a> · 最后更新 2026-06-13
+  YrY 系统架构 · 场景 5 源码中心 · <a href="../../../index.html">文档中心</a> · <a href="index.md">📄 Markdown 源</a> · 最后更新 2026-06-18
 </div>
 </div>
 
@@ -807,51 +521,33 @@ a[target="_blank"]::after{content:" ↗";font-size:.7em;opacity:.5}
 <div class="toast" id="toast"></div>
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
-   源码中心 · 状态 + 数据 + 逻辑
+   场景 5 源码中心 · 经验技能化与记忆注入 · 状态 + 数据 + 逻辑
    ═══════════════════════════════════════════════════════════════════════ */
 var activePanel='overview',fileQuery='',filterCatState=null;
 var currentSourcePath=null,currentSourceText=null;
 
 var manifest={"files":[
-  {"name":"rui/SKILL.md","path":"skills/rui/SKILL.md","cat":"skill","lines":210,"size":11800,"desc":"核心编排器 — 故事驱动的 SDLC 编排，全流程管线","importance":"recommend","icon":"⚙️"},
-  {"name":"rui/formulas.md","path":"skills/rui/formulas.md","cat":"skill","lines":520,"size":28500,"desc":"故事文档公式 — 生成模板与公式定义","importance":"reference","icon":"⚙️"},
-  {"name":"rui/coder.md","path":"skills/rui/coder.md","cat":"skill","lines":120,"size":6200,"desc":"Coder 编码规范 — 实现约束","importance":"reference","icon":"⚙️"},
-  {"name":"rui/ranking.md","path":"skills/rui/ranking.md","cat":"skill","lines":95,"size":4800,"desc":"排序规则 — 提案优先级排序","importance":"reference","icon":"⚙️"},
-  {"name":"rui-story/SKILL.md","path":"skills/rui-story/SKILL.md","cat":"skill","lines":180,"size":9400,"desc":"故事面板管理 — 收集/状态/同步/通知","importance":"reference","icon":"⚙️"},
-  {"name":"rui-经验技能化与记忆注入/SKILL.md","path":"skills/rui-经验技能化与记忆注入/SKILL.md","cat":"skill","lines":140,"size":7200,"desc":".claude/ 配置管理 — 同步/健康分析","importance":"reference","icon":"⚙️"},
-  {"name":"rui-import/SKILL.md","path":"skills/rui-import/SKILL.md","cat":"skill","lines":100,"size":5100,"desc":"文档同步 — 本地到远程 API","importance":"reference","icon":"⚙️"},
-  {"name":"rui-bot/SKILL.md","path":"skills/rui-bot/SKILL.md","cat":"skill","lines":90,"size":4600,"desc":"企微通知 — Webhook 消息推送","importance":"reference","icon":"⚙️"},
-  {"name":"rui-trends/SKILL.md","path":"skills/rui-trends/SKILL.md","cat":"skill","lines":80,"size":4200,"desc":"技术趋势发现 — GitHub Trending","importance":"reference","icon":"⚙️"},
-  {"name":"rui-npm/SKILL.md","path":"skills/rui-npm/SKILL.md","cat":"skill","lines":110,"size":5600,"desc":"npm 包管理 — 搜索/安装/发布/审计","importance":"reference","icon":"⚙️"},
-  {"name":"AGENT.md","path":"agents/AGENT.md","cat":"agent","lines":140,"size":22000,"desc":"角色拓扑总纲 — 行为纪律/设计原则/ADR","importance":"must","icon":"🤖"},
-  {"name":"pm.md","path":"agents/pm.md","cat":"agent","lines":80,"size":4200,"desc":"产品决策者 — 需求解析/委派子PM","importance":"reference","icon":"🤖"},
-  {"name":"planner.md","path":"agents/planner.md","cat":"agent","lines":75,"size":3900,"desc":"实施规划者 — 步骤拆分/方案评估","importance":"reference","icon":"🤖"},
-  {"name":"architect.md","path":"agents/architect.md","cat":"agent","lines":65,"size":3400,"desc":"系统架构设计者 — ADR/影响分析","importance":"reference","icon":"🤖"},
-  {"name":"coder.md","path":"agents/coder.md","cat":"agent","lines":90,"size":4700,"desc":"代码实现者 — 逐模块/P0清零","importance":"recommend","icon":"🤖"},
-  {"name":"code-reviewer.md","path":"agents/code-reviewer.md","cat":"agent","lines":70,"size":3600,"desc":"代码审查者 — 正确性/简化/复用","importance":"reference","icon":"🤖"},
-  {"name":"tester.md","path":"agents/tester.md","cat":"agent","lines":85,"size":4400,"desc":"质量保障者 — Gate A/B 关卡","importance":"reference","icon":"🤖"},
-  {"name":"reporter.md","path":"agents/reporter.md","cat":"agent","lines":60,"size":3100,"desc":"过程报告者 — 复盘/知识资产","importance":"reference","icon":"🤖"},
-  {"name":"security.md","path":"agents/security.md","cat":"agent","lines":75,"size":3900,"desc":"安全专家 — 威胁建模/约束注入","importance":"reference","icon":"🤖"},
-  {"name":"self-improve.md","path":"agents/self-improve.md","cat":"agent","lines":100,"size":5200,"desc":"自改进引擎 — D0-D7诊断/E1-E4评估","importance":"reference","icon":"🤖"},
-  {"name":"code-pipeline.md","path":"rules/code-pipeline.md","cat":"rule","lines":530,"size":30700,"desc":"管线全流程 — 分支隔离/Gate A/B/逐模块","importance":"must","icon":"📜"},
-  {"name":"delivery-gate.md","path":"rules/delivery-gate.md","cat":"rule","lines":120,"size":7500,"desc":"交付收口 — 三步Hook","importance":"recommend","icon":"📜"},
-  {"name":"architecture-diagram.md","path":"rules/architecture-diagram.md","cat":"rule","lines":170,"size":9700,"desc":"架构图规范 — Mermaid语法/颜色语义","importance":"reference","icon":"📜"},
-  {"name":"plan-execution.md","path":"rules/plan-execution.md","cat":"rule","lines":100,"size":5900,"desc":"计划执行 — 逐步骤验证/P0清零","importance":"reference","icon":"📜"},
-  {"name":"doc-generation.md","path":"rules/doc-generation.md","cat":"rule","lines":340,"size":21500,"desc":"文档生成约束 — 表达优先 图→文→表","importance":"reference","icon":"📜"},
-  {"name":"knowledge-graph.md","path":"rules/knowledge-graph.md","cat":"rule","lines":110,"size":6600,"desc":"知识图谱规范 — JSON Schema","importance":"reference","icon":"📜"},
-  {"name":"mermaid-theme.md","path":"rules/mermaid-theme.md","cat":"rule","lines":40,"size":2100,"desc":"Mermaid 主题 — 暗色标准","importance":"reference","icon":"📜"},
-  {"name":"security-guardrails.md","path":"rules/security-guardrails.md","cat":"rule","lines":150,"size":8900,"desc":"安全护栏 — 四不妥协","importance":"recommend","icon":"📜"},
-  {"name":"rui-经验技能化与记忆注入.md","path":"rules/rui-经验技能化与记忆注入.md","cat":"rule","lines":110,"size":5700,"desc":"配置管理规则 — .claude/同步策略","importance":"reference","icon":"📜"},
-  {"name":"self-improve.md","path":"rules/self-improve.md","cat":"rule","lines":180,"size":11200,"desc":"自改进闭环 — D0-D7/E1-E4","importance":"reference","icon":"📜"},
-  {"name":"constants.mjs","path":"lib/constants.mjs","cat":"lib","lines":30,"size":800,"desc":"共享常量 — 语义化常量定义","importance":"reference","icon":"📦"},
-  {"name":"fs.mjs","path":"lib/fs.mjs","cat":"lib","lines":50,"size":1400,"desc":"文件系统工具 — 读写/遍历","importance":"reference","icon":"📦"},
-  {"name":"help-layout.mjs","path":"lib/help-layout.mjs","cat":"lib","lines":40,"size":1100,"desc":"Help 布局 — 格式化输出","importance":"reference","icon":"📦"},
-  {"name":"tty.mjs","path":"lib/tty.mjs","cat":"lib","lines":35,"size":900,"desc":"终端工具 — 颜色/样式","importance":"reference","icon":"📦"}
+  {"name":"self-improve.md","path":"rules/self-improve.md","cat":"rule","lines":288,"size":11133,"desc":"自改进闭环规则 — D0-D8 诊断维度 · E1-E4 效果评估 · 五条经验技能化升级路径 · 触发条件与目标映射","importance":"must","icon":"📜"},
+  {"name":"self-improve.md","path":"agents/self-improve.md","cat":"agent","lines":263,"size":11647,"desc":"自改进引擎 Agent — 四段闭环行为定义 · 提案矩阵 · 跨会话记忆压缩与注入策略","importance":"must","icon":"🤖"},
+  {"name":"diagnostics.mjs","path":"lib/engine/diagnostics.mjs","cat":"lib","lines":248,"size":10962,"desc":"诊断引擎 — D0-D7 诊断信号生成 · 触发条件判定 · 评分计算","importance":"must","icon":"📦"},
+  {"name":"proposals.mjs","path":"lib/proposals.mjs","cat":"lib","lines":444,"size":16701,"desc":"提案生成与路由 — 诊断信号→提案类型映射 · 路由目标分发 · 优先级排序","importance":"recommend","icon":"📦"},
+  {"name":"record.mjs","path":"lib/record.mjs","cat":"lib","lines":467,"size":16095,"desc":"执行记录 — 记忆写入 · 压缩策略 · 相似检索 · 跨会话注入","importance":"recommend","icon":"📦"},
+  {"name":"recommend.mjs","path":"lib/recommend.mjs","cat":"lib","lines":484,"size":17524,"desc":"推荐引擎 — 改进机会识别 · 提案排序算法 · 效果反馈权重调整","importance":"recommend","icon":"📦"},
+  {"name":"selfimprove-generator.mjs","path":"lib/selfimprove-generator.mjs","cat":"lib","lines":513,"size":17864,"desc":"自改进报告生成器 — 从健康趋势生成巡检报告 · 多维度评分 · 趋势图表","importance":"recommend","icon":"📦"},
+  {"name":"recommend-detect.mjs","path":"lib/recommend-detect.mjs","cat":"lib","lines":87,"size":3189,"desc":"推荐检测 — 扫描项目检测可改进项 · 模式匹配 · 规则触发","importance":"reference","icon":"📦"},
+  {"name":"recommend-cli.mjs","path":"lib/recommend-cli.mjs","cat":"lib","lines":121,"size":4763,"desc":"推荐命令行 — CLI 入口 · 参数解析 · 格式化输出","importance":"reference","icon":"📦"},
+  {"name":"SKILL.md","path":"skills/rui-yry/SKILL.md","cat":"skill","lines":122,"size":5455,"desc":"自改进技能入口 — rui-yry 自主自改进循环 · 参数定义 · 输出规范","importance":"recommend","icon":"⚙️"},
+  {"name":"help.mjs","path":"skills/rui-yry/help.mjs","cat":"skill","lines":32,"size":1309,"desc":"自改进帮助 — 命令列表 · 使用说明","importance":"reference","icon":"⚙️"},
+  {"name":"diagnostics.md","path":"skills/rui/concerns/diagnostics.md","cat":"skill","lines":42,"size":2312,"desc":"诊断关注点 — 诊断信号注入 · 关注点定义","importance":"reference","icon":"⚙️"},
+  {"name":"architecture.md","path":"skills/rui/concerns/architecture.md","cat":"skill","lines":13,"size":806,"desc":"架构关注点 — 架构合规关注点注入","importance":"reference","icon":"⚙️"},
+  {"name":"integration.md","path":"skills/rui/concerns/integration.md","cat":"skill","lines":38,"size":2284,"desc":"集成关注点 — 模块集成关注点注入","importance":"reference","icon":"⚙️"},
+  {"name":"handoff.md","path":"skills/rui/concerns/handoff.md","cat":"skill","lines":32,"size":940,"desc":"交接关注点 — Agent 交接关注点注入","importance":"reference","icon":"⚙️"},
+  {"name":"bot-health-diagnostics.mjs","path":"skills/rui-bot/lib/bot-health-diagnostics.mjs","cat":"skill","lines":350,"size":14270,"desc":"Bot 健康诊断 — 企微通知场景的健康诊断 · 失败队列分析 · Webhook 健康","importance":"reference","icon":"⚙️"}
 ]};
 
-var CAT_ICONS={skill:'⚙️',agent:'🤖',rule:'📜',lib:'📦'};
-var CAT_LABELS={skill:'技能 Skills',agent:'Agent 角色',rule:'规则 Rules',lib:'共享库 Lib'};
-var CAT_BADGE={skill:'SKILL',agent:'AGENT',rule:'RULE',lib:'LIB'};
+var CAT_ICONS={rule:'📜',agent:'🤖',lib:'📦',skill:'⚙️'};
+var CAT_LABELS={rule:'规则 Rules',agent:'Agent 角色',lib:'引擎库 Lib',skill:'技能 Skills'};
+var CAT_BADGE={rule:'RULE',agent:'AGENT',lib:'LIB',skill:'SKILL'};
 var IMPORTANCE_BADGES={must:{cls:'must',label:'必读'},recommend:{cls:'recommend',label:'推荐'},reference:{cls:'reference',label:'参考'}};
 var IMPORTANCE_PRIORITY={must:0,recommend:1,reference:2};
 
@@ -862,34 +558,29 @@ function fmtSize(b){if(!b||b===0)return'—';if(b<1024)return b+'B';return (b/10
 /* ── 渲染统计 ────────────────────────────────────────────────────────── */
 function renderStats(){
   var files=manifest.files,total=files.length,totalLines=0;
-  var cc={skill:0,agent:0,rule:0,lib:0},cs={skill:0,agent:0,rule:0,lib:0},cl={skill:0,agent:0,rule:0,lib:0};
+  var cc={rule:0,agent:0,lib:0,skill:0},cs={rule:0,agent:0,lib:0,skill:0},cl={rule:0,agent:0,lib:0,skill:0};
   for(var i=0;i<files.length;i++){var f=files[i];cc[f.cat]=(cc[f.cat]||0)+1;cs[f.cat]=(cs[f.cat]||0)+(f.size||0);cl[f.cat]=(cl[f.cat]||0)+(f.lines||0);totalLines+=f.lines||0}
   var importanceCount={must:0,recommend:0,reference:0};
   for(var j=0;j<files.length;j++){var im=files[j].importance||'reference';importanceCount[im]=(importanceCount[im]||0)+1}
 
   document.getElementById('statsRow').innerHTML=
     '<div class="stat-card" onclick="filterCat(\'all\')" id="statAll"><div class="val c">'+total+'</div><div class="lbl">📄 文件总数</div></div>'+
-    '<div class="stat-card" onclick="filterCat(\'skill\')" id="statSkill"><div class="val a">'+cc.skill+'</div><div class="lbl">⚙️ 技能 ('+cl.skill+' 行)</div></div>'+
-    '<div class="stat-card" onclick="filterCat(\'agent\')" id="statAgent"><div class="val p">'+cc.agent+'</div><div class="lbl">🤖 Agent ('+cl.agent+' 行)</div></div>'+
     '<div class="stat-card" onclick="filterCat(\'rule\')" id="statRule"><div class="val g">'+cc.rule+'</div><div class="lbl">📜 规则 ('+cl.rule+' 行)</div></div>'+
-    '<div class="stat-card" onclick="filterCat(\'lib\')" id="statLib"><div class="val c">'+cc.lib+'</div><div class="lbl">📦 共享库 ('+cl.lib+' 行)</div></div>';
+    '<div class="stat-card" onclick="filterCat(\'agent\')" id="statAgent"><div class="val p">'+cc.agent+'</div><div class="lbl">🤖 Agent ('+cl.agent+' 行)</div></div>'+
+    '<div class="stat-card" onclick="filterCat(\'lib\')" id="statLib"><div class="val c">'+cc.lib+'</div><div class="lbl">📦 引擎库 ('+cl.lib+' 行)</div></div>'+
+    '<div class="stat-card" onclick="filterCat(\'skill\')" id="statSkill"><div class="val a">'+cc.skill+'</div><div class="lbl">⚙️ 技能 ('+cl.skill+' 行)</div></div>';
 
   var ts=totalLines||1;
-  var skillCount=files.filter(function(f){return f.cat==='skill'}).length;
-  var agentCount=files.filter(function(f){return f.cat==='agent'}).length;
-  var ruleCount=files.filter(function(f){return f.cat==='rule'}).length;
-  var libCount=files.filter(function(f){return f.cat==='lib'}).length;
   document.getElementById('bar').innerHTML=
-    '<div class="seg skill" style="width:'+(cl.skill/ts*100)+'%" data-tip="技能 '+cl.skill+' 行 '+skillCount+' 文件" onclick="filterCat(\'skill\')"></div>'+
-    '<div class="seg agent" style="width:'+(cl.agent/ts*100)+'%" data-tip="Agent '+cl.agent+' 行 '+agentCount+' 文件" onclick="filterCat(\'agent\')"></div>'+
-    '<div class="seg rule" style="width:'+(cl.rule/ts*100)+'%" data-tip="规则 '+cl.rule+' 行 '+ruleCount+' 文件" onclick="filterCat(\'rule\')"></div>'+
-    '<div class="seg lib" style="width:'+(cl.lib/ts*100)+'%" data-tip="Lib '+cl.lib+' 行 '+libCount+' 文件" onclick="filterCat(\'lib\')"></div>';
+    '<div class="seg rule" style="width:'+(cl.rule/ts*100)+'%" data-tip="规则 '+cl.rule+' 行 '+cc.rule+' 文件" onclick="filterCat(\'rule\')"></div>'+
+    '<div class="seg agent" style="width:'+(cl.agent/ts*100)+'%" data-tip="Agent '+cl.agent+' 行 '+cc.agent+' 文件" onclick="filterCat(\'agent\')"></div>'+
+    '<div class="seg lib" style="width:'+(cl.lib/ts*100)+'%" data-tip="Lib '+cl.lib+' 行 '+cc.lib+' 文件" onclick="filterCat(\'lib\')"></div>'+
+    '<div class="seg skill" style="width:'+(cl.skill/ts*100)+'%" data-tip="技能 '+cl.skill+' 行 '+cc.skill+' 文件" onclick="filterCat(\'skill\')"></div>';
 
-  // 概览页统计
-  var ovSkill=document.getElementById('ov-skill');if(ovSkill)ovSkill.textContent=cc.skill+' 文件';
-  var ovAgent=document.getElementById('ov-agent');if(ovAgent)ovAgent.textContent=cc.agent+' 文件';
   var ovRule=document.getElementById('ov-rule');if(ovRule)ovRule.textContent=cc.rule+' 文件';
+  var ovAgent=document.getElementById('ov-agent');if(ovAgent)ovAgent.textContent=cc.agent+' 文件';
   var ovLib=document.getElementById('ov-lib');if(ovLib)ovLib.textContent=cc.lib+' 文件';
+  var ovSkill=document.getElementById('ov-skill');if(ovSkill)ovSkill.textContent=cc.skill+' 文件';
 }
 
 /* ── 文件过滤 ────────────────────────────────────────────────────────── */
@@ -920,7 +611,6 @@ function renderFiles(){
   var filtered=sortByImportance(filterFiles(manifest.files));
   if(!filtered.length){container.innerHTML='<div class="state-msg"><div class="icon">🔍</div><h3>无匹配文件</h3><p>试试调整搜索关键词或清空筛选</p><code>'+esc(fileQuery)+'</code></div>';return}
 
-  // 按 cat + importance 分组
   var groups={};
   for(var i=0;i<filtered.length;i++){
     var f=filtered[i];
@@ -929,7 +619,7 @@ function renderFiles(){
     groups[key].push(f);
   }
 
-  var order=['skill','agent','rule','lib'];
+  var order=['rule','agent','lib','skill'];
   var importanceOrder=['must','recommend','reference'];
   var html='';
 
@@ -976,10 +666,12 @@ function renderBrowse(){
   var container=document.getElementById('browseContent');
   var html='';
   var dirs=[
-    {path:'skills/',label:'⚙️ 技能模块',desc:'用户入口与编排管线'},
-    {path:'agents/',label:'🤖 Agent 角色',desc:'协作拓扑与行为纪律'},
-    {path:'rules/',label:'📜 治理规则',desc:'管线纪律与安全护栏'},
-    {path:'lib/',label:'📦 共享库',desc:'基础设施与工具复用'}
+    {path:'rules/',label:'📜 治理规则',desc:'自改进闭环规则定义'},
+    {path:'agents/',label:'🤖 Agent 角色',desc:'自改进引擎行为定义'},
+    {path:'lib/',label:'📦 引擎库',desc:'诊断 · 提案 · 记录 · 推荐 · 报告'},
+    {path:'skills/rui-yry/',label:'⚙️ 自改进技能',desc:'rui-yry 自主自改进循环'},
+    {path:'skills/rui/concerns/',label:'🎯 关注点注入',desc:'诊断 · 架构 · 集成 · 交接'},
+    {path:'skills/rui-bot/lib/',label:'📡 Bot 诊断',desc:'企微通知健康诊断'}
   ];
   for(var d=0;d<dirs.length;d++){
     var dir=dirs[d];
@@ -1024,12 +716,11 @@ function filterCat(cat){
   document.getElementById('searchBox').classList.remove('has-value');
 
   document.querySelectorAll('.stat-card').forEach(function(c){c.classList.remove('active-filter')});
-  var id=cat==='all'?'statAll':cat==='skill'?'statSkill':cat==='agent'?'statAgent':cat==='rule'?'statRule':cat==='lib'?'statLib':null;
+  var id=cat==='all'?'statAll':cat==='rule'?'statRule':cat==='agent'?'statAgent':cat==='lib'?'statLib':cat==='skill'?'statSkill':null;
   if(id){var el=document.getElementById(id);if(el)el.classList.add('active-filter')}
 
   if(cat==='all'){switchPanel('files');renderFiles()}
   else{
-    // 在所有文件中按 cat 过滤
     var filtered=manifest.files.filter(function(f){return f.cat===cat});
     fileQuery='';
     var container=document.getElementById('filesContent');
@@ -1080,7 +771,6 @@ function clearSearch(){
 
 /* ── 复制文本 ────────────────────────────────────────────────────────── */
 function copyText(text){
-  // 还原 HTML 实体
   text=text.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/&quot;/g,'"');
   if(navigator.clipboard&&navigator.clipboard.writeText){
     navigator.clipboard.writeText(text).then(function(){toast('✅ 命令已复制到剪贴板')}).catch(function(){fallbackCopy(text)});
@@ -1101,7 +791,6 @@ function viewSource(relPath){
   document.getElementById('modalTitle').textContent=relPath;
   document.getElementById('jumpInput').value='';
 
-  // 填充元信息
   var f=manifest.files.find(function(x){return x.path===relPath});
   document.getElementById('mm-size').textContent=f?fmtSize(f.size):'—';
   document.getElementById('mm-lines').textContent=f?(f.lines||'—'):'—';
@@ -1161,11 +850,9 @@ function jumpToLine(){
   if(!n||n<1){toast('❌ 请输入有效的行号');return}
   var el=document.getElementById('line-'+n);
   if(!el){toast('❌ 行号 '+n+' 不存在');return}
-  // 移除旧高亮
   document.querySelectorAll('.code-line.target').forEach(function(e){e.classList.remove('target')});
   el.classList.add('target');
   el.scrollIntoView({behavior:'smooth',block:'center'});
-  // 临时高亮行号
   var ln=el.querySelector('.ln');
   if(ln){
     ln.style.color='var(--accent)';
@@ -1218,7 +905,6 @@ document.getElementById('modalOverlay').addEventListener('click',function(e){
 /* ── 初始化 ──────────────────────────────────────────────────────────── */
 window.addEventListener('DOMContentLoaded',function(){
   renderStats();
-  // 默认渲染概览
   switchPanel('overview');
 });
 </script>

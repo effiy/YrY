@@ -1,6 +1,6 @@
 # 场景 2: 双主题系统设计
 
-> | v1.1.0 | 2026-06-12 | deepseek-v4-pro | 🌿 feat/yry-cdn | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
+> | v1.2.0 | 2026-06-18 | deepseek-v4-pro | 🌿 feat/yry-cdn | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
 > **导航**: [← 场景-1](../场景-1-cdn资源加载与页面渲染/index.md) · [场景-3 →](../场景-3-组件库与JS工具API/index.md)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
@@ -25,7 +25,7 @@ flowchart TD
 
     SYSTEM --> S_BG["深紫黑底<br/>rgba(22,22,32,1)"]:::color2
     SYSTEM --> S_FONT["系统字体<br/>Segoe UI / Noto Sans SC"]:::font2
-    SYSTEM --> S_COMP["14 组件<br/>统计卡 · 标签页 · 折叠套件<br/>进度条 · 按钮 · 链接卡"]:::comp2
+    SYSTEM --> S_COMP["62 组件 · 10 大类别<br/>布局/导航/卡片/场景/统计<br/>清单/风险/面板/工具/其他"]:::comp2
 
     MONO --> SHARED["shared.css<br/>通用基础层"]:::base
     SYSTEM --> SHARED
@@ -65,7 +65,7 @@ flowchart TD
 | 🎭 | **场合适配** | 架构图表用等宽字体获得技术文档的专业感，审查页面用系统字体获得舒适阅读感 |
 | 🧬 | **命名空间隔离** | Mono 组件用 `.yry-mono-*` 前缀，System 组件用 `.yry-*` 前缀，互不冲突 |
 | 📐 | **独立演化** | 两套主题可独立迭代，不担心修改会影响对方的页面 |
-| 🎨 | **设计令牌统一** | System 主题通过 CSS 变量统一视觉语言，14 个组件的颜色全部通过 var() 引用 |
+| 🎨 | **设计令牌统一** | System 主题通过 CSS 变量统一视觉语言，62 个组件的颜色全部通过 var() 引用 |
 
 ---
 
@@ -95,12 +95,12 @@ flowchart LR
     subgraph SYS["System 主题 theme.css"]
         TOKENS[":root 14 变量<br/>Surfaces · Brand<br/>Semantic · Text · Elevation"]:::sys
         BODY_S["body 样式<br/>系统字体"]:::sys
-        COMP_S["14 组件<br/>Container · Header · Stats<br/>Bar · Tabs · Panels · Cards<br/>Suite · Progress · Button<br/>Section · LinkCard"]:::sys
+        COMP_S["62 组件 · 10 大类别<br/>布局/导航/卡片/场景/统计<br/>清单/风险/面板/工具/其他"]:::sys
     end
 
     subgraph MONO_T["Mono 主题 theme-mono.css"]
         BODY_M["body 样式<br/>JetBrains Mono 等宽<br/>#020617 深蓝黑底"]:::mono
-        COMP_M["7 组件<br/>MonoContainer · Header<br/>PulseDot · Diagram<br/>Graph · MonoCards · Legend"]:::mono
+        COMP_M["Mono 主题组件<br/>MonoContainer · Header<br/>PulseDot · Diagram<br/>Graph · MonoCards · Legend"]:::mono
     end
 
     BASE --> SYS
@@ -131,7 +131,7 @@ flowchart LR
 | 决策 | 选择 | 理由 |
 |------|------|------|
 | Mono 不使用 CSS 变量 | 硬编码颜色值 | Mono 主题是固定视觉方案，不需要跨组件复用 |
-| System 使用 CSS 变量 | `:root` 14 变量 | 14 组件共享设计令牌，变量使颜色调整一次生效全局 |
+| System 使用 CSS 变量 | `:root` 14 变量 | 62 组件共享设计令牌，变量使颜色调整一次生效全局 |
 | 双文件非单文件 | 两个独立 CSS 文件 | 按需加载，Cat B 页面不加载 Mono 样式（节省 ~6 KB） |
 | shared.css 为共有基础 | 抽取交集 | Reset/动画/导航/Toolbar/Toast 两个主题都用到 |
 
@@ -174,7 +174,7 @@ flowchart LR
 | 来源 | 行号 | 内容 |
 |------|------|------|
 | `cdn/theme.css` | 11–39 | :root 14 CSS 变量定义 |
-| `cdn/theme.css` | 42–224 | 14 组件样式全量 |
+| `cdn/theme.css` | 42–254 | 62 组件样式全量（10 大类别） |
 | `cdn/theme-mono.css` | 13–19 | body 背景+字体 |
 | `cdn/theme-mono.css` | 22–108 | Mono 组件全量 |
 | `cdn/README.md` | 17–42 | Category A/B 页面分类与加载 |
@@ -190,7 +190,7 @@ flowchart LR
 |------|------|------|------|
 | L1 视觉验证 | 截图对比 | 浏览器 | Cat A 页面 × 3，Cat B 页面 × 3 |
 | L2 令牌验证 | CSS 变量取值 | DevTools | theme.css :root 14 变量 |
-| L3 组件覆盖 | 组件存在性 | DOM 查询 | Cat B 14 组件，Cat A 7 组件 |
+| L3 组件覆盖 | 组件存在性 | DOM 查询 | 62 组件（10 大类别） |
 | L4 响应式 | 视口缩放 | DevTools | 768px / 640px 断点 |
 
 ### §1.2 测试用例
@@ -300,7 +300,7 @@ flowchart LR
 
 ### §2.4 组件覆盖验证
 
-**System 14 组件 (theme.css)**:
+**System 62 组件（10 大类别 · theme.css + shared.css）**:
 
 | # | 组件类名 | 行号 | 用途 | 状态 |
 |---|---------|------|------|------|
@@ -401,10 +401,10 @@ flowchart LR
 
 | 诊断 | 触发? | 证据 | 说明 |
 |------|-------|------|------|
-| D0 基线偏离 | 否 | 双主题架构清晰：Mono 7 组件 + System 14 组件，命名空间隔离 | 架构一致 |
+| D0 基线偏离 | 否 | 双主题架构清晰：62 组件分属 10 大类别，命名空间隔离 | 架构一致 |
 | D1 效率退化 | 否 | 双文件加载策略（Cat B 不加载 Mono 样式）节省 ~6 KB | 按需加载 |
 | D2 质量热点 | 否 | 14 CSS 变量集中定义于 :root，修改一处全局生效 | 设计令牌统一 |
-| D3 复杂度增长 | 否 | 21 组件分属两套主题，职责清晰无交叉 | 组件内聚 |
+| D3 复杂度增长 | 否 | 62 组件分属 10 大类别 + 2 套主题，职责清晰无交叉 | 组件内聚 |
 | D4 流程退化 | 否 | 响应式断点覆盖 768px/640px，动画体系 7 @keyframes | 覆盖完整 |
 | D5 依赖退化 | 否 | 字体完全自托管（4 woff2），零外部依赖 | 自包含 |
 | D6 文档过时 | 否 | 本文档 §0–§4 全部填充，代码锚点可追溯 | 文档同步 |

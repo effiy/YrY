@@ -17,6 +17,7 @@ import { readdirSync, existsSync, writeFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { NODE_ARGV_OFFSET } from '../lib/constants.mjs';
 
 const TESTS_DIR = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = resolve(TESTS_DIR, '..');
@@ -39,7 +40,7 @@ function discoverTests(subdir) {
 }
 
 function parseArgs() {
-  const args = process.argv.slice(2);
+  const args = process.argv.slice(NODE_ARGV_OFFSET);
   const filters = [];
   let listOnly = false;
   let jsonMode = false;

@@ -13,7 +13,7 @@ import { NODE_ARGV_OFFSET, STORY_PANEL_DIR } from '../../lib/constants.mjs';
 import { findProjectRoot } from '../../lib/fs.mjs';
 import { extractSceneData } from './lib/extractor.mjs';
 import { generateSceneDocs } from './lib/generator.mjs';
-import { listTemplates, DOC_TYPES } from './lib/templates.mjs';
+import { DOC_TYPES } from './lib/templates.mjs';
 
 function parseArgs() {
   const args = process.argv.slice(NODE_ARGV_OFFSET);
@@ -81,7 +81,7 @@ async function main() {
   if (opts.type && !DOC_TYPES.includes(opts.type)) {
     console.error(red(`无效文档类型 "${opts.type}"`));
     console.error(dim(`可用类型: ${DOC_TYPES.join(', ')}`));
-    process.exit(0);
+    process.exit(1);
   }
 
   const projectRoot = findProjectRoot(process.cwd());
@@ -101,7 +101,7 @@ async function main() {
     if (targetScenes.length === 0) {
       console.error(red(`未找到场景 ${opts.scene}`));
       console.error(dim(`可用场景: ${allScenes.join(', ')}`));
-      process.exit(0);
+      process.exit(1);
     }
   }
 

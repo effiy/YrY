@@ -3,7 +3,7 @@
 // 用法: node skills/rui-story/help.mjs 或 /rui-story --help
 
 import { bold, dim, yellow, cyan } from '../../lib/tty.mjs';
-import { hdr, subhdr, item, flag, scene } from '../../lib/help-layout.mjs';
+import { hdr, subhdr, item, scene } from '../../lib/help-layout.mjs';
 
 const help = `
 ${bold("# rui-story — 故事任务面板管理")}

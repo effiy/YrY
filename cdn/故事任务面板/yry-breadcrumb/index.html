@@ -21,7 +21,6 @@
 <link rel="stylesheet" href="../../yry-back-top/index.css">
 <link rel="stylesheet" href="../../yry-scene-header/index.css">
 <link rel="stylesheet" href="../../yry-stats-grid/index.css">
-<link rel="stylesheet" href="../../yry-inline-helpers.css">
   <!-- ═══ CDN: Vue 3 ═══ -->
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 
@@ -41,169 +40,13 @@
 }
 </script>
 
+<link rel="stylesheet" href="../../yry-story-panel.css">
 <style>
-/* ════════════════════════════════════════════════════════════════
-   页面专属样式 — 共享样式由 yry-home.css + theme.css 提供
-   ════════════════════════════════════════════════════════════════ */
-
-/* ── a11y: Skip link ── */
-.skip-link {
-  position: fixed; top: -100px; left: 8px; z-index: 1000;
-  background: var(--yry-accent, #ffc107); color: #000;
-  padding: 10px 16px; border-radius: 6px; font-weight: 600;
-  text-decoration: none; transition: top .2s cubic-bezier(0.16, 1, 0.3, 1);
-  font-size: .85rem; box-shadow: 0 4px 12px rgba(0,0,0,.3);
-  border: 2px solid transparent;
-}
-.skip-link:focus { top: 8px; outline: none; border-color: var(--yry-cyan, #22d3ee); }
-.skip-link:focus-visible { top: 8px; outline: 3px solid var(--yry-cyan, #22d3ee); outline-offset: 2px; }
-
-:focus-visible {
-  outline: 2px solid var(--yry-cyan, #22d3ee);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
 /* ── Icon variants (extends .icon from yry-home.css) ── */
 .item-card .icon.tpl { background: rgba(255,193,7,.15); color: var(--yry-accent, #ffc107); }
 .item-card .icon.js  { background: rgba(34,211,238,.15); color: var(--yry-cyan, #22d3ee); }
-.item-card .icon.css { background: rgba(192,132,252,.15); color: #c084fc; }
-
-/* ── Badge (extends .name) ── */
-.item-card .name .badge {
-  font-size: .62rem; font-weight: 600; padding: 1px 7px; border-radius: 4px;
-  background: rgba(255,193,7,.12); color: var(--yry-accent, #ffc107);
-  border: 1px solid rgba(255,193,7,.25);
-}
-
-/* ── Cyan layer-num variant ── */
-.layer-header .layer-num.cyan { background: var(--yry-cyan, #22d3ee); }
-
-/* ── Scene card base styles (yry-home.css uses yry- prefix, supplement non-prefixed) ── */
-.scene-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; margin-bottom: 12px; }
-.scene-card {
-  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08);
-  border-radius: 10px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(0,0,0,.25);
-  transition: transform .15s, box-shadow .15s, border-color .15s;
-  animation: fadeInUp .4s ease both;
-  position: relative;
-}
-.scene-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,.4); border-color: rgba(255,193,7,.2); }
-.scene-card .scene-num {
-  font-size: .68rem; font-weight: 700; color: var(--yry-accent, #ffc107);
-  background: rgba(255,193,7,.1); border: 1px solid rgba(255,193,7,.25);
-  border-radius: 4px; padding: 2px 8px;
-}
-.scene-card .scene-name { font-size: .98rem; font-weight: 700; }
-.scene-card .scene-name a { color: var(--yry-cyan, #22d3ee); text-decoration: none; }
-.scene-card .scene-name a:hover { color: var(--yry-accent, #ffc107); text-decoration: underline; }
-.scene-card .scene-desc { color: var(--yry-text3, #888); font-size: .78rem; line-height: 1.55; margin: 6px 0 10px; }
-.scene-card .scene-meta { padding-top: 8px; border-top: 1px solid rgba(255,255,255,.05); display: flex; flex-wrap: wrap; gap: 2px; }
-.scene-card .scene-meta a { font-size: .68rem; color: var(--yry-cyan, #22d3ee); text-decoration: none; transition: color .15s; }
-.scene-card .scene-meta a:hover { color: var(--yry-accent, #ffc107); text-decoration: underline; }
-.scene-card .scene-meta .sep { color: var(--yry-text3, #888); margin: 0 2px; user-select: none; }
-
-/* ── Scene status (✅ / 🚧 / 📋) ── */
-.scene-card .scene-status {
-  position: absolute; top: 12px; right: 14px;
-  font-size: .72rem; font-weight: 700;
-  padding: 2px 8px; border-radius: 10px;
-  background: rgba(16,185,129,.12); color: #10b981;
-  border: 1px solid rgba(16,185,129,.3);
-  cursor: help; user-select: none;
-}
-.scene-card .scene-status[data-status="wip"]   { background: rgba(251,191,36,.12); color: #fbbf24; border-color: rgba(251,191,36,.3); }
-.scene-card .scene-status[data-status="todo"]  { background: rgba(148,163,184,.12); color: #94a3b8; border-color: rgba(148,163,184,.3); }
-.scene-card.is-hidden { display: none; }
-
-/* ── Card desc + detail fallback (yry-home.css uses yry- prefix) ── */
-.item-card .desc { color: var(--yry-text3, #888); font-size: .78rem; line-height: 1.55; }
 .item-card .meta .detail { font-size: .7rem; color: var(--yry-text3, #888); }
-
-/* ── Scene card header (with color dot) ── */
-.scene-card .scene-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.scene-card .scene-color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-
-/* ── Scene card progress (localStorage) ── */
-.scene-card .scene-progress {
-  margin-top: 8px; height: 4px; background: rgba(255,255,255,.05);
-  border-radius: 2px; overflow: hidden;
-}
-.scene-card .scene-progress-bar {
-  height: 100%; background: linear-gradient(90deg, var(--yry-cyan, #22d3ee), var(--yry-accent, #ffc107));
-  width: 0; transition: width .4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* ── Flow strip ── */
-.flow-strip {
-  display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;
-  margin: 0 0 36px; padding: 12px 18px;
-  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06);
-  border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.25);
-  animation: fadeInDown .5s .2s ease both;
-  font-size: .68rem; color: var(--yry-text3, #888);
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-}
-.flow-strip .flow-step { color: var(--yry-text2, #d4d4d4); }
-.flow-strip .flow-arrow { color: var(--yry-accent, #ffc107); opacity: .6; }
-.flow-strip .flow-tag {
-  padding: 2px 8px; border-radius: 4px;
-  background: rgba(255,193,7,.08); color: var(--yry-accent, #ffc107);
-  border: 1px solid rgba(255,193,7,.15);
-}
-
-/* ── Timeline strip (5 场景进度时间轴) ── */
-.timeline-strip {
-  display: flex; align-items: center; gap: 0; margin: 0 0 24px;
-  padding: 14px 18px;
-  background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.05);
-  border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.2);
-  animation: fadeInUp .4s .1s ease both;
-  overflow-x: auto; -webkit-overflow-scrolling: touch;
-}
-.timeline-strip .tl-step {
-  flex: 1; min-width: 90px; padding: 6px 8px; text-align: center;
-  font-size: .72rem; color: var(--yry-text3, #888);
-  border-right: 1px dashed rgba(255,255,255,.08);
-  transition: color .2s;
-}
-.timeline-strip .tl-step:last-child { border-right: none; }
-.timeline-strip .tl-step .tl-num {
-  display: block; font-size: 1.05rem; font-weight: 700; color: var(--yry-text2, #d4d4d4);
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  margin-bottom: 2px;
-}
-.timeline-strip .tl-step.is-done .tl-num { color: #10b981; }
-.timeline-strip .tl-step.is-active .tl-num { color: var(--yry-accent, #ffc107); }
 .timeline-strip .tl-step .tl-name { display: block; font-size: .7rem; }
-
-/* ── Quick filter ── */
-.quick-filter {
-  display: flex; align-items: center; gap: 8px; margin: 0 0 16px;
-  padding: 8px 12px;
-  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08);
-  border-radius: 8px;
-  animation: fadeInDown .4s .15s ease both;
-}
-.quick-filter .qf-icon { color: var(--yry-text3, #888); font-size: .9rem; }
-.quick-filter input {
-  flex: 1; background: transparent; border: none; outline: none;
-  color: var(--yry-text, #f5f5f5); font-size: .85rem; font-family: inherit;
-  padding: 4px 0;
-}
-.quick-filter input::placeholder { color: var(--yry-text3, #888); }
-.quick-filter .qf-count {
-  font-size: .7rem; color: var(--yry-text3, #888);
-  padding: 2px 8px; background: rgba(255,255,255,.05); border-radius: 10px;
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  white-space: nowrap;
-}
-.quick-filter .qf-clear {
-  background: none; border: none; color: var(--yry-text3, #888);
-  cursor: pointer; font-size: .9rem; padding: 0 4px; line-height: 1;
-}
-.quick-filter .qf-clear:hover { color: var(--yry-accent, #ffc107); }
-
 /* ── Page meta (阅读时间 + 更新时间) ── */
 .page-meta {
   display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
@@ -216,67 +59,12 @@
   border: 1px solid rgba(255,255,255,.06); border-radius: 10px;
 }
 .page-meta .meta-pill .meta-icon { font-size: .85rem; }
-
-/* ── Progress summary bar ── */
-.progress-summary {
-  display: flex; align-items: center; gap: 10px; margin: 0 0 18px;
-  padding: 10px 14px;
-  background: rgba(16,185,129,.06); border: 1px solid rgba(16,185,129,.18);
-  border-radius: 8px;
-  font-size: .78rem; color: var(--yry-text2, #d4d4d4);
-}
-.progress-summary .ps-bar {
-  flex: 1; height: 6px; background: rgba(255,255,255,.06);
-  border-radius: 3px; overflow: hidden;
-}
-.progress-summary .ps-bar-fill {
-  height: 100%; background: linear-gradient(90deg, #10b981, #22d3ee);
-  width: 0; transition: width .5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.progress-summary .ps-pct {
-  font-weight: 700; color: #10b981;
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  min-width: 42px; text-align: right;
-}
-.progress-summary button {
-  background: none; border: 1px solid rgba(255,255,255,.15);
-  color: var(--yry-text3, #888); padding: 3px 10px; border-radius: 4px;
-  font-size: .68rem; cursor: pointer; font-family: inherit;
-  transition: all .15s;
-}
-.progress-summary button:hover { color: var(--yry-accent, #ffc107); border-color: var(--yry-accent, #ffc107); }
-
-/* ── Deliverables grid ── */
-.deliv-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 10px; margin-bottom: 8px;
-}
-.deliv-card {
-  background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.05);
-  border-radius: 8px; padding: 12px 14px;
-  transition: all .15s; animation: fadeInUp .4s ease both;
-}
-.deliv-card:hover { background: rgba(255,255,255,.05); border-color: rgba(255,193,7,.18); }
-.deliv-card .deliv-icon { font-size: 1.1rem; margin-bottom: 4px; }
-.deliv-card .deliv-name { font-size: .82rem; font-weight: 600; color: var(--yry-text, #f5f5f5); }
-.deliv-card .deliv-desc { font-size: .68rem; color: var(--yry-text3, #888); margin-top: 2px; line-height: 1.5; }
-
-/* ── Animations (yry-home.css provides base, these augment) ── */
-@keyframes fadeInUp  { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes fadeInDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes glowPulse  { 0%,100% { filter: brightness(1); box-shadow: 0 0 0 0 rgba(255,193,7,.4); } 50% { filter: brightness(1.15); box-shadow: 0 0 0 6px rgba(255,193,7,0); } }
-@keyframes shimmer    { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-@keyframes scaleIn    { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: scale(1); } }
-@keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-@keyframes ringPulse  { 0% { transform: scale(.95); opacity: .7; } 100% { transform: scale(1.4); opacity: 0; } }
-
 /* ── Pulse dot (live/active indicator) ── */
 .pulse-dot {
   display: inline-block; width: 7px; height: 7px; border-radius: 50%;
   background: #10b981; flex-shrink: 0;
   animation: glowPulse 2s infinite;
 }
-
 /* ── Tip / callout boxes ── */
 .tip-box {
   background: rgba(255,193,7,.04); border-left: 3px solid var(--yry-accent, #ffc107);
@@ -295,7 +83,6 @@
 .tip-box.info strong { color: var(--yry-cyan, #22d3ee); }
 .tip-box.warn { background: rgba(239,68,68,.05); border-left-color: #ef4444; }
 .tip-box.warn strong { color: #ef4444; }
-
 /* ── Tag chips ── */
 .tag-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
 .tag-chip {
@@ -304,46 +91,7 @@
   text-transform: uppercase; white-space: nowrap;
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
-.tag-chip.accent  { background: rgba(255,193,7,.12); color: var(--yry-accent, #ffc107); }
-.tag-chip.info    { background: rgba(34,211,238,.12); color: var(--yry-cyan, #22d3ee); }
 .tag-chip.success { background: rgba(16,185,129,.12); color: #10b981; }
-.tag-chip.purple  { background: rgba(192,132,252,.12); color: #c084fc; }
-
-/* ── Scene card hover glow ── */
-.scene-card:hover {
-  transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,.4), 0 0 20px rgba(255,193,7,.04);
-  border-color: rgba(255,193,7,.22);
-}
-
-/* ── Enhanced stat cards with hover ── */
-.stat {
-  transition: transform .15s, box-shadow .15s, border-color .15s;
-}
-.stat:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(0,0,0,.35);
-  border-color: rgba(255,193,7,.18);
-}
-
-/* ── Flow strip enhanced ── */
-.flow-strip {
-  transition: border-color .2s;
-}
-.flow-strip:hover {
-  border-color: rgba(255,193,7,.12);
-}
-
-/* ── Timeline enhanced hover ── */
-.timeline-strip .tl-step {
-  transition: color .2s, background .15s;
-  border-radius: 6px;
-  text-decoration: none;
-}
-.timeline-strip .tl-step:hover {
-  background: rgba(255,193,7,.04);
-  color: var(--yry-text2, #d4d4d4);
-}
-
 /* ── Overview cards (for highlights section) ── */
 .overview-grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -363,18 +111,6 @@
 .ov-card .ov-ico { font-size: 1.5rem; margin-bottom: 6px; }
 .ov-card .ov-title { font-size: .86rem; font-weight: 700; color: var(--yry-text, #f5f5f5); margin-bottom: 4px; }
 .ov-card .ov-desc { font-size: .72rem; color: var(--yry-text3, #888); line-height: 1.5; }
-
-/* ── Enhanced item card hover ── */
-.item-card {
-  transition: transform .15s, box-shadow .15s, border-color .15s !important;
-  animation: fadeInUp .45s ease both;
-}
-.item-card:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(0,0,0,.3);
-  border-color: rgba(255,255,255,.1);
-}
-
 /* ── KBD style ── */
 .kbd {
   font-size: .7rem; color: var(--yry-text2, #d4d4d4);
@@ -383,7 +119,6 @@
   padding: 1px 6px; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   display: inline-block; min-width: 18px; text-align: center;
 }
-
 /* ── Section header with meta ── */
 .section-head {
   display: flex; align-items: center; justify-content: space-between;
@@ -393,7 +128,6 @@
   font-size: .7rem; color: var(--yry-text3, #888);
   display: flex; gap: 10px; align-items: center;
 }
-
 /* ── Next-action (walkthrough CTA) ── */
 .next-action {
   display: flex; align-items: flex-start; gap: 14px;
@@ -413,18 +147,7 @@
 .next-action .na-desc {
   font-size: .75rem; color: var(--yry-text3, #888); line-height: 1.55;
 }
-
-/* ── Responsive ── */
-@media (max-width: 720px) {
-  .header h1 { font-size: 1.6rem; }
-  .stat { min-width: 90px; padding: 12px 16px; }
-  .stat .num { font-size: 1.4rem; }
-  .scene-grid { grid-template-columns: 1fr; }
-  .timeline-strip { padding: 10px; gap: 0; }
-  .timeline-strip .tl-step { min-width: 70px; padding: 4px 6px; }
-  .quick-filter { padding: 6px 10px; }
-}
-
+.stat .num { font-size: 1.4rem; }
 /* ── Reduced motion (a11y) ── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -432,23 +155,9 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  .scene-card:hover { transform: none; }
-}
-
 /* ── Print ── */
 @media print {
   .skip-link, .back-top, .cross-nav, .quick-filter, .progress-summary button { display: none !important; }
-  .scene-card, .item-card, .deliv-card {
-    break-inside: avoid; box-shadow: none !important;
-    border: 1px solid #ccc !important; background: white !important;
-  }
-  .scene-card .scene-status { background: white !important; color: black !important; border: 1px solid #333 !important; }
-  a { color: #0066cc !important; text-decoration: underline !important; }
-  .flow-strip, .timeline-strip { background: white !important; }
-  body { color: black !important; background: white !important; }
-}
-
-.container { max-width: 1100px; }
 </style>
 </head>
 <body>

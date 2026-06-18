@@ -12,10 +12,12 @@ import {
   buildSharedContext,
   buildBreadcrumb,
   buildCrossNav,
+  buildBreadcrumbJSON,
+  buildCrossNavJSON,
   buildHeadBlock,
   getCategory,
 } from './templates.mjs';
-import { markdownToHtml, isPlaceholder } from './extractor.mjs';
+import { markdownToHtml, escapeHtml } from './extractor.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -79,6 +81,8 @@ function renderTemplate(template, ctx, docType) {
   // Build dynamic fragments
   const breadcrumb = buildBreadcrumb(ctx, docType);
   const crossNav = buildCrossNav(ctx, docType);
+  const breadcrumbJSON = buildBreadcrumbJSON(ctx, docType);
+  const crossNavJSON = buildCrossNavJSON(ctx, docType);
   const headBlock = buildHeadBlock(ctx, docType);
 
   // Section content converted to HTML
@@ -94,8 +98,8 @@ function renderTemplate(template, ctx, docType) {
     : '';
 
   // Stats data
-  const statsGrid = buildStatsGrid(ctx, docType);
-  const healthBar = buildHealthBar(ctx, docType);
+  const statsGridJSON = buildStatsGridJSON(ctx, docType);
+  const healthBarJSON = buildHealthBarJSON(ctx, docType);
 
   // Replace tokens
   const replacements = {
@@ -110,6 +114,8 @@ function renderTemplate(template, ctx, docType) {
     '{{CDN_DEPTH}}':      ctx.cdnDepth,
     '{{BREADCRUMB}}':     breadcrumb,
     '{{CROSS_NAV}}':      crossNav,
+    '{{BREADCRUMB_JSON}}': breadcrumbJSON,
+    '{{CROSS_NAV_JSON}}':  crossNavJSON,
     '{{HEAD_BLOCK}}':     headBlock,
     '{{MERMAID_BLOCKS}}': mermaidHtml,
     '{{SEC0_HTML}}':      sec0Html,
@@ -117,8 +123,8 @@ function renderTemplate(template, ctx, docType) {
     '{{SEC2_HTML}}':      sec2Html,
     '{{SEC3_HTML}}':      sec3Html,
     '{{SEC4_HTML}}':      sec4Html,
-    '{{STATS_GRID}}':     statsGrid,
-    '{{HEALTH_BAR}}':     healthBar,
+    '{{STATS_GRID_JSON}}': statsGridJSON,
+    '{{HEALTH_BAR_JSON}}': healthBarJSON,
     '{{OVERVIEW}}':       ctx.overview ? markdownToHtml(ctx.overview) : '',
   };
 
@@ -133,84 +139,82 @@ function placeholderHtml() {
   return '<div class="yry-placeholder" style="padding:2rem;text-align:center;color:var(--yry-text3);background:var(--yry-bg-flat);border-radius:8px;margin:1rem 0">数据待填充 — 运行 /rui code 生成</div>';
 }
 
-function escapeHtml(str) {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-/**
- * Build a stats grid based on doc type and extracted data.
- */
-function buildStatsGrid(ctx, docType) {
-  const { tables, sections } = ctx;
+/** Build stats data as JSON array (for YrySceneStats component) */
+function buildStatsGridJSON(ctx, docType) {
+  const { tables } = ctx;
 
   switch (docType) {
     case '测试面板': {
-      // Try to extract test counts from §3
       const totalTests = extractTableValue(tables, '断言总数') || extractTableValue(tables, '断言') || '—';
       const passed = extractTableValue(tables, '通过') || '—';
       const failed = extractTableValue(tables, '失败') || '0';
       const skipped = extractTableValue(tables, '跳过') || '0';
       const duration = extractTableValue(tables, '执行耗时') || '—';
-      return `<div class="yry-stats">
-        <div class="yry-stat"><div class="yry-val t">${totalTests}</div><div class="yry-lbl">总断言</div></div>
-        <div class="yry-stat"><div class="yry-val p">${passed}</div><div class="yry-lbl">通过</div></div>
-        <div class="yry-stat"><div class="yry-val f">${failed}</div><div class="yry-lbl">失败</div></div>
-        <div class="yry-stat"><div class="yry-val s">${skipped}</div><div class="yry-lbl">跳过</div></div>
-        <div class="yry-stat"><div class="yry-val d">${duration}</div><div class="yry-lbl">耗时</div></div>
-      </div>`;
+      return JSON.stringify([
+        { value: totalTests, label: '总断言', color: 't' },
+        { value: passed, label: '通过', color: 'p' },
+        { value: failed, label: '失败', color: 'f' },
+        { value: skipped, label: '跳过', color: 's' },
+        { value: duration, label: '耗时', color: 'info' },
+      ]);
     }
     case '审查': {
-      // Try to extract D0-D7 diagnostics
       const passCount = countDiagnosticPasses(tables);
-      return `<div class="yry-stats">
-        <div class="yry-stat"><div class="yry-val health">${passCount}/8</div><div class="yry-lbl">诊断通过</div></div>
-        <div class="yry-stat"><div class="yry-val">D0-D7</div><div class="yry-lbl">覆盖范围</div></div>
-        <div class="yry-stat"><div class="yry-val warn-h">${8 - passCount}</div><div class="yry-lbl">改进建议</div></div>
-      </div>`;
+      return JSON.stringify([
+        { value: `${passCount}/8`, label: '诊断通过', color: 'health' },
+        { value: 'D0-D7', label: '覆盖范围', color: 't' },
+        { value: 8 - passCount, label: '改进建议', color: 'warn-h' },
+      ]);
     }
     case '计划清单': {
       const sceneCount = countTableRows(tables, 'TC-');
-      return `<div class="yry-stats">
-        <div class="yry-stat"><div class="yry-val health">${ctx.sceneNum}</div><div class="yry-lbl">场景序号</div></div>
-        <div class="yry-stat"><div class="yry-val">${sceneCount || '—'}</div><div class="yry-lbl">测试用例</div></div>
-        <div class="yry-stat"><div class="yry-val">v${ctx.version}</div><div class="yry-lbl">版本</div></div>
-      </div>`;
+      return JSON.stringify([
+        { value: ctx.sceneNum, label: '场景序号', color: 'health' },
+        { value: sceneCount || '—', label: '测试用例', color: 't' },
+        { value: `v${ctx.version}`, label: '版本', color: 't' },
+      ]);
     }
     case '源码': {
       const artifactCount = countArtifactRows(tables);
-      return `<div class="yry-stats">
-        <div class="yry-stat"><div class="yry-val c">${artifactCount || '—'}</div><div class="yry-lbl">产物文件</div></div>
-        <div class="yry-stat"><div class="yry-val a">${ctx.sceneNum}</div><div class="yry-lbl">场景</div></div>
-        <div class="yry-stat"><div class="yry-val">v${ctx.version}</div><div class="yry-lbl">版本</div></div>
-      </div>`;
+      return JSON.stringify([
+        { value: artifactCount || '—', label: '产物文件', color: 'info' },
+        { value: ctx.sceneNum, label: '场景', color: 't' },
+        { value: `v${ctx.version}`, label: '版本', color: 't' },
+      ]);
     }
     case '演示': {
-      return `<div class="yry-stats">
-        <div class="yry-stat"><div class="yry-val c">${ctx.mermaidBlocks?.length || 0}</div><div class="yry-lbl">流程图</div></div>
-        <div class="yry-stat"><div class="yry-val a">${countTableRows(tables)}</div><div class="yry-lbl">数据表</div></div>
-        <div class="yry-stat"><div class="yry-val">v${ctx.version}</div><div class="yry-lbl">版本</div></div>
-      </div>`;
+      return JSON.stringify([
+        { value: ctx.mermaidBlocks?.length || 0, label: '流程图', color: 'info' },
+        { value: countTableRows(tables), label: '数据表', color: 't' },
+        { value: `v${ctx.version}`, label: '版本', color: 't' },
+      ]);
     }
     default:
-      return `<div class="yry-stats">
-        <div class="yry-stat"><div class="yry-val c">${ctx.sceneNum}</div><div class="yry-lbl">场景</div></div>
-        <div class="yry-stat"><div class="yry-val">v${ctx.version}</div><div class="yry-lbl">版本</div></div>
-      </div>`;
+      return JSON.stringify([
+        { value: ctx.sceneNum, label: '场景', color: 't' },
+        { value: `v${ctx.version}`, label: '版本', color: 't' },
+      ]);
   }
 }
 
-function buildHealthBar(ctx, docType) {
+function buildHealthBarJSON(ctx, docType) {
   if (docType === '审查') {
     const passCount = countDiagnosticPasses(ctx.tables);
     const pct = Math.round((passCount / 8) * 100);
-    return `<div class="yry-bar-wrap"><div class="yry-bar-outer"><div class="yry-seg strength" style="width:${pct}%"></div><div class="yry-seg gap" style="width:${100-pct}%"></div></div></div>`;
+    return JSON.stringify([
+      { pct, cls: 'strength' },
+      { pct: 100 - pct, cls: 'gap' },
+    ]);
   }
   if (docType === '测试面板') {
     const total = parseInt(extractTableValue(ctx.tables, '断言总数') || '0', 10);
     const passed = parseInt(extractTableValue(ctx.tables, '通过') || '0', 10);
     if (total > 0) {
       const pctP = Math.round((passed / total) * 100);
-      return `<div class="yry-bar-wrap"><div class="yry-bar-outer"><div class="yry-seg p" style="width:${pctP}%"></div><div class="yry-seg f" style="width:${100-pctP}%"></div></div></div>`;
+      return JSON.stringify([
+        { pct: pctP, cls: 'p' },
+        { pct: 100 - pctP, cls: 'f' },
+      ]);
     }
   }
   return '';

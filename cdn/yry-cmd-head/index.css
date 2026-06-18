@@ -1,0 +1,55 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryCmdHead · 命令面板头部
+   包含: 大标题 + 副标题 + 元信息 + 一组快速统计
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host { display: block; }
+
+.cmdh-wrapper {
+  background: linear-gradient(135deg, rgba(34, 211, 238, .06), rgba(255, 193, 7, .04));
+  border: 1px solid rgba(34, 211, 238, .2);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 14px;
+}
+
+.cmdh-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--yry-cyan, #22d3ee);
+  margin-bottom: 4px;
+}
+.cmdh-subtitle {
+  font-size: .78rem;
+  color: var(--yry-text2, #d4d4d4);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.cmdh-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: .72rem;
+  color: var(--yry-text2, #d4d4d4);
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(34, 211, 238, .2);
+}
+.cmdh-stats b { color: var(--yry-text, #f5f5f5); font-weight: 600; }
+.cmdh-stats code {
+  color: var(--yry-accent, #ffc107);
+  background: rgba(255, 193, 7, .08);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: .68rem;
+}
+.cmdh-stats .chs {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(16, 185, 129, .12);
+  border: 1px solid rgba(16, 185, 129, .3);
+  border-radius: 6px;
+  font-size: .66rem;
+  color: #10b981;
+}

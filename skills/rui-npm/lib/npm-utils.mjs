@@ -7,6 +7,7 @@
 import { spawnSync, spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { get } from "node:https";
+import { nowISO, fmtDisplay } from "../../../lib/fs.mjs";
 
 export const REGISTRY_OFFICIAL = "https://registry.npmjs.org/";
 export const NPM_TOKEN = process.env.NPM_TOKEN || "";
@@ -61,7 +62,7 @@ export function maskToken(token) {
 }
 
 export function timestamp() {
-  return new Date().toISOString().replace("T", " ").substring(0, 19);
+  return fmtDisplay(nowISO());
 }
 
 export function toTable(headers, rows) {

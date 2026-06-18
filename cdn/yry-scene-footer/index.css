@@ -1,0 +1,25 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YrySceneFooter · 场景页脚 样式
+   继承页面字体; 颜色通过 CSS 自定义属性注入
+   Cat-A 页面通过 :root 或 .sf-inner 覆盖颜色
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: block;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.sf-inner {
+  font-size: .74rem;
+  color: var(--yry-text3, #475569);
+}
+
+.sf-inner a {
+  color: var(--yry-text2, #94a3b8);
+  text-decoration: none;
+}
+
+.sf-inner a:hover {
+  color: var(--yry-text, #e2e8f0);
+}

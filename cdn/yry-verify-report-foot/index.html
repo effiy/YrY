@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryVerifyReportFoot · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css"><link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>body{{background:var(--yry-bg,#0e0f1a);color:var(--yry-text,#f5f5f5);padding:32px;max-width:700px;margin:0 auto;font-family:var(--yry-font-sans)}}h1{{font-size:1.1rem}}.demo-hint{{font-size:.74rem;color:var(--yry-text3,#888);margin:0 0 20px}}</style>
+</head>
+<body>
+<h1>YryVerifyReportFoot</h1><p class="demo-hint">Vue 3: <code>summary</code> · <code>sections</code> · <code>signatures</code> (JSON)</p>
+<div id="demo-1"></div>
+
+<script type="text/x-template" id="yry-verify-report-foot-tpl">
+  <div class="vrf-wrapper">
+    <div v-if="summary" class="vrf-summary" v-html="summary"></div>
+    <div v-for="(s, si) in parsedSections" :key="'s'+si" class="vrf-section">
+      <div class="vrf-k">{{ s.key }}</div>
+      <ul v-if="s.type === 'list'" class="vrf-list">
+        <li v-for="(it, ii) in (s.items || [])" :key="'li'+ii">
+          <template v-if="typeof it === 'object'" v-html="it.html || it.text || ''"></template>
+          <template v-else>{{ it }}</template>
+        </li>
+      </ul>
+      <div v-else class="vrf-v" v-html="s.value || ''"></div>
+    </div>
+    <div v-if="parsedSigs.length" class="vrf-sig">
+      <span v-for="(s, si) in parsedSigs" :key="'sig'+si" class="vrf-sig-item">
+        <span :class="'dot' + (s.state !== 'pass' ? ' ' + s.state : '')"></span>
+        <b>{{ s.role }}</b> {{ s.text }}
+      </span>
+    </div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function m(){{if(!window.YryVerifyReportFoot)return;Vue.createApp(window.YryVerifyReportFoot,{{
+  summary:'验证 <b>通过</b>:4 个验证项,12/12 检查点全绿。',
+  sections:'[{{"key":"🛡 遗留风险","type":"text","value":"无。4 项验证全部通过。"}},{{"key":"📝 改进建议","type":"list","items":["补充截图","纳入 CI"]}}]',
+  signatures:'[{{"role":"planner","text":"已签收","state":"pass"}},{{"role":"tester","text":"已签收","state":"pass"}}]'
+}}).mount('#demo-1')}}
+if(window.YryVerifyReportFoot)m();else document.addEventListener('yry-verify-report-foot-ready',m,{{once:true}});
+</script>
+</body>
+</html>

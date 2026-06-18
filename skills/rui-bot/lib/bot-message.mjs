@@ -9,6 +9,7 @@ import { existsSync, readdirSync, statSync } from "node:fs";
 import {
   MAX_MSG_LENGTH, STORY_PANEL_DIR,
 } from "../../../lib/constants.mjs";
+import { nowDate, nowISO, fmtDisplay } from "../../../lib/fs.mjs";
 
 import { getDiagnosticResult } from "./bot-health-diagnostics.mjs";
 import { HEALTH_DIMENSIONS } from "./bot-health-trend.mjs";
@@ -254,7 +255,7 @@ export function buildMessage(opts, projectName, projectRoot) {
   const emoji = STATUS_EMOJI[opts.status] || STATUS_EMOJI.complete;
   const label = STATUS_LABELS[opts.status] || STATUS_LABELS.complete;
   const storyCtx = opts.story ? `故事 ${opts.story}` : "当前项目";
-  const dateStr = new Date().toISOString().slice(0, 10);
+  const dateStr = nowDate();
 
   // Constraint #7: skill + command must be first two lines after project header
   lines.push(`${FIELD_EMOJI.skill} 技能: ${opts.skill || "rui"}`);
@@ -343,8 +344,7 @@ export function buildMessage(opts, projectName, projectRoot) {
   }
 
   // ---- Summary footer ----
-  const now = new Date();
-  const ts = now.toISOString().replace("T", " ").slice(0, 19);
+  const ts = fmtDisplay(nowISO());
   const sessionId = (Math.random() + 1).toString(36).substring(2, 8);
   lines.push("");
   lines.push(`└─ ${ts} · sid:${sessionId}`);
@@ -357,7 +357,7 @@ export function buildMessage(opts, projectName, projectRoot) {
  */
 export function buildHealthNotification(hr, projectName) {
   const lines = [`【${projectName}】`];
-  const dateStr = new Date().toISOString().slice(0, 10);
+  const dateStr = nowDate();
 
   lines.push(`${FIELD_EMOJI.skill} 技能: rui-bot`);
   lines.push(`${FIELD_EMOJI.command} 命令: health`);
@@ -398,7 +398,7 @@ export function buildHealthNotification(hr, projectName) {
  */
 export function buildHealthAlertNotification(hr, projectName, threshold) {
   const lines = [`【${projectName}】🚨 健康告警`];
-  const dateStr = new Date().toISOString().slice(0, 10);
+  const dateStr = nowDate();
 
   lines.push(`${FIELD_EMOJI.skill} 技能: rui-bot`);
   lines.push(`${FIELD_EMOJI.command} 命令: health --alert`);

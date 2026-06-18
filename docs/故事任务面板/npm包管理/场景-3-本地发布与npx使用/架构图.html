@@ -3,117 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>新人上手 — 架构图</title>
+<title>本地发布与npx使用 — 架构图</title>
 <link rel="stylesheet" href="../../../../cdn/fonts.css">
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#020617; --card:rgba(15,23,42,.5); --card2:rgba(15,23,42,.8);
-  --border:#1e293b; --border2:#334155; --text:#fff; --text2:#94a3b8; --text3:#64748b;
-  --cyan:#22d3ee; --emerald:#34d399; --violet:#a78bfa; --amber:#fbbf24; --rose:#fb7185; --blue:#3B82F6;
-}
-body{font-family:'JetBrains Mono',monospace;background:var(--bg);min-height:100vh;padding:2rem;color:var(--text);background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(34,211,238,.08),transparent);background-attachment:fixed}
-.container{max-width:1240px;margin:0 auto}
-.header{margin-bottom:1.25rem;animation:fadeInDown .5s ease both}
-.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem;flex-wrap:wrap}
-.pulse-dot{width:12px;height:12px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite;box-shadow:0 0 12px rgba(34,211,238,.6)}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
-@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-h1{font-size:1.5rem;font-weight:700;letter-spacing:-.01em}
-.subtitle{color:var(--text2);font-size:.85rem;margin-left:1.75rem}
-.toolbar{display:flex;gap:.5rem;margin-left:auto;flex-shrink:0;align-items:center}
-.toolbar-toggle{background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem;transition:all .15s}
-.toolbar-toggle:hover{color:var(--text2);background:rgba(30,41,59,.5)}
-.toolbar-actions{display:none;gap:.5rem}
-.toolbar.expanded .toolbar-actions{display:flex}
-.toolbar-actions button{background:rgba(30,41,59,.8);border:1px solid var(--border2);color:var(--text2);padding:.375rem .75rem;border-radius:.375rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s;white-space:nowrap}
-.toolbar-actions button:hover{background:rgba(51,65,85,.8);color:#fff;border-color:#475569}
-.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1rem;font-size:0.76rem}
-.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
-.breadcrumb a:hover{color:var(--amber);text-decoration:underline}
-.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
-.breadcrumb .bc-current{color:var(--text2);font-weight:500}
-.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
-.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
-.cross-link:hover{color:var(--amber);background:rgba(251,191,36,0.06)}
-.cross-link.on{color:var(--amber);font-weight:600;cursor:default}
-.cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
-.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:1.25rem;animation:fadeInUp .5s .2s ease both}
-.stat-strip .ss{background:var(--card);border:1px solid var(--border);border-radius:.5rem;padding:.5rem .75rem;display:flex;align-items:center;gap:.5rem;transition:all .2s}
-.stat-strip .ss:hover{border-color:var(--border2);background:var(--card2);transform:translateY(-1px)}
-.stat-strip .ss .ss-ico{font-size:1rem;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;flex-shrink:0}
-.stat-strip .ss .ss-body{flex:1;min-width:0}
-.stat-strip .ss .ss-val{font-size:1.05rem;font-weight:700;line-height:1.1}
-.stat-strip .ss .ss-lbl{font-size:.62rem;color:var(--text2);margin-top:1px;text-transform:uppercase;letter-spacing:.3px}
-@media(max-width:720px){.stat-strip{grid-template-columns:repeat(2,1fr)}}
-.tabs{display:flex;gap:.25rem;background:rgba(15,23,42,.4);border:1px solid var(--border);border-radius:.75rem;padding:.25rem;margin-bottom:1.25rem;overflow-x:auto;animation:fadeInDown .5s .25s ease both}
-.tab{padding:.55rem 1rem;cursor:pointer;font-size:.78rem;color:var(--text2);border-radius:.5rem;transition:all .2s;user-select:none;display:flex;align-items:center;gap:.4rem;white-space:nowrap}
-.tab:hover{color:var(--text);background:rgba(255,255,255,.03)}
-.tab.on{color:var(--bg);background:linear-gradient(135deg,var(--cyan),#0891b2);box-shadow:0 2px 8px rgba(34,211,238,.3);font-weight:600}
-.tab .tab-badge{font-size:.6rem;background:rgba(0,0,0,.25);padding:1px 5px;border-radius:6px;font-weight:600}
-.tab.on .tab-badge{background:rgba(0,0,0,.2);color:var(--bg)}
-.tab-panel{display:none;animation:fadeInUp .35s ease both}
-.tab-panel.on{display:block}
-.diagram-container{background:var(--card);border-radius:1rem;border:1px solid var(--border);padding:1.5rem;overflow-x:auto;margin-bottom:1.25rem;position:relative}
-.diagram-container::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.4}
-.diagram-container svg{width:100%;min-width:900px;display:block}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:.85rem;margin-bottom:1.25rem}
-.card{background:var(--card);border-radius:.75rem;border:1px solid var(--border);padding:1.1rem 1.2rem;transition:all .2s;position:relative;overflow:hidden}
-.card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--accent,var(--cyan));opacity:.6}
-.card:hover{border-color:var(--border2);background:var(--card2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.25)}
-.card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.65rem}
-.card-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.card-dot.cyan{background:var(--cyan)}.card-dot.emerald{background:var(--emerald)}.card-dot.violet{background:var(--violet)}.card-dot.amber{background:var(--amber)}.card-dot.rose{background:var(--rose)}.card-dot.blue{background:var(--blue)}
-.card h3{font-size:.82rem;font-weight:600;letter-spacing:.01em}
-.card .card-sub{font-size:.62rem;color:var(--text3);margin-left:auto;text-transform:uppercase;letter-spacing:.5px}
-.card ul{list-style:none;color:var(--text2);font-size:.72rem;line-height:1.55}
-.card li{margin-bottom:.3rem;padding-left:.85rem;position:relative}
-.card li::before{content:'▸';position:absolute;left:0;color:var(--accent,var(--cyan));font-size:.7rem;line-height:1.55}
-.card li code{background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:3px;padding:1px 4px;font-size:.66rem;color:var(--cyan)}
-.card li b{color:var(--text);font-weight:600}
-.chip-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.65rem;padding-top:.55rem;border-top:1px dashed var(--border)}
-.chip{font-size:.6rem;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:3px;padding:2px 6px;color:var(--text2);font-weight:500}
-.chip.ok{color:var(--emerald);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.06)}
-.chip.warn{color:var(--amber);border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.06)}
-.chip.fail{color:var(--rose);border-color:rgba(251,113,133,.3);background:rgba(251,113,133,.06)}
-.chip.info{color:var(--cyan);border-color:rgba(34,211,238,.3);background:rgba(34,211,238,.06)}
-.gate-table{width:100%;border-collapse:collapse;margin-top:.5rem;font-size:.72rem}
-.gate-table th,.gate-table td{padding:.6rem .75rem;text-align:left;border-bottom:1px solid var(--border)}
-.gate-table th{font-size:.62rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);font-weight:600;background:rgba(0,0,0,.2)}
-.gate-table tbody tr{transition:background .15s}
-.gate-table tbody tr:hover{background:rgba(34,211,238,.04)}
-.gate-table td:first-child{font-weight:600;color:var(--cyan);white-space:nowrap}
-.gate-table .g-id{display:inline-block;min-width:48px;padding:2px 6px;border-radius:3px;font-size:.65rem;font-weight:700;text-align:center}
-.gate-table .g-id.A{background:rgba(34,211,238,.12);color:var(--cyan)}
-.gate-table .g-id.B{background:rgba(52,211,153,.12);color:var(--emerald)}
-.gate-table .g-id.C{background:rgba(251,191,36,.12);color:var(--amber)}
-.gate-table .g-id.D{background:rgba(251,113,133,.12);color:var(--rose)}
-.gate-table .g-ok{color:var(--emerald);font-weight:600}.gate-table .g-warn{color:var(--amber);font-weight:600}.gate-table .g-fail{color:var(--rose);font-weight:600}
-.timeline{position:relative;padding-left:1.75rem;margin:.75rem 0}
-.timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:1px;background:linear-gradient(180deg,var(--cyan) 0%,var(--violet) 50%,var(--amber) 100%)}
-.tl-item{position:relative;padding-bottom:1.1rem}
-.tl-item::before{content:'';position:absolute;left:-1.75rem;top:5px;width:11px;height:11px;border-radius:50%;background:var(--bg);border:2px solid var(--cyan);box-shadow:0 0 0 3px rgba(34,211,238,.15)}
-.tl-item.done::before{border-color:var(--emerald);background:var(--emerald);box-shadow:0 0 0 3px rgba(52,211,153,.2)}
-.tl-item.warn::before{border-color:var(--amber);box-shadow:0 0 0 3px rgba(251,191,36,.15)}
-.tl-item.future::before{border-color:var(--text3);box-shadow:0 0 0 3px rgba(100,116,139,.15)}
-.tl-title{font-size:.82rem;font-weight:600;margin-bottom:.2rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
-.tl-title .tl-when{font-size:.6rem;font-weight:500;color:var(--cyan);background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.2);padding:2px 6px;border-radius:3px}
-.tl-title .tl-when.warn{color:var(--amber);background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.2)}
-.tl-title .tl-when.done{color:var(--emerald);background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.2)}
-.tl-meta{font-size:.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:.2rem}
-.tl-desc{font-size:.72rem;color:var(--text2);line-height:1.55}
-.tl-desc code{background:rgba(0,0,0,.35);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-size:.65rem;color:var(--cyan);margin:0 2px}
-.banner{display:flex;align-items:center;gap:1rem;padding:.85rem 1.1rem;background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(167,139,250,.08));border:1px solid rgba(34,211,238,.2);border-radius:.75rem;margin-bottom:1.25rem;animation:fadeInDown .5s .3s ease both}
-.banner-icon{font-size:1.5rem;flex-shrink:0}
-.banner-text{flex:1;font-size:.75rem;color:var(--text2);line-height:1.55}
-.banner-text b{color:var(--text);font-weight:600}
-.banner-progress{font-size:.65rem;color:var(--cyan);font-weight:600;font-family:'JetBrains Mono',monospace;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:4px;padding:4px 8px;white-space:nowrap}
-.footer{text-align:center;color:var(--text3);font-size:.72rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)}
-@media print{body{background:#020617;padding:1rem}.toolbar,.tabs{display:none!important}.tab-panel{display:block!important;page-break-after:always}.stat-strip,.banner{break-inside:avoid}}
-</style>
+<link rel="stylesheet" href="../../../../cdn/yry-arch-base.css">
 </head>
 <body>
 <div class="container" id="rc">
@@ -143,7 +37,7 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:-.01em}
 <div class="header">
 <div class="header-row">
 <div class="pulse-dot"></div>
-<h1>新人上手 — 架构图</h1>
+<h1>本地发布与npx使用 — 架构图</h1>
 <div class="toolbar">
 <div class="toolbar-actions">
 <button onclick="copyAsImage(this)">📋 Copy</button>
@@ -768,17 +662,7 @@ h1{font-size:1.5rem;font-weight:700;letter-spacing:-.01em}
 </section>
 <p class="footer">YrY v4.5 · 系统架构 · 本地发布与 npx 使用</p>
 </div>
-<script>
-function switchTab(name){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.panel===name));
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('on',p.id==='panel'+name.charAt(0).toUpperCase()+name.slice(1)));
-  try{window.YrY&&YrY.toast&&YrY.toast('已切换: '+name);}catch(e){}
-}
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.panel)));
-async function copyAsImage(b){const o=b.textContent;try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2}),bl=await new Promise(r=>c.toBlob(r,"image/png"));await navigator.clipboard.write([new ClipboardItem({"image/png":bl})]);b.textContent="✓ Copied!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}
-async function downloadPNG(b){const o=b.textContent;b.textContent="⏳...";try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2}),a=document.createElement("a");a.download="场景1.png";a.href=c.toDataURL("image/png");a.click();b.textContent="✓ Done!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}
-async function downloadPDF(b){const o=b.textContent;b.textContent="⏳...";try{const e=document.getElementById("rc"),r=e.getBoundingClientRect(),p=32,c=await html2canvas(document.body,{backgroundColor:"#020617",scale:2,ignoreElements:x=>x.classList&&x.classList.contains("toolbar"),x:r.left+window.scrollX-p,y:r.top+window.scrollY-p,width:r.width+p*2,height:r.height+p*2});const{jsPDF}=window.jspdf;const d=new jsPDF({orientation:c.width>c.height?"l":"p",unit:"px",format:[c.width/2,c.height/2]});d.addImage(c.toDataURL("image/png"),"PNG",0,0,c.width/2,c.height/2);d.save("场景1.pdf");b.textContent="✓ Done!"}catch(e){b.textContent="✗ Failed"}setTimeout(()=>b.textContent=o,2000)}
-</script>
+<script src="../../../../cdn/yry-arch-diagram.js"></script>
 <script src="../../../../cdn/shared.js"></script>
 </body>
 </html>

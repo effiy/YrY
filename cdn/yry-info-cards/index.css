@@ -1,0 +1,83 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryInfoCards · 信息卡片网格 样式
+   Cat-A Mono dark theme 专用 — 硬编码颜色匹配 shared-a.css 主题
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Card items inside the grid — scoped to :host for light DOM children */
+yry-info-cards .yry-card,
+:host .yry-card {
+  background: rgba(15,23,42,.5);
+  border-radius: .75rem;
+  border: 1px solid #1e293b;
+  padding: 1.25rem;
+}
+
+yry-info-cards .yry-card-header,
+:host .yry-card-header {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: .75rem;
+}
+
+yry-info-cards .yry-card-dot,
+:host .yry-card-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+yry-info-cards .yry-card-dot.cyan,
+:host .yry-card-dot.cyan    { background: #22d3ee; }
+
+yry-info-cards .yry-card-dot.emerald,
+:host .yry-card-dot.emerald { background: #34d399; }
+
+yry-info-cards .yry-card-dot.violet,
+:host .yry-card-dot.violet  { background: #a78bfa; }
+
+yry-info-cards .yry-card-dot.amber,
+:host .yry-card-dot.amber   { background: #fbbf24; }
+
+yry-info-cards .yry-card-dot.rose,
+:host .yry-card-dot.rose    { background: #fb7185; }
+
+yry-info-cards .yry-card-dot.blue,
+:host .yry-card-dot.blue    { background: #3B82F6; }
+
+yry-info-cards .yry-card-dot.scene,
+:host .yry-card-dot.scene   { background: #8B5CF6; }
+
+yry-info-cards .yry-card-dot.check,
+:host .yry-card-dot.check   { background: #EC4899; }
+
+yry-info-cards .yry-card-dot.source,
+:host .yry-card-dot.source  { background: #3B82F6; }
+
+yry-info-cards .yry-card-dot.domain,
+:host .yry-card-dot.domain  { background: #22d3ee; }
+
+yry-info-cards .yry-card h3,
+:host .yry-card h3 {
+  font-size: .875rem;
+  font-weight: 600;
+}
+
+yry-info-cards .yry-card ul,
+:host .yry-card ul {
+  list-style: none;
+  color: #94a3b8;
+  font-size: .75rem;
+}
+
+yry-info-cards .yry-card li,
+:host .yry-card li {
+  margin-bottom: .375rem;
+}

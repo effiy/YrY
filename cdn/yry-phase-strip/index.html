@@ -1,0 +1,69 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryPhaseStrip · 阶段进度条 Vue 3 组件
+   三文件: index.html (模板+Demo) · index.js (逻辑) · index.css (样式)
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryPhaseStrip · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0a0a0a); color: var(--yry-text, #f5f5f5); font-family: var(--yry-font-sans); padding: 32px 24px 60px; max-width: 900px; margin: 0 auto; line-height: 1.55; }
+  h1 { font-size: 1.25rem; margin: 0 0 4px; }
+  h1 .accent { color: var(--yry-accent, #ffc107); }
+  .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+  .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: .72rem; color: #e0af68; }
+  hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+  .demo-section { margin: 20px 0; }
+  .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 10px; color: var(--yry-text2); }
+</style>
+</head>
+<body>
+
+<h1><span class="accent">🛤</span> YryPhaseStrip · 阶段进度条</h1>
+<p class="demo-hint">Vue 3 组件 — <code>phases</code> (JSON 数组) · <code>cols</code></p>
+
+<div class="demo-section"><h3>Demo 1 — 全部完成</h3><div id="demo-1"></div></div>
+<div class="demo-section"><h3>Demo 2 — 进行中</h3><div id="demo-2"></div></div>
+<div class="demo-section"><h3>Demo 3 — 4 列布局</h3><div id="demo-3"></div></div>
+
+<hr>
+<p class="demo-hint">💡 <strong>API:</strong> <code>phases</code> JSON: <code>[{ name, count, state, title? }]</code> · <code>state</code>: done/active/pending</p>
+
+<script type="text/x-template" id="yry-phase-strip-tpl">
+  <div class="phs-wrapper" :style="{ '--phs-cols': String(cols) }">
+    <div v-for="(p, i) in parsedPhases" :key="i" :class="'phase ' + (p.state || 'pending')" :title="p.title || p.name">
+      <div class="p-dot">{{ dotChar(p.state) }}</div>
+      <div class="p-name">{{ p.name }}</div>
+      <div class="p-count">{{ p.count || '' }}</div>
+    </div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YryPhaseStrip) return;
+  Vue.createApp(window.YryPhaseStrip, {
+    cols: '6',
+    phases: '[{"name":"§0 评审","count":"6/6","state":"done","title":"技术评审完成"},{"name":"§1 设计","count":"1/1","state":"done"},{"name":"§2 实施","count":"3/3","state":"done"},{"name":"§3 验证","count":"2/2","state":"done"},{"name":"§4 改进","count":"2/2","state":"done"},{"name":"交付","count":"2/2","state":"done"}]'
+  }).mount('#demo-1');
+  Vue.createApp(window.YryPhaseStrip, {
+    cols: '6',
+    phases: '[{"name":"§0 评审","count":"6/6","state":"done"},{"name":"§1 设计","count":"1/1","state":"done"},{"name":"§2 实施","count":"2/3","state":"active"},{"name":"§3 验证","count":"0/2","state":"pending"},{"name":"§4 改进","count":"0/2","state":"pending"},{"name":"交付","count":"0/2","state":"pending"}]'
+  }).mount('#demo-2');
+  Vue.createApp(window.YryPhaseStrip, {
+    cols: '4',
+    phases: '[{"name":"Sprint 1","count":"10/10","state":"done"},{"name":"Sprint 2","count":"8/8","state":"done"},{"name":"Sprint 3","count":"5/8","state":"active"},{"name":"Sprint 4","count":"0/8","state":"pending"}]'
+  }).mount('#demo-3');
+}
+if (window.YryPhaseStrip) mountAll();
+else document.addEventListener('yry-phase-strip-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

@@ -7,6 +7,8 @@ import { join } from "node:path";
 import { readFileSync } from "node:fs";
 import { execSync } from "node:child_process";
 
+import { scoreIcon, clampScore } from "./bot-health-analysis.mjs";
+
 const STRUCT_LARGE_FILE_WARN = 500;
 const STRUCT_LARGE_FILE_CRIT = 1000;
 const STRUCT_MODULE_FILE_WARN = 30;
@@ -40,7 +42,7 @@ export function getGitSnapshot(projectRoot) {
     const summary = issues.length > 0
       ? `${branch} · ${issues.join("; ")}`
       : `${branch} · ${uncommitted > 0 ? `${uncommitted} 个未提交文件` : "工作区干净"}`;
-    const icon = score >= 80 ? "✅" : score >= 60 ? "⚠️" : "❌";
+    const icon = scoreIcon(score);
     return { score, summary, icon, branch, uncommitted, behind, ahead };
   } catch {
     return { score: 0, summary: "Git 信息获取失败", icon: "⏭️", branch: "?", uncommitted: 0, behind: 0, ahead: 0 };
@@ -83,7 +85,7 @@ export function runSecurityScan(projectRoot) {
   const score = findings.length === 0 ? 100 : findings.length <= 2 ? 70 : findings.length <= 5 ? 40 : 20;
   const summary = findings.length === 0 ? "未发现风险"
     : `${findings.length} 项发现: ${findings.slice(0, 2).join("; ")}${findings.length > 2 ? ` +${findings.length - 2} 项` : ""}`;
-  const icon = score >= 80 ? "✅" : score >= 60 ? "⚠️" : "❌";
+  const icon = scoreIcon(score);
   return { score, summary, icon, findings };
 }
 
@@ -132,9 +134,9 @@ export function getStructureHealth(projectRoot) {
     const warnFiles = largeFiles.length - critFiles;
     const hotModules = topModules.filter((m) => m.lines >= STRUCT_MODULE_LINE_WARN || m.fileCount >= STRUCT_MODULE_FILE_WARN);
     let score = 100; score -= critFiles * 8; score -= warnFiles * 3; score -= hotModules.length * 4;
-    score = Math.max(0, Math.min(100, score));
+    score = clampScore(score);
     const summary = `${fileCount} 源文件 · ${totalLines.toLocaleString()} 行` + (largeFiles.length > 0 ? ` · ${largeFiles.length} 大文件` : "") + (hotModules.length > 0 ? ` · ${hotModules.length} 热模块` : "");
-    const icon = score >= 80 ? "✅" : score >= 60 ? "⚠️" : "❌";
+    const icon = scoreIcon(score);
     return { largeFiles: topFiles, allLargeFileCount: largeFiles.length, critFileCount: critFiles, modules: topModules, totals: { fileCount, totalLines }, score, summary, icon };
   } catch (err) {
     return { largeFiles: [], allLargeFileCount: 0, critFileCount: 0, modules: [], totals: { fileCount: 0, totalLines: 0 }, score: 0, summary: `分析失败: ${err.message?.slice(0, 40) || "unknown"}`, icon: "❌" };

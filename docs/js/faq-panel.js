@@ -1,8 +1,8 @@
 /**
- * faq-panel.js — FAQ accordion panel
+ * faq-panel.js — FAQ accordion panel (Vue 3)
  *
  * Static FAQ data with cross-panel links.
- * Depends on: panel-hub.js (loaded first)
+ * Depends on: panel-hub.js (loaded first) · Vue 3 (window.Vue)
  */
 (function() {
   'use strict';
@@ -10,9 +10,6 @@
   if (!H) { console.error('faq-panel: PanelHub required'); return; }
 
   var faqPanelBody = document.getElementById('faqPanelBody');
-
-  /* ── Registration ───────────────────────── */
-  H.register('faq', null, 'faqPanel', 'faqOverlay', null);
 
   /* ── FAQ data ───────────────────────────── */
   var faqs = [
@@ -35,20 +32,32 @@
     { q: '通知面板的数据来自哪里？如何保证新鲜度？', a: '通知面板的三类数据源各有独立的新鲜度保障：<br><strong>健康报告</strong> — 由 ' + H.panelLink('cron', '⏰ 调度任务') + ' 中的 <code>health-check</code> 任务每 30 分钟自动运行 <code>send.mjs health --html</code> 生成。<br><strong>自循环报告</strong> — 由 12 个技能的独立 cron 任务按各自间隔触发（从每 5 分钟到每周一），见 ' + H.panelLink('cron', '调度面板') + ' 中的任务列表。<br><strong>趋势报告</strong> — 从 GitHub Trending / OSS Insight 等外部源扫描，结果写入 <code>docs/趋势报告/reports.json</code> 清单。<br>面板每次打开时自动拉取最新索引，支持手动刷新（点击 🔄 按钮）。' }
   ];
 
-  /* ── Render ─────────────────────────────── */
-  function renderFaq() {
-    var ctxHtml = '<div style="padding:10px 20px;font-size:.64rem;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,.04);line-height:1.6">'
-      + '<strong>YrY 知识库</strong> — ' + faqs.length + ' 个常见问题，覆盖：系统概念 · 命令使用 · 面板关系 · 健康检查 · 设计原则 · 版本管理。<br>点击问题展开答案。彩色链接可快速打开对应面板。</div>';
-    var html = ctxHtml + '<ul class="faq-list">';
-    for (var i = 0; i < faqs.length; i++) {
-      html += '<li class="faq-item">'
-        + '<div class="faq-q" data-index="' + i + '"><span class="faq-q-icon">Q:</span>' + H.escHtml(faqs[i].q) + '</div>'
-        + '<div class="faq-a">' + faqs[i].a + '</div>'
-        + '</li>';
-    }
-    html += '</ul>';
-    faqPanelBody.innerHTML = html;
+  /* ── Vue app ────────────────────────────── */
+  var app = Vue.createApp({
+    data: function() {
+      return { faqs: faqs };
+    },
+    template: /* html */'<div style="padding:10px 20px;font-size:.64rem;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,.04);line-height:1.6">'
+      + '<strong>YrY 知识库</strong> — ' + faqs.length + ' 个常见问题，覆盖：系统概念 · 命令使用 · 面板关系 · 健康检查 · 设计原则 · 版本管理。<br>点击问题展开答案。彩色链接可快速打开对应面板。</div>'
+      + '<ul class="faq-list">'
+      +   '<li v-for="(item, i) in faqs" :key="i" class="faq-item">'
+      +     '<div class="faq-q" :data-index="i"><span class="faq-q-icon">Q:</span>{{ item.q }}</div>'
+      +     '<div class="faq-a" v-html="item.a"></div>'
+      +   '</li>'
+      + '</ul>'
+  });
+
+  function mountApp() {
+    if (faqPanelBody) { app.mount(faqPanelBody); return; }
+    document.addEventListener('yry-faq-panel-ready', function() {
+      faqPanelBody = document.getElementById('faqPanelBody');
+      if (faqPanelBody) app.mount(faqPanelBody);
+    }, { once: true });
   }
+  mountApp();
+
+  /* ── PanelHub registration ───────────────── */
+  H.register('faq', null, 'faqPanel', 'faqOverlay', null);
 
   /* ── Accordion ──────────────────────────── */
   faqPanelBody.addEventListener('click', function(e) {
@@ -65,7 +74,4 @@
       item.classList.add('open');
     }
   });
-
-  /* ── Initial render ─────────────────────── */
-  renderFaq();
 })();

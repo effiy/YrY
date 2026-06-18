@@ -1,0 +1,38 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YrySceneChrome · 场景页头部 chrome 组件 样式
+   颜色通过 CSS 自定义属性注入 (由页面 :root 或 shared-*.css 定义)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Breadcrumb ── */
+.sc-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 1.25rem; font-size: 0.76rem; }
+.sc-breadcrumb a { color: var(--sc-link, #7aa2f7); text-decoration: none; transition: color 0.15s; }
+.sc-breadcrumb a:hover { color: var(--sc-link-hover, #fbbf24); }
+.sc-breadcrumb .sc-bc-sep { color: var(--sc-sep, #53576c); opacity: 0.5; user-select: none; }
+.sc-breadcrumb .sc-bc-current { color: var(--sc-muted, #94a3b8); font-weight: 500; }
+
+/* ── Cross-nav ── */
+.sc-cross-nav { display: flex; gap: 4px; justify-content: center; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; animation: sc-fadeInDown .5s .15s ease both; }
+.sc-cross-nav .sc-cross-link { color: var(--sc-link, #7aa2f7); text-decoration: none; font-size: 0.76rem; padding: 3px 10px; border-radius: 4px; transition: color 0.15s, background 0.15s; }
+.sc-cross-nav .sc-cross-link:hover { color: var(--sc-link-hover, #fbbf24); background: var(--sc-cross-hover-bg, rgba(251,191,36,0.06)); }
+.sc-cross-nav .sc-cross-link.on { color: var(--sc-active, #fbbf24); font-weight: 600; cursor: default; }
+.sc-cross-nav .sc-cross-sep { color: var(--sc-dim, #475569); font-size: 0.5rem; opacity: 0.35; user-select: none; }
+
+/* ── Header ── */
+.sc-header { margin-bottom: 1.25rem; animation: sc-fadeInDown .5s ease both; }
+.sc-header-row { display: flex; align-items: center; gap: 1rem; margin-bottom: .5rem; flex-wrap: wrap; }
+.sc-pulse-dot { width: 12px; height: 12px; background: var(--sc-accent, #22d3ee); border-radius: 50%; animation: sc-pulse 2s infinite; box-shadow: 0 0 12px var(--sc-pulse-glow, rgba(34,211,238,.6)); flex-shrink: 0; }
+.sc-header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.01em; margin: 0; }
+.sc-subtitle { color: var(--sc-muted, #94a3b8); font-size: .85rem; margin-left: 1.75rem; }
+
+/* ── Toolbar (placed in header-row via toolbar attribute) ── */
+.sc-header-row .yry-toolbar { margin-left: auto; flex-shrink: 0; }
+
+@keyframes sc-pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .5; transform: scale(.85); } }
+@keyframes sc-fadeInDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Theme B overrides (lighter header, no pulse dot) ── */
+:host([theme="b"]) .sc-pulse-dot { display: none; }
+:host([theme="b"]) .sc-header { text-align: center; margin-bottom: 24px; }
+:host([theme="b"]) .sc-header h1 { font-size: 1.8rem; }
+:host([theme="b"]) .sc-subtitle { margin-left: 0; margin-top: 4px; }
+:host([theme="b"]) .sc-accent { color: var(--yry-accent, #ffc107); }

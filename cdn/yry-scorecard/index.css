@@ -1,0 +1,37 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryScorecard · 评分卡表格
+   通用表格组件,支持 pass/fail/warn 状态 + total-row
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host { display: block; }
+
+.sc-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: .74rem;
+}
+
+.sc-table th, .sc-table td {
+  padding: 7px 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, .06);
+}
+.sc-table th {
+  background: rgba(255, 255, 255, .04);
+  color: var(--yry-text3, #888);
+  font-weight: 500;
+  font-size: .68rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.sc-table td.pass { color: #10b981; font-weight: 600; }
+.sc-table td.fail { color: #ef4444; font-weight: 600; }
+.sc-table td.warn { color: #f59e0b; font-weight: 600; }
+
+.sc-table .sc-total-row td {
+  background: rgba(255, 193, 7, .06);
+  border-top: 2px solid rgba(255, 193, 7, .3);
+}
+
+.sc-table tr:hover td { background: rgba(255, 255, 255, .02); }

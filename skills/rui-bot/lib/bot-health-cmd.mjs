@@ -13,12 +13,21 @@ import {
 
 import { API_URL_DEFAULT, loadConfig } from "./bot-transport.mjs";
 import { FIELD_EMOJI } from "./bot-message.mjs";
+import { scoreStatus, scoreIcon, PASS_THRESHOLD, WARN_THRESHOLD } from "./bot-health-analysis.mjs";
 import { HEALTH_DIMENSIONS, HEALTH_GRADE, healthBar, saveHealthTrend } from "./bot-health-trend.mjs";
 import { getGitSnapshot, runSecurityScan, getStructureHealth } from "./bot-health-structure.mjs";
-import { assessEngineeringMaturity, scanComponentScores } from "./bot-health-analysis.mjs";
-import { getDiagnosticResult, collectHealthData } from "./bot-health-diagnostics.mjs";
+import { assessEngineeringMaturity, scanComponentScores, avgScore } from "./bot-health-analysis.mjs";
+import { getDiagnosticResult } from "./bot-health-diagnostics.mjs";
+import { getFileSizeAnalysis } from "./bot-health-filesize.mjs";
+import { getDependencyAnalysis } from "./bot-health-deps.mjs";
 
-export function validateMessageFormat() {
+function registerDim(scores, details, dim, label, info, logLabel) {
+  scores[dim] = info.score;
+  details.push({ dim, label, status: scoreStatus(info.score), detail: info.summary, score: info.score });
+  console.log(`  ${info.icon} ${logLabel} ${info.summary}`);
+}
+
+function validateMessageFormat() {
   const issues = [];
 
   // Check SKILL.md exists and has format constraints
@@ -28,11 +37,6 @@ export function validateMessageFormat() {
   }
 
   const skillContent = readFileSync(skillPath, "utf-8");
-
-  // Constraint #8: skill identifiers
-  const validSkills = ["rui", "rui-story", "rui-claude", "rui-bot", "rui-import", "rui-npm", "rui-html", "rui-doc", "rui-version", "rui-plan", "rui-trends", "rui-analysis", "self-improve"];
-  // Check if buildMessage uses valid skill identifiers
-  // (static check — we verify the code references valid skill set)
 
   // Constraint #7: skill + command must be first after header
   if (!skillContent.includes("🤖 技能") || !skillContent.includes("📋 命令")) {
@@ -225,13 +229,13 @@ export async function cmdHealth(projectRoot, opts = {}) {
   details.push({
     dim: "diagnostics",
     label: "D0-D7 诊断",
-    status: diagResult.score >= 80 ? "pass" : diagResult.score >= 60 ? "warn" : "fail",
+    status: scoreStatus(diagResult.score),
     detail: diagDetail,
     score: diagResult.score,
     diagnostics: diagResult.diagnostics,
     triggered: diagResult.triggered,
   });
-  const diagIcon = diagResult.score >= 80 ? "✅" : diagResult.score >= 60 ? "⚠️" : diagResult.skip ? "⏭️" : "❌";
+  const diagIcon = diagResult.score >= PASS_THRESHOLD ? "✅" : diagResult.score >= WARN_THRESHOLD ? "⚠️" : diagResult.skip ? "⏭️" : "❌";
   const bootLabel = diagResult.bootstrapped ? " (Git 引导)" : "";
   console.log(`  ${diagIcon} D0-D7 诊断:       ${diagDetail}${bootLabel}`);
   if (diagResult.triggered?.length > 0) {
@@ -242,34 +246,18 @@ export async function cmdHealth(projectRoot, opts = {}) {
 
   // ── 8. Git repository state ──────────────────────────
   const gitInfo = getGitSnapshot(projectRoot);
-  scores.git = gitInfo.score;
-  details.push({
-    dim: "git",
-    label: "Git 仓库状态",
-    status: gitInfo.score >= 80 ? "pass" : gitInfo.score >= 60 ? "warn" : "fail",
-    detail: gitInfo.summary,
-    score: gitInfo.score,
-  });
-  console.log(`  ${gitInfo.icon} Git 仓库状态:     ${gitInfo.summary}`);
+  registerDim(scores, details, "git", "Git 仓库状态", gitInfo, "Git 仓库状态:    ");
 
   // ── 9. Security scan ──────────────────────────────────
   const secInfo = runSecurityScan(projectRoot);
-  scores.security = secInfo.score;
-  details.push({
-    dim: "security",
-    label: "安全扫描",
-    status: secInfo.score >= 80 ? "pass" : secInfo.score >= 60 ? "warn" : "fail",
-    detail: secInfo.summary,
-    score: secInfo.score,
-  });
-  console.log(`  ${secInfo.icon} 安全扫描:         ${secInfo.summary}`);
+  registerDim(scores, details, "security", "安全扫描", secInfo, "安全扫描:        ");
 
   // ── 10-16. Engineering maturity (rui-init §7) ────────────
   const emResult = assessEngineeringMaturity(projectRoot);
   Object.assign(scores, emResult.scores);
   for (const d of emResult.details) details.push(d);
   for (const [dim, info] of Object.entries(emResult.scores)) {
-    const icon = info >= 80 ? "✅" : info >= 60 ? "⚠️" : "❌";
+    const icon = scoreIcon(info);
     const label = HEALTH_DIMENSIONS[dim]?.label || dim;
     console.log(`  ${icon} ${label}:${" ".repeat(Math.max(0, 12 - label.length))} ${info} 分 — ${emResult.summaries[dim] || ""}`);
   }
@@ -277,6 +265,19 @@ export async function cmdHealth(projectRoot, opts = {}) {
   // ── 17. Structure analysis (大模块/大文件) ──────────────
   const structInfo = getStructureHealth(projectRoot);
   console.log(`  ${structInfo.icon} 结构健康:         ${structInfo.summary}`);
+
+  // ── 18. File size analysis (文件体积) ────────────────────
+  const fileSizeInfo = getFileSizeAnalysis(projectRoot);
+  registerDim(scores, details, "file_size", "文件体积", fileSizeInfo, "文件体积:        ");
+
+  // ── 19. Dependency analysis (系统组件依赖) ───────────────
+  const depInfo = getDependencyAnalysis(projectRoot);
+  registerDim(scores, details, "dep_analysis", "依赖分析", depInfo, "依赖分析:        ");
+  if (depInfo.cycles.length > 0) {
+    for (const cycle of depInfo.cycles.slice(0, 3)) {
+      console.log(`    ⚠️ 循环依赖 (${cycle.length} 层): ${cycle.path.map((p) => p.replace(/^skills\//,"").replace(/^lib\//,"")).join(" → ")}`);
+    }
+  }
 
   // ── Composite score ───────────────────────────────────
   let totalScore = 0;
@@ -300,9 +301,7 @@ export async function cmdHealth(projectRoot, opts = {}) {
   // ── Component quality dimension (before display loop) ────
   const compScores = scanComponentScores(projectRoot);
   const allComps = [...compScores.skills, ...compScores.agents, ...compScores.rules, ...compScores.scripts];
-  const compQualScore = allComps.length > 0
-    ? Math.round(allComps.reduce((a, c) => a + c.score, 0) / allComps.length)
-    : 0;
+  const compQualScore = avgScore(allComps);
   const compPassCount = allComps.filter((c) => c.score >= 80).length;
   const compWarnCount = allComps.filter((c) => c.score >= 60 && c.score < 80).length;
   const compFailCount = allComps.filter((c) => c.score < 60).length;
@@ -310,11 +309,11 @@ export async function cmdHealth(projectRoot, opts = {}) {
   details.push({
     dim: "comp_qual",
     label: "组件质量",
-    status: compQualScore >= 80 ? "pass" : compQualScore >= 60 ? "warn" : "fail",
+    status: scoreStatus(compQualScore),
     detail: `${allComps.length} 组件均分 ${compQualScore} · 优秀 ${compPassCount} / 一般 ${compWarnCount} / 待改进 ${compFailCount}`,
     score: compQualScore,
   });
-  console.log(`  ${compQualScore >= 80 ? "✅" : compQualScore >= 60 ? "⚠️" : "❌"} 组件质量:         ${compQualScore} 分 — ${allComps.length} 组件 (Skills ${compScores.skills.length} · Agents ${compScores.agents.length} · Rules ${compScores.rules.length} · Scripts ${compScores.scripts.length})`);
+  console.log(`  ${scoreIcon(compQualScore)} 组件质量:         ${compQualScore} 分 — ${allComps.length} 组件 (Skills ${compScores.skills.length} · Agents ${compScores.agents.length} · Rules ${compScores.rules.length} · Scripts ${compScores.scripts.length})`);
 
   // Dimension breakdown
   console.log("  维度得分:");
@@ -325,7 +324,7 @@ export async function cmdHealth(projectRoot, opts = {}) {
   }
   console.log("");
 
-  const result = { composite, grade: grade.grade, scores, details, diagnostics: diagResult, config, tokenOk, robotOkCount, robotNames, gitInfo, secInfo, structInfo, compScores };
+  const result = { composite, grade: grade.grade, scores, details, diagnostics: diagResult, config, tokenOk, robotOkCount, robotNames, gitInfo, secInfo, structInfo, fileSizeInfo, depInfo, compScores };
   saveHealthTrend(result, projectRoot);
 
   // Regenerate self-improve summary after each health check

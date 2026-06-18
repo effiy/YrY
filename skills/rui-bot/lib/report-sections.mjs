@@ -3,7 +3,8 @@
  * Extracted from health-report.mjs for module decomposition.
  */
 
-import { DIM_ICONS, DIM_LABELS, DIM_WEIGHTS } from "./report-constants.mjs";
+import { DIM_LABELS, DIM_WEIGHTS } from "./report-constants.mjs";
+import { PASS_THRESHOLD, WARN_THRESHOLD, scoreColor, scoreIcon, avgScore } from "./bot-health-analysis.mjs";
 
 export function buildScoreTrend(history) {
   if (!history || history.length < 2) return "";
@@ -103,7 +104,7 @@ export function buildScoreBreakdown(hr) {
   const totalContribution = entries.reduce((s, e) => s + e.contribution, 0);
 
   const bars = entries.map((e, i) => {
-    const barColor = e.score >= 80 ? "var(--yry-pass)" : e.score >= 60 ? "var(--yry-warn)" : "var(--yry-fail)";
+    const barColor = scoreColor(e.score);
     const barPct = ((e.contribution / totalContribution) * 100).toFixed(0);
     return `<div class="h-comp-row">
       <span class="h-comp-rank">${i + 1}</span>
@@ -141,13 +142,13 @@ export function buildRecommendationsSection(recs) {
 
 export function buildComponentSections(compScores) {
   if (!compScores) return "";
-  function sc(s){return s>=80?"var(--yry-pass)":s>=60?"var(--yry-warn)":"var(--yry-fail)"}
+  const sc = scoreColor;
   function chip(s){return s>=80?'<span class="h-comp-chip pass">优秀</span>':s>=60?'<span class="h-comp-chip warn">一般</span>':'<span class="h-comp-chip fail">待改进</span>'}
   function tbl(items,showMeta){
     if(!items||!items.length)return'<div class="h-placeholder">暂无数据</div>';
     const s=[...items].sort((a,b)=>b.score-a.score);
     return`<table class="h-comp-table"><thead><tr><th>#</th><th>名称</th>${showMeta?'<th>属性</th>':''}<th>评分</th><th>等级</th></tr></thead><tbody>${s.map((x,i)=>{const m=[];if(x.hasSkillMd!==undefined)m.push(x.hasSkillMd?'📄':'❌SKILL.md');if(x.hasLib)m.push('📦lib');if(x.mjsCount>0)m.push('📜'+x.mjsCount);if(x.category)m.push('📂'+x.category);return`<tr><td class="h-comp-rank">${i+1}</td><td class="h-comp-name">${x.name}</td>${showMeta?`<td class="h-comp-meta">${m.join(' ')||'—'}</td>`:''}<td class="h-comp-score-cell"><div class="h-comp-score-bar"><div class="h-comp-score-fill" style="width:${x.score}%;background:${sc(x.score)}"></div></div><span class="h-comp-score-num" style="color:${sc(x.score)}">${x.score} 分</span></td><td>${chip(x.score)}</td></tr>`}).join('')}</tbody></table>`}
-  const avg=a=>a.length?Math.round(a.reduce((p,c)=>p+c.score,0)/a.length):0;
+  const avg = avgScore;
   const all=[...(compScores.skills||[]),...(compScores.agents||[]),...(compScores.rules||[]),...(compScores.scripts||[])];
   const lo=all.filter(c=>c.score<60);
   return`<div class="h-section"><h2>📦 组件评分总览</h2><div class="h-comp-summary"><div class="h-comp-sum-item"><div class="h-comp-sum-val" style="color:${sc(avg(all))}">${avg(all)}</div><div class="h-comp-sum-lbl">综合均分 · ${all.length} 组件</div></div><div class="h-comp-sum-item"><div class="h-comp-sum-val" style="color:${sc(avg(compScores.skills))}">${avg(compScores.skills)}</div><div class="h-comp-sum-lbl">Skills · ${compScores.skills.length} 个</div></div><div class="h-comp-sum-item"><div class="h-comp-sum-val" style="color:${sc(avg(compScores.agents))}">${avg(compScores.agents)}</div><div class="h-comp-sum-lbl">Agents · ${compScores.agents.length} 个</div></div><div class="h-comp-sum-item"><div class="h-comp-sum-val" style="color:${sc(avg(compScores.rules))}">${avg(compScores.rules)}</div><div class="h-comp-sum-lbl">Rules · ${compScores.rules.length} 个</div></div><div class="h-comp-sum-item"><div class="h-comp-sum-val" style="color:${sc(avg(compScores.scripts))}">${avg(compScores.scripts)}</div><div class="h-comp-sum-lbl">Scripts · ${compScores.scripts.length} 个</div></div></div></div>${lo.length?`<div class="h-section" style="border-left:3px solid var(--yry-fail)"><h2>⚠️ 低分组件 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">${lo.length} 个</span></h2><div class="h-rec-list">${lo.map(c=>`<div class="h-rec-item"><span class="h-rec-prio" style="color:var(--yry-fail)">🔴</span><div class="h-rec-body"><div class="h-rec-source">${c.name} · ${c.score} 分</div><div class="h-rec-text">${(c.recommendations||['补充完善']).join('；')}</div></div></div>`).join('')}</div></div>`:''}<div class="h-section"><h2>🤖 Skills <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">${compScores.skills.length} 个 · 均分 ${avg(compScores.skills)}</span></h2>${tbl(compScores.skills,true)}</div><div class="h-section"><h2>👥 Agents <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">${compScores.agents.length} 个 · 均分 ${avg(compScores.agents)}</span></h2>${tbl(compScores.agents,false)}</div><div class="h-section"><h2>📏 Rules <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">${compScores.rules.length} 个 · 均分 ${avg(compScores.rules)}</span></h2>${tbl(compScores.rules,false)}</div><div class="h-section"><h2>📜 Scripts <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">${compScores.scripts.length} 个 · 均分 ${avg(compScores.scripts)}</span></h2>${tbl(compScores.scripts,true)}</div>`;
@@ -159,7 +160,7 @@ export function buildStructureSection(hr) {
 
   const score = si.score ?? 0;
   const icon = si.icon || "📐";
-  const barColor = score >= 80 ? "var(--yry-pass)" : score >= 60 ? "var(--yry-warn)" : "var(--yry-fail)";
+  const barColor = scoreColor(score);
 
   const totals = si.totals || { fileCount: 0, totalLines: 0 };
 
@@ -253,7 +254,7 @@ export function buildGitSecuritySection(hr) {
 
   if (hr.gitInfo) {
     const gi = hr.gitInfo;
-    const icon = gi.score >= 80 ? "✅" : gi.score >= 60 ? "⚠️" : "❌";
+    const icon = scoreIcon(gi.score);
     parts.push(`<div class="h-section">
       <h2>📦 Git 仓库状态 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">${icon} ${gi.summary}</span></h2>
       <div class="h-detail-list">
@@ -267,7 +268,7 @@ export function buildGitSecuritySection(hr) {
 
   if (hr.secInfo) {
     const si = hr.secInfo;
-    const icon = si.score >= 80 ? "✅" : si.score >= 60 ? "⚠️" : "❌";
+    const icon = scoreIcon(si.score);
     const findingItems = (si.findings || []).length > 0
       ? si.findings.slice(0, 5).map((f) => `<div class="h-detail-item"><span class="h-detail-icon">⚠️</span><span class="h-detail-text" style="font-family:monospace;font-size:.76rem">${f}</span></div>`).join("")
       : "";
@@ -278,4 +279,222 @@ export function buildGitSecuritySection(hr) {
   }
 
   return parts.join("\n");
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+export function buildFileSizeSection(hr) {
+  const fi = hr.fileSizeInfo;
+  if (!fi) return "";
+
+  const score = fi.score ?? 0;
+  const barColor = scoreColor(score);
+
+  // Summary stats
+  const summaryHtml = `<div class="h-summary-row">
+    <div class="h-summary-item">
+      <div class="h-summary-val">${fi.totalFiles}</div>
+      <div class="h-summary-lbl">源文件</div>
+    </div>
+    <div class="h-summary-item">
+      <div class="h-summary-val">${formatBytes(fi.totalBytes)}</div>
+      <div class="h-summary-lbl">总大小</div>
+    </div>
+    <div class="h-summary-item">
+      <div class="h-summary-val">${formatBytes(fi.avgFileSize)}</div>
+      <div class="h-summary-lbl">平均文件大小</div>
+    </div>
+    <div class="h-summary-item">
+      <div class="h-summary-val" style="color:${fi.growthPct !== null ? (fi.growthPct > 10 ? 'var(--yry-fail)' : fi.growthPct > 5 ? 'var(--yry-warn)' : 'var(--yry-pass)') : 'var(--yry-text2)'}">${fi.growthPct !== null ? (fi.growthPct > 0 ? '+' : '') + fi.growthPct + '%' : '—'}</div>
+      <div class="h-summary-lbl">体积变化</div>
+    </div>
+  </div>`;
+
+  // Size distribution histogram
+  const maxBucket = Math.max(1, ...fi.bucketCounts.map((b) => b.count));
+  const distHtml = fi.bucketCounts.map((b) => {
+    const pct = Math.round((b.count / maxBucket) * 100);
+    const barW = Math.max(2, Math.round((b.count / Math.max(1, fi.totalFiles)) * 100));
+    return `<div class="h-comp-row">
+      <span class="h-comp-label">${b.label}</span>
+      <span class="h-comp-score" style="color:var(--yry-text2)">${b.count} 文件</span>
+      <div class="h-comp-bar-wrap"><div class="h-comp-bar-inner" style="width:${barW}%;background:var(--yry-cyan)"></div></div>
+      <span class="h-comp-val">${barW}%</span>
+    </div>`;
+  }).join("");
+
+  // Largest files table
+  let largestHtml = "";
+  if (fi.largestFiles && fi.largestFiles.length > 0) {
+    const topFiles = fi.largestFiles.slice(0, 10);
+    const rows = topFiles.map((f, i) => {
+      const tier = f.bytes >= 500 * 1024 ? "fail" : f.bytes >= 100 * 1024 ? "warn" : "pass";
+      const tierLabel = f.bytes >= 500 * 1024 ? "巨型" : f.bytes >= 100 * 1024 ? "大型" : "正常";
+      const tierColor = f.bytes >= 500 * 1024 ? "var(--yry-fail)" : f.bytes >= 100 * 1024 ? "var(--yry-warn)" : "var(--yry-pass)";
+      const pct = Math.min(100, (f.bytes / Math.max(1, fi.largestFiles[0]?.bytes || 1)) * 100);
+      return `<tr>
+        <td class="h-struct-rank">${i + 1}</td>
+        <td class="h-struct-path" title="${f.path}">${f.path}</td>
+        <td class="h-struct-ext">${f.ext || "—"}</td>
+        <td class="h-struct-lines" style="font-family:'JetBrains Mono',monospace">${formatBytes(f.bytes)}</td>
+        <td class="h-struct-bar-cell"><div class="h-struct-bar"><div class="h-struct-bar-fill" style="width:${pct}%;background:${tierColor}"></div></div></td>
+        <td><span class="h-struct-chip ${tier}">${tierLabel}</span></td>
+      </tr>`;
+    }).join("");
+    largestHtml = `
+      <h3 class="h-struct-sub">📄 最大文件 TOP 10 <span class="h-struct-sub-note">按字节大小降序 · 共 ${fi.largestFiles.length} 个</span></h3>
+      <table class="h-struct-table">
+        <thead><tr><th>#</th><th>路径</th><th>类型</th><th>大小</th><th>规模</th><th>级别</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  // Extension breakdown
+  const extRows = fi.extSizes.slice(0, 8).map((e, i) => {
+    const barW = Math.max(2, Math.round((e.totalBytes / Math.max(1, fi.totalBytes)) * 100));
+    return `<tr>
+      <td class="h-struct-rank">${i + 1}</td>
+      <td class="h-struct-ext">.${e.ext}</td>
+      <td class="h-struct-lines">${e.count}</td>
+      <td class="h-struct-lines" style="font-family:'JetBrains Mono',monospace">${formatBytes(e.totalBytes)}</td>
+      <td class="h-struct-bar-cell"><div class="h-struct-bar"><div class="h-struct-bar-fill" style="width:${barW}%;background:var(--yry-cyan)"></div></div></td>
+      <td class="h-struct-lines">${e.pct}%</td>
+    </tr>`;
+  }).join("");
+
+  return `<div class="h-section">
+    <h2>📏 文件体积分析 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">${fi.icon || ""} ${fi.summary || ""}</span></h2>
+    ${summaryHtml}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:16px">
+      <div>
+        <h3 class="h-struct-sub">📊 大小分布</h3>
+        <div class="h-comp-list">${distHtml}</div>
+      </div>
+      <div>
+        <h3 class="h-struct-sub">📁 文件类型占比</h3>
+        <table class="h-struct-table">
+          <thead><tr><th>#</th><th>类型</th><th>文件数</th><th>大小</th><th>占比</th><th>%</th></tr></thead>
+          <tbody>${extRows}</tbody>
+        </table>
+      </div>
+    </div>
+    ${largestHtml}
+    <div class="h-struct-legend">
+      <span class="h-struct-chip fail">巨型 ≥500 KB</span>
+      <span class="h-struct-chip warn">大型 ≥100 KB</span>
+      <span class="h-struct-chip pass">正常</span>
+    </div>
+  </div>`;
+}
+
+export function buildDependencySection(hr) {
+  const di = hr.depInfo;
+  if (!di) return "";
+
+  const score = di.score ?? 0;
+  const barColor = scoreColor(score);
+
+  // Summary
+  const summaryHtml = `<div class="h-summary-row">
+    <div class="h-summary-item">
+      <div class="h-summary-val">${di.totalFiles}</div>
+      <div class="h-summary-lbl">模块总数</div>
+    </div>
+    <div class="h-summary-item">
+      <div class="h-summary-val">${di.totalEdges}</div>
+      <div class="h-summary-lbl">依赖边</div>
+    </div>
+    <div class="h-summary-item">
+      <div class="h-summary-val" style="color:${di.cycles.length > 0 ? 'var(--yry-fail)' : 'var(--yry-pass)'}">${di.cycles.length}</div>
+      <div class="h-summary-lbl">循环依赖</div>
+    </div>
+    <div class="h-summary-item">
+      <div class="h-summary-val" style="color:${di.orphans.length > 0 ? 'var(--yry-warn)' : 'var(--yry-pass)'}">${di.orphans.length}</div>
+      <div class="h-summary-lbl">孤立文件</div>
+    </div>
+  </div>`;
+
+  // Circular dependencies
+  let cyclesHtml = "";
+  if (di.cycles.length > 0) {
+    const cycleItems = di.cycles.map((c) => {
+      const shortPath = c.path.map((p) => `<code style="font-size:.72rem">${p.replace(/^skills\//,"").replace(/^lib\//,"").replace(/^agents\//,"").replace(/^rules\//,"")}</code>`).join(" <span style=\"color:var(--yry-fail)\">→</span> ");
+      return `<div class="h-rec-item">
+        <span class="h-rec-prio" style="color:var(--yry-fail)">🔴</span>
+        <div class="h-rec-body">
+          <div class="h-rec-source">${c.length} 层循环</div>
+          <div class="h-rec-text">${shortPath}</div>
+        </div>
+      </div>`;
+    }).join("");
+    cyclesHtml = `
+      <h3 class="h-struct-sub">⚠️ 循环依赖 <span class="h-struct-sub-note">共 ${di.cycles.length} 个 · 需重构解除</span></h3>
+      <div class="h-rec-list">${cycleItems}</div>`;
+  } else {
+    cyclesHtml = `<div class="h-placeholder">✅ 未检测到循环依赖 — 依赖图无环</div>`;
+  }
+
+  // Fan-in (most depended on) + Fan-out (most dependencies)
+  const fanInRows = (di.highFanIn || di.fanIn || []).slice(0, 8).map((f, i) => {
+    const hot = f.count >= 8;
+    return `<tr>
+      <td class="h-struct-rank">${i + 1}</td>
+      <td class="h-struct-path" title="${f.file}">${f.shortPath}</td>
+      <td class="h-struct-lines" style="font-family:'JetBrains Mono',monospace;color:${hot ? 'var(--yry-warn)' : 'var(--yry-pass)'}">${f.count}</td>
+      <td>${hot ? '<span class="h-struct-chip warn">核心</span>' : '<span class="h-struct-chip pass">正常</span>'}</td>
+    </tr>`;
+  }).join("");
+
+  const fanOutRows = (di.highFanOut || di.fanOut || []).slice(0, 8).map((f, i) => {
+    const god = f.count >= 10;
+    return `<tr>
+      <td class="h-struct-rank">${i + 1}</td>
+      <td class="h-struct-path" title="${f.file}">${f.shortPath}</td>
+      <td class="h-struct-lines" style="font-family:'JetBrains Mono',monospace;color:${god ? 'var(--yry-fail)' : 'var(--yry-warn)'}">${f.count}</td>
+      <td>${god ? '<span class="h-struct-chip fail">上帝</span>' : '<span class="h-struct-chip warn">偏高</span>'}</td>
+    </tr>`;
+  }).join("");
+
+  // Orphans
+  let orphansHtml = "";
+  if (di.orphans.length > 0) {
+    const orphanItems = di.orphans.slice(0, 5).map((o) =>
+      `<div class="h-detail-item"><span class="h-detail-icon">👻</span><span class="h-detail-text" style="font-family:monospace;font-size:.76rem">${o.shortPath}</span></div>`
+    ).join("");
+    orphansHtml = `
+      <h3 class="h-struct-sub">👻 孤立文件 <span class="h-struct-sub-note">未被任何模块引用 · 共 ${di.orphans.length} 个</span></h3>
+      <div class="h-detail-list">${orphanItems}</div>`;
+  }
+
+  return `<div class="h-section">
+    <h2>🔗 系统组件依赖分析 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">${di.icon || ""} ${di.summary || ""}</span></h2>
+    ${summaryHtml}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:16px">
+      <div>
+        <h3 class="h-struct-sub">📥 被依赖最多 (Fan-in) <span class="h-struct-sub-note">核心模块</span></h3>
+        <table class="h-struct-table">
+          <thead><tr><th>#</th><th>模块</th><th>被引用</th><th>级别</th></tr></thead>
+          <tbody>${fanInRows || '<tr><td colspan="4"><div class="h-placeholder">暂无数据</div></td></tr>'}</tbody>
+        </table>
+      </div>
+      <div>
+        <h3 class="h-struct-sub">📤 依赖最多 (Fan-out) <span class="h-struct-sub-note">上帝模块</span></h3>
+        <table class="h-struct-table">
+          <thead><tr><th>#</th><th>模块</th><th>依赖数</th><th>级别</th></tr></thead>
+          <tbody>${fanOutRows || '<tr><td colspan="4"><div class="h-placeholder">暂无数据</div></td></tr>'}</tbody>
+        </table>
+      </div>
+    </div>
+    ${cyclesHtml}
+    ${orphansHtml}
+    <div class="h-struct-legend">
+      <span class="h-struct-chip fail">上帝模块 ≥10 依赖</span>
+      <span class="h-struct-chip warn">核心模块 ≥8 被引用 · 偏高 ≥8 依赖</span>
+      <span class="h-struct-chip pass">正常</span>
+    </div>
+  </div>`;
 }

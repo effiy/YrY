@@ -102,6 +102,40 @@
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
+.item-card .demo-link {
+  margin-top: 6px;
+  font-size: .72rem;
+}
+.item-card .demo-link a {
+  color: var(--yry-accent, #ffc107);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color .15s var(--yry-ease-out, ease);
+}
+.item-card .demo-link a:hover {
+  color: var(--yry-cyan, #22d3ee);
+  text-decoration: underline;
+}
+
+.item-card .item-links {
+  margin-top: 6px;
+  display: flex; flex-wrap: wrap; gap: 4px 10px;
+  font-size: .72rem;
+}
+.item-card .item-links a {
+  color: var(--yry-text2, #d4d4d4);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color .15s var(--yry-ease-out, ease);
+}
+.item-card .item-links a:hover {
+  color: var(--yry-accent, #ffc107);
+}
+.item-card .item-links span {
+  color: var(--yry-text3, #888);
+  white-space: nowrap;
+}
+
 @media (max-width: 640px) {
   .item-card { padding: 12px 14px; gap: 10px; }
   .item-card .icon { width: 34px; height: 34px; font-size: .9rem; }

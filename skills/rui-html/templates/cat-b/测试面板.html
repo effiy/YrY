@@ -2,53 +2,58 @@
 <html lang="zh-CN">
 <head>
 {{HEAD_BLOCK}}
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-health-bar/index.css">
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-footer/index.css">
 <style>
 /* Page-specific overrides — shared patterns in shared-b.css */
 </style>
 </head>
 <body>
 <div class="yry-container">
-{{BREADCRUMB}}
-{{CROSS_NAV}}
+<yry-scene-chrome
+  theme="b"
+  title="🧪 {ACCENT} · 测试面板"
+  title-accent="{{SCENE_TITLE}}"
+  subtitle="场景 {{SCENE_NUM}} · 版本 v{{VERSION}} · {{DATE}}"
+  breadcrumb='{{BREADCRUMB_JSON}}'
+  crossnav='{{CROSS_NAV_JSON}}'>
+</yry-scene-chrome>
 
-<div class="yry-header">
-  <h1>🧪 <span class="yry-accent">{{SCENE_TITLE}}</span> · 测试面板</h1>
-  <p class="yry-sub">场景 {{SCENE_NUM}} · 版本 v{{VERSION}} · {{DATE}}</p>
-</div>
+<yry-scene-stats items='{{STATS_GRID_JSON}}'></yry-scene-stats>
+<yry-scene-health-bar segments='{{HEALTH_BAR_JSON}}'></yry-scene-health-bar>
 
-{{STATS_GRID}}
-{{HEALTH_BAR}}
-
-<div class="yry-tabs">
-  <span class="yry-tab on" data-panel="cases">📋 测试用例</span>
-  <span class="yry-tab" data-panel="results">📊 执行结果</span>
-  <span class="yry-tab" data-panel="gates">🚦 门禁</span>
-</div>
-
-<div class="yry-panel on" id="panelCases">
-  <div class="yry-section">
-    <h2><span class="yry-dot"></span>§1 测试设计 — 正常路径用例</h2>
-    {{SEC1_HTML}}
+<yry-scene-tabs tabs='[{"id":"cases","label":"📋 测试用例"},{"id":"results","label":"📊 执行结果"},{"id":"gates","label":"🚦 门禁"}]'>
+  <div data-panel="cases">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>§1 测试设计 — 正常路径用例</h2>
+      {{SEC1_HTML}}
+    </div>
   </div>
-</div>
-
-<div class="yry-panel" id="panelResults">
-  <div class="yry-section">
-    <h2><span class="yry-dot"></span>§3 测试报告</h2>
-    {{SEC3_HTML}}
+  <div data-panel="results">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>§3 测试报告</h2>
+      {{SEC3_HTML}}
+    </div>
   </div>
-</div>
-
-<div class="yry-panel" id="panelGates">
-  <div class="yry-section">
-    <h2><span class="yry-dot"></span>门禁判定</h2>
-    {{SEC4_HTML}}
+  <div data-panel="gates">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>Gate 门禁矩阵</h2>
+      <p class="yry-section-desc">P0 标记: 强制断言 · P1 标记: 建议开启 · P2 标记: 按需开启</p>
+      {{SEC0_HTML}}
+    </div>
   </div>
-</div>
+</yry-scene-tabs>
 
-<div class="yry-footer">YrY v{{VERSION}} · {{DATE}} · <a href="{{CDN_DEPTH}}docs/index.html">文档中心</a></div>
+<yry-scene-footer version="{{VERSION}}" date="{{DATE}}" docs-link="{{CDN_DEPTH}}docs/index.html"></yry-scene-footer>
 </div>
 <script src="{{CDN_DEPTH}}cdn/shared.js"></script>
-<script>YrY.initTabs();</script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-chrome/index.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-stats/index.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-health-bar/index.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-tabs/index.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-footer/index.js"></script>
 </body>
 </html>

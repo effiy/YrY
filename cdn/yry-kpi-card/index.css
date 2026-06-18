@@ -1,0 +1,49 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryKpiCard · 单个 KPI 指标卡片
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host { display: inline-block; }
+
+.kpic {
+  background: rgba(255, 255, 255, .03);
+  border: 1px solid rgba(255, 255, 255, .06);
+  border-radius: 8px;
+  padding: 12px 10px;
+  text-align: center;
+  transition: all .2s;
+  min-width: 100px;
+}
+.kpic:hover {
+  border-color: rgba(255, 193, 7, .3);
+  transform: translateY(-1px);
+}
+
+.kpic-label {
+  font-size: .65rem;
+  color: var(--yry-text3, #888);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.kpic-num {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--yry-text, #f5f5f5);
+  line-height: 1.2;
+  margin: 4px 0;
+}
+.kpic-num.health { color: #10b981; }
+.kpic-num.warn   { color: #f59e0b; }
+.kpic-num.fail   { color: #ef4444; }
+.kpic-num.cyan   { color: var(--yry-cyan, #22d3ee); }
+.kpic-num.accent { color: var(--yry-accent, #ffc107); }
+
+.kpic-trend {
+  font-size: .68rem;
+  color: var(--yry-text3, #888);
+  margin-top: 2px;
+}
+.kpic-trend.up   { color: #10b981; }
+.kpic-trend.down { color: #ef4444; }
+.kpic-trend.flat { color: var(--yry-text3, #888); }

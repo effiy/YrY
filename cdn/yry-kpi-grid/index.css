@@ -1,0 +1,15 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryKpiGrid · KPI 指标网格容器
+   横向排列,自适应列数
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host { display: block; }
+
+.kpg-wrapper {
+  display: grid;
+  grid-template-columns: repeat(var(--kpg-cols, 6), 1fr);
+  gap: 10px;
+  margin: 14px 0 18px;
+}
+@media (max-width: 900px) { .kpg-wrapper { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 500px) { .kpg-wrapper { grid-template-columns: repeat(2, 1fr); } }

@@ -1,0 +1,34 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryPathLink · 路径链接 (表格内)
+   展示文件路径,带 hover 显示完整路径
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host { display: inline-block; }
+
+.path-link {
+  font-family: ui-monospace, monospace;
+  font-size: .72rem;
+  color: var(--yry-text2, #d4d4d4);
+  background: rgba(255, 255, 255, .03);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, .06);
+  text-decoration: none;
+  display: inline-block;
+  white-space: nowrap;
+  transition: all .15s;
+  position: relative;
+}
+.path-link:hover {
+  background: rgba(34, 211, 238, .12);
+  border-color: var(--yry-cyan, #22d3ee);
+  color: var(--yry-cyan, #22d3ee);
+  text-decoration: none;
+}
+
+.path-link::before {
+  content: '📁';
+  font-size: .8em;
+  margin-right: 4px;
+  opacity: .6;
+}

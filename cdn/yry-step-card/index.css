@@ -1,0 +1,171 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryStepCard · 步骤卡片样式
+   包含: 可点击头部 + 展开体(元信息/验收标准/依赖/日志)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host { display: block; margin-bottom: 8px; }
+
+.stc-wrapper {
+  background: rgba(255, 255, 255, .02);
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all .2s;
+}
+.stc-wrapper:hover { border-color: rgba(34, 211, 238, .25); }
+.stc-wrapper.open { background: rgba(34, 211, 238, .03); border-color: var(--yry-cyan, #22d3ee); }
+
+.stc-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: background .15s;
+}
+.stc-header:hover { background: rgba(255, 255, 255, .02); }
+
+.stc-checkbox { width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; }
+
+.stc-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(34, 211, 238, .15);
+  color: var(--yry-cyan, #22d3ee);
+  font-size: .72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.stc-title {
+  flex: 1;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--yry-text, #f5f5f5);
+}
+
+.stc-status {
+  font-size: .66rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+.stc-status.status-done {
+  color: #10b981;
+  background: rgba(16, 185, 129, .15);
+  border: 1px solid rgba(16, 185, 129, .3);
+}
+.stc-status.status-pending {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, .15);
+  border: 1px solid rgba(245, 158, 11, .3);
+}
+.stc-status.status-fail {
+  color: #ef4444;
+  background: rgba(239, 68, 68, .15);
+  border: 1px solid rgba(239, 68, 68, .3);
+}
+
+.stc-toggle {
+  font-size: .7rem;
+  color: var(--yry-text3, #888);
+  transition: transform .2s;
+}
+.stc-wrapper.open .stc-toggle { color: var(--yry-cyan, #22d3ee); }
+
+.stc-body {
+  display: none;
+  padding: 0 14px 14px;
+  border-top: 1px dashed rgba(34, 211, 238, .2);
+}
+.stc-wrapper.open .stc-body { display: block; padding-top: 12px; }
+
+.stc-summary {
+  font-size: .76rem;
+  color: var(--yry-text2, #d4d4d4);
+  line-height: 1.6;
+  margin: 4px 0 10px;
+}
+
+.stc-meta {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin: 8px 0;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, .02);
+  border: 1px solid rgba(255, 255, 255, .05);
+  border-radius: 6px;
+}
+@media (max-width: 700px) { .stc-meta { grid-template-columns: repeat(2, 1fr); } }
+
+.stc-meta-item {
+  font-size: .7rem;
+  color: var(--yry-text2, #d4d4d4);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.stc-meta-item b { color: var(--yry-text3, #888); font-weight: 500; margin-right: 2px; }
+.stc-meta-pri {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: .62rem;
+  font-weight: 700;
+}
+.stc-meta-pri.p0 { background: rgba(239, 68, 68, .18); color: #ef4444; border: 1px solid rgba(239, 68, 68, .3); }
+.stc-meta-pri.p1 { background: rgba(245, 158, 11, .18); color: #f59e0b; border: 1px solid rgba(245, 158, 11, .3); }
+.stc-meta-pri.p2 { background: rgba(34, 211, 238, .18); color: var(--yry-cyan, #22d3ee); border: 1px solid rgba(34, 211, 238, .3); }
+
+.stc-criteria {
+  background: rgba(34, 211, 238, .04);
+  border-left: 3px solid var(--yry-cyan, #22d3ee);
+  padding: 8px 12px;
+  margin: 8px 0;
+  border-radius: 0 6px 6px 0;
+}
+.stc-criteria b {
+  font-size: .74rem;
+  color: var(--yry-cyan, #22d3ee);
+  display: block;
+  margin-bottom: 4px;
+}
+.stc-criteria ul { margin: 0 0 0 16px; padding: 0; font-size: .72rem; color: var(--yry-text2, #d4d4d4); line-height: 1.55; }
+.stc-criteria li { margin: 2px 0; }
+.stc-criteria code { color: var(--yry-accent, #ffc107); background: rgba(255, 193, 7, .08); padding: 1px 4px; border-radius: 3px; font-size: .7rem; }
+
+.stc-deps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0;
+  font-size: .7rem;
+}
+.stc-deps-label { color: var(--yry-text3, #888); }
+
+.stc-log {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 8px;
+}
+.stc-log-entry {
+  font-size: .68rem;
+  color: var(--yry-text2, #d4d4d4);
+  padding: 3px 8px;
+  background: rgba(0, 0, 0, .15);
+  border-radius: 4px;
+  font-family: ui-monospace, monospace;
+}
+.stc-log-time { color: var(--yry-cyan, #22d3ee); margin-right: 6px; }
+.stc-log-entry b { color: #10b981; }

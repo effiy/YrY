@@ -1,0 +1,88 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryOpBtn · 操作按钮 Vue 3 组件
+   三文件: index.html (模板+Demo) · index.js (逻辑) · index.css (样式)
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryOpBtn · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0a0a0a); color: var(--yry-text, #f5f5f5); font-family: var(--yry-font-sans); padding: 32px 24px 60px; max-width: 900px; margin: 0 auto; line-height: 1.55; }
+  h1 { font-size: 1.25rem; margin: 0 0 4px; }
+  h1 .accent { color: var(--yry-accent, #ffc107); }
+  .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+  .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: .72rem; color: #e0af68; }
+  hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+  .demo-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+  .demo-table th, .demo-table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,.06); font-size: .76rem; }
+  .demo-table th { color: var(--yry-text3, #888); font-size: .68rem; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<h1><span class="accent">🖱</span> YryOpBtn · 操作按钮</h1>
+<p class="demo-hint">操作按钮 — Vue 3 组件: <code>label</code> · <code>icon</code> · <code>href</code> · <code>target</code> · <code>tone</code></p>
+
+<h3>Demo 1 — 各种 tone</h3>
+<div id="r1"></div>
+
+<h3 style="margin-top: 24px">Demo 2 — 表格内用法</h3>
+<table class="demo-table">
+  <thead><tr><th>文档</th><th>操作</th></tr></thead>
+  <tbody>
+    <tr><td>📐 架构图.html</td><td id="row1"></td></tr>
+    <tr><td>🧪 测试面板.html</td><td id="row2"></td></tr>
+  </tbody>
+</table>
+
+<hr>
+<p class="demo-hint">💡 <strong>tone 颜色:</strong> <code>view (cyan)</code> · <code>run (green)</code> · <code>edit (yellow)</code> · <code>del (red)</code> · <code>warn (orange)</code></p>
+
+<script type="text/x-template" id="yry-op-btn-tpl">
+  <component :is="href ? 'a' : 'button'" :href="href || undefined" :target="target || undefined" :class="'op-btn' + (tone ? ' tone-' + tone : '')">
+    <span v-if="icon">{{ icon }}</span>{{ label }}
+  </component>
+</script>
+
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YryOpBtn) return;
+  var samples = [
+    { label: '查看', icon: '👁', href: '#', tone: 'view' },
+    { label: '运行', icon: '▶', href: '#', tone: 'run' },
+    { label: '编辑', icon: '✎', href: '#', tone: 'edit' },
+    { label: '删除', icon: '🗑', href: '#', tone: 'del' },
+    { label: '告警', icon: '⚠', href: '#', tone: 'warn' },
+    { label: '普通', icon: '·', href: '#' }
+  ];
+  var r1 = document.getElementById('r1');
+  samples.forEach(function (b) {
+    var div = document.createElement('div'); r1.appendChild(div);
+    Vue.createApp(window.YryOpBtn, b).mount(div);
+  });
+  var row1 = document.getElementById('row1');
+  [
+    { label: '查看', icon: '👁', href: '架构图.html', target: '_blank', tone: 'view' },
+    { label: '编辑', icon: '✎', href: '架构图.html', target: '_blank', tone: 'edit' }
+  ].forEach(function (b) {
+    var span = document.createElement('span'); row1.appendChild(span);
+    Vue.createApp(window.YryOpBtn, b).mount(span);
+  });
+  var row2 = document.getElementById('row2');
+  [{ label: '运行', icon: '▶', href: 'tester.mjs', tone: 'run' }].forEach(function (b) {
+    var span = document.createElement('span'); row2.appendChild(span);
+    Vue.createApp(window.YryOpBtn, b).mount(span);
+  });
+}
+if (window.YryOpBtn) mountAll();
+else document.addEventListener('yry-op-btn-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

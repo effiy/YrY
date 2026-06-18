@@ -1,0 +1,42 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryOpBtn · 操作按钮
+   表格内 / 列表内的按钮组 (查看/运行/编辑/复制 等)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host { display: inline-block; margin: 0 2px; }
+
+.op-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: .68rem;
+  text-decoration: none;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(255, 255, 255, .1);
+  color: var(--yry-text2, #d4d4d4);
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+.op-btn:hover {
+  background: rgba(34, 211, 238, .12);
+  border-color: var(--yry-cyan, #22d3ee);
+  color: var(--yry-cyan, #22d3ee);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.op-btn.tone-view { background: rgba(34, 211, 238, .08); border-color: rgba(34, 211, 238, .3); color: var(--yry-cyan, #22d3ee); }
+.op-btn.tone-run  { background: rgba(16, 185, 129, .08); border-color: rgba(16, 185, 129, .3); color: #10b981; }
+.op-btn.tone-edit { background: rgba(255, 193, 7, .08); border-color: rgba(255, 193, 7, .3); color: var(--yry-accent, #ffc107); }
+.op-btn.tone-del  { background: rgba(239, 68, 68, .08); border-color: rgba(239, 68, 68, .3); color: #ef4444; }
+.op-btn.tone-warn { background: rgba(245, 158, 11, .08); border-color: rgba(245, 158, 11, .3); color: #f59e0b; }
+
+.op-btn.tone-view:hover { background: rgba(34, 211, 238, .18); border-color: var(--yry-cyan, #22d3ee); }
+.op-btn.tone-run:hover  { background: rgba(16, 185, 129, .18); border-color: #10b981; }
+.op-btn.tone-edit:hover { background: rgba(255, 193, 7, .18); border-color: var(--yry-accent, #ffc107); }
+.op-btn.tone-del:hover  { background: rgba(239, 68, 68, .18); border-color: #ef4444; }
+.op-btn.tone-warn:hover { background: rgba(245, 158, 11, .18); border-color: #f59e0b; }

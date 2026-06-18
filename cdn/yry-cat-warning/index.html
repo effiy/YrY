@@ -1,0 +1,62 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryCatWarning · 类别警告/成功块 Vue 3 组件
+   三文件: index.html (模板+Demo) · index.js (逻辑) · index.css (样式)
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryCatWarning · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0e0f1a); color: var(--yry-text, #f5f5f5); padding: 32px 24px; max-width: 800px; margin: 0 auto; font-family: var(--yry-font-sans); }
+  h1 { font-size: 1.1rem; margin: 0 0 4px; }
+  .demo-hint { font-size: .74rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+  .demo-section { margin: 16px 0; }
+</style>
+</head>
+<body>
+<h1>YryCatWarning</h1>
+<p class="demo-hint">类别警告/成功块 — 4 种 tone (warn / success / info / fail)</p>
+
+<div class="demo-section"><div id="demo-1"></div></div>
+<div class="demo-section"><div id="demo-2"></div></div>
+<div class="demo-section"><div id="demo-3"></div></div>
+<div class="demo-section"><div id="demo-4"></div></div>
+
+<script type="text/x-template" id="yry-cat-warning-tpl">
+  <div v-if="tone" :class="'cw-wrapper tone-' + tone">
+    <div class="cw-icon" v-if="icon">{{ icon }}</div>
+    <div class="cw-content" v-html="content"></div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YryCatWarning) return;
+  Vue.createApp(window.YryCatWarning, {
+    tone: 'warn', icon: '\u{1F4A1}',
+    content: '<b>集中度分析：</b>性能类占比 <b class="yry-clr-fail">26%</b> 偏高,建议优先缓解 <code>R-04</code>。'
+  }).mount('#demo-1');
+  Vue.createApp(window.YryCatWarning, {
+    tone: 'success', icon: '\u2705',
+    content: '<b>已完成：</b>维护 / 兼容 / 外部 3 类 100% 缓解 (3/3 项),贡献总评分下降 5.3 分。'
+  }).mount('#demo-2');
+  Vue.createApp(window.YryCatWarning, {
+    tone: 'info', icon: '\u2139\uFE0F',
+    content: '<b>提示：</b>当前 HHI 指数 <b>0.18</b>(中等),低于警戒线 0.25,整体分布健康。'
+  }).mount('#demo-3');
+  Vue.createApp(window.YryCatWarning, {
+    tone: 'fail', icon: '\u{1F6A8}',
+    content: '<b>严重警告：</b>建议立即处理 <code>R-04</code>,影响核心交付。'
+  }).mount('#demo-4');
+}
+if (window.YryCatWarning) mountAll();
+else document.addEventListener('yry-cat-warning-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

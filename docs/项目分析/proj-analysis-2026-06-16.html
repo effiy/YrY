@@ -9,117 +9,69 @@
 <link rel="stylesheet" href="../../cdn/theme.css">
 <link rel="stylesheet" href="../../cdn/shared-reports.css">
 <style>
-/* common :root/body covered by shared-reports.css */
-:root {
-  --yry-bg: rgba(22,22,32,1);
-  --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
-  --yry-accent: #FFC107; --yry-pass: #22c55e; --yry-fail: #ef4444; --yry-warn: #f59e0b; --yry-cyan: #22d3ee;
-  --yry-text: rgba(250,250,252,1); --yry-text2: rgba(160,160,164,1); --yry-text3: rgba(110,110,114,1);
-  --yry-radius: 12px; --yry-border: 1px solid rgba(255,255,255,0.06);
-  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--yry-bg); color: var(--yry-text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; line-height: 1.6; min-height: 100vh; }
-.c { max-width: 1040px; margin: 0 auto; padding: 48px 24px 80px; }
-.bc { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; font-size: .76rem; }
-.bc a { color: #7aa2f7; text-decoration: none; } .bc a:hover { color: var(--yry-accent); }
-.bc .sep { color: #53576c; opacity: .5; } .bc .cur { color: #94a3b8; }
-.hd { text-align: center; margin-bottom: 32px; }
-.hd .icon { font-size: 2.5rem; margin-bottom: 8px; }
-.hd h1 { font-size: 1.6rem; }
-.hd .meta { color: var(--yry-text3); font-size: .82rem; margin-top: 6px; }
-.hd .meta .badge { vertical-align: middle; margin: 0 3px; }
-.intro { padding: 18px 20px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 24px; color: var(--yry-text2); font-size: .86rem; line-height: 1.75; }
-.intro strong { color: var(--yry-accent); }
-.intro code { background: rgba(59,130,246,.1); padding: 1px 6px; border-radius: 4px; font-size: .82em; color: #7aa2f7; }
-.card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 24px; box-shadow: var(--yry-shadow); margin-bottom: 20px; }
-.card h2 { font-size: 1.1rem; margin-bottom: 16px; color: var(--yry-accent); display: flex; align-items: center; gap: 8px; }
-.card h3 { font-size: .92rem; margin: 18px 0 10px; color: var(--yry-text); }
-.card p.note-text { font-size: .78rem; color: var(--yry-text3); margin-bottom: 12px; }
-.stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
-.stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 14px 18px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 95px; transition: transform .15s; }
-.stat:hover { transform: translateY(-2px); }
-.stat .val { font-size: 1.5rem; font-weight: 700; }
-.stat .val.pass { color: var(--yry-pass); } .stat .val.warn { color: var(--yry-warn); } .stat .val.info { color: var(--yry-cyan); } .stat .val.fail { color: var(--yry-fail); }
-.stat .lbl { font-size: .68rem; color: var(--yry-text3); margin-top: 3px; }
-.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: .7rem; font-weight: 600; }
-.badge.ok { background: rgba(34,197,94,.15); color: var(--yry-pass); }
-.badge.pass { background: rgba(34,197,94,.15); color: var(--yry-pass); }
-.badge.warn { background: rgba(245,158,11,.15); color: var(--yry-warn); }
-.badge.rise { background: rgba(34,197,94,.12); color: var(--yry-pass); }
-.badge.fall { background: rgba(239,68,68,.12); color: var(--yry-fail); }
-.badge.flat { background: rgba(255,255,255,.05); color: var(--yry-text3); }
-.badge.fail { background: rgba(239,68,68,.12); color: var(--yry-fail); }
-.badge.info-badge { background: rgba(34,211,238,.12); color: var(--yry-cyan); }
-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-th, td { padding: 10px 16px; text-align: left; border-bottom: var(--yry-border); font-size: .86rem; }
-th { color: var(--yry-text3); font-size: .72rem; text-transform: uppercase; letter-spacing: .4px; }
-td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
-.dim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
-.dim-item { padding: 16px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); position: relative; }
-.dim-item.warn { border-left: 3px solid var(--yry-warn); }
-.dim-item.pass { border-left: 3px solid var(--yry-pass); }
-.dim-item .dim-name { font-size: .72rem; color: var(--yry-text3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .4px; }
-.dim-item .dim-score { font-size: 1.5rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
-.dim-score.a { color: var(--yry-pass); }
-.dim-score.b { color: var(--yry-warn); }
-.dim-item .dim-desc { font-size: .72rem; color: var(--yry-text3); margin-top: 6px; line-height: 1.5; }
-.dim-item .dim-check { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: .65rem; margin-top: 6px; background: rgba(34,197,94,.1); color: var(--yry-pass); }
-.dim-item .dim-check.warn { background: rgba(245,158,11,.1); color: var(--yry-warn); }
-.findings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px; }
-.finding { padding: 16px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
-.finding.info { border-left: 3px solid var(--yry-cyan); }
-.finding.warn { border-left: 3px solid var(--yry-warn); }
-.finding .f-type { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
-.finding.info .f-type { color: var(--yry-cyan); }
-.finding.warn .f-type { color: var(--yry-warn); }
-.finding .f-msg { font-size: .84rem; color: var(--yry-text2); line-height: 1.6; }
-.finding .f-detail { font-size: .76rem; color: var(--yry-text3); margin-top: 8px; line-height: 1.6; }
-.note { padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); font-size: .82rem; color: var(--yry-text2); line-height: 1.7; }
-.note strong { color: var(--yry-accent); }
-.note a { color: #7aa2f7; text-decoration: none; }
-.note a:hover { color: var(--yry-accent); }
-.eco-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
-.eco-item { padding: 14px 16px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); text-align: center; }
-.eco-item .eco-num { font-size: 1.5rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--yry-cyan); }
-.eco-item .eco-name { font-size: .72rem; color: var(--yry-text2); margin-top: 4px; }
-.eco-item .eco-ratio { font-size: .64rem; color: var(--yry-text3); margin-top: 2px; }
-.file-bars { display: flex; flex-direction: column; gap: 8px; }
-.file-row { display: flex; align-items: center; gap: 10px; }
-.file-label { min-width: 80px; font-size: .76rem; font-weight: 600; color: var(--yry-text2); }
-.file-bar-wrap { flex: 1; height: 22px; border-radius: 4px; background: rgba(255,255,255,.05); overflow: hidden; position: relative; }
-.file-bar-fill { height: 100%; border-radius: 4px; transition: width .6s ease; display: flex; align-items: center; padding-left: 10px; font-size: .66rem; color: rgba(0,0,0,.7); font-weight: 700; }
-.file-count { min-width: 90px; text-align: right; font-size: .72rem; color: var(--yry-text3); font-family: 'JetBrains Mono', monospace; }
-.action-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 10px; }
-.action-item { padding: 16px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); display: flex; gap: 12px; align-items: flex-start; }
-.action-item .act-prio { flex: 0 0 auto; }
-.action-item .act-body { flex: 1; }
-.action-item .act-title { font-size: .84rem; font-weight: 600; color: var(--yry-text); margin-bottom: 4px; }
-.action-item .act-desc { font-size: .76rem; color: var(--yry-text2); line-height: 1.6; }
-.action-item .act-diag { font-size: .68rem; color: var(--yry-text3); margin-top: 4px; }
-.prio-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: .62rem; font-weight: 700; }
-.prio-p1 { background: rgba(239,68,68,.15); color: var(--yry-fail); }
-.prio-p2 { background: rgba(245,158,11,.12); color: var(--yry-warn); }
-.prio-p3 { background: rgba(34,211,238,.1); color: var(--yry-cyan); }
-.cmp-row { display: flex; align-items: stretch; gap: 0; margin: 12px 0; }
-.cmp-col { flex: 1; padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); text-align: center; }
-.cmp-col.before { border-left: 3px solid var(--yry-warn); }
-.cmp-col.after { border-left: 3px solid var(--yry-cyan); }
-.cmp-col .cmp-label { font-size: .68rem; color: var(--yry-text3); margin-bottom: 6px; }
-.cmp-col .cmp-val { font-size: 1.2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
-.cmp-col .cmp-sub { font-size: .64rem; color: var(--yry-text3); margin-top: 2px; }
-.cmp-arrow { display: flex; align-items: center; justify-content: center; flex: 0 0 36px; color: var(--yry-text3); font-size: 1.2rem; }
-svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
-.ft { text-align: center; color: var(--yry-text3); font-size: .74rem; margin-top: 48px; padding-top: 20px; border-top: var(--yry-border); }
-@media (max-width: 640px) {
-  .dim-grid { grid-template-columns: 1fr; }
-  .findings-grid { grid-template-columns: 1fr; }
-  .action-grid { grid-template-columns: 1fr; }
-  .cmp-row { flex-direction: column; }
-  .cmp-arrow { transform: rotate(90deg); }
-  .eco-grid { grid-template-columns: repeat(2, 1fr); }
-}
-</style>
+  /* common :root/body/bc/hd/intro/card/stats/badge/table/ft covered by shared-reports.css */
+  .card p.note-text { font-size: .78rem; color: var(--yry-text3); margin-bottom: 12px; }
+  td .num { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+  .dim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+  .dim-item { padding: 16px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); position: relative; }
+  .dim-item.warn { border-left: 3px solid var(--yry-warn); }
+  .dim-item.pass { border-left: 3px solid var(--yry-pass); }
+  .dim-item .dim-name { font-size: .72rem; color: var(--yry-text3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .4px; }
+  .dim-item .dim-score { font-size: 1.5rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .dim-score.a { color: var(--yry-pass); }
+  .dim-score.b { color: var(--yry-warn); }
+  .dim-item .dim-desc { font-size: .72rem; color: var(--yry-text3); margin-top: 6px; line-height: 1.5; }
+  .dim-item .dim-check { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: .65rem; margin-top: 6px; background: rgba(34,197,94,.1); color: var(--yry-pass); }
+  .dim-item .dim-check.warn { background: rgba(245,158,11,.1); color: var(--yry-warn); }
+  .findings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 10px; }
+  .finding { padding: 16px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
+  .finding.info { border-left: 3px solid var(--yry-cyan); }
+  .finding.warn { border-left: 3px solid var(--yry-warn); }
+  .finding .f-type { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
+  .finding.info .f-type { color: var(--yry-cyan); }
+  .finding.warn .f-type { color: var(--yry-warn); }
+  .finding .f-msg { font-size: .84rem; color: var(--yry-text2); line-height: 1.6; }
+  .finding .f-detail { font-size: .76rem; color: var(--yry-text3); margin-top: 8px; line-height: 1.6; }
+  .eco-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+  .eco-item { padding: 14px 16px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); text-align: center; }
+  .eco-item .eco-num { font-size: 1.5rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--yry-cyan); }
+  .eco-item .eco-name { font-size: .72rem; color: var(--yry-text2); margin-top: 4px; }
+  .eco-item .eco-ratio { font-size: .64rem; color: var(--yry-text3); margin-top: 2px; }
+  .file-bars { display: flex; flex-direction: column; gap: 8px; }
+  .file-row { display: flex; align-items: center; gap: 10px; }
+  .file-label { min-width: 80px; font-size: .76rem; font-weight: 600; color: var(--yry-text2); }
+  .file-bar-wrap { flex: 1; height: 22px; border-radius: 4px; background: rgba(255,255,255,.05); overflow: hidden; position: relative; }
+  .file-bar-fill { height: 100%; border-radius: 4px; transition: width .6s ease; display: flex; align-items: center; padding-left: 10px; font-size: .66rem; color: rgba(0,0,0,.7); font-weight: 700; }
+  .file-count { min-width: 90px; text-align: right; font-size: .72rem; color: var(--yry-text3); font-family: 'JetBrains Mono', monospace; }
+  .action-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 10px; }
+  .action-item { padding: 16px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); display: flex; gap: 12px; align-items: flex-start; }
+  .action-item .act-prio { flex: 0 0 auto; }
+  .action-item .act-body { flex: 1; }
+  .action-item .act-title { font-size: .84rem; font-weight: 600; color: var(--yry-text); margin-bottom: 4px; }
+  .action-item .act-desc { font-size: .76rem; color: var(--yry-text2); line-height: 1.6; }
+  .action-item .act-diag { font-size: .68rem; color: var(--yry-text3); margin-top: 4px; }
+  .prio-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: .62rem; font-weight: 700; }
+  .prio-p1 { background: rgba(239,68,68,.15); color: var(--yry-fail); }
+  .prio-p2 { background: rgba(245,158,11,.12); color: var(--yry-warn); }
+  .prio-p3 { background: rgba(34,211,238,.1); color: var(--yry-cyan); }
+  .cmp-row { display: flex; align-items: stretch; gap: 0; margin: 12px 0; }
+  .cmp-col { flex: 1; padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); text-align: center; }
+  .cmp-col.before { border-left: 3px solid var(--yry-warn); }
+  .cmp-col.after { border-left: 3px solid var(--yry-cyan); }
+  .cmp-col .cmp-label { font-size: .68rem; color: var(--yry-text3); margin-bottom: 6px; }
+  .cmp-col .cmp-val { font-size: 1.2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .cmp-col .cmp-sub { font-size: .64rem; color: var(--yry-text3); margin-top: 2px; }
+  .cmp-arrow { display: flex; align-items: center; justify-content: center; flex: 0 0 36px; color: var(--yry-text3); font-size: 1.2rem; }
+  svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
+  @media (max-width: 640px) {
+    .dim-grid { grid-template-columns: 1fr; }
+    .findings-grid { grid-template-columns: 1fr; }
+    .action-grid { grid-template-columns: 1fr; }
+    .cmp-row { flex-direction: column; }
+    .cmp-arrow { transform: rotate(90deg); }
+    .eco-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  </style>
 </head>
 <body>
 <div class="c">
@@ -266,61 +218,61 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
   <h2>🏗️ 10 维度架构合规详情</h2>
   <p class="note-text">9 维度满分 · YAGNI 告警 90 分 · 每维度含约束说明与验证方式</p>
   <div class="dim-grid">
-    <div class="dim-item pass">
+    <div class="dim-item rp-card-flat pass">
       <div class="dim-name">arch_kernel · 内核体积</div>
       <div class="dim-score a">100</div>
       <div class="dim-desc">lib/ ≤ 20 文件 · 编排器 ≤ 500 行 · 规则 ≤ 8 核心</div>
       <div class="dim-check">17/20 allc · 合规</div>
     </div>
-    <div class="dim-item pass">
+    <div class="dim-item rp-card-flat pass">
       <div class="dim-name">arch_paradigm · 代码范式</div>
       <div class="dim-score a">100</div>
       <div class="dim-desc">无 class/extends · 无 export default · 模块化导出</div>
       <div class="dim-check">0 违规 · 合规</div>
     </div>
-    <div class="dim-item pass">
+    <div class="dim-item rp-card-flat pass">
       <div class="dim-name">arch_imports · 导入规范</div>
       <div class="dim-score a">100</div>
       <div class="dim-desc">命名导入优先 · 313 ESM 导入 · 0 循环依赖</div>
       <div class="dim-check">0 违规 · 合规</div>
     </div>
-    <div class="dim-item pass">
+    <div class="dim-item rp-card-flat pass">
       <div class="dim-name">arch_srp · 单一职责</div>
       <div class="dim-score a">100</div>
       <div class="dim-desc">每模块单一变更原因 · 函数内聚性检查</div>
       <div class="dim-check">合规 · 无违规</div>
     </div>
-    <div class="dim-item pass">
+    <div class="dim-item rp-card-flat pass">
       <div class="dim-name">dry · 无重复代码</div>
       <div class="dim-score a">100</div>
       <div class="dim-desc">17 共享 lib/ 文件消除 copy-paste · 通用函数集中管理</div>
       <div class="dim-check">17 lib 复用 · 合规</div>
     </div>
-    <div class="dim-item warn">
+    <div class="dim-item rp-card-flat warn">
       <div class="dim-name">yagni · 无过度设计</div>
       <div class="dim-score b">90</div>
       <div class="dim-desc">lib/arch-helpers.mjs 中 5 个 export 仅 0–1 个调用方，需评估移除</div>
       <div class="dim-check warn">5 低调用方 · 告警</div>
     </div>
-    <div class="dim-item pass">
+    <div class="dim-item rp-card-flat pass">
       <div class="dim-name">arch_extensions · 扩展隔离</div>
       <div class="dim-score a">100</div>
       <div class="dim-desc">新增 Skill 不修改编排器 · 插件式注册</div>
       <div class="dim-check">19 skills 独立 · 合规</div>
     </div>
-    <div class="dim-item pass">
+    <div class="dim-item rp-card-flat pass">
       <div class="dim-name">arch_isp · 接口隔离</div>
       <div class="dim-score a">100</div>
       <div class="dim-desc">Agent 不依赖未用接口 · 最小知识原则</div>
       <div class="dim-check">10 agents 隔离 · 合规</div>
     </div>
-    <div class="dim-item pass">
+    <div class="dim-item rp-card-flat pass">
       <div class="dim-name">arch_config · 配置完整性</div>
       <div class="dim-score a">100</div>
       <div class="dim-desc">config-api-schema.json 形式化验证 · tool/param 一致性</div>
       <div class="dim-check">19+10+19 验证通过</div>
     </div>
-    <div class="dim-item pass">
+    <div class="dim-item rp-card-flat pass">
       <div class="dim-name">arch_docs · 文档新鲜度</div>
       <div class="dim-score a">100</div>
       <div class="dim-desc">docs/ 内 342 页面、116 markdown · 与代码同步</div>
@@ -378,32 +330,32 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
   <h2>🧩 组件生态健康分解</h2>
   <p class="note-text">5 大组件维度 · 19 技能 + 10 Agent + 19 规则 + 17 lib + 11 scripts 构成自托管核心</p>
   <div class="eco-grid">
-    <div class="eco-item">
+    <div class="eco-item rp-card-flat">
       <div class="eco-num">19</div>
       <div class="eco-name">Skills 技能</div>
       <div class="eco-ratio">含 rui-bot / rui-html / rui-analysis / rui-cron 等</div>
     </div>
-    <div class="eco-item">
+    <div class="eco-item rp-card-flat">
       <div class="eco-num">10</div>
       <div class="eco-name">Agents 智能体</div>
       <div class="eco-ratio">前端/后端/全栈/测试等角色定义</div>
     </div>
-    <div class="eco-item">
+    <div class="eco-item rp-card-flat">
       <div class="eco-num">19</div>
       <div class="eco-name">Rules 规则</div>
       <div class="eco-ratio">核心 8 + 扩展 11 · 已达 8/8 上限</div>
     </div>
-    <div class="eco-item">
+    <div class="eco-item rp-card-flat">
       <div class="eco-num">17</div>
       <div class="eco-name">Lib 共享库</div>
       <div class="eco-ratio">17/20 = 85% · 接近上限</div>
     </div>
-    <div class="eco-item">
+    <div class="eco-item rp-card-flat">
       <div class="eco-num">143</div>
       <div class="eco-name">MJS 模块</div>
       <div class="eco-ratio">23,157 行 · 313 ESM 导入</div>
     </div>
-    <div class="eco-item">
+    <div class="eco-item rp-card-flat">
       <div class="eco-num">342</div>
       <div class="eco-name">HTML 页面</div>
       <div class="eco-ratio">文档 + 故事面板 + 自检中心</div>
@@ -460,8 +412,8 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
 <!-- 5. Findings -->
 <div class="card">
   <h2>📋 发现详情</h2>
-  <div class="findings-grid">
-    <div class="finding warn">
+  <div class="finding rp-card-flats-grid">
+    <div class="finding rp-card-flat warn">
       <div class="f-type">⚠️ 告警</div>
       <div class="f-msg">lib/ 文件数 17/20 接近上限 (85%)</div>
       <div class="f-detail">
@@ -472,7 +424,7 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
         两项操作合计可减少 lib/ 文件数或避免新增，缓解上限压力。
       </div>
     </div>
-    <div class="finding info">
+    <div class="finding rp-card-flat info">
       <div class="f-type">ℹ️ 信息</div>
       <div class="f-msg">内核规则数 8/8 已达上限 (100%)</div>
       <div class="f-detail">
@@ -482,7 +434,7 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
         需先重新评估现有 8 条的合并空间。
       </div>
     </div>
-    <div class="finding warn">
+    <div class="finding rp-card-flat warn">
       <div class="f-type">⚠️ 告警</div>
       <div class="f-msg">YAGNI: 5 个 export 仅 0-1 个调用方</div>
       <div class="f-detail">
@@ -495,7 +447,7 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
         建议优先处理 (a)(b) 0 调用方项，可回收约 80 行代码。
       </div>
     </div>
-    <div class="finding info">
+    <div class="finding rp-card-flat info">
       <div class="f-type">ℹ️ 信息</div>
       <div class="f-msg">范式合规 100 分 — 0 违规项</div>
       <div class="f-detail">
@@ -505,7 +457,7 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
         本期扫描 313 个 ESM 导入语句，路径一致性 100%。
       </div>
     </div>
-    <div class="finding info">
+    <div class="finding rp-card-flat info">
       <div class="f-type">ℹ️ 信息</div>
       <div class="f-msg">扩展隔离 100 分 — 19 skills 独立</div>
       <div class="f-detail">
@@ -515,7 +467,7 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
         这是扩展隔离原则的完美实践 — 0 次编排器修改，0 次核心文件变更。
       </div>
     </div>
-    <div class="finding info">
+    <div class="finding rp-card-flat info">
       <div class="f-type">ℹ️ 信息</div>
       <div class="f-msg">配置完整性 100 分 — 19+10+19 验证</div>
       <div class="f-detail">
@@ -559,14 +511,14 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
   <h2>🔄 与 06-12 周期对比</h2>
   <p class="note-text">14 天间隔 · 项目体量大幅扩展（+441 文件）· 架构评分微降 6 分（YAGNI 触发）</p>
   <div class="cmp-row">
-    <div class="cmp-col before">
+    <div class="cmp-col rp-card-flat before">
       <div class="cmp-label">06-12 (前)</div>
       <div class="cmp-val">100/A</div>
       <div class="cmp-sub">197 文件 · 44,292 行</div>
       <div class="cmp-sub">14/14 通过 · 9 维度满分</div>
     </div>
     <div class="cmp-arrow">→</div>
-    <div class="cmp-col after">
+    <div class="cmp-col rp-card-flat after">
       <div class="cmp-label">06-16 (今)</div>
       <div class="cmp-val" style="color:var(--yry-cyan)">94/A</div>
       <div class="cmp-sub">638 文件 · 380,516 行</div>
@@ -589,7 +541,7 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
       <tr><td>检查通过率</td><td class="num">14/14</td><td class="num">15/16</td><td><span class="badge fall">-1 项</span></td><td>YAGNI 唯一告警项</td></tr>
     </tbody>
   </table>
-  <div class="note" style="margin-top:14px">
+  <div class="intro" style="margin-top:14px">
     <strong>深度解读</strong>：综合评分从 100 降至 94 的核心原因是 <code>YAGNI</code> 维度从 100 降至 90（5 个低调用方 export）。
     这一变化并不代表架构质量下降 — 实际上 <strong>SRP / DRY / 范式 / 导入 / 扩展隔离 / ISP / 配置 / 文档</strong> 8 个核心维度仍保持 100 满分。
     YAGNI 告警的根因是 <code>lib/arch-helpers.mjs</code> 在多次迭代中累积了"为未来预留"的工具函数。
@@ -646,7 +598,7 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
       </tr>
     </tbody>
   </table>
-  <div class="note" style="margin-top:14px">
+  <div class="intro" style="margin-top:14px">
     <strong>处理路径</strong>：P1 项（0 调用方）合计可回收约 80 行 + 减少 lib/ 体积压力。
     执行后预期 YAGNI 维度回升至 95+（剩余 3 个 1 调用方 export 仍在合理范围内），
     综合评分回升至 97+。处理流程：(1) Git grep 二次确认无遗漏调用方；
@@ -659,7 +611,7 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
 <div class="card">
   <h2>🎯 行动建议</h2>
   <div class="action-grid">
-    <div class="action-item">
+    <div class="action-item rp-card-flat">
       <div class="act-prio"><span class="prio-badge prio-p1">P1</span></div>
       <div class="act-body">
         <div class="act-title">清理 YAGNI 0 调用方 export（2 项）</div>
@@ -667,7 +619,7 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
         <div class="act-diag">关联：D8 架构退化 · yagni 维度</div>
       </div>
     </div>
-    <div class="action-item">
+    <div class="action-item rp-card-flat">
       <div class="act-prio"><span class="prio-badge prio-p2">P2</span></div>
       <div class="act-body">
         <div class="act-title">lib/ 容量预警监控</div>
@@ -675,7 +627,7 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
         <div class="act-diag">关联：D8 架构退化 · arch_kernel 内核体积</div>
       </div>
     </div>
-    <div class="action-item">
+    <div class="action-item rp-card-flat">
       <div class="act-prio"><span class="prio-badge prio-p2">P2</span></div>
       <div class="act-body">
         <div class="act-title">拆分 lib/arch-check.mjs（1,094 行）</div>
@@ -683,7 +635,7 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
         <div class="act-diag">关联：D8 架构退化 · arch_kernel 内核体积</div>
       </div>
     </div>
-    <div class="action-item">
+    <div class="action-item rp-card-flat">
       <div class="act-prio"><span class="prio-badge prio-p3">P3</span></div>
       <div class="act-body">
         <div class="act-title">YAGNI 阈值校准</div>
@@ -691,7 +643,7 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
         <div class="act-diag">关联：D8 架构退化 · yagni 维度 · 配置完整性</div>
       </div>
     </div>
-    <div class="action-item">
+    <div class="action-item rp-card-flat">
       <div class="act-prio"><span class="prio-badge prio-p3">P3</span></div>
       <div class="act-body">
         <div class="act-title">架构合规趋势持久化</div>
@@ -699,7 +651,7 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
         <div class="act-diag">关联：D8 架构退化 · trend 持久化</div>
       </div>
     </div>
-    <div class="action-item">
+    <div class="action-item rp-card-flat">
       <div class="act-prio"><span class="prio-badge prio-p3">P3</span></div>
       <div class="act-body">
         <div class="act-title">10 维度扩展为 12 维度</div>
@@ -713,7 +665,7 @@ svg text { font-family: -apple-system, "Noto Sans SC", sans-serif; }
 <!-- 10. Related Reports -->
 <div class="card">
   <h2>📎 关联报告与文档</h2>
-  <div class="note">
+  <div class="intro">
     <strong>健康报告（06-16）</strong>：查看 <a href="../健康报告/health-2026-06-16.html">健康报告 2026-06-16</a> 获取 17 维度全量评分分解（含 23,157 行 JS 代码分布、组件健康矩阵）。<br><br>
     <strong>自我改进（06-16）</strong>：查看 <a href="../自循环报告/self-improve-2026-06-16.html">自改进闭环 2026-06-16</a> 获取 D0–D8 诊断矩阵、E1–E4 改进循环状态与引导模式基线。<br><br>
     <strong>趋势报告（06-16）</strong>：查看 <a href="../趋势报告/trend-all-2026-06-16.html">全量趋势扫描 2026-06-16</a> 获取 4 源技术趋势聚合（投影数据 +19.4% 上升）。<br><br>

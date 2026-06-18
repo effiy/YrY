@@ -1,0 +1,148 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryCronPanel · 调度任务面板样式
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.yry-cron-overlay {
+  position: fixed; inset: 0; z-index: 299;
+  background: rgba(0,0,0,0.3);
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.cron-overlay.open { opacity: 1; pointer-events: auto; }
+.yry-cron-panel {
+  position: fixed; top: 60px; left: 50%; margin-left: -400px; z-index: 300;
+  width: 800px; max-height: 75vh;
+  background: var(--bg-card, #1e1f2b); border: var(--border-subtle);
+  border-radius: 12px; box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  display: flex; flex-direction: column;
+  opacity: 0; pointer-events: none; transform: translateY(-8px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+.cron-panel.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.cron-panel .yry-panel-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 20px; flex-shrink: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.cron-panel .panel-header .cron-title {
+  font-size: 0.9rem; font-weight: 600; color: var(--text-primary);
+  flex: 1;
+}
+.cron-panel .panel-header .cron-count {
+  font-size: 0.7rem; color: var(--text-muted);
+}
+.cron-panel .panel-refresh {
+  padding: 4px 10px; font-size: 1rem; cursor: pointer;
+  background: none; border: none; color: var(--text-muted);
+  border-radius: 4px; transition: all 0.15s;
+}
+.cron-panel .panel-refresh:hover { color: var(--color-accent-2); background: rgba(255,255,255,0.03); }
+.cron-panel .panel-refresh.spinning { animation: spin .6s linear; }
+.cron-panel .yry-panel-body {
+  flex: 1; overflow-y: auto; padding: 0;
+  max-height: calc(75vh - 56px);
+}
+.cron-panel .yry-panel-loading {
+  text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.82rem;
+}
+.cron-panel .yry-panel-empty {
+  text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.82rem;
+}
+.cron-panel .yry-cron-list { list-style: none; }
+.cron-panel .yry-cron-item {
+  padding: 16px 20px; transition: background 0.12s;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.cron-panel .cron-item:last-child { border-bottom: none; }
+.cron-panel .cron-item:hover { background: rgba(255,255,255,0.04); }
+.cron-panel .cron-item .yry-cr-row1 {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+}
+.cron-panel .cron-item .yry-cr-icon {
+  font-size: 1rem; flex-shrink: 0; width: 24px; text-align: center;
+}
+.cron-panel .cron-item .yry-cr-cron {
+  flex: 1; min-width: 0; font-size: 0.82rem; font-weight: 600; color: var(--color-accent-2);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cron-panel .cron-item .yry-cr-badge {
+  flex-shrink: 0; font-size: 0.66rem; font-weight: 600; padding: 2px 8px; border-radius: 8px;
+  white-space: nowrap;
+}
+.cron-panel .cron-item .cr-badge.active { background: rgba(34,197,94,0.15); color: #22c55e; }
+.cron-panel .cron-item .cr-badge.idle { background: rgba(148,163,184,0.12); color: #94a3b8; }
+.cron-panel .cron-item .cr-row2 {
+  padding-left: 34px; font-size: 0.78rem; color: var(--text-primary); line-height: 1.5;
+  margin-bottom: 6px;
+}
+.cron-panel .cron-item .yry-cr-row3 {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+  padding-left: 34px; font-size: 0.68rem; color: var(--text-muted);
+}
+.cron-panel .cron-item .cr-row3 .yry-cr-dot { opacity: 0.4; }
+.cron-panel .cron-item .yry-cr-prompt {
+  margin-left: 34px; margin-top: 6px; font-size: 0.72rem; color: var(--text-secondary);
+  background: rgba(255,255,255,0.02); border-radius: 6px; padding: 8px 12px;
+  border: 1px solid rgba(255,255,255,0.04); white-space: pre-wrap; word-break: break-all;
+  line-height: 1.5;
+}
+.cron-panel .panel-footer {
+  padding: 10px 20px; border-top: 1px solid rgba(255,255,255,0.06);
+  text-align: center; flex-shrink: 0;
+}
+.cron-panel .panel-footer span {
+  color: var(--text-muted); font-size: 0.7rem;
+}
+
+/* ── Cron item enhancements ── */
+.cron-panel .cron-item.active-item { border-left: 2px solid rgba(34,197,94,0.4); }
+.cron-panel .cron-item .yry-cr-next {
+  padding-left: 34px; font-size: 0.68rem; color: var(--color-accent-2);
+  margin-top: 2px;
+}
+@keyframes pulseDot {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+  50% { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+}
+.yry-pulse-dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: #22c55e; margin-right: 4px; flex-shrink: 0;
+  animation: pulseDot 1.8s ease infinite;
+}
+.cron-panel .cron-item .yry-cr-dot-idle {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: #555; margin-right: 4px; flex-shrink: 0;
+}
+.cron-panel .cron-item .cr-desc {
+  flex: 1; font-size: 0.84rem; font-weight: 600; color: var(--text-primary);
+}
+.cron-panel .cron-item .yry-cr-raw {
+  color: var(--text-muted);
+}
+.cron-panel .cron-item .cr-prompt.collapsed {
+  max-height: 2.8em; overflow: hidden; position: relative; cursor: pointer;
+}
+.cron-panel .cron-item .cr-prompt.collapsed::after {
+  content: '...'; position: absolute; right: 8px; bottom: 0;
+  color: var(--text-muted); background: rgba(30,31,43,0.9); padding-left: 4px;
+}
+.cron-panel .cron-item .cr-prompt.expanded { max-height: none; cursor: pointer; }
+.yry-cr-countdown {
+  font-size: 0.66rem; font-weight: 600; padding: 2px 8px; border-radius: 8px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.cr-countdown.soon { background: rgba(34,197,94,0.1); color: #22c55e; }
+.cr-countdown.later { background: rgba(148,163,184,0.08); color: #94a3b8; }
+.yry-cr-badge-meta {
+  background: rgba(148,163,184,0.08); color: #94a3b8; font-size: 0.63rem;
+}
+.yry-cr-badge-durable {
+  background: rgba(96,165,250,0.08); color: #60a5fa; font-size: 0.63rem;
+  padding: 2px 8px; border-radius: 8px; white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .yry-cron-panel { top: 60px; left: 8px; right: 8px; width: auto; margin-left: 0; max-height: 65vh; }
+  .cron-panel .yry-panel-body { max-height: calc(65vh - 56px); }
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }

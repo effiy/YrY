@@ -1,0 +1,100 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryCmdCard · 命令执行卡片 Vue 3 组件
+   三文件: index.html (模板+Demo) · index.js (逻辑) · index.css (样式)
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryCmdCard · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0a0a0a); color: var(--yry-text, #f5f5f5); font-family: var(--yry-font-sans); padding: 32px 24px 60px; max-width: 900px; margin: 0 auto; line-height: 1.55; }
+  h1 { font-size: 1.25rem; margin: 0 0 4px; }
+  h1 .accent { color: var(--yry-accent, #ffc107); }
+  .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+  .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: .72rem; color: #e0af68; }
+  hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+  .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 700px) { .demo-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<h1><span class="accent">⚡</span> YryCmdCard · 命令执行卡片</h1>
+<p class="demo-hint">
+  命令执行卡片 — 展示阶段、命令、预期结果,内置复制按钮。<br>
+  Vue 3 组件: <code>stage</code> · <code>name</code> · <code>desc</code> · <code>cmd</code> · <code>expectHtml</code> · <code>owner</code> · <code>duration</code> · <code>priority</code>
+</p>
+
+<div class="demo-grid" id="demos">
+  <div id="demo-1"></div>
+  <div id="demo-2"></div>
+  <div id="demo-3"></div>
+  <div id="demo-4"></div>
+</div>
+
+<hr>
+<p class="demo-hint">
+  💡 <strong>API:</strong> <code>stage</code> · <code>name</code> · <code>desc</code> · <code>cmd</code> · <code>expectHtml</code> · <code>owner</code> · <code>duration</code> · <code>priority</code> (p0/p1/p2)<br>
+  <code>expectHtml</code> 字段支持内联 HTML (如 <code>&lt;code&gt;</code>)。
+</p>
+
+<script type="text/x-template" id="yry-cmd-card-tpl">
+  <div class="cmd-card">
+    <div v-if="stage" class="c-stage">{{ stage }}</div>
+    <div class="c-name">{{ name }}</div>
+    <div v-if="desc" class="c-desc">{{ desc }}</div>
+    <div v-if="cmd" class="c-code">
+      <pre><code>{{ cmd }}</code></pre>
+      <button class="c-copy" :class="{ copied: copied }" @click.stop="doCopy" title="复制命令">{{ copied ? '\u2705' : '\u{1F4CB}' }}</button>
+    </div>
+    <div v-if="metaItems.length" class="c-meta">
+      <span v-for="(m, i) in metaItems" :key="i" v-html="m"></span>
+    </div>
+    <div v-if="expectHtml" class="c-expect"><b>✓ 预期：</b><span v-html="expectHtml"></span></div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YryCmdCard) return;
+  Vue.createApp(window.YryCmdCard, {
+    stage: '步骤 1', name: '生成学习路径索引',
+    desc: '生成项目基线,自动建立从 README 到技能手册的学习路径',
+    cmd: '/rui init',
+    expectHtml: '生成 <code>docs/故事任务面板/架构/</code> 全套模板,含 5 域路径图',
+    owner: 'planner', duration: '1.5h', priority: 'p0'
+  }).mount('#demo-1');
+  Vue.createApp(window.YryCmdCard, {
+    stage: '步骤 2', name: '运行测试套件',
+    desc: '执行 12 个 TC-O 上手路径测试用例,验证导航可达性',
+    cmd: 'node tests/skills/rui.test.mjs --verbose',
+    expectHtml: '12/12 用例 PASS · 输出 JSON 报告',
+    owner: 'tester', duration: '1.0h', priority: 'p0'
+  }).mount('#demo-2');
+  Vue.createApp(window.YryCmdCard, {
+    stage: '步骤 3', name: '推送测试报告',
+    desc: '企微通知上手路径验证报告给项目群',
+    cmd: 'node skills/rui-bot/send.mjs --story=yry-arch --status=test-report',
+    expectHtml: '企微消息送达 · 含报告链接',
+    owner: 'tester', duration: '0.1h', priority: 'p1'
+  }).mount('#demo-3');
+  Vue.createApp(window.YryCmdCard, {
+    stage: '步骤 4', name: '交付收口',
+    desc: 'git commit + rui-import sync + 企微通知',
+    cmd: 'git add . && git commit -m "docs: 场景-1 完成"',
+    expectHtml: 'commit + sync + 通知 + 4 方签收',
+    owner: 'planner+devops', duration: '0.3h', priority: 'p0'
+  }).mount('#demo-4');
+}
+if (window.YryCmdCard) mountAll();
+else document.addEventListener('yry-cmd-card-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

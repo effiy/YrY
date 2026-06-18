@@ -1,0 +1,68 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryTrendCard · 趋势柱状图卡片样式
+   包含: 标题、柱状图组、X 轴标签
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: block;
+}
+
+.trend-card {
+  background: rgba(255, 255, 255, .02);
+  border: 1px solid rgba(255, 255, 255, .06);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.trend-title {
+  font-size: .78rem;
+  color: var(--yry-text, #f5f5f5);
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.trend-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 120px;
+  padding: 0 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.bar {
+  flex: 1;
+  background: linear-gradient(180deg, var(--yry-accent, #10b981), rgba(16, 185, 129, .4));
+  border-radius: 3px 3px 0 0;
+  min-height: 8px;
+  position: relative;
+  transition: all .2s;
+  height: var(--h, 50%);
+}
+.bar:hover { filter: brightness(1.2); }
+.bar span {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: .6rem;
+  color: var(--yry-text2, #d4d4d4);
+  white-space: nowrap;
+}
+.bar.inverse {
+  background: linear-gradient(180deg, #ef4444, rgba(239, 68, 68, .4));
+}
+.bar.warn {
+  background: linear-gradient(180deg, #f59e0b, rgba(245, 158, 11, .4));
+}
+.bar.cyan {
+  background: linear-gradient(180deg, var(--yry-cyan, #22d3ee), rgba(34, 211, 238, .4));
+}
+
+.trend-axis {
+  text-align: center;
+  font-size: .66rem;
+  color: var(--yry-text3, #888);
+  margin-top: 6px;
+  letter-spacing: .04em;
+}

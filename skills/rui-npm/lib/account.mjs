@@ -136,7 +136,7 @@ export function cmdUnpublish(pkg, args) {
 
   const info = npm(["view", pkgName, "--json", ...registryArgs()]);
   let pkgData = {};
-  try { pkgData = JSON.parse(info.stdout); } catch {}
+  try { pkgData = JSON.parse(info.stdout); } catch { /* parse failed, keep {} */ }
   if (Array.isArray(pkgData)) pkgData = pkgData[pkgData.length - 1];
 
   const target = pkgVersion ? `${pkgName}@${pkgVersion}` : pkgName;

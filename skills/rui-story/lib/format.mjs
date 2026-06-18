@@ -6,7 +6,7 @@
  */
 
 import { bold, dim, red, yellow, cyan, green } from "../../../lib/tty.mjs";
-import { determineStatus, extractStoryName, groupSessionsByStory, readBlockedState } from './extract.mjs';
+import { determineStatus } from './extract.mjs';
 
 // Display constants
 const STATUS_COUNT_PAD = 4;

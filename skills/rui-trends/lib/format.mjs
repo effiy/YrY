@@ -4,9 +4,9 @@
  * Generates markdown tables and CLI output per the SKILL.md output format spec.
  */
 
-import { LEFT_COLUMN_WIDTH, COLUMN_MIN_PADDING } from '../../../lib/constants.mjs';
+import { nowISO, fmtDisplay } from '../../../lib/fs.mjs';
 
-const TS = () => new Date().toISOString().replace('T', ' ').slice(0, 16);
+const TS = () => fmtDisplay(nowISO()).slice(0, 16);
 
 // ── trend direction ───────────────────────────────────────────────────
 

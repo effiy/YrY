@@ -1,0 +1,120 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryCmdCard · 命令执行卡片样式
+   包含: 阶段、名称、描述、命令块、元信息、预期输出
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: block;
+}
+
+.cmd-card {
+  background: rgba(255, 255, 255, .02);
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: all .2s;
+}
+.cmd-card:hover {
+  border-color: rgba(255, 193, 7, .25);
+  background: rgba(255, 193, 7, .03);
+}
+
+.c-stage {
+  font-size: .65rem;
+  color: var(--yry-cyan, #22d3ee);
+  background: rgba(34, 211, 238, .1);
+  border: 1px solid rgba(34, 211, 238, .25);
+  border-radius: 10px;
+  padding: 2px 10px;
+  display: inline-block;
+  margin-bottom: 8px;
+  letter-spacing: .04em;
+}
+
+.c-name {
+  font-size: .92rem;
+  font-weight: 600;
+  color: var(--yry-text, #f5f5f5);
+  margin-bottom: 4px;
+}
+
+.c-desc {
+  font-size: .76rem;
+  color: var(--yry-text2, #d4d4d4);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.c-code {
+  position: relative;
+  margin: 8px 0;
+}
+.c-code pre {
+  margin: 0;
+  padding: 10px 40px 10px 12px;
+  background: rgba(0, 0, 0, .35);
+  border: 1px solid rgba(255, 255, 255, .06);
+  border-radius: 6px;
+  font-size: .72rem;
+  color: var(--yry-text, #f5f5f5);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.5;
+  font-family: ui-monospace, "JetBrains Mono", monospace;
+}
+.c-code pre code { color: var(--yry-accent, #ffc107); }
+
+.c-copy {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .1);
+  color: var(--yry-text2, #d4d4d4);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: .7rem;
+  cursor: pointer;
+  transition: all .15s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.c-copy:hover { background: rgba(34, 211, 238, .15); border-color: var(--yry-cyan, #22d3ee); color: var(--yry-cyan, #22d3ee); }
+.c-copy.copied { background: rgba(16, 185, 129, .15); border-color: #10b981; color: #10b981; }
+
+.c-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 6px 0 4px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(255, 255, 255, .06);
+  font-size: .66rem;
+  color: var(--yry-text3, #888);
+}
+.c-meta span { display: inline-block; }
+
+.c-expect {
+  font-size: .7rem;
+  color: var(--yry-text2, #d4d4d4);
+  background: rgba(16, 185, 129, .06);
+  border-left: 2px solid #10b981;
+  padding: 5px 10px;
+  margin-top: 6px;
+  border-radius: 0 4px 4px 0;
+  line-height: 1.5;
+}
+.c-expect b { color: #10b981; }
+.c-expect code {
+  color: var(--yry-accent, #ffc107);
+  background: rgba(255, 193, 7, .08);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: .68rem;
+}
+
+.c-priority { display: inline-block; padding: 1px 6px; border-radius: 6px; font-size: .62rem; font-weight: 700; }
+.c-priority.p0 { background: rgba(239, 68, 68, .18); color: #ef4444; border: 1px solid rgba(239, 68, 68, .3); }
+.c-priority.p1 { background: rgba(245, 158, 11, .18); color: #f59e0b; border: 1px solid rgba(245, 158, 11, .3); }
+.c-priority.p2 { background: rgba(34, 211, 238, .18); color: var(--yry-cyan, #22d3ee); border: 1px solid rgba(34, 211, 238, .3); }

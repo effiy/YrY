@@ -219,7 +219,7 @@ yry-breadcrumb/
 直接浏览器打开 `index.html`:
 
 ```
-file:///Users/yi/Yi/YrY/cdn/yry-breadcrumb/index.html
+../../yry-breadcrumb/index.html
 ```
 
 可看到 3 个示例:
@@ -269,7 +269,7 @@ docs/故事任务面板/
 └── 首页/                      #   首页仪表板 (4 场景)
 ```
 
-**总入口**: [docs/故事任务面板/index.json](file:///Users/yi/YrY/docs/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1%E9%9D%A2%E6%9D%BF/index.json) · 各分类根目录含 `故事任务.md` (故事总览) + `知识图谱.html/.json` (知识图谱可视化)
+**总入口**: [docs/故事任务面板/index.json](../../../../docs/故事任务面板/index.json) · 各分类根目录含 `故事任务.md` (故事总览) + `知识图谱.html/.json` (知识图谱可视化)
 
 ### 🟢 CDN 故事任务 · 5 场景 (本组件直接所属)
 
@@ -284,21 +284,21 @@ docs/故事任务面板/
 | 5 | npm 包发布与版本管理 | ✅ | `yry-cdn@1.1.0` · 语义化版本 | ⬜ 间接 (本组件随包发布) |
 
 **场景 3 详情** (本组件文档所在地):
-- 📄 [场景-3-组件库与JS工具API/index.md](file:///Users/yi/YrY/docs/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1%E9%9D%A2%E6%9D%BF/cdn/%E5%9C%BA%E6%99%AF-3-%E7%BB%84%E4%BB%B6%E5%BA%93%E4%B8%8EJS%E5%B7%A5%E5%85%B7API/index.md) — 场景正文 (技术评审 / 测试设计 / 实施 / 报告 / 自改进)
-- 🎯 [场景-3-组件库与JS工具API/演示.html](file:///Users/yi/YrY/docs/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1%E9%9D%A2%E6%9D%BF/cdn/%E5%9C%BA%E6%99%AF-3-%E7%BB%84%E4%BB%B6%E5%BA%93%E4%B8%8EJS%E5%B7%A5%E5%85%B7API/%E6%BC%94%E7%A4%BA.html) — 21 个 CSS 组件 + 9 个 JS API 的可交互演示
-- 🏗 [场景-3-组件库与JS工具API/架构图.html](file:///Users/yi/YrY/docs/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1%E9%9D%A2%E6%9D%BF/cdn/%E5%9C%BA%E6%99%AF-3-%E7%BB%84%E4%BB%B6%E5%BA%93%E4%B8%8EJS%E5%B7%A5%E5%85%B7API/%E6%9E%B6%E6%9E%84%E5%9B%BE.html) — 组件分类 + 数据流图
-- 📋 [场景-3-组件库与JS工具API/计划清单.html](file:///Users/yi/YrY/docs/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1%E9%9D%A2%E6%9D%BF/cdn/%E5%9C%BA%E6%99%AF-3-%E7%BB%84%E4%BB%B6%E5%BA%93%E4%B8%8EJS%E5%B7%A5%E5%85%B7API/%E8%AE%A1%E5%88%92%E6%B8%85%E5%8D%95.html) — 任务分解 + 交付清单
+- 📄 [场景-3-组件库与JS工具API/index.md](../cdn/场景-3-组件库与JS工具API/index.md) — 场景正文 (技术评审 / 测试设计 / 实施 / 报告 / 自改进)
+- 🎯 [场景-3-组件库与JS工具API/演示.html](../cdn/场景-3-组件库与JS工具API/演示.html) — 21 个 CSS 组件 + 9 个 JS API 的可交互演示
+- 🏗 [场景-3-组件库与JS工具API/架构图.html](../cdn/场景-3-组件库与JS工具API/架构图.html) — 组件分类 + 数据流图
+- 📋 [场景-3-组件库与JS工具API/计划清单.html](../cdn/场景-3-组件库与JS工具API/计划清单.html) — 任务分解 + 交付清单
 
 ### 🟡 其他 6 大故事任务 (本组件间接相关)
 
 | 分类 | 场景数 | 主题 | 与本组件关系 |
 |------|-------|------|------------|
-| [npm包管理](file:///Users/yi/YrY/docs/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1%E9%9D%A2%E6%9D%BF/npm%E5%8C%85%E7%AE%A1%E7%90%86/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1.md) | 5 | 包搜索 / 安装 / 本地发布 / 审计 / 账号管理 | 间接 — `yry-cdn@1.1.0` 包随本组件发布 |
-| [架构](file:///Users/yi/Yi/YrY/docs/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1%E9%9D%A2%E6%9D%BF/%E6%9E%B6%E6%9E%84/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1.md) | 8 | 新人上手 / 模块定位 / 数据流 / 依赖变更 / 信任边界 / 断言脚本化 / 漂移监测 / 健康仪表板 | 间接 — 场景 1 (新人上手) 的页面会用到本组件 |
-| [自改进](file:///Users/yi/Yi/YrY/docs/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1%E9%9D%A2%E6%9D%BF/%E8%87%AA%E6%94%B9%E8%BF%9B/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1.md) | 5 | 数据采集 / 诊断引擎 / 提案生成 / 效果评估 / 经验技能化 | 间接 — 提案可能涉及本组件的优化 |
-| [自测](file:///Users/yi/Yi/YrY/docs/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1%E9%9D%A2%E6%9D%BF/%E8%87%AA%E6%B5%8B/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1.md) | 6 | init 自检 / commit 自检 / 文档一致性 / 安全回归 / 集成回归 / 第三方 | 间接 — TC 套件需覆盖本组件 |
-| [计划清单](file:///Users/yi/Yi/YrY/docs/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1%E9%9D%A2%E6%9D%BF/%E8%AE%A1%E5%88%92%E6%B8%85%E5%8D%95/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1.md) | 4 | 模板架构 · 交互组件 · 验证报告 · 批量生成 | 间接 — 模板场景 (场景 1) 已用本组件重构面包屑 |
-| [首页](file:///Users/yi/Yi/YrY/docs/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1%E9%9D%A2%E6%9D%BF/%E9%A6%96%E9%A1%B5/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1.md) | 4 | 数据采集 / 实时面板 / 交叉导航 / 自动化生成 | 间接 — 首页面包屑也用本组件 |
+| [npm包管理](../../../../docs/故事任务面板/npm包管理/故事任务.md) | 5 | 包搜索 / 安装 / 本地发布 / 审计 / 账号管理 | 间接 — `yry-cdn@1.1.0` 包随本组件发布 |
+| [架构](../../../../docs/故事任务面板/架构/故事任务.md) | 8 | 新人上手 / 模块定位 / 数据流 / 依赖变更 / 信任边界 / 断言脚本化 / 漂移监测 / 健康仪表板 | 间接 — 场景 1 (新人上手) 的页面会用到本组件 |
+| [自改进](../../../../docs/故事任务面板/自改进/故事任务.md) | 5 | 数据采集 / 诊断引擎 / 提案生成 / 效果评估 / 经验技能化 | 间接 — 提案可能涉及本组件的优化 |
+| [自测](../../../../docs/故事任务面板/自测/故事任务.md) | 6 | init 自检 / commit 自检 / 文档一致性 / 安全回归 / 集成回归 / 第三方 | 间接 — TC 套件需覆盖本组件 |
+| [计划清单](../../../../docs/故事任务面板/计划清单/故事任务.md) | 4 | 模板架构 · 交互组件 · 验证报告 · 批量生成 | 间接 — 模板场景 (场景 1) 已用本组件重构面包屑 |
+| [首页](../../../../docs/故事任务面板/首页/故事任务.md) | 4 | 数据采集 / 实时面板 / 交叉导航 / 自动化生成 | 间接 — 首页面包屑也用本组件 |
 
 ### 📑 每个场景的标准 8 交付物
 
@@ -317,9 +317,9 @@ docs/故事任务面板/
 
 ### 🔍 快速跳转 (本组件相关)
 
-- 本组件仓库: [`cdn/yry-breadcrumb/`](file:///Users/yi/Yi/YrY/cdn/yry-breadcrumb/) · [README](file:///Users/yi/Yi/YrY/cdn/yry-breadcrumb/%E4%BB%BB%E5%8A%A1%E6%95%85%E4%BA%8B/README.md) · [Demo](file:///Users/yi/Yi/YrY/cdn/yry-breadcrumb/index.html)
-- 所属场景: [场景-3-组件库与JS工具API](file:///Users/yi/Yi/YrY/docs/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1%E9%9D%A2%E6%9D%BF/cdn/%E5%9C%BA%E6%99%AF-3-%E7%BB%84%E4%BB%B6%E5%BA%93%E4%B8%8EJS%E5%B7%A5%E5%85%B7API/index.md)
-- 已使用本组件的页面: [计划清单 · 场景 1](file:///Users/yi/Yi/YrY/docs/%E6%95%85%E4%BA%8B%E4%BB%BB%E5%8A%A1%E9%9D%A2%E6%9D%BF/%E8%AE%A1%E5%88%92%E6%B8%85%E5%8D%95/%E5%9C%BA%E6%99%AF-1-%E6%A8%A1%E6%9D%BF%E6%9E%B6%E6%9E%84%E4%B8%8ECSS%E8%AE%BE%E8%AE%A1%E7%B3%BB%E7%BB%9F/%E8%AE%A1%E5%88%92%E6%B8%85%E5%8D%95.html) · 未来可接入: 架构/自测/自改进/首页等 28+ 场景页
+- 本组件仓库: [`cdn/yry-breadcrumb/`](../../yry-breadcrumb/) · [README](../../yry-breadcrumb/%E4%BB%BB%E5%8A%A1%E6%95%85%E4%BA%8B/README.md) · [Demo](../../yry-breadcrumb/index.html)
+- 所属场景: [场景-3-组件库与JS工具API](../cdn/场景-3-组件库与JS工具API/index.md)
+- 已使用本组件的页面: [计划清单 · 场景 1](../../../../docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html) · 未来可接入: 架构/自测/自改进/首页等 28+ 场景页
 
 ---
 

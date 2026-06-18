@@ -12,12 +12,12 @@
  *   node skills/rui-health/health.mjs --trend   # Append to health-trend.jsonl
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join, dirname } from 'path';
+import { writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { readProjectName } from '../../lib/fs.mjs';
-import { HEALTH_DIM_WEIGHTS, HEALTH_DIM_LABELS } from '../../lib/constants.mjs';
+import { HEALTH_DIM_WEIGHTS, HEALTH_DIM_LABELS, NODE_ARGV_OFFSET } from '../../lib/constants.mjs';
 
-const args = process.argv.slice(2);
+const args = process.argv.slice(NODE_ARGV_OFFSET);
 const flag = (f) => args.includes(f);
 const htmlMode = flag('--html');
 const jsonMode = flag('--json');

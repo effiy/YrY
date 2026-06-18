@@ -1,6 +1,6 @@
 # 场景 4: 存量页面迁移
 
-> | v1.1.0 | 2026-06-12 | deepseek-v4-pro | 🌿 feat/yry-cdn | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
+> | v1.2.0 | 2026-06-18 | deepseek-v4-pro | 🌿 feat/yry-cdn | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
 > **导航**: [← 场景-3](../场景-3-组件库与JS工具API/index.md) · [场景-5 →](../场景-5-npm包发布与版本管理/index.md)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)

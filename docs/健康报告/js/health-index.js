@@ -116,7 +116,9 @@
       var freshClass = diffMin < 480 ? 'hot' : diffMin < 1440 ? 'warm' : 'cold';
       var freshLabel = diffMin < 480 ? '实时数据' : diffMin < 1440 ? '今日更新' : '数据过时';
       freshnessHtml = '<span class="fresh ' + freshClass + '"><span class="dot"></span>' + freshLabel + ' · ' + fmtMinutesAgo(diffMin) + '</span>';
-      document.getElementById('freshBadge').innerHTML = freshnessHtml;
+      document.getElementById('freshBadge').textContent = '';
+
+      document.getElementById('freshBadge').insertAdjacentHTML('beforeend', freshnessHtml);
       document.getElementById('stFresh').textContent = fmtMinutesAgo(diffMin);
       document.getElementById('stFresh').className = 'val ' + (diffMin < 480 ? 'pass' : diffMin < 1440 ? 'warn' : 'fail');
     }
@@ -141,7 +143,9 @@
 
       // SVG Score Trend
       var trendScores = reports.slice().reverse().map(function(r) { return r.score || 0; });
-      document.getElementById('trendChart').innerHTML = renderScoreSparkline(trendScores, 360, 56);
+      document.getElementById('trendChart').textContent = '';
+
+      document.getElementById('trendChart').insertAdjacentHTML('beforeend', renderScoreSparkline(trendScores, 360, 56));
     }
 
     // --- Stats Row ---
@@ -188,7 +192,8 @@
       });
       var catColors = { '核心': '#22d3ee', '工程': '#a78bfa', '综合': 'var(--yry-accent)' };
       var catKeys = ['核心', '工程', '综合'];
-      document.getElementById('catBreakdown').innerHTML = catKeys.map(function(cat) {
+      document.getElementById('catBreakdown').textContent = '';
+      getElementById('catBreakdown').insertAdjacentHTML('beforeend',  catKeys.map(function(cat) {
         var avg = catAvg[cat].n > 0 ? Math.round(catAvg[cat].total / catAvg[cat].n) : 0;
         return '<div class="cat-bar-wrap">' +
           '<span class="cat-bar-lbl">' + cat + '</span>' +
@@ -196,7 +201,7 @@
           '<span class="cat-bar-track"><span class="cat-bar-fill" style="width:' + avg + '%;background:' + (catColors[cat] || '#666') + '"></span></span>' +
           '<span class="cat-bar-num" style="color:' + scoreClr(avg) + '">' + avg + ' 分 · ' + scoreGrade(avg) + '</span>' +
           '</div>';
-      }).join('');
+      }).join(''));
       document.getElementById('stCat').textContent = catKeys.length + ' 类';
       document.getElementById('stCat').className = 'val info';
     }
@@ -233,7 +238,9 @@
         '<div class="ref-meta">最新: ' + tLatest.date + ' · ' + (tLatest.ok ? '✓ 可达' : '⚠ 部分不可达') + ' · ' + (tLatest.items || '—') + ' 条目</div>' +
         '</a>';
     }
-    document.getElementById('refContent').innerHTML = refHtml;
+    document.getElementById('refContent').textContent = '';
+
+    document.getElementById('refContent').insertAdjacentHTML('beforeend', refHtml);
 
     // --- Dimension Grid ---
     if (scores) {
@@ -259,10 +266,12 @@
 
       var weakest = dimEntries.filter(function(d) { return d.score < 40; });
       var weakNames = weakest.map(function(d) { return '<span style="color:' + scoreClr(d.score) + '">' + d.label + ' (' + d.score + ')</span>'; }).join('、');
-      document.getElementById('dimWeakest').innerHTML = dimAnalysis +
-        (weakest.length > 0 ? ' · <span style="color:var(--yry-fail)">薄弱: ' + weakNames + '</span>' : ' · 无严重薄弱项');
+      document.getElementById('dimWeakest').textContent = '';
+      getElementById('dimWeakest').insertAdjacentHTML('beforeend',  dimAnalysis +
+        (weakest.length > 0 ? ' · <span style="color:var(--yry-fail)">薄弱: ' + weakNames + '</span>' : ' · 无严重薄弱项'));
 
-      document.getElementById('dimGrid').innerHTML = dimEntries.map(function(d) {
+      document.getElementById('dimGrid').textContent = '';
+      getElementById('dimGrid').insertAdjacentHTML('beforeend',  dimEntries.map(function(d) {
         var cls = scoreCls(d.score);
         var clr = scoreClr(d.score);
         var trendInfo = dimTrendMap[d.dim];
@@ -277,12 +286,13 @@
           '<div class="dim-bar-wrap"><div class="dim-bar-fill" style="width:' + d.score + '%;background:' + clr + '"></div></div>' +
           trendHtml +
           '</div>';
-      }).join('');
+      }).join(''));
 
       // Weakest detail
       if (weakest.length > 0) {
         document.getElementById('weakCard').style.display = 'block';
-        document.getElementById('weakDetail').innerHTML = weakest.map(function(d) {
+        document.getElementById('weakDetail').textContent = '';
+        getElementById('weakDetail').insertAdjacentHTML('beforeend',  weakest.map(function(d) {
           var impact = d.score === 0 ? 'P0 阻断 — 该项完全缺失,应作为最高优先级补齐' :
                        d.score < 30 ? 'P1 严重 — 该项严重不足,直接影响整体评分' :
                        'P2 警告 — 该项偏低,建议在 1-2 周期内改进';
@@ -297,7 +307,7 @@
             '<span style="font-size:.72rem;color:var(--yry-text2);flex:1">' + impact + '</span>' +
             '<span style="font-size:.64rem;color:var(--yry-text3);max-width:200px">建议: ' + action + '</span>' +
             '</div>';
-        }).join('');
+        }).join(''));
       }
 
       // --- Statistics Summary ---
@@ -312,7 +322,8 @@
       var coreAvg = coreDims.length > 0 ? Math.round(coreDims.reduce(function(a,b){return a+b.score;}, 0) / coreDims.length) : 0;
       var engAvg = engDims.length > 0 ? Math.round(engDims.reduce(function(a,b){return a+b.score;}, 0) / engDims.length) : 0;
 
-      document.getElementById('summaryGrid').innerHTML = [
+      document.getElementById('summaryGrid').textContent = '';
+      getElementById('summaryGrid').insertAdjacentHTML('beforeend',  [
         { l:'平均分', v:avgScore+' 分', c:scoreClr(avgScore) },
         { l:'中位数', v:medianScore+' 分', c:scoreClr(medianScore) },
         { l:'最高', v:maxScore+' 分', c:scoreClr(maxScore) },
@@ -323,7 +334,7 @@
         { l:'D 级数 (<55)', v:dimEntries.filter(function(d){return d.score<55;}).length+'/17', c:dimEntries.filter(function(d){return d.score<55;}).length===0?'var(--yry-pass)':'var(--yry-fail)' }
       ].map(function(item) {
         return '<div class="summary-item"><div class="s-lbl">' + item.l + '</div><div class="s-val" style="color:' + item.c + '">' + item.v + '</div></div>';
-      }).join('');
+      }).join(''));
 
       // === Trend Statistical Analysis ===
       if (reports.length >= 2) {
@@ -361,7 +372,8 @@
         var projectionLower = Math.max(0, Math.round(nextScore - 1.96 * stddev));
         var projectionUpper = Math.min(100, Math.round(nextScore + 1.96 * stddev));
 
-        document.getElementById('statGrid').innerHTML = [
+        document.getElementById('statGrid').textContent = '';
+        getElementById('statGrid').insertAdjacentHTML('beforeend',  [
           { l:'数据点数', v:n + ' 次', c:'#22d3ee', meta:'报告数量' },
           { l:'均值', v:Math.round(mean) + ' 分', c:scoreClr(Math.round(mean)), meta:scoreGrade(Math.round(mean)) + ' 级' },
           { l:'标准差 (σ)', v:'±' + stddev.toFixed(1) + ' 分', c:stddev < 10 ? 'var(--yry-pass)' : stddev < 20 ? 'var(--yry-warn)' : 'var(--yry-fail)', meta:'离散度' },
@@ -372,7 +384,7 @@
           { l:'预测下轮', v:nextScore + ' 分', c:scoreClr(nextScore), meta:'95% CI [' + projectionLower + ', ' + projectionUpper + ']' }
         ].map(function(item) {
           return '<div class="summary-item"><div class="s-lbl">' + item.l + '</div><div class="s-val" style="color:' + item.c + '">' + item.v + '</div><div style="font-size:.62rem;color:var(--yry-text3);margin-top:2px">' + item.meta + '</div></div>';
-        }).join('');
+        }).join(''));
 
         // Insight text
         var insightText = '';
@@ -390,7 +402,9 @@
           insightText = '<strong style="color:#22d3ee">稳态运行</strong> — ' + stability.label + '，变异系数 ' + cv + '%，系统输出稳定。';
           insightText += ' 预测下轮得分 ' + nextScore + ' 分 [95%CI: ' + projectionLower + ', ' + projectionUpper + ']，趋势斜率 ' + (slopePerCycle >= 0 ? '+' : '') + slopePerCycle.toFixed(1) + ' 分/周期。';
         }
-        document.getElementById('statInsight').innerHTML = insightText;
+        document.getElementById('statInsight').textContent = '';
+
+        document.getElementById('statInsight').insertAdjacentHTML('beforeend', insightText);
       }
 
       // === Improvement Priority Queue ===
@@ -454,11 +468,15 @@
         var actionableList = priorityList.filter(function(p) { return p.score < 85; });
         if (actionableList.length === 0) actionableList = priorityList.slice(0, 5);
 
-        document.getElementById('priorityMeta').innerHTML = '共 <strong>' + priorityList.length + '</strong> 项待改进维度 · 已按影响权重 × 严重等级 × 紧急系数排序 · 显示 ' + actionableList.length + ' 项待处理';
+        document.getElementById('priorityMeta').textContent = '';
+
+
+        document.getElementById('priorityMeta').insertAdjacentHTML('beforeend', '共 <strong>' + priorityList.length + '</strong> 项待改进维度 · 已按影响权重 × 严重等级 × 紧急系数排序 · 显示 ' + actionableList.length + ' 项待处理');
 
         // Priority colors
         var priorityColors = ['#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22d3ee'];
-        document.getElementById('priorityGrid').innerHTML = actionableList.map(function(p, i) {
+        document.getElementById('priorityGrid').textContent = '';
+        getElementById('priorityGrid').insertAdjacentHTML('beforeend',  actionableList.map(function(p, i) {
           var clr = priorityColors[Math.min(i, priorityColors.length - 1)];
           var sevBadge = p.score === 0 ? '<span class="badge fail">P0 阻断</span>' :
                          p.score < 40 ? '<span class="badge fail">P1 严重</span>' :
@@ -483,7 +501,7 @@
               '<div style="font-size:.68rem;color:var(--yry-text3);margin-top:8px;white-space:pre-line;line-height:1.6;background:rgba(0,0,0,.2);padding:8px 12px;border-radius:6px">' + p.actionable + '</div>' +
             '</div>' +
             '</div>';
-        }).join('');
+        }).join(''));
 
         // Projection text
         var zeroDims = priorityList.filter(function(p) { return p.score === 0; });
@@ -503,7 +521,9 @@
           projText = '<strong style="color:var(--yry-warn)">🟡 ' + lowDims.length + ' 项待改进</strong> — 无零分阻断项，但 ' + lowDims.map(function(d){return d.label;}).join('、') + ' 偏低。';
           projText += ' 预计提升后综合评分可增加 <strong style="color:var(--yry-pass)">+' + projectedImprovement + ' 分</strong>。';
         }
-        document.getElementById('priorityProjection').innerHTML = projText;
+        document.getElementById('priorityProjection').textContent = '';
+
+        document.getElementById('priorityProjection').insertAdjacentHTML('beforeend', projText);
       }
 
       // === Dimension Co-Movement Analysis ===
@@ -529,8 +549,10 @@
         var coreVar = coreDimsCmv.length > 0 ? Math.round(Math.sqrt(coreDimsCmv.reduce(function(a,d){return a+(d.score-coreAvgCmv)*(d.score-coreAvgCmv);},0)/coreDimsCmv.length)) : 0;
         var engVar = engDimsCmv.length > 0 ? Math.round(Math.sqrt(engDimsCmv.reduce(function(a,d){return a+(d.score-engAvgCmv)*(d.score-engAvgCmv);},0)/engDimsCmv.length)) : 0;
 
-        document.getElementById('coreEngGap').innerHTML =
-          '<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">' +
+        document.getElementById('coreEngGap').textContent = '';
+
+
+        document.getElementById('coreEngGap').insertAdjacentHTML('beforeend', '<div style="display:flex);align-items:center;gap:12px;margin-bottom:10px">' +
             '<div style="flex:1;text-align:center;padding:12px;border-radius:8px;background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.12)">' +
               '<div style="font-size:.64rem;color:var(--yry-text3)">核心 (9维)</div>' +
               '<div style="font-size:1.4rem;font-weight:700;color:' + scoreClr(coreAvgCmv) + '">' + coreAvgCmv + ' 分</div>' +
@@ -559,7 +581,8 @@
         };
         var clusterKeys = ['强项集群 (≥85)', '中等集群 (55-84)', '薄弱集群 (<55)'];
         var clusterColors = ['var(--yry-pass)', '#f59e0b', 'var(--yry-fail)'];
-        document.getElementById('clusterDist').innerHTML = clusterKeys.map(function(ck, ci) {
+        document.getElementById('clusterDist').textContent = '';
+        getElementById('clusterDist').insertAdjacentHTML('beforeend',  clusterKeys.map(function(ck, ci) {
           var cd = clusters[ck];
           var pct = Math.round(cd.length / dimEntriesForCmv.length * 100);
           return '<div style="margin-bottom:12px">' +
@@ -572,7 +595,7 @@
             '</div>' +
             (cd.length > 0 ? '<div style="font-size:.64rem;color:var(--yry-text3);margin-top:4px">' + cd.map(function(d){return d.label + '(' + d.score + ')';}).join(' · ') + '</div>' : '') +
             '</div>';
-        }).join('');
+        }).join(''));
 
         // Overall co-movement insight
         var strongRatio = clusters['强项集群 (≥85)'].length / dimEntriesForCmv.length;
@@ -591,7 +614,9 @@
         }
         if (coreVar > 25) cmvInsight += ' <strong style="color:var(--yry-warn)">核心维度高离散 (σ=' + coreVar + ')</strong> 提示存在异常低分维度，需排查是否为数据稀疏导致的自举偏差。';
         if (engVar > 30) cmvInsight += ' <strong style="color:var(--yry-warn)">工程维度高离散 (σ=' + engVar + ')</strong> 提示工程实践覆盖不均，部分领域（如 docs/deps 满分）与薄弱项差距悬殊。';
-        document.getElementById('comovementInsight').innerHTML = cmvInsight;
+        document.getElementById('comovementInsight').textContent = '';
+
+        document.getElementById('comovementInsight').insertAdjacentHTML('beforeend', cmvInsight);
       }
     }
 
@@ -612,9 +637,12 @@
     var trigSummary = triggeredList.length > 0
       ? '<strong style="color:var(--yry-warn)">⚠ ' + triggeredList.length + '/9 诊断触发:</strong> ' + triggeredList.map(function(d) { return d + ' ' + (DIAG_LABELS[d]||''); }).join(', ')
       : '<strong style="color:var(--yry-pass)">✅ 无诊断触发</strong> — 所有 D0-D8 诊断点均正常';
-    document.getElementById('diagSummary').innerHTML = trigSummary;
+    document.getElementById('diagSummary').textContent = '';
 
-    document.getElementById('diagList').innerHTML = allDiags.map(function(d) {
+    document.getElementById('diagSummary').insertAdjacentHTML('beforeend', trigSummary);
+
+    document.getElementById('diagList').textContent = '';
+    getElementById('diagList').insertAdjacentHTML('beforeend',  allDiags.map(function(d) {
       var isTriggered = !!triggeredSet[d];
       var rateInfo = diagRates[d];
       var rateText = '';
@@ -632,14 +660,17 @@
         (isTriggered ? '<span class="badge warn">⚠ 触发</span>' : '<span class="badge pass">✓ 正常</span>') +
         '<span style="font-size:.64rem;color:var(--yry-text3);min-width:110px;text-align:right">' + rateText + '</span>' +
         '</div>';
-    }).join('');
+    }).join(''));
 
     // --- Report History Table ---
     if (reports.length === 0) {
-      document.getElementById('tbody').innerHTML = '<tr><td colspan="7"><div class="empty">暂无报告<br><span style="font-size:.7rem;margin-top:8px;display:block">运行 <code>node skills/rui-bot/send.mjs health --html</code> 生成首份报告</span></div></td></tr>';
+      document.getElementById('tbody').textContent = '';
+
+      document.getElementById('tbody').insertAdjacentHTML('beforeend', '<tr><td colspan="7"><div class="empty">暂无报告<br><span style="font-size:.7rem);margin-top:8px;display:block">运行 <code>node skills/rui-bot/send.mjs health --html</code> 生成首份报告</span></div></td></tr>';
     } else {
       // Compute trend direction icon for each row
-      document.getElementById('tbody').innerHTML = reports.map(function(r, i) {
+      document.getElementById('tbody').textContent = '';
+      getElementById('tbody').insertAdjacentHTML('beforeend',  reports.map(function(r, i) {
         var scHtml = r.score ? '<span style="font-weight:700;color:' + scoreClr(r.score) + '">' + r.score + ' 分</span>' : '—';
         var gradeHtml = r.grade ? '<span class="badge ' + r.grade + '">' + r.grade + ' 级</span>' : '—';
         var trigHtml = (r.triggers !== null && r.triggers !== undefined)
@@ -667,10 +698,14 @@
           '<td>' + deltaHtml + '</td>' +
           '<td><a href="' + r.file + '">查看</a></td>' +
           '</tr>';
-      }).join('');
+      }).join(''));
     }
   }).catch(function(e) {
-    document.getElementById('tbody').innerHTML = '<tr><td colspan="7"><div class="empty">加载失败: ' + e.message + '</div></td></tr>';
-    document.getElementById('diagList').innerHTML = '<div class="empty">数据加载失败</div>';
+    document.getElementById('tbody').textContent = '';
+
+    document.getElementById('tbody').insertAdjacentHTML('beforeend', '<tr><td colspan="7"><div class="empty">加载失败: ' + e.message + '</div></td></tr>');
+    document.getElementById('diagList').textContent = '';
+
+    document.getElementById('diagList').insertAdjacentHTML('beforeend', '<div class="empty">数据加载失败</div>');
   });
 })();

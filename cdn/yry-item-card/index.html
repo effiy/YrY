@@ -94,6 +94,23 @@
             :href="t.href || ''" />
         </div>
         <div v-if="meta" class="meta"><span class="detail">{{ meta }}</span></div>
+        <div class="item-links">
+          <template v-if="links && links.length">
+            <a v-for="(l, i) in links" v-if="l.href" :key="'a' + i" :href="l.href" target="_blank" rel="noopener noreferrer">{{ l.icon }} {{ l.label }}</a>
+            <span v-for="(l, i) in links" v-else :key="'s' + i">{{ l.icon }} {{ l.label }}</span>
+          </template>
+          <template v-else>
+            <span>📋 清单</span>
+            <span>📐 架构</span>
+            <span>🔗 图谱</span>
+            <span>🧪 测试</span>
+            <a v-if="nameHref" :href="nameHref" target="_blank" rel="noopener noreferrer">📄 源码</a>
+            <span v-else>📄 源码</span>
+            <a v-if="demo" :href="demo" target="_blank" rel="noopener noreferrer">💡 演示</a>
+            <span v-else>💡 演示</span>
+            <span>📝 审查</span>
+          </template>
+        </div>
       </div>
     </div>
   </script>

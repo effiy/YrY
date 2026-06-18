@@ -2,7 +2,10 @@
 <html lang="zh-CN">
 <head>
 {{HEAD_BLOCK}}
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-chrome/index.css">
 <link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-export-toolbar/index.css">
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-info-cards/index.css">
 <style>
 /* Page-specific overrides — shared patterns in shared-a.css */
 .diagram-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1.5rem;overflow-x:auto;margin-bottom:1.5rem}
@@ -12,21 +15,14 @@
 </head>
 <body>
 <div class="yry-container" id="report-container">
-{{BREADCRUMB}}
-{{CROSS_NAV}}
-
-<div class="yry-header">
-  <div class="yry-header-row">
-    <div class="yry-pulse-dot"></div>
-    <h1>{{STORY_NAME}} — 场景 {{SCENE_NUM}}: {{SCENE_TITLE}}</h1>
-    <div class="yry-export-toolbar yry-toolbar" data-target=".diagram-container" data-filename="{{STORY_NAME}}-scene{{SCENE_NUM}}-architecture" data-bg="#020617">
-      <button data-action="copy-svg">📋 Copy SVG</button>
-      <button data-action="download-png">🖼 PNG</button>
-      <button data-action="download-svg">📄 SVG</button>
-    </div>
-  </div>
-  <p class="yry-subtitle">{{SCENE_TITLE}} · v{{VERSION}} · {{DATE}}</p>
-</div>
+<yry-scene-chrome
+  theme="a"
+  title="{{STORY_NAME}} — 场景 {{SCENE_NUM}}: {{SCENE_TITLE}}"
+  subtitle="{{SCENE_TITLE}} · v{{VERSION}} · {{DATE}}"
+  breadcrumb='{{BREADCRUMB_JSON}}'
+  crossnav='{{CROSS_NAV_JSON}}'
+  toolbar='<div class="yry-export-toolbar yry-toolbar" data-target=".diagram-container" data-filename="{{STORY_NAME}}-scene{{SCENE_NUM}}-architecture" data-bg="#020617"><button data-action="copy-svg">📋 Copy SVG</button><button data-action="download-png">🖼 PNG</button><button data-action="download-svg">📄 SVG</button></div>'>
+</yry-scene-chrome>
 
 <div class="diagram-container">
   <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
@@ -45,7 +41,7 @@
   </svg>
 </div>
 
-<div class="yry-cards">
+<yry-info-cards>
   <div class="yry-card">
     <div class="yry-card-header"><div class="yry-card-dot cyan"></div><h3>场景信息</h3></div>
     <ul>
@@ -61,11 +57,14 @@
       <li><b>生成日期:</b> {{DATE}}</li>
     </ul>
   </div>
-</div>
+</yry-info-cards>
 
-<div class="yry-footer">YrY v{{VERSION}} · {{DATE}}</div>
+<yry-scene-footer version="{{VERSION}}" date="{{DATE}}"></yry-scene-footer>
 </div>
 <script src="{{CDN_DEPTH}}cdn/shared.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-chrome/index.js"></script>
 <script src="{{CDN_DEPTH}}cdn/yry-export-toolbar/index.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-footer/index.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-info-cards/index.js"></script>
 </body>
 </html>

@@ -38,7 +38,7 @@ export async function cmdMergeToMain(projectRoot) {
 
   if (currentBranch === mainBranch) {
     console.error(`[rui-story] 当前已在 ${mainBranch} 分支，无需合并`);
-    process.exit(0);
+    process.exit(1);
   }
 
   console.error(`[rui-story] §1 当前分支: ${currentBranch}`);

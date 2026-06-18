@@ -304,7 +304,10 @@
           '</div>');
       }
 
-      el.innerHTML = items.join('');
+      el.textContent = '';
+
+
+      el.insertAdjacentHTML('beforeend', items.join(''));
     });
   }
 
@@ -320,8 +323,9 @@
 
         var el = document.getElementById('healthRef');
         if (!el) return;
-        el.innerHTML =
-          '<div class="health-score-circle" style="border:3px solid ' + clr + ';color:' + clr + '">' + score + '</div>' +
+        el.textContent = '';
+
+        el.insertAdjacentHTML('beforeend', '<div class="health-score-circle" style="border:3px solid ' + clr + ');color:' + clr + '">' + score + '</div>' +
           '<div class="health-meta">' +
             '<div><strong>综合健康评分</strong> <span class="badge ' + (grade === 'A' || grade === 'B' ? 'ok' : grade === 'C' ? 'warn' : 'err') + '">' + grade + ' 级</span></div>' +
             '<div>报告日期: ' + (latest.date || '—') + ' · 维度: ' + (latest.dimTotal || '—') + '</div>' +
@@ -350,13 +354,19 @@
 
     if (failRatio >= 0.8) {
       el.className = 'alert-banner fail';
-      el.innerHTML = '⚠️ <strong>严重投影依赖</strong>：最新周期 ' + latest.fail + '/' + totalLatest + ' 报告为投影数据 (≥80%)。4 个数据源全部不可达，API 连通性检查建议立即执行。';
+      el.textContent = '';
+
+      el.insertAdjacentHTML('beforeend', '⚠️ <strong>严重投影依赖</strong>：最新周期 ' + latest.fail + '/' + totalLatest + ' 报告为投影数据 (≥80%)。4 个数据源全部不可达，API 连通性检查建议立即执行。');
     } else if (failRatio >= 0.4) {
       el.className = 'alert-banner warn';
-      el.innerHTML = '📡 <strong>部分投影依赖</strong>：最新周期 ' + latest.fail + '/' + totalLatest + ' 报告为投影数据。' + (4 - (totalLatest - latest.fail)) + ' 源不可达，下周扫描可能触发 D5 数据源退化诊断。';
+      el.textContent = '';
+
+      el.insertAdjacentHTML('beforeend', '📡 <strong>部分投影依赖</strong>：最新周期 ' + latest.fail + '/' + totalLatest + ' 报告为投影数据。' + (4 - (totalLatest - latest.fail)) + ' 源不可达，下周扫描可能触发 D5 数据源退化诊断。');
     } else {
       el.className = 'alert-banner info';
-      el.innerHTML = '✓ <strong>数据源正常</strong>：最新周期 ' + (totalLatest - latest.fail) + '/' + totalLatest + ' 报告为真实数据。四源可达性良好，趋势信号可信。';
+      el.textContent = '';
+
+      el.insertAdjacentHTML('beforeend', '✓ <strong>数据源正常</strong>：最新周期 ' + (totalLatest - latest.fail) + '/' + totalLatest + ' 报告为真实数据。四源可达性良好，趋势信号可信。');
     }
   }
 
@@ -804,7 +814,9 @@
       document.getElementById('count').textContent = reports.length + ' 份';
 
       if (!reports.length) {
-        document.getElementById('tbody').innerHTML = '<tr><td colspan="7"><div class="empty">暂无趋势报告<br><span style="font-size:.7rem;margin-top:8px;display:block">运行 <code>node skills/rui-trends/rui-trends.mjs all</code> 生成首份报告</span></div></td></tr>';
+        document.getElementById('tbody').textContent = '';
+
+        document.getElementById('tbody').insertAdjacentHTML('beforeend', '<tr><td colspan="7"><div class="empty">暂无趋势报告<br><span style="font-size:.7rem);margin-top:8px;display:block">运行 <code>node skills/rui-trends/rui-trends.mjs all</code> 生成首份报告</span></div></td></tr>';
         renderHealthRef();
         renderCrossRefs();
         return;
@@ -839,23 +851,28 @@
 
       document.getElementById('srcSummary').textContent = uniqueSources + ' 源 · ' + (riseCount > fallCount ? '上升' : fallCount > riseCount ? '下降' : '持平') + '趋势';
 
-      document.getElementById('stats').innerHTML =
-        '<div class="stat"><div class="val info">' + reports.length + '</div><div class="lbl">报告总数</div></div>' +
+      var statsEl = document.getElementById('stats');
+      statsEl.textContent = '';
+      statsEl.insertAdjacentHTML('beforeend', '<div class="stat"><div class="val info">' + reports.length + '</div><div class="lbl">报告总数</div></div>' +
         '<div class="stat"><div class="val pass">' + totalOk + '</div><div class="lbl">可达报告</div></div>' +
         '<div class="stat"><div class="val ' + (totalFail > 0 ? 'fail' : 'info') + '">' + totalFail + '</div><div class="lbl">不可达 / 投影</div></div>' +
         '<div class="stat"><div class="val info">' + uniqueSources + ' / 4</div><div class="lbl">覆盖源数</div></div>' +
         '<div class="stat"><div class="val info">' + totalItems + '</div><div class="lbl">总条目数</div></div>' +
-        '<div class="stat"><div class="val ' + globalTrendClr + '">' + globalTrend + '</div><div class="lbl">整体趋势</div></div>';
+        '<div class="stat"><div class="val ' + globalTrendClr + '">' + globalTrend + '</div><div class="lbl">整体趋势</div></div>');
 
       // Alert banner
       renderAlertBanner(reports);
 
       // Trend sparkline
-      document.getElementById('trendChart').innerHTML = renderTrendSparkline(reports);
+      document.getElementById('trendChart').textContent = '';
+
+      document.getElementById('trendChart').insertAdjacentHTML('beforeend', renderTrendSparkline(reports));
 
       // Source health
       var ALL_SOURCES = ['github-trending', 'oss-insight', 'trendshift', 'top-starred', 'all'];
-      document.getElementById('srcGrid').innerHTML = ALL_SOURCES.map(function(s) {
+      var srcGrid = document.getElementById('srcGrid');
+      srcGrid.textContent = '';
+      srcGrid.insertAdjacentHTML('beforeend', ALL_SOURCES.map(function(s) {
         var ss = sourceStats[s];
         if (!ss) {
           return '<div class="src-card" style="opacity:.5">' +
@@ -885,27 +902,41 @@
           '</div>' +
           '<div style="margin-top:6px">' + trendBadge + '</div>' +
           '</div>';
-      }).join('');
+      }).join(''));
 
       // Category distribution
-      document.getElementById('catBars').innerHTML = renderCatDistribution();
+      document.getElementById('catBars').textContent = '';
+
+      document.getElementById('catBars').insertAdjacentHTML('beforeend', renderCatDistribution());
 
       // Category evolution
-      document.getElementById('catEvo').innerHTML = renderCatEvolution();
+      document.getElementById('catEvo').textContent = '';
+
+      document.getElementById('catEvo').insertAdjacentHTML('beforeend', renderCatEvolution());
 
       // Data quality
-      document.getElementById('qualityGrid').innerHTML = renderQualityBreakdown(reports);
+      document.getElementById('qualityGrid').textContent = '';
+
+      document.getElementById('qualityGrid').insertAdjacentHTML('beforeend', renderQualityBreakdown(reports));
 
       // Per-source velocity
-      document.getElementById('srcVelocity').innerHTML = renderSourceVelocity(reports);
+      document.getElementById('srcVelocity').textContent = '';
+
+      document.getElementById('srcVelocity').insertAdjacentHTML('beforeend', renderSourceVelocity(reports));
       // Technology lifecycle stages
-      document.getElementById('lifecycleGrid').innerHTML = renderLifecycle(reports);
+      document.getElementById('lifecycleGrid').textContent = '';
+
+      document.getElementById('lifecycleGrid').insertAdjacentHTML('beforeend', renderLifecycle(reports));
 
       // Language ecosystem heatmap
-      document.getElementById('ecoHeatmap').innerHTML = renderEcoHeatmap();
+      document.getElementById('ecoHeatmap').textContent = '';
+
+      document.getElementById('ecoHeatmap').insertAdjacentHTML('beforeend', renderEcoHeatmap());
 
       // Signal-to-noise ratio analysis
-      document.getElementById('snrAnalysis').innerHTML = renderSNR(reports);
+      document.getElementById('snrAnalysis').textContent = '';
+
+      document.getElementById('snrAnalysis').insertAdjacentHTML('beforeend', renderSNR(reports));
 
 
       // Velocity
@@ -922,15 +953,18 @@
       var velSign = itemVelocity > 0 ? '+' : '';
       var velClr = itemVelocity > 0 ? 'var(--yry-pass)' : itemVelocity < 0 ? 'var(--yry-fail)' : 'var(--yry-text3)';
 
-      document.getElementById('velGrid').innerHTML =
-        '<div class="vel-item"><div class="vel-num" style="color:#22d3ee">' + avgItemsPerReport + '</div><div class="vel-lbl">平均条目 / 报告</div></div>' +
+      var velGrid = document.getElementById('velGrid');
+      velGrid.textContent = '';
+      velGrid.insertAdjacentHTML('beforeend', '<div class="vel-item"><div class="vel-num" style="color:#22d3ee">' + avgItemsPerReport + '</div><div class="vel-lbl">平均条目 / 报告</div></div>' +
         '<div class="vel-item"><div class="vel-num" style="color:' + (freshnessDays <= 7 ? 'var(--yry-pass)' : freshnessDays <= 14 ? 'var(--yry-warn)' : 'var(--yry-fail)') + '">' + freshnessDays + ' 天</div><div class="vel-lbl">数据新鲜度</div></div>' +
         '<div class="vel-item"><div class="vel-num" style="color:#22d3ee">' + latestItems + '</div><div class="vel-lbl">最新全量条目</div></div>' +
         '<div class="vel-item"><div class="vel-num" style="color:' + velClr + '">' + velSign + itemVelocity + '%</div><div class="vel-lbl">条目周增长率</div></div>' +
-        '<div class="vel-item"><div class="vel-num" style="color:' + (projRatio > 50 ? 'var(--yry-fail)' : projRatio > 20 ? 'var(--yry-warn)' : 'var(--yry-pass)') + '">' + projRatio + '%</div><div class="vel-lbl">投影占比</div></div>';
+        '<div class="vel-item"><div class="vel-num" style="color:' + (projRatio > 50 ? 'var(--yry-fail)' : projRatio > 20 ? 'var(--yry-warn)' : 'var(--yry-pass)') + '">' + projRatio + '%</div><div class="vel-lbl">投影占比</div></div>');
 
       // Report table
-      document.getElementById('tbody').innerHTML = reports.map(function(r) {
+      var tbodyEl = document.getElementById('tbody');
+      tbodyEl.textContent = '';
+      tbodyEl.insertAdjacentHTML('beforeend', reports.map(function(r) {
         var okBadge = r.ok
           ? '<span class="badge ok">✓ 可达</span>'
           : '<span class="badge err">✗ 不可达</span>';
@@ -957,6 +991,8 @@
       renderCrossRefs();
     })
     .catch(function(e) {
-      document.getElementById('tbody').innerHTML = '<tr><td colspan="7"><div class="empty">加载失败: ' + e.message + '</div></td></tr>';
+      document.getElementById('tbody').textContent = '';
+
+      document.getElementById('tbody').insertAdjacentHTML('beforeend', '<tr><td colspan="7"><div class="empty">加载失败: ' + e.message + '</div></td></tr>');
     });
 })();

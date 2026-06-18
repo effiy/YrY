@@ -9,27 +9,15 @@
  *   const r = await generateTrendReport({ source, url, data, trend, findings });
  */
 
-import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
+import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { nowISO, nowDate } from '../../../lib/fs.mjs';
+import { nowISO, nowDate, fmtDisplay, escHtml, readJson, writeJson } from '../../../lib/fs.mjs';
 
 const REPORT_DIR = 'docs/趋势报告';
 const CDN_DEPTH = '../../';
 const MANIFEST_FILE = join(REPORT_DIR, 'reports.json');
 const MAX_MANIFEST_ENTRIES = 50;
-
-function fmtDisplay(iso) {
-  return iso.replace('T', ' ').slice(0, 19);
-}
-
-function nowTimestamp() {
-  return Date.now().toString(36);
-}
-
-function escHtml(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
 
 const SOURCE_META = {
   'github-trending': { icon: '🐙', label: 'GitHub Trending', url: 'https://github.com/trending' },
@@ -445,12 +433,7 @@ export function updateTrendManifest(entry) {
     mkdirSync(REPORT_DIR, { recursive: true });
   }
 
-  let manifest = [];
-  if (existsSync(MANIFEST_FILE)) {
-    try {
-      manifest = JSON.parse(readFileSync(MANIFEST_FILE, 'utf-8'));
-    } catch { manifest = []; }
-  }
+  const manifest = readJson(MANIFEST_FILE) || [];
 
   const normalized = { ...entry };
   const date = normalized.date || nowDate();
@@ -465,7 +448,7 @@ export function updateTrendManifest(entry) {
     manifest = manifest.slice(0, MAX_MANIFEST_ENTRIES);
   }
 
-  writeFileSync(MANIFEST_FILE, JSON.stringify(manifest, null, 2), 'utf-8');
+  writeJson(MANIFEST_FILE, manifest);
   return manifest;
 }
 

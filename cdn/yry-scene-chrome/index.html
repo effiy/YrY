@@ -1,0 +1,67 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YrySceneChrome · 场景页头部 Vue 3 组件
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YrySceneChrome · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0e0f1a); color: var(--yry-text, #f5f5f5); padding: 32px 24px; max-width: 800px; margin: 0 auto; font-family: var(--yry-font-sans); }
+  h1 { font-size: 1.1rem; }
+  .demo-hint { font-size: .74rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+</style>
+</head>
+<body>
+<h1>YrySceneChrome</h1>
+<p class="demo-hint">Vue 3 组件: <code>theme</code> · <code>title</code> · <code>subtitle</code> · <code>breadcrumb</code> · <code>crossnav</code> (JSON)</p>
+
+<div id="demo-1"></div>
+
+<script type="text/x-template" id="yry-scene-chrome-tpl">
+  <div>
+    <nav v-if="parsedBc.length" class="sc-breadcrumb">
+      <template v-for="(item, i) in parsedBc" :key="'bc'+i">
+        <span v-if="i > 0" class="sc-bc-sep">/</span>
+        <a v-if="item.href" :href="item.href">{{ item.label }}</a>
+        <span v-else class="sc-bc-current">{{ item.label }}</span>
+      </template>
+    </nav>
+    <nav v-if="parsedCn.length" class="sc-cross-nav">
+      <template v-for="(item, i) in parsedCn" :key="'cn'+i">
+        <span v-if="i > 0" class="sc-cross-sep">·</span>
+        <span v-if="item.active" class="sc-cross-link on">{{ item.label }}</span>
+        <a v-else-if="item.href" class="sc-cross-link" :href="item.href">{{ item.label }}</a>
+        <span v-else class="sc-cross-link">{{ item.label }}</span>
+      </template>
+    </nav>
+    <div class="sc-header">
+      <div class="sc-header-row">
+        <div v-if="theme !== 'b'" class="sc-pulse-dot"></div>
+        <h1><template v-if="titleAccent">{{ title.replace('{ACCENT}', '') }}</template><template v-else>{{ title }}</template></h1>
+        <span v-if="toolbar" v-html="toolbar"></span>
+      </div>
+      <p v-if="subtitle" class="sc-subtitle">{{ subtitle }}</p>
+    </div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YrySceneChrome) return;
+  Vue.createApp(window.YrySceneChrome, {
+    theme: 'a', title: '新人上手 — 架构图', subtitle: '5 步上手路径 · 8 角色协作',
+    breadcrumb: '[{"label":"文档中心","href":"../../../index.html"},{"label":"场景1"}]',
+    crossnav: '[{"label":"清单","href":"计划清单.html"},{"label":"架构","active":true}]'
+  }).mount('#demo-1');
+}
+if (window.YrySceneChrome) mountAll();
+else document.addEventListener('yry-scene-chrome-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

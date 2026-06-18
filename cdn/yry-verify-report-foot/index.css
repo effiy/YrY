@@ -1,0 +1,54 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryVerifyReportFoot · 验证报告页脚
+   包含: 总结 + 签名 + 状态徽章
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host { display: block; }
+
+.vrf-wrapper {
+  background: linear-gradient(135deg, rgba(255, 193, 7, .04), rgba(34, 211, 238, .04));
+  border: 1px solid rgba(255, 193, 7, .2);
+  border-radius: 10px;
+  padding: 14px 20px;
+  margin-top: 16px;
+}
+.vrf-summary {
+  font-size: .82rem;
+  color: var(--yry-text, #f5f5f5);
+  margin-bottom: 8px;
+  line-height: 1.55;
+}
+.vrf-summary b { color: #10b981; }
+
+.vrf-sig {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(255, 255, 255, .08);
+  font-size: .7rem;
+  color: var(--yry-text2, #d4d4d4);
+}
+.vrf-sig-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, .02);
+  border-radius: 4px;
+}
+.vrf-sig-item .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #10b981;
+}
+.vrf-sig-item .dot.pending { background: #f59e0b; }
+.vrf-sig-item .dot.fail    { background: #ef4444; }
+
+.vrf-section { margin: 10px 0; }
+.vrf-k { font-size: .78rem; font-weight: 600; color: var(--yry-text, #f5f5f5); margin-bottom: 5px; letter-spacing: .02em; }
+.vrf-v { font-size: .76rem; color: var(--yry-text2, #cdd6f4); line-height: 1.55; }
+.vrf-v code { color: var(--yry-accent, #ffc107); background: rgba(255, 193, 7, .08); padding: 1px 5px; border-radius: 3px; font-size: .72rem; }
+.vrf-list { margin: 4px 0 0 18px; padding: 0; font-size: .76rem; color: var(--yry-text2, #cdd6f4); line-height: 1.6; }
+.vrf-list li { margin: 2px 0; }
+.vrf-list code { color: var(--yry-accent, #ffc107); background: rgba(255, 193, 7, .08); padding: 1px 5px; border-radius: 3px; font-size: .72rem; }

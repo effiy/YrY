@@ -3,7 +3,7 @@
 // 用法: node skills/rui-bot/help.mjs 或 /rui-bot --help
 
 import { bold, dim, yellow, cyan } from '../../lib/tty.mjs';
-import { hdr, subhdr, item, flag, scene } from '../../lib/help-layout.mjs';
+import { hdr, subhdr, item, scene } from '../../lib/help-layout.mjs';
 
 const help = `
 ${bold("# rui-bot — 企业微信机器人通知")}

@@ -3,211 +3,99 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>健康报告索引 — YrY 系统健康仪表板</title>
-<meta name="description" content="YrY 系统综合健康度量仪表板 — 9 核心维度 + 7 工程成熟度评分 + D0-D8 诊断触发 · 每次运行自动生成 HTML 报告并持久化趋势数据">
+<title>健康报告索引</title>
 <link rel="stylesheet" href="../../cdn/shared.css">
 <link rel="stylesheet" href="../../cdn/theme.css">
-<link rel="stylesheet" href="../../cdn/shared-reports.css">
-<style>
-.badge.p0 { background: rgba(239,68,68,.2); color: var(--yry-fail); font-weight: 700; }
-.badge.p1 { background: rgba(245,158,11,.18); color: var(--yry-warn); }
-.badge.p2 { background: rgba(59,130,246,.12); color: #60a5fa; }
-
-.big-score { text-align: center; padding: 28px 20px 24px; margin-bottom: 20px; background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); box-shadow: var(--yry-shadow); }
-.big-score .score-val { font-size: 3.5rem; font-weight: 800; line-height: 1; }
-.big-score .grade-badge { display: inline-block; font-size: 1.4rem; font-weight: 800; margin-top: 6px; padding: 4px 16px; border-radius: 10px; }
-.big-score .grade-badge.A { background: rgba(34,197,94,.15); color: var(--yry-pass); }
-.big-score .grade-badge.B { background: rgba(74,222,128,.15); color: #4ade80; }
-.big-score .grade-badge.C { background: rgba(245,158,11,.15); color: var(--yry-warn); }
-.big-score .grade-badge.D { background: rgba(239,68,68,.15); color: var(--yry-fail); }
-.big-score .sub { font-size: .68rem; color: var(--yry-text3); margin-top: 10px; line-height: 1.6; }
-.big-score .trend-svg { margin-top: 14px; }
-
-.dim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; }
-.dim-item { padding: 12px 14px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); transition: transform .15s, border-color .15s; position: relative; overflow: hidden; }
-.dim-item:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.08); }
-.dim-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 0 3px 3px 0; }
-.dim-item.A::before { background: var(--yry-pass); }
-.dim-item.B::before { background: #4ade80; }
-.dim-item.C::before { background: var(--yry-warn); }
-.dim-item.D::before { background: var(--yry-fail); }
-.dim-name { font-size: .74rem; font-weight: 600; }
-.dim-cat { font-size: .58rem; color: var(--yry-text3); text-transform: uppercase; letter-spacing: .3px; margin-top: 2px; }
-.dim-score-val { font-size: 1.3rem; font-weight: 700; margin-top: 6px; }
-.dim-bar-wrap { height: 4px; border-radius: 2px; background: rgba(255,255,255,.06); margin-top: 6px; overflow: hidden; }
-.dim-bar-fill { height: 100%; border-radius: 2px; transition: width .5s ease; }
-.dim-trend { font-size: .62rem; margin-top: 4px; }
-
-.diag-row { display: flex; align-items: center; gap: 12px; padding: 12px 16px; margin-bottom: 6px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); flex-wrap: wrap; }
-.diag-row.triggered { border-left: 3px solid var(--yry-warn); background: rgba(245,158,11,.03); }
-.diag-row.clear { border-left: 3px solid var(--yry-pass); background: rgba(34,197,94,.02); }
-.diag-id { font-weight: 700; font-size: .8rem; font-family: 'JetBrains Mono', monospace; min-width: 28px; }
-.diag-label { font-size: .78rem; min-width: 80px; }
-.diag-sev { font-size: .64rem; font-weight: 600; min-width: 40px; }
-
-.cat-bar-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: .78rem; }
-.cat-bar-lbl { min-width: 56px; color: var(--yry-text2); }
-.cat-bar-track { flex: 1; height: 10px; border-radius: 5px; background: rgba(255,255,255,.06); overflow: hidden; }
-.cat-bar-fill { height: 100%; border-radius: 5px; transition: width .5s ease; }
-.cat-bar-num { min-width: 72px; text-align: right; font-size: .76rem; color: var(--yry-text3); font-family: 'JetBrains Mono', monospace; }
-
-.ref-card { padding: 16px 20px; border-radius: var(--yry-radius); border: var(--yry-border); background: rgba(15,23,42,.3); cursor: pointer; transition: all .15s; text-decoration: none; display: block; color: inherit; }
-.ref-card:hover { border-color: rgba(255,255,255,.1); transform: translateY(-1px); }
-.ref-card .ref-title { font-size: .82rem; font-weight: 600; color: var(--yry-text); }
-.ref-card .ref-score { font-size: 1.4rem; font-weight: 700; margin-top: 4px; }
-.ref-card .ref-meta { font-size: .66rem; color: var(--yry-text3); margin-top: 4px; }
-
-.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-.summary-item { padding: 14px 16px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.3); }
-.summary-item .s-lbl { font-size: .66rem; color: var(--yry-text3); text-transform: uppercase; letter-spacing: .4px; }
-.summary-item .s-val { font-size: 1.1rem; font-weight: 700; margin-top: 4px; }
-
-@media (max-width: 640px) {
-  .dim-grid { grid-template-columns: 1fr 1fr; }
-}
-</style>
+	<link rel="stylesheet" href="../../cdn/shared-reports.css">
+	<style>
+	/* common :root / reset / body / table / bc / hd / card / links / ft covered by shared-reports.css */
+	.c { max-width: 800px; margin: 0 auto; padding: 48px 24px 80px; }
+	.latest { text-align: center; padding: 16px 16px 12px; margin-bottom: 20px; background: rgba(255,193,7,.05); border-radius: 10px; border: var(--yry-border); }
+	.latest .score { font-size: 2rem; font-weight: 800; color: var(--yry-accent); }
+	.latest .grade { font-size: 1.1rem; font-weight: 700; margin-left: 8px; }
+	.latest .date { display: block; font-size: .72rem; color: var(--yry-text3); margin-top: 4px; }
+	.latest .meta-row { font-size: .68rem; color: var(--yry-text3); margin-top: 6px; }
+	td a { color: #22d3ee; text-decoration: none; } td a:hover { color: var(--yry-accent); }
+	td .s { font-weight: 700; font-size: .82rem; } td .s.A, td .s.B { color: var(--yry-pass); } td .s.C { color: #f59e0b; } td .s.D { color: var(--yry-fail); }
+	.yry-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: .72rem; font-weight: 600; } /* grade variants .A/.B/.C/.D from shared-reports.css */
+	#loading { text-align: center; color: var(--yry-text3); padding: 40px; }
+	</style>
 </head>
 <body>
 <div class="c">
 
 <nav class="bc">
-  <a href="../index.html">文档中心</a>
+  <a href="../../docs/index.html">📄 文档中心</a>
   <span class="sep">/</span>
-  <span class="cur">健康报告</span>
+  <span class="cur">🩺 健康报告</span>
 </nav>
 
 <div class="hd">
-  <h1>系统健康仪表板</h1>
-  <div class="desc">综合健康度量仪表板 — 覆盖 <strong>9 核心维度</strong>（Token 安全、配置健康、机器人就绪、API 可达性、报告质量、格式规范、诊断引擎、Git 纪律、安全基线）和 <strong>7 工程成熟度</strong>（测试、类型、Lint、CI/CD、文档、依赖、Git 实践），共 <strong>17 维度</strong>。每次运行通过 <code>node skills/rui-bot/send.mjs health --html</code> 自动生成 HTML 报告并持久化至 <code>.memory/health-trend.jsonl</code></div>
-  <div class="meta"><span id="count">—</span> 份历史报告 · <span id="dateRange">—</span></div>
-  <div id="freshBadge"></div>
+  <h1>🩺 健康报告</h1>
+  <div class="desc">系统综合健康度量仪表板 — 覆盖 9 核心维度 + 7 工程成熟度评分 + D0-D7 诊断触发。每次运行自动生成 HTML 报告并持久化趋势数据至 <code>.memory/health-trend.jsonl</code>。</div>
+  <div class="meta"><span id="count">4</span> 份历史报告</div>
 </div>
 
 <div class="intro">
-  <strong>评估体系</strong>：9 核心维度 × 7 工程成熟度 = 17 维评分矩阵 · 每维 0–100 分 · 综合加权生成 A/B/C/D 等级<br>
-  <strong>诊断联动</strong>：低分维度自动触发 <strong>D0-D8</strong> 分级诊断（P0/P1/P2 严重等级）· 趋势数据输入自改进分析面板 · 企微 Webhook 实时推送通知<br>
-  <strong>退化检测</strong>：趋势下降 &gt;15 分/周 → 退化告警 · 连续 2 次 C 级同维 → P1 · 连续 3 次 → 自动升级 P0<br>
-  <strong>自举引导模式</strong>：项目初始化阶段数据稀疏 → 部分维度评分为估计值（标记为自举数据），随运行次数增加逐步收敛至真实值
+  <strong>评估体系</strong>：<strong>9 核心维度</strong>（Token 安全、配置健康、机器人就绪、API 可达性、报告质量、格式规范、诊断引擎、Git 纪律、安全基线）+ <strong>7 工程成熟度</strong>（测试、类型、Lint、CI/CD、文档、依赖、Git 实践）<br>
+  <strong>诊断联动</strong>：评分过低自动触发 <strong>D0-D7</strong> 分级诊断 · 趋势数据输入自改进分析面板 · 企微通知推送<br>
+  <strong>生成命令</strong>：<code>node skills/rui-bot/send.mjs health --html</code>
 </div>
 
-<!-- Stats Row -->
-<div class="stats" id="statsRow">
-  <div class="stat"><div class="val info" id="stTotal">—</div><div class="lbl">报告总数</div></div>
-  <div class="stat"><div class="val info" id="stScore">—</div><div class="lbl">最新评分</div></div>
-  <div class="stat"><div class="val info" id="stGrade">—</div><div class="lbl">最新等级</div></div>
-  <div class="stat"><div class="val info" id="stDiags">—</div><div class="lbl">诊断触发</div></div>
-  <div class="stat"><div class="val info" id="stDims">—</div><div class="lbl">活跃维度</div></div>
-  <div class="stat"><div class="val info" id="stTrend">—</div><div class="lbl">趋势方向</div></div>
-  <div class="stat"><div class="val info" id="stCat">—</div><div class="lbl">类别分布</div></div>
-  <div class="stat"><div class="val info" id="stFresh">—</div><div class="lbl">数据新鲜度</div></div>
+<div class="yry-stats" id="stats">
+  <div class="yry-stat"><div class="yry-val info">4</div><div class="yry-lbl">报告总数</div></div>
+  <div class="yry-stat"><div class="yry-val pass">—</div><div class="yry-lbl">最新评分</div></div>
+  <div class="yry-stat"><div class="yry-val pass">B</div><div class="yry-lbl">最新等级</div></div>
+  <div class="yry-stat"><div class="yry-val info">19</div><div class="yry-lbl">评分维度</div></div>
+  <div class="yry-stat"><div class="yry-val pass">0</div><div class="yry-lbl">诊断触发</div></div>
 </div>
 
-<!-- Latest Score Hero -->
-<div class="big-score" id="heroCard" style="display:none">
-  <div class="score-val" id="heroScore" style="color:var(--yry-accent)">—</div>
-  <div class="grade-badge" id="heroGrade">—</div>
-  <div class="sub" id="heroMeta"></div>
-  <div class="trend-svg" id="trendChart"></div>
-</div>
-<!-- Score Trend Statistical Analysis -->
-<div class="card" id="statCard" style="display:none">
-  <h2>得分趋势统计分析</h2>
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px" id="statGrid"></div>
-  <div style="margin-top:18px;padding:14px 18px;border-radius:8px;background:rgba(15,23,42,.3);border:var(--yry-border);font-size:.78rem;color:var(--yry-text2);line-height:1.8" id="statInsight"></div>
-</div>
-
-
-
-
-<!-- Two-column: Category Breakdown + Cross-Dashboard Health -->
-<div class="grid2">
-  <div class="card" id="catCard" style="display:none">
-    <h2>维度类别分布</h2>
-    <div id="catBreakdown"></div>
-  </div>
-  <div class="card" id="refCard" style="display:none">
-    <h2>跨仪表板健康参考</h2>
-    <div id="refContent"></div>
-  </div>
-</div>
-
-<!-- Dimension Health Overview -->
-<div class="card" id="dimCard" style="display:none">
-  <h2>17 维度健康概览</h2>
-  <div id="dimWeakest" style="margin-bottom:14px;font-size:.76rem;color:var(--yry-text2)"></div>
-  <div class="dim-grid" id="dimGrid"></div>
-</div>
-
-<!-- Dimension Co-Movement Analysis -->
-<div class="card" id="comovementCard" style="display:none">
-  <h2>维度协同与结构分析</h2>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px" id="comovementGrid">
-    <div>
-      <h3>核心 vs 工程维度对比</h3>
-      <div id="coreEngGap" style="font-size:.78rem;color:var(--yry-text2);line-height:1.8"></div>
-    </div>
-    <div>
-      <h3>维度聚类分布</h3>
-      <div id="clusterDist" style="font-size:.78rem;color:var(--yry-text2);line-height:1.8"></div>
-    </div>
-  </div>
-  <div style="margin-top:18px;padding:14px 18px;border-radius:8px;background:rgba(15,23,42,.3);border:var(--yry-border);font-size:.78rem;color:var(--yry-text2);line-height:1.8" id="comovementInsight"></div>
-</div>
-
-
-<!-- D0-D8 Diagnostic Status -->
 <div class="card">
-  <h2>D0–D8 诊断状态</h2>
-  <div id="diagSummary" style="margin-bottom:14px;font-size:.76rem;color:var(--yry-text2)"></div>
-  <div id="diagList"><div class="empty">加载中...</div></div>
-</div>
-
-<!-- Improvement Priority Queue -->
-<div class="card" id="priorityCard" style="display:none">
-  <h2>改进建议优先级队列</h2>
-  <div style="margin-bottom:14px;font-size:.76rem;color:var(--yry-text2)" id="priorityMeta"></div>
-  <div id="priorityGrid" style="display:flex;flex-direction:column;gap:10px"></div>
-  <div style="margin-top:16px;padding:12px 16px;border-radius:8px;background:rgba(34,211,238,.04);border:1px solid rgba(34,211,238,.12);font-size:.74rem;color:var(--yry-text2);line-height:1.7" id="priorityProjection"></div>
-</div>
-
-
-<!-- Weakest Dimensions Detail -->
-<div class="card" id="weakCard" style="display:none">
-  <h2>薄弱维度分析与改进建议</h2>
-  <div id="weakDetail"></div>
-</div>
-
-<!-- Statistics Summary -->
-<div class="card" id="summaryCard" style="display:none">
-  <h2>统计摘要</h2>
-  <div class="summary-grid" id="summaryGrid"></div>
-</div>
-
-<!-- Report History -->
-<div class="card">
-  <h2>报告历史</h2>
+  <h2>📋 报告历史</h2>
   <table>
-    <thead><tr><th>日期</th><th>时间</th><th>评分</th><th>等级</th><th>诊断触发</th><th>趋势 Δ</th><th>操作</th></tr></thead>
+    <thead><tr><th>日期</th><th>时间</th><th>评分</th><th>等级</th><th>诊断</th><th>操作</th></tr></thead>
     <tbody id="tbody"></tbody>
   </table>
 </div>
 
 <div class="links">
-  <a href="../自循环报告/">自循环报告</a>
-  <a href="../趋势报告/">趋势报告</a>
-  <a href="../自我改进/">自我改进</a>
-  <a href="../故事任务面板/">故事任务面板</a>
-  <a href="../index.html">文档中心</a>
+  <a href="../../docs/自循环报告/">🔄 自循环报告</a>
+  <a href="../../docs/趋势报告/">📡 趋势报告</a>
+  <a href="../../docs/自我改进/">🧬 自我改进</a>
+  <a href="../../docs/故事任务面板/">📋 故事任务面板</a>
+  <a href="../../docs/index.html">📄 文档中心</a>
 </div>
 
 <div class="ft">
-  系统健康仪表板<br>
-  <span style="color:var(--yry-text3)">由 rui-bot health-report 自动生成 HTML · 9 核心 + 7 工程 = 17 维度 · D0-D8 诊断 · 趋势持久化至 .memory/health-trend.jsonl</span>
+  健康报告索引<br>
+  <span style="color:var(--yry-text3)">由 rui-bot health-report 自动生成 · 9 核心 + 7 工程维度 · D0-D7 诊断</span>
 </div>
 
 </div>
+<script>
+(async function() {
+  try {
+    var res = await fetch('reports.json');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var reports = await res.json();
+    document.getElementById('count').textContent = reports.length;
 
-<script src="../../cdn/shared-reports.js"></script>
-<script src="js/health-index.js"></script>
+    var tbody = document.getElementById('tbody');
+    if (reports.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6"><div class="yry-empty">暂无报告<br><span style="font-size:.7rem;margin-top:8px;display:block">运行 <code>node skills/rui-bot/send.mjs health --html</code> 生成首份报告</span></div></td></tr>';
+    } else {
+      tbody.innerHTML = reports.map(function(r) {
+        var scHtml = r.score ? '<span class="s ' + (r.grade || '') + '">' + r.score + ' 分</span>' : '—';
+        var gradeHtml = r.grade ? '<span class="yry-badge ' + (r.grade) + '">' + r.grade + ' 级</span>' : '—';
+        var trigHtml = r.triggers !== null ? (r.triggers > 0 ? '<span style="color:var(--yry-warn)">' + r.triggers + '/8</span>' : '<span style="color:var(--yry-pass)">0/8</span>') : '—';
+        var timeHtml = r.time && r.time !== '—' ? r.time : '—';
+        return '<tr><td><a href="' + r.file + '">🩺 ' + r.date + '</a></td><td>' + timeHtml + '</td><td>' + scHtml + '</td><td>' + gradeHtml + '</td><td>' + trigHtml + '</td><td><a href="' + r.file + '">查看</a></td></tr>';
+      }).join('');
+    }
+  } catch(e) {
+    document.getElementById('tbody').innerHTML = '<tr><td colspan="6"><div class="yry-empty">加载失败: ' + e.message + '</div></td></tr>';
+  }
+})();
+</script>
 </body>
 </html>

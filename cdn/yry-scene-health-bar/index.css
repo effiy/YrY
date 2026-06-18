@@ -1,0 +1,37 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YrySceneHealthBar · 场景健康进度条 样式
+   颜色通过 CSS 自定义属性注入 (由 shared-b.css :root 定义)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: block;
+  margin-bottom: 24px;
+  animation: hb-fadeInDown .5s .15s ease both;
+}
+
+@keyframes hb-fadeInDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hb-wrap { }
+
+.hb-outer {
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  background: rgba(255,255,255,.04);
+}
+
+.hb-seg {
+  height: 100%;
+  transition: width .5s ease;
+  min-width: 2px;
+}
+
+.hb-seg.p        { background: var(--yry-pass, #22c55e); }
+.hb-seg.f        { background: var(--yry-fail, #ef4444); }
+.hb-seg.s        { background: var(--yry-skip, #6b7280); }
+.hb-seg.strength { background: var(--yry-pass, #22c55e); }
+.hb-seg.gap      { background: rgba(255,255,255,.04); }

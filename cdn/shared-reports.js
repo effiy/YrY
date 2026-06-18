@@ -246,7 +246,8 @@
   /** 安全设置元素 HTML */
   R.setHTML = function (id, html) {
     var el = typeof id === 'string' ? document.getElementById(id) : id;
-    if (el) el.innerHTML = html;
+    if (el) el.textContent = '';
+ el.insertAdjacentHTML('beforeend', html);
   };
 
   /** 安全显示/隐藏元素 */

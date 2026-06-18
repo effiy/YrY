@@ -1,6 +1,6 @@
 # 场景 3: 组件库与 JS 工具 API
 
-> | v1.1.0 | 2026-06-12 | deepseek-v4-pro | 🌿 feat/yry-cdn | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
+> | v1.2.0 | 2026-06-18 | deepseek-v4-pro | 🌿 feat/yry-cdn | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
 > **导航**: [← 场景-2](../场景-2-双主题系统设计/index.md) · [场景-4 →](../场景-4-存量页面迁移/index.md)
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
@@ -15,11 +15,26 @@
   'tertiaryColor': '#21232f'
 }}}%%
 flowchart LR
-    subgraph CSS["CSS 组件 21 个"]
+    subgraph CSS["CSS 组件 62 个 · 10 大类别"]
         direction TB
-        GLOBAL["全局组件<br/>面包屑 · cross-nav<br/>Toolbar · Toast<br/>页脚"]:::global
-        SYS_COMP["System 组件<br/>Container · Header · Stats<br/>Bar · Tabs · Panels · Cards<br/>Suite · Progress · Button<br/>Section · LinkCard"]:::sys
-        MONO_COMP["Mono 组件<br/>Container · Header<br/>PulseDot · Diagram<br/>Graph · Cards · Legend"]:::mono
+        LAYOUT["布局与结构 9<br/>yry-layer · yry-doc-layer<br/>yry-breadcrumb · yry-sub-title<br/>yry-card-grid · yry-layer-agents<br/>yry-layer-rules · yry-layer-refs<br/>yry-layer-info-panel"]:::layout
+        NAV["导航 5<br/>yry-panel-hub · yry-cross-nav<br/>yry-page-nav · yry-scene-nav<br/>yry-back-top"]:::nav
+        CARD["卡片与展示 11<br/>yry-item-card · yry-story-card<br/>yry-scene-card · yry-tag-chip<br/>yry-kpi-card · yry-trend-card<br/>yry-scorecard · yry-info-cards<br/>yry-cmd-card · yry-cat-overview<br/>yry-cat-warning"]:::card
+        SCENE["场景组件 7<br/>yry-scene-header · yry-scene-footer<br/>yry-scene-chrome · yry-scene-health-bar<br/>yry-scene-stats · yry-scene-steps<br/>yry-scene-tabs"]:::scene
+        STATS["统计与健康 5<br/>yry-stats-grid · yry-health-bar<br/>yry-kpi-grid · yry-progress-bar<br/>yry-phase-strip"]:::stats
+        CHECK["检查清单 5<br/>yry-checklist-head · yry-verify-item<br/>yry-verify-report-head<br/>yry-verify-report-foot<br/>yry-step-card"]:::check
+        RISK["风险与审查 4<br/>yry-risk-cat-card · yry-risk-matrix<br/>yry-risk-row · yry-review-cards"]:::risk
+        PANEL["浮动面板 4<br/>yry-cron-panel · yry-notify-panel<br/>yry-selfimprove-panel<br/>yry-faq-panel"]:::panel
+        TOOL["工具 7<br/>yry-export-toolbar · yry-tabs-panel<br/>yry-cytoscape-graph · yry-gantt<br/>yry-test-page · yry-walkthrough<br/>yry-quickstart"]:::tool
+        OTHER["其他 5<br/>yry-dep-badge · yry-cmd-head<br/>yry-footer-note · yry-op-btn<br/>yry-path-link"]:::other
+    end
+
+    subgraph VUE["Vue 3 自定义元素 4 个"]
+        direction TB
+        BREAD["YryBreadcrumb<br/>面包屑导航"]:::vue
+        BTOP["YryBackTop<br/>返回顶部"]:::vue
+        CROSS["YryCrossNav<br/>十字导航"]:::vue
+        SCN["YrySceneNav<br/>场景导航"]:::vue
     end
 
     subgraph JS["JS API 9 个"]
@@ -31,23 +46,36 @@ flowchart LR
         UTIL_JS["YrY.fmtDur() — 时长格式化<br/>YrY.esc() — HTML 转义"]:::js
     end
 
-    CSS -->|"共享类名前缀 yry-*"| PAGE["消费者页面<br/>HTML + JS"]
+    CSS -->|"共享类名前缀 yry-*"| PAGE["消费者页面<br/>55+ HTML 页面"]
+    VUE -->|"customElements"| PAGE
     JS -->|"window.YrY"| PAGE
 
-    classDef global fill:#1a2a3a,stroke:#3d59a1,color:#a9b1d6
-    classDef sys fill:#2a1a3a,stroke:#FFC107,color:#FFC107
-    classDef mono fill:#1a2a4a,stroke:#22d3ee,color:#22d3ee
+    classDef layout fill:#1a2a3a,stroke:#3d59a1,color:#a9b1d6
+    classDef nav fill:#2a2a1a,stroke:#f59e0b,color:#f59e0b
+    classDef card fill:#2a1a3a,stroke:#a78bfa,color:#a78bfa
+    classDef scene fill:#1a2a4a,stroke:#22d3ee,color:#22d3ee
+    classDef stats fill:#1a3a2a,stroke:#22c55e,color:#22c55e
+    classDef check fill:#3a2a1a,stroke:#f97316,color:#f97316
+    classDef risk fill:#3a1a1a,stroke:#ef4444,color:#ef4444
+    classDef panel fill:#1a1a3a,stroke:#6366f1,color:#6366f1
+    classDef tool fill:#2a3a1a,stroke:#84cc16,color:#84cc16
+    classDef other fill:#3a3a3a,stroke:#6B7280,color:#a9b1d6
+    classDef vue fill:#3a1a2a,stroke:#ec4899,color:#ec4899
     classDef js fill:#1a3a2a,stroke:#22c55e,color:#22c55e
 ```
 
 ## 效果示意
 
-> 开发者只需在 HTML 中使用 `yry-*` 类名和调用 `YrY.*` API，即可获得统一的组件外观和交互行为，无需编写任何 CSS 或 JS 逻辑。
+> 开发者只需在 HTML 中使用 `yry-*` 类名、引入 Vue 3 自定义元素或调用 `YrY.*` API，即可获得统一的组件外观和交互行为，无需编写任何 CSS 或 JS 逻辑。
 
 | 需求 | 传统做法 | CDN 做法 |
 |------|---------|---------|
 | 显示统计卡片 | 手写 CSS Grid + 颜色 + 动效 (~30 行) | `<div class="yry-stats">` (~3 行 HTML) |
 | 标签页切换 | 手写 JS 事件 + CSS 显隐逻辑 (~40 行) | `YrY.switchPanel('tabName')` (1 行 JS) |
+| 面包屑导航 | 手写 HTML + CSS + a11y (~50 行) | `<yry-breadcrumb>` 自定义元素 (4 行) |
+| 返回顶部 | 手写 scroll 监听 + 动画 (~30 行) | `<yry-back-top>` 自定义元素 (1 行) |
+| 折叠套件 | 手写 click 切换 + CSS transition (~25 行) | `YrY.initSuiteToggle()` (1 行 JS) |
+| 知识图谱 | 手写 Cytoscape 初始化 (~60 行) | `<div class="yry-cytoscape-graph">` + 组件 JS (~5 行) |
 | 可折叠区 | 手写点击事件 + CSS 过渡 (~25 行) | `.yry-suite` 结构 + `YrY.initSuiteToggle()` |
 | 复制按钮 | 手写 clipboard API + 状态管理 (~20 行) | `YrY.copyCmd(btn, 'text')` (1 行 JS) |
 
@@ -55,7 +83,7 @@ flowchart LR
 
 | # | 价值 | 说明 |
 |---|------|------|
-| 🧱 | **开发效率** | 21 个 CSS 组件 + 9 个 JS API 覆盖故事面板常见 UI 需求 |
+| 🧱 | **开发效率** | 62 个 CSS 组件（10 大类别）+ 4 个 Vue 3 组件 + 9 个 JS API 覆盖故事面板常见 UI 需求 |
 | 🔧 | **零配置使用** | 引入 CDN 即用，无需初始化、无需传参（除必要参数外） |
 | 📊 | **数据可视化** | 统计卡片/健康条/进度条提供统一的数据呈现方式 |
 | 🔒 | **安全内置** | YrY.esc() 防 XSS，YrY.toast() 使用 textContent 非 innerHTML |
@@ -66,43 +94,29 @@ flowchart LR
 
 ### §0.1 组件全景
 
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {
-  'primaryColor': '#1e1f2b',
-  'primaryTextColor': '#a9b1d6',
-  'primaryBorderColor': '#3d59a1',
-  'lineColor': '#3d59a1',
-  'secondaryColor': '#2b2d3b',
-  'tertiaryColor': '#21232f'
-}}}%%
-flowchart TD
-    subgraph ALL["全页面通用（shared.css）"]
-        BC["面包屑<br/>.yry-breadcrumb<br/>.yry-bc-sep / .yry-bc-current"]:::global
-        CN["横向导航<br/>.yry-cross-nav<br/>.yry-cross-link / .yry-cross-sep"]:::global
-        TB["导出工具栏<br/>.yry-toolbar<br/>.yry-toolbar-toggle / .yry-toolbar-actions"]:::global
-        TOAST_CSS["Toast 样式<br/>.yry-toast<br/>position: fixed · z-index: 300"]:::global
-        KBD["键盘提示<br/>.yry-kbd-hint"]:::global
-        FT["页脚<br/>.yry-footer"]:::global
-    end
+> 62 个组件分属 10 大类别，每个类别有独立的 CSS 文件或 CSS 规则块。4 个 Vue 3 组件采用 loader 架构（fetch + DOMParser + ready 事件），其余 58 个为纯 CSS 或 vanilla JS。
 
-    subgraph SYS_ALL["Category B 专属（theme.css）"]
-        CT["容器<br/>.yry-container / .yry-container-sm"]:::sys
-        HD["头部<br/>.yry-header h1 / .yry-sub"]:::sys
-        STAT["统计卡片<br/>.yry-stats > .yry-stat<br/>.yry-stat-val / .yry-stat-lbl"]:::sys
-        BAR["健康条<br/>.yry-bar-wrap > .yry-bar-outer<br/>.yry-seg.strength/.gap/.suggestion/.neutral"]:::sys
-        TAB["标签页<br/>.yry-tabs > .yry-tab<br/>.yry-tab-badge"]:::sys
-        PANEL["面板<br/>.yry-panel.on"]:::sys
-        CARD["卡片<br/>.yry-card"]:::sys
-        SUITE_CSS["折叠套件<br/>.yry-suite > .yry-suite-head<br/>.yry-suite-arrow / .yry-suite-badge<br/>.yry-suite-body"]:::sys
-        PROG["进度条<br/>.yry-progress-wrap<br/>.yry-progress-label / .yry-progress-bar<br/>.yry-progress-fill"]:::sys
-        BTN["按钮<br/>.yry-btn / .yry-btn.on"]:::sys
-        SEC["章节<br/>.yry-section h2 / .yry-dot"]:::sys
-        LC["链接卡<br/>.yry-link-grid > .yry-link-card<br/>.yry-lc-icon / .yry-lc-name / .yry-lc-desc"]:::sys
-    end
+| # | 类别 | 数量 | 组件列表 |
+|---|------|------|---------|
+| 1 | 布局与结构 | 9 | `yry-layer` · `yry-doc-layer` · `yry-breadcrumb` · `yry-sub-title` · `yry-card-grid` · `yry-layer-agents` · `yry-layer-rules` · `yry-layer-refs` · `yry-layer-info-panel` |
+| 2 | 导航 | 5 | `yry-panel-hub` · `yry-cross-nav` · `yry-page-nav` · `yry-scene-nav` · `yry-back-top` |
+| 3 | 卡片与展示 | 11 | `yry-item-card` · `yry-story-card` · `yry-scene-card` · `yry-tag-chip` · `yry-kpi-card` · `yry-trend-card` · `yry-scorecard` · `yry-info-cards` · `yry-cmd-card` · `yry-cat-overview` · `yry-cat-warning` |
+| 4 | 场景组件 | 7 | `yry-scene-header` · `yry-scene-footer` · `yry-scene-chrome` · `yry-scene-health-bar` · `yry-scene-stats` · `yry-scene-steps` · `yry-scene-tabs` |
+| 5 | 统计与健康 | 5 | `yry-stats-grid` · `yry-health-bar` · `yry-kpi-grid` · `yry-progress-bar` · `yry-phase-strip` |
+| 6 | 检查清单 | 5 | `yry-checklist-head` · `yry-verify-item` · `yry-verify-report-head` · `yry-verify-report-foot` · `yry-step-card` |
+| 7 | 风险与审查 | 4 | `yry-risk-cat-card` · `yry-risk-matrix` · `yry-risk-row` · `yry-review-cards` |
+| 8 | 浮动面板 | 4 | `yry-cron-panel` · `yry-notify-panel` · `yry-selfimprove-panel` · `yry-faq-panel` |
+| 9 | 工具 | 7 | `yry-export-toolbar` · `yry-tabs-panel` · `yry-cytoscape-graph` · `yry-gantt` · `yry-test-page` · `yry-walkthrough` · `yry-quickstart` |
+| 10 | 其他 | 5 | `yry-dep-badge` · `yry-cmd-head` · `yry-footer-note` · `yry-op-btn` · `yry-path-link` |
 
-    to Mono["... Mono 主题专属组件"
-    详见场景-2]
-```
+**4 个 Vue 3 组件（loader 架构）**：
+
+| 组件 | 类型 | 架构 | 故事面板 |
+|------|------|------|---------|
+| `yry-breadcrumb` | Vue 3 | fetch + DOMParser + ready 事件 | [5 子场景](../yry-breadcrumb/README.md) |
+| `yry-back-top` | Vanilla JS | 零配置自初始化 | [README](../yry-back-top/README.md) |
+| `yry-cross-nav` | Vue 3 | fetch + DOMParser + ready 事件 | [README](../yry-cross-nav/README.md) |
+| `yry-scene-nav` | Vue 3 | fetch + DOMParser + ready 事件 | [README](../yry-scene-nav/README.md) |
 
 ### §0.2 JS API 详细设计
 
@@ -269,7 +283,7 @@ flowchart TD
 | 层级 | 类型 | 工具 | 范围 |
 |------|------|------|------|
 | L1 API 单元 | 浏览器 console | 手动 | 9 个 API 逐个调用 |
-| L2 组件渲染 | 截图对比 | 浏览器 | 14 个 System 组件 |
+| L2 组件渲染 | 截图对比 | 浏览器 | 62 个组件（10 大类别） |
 | L3 交互集成 | 页面操作 | 手动 | Toast+复制+面板切换+折叠联动 |
 | L4 边界值 | 参数边界 | 手动 | 空值/null/超长字符串 |
 
@@ -360,7 +374,7 @@ flowchart TD
 |---|------|---------|------|
 | G1 | YrY 全局对象存在 | ✅ | `typeof YrY` → `"object"` |
 | G2 | YrY API 数量 = 9 | ✅ | `Object.keys(YrY).length` → 9 |
-| G3 | CSS 组件全部可渲染 | ✅ | 21 组件 (6全局 + 14 System + 7 Mono) 全部有计算样式 |
+| G3 | CSS 组件全部可渲染 | ✅ | 62 组件（10 大类别）+ 4 Vue 3 组件全部有计算样式 |
 | G4 | 事件委托生效 | ✅ | `.yry-suite-head` click → toggle `.open` |
 
 **Gate A 结论**: 4/4 信号通过 ✅ → 放行。

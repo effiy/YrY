@@ -430,4 +430,34 @@
   } else {
     document.addEventListener('yry-item-card-ready', mountAll, { once: true });
   }
+
+  /* 复合组件 (yry-layer-agents/rules/refs) 异步渲染 <yry-card-grid>,
+     需在它们就绪后重新挂载卡片 */
+  document.addEventListener('yry-layer-agents-ready', mountAll);
+  document.addEventListener('yry-layer-rules-ready', mountAll);
+  document.addEventListener('yry-layer-refs-ready', mountAll);
+
+  /* 为每张卡片补齐 7 种交付物图标链接 */
+  var DELIVERY_ICONS = [
+    { icon: '📋', label: '清单' },
+    { icon: '📐', label: '架构' },
+    { icon: '🔗', label: '图谱' },
+    { icon: '🧪', label: '测试' },
+    { icon: '📄', label: '源码' },
+    { icon: '💡', label: '演示' },
+    { icon: '📝', label: '审查' }
+  ];
+  Object.keys(window.YRY_ITEM_CARDS).forEach(function (gridId) {
+    (window.YRY_ITEM_CARDS[gridId] || []).forEach(function (item) {
+      if (item.links) return;
+      var links = [];
+      DELIVERY_ICONS.forEach(function (d) {
+        var entry = { icon: d.icon, label: d.label };
+        if (d.label === '源码' && item.nameHref) entry.href = item.nameHref;
+        links.push(entry);
+      });
+      item.links = links;
+    });
+  });
+
 })();

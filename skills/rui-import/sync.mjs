@@ -17,7 +17,6 @@ import { scanFiles, resolveRemotePath } from "./lib/scan.mjs";
 import { querySessions } from "./lib/api.mjs";
 import { uploadSingleFile, uploadAll } from "./lib/upload.mjs";
 import { pullFromRemote, recommendPullMode } from "./lib/pull.mjs";
-import { recommendMode } from "./lib/diagnose.mjs";
 
 async function main() {
   const opts = parseArgs();
@@ -31,7 +30,7 @@ async function main() {
 
   if (!existsSync(root)) {
     console.error(`[rui-import] scan root not found: ${root}`);
-    process.exit(0);
+    process.exit(1);
   }
 
   const workspaceName = root.split(sep).pop() || "workspace";

@@ -9,6 +9,7 @@ import { existsSync, readFileSync, writeFileSync, appendFileSync } from "node:fs
 import {
   HTTP_TIMEOUT_MS, MAX_RETRIES, RETRY_DELAY_MS, DEFAULT_API_URL,
 } from "../../../lib/constants.mjs";
+import { readJson } from "../../../lib/fs.mjs";
 
 export const API_URL_DEFAULT = `${DEFAULT_API_URL}/wework/send-message`;
 
@@ -161,10 +162,7 @@ export function logNotificationDelivery(projectRoot, opts, result) {
 
 export function loadConfig(projectRoot) {
   const configPath = join(projectRoot, ".claude", "skills", "rui-bot", "config.json");
-  if (!existsSync(configPath)) return { api_url: API_URL_DEFAULT, robots: {}, agents: {}, default_robot: "general" };
-  try {
-    return JSON.parse(readFileSync(configPath, "utf-8"));
-  } catch {
-    return { api_url: API_URL_DEFAULT, robots: {}, agents: {}, default_robot: "general" };
-  }
+  const cfg = readJson(configPath);
+  return cfg || { api_url: API_URL_DEFAULT, robots: {}, agents: {}, default_robot: "general" };
+}
 }

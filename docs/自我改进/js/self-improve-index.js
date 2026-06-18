@@ -290,7 +290,9 @@
       var freshClr = 'var(--yry-pass)';
       if (ageMins.indexOf('天') !== -1) freshClr = 'var(--yry-fail)';
       else if (ageMins.indexOf('小时') !== -1 && parseInt(ageMins) >= 8) freshClr = 'var(--yry-warn)';
-      document.getElementById('siFreshness').innerHTML = '<span style="color:' + freshClr + '">' + ageMins + '</span>';
+      document.getElementById('siFreshness').textContent = '';
+
+      document.getElementById('siFreshness').insertAdjacentHTML('beforeend', '<span style="color:' + freshClr + '">' + ageMins + '</span>');
 
       // Stats
       var scClr = latest.composite >= 80 ? 'pass' : latest.composite >= 60 ? 'warn' : 'fail';
@@ -298,13 +300,14 @@
       var trigCount = (latest.triggeredDiags || []).length;
       var trigClr = trigCount === 0 ? 'pass' : 'warn';
 
-      document.getElementById('stats').innerHTML =
+      document.getElementById('stats').textContent = '';
+      getElementById('stats').insertAdjacentHTML('beforeend', 
         '<div class="stat"><div class="val info">' + data.totalEntries + '</div><div class="lbl">数据条目</div></div>' +
         '<div class="stat"><div class="val ' + scClr + '">' + latest.composite + ' 分</div><div class="lbl">最新评分</div></div>' +
         '<div class="stat"><div class="val ' + gradeClr + '">' + latest.grade + ' 级</div><div class="lbl">最新等级</div></div>' +
         '<div class="stat"><div class="val ' + trigClr + '">' + trigCount + '/9</div><div class="lbl">诊断触发</div></div>' +
         '<div class="stat"><div class="val info">' + (dateRange.to || '—') + '</div><div class="lbl">最新日期</div></div>' +
-        '<div class="stat"><div class="val info">' + (latest.gitBranch || '—') + '</div><div class="lbl">Git 分支</div></div>';
+        '<div class="stat"><div class="val info">' + (latest.gitBranch || '—') + '</div><div class="lbl">Git 分支</div></div>');
 
       // Latest snapshot
       var triggeredHtml = '';
@@ -316,8 +319,9 @@
         triggeredHtml = '<div style="margin-top:10px;color:var(--yry-pass);font-size:.76rem">✅ 无诊断触发 — 所有 D0-D8 指标正常</div>';
       }
       var branchInfo = (latest.gitBranch ? '分支: ' + latest.gitBranch : '') + (latest.gitUncommitted !== undefined ? ' · 未提交: ' + latest.gitUncommitted + ' 文件' : '') + (latest.bootstrapped ? ' · 自举引导模式' : '');
-      document.getElementById('latestBody').innerHTML =
-        '<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">' +
+      document.getElementById('latestBody').textContent = '';
+
+      document.getElementById('latestBody').insertAdjacentHTML('beforeend', '<div style="display:flex);align-items:center;gap:20px;flex-wrap:wrap">' +
         '<div style="text-align:center">' +
           '<div style="font-size:2.6rem;font-weight:800;line-height:1;color:' + scoreClr(latest.composite) + '">' + latest.composite + '</div>' +
           '<div style="font-size:.62rem;color:var(--yry-text3);margin-top:4px">综合评分 / 100</div>' +
@@ -343,7 +347,8 @@
       var diagSummary = data.diagSummary || [];
       diagSummary.forEach(function(d) { diagRates[d.id] = d; });
 
-      document.getElementById('diagGrid').innerHTML = allDiags.map(function(d) {
+      document.getElementById('diagGrid').textContent = '';
+      getElementById('diagGrid').insertAdjacentHTML('beforeend',  allDiags.map(function(d) {
         var isTriggered = !!triggeredSet[d];
         var rateInfo = diagRates[d];
         var rateHtml = '';
@@ -361,7 +366,7 @@
           rateHtml +
           '<div style="font-size:.56rem;color:var(--yry-text3);margin-top:2px;line-height:1.4">' + (DIAG_DESCS[d] || '') + '</div>' +
           '</div>';
-      }).join('');
+      }).join(''));
 
       // Dimension scores with weekly comparison
       var dimSummary = data.dimSummary || [];
@@ -373,7 +378,8 @@
       });
       dimEntries.sort(function(a, b) { return a.score - b.score; });
 
-      document.getElementById('dimGrid').innerHTML = dimEntries.map(function(d) {
+      document.getElementById('dimGrid').textContent = '';
+      getElementById('dimGrid').insertAdjacentHTML('beforeend',  dimEntries.map(function(d) {
         var g = scoreGrade(d.score);
         var clr = scoreClr(d.score);
         var avgHtml = d.avg !== undefined ? '<span class="dim-avg">周均 ' + d.avg + '</span>' : '';
@@ -386,7 +392,7 @@
           '<span class="dim-score" style="color:' + clr + '">' + d.score + '</span>' +
           avgHtml + trendHtml +
           '</div>';
-      }).join('');
+      }).join(''));
 
       // Grade distribution from weekly summary
       var weekly = data.weekly && data.weekly[0];
@@ -408,14 +414,17 @@
           '<span><span style="color:var(--yry-fail)">■</span> D 级: ' + (gd.D || 0) + ' (' + (total > 0 ? Math.round((gd.D || 0) / total * 100) : 0) + '%)</span>' +
           '<span>总计: ' + total + ' 条</span>' +
           '</div>';
-        document.getElementById('gradeDist').innerHTML = gdHtml;
+        document.getElementById('gradeDist').textContent = '';
+
+        document.getElementById('gradeDist').insertAdjacentHTML('beforeend', gdHtml);
       }
 
       // Branch health
       var branchSummary = data.branchSummary || [];
       if (branchSummary.length > 0) {
         var maxCount = Math.max.apply(null, branchSummary.map(function(b) { return b.count || 0; }));
-        document.getElementById('branchList').innerHTML = branchSummary.map(function(b) {
+        document.getElementById('branchList').textContent = '';
+        getElementById('branchList').insertAdjacentHTML('beforeend',  branchSummary.map(function(b) {
           var barClr = b.avgScore >= 80 ? 'var(--yry-pass)' : b.avgScore >= 60 ? 'var(--yry-warn)' : 'var(--yry-fail)';
           var barPct = maxCount > 0 ? Math.max((b.count || 0) / maxCount * 100, 5) : 50;
           return '<div class="branch-item">' +
@@ -425,28 +434,37 @@
             '<div class="branch-bar"><div class="branch-fill" style="width:' + barPct + '%;background:var(--yry-accent);opacity:.4"></div></div>' +
             '<span style="font-size:.64rem;color:var(--yry-text3)">未提交 ~' + (b.avgUncommitted || 0) + ' 文件</span>' +
             '</div>';
-        }).join('');
+        }).join(''));
       } else {
-        document.getElementById('branchList').innerHTML = '<div class="empty">暂无分支数据</div>';
+        document.getElementById('branchList').textContent = '';
+
+        document.getElementById('branchList').insertAdjacentHTML('beforeend', '<div class="empty">暂无分支数据</div>');
       }
 
       // Component Health
-      document.getElementById('compGrid').innerHTML = renderComponentHealth(data.componentHealth);
+      document.getElementById('compGrid').textContent = '';
+
+      document.getElementById('compGrid').insertAdjacentHTML('beforeend', renderComponentHealth(data.componentHealth));
 
       // Architecture Health
-      document.getElementById('archBody').innerHTML = renderArchHealth(data.archHealth);
+      document.getElementById('archBody').textContent = '';
+
+      document.getElementById('archBody').insertAdjacentHTML('beforeend', renderArchHealth(data.archHealth));
 
       // Score Trend
-      document.getElementById('trendBody').innerHTML = renderScoreTrend(data.scoreTrend);
+      document.getElementById('trendBody').textContent = '';
+
+      document.getElementById('trendBody').insertAdjacentHTML('beforeend', renderScoreTrend(data.scoreTrend));
 
       // Signal detection
       var signals = data.signals || [];
       if (signals.length > 0) {
         document.getElementById('sigCard').style.display = 'block';
-        document.getElementById('sigList').innerHTML = signals.map(function(s) {
+        document.getElementById('sigList').textContent = '';
+        getElementById('sigList').insertAdjacentHTML('beforeend',  signals.map(function(s) {
           var sigCls = s.type === 'critical' ? 'critical' : s.type === 'warning' ? 'warning' : s.type === 'improvement' ? 'improvement' : 'info';
           return '<div class="signal ' + sigCls + '"><span class="signal-icon">' + (s.icon || '📌') + '</span>' + s.msg + '</div>';
-        }).join('');
+        }).join(''));
       }
 
       // --- E1-E4 Evaluation Effectiveness Matrix ---
@@ -561,11 +579,12 @@
         detailLines.push('E3 长期趋势: ' + totalDims + ' 维度中 ' + improvingDims + ' 改善 / ' + degradingDims + ' 退化 / ' + (totalDims - improvingDims - degradingDims) + ' 持平');
         detailLines.push('E4 技能化: ' + e4Candidates + ' 个候选改进模式 · ' + (e4Candidates >= 3 ? '满足固化条件' : '需 ≥3 次验证方可固化'));
 
-        document.getElementById('evalMatrix').innerHTML = tableHtml +
+        document.getElementById('evalMatrix').textContent = '';
+        getElementById('evalMatrix').insertAdjacentHTML('beforeend',  tableHtml +
           '<div style="margin-top:12px;padding:10px 14px;background:rgba(255,255,255,.02);border-radius:8px;font-size:.74rem;color:var(--yry-text2);line-height:1.6">' +
           '<strong>评估总结</strong>: ' + insightHtml +
           '<br>' + detailLines.map(function(l) { return '<span style="font-size:.64rem;color:var(--yry-text3)">' + l + '</span>'; }).join('<br>') +
-          '</div>';
+          '</div>');
       })();
 
       // --- Improvement Velocity Tracking ---
@@ -671,12 +690,17 @@
           '<br><span style="font-size:.64rem;color:var(--yry-text3)">诊断解决率 = 已清零诊断 / 历史触发总数 · 改善率 = 趋势上升维度 / 总维度 · 周期 = 从触发到恢复的估算时间窗口</span>' +
           '</div>';
 
-        document.getElementById('improveVelocity').innerHTML = html;
+        document.getElementById('improveVelocity').textContent = '';
+
+
+        document.getElementById('improveVelocity').insertAdjacentHTML('beforeend', html);
       })();
 
 
       // Time panel with tabs
-      document.getElementById('timePanel').innerHTML = renderPeriod(data, 'daily');
+      document.getElementById('timePanel').textContent = '';
+
+      document.getElementById('timePanel').insertAdjacentHTML('beforeend', renderPeriod(data, 'daily'));
 
       // Tab click handler
       document.getElementById('timeTabs').addEventListener('click', function(e) {
@@ -688,7 +712,9 @@
         var tabs = document.querySelectorAll('.time-tab');
         tabs.forEach(function(t) { t.classList.remove('active'); });
         tab.classList.add('active');
-        document.getElementById('timePanel').innerHTML = renderPeriod(data, period);
+        document.getElementById('timePanel').textContent = '';
+
+        document.getElementById('timePanel').insertAdjacentHTML('beforeend', renderPeriod(data, period));
       });
 
     })
@@ -707,8 +733,9 @@
       var clr = score >= 80 ? 'var(--yry-pass)' : score >= 60 ? 'var(--yry-warn)' : 'var(--yry-fail)';
       var el = document.getElementById('healthRef');
       if (!el) return;
-      el.innerHTML =
-        '<div style="width:72px;height:72px;border-radius:50%;border:3px solid ' + clr + ';display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800;color:' + clr + ';flex-shrink:0">' + score + '</div>' +
+      el.textContent = '';
+
+      el.insertAdjacentHTML('beforeend', '<div style="width:72px);height:72px;border-radius:50%;border:3px solid ' + clr + ';display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800;color:' + clr + ';flex-shrink:0">' + score + '</div>' +
         '<div style="font-size:.72rem;color:var(--yry-text3);line-height:1.7">' +
           '<div><strong style="color:var(--yry-text)">健康评分</strong> <span class="badge ' + (grade === 'A' || grade === 'B' ? 'pass' : grade === 'C' ? 'warn' : 'fail') + '">' + grade + ' 级</span></div>' +
           '<div>报告日期: ' + (latest.date || '—') + '</div>' +

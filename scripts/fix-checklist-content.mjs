@@ -17,20 +17,20 @@
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { NODE_ARGV_OFFSET, STORY_PANEL_DIR } from '../lib/constants.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = join(__dirname, '..');
-const PANEL_DIR = 'docs/故事任务面板';
 
 // ── Args ──────────────────────────────────────────────
-const args = process.argv.slice(2);
+const args = process.argv.slice(NODE_ARGV_OFFSET);
 const DRY_RUN = args.includes('--dry-run');
 const sceneArgIdx = args.indexOf('--scene');
 const SINGLE_SCENE = sceneArgIdx >= 0 ? args[sceneArgIdx + 1] : null;
 
 // ── Helpers ───────────────────────────────────────────
 function findAllSceneDirs() {
-  const base = join(PROJECT_ROOT, PANEL_DIR);
+  const base = join(PROJECT_ROOT, STORY_PANEL_DIR);
   const out = [];
   for (const story of readdirSync(base)) {
     const storyPath = join(base, story);

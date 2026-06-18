@@ -1,0 +1,56 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryCatOverview · 风险类别总览 Vue 3 组件
+   三文件: index.html (模板+Demo) · index.js (逻辑) · index.css (样式)
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryCatOverview · Demo & Template</title>
+<link rel="stylesheet" href="../../shared.css">
+<link rel="stylesheet" href="./index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { padding: 24px; background: var(--yry-bg, #0e0f1a); max-width: 900px; margin: 0 auto; font-family: var(--yry-font-sans); }
+  h2 { color: #f5f5f5; }
+</style>
+</head>
+<body>
+
+<h2>📊 风险类别总览 — 堆叠条 + 摘要统计</h2>
+
+<div id="demo-1"></div>
+
+<script type="text/x-template" id="yry-cat-overview-tpl">
+  <div class="co-wrapper">
+    <div class="co-title">{{ title }}</div>
+    <div class="co-stacked-bar">
+      <div v-for="(s, i) in parsedSegments" :key="i" :class="'co-seg' + (s.hot ? ' hot' : '')" :style="{ '--seg-w': s.pct + '%', '--seg-bg': s.color || '#22d3ee' }" :title="s.name + ' ' + s.value + ' 分 / ' + s.pct + '%'">
+        <span>{{ s.text || s.name }}</span>
+      </div>
+    </div>
+    <div class="co-summary-stats">
+      <div v-for="(st, i) in parsedStats" :key="i" class="css-item">
+        <div class="css-num">{{ st.num }}</div>
+        <div class="css-lbl">{{ st.lbl }}</div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script src="./index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YryCatOverview) return;
+  Vue.createApp(window.YryCatOverview, {
+    title: '📊 总评分按类别分布 (总计 35 分)',
+    segments: '[{"name":"维护","value":6,"pct":17.1,"color":"#22d3ee","text":"维护 17%"},{"name":"度量","value":6,"pct":17.1,"color":"#a855f7","text":"度量 17%"},{"name":"兼容","value":6,"pct":17.1,"color":"#f59e0b","text":"兼容 17%"},{"name":"性能","value":9,"pct":25.7,"color":"#ef4444","text":"性能 26% (最高) 🔥","hot":true},{"name":"时效","value":7,"pct":20.0,"color":"#22c55e","text":"时效 20%"},{"name":"外部","value":2,"pct":5.7,"color":"#6366f1","text":"外部"},{"name":"安全","value":1,"pct":2.9,"color":"#ec4899","text":"安全"}]',
+    stats: '[{"num":"35","lbl":"总评分"},{"num":"7","lbl":"类别数"},{"num":"26%","lbl":"最高占比 (性能)"},{"num":"0.18","lbl":"集中度 (中等)"}]'
+  }).mount('#demo-1');
+}
+if (window.YryCatOverview) mountAll();
+else document.addEventListener('yry-cat-overview-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

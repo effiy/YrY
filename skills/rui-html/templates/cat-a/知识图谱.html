@@ -2,8 +2,11 @@
 <html lang="zh-CN">
 <head>
 {{HEAD_BLOCK}}
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-chrome/index.css">
 <link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-cytoscape-graph/index.css">
 <link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-export-toolbar/index.css">
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-info-cards/index.css">
 <style>
 /* Page-specific overrides — shared patterns in shared-a.css */
 .yry-container{max-width:1400px}
@@ -12,21 +15,14 @@
 </head>
 <body>
 <div class="yry-container" id="report-container">
-{{BREADCRUMB}}
-{{CROSS_NAV}}
-
-<div class="yry-header">
-  <div class="yry-header-row">
-    <div class="yry-pulse-dot"></div>
-    <h1>🔗 {{SCENE_TITLE}} · 知识图谱</h1>
-    <div class="yry-export-toolbar yry-toolbar" data-target=".yry-cy-container" data-filename="{{STORY_NAME}}-scene{{SCENE_NUM}}-kg" data-bg="#020617">
-      <button data-action="copy-png">📋 Copy</button>
-      <button data-action="download-png">🖼 PNG</button>
-      <button data-action="download-pdf">📄 PDF</button>
-    </div>
-  </div>
-  <p class="yry-subtitle">{{STORY_NAME}} · 场景 {{SCENE_NUM}} · v{{VERSION}}</p>
-</div>
+<yry-scene-chrome
+  theme="a"
+  title="🔗 {{SCENE_TITLE}} · 知识图谱"
+  subtitle="{{STORY_NAME}} · 场景 {{SCENE_NUM}} · v{{VERSION}}"
+  breadcrumb='{{BREADCRUMB_JSON}}'
+  crossnav='{{CROSS_NAV_JSON}}'
+  toolbar='<div class="yry-export-toolbar yry-toolbar" data-target=".yry-cy-container" data-filename="{{STORY_NAME}}-scene{{SCENE_NUM}}-kg" data-bg="#020617"><button data-action="copy-png">📋 Copy</button><button data-action="download-png">🖼 PNG</button><button data-action="download-pdf">📄 PDF</button></div>'>
+</yry-scene-chrome>
 
 <div class="legend">
   <span style="color:#94a3b8;font-weight:600;">节点:</span>
@@ -40,18 +36,21 @@
 
 <div class="yry-cytoscape-graph graph-container" id="cy-graph" data-filename="{{STORY_NAME}}-scene{{SCENE_NUM}}-kg" data-layout="breadthfirst" data-legend="false" style="height:550px"></div>
 
-<div class="yry-cards">
+<yry-info-cards>
   <div class="yry-card">
     <div class="yry-card-header"><div class="yry-card-dot scene"></div><h3>场景</h3></div>
     <ul><li><b>{{SCENE_TITLE}}</b> — 场景 {{SCENE_NUM}}</li></ul>
   </div>
   {{SEC0_HTML}}
-</div>
+</yry-info-cards>
 
-<div class="yry-footer">YrY v{{VERSION}} · {{DATE}}</div>
+<yry-scene-footer version="{{VERSION}}" date="{{DATE}}"></yry-scene-footer>
 </div>
 <script src="{{CDN_DEPTH}}cdn/shared.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-chrome/index.js"></script>
 <script src="{{CDN_DEPTH}}cdn/yry-cytoscape-graph/index.js"></script>
 <script src="{{CDN_DEPTH}}cdn/yry-export-toolbar/index.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-footer/index.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-info-cards/index.js"></script>
 </body>
 </html>

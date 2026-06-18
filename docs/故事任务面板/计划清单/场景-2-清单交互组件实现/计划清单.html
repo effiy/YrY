@@ -7,6 +7,7 @@
 <!-- ═══ CDN: YrY 共享样式 ═══ -->
 <link rel="stylesheet" href="../../../../cdn/shared.css">
 <link rel="stylesheet" href="../../../../cdn/theme.css">
+<link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-checklist.css">
 <link rel="stylesheet" href="yry-checklist-ext.css">
 <link rel="stylesheet" href="panels/panel-checklist.css">
@@ -20,28 +21,11 @@
 <body>
 <div class="container">
 
-<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-checklist · 清单与自循环</span><span class="bc-sep">/</span><span class="bc-current">场景 2 · 清单交互组件实现</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
-<nav class="scene-nav">
-  <a class="scene-nav-link" href="../场景-1-模板架构与CSS设计系统/计划清单.html">📋 场景1 · 模板架构与 CSS 设计系统</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link active" href="计划清单.html">📋 场景2 · 清单交互组件实现</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-3-验证报告与健康面板集成/计划清单.html">📋 场景3 · 验证报告与健康面板集成</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link" href="../场景-4-批量生成与自循环机制/计划清单.html">📋 场景4 · 批量生成与自循环机制</a>
-  <span class="scene-nav-sep">·</span>
-  <a class="scene-nav-link story" href="index.md">📖 场景说明</a>
-</nav>
-
-<nav class="cross-nav">
-<span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
-<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
-<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
-<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
-<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
-<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
-<a class="cross-link" href="审查.html">📝 审计</a>
-</nav>
+<script type="application/json" id="yry-page-config">
+{"story": "yry-checklist · 清单与自循环", "scene": {"num": "2", "name": "清单交互组件实现", "dir": "场景-2-清单交互组件实现"}, "depth": "../../../", "scenes": [{"num": "1", "name": "模板架构与 CSS 设计系统", "dir": "场景-1-模板架构与CSS设计系统"}, {"num": "2", "name": "清单交互组件实现", "dir": "场景-2-清单交互组件实现"}, {"num": "3", "name": "验证报告与健康面板集成", "dir": "场景-3-验证报告与健康面板集成"}, {"num": "4", "name": "批量生成与自循环机制", "dir": "场景-4-批量生成与自循环机制"}], "pages": [{"type": "清单", "icon": "📋", "file": "计划清单.html"}, {"type": "架构", "icon": "📐", "file": "架构图.html"}, {"type": "图谱", "icon": "🔗", "file": "知识图谱.html"}, {"type": "源码", "icon": "📄", "file": "源码.html"}, {"type": "测试", "icon": "🧪", "file": "测试面板.html"}, {"type": "演示", "icon": "💡", "file": "演示.html"}, {"type": "审计", "icon": "📝", "file": "审查.html"}], "page": {"type": "清单", "icon": "📋", "file": "计划清单.html"}}
+</script>
+<div id="yry-nav"></div>
+<script src="../../../../cdn/yry-page-nav/index.js"></script>
 
 <div class="header">
   <h1>🧩 场景-2<span class="accent"> · 清单交互组件实现</span></h1>

@@ -1,0 +1,49 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryVerifyReportHead · 验证报告头部 Vue 3 组件
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryVerifyReportHead · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0e0f1a); color: var(--yry-text, #f5f5f5); padding: 32px 24px; max-width: 700px; margin: 0 auto; font-family: var(--yry-font-sans); }
+  h1 { font-size: 1.1rem; }
+  .demo-hint { font-size: .74rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+</style>
+</head>
+<body>
+<h1>YryVerifyReportHead</h1>
+<p class="demo-hint">Vue 3 组件: <code>title</code> · <code>items</code> (JSON)</p>
+
+<div id="demo-1"></div>
+
+<script type="text/x-template" id="yry-verify-report-head-tpl">
+  <div class="vrh-wrapper">
+    <div v-if="title" class="vrh-title">{{ title }}</div>
+    <div class="vrh-meta">
+      <div v-for="(it, i) in parsedItems" :key="i" class="vrh-meta-item">
+        <b>{{ it.label }}</b><span v-html="it.value || ''"></span>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YryVerifyReportHead) return;
+  Vue.createApp(window.YryVerifyReportHead, {
+    title: '🧪 验证报告 · 任务 Y 验收',
+    items: '[{"label":"🎯 策略","value":"<b>验收型</b> + <b>回归型</b>"},{"label":"⏰ 触发","value":"§3 测试报告 (Y-2 段)"},{"label":"🌍 范围","value":"5 个交付物 · 12 TC-O"},{"label":"🛠 工具","value":"<code>tester.mjs</code> + <code>check-links.mjs</code>"}]'
+  }).mount('#demo-1');
+}
+if (window.YryVerifyReportHead) mountAll();
+else document.addEventListener('yry-verify-report-head-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

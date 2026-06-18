@@ -1,0 +1,88 @@
+# YryCrossNav · Vue 3 交叉导航组件
+
+> 一个**零打包** (build-free) 的 Vue 3 单文件组件，按 `index.html` / `index.js` / `index.css` 三文件拆分，模板/逻辑/样式各司其职。用于场景页 7 种交付物类型间的快速跳转。
+
+## 文件结构
+
+```
+yry-cross-nav/
+├── index.html    # 模板源 + Demo 预览页
+├── index.js      # Loader: 异步 fetch 模板 → 注册组件 → 派发 ready 事件
+└── index.css     # 组件样式: 横向导航 · 当前页高亮 · 分隔符
+```
+
+## 架构
+
+```
+┌─────────────────┐
+│   index.html    │ ←─── 模板源 (单一真实来源)
+│  ┌───────────┐  │
+│  │ <script>  │  │
+│  │ template  │  │
+│  │ </script> │  │
+│  └───────────┘  │
+└────────┬────────┘
+         │ fetch
+         ▼
+┌─────────────────┐
+│   index.js      │
+│  ① fetch HTML   │
+│  ② DOMParser    │
+│  ③ 取 #yry-     │
+│     cross-nav-  │
+│     tpl 块      │
+│  ④ Vue.register │
+│  ⑤ dispatchEvent│
+└────────┬────────┘
+         │ window.YryCrossNav + 'yry-cross-nav-ready' 事件
+         ▼
+┌─────────────────┐
+│  页面 mount 脚本 │ ←─── 监听 ready 事件后 Vue.createApp(...).mount('#cross-nav-app')
+└─────────────────┘
+```
+
+## 页面使用
+
+```html
+<link rel="stylesheet" href="../../../../cdn/yry-cross-nav/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../../../../cdn/yry-cross-nav/index.js"></script>
+<div id="cross-nav-app"></div>
+<script>
+  function mount() {
+    Vue.createApp(window.YryCrossNav, {
+      basePath: './',
+      active: '清单',
+      pages: [
+        { id:'清单', icon:'📋', href:'计划清单.html' },
+        { id:'架构', icon:'📐', href:'架构图.html' },
+        { id:'图谱', icon:'🔗', href:'知识图谱.html' },
+        { id:'测试', icon:'🧪', href:'测试面板.html' },
+        { id:'源码', icon:'📄', href:'源码.html' },
+        { id:'演示', icon:'💡', href:'演示.html' },
+        { id:'审查', icon:'📝', href:'审查.html' }
+      ]
+    }).mount('#cross-nav-app');
+  }
+  if (window.YryCrossNav) mount();
+  else document.addEventListener('yry-cross-nav-ready', mount, { once: true });
+</script>
+```
+
+## Props API
+
+| 名称 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `pages` | `Array<{id, icon, href}>` | ✅ | 导航页面列表 |
+| `basePath` | `string` | | 路径前缀 |
+| `active` | `string` | | 当前激活页 id |
+
+## 事件
+
+| 事件 | 何时派发 | payload |
+|------|---------|---------|
+| `yry-cross-nav-ready` (document) | 模板 fetch + 注册完成后 | `{ component: 'YryCrossNav' }` |
+
+---
+
+> 维护者提示：本组件属于 CDN 场景 3（组件库与 JS 工具 API），是 4 个 Vue 3 组件之一。与 YryBreadcrumb 共享相同的 loader 架构（fetch + DOMParser + ready 事件）。

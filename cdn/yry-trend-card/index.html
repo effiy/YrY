@@ -1,0 +1,76 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryTrendCard · 趋势柱状图 Vue 3 组件
+   三文件: index.html (模板+Demo) · index.js (逻辑) · index.css (样式)
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryTrendCard · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0a0a0a); color: var(--yry-text, #f5f5f5); font-family: var(--yry-font-sans); padding: 32px 24px 60px; max-width: 900px; margin: 0 auto; line-height: 1.55; }
+  h1 { font-size: 1.25rem; margin: 0 0 4px; }
+  h1 .accent { color: var(--yry-accent, #ffc107); }
+  .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+  .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: .72rem; color: #e0af68; }
+  hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+  .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 700px) { .demo-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<h1><span class="accent">📈</span> YryTrendCard · 趋势柱状图</h1>
+<p class="demo-hint">Vue 3 组件 — <code>title</code> · <code>axis</code> · <code>bars</code> (JSON 数组)</p>
+
+<div class="demo-grid" id="demos">
+  <div id="demo-1"></div>
+  <div id="demo-2"></div>
+  <div id="demo-3"></div>
+  <div id="demo-4"></div>
+</div>
+
+<hr>
+<p class="demo-hint">💡 <strong>bars:</strong> <code>[{ value: 0-100, label, color: 'normal'|'inverse'|'warn'|'cyan' }]</code></p>
+
+<script type="text/x-template" id="yry-trend-card-tpl">
+  <div class="trend-card">
+    <div class="trend-title">{{ title }}</div>
+    <div class="trend-bars">
+      <div v-for="(b, i) in parsedBars" :key="i" :class="'bar' + (b.color && b.color !== 'normal' ? ' ' + b.color : '')" :style="{ '--h': barHeight(b.value) + '%' }"><span>{{ b.label || '' }}</span></div>
+    </div>
+    <div v-if="axis" class="trend-axis">{{ axis }}</div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YryTrendCard) return;
+  Vue.createApp(window.YryTrendCard, {
+    title: '📈 路径完整度', axis: 'D-7 → D0',
+    bars: '[{"value":62,"label":"62%"},{"value":71,"label":"71%"},{"value":76,"label":"76%"},{"value":83,"label":"83%"},{"value":89,"label":"89%"},{"value":93,"label":"93%"},{"value":100,"label":"100%"}]'
+  }).mount('#demo-1');
+  Vue.createApp(window.YryTrendCard, {
+    title: '⏱ 首次阅读速度 (秒)', axis: 'D-7 → D0',
+    bars: '[{"value":100,"label":"62s","color":"inverse"},{"value":80,"label":"52s","color":"inverse"},{"value":70,"label":"45s","color":"inverse"},{"value":55,"label":"38s","color":"inverse"},{"value":48,"label":"33s","color":"inverse"},{"value":42,"label":"30s","color":"inverse"},{"value":38,"label":"28s","color":"inverse"}]'
+  }).mount('#demo-2');
+  Vue.createApp(window.YryTrendCard, {
+    title: '🐛 缺陷密度 (个/页)', axis: 'D-7 → D0',
+    bars: '[{"value":80,"label":"4","color":"warn"},{"value":60,"label":"3","color":"warn"},{"value":50,"label":"2.5","color":"warn"},{"value":35,"label":"1.8","color":"warn"},{"value":20,"label":"1","color":"warn"},{"value":10,"label":"0.5","color":"warn"},{"value":5,"label":"0","color":"warn"}]'
+  }).mount('#demo-3');
+  Vue.createApp(window.YryTrendCard, {
+    title: '✅ 测试通过率', axis: 'D-7 → D0',
+    bars: '[{"value":75,"label":"75%"},{"value":80,"label":"80%"},{"value":85,"label":"85%"},{"value":90,"label":"90%"},{"value":95,"label":"95%"},{"value":98,"label":"98%"},{"value":100,"label":"100%"}]'
+  }).mount('#demo-4');
+}
+if (window.YryTrendCard) mountAll();
+else document.addEventListener('yry-trend-card-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

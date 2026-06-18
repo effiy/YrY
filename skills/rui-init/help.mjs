@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import { bold, dim, yellow, cyan } from '../../lib/tty.mjs';
-import { hdr, subhdr, item, flag, scene } from '../../lib/help-layout.mjs';
+import { bold, dim, cyan } from '../../lib/tty.mjs';
+import { hdr, item } from '../../lib/help-layout.mjs';
 
 const help = `
 ${bold('# rui-init — 项目初始化')}

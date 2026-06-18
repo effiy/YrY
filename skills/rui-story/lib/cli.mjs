@@ -3,10 +3,9 @@
  * Extracted from rui-story.mjs for single-responsibility
  */
 
-import { execSync } from "node:child_process";
 import { bold, dim } from "../../../lib/tty.mjs";
 import { NODE_ARGV_OFFSET } from "../../../lib/constants.mjs";
-import { findPluginHelpPath } from "../../../lib/plugin-utils.mjs";
+import { showPluginHelp } from "../../../lib/plugin-utils.mjs";
 
 export const SKILL_NAME = "rui-story";
 export const SHOW_MIN_ARGS = 2;
@@ -32,26 +31,17 @@ export function parseArgs() {
   if (cmd === "show") {
     if (args.length < SHOW_MIN_ARGS) {
       console.error("rui-story: show 需要 <name> 参数");
-      process.exit(0);
+      process.exit(1);
     }
     return { command: "show", name: args[1] };
   }
 
   console.error(`rui-story: 未知命令 "${cmd}"，使用 --help 查看帮助`);
-  process.exit(0);
+  process.exit(1);
 }
 
 export function showHelp() {
-  const helpPath = findPluginHelpPath(SKILL_NAME);
-  if (helpPath) {
-    try {
-      execSync(`node "${helpPath}"`, { stdio: "inherit" });
-    } catch {
-      fallbackHelp();
-    }
-  } else {
-    fallbackHelp();
-  }
+  showPluginHelp(SKILL_NAME, fallbackHelp);
 }
 
 export function fallbackHelp() {

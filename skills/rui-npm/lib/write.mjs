@@ -44,7 +44,7 @@ export function cmdUpdate(pkg, args) {
   checkPackageJson();
   const before = npm(["list", pkg, "--json", "--depth", "0"]);
   let beforeVer = "?";
-  try { beforeVer = JSON.parse(before.stdout)?.dependencies?.[pkg]?.version ?? "?"; } catch {}
+  try { beforeVer = JSON.parse(before.stdout)?.dependencies?.[pkg]?.version ?? "?"; } catch { /* parse failed, keep "?" */ }
   console.log(`⬆️  更新 ${pkg} (当前: ${beforeVer}) ...`);
   const result = spawnSync("npm", ["update", pkg], { stdio: "inherit", encoding: "utf-8" });
   if (result.status !== 0) {
@@ -53,7 +53,7 @@ export function cmdUpdate(pkg, args) {
   }
   const after = npm(["list", pkg, "--json", "--depth", "0"]);
   let afterVer = "?";
-  try { afterVer = JSON.parse(after.stdout)?.dependencies?.[pkg]?.version ?? "?"; } catch {}
+  try { afterVer = JSON.parse(after.stdout)?.dependencies?.[pkg]?.version ?? "?"; } catch { /* parse failed, keep "?" */ }
   if (beforeVer !== afterVer) {
     console.log(`✅ ${pkg}: ${beforeVer} → ${afterVer}`);
   } else {

@@ -1,8 +1,8 @@
 # 场景-1-cdn资源加载与页面渲染
 
-> **所属故事**: yry-cdn
-> **场景**: CDN 共享资源加载链路与页面渲染
-> **覆盖 Story#**: Story 1
+> | v1.2.0 | 2026-06-18 | deepseek-v4-pro | 🌿 feat/yry-cdn | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
+> **导航**: [场景-2 →](../场景-2-双主题系统设计/index.md)
+> **所属故事**: yry-cdn · **覆盖 Story#**: Story 1
 > | v1.1.0 | 2026-06-09 | deepseek-v4-pro | 🌿 main | ⏱️ — | 📎 [CLAUDE.md](../../../../CLAUDE.md) |
 
 [§0 技术评审](#sec0) · [§1 测试设计](#sec1) · [§2 实施报告](#sec2) · [§3 测试报告](#sec3) · [§4 自改进](#sec4)
@@ -23,7 +23,7 @@ flowchart TD
     TYPE -->|"Category B<br/>审查 / 测试 / 演示 / 计划"| SHARED_CSS
     SHARED_CSS --> THEME{"③ 主题 CSS"}
     THEME -->|"Category A"| MONO["theme-mono.css<br/>等宽字体 · 图表容器<br/>图例 · 脉冲点 · 卡片"]:::mono
-    THEME -->|"Category B"| SYSTEM["theme.css<br/>设计令牌 · 14 组件<br/>统计卡 · 标签页 · 折叠套件"]:::sys
+    THEME -->|"Category B"| SYSTEM["theme.css<br/>设计令牌 · 62 组件<br/>10 大类别"]:::sys
     MONO --> JS["④ shared.js 加载<br/>YrY 全局对象就绪"]:::js
     SYSTEM --> JS
     JS --> INTERACTIVE["⑤ 页面可交互<br/>Toast · 复制 · 面板切换<br/>折叠套件 · 剪贴板"]:::ready
@@ -77,7 +77,7 @@ flowchart LR
     subgraph CDN["cdn/ 源文件"]
         SH_CSS["shared.css<br/>1. CSS Reset<br/>2. 6 动画<br/>3. 面包屑<br/>4. cross-nav<br/>5. Toolbar<br/>6. Toast 样式<br/>7. 工具类"]:::file
         SH_JS["shared.js<br/>IIFE 模块<br/>YrY 全局对象<br/>9 个公共 API"]:::file
-        T_CSS["theme.css<br/>:root 14 变量<br/>14 组件样式"]:::file
+        T_CSS["theme.css<br/>:root 14 变量<br/>62 组件样式"]:::file
         TM_CSS["theme-mono.css<br/>Mono 容器/图表<br/>图例/脉冲点"]:::file
     end
 
@@ -136,7 +136,7 @@ sequenceDiagram
         L-->>B: Mono 容器 · 图表 · 图例 · 脉冲点
     else Category B
         B->>L: ③ 请求 theme.css
-        L-->>B: 设计令牌 · 14 组件样式
+        L-->>B: 设计令牌 · 62 组件样式
     end
     Note over B: 应用主题样式
 
@@ -208,7 +208,7 @@ docs/故事任务面板/<name>/场景-N-<slug>/index.html
 |------|------|------|
 | `cdn/shared.css` | 1–94 | CSS Reset、6 动画、面包屑、cross-nav、Toolbar、Toast、工具类 |
 | `cdn/shared.js` | 1–101 | YrY IIFE，9 个公共 API |
-| `cdn/theme.css` | 1–224 | :root 14 设计令牌、14 组件样式 |
+| `cdn/theme.css` | 1–254 | :root 14 设计令牌、62 组件样式 |
 | `cdn/theme-mono.css` | 1–108 | Mono 容器、图表容器、图例、脉冲点、卡片 |
 | `cdn/fonts.css` | 1–30 | 4 @font-face 声明 |
 | `cdn/README.md` | 1–117 | 页面分类、组件速查、JS API、迁移指南 |
@@ -486,7 +486,7 @@ docs/故事任务面板/<name>/场景-N-<slug>/index.html
 |------|------|------|
 | 源码 | `cdn/shared.css:1–94` | 全量 CSS 内容 |
 | 源码 | `cdn/shared.js:1–101` | 全量 JS 内容 |
-| 源码 | `cdn/theme.css:1–224` | :root 14 设计令牌 + 14 组件 |
+| 源码 | `cdn/theme.css:1–254` | :root 14 设计令牌 + 62 组件 |
 | 源码 | `cdn/theme-mono.css:1–108` | Mono 容器 + 图表 + 图例 |
 | 源码 | `cdn/fonts.css:1–30` | 4 @font-face 声明 |
 | 文档 | `cdn/README.md:5–13` | 文件清单与用途 |

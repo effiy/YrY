@@ -1,0 +1,563 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryFaqPanel · 常见问题 (手风琴) 面板样式
+
+   职责范围:
+     1) 面板容器/遮罩/动画 (overlay / panel / open)
+     2) 头部 (header · title)
+     3) 主体 + 滚动条 + 上下文块 (body · context)
+     4) FAQ 列表 + 手风琴项 (faq-list · faq-item · faq-q · faq-a)
+     5) 内容排版 (内联 code / strong / a / ul 等的样式精修)
+     6) 页脚 (footer · shortcuts)
+     7) 响应式 + 可访问性 (focus / reduced-motion)
+
+   设计理念:
+     - 绿色 (#22c55e) 作为品牌主色,通过 CSS 变量集中管理
+     - 共享基线样式 (.panel-context / .panel-footer-link 等) 保留在
+       yry-home.css 中,本文件仅定义 FAQ 面板独有的样式与组件
+     - 手风琴展开使用 max-height + opacity 平滑过渡(替代 display:none 突兀切换)
+     - 折叠/展开提供清晰视觉反馈(左侧条 · 箭头旋转 · Q/A 着色)
+     - 关闭按钮通过纯 CSS ::after 注入,不影响模板结构
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Design Tokens ─────────────────────────────────────────────────── */
+.yry-faq-panel {
+  --fp-green:       #22c55e;
+  --fp-green-soft:  #86efac;
+  --fp-green-glow:  rgba(34, 197, 94, 0.55);
+  --fp-green-bg:    rgba(34, 197, 94, 0.08);
+  --fp-green-bg-2:  rgba(34, 197, 94, 0.16);
+  --fp-radius:      16px;
+  --fp-radius-sm:   10px;
+  --fp-border:      rgba(255, 255, 255, 0.06);
+  --fp-border-hi:   rgba(255, 255, 255, 0.14);
+  --fp-bg-1:        rgba(23, 28, 39, 0.98);
+  --fp-bg-2:        rgba(18, 23, 33, 0.98);
+  --fp-bg-body:     rgba(13, 17, 26, 0.72);
+  --fp-ease:        cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   1) 遮罩 + 面板容器 + 入场动画
+   ════════════════════════════════════════════════════════════════════════ */
+.yry-faq-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 299;
+  background: rgba(5, 8, 18, 0.58);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s var(--fp-ease);
+}
+
+.yry-faq-panel {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  z-index: 300;
+  width: 800px;
+  max-height: 78vh;
+  margin-left: -400px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--fp-bg-1) 0%, var(--fp-bg-2) 100%);
+  border: 1px solid rgba(34, 197, 94, 0.18);
+  border-radius: var(--fp-radius);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.02),
+    0 22px 70px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-12px) scale(0.985);
+  transition:
+    opacity 0.22s var(--fp-ease),
+    transform 0.22s var(--fp-ease);
+}
+
+/* 开启态 */
+.faq-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.faq-panel.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   2) 头部 (Header) · 标题区
+   - 当前模板结构只有 title,关闭通过 Esc / 遮罩 / 面板枢纽按钮完成
+   ════════════════════════════════════════════════════════════════════════ */
+.faq-panel .yry-panel-header {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 10px;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background:
+    radial-gradient(circle at top left, rgba(34, 197, 94, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+}
+
+.faq-panel .panel-header .yry-faq-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.98rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 标题前的小图标徽章 — 与 faq-q-icon 视觉呼应 */
+.faq-panel .yry-faq-title::before {
+  content: '❓';
+  font-size: 1rem;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+/* ── 头部操作区(JS 可在此注入计数/搜索等扩展元素) ── */
+.faq-panel .np-header-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   3) 主体 (Body) + 滚动条 + 上下文块
+   ════════════════════════════════════════════════════════════════════════ */
+.faq-panel .yry-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.015) 0%, transparent 18%),
+    var(--fp-bg-body);
+  scroll-behavior: smooth;
+}
+
+.faq-panel .panel-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.faq-panel .panel-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.faq-panel .panel-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  transition: background 0.18s var(--fp-ease);
+}
+
+.faq-panel .panel-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 上下文块 — 由 JS 内联 style 生成,通过位置选择器锁定并美化 */
+.faq-panel .yry-panel-body > div:first-child {
+  margin: 0 !important;
+  padding: 12px 20px !important;
+  font-size: 0.68rem !important;
+  line-height: 1.6 !important;
+  color: var(--text-muted) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.015) 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.faq-panel .yry-panel-body > div:first-child strong {
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   4) FAQ 列表 (Hand-writhen · 无库依赖)
+   ════════════════════════════════════════════════════════════════════════ */
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   5) FAQ 项 (.faq-item)
+   - 默认:折叠态(只显示问题)
+   - .open:展开态(显示答案 + 高亮左边条)
+   ════════════════════════════════════════════════════════════════════════ */
+.faq-item {
+  position: relative;
+  padding: 14px 20px 14px 24px;
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition:
+    background 0.18s var(--fp-ease),
+    border-left-color 0.22s var(--fp-ease);
+  border-left: 3px solid transparent;
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+}
+
+.faq-item:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.faq-item:hover {
+  border-left-color: rgba(34, 197, 94, 0.25);
+}
+
+/* 展开态:整行背景提亮 + 左边条实色 */
+.faq-item.open {
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.06) 0%, rgba(34, 197, 94, 0.02) 60%, transparent 100%);
+  border-left-color: var(--fp-green);
+}
+
+/* ── 问题 (.faq-q) ───────────────────────────────────────────────── */
+.faq-q {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0;
+  padding-right: 32px; /* 给箭头留位 */
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-primary);
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: color 0.18s var(--fp-ease);
+}
+
+/* Q: 徽章 */
+.faq-q-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--fp-green);
+  background: var(--fp-green-bg);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: 6px;
+  transition:
+    background 0.18s var(--fp-ease),
+    border-color 0.18s var(--fp-ease),
+    color 0.18s var(--fp-ease);
+}
+
+.faq-item.open .faq-q-icon {
+  color: #fff;
+  background: linear-gradient(135deg, var(--fp-green), #16a34a);
+  border-color: var(--fp-green);
+}
+
+/* 问题文本 — 展开时着色 */
+.faq-q-text {
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.faq-item.open .faq-q {
+  color: var(--fp-green-soft);
+}
+
+/* 箭头 — 通过 ::after 注入(避免修改模板) */
+.faq-q::after {
+  content: '';
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--text-muted);
+  border-bottom: 2px solid var(--text-muted);
+  transform: translateY(-70%) rotate(45deg);
+  transition:
+    transform 0.25s var(--fp-ease),
+    border-color 0.18s var(--fp-ease);
+  pointer-events: none;
+}
+
+.faq-item:hover .faq-q::after {
+  border-right-color: var(--fp-green);
+  border-bottom-color: var(--fp-green);
+}
+
+.faq-item.open .faq-q::after {
+  transform: translateY(-30%) rotate(-135deg);
+  border-right-color: var(--fp-green);
+  border-bottom-color: var(--fp-green);
+}
+
+/* 可聚焦态 (键盘可达) */
+.faq-q:focus-visible {
+  outline: none;
+  border-radius: 4px;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+}
+
+.faq-q:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ── 答案 (.faq-a) ───────────────────────────────────────────────── */
+/* 折叠:max-height 0 + 透明 + padding 0
+   展开:max-height 大值(覆盖最长答案)+ 不透明 + padding 完整 */
+.faq-a {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 0 0 32px; /* 缩进对齐 Q 徽章右侧 */
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  opacity: 0;
+  transition:
+    max-height 0.32s var(--fp-ease),
+    opacity 0.22s var(--fp-ease) 0.05s,
+    padding 0.22s var(--fp-ease),
+    margin 0.22s var(--fp-ease);
+}
+
+.faq-item.open .faq-a {
+  max-height: 800px; /* 大于任何单条答案的最大高度 */
+  opacity: 1;
+  padding: 10px 0 6px 32px;
+}
+
+/* 答案内容排版精修 */
+.faq-a > :first-child { margin-top: 0; }
+.faq-a > :last-child  { margin-bottom: 0; }
+
+.faq-a p {
+  margin: 0 0 8px;
+}
+
+.faq-a strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.faq-a a {
+  color: var(--fp-green-soft);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(34, 197, 94, 0.35);
+  transition:
+    color 0.15s var(--fp-ease),
+    text-decoration-color 0.15s var(--fp-ease);
+}
+
+.faq-a a:hover {
+  color: var(--fp-green);
+  text-decoration-color: var(--fp-green);
+}
+
+.faq-a code {
+  padding: 1px 6px;
+  font-family: ui-monospace, 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: #e0af68;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 3px;
+}
+
+.faq-a ul,
+.faq-a ol {
+  margin: 6px 0 8px;
+  padding-left: 18px;
+}
+
+.faq-a li {
+  margin: 3px 0;
+  line-height: 1.55;
+}
+
+.faq-a li::marker {
+  color: var(--fp-green);
+}
+
+.faq-a br + strong {
+  display: inline-block;
+  margin-top: 4px;
+}
+
+/* 链接式跨面板跳转 (panelLink 生成的) */
+.faq-a a[onclick*="PanelHub.open"] {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: rgba(34, 197, 94, 0.06);
+  transition: background 0.15s var(--fp-ease);
+}
+
+.faq-a a[onclick*="PanelHub.open"]:hover {
+  background: rgba(34, 197, 94, 0.14);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   6) 页脚 (Footer) · 快捷打开其他面板
+   ════════════════════════════════════════════════════════════════════════ */
+.faq-panel .panel-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.faq-panel .panel-footer span {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.faq-panel .panel-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  font-size: 0.7rem;
+  color: var(--fp-green-soft);
+  text-decoration: none;
+  background: rgba(34, 197, 94, 0.06);
+  border: 1px solid rgba(34, 197, 94, 0.18);
+  border-radius: 999px;
+  transition:
+    color 0.15s var(--fp-ease),
+    background 0.15s var(--fp-ease),
+    border-color 0.15s var(--fp-ease),
+    transform 0.15s var(--fp-ease);
+}
+
+.faq-panel .panel-footer a:hover {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.18) 0%, rgba(34, 197, 94, 0.08) 100%);
+  border-color: var(--fp-green);
+  transform: translateY(-1px);
+}
+
+.faq-panel .panel-footer a:focus-visible {
+  outline: none;
+  border-color: var(--fp-green);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.22);
+}
+
+.faq-panel .panel-footer-sep {
+  opacity: 0.35;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   7) 响应式适配
+   ════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 880px) {
+  .yry-faq-panel {
+    top: 52px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    margin-left: 0;
+    max-height: calc(100vh - 64px);
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .yry-faq-panel {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    max-height: calc(100vh - 16px);
+    border-radius: 12px;
+  }
+
+  .faq-panel .yry-panel-header {
+    padding: 12px 16px;
+  }
+
+  .faq-panel .panel-header .yry-faq-title {
+    font-size: 0.92rem;
+  }
+
+  .faq-item {
+    padding: 12px 14px 12px 18px;
+  }
+
+  .faq-q {
+    font-size: 0.82rem;
+    padding-right: 28px;
+  }
+
+  .faq-q-icon {
+    min-width: 20px;
+    height: 20px;
+    font-size: 0.62rem;
+  }
+
+  .faq-a,
+  .faq-item.open .faq-a {
+    padding-left: 28px;
+    font-size: 0.74rem;
+  }
+
+  .faq-panel .panel-footer {
+    padding: 10px 14px;
+    gap: 8px;
+  }
+}
+
+/* ── 可访问性:尊重用户的动画偏好 ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .yry-faq-overlay,
+  .yry-faq-panel,
+  .faq-item,
+  .faq-q,
+  .faq-q-icon,
+  .faq-q::after,
+  .faq-a,
+  .faq-panel .panel-footer a,
+  .faq-panel .yry-panel-header::after {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .faq-a {
+    max-height: none !important;
+    opacity: 1 !important;
+    padding: 10px 0 6px 32px !important;
+  }
+
+  .faq-item:not(.open) .faq-a {
+    max-height: 0 !important;
+    padding: 0 !important;
+    opacity: 0 !important;
+  }
+}

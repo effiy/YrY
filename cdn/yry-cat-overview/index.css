@@ -1,0 +1,77 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryCatOverview · 风险类别总览 (堆叠条 + 摘要统计) 样式
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host { display: block; }
+
+.co-wrapper {
+  background: rgba(255, 255, 255, .02);
+  border: 1px solid rgba(255, 255, 255, .06);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+
+.co-title {
+  font-size: .78rem;
+  color: var(--yry-text, #f5f5f5);
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.co-stacked-bar {
+  display: flex;
+  height: 32px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .2);
+}
+.co-seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: .66rem;
+  font-weight: 600;
+  transition: all .2s;
+  cursor: default;
+  position: relative;
+  background: var(--seg-bg, #22d3ee);
+  width: var(--seg-w, 0%);
+}
+.co-seg span {
+  padding: 0 6px;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+}
+.co-seg:hover { filter: brightness(1.15); }
+.co-seg.hot { box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .3); }
+
+.co-summary-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+@media (max-width: 600px) {
+  .co-summary-stats { grid-template-columns: repeat(2, 1fr); }
+}
+.css-item {
+  background: rgba(255, 255, 255, .02);
+  border: 1px solid rgba(255, 255, 255, .05);
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+}
+.css-num {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--yry-accent, #ffc107);
+  line-height: 1.1;
+}
+.css-lbl {
+  font-size: .62rem;
+  color: var(--yry-text3, #888);
+  margin-top: 3px;
+  letter-spacing: .04em;
+}

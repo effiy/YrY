@@ -61,8 +61,8 @@
         <span v-else>{{ name }}</span>
       </div>
       <div v-if="desc" class="scene-desc" v-html="desc"></div>
-      <div v-if="meta && meta.length" class="scene-meta">
-        <template v-for="(m, i) in meta">
+      <div v-if="deliveryLinks && deliveryLinks.length" class="scene-meta">
+        <template v-for="(m, i) in deliveryLinks">
           <a v-if="m.href" :key="'a' + i" :href="m.href" :target="m.target || null" :rel="m.target ? 'noopener noreferrer' : null">{{ m.icon }} {{ m.label }}</a>
           <span v-else :key="'s' + i">{{ m.icon }} {{ m.label }}</span>
         </template>

@@ -26,6 +26,7 @@
      desc          (可选) 描述文字(支持 HTML,经 v-html 渲染)
      tags          (可选) 标签数组 · 内部使用 <yry-tag-chip> 渲染
      meta          (可选) 底部元信息
+	     demo          (可选) 效果演示链接 URL
 
    页面使用方式:
      <link rel="stylesheet" href="../../../../cdn/yry-item-card/index.css">
@@ -91,7 +92,9 @@
         badge:        { type: String, default: '' },
         desc:         { type: String, default: '' },
         tags:         { type: Array,  default: function () { return []; } },
-        meta:         { type: String, default: '' }
+        meta:         { type: String, default: '' },
+        demo:         { type: String, default: '' },
+        links:        { type: Array,  default: function () { return []; } }
       },
       template: templateHTML
     };

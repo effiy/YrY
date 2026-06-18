@@ -6,6 +6,7 @@
  */
 
 import { HTTP_TIMEOUT_MS, HTTP_TIMEOUT_SHORT_MS, MAX_RETRIES, RETRY_DELAY_MS } from '../../../lib/constants.mjs';
+import { nowISO, fmtDisplay } from '../../../lib/fs.mjs';
 
 // ── helpers ───────────────────────────────────────────────────────────
 
@@ -36,7 +37,7 @@ async function fetchWithRetry(url, opts = {}) {
 }
 
 function ts() {
-  return new Date().toISOString().replace('T', ' ').slice(0, 19);
+  return fmtDisplay(nowISO());
 }
 
 // ── HTML extraction helpers ───────────────────────────────────────────

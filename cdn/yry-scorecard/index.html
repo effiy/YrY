@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryScorecard · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css"><link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>body{{background:var(--yry-bg,#0e0f1a);color:var(--yry-text,#f5f5f5);padding:32px;max-width:800px;margin:0 auto;font-family:var(--yry-font-sans)}}h1{{font-size:1.1rem}}.demo-hint{{font-size:.74rem;color:var(--yry-text3,#888);margin:0 0 20px}}</style>
+</head>
+<body>
+<h1>YryScorecard</h1><p class="demo-hint">Vue 3: <code>columns</code> · <code>rows</code> · <code>total</code> (JSON)</p>
+<div id="demo-1"></div>
+
+<script type="text/x-template" id="yry-scorecard-tpl">
+  <table class="sc-table">
+    <thead><tr><th v-for="(c, i) in parsedColumns" :key="'h'+i">{{ c }}</th></tr></thead>
+    <tbody>
+      <tr v-for="(row, ri) in parsedRows" :key="'r'+ri">
+        <td v-for="(cell, ci) in (row || [])" :key="'c'+ci" :class="cellClass(cell)" v-html="cellText(cell)"></td>
+      </tr>
+      <tr v-if="parsedTotal.length" class="sc-total-row">
+        <td v-for="(cell, ci) in parsedTotal" :key="'tc'+ci" :class="cellClass(cell)" v-html="cellText(cell)"></td>
+      </tr>
+    </tbody>
+  </table>
+</script>
+
+<script src="index.js"></script>
+<script>
+function m(){{if(!window.YryScorecard)return;Vue.createApp(window.YryScorecard,{{
+  columns:'["维度","权重","目标","实测","得分","状态"]',
+  rows:'[["覆盖度","20%","≥ 95%","100%","100",{{"text":"✓ 优秀","status":"pass"}}],["性能","30%","≤ 2s","1.2s","100",{{"text":"✓ 优秀","status":"pass"}}]]',
+  total:'[["合计","","","",{{"text":"97.5"}},{{"text":"✓ 达到发布标准","status":"pass"}}]]'
+}}).mount('#demo-1')}}
+if(window.YryScorecard)m();else document.addEventListener('yry-scorecard-ready',m,{{once:true}});
+</script>
+</body>
+</html>

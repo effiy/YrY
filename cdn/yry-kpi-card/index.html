@@ -1,0 +1,77 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryKpiCard · KPI 指标卡 Vue 3 组件
+   三文件: index.html (模板+Demo) · index.js (逻辑) · index.css (样式)
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryKpiCard · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0a0a0a); color: var(--yry-text, #f5f5f5); font-family: var(--yry-font-sans); padding: 32px 24px 60px; max-width: 900px; margin: 0 auto; line-height: 1.55; }
+  h1 { font-size: 1.25rem; margin: 0 0 4px; }
+  h1 .accent { color: var(--yry-accent, #ffc107); }
+  .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+  .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: .72rem; color: #e0af68; }
+  hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+  .demo-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+</style>
+</head>
+<body>
+
+<h1><span class="accent">📊</span> YryKpiCard · KPI 指标卡</h1>
+<p class="demo-hint">KPI 指标卡片 — Vue 3 props: <code>label</code> · <code>num</code> · <code>trend</code> · <code>trend-dir</code> · <code>num-color</code></p>
+
+<h3>Demo 1 — 默认属性方式</h3>
+<div class="demo-row" id="demo-1"></div>
+
+<h3>Demo 2 — Property 方式</h3>
+<div class="demo-row" id="demo-2"></div>
+
+<hr>
+<p class="demo-hint">💡 <strong>API:</strong> <code>label</code> · <code>num</code> · <code>trend</code> · <code>trendDir</code> (up/down/flat) · <code>numColor</code> (health/warn/fail/cyan/accent)</p>
+
+<script type="text/x-template" id="yry-kpi-card-tpl">
+  <div class="kpic">
+    <div class="kpic-label">{{ label }}</div>
+    <div :class="'kpic-num' + (numColor ? ' ' + numColor : '')">{{ num }}</div>
+    <div v-if="trend" :class="'kpic-trend ' + trendDir">{{ trend }}</div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YryKpiCard) return;
+  var r1 = [
+    { label: '路径完整度', num: '100%', trend: '↑ 5 大域全覆盖', trendDir: 'up', numColor: 'health' },
+    { label: '首次阅读速度', num: '28s', trend: '↑ 优于 30s 目标', trendDir: 'up', numColor: 'cyan' },
+    { label: '缺陷密度', num: '0', trend: '↓ 较 D-7 减少', trendDir: 'down', numColor: 'health' }
+  ];
+  var d1 = document.getElementById('demo-1');
+  r1.forEach(function(k) {
+    var div = document.createElement('div'); d1.appendChild(div);
+    Vue.createApp(window.YryKpiCard, k).mount(div);
+  });
+  var r2 = [
+    { label: '📄 文档类', num: '4', trend: '100% 已交付', trendDir: 'up', numColor: 'accent' },
+    { label: '📊 图表类', num: '2', trend: '100% 已交付', trendDir: 'up', numColor: 'cyan' },
+    { label: '🧪 测试类', num: '2', trend: '100% 已交付', trendDir: 'up', numColor: 'health' },
+    { label: '📋 数据类', num: '2', trend: '100% 已交付', trendDir: 'up', numColor: 'warn' }
+  ];
+  var d2 = document.getElementById('demo-2');
+  r2.forEach(function(k) {
+    var div = document.createElement('div'); d2.appendChild(div);
+    Vue.createApp(window.YryKpiCard, k).mount(div);
+  });
+}
+if (window.YryKpiCard) mountAll();
+else document.addEventListener('yry-kpi-card-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

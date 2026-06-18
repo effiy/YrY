@@ -16,36 +16,9 @@
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
 <link rel="stylesheet" href="../../../yry-inline-helpers.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<link rel="stylesheet" href="../../../yry-a11y.css">
 <style>
 
-/* ═══ a11y · prefers-reduced-motion ═══ */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-/* ═══ a11y · Skip Link ═══ */
-.skip-link {
-  position: fixed; top: -100px; left: 8px; z-index: 1000;
-  background: var(--accent, #ffc107); color: #000;
-  padding: 10px 16px; border-radius: 6px; font-weight: 600;
-  text-decoration: none; transition: top .2s cubic-bezier(0.16, 1, 0.3, 1);
-  font-size: .85rem; box-shadow: 0 4px 12px rgba(0,0,0,.3);
-  border: 2px solid transparent;
-}
-.skip-link:focus { top: 8px; outline: none; border-color: var(--cyan, #22d3ee); }
-.skip-link:focus-visible { top: 8px; outline: 3px solid var(--cyan, #22d3ee); outline-offset: 2px; }
-/* ═══ a11y · Focus Ring ═══ */
-:focus-visible {
-  outline: 2px solid var(--cyan, #22d3ee);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-/* ═══ a11y · Semantic Container ═══ */
-[role="main"] { scroll-margin-top: 16px; }
 .container { max-width: 1100px; }
 </style>
 </head>
@@ -282,29 +255,7 @@
 </div>
 
 
-<script>
-document.querySelectorAll('.quiz-opt').forEach(function(opt) {
-  opt.addEventListener('click', function() {
-    var card = this.closest('.quiz-card');
-    if (card.classList.contains('answered')) return;
-    card.classList.add('answered');
-    var isCorrect = this.dataset.answer === 'correct';
-    this.classList.add(isCorrect ? 'correct' : 'wrong');
-    card.querySelector('.quiz-feedback').classList.add('show');
-    card.querySelectorAll('.quiz-opt').forEach(function(o) { o.classList.add('disabled'); });
-    if (isCorrect) {
-      card.dataset.score = '1';
-    }
-    updateQuizScore();
-  });
-});
-function updateQuizScore() {
-  var total = document.querySelectorAll('.quiz-card').length;
-  var score = document.querySelectorAll('.quiz-card[data-score="1"]').length;
-  var el = document.querySelector('.quiz-score');
-  if (el) { el.classList.add('show'); el.querySelector('.qs-big').textContent = score + '/' + total; }
-}
-</script>
+<script src="../../../yry-quiz.js"></script>
 
 <script src="../../../shared.js"></script>
 <!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->

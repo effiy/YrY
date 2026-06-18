@@ -1,0 +1,50 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryFooterNote · 页脚组件 Vue 3
+   三文件: index.html (模板+Demo) · index.js (逻辑) · index.css (样式)
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryFooterNote · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0a0a0a); color: var(--yry-text, #f5f5f5); font-family: var(--yry-font-sans); padding: 60px 24px; max-width: 600px; margin: 0 auto; text-align: center; }
+  h1 { font-size: 1.25rem; }
+  h1 .accent { color: var(--yry-accent, #ffc107); }
+  .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 16px 0 40px; line-height: 1.6; }
+  .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: .72rem; color: #e0af68; }
+  hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0; }
+</style>
+</head>
+<body>
+<h1><span class="accent">&#169;</span> YryFooterNote</h1>
+<p class="demo-hint">Vue 3 页脚组件 — <code>version</code> prop</p>
+
+<hr>
+<div id="demo-1"></div>
+<div style="margin-top:40px">
+  <h2 style="font-size:.82rem;color:var(--yry-text2,#d4d4d4);margin-bottom:8px">自定义版本</h2>
+  <div id="demo-2"></div>
+</div>
+
+<script type="text/x-template" id="yry-footer-note-tpl">
+  <div class="footer-note">YrY v{{ version }} · 故事驱动的 SDLC 编排系统</div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YryFooterNote) return;
+  Vue.createApp(window.YryFooterNote, { version: '5.4.0' }).mount('#demo-1');
+  Vue.createApp(window.YryFooterNote, { version: '6.0.0' }).mount('#demo-2');
+}
+if (window.YryFooterNote) mountAll();
+else document.addEventListener('yry-footer-note-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

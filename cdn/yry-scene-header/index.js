@@ -17,7 +17,7 @@
        function mount() {
          Vue.createApp(window.YrySceneHeader, {
            icon: '📋',
-           prefix: '场景-1',
+           titlePrefix: '场景-1',
            accent: ' · 模板架构与 CSS 设计系统',
            meta: '📌 v1.0 · 📅 2026-06-05 · 🏷️ arch',
            desc: '定义计划清单页面的模板架构与 CSS 设计系统…'
@@ -26,6 +26,9 @@
        if (window.YrySceneHeader) mount();
        else document.addEventListener('yry-scene-header-ready', mount, { once: true });
      </script>
+
+   注意: prop 名不使用 `prefix`,因为 Element.prototype.prefix 是只读 getter
+   (XML 命名空间),升级为自定义元素后赋值会抛 TypeError。
    ═══════════════════════════════════════════════════════════════════════════ */
 
 (function () {
@@ -59,11 +62,11 @@
     return {
       name: 'YrySceneHeader',
       props: {
-        icon:   { type: String, default: '' },
-        prefix: { type: String, default: '' },
-        accent: { type: String, default: '' },
-        meta:   { type: String, default: '' },
-        desc:   { type: String, default: '' }
+        icon:        { type: String, default: '' },
+        titlePrefix: { type: String, default: '' },
+        accent:      { type: String, default: '' },
+        meta:        { type: String, default: '' },
+        desc:        { type: String, default: '' }
       },
       template: templateHTML
     };

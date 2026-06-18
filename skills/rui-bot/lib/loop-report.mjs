@@ -8,23 +8,11 @@
 
 import { writeFileSync, mkdirSync, existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { fileURLToPath } from "node:url";
-import { nowISO, nowDate } from "../../../lib/fs.mjs";
+import { nowISO, nowDate, isMain, fmtDisplay, writeJson } from "../../../lib/fs.mjs";
+import { NODE_ARGV_OFFSET } from "../../../lib/constants.mjs";
 
 const REPORT_DIR = "docs/自循环报告";
 const CDN_DEPTH = "../../";
-
-function fmtDisplay(iso) {
-  return iso.replace('T', ' ').slice(0, 19);
-}
-
-function nowTime() {
-  return new Date().toISOString().slice(11, 19);
-}
-
-function nowTimestamp() {
-  return Date.now().toString(36);
-}
 
 /**
  * Read latest health score for cross-report context.
@@ -378,7 +366,7 @@ export function generateManifest() {
     });
   }
 
-  writeFileSync(join(REPORT_DIR, "reports.json"), JSON.stringify(reports), "utf-8");
+  writeJson(join(REPORT_DIR, "reports.json"), reports);
 }
 
 /**
@@ -463,22 +451,71 @@ export function generateIndex() {
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     var reports = await resp.json();
     if (reports.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5"><div class="yry-empty">暂无自循环报告<br><span style="font-size:.7rem;margin-top:8px;display:block">运行 <code>node skills/rui-bot/lib/loop-report.mjs --skill=&lt;name&gt; --status=&lt;pass|warn|fail&gt;</code> 生成首份报告</span></div></td></tr>';
+      tbody.appendChild(buildEmptyRow());
       return;
     }
     var badgeMap = { pass: '✅ 通过', warn: '⚠️ 告警', fail: '🚫 异常' };
-    tbody.innerHTML = reports.map(function(r) {
-      var badge = '<span class="yry-badge ' + (r.status || 'pass') + '">' + (badgeMap[r.status] || r.status) + '</span>';
-      return '<tr>' +
-        '<td><a href="' + (r.file || '#') + '">' + (r.icon || '🔄') + ' ' + (r.skillLabel || r.skill) + '</a></td>' +
-        '<td>' + r.date + '</td>' +
-        '<td>' + badge + '</td>' +
-        '<td style="font-size:.82rem;color:var(--yry-text2)">' + (r.summary || '—') + '</td>' +
-        '<td><a href="' + (r.file || '#') + '">查看</a></td>' +
-        '</tr>';
-    }).join('');
+    reports.forEach(function(r) {
+      tbody.appendChild(buildReportRow(r, badgeMap));
+    });
   } catch(e) {
-    tbody.innerHTML = '<tr><td colspan="5"><div class="yry-empty">暂无自循环报告<br><span style="font-size:.7rem;margin-top:8px;display:block">运行 <code>node skills/rui-bot/lib/loop-report.mjs --skill=&lt;name&gt; --status=&lt;pass|warn|fail&gt;</code> 生成首份报告</span></div></td></tr>';
+    tbody.appendChild(buildEmptyRow());
+  }
+
+  function buildEmptyRow() {
+    var tr = document.createElement('tr');
+    var td = document.createElement('td');
+    td.colSpan = 5;
+    var div = document.createElement('div');
+    div.className = 'yry-empty';
+    div.textContent = '\u6682\u65e0\u81ea\u5faa\u73af\u62a5\u544a';
+    div.appendChild(document.createElement('br'));
+    var span = document.createElement('span');
+    span.style.cssText = 'font-size:.7rem;margin-top:8px;display:block';
+    var code = document.createElement('code');
+    code.textContent = 'node skills/rui-bot/lib/loop-report.mjs --skill=<name> --status=<pass|warn|fail> \u751f\u6210\u9996\u4efd\u62a5\u544a';
+    span.appendChild(code);
+    div.appendChild(span);
+    td.appendChild(div);
+    tr.appendChild(td);
+    return tr;
+  }
+
+  function buildReportRow(r, badgeMap) {
+    var tr = document.createElement('tr');
+    var status = r.status || 'pass';
+
+    var tdSkill = document.createElement('td');
+    var aSkill = document.createElement('a');
+    aSkill.href = r.file || '#';
+    aSkill.textContent = (r.icon || '\ud83d\udd04') + ' ' + (r.skillLabel || r.skill);
+    tdSkill.appendChild(aSkill);
+    tr.appendChild(tdSkill);
+
+    var tdDate = document.createElement('td');
+    tdDate.textContent = r.date;
+    tr.appendChild(tdDate);
+
+    var tdStatus = document.createElement('td');
+    var badge = document.createElement('span');
+    badge.className = 'yry-badge ' + status;
+    badge.textContent = badgeMap[status] || status;
+    tdStatus.appendChild(badge);
+    tr.appendChild(tdStatus);
+
+    var tdSummary = document.createElement('td');
+    tdSummary.style.cssText = 'font-size:.82rem;color:var(--yry-text2)';
+    tdSummary.textContent = r.summary || '\u2014';
+    tr.appendChild(tdSummary);
+
+    var tdAction = document.createElement('td');
+    var aAction = document.createElement('a');
+    aAction.href = r.file || '#';
+    aAction.textContent = '\u67e5\u770b';
+    tdAction.appendChild(aAction);
+    tr.appendChild(tdAction);
+
+    return tr;
   }
 })();
 </script>
@@ -524,7 +561,7 @@ export async function notifyReport({ skill, status, filename, summary, findings 
     healthLine,
     findingsText ? `发现:\n${findingsText}` : "",
     `报告: docs/自循环报告/${filename}`,
-    `时间: ${new Date().toISOString().slice(0, 19).replace("T", " ")}`,
+    `时间: ${fmtDisplay(nowISO())}`,
   ].filter(Boolean).join("\n");
 
   try {
@@ -548,7 +585,7 @@ export async function notifyReport({ skill, status, filename, summary, findings 
  * Main CLI entry point.
  */
 async function main() {
-  const args = process.argv.slice(2);
+  const args = process.argv.slice(NODE_ARGV_OFFSET);
   const opts = { skill: "", status: "", summary: "", details: "", findings: [] };
 
   for (const arg of args) {
@@ -557,7 +594,7 @@ async function main() {
     const key = arg.slice(2, eq);
     const val = arg.slice(eq + 1);
     if (key === "findings") {
-      try { opts.findings = JSON.parse(val); } catch {}
+      try { opts.findings = JSON.parse(val); } catch { /* invalid JSON, skip */ }
     } else {
       opts[key] = val;
     }
@@ -582,7 +619,7 @@ async function main() {
   }
 }
 
-const _isMain = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+const _isMain = isMain(import.meta.url);
 if (_isMain) {
   main();
 }

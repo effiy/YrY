@@ -36,8 +36,12 @@
     document.getElementById('skillCount').textContent = Object.keys(SKILL_INFO).length + '';
 
     if (!reports.length) {
-      document.getElementById('tbody').innerHTML = '<tr><td colspan="6"><div class="empty">暂无自循环报告<br><span style="font-size:.7rem;margin-top:8px;display:block">运行 <code>node skills/rui-bot/lib/loop-report.mjs --skill=&lt;name&gt; --status=&lt;pass|warn|fail&gt;</code> 生成首份报告</span></div></td></tr>';
-      document.getElementById('freshList').innerHTML = '<div class="empty">暂无巡检数据</div>';
+      document.getElementById('tbody').textContent = '';
+
+      document.getElementById('tbody').insertAdjacentHTML('beforeend', '<tr><td colspan="6"><div class="empty">暂无自循环报告<br><span style="font-size:.7rem);margin-top:8px;display:block">运行 <code>node skills/rui-bot/lib/loop-report.mjs --skill=&lt;name&gt; --status=&lt;pass|warn|fail&gt;</code> 生成首份报告</span></div></td></tr>';
+      document.getElementById('freshList').textContent = '';
+
+      document.getElementById('freshList').insertAdjacentHTML('beforeend', '<div class="empty">暂无巡检数据</div>');
       return;
     }
 
@@ -50,7 +54,9 @@
     var diffMin = Math.floor((now - latestD) / 60000);
     var frCls = diffMin < 480 ? 'hot' : diffMin < 1440 ? 'warm' : 'cold';
     var frLabel = diffMin < 480 ? '实时更新' : diffMin < 1440 ? '今日更新' : '数据滞后';
-    document.getElementById('freshBadge').innerHTML = '<span class="fresh ' + frCls + '"><span class="dot"></span>' + frLabel + ' · ' + YrYReports.fmtMinutesAgo(diffMin) + '</span>';
+    document.getElementById('freshBadge').textContent = '';
+
+    document.getElementById('freshBadge').insertAdjacentHTML('beforeend', '<span class="fresh ' + frCls + '"><span class="dot"></span>' + frLabel + ' · ' + YrYReports.fmtMinutesAgo(diffMin) + '</span>');
 
     // Status counts and per-skill aggregation
     var passCount = 0, warnCount = 0, failCount = 0, totalFindings = 0;
@@ -75,7 +81,8 @@
 
     // Stats row
     var activeSkills = Object.keys(skillLatest).length;
-    document.getElementById('stats').innerHTML =
+    document.getElementById('stats').textContent = '';
+    getElementById('stats').insertAdjacentHTML('beforeend', 
       '<div class="stat"><div class="val info">' + reports.length + '</div><div class="lbl">报告总数</div></div>' +
       '<div class="stat"><div class="val pass">' + passCount + '</div><div class="lbl">通过 (pass)</div></div>' +
       '<div class="stat"><div class="val warn">' + warnCount + '</div><div class="lbl">告警 (warn)</div></div>' +
@@ -83,7 +90,7 @@
       '<div class="stat"><div class="val info">' + totalFindings + '</div><div class="lbl">总发现项</div></div>' +
       '<div class="stat"><div class="val info">' + latestDate + '</div><div class="lbl">最新巡检日</div></div>' +
       '<div class="stat"><div class="val info">' + activeSkills + '/' + Object.keys(SKILL_INFO).length + '</div><div class="lbl">活跃技能</div></div>' +
-      '<div class="stat"><div class="val ' + (diffMin < 480 ? 'pass' : diffMin < 1440 ? 'warn' : 'fail') + '">' + YrYReports.fmtMinutesAgo(diffMin) + '</div><div class="lbl">数据新鲜度</div></div>';
+      '<div class="stat"><div class="val ' + (diffMin < 480 ? 'pass' : diffMin < 1440 ? 'warn' : 'fail') + '">' + YrYReports.fmtMinutesAgo(diffMin) + '</div><div class="lbl">数据新鲜度</div></div>');
 
     // Health summary card
     if (healthReports.length > 0) {
@@ -105,10 +112,11 @@
         var tLatest = trendReports[0];
         trendRef = '<br><span style="font-size:.68rem;color:var(--yry-text3)">外源趋势: ' + tLatest.date + ' · 源可达 ' + (tLatest.ok ? '✓' : '⚠') + ' · ' + (tLatest.items || '—') + ' 条目</span>';
       }
-      document.getElementById('healthMeta').innerHTML =
+      document.getElementById('healthMeta').textContent = '';
+      getElementById('healthMeta').insertAdjacentHTML('beforeend', 
         '<strong style="color:' + healthClr + '">系统健康 ' + hScore + ' 分 · ' + hGrade + ' 级</strong>' +
         (hLatest.time && hLatest.time !== '—' ? ' · 生成时间 ' + hLatest.time : '') +
-        '<br>' + triggerText + ' · ' + (hLatest.dimTotal || 17) + ' 维度评分矩阵' + bootText + trendRef;
+        '<br>' + triggerText + ' · ' + (hLatest.dimTotal || 17) + ' 维度评分矩阵' + bootText + trendRef);
     }
 
     // --- Findings Trend SVG ---
@@ -152,9 +160,13 @@
       svg += '<span style="color:var(--yry-warn)">■ 告警 ' + totalWarn + '</span>';
       svg += '<span style="color:var(--yry-fail)">■ 异常 ' + totalFail + '</span>';
       svg += '</div>';
-      document.getElementById('trendChart').innerHTML = svg;
+      document.getElementById('trendChart').textContent = '';
+
+      document.getElementById('trendChart').insertAdjacentHTML('beforeend', svg);
     } else {
-      document.getElementById('trendChart').innerHTML = '<div style="text-align:center;color:var(--yry-text3);font-size:.78rem;padding:20px">单日数据 · 趋势需 ≥2 天</div>';
+      document.getElementById('trendChart').textContent = '';
+
+      document.getElementById('trendChart').insertAdjacentHTML('beforeend', '<div style="text-align:center);color:var(--yry-text3);font-size:.78rem;padding:20px">单日数据 · 趋势需 ≥2 天</div>';
     }
 
     // --- Execution Velocity ---
@@ -165,7 +177,8 @@
     var dayEntries = Object.keys(dayMap).sort().reverse();
     var maxDay = Math.max.apply(null, dayEntries.map(function(d) { return dayMap[d]; })) || 1;
     if (dayEntries.length > 0) {
-      document.getElementById('velChart').innerHTML = dayEntries.slice(0, 10).map(function(d) {
+      document.getElementById('velChart').textContent = '';
+      getElementById('velChart').insertAdjacentHTML('beforeend',  dayEntries.slice(0, 10).map(function(d) {
         var count = dayMap[d];
         var pct = Math.round(count / maxDay * 100);
         var clr = count >= 10 ? 'var(--yry-pass)' : count >= 5 ? 'var(--yry-warn)' : '#60a5fa';
@@ -174,7 +187,7 @@
           '<div class="vel-bar-track"><div class="vel-bar-fill" style="width:' + pct + '%;background:' + clr + '">' + (pct > 30 ? count : '') + '</div></div>' +
           '<span class="vel-count">' + count + ' 份</span>' +
           '</div>';
-      }).join('');
+      }).join(''));
     }
 
     // Data freshness
@@ -205,7 +218,9 @@
         '<span style="font-size:.6rem;color:var(--yry-text3)">' + info.cadence + '</span>' +
         '</div>';
     }).join('');
-    document.getElementById('freshList').innerHTML = freshHtml;
+    document.getElementById('freshList').textContent = '';
+
+    document.getElementById('freshList').insertAdjacentHTML('beforeend', freshHtml);
 
     // Skill health matrix
     var skillHtml = Object.keys(SKILL_INFO).map(function(sk) {
@@ -247,7 +262,9 @@
         '</div>' + trendHtml +
         '</div>';
     }).join('');
-    document.getElementById('skillGrid').innerHTML = skillHtml;
+    document.getElementById('skillGrid').textContent = '';
+
+    document.getElementById('skillGrid').insertAdjacentHTML('beforeend', skillHtml);
 
     // Skill trend direction list
     var trendListHtml = '';
@@ -276,36 +293,41 @@
         '<span class="skill-trend ' + trendCls + '">' + trendIcon + ' ' + trendLabel + '</span>' +
         '</div>';
     });
-    document.getElementById('skillTrendList').innerHTML = trendListHtml;
+    document.getElementById('skillTrendList').textContent = '';
+
+    document.getElementById('skillTrendList').insertAdjacentHTML('beforeend', trendListHtml);
 
     // Findings distribution
     var pctInfo = totalFindings > 0 ? Math.round(totalInfo / totalFindings * 100) : 0;
     var pctWarn = totalFindings > 0 ? Math.round(totalWarn / totalFindings * 100) : 0;
     var pctFail = totalFindings > 0 ? Math.round(totalFail / totalFindings * 100) : 0;
-    document.getElementById('findGrid').innerHTML =
-      '<div class="find-item info"><div style="color:var(--yry-text3);font-size:.72rem">ℹ️ 信息</div><div class="find-num" style="color:#60a5fa">' + totalInfo + '</div><div class="find-pct">' + pctInfo + '%</div></div>' +
+    document.getElementById('findGrid').textContent = '';
+
+    document.getElementById('findGrid').insertAdjacentHTML('beforeend', '<div class="find-item info"><div style="color:var(--yry-text3));font-size:.72rem">ℹ️ 信息</div><div class="find-num" style="color:#60a5fa">' + totalInfo + '</div><div class="find-pct">' + pctInfo + '%</div></div>' +
       '<div class="find-item warn"><div style="color:var(--yry-text3);font-size:.72rem">⚠️ 告警</div><div class="find-num" style="color:var(--yry-warn)">' + totalWarn + '</div><div class="find-pct">' + pctWarn + '%</div></div>' +
       '<div class="find-item fail"><div style="color:var(--yry-text3);font-size:.72rem">🚫 异常</div><div class="find-num" style="color:var(--yry-fail)">' + totalFail + '</div><div class="find-pct">' + pctFail + '%</div></div>';
 
     // Execution cadence
     var coveragePct = Math.round(activeSkills / Object.keys(SKILL_INFO).length * 100);
     var cadenceColor = coveragePct >= 50 ? 'var(--yry-pass)' : coveragePct >= 25 ? 'var(--yry-warn)' : 'var(--yry-fail)';
-    document.getElementById('cadGrid').innerHTML =
+    document.getElementById('cadGrid').textContent = '';
+    getElementById('cadGrid').insertAdjacentHTML('beforeend', 
       '<div class="queue-item"><div class="queue-num" style="color:#22d3ee">' + reports.length + '</div><div class="queue-lbl">总执行次数</div></div>' +
       '<div class="queue-item"><div class="queue-num" style="color:' + cadenceColor + '">' + activeSkills + '/' + Object.keys(SKILL_INFO).length + '</div><div class="queue-lbl">活跃/总计 (' + coveragePct + '%)</div></div>' +
       '<div class="queue-item"><div class="queue-num" style="color:var(--yry-pass)">' + passCount + '</div><div class="queue-lbl">成功执行</div></div>' +
       '<div class="queue-item"><div class="queue-num" style="color:var(--yry-text2)">6</div><div class="queue-lbl">Cron 任务</div></div>' +
-      '<div class="queue-item"><div class="queue-num" style="color:var(--yry-text2)">' + latestDate + '</div><div class="queue-lbl">最新活跃日</div></div>';
+      '<div class="queue-item"><div class="queue-num" style="color:var(--yry-text2)">' + latestDate + '</div><div class="queue-lbl">最新活跃日</div></div>');
 
     // Coverage gap analysis
     var coveredSkills = Object.keys(skillLatest);
     var uncoveredSkills = Object.keys(SKILL_INFO).filter(function(sk) { return !skillLatest[sk]; });
     if (uncoveredSkills.length > 0) {
       document.getElementById('gapCard').style.display = 'block';
-      document.getElementById('gapContent').innerHTML =
+      document.getElementById('gapContent').textContent = '';
+      getElementById('gapContent').insertAdjacentHTML('beforeend', 
         '<strong style="color:var(--yry-warn)">⚠ ' + uncoveredSkills.length + ' 个技能尚未巡检:</strong> ' +
         uncoveredSkills.map(function(sk) { return SKILL_INFO[sk].icon + ' ' + SKILL_INFO[sk].label; }).join(' · ') +
-        '<br><span style="font-size:.68rem;color:var(--yry-text3)">这些技能的初始巡检将在下次 Cron 调度触发或手动执行时完成。按需触发技能 (rui-code/rui-init/rui-update/rui-html/rui-story/rui-claude) 仅在明确请求时执行，不自动排入 Cron。</span>';
+        '<br><span style="font-size:.68rem;color:var(--yry-text3)">这些技能的初始巡检将在下次 Cron 调度触发或手动执行时完成。按需触发技能 (rui-code/rui-init/rui-update/rui-html/rui-story/rui-claude) 仅在明确请求时执行，不自动排入 Cron。</span>');
     }
 
     // Diag status from summary
@@ -315,19 +337,24 @@
         var el = document.getElementById('diag' + d);
         if (el) {
           var isTrig = triggeredDiags.indexOf(d) !== -1;
-          el.innerHTML = isTrig ? '<span class="badge warn">触发</span>' : '<span class="badge pass">✓ 正常</span>';
+          el.textContent = '';
+
+          el.insertAdjacentHTML('beforeend', isTrig ? '<span class="badge warn">触发</span>' : '<span class="badge pass">✓ 正常</span>');
         }
       });
       // Notif queue status
       var nqEl = document.getElementById('diagNQ');
-      if (nqEl) nqEl.innerHTML = '<span class="badge pass">✓ 正常</span>';
+      if (nqEl) nqEl.textContent = '';
+ nqEl.insertAdjacentHTML('beforeend', '<span class="badge pass">✓ 正常</span>');
     }
 
     // --- Skill Reliability Scoring ---
     (function() {
       var skillNames = Object.keys(skillReports);
       if (skillNames.length === 0) {
-        document.getElementById('reliContent').innerHTML = '<div class="empty">暂无数据用于可靠性计算</div>';
+        document.getElementById('reliContent').textContent = '';
+
+        document.getElementById('reliContent').insertAdjacentHTML('beforeend', '<div class="empty">暂无数据用于可靠性计算</div>');
         return;
       }
       var reliRows = [];
@@ -417,18 +444,21 @@
         insightText = '<span style="color:var(--yry-fail)">' + unstableSkills.length + ' 个技能需要关注</span> · 系统平均稳定性 ' + avgStability + ' 分 · 建议优先修复高频异常技能';
       }
 
-      document.getElementById('reliContent').innerHTML = tableHtml +
+      document.getElementById('reliContent').textContent = '';
+      getElementById('reliContent').insertAdjacentHTML('beforeend',  tableHtml +
         '<div style="margin-top:12px;padding:10px 14px;background:rgba(255,255,255,.02);border-radius:8px;font-size:.74rem;color:var(--yry-text2);line-height:1.6">' +
         '<strong>可靠性评估</strong>: ' + insightText +
         '<br><span style="font-size:.64rem;color:var(--yry-text3)">MTBF = 观测周期 ÷ (异常次数+1) · 稳定性 = 100 − (异常率×0.5 + 非通过率×0.25) · 数据稀疏 (<3份) 上限 85 分</span>' +
-        '</div>';
+        '</div>');
     })();
 
     // --- Anomaly Correlation Matrix ---
     (function() {
       var skillNames = Object.keys(skillReports).filter(function(sk) { return skillReports[sk].length >= 2; });
       if (skillNames.length < 2) {
-        document.getElementById('corrContent').innerHTML = '<div class="empty">需要 ≥2 个技能的数据用于关联分析</div>';
+        document.getElementById('corrContent').textContent = '';
+
+        document.getElementById('corrContent').insertAdjacentHTML('beforeend', '<div class="empty">需要 ≥2 个技能的数据用于关联分析</div>');
         return;
       }
 
@@ -445,7 +475,9 @@
 
       var dates = Object.keys(dateAnomaly).sort();
       if (dates.length === 0) {
-        document.getElementById('corrContent').innerHTML = '<div class="empty" style="color:var(--yry-pass)">✅ 无异常日期 — 所有技能在所有日期均正常通过</div>';
+        document.getElementById('corrContent').textContent = '';
+
+        document.getElementById('corrContent').insertAdjacentHTML('beforeend', '<div class="empty" style="color:var(--yry-pass)">✅ 无异常日期 — 所有技能在所有日期均正常通过</div>');
         return;
       }
 
@@ -553,16 +585,18 @@
         insightHtml = '<span style="color:var(--yry-pass)">技能异常独立性良好</span> · 无显著共现模式 · 各技能故障根因相对独立';
       }
 
-      document.getElementById('corrContent').innerHTML = svg + legendHtml +
+      document.getElementById('corrContent').textContent = '';
+      getElementById('corrContent').insertAdjacentHTML('beforeend',  svg + legendHtml +
         '<div style="margin-top:8px;padding:10px 14px;background:rgba(255,255,255,.02);border-radius:8px;font-size:.74rem;color:var(--yry-text2);line-height:1.6">' +
         '<strong>关联分析</strong> (' + dates.length + ' 异常日): ' + insightHtml +
-        '</div>';
+        '</div>');
     })();
 
 
     // Report table
     var badgeMap = { pass: '✅ 通过', warn: '⚠️ 告警', fail: '🚫 异常' };
-    document.getElementById('tbody').innerHTML = reports.map(function(r) {
+    document.getElementById('tbody').textContent = '';
+    getElementById('tbody').insertAdjacentHTML('beforeend',  reports.map(function(r) {
       var badge = '<span class="badge ' + (r.status || 'pass') + '">' + (badgeMap[r.status] || r.status) + '</span>';
       var f = r.findings || {};
       var findHtml = [];
@@ -580,8 +614,10 @@
         '<td style="font-size:.78rem;color:var(--yry-text2);max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + (r.summary || '') + '">' + (r.summary || '—') + '</td>' +
         '<td><a href="' + (r.file || '#') + '">查看</a></td>' +
         '</tr>';
-    }).join('');
+    }).join(''));
   }).catch(function(e) {
-    document.getElementById('tbody').innerHTML = '<tr><td colspan="6"><div class="empty">加载失败: ' + e.message + '</div></td></tr>';
+    document.getElementById('tbody').textContent = '';
+
+    document.getElementById('tbody').insertAdjacentHTML('beforeend', '<tr><td colspan="6"><div class="empty">加载失败: ' + e.message + '</div></td></tr>');
   });
 })();

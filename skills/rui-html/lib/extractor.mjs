@@ -9,7 +9,9 @@
 
 import { readFileSync, existsSync } from 'node:fs';
 import { join, basename, dirname } from 'node:path';
-import { readFile } from 'node:fs/promises';
+import { escHtml } from '../../../lib/fs.mjs';
+
+export { escHtml as escapeHtml };
 
 /**
  * Parse scene metadata from index.md.
@@ -352,12 +354,4 @@ function convertTablesToHtml(html) {
   }
 
   return result.join('\n');
-}
-
-function escapeHtml(str) {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
 }

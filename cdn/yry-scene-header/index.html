@@ -64,12 +64,12 @@
   </p>
 
   <div class="demo-section">
-    <h3>Demo 1 — 基础 (icon + prefix + accent + meta) · 与 scene-2 静态结构一致</h3>
+    <h3>Demo 1 — 基础 (icon + titlePrefix + accent + meta) · 与 scene-2 静态结构一致</h3>
     <div id="demo-1"></div>
   </div>
 
   <div class="demo-section">
-    <h3>Demo 2 — 完整 (icon + prefix + accent + meta + desc) · scene-1 实际使用</h3>
+    <h3>Demo 2 — 完整 (icon + titlePrefix + accent + meta + desc) · scene-1 实际使用</h3>
     <div id="demo-2"></div>
   </div>
 
@@ -84,7 +84,7 @@
   <script type="text/x-template" id="yry-scene-header-tpl">
     <div class="header">
       <h1>
-        <span v-if="icon" class="icon">{{ icon }} </span>{{ prefix }}<span v-if="accent" class="accent">{{ accent }}</span>
+        <span v-if="icon" class="icon">{{ icon }} </span>{{ titlePrefix }}<span v-if="accent" class="accent">{{ accent }}</span>
       </h1>
       <div v-if="meta" class="meta">{{ meta }}</div>
       <p v-if="desc" class="desc">{{ desc }}</p>
@@ -101,13 +101,13 @@
     function mountAll() {
       mountDemo('demo-1', {
         icon: '🧩',
-        prefix: '场景-2',
+        titlePrefix: '场景-2',
         accent: ' · 清单交互组件实现',
         meta: '📌 v4.5 · 📅 2026-06-05 · 🏷️ arch'
       });
       mountDemo('demo-2', {
         icon: '📋',
-        prefix: '场景-1',
+        titlePrefix: '场景-1',
         accent: ' · 模板架构与 CSS 设计系统',
         meta: '📌 新人上手 · 计划清单 · yry-checklist · 场景 1 · Template Architecture & CSS Design System',
         desc: '定义计划清单页面的模板架构与 CSS 设计系统,涵盖 7 区域骨架、14 组件样式、CDN 级联加载策略及批量生成管线。'

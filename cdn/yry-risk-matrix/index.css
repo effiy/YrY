@@ -1,0 +1,105 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryRiskMatrix · 风险矩阵热力图样式
+   5x5 矩阵,行=严重度,列=可能性
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: block;
+}
+
+.risk-matrix {
+  display: grid;
+  grid-template-columns: 60px 100px repeat(5, 1fr);
+  gap: 2px;
+  padding: 10px;
+  background: rgba(255, 255, 255, .02);
+  border: 1px solid rgba(255, 255, 255, .06);
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.rm-corner { background: transparent; }
+
+.rm-axis-x {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  font-size: .62rem;
+  color: var(--yry-text3, #888);
+}
+
+.rm-col-h, .rm-row-h {
+  text-align: center;
+  padding: 6px 2px;
+  font-size: .64rem;
+  color: var(--yry-text3, #888);
+  background: rgba(34, 211, 238, .05);
+  border-radius: 4px;
+}
+.rm-row-h {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+}
+
+.rm-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  background: rgba(255, 255, 255, .02);
+  border-radius: 4px;
+  font-size: .66rem;
+  font-weight: 600;
+  cursor: default;
+  transition: all .15s;
+  padding: 2px;
+  text-align: center;
+}
+.rm-cell:hover {
+  transform: scale(1.05);
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
+}
+.rm-cell.l0 { background: rgba(16, 185, 129, .04); }
+.rm-cell.l1 { background: rgba(16, 185, 129, .08); }
+.rm-cell.l2 { background: rgba(16, 185, 129, .12); }
+.rm-cell.l3 { background: rgba(16, 185, 129, .16); }
+.rm-cell.l4 { background: rgba(16, 185, 129, .20); }
+
+.rm-cell.r-low  { color: #10b981; background: rgba(16, 185, 129, .18); border: 1px solid rgba(16, 185, 129, .4); }
+.rm-cell.r-med  { color: #f59e0b; background: rgba(245, 158, 11, .20); border: 1px solid rgba(245, 158, 11, .4); animation: pulse-warn 2.5s infinite; }
+.rm-cell.r-high { color: #ef4444; background: rgba(239, 68, 68, .25); border: 1px solid rgba(239, 68, 68, .5); }
+.rm-cell.r-crit { color: #fff; background: rgba(239, 68, 68, .45); border: 1px solid #ef4444; animation: pulse-crit 1.5s infinite; }
+
+@keyframes pulse-warn { 0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, .3); } 50% { box-shadow: 0 0 0 4px rgba(245, 158, 11, 0); } }
+@keyframes pulse-crit { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, .5); } 50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } }
+
+.rm-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, .02);
+  border-radius: 6px;
+}
+.rml-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .68rem;
+  color: var(--yry-text2, #d4d4d4);
+}
+.rml-dot { width: 10px; height: 10px; border-radius: 3px; }
+.rml-dot.r-low  { background: rgba(16, 185, 129, .5); border: 1px solid #10b981; }
+.rml-dot.r-med  { background: rgba(245, 158, 11, .5); border: 1px solid #f59e0b; }
+.rml-dot.r-high { background: rgba(239, 68, 68, .5); border: 1px solid #ef4444; }
+.rml-dot.r-crit { background: rgba(239, 68, 68, .8); border: 1px solid #ef4444; }
+
+@media (max-width: 700px) {
+  .risk-matrix { grid-template-columns: 40px 60px repeat(5, 1fr); }
+  .rm-cell { font-size: .58rem; }
+}

@@ -1,0 +1,53 @@
+{
+  "releases": [
+    {
+      "version": "1.2.0",
+      "date": "2026-06-16",
+      "type": "MINOR",
+      "icon": "📦",
+      "title": "yry-cdn v1.2.0 — 组件库扩张 + 迁移工具完善",
+      "summary": "新增 5 个组件(stats-grid / panel-hub / doc-layer / story-card / scene-card),2 个 YrY.* API,迁移 6 步清单上线。",
+      "highlights": [
+        "📊 yry-stats-grid — 统计卡组,支持 KPI 总览",
+        "🎛 yry-panel-hub — 浮动面板工具栏(本页顶部即采用)",
+        "📑 yry-doc-layer — 文档分层容器,与 docs/index.html 4 个 doc-layer 同构",
+        "📖 yry-story-card / yry-scene-card — 故事/场景卡片,7 件套交付物链接",
+        "🔧 YrY.copyCmd / YrY.toast API 增强"
+      ],
+      "migration": "v1.1 → v1.2:无破坏性变更。panel-hub 事件名 panel-hub-select 与 docs 同构,直接复用绑定代码。",
+      "filesChanged": 12
+    },
+    {
+      "version": "1.1.0",
+      "date": "2026-05-20",
+      "type": "MINOR",
+      "icon": "🎨",
+      "title": "yry-cdn v1.1.0 — 双主题完善 + Mono 字体集成",
+      "summary": "新增 theme-mono.css (Cat A 等宽主题),fonts.css + 4 字重 woff2 自托管,14 设计令牌稳定。",
+      "highlights": [
+        "🖋 theme-mono.css — JetBrains Mono 等宽主题(架构图/知识图谱)",
+        "🔤 fonts/jetbrains-mono-latin-{400,500,600,700}.woff2",
+        "🎨 14 设计令牌固化:Surfaces / Brand / Semantic / Text / Elevation",
+        "🧩 yry-breadcrumb / yry-tabs-panel / yry-suite-toggle 组件稳定"
+      ],
+      "migration": "v1.0 → v1.1:Cat A 页面需新增 fonts.css 引用;Cat B 页面不受影响。",
+      "filesChanged": 8
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-04-08",
+      "type": "MAJOR",
+      "icon": "🚀",
+      "title": "yry-cdn v1.0.0 — 首个稳定版",
+      "summary": "CDN 共享前端资源库首版,提供 shared.css / theme.css / shared.js,9 个 YrY.* API 全部可用。",
+      "highlights": [
+        "📦 shared.css — Reset + 动画 + 14 组件基线",
+        "🎨 theme.css — System 主题(Cat B)",
+        "⚙ shared.js — YrY 全局对象,9 个 API(toast / copyCmd / switchPanel / suiteToggle / ...)",
+        "📋 package.json — npm 包元数据,jsDelivr 同步就绪"
+      ],
+      "migration": "存量页面:删除内联样式 → 引入 shared.css/theme.css/shared.js → 类名前缀 yry-",
+      "filesChanged": 0
+    }
+  ]
+}

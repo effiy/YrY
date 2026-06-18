@@ -1,0 +1,51 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YrySceneHealthBar · 场景健康进度条 Vue 3 组件
+   三文件: index.html (模板+Demo) · index.js (逻辑) · index.css (样式)
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YrySceneHealthBar · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0e0f1a); color: var(--yry-text, #f5f5f5); padding: 32px 24px; max-width: 600px; margin: 0 auto; font-family: var(--yry-font-sans); }
+  h1 { font-size: 1.1rem; margin: 0 0 4px; }
+  .demo-hint { font-size: .74rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+  .demo-section { margin: 16px 0; padding: 16px; background: rgba(255,255,255,.03); border-radius: 8px; }
+</style>
+</head>
+<body>
+<h1>YrySceneHealthBar</h1>
+<p class="demo-hint">场景健康进度条 — Vue 3 prop: <code>segments</code> (JSON 数组)</p>
+
+<div class="demo-section"><div id="demo-1"></div></div>
+<div class="demo-section"><div id="demo-2"></div></div>
+
+<script type="text/x-template" id="yry-scene-health-bar-tpl">
+  <div class="hb-wrap">
+    <div class="hb-outer">
+      <div v-for="(seg, i) in parsedSegments" :key="i" :class="'hb-seg ' + seg.cls" :style="{ width: seg.pct + '%' }"></div>
+    </div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YrySceneHealthBar) return;
+  Vue.createApp(window.YrySceneHealthBar, {
+    segments: '[{"pct":75,"cls":"strength"},{"pct":25,"cls":"gap"}]'
+  }).mount('#demo-1');
+  Vue.createApp(window.YrySceneHealthBar, {
+    segments: '[{"pct":40,"cls":"p"},{"pct":35,"cls":"f"},{"pct":25,"cls":"s"}]'
+  }).mount('#demo-2');
+}
+if (window.YrySceneHealthBar) mountAll();
+else document.addEventListener('yry-scene-health-bar-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

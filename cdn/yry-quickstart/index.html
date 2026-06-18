@@ -1,0 +1,53 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryQuickstart · 快速开始块 Vue 3 组件
+   三文件: index.html (模板+Demo) · index.js (逻辑) · index.css (样式)
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryQuickstart · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0a0a0a); color: var(--yry-text, #f5f5f5); font-family: var(--yry-font-sans); padding: 32px 24px 60px; max-width: 900px; margin: 0 auto; line-height: 1.55; }
+  h1 { font-size: 1.25rem; margin: 0 0 4px; }
+  h1 .accent { color: var(--yry-accent, #ffc107); }
+  .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+  .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: .72rem; color: #e0af68; }
+</style>
+</head>
+<body>
+
+<h1><span class="accent">🚀</span> YryQuickstart · 快速开始块</h1>
+<p class="demo-hint">快速开始块 — Vue 3 props: <code>tip</code> · <code>cmd</code> (支持复制按钮)</p>
+
+<div id="demo-1"></div>
+
+<script type="text/x-template" id="yry-quickstart-tpl">
+  <div class="qs-wrapper">
+    <div v-if="tip" class="qs-tip" v-html="tip"></div>
+    <div v-if="cmd" class="qs-code">
+      <pre><code>{{ cmd }}</code></pre>
+      <button class="qs-copy" :class="{ copied: copied }" @click.stop="doCopy" title="复制命令">{{ copied ? '✅ 已复制' : '📋 复制' }}</button>
+    </div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YryQuickstart) return;
+  Vue.createApp(window.YryQuickstart, {
+    tip: '复制整段 → 进入 <code>~/repos</code> → 终端粘贴。',
+    cmd: 'git clone git@github.com:yry-org/story-task-panel.git\ncd story-task-panel && bash setup.sh'
+  }).mount('#demo-1');
+}
+if (window.YryQuickstart) mountAll();
+else document.addEventListener('yry-quickstart-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

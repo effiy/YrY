@@ -1,11 +1,9 @@
 /* ═══ shared-a.css — Common styles for all Category A documents (Mono theme) ═══ */
 /* Inlined by rui-html/lib/templates.mjs buildHeadBlock() during generation */
 /* Cat-A pages: 架构图 · 知识图谱 — uses Mono dark theme with JetBrains Mono */
+/* Breadcrumb/Cross-nav/Header styles → now provided by yry-scene-chrome component */
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
-@keyframes yry-pulse { 0%,100% { opacity: 1 } 50% { opacity: .5 } }
-@keyframes yry-fadeInDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 
 body {
   font-family: 'JetBrains Mono', monospace;
@@ -15,55 +13,4 @@ body {
 
 .yry-container { max-width: 1200px; margin: 0 auto; }
 
-.yry-header { margin-bottom: 1.5rem; }
-.yry-header-row { display: flex; align-items: center; gap: 1rem; margin-bottom: .5rem; }
-.yry-pulse-dot { width: 12px; height: 12px; background: #22d3ee; border-radius: 50%; animation: yry-pulse 2s infinite; }
-.yry-header h1 { font-size: 1.5rem; font-weight: 700; }
-.yry-subtitle { color: #94a3b8; font-size: .875rem; margin-left: 1.75rem; }
-
-/* ── Breadcrumb (Mono theme) ── */
-.yry-breadcrumb { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 1.25rem; font-size: 0.76rem; }
-.yry-breadcrumb a { color: #7aa2f7; text-decoration: none; transition: color 0.15s; }
-.yry-breadcrumb a:hover { color: #fbbf24; }
-.yry-breadcrumb .yry-bc-sep { color: #53576c; opacity: 0.5; user-select: none; }
-.yry-breadcrumb .yry-bc-current { color: #94a3b8; font-weight: 500; }
-
-/* ── Cross-nav (Mono theme) ── */
-.yry-cross-nav { display: flex; gap: 4px; justify-content: center; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; animation: yry-fadeInDown .5s .15s ease both; }
-.yry-cross-nav .yry-cross-link { color: #7aa2f7; text-decoration: none; font-size: 0.76rem; padding: 3px 10px; border-radius: 4px; transition: color 0.15s, background 0.15s; }
-.yry-cross-nav .yry-cross-link:hover { color: #fbbf24; background: rgba(251,191,36,0.06); }
-.yry-cross-nav .yry-cross-link.on { color: #fbbf24; font-weight: 600; cursor: default; }
-.yry-cross-nav .yry-cross-sep { color: #475569; font-size: 0.5rem; opacity: 0.35; user-select: none; }
-
-/* ── Toolbar ── */
-.yry-toolbar { display: flex; gap: .5rem; margin-left: auto; flex-shrink: 0; align-items: center; }
-.yry-toolbar-toggle { background: transparent; border: none; color: #475569; cursor: pointer; font-size: 1.25rem; padding: .25rem .5rem; border-radius: .375rem; }
-.yry-toolbar-toggle:hover { color: #94a3b8; background: rgba(30,41,59,.5); }
-.yry-toolbar-actions { display: none; gap: .5rem; }
-.yry-toolbar.expanded .yry-toolbar-actions { display: flex; }
-.yry-toolbar-actions button { background: rgba(30,41,59,.8); border: 1px solid #334155; color: #94a3b8; padding: .375rem .75rem; border-radius: .375rem; font-family: inherit; font-size: .75rem; cursor: pointer; transition: all .2s; white-space: nowrap; }
-.yry-toolbar-actions button:hover { background: rgba(51,65,85,.8); color: white; border-color: #475569; }
-
-/* ── Cards ── */
-.yry-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-.yry-card { background: rgba(15,23,42,.5); border-radius: .75rem; border: 1px solid #1e293b; padding: 1.25rem; }
-.yry-card-header { display: flex; align-items: center; gap: .5rem; margin-bottom: .75rem; }
-.yry-card-dot { width: 8px; height: 8px; border-radius: 50%; }
-.yry-card-dot.cyan    { background: #22d3ee; }
-.yry-card-dot.emerald { background: #34d399; }
-.yry-card-dot.violet  { background: #a78bfa; }
-.yry-card-dot.amber   { background: #fbbf24; }
-.yry-card-dot.rose    { background: #fb7185; }
-.yry-card-dot.blue    { background: #3B82F6; }
-.yry-card-dot.scene   { background: #8B5CF6; }
-.yry-card-dot.check   { background: #EC4899; }
-.yry-card-dot.source  { background: #3B82F6; }
-.yry-card-dot.domain  { background: #22d3ee; }
-.yry-card h3 { font-size: .875rem; font-weight: 600; }
-.yry-card ul { list-style: none; color: #94a3b8; font-size: .75rem; }
-.yry-card li { margin-bottom: .375rem; }
-
-/* ── Footer ── */
-.yry-footer { text-align: center; color: #475569; font-size: .75rem; margin-top: 1rem; }
-
-@media print { body { background: #020617; padding: 1rem; } .yry-toolbar { display: none !important; } }
+@media print { body { background: #020617; padding: 1rem; } }

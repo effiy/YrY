@@ -15,17 +15,16 @@
 
 import { join } from "node:path";
 import { existsSync, readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 
 import {
   NODE_ARGV_OFFSET, MAX_RETRIES, MAX_MSG_LENGTH, DEFAULT_API_URL, STORY_PANEL_DIR,
 } from "../../lib/constants.mjs";
-import { findProjectRoot, readProjectName } from "../../lib/fs.mjs";
+import { findProjectRoot, readProjectName, isMain } from "../../lib/fs.mjs";
 
 import { API_URL_DEFAULT, sendWithRetry, enqueueFailedNotification, flushNotificationQueue, logNotificationDelivery, loadConfig } from "./lib/bot-transport.mjs";
 import { buildMessage, buildHealthNotification, buildHealthAlertNotification } from "./lib/bot-message.mjs";
 import { HEALTH_DIMENSIONS, HEALTH_TREND_FILE } from "./lib/bot-health-trend.mjs";
-import { cmdHealth, validateMessageFormat } from "./lib/bot-health-cmd.mjs";
+import { cmdHealth } from "./lib/bot-health-cmd.mjs";
 
 // --- args --------------------------------------------------------------------
 
@@ -310,7 +309,7 @@ async function main() {
   await cmdSend(opts);
 }
 
-const _isMain = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+const _isMain = isMain(import.meta.url);
 if (_isMain) {
   main().catch((err) => {
     console.error(`[rui-bot] fatal: ${err.message}`);

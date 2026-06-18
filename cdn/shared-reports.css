@@ -142,6 +142,11 @@ td a:hover { color: var(--yry-accent); }
 .badge.rise { background: rgba(34,197,94,.12); color: var(--yry-pass); }
 .badge.fall { background: rgba(239,68,68,.12); color: var(--yry-fail); }
 .badge.flat { background: rgba(255,255,255,.05); color: var(--yry-text3); }
+.badge.A, .badge.B, .yry-badge.A, .yry-badge.B { background: rgba(34,197,94,.15); color: var(--yry-pass); }
+.badge.C, .yry-badge.C { background: rgba(245,158,11,.15); color: var(--yry-warn); }
+.badge.D, .yry-badge.D { background: rgba(239,68,68,.15); color: var(--yry-fail); }
+.badge.triggered, .yry-badge.triggered { background: rgba(245,158,11,.15); color: var(--yry-warn); }
+.badge.clear, .yry-badge.clear { background: rgba(34,197,94,.15); color: var(--yry-pass); }
 
 /* ── Findings (用于自循环报告 / 趋势报告) ───────────────────────────── */
 .yry-finding { padding: 14px 18px; margin-bottom: 8px; border-radius: 8px; border: var(--yry-border); }
@@ -205,6 +210,47 @@ td a:hover { color: var(--yry-accent); }
 .trend-delta.up { color: var(--yry-pass); }
 .trend-delta.down { color: var(--yry-fail); }
 .trend-delta.flat { color: var(--yry-text3); }
+
+/* ── Flat card (rgba surface, used by report index pages) ─────────────── */
+.rp-card-flat {
+  background: rgba(15,23,42,.4); border: var(--yry-border);
+  border-radius: 10px; padding: 16px 18px;
+  transition: transform .15s, border-color .15s;
+}
+.rp-card-flat:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.1); }
+.rp-card-flat.accent-l { border-left: 3px solid var(--yry-accent); }
+.rp-card-flat.pass-l { border-left: 3px solid var(--yry-pass); }
+.rp-card-flat.warn-l { border-left: 3px solid var(--yry-warn); }
+.rp-card-flat.fail-l { border-left: 3px solid var(--yry-fail); }
+.rp-card-flat.info-l { border-left: 3px solid var(--yry-cyan); }
+
+/* ── Score circle ─────────────────────────────────────────────────────── */
+.rp-score-circle {
+  border-radius: 50%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; border: 3px solid; flex-shrink: 0;
+}
+.rp-score-circle .big { font-size: 1.8rem; font-weight: 800; line-height: 1; }
+.rp-score-circle .sm { font-size: .6rem; color: var(--yry-text3); margin-top: 2px; }
+.rp-score-circle.good { border-color: var(--yry-pass); }
+.rp-score-circle.ok { border-color: #4ade80; }
+.rp-score-circle.warn { border-color: var(--yry-warn); }
+.rp-score-circle.bad { border-color: var(--yry-fail); }
+
+/* ── Alert banner ─────────────────────────────────────────────────────── */
+.rp-alert {
+  padding: 14px 18px; border-radius: 8px; margin-bottom: 20px;
+  font-size: .8rem; display: flex; align-items: center; gap: 10px;
+}
+.rp-alert.warn { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.2); color: var(--yry-warn); }
+.rp-alert.fail { background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.2); color: var(--yry-fail); }
+.rp-alert.info { background: rgba(34,211,238,.08); border: 1px solid rgba(34,211,238,.2); color: #22d3ee; }
+
+/* ── Bar row (label + bar + count) ────────────────────────────────────── */
+.rp-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.rp-bar-label { min-width: 80px; font-size: .76rem; font-weight: 600; color: var(--yry-text2); }
+.rp-bar-wrap { flex: 1; height: 20px; border-radius: 4px; background: rgba(255,255,255,.05); overflow: hidden; }
+.rp-bar-fill { height: 100%; border-radius: 4px; transition: width .6s ease; }
+.rp-bar-count { min-width: 60px; text-align: right; font-size: .72rem; color: var(--yry-text3); font-family: 'JetBrains Mono', monospace; }
 
 /* ── Responsive ────────────────────────────────────────────────────────── */
 @media (max-width: 640px) {

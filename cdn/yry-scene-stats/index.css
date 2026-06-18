@@ -1,0 +1,51 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YrySceneStats · 场景统计卡组 样式
+   颜色通过 CSS 自定义属性注入 (由 shared-b.css :root 定义)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  animation: ss-fadeInDown .5s .1s ease both;
+}
+
+@keyframes ss-fadeInDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ss-stat {
+  background: var(--yry-bg-card, linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%));
+  border: var(--yry-border, 1px solid rgba(255,255,255,0.06));
+  border-radius: var(--yry-radius, 12px);
+  padding: 18px 22px;
+  text-align: center;
+  box-shadow: var(--yry-shadow, 0 4px 20px rgba(0,0,0,0.3));
+  min-width: 90px;
+}
+
+.ss-val {
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.ss-val.t  { color: var(--yry-text, rgba(250,250,252,1)); }
+.ss-val.p  { color: var(--yry-pass, #22c55e); }
+.ss-val.f  { color: var(--yry-fail, #ef4444); }
+.ss-val.s  { color: var(--yry-skip, #6b7280); }
+.ss-val.health { color: var(--yry-pass, #22c55e); }
+.ss-val.warn-h { color: var(--yry-warn, #f59e0b); }
+.ss-val.accent { color: var(--yry-accent, #ffc107); }
+.ss-val.info { color: var(--yry-cyan, #22d3ee); }
+
+.ss-lbl {
+  font-size: .72rem;
+  color: var(--yry-text3, rgba(110,110,114,1));
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}

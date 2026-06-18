@@ -1,0 +1,51 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryCatWarning · 类别警告/成功块样式
+   用途: 集中度分析提示 / 已完成提示 等
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host { display: block; margin-top: 10px; }
+
+.cw-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border-radius: 8px;
+  padding: 10px 14px;
+  border: 1px solid;
+}
+.cw-wrapper.tone-warn {
+  background: rgba(245, 158, 11, .06);
+  border-color: rgba(245, 158, 11, .25);
+}
+.cw-wrapper.tone-success {
+  background: rgba(16, 185, 129, .06);
+  border-color: rgba(16, 185, 129, .25);
+}
+.cw-wrapper.tone-info {
+  background: rgba(34, 211, 238, .06);
+  border-color: rgba(34, 211, 238, .25);
+}
+.cw-wrapper.tone-fail {
+  background: rgba(239, 68, 68, .06);
+  border-color: rgba(239, 68, 68, .25);
+}
+
+.cw-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+.cw-content {
+  font-size: .74rem;
+  color: var(--yry-text2, #cdd6f4);
+  line-height: 1.55;
+  flex: 1;
+}
+.cw-content b { color: var(--yry-text, #f5f5f5); }
+.cw-content code {
+  color: var(--yry-accent, #ffc107);
+  background: rgba(255, 193, 7, .1);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: .7rem;
+}

@@ -1,0 +1,60 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YryWalkthrough · 逐步演示组件样式
+
+   依赖: yry-scene-base.css (提供 .walkthrough .step 基架样式)
+   本文件仅包含组件内部的增量样式 (s-tags, s-tag, s-time, s-result-desc)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.walkthrough .step .suite-body { width: 100%; }
+
+.walkthrough .step .s-title .s-time {
+  font-family: ui-monospace, monospace;
+  font-size: 0.64rem;
+  color: var(--accent, #FFC107);
+  background: rgba(255,193,7,.06);
+  border-radius: 8px;
+  padding: 1px 6px;
+  margin-left: 6px;
+  font-weight: 400;
+}
+
+.walkthrough .step .s-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.walkthrough .step .s-tag {
+  font-size: .58rem;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 500;
+  background: rgba(255,255,255,.03);
+  color: var(--text2, #d4d4d4);
+  border: 1px solid rgba(255,255,255,.04);
+}
+
+.walkthrough .step .s-tag.t-p0 {
+  color: var(--fail, #ef4444);
+  background: rgba(239,68,68,.06);
+  border-color: rgba(239,68,68,.15);
+}
+
+.walkthrough .step .s-tag.t-p1 {
+  color: var(--warn, #f59e0b);
+  background: rgba(245,158,11,.06);
+  border-color: rgba(245,158,11,.15);
+}
+
+.walkthrough .step .s-tag.t-p2 {
+  color: var(--info, #6b7280);
+  background: rgba(107,114,128,.06);
+  border-color: rgba(107,114,128,.15);
+}
+
+.walkthrough .step .s-tag.t-new {
+  color: var(--cyan, #22d3ee);
+  background: rgba(34,211,238,.06);
+  border-color: rgba(34,211,238,.15);
+}

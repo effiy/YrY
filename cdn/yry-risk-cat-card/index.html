@@ -1,0 +1,66 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryRiskCatCard · 风险类别增强卡片 Vue 3 组件
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryRiskCatCard · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0e0f1a); color: var(--yry-text, #f5f5f5); padding: 32px 24px; max-width: 400px; margin: 0 auto; font-family: var(--yry-font-sans); }
+  h1 { font-size: 1.1rem; }
+  .demo-hint { font-size: .74rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+</style>
+</head>
+<body>
+<h1>YryRiskCatCard</h1>
+<p class="demo-hint">Vue 3 组件: <code>icon</code> · <code>name</code> · <code>metrics</code> · <code>progress</code> · <code>trend</code> (JSON)</p>
+
+<div id="demo-1"></div>
+
+<script type="text/x-template" id="yry-risk-cat-card-tpl">
+  <div :class="'rcc-wrapper' + (hot ? ' hot' : '')">
+    <div class="rcc-head">
+      <div class="rcc-icon" :style="iconBg ? { '--rcc-icon-bg': iconBg } : {}">{{ icon }}</div>
+      <div class="rcc-name">{{ name }}</div>
+      <div class="rcc-count">{{ count }}</div>
+      <div v-if="badge" class="rcc-badge">{{ badge }}</div>
+    </div>
+    <div class="rcc-metric">
+      <div v-for="(m, i) in parsedMetrics" :key="i" class="rcc-m-row">
+        <span>{{ m.label }}</span>
+        <b :class="m.valueClass || ''">{{ m.value }}</b>
+      </div>
+    </div>
+    <div class="rcc-progress">
+      <div class="rcc-prog-fill" :style="progressStyle"></div>
+    </div>
+    <div class="rcc-trend">
+      <span v-if="trendDir" :class="'rcc-trend-' + trendDir">{{ trendText }}</span>
+      <span v-if="trendSuffix"> {{ trendSuffix }}</span>
+    </div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YryRiskCatCard) return;
+  Vue.createApp(window.YryRiskCatCard, {
+    icon: '🛠', name: '维护', count: '1 项',
+    iconBg: 'linear-gradient(135deg, #22d3ee, #0ea5e9)',
+    hot: false, badge: '',
+    metrics: '[{"label":"评分","value":"6","valueClass":"yry-clr-warn-2"},{"label":"占比","value":"17.1%"},{"label":"已缓解","value":"1/1","valueClass":"yry-clr-green"}]',
+    progressWidth: '100%', progressColor: '#10b981',
+    trendDir: 'down', trendText: '↓ -50%', trendSuffix: 'vs D-7'
+  }).mount('#demo-1');
+}
+if (window.YryRiskCatCard) mountAll();
+else document.addEventListener('yry-risk-cat-card-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

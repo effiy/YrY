@@ -1,0 +1,50 @@
+{
+  "latest": {
+    "version": "1.2.0",
+    "composite": 92,
+    "grade": "A",
+    "date": "2026-06-16"
+  },
+  "totalVersions": 3,
+  "dateRange": { "from": "2026-04-08", "to": "2026-06-16" },
+  "dimSummary": [
+    { "label": "CSS 组件覆盖", "avgScore": 95, "trend": 5, "recentAvg": 95, "entries": 3 },
+    { "label": "双主题完备性", "avgScore": 90, "trend": 0, "recentAvg": 90, "entries": 3 },
+    { "label": "JS API 一致性", "avgScore": 88, "trend": 3, "recentAvg": 88, "entries": 3 },
+    { "label": "加载链稳定", "avgScore": 96, "trend": 2, "recentAvg": 96, "entries": 3 },
+    { "label": "页面迁移率",  "avgScore": 85, "trend": 8, "recentAvg": 85, "entries": 3 },
+    { "label": "字体性能",     "avgScore": 92, "trend": 0, "recentAvg": 92, "entries": 3 }
+  ],
+  "diagSummary": [
+    { "id": "D0", "label": "基线偏离",   "count": 0, "rate": 0   },
+    { "id": "D1", "label": "效率退化",   "count": 0, "rate": 0   },
+    { "id": "D2", "label": "质量退化",   "count": 0, "rate": 0   },
+    { "id": "D3", "label": "复杂度增长", "count": 1, "rate": 33  },
+    { "id": "D4", "label": "流程退化",   "count": 0, "rate": 0   },
+    { "id": "D5", "label": "依赖退化",   "count": 0, "rate": 0   },
+    { "id": "D6", "label": "文档过时",   "count": 0, "rate": 0   },
+    { "id": "D7", "label": "配置漂移",   "count": 0, "rate": 0   }
+  ],
+  "diagLabels": {
+    "D0": "基线偏离",   "D1": "效率退化",   "D2": "质量退化",
+    "D3": "复杂度增长", "D4": "流程退化",   "D5": "依赖退化",
+    "D6": "文档过时",   "D7": "配置漂移"
+  },
+  "scoreTrend": [
+    { "date": "2026-04-08", "score": 78, "grade": "C", "version": "1.0.0" },
+    { "date": "2026-05-20", "score": 86, "grade": "B", "version": "1.1.0" },
+    { "date": "2026-06-16", "score": 92, "grade": "A", "version": "1.2.0" }
+  ],
+  "signals": [
+    { "type": "improvement", "icon": "📈", "msg": "页面迁移率连续 3 版本上升至 85%,D0-D7 诊断覆盖率改善" },
+    { "type": "info",        "icon": "ℹ️", "msg": "CSS 组件已稳定在 22+ 个,后续 1.x 阶段不再新增类" }
+  ],
+  "componentHealth": {
+    "css":     { "count": 22,  "avgScore": 95 },
+    "themes":  { "count": 2,   "avgScore": 90 },
+    "apis":    { "count": 9,   "avgScore": 88 },
+    "scripts": { "count": 2,   "avgScore": 92 },
+    "overallAvg": 92,
+    "totalComponents": 35
+  }
+}

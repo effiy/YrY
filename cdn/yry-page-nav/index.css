@@ -1,0 +1,87 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — yry-page-nav · 页面导航三件套样式
+   包含: breadcrumb · scene-nav · cross-nav
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
+     配合 yry-page-nav/index.js 自动生成 HTML
+
+   所有颜色均带 fallback，无 theme.css 也能正常显示
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Breadcrumb ────────────────────────────────────────────────────────── */
+.breadcrumb {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 1.25rem; font-size: 0.76rem;
+}
+.breadcrumb a {
+  color: var(--yry-color-text-2, #7aa2f7); text-decoration: none;
+  transition: color 0.15s;
+}
+.breadcrumb a:hover { color: var(--yry-color-accent, #fbbf24); text-decoration: underline; }
+.bc-sep { color: var(--yry-color-text-3, #53576c); opacity: 0.5; user-select: none; }
+.bc-current { color: var(--yry-color-text-2, #94a3b8); font-weight: 500; }
+
+/* ── Scene Nav ─────────────────────────────────────────────────────────── */
+.scene-nav {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+  justify-content: center; padding: 12px 16px; margin: 24px 0;
+  background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.05);
+  border-radius: 8px;
+}
+.scene-nav-link {
+  color: var(--yry-color-text-2, #94a3b8); text-decoration: none;
+  font-size: .76rem; padding: 5px 12px; border-radius: 14px;
+  transition: all .15s; white-space: nowrap;
+}
+.scene-nav-link:hover {
+  color: var(--yry-color-accent, #ffc107);
+  background: rgba(255,193,7,.08);
+}
+.scene-nav-link.active {
+  color: var(--yry-color-accent, #ffc107); font-weight: 600;
+  background: rgba(255,193,7,.12); border: 1px solid rgba(255,193,7,.25);
+  cursor: default;
+}
+.scene-nav-link.story { color: var(--yry-color-cyan, #22d3ee); }
+.scene-nav-link.story:hover {
+  color: var(--yry-color-accent, #ffc107);
+  background: rgba(34,211,238,.08);
+}
+.scene-nav-sep {
+  color: var(--yry-color-text-3, #64748b); font-size: .6rem;
+  opacity: .3; user-select: none;
+}
+
+/* ── Cross Nav ─────────────────────────────────────────────────────────── */
+.cross-nav {
+  display: flex; gap: 4px; justify-content: center; align-items: center;
+  margin-bottom: 32px; flex-wrap: wrap;
+  animation: yry-fadeInDown .5s .15s ease both;
+}
+.cross-link {
+  color: var(--yry-color-cyan, #22d3ee); text-decoration: none;
+  font-size: .74rem; padding: 3px 10px; border-radius: 4px;
+  transition: color .15s, background .15s;
+}
+.cross-link:hover {
+  color: var(--yry-color-accent, #ffc107);
+  background: rgba(255,193,7,.06); text-decoration: underline;
+}
+.cross-link.on {
+  color: var(--yry-color-accent, #ffc107); font-weight: 600;
+}
+.cross-sep {
+  color: var(--yry-color-text-3, #475569); font-size: .5rem;
+  opacity: .35; user-select: none;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .scene-nav { gap: 3px; padding: 8px 10px; }
+  .scene-nav-link { font-size: .7rem; padding: 3px 8px; }
+}
+
+@media print {
+  .scene-nav, .cross-nav { display: none !important; }
+}

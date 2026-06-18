@@ -7,7 +7,8 @@
 <link rel="stylesheet" href="../../../../cdn/fonts.css">
 <link rel="stylesheet" href="../../../../cdn/shared.css">
 <link rel="stylesheet" href="../../../../cdn/theme-mono.css">
-<style>body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}</style>
+<link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-graph-base.css">
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
@@ -23,14 +24,9 @@ body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;
 @keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 h1{font-size:1.5rem;font-weight:700}
 .subtitle{color:#94a3b8;font-size:.875rem;margin-left:1.75rem}
-.toolbar{display:flex;gap:.5rem;margin-left:auto;flex-shrink:0;align-items:center}
 .toolbar-toggle{background:transparent;border:none;color:#475569;cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem}
 .toolbar-toggle:hover{color:#94a3b8;background:rgba(30,41,59,.5)}
-.toolbar-actions{display:none;gap:.5rem}
-.toolbar.expanded .toolbar-actions{display:flex}
-.toolbar-actions button{background:rgba(30,41,59,.8);border:1px solid #334155;color:#94a3b8;padding:.375rem .75rem;border-radius:.375rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s;white-space:nowrap}
-.toolbar-actions button:hover{background:rgba(51,65,85,.8);color:white;border-color:#475569}
-.graph-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1rem;margin-bottom:1.5rem}
+.toolbar.expanded .graph-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1rem;margin-bottom:1.5rem}
 #cy{width:100%;height:550px;border-radius:.5rem}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
 .card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
@@ -58,13 +54,16 @@ h1{font-size:1.5rem;font-weight:700}
 .cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
 .cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
 .footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
-@media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
+@media print{body{background:#020617;padding:1rem}}
 </style>
 </head>
 <body>
 <div class="container" id="report-container">
-<nav class="yry-breadcrumb"><a href="../../../../docs/index.html">📄 文档中心</a><span class="yry-bc-sep">/</span><span class="yry-bc-current">计划清单 · 故事任务</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">场景 4 · 批量生成与自循环机制</span><span class="yry-bc-sep">/</span><span class="yry-bc-current">🔗 知识图谱</span></nav>
-<div class="yry-cross-nav"><a class="yry-cross-link" href="计划清单.html">📋 清单</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="架构图.html">📐 架构</a><span class="yry-cross-sep">·</span><span class="yry-cross-link on">🔗 图谱</span><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="源码.html">📄 源码</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="测试面板.html">🧪 测试</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="演示.html">💡 演示</a><span class="yry-cross-sep">·</span><a class="yry-cross-link" href="审查.html">📝 审查</a></div>
+<script type="application/json" id="yry-page-config">
+{"story": "yry-checklist · 清单与自循环", "scene": {"num": "4", "name": "批量生成与自循环机制", "dir": "场景-4-批量生成与自循环机制"}, "depth": "../../../", "scenes": [{"num": "1", "name": "模板架构与 CSS 设计系统", "dir": "场景-1-模板架构与CSS设计系统"}, {"num": "2", "name": "清单交互组件实现", "dir": "场景-2-清单交互组件实现"}, {"num": "3", "name": "验证报告与健康面板集成", "dir": "场景-3-验证报告与健康面板集成"}, {"num": "4", "name": "批量生成与自循环机制", "dir": "场景-4-批量生成与自循环机制"}], "pages": [{"type": "清单", "icon": "📋", "file": "计划清单.html"}, {"type": "架构", "icon": "📐", "file": "架构图.html"}, {"type": "图谱", "icon": "🔗", "file": "知识图谱.html"}, {"type": "源码", "icon": "📄", "file": "源码.html"}, {"type": "测试", "icon": "🧪", "file": "测试面板.html"}, {"type": "演示", "icon": "💡", "file": "演示.html"}, {"type": "审计", "icon": "📝", "file": "审查.html"}], "page": {"type": "图谱", "icon": "🔗", "file": "知识图谱.html"}}
+</script>
+<div id="yry-nav"></div>
+<script src="../../../../cdn/yry-page-nav/index.js"></script>
 
 <div class="header">
   <div class="header-row">

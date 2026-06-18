@@ -2,76 +2,44 @@
 <html lang="zh-CN">
 <head>
 {{HEAD_BLOCK}}
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-footer/index.css">
 <style>
-@keyframes stepIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
-.yry-container{max-width:960px;padding:40px 24px 80px}
-.yry-header h1{font-size:1.8rem}
-.yry-header .yry-sub{margin-top:4px}
-.yry-stats{gap:12px;margin-bottom:20px}
-.yry-stat{padding:16px 20px;min-width:80px}
-.yry-stat .yry-val{font-size:1.6rem}
-.yry-tabs{margin-bottom:24px}
-.yry-tab{padding:8px 18px;font-size:.82rem}
-.yry-panel{padding-top:0}
-/* ── Walkthrough ── */
-.walkthrough{counter-reset:step}
-.walkthrough .step{counter-increment:step;display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:stepIn .3s ease both}
-.walkthrough .step::before{content:counter(step);width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);color:var(--yry-accent);font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.walkthrough .step .s-title{font-weight:600;font-size:.88rem}
-.walkthrough .step .s-desc{font-size:.76rem;color:var(--yry-text2);margin:3px 0 6px}
-/* ── Code blocks ── */
-pre{background:rgba(0,0,0,.3);border-radius:6px;padding:10px 36px 10px 14px;font-size:.74rem;color:var(--yry-cyan);overflow-x:auto;font-family:'SF Mono',monospace;position:relative;cursor:pointer;margin:6px 0}
-/* ── Mermaid diagram wraps ── */
-.mermaid-wrap{background:var(--yry-bg-card);border:var(--yry-border);border-radius:var(--yry-radius);padding:20px;box-shadow:var(--yry-shadow);overflow-x:auto;margin-bottom:16px}
-/* ── Command cards ── */
-.cmd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
-.cmd-card{background:var(--yry-bg-card);border:var(--yry-border);border-radius:var(--yry-radius);padding:16px 18px;box-shadow:var(--yry-shadow)}
-.cmd-card .name{font-weight:700;font-size:.88rem;color:var(--yry-accent);font-family:monospace}
-.cmd-card .desc{font-size:.76rem;color:var(--yry-text2);margin:4px 0 8px;line-height:1.5}
-/* ── Flow diagram ── */
-.flow-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:16px 0}
-.flow-chip{background:var(--yry-bg-flat);border:var(--yry-border);border-radius:20px;padding:6px 14px;font-size:.78rem}
-.flow-chip .n{font-weight:700;color:var(--yry-accent)}
-.flow-arrow{color:var(--yry-text3);font-size:.8rem}
+/* Page-specific overrides — shared patterns in shared-b.css */
 </style>
 </head>
 <body>
 <div class="yry-container">
-{{BREADCRUMB}}
-{{CROSS_NAV}}
+<yry-scene-chrome
+  theme="b"
+  title="💡 {ACCENT} — 演示"
+  title-accent="{{SCENE_TITLE}}"
+  subtitle="场景 {{SCENE_NUM}} · 版本 v{{VERSION}} · {{DATE}}"
+  breadcrumb='{{BREADCRUMB_JSON}}'
+  crossnav='{{CROSS_NAV_JSON}}'>
+</yry-scene-chrome>
 
-<div class="yry-header">
-  <h1>💡 <span class="yry-accent">{{SCENE_TITLE}}</span> — 演示</h1>
-  <p class="yry-sub">场景 {{SCENE_NUM}} · 版本 v{{VERSION}} · {{DATE}}</p>
-</div>
+<yry-scene-stats items='{{STATS_GRID_JSON}}'></yry-scene-stats>
 
-{{STATS_GRID}}
-
-<div class="yry-tabs">
-  <span class="yry-tab on" data-panel="walkthrough">🚶 演示</span>
-  <span class="yry-tab" data-panel="overview">📊 概览</span>
-  <span class="yry-tab" data-panel="commands">⚡ 命令</span>
-</div>
-
-<div class="yry-panel on" id="panelWalkthrough">
-  {{SEC0_HTML}}
-</div>
-
-<div class="yry-panel" id="panelOverview">
-  {{OVERVIEW}}
-  <div class="yry-section">
-    <h2><span class="yry-dot"></span>执行流程</h2>
-    <div class="mermaid-wrap">{{MERMAID_BLOCKS}}</div>
+<yry-scene-tabs tabs='[{"id":"walkthrough","label":"🚶 操作演示"},{"id":"commands","label":"💻 命令列表"},{"id":"screenshots","label":"📸 效果截图"}]'>
+  <div data-panel="walkthrough">{{SEC0_HTML}}</div>
+  <div data-panel="commands">
+    <div class="yry-section">
+      <h2><span class="yry-dot"></span>命令参考</h2>
+      {{SEC1_HTML}}
+    </div>
   </div>
-</div>
+  <div data-panel="screenshots">{{MERMAID_BLOCKS}}</div>
+</yry-scene-tabs>
 
-<div class="yry-panel" id="panelCommands">
-  {{SEC2_HTML}}
-</div>
-
-<div class="yry-footer">YrY v{{VERSION}} · {{DATE}} · <a href="{{CDN_DEPTH}}docs/index.html">文档中心</a></div>
+<yry-scene-footer version="{{VERSION}}" date="{{DATE}}" docs-link="{{CDN_DEPTH}}docs/index.html"></yry-scene-footer>
 </div>
 <script src="{{CDN_DEPTH}}cdn/shared.js"></script>
-<script>YrY.initTabs();YrY.initCodeCopy();</script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-chrome/index.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-stats/index.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-tabs/index.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-footer/index.js"></script>
 </body>
 </html>

@@ -1,0 +1,73 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryChecklistHead · 清单头部样式
+   包含: 标题、元信息、完成度环
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: block;
+}
+
+.clh-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: linear-gradient(135deg, rgba(255, 193, 7, .06), rgba(34, 211, 238, .04));
+  border: 1px solid rgba(255, 193, 7, .18);
+  border-radius: 10px;
+  padding: 14px 20px;
+  margin-bottom: 14px;
+}
+
+.clh-info { flex: 1; min-width: 0; }
+.clh-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--yry-accent, #ffc107);
+  letter-spacing: .02em;
+}
+.clh-meta {
+  font-size: .72rem;
+  color: var(--yry-text3, #888);
+  margin-top: 4px;
+}
+.clh-meta code {
+  color: var(--yry-cyan, #22d3ee);
+  background: rgba(34, 211, 238, .08);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: .7rem;
+}
+.clh-meta b { color: var(--yry-text, #f5f5f5); font-weight: 600; }
+
+.clh-progress {
+  text-align: center;
+  padding: 8px 18px;
+  background: rgba(16, 185, 129, .12);
+  border: 1px solid rgba(16, 185, 129, .3);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.clh-pct {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #10b981;
+  line-height: 1;
+}
+.clh-pct span {
+  font-size: .8rem;
+  color: #10b981;
+  opacity: .7;
+  margin-left: 2px;
+}
+.clh-pct-lbl {
+  font-size: .65rem;
+  color: var(--yry-text3, #888);
+  margin-top: 2px;
+  letter-spacing: .04em;
+}
+
+@media (max-width: 600px) {
+  .clh-wrapper { flex-direction: column; align-items: stretch; }
+  .clh-progress { align-self: flex-end; }
+}

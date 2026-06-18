@@ -1,0 +1,37 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryVerifyReportHead · 验证报告头部
+   包含: 标题 + 元信息(策略/触发/范围/工具)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host { display: block; }
+
+.vrh-wrapper {
+  background: linear-gradient(135deg, rgba(16, 185, 129, .04), rgba(34, 211, 238, .04));
+  border: 1px solid rgba(16, 185, 129, .2);
+  border-radius: 10px;
+  padding: 14px 20px;
+  margin-bottom: 16px;
+}
+.vrh-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--yry-cyan, #22d3ee);
+  margin-bottom: 6px;
+}
+.vrh-meta {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  font-size: .72rem;
+  color: var(--yry-text2, #d4d4d4);
+}
+@media (max-width: 700px) { .vrh-meta { grid-template-columns: repeat(2, 1fr); } }
+
+.vrh-meta-item b { color: var(--yry-text3, #888); font-weight: 500; margin-right: 3px; }
+.vrh-meta-item code {
+  color: var(--yry-accent, #ffc107);
+  background: rgba(255, 193, 7, .08);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: .68rem;
+}

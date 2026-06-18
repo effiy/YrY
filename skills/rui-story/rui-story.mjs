@@ -30,7 +30,7 @@ async function cmdOverview(apiUrl, projectRoot, projectPrefix) {
     sessions = await querySessionsFull(apiUrl, API_X_TOKEN);
   } catch (err) {
     console.error(`[rui-story] 远端不可达: ${err.message}`);
-    process.exit(0);
+    process.exit(1);
   }
   const storyMap = groupSessionsByStory(sessions);
   const blockedMap = new Map();
@@ -48,7 +48,7 @@ async function cmdList(apiUrl, projectRoot, projectPrefix) {
     sessions = await querySessionsFull(apiUrl, API_X_TOKEN);
   } catch (err) {
     console.error(`[rui-story] 远端不可达: ${err.message}`);
-    process.exit(0);
+    process.exit(1);
   }
   const storyMap = groupSessionsByStory(sessions);
   if (storyMap.size === 0) {
@@ -77,7 +77,7 @@ async function cmdShow(apiUrl, projectRoot, projectPrefix, name) {
     sessions = await querySessionsFull(apiUrl, API_X_TOKEN);
   } catch (err) {
     console.error(`[rui-story] 远端不可达: ${err.message}`);
-    process.exit(0);
+    process.exit(1);
   }
   const storyMap = groupSessionsByStory(sessions);
 
@@ -109,7 +109,7 @@ async function cmdRecommend(apiUrl) {
     sessions = await querySessionsFull(apiUrl, API_X_TOKEN);
   } catch (err) {
     console.error(`[rui-story] 远端不可达: ${err.message}`);
-    process.exit(0);
+    process.exit(1);
   }
   const storyMap = groupSessionsByStory(sessions);
   printRecommend(storyMap);
@@ -162,7 +162,7 @@ async function cmdSync(apiUrl, projectRoot, projectPrefix, name) {
 
   if (!existsSync(syncScript)) {
     console.error("[rui-story] rui-import sync 脚本不存在");
-    process.exit(0);
+    process.exit(1);
   }
 
   console.error(dim(`[rui-story] sync mode — 从远端拉取 story=${name} (前缀: ${projectPrefix})...`));
@@ -174,7 +174,7 @@ async function cmdSync(apiUrl, projectRoot, projectPrefix, name) {
     });
   } catch (err) {
     console.error(`[rui-story] sync 失败: ${err.message}`);
-    process.exit(0);
+    process.exit(1);
   }
 }
 
@@ -192,7 +192,7 @@ async function main() {
 
   if (!projectName) {
     console.error("[rui-story] 无法确定项目名，请检查 CLAUDE.md");
-    process.exit(0);
+    process.exit(1);
   }
 
   const projectPrefix = projectName + "-";
@@ -232,7 +232,7 @@ async function main() {
       break;
     default:
       console.error(`[rui-story] 未知命令: ${opts.command}`);
-      process.exit(0);
+      process.exit(1);
   }
 }
 

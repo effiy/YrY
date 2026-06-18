@@ -84,9 +84,10 @@
        ════════════════════════════════════════════════════════════════════ -->
   <script type="text/x-template" id="yry-stats-grid-tpl">
     <div class="stats-grid">
-      <div v-for="(item, i) in items" :key="i" class="stat-card">
+      <div v-for="(item, i) in items" :key="i" class="stat-card" :title="item.tooltip || ''">
         <div class="val" :class="item.modifier">{{ item.value }}</div>
         <div class="lbl">{{ item.label }}</div>
+        <div v-if="item.sub" class="sub">{{ item.sub }}</div>
       </div>
     </div>
   </script>

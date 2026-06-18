@@ -1,0 +1,62 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryPhaseStrip · 阶段进度条样式
+   包含: 6 阶段横向排列,支持 done/active/pending 三态
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: block;
+}
+
+.phs-wrapper {
+  display: grid;
+  grid-template-columns: repeat(var(--phs-cols, 6), 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.phase {
+  background: rgba(255, 255, 255, .03);
+  border: 1px solid rgba(255, 255, 255, .06);
+  border-radius: 6px;
+  padding: 8px 6px;
+  text-align: center;
+  transition: all .2s;
+  cursor: default;
+}
+.phase:hover { transform: translateY(-1px); }
+.phase.done { background: rgba(16, 185, 129, .08); border-color: rgba(16, 185, 129, .3); }
+.phase.active { background: rgba(245, 158, 11, .08); border-color: rgba(245, 158, 11, .3); }
+
+.p-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #10b981;
+  color: #fff;
+  font-size: .66rem;
+  font-weight: 700;
+  line-height: 18px;
+  margin: 0 auto 4px;
+}
+.phase.active .p-dot { background: #f59e0b; }
+.phase.pending .p-dot { background: rgba(255, 255, 255, .12); color: var(--yry-text3, #888); }
+
+.p-name {
+  font-size: .66rem;
+  color: var(--yry-text2, #d4d4d4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.p-count {
+  font-size: .6rem;
+  color: var(--yry-text3, #888);
+  margin-top: 1px;
+}
+
+@media (max-width: 900px) {
+  .phs-wrapper { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 480px) {
+  .phs-wrapper { grid-template-columns: repeat(2, 1fr); }
+}

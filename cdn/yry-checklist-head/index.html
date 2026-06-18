@@ -1,0 +1,75 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryChecklistHead · 清单头部 Vue 3 组件
+   三文件: index.html (模板+Demo) · index.js (逻辑) · index.css (样式)
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryChecklistHead · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0a0a0a); color: var(--yry-text, #f5f5f5); font-family: var(--yry-font-sans); padding: 32px 24px 60px; max-width: 900px; margin: 0 auto; line-height: 1.55; }
+  h1 { font-size: 1.25rem; margin: 0 0 4px; }
+  h1 .accent { color: var(--yry-accent, #ffc107); }
+  .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+  .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: .72rem; color: #e0af68; }
+  hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+  .demo-section { margin: 20px 0; }
+  .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 10px; color: var(--yry-text2); }
+</style>
+</head>
+<body>
+
+<h1><span class="accent">📋</span> YryChecklistHead · 清单头部</h1>
+<p class="demo-hint">Vue 3 组件: <code>percent</code> · <code>title</code> · <code>meta</code></p>
+
+<div class="demo-section"><h3>Demo 1 — 100% 完成</h3><div id="demo-1"></div></div>
+<div class="demo-section"><h3>Demo 2 — 60% 进行中</h3><div id="demo-2"></div></div>
+<div class="demo-section"><h3>Demo 3 — 0% 启动期</h3><div id="demo-3"></div></div>
+
+<hr>
+<p class="demo-hint">💡 <strong>API:</strong> <code>percent</code> (0-100) · <code>title</code> · <code>meta</code> (支持 HTML)</p>
+
+<script type="text/x-template" id="yry-checklist-head-tpl">
+  <div class="clh-wrapper">
+    <div class="clh-info">
+      <div class="clh-title" v-html="title"></div>
+      <div class="clh-meta" v-html="meta"></div>
+    </div>
+    <div class="clh-progress">
+      <div class="clh-pct">{{ percent }}<span>%</span></div>
+      <div class="clh-pct-lbl">完成度</div>
+    </div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YryChecklistHead) return;
+  Vue.createApp(window.YryChecklistHead, {
+    percent: 100,
+    title: '📋 cdn资源加载与页面渲染执行清单',
+    meta: '场景: <code>cdn资源加载与页面渲染</code> · 阶段: <b>交付完成</b> · 更新: <code>2026-06-13</code>'
+  }).mount('#demo-1');
+  Vue.createApp(window.YryChecklistHead, {
+    percent: 60,
+    title: '🚀 测试用例执行清单',
+    meta: '阶段: <b>§3 验证</b> · 进度: <code>8/12</code> · 预计: <code>06-20</code>'
+  }).mount('#demo-2');
+  Vue.createApp(window.YryChecklistHead, {
+    percent: 0,
+    title: '🌱 新场景 · 风险登记',
+    meta: '阶段: <b>§0 立项</b> · 计划: <code>2026-07-01</code>'
+  }).mount('#demo-3');
+}
+if (window.YryChecklistHead) mountAll();
+else document.addEventListener('yry-checklist-head-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

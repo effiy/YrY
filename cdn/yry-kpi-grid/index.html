@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryKpiGrid · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css"><link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="../yry-kpi-card/index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>body{{background:var(--yry-bg,#0e0f1a);color:var(--yry-text,#f5f5f5);padding:32px;max-width:900px;margin:0 auto;font-family:var(--yry-font-sans)}}h1{{font-size:1.1rem}}.demo-hint{{font-size:.74rem;color:var(--yry-text3,#888);margin:0 0 20px}}</style>
+</head>
+<body>
+<h1>YryKpiGrid</h1><p class="demo-hint">Vue 3: <code>kpis</code> (JSON) · <code>cols</code></p>
+<div id="demo-1"></div>
+
+<script type="text/x-template" id="yry-kpi-grid-tpl">
+  <div class="kpg-wrapper" :style="{ '--kpg-cols': String(cols) }">
+    <div v-for="(k, i) in parsedKpis" :key="i" class="kpic">
+      <div class="kpic-label">{{ k.label }}</div>
+      <div :class="'kpic-num' + (k.numColor ? ' ' + k.numColor : '')">{{ k.num }}</div>
+      <div v-if="k.trend" :class="'kpic-trend ' + (k.trendDir || 'flat')">{{ k.trend }}</div>
+    </div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function m(){{if(!window.YryKpiGrid)return;Vue.createApp(window.YryKpiGrid,{{cols:6,kpis:'[{"label":"路径完整度","num":"100%","trend":"↑","trendDir":"up","numColor":"health"},{"label":"阅读速度","num":"28s","trend":"↑","trendDir":"up","numColor":"cyan"}]'}}).mount('#demo-1')}}
+if(window.YryKpiGrid)m();else document.addEventListener('yry-kpi-grid-ready',m,{{once:true}});
+</script>
+</body>
+</html>

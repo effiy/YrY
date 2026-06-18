@@ -9,13 +9,8 @@
 <link rel="stylesheet" href="../../cdn/theme.css">
 <link rel="stylesheet" href="../../cdn/shared-reports.css">
 <style>
-.badge.ok { background: rgba(34,197,94,.15); color: var(--yry-pass); }
-.badge.err { background: rgba(239,68,68,.15); color: var(--yry-fail); }
-.badge.rise { background: rgba(34,197,94,.12); color: var(--yry-pass); }
-.badge.fall { background: rgba(239,68,68,.12); color: var(--yry-fail); }
-.badge.flat { background: rgba(255,255,255,.05); color: var(--yry-text3); }
 .src-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
-.src-card { background: rgba(15,23,42,.4); border: 1px solid rgba(255,255,255,.06); border-radius: 10px; padding: 16px 18px; text-align: center; transition: transform .15s, border-color .15s; }
+.src-card { border: 1px solid rgba(255,255,255,.06); padding: 16px 18px; text-align: center; }
 .src-card:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.1); }
 .src-icon { font-size: 1.6rem; margin-bottom: 6px; }
 .src-name { font-size: .82rem; font-weight: 600; }
@@ -31,14 +26,10 @@
 .vel-lbl { font-size: .64rem; color: var(--yry-text3); margin-top: 4px; letter-spacing: .3px; }
 
 .cat-bars { display: flex; flex-direction: column; gap: 8px; }
-.cat-row { display: flex; align-items: center; gap: 12px; }
-.cat-label { min-width: 110px; font-size: .76rem; font-weight: 600; color: var(--yry-text2); }
-.cat-bar-wrap { flex: 1; height: 20px; border-radius: 4px; background: rgba(255,255,255,.05); overflow: hidden; position: relative; }
-.cat-bar-fill { height: 100%; border-radius: 4px; transition: width .6s ease; }
-.cat-count { min-width: 60px; text-align: right; font-size: .72rem; color: var(--yry-text3); font-family: 'JetBrains Mono', monospace; }
+
 .cat-pct { min-width: 48px; text-align: right; font-size: .68rem; color: var(--yry-text3); }
 
-.quality-card { padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.quality-card { padding: 14px 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .quality-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .quality-num { font-size: 1.1rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
 .quality-lbl { font-size: .72rem; color: var(--yry-text2); }
@@ -51,7 +42,7 @@
 
 /* health ref card */
 .health-ref { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding: 18px 20px; border-radius: 10px; border: var(--yry-border); background: rgba(15,23,42,.4); }
-.health-score-circle { width: 72px; height: 72px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; flex-shrink: 0; }
+
 .health-meta { font-size: .72rem; color: var(--yry-text3); line-height: 1.7; }
 .health-meta strong { color: var(--yry-text); }
 
@@ -62,10 +53,6 @@
 .freshness-cold { background: var(--yry-fail); }
 
 /* alert banner */
-.alert-banner { padding: 14px 18px; border-radius: 8px; margin-bottom: 20px; font-size: .8rem; display: flex; align-items: center; gap: 10px; }
-.alert-banner.warn { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.2); color: var(--yry-warn); }
-.alert-banner.fail { background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.2); color: var(--yry-fail); }
-.alert-banner.info { background: rgba(34,211,238,.08); border: 1px solid rgba(34,211,238,.2); color: #22d3ee; }
 
 .momentum-bar { display: inline-block; height: 6px; border-radius: 3px; min-width: 30px; vertical-align: middle; margin-right: 4px; }
 .momentum-pos { background: var(--yry-pass); }
@@ -75,7 +62,7 @@
 @media (max-width: 640px) {
   .src-grid { grid-template-columns: 1fr 1fr; }
   .vel-grid { flex-direction: column; }
-  .cat-label { min-width: 80px; font-size: .68rem; }
+  
   .health-ref { flex-direction: column; align-items: flex-start; }
 }
 </style>
@@ -126,7 +113,7 @@
 <div class="card">
   <h2>📡 数据源可达性 &amp; 聚合权重</h2>
   <div class="src-grid" id="srcGrid">
-    <div class="src-card"><div style="color:var(--yry-text3);padding:12px;text-align:center">加载中...</div></div>
+    <div class="src-card rp-card-flat"><div style="color:var(--yry-text3);padding:12px;text-align:center">加载中...</div></div>
   </div>
 </div>
 
@@ -215,7 +202,7 @@
 <!-- Cross-reference: Health + Self-Improve + 自循环 -->
 <div class="card">
   <h2>🩺 系统联动快照</h2>
-  <div class="health-ref" id="healthRef">
+  <div class="health-ref rp-card-flat" id="healthRef">
     <div style="color:var(--yry-text3);text-align:center;padding:12px;flex:1">加载中...</div>
   </div>
   <div id="crossRefs" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"></div>

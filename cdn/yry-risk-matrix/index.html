@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryRiskMatrix · Demo</title>
+<link rel="stylesheet" href="../shared.css"><link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>body{{background:var(--yry-bg,#0e0f1a);color:var(--yry-text,#f5f5f5);padding:32px;max-width:900px;margin:0 auto;font-family:var(--yry-font-sans)}}h1{{font-size:1.1rem}}.demo-hint{{font-size:.74rem;color:var(--yry-text3,#888);margin:0 0 20px}}</style>
+</head>
+<body>
+<h1>YryRiskMatrix</h1><p class="demo-hint">Vue 3: <code>cells</code> · <code>col-labels</code> · <code>row-labels</code> (JSON)</p>
+<div id="demo-1"></div>
+
+<script type="text/x-template" id="yry-risk-matrix-tpl">
+  <div class="risk-matrix">
+    <div class="rm-corner"></div>
+    <div class="rm-axis-x">{{ likelihoodAxis }}</div>
+    <div v-for="(l, i) in parsedColLabels" :key="'ch'+i" class="rm-col-h">{{ l }}</div>
+    <template v-for="(r, ri) in [0,1,2,3,4]" :key="'row'+ri">
+      <div class="rm-row-h">{{ parsedRowLabels[ri] || '' }}</div>
+      <div v-for="(c, ci) in [0,1,2,3,4]" :key="'cell'+ri+'-'+ci">
+        <div v-if="cellObj(ri,ci).id" :class="'rm-cell ' + cellCls(ri,ci)" :title="cellObj(ri,ci).title || ''">{{ cellObj(ri,ci).id }}</div>
+        <div v-else :class="'rm-cell l' + ri">&nbsp;</div>
+      </div>
+    </template>
+    <div class="rm-corner"></div>
+    <div class="rm-axis-x">{{ severityAxis }}</div>
+    <div v-for="(l, i) in parsedColLabels" :key="'cb'+i" class="rm-col-h">{{ l }}</div>
+  </div>
+  <div class="rm-legend">
+    <span class="rml-item"><span class="rml-dot r-low"></span>低风险 (1-3)</span>
+    <span class="rml-item"><span class="rml-dot r-med"></span>中风险 (4-9)</span>
+    <span class="rml-item"><span class="rml-dot r-high"></span>高风险 (10-15)</span>
+    <span class="rml-item"><span class="rml-dot r-crit"></span>极高 (16-25)</span>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function m(){{if(!window.YryRiskMatrix)return;Vue.createApp(window.YryRiskMatrix,{{
+  colLabels:'["极低 (1)","低 (2)","中 (3)","高 (4)","极高 (5)"]',
+  rowLabels:'["极高 (5)","高 (4)","中 (3)","低 (2)","极低 (1)"]',
+  severityAxis:'↑ 严重度',likelihoodAxis:'可能性 →',
+  cells:'[["","",{{"id":"R-04","level":"med"}},"",""],["",{{"id":"R-05","level":"low"}},"",{{"id":"R-03","level":"med"}},""],["","","","",""],["","","","",""],["","","","",""]]'
+}}).mount('#demo-1')}}
+if(window.YryRiskMatrix)m();else document.addEventListener('yry-risk-matrix-ready',m,{{once:true}});
+</script>
+</body>
+</html>

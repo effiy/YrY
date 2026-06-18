@@ -3,9 +3,8 @@
  * Extracted from sync.mjs for single-responsibility
  */
 
-import { execSync } from "node:child_process";
 import { NODE_ARGV_OFFSET } from "../../../lib/constants.mjs";
-import { findPluginHelpPath } from "../../../lib/plugin-utils.mjs";
+import { showPluginHelp } from "../../../lib/plugin-utils.mjs";
 import { SKILL_NAME } from "./config.mjs";
 
 export function parseArgs() {
@@ -39,16 +38,7 @@ export function parseArgs() {
 }
 
 export function showHelp() {
-  const helpPath = findPluginHelpPath(SKILL_NAME);
-  if (helpPath) {
-    try {
-      execSync(`node "${helpPath}"`, { stdio: "inherit" });
-    } catch {
-      fallbackHelp();
-    }
-  } else {
-    fallbackHelp();
-  }
+  showPluginHelp(SKILL_NAME, fallbackHelp);
   process.exit(0);
 }
 

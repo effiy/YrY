@@ -1,0 +1,86 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryRiskRow · 可展开风险行 Vue 3 组件
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryRiskRow · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0e0f1a); color: var(--yry-text, #f5f5f5); padding: 32px 24px; max-width: 800px; margin: 0 auto; font-family: var(--yry-font-sans); }
+  h1 { font-size: 1.1rem; }
+  .demo-hint { font-size: .74rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+</style>
+</head>
+<body>
+<h1>YryRiskRow</h1>
+<p class="demo-hint">Vue 3 组件: <code>id</code> · <code>name</code> · <code>details</code> · <code>plan</code> · <code>timeline</code> (JSON)</p>
+
+<div id="demo-1"></div>
+
+<script type="text/x-template" id="yry-risk-row-tpl">
+  <div :class="'risk-row' + (open ? ' open' : '')">
+    <div class="rr-summary" @click="open = !open">
+      <div class="rr-id"><code>{{ id }}</code></div>
+      <div class="rr-title">
+        <div class="rr-name">{{ name }}</div>
+        <div v-if="sub" class="rr-sub">{{ sub }}</div>
+      </div>
+      <div class="rr-cat"><span :class="'risk-cat cat-' + (category || '')">{{ category }}</span></div>
+      <div class="rr-score">
+        <div class="rr-score-bar"><div :class="'rr-score-fill ' + (scoreLevel || 'low')" :style="{ '--w': scorePct + '%' }"></div></div>
+        <div class="rr-score-info">{{ scoreInfo }}</div>
+      </div>
+      <div class="rr-deadline"><code>{{ deadline }}</code></div>
+      <div class="rr-owner">{{ owner }}</div>
+      <div :class="'rr-status ' + (status || 'pass')">{{ statusText }}</div>
+      <div class="rr-toggle">{{ open ? '▲' : '▼' }}</div>
+    </div>
+    <div class="rr-detail">
+      <div v-if="parsedDetails.length" class="rr-grid-4">
+        <div v-for="(d, i) in parsedDetails" :key="'d'+i" class="rr-cell">
+          <div class="rr-cell-k">{{ d.key }}</div>
+          <div class="rr-cell-v" v-html="d.val || ''"></div>
+        </div>
+      </div>
+      <div v-if="parsedPlan.length" class="rr-block">
+        <div class="rr-block-k">🛡 缓解计划 ({{ parsedPlan.length }} 步)</div>
+        <div class="rr-steps">
+          <div v-for="(p, i) in parsedPlan" :key="'p'+i" :class="'rr-step ' + (p.state || 'todo')" v-html="p.text || ''"></div>
+        </div>
+      </div>
+      <div v-if="parsedTimeline.length" class="rr-block">
+        <div class="rr-block-k">📅 风险时间线</div>
+        <div class="rr-timeline">
+          <span v-for="(t, i) in parsedTimeline" :key="'t'+i" class="rr-ev">
+            <span :class="'rr-ev-dot ' + (t.state || 'plan')"></span>
+            <b>{{ t.label }}</b>{{ t.text }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YryRiskRow) return;
+  Vue.createApp(window.YryRiskRow, {
+    id: 'R-01', name: '外部文档链接漂移', sub: 'README/CLAUDE/rules 频繁变更',
+    category: '维护', score: '6', scoreLevel: 'med', scoreInfo: 'S=3 · L=2',
+    deadline: '06-15', owner: 'planner', status: 'pass', statusText: '✓ 已缓解',
+    details: '[{"key":"🎯 触发条件","val":"外部文档 commit 推送后 24h 内"},{"key":"📊 影响范围","val":"5 个文档链接"}]',
+    plan: '[{"state":"done","text":"① <code>check-links.mjs</code> 每日 CI 扫描"},{"state":"proc","text":"② 外部文档 PR 触发自动校验"}]',
+    timeline: '[{"state":"open","label":"06-05","text":"发现"},{"state":"proc","label":"06-08","text":"缓解中"},{"state":"done","label":"06-12","text":"关闭"}]'
+  }).mount('#demo-1');
+}
+if (window.YryRiskRow) mountAll();
+else document.addEventListener('yry-risk-row-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

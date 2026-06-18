@@ -3,373 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>新人上手 · 计划清单</title>
+<title>效果评估与闭环 · 计划清单</title>
 <!-- ═══ CDN: YrY 共享样式 ═══ -->
 <link rel="stylesheet" href="../../../../cdn/shared.css">
 <link rel="stylesheet" href="../../../../cdn/theme.css">
 <link rel="stylesheet" href="../../../../cdn/yry-checklist.css">
-<style>
-/* Page-specific overrides — all shared styles loaded from CDN */
-.container { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
-.scene-nav { display:flex; align-items:center; flex-wrap:wrap; gap:8px; justify-content:center; padding:12px 16px; margin:24px 0; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:8px; }
-.scene-nav-link { color:var(--text2); text-decoration:none; font-size:.76rem; padding:5px 12px; border-radius:14px; transition:all .15s; white-space:nowrap; }
-.scene-nav-link:hover { color:var(--accent); background:rgba(255,193,7,.08); }
-.scene-nav-link.active { color:var(--accent); font-weight:600; background:rgba(255,193,7,.12); border:1px solid rgba(255,193,7,.25); cursor:default; }
-.scene-nav-link.story { color:var(--cyan); }
-.scene-nav-link.story:hover { color:var(--accent); background:rgba(34,211,238,.08); }
-.scene-nav-sep { color:var(--text3); font-size:.6rem; opacity:.3; user-select:none; }
-
-/* Verify report — page-specific */
-.verify-report-head { background:linear-gradient(135deg,rgba(34,211,238,.06),rgba(255,193,7,.04)); border:1px solid rgba(34,211,238,.18); border-radius:10px; padding:18px 20px; margin-bottom:18px; }
-.vrh-title { font-size:1.05rem; font-weight:600; color:var(--accent); margin-bottom:10px; letter-spacing:.02em; }
-.vrh-meta { display:flex; flex-wrap:wrap; gap:6px 16px; font-size:.7rem; color:var(--text3); margin-bottom:14px; }
-.vrh-meta code { color:var(--cyan); background:rgba(34,211,238,.08); padding:1px 6px; border-radius:4px; font-size:.68rem; }
-.vrh-metrics { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:12px; }
-.vrh-m { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:8px; padding:10px 8px; text-align:center; }
-.vrh-m-num { font-size:1.2rem; font-weight:700; line-height:1.1; }
-.vrh-m-num.pass { color:var(--accent,#10b981); }
-.vrh-m-num.fail { color:#ef4444; }
-.vrh-m-num.warn { color:#f59e0b; }
-.vrh-m-lbl { font-size:.65rem; color:var(--text3); margin-top:3px; letter-spacing:.04em; }
-.vrh-verdict { font-size:.82rem; padding:8px 12px; border-radius:6px; font-weight:500; }
-.vrh-verdict.pass { background:rgba(16,185,129,.10); color:#10b981; border:1px solid rgba(16,185,129,.25); }
-.vrh-verdict.fail { background:rgba(239,68,68,.10); color:#ef4444; border:1px solid rgba(239,68,68,.25); }
-
-.vi-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
-.vi-status { font-size:.7rem; font-weight:700; padding:3px 10px; border-radius:10px; letter-spacing:.06em; }
-.vi-status.pass { background:rgba(16,185,129,.15); color:#10b981; border:1px solid rgba(16,185,129,.3); }
-.vi-status.fail { background:rgba(239,68,68,.15); color:#ef4444; border:1px solid rgba(239,68,68,.3); }
-.vi-status.warn { background:rgba(245,158,11,.15); color:#f59e0b; border:1px solid rgba(245,158,11,.3); }
-
-.vi-section { margin:10px 0; }
-.vi-k { font-size:.72rem; font-weight:600; color:var(--cyan); margin-bottom:5px; letter-spacing:.02em; }
-.vi-v { font-size:.78rem; color:var(--text2); line-height:1.55; }
-.vi-v code { color:var(--accent); background:rgba(255,193,7,.08); padding:1px 5px; border-radius:3px; font-size:.74rem; }
-.vi-criteria { margin:4px 0 0 18px; padding:0; font-size:.76rem; color:var(--text2); line-height:1.6; }
-.vi-criteria li { margin:2px 0; }
-.vi-criteria b { color:var(--text1); font-weight:600; }
-
-.vi-table { width:100%; border-collapse:collapse; margin-top:6px; font-size:.72rem; }
-.vi-table th, .vi-table td { padding:6px 10px; text-align:left; border-bottom:1px solid rgba(255,255,255,.06); }
-.vi-table th { background:rgba(255,255,255,.04); color:var(--text3); font-weight:500; font-size:.68rem; letter-spacing:.04em; text-transform:uppercase; }
-.vi-table td.pass { color:#10b981; font-weight:600; }
-.vi-table td.fail { color:#ef4444; font-weight:600; }
-.vi-table td.warn { color:#f59e0b; font-weight:600; }
-.vi-table tr:hover td { background:rgba(255,255,255,.02); }
-
-.verify-report-foot { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:10px; padding:14px 18px; margin-top:18px; }
-.vrf-section { margin:8px 0; }
-.vrf-k { font-size:.74rem; font-weight:600; color:var(--text1); margin-bottom:4px; }
-.vrf-v { font-size:.76rem; color:var(--text2); line-height:1.55; }
-.vrf-suggest { margin:4px 0 0 18px; padding:0; font-size:.76rem; color:var(--text2); line-height:1.6; }
-.vrf-suggest li { margin:2px 0; }
-.vrf-suggest code, .vrf-v code { color:var(--accent); background:rgba(255,193,7,.08); padding:1px 5px; border-radius:3px; font-size:.72rem; }
-
-/* Generic report head */
-.report-head { background:linear-gradient(135deg,rgba(255,193,7,.05),rgba(34,211,238,.03)); border:1px solid rgba(255,193,7,.15); border-radius:10px; padding:14px 18px; margin-bottom:18px; }
-.rh-title { font-size:1.05rem; font-weight:600; color:var(--accent); margin-bottom:6px; letter-spacing:.02em; }
-.rh-meta { font-size:.72rem; color:var(--text3); }
-.rh-meta code { color:var(--cyan); background:rgba(34,211,238,.08); padding:1px 6px; border-radius:4px; font-size:.7rem; }
-
-/* KPI grid */
-.kpi-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin:14px 0 18px; }
-@media (max-width:900px){ .kpi-grid{grid-template-columns:repeat(3,1fr);} }
-.kpi-card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:8px; padding:12px 10px; text-align:center; transition:all .2s; }
-.kpi-card:hover { border-color:rgba(255,193,7,.3); transform:translateY(-1px); }
-.kpi-label { font-size:.65rem; color:var(--text3); letter-spacing:.04em; text-transform:uppercase; }
-.kpi-num { font-size:1.4rem; font-weight:700; color:var(--text1); line-height:1.2; margin:4px 0; }
-.kpi-trend { font-size:.68rem; color:var(--text3); }
-.kpi-trend.up { color:#10b981; }
-.kpi-trend.down { color:#ef4444; }
-
-/* Scorecard table */
-.scorecard { width:100%; border-collapse:collapse; margin-top:8px; font-size:.74rem; }
-.scorecard th, .scorecard td { padding:7px 10px; text-align:left; border-bottom:1px solid rgba(255,255,255,.06); }
-.scorecard th { background:rgba(255,255,255,.04); color:var(--text3); font-weight:500; font-size:.68rem; letter-spacing:.04em; text-transform:uppercase; }
-.scorecard td.pass { color:#10b981; font-weight:600; }
-.scorecard td.fail { color:#ef4444; font-weight:600; }
-.scorecard td.warn { color:#f59e0b; font-weight:600; }
-.scorecard .total-row td { background:rgba(255,193,7,.06); border-top:2px solid rgba(255,193,7,.3); }
-.scorecard tr:hover td { background:rgba(255,255,255,.02); }
-
-/* Trend chart */
-.trend-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:8px; }
-@media (max-width:700px){ .trend-grid{grid-template-columns:1fr;} }
-.trend-card { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:8px; padding:12px; }
-.trend-title { font-size:.78rem; color:var(--text1); font-weight:500; margin-bottom:10px; }
-.trend-bars { display:flex; align-items:flex-end; gap:6px; height:120px; padding:0 4px; border-bottom:1px solid rgba(255,255,255,.08); }
-.bar { flex:1; background:linear-gradient(180deg,var(--accent,#10b981),rgba(16,185,129,.4)); border-radius:3px 3px 0 0; min-height:8px; position:relative; transition:all .2s; }
-.bar:hover { filter:brightness(1.2); }
-.bar span { position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:.6rem; color:var(--text2); white-space:nowrap; }
-.bar.inverse { background:linear-gradient(180deg,#ef4444,rgba(239,68,68,.4)); }
-.bar.warn { background:linear-gradient(180deg,#f59e0b,rgba(245,158,11,.4)); }
-.trend-axis { text-align:center; font-size:.66rem; color:var(--text3); margin-top:6px; letter-spacing:.04em; }
-
-/* Risk badges */
-.risk-high { display:inline-block; padding:2px 8px; border-radius:8px; font-size:.68rem; font-weight:600; background:rgba(239,68,68,.15); color:#ef4444; border:1px solid rgba(239,68,68,.3); }
-.risk-med { display:inline-block; padding:2px 8px; border-radius:8px; font-size:.68rem; font-weight:600; background:rgba(245,158,11,.15); color:#f59e0b; border:1px solid rgba(245,158,11,.3); }
-.risk-low { display:inline-block; padding:2px 8px; border-radius:8px; font-size:.68rem; font-weight:600; background:rgba(16,185,129,.15); color:#10b981; border:1px solid rgba(16,185,129,.3); }
-.risk-summary { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:6px; padding:12px 16px; }
-.rs-line { font-size:.78rem; color:var(--text2); margin:4px 0; font-family:ui-monospace,monospace; }
-.rs-line b { color:var(--text1); }
-
-/* Gantt */
-.gantt { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:8px; padding:12px; margin-top:8px; }
-.gantt-row { display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1px dashed rgba(255,255,255,.04); }
-.gantt-row:last-child { border-bottom:none; }
-.gantt-row.gantt-head { font-size:.66rem; color:var(--text3); border-bottom:1px solid rgba(255,255,255,.1); }
-.gantt-task { width:110px; font-size:.76rem; color:var(--text2); flex-shrink:0; }
-.gantt-bar-wrap { flex:1; display:flex; height:24px; position:relative; background:repeating-linear-gradient(90deg,rgba(255,255,255,.02) 0,rgba(255,255,255,.02) calc(100%/15),transparent calc(100%/15),transparent calc(200%/15)); border-radius:4px; }
-.gantt-day { flex:1; text-align:center; font-size:.6rem; color:var(--text3); line-height:24px; border-right:1px solid rgba(255,255,255,.04); }
-.gantt-day:last-child { border-right:none; }
-.gantt-bar { position:absolute; top:0; height:24px; background:linear-gradient(180deg,var(--accent,#10b981),rgba(16,185,129,.5)); border-radius:4px; display:flex; align-items:center; padding:0 6px; font-size:.66rem; color:#fff; font-weight:500; box-shadow:0 1px 3px rgba(0,0,0,.2); }
-.gantt-bar.alt { background:linear-gradient(180deg,var(--cyan,#22d3ee),rgba(34,211,238,.5)); }
-
-/* Checklist head */
-.checklist-head { display:flex; align-items:center; justify-content:space-between; gap:16px; background:linear-gradient(135deg,rgba(255,193,7,.06),rgba(34,211,238,.04)); border:1px solid rgba(255,193,7,.18); border-radius:10px; padding:14px 20px; margin-bottom:14px; }
-.ch-title { font-size:1.1rem; font-weight:600; color:var(--accent); letter-spacing:.02em; }
-.ch-meta { font-size:.72rem; color:var(--text3); margin-top:4px; }
-.ch-meta code { color:var(--cyan); background:rgba(34,211,238,.08); padding:1px 6px; border-radius:4px; font-size:.7rem; }
-.ch-progress { text-align:center; padding:8px 18px; background:rgba(16,185,129,.12); border:1px solid rgba(16,185,129,.3); border-radius:8px; }
-.ch-pct { font-size:1.6rem; font-weight:700; color:#10b981; line-height:1; }
-.ch-pct span { font-size:.8rem; color:#10b981; opacity:.7; margin-left:2px; }
-.ch-pct-lbl { font-size:.65rem; color:var(--text3); margin-top:2px; letter-spacing:.04em; }
-
-/* Phase strip */
-.phase-strip { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-bottom:20px; }
-@media (max-width:900px){ .phase-strip{grid-template-columns:repeat(3,1fr);} }
-.phase { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:6px; padding:8px 6px; text-align:center; transition:all .2s; cursor:default; }
-.phase.done { background:rgba(16,185,129,.08); border-color:rgba(16,185,129,.3); }
-.phase:hover { transform:translateY(-1px); }
-.p-dot { width:18px; height:18px; border-radius:50%; background:#10b981; color:#fff; font-size:.66rem; font-weight:700; line-height:18px; margin:0 auto 4px; }
-.p-name { font-size:.66rem; color:var(--text2); }
-.p-count { font-size:.6rem; color:var(--text3); margin-top:1px; }
-
-/* Step metadata grid */
-.step-meta { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin:8px 0; padding:8px 10px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:6px; }
-@media (max-width:700px){ .step-meta{grid-template-columns:repeat(2,1fr);} }
-.meta-item { font-size:.7rem; color:var(--text2); display:flex; align-items:center; gap:4px; }
-.meta-item .m-icon { font-size:.78rem; }
-.meta-item b { color:var(--text3); font-weight:500; margin-right:2px; }
-.pri-p0 { display:inline-block; padding:1px 6px; border-radius:6px; font-size:.62rem; font-weight:700; background:rgba(239,68,68,.18); color:#ef4444; border:1px solid rgba(239,68,68,.3); }
-.pri-p1 { display:inline-block; padding:1px 6px; border-radius:6px; font-size:.62rem; font-weight:700; background:rgba(245,158,11,.18); color:#f59e0b; border:1px solid rgba(245,158,11,.3); }
-.pri-p2 { display:inline-block; padding:1px 6px; border-radius:6px; font-size:.62rem; font-weight:700; background:rgba(34,211,238,.18); color:var(--cyan); border:1px solid rgba(34,211,238,.3); }
-
-/* Step criteria */
-.step-criteria { background:rgba(34,211,238,.04); border-left:3px solid var(--cyan); padding:8px 12px; margin:8px 0; border-radius:0 6px 6px 0; }
-.step-criteria b { font-size:.74rem; color:var(--cyan); display:block; margin-bottom:4px; }
-.step-criteria ul { margin:0 0 0 16px; padding:0; font-size:.72rem; color:var(--text2); line-height:1.55; }
-.step-criteria li { margin:2px 0; }
-.step-criteria code { color:var(--accent); background:rgba(255,193,7,.08); padding:1px 4px; border-radius:3px; font-size:.7rem; }
-
-/* Command panel head */
-.cmd-head { display:flex; align-items:center; justify-content:space-between; gap:16px; background:linear-gradient(135deg,rgba(255,193,7,.06),rgba(34,211,238,.04)); border:1px solid rgba(255,193,7,.18); border-radius:10px; padding:14px 20px; margin-bottom:14px; }
-.cmd-head-title { font-size:1.1rem; font-weight:600; color:var(--accent); letter-spacing:.02em; }
-.cmd-head-meta { font-size:.72rem; color:var(--text3); margin-top:4px; }
-.cmd-head-stats { display:flex; gap:8px; }
-.chs { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:6px; padding:6px 12px; text-align:center; min-width:64px; }
-.chs b { font-size:1.1rem; color:var(--accent); display:block; }
-.chs span { font-size:.6rem; color:var(--text3); }
-
-/* Quick start block */
-.quickstart { background:rgba(34,211,238,.04); border:1px solid rgba(34,211,238,.2); border-radius:8px; padding:12px 16px; margin-bottom:18px; }
-.qs-title { font-size:.82rem; color:var(--cyan); font-weight:600; margin-bottom:8px; letter-spacing:.02em; }
-.quickstart pre { margin:0; padding:10px 12px; background:rgba(0,0,0,.3); border-radius:5px; font-size:.7rem; color:var(--text1); overflow-x:auto; white-space:pre; line-height:1.5; }
-.quickstart pre code, .quickstart code { color:var(--accent); }
-
-/* Cmd card meta */
-.c-meta { display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 4px; padding-top:6px; border-top:1px dashed rgba(255,255,255,.06); font-size:.66rem; color:var(--text3); }
-.c-meta span { display:inline-block; }
-.c-expect { font-size:.7rem; color:var(--text2); background:rgba(16,185,129,.06); border-left:2px solid #10b981; padding:5px 10px; margin-top:6px; border-radius:0 4px 4px 0; line-height:1.5; }
-.c-expect b { color:#10b981; }
-.c-expect code { color:var(--accent); background:rgba(255,193,7,.08); padding:1px 4px; border-radius:3px; font-size:.68rem; }
-
-/* File system status banner */
-.fs-status { background:rgba(34,211,238,.04); border:1px solid rgba(34,211,238,.2); border-radius:10px; padding:12px 16px; margin-bottom:18px; }
-.fs-title { font-size:.78rem; color:var(--cyan); font-weight:600; margin-bottom:10px; letter-spacing:.02em; }
-.fs-list { display:flex; flex-wrap:wrap; gap:8px; }
-.fs-item { display:inline-flex; align-items:center; gap:6px; padding:5px 10px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:6px; text-decoration:none; color:var(--text2); font-size:.72rem; transition:all .15s; }
-.fs-item:hover { background:rgba(34,211,238,.12); border-color:var(--cyan); color:var(--cyan); transform:translateY(-1px); }
-.fs-item.self { background:rgba(255,193,7,.10); border-color:rgba(255,193,7,.3); color:var(--accent); cursor:default; }
-.fs-icon { font-size:.85rem; }
-.fs-name { font-family:ui-monospace,monospace; font-size:.7rem; }
-.fs-arrow { color:var(--cyan); font-weight:700; font-size:.7rem; opacity:.6; }
-.fs-item.self .fs-arrow { color:var(--accent); }
-
-/* Deliverable card grid */
-.deliv-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-top:8px; }
-@media (max-width:1100px){ .deliv-grid{grid-template-columns:repeat(4,1fr);} }
-@media (max-width:800px){ .deliv-grid{grid-template-columns:repeat(3,1fr);} }
-@media (max-width:500px){ .deliv-grid{grid-template-columns:repeat(2,1fr);} }
-.deliv-card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); border-radius:8px; padding:14px 10px; text-decoration:none; color:var(--text1); text-align:center; transition:all .2s; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; }
-.deliv-card:hover { background:rgba(34,211,238,.08); border-color:var(--cyan); transform:translateY(-2px); box-shadow:0 4px 12px rgba(34,211,238,.2); }
-.dc-icon { font-size:1.6rem; line-height:1; }
-.dc-name { font-size:.78rem; font-weight:600; color:var(--text1); }
-.dc-type { font-size:.62rem; color:var(--text3); letter-spacing:.04em; text-transform:uppercase; }
-
-/* Path link in table */
-.path-link { color:var(--cyan); text-decoration:none; transition:all .15s; display:inline-block; max-width:100%; }
-.path-link code { color:var(--cyan); background:rgba(34,211,238,.06); padding:2px 6px; border-radius:4px; font-size:.7rem; border:1px solid transparent; transition:all .15s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:280px; display:inline-block; vertical-align:middle; }
-.path-link:hover code { background:rgba(34,211,238,.15); border-color:var(--cyan); }
-.path-link::after { content:" ↗"; font-size:.7rem; opacity:.5; margin-left:2px; }
-
-/* Operation buttons in table */
-.op-cell { white-space:nowrap; }
-.op-btn { display:inline-block; padding:2px 6px; margin:0 2px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:4px; font-size:.7rem; cursor:pointer; text-decoration:none; color:var(--text2); transition:all .15s; }
-a.op-btn:hover { background:rgba(34,211,238,.15); border-color:var(--cyan); color:var(--cyan); }
-span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); color:var(--accent); }
-
-/* Risk enhancements */
-.risk-sub { font-size:.66rem; color:var(--text3); font-weight:400; }
-.risk-cat { display:inline-block; padding:2px 8px; border-radius:6px; font-size:.66rem; font-weight:500; }
-.cat-维护 { background:rgba(34,211,238,.12); color:var(--cyan); }
-.cat-度量 { background:rgba(168,85,247,.12); color:#a855f7; }
-.cat-兼容 { background:rgba(245,158,11,.12); color:#f59e0b; }
-.cat-性能 { background:rgba(239,68,68,.12); color:#ef4444; }
-.cat-时效 { background:rgba(34,197,94,.12); color:#22c55e; }
-.cat-外部 { background:rgba(99,102,241,.12); color:#6366f1; }
-.cat-安全 { background:rgba(236,72,153,.12); color:#ec4899; }
-.scorecard td.warn { color:#f59e0b; font-weight:600; }
-
-/* Risk matrix heatmap */
-.risk-matrix { display:grid; grid-template-columns:60px 100px repeat(5, 1fr); gap:2px; padding:10px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:8px; margin-top:8px; }
-.rm-corner { background:transparent; }
-.rm-axis-x { display:flex; align-items:center; justify-content:flex-end; padding-right:8px; font-size:.62rem; color:var(--text3); }
-.rm-col-h { text-align:center; padding:6px 2px; font-size:.64rem; color:var(--text3); background:rgba(34,211,238,.05); border-radius:4px; }
-.rm-row-h { display:flex; align-items:center; justify-content:flex-end; padding-right:8px; font-size:.64rem; color:var(--text3); background:rgba(34,211,238,.05); border-radius:4px; }
-.rm-cell { display:flex; align-items:center; justify-content:center; min-height:42px; background:rgba(255,255,255,.02); border-radius:4px; font-size:.66rem; font-weight:600; cursor:default; transition:all .15s; }
-.rm-cell:hover { transform:scale(1.05); z-index:2; box-shadow:0 2px 8px rgba(0,0,0,.3); }
-.rm-cell.l0 { background:rgba(16,185,129,.04); }
-.rm-cell.l1 { background:rgba(16,185,129,.08); }
-.rm-cell.l2 { background:rgba(16,185,129,.12); }
-.rm-cell.l3 { background:rgba(16,185,129,.16); }
-.rm-cell.l4 { background:rgba(16,185,129,.20); }
-.rm-cell.r-low { color:#10b981; background:rgba(16,185,129,.18); border:1px solid rgba(16,185,129,.4); }
-.rm-cell.r-med { color:#f59e0b; background:rgba(245,158,11,.20); border:1px solid rgba(245,158,11,.4); animation:pulse-warn 2.5s infinite; }
-.rm-cell.r-high { color:#ef4444; background:rgba(239,68,68,.25); border:1px solid rgba(239,68,68,.5); }
-.rm-cell.r-crit { color:#fff; background:rgba(239,68,68,.45); border:1px solid #ef4444; animation:pulse-crit 1.5s infinite; }
-@keyframes pulse-warn { 0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,.3);} 50%{box-shadow:0 0 0 4px rgba(245,158,11,0);} }
-@keyframes pulse-crit { 0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.5);} 50%{box-shadow:0 0 0 6px rgba(239,68,68,0);} }
-
-.rm-legend { display:flex; flex-wrap:wrap; gap:14px; margin-top:10px; padding:8px 12px; background:rgba(255,255,255,.02); border-radius:6px; }
-.rml-item { display:flex; align-items:center; gap:6px; font-size:.68rem; color:var(--text2); }
-.rml-dot { width:10px; height:10px; border-radius:3px; }
-.rml-dot.r-low { background:rgba(16,185,129,.5); border:1px solid #10b981; }
-.rml-dot.r-med { background:rgba(245,158,11,.5); border:1px solid #f59e0b; }
-.rml-dot.r-high { background:rgba(239,68,68,.5); border:1px solid #ef4444; }
-.rml-dot.r-crit { background:rgba(239,68,68,.8); border:1px solid #ef4444; }
-
-/* Risk category distribution */
-.risk-cat-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:10px; margin-top:8px; }
-@media (max-width:1000px){ .risk-cat-grid{grid-template-columns:repeat(4,1fr);} }
-@media (max-width:600px){ .risk-cat-grid{grid-template-columns:repeat(2,1fr);} }
-.rc-card { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:8px; padding:10px 8px; text-align:center; }
-.rc-name { font-size:.74rem; color:var(--text1); font-weight:500; margin-bottom:8px; }
-.rc-bar { height:8px; background:linear-gradient(90deg,var(--cyan),var(--accent)); border-radius:4px; margin-bottom:4px; min-width:8px; }
-.rc-bar span { font-size:.6rem; color:var(--text3); display:block; margin-top:2px; }
-
-/* Risk trend bar chart */
-.risk-trend { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; height:160px; padding:20px 12px 8px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:8px; margin-top:8px; }
-.rt-day { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; }
-.rt-bar { width:100%; max-width:60px; background:linear-gradient(180deg,#ef4444,#f59e0b); border-radius:4px 4px 0 0; position:relative; min-height:8px; display:flex; align-items:flex-start; justify-content:center; padding-top:4px; transition:all .2s; }
-.rt-bar:hover { filter:brightness(1.2); transform:scaleY(1.05); }
-.rt-bar span { position:absolute; top:-22px; font-size:.7rem; color:var(--text1); font-weight:600; }
-.rt-date { font-size:.66rem; color:var(--text3); }
-
-/* ── Risk row (expandable) ── */
-.risk-list { display:flex; flex-direction:column; gap:8px; margin-top:8px; }
-.risk-row { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.08); border-radius:8px; overflow:hidden; transition:all .2s; }
-.risk-row:hover { border-color:rgba(34,211,238,.25); }
-.risk-row.open { border-color:var(--cyan); background:rgba(34,211,238,.04); }
-.rr-summary { display:grid; grid-template-columns:54px 1fr 80px 130px 80px 80px 90px 24px; gap:10px; align-items:center; padding:10px 14px; cursor:pointer; transition:background .15s; }
-.rr-summary:hover { background:rgba(255,255,255,.02); }
-.rr-id code { font-size:.7rem; color:var(--cyan); background:rgba(34,211,238,.1); padding:2px 6px; border-radius:4px; }
-.rr-name { font-size:.78rem; color:var(--text1); font-weight:600; }
-.rr-sub { font-size:.66rem; color:var(--text3); margin-top:2px; }
-.rr-score { display:flex; flex-direction:column; gap:3px; }
-.rr-score-bar { width:100%; height:6px; background:rgba(255,255,255,.06); border-radius:3px; overflow:hidden; }
-.rr-score-fill { height:100%; border-radius:3px; transition:width .3s; }
-.rr-score-fill.low { background:linear-gradient(90deg,#10b981,#22c55e); }
-.rr-score-fill.med { background:linear-gradient(90deg,#f59e0b,#f59e0b); }
-.rr-score-fill.high { background:linear-gradient(90deg,#ef4444,#dc2626); }
-.rr-score-info { font-size:.62rem; color:var(--text3); font-family:ui-monospace,monospace; }
-.rr-score-info b { color:var(--text1); }
-.rr-deadline code { font-size:.66rem; color:var(--text2); background:rgba(255,255,255,.05); padding:1px 5px; border-radius:3px; }
-.rr-owner { font-size:.7rem; color:var(--text2); }
-.rr-status { font-size:.7rem; font-weight:600; }
-.rr-status.pass { color:#10b981; }
-.rr-status.warn { color:#f59e0b; }
-.rr-status.fail { color:#ef4444; }
-.rr-toggle { color:var(--text3); font-size:.7rem; text-align:center; transition:transform .2s; }
-.risk-row.open .rr-toggle { color:var(--cyan); }
-
-.rr-detail { display:none; padding:0 14px 14px; border-top:1px dashed rgba(34,211,238,.2); margin-top:0; }
-.risk-row.open .rr-detail { display:block; padding-top:14px; }
-.rr-grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:10px; }
-@media (max-width:900px){ .rr-grid-4{grid-template-columns:repeat(2,1fr);} }
-.rr-cell { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:6px; padding:8px 10px; }
-.rr-cell-k { font-size:.66rem; color:var(--cyan); font-weight:600; margin-bottom:4px; }
-.rr-cell-v { font-size:.72rem; color:var(--text2); line-height:1.5; }
-.rr-cell-v code { color:var(--accent); background:rgba(255,193,7,.08); padding:1px 4px; border-radius:3px; font-size:.68rem; }
-.rr-block { background:rgba(0,0,0,.15); border:1px solid rgba(255,255,255,.05); border-radius:6px; padding:8px 10px; margin-bottom:8px; }
-.rr-block-k { font-size:.66rem; color:var(--text1); font-weight:600; margin-bottom:6px; }
-.rr-steps { display:flex; flex-direction:column; gap:4px; }
-.rr-step { font-size:.72rem; color:var(--text2); padding:4px 8px; border-radius:4px; line-height:1.5; }
-.rr-step code { color:var(--accent); background:rgba(255,193,7,.08); padding:1px 4px; border-radius:3px; font-size:.68rem; }
-.rr-step.done { background:rgba(16,185,129,.08); border-left:2px solid #10b981; color:var(--text1); }
-.rr-step.proc { background:rgba(245,158,11,.08); border-left:2px solid #f59e0b; }
-.rr-step.todo { background:rgba(255,255,255,.02); border-left:2px solid var(--text3); color:var(--text3); }
-.rr-step.plan { background:rgba(34,211,238,.06); border-left:2px solid var(--cyan); }
-.rr-timeline { display:flex; flex-wrap:wrap; gap:10px; }
-.rr-ev { display:inline-flex; align-items:center; gap:5px; font-size:.7rem; color:var(--text2); padding:3px 8px; background:rgba(255,255,255,.02); border-radius:4px; }
-.rr-ev b { color:var(--text1); margin-right:2px; }
-.rr-ev-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-.rr-ev-dot.open { background:#f59e0b; box-shadow:0 0 4px rgba(245,158,11,.6); }
-.rr-ev-dot.proc { background:var(--cyan); animation:pulse-warn 1.8s infinite; }
-.rr-ev-dot.done { background:#10b981; }
-.rr-ev-dot.plan { background:var(--text3); }
-
-/* ── Risk category overview ── */
-.cat-overview { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:8px; padding:14px 16px; margin-bottom:14px; }
-.co-title { font-size:.78rem; color:var(--text1); font-weight:500; margin-bottom:10px; }
-.cat-stacked-bar { display:flex; height:32px; border-radius:6px; overflow:hidden; margin-bottom:12px; box-shadow:0 2px 6px rgba(0,0,0,.2); }
-.cs-seg { display:flex; align-items:center; justify-content:center; color:#fff; font-size:.66rem; font-weight:600; transition:all .2s; cursor:default; position:relative; }
-.cs-seg span { padding:0 6px; white-space:nowrap; text-shadow:0 1px 2px rgba(0,0,0,.3); }
-.cs-seg:hover { filter:brightness(1.15); }
-.cs-seg.hot { box-shadow:inset 0 0 0 2px rgba(255,255,255,.3); }
-.cat-summary-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
-@media (max-width:600px){ .cat-summary-stats{grid-template-columns:repeat(2,1fr);} }
-.css-item { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.05); border-radius:6px; padding:8px; text-align:center; }
-.css-num { font-size:1.2rem; font-weight:700; color:var(--accent); line-height:1.1; }
-.css-lbl { font-size:.62rem; color:var(--text3); margin-top:3px; letter-spacing:.04em; }
-
-/* ── Enhanced risk category card ── */
-.rc-card.enhanced { background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01)); border:1px solid rgba(255,255,255,.08); padding:0; text-align:left; transition:all .2s; }
-.rc-card.enhanced:hover { border-color:rgba(34,211,238,.4); transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.2); }
-.rc-card.enhanced.hot { border-color:rgba(239,68,68,.4); animation:rc-pulse 2s infinite; }
-@keyframes rc-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0);} 50%{box-shadow:0 0 0 4px rgba(239,68,68,.1);} }
-.rc-head { display:flex; align-items:center; gap:8px; padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.05); }
-.rc-icon { width:30px; height:30px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:.9rem; flex-shrink:0; }
-.rc-name { font-size:.78rem; color:var(--text1); font-weight:600; flex:1; }
-.rc-count { font-size:.62rem; color:var(--text3); background:rgba(255,255,255,.05); padding:2px 6px; border-radius:8px; }
-.rc-badge { font-size:.6rem; color:#ef4444; background:rgba(239,68,68,.15); padding:2px 6px; border-radius:8px; border:1px solid rgba(239,68,68,.3); font-weight:600; }
-.rc-metric { padding:8px 12px; }
-.rc-m-row { display:flex; justify-content:space-between; font-size:.68rem; color:var(--text3); padding:2px 0; }
-.rc-m-row b { color:var(--text1); font-weight:600; font-family:ui-monospace,monospace; }
-.rc-progress { height:4px; background:rgba(255,255,255,.05); border-radius:2px; margin:0 12px 6px; overflow:hidden; }
-.rc-prog-fill { height:100%; border-radius:2px; transition:width .3s; }
-.rc-trend { padding:0 12px 10px; font-size:.66rem; color:var(--text3); }
-.rc-trend-up { color:#ef4444; font-weight:600; }
-.rc-trend-down { color:#10b981; font-weight:600; }
-.rc-trend-flat { color:var(--text3); font-weight:600; }
-
-/* ── Cat warning blocks ── */
-.cat-warning { background:rgba(245,158,11,.06); border:1px solid rgba(245,158,11,.25); border-radius:8px; padding:10px 14px; margin-top:10px; display:flex; gap:10px; align-items:flex-start; }
-.cw-icon { font-size:1.1rem; flex-shrink:0; }
-.cw-content { font-size:.74rem; color:var(--text2); line-height:1.55; }
-.cw-content b { color:var(--text1); }
-.cw-content code { color:var(--accent); background:rgba(255,193,7,.1); padding:1px 5px; border-radius:3px; font-size:.7rem; }
-</style>
+<link rel="stylesheet" href="../../../../cdn/yry-plan-base.css">
 </head>
 <body>
 <div class="container">
@@ -424,7 +63,7 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
 <div class="checklist-head">
   <div class="ch-info">
     <div class="ch-title">📋 效果评估与闭环执行清单</div>
-    <div class="ch-meta">场景: <code>场景-4-效果评估与闭环 · 效果评估与闭环</code> · 阶段: <b>交付完成</b> · 更新: <code>2026-06-13</code></div>
+    <div class="ch-meta">场景: <code>场景-4-效果评估与闭环 · 效果评估与闭环</code> · 阶段: <b>交付完成</b> · 更新: <code>2026-06-17</code></div>
   </div>
   <div class="ch-progress">
     <div class="ch-pct">100<span>%</span></div>
@@ -456,7 +95,7 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
     <p>E1–E4 详细定义</p>
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
-      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.4h</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>2.2h</div>
       <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
       <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>指标</div>
     </div>
@@ -481,7 +120,7 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
     <p>涉及模块</p>
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
-      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.9h</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>0.5h</div>
       <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
       <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>职责</div>
     </div>
@@ -506,7 +145,7 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
     <p>§0 评审 - 补充 §0 评审 工作项 3</p>
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
-      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.0h</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.2h</div>
       <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
       <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>补充 §0 评审 工作项 3</div>
     </div>
@@ -535,7 +174,7 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
     <p>正常路径用例</p>
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
-      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.5h</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>0.9h</div>
       <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
       <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>Given</div>
     </div>
@@ -560,7 +199,7 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
     <p>边界/异常用例</p>
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
-      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.3h</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.9h</div>
       <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
       <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>Given</div>
     </div>
@@ -585,7 +224,7 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
     <p>Gate A 交接</p>
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
-      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.0h</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>2.4h</div>
       <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
       <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>状态</div>
     </div>
@@ -639,7 +278,7 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
     <p>§2 实施 - §2 实施 中段执行</p>
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
-      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>0.7h</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>0.8h</div>
       <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p1">P1</span></div>
       <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>§2 实施 中段执行</div>
     </div>
@@ -668,7 +307,7 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
     <p>§3 验证 - §3 验证 启动</p>
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
-      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.3h</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>0.5h</div>
       <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p1">P1</span></div>
       <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>§3 验证 启动</div>
     </div>
@@ -693,7 +332,7 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
     <p>§3 验证 - §3 验证 中段执行</p>
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
-      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.0h</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.3h</div>
       <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p1">P1</span></div>
       <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>§3 验证 中段执行</div>
     </div>
@@ -722,7 +361,7 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
     <p>§4.1 E1–E4 评估矩阵</p>
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
-      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.7h</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>2.0h</div>
       <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
       <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>指标</div>
     </div>
@@ -747,7 +386,7 @@ span.op-btn:hover { background:rgba(255,193,7,.15); border-color:var(--accent); 
     <p>E1 改善 = postMetrics.block_rate &lt; preMetrics.block_rate</p>
     <div class="step-meta">
       <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
-      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>0.5h</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>2.3h</div>
       <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p1">P1</span></div>
       <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>§4.2 判定逻辑（代码实现）</div>
     </div>
@@ -827,6 +466,8 @@ E3 退化 = stillPresent.length</div>
 
 </div>
 
+
+
 <!-- /panelChecklist -->
 
 
@@ -874,7 +515,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=test-report
 
 # 交付 (2 步)
 /rui doc --story arch --check p0
-git add docs/故事任务面板/架构/ && git commit -m "docs: 场景-1 新人上手完成"
+git add docs/故事任务面板/架构/ && git commit -m "docs: 场景-4-效果评估与闭环 完成"
 node skills/rui-import/sync.mjs workspace=true
 node skills/rui-bot/send.mjs --story=yry-arch --status=done<span class="cb" onclick="copyCmd(this,this.previousSibling ? this.parentNode.textContent : '')">📋</span></pre>
 </div>
@@ -1025,7 +666,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done<span class="cb" oncl
     <div class="c-stage">步骤 13</div>
     <div class="c-name">P0 交叉引用验证</div>
     <div class="c-desc">验证所有交叉引用的双向可达性,确保 0 死链</div>
-    <pre>node tests/skills/cross-ref.mjs --scene=场景-1-新人上手 --bidirectional<span class="cb" onclick="copyCmd(this,'node tests/skills/cross-ref.mjs --scene=场景-1-新人上手 --bidirectional')">📋</span></pre>
+    <pre>node tests/skills/cross-ref.mjs --scene=场景-4-效果评估与闭环 --bidirectional<span class="cb" onclick="copyCmd(this,'node tests/skills/cross-ref.mjs --scene=场景-4-效果评估与闭环 --bidirectional')">📋</span></pre>
     <div class="c-meta">
       <span>👤 tester</span><span>⏱ 0.5h</span><span>🎯 P0</span>
     </div>
@@ -1035,7 +676,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done<span class="cb" oncl
     <div class="c-stage">步骤 14</div>
     <div class="c-name">交付收口</div>
     <div class="c-desc">git commit → rui-import 同步 → rui-bot 通知,完成 4 方签收</div>
-    <pre>git add . && git commit -m "docs: 场景-1 新人上手完成" && node skills/rui-import/sync.mjs workspace=true && node skills/rui-bot/send.mjs --story=yry-arch --status=done<span class="cb" onclick="copyCmd(this,'git add . && git commit -m &quot;docs: 场景-1 新人上手完成&quot; && node skills/rui-import/sync.mjs workspace=true && node skills/rui-bot/send.mjs --story=yry-arch --status=done')">📋</span></pre>
+    <pre>git add . && git commit -m "docs: 场景-4-效果评估与闭环 完成" && node skills/rui-import/sync.mjs workspace=true && node skills/rui-bot/send.mjs --story=yry-arch --status=done<span class="cb" onclick="copyCmd(this,'git add . && git commit -m &quot;docs: 场景-4-效果评估与闭环 完成&quot; && node skills/rui-import/sync.mjs workspace=true && node skills/rui-bot/send.mjs --story=yry-arch --status=done')">📋</span></pre>
     <div class="c-meta">
       <span>👤 planner+devops</span><span>⏱ 0.3h</span><span>🎯 P0</span>
     </div>
@@ -1074,7 +715,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done<span class="cb" oncl
 
 <!-- 验证报告概览 -->
 <div class="verify-report-head">
-  <div class="vrh-title">🧪 新人上手验证报告</div>
+  <div class="vrh-title">🧪 效果评估与闭环验证报告</div>
   <div class="vrh-meta">
     <span>报告 ID: <code>VR-ARCH-ONBOARD-2026-06-13</code></span>
     <span>执行人: <code>tester agent</code></span>
@@ -1088,7 +729,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done<span class="cb" oncl
     <div class="vrh-m"><div class="vrh-m-num warn">0</div><div class="vrh-m-lbl">警告项</div></div>
     <div class="vrh-m"><div class="vrh-m-num pass">100%</div><div class="vrh-m-lbl">达成率</div></div>
   </div>
-  <div class="vrh-verdict pass">✅ 总体结论：通过 — 新人上手路径质量满足发布标准</div>
+  <div class="vrh-verdict pass">✅ 总体结论：通过 — 效果评估与闭环路径质量满足发布标准</div>
 </div>
 
 <!-- 详细验证项 -->
@@ -1097,7 +738,7 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=done<span class="cb" oncl
   <!-- 验证 1：上手路径可达性 -->
   <div class="verify-item">
     <div class="vi-head">
-      <div class="vi-label">验证 1 · 步骤 7 · 新人上手路径验证</div>
+      <div class="vi-label">验证 1 · 步骤 7 · 效果评估与闭环路径验证</div>
       <div class="vi-status pass">PASS</div>
     </div>
     <div class="vi-section">
@@ -1146,11 +787,11 @@ node tests/skills/rui.test.mjs --suite=onboarding --verbose<span class="cb" oncl
     </div>
     <div class="vi-section">
       <div class="vi-k">📜 验证脚本</div>
-      <pre>node tests/skills/check-links.mjs --scope=docs/故事任务面板/架构/场景-1-新人上手/
+      <pre>node tests/skills/check-links.mjs --scope=docs/故事任务面板/自改进/场景-4-效果评估与闭环/
 node skills/rui-import/sync.mjs --check-refs --story=arch
 grep -rEho '\]\(([^)]+\.(md|html|json))\)' . | sed 's/^(//;s/)$//' | sort -u | while read p; do
   [ -e "$p" ] || echo "BROKEN: $p"
-done<span class="cb" onclick="copyCmd(this,'node tests/skills/check-links.mjs --scope=docs/故事任务面板/架构/场景-1-新人上手/')">📋</span></pre>
+done<span class="cb" onclick="copyCmd(this,'node tests/skills/check-links.mjs --scope=docs/故事任务面板/自改进/场景-4-效果评估与闭环/')">📋</span></pre>
     </div>
     <div class="vi-section">
       <div class="vi-k">📐 验收标准</div>
@@ -1187,8 +828,8 @@ done<span class="cb" onclick="copyCmd(this,'node tests/skills/check-links.mjs --
     <div class="vi-section">
       <div class="vi-k">📜 验证脚本</div>
       <pre>/rui doc --story arch --check p0 --format=json
-node tests/p0-checklist.test.mjs --scene=新人上手
-grep -c "FAQ" 新人指南.md && grep -c "架构图" 新人指南.md<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --check p0 --format=json\nnode tests/p0-checklist.test.mjs --scene=新人上手')">📋</span></pre>
+node tests/p0-checklist.test.mjs --scene=效果评估与闭环
+grep -c "FAQ" 新人指南.md && grep -c "架构图" 新人指南.md<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --check p0 --format=json\nnode tests/p0-checklist.test.mjs --scene=效果评估与闭环')">📋</span></pre>
     </div>
     <div class="vi-section">
       <div class="vi-k">📐 验收标准（P0 硬约束）</div>
@@ -1228,10 +869,10 @@ grep -c "FAQ" 新人指南.md && grep -c "架构图" 新人指南.md<span class=
     </div>
     <div class="vi-section">
       <div class="vi-k">📜 验证脚本</div>
-      <pre>node tests/skills/cross-ref.mjs --scene=场景-1-新人上手 --bidirectional
+      <pre>node tests/skills/cross-ref.mjs --scene=场景-4-效果评估与闭环 --bidirectional
 /rui doc --story arch --scene 1 --check cross-ref
 grep -Eho '\[.+\]\(.+\)' 新人指南.md | wc -l
-grep -Eho '\[.+\]\(.+\)' 架构图.html | wc -l<span class="cb" onclick="copyCmd(this,'node tests/skills/cross-ref.mjs --scene=场景-1-新人上手 --bidirectional')">📋</span></pre>
+grep -Eho '\[.+\]\(.+\)' 架构图.html | wc -l<span class="cb" onclick="copyCmd(this,'node tests/skills/cross-ref.mjs --scene=场景-4-效果评估与闭环 --bidirectional')">📋</span></pre>
     </div>
     <div class="vi-section">
       <div class="vi-k">📐 验收标准</div>
@@ -1269,7 +910,7 @@ grep -Eho '\[.+\]\(.+\)' 架构图.html | wc -l<span class="cb" onclick="copyCmd
     <ul class="vrf-suggest">
       <li>为新人指南补充 1 段"30 秒速读视频/截图"，降低纯文字门槛</li>
       <li>将 onboarding 测试用例纳入 CI，变更时自动触发</li>
-      <li>每月 1 号归档验证报告到 <code>docs/故事任务面板/架构/场景-1-新人上手/reports/</code></li>
+      <li>每月 1 号归档验证报告到 <code>docs/故事任务面板/自改进/场景-4-效果评估与闭环/reports/</code></li>
     </ul>
   </div>
   <div class="vrf-section">
@@ -1492,21 +1133,21 @@ grep -Eho '\[.+\]\(.+\)' 架构图.html | wc -l<span class="cb" onclick="copyCmd
       <td>1</td>
       <td><b>新人学习路径图</b></td>
       <td>📊 Mermaid</td>
-      <td><a href="学习路径.md" class="path-link" target="_blank"><code>docs/.../场景-1-新人上手/学习路径.md</code></a></td>
+      <td><a href="学习路径.md" class="path-link" target="_blank"><code>docs/.../场景-4-效果评估与闭环/学习路径.md</code></a></td>
       <td>3.2 KB</td>
       <td>planner</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="学习路径.md" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/架构/场景-1-新人上手/学习路径.md',this)">📋</span></td>
+      <td class="op-cell"><a href="学习路径.md" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/自改进/场景-4-效果评估与闭环/学习路径.md',this)">📋</span></td>
     </tr>
     <tr>
       <td>2</td>
       <td><b>30 秒导航索引</b></td>
       <td>📄 Markdown</td>
-      <td><a href="30秒索引.md" class="path-link" target="_blank"><code>docs/.../场景-1-新人上手/30秒索引.md</code></a></td>
+      <td><a href="30秒索引.md" class="path-link" target="_blank"><code>docs/.../场景-4-效果评估与闭环/30秒索引.md</code></a></td>
       <td>1.8 KB</td>
       <td>planner</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="30秒索引.md" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/架构/场景-1-新人上手/30秒索引.md',this)">📋</span></td>
+      <td class="op-cell"><a href="30秒索引.md" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/自改进/场景-4-效果评估与闭环/30秒索引.md',this)">📋</span></td>
     </tr>
     <tr>
       <td>3</td>
@@ -1522,31 +1163,31 @@ grep -Eho '\[.+\]\(.+\)' 架构图.html | wc -l<span class="cb" onclick="copyCmd
       <td>4</td>
       <td><b>新人指南文档</b></td>
       <td>📄 Markdown</td>
-      <td><a href="新人指南.md" class="path-link" target="_blank"><code>docs/.../场景-1-新人上手/新人指南.md</code></a></td>
+      <td><a href="新人指南.md" class="path-link" target="_blank"><code>docs/.../场景-4-效果评估与闭环/新人指南.md</code></a></td>
       <td>18.4 KB</td>
       <td>planner</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="新人指南.md" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/架构/场景-1-新人上手/新人指南.md',this)">📋</span></td>
+      <td class="op-cell"><a href="新人指南.md" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/自改进/场景-4-效果评估与闭环/新人指南.md',this)">📋</span></td>
     </tr>
     <tr>
       <td>5</td>
       <td><b>常见问题 FAQ</b></td>
       <td>📄 Markdown</td>
-      <td><a href="FAQ.md" class="path-link" target="_blank"><code>docs/.../场景-1-新人上手/FAQ.md</code></a></td>
+      <td><a href="FAQ.md" class="path-link" target="_blank"><code>docs/.../场景-4-效果评估与闭环/FAQ.md</code></a></td>
       <td>6.7 KB</td>
       <td>planner</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="FAQ.md" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/架构/场景-1-新人上手/FAQ.md',this)">📋</span></td>
+      <td class="op-cell"><a href="FAQ.md" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/自改进/场景-4-效果评估与闭环/FAQ.md',this)">📋</span></td>
     </tr>
     <tr>
       <td>6</td>
       <td><b>学习路径架构图</b></td>
       <td>📊 HTML+SVG</td>
-      <td><a href="架构图.html" class="path-link" target="_blank"><code>docs/.../场景-1-新人上手/架构图.html</code></a></td>
+      <td><a href="架构图.html" class="path-link" target="_blank"><code>docs/.../场景-4-效果评估与闭环/架构图.html</code></a></td>
       <td>24.1 KB</td>
       <td>planner</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="架构图.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/架构/场景-1-新人上手/架构图.html',this)">📋</span></td>
+      <td class="op-cell"><a href="架构图.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/自改进/场景-4-效果评估与闭环/架构图.html',this)">📋</span></td>
     </tr>
     <tr>
       <td>7</td>
@@ -1562,31 +1203,31 @@ grep -Eho '\[.+\]\(.+\)' 架构图.html | wc -l<span class="cb" onclick="copyCmd
       <td>8</td>
       <td><b>上手摩擦点清单</b></td>
       <td>📋 Data</td>
-      <td><a href="摩擦点.json" class="path-link" target="_blank"><code>docs/.../场景-1-新人上手/摩擦点.json</code></a></td>
+      <td><a href="摩擦点.json" class="path-link" target="_blank"><code>docs/.../场景-4-效果评估与闭环/摩擦点.json</code></a></td>
       <td>1.5 KB</td>
       <td>planner</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="摩擦点.json" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/架构/场景-1-新人上手/摩擦点.json',this)">📋</span></td>
+      <td class="op-cell"><a href="摩擦点.json" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/自改进/场景-4-效果评估与闭环/摩擦点.json',this)">📋</span></td>
     </tr>
     <tr>
       <td>9</td>
       <td><b>知识图谱导航</b></td>
       <td>📊 Interactive</td>
-      <td><a href="知识图谱.html" class="path-link" target="_blank"><code>docs/.../场景-1-新人上手/知识图谱.html</code></a></td>
+      <td><a href="知识图谱.html" class="path-link" target="_blank"><code>docs/.../场景-4-效果评估与闭环/知识图谱.html</code></a></td>
       <td>32.8 KB</td>
       <td>planner</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="知识图谱.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/架构/场景-1-新人上手/知识图谱.html',this)">📋</span></td>
+      <td class="op-cell"><a href="知识图谱.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/自改进/场景-4-效果评估与闭环/知识图谱.html',this)">📋</span></td>
     </tr>
     <tr>
       <td>10</td>
       <td><b>演示演练页面</b></td>
       <td>💡 Interactive</td>
-      <td><a href="演示.html" class="path-link" target="_blank"><code>docs/.../场景-1-新人上手/演示.html</code></a></td>
+      <td><a href="演示.html" class="path-link" target="_blank"><code>docs/.../场景-4-效果评估与闭环/演示.html</code></a></td>
       <td>15.6 KB</td>
       <td>planner</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="演示.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/架构/场景-1-新人上手/演示.html',this)">📋</span></td>
+      <td class="op-cell"><a href="演示.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('docs/故事任务面板/自改进/场景-4-效果评估与闭环/演示.html',this)">📋</span></td>
     </tr>
   </tbody>
 </table>
@@ -2299,133 +1940,7 @@ grep -Eho '\[.+\]\(.+\)' 架构图.html | wc -l<span class="cb" onclick="copyCmd
 
 <div class="toast" id="toast"></div>
 
-<script>
-const SCENE_KEY = 'yry-arch-s3-checklist';
-
-// ── Tab Switching ─────────────────────────
-document.querySelector('.tabs').addEventListener('click', e => {
-  const tab = e.target.closest('.tab');
-  if (!tab) return;
-  switchPanel(tab.dataset.panel);
-});
-
-function switchPanel(name) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.panel === name));
-  document.querySelectorAll('.panel').forEach(p => {
-    p.classList.toggle('on', p.id === 'panel' + name.charAt(0).toUpperCase() + name.slice(1));
-  });
-  localStorage.setItem(SCENE_KEY + '-tab', name);
-}
-
-// Keyboard shortcuts
-document.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT') return;
-  const m = {'1':'checklist','2':'overview','3':'commands','4':'related','5':'verify','6':'metrics','7':'deliverables','8':'risks','9':'timeline'};
-  if (m[e.key]) { e.preventDefault(); switchPanel(m[e.key]); }
-});
-
-// ── Progress ─────────────────────────────
-function updateProgress() {
-  const checks = document.querySelectorAll('.step-checkbox');
-  const done = Array.from(checks).filter(c => c.checked).length;
-  const total = checks.length;
-  const pct = Math.round((done / total) * 100);
-  document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('progress-text').textContent = done + ' / ' + total + ' 完成';
-
-  checks.forEach(cb => {
-    const status = cb.closest('.step').querySelector('.step-status');
-    if (cb.checked) {
-      status.textContent = '✅ 完成'; status.className = 'step-status status-done';
-    } else {
-      const allChecks = Array.from(checks);
-      const idx = allChecks.indexOf(cb);
-      const prevDone = idx === 0 || allChecks[idx - 1].checked;
-      status.textContent = prevDone ? '🔶 就绪' : '⏳ 待开始';
-      status.className = prevDone ? 'step-status status-active' : 'step-status status-pending';
-    }
-  });
-
-  // Update overview tab stats
-  const pending = total - done;
-  const ready = Array.from(checks).filter((c, i) => {
-    if (c.checked) return false;
-    const allChecks = Array.from(checks);
-    return i === 0 || allChecks[i - 1].checked;
-  }).length;
-  const ovDone = document.getElementById('ov-done');
-  const ovReady = document.getElementById('ov-ready');
-  const ovPending = document.getElementById('ov-pending');
-  if (ovDone) ovDone.textContent = done;
-  if (ovReady) ovReady.textContent = ready;
-  if (ovPending) ovPending.textContent = pending - ready;
-
-  // Persist
-  const state = {};
-  checks.forEach((cb, i) => { state['step-' + (i + 1)] = cb.checked; });
-  localStorage.setItem(SCENE_KEY, JSON.stringify(state));
-}
-
-// ── Copy ─────────────────────────────────
-function copyCmd(btn, cmd) {
-  navigator.clipboard.writeText(cmd).then(() => {
-    btn.textContent = '✅'; btn.style.opacity = '1';
-    setTimeout(() => { btn.textContent = '📋'; btn.style.opacity = ''; }, 1500);
-  }).catch(() => toast('复制失败'));
-}
-
-function copyPath(path, el) {
-  navigator.clipboard.writeText(path).then(() => {
-    const orig = el ? el.textContent : '';
-    if (el) {
-      el.textContent = '✅ 已复制';
-      el.style.color = '#10b981';
-      setTimeout(() => { el.textContent = orig; el.style.color = ''; }, 1500);
-    }
-    toast('📋 已复制路径: ' + path);
-  }).catch(() => {
-    // Fallback for older browsers
-    const ta = document.createElement('textarea');
-    ta.value = path; document.body.appendChild(ta);
-    ta.select(); document.execCommand('copy');
-    document.body.removeChild(ta);
-    if (el) {
-      const orig = el.textContent;
-      el.textContent = '✅ 已复制';
-      setTimeout(() => { el.textContent = orig; }, 1500);
-    }
-    toast('📋 已复制路径: ' + path);
-  });
-}
-
-function toggleRisk(row) {
-  row.classList.toggle('open');
-  const tog = row.querySelector('.rr-toggle');
-  if (tog) tog.textContent = row.classList.contains('open') ? '▲' : '▼';
-}
-
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove('show'), 1800);
-}
-
-// ── Init ──────────────────────────────────
-(function() {
-  const saved = JSON.parse(localStorage.getItem(SCENE_KEY) || '{}');
-  document.querySelectorAll('.step-checkbox').forEach((cb, i) => {
-    if (saved['step-' + (i + 1)]) {
-      cb.checked = true;
-    }
-  });
-  updateProgress();
-
-  // Restore last active tab
-  const activeTab = localStorage.getItem(SCENE_KEY + '-tab') || 'checklist';
-  switchPanel(activeTab);
-})();
-</script>
+<script src="../../../../cdn/yry-plan-checklist.js"></script>
 <script src="../../../../cdn/shared.js"></script>
 </body>
 </html>

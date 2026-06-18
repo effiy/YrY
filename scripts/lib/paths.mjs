@@ -2,11 +2,12 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
+import { STORY_PANEL_DIR } from '../../lib/constants.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(__dirname, '../..');
 export const SCRIPTS_DIR = path.join(ROOT, 'scripts');
-export const DOCS_DIR = path.join(ROOT, 'docs/故事任务面板');
+export const DOCS_DIR = path.join(ROOT, STORY_PANEL_DIR);
 export const TEMPLATE_DIR = path.join(DOCS_DIR, '架构/场景-1-新人上手');
 export const CACHE_DIR = path.join(SCRIPTS_DIR, '.cache');
 

@@ -4,8 +4,8 @@
  * 用法: node skills/rui-npm/help.mjs 或 /rui-npm --help
  */
 
-import { bold, underline, dim, yellow, cyan } from '../../lib/tty.mjs';
-import { hdr, subhdr, item, flag, scene } from '../../lib/help-layout.mjs';
+import { bold, dim, yellow, cyan } from '../../lib/tty.mjs';
+import { hdr, subhdr, item, scene } from '../../lib/help-layout.mjs';
 
 const help = `
 ${bold("# rui-npm — 个人 npm packages 管理器")}

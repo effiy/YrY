@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { bold, dim, yellow, cyan } from '../../lib/tty.mjs';
-import { hdr, subhdr, item, flag, scene } from '../../lib/help-layout.mjs';
+import { hdr, item } from '../../lib/help-layout.mjs';
 
 const help = `
 ${bold('# rui-analysis — 代码与架构静态分析')}

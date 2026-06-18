@@ -49,6 +49,25 @@
         desc:       { type: String, default: '' },
         meta:       { type: Array,  default: function () { return []; } }
       },
+      computed: {
+        deliveryLinks: function () {
+          var DELIVERY_ICONS = [
+            { icon: '📋', label: '清单' },
+            { icon: '📐', label: '架构' },
+            { icon: '🔗', label: '图谱' },
+            { icon: '🧪', label: '测试' },
+            { icon: '📄', label: '源码' },
+            { icon: '💡', label: '演示' },
+            { icon: '📝', label: '审查' }
+          ];
+          if (!this.meta || !this.meta.length) return DELIVERY_ICONS;
+          var existing = {};
+          this.meta.forEach(function (m) { existing[m.label] = m; });
+          return DELIVERY_ICONS.map(function (d) {
+            return existing[d.label] || { icon: d.icon, label: d.label };
+          });
+        }
+      },
       template: templateHTML
     };
   }

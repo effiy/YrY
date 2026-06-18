@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  YryNotifyPanel · 模板源 + Demo 预览页
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryNotifyPanel · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../yry-inline-helpers.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: #ef4444; }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">&#128276;</span> YryNotifyPanel · 通知中心面板</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-notify-panel&gt;</code> — 加载后注入面板 HTML。<br>
+    需配合 <code>panel-hub.js</code> + <code>notify-panel.js</code> 实现完整交互。
+  </p>
+
+  <yry-notify-panel></yry-notify-panel>
+
+  <script type="text/x-template" id="yry-notify-panel-tpl">
+    <div class="notify-overlay yry-notify-overlay" id="notifyOverlay"></div>
+    <div class="notify-panel yry-notify-panel" id="notifyPanel">
+      <div class="panel-header yry-panel-header">
+        <div class="np-header-main yry-np-header-main">
+          <div class="np-title-row">
+            <span class="np-title">&#128276; 通知中心</span>
+            <span class="np-count" id="npTotalCount">—</span>
+          </div>
+          <div class="np-subtitle">统一汇总健康检查、自循环巡检与趋势扫描结果</div>
+        </div>
+        <div class="np-header-actions">
+          <button class="panel-refresh" id="notifyRefresh" title="刷新" aria-label="刷新">&#x21bb;</button>
+          <button class="panel-close" type="button" onclick="PanelHub.close('notify')" title="关闭" aria-label="关闭">✕</button>
+        </div>
+      </div>
+      <div class="np-filters" id="npFilters">
+        <span class="np-filter-chip active" data-filter="all">全部<span class="np-filter-badge" id="npBadgeAll">0</span></span>
+        <span class="np-filter-chip" data-filter="health">🩺 健康<span class="np-filter-badge" id="npBadgeHealth">0</span></span>
+        <span class="np-filter-chip" data-filter="release">📦 发布<span class="np-filter-badge" id="npBadgeRelease">0</span></span>
+        <span class="np-filter-chip" data-filter="major">🔴 MAJOR<span class="np-filter-badge" id="npBadgeMajor">0</span></span>
+        <span class="np-filter-chip" data-filter="minor">🟡 MINOR<span class="np-filter-badge" id="npBadgeMinor">0</span></span>
+      </div>
+      <div class="panel-body yry-panel-body" id="notifyPanelBody">
+        <div class="np-context panel-context">
+          <strong>数据源</strong>：动态读取 <code>./health-report.json</code> + <code>./releases.json</code>(CDN 自有,与项目级 <code>docs/健康报告</code> 隔离)<br>
+          <strong>健康报告</strong>：针对 CDN 目录自身 — 8 维度评估(D0 组件完整性 / D1 核心文件 / D2 字体 / D3 发布元数据 / D4 主题 / D5 演示 / D6 加载链 / D7 jsDelivr) · 按日期去重(同一天仅保留最新一份)<br>
+          <strong>CDN 发布</strong>：CDN 自身的版本发布记录(v1.0 / v1.1 / v1.2),按 MAJOR / MINOR 类型展示 · 数据来自 <code>releases.json</code><br>
+          <strong>生成命令</strong>：健康: 手动更新 <code>health-report.json</code>(每次发版后) · 发布: <code>npm version</code> + 更新 <code>releases.json</code><br>
+          <strong>更新机制</strong>：每次打开/刷新面板自动从 JSON 清单拉取最新数据;只要 <code>health-report.json</code> / <code>releases.json</code> 更新完成,无需手工改面板脚本
+        </div>
+        <div class="panel-loading yry-panel-loading">加载中...</div>
+      </div>
+      <div class="panel-footer">
+        <div class="np-footer-meta">
+          <span id="npUpdateTime"></span>
+          <a href="#" onclick="event.preventDefault();window.openPanel('faq')" class="np-footer-faq">❓ FAQ</a>
+        </div>
+        <div class="np-footer-links">
+          <a href="../健康报告/index.html" target="_blank">🩺 健康报告</a>
+          <a href="../README.md" target="_blank">📖 README</a>
+          <a href="../package.json" target="_blank">📦 package.json</a>
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <script src="index.js"></script>
+
+  <div class="demo-footer" style="margin-top:28px;text-align:center;font-size:.72rem;color:var(--yry-text3,#888)">
+    &#128276; YryNotifyPanel v1.0.0 · <a href="../index.html" style="color:var(--yry-accent,#ffc107);text-decoration:none">CDN 首页</a>
+  </div>
+
+  <script src="../yry-back-top/index.js"></script>
+</body>
+</html>

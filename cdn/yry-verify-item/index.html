@@ -1,0 +1,79 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryVerifyItem · 验证项 Vue 3 组件
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryVerifyItem · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0e0f1a); color: var(--yry-text, #f5f5f5); padding: 32px 24px; max-width: 800px; margin: 0 auto; font-family: var(--yry-font-sans); }
+  h1 { font-size: 1.1rem; }
+  .demo-hint { font-size: .74rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+</style>
+</head>
+<body>
+<h1>YryVerifyItem</h1>
+<p class="demo-hint">Vue 3 组件: <code>label</code> · <code>status</code> · <code>sections</code> (JSON)</p>
+
+<div id="demo-1"></div>
+
+<script type="text/x-template" id="yry-verify-item-tpl">
+  <div class="vi-wrapper">
+    <div class="vi-head">
+      <div class="vi-label">{{ label }}</div>
+      <div :class="'vi-status ' + (status || 'pass')">{{ (status || 'pass').toUpperCase() }}</div>
+    </div>
+    <div v-for="(s, si) in parsedSections" :key="'s'+si" class="vi-section">
+      <div class="vi-k">{{ s.key }}</div>
+      <div v-if="s.type === 'text'" class="vi-v" v-html="s.value || ''"></div>
+      <div v-else-if="s.type === 'code'" class="vi-v"><pre>{{ s.value || '' }}</pre></div>
+      <div v-else-if="s.type === 'list'" class="vi-v">
+        <ul class="vi-criteria">
+          <li v-for="(it, ii) in (s.items || [])" :key="'li'+ii">
+            <template v-if="typeof it === 'object'" v-html="it.html || it.text || ''"></template>
+            <template v-else>{{ it }}</template>
+          </li>
+        </ul>
+      </div>
+      <div v-else-if="s.type === 'table'" class="vi-v">
+        <table class="vi-table">
+          <thead><tr><th v-for="(c, ci) in (s.columns || [])" :key="'th'+ci">{{ c }}</th></tr></thead>
+          <tbody>
+            <tr v-for="(row, ri) in (s.rows || [])" :key="'r'+ri">
+              <td v-for="(cell, cci) in (row || [])" :key="'c'+cci" :class="(cell && typeof cell === 'object' && cell.status) ? cell.status : ''">
+                <template v-if="cell && typeof cell === 'object'">{{ cell.text !== undefined ? cell.text : '' }}</template>
+                <template v-else>{{ cell }}</template>
+              </td>
+            </tr>
+            <tr v-if="s.total">
+              <td v-for="(cell, cci) in (s.total || [])" :key="'tc'+cci" :class="(cell && typeof cell === 'object' && cell.status) ? cell.status : ''">
+                <template v-if="cell && typeof cell === 'object'">{{ cell.text !== undefined ? cell.text : '' }}</template>
+                <template v-else>{{ cell }}</template>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YryVerifyItem) return;
+  Vue.createApp(window.YryVerifyItem, {
+    label: '验证 1 · 步骤 7 · 新人上手路径验证', status: 'pass',
+    sections: '[{"key":"🎯 验证目标","type":"text","value":"验证架构文档的可达性"},{"key":"📜 验证脚本","type":"code","value":"node tests/run.mjs"},{"key":"📐 验收标准","type":"list","items":["标准 1","标准 2"]},{"key":"📊 实测结果","type":"table","columns":["检查点","期望","实测","状态"],"rows":[["核心概念定位","命中 ≥ 1","命中 8",{"text":"PASS","status":"pass"}]]}]'
+  }).mount('#demo-1');
+}
+if (window.YryVerifyItem) mountAll();
+else document.addEventListener('yry-verify-item-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

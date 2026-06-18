@@ -1,0 +1,629 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryNotifyPanel · 通知中心面板样式
+
+   职责范围:
+     1) 面板容器/遮罩/动画 (overlay / panel / open)
+     2) 头部 (header · title · count · subtitle · refresh/close buttons)
+     3) 筛选条 (filter chips · badges)
+     4) 滚动条 + 上下文块 (body · np-context)
+     5) CDN 版本发布卡片 (.np-release-card · np-row1 · np-type-pill 等)
+     6) 页脚 (footer · meta · links)
+     7) 响应式适配
+
+   设计理念:
+     - 红色 (#ef4444) 作为品牌主色,通过 CSS 变量集中管理
+     - 共享基线样式 (.np-card / .np-filter-chip / .np-summary-bar) 保留在
+       yry-home.css 中,本文件仅定义通知中心独有的样式与组件
+     - 使用 :where() 降低特异性,便于后续覆盖
+     - 所有可交互元素均带 transition / hover / focus 反馈
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Design Tokens ─────────────────────────────────────────────────── */
+.yry-notify-panel {
+  --np-red:        #ef4444;
+  --np-red-soft:   #fecaca;
+  --np-red-glow:   rgba(239, 68, 68, 0.55);
+  --np-radius:     18px;
+  --np-radius-sm:  10px;
+  --np-radius-xs:  8px;
+  --np-border:     rgba(255, 255, 255, 0.06);
+  --np-border-hi:  rgba(255, 255, 255, 0.14);
+  --np-bg-1:       rgba(23, 28, 39, 0.98);
+  --np-bg-2:       rgba(18, 23, 33, 0.98);
+  --np-bg-body:    rgba(13, 17, 26, 0.72);
+  --np-ease:       cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   1) 遮罩 + 面板容器 + 入场动画
+   ════════════════════════════════════════════════════════════════════════ */
+.yry-notify-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 299;
+  background: rgba(5, 8, 18, 0.58);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s var(--np-ease);
+}
+
+.yry-notify-panel {
+  position: fixed;
+  top: 56px;
+  left: 50%;
+  z-index: 300;
+  width: 860px;
+  max-height: 84vh;
+  margin-left: -430px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--np-bg-1) 0%, var(--np-bg-2) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.16);
+  border-radius: var(--np-radius);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.02),
+    0 22px 70px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-12px) scale(0.985);
+  transition:
+    opacity 0.22s var(--np-ease),
+    transform 0.22s var(--np-ease);
+}
+
+/* 开启态:遮罩可点击 + 面板可见 */
+.notify-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.notify-panel.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   2) 头部 (Header)
+   ════════════════════════════════════════════════════════════════════════ */
+.notify-panel .yry-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-shrink: 0;
+  padding: 18px 20px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background:
+    radial-gradient(circle at top left, rgba(239, 68, 68, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+}
+
+.notify-panel .yry-np-header-main {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.notify-panel .np-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.notify-panel .panel-header .np-title {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
+}
+
+.notify-panel .panel-header .np-count {
+  font-size: 0.66rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--np-red-soft);
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: transform 0.2s var(--np-ease);
+}
+
+.notify-panel .panel-header .np-count.is-bumped {
+  animation: np-count-pulse 0.45s var(--np-ease);
+}
+
+@keyframes np-count-pulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.12); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.18); }
+  100% { transform: scale(1); }
+}
+
+.notify-panel .np-subtitle {
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.notify-panel .np-header-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+/* 通用按钮基线 (刷新 / 关闭) */
+.notify-panel .panel-refresh,
+.notify-panel .panel-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 10px;
+  cursor: pointer;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--np-border);
+  border-radius: var(--np-radius-sm);
+  transition:
+    color 0.18s var(--np-ease),
+    background 0.18s var(--np-ease),
+    border-color 0.18s var(--np-ease),
+    transform 0.18s var(--np-ease),
+    box-shadow 0.18s var(--np-ease);
+}
+
+.notify-panel .panel-refresh:hover,
+.notify-panel .panel-close:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--np-border-hi);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+.notify-panel .panel-refresh:focus-visible,
+.notify-panel .panel-close:focus-visible {
+  outline: none;
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18);
+}
+
+.notify-panel .panel-close {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.notify-panel .panel-refresh {
+  font-size: 1rem;
+}
+
+.notify-panel .panel-refresh.spinning {
+  animation: np-spin 0.6s linear;
+}
+
+@keyframes np-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   3) 筛选条 (Filter Chips)
+   ════════════════════════════════════════════════════════════════════════ */
+.notify-panel .np-filters {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.015);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   4) 主体 (Body) + 滚动条 + 上下文块
+   ════════════════════════════════════════════════════════════════════════ */
+.notify-panel .yry-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.015) 0%, transparent 18%),
+    var(--np-bg-body);
+  scroll-behavior: smooth;
+}
+
+.notify-panel .panel-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notify-panel .panel-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.notify-panel .panel-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  transition: background 0.18s var(--np-ease);
+}
+
+.notify-panel .panel-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.notify-panel .np-context {
+  margin: 0 0 12px;
+  padding: 12px 14px !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.015) 100%);
+  border: 1px solid var(--np-border);
+  border-radius: 12px;
+  font-size: 0.68rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+.notify-panel .np-context strong {
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.notify-panel .np-context code {
+  font-family: ui-monospace, 'JetBrains Mono', monospace;
+  font-size: 0.66rem;
+  color: #e0af68;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   5) CDN 版本发布卡片 (.np-release-card)
+   - 仅定义 CDN 通知独有的视觉表达
+   - 复用 .np-item 作为容器,共享基线在 yry-home.css
+   ════════════════════════════════════════════════════════════════════════ */
+.np-release-card {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 14px 16px;
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.018) 100%);
+  border: 1px solid var(--np-border);
+  border-left: 3px solid var(--np-red-glow);
+  border-radius: 14px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  transition:
+    transform 0.2s var(--np-ease),
+    background 0.2s var(--np-ease),
+    border-color 0.2s var(--np-ease),
+    box-shadow 0.2s var(--np-ease);
+}
+
+.np-release-card:hover {
+  transform: translateY(-1px);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.025) 100%);
+  border-color: rgba(255, 255, 255, 0.12);
+  border-left-color: var(--np-red);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+}
+
+/* 按 bump 类型差异化左侧条 */
+.np-release-card[data-type="MAJOR"] { border-left-color: var(--np-red); }
+.np-release-card[data-type="MINOR"] { border-left-color: rgba(245, 158, 11, 0.55); }
+.np-release-card[data-type="PATCH"] { border-left-color: rgba(34, 197, 94, 0.55); }
+
+/* 第 1 行:版本徽章 + bump 类型 + 相对时间 + 绝对日期 */
+.np-row1 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* 版本号胶囊 (v1.2.0) */
+.np-type-pill {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 3px 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: 999px;
+  background: rgba(239, 68, 68, 0.13);
+  color: var(--np-red);
+  border: 1px solid rgba(239, 68, 68, 0.26);
+}
+
+/* bump 类型标签 (MAJOR / MINOR / PATCH) */
+.np-bump {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.np-release-card[data-type="MAJOR"] .np-bump { color: var(--np-red); }
+.np-release-card[data-type="MINOR"] .np-bump { color: #f59e0b; }
+.np-release-card[data-type="PATCH"] .np-bump { color: #22c55e; }
+
+/* 相对时间 ("2 天前") — 放右侧 */
+.np-time {
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 4px 9px;
+  font-size: 0.64rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* 绝对日期 ("2026-06-16") — 隐藏,在 hover 时显示 */
+.np-date {
+  font-size: 0.6rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.18s var(--np-ease);
+}
+
+.np-release-card:hover .np-date { opacity: 0.7; }
+
+/* 标题行:图标 + 标题 */
+.np-release-card .np-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 1px;
+}
+
+.np-release-card .np-icon {
+  flex-shrink: 0;
+  font-size: 1.05rem;
+  line-height: 1.3;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.np-release-card .np-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+/* 摘要 */
+.np-release-card .np-summary {
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* 高亮列表 (📊 新组件 · 🎨 主题…) */
+.np-highlights {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 2px 0 0;
+  padding: 9px 11px 9px 14px;
+  list-style: none;
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 2px solid rgba(239, 68, 68, 0.2);
+  border-radius: 0 6px 6px 0;
+}
+
+.np-highlights li {
+  position: relative;
+  padding-left: 12px;
+  font-size: 0.68rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.np-highlights li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.55);
+}
+
+/* 迁移提示 */
+.np-migration {
+  padding: 8px 12px;
+  font-size: 0.68rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  background: rgba(245, 158, 11, 0.06);
+  border-left: 2px solid rgba(245, 158, 11, 0.4);
+  border-radius: 0 6px 6px 0;
+}
+
+/* 底部元数据行 (📁 文件数 等) */
+.np-release-card .np-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.np-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 9px;
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.np-meta-chip strong {
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   6) 页脚 (Footer)
+   ════════════════════════════════════════════════════════════════════════ */
+.notify-panel .panel-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 18px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.notify-panel .np-footer-meta,
+.notify-panel .np-footer-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.notify-panel .np-footer-meta {
+  font-size: 0.66rem;
+  color: var(--text-muted);
+}
+
+.notify-panel .np-footer-faq {
+  color: #86efac !important;
+}
+
+.notify-panel .panel-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  font-size: 0.7rem;
+  color: var(--cyan);
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+  transition:
+    color 0.15s var(--np-ease),
+    background 0.15s var(--np-ease),
+    border-color 0.15s var(--np-ease),
+    transform 0.15s var(--np-ease);
+}
+
+.notify-panel .panel-footer a:hover {
+  color: var(--color-accent);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.notify-panel .panel-footer a:focus-visible {
+  outline: none;
+  border-color: rgba(34, 211, 238, 0.4);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.18);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   7) 响应式适配
+   ════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 880px) {
+  .yry-notify-panel {
+    top: 52px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    margin-left: 0;
+    max-height: calc(100vh - 64px);
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .yry-notify-panel {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    max-height: calc(100vh - 16px);
+    border-radius: 12px;
+  }
+
+  .notify-panel .yry-panel-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 14px 16px 12px;
+  }
+
+  .notify-panel .np-header-actions {
+    justify-content: flex-end;
+  }
+
+  .notify-panel .np-filters {
+    padding: 12px 16px 10px;
+    gap: 6px;
+  }
+
+  .notify-panel .yry-panel-body {
+    padding: 10px;
+  }
+
+  .np-release-card {
+    padding: 12px 14px;
+  }
+
+  .np-release-card .np-title {
+    font-size: 0.84rem;
+  }
+
+  .notify-panel .panel-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 16px 12px;
+  }
+
+  .notify-panel .np-footer-links {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .yry-notify-overlay,
+  .yry-notify-panel,
+  .notify-panel .panel-refresh,
+  .notify-panel .panel-close,
+  .notify-panel .panel-footer a,
+  .np-release-card,
+  .np-release-card .np-date,
+  .np-release-card .np-count {
+    transition: none !important;
+    animation: none !important;
+  }
+}

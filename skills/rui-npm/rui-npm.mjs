@@ -31,6 +31,7 @@ import { spawnSync } from "node:child_process";
 import { join, dirname } from "node:path";
 
 import { checkNpm } from "./lib/npm-utils.mjs";
+import { NODE_ARGV_OFFSET } from "../../lib/constants.mjs";
 import { parseArgs } from "./lib/cli.mjs";
 import { cmdSearch, cmdList, cmdInfo } from "./lib/read.mjs";
 import { cmdInstall, cmdUpdate, cmdUninstall } from "./lib/write.mjs";
@@ -40,7 +41,7 @@ import { cmdLogin } from "./lib/auth.mjs";
 import { cmdPublish } from "./lib/publish.mjs";
 
 function main() {
-  const rawArgs = process.argv.slice(2);
+  const rawArgs = process.argv.slice(NODE_ARGV_OFFSET);
   if (rawArgs.length === 0 || rawArgs[0] === "help" || rawArgs[0] === "--help" || rawArgs[0] === "-h") {
     const helpPath = join(dirname(new URL(import.meta.url).pathname), "help.mjs");
     spawnSync("node", [helpPath], { stdio: "inherit" });

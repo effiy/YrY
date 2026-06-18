@@ -1,0 +1,54 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryCmdHead · 命令面板头部 Vue 3 组件
+   三文件: index.html (模板+Demo) · index.js (逻辑) · index.css (样式)
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryCmdHead · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0a0a0a); color: var(--yry-text, #f5f5f5); font-family: var(--yry-font-sans); padding: 32px 24px 60px; max-width: 900px; margin: 0 auto; line-height: 1.55; }
+  h1 { font-size: 1.25rem; margin: 0 0 4px; }
+  h1 .accent { color: var(--yry-accent, #ffc107); }
+  .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; }
+  .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: .72rem; color: #e0af68; }
+</style>
+</head>
+<body>
+
+<h1><span class="accent">⚡</span> YryCmdHead · 命令面板头部</h1>
+<p class="demo-hint">Vue 3 组件: <code>title</code> · <code>subtitle</code> · <code>stats</code> (JSON 数组)</p>
+
+<div id="demo-1"></div>
+
+<script type="text/x-template" id="yry-cmd-head-tpl">
+  <div class="cmdh-wrapper">
+    <div v-if="title" class="cmdh-title">{{ title }}</div>
+    <div v-if="subtitle" class="cmdh-subtitle" v-html="subtitle"></div>
+    <div v-if="parsedStats.length" class="cmdh-stats">
+      <span v-for="(s, i) in parsedStats" :key="i" v-html="s.html || s.text || ''"></span>
+    </div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YryCmdHead) return;
+  Vue.createApp(window.YryCmdHead, {
+    title: '⚡ 命令面板 · §2 实施',
+    subtitle: '本阶段需在 <code>demo-server</code> 上执行 14 个命令,涉及 <b>4 个子系统</b>。',
+    stats: '[{"html":"👤 <b>Owner</b>: planner+devops"},{"html":"⏱ <b>工期</b>: <b>8.0h</b> / <code>06-03 → 06-08</code>"},{"html":"📦 <b>产出</b>: 4 个实施报告"},{"html":"<span class=\\"chs\\">✓ 已就绪</span>"}]'
+  }).mount('#demo-1');
+}
+if (window.YryCmdHead) mountAll();
+else document.addEventListener('yry-cmd-head-ready', mountAll, { once: true });
+</script>
+</body>
+</html>

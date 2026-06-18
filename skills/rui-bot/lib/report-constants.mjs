@@ -16,6 +16,8 @@ export const DIM_ICONS = {
   diagnostics: "🔬",
   git:         "📦",
   security:    "🛡️",
+  file_size:   "📏",
+  dep_analysis:"🔗",
   em_testing:  "🧪",
   em_types:    "🛡️",
   em_linting:  "📏",
@@ -36,6 +38,8 @@ export const DIM_LABELS = {
   diagnostics: "D0-D7 诊断",
   git:         "Git 仓库状态",
   security:    "安全扫描",
+  file_size:   "文件体积",
+  dep_analysis:"依赖分析",
   em_testing:  "测试体系",
   em_types:    "类型安全",
   em_linting:  "代码规范",
@@ -47,7 +51,8 @@ export const DIM_LABELS = {
 };
 
 export const DIM_WEIGHTS = {
-  token: 15, config: 10, robots: 10, api: 15, reports: 10, format: 10, diagnostics: 10, git: 10, security: 10,
+  token: 12, config: 8, robots: 8, api: 12, reports: 8, format: 8, diagnostics: 8, git: 8, security: 8,
+  file_size: 8, dep_analysis: 8,
   em_testing: 20, em_types: 15, em_linting: 15, em_cicd: 15, em_docs: 15, em_deps: 10, em_git: 10,
   comp_qual: 10,
 };

@@ -5,60 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>yry-cdn 全景 · 知识图谱</title>
 <link rel="stylesheet" href="../../../../cdn/fonts.css">
-<link rel="stylesheet" href="../../../../cdn/yry-inline-helpers.css">
+<link rel="stylesheet" href="../../../../cdn/yry-graph-base.css">
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'JetBrains Mono',monospace;background:#020617;min-height:100vh;padding:2rem;color:white}
-.container{max-width:1400px;margin:0 auto}
-.header{margin-bottom:1.5rem}
-.header-row{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
-.pulse-dot{width:12px;height:12px;background:#22d3ee;border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-@keyframes fadeInDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-h1{font-size:1.5rem;font-weight:700}
-.subtitle{color:#94a3b8;font-size:.875rem;margin-left:1.75rem}
-.toolbar{display:flex;gap:.5rem;margin-left:auto;flex-shrink:0;align-items:center}
-.toolbar-toggle{background:transparent;border:none;color:#475569;cursor:pointer;font-size:1.25rem;padding:.25rem .5rem;border-radius:.375rem}
-.toolbar-toggle:hover{color:#94a3b8;background:rgba(30,41,59,.5)}
-.toolbar-actions{display:none;gap:.5rem}
-.toolbar.expanded .toolbar-actions{display:flex}
-.toolbar-actions button{background:rgba(30,41,59,.8);border:1px solid #334155;color:#94a3b8;padding:.375rem .75rem;border-radius:.375rem;font-family:inherit;font-size:.75rem;cursor:pointer;transition:all .2s;white-space:nowrap}
-.toolbar-actions button:hover{background:rgba(51,65,85,.8);color:white;border-color:#475569}
-.graph-container{background:rgba(15,23,42,.5);border-radius:1rem;border:1px solid #1e293b;padding:1rem;margin-bottom:1.5rem}
-#cy{width:100%;height:550px;border-radius:.5rem}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
-.card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem}
-.card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem}
-.card-dot{width:8px;height:8px;border-radius:50%}
-.card-dot.domain{background:#EC4899}.card-dot.flow{background:#34d399}.card-dot.step{background:#3B82F6}.card-dot.skill{background:#22d3ee}.card-dot.scene{background:#8B5CF6}
-.card h3{font-size:.875rem;font-weight:600}
-.card ul{list-style:none;color:#94a3b8;font-size:.75rem}
-.card li{margin-bottom:.375rem}
-.legend{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:.75rem;padding:.75rem;background:rgba(15,23,42,.5);border-radius:.5rem;border:1px solid #1e293b;font-size:.75rem;color:#94a3b8}
-.legend-item{display:flex;align-items:center;gap:.375rem}
-.legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid}
-.legend-dot.domain{background:rgba(236,72,153,.3);border-color:#EC4899}
-.legend-dot.flow{background:rgba(52,211,153,.3);border-color:#34d399}
-.legend-dot.step{background:rgba(59,130,246,.3);border-color:#3B82F6}
-.legend-dot.skill{background:rgba(34,211,238,.3);border-color:#22d3ee}
-.legend-dot.scene{background:rgba(139,92,246,.3);border-color:#8B5CF6}
-.breadcrumb{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem;font-size:0.76rem}
-.breadcrumb a{color:#7aa2f7;text-decoration:none;transition:color 0.15s}
-.breadcrumb a:hover{color:#fbbf24;text-decoration:underline}
-.breadcrumb .bc-sep{color:#53576c;opacity:0.5;user-select:none}
-.breadcrumb .bc-current{color:#94a3b8;font-weight:500}
-.footer{text-align:center;color:#475569;font-size:.75rem;margin-top:1rem}
-
-@media print{body{background:#020617;padding:1rem}.toolbar{display:none!important}}
-.cross-nav{display:flex;gap:4px;justify-content:center;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;animation:fadeInDown .5s .15s ease both}
-.cross-link{color:#7aa2f7;text-decoration:none;font-size:0.76rem;padding:3px 10px;border-radius:4px;transition:color 0.15s,background 0.15s}
-.cross-link:hover{color:#fbbf24;background:rgba(251,191,36,0.06)}
-.cross-link.on{color:#fbbf24;font-weight:600;cursor:default}
-.cross-sep{color:#475569;font-size:0.5rem;opacity:0.35;user-select:none}
-</style>
 </head><body><div class="container" id="report-container">
 <nav class="breadcrumb"><a href="../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-cdn · CDN 共享前端资源管理</span><span class="bc-sep">/</span><span class="bc-current">🔗 知识图谱</span></nav>
 <nav class="cross-nav">
@@ -85,10 +35,10 @@ h1{font-size:1.5rem;font-weight:700}
 
 <div class="graph-container"><div id="cy"></div></div>
 
-<div class="cards"><div class="card"><div class="card-header"><span class="card-dot a"></span><h3>5 个场景</h3></div><ul><li>场景 1 — CDN 资源加载与页面渲染 · 5 步加载链</li><li>场景 2 — 双主题系统设计 · 18 令牌 + 21 组件</li><li>场景 3 — 组件库与 JS 工具 API · 27 组件 + 9 API</li><li>场景 4 — 存量页面迁移 · 6 步迁移 + 89 页面</li><li>场景 5 — npm 包发布与版本管理 · 11 文件发布</li></ul></div>
-<div class="card"><div class="card-header"><span class="card-dot b"></span><h3>11 个源文件</h3></div><ul><li>4 CSS: shared.css · theme.css · theme-mono.css · fonts.css</li><li>1 JS: shared.js (YrY IIFE · 9 API)</li><li>4 woff2: JetBrains Mono 400/500/600/700</li><li>1 README + 1 package.json + 1 迁移脚本</li></ul></div>
-<div class="card"><div class="card-header"><span class="card-dot c"></span><h3>核心产出</h3></div><ul><li>18 :root CSS 变量 — 设计令牌系统</li><li>21 组件 — 14 System + 7 Mono</li><li>9 YrY API — toast/copyCmd/switchPanel/suite/format/escape/clipboard</li><li>7 @keyframes 动画 — 6 共享 + 1 Mono</li></ul></div>
-<div class="card"><div class="card-header"><span class="card-dot d"></span><h3>55 消费者页面</h3></div><ul><li>Cat A (架构图·知识图谱): mono 主题 + JetBrains Mono</li><li>Cat B (审查·测试·演示·计划): system 主题 + 系统字体</li><li>CDN 引用: shared.css + theme.css/mono + shared.js</li><li>跨页面浏览器缓存 — 0 网络请求</li></ul></div></div>
+<div class="cards"><div class="card"><div class="card-header"><span class="card-dot a"></span><h3>5 个场景</h3></div><ul><li>场景 1 — CDN 资源加载与页面渲染 · 5 步加载链</li><li>场景 2 — 双主题系统设计 · 14 令牌 + 2 主题</li><li>场景 3 — 组件库与 JS 工具 API · 62 组件 + 9 API + 4 Vue</li><li>场景 4 — 存量页面迁移 · 6 步迁移 + 55 页面</li><li>场景 5 — npm 包发布与版本管理 · jsDelivr 分发</li></ul></div>
+<div class="card"><div class="card-header"><span class="card-dot b"></span><h3>11 个源文件</h3></div><ul><li>4 CSS: shared.css · theme.css · theme-mono.css · fonts.css</li><li>1 JS: shared.js (YrY IIFE · 9 API)</li><li>4 woff2: JetBrains Mono 400/500/600/700</li><li>1 README + 1 package.json</li></ul></div>
+<div class="card"><div class="card-header"><span class="card-dot c"></span><h3>核心产出</h3></div><ul><li>14 :root CSS 变量 — 设计令牌系统</li><li>62 组件 — 10 大类别（布局/导航/卡片/场景/统计/清单/风险/面板/工具/其他）</li><li>9 YrY API — toast/copyCmd/switchPanel/suite/format/escape/clipboard</li><li>4 Vue 3 组件 — Breadcrumb/BackTop/CrossNav/SceneNav</li></ul></div>
+<div class="card"><div class="card-header"><span class="card-dot d"></span><h3>55 消费者页面</h3></div><ul><li>Cat A (架构图·知识图谱): Mono 主题 + JetBrains Mono</li><li>Cat B (审查·测试·演示·计划): System 主题 + 系统字体</li><li>CDN 引用: shared.css + theme.css + shared.js</li><li>跨页面浏览器缓存 — 0 网络请求</li></ul></div></div>
 
 <div class="footer">🧩 yry-cdn 知识图谱 · yry-cdn · 知识图谱 · Powered by Cytoscape.js</div>
 </div>
@@ -142,9 +92,9 @@ v1.1.0',type:'b'}},
 {data:{id:'tokens',label:':root
 18 变量',type:'c'}},
 {data:{id:'sys-comp',label:'System
-14 组件',type:'c'}},
+62 组件',type:'c'}},
 {data:{id:'mono-comp',label:'Mono
-7 组件',type:'c'}},
+主题',type:'c'}},
 {data:{id:'api',label:'YrY
 9 API',type:'c'}},
 {data:{id:'anim',label:'@keyframes

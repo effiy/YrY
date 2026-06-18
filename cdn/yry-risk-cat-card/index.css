@@ -1,0 +1,107 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryRiskCatCard · 风险类别增强卡片样式
+   包含: 图标头部 + 多指标 + 进度条 + 趋势
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host { display: block; }
+
+.rcc-wrapper {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(255, 255, 255, .01));
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 8px;
+  padding: 0;
+  text-align: left;
+  transition: all .2s;
+}
+.rcc-wrapper:hover {
+  border-color: rgba(34, 211, 238, .4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .2);
+}
+.rcc-wrapper.hot {
+  border-color: rgba(239, 68, 68, .4);
+  animation: rcc-pulse 2s infinite;
+}
+@keyframes rcc-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  50% { box-shadow: 0 0 0 4px rgba(239, 68, 68, .1); }
+}
+
+.rcc-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, .05);
+}
+.rcc-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .9rem;
+  flex-shrink: 0;
+  background: var(--rcc-icon-bg, linear-gradient(135deg, #22d3ee, #0ea5e9));
+}
+.rcc-name {
+  font-size: .78rem;
+  color: var(--yry-text, #f5f5f5);
+  font-weight: 600;
+  flex: 1;
+}
+.rcc-count {
+  font-size: .62rem;
+  color: var(--yry-text3, #888);
+  background: rgba(255, 255, 255, .05);
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+.rcc-badge {
+  font-size: .6rem;
+  color: #ef4444;
+  background: rgba(239, 68, 68, .15);
+  padding: 2px 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(239, 68, 68, .3);
+  font-weight: 600;
+}
+
+.rcc-metric { padding: 8px 12px; }
+.rcc-m-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: .68rem;
+  color: var(--yry-text3, #888);
+  padding: 2px 0;
+}
+.rcc-m-row b {
+  color: var(--yry-text, #f5f5f5);
+  font-weight: 600;
+  font-family: ui-monospace, monospace;
+}
+
+.rcc-progress {
+  height: 4px;
+  background: rgba(255, 255, 255, .05);
+  border-radius: 2px;
+  margin: 0 12px 6px;
+  overflow: hidden;
+}
+.rcc-prog-fill {
+  height: 100%;
+  width: var(--rcc-prog-w, 50%);
+  background: var(--rcc-prog-bg, #f59e0b);
+  border-radius: 2px;
+  transition: width .3s;
+}
+
+.rcc-trend {
+  padding: 0 12px 10px;
+  font-size: .66rem;
+  color: var(--yry-text3, #888);
+}
+.rcc-trend-up { color: #ef4444; font-weight: 600; }
+.rcc-trend-down { color: #10b981; font-weight: 600; }
+.rcc-trend-flat { color: var(--yry-text3, #888); font-weight: 600; }

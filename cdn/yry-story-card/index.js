@@ -10,6 +10,7 @@
      badge       (可选) 版本号徽标
      desc        (可选) 故事描述(支持 HTML,经 v-html 渲染)
      scenes      (可选) 场景 tag 文本数组
+	     demo        (可选) 效果演示链接 URL
    ═══════════════════════════════════════════════════════════════════════════ */
 
 (function () {
@@ -49,7 +50,9 @@
         nameTarget: { type: String, default: '' },
         badge:      { type: String, default: '' },
         desc:       { type: String, default: '' },
-        scenes:     { type: Array,  default: function () { return []; } }
+        scenes:     { type: Array,  default: function () { return []; } },
+        demo:       { type: String, default: '' },
+        links:      { type: Array,  default: function () { return []; } }
       },
       template: templateHTML
     };

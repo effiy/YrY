@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryStepCard · Demo</title>
+<link rel="stylesheet" href="../shared.css"><link rel="stylesheet" href="index.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>body{{background:var(--yry-bg,#0e0f1a);color:var(--yry-text,#f5f5f5);padding:32px;max-width:700px;margin:0 auto;font-family:var(--yry-font-sans)}}h1{{font-size:1.1rem}}.demo-hint{{font-size:.74rem;color:var(--yry-text3,#888);margin:0 0 20px}}</style>
+</head>
+<body>
+<h1>YryStepCard</h1><p class="demo-hint">Vue 3: <code>num</code> · <code>title</code> · <code>meta</code> · <code>criteria</code> · <code>deps</code> · <code>log</code> (JSON)</p>
+<div id="demo-1"></div>
+
+<script type="text/x-template" id="yry-step-card-tpl">
+  <div :class="'stc-wrapper' + (open ? ' open' : '')">
+    <div class="stc-header" @click="open = !open">
+      <input type="checkbox" class="stc-checkbox" :checked="checked" @change.stop="onCheck">
+      <span class="stc-num">{{ num }}</span>
+      <span class="stc-title">{{ title }}</span>
+      <span :class="'stc-status status-' + (status || 'pending')">{{ statusText || status }}</span>
+      <span class="stc-toggle">{{ open ? '▲' : '▼' }}</span>
+    </div>
+    <div class="stc-body">
+      <div v-if="summary" class="stc-summary" v-html="summary"></div>
+      <div v-if="parsedMeta.length" class="stc-meta">
+        <div v-for="(m, i) in parsedMeta" :key="'m'+i" class="stc-meta-item">
+          <span class="m-icon">{{ m.icon }}</span>
+          <b>{{ m.label }}:</b>
+          <span v-if="m.priority" :class="'stc-meta-pri ' + m.priority">{{ m.value }}</span>
+          <span v-else>{{ m.value }}</span>
+        </div>
+      </div>
+      <div v-if="parsedCriteria.length" class="stc-criteria">
+        <b>📐 验收标准：</b>
+        <ul><li v-for="(c, i) in parsedCriteria" :key="'cr'+i" v-html="c.text || c"></li></ul>
+      </div>
+      <div v-if="parsedDeps.length" class="stc-deps">
+        <span class="stc-deps-label">关联页面:</span>
+        <a v-for="(d, i) in parsedDeps" :key="'dp'+i" :href="d.href" :target="d.target || undefined" class="stc-dep-badge">{{ d.icon || '' }} {{ d.label }}</a>
+      </div>
+      <div v-if="parsedLog.length" class="stc-log">
+        <div v-for="(l, i) in parsedLog" :key="'lg'+i" class="stc-log-entry">
+          <span class="stc-log-time">{{ l.time }}</span> <span v-html="l.text || ''"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script src="index.js"></script>
+<script>
+function m(){{if(!window.YryStepCard)return;Vue.createApp(window.YryStepCard,{{
+  num:1,title:'主要价值',status:'done',statusText:'✅ 完成',checked:true,
+  summary:'统一加载链 — 55 个页面共享同一套 CSS,减少冗余请求。',
+  meta:'[{{"icon":"👤","label":"Owner","value":"coder agent"}},{{"icon":"⏱","label":"工期","value":"2.2h"}},{{"icon":"🎯","label":"优先级","value":"P0","priority":"p0"}}]',
+  criteria:'["统一加载链 — 55 个页面共享","零配置渲染 — 页面只需声明类型"]',
+  deps:'[{{"href":"架构图.html","label":"📐 架构图","target":"_blank"}}]',
+  log:'[{{"time":"2026-06-13 14:35","text":"<b>完成</b> · 阶段交付"}}]'
+}}).mount('#demo-1')}}
+if(window.YryStepCard)m();else document.addEventListener('yry-step-card-ready',m,{{once:true}});
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  YrySelfImprovePanel · 模板源 + Demo 预览页
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YrySelfImprovePanel · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../yry-inline-helpers.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: #a78bfa; }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">&#129514;</span> YrySelfImprovePanel · 自改进分析面板</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-selfimprove-panel&gt;</code> — 加载后注入面板 HTML。<br>
+    需配合 <code>panel-hub.js</code> + <code>selfimprove-panel.js</code> 实现完整交互。
+  </p>
+
+  <yry-selfimprove-panel></yry-selfimprove-panel>
+
+  <script type="text/x-template" id="yry-selfimprove-panel-tpl">
+    <div class="selfimprove-overlay yry-selfimprove-overlay" id="selfimproveOverlay"></div>
+    <div class="selfimprove-panel yry-selfimprove-panel" id="selfimprovePanel">
+      <div class="panel-header yry-panel-header">
+        <span class="np-title">&#129514; 自改进分析<span class="si-live-grade loading" id="siLiveGrade">—</span></span>
+        <span class="np-count" id="siTotalCount">—</span>
+        <button class="panel-refresh" id="siRefresh" title="刷新" aria-label="刷新">&#x21bb;</button>
+      </div>
+      <div class="np-filters" id="siFilters">
+        <span class="np-filter-chip active" data-period="daily">日报</span>
+        <span class="np-filter-chip" data-period="weekly">周报</span>
+        <span class="np-filter-chip" data-period="monthly">月报</span>
+        <span class="np-filter-chip" data-period="overview">全景</span>
+      </div>
+      <div class="panel-body yry-panel-body" id="siPanelBody">
+        <div class="panel-context">
+          <strong>数据源</strong>：<code>.memory/health-trend.jsonl</code> + <code>docs/自我改进/summary.json</code><br>
+          <strong>视角</strong>：日报/周报/月报/全景
+        </div>
+        <div class="panel-loading yry-panel-loading">加载中...</div>
+      </div>
+      <div class="panel-footer panel-footer-row">
+        <span>数据: .memory/health-trend.jsonl + summary.json</span>
+        <span><a href="#" onclick="event.preventDefault();window.openPanel('faq')" class="yry-clr-pass-64 yry-link-noul">❓ FAQ</a> · <a href="#" onclick="event.preventDefault();window.openPanel('notify')" class="yry-clr-fail-64 yry-link-noul">🔔 通知</a></span>
+        <span id="siFooterTime"></span>
+      </div>
+    </div>
+  </script>
+
+  <script src="index.js"></script>
+
+  <div class="demo-footer" style="margin-top:28px;text-align:center;font-size:.72rem;color:var(--yry-text3,#888)">
+    &#129514; YrySelfImprovePanel v1.0.0 · <a href="../index.html" style="color:var(--yry-accent,#ffc107);text-decoration:none">CDN 首页</a>
+  </div>
+
+  <script src="../yry-back-top/index.js"></script>
+</body>
+</html>

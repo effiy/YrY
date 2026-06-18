@@ -54,6 +54,10 @@
   font-size: .68rem; color: var(--text3, var(--yry-text3, rgba(110,110,114,1)));
   margin-top: 2px; letter-spacing: .5px;
 }
+.stat-card .sub {
+  font-size: .56rem; color: var(--text3, var(--yry-text3, rgba(110,110,114,1)));
+  margin-top: 1px; opacity: .7; line-height: 1.2;
+}
 
 @media (max-width: 640px) {
   .stat-card { min-width: 72px; padding: 12px 14px; }

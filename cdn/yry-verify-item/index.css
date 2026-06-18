@@ -1,0 +1,109 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryVerifyItem · 验证项组件
+   包含: 头部(标题+状态) + 多 section(目标/脚本/标准/结果) + 内嵌表格
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host { display: block; margin-bottom: 14px; }
+
+.vi-wrapper {
+  background: rgba(255, 255, 255, .02);
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 8px;
+  padding: 14px 16px;
+  transition: all .2s;
+}
+.vi-wrapper:hover { border-color: rgba(34, 211, 238, .25); }
+
+.vi-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, .06);
+}
+.vi-label {
+  font-size: .84rem;
+  font-weight: 600;
+  color: var(--yry-text, #f5f5f5);
+}
+.vi-status {
+  font-size: .7rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 10px;
+  letter-spacing: .06em;
+}
+.vi-status.pass { background: rgba(16, 185, 129, .15); color: #10b981; border: 1px solid rgba(16, 185, 129, .3); }
+.vi-status.fail { background: rgba(239, 68, 68, .15); color: #ef4444; border: 1px solid rgba(239, 68, 68, .3); }
+.vi-status.warn { background: rgba(245, 158, 11, .15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, .3); }
+
+.vi-section { margin: 10px 0; }
+.vi-k {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--yry-cyan, #22d3ee);
+  margin-bottom: 5px;
+  letter-spacing: .02em;
+}
+.vi-v {
+  font-size: .78rem;
+  color: var(--yry-text2, #d4d4d4);
+  line-height: 1.55;
+}
+.vi-v code {
+  color: var(--yry-accent, #ffc107);
+  background: rgba(255, 193, 7, .08);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: .74rem;
+}
+
+.vi-v pre {
+  margin: 4px 0 0;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, .25);
+  border-radius: 4px;
+  font-size: .72rem;
+  color: var(--yry-text, #f5f5f5);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  position: relative;
+}
+
+.vi-criteria {
+  margin: 4px 0 0 18px;
+  padding: 0;
+  font-size: .76rem;
+  color: var(--yry-text2, #d4d4d4);
+  line-height: 1.6;
+}
+.vi-criteria li { margin: 2px 0; }
+.vi-criteria b { color: var(--yry-text, #f5f5f5); font-weight: 600; }
+.vi-criteria code { color: var(--yry-accent, #ffc107); background: rgba(255, 193, 7, .08); padding: 1px 4px; border-radius: 3px; font-size: .72rem; }
+
+.vi-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 6px;
+  font-size: .72rem;
+}
+.vi-table th, .vi-table td {
+  padding: 6px 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, .06);
+}
+.vi-table th {
+  background: rgba(255, 255, 255, .04);
+  color: var(--yry-text3, #888);
+  font-weight: 500;
+  font-size: .68rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.vi-table td.pass { color: #10b981; font-weight: 600; }
+.vi-table td.fail { color: #ef4444; font-weight: 600; }
+.vi-table td.warn { color: #f59e0b; font-weight: 600; }
+.vi-table tr:hover td { background: rgba(255, 255, 255, .02); }

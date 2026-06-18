@@ -2,105 +2,69 @@
 <html lang="zh-CN">
 <head>
 {{HEAD_BLOCK}}
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-chrome/index.css">
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-stats/index.css">
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-health-bar/index.css">
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-tabs/index.css">
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-scene-footer/index.css">
+<link rel="stylesheet" href="{{CDN_DEPTH}}cdn/yry-review-cards/index.css">
 <style>
 .yry-container{max-width:1120px}
-.yry-header h1{font-size:1.8rem}
-.yry-header .yry-sub{margin-top:4px}
-.yry-stats{gap:12px;margin-bottom:20px}
-.yry-stat{padding:16px 20px;min-width:80px}
-.yry-stat .yry-val{font-size:1.6rem}
-.yry-bar-outer{height:10px;border-radius:5px}
-.yry-bar-outer .yry-seg{min-width:3px}
-/* ── Review-specific components ── */
-.dim-card{background:var(--yry-bg-card);border:var(--yry-border);border-radius:var(--yry-radius);padding:20px 22px;margin-bottom:10px;box-shadow:var(--yry-shadow)}
-.dim-card h3{font-size:.9rem;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.dim-card .dim-score{font-size:1.4rem;font-weight:700;margin-left:auto}
-.dim-card .dim-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.04);overflow:hidden;margin-bottom:8px}
-.dim-card .dim-bar-inner{height:100%;border-radius:3px}
-.dim-card ul{list-style:none;color:var(--yry-text2);font-size:.78rem;margin-top:6px}
-.dim-card ul li{margin-bottom:4px;padding-left:16px;position:relative}
-.dim-card ul li::before{content:'•';position:absolute;left:2px;color:var(--yry-text3)}
-.case-card{background:rgba(15,23,42,.5);border-radius:.75rem;border:1px solid #1e293b;padding:1.25rem;margin-bottom:12px}
-.case-card.good{border-left:3px solid var(--yry-pass)}
-.case-card.bad{border-left:3px solid var(--yry-fail)}
-.case-card h4{font-size:.85rem;font-weight:600;margin-bottom:.5rem;display:flex;align-items:center;gap:6px}
-.case-tag{font-size:.65rem;font-weight:600;padding:2px 8px;border-radius:3px}
-.case-tag.good{background:rgba(34,197,94,.1);color:var(--yry-pass)}
-.case-tag.bad{background:rgba(239,68,68,.1);color:var(--yry-fail)}
-.case-card .case-loc{font-size:.7rem;color:var(--yry-text3);font-family:'JetBrains Mono',monospace;margin-bottom:6px}
-.case-card .case-desc{color:var(--yry-text2);font-size:.78rem;line-height:1.6;margin-bottom:6px}
-.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px}
-.rec-card{background:var(--yry-bg-card);border:var(--yry-border);border-radius:var(--yry-radius);padding:18px 20px;box-shadow:var(--yry-shadow)}
-.rec-card.p1{border-left:3px solid var(--yry-fail)}.rec-card.p2{border-left:3px solid var(--yry-warn)}.rec-card.p3{border-left:3px solid var(--yry-skip)}
-.rec-pri{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:3px;display:inline-block;margin-bottom:6px}
-.rec-pri.p1{background:rgba(239,68,68,.12);color:var(--yry-fail)}
-.rec-pri.p2{background:rgba(245,158,11,.12);color:var(--yry-warn)}
-.rec-pri.p3{background:rgba(107,114,128,.12);color:var(--yry-skip)}
-.rec-card h4{font-size:.82rem;font-weight:600;margin-bottom:4px}
-.rec-card p{color:var(--yry-text2);font-size:.74rem;line-height:1.5}
 </style>
 </head>
 <body>
 <div class="yry-container">
-{{BREADCRUMB}}
-{{CROSS_NAV}}
+<yry-scene-chrome
+  theme="b"
+  title="📝 {ACCENT} — 审查报告"
+  title-accent="{{SCENE_TITLE}}"
+  subtitle="审查日期 {{DATE}} · 版本 v{{VERSION}} · 场景 {{SCENE_NUM}}"
+  breadcrumb='{{BREADCRUMB_JSON}}'
+  crossnav='{{CROSS_NAV_JSON}}'>
+</yry-scene-chrome>
 
-<div class="yry-header">
-  <h1>📝 <span class="yry-accent">{{SCENE_TITLE}}</span> — 审查报告</h1>
-  <p class="yry-sub">审查日期 {{DATE}} · 版本 v{{VERSION}} · 场景 {{SCENE_NUM}}</p>
-</div>
+<yry-scene-stats items='{{STATS_GRID_JSON}}'></yry-scene-stats>
+<yry-scene-health-bar segments='{{HEALTH_BAR_JSON}}'></yry-scene-health-bar>
 
-{{STATS_GRID}}
-{{HEALTH_BAR}}
-
-<div class="yry-tabs">
-  <span class="yry-tab on" data-panel="overview">📊 总览</span>
-  <span class="yry-tab" data-panel="good">✅ 好案例</span>
-  <span class="yry-tab" data-panel="bad">❌ 坏案例</span>
-  <span class="yry-tab" data-panel="recommendations">📝 改进建议</span>
-  <span class="yry-tab" data-panel="evidence">📎 证据链</span>
-</div>
-
-<div class="yry-panel on" id="panelOverview">
-  {{SEC0_HTML}}
-</div>
-
-<div class="yry-panel" id="panelGood">
-  <div class="case-card good">
-    <h4>✅ <span class="case-tag good">好案例</span> 文档基线完整</h4>
-    <div class="case-loc">📁 docs/故事任务面板/{{STORY_NAME}}/场景-{{SCENE_NUM}}-{{SCENE_SLUG}}/index.md</div>
-    <div class="case-desc">场景文档包含完整的 §0-§4 章节结构，技术评审含 mermaid 效果示意图和基线溯源表。</div>
+<yry-scene-tabs tabs='[{"id":"overview","label":"📊 总览"},{"id":"good","label":"✅ 好案例"},{"id":"bad","label":"❌ 坏案例"},{"id":"recommendations","label":"📝 改进建议"},{"id":"evidence","label":"📎 证据链"}]'>
+  <div data-panel="overview">{{SEC0_HTML}}</div>
+  <div data-panel="good">
+    <div class="case-card good">
+      <h4>✅ <span class="case-tag good">好案例</span> 文档基线完整</h4>
+      <div class="case-loc">📁 docs/故事任务面板/{{STORY_NAME}}/场景-{{SCENE_NUM}}-{{SCENE_SLUG}}/index.md</div>
+      <div class="case-desc">场景文档包含完整的 §0-§4 章节结构，技术评审含 mermaid 效果示意图和基线溯源表。</div>
+    </div>
   </div>
-</div>
-
-<div class="yry-panel" id="panelBad">
-  <div class="case-card bad">
-    <h4>❌ <span class="case-tag bad">待审查</span> 需运行 /rui code 生成实施数据</h4>
-    <div class="case-loc">📁 docs/故事任务面板/{{STORY_NAME}}/场景-{{SCENE_NUM}}-{{SCENE_SLUG}}/index.md §2-§4</div>
-    <div class="case-desc">§2 实施报告、§3 测试报告、§4 自改进章节数据待填充。运行 /rui code 后重新审查。</div>
+  <div data-panel="bad">
+    <div class="case-card bad">
+      <h4>❌ <span class="case-tag bad">待审查</span> 需运行 /rui code 生成实施数据</h4>
+      <div class="case-loc">📁 docs/故事任务面板/{{STORY_NAME}}/场景-{{SCENE_NUM}}-{{SCENE_SLUG}}/index.md §2-§4</div>
+      <div class="case-desc">§2 实施报告、§3 测试报告、§4 自改进章节数据待填充。运行 /rui code 后重新审查。</div>
+    </div>
   </div>
-</div>
-
-<div class="yry-panel" id="panelRecommendations">
-  <div class="rec-grid">
-    {{SEC4_HTML}}
+  <div data-panel="recommendations">
+    <div class="rec-grid">{{SEC4_HTML}}</div>
   </div>
-</div>
-
-<div class="yry-panel" id="panelEvidence">
-  <div class="dim-card">
-    <h3>📎 审查证据清单</h3>
-    <ul>
-      <li><strong>场景文档:</strong> index.md 存在，含 §0-§4 章节</li>
-      <li><strong>版本:</strong> v{{VERSION}} · {{DATE}}</li>
-      <li><strong>故事:</strong> {{STORY_NAME}} · {{STORY_TITLE}}</li>
-    </ul>
+  <div data-panel="evidence">
+    <div class="dim-card">
+      <h3>📎 审查证据清单</h3>
+      <ul>
+        <li><strong>场景文档:</strong> index.md 存在，含 §0-§4 章节</li>
+        <li><strong>版本:</strong> v{{VERSION}} · {{DATE}}</li>
+        <li><strong>故事:</strong> {{STORY_NAME}} · {{STORY_TITLE}}</li>
+      </ul>
+    </div>
   </div>
-</div>
+</yry-scene-tabs>
 
-<div class="yry-footer">YrY v{{VERSION}} · {{DATE}} · <a href="{{CDN_DEPTH}}docs/index.html">文档中心</a></div>
+<yry-scene-footer version="{{VERSION}}" date="{{DATE}}" docs-link="{{CDN_DEPTH}}docs/index.html"></yry-scene-footer>
 </div>
 <script src="{{CDN_DEPTH}}cdn/shared.js"></script>
-<script>YrY.initTabs();</script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-chrome/index.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-stats/index.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-health-bar/index.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-tabs/index.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-scene-footer/index.js"></script>
+<script src="{{CDN_DEPTH}}cdn/yry-review-cards/index.js"></script>
 </body>
 </html>

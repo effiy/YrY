@@ -5,7 +5,7 @@
  */
 
 import { join } from "node:path";
-import { existsSync, readFileSync } from "node:fs";
+import { readJson } from "../../../lib/fs.mjs";
 
 const STORY_DIR_OFFSET = 1;
 const STORY_NAME_OFFSET = 2;
@@ -36,13 +36,9 @@ export function groupSessionsByStory(sessions) {
 
 export function readBlockedState(projectRoot, storyName) {
   const ruiStatePath = join(projectRoot, "docs", "故事任务面板", storyName, ".memory", "rui-state.json");
-  if (!existsSync(ruiStatePath)) return null;
-  try {
-    const data = JSON.parse(readFileSync(ruiStatePath, "utf-8"));
-    return { blocked: data.blocked === true, block_reason: data.block_reason || null };
-  } catch {
-    return null;
-  }
+  const data = readJson(ruiStatePath);
+  if (!data) return null;
+  return { blocked: data.blocked === true, block_reason: data.block_reason || null };
 }
 
 export function hasProjectFile(fileBasenames, projectPrefix, docType) {

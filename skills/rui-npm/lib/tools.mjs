@@ -4,7 +4,7 @@
  */
 
 import { spawnSync } from "node:child_process";
-import { npm, registryArgs, checkPackageJson, toTable, timestamp } from "./npm-utils.mjs";
+import { npm, checkPackageJson, toTable, timestamp } from "./npm-utils.mjs";
 
 export function cmdNpx(pkg, args) {
   if (!pkg) {

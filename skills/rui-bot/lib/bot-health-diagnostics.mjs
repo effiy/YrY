@@ -13,7 +13,7 @@ import {
 } from "../../../lib/constants.mjs";
 import { runDiagnostics } from "../../../lib/engine/diagnostics.mjs";
 
-export function collectHealthData(projectRoot) {
+function collectHealthData(projectRoot) {
   const execPath = join(projectRoot, ".memory", "execution-memory.jsonl");
   const auditPath = join(projectRoot, ".memory", "tool-audit.jsonl");
   const deliveryPath = join(projectRoot, ".memory", "delivery-tracking.jsonl");

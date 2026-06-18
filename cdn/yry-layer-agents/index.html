@@ -1,0 +1,56 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryLayerAgents · YryLayerAgents · Layer 5 Agent 角色 Vue 3 复合组件
+   ═══════════════════════════════════════════════════════════════════════════ -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YryLayerAgents · Demo & Template</title>
+<link rel="stylesheet" href="../shared.css">
+<link rel="stylesheet" href="../theme.css">
+<link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="../yry-layer/index.css">
+<link rel="stylesheet" href="../yry-sub-title/index.css">
+<link rel="stylesheet" href="../yry-card-grid/index.css">
+<link rel="stylesheet" href="../yry-item-card/index.css">
+<link rel="stylesheet" href="../yry-tag-chip/index.css">
+<link rel="stylesheet" href="../yry-home.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<style>
+  body { background: var(--yry-bg, #0a0a0a); color: var(--yry-text, #f5f5f5); font-family: var(--yry-font-sans); padding: 60px 24px; max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 1.25rem; }
+  h1 .accent { color: var(--yry-accent, #ffc107); }
+  .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 16px 0 40px; line-height: 1.6; }
+  .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: .72rem; color: #e0af68; }
+</style>
+</head>
+<body>
+<h1><span class="accent">&#9670;</span> YryLayerAgents</h1>
+<p class="demo-hint">Vue 3 组件 — 包含 Layer 5 Agent 角色的完整 DOM 结构</p>
+
+<div id="demo-1"></div>
+
+<script type="text/x-template" id="yry-layer-agents-tpl">
+  <yry-layer id="layer-agents-app">
+    <yry-sub-title id="sub-title-agent-roles"></yry-sub-title>
+    <yry-card-grid id="agent-roles-grid"></yry-card-grid>
+    <yry-sub-title id="sub-title-agent-topology" class="yry-mt-18"></yry-sub-title>
+    <yry-card-grid id="agent-topology-grid"></yry-card-grid>
+  </yry-layer>
+</script>
+
+<script src="../yry-layer/index.js"></script>
+<script src="../yry-sub-title/index.js"></script>
+<script src="../yry-card-grid/index.js"></script>
+<script src="index.js"></script>
+<script>
+function mountAll() {
+  if (!window.YryLayerAgents) return;
+  Vue.createApp(window.YryLayerAgents).mount('#demo-1');
+}
+if (window.YryLayerAgents) mountAll();
+else document.addEventListener('yry-layer-agents-ready', mountAll, { once: true });
+</script>
+</body>
+</html>
