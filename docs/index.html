@@ -34,6 +34,7 @@
   <link rel="stylesheet" href="../cdn/yry-layer-info-panel/index.css">
   <link rel="stylesheet" href="../cdn/yry-back-top/index.css">
   <link rel="stylesheet" href="../cdn/yry-footer-note/index.css">
+  <link rel="stylesheet" href="yry-docs-binding/index.css">
 </head>
 <body>
   <div class="container">
@@ -81,6 +82,9 @@
   <yry-selfimprove-panel></yry-selfimprove-panel>
   <yry-layer-info-panel></yry-layer-info-panel>
 
+  <!-- ═══ 文档数据绑定控制器 (空渲染,自动在 mounted 钩子中执行所有绑定/拉取/事件) ═══ -->
+  <yry-docs-binding></yry-docs-binding>
+
   <!-- ═══ JS 脚本 ═══ -->
   <script src="../cdn/shared.js"></script>
 
@@ -122,7 +126,9 @@
   <script src="js/cron-panel.js"></script>
   <script src="js/faq-panel.js"></script>
   <script src="js/layer-info.js"></script>
-<script src="js/docs-binding.js"></script>
+
+  <!-- ═══ Vue 3 controller: docs/yry-docs-binding (替代原 js/docs-binding.js) ═══ -->
+  <script src="yry-docs-binding/index.js"></script>
 
 
   <!-- ═══ CDN 组件挂载脚本:自定义标签形式 (property 赋值,无需 .mount()) ═══ -->

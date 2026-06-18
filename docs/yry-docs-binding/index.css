@@ -1,0 +1,42 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YryDocsBinding · 文档中心数据绑定控制器样式
+
+   命名空间: .ydb-* (避免与 yry-* 组件样式冲突)
+   内容: 评分图例 + 三评分徽章 (从原 docs/js/docs-binding.js 的内联 cssText 迁出)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 评分图例 (Score Legend Bar) ──────────────────────────────────────── */
+.ydb-legend {
+  text-align: center;
+  margin: -8px 0 16px;
+  font-size: .58rem;
+  color: var(--text-muted);
+  opacity: .8;
+}
+.ydb-legend-item {
+  /* 由 JS 设置 color */
+}
+.ydb-legend-sep {
+  /* 由 JS 控制间距 */
+}
+
+/* ── 三评分徽章 (Score Badges) ──────────────────────────────────────── */
+.ydb-score-badge {
+  font-size: .52rem;
+  margin-left: 8px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,.04);
+  white-space: nowrap;
+  line-height: 1.4;
+}
+/* story-card / scene-card 用的更小字号 */
+.ydb-score-badge.ydb-small {
+  font-size: .50rem;
+  margin-left: 8px;
+  padding: 1px 5px;
+}
+.ydb-score-badge .ydb-badge-num {
+  font-weight: 600;
+  /* color 由 JS 根据等级设置 */
+}

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  YryDocsBinding · 文档中心数据绑定控制器 (Vue 3 custom element + fetch template)
+
+  本文件有 2 个用途:
+    1) **模板源** — 下方 <script type="text/x-template" id="yry-docs-binding-tpl">
+       为 canonical 模板源;index.js fetch 此块渲染到 <yry-docs-binding> 自定义元素中。
+    2) **Demo 预览** — 直接用浏览器打开本文件,可看到该控制器的占位元素渲染。
+
+  本组件是一个 **控制器型 (controller-only) 组件**:
+    - 模板是空占位 (display:none),不渲染任何可见 DOM
+    - 业务逻辑全部在 mounted() 钩子中执行:
+        * 立即绑定: Breadcrumb / SceneHeader / StatsGrid / CrossNav / PanelHub
+        * Live 评分拉取: summary.json (每 5 分钟)
+        * 事件路由: panel-hub-select / layer-panel-select / yry-*-ready
+        * 注入三评分徽章到 .item-card / .story-card / .scene-card
+    - 卸载时 (disconnectedCallback) 清理定时器与监听器
+
+  自定义元素用法 (推荐):
+     <link rel="stylesheet" href="path/to/yry-docs-binding/index.css">
+     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+     <script src="path/to/yry-docs-binding/index.js"></script>
+     ...
+     <yry-docs-binding></yry-docs-binding>     <!-- 放在 body 末尾任意位置 -->
+
+  Differences vs 原 docs/js/docs-binding.js (517 行 IIFE):
+    - 业务逻辑 1:1 保留(数据 / live fetch / 事件 / 徽章注入)
+    - 拆分为三件套: index.html (模板) / index.js (Vue) / index.css (样式)
+    - 内联 cssText 全部迁出到 index.css (使用 .ydb-* 命名空间)
+    - 卸载时清理所有资源 (防止热重载 / 单页切换泄漏)
+    - 派发事件: yry-docs-binding-ready
+  ═══════════════════════════════════════════════════════════════════════════ -->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryDocsBinding · Demo & Template</title>
+  <link rel="stylesheet" href="../cdn/shared.css">
+  <link rel="stylesheet" href="../cdn/theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; }
+    h1 .accent { color: #22c55e; }
+    .demo-hint { font-size: .78rem; color: #888; margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+                      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">🔗</span> YryDocsBinding · 文档中心数据绑定控制器</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-docs-binding&gt;</code> — 控制器型组件,无可见渲染。挂载后自动:
+    <br>• 绑定 Breadcrumb / SceneHeader / StatsGrid / CrossNav / PanelHub 数据
+    <br>• 每 5 分钟从 <code>summary.json</code> 拉取最新评分并刷新 UI
+    <br>• 路由 <code>panel-hub-select</code> / <code>layer-panel-select</code> 事件
+    <br>• 注入三评分徽章到 <code>.item-card</code> / <code>.story-card</code> / <code>.scene-card</code>
+  </p>
+
+  <yry-docs-binding></yry-docs-binding>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       TEMPLATE SOURCE OF TRUTH · YryDocsBinding 的 template
+       控制器型组件: 空占位 + 默认 slot (允许父级传入内容,但本组件自身不渲染)
+       ════════════════════════════════════════════════════════════════════ -->
+  <script type="text/x-template" id="yry-docs-binding-tpl">
+    <div class="yry-docs-binding ydb-root" style="display:none" aria-hidden="true"></div>
+  </script>
+
+  <!-- 加载链 -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>
