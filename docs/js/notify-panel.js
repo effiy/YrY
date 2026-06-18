@@ -501,10 +501,17 @@
   }
   mountApp();
 
-  /* ── PanelHub registration ───────────────── */
-  H.register('notify', null, 'notifyPanel', 'notifyOverlay', function() {
-    if (state.allItems.length === 0 && !state.loading) fetchAll();
-  });
+  /* ── PanelHub registration (defer until panel DOM is ready) ── */
+  function registerNotify() {
+    H.register('notify', null, 'notifyPanel', 'notifyOverlay', function() {
+      if (state.allItems.length === 0 && !state.loading) fetchAll();
+    });
+  }
+  if (document.getElementById('notifyPanel') && document.getElementById('notifyOverlay')) {
+    registerNotify();
+  } else {
+    document.addEventListener('yry-notify-panel-ready', registerNotify, { once: true });
+  }
 
   /* ── Data fetching ───────────────────────── */
   async function fetchAll() {

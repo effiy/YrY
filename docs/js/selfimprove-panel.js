@@ -728,10 +728,17 @@
   }
   mountApp();
 
-  /* ── PanelHub registration ───────────────── */
-  H.register('selfimprove', null, 'selfimprovePanel', 'selfimproveOverlay', function() {
-    if (!state.siData && !state.loading) fetchData();
-  });
+  /* ── PanelHub registration (defer until panel DOM is ready) ── */
+  function registerSelfImprove() {
+    H.register('selfimprove', null, 'selfimprovePanel', 'selfimproveOverlay', function() {
+      if (!state.siData && !state.loading) fetchData();
+    });
+  }
+  if (document.getElementById('selfimprovePanel') && document.getElementById('selfimproveOverlay')) {
+    registerSelfImprove();
+  } else {
+    document.addEventListener('yry-selfimprove-panel-ready', registerSelfImprove, { once: true });
+  }
 
   /* ── Data fetching ───────────────────────── */
   async function fetchData() {

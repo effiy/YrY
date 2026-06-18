@@ -208,10 +208,17 @@
   }
   mountApp();
 
-  /* ── PanelHub registration ───────────────── */
-  H.register('cron', null, 'cronPanel', 'cronOverlay', function() {
-    if (state.cronData.length === 0 && !state.loading) fetchCron();
-  });
+  /* ── PanelHub registration (defer until panel DOM is ready) ── */
+  function registerCron() {
+    H.register('cron', null, 'cronPanel', 'cronOverlay', function() {
+      if (state.cronData.length === 0 && !state.loading) fetchCron();
+    });
+  }
+  if (document.getElementById('cronPanel') && document.getElementById('cronOverlay')) {
+    registerCron();
+  } else {
+    document.addEventListener('yry-cron-panel-ready', registerCron, { once: true });
+  }
 
   /* ── Data fetching ───────────────────────── */
   async function fetchCron() {

@@ -74,6 +74,13 @@
   }
   mountApp();
 
-  /* ── PanelHub registration ───────────────── */
-  H.register('faq', null, 'faqPanel', 'faqOverlay', null);
+  /* ── PanelHub registration (defer until panel DOM is ready) ── */
+  function registerFaq() {
+    H.register('faq', null, 'faqPanel', 'faqOverlay', null);
+  }
+  if (document.getElementById('faqPanel') && document.getElementById('faqOverlay')) {
+    registerFaq();
+  } else {
+    document.addEventListener('yry-faq-panel-ready', registerFaq, { once: true });
+  }
 })();

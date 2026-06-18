@@ -47,7 +47,7 @@
         el.icon        = '⭐';
         el.titlePrefix = 'YrY ';
         el.accent      = '文档中心';
-        el.meta        = '📌 v5.4.0 · 🩺 健康 77/B · 🧪 测试 60分 · 🧬 自改进 89/A · 🛡 安全 100分';
+        el.meta        = '📌 v5.4.0 · 🩺 健康 77/B · 🧪 测试 60分 · 🧬 自改进 89/A';
         el.desc        = '故事驱动的 SDLC 编排系统 — 六层结构：依赖/框架 → 19 技能 → 7 故事 → 37 场景 → Agent 角色与规则 → 参考入口';
       },
       /* 3) Stats Grid */
@@ -56,7 +56,6 @@
           { value: '77/B', label: '健康评分', modifier: 'warn-h', sub: '综合 19 维', tooltip: '健康评分 = 19 维度加权均分。A≥80 B≥60 C≥40 D<40。数据源: .memory/health-trend.jsonl → summary.json' },
           { value: '60分', label: '测试评分', modifier: 'warn-h', sub: '工程成熟度', tooltip: '测试评分 = 工程成熟度 7 维加权: 测试覆盖×30% + 类型安全×15% + 代码检查×15% + CI/CD×10% + 文档×10% + 依赖×10% + Git实践×10%' },
           { value: '89分', label: '自改进', modifier: 'health', sub: '组件健康均分', tooltip: '自改进评分 = Skills/Agents/Rules/Scripts 四类组件健康评分的加权均分。反映项目整体代码质量和架构合规度' },
-          { value: '100', label: '安全评分', modifier: 'health', sub: '4 项不妥协', tooltip: '安全评分 = 认证不可绕过 · 密钥不落盘 · 输入必校验 · 架构合规不可绕过。四项全部通过=100分，任一项失败=0分' },
           { value: 12, label: '依赖/框架', modifier: 'info', tooltip: '6 运行时依赖 + 6 开发依赖' },
           { value: 19, label: '技能', modifier: 'health', tooltip: '1 编排入口 + 7 管线子技能 + 8 支撑技能 + 3 新增技能' },
           { value: 7,  label: '故事', modifier: 'health', tooltip: '7 个故事: 架构 · 自测 · npm · CDN · 自改进 · 首页 · 计划清单' },
@@ -91,7 +90,7 @@
           { icon: '🧬', name: '自改进', desc: '趋势·诊断·评估', color: '#a78bfa',       panel: 'selfimprove', title: '自改进分析 — 读取 .memory/health-trend.jsonl 和 summary.json,按日/周/月/全景四个视角展示健康趋势、D0-D7 诊断覆盖率、等级分布、分支健康对比;健康数据按日期覆盖,每天保留一个快照。' },
           { icon: '❓', name: 'FAQ',    desc: '知识·指南·解惑', color: '#22c55e',       panel: 'faq',         title: '常见问题 — 系统知识入口:YrY 概念、命令使用、面板关系、健康检查原理、Skill/Agent/Rule 区别。含交叉面板导航链接。' }
         ];
-        el.flow = 'Cron 定时触发 → 技能执行 → 通知产出 → 🔔 通知面板展示 → 数据写入 .memory/ → 🧬 自改进分析消费';
+        el.flow = 'Cron 定时触发 → 技能执行 → 通知产出 → 🔔 通知面板展示 → 🧬 自改进分析消费';
       }
     };
 
@@ -195,10 +194,6 @@
           var siScore = (data.componentHealth && data.componentHealth.overallAvg) || 0;
           var siCls = siScore >= 80 ? 'health' : siScore >= 60 ? 'warn-h' : 'accent';
 
-          // 安全评分: 直接从 scores 取
-          var secScore = scores.security || 0;
-          var secCls = secScore >= 80 ? 'health' : secScore >= 60 ? 'warn-h' : 'accent';
-
           // 架构评分: 从 archHealth 提取
           var archScore = (data.archHealth && data.archHealth.latest && data.archHealth.latest.composite) || 0;
           var archGrade = (data.archHealth && data.archHealth.latest && data.archHealth.latest.grade) || '';
@@ -215,7 +210,6 @@
             if (items[0]) { items[0].value = healthScore + '/' + healthGrade + ' ' + trendDir; items[0].modifier = healthCls; items[0].sub = '综合 ' + (data.dimSummary ? data.dimSummary.length : '?') + ' 维'; items[0].tooltip = '健康评分 = ' + (data.dimSummary ? data.dimSummary.length : '?') + ' 维度加权均分。A≥80 B≥60 C≥40 D<40。最新: ' + healthScore + '分 ' + healthGrade + '级 ' + trendDir + '。数据源: .memory/health-trend.jsonl → summary.json'; }
             if (items[1]) { items[1].value = testScore + '分'; items[1].modifier = testCls; items[1].sub = '加权 ' + testScore + '/' + (testScore >= 80 ? 'A' : testScore >= 60 ? 'B' : 'C'); items[1].tooltip = '测试评分 = 工程成熟度加权: 测试×30% + 类型×15% + 检查×15% + CI/CD×10% + 文档×10% + 依赖×10% + Git×10% = ' + testScore + '分'; }
             if (items[2]) { items[2].value = siScore + '分'; items[2].modifier = siCls; items[2].sub = (data.componentHealth ? data.componentHealth.totalComponents : '?') + ' 组件'; items[2].tooltip = '自改进评分 = Skills/Agents/Rules/Scripts 四类组件健康均分。当前 ' + siScore + '分，共 ' + (data.componentHealth ? data.componentHealth.totalComponents : '?') + ' 组件'; }
-            if (items[3]) { items[3].value = secScore + '分'; items[3].modifier = secCls; items[3].sub = secScore >= 80 ? '全部通过' : '有未通过项'; items[3].tooltip = '安全评分 = 四项不妥协底线检查: 认证不可绕过 · 密钥不落盘 · 输入必校验 · 架构合规不可绕过'; }
             sg.items = items.slice();
           }
 
@@ -236,7 +230,7 @@
           // 更新 Scene Header meta
           var sh = document.getElementById('scene-header-app');
           if (sh && healthScore > 0) {
-            sh.meta = '📌 v5.4.0 · 🩺 健康 ' + healthScore + '/' + healthGrade + ' · 🧪 测试 ' + testScore + '分 · 🧬 自改进 ' + siScore + '分 · 🛡 安全 ' + secScore + '分' + (archScore > 0 ? ' · 📐 架构 ' + archScore + '/' + archGrade : '');
+            sh.meta = '📌 v5.4.0 · 🩺 健康 ' + healthScore + '/' + healthGrade + ' · 🧪 测试 ' + testScore + '分 · 🧬 自改进 ' + siScore + '分' + (archScore > 0 ? ' · 📐 架构 ' + archScore + '/' + archGrade : '');
           }
 
           // Update layer stats with live scores
