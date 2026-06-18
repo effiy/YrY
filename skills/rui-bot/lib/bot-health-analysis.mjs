@@ -336,7 +336,10 @@ export function scanComponentScores(projectRoot) {
           recommendations: recs,
         });
       }
-    } catch { /* skip unreadable rules dir */ } (lib/ + lib/engine/ + skills/*/lib/) ─────────
+    } catch { /* skip unreadable rules dir */ }
+  }
+
+  // ── Scripts (lib/ + lib/engine/ + skills/*/lib/) ─────────
   const scriptDirs = [join(projectRoot, "lib"), join(projectRoot, "lib", "engine")];
   if (existsSync(skillsDir)) {
     try {
@@ -345,6 +348,8 @@ export function scanComponentScores(projectRoot) {
         if (existsSync(skillLib)) scriptDirs.push(skillLib);
       }
     } catch { /* skip unreadable skills dir for scripts */ }
+  }
+  for (const dir of scriptDirs) {
     if (!existsSync(dir)) continue;
     try {
       const files = readdirSync(dir, { recursive: true, withFileTypes: true });

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YrySceneSteps · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">📋</span> YrySceneSteps · 场景步骤清单</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-scene-steps&gt;</code> — 可交互的步骤清单。
+    点击步骤标题展开/折叠详情，勾选复选框自动更新进度状态。
+    Light DOM 子元素（由 markdown 提取器生成）自动移入 wrapper。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo — Gate A 验证步骤（点击展开 · 勾选切换状态）</h3>
+    <yry-scene-steps>
+      <div class="step">
+        <div class="step-header">
+          <input type="checkbox" class="step-checkbox">
+          <span class="step-num">S1</span>
+          <span class="step-title">验证技能规约完整性</span>
+          <span class="step-status status-done">已完成</span>
+        </div>
+        <div class="step-body open">
+          <p>检查每个 Skill 是否有完整的 SKILL.md，包含 frontmatter 和所需的所有章节。</p>
+          <p>验证命令: <code>node lib/arch-check.mjs --skills</code></p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <input type="checkbox" class="step-checkbox" checked>
+          <span class="step-num">S2</span>
+          <span class="step-title">架构合规自动检查</span>
+          <span class="step-status status-done">已完成</span>
+        </div>
+        <div class="step-body">
+          <p>运行 arch-check.mjs 验证 15 维度 A 级合规。检查内核体积、范式合规、扩展隔离。</p>
+          <p>验证命令: <code>node lib/arch-check.mjs --all</code></p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <input type="checkbox" class="step-checkbox">
+          <span class="step-num">S3</span>
+          <span class="step-title">依赖变更影响分析</span>
+          <span class="step-status status-active">进行中</span>
+        </div>
+        <div class="step-body open">
+          <p>分析当前变更对下游模块的影响范围。检查跨模块引用是否仍有效。</p>
+          <p>验证命令: <code>node lib/arch-check.mjs --deps</code></p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <input type="checkbox" class="step-checkbox">
+          <span class="step-num">S4</span>
+          <span class="step-title">安全面回归自检</span>
+          <span class="step-status status-pending">待执行</span>
+        </div>
+        <div class="step-body">
+          <p>检查认证绕过、密钥落盘、输入校验、信任边界。确保 security-guardrails.md 全部通过。</p>
+          <p>验证命令: <code>node skills/rui-bot/send.mjs health --alert</code></p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-header">
+          <input type="checkbox" class="step-checkbox">
+          <span class="step-num">S5</span>
+          <span class="step-title">文档一致性校验</span>
+          <span class="step-status status-pending">待执行</span>
+        </div>
+        <div class="step-body">
+          <p>验证 plugin.json 版本号与实际 skills/agents/rules 内容一致。检查自托管一致性。</p>
+          <p>验证命令: <code>node lib/arch-check.mjs --consistency</code></p>
+        </div>
+      </div>
+    </yry-scene-steps>
+  </div>
+
+  <div class="demo-section">
+    <h3>📊 进度条</h3>
+    <yry-progress-bar done="2" total="5"></yry-progress-bar>
+  </div>
+
+  <link rel="stylesheet" href="../yry-progress-bar/index.css">
+  <script src="../yry-progress-bar/index.js"></script>
+  <script src="index.js"></script>
+
+  <div class="demo-footer">📋 YrySceneSteps v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

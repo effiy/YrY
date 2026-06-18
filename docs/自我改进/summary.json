@@ -1,39 +1,39 @@
 {
-  "updated": "2026-06-18T06:44:50.508Z",
+  "updated": "2026-06-18T15:21:21.806Z",
   "totalEntries": 3,
   "dateRange": {
     "from": "2026-06-16",
     "to": "2026-06-18"
   },
   "latest": {
-    "timestamp": "2026-06-18T05:33:36.875Z",
-    "composite": 77,
-    "grade": "B",
+    "timestamp": "2026-06-18T15:21:21.804Z",
+    "composite": 94,
+    "grade": "A",
     "scores": {
       "token": 100,
-      "config": 20,
-      "robots": 0,
+      "config": 100,
+      "robots": 100,
       "api": 100,
       "reports": 100,
       "format": 100,
       "diagnostics": 100,
       "git": 80,
       "security": 100,
-      "em_testing": 60,
+      "em_testing": 100,
       "em_types": 100,
-      "em_linting": 80,
-      "em_cicd": 0,
+      "em_linting": 100,
+      "em_cicd": 100,
       "em_docs": 100,
       "em_deps": 100,
-      "em_git": 80,
+      "em_git": 100,
       "file_size": 100,
-      "dep_analysis": 57,
-      "comp_qual": 83
+      "dep_analysis": 9,
+      "comp_qual": 88
     },
     "bootstrapped": true,
     "triggeredDiags": [],
-    "gitBranch": "master",
-    "gitUncommitted": 13
+    "gitBranch": "main",
+    "gitUncommitted": 17
   },
   "daily": [
     {
@@ -191,13 +191,13 @@
     },
     {
       "entries": 1,
-      "avgScore": 77,
-      "minScore": 77,
-      "maxScore": 77,
-      "topGrade": "B",
+      "avgScore": 94,
+      "minScore": 94,
+      "maxScore": 94,
+      "topGrade": "A",
       "gradeDist": {
-        "A": 0,
-        "B": 1,
+        "A": 1,
+        "B": 0,
         "C": 0,
         "D": 0
       },
@@ -235,51 +235,51 @@
       ],
       "branches": [
         {
-          "name": "master",
+          "name": "main",
           "count": 1
         }
       ],
-      "avgUncommitted": 13,
+      "avgUncommitted": 17,
       "dimAvgs": {
         "token": 100,
-        "config": 20,
-        "robots": 0,
+        "config": 100,
+        "robots": 100,
         "api": 100,
         "reports": 100,
         "format": 100,
         "diagnostics": 100,
         "git": 80,
         "security": 100,
-        "em_testing": 60,
+        "em_testing": 100,
         "em_types": 100,
-        "em_linting": 80,
-        "em_cicd": 0,
+        "em_linting": 100,
+        "em_cicd": 100,
         "em_docs": 100,
         "em_deps": 100,
-        "em_git": 80,
+        "em_git": 100,
         "file_size": 100,
-        "dep_analysis": 57,
-        "comp_qual": 83
+        "dep_analysis": 9,
+        "comp_qual": 88
       },
       "delta": {
-        "score": -1,
-        "gradeChange": null
+        "score": 16,
+        "gradeChange": "B→A"
       },
-      "firstTs": "2026-06-18T05:33:36.875Z",
-      "lastTs": "2026-06-18T05:33:36.875Z",
+      "firstTs": "2026-06-18T15:21:21.804Z",
+      "lastTs": "2026-06-18T15:21:21.804Z",
       "date": "2026-06-18"
     }
   ],
   "weekly": [
     {
       "entries": 3,
-      "avgScore": 78,
-      "minScore": 77,
-      "maxScore": 78,
+      "avgScore": 83,
+      "minScore": 78,
+      "maxScore": 94,
       "topGrade": "B",
       "gradeDist": {
-        "A": 0,
-        "B": 3,
+        "A": 1,
+        "B": 2,
         "C": 0,
         "D": 0
       },
@@ -317,39 +317,39 @@
       ],
       "branches": [
         {
-          "name": "master",
+          "name": "main",
           "count": 2
         },
         {
-          "name": "main",
+          "name": "master",
           "count": 1
         }
       ],
-      "avgUncommitted": 8,
+      "avgUncommitted": 9,
       "dimAvgs": {
         "token": 100,
-        "config": 20,
-        "robots": 0,
+        "config": 47,
+        "robots": 33,
         "api": 100,
         "reports": 100,
         "format": 100,
         "diagnostics": 90,
         "git": 93,
         "security": 100,
-        "em_testing": 60,
+        "em_testing": 73,
         "em_types": 100,
-        "em_linting": 80,
-        "em_cicd": 0,
+        "em_linting": 87,
+        "em_cicd": 33,
         "em_docs": 100,
         "em_deps": 100,
-        "em_git": 80,
-        "comp_qual": 83,
+        "em_git": 87,
+        "comp_qual": 84,
         "file_size": 100,
-        "dep_analysis": 57
+        "dep_analysis": 9
       },
       "delta": null,
       "firstTs": "2026-06-16T02:59:49.148Z",
-      "lastTs": "2026-06-18T05:33:36.875Z",
+      "lastTs": "2026-06-18T15:21:21.804Z",
       "week": "2026-06-14",
       "weekEnd": "2026-06-19"
     }
@@ -357,13 +357,13 @@
   "monthly": [
     {
       "entries": 3,
-      "avgScore": 78,
-      "minScore": 77,
-      "maxScore": 78,
+      "avgScore": 83,
+      "minScore": 78,
+      "maxScore": 94,
       "topGrade": "B",
       "gradeDist": {
-        "A": 0,
-        "B": 3,
+        "A": 1,
+        "B": 2,
         "C": 0,
         "D": 0
       },
@@ -401,39 +401,39 @@
       ],
       "branches": [
         {
-          "name": "master",
+          "name": "main",
           "count": 2
         },
         {
-          "name": "main",
+          "name": "master",
           "count": 1
         }
       ],
-      "avgUncommitted": 8,
+      "avgUncommitted": 9,
       "dimAvgs": {
         "token": 100,
-        "config": 20,
-        "robots": 0,
+        "config": 47,
+        "robots": 33,
         "api": 100,
         "reports": 100,
         "format": 100,
         "diagnostics": 90,
         "git": 93,
         "security": 100,
-        "em_testing": 60,
+        "em_testing": 73,
         "em_types": 100,
-        "em_linting": 80,
-        "em_cicd": 0,
+        "em_linting": 87,
+        "em_cicd": 33,
         "em_docs": 100,
         "em_deps": 100,
-        "em_git": 80,
-        "comp_qual": 83,
+        "em_git": 87,
+        "comp_qual": 84,
         "file_size": 100,
-        "dep_analysis": 57
+        "dep_analysis": 9
       },
       "delta": null,
       "firstTs": "2026-06-16T02:59:49.148Z",
-      "lastTs": "2026-06-18T05:33:36.875Z",
+      "lastTs": "2026-06-18T15:21:21.804Z",
       "month": "2026-06"
     }
   ],
@@ -454,9 +454,9 @@
     },
     {
       "date": "2026-06-18",
-      "time": "05:33",
-      "score": 77,
-      "grade": "B",
+      "time": "15:21",
+      "score": 94,
+      "grade": "A",
       "triggered": 0
     }
   ],
@@ -541,31 +541,31 @@
     {
       "dim": "comp_qual",
       "label": "组件质量",
-      "avgScore": 83,
-      "recentAvg": 83,
+      "avgScore": 84,
+      "recentAvg": 84,
       "entries": 3,
       "min": 82,
-      "max": 83,
+      "max": 88,
       "trend": 0
     },
     {
       "dim": "config",
       "label": "配置",
-      "avgScore": 20,
-      "recentAvg": 20,
+      "avgScore": 47,
+      "recentAvg": 47,
       "entries": 3,
       "min": 20,
-      "max": 20,
+      "max": 100,
       "trend": 0
     },
     {
       "dim": "dep_analysis",
       "label": "dep_analysis",
-      "avgScore": 57,
-      "recentAvg": 57,
+      "avgScore": 9,
+      "recentAvg": 9,
       "entries": 1,
-      "min": 57,
-      "max": 57,
+      "min": 9,
+      "max": 9,
       "trend": 0
     },
     {
@@ -581,11 +581,11 @@
     {
       "dim": "em_cicd",
       "label": "CI/CD",
-      "avgScore": 0,
-      "recentAvg": 0,
+      "avgScore": 33,
+      "recentAvg": 33,
       "entries": 3,
       "min": 0,
-      "max": 0,
+      "max": 100,
       "trend": 0
     },
     {
@@ -611,31 +611,31 @@
     {
       "dim": "em_git",
       "label": "Git实践",
-      "avgScore": 80,
-      "recentAvg": 80,
+      "avgScore": 87,
+      "recentAvg": 87,
       "entries": 3,
       "min": 80,
-      "max": 80,
+      "max": 100,
       "trend": 0
     },
     {
       "dim": "em_linting",
       "label": "检查",
-      "avgScore": 80,
-      "recentAvg": 80,
+      "avgScore": 87,
+      "recentAvg": 87,
       "entries": 3,
       "min": 80,
-      "max": 80,
+      "max": 100,
       "trend": 0
     },
     {
       "dim": "em_testing",
       "label": "测试",
-      "avgScore": 60,
-      "recentAvg": 60,
+      "avgScore": 73,
+      "recentAvg": 73,
       "entries": 3,
       "min": 60,
-      "max": 60,
+      "max": 100,
       "trend": 0
     },
     {
@@ -691,11 +691,11 @@
     {
       "dim": "robots",
       "label": "机器人",
-      "avgScore": 0,
-      "recentAvg": 0,
+      "avgScore": 33,
+      "recentAvg": 33,
       "entries": 3,
       "min": 0,
-      "max": 0,
+      "max": 100,
       "trend": 0
     },
     {
@@ -721,16 +721,16 @@
   ],
   "branchSummary": [
     {
-      "name": "master",
+      "name": "main",
       "count": 2,
-      "avgScore": 78,
-      "avgUncommitted": 11
+      "avgScore": 86,
+      "avgUncommitted": 10
     },
     {
-      "name": "main",
+      "name": "master",
       "count": 1,
       "avgScore": 78,
-      "avgUncommitted": 2
+      "avgUncommitted": 8
     }
   ],
   "signals": [
@@ -754,10 +754,10 @@
       "avgScore": 91
     },
     "scripts": {
-      "count": 68,
-      "avgScore": 78
+      "count": 69,
+      "avgScore": 87
     },
-    "overallAvg": 89,
-    "totalComponents": 115
+    "overallAvg": 91,
+    "totalComponents": 116
   }
 }

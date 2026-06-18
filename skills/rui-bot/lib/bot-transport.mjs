@@ -165,4 +165,3 @@ export function loadConfig(projectRoot) {
   const cfg = readJson(configPath);
   return cfg || { api_url: API_URL_DEFAULT, robots: {}, agents: {}, default_robot: "general" };
 }
-}

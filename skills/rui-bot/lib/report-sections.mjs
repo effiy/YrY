@@ -5,6 +5,7 @@
 
 import { DIM_LABELS, DIM_WEIGHTS } from "./report-constants.mjs";
 import { PASS_THRESHOLD, WARN_THRESHOLD, scoreColor, scoreIcon, avgScore } from "./bot-health-analysis.mjs";
+import { contributionAnalysis, scoreDistribution, classifyScore } from "../../../lib/scoring.mjs";
 
 export function buildScoreTrend(history) {
   if (!history || history.length < 2) return "";
@@ -497,4 +498,173 @@ export function buildDependencySection(hr) {
       <span class="h-struct-chip pass">正常</span>
     </div>
   </div>`;
+}
+
+// ── Enhanced analysis sections (professional-grade) ──────────────
+
+/**
+ * Build contribution gap analysis section.
+ * Identifies which dimensions drag down the composite score the most,
+ * and quantifies the potential improvement if fixed.
+ */
+export function buildContributionGapSection(hr) {
+  const analysis = contributionAnalysis(hr.scores || {}, DIM_WEIGHTS);
+  if (!analysis || analysis.topDrag.length === 0) return "";
+
+  const totalGap = analysis.dragTotal;
+  const potentialScore = Math.min(100, hr.composite + Math.round(totalGap));
+
+  const rows = analysis.topDrag.map((e, i) => {
+    const barColor = scoreColor(e.score);
+    const gapPct = Math.min(100, Math.round((e.gap / (analysis.topDrag[0]?.gap || 1)) * 100));
+    return '<div class="h-comp-row">' +
+      '<span class="h-comp-rank">' + (i + 1) + '</span>' +
+      '<span class="h-comp-label">' + (DIM_LABELS[e.dim] || e.dim) + '</span>' +
+      '<span class="h-comp-score" style="color:' + barColor + '">' + e.score + ' 分</span>' +
+      '<span style="font-size:.72rem;color:#ef4444;min-width:50px;text-align:right">−' + (Math.round(e.gap * 10) / 10) + ' 分</span>' +
+      '<div class="h-comp-bar-wrap"><div class="h-comp-bar-inner" style="width:' + gapPct + '%;background:#ef4444;opacity:.6"></div></div>' +
+      '</div>';
+  }).join("");
+
+  return '<div class="h-section">' +
+    '<h2>🎯 加分潜力分析 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">拖分维度 Top ' + analysis.topDrag.length + '</span></h2>' +
+    '<div style="margin-bottom:12px;padding:12px;background:rgba(245,158,11,.08);border-radius:6px;border:1px solid rgba(245,158,11,.15)">' +
+    '<span style="font-weight:600">📊 当前综合评分: ' + hr.composite + ' 分</span>' +
+    '<span style="margin-left:12px;color:#22c55e">修复所有拖分项可达: <b>' + potentialScore + ' 分</b></span>' +
+    '<span style="margin-left:12px;font-size:.72rem;color:var(--yry-text3)">(' + analysis.topDrag.length + ' 个维度共拖低 ' + (Math.round(totalGap * 10) / 10) + ' 分)</span>' +
+    '</div>' +
+    '<div class="h-comp-list">' + rows + '</div>' +
+    '<div style="margin-top:8px;font-size:.68rem;color:var(--yry-text3)">💡 拖分值 = (100 − 维度得分) × 维度权重 / 总权重 · 按拖分从高到低排列</div>' +
+    '</div>';
+}
+
+/**
+ * Build dimension health distribution section with histogram and stats.
+ */
+export function buildScoreDistributionSection(hr) {
+  var scores = Object.values(hr.scores || {}).filter(function(s) { return typeof s === "number"; });
+  if (scores.length === 0) return "";
+
+  var dist = scoreDistribution(scores);
+  var tiers = { excellent: 0, good: 0, fair: 0, poor: 0 };
+  scores.forEach(function(s) {
+    tiers[classifyScore(s)]++;
+  });
+
+  var buckets = [
+    { range: "0–20", lo: 0, hi: 20 },
+    { range: "20–40", lo: 20, hi: 40 },
+    { range: "40–60", lo: 40, hi: 60 },
+    { range: "60–80", lo: 60, hi: 80 },
+    { range: "80–100", lo: 80, hi: 101 },
+  ];
+  var histogram = buckets.map(function(b) {
+    return {
+      range: b.range,
+      count: scores.filter(function(s) { return s >= b.lo && s < b.hi; }).length,
+    };
+  });
+
+  var maxCount = Math.max.apply(null, [1].concat(histogram.map(function(h) { return h.count; })));
+  var bars = histogram.map(function(h) {
+    var barH = Math.max(2, Math.round((h.count / maxCount) * 60));
+    var color = h.range.startsWith("80") ? "#22c55e" : h.range.startsWith("60") ? "#f59e0b" : "#ef4444";
+    return '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">' +
+      '<span style="font-size:.7rem;font-weight:600">' + h.count + '</span>' +
+      '<div style="width:100%;max-width:40px;height:' + barH + 'px;background:' + color + ';border-radius:3px 3px 0 0;opacity:.85" title="' + h.range + ': ' + h.count + ' dimensions"></div>' +
+      '<span style="font-size:.6rem;color:var(--yry-text3)">' + h.range + '</span>' +
+      '</div>';
+  }).join("");
+
+  return '<div class="h-section">' +
+    '<h2>📊 评分分布分析</h2>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px">' +
+    '<div style="padding:12px;background:var(--bg1);border-radius:6px">' +
+    '<div style="font-size:.72rem;color:var(--yry-text3);margin-bottom:8px">统计摘要</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.78rem">' +
+    '<div>均值: <b>' + dist.mean + '</b></div>' +
+    '<div>中位数: <b>' + dist.median + '</b></div>' +
+    '<div>标准差: <b>' + dist.stddev + '</b></div>' +
+    '<div>范围: <b>' + dist.min + '–' + dist.max + '</b></div>' +
+    '<div>P25: <b>' + dist.p25 + '</b></div>' +
+    '<div>P75: <b>' + dist.p75 + '</b></div>' +
+    '</div></div>' +
+    '<div style="padding:12px;background:var(--bg1);border-radius:6px">' +
+    '<div style="font-size:.72rem;color:var(--yry-text3);margin-bottom:8px">等级分布</div>' +
+    '<div style="display:flex;gap:12px;align-items:center;justify-content:center;height:60px">' +
+    '<div style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:#22c55e">' + tiers.excellent + '</div><div style="font-size:.65rem;color:var(--yry-text3)">优秀≥90</div></div>' +
+    '<div style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:#22c55e">' + tiers.good + '</div><div style="font-size:.65rem;color:var(--yry-text3)">良好≥75</div></div>' +
+    '<div style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:#f59e0b">' + tiers.fair + '</div><div style="font-size:.65rem;color:var(--yry-text3)">一般≥60</div></div>' +
+    '<div style="text-align:center"><div style="font-size:1.4rem;font-weight:700;color:#ef4444">' + tiers.poor + '</div><div style="font-size:.65rem;color:var(--yry-text3)">需关注&lt;60</div></div>' +
+    '</div></div>' +
+    '</div>' +
+    '<div style="padding:12px;background:var(--bg1);border-radius:6px">' +
+    '<div style="font-size:.72rem;color:var(--yry-text3);margin-bottom:8px">分值分布直方图</div>' +
+    '<div style="display:flex;align-items:flex-end;gap:4px;padding:8px 0">' + bars + '</div>' +
+    '</div>' +
+    '</div>';
+}
+
+/**
+ * Build cross-report correlation section.
+ * Combines health, component, diagnostic, and architecture scores
+ * into a Unified Project Health Index (UPHI).
+ */
+export function buildCrossReportSection(hr, archResult, compScores) {
+  var healthScore = hr.composite || 0;
+
+  var compAll = compScores
+    ? (compScores.skills || []).concat(compScores.agents || [], compScores.rules || [], compScores.scripts || [])
+    : [];
+  var compAvg = compAll.length > 0 ? avgScore(compAll) : null;
+
+  var diagTriggered = (hr.diagnostics && hr.diagnostics.triggered && hr.diagnostics.triggered.length) || 0;
+  var diagScore = Math.max(0, 100 - diagTriggered * 15);
+
+  var archScore = (archResult && archResult.composite != null) ? archResult.composite : null;
+
+  var indices = [{ label: "运营健康", score: healthScore, weight: 0.4 }];
+  if (compAvg !== null) indices.push({ label: "组件质量", score: compAvg, weight: 0.25 });
+  indices.push({ label: "诊断健康", score: diagScore, weight: 0.2 });
+  if (archScore !== null) indices.push({ label: "架构合规", score: archScore, weight: 0.15 });
+
+  var totalWeight = indices.reduce(function(s, i) { return s + i.weight; }, 0);
+  var unifiedIndex = indices.length > 0
+    ? Math.round(indices.reduce(function(s, i) { return s + i.score * i.weight; }, 0) / totalWeight)
+    : healthScore;
+
+  function getUG(s) { return s >= 90 ? "A" : s >= 75 ? "B" : s >= 60 ? "C" : "D"; }
+  var unifiedGrade = getUG(unifiedIndex);
+  var gradeColor = unifiedGrade === "A" || unifiedGrade === "B" ? "#22c55e" : unifiedGrade === "C" ? "#f59e0b" : "#ef4444";
+
+  var indexCards = indices.map(function(i) {
+    var color = i.score >= 90 ? "#22c55e" : i.score >= 75 ? "#22c55e" : i.score >= 60 ? "#f59e0b" : "#ef4444";
+    return '<div style="text-align:center;padding:12px;background:var(--bg1);border-radius:6px;flex:1;min-width:120px">' +
+      '<div style="font-size:1.6rem;font-weight:700;color:' + color + '">' + i.score + '</div>' +
+      '<div style="font-size:.75rem;color:var(--yry-text2)">' + i.label + '</div>' +
+      '<div style="font-size:.65rem;color:var(--yry-text3)">权重 ' + Math.round(i.weight * 100) + '%</div>' +
+      '</div>';
+  }).join("");
+
+  var notes = [];
+  if (compAvg !== null && Math.abs(healthScore - compAvg) > 20) {
+    notes.push('运营健康 (' + healthScore + ') 与组件质量 (' + compAvg + ') 偏差 ' + Math.abs(healthScore - compAvg) + ' 分，需关注评分口径差异');
+  }
+  if (diagTriggered >= 3) {
+    notes.push(diagTriggered + ' 个诊断被触发，诊断健康度偏低 (' + diagScore + ')，建议优先处理诊断告警');
+  }
+
+  return '<div class="h-section">' +
+    '<h2>🔗 综合项目健康指数 (UPHI) <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">跨维度统一评分</span></h2>' +
+    '<div style="margin-bottom:12px;padding:16px;background:var(--bg2);border-radius:8px;border:1px solid var(--border2);text-align:center">' +
+    '<div style="font-size:.75rem;color:var(--yry-text3);margin-bottom:4px">统一项目健康指数</div>' +
+    '<div style="font-size:3rem;font-weight:700;color:' + gradeColor + '">' + unifiedIndex + '</div>' +
+    '<div style="font-size:1rem;color:var(--yry-text2)">' + unifiedGrade + ' 级 · ' + (unifiedGrade === "A" ? "优秀" : unifiedGrade === "B" ? "良好" : unifiedGrade === "C" ? "一般" : "需关注") + '</div>' +
+    '</div>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">' + indexCards + '</div>' +
+    (notes.length > 0 ? '<div style="padding:10px;background:rgba(245,158,11,.08);border-radius:6px;border:1px solid rgba(245,158,11,.15)">' +
+      notes.map(function(n) { return '<div style="font-size:.75rem;color:var(--yry-text2);margin:4px 0">🔍 ' + n + '</div>'; }).join("") +
+    '</div>' : "") +
+    '<div style="margin-top:8px;font-size:.68rem;color:var(--yry-text3)">UPHI = 运营健康×40% + 组件质量×25% + 诊断健康×20% + 架构合规×15%</div>' +
+    '</div>';
 }

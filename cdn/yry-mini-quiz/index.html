@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryMiniQuiz · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">❓</span> YryMiniQuiz · 交互式小测验</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-mini-quiz&gt;</code> — 零依赖互动测验。
+    从 <code>&lt;script type="application/json"&gt;</code> 读取题目数据，
+    支持单选、即时反馈、得分统计。适合培训验收、知识检查、文档自测。
+  </p>
+
+  <!-- Quiz 1: Architecture knowledge -->
+  <div class="demo-section">
+    <h3>Demo — 架构知识测验 (4 题)</h3>
+    <script type="application/json" id="quiz-1-data">
+    {
+      "title": "🏗️ YrY 架构知识测验",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "YrY 项目的四大铁律中，「验先于称」的含义是什么？",
+          "options": [
+            { "letter": "A", "text": "验证需求文档后再开始编码" },
+            { "letter": "B", "text": "未运行验证命令不得声称完成/通过/修复" },
+            { "letter": "C", "text": "先设计实验再实施变更" },
+            { "letter": "D", "text": "每次检查都要出具验证报告" }
+          ],
+          "answer": "B",
+          "feedback": "「验先于称」源于「验现实」公理：没有运行验证命令，不得声称完成/通过/修复。\"上次通过了\"、\"应该没问题\"都是违反信号。"
+        },
+        {
+          "id": "q2",
+          "text": "以下哪个不是 YrY 的退化三因之一？",
+          "options": [
+            { "letter": "A", "text": "外部不可达 — URL 失效 · API 变更" },
+            { "letter": "B", "text": "渐进漂移 — 术语膨胀 · 文档过时" },
+            { "letter": "C", "text": "性能退化 — 响应变慢 · 内存泄漏" },
+            { "letter": "D", "text": "人机偏差 — 合理化 · 跳过流程" }
+          ],
+          "answer": "C",
+          "feedback": "退化三因是：外部不可达、渐进漂移、人机偏差。性能退化不在其中。"
+        },
+        {
+          "id": "q3",
+          "text": "YrY 架构中，共享代码应该放在哪里？",
+          "options": [
+            { "letter": "A", "text": "skills/shared/" },
+            { "letter": "B", "text": "lib/ 目录，禁止 copy-paste" },
+            { "letter": "C", "text": "每个 Skill 的 utils/ 子目录" },
+            { "letter": "D", "text": "根目录的 common/ 文件夹" }
+          ],
+          "answer": "B",
+          "feedback": "跨文件共享代码统一放在 lib/ 目录，各脚本从 lib/ 导入通用函数/常量，严禁跨文件复制粘贴。"
+        },
+        {
+          "id": "q4",
+          "text": "架构合规检查 (arch-check.mjs) 验证多少个维度？",
+          "options": [
+            { "letter": "A", "text": "9 维度" },
+            { "letter": "B", "text": "12 维度" },
+            { "letter": "C", "text": "15 维度" },
+            { "letter": "D", "text": "19 维度" }
+          ],
+          "answer": "C",
+          "feedback": "架构合规自动验证覆盖 15 维度，目标 A 级。包含内核体积、范式合规、扩展隔离等检查。"
+        }
+      ]
+    }
+    </script>
+    <yry-mini-quiz id="quiz-1"></yry-mini-quiz>
+  </div>
+
+  <!-- Quiz 2: Simple -->
+  <div class="demo-section">
+    <h3>Demo — 简单判断题 (2 题)</h3>
+    <script type="application/json" id="quiz-2-data">
+    {
+      "title": "📋 管线知识快测",
+      "questions": [
+        {
+          "id": "q5",
+          "text": "rui-code 管线的 Gate A 阶段验证什么？",
+          "options": [
+            { "letter": "A", "text": "规约完整性 + 架构合规" },
+            { "letter": "B", "text": "性能基准 + 负载测试" },
+            { "letter": "C", "text": "用户界面 + 交互设计" },
+            { "letter": "D", "text": "部署配置 + 环境变量" }
+          ],
+          "answer": "A",
+          "feedback": "Gate A 验证规约完整性（每个 Skill 必须有完整 SKILL.md）和架构合规（15 维度 A 级）。"
+        },
+        {
+          "id": "q6",
+          "text": "YrY 项目使用什么方式进行自托管管理？",
+          "options": [
+            { "letter": "A", "text": "外部 CI/CD 平台" },
+            { "letter": "B", "text": "自身 /rui 管线管理自身演进" },
+            { "letter": "C", "text": "手动维护 + checklist" },
+            { "letter": "D", "text": "Docker 容器编排" }
+          ],
+          "answer": "B",
+          "feedback": "YrY 是自托管系统 — 用自身管线管理自身演进，自身 .claude/ 配置通过 /rui-claude 管理。"
+        }
+      ]
+    }
+    </script>
+    <yry-mini-quiz id="quiz-2"></yry-mini-quiz>
+  </div>
+
+  <script src="index.js"></script>
+
+  <div class="demo-footer">❓ YryMiniQuiz v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

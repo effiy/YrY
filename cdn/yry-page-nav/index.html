@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryPageNav · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+    .config-box {
+      background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.06);
+      border-radius: 6px; padding: 14px 18px; margin-bottom: 20px;
+      font-family: 'SF Mono', 'Fira Code', monospace; font-size: .72rem;
+      color: var(--yry-cyan, #22d3ee); white-space: pre-wrap;
+      max-height: 200px; overflow-y: auto;
+    }
+    .config-box .key { color: var(--yry-accent, #ffc107); }
+    .config-box .str { color: var(--yry-pass, #22c55e); }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">🧭</span> YryPageNav · 页面导航三件套</h1>
+  <p class="demo-hint">
+    零依赖 vanilla JS — 从 <code>&lt;script type="application/json" id="yry-page-config"&gt;</code> 读取配置，
+    自动生成 <strong>面包屑 (Breadcrumb)</strong> + <strong>场景导航 (Scene Nav)</strong> + <strong>交叉导航 (Cross Nav)</strong>。
+  </p>
+
+  <!-- Config: 模拟场景 3「数据流追踪」的 架构图 页面 -->
+  <script type="application/json" id="yry-page-config">
+  {
+    "page": { "type": "架构图", "icon": "📐", "file": "架构图.html" },
+    "story": "🏗️ 架构",
+    "scene": { "num": 3, "name": "数据流追踪", "dir": "场景-3-数据流追踪" },
+    "depth": "../../../",
+    "scenes": [
+      { "num": 1, "name": "新人上手", "dir": "场景-1-新人上手" },
+      { "num": 2, "name": "模块定位", "dir": "场景-2-模块定位" },
+      { "num": 3, "name": "数据流追踪", "dir": "场景-3-数据流追踪" },
+      { "num": 4, "name": "依赖变更影响", "dir": "场景-4-依赖变更影响" }
+    ],
+    "pages": [
+      { "type": "计划清单", "icon": "📋", "file": "计划清单.html" },
+      { "type": "架构图",   "icon": "📐", "file": "架构图.html" },
+      { "type": "审查",     "icon": "🔍", "file": "审查.html" },
+      { "type": "测试面板", "icon": "🧪", "file": "测试面板.html" },
+      { "type": "源码",     "icon": "📜", "file": "源码.html" },
+      { "type": "演示",     "icon": "🎬", "file": "演示.html" },
+      { "type": "知识图谱", "icon": "🗺️", "file": "知识图谱.html" }
+    ]
+  }
+  </script>
+
+  <div class="demo-section">
+    <h3>Live Demo — 场景 3 · 数据流追踪 · 架构图</h3>
+    <div id="yry-nav"></div>
+  </div>
+
+  <hr>
+  <p class="demo-hint">
+    👆 导航由 JS 从配置 JSON 动态生成。配置中包含：当前页面信息、所属故事、场景列表、页面类型列表。
+    当前页面高亮，其他页面为可点击链接。
+  </p>
+
+  <div class="demo-section">
+    <h3>📋 配置 JSON （上面使用的数据）</h3>
+    <div class="config-box" id="config-display"></div>
+  </div>
+
+  <script src="index.js"></script>
+  <script>
+    // Display the config JSON prettily
+    (function() {
+      var el = document.getElementById('yry-page-config');
+      var display = document.getElementById('config-display');
+      if (el && display) {
+        try {
+          var cfg = JSON.parse(el.textContent);
+          var json = JSON.stringify(cfg, null, 2);
+          display.textContent = json
+            .replace(/"([^"]+)":/g, '<span class="key">"$1"</span>:')
+            .replace(/: "([^"]+)"/g, ': <span class="str">"$1"</span>');
+        } catch(e) { display.textContent = el.textContent; }
+      }
+    })();
+  </script>
+
+  <div class="demo-footer">🧭 YryPageNav v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

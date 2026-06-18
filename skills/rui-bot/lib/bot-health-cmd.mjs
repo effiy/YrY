@@ -293,7 +293,7 @@ export async function cmdHealth(projectRoot, opts = {}) {
 
   console.log("");
   console.log("  ┌──────────────────────────────────────┐");
-  console.log(`  │ 综合健康度: ${grade.color}${composite} 分 / ${grade.grade} 级 — ${grade.label}\x1b[0m  │`);
+  console.log(`  │ 综合健康度: ${grade.ansi}${composite} 分 / ${grade.grade} 级 — ${grade.label}\x1b[0m  │`);
   console.log(`  │ ${healthBar(composite)} │`);
   console.log("  └──────────────────────────────────────┘");
   console.log("");

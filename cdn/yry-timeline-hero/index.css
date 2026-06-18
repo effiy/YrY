@@ -1,0 +1,196 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryTimelineHero · 时间线可视化 样式
+   适用: 演示页面 · 项目概览 · 场景管线展示
+   依赖: theme.css (提供 --yry-* design tokens)
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-timeline-hero/index.css">
+     <yry-timeline-hero></yry-timeline-hero>
+     <script src="../../../../cdn/yry-timeline-hero/index.js"></script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Hero container ─────────────────────────────────────────────────── */
+.tl-hero {
+  background: linear-gradient(135deg, rgba(38,38,52,1) 0%, rgba(28,28,42,1) 100%);
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  border-radius: var(--yry-radius, 12px);
+  padding: 20px 18px 22px;
+  margin-bottom: 20px;
+  box-shadow: var(--yry-shadow, 0 4px 20px rgba(0,0,0,.3));
+  position: relative;
+  overflow: hidden;
+}
+
+.tl-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%; right: -10%;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(255,193,7,.06) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.tl-hero .tl-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  position: relative;
+}
+
+.tl-hero .tl-head .tl-icon {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  background: rgba(255,193,7,.15);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .9rem;
+}
+
+.tl-hero .tl-head .tl-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--yry-text, #f5f5f5);
+}
+
+.tl-hero .tl-head .tl-sub {
+  font-size: .66rem;
+  color: var(--yry-text3, #888);
+  font-weight: 400;
+  margin-left: auto;
+}
+
+/* ── Timeline track ─────────────────────────────────────────────────── */
+.tl-track-wrap {
+  position: relative;
+  padding: 14px 0 6px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.tl-track {
+  position: relative;
+  min-width: 520px;
+  padding: 0 12px;
+}
+
+.tl-line {
+  position: absolute;
+  top: 36px; left: 36px; right: 36px;
+  height: 2px;
+  background: rgba(255,255,255,.06);
+  border-radius: 1px;
+  z-index: 0;
+}
+
+.tl-progress {
+  position: absolute;
+  top: 36px; left: 36px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--yry-accent, #ffc107) 0%, var(--yry-cyan, #22d3ee) 100%);
+  border-radius: 1px;
+  z-index: 1;
+  transition: width .5s ease;
+  box-shadow: 0 0 8px rgba(255,193,7,.4);
+}
+
+/* ── Nodes ──────────────────────────────────────────────────────────── */
+.tl-nodes {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+
+.tl-node {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform .15s;
+  min-width: 0;
+  position: relative;
+}
+
+.tl-node:hover {
+  transform: translateY(-2px);
+}
+
+.tl-node .tl-dot {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--yry-bg, #0a0a0a);
+  border: 2px solid rgba(255,255,255,.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .85rem;
+  color: var(--yry-text3, #888);
+  transition: all .25s;
+  position: relative;
+}
+
+.tl-node.done .tl-dot {
+  background: rgba(34,197,94,.12);
+  border-color: var(--yry-pass, #22c55e);
+  color: var(--yry-pass, #22c55e);
+}
+
+.tl-node.active .tl-dot {
+  background: rgba(255,193,7,.12);
+  border-color: var(--yry-accent, #ffc107);
+  color: var(--yry-accent, #ffc107);
+  box-shadow: 0 0 0 4px rgba(255,193,7,.08);
+}
+
+.tl-node .tl-label {
+  font-size: .68rem;
+  color: var(--yry-text2, #d4d4d4);
+  margin-top: 6px;
+  text-align: center;
+  font-weight: 500;
+  line-height: 1.2;
+  max-width: 90px;
+}
+
+.tl-node .tl-time {
+  font-size: .58rem;
+  color: var(--yry-text3, #888);
+  margin-top: 2px;
+  font-family: monospace;
+}
+
+.tl-node .tl-tooltip {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  background: var(--yry-bg-raised, rgba(42,42,56,1));
+  border: 1px solid rgba(255,193,7,.2);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: .66rem;
+  color: var(--yry-text2, #d4d4d4);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all .2s;
+  z-index: 5;
+  box-shadow: var(--yry-shadow-lg, 0 12px 32px rgba(0,0,0,.45));
+}
+
+.tl-node:hover .tl-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .tl-hero { padding: 14px 10px 16px; }
+  .tl-node .tl-label { font-size: .6rem; max-width: 70px; }
+  .tl-node .tl-dot { width: 28px; height: 28px; font-size: .75rem; }
+  .tl-track { min-width: 400px; }
+}

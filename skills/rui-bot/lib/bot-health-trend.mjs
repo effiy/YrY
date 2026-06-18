@@ -1,43 +1,25 @@
 /**
- * bot-health-trend — Health scoring dimensions, grade thresholds, trend persistence.
+ * bot-health-trend — Trend persistence and display helpers.
  * Extracted from send.mjs for module decomposition.
+ *
+ * Scoring dimensions, weights, labels, and grade thresholds are imported
+ * from the canonical source: lib/constants.mjs.
  */
 
 import { join } from "node:path";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 
 import { avgScore } from "./bot-health-analysis.mjs";
+import {
+  HEALTH_SCORING_DIMENSIONS,
+  HEALTH_GRADE_THRESHOLDS,
+} from "../../../lib/constants.mjs";
 
 export const HEALTH_TREND_FILE = ".memory/health-trend.jsonl";
 
-export const HEALTH_DIMENSIONS = {
-  token:      { label: "Token 凭据", weight: 12 },
-  config:     { label: "配置文件", weight: 8 },
-  robots:     { label: "机器人配置", weight: 8 },
-  api:        { label: "API 可达性", weight: 12 },
-  reports:    { label: "自循环报告", weight: 8 },
-  format:     { label: "消息格式合规", weight: 8 },
-  diagnostics:{ label: "D0-D7 诊断", weight: 8 },
-  git:        { label: "Git 仓库状态", weight: 8 },
-  security:   { label: "安全扫描", weight: 8 },
-  file_size:  { label: "文件体积", weight: 8 },
-  dep_analysis:{ label: "依赖分析", weight: 8 },
-  em_testing: { label: "测试体系", weight: 8 },
-  em_types:   { label: "类型安全", weight: 6 },
-  em_linting: { label: "代码规范", weight: 6 },
-  em_cicd:    { label: "CI/CD", weight: 6 },
-  em_docs:    { label: "文档完整", weight: 6 },
-  em_deps:    { label: "依赖管理", weight: 4 },
-  em_git:     { label: "Git 纪律", weight: 4 },
-  comp_qual:  { label: "组件质量", weight: 8 },
-};
-
-export const HEALTH_GRADE = [
-  { min: 90, grade: "A", label: "优秀", color: "\x1b[32m" },
-  { min: 75, grade: "B", label: "良好", color: "\x1b[33m" },
-  { min: 60, grade: "C", label: "一般", color: "\x1b[33m" },
-  { min: 0,  grade: "D", label: "需关注", color: "\x1b[31m" },
-];
+// Re-export from canonical source for backward compatibility
+export { HEALTH_SCORING_DIMENSIONS as HEALTH_DIMENSIONS };
+export { HEALTH_GRADE_THRESHOLDS as HEALTH_GRADE };
 
 export function scoreEmoji(score) {
   if (score >= 90) return "✅";

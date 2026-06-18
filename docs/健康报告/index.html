@@ -10,6 +10,17 @@
 	<style>
 	/* common :root / reset / body / table / bc / hd / card / links / ft covered by shared-reports.css */
 	.c { max-width: 800px; margin: 0 auto; padding: 48px 24px 80px; }
+	.h-intro { padding: 16px; border-left: 3px solid var(--yry-accent); background: rgba(255,193,7,.04); border-radius: 0 var(--yry-radius) var(--yry-radius) 0; margin-bottom: 20px; color: var(--yry-text2); font-size: .84rem; line-height: 1.7; }
+	.h-intro strong { color: var(--yry-accent); }
+	.h-intro code { background: rgba(59,130,246,.1); padding: 1px 6px; border-radius: 4px; font-size: .82em; color: #22d3ee; }
+	.h-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+	.h-stat { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 16px 20px; text-align: center; box-shadow: var(--yry-shadow); flex: 1; min-width: 90px; cursor: default; }
+	.h-stat .h-val { font-size: 1.4rem; font-weight: 700; }
+	.h-stat .h-val.pass { color: var(--yry-pass); }
+	.h-stat .h-val.warn { color: var(--yry-warn); }
+	.h-stat .h-val.fail { color: var(--yry-fail); }
+	.h-stat .h-val.info { color: #22d3ee; }
+	.h-stat .h-lbl { font-size: .68rem; color: var(--yry-text3); margin-top: 4px; }
 	.latest { text-align: center; padding: 16px 16px 12px; margin-bottom: 20px; background: rgba(255,193,7,.05); border-radius: 10px; border: var(--yry-border); }
 	.latest .score { font-size: 2rem; font-weight: 800; color: var(--yry-accent); }
 	.latest .grade { font-size: 1.1rem; font-weight: 700; margin-left: 8px; }
@@ -44,8 +55,8 @@
 
 <div class="yry-stats" id="stats">
   <div class="yry-stat"><div class="yry-val info">4</div><div class="yry-lbl">报告总数</div></div>
-  <div class="yry-stat"><div class="yry-val pass">—</div><div class="yry-lbl">最新评分</div></div>
-  <div class="yry-stat"><div class="yry-val pass">B</div><div class="yry-lbl">最新等级</div></div>
+  <div class="yry-stat"><div class="yry-val pass">94</div><div class="yry-lbl">最新评分</div></div>
+  <div class="yry-stat"><div class="yry-val pass">A</div><div class="yry-lbl">最新等级</div></div>
   <div class="yry-stat"><div class="yry-val info">19</div><div class="yry-lbl">评分维度</div></div>
   <div class="yry-stat"><div class="yry-val pass">0</div><div class="yry-lbl">诊断触发</div></div>
 </div>
@@ -81,21 +92,85 @@
     document.getElementById('count').textContent = reports.length;
 
     var tbody = document.getElementById('tbody');
-    if (reports.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6"><div class="yry-empty">暂无报告<br><span style="font-size:.7rem;margin-top:8px;display:block">运行 <code>node skills/rui-bot/send.mjs health --html</code> 生成首份报告</span></div></td></tr>';
-    } else {
-      tbody.innerHTML = reports.map(function(r) {
-        var scHtml = r.score ? '<span class="s ' + (r.grade || '') + '">' + r.score + ' 分</span>' : '—';
-        var gradeHtml = r.grade ? '<span class="yry-badge ' + (r.grade) + '">' + r.grade + ' 级</span>' : '—';
-        var trigHtml = r.triggers !== null ? (r.triggers > 0 ? '<span style="color:var(--yry-warn)">' + r.triggers + '/8</span>' : '<span style="color:var(--yry-pass)">0/8</span>') : '—';
-        var timeHtml = r.time && r.time !== '—' ? r.time : '—';
-        return '<tr><td><a href="' + r.file + '">🩺 ' + r.date + '</a></td><td>' + timeHtml + '</td><td>' + scHtml + '</td><td>' + gradeHtml + '</td><td>' + trigHtml + '</td><td><a href="' + r.file + '">查看</a></td></tr>';
-      }).join('');
-    }
-  } catch(e) {
-    document.getElementById('tbody').innerHTML = '<tr><td colspan="6"><div class="yry-empty">加载失败: ' + e.message + '</div></td></tr>';
-  }
-})();
+	    if (reports.length === 0) {
+	      tbody.appendChild(buildHealthEmptyRow());
+	    } else {
+	      reports.forEach(function(r) {
+	        tbody.appendChild(buildHealthRow(r));
+	      });
+	    }
+	  } catch(e) {
+	    var tbodyErr = document.getElementById('tbody');
+	    tbodyErr.textContent = '';
+	    var trErr = document.createElement('tr');
+	    var tdErr = document.createElement('td');
+	    tdErr.colSpan = 6;
+	    var divErr = document.createElement('div');
+	    divErr.className = 'yry-empty';
+	    divErr.textContent = '加载失败: ' + e.message;
+	    tdErr.appendChild(divErr);
+	    trErr.appendChild(tdErr);
+	    tbodyErr.appendChild(trErr);
+	  }
+
+	  function buildHealthEmptyRow() {
+	    var tr = document.createElement('tr');
+	    var td = document.createElement('td');
+	    td.colSpan = 6;
+	    var div = document.createElement('div');
+	    div.className = 'yry-empty';
+	    div.textContent = '暂无报告';
+	    div.appendChild(document.createElement('br'));
+	    var span = document.createElement('span');
+	    span.style.cssText = 'font-size:.7rem;margin-top:8px;display:block';
+	    var code = document.createElement('code');
+	    code.textContent = 'node skills/rui-bot/send.mjs health --html 生成首份报告';
+	    span.appendChild(code);
+	    div.appendChild(span);
+	    td.appendChild(div);
+	    tr.appendChild(td);
+	    return tr;
+	  }
+
+	  function buildHealthRow(r) {
+	    var tr = document.createElement('tr');
+	    var scHtml = r.score ? '<span class="s ' + (r.grade || '') + '">' + r.score + ' 分</span>' : '—';
+	    var gradeHtml = r.grade ? '<span class="yry-badge ' + (r.grade) + '">' + r.grade + ' 级</span>' : '—';
+	    var trigHtml = r.triggers !== null ? (r.triggers > 0 ? '<span style="color:var(--yry-warn)">' + r.triggers + '/8</span>' : '<span style="color:var(--yry-pass)">0/8</span>') : '—';
+	    var timeHtml = r.time && r.time !== '—' ? r.time : '—';
+
+	    var td1 = document.createElement('td');
+	    var a1 = document.createElement('a');
+	    a1.href = r.file;
+	    a1.textContent = '🩺 ' + r.date;
+	    td1.appendChild(a1);
+	    tr.appendChild(td1);
+
+	    var td2 = document.createElement('td');
+	    td2.textContent = timeHtml;
+	    tr.appendChild(td2);
+
+	    var td3 = document.createElement('td');
+	    td3.insertAdjacentHTML('beforeend', scHtml);
+	    tr.appendChild(td3);
+
+	    var td4 = document.createElement('td');
+	    td4.insertAdjacentHTML('beforeend', gradeHtml);
+	    tr.appendChild(td4);
+
+	    var td5 = document.createElement('td');
+	    td5.insertAdjacentHTML('beforeend', trigHtml);
+	    tr.appendChild(td5);
+
+	    var td6 = document.createElement('td');
+	    var a2 = document.createElement('a');
+	    a2.href = r.file;
+	    a2.textContent = '查看';
+	    td6.appendChild(a2);
+	    tr.appendChild(td6);
+
+	    return tr;
+	  }})();
 </script>
 </body>
 </html>

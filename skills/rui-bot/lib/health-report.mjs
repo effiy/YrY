@@ -19,6 +19,7 @@ import {
   nowChinese, nowDate, getPreviousScore, getHealthTrend,
   buildGradeSparkline, getDimensionHistory, dimTrendIcon,
   listReportFiles, pickLatestReportsByDate, removeReportsForDate,
+  buildEnhancedTrendAnalysis, buildTrendSummaryHTML, buildAnomalyAlertHTML,
 } from "./report-trend.mjs";
 
 import {
@@ -26,6 +27,8 @@ import {
   buildRecommendationsSection, buildComponentSections,
   buildStructureSection, buildGitSecuritySection,
   buildFileSizeSection, buildDependencySection,
+  buildContributionGapSection, buildScoreDistributionSection,
+  buildCrossReportSection,
 } from "./report-sections.mjs";
 
 import { scoreStatus, PASS_THRESHOLD, WARN_THRESHOLD } from "./bot-health-analysis.mjs";
@@ -86,6 +89,7 @@ export function generateHealthReport(hr) {
   }
 
   const gradeSparkline = buildGradeSparkline(healthTrend);
+  const enhancedTrend = buildEnhancedTrendAnalysis(healthTrend);
 
   const prevTriggeredIds = new Set();
   const prevScores = {};
@@ -269,7 +273,12 @@ export function generateHealthReport(hr) {
   ${buildFileSizeSection(hr)}
   ${buildDependencySection(hr)}
   ${buildScoreBreakdown(hr)}
+  ${buildContributionGapSection(hr)}
+  ${buildScoreDistributionSection(hr)}
   ${buildScoreTrend(healthTrend)}
+  ${enhancedTrend ? buildTrendSummaryHTML(enhancedTrend) : ""}
+  ${enhancedTrend ? buildAnomalyAlertHTML(enhancedTrend) : ""}
+  ${buildCrossReportSection(hr, null, compScores)}
   <div class="h-section">
     <h2>🔗 相关资源</h2>
     <div class="h-links">

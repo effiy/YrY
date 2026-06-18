@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryTimelineHero · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+    .demo-controls { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+    .demo-btn {
+      background: var(--yry-bg-flat, rgba(42,42,56,1)); color: var(--yry-text2, #d4d4d4);
+      border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+      border-radius: 20px; padding: 6px 16px; font-size: .76rem; cursor: pointer;
+      transition: all .15s; font-family: inherit;
+    }
+    .demo-btn:hover { border-color: rgba(255,193,7,.3); color: var(--yry-accent, #ffc107); }
+    .demo-btn.on { background: rgba(255,193,7,.12); border-color: rgba(255,193,7,.4); color: var(--yry-accent, #ffc107); }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">⏱️</span> YryTimelineHero · 时间线可视化</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-timeline-hero&gt;</code> — 项目阶段时间线。
+    从 <code>&lt;script type="application/json"&gt;</code> 读取节点数据，JS 自动渲染 SVG 进度条和交互节点。
+    支持完成/进行中/待执行状态，hover 显示详情 tooltip。
+  </p>
+
+  <!-- Demo 1: Scene pipeline -->
+  <div class="demo-section">
+    <h3>Demo — 场景管线 (4 场景 · 2 完成 · 1 进行中 · 1 待执行)</h3>
+
+    <script type="application/json" id="timeline-demo-1">
+    {
+      "title": "🏗️ 架构故事 — 8 场景管线",
+      "subtitle": "入门 → 定位 → 追踪 → 影响 → 安全 → 校验 → 监测 → 仪表板",
+      "progress": 32,
+      "nodes": [
+        { "label": "新人上手", "time": "D1-3", "status": "done", "tooltip": "环境搭建·调试方法·首修" },
+        { "label": "模块定位", "time": "D4-5", "status": "done", "tooltip": "19 技能·9 Agent·职责边界" },
+        { "label": "数据流追踪", "time": "D6-8", "status": "active", "tooltip": "story→scene→source 图谱" },
+        { "label": "依赖变更影响", "time": "D9-11", "status": "active", "tooltip": "跨模块影响分析·去耦合" },
+        { "label": "信任边界与安全", "time": "D12-13", "status": "pending", "tooltip": "认证·密钥·注入·信任边界" },
+        { "label": "架构断言校验", "time": "D14-15", "status": "pending", "tooltip": "15 维度 A 级自动验证" },
+        { "label": "架构漂移监测", "time": "D16-17", "status": "pending", "tooltip": "持续合规·退化检测" },
+        { "label": "健康度量仪表板", "time": "D18-20", "status": "pending", "tooltip": "实时面板·趋势·告警" }
+      ]
+    }
+    </script>
+    <yry-timeline-hero id="timeline-1"></yry-timeline-hero>
+  </div>
+
+  <!-- Demo 2: Simple 4-node pipeline -->
+  <div class="demo-section">
+    <h3>Demo — 简单里程碑 (4 节点 · 递增进度)</h3>
+
+    <script type="application/json" id="timeline-demo-2">
+    {
+      "title": "🚀 发布管线",
+      "subtitle": "Gate A → Gate B → 验证 → 交付",
+      "progress": 75,
+      "nodes": [
+        { "label": "Gate A", "time": "1h", "status": "done", "tooltip": "规约完整性·架构合规" },
+        { "label": "Gate B", "time": "2h", "status": "done", "tooltip": "安全面·测试·一致性" },
+        { "label": "验证收口", "time": "30m", "status": "done", "tooltip": "三步 hook · 逐模块清零" },
+        { "label": "交付", "time": "15m", "status": "active", "tooltip": "生成报告·推送通知" }
+      ]
+    }
+    </script>
+    <yry-timeline-hero id="timeline-2"></yry-timeline-hero>
+  </div>
+
+  <div class="demo-section">
+    <h3>📋 使用方式</h3>
+    <p class="demo-hint">
+      在每个 <code>&lt;yry-timeline-hero&gt;</code> 之前放置一个
+      <code>&lt;script type="application/json" id="unique-id"&gt;</code> 数据块。
+      JS 从 <code>previousElementSibling</code> 读取配置并渲染。
+    </p>
+  </div>
+
+  <script src="index.js"></script>
+
+  <div class="demo-footer">⏱️ YryTimelineHero v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

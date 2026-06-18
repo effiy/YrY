@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryInfoCards · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">🃏</span> YryInfoCards · 信息卡片网格</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-info-cards&gt;</code> — CSS Grid 自适应布局。
+    每张卡片包含彩色圆点 + 标题 + 无序列表。适用于模块概览、维度说明、快速参考等场景。
+  </p>
+
+  <div class="demo-section">
+    <h3>Demo — 系统模块总览</h3>
+    <yry-info-cards>
+      <div class="yry-card">
+        <div class="yry-card-header">
+          <div class="yry-card-dot cyan"></div>
+          <h3>🔧 技能系统 (Skills)</h3>
+        </div>
+        <ul>
+          <li>19 个可独立执行的能力单元</li>
+          <li>每个 Skill 包含 SKILL.md 规约 + 辅助脚本</li>
+          <li>通过 /rui-* 管线串联为完整流程</li>
+        </ul>
+      </div>
+      <div class="yry-card">
+        <div class="yry-card-header">
+          <div class="yry-card-dot emerald"></div>
+          <h3>🤖 Agent 系统</h3>
+        </div>
+        <ul>
+          <li>9 个专职智能体，各司其职</li>
+          <li>Agent 间通过交接信号 (handoff) 通信</li>
+          <li>支持 subagent 委派与并行协作</li>
+        </ul>
+      </div>
+      <div class="yry-card">
+        <div class="yry-card-header">
+          <div class="yry-card-dot violet"></div>
+          <h3>📋 规则引擎 (Rules)</h3>
+        </div>
+        <ul>
+          <li>16 条强制执行规则，覆盖架构/设计/安全</li>
+          <li>架构合规自动验证 (arch-check.mjs)</li>
+          <li>铁律四条的不可妥协底线</li>
+        </ul>
+      </div>
+      <div class="yry-card">
+        <div class="yry-card-header">
+          <div class="yry-card-dot amber"></div>
+          <h3>📦 共享库 (Lib)</h3>
+        </div>
+        <ul>
+          <li>16 个零依赖共享模块</li>
+          <li>常量 · TTY · FS · 诊断 · 主题 · 网络</li>
+          <li>遵循 DRY 原则，禁止跨脚本 copy-paste</li>
+        </ul>
+      </div>
+    </yry-info-cards>
+  </div>
+
+  <div class="demo-section">
+    <h3>Demo — 更多颜色变体</h3>
+    <yry-info-cards>
+      <div class="yry-card">
+        <div class="yry-card-header">
+          <div class="yry-card-dot rose"></div>
+          <h3>🔴 安全防线</h3>
+        </div>
+        <ul><li>认证不可绕过 · 密钥不落盘 · 输入必校验</li></ul>
+      </div>
+      <div class="yry-card">
+        <div class="yry-card-header">
+          <div class="yry-card-dot blue"></div>
+          <h3>🔵 数据流追踪</h3>
+        </div>
+        <ul><li>story → scene → source 三层知识图谱</li></ul>
+      </div>
+      <div class="yry-card">
+        <div class="yry-card-header">
+          <div class="yry-card-dot scene"></div>
+          <h3>🟣 场景管理</h3>
+        </div>
+        <ul><li>每场景 7 文档：审查·架构·测试·源码·演示·图谱·清单</li></ul>
+      </div>
+      <div class="yry-card">
+        <div class="yry-card-header">
+          <div class="yry-card-dot check"></div>
+          <h3>🩷 健康检查</h3>
+        </div>
+        <ul><li>9 维度 · D0-D8 诊断 · 趋势持久化 · 智能告警</li></ul>
+      </div>
+    </yry-info-cards>
+  </div>
+
+  <script src="index.js"></script>
+
+  <div class="demo-footer">🃏 YryInfoCards v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>
