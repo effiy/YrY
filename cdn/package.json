@@ -1,33 +1,18 @@
 {
   "name": "yry-cdn",
   "version": "1.2.0",
-  "description": "YrY CDN — shared frontend resources: themes, CSS components, animations, JS utilities, Vue 3 components, vanilla JS tool components for story panel HTML pages",
-  "main": "shared.js",
-  "files": [
-    "shared.css",
-    "shared.js",
-    "shared-reports.css",
-    "shared-reports.js",
-    "yry-breadcrumb/index.html",
-    "yry-breadcrumb/index.js",
-    "yry-breadcrumb/index.css",
-    "yry-breadcrumb/任务故事",
-    "yry-export-toolbar/index.html",
-    "yry-export-toolbar/index.js",
-    "yry-export-toolbar/index.css",
-    "yry-cytoscape-graph/index.html",
-    "yry-cytoscape-graph/index.js",
-    "yry-cytoscape-graph/index.css",
-    "theme.css",
-    "theme-mono.css",
-    "fonts.css",
-    "fonts/*.woff2",
-    "yry-checklist.css",
-    "yry-scene.css",
-    "yry-home.css",
-    "yry-inline-helpers.css",
-    "README.md"
-  ],
+  "description": "YrY CDN — shared frontend resources: themes, CSS components, animations, JS utilities, Vue 3 custom-element components, vanilla JS tool components for story panel HTML pages",
+  "license": "MIT",
+  "author": "effiyichengliang",
+  "homepage": "https://github.com/effiyichengliang/YrY/tree/main/cdn#readme",
+  "bugs": {
+    "url": "https://github.com/effiyichengliang/YrY/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/effiyichengliang/YrY.git",
+    "directory": "cdn"
+  },
   "keywords": [
     "yry",
     "cdn",
@@ -35,12 +20,90 @@
     "theme",
     "mono",
     "frontend",
-    "utility"
+    "utility",
+    "vue3",
+    "custom-element",
+    "design-tokens"
   ],
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/effiyichengliang/YrY.git"
+  "engines": {
+    "node": ">=18"
   },
-  "author": "effiyichengliang"
+  "main": "shared.js",
+  "style": "shared.css",
+  "browser": "shared.js",
+  "unpkg": "shared.js",
+  "jsdelivr": "shared.js",
+  "sideEffects": [
+    "*.css",
+    "shared.js",
+    "shared-reports.js",
+    "yry-*/index.css",
+    "yry-*/index.js",
+    "js/*.js"
+  ],
+  "exports": {
+    ".": {
+      "style": "./shared.css",
+      "default": "./shared.js"
+    },
+    "./shared.css": "./shared.css",
+    "./shared.js": "./shared.js",
+    "./theme.css": "./theme.css",
+    "./theme-mono.css": "./theme-mono.css",
+    "./fonts.css": "./fonts.css",
+    "./fonts/*": "./fonts/*",
+    "./shared-reports.css": "./shared-reports.css",
+    "./shared-reports.js": "./shared-reports.js",
+    "./*": "./*"
+  },
+  "files": [
+    "shared.css",
+    "shared.js",
+    "shared-reports.css",
+    "shared-reports.js",
+    "theme.css",
+    "theme-mono.css",
+    "fonts.css",
+    "fonts/",
+    "yry-*/index.html",
+    "yry-*/index.js",
+    "yry-*/index.css",
+    "js/",
+    "README.md",
+    "CHANGELOG.md",
+    "components.manifest.json",
+    "releases.json",
+    "cdn-summary.json"
+  ],
+  "scripts": {
+    "lint": "npm run lint:js && npm run lint:css",
+    "lint:js": "eslint \"**/*.js\" --max-warnings 0",
+    "lint:css": "stylelint \"**/*.css\" --allow-empty-input",
+    "format": "prettier --write \"**/*.{js,mjs,json,md,css,html}\" --ignore-path .gitignore --ignore-path .prettierignore",
+    "format:check": "prettier --check \"**/*.{js,mjs,json,md,css,html}\" --ignore-path .gitignore --ignore-path .prettierignore",
+    "build:manifest": "node scripts/build-manifest.mjs",
+    "sync:version": "node scripts/sync-version.mjs",
+    "validate": "node scripts/validate.mjs",
+    "validate:manifest": "node scripts/validate.mjs --only=manifest",
+    "validate:version": "node scripts/validate.mjs --only=version",
+    "validate:components": "node scripts/validate.mjs --only=components",
+    "ci": "npm run lint && npm run validate && npm run build:manifest && npm run validate:manifest",
+    "self-check": "node scripts/dev-check.mjs",
+    "prepublishOnly": "npm run ci",
+    "version": "node scripts/sync-version.mjs --bump && git add -A package.json README.md index.html CHANGELOG.md releases.json components.manifest.json"
+  },
+  "devDependencies": {
+    "eslint": "^9.13.0",
+    "prettier": "^3.3.3",
+    "stylelint": "^16.10.0",
+    "stylelint-config-standard": "^36.0.1"
+  },
+  "peerDependencies": {
+    "vue": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "vue": {
+      "optional": false
+    }
+  }
 }

@@ -1,40 +1,54 @@
 # YrY CDN — npm 包发布忽略清单
 # 对应场景文档:
-#   - docs/故事任务面板/yry-cdn/场景-5-npm包发布与版本管理/
+#   - 故事任务面板/yry-breadcrumb/场景-5-测试与发布/
 
-# Package management files
+# === Build / development files (npm 不应包含) ===
 node_modules/
 package-lock.json
 yarn.lock
+pnpm-lock.yaml
 .npmrc
 
-# Development files
-.env
-.env.*
-*.log
-*.tmp
+# === Scripts (本地工程化,非运行时) ===
+scripts/
 
-# Test files
+# === CI / hooks ===
+.github/
+
+# === Lint / Format 配置 ===
+.eslintrc*
+eslint.config.*
+.prettierrc*
+.prettierignore
+.stylelintrc*
+.stylelintignore
+.editorconfig
+.gitattributes
+
+# === Test files ===
 tests/
 test/
 *.test.js
 *.test.mjs
+coverage/
 
-# Script files (not part of CDN delivery)
-scripts/
-skills/
+# === Local dev artifacts ===
+.env
+.env.*
+*.log
+*.tmp
+.DS_Store
 
-# Project configuration
-.claude/
+# === Project governance (在仓库里读,不进 npm) ===
+CONTRIBUTING.md
+SECURITY.md
 CLAUDE.md
-README.md
 docs/
 
-# IDE
+# === Source meta / debug (源码仓库保留,npm 不需要) ===
 .idea/
 .vscode/
 *.swp
 *.swo
 *~
-.DS_Store
 Thumbs.db

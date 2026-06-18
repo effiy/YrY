@@ -1,0 +1,26 @@
+# Git attributes — normalize line endings &amp; mark generated files
+# 详情: https://git-scm.com/docs/gitattributes
+
+# === 默认: LF (Unix) ===
+*           text=auto eol=lf
+
+# === Windows 友好: 文档允许 CRLF ===
+*.md        text eol=lf
+*.txt       text eol=lf
+
+# === 二进制 ===
+*.woff2     binary
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.ico       binary
+
+# === 生成的文件 (diff 时不显示,只允许整文件替换) ===
+components.manifest.json linguist-generated
+cdn-summary.json          linguist-generated
+health-report.json        linguist-generated
+
+# === JS/CSS 在 PR diff 中显示为 diff ===
+*.js        diff=javascript
+*.css       diff=css

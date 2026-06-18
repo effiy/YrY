@@ -1,6 +1,6 @@
 # YrY CDN — 共享前端资源库
 
-> **yry-cdn v1.1.0** · `npm install yry-cdn` 或直接通过 jsDelivr CDN 引用
+> **yry-cdn v1.2.0** · `npm install yry-cdn` 或直接通过 jsDelivr CDN 引用
 >
 > 统一管理 **55+ 故事面板 HTML 页面** 的公共资源:双主题系统、22+ CSS 组件、9 个 JS 工具 API、17 个 Vue 3 自定义元素组件。
 >
@@ -478,9 +478,9 @@ npm install yry-cdn
 或通过 jsDelivr CDN 引用(无需安装):
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.1.0/shared.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.1.0/theme.css">
-<script src="https://cdn.jsdelivr.net/npm/yry-cdn@1.1.0/shared.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/theme.css">
+<script src="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared.js"></script>
 ```
 
 ### 包信息
