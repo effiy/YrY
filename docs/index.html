@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="../cdn/yry-panel-hub/index.css">
   <link rel="stylesheet" href="../cdn/yry-tag-chip/index.css">
   <link rel="stylesheet" href="../cdn/yry-item-card/index.css">
+  <link rel="stylesheet" href="../cdn/yry-card-grid/index.css">
   <link rel="stylesheet" href="../cdn/yry-layer/index.css">
   <link rel="stylesheet" href="../cdn/yry-sub-title/index.css">
   <link rel="stylesheet" href="../cdn/yry-story-card/index.css">
@@ -98,6 +99,10 @@
   <script src="../cdn/yry-tag-chip/index.js"></script>
   <script src="../cdn/yry-item-card/index.js"></script>
   <script src="../cdn/yry-card-grid/index.js"></script>
+  <!-- ═══ 基础布局组件 (供下方 layer-agents/rules/refs 依赖) · 必须早于 layer-* 复合组件加载 ═══ -->
+  <script src="../cdn/yry-layer/index.js"></script>
+  <script src="../cdn/yry-sub-title/index.js"></script>
+  <!-- ═══ Layer 5+6 复合组件 (依赖上方的 layer/sub-title/card-grid) ═══ -->
   <script src="../cdn/yry-layer-agents/index.js"></script>
   <script src="../cdn/yry-layer-rules/index.js"></script>
   <script src="../cdn/yry-layer-refs/index.js"></script>
@@ -105,8 +110,7 @@
   <!-- ═══ 静态资产卡片数据 + 挂载(替代原 9 个 card-grid 中的静态 .item-card) ═══ -->
   <script src="js/yry-item-cards.js"></script>
 
-  <script src="../cdn/yry-layer/index.js"></script>
-  <script src="../cdn/yry-sub-title/index.js"></script>
+  <!-- ═══ Layer 1-4 渲染组件 (依赖 docs-data.js, 故放在后面) ═══ -->
   <script src="../cdn/yry-story-card/index.js"></script>
   <script src="../cdn/yry-scene-card/index.js"></script>
   <script src="../cdn/yry-doc-layer/index.js"></script>

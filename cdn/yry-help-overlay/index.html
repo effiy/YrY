@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryHelpOverlay · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">🆘</span> YryHelpOverlay · 快捷键帮助面板</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-help-overlay&gt;</code> — 模态帮助面板。
+    按 <kbd class="kbd">?</kbd> 键或点击右下角 <strong>FAB 帮助按钮</strong> 打开。
+    按 <kbd class="kbd">Esc</kbd> 或点击背景关闭。支持键盘导航、屏幕阅读器。
+  </p>
+
+  <!-- Demo trigger -->
+  <div class="demo-section">
+    <h3>Demo — 按 <kbd class="kbd">?</kbd> 或点击右下角 <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(255,193,7,.12);border:1px solid rgba(255,193,7,.3);color:var(--yry-accent,#ffc107);font-size:.9rem;vertical-align:middle">?</span> 打开帮助</h3>
+    <p class="demo-hint">帮助面板列出本页面的快捷键和操作提示。内容通过 Light DOM 传入，完全可定制。</p>
+  </div>
+
+  <!-- Help overlay component -->
+  <yry-help-overlay>
+    <div class="help-card">
+      <h3>⌨️ 快捷键帮助</h3>
+
+      <div class="help-row">
+        <span class="help-keys"><kbd class="kbd">?</kbd></span>
+        <span class="help-desc">打开/关闭此帮助面板</span>
+      </div>
+      <div class="help-row">
+        <span class="help-keys"><kbd class="kbd">Esc</kbd></span>
+        <span class="help-desc">关闭当前弹窗或面板</span>
+      </div>
+      <div class="help-row">
+        <span class="help-keys"><kbd class="kbd">⌘</kbd> + <kbd class="kbd">K</kbd></span>
+        <span class="help-desc">聚焦搜索框</span>
+      </div>
+      <div class="help-row">
+        <span class="help-keys"><kbd class="kbd">⌘</kbd> + <kbd class="kbd">Enter</kbd></span>
+        <span class="help-desc">运行全部测试</span>
+      </div>
+      <div class="help-row">
+        <span class="help-keys"><kbd class="kbd">←</kbd> <kbd class="kbd">→</kbd></span>
+        <span class="help-desc">在标签页之间切换</span>
+      </div>
+      <div class="help-row">
+        <span class="help-keys"><kbd class="kbd">↑</kbd> <kbd class="kbd">↓</kbd></span>
+        <span class="help-desc">在测试列表中导航 (聚焦后)</span>
+      </div>
+      <div class="help-row">
+        <span class="help-keys"><kbd class="kbd">Space</kbd></span>
+        <span class="help-desc">展开/折叠当前测试套件</span>
+      </div>
+      <div class="help-row">
+        <span class="help-keys"><kbd class="kbd">F</kbd></span>
+        <span class="help-desc">仅显示失败测试 (过滤器)</span>
+      </div>
+
+      <div class="help-close">
+        <button class="help-close-btn" onclick="document.querySelector('yry-help-overlay').hide()">关闭</button>
+      </div>
+    </div>
+  </yry-help-overlay>
+
+  <div class="demo-section">
+    <h3>📋 使用方式</h3>
+    <p class="demo-hint">
+      在页面中放置 <code>&lt;yry-help-overlay&gt;</code>，内部放入 <code>.help-card</code>。
+      面板默认隐藏，按 <code>?</code> 或点击右下角 FAB 按钮打开。
+      组件自动注册 <code>keydown</code> 监听（<code>?</code> 打开，<code>Esc</code> 关闭）。
+    </p>
+  </div>
+
+  <script src="index.js"></script>
+
+  <div class="demo-footer">🆘 YryHelpOverlay v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

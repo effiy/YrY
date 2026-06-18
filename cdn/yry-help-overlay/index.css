@@ -1,0 +1,154 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryHelpOverlay · 快捷键帮助面板 样式
+   适用: 任何需要帮助面板的页面
+   依赖: theme.css (提供 --yry-* design tokens)
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-help-overlay/index.css">
+     <yry-help-overlay>
+       <div class="help-card">...</div>
+     </yry-help-overlay>
+     <script src="../../../../cdn/yry-help-overlay/index.js"></script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Overlay backdrop ───────────────────────────────────────────────── */
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.7);
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.help-overlay.show {
+  display: flex;
+}
+
+/* ── Help card ──────────────────────────────────────────────────────── */
+.help-card {
+  background: var(--yry-bg-card, linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%));
+  border: 1px solid rgba(255,193,7,.2);
+  border-radius: var(--yry-radius, 12px);
+  padding: 24px 28px;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  animation: help-modalIn .2s ease;
+}
+
+@keyframes help-modalIn {
+  from { opacity: 0; transform: scale(.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.help-card h3 {
+  font-size: 1rem;
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--yry-text, #f5f5f5);
+}
+
+/* ── Help rows ──────────────────────────────────────────────────────── */
+.help-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  font-size: .78rem;
+  border-bottom: 1px solid rgba(255,255,255,.03);
+}
+
+.help-row:last-child {
+  border-bottom: none;
+}
+
+.help-row .help-keys {
+  display: flex;
+  gap: 3px;
+  flex-shrink: 0;
+  min-width: 80px;
+}
+
+.help-row .help-desc {
+  color: var(--yry-text2, #d4d4d4);
+  font-size: .74rem;
+  flex: 1;
+}
+
+/* ── Close button area ──────────────────────────────────────────────── */
+.help-close {
+  margin-top: 14px;
+  text-align: right;
+}
+
+.help-close-btn {
+  background: var(--yry-bg-flat, rgba(42,42,56,1));
+  color: var(--yry-text2, #d4d4d4);
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  border-radius: 8px;
+  padding: 6px 16px;
+  font-size: .76rem;
+  cursor: pointer;
+  transition: all .15s;
+  font-family: inherit;
+}
+
+.help-close-btn:hover {
+  color: var(--yry-accent, #ffc107);
+  border-color: rgba(255,193,7,.3);
+}
+
+/* ── Keyboard key style ─────────────────────────────────────────────── */
+.kbd {
+  font-size: .7rem;
+  color: var(--yry-text, #f5f5f5);
+  background: var(--yry-bg-flat, rgba(42,42,56,1));
+  border: 1px solid rgba(255,255,255,.1);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  display: inline-block;
+  min-width: 18px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ── FAB help button ────────────────────────────────────────────────── */
+.fab-help {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: rgba(255,193,7,.12);
+  border: 1px solid rgba(255,193,7,.3);
+  color: var(--yry-accent, #ffc107);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: all .2s;
+  box-shadow: 0 4px 16px rgba(0,0,0,.4);
+  font-family: inherit;
+  font-weight: 700;
+}
+
+.fab-help:hover {
+  background: rgba(255,193,7,.2);
+  transform: scale(1.1);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .help-card { padding: 18px 20px; max-width: 95%; }
+  .help-row .help-keys { min-width: 60px; }
+}

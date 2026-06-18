@@ -10,24 +10,24 @@
     return;
   }
 
-  var TEMPLATE_ID = 'yry-layer-refs-tpl';
-  var READY_EVENT = 'yry-layer-refs-ready';
-  var TAG_NAME = 'yry-layer-refs';
-  var LOAD_TIMEOUT_MS = 5000;
+  const TEMPLATE_ID = 'yry-layer-refs-tpl';
+  const READY_EVENT = 'yry-layer-refs-ready';
+  const TAG_NAME = 'yry-layer-refs';
+  const LOAD_TIMEOUT_MS = 5000;
 
-  var script = document.currentScript;
+  const script = document.currentScript;
   if (!script || !script.src) {
     console.warn('[YryLayerRefs] 无法获取当前脚本 URL,组件已跳过注册');
     return;
   }
-  var scriptUrl;
+  let scriptUrl;
   try {
     scriptUrl = new URL(script.getAttribute('src'), window.location.href);
   } catch (e) {
     console.warn('[YryLayerRefs] 解析脚本 URL 失败:', e);
     return;
   }
-  var templateUrl = new URL('index.html', scriptUrl).href;
+  const templateUrl = new URL('index.html', scriptUrl).href;
 
   function buildComponent(templateHTML) {
     return { name: 'YryLayerRefs', template: templateHTML };
@@ -39,8 +39,8 @@
 
 
   /* ── 等待依赖组件就绪 ── */
-  var depsLoaded = 0;
-  var totalDeps = 3;
+  let depsLoaded = 0;
+  const totalDeps = 3;
 
   function checkDeps() {
     depsLoaded++;
@@ -54,11 +54,20 @@
     if (window.YryCardGrid) { depsLoaded++; }
     else { document.addEventListener('yry-card-grid-ready', checkDeps, { once: true }); }
 
+    /* 兜底超时:若任一依赖超过 6s 仍未就绪,强制推进 doInit() */
+    setTimeout(function () {
+      if (depsLoaded < totalDeps) {
+        console.warn('[YryLayerRefs] 依赖等待超时(6s),已就绪', depsLoaded, '/', totalDeps, '· 强制继续');
+        depsLoaded = totalDeps;
+        doInit();
+      }
+    }, 6000);
+
   function doInit() {
     if (!window.Vue) return;
 
-    var timedOut = false;
-    var timeoutId = setTimeout(function () {
+    let timedOut = false;
+    const timeoutId = setTimeout(function () {
       timedOut = true;
       console.error('[YryLayerRefs] 模板加载超时 (' + LOAD_TIMEOUT_MS + 'ms):', templateUrl);
     }, LOAD_TIMEOUT_MS);
@@ -72,15 +81,15 @@
         if (timedOut) return;
         clearTimeout(timeoutId);
 
-        var doc = new DOMParser().parseFromString(htmlText, 'text/html');
-        var tpl = doc.getElementById(TEMPLATE_ID);
+        const doc = new DOMParser().parseFromString(htmlText, 'text/html');
+        const tpl = doc.getElementById(TEMPLATE_ID);
         if (!tpl) throw new Error('未找到模板 ' + TEMPLATE_ID);
 
-        var templateHTML = tpl.innerHTML;
+        const templateHTML = tpl.innerHTML;
         window.YryLayerRefs = buildComponent(templateHTML);
 
         if (typeof window.Vue.defineCustomElement === 'function') {
-          var ce = window.Vue.defineCustomElement(buildComponent(templateHTML), { shadowRoot: false });
+          const ce = window.Vue.defineCustomElement(buildComponent(templateHTML), { shadowRoot: false });
           if (!customElements.get(TAG_NAME)) customElements.define(TAG_NAME, ce);
         }
 

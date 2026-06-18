@@ -668,3 +668,164 @@ export function buildCrossReportSection(hr, archResult, compScores) {
     '<div style="margin-top:8px;font-size:.68rem;color:var(--yry-text3)">UPHI = 运营健康×40% + 组件质量×25% + 诊断健康×20% + 架构合规×15%</div>' +
     '</div>';
 }
+
+// ── SVG visualization sections ──────────────────────────────────
+
+/**
+ * Build SVG radar/spider chart for dimension category scores.
+ * Pure SVG, no external dependencies.
+ *
+ * @param {object} catScores - { [category]: { score, weight, dimCount } }
+ * @param {object} catLabels - { [category]: label }
+ * @returns {string} HTML with inline SVG
+ */
+export function buildRadarChart(catScores, catLabels) {
+  var cats = Object.entries(catScores).filter(function(e) { return e[1].dimCount > 0; });
+  if (cats.length < 3) return "";
+
+  var cx = 150, cy = 150, r = 110;
+  var n = cats.length;
+  var angleStep = (2 * Math.PI) / n;
+  var startAngle = -Math.PI / 2; // Start from top
+
+  // Grid rings at 25%, 50%, 75%, 100%
+  var rings = [0.25, 0.5, 0.75, 1.0];
+  var ringPaths = rings.map(function(frac) {
+    var points = [];
+    for (var i = 0; i < n; i++) {
+      var a = startAngle + i * angleStep;
+      points.push((cx + r * frac * Math.cos(a)).toFixed(1) + ',' + (cy + r * frac * Math.sin(a)).toFixed(1));
+    }
+    return '<polygon points="' + points.join(' ') + '" fill="none" stroke="var(--border2)" stroke-width="0.5" />';
+  }).join("\n");
+
+  // Axis lines
+  var axisLines = cats.map(function(_, i) {
+    var a = startAngle + i * angleStep;
+    var x = (cx + r * Math.cos(a)).toFixed(1);
+    var y = (cy + r * Math.sin(a)).toFixed(1);
+    return '<line x1="' + cx + '" y1="' + cy + '" x2="' + x + '" y2="' + y + '" stroke="var(--border2)" stroke-width="0.5" />';
+  }).join("\n");
+
+  // Score polygon
+  var scorePoints = cats.map(function(e, i) {
+    var frac = e[1].score / 100;
+    var a = startAngle + i * angleStep;
+    return (cx + r * frac * Math.cos(a)).toFixed(1) + ',' + (cy + r * frac * Math.sin(a)).toFixed(1);
+  }).join(' ');
+
+  var scoreColor = cats.reduce(function(s, e) { return s + e[1].score; }, 0) / cats.length >= 80 ? '#22c55e' :
+    cats.reduce(function(s, e) { return s + e[1].score; }, 0) / cats.length >= 60 ? '#f59e0b' : '#ef4444';
+
+  // Labels
+  var labels = cats.map(function(e, i) {
+    var a = startAngle + i * angleStep;
+    var labelR = r + 25;
+    var lx = (cx + labelR * Math.cos(a)).toFixed(1);
+    var ly = (cy + labelR * Math.sin(a)).toFixed(1);
+    var anchor = Math.abs(Math.cos(a)) < 0.3 ? 'middle' : Math.cos(a) > 0 ? 'start' : 'end';
+    var label = (catLabels && catLabels[e[0]]) || e[0];
+    return '<text x="' + lx + '" y="' + ly + '" text-anchor="' + anchor + '" dominant-baseline="central" fill="var(--yry-text2)" font-size="11" font-weight="600">' + label + '</text>' +
+      '<text x="' + lx + '" y="' + (parseFloat(ly) + 14) + '" text-anchor="' + anchor + '" dominant-baseline="central" fill="var(--yry-text3)" font-size="10">' + e[1].score + '分</text>';
+  }).join("\n");
+
+  // Score dots
+  var dots = cats.map(function(e, i) {
+    var frac = e[1].score / 100;
+    var a = startAngle + i * angleStep;
+    var dx = (cx + r * frac * Math.cos(a)).toFixed(1);
+    var dy = (cy + r * frac * Math.sin(a)).toFixed(1);
+    return '<circle cx="' + dx + '" cy="' + dy + '" r="3" fill="' + scoreColor + '" stroke="var(--bg1)" stroke-width="1" />';
+  }).join("\n");
+
+  return '<div class="h-section">' +
+    '<h2>🕸️ 维度雷达图 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">分类评分概览</span></h2>' +
+    '<div style="display:flex;justify-content:center;padding:16px 0">' +
+    '<svg viewBox="0 0 300 300" width="100%" style="max-width:450px">' +
+    ringPaths + axisLines +
+    '<polygon points="' + scorePoints + '" fill="' + scoreColor + '" fill-opacity="0.15" stroke="' + scoreColor + '" stroke-width="1.5" />' +
+    dots + labels +
+    '</svg>' +
+    '</div>' +
+    '<div style="font-size:.68rem;color:var(--yry-text3);text-align:center">雷达图展示运营、结构、工程、质量四大维度的均衡性 · 覆盖面积越大越健康</div>' +
+    '</div>';
+}
+
+/**
+ * Build SVG heat map grid for dimension scores.
+ * Rows = categories, cells = dimensions, color = score.
+ *
+ * @param {object} scores - { dimKey: score }
+ * @param {object} dimensions - HEALTH_SCORING_DIMENSIONS
+ * @returns {string} HTML
+ */
+export function buildHeatMap(scores, dimensions) {
+  var catOrder = ["core", "structural", "engineering", "quality"];
+  var catIcons = { core: "⚙️", structural: "📏", engineering: "🔧", quality: "🧩" };
+  var catLabels = { core: "核心运营", structural: "结构健康", engineering: "工程成熟度", quality: "组件质量" };
+
+  // Group dims by category
+  var groups = {};
+  for (var _i = 0; _i < catOrder.length; _i++) {
+    groups[catOrder[_i]] = [];
+  }
+  for (var _a = 0, _b = Object.entries(dimensions); _a < _b.length; _a++) {
+    var _c = _b[_a], dim = _c[0], cfg = _c[1];
+    var cat = cfg.category || "other";
+    if (!groups[cat]) groups[cat] = [];
+    if (scores[dim] !== undefined) {
+      groups[cat].push({ dim: dim, label: cfg.label, score: scores[dim] });
+    }
+  }
+
+  var maxCols = 0;
+  for (var _d = 0, _e = Object.values(groups); _d < _e.length; _d++) {
+    var g = _e[_d];
+    if (g.length > maxCols) maxCols = g.length;
+  }
+
+  function heatColor(score) {
+    if (score >= 90) return '#22c55e';
+    if (score >= 80) return '#4ade80';
+    if (score >= 70) return '#facc15';
+    if (score >= 60) return '#f59e0b';
+    if (score >= 40) return '#f87171';
+    return '#ef4444';
+  }
+
+  function heatBg(score) {
+    if (score >= 90) return 'rgba(34,197,94,0.25)';
+    if (score >= 80) return 'rgba(74,222,128,0.2)';
+    if (score >= 70) return 'rgba(250,204,21,0.2)';
+    if (score >= 60) return 'rgba(245,158,11,0.18)';
+    if (score >= 40) return 'rgba(248,113,113,0.18)';
+    return 'rgba(239,68,68,0.2)';
+  }
+
+  var rows = "";
+  for (var _f = 0; _f < catOrder.length; _f++) {
+    var cat = catOrder[_f];
+    var dims = groups[cat];
+    if (!dims || dims.length === 0) continue;
+    var cells = "";
+    for (var _g = 0; _g < dims.length; _g++) {
+      var d = dims[_g];
+      cells += '<div style="padding:6px 8px;background:' + heatBg(d.score) + ';border-radius:4px;text-align:center;min-width:70px" title="' + d.label + ': ' + d.score + ' 分">' +
+        '<div style="font-size:.65rem;color:var(--yry-text3)">' + d.label + '</div>' +
+        '<div style="font-size:.85rem;font-weight:700;color:' + heatColor(d.score) + '">' + d.score + '</div>' +
+        '</div>';
+    }
+    rows += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">' +
+      '<div style="min-width:80px;font-size:.75rem;font-weight:600;color:var(--yry-text2)">' + (catIcons[cat] || '') + ' ' + (catLabels[cat] || cat) + '</div>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:6px;flex:1">' + cells + '</div>' +
+      '</div>';
+  }
+
+  return '<div class="h-section">' +
+    '<h2>🔥 评分热力图 <span style="font-size:.78rem;color:var(--yry-text3);font-weight:400;margin-left:8px">维度×分类矩阵</span></h2>' +
+    '<div style="padding:8px 0">' + rows + '</div>' +
+    '<div style="display:flex;gap:12px;justify-content:center;margin-top:8px;font-size:.65rem;color:var(--yry-text3)">' +
+    '<span>🟢 ≥90 优秀</span><span>🟡 ≥70 良好</span><span>🟠 ≥60 一般</span><span>🔴 &lt;60 需关注</span>' +
+    '</div>' +
+    '</div>';
+}

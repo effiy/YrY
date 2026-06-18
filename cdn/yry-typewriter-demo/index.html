@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryTypewriterDemo · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">⌨️</span> YryTypewriterDemo · 终端打字机模拟</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-typewriter-demo&gt;</code> — 模拟终端打字效果。
+    从 <code>&lt;script type="application/json"&gt;</code> 读取场景数据，逐行动画输出。
+    支持多场景切换、速度控制、重置。适用于 CLI 演示、命令教学、管线可视化。
+  </p>
+
+  <!-- Demo 1: YrY init process -->
+  <div class="demo-section">
+    <h3>Demo — YrY 项目初始化过程</h3>
+    <script type="application/json" id="tw-demo-1">
+    {
+      "title": "rui-init 项目初始化",
+      "scenarios": {
+        "init": {
+          "label": "项目初始化",
+          "lines": [
+            { "t": "cmd", "p": "$ ", "c": "node skills/rui-init/init.mjs", "d": 200 },
+            { "t": "out", "c": "🔍 扫描项目结构...", "d": 300 },
+            { "t": "info", "c": "  发现 19 个技能目录", "d": 150 },
+            { "t": "info", "c": "  发现 9 个 Agent 定义", "d": 150 },
+            { "t": "info", "c": "  发现 16 条规则", "d": 200 },
+            { "t": "out", "c": "📋 生成规约索引...", "d": 250 },
+            { "t": "ok", "c": "  ✓ skills/ 索引完成", "d": 150 },
+            { "t": "ok", "c": "  ✓ agents/ 索引完成", "d": 150 },
+            { "t": "ok", "c": "  ✓ rules/ 索引完成", "d": 150 },
+            { "t": "out", "c": "📐 运行架构合规检查...", "d": 300 },
+            { "t": "warn", "c": "  ⚠ 2 个模块接近体积上限", "d": 200 },
+            { "t": "ok", "c": "  ✓ 15/15 维度 A 级通过", "d": 200 },
+            { "t": "ok", "c": "✅ 初始化完成 — 项目健康度: A (94分)", "d": 400 }
+          ]
+        },
+        "check": {
+          "label": "健康检查",
+          "lines": [
+            { "t": "cmd", "p": "$ ", "c": "node skills/rui-bot/send.mjs health --short", "d": 200 },
+            { "t": "info", "c": "D0-D7: 0/8 触发", "d": 200 },
+            { "t": "ok", "c": "✅ 综合健康度: A 级 · 94 分", "d": 300 },
+            { "t": "out", "c": "最强维度: 文件体积 100分", "d": 200 },
+            { "t": "warn", "c": "最弱维度: 依赖分析 9分 ↑16", "d": 250 },
+            { "t": "ok", "c": "1 项改进建议", "d": 200 }
+          ]
+        },
+        "gate": {
+          "label": "Gate A 验证",
+          "lines": [
+            { "t": "cmd", "p": "$ ", "c": "node lib/arch-check.mjs --gate-a", "d": 200 },
+            { "t": "out", "c": "🔍 Gate A — 规约完整性 + 架构合规", "d": 250 },
+            { "t": "ok", "c": "  ✓ 技能规约完整性: 19/19", "d": 200 },
+            { "t": "ok", "c": "  ✓ 范式合规: 无 class/extends", "d": 200 },
+            { "t": "ok", "c": "  ✓ 内核体积: lib≤20, rule≤8, orch≤500", "d": 250 },
+            { "t": "fail", "c": "  ✗ 空 catch 检查: 发现 2 处", "d": 200 },
+            { "t": "warn", "c": "⚠ Gate A 未通过 — P0 需清零后重试", "d": 350 }
+          ]
+        }
+      }
+    }
+    </script>
+    <yry-typewriter-demo id="tw-demo-1"></yry-typewriter-demo>
+  </div>
+
+  <!-- Demo 2: Simple -->
+  <div class="demo-section">
+    <h3>Demo — CDN 构建过程</h3>
+    <script type="application/json" id="tw-demo-2">
+    {
+      "title": "cdn build",
+      "scenarios": {
+        "build": {
+          "label": "构建",
+          "lines": [
+            { "t": "cmd", "p": "$ ", "c": "node cdn/scripts/build-manifest.mjs", "d": 200 },
+            { "t": "out", "c": "📦 扫描 CDN 组件...", "d": 300 },
+            { "t": "ok", "c": "  ✓ 63 个组件已索引", "d": 200 },
+            { "t": "info", "c": "  → components.manifest.json 已更新", "d": 250 },
+            { "t": "ok", "c": "✅ 构建完成", "d": 300 }
+          ]
+        },
+        "validate": {
+          "label": "校验",
+          "lines": [
+            { "t": "cmd", "p": "$ ", "c": "node cdn/scripts/validate.mjs", "d": 150 },
+            { "t": "out", "c": "🔍 校验组件完整性...", "d": 250 },
+            { "t": "ok", "c": "  ✓ index.html: 63/63", "d": 150 },
+            { "t": "ok", "c": "  ✓ index.css:  63/63", "d": 150 },
+            { "t": "ok", "c": "  ✓ index.js:   63/63", "d": 150 },
+            { "t": "ok", "c": "✅ 全部组件校验通过", "d": 300 }
+          ]
+        }
+      }
+    }
+    </script>
+    <yry-typewriter-demo id="tw-demo-2"></yry-typewriter-demo>
+  </div>
+
+  <script src="index.js"></script>
+
+  <div class="demo-footer">⌨️ YryTypewriterDemo v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

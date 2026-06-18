@@ -1,0 +1,134 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryTypewriterDemo · 终端打字机模拟 样式
+   适用: CLI 演示 · 命令教学 · 管线可视化 · 模拟终端
+   依赖: theme.css (提供 --yry-* design tokens)
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-typewriter-demo/index.css">
+     <yry-typewriter-demo></yry-typewriter-demo>
+     <script src="../../../../cdn/yry-typewriter-demo/index.js"></script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Terminal window ────────────────────────────────────────────────── */
+.tw-demo {
+  background: #0a0e1a;
+  border: 1px solid rgba(34,211,238,.1);
+  border-radius: var(--yry-radius, 12px);
+  padding: 14px 18px;
+  font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  line-height: 1.7;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.4);
+  position: relative;
+  min-height: 160px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.tw-demo::-webkit-scrollbar { width: 6px; }
+.tw-demo::-webkit-scrollbar-thumb {
+  background: rgba(255,193,7,.2);
+  border-radius: 3px;
+}
+
+/* ── Terminal header bar ────────────────────────────────────────────── */
+.tw-demo .tw-head {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  align-items: center;
+}
+
+.tw-demo .tw-head .tw-btn {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+
+.tw-demo .tw-head .tw-btn.r { background: #ff5f56; }
+.tw-demo .tw-head .tw-btn.y { background: #ffbd2e; }
+.tw-demo .tw-head .tw-btn.g { background: #27c93f; }
+
+.tw-demo .tw-head .tw-title {
+  font-size: .62rem;
+  color: var(--yry-text3, #888);
+  margin-left: auto;
+  font-family: inherit;
+}
+
+/* ── Content lines ──────────────────────────────────────────────────── */
+.tw-line {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.tw-prompt {
+  color: var(--yry-accent, #ffc107);
+  user-select: none;
+}
+
+.tw-cmd  { color: var(--yry-text, #f5f5f5); }
+.tw-out  { color: var(--yry-text2, #d4d4d4); }
+.tw-ok   { color: var(--yry-pass, #22c55e); }
+.tw-warn { color: var(--yry-warn, #f59e0b); }
+.tw-info { color: var(--yry-cyan, #22d3ee); }
+.tw-fail { color: var(--yry-fail, #ef4444); }
+.tw-muted { color: var(--yry-text3, #888); }
+
+.tw-caret {
+  display: inline-block;
+  width: 6px; height: 1em;
+  background: var(--yry-accent, #ffc107);
+  vertical-align: text-bottom;
+  animation: tw-caretBlink 1s infinite;
+  margin-left: 1px;
+}
+
+@keyframes tw-caretBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ── Controls ───────────────────────────────────────────────────────── */
+.tw-controls {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.tw-ctrl-btn {
+  background: var(--yry-bg-flat, rgba(42,42,56,1));
+  color: var(--yry-text2, #d4d4d4);
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  border-radius: 16px;
+  padding: 5px 12px;
+  font-size: .7rem;
+  cursor: pointer;
+  transition: all .15s;
+  font-family: inherit;
+}
+
+.tw-ctrl-btn:hover {
+  color: var(--yry-accent, #ffc107);
+  border-color: rgba(255,193,7,.3);
+}
+
+.tw-ctrl-btn.on {
+  background: rgba(255,193,7,.12);
+  color: var(--yry-accent, #ffc107);
+  border-color: rgba(255,193,7,.3);
+}
+
+.tw-ctrl-btn.reset-btn {
+  margin-left: auto;
+  color: var(--yry-text3, #888);
+}
+
+.tw-ctrl-btn.reset-btn:hover {
+  color: var(--yry-fail, #ef4444);
+  border-color: rgba(239,68,68,.3);
+}

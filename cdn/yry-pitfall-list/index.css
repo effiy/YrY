@@ -1,0 +1,134 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YrY CDN — YryPitfallList · 常见陷阱列表 样式
+   适用: 文档中的常见错误/陷阱/反模式展示
+   依赖: theme.css (提供 --yry-* design tokens)
+
+   使用方式:
+     <link rel="stylesheet" href="../../../../cdn/yry-pitfall-list/index.css">
+     <yry-pitfall-list>
+       <div class="pitfall">...</div>
+     </yry-pitfall-list>
+     <script src="../../../../cdn/yry-pitfall-list/index.js"></script>
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Pitfall card ───────────────────────────────────────────────────── */
+.pitfall {
+  background: var(--yry-bg-card, linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%));
+  border: var(--yry-border, 1px solid rgba(255,255,255,.06));
+  border-left: 3px solid var(--yry-fail, #ef4444);
+  border-radius: 0 8px 8px 0;
+  padding: 14px 16px;
+  box-shadow: var(--yry-shadow, 0 4px 20px rgba(0,0,0,.3));
+  transition: all .2s;
+}
+
+.pitfall:hover {
+  transform: translateX(2px);
+}
+
+.pitfall.warn {
+  border-left-color: var(--yry-warn, #f59e0b);
+  background: rgba(245,158,11,.03);
+}
+
+.pitfall.tip {
+  border-left-color: var(--yry-cyan, #22d3ee);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────── */
+.pf-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.pf-ico {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.pf-title {
+  font-weight: 600;
+  font-size: .84rem;
+  color: var(--yry-text, #f5f5f5);
+}
+
+/* ── Severity badge ─────────────────────────────────────────────────── */
+.pf-sev {
+  font-size: .58rem;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  margin-left: auto;
+  font-family: monospace;
+}
+
+.pf-sev.s-high {
+  background: rgba(239,68,68,.12);
+  color: var(--yry-fail, #ef4444);
+}
+
+.pf-sev.s-med {
+  background: rgba(245,158,11,.12);
+  color: var(--yry-warn, #f59e0b);
+}
+
+.pf-sev.s-low {
+  background: rgba(34,211,238,.12);
+  color: var(--yry-cyan, #22d3ee);
+}
+
+/* ── Body ───────────────────────────────────────────────────────────── */
+.pf-body {
+  font-size: .74rem;
+  color: var(--yry-text2, #d4d4d4);
+  line-height: 1.55;
+}
+
+.pf-body p + p {
+  margin-top: 6px;
+}
+
+.pf-body code {
+  background: rgba(0,0,0,.3);
+  color: var(--yry-cyan, #22d3ee);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: .72rem;
+}
+
+/* ── Fix suggestion ─────────────────────────────────────────────────── */
+.pf-fix {
+  font-size: .72rem;
+  color: var(--yry-pass, #22c55e);
+  background: rgba(34,197,94,.04);
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-top: 8px;
+  border-left: 2px solid var(--yry-pass, #22c55e);
+  line-height: 1.5;
+}
+
+.pf-fix strong {
+  color: var(--yry-pass, #22c55e);
+}
+
+.pf-fix code {
+  background: rgba(0,0,0,.3);
+  color: var(--yry-accent, #ffc107);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: .68rem;
+}

@@ -1,12 +1,12 @@
 {
-  "updated": "2026-06-18T15:21:21.806Z",
+  "updated": "2026-06-18T16:27:16.554Z",
   "totalEntries": 3,
   "dateRange": {
     "from": "2026-06-16",
     "to": "2026-06-18"
   },
   "latest": {
-    "timestamp": "2026-06-18T15:21:21.804Z",
+    "timestamp": "2026-06-18T16:27:16.551Z",
     "composite": 94,
     "grade": "A",
     "scores": {
@@ -33,7 +33,7 @@
     "bootstrapped": true,
     "triggeredDiags": [],
     "gitBranch": "main",
-    "gitUncommitted": 17
+    "gitUncommitted": 16
   },
   "daily": [
     {
@@ -239,7 +239,7 @@
           "count": 1
         }
       ],
-      "avgUncommitted": 17,
+      "avgUncommitted": 16,
       "dimAvgs": {
         "token": 100,
         "config": 100,
@@ -265,8 +265,8 @@
         "score": 16,
         "gradeChange": "B→A"
       },
-      "firstTs": "2026-06-18T15:21:21.804Z",
-      "lastTs": "2026-06-18T15:21:21.804Z",
+      "firstTs": "2026-06-18T16:27:16.551Z",
+      "lastTs": "2026-06-18T16:27:16.551Z",
       "date": "2026-06-18"
     }
   ],
@@ -349,7 +349,7 @@
       },
       "delta": null,
       "firstTs": "2026-06-16T02:59:49.148Z",
-      "lastTs": "2026-06-18T15:21:21.804Z",
+      "lastTs": "2026-06-18T16:27:16.551Z",
       "week": "2026-06-14",
       "weekEnd": "2026-06-19"
     }
@@ -433,7 +433,7 @@
       },
       "delta": null,
       "firstTs": "2026-06-16T02:59:49.148Z",
-      "lastTs": "2026-06-18T15:21:21.804Z",
+      "lastTs": "2026-06-18T16:27:16.551Z",
       "month": "2026-06"
     }
   ],
@@ -454,7 +454,7 @@
     },
     {
       "date": "2026-06-18",
-      "time": "15:21",
+      "time": "16:27",
       "score": 94,
       "grade": "A",
       "triggered": 0
@@ -724,7 +724,7 @@
       "name": "main",
       "count": 2,
       "avgScore": 86,
-      "avgUncommitted": 10
+      "avgUncommitted": 9
     },
     {
       "name": "master",
@@ -738,6 +738,11 @@
       "type": "warning",
       "msg": "D3 复杂度增长 触发率 67%",
       "icon": "⚠️"
+    },
+    {
+      "type": "improvement",
+      "msg": "综合评分持续上升 (+56/周, R²=0.75)",
+      "icon": "📈"
     }
   ],
   "componentHealth": {
@@ -759,5 +764,41 @@
     },
     "overallAvg": 91,
     "totalComponents": 116
+  },
+  "enhancedTrend": {
+    "trend": {
+      "direction": "rising",
+      "slope": 8,
+      "slopePerWeek": 56,
+      "r2": 0.75,
+      "confidence": "high"
+    },
+    "forecast": {
+      "forecast": 94,
+      "range": [
+        84,
+        104
+      ],
+      "confidence": "low"
+    },
+    "velocity": {
+      "recent": 16,
+      "weekly": 8,
+      "accelerating": true
+    },
+    "distribution": {
+      "min": 78,
+      "max": 94,
+      "mean": 83.3,
+      "median": 78,
+      "stddev": 7.5,
+      "p25": 78,
+      "p75": 94,
+      "range": 16
+    },
+    "sma7": [
+      83
+    ],
+    "anomalies": []
   }
 }

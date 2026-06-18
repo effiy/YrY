@@ -14,6 +14,8 @@ import { join } from "node:path";
 import {
   REPORT_DIR, CDN_DEPTH, DIM_LABELS, DIM_WEIGHTS, GRADE_STYLE,
 } from "./report-constants.mjs";
+import { HEALTH_SCORING_DIMENSIONS } from "../../../lib/constants.mjs";
+import { categoryScores } from "../../../lib/scoring.mjs";
 
 import {
   nowChinese, nowDate, getPreviousScore, getHealthTrend,
@@ -28,7 +30,7 @@ import {
   buildStructureSection, buildGitSecuritySection,
   buildFileSizeSection, buildDependencySection,
   buildContributionGapSection, buildScoreDistributionSection,
-  buildCrossReportSection,
+  buildCrossReportSection, buildRadarChart, buildHeatMap,
 } from "./report-sections.mjs";
 
 import { scoreStatus, PASS_THRESHOLD, WARN_THRESHOLD } from "./bot-health-analysis.mjs";
@@ -275,6 +277,8 @@ export function generateHealthReport(hr) {
   ${buildScoreBreakdown(hr)}
   ${buildContributionGapSection(hr)}
   ${buildScoreDistributionSection(hr)}
+  ${buildRadarChart(categoryScores(hr.scores || {}, HEALTH_SCORING_DIMENSIONS), { core: "核心运营", structural: "结构健康", engineering: "工程成熟度", quality: "组件质量" })}
+  ${buildHeatMap(hr.scores || {}, HEALTH_SCORING_DIMENSIONS)}
   ${buildScoreTrend(healthTrend)}
   ${enhancedTrend ? buildTrendSummaryHTML(enhancedTrend) : ""}
   ${enhancedTrend ? buildAnomalyAlertHTML(enhancedTrend) : ""}

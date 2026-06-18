@@ -54,6 +54,16 @@
     if (window.YryCardGrid) { depsLoaded++; }
     else { document.addEventListener('yry-card-grid-ready', checkDeps, { once: true }); }
 
+    /* 兜底超时:若任一依赖超过 6s 仍未就绪(脚本加载失败/CORS/网络抖动),
+       即便 checkDeps 没触发,也强制推进 doInit(),避免永久卡死 */
+    setTimeout(function () {
+      if (depsLoaded < totalDeps) {
+        console.warn('[YryLayerAgents] 依赖等待超时(6s),已就绪', depsLoaded, '/', totalDeps, '· 强制继续');
+        depsLoaded = totalDeps;
+        doInit();
+      }
+    }, 6000);
+
   function doInit() {
     if (!window.Vue) return;
 

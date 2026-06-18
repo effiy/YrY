@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YryPitfallList · Demo & Template</title>
+  <link rel="stylesheet" href="../shared.css">
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body {
+      background: var(--yry-bg, #0a0a0a);
+      color: var(--yry-text, #f5f5f5);
+      font-family: var(--yry-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif);
+      padding: 32px 24px 60px;
+      max-width: 920px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; color: var(--yry-text, #f5f5f5); }
+    h1 .accent { color: var(--yry-accent, #ffc107); }
+    .demo-hint { font-size: .78rem; color: var(--yry-text3, #888); margin: 0 0 20px; line-height: 1.6; }
+    .demo-hint code {
+      background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px;
+      font-family: ui-monospace, monospace; font-size: .72rem; color: #e0af68;
+    }
+    hr { border: none; border-top: 1px solid rgba(255,255,255,.08); margin: 28px 0 24px; }
+    .demo-section {
+      margin: 20px 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .demo-section h3 { font-size: .82rem; font-weight: 600; margin: 0 0 12px; color: var(--yry-text2, #d4d4d4); }
+    .demo-footer { margin-top: 28px; text-align: center; font-size: .72rem; color: var(--yry-text3, #888); }
+    .demo-footer a { color: var(--yry-accent, #ffc107); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1><span class="accent">⚠️</span> YryPitfallList · 常见陷阱列表</h1>
+  <p class="demo-hint">
+    自定义元素 <code>&lt;yry-pitfall-list&gt;</code> — 展示常见错误/陷阱/提示。
+    Light DOM 子元素直接放入列表，支持 <strong>high/med/low</strong> 三个严重级别和 <strong>warn/tip</strong> 变体。
+    每条可包含标题、正文和修复建议。
+  </p>
+
+  <!-- Demo -->
+  <div class="demo-section">
+    <h3>Demo — YrY 开发常见陷阱</h3>
+    <yry-pitfall-list>
+      <!-- Pitfall 1: HIGH severity -->
+      <div class="pitfall">
+        <div class="pf-head">
+          <span class="pf-ico">🔥</span>
+          <span class="pf-title">跨分支共享管线状态</span>
+          <span class="pf-sev s-high">P0 · HIGH</span>
+        </div>
+        <div class="pf-body">
+          <p>记忆/缓存/本地状态文件禁止跨分支共享。每个 <code>feat/&lt;name&gt;</code> 分支有独立的管线状态，混用会导致 Gate 检查结果不可靠。</p>
+          <p>常见错误：在一个分支的 worktree 中运行 health 检查后，切换到另一分支复用同一份 <code>.memory/health-trend.jsonl</code>。</p>
+        </div>
+        <div class="pf-fix">
+          <strong>✅ 正确做法：</strong>每次切分支后运行 <code>node skills/rui-bot/send.mjs health --diff</code> 重新生成基线，确保状态隔离。
+        </div>
+      </div>
+
+      <!-- Pitfall 2: MED severity, WARN variant -->
+      <div class="pitfall warn">
+        <div class="pf-head">
+          <span class="pf-ico">⚡</span>
+          <span class="pf-title">魔法数字硬编码</span>
+          <span class="pf-sev s-med">P1 · MED</span>
+        </div>
+        <div class="pf-body">
+          <p>健康评分阈值（如 60、80）直接写死在函数体内，后续调整需要多处修改。违反「禁止魔法数字」铁律。</p>
+        </div>
+        <div class="pf-fix">
+          <strong>✅ 正确做法：</strong>所有阈值统一定义在 <code>lib/constants.mjs</code> 中，各脚本通过 <code>import { HEALTH_THRESHOLD } from '../lib/constants.mjs'</code> 引用。
+        </div>
+      </div>
+
+      <!-- Pitfall 3: LOW severity, TIP variant -->
+      <div class="pitfall tip">
+        <div class="pf-head">
+          <span class="pf-ico">💡</span>
+          <span class="pf-title">过度使用 Workflow 工具</span>
+          <span class="pf-sev s-low">P2 · TIP</span>
+        </div>
+        <div class="pf-body">
+          <p>Workflow 工具适合大规模并行审计/迁移场景。简单的 2-3 文件修改直接用 Agent 工具即可，Workflow 的隔离开销（worktree setup ~500ms/agent）在小任务上得不偿失。</p>
+        </div>
+        <div class="pf-fix">
+          <strong>💡 建议：</strong>任务涉及 &lt;5 个文件时使用 Agent，5-20 个文件使用 parallel Agent，20+ 文件或需要隔离时才使用 Workflow。
+        </div>
+      </div>
+
+      <!-- Pitfall 4: MED severity -->
+      <div class="pitfall">
+        <div class="pf-head">
+          <span class="pf-ico">🐛</span>
+          <span class="pf-title">未验证就声称修复</span>
+          <span class="pf-sev s-med">P1 · MED</span>
+        </div>
+        <div class="pf-body">
+          <p>修复代码后未运行验证命令就声称"已完成"，违反「验先于称」铁律。\"上次通过了\"、\"应该没问题\"都是违反信号。</p>
+        </div>
+        <div class="pf-fix">
+          <strong>✅ 正确做法：</strong>每个修复后执行验证五步法：①运行相关测试 ②运行 arch-check ③运行 health --short ④确认输出符合预期 ⑤记录验证结果。
+        </div>
+      </div>
+    </yry-pitfall-list>
+  </div>
+
+  <div class="demo-section">
+    <h3>📋 使用方式</h3>
+    <p class="demo-hint">
+      使用 <code>&lt;yry-pitfall-list&gt;</code> 包裹多个 <code>.pitfall</code> 子元素。
+      每个 pitfall 支持变体类名 <code>.warn</code>（橙色左边框）和 <code>.tip</code>（青色左边框），默认红色。
+      严重度标签用 <code>.pf-sev.s-high</code> / <code>.s-med</code> / <code>.s-low</code>。
+    </p>
+  </div>
+
+  <script src="index.js"></script>
+
+  <div class="demo-footer">⚠️ YryPitfallList v1.0.0 · <a href="../index.html">CDN 首页</a></div>
+</body>
+</html>

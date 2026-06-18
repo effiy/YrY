@@ -340,6 +340,9 @@
      2) 挂载逻辑
      ───────────────────────────────────────────────────────────────────── */
 
+  /* 跟踪已挂载的 grid id,避免重复挂载 */
+  var mountedGrids = Object.create(null);
+
   /**
    * 在指定 host 元素上挂载一张 YryItemCard
    * @param {HTMLElement} host - 挂载点(空 div)
@@ -380,24 +383,33 @@
    * 主流程:挂载所有 card-grid 中的所有卡片
    *  - 若 grid 是 <yry-card-grid> 自定义元素 → 直接设 .items 属性(由组件内部渲染)
    *  - 否则走旧路径:手动创建 div 并 Vue.createApp 挂载 YryItemCard
+   *  - 已挂载过的 grid 跳过,避免重复触发响应式更新
    */
   function mountAll() {
     if (!window.Vue) {
       console.warn('[YRY_ITEM_CARDS] Vue 3 未加载,跳过挂载');
-      return;
+      return 0;
     }
 
     var grids = window.YRY_ITEM_CARDS;
+    var mountCount = 0;
+    var pendingGrids = [];
+
     Object.keys(grids).forEach(function (gridId) {
+      if (mountedGrids[gridId]) return; /* 已挂载,跳过 */
+
       var grid = document.getElementById(gridId);
       if (!grid) {
-        /* grid 尚未被 yry-layer-agents/rules/refs 渲染出来 → 静默等待下一次 mountAll */
+        /* grid 尚未被 yry-layer-agents/rules/refs 渲染出来 → 标记为 pending */
+        pendingGrids.push(gridId);
         return;
       }
 
       /* 新路径:自定义元素 <yry-card-grid> → 设 .items 属性 */
       if (grid.tagName && grid.tagName.toLowerCase() === 'yry-card-grid') {
         grid.items = grids[gridId];
+        mountedGrids[gridId] = true;
+        mountCount++;
         return;
       }
 
@@ -410,18 +422,77 @@
         var host = document.createElement('div');
         grid.appendChild(host);
         mountYryItemCard(host, item);
+        mountCount++;
       });
+      mountedGrids[gridId] = true;
     });
+
+    if (mountCount > 0) {
+      console.info('[YRY_ITEM_CARDS] 成功挂载', mountCount, '张卡片到', Object.keys(mountedGrids).length, '个 grid');
+    } else if (pendingGrids.length) {
+      console.info('[YRY_ITEM_CARDS] 待挂载 grid:', pendingGrids.join(', '), '· 等待 yry-layer-*-ready 事件或 MutationObserver');
+    }
 
     /* 还原原静态 item-card 的交错动画延迟(staggered fadeInUp)
        与原 docs/index.html 中 line ~755 的逻辑保持一致 */
     requestAnimationFrame(function () {
       var i = 0;
       document.querySelectorAll('.card-grid .item-card').forEach(function (card) {
-        card.style.animationDelay = (0.01 + (i % 20) * 0.012) + 's';
+        if (!card.style.animationDelay) {
+          card.style.animationDelay = (0.01 + (i % 20) * 0.012) + 's';
+        }
         i++;
       });
     });
+
+    return pendingGrids.length;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────────
+     3) 启动策略:多重保险,确保所有 grid 最终都能挂载
+     ───────────────────────────────────────────────────────────────────── */
+
+  /**
+   * MutationObserver 兜底:监听 yry-layer-agents/rules/refs 内部 DOM 变化,
+   * 一旦发现 <yry-card-grid> 子节点出现,立即尝试 mountAll()
+   * 解决 race condition: layer-*-ready 事件触发时 grid 尚未插入 DOM
+   */
+  function setupObserver() {
+    if (typeof MutationObserver === 'undefined') return;
+    var targets = ['yry-layer-agents', 'yry-layer-rules', 'yry-layer-refs'];
+    var observers = [];
+    var pendingTimer = null;
+
+    function scheduleMount() {
+      if (pendingTimer) return;
+      pendingTimer = setTimeout(function () {
+        pendingTimer = null;
+        mountAll();
+      }, 0);
+    }
+
+    targets.forEach(function (tagName) {
+      var el = document.querySelector(tagName);
+      if (!el) return;
+      var mo = new MutationObserver(function () { scheduleMount(); });
+      mo.observe(el, { childList: true, subtree: true });
+      observers.push(mo);
+    });
+
+    /* 整页级兜底:任何 .card-grid 出现就触发 */
+    var bodyMO = new MutationObserver(function (mutations) {
+      for (var i = 0; i < mutations.length; i++) {
+        var added = mutations[i].addedNodes;
+        for (var j = 0; j < added.length; j++) {
+          var n = added[j];
+          if (n.nodeType !== 1) continue;
+          if (n.id && window.YRY_ITEM_CARDS[n.id]) { scheduleMount(); return; }
+          if (n.querySelector && n.querySelector('yry-card-grid')) { scheduleMount(); return; }
+        }
+      }
+    });
+    bodyMO.observe(document.body, { childList: true, subtree: true });
+    observers.push(bodyMO);
   }
 
   /* 启动:若 YryItemCard 已就绪立即执行,否则等待 ready 事件 */
@@ -436,6 +507,25 @@
   document.addEventListener('yry-layer-agents-ready', mountAll);
   document.addEventListener('yry-layer-rules-ready', mountAll);
   document.addEventListener('yry-layer-refs-ready', mountAll);
+
+  /* 兜底 1: MutationObserver (处理事件触发时 grid 尚未插入 DOM 的竞态) */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupObserver, { once: true });
+  } else {
+    setupObserver();
+  }
+
+  /* 兜底 2: 周期轮询 (最后一道保险,1s/2s/4s/8s,共 4 次)
+     处理 MutationObserver 和事件都失效的极端场景 */
+  var pollDelays = [1000, 2000, 4000, 8000];
+  pollDelays.forEach(function (delay) {
+    setTimeout(function () {
+      var pending = mountAll();
+      if (pending === 0) {
+        /* 已全部挂载,清理后续定时器 (简单实现:不挂全局引用) */
+      }
+    }, delay);
+  });
 
   /* 为每张卡片补齐 7 种交付物图标链接 */
   var DELIVERY_ICONS = [

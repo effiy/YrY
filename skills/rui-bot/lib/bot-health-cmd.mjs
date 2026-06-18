@@ -9,6 +9,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 
 import {
   HTTP_TIMEOUT_SHORT_MS, MAX_RETRIES, MAX_MSG_LENGTH,
+  HEALTH_SCORING_DIMENSIONS, HEALTH_DIM_WEIGHTS, HEALTH_DIM_LABELS,
 } from "../../../lib/constants.mjs";
 
 import { API_URL_DEFAULT, loadConfig } from "./bot-transport.mjs";
@@ -18,6 +19,14 @@ import { HEALTH_DIMENSIONS, HEALTH_GRADE, healthBar, saveHealthTrend } from "./b
 import { getGitSnapshot, runSecurityScan, getStructureHealth } from "./bot-health-structure.mjs";
 import { assessEngineeringMaturity, scanComponentScores, avgScore } from "./bot-health-analysis.mjs";
 import { getDiagnosticResult } from "./bot-health-diagnostics.mjs";
+import {
+  contributionAnalysis,
+  categoryScores,
+  computeComposite,
+  getGrade,
+  classifyScore,
+  scoreDistribution,
+} from "../../../lib/scoring.mjs";
 import { getFileSizeAnalysis } from "./bot-health-filesize.mjs";
 import { getDependencyAnalysis } from "./bot-health-deps.mjs";
 
@@ -279,26 +288,7 @@ export async function cmdHealth(projectRoot, opts = {}) {
     }
   }
 
-  // ── Composite score ───────────────────────────────────
-  let totalScore = 0;
-  let totalWeight = 0;
-  for (const [dim, cfg] of Object.entries(HEALTH_DIMENSIONS)) {
-    if (scores[dim] !== undefined) {
-      totalScore += scores[dim] * cfg.weight;
-      totalWeight += cfg.weight;
-    }
-  }
-  const composite = totalWeight > 0 ? Math.round(totalScore / totalWeight) : 0;
-  const grade = HEALTH_GRADE.find(g => composite >= g.min);
-
-  console.log("");
-  console.log("  ┌──────────────────────────────────────┐");
-  console.log(`  │ 综合健康度: ${grade.ansi}${composite} 分 / ${grade.grade} 级 — ${grade.label}\x1b[0m  │`);
-  console.log(`  │ ${healthBar(composite)} │`);
-  console.log("  └──────────────────────────────────────┘");
-  console.log("");
-
-  // ── Component quality dimension (before display loop) ────
+  // ── Component quality (computed before composite) ────
   const compScores = scanComponentScores(projectRoot);
   const allComps = [...compScores.skills, ...compScores.agents, ...compScores.rules, ...compScores.scripts];
   const compQualScore = avgScore(allComps);
@@ -306,6 +296,58 @@ export async function cmdHealth(projectRoot, opts = {}) {
   const compWarnCount = allComps.filter((c) => c.score >= 60 && c.score < 80).length;
   const compFailCount = allComps.filter((c) => c.score < 60).length;
   scores.comp_qual = compQualScore;
+
+  // ── Composite score (weighted average) ─────────────────
+  const composite = computeComposite(scores, HEALTH_DIM_WEIGHTS);
+  const grade = getGrade(composite);
+
+  // ── Category sub-scores ──────────────────────────────────
+  const catScores = categoryScores(scores, HEALTH_SCORING_DIMENSIONS);
+
+  // ── Distribution statistics ──────────────────────────────
+  const scoreValues = Object.values(scores).filter(s => typeof s === "number");
+  const dist = scoreDistribution(scoreValues);
+  const tierCounts = { excellent: 0, good: 0, fair: 0, poor: 0 };
+  scoreValues.forEach(s => { tierCounts[classifyScore(s)]++; });
+
+  // ── Contribution analysis ────────────────────────────────
+  const contrib = contributionAnalysis(scores, HEALTH_DIM_WEIGHTS);
+
+  // ── Output: Header ─────────────────────────────────────
+  const catIcons = { core: "⚙️", structural: "📏", engineering: "🔧", quality: "🧩" };
+  const catLabels = { core: "核心运营", structural: "结构健康", engineering: "工程成熟度", quality: "组件质量" };
+
+  console.log("");
+  console.log("  ┌──────────────────────────────────────────┐");
+  console.log(`  │ 综合健康度: ${grade.ansi}${composite} 分 / ${grade.grade} 级 — ${grade.label}\x1b[0m    │`);
+  console.log(`  │ ${healthBar(composite, 36)} │`);
+  console.log("  ├──────────────────────────────────────────┤");
+  // Category breakdown line
+  const catLine = Object.entries(catScores)
+    .filter(([,v]) => v.dimCount > 0)
+    .map(([cat, v]) => {
+      const icon = catIcons[cat] || "📌";
+      const color = v.score >= 80 ? "\x1b[32m" : v.score >= 60 ? "\x1b[33m" : "\x1b[31m";
+      return `${icon}${catLabels[cat]||cat}:${color}${v.score}\x1b[0m`;
+    }).join("  ");
+  console.log(`  │ ${catLine}${" ".repeat(Math.max(0, 34 - catLine.replace(/\x1b\[[0-9;]*m/g, "").length))}│`);
+  console.log("  └──────────────────────────────────────────┘");
+  console.log("");
+
+  // ── Output: Stats row ──────────────────────────────────
+  const statColor = (s, t) => s >= 80 ? "\x1b[32m" : s >= 60 ? "\x1b[33m" : "\x1b[31m";
+  console.log(`  📊 维度: ${scoreValues.length}项  │  均值 ${dist.mean}  │  中位 ${dist.median}  │  范围 ${dist.min}-${dist.max}  │  标准差 ${dist.stddev}`);
+  const G = "\x1b[32m", Y = "\x1b[33m", R = "\x1b[31m";
+  console.log(`  🏷️  等级: ${G}优秀 ${tierCounts.excellent}\x1b[0m · ${G}良好 ${tierCounts.good}\x1b[0m · ${Y}一般 ${tierCounts.fair}\x1b[0m · ${R}需关注 ${tierCounts.poor}\x1b[0m`);
+  if (contrib.topDrag.length > 0) {
+    const top3 = contrib.topDrag.slice(0, 3);
+    const dragStr = top3.map(e => `${HEALTH_DIM_LABELS[e.dim] || e.dim}:${e.score}分`).join(" · ");
+    const potential = Math.min(100, composite + Math.round(contrib.dragTotal));
+    console.log(`  🎯 拖分 Top3: ${dragStr}  → 修复可达 ${potential} 分`);
+  }
+  console.log("");
+
+  // ── Output: Component quality ──────────────────────────
   details.push({
     dim: "comp_qual",
     label: "组件质量",
@@ -315,14 +357,26 @@ export async function cmdHealth(projectRoot, opts = {}) {
   });
   console.log(`  ${scoreIcon(compQualScore)} 组件质量:         ${compQualScore} 分 — ${allComps.length} 组件 (Skills ${compScores.skills.length} · Agents ${compScores.agents.length} · Rules ${compScores.rules.length} · Scripts ${compScores.scripts.length})`);
 
-  // Dimension breakdown
-  console.log("  维度得分:");
-  for (const [dim, cfg] of Object.entries(HEALTH_DIMENSIONS)) {
-    const s = scores[dim] ?? 0;
-    const bar = healthBar(s, 10);
-    console.log(`    ${cfg.label.padEnd(14)} ${bar} ${s} 分`);
+  // ── Output: Dimension breakdown by category ─────────────
+  const dimByCat = {};
+  for (const [dim, cfg] of Object.entries(HEALTH_SCORING_DIMENSIONS)) {
+    const cat = cfg.category || "other";
+    if (!dimByCat[cat]) dimByCat[cat] = [];
+    dimByCat[cat].push({ dim, label: cfg.label, score: scores[dim] ?? 0 });
   }
-  console.log("");
+  const catOrder = ["core", "structural", "engineering", "quality"];
+  for (const cat of catOrder) {
+    const dims = dimByCat[cat];
+    if (!dims || dims.length === 0) continue;
+    const catIcon = catIcons[cat] || "📌";
+    const catLabel = catLabels[cat] || cat;
+    console.log(`  ${catIcon} ${catLabel}:`);
+    for (const d of dims) {
+      const bar = healthBar(d.score, 10);
+      console.log(`    ${d.label.padEnd(14)} ${bar} ${d.score} 分`);
+    }
+    console.log("");
+  }
 
   const result = { composite, grade: grade.grade, scores, details, diagnostics: diagResult, config, tokenOk, robotOkCount, robotNames, gitInfo, secInfo, structInfo, fileSizeInfo, depInfo, compScores };
   saveHealthTrend(result, projectRoot);
