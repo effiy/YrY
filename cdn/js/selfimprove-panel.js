@@ -703,7 +703,7 @@
     if (siBody) { doMount(); return; }
     document.addEventListener('yry-selfimprove-panel-ready', function() {
       siBody = document.getElementById('siPanelBody');
-      doMount();
+      if (siBody) doMount();
     }, { once: true });
   }
   mountApp();

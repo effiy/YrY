@@ -63,7 +63,7 @@
     if (faqPanelBody) { doMount(); return; }
     document.addEventListener('yry-faq-panel-ready', function() {
       faqPanelBody = document.getElementById('faqPanelBody');
-      doMount();
+      if (faqPanelBody) doMount();
     }, { once: true });
   }
   mountApp();

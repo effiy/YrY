@@ -347,7 +347,7 @@
     if (panelBody) { doMount(); return; }
     document.addEventListener('yry-notify-panel-ready', function() {
       panelBody = document.getElementById('notifyPanelBody');
-      doMount();
+      if (panelBody) doMount();
     }, { once: true });
   }
   mountApp();

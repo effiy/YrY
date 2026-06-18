@@ -39,21 +39,22 @@
 
 
   /* ── 等待依赖组件就绪 ── */
-  var depsReady = true;
   var depsLoaded = 0;
   var totalDeps = 3;
-  
+
   function checkDeps() {
     depsLoaded++;
     if (depsLoaded >= totalDeps) doInit();
   }
-  
-    if (!window.YryLayer) { depsReady = false; document.addEventListener('yry-layer-ready', checkDeps, { once: true }); }
-    if (!window.YrySubTitle) { depsReady = false; document.addEventListener('yry-sub-title-ready', checkDeps, { once: true }); }
-    if (!window.YryCardGrid) { depsReady = false; document.addEventListener('yry-card-grid-ready', checkDeps, { once: true }); }
-  
+
+    if (window.YryLayer) { depsLoaded++; }
+    else { document.addEventListener('yry-layer-ready', checkDeps, { once: true }); }
+    if (window.YrySubTitle) { depsLoaded++; }
+    else { document.addEventListener('yry-sub-title-ready', checkDeps, { once: true }); }
+    if (window.YryCardGrid) { depsLoaded++; }
+    else { document.addEventListener('yry-card-grid-ready', checkDeps, { once: true }); }
+
   function doInit() {
-    if (!depsReady) return;
     if (!window.Vue) return;
 
     var timedOut = false;
@@ -93,5 +94,5 @@
 
   }
 
-  if (depsReady) doInit(); else checkDeps();
+  if (depsLoaded >= totalDeps) doInit();
 })();

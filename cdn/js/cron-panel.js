@@ -189,7 +189,7 @@
     if (cronPanelBody) { doMount(); return; }
     document.addEventListener('yry-cron-panel-ready', function() {
       cronPanelBody = document.getElementById('cronPanelBody');
-      doMount();
+      if (cronPanelBody) doMount();
     }, { once: true });
   }
   mountApp();
