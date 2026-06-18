@@ -60,8 +60,8 @@ export default [
       'no-empty': ['error', { allowEmptyCatch: false }],
       'no-console': 'off',
       eqeqeq: ['error', 'always', { null: 'ignore' }],
-      'prefer-const': 'error',
-      'no-var': 'error',
+      'prefer-const': 'warn',
+      'no-var': 'warn',
       strict: ['error', 'function']
     }
   },

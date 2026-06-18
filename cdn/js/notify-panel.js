@@ -179,8 +179,7 @@
         if (fileName) return fileName;
         if (item.type === 'loop') return (item.meta && item.meta.pageTitle) ? item.meta.pageTitle.replace('自循环报告 · ', '') : (item.skill || '自循环报告');
         var srcLabels = { 'all': '全量扫描', 'github-trending': 'GitHub Trending', 'oss-insight': 'OSS Insight', 'trendshift': 'TrendShift', 'top-starred': 'Top-Starred' };
-        if (item.type === 'analysis') return `🔍 项目分析 · ${item.date;
-        return (srcLabels[item.source] || item.source)} · ` + item.date;
+        if (item.type === 'analysis') return `🔍 项目分析 · ${(srcLabels[item.source] || item.source)} · ${item.date}`;
       },
       renderTime: function(item) {
         if (!item.date) return '';
@@ -454,11 +453,11 @@
   async function fetchLoopReports() {
     try {
       var resp = await fetch('./自循环报告/reports.json');
-      if (!resp.ok) throw new Error(`HTTP ${resp.status);
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
       var data = await resp.json();
       if (!Array.isArray(data)) return [];
       return data.map(function(r) {
-        return { file: r.file, date: r.date, label: (r.icon || '🔄')} ` + (r.skillLabel || r.skill),
+        return { file: r.file, date: r.date, label: (r.icon || '🔄') + ' ' + (r.skillLabel || r.skill),
                  meta: { status: r.status, summary: r.summary, findings: r.findings, skill: r.skill } };
       });
     } catch (e) { console.warn('[notify-panel] 自循环报告 fetch 失败: ' + e.message); return []; }
@@ -467,14 +466,14 @@
   async function fetchTrendReports() {
     try {
       var resp = await fetch('./趋势报告/reports.json');
-      if (!resp.ok) throw new Error(`HTTP ${resp.status);
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
       var data = await resp.json();
       if (!Array.isArray(data)) return [];
       var iconMap = { all: '📡', 'github-trending': '🐙', 'oss-insight': '📊', trendshift: '📈', 'top-starred': '⭐' };
       return data.map(function(r) {
         var src = r.source || '';
         return { file: r.file, date: r.date, source: r.source,
-                 label: (iconMap[src] || '📡')} ` + (src || 'trend') + ' · ' + r.date,
+                 label: (iconMap[src] || '📡') + ' ' + (src || 'trend') + ' · ' + r.date,
                  meta: { ok: r.ok, trend: r.trend, items: r.items } };
       });
     } catch (e) { console.warn('[notify-panel] 趋势报告 fetch 失败: ' + e.message); return []; }

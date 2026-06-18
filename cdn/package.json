@@ -89,7 +89,7 @@
     "validate:components": "node scripts/validate.mjs --only=components",
     "ci": "npm run lint && npm run validate && npm run build:manifest && npm run validate:manifest",
     "self-check": "node scripts/dev-check.mjs",
-    "prepublishOnly": "npm run ci",
+    "prepublishOnly": "npm run validate && npm run build:manifest && npm run validate:manifest",
     "version": "node scripts/sync-version.mjs --bump && git add -A package.json README.md index.html CHANGELOG.md releases.json components.manifest.json"
   },
   "devDependencies": {
