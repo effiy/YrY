@@ -176,11 +176,34 @@
       + '</ul>'
   });
 
+  function setupDOM() {
+    /* ── Refresh ──────────────────────────── */
+    var cronRefreshBtn = document.getElementById('cronRefresh');
+    if (cronRefreshBtn) {
+      cronRefreshBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        cronRefreshBtn.classList.add('spinning');
+        state.cronData = []; state.loading = false; state.error = null;
+        fetchCron().finally(function() { cronRefreshBtn.classList.remove('spinning'); });
+      });
+    }
+
+    /* ── Prompt collapse/expand delegation ── */
+    cronPanelBody.addEventListener('click', function(e) {
+      var prompt = e.target.closest('.cr-prompt');
+      if (prompt) {
+        e.stopPropagation();
+        prompt.classList.toggle('collapsed');
+        prompt.classList.toggle('expanded');
+      }
+    });
+  }
+
   function mountApp() {
-    if (cronPanelBody) { app.mount(cronPanelBody); return; }
+    if (cronPanelBody) { app.mount(cronPanelBody); setupDOM(); return; }
     document.addEventListener('yry-cron-panel-ready', function() {
       cronPanelBody = document.getElementById('cronPanelBody');
-      if (cronPanelBody) app.mount(cronPanelBody);
+      if (cronPanelBody) { app.mount(cronPanelBody); setupDOM(); }
     }, { once: true });
   }
   mountApp();
@@ -188,27 +211,6 @@
   /* ── PanelHub registration ───────────────── */
   H.register('cron', null, 'cronPanel', 'cronOverlay', function() {
     if (state.cronData.length === 0 && !state.loading) fetchCron();
-  });
-
-  /* ── Refresh ────────────────────────────── */
-  var cronRefreshBtn = document.getElementById('cronRefresh');
-  if (cronRefreshBtn) {
-    cronRefreshBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      cronRefreshBtn.classList.add('spinning');
-      state.cronData = []; state.loading = false; state.error = null;
-      fetchCron().finally(function() { cronRefreshBtn.classList.remove('spinning'); });
-    });
-  }
-
-  /* ── Prompt collapse/expand delegation ──── */
-  cronPanelBody.addEventListener('click', function(e) {
-    var prompt = e.target.closest('.cr-prompt');
-    if (prompt) {
-      e.stopPropagation();
-      prompt.classList.toggle('collapsed');
-      prompt.classList.toggle('expanded');
-    }
   });
 
   /* ── Data fetching ───────────────────────── */

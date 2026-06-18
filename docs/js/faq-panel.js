@@ -47,31 +47,33 @@
       + '</ul>'
   });
 
+  function setupDOM() {
+    /* ── Accordion ────────────────────────── */
+    faqPanelBody.addEventListener('click', function(e) {
+      if (e.target.closest('a')) return;
+      var q = e.target.closest('.faq-q');
+      if (!q) return;
+      e.stopPropagation();
+      var item = q.closest('.faq-item');
+      if (item.classList.contains('open')) {
+        item.classList.remove('open');
+      } else {
+        var allItems = faqPanelBody.querySelectorAll('.faq-item.open');
+        for (var i = 0; i < allItems.length; i++) { allItems[i].classList.remove('open'); }
+        item.classList.add('open');
+      }
+    });
+  }
+
   function mountApp() {
-    if (faqPanelBody) { app.mount(faqPanelBody); return; }
+    if (faqPanelBody) { app.mount(faqPanelBody); setupDOM(); return; }
     document.addEventListener('yry-faq-panel-ready', function() {
       faqPanelBody = document.getElementById('faqPanelBody');
-      if (faqPanelBody) app.mount(faqPanelBody);
+      if (faqPanelBody) { app.mount(faqPanelBody); setupDOM(); }
     }, { once: true });
   }
   mountApp();
 
   /* ── PanelHub registration ───────────────── */
   H.register('faq', null, 'faqPanel', 'faqOverlay', null);
-
-  /* ── Accordion ──────────────────────────── */
-  faqPanelBody.addEventListener('click', function(e) {
-    if (e.target.closest('a')) return;
-    var q = e.target.closest('.faq-q');
-    if (!q) return;
-    e.stopPropagation();
-    var item = q.closest('.faq-item');
-    if (item.classList.contains('open')) {
-      item.classList.remove('open');
-    } else {
-      var allItems = faqPanelBody.querySelectorAll('.faq-item.open');
-      for (var i = 0; i < allItems.length; i++) { allItems[i].classList.remove('open'); }
-      item.classList.add('open');
-    }
-  });
 })();

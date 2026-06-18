@@ -95,6 +95,45 @@
       }
     };
 
+    /* ── Score legend helpers (shared by applyAll + updateScores) ── */
+    function scoreLegend() {
+      var frag = document.createDocumentFragment();
+      var items = [
+        { text: '● A≥80', color: '#22c55e' },
+        { text: '● B≥60', color: '#f59e0b' },
+        { text: '● C≥40', color: '#ef4444' },
+        { text: '● D<40', color: '#ef4444' },
+      ];
+      for (var i = 0; i < items.length; i++) {
+        var s = document.createElement('span');
+        s.style.color = items[i].color;
+        s.textContent = items[i].text;
+        frag.appendChild(s);
+        if (i < items.length - 1) frag.appendChild(document.createTextNode(' '));
+      }
+      frag.appendChild(document.createTextNode('  |  数据源: summary.json  |  每 5 分钟自动刷新'));
+      return frag;
+    }
+
+    function scoreLegendWithTime(ts, trendDir) {
+      var frag = document.createDocumentFragment();
+      var items = [
+        { text: '● A≥80', color: '#22c55e' },
+        { text: '● B≥60', color: '#f59e0b' },
+        { text: '● C≥40', color: '#ef4444' },
+        { text: '● D<40', color: '#ef4444' },
+      ];
+      for (var i = 0; i < items.length; i++) {
+        var s = document.createElement('span');
+        s.style.color = items[i].color;
+        s.textContent = items[i].text;
+        frag.appendChild(s);
+        if (i < items.length - 1) frag.appendChild(document.createTextNode(' '));
+      }
+      frag.appendChild(document.createTextNode('  |  数据源: summary.json  |  更新: ' + ts + '  |  趋势: ' + trendDir + '  |  每 5 分钟自动刷新'));
+      return frag;
+    }
+
     /* ── 立即设置 (元素已在 DOM,组件尚未定义) ────────────────── */
     function applyAll() {
       var bc  = document.getElementById('breadcrumb-app');
@@ -395,44 +434,7 @@
       function grade(s) { return s >= 80 ? 'A' : s >= 60 ? 'B' : s >= 40 ? 'C' : 'D'; }
       function sc(s) { return s >= 80 ? '#22c55e' : s >= 60 ? '#f59e0b' : '#ef4444'; }
       
-      function scoreLegend() {
-        var frag = document.createDocumentFragment();
-        var items = [
-          { text: '● A≥80', color: '#22c55e' },
-          { text: '● B≥60', color: '#f59e0b' },
-          { text: '● C≥40', color: '#ef4444' },
-          { text: '● D<40', color: '#ef4444' },
-        ];
-        for (var i = 0; i < items.length; i++) {
-          var s = document.createElement('span');
-          s.style.color = items[i].color;
-          s.textContent = items[i].text;
-          frag.appendChild(s);
-          if (i < items.length - 1) frag.appendChild(document.createTextNode(' '));
-        }
-        frag.appendChild(document.createTextNode('  |  数据源: summary.json  |  每 5 分钟自动刷新'));
-        return frag;
-      }
-
-      function scoreLegendWithTime(ts, trendDir) {
-        var frag = document.createDocumentFragment();
-        var items = [
-          { text: '● A≥80', color: '#22c55e' },
-          { text: '● B≥60', color: '#f59e0b' },
-          { text: '● C≥40', color: '#ef4444' },
-          { text: '● D<40', color: '#ef4444' },
-        ];
-        for (var i = 0; i < items.length; i++) {
-          var s = document.createElement('span');
-          s.style.color = items[i].color;
-          s.textContent = items[i].text;
-          frag.appendChild(s);
-          if (i < items.length - 1) frag.appendChild(document.createTextNode(' '));
-        }
-        frag.appendChild(document.createTextNode('  |  数据源: summary.json  |  更新: ' + ts + '  |  趋势: ' + trendDir + '  |  每 5 分钟自动刷新'));
-        return frag;
-      }
-function makeBadge(label, score, base) {
+      function makeBadge(label, score, base) {
         var g = grade(score);
         var c = sc(score);
         var span = document.createElement('span');

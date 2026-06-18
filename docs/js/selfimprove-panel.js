@@ -693,11 +693,37 @@
   });
 
   /* ── Mount Vue app (defer until panel shell is ready) ── */
+  var siFilters = [];
+  function setupDOM() {
+    siFilters = document.querySelectorAll('#siFilters .np-filter-chip');
+
+    /* ── Filter chips ────────────────────── */
+    siFilters.forEach(function(c) {
+      c.addEventListener('click', function(e) {
+        e.stopPropagation();
+        siFilters.forEach(function(x) { x.classList.remove('active'); });
+        this.classList.add('active');
+        state.siPeriod = this.dataset.period;
+      });
+    });
+
+    /* ── Refresh ──────────────────────────── */
+    var siRefresh = document.getElementById('siRefresh');
+    if (siRefresh) {
+      siRefresh.addEventListener('click', function(e) {
+        e.stopPropagation();
+        siRefresh.classList.add('spinning');
+        state.siData = null; state.siRaw = []; state.loading = false; state.error = null;
+        fetchData().finally(function() { siRefresh.classList.remove('spinning'); });
+      });
+    }
+  }
+
   function mountApp() {
-    if (siBody) { app.mount(siBody); return; }
+    if (siBody) { app.mount(siBody); setupDOM(); return; }
     document.addEventListener('yry-selfimprove-panel-ready', function() {
       siBody = document.getElementById('siPanelBody');
-      if (siBody) app.mount(siBody);
+      if (siBody) { app.mount(siBody); setupDOM(); }
     }, { once: true });
   }
   mountApp();
@@ -706,27 +732,6 @@
   H.register('selfimprove', null, 'selfimprovePanel', 'selfimproveOverlay', function() {
     if (!state.siData && !state.loading) fetchData();
   });
-
-  /* ── Filter chips ────────────────────────── */
-  siFilters.forEach(function(c) {
-    c.addEventListener('click', function(e) {
-      e.stopPropagation();
-      siFilters.forEach(function(x) { x.classList.remove('active'); });
-      this.classList.add('active');
-      state.siPeriod = this.dataset.period;
-    });
-  });
-
-  /* ── Refresh ─────────────────────────────── */
-  var siRefresh = document.getElementById('siRefresh');
-  if (siRefresh) {
-    siRefresh.addEventListener('click', function(e) {
-      e.stopPropagation();
-      siRefresh.classList.add('spinning');
-      state.siData = null; state.siRaw = []; state.loading = false; state.error = null;
-      fetchData().finally(function() { siRefresh.classList.remove('spinning'); });
-    });
-  }
 
   /* ── Data fetching ───────────────────────── */
   async function fetchData() {

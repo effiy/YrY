@@ -7,10 +7,17 @@ var layerInfo = (function() {
   'use strict';
   var H = window.PanelHub;
 
-  var overlay = document.getElementById('layerInfoOverlay');
-  var panel   = document.getElementById('layerInfoPanel');
-  var title   = document.getElementById('layerInfoTitle');
-  var body    = document.getElementById('layerInfoBody');
+  var overlay = null;
+  var panel   = null;
+  var title   = null;
+  var body    = null;
+
+  function refreshDOM() {
+    overlay = document.getElementById('layerInfoOverlay');
+    panel   = document.getElementById('layerInfoPanel');
+    title   = document.getElementById('layerInfoTitle');
+    body    = document.getElementById('layerInfoBody');
+  }
 
   var DATA = {
     deps: {
@@ -44,6 +51,8 @@ var layerInfo = (function() {
   };
 
   function show(name) {
+    if (!overlay || !panel) refreshDOM();
+    if (!overlay || !panel) return;
     var d = DATA[name];
     if (!d) return;
     title.textContent = '';
@@ -58,6 +67,8 @@ var layerInfo = (function() {
   }
 
   function close() {
+    if (!overlay || !panel) refreshDOM();
+    if (!overlay || !panel) return;
     panel.style.opacity = '0';
     panel.style.pointerEvents = 'none';
     panel.style.transform = 'translateY(-8px)';
@@ -65,10 +76,17 @@ var layerInfo = (function() {
     overlay.style.pointerEvents = 'none';
   }
 
-  overlay.addEventListener('click', close);
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && panel.style.opacity === '1') close();
-  });
+  function setupDOM() {
+    refreshDOM();
+    if (!overlay) return;
+    overlay.addEventListener('click', close);
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && panel && panel.style.opacity === '1') close();
+    });
+  }
+
+  if (document.getElementById('layerInfoOverlay')) { refreshDOM(); setupDOM(); }
+  else { document.addEventListener('yry-layer-info-panel-ready', setupDOM, { once: true }); }
 
   return { show: show, close: close };
 })();

@@ -466,11 +466,37 @@
       + '</div>'
   });
 
+  var filterChips = [];
+  function setupDOM() {
+    var np = document.getElementById('notifyPanel');
+    filterChips = np ? np.querySelectorAll('.np-filter-chip[data-filter]') : [];
+    /* ── Filter chips ─────────────────────── */
+    filterChips.forEach(function(c) {
+      c.addEventListener('click', function(e) {
+        e.stopPropagation();
+        filterChips.forEach(function(x) { x.classList.remove('active'); });
+        this.classList.add('active');
+        state.activeFilter = this.dataset.filter;
+      });
+    });
+
+    /* ── Refresh ──────────────────────────── */
+    var refreshBtn = document.getElementById('notifyRefresh');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        refreshBtn.classList.add('spinning');
+        state.allItems = []; state.loading = false; state.error = null;
+        fetchAll().finally(function() { refreshBtn.classList.remove('spinning'); });
+      });
+    }
+  }
+
   function mountApp() {
-    if (panelBody) { app.mount(panelBody); return; }
+    if (panelBody) { app.mount(panelBody); setupDOM(); return; }
     document.addEventListener('yry-notify-panel-ready', function() {
       panelBody = document.getElementById('notifyPanelBody');
-      if (panelBody) app.mount(panelBody);
+      if (panelBody) { app.mount(panelBody); setupDOM(); }
     }, { once: true });
   }
   mountApp();
@@ -479,27 +505,6 @@
   H.register('notify', null, 'notifyPanel', 'notifyOverlay', function() {
     if (state.allItems.length === 0 && !state.loading) fetchAll();
   });
-
-  /* ── Filter chips ───────────────────────── */
-  filterChips.forEach(function(c) {
-    c.addEventListener('click', function(e) {
-      e.stopPropagation();
-      filterChips.forEach(function(x) { x.classList.remove('active'); });
-      this.classList.add('active');
-      state.activeFilter = this.dataset.filter;
-    });
-  });
-
-  /* ── Refresh ────────────────────────────── */
-  var refreshBtn = document.getElementById('notifyRefresh');
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      refreshBtn.classList.add('spinning');
-      state.allItems = []; state.loading = false; state.error = null;
-      fetchAll().finally(function() { refreshBtn.classList.remove('spinning'); });
-    });
-  }
 
   /* ── Data fetching ───────────────────────── */
   async function fetchAll() {

@@ -58,8 +58,8 @@
       name: 'YryCrossNav',
       props: {
         basePath: { type: String, default: './' },
-        pages:    { type: Array,  required: true },
-        active:   { type: String, required: true }
+        pages:    { type: Array,  default: function() { return []; } },
+        active:   { type: String, default: '' }
       },
       template: templateHTML
     };
