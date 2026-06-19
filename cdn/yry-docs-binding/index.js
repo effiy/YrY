@@ -684,36 +684,47 @@
           document.addEventListener('layer-panel-select', handler);
           this._docListeners.push({ event: 'layer-panel-select', handler: handler });
         },
-        /* ── 顶部"技能评分"总评卡可点击 → 自我改进仪表板 ─────── */
+        /* ── 统计评分卡点击 → 跳转对应专业报告页面 ─────── */
         _installSkillScoreStatClick: function () {
           const sg = document.getElementById('stats-grid-app');
           if (!sg) return;
-          if (sg.__ydbSkillScoreBound) return;
-          sg.__ydbSkillScoreBound = true;
+          if (sg.__ydbStatRouteBound) return;
+          sg.__ydbStatRouteBound = true;
+
+          /* 评分卡标签 → 报告页面路由映射 */
+          const ROUTE_MAP = {
+            '技能评分': './技能报告/index.html',
+            '健康评分': './健康报告/index.html',
+            '测试评分': './测试报告/index.html',
+            '自改进':   './自我改进/index.html'
+          };
+
           sg.addEventListener('click', function (e) {
             const card = e.target && e.target.closest && e.target.closest('.stat-card');
             if (!card || !sg.contains(card)) return;
             const lbl = card.querySelector('.lbl');
-            if (!lbl || (lbl.textContent || '').trim() !== '技能评分') return;
+            if (!lbl) return;
+            const label = (lbl.textContent || '').trim();
+            const href = ROUTE_MAP[label];
+            if (!href) return; // 非评分卡(如依赖/故事/场景等计数卡)不跳转
             e.preventDefault();
-            window.location.href = './自我改进/index.html';
+            window.location.href = href;
           });
-          sg.setAttribute('data-skill-score-bound', '1');
-          // 给"技能评分"卡打标记(用于 CSS 视觉提示 + hover 状态)
-          // 注:Vue 重渲时会重置 title 属性,因此不在此追加 title,而是靠 CSS ↗ 箭头 + hover 效果提示可点
-          const markSkillScoreCard = function () {
+
+          /* 给可点击的评分卡打标记(用于 CSS 视觉提示 + hover 效果) */
+          const markClickableCards = function () {
             const cards = sg.querySelectorAll('.stat-card');
             cards.forEach(function (c) {
               const lbl = c.querySelector('.lbl');
-              if (lbl && (lbl.textContent || '').trim() === '技能评分') {
-                c.setAttribute('data-ydb-skill-score', '1');
+              if (lbl && ROUTE_MAP[(lbl.textContent || '').trim()]) {
+                c.setAttribute('data-ydb-stat-clickable', '1');
+                c.style.cursor = 'pointer';
               }
             });
           };
-          this.$nextTick(markSkillScoreCard);
-          // live update 重渲后再次标记
-          setTimeout(markSkillScoreCard, 800);
-          setTimeout(markSkillScoreCard, 2000);
+          this.$nextTick(markClickableCards);
+          setTimeout(markClickableCards, 800);
+          setTimeout(markClickableCards, 2000);
         },
         /* ── 评分图例构建器 (替代内联 cssText) ──────────────── */
         _buildScoreLegend: function (ts, trendDir) {

@@ -1080,14 +1080,27 @@
       document.addEventListener(ev, applyAll, { once: true });
     });
 
-    /* ── 统计卡点击 → 滚到 layer-stories (事件委托) ──────────────── */
+    /* ── 统计评分卡点击 → 跳转对应专业报告页面 ──────────────── */
     var statsEl = document.getElementById('stats-app');
     if (statsEl) {
+      /* 评分卡标签 → 报告页面路由映射 */
+      var STAT_ROUTE_MAP = {
+        '组件质量':   '../docs/组件报告/index.html',
+        '健康评分':   '../docs/健康报告/index.html',
+        '测试评分':   '../docs/测试报告/index.html',
+        '自改进评分': '../docs/自我改进/index.html',
+        '加载链':     '../docs/加载链报告/index.html'
+      };
       statsEl.addEventListener('click', function (e) {
         var card = e.target.closest('.stat-card');
         if (!card) return;
-        var target = document.getElementById('layer-stories');
-        if (target) target.scrollIntoView({ behavior: 'smooth' });
+        var lbl = card.querySelector('.lbl');
+        if (!lbl) return;
+        var label = (lbl.textContent || '').trim();
+        var href = STAT_ROUTE_MAP[label];
+        if (!href) return; // 组件/故事/场景等计数卡不跳转
+        e.preventDefault();
+        window.location.href = href;
       });
     }
 
