@@ -1,7 +1,7 @@
 /**
  * yry-notify-panel/index.js — 通知中心面板 (Vue 3 custom element + fetch template)
  *
- * 重构自 cdn/js/notify-panel.js (501 行 IIFE):
+ * 重构自旧版 IIFE (500+ 行字符串拼接式 Vue.createApp):
  *   - Template 从字符串拼接改为 fetch('index.html') + DOMParser 解析
  *   - 模板源: <script type="text/x-template" id="yry-notify-panel-tpl">
  *   - 改用 Vue 3 defineCustomElement,自动创建 #notifyPanel / #notifyOverlay DOM
@@ -10,7 +10,7 @@
  *
  * 加载链:
  *   <link rel="stylesheet" href="../../../../cdn/yry-notify-panel/index.css">
- *   <script src="../../../../cdn/js/panel-hub.js"></script>
+ *   <script src="../../../../cdn/yry-panel-hub/index.js"></script>
  *   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
  *   <script src="../../../../cdn/yry-notify-panel/index.js"></script>
  *
@@ -19,7 +19,7 @@
  *
  * 兼容性:
  *   - 与 docs/index.html · cdn/index.html 的 panel-hub 按钮事件完全兼容
- *   - 模板/数据/方法 1:1 来自原 cdn/js/notify-panel.js,行为不变
+ *   - 模板/数据/方法 1:1 来自原 IIFE,行为不变
  */
 (function () {
   'use strict';
@@ -525,7 +525,7 @@
       mounted: function () {
         var self = this;
         if (!this.registerWithHub()) {
-          // PanelHub 还未加载(js/panel-hub.js 还在后面),每 50ms 重试,最多 5s
+          // PanelHub 还未加载(yry-panel-hub 还在前面异步 fetch 模板),每 50ms 重试,最多 5s
           var tries = 0, maxTries = 100;
           var t = setInterval(function () {
             tries++;

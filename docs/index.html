@@ -35,6 +35,7 @@
   <link rel="stylesheet" href="../cdn/yry-layer-info-panel/index.css">
   <link rel="stylesheet" href="../cdn/yry-back-top/index.css">
   <link rel="stylesheet" href="../cdn/yry-footer-note/index.css">
+  <link rel="stylesheet" href="yry-item-cards/index.css">
   <link rel="stylesheet" href="yry-docs-binding/index.css">
 </head>
 <body>
@@ -54,7 +55,7 @@
     <!-- ── Panel hub (YryPanelHub) ──────────────── -->
     <yry-panel-hub id="panel-hub-app"></yry-panel-hub>
 
-    <!-- ===== Layer 1-4: YryDocLayer 动态渲染 (数据源: window.YRY_DOCS_DATA) ===== -->
+    <!-- ===== Layer 1-4: YryDocLayer 动态渲染 (数据源: window.YRY_DOCS_DATA 或 yry-docs-binding 内置 DOCS_LAYERS) ===== -->
     <div id="layer-deps-app"></div>
     <div id="layer-skills-app"></div>
     <div id="layer-story-app"></div>
@@ -62,7 +63,7 @@
 
     <hr>
 
-    <!-- ===== Layer 5+6+R: 复合组件 (子元素数据由 docs-binding.js + yry-item-cards.js 注入) ===== -->
+    <!-- ===== Layer 5+6+R: 复合组件 (子元素数据由 yry-item-cards 自动注入) ===== -->
     <yry-layer-agents></yry-layer-agents>
 
     <hr>
@@ -76,47 +77,54 @@
     <yry-footer-note version="5.4.0"></yry-footer-note>
   </div>
 
-  <!-- ═══ 面板组件 (custom elements, 同步注入 DOM) ═══ -->
+  <!-- ═══ 面板组件 (Vue 3 custom elements, 同步注入 DOM) ═══ -->
   <yry-cron-panel></yry-cron-panel>
   <yry-faq-panel></yry-faq-panel>
   <yry-notify-panel></yry-notify-panel>
   <yry-selfimprove-panel></yry-selfimprove-panel>
   <yry-layer-info-panel></yry-layer-info-panel>
 
+  <!-- ═══ 无渲染组件(纯数据注入) ═══ -->
+  <yry-item-cards></yry-item-cards>
+
   <!-- ═══ 文档数据绑定控制器 (空渲染,自动在 mounted 钩子中执行所有绑定/拉取/事件) ═══ -->
   <yry-docs-binding></yry-docs-binding>
 
-  <!-- ═══ JS 脚本 ═══ -->
+  <!-- ═══ JS 脚本 (Vue 3 + CDN 组件,均为 custom element) ═══ -->
   <script src="../cdn/shared.js"></script>
 
-  <!-- ═══ Vue 3 + CDN 组件(Breadcrumb / SceneHeader / StatsGrid / CrossNav) ═══ -->
+  <!-- Vue 3 (必须最早加载,为后续所有 Vue 组件提供依赖) -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+  <!-- 基础展示组件 (供 breadcrumb/header/stats/cross-nav 挂载) -->
   <script src="../cdn/yry-breadcrumb/index.js"></script>
   <script src="../cdn/yry-scene-header/index.js"></script>
   <script src="../cdn/yry-stats-grid/index.js"></script>
   <script src="../cdn/yry-cross-nav/index.js"></script>
+
+  <!-- PanelHub 控制器 (必须早于依赖 PanelHub 的面板组件加载,提供 window.PanelHub) -->
   <script src="../cdn/yry-panel-hub/index.js"></script>
+
+  <!-- 卡片相关组件 -->
   <script src="../cdn/yry-tag-chip/index.js"></script>
   <script src="../cdn/yry-item-card/index.js"></script>
   <script src="../cdn/yry-card-grid/index.js"></script>
-  <!-- ═══ 基础布局组件 (供下方 layer-agents/rules/refs 依赖) · 必须早于 layer-* 复合组件加载 ═══ -->
+
+  <!-- 布局组件 (供 layer-* 复合组件依赖) -->
   <script src="../cdn/yry-layer/index.js"></script>
   <script src="../cdn/yry-sub-title/index.js"></script>
-  <!-- ═══ Layer 5+6 复合组件 (依赖上方的 layer/sub-title/card-grid) ═══ -->
+
+  <!-- Layer 5+6 复合组件 (依赖上方的 layer/sub-title/card-grid) -->
   <script src="../cdn/yry-layer-agents/index.js"></script>
   <script src="../cdn/yry-layer-rules/index.js"></script>
   <script src="../cdn/yry-layer-refs/index.js"></script>
 
-  <!-- ═══ 静态资产卡片数据 + 挂载(替代原 9 个 card-grid 中的静态 .item-card) ═══ -->
-  <script src="js/yry-item-cards.js"></script>
-
-  <!-- ═══ Layer 1-4 渲染组件 (依赖 docs-data.js, 故放在后面) ═══ -->
+  <!-- Layer 1-4 渲染组件 (story-card / scene-card / doc-layer) -->
   <script src="../cdn/yry-story-card/index.js"></script>
   <script src="../cdn/yry-scene-card/index.js"></script>
   <script src="../cdn/yry-doc-layer/index.js"></script>
-  <script src="./js/docs-data.js"></script>
 
-  <!-- ═══ 面板组件 JS (定义 custom elements, 必须在 Panel JS 之前加载) ═══ -->
+  <!-- 面板组件 (依赖 window.PanelHub) -->
   <script src="../cdn/yry-cron-panel/index.js"></script>
   <script src="../cdn/yry-faq-panel/index.js"></script>
   <script src="../cdn/yry-notify-panel/index.js"></script>
@@ -124,20 +132,13 @@
   <script src="../cdn/yry-layer-info-panel/index.js"></script>
   <script src="../cdn/yry-footer-note/index.js"></script>
 
-  <!-- ═══ Panel JS modules · 旧版 js/notify-panel.js 已迁出到 cdn/yry-notify-panel/index.js (Vue 3 custom element) ═══ -->
-  <script src="js/panel-hub.js"></script>
-  <script src="js/selfimprove-panel.js"></script>
-  <script src="js/cron-panel.js"></script>
-  <script src="js/faq-panel.js"></script>
-  <script src="js/layer-info.js"></script>
+  <!-- 静态资产卡片数据注入器 (替代旧版 js/yry-item-cards.js) -->
+  <script src="yry-item-cards/index.js"></script>
 
-  <!-- ═══ Vue 3 controller: docs/yry-docs-binding (替代原 js/docs-binding.js) ═══ -->
+  <!-- 文档数据绑定控制器 (替代旧版 js/docs-data.js + js/panel-hub.js + js/cron-panel.js + js/faq-panel.js + js/layer-info.js + js/selfimprove-panel.js) -->
   <script src="yry-docs-binding/index.js"></script>
 
-
-  <!-- ═══ CDN 组件挂载脚本:自定义标签形式 (property 赋值,无需 .mount()) ═══ -->
-
-  <!-- ═══ 自初始化组件 (零配置, 加载即生效) ═══ -->
+  <!-- 自初始化组件 (零配置, 加载即生效) -->
   <script src="../cdn/yry-back-top/index.js"></script>
 </body>
 </html>

@@ -45,29 +45,50 @@
   <yry-cron-panel></yry-cron-panel>
 
   <!-- ════════════════════════════════════════════════════════════════════
-       TEMPLATE SOURCE OF TRUTH · YryCronPanel 的 template
-       修改此块即更新组件,index.js 内联了此内容以确保同步注入
+       TEMPLATE SOURCE OF TRUTH · YryCronPanel 的 template (Vue 3 完整模板)
+       由 index.js 通过 fetch + DOMParser 解析后注册为自定义元素
        ════════════════════════════════════════════════════════════════════ -->
   <script type="text/x-template" id="yry-cron-panel-tpl">
     <div class="cron-overlay yry-cron-overlay" id="cronOverlay"></div>
     <div class="cron-panel yry-cron-panel" id="cronPanel">
       <div class="panel-header yry-panel-header">
-        <span class="cron-title yry-cron-title">&#9200; 调度任务</span>
-        <span class="cron-count yry-cron-count" id="cronTaskCount"></span>
-        <button class="panel-refresh" id="cronRefresh" title="刷新任务列表" aria-label="刷新任务列表">&#x21bb;</button>
+        <span class="cron-title yry-cron-title">⏰ 调度任务</span>
+        <span class="cron-count yry-cron-count" id="cronTaskCount">0 个任务</span>
+        <button class="panel-refresh" id="cronRefresh" title="刷新任务列表" aria-label="刷新任务列表" @click.stop="onRefresh">⟳</button>
       </div>
       <div class="panel-body yry-panel-body" id="cronPanelBody">
         <div class="panel-context">
-          <strong>数据源</strong>：<code>.claude/scheduled_tasks.json</code><br>
-          <strong>状态</strong>：🟢 活跃 — 定时触发中 ｜ ⚫ 空闲 — 超过 24h 未触发 ｜ 💾 持久 — 写入磁盘，会话重启不丢失<br>
-          <strong>管理</strong>：使用 <code>/loop</code> 命令创建/删除定时任务
+          <strong>数据源</strong>:<code>.claude/scheduled_tasks.json</code><br>
+          <strong>状态</strong>:🟢 活跃 — 定时触发中 ｜ ⚫ 空闲 — 超过 24h 未触发 ｜ 💾 持久 — 写入磁盘,会话重启不丢失<br>
+          <strong>管理</strong>:使用 <code>/loop</code> 命令创建/删除定时任务
         </div>
-        <div class="panel-loading yry-panel-loading">加载中...</div>
+        <div v-if="loading" class="panel-loading yry-panel-loading">加载中...</div>
+        <div v-else-if="error" class="panel-empty yry-panel-empty">加载失败<br><span class="hint">{{ error }}</span></div>
+        <div v-else-if="tasks.length === 0" class="panel-empty yry-panel-empty">暂无调度任务<br><span class="hint">使用 Claude Code 的 <code>/loop</code> 命令创建定时任务</span></div>
+        <ul v-else class="cron-list yry-cron-list">
+          <li v-for="(t, i) in tasks" :key="i" :class="'cron-item yry-cron-item' + (t.isActive ? ' active-item' : '')">
+            <div class="cr-row1">
+              <span :class="t.isActive ? 'pulse-dot' : 'cr-dot-idle'"></span>
+              <span class="cr-desc" v-html="t.desc"></span>
+              <span :class="'cr-badge ' + (t.isActive ? 'active' : 'idle')">{{ t.isActive ? '活跃' : '空闲' }}</span>
+              <span v-if="t.durable" class="cr-badge cr-badge-durable">💾持久</span>
+              <span v-if="t.cdHtml" :class="'cr-countdown ' + t.cdHtml.cls">{{ t.cdHtml.label }}</span>
+            </div>
+            <div class="cr-row2 cr-raw">{{ t.cron }}</div>
+            <div class="cr-row3">
+              <span class="cr-badge cr-badge-meta">{{ t.recurring }}</span>
+              <span class="cr-dot">·</span><span>创建: {{ t.created }}</span>
+              <span class="cr-dot">·</span><span>上次: {{ t.lastFired }}</span>
+            </div>
+            <div v-if="t.nextFire" class="cr-next">⏭ 预计下次: {{ t.nextFire }}</div>
+            <div v-if="t.prompt" :class="'cr-prompt' + (t.promptLong ? ' collapsed' : '')" :title="t.prompt">{{ t.prompt }}</div>
+          </li>
+        </ul>
       </div>
       <div class="panel-footer">
         <span>数据来源: .claude/scheduled_tasks.json</span>
         <span class="panel-footer-sep">|</span>
-        <a href="#" onclick="event.preventDefault();window.openPanel('faq')" class="panel-footer-link">❓ 什么是调度任务？</a>
+        <a href="#" onclick="event.preventDefault();window.openPanel('faq')" class="panel-footer-link">❓ 什么是调度任务?</a>
       </div>
     </div>
   </script>

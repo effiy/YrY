@@ -37,14 +37,18 @@
 
   <yry-layer-info-panel></yry-layer-info-panel>
 
+  <!-- ════════════════════════════════════════════════════════════════════
+       TEMPLATE SOURCE OF TRUTH · YryLayerInfoPanel 的 template (Vue 3 完整模板)
+       由 index.js 通过 fetch + DOMParser 解析后注册为自定义元素
+       ════════════════════════════════════════════════════════════════════ -->
   <script type="text/x-template" id="yry-layer-info-panel-tpl">
-    <div class="layer-info-overlay yry-layer-info-overlay" id="layerInfoOverlay"></div>
-    <div class="yry-layer-info-panel layer-info-panel" id="layerInfoPanel">
+    <div class="layer-info-overlay yry-layer-info-overlay" :class="{ open: openState }" id="layerInfoOverlay" @click.self="onOverlayClick"></div>
+    <div class="yry-layer-info-panel layer-info-panel" :class="{ open: openState }" id="layerInfoPanel">
       <div class="panel-header yry-panel-header">
-        <span class="panel-title" id="layerInfoTitle">层级详情</span>
-        <button onclick="layerInfo.close()" class="panel-close-btn" title="关闭" aria-label="关闭">✕</button>
+        <span class="panel-title" id="layerInfoTitle" v-html="currentTitle"></span>
+        <button @click.stop="close" class="panel-close-btn" title="关闭" aria-label="关闭">✕</button>
       </div>
-      <div class="panel-body yry-panel-body" id="layerInfoBody"></div>
+      <div class="panel-body yry-panel-body" id="layerInfoBody" v-html="currentContent"></div>
     </div>
   </script>
 

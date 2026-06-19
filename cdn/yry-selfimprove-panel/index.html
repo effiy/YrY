@@ -29,39 +29,233 @@
   </style>
 </head>
 <body>
-  <h1><span class="accent">&#129514;</span> YrySelfImprovePanel · 自改进分析面板</h1>
+  <h1><span class="accent">🧬</span> YrySelfImprovePanel · 自改进分析面板</h1>
   <p class="demo-hint">
-    自定义元素 <code>&lt;yry-selfimprove-panel&gt;</code> — 加载后注入面板 HTML。<br>
-    需配合 <code>panel-hub.js</code> + <code>selfimprove-panel.js</code> 实现完整交互。
+    自定义元素 <code>&lt;yry-selfimprove-panel&gt;</code> — Vue 3 custom element,完整数据 + 面板注册 + 加载逻辑均内置。<br>
+    1:1 继承自旧版 <code>docs/js/selfimprove-panel.js</code> 的 789 行 IIFE 业务逻辑。
   </p>
 
   <yry-selfimprove-panel></yry-selfimprove-panel>
 
+  <!-- ════════════════════════════════════════════════════════════════════
+       TEMPLATE SOURCE OF TRUTH · YrySelfImprovePanel 的 template (Vue 3 完整模板)
+       由 index.js 通过 fetch + DOMParser 解析后注册为自定义元素
+       ════════════════════════════════════════════════════════════════════ -->
   <script type="text/x-template" id="yry-selfimprove-panel-tpl">
     <div class="selfimprove-overlay yry-selfimprove-overlay" id="selfimproveOverlay"></div>
     <div class="selfimprove-panel yry-selfimprove-panel" id="selfimprovePanel">
       <div class="panel-header yry-panel-header">
-        <span class="np-title">&#129514; 自改进分析<span class="si-live-grade loading" id="siLiveGrade">—</span></span>
-        <span class="np-count" id="siTotalCount">—</span>
-        <button class="panel-refresh" id="siRefresh" title="刷新" aria-label="刷新">&#x21bb;</button>
+        <span class="np-title">🧬 自改进分析<span class="si-live-grade loading" id="siLiveGrade" v-if="hero">: {{ hero.score }} {{ hero.label }}</span><span class="si-live-grade loading" v-else>—</span></span>
+        <span class="np-count" id="siTotalCount">{{ (siData && siData.totalEntries) || siRaw.length }} 条</span>
+        <button class="panel-refresh" id="siRefresh" title="刷新" aria-label="刷新" @click.stop="onRefresh">⟳</button>
       </div>
       <div class="np-filters" id="siFilters">
-        <span class="np-filter-chip active" data-period="daily">日报</span>
-        <span class="np-filter-chip" data-period="weekly">周报</span>
-        <span class="np-filter-chip" data-period="monthly">月报</span>
-        <span class="np-filter-chip" data-period="overview">全景</span>
+        <span class="np-filter-chip" :class="siPeriod === 'daily' ? 'active' : ''" data-period="daily" @click="setPeriod('daily')">日报</span>
+        <span class="np-filter-chip" :class="siPeriod === 'weekly' ? 'active' : ''" data-period="weekly" @click="setPeriod('weekly')">周报</span>
+        <span class="np-filter-chip" :class="siPeriod === 'monthly' ? 'active' : ''" data-period="monthly" @click="setPeriod('monthly')">月报</span>
+        <span class="np-filter-chip" :class="siPeriod === 'overview' ? 'active' : ''" data-period="overview" @click="setPeriod('overview')">全景</span>
       </div>
       <div class="panel-body yry-panel-body" id="siPanelBody">
         <div class="panel-context">
-          <strong>数据源</strong>：<code>.memory/health-trend.jsonl</code> + <code>docs/自我改进/summary.json</code><br>
-          <strong>视角</strong>：日报/周报/月报/全景
+          <strong>数据源</strong>:<code>.memory/health-trend.jsonl</code> + <code>docs/自我改进/summary.json</code><br>
+          <strong>视角</strong>:日报 / 周报 / 月报 / 全景 · 共 <strong>{{ (siData && siData.totalEntries) || siRaw.length }}</strong> 条记录
         </div>
-        <div class="panel-loading yry-panel-loading">加载中...</div>
+
+        <div v-if="loading" class="panel-loading yry-panel-loading">加载中...</div>
+        <div v-else-if="error" class="panel-empty yry-panel-empty">加载失败<br><span class="hint">{{ error }}</span></div>
+        <div v-else-if="!siData" class="panel-empty yry-panel-empty">暂无数据<br><span class="hint">运行 <code>node skills/rui-bot/send.mjs health</code> 生成健康报告</span></div>
+
+        <!-- ═══════ OVERVIEW (全景) ═══════ -->
+        <div v-else-if="siPeriod === 'overview'" class="yry-si-overview">
+          <!-- Hero -->
+          <div v-if="hero" class="si-hero" :style="{ background: hero.bg }">
+            <div class="si-hero-score" :style="{ color: hero.color }">{{ hero.score }}<span class="si-hero-grade">{{ hero.label }}级</span></div>
+            <div class="si-hero-meta">
+              <div class="si-hero-row"><span class="si-hero-key">最新评级</span><span class="si-hero-val" :style="{ color: hero.color }">{{ hero.grade }}级 ({{ hero.score }}分)</span></div>
+              <div v-if="hero.trend" class="si-hero-row"><span class="si-hero-key">趋势</span><span class="si-hero-val" :style="{ color: hero.trend.color }">{{ hero.trend.icon }} {{ hero.trend.label }}</span></div>
+              <div class="si-hero-row"><span class="si-hero-key">诊断触发</span><span class="si-hero-val">{{ hero.diagCount }} 项</span></div>
+              <div class="si-hero-row"><span class="si-hero-key">覆盖维度</span><span class="si-hero-val">{{ hero.dimCount }} 项</span></div>
+              <div v-if="hero.spark.length > 0" class="si-hero-spark">
+                <span v-for="(s, i) in hero.spark" :key="i" class="si-spark-dot" :style="{ background: s.color, width: s.size, height: s.size }" :title="s.title"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary card -->
+          <div v-if="summary" class="si-summary-card">
+            <div class="si-sum-row"><span class="si-sum-key">整体状态</span><span class="si-sum-val"><span class="si-sum-icon">{{ summary.overallIcon }}</span>{{ summary.overall }}</span></div>
+            <div class="si-sum-row"><span class="si-sum-key">维度健康</span><span class="si-sum-val">{{ summary.dimPass }} 健康 / {{ summary.dimWarn }} 关注 / {{ summary.dimFail }} 异常</span></div>
+            <div class="si-sum-row"><span class="si-sum-key">最弱项</span><span class="si-sum-val" :style="{ color: '#ef4444' }">{{ summary.weakLabel }}<span :style="{ color: summary.weakTrendClr }">{{ summary.weakTrend }}</span></span></div>
+            <div class="si-sum-row"><span class="si-sum-key">最强项</span><span class="si-sum-val" :style="{ color: '#22c55e' }">{{ summary.strongLabel }}</span></div>
+            <div class="si-sum-row"><span class="si-sum-key">建议</span><span class="si-sum-val">{{ summary.topRec }}</span></div>
+          </div>
+
+          <!-- Recommendations -->
+          <div v-if="recommendations.length > 0" class="si-recs">
+            <div class="si-section-title">改进建议 ({{ recommendations.length }})</div>
+            <ul class="si-rec-list">
+              <li v-for="(r, i) in recommendations" :key="i" :class="'si-rec-item prio-' + r.priority">
+                <span class="si-rec-source">{{ r.source }}</span>
+                <span class="si-rec-text">{{ r.text }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Dim matrix -->
+          <div v-if="dimMatrix.length > 0" class="si-matrix">
+            <div class="si-section-title">维度矩阵 ({{ dimMatrix.length }} 项)</div>
+            <div class="si-matrix-grid">
+              <div v-for="(m, i) in dimMatrix" :key="i" :class="'si-mx-item ' + m.cls" :title="m.title">
+                <span class="si-mx-label">{{ m.label }}</span>
+                <span class="si-mx-score" :style="{ color: m.color }">{{ m.score }}<span v-if="m.trendIcon" class="si-mx-trend" :style="{ color: m.trendClr }">{{ m.trendIcon }}{{ m.trendAbs }}</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active diagnostics -->
+          <div v-if="activeDiags.length > 0" class="si-diags">
+            <div class="si-section-title">活跃诊断 ({{ activeDiags.length }} 项)</div>
+            <ul class="si-diag-list">
+              <li v-for="(diag, i) in activeDiags" :key="i" class="si-diag-item">
+                <div class="si-diag-head">
+                  <span class="si-diag-id">{{ diag.id }}</span>
+                  <span class="si-diag-label">{{ diag.label }}</span>
+                  <span class="si-diag-count">{{ diag.count }}次 / {{ diag.rate }}%</span>
+                </div>
+                <div class="si-diag-bar"><div class="si-diag-bar-fill" :style="{ width: diag.barW + '%', background: diag.barClr }"></div></div>
+                <div v-if="diag.desc" class="si-diag-desc">{{ diag.desc }}</div>
+                <div v-if="diag.rec" class="si-diag-rec">建议: {{ diag.rec }}</div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Branches -->
+          <div v-if="branches.length > 0" class="si-branches">
+            <div class="si-section-title">分支摘要</div>
+            <ul class="si-branch-list">
+              <li v-for="(b, i) in branches" :key="i" class="si-branch-item">
+                <span class="si-branch-name">{{ b.name }}</span>
+                <span class="si-branch-score" :style="{ color: b.color }">{{ b.score }}</span>
+                <span class="si-branch-count">{{ b.count }}次</span>
+                <span class="si-branch-uncommitted" :style="{ color: b.uncommittedClr }">{{ b.uncommitted }} 未提交</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Score trend -->
+          <div v-if="scoreTrend.length > 0" class="si-trend">
+            <div class="si-section-title">分数趋势 (最近 {{ scoreTrend.length }} 次)</div>
+            <div class="si-trend-bars">
+              <div v-for="(t, i) in scoreTrend" :key="i" class="si-trend-bar" :style="{ height: t.h + 'px', background: t.color }" :title="t.title"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════ PERIOD (日/周/月报) ═══════ -->
+        <div v-else-if="periodData && !periodData.empty" class="yry-si-period">
+          <div class="si-period-head" :style="{ color: periodData.color }">
+            <div class="si-period-score">{{ periodData.score }}<span class="si-period-grade">{{ periodData.grade }}级</span></div>
+            <div class="si-period-meta">
+              <div class="si-period-row"><span class="si-period-key">{{ periodData.title }}</span><span class="si-period-val">{{ periodData.label }}</span></div>
+              <div class="si-period-row"><span class="si-period-key">区间</span><span class="si-period-val">最低 {{ periodData.minScore }} / 最高 {{ periodData.maxScore }}</span></div>
+              <div v-if="periodData.delta" class="si-period-row"><span class="si-period-key">对比上期</span><span class="si-period-val" :style="{ color: periodData.delta.up ? '#22c55e' : '#ef4444' }">{{ periodData.delta.text }}</span></div>
+              <div class="si-period-row"><span class="si-period-key">触发次数</span><span class="si-period-val">{{ periodData.entries }} 次</span></div>
+              <div v-if="periodData.branchCount > 0" class="si-period-row"><span class="si-period-key">涉及分支</span><span class="si-period-val">{{ periodData.branchCount }} 个</span></div>
+            </div>
+          </div>
+
+          <!-- Grade distribution -->
+          <div v-if="periodData.gradeDist.length > 0" class="si-grade-dist">
+            <span class="si-section-title">评级分布:</span>
+            <span v-for="(gd, i) in periodData.gradeDist" :key="i" class="si-grade-badge" :class="'grade-' + gd.grade">{{ gd.grade }}级 × {{ gd.count }}</span>
+          </div>
+
+          <!-- Period score trend -->
+          <div v-if="periodScoreTrend.length > 0" class="si-period-trend">
+            <div class="si-section-title">分数趋势</div>
+            <div class="si-trend-bars">
+              <div v-for="(t, i) in periodScoreTrend" :key="i" class="si-trend-bar" :style="{ height: t.h + 'px', background: t.color }" :title="t.title"></div>
+            </div>
+          </div>
+
+          <!-- Period dims -->
+          <div v-if="periodDims.length > 0" class="si-period-dims">
+            <div class="si-section-title">维度分数 (Top 9)</div>
+            <ul class="si-period-dim-list">
+              <li v-for="(dim, i) in periodDims" :key="i" class="si-period-dim-item">
+                <span class="si-pd-label">{{ dim.label }}</span>
+                <div class="si-pd-bar"><div class="si-pd-fill" :style="{ width: dim.barW + '%', background: dim.color }"></div></div>
+                <span class="si-pd-score" :style="{ color: dim.color }">{{ dim.score }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Period diagnostics -->
+          <div v-if="periodDiags.length > 0" class="si-period-diags">
+            <div class="si-section-title">触发诊断</div>
+            <ul class="si-pdiag-list">
+              <li v-for="(diag, i) in periodDiags" :key="i" class="si-pdiag-item">
+                <span class="si-pdiag-id" :style="{ color: diag.barClr }">{{ diag.id }}</span>
+                <span class="si-pdiag-label">{{ diag.label }}</span>
+                <span class="si-pdiag-count">{{ diag.count }}次 / {{ diag.rate }}%</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Period buckets -->
+          <div v-if="siPeriod === 'daily' && todayEntries.length > 0" class="si-period-buckets">
+            <div class="si-section-title">今日时间线</div>
+            <ul class="si-timeline">
+              <li v-for="(entry, i) in todayEntries" :key="i" class="si-tl-item">
+                <span class="si-tl-time">{{ entry.time }}</span>
+                <span class="si-tl-score" :style="{ color: entry.color }">{{ entry.score }} {{ entry.grade }}级</span>
+                <span v-if="entry.gitBranch" class="si-tl-branch">@ {{ entry.gitBranch }}</span>
+                <span v-for="(tag, ti) in entry.diagTags" :key="ti" class="si-tl-diag" :title="tag.title">{{ tag.id }}</span>
+              </li>
+            </ul>
+          </div>
+          <div v-else-if="siPeriod === 'weekly' && weekDays.length > 0" class="si-period-buckets">
+            <div class="si-section-title">本周每日</div>
+            <ul class="si-wdays">
+              <li v-for="(d, i) in weekDays" :key="i" class="si-wday-item">
+                <span class="si-wday-name">{{ d.name }}</span>
+                <span class="si-wday-score" :style="{ color: d.color }">{{ d.score }}</span>
+                <span class="si-wday-entries">{{ d.entries }}次</span>
+              </li>
+            </ul>
+          </div>
+          <div v-else-if="siPeriod === 'monthly' && monthWeeks.length > 0" class="si-period-buckets">
+            <div class="si-section-title">本月每周</div>
+            <ul class="si-wdays">
+              <li v-for="(w, i) in monthWeeks" :key="i" class="si-wday-item">
+                <span class="si-wday-name">{{ w.name }}</span>
+                <span class="si-wday-score" :style="{ color: w.color }">{{ w.score }}</span>
+                <span class="si-wday-entries">{{ w.entries }}次</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Period history -->
+          <div v-if="periodHistory.length > 0" class="si-period-history">
+            <div class="si-section-title">历史回溯 (前 {{ periodHistory.length }} 个{{ periodData.title.replace('报', '') }})</div>
+            <ul class="si-phist-list">
+              <li v-for="(h, i) in periodHistory" :key="i" class="si-phist-item">
+                <span class="si-phist-label">{{ h.label }}</span>
+                <span class="si-phist-score">{{ h.score }} {{ h.grade }}级</span>
+                <span class="si-phist-entries">{{ h.entries }}次</span>
+                <span v-if="h.deltaText" class="si-phist-delta">{{ h.deltaText }}</span>
+                <span v-for="(d, di) in h.topDiags" :key="di" class="si-phist-diag" :class="d.hot ? 'hot' : ''">{{ d.id }}×{{ d.count }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div v-else class="panel-empty yry-panel-empty">该视角暂无数据</div>
       </div>
       <div class="panel-footer panel-footer-row">
         <span>数据: .memory/health-trend.jsonl + summary.json</span>
         <span><a href="#" onclick="event.preventDefault();window.openPanel('faq')" class="yry-clr-pass-64 yry-link-noul">❓ FAQ</a> · <a href="#" onclick="event.preventDefault();window.openPanel('notify')" class="yry-clr-fail-64 yry-link-noul">🔔 通知</a></span>
-        <span id="siFooterTime"></span>
+        <span id="siFooterTime">{{ (siData && siData.totalEntries) || siRaw.length }} 条记录</span>
       </div>
     </div>
   </script>
@@ -69,7 +263,7 @@
   <script src="index.js"></script>
 
   <div class="demo-footer" style="margin-top:28px;text-align:center;font-size:.72rem;color:var(--yry-text3,#888)">
-    &#129514; YrySelfImprovePanel v1.0.0 · <a href="../index.html" style="color:var(--yry-accent,#ffc107);text-decoration:none">CDN 首页</a>
+    🧬 YrySelfImprovePanel v1.0.0 · <a href="../index.html" style="color:var(--yry-accent,#ffc107);text-decoration:none">CDN 首页</a>
   </div>
 
   <script src="../yry-back-top/index.js"></script>

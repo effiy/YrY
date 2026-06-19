@@ -37,20 +37,36 @@
 
   <yry-faq-panel></yry-faq-panel>
 
+  <!-- ════════════════════════════════════════════════════════════════════
+       TEMPLATE SOURCE OF TRUTH · YryFaqPanel 的 template (Vue 3 完整模板)
+       由 index.js 通过 fetch + DOMParser 解析后注册为自定义元素
+       ════════════════════════════════════════════════════════════════════ -->
   <script type="text/x-template" id="yry-faq-panel-tpl">
     <div class="faq-overlay yry-faq-overlay" id="faqOverlay"></div>
     <div class="faq-panel yry-faq-panel" id="faqPanel">
       <div class="panel-header yry-panel-header">
-        <span class="faq-title yry-faq-title">&#10067; 常见问题</span>
+        <span class="faq-title yry-faq-title">❓ 常见问题</span>
       </div>
-      <div class="panel-body yry-panel-body" id="faqPanelBody"></div>
+      <div class="panel-body yry-panel-body" id="faqPanelBody">
+        <div class="yry-faq-intro">
+          <strong>YrY 知识库</strong> — {{ faqs.length }} 个常见问题,覆盖:系统概念 · 命令使用 · 面板关系 · 健康检查 · 设计原则 · 版本管理。<br>点击问题展开答案。彩色链接可快速打开对应面板。
+        </div>
+        <ul class="faq-list yry-faq-list">
+          <li v-for="(item, i) in faqs" :key="i" :class="'faq-item yry-faq-item' + (item.open ? ' open' : '')">
+            <div class="faq-q" :data-index="i" @click="toggle(i)">
+              <span class="faq-q-icon">Q:</span>{{ item.q }}
+            </div>
+            <div class="faq-a" v-html="item.a"></div>
+          </li>
+        </ul>
+      </div>
       <div class="panel-footer">
-        <span class="yry-mute-7">快捷打开：</span>
-        <a href="#" onclick="event.preventDefault();window.openPanel('notify')" class="yry-clr-fail-7 yry-link-noul">&#128276; 通知</a>
+        <span class="yry-mute-7">快捷打开:</span>
+        <a href="#" onclick="event.preventDefault();window.openPanel('notify')" class="yry-clr-fail-7 yry-link-noul">🔔 通知</a>
         <span class="panel-footer-sep">·</span>
-        <a href="#" onclick="event.preventDefault();window.openPanel('cron')" class="panel-footer-link">&#9200; 调度</a>
+        <a href="#" onclick="event.preventDefault();window.openPanel('cron')" class="panel-footer-link">⏰ 调度</a>
         <span class="panel-footer-sep">·</span>
-        <a href="#" onclick="event.preventDefault();window.openPanel('selfimprove')" class="yry-clr-purp-7 yry-link-noul">&#129514; 自改进</a>
+        <a href="#" onclick="event.preventDefault();window.openPanel('selfimprove')" class="yry-clr-purp-7 yry-link-noul">🧬 自改进</a>
       </div>
     </div>
   </script>

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bundle Analysis — YrY</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  :root {
+    --bg: #1e1f2b;
+    --panel-bg: #2b2d3b;
+    --border: #3d59a1;
+    --text: #a9b1d6;
+    --text-dim: #6b7089;
+    --accent: #3d59a1;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --ok: #34d399;
+    --info: #22d3ee;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  /* Header */
+  #header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: var(--panel-bg);
+    border-bottom: 1px solid var(--border);
+    height: 44px;
+    flex-shrink: 0;
+  }
+  #header h1 { font-size:15px; font-weight:600; }
+  #header .meta { font-size:12px; color: var(--text-dim); }
+
+  /* Toolbar */
+  #toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    background: #21232f;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  #toolbar button {
+    padding: 4px 12px;
+    border: 1px solid var(--border);
+    background: var(--panel-bg);
+    color: var(--text);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background .15s;
+  }
+  #toolbar button:hover { background: var(--accent); }
+  #toolbar button.active { background: var(--accent); color: #fff; }
+  #toolbar .spacer { flex:1; }
+  #toolbar .stat-badge {
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 2px 8px;
+    background: var(--panel-bg);
+    border-radius: 3px;
+  }
+
+  /* Main layout */
+  #main { display:flex; flex:1; overflow:hidden; height: calc(100vh - 76px); }
+
+  /* Visualization area */
+  #vis {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+  }
+  #vis:active { cursor: grabbing; }
+  #vis svg { width:100%; height:100%; }
+
+  /* Side panel */
+  #sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    background: #21232f;
+    border-left: 1px solid var(--border);
+    padding: 12px;
+  }
+  #sidebar h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin: 12px 0 6px;
+  }
+  #sidebar h3:first-child { margin-top: 0; }
+
+  /* Stat rows */
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 3px;
+  }
+  .stat-row:hover { background: rgba(255,255,255,.03); }
+  .stat-row .label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 200px;
+  }
+  .stat-row .value { color: var(--info); font-variant-numeric: tabular-nums; flex-shrink: 0; margin-left: 8px; }
+  .stat-row .value.warn { color: var(--warn); }
+  .stat-row .value.danger { color: var(--danger); }
+
+  /* Ext bar chart */
+  .ext-bar-wrap { display:flex; align-items:center; gap:6px; margin:2px 0; font-size:11px; }
+  .ext-bar-wrap .ext-label { width:50px; text-align:right; flex-shrink:0; color: var(--text-dim); }
+  .ext-bar-wrap .ext-bar {
+    height: 14px;
+    background: var(--accent);
+    border-radius: 2px;
+    min-width: 2px;
+    transition: width .3s;
+  }
+  .ext-bar-wrap .ext-size { margin-left:4px; color: var(--text-dim); flex-shrink:0; }
+
+  /* Tooltip */
+  #tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: rgba(30,31,43,.95);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+    line-height: 1.6;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 100;
+    max-width: 280px;
+  }
+  #tooltip.visible { opacity: 1; }
+  #tooltip .tt-path { color: var(--text-dim); font-size: 11px; word-break: break-all; }
+  #tooltip .tt-size { color: var(--info); font-weight: 600; }
+
+  /* Graph labels */
+  .node-label { font-size:9px; fill: var(--text); pointer-events:none; }
+  .link { stroke: #3d59a1; stroke-opacity: .4; }
+  .link-require { stroke: #f59e0b; stroke-opacity: .5; stroke-dasharray: 4 2; }
+  .link-dynamic { stroke: #a78bfa; stroke-opacity: .5; stroke-dasharray: 2 2; }
+
+  /* Breadcrumb nav */
+  #breadcrumb {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    z-index: 10;
+  }
+  #breadcrumb button {
+    padding: 2px 8px;
+    font-size: 11px;
+    background: rgba(30,31,43,.9);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  #breadcrumb button:hover { background: var(--accent); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    #sidebar { width: 240px; }
+  }
+
+  /* Scrollbar */
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-track { background: transparent; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>📦 Bundle Analysis — YrY</h1>
+  <span class="meta">2026-06-18 23:43:16 · 25 files · 209.1 KB</span>
+</div>
+
+<div id="toolbar">
+  <button id="btn-treemap" class="active" onclick="switchView('treemap')">📏 Treemap</button>
+  <button id="btn-graph" onclick="switchView('graph')">🔗 Dependency Graph</button>
+  <button onclick="resetZoom()">🔍 Reset Zoom</button>
+  <span class="spacer"></span>
+  <span class="stat-badge">Nodes: 25</span>
+  <span class="stat-badge">Edges: 0</span>
+  
+  
+</div>
+
+<div id="main">
+  <div id="vis"></div>
+  <div id="sidebar">
+    <h3>📏 Top Largest Files</h3><div class="stat-row"><span class="label" title="scoring.mjs">scoring.mjs</span><span class="value ">23.5 KB</span></div><div class="stat-row"><span class="label" title="selfimprove-generator.mjs">selfimprove-generator.mjs</span><span class="value ">20.8 KB</span></div><div class="stat-row"><span class="label" title="recommend.mjs">recommend.mjs</span><span class="value ">17.1 KB</span></div><div class="stat-row"><span class="label" title="proposals.mjs">proposals.mjs</span><span class="value ">16.3 KB</span></div><div class="stat-row"><span class="label" title="constants.mjs">constants.mjs</span><span class="value ">15.7 KB</span></div><div class="stat-row"><span class="label" title="record.mjs">record.mjs</span><span class="value ">15.5 KB</span></div><div class="stat-row"><span class="label" title="branch-check.mjs">branch-check.mjs</span><span class="value ">10.8 KB</span></div><div class="stat-row"><span class="label" title="engine/diagnostics.mjs">engine/diagnostics.mjs</span><span class="value ">10.7 KB</span></div><div class="stat-row"><span class="label" title="arch-check.mjs">arch-check.mjs</span><span class="value ">10.1 KB</span></div><div class="stat-row"><span class="label" title="engine/evaluate.mjs">engine/evaluate.mjs</span><span class="value ">8.5 KB</span></div><div class="stat-row"><span class="label" title="engine/materialize.mjs">engine/materialize.mjs</span><span class="value ">8.2 KB</span></div><div class="stat-row"><span class="label" title="arch-dimensions/quality.mjs">arch-dimensions/quality.mjs</span><span class="value ">7.7 KB</span></div><div class="stat-row"><span class="label" title="audit.mjs">audit.mjs</span><span class="value ">7.3 KB</span></div><div class="stat-row"><span class="label" title="arch-dimensions/solid.mjs">arch-dimensions/solid.mjs</span><span class="value ">7.2 KB</span></div><div class="stat-row"><span class="label" title="arch-dimensions/kernel-paradigm.mjs">arch-dimensions/kernel-paradigm.mjs</span><span class="value ">6.5 KB</span></div><h3>📦 By Extension</h3><div class="ext-bar-wrap"><span class="ext-label">.mjs</span><div class="ext-bar" style="width:100%"></div><span class="ext-size">209.1 KB</span></div><h3>📁 By Directory</h3><div class="stat-row"><span class="label">engine/</span><span class="value">29.8 KB</span></div><div class="stat-row"><span class="label">scoring.mjs/</span><span class="value">23.5 KB</span></div><div class="stat-row"><span class="label">arch-dimensions/</span><span class="value">21.3 KB</span></div><div class="stat-row"><span class="label">selfimprove-generator.mjs/</span><span class="value">20.8 KB</span></div><div class="stat-row"><span class="label">recommend.mjs/</span><span class="value">17.1 KB</span></div><div class="stat-row"><span class="label">proposals.mjs/</span><span class="value">16.3 KB</span></div><div class="stat-row"><span class="label">constants.mjs/</span><span class="value">15.7 KB</span></div><div class="stat-row"><span class="label">record.mjs/</span><span class="value">15.5 KB</span></div><div class="stat-row"><span class="label">branch-check.mjs/</span><span class="value">10.8 KB</span></div><div class="stat-row"><span class="label">arch-check.mjs/</span><span class="value">10.1 KB</span></div>
+  </div>
+</div>
+
+<div id="tooltip"></div>
+
+<script>
+// ── Data ─────────────────────────────────────────────────────────────
+const TREEMAP_DATA = {"name":"root","children":[]};
+const DEP_NODES = [{"path":"scoring.mjs","size":24095,"ext":".mjs"},{"path":"selfimprove-generator.mjs","size":21344,"ext":".mjs"},{"path":"recommend.mjs","size":17524,"ext":".mjs"},{"path":"proposals.mjs","size":16672,"ext":".mjs"},{"path":"constants.mjs","size":16042,"ext":".mjs"},{"path":"record.mjs","size":15876,"ext":".mjs"},{"path":"branch-check.mjs","size":11020,"ext":".mjs"},{"path":"engine/diagnostics.mjs","size":10962,"ext":".mjs"},{"path":"arch-check.mjs","size":10377,"ext":".mjs"},{"path":"engine/evaluate.mjs","size":8659,"ext":".mjs"},{"path":"engine/materialize.mjs","size":8429,"ext":".mjs"},{"path":"arch-dimensions/quality.mjs","size":7860,"ext":".mjs"},{"path":"audit.mjs","size":7437,"ext":".mjs"},{"path":"arch-dimensions/solid.mjs","size":7349,"ext":".mjs"},{"path":"arch-dimensions/kernel-paradigm.mjs","size":6618,"ext":".mjs"},{"path":"fs.mjs","size":5380,"ext":".mjs"},{"path":"recommend-cli.mjs","size":4763,"ext":".mjs"},{"path":"recommend-detect.mjs","size":3179,"ext":".mjs"},{"path":"engine/upgrade.mjs","size":2469,"ext":".mjs"},{"path":"arch-helpers.mjs","size":1930,"ext":".mjs"},{"path":"network.mjs","size":1819,"ext":".mjs"},{"path":"plugin-utils.mjs","size":1335,"ext":".mjs"},{"path":"help-layout.mjs","size":1100,"ext":".mjs"},{"path":"tty.mjs","size":1057,"ext":".mjs"},{"path":"concurrency.mjs","size":847,"ext":".mjs"}];
+const DEP_EDGES = [];
+const STATS = {"largestFiles":[{"path":"scoring.mjs","size":24095,"ext":".mjs"},{"path":"selfimprove-generator.mjs","size":21344,"ext":".mjs"},{"path":"recommend.mjs","size":17524,"ext":".mjs"},{"path":"proposals.mjs","size":16672,"ext":".mjs"},{"path":"constants.mjs","size":16042,"ext":".mjs"},{"path":"record.mjs","size":15876,"ext":".mjs"},{"path":"branch-check.mjs","size":11020,"ext":".mjs"},{"path":"engine/diagnostics.mjs","size":10962,"ext":".mjs"},{"path":"arch-check.mjs","size":10377,"ext":".mjs"},{"path":"engine/evaluate.mjs","size":8659,"ext":".mjs"},{"path":"engine/materialize.mjs","size":8429,"ext":".mjs"},{"path":"arch-dimensions/quality.mjs","size":7860,"ext":".mjs"},{"path":"audit.mjs","size":7437,"ext":".mjs"},{"path":"arch-dimensions/solid.mjs","size":7349,"ext":".mjs"},{"path":"arch-dimensions/kernel-paradigm.mjs","size":6618,"ext":".mjs"},{"path":"fs.mjs","size":5380,"ext":".mjs"},{"path":"recommend-cli.mjs","size":4763,"ext":".mjs"},{"path":"recommend-detect.mjs","size":3179,"ext":".mjs"},{"path":"engine/upgrade.mjs","size":2469,"ext":".mjs"},{"path":"arch-helpers.mjs","size":1930,"ext":".mjs"}],"sizeByExt":{".mjs":214143},"sizeByDir":{"arch-check.mjs":10377,"arch-dimensions":21827,"arch-helpers.mjs":1930,"audit.mjs":7437,"branch-check.mjs":11020,"concurrency.mjs":847,"constants.mjs":16042,"engine":30519,"fs.mjs":5380,"help-layout.mjs":1100,"network.mjs":1819,"plugin-utils.mjs":1335,"proposals.mjs":16672,"recommend-cli.mjs":4763,"recommend-detect.mjs":3179,"recommend.mjs":17524,"record.mjs":15876,"scoring.mjs":24095,"selfimprove-generator.mjs":21344,"tty.mjs":1057},"mostDependedOn":[],"mostDependencies":[],"circularDeps":[],"totalSize":214143,"totalFiles":25,"oversizedFiles":[]};
+
+// ── D3 setup ─────────────────────────────────────────────────────────
+const vis = d3.select("#vis");
+const width = () => vis.node().clientWidth;
+const height = () => vis.node().clientHeight;
+let currentView = "treemap";
+
+// Color scale for extensions
+const extColors = d3.scaleOrdinal(d3.schemeTableau10);
+const extColorMap = {};
+function getExtColor(ext) {
+  if (!extColorMap[ext]) extColorMap[ext] = extColors(ext);
+  return extColorMap[ext];
+}
+
+// ── Treemap ──────────────────────────────────────────────────────────
+function renderTreemap() {
+  vis.selectAll("*").remove();
+
+  const svg = vis.append("svg")
+    .attr("width", width())
+    .attr("height", height());
+
+  const g = svg.append("g");
+
+  // Zoom
+  const zoom = d3.zoom()
+    .scaleExtent([1, 20])
+    .on("zoom", (event) => g.attr("transform", event.transform));
+
+  svg.call(zoom);
+
+  // Hierarchy
+  const root = d3.hierarchy(TREEMAP_DATA)
+    .sum(d => d.value || 0)
+    .sort((a, b) => b.value - a.value);
+
+  // Treemap layout
+  d3.treemap()
+    .size([width(), height()])
+    .padding(1)
+    .round(true)(root);
+
+  // Color scale
+  const color = d3.scaleOrdinal()
+    .domain([...new Set(root.leaves().map(d => d.data.ext || "dir"))])
+    .range(d3.schemeTableau10);
+
+  // Draw
+  const cell = g.selectAll("g")
+    .data(root.leaves())
+    .join("g")
+    .attr("transform", d => `translate(${d.x0},${d.y0})`);
+
+  // Click to show breadcrumb (zoom to parent concept)
+  cell.on("click", (event, d) => {
+    // Navigate to parent via zoom
+    const parent = d.parent;
+    if (parent && parent !== root) {
+      const leaves = parent.leaves();
+      const x0 = d3.min(leaves, l => l.x0);
+      const y0 = d3.min(leaves, l => l.y0);
+      const x1 = d3.max(leaves, l => l.x1);
+      const y1 = d3.max(leaves, l => l.y1);
+      const dx = x1 - x0;
+      const dy = y1 - y0;
+
+      svg.transition().duration(500).call(
+        zoom.transform,
+        d3.zoomIdentity
+          .translate(width() / 2, height() / 2)
+          .scale(Math.min(8, 0.9 / Math.max(dx / width(), dy / height())))
+          .translate(-(x0 + dx / 2), -(y0 + dy / 2))
+      );
+    }
+  });
+
+  cell.append("rect")
+    .attr("width", d => Math.max(0, d.x1 - d.x0))
+    .attr("height", d => Math.max(0, d.y1 - d.y0))
+    .attr("fill", d => getExtColor(d.data.ext || "dir"))
+    .attr("fill-opacity", 0.85)
+    .attr("stroke", "#1e1f2b")
+    .attr("stroke-width", 0.5)
+    .on("mouseover", showTooltip)
+    .on("mousemove", moveTooltip)
+    .on("mouseout", hideTooltip);
+
+  // Labels (only on larger cells)
+  cell.append("text")
+    .attr("x", 3)
+    .attr("y", 12)
+    .attr("font-size", 10)
+    .attr("fill", "#fff")
+    .attr("font-family", "system-ui, sans-serif")
+    .text(d => {
+      const w = d.x1 - d.x0;
+      const h = d.y1 - d.y0;
+      if (w < 30 || h < 14) return "";
+      const name = d.data.name || "";
+      return w > name.length * 6 ? name : name.slice(0, Math.floor(w / 6) - 1) + "…";
+    });
+
+  // Breadcrumb (root = all files)
+  updateBreadcrumb([TREEMAP_DATA]);
+
+  // Store zoom for reset
+  vis.node()._zoom = zoom;
+  vis.node()._svg = svg;
+  vis.node()._g = g;
+}
+
+// ── Dependency Graph ─────────────────────────────────────────────────
+function renderGraph() {
+  vis.selectAll("*").remove();
+
+  const svg = vis.append("svg")
+    .attr("width", width())
+    .attr("height", height());
+
+  const g = svg.append("g");
+
+  const zoom = d3.zoom()
+    .scaleExtent([0.1, 10])
+    .on("zoom", (event) => g.attr("transform", event.transform));
+
+  svg.call(zoom);
+
+  // Size scale for nodes
+  const sizeScale = d3.scaleSqrt()
+    .domain([0, d3.max(DEP_NODES, d => d.size) || 1])
+    .range([3, 40]);
+
+  // Color by extension
+  const nodeColor = d => getExtColor(d.ext || "dir");
+
+  // Build adjacency for links
+  const nodeMap = new Map(DEP_NODES.map(n => [n.path, n]));
+
+  const links = DEP_EDGES
+    .filter(e => nodeMap.has(e.from) && nodeMap.has(e.to))
+    .map(e => ({
+      source: e.from,
+      target: e.to,
+      type: e.type || "import",
+    }));
+
+  // Simulation
+  const simulation = d3.forceSimulation(DEP_NODES)
+    .force("link", d3.forceLink(links).id(d => d.path).distance(80))
+    .force("charge", d3.forceManyBody().strength(-200))
+    .force("center", d3.forceCenter(width() / 2, height() / 2))
+    .force("collision", d3.forceCollide().radius(d => sizeScale(d.size) + 4));
+
+  // Draw links
+  const link = g.append("g")
+    .selectAll("line")
+    .data(links)
+    .join("line")
+    .attr("class", d => d.type === "require" ? "link link-require" : d.type === "dynamic" ? "link link-dynamic" : "link")
+    .attr("stroke-width", d => d.type === "dynamic" ? 0.8 : 1);
+
+  // Draw nodes
+  const node = g.append("g")
+    .selectAll("g")
+    .data(DEP_NODES)
+    .join("g")
+    .call(d3.drag()
+      .on("start", (event, d) => {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+      })
+      .on("drag", (event, d) => {
+        d.fx = event.x;
+        d.fy = event.y;
+      })
+      .on("end", (event, d) => {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+      })
+    );
+
+  node.append("circle")
+    .attr("r", d => sizeScale(d.size))
+    .attr("fill", nodeColor)
+    .attr("fill-opacity", 0.8)
+    .attr("stroke", "#1e1f2b")
+    .attr("stroke-width", 1)
+    .on("mouseover", showGraphTooltip)
+    .on("mousemove", moveTooltip)
+    .on("mouseout", hideTooltip);
+
+  // Labels on larger nodes
+  node.append("text")
+    .attr("class", "node-label")
+    .attr("text-anchor", "middle")
+    .attr("dy", d => sizeScale(d.size) + 12)
+    .text(d => {
+      const r = sizeScale(d.size);
+      if (r < 12) return "";
+      const parts = d.path.split("/");
+      return parts[parts.length - 1];
+    });
+
+  simulation.on("tick", () => {
+    link
+      .attr("x1", d => d.source.x)
+      .attr("y1", d => d.source.y)
+      .attr("x2", d => d.target.x)
+      .attr("y2", d => d.target.y);
+
+    node.attr("transform", d => `translate(${d.x},${d.y})`);
+  });
+
+  // Store for reset
+  vis.node()._zoom = zoom;
+  vis.node()._svg = svg;
+  vis.node()._g = g;
+}
+
+// ── Tooltips ─────────────────────────────────────────────────────────
+const tooltip = d3.select("#tooltip");
+
+function showTooltip(event, d) {
+  const p = d.data.path || d.data.name;
+  tooltip
+    .classed("visible", true)
+    .html(`
+      <div class="tt-path">${escapeH(p)}</div>
+      <div class="tt-size">${formatB(d.value || d.data.value)}</div>
+      ${d.data.ext ? `<div style="color:#6b7089">ext: ${escapeH(d.data.ext)}</div>` : ""}
+    `);
+}
+
+function showGraphTooltip(event, d) {
+  tooltip
+    .classed("visible", true)
+    .html(`
+      <div class="tt-path">${escapeH(d.path)}</div>
+      <div class="tt-size">${formatB(d.size)}</div>
+    `);
+}
+
+function moveTooltip(event) {
+  tooltip
+    .style("left", (event.pageX + 12) + "px")
+    .style("top", (event.pageY - 28) + "px");
+}
+
+function hideTooltip() {
+  tooltip.classed("visible", false);
+}
+
+function escapeH(s) {
+  return (s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function formatB(bytes) {
+  if (!bytes || bytes === 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return (bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1) + " " + units[i];
+}
+
+// ── Breadcrumb ───────────────────────────────────────────────────────
+function updateBreadcrumb(ancestors) {
+  // For treemap: show directory hierarchy
+  let html = '<button onclick="resetZoom()">📦 root</button>';
+  for (let i = 0; i < Math.min(ancestors.length, 6); i++) {
+    html += `<button>${escapeH(ancestors[i].name || "root")}</button>`;
+  }
+  d3.select("#breadcrumb").html(html);
+}
+
+// ── Controls ─────────────────────────────────────────────────────────
+function switchView(view) {
+  currentView = view;
+  d3.select("#btn-treemap").classed("active", view === "treemap");
+  d3.select("#btn-graph").classed("active", view === "graph");
+
+  if (view === "treemap") renderTreemap();
+  else renderGraph();
+}
+
+function resetZoom() {
+  const svg = vis.node()._svg;
+  const zoom = vis.node()._zoom;
+  if (svg && zoom) {
+    svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
+  }
+}
+
+// ── Init ─────────────────────────────────────────────────────────────
+renderTreemap();
+
+// Handle resize
+window.addEventListener("resize", () => {
+  if (currentView === "treemap") renderTreemap();
+  else renderGraph();
+});
+</script>
+</body>
+</html>

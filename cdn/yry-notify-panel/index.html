@@ -12,11 +12,11 @@
   自定义元素用法 (推荐):
      <link rel="stylesheet" href="path/to/yry-notify-panel/index.css">
      <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-     <script src="path/to/js/panel-hub.js"></script>
+     <script src="path/to/yry-panel-hub/index.js"></script>
      <script src="path/to/yry-notify-panel/index.js"></script>
      <yry-notify-panel></yry-notify-panel>
 
-  Differences vs 原 cdn/js/notify-panel.js (501 行 IIFE):
+  Differences vs 原 IIFE (500+ 行字符串拼接式 Vue.createApp):
     - Template 已移出 JS 字符串拼接,改为 HTML <script> 块 (可读性 ↑)
     - 改用 Vue 3 defineCustomElement,自动注入 #notifyPanel / #notifyOverlay DOM
     - 业务逻辑 (data / computed / methods / fetch) 1:1 保留
@@ -99,8 +99,8 @@
     </div>
   </script>
 
-  <!-- 加载链 -->
-  <script src="../js/panel-hub.js"></script>
+  <!-- 加载链 (PanelHub 由 yry-panel-hub 提供 window.PanelHub;yry-notify-panel index.js 自动 register) -->
+  <script src="../yry-panel-hub/index.js"></script>
   <script src="../shared.js"></script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <script src="index.js"></script>
