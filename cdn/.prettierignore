@@ -11,8 +11,8 @@ releases.json
 node_modules/
 fonts/
 
-# === 历史档案(只读) ===
-健康报告/
+# === 历史档案(只读) — 已重构至 docs/健康报告/health-cdn-* ===
+# 健康报告/
 
 # === 大型演示文件(单行代码块居多) ===
 yry-test-panel.js

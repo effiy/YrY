@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YrY CDN · 健康报告索引 · 重构自 cdn/健康报告</title>
+<link rel="stylesheet" href="../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../cdn/shared-reports/index.css">
+<link rel="stylesheet" href="../../cdn/yry-home/index.css">
+<style>
+.c { max-width: 880px; margin: 0 auto; padding: 48px 24px 80px; }
+.latest { text-align: center; padding: 18px 16px 14px; margin-bottom: 20px; background: rgba(255,193,7,.05); border-radius: 10px; border: var(--yry-border); }
+.latest .score { font-size: 2rem; font-weight: 800; color: var(--yry-accent); }
+.latest .grade { font-size: 1.1rem; font-weight: 700; margin-left: 8px; }
+.latest .date { display: block; font-size: .72rem; color: var(--yry-text3); margin-top: 4px; }
+.latest .meta-row { font-size: .68rem; color: var(--yry-text3); margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="c" id="app">
+
+<nav class="bc">
+  <a href="../../cdn/index.html">🌐 YrY CDN</a>
+  <span class="sep">/</span>
+  <span class="cur">🩺 健康报告</span>
+</nav>
+
+<div class="hd">
+  <h1>🩺 YrY CDN 健康报告</h1>
+  <div class="desc">CDN 资源库专属健康度量 — 8 维度评估(D0 组件完整性 / D1 核心文件 / D2 字体 / D3 发布元数据 / D4 主题 / D5 演示 / D6 加载链 / D7 jsDelivr),与项目级 <code>docs/健康报告</code> 隔离,只评估 <code>cdn/</code> 目录自身。</div>
+  <div class="meta"><span>{{ countText }}</span> · 数据源 <code>health-report.json</code></div>
+</div>
+
+<div class="intro">
+  <strong>评估范围</strong>：仅限 <code>cdn/</code> 目录(yry-* 组件 / 核心 CSS / 字体 / 主题 / 演示 / 加载链 / npm 发布),不涉及项目业务代码<br>
+  <strong>8 维度</strong>：<code>D0</code> 组件完整性(53/62) · <code>D1</code> 核心文件(4/4) · <code>D2</code> 字体(4/4 woff2) · <code>D3</code> 发布元数据(4/4) · <code>D4</code> 主题(2/2) · <code>D5</code> 演示(53/62) · <code>D6</code> 加载链(5 步) · <code>D7</code> jsDelivr 同步<br>
+  <strong>等级阈值</strong>：A ≥ 95 · B 85-94 · C 70-84 · D &lt; 70<br>
+  <strong>数据更新</strong>：发版后手动更新 <code>health-report.json</code>,通知中心面板自动拉取
+</div>
+
+<div class="yry-stats" v-if="!error">
+  <div class="yry-stat"><div class="yry-val" :class="latestScoreCls">{{ latestScore }}</div><div class="yry-lbl">最新评分</div></div>
+  <div class="yry-stat"><div class="yry-val" :class="latestScoreCls">{{ latestGrade }}</div><div class="yry-lbl">最新等级</div></div>
+  <div class="yry-stat"><div class="yry-val" :class="latestTriggerCls">{{ latestTriggers }}</div><div class="yry-lbl">诊断触发</div></div>
+  <div class="yry-stat"><div class="yry-val info">{{ dimCount }}</div><div class="yry-lbl">评分维度</div></div>
+  <div class="yry-stat"><div class="yry-val info">{{ latestVersion }}</div><div class="yry-lbl">最新版本</div></div>
+</div>
+
+<div class="latest" v-if="latest && !error">
+  <div class="score" :class="latestScoreCls">{{ latestScore }} 分</div>
+  <span class="grade yry-badge" :class="latestGrade">{{ latestGrade }} 级</span>
+  <span class="date">{{ latestDate }}</span>
+  <div class="meta-row">{{ latestMeta }}</div>
+</div>
+
+<div class="card" v-if="latest && latest.dims && dimKeys.length" id="dimsCard">
+  <h2>📊 最新 8 维度明细</h2>
+  <div class="dim-grid">
+    <div v-for="dim in dimList" :key="dim.id" class="dim-cell">
+      <div class="dim-id">{{ dim.id }}</div>
+      <div class="dim-name">{{ dim.name }}</div>
+      <div class="dim-score" :class="dim.cls">{{ dim.score }}</div>
+      <div class="dim-bar"><span :class="dim.cls" :style="{ width: dim.score + '%' }"></span></div>
+      <div class="dim-detail">{{ dim.desc }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>📋 报告历史</h2>
+  <table>
+    <thead><tr><th>日期</th><th>时间</th><th>版本</th><th>评分</th><th>等级</th><th>诊断</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr v-if="loading"><td colspan="7">加载中...</td></tr>
+      <tr v-else-if="error"><td colspan="7"><div class="yry-empty">加载失败: {{ error }}</div></td></tr>
+      <tr v-else-if="reports.length === 0"><td colspan="7"><div class="yry-empty">暂无报告<br><span style="font-size:.7rem;margin-top:8px;display:block">更新 <code>health-report.json</code> 添加首份记录</span></div></td></tr>
+      <tr v-for="(r, i) in reports" :key="i">
+        <td>🩺 {{ r.date || '—' }}</td>
+        <td style="font-size:.72rem;color:var(--yry-text3)">{{ r.time || '—' }}</td>
+        <td><code v-if="r.version" style="font-size:.72rem">v{{ r.version }}</code><span v-else>—</span></td>
+        <td><span v-if="r.score" class="s" :class="r.grade || ''">{{ r.score }} 分</span><span v-else>—</span></td>
+        <td><span v-if="r.grade" class="yry-badge" :class="r.grade">{{ r.grade }} 级</span><span v-else>—</span></td>
+        <td>{{ r.triggers !== undefined && r.triggers !== null ? r.triggers + '/8' : '—' }}</td>
+        <td><a :href="r.file || '#'">查看</a></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="links">
+  <a href="../../cdn/index.html">🌐 CDN 首页</a>
+  <a href="../../cdn/README.md">📖 README</a>
+  <a href="../../cdn/package.json">📦 package.json</a>
+  <a href="../../cdn/releases/index.json">📜 releases.json</a>
+  <a href="https://www.npmjs.com/package/yry-cdn" target="_blank" rel="noopener noreferrer">🌐 npm</a>
+  <a href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/" target="_blank" rel="noopener noreferrer">🚀 jsDelivr</a>
+</div>
+
+<div class="ft">
+  YrY CDN 健康报告 · CDN 自有资源评估<br>
+  <span style="color:var(--yry-text3)">8 维度评估 · D0-D7 诊断 · 数据源 health-report.json</span>
+</div>
+
+</div>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="../../cdn/yry-back-top/index.js"></script>
+<script>
+(function() {
+  var app = Vue.createApp({
+    data: function() {
+      return {
+        reports: [],
+        meta: {},
+        loading: true,
+        error: null
+      };
+    },
+    computed: {
+      countText: function() { return this.reports.length + ' 份历史报告'; },
+      latest: function() { return this.reports.length > 0 ? this.reports[0] : null; },
+      latestScore: function() { return this.latest ? (this.latest.score || '—') : '—'; },
+      latestGrade: function() { return this.latest ? (this.latest.grade || '—') : '—'; },
+      latestScoreCls: function() {
+        var sc = this.latest ? this.latest.score : 0;
+        return sc >= 95 ? 'pass' : sc >= 85 ? 'pass' : sc >= 70 ? 'warn' : 'fail';
+      },
+      latestTriggerCls: function() {
+        var t = this.latest ? this.latest.triggers : -1;
+        return t === 0 ? 'pass' : t <= 2 ? 'warn' : 'fail';
+      },
+      latestTriggers: function() {
+        var t = this.latest ? this.latest.triggers : null;
+        return (t === 0 || t) ? t : '—';
+      },
+      latestVersion: function() { return this.latest && this.latest.version ? 'v' + this.latest.version : '—'; },
+      latestDate: function() {
+        if (!this.latest) return '—';
+        return (this.latest.date || '—') + (this.latest.time ? ' ' + this.latest.time : '');
+      },
+      latestMeta: function() {
+        if (!this.latest) return '—';
+        var parts = [];
+        if (this.latest.version) parts.push('📦 v' + this.latest.version);
+        if (this.latest.triggers !== undefined && this.latest.triggers !== null) parts.push('🔬 ' + this.latest.triggers + '/8 触发');
+        if (this.latest.dimTotal) parts.push('📊 ' + this.latest.dimTotal + ' 维度');
+        return parts.join(' · ');
+      },
+      dimCount: function() { return (this.meta.dimensions || []).length || 8; },
+      dimKeys: function() {
+        if (!this.latest || !this.latest.dims) return [];
+        return Object.keys(this.latest.dims);
+      },
+      dimList: function() {
+        if (!this.latest || !this.latest.dims) return [];
+        var dimOrder = ['D0','D1','D2','D3','D4','D5','D6','D7'];
+        var dimMeta = {};
+        var self = this;
+        (this.meta.dimensions || []).forEach(function(d) { dimMeta[d.id] = d; });
+        return dimOrder.filter(function(id) { return self.latest.dims[id]; }).map(function(id) {
+          var dn = self.latest.dims[id];
+          var ds = dn.score;
+          return {
+            id: id,
+            name: (dimMeta[id] && dimMeta[id].name) || dn.name || id,
+            score: ds,
+            cls: ds >= 80 ? 'pass' : ds >= 60 ? 'warn' : 'fail',
+            desc: (dimMeta[id] && dimMeta[id].desc) || dn.detail || ''
+          };
+        });
+      }
+    },
+    mounted: function() { this.fetchData(); },
+    methods: {
+      async fetchData() {
+        try {
+          var res = await fetch('../../cdn/health-report/index.json');
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          var data = await res.json();
+          this.reports = Array.isArray(data) ? data : (Array.isArray(data.reports) ? data.reports : []);
+          this.meta = (data && data._meta) || {};
+        } catch(e) {
+          this.error = e.message;
+        }
+        this.loading = false;
+      }
+    }
+  });
+  app.mount('#app');
+})();
+</script>
+</body>
+</html>

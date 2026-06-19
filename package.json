@@ -6,11 +6,11 @@
   "description": "YrY — story-driven SDLC orchestrator (Claude Code plugin)",
   "scripts": {
     "test": "vitest run",
-    "test:all": "vitest run && node tests/run.mjs",
+    "test:all": "vitest run && node skills/rui/tests/run.mjs",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "test:legacy": "node tests/run.mjs",
+    "test:legacy": "node skills/rui/tests/run.mjs",
     "version": "node -e \"console.log(require('./package.json').version)\""
   },
   "devDependencies": {

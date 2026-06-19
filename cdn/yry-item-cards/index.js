@@ -120,7 +120,7 @@
       ],
       /* Layer 6 · 监控与报告 (6) */
       'ref-monitor-grid': [
-        { icon: '🩺', iconModifier: 'ref', name: '健康报告', nameHref: '../健康报告/index.html', nameTarget: '_blank', desc: '健康报告中心 — 历次 9 维度健康评分(A/B/C/D 四级)、D0-D7 诊断、机器人就绪状态、报告归档与查询', tags: [{ text: '监控面板', modifier: 'green' }, { text: '健康', modifier: 'info' }], meta: '归档 + 趋势 · 9 维度 · D0-D7 诊断' },
+        { icon: '🩺', iconModifier: 'ref', name: '健康报告', nameHref: '../docs/健康报告/index.html', nameTarget: '_blank', desc: '健康报告中心 — 历次 9 维度健康评分(A/B/C/D 四级)、D0-D7 诊断、机器人就绪状态、报告归档与查询', tags: [{ text: '监控面板', modifier: 'green' }, { text: '健康', modifier: 'info' }], meta: '归档 + 趋势 · 9 维度 · D0-D7 诊断' },
         { icon: '🔄', iconModifier: 'ref', name: '自循环报告', nameHref: '../自循环报告/index.html', nameTarget: '_blank', desc: '自循环报告中心 — 12 项技能每日/每周巡检报告 · 通过/告警/异常 · 发现清单分级', tags: [{ text: '监控面板', modifier: 'green' }, { text: '循环', modifier: 'info' }], meta: '12 项技能 · 日/周巡检 · 分级清单' },
         { icon: '📡', iconModifier: 'ref', name: '趋势报告', nameHref: '../趋势报告/index.html', nameTarget: '_blank', desc: '趋势报告中心 — GitHub Trending / OSS Insight / TrendShift / Top-Starred 数据源扫描,可达性 + 趋势分析', tags: [{ text: '监控面板', modifier: 'green' }, { text: '趋势', modifier: 'info' }], meta: '4 数据源 · 可达性 · 趋势方向' },
         { icon: '🧬', iconModifier: 'ref', name: '自改进分析', nameHref: './index.html#selfimprove', nameTarget: '_self', desc: '本页面顶部的自改进面板 — 日/周/月/全景四视角,实时追踪健康趋势与改进信号', tags: [{ text: '本页内嵌', modifier: 'green' }, { text: '分析', modifier: 'info' }], meta: '日/周/月/全景 · 趋势追踪', onClick: function () { if (window.openPanel) window.openPanel('selfimprove'); } },

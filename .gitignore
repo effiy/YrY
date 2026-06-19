@@ -23,6 +23,9 @@ coverage/
 dist/
 build/
 .cache/
+skills/rui/tests/results.json
+skills/rui/tests/manifest.json
+skills/rui/tests/unit/__pycache__/
 
 # Environment & secrets
 .env

@@ -4,11 +4,11 @@
  * 用法: node skills/rui-npm/rui-npm.mjs <command> [options]
  *
  * 对应场景文档:
- *   - docs/故事任务面板/rui-npm/场景-1-包搜索与发现/
- *   - docs/故事任务面板/rui-npm/场景-2-包安装与版本管理/
- *   - docs/故事任务面板/rui-npm/场景-3-本地发布与npx使用/
- *   - docs/故事任务面板/rui-npm/场景-4-包信息审计与卸载/
- *   - docs/故事任务面板/rui-npm/场景-5-账号级包管理/
+ *   - skills/rui-npm/scenes/场景-1-包搜索与发现/
+ *   - skills/rui-npm/scenes/场景-2-包安装与版本管理/
+ *   - skills/rui-npm/scenes/场景-3-本地发布与npx使用/
+ *   - skills/rui-npm/scenes/场景-4-包信息审计与卸载/
+ *   - skills/rui-npm/scenes/场景-5-账号级包管理/
  *
  * 子命令:
  *   search       <keyword>           搜索 npm registry

@@ -326,10 +326,10 @@ YrY/
 │       ├── evaluate.mjs     #     E1-E4 效果评估
 │       ├── materialize.mjs  #     提案→故事物化
 │       └── upgrade.mjs      #     经验→规则升级检测
-├── tests/                   # 自检测试套件
-│   ├── run.mjs              #   测试运行器
-│   ├── skills/ integration/
-│   └── lib/                 #   测试工具（harness + helpers）
+├── skills/*/tests/          # 分布式自检测试套件（每个 skill 自包含）
+│   ├── run.mjs              #   测试运行器 (skills/rui/tests/)
+│   └── ...
+├── cdn/tests/               # CDN/主题集成测试
 ├── .claude/                 # Claude Code 本地配置
 ├── .claude-plugin/          # 插件清单与市场元数据
 ├── CLAUDE.md

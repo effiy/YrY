@@ -2,9 +2,9 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    include: ['tests/infrastructure/**/*.test.mjs'],
+    include: ['skills/rui/tests/infrastructure/**/*.test.mjs'],
     // Legacy test files (skills/ integration/) use the custom
-    // test-harness.mjs API and are managed by `node tests/run.mjs`.
+    // test-harness.mjs API and are managed by `node skills/rui/tests/run.mjs`.
     // Agents and rules are now integrated into skills/.
     // Vitest focuses on engineering-grade tests using vitest-native primitives.
     exclude: ['node_modules', '.claude/**', 'cdn/**'],
@@ -14,7 +14,7 @@ export default defineConfig({
     reporters: ['default'],
     coverage: {
       provider: 'v8',
-      reportsDirectory: 'tests/coverage',
+      reportsDirectory: 'coverage',
       reporter: ['text', 'html', 'json'],
       include: [
         'skills/**/*.mjs',

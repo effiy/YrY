@@ -54,7 +54,7 @@
   var PanelHubRegistry = {
     registry: {},
     PATHS: {
-      healthIndex:   './健康报告/index.html',
+      healthIndex:   '../docs/健康报告/health-cdn-index.html',
       loopIndex:     './自循环报告/index.html',
       trendManifest: './趋势报告/reports.json',
       summaryJson:   './自我改进/summary.json',

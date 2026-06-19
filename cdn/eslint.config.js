@@ -18,7 +18,7 @@ export default [
     ignores: [
       'node_modules/**',
       'fonts/**',
-      '健康报告/**',
+      '健康报告/**', // 历史档案(已重构至 docs/健康报告/),占位以避免 ESLint 缓存路径漂移
       '故事任务面板/**',
       'components.manifest.json',
       'cdn-summary.json',

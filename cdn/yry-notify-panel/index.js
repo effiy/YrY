@@ -60,7 +60,7 @@
     if (!item || !item.href) return '';
     var fileName = String(item.href).split('/').pop() || '';
     if (!fileName) return '';
-    if (item.type === 'health') return './健康报告/' + fileName;
+    if (item.type === 'health') return '../docs/健康报告/' + fileName;
     return item.basePath ? (item.basePath + item.href) : item.href;
   }
 
@@ -409,7 +409,7 @@
             var unified = [];
             healthData.forEach(function (r) {
               unified.push({
-                type: 'health', href: r.file, basePath: './健康报告/', label: '🩺 ' + r.date,
+                type: 'health', href: r.file, basePath: '../docs/健康报告/', label: '🩺 ' + r.date,
                 date: r.date, timeText: r.time, timeId: String(r.time || '').replace(/\D/g, ''),
                 meta: { score: r.score, grade: r.grade }
               });
@@ -455,7 +455,7 @@
         },
         fetchHealthReports: async function () {
           try {
-            var resp = await fetch('./健康报告/reports.json');
+            var resp = await fetch('../docs/健康报告/reports.json');
             if (!resp.ok) throw new Error('HTTP ' + resp.status);
             var data = await resp.json();
             if (!Array.isArray(data) || data.length === 0) return [];

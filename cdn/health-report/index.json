@@ -50,9 +50,100 @@
       "C": "70-84 — 需修复",
       "D": "< 70 — 需干预"
     },
-    "updatedAt": "2026-06-18"
+    "updatedAt": "2026-06-19"
   },
   "reports": [
+    {
+      "date": "2026-06-19",
+      "time": "2026-06-19 10:35:12",
+      "type": "project",
+      "score": 82,
+      "grade": "B",
+      "triggers": 2,
+      "dimTotal": 20,
+      "dims": {
+        "token": {
+          "score": 100,
+          "detail": "已配置 (8 字符)"
+        },
+        "config": {
+          "score": 100,
+          "detail": "存在 — 1 机器人, 4/4 通知开关已启用"
+        },
+        "robots": {
+          "score": 100,
+          "detail": "1/1 webhook 就绪 (general)"
+        },
+        "api": {
+          "score": 100,
+          "detail": "可达 (HTTP 400)"
+        },
+        "reports": {
+          "score": 100,
+          "detail": "6 份报告, 2 份近 7 天"
+        },
+        "format": {
+          "score": 100,
+          "detail": "SKILL.md 格式约束全部满足"
+        },
+        "diagnostics": {
+          "score": 70,
+          "detail": "0 条记录, 2/8 诊断触发"
+        },
+        "git": {
+          "score": 40,
+          "detail": "main · 102 个未提交文件"
+        },
+        "security": {
+          "score": 100,
+          "detail": "未发现风险"
+        },
+        "em_testing": {
+          "score": 60,
+          "detail": "vitest, 0 用例"
+        },
+        "em_types": {
+          "score": 100,
+          "detail": "TypeScript strict"
+        },
+        "em_linting": {
+          "score": 80,
+          "detail": "3 工具: ESLint, Prettier, EditorConfig"
+        },
+        "em_cicd": {
+          "score": 0,
+          "detail": "无 CI/CD 管线"
+        },
+        "em_docs": {
+          "score": 100,
+          "detail": "3 文档: README, CLAUDE.md, docs/"
+        },
+        "em_deps": {
+          "score": 100,
+          "detail": "npm lockfile + 版本脚本"
+        },
+        "em_git": {
+          "score": 80,
+          "detail": "2 项: .gitignore, .gitattributes"
+        },
+        "file_size": {
+          "score": 98,
+          "detail": "210 文件 · 1.95 MB · 最大 319.5 KB · -10.1%"
+        },
+        "dep_analysis": {
+          "score": 21,
+          "detail": "153 模块 · 278 依赖边 · 无循环依赖 · 32 孤立文件"
+        },
+        "notify": {
+          "score": 100,
+          "detail": "暂无投递记录"
+        },
+        "comp_qual": {
+          "score": 86,
+          "detail": "99 组件均分 86 · 优秀 86 / 一般 13 / 待改进 0"
+        }
+      }
+    },
     {
       "date": "2026-06-18",
       "time": "2026-06-18 22:27:06",

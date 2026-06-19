@@ -88,7 +88,7 @@
         { id: 'CDN 共享库',  icon: '🌐', href: '../cdn/index.html' },
         { id: '自检中心',    icon: '🧪', href: '../tests/index.html' },
         { id: '演示中心',    icon: '🎬', href: './yry-arch/scenes/场景-1-新人上手/演示.html' },
-        { id: '健康报告',    icon: '🩺', href: './健康报告/index.html' },
+        { id: '健康报告',    icon: '🩺', href: '../docs/健康报告/health-cdn-index.html' },
         { id: '自循环报告',  icon: '🔄', href: './自循环报告/index.html' },
         { id: '趋势报告',    icon: '📡', href: './趋势报告/index.html' },
         { id: '自我改进',    icon: '🧬', href: './自我改进/index.html' },
@@ -349,11 +349,11 @@
         subTitle: { icon: '📦', text: 'npm 包管理工具 — 5 场景', count: '5 个' },
         grid: 'scene',
         items: [
-          { num: '场景 1', name: '包搜索与发现',      nameHref: '故事任务面板/npm包管理/场景-1-包搜索与发现/index.md',      nameTarget: '_blank', desc: 'npm search · registry 查询 · 包详情获取 — 快速发现和评估 npm 包', meta: sceneMeta('故事任务面板/npm包管理/场景-1-包搜索与发现') },
-          { num: '场景 2', name: '包安装与版本管理',  nameHref: '故事任务面板/npm包管理/场景-2-包安装与版本管理/index.md',  nameTarget: '_blank', desc: 'npm install · 版本锁定 · 依赖树管理 — 安全可靠的包安装', meta: sceneMeta('故事任务面板/npm包管理/场景-2-包安装与版本管理') },
-          { num: '场景 3', name: '本地发布与 npx 使用', nameHref: '故事任务面板/npm包管理/场景-3-本地发布与npx使用/index.md', nameTarget: '_blank', desc: 'npm pack · npm link · npx 执行 — 本地开发与测试工作流', meta: sceneMeta('故事任务面板/npm包管理/场景-3-本地发布与npx使用') },
-          { num: '场景 4', name: '包信息审计与卸载',  nameHref: '故事任务面板/npm包管理/场景-4-包信息审计与卸载/index.md',  nameTarget: '_blank', desc: 'npm audit · npm ls · npm uninstall — 安全审计与清理', meta: sceneMeta('故事任务面板/npm包管理/场景-4-包信息审计与卸载') },
-          { num: '场景 5', name: '账号级包管理',      nameHref: '故事任务面板/npm包管理/场景-5-账号级包管理/index.md',      nameTarget: '_blank', desc: 'my-packages · deprecate · unpublish — 个人 npm 资产 CRUD', meta: sceneMeta('故事任务面板/npm包管理/场景-5-账号级包管理') }
+          { num: '场景 1', name: '包搜索与发现',      nameHref: '../skills/rui-npm/scenes/场景-1-包搜索与发现/index.md',      nameTarget: '_blank', desc: 'npm search · registry 查询 · 包详情获取 — 快速发现和评估 npm 包', meta: sceneMeta('../skills/rui-npm/scenes/场景-1-包搜索与发现') },
+          { num: '场景 2', name: '包安装与版本管理',  nameHref: '../skills/rui-npm/scenes/场景-2-包安装与版本管理/index.md',  nameTarget: '_blank', desc: 'npm install · 版本锁定 · 依赖树管理 — 安全可靠的包安装', meta: sceneMeta('../skills/rui-npm/scenes/场景-2-包安装与版本管理') },
+          { num: '场景 3', name: '本地发布与 npx 使用', nameHref: '../skills/rui-npm/scenes/场景-3-本地发布与npx使用/index.md', nameTarget: '_blank', desc: 'npm pack · npm link · npx 执行 — 本地开发与测试工作流', meta: sceneMeta('../skills/rui-npm/scenes/场景-3-本地发布与npx使用') },
+          { num: '场景 4', name: '包信息审计与卸载',  nameHref: '../skills/rui-npm/scenes/场景-4-包信息审计与卸载/index.md',  nameTarget: '_blank', desc: 'npm audit · npm ls · npm uninstall — 安全审计与清理', meta: sceneMeta('../skills/rui-npm/scenes/场景-4-包信息审计与卸载') },
+          { num: '场景 5', name: '账号级包管理',      nameHref: '../skills/rui-npm/scenes/场景-5-账号级包管理/index.md',      nameTarget: '_blank', desc: 'my-packages · deprecate · unpublish — 个人 npm 资产 CRUD', meta: sceneMeta('../skills/rui-npm/scenes/场景-5-账号级包管理') }
         ]
       },
       {

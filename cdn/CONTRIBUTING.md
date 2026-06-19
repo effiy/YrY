@@ -124,7 +124,7 @@ PR 必须通过以下检查:
 ## 📚 相关文档
 
 - 场景: [yry-breadcrumb/scenes/](./yry-breadcrumb/scenes/) (5 场景)
-- 健康报告: [健康报告/index.html](./健康报告/index.html)
+- 健康报告: [健康报告/health-cdn-index.html](../docs/健康报告/health-cdn-index.html)
 - 组件清单: [components.manifest.json](components\-manifest\/index\.json)(自动生成)
 - 架构决策: 见 `docs/`(根目录 CLAUDE.md)
 
