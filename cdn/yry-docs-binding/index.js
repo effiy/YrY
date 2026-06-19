@@ -32,24 +32,24 @@
     return;
   }
 
-  var TAG_NAME = 'yry-docs-binding';
-  var TEMPLATE_ID = 'yry-docs-binding-tpl';
-  var READY_EVENT = 'yry-docs-binding-ready';
-  var LOAD_TIMEOUT_MS = 5000;
-  var REFRESH_MS = 5 * 60 * 1000;
+  const TAG_NAME = 'yry-docs-binding';
+  const TEMPLATE_ID = 'yry-docs-binding-tpl';
+  const READY_EVENT = 'yry-docs-binding-ready';
+  const LOAD_TIMEOUT_MS = 5000;
+  const REFRESH_MS = 5 * 60 * 1000;
 
   if (customElements.get(TAG_NAME)) return;
 
-  var script = document.currentScript;
+  const script = document.currentScript;
   if (!script || !script.src) {
     console.error('[YryDocsBinding] 无法获取当前脚本 URL,组件已跳过注册');
     return;
   }
-  var scriptUrl = new URL(script.getAttribute('src'), window.location.href);
-  var templateUrl = new URL('index.html', scriptUrl).href;
+  const scriptUrl = new URL(script.getAttribute('src'), window.location.href);
+  const templateUrl = new URL('index.html', scriptUrl).href;
 
   /* ── Module-level constants (原 YRY_APP_DATA, 1:1 保留) ────────── */
-  var YRY_APP_DATA = {
+  const YRY_APP_DATA = {
     /* 1) Breadcrumb */
     breadcrumb: function (el) {
       el.items = [
@@ -110,7 +110,7 @@
   };
 
   /* ── SubTitle × 9 数据 ─────────────────────────────────────────── */
-  var SUB_TITLE_DATA = [
+  const SUB_TITLE_DATA = [
     { id: 'sub-title-agent-roles',     props: { icon: '🤖', text: 'Agent 角色',         count: '9' } },
     { id: 'sub-title-agent-topology',  props: { icon: '📜', text: 'Agent 角色拓扑' } },
     { id: 'sub-title-rule-pipeline',   props: { icon: '🛠', text: '管线与执行规则',     count: '5' } },
@@ -123,7 +123,7 @@
   ];
 
   /* ── Static Layer × 3 数据 ────────────────────────────────────── */
-  var STATIC_LAYER_DATA = [
+  const STATIC_LAYER_DATA = [
     {
       mountId: 'layer-agents-app',
       props: {
@@ -182,7 +182,10 @@
        ]
      页面布局、样式、交互完全由 cdn/yry-* 组件承担。
   ─────────────────────────────────────────────────────────────── */
-  var sceneMeta = (typeof YrY !== 'undefined' && YrY.sceneMeta) ? YrY.sceneMeta : function (p) {
+  // YrY 是旧版 globals 上的扩展点(sceneMeta 等)。兼容声明 + 静态访问保护,避免 ESLint 误报。
+  /* global YrY */
+  const _YrY = (typeof YrY !== 'undefined') ? YrY : undefined;
+  const sceneMeta = (_YrY && _YrY.sceneMeta) ? _YrY.sceneMeta : function (p) {
     return [
       { icon: '📋', label: '清单', href: p + '/计划清单.html' },
       { icon: '📐', label: '架构', href: p + '/架构图.html' },
@@ -194,7 +197,7 @@
     ];
   };
 
-  var layerDeps = {
+  const layerDeps = {
     id: 'layer-deps', num: '2',
     titleIcon: '📚', titleAccent: '第三方依赖与框架',
     stats: ['🩺 依赖健康 100分 · 6 运行时 · 6 开发'],
@@ -229,7 +232,7 @@
     ]
   };
 
-  var layerLib = {
+  const layerLib = {
     id: 'layer-lib', num: 'L',
     titleIcon: '📚', titleAccent: '内部共享库 (lib/)',
     stats: ['🩺 库健康 92/A · 28 模块 · 7 类目 · 105 自检测试全通过'],
@@ -303,7 +306,7 @@
     ]
   };
 
-  var layerSkills = {
+  const layerSkills = {
     id: 'layer-skills', num: '1',
     titleIcon: '🛠', titleAccent: '技能',
     stats: ['🩺 技能健康 86/A · 19 能力模块 · SRP 拆分 · 故事驱动的 SDLC 编排'],
@@ -362,7 +365,7 @@
     ]
   };
 
-  var layerStory = {
+  const layerStory = {
     id: 'layer-story', num: '3',
     titleIcon: '📖', titleAccent: '故事',
     stats: ['🩺 故事健康 85/B · 7 故事 · 架构基线 + 自检体系 + npm 管理 + CDN 共享库 + 自改进闭环 + 文档首页 + 计划清单生成'],
@@ -385,7 +388,7 @@
     ]
   };
 
-  var layerScene = {
+  const layerScene = {
     id: 'layer-scene', num: '4',
     titleIcon: '🎬', titleAccent: '场景',
     stats: ['🩺 场景健康 80/B · 7 故事 · 37 场景'],
@@ -476,8 +479,8 @@
   };
 
   /* ── DOCS_DATA 组装 + 7 种交付物图标补齐 ───────────────────────── */
-  var DOCS_LAYERS = [layerSkills, layerDeps, layerLib, layerStory, layerScene];
-  var DOCS_DELIVERY_ICONS = [
+  const DOCS_LAYERS = [layerSkills, layerDeps, layerLib, layerStory, layerScene];
+  const DOCS_DELIVERY_ICONS = [
     { icon: '📋', label: '清单' },
     { icon: '📐', label: '架构' },
     { icon: '🔗', label: '图谱' },
@@ -490,9 +493,9 @@
     layer.sections.forEach(function (sec) {
       (sec.items || []).forEach(function (item) {
         if (item.links) return;
-        var links = [];
+        const links = [];
         DOCS_DELIVERY_ICONS.forEach(function (d) {
-          var entry = { icon: d.icon, label: d.label };
+          const entry = { icon: d.icon, label: d.label };
           if (d.label === '源码' && item.nameHref) entry.href = item.nameHref;
           if (d.label === '演示' && item.demo) entry.href = item.demo;
           links.push(entry);
@@ -542,7 +545,7 @@
           this._liveUpdateTimer = null;
         }
         // 清理监听器
-        var self = this;
+        const self = this;
         this._readyListeners.forEach(function (l) {
           document.removeEventListener(l.event, l.handler);
         });
@@ -555,18 +558,18 @@
       methods: {
         /* ── 立即绑定 (元素已在 DOM, 组件尚未定义) ────────────── */
         _applyAll: function () {
-          var bc = document.getElementById('breadcrumb-app');
-          var sh = document.getElementById('scene-header-app');
-          var sg = document.getElementById('stats-grid-app');
-          var cn = document.getElementById('cross-nav-app');
-          var ph = document.getElementById('panel-hub-app');
+          const bc = document.getElementById('breadcrumb-app');
+          const sh = document.getElementById('scene-header-app');
+          const sg = document.getElementById('stats-grid-app');
+          const cn = document.getElementById('cross-nav-app');
+          const ph = document.getElementById('panel-hub-app');
           if (bc) YRY_APP_DATA.breadcrumb(bc);
           if (sh) YRY_APP_DATA.sceneHeader(sh);
           if (sg) YRY_APP_DATA.statsGrid(sg);
           if (cn) YRY_APP_DATA.crossNav(cn);
           // 注入评分图例 (Score Legend) 到 stats grid 之后
           if (sg && !document.getElementById('score-legend-bar')) {
-            var legend = document.createElement('div');
+            const legend = document.createElement('div');
             legend.id = 'score-legend-bar';
             legend.className = 'ydb-legend';
             legend.textContent = '';
@@ -576,7 +579,7 @@
           if (cn) YRY_APP_DATA.crossNav(cn);
           if (ph) {
             YRY_APP_DATA.panelHub(ph);
-            var self = this;
+            const self = this;
             ph.addEventListener('panel-hub-select', function (e) {
               if (window.PanelHub) window.PanelHub.open(e.detail.panel);
             });
@@ -586,15 +589,17 @@
           this._applyDocLayerData();
           this._applySubTitles();
           this._applyStaticLayers();
+          /* ── 顶部"技能评分"总评卡可点击(委托,内部重渲后仍生效) ── */
+          this._installSkillScoreStatClick();
         },
         /* ── 监听组件 *-ready 事件 (升级后再设一次) ────────── */
         _registerReadyListeners: function () {
-          var self = this;
+          const self = this;
           ['yry-breadcrumb-ready', 'yry-scene-header-ready', 'yry-stats-grid-ready',
            'yry-cross-nav-ready', 'yry-panel-hub-ready',
            'yry-doc-layer-ready', 'yry-sub-title-ready',
            'yry-layer-agents-ready', 'yry-layer-rules-ready', 'yry-layer-refs-ready'].forEach(function (ev) {
-            var h = function () { self._applyAll(); };
+            const h = function () { self._applyAll(); };
             document.addEventListener(ev, h, { once: true });
             self._readyListeners.push({ event: ev, handler: h });
           });
@@ -603,19 +608,19 @@
         _applyDocLayerData: function () {
           if (this._layersMounted) return;
           /* 数据源优先级: 外部 window.YRY_DOCS_DATA > 内置 DOCS_LAYERS */
-          var dataLayers = (window.YRY_DOCS_DATA && window.YRY_DOCS_DATA.layers) || DOCS_LAYERS;
+          const dataLayers = (window.YRY_DOCS_DATA && window.YRY_DOCS_DATA.layers) || DOCS_LAYERS;
           if (!dataLayers || !dataLayers.length) return;
           if (!window.Vue || !window.YryDocLayer) return; // 组件尚未就绪,等 yry-doc-layer-ready 事件重试
-          var map = {
+          const map = {
             'layer-deps':   'layer-deps-app',
             'layer-skills': 'layer-skills-app',
             'layer-lib':    'layer-lib-app',
             'layer-story':  'layer-story-app',
             'layer-scene':  'layer-scene-app'
           };
-          var self = this;
+          const self = this;
           dataLayers.forEach(function (layer) {
-            var el = document.getElementById(map[layer.id]);
+            const el = document.getElementById(map[layer.id]);
             if (!el) return;
             // Mount Vue app with props data directly — bypasses custom element
             // property-shadowing issues that occur when properties are set before
@@ -638,7 +643,7 @@
         /* ── SubTitle × 9 注入 ───────────────────────────────── */
         _applySubTitles: function () {
           SUB_TITLE_DATA.forEach(function (m) {
-            var el = document.getElementById(m.id);
+            const el = document.getElementById(m.id);
             if (!el) return;
             el.icon  = m.props.icon;
             el.text  = m.props.text;
@@ -648,9 +653,9 @@
         /* ── Static Layer × 3 注入 ──────────────────────────── */
         _applyStaticLayers: function () {
           STATIC_LAYER_DATA.forEach(function (m) {
-            var el = document.getElementById(m.mountId);
+            const el = document.getElementById(m.mountId);
             if (!el) return;
-            var p = m.props;
+            const p = m.props;
             el.layerId              = p.layerId;
             el.num                  = p.num;
             el.titleAccent          = p.titleAccent;
@@ -663,9 +668,9 @@
         },
         /* ── 路由 layer-panel-select 事件 ───────────────────── */
         _registerLayerPanelRouter: function () {
-          var self = this;
-          var handler = function (e) {
-            var p = e.detail || {};
+          const self = this;
+          const handler = function (e) {
+            const p = e.detail || {};
             if (!p.panel) return;
             if (p.onPanel === 'layerInfo' && window.layerInfo) {
               window.layerInfo.show(p.panel);
@@ -679,17 +684,48 @@
           document.addEventListener('layer-panel-select', handler);
           this._docListeners.push({ event: 'layer-panel-select', handler: handler });
         },
+        /* ── 顶部"技能评分"总评卡可点击 → 自我改进仪表板 ─────── */
+        _installSkillScoreStatClick: function () {
+          const sg = document.getElementById('stats-grid-app');
+          if (!sg) return;
+          if (sg.__ydbSkillScoreBound) return;
+          sg.__ydbSkillScoreBound = true;
+          sg.addEventListener('click', function (e) {
+            const card = e.target && e.target.closest && e.target.closest('.stat-card');
+            if (!card || !sg.contains(card)) return;
+            const lbl = card.querySelector('.lbl');
+            if (!lbl || (lbl.textContent || '').trim() !== '技能评分') return;
+            e.preventDefault();
+            window.location.href = './自我改进/index.html';
+          });
+          sg.setAttribute('data-skill-score-bound', '1');
+          // 给"技能评分"卡打标记(用于 CSS 视觉提示 + hover 状态)
+          // 注:Vue 重渲时会重置 title 属性,因此不在此追加 title,而是靠 CSS ↗ 箭头 + hover 效果提示可点
+          const markSkillScoreCard = function () {
+            const cards = sg.querySelectorAll('.stat-card');
+            cards.forEach(function (c) {
+              const lbl = c.querySelector('.lbl');
+              if (lbl && (lbl.textContent || '').trim() === '技能评分') {
+                c.setAttribute('data-ydb-skill-score', '1');
+              }
+            });
+          };
+          this.$nextTick(markSkillScoreCard);
+          // live update 重渲后再次标记
+          setTimeout(markSkillScoreCard, 800);
+          setTimeout(markSkillScoreCard, 2000);
+        },
         /* ── 评分图例构建器 (替代内联 cssText) ──────────────── */
         _buildScoreLegend: function (ts, trendDir) {
-          var frag = document.createDocumentFragment();
-          var items = [
+          const frag = document.createDocumentFragment();
+          const items = [
             { text: '● A≥80', color: '#22c55e' },
             { text: '● B≥60', color: '#f59e0b' },
             { text: '● C≥40', color: '#ef4444' },
             { text: '● D<40', color: '#ef4444' }
           ];
-          for (var i = 0; i < items.length; i++) {
-            var s = document.createElement('span');
+          for (let i = 0; i < items.length; i++) {
+            const s = document.createElement('span');
             s.className = 'ydb-legend-item';
             s.style.color = items[i].color;
             s.textContent = items[i].text;
@@ -705,48 +741,48 @@
         },
         /* ── Live 评分拉取 (每 5 分钟) ──────────────────────── */
         _startLiveUpdate: function () {
-          var self = this;
-          var sg = document.getElementById('stats-grid-app');
-          var ph = document.getElementById('panel-hub-app');
+          const self = this;
+          const sg = document.getElementById('stats-grid-app');
+          const ph = document.getElementById('panel-hub-app');
 
-          var updateScores = function () {
+          const updateScores = function () {
             fetch('./自我改进/summary.json')
               .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
               .then(function (data) {
                 if (!data || !data.latest) return;
-                var l = data.latest;
-                var scores = l.scores || {};
-                var healthScore = l.composite || 0;
-                var healthGrade = l.grade || '';
-                var healthCls = healthScore >= 80 ? 'health' : healthScore >= 60 ? 'warn-h' : 'accent';
+                const l = data.latest;
+                const scores = l.scores || {};
+                const healthScore = l.composite || 0;
+                const healthGrade = l.grade || '';
+                const healthCls = healthScore >= 80 ? 'health' : healthScore >= 60 ? 'warn-h' : 'accent';
 
                 // 测试评分: 工程成熟度加权
-                var emWeights = { em_testing: 0.30, em_types: 0.15, em_linting: 0.15, em_cicd: 0.10, em_docs: 0.10, em_deps: 0.10, em_git: 0.10 };
-                var emSum = 0, emTotal = 0;
+                const emWeights = { em_testing: 0.30, em_types: 0.15, em_linting: 0.15, em_cicd: 0.10, em_docs: 0.10, em_deps: 0.10, em_git: 0.10 };
+                let emSum = 0, emTotal = 0;
                 Object.keys(emWeights).forEach(function (k) {
                   if (typeof scores[k] === 'number') { emSum += scores[k] * emWeights[k]; emTotal += emWeights[k]; }
                 });
-                var testScore = emTotal > 0 ? Math.round(emSum / emTotal) : (scores.em_testing || 0);
-                var testCls = testScore >= 80 ? 'health' : testScore >= 60 ? 'warn-h' : 'accent';
+                const testScore = emTotal > 0 ? Math.round(emSum / emTotal) : (scores.em_testing || 0);
+                const testCls = testScore >= 80 ? 'health' : testScore >= 60 ? 'warn-h' : 'accent';
 
                 // 自改进评分: 组件健康综合均分
-                var siScore = (data.componentHealth && data.componentHealth.overallAvg) || 0;
-                var siCls = siScore >= 80 ? 'health' : siScore >= 60 ? 'warn-h' : 'accent';
+                const siScore = (data.componentHealth && data.componentHealth.overallAvg) || 0;
+                const siCls = siScore >= 80 ? 'health' : siScore >= 60 ? 'warn-h' : 'accent';
 
                 // 技能评分: compHealth.skills 专项评分
-                var skScore = (data.componentHealth && data.componentHealth.skills && data.componentHealth.skills.avgScore) || 0;
-                var skCls = skScore >= 80 ? 'health' : skScore >= 60 ? 'warn-h' : 'accent';
+                const skScore = (data.componentHealth && data.componentHealth.skills && data.componentHealth.skills.avgScore) || 0;
+                const skCls = skScore >= 80 ? 'health' : skScore >= 60 ? 'warn-h' : 'accent';
 
                 // 架构评分
-                var archScore = (data.archHealth && data.archHealth.latest && data.archHealth.latest.composite) || 0;
-                var archGrade = (data.archHealth && data.archHealth.latest && data.archHealth.latest.grade) || '';
+                const archScore = (data.archHealth && data.archHealth.latest && data.archHealth.latest.composite) || 0;
+                const archGrade = (data.archHealth && data.archHealth.latest && data.archHealth.latest.grade) || '';
 
                 if (sg) {
-                  var items = sg.items || [];
+                  const items = sg.items || [];
                   var trendDir = '→';
                   if (data.scoreTrend && data.scoreTrend.length >= 2) {
-                    var prevPt = data.scoreTrend[data.scoreTrend.length - 2];
-                    var currPt = data.scoreTrend[data.scoreTrend.length - 1];
+                    const prevPt = data.scoreTrend[data.scoreTrend.length - 2];
+                    const currPt = data.scoreTrend[data.scoreTrend.length - 1];
                     trendDir = currPt.score > prevPt.score ? '↑' : currPt.score < prevPt.score ? '↓' : '→';
                   }
                   if (items[0]) { items[0].value = (skScore || siScore) + '/' + ((skScore || siScore) >= 80 ? 'A' : (skScore || siScore) >= 60 ? 'B' : 'C'); items[0].modifier = skCls; items[0].sub = '19 能力 · 4 维评估'; items[0].tooltip = '技能健康指数 · 四维加权(SKILL.md规约完整性×30% + 领域语言一致性×25% + 自包含可执行性×25% + 代码范式合规×20%)。当前 ' + (skScore || siScore) + '分。评级: A≥80 B≥60 C≥40 D<40。数据源: arch-check.mjs'; }
@@ -757,10 +793,10 @@
                 }
 
                 // 更新评分图例时间戳
-                var legend = document.getElementById('score-legend-bar');
+                const legend = document.getElementById('score-legend-bar');
                 if (legend) {
-                  var now = new Date();
-                  var ts = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ':' + now.getSeconds().toString().padStart(2, '0');
+                  const now = new Date();
+                  const ts = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ':' + now.getSeconds().toString().padStart(2, '0');
                   legend.textContent = '';
                   legend.appendChild(self._buildScoreLegend(ts, trendDir));
                 }
@@ -771,33 +807,33 @@
                 }
 
                 // 更新 Scene Header meta
-                var sh = document.getElementById('scene-header-app');
+                const sh = document.getElementById('scene-header-app');
                 if (sh && healthScore > 0) {
                   sh.meta = '📌 v5.4.0 · 🩺 健康 ' + healthScore + '/' + healthGrade + ' · 🧪 测试 ' + testScore + '分 · 🧬 自改进 ' + siScore + '分 · 🛠 技能 ' + (skScore || siScore) + '/' + ((skScore || siScore) >= 80 ? 'A' : (skScore || siScore) >= 60 ? 'B' : 'C') + (archScore > 0 ? ' · 📐 架构 ' + archScore + '/' + archGrade : '');
                 }
 
                 // Update layer stats with live scores
-                var compHealth = data.componentHealth;
+                const compHealth = data.componentHealth;
                 if (compHealth) {
-                  var layerSkills = document.getElementById('layer-skills-app');
+                  const layerSkills = document.getElementById('layer-skills-app');
                   if (layerSkills && compHealth.skills) {
-                    var sk = compHealth.skills.avgScore || 0;
+                    const sk = compHealth.skills.avgScore || 0;
                     layerSkills.stats = ['🩺 技能健康 ' + sk + '/' + (sk >= 80 ? 'A' : sk >= 60 ? 'B' : 'C') + ' · 19 能力模块 · SRP 拆分'];
                   }
-                  var layerStory = document.getElementById('layer-story-app');
+                  const layerStory = document.getElementById('layer-story-app');
                   if (layerStory && compHealth.overallAvg) {
-                    var st = compHealth.overallAvg || 0;
+                    const st = compHealth.overallAvg || 0;
                     layerStory.stats = ['🩺 故事健康 ' + st + '/' + (st >= 80 ? 'A' : st >= 60 ? 'B' : 'C') + ' · 7 故事'];
                   }
                 }
-                var layerAgents = document.getElementById('layer-agents-app');
+                const layerAgents = document.getElementById('layer-agents-app');
                 if (layerAgents && compHealth && compHealth.agents) {
-                  var ag = compHealth.agents.avgScore || 0;
+                  const ag = compHealth.agents.avgScore || 0;
                   layerAgents.stats = ['🩺 Agent 健康 ' + ag + '/' + (ag >= 80 ? 'A' : ag >= 60 ? 'B' : 'C') + ' · 9 Agent 角色 + 1 拓扑总纲 · 18 治理规则'];
                 }
-                var layerRules = document.getElementById('layer-rules-app');
+                const layerRules = document.getElementById('layer-rules-app');
                 if (layerRules && compHealth && compHealth.rules) {
-                  var ru = compHealth.rules.avgScore || 0;
+                  const ru = compHealth.rules.avgScore || 0;
                   layerRules.stats = ['🩺 规则健康 ' + ru + '/' + (ru >= 80 ? 'A' : ru >= 60 ? 'B' : 'C') + ' · 18 规则 · 管线纪律 · 安全 · 文档'];
                 }
               })
@@ -809,11 +845,11 @@
           updateScores();
           this._liveUpdateTimer = setInterval(updateScores, REFRESH_MS);
         },
-        /* ── 评分徽章注入 ──────────────────────────────────── */
+        /* ── 三评分徽章注入 ──────────────────────────────────── */
         _scheduleScoreBadgeInject: function () {
-          var self = this;
-          var injected = false;
-          var inject = function () {
+          const self = this;
+          let injected = false;
+          const inject = function () {
             if (injected) return;
             injected = true;
             self._injectScoreBadges();
@@ -823,22 +859,85 @@
           document.addEventListener('yry-item-card-ready', function () { setTimeout(inject, 100); }, { once: true });
           setTimeout(inject, 1500);
         },
+        /* ── 技能 → 自循环报告 URL 映射(异步加载,失败时仅回退) ── */
+        _skillReportMap: null,
+        _loadSkillReportMap: function () {
+          const self = this;
+          if (this._skillReportMap) return Promise.resolve(this._skillReportMap);
+          return fetch('./自循环报告/reports.json', { credentials: 'same-origin' })
+            .then(function (r) { return r.ok ? r.json() : []; })
+            .then(function (reports) {
+              // 按 skill 分组,取最新一份(date desc → file 字典序)作为跳转目标
+              const bySkill = {};
+              (reports || []).forEach(function (rep) {
+                if (!rep || !rep.skill || !rep.file) return;
+                if (!bySkill[rep.skill] ||
+                    (rep.date || '') > (bySkill[rep.skill].date || '') ||
+                    ((rep.date || '') === (bySkill[rep.skill].date || '') && (rep.file || '') > (bySkill[rep.skill].file || ''))) {
+                  bySkill[rep.skill] = rep;
+                }
+              });
+              const map = {};
+              Object.keys(bySkill).forEach(function (k) {
+                map[k] = './自循环报告/' + bySkill[k].file;
+              });
+              self._skillReportMap = map;
+              return map;
+            })
+            .catch(function () {
+              self._skillReportMap = {};
+              return {};
+            });
+        },
+        /* ── 从技能卡片名解析 skill key(用于查报告) ──────── */
+        _resolveSkillKey: function (card) {
+          // 1) 优先取 nameHref 中的 ../skills/<key>/SKILL.md 或 ../rules/<key>.md 路径
+          const nameA = card.querySelector('.body .name a');
+          if (nameA && nameA.getAttribute('href')) {
+            const href = nameA.getAttribute('href');
+            const m = href.match(/(?:^|\/)(skills|rules)\/([^/]+)\//);
+            if (m) return m[2];
+            const m2 = href.match(/(?:^|\/)(skills|rules)\/([^/.]+)\.md$/);
+            if (m2) return m2[2];
+          }
+          // 2) 回退:用 .name 文本内容(去掉 badge 文本)作为 skill 名
+          const nameEl = card.querySelector('.body .name');
+          if (nameEl) {
+            // 取首段文本(不含徽章)
+            const txt = (nameEl.childNodes[0] && nameEl.childNodes[0].textContent || '').trim();
+            if (txt) return txt;
+          }
+          return '';
+        },
+        /* ── 构造单个徽章链接(锚点包裹) ───────────────── */
+        _wrapBadgeWithLink: function (badge, href, title) {
+          const a = document.createElement('a');
+          a.className = 'ydb-badge-link';
+          a.href = href;
+          a.title = title;
+          a.setAttribute('data-skill-report', '1');
+          // 把 badge 子节点全部迁入 anchor
+          while (badge.firstChild) a.appendChild(badge.firstChild);
+          badge.appendChild(a);
+        },
         _injectScoreBadges: function () {
-          var baseHealth = { skill: 86, agent: 99, rule: 91, ref: 78 };
-          var baseTest   = { skill: 60, agent: 60, rule: 60, ref: 60 };
-          var baseSi     = { skill: 89, agent: 89, rule: 89, ref: 89 };
+          const self = this;
+          const baseHealth = { skill: 86, agent: 99, rule: 91, ref: 78 };
+          const baseTest   = { skill: 60, agent: 60, rule: 60, ref: 60 };
+          const baseSi     = { skill: 89, agent: 89, rule: 89, ref: 89 };
+          const SI_HREF = './自我改进/index.html';
           function itemScore(name, base) {
-            var h = 0;
-            for (var i = 0; i < name.length; i++) { h = ((h << 5) - h) + name.charCodeAt(i); h |= 0; }
+            let h = 0;
+            for (let i = 0; i < name.length; i++) { h = ((h << 5) - h) + name.charCodeAt(i); h |= 0; }
             return Math.min(100, Math.max(0, base + (Math.abs(h) % 11) - 5));
           }
           function grade(s) { return s >= 80 ? 'A' : s >= 60 ? 'B' : s >= 40 ? 'C' : 'D'; }
           function sc(s) { return s >= 80 ? '#22c55e' : s >= 60 ? '#f59e0b' : '#ef4444'; }
 
           function makeBadge(label, score, base) {
-            var g = grade(score);
-            var c = sc(score);
-            var span = document.createElement('span');
+            const g = grade(score);
+            const c = sc(score);
+            const span = document.createElement('span');
             span.className = 'ydb-badge-num';
             span.style.color = c;
             span.title = label + ': ' + score + '分 ' + g + '级 (基准' + base + '±5)';
@@ -846,67 +945,87 @@
             return span;
           }
 
-          // .item-card
-          document.querySelectorAll('.item-card').forEach(function (card) {
-            if (card.querySelector('.ydb-score-badge')) return;
-            var iconEl = card.querySelector('.icon');
-            var nameEl = card.querySelector('.name');
-            if (!iconEl || !nameEl) return;
-            var modifier = '';
-            ['skill', 'agent', 'rule', 'ref'].forEach(function (m) {
-              if (iconEl.classList.contains(m)) modifier = m;
+          // 异步加载自循环报告 URL 映射(失败时仅回退到自我改进仪表板)
+          return this._loadSkillReportMap().then(function (reportMap) {
+            function skillReportHref(skillKey) {
+              if (skillKey && reportMap[skillKey]) return reportMap[skillKey];
+              return SI_HREF;
+            }
+
+            // .item-card
+            document.querySelectorAll('.item-card').forEach(function (card) {
+              if (card.querySelector('.ydb-score-badge')) return;
+              const iconEl = card.querySelector('.icon');
+              const nameEl = card.querySelector('.name');
+              if (!iconEl || !nameEl) return;
+              let modifier = '';
+              ['skill', 'agent', 'rule', 'ref'].forEach(function (m) {
+                if (iconEl.classList.contains(m)) modifier = m;
+              });
+              const bh = baseHealth[modifier], bt = baseTest[modifier], bs = baseSi[modifier];
+              if (!bh) return;
+              const nameText = (nameEl.textContent || '').trim();
+              const hs = itemScore(nameText, bh);
+              const ts = itemScore(nameText, bt);
+              const ss = itemScore(nameText, bs);
+              const badge = document.createElement('span');
+              badge.className = 'ydb-score-badge';
+              badge.appendChild(document.createTextNode('🩺'));
+              badge.appendChild(makeBadge('健康', hs, bh));
+              badge.appendChild(document.createTextNode(' 🧪'));
+              badge.appendChild(makeBadge('测试', ts, bt));
+              badge.appendChild(document.createTextNode(' 🧬'));
+              badge.appendChild(makeBadge('自改进', ss, bs));
+              // 技能卡片:评分徽章整体可点击跳转对应报告;其他类型(agent/rule/ref)→自我改进仪表板
+              let href = SI_HREF, tipSuffix = '查看综合评分报告';
+              if (modifier === 'skill') {
+                const skillKey = self._resolveSkillKey(card);
+                href = skillReportHref(skillKey);
+                tipSuffix = reportMap[skillKey]
+                  ? '查看 ' + skillKey + ' 自循环报告'
+                  : (skillKey ? skillKey + ' 暂无独立报告 → 查看综合评分仪表板' : '查看综合评分报告');
+              }
+              self._wrapBadgeWithLink(badge, href, tipSuffix);
+              nameEl.appendChild(badge);
             });
-            var bh = baseHealth[modifier], bt = baseTest[modifier], bs = baseSi[modifier];
-            if (!bh) return;
-            var nameText = (nameEl.textContent || '').trim();
-            var hs = itemScore(nameText, bh);
-            var ts = itemScore(nameText, bt);
-            var ss = itemScore(nameText, bs);
-            var badge = document.createElement('span');
-            badge.className = 'ydb-score-badge';
-            badge.appendChild(document.createTextNode('🩺'));
-            badge.appendChild(makeBadge('健康', hs, bh));
-            badge.appendChild(document.createTextNode(' 🧪'));
-            badge.appendChild(makeBadge('测试', ts, bt));
-            badge.appendChild(document.createTextNode(' 🧬'));
-            badge.appendChild(makeBadge('自改进', ss, bs));
-            nameEl.appendChild(badge);
-          });
 
-          // .story-card
-          document.querySelectorAll('.story-card').forEach(function (card) {
-            if (card.querySelector('.ydb-score-badge')) return;
-            var nameEl = card.querySelector('.story-name');
-            if (!nameEl) return;
-            var nameText = (nameEl.textContent || '').trim();
-            var hs = itemScore(nameText, 85), ts = itemScore(nameText, 60), ss = itemScore(nameText, 89);
-            var badge = document.createElement('span');
-            badge.className = 'ydb-score-badge ydb-small';
-            badge.appendChild(document.createTextNode('🩺'));
-            badge.appendChild(makeBadge('健康', hs, 85));
-            badge.appendChild(document.createTextNode(' 🧪'));
-            badge.appendChild(makeBadge('测试', ts, 60));
-            badge.appendChild(document.createTextNode(' 🧬'));
-            badge.appendChild(makeBadge('自改进', ss, 89));
-            nameEl.appendChild(badge);
-          });
+            // .story-card (故事无独立报告,统一指向自我改进仪表板)
+            document.querySelectorAll('.story-card').forEach(function (card) {
+              if (card.querySelector('.ydb-score-badge')) return;
+              const nameEl = card.querySelector('.story-name');
+              if (!nameEl) return;
+              const nameText = (nameEl.textContent || '').trim();
+              const hs = itemScore(nameText, 85), ts = itemScore(nameText, 60), ss = itemScore(nameText, 89);
+              const badge = document.createElement('span');
+              badge.className = 'ydb-score-badge ydb-small';
+              badge.appendChild(document.createTextNode('🩺'));
+              badge.appendChild(makeBadge('健康', hs, 85));
+              badge.appendChild(document.createTextNode(' 🧪'));
+              badge.appendChild(makeBadge('测试', ts, 60));
+              badge.appendChild(document.createTextNode(' 🧬'));
+              badge.appendChild(makeBadge('自改进', ss, 89));
+              self._wrapBadgeWithLink(badge, SI_HREF, '查看故事综合评分仪表板');
+              nameEl.appendChild(badge);
+            });
 
-          // .scene-card
-          document.querySelectorAll('.scene-card').forEach(function (card) {
-            if (card.querySelector('.ydb-score-badge')) return;
-            var nameEl = card.querySelector('.scene-name');
-            if (!nameEl) return;
-            var nameText = (nameEl.textContent || '').trim();
-            var hs = itemScore(nameText, 80), ts = itemScore(nameText, 60), ss = itemScore(nameText, 89);
-            var badge = document.createElement('span');
-            badge.className = 'ydb-score-badge ydb-small';
-            badge.appendChild(document.createTextNode('🩺'));
-            badge.appendChild(makeBadge('健康', hs, 80));
-            badge.appendChild(document.createTextNode(' 🧪'));
-            badge.appendChild(makeBadge('测试', ts, 60));
-            badge.appendChild(document.createTextNode(' 🧬'));
-            badge.appendChild(makeBadge('自改进', ss, 89));
-            nameEl.appendChild(badge);
+            // .scene-card (场景无独立报告,统一指向自我改进仪表板)
+            document.querySelectorAll('.scene-card').forEach(function (card) {
+              if (card.querySelector('.ydb-score-badge')) return;
+              const nameEl = card.querySelector('.scene-name');
+              if (!nameEl) return;
+              const nameText = (nameEl.textContent || '').trim();
+              const hs = itemScore(nameText, 80), ts = itemScore(nameText, 60), ss = itemScore(nameText, 89);
+              const badge = document.createElement('span');
+              badge.className = 'ydb-score-badge ydb-small';
+              badge.appendChild(document.createTextNode('🩺'));
+              badge.appendChild(makeBadge('健康', hs, 80));
+              badge.appendChild(document.createTextNode(' 🧪'));
+              badge.appendChild(makeBadge('测试', ts, 60));
+              badge.appendChild(document.createTextNode(' 🧬'));
+              badge.appendChild(makeBadge('自改进', ss, 89));
+              self._wrapBadgeWithLink(badge, SI_HREF, '查看场景综合评分仪表板');
+              nameEl.appendChild(badge);
+            });
           });
         },
         /* ── Staggered card animations ────────────────────────── */
@@ -920,8 +1039,8 @@
   }
 
   /* ── Fetch template from index.html ──────────────────────────────── */
-  var timedOut = false;
-  var timeoutId = setTimeout(function () {
+  let timedOut = false;
+  const timeoutId = setTimeout(function () {
     timedOut = true;
     console.error('[YryDocsBinding] 模板加载超时 (' + LOAD_TIMEOUT_MS + 'ms):', templateUrl);
   }, LOAD_TIMEOUT_MS);
@@ -935,17 +1054,17 @@
       if (timedOut) return;
       clearTimeout(timeoutId);
 
-      var doc = new DOMParser().parseFromString(htmlText, 'text/html');
-      var tpl = doc.getElementById(TEMPLATE_ID);
+      const doc = new DOMParser().parseFromString(htmlText, 'text/html');
+      const tpl = doc.getElementById(TEMPLATE_ID);
       if (!tpl) throw new Error('未找到 <script type="text/x-template" id="' + TEMPLATE_ID + '">');
 
-      var component = buildComponent(tpl.innerHTML);
+      const component = buildComponent(tpl.innerHTML);
 
       if (typeof window.Vue.defineCustomElement !== 'function') {
         console.error('[YryDocsBinding] Vue.defineCustomElement 不可用,跳过注册');
         return;
       }
-      var CE = window.Vue.defineCustomElement(component, { shadowRoot: false });
+      const CE = window.Vue.defineCustomElement(component, { shadowRoot: false });
       customElements.define(TAG_NAME, CE);
     })
     .catch(function (err) {

@@ -52,3 +52,50 @@
   font-weight: 600;
   /* color 由 JS 根据等级设置 */
 }
+
+/* ── 评分徽章链接(整体可点击) ─────────────────────────────────── */
+.ydb-badge-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 3px;
+  padding: 0 2px;
+  transition: background-color .12s ease, box-shadow .12s ease;
+}
+.ydb-badge-link:hover,
+.ydb-badge-link:focus {
+  background: rgba(255, 193, 7, .12);
+  box-shadow: 0 0 0 1px rgba(255, 193, 7, .35);
+  outline: none;
+}
+.ydb-badge-link:active {
+  background: rgba(255, 193, 7, .22);
+}
+
+/* ── 顶部"技能评分"总评卡可点击视觉提示 ──────────────────────── */
+[data-skill-score-bound="1"] .stat-card { cursor: default; }
+[data-skill-score-bound="1"] .stat-card:has(.lbl) { /* 不影响无 lbl 的卡 */ }
+/* 通过 JS 标记的"技能评分"卡:第一个 label === "技能评分" */
+.stats-grid .stat-card[data-ydb-skill-score="1"] {
+  cursor: pointer;
+  position: relative;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+.stats-grid .stat-card[data-ydb-skill-score="1"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(255, 193, 7, .18);
+  border-color: rgba(255, 193, 7, .35);
+}
+.stats-grid .stat-card[data-ydb-skill-score="1"]::after {
+  content: '↗';
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: .6rem;
+  color: rgba(255, 193, 7, .65);
+  opacity: 0;
+  transition: opacity .12s ease;
+}
+.stats-grid .stat-card[data-ydb-skill-score="1"]:hover::after { opacity: 1; }
