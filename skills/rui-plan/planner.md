@@ -294,6 +294,6 @@ flowchart LR
 |------|------|
 | 上游 | pm（故事文档基线）· architect（架构设计） |
 | 下游 | coder（实现）· tester（测试执行） |
-| 规则 | [plan-execution](./rules/plan-execution.md) · [code-pipeline](../rui-code/rules/code-pipeline.md) · [doc-generation](../rui-html/rules/doc-generation.md) |
-| 技能 | [rui](../../skills/rui/SKILL.md) · [rui-trends](../../skills/rui-trends/SKILL.md) |
+| 规则 | [plan-execution](./rules/plan-execution.md) — 本 skill 自含完整计划执行约束 |
+| 上下文 | 本 skill 含 planner + architect 角色 + plan-execution 规则，自包含运行 |
 | 文档 | plan.html（故事级计划总览）· 计划清单.html（场景级任务清单） |

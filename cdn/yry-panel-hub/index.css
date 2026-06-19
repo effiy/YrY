@@ -76,7 +76,7 @@
 .panel-hub-flow {
   font-size: .6rem; color: var(--yry-text3, rgba(110,110,114,1)); opacity: .7;
   font-family: 'JetBrains Mono', ui-monospace, monospace; margin-left: 4px;
-  white-space: pre-line;
+  white-space: nowrap;
 }
 
 @media (max-width: 768px) {

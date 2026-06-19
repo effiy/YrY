@@ -172,11 +172,11 @@ flowchart LR
 
 ### 探索模式
 
-> 数据采集由 `node lib/recommend.mjs` 完成，评分由 PM 按 [ranking.md](../skills/rui/ranking.md) 的 5 层框架执行。
+> 数据采集由 `node lib/recommend.mjs` 完成，评分由 PM 按 [ranking.md](./ranking.md) 的 5 层框架执行。
 
 | 项目类型 | 扫描命令 | 排序依据 | 命名格式 |
 |---------|---------|---------|---------|
-| 前端 | `node lib/recommend.mjs --root . --type frontend` | [5层评分](../skills/rui/ranking.md) → P0→P3 | `<project>-<component>-doc` |
+| 前端 | `node lib/recommend.mjs --root . --type frontend` | [5层评分](./ranking.md) → P0→P3 | `<project>-<component>-doc` |
 | 后端 | `node lib/recommend.mjs --root . --type backend` | 同上 | `<resource>-api` |
 | 全栈 | `node lib/recommend.mjs --root . --type fullstack` | 两端分别排序 | — |
 
