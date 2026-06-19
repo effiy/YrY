@@ -26,7 +26,8 @@
 
 .stats-grid {
   display: flex; gap: 12px; justify-content: center; margin-bottom: 20px;
-  flex-wrap: wrap; animation: yry-fadeInDown .5s .1s ease both;
+  flex-wrap: wrap; min-height: 80px;
+  opacity: 0; animation: yry-fadeInDown .5s .1s ease both;
 }
 
 .stat-card {

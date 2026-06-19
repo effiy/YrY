@@ -861,13 +861,6 @@
 	          legend.appendChild(legendHTML());
           sg.parentNode.insertBefore(legend, sg.nextSibling);
         }
-        // Pulse animation on stats grid on first load
-        if (!sg._pulsed) {
-          sg._pulsed = true;
-          sg.style.transition = 'box-shadow .3s ease';
-          sg.style.boxShadow = '0 0 20px rgba(34,197,94,.3)';
-          setTimeout(function() { sg.style.boxShadow = ''; }, 800);
-        }
       }
 
       var ph = document.getElementById('panel-hub-app');

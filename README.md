@@ -1,8 +1,8 @@
 # YrY <sub>v5.4.0</sub>
 
-> 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。19 技能 + 9 Agent + 16 规则 + 14 共享库 + 9 维度健康检查 + 4 实时监控面板。
+> 故事驱动的 SDLC 编排系统 — 需求 → 文档 → 代码 → 交付。YrY 用自身管线管理自身演进。20 技能 + 9 Agent + 18 规则 + 18 共享库 + 9 维度健康检查 + 4 实时监控面板。
 
-[系统全景](#系统全景) · [管线](#管线) · [快速开始](#快速开始) · [命令](#命令) · [/rui](#rui) · [/rui-story](#rui-story) · [/rui-claude](#rui-claude) · [/rui-docs](#rui-docs) · [/rui-npm](#rui-npm) · [Agent 角色](#agent-角色) · [规则](#规则) · [技能](#技能) · [目录结构](#目录结构) · [领域语言](#领域语言) · [技术趋势](#技术趋势)
+[系统全景](#系统全景) · [管线](#管线) · [快速开始](#快速开始) · [命令](#命令) · [/rui](#rui) · [/rui-story](#rui-story) · [/rui-claude](#rui-claude) · [/rui-npm](#rui-npm) · [Agent 角色](#agent-角色) · [规则](#规则) · [技能](#技能) · [目录结构](#目录结构) · [领域语言](#领域语言) · [技术趋势](#技术趋势)
 
 ## 系统全景
 
@@ -18,13 +18,13 @@
 flowchart TD
     CMD["/rui · /rui-story · /rui-claude"]
 
-    subgraph Skills[十九技能]
+    subgraph Skills[二十技能]
         direction TB
         CORE["主线: rui · rui-code · rui-init · rui-update · rui-yry"]:::skill
         MGMT["管理: rui-story · rui-claude · rui-skills"]:::skill
         BOT["通知: rui-bot · rui-import"]:::skill
         DOCS["文档: rui-html · rui-doc · rui-reporter"]:::skill
-        DISC["发现: rui-trends · rui-analysis · rui-npm"]:::skill
+        DISC["发现: rui-trends · rui-analysis · rui-bundle-analyze · rui-npm"]:::skill
         EVO["演进: rui-version · rui-plan · self-improve"]:::skill
         HEALTH["健康: rui-health"]:::skill
     end
@@ -41,14 +41,13 @@ flowchart TD
         SI[self-improve]:::agent
     end
 
-    CMD --> RUI & RC
-    RUI --> PM
+    CMD --> SKILLS["技能系统"]
+    SKILLS --> PM
     PM --> ARCHITECT & CODER & TESTER & REPORTER
     ARCHITECT -.设计.-> CODER
     REVIEWER -.审查.-> CODER
     SECURITY -.约束.-> CODER
     SI -.提案.-> PM
-    ID -.hook.-> WW
 
 ```
 
@@ -220,6 +219,7 @@ flowchart LR
 
 - **code-pipeline** — 源码改动：分支隔离 · Gate A/B · 逐模块清零
 - **code-pipeline-techniques** — 10 项支撑技术：根因追溯/纵深防御/反馈回路/深度模块/垂直切片
+- **code-paradigm** — 代码编程范式：模块范式/函数范式/错误处理/导入/常量，含正反例
 - **delivery-gate** — 交付收口：日志 → 同步 → 通知，手动触发
 - **doc-generation** — 文档产出：目录命名 · 骨架模板 · 附属数据存放
 - **doc-generation-lifecycle** — 补充文档触发器和策展步骤
@@ -232,7 +232,8 @@ flowchart LR
 - **security-guardrails** — 安全护栏：防线在信任边界处，输入必校验
 - **self-improve** — 自改进闭环：D0-D7 诊断 · E1-E4 评估
 - **rui-claude** — .claude/ 管理：仅限 `.claude/` · 禁自动 commit/push
-- **design-principles** — 九条工程原则：SRP/高内聚/低耦合/DIP/OCP/ISP/DRY/YAGNI/组合
+- **architecture-principles** — 架构宪法：内核轻量/扩展丰富/配置 API/代码范式/健康检测架构
+- **design-principles** — 十一条设计原则：SRP/高内聚/低耦合/DIP/OCP/ISP/DRY/YAGNI/组合/扩展至上/可健康检测
 - **agent-handoff** — Agent 交接规范：5 对契约 · 交接信号格式 · 阻断条件
 
 详见各 skill 目录下的 `rules/` 子目录。
@@ -268,7 +269,8 @@ flowchart LR
 
 ### 健康与监控
 
-- **rui-health** — 系统健康诊断（从 rui-bot 按 SRP 拆分）：16 维度评分 + HTML 报告 + D0-D7 诊断 + 趋势持久化
+- **rui-health** — 系统健康诊断（从 rui-bot 按 SRP 拆分）：9 维度评分 + HTML 报告 + D0-D7 诊断 + 趋势持久化
+- **rui-bundle-analyze** — 打包产物分析：CDN 组件体积/依赖/覆盖率检测
 
 ### 质量与演进
 
@@ -277,13 +279,13 @@ flowchart LR
 - **rui-import** — 文档远端同步（per-document instant + batch safety-net）
 - **self-improve** — 持续自改进闭环：D0-D7 诊断 → 提案生成 → 物化为故事 → 效果评估 (E1-E4)
 
-详见 [`skills/`](./skills/)。所有脚本通过 [`lib/`](./lib/)（14 文件含 `lib/engine/` 诊断/评估/物化/升级引擎）共享 TTY 格式化、项目工具、诊断引擎、Mermaid 主题和常量定义。
+详见 [`skills/`](./skills/)。所有脚本通过 [`lib/`](./lib/)（18 文件含 `lib/engine/` 诊断/评估/物化/升级引擎及 `lib/arch-dimensions/` 架构检测）共享 TTY 格式化、项目工具、诊断引擎和常量定义。
 
 ## 目录结构
 
 ```
 YrY/
-├── skills/                  # 19 个技能（含 Agent 角色 + 规则）
+├── skills/                  # 20 个技能（含 Agent 角色 + 规则）
 │   ├── rui/                 #   核心编排（含 pm/coder/tester/security agents + 6 规则）
 │   │   ├── SKILL.md
 │   │   ├── pm.md · coder.md · tester.md · security.md · AGENT.md
@@ -295,11 +297,11 @@ YrY/
 │   ├── rui-story/           #   故事管理（含 knowledge-graph 规则）
 │   ├── rui-yry/             #   自改进（含 self-improve agent + 规则）
 │   ├── rui-claude/          #   Claude 配置（含 rui-claude 规则）
-│   ├── ...                  #   其他 10 项技能
+│   ├── ...                  #   其他 12 项技能
 ├── docs/
 │   ├── index.html           #   文档中心着陆页 + 4 面板 (通知/调度/自改进/FAQ)
-│   ├── css/index.css        #   面板样式 (1,382 行)
-│   ├── js/                  #   5 面板 JS 模块 (panel-hub + 4 面板)
+│   ├── css/index.css        #   面板样式
+│   ├── js/                  #   4 面板 JS 模块（健康/自循环/自我改进/趋势）
 │   ├── 健康报告/             #   9 维度健康仪表板 + 历史趋势
 │   ├── 自循环报告/           #   12 技能定期巡检报告
 │   ├── 自我改进/             #   健康趋势摘要和聚合数据
@@ -314,18 +316,26 @@ YrY/
 │               ├── 测试面板.html  # 测试仪表盘
 │               ├── 演示.html      # 交互演示
 │               └── 审查.html      # D0-D7 审查报告
-├── lib/                     # 14 文件共享库（消除跨文件重复）
+├── lib/                     # 18 文件共享库（消除跨文件重复）
 │   ├── constants.mjs        #   共享常量（超时/并发/阈值/路径）
 │   ├── tty.mjs / fs.mjs     #   TTY 格式化 / 文件系统工具
 │   ├── network.mjs          #   网络请求封装
 │   ├── audit.mjs            #   工具调用审计
 │   ├── branch-check.mjs     #   分支隔离强制
 │   ├── proposals.mjs        #   改进提案编排
-│   └── engine/              #   诊断引擎
-│       ├── diagnostics.mjs  #     D0-D7 诊断（纯逻辑）
-│       ├── evaluate.mjs     #     E1-E4 效果评估
-│       ├── materialize.mjs  #     提案→故事物化
-│       └── upgrade.mjs      #     经验→规则升级检测
+│   ├── scoring.mjs          #   管线评分引擎
+│   ├── recommend.mjs        #   任务推荐引擎
+│   ├── concurrency.mjs      #   并发控制
+│   ├── record.mjs           #   执行记录
+│   ├── arch-check.mjs       #   架构合规自动验证
+│   ├── arch-helpers.mjs     #   架构辅助工具
+│   ├── arch-dimensions/     #   架构维度检测（kernel·paradigm·solid·quality）
+│   ├── engine/              #   诊断引擎
+│   │   ├── diagnostics.mjs  #     D0-D7 诊断（纯逻辑）
+│   │   ├── evaluate.mjs     #     E1-E4 效果评估
+│   │   ├── materialize.mjs  #     提案→故事物化
+│   │   └── upgrade.mjs      #     经验→规则升级检测
+│   └── tests/               #   lib 自检测试
 ├── skills/*/tests/          # 分布式自检测试套件（每个 skill 自包含）
 │   ├── run.mjs              #   测试运行器 (skills/rui/tests/)
 │   └── ...

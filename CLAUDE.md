@@ -58,7 +58,7 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 | 项目名 | YrY |
 | 类型 | **meta** — Claude Code 插件，纯规约驱动 |
 | 版本 | 5.4.0 |
-| 架构 | plugin — 19 技能（含 Agent 角色 + 规则） + 16 共享库（lib/） + D0-D8 诊断引擎 + 9 核心 + 7 工程 + 8 架构健康维度 + 4 实时监控面板 + A 级架构合规 |
+| 架构 | plugin — 20 技能（含 Agent 角色 + 规则） + 18 共享库（lib/）+ arch-dimensions + engine + D0-D8 诊断引擎 + 9 核心 + 7 工程 + 10 架构健康维度 + 4 实时监控面板 + A 级架构合规 |
 | 生态 | root package.json (仅 devDependencies: vitest + @vitest/ui)，markdown 规约 + node 辅助脚本 + 共享 lib/ 消除重复 |
 | 自托管 | 是 — YrY 用自身管线管理自身演进 |
 
@@ -130,7 +130,7 @@ flowchart LR
 | 设计原则（SRP · 高内聚 · 低耦合 · DIP · OCP · ISP · DRY · YAGNI · 组合 · 扩展至上 · 可健康检测） | [rules/design-principles.md](./skills/rui/rules/design-principles.md) |
 | 架构宪法（内核轻量·扩展丰富 · 配置 API · 代码范式 · 健康检测架构） | [rules/architecture-principles.md](./skills/rui/rules/architecture-principles.md) |
 | 代码编程范式（模块范式 · 函数范式 · 错误处理 · 导入 · 常量，含正反例） | [rules/code-paradigm.md](./skills/rui-code/rules/code-paradigm.md) |
-| 架构合规自动验证（15 维度 A 级 · --fix · --append-trend） | `node lib/arch-check.mjs` |
+| 架构合规自动验证（10 维度 A 级 · --fix · --append-trend） | `node lib/arch-check.mjs` |
 | Agent 交接规范（交接信号格式 · Agent 间契约 · 阻断条件） | [rules/agent-handoff.md](./skills/rui/rules/agent-handoff.md) |
 | 文档质量标准（A/B/C/D 证据等级 · 统一模版 · 退化检测） | [rules/doc-quality.md](./skills/rui-html/rules/doc-quality.md) |
 | 知识图谱所有权（单点写入 · pm/coder/reporter 三方解耦） | [rules/knowledge-graph-ownership.md](./skills/rui-story/rules/knowledge-graph-ownership.md) |

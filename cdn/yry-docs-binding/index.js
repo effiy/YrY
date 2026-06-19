@@ -800,12 +800,6 @@
                   var ru = compHealth.rules.avgScore || 0;
                   layerRules.stats = ['🩺 规则健康 ' + ru + '/' + (ru >= 80 ? 'A' : ru >= 60 ? 'B' : 'C') + ' · 18 规则 · 管线纪律 · 安全 · 文档'];
                 }
-                // Pulse animation on stats grid
-                if (sg) {
-                  sg.style.transition = 'box-shadow .3s ease';
-                  sg.style.boxShadow = '0 0 20px rgba(34,197,94,.3)';
-                  setTimeout(function () { sg.style.boxShadow = ''; }, 800);
-                }
               })
               .catch(function (err) {
                 console.warn('[docs-binding] 无法加载实时评分,使用默认值:', err.message);

@@ -1,6 +1,6 @@
 {
   "name": "yry",
-  "version": "5.3.1",
+  "version": "5.4.0",
   "private": true,
   "type": "module",
   "description": "YrY — story-driven SDLC orchestrator (Claude Code plugin)",
