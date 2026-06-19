@@ -130,7 +130,6 @@ flowchart LR
 | 设计原则（SRP · 高内聚 · 低耦合 · DIP · OCP · ISP · DRY · YAGNI · 组合 · 扩展至上 · 可健康检测） | [rules/design-principles.md](./rules/design-principles.md) |
 | 架构宪法（内核轻量·扩展丰富 · 配置 API · 代码范式 · 健康检测架构） | [rules/architecture-principles.md](./rules/architecture-principles.md) |
 | 代码编程范式（模块范式 · 函数范式 · 错误处理 · 导入 · 常量，含正反例） | [rules/code-paradigm.md](./rules/code-paradigm.md) |
-| 配置 API JSON Schema（Skill/Agent/Rule frontmatter 形式化验证） | [rules/config-api-schema.json](./rules/config-api-schema.json) |
 | 架构合规自动验证（15 维度 A 级 · --fix · --append-trend） | `node lib/arch-check.mjs` |
 | Agent 交接规范（交接信号格式 · Agent 间契约 · 阻断条件） | [rules/agent-handoff.md](./rules/agent-handoff.md) |
 | 文档质量标准（A/B/C/D 证据等级 · 统一模版 · 退化检测） | [rules/doc-quality.md](./rules/doc-quality.md) |

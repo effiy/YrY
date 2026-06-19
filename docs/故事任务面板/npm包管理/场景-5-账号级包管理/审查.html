@@ -288,10 +288,10 @@
     <div class="suite-head"><span class="s-arrow">▶</span><span class="s-name">📎 审查证据清单</span><span class="s-badge pass">12 项</span></div>
     <div class="suite-body">
       <ul class="ev-list">
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>预期输出缺失：</strong><code>grep -rn '预期输出\|你应该看到\|expected output' docs/故事任务面板/架构/index.md → 0 results</code></span></li>
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>FAQ 缺失：</strong><code>grep -rn 'FAQ\|常见问题\|故障排查\|troubleshoot' docs/故事任务面板/架构/index.md → 0 results</code></span></li>
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>DoD 缺失：</strong><code>grep -rn '验收清单\|Definition of Done\|DoD' docs/故事任务面板/架构/index.md → 0 results</code></span></li>
-        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>错误码未文档：</strong><code>grep -rn 'exit code\|退出码\|errno' docs/故事任务面板/架构/index.md → 0 results</code></span></li>
+        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>预期输出缺失：</strong><code>grep -rn '预期输出\|你应该看到\|expected output' ../cdn/yry-arch/scenes/index.md → 0 results</code></span></li>
+        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>FAQ 缺失：</strong><code>grep -rn 'FAQ\|常见问题\|故障排查\|troubleshoot' ../cdn/yry-arch/scenes/index.md → 0 results</code></span></li>
+        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>DoD 缺失：</strong><code>grep -rn '验收清单\|Definition of Done\|DoD' ../cdn/yry-arch/scenes/index.md → 0 results</code></span></li>
+        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>错误码未文档：</strong><code>grep -rn 'exit code\|退出码\|errno' ../cdn/yry-arch/scenes/index.md → 0 results</code></span></li>
         <li><span class="ev-icon">✅</span><span class="ev-text"><strong>命令一致性：</strong>场景中的 13 个命令示例与各 skill SKILL.md 中的命令签名 100% 一致</span></li>
         <li><span class="ev-icon">✅</span><span class="ev-text"><strong>目录结构：</strong>导览路径与实际仓库目录树匹配（skills/ agents/ rules/ docs/ tests/）</span></li>
         <li><span class="ev-icon">✅</span><span class="ev-text"><strong>术语对齐：</strong>首验证任务 / 上手流程 / 验收 等 17 个核心术语与 <code>docs/术语表.md</code> 100% 对齐</span></li>
@@ -310,18 +310,18 @@
       <p style="font-size:.76rem;color:var(--text2);margin-bottom:8px">其他审查者可通过以下命令复现本次审查：</p>
       <pre style="background:rgba(0,0,0,.3);border-radius:6px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);line-height:1.6">
 # Step 1: 完整性扫描
-grep -rn '预期输出\|你应该看到' docs/故事任务面板/架构/index.md
-grep -rn 'FAQ\|故障排查' docs/故事任务面板/架构/index.md
-grep -rn 'Definition of Done\|验收清单' docs/故事任务面板/架构/index.md
+grep -rn '预期输出\|你应该看到' ../cdn/yry-arch/scenes/index.md
+grep -rn 'FAQ\|故障排查' ../cdn/yry-arch/scenes/index.md
+grep -rn 'Definition of Done\|验收清单' ../cdn/yry-arch/scenes/index.md
 
 # Step 2: 一致性校验
 for cmd in rui-账号级包管理 rui-story rui-config npm git; do
   echo "=== $cmd ==="
-  grep -rn "$cmd" docs/故事任务面板/架构/index.md | wc -l
+  grep -rn "$cmd" ../cdn/yry-arch/scenes/index.md | wc -l
 done
 
 # Step 3: 自动生成退出码表
-./tools/extract-exit-codes.sh --output docs/故事任务面板/架构/index.md
+./tools/extract-exit-codes.sh --output ../cdn/yry-arch/scenes/index.md
 </pre>
     </div>
   </div>
