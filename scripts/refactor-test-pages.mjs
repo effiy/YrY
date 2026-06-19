@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Batch refactor 測試面板.html: replace entire inline <style> block
- * with <link> to cdn/yry-test-base.css (block is identical across all files).
+ * with <link> to cdn/yry-test/index.css (block is identical across all files).
  *
  * Usage: node cdn/js/refactor-test-pages.mjs [--dry-run]
  */
@@ -35,7 +35,7 @@ function refactorFile(filePath) {
   const endIdx = raw.indexOf('</style>', startIdx);
   if (endIdx === -1) return { file: filePath, replaced: false, reason: 'no </style>' };
 
-  const cssPath = relative(dirname(filePath), resolve(root, 'cdn/yry-test-base.css'));
+  const cssPath = relative(dirname(filePath), resolve(root, 'cdn/yry-test/index.css'));
   const before = raw.slice(0, startIdx);
   const after = raw.slice(endIdx + '</style>'.length);
   const newRaw = before + `<link rel="stylesheet" href="${cssPath}">` + after;

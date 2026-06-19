@@ -1,7 +1,7 @@
 /**
- * shared.css 全局样式测试 — 重置、动画、面包屑、工具栏等
+ * shared/index.css 全局样式测试 — 重置、动画、面包屑、工具栏等
  *
- * 验证 shared.css 在两类页面中都生效的基础规则。
+ * 验证 shared/index.css 在两类页面中都生效的基础规则。
  *
  * 对应场景文档:
  *   - docs/故事任务面板/yry-cdn/场景-2-双主题系统设计/
@@ -10,15 +10,15 @@
 import { describe, it, assert, run } from '../lib/test-harness.mjs';
 import { fileExists, readFile, PROJECT_ROOT } from '../lib/helpers.mjs';
 
-const SHARED_CSS = 'cdn/shared.css';
+const SHARED_CSS = 'cdn/shared/index.css';
 
-describe('shared.css — 全局共享样式', () => {
+describe('shared/index.css — 全局共享样式', () => {
   // ── File integrity ────────────────────────────────────────────────
   describe('文件完整性', () => {
-    it('shared.css 存在', () => assert.ok(fileExists(SHARED_CSS)));
+    it('shared/index.css 存在', () => assert.ok(fileExists(SHARED_CSS)));
     it('文件内容充足 (> 1000 chars)', () => {
       const content = readFile(SHARED_CSS);
-      assert.ok(content.length > 1000, 'shared.css 应有足够内容');
+      assert.ok(content.length > 1000, 'shared/index.css 应有足够内容');
     });
   });
 

@@ -1,6 +1,6 @@
 /* ═══ shared-b.css — Common styles for all Category B documents ═══ */
 /* Inlined by rui-html/lib/templates.mjs buildHeadBlock() during generation */
-/* Uses yry- prefixed CSS variables matching cdn/theme.css conventions */
+/* Uses yry- prefixed CSS variables matching cdn/theme/index.css conventions */
 /* Breadcrumb/Cross-nav/Header styles → now provided by yry-scene-chrome component */
 
 :root {

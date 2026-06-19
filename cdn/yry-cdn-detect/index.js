@@ -1,9 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    YrY CDN · CDN 资源加载性能监测
 
-   检测 shared.css / theme.css / shared.js 的加载耗时并更新 Live Bar 徽章
+   检测 shared/index.css / theme/index.css / shared.js 的加载耗时并更新 Live Bar 徽章
    依赖: DOM 中需存在 #lrCss, #lrTheme, #lrJs, #statTiming 元素
-   用法: <script src="../yry-cdn-detect.js"></script> (自动执行)
+   用法: <script src="../yry-cdn-detect/index.js"></script> (自动执行)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 (function detectCDN() {
@@ -13,8 +13,8 @@
   var totalDuration = 0;
   cdnEntries.forEach(function (r) {
     var name = r.name.split('/').pop().split('?')[0];
-    if (name === 'shared.css') found.css = r;
-    if (name === 'theme.css') found.theme = r;
+    if (name === 'shared/index.css') found.css = r;
+    if (name === 'theme/index.css') found.theme = r;
     if (name === 'shared.js') found.js = r;
     totalDuration += r.duration;
   });

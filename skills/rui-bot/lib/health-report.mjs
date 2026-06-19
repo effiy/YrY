@@ -231,9 +231,9 @@ export function generateHealthReport(hr) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>健康报告 · ${nowDate()}</title>
-<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared.css">
-<link rel="stylesheet" href="${CDN_DEPTH}cdn/theme.css">
-	<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared-reports.css">
+<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared/index.css">
+<link rel="stylesheet" href="${CDN_DEPTH}cdn/theme/index.css">
+	<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared-reports/index.css">
 </head>
 <body>
 <div class="h-container">
@@ -345,7 +345,7 @@ export function generateHealthReport(hr) {
 </div>
 
 </div>
-<script src="${CDN_DEPTH}cdn/shared.js"></script>
+<script src="${CDN_DEPTH}cdn/shared/index.js"></script>
 <script>
 document.querySelectorAll('.h-tab').forEach(function(t) {
   t.addEventListener('click', function() {
@@ -416,9 +416,9 @@ export function generateHealthIndex() {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>健康报告索引</title>
-<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared.css">
-<link rel="stylesheet" href="${CDN_DEPTH}cdn/theme.css">
-	<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared-reports.css">
+<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared/index.css">
+<link rel="stylesheet" href="${CDN_DEPTH}cdn/theme/index.css">
+	<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared-reports/index.css">
 	<style>
 	/* common :root / reset / body / table / bc / hd / card / links / ft covered by shared-reports.css */
 	.c { max-width: 800px; margin: 0 auto; padding: 48px 24px 80px; }

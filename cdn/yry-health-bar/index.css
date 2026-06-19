@@ -2,7 +2,7 @@
    YrY CDN — YryHealthBar · 健康/进度条 样式
    适用: 审查 · 测试面板 · 计划清单
 
-   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+   依赖 design tokens (来自 cdn/theme/index.css 或页面 :root):
      --yry-pass / --yry-fail / --yry-warn / --yry-skip
 
    使用方式:

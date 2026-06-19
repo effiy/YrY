@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>模板架构与 CSS 设计系统 · 源码</title>
-<link rel="stylesheet" href="../../../../cdn/shared.css">
-<link rel="stylesheet" href="../../../../cdn/theme.css">
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-source-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-source/index.css">
 </head>
 <body>
 <div class="container">
@@ -94,7 +94,7 @@
       <div class="role-mini" onclick="filterCat('skill')">
         <div class="rm-name">🎨 CDN 资源 <span style="margin-left:auto;font-size:.7rem;color:var(--accent)" id="ov-skill"></span></div>
         <div class="rm-desc">样式入口 · 加载链 · 4 份资源</div>
-        <div class="rm-files">shared.css · theme.css · yry-checklist.css · shared.js</div>
+        <div class="rm-files">shared/index.css · theme/index.css · yry-checklist.css · shared.js</div>
       </div>
       <div class="role-mini" onclick="filterCat('agent')">
         <div class="rm-name">📋 模板主文件 <span style="margin-left:auto;font-size:.7rem;color:var(--purple)" id="ov-agent"></span></div>
@@ -118,8 +118,8 @@
     <h2>🎯 重要度分级 <span class="h2-tag">按优先级阅读</span></h2>
     <p style="margin-bottom:10px">所有源文件按重要度分为三级，建议按优先级阅读：</p>
     <ul class="checklist">
-      <li><span class="chk" style="color:var(--fail)">★</span> <b style="color:var(--fail)">必读 (Must-Read)</b> — 模板架构核心，缺失则无法理解设计系统：<code>cdn/shared.css</code> · <code>cdn/theme.css</code> · <code>cdn/yry-checklist.css</code> · <code>计划清单.html</code></li>
-      <li><span class="chk partial">◆</span> <b style="color:var(--warn)">推荐 (Recommended)</b> — 进入实操前需了解：<code>cdn/shared.js</code> · <code>tests/yry-checklist/skel.test.mjs</code> · <code>tests/yry-checklist/css-vars.test.mjs</code></li>
+      <li><span class="chk" style="color:var(--fail)">★</span> <b style="color:var(--fail)">必读 (Must-Read)</b> — 模板架构核心，缺失则无法理解设计系统：<code>cdn/shared/index.css</code> · <code>cdn/theme/index.css</code> · <code>cdn/yry-checklist/index.css</code> · <code>计划清单.html</code></li>
+      <li><span class="chk partial">◆</span> <b style="color:var(--warn)">推荐 (Recommended)</b> — 进入实操前需了解：<code>cdn/shared/index.js</code> · <code>tests/yry-checklist/skel.test.mjs</code> · <code>tests/yry-checklist/css-vars.test.mjs</code></li>
       <li><span class="chk" style="color:var(--cyan)">○</span> <b style="color:var(--cyan)">参考 (Reference)</b> — 按需查阅：<code>tests/yry-checklist/token.test.mjs</code> · <code>架构图.html</code> · <code>知识图谱.html</code></li>
     </ul>
   </div>
@@ -128,12 +128,12 @@
     <h2>⚡ 快速操作台 <span class="h2-tag">点击复制命令</span></h2>
     <p style="margin-bottom:12px">下列命令覆盖 80% 的模板架构日常操作，点击卡片即可复制：</p>
     <div class="task-grid">
-      <div class="task-card" onclick="copyText('cat cdn/shared.css cdn/theme.css cdn/yry-checklist.css')">
+      <div class="task-card" onclick="copyText('cat cdn/shared/index.css cdn/theme/index.css cdn/yry-checklist/index.css')">
         <span class="t-diff easy">EASY</span>
         <span class="t-icon">�</span>
         <div class="t-title">查看 CDN 三件套</div>
         <div class="t-desc">合并查看 3 个 CSS 资源</div>
-        <div class="t-cmd">cat cdn/shared.css cdn/theme.css cdn/yry-checklist.css</div>
+        <div class="t-cmd">cat cdn/shared/index.css cdn/theme/index.css cdn/yry-checklist/index.css</div>
       </div>
       <div class="task-card" onclick="copyText('node tests/yry-checklist/skel.test.mjs')">
         <span class="t-diff easy">EASY</span>
@@ -142,12 +142,12 @@
         <div class="t-desc">验证 7 区域 DOM 选择器</div>
         <div class="t-cmd">node tests/yry-checklist/skel.test.mjs</div>
       </div>
-      <div class="task-card" onclick="copyText('curl -I http://localhost:8000/cdn/shared.css')">
+      <div class="task-card" onclick="copyText('curl -I http://localhost:8000/cdn/shared/index.css')">
         <span class="t-diff easy">EASY</span>
         <span class="t-icon">�</span>
         <div class="t-title">验证 CDN 200</div>
-        <div class="t-desc">检查 shared.css HTTP 状态</div>
-        <div class="t-cmd">curl -I http://localhost:8000/cdn/shared.css</div>
+        <div class="t-desc">检查 shared/index.css HTTP 状态</div>
+        <div class="t-cmd">curl -I http://localhost:8000/cdn/shared/index.css</div>
       </div>
       <div class="task-card" onclick="copyText('grep -rn &quot;{{&quot; docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/*.html')">
         <span class="t-diff easy">EASY</span>
@@ -163,12 +163,12 @@
         <div class="t-desc">验证 14 个 --yry-* 变量可解析</div>
         <div class="t-cmd">node tests/yry-checklist/css-vars.test.mjs</div>
       </div>
-      <div class="task-card" onclick="copyText('grep -n &quot;@layer\\|@media\\|--yry-&quot; cdn/yry-checklist.css')">
+      <div class="task-card" onclick="copyText('grep -n &quot;@layer\\|@media\\|--yry-&quot; cdn/yry-checklist/index.css')">
         <span class="t-diff easy">EASY</span>
         <span class="t-icon">�</span>
         <div class="t-title">查看 @layer 优先级</div>
         <div class="t-desc">检查 5 层 @layer 显式声明</div>
-        <div class="t-cmd">grep -n "@layer\|@media\|--yry-" cdn/yry-checklist.css</div>
+        <div class="t-cmd">grep -n "@layer\|@media\|--yry-" cdn/yry-checklist/index.css</div>
       </div>
     </div>
   </div>
@@ -194,13 +194,13 @@
       </div>
       <div class="t-step s2">
         <div class="step-title"><span class="step-num">STEP 2 · 2 min</span> TC-2 CSS 变量覆盖</div>
-        <div class="step-desc">阅读 <code>cdn/theme.css</code> + <code>cdn/yry-checklist.css</code>。理解 14 个 <code>--yry-*</code> 变量（4 surface / 2 brand / 5 semantic / 3 text）在 <code>:root</code> 定义，在 yry-checklist.css 通过 alias 桥接。</div>
+        <div class="step-desc">阅读 <code>cdn/theme/index.css</code> + <code>cdn/yry-checklist/index.css</code>。理解 14 个 <code>--yry-*</code> 变量（4 surface / 2 brand / 5 semantic / 3 text）在 <code>:root</code> 定义，在 yry-checklist.css 通过 alias 桥接。</div>
         <div class="step-action">→ 14 个变量 + 6 大组件类 + 5 层 @layer 断言</div>
         <div class="step-time">✅ 完成标志：DevTools 中 14 变量全部可解析 · 14/14 通过</div>
       </div>
       <div class="t-step s3">
         <div class="step-title"><span class="step-num">STEP 3 · 2 min</span> TC-3 CDN 加载链</div>
-        <div class="step-desc">检查 <code>&lt;head&gt;</code> 中 link 顺序：<code>shared.css → theme.css → yry-checklist.css</code>，最后加载 <code>shared.js</code>。在 DevTools Network 面板确认 4 资源均 HTTP 200，0 个 404。</div>
+        <div class="step-desc">检查 <code>&lt;head&gt;</code> 中 link 顺序：<code>shared/index.css → theme/index.css → yry-checklist.css</code>，最后加载 <code>shared.js</code>。在 DevTools Network 面板确认 4 资源均 HTTP 200，0 个 404。</div>
         <div class="step-action">→ 4 资源 200 OK · 加载顺序正确 · 无 FOUC</div>
         <div class="step-time">✅ 完成标志：Network 面板 4/4 资源 200 · 顺序正确</div>
       </div>
@@ -212,7 +212,7 @@
       </div>
       <div class="t-step">
         <div class="step-title"><span class="step-num">STEP 5 · 2 min</span> TC-5 响应式断点</div>
-        <div class="step-desc">在 DevTools 切到 ≤900 / ≤700 / ≤500px 三档断点。KPI 栅格 5 列 → 3 列 → 1 列；阶段环 7 段 4 列；卡片不溢出。@media 媒体查询均在 <code>cdn/yry-checklist.css:340</code> 集中声明。</div>
+        <div class="step-desc">在 DevTools 切到 ≤900 / ≤700 / ≤500px 三档断点。KPI 栅格 5 列 → 3 列 → 1 列；阶段环 7 段 4 列；卡片不溢出。@media 媒体查询均在 <code>cdn/yry-checklist/index.css:340</code> 集中声明。</div>
         <div class="step-action">→ 3 断点 100% 自适应 · 6 组件重排正确</div>
         <div class="step-time">✅ 完成标志：3 断点视觉回归全过</div>
       </div>
@@ -222,15 +222,15 @@
   <div class="card">
     <h2>📚 阅读顺序推荐 <span class="h2-tag">按依赖深度</span></h2>
     <div class="dep-graph">
-      <span class="dep-node root" onclick="viewSource('cdn/shared.css')">shared.css</span>
+      <span class="dep-node root" onclick="viewSource('cdn/shared/index.css')">shared/index.css</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('cdn/theme.css')">theme.css</span>
+      <span class="dep-node" onclick="viewSource('cdn/theme/index.css')">theme/index.css</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('cdn/yry-checklist.css')">yry-checklist.css</span>
+      <span class="dep-node" onclick="viewSource('cdn/yry-checklist/index.css')">yry-checklist.css</span>
       <span class="dep-arrow">→</span>
       <span class="dep-node" onclick="viewSource('计划清单.html')">计划清单.html</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node leaf" onclick="viewSource('cdn/shared.js')">shared.js</span>
+      <span class="dep-node leaf" onclick="viewSource('cdn/shared/index.js')">shared.js</span>
     </div>
     <p style="text-align:center;color:var(--text3);font-size:.78rem;margin-top:10px">共享样式 → 主题令牌 → 组件样式 → 模板主文件 → 命令面板 JS（点击节点可直接查看）</p>
   </div>
@@ -242,7 +242,7 @@
         <span class="tip-icon">⚠️</span>
         <div class="tip-body">
           <div class="tip-title">不要打乱 head 中 link 顺序</div>
-          <div class="tip-desc">yry-checklist.css 必须在 theme.css 之后加载，否则 <code>--yry-*</code> 变量在 alias 时尚未定义，整个页面颜色变黑。CDN 顺序：shared → theme → yry-checklist → shared.js。</div>
+          <div class="tip-desc">yry-checklist.css 必须在 theme/index.css 之后加载，否则 <code>--yry-*</code> 变量在 alias 时尚未定义，整个页面颜色变黑。CDN 顺序：shared → theme → yry-checklist → shared.js。</div>
         </div>
       </div>
       <div class="tip danger">
@@ -318,12 +318,12 @@
         <div class="t-desc">检查模板主文件行数（应 ≤ 480）</div>
         <div class="t-cmd">cat docs/.../场景-1-*.html | wc -l</div>
       </div>
-      <div class="task-card" onclick="copyText('curl -I http://localhost:8000/cdn/shared.css')">
+      <div class="task-card" onclick="copyText('curl -I http://localhost:8000/cdn/shared/index.css')">
         <span class="t-diff easy">EASY</span>
         <span class="t-icon">📨</span>
         <div class="t-title">验证 CDN 200</div>
         <div class="t-desc">本地起 server 后检查 CDN 资源 200</div>
-        <div class="t-cmd">curl -I http://localhost:8000/cdn/shared.css</div>
+        <div class="t-cmd">curl -I http://localhost:8000/cdn/shared/index.css</div>
       </div>
       <div class="task-card" onclick="copyText('chromium --headless --window-size=320,800 --screenshot=out.png docs/.../计划清单.html')">
         <span class="t-diff medium">MED</span>
@@ -346,12 +346,12 @@
         <div class="t-desc">Token 漏替换直接抛 ConfigurationError</div>
         <div class="t-cmd">node tests/.../token.test.mjs --strict</div>
       </div>
-      <div class="task-card" onclick="copyText('cat cdn/yry-checklist.css | grep -E &quot;@media|max-width&quot; | head -10')">
+      <div class="task-card" onclick="copyText('cat cdn/yry-checklist/index.css | grep -E &quot;@media|max-width&quot; | head -10')">
         <span class="t-diff hard">HARD</span>
         <span class="t-icon">🎯</span>
         <div class="t-title">检查断点声明</div>
         <div class="t-desc">列出所有 @media 媒体查询</div>
-        <div class="t-cmd">grep -E "@media\|max-width" cdn/yry-checklist.css</div>
+        <div class="t-cmd">grep -E "@media\|max-width" cdn/yry-checklist/index.css</div>
       </div>
     </div>
   </div>
@@ -364,14 +364,14 @@
         <div class="tip-body">
           <div class="tip-title">页面打开后无样式（FOUC）</div>
           <div class="tip-desc">症状：HTML 裸奔 · 控制台 404。CDN 顺序错位或路径错。检查项：</div>
-          <div class="tip-code">curl -I ../../../../cdn/shared.css</div>
+          <div class="tip-code">curl -I ../../../../cdn/shared/index.css</div>
         </div>
       </div>
       <div class="tip warn">
         <span class="tip-icon">⏱</span>
         <div class="tip-body">
           <div class="tip-title">--yry-* 变量未定义导致颜色变黑</div>
-          <div class="tip-desc">症状：DevTools Computed 中 <code>--yry-bg</code> 值为空。yry-checklist.css 加载在 theme.css 之前。修复：</div>
+          <div class="tip-desc">症状：DevTools Computed 中 <code>--yry-bg</code> 值为空。yry-checklist.css 加载在 theme/index.css 之前。修复：</div>
           <div class="tip-code">mv &lt;head&gt; 中两个 link 标签的顺序</div>
         </div>
       </div>
@@ -388,7 +388,7 @@
         <div class="tip-body">
           <div class="tip-title">响应式断点不生效</div>
           <div class="tip-desc">症状：viewport 缩到 500px 卡片仍溢出。@media 查询缺失或断点值错。查看：</div>
-          <div class="tip-code">grep -n "@media" cdn/yry-checklist.css</div>
+          <div class="tip-code">grep -n "@media" cdn/yry-checklist/index.css</div>
         </div>
       </div>
       <div class="tip">
@@ -396,7 +396,7 @@
         <div class="tip-body">
           <div class="tip-title">@layer 顺序被破坏 · 字号回退</div>
           <div class="tip-desc">症状：.kpi-card 字号变 16px。有人把 components 层放到了 reset 之前。修复：</div>
-          <div class="tip-code">cat cdn/yry-checklist.css | head -5</div>
+          <div class="tip-code">cat cdn/yry-checklist/index.css | head -5</div>
         </div>
       </div>
       <div class="tip warn">
@@ -416,11 +416,11 @@
   <div class="card">
     <h2>🧭 模板架构加载拓扑 <span class="h2-tag">点击节点可查看源码</span></h2>
     <div class="dep-graph">
-      <span class="dep-node root" onclick="viewSource('cdn/shared.css')">shared.css</span>
+      <span class="dep-node root" onclick="viewSource('cdn/shared/index.css')">shared/index.css</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('cdn/theme.css')">theme.css</span>
+      <span class="dep-node" onclick="viewSource('cdn/theme/index.css')">theme/index.css</span>
       <span class="dep-arrow">→</span>
-      <span class="dep-node" onclick="viewSource('cdn/yry-checklist.css')">yry-checklist.css</span>
+      <span class="dep-node" onclick="viewSource('cdn/yry-checklist/index.css')">yry-checklist.css</span>
       <span class="dep-arrow">→</span>
       <span class="dep-node leaf" onclick="viewSource('计划清单.html')">计划清单.html</span>
     </div>
@@ -430,9 +430,9 @@
   <div class="card">
     <h2>🔑 关键入口文件 <span class="h2-tag">4 份必读</span></h2>
     <ul class="checklist">
-      <li><span class="chk">★</span> <code>cdn/shared.css</code> — 共享样式 · Reset · Animations · Breadcrumb · Cross-Nav</li>
-      <li><span class="chk">★</span> <code>cdn/theme.css</code> — Category B 主题令牌 · 14 个 --yry-* 变量</li>
-      <li><span class="chk">★</span> <code>cdn/yry-checklist.css</code> — 6 大组件类 · 5 层 @layer · 3 断点响应式</li>
+      <li><span class="chk">★</span> <code>cdn/shared/index.css</code> — 共享样式 · Reset · Animations · Breadcrumb · Cross-Nav</li>
+      <li><span class="chk">★</span> <code>cdn/theme/index.css</code> — Category B 主题令牌 · 14 个 --yry-* 变量</li>
+      <li><span class="chk">★</span> <code>cdn/yry-checklist/index.css</code> — 6 大组件类 · 5 层 @layer · 3 断点响应式</li>
       <li><span class="chk">★</span> <code>计划清单.html</code> — 模板主文件 · 7 区域骨架 · 20 Token 占位符</li>
     </ul>
   </div>
@@ -441,9 +441,9 @@
     <h2>🔄 模块依赖矩阵 <span class="h2-tag">谁依赖谁</span></h2>
     <p style="margin-bottom:12px">以下矩阵揭示模块间的主要引用关系，开发者可据此理解"改动一个文件可能影响哪些下游"：</p>
     <ul class="checklist">
-      <li><span class="chk">→</span> <code>计划清单.html</code> → 引用 <code>shared.css</code> · <code>theme.css</code> · <code>yry-checklist.css</code> · <code>shared.js</code>（4 个 head link）</li>
-      <li><span class="chk">→</span> <code>cdn/yry-checklist.css</code> → 引用 <code>cdn/theme.css</code> 的 <code>--yry-*</code> 变量 · 通过 alias 桥接为 <code>--bg / --accent / --text</code></li>
-      <li><span class="chk">→</span> <code>cdn/shared.js</code> → 提供 ⌘K 命令面板 · 工具函数 · 跨页导航（不影响样式）</li>
+      <li><span class="chk">→</span> <code>计划清单.html</code> → 引用 <code>shared/index.css</code> · <code>theme/index.css</code> · <code>yry-checklist.css</code> · <code>shared.js</code>（4 个 head link）</li>
+      <li><span class="chk">→</span> <code>cdn/yry-checklist/index.css</code> → 引用 <code>cdn/theme/index.css</code> 的 <code>--yry-*</code> 变量 · 通过 alias 桥接为 <code>--bg / --accent / --text</code></li>
+      <li><span class="chk">→</span> <code>cdn/shared/index.js</code> → 提供 ⌘K 命令面板 · 工具函数 · 跨页导航（不影响样式）</li>
       <li><span class="chk">→</span> <code>tests/yry-checklist/*</code> → 调用 <code>计划清单.html</code> 与 3 个 CSS 进行端到端验证</li>
     </ul>
   </div>
@@ -524,10 +524,10 @@ var activePanel='overview',fileQuery='',filterCatState=null;
 var currentSourcePath=null,currentSourceText=null;
 
 var manifest={"files":[
-  {"name":"shared.css","path":"cdn/shared.css","cat":"skill","lines":520,"size":18800,"desc":"YrY 共享样式 · Reset / Animations / Breadcrumb / Cross-Nav · 必须第一个加载","importance":"must","icon":"🎨"},
-  {"name":"theme.css","path":"cdn/theme.css","cat":"skill","lines":180,"size":7200,"desc":"Category B 主题令牌 · 14 个 --yry-* 变量（4 surface + 2 brand + 5 semantic + 3 text）","importance":"must","icon":"🎨"},
-  {"name":"yry-checklist.css","path":"cdn/yry-checklist.css","cat":"skill","lines":360,"size":12400,"desc":"计划清单组件样式 · 6 大组件类 · 5 层 @layer · 3 断点响应式 · alias 桥接","importance":"must","icon":"🎨"},
-  {"name":"shared.js","path":"cdn/shared.js","cat":"skill","lines":220,"size":8400,"desc":"共享 JS · ⌘K 命令面板 · 工具函数 · 跨页导航（不阻塞样式）","importance":"recommend","icon":"🎨"},
+  {"name":"shared/index.css","path":"cdn/shared/index.css","cat":"skill","lines":520,"size":18800,"desc":"YrY 共享样式 · Reset / Animations / Breadcrumb / Cross-Nav · 必须第一个加载","importance":"must","icon":"🎨"},
+  {"name":"theme/index.css","path":"cdn/theme/index.css","cat":"skill","lines":180,"size":7200,"desc":"Category B 主题令牌 · 14 个 --yry-* 变量（4 surface + 2 brand + 5 semantic + 3 text）","importance":"must","icon":"🎨"},
+  {"name":"yry-checklist.css","path":"cdn/yry-checklist/index.css","cat":"skill","lines":360,"size":12400,"desc":"计划清单组件样式 · 6 大组件类 · 5 层 @layer · 3 断点响应式 · alias 桥接","importance":"must","icon":"🎨"},
+  {"name":"shared.js","path":"cdn/shared/index.js","cat":"skill","lines":220,"size":8400,"desc":"共享 JS · ⌘K 命令面板 · 工具函数 · 跨页导航（不阻塞样式）","importance":"recommend","icon":"🎨"},
   {"name":"计划清单.html","path":"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html","cat":"agent","lines":480,"size":45200,"desc":"模板主文件 · 7 区域骨架 · 20 个 {{ }} Token 占位符 · Stage 7 + 演示 + 审查子页","importance":"must","icon":"📋"},
   {"name":"架构图.html","path":"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/架构图.html","cat":"agent","lines":320,"size":28600,"desc":"模板架构 Mermaid 架构图 · 4 场景关系 + CDN 加载链 + 7 区域映射","importance":"reference","icon":"📋"},
   {"name":"知识图谱.html","path":"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/知识图谱.html","cat":"agent","lines":280,"size":24100,"desc":"模板架构知识图谱 · 节点/边/概念卡 · 与架构图互补","importance":"reference","icon":"📋"},
@@ -911,6 +911,6 @@ window.addEventListener('DOMContentLoaded',function(){
   switchPanel('overview');
 });
 </script>
-<script src="../../../../cdn/shared.js"></script>
+<script src="../../../../cdn/shared/index.js"></script>
 </body>
 </html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — yry-quiz · 自测答题交互
+  依赖: DOM 中需存在 .quiz-card / .quiz-opt / .quiz-feedback / .quiz-score 元素
+  加载: <script src="../../../../cdn/yry-quiz/index.js"></script>  (DOMContentLoaded 后自动绑定)
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY yry-quiz · 自测交互</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="../yry-story-panel/index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+    .quiz-card { background: var(--yry-bg-card); border: var(--yry-border); border-radius: 12px; padding: 18px 22px; margin: 10px 0; }
+    .quiz-opt { display: block; padding: 10px 14px; background: var(--yry-bg-flat); border: var(--yry-border); border-radius: 8px; cursor: pointer; margin: 6px 0; }
+    .quiz-opt:hover { border-color: var(--yry-accent, #FFC107); }
+    .quiz-opt.correct { border-color: var(--yry-pass, #22c55e); background: rgba(34,197,94,.12); }
+    .quiz-opt.wrong { border-color: var(--yry-fail, #ef4444); background: rgba(239,68,68,.12); }
+    .quiz-opt.disabled { pointer-events: none; opacity: .6; }
+    .quiz-feedback { display: none; padding: 8px 12px; background: rgba(34,211,238,.08); border-radius: 6px; margin-top: 10px; font-size: .82rem; }
+    .quiz-feedback.show { display: block; }
+    .quiz-score { display: none; padding: 12px; text-align: center; font-size: 1.1rem; font-weight: 700; }
+    .quiz-score.show { display: block; }
+  </style>
+</head>
+<body>
+  <h1>❓ yry-quiz · 自测交互</h1>
+  <p>提供自测答题绑定:点击选项 → 标记对错 → 显示反馈。自动监听 .quiz-opt 点击,无需额外 JS。</p>
+
+  <h2>载入</h2>
+  <pre>&lt;script src="../../../../cdn/yry-quiz/index.js"&gt;&lt;/script&gt;</pre>
+
+  <h2>演示</h2>
+  <div class="quiz-card" data-q="1">
+    <h3>1. YrY CDN 是什么?</h3>
+    <div class="quiz-opt" data-answer="correct">📦 集中存放共享 CSS / JS / 资源的目录</div>
+    <div class="quiz-opt" data-answer="wrong">🛒 商品快递网络</div>
+    <div class="quiz-opt" data-answer="wrong">📡 域名系统</div>
+    <div class="quiz-feedback">✅ 正确!CDN(Content Delivery Network)在此指 cdn/ 共享资源目录。</div>
+  </div>
+
+  <div class="quiz-score">
+    得分: <span class="qs-big">0/1</span>
+  </div>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · yry-quiz · 2026</p>
+
+  <script src="index.js"></script>
+</body>
+</html>

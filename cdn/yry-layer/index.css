@@ -17,7 +17,7 @@
        <slot/>  <!-- body 内容:sub-section,card-grid,story-grid,scene-grid 等 -->
      </div>
 
-   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+   依赖 design tokens (来自 cdn/theme/index.css 或页面 :root):
      --yry-bg-card / --yry-border / --yry-radius
      --yry-shadow / --yry-shadow-lg
      --yry-text / --yry-text2 / --yry-text3

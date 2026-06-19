@@ -14,8 +14,8 @@ import { existsSync, statSync, readdirSync } from 'node:fs';
 const PKG_DIR = 'cdn';
 const PKG_JSON = `${PKG_DIR}/package.json`;
 const CDN_FILES = [
-  'shared.css', 'shared.js', 'theme.css', 'theme-mono.css',
-  'fonts.css', 'README.md',
+  'shared/index.css', 'shared.js', 'theme/index.css', 'theme-mono/index.css',
+  'fonts/index.css', 'README.md',
 ];
 
 describe('npm package — CDN 包发布与版本管理', () => {

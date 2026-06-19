@@ -20,7 +20,7 @@
 **需求来源**:
 - 计划清单 · 场景 1 的面包屑从静态 HTML 重构为 Vue 3 组件
 - 跨 28+ 场景页需要统一面包屑实现
-- 现有 `cdn/yry-checklist.css` 内 hardcoded 颜色不易跨主题迁移
+- 现有 `cdn/yry-checklist/index.css` 内 hardcoded 颜色不易跨主题迁移
 
 **设计决策**:
 

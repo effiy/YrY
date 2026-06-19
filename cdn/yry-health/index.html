@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — yry-health · CDN 健康报告专属样式
+  适用: cdn/健康报告/health-cdn-*.html
+  加载: <link rel="stylesheet" href="../../cdn/yry-health/index.css">
+        (前置: shared/index.css + theme/index.css + shared-reports.css + yry-home.css)
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY yry-health · CDN 健康报告</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="../shared-reports/index.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>🏥 yry-health · CDN 健康报告样式</h1>
+  <p>健康报告专属样式: .h-hero (大圆环分数 + 6 项 stat) / .h-tabs / .h-panel / .h-section / .h-summary-card / .h-tab-badge / .h-dim-card 等。</p>
+
+  <h2>载入</h2>
+  <pre>&lt;link rel="stylesheet" href="../../cdn/yry-health/index.css"&gt;</pre>
+
+  <div class="h-hero">
+    <div class="h-score-ring">
+      <div class="h-score-num">86</div>
+      <div class="h-score-grade">A</div>
+    </div>
+    <div class="h-hero-stats">
+      <div class="h-hero-stat">📊 <strong>86</strong> 分</div>
+      <div class="h-hero-stat">✅ <strong>14</strong> 项</div>
+      <div class="h-hero-stat">⚠ <strong>2</strong> 项</div>
+    </div>
+  </div>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · yry-health · 2026</p>
+</body>
+</html>

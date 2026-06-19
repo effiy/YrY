@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    YrY CDN — YryCrossNav · Vue 3 交叉导航组件 样式
 
-   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+   依赖 design tokens (来自 cdn/theme/index.css 或页面 :root):
      --yry-color-cyan / --yry-color-accent / --yry-color-text-3
 
    所有颜色都带 fallback,即使页面未加载主题也能正常显示。

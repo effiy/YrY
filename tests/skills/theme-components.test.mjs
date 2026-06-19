@@ -10,9 +10,9 @@
 import { describe, it, assert, run } from '../lib/test-harness.mjs';
 import { fileExists, readFile, PROJECT_ROOT } from '../lib/helpers.mjs';
 
-const THEME_CSS = 'cdn/theme.css';
-const THEME_MONO = 'cdn/theme-mono.css';
-const SHARED_CSS = 'cdn/shared.css';
+const THEME_CSS = 'cdn/theme/index.css';
+const THEME_MONO = 'cdn/theme-mono/index.css';
+const SHARED_CSS = 'cdn/shared/index.css';
 
 // Shared components that both themes must reference
 const SHARED_COMPONENTS = [
@@ -34,28 +34,28 @@ const A_COMPONENTS = [
 ];
 
 describe('Theme components — 组件完整性', () => {
-  describe('共享组件 (shared.css)', () => {
+  describe('共享组件 (shared/index.css)', () => {
     const content = readFile(SHARED_CSS);
     for (const comp of SHARED_COMPONENTS) {
-      it(`shared.css 包含 yry-${comp}`, () => {
+      it(`shared/index.css 包含 yry-${comp}`, () => {
         assert.ok(content.includes(`yry-${comp}`), `应包含共享组件 ${comp}`);
       });
     }
   });
 
-  describe('B 类组件 (theme.css)', () => {
+  describe('B 类组件 (theme/index.css)', () => {
     const content = readFile(THEME_CSS);
     for (const comp of B_COMPONENTS) {
-      it(`theme.css 包含 yry-${comp}`, () => {
+      it(`theme/index.css 包含 yry-${comp}`, () => {
         assert.ok(content.includes(`yry-${comp}`), `应包含 B 类组件 ${comp}`);
       });
     }
   });
 
-  describe('A 类组件 (theme-mono.css)', () => {
+  describe('A 类组件 (theme-mono/index.css)', () => {
     const content = readFile(THEME_MONO);
     for (const comp of A_COMPONENTS) {
-      it(`theme-mono.css 包含 ${comp}`, () => {
+      it(`theme-mono/index.css 包含 ${comp}`, () => {
         assert.ok(content.includes(comp), `应包含 A 类组件 ${comp}`);
       });
     }

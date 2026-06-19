@@ -23,25 +23,25 @@ export const DOC_TYPES = ['计划清单', '架构图', '知识图谱', '源码',
 
 /** Page metadata for cross-nav and breadcrumb */
 export const PAGE_META = {
-  '计划清单':  { icon: '📋', label: '计划清单', shortLabel: '清单', css: 'shared.css + theme.css + yry-checklist.css' },
-  '架构图':    { icon: '📐', label: '架构图',   shortLabel: '架构', css: 'fonts.css + shared.css + theme-mono.css' },
-  '知识图谱':  { icon: '🔗', label: '知识图谱', shortLabel: '图谱', css: 'fonts.css + shared.css + theme-mono.css' },
-  '源码':      { icon: '📄', label: '源码',     shortLabel: '源码', css: 'shared.css + theme.css' },
-  '测试面板':  { icon: '🧪', label: '测试面板', shortLabel: '测试', css: 'shared.css + theme.css' },
-  '演示':      { icon: '💡', label: '演示',     shortLabel: '演示', css: 'shared.css + theme.css' },
-  '审查':      { icon: '📝', label: '审查',     shortLabel: '审查', css: 'shared.css + theme.css' },
+  '计划清单':  { icon: '📋', label: '计划清单', shortLabel: '清单', css: 'shared/index.css + theme/index.css + yry-checklist.css' },
+  '架构图':    { icon: '📐', label: '架构图',   shortLabel: '架构', css: 'fonts/index.css + shared/index.css + theme-mono/index.css' },
+  '知识图谱':  { icon: '🔗', label: '知识图谱', shortLabel: '图谱', css: 'fonts/index.css + shared/index.css + theme-mono/index.css' },
+  '源码':      { icon: '📄', label: '源码',     shortLabel: '源码', css: 'shared/index.css + theme/index.css' },
+  '测试面板':  { icon: '🧪', label: '测试面板', shortLabel: '测试', css: 'shared/index.css + theme/index.css' },
+  '演示':      { icon: '💡', label: '演示',     shortLabel: '演示', css: 'shared/index.css + theme/index.css' },
+  '审查':      { icon: '📝', label: '审查',     shortLabel: '审查', css: 'shared/index.css + theme/index.css' },
 };
 
 /** Category determines CSS load chain */
 export const CATEGORY_CSS = {
   A: [
-    { href: '{{CDN_DEPTH}}cdn/fonts.css', rel: 'stylesheet' },
-    { href: '{{CDN_DEPTH}}cdn/shared.css', rel: 'stylesheet' },
-    { href: '{{CDN_DEPTH}}cdn/theme-mono.css', rel: 'stylesheet' },
+    { href: '{{CDN_DEPTH}}cdn/fonts\/index\.css', rel: 'stylesheet' },
+    { href: '{{CDN_DEPTH}}cdn/shared/index.css', rel: 'stylesheet' },
+    { href: '{{CDN_DEPTH}}cdn/theme-mono/index.css', rel: 'stylesheet' },
   ],
   B: [
-    { href: '{{CDN_DEPTH}}cdn/shared.css', rel: 'stylesheet' },
-    { href: '{{CDN_DEPTH}}cdn/theme.css', rel: 'stylesheet' },
+    { href: '{{CDN_DEPTH}}cdn/shared/index.css', rel: 'stylesheet' },
+    { href: '{{CDN_DEPTH}}cdn/theme/index.css', rel: 'stylesheet' },
   ],
 };
 
@@ -149,7 +149,7 @@ export function buildHeadBlock(ctx, docType) {
   }
 
   if (docType === '计划清单') {
-    head.push(`<link rel="stylesheet" href="${d}cdn/yry-checklist.css">`);
+    head.push(`<link rel="stylesheet" href="${d}cdn/yry-checklist/index.css">`);
   }
 
   const CAT_A_BASE = {

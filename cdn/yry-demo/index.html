@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — yry-demo · 演示页面共享样式
+  包含: 阶段流程 (stage-row) · 日志面板 · 提示框 · 时间线 Hero · 概念雷达 · ...
+  加载: <link rel="stylesheet" href="../../../../cdn/yry-demo/index.css">
+        <link rel="stylesheet" href="../../../../cdn/yry-demo/index-stage.css"> (可选:阶段扩展)
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY yry-demo · 演示页面样式</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>💡 yry-demo · 演示页面</h1>
+  <p>提供演示页专用的 .stage-row / .tip-box / .log-box / .timeline-hero / .concept-radar 等。</p>
+
+  <h2>载入</h2>
+  <pre>&lt;link rel="stylesheet" href="../../../../cdn/yry-demo/index.css"&gt;</pre>
+
+  <h2>演示 stage-row</h2>
+  <div class="stage-list">
+    <div class="stage-row done">
+      <div class="st-num">1</div>
+      <div class="st-info"><div class="st-name">已完成步骤</div><div class="st-detail">说明</div></div>
+      <div class="st-status ok">完成 ✓</div>
+      <div class="st-bar" style="width: 100%"></div>
+    </div>
+    <div class="stage-row active">
+      <div class="st-num">2</div>
+      <div class="st-info"><div class="st-name">进行中</div><div class="st-detail">说明</div></div>
+      <div class="st-status loading">学习中</div>
+      <div class="st-bar" style="width: 60%"></div>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <strong>提示:</strong> 这是 .tip-box 的样式,左侧 accent 边线 + 暖色背景。
+  </div>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · yry-demo · 2026</p>
+</body>
+</html>

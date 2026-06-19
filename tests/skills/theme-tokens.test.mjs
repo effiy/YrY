@@ -1,7 +1,7 @@
 /**
  * Theme tokens 测试 — CSS 变量与设计令牌一致性
  *
- * 验证 theme.css 和 theme-mono.css 的 CSS 自定义属性完整性。
+ * 验证 theme/index.css 和 theme-mono/index.css 的 CSS 自定义属性完整性。
  * 检测两个主题之间的关键差异是否符合设计规范。
  *
  * 对应场景文档:
@@ -15,8 +15,8 @@
 import { describe, it, assert, run } from '../lib/test-harness.mjs';
 import { fileExists, readFile, PROJECT_ROOT } from '../lib/helpers.mjs';
 
-const THEME_CSS = 'cdn/theme.css';
-const THEME_MONO = 'cdn/theme-mono.css';
+const THEME_CSS = 'cdn/theme/index.css';
+const THEME_MONO = 'cdn/theme-mono/index.css';
 
 function extractCssVars(content) {
   const vars = {};
@@ -29,15 +29,15 @@ function extractCssVars(content) {
 describe('Theme tokens — 设计令牌一致性', () => {
   // ── File integrity ───────────────────────────────────────────────
   describe('文件完整性', () => {
-    it('theme.css 存在', () => assert.ok(fileExists(THEME_CSS)));
-    it('theme-mono.css 存在', () => assert.ok(fileExists(THEME_MONO)));
+    it('theme/index.css 存在', () => assert.ok(fileExists(THEME_CSS)));
+    it('theme-mono/index.css 存在', () => assert.ok(fileExists(THEME_MONO)));
     it('两个文件内容不同', () => {
       assert.notEqual(readFile(THEME_CSS), readFile(THEME_MONO), '两个主题应有不同样式');
     });
   });
 
   // ── Theme B tokens (system font, dark purple) ────────────────────
-  describe('Cat B — B 类主题 (theme.css)', () => {
+  describe('Cat B — B 类主题 (theme/index.css)', () => {
     const content = readFile(THEME_CSS);
     const vars = extractCssVars(content);
 
@@ -55,11 +55,11 @@ describe('Theme tokens — 设计令牌一致性', () => {
   });
 
   // ── Theme A tokens (monospace, dark blue) ────────────────────────
-  describe('Cat A — A 类主题 (theme-mono.css)', () => {
+  describe('Cat A — A 类主题 (theme-mono/index.css)', () => {
     const content = readFile(THEME_MONO);
 
     it('文件内容充足 (> 500 chars)', () => {
-      assert.ok(content.length > 500, 'theme-mono.css 应有足够内容');
+      assert.ok(content.length > 500, 'theme-mono/index.css 应有足够内容');
     });
     it('使用等宽字体', () => {
       assert.ok(content.includes('mono') || content.includes('Mono'),
@@ -77,7 +77,7 @@ describe('Theme tokens — 设计令牌一致性', () => {
       const bgB = readFile(THEME_CSS).match(/--yry-bg\s*:\s*([^;]+)/)?.[1] || '';
       // theme-mono uses hardcoded colors, not CSS vars — verify it's different
       const monoContent = readFile(THEME_MONO);
-      assert.ok(monoContent.includes('background:'), 'theme-mono.css 应定义背景色');
+      assert.ok(monoContent.includes('background:'), 'theme-mono/index.css 应定义背景色');
       // The two should have different color values
       if (bgB) {
         assert.ok(!monoContent.includes(bgB), '两个主题不应使用相同背景色');
@@ -88,7 +88,7 @@ describe('Theme tokens — 设计令牌一致性', () => {
       const vars = extractCssVars(readFile(THEME_CSS));
       const expected = ['yry-bg', 'yry-text', 'yry-accent', 'yry-shadow', 'yry-radius', 'yry-border'];
       for (const v of expected) {
-        assert.ok(vars[v], `theme.css 应定义 --${v}`);
+        assert.ok(vars[v], `theme/index.css 应定义 --${v}`);
       }
     });
   });

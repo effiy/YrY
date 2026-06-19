@@ -2,8 +2,8 @@
    shared-reports.js — YrY report pages shared JavaScript utilities
    用于: 健康报告 · 趋势报告 · 自循环报告 · 自我改进 · 项目分析
 
-   依赖: theme.css (提供 --yry-* design tokens via CSS custom properties)
-   加载: <script src="../../cdn/shared-reports.js"></script>
+   依赖: theme/index.css (提供 --yry-* design tokens via CSS custom properties)
+   加载: <script src="../../cdn/shared-reports/index.js"></script>
 
    所有函数挂载在 window.YrYReports 命名空间下。
    ========================================================================== */

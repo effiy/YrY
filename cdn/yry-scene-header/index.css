@@ -7,7 +7,7 @@
      <div class="meta">{meta}</div>
      <p class="desc">{desc}</p>      ← 扩展(可选,scene-2 没有)
 
-   依赖 design tokens (来自 cdn/yry-checklist.css :root 或 cdn/theme.css):
+   依赖 design tokens (来自 cdn/yry-checklist/index.css :root 或 cdn/theme/index.css):
      --accent / --text2 / --text3
 
    所有颜色都带 fallback,即使页面未加载主题也能正常显示。

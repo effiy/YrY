@@ -92,9 +92,9 @@ export function generateReport({ skill, status, summary, details, findings }) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>自循环报告 · ${meta.label}</title>
-<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared.css">
-<link rel="stylesheet" href="${CDN_DEPTH}cdn/theme.css">
-	<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared-reports.css">
+<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared/index.css">
+<link rel="stylesheet" href="${CDN_DEPTH}cdn/theme/index.css">
+	<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared-reports/index.css">
 	<style>
 	.yry-container { max-width: 800px; }
 	.yry-header .icon { font-size: 2.5rem; }
@@ -178,7 +178,7 @@ ${buildCrossReferenceCard(skill, status)}
 </div>
 
 </div>
-<script src="${CDN_DEPTH}cdn/shared.js"></script>
+<script src="${CDN_DEPTH}cdn/shared/index.js"></script>
 </body>
 </html>`;
 
@@ -387,9 +387,9 @@ export function generateIndex() {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>自循环报告索引</title>
-<link rel="stylesheet" href="../../cdn/shared.css">
-<link rel="stylesheet" href="../../cdn/theme.css">
-	<link rel="stylesheet" href="../../cdn/shared-reports.css">
+<link rel="stylesheet" href="../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../cdn/theme/index.css">
+	<link rel="stylesheet" href="../../cdn/shared-reports/index.css">
 	<style>
 	.yry-container { max-width: 800px; }
 	/* breadcrumb variant: cyan links (not blue, unlike shared-reports.css) */

@@ -15,7 +15,7 @@
   'secondaryColor': '#2b2d3b', 'tertiaryColor': '#21232f'
 }}}%%
 flowchart TD
-    SKEL["HTML 骨架<br/>7 区域结构"]:::sk --> CDN["CDN 加载链<br/>shared.css→theme.css→yry-checklist.css"]:::cs
+    SKEL["HTML 骨架<br/>7 区域结构"]:::sk --> CDN["CDN 加载链<br/>shared/index.css→theme/index.css→yry-checklist.css"]:::cs
     CDN --> VARS["CSS 变量系统<br/>--accent·--cyan·--text1-3"]:::cs
     VARS --> COMP["组件体系<br/>step·phase·scorecard·risk-matrix"]:::cs
     COMP --> TOK["Token 变量<br/>{{STORY}}·{{SCENE}}·{{VERSION}}"]:::cs

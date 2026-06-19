@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    YrY CDN — YrySceneNav · Vue 3 场景层级面包屑导航 样式
 
-   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+   依赖 design tokens (来自 cdn/theme/index.css 或页面 :root):
      --yry-color-surface-1 / --yry-color-border / --yry-color-text-2
      --yry-color-accent
 

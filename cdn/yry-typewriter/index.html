@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — yry-typewriter · 终端模拟器
+  提供: twAdd / twRun / twReset
+  依赖: 页面需定义 var twScenarios = { scenarioName: [...] }
+  加载: <script src="../../../../cdn/yry-typewriter/index.js"></script>
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY yry-typewriter · 终端模拟器</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+    #twContent { background: #0a0a14; color: #d4d4d4; border-radius: 8px; padding: 16px; min-height: 160px; font-family: 'SF Mono', monospace; font-size: .78rem; }
+    .tw-ctrl-btn { background: var(--yry-bg-flat); border: var(--yry-border); color: var(--yry-text2); border-radius: 8px; padding: 6px 14px; cursor: pointer; margin-right: 6px; font-family: inherit; font-size: .78rem; }
+    .tw-ctrl-btn.on { background: rgba(255,193,7,.12); color: var(--yry-accent); border-color: rgba(255,193,7,.4); }
+    .tw-prompt { color: #22d3ee; }
+    .tw-cmd { color: #fafafc; }
+    .tw-ok { color: #22c55e; }
+    .tw-info { color: #6b7280; }
+  </style>
+</head>
+<body>
+  <h1>⌨️ yry-typewriter · 终端模拟器</h1>
+  <p>提供命令行终端演练效果,逐行打印 + 颜色区分 (cmd / out / ok / warn / info / fail)。</p>
+
+  <h2>载入</h2>
+  <pre>&lt;script src="../../../../cdn/yry-typewriter/index.js"&gt;&lt;/script&gt;</pre>
+
+  <h2>API</h2>
+  <pre>twAdd(type, prompt, cmd, content)   // type: cmd|out|ok|warn|info|fail|muted
+twRun(scenario, btn)               // 运行 var twScenarios[scenario]
+twReset()                          // 清空终端</pre>
+
+  <h2>演示</h2>
+  <div style="margin: 12px 0;">
+    <button class="tw-ctrl-btn" onclick="twRun('install', this)">运行 install</button>
+    <button class="tw-ctrl-btn" onclick="twReset()">重置</button>
+  </div>
+  <div id="twContent"></div>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · yry-typewriter · 2026</p>
+
+  <script>
+    var twScenarios = {
+      install: [
+        { t: 'cmd', p: '$ ', c: 'npm install', d: 200 },
+        { t: 'out', c: '⏳ 正在解析依赖...', d: 300 },
+        { t: 'out', c: '✓ react@18 已安装', d: 400 },
+        { t: 'out', c: '✓ vue@3 已安装', d: 300 },
+        { t: 'ok',  c: '✅ 共安装 12 个包,用时 4.2s', d: 200 }
+      ]
+    };
+  </script>
+  <script src="index.js"></script>
+</body>
+</html>

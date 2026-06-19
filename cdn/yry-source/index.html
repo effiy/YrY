@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — yry-source · 源码页面样式 + 弹窗管理
+  加载: <link rel="stylesheet" href="../../../../cdn/yry-source/index.css">
+        <script src="../../../../cdn/yry-source/index.js"></script>
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY yry-source · 源码页</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="../yry-scene/index.css">
+  <link rel="stylesheet" href="../yry-checklist/index.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>📄 yry-source · 源码页</h1>
+  <p>源码页样式 + YrYSourcePage 工具命名空间 (复制文本、新标签打开、关闭模态框)。</p>
+
+  <h2>载入</h2>
+  <pre>&lt;link rel="stylesheet" href="../../../../cdn/yry-source/index.css"&gt;
+&lt;script src="../../../../cdn/yry-source/index.js"&gt;&lt;/script&gt;</pre>
+
+  <h2>API</h2>
+  <pre>YrYSourcePage.fmtSize(bytes)
+YrYSourcePage.copyText(htmlString)   // 含 HTML 实体还原
+YrYSourcePage.fallbackCopy(text)     // execCommand 降级
+YrYSourcePage.closeModal()
+YrYSourcePage.openInNewTab(path)</pre>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · yry-source · 2026</p>
+
+  <script src="../shared/index.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>

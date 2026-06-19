@@ -18,12 +18,12 @@
 }}}%%
 flowchart TD
     ENTRY["用户打开<br/>故事面板页面"]:::user --> TYPE{"页面类型?"}
-    TYPE -->|"Category A<br/>架构图 / 知识图谱"| CAT_A["① 自托管字体加载<br/>fonts.css + 4 woff2"]:::ext
-    CAT_A --> SHARED_CSS["② shared.css 加载<br/>Reset · 动画 · 面包屑 · 导航 · Toolbar · Toast"]:::base
+    TYPE -->|"Category A<br/>架构图 / 知识图谱"| CAT_A["① 自托管字体加载<br/>fonts/index.css + 4 woff2"]:::ext
+    CAT_A --> SHARED_CSS["② shared/index.css 加载<br/>Reset · 动画 · 面包屑 · 导航 · Toolbar · Toast"]:::base
     TYPE -->|"Category B<br/>审查 / 测试 / 演示 / 计划"| SHARED_CSS
     SHARED_CSS --> THEME{"③ 主题 CSS"}
-    THEME -->|"Category A"| MONO["theme-mono.css<br/>等宽字体 · 图表容器<br/>图例 · 脉冲点 · 卡片"]:::mono
-    THEME -->|"Category B"| SYSTEM["theme.css<br/>设计令牌 · 62 组件<br/>10 大类别"]:::sys
+    THEME -->|"Category A"| MONO["theme-mono/index.css<br/>等宽字体 · 图表容器<br/>图例 · 脉冲点 · 卡片"]:::mono
+    THEME -->|"Category B"| SYSTEM["theme/index.css<br/>设计令牌 · 62 组件<br/>10 大类别"]:::sys
     MONO --> JS["④ shared.js 加载<br/>YrY 全局对象就绪"]:::js
     SYSTEM --> JS
     JS --> INTERACTIVE["⑤ 页面可交互<br/>Toast · 复制 · 面板切换<br/>折叠套件 · 剪贴板"]:::ready
@@ -60,7 +60,7 @@ flowchart TD
 - 🎯 **统一加载链** — 55 个页面共享同一套资源加载顺序，浏览器缓存使其在页面间瞬间可用
 - ⚡ **零配置渲染** — 页面只需声明类型（Cat A / Cat B），无需手动配置样式变量
 - 🛡️ **优雅降级** — 字体不可达时回退系统等宽字体，页面的核心信息传递不受影响
-- 🔄 **渐进增强** — shared.css 保证基础可用，主题 CSS 提供增强视觉，JS 提升交互
+- 🔄 **渐进增强** — shared/index.css 保证基础可用，主题 CSS 提供增强视觉，JS 提升交互
 
 ### §0.1 架构概览
 
@@ -75,10 +75,10 @@ flowchart TD
 }}}%%
 flowchart LR
     subgraph CDN["cdn/ 源文件"]
-        SH_CSS["shared.css<br/>1. CSS Reset<br/>2. 6 动画<br/>3. 面包屑<br/>4. cross-nav<br/>5. Toolbar<br/>6. Toast 样式<br/>7. 工具类"]:::file
+        SH_CSS["shared/index.css<br/>1. CSS Reset<br/>2. 6 动画<br/>3. 面包屑<br/>4. cross-nav<br/>5. Toolbar<br/>6. Toast 样式<br/>7. 工具类"]:::file
         SH_JS["shared.js<br/>IIFE 模块<br/>YrY 全局对象<br/>9 个公共 API"]:::file
-        T_CSS["theme.css<br/>:root 14 变量<br/>62 组件样式"]:::file
-        TM_CSS["theme-mono.css<br/>Mono 容器/图表<br/>图例/脉冲点"]:::file
+        T_CSS["theme/index.css<br/>:root 14 变量<br/>62 组件样式"]:::file
+        TM_CSS["theme-mono/index.css<br/>Mono 容器/图表<br/>图例/脉冲点"]:::file
     end
 
     subgraph PAGE["消费者页面 HTML"]
@@ -121,21 +121,21 @@ sequenceDiagram
     Note over B: 解析 HTML
 
     alt Category A 页面
-        B->>F: ① 请求 fonts.css
+        B->>F: ① 请求 fonts/index.css
         F-->>B: 4 @font-face 声明
         B->>F: 请求 4 woff2 文件
         F-->>B: JetBrains Mono (并行下载)
     end
 
-    B->>L: ② 请求 shared.css
+    B->>L: ② 请求 shared/index.css
     L-->>B: Reset · 动画 · 面包屑 · 导航 · Toolbar · Toast
     Note over B: 应用全局样式
 
     alt Category A
-        B->>L: ③ 请求 theme-mono.css
+        B->>L: ③ 请求 theme-mono/index.css
         L-->>B: Mono 容器 · 图表 · 图例 · 脉冲点
     else Category B
-        B->>L: ③ 请求 theme.css
+        B->>L: ③ 请求 theme/index.css
         L-->>B: 设计令牌 · 62 组件样式
     end
     Note over B: 应用主题样式
@@ -151,10 +151,10 @@ sequenceDiagram
 
 | 顺序 | 文件 | 前置依赖 | 原因 |
 |------|------|---------|------|
-| ① | fonts.css（仅 Cat A） | — | @font-face 声明提前，woff2 并行下载 |
-| ② | shared.css | — | CSS Reset 必须先于所有样式应用 |
-| ③ | theme.css 或 theme-mono.css | shared.css | 主题样式引用 shared.css 定义的动画 keyframes |
-| ④ | shared.js | shared.css + 主题 CSS | JS 操作 `.yry-*` 类名，CSS 类名必须已定义 |
+| ① | fonts/index.css（仅 Cat A） | — | @font-face 声明提前，woff2 并行下载 |
+| ② | shared/index.css | — | CSS Reset 必须先于所有样式应用 |
+| ③ | theme/index.css 或 theme-mono/index.css | shared/index.css | 主题样式引用 shared/index.css 定义的动画 keyframes |
+| ④ | shared.js | shared/index.css + 主题 CSS | JS 操作 `.yry-*` 类名，CSS 类名必须已定义 |
 
 ### §0.3 路径解析
 
@@ -162,9 +162,9 @@ sequenceDiagram
 
 ```text
 docs/故事任务面板/<name>/场景-N-<slug>/index.html
-                                   ├── ../../../../cdn/shared.css    ← 4 层上溯
-                                   ├── ../../../../cdn/theme.css
-                                   └── ../../../../cdn/shared.js
+                                   ├── ../../../../cdn/shared/index.css    ← 4 层上溯
+                                   ├── ../../../../cdn/theme/index.css
+                                   └── ../../../../cdn/shared/index.js
 ```
 
 > 证据: `cdn/README.md:25`
@@ -185,11 +185,11 @@ docs/故事任务面板/<name>/场景-N-<slug>/index.html
 
 | 指标 | 现状 | 目标 |
 |------|------|------|
-| shared.css | 4.6 KB（未压缩） | <10 KB |
+| shared/index.css | 4.6 KB（未压缩） | <10 KB |
 | shared.js | 3.9 KB（未压缩） | <10 KB |
-| theme.css | 9.1 KB | <20 KB |
-| theme-mono.css | 4.4 KB | <10 KB |
-| fonts.css + 4 woff2 | ~87 KB | <120 KB |
+| theme/index.css | 9.1 KB | <20 KB |
+| theme-mono/index.css | 4.4 KB | <10 KB |
+| fonts/index.css + 4 woff2 | ~87 KB | <120 KB |
 | 首次加载总大小 | ~109 KB | 本地文件系统 <10ms |
 | 跨页面缓存 | 浏览器强缓存（本地文件） | 页面间 0 网络请求 |
 
@@ -197,7 +197,7 @@ docs/故事任务面板/<name>/场景-N-<slug>/index.html
 
 | # | 信号 | 风险 | 缓解 | 状态 |
 |---|------|------|------|------|
-| S1 | 自托管字体本地加载 | 无外部请求，零第三方风险 | 完全自托管，fonts.css + woff2 均在本地 | ✅ |
+| S1 | 自托管字体本地加载 | 无外部请求，零第三方风险 | 完全自托管，fonts/index.css + woff2 均在本地 | ✅ |
 | S2 | YrY.clipboardWrite 写入剪贴板 | 恶意页面调用覆盖剪贴板 | 仅响应点击事件，非自动触发 | ✅ |
 | S3 | YrY.esc HTML 转义 | 用户输入在 Toast 中显示导致 XSS | textContent 赋值（非 innerHTML），浏览器自动转义 | ✅ |
 | S4 | 相对路径引用 | 路径遍历攻击 | 浏览器同源策略限制相对路径范围 | ✅ 平台防护 |
@@ -206,11 +206,11 @@ docs/故事任务面板/<name>/场景-N-<slug>/index.html
 
 | 来源 | 行号 | 内容 |
 |------|------|------|
-| `cdn/shared.css` | 1–94 | CSS Reset、6 动画、面包屑、cross-nav、Toolbar、Toast、工具类 |
-| `cdn/shared.js` | 1–101 | YrY IIFE，9 个公共 API |
-| `cdn/theme.css` | 1–254 | :root 14 设计令牌、62 组件样式 |
-| `cdn/theme-mono.css` | 1–108 | Mono 容器、图表容器、图例、脉冲点、卡片 |
-| `cdn/fonts.css` | 1–30 | 4 @font-face 声明 |
+| `cdn/shared/index.css` | 1–94 | CSS Reset、6 动画、面包屑、cross-nav、Toolbar、Toast、工具类 |
+| `cdn/shared/index.js` | 1–101 | YrY IIFE，9 个公共 API |
+| `cdn/theme/index.css` | 1–254 | :root 14 设计令牌、62 组件样式 |
+| `cdn/theme-mono/index.css` | 1–108 | Mono 容器、图表容器、图例、脉冲点、卡片 |
+| `cdn/fonts\/index\.css` | 1–30 | 4 @font-face 声明 |
 | `cdn/README.md` | 1–117 | 页面分类、组件速查、JS API、迁移指南 |
 
 ---
@@ -250,7 +250,7 @@ docs/故事任务面板/<name>/场景-N-<slug>/index.html
 | 测试目标 | 验证 Cat B 页面（审查/测试/演示/计划）的 3 文件加载链完整且顺序正确 |
 | 前置条件 | `npx chrome-devtools-mcp` 连接到本地 Chrome 实例 |
 | MCP 步骤 | ① `navigate_page` → `file://` 目标页面<br>② `list_network_requests` → 采集请求序列<br>③ `evaluate_script` → `getComputedStyle(document.documentElement).getPropertyValue('--yry-accent')`<br>④ `evaluate_script` → `typeof YrY` |
-| 期望 | ① 请求序列: shared.css → theme.css → shared.js（均 200）<br>② `--yry-accent` 值为 `#FFC107`<br>③ `typeof YrY` 为 `"object"` |
+| 期望 | ① 请求序列: shared/index.css → theme/index.css → shared.js（均 200）<br>② `--yry-accent` 值为 `#FFC107`<br>③ `typeof YrY` 为 `"object"` |
 | Gate A 交接 | `window.YrY !== undefined && getComputedStyle(document.body).getPropertyValue('--yry-bg') !== ''` |
 
 #### TC2 — Cat A 页面 Mono 主题加载
@@ -260,7 +260,7 @@ docs/故事任务面板/<name>/场景-N-<slug>/index.html
 | 测试目标 | 验证 Cat A 页面（架构图/知识图谱）的 4 文件加载链及 Mono 主题生效 |
 | 前置条件 | MCP 连接到 Chrome |
 | MCP 步骤 | ① `navigate_page` → Cat A 页面<br>② `list_network_requests` → 采集请求序列<br>③ `evaluate_script` → `getComputedStyle(document.body).fontFamily`<br>④ `evaluate_script` → `getComputedStyle(document.body).backgroundColor`<br>⑤ `take_screenshot` → 保存全页截图 |
-| 期望 | ① 请求序列: fonts.css → shared.css → theme-mono.css → shared.js<br>② `fontFamily` 含 `JetBrains Mono`<br>③ `backgroundColor` 为 `rgb(2, 6, 23)` (#020617)<br>④ 截图显示深色背景 + 图表组件 |
+| 期望 | ① 请求序列: fonts/index.css → shared/index.css → theme-mono/index.css → shared.js<br>② `fontFamily` 含 `JetBrains Mono`<br>③ `backgroundColor` 为 `rgb(2, 6, 23)` (#020617)<br>④ 截图显示深色背景 + 图表组件 |
 | Gate A 交接 | `getComputedStyle(document.body).fontFamily.includes('JetBrains Mono')` |
 
 #### TC3 — 加载顺序强制执行
@@ -270,8 +270,8 @@ docs/故事任务面板/<name>/场景-N-<slug>/index.html
 | 测试目标 | 验证 `<head>` 中 `<link>` 标签的声明顺序与资源加载顺序一致 |
 | 前置条件 | MCP 连接到 Chrome |
 | MCP 步骤 | ① `navigate_page` → 任意 Cat B 页面<br>② `evaluate_script` → `Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(l => l.href.split('/').pop())`<br>③ `evaluate_script` → `Array.from(document.styleSheets).map(s => s.href?.split('/').pop()).filter(Boolean)` |
-| 期望 | ① DOM 中 link 顺序: shared.css → theme.css<br>② `document.styleSheets` 顺序与 DOM 声明一致<br>③ shared.css 定义的 `@keyframes` 在 theme.css 中可用 |
-| Gate A 交接 | `document.querySelectorAll('link[rel="stylesheet"]')[0].href.includes('shared.css')` |
+| 期望 | ① DOM 中 link 顺序: shared/index.css → theme/index.css<br>② `document.styleSheets` 顺序与 DOM 声明一致<br>③ shared/index.css 定义的 `@keyframes` 在 theme/index.css 中可用 |
+| Gate A 交接 | `document.querySelectorAll('link[rel="stylesheet"]')[0].href.includes('shared/index.css')` |
 
 #### TC4 — 字体降级验证
 
@@ -289,7 +289,7 @@ docs/故事任务面板/<name>/场景-N-<slug>/index.html
 |------|------|
 | 测试目标 | 验证 shared.js 不可用时页面不崩溃 |
 | 前置条件 | MCP 连接到 Chrome |
-| MCP 步骤 | ① 临时重命名 `cdn/shared.js` → `cdn/shared.bak.js`<br>② `navigate_page` → 目标页面<br>③ `evaluate_script` → `typeof YrY`<br>④ `evaluate_script` → `document.querySelector('.yry-suite-toggle')?.offsetHeight`<br>⑤ `take_screenshot` → 保存降级后页面截图 |
+| MCP 步骤 | ① 临时重命名 `cdn/shared/index.js` → `cdn/shared.bak.js`<br>② `navigate_page` → 目标页面<br>③ `evaluate_script` → `typeof YrY`<br>④ `evaluate_script` → `document.querySelector('.yry-suite-toggle')?.offsetHeight`<br>⑤ `take_screenshot` → 保存降级后页面截图 |
 | 期望 | ① 页面 HTML 和 CSS 正常渲染<br>② `typeof YrY` 为 `"undefined"`（可接受）<br>③ 依赖 JS 的交互（Toast/面板切换/折叠）不可用<br>④ 截图显示页面结构完整，无白屏 |
 | Gate A 交接 | HTML 结构完整渲染，无 JS 运行时错误导致白屏 |
 
@@ -311,7 +311,7 @@ docs/故事任务面板/<name>/场景-N-<slug>/index.html
 | G2 | YrY API 数量 | `evaluate_script`: `Object.keys(YrY).length` | 9 |
 | G3 | CSS 变量注入 | `evaluate_script`: `getComputedStyle(document.documentElement).getPropertyValue('--yry-accent').trim()` | `"#FFC107"` |
 | G4 | 资源加载无 404 | `list_network_requests` 过滤 status | 全部 200 |
-| G5 | 资源加载顺序 | `list_network_requests` 按 startTime 排序 | shared.css → theme.css → shared.js |
+| G5 | 资源加载顺序 | `list_network_requests` 按 startTime 排序 | shared/index.css → theme/index.css → shared.js |
 
 ---
 
@@ -326,7 +326,7 @@ docs/故事任务面板/<name>/场景-N-<slug>/index.html
 | 实施日期 | 2026-06-09 |
 | 实施者 | Claude (coder agent) |
 | 环境 | Node.js v24.14.0, Linux 5.15.0, Chrome MCP |
-| 源码基线 | `cdn/` — shared.css (94行), shared.js (100行), theme.css (224行), theme-mono.css (108行), fonts.css (30行) |
+| 源码基线 | `cdn/` — shared/index.css (94行), shared.js (100行), theme/index.css (224行), theme-mono/index.css (108行), fonts/index.css (30行) |
 | 验证工具 | Chrome DevTools MCP (`chrome-devtools-mcp@1.2.0`) — 全自动化浏览器端验证，替换手工 DevTools |
 
 ### §2.2 验证方法论
@@ -350,7 +350,7 @@ docs/故事任务面板/<name>/场景-N-<slug>/index.html
 | G2 | YrY API 数量 | `evaluate_script` | ✅ | `Object.keys(YrY).length` → 9 |
 | G3 | CSS 变量注入 | `evaluate_script` | ✅ | `--yry-accent` → `#FFC107` |
 | G4 | 资源加载无 404 | `list_network_requests` | ✅ | 4/4 文件 status 200 |
-| G5 | 加载顺序 | `list_network_requests` | ✅ | shared.css → theme.css → shared.js |
+| G5 | 加载顺序 | `list_network_requests` | ✅ | shared/index.css → theme/index.css → shared.js |
 
 **Gate A 结论**: 5/5 信号通过 ✅ → 放行进入实施阶段。
 
@@ -393,11 +393,11 @@ docs/故事任务面板/<name>/场景-N-<slug>/index.html
 
 | 指标 | 值 | 测量方式 |
 |------|-----|---------|
-| shared.css | 4.6 KB | `fs.statSync` |
+| shared/index.css | 4.6 KB | `fs.statSync` |
 | shared.js | 3.9 KB | `fs.statSync` |
-| theme.css | 9.1 KB | `fs.statSync` |
-| theme-mono.css | 4.4 KB | `fs.statSync` |
-| fonts.css + 4 woff2 | 87 KB | `fs.statSync` |
+| theme/index.css | 9.1 KB | `fs.statSync` |
+| theme-mono/index.css | 4.4 KB | `fs.statSync` |
+| fonts/index.css + 4 woff2 | 87 KB | `fs.statSync` |
 | 首次加载总大小 | ~109 KB | 本地文件系统 <10ms |
 | 跨页面缓存命中 | CSS: transferSize 0 | MCP `evaluate_script` → `performance.getEntriesByType('resource')` |
 
@@ -411,7 +411,7 @@ docs/故事任务面板/<name>/场景-N-<slug>/index.html
 | P0-4 | MCP 自动化验证通过 65/65 | `evaluate_script` ×65 | ✅ |
 | P0-5 | 降级策略验证（字体/JS） | MCP 降级测试 6/6 | ✅ |
 | P0-6 | 字体完全自托管（零外部依赖） | `ls cdn/fonts/` | ✅ |
-| P0-7 | package.json files 含 fonts.css + fonts/*.woff2 | `grep` package.json | ✅ |
+| P0-7 | package.json files 含 fonts/index.css + fonts/*.woff2 | `grep` package.json | ✅ |
 
 ---
 
@@ -475,7 +475,7 @@ docs/故事任务面板/<name>/场景-N-<slug>/index.html
 | # | 改进项 | 优先级 | 状态 |
 |---|--------|--------|------|
 | 1 | MCP 自动化验证已替换所有手工 DevTools 操作 | P0 | ✅ 完成 |
-| 2 | 字体完全自托管（fonts.css + woff2），消除 Google Fonts 外部依赖 | P0 | ✅ 完成 |
+| 2 | 字体完全自托管（fonts/index.css + woff2），消除 Google Fonts 外部依赖 | P0 | ✅ 完成 |
 | 3 | 降级测试从手动阻断改为 MCP 自动化 | P1 | ✅ 完成 |
 
 ---
@@ -484,11 +484,11 @@ docs/故事任务面板/<name>/场景-N-<slug>/index.html
 
 | 角色 | 来源 | 证据 |
 |------|------|------|
-| 源码 | `cdn/shared.css:1–94` | 全量 CSS 内容 |
-| 源码 | `cdn/shared.js:1–101` | 全量 JS 内容 |
-| 源码 | `cdn/theme.css:1–254` | :root 14 设计令牌 + 62 组件 |
-| 源码 | `cdn/theme-mono.css:1–108` | Mono 容器 + 图表 + 图例 |
-| 源码 | `cdn/fonts.css:1–30` | 4 @font-face 声明 |
+| 源码 | `cdn/shared/index.css:1–94` | 全量 CSS 内容 |
+| 源码 | `cdn/shared/index.js:1–101` | 全量 JS 内容 |
+| 源码 | `cdn/theme/index.css:1–254` | :root 14 设计令牌 + 62 组件 |
+| 源码 | `cdn/theme-mono/index.css:1–108` | Mono 容器 + 图表 + 图例 |
+| 源码 | `cdn/fonts\/index\.css:1–30` | 4 @font-face 声明 |
 | 文档 | `cdn/README.md:5–13` | 文件清单与用途 |
 | 文档 | `cdn/README.md:17–40` | Category A/B 加载顺序 |
 
@@ -496,5 +496,5 @@ docs/故事任务面板/<name>/场景-N-<slug>/index.html
 
 | 日期 | 版本 | 变更 | 触发 |
 |------|------|------|------|
-| 2026-06-09 | 1.1.0 | MCP DevTools 替换手工 DevTools 验证；字体完全自托管（fonts.css + woff2 替代 Google Fonts） | `/rui update yry-cdn` |
+| 2026-06-09 | 1.1.0 | MCP DevTools 替换手工 DevTools 验证；字体完全自托管（fonts/index.css + woff2 替代 Google Fonts） | `/rui update yry-cdn` |
 | 2026-06-07 | 1.0.0 | 初始生成 | `/rui doc --from-code cdn` |

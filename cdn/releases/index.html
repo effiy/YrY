@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — releases · 版本发布历史数据
+  数据源: releases.json (YrY CDN 包的版本发布历史)
+  数据消费者: README.md 链接 · 各 report 页引用
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY releases · 版本历史</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 12px 14px; border-radius: 6px; font-size: .72rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; max-height: 600px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <h1>📜 releases · 版本历史</h1>
+  <p>YrY CDN 包的版本发布历史:版本号、发布日期、变更摘要、影响维度。</p>
+
+  <h2>数据预览</h2>
+  <pre id="data">加载中...</pre>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · releases · 2026</p>
+
+  <script>
+    fetch('index.json').then(r => r.json()).then(d => {
+      document.getElementById('data').textContent = JSON.stringify(d, null, 2);
+    }).catch(e => {
+      document.getElementById('data').textContent = '❌ 加载失败: ' + e.message;
+    });
+  </script>
+</body>
+</html>

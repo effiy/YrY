@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  YrY CDN — shared · 全局共享样式与脚本
+  ═══════════════════════════════════════════════════════════════════════════
+  用途: 跨页面通用样式 (.yry-breadcrumb, .yry-cross-nav, .yry-toast,
+        .yry-toolbar, .yry-footer, .yry-kbd-hint, .h-* 健康报告样式)
+        与全局 YrY 工具脚本 (YrY.toast / copyCmd / switchPanel / ...)
+
+  加载方式:
+    <link rel="stylesheet" href="../../../../cdn/shared/index.css">
+    <script src="../../../../cdn/shared/index.js"></script>
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY shared · 全局共享</title>
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; margin: 0 0 6px; color: var(--yry-accent, #FFC107); }
+    h2 { font-size: 1rem; margin: 24px 0 8px; color: var(--yry-text, #fafafc); }
+    p, li { font-size: .86rem; color: var(--yry-text2, #d4d4d4); }
+    code { background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 3px; font-family: 'SF Mono', monospace; font-size: .82em; color: var(--yry-cyan, #22d3ee); }
+    .panel { background: var(--yry-bg-card); border: var(--yry-border); border-radius: var(--yry-radius); padding: 20px 24px; box-shadow: var(--yry-shadow); margin-bottom: 16px; }
+    pre { background: rgba(0,0,0,.3); border-radius: 6px; padding: 10px 14px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+    .pill { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: .68rem; background: rgba(34,211,238,.12); color: var(--yry-cyan, #22d3ee); margin-right: 4px; }
+  </style>
+</head>
+<body>
+  <h1>🌐 shared · 全局共享</h1>
+  <p><span class="pill">CSS</span><span class="pill">JS</span> 提供 .yry-breadcrumb / .yry-cross-nav / .yry-toast / .yry-toolbar / .yry-footer 等通用 UI 元素 + 全局 <code>YrY</code> 命名空间工具方法。</p>
+
+  <h2>载入</h2>
+  <pre>&lt;link rel="stylesheet" href="../../../../cdn/shared/index.css"&gt;
+&lt;link rel="stylesheet" href="../../../../cdn/theme/index.css"&gt;
+&lt;script src="../../../../cdn/shared/index.js"&gt;&lt;/script&gt;</pre>
+
+  <h2>CSS 主要类</h2>
+  <ul>
+    <li><code>.yry-breadcrumb</code> · 面包屑导航</li>
+    <li><code>.yry-cross-nav</code> · 同场景页面切换条</li>
+    <li><code>.yry-toast</code> · 浮动提示（控制用 JS <code>YrY.toast(msg)</code>）</li>
+    <li><code>.yry-toolbar</code> · 操作工具栏（含 .yry-toolbar-toggle / .yry-toolbar-actions）</li>
+    <li><code>.yry-footer</code> · 页脚</li>
+    <li><code>.yry-kbd-hint</code> · 键盘快捷键提示标签</li>
+    <li><code>.h-*</code> · 健康报告相关组件（h-tabs / h-tab / h-panel / h-section / h-summary-card / h-dim-card / h-sparkline / h-struct-table / h-comp-table 等）</li>
+  </ul>
+
+  <h2>JS API（window.YrY）</h2>
+  <pre>YrY.toast('已保存')                // 浮动提示
+YrY.copyCmd(btn, 'npm install')   // 一键复制 + 按钮态变化
+YrY.switchPanel('walkthrough')    // 切 .yry-tab / .yry-panel
+YrY.initTabs('.container')
+YrY.initSuiteToggle('.yry-container')
+YrY.expandAllSuites() / collapseAllSuites()
+YrY.initDemoTabs(sceneKey, keyMap, onHelp)
+YrY.initChecklist({storageKey, exportTitle})
+YrY.initRadar(data, baseData, descMap, defaultMsg)
+YrY.initNextAction(steps)
+YrY.initCodeCopy('.container')
+YrY.initStepToggle('.container')
+YrY.fmtDur(1234)                   // → "1.2s"
+YrY.esc(htmlString)
+YrY.sceneMeta('./base-path')      // 7 件套链接数组
+YrY.elt(tag, className, textContent)</pre>
+
+  <h2>演示</h2>
+  <div class="panel">
+    <p>点击下方按钮触发 toast 提示:</p>
+    <button class="yry-btn" onclick="YrY.toast('✅ 操作成功', 2000)">触发 Toast</button>
+    <button class="yry-btn" onclick="YrY.toast('⚠ 警告:请检查输入', 2500)">警告 Toast</button>
+  </div>
+
+  <nav class="yry-breadcrumb" aria-label="breadcrumb">
+    <a href="../index.html">📄 文档中心</a>
+    <span class="yry-bc-sep">/</span>
+    <span class="yry-bc-current">cdn/shared</span>
+  </nav>
+
+  <p class="yry-footer">YrY CDN · shared · 2026</p>
+</body>
+</html>

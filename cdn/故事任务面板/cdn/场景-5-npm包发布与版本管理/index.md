@@ -16,7 +16,7 @@
 }}}%%
 flowchart LR
     subgraph SOURCE["CDN 源文件"]
-        FILES["shared.css · shared.js<br/>theme.css · theme-mono.css<br/>README.md"]:::file
+        FILES["shared/index.css · shared.js<br/>theme/index.css · theme-mono/index.css<br/>README.md"]:::file
     end
 
     subgraph PKG["package.json"]
@@ -87,10 +87,10 @@ flowchart TD
     PKG_JSON --> REPO_FIELD["repository: GitHub"]:::field
     PKG_JSON --> AUTHOR["author"]:::field
 
-    FILES_FIELD --> F1["shared.css ✓"]:::check
+    FILES_FIELD --> F1["shared/index.css ✓"]:::check
     FILES_FIELD --> F2["shared.js ✓"]:::check
-    FILES_FIELD --> F3["theme.css ✓"]:::check
-    FILES_FIELD --> F4["theme-mono.css ✓"]:::check
+    FILES_FIELD --> F3["theme/index.css ✓"]:::check
+    FILES_FIELD --> F4["theme-mono/index.css ✓"]:::check
     FILES_FIELD --> F5["README.md ✓"]:::check
 
     classDef meta fill:#2a1a3a,stroke:#FFC107,color:#FFC107
@@ -249,7 +249,7 @@ CDN 变更的影响面取决于变更类型：
 | # | 信号 | 验证命令 | 期望值 |
 |---|------|---------|--------|
 | G1 | package.json 有效 | `node -e "require('./cdn/package.json')"` | exit 0 |
-| G2 | files 清单完整 | `ls cdn/shared.css cdn/shared.js cdn/theme.css cdn/theme-mono.css cdn/README.md cdn/package.json` | 6 文件存在 |
+| G2 | files 清单完整 | `ls cdn/shared/index.css cdn/shared/index.js cdn/theme/index.css cdn/theme-mono/index.css cdn/README.md cdn/package.json` | 6 文件存在 |
 | G3 | 版本号格式 | `node -e "process.exit(/^\d+\.\d+\.\d+$/.test(require('./cdn/package.json').version)?0:1)"` | exit 0 |
 | G4 | dry-run 通过 | `cd cdn && npm publish --dry-run` | exit 0 |
 
@@ -267,7 +267,7 @@ CDN 变更的影响面取决于变更类型：
 | 实施者 | Claude (coder agent) |
 | 包名 | `yry-cdn` |
 | 版本 | `1.1.0` |
-| 发布文件数 | 11 (含 fonts.css + 4 woff2) |
+| 发布文件数 | 11 (含 fonts/index.css + 4 woff2) |
 | tarball 大小 | 96.0 KB |
 
 ### §2.2 Gate A 交接信号验证
@@ -276,7 +276,7 @@ CDN 变更的影响面取决于变更类型：
 |---|------|---------|------|
 | G1 | package.json 8 字段齐全 | ✅ | name/version/description/main/files/keywords/license/repository/author |
 | G2 | version 格式正确 | ✅ | `1.1.0` 匹配 `/^\d+\.\d+\.\d+$/` |
-| G3 | files 清单完整 | ✅ | 7 条目含 fonts.css + fonts/*.woff2 |
+| G3 | files 清单完整 | ✅ | 7 条目含 fonts/index.css + fonts/*.woff2 |
 | G4 | npm publish --dry-run 通过 | ✅ | exit code 0, 列出 11 文件 |
 
 **Gate A 结论**: 4/4 信号通过 ✅ → 放行。
@@ -301,16 +301,16 @@ CDN 变更的影响面取决于变更类型：
 npm notice 📦  yry-cdn@1.1.0
 npm notice Tarball Contents
 npm notice 5.0kB  README.md
-npm notice 819B   fonts.css
+npm notice 819B   fonts/index.css
 npm notice 21.2kB fonts/jetbrains-mono-latin-400-normal.woff2
 npm notice 21.8kB fonts/jetbrains-mono-latin-500-normal.woff2
 npm notice 21.9kB fonts/jetbrains-mono-latin-600-normal.woff2
 npm notice 21.9kB fonts/jetbrains-mono-latin-700-normal.woff2
 npm notice 614B   package.json
-npm notice 5.9kB  shared.css
+npm notice 5.9kB  shared/index.css
 npm notice 5.1kB  shared.js
-npm notice 6.1kB  theme-mono.css
-npm notice 11.3kB theme.css
+npm notice 6.1kB  theme-mono/index.css
+npm notice 11.3kB theme/index.css
 npm notice Tarball Details
 npm notice package size: 96.0 kB
 npm notice unpacked size: 121.6 kB
@@ -321,8 +321,8 @@ npm notice total files: 11
 
 | 问题 | 修复前 | 修复后 | 日期 |
 |------|--------|--------|------|
-| fonts 未包含在发布清单 | `files: [5 files]` 不含 fonts | `files: [7 entries]` 含 fonts.css + fonts/*.woff2 | 2026-06-08 |
-| 自托管字体缺失 | Google Fonts 外部依赖 | fonts.css + 4 woff2 自托管 | 2026-06-08 |
+| fonts 未包含在发布清单 | `files: [5 files]` 不含 fonts | `files: [7 entries]` 含 fonts/index.css + fonts/*.woff2 | 2026-06-08 |
+| 自托管字体缺失 | Google Fonts 外部依赖 | fonts/index.css + 4 woff2 自托管 | 2026-06-08 |
 
 ### §2.6 P0 检查清单
 
@@ -357,7 +357,7 @@ npm notice total files: 11
 | TC# | 名称 | 断言 | 通过 | 失败 | 说明 |
 |-----|------|------|------|------|------|
 | TC1 | package.json 规范完整性 | 8 | 8 | 0 | name/version/description/main/files/license/repository/author |
-| TC2 | files 清单与实际文件一致 | 11 | 11 | 0 | 11 个文件全部存在（含 fonts.css + 4 woff2） |
+| TC2 | files 清单与实际文件一致 | 11 | 11 | 0 | 11 个文件全部存在（含 fonts/index.css + 4 woff2） |
 | TC3 | npm publish --dry-run | 1 | 1 | 0 | exit 0，tarball 96.0 KB |
 | TC4 | 版本号语义化格式 | 1 | 1 | 0 | `1.1.0` 匹配 `/^\d+\.\d+\.\d+$/` |
 | TC5 | git tag 与 version 一致 | 1 | 1 | 0 | `v1.1.0` === `v` + package.json version |

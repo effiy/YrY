@@ -8,7 +8,7 @@
        id="yry-breadcrumb-tpl"> 内容作为 Vue 组件的 template。
     2) **Demo 预览** — 直接用浏览器打开本文件,即可看到 YryBreadcrumb 的实际渲染效果。
 
-  加载链: ../shared.css → ../theme.css → index.css → Vue 3 → index.js
+  加载链: ../shared/index.css → ../theme/index.css → index.css → Vue 3 → index.js
   ═══════════════════════════════════════════════════════════════════════════
 -->
 <html lang="zh-CN">
@@ -18,15 +18,15 @@
   <title>YryBreadcrumb · Demo & Template</title>
   <meta name="description" content="YryBreadcrumb Vue 3 零打包面包屑组件 — 异步模板加载 · a11y 完备 · 3 文件拆分 · Demo 预览 + 模板源">
   <!-- ═══ CDN: YrY 共享样式 ═══ -->
-  <link rel="stylesheet" href="../shared.css">
-  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="../shared\/index\.css">
+  <link rel="stylesheet" href="../theme\/index\.css">
   <!-- ═══ 组件样式 ═══ -->
   <link rel="stylesheet" href="index.css">
-  <link rel="stylesheet" href="../yry-inline-helpers.css">
+  <link rel="stylesheet" href="../yry\-inline\-helpers\/index\.css">
   <!-- ═══ Vue 3 ═══ -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <style>
-    /* ═══ Demo 专属样式 — 组件样式在 index.css,共享样式在 ../shared.css + ../theme.css ═══ */
+    /* ═══ Demo 专属样式 — 组件样式在 index.css,共享样式在 ../shared/index.css + ../theme/index.css ═══ */
     body {
       background: var(--yry-bg, #0a0a0a);
       color: var(--yry-text, #f5f5f5);

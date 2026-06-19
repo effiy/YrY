@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — yry-story-panel · 故事任务面板共享样式
+  适用: cdn/故事任务面板/index.html
+  依赖: theme/index.css (提供 --yry-* design tokens)
+  加载: <link rel="stylesheet" href="../../../../cdn/yry-story-panel/index.css">
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY yry-story-panel · 故事面板样式</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="../yry-a11y/index.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>📚 yry-story-panel · 故事面板样式</h1>
+  <p>故事任务面板共享样式: .scene-grid / .scene-card / .sub-story-hero / .flow-strip / .timeline-strip / .quick-filter / .progress-summary / .deliv-grid。</p>
+
+  <h2>载入</h2>
+  <pre>&lt;link rel="stylesheet" href="../../../../cdn/yry-story-panel/index.css"&gt;</pre>
+
+  <h2>演示场景卡片</h2>
+  <div class="scene-grid">
+    <div class="scene-card">
+      <div class="scene-head">
+        <span class="scene-num">1</span>
+        <div class="scene-color-dot" style="background: #22d3ee"></div>
+        <div class="scene-name"><a href="#">示例场景</a></div>
+        <span class="scene-story">故事名</span>
+      </div>
+      <div class="scene-desc">场景描述</div>
+    </div>
+  </div>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · yry-story-panel · 2026</p>
+</body>
+</html>

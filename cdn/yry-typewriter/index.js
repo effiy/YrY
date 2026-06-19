@@ -3,7 +3,7 @@
 
    提供 twAdd / twRun / twReset 三个函数
    依赖: 页面需定义 var twScenarios = { scenarioName: [...] }
-   用法: <script src="../yry-typewriter.js"></script>
+   用法: <script src="../yry-typewriter/index.js"></script>
    ═══════════════════════════════════════════════════════════════════════════ */
 
 function twAdd(type, prompt, cmd, content) {

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — health-report · CDN 健康报告数据
+  数据源: health-report.json (YrY CDN 自身的健康指标,8 维度)
+  数据消费者: 健康报告/index.html · 健康报告/health-cdn-*.html
+  数据更新: 发版后手动更新 health-report/index.json
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY health-report · 健康报告数据</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 12px 14px; border-radius: 6px; font-size: .72rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; max-height: 600px; overflow-y: auto; }
+    .links a { color: var(--yry-cyan, #22d3ee); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1>🩺 health-report · 健康报告数据</h1>
+  <p>YrY CDN 资源库专属健康数据 · 8 维度评估 (D0-D7) · 含最新报告、综合分、等级、日期、维度平均分、趋势、诊断标签。</p>
+
+  <h2>消费者</h2>
+  <div class="links">
+    <a href="../健康报告/index.html">📊 健康报告 /index.html</a> ·
+    <a href="../健康报告/health-cdn-2026-06-16.html">📊 健康报告/health-cdn-2026-06-16.html</a>
+  </div>
+
+  <h2>数据预览</h2>
+  <pre id="data">加载中...</pre>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · health-report · 2026</p>
+
+  <script>
+    fetch('index.json').then(r => r.json()).then(d => {
+      document.getElementById('data').textContent = JSON.stringify(d, null, 2);
+    }).catch(e => {
+      document.getElementById('data').textContent = '❌ 加载失败: ' + e.message;
+    });
+  </script>
+</body>
+</html>

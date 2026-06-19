@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Batch refactor: 演示.html → yry-typewriter.js
+ * Batch refactor: 演示.html → yry-typewriter/index.js
  * Replaces twAdd / twRun / twReset function definitions with external script reference.
  *
  * Usage: node cdn/js/refactor-typewriter.mjs [--dry-run]
@@ -39,7 +39,7 @@ for (const f of files) {
     continue;
   }
 
-  const srcPath = relative(dirname(f), resolve(root, 'cdn', 'yry-typewriter.js'));
+  const srcPath = relative(dirname(f), resolve(root, 'cdn', 'yry-typewriter/index.js'));
 
   // Find the main <script> block that contains the typewriter code.
   // Search backwards for <script> immediately followed by newline (inline block).

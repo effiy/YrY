@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>清单交互组件实现 — 演示</title>
-<link rel="stylesheet" href="../../../../cdn/shared.css">
-<link rel="stylesheet" href="../../../../cdn/theme.css">
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-scene-base.css">
-<link rel="stylesheet" href="../../../../cdn/yry-demo-stage.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene/index-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-demo/index-stage.css">
 </head>
 <body>
 <div class="container">
@@ -31,8 +31,8 @@
 
 <div class="live-bar" id="liveBar">
   <span class="live-dot"></span> 本页 CDN 加载状态：
-  <span class="live-resource"><span class="lr-name">shared.css</span><span class="lr-status" id="lrCss">检测中</span><span class="lr-size">6.0KB</span></span>
-  <span class="live-resource"><span class="lr-name">theme.css</span><span class="lr-status" id="lrTheme">检测中</span><span class="lr-size">12.1KB</span></span>
+  <span class="live-resource"><span class="lr-name">shared/index.css</span><span class="lr-status" id="lrCss">检测中</span><span class="lr-size">6.0KB</span></span>
+  <span class="live-resource"><span class="lr-name">theme/index.css</span><span class="lr-status" id="lrTheme">检测中</span><span class="lr-size">12.1KB</span></span>
   <span class="live-resource"><span class="lr-name">shared.js</span><span class="lr-status" id="lrJs">检测中</span><span class="lr-size">5.3KB</span></span>
   <span class="kbd-hint">1-9,0,C,S,Q</span> 切换 Tab · <span class="kbd-hint">?</span> 帮助
 </div>
@@ -816,8 +816,8 @@ grep -c 'PASS' test-results.txt<span class="cb" onclick="YrY.copyCmd(this,'TC-10
 
 <!-- Floating help button --></div>
 
-<script src="../../../../cdn/yry-typewriter.js"></script>
-<script src="../../../../cdn/yry-cdn-detect.js"></script>
+<script src="../../../../cdn/yry-typewriter/index.js"></script>
+<script src="../../../../cdn/yry-cdn-detect/index.js"></script>
 <script>/* ─── Typewriter Demo ─── */
 var twScenarios={bind:[{t:'cmd',p:'$ ',c:'# 阶段1: 事件绑定 — 6 组件事件契约'},{t:'out',c:'🔗 清单交互组件 — 事件契约定义'},{t:'info',c:'[1/6] 勾选进度联动 — checkbox change 事件...',d:300},{t:'ok',c:'  ✓ 事件: change | 状态: step-N 布尔 | CSS: checked'},{t:'ok',c:'  ✓ DOM 钩子: data-checklist-checked | ARIA: aria-checked'},{t:'info',c:'[2/6] 折叠面板 — click 事件...',d:400},{t:'ok',c:'  ✓ 事件: click | 状态: bool | CSS: collapsed'},{t:'ok',c:'  ✓ 动画: max-height 0.3s ease-out | ARIA: aria-expanded'},{t:'info',c:'[3/6] 标签页切换 — click + keydown 事件...',d:500},{t:'ok',c:'  ✓ 事件: click + keydown | 状态: string | CSS: opacity'},{t:'ok',c:'  ✓ 键盘: 1-9 映射 7 面板 + 跳过 input 聚焦'},{t:'info',c:'[4/6] 风险行展开 — click 事件...',d:400},{t:'ok',c:'  ✓ 事件: click | 状态: bool | CSS: open'},{t:'ok',c:'  ✓ 详情区展开 + 箭头旋转动画'},{t:'info',c:'[5/6] 交付物类型过滤 — click 事件...',d:400},{t:'ok',c:'  ✓ 事件: click | 状态: string | CSS: dim/on'},{t:'ok',c:'  ✓ 六类过滤: 全部/HTML/MD/CSS/Test/其他'},{t:'info',c:'[6/6] 路径复制 — click 事件...',d:400},{t:'ok',c:'  ✓ 事件: click | toast: 1.5s | 剪贴板写入'},{t:'ok',c:'  ✓ 哈希定位: #step-N-deliv 跨 tab 跳转'},{t:'ok',c:'',d:200},{t:'ok',c:'✅ 6 组件事件契约定义完成 — 5 click + 1 keydown'},{t:'muted',c:'💡 下一步: localStorage 持久化 + Data/Template/Renderer 实现',d:600}],persist:[{t:'cmd',p:'$ ',c:'# 阶段2: localStorage 持久化 + Data 层'},{t:'out',c:'💾 清单交互组件 — Schema 与持久化'},{t:'info',c:'[Data] 状态结构定义...',d:400},{t:'ok',c:'  ✓ step-N: boolean — 勾选状态'},{t:'ok',c:'  ✓ deriveStatus(): 已完成(✅)/就绪(🔶)/待开始(⏳)'},{t:'info',c:'[localStorage] Schema 发布...',d:500},{t:'ok',c:'  ✓ Key: yry-arch-s2-checklist — step-N 布尔 JSON'},{t:'ok',c:'  ✓ Key: yry-arch-s2-checklist-tab — 活跃标签页'},{t:'info',c:'[Adapter] 读写适配器...',d:400},{t:'ok',c:'  ✓ read(): try/catch + 默认 {} + 隐私模式兼容'},{t:'ok',c:'  ✓ write(): try/catch + QuotaExceededError 降级'},{t:'info',c:'[Template] data-* 钩子...',d:500},{t:'ok',c:'  ✓ data-checklist-checked / data-checklist-fold'},{t:'ok',c:'  ✓ data-checklist-tab / data-checklist-risk'},{t:'ok',c:'  ✓ autoAnnotate(): 扩展名 → data-type 自动标注'},{t:'info',c:'[Renderer] CSS class 驱动...',d:400},{t:'ok',c:'  ✓ progress bar: width transition 0.5s ease'},{t:'ok',c:'  ✓ fold panel: max-height 0.3s ease-out'},{t:'ok',c:'  ✓ toast: opacity 0.15s + translateY'},{t:'ok',c:'',d:200},{t:'ok',c:'✅ localStorage + Data/Template/Renderer 完成 (2 script 块 ~410 行)'},{t:'muted',c:'💡 下一步: TC-10~16 全量验证 26 断言',d:600}],test:[{t:'cmd',p:'$ ',c:'# 阶段3: TC 验证 + a11y + 签收'},{t:'out',c:'🧪 清单交互组件 — 测试验证'},{t:'info',c:'[TC-10] 勾选进度联动 — 5 断言...',d:400},{t:'ok',c:'  ✓ 勾选→进度%更新 + 完成数+1 + 状态推导 <50ms'},{t:'ok',c:'  ✓ 全选后进度=100% 验证正确'},{t:'info',c:'[TC-11] 折叠面板动画 — 3 断言...',d:400},{t:'ok',c:'  ✓ 展开/收起 300ms + collapsed class 切换'},{t:'info',c:'[TC-12] 标签页全切换 — 7 断言...',d:500},{t:'ok',c:'  ✓ 7/7 面板显示 + 键盘 1-9 映射 + input 跳过'},{t:'info',c:'[TC-13] 刷新恢复 — 3 断言...',d:400},{t:'ok',c:'  ✓ localStorage 回读勾选 + tab 状态全恢复'},{t:'info',c:'[TC-14] 风险行展开 — 3 断言...',d:400},{t:'ok',c:'  ✓ 详情显示/隐藏 + 箭头旋转 + open class 切换'},{t:'info',c:'[TC-15] 交付物过滤 — 6 断言...',d:500},{t:'ok',c:'  ✓ 全部/HTML/MD/CSS/Test/其他 — 六类全通过'},{t:'info',c:'[TC-16] 路径复制 — 2 断言...',d:400},{t:'ok',c:'  ✓ 单步复制 + 全部复制 + 剪贴板写入 + toast 1.5s'},{t:'info',c:'[a11y] 无障碍验证...',d:400},{t:'ok',c:'  ✓ 焦点环 2px + 键盘劫持检测 + prefers-reduced-motion'},{t:'ok',c:'  ✓ ARIA 标签完整 + Lighthouse a11y 100'},{t:'info',c:'[Signoff] 4 方签收...',d:400},{t:'ok',c:'  ✓ PO 业务价值 + Tech Lead 架构 + QA 26 断言'},{t:'ok',c:'  ✓ 新人官文档可读性 + 交互 a11y 通过'},{t:'ok',c:'',d:200},{t:'ok',c:'✅ 7/7 TC 套件 26/26 断言通过 — 4 方签收完成'},{t:'muted',c:'🎉 checklist-interact.js v1.0.0 已交付! P2 改进项: 撤销/重做 + 勾选动画',d:600}]};
 
@@ -856,7 +856,7 @@ function startSim(){if(simRunning)return;simRunning=true;var btn=document.getEle
   <span>·</span>
   <span style="color:var(--accent)">💡 演示</span>
 </div>
-<script src="../../../../cdn/shared.js"></script>
+<script src="../../../../cdn/shared/index.js"></script>
 <script>YrY.initDemoTabs('yry-arch-s2-demo')</script>
 </body>
 </html>

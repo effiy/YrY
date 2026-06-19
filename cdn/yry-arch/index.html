@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — yry-arch · 架构图页面共享样式 (Category A)
+  加载: <link rel="stylesheet" href="../../../../cdn/yry-arch/index.css">
+        <script src="../../../../cdn/yry-arch/index.js"></script>
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY yry-arch · 架构图共享</title>
+  <link rel="stylesheet" href="../fonts/index.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--cyan); overflow-x: auto; }
+    .tab-panel { padding: 12px 0; }
+  </style>
+</head>
+<body>
+  <h1>📐 yry-arch · 架构图共享</h1>
+  <p>为 <strong>架构图.html</strong> 提供共享布局: header / pulse-dot / tabs (pill 风格) / diagram-container / cards / timeline / gate-table / toolbar(导出 PNG/PDF/SVG)。</p>
+
+  <h2>载入</h2>
+  <pre>&lt;link rel="stylesheet" href="../../../../cdn/yry-arch/index.css"&gt;
+&lt;script src="../../../../cdn/yry-arch/index.js"&gt;&lt;/script&gt;</pre>
+
+  <h2>index.js 提供</h2>
+  <pre>switchTab(name)                  // 切换 tab-panel
+copyAsImage(btn)                 // 复制为 PNG (html2canvas)
+downloadPNG(btn)                 // 下载 PNG
+downloadPDF(btn)                 // 下载 PDF (jsPDF)</pre>
+
+  <div class="toolbar" style="margin-top: 24px;">
+    <button class="toolbar-toggle" onclick="document.getElementById('toolbar').classList.toggle('expanded')">⚙</button>
+    <div class="toolbar-actions" id="toolbar">
+      <button onclick="copyAsImage(this)">📋 Copy SVG</button>
+      <button onclick="downloadPNG(this)">🖼 PNG</button>
+    </div>
+  </div>
+
+  <script src="index.js"></script>
+  <p style="margin-top: 32px; color: var(--text3); font-size: .72rem;">YrY CDN · yry-arch · 2026</p>
+</body>
+</html>

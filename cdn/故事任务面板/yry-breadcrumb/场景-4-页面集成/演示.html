@@ -4,19 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>页面集成 · 可交互演示 · YryBreadcrumb 任务故事</title>
-<link rel="stylesheet" href="../../../shared.css">
-<link rel="stylesheet" href="../../../theme.css">
-<link rel="stylesheet" href="../../../yry-scene.css">
-<link rel="stylesheet" href="../../../yry-checklist.css">
+<link rel="stylesheet" href="../../../shared\/index\.css">
+<link rel="stylesheet" href="../../../theme\/index\.css">
+<link rel="stylesheet" href="../../../yry\-scene\/index\.css">
+<link rel="stylesheet" href="../../../yry\-checklist\/index\.css">
 <link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
 <link rel="stylesheet" href="../../../yry-scene-nav/index.css">
 <link rel="stylesheet" href="../../../yry-cross-nav/index.css">
 <link rel="stylesheet" href="../../../yry-back-top/index.css">
 <link rel="stylesheet" href="../../../yry-scene-header/index.css">
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
-<link rel="stylesheet" href="../../../yry-inline-helpers.css">
+<link rel="stylesheet" href="../../../yry\-inline\-helpers\/index\.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<link rel="stylesheet" href="../../../yry-a11y.css">
+<link rel="stylesheet" href="../../../yry\-a11y\/index\.css">
 <style>
 
 .container { max-width: 1100px; }
@@ -149,7 +149,7 @@ else document.addEventListener('yry-breadcrumb-ready', mountAll, { once: true })
   <div class="w-step">
     <div class="ws-body">
       <div class="ws-title">确定 4 文件引用顺序 <span class="ws-time">~10 min</span></div>
-      <div class="ws-desc">文档化标准引用顺序：shared.css → theme.css → yry-scene.css → yry-checklist.css → index.css（CSS 层）→ vue CDN → shared.js → index.js（JS 层），确保 FOUC 防护。</div>
+      <div class="ws-desc">文档化标准引用顺序：shared/index.css → theme/index.css → yry-scene.css → yry-checklist.css → index.css（CSS 层）→ vue CDN → shared.js → index.js（JS 层），确保 FOUC 防护。</div>
       <div class="ws-result">✅ 产出: 4 文件引用顺序规范，所有页面统一遵循</div>
     </div>
   </div>
@@ -211,11 +211,11 @@ else document.addEventListener('yry-breadcrumb-ready', mountAll, { once: true })
   <div class="quiz-card" data-quiz="1">
     <div class="quiz-q"><span class="q-num">1</span> 页面集成时正确的文件引用顺序（CSS 层）是什么？</div>
     <div class="quiz-opts">
-      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">A</span><span class="opt-text">theme.css → shared.css → yry-scene.css → index.css</span></div>
-      <div class="quiz-opt correct" data-answer="correct"><span class="opt-letter">B</span><span class="opt-text">shared.css → theme.css → yry-scene.css → index.css</span></div>
-      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">C</span><span class="opt-text">index.css → yry-scene.css → theme.css → shared.css</span></div>
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">A</span><span class="opt-text">theme/index.css → shared/index.css → yry-scene.css → index.css</span></div>
+      <div class="quiz-opt correct" data-answer="correct"><span class="opt-letter">B</span><span class="opt-text">shared/index.css → theme/index.css → yry-scene.css → index.css</span></div>
+      <div class="quiz-opt" data-answer="wrong"><span class="opt-letter">C</span><span class="opt-text">index.css → yry-scene.css → theme/index.css → shared/index.css</span></div>
     </div>
-    <div class="quiz-feedback"><strong>✓ 正确!</strong> CSS 加载顺序为 shared.css（基础重置+布局）→ theme.css（设计令牌）→ yry-scene.css（场景共享样式）→ index.css（组件样式），确保层叠正确且 FOUC 防护。</div>
+    <div class="quiz-feedback"><strong>✓ 正确!</strong> CSS 加载顺序为 shared/index.css（基础重置+布局）→ theme/index.css（设计令牌）→ yry-scene.css（场景共享样式）→ index.css（组件样式），确保层叠正确且 FOUC 防护。</div>
   </div>
   <div class="quiz-card" data-quiz="2">
     <div class="quiz-q"><span class="q-num">2</span> 页面集成覆盖了哪 4 种 items 配置模式？</div>
@@ -265,9 +265,9 @@ else document.addEventListener('yry-breadcrumb-ready', mountAll, { once: true })
 </div>
 
 
-<script src="../../../yry-quiz.js"></script>
+<script src="../../../yry\-quiz\/index\.js"></script>
 
-<script src="../../../shared.js"></script>
+<script src="../../../shared\/index\.js"></script>
 <!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
 <script src="../../../yry-scene-nav/index.js"></script>
 <!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->

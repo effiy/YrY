@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — yry-checklist · 计划清单页面组件样式
+  依赖: shared/index.css + theme/index.css (需先加载,提供 --yry-* 变量)
+  加载: <link rel="stylesheet" href="../../../../cdn/yry-checklist/index.css">
+  注意: 本目录提供基类样式,具体交互组件见 yry-check-item/ yry-checklist-head/
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY yry-checklist · 计划清单基类</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>✅ yry-checklist · 计划清单基类</h1>
+  <p>计划清单页的 step / step-header / step-body / step-status / skill-hint / step-deps / verify-cmd / cmd-grid / link-grid 等基础样式。</p>
+
+  <h2>载入</h2>
+  <pre>&lt;link rel="stylesheet" href="../../../../cdn/yry-checklist/index.css"&gt;</pre>
+
+  <h2>主要类</h2>
+  <pre>.step / .step-header / .step-body / .step-checkbox / .step-num / .step-title / .step-status
+.skill-hint (含 .hint-icon)
+.step-deps / .dep-badge
+.code-block / .verify-cmd / .expected / .log-entry
+.section / .section h2 .dot
+.tabs / .tab / .panel
+.stat-card / .stat-grid / .stat-mini
+.cmd-grid / .cmd-card / .cmd-card pre / .cb
+.link-grid / .link-card
+.verify-list / .verify-item / .vi-label / .vi-expect
+.toast / .cross-nav / .breadcrumb / .footer</pre>
+
+  <div class="step" style="margin-top: 16px;">
+    <div class="step-header">
+      <span class="step-num">1</span>
+      <span class="step-title">示例 step</span>
+      <span class="step-status status-active">🔶 就绪</span>
+    </div>
+  </div>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · yry-checklist · 2026</p>
+</body>
+</html>

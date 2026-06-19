@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — shared-reports · 报告页面 (健康/趋势/自循环/自我改进/项目分析) 公共资源
+  适用: cdn/健康报告/health-cdn-*.html 等所有报告类页面
+  加载: <link rel="stylesheet" href="../../cdn/shared-reports/index.css">
+        <script src="../../cdn/shared-reports/index.js"></script>
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY shared-reports · 报告页面公共资源</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    h2 { font-size: 1rem; margin: 20px 0 8px; }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>📊 shared-reports · 报告页面公共</h1>
+  <p>为 <code>健康报告 / 趋势报告 / 自循环报告 / 自我改进 / 项目分析</code> 等报告页面提供统一 CSS + JS 工具(<code>YrYReports</code> 命名空间)。</p>
+
+  <h2>载入</h2>
+  <pre>&lt;link rel="stylesheet" href="../../cdn/shared-reports/index.css"&gt;
+&lt;script src="../../cdn/shared-reports/index.js"&gt;&lt;/script&gt;</pre>
+
+  <h2>YrYReports API</h2>
+  <pre>YrYReports.scoreClr(s)             // 分数 → CSS 颜色变量
+YrYReports.scoreGrade(s)           // 分数 → 字母等级 A/B/C/D
+YrYReports.fmtMinutesAgo(min)      // "5 分钟前" / "2 小时前" / "3 天前"
+YrYReports.renderFreshnessBadge(d) // 新鲜度 badge HTML
+YrYReports.renderScoreSparkline(scores) // SVG 迷你图
+YrYReports.trendDelta(curr, prev)  // 趋势方向 + delta
+YrYReports.statCard(val, label, cls) // stat 卡片 HTML
+YrYReports.badge(text, variant)    // 彩色 badge HTML
+YrYReports.fetchCrossRefData()     // 跨仪表板并行抓取
+YrYReports.mean(arr) / stddev / cv / median / linearSlope
+YrYReports.setText/setHTML/toggle</pre>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · shared-reports · 2026</p>
+</body>
+</html>

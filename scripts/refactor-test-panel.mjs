@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Batch refactor: test panel inline JS → yry-test-panel.js
+ * Batch refactor: test panel inline JS → yry-test/index.js
  * Usage: node cdn/js/refactor-test-panel.mjs [--dry-run]
  */
 
@@ -55,7 +55,7 @@ for (const f of files) {
     continue;
   }
 
-  const srcPath = relative(dirname(f), resolve(root, 'cdn', 'yry-test-panel.js'));
+  const srcPath = relative(dirname(f), resolve(root, 'cdn', 'yry-test/index.js'));
 
   // Remove the inline script block
   let start = block.start;

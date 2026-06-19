@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>YrY CDN · 健康报告索引</title>
-<link rel="stylesheet" href="../shared.css">
-<link rel="stylesheet" href="../theme.css">
-<link rel="stylesheet" href="../shared-reports.css">
-<link rel="stylesheet" href="../yry-home.css">
+<link rel="stylesheet" href="../shared\/index\.css">
+<link rel="stylesheet" href="../theme\/index\.css">
+<link rel="stylesheet" href="../shared\-reports\/index\.css">
+<link rel="stylesheet" href="../yry\-home\/index\.css">
 <style>
 .c { max-width: 880px; margin: 0 auto; padding: 48px 24px 80px; }
 .latest { text-align: center; padding: 18px 16px 14px; margin-bottom: 20px; background: rgba(255,193,7,.05); border-radius: 10px; border: var(--yry-border); }
@@ -92,7 +92,7 @@
   <a href="../index.html">🌐 CDN 首页</a>
   <a href="../README.md">📖 README</a>
   <a href="../package.json">📦 package.json</a>
-  <a href="../releases.json">📜 releases.json</a>
+  <a href="../releases\/index\.json">📜 releases.json</a>
   <a href="https://www.npmjs.com/package/yry-cdn" target="_blank" rel="noopener noreferrer">🌐 npm</a>
   <a href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/" target="_blank" rel="noopener noreferrer">🚀 jsDelivr</a>
 </div>
@@ -174,7 +174,7 @@
     methods: {
       async fetchData() {
         try {
-          var res = await fetch('health-report.json');
+          var res = await fetch('../health-report/index.json');
           if (!res.ok) throw new Error('HTTP ' + res.status);
           var data = await res.json();
           this.reports = Array.isArray(data) ? data : (Array.isArray(data.reports) ? data.reports : []);

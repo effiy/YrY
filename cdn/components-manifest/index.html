@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — components-manifest · 组件清单数据
+  数据源: components.manifest.json (自动生成的 yry-* 组件清单)
+  生成方式: npm run build:manifest
+  数据消费者: scripts/refactor-quiz.mjs · README.md 链接
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY components-manifest · 组件清单</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 12px 14px; border-radius: 6px; font-size: .72rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; max-height: 600px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <h1>📋 components-manifest · 组件清单</h1>
+  <p>所有 yry-* 组件的索引:组件名、文件清单、依赖关系、大小、API 摘要。由 <code>npm run build:manifest</code> 自动生成。</p>
+
+  <h2>数据预览</h2>
+  <pre id="data">加载中...</pre>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · components-manifest · 2026</p>
+
+  <script>
+    fetch('index.json').then(r => r.json()).then(d => {
+      document.getElementById('data').textContent = JSON.stringify(d, null, 2);
+    }).catch(e => {
+      document.getElementById('data').textContent = '❌ 加载失败: ' + e.message;
+    });
+  </script>
+</body>
+</html>

@@ -12,11 +12,11 @@
        </div>
      </div>
 
-   iconModifier (与 cdn/yry-home.css 中 .icon.* 选择器一致):
+   iconModifier (与 cdn/yry-home/index.css 中 .icon.* 选择器一致):
      - skill / agent / rule / ref
      不同类型用不同背景色区分 (skill=青 / agent=紫 / rule=黄 / ref=绿)
 
-   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+   依赖 design tokens (来自 cdn/theme/index.css 或页面 :root):
      --yry-bg-card / --yry-border / --yry-radius
      --yry-shadow / --yry-shadow-lg
      --yry-text / --yry-text2 / --yry-text3

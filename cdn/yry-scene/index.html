@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — yry-scene · 场景页基类样式 + 通用变量别名
+  加载: <link rel="stylesheet" href="../../../../cdn/yry-scene/index.css">
+        (前置: shared/index.css + theme/index.css + yry-scene/index-base.css 已合并到 index.css)
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY yry-scene · 场景页基类</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+    .flow-chip { background: var(--bg-flat); border: var(--border); border-radius: 20px; padding: 6px 14px; font-size: .78rem; display: inline-block; }
+  </style>
+</head>
+<body>
+  <h1>🎬 yry-scene · 场景页基类</h1>
+  <p>场景页基类样式 (.cmd-card / .walkthrough .step / .stats-grid / .bar-wrap / .live-bar / .play-bar / .flow-row / .file-list / .checklist) + 变量别名映射 (<code>--bg → --yry-bg</code>)。</p>
+
+  <h2>载入</h2>
+  <pre>&lt;link rel="stylesheet" href="../../../../cdn/yry-scene/index.css"&gt;
+&lt;link rel="stylesheet" href="../../../../cdn/yry-scene/index-base.css"&gt; (可选:基础变体)</pre>
+
+  <h2>演示</h2>
+  <div class="cmd-card">
+    <div class="name">示例命令</div>
+    <div class="desc">描述</div>
+    <div class="stage">第 1 阶段</div>
+  </div>
+
+  <div class="flow-row" style="margin-top: 16px;">
+    <div class="flow-chip"><span class="n">1</span> 起步</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-chip"><span class="n">2</span> 进阶</div>
+  </div>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · yry-scene · 2026</p>
+</body>
+</html>

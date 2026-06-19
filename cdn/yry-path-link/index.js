@@ -11,7 +11,7 @@
      <script>
        function mount() {
          Vue.createApp(window.YryPathLink, {
-           display: 'cdn/shared.css', full: '/path/to/file', href: 'file.css'
+           display: 'cdn/shared/index.css', full: '/path/to/file', href: 'file.css'
          }).mount('#my-link');
        }
        if (window.YryPathLink) mount();

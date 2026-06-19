@@ -148,7 +148,7 @@ flowchart LR
 | msg | string | 必填 | 显示文本（textContent 赋值，内置防 XSS）|
 | duration | number | 1800 | 显示时长 ms |
 
-> 证据: `cdn/shared.js:14–22`
+> 证据: `cdn/shared/index.js:14–22`
 
 #### YrY.copyCmd(btn, cmd)
 
@@ -159,7 +159,7 @@ flowchart LR
 
 状态机: `📋` (初始) → 点击 → `✅` (1.5s) → `📋` (恢复)
 
-> 证据: `cdn/shared.js:25–32`
+> 证据: `cdn/shared/index.js:25–32`
 
 #### YrY.switchPanel(name, tabSelector?, panelSelector?)
 
@@ -171,7 +171,7 @@ flowchart LR
 
 面板 ID 约定: `id="panel<Name>"`（首字母大写），如 `name="summary"` → `id="panelSummary"`
 
-> 证据: `cdn/shared.js:35–44`
+> 证据: `cdn/shared/index.js:35–44`
 
 #### YrY.initSuiteToggle(containerSelector?)
 
@@ -181,7 +181,7 @@ flowchart LR
 
 使用事件委托模式：点击 `.yry-suite-head` → 最近 `.yry-suite` 切换 `.open` 类。
 
-> 证据: `cdn/shared.js:47–55`
+> 证据: `cdn/shared/index.js:47–55`
 
 #### YrY.expandAllSuites(scope?) / YrY.collapseAllSuites(scope?)
 
@@ -189,7 +189,7 @@ flowchart LR
 |------|------|------|
 | scope | Element | 搜索范围，默认 document |
 
-> 证据: `cdn/shared.js:58–63`
+> 证据: `cdn/shared/index.js:58–63`
 
 #### YrY.fmtDur(ms)
 
@@ -200,13 +200,13 @@ flowchart LR
 null → ""
 ```
 
-> 证据: `cdn/shared.js:66–71`
+> 证据: `cdn/shared/index.js:66–71`
 
 #### YrY.esc(s)
 
 转义 `&` `<` `>` `"` 为 HTML 实体。
 
-> 证据: `cdn/shared.js:74–77`
+> 证据: `cdn/shared/index.js:74–77`
 
 #### YrY.clipboardWrite(text, onSuccess, onFail)
 
@@ -216,7 +216,7 @@ null → ""
 | onSuccess | function | 成功回调 |
 | onFail | function | 失败回调（默认显示 Toast） |
 
-> 证据: `cdn/shared.js:80–86`
+> 证据: `cdn/shared/index.js:80–86`
 
 ### §0.3 组件交互联动
 
@@ -230,7 +230,7 @@ null → ""
   'tertiaryColor': '#21232f'
 }}}%%
 flowchart TD
-    HTML["HTML 结构<br/>yry-* 类名"] --> CSS["shared.css + 主题 CSS<br/>提供视觉样式"]
+    HTML["HTML 结构<br/>yry-* 类名"] --> CSS["shared/index.css + 主题 CSS<br/>提供视觉样式"]
     HTML --> EVENTS["事件绑定"]
     EVENTS --> TOAST_EVT["点击复制 → YrY.copyCmd()"]
     EVENTS --> TAB_EVT["点击标签 → YrY.switchPanel()"]
@@ -265,14 +265,14 @@ flowchart TD
 
 | 来源 | 行号 | 内容 |
 |------|------|------|
-| `cdn/shared.css` | 22–79 | 面包屑/cross-nav/Toolbar/Toast 样式 |
-| `cdn/theme.css` | 50–213 | 14 System 组件全量 |
-| `cdn/theme-mono.css` | 22–101 | Mono 组件全量 |
-| `cdn/shared.js` | 14–22 | YrY.toast() |
-| `cdn/shared.js` | 25–32 | YrY.copyCmd() |
-| `cdn/shared.js` | 35–44 | YrY.switchPanel() |
-| `cdn/shared.js` | 47–63 | Suite toggle/expand/collapse |
-| `cdn/shared.js` | 66–86 | fmtDur/esc/clipboardWrite |
+| `cdn/shared/index.css` | 22–79 | 面包屑/cross-nav/Toolbar/Toast 样式 |
+| `cdn/theme/index.css` | 50–213 | 14 System 组件全量 |
+| `cdn/theme-mono/index.css` | 22–101 | Mono 组件全量 |
+| `cdn/shared/index.js` | 14–22 | YrY.toast() |
+| `cdn/shared/index.js` | 25–32 | YrY.copyCmd() |
+| `cdn/shared/index.js` | 35–44 | YrY.switchPanel() |
+| `cdn/shared/index.js` | 47–63 | Suite toggle/expand/collapse |
+| `cdn/shared/index.js` | 66–86 | fmtDur/esc/clipboardWrite |
 
 ---
 
@@ -366,7 +366,7 @@ flowchart TD
 |------|------|
 | 实施日期 | 2026-06-08 |
 | 实施者 | Claude (coder agent) |
-| 源码基线 | `cdn/shared.css` (94行), `cdn/shared.js` (100行), `cdn/theme.css` (224行), `cdn/theme-mono.css` (108行) |
+| 源码基线 | `cdn/shared/index.css` (94行), `cdn/shared/index.js` (100行), `cdn/theme/index.css` (224行), `cdn/theme-mono/index.css` (108行) |
 
 ### §2.2 Gate A 交接信号验证
 
@@ -399,9 +399,9 @@ flowchart TD
 
 | 分类 | 文件 | 组件数 | 全部渲染 | 说明 |
 |------|------|--------|---------|------|
-| 全局 | shared.css | 6 | ✅ | 面包屑/cross-nav/Toolbar/Toast/页脚/键盘提示 |
-| System | theme.css | 14 | ✅ | Container/Header/Stats/Bar/Tabs/Panel/Suite/Progress/Button/Section/LinkGrid/Card/Verify/Cmd |
-| Mono | theme-mono.css | 7 | ✅ | MonoContainer/Header/PulseDot/Diagram/Graph/MonoCards/Legend |
+| 全局 | shared/index.css | 6 | ✅ | 面包屑/cross-nav/Toolbar/Toast/页脚/键盘提示 |
+| System | theme/index.css | 14 | ✅ | Container/Header/Stats/Bar/Tabs/Panel/Suite/Progress/Button/Section/LinkGrid/Card/Verify/Cmd |
+| Mono | theme-mono/index.css | 7 | ✅ | MonoContainer/Header/PulseDot/Diagram/Graph/MonoCards/Legend |
 | **合计** | | **27** | **✅** | yry-* 前缀统一，无碰撞 |
 
 ### §2.5 fmtDur / esc 边界值测试
@@ -441,9 +441,9 @@ flowchart TD
 
 | TC# | 名称 | 断言 | 通过 | 失败 | 覆盖 |
 |-----|------|------|------|------|------|
-| TC1 | 全局组件渲染 (shared.css) | 6 | 6 | 0 | 面包屑/cross-nav/Toolbar/Toast/页脚/键盘提示 |
-| TC2 | System 组件渲染 (theme.css) | 14 | 14 | 0 | Container/Header/Stats/Bar/Tabs/Panel/Suite/Progress/Button/Section/LinkGrid/Card/Verify/Cmd |
-| TC3 | Mono 组件渲染 (theme-mono.css) | 7 | 7 | 0 | MonoContainer/Header/PulseDot/Diagram/Graph/MonoCards/Legend |
+| TC1 | 全局组件渲染 (shared/index.css) | 6 | 6 | 0 | 面包屑/cross-nav/Toolbar/Toast/页脚/键盘提示 |
+| TC2 | System 组件渲染 (theme/index.css) | 14 | 14 | 0 | Container/Header/Stats/Bar/Tabs/Panel/Suite/Progress/Button/Section/LinkGrid/Card/Verify/Cmd |
+| TC3 | Mono 组件渲染 (theme-mono/index.css) | 7 | 7 | 0 | MonoContainer/Header/PulseDot/Diagram/Graph/MonoCards/Legend |
 | TC4 | YrY API 9 方法验证 | 9 | 9 | 0 | toast/copyCmd/switchPanel/initSuiteToggle/expandAllSuites/collapseAllSuites/fmtDur/esc/clipboardWrite |
 | TC5 | fmtDur/esc 边界值 | 11 | 11 | 0 | null/0/0.5/142/999/1234/undefined + HTML 实体 4 字符 |
 
@@ -475,7 +475,7 @@ flowchart TD
 | D4 流程退化 | 否 | IIFE 模块模式，`window.YrY` 单次赋值 | 模式一致 |
 | D5 依赖退化 | 否 | 零外部依赖，纯浏览器 API（Clipboard/classList/closest） | 自包含 |
 | D6 文档过时 | 否 | 本文档 §0–§4 全部填充，API 签名与实现一致 | 文档同步 |
-| D7 配置漂移 | 否 | `cdn/shared.js` 100 行紧凑且无配置项 | 无配置漂移风险 |
+| D7 配置漂移 | 否 | `cdn/shared/index.js` 100 行紧凑且无配置项 | 无配置漂移风险 |
 
 ### §4.2 改进清单
 
@@ -490,11 +490,11 @@ flowchart TD
 
 | 诊断 | 触发状态 | 证据 | 基线引用 |
 |------|---------|------|---------|
-| D2 质量热点 | 未触发 | 全部 JS API 含异常保护 | `cdn/shared.js:10-100` |
-| D3 复杂度增长 | 未触发 | 组件数稳定（27 个），API 数稳定（9 个） | `cdn/theme.css` · `cdn/shared.js` |
+| D2 质量热点 | 未触发 | 全部 JS API 含异常保护 | `cdn/shared/index.js:10-100` |
+| D3 复杂度增长 | 未触发 | 组件数稳定（27 个），API 数稳定（9 个） | `cdn/theme/index.css` · `cdn/shared/index.js` |
 | D6 文档过时 | 未触发 | API 文档与实际签名一致 | `cdn/README.md` |
 
-> **代码锚点**：组件渲染逻辑在 `cdn/theme.css:42-224`（14 System 组件）和 `cdn/theme-mono.css:22-102`（7 Mono 组件）。JS API 实现在 `cdn/shared.js:10-100`（9 个公共方法，IIFE 模式）。XSS 防护在 `YrY.toast()` (textContent) 和 `YrY.esc()` (4 字符转义)。
+> **代码锚点**：组件渲染逻辑在 `cdn/theme/index.css:42-224`（14 System 组件）和 `cdn/theme-mono/index.css:22-102`（7 Mono 组件）。JS API 实现在 `cdn/shared/index.js:10-100`（9 个公共方法，IIFE 模式）。XSS 防护在 `YrY.toast()` (textContent) 和 `YrY.esc()` (4 字符转义)。
 
 ---
 
@@ -502,10 +502,10 @@ flowchart TD
 
 | 角色 | 来源 | 证据 |
 |------|------|------|
-| 源码 | `cdn/shared.css:1–94` | 全局组件 CSS |
-| 源码 | `cdn/theme.css:50–213` | System 组件 CSS |
-| 源码 | `cdn/theme-mono.css:22–101` | Mono 组件 CSS |
-| 源码 | `cdn/shared.js:10–100` | 9 个 JS API 实现 |
+| 源码 | `cdn/shared/index.css:1–94` | 全局组件 CSS |
+| 源码 | `cdn/theme/index.css:50–213` | System 组件 CSS |
+| 源码 | `cdn/theme-mono/index.css:22–101` | Mono 组件 CSS |
+| 源码 | `cdn/shared/index.js:10–100` | 9 个 JS API 实现 |
 
 ### 变更记录
 

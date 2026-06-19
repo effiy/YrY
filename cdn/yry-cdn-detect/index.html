@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — yry-cdn-detect · CDN 资源加载耗时检测
+  自动检测 shared/index.css / theme/index.css / shared.js 的加载耗时,更新 Live Bar 徽章
+  加载: <script src="../../../../cdn/yry-cdn-detect/index.js"></script>
+  依赖: 页面需存在 #lrCss / #lrTheme / #lrJs / #statTiming 元素
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY yry-cdn-detect · 加载耗时检测</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="../yry-inline-helpers/index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+    .live-bar { background: var(--yry-bg-flat); padding: 10px 14px; border-radius: 8px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; font-size: .78rem; }
+  </style>
+</head>
+<body>
+  <h1>⚡ yry-cdn-detect · CDN 加载耗时</h1>
+  <p>页面加载完成后,通过 <code>performance.getEntriesByType('resource')</code> 抓取 <code>/cdn/</code> 路径下所有资源的耗时,并更新 Live Bar 徽章。</p>
+
+  <h2>载入</h2>
+  <pre>&lt;script src="../../../../cdn/yry-cdn-detect/index.js"&gt;&lt;/script&gt;</pre>
+
+  <h2>演示</h2>
+  <div class="live-bar">
+    <span class="live-dot"></span> 加载耗时:
+    <span class="live-resource"><span class="lr-name">shared/index.css</span><span class="lr-status" id="lrCss">—</span></span>
+    <span class="live-resource"><span class="lr-name">theme/index.css</span><span class="lr-status" id="lrTheme">—</span></span>
+    <span class="live-resource"><span class="lr-name">shared.js</span><span class="lr-status" id="lrJs">—</span></span>
+    <span>总计: <span id="statTiming">—</span></span>
+  </div>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · yry-cdn-detect · 2026</p>
+
+  <script src="../shared/index.js"></script>
+  <script src="../yry-inline-helpers/index.css"></script>
+  <script src="index.js"></script>
+</body>
+</html>

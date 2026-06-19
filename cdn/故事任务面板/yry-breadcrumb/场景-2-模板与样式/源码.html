@@ -4,19 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>模板与样式 · 关键源码 · YryBreadcrumb 任务故事</title>
-<link rel="stylesheet" href="../../../shared.css">
-<link rel="stylesheet" href="../../../theme.css">
-<link rel="stylesheet" href="../../../yry-scene.css">
-<link rel="stylesheet" href="../../../yry-checklist.css">
+<link rel="stylesheet" href="../../../shared\/index\.css">
+<link rel="stylesheet" href="../../../theme\/index\.css">
+<link rel="stylesheet" href="../../../yry\-scene\/index\.css">
+<link rel="stylesheet" href="../../../yry\-checklist\/index\.css">
 <link rel="stylesheet" href="../../../yry-breadcrumb/index.css">
 <link rel="stylesheet" href="../../../yry-scene-nav/index.css">
 <link rel="stylesheet" href="../../../yry-cross-nav/index.css">
 <link rel="stylesheet" href="../../../yry-back-top/index.css">
 <link rel="stylesheet" href="../../../yry-scene-header/index.css">
 <link rel="stylesheet" href="../../../yry-stats-grid/index.css">
-<link rel="stylesheet" href="../../../yry-inline-helpers.css">
+<link rel="stylesheet" href="../../../yry\-inline\-helpers\/index\.css">
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<link rel="stylesheet" href="../../../yry-a11y.css">
+<link rel="stylesheet" href="../../../yry\-a11y\/index\.css">
 <style>
 
 .container { max-width: 1100px; }
@@ -87,7 +87,7 @@
     <div class="cc-name">index.css</div>
     <div class="cc-domain">样式表</div>
     <div class="cc-desc">设计令牌驱动的 BEM 样式。5 种视觉模式（默认深色 / 浅色 prefers-color-scheme / 高对比度 / 自定义主题 / 组件级覆盖）均通过 :root 变量值切换。</div>
-    <div class="cc-rels"><span class="cc-rel in">← 令牌来自 shared.css</span><span class="cc-rel out">→ 样式化模板</span></div>
+    <div class="cc-rels"><span class="cc-rel in">← 令牌来自 shared/index.css</span><span class="cc-rel out">→ 样式化模板</span></div>
   </div>
   <div class="concept-card">
     <div class="cc-icon">⚙️</div>
@@ -131,7 +131,7 @@
 <h3>2. CSS 设计令牌用法 (--yry-color-* 及 fallback)</h3>
 <p>来自 <code>cdn/yry-breadcrumb/index.css</code>。</p>
 <div class="cb-head"><span class="cb-lang">CSS</span><span class="cb-file">index.css</span></div>
-<pre><code>/* === 设计令牌（来自 shared.css / theme.css）=== */
+<pre><code>/* === 设计令牌（来自 shared/index.css / theme/index.css）=== */
 /* 自定义属性在 :root 中定义，此处为使用侧代码 */
 
 .breadcrumb {
@@ -262,7 +262,7 @@ window.addEventListener('scroll',toggleBackTop,{passive:true});
 backTopBtn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
 </script>
 
-<script src="../../../shared.js"></script>
+<script src="../../../shared\/index\.js"></script>
 <!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
 <script src="../../../yry-scene-nav/index.js"></script>
 <!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->

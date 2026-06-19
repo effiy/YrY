@@ -2,7 +2,7 @@
    YrY CDN — YryBreadcrumb · Vue 3 面包屑组件 样式
    适用: 审查 · 测试面板 · 演示 · 计划清单 · 架构图 · 知识图谱
 
-   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+   依赖 design tokens (来自 cdn/theme/index.css 或页面 :root):
      --yry-color-text-1 / --yry-color-text-2 / --yry-color-text-3
      --yry-color-accent
      --yry-ease-out

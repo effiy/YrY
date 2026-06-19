@@ -17,27 +17,27 @@ const CDN = resolve(process.cwd(), "cdn");
 const VERBOSE = process.argv.includes("--verbose");
 
 const files = {
-  sharedCSS: resolve(CDN, "shared.css"),
-  sharedJS: resolve(CDN, "shared.js"),
-  themeCSS: resolve(CDN, "theme.css"),
-  themeMonoCSS: resolve(CDN, "theme-mono.css"),
-  fontsCSS: resolve(CDN, "fonts.css"),
+  sharedCSS: resolve(CDN, "shared/index.css"),
+  sharedJS: resolve(CDN, "shared/index.js"),
+  themeCSS: resolve(CDN, "theme/index.css"),
+  themeMonoCSS: resolve(CDN, "theme-mono/index.css"),
+  fontsCSS: resolve(CDN, "fonts/index.css"),
 };
 
 function readCSS(path) { return existsSync(path) ? readFileSync(path, "utf-8") : null; }
 
-// ─── TC1: Cat B 加载链 — shared.css → theme.css → shared.js ──────────
-describe("TC1 — Category B 加载链 (shared.css → theme.css → shared.js)", () => {
-  it("shared.css 存在且非空", () => {
+// ─── TC1: Cat B 加载链 — shared/index.css → theme/index.css → shared.js ──────────
+describe("TC1 — Category B 加载链 (shared/index.css → theme/index.css → shared.js)", () => {
+  it("shared/index.css 存在且非空", () => {
     const css = readCSS(files.sharedCSS);
-    assert.notEqual(css, null, "shared.css not found");
-    assert.equal(css.length > 100, true, "shared.css too small");
+    assert.notEqual(css, null, "shared/index.css not found");
+    assert.equal(css.length > 100, true, "shared/index.css too small");
   });
 
-  it("theme.css 存在且非空", () => {
+  it("theme/index.css 存在且非空", () => {
     const css = readCSS(files.themeCSS);
-    assert.notEqual(css, null, "theme.css not found");
-    assert.equal(css.length > 100, true, "theme.css too small");
+    assert.notEqual(css, null, "theme/index.css not found");
+    assert.equal(css.length > 100, true, "theme/index.css too small");
   });
 
   it("shared.js 存在且非空", () => {
@@ -46,15 +46,15 @@ describe("TC1 — Category B 加载链 (shared.css → theme.css → shared.js)"
     assert.equal(js.length > 100, true, "shared.js too small");
   });
 
-  it("shared.css 含 CSS Reset (border-box)", () => {
+  it("shared/index.css 含 CSS Reset (border-box)", () => {
     const css = readCSS(files.sharedCSS);
     assert.equal(css.includes("box-sizing"), true, "missing box-sizing reset");
   });
 
-  it("theme.css 含 :root CSS 变量块", () => {
+  it("theme/index.css 含 :root CSS 变量块", () => {
     const css = readCSS(files.themeCSS);
-    assert.equal(css.includes(":root"), true, "theme.css missing :root");
-    assert.equal(css.includes("--yry-"), true, "theme.css missing --yry-* variables");
+    assert.equal(css.includes(":root"), true, "theme/index.css missing :root");
+    assert.equal(css.includes("--yry-"), true, "theme/index.css missing --yry-* variables");
   });
 
   it("shared.js 定义 window.YrY IIFE", () => {
@@ -64,29 +64,29 @@ describe("TC1 — Category B 加载链 (shared.css → theme.css → shared.js)"
   });
 });
 
-// ─── TC2: Cat A 加载链 — fonts.css → shared.css → theme-mono.css → shared.js ──
-describe("TC2 — Category A 加载链 (fonts.css → shared.css → theme-mono.css → shared.js)", () => {
-  it("fonts.css 存在且非空", () => {
+// ─── TC2: Cat A 加载链 — fonts/index.css → shared/index.css → theme-mono/index.css → shared.js ──
+describe("TC2 — Category A 加载链 (fonts/index.css → shared/index.css → theme-mono/index.css → shared.js)", () => {
+  it("fonts/index.css 存在且非空", () => {
     const css = readCSS(files.fontsCSS);
-    assert.notEqual(css, null, "fonts.css not found");
-    assert.equal(css.length > 50, true, "fonts.css too small");
+    assert.notEqual(css, null, "fonts/index.css not found");
+    assert.equal(css.length > 50, true, "fonts/index.css too small");
   });
 
-  it("theme-mono.css 存在且非空", () => {
+  it("theme-mono/index.css 存在且非空", () => {
     const css = readCSS(files.themeMonoCSS);
-    assert.notEqual(css, null, "theme-mono.css not found");
-    assert.equal(css.length > 100, true, "theme-mono.css too small");
+    assert.notEqual(css, null, "theme-mono/index.css not found");
+    assert.equal(css.length > 100, true, "theme-mono/index.css too small");
   });
 
-  it("fonts.css 定义 @font-face 规则", () => {
+  it("fonts/index.css 定义 @font-face 规则", () => {
     const css = readCSS(files.fontsCSS);
-    assert.equal(css.includes("@font-face"), true, "fonts.css missing @font-face");
-    assert.equal(css.includes("JetBrains Mono"), true, "fonts.css missing JetBrains Mono");
+    assert.equal(css.includes("@font-face"), true, "fonts/index.css missing @font-face");
+    assert.equal(css.includes("JetBrains Mono"), true, "fonts/index.css missing JetBrains Mono");
   });
 
-  it("theme-mono.css 设置深蓝黑背景 #020617", () => {
+  it("theme-mono/index.css 设置深蓝黑背景 #020617", () => {
     const css = readCSS(files.themeMonoCSS);
-    assert.equal(css.includes("020617"), true, "theme-mono.css missing #020617 background");
+    assert.equal(css.includes("020617"), true, "theme-mono/index.css missing #020617 background");
   });
 
   it("fonts/ 目录含 4 个 woff2 字体文件", () => {
@@ -100,16 +100,16 @@ describe("TC2 — Category A 加载链 (fonts.css → shared.css → theme-mono.
 
 // ─── TC3: 加载顺序约束验证 ──────────────────────────────────────────
 describe("TC3 — 加载顺序约束", () => {
-  it("shared.css 前置: 定义 @keyframes 给 theme.css 使用", () => {
+  it("shared/index.css 前置: 定义 @keyframes 给 theme/index.css 使用", () => {
     const css = readCSS(files.sharedCSS);
-    assert.equal(css.includes("@keyframes yry-fadeInUp"), true, "shared.css missing @keyframes yry-fadeInUp");
-    assert.equal(css.includes("@keyframes yry-fadeInDown"), true, "shared.css missing @keyframes yry-fadeInDown");
+    assert.equal(css.includes("@keyframes yry-fadeInUp"), true, "shared/index.css missing @keyframes yry-fadeInUp");
+    assert.equal(css.includes("@keyframes yry-fadeInDown"), true, "shared/index.css missing @keyframes yry-fadeInDown");
   });
 
-  it("theme.css 引用共享动画 keyframes (animation: yry-fadeInUp)", () => {
+  it("theme/index.css 引用共享动画 keyframes (animation: yry-fadeInUp)", () => {
     const css = readCSS(files.themeCSS);
     assert.equal(css.includes("yry-fadeInUp") || css.includes("yry-fadeInDown"), true,
-      "theme.css should reference shared @keyframes");
+      "theme/index.css should reference shared @keyframes");
   });
 
   it("shared.js 操作 yry-* 类名 — 依赖 CSS 先加载", () => {
@@ -127,11 +127,11 @@ describe("TC3 — 加载顺序约束", () => {
 // ─── TC4: HTTP 可达性 (静态文件存在即视为可达) ──────────────────────
 describe("TC4 — 资源可达性", () => {
   const required = [
-    ["shared.css", files.sharedCSS],
+    ["shared/index.css", files.sharedCSS],
     ["shared.js", files.sharedJS],
-    ["theme.css", files.themeCSS],
-    ["theme-mono.css", files.themeMonoCSS],
-    ["fonts.css", files.fontsCSS],
+    ["theme/index.css", files.themeCSS],
+    ["theme-mono/index.css", files.themeMonoCSS],
+    ["fonts/index.css", files.fontsCSS],
   ];
 
   for (const [name, fp] of required) {

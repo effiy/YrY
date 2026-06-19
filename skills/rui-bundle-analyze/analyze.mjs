@@ -15,8 +15,12 @@ import { readFileSync, writeFileSync, existsSync, readdirSync, statSync, mkdirSy
 import { join, relative, resolve, basename, extname, dirname } from "node:path";
 import { createReadStream } from "node:fs";
 import { createInterface } from "node:readline";
+import { createHash } from "node:crypto";
 import { execSync } from "node:child_process";
 import { findProjectRoot } from "../../lib/fs.mjs";
+
+// ── Version ──────────────────────────────────────────────────────────────────
+const ANALYSIS_VERSION = "2.0";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -80,6 +84,37 @@ const DEP_RANK_TOP_N = 10;
 /** Max circular dependency chains to report */
 const MAX_CIRCULAR_DEPS = 20;
 
+/** Baseline file path (relative to project root) */
+const BASELINE_FILE = ".memory/bundle-baseline.json";
+
+/** Histogram buckets: [label, minBytes, maxBytes] */
+const HISTOGRAM_BUCKETS = [
+  ["0-1 KB", 0, 1_024],
+  ["1-10 KB", 1_024, 10_240],
+  ["10-100 KB", 10_240, 102_400],
+  ["100-500 KB", 102_400, 512_000],
+  ["500 KB-1 MB", 512_000, 1_048_576],
+  [">1 MB", 1_048_576, Infinity],
+];
+
+/** Threshold for flagging significant file size change (20%) */
+const SIGNIFICANT_CHANGE_PCT = 20;
+
+/** Max depth for dependency graph traversal (0 = no limit) */
+const DEFAULT_MAX_DEPTH = 0;
+
+/** Minimum file size for duplicate detection (skip tiny config files) */
+const DUPLICATE_MIN_SIZE = 100;
+
+/** Max duplicate groups to report */
+const MAX_DUPLICATE_GROUPS = 20;
+
+/** Package metric: "zone of pain" threshold (D > 0.7 from main sequence) */
+const ZONE_OF_PAIN_D = 0.7;
+
+/** Package metric: "zone of uselessness" threshold (D > 0.7 with high abstractness) */
+const ZONE_OF_USELESS_D = 0.7;
+
 // ── CLI ────────────────────────────────────────────────────────────────────
 
 function parseArgs(argv) {
@@ -89,6 +124,9 @@ function parseArgs(argv) {
     json: false,
     scope: null,
     help: false,
+    saveBaseline: false,
+    diff: false,
+    maxDepth: DEFAULT_MAX_DEPTH,
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -98,6 +136,9 @@ function parseArgs(argv) {
     else if (a === "--no-open") { args.noOpen = true; }
     else if (a === "--json") { args.json = true; }
     else if (a === "--scope" && i + 1 < argv.length) { args.scope = argv[++i]; }
+    else if (a === "--save-baseline") { args.saveBaseline = true; }
+    else if (a === "--diff") { args.diff = true; }
+    else if (a === "--max-depth" && i + 1 < argv.length) { args.maxDepth = parseInt(argv[++i], 10) || 0; }
   }
 
   return args;
@@ -106,22 +147,29 @@ function parseArgs(argv) {
 function printHelp() {
   // Delegate to help.mjs
   const help = `
-rui-bundle-analyze — File size & dependency analysis (like webpack-bundle-analyzer)
+rui-bundle-analyze v${ANALYSIS_VERSION} — File size & dependency analysis (like webpack-bundle-analyzer)
 
 Usage:
   node skills/rui-bundle-analyze/analyze.mjs [options]
 
-Options:
-  --dir <path>     Analyze a specific directory (default: project root)
-  --no-open        Don't open the report in browser
-  --json           Output JSON to stdout instead of generating HTML
-  --scope <glob>   Limit files to a glob pattern (e.g. "**/*.js")
-  --help, -h       Show this help
+Analysis Options:
+  --dir <path>       Analyze a specific directory (default: project root)
+  --scope <glob>     Limit files to a glob pattern (e.g. "**/*.js")
+  --max-depth <n>    Limit dependency graph node depth (0 = no limit, default: 0)
 
-Example:
+Output Options:
+  --no-open          Don't open the report in browser
+  --json             Output JSON to stdout instead of generating HTML
+  --save-baseline    Save analysis as baseline for future --diff comparisons
+  --diff             Compare with saved baseline and show changes
+  --help, -h         Show this help
+
+Examples:
   /rui-bundle-analyze
   /rui-bundle-analyze --dir src/
   /rui-bundle-analyze --json | jq .stats.largestFiles
+  /rui-bundle-analyze --save-baseline
+  /rui-bundle-analyze --diff
 `;
   console.log(help);
 }
@@ -191,9 +239,17 @@ function walkDir(root, opts = {}) {
 // ── Import parsing ─────────────────────────────────────────────────────────
 
 /**
- * Simple static import parser using regex.
- * Handles: import ... from '...', import('...'), require('...')
- * Returns array of imported module specifiers.
+ * Enhanced static import parser using regex.
+ * Handles 9 import/export patterns:
+ *   import { x } from '...' | import x from '...' | import '...'
+ *   import('...') dynamic
+ *   require('...')
+ *   export { x } from '...' (re-export)
+ *   export * from '...' (wildcard re-export)
+ *   export { default } from '...'
+ *   import type { T } from '...' (TypeScript)
+ *   CSS @import url('...')
+ * Returns array of imported module specifiers with type annotations.
  */
 function parseImports(filePath) {
   const imports = [];
@@ -209,32 +265,460 @@ function parseImports(filePath) {
     .replace(/\/\*[\s\S]*?\*\//g, " ")   // block comments
     .replace(/\/\/.*$/gm, " ");            // line comments
 
-  // Static imports: import { x } from '...' / import '...'
-  const staticPattern = /import\s+(?:[\s\S]*?\s+from\s+)?['"]([^'"]+)['"]/g;
+  // 1. Re-exports (must match before static imports):
+  //    export { x, y } from '...' / export { default } from '...'
+  const reExportPattern = /export\s+\{[^}]*\}\s*from\s*['"]([^'"]+)['"]/g;
   let match;
+  while ((match = reExportPattern.exec(stripped)) !== null) {
+    imports.push({ specifier: match[1], type: "re-export" });
+  }
+
+  // 2. Wildcard re-exports: export * from '...'
+  const wildcardReExportPattern = /export\s+\*\s+from\s*['"]([^'"]+)['"]/g;
+  while ((match = wildcardReExportPattern.exec(stripped)) !== null) {
+    imports.push({ specifier: match[1], type: "re-export-all" });
+  }
+
+  // 3. Static imports: import { x } from '...' / import x from '...' / import '...'
+  //    Exclude 'import type' by using a negative lookahead
+  const staticPattern = /import\s+(?!type\b)(?:[\s\S]*?\s+from\s+)?['"]([^'"]+)['"]/g;
   while ((match = staticPattern.exec(stripped)) !== null) {
     imports.push({ specifier: match[1], type: "import" });
   }
 
-  // Dynamic imports: import('...')
+  // 4. TypeScript type-only imports: import type { T } from '...'
+  const typeImportPattern = /import\s+type\s+\{[^}]*\}\s*from\s*['"]([^'"]+)['"]/g;
+  while ((match = typeImportPattern.exec(stripped)) !== null) {
+    imports.push({ specifier: match[1], type: "type-import" });
+  }
+
+  // 5. Dynamic imports: import('...')
   const dynamicPattern = /import\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
   while ((match = dynamicPattern.exec(stripped)) !== null) {
     imports.push({ specifier: match[1], type: "dynamic" });
   }
 
-  // require('...')
+  // 6. require('...')
   const requirePattern = /require\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
   while ((match = requirePattern.exec(stripped)) !== null) {
     imports.push({ specifier: match[1], type: "require" });
   }
 
-  // CSS @import url('...')
+  // 7. CSS @import url('...')
   const cssImportPattern = /@import\s+(?:url\s*\(\s*)?['"]([^'"]+)['"]/g;
   while ((match = cssImportPattern.exec(stripped)) !== null) {
     imports.push({ specifier: match[1], type: "css-import" });
   }
 
   return imports;
+}
+
+// ── Line counting ────────────────────────────────────────────────────────────
+
+/**
+ * Count non-empty lines in a file efficiently using a read stream.
+ * Falls back to full read for small files.
+ */
+function countLines(filePath) {
+  try {
+    const content = readFileSync(filePath, "utf-8");
+    // Count non-empty lines (strip trailing newline, split)
+    const lines = content.trimEnd().split("\n");
+    // Filter to non-blank lines for a more meaningful count
+    return lines.filter((l) => l.trim().length > 0).length;
+  } catch {
+    return 0;
+  }
+}
+
+// ── Baseline management ──────────────────────────────────────────────────────
+
+/**
+ * Save analysis baseline to .memory/bundle-baseline.json
+ */
+function saveBaseline(projectRoot, baselineData) {
+  const baselinePath = join(projectRoot, BASELINE_FILE);
+  const dir = dirname(baselinePath);
+  if (!existsSync(dir)) {
+    mkdirSync(dir, { recursive: true });
+  }
+  writeFileSync(baselinePath, JSON.stringify(baselineData, null, 2), "utf-8");
+  return baselinePath;
+}
+
+/**
+ * Load previous analysis baseline.
+ * @returns {object|null} baseline data or null if none exists
+ */
+function loadBaseline(projectRoot) {
+  const baselinePath = join(projectRoot, BASELINE_FILE);
+  if (!existsSync(baselinePath)) return null;
+  try {
+    return JSON.parse(readFileSync(baselinePath, "utf-8"));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Compute diff between current analysis and baseline.
+ */
+function computeDiff(currentFiles, currentDeps, baseline) {
+  if (!baseline) return { hasBaseline: false };
+
+  const oldFileMap = new Map(baseline.files.map((f) => [f.path, f]));
+  const newFileMap = new Map(currentFiles.map((f) => [f.relPath, f]));
+
+  // New files (in current but not in baseline)
+  const newFiles = [];
+  for (const f of currentFiles) {
+    if (!oldFileMap.has(f.relPath)) {
+      newFiles.push({ path: f.relPath, size: f.size });
+    }
+  }
+
+  // Deleted files (in baseline but not in current)
+  const deletedFiles = [];
+  for (const [path, f] of oldFileMap) {
+    if (!newFileMap.has(path)) {
+      deletedFiles.push({ path, size: f.size });
+    }
+  }
+
+  // Changed files (> SIGNIFICANT_CHANGE_PCT % difference)
+  const changedFiles = [];
+  for (const f of currentFiles) {
+    const old = oldFileMap.get(f.relPath);
+    if (old && old.size > 0) {
+      const delta = f.size - old.size;
+      const deltaPct = Math.round((Math.abs(delta) / old.size) * 100);
+      if (deltaPct >= SIGNIFICANT_CHANGE_PCT) {
+        changedFiles.push({
+          path: f.relPath,
+          oldSize: old.size,
+          newSize: f.size,
+          delta,
+          deltaPercent: deltaPct * (delta > 0 ? 1 : -1),
+        });
+      }
+    }
+  }
+  changedFiles.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+
+  // Dependency changes
+  const oldEdgeSet = new Set((baseline.dependencies || []).map((e) => `${e.from}→${e.to}`));
+  const newEdgeSet = new Set(currentDeps.map((e) => `${e.from}→${e.to}`));
+
+  const newDeps = currentDeps.filter((e) => !oldEdgeSet.has(`${e.from}→${e.to}`));
+  const removedDeps = (baseline.dependencies || []).filter((e) => !newEdgeSet.has(`${e.from}→${e.to}`));
+
+  // Size delta
+  const oldTotalSize = baseline.meta?.totalSize || 0;
+  const newTotalSize = currentFiles.reduce((sum, f) => sum + f.size, 0);
+  const sizeDelta = newTotalSize - oldTotalSize;
+  const sizeDeltaPercent = oldTotalSize > 0 ? Math.round((sizeDelta / oldTotalSize) * 1000) / 10 : 0;
+
+  return {
+    hasBaseline: true,
+    baselineDate: baseline.meta?.generatedAt || "unknown",
+    sizeDelta,
+    sizeDeltaPercent,
+    newFiles,
+    deletedFiles,
+    changedFiles: changedFiles.slice(0, 20),  // top 20 changes
+    newDeps: newDeps.slice(0, 20),
+    removedDeps: removedDeps.slice(0, 20),
+  };
+}
+
+// ── Advanced analysis ────────────────────────────────────────────────────────
+
+/**
+ * Detect orphan files: files that neither import anything nor are imported by anything.
+ * Excludes well-known entry/root files that are expected to have no dependents.
+ */
+function detectOrphanFiles(files, depGraph) {
+  const importedSet = new Set(depGraph.edges.map((e) => e.to));
+  const importerSet = new Set(depGraph.edges.map((e) => e.from));
+
+  // Also check files that have imports in the actual source (not just depGraph edges)
+  const allNodeSet = new Set(depGraph.nodes.map((n) => n.path));
+
+  // Known entry patterns that are expected to be "orphan" (not imported by others)
+  const entryPatterns = [/^index\.(js|mjs|ts|jsx|tsx)$/, /^main\.(js|mjs|ts)$/, /^app\.(js|mjs|ts|jsx|tsx)$/, /\.config\.(js|mjs|ts)$/, /^cli\.(js|mjs|ts)$/];
+
+  const isEntry = (relPath) => {
+    const name = basename(relPath);
+    return entryPatterns.some((p) => p.test(name));
+  };
+
+  // Only consider source-ish files for orphan detection
+  const sourceFiles = files.filter((f) => DEP_PARSE_EXTS.has(f.ext) || f.ext === ".html" || f.ext === ".md");
+
+  return sourceFiles
+    .filter((f) => {
+      const inGraph = allNodeSet.has(f.relPath);
+      const isImported = importedSet.has(f.relPath);
+      // An orphan: in the graph but not imported by anyone, AND doesn't import anything
+      // OR not in the graph at all (no imports, never parsed)
+      if (!inGraph && !isEntry(f.relPath) && f.ext !== ".html" && f.ext !== ".md") {
+        return true;
+      }
+      if (inGraph && !isImported && !importerSet.has(f.relPath) && !isEntry(f.relPath)) {
+        return true;
+      }
+      return false;
+    })
+    .sort((a, b) => b.size - a.size)
+    .slice(0, 30)
+    .map((f) => ({ path: f.relPath, size: f.size, ext: f.ext }));
+}
+
+/**
+ * Detect barrel files: files that primarily re-export from other modules.
+ * A file is a barrel if >50% of its imports are re-exports and it has few own definitions.
+ */
+function detectBarrelFiles(files, projectRoot) {
+  const barrels = [];
+  const parsableFiles = files.filter((f) => DEP_PARSE_EXTS.has(f.ext));
+
+  for (const f of parsableFiles) {
+    const rawImports = parseImports(f.path);
+    if (rawImports.length === 0) continue;
+
+    const reExports = rawImports.filter((imp) => imp.type === "re-export" || imp.type === "re-export-all");
+    const reExportRatio = reExports.length / rawImports.length;
+
+    // Barrel: at least 2 re-exports and >50% of imports are re-exports
+    if (reExports.length >= 2 && reExportRatio > 0.5) {
+      barrels.push({ path: f.relPath, size: f.size, reExportCount: reExports.length, totalImportCount: rawImports.length, ratio: Math.round(reExportRatio * 100) });
+    }
+  }
+
+  return barrels.sort((a, b) => b.reExportCount - a.reExportCount).slice(0, 15);
+}
+
+/**
+ * Compute size histogram (files bucketed by size range).
+ */
+function computeHistogram(files) {
+  const histogram = {};
+  for (const [label, min, max] of HISTOGRAM_BUCKETS) {
+    histogram[label] = files.filter((f) => f.size >= min && f.size < max).length;
+  }
+  return histogram;
+}
+
+/**
+ * Compute dependency chain depth for each node using topological longest-path.
+ */
+function computeDepths(depGraph) {
+  const adj = {};
+  const revAdj = {};
+  for (const edge of depGraph.edges) {
+    if (!adj[edge.from]) adj[edge.from] = [];
+    adj[edge.from].push(edge.to);
+    if (!revAdj[edge.to]) revAdj[edge.to] = [];
+    revAdj[edge.to].push(edge.from);
+  }
+
+  // Find nodes with no incoming edges (roots)
+  const allNodes = new Set([...Object.keys(adj), ...Object.keys(revAdj)]);
+  const roots = [...allNodes].filter((n) => !revAdj[n] || revAdj[n].length === 0);
+
+  // BFS to compute max depth from any root
+  const depth = {};
+  const queue = roots.map((r) => ({ node: r, d: 1 }));
+  for (const { node, d } of queue) {
+    if (!depth[node] || d > depth[node]) {
+      depth[node] = d;
+    }
+    for (const neighbor of adj[node] || []) {
+      queue.push({ node: neighbor, d: (depth[node] || d) + 1 });
+    }
+  }
+
+  const maxDepth = Math.max(1, ...Object.values(depth));
+  return { maxDepth, nodeDepths: depth };
+}
+
+// ── Content hashing & duplicate detection ────────────────────────────────────
+
+/**
+ * Compute MD5 hash of file content for duplicate detection.
+ */
+function hashContent(filePath) {
+  try {
+    const content = readFileSync(filePath);
+    return createHash("md5").update(content).digest("hex");
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Detect files with identical content (byte-for-byte duplicates).
+ * Groups files by content hash, reports groups with 2+ members.
+ */
+function detectDuplicates(files, projectRoot) {
+  const hashMap = new Map(); // hash → [{path, size}]
+
+  for (const f of files) {
+    if (f.size < DUPLICATE_MIN_SIZE) continue;
+    const hash = hashContent(f.path);
+    if (!hash) continue;
+    if (!hashMap.has(hash)) hashMap.set(hash, []);
+    hashMap.get(hash).push({ path: f.relPath, size: f.size });
+  }
+
+  // Filter to groups with 2+ files
+  const groups = [...hashMap.values()]
+    .filter((g) => g.length >= 2)
+    .sort((a, b) => b[0].size * b.length - a[0].size * a.length) // sort by wasted bytes
+    .slice(0, MAX_DUPLICATE_GROUPS);
+
+  return groups.map((g) => ({
+    files: g.map((f) => f.path),
+    size: g[0].size,
+    wastedBytes: g[0].size * (g.length - 1),
+    count: g.length,
+  }));
+}
+
+// ── Package-level software engineering metrics ───────────────────────────────
+
+/**
+ * Compute Robert Martin's package-level metrics:
+ *   Ce = Efferent coupling (fan-out: deps TO other packages)
+ *   Ca = Afferent coupling (fan-in: deps FROM other packages)
+ *   I  = Instability = Ce / (Ca + Ce)  [0=stable, 1=unstable]
+ *   A  = Abstractness (approximated by ratio of "abstract-ish" files)
+ *   D  = Distance from Main Sequence = |A + I - 1|
+ *
+ * "Package" = top-level directory or second-level directory for large projects.
+ */
+function computePackageMetrics(files, depGraph) {
+  // Determine package depth: use 1st level if >5 dirs, else 2nd level
+  const topDirs = new Set(files.map((f) => f.relPath.split("/")[0]));
+  const useSecondLevel = topDirs.size <= 5;
+
+  function getPackage(relPath) {
+    const parts = relPath.split("/");
+    // Root-level files go to "." (root package)
+    if (parts.length === 1) return ".";
+    // For deeper paths: use 1st level dir as package name
+    // But if useSecondLevel and the first level has subdirectories, use 2 levels
+    if (useSecondLevel && parts.length >= 3) return parts.slice(0, 2).join("/");
+    return parts[0] || ".";
+  }
+
+  // Group files by package
+  const pkgFiles = {}; // pkg → [relPath]
+  for (const f of files) {
+    const pkg = getPackage(f.relPath);
+    if (!pkgFiles[pkg]) pkgFiles[pkg] = [];
+    pkgFiles[pkg].push(f.relPath);
+  }
+  const packages = Object.keys(pkgFiles);
+
+  // Build package-level dependency graph
+  const pkgEdges = new Set(); // "pkgA→pkgB"
+  for (const edge of depGraph.edges) {
+    const fromPkg = getPackage(edge.from);
+    const toPkg = getPackage(edge.to);
+    if (fromPkg !== toPkg) {
+      pkgEdges.add(`${fromPkg}→${toPkg}`);
+    }
+  }
+
+  // Compute Ce (efferent) and Ca (afferent) per package
+  const ce = {}; // fan-out per package
+  const ca = {}; // fan-in per package
+  for (const pkg of packages) { ce[pkg] = 0; ca[pkg] = 0; }
+  for (const edge of pkgEdges) {
+    const [from, to] = edge.split("→");
+    if (ce[from] !== undefined) ce[from]++;
+    if (ca[to] !== undefined) ca[to]++;
+  }
+
+  // Compute file-level Ce/Ca/I for per-file coupling
+  const fileCe = {}; // fan-out per file
+  const fileCa = {}; // fan-in per file
+  const allNodes = new Set(depGraph.nodes.map((n) => n.path));
+  for (const n of allNodes) { fileCe[n] = 0; fileCa[n] = 0; }
+  for (const edge of depGraph.edges) {
+    fileCe[edge.from] = (fileCe[edge.from] || 0) + 1;
+    fileCa[edge.to] = (fileCa[edge.to] || 0) + 1;
+  }
+
+  // Approximate abstractness: files whose name starts with "I" (interface),
+  // or are .d.ts, or are in an "interface"/"types"/"abstract" directory
+  function isAbstractFile(relPath) {
+    const name = basename(relPath);
+    const dir = dirname(relPath).toLowerCase();
+    return (
+      /^[A-Z]/.test(name) && /\.(ts|d\.ts)$/.test(name) ||  // Capitalized .ts files (likely classes/interfaces)
+      /\.d\.ts$/.test(name) ||                               // TypeScript declaration files
+      /(^|\/)types?\//.test(dir) ||                           // in types/ directory
+      /(^|\/)interfaces?\//.test(dir)                        // in interfaces/ directory
+    );
+  }
+
+  // Compute per-package metrics
+  const metrics = packages.map((pkg) => {
+    const fileList = pkgFiles[pkg];
+    const totalFiles = fileList.length;
+    const abstractFiles = fileList.filter(isAbstractFile).length;
+    const Ce = ce[pkg] || 0;
+    const Ca = ca[pkg] || 0;
+    const I = Ce + Ca > 0 ? +(Ce / (Ce + Ca)).toFixed(3) : 0;
+    const A = totalFiles > 0 ? +(abstractFiles / totalFiles).toFixed(3) : 0;
+    const D = +((Math.abs(A + I - 1))).toFixed(3);
+
+    // Compute intra-package coupling (internal edges / total edges)
+    let internalEdges = 0;
+    let totalEdges = 0;
+    for (const edge of depGraph.edges) {
+      if (getPackage(edge.from) === pkg || getPackage(edge.to) === pkg) {
+        totalEdges++;
+        if (getPackage(edge.from) === pkg && getPackage(edge.to) === pkg) {
+          internalEdges++;
+        }
+      }
+    }
+    const cohesion = totalEdges > 0 ? +(internalEdges / totalEdges).toFixed(3) : 0;
+
+    // Zone classification
+    let zone = "main-sequence";
+    if (D > ZONE_OF_PAIN_D && I < 0.5) zone = "zone-of-pain";       // stable + concrete = painful to change
+    else if (D > ZONE_OF_USELESS_D && I > 0.5) zone = "zone-of-uselessness"; // unstable + abstract = useless
+
+    return {
+      package: pkg,
+      fileCount: totalFiles,
+      abstractCount: abstractFiles,
+      Ce, Ca, I, A, D,
+      cohesion,
+      zone,
+    };
+  });
+
+  // Sort by D descending (most problematic first)
+  metrics.sort((a, b) => b.D - a.D);
+
+  // Per-file coupling: top files by instability
+  const fileCoupling = [...allNodes]
+    .filter((n) => (fileCe[n] || 0) + (fileCa[n] || 0) > 0)
+    .map((n) => {
+      const _Ce = fileCe[n] || 0;
+      const _Ca = fileCa[n] || 0;
+      const _I = _Ce + _Ca > 0 ? +(_Ce / (_Ce + _Ca)).toFixed(3) : 0;
+      return { path: n, Ce: _Ce, Ca: _Ca, I: _I };
+    })
+    .sort((a, b) => b.I - a.I) // most unstable first
+    .slice(0, 20);
+
+  return { packages: metrics, fileCoupling, edgeCount: pkgEdges.size, packageCount: packages.length };
 }
 
 /**
@@ -321,9 +805,378 @@ function buildDepGraph(files, projectRoot) {
   return { nodes, edges };
 }
 
+// ── Transitive dependency analysis ──────────────────────────────────────────
+
+/**
+ * Compute transitive closure of the dependency graph using BFS from each node.
+ * Returns:
+ *   - transitiveFanOut: for each node, the set of nodes reachable via any path
+ *   - transitiveFanIn: for each node, the set of nodes that can reach it
+ *   - bridgeModules: nodes whose removal disconnects the graph (articulation points, simplified)
+ *   - indirectDeps: top nodes with the most indirect (non-direct) dependencies
+ */
+function computeTransitiveDeps(depGraph) {
+  // Build adjacency list
+  const adj = {};     // forward edges
+  const revAdj = {};  // reverse edges
+  const nodes = new Set();
+
+  for (const n of depGraph.nodes) {
+    nodes.add(n.path);
+    adj[n.path] = [];
+    revAdj[n.path] = [];
+  }
+  for (const edge of depGraph.edges) {
+    if (adj[edge.from]) adj[edge.from].push(edge.to);
+    if (revAdj[edge.to]) revAdj[edge.to].push(edge.from);
+    nodes.add(edge.from);
+    nodes.add(edge.to);
+  }
+  for (const n of nodes) {
+    if (!adj[n]) adj[n] = [];
+    if (!revAdj[n]) revAdj[n] = [];
+  }
+
+  const allNodes = [...nodes];
+
+  // BFS to compute reachable set (transitive fan-out) for each node
+  const reachable = {}; // node → Set of reachable nodes
+  const directDeps = {}; // node → Set of direct deps
+
+  for (const n of allNodes) {
+    directDeps[n] = new Set(adj[n]);
+    // BFS
+    const visited = new Set();
+    const queue = [n];
+    visited.add(n);
+    while (queue.length > 0) {
+      const current = queue.shift();
+      for (const neighbor of adj[current] || []) {
+        if (!visited.has(neighbor)) {
+          visited.add(neighbor);
+          queue.push(neighbor);
+        }
+      }
+    }
+    visited.delete(n); // exclude self
+    reachable[n] = visited;
+  }
+
+  // Compute transitive fan-in (reverse reachability)
+  const reaching = {}; // node → Set of nodes that can reach it
+  for (const n of allNodes) {
+    const visited = new Set();
+    const queue = [n];
+    visited.add(n);
+    while (queue.length > 0) {
+      const current = queue.shift();
+      for (const neighbor of revAdj[current] || []) {
+        if (!visited.has(neighbor)) {
+          visited.add(neighbor);
+          queue.push(neighbor);
+        }
+      }
+    }
+    visited.delete(n);
+    reaching[n] = visited;
+  }
+
+  // Top nodes by transitive fan-out (largest blast radius)
+  const topTransitiveFanOut = allNodes
+    .map((n) => ({ path: n, directCount: directDeps[n].size, transitiveCount: reachable[n].size, indirectOnly: reachable[n].size - directDeps[n].size }))
+    .filter((x) => x.transitiveCount > 0)
+    .sort((a, b) => b.transitiveCount - a.transitiveCount)
+    .slice(0, 15);
+
+  // Top nodes by transitive fan-in (most depended-on, including indirect)
+  const topTransitiveFanIn = allNodes
+    .map((n) => ({ path: n, directCount: (revAdj[n] || []).length, transitiveCount: reaching[n].size, indirectOnly: reaching[n].size - (revAdj[n] || []).length }))
+    .filter((x) => x.transitiveCount > 0)
+    .sort((a, b) => b.transitiveCount - a.transitiveCount)
+    .slice(0, 15);
+
+  // Bridge modules: nodes that if you look at their reachable set,
+  // they are the sole connector between otherwise disconnected groups.
+  // Simplified heuristic: a node is a "bridge" if it has both high fan-in AND high fan-out
+  // AND many of its transitive connections are indirect (not direct).
+  const bridgeModules = allNodes
+    .map((n) => {
+      const r = reachable[n];
+      const ri = reaching[n];
+      // Bridge score: product of direct fan-in and fan-out, weighted by indirect ratio
+      const directOut = directDeps[n].size;
+      const directIn = (revAdj[n] || []).length;
+      const bridgeScore = directOut * directIn * (r.size > 0 ? (r.size - directOut) / r.size : 0);
+      return { path: n, directIn, directOut, transitiveIn: ri.size, transitiveOut: r.size, bridgeScore: +bridgeScore.toFixed(1) };
+    })
+    .filter((x) => x.bridgeScore > 0)
+    .sort((a, b) => b.bridgeScore - a.bridgeScore)
+    .slice(0, 10);
+
+  // Average path length and graph diameter
+  const allReachableCounts = allNodes.map((n) => reachable[n].size);
+  const avgReachable = allReachableCounts.length > 0 ? +(allReachableCounts.reduce((a, b) => a + b, 0) / allReachableCounts.length).toFixed(1) : 0;
+  const maxReachable = Math.max(0, ...allReachableCounts);
+
+  // Disconnected subgraph detection
+  const subgraphs = findDisconnectedSubgraphs(allNodes, adj);
+
+  return {
+    topTransitiveFanOut,
+    topTransitiveFanIn,
+    bridgeModules,
+    avgReachable,
+    maxReachable,
+    disconnectedSubgraphs: subgraphs.length,
+    largestSubgraphRatio: subgraphs.length > 0 ? +(Math.max(...subgraphs.map((s) => s.size)) / allNodes.length).toFixed(2) : 1,
+  };
+}
+
+/**
+ * Find disconnected subgraphs using BFS on undirected version of graph.
+ */
+function findDisconnectedSubgraphs(nodes, adj) {
+  const undirected = {};
+  for (const n of nodes) {
+    undirected[n] = new Set(adj[n] || []);
+  }
+  // Make undirected
+  for (const n of nodes) {
+    for (const neighbor of undirected[n]) {
+      if (!undirected[neighbor]) undirected[neighbor] = new Set();
+      undirected[neighbor].add(n);
+    }
+  }
+
+  const visited = new Set();
+  const subgraphs = [];
+
+  for (const n of nodes) {
+    if (visited.has(n)) continue;
+    const component = new Set();
+    const queue = [n];
+    while (queue.length > 0) {
+      const current = queue.shift();
+      if (visited.has(current)) continue;
+      visited.add(current);
+      component.add(current);
+      for (const neighbor of undirected[current] || []) {
+        if (!visited.has(neighbor)) queue.push(neighbor);
+      }
+    }
+    subgraphs.push(component);
+  }
+
+  return subgraphs;
+}
+
+// ── Git churn analysis ──────────────────────────────────────────────────────
+
+/**
+ * Analyze git commit history to compute file change frequency (churn).
+ * Cross-references churn with file size to identify change hotspots.
+ *
+ * @param {string} projectRoot
+ * @param {object} opts - { timeWindow: '30 days' | '90 days' | 'all' }
+ */
+function computeGitChurn(projectRoot, files, opts = {}) {
+  const timeWindow = opts.timeWindow || "90 days";
+  const fileSet = new Set(files.map((f) => f.relPath));
+
+  let gitOutput;
+  try {
+    const args = ["log", `--since="${timeWindow} ago"`, "--diff-filter=M", "--name-only", "--pretty=format:", "--", "."];
+    gitOutput = execSync(`git -C "${projectRoot}" ${args.join(" ")}`, { encoding: "utf-8", timeout: 5000 });
+  } catch {
+    return { available: false, reason: "git command failed or timed out" };
+  }
+
+  // Parse git output: each line is a changed file path
+  const changedFiles = gitOutput
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
+
+  // Count changes per file
+  const churnCount = {};
+  for (const f of changedFiles) {
+    churnCount[f] = (churnCount[f] || 0) + 1;
+  }
+
+  // Cross-reference with project files
+  const fileMap = new Map(files.map((f) => [f.relPath, f]));
+  const hotFiles = [];
+
+  for (const [path, count] of Object.entries(churnCount)) {
+    if (!fileMap.has(path)) continue; // outside scope
+    const file = fileMap.get(path);
+    // Heat index: churn × log2(size in KB + 1) — balances size and frequency
+    const sizeKB = file.size / 1024;
+    const heatIndex = +(count * Math.log2(sizeKB + 1)).toFixed(1);
+    hotFiles.push({
+      path,
+      size: file.size,
+      churnCount: count,
+      heatIndex,
+    });
+  }
+
+  hotFiles.sort((a, b) => b.heatIndex - a.heatIndex);
+
+  // Summary
+  const totalChanges = hotFiles.reduce((s, f) => s + f.churnCount, 0);
+  const filesChanged = hotFiles.length;
+  const filesUnchanged = files.length - filesChanged;
+  const topHotFiles = hotFiles.slice(0, 20);
+
+  // Churn buckets
+  const churnBuckets = { "0": 0, "1-2": 0, "3-5": 0, "6-10": 0, "11-20": 0, "20+": 0 };
+  for (const f of hotFiles) {
+    if (f.churnCount === 0) churnBuckets["0"]++;
+    else if (f.churnCount <= 2) churnBuckets["1-2"]++;
+    else if (f.churnCount <= 5) churnBuckets["3-5"]++;
+    else if (f.churnCount <= 10) churnBuckets["6-10"]++;
+    else if (f.churnCount <= 20) churnBuckets["11-20"]++;
+    else churnBuckets["20+"]++;
+  }
+
+  return {
+    available: true,
+    timeWindow,
+    totalChanges,
+    filesChanged,
+    filesUnchanged,
+    churnRate: files.length > 0 ? +((filesChanged / files.length) * 100).toFixed(1) : 0,
+    topHotFiles,
+    churnBuckets,
+  };
+}
+
+// ── Architecture layer detection ─────────────────────────────────────────────
+
+/**
+ * Detect architectural layers based on dependency direction.
+ *
+ * Layer assignment (topological):
+ *   - Layer 0 (Entry): files with no incoming dependencies (fan-in = 0)
+ *   - Layer N (Foundation): files with no outgoing dependencies (fan-out = 0)
+ *   - Middle layers: everything else, ordered by dependency distance from entry
+ *
+ * Layer violation: a lower layer (higher layer number) depending on an upper layer
+ * (lower layer number). This is the "downward dependency rule" — foundations
+ * should not depend on entries.
+ */
+function detectLayers(files, depGraph) {
+  if (depGraph.edges.length === 0) return { layers: [], violations: [], layerCount: 0 };
+
+  // Compute fan-in and fan-out for each node
+  const fanIn = {};
+  const fanOut = {};
+  const adj = {};
+  const revAdj = {};
+
+  for (const n of depGraph.nodes) {
+    fanIn[n.path] = 0;
+    fanOut[n.path] = 0;
+    adj[n.path] = [];
+    revAdj[n.path] = [];
+  }
+  for (const edge of depGraph.edges) {
+    if (fanIn[edge.to] !== undefined) fanIn[edge.to]++;
+    if (fanOut[edge.from] !== undefined) fanOut[edge.from]++;
+    if (adj[edge.from]) adj[edge.from].push(edge.to);
+    if (revAdj[edge.to]) revAdj[edge.to].push(edge.from);
+  }
+
+  const allNodes = depGraph.nodes.map((n) => n.path);
+
+  // Compute topological layer using BFS from entry nodes (fan-in = 0)
+  const entryNodes = allNodes.filter((n) => fanIn[n] === 0);
+  const layerAssignment = {};
+  const queue = entryNodes.map((n) => ({ node: n, layer: 0 }));
+
+  while (queue.length > 0) {
+    const { node, layer } = queue.shift();
+    if (layerAssignment[node] !== undefined && layerAssignment[node] <= layer) continue;
+    layerAssignment[node] = layer;
+    for (const neighbor of adj[node] || []) {
+      if (layerAssignment[neighbor] === undefined || layerAssignment[neighbor] < layer + 1) {
+        queue.push({ node: neighbor, layer: layer + 1 });
+      }
+    }
+  }
+
+  // Assign remaining unassigned nodes
+  for (const n of allNodes) {
+    if (layerAssignment[n] === undefined) layerAssignment[n] = 0;
+  }
+
+  const maxLayer = Math.max(0, ...Object.values(layerAssignment));
+
+  // Detect layer violations: lower layer (higher number) → upper layer (lower number)
+  const violations = [];
+  for (const edge of depGraph.edges) {
+    const fromLayer = layerAssignment[edge.from] ?? 0;
+    const toLayer = layerAssignment[edge.to] ?? 0;
+    // Violation: depending upward (from lower to upper layer)
+    if (fromLayer > toLayer) {
+      violations.push({
+        from: edge.from,
+        to: edge.to,
+        fromLayer,
+        toLayer,
+        gap: fromLayer - toLayer,
+        type: edge.type || "import",
+      });
+    }
+  }
+
+  // Group nodes by layer
+  const layerGroups = {};
+  for (const n of allNodes) {
+    const l = layerAssignment[n] ?? 0;
+    if (!layerGroups[l]) layerGroups[l] = [];
+    layerGroups[l].push(n);
+  }
+
+  // Layer metrics
+  const layers = Object.entries(layerGroups)
+    .map(([layer, nodeList]) => ({
+      layer: parseInt(layer),
+      nodeCount: nodeList.length,
+      // Find representative files (largest in this layer)
+      representatives: nodeList
+        .map((n) => {
+          const node = depGraph.nodes.find((nd) => nd.path === n);
+          return { path: n, size: node ? node.size : 0 };
+        })
+        .sort((a, b) => b.size - a.size)
+        .slice(0, 5)
+        .map((x) => x.path.split("/").pop()),
+      // Ratio of intra-layer edges vs cross-layer
+      avgFanOut: nodeList.length > 0 ? +(nodeList.reduce((s, n) => s + (fanOut[n] || 0), 0) / nodeList.length).toFixed(1) : 0,
+    }))
+    .sort((a, b) => a.layer - b.layer);
+
+  // Violation severity summary
+  const severeViolations = violations.filter((v) => v.gap > 1).length;
+
+  return {
+    layers,
+    violations: violations.slice(0, 20), // top 20
+    violationCount: violations.length,
+    severeViolations,
+    layerCount: layers.length,
+    maxLayer,
+    entryNodeCount: entryNodes.length,
+  };
+}
+
 // ── Statistics ─────────────────────────────────────────────────────────────
 
-function computeStats(files, depGraph) {
+function computeStats(files, depGraph, opts = {}) {
+  const { projectRoot } = opts;
+
   // Largest files
   const largestFiles = [...files]
     .sort((a, b) => b.size - a.size)
@@ -364,7 +1217,7 @@ function computeStats(files, depGraph) {
     .slice(0, DEP_RANK_TOP_N)
     .map(([path, count]) => ({ path, count }));
 
-  // Circular dependency detection (simple DFS)
+  // Circular dependency detection (DFS-based)
   const circularDeps = detectCircularDeps(depGraph);
 
   // Total
@@ -377,6 +1230,41 @@ function computeStats(files, depGraph) {
     .sort((a, b) => b.size - a.size)
     .map((f) => ({ path: f.relPath, size: f.size }));
 
+  // New: orphan file detection
+  const orphanFiles = detectOrphanFiles(files, depGraph);
+
+  // New: barrel file detection
+  const barrelFiles = projectRoot ? detectBarrelFiles(files, projectRoot) : [];
+
+  // New: size histogram
+  const sizeHistogram = computeHistogram(files);
+
+  // New: dependency depth analysis
+  const { maxDepth } = computeDepths(depGraph);
+
+  // New: directory depth distribution
+  const depthDist = {};
+  for (const f of files) {
+    const depth = f.relPath.split("/").length;
+    const bucket = depth <= 1 ? "1" : depth <= 2 ? "2" : depth <= 3 ? "3" : depth <= 5 ? "4-5" : depth <= 8 ? "6-8" : "9+";
+    depthDist[bucket] = (depthDist[bucket] || 0) + 1;
+  }
+
+  // New: duplicate file detection
+  const duplicates = projectRoot ? detectDuplicates(files, projectRoot) : [];
+
+  // New: package-level metrics (Robert Martin I/A/D) + file coupling
+  const packageMetrics = depGraph.edges.length > 0 ? computePackageMetrics(files, depGraph) : { packages: [], fileCoupling: [], edgeCount: 0, packageCount: 0 };
+
+  // New: transitive dependency analysis
+  const transitiveDeps = depGraph.edges.length > 0 ? computeTransitiveDeps(depGraph) : null;
+
+  // New: git churn analysis (if projectRoot available and git repo)
+  const gitChurn = projectRoot ? computeGitChurn(projectRoot, files, { timeWindow: "90 days" }) : null;
+
+  // New: architecture layer detection
+  const layerAnalysis = depGraph.edges.length > 0 ? detectLayers(files, depGraph) : null;
+
   return {
     largestFiles,
     sizeByExt,
@@ -387,6 +1275,16 @@ function computeStats(files, depGraph) {
     totalSize,
     totalFiles,
     oversizedFiles,
+    orphanFiles,
+    barrelFiles,
+    sizeHistogram,
+    maxDependencyDepth: maxDepth || 0,
+    depthDist,
+    duplicates,
+    packageMetrics,
+    transitiveDeps,
+    gitChurn,
+    layerAnalysis,
   };
 }
 
@@ -505,12 +1403,13 @@ function buildTreemapData(files) {
 /**
  * Generate a self-contained HTML report.
  */
-function generateHtml(data, meta) {
+function generateHtml(data, meta, diff) {
   const { treemapData, depGraph, stats } = data;
   const treemapJson = JSON.stringify(treemapData);
   const depNodesJson = JSON.stringify(depGraph.nodes);
   const depEdgesJson = JSON.stringify(depGraph.edges);
   const statsJson = JSON.stringify(stats);
+  const diffJson = diff ? JSON.stringify(diff) : "null";
 
   return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -706,6 +1605,68 @@ function generateHtml(data, meta) {
   #sidebar::-webkit-scrollbar { width: 4px; }
   #sidebar::-webkit-scrollbar-track { background: transparent; }
   #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Color legend */
+  #legend {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(30,31,43,.92);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 10px;
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  #legend .legend-item { display:flex; align-items:center; gap:5px; }
+  #legend .legend-swatch { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+  #legend .legend-label { color: var(--text-dim); white-space:nowrap; }
+
+  /* Histogram bars in sidebar */
+  .histo-bar-wrap { display:flex; align-items:center; gap:6px; margin:2px 0; font-size:11px; }
+  .histo-bar-wrap .histo-label { width:80px; text-align:right; flex-shrink:0; color: var(--text-dim); }
+  .histo-bar-wrap .histo-bar {
+    height: 14px;
+    background: linear-gradient(90deg, var(--accent), var(--info));
+    border-radius: 2px;
+    min-width: 2px;
+    transition: width .3s;
+  }
+  .histo-bar-wrap .histo-count { margin-left:4px; color: var(--text-dim); flex-shrink:0; }
+
+  /* Diff indicators */
+  .diff-up { color: var(--danger); }
+  .diff-down { color: var(--ok); }
+  .diff-neutral { color: var(--text-dim); }
+
+  /* Search input */
+  #file-search {
+    width: 100%;
+    padding: 4px 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 3px;
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+  #file-search::placeholder { color: var(--text-dim); }
+
+  /* Trend summary card */
+  .trend-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+  .trend-card .trend-title { font-size:12px; font-weight:600; color: var(--info); margin-bottom:4px; }
+  .trend-card .trend-row { font-size:11px; color: var(--text-dim); }
 </style>
 </head>
 <body>
@@ -729,11 +1690,16 @@ function generateHtml(data, meta) {
 <div id="main">
   <div id="vis"></div>
   <div id="sidebar">
-    ${renderSidebar(stats)}
+    <input id="file-search" type="text" placeholder="🔍 Filter files..." oninput="filterSidebar(this.value)">
+    <div id="sidebar-content">
+      ${renderSidebar(stats, diff)}
+    </div>
   </div>
 </div>
 
 <div id="tooltip"></div>
+  <div id="legend"></div>
+  <div id="breadcrumb"></div>
 
 <script>
 // ── Data ─────────────────────────────────────────────────────────────
@@ -741,6 +1707,8 @@ const TREEMAP_DATA = ${treemapJson};
 const DEP_NODES = ${depNodesJson};
 const DEP_EDGES = ${depEdgesJson};
 const STATS = ${statsJson};
+const DIFF = ${diffJson};
+const PKG_METRICS = ${JSON.stringify(stats.packageMetrics || { packages: [], fileCoupling: [], edgeCount: 0, packageCount: 0 })};
 
 // ── D3 setup ─────────────────────────────────────────────────────────
 const vis = d3.select("#vis");
@@ -847,10 +1815,41 @@ function renderTreemap() {
   // Breadcrumb (root = all files)
   updateBreadcrumb([TREEMAP_DATA]);
 
+  // Color legend
+  renderLegend();
+
   // Store zoom for reset
   vis.node()._zoom = zoom;
   vis.node()._svg = svg;
   vis.node()._g = g;
+}
+
+// ── Color Legend ─────────────────────────────────────────────────────
+function renderLegend() {
+  // Build extension → total size map for legend
+  const extSizes = {};
+  const leaves = d3.hierarchy(TREEMAP_DATA).leaves();
+  for (const d of leaves) {
+    const ext = d.data.ext || "dir";
+    extSizes[ext] = (extSizes[ext] || 0) + (d.data.value || 0);
+  }
+  const entries = Object.entries(extSizes)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 15);
+
+  const legend = d3.select("#legend");
+  legend.html("");
+  legend.style("display", currentView === "treemap" ? "flex" : "none");
+
+  for (const [ext, size] of entries) {
+    const item = legend.append("div").attr("class", "legend-item");
+    item.append("div")
+      .attr("class", "legend-swatch")
+      .style("background", getExtColor(ext === "(no ext)" ? "dir" : ext));
+    item.append("span")
+      .attr("class", "legend-label")
+      .text(ext + " (" + formatB(size) + ")");
+  }
 }
 
 // ── Dependency Graph ─────────────────────────────────────────────────
@@ -1024,7 +2023,11 @@ function switchView(view) {
   d3.select("#btn-graph").classed("active", view === "graph");
 
   if (view === "treemap") renderTreemap();
-  else renderGraph();
+  else {
+    d3.select("#legend").style("display", "none");
+    d3.select("#breadcrumb").html("");
+    renderGraph();
+  }
 }
 
 function resetZoom() {
@@ -1033,6 +2036,42 @@ function resetZoom() {
   if (svg && zoom) {
     svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
   }
+}
+
+// ── Sidebar search filter ────────────────────────────────────────────
+function filterSidebar(query) {
+  const content = d3.select("#sidebar-content");
+  const rows = content.selectAll(".stat-row");
+  const headings = content.selectAll("h3");
+  const bars = content.selectAll(".ext-bar-wrap, .histo-bar-wrap");
+  const cards = content.selectAll(".trend-card");
+
+  const q = (query || "").toLowerCase().trim();
+
+  if (!q) {
+    // Show all
+    rows.style("display", "flex");
+    headings.style("display", "block");
+    bars.style("display", "flex");
+    cards.style("display", "block");
+    return;
+  }
+
+  // Filter rows
+  rows.style("display", function() {
+    const text = (this.textContent || "").toLowerCase();
+    return text.includes(q) ? "flex" : "none";
+  });
+
+  // Filter bars
+  bars.style("display", function() {
+    const text = (this.textContent || "").toLowerCase();
+    return text.includes(q) ? "flex" : "none";
+  });
+
+  // Show all headings and cards (they provide context)
+  headings.style("display", "block");
+  cards.style("display", "block");
 }
 
 // ── Init ─────────────────────────────────────────────────────────────
@@ -1048,8 +2087,8 @@ window.addEventListener("resize", () => {
 </html>`;
 }
 
-function renderSidebar(stats) {
-  const { largestFiles, sizeByExt, sizeByDir, mostDependedOn, mostDependencies, circularDeps, oversizedFiles } = stats;
+function renderSidebar(stats, diff) {
+  const { largestFiles, sizeByExt, sizeByDir, mostDependedOn, mostDependencies, circularDeps, oversizedFiles, orphanFiles, barrelFiles, sizeHistogram, maxDependencyDepth, depthDist, duplicates, packageMetrics, transitiveDeps, gitChurn, layerAnalysis } = stats;
 
   const extEntries = Object.entries(sizeByExt).sort((a, b) => b[1] - a[1]);
   const maxExtSize = extEntries.length > 0 ? extEntries[0][1] : 1;
@@ -1057,14 +2096,34 @@ function renderSidebar(stats) {
 
   let html = "";
 
-  // Largest files
+  // ── Trend diff card (if diff data available) ──
+  if (diff && diff.hasBaseline) {
+    const deltaCls = diff.sizeDeltaPercent > 0 ? "diff-up" : diff.sizeDeltaPercent < 0 ? "diff-down" : "diff-neutral";
+    const arrow = diff.sizeDeltaPercent > 0 ? "↑" : diff.sizeDeltaPercent < 0 ? "↓" : "→";
+    html += `<h3>📈 Trend vs Baseline</h3>`;
+    html += `<div class="trend-card">`;
+    html += `<div class="trend-title">${escapeHtml(diff.baselineDate)}</div>`;
+    html += `<div class="trend-row">Total size: <span class="${deltaCls}">${arrow} ${Math.abs(diff.sizeDeltaPercent).toFixed(1)}% (${formatBytes(Math.abs(diff.sizeDelta))})</span></div>`;
+    html += `<div class="trend-row">+${diff.newFiles.length} new · −${diff.deletedFiles.length} deleted · ${diff.changedFiles.length} changed</div>`;
+    if (diff.changedFiles.length > 0) {
+      html += `<div class="trend-row" style="margin-top:4px; color:var(--text-dim)">Top changes:</div>`;
+      for (const f of diff.changedFiles.slice(0, 5)) {
+        const fCls = f.deltaPercent > 0 ? "diff-up" : "diff-down";
+        const fArrow = f.deltaPercent > 0 ? "↑" : "↓";
+        html += `<div class="stat-row"><span class="label" title="${escapeHtml(f.path)}">${escapeHtml(f.path.split("/").pop())}</span><span class="value ${fCls}">${fArrow} ${formatBytes(Math.abs(f.delta))}</span></div>`;
+      }
+    }
+    html += `</div>`;
+  }
+
+  // ── Largest files ──
   html += `<h3>📏 Top Largest Files</h3>`;
   for (const f of largestFiles.slice(0, 15)) {
     const cls = f.size > 500_000 ? "danger" : f.size > 100_000 ? "warn" : "";
     html += `<div class="stat-row"><span class="label" title="${escapeHtml(f.path)}">${escapeHtml(f.path.split("/").slice(-2).join("/"))}</span><span class="value ${cls}">${formatBytes(f.size)}</span></div>`;
   }
 
-  // Oversized files warning
+  // ── Oversized files warning ──
   if (oversizedFiles.length > 0) {
     html += `<h3>⚠️ Oversized Files (&gt;500KB)</h3>`;
     for (const f of oversizedFiles) {
@@ -1072,20 +2131,38 @@ function renderSidebar(stats) {
     }
   }
 
-  // By extension
+  // ── Size histogram ──
+  if (sizeHistogram && Object.keys(sizeHistogram).length > 0) {
+    html += `<h3>📊 Size Distribution</h3>`;
+    const maxCount = Math.max(1, ...Object.values(sizeHistogram));
+    for (const [bucket, count] of Object.entries(sizeHistogram)) {
+      const pct = ((count / maxCount) * 100).toFixed(1);
+      html += `<div class="histo-bar-wrap"><span class="histo-label">${escapeHtml(bucket)}</span><div class="histo-bar" style="width:${Math.max(pct, 1)}%"></div><span class="histo-count">${count} files</span></div>`;
+    }
+  }
+
+  // ── By extension ──
   html += `<h3>📦 By Extension</h3>`;
   for (const [ext, size] of extEntries.slice(0, 12)) {
     const pct = ((size / maxExtSize) * 100).toFixed(1);
     html += `<div class="ext-bar-wrap"><span class="ext-label">${escapeHtml(ext)}</span><div class="ext-bar" style="width:${Math.max(pct, 1)}%"></div><span class="ext-size">${formatBytes(size)}</span></div>`;
   }
 
-  // By directory
+  // ── By directory ──
   html += `<h3>📁 By Directory</h3>`;
   for (const [dir, size] of dirEntries.slice(0, 10)) {
     html += `<div class="stat-row"><span class="label">${escapeHtml(dir)}/</span><span class="value">${formatBytes(size)}</span></div>`;
   }
 
-  // Most depended-on
+  // ── Directory depth distribution ──
+  if (depthDist && Object.keys(depthDist).length > 0) {
+    html += `<h3>📐 Directory Depth</h3>`;
+    for (const [depth, count] of Object.entries(depthDist)) {
+      html += `<div class="stat-row"><span class="label">Depth ${escapeHtml(depth)}</span><span class="value">${count} files</span></div>`;
+    }
+  }
+
+  // ── Most depended-on (fan-in) ──
   if (mostDependedOn.length > 0) {
     html += `<h3>🔥 Most Depended On (fan-in)</h3>`;
     for (const d of mostDependedOn) {
@@ -1093,7 +2170,7 @@ function renderSidebar(stats) {
     }
   }
 
-  // Most dependencies
+  // ── Most dependencies (fan-out) ──
   if (mostDependencies.length > 0) {
     html += `<h3>📤 Most Dependencies (fan-out)</h3>`;
     for (const d of mostDependencies) {
@@ -1101,11 +2178,115 @@ function renderSidebar(stats) {
     }
   }
 
-  // Circular dependencies
+  // ── Max dependency depth ──
+  if (maxDependencyDepth > 0) {
+    html += `<h3>📏 Max Dependency Depth</h3>`;
+    html += `<div class="stat-row"><span class="label">Longest chain</span><span class="value">${maxDependencyDepth} hops</span></div>`;
+  }
+
+  // ── Circular dependencies ──
   if (circularDeps.length > 0) {
     html += `<h3>🔄 Circular Dependencies</h3>`;
     for (const cycle of circularDeps.slice(0, 5)) {
       html += `<div class="stat-row"><span class="label" style="color:var(--warn)">${escapeHtml(cycle.join(" → "))}</span></div>`;
+    }
+  }
+
+  // ── Orphan files ──
+  if (orphanFiles && orphanFiles.length > 0) {
+    html += `<h3>👻 Orphan Files (not imported)</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Files that aren't imported by any other file (may be dead code)</span></div>`;
+    for (const f of orphanFiles.slice(0, 10)) {
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(f.path)}">${escapeHtml(f.path.split("/").slice(-2).join("/"))}</span><span class="value" style="color:var(--text-dim)">${formatBytes(f.size)}</span></div>`;
+    }
+  }
+
+  // ── Barrel files ──
+  if (barrelFiles && barrelFiles.length > 0) {
+    html += `<h3>📦 Barrel Files (re-export hubs)</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Files that primarily re-export from other modules</span></div>`;
+    for (const f of barrelFiles.slice(0, 10)) {
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(f.path)}">${escapeHtml(f.path.split("/").pop())}</span><span class="value">${f.reExportCount}/${f.totalImportCount} re-exports</span></div>`;
+    }
+  }
+
+  // ── Duplicate files ──
+  if (duplicates && duplicates.length > 0) {
+    const totalWasted = duplicates.reduce((s, d) => s + (d.wastedBytes || 0), 0);
+    html += `<h3>🟰 Duplicate Files</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--warn);font-size:10px">${duplicates.length} groups · ${formatBytes(totalWasted)} wasted</span></div>`;
+    for (const g of duplicates.slice(0, 8)) {
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(g.files.join(', '))}">${escapeHtml(g.files[0].split('/').pop())} ×${g.count}</span><span class="value" style="color:var(--warn)">${formatBytes(g.wastedBytes)} wasted</span></div>`;
+    }
+  }
+
+  // ── Package metrics (I/A/D) ──
+  if (packageMetrics && packageMetrics.packages && packageMetrics.packages.length > 0) {
+    html += `<h3>📐 Package Metrics (I/A/D)</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Robert Martin instability/abstractness — ${packageMetrics.packageCount} packages</span></div>`;
+    const painPkgs = packageMetrics.packages.filter((p) => p.zone === "zone-of-pain");
+    const uselessPkgs = packageMetrics.packages.filter((p) => p.zone === "zone-of-uselessness");
+    const showPkgs = [...painPkgs, ...uselessPkgs, ...packageMetrics.packages.filter((p) => p.zone === "main-sequence")].slice(0, 10);
+    for (const p of showPkgs) {
+      const zoneCls = p.zone === "zone-of-pain" ? "danger" : p.zone === "zone-of-uselessness" ? "warn" : "";
+      const zoneLabel = p.zone === "zone-of-pain" ? "⚡Pain" : p.zone === "zone-of-uselessness" ? "💨Useless" : "";
+      html += `<div class="stat-row"><span class="label" title="I=${p.I} A=${p.A} D=${p.D} Cohesion=${p.cohesion}">${escapeHtml(p.package)}</span><span class="value ${zoneCls}">D=${p.D} ${zoneLabel}</span></div>`;
+    }
+  }
+
+  // ── Transitive dependency analysis ──
+  if (transitiveDeps && transitiveDeps.topTransitiveFanOut && transitiveDeps.topTransitiveFanOut.length > 0) {
+    html += `<h3>🔗 Transitive Dependencies</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Avg ${transitiveDeps.avgReachable} reachable · Max ${transitiveDeps.maxReachable} · ${transitiveDeps.disconnectedSubgraphs} subgraphs</span></div>`;
+    // Top transitive fan-out (largest blast radius)
+    if (transitiveDeps.topTransitiveFanOut.length > 0) {
+      html += `<div style="color:var(--text-dim);font-size:10px;margin:2px 0;padding-left:8px">Largest blast radius:</div>`;
+      for (const f of transitiveDeps.topTransitiveFanOut.slice(0, 5)) {
+        html += `<div class="stat-row"><span class="label" title="${escapeHtml(f.path)}">${escapeHtml(f.path.split("/").pop())}</span><span class="value">${f.transitiveCount} reachable (${f.directCount} direct)</span></div>`;
+      }
+    }
+    // Bridge modules
+    if (transitiveDeps.bridgeModules && transitiveDeps.bridgeModules.length > 0) {
+      html += `<div style="color:var(--text-dim);font-size:10px;margin:2px 0;padding-left:8px">Bridge connectors:</div>`;
+      for (const b of transitiveDeps.bridgeModules.slice(0, 5)) {
+        html += `<div class="stat-row"><span class="label" title="${escapeHtml(b.path)}">${escapeHtml(b.path.split("/").pop())}</span><span class="value" style="color:var(--info)">↔${b.bridgeScore}</span></div>`;
+      }
+    }
+  }
+
+  // ── Git churn hotspots ──
+  if (gitChurn && gitChurn.available && gitChurn.topHotFiles && gitChurn.topHotFiles.length > 0) {
+    html += `<h3>📜 Change Hotspots (${escapeHtml(gitChurn.timeWindow)})</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${gitChurn.filesChanged} files changed · ${gitChurn.totalChanges} commits · ${gitChurn.churnRate}% churn rate</span></div>`;
+    for (const f of gitChurn.topHotFiles.slice(0, 8)) {
+      const cls = f.heatIndex > 100 ? "danger" : f.heatIndex > 50 ? "warn" : "";
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(f.path)}">${escapeHtml(f.path.split("/").slice(-2).join("/"))}</span><span class="value ${cls}">🔥${f.heatIndex} (${f.churnCount}×)</span></div>`;
+    }
+    // Churn distribution
+    if (gitChurn.churnBuckets) {
+      html += `<div style="color:var(--text-dim);font-size:10px;margin:4px 0;padding-left:8px">Churn distribution: `;
+      const parts = [];
+      for (const [bucket, count] of Object.entries(gitChurn.churnBuckets)) {
+        if (count > 0) parts.push(`${bucket}: ${count}`);
+      }
+      html += escapeHtml(parts.join(" · "));
+      html += `</div>`;
+    }
+  }
+
+  // ── Architecture layer analysis ──
+  if (layerAnalysis && layerAnalysis.layers && layerAnalysis.layers.length > 0) {
+    html += `<h3>🏗️ Architecture Layers</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${layerAnalysis.layerCount} layers (max depth ${layerAnalysis.maxLayer}) · ${layerAnalysis.violationCount} violations</span></div>`;
+    for (const l of layerAnalysis.layers) {
+      const label = l.layer === 0 ? "Entry" : l.layer === layerAnalysis.maxLayer ? "Foundation" : `Layer ${l.layer}`;
+      html += `<div class="stat-row"><span class="label">L${l.layer} ${escapeHtml(label)}</span><span class="value">${l.nodeCount} files · fan-out ${l.avgFanOut}</span></div>`;
+    }
+    if (layerAnalysis.violations.length > 0) {
+      html += `<div style="color:var(--warn);font-size:10px;margin:4px 0;padding-left:8px">⚠ Top violations (upward deps):</div>`;
+      for (const v of layerAnalysis.violations.slice(0, 5)) {
+        html += `<div class="stat-row"><span class="label" style="color:var(--warn);font-size:10px" title="${escapeHtml(v.from)} → ${escapeHtml(v.to)}">L${v.fromLayer}→L${v.toLayer}: ${escapeHtml(v.from.split('/').pop())} → ${escapeHtml(v.to.split('/').pop())}</span></div>`;
+      }
     }
   }
 
@@ -1151,11 +2332,37 @@ function main() {
   const files = walkDir(targetDir, { scopeGlob: args.scope });
   const generatedAt = new Date().toISOString().replace("T", " ").slice(0, 19);
 
-  // Build dependency graph (only for parsable files)
+  // Build dependency graph (only for parsable files, skip if --scope used)
   const depGraph = args.scope ? { nodes: [], edges: [] } : buildDepGraph(files, projectRoot);
 
-  // Compute statistics
-  const stats = computeStats(files, depGraph);
+  // Compute statistics (with projectRoot for barrel detection)
+  const stats = computeStats(files, depGraph, { projectRoot });
+
+  // ── Baseline & Diff ──
+  let baseline = null;
+  let diff = null;
+
+  if (args.diff) {
+    baseline = loadBaseline(projectRoot);
+    if (baseline) {
+      diff = computeDiff(files, depGraph.edges, baseline);
+    }
+  }
+
+  if (args.saveBaseline) {
+    const baselineData = {
+      meta: {
+        projectName,
+        generatedAt,
+        totalFiles: stats.totalFiles,
+        totalSize: stats.totalSize,
+        analysisVersion: ANALYSIS_VERSION,
+      },
+      files: files.map((f) => ({ path: f.relPath, size: f.size, ext: f.ext })),
+      dependencies: depGraph.edges,
+    };
+    const baselinePath = saveBaseline(projectRoot, baselineData);
+  }
 
   // JSON output mode
   if (args.json) {
@@ -1167,20 +2374,33 @@ function main() {
         totalFiles: stats.totalFiles,
         totalSize: stats.totalSize,
         totalSizeFormatted: formatBytes(stats.totalSize),
+        analysisVersion: ANALYSIS_VERSION,
       },
       files: files.map((f) => ({ path: f.relPath, size: f.size, ext: f.ext })),
       directories: Object.entries(stats.sizeByDir)
         .sort((a, b) => b[1] - a[1])
-        .map(([dir, size]) => ({ path: dir, size })),
+        .map(([dir, size]) => ({ path: dir, size, fileCount: 0 })),
       dependencies: depGraph.edges,
       stats: {
         largestFiles: stats.largestFiles,
         mostDependedOn: stats.mostDependedOn,
         mostDependencies: stats.mostDependencies,
         sizeByExt: stats.sizeByExt,
+        sizeByDir: stats.sizeByDir,
         circularDeps: stats.circularDeps,
         oversizedFiles: stats.oversizedFiles,
+        orphanFiles: stats.orphanFiles,
+        barrelFiles: stats.barrelFiles,
+        sizeHistogram: stats.sizeHistogram,
+        maxDependencyDepth: stats.maxDependencyDepth,
+        depthDist: stats.depthDist,
+        duplicates: stats.duplicates,
+        packageMetrics: stats.packageMetrics,
+        transitiveDeps: stats.transitiveDeps,
+        gitChurn: stats.gitChurn,
+        layerAnalysis: stats.layerAnalysis,
       },
+      diff: diff || { hasBaseline: false },
     };
     console.log(JSON.stringify(jsonOutput, null, 2));
     process.exit(0);
@@ -1200,7 +2420,8 @@ function main() {
       projectName,
       generatedAt,
       targetDir,
-    }
+    },
+    diff
   );
 
   // Write report
@@ -1216,12 +2437,59 @@ function main() {
   console.log(`✅ Report generated: ${relative(process.cwd(), reportPath)}`);
   console.log(`   Files: ${stats.totalFiles} · Total size: ${formatBytes(stats.totalSize)}`);
   console.log(`   Dep graph: ${depGraph.nodes.length} nodes · ${depGraph.edges.length} edges`);
+  if (stats.maxDependencyDepth > 0) {
+    console.log(`   Max dep depth: ${stats.maxDependencyDepth} hops`);
+  }
 
   if (stats.oversizedFiles.length > 0) {
     console.log(`   ⚠️  Oversized files (>500KB): ${stats.oversizedFiles.length}`);
   }
   if (stats.circularDeps.length > 0) {
     console.log(`   ⚠️  Circular dependencies: ${stats.circularDeps.length}`);
+  }
+  if (stats.orphanFiles && stats.orphanFiles.length > 0) {
+    console.log(`   👻 Orphan files (not imported): ${stats.orphanFiles.length}`);
+  }
+  if (stats.barrelFiles && stats.barrelFiles.length > 0) {
+    console.log(`   📦 Barrel files (re-export hubs): ${stats.barrelFiles.length}`);
+  }
+  if (stats.duplicates && stats.duplicates.length > 0) {
+    const totalWasted = stats.duplicates.reduce((s, d) => s + d.wastedBytes, 0);
+    console.log(`   🟰 Duplicate files: ${stats.duplicates.length} groups · ${formatBytes(totalWasted)} wasted`);
+  }
+  if (stats.packageMetrics && stats.packageMetrics.packages.length > 0) {
+    const painCount = stats.packageMetrics.packages.filter((p) => p.zone === "zone-of-pain").length;
+    const uselessCount = stats.packageMetrics.packages.filter((p) => p.zone === "zone-of-uselessness").length;
+    if (painCount + uselessCount > 0) {
+      console.log(`   📐 Package metrics (I/A/D): ${painCount} in zone-of-pain · ${uselessCount} in zone-of-uselessness`);
+    }
+  }
+  if (stats.transitiveDeps) {
+    const td = stats.transitiveDeps;
+    console.log(`   🔗 Transitive deps: avg ${td.avgReachable} reachable · max ${td.maxReachable} · ${td.disconnectedSubgraphs} subgraphs`);
+    if (td.bridgeModules.length > 0) {
+      console.log(`   🌉 Bridge modules: ${td.bridgeModules.length} connectors`);
+    }
+  }
+  if (stats.gitChurn && stats.gitChurn.available) {
+    const gc = stats.gitChurn;
+    console.log(`   📜 Git churn (${gc.timeWindow}): ${gc.filesChanged}/${stats.totalFiles} files changed · ${gc.totalChanges} total changes · rate ${gc.churnRate}%`);
+  }
+  if (stats.layerAnalysis && stats.layerAnalysis.layerCount > 0) {
+    const la = stats.layerAnalysis;
+    console.log(`   🏗️  Architecture layers: ${la.layerCount} layers (depth ${la.maxLayer}) · ${la.violationCount} violations (${la.severeViolations} severe)`);
+  }
+
+  // Diff summary
+  if (diff && diff.hasBaseline) {
+    const deltaArrow = diff.sizeDeltaPercent > 0 ? "↑" : diff.sizeDeltaPercent < 0 ? "↓" : "→";
+    console.log(`   📈 vs baseline (${diff.baselineDate}): ${deltaArrow} ${diff.sizeDeltaPercent > 0 ? "+" : ""}${diff.sizeDeltaPercent.toFixed(1)}% (${formatBytes(Math.abs(diff.sizeDelta))})`);
+    console.log(`      +${diff.newFiles.length} new · −${diff.deletedFiles.length} deleted · ${diff.changedFiles.length} changed`);
+  }
+
+  if (args.saveBaseline) {
+    const bp = join(projectRoot, BASELINE_FILE);
+    console.log(`   💾 Baseline saved: ${relative(process.cwd(), bp)}`);
   }
 
   // Open in browser

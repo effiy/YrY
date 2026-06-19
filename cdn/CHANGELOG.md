@@ -40,21 +40,21 @@ v1.1 → v1.2:无破坏性变更。`panel-hub` 事件名 `panel-hub-select` 与 
 ## [1.1.0] - 2026-05-20
 
 ### Added
-- `theme-mono.css` — JetBrains Mono 等宽主题(Cat A:架构图/知识图谱)
+- `theme-mono/index.css` — JetBrains Mono 等宽主题(Cat A:架构图/知识图谱)
 - `fonts/jetbrains-mono-latin-{400,500,600,700}.woff2`
 - 14 设计令牌固化:Surfaces / Brand / Semantic / Text / Elevation
 - `yry-breadcrumb` / `yry-tabs-panel` / `yry-suite-toggle` 组件稳定
 
 ### Migration
-v1.0 → v1.1:Cat A 页面需新增 `fonts.css` 引用;Cat B 页面不受影响。
+v1.0 → v1.1:Cat A 页面需新增 `fonts/index.css` 引用;Cat B 页面不受影响。
 
 ---
 
 ## [1.0.0] - 2026-04-08
 
 ### Added
-- `shared.css` — Reset + 动画 + 14 组件基线
-- `theme.css` — System 主题(Cat B)
+- `shared/index.css` — Reset + 动画 + 14 组件基线
+- `theme/index.css` — System 主题(Cat B)
 - `shared.js` — YrY 全局对象,9 个 API(`toast` / `copyCmd` / `switchPanel` / `suiteToggle` / ...)
 - `package.json` — npm 包元数据,jsDelivr 同步就绪
 

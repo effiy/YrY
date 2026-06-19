@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bundle Analysis — YrY</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  :root {
+    --bg: #1e1f2b;
+    --panel-bg: #2b2d3b;
+    --border: #3d59a1;
+    --text: #a9b1d6;
+    --text-dim: #6b7089;
+    --accent: #3d59a1;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --ok: #34d399;
+    --info: #22d3ee;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  /* Header */
+  #header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: var(--panel-bg);
+    border-bottom: 1px solid var(--border);
+    height: 44px;
+    flex-shrink: 0;
+  }
+  #header h1 { font-size:15px; font-weight:600; }
+  #header .meta { font-size:12px; color: var(--text-dim); }
+
+  /* Toolbar */
+  #toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    background: #21232f;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  #toolbar button {
+    padding: 4px 12px;
+    border: 1px solid var(--border);
+    background: var(--panel-bg);
+    color: var(--text);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background .15s;
+  }
+  #toolbar button:hover { background: var(--accent); }
+  #toolbar button.active { background: var(--accent); color: #fff; }
+  #toolbar .spacer { flex:1; }
+  #toolbar .stat-badge {
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 2px 8px;
+    background: var(--panel-bg);
+    border-radius: 3px;
+  }
+
+  /* Main layout */
+  #main { display:flex; flex:1; overflow:hidden; height: calc(100vh - 76px); }
+
+  /* Visualization area */
+  #vis {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+  }
+  #vis:active { cursor: grabbing; }
+  #vis svg { width:100%; height:100%; }
+
+  /* Side panel */
+  #sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    background: #21232f;
+    border-left: 1px solid var(--border);
+    padding: 12px;
+  }
+  #sidebar h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin: 12px 0 6px;
+  }
+  #sidebar h3:first-child { margin-top: 0; }
+
+  /* Stat rows */
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 3px;
+  }
+  .stat-row:hover { background: rgba(255,255,255,.03); }
+  .stat-row .label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 200px;
+  }
+  .stat-row .value { color: var(--info); font-variant-numeric: tabular-nums; flex-shrink: 0; margin-left: 8px; }
+  .stat-row .value.warn { color: var(--warn); }
+  .stat-row .value.danger { color: var(--danger); }
+
+  /* Ext bar chart */
+  .ext-bar-wrap { display:flex; align-items:center; gap:6px; margin:2px 0; font-size:11px; }
+  .ext-bar-wrap .ext-label { width:50px; text-align:right; flex-shrink:0; color: var(--text-dim); }
+  .ext-bar-wrap .ext-bar {
+    height: 14px;
+    background: var(--accent);
+    border-radius: 2px;
+    min-width: 2px;
+    transition: width .3s;
+  }
+  .ext-bar-wrap .ext-size { margin-left:4px; color: var(--text-dim); flex-shrink:0; }
+
+  /* Tooltip */
+  #tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: rgba(30,31,43,.95);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+    line-height: 1.6;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 100;
+    max-width: 280px;
+  }
+  #tooltip.visible { opacity: 1; }
+  #tooltip .tt-path { color: var(--text-dim); font-size: 11px; word-break: break-all; }
+  #tooltip .tt-size { color: var(--info); font-weight: 600; }
+
+  /* Graph labels */
+  .node-label { font-size:9px; fill: var(--text); pointer-events:none; }
+  .link { stroke: #3d59a1; stroke-opacity: .4; }
+  .link-require { stroke: #f59e0b; stroke-opacity: .5; stroke-dasharray: 4 2; }
+  .link-dynamic { stroke: #a78bfa; stroke-opacity: .5; stroke-dasharray: 2 2; }
+
+  /* Breadcrumb nav */
+  #breadcrumb {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    z-index: 10;
+  }
+  #breadcrumb button {
+    padding: 2px 8px;
+    font-size: 11px;
+    background: rgba(30,31,43,.9);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  #breadcrumb button:hover { background: var(--accent); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    #sidebar { width: 240px; }
+  }
+
+  /* Scrollbar */
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-track { background: transparent; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Color legend */
+  #legend {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(30,31,43,.92);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 10px;
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  #legend .legend-item { display:flex; align-items:center; gap:5px; }
+  #legend .legend-swatch { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+  #legend .legend-label { color: var(--text-dim); white-space:nowrap; }
+
+  /* Histogram bars in sidebar */
+  .histo-bar-wrap { display:flex; align-items:center; gap:6px; margin:2px 0; font-size:11px; }
+  .histo-bar-wrap .histo-label { width:80px; text-align:right; flex-shrink:0; color: var(--text-dim); }
+  .histo-bar-wrap .histo-bar {
+    height: 14px;
+    background: linear-gradient(90deg, var(--accent), var(--info));
+    border-radius: 2px;
+    min-width: 2px;
+    transition: width .3s;
+  }
+  .histo-bar-wrap .histo-count { margin-left:4px; color: var(--text-dim); flex-shrink:0; }
+
+  /* Diff indicators */
+  .diff-up { color: var(--danger); }
+  .diff-down { color: var(--ok); }
+  .diff-neutral { color: var(--text-dim); }
+
+  /* Search input */
+  #file-search {
+    width: 100%;
+    padding: 4px 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 3px;
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+  #file-search::placeholder { color: var(--text-dim); }
+
+  /* Trend summary card */
+  .trend-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+  .trend-card .trend-title { font-size:12px; font-weight:600; color: var(--info); margin-bottom:4px; }
+  .trend-card .trend-row { font-size:11px; color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>📦 Bundle Analysis — YrY</h1>
+  <span class="meta">2026-06-19 01:33:44 · 1063 files · 19.6 MB</span>
+</div>
+
+<div id="toolbar">
+  <button id="btn-treemap" class="active" onclick="switchView('treemap')">📏 Treemap</button>
+  <button id="btn-graph" onclick="switchView('graph')">🔗 Dependency Graph</button>
+  <button onclick="resetZoom()">🔍 Reset Zoom</button>
+  <span class="spacer"></span>
+  <span class="stat-badge">Nodes: 390</span>
+  <span class="stat-badge">Edges: 296</span>
+  
+  
+</div>
+
+<div id="main">
+  <div id="vis"></div>
+  <div id="sidebar">
+    <h3>📏 Top Largest Files</h3><div class="stat-row"><span class="label" title="docs/健康报告/health-2026-06-18.html">健康报告/health-2026-06-18.html</span><span class="value warn">245.0 KB</span></div><div class="stat-row"><span class="label" title="docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html">场景-1-模板架构与CSS设计系统/计划清单.html</span><span class="value warn">138.2 KB</span></div><div class="stat-row"><span class="label" title="cdn/故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/计划清单.html">场景-1-cdn资源加载与页面渲染/计划清单.html</span><span class="value warn">134.6 KB</span></div><div class="stat-row"><span class="label" title="docs/故事任务面板/计划清单/场景-3-验证报告与健康面板集成/计划清单.html">场景-3-验证报告与健康面板集成/计划清单.html</span><span class="value warn">112.3 KB</span></div><div class="stat-row"><span class="label" title="cdn/故事任务面板/cdn/场景-3-组件库与JS工具API/计划清单.html">场景-3-组件库与JS工具API/计划清单.html</span><span class="value warn">108.4 KB</span></div><div class="stat-row"><span class="label" title="cdn/故事任务面板/cdn/场景-5-npm包发布与版本管理/计划清单.html">场景-5-npm包发布与版本管理/计划清单.html</span><span class="value warn">108.2 KB</span></div><div class="stat-row"><span class="label" title="cdn/故事任务面板/cdn/场景-2-双主题系统设计/计划清单.html">场景-2-双主题系统设计/计划清单.html</span><span class="value warn">107.8 KB</span></div><div class="stat-row"><span class="label" title="cdn/故事任务面板/cdn/场景-4-存量页面迁移/计划清单.html">场景-4-存量页面迁移/计划清单.html</span><span class="value warn">107.8 KB</span></div><div class="stat-row"><span class="label" title="docs/故事任务面板/自测/场景-6-第三方框架与服务自检/计划清单.html">场景-6-第三方框架与服务自检/计划清单.html</span><span class="value warn">104.9 KB</span></div><div class="stat-row"><span class="label" title="docs/故事任务面板/架构/场景-8-架构健康度量仪表板/计划清单.html">场景-8-架构健康度量仪表板/计划清单.html</span><span class="value warn">104.9 KB</span></div><div class="stat-row"><span class="label" title="docs/故事任务面板/自测/场景-3-文档代码一致性校验/计划清单.html">场景-3-文档代码一致性校验/计划清单.html</span><span class="value warn">104.9 KB</span></div><div class="stat-row"><span class="label" title="docs/故事任务面板/架构/场景-6-架构断言脚本化校验/计划清单.html">场景-6-架构断言脚本化校验/计划清单.html</span><span class="value warn">104.8 KB</span></div><div class="stat-row"><span class="label" title="docs/故事任务面板/架构/场景-7-架构漂移持续监测/计划清单.html">场景-7-架构漂移持续监测/计划清单.html</span><span class="value warn">104.8 KB</span></div><div class="stat-row"><span class="label" title="docs/故事任务面板/架构/场景-5-信任边界与安全面/计划清单.html">场景-5-信任边界与安全面/计划清单.html</span><span class="value warn">104.7 KB</span></div><div class="stat-row"><span class="label" title="docs/故事任务面板/自测/场景-4-安全面回归自检/计划清单.html">场景-4-安全面回归自检/计划清单.html</span><span class="value warn">104.7 KB</span></div><h3>📊 Size Distribution</h3><div class="histo-bar-wrap"><span class="histo-label">0-1 KB</span><div class="histo-bar" style="width:8.2%"></div><span class="histo-count">48 files</span></div><div class="histo-bar-wrap"><span class="histo-label">1-10 KB</span><div class="histo-bar" style="width:100%"></div><span class="histo-count">587 files</span></div><div class="histo-bar-wrap"><span class="histo-label">10-100 KB</span><div class="histo-bar" style="width:66.8%"></div><span class="histo-count">392 files</span></div><div class="histo-bar-wrap"><span class="histo-label">100-500 KB</span><div class="histo-bar" style="width:6.1%"></div><span class="histo-count">36 files</span></div><div class="histo-bar-wrap"><span class="histo-label">500 KB-1 MB</span><div class="histo-bar" style="width:1%"></div><span class="histo-count">0 files</span></div><div class="histo-bar-wrap"><span class="histo-label">&gt;1 MB</span><div class="histo-bar" style="width:1%"></div><span class="histo-count">0 files</span></div><h3>📦 By Extension</h3><div class="ext-bar-wrap"><span class="ext-label">.html</span><div class="ext-bar" style="width:100%"></div><span class="ext-size">15.1 MB</span></div><div class="ext-bar-wrap"><span class="ext-label">.md</span><div class="ext-bar" style="width:9.3%"></div><span class="ext-size">1.4 MB</span></div><div class="ext-bar-wrap"><span class="ext-label">.mjs</span><div class="ext-bar" style="width:7.1%"></div><span class="ext-size">1.1 MB</span></div><div class="ext-bar-wrap"><span class="ext-label">.js</span><div class="ext-bar" style="width:5.6%"></div><span class="ext-size">862.5 KB</span></div><div class="ext-bar-wrap"><span class="ext-label">.css</span><div class="ext-bar" style="width:5.4%"></div><span class="ext-size">829.8 KB</span></div><div class="ext-bar-wrap"><span class="ext-label">.json</span><div class="ext-bar" style="width:1.7%"></div><span class="ext-size">265.1 KB</span></div><div class="ext-bar-wrap"><span class="ext-label">.py</span><div class="ext-bar" style="width:1%"></div><span class="ext-size">45.1 KB</span></div><div class="ext-bar-wrap"><span class="ext-label">(no ext)</span><div class="ext-bar" style="width:1%"></div><span class="ext-size">15.5 KB</span></div><div class="ext-bar-wrap"><span class="ext-label">.pl</span><div class="ext-bar" style="width:1%"></div><span class="ext-size">4.3 KB</span></div><h3>📁 By Directory</h3><div class="stat-row"><span class="label">docs/</span><span class="value">12.7 MB</span></div><div class="stat-row"><span class="label">cdn/</span><span class="value">5.0 MB</span></div><div class="stat-row"><span class="label">skills/</span><span class="value">892.0 KB</span></div><div class="stat-row"><span class="label">tests/</span><span class="value">221.5 KB</span></div><div class="stat-row"><span class="label">lib/</span><span class="value">209.1 KB</span></div><div class="stat-row"><span class="label">rules/</span><span class="value">192.3 KB</span></div><div class="stat-row"><span class="label">scripts/</span><span class="value">176.2 KB</span></div><div class="stat-row"><span class="label">agents/</span><span class="value">125.9 KB</span></div><div class="stat-row"><span class="label">package-lock.json/</span><span class="value">52.6 KB</span></div><div class="stat-row"><span class="label">README.md/</span><span class="value">22.0 KB</span></div><h3>📐 Directory Depth</h3><div class="stat-row"><span class="label">Depth 1</span><span class="value">14 files</span></div><div class="stat-row"><span class="label">Depth 2</span><span class="value">98 files</span></div><div class="stat-row"><span class="label">Depth 3</span><span class="value">461 files</span></div><div class="stat-row"><span class="label">Depth 4-5</span><span class="value">440 files</span></div><div class="stat-row"><span class="label">Depth 6-8</span><span class="value">50 files</span></div><h3>🔥 Most Depended On (fan-in)</h3><div class="stat-row"><span class="label" title="lib/constants.mjs">constants.mjs</span><span class="value">42 refs</span></div><div class="stat-row"><span class="label" title="lib/tty.mjs">tty.mjs</span><span class="value">33 refs</span></div><div class="stat-row"><span class="label" title="lib/fs.mjs">fs.mjs</span><span class="value">28 refs</span></div><div class="stat-row"><span class="label" title="tests/lib/test-harness.mjs">test-harness.mjs</span><span class="value">22 refs</span></div><div class="stat-row"><span class="label" title="tests/lib/helpers.mjs">helpers.mjs</span><span class="value">19 refs</span></div><div class="stat-row"><span class="label" title="lib/help-layout.mjs">help-layout.mjs</span><span class="value">19 refs</span></div><div class="stat-row"><span class="label" title="skills/rui-bot/lib/bot-health-analysis.mjs">bot-health-analysis.mjs</span><span class="value">9 refs</span></div><div class="stat-row"><span class="label" title="scripts/lib/paths.mjs">paths.mjs</span><span class="value">8 refs</span></div><div class="stat-row"><span class="label" title="skills/rui-npm/lib/npm-utils.mjs">npm-utils.mjs</span><span class="value">7 refs</span></div><div class="stat-row"><span class="label" title="skills/rui-import/lib/config.mjs">config.mjs</span><span class="value">6 refs</span></div><h3>📤 Most Dependencies (fan-out)</h3><div class="stat-row"><span class="label" title="skills/rui-bot/lib/bot-health-cmd.mjs">bot-health-cmd.mjs</span><span class="value">15 deps</span></div><div class="stat-row"><span class="label" title="skills/rui-story/rui-story.mjs">rui-story.mjs</span><span class="value">9 deps</span></div><div class="stat-row"><span class="label" title="skills/rui-npm/rui-npm.mjs">rui-npm.mjs</span><span class="value">9 deps</span></div><div class="stat-row"><span class="label" title="skills/rui-bot/lib/health-report.mjs">health-report.mjs</span><span class="value">7 deps</span></div><div class="stat-row"><span class="label" title="lib/proposals.mjs">proposals.mjs</span><span class="value">7 deps</span></div><div class="stat-row"><span class="label" title="skills/rui-bot/send.mjs">send.mjs</span><span class="value">7 deps</span></div><div class="stat-row"><span class="label" title="skills/rui-import/sync.mjs">sync.mjs</span><span class="value">7 deps</span></div><div class="stat-row"><span class="label" title="skills/rui-html/rui-html.mjs">rui-html.mjs</span><span class="value">6 deps</span></div><div class="stat-row"><span class="label" title="lib/arch-check.mjs">arch-check.mjs</span><span class="value">5 deps</span></div><div class="stat-row"><span class="label" title="skills/rui-trends/rui-trends.mjs">rui-trends.mjs</span><span class="value">5 deps</span></div><h3>📏 Max Dependency Depth</h3><div class="stat-row"><span class="label">Longest chain</span><span class="value">7 hops</span></div><h3>👻 Orphan Files (not imported)</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Files that aren't imported by any other file (may be dead code)</span></div><div class="stat-row"><span class="label" title="cdn/yry-home/index.css">yry-home/index.css</span><span class="value" style="color:var(--text-dim)">86.6 KB</span></div><div class="stat-row"><span class="label" title="cdn/yry-scene/index.css">yry-scene/index.css</span><span class="value" style="color:var(--text-dim)">82.5 KB</span></div><div class="stat-row"><span class="label" title="docs/趋势报告/js/trend-index.js">js/trend-index.js</span><span class="value" style="color:var(--text-dim)">58.1 KB</span></div><div class="stat-row"><span class="label" title="docs/健康报告/js/health-index.js">js/health-index.js</span><span class="value" style="color:var(--text-dim)">46.3 KB</span></div><div class="stat-row"><span class="label" title="docs/自我改进/js/self-improve-index.js">js/self-improve-index.js</span><span class="value" style="color:var(--text-dim)">43.6 KB</span></div><div class="stat-row"><span class="label" title="cdn/yry-test/index.css">yry-test/index.css</span><span class="value" style="color:var(--text-dim)">38.7 KB</span></div><div class="stat-row"><span class="label" title="docs/自循环报告/js/loop-index.js">js/loop-index.js</span><span class="value" style="color:var(--text-dim)">36.9 KB</span></div><div class="stat-row"><span class="label" title="cdn/yry-plan/index.css">yry-plan/index.css</span><span class="value" style="color:var(--text-dim)">31.7 KB</span></div><div class="stat-row"><span class="label" title="scripts/transform-breadcrumb-scenes.mjs">scripts/transform-breadcrumb-scenes.mjs</span><span class="value" style="color:var(--text-dim)">25.7 KB</span></div><div class="stat-row"><span class="label" title="cdn/yry-source/index.css">yry-source/index.css</span><span class="value" style="color:var(--text-dim)">24.3 KB</span></div>
+  </div>
+</div>
+
+<div id="tooltip"></div>
+  <div id="legend"></div>
+  <div id="breadcrumb"></div>
+
+<script>
+// ── Data ─────────────────────────────────────────────────────────────
+const TREEMAP_DATA = {"name":"root","children":[]};
+const DEP_NODES = [{"path":"cdn/yry-home/index.css","size":88708,"ext":".css"},{"path":"cdn/yry-scene/index.css","size":84465,"ext":".css"},{"path":"cdn/yry-test/index.js","size":82543,"ext":".js"},{"path":"skills/rui-bot/lib/report-sections.mjs","size":75142,"ext":".mjs"},{"path":"skills/rui-bot/lib/report-constants.mjs","size":651,"ext":".mjs"},{"path":"skills/rui-bot/lib/bot-health-analysis.mjs","size":20035,"ext":".mjs"},{"path":"lib/scoring.mjs","size":24095,"ext":".mjs"},{"path":"cdn/yry-docs-binding/index.js","size":73220,"ext":".js"},{"path":"skills/rui-bundle-analyze/analyze.mjs","size":59839,"ext":".mjs"},{"path":"lib/fs.mjs","size":5380,"ext":".mjs"},{"path":"docs/趋势报告/js/trend-index.js","size":59469,"ext":".js"},{"path":"docs/健康报告/js/health-index.js","size":47406,"ext":".js"},{"path":"docs/自我改进/js/self-improve-index.js","size":44649,"ext":".js"},{"path":"cdn/yry-test/index.css","size":39670,"ext":".css"},{"path":"docs/自循环报告/js/loop-index.js","size":37825,"ext":".js"},{"path":"tests/skills/rui-npm.test.mjs","size":37616,"ext":".mjs"},{"path":"tests/lib/test-harness.mjs","size":7212,"ext":".mjs"},{"path":"cdn/yry-selfimprove-panel/index.js","size":33041,"ext":".js"},{"path":"cdn/yry-plan/index.css","size":32508,"ext":".css"},{"path":"cdn/yry-notify-panel/index.js","size":29227,"ext":".js"},{"path":"skills/rui-trends/lib/trend-report.mjs","size":28834,"ext":".mjs"},{"path":"skills/rui-bot/lib/loop-report.mjs","size":28173,"ext":".mjs"},{"path":"lib/constants.mjs","size":16042,"ext":".mjs"},{"path":"skills/rui-bot/send.mjs","size":15538,"ext":".mjs"},{"path":"scripts/fix-checklist-content.mjs","size":27874,"ext":".mjs"},{"path":"skills/rui-bot/lib/health-report.mjs","size":27672,"ext":".mjs"},{"path":"skills/rui-bot/lib/report-trend.mjs","size":24250,"ext":".mjs"},{"path":"skills/rui-bot/lib/bot-health-cmd.mjs","size":27151,"ext":".mjs"},{"path":"skills/rui-bot/lib/bot-transport.mjs","size":5129,"ext":".mjs"},{"path":"skills/rui-bot/lib/bot-message.mjs","size":15098,"ext":".mjs"},{"path":"skills/rui-bot/lib/bot-health-trend.mjs","size":3373,"ext":".mjs"},{"path":"skills/rui-bot/lib/bot-health-structure.mjs","size":7443,"ext":".mjs"},{"path":"skills/rui-bot/lib/bot-health-diagnostics.mjs","size":14270,"ext":".mjs"},{"path":"lib/arch-check.mjs","size":10377,"ext":".mjs"},{"path":"skills/rui-bot/lib/bot-health-filesize.mjs","size":5976,"ext":".mjs"},{"path":"skills/rui-bot/lib/bot-health-deps.mjs","size":7727,"ext":".mjs"},{"path":"lib/selfimprove-generator.mjs","size":21344,"ext":".mjs"},{"path":"scripts/transform-breadcrumb-scenes.mjs","size":26341,"ext":".mjs"},{"path":"cdn/yry-item-cards/index.js","size":25916,"ext":".js"},{"path":"cdn/yry-source/index.css","size":24865,"ext":".css"},{"path":"cdn/yry-demo/index-stage.css","size":22695,"ext":".css"},{"path":"cdn/yry-demo/index.css","size":22650,"ext":".css"},{"path":"cdn/shared/index.js","size":22516,"ext":".js"},{"path":"cdn/yry-health/index.css","size":22028,"ext":".css"},{"path":"cdn/shared/index.css","size":20941,"ext":".css"},{"path":"cdn/yry-checklist/index.css","size":19384,"ext":".css"},{"path":"cdn/yry-layer-info-panel/index.js","size":19307,"ext":".js"},{"path":"cdn/yry-scene/index-base.css","size":18384,"ext":".css"},{"path":"cdn/yry-notify-panel/index.css","size":18375,"ext":".css"},{"path":"cdn/yry-graph/index.css","size":17641,"ext":".css"},{"path":"cdn/yry-test-page/index.css","size":17593,"ext":".css"},{"path":"lib/recommend.mjs","size":17524,"ext":".mjs"},{"path":"lib/recommend-cli.mjs","size":4763,"ext":".mjs"},{"path":"lib/recommend-detect.mjs","size":3179,"ext":".mjs"},{"path":"scripts/lib/generate.mjs","size":17313,"ext":".mjs"},{"path":"scripts/lib/paths.mjs","size":1852,"ext":".mjs"},{"path":"scripts/lib/scrub.mjs","size":5520,"ext":".mjs"},{"path":"scripts/lib/escape.mjs","size":312,"ext":".mjs"},{"path":"cdn/yry-faq-panel/index.css","size":17000,"ext":".css"},{"path":"cdn/yry-review/index.css","size":16832,"ext":".css"},{"path":"lib/proposals.mjs","size":16672,"ext":".mjs"},{"path":"lib/tty.mjs","size":1057,"ext":".mjs"},{"path":"lib/engine/diagnostics.mjs","size":10962,"ext":".mjs"},{"path":"lib/engine/evaluate.mjs","size":8659,"ext":".mjs"},{"path":"lib/engine/materialize.mjs","size":8429,"ext":".mjs"},{"path":"lib/engine/upgrade.mjs","size":2469,"ext":".mjs"},{"path":"cdn/shared-reports/index.css","size":16123,"ext":".css"},{"path":"lib/record.mjs","size":15876,"ext":".mjs"},{"path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/panels/panel-risks.css","size":14864,"ext":".css"},{"path":"cdn/yry-faq-panel/index.js","size":14810,"ext":".js"},{"path":"cdn/yry-cron-panel/index.js","size":12814,"ext":".js"},{"path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/panels/panel-checklist.css","size":12640,"ext":".css"},{"path":"cdn/theme/index.css","size":12433,"ext":".css"},{"path":"cdn/yry-cytoscape-graph/index.js","size":11546,"ext":".js"},{"path":"cdn/yry-story-panel/index.css","size":11513,"ext":".css"},{"path":"cdn/yry-inline-helpers/index.css","size":11348,"ext":".css"},{"path":"cdn/shared-reports/index.js","size":11338,"ext":".js"},{"path":"cdn/yry-arch/index.css","size":11058,"ext":".css"},{"path":"lib/branch-check.mjs","size":11020,"ext":".mjs"},{"path":"skills/rui-analysis/scripts/extract-structure.mjs","size":10827,"ext":".mjs"},{"path":"skills/rui-html/lib/extractor.mjs","size":10603,"ext":".mjs"},{"path":"cdn/yry-pipeline-simulator/index.js","size":10393,"ext":".js"},{"path":"lib/arch-dimensions/kernel-paradigm.mjs","size":6618,"ext":".mjs"},{"path":"lib/arch-dimensions/solid.mjs","size":7349,"ext":".mjs"},{"path":"lib/arch-dimensions/quality.mjs","size":7860,"ext":".mjs"},{"path":"cdn/yry-panel-hub/index.js","size":10078,"ext":".js"},{"path":"docs/cdn/shared.css","size":9955,"ext":".css"},{"path":"skills/rui-html/lib/generator.mjs","size":9287,"ext":".mjs"},{"path":"skills/rui-html/lib/templates.mjs","size":6801,"ext":".mjs"},{"path":"skills/rui-story/lib/format.mjs","size":9257,"ext":".mjs"},{"path":"skills/rui-story/lib/extract.mjs","size":3918,"ext":".mjs"},{"path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/yry-checklist-deliv.js","size":9234,"ext":".js"},{"path":"cdn/theme-mono/index.css","size":9073,"ext":".css"},{"path":"cdn/yry-doc-layer/index.js","size":8992,"ext":".js"},{"path":"skills/rui-trends/lib/trend-fetch.mjs","size":8783,"ext":".mjs"},{"path":"cdn/yry-export-toolbar/index.js","size":8385,"ext":".js"},{"path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/yry-checklist-core.js","size":8178,"ext":".js"},{"path":"lib/arch-helpers.mjs","size":1930,"ext":".mjs"},{"path":"tests/integration/cross-references.test.mjs","size":7852,"ext":".mjs"},{"path":"tests/lib/helpers.mjs","size":3817,"ext":".mjs"},{"path":"skills/rui-story/rui-story.mjs","size":7812,"ext":".mjs"},{"path":"lib/network.mjs","size":1819,"ext":".mjs"},{"path":"skills/rui-story/lib/cli.mjs","size":2015,"ext":".mjs"},{"path":"skills/rui-story/lib/infer.mjs","size":1625,"ext":".mjs"},{"path":"skills/rui-story/lib/merge.mjs","size":4117,"ext":".mjs"},{"path":"cdn/yry-item-card/index.js","size":7589,"ext":".js"},{"path":"tests/skills/rui-bot.test.mjs","size":7538,"ext":".mjs"},{"path":"lib/audit.mjs","size":7437,"ext":".mjs"},{"path":"cdn/yry-card-grid/index.js","size":7374,"ext":".js"},{"path":"cdn/yry-concept-radar/index.js","size":7257,"ext":".js"},{"path":"skills/rui-npm/lib/account.mjs","size":7251,"ext":".mjs"},{"path":"skills/rui-npm/lib/npm-utils.mjs","size":2945,"ext":".mjs"},{"path":"skills/rui-npm/lib/auth.mjs","size":3702,"ext":".mjs"},{"path":"skills/rui-npm/lib/publish.mjs","size":6228,"ext":".mjs"},{"path":"cdn/yry-simulator/index.js","size":7139,"ext":".js"},{"path":"cdn/yry-pipeline-simulator/index.css","size":6809,"ext":".css"},{"path":"tests/skills/cdn-degrade.test.mjs","size":6645,"ext":".mjs"},{"path":"tests/skills/rui-trends.test.mjs","size":6631,"ext":".mjs"},{"path":"tests/skills/cdn-load-order.test.mjs","size":6596,"ext":".mjs"},{"path":"cdn/yry-layer/index.js","size":6535,"ext":".js"},{"path":"scripts/refactor-simulator.mjs","size":6506,"ext":".mjs"},{"path":"cdn/yry-cron-panel/index.css","size":6489,"ext":".css"},{"path":"cdn/yry-risk-row/index.css","size":6458,"ext":".css"},{"path":"cdn/yry-mini-quiz/index.js","size":6372,"ext":".js"},{"path":"cdn/yry-typewriter-demo/index.js","size":6053,"ext":".js"},{"path":"tests/unit/engine.test.mjs","size":6001,"ext":".mjs"},{"path":"cdn/yry-cmd-card/index.js","size":5737,"ext":".js"},{"path":"tests/skills/rui-claude.test.mjs","size":5659,"ext":".mjs"},{"path":"skills/rui-npm/help.mjs","size":5623,"ext":".mjs"},{"path":"lib/help-layout.mjs","size":1100,"ext":".mjs"},{"path":"scripts/refactor-quiz-docs.mjs","size":5582,"ext":".mjs"},{"path":"cdn/yry-mini-quiz/index.css","size":5528,"ext":".css"},{"path":"scripts/lib/breadcrumb.mjs","size":5264,"ext":".mjs"},{"path":"cdn/yry-breadcrumb/index.js","size":5507,"ext":".js"},{"path":"cdn/yry-timeline-hero/index.css","size":5488,"ext":".css"},{"path":"tests/integration/cross-cat.test.mjs","size":5458,"ext":".mjs"},{"path":"skills/rui-bundle-analyze/help.mjs","size":5422,"ext":".mjs"},{"path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/yry-checklist-shell.js","size":5421,"ext":".js"},{"path":"scripts/lib/extract.mjs","size":5390,"ext":".mjs"},{"path":"cdn/yry-item-card/index.css","size":5373,"ext":".css"},{"path":"skills/rui-trends/rui-trends.mjs","size":5213,"ext":".mjs"},{"path":"skills/rui-trends/lib/format.mjs","size":5104,"ext":".mjs"},{"path":"skills/rui-html/rui-html.mjs","size":5125,"ext":".mjs"},{"path":"tests/rules/rules.test.mjs","size":5099,"ext":".mjs"},{"path":"cdn/yry-timeline-hero/index.js","size":5093,"ext":".js"},{"path":"cdn/yry-search-bar/index.js","size":5091,"ext":".js"},{"path":"skills/rui-import/sync.mjs","size":5076,"ext":".mjs"},{"path":"skills/rui-import/lib/config.mjs","size":507,"ext":".mjs"},{"path":"skills/rui-import/lib/cli.mjs","size":2696,"ext":".mjs"},{"path":"skills/rui-import/lib/scan.mjs","size":1299,"ext":".mjs"},{"path":"skills/rui-import/lib/api.mjs","size":2226,"ext":".mjs"},{"path":"skills/rui-import/lib/upload.mjs","size":1944,"ext":".mjs"},{"path":"skills/rui-import/lib/pull.mjs","size":4998,"ext":".mjs"},{"path":"cdn/yry-help-overlay/index.css","size":4942,"ext":".css"},{"path":"tests/skills/rui.test.mjs","size":4899,"ext":".mjs"},{"path":"cdn/yry-step-card/index.css","size":4838,"ext":".css"},{"path":"cdn/yry-plan/index.js","size":4805,"ext":".js"},{"path":"cdn/yry-help-overlay/index.js","size":4803,"ext":".js"},{"path":"skills/rui-npm/lib/read.mjs","size":4796,"ext":".mjs"},{"path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/yry-checklist-ext.css","size":4792,"ext":".css"},{"path":"lib/plugin-utils.mjs","size":1335,"ext":".mjs"},{"path":"cdn/yry-page-nav/index.js","size":4756,"ext":".js"},{"path":"cdn/yry-concept-radar/index.css","size":4754,"ext":".css"},{"path":"skills/rui-health/health.mjs","size":4704,"ext":".mjs"},{"path":"scripts/refactor-scene-pages.mjs","size":4673,"ext":".mjs"},{"path":"cdn/yry-scene-header/index.js","size":4663,"ext":".js"},{"path":"scripts/refactor-breadcrumb-a11y.mjs","size":4646,"ext":".mjs"},{"path":"scripts/refactor-radar.mjs","size":4612,"ext":".mjs"},{"path":"skills/rui-claude/help.mjs","size":4567,"ext":".mjs"},{"path":"cdn/yry-quickstart/index.js","size":4531,"ext":".js"},{"path":"skills/rui-npm/lib/tools.mjs","size":4517,"ext":".mjs"},{"path":"cdn/yry-scene-card/index.js","size":4497,"ext":".js"},{"path":"tests/infrastructure/framework-presence.test.mjs","size":4468,"ext":".mjs"},{"path":"tests/lib/vitest-adapter.mjs","size":2807,"ext":".mjs"},{"path":"tests/run.mjs","size":4448,"ext":".mjs"},{"path":"cdn/yry-tag-chip/index.js","size":4426,"ext":".js"},{"path":"skills/rui-bot/help.mjs","size":4424,"ext":".mjs"},{"path":"tests/skills/theme-tokens.test.mjs","size":4325,"ext":".mjs"},{"path":"skills/rui-trends/help.mjs","size":4321,"ext":".mjs"},{"path":"tests/integration/knowledge-graph.test.mjs","size":4287,"ext":".mjs"},{"path":"cdn/yry-progress-bar/index.js","size":4279,"ext":".js"},{"path":"cdn/yry-stats-grid/index.js","size":4263,"ext":".js"},{"path":"cdn/yry-typewriter-demo/index.css","size":4247,"ext":".css"},{"path":"cdn/yry-cross-nav/index.js","size":4210,"ext":".js"},{"path":"cdn/yry-day-plan/index.css","size":4193,"ext":".css"},{"path":"cdn/yry-selfimprove-panel/index.css","size":4180,"ext":".css"},{"path":"scripts/refactor-cdn-detect.mjs","size":4176,"ext":".mjs"},{"path":"cdn/yry-story-card/index.css","size":4162,"ext":".css"},{"path":"scripts/migrate-scene-css.mjs","size":4145,"ext":".mjs"},{"path":"cdn/yry-phase-strip/index.js","size":4094,"ext":".js"},{"path":"cdn/yry-scene-nav/index.js","size":4084,"ext":".js"},{"path":"cdn/yry-trend-card/index.js","size":4077,"ext":".js"},{"path":"docs/cdn/theme.css","size":4058,"ext":".css"},{"path":"cdn/yry-step-card/index.js","size":4020,"ext":".js"},{"path":"cdn/yry-review-cards/index.css","size":4018,"ext":".css"},{"path":"cdn/yry-pitfall-list/index.css","size":4016,"ext":".css"},{"path":"cdn/yry-risk-row/index.js","size":4009,"ext":".js"},{"path":"cdn/yry-story-card/index.js","size":4002,"ext":".js"},{"path":"cdn/yry-layer-agents/index.js","size":3994,"ext":".js"},{"path":"scripts/refactor-next-action.mjs","size":3983,"ext":".mjs"},{"path":"cdn/yry-page-nav/index.css","size":3971,"ext":".css"},{"path":"cdn/yry-cat-overview/index.js","size":3936,"ext":".js"},{"path":"cdn/yry-cmd-head/index.js","size":3929,"ext":".js"},{"path":"cdn/yry-kpi-card/index.js","size":3914,"ext":".js"},{"path":"cdn/yry-cat-warning/index.js","size":3908,"ext":".js"},{"path":"cdn/yry-layer-refs/index.js","size":3892,"ext":".js"},{"path":"tests/agents/agents.test.mjs","size":3892,"ext":".mjs"},{"path":"cdn/yry-layer-rules/index.js","size":3885,"ext":".js"},{"path":"cdn/yry-risk-matrix/index.js","size":3878,"ext":".js"},{"path":"cdn/yry-dep-badge/index.js","size":3824,"ext":".js"},{"path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/panels/panel-verify.css","size":3820,"ext":".css"},{"path":"tests/skills/shared-global.test.mjs","size":3816,"ext":".mjs"},{"path":"cdn/yry-op-btn/index.js","size":3799,"ext":".js"},{"path":"cdn/yry-path-link/index.js","size":3786,"ext":".js"},{"path":"scripts/refactor-help-overlay.mjs","size":3783,"ext":".mjs"},{"path":"cdn/yry-risk-cat-card/index.js","size":3766,"ext":".js"},{"path":"scripts/refactor-typewriter.mjs","size":3739,"ext":".mjs"},{"path":"skills/rui/help.mjs","size":3736,"ext":".mjs"},{"path":"cdn/yry-panel-hub/index.css","size":3731,"ext":".css"},{"path":"cdn/yry-scorecard/index.js","size":3729,"ext":".js"},{"path":"skills/rui-import/help.mjs","size":3702,"ext":".mjs"},{"path":"cdn/yry-layer/index.css","size":3660,"ext":".css"},{"path":"tests/skills/npm-package.test.mjs","size":3660,"ext":".mjs"},{"path":"cdn/yry-check-item/index.css","size":3655,"ext":".css"},{"path":"cdn/yry-scene-health-bar/index.js","size":3649,"ext":".js"},{"path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/panels/panel-commands.css","size":3614,"ext":".css"},{"path":"scripts/refactor-checklist.mjs","size":3593,"ext":".mjs"},{"path":"cdn/yry-risk-matrix/index.css","size":3576,"ext":".css"},{"path":"cdn/yry-scene-stats/index.js","size":3559,"ext":".js"},{"path":"cdn/yry-cmd-card/index.css","size":3556,"ext":".css"},{"path":"cdn/yry-checklist-head/index.js","size":3554,"ext":".js"},{"path":"cdn/yry-walkthrough/index.js","size":3519,"ext":".js"},{"path":"skills/rui-npm/rui-npm.mjs","size":3500,"ext":".mjs"},{"path":"skills/rui-npm/lib/cli.mjs","size":1362,"ext":".mjs"},{"path":"skills/rui-npm/lib/write.mjs","size":2999,"ext":".mjs"},{"path":"cdn/yry-scene-chrome/index.js","size":3401,"ext":".js"},{"path":"cdn/yry-sub-title/index.js","size":3401,"ext":".js"},{"path":"tests/skills/shared-js-api.test.mjs","size":3373,"ext":".mjs"},{"path":"cdn/yry-code-block/index.js","size":3342,"ext":".js"},{"path":"cdn/yry-footer-note/index.js","size":3342,"ext":".js"},{"path":"cdn/yry-verify-item/index.css","size":3326,"ext":".css"},{"path":"cdn/yry-overview-grid/index.css","size":3310,"ext":".css"},{"path":"cdn/yry-skeleton-loader/index.js","size":3304,"ext":".js"},{"path":"scripts/refactor-timeline-progress.mjs","size":3299,"ext":".mjs"},{"path":"cdn/yry-source/index.js","size":3278,"ext":".js"},{"path":"cdn/yry-scene-chrome/index.css","size":3252,"ext":".css"},{"path":"skills/rui-html/help.mjs","size":3247,"ext":".mjs"},{"path":"tests/skills/rui-import.test.mjs","size":3235,"ext":".mjs"},{"path":"cdn/yry-verify-report-foot/index.js","size":3232,"ext":".js"},{"path":"scripts/refactor-tab-panel.mjs","size":3209,"ext":".mjs"},{"path":"scripts/refactor-plan-checklist.mjs","size":3181,"ext":".mjs"},{"path":"cdn/yry-toast/index.css","size":3176,"ext":".css"},{"path":"cdn/yry-milestone-grid/index.css","size":3158,"ext":".css"},{"path":"cdn/yry-search-bar/index.css","size":3141,"ext":".css"},{"path":"cdn/yry-code-block/index.css","size":3128,"ext":".css"},{"path":"cdn/yry-scene-steps/index.js","size":3116,"ext":".js"},{"path":"cdn/yry-tooltip/index.css","size":3114,"ext":".css"},{"path":"cdn/yry-verify-report-head/index.js","size":3110,"ext":".js"},{"path":"cdn/yry-verify-item/index.js","size":3082,"ext":".js"},{"path":"cdn/yry-gantt/index.js","size":3076,"ext":".js"},{"path":"cdn/yry-scene-tabs/index.js","size":3042,"ext":".js"},{"path":"cdn/yry-toast/index.js","size":3040,"ext":".js"},{"path":"cdn/yry-spinner/index.js","size":3011,"ext":".js"},{"path":"cdn/yry-next-action/index.css","size":2986,"ext":".css"},{"path":"cdn/yry-dep-badge/index.css","size":2984,"ext":".css"},{"path":"cdn/yry-scene-card/index.css","size":2969,"ext":".css"},{"path":"cdn/yry-scene-footer/index.js","size":2954,"ext":".js"},{"path":"cdn/yry-kpi-grid/index.js","size":2950,"ext":".js"},{"path":"cdn/yry-skeleton-loader/index.css","size":2949,"ext":".css"},{"path":"cdn/yry-stats-grid/index.css","size":2946,"ext":".css"},{"path":"cdn/yry-accordion/index.css","size":2931,"ext":".css"},{"path":"cdn/yry-tag-chip/index.css","size":2907,"ext":".css"},{"path":"cdn/yry-risk-cat-card/index.css","size":2904,"ext":".css"},{"path":"cdn/yry-health-bar/index.css","size":2872,"ext":".css"},{"path":"scripts/refactor-test-panel.mjs","size":2861,"ext":".mjs"},{"path":"scripts/refactor-quiz.mjs","size":2846,"ext":".mjs"},{"path":"cdn/yry-toggle/index.js","size":2825,"ext":".js"},{"path":"tests/skills/cat-b-theme.test.mjs","size":2792,"ext":".mjs"},{"path":"cdn/yry-tooltip/index.js","size":2744,"ext":".js"},{"path":"scripts/verify-breadcrumb.mjs","size":2700,"ext":".mjs"},{"path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/panels/panel-deliverables.css","size":2637,"ext":".css"},{"path":"tests/skills/cat-a-theme.test.mjs","size":2618,"ext":".mjs"},{"path":"skills/rui-story/help.mjs","size":2609,"ext":".mjs"},{"path":"scripts/refactor-remaining-pages.mjs","size":2557,"ext":".mjs"},{"path":"cdn/eslint.config.js","size":2547,"ext":".js"},{"path":"cdn/yry-gantt/index.css","size":2488,"ext":".css"},{"path":"cdn/yry-meter/index.js","size":2488,"ext":".js"},{"path":"cdn/yry-tip-box/index.css","size":2468,"ext":".css"},{"path":"cdn/yry-toggle/index.css","size":2447,"ext":".css"},{"path":"scripts/refactor-test-pages.mjs","size":2392,"ext":".mjs"},{"path":"tests/skills/theme-components.test.mjs","size":2390,"ext":".mjs"},{"path":"cdn/yry-info-cards/index.css","size":2388,"ext":".css"},{"path":"cdn/yry-badge/index.css","size":2343,"ext":".css"},{"path":"cdn/yry-meter/index.css","size":2327,"ext":".css"},{"path":"cdn/yry-arch/index.js","size":2269,"ext":".js"},{"path":"scripts/refactor-demo-css.mjs","size":2267,"ext":".mjs"},{"path":"tests/skills/rui-story.test.mjs","size":2266,"ext":".mjs"},{"path":"cdn/yry-cytoscape-graph/index.css","size":2257,"ext":".css"},{"path":"cdn/yry-op-btn/index.css","size":2251,"ext":".css"},{"path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/panels/panel-metrics.css","size":2221,"ext":".css"},{"path":"cdn/yry-verify-report-foot/index.css","size":2200,"ext":".css"},{"path":"scripts/refactor-arch-diagram.mjs","size":2199,"ext":".mjs"},{"path":"cdn/yry-cdn-detect/index.js","size":2168,"ext":".js"},{"path":"scripts/refactor-review.mjs","size":2159,"ext":".mjs"},{"path":"cdn/yry-typewriter/index.js","size":2158,"ext":".js"},{"path":"cdn/yry-layer-info-panel/index.css","size":2149,"ext":".css"},{"path":"tests/infrastructure/third-party-reachability.test.mjs","size":2122,"ext":".mjs"},{"path":"cdn/yry-scene-steps/index.css","size":2108,"ext":".css"},{"path":"scripts/refactor-review-pages.mjs","size":2088,"ext":".mjs"},{"path":"scripts/refactor-arch-pages.mjs","size":2071,"ext":".mjs"},{"path":"cdn/yry-back-top/index.js","size":2070,"ext":".js"},{"path":"cdn/yry-cat-overview/index.css","size":2067,"ext":".css"},{"path":"cdn/yry-empty-state/index.js","size":2053,"ext":".js"},{"path":"skills/rui-import/lib/diagnose.mjs","size":2024,"ext":".mjs"},{"path":"cdn/yry-quickstart/index.css","size":2008,"ext":".css"},{"path":"cdn/yry-spinner/index.css","size":2007,"ext":".css"},{"path":"cdn/yry-checklist-head/index.css","size":1978,"ext":".css"},{"path":"lib/concurrency.mjs","size":847,"ext":".mjs"},{"path":"cdn/yry-quiz/index.js","size":1943,"ext":".js"},{"path":"cdn/yry-tabs-panel/index.css","size":1905,"ext":".css"},{"path":"cdn/yry-phase-strip/index.css","size":1902,"ext":".css"},{"path":"scripts/refactor-toggle-help.mjs","size":1891,"ext":".mjs"},{"path":"cdn/yry-scene-header/index.css","size":1889,"ext":".css"},{"path":"cdn/yry-export-toolbar/index.css","size":1886,"ext":".css"},{"path":"cdn/yry-trend-card/index.css","size":1872,"ext":".css"},{"path":"cdn/yry-scene-stats/index.css","size":1866,"ext":".css"},{"path":"cdn/yry-walkthrough/index.css","size":1859,"ext":".css"},{"path":"cdn/yry-keyboard/index.js","size":1822,"ext":".js"},{"path":"skills/rui-html/templates/shared-b.css","size":1777,"ext":".css"},{"path":"cdn/yry-scene-nav/index.css","size":1771,"ext":".css"},{"path":"cdn/yry-cmd-head/index.css","size":1704,"ext":".css"},{"path":"cdn/yry-breadcrumb/index.css","size":1694,"ext":".css"},{"path":"cdn/yry-empty-state/index.css","size":1684,"ext":".css"},{"path":"cdn/yry-docs-binding/index.css","size":1660,"ext":".css"},{"path":"cdn/yry-keyboard/index.css","size":1634,"ext":".css"},{"path":"cdn/yry-a11y/index.css","size":1579,"ext":".css"},{"path":"skills/rui-skills/help.mjs","size":1573,"ext":".mjs"},{"path":"cdn/yry-cat-warning/index.css","size":1572,"ext":".css"},{"path":"scripts/extract-scenario-data.mjs","size":1564,"ext":".mjs"},{"path":"scripts/lib/walk.mjs","size":729,"ext":".mjs"},{"path":"cdn/yry-kpi-card/index.css","size":1552,"ext":".css"},{"path":"skills/rui-analysis/help.mjs","size":1538,"ext":".mjs"},{"path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/panels/panel-timeline.css","size":1514,"ext":".css"},{"path":"cdn/yry-verify-report-head/index.css","size":1413,"ext":".css"},{"path":"skills/rui-reporter/help.mjs","size":1403,"ext":".mjs"},{"path":"cdn/yry-scene-tabs/index.css","size":1390,"ext":".css"},{"path":"skills/rui-code/help.mjs","size":1371,"ext":".mjs"},{"path":"cdn/yry-back-top/index.css","size":1370,"ext":".css"},{"path":"cdn/yry-pitfall-list/index.js","size":1365,"ext":".js"},{"path":"cdn/yry-cross-nav/index.css","size":1358,"ext":".css"},{"path":"cdn/yry-scorecard/index.css","size":1358,"ext":".css"},{"path":"skills/rui-doc/help.mjs","size":1343,"ext":".mjs"},{"path":"cdn/yry-scene-health-bar/index.css","size":1339,"ext":".css"},{"path":"cdn/yry-info-cards/index.js","size":1318,"ext":".js"},{"path":"cdn/yry-accordion/index.js","size":1310,"ext":".js"},{"path":"skills/rui-yry/help.mjs","size":1309,"ext":".mjs"},{"path":"cdn/yry-health-bar/index.js","size":1295,"ext":".js"},{"path":"cdn/yry-tabs-panel/index.js","size":1288,"ext":".js"},{"path":"cdn/yry-doc-layer/index.css","size":1282,"ext":".css"},{"path":"scripts/pipeline.mjs","size":1270,"ext":".mjs"},{"path":"cdn/yry-check-item/index.js","size":1263,"ext":".js"},{"path":"cdn/yry-next-action/index.js","size":1263,"ext":".js"},{"path":"cdn/yry-tip-box/index.js","size":1259,"ext":".js"},{"path":"cdn/yry-path-link/index.css","size":1221,"ext":".css"},{"path":"cdn/yry-sub-title/index.css","size":1212,"ext":".css"},{"path":"cdn/fonts/index.css","size":1170,"ext":".css"},{"path":"cdn/yry-progress-bar/index.css","size":1103,"ext":".css"},{"path":"cdn/yry-milestone-grid/index.js","size":1100,"ext":".js"},{"path":"cdn/yry-overview-grid/index.js","size":1097,"ext":".js"},{"path":"skills/rui-version/help.mjs","size":1094,"ext":".mjs"},{"path":"cdn/yry-day-plan/index.js","size":1077,"ext":".js"},{"path":"cdn/yry-badge/index.js","size":1071,"ext":".js"},{"path":"cdn/yry-review-cards/index.js","size":1062,"ext":".js"},{"path":"cdn/yry-item-cards/index.css","size":1030,"ext":".css"},{"path":"cdn/yry-test-page/index.js","size":986,"ext":".js"},{"path":"skills/rui-plan/help.mjs","size":948,"ext":".mjs"},{"path":"skills/rui-update/help.mjs","size":936,"ext":".mjs"},{"path":"scripts/generate-review-html.mjs","size":912,"ext":".mjs"},{"path":"cdn/yry-scene-footer/index.css","size":909,"ext":".css"},{"path":"skills/rui-init/help.mjs","size":904,"ext":".mjs"},{"path":"cdn/yry-card-grid/index.css","size":899,"ext":".css"},{"path":"scripts/scrub-html.mjs","size":886,"ext":".mjs"},{"path":"cdn/yry-kpi-grid/index.css","size":873,"ext":".css"},{"path":"vitest.config.mjs","size":781,"ext":".mjs"},{"path":"cdn/yry-footer-note/index.css","size":780,"ext":".css"},{"path":"cdn/yry-layer-agents/index.css","size":657,"ext":".css"},{"path":"cdn/yry-layer-rules/index.css","size":656,"ext":".css"},{"path":"cdn/yry-layer-refs/index.css","size":655,"ext":".css"},{"path":"skills/rui-html/templates/shared-a.css","size":654,"ext":".css"},{"path":"cdn/yry-review/index.js","size":545,"ext":".js"}];
+const DEP_EDGES = [{"from":"skills/rui-bot/lib/report-sections.mjs","to":"skills/rui-bot/lib/report-constants.mjs","type":"import"},{"from":"skills/rui-bot/lib/report-sections.mjs","to":"skills/rui-bot/lib/bot-health-analysis.mjs","type":"import"},{"from":"skills/rui-bot/lib/report-sections.mjs","to":"lib/scoring.mjs","type":"import"},{"from":"skills/rui-bundle-analyze/analyze.mjs","to":"lib/fs.mjs","type":"import"},{"from":"tests/skills/rui-npm.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"skills/rui-trends/lib/trend-report.mjs","to":"lib/fs.mjs","type":"import"},{"from":"skills/rui-bot/lib/loop-report.mjs","to":"lib/fs.mjs","type":"import"},{"from":"skills/rui-bot/lib/loop-report.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-bot/lib/loop-report.mjs","to":"skills/rui-bot/send.mjs","type":"dynamic"},{"from":"skills/rui-bot/lib/loop-report.mjs","to":"lib/fs.mjs","type":"dynamic"},{"from":"scripts/fix-checklist-content.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-bot/lib/health-report.mjs","to":"skills/rui-bot/lib/report-constants.mjs","type":"import"},{"from":"skills/rui-bot/lib/health-report.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-bot/lib/health-report.mjs","to":"lib/scoring.mjs","type":"import"},{"from":"skills/rui-bot/lib/health-report.mjs","to":"skills/rui-bot/lib/report-trend.mjs","type":"import"},{"from":"skills/rui-bot/lib/health-report.mjs","to":"skills/rui-bot/lib/report-sections.mjs","type":"import"},{"from":"skills/rui-bot/lib/health-report.mjs","to":"skills/rui-bot/lib/bot-health-analysis.mjs","type":"import"},{"from":"skills/rui-bot/lib/health-report.mjs","to":"lib/fs.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-cmd.mjs","to":"lib/fs.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-cmd.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-cmd.mjs","to":"skills/rui-bot/lib/bot-transport.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-cmd.mjs","to":"skills/rui-bot/lib/bot-message.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-cmd.mjs","to":"skills/rui-bot/lib/bot-health-analysis.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-cmd.mjs","to":"skills/rui-bot/lib/bot-health-trend.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-cmd.mjs","to":"skills/rui-bot/lib/report-trend.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-cmd.mjs","to":"skills/rui-bot/lib/bot-health-structure.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-cmd.mjs","to":"skills/rui-bot/lib/bot-health-analysis.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-cmd.mjs","to":"skills/rui-bot/lib/bot-health-diagnostics.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-cmd.mjs","to":"lib/arch-check.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-cmd.mjs","to":"lib/scoring.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-cmd.mjs","to":"skills/rui-bot/lib/bot-health-filesize.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-cmd.mjs","to":"skills/rui-bot/lib/bot-health-deps.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-cmd.mjs","to":"lib/selfimprove-generator.mjs","type":"dynamic"},{"from":"skills/rui-bot/lib/report-trend.mjs","to":"skills/rui-bot/lib/report-constants.mjs","type":"import"},{"from":"skills/rui-bot/lib/report-trend.mjs","to":"lib/fs.mjs","type":"import"},{"from":"skills/rui-bot/lib/report-trend.mjs","to":"skills/rui-bot/lib/bot-health-analysis.mjs","type":"import"},{"from":"skills/rui-bot/lib/report-trend.mjs","to":"lib/scoring.mjs","type":"import"},{"from":"lib/scoring.mjs","to":"lib/constants.mjs","type":"import"},{"from":"lib/selfimprove-generator.mjs","to":"lib/fs.mjs","type":"import"},{"from":"lib/selfimprove-generator.mjs","to":"lib/constants.mjs","type":"import"},{"from":"lib/selfimprove-generator.mjs","to":"lib/scoring.mjs","type":"import"},{"from":"lib/recommend.mjs","to":"lib/constants.mjs","type":"import"},{"from":"lib/recommend.mjs","to":"lib/recommend-cli.mjs","type":"import"},{"from":"lib/recommend.mjs","to":"lib/recommend-detect.mjs","type":"import"},{"from":"scripts/lib/generate.mjs","to":"scripts/lib/paths.mjs","type":"import"},{"from":"scripts/lib/generate.mjs","to":"scripts/lib/scrub.mjs","type":"import"},{"from":"scripts/lib/generate.mjs","to":"scripts/lib/escape.mjs","type":"import"},{"from":"lib/proposals.mjs","to":"lib/constants.mjs","type":"import"},{"from":"lib/proposals.mjs","to":"lib/tty.mjs","type":"import"},{"from":"lib/proposals.mjs","to":"lib/fs.mjs","type":"import"},{"from":"lib/proposals.mjs","to":"lib/engine/diagnostics.mjs","type":"import"},{"from":"lib/proposals.mjs","to":"lib/engine/evaluate.mjs","type":"import"},{"from":"lib/proposals.mjs","to":"lib/engine/materialize.mjs","type":"import"},{"from":"lib/proposals.mjs","to":"lib/engine/upgrade.mjs","type":"import"},{"from":"lib/record.mjs","to":"lib/constants.mjs","type":"import"},{"from":"lib/record.mjs","to":"lib/tty.mjs","type":"import"},{"from":"lib/record.mjs","to":"lib/fs.mjs","type":"import"},{"from":"skills/rui-bot/send.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-bot/send.mjs","to":"lib/fs.mjs","type":"import"},{"from":"skills/rui-bot/send.mjs","to":"skills/rui-bot/lib/bot-transport.mjs","type":"import"},{"from":"skills/rui-bot/send.mjs","to":"skills/rui-bot/lib/bot-message.mjs","type":"import"},{"from":"skills/rui-bot/send.mjs","to":"skills/rui-bot/lib/bot-health-trend.mjs","type":"import"},{"from":"skills/rui-bot/send.mjs","to":"skills/rui-bot/lib/bot-health-cmd.mjs","type":"import"},{"from":"skills/rui-bot/send.mjs","to":"skills/rui-bot/lib/health-report.mjs","type":"dynamic"},{"from":"skills/rui-bot/lib/bot-message.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-message.mjs","to":"lib/fs.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-message.mjs","to":"skills/rui-bot/lib/bot-health-diagnostics.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-message.mjs","to":"skills/rui-bot/lib/bot-health-trend.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-diagnostics.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-diagnostics.mjs","to":"lib/engine/diagnostics.mjs","type":"import"},{"from":"lib/branch-check.mjs","to":"lib/constants.mjs","type":"import"},{"from":"lib/branch-check.mjs","to":"lib/tty.mjs","type":"import"},{"from":"lib/branch-check.mjs","to":"lib/fs.mjs","type":"import"},{"from":"lib/engine/diagnostics.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-html/lib/extractor.mjs","to":"lib/fs.mjs","type":"import"},{"from":"lib/arch-check.mjs","to":"lib/fs.mjs","type":"import"},{"from":"lib/arch-check.mjs","to":"lib/constants.mjs","type":"import"},{"from":"lib/arch-check.mjs","to":"lib/arch-dimensions/kernel-paradigm.mjs","type":"import"},{"from":"lib/arch-check.mjs","to":"lib/arch-dimensions/solid.mjs","type":"import"},{"from":"lib/arch-check.mjs","to":"lib/arch-dimensions/quality.mjs","type":"import"},{"from":"skills/rui-html/lib/generator.mjs","to":"skills/rui-html/lib/templates.mjs","type":"import"},{"from":"skills/rui-html/lib/generator.mjs","to":"skills/rui-html/lib/extractor.mjs","type":"import"},{"from":"skills/rui-story/lib/format.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-story/lib/format.mjs","to":"skills/rui-story/lib/extract.mjs","type":"import"},{"from":"skills/rui-trends/lib/trend-fetch.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-trends/lib/trend-fetch.mjs","to":"lib/fs.mjs","type":"import"},{"from":"lib/engine/evaluate.mjs","to":"lib/constants.mjs","type":"import"},{"from":"lib/engine/evaluate.mjs","to":"lib/tty.mjs","type":"import"},{"from":"lib/engine/evaluate.mjs","to":"lib/fs.mjs","type":"import"},{"from":"lib/engine/materialize.mjs","to":"lib/constants.mjs","type":"import"},{"from":"lib/engine/materialize.mjs","to":"lib/tty.mjs","type":"import"},{"from":"lib/engine/materialize.mjs","to":"lib/fs.mjs","type":"import"},{"from":"lib/arch-dimensions/quality.mjs","to":"lib/constants.mjs","type":"import"},{"from":"lib/arch-dimensions/quality.mjs","to":"lib/arch-helpers.mjs","type":"import"},{"from":"tests/integration/cross-references.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/integration/cross-references.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"skills/rui-story/rui-story.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-story/rui-story.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-story/rui-story.mjs","to":"lib/fs.mjs","type":"import"},{"from":"skills/rui-story/rui-story.mjs","to":"lib/network.mjs","type":"import"},{"from":"skills/rui-story/rui-story.mjs","to":"skills/rui-story/lib/extract.mjs","type":"import"},{"from":"skills/rui-story/rui-story.mjs","to":"skills/rui-story/lib/format.mjs","type":"import"},{"from":"skills/rui-story/rui-story.mjs","to":"skills/rui-story/lib/cli.mjs","type":"import"},{"from":"skills/rui-story/rui-story.mjs","to":"skills/rui-story/lib/infer.mjs","type":"import"},{"from":"skills/rui-story/rui-story.mjs","to":"skills/rui-story/lib/merge.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-deps.mjs","to":"skills/rui-bot/lib/bot-health-analysis.mjs","type":"import"},{"from":"tests/skills/rui-bot.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/skills/rui-bot.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"tests/skills/rui-bot.test.mjs","to":"skills/rui-bot/lib/health-report.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-structure.mjs","to":"skills/rui-bot/lib/bot-health-analysis.mjs","type":"import"},{"from":"lib/audit.mjs","to":"lib/constants.mjs","type":"import"},{"from":"lib/audit.mjs","to":"lib/tty.mjs","type":"import"},{"from":"lib/audit.mjs","to":"lib/fs.mjs","type":"import"},{"from":"lib/arch-dimensions/solid.mjs","to":"lib/constants.mjs","type":"import"},{"from":"lib/arch-dimensions/solid.mjs","to":"lib/arch-helpers.mjs","type":"import"},{"from":"skills/rui-npm/lib/account.mjs","to":"skills/rui-npm/lib/npm-utils.mjs","type":"import"},{"from":"skills/rui-npm/lib/account.mjs","to":"skills/rui-npm/lib/auth.mjs","type":"import"},{"from":"skills/rui-npm/lib/account.mjs","to":"skills/rui-npm/lib/publish.mjs","type":"import"},{"from":"tests/skills/cdn-degrade.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/skills/rui-trends.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/skills/rui-trends.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"lib/arch-dimensions/kernel-paradigm.mjs","to":"lib/constants.mjs","type":"import"},{"from":"lib/arch-dimensions/kernel-paradigm.mjs","to":"lib/arch-helpers.mjs","type":"import"},{"from":"tests/skills/cdn-load-order.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"skills/rui-npm/lib/publish.mjs","to":"skills/rui-npm/lib/npm-utils.mjs","type":"import"},{"from":"skills/rui-npm/lib/publish.mjs","to":"skills/rui-npm/lib/auth.mjs","type":"import"},{"from":"tests/unit/engine.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/unit/engine.test.mjs","to":"lib/engine/evaluate.mjs","type":"dynamic"},{"from":"skills/rui-bot/lib/bot-health-filesize.mjs","to":"skills/rui-bot/lib/bot-health-analysis.mjs","type":"import"},{"from":"tests/skills/rui-claude.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/skills/rui-claude.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"skills/rui-npm/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-npm/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"scripts/lib/scrub.mjs","to":"scripts/lib/escape.mjs","type":"import"},{"from":"scripts/lib/scrub.mjs","to":"scripts/lib/breadcrumb.mjs","type":"import"},{"from":"tests/integration/cross-cat.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/integration/cross-cat.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"skills/rui-bundle-analyze/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-bundle-analyze/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"scripts/lib/extract.mjs","to":"scripts/lib/paths.mjs","type":"import"},{"from":"lib/fs.mjs","to":"lib/constants.mjs","type":"import"},{"from":"scripts/lib/breadcrumb.mjs","to":"scripts/lib/paths.mjs","type":"import"},{"from":"scripts/lib/breadcrumb.mjs","to":"scripts/lib/escape.mjs","type":"import"},{"from":"skills/rui-trends/rui-trends.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-trends/rui-trends.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-trends/rui-trends.mjs","to":"skills/rui-trends/lib/trend-fetch.mjs","type":"import"},{"from":"skills/rui-trends/rui-trends.mjs","to":"skills/rui-trends/lib/format.mjs","type":"import"},{"from":"skills/rui-trends/rui-trends.mjs","to":"skills/rui-trends/lib/trend-report.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-transport.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-transport.mjs","to":"lib/fs.mjs","type":"import"},{"from":"skills/rui-html/rui-html.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-html/rui-html.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-html/rui-html.mjs","to":"lib/fs.mjs","type":"import"},{"from":"skills/rui-html/rui-html.mjs","to":"skills/rui-html/lib/extractor.mjs","type":"import"},{"from":"skills/rui-html/rui-html.mjs","to":"skills/rui-html/lib/generator.mjs","type":"import"},{"from":"skills/rui-html/rui-html.mjs","to":"skills/rui-html/lib/templates.mjs","type":"import"},{"from":"skills/rui-trends/lib/format.mjs","to":"lib/fs.mjs","type":"import"},{"from":"tests/rules/rules.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/rules/rules.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"skills/rui-import/sync.mjs","to":"lib/fs.mjs","type":"import"},{"from":"skills/rui-import/sync.mjs","to":"skills/rui-import/lib/config.mjs","type":"import"},{"from":"skills/rui-import/sync.mjs","to":"skills/rui-import/lib/cli.mjs","type":"import"},{"from":"skills/rui-import/sync.mjs","to":"skills/rui-import/lib/scan.mjs","type":"import"},{"from":"skills/rui-import/sync.mjs","to":"skills/rui-import/lib/api.mjs","type":"import"},{"from":"skills/rui-import/sync.mjs","to":"skills/rui-import/lib/upload.mjs","type":"import"},{"from":"skills/rui-import/sync.mjs","to":"skills/rui-import/lib/pull.mjs","type":"import"},{"from":"skills/rui-import/lib/pull.mjs","to":"lib/network.mjs","type":"import"},{"from":"skills/rui-import/lib/pull.mjs","to":"skills/rui-import/lib/config.mjs","type":"import"},{"from":"tests/skills/rui.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/skills/rui.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"skills/rui-npm/lib/read.mjs","to":"skills/rui-npm/lib/npm-utils.mjs","type":"import"},{"from":"lib/recommend-cli.mjs","to":"lib/plugin-utils.mjs","type":"import"},{"from":"lib/recommend-cli.mjs","to":"lib/constants.mjs","type":"import"},{"from":"lib/recommend-cli.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-health/health.mjs","to":"lib/fs.mjs","type":"import"},{"from":"skills/rui-health/health.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-claude/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-claude/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"skills/rui-npm/lib/tools.mjs","to":"skills/rui-npm/lib/npm-utils.mjs","type":"import"},{"from":"tests/infrastructure/framework-presence.test.mjs","to":"tests/lib/vitest-adapter.mjs","type":"dynamic"},{"from":"tests/infrastructure/framework-presence.test.mjs","to":"tests/lib/vitest-adapter.mjs","type":"dynamic"},{"from":"tests/infrastructure/framework-presence.test.mjs","to":"tests/lib/vitest-adapter.mjs","type":"dynamic"},{"from":"tests/run.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-bot/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-bot/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"tests/skills/theme-tokens.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/skills/theme-tokens.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"skills/rui-trends/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-trends/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"tests/integration/knowledge-graph.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/integration/knowledge-graph.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"skills/rui-story/lib/extract.mjs","to":"lib/fs.mjs","type":"import"},{"from":"tests/agents/agents.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/agents/agents.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"tests/skills/shared-global.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/skills/shared-global.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"skills/rui/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"skills/rui-import/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-import/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"skills/rui-npm/lib/auth.mjs","to":"skills/rui-npm/lib/npm-utils.mjs","type":"import"},{"from":"tests/skills/npm-package.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/skills/npm-package.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"skills/rui-npm/rui-npm.mjs","to":"skills/rui-npm/lib/npm-utils.mjs","type":"import"},{"from":"skills/rui-npm/rui-npm.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-npm/rui-npm.mjs","to":"skills/rui-npm/lib/cli.mjs","type":"import"},{"from":"skills/rui-npm/rui-npm.mjs","to":"skills/rui-npm/lib/read.mjs","type":"import"},{"from":"skills/rui-npm/rui-npm.mjs","to":"skills/rui-npm/lib/write.mjs","type":"import"},{"from":"skills/rui-npm/rui-npm.mjs","to":"skills/rui-npm/lib/account.mjs","type":"import"},{"from":"skills/rui-npm/rui-npm.mjs","to":"skills/rui-npm/lib/tools.mjs","type":"import"},{"from":"skills/rui-npm/rui-npm.mjs","to":"skills/rui-npm/lib/auth.mjs","type":"import"},{"from":"skills/rui-npm/rui-npm.mjs","to":"skills/rui-npm/lib/publish.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-trend.mjs","to":"skills/rui-bot/lib/bot-health-analysis.mjs","type":"import"},{"from":"skills/rui-bot/lib/bot-health-trend.mjs","to":"lib/constants.mjs","type":"import"},{"from":"tests/skills/shared-js-api.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/skills/shared-js-api.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"skills/rui-html/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-html/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"tests/skills/rui-import.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/skills/rui-import.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"skills/rui-npm/lib/write.mjs","to":"skills/rui-npm/lib/npm-utils.mjs","type":"import"},{"from":"skills/rui-npm/lib/npm-utils.mjs","to":"lib/fs.mjs","type":"import"},{"from":"tests/lib/vitest-adapter.mjs","to":"tests/lib/helpers.mjs","type":"re-export"},{"from":"tests/skills/cat-b-theme.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/skills/cat-b-theme.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"scripts/verify-breadcrumb.mjs","to":"scripts/lib/paths.mjs","type":"import"},{"from":"skills/rui-import/lib/cli.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-import/lib/cli.mjs","to":"lib/plugin-utils.mjs","type":"import"},{"from":"skills/rui-import/lib/cli.mjs","to":"skills/rui-import/lib/config.mjs","type":"import"},{"from":"tests/skills/cat-a-theme.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/skills/cat-a-theme.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"skills/rui-story/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-story/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"lib/engine/upgrade.mjs","to":"lib/constants.mjs","type":"import"},{"from":"lib/engine/upgrade.mjs","to":"lib/tty.mjs","type":"import"},{"from":"lib/engine/upgrade.mjs","to":"lib/fs.mjs","type":"import"},{"from":"tests/skills/theme-components.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/skills/theme-components.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"tests/skills/rui-story.test.mjs","to":"tests/lib/test-harness.mjs","type":"import"},{"from":"tests/skills/rui-story.test.mjs","to":"tests/lib/helpers.mjs","type":"import"},{"from":"skills/rui-import/lib/api.mjs","to":"lib/network.mjs","type":"import"},{"from":"skills/rui-import/lib/api.mjs","to":"skills/rui-import/lib/config.mjs","type":"import"},{"from":"skills/rui-import/lib/api.mjs","to":"skills/rui-import/lib/scan.mjs","type":"import"},{"from":"skills/rui-import/lib/diagnose.mjs","to":"skills/rui-import/lib/config.mjs","type":"import"},{"from":"skills/rui-import/lib/diagnose.mjs","to":"skills/rui-import/lib/scan.mjs","type":"import"},{"from":"skills/rui-import/lib/diagnose.mjs","to":"skills/rui-import/lib/api.mjs","type":"import"},{"from":"skills/rui-story/lib/cli.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-story/lib/cli.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-story/lib/cli.mjs","to":"lib/plugin-utils.mjs","type":"import"},{"from":"skills/rui-import/lib/upload.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-import/lib/upload.mjs","to":"lib/concurrency.mjs","type":"import"},{"from":"skills/rui-import/lib/upload.mjs","to":"skills/rui-import/lib/scan.mjs","type":"import"},{"from":"skills/rui-import/lib/upload.mjs","to":"skills/rui-import/lib/api.mjs","type":"import"},{"from":"scripts/lib/paths.mjs","to":"lib/constants.mjs","type":"import"},{"from":"lib/network.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-story/lib/infer.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-story/lib/infer.mjs","to":"lib/network.mjs","type":"import"},{"from":"skills/rui-story/lib/infer.mjs","to":"lib/concurrency.mjs","type":"import"},{"from":"skills/rui-skills/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-skills/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"scripts/extract-scenario-data.mjs","to":"scripts/lib/walk.mjs","type":"import"},{"from":"scripts/extract-scenario-data.mjs","to":"scripts/lib/paths.mjs","type":"import"},{"from":"scripts/extract-scenario-data.mjs","to":"scripts/lib/extract.mjs","type":"import"},{"from":"skills/rui-analysis/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-analysis/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"skills/rui-reporter/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-reporter/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"skills/rui-code/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-code/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"skills/rui-doc/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-doc/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"skills/rui-yry/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-yry/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"skills/rui-import/lib/scan.mjs","to":"skills/rui-import/lib/config.mjs","type":"import"},{"from":"scripts/pipeline.mjs","to":"scripts/lib/walk.mjs","type":"import"},{"from":"scripts/pipeline.mjs","to":"scripts/lib/extract.mjs","type":"import"},{"from":"scripts/pipeline.mjs","to":"scripts/lib/generate.mjs","type":"import"},{"from":"lib/help-layout.mjs","to":"lib/constants.mjs","type":"import"},{"from":"lib/help-layout.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-version/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-version/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"skills/rui-plan/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-plan/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"skills/rui-update/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-update/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"scripts/generate-review-html.mjs","to":"scripts/lib/paths.mjs","type":"import"},{"from":"scripts/generate-review-html.mjs","to":"scripts/lib/extract.mjs","type":"import"},{"from":"scripts/generate-review-html.mjs","to":"scripts/lib/generate.mjs","type":"import"},{"from":"skills/rui-init/help.mjs","to":"lib/tty.mjs","type":"import"},{"from":"skills/rui-init/help.mjs","to":"lib/help-layout.mjs","type":"import"},{"from":"scripts/scrub-html.mjs","to":"scripts/lib/paths.mjs","type":"import"},{"from":"scripts/scrub-html.mjs","to":"scripts/lib/extract.mjs","type":"import"},{"from":"scripts/scrub-html.mjs","to":"scripts/lib/generate.mjs","type":"import"},{"from":"scripts/lib/walk.mjs","to":"scripts/lib/paths.mjs","type":"import"},{"from":"skills/rui-bot/lib/report-constants.mjs","to":"lib/constants.mjs","type":"import"},{"from":"skills/rui-import/lib/config.mjs","to":"lib/constants.mjs","type":"import"}];
+const STATS = {"largestFiles":[{"path":"docs/健康报告/health-2026-06-18.html","size":250845,"ext":".html"},{"path":"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html","size":141529,"ext":".html"},{"path":"cdn/故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/计划清单.html","size":137830,"ext":".html"},{"path":"docs/故事任务面板/计划清单/场景-3-验证报告与健康面板集成/计划清单.html","size":114992,"ext":".html"},{"path":"cdn/故事任务面板/cdn/场景-3-组件库与JS工具API/计划清单.html","size":111047,"ext":".html"},{"path":"cdn/故事任务面板/cdn/场景-5-npm包发布与版本管理/计划清单.html","size":110805,"ext":".html"},{"path":"cdn/故事任务面板/cdn/场景-2-双主题系统设计/计划清单.html","size":110438,"ext":".html"},{"path":"cdn/故事任务面板/cdn/场景-4-存量页面迁移/计划清单.html","size":110438,"ext":".html"},{"path":"docs/故事任务面板/自测/场景-6-第三方框架与服务自检/计划清单.html","size":107460,"ext":".html"},{"path":"docs/故事任务面板/架构/场景-8-架构健康度量仪表板/计划清单.html","size":107421,"ext":".html"},{"path":"docs/故事任务面板/自测/场景-3-文档代码一致性校验/计划清单.html","size":107411,"ext":".html"},{"path":"docs/故事任务面板/架构/场景-6-架构断言脚本化校验/计划清单.html","size":107350,"ext":".html"},{"path":"docs/故事任务面板/架构/场景-7-架构漂移持续监测/计划清单.html","size":107270,"ext":".html"},{"path":"docs/故事任务面板/架构/场景-5-信任边界与安全面/计划清单.html","size":107246,"ext":".html"},{"path":"docs/故事任务面板/自测/场景-4-安全面回归自检/计划清单.html","size":107234,"ext":".html"},{"path":"docs/故事任务面板/自测/场景-5-跨故事集成回归自检/计划清单.html","size":107203,"ext":".html"},{"path":"docs/故事任务面板/自改进/场景-5-经验技能化与记忆注入/计划清单.html","size":106930,"ext":".html"},{"path":"docs/故事任务面板/自测/场景-2-commit前增量自检/计划清单.html","size":106857,"ext":".html"},{"path":"docs/故事任务面板/自改进/场景-4-效果评估与闭环/计划清单.html","size":106660,"ext":".html"},{"path":"docs/故事任务面板/架构/场景-4-依赖变更影响/计划清单.html","size":106396,"ext":".html"}],"sizeByExt":{"(no ext)":15921,".json":271414,".pl":4427,".md":1478645,".html":15838284,".js":883162,".css":849720,".mjs":1126463,".py":46216},"sizeByDir":{".DS_Store":6148,".editorconfig":188,".eslintrc.json":411,".gitattributes":299,".gitignore":773,".prettierrc":160,".yry-docfix.pl":1086,".yry-rename-final.pl":3341,"CLAUDE.md":10677,"README.md":22511,"agents":128915,"cdn":5245180,"docs":13307012,"lib":214143,"package-lock.json":53840,"package.json":721,"rules":196943,"scripts":180385,"skills":913368,"tests":226848,"tsconfig.json":522,"vitest.config.mjs":781},"mostDependedOn":[{"path":"lib/constants.mjs","count":42},{"path":"lib/tty.mjs","count":33},{"path":"lib/fs.mjs","count":28},{"path":"tests/lib/test-harness.mjs","count":22},{"path":"tests/lib/helpers.mjs","count":19},{"path":"lib/help-layout.mjs","count":19},{"path":"skills/rui-bot/lib/bot-health-analysis.mjs","count":9},{"path":"scripts/lib/paths.mjs","count":8},{"path":"skills/rui-npm/lib/npm-utils.mjs","count":7},{"path":"skills/rui-import/lib/config.mjs","count":6}],"mostDependencies":[{"path":"skills/rui-bot/lib/bot-health-cmd.mjs","count":15},{"path":"skills/rui-story/rui-story.mjs","count":9},{"path":"skills/rui-npm/rui-npm.mjs","count":9},{"path":"skills/rui-bot/lib/health-report.mjs","count":7},{"path":"lib/proposals.mjs","count":7},{"path":"skills/rui-bot/send.mjs","count":7},{"path":"skills/rui-import/sync.mjs","count":7},{"path":"skills/rui-html/rui-html.mjs","count":6},{"path":"lib/arch-check.mjs","count":5},{"path":"skills/rui-trends/rui-trends.mjs","count":5}],"circularDeps":[],"totalSize":20514252,"totalFiles":1063,"oversizedFiles":[],"orphanFiles":[{"path":"cdn/yry-home/index.css","size":88708,"ext":".css"},{"path":"cdn/yry-scene/index.css","size":84465,"ext":".css"},{"path":"docs/趋势报告/js/trend-index.js","size":59469,"ext":".js"},{"path":"docs/健康报告/js/health-index.js","size":47406,"ext":".js"},{"path":"docs/自我改进/js/self-improve-index.js","size":44649,"ext":".js"},{"path":"cdn/yry-test/index.css","size":39670,"ext":".css"},{"path":"docs/自循环报告/js/loop-index.js","size":37825,"ext":".js"},{"path":"cdn/yry-plan/index.css","size":32508,"ext":".css"},{"path":"scripts/transform-breadcrumb-scenes.mjs","size":26341,"ext":".mjs"},{"path":"cdn/yry-source/index.css","size":24865,"ext":".css"},{"path":"cdn/yry-demo/index-stage.css","size":22695,"ext":".css"},{"path":"cdn/yry-demo/index.css","size":22650,"ext":".css"},{"path":"cdn/yry-health/index.css","size":22028,"ext":".css"},{"path":"cdn/shared/index.css","size":20941,"ext":".css"},{"path":"cdn/yry-checklist/index.css","size":19384,"ext":".css"},{"path":"cdn/yry-scene/index-base.css","size":18384,"ext":".css"},{"path":"cdn/yry-notify-panel/index.css","size":18375,"ext":".css"},{"path":"cdn/yry-graph/index.css","size":17641,"ext":".css"},{"path":"cdn/yry-test-page/index.css","size":17593,"ext":".css"},{"path":"cdn/yry-faq-panel/index.css","size":17000,"ext":".css"},{"path":"cdn/yry-review/index.css","size":16832,"ext":".css"},{"path":"cdn/shared-reports/index.css","size":16123,"ext":".css"},{"path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/panels/panel-risks.css","size":14864,"ext":".css"},{"path":"docs/故事任务面板/计划清单/场景-2-清单交互组件实现/panels/panel-checklist.css","size":12640,"ext":".css"},{"path":"cdn/theme/index.css","size":12433,"ext":".css"},{"path":"cdn/yry-story-panel/index.css","size":11513,"ext":".css"},{"path":"cdn/yry-inline-helpers/index.css","size":11348,"ext":".css"},{"path":"cdn/yry-arch/index.css","size":11058,"ext":".css"},{"path":"skills/rui-analysis/scripts/extract-structure.mjs","size":10827,"ext":".mjs"},{"path":"docs/cdn/shared.css","size":9955,"ext":".css"}],"barrelFiles":[],"sizeHistogram":{"0-1 KB":48,"1-10 KB":587,"10-100 KB":392,"100-500 KB":36,"500 KB-1 MB":0,">1 MB":0},"maxDependencyDepth":7,"depthDist":{"1":14,"2":98,"3":461,"4-5":440,"6-8":50}};
+const DIFF = null;
+
+// ── D3 setup ─────────────────────────────────────────────────────────
+const vis = d3.select("#vis");
+const width = () => vis.node().clientWidth;
+const height = () => vis.node().clientHeight;
+let currentView = "treemap";
+
+// Color scale for extensions
+const extColors = d3.scaleOrdinal(d3.schemeTableau10);
+const extColorMap = {};
+function getExtColor(ext) {
+  if (!extColorMap[ext]) extColorMap[ext] = extColors(ext);
+  return extColorMap[ext];
+}
+
+// ── Treemap ──────────────────────────────────────────────────────────
+function renderTreemap() {
+  vis.selectAll("*").remove();
+
+  const svg = vis.append("svg")
+    .attr("width", width())
+    .attr("height", height());
+
+  const g = svg.append("g");
+
+  // Zoom
+  const zoom = d3.zoom()
+    .scaleExtent([1, 20])
+    .on("zoom", (event) => g.attr("transform", event.transform));
+
+  svg.call(zoom);
+
+  // Hierarchy
+  const root = d3.hierarchy(TREEMAP_DATA)
+    .sum(d => d.value || 0)
+    .sort((a, b) => b.value - a.value);
+
+  // Treemap layout
+  d3.treemap()
+    .size([width(), height()])
+    .padding(1)
+    .round(true)(root);
+
+  // Color scale
+  const color = d3.scaleOrdinal()
+    .domain([...new Set(root.leaves().map(d => d.data.ext || "dir"))])
+    .range(d3.schemeTableau10);
+
+  // Draw
+  const cell = g.selectAll("g")
+    .data(root.leaves())
+    .join("g")
+    .attr("transform", d => `translate(${d.x0},${d.y0})`);
+
+  // Click to show breadcrumb (zoom to parent concept)
+  cell.on("click", (event, d) => {
+    // Navigate to parent via zoom
+    const parent = d.parent;
+    if (parent && parent !== root) {
+      const leaves = parent.leaves();
+      const x0 = d3.min(leaves, l => l.x0);
+      const y0 = d3.min(leaves, l => l.y0);
+      const x1 = d3.max(leaves, l => l.x1);
+      const y1 = d3.max(leaves, l => l.y1);
+      const dx = x1 - x0;
+      const dy = y1 - y0;
+
+      svg.transition().duration(500).call(
+        zoom.transform,
+        d3.zoomIdentity
+          .translate(width() / 2, height() / 2)
+          .scale(Math.min(8, 0.9 / Math.max(dx / width(), dy / height())))
+          .translate(-(x0 + dx / 2), -(y0 + dy / 2))
+      );
+    }
+  });
+
+  cell.append("rect")
+    .attr("width", d => Math.max(0, d.x1 - d.x0))
+    .attr("height", d => Math.max(0, d.y1 - d.y0))
+    .attr("fill", d => getExtColor(d.data.ext || "dir"))
+    .attr("fill-opacity", 0.85)
+    .attr("stroke", "#1e1f2b")
+    .attr("stroke-width", 0.5)
+    .on("mouseover", showTooltip)
+    .on("mousemove", moveTooltip)
+    .on("mouseout", hideTooltip);
+
+  // Labels (only on larger cells)
+  cell.append("text")
+    .attr("x", 3)
+    .attr("y", 12)
+    .attr("font-size", 10)
+    .attr("fill", "#fff")
+    .attr("font-family", "system-ui, sans-serif")
+    .text(d => {
+      const w = d.x1 - d.x0;
+      const h = d.y1 - d.y0;
+      if (w < 30 || h < 14) return "";
+      const name = d.data.name || "";
+      return w > name.length * 6 ? name : name.slice(0, Math.floor(w / 6) - 1) + "…";
+    });
+
+  // Breadcrumb (root = all files)
+  updateBreadcrumb([TREEMAP_DATA]);
+
+  // Color legend
+  renderLegend();
+
+  // Store zoom for reset
+  vis.node()._zoom = zoom;
+  vis.node()._svg = svg;
+  vis.node()._g = g;
+}
+
+// ── Color Legend ─────────────────────────────────────────────────────
+function renderLegend() {
+  // Build extension → total size map for legend
+  const extSizes = {};
+  const leaves = d3.hierarchy(TREEMAP_DATA).leaves();
+  for (const d of leaves) {
+    const ext = d.data.ext || "dir";
+    extSizes[ext] = (extSizes[ext] || 0) + (d.data.value || 0);
+  }
+  const entries = Object.entries(extSizes)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 15);
+
+  const legend = d3.select("#legend");
+  legend.html("");
+  legend.style("display", currentView === "treemap" ? "flex" : "none");
+
+  for (const [ext, size] of entries) {
+    const item = legend.append("div").attr("class", "legend-item");
+    item.append("div")
+      .attr("class", "legend-swatch")
+      .style("background", getExtColor(ext === "(no ext)" ? "dir" : ext));
+    item.append("span")
+      .attr("class", "legend-label")
+      .text(ext + " (" + formatB(size) + ")");
+  }
+}
+
+// ── Dependency Graph ─────────────────────────────────────────────────
+function renderGraph() {
+  vis.selectAll("*").remove();
+
+  const svg = vis.append("svg")
+    .attr("width", width())
+    .attr("height", height());
+
+  const g = svg.append("g");
+
+  const zoom = d3.zoom()
+    .scaleExtent([0.1, 10])
+    .on("zoom", (event) => g.attr("transform", event.transform));
+
+  svg.call(zoom);
+
+  // Size scale for nodes
+  const sizeScale = d3.scaleSqrt()
+    .domain([0, d3.max(DEP_NODES, d => d.size) || 1])
+    .range([3, 40]);
+
+  // Color by extension
+  const nodeColor = d => getExtColor(d.ext || "dir");
+
+  // Build adjacency for links
+  const nodeMap = new Map(DEP_NODES.map(n => [n.path, n]));
+
+  const links = DEP_EDGES
+    .filter(e => nodeMap.has(e.from) && nodeMap.has(e.to))
+    .map(e => ({
+      source: e.from,
+      target: e.to,
+      type: e.type || "import",
+    }));
+
+  // Simulation
+  const simulation = d3.forceSimulation(DEP_NODES)
+    .force("link", d3.forceLink(links).id(d => d.path).distance(80))
+    .force("charge", d3.forceManyBody().strength(-200))
+    .force("center", d3.forceCenter(width() / 2, height() / 2))
+    .force("collision", d3.forceCollide().radius(d => sizeScale(d.size) + 4));
+
+  // Draw links
+  const link = g.append("g")
+    .selectAll("line")
+    .data(links)
+    .join("line")
+    .attr("class", d => d.type === "require" ? "link link-require" : d.type === "dynamic" ? "link link-dynamic" : "link")
+    .attr("stroke-width", d => d.type === "dynamic" ? 0.8 : 1);
+
+  // Draw nodes
+  const node = g.append("g")
+    .selectAll("g")
+    .data(DEP_NODES)
+    .join("g")
+    .call(d3.drag()
+      .on("start", (event, d) => {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+      })
+      .on("drag", (event, d) => {
+        d.fx = event.x;
+        d.fy = event.y;
+      })
+      .on("end", (event, d) => {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+      })
+    );
+
+  node.append("circle")
+    .attr("r", d => sizeScale(d.size))
+    .attr("fill", nodeColor)
+    .attr("fill-opacity", 0.8)
+    .attr("stroke", "#1e1f2b")
+    .attr("stroke-width", 1)
+    .on("mouseover", showGraphTooltip)
+    .on("mousemove", moveTooltip)
+    .on("mouseout", hideTooltip);
+
+  // Labels on larger nodes
+  node.append("text")
+    .attr("class", "node-label")
+    .attr("text-anchor", "middle")
+    .attr("dy", d => sizeScale(d.size) + 12)
+    .text(d => {
+      const r = sizeScale(d.size);
+      if (r < 12) return "";
+      const parts = d.path.split("/");
+      return parts[parts.length - 1];
+    });
+
+  simulation.on("tick", () => {
+    link
+      .attr("x1", d => d.source.x)
+      .attr("y1", d => d.source.y)
+      .attr("x2", d => d.target.x)
+      .attr("y2", d => d.target.y);
+
+    node.attr("transform", d => `translate(${d.x},${d.y})`);
+  });
+
+  // Store for reset
+  vis.node()._zoom = zoom;
+  vis.node()._svg = svg;
+  vis.node()._g = g;
+}
+
+// ── Tooltips ─────────────────────────────────────────────────────────
+const tooltip = d3.select("#tooltip");
+
+function showTooltip(event, d) {
+  const p = d.data.path || d.data.name;
+  tooltip
+    .classed("visible", true)
+    .html(`
+      <div class="tt-path">${escapeH(p)}</div>
+      <div class="tt-size">${formatB(d.value || d.data.value)}</div>
+      ${d.data.ext ? `<div style="color:#6b7089">ext: ${escapeH(d.data.ext)}</div>` : ""}
+    `);
+}
+
+function showGraphTooltip(event, d) {
+  tooltip
+    .classed("visible", true)
+    .html(`
+      <div class="tt-path">${escapeH(d.path)}</div>
+      <div class="tt-size">${formatB(d.size)}</div>
+    `);
+}
+
+function moveTooltip(event) {
+  tooltip
+    .style("left", (event.pageX + 12) + "px")
+    .style("top", (event.pageY - 28) + "px");
+}
+
+function hideTooltip() {
+  tooltip.classed("visible", false);
+}
+
+function escapeH(s) {
+  return (s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function formatB(bytes) {
+  if (!bytes || bytes === 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return (bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1) + " " + units[i];
+}
+
+// ── Breadcrumb ───────────────────────────────────────────────────────
+function updateBreadcrumb(ancestors) {
+  // For treemap: show directory hierarchy
+  let html = '<button onclick="resetZoom()">📦 root</button>';
+  for (let i = 0; i < Math.min(ancestors.length, 6); i++) {
+    html += `<button>${escapeH(ancestors[i].name || "root")}</button>`;
+  }
+  d3.select("#breadcrumb").html(html);
+}
+
+// ── Controls ─────────────────────────────────────────────────────────
+function switchView(view) {
+  currentView = view;
+  d3.select("#btn-treemap").classed("active", view === "treemap");
+  d3.select("#btn-graph").classed("active", view === "graph");
+
+  if (view === "treemap") renderTreemap();
+  else {
+    d3.select("#legend").style("display", "none");
+    d3.select("#breadcrumb").html("");
+    renderGraph();
+  }
+}
+
+function resetZoom() {
+  const svg = vis.node()._svg;
+  const zoom = vis.node()._zoom;
+  if (svg && zoom) {
+    svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
+  }
+}
+
+// ── Init ─────────────────────────────────────────────────────────────
+renderTreemap();
+
+// Handle resize
+window.addEventListener("resize", () => {
+  if (currentView === "treemap") renderTreemap();
+  else renderGraph();
+});
+</script>
+</body>
+</html>

@@ -8,14 +8,14 @@
   <link rel="preconnect" href="https://unpkg.com" crossorigin>
   <link rel="dns-prefetch" href="https://unpkg.com">
   <link rel="preload" href="https://unpkg.com/vue@3/dist/vue.global.prod.js" as="script" crossorigin fetchpriority="high">
-  <link rel="preload" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/theme.css" as="style" crossorigin>
-  <link rel="preload" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared.css" as="style" crossorigin>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/theme.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared.css">
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/theme\/index\.css" as="style" crossorigin>
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared\/index\.css" as="style" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/theme\/index\.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared\/index\.css">
   <title>YrY CDN — 故事与场景</title>
   <meta name="description" content="YrY CDN 共享前端资源库 — 62 组件 · 5 故事 · 13 场景">
-  <link rel="stylesheet" href="yry-home.css">
-  <link rel="stylesheet" href="yry-inline-helpers.css">
+  <link rel="stylesheet" href="yry\-home\/index\.css">
+  <link rel="stylesheet" href="yry\-inline\-helpers\/index\.css">
   <!-- ═══ 组件样式 (在 yry-home.css 之后加载,确保组件样式优先) ═══ -->
   <link rel="stylesheet" href="yry-breadcrumb/index.css">
   <link rel="stylesheet" href="yry-stats-grid/index.css">
@@ -89,7 +89,7 @@
   <yry-selfimprove-panel></yry-selfimprove-panel>
   <yry-faq-panel></yry-faq-panel>
 
-  <script src="shared.js" defer></script>
+  <script src="shared\/index\.js" defer></script>
 
   <!-- ═══ 组件加载器 (按依赖顺序: tag-chip → item-card → card-grid → ...) ═══ -->
   <script src="yry-tag-chip/index.js"></script>
@@ -135,7 +135,7 @@
         { value: '92分', label: '组件质量', modifier: 'health', sub: 'CSS+主题+API+脚本', tooltip: '组件质量 = CSS组件(22个).主题(2个).YrY.* API(9个).脚本(2个) 四类组件的健康评分均分。当前 92分/A级' },
         { value: '90分', label: '主题完备', modifier: 'health', sub: 'Mono + System', tooltip: '双主题完备性 = Cat A (Mono 等宽) + Cat B (System 无衬线) 双主题的 14 设计令牌覆盖率和一致性评分' },
         { value: '88分', label: 'API 一致', modifier: 'health', sub: '9 个 YrY.* API', tooltip: 'JS API 一致性 = 9 个 YrY.* 工具函数的命名规范.参数签名.返回值类型.错误处理的一致性评分' },
-        { value: '96分', label: '加载链', modifier: 'health', sub: '5 步加载链', tooltip: '加载链稳定 = shared.css->theme.css->组件CSS->Vue3->组件JS 五步加载链的可靠性.容错.fallback 评分' },
+        { value: '96分', label: '加载链', modifier: 'health', sub: '5 步加载链', tooltip: '加载链稳定 = shared/index.css->theme/index.css->组件CSS->Vue3->组件JS 五步加载链的可靠性.容错.fallback 评分' },
         { value: 62, label: '组件', modifier: 'health', tooltip: '62 个 CDN 组件: 10 大类别(CSS+Vue+JS+CE)' },
         { value: 5,  label: '故事', modifier: 'health', tooltip: '5 个故事: CDN 共享前端资源库 . YryBreadcrumb 组件 . YryBackTop 组件 . YryCrossNav 组件 . YrySceneNav 组件' },
         { value: 13, label: '场景', modifier: 'health', tooltip: '13 个场景分布在 5 个故事中，每个场景 7 件标准交付物' }
@@ -146,7 +146,7 @@
         label: { text: '📦 v1.2.0', panel: 'selfimprove', title: '点击打开自改进面板查看 CDN 演进分析' },
         buttons: [
           { icon: '⏰', name: '调度',   desc: '加载·字体·动画', color: 'var(--yry-cyan, #22d3ee)', panel: 'cron',
-            title: 'CDN 资源加载调度 — 5 步加载链: shared.css → theme.css → 组件 CSS → Vue 3 → 组件 JS。字体 woff2 预加载、动画延迟 100ms、shared.css 必备基线。详见场景 1:CDN 资源加载与页面渲染' },
+            title: 'CDN 资源加载调度 — 5 步加载链: shared/index.css → theme/index.css → 组件 CSS → Vue 3 → 组件 JS。字体 woff2 预加载、动画延迟 100ms、shared/index.css 必备基线。详见场景 1:CDN 资源加载与页面渲染' },
           { icon: '🔔', name: '通知',   desc: '升级·兼容·安全', color: '#ef4444',                  panel: 'notify',
             title: 'CDN 版本通知 — 跟踪 yry-cdn-lib 的版本变更:MAJOR 不兼容警告、MINOR 新组件、SECURITY 紧急修复。订阅 GitHub releases 与 npm notifications。详见场景 5:npm 包发布与版本管理' },
           { icon: '🧬', name: '自改进', desc: '主题·组件·API', color: '#a78bfa',                  panel: 'selfimprove',
@@ -171,7 +171,7 @@
         panels:      [
           { icon: '🧬', panel: 'selfimprove', title: '查看 62 组件的演进历史与未来规划 (自改进面板)' },
           { icon: '🔔', panel: 'notify',      title: 'CDN 版本变更通知:MAJOR 不兼容警告、MINOR 新组件、SECURITY 紧急修复' },
-          { icon: '⏰', panel: 'cron',        title: 'CDN 资源加载调度:5 步加载链、字体预加载、动画延迟、shared.css 基线' },
+          { icon: '⏰', panel: 'cron',        title: 'CDN 资源加载调度:5 步加载链、字体预加载、动画延迟、shared/index.css 基线' },
           { icon: '❓', panel: 'faq',         title: '62 组件与 9 API 使用指南、6 步迁移路径、最佳实践' }
         ],
         sections:    [
@@ -636,7 +636,7 @@
             items: [
               { num: '场景 1', name: 'CDN 资源加载与页面渲染',
                 nameHref: '故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/index.md', nameTarget: '_blank',
-                desc: 'jsDelivr URL 规范 · 加载顺序约束 · 字体/动画延迟 · shared.css 必备基线',
+                desc: 'jsDelivr URL 规范 · 加载顺序约束 · 字体/动画延迟 · shared/index.css 必备基线',
                 meta: YrY.sceneMeta('故事任务面板/cdn/场景-1-cdn资源加载与页面渲染') },
               { num: '场景 2', name: '双主题系统设计',
                 nameHref: '故事任务面板/cdn/场景-2-双主题系统设计/index.md', nameTarget: '_blank',
@@ -835,7 +835,7 @@
       retryCount = retryCount || 0;
       var controller = new AbortController();
       var timeoutId = setTimeout(function() { controller.abort(); }, FETCH_TIMEOUT_MS);
-      fetch('./cdn-summary.json', { signal: controller.signal })
+      fetch('cdn\-summary\/index\.json', { signal: controller.signal })
         .then(function(r) { clearTimeout(timeoutId); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(function(data) {
           if (!data || !data.latest) return;

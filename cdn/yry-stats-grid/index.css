@@ -17,7 +17,7 @@
      - info   : 灰色 (信息)
      - accent : 主题黄 (强调)
 
-   依赖 design tokens (来自 cdn/yry-checklist.css :root 或 cdn/theme.css):
+   依赖 design tokens (来自 cdn/yry-checklist/index.css :root 或 cdn/theme/index.css):
      --bg-card / --border / --radius / --shadow / --shadow-lg
      --pass / --warn / --info / --accent / --text3
 

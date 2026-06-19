@@ -11,7 +11,7 @@
 
    页面使用方式:
      <link rel="stylesheet" href="../../../../cdn/yry-tabs-panel/index.css">
-     <script src="../../../../cdn/shared.js"></script>
+     <script src="../../../../cdn/shared/index.js"></script>
      <script>YrY.initTabs();</script>
    ═══════════════════════════════════════════════════════════════════════════ */
 

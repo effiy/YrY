@@ -27,9 +27,10 @@
 
 | 维度 | 数量 | 说明 |
 |------|------|------|
-| **CSS 资源** | 6 个文件 | `shared.css` + `theme.css` + `theme-mono.css` + `yry-checklist.css` + `yry-scene.css` + `yry-home.css` + `yry-inline-helpers.css` |
-| **JS 资源** | 1 个核心 | `shared.js` (命名空间 `YrY.*`,9 个工具 API) |
-| **字体** | 1 套 (4 字重) | JetBrains Mono (woff2, 400/500/600/700) |
+| **CSS 资源** | 9 个文件 | `shared/index.css` + `theme/index.css` + `theme-mono/index.css` + `fonts/index.css` + `yry-checklist/index.css` + `yry-scene/index.css` + `yry-home/index.css` + `yry-inline-helpers/index.css` + `yry-a11y/index.css` |
+| **JS 资源** | 2 个核心 | `shared/index.js` (YrY.*,9 工具 API) + `shared-reports/index.js` (报告页工具) |
+| **字体** | 1 套 (4 字重) | JetBrains Mono (woff2, 400/500/600/700,自托管) |
+| **数据快照** | 4 个 JSON | `health-report/index.json` + `cdn-summary/index.json` + `releases/index.json` + `components-manifest/index.json` |
 | **CSS 组件类** | 22+ 个 | 全部以 `.yry-*` / `.yry-mono-*` 命名空间 |
 | **Vue 3 组件** | 17 个 | 零打包、自定义元素、`*-ready` 事件 |
 | **设计令牌** | 14 个 `:root` 变量 | Surfaces / Brand / Semantic / Text / Elevation |
@@ -44,19 +45,35 @@
 ```
 cdn/
 ├── index.html                # ★ CDN 库首页 — 概览 · 统计 · 跨页导航 · 2 故事 × 10 场景
-├── shared.css                # ★ 必备基线 — Reset · 动画 · 面包屑 · 横向导航 · Toolbar · Toast · 健康报告
-├── shared.js                 # ★ 必备基线 — YrY 全局命名空间 · 9 个工具 API · 折叠/展开
-├── theme.css                 # ★ Cat B 主题 — 14 设计令牌 · 统计卡 · 标签页 · 折叠套件 · 进度条
-├── theme-mono.css            # ★ Cat A 主题 — JetBrains Mono 主题 · 图表容器 · 图例 · 脉冲圆点
-├── yry-checklist.css         # 计划清单专属 — 勾选交互 · 进度条 · 风险行 · 标签页 · 批量操作栏
-├── yry-scene.css             # 场景文档共享 — 35 场景页统一引用 · 排版 · 代码块 · 表格 · 徽章
-├── yry-home.css              # 文档首页专属 — 六层结构布局 · 统计卡片 · 场景网格
-├── yry-inline-helpers.css    # 内联工具类 — 文字色 · 背景色 · 间距等 demo 辅助
-├── shared-reports.css        # 报告页面公共样式 (5 个报告 index 页共享)
-├── shared-reports.js         # 报告 JS 工具库 (YrYReports.* — 20+ 函数)
+├── shared/                   # ★ 必备基线 — Reset · 动画 · 面包屑 · 横向导航 · Toolbar · Toast · 健康报告 (index.html/css/js)
+├── theme/                    # ★ Cat B 主题 — 14 设计令牌 · 统计卡 · 标签页 · 折叠套件 · 进度条 (index.html/css)
+├── theme-mono/               # ★ Cat A 主题 — JetBrains Mono 主题 · 图表容器 · 图例 · 脉冲圆点 (index.html/css)
+├── yry-checklist/            # 计划清单专属 — 勾选交互 · 进度条 · 风险行 · 标签页 · 批量操作栏 (index.html/css)
+├── yry-scene/                # 场景文档共享 — 35 场景页统一引用 · 排版 · 代码块 · 表格 · 徽章 (index.html/css/index-base.css)
+├── yry-home/                 # 文档首页专属 — 六层结构布局 · 统计卡片 · 场景网格 (index.html/css)
+├── yry-inline-helpers/       # 内联工具类 — 文字色 · 背景色 · 间距等 demo 辅助 (index.html/css)
+├── shared-reports/           # 报告页面公共样式 + JS (5 个报告 index 页共享, index.html/css/js)
+├── yry-cdn-detect/           # CDN 加载耗时检测 (Live Bar 徽章, index.html/js)
+├── yry-arch/                 # 架构图页基类样式 + 导出 PNG/PDF/SVG (index.html/css/js)
+├── yry-graph/                # 知识图谱页基类样式 (index.html/css)
+├── yry-plan/                 # 计划清单状态持久化 (index.html/css/js)
+├── yry-source/               # 源码页面样式 + 弹窗管理 (index.html/css/js)
+├── yry-test/                 # 测试面板样式 (index.html/css/js)
+├── yry-review/               # 审查报告样式 + tab/折叠 (index.html/css/js)
+├── yry-demo/                 # 演示页样式 (index.html/css/index-stage.css)
+├── yry-health/               # 健康报告样式 (index.html/css)
+├── yry-quiz/                 # 自测答题交互 (index.html/js)
+├── yry-simulator/            # 管线模拟器 (index.html/js)
+├── yry-typewriter/           # 终端模拟器 (index.html/js)
+├── yry-story-panel/          # 故事任务面板共享样式 (index.html/css)
+├── yry-a11y/                 # 无障碍通用样式 (index.html/css)
+├── fonts/                    # 自托管字体 — JetBrains Mono 4 字重 (index.html/css + 4 woff2)
+├── health-report/            # CDN 健康报告快照数据 (index.html + index.json,机器人命令自动维护)
+├── cdn-summary/              # CDN 跨版本摘要 (index.html + index.json,首页 index.html 用)
+├── releases/                 # 版本发布历史 (index.html + index.json,SemVer + 迁移说明)
+├── components-manifest/      # 组件清单数据 (index.html + index.json,工具链消费)
 ├── package.json              # npm 包元数据 (files 白名单、keywords、仓库地址)
 ├── .npmignore                # npm 排除文件清单
-├── fonts.css + fonts/        # JetBrains Mono 字体声明 + 4 个 woff2 文件
 │
 ├── yry-back-top/             # Vue 3 组件 — 回到顶部 (零配置自动初始化)
 ├── yry-breadcrumb/           # Vue 3 组件 — 面包屑 (a11y 完备 · 异步模板加载)
@@ -123,10 +140,10 @@ cdn/
 
 ```html
 <!-- 加载顺序: 字体 → 共享 → 主题 → 共享 JS -->
-<link rel="stylesheet" href="../../../../cdn/fonts.css">
-<link rel="stylesheet" href="../../../../cdn/shared.css">
-<link rel="stylesheet" href="../../../../cdn/theme-mono.css">
-<script src="../../../../cdn/shared.js"></script>
+<link rel="stylesheet" href="../../../../cdn/fonts\/index\.css">
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme-mono/index.css">
+<script src="../../../../cdn/shared/index.js"></script>
 ```
 
 **CSS 类名前缀**: `.yry-mono-*` (容器 / 卡片 / 圆点 / 图例 / 页脚)
@@ -137,9 +154,9 @@ cdn/
 
 ```html
 <!-- 加载顺序: 共享 → 主题 → 共享 JS -->
-<link rel="stylesheet" href="../../../../cdn/shared.css">
-<link rel="stylesheet" href="../../../../cdn/theme.css">
-<script src="../../../../cdn/shared.js"></script>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<script src="../../../../cdn/shared/index.js"></script>
 ```
 
 **CSS 类名前缀**: `.yry-*` (容器 / 统计卡 / 标签页 / 折叠套件 / 进度条 / 按钮 / 链接卡)
@@ -148,8 +165,8 @@ cdn/
 
 ```html
 <!-- 1. 共享样式 -->
-<link rel="stylesheet" href="../../../../cdn/shared.css">
-<link rel="stylesheet" href="../../../../cdn/theme.css">
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
 
 <!-- 2. 组件样式 (在主题之后,确保覆盖默认) -->
 <link rel="stylesheet" href="../../../../cdn/yry-breadcrumb/index.css">
@@ -161,7 +178,7 @@ cdn/
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 
 <!-- 4. 共享 JS -->
-<script src="../../../../cdn/shared.js"></script>
+<script src="../../../../cdn/shared/index.js"></script>
 
 <!-- 5. 组件 loader (按依赖顺序: tag-chip → item-card → card-grid → story-card → scene-card → ...) -->
 <script src="../../../../cdn/yry-tag-chip/index.js"></script>
@@ -179,7 +196,7 @@ cdn/
 
 ## 🧩 CSS 组件速查
 
-### shared.css (所有页面必备基线)
+### shared/index.css (所有页面必备基线)
 
 | 组件 | CSS 类 | 适用主题 |
 |------|--------|----------|
@@ -191,7 +208,7 @@ cdn/
 | 页脚 | `.yry-footer` | 全部 |
 | 健康报告容器 | `.h-container` · `.h-tabs` · `.h-tab` · `.h-panel` · `.h-bc` · `.h-header` · `.h-hero` · `.h-score-ring` | 健康报告 |
 
-### theme.css (Category B — System 主题)
+### theme/index.css (Category B — System 主题)
 
 | 组件 | CSS 类 | 主题 |
 |------|--------|------|
@@ -207,7 +224,7 @@ cdn/
 | 章节 | `.yry-section` | B |
 | 卡片 | `.yry-card` | B |
 
-### theme-mono.css (Category A — Mono 主题)
+### theme-mono/index.css (Category A — Mono 主题)
 
 | 组件 | CSS 类 | 主题 |
 |------|--------|------|
@@ -394,7 +411,7 @@ applyAll();
 
 ## 🎨 设计令牌 (CSS 变量)
 
-`theme.css` 定义 14 个 `:root` 变量,所有 Category B 页面通过 `var(--yry-xxx)` 引用,Category A 页面用 `theme-mono.css` 的等宽字体覆盖。
+`theme/index.css` 定义 14 个 `:root` 变量,所有 Category B 页面通过 `var(--yry-xxx)` 引用,Category A 页面用 `theme-mono/index.css` 的等宽字体覆盖。
 
 | 分组 | 变量 | 默认值 | 用途 |
 |------|------|--------|------|
@@ -426,9 +443,9 @@ YrY CDN 自身的演进以「**故事 + 场景 + 8 交付物**」的标准化结
 
 | # | 场景 | 核心交付 | 涉及文件 |
 |---|------|---------|----------|
-| **1** | [CDN 资源加载与页面渲染](故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/index.md) | jsDelivr URL 规范 · 加载顺序约束 · 字体/动画延迟 · shared.css 必备基线 | `index.html` · `package.json` · `shared.css` |
-| **2** | [双主题系统设计](故事任务面板/cdn/场景-2-双主题系统设计/index.md) | Category A (Mono) vs Category B (System) 选型 · 14 设计令牌 · CSS 变量分层 | `theme.css` · `theme-mono.css` · `fonts.css` |
-| **3** | [组件库与 JS 工具 API](故事任务面板/cdn/场景-3-组件库与JS工具API/index.md) | 22 CSS 组件类名约定 · 9 个 YrY.* 工具函数 · 命名空间与语义化 | `shared.js` · `shared.css` · 17 个 `yry-*` 组件 |
+| **1** | [CDN 资源加载与页面渲染](故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/index.md) | jsDelivr URL 规范 · 加载顺序约束 · 字体/动画延迟 · shared/index.css 必备基线 | `index.html` · `package.json` · `shared/index.css` |
+| **2** | [双主题系统设计](故事任务面板/cdn/场景-2-双主题系统设计/index.md) | Category A (Mono) vs Category B (System) 选型 · 14 设计令牌 · CSS 变量分层 | `theme/index.css` · `theme-mono/index.css` · `fonts/index.css` |
+| **3** | [组件库与 JS 工具 API](故事任务面板/cdn/场景-3-组件库与JS工具API/index.md) | 22 CSS 组件类名约定 · 9 个 YrY.* 工具函数 · 命名空间与语义化 | `shared.js` · `shared/index.css` · 17 个 `yry-*` 组件 |
 | **4** | [存量页面迁移](故事任务面板/cdn/场景-4-存量页面迁移/index.md) | 删除内联样式 → 替换 `.yry-*` 类名 · 保留页面专属 CSS · 6 步迁移清单 | 55+ 消费页面 |
 | **5** | [npm 包发布与版本管理](故事任务面板/cdn/场景-5-npm包发布与版本管理/index.md) | `package.json` 字段 · `files` 白名单 · jsDelivr 同步 · 版本号策略 | `package.json` · `.npmignore` |
 
@@ -478,9 +495,9 @@ npm install yry-cdn
 或通过 jsDelivr CDN 引用(无需安装):
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/theme.css">
-<script src="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared\/index\.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/theme\/index\.css">
+<script src="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared\/index\.js"></script>
 ```
 
 ### 包信息
@@ -492,7 +509,7 @@ npm install yry-cdn
 | **main** | `shared.js` |
 | **license** | MIT |
 | **repository** | `git+https://github.com/effiyichengliang/YrY.git` |
-| **files** | `shared.css` · `shared.js` · `theme.css` · `theme-mono.css` · `fonts.css` · `fonts/*.woff2` · `yry-checklist.css` · `yry-scene.css` · `yry-home.css` · `yry-breadcrumb/*` · `README.md` |
+| **files** | `shared/index.css` · `shared.js` · `theme/index.css` · `theme-mono/index.css` · `fonts/index.css` · `fonts/*.woff2` · `yry-checklist.css` · `yry-scene.css` · `yry-home.css` · `yry-breadcrumb/*` · `README.md` |
 
 ---
 
@@ -506,12 +523,12 @@ npm install yry-cdn
    - 面包屑、cross-nav、tabs、stats、toast
 2. **添加** `<link>` 标签加载对应的 CDN CSS
    ```html
-   <link rel="stylesheet" href="../../../../cdn/shared.css">
-   <link rel="stylesheet" href="../../../../cdn/theme.css">  <!-- 或 theme-mono.css -->
+   <link rel="stylesheet" href="../../../../cdn/shared/index.css">
+   <link rel="stylesheet" href="../../../../cdn/theme/index.css">  <!-- 或 theme-mono/index.css -->
    ```
 3. **添加** `<script>` 标签加载 `shared.js`
    ```html
-   <script src="../../../../cdn/shared.js"></script>
+   <script src="../../../../cdn/shared/index.js"></script>
    ```
 4. **替换** CSS 类名为 `yry-*` 前缀版本
    - `class="container"` → `class="yry-container"`

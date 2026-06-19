@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — cdn-summary · CDN 摘要数据
+  数据源: cdn-summary.json (跨多版本聚合的 CDN 健康摘要,首页 index.html 用)
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY cdn-summary · CDN 摘要</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 12px 14px; border-radius: 6px; font-size: .72rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; max-height: 600px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  <h1>📊 cdn-summary · CDN 摘要</h1>
+  <p>CDN 跨多版本聚合的摘要:最新版本、综合分、等级、日期范围、6 维度趋势摘要、8 诊断标签总数。</p>
+
+  <h2>消费者</h2>
+  <p><a href="../index.html" style="color:var(--yry-cyan, #22d3ee)">📄 CDN 首页 index.html</a> (用于渲染顶部 stats 摘要)</p>
+
+  <h2>数据预览</h2>
+  <pre id="data">加载中...</pre>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · cdn-summary · 2026</p>
+
+  <script>
+    fetch('index.json').then(r => r.json()).then(d => {
+      document.getElementById('data').textContent = JSON.stringify(d, null, 2);
+    }).catch(e => {
+      document.getElementById('data').textContent = '❌ 加载失败: ' + e.message;
+    });
+  </script>
+</body>
+</html>

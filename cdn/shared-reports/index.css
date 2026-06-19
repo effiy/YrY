@@ -5,8 +5,8 @@
    本文件集中管理所有报告索引页和详情页的公共 CSS，消除 health-report.mjs /
    loop-report.mjs / trend-report.mjs 中的重复内联样式。
 
-   依赖: cdn/theme.css (提供 --yry-* design tokens)
-   加载: <link rel="stylesheet" href="../../cdn/shared-reports.css">
+   依赖: cdn/theme/index.css (提供 --yry-* design tokens)
+   加载: <link rel="stylesheet" href="../../cdn/shared-reports/index.css">
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── Design tokens (fallback，theme.css 未加载时生效) ──────────────────── */

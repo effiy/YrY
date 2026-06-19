@@ -2,7 +2,7 @@
    YrY CDN — YryTabsPanel · 标签页 + 面板切换 样式
    适用: 审查 · 测试面板 · 演示 · 计划清单 · 源码 (所有 Category B 文档)
 
-   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+   依赖 design tokens (来自 cdn/theme/index.css 或页面 :root):
      --yry-accent / --yry-text2 / --yry-text3 / --yry-border
      --yry-fadeInDown / --yry-fadeInUp (keyframes 定义)
 
@@ -14,7 +14,7 @@
      </div>
      <div class="yry-panel on" id="panelOverview">...</div>
      <div class="yry-panel" id="panelDetails">...</div>
-     <script src="../../../../cdn/shared.js"></script>
+     <script src="../../../../cdn/shared/index.js"></script>
      <script>YrY.initTabs();</script>
    ═══════════════════════════════════════════════════════════════════════════ */
 

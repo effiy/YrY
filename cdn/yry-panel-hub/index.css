@@ -17,7 +17,7 @@
        { detail: { panel: <name> }, bubbles: true })
      - 页面通过 addEventListener('panel-hub-select', ...) 接收后调用自己的面板 API
 
-   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+   依赖 design tokens (来自 cdn/theme/index.css 或页面 :root):
      --yry-bg-card / --yry-border / --yry-radius
      --yry-shadow / --yry-shadow-lg
      --yry-text / --yry-text2 / --yry-text3 / --yry-cyan

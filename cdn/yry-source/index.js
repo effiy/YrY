@@ -2,10 +2,10 @@
    YrY CDN — yry-source-page.js · 源码页面共享 JS 工具
 
    适用: 所有 源码.html 页面 (35+ 文件)
-   依赖: cdn/shared.js (提供 YrY.toast, YrY.switchPanel, YrY.esc)
+   依赖: cdn/shared/index.js (提供 YrY.toast, YrY.switchPanel, YrY.esc)
 
    消除 35 个源码页面中重复的 inline JS 函数。
-   加载: <script src="../../../../cdn/yry-source-page.js"></script>
+   加载: <script src="../../../../cdn/yry-source/index.js"></script>
    ═══════════════════════════════════════════════════════════════════════════ */
 
 (function() {

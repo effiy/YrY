@@ -28,42 +28,42 @@
   "engines": {
     "node": ">=18"
   },
-  "main": "shared.js",
-  "style": "shared.css",
-  "browser": "shared.js",
-  "unpkg": "shared.js",
-  "jsdelivr": "shared.js",
+  "main": "shared/index.js",
+  "style": "shared/index.css",
+  "browser": "shared/index.js",
+  "unpkg": "shared/index.js",
+  "jsdelivr": "shared/index.js",
   "sideEffects": [
     "*.css",
-    "shared.js",
-    "shared-reports.js",
+    "shared/index.js",
+    "shared-reports/index.js",
     "yry-*/index.css",
     "yry-*/index.js",
     "js/*.js"
   ],
   "exports": {
     ".": {
-      "style": "./shared.css",
-      "default": "./shared.js"
+      "style": "./shared/index.css",
+      "default": "./shared/index.js"
     },
-    "./shared.css": "./shared.css",
-    "./shared.js": "./shared.js",
-    "./theme.css": "./theme.css",
-    "./theme-mono.css": "./theme-mono.css",
-    "./fonts.css": "./fonts.css",
+    "./shared.css": "./shared/index.css",
+    "./shared.js": "./shared/index.js",
+    "./theme.css": "./theme/index.css",
+    "./theme-mono.css": "./theme-mono/index.css",
+    "./fonts.css": "./fonts/index.css",
     "./fonts/*": "./fonts/*",
-    "./shared-reports.css": "./shared-reports.css",
-    "./shared-reports.js": "./shared-reports.js",
+    "./shared-reports.css": "./shared-reports/index.css",
+    "./shared-reports.js": "./shared-reports/index.js",
     "./*": "./*"
   },
   "files": [
-    "shared.css",
-    "shared.js",
-    "shared-reports.css",
-    "shared-reports.js",
-    "theme.css",
-    "theme-mono.css",
-    "fonts.css",
+    "shared/index.css",
+    "shared/index.js",
+    "shared-reports/index.css",
+    "shared-reports/index.js",
+    "theme/index.css",
+    "theme-mono/index.css",
+    "fonts/index.css",
     "fonts/",
     "yry-*/index.html",
     "yry-*/index.js",
@@ -71,9 +71,9 @@
     "js/",
     "README.md",
     "CHANGELOG.md",
-    "components.manifest.json",
-    "releases.json",
-    "cdn-summary.json"
+    "components-manifest/index.json",
+    "releases/index.json",
+    "cdn-summary/index.json"
   ],
   "scripts": {
     "lint": "npm run lint:js && npm run lint:css",

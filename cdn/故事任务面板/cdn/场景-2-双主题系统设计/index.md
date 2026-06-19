@@ -16,8 +16,8 @@
 }}}%%
 flowchart TD
     ROOT["YrY 故事面板<br/>双主题系统"]:::root --> SPLIT{"页面类型<br/>判定"}
-    SPLIT -->|"Category A"| MONO["Mono 主题<br/>theme-mono.css"]:::mono
-    SPLIT -->|"Category B"| SYSTEM["System 主题<br/>theme.css"]:::sys
+    SPLIT -->|"Category A"| MONO["Mono 主题<br/>theme-mono/index.css"]:::mono
+    SPLIT -->|"Category B"| SYSTEM["System 主题<br/>theme/index.css"]:::sys
 
     MONO --> M_BG["深蓝黑底<br/>#020617"]:::color
     MONO --> M_FONT["JetBrains Mono<br/>等宽字体"]:::font
@@ -27,7 +27,7 @@ flowchart TD
     SYSTEM --> S_FONT["系统字体<br/>Segoe UI / Noto Sans SC"]:::font2
     SYSTEM --> S_COMP["62 组件 · 10 大类别<br/>布局/导航/卡片/场景/统计<br/>清单/风险/面板/工具/其他"]:::comp2
 
-    MONO --> SHARED["shared.css<br/>通用基础层"]:::base
+    MONO --> SHARED["shared/index.css<br/>通用基础层"]:::base
     SYSTEM --> SHARED
 
     classDef root fill:#1a1a2a,stroke:#a78bfa,color:#a9b1d6
@@ -56,7 +56,7 @@ flowchart TD
 | 图标语言 | 脉冲圆点 + 彩色标识点 | 语义色值（绿/红/黄/灰） |
 | 页面类型 | 架构图 · 知识图谱 | 审查 · 测试面板 · 演示 · 计划清单 · plan |
 | 外部依赖 | Google Fonts | 无 |
-| CSS 文件 | theme-mono.css (6.1 KB) | theme.css (11.3 KB) |
+| CSS 文件 | theme-mono/index.css (6.1 KB) | theme/index.css (11.3 KB) |
 
 ## 主要价值
 
@@ -83,7 +83,7 @@ flowchart TD
   'tertiaryColor': '#21232f'
 }}}%%
 flowchart LR
-    subgraph BASE["基础层 shared.css"]
+    subgraph BASE["基础层 shared/index.css"]
         RESET["CSS Reset<br/>border-box"]:::base
         ANIM["6 动画<br/>@keyframes"]:::base
         NAV["面包屑 · cross-nav"]:::base
@@ -92,13 +92,13 @@ flowchart LR
         UTIL["工具类 · 页脚"]:::base
     end
 
-    subgraph SYS["System 主题 theme.css"]
+    subgraph SYS["System 主题 theme/index.css"]
         TOKENS[":root 14 变量<br/>Surfaces · Brand<br/>Semantic · Text · Elevation"]:::sys
         BODY_S["body 样式<br/>系统字体"]:::sys
         COMP_S["62 组件 · 10 大类别<br/>布局/导航/卡片/场景/统计<br/>清单/风险/面板/工具/其他"]:::sys
     end
 
-    subgraph MONO_T["Mono 主题 theme-mono.css"]
+    subgraph MONO_T["Mono 主题 theme-mono/index.css"]
         BODY_M["body 样式<br/>JetBrains Mono 等宽<br/>#020617 深蓝黑底"]:::mono
         COMP_M["Mono 主题组件<br/>MonoContainer · Header<br/>PulseDot · Diagram<br/>Graph · MonoCards · Legend"]:::mono
     end
@@ -113,7 +113,7 @@ flowchart LR
 
 ### §0.2 设计令牌对比
 
-| 令牌分组 | System (theme.css) | Mono (theme-mono.css) |
+| 令牌分组 | System (theme/index.css) | Mono (theme-mono/index.css) |
 |---------|--------------------|------------------------|
 | 背景色 | `--yry-bg: rgba(22,22,32,1)` (深紫黑) | `body { background: #020617 }` (深蓝黑) |
 | 卡片面 | `--yry-bg-card: linear-gradient(...)` (渐变) | `background: rgba(15,23,42,.5)` (半透明) |
@@ -123,8 +123,8 @@ flowchart LR
 | 圆角 | `--yry-radius: 12px` | `0.5rem` / `0.75rem` / `1rem` 硬编码 |
 | 阴影 | `--yry-shadow / --yry-shadow-lg` | 无阴影（扁平设计） |
 
-> 证据: `cdn/theme.css:11–39` — :root CSS 变量定义
-> 证据: `cdn/theme-mono.css:13–19` — body 背景
+> 证据: `cdn/theme/index.css:11–39` — :root CSS 变量定义
+> 证据: `cdn/theme-mono/index.css:13–19` — body 背景
 
 ### §0.3 设计决策
 
@@ -133,7 +133,7 @@ flowchart LR
 | Mono 不使用 CSS 变量 | 硬编码颜色值 | Mono 主题是固定视觉方案，不需要跨组件复用 |
 | System 使用 CSS 变量 | `:root` 14 变量 | 62 组件共享设计令牌，变量使颜色调整一次生效全局 |
 | 双文件非单文件 | 两个独立 CSS 文件 | 按需加载，Cat B 页面不加载 Mono 样式（节省 ~6 KB） |
-| shared.css 为共有基础 | 抽取交集 | Reset/动画/导航/Toolbar/Toast 两个主题都用到 |
+| shared/index.css 为共有基础 | 抽取交集 | Reset/动画/导航/Toolbar/Toast 两个主题都用到 |
 
 ### §0.4 响应式设计
 
@@ -142,23 +142,23 @@ flowchart LR
 | ≤ 768px | `.yry-container` padding → `24px 12px`，标题字号缩小，统计卡片 gap 缩小 | — |
 | ≤ 640px | — | `body` padding → `1rem`，`.yry-mono-container` padding → `0` |
 
-> 证据: `cdn/theme.css:217–223` — System 响应式
-> 证据: `cdn/theme-mono.css:104–107` — Mono 响应式
+> 证据: `cdn/theme/index.css:217–223` — System 响应式
+> 证据: `cdn/theme-mono/index.css:104–107` — Mono 响应式
 
 ### §0.5 动画体系
 
 | 动画名称 | 定义位置 | 用途 | 使用方 |
 |---------|---------|------|--------|
-| `yry-fadeInUp` | shared.css | 面板内容淡入上浮 | System (.yry-panel, .yry-section) |
-| `yry-fadeInDown` | shared.css | 标题/导航淡入下移 | System (.yry-header, .yry-stats, .yry-tabs, .yry-bar-wrap) |
-| `yry-slideDown` | shared.css | 折叠套件展开 | System (.yry-suite-body) |
-| `yry-pulse` | shared.css | Toast 脉冲光晕 | System (.yry-toast) |
-| `yry-modalIn` | shared.css | 弹窗淡入缩放 | 预留 |
-| `yry-stepIn` | shared.css | 步骤条滑入 | 预留 |
-| `yry-pulse-mono` | theme-mono.css | 脉冲点呼吸 | Mono (.yry-pulse-dot) |
+| `yry-fadeInUp` | shared/index.css | 面板内容淡入上浮 | System (.yry-panel, .yry-section) |
+| `yry-fadeInDown` | shared/index.css | 标题/导航淡入下移 | System (.yry-header, .yry-stats, .yry-tabs, .yry-bar-wrap) |
+| `yry-slideDown` | shared/index.css | 折叠套件展开 | System (.yry-suite-body) |
+| `yry-pulse` | shared/index.css | Toast 脉冲光晕 | System (.yry-toast) |
+| `yry-modalIn` | shared/index.css | 弹窗淡入缩放 | 预留 |
+| `yry-stepIn` | shared/index.css | 步骤条滑入 | 预留 |
+| `yry-pulse-mono` | theme-mono/index.css | 脉冲点呼吸 | Mono (.yry-pulse-dot) |
 
-> 证据: `cdn/shared.css:15–20` — 6 个 @keyframes
-> 证据: `cdn/theme-mono.css:41` — `@keyframes yry-pulse-mono`
+> 证据: `cdn/shared/index.css:15–20` — 6 个 @keyframes
+> 证据: `cdn/theme-mono/index.css:41` — `@keyframes yry-pulse-mono`
 
 ### §0.6 安全考量
 
@@ -173,10 +173,10 @@ flowchart LR
 
 | 来源 | 行号 | 内容 |
 |------|------|------|
-| `cdn/theme.css` | 11–39 | :root 14 CSS 变量定义 |
-| `cdn/theme.css` | 42–254 | 62 组件样式全量（10 大类别） |
-| `cdn/theme-mono.css` | 13–19 | body 背景+字体 |
-| `cdn/theme-mono.css` | 22–108 | Mono 组件全量 |
+| `cdn/theme/index.css` | 11–39 | :root 14 CSS 变量定义 |
+| `cdn/theme/index.css` | 42–254 | 62 组件样式全量（10 大类别） |
+| `cdn/theme-mono/index.css` | 13–19 | body 背景+字体 |
+| `cdn/theme-mono/index.css` | 22–108 | Mono 组件全量 |
 | `cdn/README.md` | 17–42 | Category A/B 页面分类与加载 |
 | `cdn/README.md` | 46–65 | 组件速查表 |
 
@@ -189,7 +189,7 @@ flowchart LR
 | 层级 | 类型 | 工具 | 范围 |
 |------|------|------|------|
 | L1 视觉验证 | 截图对比 | 浏览器 | Cat A 页面 × 3，Cat B 页面 × 3 |
-| L2 令牌验证 | CSS 变量取值 | DevTools | theme.css :root 14 变量 |
+| L2 令牌验证 | CSS 变量取值 | DevTools | theme/index.css :root 14 变量 |
 | L3 组件覆盖 | 组件存在性 | DOM 查询 | 62 组件（10 大类别） |
 | L4 响应式 | 视口缩放 | DevTools | 768px / 640px 断点 |
 
@@ -199,7 +199,7 @@ flowchart LR
 
 | 维度 | 内容 |
 |------|------|
-| 测试目标 | 验证 theme.css :root 中 14 个 CSS 变量全部定义 |
+| 测试目标 | 验证 theme/index.css :root 中 14 个 CSS 变量全部定义 |
 | 前置条件 | 任意 Category B 页面 |
 | 步骤 | 1. DevTools → Elements → Styles → :root<br>2. 计数 `--yry-*` 变量 |
 | 期望 | 14 个变量：bg×4 + accent×2 + pass/fail/warn/info/skip + text×3 + shadow×2 + radius + border |
@@ -222,7 +222,7 @@ flowchart LR
 | 测试目标 | 验证 Cat A 页面不加载 System 组件，Cat B 页面不加载 Mono 组件 |
 | 前置条件 | Cat A 页面 |
 | 步骤 | 1. DevTools → Elements → Styles → Computed<br>2. 搜索 `.yry-container`（System 组件）<br>3. 在 Cat A 页面搜索 `.yry-mono-container`（Mono 组件） |
-| 期望 | Cat A 页面：`.yry-container` 无样式（theme.css 未加载），`.yry-mono-container` 有样式<br>Cat B 页面：`.yry-mono-container` 无样式，`.yry-container` 有样式 |
+| 期望 | Cat A 页面：`.yry-container` 无样式（theme/index.css 未加载），`.yry-mono-container` 有样式<br>Cat B 页面：`.yry-mono-container` 无样式，`.yry-container` 有样式 |
 | Gate A 交接 | 交叉验证通过 |
 
 #### TC4 — 响应式断点
@@ -259,23 +259,23 @@ flowchart LR
 |------|------|
 | 实施日期 | 2026-06-08 |
 | 实施者 | Claude (coder agent) |
-| 源码基线 | `cdn/theme.css` (224行), `cdn/theme-mono.css` (108行), `cdn/shared.css` (94行), `cdn/fonts.css` (30行) |
+| 源码基线 | `cdn/theme/index.css` (224行), `cdn/theme-mono/index.css` (108行), `cdn/shared/index.css` (94行), `cdn/fonts\/index\.css` (30行) |
 
 ### §2.2 Gate A 交接信号验证
 
 | # | 信号 | 验证结果 | 证据 |
 |---|------|---------|------|
-| G1 | System CSS 变量 | ✅ 通过 | `--yry-accent` → `#FFC107`, :root 含 14 个 `--yry-*` 变量 (theme.css:11-39) |
-| G2 | Mono 背景色 | ✅ 通过 | `body { background: #020617 }` → `rgb(2, 6, 23)` (theme-mono.css:14) |
-| G3 | Mono 字体 | ✅ 通过 | `font-family: 'JetBrains Mono', monospace` (theme-mono.css:15) |
+| G1 | System CSS 变量 | ✅ 通过 | `--yry-accent` → `#FFC107`, :root 含 14 个 `--yry-*` 变量 (theme/index.css:11-39) |
+| G2 | Mono 背景色 | ✅ 通过 | `body { background: #020617 }` → `rgb(2, 6, 23)` (theme-mono/index.css:14) |
+| G3 | Mono 字体 | ✅ 通过 | `font-family: 'JetBrains Mono', monospace` (theme-mono/index.css:15) |
 | G4 | 动画存在 | ✅ 通过 | 7 @keyframes 定义: yry-fadeInUp/Down, yry-slideDown, yry-pulse, yry-modalIn, yry-stepIn, yry-pulse-mono |
-| G5 | 响应式生效 | ✅ 通过 | 768px 断点: `.yry-container` padding → `24px 12px` (theme.css:217-223); 640px 断点 (theme-mono.css:104-107) |
+| G5 | 响应式生效 | ✅ 通过 | 768px 断点: `.yry-container` padding → `24px 12px` (theme/index.css:217-223); 640px 断点 (theme-mono/index.css:104-107) |
 
 **Gate A 结论**: 5/5 信号通过 ✅ → 放行进入 §2 实施阶段。
 
 ### §2.3 设计令牌验证
 
-**System 主题 (theme.css) :root 14 CSS 变量**:
+**System 主题 (theme/index.css) :root 14 CSS 变量**:
 
 | 分组 | 变量 | 值 | 状态 |
 |------|------|-----|------|
@@ -300,7 +300,7 @@ flowchart LR
 
 ### §2.4 组件覆盖验证
 
-**System 62 组件（10 大类别 · theme.css + shared.css）**:
+**System 62 组件（10 大类别 · theme/index.css + shared/index.css）**:
 
 | # | 组件类名 | 行号 | 用途 | 状态 |
 |---|---------|------|------|------|
@@ -319,7 +319,7 @@ flowchart LR
 | 13 | `.yry-verify-list` / `.yry-verify-item` | 内联于各页面 | 验证命令列表 | ✅ |
 | 14 | `.yry-cmd-grid` / `.yry-cmd-card` | 内联于各页面 | 命令卡片 | ✅ |
 
-**Mono 7 组件 (theme-mono.css)**:
+**Mono 7 组件 (theme-mono/index.css)**:
 
 | # | 组件类名 | 行号 | 用途 | 状态 |
 |---|---------|------|------|------|
@@ -351,7 +351,7 @@ flowchart LR
 | 600 | `fonts/jetbrains-mono-latin-600-normal.woff2` | 21.9 KB | ✅ |
 | 700 | `fonts/jetbrains-mono-latin-700-normal.woff2` | 21.9 KB | ✅ |
 
-自托管字体: Cat A 页面加载 `fonts.css` 提供 JetBrains Mono 字体，无需外部依赖。
+自托管字体: Cat A 页面加载 `fonts/index.css` 提供 JetBrains Mono 字体，无需外部依赖。
 
 ---
 
@@ -408,7 +408,7 @@ flowchart LR
 | D4 流程退化 | 否 | 响应式断点覆盖 768px/640px，动画体系 7 @keyframes | 覆盖完整 |
 | D5 依赖退化 | 否 | 字体完全自托管（4 woff2），零外部依赖 | 自包含 |
 | D6 文档过时 | 否 | 本文档 §0–§4 全部填充，代码锚点可追溯 | 文档同步 |
-| D7 配置漂移 | 否 | package.json files 含 fonts.css + fonts/*.woff2 | 配置一致 |
+| D7 配置漂移 | 否 | package.json files 含 fonts/index.css + fonts/*.woff2 | 配置一致 |
 
 ### §4.2 改进清单
 
@@ -422,11 +422,11 @@ flowchart LR
 
 | 诊断 | 触发状态 | 证据 | 基线引用 |
 |------|---------|------|---------|
-| D0 基线偏离 | 未触发 | 架构图 §0.1 主题架构 | `cdn/theme.css` · `cdn/theme-mono.css` |
-| D5 依赖退化 | 未触发 | Google Fonts → 自托管 | `cdn/fonts.css` · `cdn/fonts/` |
+| D0 基线偏离 | 未触发 | 架构图 §0.1 主题架构 | `cdn/theme/index.css` · `cdn/theme-mono/index.css` |
+| D5 依赖退化 | 未触发 | Google Fonts → 自托管 | `cdn/fonts\/index\.css` · `cdn/fonts/` |
 | D7 配置漂移 | 未触发 | package.json files 一致 | `cdn/package.json` |
 
-> **代码锚点**：双主题入口在 `cdn/theme.css:11-39`（System :root 变量）和 `cdn/theme-mono.css:13-19`（Mono body 样式）。组件覆盖验证在 `cdn/theme.css:42-224`（14 System 组件）和 `cdn/theme-mono.css:22-102`（7 Mono 组件）。
+> **代码锚点**：双主题入口在 `cdn/theme/index.css:11-39`（System :root 变量）和 `cdn/theme-mono/index.css:13-19`（Mono body 样式）。组件覆盖验证在 `cdn/theme/index.css:42-224`（14 System 组件）和 `cdn/theme-mono/index.css:22-102`（7 Mono 组件）。
 
 ---
 
@@ -434,8 +434,8 @@ flowchart LR
 
 | 角色 | 来源 | 证据 |
 |------|------|------|
-| 源码 | `cdn/theme.css:11–39` | :root 14 CSS 变量 |
-| 源码 | `cdn/theme-mono.css:13–19` | body 样式 Mono |
+| 源码 | `cdn/theme/index.css:11–39` | :root 14 CSS 变量 |
+| 源码 | `cdn/theme-mono/index.css:13–19` | body 样式 Mono |
 | 文档 | `cdn/README.md:17–42` | Category A/B 加载说明 |
 
 ### 变更记录

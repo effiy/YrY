@@ -26,7 +26,7 @@ function refactorFile(filePath) {
   const endIdx = raw.indexOf('</style>', startIdx);
   if (endIdx === -1) return { file: filePath, replaced: false, reason: 'no </style>' };
 
-  const cssPath = relative(dirname(filePath), resolve(root, 'cdn/yry-review-base.css'));
+  const cssPath = relative(dirname(filePath), resolve(root, 'cdn/yry-review/index.css'));
   const before = raw.slice(0, startIdx);
   const after = raw.slice(endIdx + '</style>'.length);
   const newRaw = before + `<link rel="stylesheet" href="${cssPath}">` + after;

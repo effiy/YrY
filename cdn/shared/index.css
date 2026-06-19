@@ -3,8 +3,8 @@
    适用: 架构图 · 知识图谱 · 审查 · 测试面板 · 演示 · 计划清单 · plan
 
    使用方式:
-     <link rel="stylesheet" href="../../../../cdn/shared.css">
-     <link rel="stylesheet" href="../../../../cdn/theme.css">   ← 仅 Category B 页面
+     <link rel="stylesheet" href="../../../../cdn/shared/index.css">
+     <link rel="stylesheet" href="../../../../cdn/theme/index.css">   ← 仅 Category B 页面
 
    对应场景文档:
      - docs/故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/

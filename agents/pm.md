@@ -78,7 +78,7 @@ flowchart LR
 | 每场景文件 | **index.md + 7 HTML**（计划清单/架构图/知识图谱/源码/测试面板/演示/审查） | 同左 |
 | 故事级文件 | 故事任务.md + 知识图谱.json + 知识图谱.html | 同左 |
 | 演示中心 | **演示/index.html**（各场景入口卡片 + 管线全景 + 快速命令） | 同左 |
-| HTML 结构 | 暗色主题 CSS 变量 · 面包屑导航 · 7 文档交叉导航 · CDN 深度正确 · shared.css/theme.css 引用 | 同左 |
+| HTML 结构 | 暗色主题 CSS 变量 · 面包屑导航 · 7 文档交叉导航 · CDN 深度正确 · shared/index.css/theme.css 引用 | 同左 |
 
 > 任一场景缺失任一 HTML 文件或故事级文件缺失，视为 rui init verify 失败。每场景 7 个 HTML 从 index.md 的 §0-§4 各节派生：计划清单 ← §0+§1+§2+§4，架构图 ← §0 Mermaid，知识图谱 ← 知识图谱.json，源码 ← §2 产物清单，测试面板 ← §1+§3，演示 ← §0+§2，审查 ← §4。
 

@@ -13,7 +13,7 @@
 import { describe, it, assert, run } from '../lib/test-harness.mjs';
 import { fileExists, readFile, PROJECT_ROOT } from '../lib/helpers.mjs';
 
-const JS_PATH = 'cdn/shared.js';
+const JS_PATH = 'cdn/shared/index.js';
 
 describe('shared.js API — 公共方法测试', () => {
   // ── File integrity ────────────────────────────────────────────────

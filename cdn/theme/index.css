@@ -4,8 +4,8 @@
 
    依赖: shared.css (需先加载)
    使用方式:
-     <link rel="stylesheet" href="../../../../cdn/shared.css">
-     <link rel="stylesheet" href="../../../../cdn/theme.css">
+     <link rel="stylesheet" href="../../../../cdn/shared/index.css">
+     <link rel="stylesheet" href="../../../../cdn/theme/index.css">
 
    对应场景文档:
      - docs/故事任务面板/yry-cdn/场景-2-双主题系统设计/

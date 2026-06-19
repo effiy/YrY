@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>模板架构与 CSS 设计系统 · 计划清单</title>
 <!-- ═══ CDN: YrY 共享样式 ═══ -->
-<link rel="stylesheet" href="../../../../cdn/shared.css">
-<link rel="stylesheet" href="../../../../cdn/theme.css">
-<link rel="stylesheet" href="../../../../cdn/yry-scene.css">
-<link rel="stylesheet" href="../../../../cdn/yry-checklist.css">
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-scene/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-checklist/index.css">
 <!-- ═══ CDN: YryBreadcrumb 组件样式 ═══ -->
 <link rel="stylesheet" href="../../../../cdn/yry-breadcrumb/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-scene-nav/index.css">
@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="../../../../cdn/yry-stats-grid/index.css">
 <!-- ═══ CDN: Vue 3 (生产构建,用于面包屑组件) ═══ -->
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-<link rel="stylesheet" href="../../../../cdn/yry-plan-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-plan/index.css">
 </head>
 <body>
 <!-- ═══ Skip Link (a11y 键盘可达性 · 跳过导航直达主内容) ═══ -->
@@ -537,7 +537,7 @@ node tests/skills/check-cdn.mjs --init --resources=4
 
 # §2 实施 (2 步 · 计划清单.html + yry-checklist.css)
 node skills/codegen/checklist.mjs --scene=arch --output=计划清单.html
-node skills/codegen/css-bundle.mjs --output=cdn/yry-checklist.css
+node skills/codegen/css-bundle.mjs --output=cdn/yry-checklist/index.css
 
 # §3 验证 (2 步 · 跑测试 + 写报告)
 node tests/skills/check-skeleton.mjs --verbose
@@ -643,7 +643,7 @@ git tag -a v1.0.1 -m "场景-1 v4.6 patch"<span class="cb" onclick="copyCmd(this
     <div class="c-stage">步骤 8</div>
     <div class="c-name">打包 yry-checklist.css</div>
     <div class="c-desc">CDN CSS 设计系统:30+ token + 14 组件样式,3 断点 @media,stylelint + PurgeCSS 死代码清理</div>
-    <pre>node skills/codegen/css-bundle.mjs --output=cdn/yry-checklist.css --purge --minify<span class="cb" onclick="copyCmd(this,'node skills/codegen/css-bundle.mjs --output=cdn/yry-checklist.css --purge --minify')">📋</span></pre>
+    <pre>node skills/codegen/css-bundle.mjs --output=cdn/yry-checklist/index.css --purge --minify<span class="cb" onclick="copyCmd(this,'node skills/codegen/css-bundle.mjs --output=cdn/yry-checklist/index.css --purge --minify')">📋</span></pre>
     <div class="c-meta">
       <span>👤 coder agent</span><span>⏱ 1.0h</span><span>🎯 P1</span>
     </div>
@@ -864,10 +864,10 @@ node skills/rui-bot/send.mjs --story=yry-arch --status=v4.6-patch<span class="cb
       <div class="vi-k">📜 验证脚本</div>
       <pre>node tests/skills/check-css-vars.mjs --components=14 --a11y-contrast=4.5 --pixel-diff
 node tests/skills/check-css-vars.mjs --token-prefix=yry- --min-tokens=20
-npx stylelint cdn/yry-checklist.css --custom-property-pattern="yry-.+" --quiet
+npx stylelint cdn/yry-checklist/index.css --custom-property-pattern="yry-.+" --quiet
 node -e "const c=require('jsdom');..." # 详见 tests/skills/check-css-vars.mjs
 # Lighthouse a11y 审计
-npx lighthouse cdn/yry-checklist.css --only-categories=accessibility --quiet --chrome-flags='--headless'<span class="cb" onclick="copyCmd(this,'node tests/skills/check-css-vars.mjs --components=14 --a11y-contrast=4.5 --pixel-diff\nnode tests/skills/check-css-vars.mjs --token-prefix=yry- --min-tokens=20\nnpx stylelint cdn/yry-checklist.css --custom-property-pattern=yry-.+ --quiet\nnpx lighthouse cdn/yry-checklist.css --only-categories=accessibility --quiet --chrome-flags=--headless')">📋</span></pre>
+npx lighthouse cdn/yry-checklist/index.css --only-categories=accessibility --quiet --chrome-flags='--headless'<span class="cb" onclick="copyCmd(this,'node tests/skills/check-css-vars.mjs --components=14 --a11y-contrast=4.5 --pixel-diff\nnode tests/skills/check-css-vars.mjs --token-prefix=yry- --min-tokens=20\nnpx stylelint cdn/yry-checklist/index.css --custom-property-pattern=yry-.+ --quiet\nnpx lighthouse cdn/yry-checklist/index.css --only-categories=accessibility --quiet --chrome-flags=--headless')">📋</span></pre>
     </div>
     <div class="vi-section">
       <div class="vi-k">📐 验收标准</div>
@@ -904,15 +904,15 @@ npx lighthouse cdn/yry-checklist.css --only-categories=accessibility --quiet --c
     </div>
     <div class="vi-section">
       <div class="vi-k">🎯 验证目标</div>
-      <div class="vi-v">并行 HEAD 探测 4 个 CDN 资源 (<code>shared.css / theme.css / yry-checklist.css / shared.js</code>),记录 <code>status / TTFB / Content-Length / Cache-Control</code>,TTFB <code>&lt; 200ms</code>,SRI <code>integrity</code> 哈希校验通过。</div>
+      <div class="vi-v">并行 HEAD 探测 4 个 CDN 资源 (<code>shared/index.css / theme/index.css / yry-checklist.css / shared.js</code>),记录 <code>status / TTFB / Content-Length / Cache-Control</code>,TTFB <code>&lt; 200ms</code>,SRI <code>integrity</code> 哈希校验通过。</div>
     </div>
     <div class="vi-section">
       <div class="vi-k">📜 验证脚本</div>
       <pre>node tests/skills/check-cdn.mjs --resources=4 --max-ttfb=200 --sri-verify --cache-ttl=86400
 # 4 并行 HEAD 请求
-for r in shared.css theme.css yry-checklist.css shared.js; do
+for r in shared/index.css theme/index.css yry-checklist.css shared.js; do
   curl -sI -o /dev/null -w "%{http_code} %{time_starttransfer}\n" "https://cdn.yry-arch.com/$r" &
-done; wait<span class="cb" onclick="copyCmd(this,'node tests/skills/check-cdn.mjs --resources=4 --max-ttfb=200 --sri-verify --cache-ttl=86400\nfor r in shared.css theme.css yry-checklist.css shared.js; do\n  curl -sI -o /dev/null -w %{http_code} %{time_starttransfer}\\n https://cdn.yry-arch.com/$r &\ndone; wait')">📋</span></pre>
+done; wait<span class="cb" onclick="copyCmd(this,'node tests/skills/check-cdn.mjs --resources=4 --max-ttfb=200 --sri-verify --cache-ttl=86400\nfor r in shared/index.css theme/index.css yry-checklist.css shared.js; do\n  curl -sI -o /dev/null -w %{http_code} %{time_starttransfer}\\n https://cdn.yry-arch.com/$r &\ndone; wait')">📋</span></pre>
     </div>
     <div class="vi-section">
       <div class="vi-k">📐 验收标准</div>
@@ -929,8 +929,8 @@ done; wait<span class="cb" onclick="copyCmd(this,'node tests/skills/check-cdn.mj
       <table class="vi-table">
         <thead><tr><th>检查点</th><th>期望</th><th>实测</th><th>状态</th></tr></thead>
         <tbody>
-          <tr><td>shared.css HTTP 状态</td><td>200</td><td>200</td><td class="pass">PASS</td></tr>
-          <tr><td>theme.css HTTP 状态</td><td>200</td><td>200</td><td class="pass">PASS</td></tr>
+          <tr><td>shared/index.css HTTP 状态</td><td>200</td><td>200</td><td class="pass">PASS</td></tr>
+          <tr><td>theme/index.css HTTP 状态</td><td>200</td><td>200</td><td class="pass">PASS</td></tr>
           <tr><td>yry-checklist.css HTTP 状态</td><td>200</td><td>200</td><td class="pass">PASS</td></tr>
           <tr><td>shared.js HTTP 状态</td><td>200</td><td>200</td><td class="pass">PASS</td></tr>
           <tr><td>TTFB 均值 (3 区域)</td><td>&lt; 200ms</td><td>142ms</td><td class="pass">PASS</td></tr>
@@ -1330,45 +1330,45 @@ grep -rEho '\{\{[A-Z_]+\}\}' docs/ | wc -l   # 期望 0<span class="cb" onclick=
       <td>9</td>
       <td><b>设计系统 CSS (核心)</b></td>
       <td>🎨 CSS</td>
-      <td><a href="../../../../cdn/yry-checklist.css" class="path-link" target="_blank"><code>cdn/yry-checklist.css</code></a></td>
+      <td><a href="../../../../cdn/yry-checklist/index.css" class="path-link" target="_blank"><code>cdn/yry-checklist/index.css</code></a></td>
       <td>30+ Token / 14 组件 / 5 断点 / <code>--yry-</code> 命名</td>
       <td>18.8 KB</td>
       <td>designer</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="../../../../cdn/yry-checklist.css" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/yry-checklist.css',this)">📋</span></td>
+      <td class="op-cell"><a href="../../../../cdn/yry-checklist/index.css" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/yry-checklist/index.css',this)">📋</span></td>
     </tr>
     <tr>
       <td>10</td>
       <td><b>CDN 共享 CSS</b></td>
       <td>🌐 CSS</td>
-      <td><a href="../../../../cdn/shared.css" class="path-link" target="_blank"><code>cdn/shared.css</code></a></td>
+      <td><a href="../../../../cdn/shared/index.css" class="path-link" target="_blank"><code>cdn/shared/index.css</code></a></td>
       <td>基础 reset + 通用原子类</td>
       <td>20.1 KB</td>
       <td>designer</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="../../../../cdn/shared.css" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/shared.css',this)">📋</span></td>
+      <td class="op-cell"><a href="../../../../cdn/shared/index.css" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/shared/index.css',this)">📋</span></td>
     </tr>
     <tr>
       <td>11</td>
       <td><b>CDN 主题 CSS</b></td>
       <td>🎭 CSS</td>
-      <td><a href="../../../../cdn/theme.css" class="path-link" target="_blank"><code>cdn/theme.css</code></a></td>
+      <td><a href="../../../../cdn/theme/index.css" class="path-link" target="_blank"><code>cdn/theme/index.css</code></a></td>
       <td>Tokyo Night 主题色 + 暗色变量</td>
       <td>12.1 KB</td>
       <td>designer</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="../../../../cdn/theme.css" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/theme.css',this)">📋</span></td>
+      <td class="op-cell"><a href="../../../../cdn/theme/index.css" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/theme/index.css',this)">📋</span></td>
     </tr>
     <tr>
       <td>12</td>
       <td><b>CDN 共享 JS</b></td>
       <td>⚙️ JS</td>
-      <td><a href="../../../../cdn/shared.js" class="path-link" target="_blank"><code>cdn/shared.js</code></a></td>
+      <td><a href="../../../../cdn/shared/index.js" class="path-link" target="_blank"><code>cdn/shared/index.js</code></a></td>
       <td>Tab 切换 / 折叠 / 复制 / 工具函数</td>
       <td>5.3 KB</td>
       <td>designer</td>
       <td class="pass">✓ 已交付</td>
-      <td class="op-cell"><a href="../../../../cdn/shared.js" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/shared.js',this)">📋</span></td>
+      <td class="op-cell"><a href="../../../../cdn/shared/index.js" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/shared/index.js',this)">📋</span></td>
     </tr>
     <!-- 三、测试脚本 -->
     <tr>
@@ -1700,7 +1700,7 @@ grep -rEho '\{\{[A-Z_]+\}\}' docs/ | wc -l   # 期望 0<span class="cb" onclick=
     </div>
     <div class="rr-detail">
       <div class="rr-grid-4">
-        <div class="rr-cell"><div class="rr-cell-k">🎯 触发条件</div><div class="rr-cell-v">新增 token 未在 <code>theme.css</code> 同步</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🎯 触发条件</div><div class="rr-cell-v">新增 token 未在 <code>theme/index.css</code> 同步</div></div>
         <div class="rr-cell"><div class="rr-cell-k">🌍 影响范围</div><div class="rr-cell-v">所有 5 场景页面主题一致性</div></div>
         <div class="rr-cell"><div class="rr-cell-k">🔍 检测方法</div><div class="rr-cell-v">5 主题切换截图 diff</div></div>
         <div class="rr-cell"><div class="rr-cell-k">⏱ 残余风险</div><div class="rr-cell-v">评分 2 · 持续监控</div></div>
@@ -2082,7 +2082,7 @@ grep -rEho '\{\{[A-Z_]+\}\}' docs/ | wc -l   # 期望 0<span class="cb" onclick=
     <tr><td><code>06-01</code></td><td>✅ §0 评审通过</td><td>4 方 RACI 签收 (PO/TL/QA/新人官),0 阻塞项</td><td>index.json</td><td>planner</td></tr>
     <tr><td><code>06-03</code></td><td>✅ §1 测试设计</td><td>TC-1 骨架完整性 / TC-2 CSS 变量 / TC-3 CDN 可达性 3 套件设计完成</td><td>3 套测试脚本</td><td>tester</td></tr>
     <tr><td><code>06-05</code></td><td>✅ §2 实施中期</td><td>计划清单.html 7 区域 + 14 组件样式 + 30+ token 注入完成</td><td>计划清单.html</td><td>coder</td></tr>
-    <tr><td><code>06-08</code></td><td>✅ §2 实施完成</td><td>yry-checklist.css (12KB) 打包 + html-minifier + Brotli 双压缩完成</td><td>cdn/yry-checklist.css</td><td>coder / designer</td></tr>
+    <tr><td><code>06-08</code></td><td>✅ §2 实施完成</td><td>yry-checklist.css (12KB) 打包 + html-minifier + Brotli 双压缩完成</td><td>cdn/yry-checklist/index.css</td><td>coder / designer</td></tr>
     <tr><td><code>06-10</code></td><td>✅ §3 测试通过</td><td>23 检查点 100% PASS · CDN 4/4 200 · 视觉 diff 0.32%</td><td>验证报告</td><td>tester</td></tr>
     <tr><td><code>06-12</code></td><td>✅ §4 自改进</td><td>CSS 变量命名规范化 (32/32) + 响应式断点文档化 (3 断点)</td><td>codemod PR × 14</td><td>coder / frontend</td></tr>
     <tr><td><code>06-13</code></td><td>🎯 交付</td><td>git tag v1.0.0 + 4 方签收 + rui-import sync + 企微通知</td><td>v1.0.0 交付包</td><td>all</td></tr>
@@ -2415,7 +2415,7 @@ function toast(msg) {
   }
 })();
 </script>
-<script src="../../../../cdn/shared.js"></script>
+<script src="../../../../cdn/shared/index.js"></script>
 
 <!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
 <script src="../../../../cdn/yry-scene-nav/index.js"></script>

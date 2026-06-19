@@ -508,11 +508,11 @@ export async function cmdHealth(projectRoot, opts = {}) {
 }
 
 /**
- * Auto-update cdn/health-report.json with the latest project health data.
+ * Auto-update cdn/health\-report\/index\.json with the latest project health data.
  * Preserves existing entries (dedup by date), keeps at most 10 reports.
  */
 function updateCdnHealthReport(result, projectRoot) {
-  const cdnPath = join(projectRoot, "cdn", "health-report.json");
+  const cdnPath = join(projectRoot, "cdn", "health-report", "index.json");
   let report = { _meta: {}, reports: [] };
 
   if (existsSync(cdnPath)) {

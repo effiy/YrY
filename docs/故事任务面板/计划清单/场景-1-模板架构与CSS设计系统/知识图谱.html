@@ -1,12 +1,12 @@
 <!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>🎨 模板架构与 CSS 设计系统 · 知识图谱</title>
-<link rel="stylesheet" href="../../../../cdn/fonts.css">
-<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/fonts\/index\.css">
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-export-toolbar/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
 <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-<link rel="stylesheet" href="../../../../cdn/yry-graph-base.css"></head><body><div class="container" id="report-container">
+<link rel="stylesheet" href="../../../../cdn/yry-graph/index.css"></head><body><div class="container" id="report-container">
 <script type="application/json" id="yry-page-config">
 {
   "page":    { "type":"知识图谱", "icon":"🔗", "file":"知识图谱.html" },
@@ -125,7 +125,7 @@
     <p class="desc">从「页面骨架」到「设计系统贯通」的完整路径。每一步有明确的输入/输出/可验证的通过条件，✅ 表示已就绪可立即落地，🟡 表示需结合上下文验证。</p>
     <div class="timeline">
       <div class="tl-step done"><div class="tl-dot">1</div><div class="tl-time">≈ 30 min</div><div class="tl-num">STEP · 01 · 骨架定义</div><h4>定义 7 区域 HTML 骨架</h4><p>确定 7 区域结构(CDN 头 · 面包屑 · 场景导航 · 统计卡 · 标签页 · 7 面板 · 脚本),引入 <code>{{TOKEN}}</code> 占位符。所有场景共享一套骨架,只换数据,不动结构。</p><div class="tl-files"><span class="tl-file">� container</span><span class="tl-file">🏷️ breadcrumb</span><span class="tl-out">→ 骨架稳定</span></div></div>
-      <div class="tl-step done"><div class="tl-dot">2</div><div class="tl-time">≈ 20 min</div><div class="tl-num">STEP · 02 · CDN 加载链</div><h4>配置 4 资源 CDN 加载顺序</h4><p>严格按 <code>shared.css → theme.css → yry-checklist.css → shared.js</code> 顺序加载。<code>{{CDN_DEPTH}}</code> 自动计算路径深度。CSS 3 必须最后加载,确保组件类能覆盖主题变量。</p><div class="tl-files"><span class="tl-file">� shared.css</span><span class="tl-file">📄 theme.css</span><span class="tl-file">� yry-checklist.css</span><span class="tl-out">✓ 顺序正确</span></div></div>
+      <div class="tl-step done"><div class="tl-dot">2</div><div class="tl-time">≈ 20 min</div><div class="tl-num">STEP · 02 · CDN 加载链</div><h4>配置 4 资源 CDN 加载顺序</h4><p>严格按 <code>shared/index.css → theme/index.css → yry-checklist.css → shared.js</code> 顺序加载。<code>{{CDN_DEPTH}}</code> 自动计算路径深度。CSS 3 必须最后加载,确保组件类能覆盖主题变量。</p><div class="tl-files"><span class="tl-file">� shared/index.css</span><span class="tl-file">📄 theme/index.css</span><span class="tl-file">� yry-checklist.css</span><span class="tl-out">✓ 顺序正确</span></div></div>
       <div class="tl-step done"><div class="tl-dot">3</div><div class="tl-time">≈ 25 min</div><div class="tl-num">STEP · 03 · 3 层 Token 体系</div><h4>建立 primitive → semantic → component Token 链</h4><p>Layer 1 Primitive(色板/间距/字号/圆角/动效,28 原子) → Layer 2 Semantic(text/bg/layout/z-index/主题,15 语义) → Layer 3 Component(step/phase/scorecard/risk/gantt/trend,6 组件)。自上而下消费,自下而上反馈。</p><div class="tl-files"><span class="tl-file">🎨 --accent</span><span class="tl-file">🎨 --cyan</span><span class="tl-file">🎨 --text-1/2/3</span><span class="tl-out">→ 主题可换</span></div></div>
       <div class="tl-step alt"><div class="tl-dot">4</div><div class="tl-time">≈ 30 min</div><div class="tl-num">STEP · 04 · 6 类组件实现</div><h4>封装 6 大 BEM 组件类</h4><p>基于 Layer 3 Token 封装 <code>.step</code> · <code>.phase-strip</code> · <code>.scorecard</code> · <code>.risk-matrix</code> · <code>.gantt</code> · <code>.trend</code>。BEM 命名:块 / 元素 <code>__</code> / 修饰 <code>--</code>。新场景只组合,不复发明。</p><div class="tl-files"><span class="tl-file">� .step</span><span class="tl-file">� .scorecard</span><span class="tl-file">� .risk-matrix</span><span class="tl-out">→ 组件库成</span></div></div>
       <div class="tl-step alt"><div class="tl-dot">5</div><div class="tl-time">≈ 15 min</div><div class="tl-num">STEP · 05 · 验收贯通</div><h4>5 套 AC 验证 + 一次贯通</h4><p>运行 <code>node tests/run.mjs</code> 跑通 SC1-SC4 + AC3-AC4 验收:<code>grep -c 'class="panel' ≥ 7</code> · <code>grep -c '{{' = 0</code> · <code>curl 4 资源 = 200</code> · CSS 类覆盖 100% · 响应式 3 断点 + 主题切换无跳变。</p><div class="tl-files"><span class="tl-file">✅ SC1 · 7 区域</span><span class="tl-file">✅ SC2 · CSS 覆盖</span><span class="tl-file">✅ SC3 · CDN 200</span><span class="tl-file">✅ SC4 · Token 干净</span><span class="tl-out">🚀 设计系统就绪</span></div></div>
@@ -464,6 +464,6 @@ function buildNodeCards() {
 }
 buildNodeCards();
 </script>
-<script src="../../../../cdn/shared.js"></script>
+<script src="../../../../cdn/shared/index.js"></script>
 <script src="../../../../cdn/yry-export-toolbar/index.js"></script>
 </body></html>

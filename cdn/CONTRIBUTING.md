@@ -59,8 +59,8 @@ yry-<name>/
 
 ```html
 <!-- 1. 共享样式 (基线 + 主题) -->
-<link rel="stylesheet" href="../../../../cdn/shared.css">
-<link rel="stylesheet" href="../../../../cdn/theme.css">
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
 
 <!-- 2. 组件样式 (在主题之后) -->
 <link rel="stylesheet" href="../../../../cdn/yry-<name>/index.css">
@@ -69,7 +69,7 @@ yry-<name>/
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 
 <!-- 4. 共享 JS -->
-<script src="../../../../cdn/shared.js"></script>
+<script src="../../../../cdn/shared/index.js"></script>
 
 <!-- 5. 组件 loader (按依赖顺序) -->
 <script src="../../../../cdn/yry-<name>/index.js"></script>
@@ -113,10 +113,10 @@ PR 必须通过以下检查:
 | 维度 | 含义 | 工具 |
 |------|------|------|
 | **D0 组件完整性** | `yry-*/` 同时具备 index.{html,css,js} | `npm run validate:components` |
-| **D1 核心文件** | shared.css/theme.css/fonts.css/shared.js | `npm run validate` |
+| **D1 核心文件** | shared/index.css/theme.css/fonts.css/shared.js | `npm run validate` |
 | **D2 字体资源** | fonts/ 4 个字重 woff2 | `npm run validate` |
 | **D3 发布元数据** | package.json + README + .npmignore + releases.json | `npm run validate` |
-| **D4 主题覆盖** | theme.css + theme-mono.css | `npm run validate` |
+| **D4 主题覆盖** | theme/index.css + theme-mono/index.css | `npm run validate` |
 | **D5 演示覆盖** | 组件含 index.html 演示 | `npm run validate:components` |
 | **D6 加载链** | 5 步加载顺序规范 | 文档 + CI review |
 | **D7 版本同步** | package.json / index.html / README 一致 | `npm run validate:version` |
@@ -125,7 +125,7 @@ PR 必须通过以下检查:
 
 - 场景: [故事任务面板/yry-breadcrumb/](./故事任务面板/yry-breadcrumb/) (5 场景)
 - 健康报告: [健康报告/index.html](./健康报告/index.html)
-- 组件清单: [components.manifest.json](./components.manifest.json)(自动生成)
+- 组件清单: [components.manifest.json](components\-manifest\/index\.json)(自动生成)
 - 架构决策: 见 `docs/`(根目录 CLAUDE.md)
 
 ## 📄 许可证

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Batch refactor: 演示.html → yry-simulator.js
+ * Batch refactor: 演示.html → yry-simulator/index.js
  * Replaces sim log IIFE + state vars + 4 simulator functions with external script.
  *
  * Usage: node cdn/js/refactor-simulator.mjs [--dry-run]
@@ -92,7 +92,7 @@ for (const f of files) {
     continue;
   }
 
-  const srcPath = relative(dirname(f), resolve(root, 'cdn', 'yry-simulator.js'));
+  const srcPath = relative(dirname(f), resolve(root, 'cdn', 'yry-simulator/index.js'));
   const afterScriptTag = raw.slice(scriptStart + '<script>'.length);
 
   // Positions relative to afterScriptTag

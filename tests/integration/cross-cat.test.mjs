@@ -25,7 +25,7 @@ describe('cross-cat — 跨类别 CDN 集成测试', () => {
       const htmlFile = 'docs/故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/演示.html';
       if (fileExists(htmlFile)) {
         const content = readFile(htmlFile);
-        assert.ok(content.includes('cdn/shared.css') || content.includes('cdn/shared.js'),
+        assert.ok(content.includes('cdn/shared/index.css') || content.includes('cdn/shared/index.js'),
           '应引用本地 CDN 资源');
       }
     });
@@ -34,7 +34,7 @@ describe('cross-cat — 跨类别 CDN 集成测试', () => {
       const htmlFile = 'docs/故事任务面板/yry-arch/场景-1-模块定位/演示.html';
       if (fileExists(htmlFile)) {
         const content = readFile(htmlFile);
-        assert.ok(content.includes('cdn/shared.css') || content.includes('cdn/shared.js'),
+        assert.ok(content.includes('cdn/shared/index.css') || content.includes('cdn/shared/index.js'),
           '应引用本地 CDN 资源');
       }
     });
@@ -43,7 +43,7 @@ describe('cross-cat — 跨类别 CDN 集成测试', () => {
       const htmlFile = 'docs/故事任务面板/yry-self-test/场景-1-init后全量自检/演示.html';
       if (fileExists(htmlFile)) {
         const content = readFile(htmlFile);
-        assert.ok(content.includes('cdn/shared.css') || content.includes('cdn/shared.js'),
+        assert.ok(content.includes('cdn/shared/index.css') || content.includes('cdn/shared/index.js'),
           '应引用本地 CDN 资源');
       }
     });
@@ -52,7 +52,7 @@ describe('cross-cat — 跨类别 CDN 集成测试', () => {
       const htmlFile = 'docs/故事任务面板/rui-npm/场景-1-包搜索与发现/演示.html';
       if (fileExists(htmlFile)) {
         const content = readFile(htmlFile);
-        assert.ok(content.includes('cdn/shared.css') || content.includes('cdn/shared.js'),
+        assert.ok(content.includes('cdn/shared/index.css') || content.includes('cdn/shared/index.js'),
           '应引用本地 CDN 资源');
       }
     });
@@ -62,8 +62,8 @@ describe('cross-cat — 跨类别 CDN 集成测试', () => {
   describe('CDN 目录结构', () => {
     it('所有核心文件存在', () => {
       const required = [
-        'cdn/shared.css', 'cdn/shared.js', 'cdn/theme.css',
-        'cdn/theme-mono.css', 'cdn/fonts.css', 'cdn/package.json',
+        'cdn/shared/index.css', 'cdn/shared/index.js', 'cdn/theme/index.css',
+        'cdn/theme-mono/index.css', 'cdn/fonts\/index\.css', 'cdn/package.json',
       ];
       for (const f of required) {
         assert.ok(fileExists(f), `${f} 应存在`);
@@ -80,7 +80,7 @@ describe('cross-cat — 跨类别 CDN 集成测试', () => {
 
   // ── Theme consistency across stories ──────────────────────────────
   describe('跨故事主题一致性', () => {
-    it('所有 B 类页面使用 theme.css', () => {
+    it('所有 B 类页面使用 theme/index.css', () => {
       // Spot-check a few Cat B pages
       const bPages = [
         'docs/故事任务面板/yry-arch/场景-1-模块定位/审查.html',
@@ -89,13 +89,13 @@ describe('cross-cat — 跨类别 CDN 集成测试', () => {
       for (const page of bPages) {
         if (fileExists(page)) {
           const content = readFile(page);
-          assert.ok(content.includes('theme.css') && !content.includes('theme-mono.css'),
-            `${page} 应使用 B 类主题 (theme.css)`);
+          assert.ok(content.includes('theme/index.css') && !content.includes('theme-mono/index.css'),
+            `${page} 应使用 B 类主题 (theme/index.css)`);
         }
       }
     });
 
-    it('所有 A 类页面使用 theme-mono.css', () => {
+    it('所有 A 类页面使用 theme-mono/index.css', () => {
       const aPages = [
         'docs/故事任务面板/yry-arch/场景-1-模块定位/架构图.html',
         'docs/故事任务面板/yry-arch/场景-1-模块定位/知识图谱.html',
@@ -103,8 +103,8 @@ describe('cross-cat — 跨类别 CDN 集成测试', () => {
       for (const page of aPages) {
         if (fileExists(page)) {
           const content = readFile(page);
-          assert.ok(content.includes('theme-mono.css') || content.includes('theme-mono'),
-            `${page} 应使用 A 类主题 (theme-mono.css)`);
+          assert.ok(content.includes('theme-mono/index.css') || content.includes('theme-mono'),
+            `${page} 应使用 A 类主题 (theme-mono/index.css)`);
         }
       }
     });
@@ -113,7 +113,7 @@ describe('cross-cat — 跨类别 CDN 集成测试', () => {
   // ── JS API consistency ────────────────────────────────────────────
   describe('JS API 一致性', () => {
     it('shared.js 定义所有公共 API', () => {
-      const content = readFile('cdn/shared.js');
+      const content = readFile('cdn/shared/index.js');
       const apis = ['toast', 'copyCmd', 'switchPanel'];
       for (const api of apis) {
         assert.ok(content.includes(api), `shared.js 应包含 ${api}`);

@@ -2,7 +2,7 @@
 
 > 一个**零打包** (build-free) 的 Vue 3 单文件组件,按 `index.html` / `index.js` / `index.css` 三文件拆分,模板/逻辑/样式各司其职。
 >
-> 所有 HTML 页面统一采用 **YrY CSS 设计系统**：`@layer` 级联 · 22 设计令牌 (`--yry-color-*`) · 亮/暗双模自适应 · `prefers-reduced-motion` a11y 动效克制 · skip-link 键盘可达性。CSS 资源通过 CDN 加载 (`shared.css` / `theme.css` / `yry-checklist.css`)。
+> 所有 HTML 页面统一采用 **YrY CSS 设计系统**：`@layer` 级联 · 22 设计令牌 (`--yry-color-*`) · 亮/暗双模自适应 · `prefers-reduced-motion` a11y 动效克制 · skip-link 键盘可达性。CSS 资源通过 CDN 加载 (`shared/index.css` / `theme/index.css` / `yry-checklist.css`)。
 
 ## 文件结构
 
@@ -198,7 +198,7 @@ yry-breadcrumb/
 | `.bc-sep` | 分隔符 `/` | `var(--yry-color-text-3)` opacity .4 |
 | `.bc-current` | 当前项 | `var(--yry-color-text-1)` 默认 #f5f5f5,font-weight 500 |
 
-所有颜色都用 `var(--yry-color-*, #fallback)` 形式,即使页面未加载 `theme.css` 也能正常显示。
+所有颜色都用 `var(--yry-color-*, #fallback)` 形式,即使页面未加载 `theme/index.css` 也能正常显示。
 
 ## 修改指南
 
@@ -278,7 +278,7 @@ docs/故事任务面板/
 | 场景 | 标题 | 状态 | 核心交付 | 本组件相关性 |
 |------|------|------|---------|------------|
 | 1 | CDN 资源加载与页面渲染 | ✅ | CDN 4 文件 + 页面接入示例 | ⬜ 间接 (本组件需 Vue 3) |
-| 2 | 双主题系统设计 | ✅ | `theme.css` (B 类) + `theme-mono.css` (A 类) | ⬜ 间接 (CSS 使用 token) |
+| 2 | 双主题系统设计 | ✅ | `theme/index.css` (B 类) + `theme-mono/index.css` (A 类) | ⬜ 间接 (CSS 使用 token) |
 | 3 | **组件库与 JS 工具 API** | ✅ | 21 个 CSS 组件 + 9 个 JS API | ✅ **本组件在此** |
 | 4 | 存量页面迁移 | ✅ | 4 文件拆分 · 设计令牌 · 灰度迁移 | ⬜ 间接 (本组件可被新页面直接使用) |
 | 5 | npm 包发布与版本管理 | ✅ | `yry-cdn@1.1.0` · 语义化版本 | ⬜ 间接 (本组件随包发布) |

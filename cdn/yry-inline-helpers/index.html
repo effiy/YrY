@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — yry-inline-helpers · 抽取自 HTML 内联 style 的高频原子类
+  目的: 替换 cdn/ 目录下 HTML 文件中反复出现的 style="..." 模式
+  加载: <link rel="stylesheet" href="../../../../cdn/yry-inline-helpers/index.css">
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY yry-inline-helpers · 原子类</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+    .demo { padding: 14px 18px; background: var(--yry-bg-flat); border-radius: 8px; margin: 8px 0; }
+  </style>
+</head>
+<body>
+  <h1>🧩 yry-inline-helpers · 原子类</h1>
+  <p>把 HTML 中反复出现的 <code>style="color: var(--yry-xxx); font-size: .7rem"</code> 等抽到 CSS,提升可维护性 + 一致性。</p>
+
+  <h2>载入</h2>
+  <pre>&lt;link rel="stylesheet" href="../../../../cdn/yry-inline-helpers/index.css"&gt;</pre>
+
+  <h2>示例</h2>
+  <div class="demo">
+    <span class="yry-clr-accent">yry-clr-accent</span> ·
+    <span class="yry-clr-cyan">yry-clr-cyan</span> ·
+    <span class="yry-clr-pass">yry-clr-pass</span> ·
+    <span class="yry-clr-warn">yry-clr-warn</span> ·
+    <span class="yry-clr-fail">yry-clr-fail</span> ·
+    <span class="yry-clr-text3">yry-clr-text3</span>
+  </div>
+  <div class="demo">
+    <span class="yry-clr-fail-7">yry-clr-fail-7</span> ·
+    <span class="yry-clr-pass-64">yry-clr-pass-64</span> ·
+    <span class="yry-clr-purp-7">yry-clr-purp-7</span> ·
+    <span class="yry-clr-acc-72">yry-clr-acc-72</span>
+  </div>
+  <div class="demo yry-mt-14">
+    <span class="yry-mute-78-12">yry-mute-78-12</span> ·
+    <span class="yry-mute-64">yry-mute-64</span> ·
+    <span class="yry-mute-7">yry-mute-7</span>
+  </div>
+  <div class="demo">
+    <span class="yry-fs-1-4">yry-fs-1-4</span> ·
+    <span class="yry-fs-78">yry-fs-78</span>
+  </div>
+  <div class="demo">
+    <span class="yry-color-tag yry-color-tag--cyan">cyan</span>
+    <span class="yry-color-tag yry-color-tag--green">green</span>
+    <span class="yry-color-tag yry-color-tag--amber">amber</span>
+    <span class="yry-color-tag yry-color-tag--pink">pink</span>
+    <span class="yry-color-tag yry-color-tag--purple">purple</span>
+  </div>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · yry-inline-helpers · 2026</p>
+</body>
+</html>

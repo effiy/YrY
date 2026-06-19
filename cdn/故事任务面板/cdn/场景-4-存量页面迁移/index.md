@@ -71,8 +71,8 @@ flowchart TD
     Q2 -->|"架构图 / 知识图谱"| CAT_A["Category A"]:::mono
     Q2 -->|"审查 / 测试 / 演示 / 计划 / plan / index"| CAT_B["Category B"]:::sys
 
-    CAT_A --> AUDIT_A["审查页内 &lt;style&gt;<br/>对比 shared.css + theme-mono.css<br/>标记可删除块"]
-    CAT_B --> AUDIT_B["审查页内 &lt;style&gt;<br/>对比 shared.css + theme.css<br/>标记可删除块"]
+    CAT_A --> AUDIT_A["审查页内 &lt;style&gt;<br/>对比 shared/index.css + theme-mono/index.css<br/>标记可删除块"]
+    CAT_B --> AUDIT_B["审查页内 &lt;style&gt;<br/>对比 shared/index.css + theme/index.css<br/>标记可删除块"]
 
     AUDIT_A --> CONF_A{确认 Category A<br/>迁移清单}
     AUDIT_B --> CONF_B{确认 Category B<br/>迁移清单}
@@ -95,42 +95,42 @@ flowchart TD
 
 ### §0.2 可删除的样式清单
 
-#### Category A 页面可删除（对比 shared.css + theme-mono.css）
+#### Category A 页面可删除（对比 shared/index.css + theme-mono/index.css）
 
 | 可删除块 | 对应 CDN 文件 | 保留条件 |
 |---------|--------------|---------|
-| `*, *::before, *::after { ... }` | shared.css | 无 — CDN 已覆盖 |
-| `@keyframes yry-*` | shared.css | 若使用 CDN 动画（当前无 Cat A 使用 shared.css 动画） |
-| `.yry-breadcrumb` / `.yry-cross-nav` / `.yry-toolbar` | shared.css | 无 — CDN 已覆盖 |
-| `.yry-toast` 样式 | shared.css | 无 — CDN 已覆盖 |
-| `body { font-family: 'JetBrains Mono'... }` | theme-mono.css | 无 — CDN 已覆盖 |
-| `.yry-mono-container` / `.yry-mono-header` | theme-mono.css | 无 — CDN 已覆盖 |
-| `.yry-diagram-wrap` / `.yry-graph-wrap` | theme-mono.css | 无 — CDN 已覆盖 |
-| `.yry-pulse-dot` / `.yry-mono-legend` | theme-mono.css | 无 — CDN 已覆盖 |
-| `.yry-mono-cards` / `.yry-mono-card` / `.yry-mono-dot` | theme-mono.css | 无 — CDN 已覆盖 |
+| `*, *::before, *::after { ... }` | shared/index.css | 无 — CDN 已覆盖 |
+| `@keyframes yry-*` | shared/index.css | 若使用 CDN 动画（当前无 Cat A 使用 shared/index.css 动画） |
+| `.yry-breadcrumb` / `.yry-cross-nav` / `.yry-toolbar` | shared/index.css | 无 — CDN 已覆盖 |
+| `.yry-toast` 样式 | shared/index.css | 无 — CDN 已覆盖 |
+| `body { font-family: 'JetBrains Mono'... }` | theme-mono/index.css | 无 — CDN 已覆盖 |
+| `.yry-mono-container` / `.yry-mono-header` | theme-mono/index.css | 无 — CDN 已覆盖 |
+| `.yry-diagram-wrap` / `.yry-graph-wrap` | theme-mono/index.css | 无 — CDN 已覆盖 |
+| `.yry-pulse-dot` / `.yry-mono-legend` | theme-mono/index.css | 无 — CDN 已覆盖 |
+| `.yry-mono-cards` / `.yry-mono-card` / `.yry-mono-dot` | theme-mono/index.css | 无 — CDN 已覆盖 |
 
-#### Category B 页面可删除（对比 shared.css + theme.css）
+#### Category B 页面可删除（对比 shared/index.css + theme/index.css）
 
 | 可删除块 | 对应 CDN 文件 |
 |---------|--------------|
-| `*, *::before, *::after { ... }` | shared.css |
-| `@keyframes yry-fadeInUp/Down/slideDown/pulse` | shared.css |
-| `.yry-breadcrumb` / `.yry-cross-nav` / `.yry-toolbar` / `.yry-toast` | shared.css |
-| `:root { --yry-* }` CSS 变量定义 | theme.css |
-| `body { background/font-family/color }` | theme.css |
-| `.yry-container` / `.yry-container-sm` | theme.css |
-| `.yry-header h1 / .yry-sub` | theme.css |
-| `.yry-stats` / `.yry-stat` / `.yry-stat-val` / `.yry-stat-lbl` | theme.css |
-| `.yry-bar-wrap` / `.yry-bar-outer` / `.yry-seg` | theme.css |
-| `.yry-tabs` / `.yry-tab` / `.yry-tab-badge` | theme.css |
-| `.yry-panel` / `.yry-panel.on` | theme.css |
-| `.yry-card` | theme.css |
-| `.yry-suite` / `.yry-suite-head` / `.yry-suite-arrow` / `.yry-suite-badge` / `.yry-suite-body` | theme.css |
-| `.yry-progress-wrap` / `.yry-progress-label` / `.yry-progress-bar` / `.yry-progress-fill` | theme.css |
-| `.yry-btn` / `.yry-btn.on` | theme.css |
-| `.yry-section` / `.yry-dot` | theme.css |
-| `.yry-link-grid` / `.yry-link-card` | theme.css |
-| `.yry-footer` | shared.css |
+| `*, *::before, *::after { ... }` | shared/index.css |
+| `@keyframes yry-fadeInUp/Down/slideDown/pulse` | shared/index.css |
+| `.yry-breadcrumb` / `.yry-cross-nav` / `.yry-toolbar` / `.yry-toast` | shared/index.css |
+| `:root { --yry-* }` CSS 变量定义 | theme/index.css |
+| `body { background/font-family/color }` | theme/index.css |
+| `.yry-container` / `.yry-container-sm` | theme/index.css |
+| `.yry-header h1 / .yry-sub` | theme/index.css |
+| `.yry-stats` / `.yry-stat` / `.yry-stat-val` / `.yry-stat-lbl` | theme/index.css |
+| `.yry-bar-wrap` / `.yry-bar-outer` / `.yry-seg` | theme/index.css |
+| `.yry-tabs` / `.yry-tab` / `.yry-tab-badge` | theme/index.css |
+| `.yry-panel` / `.yry-panel.on` | theme/index.css |
+| `.yry-card` | theme/index.css |
+| `.yry-suite` / `.yry-suite-head` / `.yry-suite-arrow` / `.yry-suite-badge` / `.yry-suite-body` | theme/index.css |
+| `.yry-progress-wrap` / `.yry-progress-label` / `.yry-progress-bar` / `.yry-progress-fill` | theme/index.css |
+| `.yry-btn` / `.yry-btn.on` | theme/index.css |
+| `.yry-section` / `.yry-dot` | theme/index.css |
+| `.yry-link-grid` / `.yry-link-card` | theme/index.css |
+| `.yry-footer` | shared/index.css |
 
 ### §0.3 不可删除的样式（保留在页内）
 
@@ -173,9 +173,9 @@ flowchart TD
 |------|------|------|
 | `cdn/README.md` | 107–115 | 迁移指南 6 步 |
 | `cdn/README.md` | 46–65 | 组件速查表（判别可迁移样式） |
-| `cdn/shared.css` | 1–94 | 全局样式覆盖清单 |
-| `cdn/theme.css` | 1–224 | System 组件覆盖清单 |
-| `cdn/theme-mono.css` | 1–108 | Mono 组件覆盖清单 |
+| `cdn/shared/index.css` | 1–94 | 全局样式覆盖清单 |
+| `cdn/theme/index.css` | 1–224 | System 组件覆盖清单 |
+| `cdn/theme-mono/index.css` | 1–108 | Mono 组件覆盖清单 |
 
 ---
 
@@ -238,7 +238,7 @@ flowchart TD
 
 | # | 信号 | 验证命令 | 期望值 |
 |---|------|---------|--------|
-| G1 | CDN 引用存在 | `document.querySelectorAll('link[href*="cdn/shared.css"]').length` | ≥ 1 |
+| G1 | CDN 引用存在 | `document.querySelectorAll('link[href*="cdn/shared/index.css"]').length` | ≥ 1 |
 | G2 | shared.js 已加载 | `typeof YrY` | `"object"` |
 | G3 | 页内代码减少 | git diff stat | 净删除行 > 0 |
 | G4 | 视觉一致 | 截图对比 | 0 差异 |
@@ -284,8 +284,8 @@ flowchart TD
 | 步骤 | 操作 | 状态 | 详情 |
 |------|------|------|------|
 | ① 分析 | 对比 CDN 覆盖清单 | ✅ | :root 14 变量、6 @keyframes、Reset、面包屑、cross-nav、Toast、页脚、统计卡、标签页、面板、折叠套件、进度条 — 全部可被 CDN 覆盖 |
-| ② 判定 | Cat B (计划清单) | ✅ | 加载 shared.css + theme.css + shared.js |
-| ③ 引用 | 添加 `<link>` + `<script>` | ✅ | 3 个 CDN 引用: shared.css, theme.css, shared.js |
+| ② 判定 | Cat B (计划清单) | ✅ | 加载 shared/index.css + theme/index.css + shared.js |
+| ③ 引用 | 添加 `<link>` + `<script>` | ✅ | 3 个 CDN 引用: shared/index.css, theme/index.css, shared.js |
 | ④ 类名 | 替换为 `yry-*` 前缀 | ✅ | `.container`→`.yry-container`, `.breadcrumb`→`.yry-breadcrumb`, `.cross-nav`→`.yry-cross-nav`, `.tabs`→`.yry-tabs`, `.stats-grid`→`.yry-stats`, `.section`→`.yry-section`, `.panel`→`.yry-panel`, `.toast`→`.yry-toast`, `.footer`→`.yry-footer` |
 | ⑤ JS | 替换为 `YrY.*` 调用 | ✅ | `toast()`→`YrY.toast()`, `copyCmd()`→`YrY.copyCmd()`, `switchPanel()`→`YrY.switchPanel()` |
 | ⑥ 保留 | 页面专属样式 | ✅ | `.skill-hint`, `.step-deps`, `.code-block`, `.verify-cmd`, `.cmd-grid`, `.link-grid`, `.verify-list` 保留 |
@@ -388,7 +388,7 @@ flowchart TD
 | D2 质量热点 | 未触发 | 89 存量页面待迁移，当前已完成 1 个 | `scripts/migrate-to-cdn.mjs` |
 | D4 流程退化 | 未触发 | 迁移流程 6 步标准化 | `cdn/README.md` |
 
-> **代码锚点**：迁移脚本在 `scripts/migrate-to-cdn.mjs` — 当前支持 yry-arch + yry-self-test。迁移清单对照 `cdn/shared.css`（全局样式）、`cdn/theme.css`（System 组件）、`cdn/theme-mono.css`（Mono 组件）判定可删除的页内样式。
+> **代码锚点**：迁移脚本在 `scripts/migrate-to-cdn.mjs` — 当前支持 yry-arch + yry-self-test。迁移清单对照 `cdn/shared/index.css`（全局样式）、`cdn/theme/index.css`（System 组件）、`cdn/theme-mono/index.css`（Mono 组件）判定可删除的页内样式。
 
 ---
 
@@ -398,8 +398,8 @@ flowchart TD
 |------|------|------|
 | 文档 | `cdn/README.md:107–115` | 迁移指南 6 步 |
 | 文档 | `cdn/README.md:115` | 迁移范例引用 |
-| 源码 | `cdn/shared.css` | 全局样式覆盖清单 |
-| 源码 | `cdn/theme.css` | System 组件覆盖清单 |
+| 源码 | `cdn/shared/index.css` | 全局样式覆盖清单 |
+| 源码 | `cdn/theme/index.css` | System 组件覆盖清单 |
 
 ### 变更记录
 

@@ -2,7 +2,7 @@
    YrY CDN · Quiz 自测交互
 
    依赖: DOM 中需存在 .quiz-card / .quiz-opt / .quiz-feedback / .quiz-score 元素
-   用法: <script src="../yry-quiz.js"></script> (DOMContentLoaded 后自动绑定)
+   用法: <script src="../yry-quiz/index.js"></script> (DOMContentLoaded 后自动绑定)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 (function () {

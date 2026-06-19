@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>模板架构与 CSS 设计系统 — 架构图</title>
-<link rel="stylesheet" href="../../../../cdn/fonts.css">
-<link rel="stylesheet" href="../../../../cdn/shared.css">
+<link rel="stylesheet" href="../../../../cdn/fonts\/index\.css">
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-export-toolbar/index.css">
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-<link rel="stylesheet" href="../../../../cdn/yry-arch-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-arch/index.css">
 </head>
 <body>
 <div class="container" id="rc">
@@ -172,7 +172,7 @@
 <div class="card" style="--accent:var(--violet)">
 <div class="card-header"><div class="card-dot violet"></div><h3>CDN 加载链 · FP3</h3><span class="card-sub">P0</span></div>
 <ul>
-<li>顺序: <code>shared.css</code> → <code>theme.css</code> → <code>yry-checklist.css</code></li>
+<li>顺序: <code>shared/index.css</code> → <code>theme/index.css</code> → <code>yry-checklist.css</code></li>
 <li>脚本: <code>shared.js</code> defer 加载</li>
 <li>相对路径基于 <code>{{CDN_DEPTH}}</code> 计算</li>
 <li>不允许硬编码 <code>../../../</code> 层级数</li>
@@ -199,11 +199,11 @@
 <text x="130" y="80" fill="#94a3b8" font-size="8" text-anchor="middle">HTTP 客户端</text>
 <line x1="130" y1="86" x2="130" y2="430" stroke="#22d3ee" stroke-width="1" stroke-dasharray="3 3" opacity=".5"/>
 <rect x="250" y="50" width="160" height="36" rx="4" fill="rgba(167,139,250,.1)" stroke="#a78bfa"/>
-<text x="330" y="68" fill="#a78bfa" text-anchor="middle">📄 shared.css</text>
+<text x="330" y="68" fill="#a78bfa" text-anchor="middle">📄 shared/index.css</text>
 <text x="330" y="80" fill="#94a3b8" font-size="8" text-anchor="middle">CDN · reset+base</text>
 <line x1="330" y1="86" x2="330" y2="430" stroke="#a78bfa" stroke-width="1" stroke-dasharray="3 3" opacity=".5"/>
 <rect x="460" y="50" width="160" height="36" rx="4" fill="rgba(52,211,153,.1)" stroke="#34d399"/>
-<text x="540" y="68" fill="#34d399" text-anchor="middle">🎨 theme.css</text>
+<text x="540" y="68" fill="#34d399" text-anchor="middle">🎨 theme/index.css</text>
 <text x="540" y="80" fill="#94a3b8" font-size="8" text-anchor="middle">CDN · 主题变量</text>
 <line x1="540" y1="86" x2="540" y2="430" stroke="#34d399" stroke-width="1" stroke-dasharray="3 3" opacity=".5"/>
 <rect x="670" y="50" width="180" height="36" rx="4" fill="rgba(251,191,36,.1)" stroke="#fbbf24"/>
@@ -260,8 +260,8 @@
 <div class="card" style="--accent:var(--cyan)">
 <div class="card-header"><div class="card-dot cyan"></div><h3>加载顺序</h3><span class="card-sub">铁律</span></div>
 <ul>
-<li><b>CSS 1</b> shared.css — 浏览器 reset + 基础排版</li>
-<li><b>CSS 2</b> theme.css — 主题变量(:root 自定义属性)</li>
+<li><b>CSS 1</b> shared/index.css — 浏览器 reset + 基础排版</li>
+<li><b>CSS 2</b> theme/index.css — 主题变量(:root 自定义属性)</li>
 <li><b>CSS 3</b> yry-checklist.css — 组件类(可被页面覆盖)</li>
 <li><b>JS</b> shared.js defer — 交互绑定(DOMContentLoaded 后)</li>
 </ul>
@@ -619,12 +619,12 @@
 <div class="tl-item done">
 <div class="tl-title">SC2 · CSS 类覆盖 100% <span class="tl-when done">FP2 → AC2</span></div>
 <div class="tl-meta">度量:模板用类 vs CDN 选择器交叉比对</div>
-<div class="tl-desc">目标:覆盖度 100%。步骤 <code>grep -oE 'class="[^"]+"' 计划清单.html | sort -u</code> 与 <code>cdn/yry-checklist.css</code> 选择器集合做差集,差异 ≤ 0。<b>页面专属类</b> 允许独立定义,但需限定在 <code>.container</code> 作用域内。</div>
+<div class="tl-desc">目标:覆盖度 100%。步骤 <code>grep -oE 'class="[^"]+"' 计划清单.html | sort -u</code> 与 <code>cdn/yry-checklist/index.css</code> 选择器集合做差集,差异 ≤ 0。<b>页面专属类</b> 允许独立定义,但需限定在 <code>.container</code> 作用域内。</div>
 </div>
 <div class="tl-item done">
 <div class="tl-title">SC3 · CDN 资源 200 OK <span class="tl-when done">FP3 → AC3</span></div>
 <div class="tl-meta">度量:浏览器 DevTools Network 面板</div>
-<div class="tl-desc">目标:全部 4 资源 HTTP 200。顺序为 <code>shared.css</code> → <code>theme.css</code> → <code>yry-checklist.css</code> → <code>shared.js</code>。加载顺序错误会导致组件类覆盖主题变量。自动化测试: <code>curl -I -o /dev/null -w "%{http_code}"</code> 4 资源全 200。</div>
+<div class="tl-desc">目标:全部 4 资源 HTTP 200。顺序为 <code>shared/index.css</code> → <code>theme/index.css</code> → <code>yry-checklist.css</code> → <code>shared.js</code>。加载顺序错误会导致组件类覆盖主题变量。自动化测试: <code>curl -I -o /dev/null -w "%{http_code}"</code> 4 资源全 200。</div>
 </div>
 <div class="tl-item done">
 <div class="tl-title">SC4 · Token 替换无残留 <span class="tl-when done">FP4 → AC4</span></div>
@@ -673,8 +673,8 @@
 </section>
 <p class="footer">YrY v4.5 · 系统架构 · 模板架构与 CSS 设计系统 · SC1-SC4 全部 pass</p>
 </div>
-<script src="../../../../cdn/yry-arch-diagram.js"></script>
-<script src="../../../../cdn/shared.js"></script>
+<script src="../../../../cdn/yry-arch/index.js"></script>
+<script src="../../../../cdn/shared/index.js"></script>
 <script src="../../../../cdn/yry-export-toolbar/index.js"></script>
 </body>
 </html>

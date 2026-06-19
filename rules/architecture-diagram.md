@@ -36,7 +36,7 @@ paths:
 使用 JetBrains Mono（等宽，技术美学）：
 
 ```html
-<link rel="stylesheet" href="../../../../cdn/fonts.css">
+<link rel="stylesheet" href="../../../../cdn/fonts\/index\.css">
 ```
 
 | 元素 | 字号 | 字重 | 颜色 |

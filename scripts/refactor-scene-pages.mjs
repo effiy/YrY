@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * YrY — Batch refactor scene 演示.html pages: replace inline common styles
- * with <link> to cdn/yry-scene-base.css
+ * with <link> to cdn/yry-scene/index-base.css
  *
  * Usage: node cdn/js/refactor-scene-pages.mjs [--dry-run]
  */
@@ -38,12 +38,12 @@ function findDemoFiles() {
 }
 
 /**
- * Calculate relative path from file to cdn/yry-scene-base.css.
- * e.g., docs/故事任务面板/首页/scene/演示.html → ../../../../cdn/yry-scene-base.css
+ * Calculate relative path from file to cdn/yry-scene/index-base.css.
+ * e.g., docs/故事任务面板/首页/scene/演示.html → ../../../../cdn/yry-scene/index-base.css
  */
 function relCdn(filePath) {
   const dir = dirname(filePath);
-  const cdnCss = resolve(root, 'cdn/yry-scene-base.css');
+  const cdnCss = resolve(root, 'cdn/yry-scene/index-base.css');
   return relative(dir, cdnCss);
 }
 

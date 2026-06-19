@@ -3,7 +3,7 @@
    适用: 审查 · 测试面板 · 演示 · 计划清单 · 架构图 · 知识图谱
 
    使用方式:
-     <script src="../../../../cdn/shared.js"></script>
+     <script src="../../../../cdn/shared/index.js"></script>
      然后调用: YrY.toast('消息') / YrY.copyCmd(btn, cmd) / YrY.switchPanel(name)
 
    对应场景文档:

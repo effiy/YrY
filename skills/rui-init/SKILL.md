@@ -99,7 +99,7 @@ flowchart TD
 > - 演示.html ← §0 效果示意 + §2 关键发现
 > - 审查.html ← §4 自改进 + D0-D7 诊断
 >
-> HTML 文件结构必须与项目参考实现（`docs/故事任务面板/rui-npm/`）保持一致：暗色主题 CSS 变量、面包屑导航、7 文档交叉导航、CDN 深度正确、shared.css/theme.css 引用。
+> HTML 文件结构必须与项目参考实现（`docs/故事任务面板/rui-npm/`）保持一致：暗色主题 CSS 变量、面包屑导航、7 文档交叉导航、CDN 深度正确、shared/index.css/theme.css 引用。
 
 **故事命名**：`<project>-arch`、`<project>-self-test`（如项目名 `YrY` → `yry-arch`、`yry-self-test`）。
 

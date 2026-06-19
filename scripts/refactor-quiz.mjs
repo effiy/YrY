@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Batch refactor: yry-breadcrumb 演示.html → yry-quiz.js
- * Replaces inline quiz scoring <script>...</script> with <script src="../../../yry-quiz.js"></script>
+ * Batch refactor: yry-breadcrumb 演示.html → yry-quiz/index.js
+ * Replaces inline quiz scoring <script>...</script> with <script src="../../../yry\-quiz\/index\.js"></script>
  *
  * Usage: node cdn/js/refactor-quiz.mjs [--dry-run]
  */
@@ -45,7 +45,7 @@ console.log(`yry-breadcrumb 演示.html: ${files.length} total\n`);
 let rep = 0, total = 0;
 for (const f of files) {
   const raw = readFileSync(f, 'utf-8');
-  const srcPath = relative(dirname(f), resolve(root, 'cdn', 'yry-quiz.js'));
+  const srcPath = relative(dirname(f), resolve(root, 'cdn', 'yry-quiz/index.js'));
 
   // Find the quiz script tag
   const startMarker = `<script>\n${QUIZ_SCRIPT}`;

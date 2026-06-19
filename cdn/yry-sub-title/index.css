@@ -4,7 +4,7 @@
    效果对齐 docs/index.html 中 <div class="sub-title"> 静态结构:
      <div class="sub-title"><span class="accent">⚡</span> 运行时依赖 (6)</div>
 
-   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+   依赖 design tokens (来自 cdn/theme/index.css 或页面 :root):
      --yry-accent / --yry-text
    ═══════════════════════════════════════════════════════════════════════════ */
 

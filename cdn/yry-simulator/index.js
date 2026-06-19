@@ -4,7 +4,7 @@
    提供 simLog / updateStage / resetSim / setSpeed / startSim
    依赖: 页面需定义 var stageDefsS3 = [...] (阶段定义数据)
          DOM 中需存在 #simLogBox / #btnSimPlay / simStageIds 对应元素
-   用法: <script src="../yry-simulator.js"></script>
+   用法: <script src="../yry-simulator/index.js"></script>
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ── Sim Log (带时间戳) ─────────────────────────────────────────────────── */

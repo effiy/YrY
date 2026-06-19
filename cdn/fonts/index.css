@@ -3,6 +3,10 @@
    对应场景文档:
      - docs/故事任务面板/yry-cdn/场景-1-cdn资源加载与页面渲染/
      - docs/故事任务面板/yry-cdn/场景-2-双主题系统设计/
+
+   加载方式:
+     <link rel="stylesheet" href="../../../../cdn/fonts/index.css">
+   注: 此目录含 4 个 woff2 文件,加载 @font-face 时使用相对路径 fonts/...
 */
 
 @font-face {

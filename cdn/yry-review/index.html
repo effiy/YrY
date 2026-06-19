@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — yry-review · 审查报告页样式 + tab/折叠
+  加载: <link rel="stylesheet" href="../../../../cdn/yry-review/index.css">
+        <script src="../../../../cdn/yry-review/index.js"></script>
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY yry-review · 审查报告</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="../yry-scene/index.css">
+  <link rel="stylesheet" href="../yry-checklist/index.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>📝 yry-review · 审查报告</h1>
+  <p>审查报告页: .dim-card / .case-card / .risk-matrix / .action-table / .rec-grid / .scorecard / .method-card / .rubric-table / .ev-list。JS 提供 tab + suite 自动折叠。</p>
+
+  <h2>载入</h2>
+  <pre>&lt;link rel="stylesheet" href="../../../../cdn/yry-review/index.css"&gt;
+&lt;script src="../../../../cdn/yry-review/index.js"&gt;&lt;/script&gt;</pre>
+
+  <h2>演示 suite 折叠</h2>
+  <div class="suite">
+    <div class="s-head">
+      <strong>▸ 维度 A:架构</strong>
+    </div>
+    <div class="s-body" style="padding: 12px 18px; font-size: .84rem;">
+      这是 suite 折叠内容。
+    </div>
+  </div>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · yry-review · 2026</p>
+
+  <script src="index.js"></script>
+</body>
+</html>

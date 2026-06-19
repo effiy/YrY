@@ -7,23 +7,109 @@ user_invocable: true
 lifecycle: standalone
 ---
 
-# rui-bundle-analyze — 文件体积与依赖分析
+# rui-bundle-analyze — 项目体积与依赖结构分析
 
-> 类 webpack-bundle-analyzer 风格的项目文件体积 + 依赖关系可视化分析。生成自包含 HTML 交互报告。
+> 类 webpack-bundle-analyzer 风格的项目文件体积 + 依赖关系可视化分析。生成自包含 HTML 交互报告，支持 JSON 管线消费与趋势对比。
 
-[命令](#命令) · [分析维度](#分析维度) · [报告输出](#报告输出) · [集成点](#集成点) · [核心规则](#核心规则) · [生效标志](#生效标志)
+[概述](#概述) · [分析方法论](#分析方法论) · [分析维度](#分析维度) · [高级特性](#高级特性) · [命令](#命令) · [报告输出](#报告输出) · [性能特征](#性能特征) · [局限与边界](#局限与边界) · [行业对比](#行业对比) · [集成点](#集成点) · [核心规则](#核心规则) · [生效标志](#生效标志) · [架构决策](#架构决策) · [自循环](#自循环)
 
-## 命令
+## 概述
 
-| 命令 | 说明 |
-|------|------|
-| `/rui-bundle-analyze` | 全量分析，生成 HTML 报告并在浏览器打开 |
-| `/rui-bundle-analyze --dir <path>` | 分析指定目录（默认项目根） |
-| `/rui-bundle-analyze --no-open` | 仅生成报告，不打开浏览器 |
-| `/rui-bundle-analyze --json` | 输出 JSON 数据（供管线消费） |
-| `/rui-bundle-analyze --help` | 显示帮助信息 |
+### 定位
 
-可执行入口：`node skills/rui-bundle-analyze/analyze.mjs [options]`
+`rui-bundle-analyze` 是 YrY 生态中的**静态项目结构分析器**。它不分析打包产物（webpack/vite/rollup 输出），而是直接对源码目录树进行文件体积建模与 import 依赖拓扑分析。这一设计选择使其独立于构建工具链，适用于任何包含 import/require 语句的源码项目。
+
+### 解决的问题
+
+| 问题 | 传统方式 | rui-bundle-analyze |
+|------|---------|-------------------|
+| 哪些文件/目录占比最大？ | `du -sh */` 手动排查 | 交互式 treemap 一眼定位 |
+| 模块间依赖关系如何？ | 阅读 import 语句手动追踪 | 力导向图自动可视化 |
+| 是否存在循环依赖？ | 构建报错时才发现 | 静态分析提前检测 |
+| 哪些模块是依赖热点？ | 经验判断 | fan-in/fan-out 量化排名 |
+| 项目体积是否在膨胀？ | 凭感觉 | 基线对比量化增长 |
+| 是否有无人引用的孤儿文件？ | 难以发现 | 自动检测孤立文件 |
+
+### 设计原则
+
+1. **零配置** — 无需 webpack 插件、无需 source-map、无需构建，直接对源码目录运行
+2. **只读安全** — 不修改任何源码文件，不执行任何项目代码
+3. **自包含输出** — HTML 报告仅依赖 D3 CDN，其余全部内联；JSON 输出可被管线消费
+4. **渐进增强** — 基础模式即时可用，高级特性（趋势对比、基线管理）按需启用
+
+## 分析方法论
+
+### 文件体积分析
+
+```
+算法：递归目录遍历 → 文件 stat 取 size → 构建嵌套层级 → D3 squarified treemap 布局
+
+复杂度：O(n) 遍历，n = 项目文件数
+```
+
+**Treemap 布局算法**：采用 Bruls-Huizing-van Wijk **squarified treemap** 算法（D3 `d3.treemapSquarify` 默认实现），确保矩形尽量接近正方形，避免 slice-and-dice 产生的极端长宽比，提升可读性。面积严格与文件字节数成比例。
+
+**颜色编码策略**：使用 Tableau10 色板，按文件扩展名分配颜色。相同类型文件颜色一致，便于跨目录识别同类文件分布。
+
+**排除规则**：
+
+| 类别 | 目录/扩展名 | 原因 |
+|------|-----------|------|
+| 硬排除目录 | `node_modules/`, `.git/`, `.claude/`, `.memory/`, `dist/`, `build/`, `.next/`, `.nuxt/`, `coverage/`, `__pycache__/`, `.turbo/`, `.cache/`, `.yarn/`, `.pnpm/` | 非源码、构建产物或缓存；分析无意义且体量巨大 |
+| 软排除目录 | `.vercel/`, `.netlify/`, `.serverless/`, `cdk.out/`, `terraform/` | 部署产物，默认跳过但可通过配置纳入 |
+| 二进制跳过 | `.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.ico`, `.bmp`, `.woff`, `.woff2`, `.ttf`, `.eot`, `.otf`, `.mp3`, `.mp4`, `.wav`, `.ogg`, `.webm`, `.map`, `.lock`, `.sum` | 不可解析的二进制文件，对依赖分析无贡献 |
+
+### 依赖图谱分析
+
+```
+算法：静态 import 解析 → 相对路径解析 → 有向图构建 → D3 力导向布局
+
+复杂度：O(f × i) 解析，f = 可解析文件数，i = 每文件平均 import 数；O(n + e) 图遍历
+```
+
+**Import 解析策略**：基于正则表达式的静态解析，不执行代码。支持的导入模式：
+
+| 模式 | 示例 | JavaScript | TypeScript | CSS |
+|------|------|:---:|:---:|:---:|
+| 静态 import | `import { x } from './foo'` | ✅ | ✅ | — |
+| 默认 import | `import foo from './foo'` | ✅ | ✅ | — |
+| 副作用 import | `import './init'` | ✅ | ✅ | — |
+| 动态 import | `import('./lazy')` | ✅ | ✅ | — |
+| CommonJS require | `require('./foo')` | ✅ | — | — |
+| CSS @import | `@import url('./base.css')` | — | — | ✅ |
+| Re-export | `export { x } from './foo'` | ✅ | ✅ | — |
+| 通配 re-export | `export * from './foo'` | ✅ | ✅ | — |
+| TypeScript type import | `import type { T } from './foo'` | — | ✅ | — |
+
+**路径解析**：仅解析相对路径导入（`.` 或 `..` 开头）。裸标识符（`'react'`、`'lodash'`）视为外部依赖，不纳入图谱。解析时尝试以下后缀依次匹配：无扩展名 → `.js` → `.mjs` → `.ts` → `.jsx` → `.tsx` → `.vue` → `.css` → `.scss` → `/index.js` → `/index.mjs` → `/index.ts`。
+
+**图谱性能上限**：最大 500 节点，按文件体积降序选取，确保最大的模块优先入图。此设计避免了超大型项目（数千文件）导致的力导向布局性能退化。
+
+### 循环依赖检测
+
+```
+算法：基于 DFS 的 Johnson 变体 — 递归栈追踪 + 回溯路径记录
+
+复杂度：O(n + e)，n = 节点数，e = 边数
+```
+
+- 对有向图执行深度优先遍历
+- 维护 `visited` 集合（全局已访问）和 `recStack` 集合（当前递归路径）
+- 当遇到 `recStack` 中已存在的节点时，记录完整环路径
+- 限制输出 Top-20 个循环，按环长度升序排列
+
+### 统计聚合
+
+| 统计维度 | 计算方式 | 用途 |
+|---------|---------|------|
+| **体积排名** | 按 size 降序排列 | 定位最大的文件/目录 |
+| **扩展名分布** | 按扩展名聚合总字节数 | 了解项目语言构成 |
+| **目录分布** | 按一级子目录聚合 | 了解模块组织比例 |
+| **Fan-in（被依赖度）** | 入边计数 | 识别核心/基础模块，高 fan-in 模块修改风险大 |
+| **Fan-out（依赖数）** | 出边计数 | 识别 God Module，高 fan-out 模块可能职责过多 |
+| **超大文件** | size > 500 KB | 标记可能需要拆分的文件 |
+| **孤儿文件** | fan-in = 0 且 fan-out = 0 | 可能未被使用，候选清理 |
+| **Barrel 文件** | 仅含 re-export 语句 | 识别模块聚合模式 |
 
 ## 分析维度
 
@@ -36,43 +122,290 @@ lifecycle: standalone
   'secondaryColor': '#2b2d3b',
   'tertiaryColor': '#21232f'
 }}}%%
-flowchart LR
-    ENTRY["/rui-bundle-analyze"]:::entry --> D1["① 文件体积<br/>treemap 可视化<br/>目录/文件矩形面积=大小"]:::dim
-    ENTRY --> D2["② 依赖图谱<br/>力导向图<br/>import/require 关系"]:::dim
-    ENTRY --> D3["③ 体积统计<br/>Top-N 最大文件<br/>按扩展名分布"]:::dim
-    ENTRY --> D4["④ 依赖热点<br/>被依赖最多模块<br/>依赖链深度"]:::dim
+flowchart TB
+    ENTRY["/rui-bundle-analyze"]:::entry
 
-    classDef entry fill:#3d59a1,color:#fff
-    classDef dim fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6
+    ENTRY --> D1["① 文件体积分析<br/>━━━━━━━━━━<br/>· squarified treemap<br/>· 目录/文件矩形面积=体积<br/>· 颜色编码按扩展名<br/>· 缩放+面包屑导航"]:::dim
+    ENTRY --> D2["② 依赖图谱<br/>━━━━━━━━━━<br/>· 力导向有向图<br/>· import/require/动态导入<br/>· 节点大小=文件体积<br/>· 边样式区分导入类型"]:::dim
+    ENTRY --> D3["③ 体积统计<br/>━━━━━━━━━━<br/>· Top-20 最大文件<br/>· 扩展名/目录分布<br/>· 体积直方图<br/>· 目录深度分布"]:::dim
+    ENTRY --> D4["④ 依赖热点<br/>━━━━━━━━━━<br/>· Top-10 fan-in 核心模块<br/>· Top-10 fan-out God Module<br/>· 循环依赖检测<br/>· 依赖链最大深度"]:::dim
+    ENTRY --> D5["⑤ 代码质量<br/>━━━━━━━━━━<br/>· 孤儿文件检测<br/>· Barrel 文件识别<br/>· 超大文件告警<br/>· 代码密度估算"]:::dim
+    ENTRY --> D6["⑥ 趋势对比<br/>━━━━━━━━━━<br/>· 与上次基线对比<br/>· 新增/删除/变化文件<br/>· 体积增长率<br/>· 依赖结构变化"]:::dim
+    ENTRY --> D7["⑦ 软件工程度量<br/>━━━━━━━━━━<br/>· Robert Martin I/A/D<br/>· 包级耦合与内聚<br/>· 重复文件检测<br/>· Zone-of-Pain 识别"]:::dim
+    ENTRY --> D8["⑧ 传递依赖分析<br/>━━━━━━━━━━<br/>· BFS 传递闭包<br/>· 爆炸半径 (blast radius)<br/>· 桥接模块识别<br/>· 子图连通性"]:::dim
+    ENTRY --> D9["⑨ Git 变更热点<br/>━━━━━━━━━━<br/>· git log 变更频率<br/>· 热度指数 (churn×size)<br/>· 变更分布桶<br/>· 90 天窗口统计"]:::dim
+    ENTRY --> D10["⑩ 架构分层<br/>━━━━━━━━━━<br/>· 拓扑分层 (Entry→Foundation)<br/>· 层级违规检测<br/>· 向下依赖规则<br/>· 严重度分级"]:::dim
+
+    classDef entry fill:#3d59a1,color:#fff,font-weight:bold
+    classDef dim fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6,text-align:left
 ```
 
 ### 1. 文件体积分析
 
-- 递归扫描项目目录，计算每个文件的体积
-- 目录体积 = 所有子文件体积之和
-- Treemap 矩形面积与文件/目录体积成比例
-- 颜色编码按文件扩展名区分
+- 递归扫描项目目录树，通过 `statSync` 获取每个文件精确字节数
+- 目录体积 = 递归子文件体积之和（非 du 块大小，更精确）
+- Treemap 矩形面积严格按照 squarified 算法与文件/目录体积成比例
+- 颜色编码按文件扩展名分类，同一扩展名颜色全局一致
+- 交互：滚轮缩放、点击深入目录、面包屑导航层级返回
 
 ### 2. 依赖图谱分析
 
-- 解析 `import` / `require` 语句构建有向依赖图
-- 力导向布局展示模块间依赖关系
-- 节点大小 = 文件体积，边 = 依赖关系
-- 支持的文件类型：`.js` `.mjs` `.jsx` `.ts` `.tsx` `.vue` `.svelte` `.css` `.scss` `.less`
+- 静态解析 9 种 import/require/re-export 模式（见方法论）
+- 力导向模拟参数：link distance 80、charge -200、collision radius 基于节点大小
+- 节点映射：圆形半径与文件大小平方根成比例（面积 = 体积），颜色按扩展名
+- 边映射：实线 = static import、虚线 = dynamic import、黄虚线 = require、点线 = re-export
+- 可拖拽节点固定位置，支持缩放/平移
 
 ### 3. 体积统计
 
-- Top-20 最大文件列表
-- 按扩展名的体积分布
-- 按目录的体积分布
-- 总文件数、总行数（估算）
+- **Top-20 最大文件**：按绝对字节数排名，含完整路径和扩展名
+- **扩展名分布**：聚合各扩展名总体积，横向条形图可视化（占比百分比）
+- **目录分布**：一级子目录体积排名，含占总比
+- **体积直方图**：按文件大小分桶（0-1KB, 1-10KB, 10-100KB, 100KB-1MB, >1MB），展示分布形态
+- **目录深度分布**：按嵌套层级统计文件数和体积
 
 ### 4. 依赖热点
 
-- Top-10 被依赖最多模块（fan-in）
-- Top-10 依赖最多模块（fan-out）
-- 循环依赖检测
-- 依赖链最大深度
+- **Fan-in Top-10**：被最多文件依赖的模块。高 fan-in 模块 = 核心基础设施，修改需谨慎
+- **Fan-out Top-10**：依赖最多其他文件的模块。高 fan-out 可能 = God Module 反模式
+- **循环依赖**：DFS 检测闭环，按环长度排序，报告完整环路路径
+- **依赖链深度**：从入口到最远叶节点的最长路径长度
+
+### 5. 代码质量信号
+
+- **孤儿文件**：既不被 import 也不 import 其他文件的孤立模块 — 可能是死代码候选（注意排除入口文件、配置文件等合理单例）
+- **Barrel 文件**：仅含 re-export 语句（`export * from` / `export { x } from`）的聚合模块 — 常见且合理的模式，但过多的 barrel 会增加构建复杂度
+- **超大文件告警**：超过 500 KB 阈值自动标红，附带体积和建议
+- **代码密度**：字节数 / 行数比值，识别异常稀疏/密集的文件
+
+### 6. 趋势对比
+
+- 将当前分析结果与上次基线（`.memory/bundle-baseline.json`）对比
+- 输出三类变化：**新增文件**、**删除文件**、**体积变化超过 20% 的文件**
+- 计算总体积增长率（%）
+- 依赖结构变化检测：新增/删除的依赖边数量
+
+### 7. 软件工程度量
+
+基于 Robert Martin (Uncle Bob) 的包设计原则，对项目进行包级别的稳定性与抽象度分析。
+
+#### 核心指标
+
+| 指标 | 公式 | 含义 | 理想范围 |
+|------|------|------|---------|
+| **Ce** (Efferent Coupling) | 包对外部的依赖数（fan-out） | 包依赖多少其他包 | — |
+| **Ca** (Afferent Coupling) | 外部对包的依赖数（fan-in） | 包被多少其他包依赖 | — |
+| **I** (Instability) | I = Ce / (Ca + Ce) | 不稳定性：0=完全稳定，1=完全不 stable | — |
+| **A** (Abstractness) | A = 抽象文件数 / 总文件数 | 抽象度：0=全具体，1=全抽象 | — |
+| **D** (Distance) | D = \|A + I - 1\| | 离主序列的距离：0=理想位置 | D < 0.3 |
+| **Cohesion** | 内部依赖 / 总依赖 | 包内聚度：包内依赖占该包相关所有依赖的比例 | > 0.5 |
+
+#### 区域分类
+
+```
+        I=1 (不稳定)
+        |
+  Zone of    |   Main
+Uselessness  |  Sequence
+  (无用区)    |  (理想带)
+        |    |
+   D=0.7 ----+---- D=0
+        |    |
+  Main       |  Zone of
+ Sequence    |   Pain
+        |    |  (痛苦区)
+        I=0 (稳定)
+        A=0    A=1
+        (具体)  (抽象)
+```
+
+- **Zone of Pain（痛苦区）**：I≈0 且 A≈0 → 稳定且具体。修改成本高（被大量依赖）但又不抽象（难以扩展）。典型的"God Package" 反模式。
+- **Zone of Uselessness（无用区）**：I≈1 且 A≈1 → 不稳定且抽象。没有其他包依赖它，但又很抽象——意味着抽象没人用。
+- **Main Sequence（理想带）**：A + I ≈ 1 → 稳定性和抽象度平衡。稳定的包应该是抽象的（易于扩展），不稳定的包应该是具体的（易于修改）。
+
+#### 抽象文件判定启发式
+
+在 JavaScript/TypeScript 项目中，以下文件被视为"抽象"：
+- TypeScript 声明文件（`.d.ts`）
+- 位于 `types/` 或 `interfaces/` 目录中的文件
+- 大写开头的 `.ts` 文件（约定俗成的类/接口文件）
+
+> **注意**：A 的计算是启发式近似，非精确的 AST 级抽象检测。对于纯 JavaScript 项目，A 值可能偏低。
+
+#### 重复文件检测
+
+- 对每个文件计算 MD5 内容哈希
+- 将相同哈希的文件归组，报告 2+ 成员的重复组
+- 计算浪费的字节数 = 单文件大小 × (重复数 - 1)
+- 跳过 < 100 字节的小文件（配置文件等合理的相似内容）
+
+#### 文件级耦合
+
+- 为每个文件计算 Ce（fan-out）、Ca（fan-in）、I（不稳定性）
+- 按 I 降序排列，Top-20 最不稳定的文件可能是重构候选
+
+### 8. 传递依赖分析
+
+基于 BFS（广度优先搜索）计算依赖图的传递闭包，揭示间接依赖关系。
+
+#### 核心概念
+
+| 概念 | 定义 | 工程意义 |
+|------|------|---------|
+| **传递 fan-out** | 从文件 A 出发，经过任意跳数能到达的所有文件 | **爆炸半径**：修改 A 可能影响的所有文件 |
+| **传递 fan-in** | 能经过任意跳数到达文件 A 的所有文件 | **影响面**：哪些文件的修改可能波及 A |
+| **间接依赖** | 传递可达但非直接 import 的文件 | 隐藏的耦合 — 不直接依赖但实际受影响 |
+| **桥接模块** | 连接多个子图的关键节点 | 架构瓶颈：移除它会断开连通性 |
+| **子图连通性** | 依赖图被分割为多少个不连通的子图 | 架构碎片化程度 — 过高暗示缺乏统一设计 |
+| **最大可达数** | 单个文件能到达的最多文件数 | 依赖集中度 — 过高暗示 God Module |
+
+#### 爆炸半径分析
+
+- 对每个节点（文件）执行 BFS 遍历
+- 统计直接依赖数、传递依赖数、间接依赖数
+- Top-15 最大传递 fan-out 文件排名
+- 间接依赖占比 = (传递 - 直接) / 传递 → 高占比意味着该模块的影响主要通过间接路径传导
+
+#### 桥接模块识别
+
+```
+桥接评分 = fan-in × fan-out × (间接连接数 / 总连接数)
+```
+
+高桥接评分的模块是架构中的关键连接点：
+- 删除或破坏该类模块会导致依赖图分裂
+- 是重构和测试优先级最高的模块
+- 应当有最完善的测试覆盖
+
+#### 子图检测
+
+- 构建无向版本依赖图
+- BFS 找出所有连通分量
+- 报告子图数量和最大子图占比
+- 子图数量过多（> 文件数 50%）→ 暗示模块间缺乏协作，可能过度解耦
+
+### 9. Git 变更热点分析
+
+集成 Git 历史，计算文件变更频率，与文件体积交叉分析识别"热点"模块。
+
+#### 核心指标
+
+| 指标 | 计算方式 | 含义 |
+|------|---------|------|
+| **变更次数** (Churn Count) | `git log --diff-filter=M --name-only` | 文件在时间窗口内被修改的次数 |
+| **热度指数** (Heat Index) | churn × log₂(size_in_KB + 1) | 综合变更频率和文件大小的热度评分 |
+| **变更率** (Churn Rate) | 被修改过的文件数 / 总文件数 | 项目活跃度指标 |
+| **变更分布** | 按变更次数分桶（1-2, 3-5, 6-10, 11-20, 20+） | 变更集中度 — 是否少数文件占据多数变更 |
+
+#### 热度指数设计
+
+```
+heatIndex = churnCount × log₂(fileSizeInKB + 1)
+```
+
+- **高 churn + 大文件**：最大热点 → 需要拆分或重构
+- **高 churn + 小文件**：频繁微调 → 可能接口不稳定
+- **低 churn + 大文件**：稳定的大文件 → 可能是成熟的"核心"
+- **低 churn + 小文件**：稳定的小文件 → 健康
+
+#### 时间窗口
+
+默认 90 天，可通过 `--churn-period <days>` 自定义。窗口越长，趋势越稳定；窗口越短，越能反映近期动态。
+
+### 10. 架构分层检测
+
+基于依赖方向自动检测项目的架构分层，识别层级违规。
+
+#### 分层算法
+
+```
+1. 计算每个文件的 fan-in / fan-out
+2. 入口层 (Layer 0) = fan-in = 0 的文件（不被任何文件依赖）
+3. BFS 从入口层出发，逐层向下：
+   Layer N+1 = 被 Layer N 文件的直接依赖，且尚未分配到更浅层的文件
+4. 基础层 = fan-out = 0 的文件（不依赖任何其他文件）
+```
+
+#### 层级语义
+
+| 层 | 典型内容 | 特征 |
+|----|---------|------|
+| **Layer 0 (Entry)** | CLI 入口、页面组件、脚本 | fan-in=0，只依赖别人 |
+| **Layer 1..N-1 (Middle)** | 业务逻辑、服务层、状态管理 | 既有 fan-in 也有 fan-out |
+| **Layer N (Foundation)** | 工具库、常量、类型定义 | fan-out=0，只被别人依赖 |
+
+#### 层级违规
+
+**向下依赖规则 (Downward Dependency Rule)**：上层（Layer N）可以依赖下层（Layer N+M），但下层不应依赖上层。
+
+违规 = 低层 → 高层的边，即 `fromLayer > toLayer`。
+
+```
+✅ 合法: Layer 0 (Page) → Layer 2 (Util)
+❌ 违规: Layer 2 (Util) → Layer 0 (Page)
+```
+
+违规严重度：
+- **轻微** (gap=1)：相邻层间的反向依赖 → 可能可以接受
+- **严重** (gap>1)：跨层反向依赖 → 架构问题，需重构
+
+#### 工程意义
+
+- **分层清晰**（层数适中，违规少）：架构良好，依赖方向一致
+- **分层过少**（1-2 层）：可能缺乏架构分层意识
+- **分层过多**（>7 层）：可能过度抽象，增加理解成本
+- **违规多**：下层依赖上层 → 循环依赖的宏观表现，维护成本增加
+
+## 高级特性
+
+### 基线管理
+
+```
+node skills/rui-bundle-analyze/analyze.mjs --save-baseline
+```
+
+将当前分析结果保存为基线（`.memory/bundle-baseline.json`），后续运行自动与基线对比。
+
+### 趋势对比
+
+```
+node skills/rui-bundle-analyze/analyze.mjs --diff
+```
+
+与已保存的基线对比，在报告和 CLI 输出中展示变化。无基线时自动降级为普通模式。
+
+### 文件过滤
+
+```
+node skills/rui-bundle-analyze/analyze.mjs --scope "skills/**/*.mjs"
+```
+
+使用 glob 模式限定分析范围。适合聚焦特定子系统。
+
+### 深度控制
+
+```
+node skills/rui-bundle-analyze/analyze.mjs --max-depth 3
+```
+
+限制依赖图遍历深度，控制图谱复杂度。适用于超大型项目。
+
+## 命令
+
+| 命令 | 说明 |
+|------|------|
+| `/rui-bundle-analyze` | 全量分析，生成 HTML 报告并打开浏览器 |
+| `/rui-bundle-analyze --dir <path>` | 分析指定目录（默认项目根目录） |
+| `/rui-bundle-analyze --no-open` | 仅生成报告，不自动打开浏览器 |
+| `/rui-bundle-analyze --json` | 输出 JSON 到 stdout（供管线消费） |
+| `/rui-bundle-analyze --json --no-open` | 管线模式：仅 JSON 输出，不生成 HTML |
+| `/rui-bundle-analyze --scope <glob>` | 限定文件范围（如 `"skills/**/*.mjs"`） |
+| `/rui-bundle-analyze --save-baseline` | 保存为基线（后续 `--diff` 对比用） |
+| `/rui-bundle-analyze --diff` | 与基线对比，展示变化 |
+| `/rui-bundle-analyze --max-depth <n>` | 限制依赖图节点深度（默认不限制） |
+| `/rui-bundle-analyze --help` | 显示完整帮助信息 |
+
+可执行入口：`node skills/rui-bundle-analyze/analyze.mjs [options]`
 
 ## 报告输出
 
@@ -80,70 +413,327 @@ flowchart LR
 
 `node skills/rui-bundle-analyze/analyze.mjs` 生成自包含 HTML 报告，包含：
 
-- **Treemap 视图** — 类 webpack-bundle-analyzer 的缩放 treemap，鼠标悬停显示文件详情
-- **依赖图谱视图** — 力导向依赖关系图，可拖拽节点
-- **统计面板** — 文件体积排名、扩展名分布、依赖热点
-- **双视图切换** — Treemap / Graph 一键切换
+**主视图区域（双视图切换）**：
+
+| 视图 | 功能 |
+|------|------|
+| **Treemap** | squarified 矩形图，滚轮缩放、点击深入目录、面包屑导航、悬停 tooltip 显示文件详情和体积 |
+| **Dependency Graph** | D3 力导向有向图，节点拖拽固定、缩放平移、边样式区分导入类型、大节点显示文件名标签 |
+
+**侧边栏面板（6 区块）**：
+
+| 区块 | 内容 |
+|------|------|
+| 📏 Top 最大文件 | 前 15 个最大文件，>500KB 标红、>100KB 标黄 |
+| ⚠️ 超大文件告警 | 超过 500KB 阈值的文件列表 |
+| 📦 扩展名分布 | 横向比例条，各扩展名总字节数 |
+| 📁 目录分布 | 一级子目录体积排名 |
+| 🔥 依赖热点 | fan-in / fan-out 排名 + 最大依赖深度 |
+| 🔄 循环依赖 | 环路路径展示（最多 5 个） |
+| 👻 孤儿文件 | 无引用的潜在死代码文件 |
+| 📦 Barrel 文件 | re-export 聚合模块列表 |
+| 🟰 重复文件 | 内容哈希重复的文件组 + 浪费字节数 |
+| 📐 包度量 (I/A/D) | Robert Martin 稳定性/抽象度分析，Zone-of-Pain 标记 |
+| 🔗 传递依赖 | 爆炸半径排名、桥接模块、子图连通性 |
+| 📜 变更热点 | git churn × 文件体积热度指数、变更分布 |
+| 🏗️ 架构分层 | Entry→Foundation 拓扑分层、层级违规检测 |
+| 📊 体积分布 | 6 桶直方图 + 目录深度分布 |
+
+**趋势对比区块（`--diff` 时显示）**：
+
+| 区块 | 内容 |
+|------|------|
+| 📈 体积变化 | 总增长/缩减、新增/删除文件数 |
+| 🔺 增长最快 | 体积增幅 Top-10 |
+| 🔻 缩减最多 | 体积减幅 Top-10 |
+| 🆕 新增依赖 | 上次基线中不存在的新增依赖边 |
+
+**工具栏**：
+- Treemap / Graph 视图切换
+- Reset Zoom 恢复默认视角
+- 统计徽章：节点数、边数、循环依赖数、超大文件数
+
+**设计系统**：Tokyo Night 深色主题配色，CSS 变量体系，响应式侧边栏。
 
 输出路径：`docs/bundle-reports/bundle-YYYY-MM-DD-HHmmss.html`
 
 ### JSON 输出
 
-`--json` 输出结构化数据，供管线消费：
+`--json` 输出结构化数据，供管线消费，格式向后兼容：
 
 ```json
 {
-  "meta": { "root": "...", "generatedAt": "...", "totalFiles": N, "totalSize": N },
-  "files": [{ "path": "...", "size": N, "ext": "..." }],
-  "directories": [{ "path": "...", "size": N, "fileCount": N }],
-  "dependencies": [{ "from": "...", "to": "...", "type": "import|require|dynamic" }],
+  "meta": {
+    "root": ".",
+    "projectName": "YrY",
+    "generatedAt": "2026-06-19 14:30:00",
+    "totalFiles": 342,
+    "totalSize": 5242880,
+    "totalSizeFormatted": "5.0 MB",
+    "analysisVersion": "2.0"
+  },
+  "files": [
+    { "path": "skills/rui-bundle-analyze/analyze.mjs", "size": 45678, "ext": ".mjs", "lines": 1240 }
+  ],
+  "directories": [
+    { "path": "skills", "size": 1024000, "fileCount": 128 }
+  ],
+  "dependencies": [
+    { "from": "skills/rui-bundle-analyze/analyze.mjs", "to": "lib/fs.mjs", "type": "import" }
+  ],
   "stats": {
     "largestFiles": [...],
-    "mostDependedOn": [...],
-    "sizeByExt": {...},
-    "circularDeps": [...]
+    "mostDependedOn": [{ "path": "...", "count": 15 }],
+    "mostDependencies": [{ "path": "...", "count": 22 }],
+    "sizeByExt": { ".mjs": 2048000, ".md": 1024000 },
+    "sizeByDir": { "skills": 3000000, "lib": 800000 },
+    "circularDeps": [["a.mjs", "b.mjs", "a.mjs"]],
+    "oversizedFiles": [...],
+    "orphanFiles": [...],
+    "barrelFiles": [...],
+    "sizeHistogram": { "0-1KB": 100, "1-10KB": 150, "10-100KB": 70, "100KB-1MB": 20, "500KB-1MB": 0, ">1MB": 2 },
+    "maxDependencyDepth": 8,
+    "depthDist": { "1": 14, "2": 98, "3": 461, "4-5": 440, "6-8": 50 },
+    "duplicates": [
+      { "files": ["a.js", "b.js"], "size": 1024, "wastedBytes": 1024, "count": 2 }
+    ],
+    "packageMetrics": {
+      "packages": [
+        { "package": "lib", "fileCount": 25, "abstractCount": 3, "Ce": 5, "Ca": 20, "I": 0.2, "A": 0.12, "D": 0.68, "cohesion": 0.45, "zone": "zone-of-pain" }
+      ],
+      "fileCoupling": [{ "path": "...", "Ce": 10, "Ca": 2, "I": 0.833 }],
+      "edgeCount": 25,
+      "packageCount": 12
+    },
+    "transitiveDeps": {
+      "topTransitiveFanOut": [{ "path": "...", "directCount": 3, "transitiveCount": 24, "indirectOnly": 21 }],
+      "topTransitiveFanIn": [{ "path": "...", "directCount": 10, "transitiveCount": 50, "indirectOnly": 40 }],
+      "bridgeModules": [{ "path": "...", "directIn": 8, "directOut": 5, "transitiveIn": 40, "transitiveOut": 30, "bridgeScore": 12.5 }],
+      "avgReachable": 1.1,
+      "maxReachable": 24,
+      "disconnectedSubgraphs": 257,
+      "largestSubgraphRatio": 0.34
+    },
+    "gitChurn": {
+      "available": true,
+      "timeWindow": "90 days",
+      "totalChanges": 1355,
+      "filesChanged": 168,
+      "filesUnchanged": 895,
+      "churnRate": 15.8,
+      "topHotFiles": [{ "path": "...", "size": 22511, "churnCount": 137, "heatIndex": 619.6 }],
+      "churnBuckets": { "0": 895, "1-2": 110, "3-5": 13, "6-10": 14, "11-20": 13, "20+": 18 }
+    },
+    "layerAnalysis": {
+      "layers": [{ "layer": 0, "nodeCount": 319, "avgFanOut": 0.8, "representatives": ["..."] }],
+      "violations": [{ "from": "...", "to": "...", "fromLayer": 3, "toLayer": 0, "gap": 3, "type": "import" }],
+      "violationCount": 25,
+      "severeViolations": 10,
+      "layerCount": 6,
+      "maxLayer": 5,
+      "entryNodeCount": 319
+    }
+  },
+  "diff": {
+    "hasBaseline": true,
+    "baselineDate": "2026-06-12 09:00:00",
+    "sizeDelta": 102400,
+    "sizeDeltaPercent": 2.0,
+    "newFiles": [{ "path": "...", "size": 1024 }],
+    "deletedFiles": [{ "path": "...", "size": 512 }],
+    "changedFiles": [{ "path": "...", "oldSize": 1000, "newSize": 2000, "delta": 1000, "deltaPercent": 100 }],
+    "newDeps": [{ "from": "...", "to": "..." }],
+    "removedDeps": [{ "from": "...", "to": "..." }]
   }
 }
 ```
 
+### 退出码
+
+| 码 | 含义 |
+|----|------|
+| 0 | 分析成功完成 |
+| 1 | 目录不存在或不可读 |
+| 2 | JSON 输出模式下，输出非合法 JSON（不应发生） |
+
+## 性能特征
+
+| 指标 | 典型值（YrY 项目，~500 文件） | 极限值 |
+|------|---------------------------|--------|
+| 文件遍历 | < 50ms | O(n) 文件数 |
+| Import 解析 | < 100ms | O(f × i)，f=可解析文件数(≤500)，i=人均 import 数 |
+| 依赖图构建 | < 50ms | O(n + e)，n≤500 |
+| 循环检测 | < 20ms | O(n + e) |
+| 统计计算 | < 10ms | O(n log n)（排序） |
+| HTML 生成 | < 50ms | O(n) |
+| **总计** | **< 300ms** | 瓶颈在 D3 客户端渲染，非 Node 端 |
+
+**拓展性**：超大型项目（>5000 文件）的依赖图自动裁剪至 Top-500 最大文件，确保图谱始终可交互。Treemap 无节点上限。
+
+## 局限与边界
+
+### 明确不支持
+
+| 局限 | 原因 | 替代方案 |
+|------|------|---------|
+| 打包产物分析 | 本工具定位于**源码级**分析 | 使用 webpack-bundle-analyzer / rollup-plugin-visualizer |
+| 运行时依赖 | 静态分析无法捕获动态 `import(variable)` | 结合运行时 coverage 工具 |
+| 跨包依赖 | 不解析 `node_modules` 内依赖关系 | 使用 `npm ls --all` 或 dependency-cruiser |
+| AST 级精确解析 | 正则解析存在边界 case（模板字符串内的 import 等） | 使用 babel/swc parser 的专用工具 |
+| Tree-shaking 效果 | 需要打包器级别的导出使用分析 | 使用 `rollup-plugin-visualizer` 的 "sunburst" |
+| TypeScript path alias | 仅解析相对路径，`@/` 等 alias 视为外部 | 需配置 `tsconfig.json` paths 映射 |
+
+### 边界 Case
+
+1. **动态模板 import**：`import(\`./\${name}\`)` 无法静态解析，跳过
+2. **Monorepo 交叉引用**：workspace 包间引用（如 `@scope/foo`）视为外部，不展开
+3. **CSS preprocessor @use/@forward**：SCSS `@use` / `@forward` 语法暂不解析
+4. **条件 require**：`if (cond) require('a') else require('b')` 两条路径均记录，实际运行时只走一条
+5. **Symlink**：不跟踪符号链接，避免重复计算
+
+## 行业对比
+
+| 特性 | rui-bundle-analyze | webpack-bundle-analyzer | dependency-cruiser | source-map-explorer |
+|------|:---:|:---:|:---:|:---:|
+| **分析对象** | 源码目录 | webpack 打包产物 | 源码目录 | 打包产物 + source map |
+| **零配置** | ✅ | ❌ 需 webpack | ✅ | ❌ 需 source map |
+| **构建工具无关** | ✅ | ❌ | ✅ | ❌ (需 source map) |
+| **Treemap 可视化** | ✅ | ✅ | ❌ | ✅ |
+| **依赖图谱** | ✅ | ❌ | ✅ (dot/svg) | ❌ |
+| **循环依赖检测** | ✅ | ❌ | ✅ | ❌ |
+| **趋势对比** | ✅ (`--diff`) | ❌ | ❌ | ❌ |
+| **孤儿文件检测** | ✅ | ❌ | ✅ | ❌ |
+| **包级 I/A/D 度量** | ✅ | ❌ | ❌ | ❌ |
+| **重复文件检测** | ✅ | ❌ | ❌ | ❌ |
+| **传递依赖分析** | ✅ | ❌ | ✅ (dot) | ❌ |
+| **Git 变更热点** | ✅ | ❌ | ❌ | ❌ |
+| **架构分层检测** | ✅ | ❌ | ❌ | ❌ |
+| **JSON 管线输出** | ✅ | ✅ (stats.json) | ✅ | ❌ |
+| **HTML 自包含报告** | ✅ | ✅ | ❌ | ✅ |
+| **依赖规则校验** | ❌ | ❌ | ✅ | ❌ |
+
+**rui-bundle-analyze 的独特价值**：将 treemap 可视化（webpack-bundle-analyzer 风格）与依赖图谱分析（dependency-cruiser 风格）和趋势追踪整合为单一零配置工具，输出统一的自包含 HTML 报告。
+
 ## 集成点
 
-| 集成场景 | 触发方 | 用途 |
-|---------|--------|------|
-| 健康检查 | rui-health | `file_size` + `dep_analysis` 维度评分 |
-| 自改进 D3 诊断 | self-improve agent | 复杂度增长检测 |
-| 自改进 D5 诊断 | self-improve agent | 依赖退化检测 |
-| 计划阶段 | planner | 项目结构可视化输入 |
+| 集成场景 | 触发方 | 数据流向 | 用途 |
+|---------|--------|---------|------|
+| **健康检查** | `rui-health` | `--json` stdout → `health.mjs` 评分函数 | `file_size` 维度（体积分布健康度）+ `dep_analysis` 维度（循环依赖/孤儿文件扣分） |
+| **D3 复杂度诊断** | `self-improve` agent | JSON `stats` → 复杂度评分卡 | 检测文件体积增长趋势、超大文件新增 |
+| **D5 依赖退化** | `self-improve` agent | JSON `circularDeps` + `mostDependedOn` → 退化评分 | 检测新增循环依赖、fan-in 过度集中 |
+| **计划阶段** | `planner` | HTML 报告 → 可视化参考 | 让开发者在规划前理解项目物理结构 |
+| **CI 门禁** | CI pipeline | `--json --diff` → 阈值检查 | 体积增长超 10% 告警、新增循环依赖阻断 |
+| **周度巡检** | `loop-report.mjs` | `--save-baseline` → 趋势数据持久化 | 自动生成体积健康趋势报告 |
 
 ## 核心规则
 
-| # | 规则 |
-|---|------|
-| 1 | 只读分析，不修改源码 |
-| 2 | 尊重 `.gitignore` 排除规则 |
-| 3 | HTML 报告自包含（CDN 引用 D3 除外） |
-| 4 | JSON 输出格式稳定，供管线消费 |
-| 5 | 不分析 `node_modules/`、`.git/`、`dist/`、`build/`、`.next/` |
-| 6 | 超大文件（> 500 KB 源码）标红警告 |
+| # | 规则 | 设计理由 |
+|---|------|---------|
+| 1 | **只读分析**，不修改任何源码文件 | 安全第一，分析工具不应有副作用 |
+| 2 | 尊重 `.gitignore` 排除规则（通过目录黑名单近似实现） | 避免分析构建产物和依赖 |
+| 3 | HTML 报告自包含（仅 D3 通过 CDN 加载） | 可离线查看，无需本地服务器 |
+| 4 | JSON 输出格式向后兼容，字段只增不减 | 下游管线依赖稳定性 |
+| 5 | 不分析 `node_modules/`、`.git/`、`dist/`、`build/`、`.next/` 等 | 避免噪音和性能问题 |
+| 6 | 超大文件（> 500 KB 源码）标红警告 | 鼓励文件拆分，保持模块健康 |
+| 7 | 依赖图上限 500 节点，按文件体积降序选取 | 确保图谱始终可交互，避免布局退化 |
+| 8 | 错误不阻断整体流程 — 单个文件读取失败跳过，继续分析其余文件 | 鲁棒性优于完整性 |
 
 ## 生效标志
 
-| 标志 | 验证方式 |
-|------|---------|
-| Treemap 可交互缩放 | 打开 HTML 报告，滚轮缩放正常 |
-| 依赖图节点可拖拽 | 打开 HTML 报告，拖拽节点正常 |
-| 体积统计准确 | `du -sh` 对比报告中的目录体积 |
-| JSON 输出可解析 | `--json` 输出为合法 JSON |
-| 报告自动打开 | 默认行为在浏览器中打开 HTML |
+| 标志 | 验证方式 | 预期行为 |
+|------|---------|---------|
+| Treemap 可交互缩放 | 打开 HTML 报告，滚轮缩放 | 矩形跟随缩放平滑变换 |
+| Treemap 面包屑导航 | 点击某个目录矩形 | 视图缩放到该目录，底部显示面包屑路径 |
+| 依赖图节点可拖拽 | 切换到 Graph 视图，拖拽节点 | 节点跟随鼠标，释放后位置固定 |
+| 依赖图边类型区分 | 观察不同类型边的样式 | import=蓝色实线、require=黄色虚线、dynamic=紫色点线 |
+| 体积统计准确 | `du -sh` 对比报告中的文件大小 | 误差在块大小对齐范围内 |
+| JSON 输出可解析 | `--json \| jq .meta.totalFiles` | 返回正确整数 |
+| 报告自动打开 | 默认行为 | 生成后在默认浏览器中打开 HTML |
+| 趋势对比生效 | `--diff` 在有基线时运行 | 报告中显示变化量和增长率 |
+
+## 架构决策
+
+### ADR-001: 选择正则解析而非 AST 解析
+
+**决策**：使用正则表达式解析 import 语句，而非 babel/swc/typescript compiler API。
+
+**理由**：
+- **零依赖**：避免引入重量级 parser 依赖（@babel/parser ~2MB）
+- **性能**：正则比 AST 遍历快 5-10 倍，对于分析工具的低延迟要求至关重要
+- **容错**：正则解析遇到语法错误文件仍可部分提取 import；AST 解析直接失败
+- **覆盖度**：9 种导入模式的正则覆盖率 >95% 的实际使用场景
+
+**代价**：无法处理模板字符串内的动态 import、注释中的 import、字符串拼接的路径。对于源码级结构分析，这些边界 case 影响有限。
+
+### ADR-002: 力导向图而非分层图
+
+**决策**：依赖图谱使用 D3 force simulation，而非 sankey/hierarchy 布局。
+
+**理由**：
+- 力导向图对任意图结构无假设，适合不规则的源码依赖关系
+- 拖拽交互自然的物理隐喻
+- D3 force 实现成熟稳定
+
+**代价**：每次渲染布局结果不完全一致（非确定性），大型图初始抖动明显。
+
+### ADR-003: 文件级分析而非模块级
+
+**决策**：以文件为最小分析单元，不展开到导出/函数级。
+
+**理由**：
+- 导出级分析需要完整的 AST + 类型解析，复杂度跃升一个数量级
+- 文件是开发者日常操作的原子单元，文件级信息可直接指导重构
+- 保持与 `du`、`ls` 等 Unix 工具的认知一致性
+
+### ADR-004: HTML 自包含（除 D3 CDN）
+
+**决策**：HTML 报告内联所有 CSS/JS 和数据，仅 D3 通过 CDN `<script src>` 加载。
+
+**理由**：
+- D3 v7 压缩后 ~80KB，内联会使报告膨胀
+- CDN 引用可被浏览器缓存，多次打开报告只需加载一次
+- 其余数据（JSON 内联）即使数 MB 也在可接受范围
 
 ## 自循环
 
-> 项目体积看门狗。Agent 可按间隔周期性分析，检测体积膨胀。
+> 项目体积看门狗。由 Agent 或定时任务周期性运行，检测体积异常并告警。
 
 | 属性 | 值 |
 |------|-----|
 | 推荐间隔 | `0 9 * * 1`（每周一早 9 点） |
-| 触发条件 | 最近 7 天有新 commit |
+| 快速模式 | `0 */6 * * *`（每 6 小时，适合活跃开发期） |
+| 触发条件 | 最近 7 天有新 commit（通过 `git log --since` 检测） |
 | 终止条件 | 连续 2 次无新增告警 |
-| 迭代动作 | 全量分析 → 与上次基线对比 → 有新增超大文件时告警 |
-| 收敛判定 | 无新增 > 500KB 源码文件或超大文件已记录在案 |
+| 迭代动作 | ① 全量分析 → ② 与基线对比 → ③ 检测告警条件 → ④ 推送通知（如有告警）→ ⑤ 保存为新基线 |
+| 告警条件 | 新增 >500KB 文件 / 总体积增长 >15% / 新增循环依赖 / 新增孤儿文件 >5 / 包进入 Zone-of-Pain / 新增重复文件组 |
+| 收敛判定 | 无新增告警且体积增长率 <5% |
+
+### 自循环工作流
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {
+  'primaryColor': '#1e1f2b',
+  'primaryTextColor': '#a9b1d6',
+  'primaryBorderColor': '#3d59a1',
+  'lineColor': '#3d59a1',
+  'secondaryColor': '#2b2d3b',
+  'tertiaryColor': '#21232f'
+}}}%%
+flowchart TD
+    A[定时触发] --> B{最近 7 天<br/>有新 commit?}
+    B -->|否| C[跳过本轮]
+    B -->|是| D[全量分析]
+    D --> E[与基线对比]
+    E --> F{有告警?}
+    F -->|是| G[生成告警报告]
+    G --> H[推送企微/邮件]
+    H --> I[保存基线]
+    F -->|否| J{连续 2 次<br/>无告警?}
+    J -->|是| K[终止自循环]
+    J -->|否| I
+    I --> A
+
+    style A fill:#3d59a1,color:#fff
+    style K fill:#ef4444,color:#fff
+    style G fill:#f59e0b,color:#1e1f2b
+```

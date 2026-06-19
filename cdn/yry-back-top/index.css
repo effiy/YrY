@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    YrY CDN — YryBackTop · 回到顶部按钮 样式
 
-   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+   依赖 design tokens (来自 cdn/theme/index.css 或页面 :root):
      --yry-color-text-2 / --yry-color-accent / --yry-color-surface-2
 
    所有颜色都带 fallback,即使页面未加载主题也能正常显示。

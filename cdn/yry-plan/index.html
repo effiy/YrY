@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — yry-plan · 计划清单页样式 + 清单状态持久化
+  加载: <link rel="stylesheet" href="../../../../cdn/yry-plan/index.css">
+        <script src="../../../../cdn/yry-plan/index.js"></script>
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY yry-plan · 计划清单</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="../yry-checklist/index.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+    .step-checkbox { width: 18px; height: 18px; }
+  </style>
+</head>
+<body>
+  <h1>📋 yry-plan · 计划清单</h1>
+  <p>计划清单页面: step 卡片 + 进度条 + tab 切换 + localStorage 持久化。JS 通过 <code>document.querySelector('.tabs')</code> 自动初始化。</p>
+
+  <h2>载入</h2>
+  <pre>&lt;link rel="stylesheet" href="../../../../cdn/yry-plan/index.css"&gt;
+&lt;script src="../../../../cdn/yry-plan/index.js"&gt;&lt;/script&gt;</pre>
+
+  <h2>演示步骤</h2>
+  <div class="step">
+    <div class="step-header">
+      <input type="checkbox" class="step-checkbox" id="d1">
+      <span class="step-num">1</span>
+      <span class="step-title">示例步骤</span>
+      <span class="step-status status-pending">⏳ 待开始</span>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-header">
+      <input type="checkbox" class="step-checkbox" id="d2">
+      <span class="step-num">2</span>
+      <span class="step-title">另一个步骤</span>
+      <span class="step-status status-pending">⏳ 待开始</span>
+    </div>
+  </div>
+
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · yry-plan · 2026</p>
+</body>
+</html>

@@ -45,7 +45,7 @@
              { text: '自建', modifier: 'accent' },
              { text: 'jsDelivr', modifier: 'info' }
            ],
-           meta: 'shared.css + theme.css + ...'
+           meta: 'shared/index.css + theme/index.css + ...'
          }).mount('#item-1');
        }
        if (window.YryItemCard) mount();

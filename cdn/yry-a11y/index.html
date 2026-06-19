@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--
+  YrY CDN — yry-a11y · 无障碍通用样式 (a11y)
+  提供: prefers-reduced-motion · skip-link · focus-visible
+  加载: <link rel="stylesheet" href="../../../../cdn/yry-a11y/index.css">
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YrY yry-a11y · 无障碍样式</title>
+  <link rel="stylesheet" href="../shared/index.css">
+  <link rel="stylesheet" href="../theme/index.css">
+  <link rel="stylesheet" href="index.css">
+  <style>
+    body { padding: 32px 24px 60px; max-width: 920px; margin: 0 auto; line-height: 1.7; }
+    h1 { font-size: 1.4rem; color: var(--yry-accent, #FFC107); }
+    pre { background: rgba(0,0,0,.3); padding: 10px 14px; border-radius: 6px; font-size: .76rem; color: var(--yry-cyan, #22d3ee); overflow-x: auto; }
+    button { margin-right: 8px; padding: 6px 14px; }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主内容</a>
+  <main id="main" role="main">
+    <h1>♿ yry-a11y · 无障碍样式</h1>
+    <p>提供 <code>prefers-reduced-motion</code> 媒体查询支持、跳过链接 (skip-link)、键盘焦点轮廓 (:focus-visible)、语义化 <code>[role="main"]</code> 滚动边距。</p>
+
+    <h2>载入</h2>
+    <pre>&lt;link rel="stylesheet" href="../../../../cdn/yry-a11y/index.css"&gt;</pre>
+
+    <h2>演示</h2>
+    <button>普通按钮</button>
+    <button>另一个按钮</button>
+    <p style="margin-top: 20px; font-size: .78rem; color: var(--yry-text3);">使用 Tab 键聚焦可见轮廓,系统启用 reduced-motion 后所有动画降为 0.01ms。</p>
+  </main>
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · yry-a11y · 2026</p>
+</body>
+</html>

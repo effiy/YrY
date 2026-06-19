@@ -313,9 +313,9 @@ export function generateTrendReport({ source, url, data, trend, findings, ok }) 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>趋势报告 · ${meta.label}</title>
-<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared.css">
-<link rel="stylesheet" href="${CDN_DEPTH}cdn/theme.css">
-	<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared-reports.css">
+<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared/index.css">
+<link rel="stylesheet" href="${CDN_DEPTH}cdn/theme/index.css">
+	<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared-reports/index.css">
 	<style>
 	.yry-container { max-width: 900px; }
 	.yry-header .icon { font-size: 2.5rem; }
@@ -521,9 +521,9 @@ export function materializeTrendReportFromManifest(entry) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>趋势报告 · ${escHtml(meta.label)}</title>
-<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared.css">
-<link rel="stylesheet" href="${CDN_DEPTH}cdn/theme.css">
-	<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared-reports.css">
+<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared/index.css">
+<link rel="stylesheet" href="${CDN_DEPTH}cdn/theme/index.css">
+	<link rel="stylesheet" href="${CDN_DEPTH}cdn/shared-reports/index.css">
 	<style>
 	.yry-container { max-width: 900px; }
 	.yry-header .icon { font-size: 2.5rem; }

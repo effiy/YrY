@@ -90,13 +90,13 @@ flowchart LR
 
 | # | 文档 | 类别 | 主题 | CDN | 关键数据源 |
 |---|------|:---:|------|-----|-----------|
-| 1 | 计划清单.html | B | System | shared.css + theme.css + yry-checklist.css | §2 实施报告 |
-| 2 | 架构图.html | A | Mono | fonts.css + shared.css + theme-mono.css | §0 技术评审 mermaid 图 |
-| 3 | 知识图谱.html | A | Mono | fonts.css + shared.css + theme-mono.css + Cytoscape.js | 知识图谱.json |
-| 4 | 源码.html | B | System | shared.css + theme.css | §2 产物清单 |
-| 5 | 测试面板.html | B | System | shared.css + theme.css | §1 测试设计 + §3 测试报告 |
-| 6 | 演示.html | B | System | shared.css + theme.css | §0 效果示意 + §2 架构决策 |
-| 7 | 审查.html | B | System | shared.css + theme.css | §4 自改进 |
+| 1 | 计划清单.html | B | System | shared/index.css + theme/index.css + yry-checklist.css | §2 实施报告 |
+| 2 | 架构图.html | A | Mono | fonts/index.css + shared/index.css + theme-mono/index.css | §0 技术评审 mermaid 图 |
+| 3 | 知识图谱.html | A | Mono | fonts/index.css + shared/index.css + theme-mono/index.css + Cytoscape.js | 知识图谱.json |
+| 4 | 源码.html | B | System | shared/index.css + theme/index.css | §2 产物清单 |
+| 5 | 测试面板.html | B | System | shared/index.css + theme/index.css | §1 测试设计 + §3 测试报告 |
+| 6 | 演示.html | B | System | shared/index.css + theme/index.css | §0 效果示意 + §2 架构决策 |
+| 7 | 审查.html | B | System | shared/index.css + theme/index.css | §4 自改进 |
 
 ## 数据源
 
@@ -192,8 +192,8 @@ flowchart TD
 
 | 类别 | 文档 | CSS 加载顺序 | JS |
 |------|------|-------------|-----|
-| A — Mono | 架构图、知识图谱 | fonts.css → shared.css → theme-mono.css | shared.js |
-| B — System | 计划清单、源码、测试面板、演示、审查 | shared.css → theme.css | shared.js |
+| A — Mono | 架构图、知识图谱 | fonts/index.css → shared/index.css → theme-mono/index.css | shared.js |
+| B — System | 计划清单、源码、测试面板、演示、审查 | shared/index.css → theme/index.css | shared.js |
 
 ### Token 变量
 

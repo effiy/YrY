@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Batch refactor: 演示.html → yry-cdn-detect.js
+ * Batch refactor: 演示.html → yry-cdn-detect/index.js
  * Replaces inline detectCDN IIFE with external <script src> tag.
  *
  * Since detectCDN sits inside the main <script> block, we:
@@ -19,7 +19,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '../..');
 const DRY_RUN = process.argv.includes('--dry-run');
 
-const CDN_DETECT_CODE = `(function detectCDN(){var resources=performance.getEntriesByType('resource');var cdnEntries=resources.filter(function(r){return r.name.indexOf('/cdn/')!==-1});var found={css:false,theme:false,js:false};var totalDuration=0;cdnEntries.forEach(function(r){var name=r.name.split('/').pop().split('?')[0];if(name==='shared.css')found.css=r;if(name==='theme.css')found.theme=r;if(name==='shared.js')found.js=r;totalDuration+=r.duration});function updateBadge(elId,entry){var el=document.getElementById(elId);if(entry){el.textContent='✓ '+Math.round(entry.duration)+'ms';el.style.color='var(--pass)'}else{el.textContent='—';el.style.color='var(--text3)'}}updateBadge('lrCss',found.css);updateBadge('lrTheme',found.theme);updateBadge('lrJs',found.js);var timingEl=document.getElementById('statTiming');if(cdnEntries.length>=3){timingEl.textContent=Math.round(totalDuration)+'ms';timingEl.style.color=totalDuration<100?'var(--pass)':'var(--accent)'}else if(cdnEntries.length>0){timingEl.textContent=Math.round(totalDuration)+'ms';timingEl.style.color='var(--cyan)'}else{timingEl.textContent='已缓存';timingEl.style.color='var(--text3)'}})();`;
+const CDN_DETECT_CODE = `(function detectCDN(){var resources=performance.getEntriesByType('resource');var cdnEntries=resources.filter(function(r){return r.name.indexOf('/cdn/')!==-1});var found={css:false,theme:false,js:false};var totalDuration=0;cdnEntries.forEach(function(r){var name=r.name.split('/').pop().split('?')[0];if(name==='shared/index.css')found.css=r;if(name==='theme/index.css')found.theme=r;if(name==='shared.js')found.js=r;totalDuration+=r.duration});function updateBadge(elId,entry){var el=document.getElementById(elId);if(entry){el.textContent='✓ '+Math.round(entry.duration)+'ms';el.style.color='var(--pass)'}else{el.textContent='—';el.style.color='var(--text3)'}}updateBadge('lrCss',found.css);updateBadge('lrTheme',found.theme);updateBadge('lrJs',found.js);var timingEl=document.getElementById('statTiming');if(cdnEntries.length>=3){timingEl.textContent=Math.round(totalDuration)+'ms';timingEl.style.color=totalDuration<100?'var(--pass)':'var(--accent)'}else if(cdnEntries.length>0){timingEl.textContent=Math.round(totalDuration)+'ms';timingEl.style.color='var(--cyan)'}else{timingEl.textContent='已缓存';timingEl.style.color='var(--text3)'}})();`;
 
 if (DRY_RUN) console.log('[DRY-RUN] No files will be modified.\n');
 
@@ -59,11 +59,11 @@ for (const f of files) {
     continue;
   }
 
-  const srcPath = relative(dirname(f), resolve(root, 'cdn', 'yry-cdn-detect.js'));
+  const srcPath = relative(dirname(f), resolve(root, 'cdn', 'yry-cdn-detect/index.js'));
 
   // Build the new file:
   // ...before script tag...
-  // <script src="yry-cdn-detect.js"></script>
+  // <script src="yry\-cdn\-detect\/index\.js"></script>
   // <script>
   // ...content up to detectCDN...
   // ...content after detectCDN...

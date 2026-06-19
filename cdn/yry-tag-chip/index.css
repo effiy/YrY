@@ -7,7 +7,7 @@
      <span class="tag-chip cyan v3.2.x">v3.2.x</span>
      ...
 
-   支持的 modifier (与 cdn/yry-home.css / yry-scene.css 中 .tag-chip.* 选择器一致):
+   支持的 modifier (与 cdn/yry-home/index.css / yry-scene.css 中 .tag-chip.* 选择器一致):
      - accent : 主题黄 (强调)
      - info   : 灰色 (信息)
      - cyan   : 青色 (链接/版本)
@@ -17,7 +17,7 @@
      - warn   : 橙色 (警告)
      - blue   : 蓝色
 
-   依赖 design tokens (来自 cdn/theme.css 或页面 :root):
+   依赖 design tokens (来自 cdn/theme/index.css 或页面 :root):
      --yry-accent / --yry-cyan / --yry-pass / --yry-warn / --yry-info / --yry-purple
      --yry-bg-flat / --yry-text
 

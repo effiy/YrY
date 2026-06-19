@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#161620">
 <title>🧪 模板架构与 CSS 设计系统 · 测试面板 Pro</title>
 <!-- ═══ CDN: YrY 共享样式 ═══ -->
-<link rel="stylesheet" href="../../../../cdn/shared.css">
-<link rel="stylesheet" href="../../../../cdn/theme.css">
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../../../cdn/yry-page-nav/index.css">
-<link rel="stylesheet" href="../../../../cdn/yry-test-base.css">
+<link rel="stylesheet" href="../../../../cdn/yry-test/index.css">
 </head>
 <body>
 <div class="container">
@@ -138,13 +138,13 @@ let adoptedProposals = new Set();   // 已被采纳的改进建议 id
 
 /* ═══ 测试文件清单 ═══ */
 const manifest={"files":[
-  {"name":"计划清单.html","path":"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html","cat":"template","lines":480,"size":45200,"desc":"模板主文件：7 区域骨架 + Token 替换示例","resultKey":"骨架完整性","srcs":["cdn/shared.css","cdn/theme.css","cdn/yry-checklist.css"]},
-  {"name":"shared.css","path":"cdn/shared.css","cat":"cdn","lines":520,"size":18800,"desc":"YrY 共享样式 · Reset / Animations / Breadcrumb / Cross-Nav","resultKey":"CDN 可达性","srcs":["cdn/shared.css"]},
-  {"name":"theme.css","path":"cdn/theme.css","cat":"cdn","lines":180,"size":7200,"desc":"Category B 主题令牌 · --yry-bg / --yry-accent / --yry-text","resultKey":"CSS 覆盖","srcs":["cdn/theme.css"]},
-  {"name":"yry-checklist.css","path":"cdn/yry-checklist.css","cat":"cdn","lines":360,"size":12400,"desc":"计划清单页面专用组件样式 · step / phase / scorecard / risk-matrix","resultKey":"CSS 覆盖","srcs":["cdn/yry-checklist.css"]},
-  {"name":"shared.js","path":"cdn/shared.js","cat":"cdn","lines":220,"size":8400,"desc":"共享 JS：工具函数 / 跨页导航 / 命令面板 ⌘K","resultKey":"CDN 可达性","srcs":["cdn/shared.js"]},
+  {"name":"计划清单.html","path":"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html","cat":"template","lines":480,"size":45200,"desc":"模板主文件：7 区域骨架 + Token 替换示例","resultKey":"骨架完整性","srcs":["cdn/shared/index.css","cdn/theme/index.css","cdn/yry-checklist/index.css"]},
+  {"name":"shared/index.css","path":"cdn/shared/index.css","cat":"cdn","lines":520,"size":18800,"desc":"YrY 共享样式 · Reset / Animations / Breadcrumb / Cross-Nav","resultKey":"CDN 可达性","srcs":["cdn/shared/index.css"]},
+  {"name":"theme/index.css","path":"cdn/theme/index.css","cat":"cdn","lines":180,"size":7200,"desc":"Category B 主题令牌 · --yry-bg / --yry-accent / --yry-text","resultKey":"CSS 覆盖","srcs":["cdn/theme/index.css"]},
+  {"name":"yry-checklist.css","path":"cdn/yry-checklist/index.css","cat":"cdn","lines":360,"size":12400,"desc":"计划清单页面专用组件样式 · step / phase / scorecard / risk-matrix","resultKey":"CSS 覆盖","srcs":["cdn/yry-checklist/index.css"]},
+  {"name":"shared.js","path":"cdn/shared/index.js","cat":"cdn","lines":220,"size":8400,"desc":"共享 JS：工具函数 / 跨页导航 / 命令面板 ⌘K","resultKey":"CDN 可达性","srcs":["cdn/shared/index.js"]},
   {"name":"skel.test.mjs","path":"tests/yry-checklist/skel.test.mjs","cat":"tests","lines":140,"size":4400,"desc":"骨架完整性 TC-1：7 区域选择器 + DOM 存在性断言","resultKey":"骨架完整性","srcs":["计划清单.html"]},
-  {"name":"css-vars.test.mjs","path":"tests/yry-checklist/css-vars.test.mjs","cat":"tests","lines":120,"size":3800,"desc":"CSS 变量覆盖 TC-2：所有 --yry-* 变量在 :root 可解析","resultKey":"CSS 覆盖","srcs":["cdn/theme.css","cdn/yry-checklist.css"]},
+  {"name":"css-vars.test.mjs","path":"tests/yry-checklist/css-vars.test.mjs","cat":"tests","lines":120,"size":3800,"desc":"CSS 变量覆盖 TC-2：所有 --yry-* 变量在 :root 可解析","resultKey":"CSS 覆盖","srcs":["cdn/theme/index.css","cdn/yry-checklist/index.css"]},
   {"name":"token.test.mjs","path":"tests/yry-checklist/token.test.mjs","cat":"tests","lines":160,"size":5200,"desc":"Token 无残留 TC-4：grep 校验 {{ }} 占位符为 0","resultKey":"Token 完整性","srcs":["计划清单.html"]}
 ]};
 
@@ -160,26 +160,26 @@ const results={"summary":{"total":48,"passed":48,"failed":0,"skipped":0,"duratio
     {"name":"head/meta 包含 theme-color / viewport / 编码","status":"passed","duration":3,"src":{"path":"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html","line":3}}
   ]},
   {"name":"TC-2 · CSS 变量覆盖","tests":[
-    {"name":"--yry-bg / --yry-bg-card / --yry-bg-flat / --yry-bg-raised 4 个 surface 变量","status":"passed","duration":4,"src":{"path":"cdn/theme.css","line":18}},
-    {"name":"--yry-accent / --yry-cyan 品牌色 2 个","status":"passed","duration":3,"src":{"path":"cdn/theme.css","line":26}},
-    {"name":"--yry-pass / --yry-fail / --yry-warn / --yry-info / --yry-skip 5 个语义色","status":"passed","duration":4,"src":{"path":"cdn/theme.css","line":30}},
-    {"name":"--yry-text / --yry-text2 / --yry-text3 3 个文本变量","status":"passed","duration":3,"src":{"path":"cdn/theme.css","line":36}},
-    {"name":"yry-checklist.css 别名桥接（--bg / --accent / --text 等）","status":"passed","duration":5,"src":{"path":"cdn/yry-checklist.css","line":18}},
-    {"name":".step / .phase-strip / .scorecard / .risk-matrix / .gantt / .trend 6 大组件类","status":"passed","duration":6,"src":{"path":"cdn/yry-checklist.css","line":260}},
-    {"name":"@layer reset, base, components, utilities, overrides 显式优先级","status":"passed","duration":4,"src":{"path":"cdn/yry-checklist.css","line":60}},
-    {"name":"@media (prefers-reduced-motion) 动效克制","status":"passed","duration":3,"src":{"path":"cdn/yry-checklist.css","line":64}},
-    {"name":":focus-visible 统一焦点环","status":"passed","duration":3,"src":{"path":"cdn/yry-checklist.css","line":80}},
-    {"name":".skip-link 键盘可达性","status":"passed","duration":4,"src":{"path":"cdn/yry-checklist.css","line":70}},
-    {"name":"@media (prefers-color-scheme: light) 自动亮色覆盖","status":"passed","duration":4,"src":{"path":"cdn/yry-checklist.css","line":55}},
-    {"name":"3 个断点：≤900 / ≤700 / ≤500px 响应式","status":"passed","duration":5,"src":{"path":"cdn/yry-checklist.css","line":340}},
-    {"name":"spacing scale 8 档：4/8/12/16/20/24/32/40","status":"passed","duration":3,"src":{"path":"cdn/yry-checklist.css","line":30}},
-    {"name":"radius scale 5 档：4/6/8/12/14","status":"passed","duration":3,"src":{"path":"cdn/yry-checklist.css","line":42}}
+    {"name":"--yry-bg / --yry-bg-card / --yry-bg-flat / --yry-bg-raised 4 个 surface 变量","status":"passed","duration":4,"src":{"path":"cdn/theme/index.css","line":18}},
+    {"name":"--yry-accent / --yry-cyan 品牌色 2 个","status":"passed","duration":3,"src":{"path":"cdn/theme/index.css","line":26}},
+    {"name":"--yry-pass / --yry-fail / --yry-warn / --yry-info / --yry-skip 5 个语义色","status":"passed","duration":4,"src":{"path":"cdn/theme/index.css","line":30}},
+    {"name":"--yry-text / --yry-text2 / --yry-text3 3 个文本变量","status":"passed","duration":3,"src":{"path":"cdn/theme/index.css","line":36}},
+    {"name":"yry-checklist.css 别名桥接（--bg / --accent / --text 等）","status":"passed","duration":5,"src":{"path":"cdn/yry-checklist/index.css","line":18}},
+    {"name":".step / .phase-strip / .scorecard / .risk-matrix / .gantt / .trend 6 大组件类","status":"passed","duration":6,"src":{"path":"cdn/yry-checklist/index.css","line":260}},
+    {"name":"@layer reset, base, components, utilities, overrides 显式优先级","status":"passed","duration":4,"src":{"path":"cdn/yry-checklist/index.css","line":60}},
+    {"name":"@media (prefers-reduced-motion) 动效克制","status":"passed","duration":3,"src":{"path":"cdn/yry-checklist/index.css","line":64}},
+    {"name":":focus-visible 统一焦点环","status":"passed","duration":3,"src":{"path":"cdn/yry-checklist/index.css","line":80}},
+    {"name":".skip-link 键盘可达性","status":"passed","duration":4,"src":{"path":"cdn/yry-checklist/index.css","line":70}},
+    {"name":"@media (prefers-color-scheme: light) 自动亮色覆盖","status":"passed","duration":4,"src":{"path":"cdn/yry-checklist/index.css","line":55}},
+    {"name":"3 个断点：≤900 / ≤700 / ≤500px 响应式","status":"passed","duration":5,"src":{"path":"cdn/yry-checklist/index.css","line":340}},
+    {"name":"spacing scale 8 档：4/8/12/16/20/24/32/40","status":"passed","duration":3,"src":{"path":"cdn/yry-checklist/index.css","line":30}},
+    {"name":"radius scale 5 档：4/6/8/12/14","status":"passed","duration":3,"src":{"path":"cdn/yry-checklist/index.css","line":42}}
   ]},
   {"name":"TC-3 · CDN 可达性","tests":[
-    {"name":"shared.css HTTP 200 (18800 bytes)","status":"passed","duration":12,"src":{"path":"cdn/shared.css","line":1}},
-    {"name":"theme.css HTTP 200 (7200 bytes)","status":"passed","duration":8,"src":{"path":"cdn/theme.css","line":1}},
-    {"name":"yry-checklist.css HTTP 200 (12400 bytes)","status":"passed","duration":10,"src":{"path":"cdn/yry-checklist.css","line":1}},
-    {"name":"shared.js HTTP 200 (8400 bytes) · 加载顺序：shared → theme → yry-checklist → shared.js","status":"passed","duration":14,"src":{"path":"cdn/shared.js","line":1}}
+    {"name":"shared/index.css HTTP 200 (18800 bytes)","status":"passed","duration":12,"src":{"path":"cdn/shared/index.css","line":1}},
+    {"name":"theme/index.css HTTP 200 (7200 bytes)","status":"passed","duration":8,"src":{"path":"cdn/theme/index.css","line":1}},
+    {"name":"yry-checklist.css HTTP 200 (12400 bytes)","status":"passed","duration":10,"src":{"path":"cdn/yry-checklist/index.css","line":1}},
+    {"name":"shared.js HTTP 200 (8400 bytes) · 加载顺序：shared → theme → yry-checklist → shared.js","status":"passed","duration":14,"src":{"path":"cdn/shared/index.js","line":1}}
   ]},
   {"name":"TC-4 · Token 完整性","tests":[
     {"name":"Token {{STORY}} 已替换为「yry-checklist」","status":"passed","duration":2,"src":{"path":"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html","line":5}},
@@ -204,9 +204,9 @@ const results={"summary":{"total":48,"passed":48,"failed":0,"skipped":0,"duratio
     {"name":"grep -r '{{' 渲染后 HTML → 0 匹配","status":"passed","duration":6,"src":{"path":"tests/yry-checklist/token.test.mjs","line":42}}
   ]},
   {"name":"TC-5 · 响应式断点","tests":[
-    {"name":"断点 ≤900px：KPI 栅格 6 列 → 3 列 · .phase-strip 5 列","status":"passed","duration":6,"src":{"path":"cdn/yry-checklist.css","line":340}},
-    {"name":"断点 ≤700px：.kpi-grid 3 列 → 1 列 · .phase-strip 4 列","status":"passed","duration":5,"src":{"path":"cdn/yry-checklist.css","line":345}},
-    {"name":"断点 ≤500px：字号 -1 档 · 卡片 padding 收缩 · 无横向滚动","status":"passed","duration":6,"src":{"path":"cdn/yry-checklist.css","line":360}}
+    {"name":"断点 ≤900px：KPI 栅格 6 列 → 3 列 · .phase-strip 5 列","status":"passed","duration":6,"src":{"path":"cdn/yry-checklist/index.css","line":340}},
+    {"name":"断点 ≤700px：.kpi-grid 3 列 → 1 列 · .phase-strip 4 列","status":"passed","duration":5,"src":{"path":"cdn/yry-checklist/index.css","line":345}},
+    {"name":"断点 ≤500px：字号 -1 档 · 卡片 padding 收缩 · 无横向滚动","status":"passed","duration":6,"src":{"path":"cdn/yry-checklist/index.css","line":360}}
   ]}
 ]};
 
@@ -214,14 +214,14 @@ const results={"summary":{"total":48,"passed":48,"failed":0,"skipped":0,"duratio
 const normalCases=[
   {id:"N-1.1",title:"HTML 骨架 7 区域完整渲染（FP1）",fp:"FP1",src:{path:"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html",line:1},given:"开发者打开计划清单模板",when:"浏览 HTML 结构",then:"看到清晰的 7 区域骨架，每区域有注释标注",duration:18},
   {id:"N-1.2",title:"Token 替换后页面正确展示（FP4）",fp:"FP4",src:{path:"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html",line:5},given:"新场景需要生成计划清单",when:"开发者替换 Token 变量",then:"替换后页面正确展示该场景的标题、版本、日期",duration:32},
-  {id:"N-2.1",title:"CSS 变量通过 :root 定义且全部可解析（FP2）",fp:"FP2",src:{path:"cdn/theme.css",line:18},given:"Category B 页面加载 theme.css",when:"在 DevTools 中检查 :root 计算样式",then:"14 个 --yry-* 变量值生效",duration:8},
-  {id:"N-2.2",title:"6 大组件类在 yry-checklist.css 中有完整定义（FP2）",fp:"FP2",src:{path:"cdn/yry-checklist.css",line:260},given:"页面使用 .step / .phase-strip / .scorecard 等类",when:"渲染计划清单",then:"所有组件类匹配设计稿样式",duration:12},
+  {id:"N-2.1",title:"CSS 变量通过 :root 定义且全部可解析（FP2）",fp:"FP2",src:{path:"cdn/theme/index.css",line:18},given:"Category B 页面加载 theme/index.css",when:"在 DevTools 中检查 :root 计算样式",then:"14 个 --yry-* 变量值生效",duration:8},
+  {id:"N-2.2",title:"6 大组件类在 yry-checklist.css 中有完整定义（FP2）",fp:"FP2",src:{path:"cdn/yry-checklist/index.css",line:260},given:"页面使用 .step / .phase-strip / .scorecard 等类",when:"渲染计划清单",then:"所有组件类匹配设计稿样式",duration:12},
   {id:"N-3.1",title:"CDN 加载链顺序正确（shared → theme → yry-checklist）（FP3）",fp:"FP3",src:{path:"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html",line:9},given:"页面 head 引用 3 个 CSS",when:"浏览器按序加载",then:"无 FOUC · 变量可被后续层正确覆盖",duration:14},
-  {id:"N-3.2",title:"CDN 资源全部 HTTP 200（FP3）",fp:"FP3",src:{path:"cdn/shared.js",line:1},given:"4 资源 URL",when:"DevTools Network 面板检查",then:"4/4 HTTP 200 · 0 个 404",duration:36,isSlow:true},
+  {id:"N-3.2",title:"CDN 资源全部 HTTP 200（FP3）",fp:"FP3",src:{path:"cdn/shared/index.js",line:1},given:"4 资源 URL",when:"DevTools Network 面板检查",then:"4/4 HTTP 200 · 0 个 404",duration:36,isSlow:true},
   {id:"N-4.1",title:"Token 替换后无残留占位符（FP4）",fp:"FP4",src:{path:"tests/yry-checklist/token.test.mjs",line:42},given:"模板含 20 个 {{ }} 占位符",when:"渲染生成 HTML",then:"grep -r '{{' 命中 0 次",duration:48,isSlow:true},
   {id:"N-4.2",title:"CDN_DEPTH 动态计算路径正确（FP4）",fp:"FP4",src:{path:"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html",line:9},given:"场景目录深度 = 5 层",when:"生成 HTML 链接",then:"href=../../../../cdn/xxx · 4 层 ../",duration:6},
-  {id:"N-5.1",title:"统计卡片在 ≤900px 时从 6 列 → 3 列（响应式）",fp:"FP2",src:{path:"cdn/yry-checklist.css",line:340},given:"viewport ≤ 900px",when:"渲染 .kpi-grid",then:"grid-template-columns 切换到 repeat(3,1fr)",duration:10},
-  {id:"N-5.2",title:"阶段环 7 段在 ≤700px 改为 4 列（响应式）",fp:"FP2",src:{path:"cdn/yry-checklist.css",line:345},given:"viewport ≤ 700px",when:"渲染 .phase-strip",then:"grid-template-columns 切换到 repeat(4,1fr)",duration:8}
+  {id:"N-5.1",title:"统计卡片在 ≤900px 时从 6 列 → 3 列（响应式）",fp:"FP2",src:{path:"cdn/yry-checklist/index.css",line:340},given:"viewport ≤ 900px",when:"渲染 .kpi-grid",then:"grid-template-columns 切换到 repeat(3,1fr)",duration:10},
+  {id:"N-5.2",title:"阶段环 7 段在 ≤700px 改为 4 列（响应式）",fp:"FP2",src:{path:"cdn/yry-checklist/index.css",line:345},given:"viewport ≤ 700px",when:"渲染 .phase-strip",then:"grid-template-columns 切换到 repeat(4,1fr)",duration:8}
 ];
 
 /* ═══ 边界用例（Token 缺失 / 变量未定义 / 断点极端） ═══ */
@@ -229,23 +229,23 @@ const boundaryCases=[
   {id:"B-1.1",title:"Token 含空字符串：{{STORY}} = '' 时页面降级",fp:"FP4",src:{path:"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html",line:5},given:"{{STORY}} 替换为空串",when:"渲染 HTML",then:"页面仍可加载，无 JS 异常，title 显示 Untitled",duration:14,edge:"空值"},
   {id:"B-1.2",title:"Token 字符数刚好 20（边界值）",fp:"FP4",src:{path:"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html",line:5},given:"Token 数量 = 20",when:"完整性断言",then:"通过（==20）",duration:6,edge:"边界值"},
   {id:"B-1.3",title:"CDN_DEPTH 深度 = 6 层（场景更深一层）",fp:"FP3",src:{path:"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html",line:9},given:"场景深度 = 6",when:"替换 {{CDN_DEPTH}}",then:"href=../../../../../cdn/xxx",duration:8,edge:"深度边界"},
-  {id:"B-1.4",title:"viewport 极小（320px）下卡片不溢出",fp:"FP2",src:{path:"cdn/yry-checklist.css",line:360},given:"viewport = 320px",when:"渲染 .kpi-grid",then:"padding 收缩 · 字号保持可读",duration:42,edge:"极小屏",isSlow:true},
-  {id:"B-1.5",title:"shared.css 加载失败降级为内联样式",fp:"FP3",src:{path:"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html",line:8},given:"shared.css 404",when:"渲染页面",then:"yry-checklist.css 内 alias 仍指向 :root 兜底值",duration:120,edge:"CDN 故障",isSlow:true}
+  {id:"B-1.4",title:"viewport 极小（320px）下卡片不溢出",fp:"FP2",src:{path:"cdn/yry-checklist/index.css",line:360},given:"viewport = 320px",when:"渲染 .kpi-grid",then:"padding 收缩 · 字号保持可读",duration:42,edge:"极小屏",isSlow:true},
+  {id:"B-1.5",title:"shared/index.css 加载失败降级为内联样式",fp:"FP3",src:{path:"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html",line:8},given:"shared/index.css 404",when:"渲染页面",then:"yry-checklist.css 内 alias 仍指向 :root 兜底值",duration:120,edge:"CDN 故障",isSlow:true}
 ];
 
 /* ═══ 异常用例（独立 Tab — 模板架构相关故障 / 阻断） ═══ */
 const anomalyCases=[
-  {id:"A-1.1",title:"shared.css 404 导致所有页面无动画/面包屑/导航",severity:"P0",fp:"FP3",src:{path:"cdn/shared.css",line:1},given:"cdn/shared.css 路径错误或被误删",when:"任何 Category B 页面打开",then:"@keyframes 失效 · 面包屑/跨页导航不可见 · 全页无样式",recovery:"将 cdn/shared.css 纳入版本管理 · 在 head 增加 onerror 降级内联样式 · 模板引擎预检 fs.existsSync",duration:820,isSlow:true},
+  {id:"A-1.1",title:"shared/index.css 404 导致所有页面无动画/面包屑/导航",severity:"P0",fp:"FP3",src:{path:"cdn/shared/index.css",line:1},given:"cdn/shared/index.css 路径错误或被误删",when:"任何 Category B 页面打开",then:"@keyframes 失效 · 面包屑/跨页导航不可见 · 全页无样式",recovery:"将 cdn/shared/index.css 纳入版本管理 · 在 head 增加 onerror 降级内联样式 · 模板引擎预检 fs.existsSync",duration:820,isSlow:true},
   {id:"A-1.2",title:"Token {{CDN_DEPTH}} 未替换时所有 CDN 链接 404",severity:"P0",fp:"FP4",src:{path:"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html",line:9},given:"模板渲染时 Token 替换器漏跑",when:"打开任何计划清单",then:"href={{CDN_DEPTH}}/cdn/xxx → 浏览器报 404 · 页面裸 HTML",recovery:"渲染后 grep '{{' 必须为 0 · 替换器 fail-fast 抛 ConfigurationError · 提供 --strict-token 开关",duration:240,isSlow:true},
-  {id:"A-1.3",title:"@layer 顺序错误导致 .kpi-card 字号被覆盖",severity:"P1",fp:"FP2",src:{path:"cdn/yry-checklist.css",line:60},given:"有人把 @layer components 移到 reset 之前",when:"渲染计划清单",then:"字号回退到 16px · 阶段环 7 段对齐错位",recovery:"显式声明 @layer reset, base, components, utilities, overrides · CI 校验 layer 顺序",duration:38},
-  {id:"A-1.4",title:"响应式断点缺失导致 320px 屏上卡片横向溢出",severity:"P1",fp:"FP2",src:{path:"cdn/yry-checklist.css",line:340},given:"viewport = 320px",when:"渲染 .kpi-grid",then:"出现横向滚动条 · 移动端体验降级",recovery:"补全 @media (max-width: 500px) 断点 · 卡片 min-width: 0 配合 overflow:hidden",duration:42},
-  {id:"A-1.5",title:"theme.css 加载顺序错位致变量未定义（CSSUndeclaredVariable）",severity:"P0",fp:"FP3",src:{path:"cdn/theme.css",line:1},given:"有人把 yry-checklist.css 放到 theme.css 之前",when:"渲染 .step / .scorecard 等组件",then:"--yry-* 变量回退为无效值 · 颜色变黑",recovery:"head 中 link 顺序强约束：shared → theme → yry-checklist · 模板 lint 校验 link 顺序",duration:18}
+  {id:"A-1.3",title:"@layer 顺序错误导致 .kpi-card 字号被覆盖",severity:"P1",fp:"FP2",src:{path:"cdn/yry-checklist/index.css",line:60},given:"有人把 @layer components 移到 reset 之前",when:"渲染计划清单",then:"字号回退到 16px · 阶段环 7 段对齐错位",recovery:"显式声明 @layer reset, base, components, utilities, overrides · CI 校验 layer 顺序",duration:38},
+  {id:"A-1.4",title:"响应式断点缺失导致 320px 屏上卡片横向溢出",severity:"P1",fp:"FP2",src:{path:"cdn/yry-checklist/index.css",line:340},given:"viewport = 320px",when:"渲染 .kpi-grid",then:"出现横向滚动条 · 移动端体验降级",recovery:"补全 @media (max-width: 500px) 断点 · 卡片 min-width: 0 配合 overflow:hidden",duration:42},
+  {id:"A-1.5",title:"theme/index.css 加载顺序错位致变量未定义（CSSUndeclaredVariable）",severity:"P0",fp:"FP3",src:{path:"cdn/theme/index.css",line:1},given:"有人把 yry-checklist.css 放到 theme/index.css 之前",when:"渲染 .step / .scorecard 等组件",then:"--yry-* 变量回退为无效值 · 颜色变黑",recovery:"head 中 link 顺序强约束：shared → theme → yry-checklist · 模板 lint 校验 link 顺序",duration:18}
 ];
 
 /* ═══ 性能数据（模板渲染 + CDN 加载） ═══ */
 const perfData=[
-  {name:"shared.css 加载 + 解析（CDN 4 资源之首）",duration:14,trend:"stable",target:30},
-  {name:"theme.css 加载（14 个 --yry-* 变量定义）",duration:8,trend:"stable",target:20},
+  {name:"shared/index.css 加载 + 解析（CDN 4 资源之首）",duration:14,trend:"stable",target:30},
+  {name:"theme/index.css 加载（14 个 --yry-* 变量定义）",duration:8,trend:"stable",target:20},
   {name:"yry-checklist.css 加载（6 大组件类）",duration:12,trend:"stable",target:25},
   {name:"模板渲染（5 套件 48 断言全跑）",duration:325,trend:"down",target:600,isSlow:true},
   {name:"Token 替换（20 占位符 → 实际值）",duration:48,trend:"down",target:100},
@@ -254,10 +254,10 @@ const perfData=[
 
 /* ═══ 源码覆盖地图：CDN 资源 + 模板文件 → 关联测试 → 覆盖率 ═══ */
 const sourceMap=[
-  {path:"cdn/shared.css",cat:"cdn",tests:["N-3.1","B-1.5","A-1.1"],coverage:92},
-  {path:"cdn/theme.css",cat:"cdn",tests:["N-2.1","A-1.5"],coverage:95},
-  {path:"cdn/yry-checklist.css",cat:"cdn",tests:["N-2.2","N-5.1","N-5.2","A-1.3","A-1.4"],coverage:88},
-  {path:"cdn/shared.js",cat:"cdn",tests:["N-3.2"],coverage:70},
+  {path:"cdn/shared/index.css",cat:"cdn",tests:["N-3.1","B-1.5","A-1.1"],coverage:92},
+  {path:"cdn/theme/index.css",cat:"cdn",tests:["N-2.1","A-1.5"],coverage:95},
+  {path:"cdn/yry-checklist/index.css",cat:"cdn",tests:["N-2.2","N-5.1","N-5.2","A-1.3","A-1.4"],coverage:88},
+  {path:"cdn/shared/index.js",cat:"cdn",tests:["N-3.2"],coverage:70},
   {path:"docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html",cat:"template",tests:["N-1.1","N-1.2","N-4.1","N-4.2","A-1.2"],coverage:100},
   {path:"tests/yry-checklist/skel.test.mjs",cat:"test",tests:["N-1.1"],coverage:85},
   {path:"tests/yry-checklist/css-vars.test.mjs",cat:"test",tests:["N-2.1","N-2.2"],coverage:90},
@@ -266,13 +266,13 @@ const sourceMap=[
 
 /* ═══ 改进建议（可被标记采纳 + 导出为自改进提案） ═══ */
 const improvements=[
-  {id:"IMP-001",title:"把 shared.css 拆分 base / utilities / components 三层",desc:"当前 shared.css 单文件 18.8KB 含 reset / animations / breadcrumb / cross-nav 全部职责。建议拆为 base.css（重置+动画） + utilities.css（工具类） + components.css（导航组件）三层，源码地图清晰度提升 60%。",severity:"P2",effort:"2h",impact:"文件可维护性 +60%",area:"cdn/",related:["N-3.1"]},
-  {id:"IMP-002",title:"为 yry-checklist.css 引入 CSS 变量到 primitive 层",desc:"当前 yry-checklist.css 用 --yry-* 已是 semantic 层。补一层 primitive（如 --color-amber-500: #f59e0b）让主题切换时只换 primitive，新主题接入成本 -50%。",severity:"P2",effort:"3h",impact:"主题接入 -50%",area:"cdn/yry-checklist.css",related:["N-2.1"]},
+  {id:"IMP-001",title:"把 shared/index.css 拆分 base / utilities / components 三层",desc:"当前 shared/index.css 单文件 18.8KB 含 reset / animations / breadcrumb / cross-nav 全部职责。建议拆为 base.css（重置+动画） + utilities.css（工具类） + components.css（导航组件）三层，源码地图清晰度提升 60%。",severity:"P2",effort:"2h",impact:"文件可维护性 +60%",area:"cdn/",related:["N-3.1"]},
+  {id:"IMP-002",title:"为 yry-checklist.css 引入 CSS 变量到 primitive 层",desc:"当前 yry-checklist.css 用 --yry-* 已是 semantic 层。补一层 primitive（如 --color-amber-500: #f59e0b）让主题切换时只换 primitive，新主题接入成本 -50%。",severity:"P2",effort:"3h",impact:"主题接入 -50%",area:"cdn/yry-checklist/index.css",related:["N-2.1"]},
   {id:"IMP-003",title:"Token 替换器增加 fail-fast 与 dry-run 模式",desc:"当前 Token 替换为静默替换，遗漏占位符直到运行时才暴露。增加 fail-fast：未匹配 {{...}} 抛 ConfigurationError；增加 --dry-run：仅打印替换统计不入库。",severity:"P1",effort:"2h",impact:"Token 漏替换 0",area:"模板引擎",related:["A-1.2","N-4.1"]},
-  {id:"IMP-004",title:"CDN 加载链 lint 校验 · CI 阻断 link 顺序错位",desc:"当前 yry-checklist.css 放到 theme.css 之前仅靠开发者自觉（A-1.5 已暴露）。增加 .yry-cdn-order.json 配置文件 + CI 校验 head 中 link 顺序，强制 shared → theme → yry-checklist → shared.js。",severity:"P1",effort:"1.5h",impact:"CDN 顺序事故 0",area:"cdn/",related:["A-1.5"]},
+  {id:"IMP-004",title:"CDN 加载链 lint 校验 · CI 阻断 link 顺序错位",desc:"当前 yry-checklist.css 放到 theme/index.css 之前仅靠开发者自觉（A-1.5 已暴露）。增加 .yry-cdn-order.json 配置文件 + CI 校验 head 中 link 顺序，强制 shared → theme → yry-checklist → shared.js。",severity:"P1",effort:"1.5h",impact:"CDN 顺序事故 0",area:"cdn/",related:["A-1.5"]},
   {id:"IMP-005",title:"补 500-700-900px 三档断点的视觉回归测试",desc:"当前 3 断点仅 TC-5 断言存在性（B-1.4 已暴露溢出风险）。建议加 Playwright 视觉回归：500/700/900px 三档下截 6 组件 + 像素 diff 阈值 0.5%。",severity:"P2",effort:"4h",impact:"响应式回归早发现",area:"tests/yry-checklist/",related:["B-1.4","A-1.4"]},
   {id:"IMP-006",title:"把 Token 变量表 20 项导出为 JSON Schema 校验",desc:"当前 20 个 Token（{{STORY}}/{{SCENE}}/{{VERSION}} 等）无强类型定义。导出为 token.schema.json 含 name/type/required/regex，新增 Token 时 CI 校验 schema 自洽。",severity:"P2",effort:"2h",impact:"Token 治理 +100%",area:"模板",related:["N-4.1"]},
-  {id:"IMP-007",title:"shared.js 命令面板 ⌘K 与场景 1 的 Token 联动",desc:"当前 ⌘K 仅是通用命令面板。建议加 Token 联动：⌘K 输入「Token」可一键跳到当前页 Token 替换统计 / 残留占位符，模板自检效率 +30%。",severity:"P2",effort:"3h",impact:"模板自检 -30%",area:"cdn/shared.js",related:["N-4.1"]}
+  {id:"IMP-007",title:"shared.js 命令面板 ⌘K 与场景 1 的 Token 联动",desc:"当前 ⌘K 仅是通用命令面板。建议加 Token 联动：⌘K 输入「Token」可一键跳到当前页 Token 替换统计 / 残留占位符，模板自检效率 +30%。",severity:"P2",effort:"3h",impact:"模板自检 -30%",area:"cdn/shared/index.js",related:["N-4.1"]}
 ];
 
 /* ═══ 质量雷达 8 维（模板架构专项） ═══ */
@@ -286,7 +286,7 @@ const qualityRadar={
 const sliData=[
   {name:"测试通过率",val:100,unit:"%",target:100,status:"healthy",desc:"48/48 断言全过，达到目标"},
   {name:"模板渲染耗时",val:325,unit:"ms",target:600,status:"healthy",desc:"5 套件全跑 325ms，优于目标 600ms",invert:true},
-  {name:"CDN 加载 P95",val:14,unit:"ms",target:30,status:"healthy",desc:"shared.css 最慢 14ms，4 资源均 < 20ms",invert:true},
+  {name:"CDN 加载 P95",val:14,unit:"ms",target:30,status:"healthy",desc:"shared/index.css 最慢 14ms，4 资源均 < 20ms",invert:true},
   {name:"Token 残留",val:0,unit:"处",target:0,status:"healthy",desc:"grep -r '{{' 命中 0 次",invert:true},
   {name:"断点回归",val:100,unit:"%",target:100,status:"healthy",desc:"500/700/900px 三断点 100% 匹配"},
   {name:"源码覆盖度",val:88,unit:"%",target:85,status:"healthy",desc:"CDN + 模板 + 测试 8 文件平均 88%"},
@@ -296,11 +296,11 @@ const sliData=[
 
 /* ═══ 错误聚类 ═══ */
 const errorClusters=[
-  {pattern:"@layer 顺序错位致样式被覆盖",count:1,files:["cdn/yry-checklist.css:60"],suggest:"显式声明 @layer reset/base/components/utilities/overrides · CI 校验 layer 顺序（参考 IMP-004）"},
+  {pattern:"@layer 顺序错位致样式被覆盖",count:1,files:["cdn/yry-checklist/index.css:60"],suggest:"显式声明 @layer reset/base/components/utilities/overrides · CI 校验 layer 顺序（参考 IMP-004）"},
   {pattern:"Token {{CDN_DEPTH}} 未替换 · 链接 404",count:1,files:["docs/故事任务面板/计划清单/场景-1-模板架构与CSS设计系统/计划清单.html:9"],suggest:"渲染后 grep '{{' 断言为 0 · 替换器 fail-fast 抛 ConfigurationError（参考 IMP-003）"},
-  {pattern:"CDN 资源 404 · 整页样式丢失",count:1,files:["cdn/shared.css:1"],suggest:"head link onerror 降级内联兜底 · 模板引擎预检 fs.existsSync（参考 A-1.1 恢复）"},
-  {pattern:"theme.css 加载顺序错位 · 变量未定义",count:1,files:["cdn/theme.css:1"],suggest:"head link 顺序强约束：shared → theme → yry-checklist · yry-cdn-order.json 配置文件校验（参考 IMP-004）"},
-  {pattern:"响应式断点缺失 · 320px 卡片溢出",count:1,files:["cdn/yry-checklist.css:340"],suggest:"补 @media (max-width: 500px) 断点 · 卡片 min-width:0 + overflow:hidden（参考 B-1.4 修复）"}
+  {pattern:"CDN 资源 404 · 整页样式丢失",count:1,files:["cdn/shared/index.css:1"],suggest:"head link onerror 降级内联兜底 · 模板引擎预检 fs.existsSync（参考 A-1.1 恢复）"},
+  {pattern:"theme/index.css 加载顺序错位 · 变量未定义",count:1,files:["cdn/theme/index.css:1"],suggest:"head link 顺序强约束：shared → theme → yry-checklist · yry-cdn-order.json 配置文件校验（参考 IMP-004）"},
+  {pattern:"响应式断点缺失 · 320px 卡片溢出",count:1,files:["cdn/yry-checklist/index.css:340"],suggest:"补 @media (max-width: 500px) 断点 · 卡片 min-width:0 + overflow:hidden（参考 B-1.4 修复）"}
 ];
 
 /* ═══ 性能历史趋势（最近 7 次构建） ═══ */
@@ -319,24 +319,24 @@ const timelineData=[
   {time:"08:30:00.028",suite:"TC-1 · 骨架完整性",name:"跨文档导航 7 条",status:"passed",duration:5,src:"计划清单.html:30"},
   {time:"08:30:00.035",suite:"TC-1 · 骨架完整性",name:"KPI 栅格 5 列 + 阶段环 7 段",status:"passed",duration:7,src:"计划清单.html:80"},
   {time:"08:30:00.038",suite:"TC-1 · 骨架完整性",name:"head/meta theme-color + viewport",status:"passed",duration:3,src:"计划清单.html:3"},
-  {time:"08:30:00.042",suite:"TC-2 · CSS 变量覆盖",name:"--yry-bg 4 个 surface 变量",status:"passed",duration:4,src:"cdn/theme.css:18"},
-  {time:"08:30:00.045",suite:"TC-2 · CSS 变量覆盖",name:"--yry-accent / --yry-cyan",status:"passed",duration:3,src:"cdn/theme.css:26"},
-  {time:"08:30:00.049",suite:"TC-2 · CSS 变量覆盖",name:"5 个语义色变量",status:"passed",duration:4,src:"cdn/theme.css:30"},
-  {time:"08:30:00.052",suite:"TC-2 · CSS 变量覆盖",name:"3 个文本变量",status:"passed",duration:3,src:"cdn/theme.css:36"},
-  {time:"08:30:00.057",suite:"TC-2 · CSS 变量覆盖",name:"yry-checklist.css alias 桥接",status:"passed",duration:5,src:"cdn/yry-checklist.css:18"},
-  {time:"08:30:00.063",suite:"TC-2 · CSS 变量覆盖",name:"6 大组件类定义",status:"passed",duration:6,src:"cdn/yry-checklist.css:260"},
-  {time:"08:30:00.067",suite:"TC-2 · CSS 变量覆盖",name:"@layer 优先级显式",status:"passed",duration:4,src:"cdn/yry-checklist.css:60"},
-  {time:"08:30:00.070",suite:"TC-2 · CSS 变量覆盖",name:"prefers-reduced-motion",status:"passed",duration:3,src:"cdn/yry-checklist.css:64"},
-  {time:"08:30:00.073",suite:"TC-2 · CSS 变量覆盖",name:":focus-visible 焦点环",status:"passed",duration:3,src:"cdn/yry-checklist.css:80"},
-  {time:"08:30:00.077",suite:"TC-2 · CSS 变量覆盖",name:".skip-link 键盘可达",status:"passed",duration:4,src:"cdn/yry-checklist.css:70"},
-  {time:"08:30:00.081",suite:"TC-2 · CSS 变量覆盖",name:"prefers-color-scheme light",status:"passed",duration:4,src:"cdn/yry-checklist.css:55"},
-  {time:"08:30:00.086",suite:"TC-2 · CSS 变量覆盖",name:"3 断点响应式",status:"passed",duration:5,src:"cdn/yry-checklist.css:340"},
-  {time:"08:30:00.089",suite:"TC-2 · CSS 变量覆盖",name:"spacing scale 8 档",status:"passed",duration:3,src:"cdn/yry-checklist.css:30"},
-  {time:"08:30:00.092",suite:"TC-2 · CSS 变量覆盖",name:"radius scale 5 档",status:"passed",duration:3,src:"cdn/yry-checklist.css:42"},
-  {time:"08:30:00.104",suite:"TC-3 · CDN 可达性",name:"shared.css HTTP 200 (18.8KB)",status:"passed",duration:12,src:"cdn/shared.css:1"},
-  {time:"08:30:00.112",suite:"TC-3 · CDN 可达性",name:"theme.css HTTP 200 (7.2KB)",status:"passed",duration:8,src:"cdn/theme.css:1"},
-  {time:"08:30:00.122",suite:"TC-3 · CDN 可达性",name:"yry-checklist.css HTTP 200 (12.4KB)",status:"passed",duration:10,src:"cdn/yry-checklist.css:1"},
-  {time:"08:30:00.136",suite:"TC-3 · CDN 可达性",name:"shared.js HTTP 200 (8.4KB) 顺序正确",status:"passed",duration:14,src:"cdn/shared.js:1"},
+  {time:"08:30:00.042",suite:"TC-2 · CSS 变量覆盖",name:"--yry-bg 4 个 surface 变量",status:"passed",duration:4,src:"cdn/theme/index.css:18"},
+  {time:"08:30:00.045",suite:"TC-2 · CSS 变量覆盖",name:"--yry-accent / --yry-cyan",status:"passed",duration:3,src:"cdn/theme/index.css:26"},
+  {time:"08:30:00.049",suite:"TC-2 · CSS 变量覆盖",name:"5 个语义色变量",status:"passed",duration:4,src:"cdn/theme/index.css:30"},
+  {time:"08:30:00.052",suite:"TC-2 · CSS 变量覆盖",name:"3 个文本变量",status:"passed",duration:3,src:"cdn/theme/index.css:36"},
+  {time:"08:30:00.057",suite:"TC-2 · CSS 变量覆盖",name:"yry-checklist.css alias 桥接",status:"passed",duration:5,src:"cdn/yry-checklist/index.css:18"},
+  {time:"08:30:00.063",suite:"TC-2 · CSS 变量覆盖",name:"6 大组件类定义",status:"passed",duration:6,src:"cdn/yry-checklist/index.css:260"},
+  {time:"08:30:00.067",suite:"TC-2 · CSS 变量覆盖",name:"@layer 优先级显式",status:"passed",duration:4,src:"cdn/yry-checklist/index.css:60"},
+  {time:"08:30:00.070",suite:"TC-2 · CSS 变量覆盖",name:"prefers-reduced-motion",status:"passed",duration:3,src:"cdn/yry-checklist/index.css:64"},
+  {time:"08:30:00.073",suite:"TC-2 · CSS 变量覆盖",name:":focus-visible 焦点环",status:"passed",duration:3,src:"cdn/yry-checklist/index.css:80"},
+  {time:"08:30:00.077",suite:"TC-2 · CSS 变量覆盖",name:".skip-link 键盘可达",status:"passed",duration:4,src:"cdn/yry-checklist/index.css:70"},
+  {time:"08:30:00.081",suite:"TC-2 · CSS 变量覆盖",name:"prefers-color-scheme light",status:"passed",duration:4,src:"cdn/yry-checklist/index.css:55"},
+  {time:"08:30:00.086",suite:"TC-2 · CSS 变量覆盖",name:"3 断点响应式",status:"passed",duration:5,src:"cdn/yry-checklist/index.css:340"},
+  {time:"08:30:00.089",suite:"TC-2 · CSS 变量覆盖",name:"spacing scale 8 档",status:"passed",duration:3,src:"cdn/yry-checklist/index.css:30"},
+  {time:"08:30:00.092",suite:"TC-2 · CSS 变量覆盖",name:"radius scale 5 档",status:"passed",duration:3,src:"cdn/yry-checklist/index.css:42"},
+  {time:"08:30:00.104",suite:"TC-3 · CDN 可达性",name:"shared/index.css HTTP 200 (18.8KB)",status:"passed",duration:12,src:"cdn/shared/index.css:1"},
+  {time:"08:30:00.112",suite:"TC-3 · CDN 可达性",name:"theme/index.css HTTP 200 (7.2KB)",status:"passed",duration:8,src:"cdn/theme/index.css:1"},
+  {time:"08:30:00.122",suite:"TC-3 · CDN 可达性",name:"yry-checklist.css HTTP 200 (12.4KB)",status:"passed",duration:10,src:"cdn/yry-checklist/index.css:1"},
+  {time:"08:30:00.136",suite:"TC-3 · CDN 可达性",name:"shared.js HTTP 200 (8.4KB) 顺序正确",status:"passed",duration:14,src:"cdn/shared/index.js:1"},
   {time:"08:30:00.138",suite:"TC-4 · Token 完整性",name:"{{STORY}} → yry-checklist",status:"passed",duration:2,src:"计划清单.html:5"},
   {time:"08:30:00.140",suite:"TC-4 · Token 完整性",name:"{{SCENE}} → 场景-1-模板架构与CSS设计系统",status:"passed",duration:2,src:"计划清单.html:5"},
   {time:"08:30:00.142",suite:"TC-4 · Token 完整性",name:"{{VERSION}} → v1.0.0",status:"passed",duration:2,src:"计划清单.html:5"},
@@ -357,9 +357,9 @@ const timelineData=[
   {time:"08:30:00.172",suite:"TC-4 · Token 完整性",name:"{{AC_TOTAL}} → 4",status:"passed",duration:2,src:"计划清单.html:110"},
   {time:"08:30:00.174",suite:"TC-4 · Token 完整性",name:"{{COV_PCT}} → 100",status:"passed",duration:2,src:"计划清单.html:115"},
   {time:"08:30:00.180",suite:"TC-4 · Token 完整性",name:"grep -r '{{' 渲染后 HTML → 0 匹配",status:"passed",duration:6,src:"tests/yry-checklist/token.test.mjs:42"},
-  {time:"08:30:00.186",suite:"TC-5 · 响应式断点",name:"断点 ≤900px：KPI 栅格 6 列 → 3 列",status:"passed",duration:6,src:"cdn/yry-checklist.css:340"},
-  {time:"08:30:00.191",suite:"TC-5 · 响应式断点",name:"断点 ≤700px：.kpi-grid 3 列 → 1 列",status:"passed",duration:5,src:"cdn/yry-checklist.css:345"},
-  {time:"08:30:00.197",suite:"TC-5 · 响应式断点",name:"断点 ≤500px：字号 -1 档 · 无横向滚动",status:"passed",duration:6,src:"cdn/yry-checklist.css:360"}
+  {time:"08:30:00.186",suite:"TC-5 · 响应式断点",name:"断点 ≤900px：KPI 栅格 6 列 → 3 列",status:"passed",duration:6,src:"cdn/yry-checklist/index.css:340"},
+  {time:"08:30:00.191",suite:"TC-5 · 响应式断点",name:"断点 ≤700px：.kpi-grid 3 列 → 1 列",status:"passed",duration:5,src:"cdn/yry-checklist/index.css:345"},
+  {time:"08:30:00.197",suite:"TC-5 · 响应式断点",name:"断点 ≤500px：字号 -1 档 · 无横向滚动",status:"passed",duration:6,src:"cdn/yry-checklist/index.css:360"}
 ];
 
 /* ═══ 排行榜 ═══ */
@@ -367,7 +367,7 @@ const rankingData={
   slowest:[
     {name:"模板渲染（5 套件 48 断言全跑）",val:"325ms"},
     {name:"shared.js 加载 + 命令面板初始化",val:"18ms"},
-    {name:"shared.css 加载 + 解析",val:"14ms"},
+    {name:"shared/index.css 加载 + 解析",val:"14ms"},
     {name:"yry-checklist.css 加载（6 大组件类）",val:"12ms"},
     {name:"Token 替换（20 占位符）",val:"48ms"}
   ],
@@ -380,17 +380,17 @@ const rankingData={
   ],
   topCoverage:[
     {name:"docs/.../计划清单.html",val:"100%"},
-    {name:"cdn/theme.css",val:"95%"},
-    {name:"cdn/shared.css",val:"92%"},
+    {name:"cdn/theme/index.css",val:"95%"},
+    {name:"cdn/shared/index.css",val:"92%"},
     {name:"tests/.../css-vars.test.mjs",val:"90%"},
     {name:"tests/.../token.test.mjs",val:"88%"}
   ],
   mostRelated:[
-    {name:"cdn/yry-checklist.css",val:5},
+    {name:"cdn/yry-checklist/index.css",val:5},
     {name:"计划清单.html",val:5},
-    {name:"cdn/shared.css",val:3},
-    {name:"cdn/theme.css",val:2},
-    {name:"cdn/shared.js",val:1}
+    {name:"cdn/shared/index.css",val:3},
+    {name:"cdn/theme/index.css",val:2},
+    {name:"cdn/shared/index.js",val:1}
   ]
 };
 
@@ -725,7 +725,7 @@ function renderSlow(){
   html+='<div class="card"><h2>💡 慢测试改进意见</h2><ul style="color:var(--text2);font-size:.78rem;line-height:1.8;padding-left:20px">'+
     '<li><strong>模板渲染 (325ms)</strong>：5 套件 48 断言全跑 · 拆为 <code>--suite=skel</code> / <code>--suite=css</code> / <code>--suite=cdn</code> / <code>--suite=token</code> / <code>--suite=resp</code> 子集，按需运行（参考 IMP-002）</li>'+
     '<li><strong>Token 替换 (48ms)</strong>：当前 20 占位符逐个匹配；可改为 Map 预编译正则，单次 replace 加速 30%</li>'+
-    '<li><strong>CDN 资源顺序加载 (44ms)</strong>：shared.css 阻塞后续 theme.css，可加 <code>preload</code> 提示加速首屏</li>'+
+    '<li><strong>CDN 资源顺序加载 (44ms)</strong>：shared/index.css 阻塞后续 theme/index.css，可加 <code>preload</code> 提示加速首屏</li>'+
     '<li>接入 <code>tests/perf-trend.json</code> 历史基线，超 1.5x 标红（参考 IMP-005）</li>'+
   '</ul></div>';
   container.innerHTML=html;
@@ -1034,9 +1034,9 @@ function renderInsights(){
 
   // 优先级矩阵
   const prio=[
-    {rank:1,title:'采纳 IMP-004：CDN 加载链 lint 校验',reason:'A-1.5 已暴露 · yry-checklist.css 错放 theme.css 之前将致 --yry-* 变量失效',impact:'🔴 P1 · CDN 顺序事故 0',action:'配置 .yry-cdn-order.json · CI 校验 head link 顺序 shared→theme→yry-checklist→shared.js'},
+    {rank:1,title:'采纳 IMP-004：CDN 加载链 lint 校验',reason:'A-1.5 已暴露 · yry-checklist.css 错放 theme/index.css 之前将致 --yry-* 变量失效',impact:'🔴 P1 · CDN 顺序事故 0',action:'配置 .yry-cdn-order.json · CI 校验 head link 顺序 shared→theme→yry-checklist→shared.js'},
     {rank:2,title:'采纳 IMP-003：Token 替换器 fail-fast',reason:'A-1.2 已暴露 · {{CDN_DEPTH}} 漏替换时链接全 404 但页面静默渲染',impact:'🔴 P1 · Token 漏替换 0',action:'未匹配 {{...}} 时抛 ConfigurationError · 增加 --dry-run 模式'},
-    {rank:3,title:'采纳 IMP-001：shared.css 拆 3 层',reason:'当前 18.8KB 单文件含 reset/animations/breadcrumb/cross-nav 全部职责',impact:'🟡 P2 · 可维护性 +60%',action:'拆为 base.css + utilities.css + components.css 三层'},
+    {rank:3,title:'采纳 IMP-001：shared/index.css 拆 3 层',reason:'当前 18.8KB 单文件含 reset/animations/breadcrumb/cross-nav 全部职责',impact:'🟡 P2 · 可维护性 +60%',action:'拆为 base.css + utilities.css + components.css 三层'},
     {rank:4,title:'采纳 IMP-005：补响应式视觉回归',reason:'B-1.4 / A-1.4 已暴露 320px 卡片溢出 · 当前仅断言存在性',impact:'🟡 P2 · 响应式回归早发现',action:'Playwright 截 500/700/900px 三档 · 像素 diff 阈值 0.5%'},
     {rank:5,title:'采纳 IMP-007：⌘K 联动 Token 替换统计',reason:'当前 ⌘K 是通用命令面板 · 不联动当前页 Token 状态',impact:'🟢 P3 · 模板自检 -30%',action:'⌘K 输入「Token」跳转当前页替换统计 / 残留占位符'}
   ];
@@ -1079,7 +1079,7 @@ function renderGate(){
   const items=[
     {name:'骨架完整性 7 区域',status:'pass',desc:'breadcrumb/scene-nav/cross-nav/head/stats/tabs/footer 7 区域均存在',meta:'48ms · 7/7 通过'},
     {name:'CSS 变量定义 14 项',status:'pass',desc:'--yry-bg/-bg-card/-bg-flat/-bg-raised/-accent/-cyan/-pass/-fail/-warn/-info/-skip/-text/-text2/-text3',meta:'30ms · 14/14 可解析'},
-    {name:'CDN 4 资源可达性',status:'pass',desc:'shared.css / theme.css / yry-checklist.css / shared.js 4/4 HTTP 200',meta:'44ms · 0 个 404'},
+    {name:'CDN 4 资源可达性',status:'pass',desc:'shared/index.css / theme/index.css / yry-checklist.css / shared.js 4/4 HTTP 200',meta:'44ms · 0 个 404'},
     {name:'Token 20 占位符无残留',status:'pass',desc:'{{STORY}}/{{SCENE}}/{{VERSION}}...{{COV_PCT}} 20 个全部替换',meta:'52ms · grep {{ = 0'},
     {name:'@layer 优先级显式',status:'pass',desc:'reset → base → components → utilities → overrides 5 层显式声明',meta:'4ms · yry-checklist.css:60'},
     {name:'6 大组件类可用',status:'pass',desc:'.step / .phase-strip / .scorecard / .risk-matrix / .gantt / .trend 全部定义',meta:'6ms · yry-checklist.css:260'},
