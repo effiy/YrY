@@ -33,7 +33,7 @@
 
 .ci-row:hover {
   transform: translateY(-1px);
-  border-color: rgba(255,193,7,.15);
+  border-color: rgba(var(--yry-accent-rgb),.15);
 }
 
 /* ── Icon ───────────────────────────────────────────────────────────── */
@@ -64,7 +64,7 @@
   font-size: .56rem;
   padding: 1px 5px;
   border-radius: 3px;
-  background: rgba(167,139,250,.1);
+  background: rgba(var(--yry-violet-rgb),.1);
   color: #a78bfa;
   font-weight: 500;
   font-family: monospace;
@@ -79,14 +79,14 @@
   margin-left: 6px;
   padding: 2px 6px;
   border-radius: 3px;
-  background: rgba(34,211,238,.05);
+  background: rgba(var(--yry-cyan-rgb),.05);
   transition: all .15s;
   flex-shrink: 0;
   white-space: nowrap;
 }
 
 .ci-link:hover {
-  background: rgba(34,211,238,.12);
+  background: rgba(var(--yry-cyan-rgb),.12);
   text-decoration: underline;
 }
 

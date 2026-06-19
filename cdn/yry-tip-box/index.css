@@ -11,7 +11,7 @@
 
 :host {
   display: block;
-  background: rgba(255,193,7,.04);
+  background: rgba(var(--yry-accent-rgb),.04);
   border-left: 3px solid var(--yry-accent, #ffc107);
   border-radius: 0 6px 6px 0;
   padding: 10px 14px;
@@ -36,7 +36,7 @@
 
 /* ── Type: success ──────────────────────────────────────────────────── */
 :host([type="success"]) {
-  background: rgba(34,197,94,.05);
+  background: rgba(var(--yry-pass-rgb),.05);
   border-left-color: var(--yry-pass, #22c55e);
 }
 
@@ -46,7 +46,7 @@
 
 /* ── Type: info ─────────────────────────────────────────────────────── */
 :host([type="info"]) {
-  background: rgba(34,211,238,.04);
+  background: rgba(var(--yry-cyan-rgb),.04);
   border-left-color: var(--yry-cyan, #22d3ee);
 }
 
@@ -56,7 +56,7 @@
 
 /* ── Type: warn ─────────────────────────────────────────────────────── */
 :host([type="warn"]) {
-  background: rgba(239,68,68,.05);
+  background: rgba(var(--yry-fail-rgb),.05);
   border-left-color: var(--yry-fail, #ef4444);
 }
 

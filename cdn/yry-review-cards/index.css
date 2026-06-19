@@ -89,8 +89,8 @@
   border-radius: 3px;
 }
 
-.case-tag.good { background: rgba(34,197,94,.1); color: var(--yry-pass, #22c55e); }
-.case-tag.bad  { background: rgba(239,68,68,.1); color: var(--yry-fail, #ef4444); }
+.case-tag.good { background: rgba(var(--yry-pass-rgb),.1); color: var(--yry-pass, #22c55e); }
+.case-tag.bad  { background: rgba(var(--yry-fail-rgb),.1); color: var(--yry-fail, #ef4444); }
 
 .case-card .case-loc {
   font-size: .7rem;
@@ -134,8 +134,8 @@
   margin-bottom: 6px;
 }
 
-.rec-pri.p1 { background: rgba(239,68,68,.12); color: var(--yry-fail, #ef4444); }
-.rec-pri.p2 { background: rgba(245,158,11,.12); color: var(--yry-warn, #f59e0b); }
+.rec-pri.p1 { background: rgba(var(--yry-fail-rgb),.12); color: var(--yry-fail, #ef4444); }
+.rec-pri.p2 { background: rgba(var(--yry-warn-rgb),.12); color: var(--yry-warn, #f59e0b); }
 .rec-pri.p3 { background: rgba(107,114,128,.12); color: var(--yry-skip, #6b7280); }
 
 .rec-card h4 {

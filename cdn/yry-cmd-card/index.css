@@ -81,7 +81,7 @@
   user-select: none;
 }
 .c-copy:hover { background: rgba(34, 211, 238, .15); border-color: var(--yry-cyan, #22d3ee); color: var(--yry-cyan, #22d3ee); }
-.c-copy.copied { background: rgba(16, 185, 129, .15); border-color: #10b981; color: #10b981; }
+.c-copy.copied { background: rgba(16, 185, 129, .15); border-color: var(--yry-emerald); color: var(--yry-emerald); }
 
 .c-meta {
   display: flex;
@@ -105,7 +105,7 @@
   border-radius: 0 4px 4px 0;
   line-height: 1.5;
 }
-.c-expect b { color: #10b981; }
+.c-expect b { color: var(--yry-emerald); }
 .c-expect code {
   color: var(--yry-accent, #ffc107);
   background: rgba(255, 193, 7, .08);

@@ -54,7 +54,7 @@
 .item-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--yry-shadow-lg, 0 12px 32px rgba(0,0,0,0.45));
-  border-color: rgba(255,193,7,.18);
+  border-color: rgba(var(--yry-accent-rgb),.18);
 }
 
 .item-card:hover::before {
@@ -66,16 +66,16 @@
   display: flex; align-items: center; justify-content: center;
   width: 38px; height: 38px;
   border-radius: 10px;
-  background: rgba(255,193,7,.10);
+  background: rgba(var(--yry-accent-rgb),.10);
   color: var(--yry-accent, #ffc107);
   font-weight: 700; font-size: 1rem;
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  border: 1px solid rgba(255,193,7,.2);
+  border: 1px solid rgba(var(--yry-accent-rgb),.2);
 }
-.item-card .icon.skill  { background: rgba(34,211,238,.10);  color: var(--yry-cyan, #22d3ee);    border-color: rgba(34,211,238,.22); }
-.item-card .icon.agent  { background: rgba(167,139,250,.10); color: #a78bfa;                   border-color: rgba(167,139,250,.22); }
-.item-card .icon.rule   { background: rgba(255,193,7,.10);   color: var(--yry-accent, #ffc107); border-color: rgba(255,193,7,.22); }
-.item-card .icon.ref    { background: rgba(34,197,94,.10);   color: var(--yry-pass, #22c55e);   border-color: rgba(34,197,94,.22); }
+.item-card .icon.skill  { background: rgba(var(--yry-cyan-rgb),.10);  color: var(--yry-cyan, #22d3ee);    border-color: rgba(var(--yry-cyan-rgb),.22); }
+.item-card .icon.agent  { background: rgba(var(--yry-violet-rgb),.10); color: #a78bfa;                   border-color: rgba(var(--yry-violet-rgb),.22); }
+.item-card .icon.rule   { background: rgba(var(--yry-accent-rgb),.10);   color: var(--yry-accent, #ffc107); border-color: rgba(var(--yry-accent-rgb),.22); }
+.item-card .icon.ref    { background: rgba(var(--yry-pass-rgb),.10);   color: var(--yry-pass, #22c55e);   border-color: rgba(var(--yry-pass-rgb),.22); }
 
 .item-card .body { flex: 1; min-width: 0; }
 .item-card .name {
@@ -95,7 +95,7 @@
   font-size: .58rem; font-weight: 600;
   padding: 1px 6px;
   border-radius: 8px;
-  background: rgba(239,68,68,.12);
+  background: rgba(var(--yry-fail-rgb),.12);
   color: #ef4444;
   text-transform: uppercase;
   letter-spacing: .05em;

@@ -53,31 +53,31 @@
 /* ── Types ──────────────────────────────────────────────────────────── */
 .yry-toast.default {
   background: var(--yry-bg-raised, rgba(42,42,56,1));
-  border: 1px solid rgba(255,193,7,.3);
+  border: 1px solid rgba(var(--yry-accent-rgb),.3);
   color: var(--yry-text, #f5f5f5);
 }
 
 .yry-toast.success {
-  background: rgba(34,197,94,.12);
-  border: 1px solid rgba(34,197,94,.3);
+  background: rgba(var(--yry-pass-rgb),.12);
+  border: 1px solid rgba(var(--yry-pass-rgb),.3);
   color: var(--yry-pass, #22c55e);
 }
 
 .yry-toast.error {
-  background: rgba(239,68,68,.12);
-  border: 1px solid rgba(239,68,68,.3);
+  background: rgba(var(--yry-fail-rgb),.12);
+  border: 1px solid rgba(var(--yry-fail-rgb),.3);
   color: var(--yry-fail, #ef4444);
 }
 
 .yry-toast.warn {
-  background: rgba(245,158,11,.12);
-  border: 1px solid rgba(245,158,11,.3);
+  background: rgba(var(--yry-warn-rgb),.12);
+  border: 1px solid rgba(var(--yry-warn-rgb),.3);
   color: var(--yry-warn, #f59e0b);
 }
 
 .yry-toast.info {
-  background: rgba(34,211,238,.12);
-  border: 1px solid rgba(34,211,238,.3);
+  background: rgba(var(--yry-cyan-rgb),.12);
+  border: 1px solid rgba(var(--yry-cyan-rgb),.3);
   color: var(--yry-cyan, #22d3ee);
 }
 

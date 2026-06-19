@@ -59,12 +59,12 @@
 
 .cb-copy:hover {
   color: var(--yry-accent, #ffc107);
-  border-color: rgba(255,193,7,.3);
+  border-color: rgba(var(--yry-accent-rgb),.3);
 }
 
 .cb-copy.copied {
   color: var(--yry-pass, #22c55e);
-  border-color: rgba(34,197,94,.3);
+  border-color: rgba(var(--yry-pass-rgb),.3);
 }
 
 /* ── Code area ──────────────────────────────────────────────────────── */

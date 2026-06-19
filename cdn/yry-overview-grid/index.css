@@ -74,7 +74,7 @@
 
 .ov-stat .os.accent {
   color: var(--yry-accent, #ffc107);
-  background: rgba(255,193,7,.06);
+  background: rgba(var(--yry-accent-rgb),.06);
 }
 
 /* ── Responsive ─────────────────────────────────────────────────────── */

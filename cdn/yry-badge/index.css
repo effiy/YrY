@@ -32,27 +32,27 @@
 }
 
 :host([type="pass"]) {
-  background: rgba(34,197,94,.12);
+  background: rgba(var(--yry-pass-rgb),.12);
   color: var(--yry-pass, #22c55e);
-  border: 1px solid rgba(34,197,94,.2);
+  border: 1px solid rgba(var(--yry-pass-rgb),.2);
 }
 
 :host([type="warn"]) {
-  background: rgba(245,158,11,.12);
+  background: rgba(var(--yry-warn-rgb),.12);
   color: var(--yry-warn, #f59e0b);
-  border: 1px solid rgba(245,158,11,.2);
+  border: 1px solid rgba(var(--yry-warn-rgb),.2);
 }
 
 :host([type="fail"]) {
-  background: rgba(239,68,68,.12);
+  background: rgba(var(--yry-fail-rgb),.12);
   color: var(--yry-fail, #ef4444);
-  border: 1px solid rgba(239,68,68,.2);
+  border: 1px solid rgba(var(--yry-fail-rgb),.2);
 }
 
 :host([type="info"]) {
-  background: rgba(34,211,238,.12);
+  background: rgba(var(--yry-cyan-rgb),.12);
   color: var(--yry-cyan, #22d3ee);
-  border: 1px solid rgba(34,211,238,.2);
+  border: 1px solid rgba(var(--yry-cyan-rgb),.2);
 }
 
 /* ── Dot ────────────────────────────────────────────────────────────── */

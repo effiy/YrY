@@ -34,7 +34,7 @@
 
 .pitfall.warn {
   border-left-color: var(--yry-warn, #f59e0b);
-  background: rgba(245,158,11,.03);
+  background: rgba(var(--yry-warn-rgb),.03);
 }
 
 .pitfall.tip {
@@ -74,17 +74,17 @@
 }
 
 .pf-sev.s-high {
-  background: rgba(239,68,68,.12);
+  background: rgba(var(--yry-fail-rgb),.12);
   color: var(--yry-fail, #ef4444);
 }
 
 .pf-sev.s-med {
-  background: rgba(245,158,11,.12);
+  background: rgba(var(--yry-warn-rgb),.12);
   color: var(--yry-warn, #f59e0b);
 }
 
 .pf-sev.s-low {
-  background: rgba(34,211,238,.12);
+  background: rgba(var(--yry-cyan-rgb),.12);
   color: var(--yry-cyan, #22d3ee);
 }
 
@@ -112,7 +112,7 @@
 .pf-fix {
   font-size: .72rem;
   color: var(--yry-pass, #22c55e);
-  background: rgba(34,197,94,.04);
+  background: rgba(var(--yry-pass-rgb),.04);
   padding: 8px 12px;
   border-radius: 4px;
   margin-top: 8px;

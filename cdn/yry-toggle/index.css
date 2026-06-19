@@ -37,8 +37,8 @@
 }
 
 :host([checked]) .tg-track {
-  background: rgba(255,193,7,.25);
-  border-color: rgba(255,193,7,.4);
+  background: rgba(var(--yry-accent-rgb),.25);
+  border-color: rgba(var(--yry-accent-rgb),.4);
 }
 
 /* ── Thumb ──────────────────────────────────────────────────────────── */

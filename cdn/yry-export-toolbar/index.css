@@ -49,18 +49,18 @@
 .yry-export-toolbar button.yry-export-ok,
 .yry-export-toolbar [data-action].yry-export-ok {
   color: var(--yry-pass, #22c55e);
-  border-color: rgba(34,197,94,.3);
+  border-color: rgba(var(--yry-pass-rgb),.3);
 }
 
 .yry-export-toolbar button.yry-export-err,
 .yry-export-toolbar [data-action].yry-export-err {
   color: var(--yry-fail, #ef4444);
-  border-color: rgba(239,68,68,.3);
+  border-color: rgba(var(--yry-fail-rgb),.3);
 }
 
 .yry-export-toolbar button.yry-export-busy,
 .yry-export-toolbar [data-action].yry-export-busy {
   color: var(--yry-warn, #f59e0b);
-  border-color: rgba(245,158,11,.3);
+  border-color: rgba(var(--yry-warn-rgb),.3);
   pointer-events: none;
 }

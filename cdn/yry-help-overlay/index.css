@@ -31,7 +31,7 @@
 /* ── Help card ──────────────────────────────────────────────────────── */
 .help-card {
   background: var(--yry-bg-card, linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%));
-  border: 1px solid rgba(255,193,7,.2);
+  border: 1px solid rgba(var(--yry-accent-rgb),.2);
   border-radius: var(--yry-radius, 12px);
   padding: 24px 28px;
   max-width: 480px;
@@ -101,7 +101,7 @@
 
 .help-close-btn:hover {
   color: var(--yry-accent, #ffc107);
-  border-color: rgba(255,193,7,.3);
+  border-color: rgba(var(--yry-accent-rgb),.3);
 }
 
 /* ── Keyboard key style ─────────────────────────────────────────────── */
@@ -127,8 +127,8 @@
   right: 20px;
   width: 40px; height: 40px;
   border-radius: 50%;
-  background: rgba(255,193,7,.12);
-  border: 1px solid rgba(255,193,7,.3);
+  background: rgba(var(--yry-accent-rgb),.12);
+  border: 1px solid rgba(var(--yry-accent-rgb),.3);
   color: var(--yry-accent, #ffc107);
   font-size: 1.1rem;
   cursor: pointer;
@@ -143,7 +143,7 @@
 }
 
 .fab-help:hover {
-  background: rgba(255,193,7,.2);
+  background: rgba(var(--yry-accent-rgb),.2);
   transform: scale(1.1);
 }
 

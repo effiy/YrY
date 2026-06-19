@@ -29,7 +29,7 @@
 .scene-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--yry-shadow-lg, 0 12px 32px rgba(0,0,0,0.45));
-  border-color: rgba(34,197,94,.2);
+  border-color: rgba(var(--yry-pass-rgb),.2);
 }
 
 .scene-card .scene-num {

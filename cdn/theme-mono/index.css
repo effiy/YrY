@@ -2,24 +2,45 @@
    YrY Theme Mono CSS — JetBrains Mono 主题页面的样式
    适用: 架构图 · 知识图谱 (深蓝黑底 + 等宽字体)
 
-   依赖: shared.css (需先加载) · fonts.css (JetBrains Mono self-hosted)
+   依赖: tokens/index.css · shared/index.css · fonts/index.css (需先加载)
    使用方式:
-     <link rel="stylesheet" href="../../../../cdn/fonts.css">
+     <link rel="stylesheet" href="../../../../cdn/tokens/index.css">
+     <link rel="stylesheet" href="../../../../cdn/fonts/index.css">
      <link rel="stylesheet" href="../../../../cdn/shared/index.css">
      <link rel="stylesheet" href="../../../../cdn/theme-mono/index.css">
+
+   语义令牌 (--yry-pass/--yry-fail/--yry-warn/--yry-accent/--yry-cyan)
+   从 tokens/index.css 继承；本文件仅覆盖表面/文本令牌为 mono 深色主题。
 
    对应场景文档:
      - docs/故事任务面板/yry-cdn/场景-2-双主题系统设计/
      - docs/故事任务面板/yry-cdn/场景-3-组件库与JS工具API/
    ═══════════════════════════════════════════════════════════════════════════ */
 
+@import url('../tokens/index.css');
+
+/* ── Mono 主题令牌覆盖 ──────────────────────────────────────────────────── */
+:root {
+  --yry-bg:              #020617;
+  --yry-bg-card:         rgba(15,23,42,0.5);
+  --yry-bg-flat:         rgba(15,23,42,0.5);
+  --yry-bg-raised:       rgba(20,30,50,0.7);
+  --yry-border:          1px solid var(--yry-mono-border);
+  --yry-shadow:          0 4px 24px rgba(0,0,0,.3);
+  --yry-shadow-lg:       0 12px 32px rgba(0,0,0,.45);
+  --yry-radius:          16px;
+  --yry-text:            #fff;
+  --yry-text2:           var(--yry-mono-text2);
+  --yry-text3:           var(--yry-mono-text3);
+}
+
 /* ── Body ───────────────────────────────────────────────────────────────── */
 body {
   font-family: 'JetBrains Mono', monospace;
-  background: #020617;
+  background: var(--yry-bg);
   min-height: 100vh;
   padding: 2rem;
-  color: white;
+  color: var(--yry-text);
 }
 
 /* ── Container ──────────────────────────────────────────────────────────── */
@@ -34,11 +55,11 @@ body {
   display: flex; align-items: center; gap: 1rem; margin-bottom: .5rem;
 }
 .yry-mono-header h1 { font-size: 1.5rem; font-weight: 700; }
-.yry-mono-subtitle { color: #94a3b8; font-size: .875rem; margin-left: 1.75rem; }
+.yry-mono-subtitle { color: var(--yry-text2); font-size: .875rem; margin-left: 1.75rem; }
 
 /* ── Pulse Dot ──────────────────────────────────────────────────────────── */
 .yry-pulse-dot {
-  width: 12px; height: 12px; background: #22d3ee; border-radius: 50%;
+  width: 12px; height: 12px; background: var(--yry-cyan); border-radius: 50%;
   animation: yry-pulse-mono 2s infinite;
   flex-shrink: 0;
 }
@@ -46,16 +67,16 @@ body {
 
 /* ── Diagram Container ──────────────────────────────────────────────────── */
 .yry-diagram-wrap {
-  background: rgba(15,23,42,.5); border-radius: 1rem;
-  border: 1px solid #1e293b; padding: 1.5rem;
+  background: var(--yry-bg-card); border-radius: var(--yry-radius);
+  border: var(--yry-border); padding: 1.5rem;
   overflow-x: auto; margin-bottom: 1.5rem;
 }
 .yry-diagram-wrap svg { width: 100%; min-width: 900px; display: block; }
 
 /* ── Graph Container (Cytoscape) ────────────────────────────────────────── */
 .yry-graph-wrap {
-  background: rgba(15,23,42,.5); border-radius: 1rem;
-  border: 1px solid #1e293b; padding: 1rem; margin-bottom: 1.5rem;
+  background: var(--yry-bg-card); border-radius: var(--yry-radius);
+  border: var(--yry-border); padding: 1rem; margin-bottom: 1.5rem;
 }
 .yry-graph-wrap .yry-cy { width: 100%; height: 600px; border-radius: .5rem; }
 
@@ -65,37 +86,37 @@ body {
   gap: 1rem; margin-bottom: 1.5rem;
 }
 .yry-mono-card {
-  background: rgba(15,23,42,.5); border-radius: .75rem;
-  border: 1px solid #1e293b; padding: 1.25rem;
+  background: var(--yry-bg-card); border-radius: .75rem;
+  border: var(--yry-border); padding: 1.25rem;
 }
 .yry-mono-card-header {
   display: flex; align-items: center; gap: .5rem; margin-bottom: .75rem;
 }
 .yry-mono-card h3 { font-size: .875rem; font-weight: 600; }
-.yry-mono-card ul { list-style: none; color: #94a3b8; font-size: .75rem; }
+.yry-mono-card ul { list-style: none; color: var(--yry-text2); font-size: .75rem; }
 .yry-mono-card li { margin-bottom: .375rem; }
 
-/* ── Card Dots ──────────────────────────────────────────────────────────── */
+/* ── Card Dots (装饰性色标，固定色值以保证视觉区分度) ────────────────────── */
 .yry-mono-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.yry-mono-dot.cyan    { background: #22d3ee; }
-.yry-mono-dot.emerald { background: #34d399; }
+.yry-mono-dot.cyan    { background: var(--yry-cyan); }
+.yry-mono-dot.emerald { background: var(--yry-pass); }
 .yry-mono-dot.violet  { background: #a78bfa; }
-.yry-mono-dot.amber   { background: #fbbf24; }
-.yry-mono-dot.rose    { background: #fb7185; }
+.yry-mono-dot.amber   { background: var(--yry-warn); }
+.yry-mono-dot.rose    { background: var(--yry-fail); }
 .yry-mono-dot.blue    { background: #3B82F6; }
 
 /* ── Legend ─────────────────────────────────────────────────────────────── */
 .yry-mono-legend {
   display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: .75rem;
-  padding: .75rem; background: rgba(15,23,42,.5);
-  border-radius: .5rem; border: 1px solid #1e293b;
-  font-size: .75rem; color: #94a3b8;
+  padding: .75rem; background: var(--yry-bg-card);
+  border-radius: .5rem; border: var(--yry-border);
+  font-size: .75rem; color: var(--yry-text2);
 }
 .yry-mono-legend-item { display: flex; align-items: center; gap: .375rem; }
 
 /* ── Footer (mono) ──────────────────────────────────────────────────────── */
 .yry-mono-footer {
-  text-align: center; color: #475569; font-size: .75rem; margin-top: 1rem;
+  text-align: center; color: var(--yry-text3); font-size: .75rem; margin-top: 1rem;
 }
 
 /* ── Breadcrumb (mono theme) ─────────────────────────────────────────── */
@@ -104,27 +125,27 @@ body {
   margin-bottom: 1.25rem; font-size: 0.76rem;
 }
 .yry-mono-container .breadcrumb a {
-  color: #7aa2f7; text-decoration: none; transition: color 0.15s;
+  color: var(--yry-link); text-decoration: none; transition: color 0.15s;
 }
-.yry-mono-container .breadcrumb a:hover { color: #fbbf24; text-decoration: underline; }
-.yry-mono-container .breadcrumb .bc-sep { color: #53576c; opacity: 0.5; -webkit-user-select: none; user-select: none; }
-.yry-mono-container .breadcrumb .bc-current { color: #94a3b8; font-weight: 500; }
+.yry-mono-container .breadcrumb a:hover { color: var(--yry-link-hover); text-decoration: underline; }
+.yry-mono-container .breadcrumb .bc-sep { color: var(--yry-text3); opacity: 0.5; -webkit-user-select: none; user-select: none; }
+.yry-mono-container .breadcrumb .bc-current { color: var(--yry-text2); font-weight: 500; }
 
 /* ── Cross-nav (mono theme) ──────────────────────────────────────────── */
 .yry-mono-container .cross-nav {
   display: flex; gap: 4px; justify-content: center; align-items: center;
   margin-bottom: 1.25rem; flex-wrap: wrap;
 }
-.yry-mono-container .cross-link { color: #7aa2f7; font-size: 0.76rem; text-decoration: none; padding: 3px 10px; border-radius: 4px; transition: color 0.15s, background 0.15s; }
-.yry-mono-container .cross-link:hover { color: #fbbf24; background: rgba(251,191,36,0.06); }
-.yry-mono-container .cross-link.on { color: #fbbf24; font-weight: 600; cursor: default; }
-.yry-mono-container .cross-sep { color: #475569; font-size: 0.5rem; opacity: 0.35; -webkit-user-select: none; user-select: none; }
+.yry-mono-container .cross-link { color: var(--yry-link); font-size: 0.76rem; text-decoration: none; padding: 3px 10px; border-radius: 4px; transition: color 0.15s, background 0.15s; }
+.yry-mono-container .cross-link:hover { color: var(--yry-link-hover); background: rgba(251,191,36,0.06); }
+.yry-mono-container .cross-link.on { color: var(--yry-link-hover); font-weight: 600; cursor: default; }
+.yry-mono-container .cross-sep { color: var(--yry-text3); font-size: 0.5rem; opacity: 0.35; -webkit-user-select: none; user-select: none; }
 
 /* ── Cross-nav overrides (mono theme uses different link colors) ────────── */
-.yry-mono-container .yry-cross-link { color: #7aa2f7; font-size: 0.76rem; }
-.yry-mono-container .yry-cross-link:hover { color: #fbbf24; background: rgba(251,191,36,0.06); }
-.yry-mono-container .yry-cross-link.on { color: #fbbf24; cursor: default; }
-.yry-mono-container .yry-cross-sep { color: #475569; }
+.yry-mono-container .yry-cross-link { color: var(--yry-link); font-size: 0.76rem; }
+.yry-mono-container .yry-cross-link:hover { color: var(--yry-link-hover); background: rgba(251,191,36,0.06); }
+.yry-mono-container .yry-cross-link.on { color: var(--yry-link-hover); cursor: default; }
+.yry-mono-container .yry-cross-sep { color: var(--yry-text3); }
 
 /* ── Animations ─────────────────────────────────────────────────────────── */
 @keyframes yry-mono-card-in {
@@ -144,7 +165,7 @@ body {
 .yry-mono-card:hover {
   transform: translateY(-2px);
   border-color: rgba(148,163,184,.2);
-  box-shadow: 0 4px 24px rgba(0,0,0,.3);
+  box-shadow: var(--yry-shadow-lg);
 }
 
 .yry-diagram-wrap {

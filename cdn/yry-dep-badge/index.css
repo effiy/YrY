@@ -34,14 +34,14 @@
 .dep-badge.type-rule:hover { background: rgba(168, 85, 247, .2); border-color: #a855f7; color: #a855f7; }
 .dep-badge.type-doc  { background: rgba(34, 211, 238, .1); border-color: rgba(34, 211, 238, .25); color: var(--yry-cyan, #22d3ee); }
 .dep-badge.type-doc:hover { background: rgba(34, 211, 238, .2); border-color: var(--yry-cyan, #22d3ee); color: var(--yry-cyan, #22d3ee); }
-.dep-badge.type-test { background: rgba(16, 185, 129, .1); border-color: rgba(16, 185, 129, .25); color: #10b981; }
-.dep-badge.type-test:hover { background: rgba(16, 185, 129, .2); border-color: #10b981; color: #10b981; }
+.dep-badge.type-test { background: rgba(16, 185, 129, .1); border-color: rgba(16, 185, 129, .25); color: var(--yry-emerald); }
+.dep-badge.type-test:hover { background: rgba(16, 185, 129, .2); border-color: var(--yry-emerald); color: var(--yry-emerald); }
 .dep-badge.type-cmd  { background: rgba(255, 193, 7, .1); border-color: rgba(255, 193, 7, .25); color: var(--yry-accent, #ffc107); }
 .dep-badge.type-cmd:hover { background: rgba(255, 193, 7, .2); border-color: var(--yry-accent, #ffc107); color: var(--yry-accent, #ffc107); }
 .dep-badge.type-arc  { background: rgba(245, 158, 11, .1); border-color: rgba(245, 158, 11, .25); color: #f59e0b; }
 .dep-badge.type-arc:hover { background: rgba(245, 158, 11, .2); border-color: #f59e0b; color: #f59e0b; }
-.dep-badge.type-skill{ background: rgba(34, 197, 94, .1); border-color: rgba(34, 197, 94, .25); color: #22c55e; }
-.dep-badge.type-skill:hover { background: rgba(34, 197, 94, .2); border-color: #22c55e; color: #22c55e; }
+.dep-badge.type-skill{ background: rgba(34, 197, 94, .1); border-color: rgba(34, 197, 94, .25); color: var(--yry-pass); }
+.dep-badge.type-skill:hover { background: rgba(34, 197, 94, .2); border-color: var(--yry-pass); color: var(--yry-pass); }
 .dep-badge.type-warn { background: rgba(239, 68, 68, .1); border-color: rgba(239, 68, 68, .25); color: #ef4444; }
 .dep-badge.type-warn:hover { background: rgba(239, 68, 68, .2); border-color: #ef4444; color: #ef4444; }
 

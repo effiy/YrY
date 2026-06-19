@@ -33,7 +33,7 @@
   line-height: 1.2;
   margin: 4px 0;
 }
-.kpic-num.health { color: #10b981; }
+.kpic-num.health { color: var(--yry-emerald); }
 .kpic-num.warn   { color: #f59e0b; }
 .kpic-num.fail   { color: #ef4444; }
 .kpic-num.cyan   { color: var(--yry-cyan, #22d3ee); }
@@ -44,6 +44,6 @@
   color: var(--yry-text3, #888);
   margin-top: 2px;
 }
-.kpic-trend.up   { color: #10b981; }
+.kpic-trend.up   { color: var(--yry-emerald); }
 .kpic-trend.down { color: #ef4444; }
 .kpic-trend.flat { color: var(--yry-text3, #888); }

@@ -51,5 +51,5 @@
   border: 1px solid rgba(16, 185, 129, .3);
   border-radius: 6px;
   font-size: .66rem;
-  color: #10b981;
+  color: var(--yry-emerald);
 }

@@ -31,7 +31,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #10b981;
+  background: var(--yry-emerald);
   color: #fff;
   font-size: .66rem;
   font-weight: 700;

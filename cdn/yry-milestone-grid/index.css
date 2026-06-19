@@ -32,7 +32,7 @@
 
 .ms-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(255,193,7,.2);
+  border-color: rgba(var(--yry-accent-rgb),.2);
 }
 
 /* ── Icon ───────────────────────────────────────────────────────────── */
@@ -62,7 +62,7 @@
   color: var(--yry-accent, #ffc107);
   margin-top: 4px;
   font-family: monospace;
-  background: rgba(255,193,7,.06);
+  background: rgba(var(--yry-accent-rgb),.06);
   display: inline-block;
   padding: 1px 6px;
   border-radius: 8px;

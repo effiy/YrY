@@ -89,16 +89,16 @@
 
 /* ── Data shapes ────────────────────────────────────────────────────── */
 .radar-svg .rr-shield {
-  fill: rgba(255,193,7,.18);
+  fill: rgba(var(--yry-accent-rgb),.18);
   stroke: var(--yry-accent, #ffc107);
   stroke-width: 1.5;
   transition: all .3s;
-  filter: drop-shadow(0 0 6px rgba(255,193,7,.3));
+  filter: drop-shadow(0 0 6px rgba(var(--yry-accent-rgb),.3));
 }
 
 .radar-svg .rr-baseline {
-  fill: rgba(34,211,238,.08);
-  stroke: rgba(34,211,238,.4);
+  fill: rgba(var(--yry-cyan-rgb),.08);
+  stroke: rgba(var(--yry-cyan-rgb),.4);
   stroke-width: 1;
   stroke-dasharray: 3,3;
 }
@@ -129,7 +129,7 @@
 .radar-desc {
   margin-top: 14px;
   padding: 10px 14px;
-  background: rgba(34,211,238,.04);
+  background: rgba(var(--yry-cyan-rgb),.04);
   border-left: 2px solid var(--yry-cyan, #22d3ee);
   border-radius: 0 6px 6px 0;
   font-size: .76rem;

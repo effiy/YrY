@@ -58,7 +58,7 @@
   white-space: nowrap;
 }
 .stc-status.status-done {
-  color: #10b981;
+  color: var(--yry-emerald);
   background: rgba(16, 185, 129, .15);
   border: 1px solid rgba(16, 185, 129, .3);
 }
@@ -168,4 +168,4 @@
   font-family: ui-monospace, monospace;
 }
 .stc-log-time { color: var(--yry-cyan, #22d3ee); margin-right: 6px; }
-.stc-log-entry b { color: #10b981; }
+.stc-log-entry b { color: var(--yry-emerald); }

@@ -69,7 +69,7 @@
 .rm-cell.l3 { background: rgba(16, 185, 129, .16); }
 .rm-cell.l4 { background: rgba(16, 185, 129, .20); }
 
-.rm-cell.r-low  { color: #10b981; background: rgba(16, 185, 129, .18); border: 1px solid rgba(16, 185, 129, .4); }
+.rm-cell.r-low  { color: var(--yry-emerald); background: rgba(16, 185, 129, .18); border: 1px solid rgba(16, 185, 129, .4); }
 .rm-cell.r-med  { color: #f59e0b; background: rgba(245, 158, 11, .20); border: 1px solid rgba(245, 158, 11, .4); animation: pulse-warn 2.5s infinite; }
 .rm-cell.r-high { color: #ef4444; background: rgba(239, 68, 68, .25); border: 1px solid rgba(239, 68, 68, .5); }
 .rm-cell.r-crit { color: #fff; background: rgba(239, 68, 68, .45); border: 1px solid #ef4444; animation: pulse-crit 1.5s infinite; }

@@ -19,11 +19,11 @@
 
 .scene-nav a { color: var(--yry-color-text-2, #d4d4d4); }
 
-.scene-nav a:hover { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.08); }
+.scene-nav a:hover { color: var(--yry-color-accent, #ffc107); background: rgba(var(--yry-accent-rgb),.08); }
 
 .scene-nav .active {
-  color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.12);
-  border: 1px solid rgba(255,193,7,.25);
+  color: var(--yry-color-accent, #ffc107); background: rgba(var(--yry-accent-rgb),.12);
+  border: 1px solid rgba(var(--yry-accent-rgb),.25);
 }
 
 .scene-nav .scene-nav-sep {

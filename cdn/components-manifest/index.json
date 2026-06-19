@@ -1,31 +1,134 @@
 {
   "_meta": {
-    "generatedAt": "2026-06-18T14:23:55.534Z",
+    "generatedAt": "2026-06-19T13:44:23.920Z",
     "cdnVersion": "1.2.0",
     "generator": "scripts/build-manifest.mjs",
     "schema": "yry-cdn/components.manifest@1"
   },
   "stats": {
-    "total": 62,
-    "vue": 52,
-    "vanilla": 10,
-    "complete": 62,
-    "incomplete": 0,
-    "withDemo": 57,
-    "customElements": 56,
-    "totalCssTokens": 27,
-    "totalDeclaredDeps": 4,
-    "totalCount": 64,
+    "total": 107,
+    "vue": 54,
+    "vanilla": 44,
+    "complete": 94,
+    "incomplete": 13,
+    "withDemo": 107,
+    "customElements": 82,
+    "totalCssTokens": 459,
+    "totalDeclaredDeps": 0,
+    "totalCount": 107,
     "byKind": {
-      "vanilla": 10,
+      "vanilla": 44,
       "vue": 54
     },
     "byStatus": {
-      "complete": 64
+      "complete": 94
     },
-    "generatedAt": "2026-06-19T00:00:00.000Z"
+    "generatedAt": "2026-06-19T13:44:23.921Z"
   },
   "components": [
+    {
+      "name": "yry-a11y",
+      "kind": "unknown",
+      "status": "incomplete",
+      "tagName": "yry-a11y",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 1771
+        },
+        "css": {
+          "exists": true,
+          "size": 1579
+        },
+        "js": {
+          "exists": false,
+          "size": 0
+        }
+      }
+    },
+    {
+      "name": "yry-accordion",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-accordion",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 3575
+        },
+        "css": {
+          "exists": true,
+          "size": 2955
+        },
+        "js": {
+          "exists": true,
+          "size": 1310
+        }
+      }
+    },
+    {
+      "name": "yry-arch",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-arch",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--amber",
+        "--bg",
+        "--blue",
+        "--border",
+        "--border2",
+        "--card",
+        "--card2",
+        "--cyan",
+        "--emerald",
+        "--rose",
+        "--text",
+        "--text2",
+        "--text3",
+        "--violet",
+        "--yry-cyan-rgb",
+        "--yry-violet-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 2018
+        },
+        "css": {
+          "exists": true,
+          "size": 11275
+        },
+        "js": {
+          "exists": true,
+          "size": 2269
+        }
+      }
+    },
     {
       "name": "yry-back-top",
       "kind": "vanilla",
@@ -38,19 +141,15 @@
       "runtimeDeps": [],
       "declaredDeps": [],
       "exports": [],
-      "cssTokens": [
-        "--yry-color-accent",
-        "--yry-color-surface-2",
-        "--yry-color-text-2"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 4416
+          "size": 4454
         },
         "css": {
           "exists": true,
-          "size": 1364
+          "size": 1370
         },
         "js": {
           "exists": true,
@@ -59,33 +158,47 @@
       }
     },
     {
+      "name": "yry-badge",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-badge",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-cyan-rgb",
+        "--yry-fail-rgb",
+        "--yry-pass-rgb",
+        "--yry-warn-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 3294
+        },
+        "css": {
+          "exists": true,
+          "size": 2419
+        },
+        "js": {
+          "exists": true,
+          "size": 1071
+        }
+      }
+    },
+    {
       "name": "yry-breadcrumb",
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-breadcrumb",
-      "readyEvent": "yry-breadcrumb-ready",
+      "readyEvent": null,
       "templateId": "yry-breadcrumb-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "items",
-          "type": "Array",
-          "default": null,
-          "required": true
-        },
-        {
-          "name": "ariaLabel",
-          "type": "String",
-          "default": "面包屑导航",
-          "required": false
-        },
-        {
-          "name": "separator",
-          "type": "String",
-          "default": "/",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -93,21 +206,15 @@
       "exports": [
         "YryBreadcrumb"
       ],
-      "cssTokens": [
-        "--yry-color-accent",
-        "--yry-color-text-1",
-        "--yry-color-text-2",
-        "--yry-color-text-3",
-        "--yry-ease-out"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 9234
+          "size": 9256
         },
         "css": {
           "exists": true,
-          "size": 1688
+          "size": 1694
         },
         "js": {
           "exists": true,
@@ -120,30 +227,22 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-card-grid",
-      "readyEvent": "yry-card-grid-ready",
+      "readyEvent": null,
       "templateId": "yry-card-grid-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "items",
-          "type": "Array",
-          "default": "function () { return [];",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
       "declaredDeps": [],
       "exports": [
-        "YryCardGrid",
-        "YryItemCard"
+        "YryCardGrid"
       ],
       "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 5716
+          "size": 5754
         },
         "css": {
           "exists": true,
@@ -160,29 +259,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-cat-overview",
-      "readyEvent": "yry-cat-overview-ready",
+      "readyEvent": null,
       "templateId": "yry-cat-overview-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "title",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "segments",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        },
-        {
-          "name": "stats",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -190,15 +270,11 @@
       "exports": [
         "YryCatOverview"
       ],
-      "cssTokens": [
-        "--yry-accent",
-        "--yry-text",
-        "--yry-text3"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 3048
+          "size": 3056
         },
         "css": {
           "exists": true,
@@ -215,29 +291,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-cat-warning",
-      "readyEvent": "yry-cat-warning-ready",
+      "readyEvent": null,
       "templateId": "yry-cat-warning-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "tone",
-          "type": "String",
-          "default": "warn",
-          "required": false
-        },
-        {
-          "name": "icon",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "content",
-          "type": "String",
-          "default": "",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -245,15 +302,11 @@
       "exports": [
         "YryCatWarning"
       ],
-      "cssTokens": [
-        "--yry-accent",
-        "--yry-text",
-        "--yry-text2"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 3020
+          "size": 3028
         },
         "css": {
           "exists": true,
@@ -266,33 +319,128 @@
       }
     },
     {
+      "name": "yry-cdn-detect",
+      "kind": "vanilla",
+      "status": "incomplete",
+      "tagName": "yry-cdn-detect",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 2353
+        },
+        "css": {
+          "exists": false,
+          "size": 0
+        },
+        "js": {
+          "exists": true,
+          "size": 2168
+        }
+      }
+    },
+    {
+      "name": "yry-check-item",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-check-item",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb",
+        "--yry-cyan-rgb",
+        "--yry-violet-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 3646
+        },
+        "css": {
+          "exists": true,
+          "size": 3695
+        },
+        "js": {
+          "exists": true,
+          "size": 1263
+        }
+      }
+    },
+    {
+      "name": "yry-checklist",
+      "kind": "unknown",
+      "status": "incomplete",
+      "tagName": "yry-checklist",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--accent",
+        "--bg",
+        "--bg-card",
+        "--bg-flat",
+        "--bg-raised",
+        "--border",
+        "--cyan",
+        "--fail",
+        "--info",
+        "--pass",
+        "--radius",
+        "--shadow",
+        "--shadow-lg",
+        "--text",
+        "--text2",
+        "--text3",
+        "--warn",
+        "--yry-accent-rgb",
+        "--yry-amber-bright",
+        "--yry-cyan-rgb",
+        "--yry-link-blue",
+        "--yry-mono-text2",
+        "--yry-mono-text4",
+        "--yry-pass-rgb",
+        "--yry-warn-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 2197
+        },
+        "css": {
+          "exists": true,
+          "size": 19564
+        },
+        "js": {
+          "exists": false,
+          "size": 0
+        }
+      }
+    },
+    {
       "name": "yry-checklist-head",
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-checklist-head",
-      "readyEvent": "yry-checklist-head-ready",
+      "readyEvent": null,
       "templateId": "yry-checklist-head-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "percent",
-          "type": "Number",
-          "default": "0",
-          "required": false
-        },
-        {
-          "name": "title",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "meta",
-          "type": "String",
-          "default": "",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -301,19 +449,16 @@
         "YryChecklistHead"
       ],
       "cssTokens": [
-        "--yry-accent",
-        "--yry-cyan",
-        "--yry-text",
-        "--yry-text3"
+        "--yry-emerald"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 3730
+          "size": 3746
         },
         "css": {
           "exists": true,
-          "size": 1978
+          "size": 2000
         },
         "js": {
           "exists": true,
@@ -326,59 +471,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-cmd-card",
-      "readyEvent": "yry-cmd-card-ready",
+      "readyEvent": null,
       "templateId": "yry-cmd-card-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "stage",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "name",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "desc",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "cmd",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "expectHtml",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "owner",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "duration",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "priority",
-          "type": "String",
-          "default": "",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -387,20 +483,16 @@
         "YryCmdCard"
       ],
       "cssTokens": [
-        "--yry-accent",
-        "--yry-cyan",
-        "--yry-text",
-        "--yry-text2",
-        "--yry-text3"
+        "--yry-emerald"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 5067
+          "size": 5073
         },
         "css": {
           "exists": true,
-          "size": 3556
+          "size": 3589
         },
         "js": {
           "exists": true,
@@ -413,29 +505,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-cmd-head",
-      "readyEvent": "yry-cmd-head-ready",
+      "readyEvent": null,
       "templateId": "yry-cmd-head-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "title",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "subtitle",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "stats",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -444,19 +517,16 @@
         "YryCmdHead"
       ],
       "cssTokens": [
-        "--yry-accent",
-        "--yry-cyan",
-        "--yry-text",
-        "--yry-text2"
+        "--yry-emerald"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 2858
+          "size": 2874
         },
         "css": {
           "exists": true,
-          "size": 1704
+          "size": 1715
         },
         "js": {
           "exists": true,
@@ -465,32 +535,104 @@
       }
     },
     {
+      "name": "yry-code-block",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-code-block",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb",
+        "--yry-pass-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 2925
+        },
+        "css": {
+          "exists": true,
+          "size": 3150
+        },
+        "js": {
+          "exists": true,
+          "size": 3342
+        }
+      }
+    },
+    {
+      "name": "yry-concept-radar",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-concept-radar",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb",
+        "--yry-cyan-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 3712
+        },
+        "css": {
+          "exists": true,
+          "size": 4805
+        },
+        "js": {
+          "exists": true,
+          "size": 7257
+        }
+      }
+    },
+    {
       "name": "yry-cron-panel",
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-cron-panel",
-      "readyEvent": "yry-cron-panel-ready",
+      "readyEvent": null,
       "templateId": "yry-cron-panel-tpl",
       "isCustomElement": true,
       "props": [],
       "runtimeDeps": [
-        "Vue"
+        "Vue",
+        "PanelHub"
       ],
       "declaredDeps": [],
       "exports": [],
-      "cssTokens": [],
+      "cssTokens": [
+        "--border-subtle",
+        "--color-accent-2",
+        "--text-muted",
+        "--text-primary",
+        "--text-secondary",
+        "--yry-mono-text2",
+        "--yry-pass",
+        "--yry-pass-rgb"
+      ],
       "files": {
         "html": {
           "exists": true,
-          "size": 4733
+          "size": 6428
         },
         "css": {
           "exists": true,
-          "size": 6489
+          "size": 6605
         },
         "js": {
           "exists": true,
-          "size": 2781
+          "size": 12814
         }
       }
     },
@@ -499,29 +641,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-cross-nav",
-      "readyEvent": "yry-cross-nav-ready",
+      "readyEvent": null,
       "templateId": "yry-cross-nav-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "basePath",
-          "type": "String",
-          "default": "./",
-          "required": false
-        },
-        {
-          "name": "pages",
-          "type": "Array",
-          "default": "function() { return [];",
-          "required": false
-        },
-        {
-          "name": "active",
-          "type": "String",
-          "default": "",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -530,18 +653,16 @@
         "YryCrossNav"
       ],
       "cssTokens": [
-        "--yry-color-accent",
-        "--yry-color-cyan",
-        "--yry-color-text-3"
+        "--yry-accent-rgb"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 5564
+          "size": 5602
         },
         "css": {
           "exists": true,
-          "size": 1352
+          "size": 1370
         },
         "js": {
           "exists": true,
@@ -559,25 +680,13 @@
       "isCustomElement": false,
       "props": [],
       "runtimeDeps": [],
-      "declaredDeps": [
-        "cytoscape",
-        "html2canvas",
-        "jspdf",
-        "yry-export-toolbar"
-      ],
-      "exports": [
-        "YrYCytoscapeGraph"
-      ],
-      "cssTokens": [
-        "--yry-bg",
-        "--yry-border",
-        "--yry-radius",
-        "--yry-text3"
-      ],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 3563
+          "size": 3571
         },
         "css": {
           "exists": true,
@@ -590,39 +699,99 @@
       }
     },
     {
+      "name": "yry-day-plan",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-day-plan",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 4666
+        },
+        "css": {
+          "exists": true,
+          "size": 4193
+        },
+        "js": {
+          "exists": true,
+          "size": 1077
+        }
+      }
+    },
+    {
+      "name": "yry-demo",
+      "kind": "unknown",
+      "status": "incomplete",
+      "tagName": "yry-demo",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--accent",
+        "--bg",
+        "--bg-card",
+        "--bg-flat",
+        "--bg-raised",
+        "--border",
+        "--cyan",
+        "--day-color",
+        "--fail",
+        "--info",
+        "--pass",
+        "--purple",
+        "--radius",
+        "--shadow",
+        "--shadow-lg",
+        "--text",
+        "--text2",
+        "--text3",
+        "--warn",
+        "--yry-accent",
+        "--yry-accent-rgb",
+        "--yry-cyan-rgb",
+        "--yry-fail-rgb",
+        "--yry-pass-rgb",
+        "--yry-text2",
+        "--yry-text3",
+        "--yry-violet-rgb",
+        "--yry-warn-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 2180
+        },
+        "css": {
+          "exists": true,
+          "size": 23415
+        },
+        "js": {
+          "exists": false,
+          "size": 0
+        }
+      }
+    },
+    {
       "name": "yry-dep-badge",
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-dep-badge",
-      "readyEvent": "yry-dep-badge-ready",
+      "readyEvent": null,
       "templateId": "yry-dep-badge-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "href",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "label",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "type",
-          "type": "String",
-          "default": "doc",
-          "required": false
-        },
-        {
-          "name": "target",
-          "type": "String",
-          "default": "",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -631,17 +800,17 @@
         "YryDepBadge"
       ],
       "cssTokens": [
-        "--yry-accent",
-        "--yry-cyan"
+        "--yry-emerald",
+        "--yry-pass"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 3996
+          "size": 4012
         },
         "css": {
           "exists": true,
-          "size": 2984
+          "size": 3041
         },
         "js": {
           "exists": true,
@@ -654,95 +823,20 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-doc-layer",
-      "readyEvent": "yry-doc-layer-ready",
+      "readyEvent": null,
       "templateId": "yry-doc-layer-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "layerId",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "num",
-          "type": "String",
-          "default": null,
-          "required": true
-        },
-        {
-          "name": "titleIcon",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "titlePrefix",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "titleAccent",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "titleSuffix",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "stats",
-          "type": "Array",
-          "default": "function () { return [];",
-          "required": false
-        },
-        {
-          "name": "panels",
-          "type": "Array",
-          "default": "function () { return [];",
-          "required": false
-        },
-        {
-          "name": "panelsTitle",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "panelsContainerTitle",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "sections",
-          "type": "Array",
-          "default": null,
-          "required": true
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
       "declaredDeps": [],
-      "exports": [
-        "YryDocLayer",
-        "YryItemCard",
-        "YryLayer",
-        "YrySceneCard",
-        "YryStoryCard",
-        "YrySubTitle",
-        "YryTagChip"
-      ],
+      "exports": [],
       "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 5505
+          "size": 5543
         },
         "css": {
           "exists": true,
@@ -751,6 +845,67 @@
         "js": {
           "exists": true,
           "size": 8992
+        }
+      }
+    },
+    {
+      "name": "yry-docs-binding",
+      "kind": "vue",
+      "status": "complete",
+      "tagName": "yry-docs-binding",
+      "readyEvent": null,
+      "templateId": "yry-docs-binding-tpl",
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [
+        "Vue",
+        "PanelHub"
+      ],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--text-muted"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 4789
+        },
+        "css": {
+          "exists": true,
+          "size": 1945
+        },
+        "js": {
+          "exists": true,
+          "size": 83639
+        }
+      }
+    },
+    {
+      "name": "yry-empty-state",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-empty-state",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 3303
+        },
+        "css": {
+          "exists": true,
+          "size": 1684
+        },
+        "js": {
+          "exists": true,
+          "size": 2053
         }
       }
     },
@@ -764,32 +919,21 @@
       "isCustomElement": false,
       "props": [],
       "runtimeDeps": [],
-      "declaredDeps": [
-        "html2canvas",
-        "jspdf"
-      ],
-      "exports": [
-        "YrYExportToolbar"
-      ],
+      "declaredDeps": [],
+      "exports": [],
       "cssTokens": [
-        "--yry-bg-card",
-        "--yry-border",
-        "--yry-fail",
-        "--yry-pass",
-        "--yry-radius",
-        "--yry-shadow",
-        "--yry-text",
-        "--yry-text2",
-        "--yry-warn"
+        "--yry-fail-rgb",
+        "--yry-pass-rgb",
+        "--yry-warn-rgb"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 1688
+          "size": 1696
         },
         "css": {
           "exists": true,
-          "size": 1886
+          "size": 1915
         },
         "js": {
           "exists": true,
@@ -802,20 +946,33 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-faq-panel",
-      "readyEvent": "yry-faq-panel-ready",
+      "readyEvent": null,
       "templateId": "yry-faq-panel-tpl",
       "isCustomElement": true,
       "props": [],
       "runtimeDeps": [
-        "Vue"
+        "Vue",
+        "PanelHub"
       ],
       "declaredDeps": [],
       "exports": [],
-      "cssTokens": [],
+      "cssTokens": [
+        "--fp-bg-1",
+        "--fp-bg-2",
+        "--fp-bg-body",
+        "--fp-ease",
+        "--fp-green",
+        "--fp-green-bg",
+        "--fp-green-soft",
+        "--fp-radius",
+        "--text-muted",
+        "--text-primary",
+        "--text-secondary"
+      ],
       "files": {
         "html": {
           "exists": true,
-          "size": 3353
+          "size": 4645
         },
         "css": {
           "exists": true,
@@ -823,7 +980,7 @@
         },
         "js": {
           "exists": true,
-          "size": 2759
+          "size": 14810
         }
       }
     },
@@ -832,17 +989,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-footer-note",
-      "readyEvent": "yry-footer-note-ready",
+      "readyEvent": null,
       "templateId": "yry-footer-note-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "version",
-          "type": "String",
-          "default": "5.4.0",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -850,11 +1000,14 @@
       "exports": [
         "YryFooterNote"
       ],
-      "cssTokens": [],
+      "cssTokens": [
+        "--color-accent",
+        "--text-muted"
+      ],
       "files": {
         "html": {
           "exists": true,
-          "size": 2519
+          "size": 2535
         },
         "css": {
           "exists": true,
@@ -871,29 +1024,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-gantt",
-      "readyEvent": "yry-gantt-ready",
+      "readyEvent": null,
       "templateId": "yry-gantt-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "days",
-          "type": "Number",
-          "default": "15",
-          "required": false
-        },
-        {
-          "name": "labels",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        },
-        {
-          "name": "tasks",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -901,16 +1035,11 @@
       "exports": [
         "YryGantt"
       ],
-      "cssTokens": [
-        "--yry-accent",
-        "--yry-cyan",
-        "--yry-text2",
-        "--yry-text3"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 2232
+          "size": 2240
         },
         "css": {
           "exists": true,
@@ -923,10 +1052,10 @@
       }
     },
     {
-      "name": "yry-health-bar",
-      "kind": "vanilla",
-      "status": "complete",
-      "tagName": "yry-health-bar",
+      "name": "yry-graph",
+      "kind": "unknown",
+      "status": "incomplete",
+      "tagName": "yry-graph",
       "readyEvent": null,
       "templateId": null,
       "isCustomElement": false,
@@ -935,24 +1064,205 @@
       "declaredDeps": [],
       "exports": [],
       "cssTokens": [
-        "--yry-fail",
-        "--yry-pass",
-        "--yry-skip",
-        "--yry-text3",
-        "--yry-warn"
+        "--bg",
+        "--border",
+        "--border2",
+        "--c-amber",
+        "--c-blue",
+        "--c-cyan",
+        "--c-emerald",
+        "--c-pink",
+        "--c-slate",
+        "--c-violet",
+        "--darker",
+        "--dim",
+        "--fg",
+        "--muted",
+        "--panel",
+        "--yry-cyan-rgb"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 4363
+          "size": 1517
         },
         "css": {
           "exists": true,
-          "size": 2866
+          "size": 17776
+        },
+        "js": {
+          "exists": false,
+          "size": 0
+        }
+      }
+    },
+    {
+      "name": "yry-health",
+      "kind": "unknown",
+      "status": "incomplete",
+      "tagName": "yry-health",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent",
+        "--yry-accent-rgb",
+        "--yry-bg",
+        "--yry-bg-card",
+        "--yry-bg-flat",
+        "--yry-border",
+        "--yry-cyan-rgb",
+        "--yry-fail",
+        "--yry-fail-rgb",
+        "--yry-pass",
+        "--yry-pass-rgb",
+        "--yry-radius",
+        "--yry-shadow",
+        "--yry-text",
+        "--yry-text2",
+        "--yry-text3",
+        "--yry-warn",
+        "--yry-warn-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 1853
+        },
+        "css": {
+          "exists": true,
+          "size": 22359
+        },
+        "js": {
+          "exists": false,
+          "size": 0
+        }
+      }
+    },
+    {
+      "name": "yry-health-bar",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-health-bar",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [
+        "Vue"
+      ],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 4391
+        },
+        "css": {
+          "exists": true,
+          "size": 2872
         },
         "js": {
           "exists": true,
           "size": 1295
+        }
+      }
+    },
+    {
+      "name": "yry-help-overlay",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-help-overlay",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 5031
+        },
+        "css": {
+          "exists": true,
+          "size": 5002
+        },
+        "js": {
+          "exists": true,
+          "size": 4803
+        }
+      }
+    },
+    {
+      "name": "yry-home",
+      "kind": "unknown",
+      "status": "incomplete",
+      "tagName": "yry-home",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--bg-card",
+        "--bg-card-flat",
+        "--bg-content",
+        "--border-subtle",
+        "--color-accent",
+        "--color-accent-2",
+        "--cyan",
+        "--radius-card",
+        "--shadow-card",
+        "--shadow-hover",
+        "--text-muted",
+        "--text-primary",
+        "--text-secondary",
+        "--yry-accent",
+        "--yry-accent-rgb",
+        "--yry-amber-bright",
+        "--yry-bg",
+        "--yry-bg-card",
+        "--yry-bg-flat",
+        "--yry-border",
+        "--yry-cyan",
+        "--yry-cyan-rgb",
+        "--yry-fail-rgb",
+        "--yry-mono-text2",
+        "--yry-pass",
+        "--yry-pass-rgb",
+        "--yry-radius",
+        "--yry-shadow",
+        "--yry-shadow-lg",
+        "--yry-text",
+        "--yry-text2",
+        "--yry-text3",
+        "--yry-violet-rgb",
+        "--yry-warn-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 1315
+        },
+        "css": {
+          "exists": true,
+          "size": 90393
+        },
+        "js": {
+          "exists": false,
+          "size": 0
         }
       }
     },
@@ -968,15 +1278,18 @@
       "runtimeDeps": [],
       "declaredDeps": [],
       "exports": [],
-      "cssTokens": [],
+      "cssTokens": [
+        "--yry-amber-bright",
+        "--yry-mono-text2"
+      ],
       "files": {
         "html": {
-          "exists": false,
-          "size": 0
+          "exists": true,
+          "size": 5081
         },
         "css": {
           "exists": true,
-          "size": 2388
+          "size": 2418
         },
         "js": {
           "exists": true,
@@ -985,115 +1298,140 @@
       }
     },
     {
-      "name": "yry-item-card",
-      "kind": "vue",
-      "status": "complete",
-      "tagName": "yry-item-card",
-      "readyEvent": "yry-item-card-ready",
-      "templateId": "yry-item-card-tpl",
-      "isCustomElement": true,
-      "props": [
-        {
-          "name": "icon",
-          "type": "String",
-          "default": null,
-          "required": true
-        },
-        {
-          "name": "iconModifier",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "name",
-          "type": "String",
-          "default": null,
-          "required": true
-        },
-        {
-          "name": "nameHref",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "nameTarget",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "badge",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "desc",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "tags",
-          "type": "Array",
-          "default": "function () { return [];",
-          "required": false
-        },
-        {
-          "name": "meta",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "demo",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "links",
-          "type": "Array",
-          "default": "function () { return [];",
-          "required": false
-        }
-      ],
-      "runtimeDeps": [
-        "Vue"
-      ],
+      "name": "yry-inline-helpers",
+      "kind": "unknown",
+      "status": "incomplete",
+      "tagName": "yry-inline-helpers",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
       "declaredDeps": [],
-      "exports": [
-        "YryItemCard",
-        "YryTagChip"
-      ],
+      "exports": [],
       "cssTokens": [
+        "--np-bg",
+        "--np-fg",
+        "--rc-grad",
+        "--text3",
+        "--xxx",
         "--yry-accent",
-        "--yry-bg-card",
-        "--yry-border",
-        "--yry-cyan",
-        "--yry-ease-out",
+        "--yry-accent-rgb",
+        "--yry-amber-bright",
+        "--yry-cyan-rgb",
+        "--yry-emerald",
+        "--yry-emerald-rgb",
+        "--yry-fail-rgb",
         "--yry-pass",
-        "--yry-radius",
-        "--yry-shadow",
-        "--yry-shadow-lg",
-        "--yry-text",
-        "--yry-text2",
-        "--yry-text3"
+        "--yry-pass-rgb",
+        "--yry-violet-rgb"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 7814
+          "size": 2806
         },
         "css": {
           "exists": true,
-          "size": 5361
+          "size": 11559
+        },
+        "js": {
+          "exists": false,
+          "size": 0
+        }
+      }
+    },
+    {
+      "name": "yry-item-card",
+      "kind": "vue",
+      "status": "complete",
+      "tagName": "yry-item-card",
+      "readyEvent": null,
+      "templateId": "yry-item-card-tpl",
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [
+        "Vue"
+      ],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb",
+        "--yry-cyan-rgb",
+        "--yry-fail-rgb",
+        "--yry-pass-rgb",
+        "--yry-violet-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 7876
+        },
+        "css": {
+          "exists": true,
+          "size": 5955
         },
         "js": {
           "exists": true,
-          "size": 7577
+          "size": 7589
+        }
+      }
+    },
+    {
+      "name": "yry-item-cards",
+      "kind": "vue",
+      "status": "complete",
+      "tagName": "yry-item-cards",
+      "readyEvent": null,
+      "templateId": "yry-item-cards-tpl",
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [
+        "Vue"
+      ],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 5109
+        },
+        "css": {
+          "exists": true,
+          "size": 1030
+        },
+        "js": {
+          "exists": true,
+          "size": 25921
+        }
+      }
+    },
+    {
+      "name": "yry-keyboard",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-keyboard",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 3107
+        },
+        "css": {
+          "exists": true,
+          "size": 1634
+        },
+        "js": {
+          "exists": true,
+          "size": 1822
         }
       }
     },
@@ -1102,41 +1440,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-kpi-card",
-      "readyEvent": "yry-kpi-card-ready",
+      "readyEvent": null,
       "templateId": "yry-kpi-card-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "label",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "num",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "trend",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "trendDir",
-          "type": "String",
-          "default": "flat",
-          "required": false
-        },
-        {
-          "name": "numColor",
-          "type": "String",
-          "default": "",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -1145,19 +1452,16 @@
         "YryKpiCard"
       ],
       "cssTokens": [
-        "--yry-accent",
-        "--yry-cyan",
-        "--yry-text",
-        "--yry-text3"
+        "--yry-emerald"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 4043
+          "size": 4059
         },
         "css": {
           "exists": true,
-          "size": 1552
+          "size": 1574
         },
         "js": {
           "exists": true,
@@ -1170,17 +1474,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-kpi-grid",
-      "readyEvent": "yry-kpi-grid-ready",
+      "readyEvent": null,
       "templateId": "yry-kpi-grid-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "kpis",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -1192,7 +1489,7 @@
       "files": {
         "html": {
           "exists": true,
-          "size": 1689
+          "size": 1697
         },
         "css": {
           "exists": true,
@@ -1209,94 +1506,29 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-layer",
-      "readyEvent": "yry-layer-ready",
+      "readyEvent": null,
       "templateId": "yry-layer-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "layerId",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "num",
-          "type": "String",
-          "default": null,
-          "required": true
-        },
-        {
-          "name": "titleIcon",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "titlePrefix",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "titleAccent",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "titleSuffix",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "stats",
-          "type": "Array",
-          "default": "function () { return [];",
-          "required": false
-        },
-        {
-          "name": "panels",
-          "type": "Array",
-          "default": "function () { return [];",
-          "required": false
-        },
-        {
-          "name": "panelsTitle",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "panelsContainerTitle",
-          "type": "String",
-          "default": "",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
-        "PanelHub",
-        "Vue"
+        "Vue",
+        "PanelHub"
       ],
       "declaredDeps": [],
       "exports": [
         "YryLayer"
       ],
       "cssTokens": [
-        "--yry-accent",
-        "--yry-ease-out",
-        "--yry-text",
-        "--yry-text2",
-        "--yry-text3"
+        "--yry-accent-rgb"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 9195
+          "size": 9233
         },
         "css": {
           "exists": true,
-          "size": 3654
+          "size": 3720
         },
         "js": {
           "exists": true,
@@ -1309,7 +1541,7 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-layer-agents",
-      "readyEvent": "yry-layer-agents-ready",
+      "readyEvent": null,
       "templateId": "yry-layer-agents-tpl",
       "isCustomElement": true,
       "props": [],
@@ -1318,16 +1550,13 @@
       ],
       "declaredDeps": [],
       "exports": [
-        "YryCardGrid",
-        "YryLayer",
-        "YryLayerAgents",
-        "YrySubTitle"
+        "YryLayerAgents"
       ],
       "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 2835
+          "size": 2860
         },
         "css": {
           "exists": true,
@@ -1335,7 +1564,7 @@
         },
         "js": {
           "exists": true,
-          "size": 3556
+          "size": 3994
         }
       }
     },
@@ -1344,7 +1573,7 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-layer-info-panel",
-      "readyEvent": "yry-layer-info-panel-ready",
+      "readyEvent": null,
       "templateId": "yry-layer-info-panel-tpl",
       "isCustomElement": true,
       "props": [],
@@ -1353,11 +1582,15 @@
       ],
       "declaredDeps": [],
       "exports": [],
-      "cssTokens": [],
+      "cssTokens": [
+        "--border-subtle",
+        "--text-muted",
+        "--text-primary"
+      ],
       "files": {
         "html": {
           "exists": true,
-          "size": 2953
+          "size": 3686
         },
         "css": {
           "exists": true,
@@ -1365,7 +1598,7 @@
         },
         "js": {
           "exists": true,
-          "size": 2852
+          "size": 22120
         }
       }
     },
@@ -1374,7 +1607,7 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-layer-refs",
-      "readyEvent": "yry-layer-refs-ready",
+      "readyEvent": null,
       "templateId": "yry-layer-refs-tpl",
       "isCustomElement": true,
       "props": [],
@@ -1383,16 +1616,13 @@
       ],
       "declaredDeps": [],
       "exports": [
-        "YryCardGrid",
-        "YryLayer",
-        "YryLayerRefs",
-        "YrySubTitle"
+        "YryLayerRefs"
       ],
       "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 2791
+          "size": 2816
         },
         "css": {
           "exists": true,
@@ -1400,7 +1630,7 @@
         },
         "js": {
           "exists": true,
-          "size": 3526
+          "size": 3892
         }
       }
     },
@@ -1409,7 +1639,7 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-layer-rules",
-      "readyEvent": "yry-layer-rules-ready",
+      "readyEvent": null,
       "templateId": "yry-layer-rules-tpl",
       "isCustomElement": true,
       "props": [],
@@ -1418,16 +1648,13 @@
       ],
       "declaredDeps": [],
       "exports": [
-        "YryCardGrid",
-        "YryLayer",
-        "YryLayerRules",
-        "YrySubTitle"
+        "YryLayerRules"
       ],
       "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 3200
+          "size": 3225
         },
         "css": {
           "exists": true,
@@ -1435,7 +1662,129 @@
         },
         "js": {
           "exists": true,
-          "size": 3543
+          "size": 3885
+        }
+      }
+    },
+    {
+      "name": "yry-meter",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-meter",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 3956
+        },
+        "css": {
+          "exists": true,
+          "size": 2327
+        },
+        "js": {
+          "exists": true,
+          "size": 2488
+        }
+      }
+    },
+    {
+      "name": "yry-milestone-grid",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-milestone-grid",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 3855
+        },
+        "css": {
+          "exists": true,
+          "size": 3182
+        },
+        "js": {
+          "exists": true,
+          "size": 1100
+        }
+      }
+    },
+    {
+      "name": "yry-mini-quiz",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-mini-quiz",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb",
+        "--yry-cyan-rgb",
+        "--yry-fail-rgb",
+        "--yry-pass-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 6544
+        },
+        "css": {
+          "exists": true,
+          "size": 5622
+        },
+        "js": {
+          "exists": true,
+          "size": 6372
+        }
+      }
+    },
+    {
+      "name": "yry-next-action",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-next-action",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb",
+        "--yry-cyan-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 3521
+        },
+        "css": {
+          "exists": true,
+          "size": 3031
+        },
+        "js": {
+          "exists": true,
+          "size": 1263
         }
       }
     },
@@ -1444,28 +1793,47 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-notify-panel",
-      "readyEvent": "yry-notify-panel-ready",
+      "readyEvent": null,
       "templateId": "yry-notify-panel-tpl",
       "isCustomElement": true,
       "props": [],
       "runtimeDeps": [
-        "Vue"
+        "Vue",
+        "PanelHub"
       ],
       "declaredDeps": [],
       "exports": [],
-      "cssTokens": [],
+      "cssTokens": [
+        "--color-accent",
+        "--cyan",
+        "--np-bg-1",
+        "--np-bg-2",
+        "--np-bg-body",
+        "--np-border",
+        "--np-border-hi",
+        "--np-ease",
+        "--np-radius",
+        "--np-radius-sm",
+        "--np-red",
+        "--np-red-glow",
+        "--np-red-soft",
+        "--text-muted",
+        "--text-primary",
+        "--text-secondary",
+        "--yry-pass"
+      ],
       "files": {
         "html": {
           "exists": true,
-          "size": 5795
+          "size": 19633
         },
         "css": {
           "exists": true,
-          "size": 18375
+          "size": 18383
         },
         "js": {
           "exists": true,
-          "size": 2819
+          "size": 29245
         }
       }
     },
@@ -1474,41 +1842,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-op-btn",
-      "readyEvent": "yry-op-btn-ready",
+      "readyEvent": null,
       "templateId": "yry-op-btn-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "label",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "icon",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "href",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "target",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "tone",
-          "type": "String",
-          "default": "",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -1517,22 +1854,50 @@
         "YryOpBtn"
       ],
       "cssTokens": [
-        "--yry-accent",
-        "--yry-cyan",
-        "--yry-text2"
+        "--yry-emerald"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 4487
+          "size": 4503
         },
         "css": {
           "exists": true,
-          "size": 2251
+          "size": 2273
         },
         "js": {
           "exists": true,
           "size": 3799
+        }
+      }
+    },
+    {
+      "name": "yry-overview-grid",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-overview-grid",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 4686
+        },
+        "css": {
+          "exists": true,
+          "size": 3322
+        },
+        "js": {
+          "exists": true,
+          "size": 1097
         }
       }
     },
@@ -1549,19 +1914,17 @@
       "declaredDeps": [],
       "exports": [],
       "cssTokens": [
-        "--yry-color-accent",
-        "--yry-color-cyan",
-        "--yry-color-text-2",
-        "--yry-color-text-3"
+        "--yry-accent-rgb",
+        "--yry-cyan-rgb"
       ],
       "files": {
         "html": {
-          "exists": false,
-          "size": 0
+          "exists": true,
+          "size": 5097
         },
         "css": {
           "exists": true,
-          "size": 3971
+          "size": 4028
         },
         "js": {
           "exists": true,
@@ -1574,59 +1937,31 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-panel-hub",
-      "readyEvent": "yry-panel-hub-ready",
+      "readyEvent": null,
       "templateId": "yry-panel-hub-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "label",
-          "type": "Object",
-          "default": "null",
-          "required": false
-        },
-        {
-          "name": "buttons",
-          "type": "Array",
-          "default": null,
-          "required": true
-        },
-        {
-          "name": "flow",
-          "type": "String",
-          "default": "",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
-        "PanelHub",
-        "Vue"
+        "Vue",
+        "PanelHub"
       ],
       "declaredDeps": [],
       "exports": [
         "YryPanelHub"
       ],
-      "cssTokens": [
-        "--yry-accent",
-        "--yry-bg-card",
-        "--yry-border",
-        "--yry-ease-out",
-        "--yry-shadow",
-        "--yry-shadow-lg",
-        "--yry-text2",
-        "--yry-text3"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 7935
+          "size": 7978
         },
         "css": {
           "exists": true,
-          "size": 3725
+          "size": 3770
         },
         "js": {
           "exists": true,
-          "size": 7116
+          "size": 10095
         }
       }
     },
@@ -1635,35 +1970,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-path-link",
-      "readyEvent": "yry-path-link-ready",
+      "readyEvent": null,
       "templateId": "yry-path-link-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "display",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "full",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "href",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "target",
-          "type": "String",
-          "default": "",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -1671,14 +1981,11 @@
       "exports": [
         "YryPathLink"
       ],
-      "cssTokens": [
-        "--yry-cyan",
-        "--yry-text2"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 3184
+          "size": 3218
         },
         "css": {
           "exists": true,
@@ -1686,7 +1993,7 @@
         },
         "js": {
           "exists": true,
-          "size": 3780
+          "size": 3786
         }
       }
     },
@@ -1695,17 +2002,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-phase-strip",
-      "readyEvent": "yry-phase-strip-ready",
+      "readyEvent": null,
       "templateId": "yry-phase-strip-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "phases",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -1714,17 +2014,16 @@
         "YryPhaseStrip"
       ],
       "cssTokens": [
-        "--yry-text2",
-        "--yry-text3"
+        "--yry-emerald"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 4198
+          "size": 4214
         },
         "css": {
           "exists": true,
-          "size": 1902
+          "size": 1913
         },
         "js": {
           "exists": true,
@@ -1733,33 +2032,123 @@
       }
     },
     {
+      "name": "yry-pipeline-simulator",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-pipeline-simulator",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb",
+        "--yry-cyan-rgb",
+        "--yry-fail-rgb",
+        "--yry-pass-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 5964
+        },
+        "css": {
+          "exists": true,
+          "size": 6995
+        },
+        "js": {
+          "exists": true,
+          "size": 10393
+        }
+      }
+    },
+    {
+      "name": "yry-pitfall-list",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-pitfall-list",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-cyan-rgb",
+        "--yry-fail-rgb",
+        "--yry-pass-rgb",
+        "--yry-warn-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 6071
+        },
+        "css": {
+          "exists": true,
+          "size": 4063
+        },
+        "js": {
+          "exists": true,
+          "size": 1365
+        }
+      }
+    },
+    {
+      "name": "yry-plan",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-plan",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--accent",
+        "--cyan",
+        "--text1",
+        "--text2",
+        "--text3",
+        "--yry-accent",
+        "--yry-accent-rgb",
+        "--yry-cyan-rgb",
+        "--yry-emerald-rgb",
+        "--yry-fail-rgb",
+        "--yry-pass-rgb",
+        "--yry-text2",
+        "--yry-text3",
+        "--yry-warn-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 2123
+        },
+        "css": {
+          "exists": true,
+          "size": 33731
+        },
+        "js": {
+          "exists": true,
+          "size": 4805
+        }
+      }
+    },
+    {
       "name": "yry-progress-bar",
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-progress-bar",
-      "readyEvent": "yry-progress-bar-ready",
+      "readyEvent": null,
       "templateId": "yry-progress-bar-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "done",
-          "type": "Number",
-          "default": "0",
-          "required": false
-        },
-        {
-          "name": "total",
-          "type": "Number",
-          "default": "0",
-          "required": false
-        },
-        {
-          "name": "label",
-          "type": "String",
-          "default": "进度",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -1767,15 +2156,11 @@
       "exports": [
         "YryProgressBar"
       ],
-      "cssTokens": [
-        "--yry-accent",
-        "--yry-bg-flat",
-        "--yry-text2"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 2655
+          "size": 2663
         },
         "css": {
           "exists": true,
@@ -1792,23 +2177,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-quickstart",
-      "readyEvent": "yry-quickstart-ready",
+      "readyEvent": null,
       "templateId": "yry-quickstart-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "tip",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "cmd",
-          "type": "String",
-          "default": "",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -1817,23 +2189,103 @@
         "YryQuickstart"
       ],
       "cssTokens": [
-        "--yry-accent",
-        "--yry-cyan",
-        "--yry-text",
-        "--yry-text2"
+        "--yry-emerald"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 2667
+          "size": 2683
         },
         "css": {
           "exists": true,
-          "size": 2008
+          "size": 2030
         },
         "js": {
           "exists": true,
           "size": 4531
+        }
+      }
+    },
+    {
+      "name": "yry-quiz",
+      "kind": "vanilla",
+      "status": "incomplete",
+      "tagName": "yry-quiz",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 2889
+        },
+        "css": {
+          "exists": false,
+          "size": 0
+        },
+        "js": {
+          "exists": true,
+          "size": 1943
+        }
+      }
+    },
+    {
+      "name": "yry-review",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-review",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--accent",
+        "--bg",
+        "--bg-card",
+        "--bg-card-soft",
+        "--border",
+        "--cyan",
+        "--fail",
+        "--info",
+        "--pass",
+        "--purple",
+        "--radius",
+        "--shadow",
+        "--shadow-lg",
+        "--text",
+        "--text2",
+        "--text3",
+        "--text4",
+        "--warn",
+        "--yry-accent",
+        "--yry-accent-rgb",
+        "--yry-fail-rgb",
+        "--yry-pass-rgb",
+        "--yry-text2",
+        "--yry-text3",
+        "--yry-violet-rgb",
+        "--yry-warn-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 1846
+        },
+        "css": {
+          "exists": true,
+          "size": 17023
+        },
+        "js": {
+          "exists": true,
+          "size": 545
         }
       }
     },
@@ -1850,25 +2302,18 @@
       "declaredDeps": [],
       "exports": [],
       "cssTokens": [
-        "--yry-bg-card",
-        "--yry-border",
-        "--yry-fail",
-        "--yry-pass",
-        "--yry-radius",
-        "--yry-shadow",
-        "--yry-skip",
-        "--yry-text2",
-        "--yry-text3",
-        "--yry-warn"
+        "--yry-fail-rgb",
+        "--yry-pass-rgb",
+        "--yry-warn-rgb"
       ],
       "files": {
         "html": {
-          "exists": false,
-          "size": 0
+          "exists": true,
+          "size": 6170
         },
         "css": {
           "exists": true,
-          "size": 4018
+          "size": 4057
         },
         "js": {
           "exists": true,
@@ -1881,83 +2326,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-risk-cat-card",
-      "readyEvent": "yry-risk-cat-card-ready",
+      "readyEvent": null,
       "templateId": "yry-risk-cat-card-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "icon",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "name",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "count",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "iconBg",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "hot",
-          "type": "Boolean",
-          "default": "false",
-          "required": false
-        },
-        {
-          "name": "badge",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "metrics",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        },
-        {
-          "name": "progressWidth",
-          "type": "String",
-          "default": "50%",
-          "required": false
-        },
-        {
-          "name": "progressColor",
-          "type": "String",
-          "default": "#f59e0b",
-          "required": false
-        },
-        {
-          "name": "trendDir",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "trendText",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "trendSuffix",
-          "type": "String",
-          "default": "",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -1966,17 +2338,16 @@
         "YryRiskCatCard"
       ],
       "cssTokens": [
-        "--yry-text",
-        "--yry-text3"
+        "--yry-emerald"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 3068
+          "size": 3076
         },
         "css": {
           "exists": true,
-          "size": 2904
+          "size": 2915
         },
         "js": {
           "exists": true,
@@ -1989,41 +2360,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-risk-matrix",
-      "readyEvent": "yry-risk-matrix-ready",
+      "readyEvent": null,
       "templateId": "yry-risk-matrix-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "cells",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        },
-        {
-          "name": "colLabels",
-          "type": "String",
-          "default": "[\"极低 (1)",
-          "required": false
-        },
-        {
-          "name": "rowLabels",
-          "type": "String",
-          "default": "[\"极高 (5)",
-          "required": false
-        },
-        {
-          "name": "severityAxis",
-          "type": "String",
-          "default": "↑ 严重度",
-          "required": false
-        },
-        {
-          "name": "likelihoodAxis",
-          "type": "String",
-          "default": "可能性 →",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -2032,17 +2372,16 @@
         "YryRiskMatrix"
       ],
       "cssTokens": [
-        "--yry-text2",
-        "--yry-text3"
+        "--yry-emerald"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 2681
+          "size": 2689
         },
         "css": {
           "exists": true,
-          "size": 3576
+          "size": 3587
         },
         "js": {
           "exists": true,
@@ -2055,89 +2394,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-risk-row",
-      "readyEvent": "yry-risk-row-ready",
+      "readyEvent": null,
       "templateId": "yry-risk-row-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "id",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "name",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "sub",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "category",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "scoreLevel",
-          "type": "String",
-          "default": "low",
-          "required": false
-        },
-        {
-          "name": "scoreInfo",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "deadline",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "owner",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "status",
-          "type": "String",
-          "default": "pass",
-          "required": false
-        },
-        {
-          "name": "statusText",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "details",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        },
-        {
-          "name": "plan",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        },
-        {
-          "name": "timeline",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -2146,20 +2406,17 @@
         "YryRiskRow"
       ],
       "cssTokens": [
-        "--yry-accent",
-        "--yry-cyan",
-        "--yry-text",
-        "--yry-text2",
-        "--yry-text3"
+        "--yry-emerald",
+        "--yry-pass"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 4407
+          "size": 4415
         },
         "css": {
           "exists": true,
-          "size": 6458
+          "size": 6488
         },
         "js": {
           "exists": true,
@@ -2168,51 +2425,67 @@
       }
     },
     {
+      "name": "yry-scene",
+      "kind": "unknown",
+      "status": "incomplete",
+      "tagName": "yry-scene",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb",
+        "--yry-color-accent",
+        "--yry-color-bg",
+        "--yry-color-border",
+        "--yry-color-cyan",
+        "--yry-color-surface-1",
+        "--yry-color-surface-2",
+        "--yry-color-text-1",
+        "--yry-color-text-2",
+        "--yry-color-text-3",
+        "--yry-color-text-inverse",
+        "--yry-container-max",
+        "--yry-cyan-rgb",
+        "--yry-dur-base",
+        "--yry-ease-out",
+        "--yry-emerald",
+        "--yry-emerald-rgb",
+        "--yry-fail-rgb",
+        "--yry-font-mono",
+        "--yry-font-sans",
+        "--yry-radius-md",
+        "--yry-radius-sm",
+        "--yry-warn-rgb",
+        "--yry-z-toast"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 2079
+        },
+        "css": {
+          "exists": true,
+          "size": 86347
+        },
+        "js": {
+          "exists": false,
+          "size": 0
+        }
+      }
+    },
+    {
       "name": "yry-scene-card",
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-scene-card",
-      "readyEvent": "yry-scene-card-ready",
+      "readyEvent": null,
       "templateId": "yry-scene-card-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "num",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "name",
-          "type": "String",
-          "default": null,
-          "required": true
-        },
-        {
-          "name": "nameHref",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "nameTarget",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "desc",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "meta",
-          "type": "Array",
-          "default": "function () { return [];",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -2221,27 +2494,16 @@
         "YrySceneCard"
       ],
       "cssTokens": [
-        "--yry-accent",
-        "--yry-bg-card",
-        "--yry-border",
-        "--yry-cyan",
-        "--yry-ease-out",
-        "--yry-pass",
-        "--yry-radius",
-        "--yry-shadow",
-        "--yry-shadow-lg",
-        "--yry-text",
-        "--yry-text2",
-        "--yry-text3"
+        "--yry-pass-rgb"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 4878
+          "size": 4864
         },
         "css": {
           "exists": true,
-          "size": 2963
+          "size": 2979
         },
         "js": {
           "exists": true,
@@ -2254,53 +2516,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-scene-chrome",
-      "readyEvent": "yry-scene-chrome-ready",
+      "readyEvent": null,
       "templateId": "yry-scene-chrome-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "theme",
-          "type": "String",
-          "default": "a",
-          "required": false
-        },
-        {
-          "name": "title",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "titleAccent",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "subtitle",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "toolbar",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "breadcrumb",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        },
-        {
-          "name": "crossnav",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -2309,16 +2528,16 @@
         "YrySceneChrome"
       ],
       "cssTokens": [
-        "--yry-accent"
+        "--yry-cyan-rgb"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 3270
+          "size": 3278
         },
         "css": {
           "exists": true,
-          "size": 3252
+          "size": 3261
         },
         "js": {
           "exists": true,
@@ -2331,29 +2550,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-scene-footer",
-      "readyEvent": "yry-scene-footer-ready",
+      "readyEvent": null,
       "templateId": "yry-scene-footer-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "version",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "date",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "docsLink",
-          "type": "String",
-          "default": "",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -2361,15 +2561,11 @@
       "exports": [
         "YrySceneFooter"
       ],
-      "cssTokens": [
-        "--yry-text",
-        "--yry-text2",
-        "--yry-text3"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 2097
+          "size": 2105
         },
         "css": {
           "exists": true,
@@ -2386,41 +2582,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-scene-header",
-      "readyEvent": "yry-scene-header-ready",
+      "readyEvent": null,
       "templateId": "yry-scene-header-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "icon",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "titlePrefix",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "accent",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "meta",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "desc",
-          "type": "String",
-          "default": "",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -2428,19 +2593,15 @@
       "exports": [
         "YrySceneHeader"
       ],
-      "cssTokens": [
-        "--yry-accent",
-        "--yry-text2",
-        "--yry-text3"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 5608
+          "size": 5646
         },
         "css": {
           "exists": true,
-          "size": 1877
+          "size": 1889
         },
         "js": {
           "exists": true,
@@ -2453,17 +2614,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-scene-health-bar",
-      "readyEvent": "yry-scene-health-bar-ready",
+      "readyEvent": null,
       "templateId": "yry-scene-health-bar-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "segments",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -2471,15 +2625,11 @@
       "exports": [
         "YrySceneHealthBar"
       ],
-      "cssTokens": [
-        "--yry-fail",
-        "--yry-pass",
-        "--yry-skip"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 2456
+          "size": 2464
         },
         "css": {
           "exists": true,
@@ -2496,23 +2646,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-scene-nav",
-      "readyEvent": "yry-scene-nav-ready",
+      "readyEvent": null,
       "templateId": "yry-scene-nav-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "items",
-          "type": "Array",
-          "default": null,
-          "required": true
-        },
-        {
-          "name": "separator",
-          "type": "String",
-          "default": "·",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -2521,20 +2658,16 @@
         "YrySceneNav"
       ],
       "cssTokens": [
-        "--yry-color-accent",
-        "--yry-color-border",
-        "--yry-color-surface-1",
-        "--yry-color-text-2",
-        "--yry-color-text-3"
+        "--yry-accent-rgb"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 5982
+          "size": 6020
         },
         "css": {
           "exists": true,
-          "size": 1765
+          "size": 1807
         },
         "js": {
           "exists": true,
@@ -2547,17 +2680,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-scene-stats",
-      "readyEvent": "yry-scene-stats-ready",
+      "readyEvent": null,
       "templateId": "yry-scene-stats-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "items",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -2565,24 +2691,11 @@
       "exports": [
         "YrySceneStats"
       ],
-      "cssTokens": [
-        "--yry-accent",
-        "--yry-bg-card",
-        "--yry-border",
-        "--yry-cyan",
-        "--yry-fail",
-        "--yry-pass",
-        "--yry-radius",
-        "--yry-shadow",
-        "--yry-skip",
-        "--yry-text",
-        "--yry-text3",
-        "--yry-warn"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 2329
+          "size": 2337
         },
         "css": {
           "exists": true,
@@ -2603,28 +2716,24 @@
       "templateId": null,
       "isCustomElement": true,
       "props": [],
-      "runtimeDeps": [],
+      "runtimeDeps": [
+        "Vue"
+      ],
       "declaredDeps": [],
       "exports": [],
       "cssTokens": [
-        "--yry-accent",
-        "--yry-bg-card",
-        "--yry-border",
-        "--yry-pass",
-        "--yry-radius",
-        "--yry-shadow",
-        "--yry-text2",
-        "--yry-text3",
-        "--yry-warn"
+        "--yry-accent-rgb",
+        "--yry-pass-rgb",
+        "--yry-warn-rgb"
       ],
       "files": {
         "html": {
-          "exists": false,
-          "size": 0
+          "exists": true,
+          "size": 5478
         },
         "css": {
           "exists": true,
-          "size": 2108
+          "size": 2139
         },
         "js": {
           "exists": true,
@@ -2637,17 +2746,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-scene-tabs",
-      "readyEvent": "yry-scene-tabs-ready",
+      "readyEvent": null,
       "templateId": "yry-scene-tabs-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "tabs",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -2655,16 +2757,11 @@
       "exports": [
         "YrySceneTabs"
       ],
-      "cssTokens": [
-        "--yry-accent",
-        "--yry-border",
-        "--yry-text2",
-        "--yry-text3"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 2333
+          "size": 2341
         },
         "css": {
           "exists": true,
@@ -2681,29 +2778,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-scorecard",
-      "readyEvent": "yry-scorecard-ready",
+      "readyEvent": null,
       "templateId": "yry-scorecard-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "columns",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        },
-        {
-          "name": "rows",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        },
-        {
-          "name": "total",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -2712,16 +2790,16 @@
         "YryScorecard"
       ],
       "cssTokens": [
-        "--yry-text3"
+        "--yry-emerald"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 1966
+          "size": 1974
         },
         "css": {
           "exists": true,
-          "size": 1358
+          "size": 1369
         },
         "js": {
           "exists": true,
@@ -2730,32 +2808,207 @@
       }
     },
     {
+      "name": "yry-search-bar",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-search-bar",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 4093
+        },
+        "css": {
+          "exists": true,
+          "size": 3153
+        },
+        "js": {
+          "exists": true,
+          "size": 5091
+        }
+      }
+    },
+    {
       "name": "yry-selfimprove-panel",
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-selfimprove-panel",
-      "readyEvent": "yry-selfimprove-panel-ready",
+      "readyEvent": null,
       "templateId": "yry-selfimprove-panel-tpl",
       "isCustomElement": true,
       "props": [],
       "runtimeDeps": [
-        "Vue"
+        "Vue",
+        "PanelHub"
       ],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--text-muted",
+        "--text-primary",
+        "--yry-violet-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 17891
+        },
+        "css": {
+          "exists": true,
+          "size": 4300
+        },
+        "js": {
+          "exists": true,
+          "size": 33041
+        }
+      }
+    },
+    {
+      "name": "yry-simulator",
+      "kind": "vanilla",
+      "status": "incomplete",
+      "tagName": "yry-simulator",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
       "declaredDeps": [],
       "exports": [],
       "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 4209
+          "size": 2231
         },
         "css": {
-          "exists": true,
-          "size": 4180
+          "exists": false,
+          "size": 0
         },
         "js": {
           "exists": true,
-          "size": 3034
+          "size": 7139
+        }
+      }
+    },
+    {
+      "name": "yry-skeleton-loader",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-skeleton-loader",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 3261
+        },
+        "css": {
+          "exists": true,
+          "size": 2949
+        },
+        "js": {
+          "exists": true,
+          "size": 3304
+        }
+      }
+    },
+    {
+      "name": "yry-source",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-source",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--accent",
+        "--bg",
+        "--bg-card",
+        "--bg-flat",
+        "--bg-raised",
+        "--border",
+        "--cyan",
+        "--fail",
+        "--pass",
+        "--purple",
+        "--radius",
+        "--shadow",
+        "--shadow-lg",
+        "--text",
+        "--text2",
+        "--text3",
+        "--warn",
+        "--yry-accent",
+        "--yry-accent-rgb",
+        "--yry-cyan-rgb",
+        "--yry-fail-rgb",
+        "--yry-pass-rgb",
+        "--yry-text2",
+        "--yry-text3",
+        "--yry-warn-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 1790
+        },
+        "css": {
+          "exists": true,
+          "size": 25323
+        },
+        "js": {
+          "exists": true,
+          "size": 3278
+        }
+      }
+    },
+    {
+      "name": "yry-spinner",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-spinner",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 2932
+        },
+        "css": {
+          "exists": true,
+          "size": 2007
+        },
+        "js": {
+          "exists": true,
+          "size": 3011
         }
       }
     },
@@ -2764,17 +3017,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-stats-grid",
-      "readyEvent": "yry-stats-grid-ready",
+      "readyEvent": null,
       "templateId": "yry-stats-grid-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "items",
-          "type": "Array",
-          "default": null,
-          "required": true
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -2782,26 +3028,15 @@
       "exports": [
         "YryStatsGrid"
       ],
-      "cssTokens": [
-        "--yry-accent",
-        "--yry-bg-card",
-        "--yry-border",
-        "--yry-info",
-        "--yry-pass",
-        "--yry-radius",
-        "--yry-shadow",
-        "--yry-shadow-lg",
-        "--yry-text3",
-        "--yry-warn"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 5578
+          "size": 5616
         },
         "css": {
           "exists": true,
-          "size": 2934
+          "size": 2978
         },
         "js": {
           "exists": true,
@@ -2814,65 +3049,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-step-card",
-      "readyEvent": "yry-step-card-ready",
+      "readyEvent": null,
       "templateId": "yry-step-card-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "title",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "status",
-          "type": "String",
-          "default": "pending",
-          "required": false
-        },
-        {
-          "name": "statusText",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "checked",
-          "type": "Boolean",
-          "default": "false",
-          "required": false
-        },
-        {
-          "name": "summary",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "meta",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        },
-        {
-          "name": "criteria",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        },
-        {
-          "name": "deps",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        },
-        {
-          "name": "log",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -2881,20 +3061,16 @@
         "YryStepCard"
       ],
       "cssTokens": [
-        "--yry-accent",
-        "--yry-cyan",
-        "--yry-text",
-        "--yry-text2",
-        "--yry-text3"
+        "--yry-emerald"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 3470
+          "size": 3478
         },
         "css": {
           "exists": true,
-          "size": 4838
+          "size": 4860
         },
         "js": {
           "exists": true,
@@ -2907,65 +3083,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-story-card",
-      "readyEvent": "yry-story-card-ready",
+      "readyEvent": null,
       "templateId": "yry-story-card-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "icon",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "name",
-          "type": "String",
-          "default": null,
-          "required": true
-        },
-        {
-          "name": "nameHref",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "nameTarget",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "badge",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "desc",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "scenes",
-          "type": "Array",
-          "default": "function () { return [];",
-          "required": false
-        },
-        {
-          "name": "demo",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "links",
-          "type": "Array",
-          "default": "function () { return [];",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -2974,27 +3095,17 @@
         "YryStoryCard"
       ],
       "cssTokens": [
-        "--yry-accent",
-        "--yry-bg-card",
-        "--yry-border",
-        "--yry-cyan",
-        "--yry-ease-out",
-        "--yry-pass",
-        "--yry-radius",
-        "--yry-shadow",
-        "--yry-shadow-lg",
-        "--yry-text",
-        "--yry-text2",
-        "--yry-text3"
+        "--yry-accent-rgb",
+        "--yry-pass-rgb"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 5498
+          "size": 5514
         },
         "css": {
           "exists": true,
-          "size": 4156
+          "size": 4218
         },
         "js": {
           "exists": true,
@@ -3003,33 +3114,49 @@
       }
     },
     {
+      "name": "yry-story-panel",
+      "kind": "unknown",
+      "status": "incomplete",
+      "tagName": "yry-story-panel",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb",
+        "--yry-amber-bright",
+        "--yry-cyan-rgb",
+        "--yry-emerald",
+        "--yry-emerald-rgb",
+        "--yry-mono-text2"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 1902
+        },
+        "css": {
+          "exists": true,
+          "size": 11774
+        },
+        "js": {
+          "exists": false,
+          "size": 0
+        }
+      }
+    },
+    {
       "name": "yry-sub-title",
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-sub-title",
-      "readyEvent": "yry-sub-title-ready",
+      "readyEvent": null,
       "templateId": "yry-sub-title-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "icon",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "text",
-          "type": "String",
-          "default": null,
-          "required": true
-        },
-        {
-          "name": "count",
-          "type": "String",
-          "default": "",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -3037,19 +3164,15 @@
       "exports": [
         "YrySubTitle"
       ],
-      "cssTokens": [
-        "--yry-accent",
-        "--yry-text",
-        "--yry-text3"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 3689
+          "size": 3715
         },
         "css": {
           "exists": true,
-          "size": 1206
+          "size": 1212
         },
         "js": {
           "exists": true,
@@ -3066,27 +3189,24 @@
       "templateId": null,
       "isCustomElement": false,
       "props": [],
-      "runtimeDeps": [],
+      "runtimeDeps": [
+        "Vue"
+      ],
       "declaredDeps": [],
       "exports": [],
-      "cssTokens": [
-        "--yry-accent",
-        "--yry-border",
-        "--yry-text2",
-        "--yry-text3"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 3849
+          "size": 3891
         },
         "css": {
           "exists": true,
-          "size": 1893
+          "size": 1905
         },
         "js": {
           "exists": true,
-          "size": 1282
+          "size": 1288
         }
       }
     },
@@ -3095,29 +3215,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-tag-chip",
-      "readyEvent": "yry-tag-chip-ready",
+      "readyEvent": null,
       "templateId": "yry-tag-chip-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "text",
-          "type": "String",
-          "default": null,
-          "required": true
-        },
-        {
-          "name": "modifier",
-          "type": "String",
-          "default": "info",
-          "required": false
-        },
-        {
-          "name": "href",
-          "type": "String",
-          "default": "",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -3126,25 +3227,85 @@
         "YryTagChip"
       ],
       "cssTokens": [
-        "--yry-accent",
-        "--yry-cyan",
-        "--yry-pass",
-        "--yry-text",
-        "--yry-text2",
-        "--yry-warn"
+        "--yry-accent-rgb",
+        "--yry-cyan-rgb",
+        "--yry-fail-rgb",
+        "--yry-pass-rgb",
+        "--yry-violet-rgb",
+        "--yry-warn-rgb"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 5981
+          "size": 6019
         },
         "css": {
           "exists": true,
-          "size": 2895
+          "size": 3027
         },
         "js": {
           "exists": true,
           "size": 4426
+        }
+      }
+    },
+    {
+      "name": "yry-test",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-test",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--accent",
+        "--bg",
+        "--bg-card",
+        "--bg-flat",
+        "--bg-glass",
+        "--bg-raised",
+        "--border",
+        "--circ",
+        "--cyan",
+        "--fail",
+        "--grad-fail",
+        "--grad-pass",
+        "--pass",
+        "--purple",
+        "--radius",
+        "--shadow",
+        "--shadow-lg",
+        "--skip",
+        "--target",
+        "--text",
+        "--text2",
+        "--text3",
+        "--warn",
+        "--yry-accent",
+        "--yry-accent-rgb",
+        "--yry-cyan-rgb",
+        "--yry-fail-rgb",
+        "--yry-pass-rgb",
+        "--yry-text2",
+        "--yry-text3",
+        "--yry-warn-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 1610
+        },
+        "css": {
+          "exists": true,
+          "size": 40502
+        },
+        "js": {
+          "exists": true,
+          "size": 82543
         }
       }
     },
@@ -3161,7 +3322,25 @@
       "declaredDeps": [],
       "exports": [],
       "cssTokens": [
+        "--accent",
+        "--bg",
+        "--bg-card",
+        "--bg-flat",
+        "--bg-raised",
+        "--border",
+        "--cyan",
+        "--fail",
+        "--pass",
+        "--radius",
+        "--shadow",
+        "--shadow-lg",
+        "--skip",
+        "--text",
+        "--text2",
+        "--text3",
+        "--warn",
         "--yry-accent",
+        "--yry-accent-rgb",
         "--yry-bg",
         "--yry-bg-card",
         "--yry-bg-flat",
@@ -3169,7 +3348,9 @@
         "--yry-border",
         "--yry-cyan",
         "--yry-fail",
+        "--yry-fail-rgb",
         "--yry-pass",
+        "--yry-pass-rgb",
         "--yry-radius",
         "--yry-shadow",
         "--yry-shadow-lg",
@@ -3181,12 +3362,12 @@
       ],
       "files": {
         "html": {
-          "exists": false,
-          "size": 0
+          "exists": true,
+          "size": 8522
         },
         "css": {
           "exists": true,
-          "size": 17593
+          "size": 17779
         },
         "js": {
           "exists": true,
@@ -3195,33 +3376,174 @@
       }
     },
     {
+      "name": "yry-timeline-hero",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-timeline-hero",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb",
+        "--yry-pass-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 5604
+        },
+        "css": {
+          "exists": true,
+          "size": 5570
+        },
+        "js": {
+          "exists": true,
+          "size": 5093
+        }
+      }
+    },
+    {
+      "name": "yry-tip-box",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-tip-box",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb",
+        "--yry-cyan-rgb",
+        "--yry-fail-rgb",
+        "--yry-pass-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 3657
+        },
+        "css": {
+          "exists": true,
+          "size": 2509
+        },
+        "js": {
+          "exists": true,
+          "size": 1259
+        }
+      }
+    },
+    {
+      "name": "yry-toast",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-toast",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [
+        "YryToast"
+      ],
+      "cssTokens": [
+        "--yry-accent-rgb",
+        "--yry-cyan-rgb",
+        "--yry-fail-rgb",
+        "--yry-pass-rgb",
+        "--yry-warn-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 3454
+        },
+        "css": {
+          "exists": true,
+          "size": 3264
+        },
+        "js": {
+          "exists": true,
+          "size": 3040
+        }
+      }
+    },
+    {
+      "name": "yry-toggle",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-toggle",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 3185
+        },
+        "css": {
+          "exists": true,
+          "size": 2471
+        },
+        "js": {
+          "exists": true,
+          "size": 2825
+        }
+      }
+    },
+    {
+      "name": "yry-tooltip",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-tooltip",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 3640
+        },
+        "css": {
+          "exists": true,
+          "size": 3174
+        },
+        "js": {
+          "exists": true,
+          "size": 2744
+        }
+      }
+    },
+    {
       "name": "yry-trend-card",
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-trend-card",
-      "readyEvent": "yry-trend-card-ready",
+      "readyEvent": null,
       "templateId": "yry-trend-card-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "title",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "axis",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "bars",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -3229,17 +3551,11 @@
       "exports": [
         "YryTrendCard"
       ],
-      "cssTokens": [
-        "--yry-accent",
-        "--yry-cyan",
-        "--yry-text",
-        "--yry-text2",
-        "--yry-text3"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 4491
+          "size": 4507
         },
         "css": {
           "exists": true,
@@ -3252,33 +3568,74 @@
       }
     },
     {
+      "name": "yry-typewriter",
+      "kind": "vanilla",
+      "status": "incomplete",
+      "tagName": "yry-typewriter",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": false,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 2808
+        },
+        "css": {
+          "exists": false,
+          "size": 0
+        },
+        "js": {
+          "exists": true,
+          "size": 2158
+        }
+      }
+    },
+    {
+      "name": "yry-typewriter-demo",
+      "kind": "vanilla",
+      "status": "complete",
+      "tagName": "yry-typewriter-demo",
+      "readyEvent": null,
+      "templateId": null,
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [],
+      "declaredDeps": [],
+      "exports": [],
+      "cssTokens": [
+        "--yry-accent-rgb",
+        "--yry-cyan-rgb",
+        "--yry-fail-rgb"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 6324
+        },
+        "css": {
+          "exists": true,
+          "size": 4314
+        },
+        "js": {
+          "exists": true,
+          "size": 6053
+        }
+      }
+    },
+    {
       "name": "yry-verify-item",
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-verify-item",
-      "readyEvent": "yry-verify-item-ready",
+      "readyEvent": null,
       "templateId": "yry-verify-item-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "label",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "status",
-          "type": "String",
-          "default": "pass",
-          "required": false
-        },
-        {
-          "name": "sections",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -3287,20 +3644,16 @@
         "YryVerifyItem"
       ],
       "cssTokens": [
-        "--yry-accent",
-        "--yry-cyan",
-        "--yry-text",
-        "--yry-text2",
-        "--yry-text3"
+        "--yry-emerald"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 4180
+          "size": 4188
         },
         "css": {
           "exists": true,
-          "size": 3326
+          "size": 3348
         },
         "js": {
           "exists": true,
@@ -3313,29 +3666,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-verify-report-foot",
-      "readyEvent": "yry-verify-report-foot-ready",
+      "readyEvent": null,
       "templateId": "yry-verify-report-foot-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "summary",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "sections",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        },
-        {
-          "name": "signatures",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -3344,18 +3678,16 @@
         "YryVerifyReportFoot"
       ],
       "cssTokens": [
-        "--yry-accent",
-        "--yry-text",
-        "--yry-text2"
+        "--yry-emerald"
       ],
       "files": {
         "html": {
           "exists": true,
-          "size": 2407
+          "size": 2415
         },
         "css": {
           "exists": true,
-          "size": 2200
+          "size": 2222
         },
         "js": {
           "exists": true,
@@ -3368,23 +3700,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-verify-report-head",
-      "readyEvent": "yry-verify-report-head-ready",
+      "readyEvent": null,
       "templateId": "yry-verify-report-head-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "title",
-          "type": "String",
-          "default": "",
-          "required": false
-        },
-        {
-          "name": "items",
-          "type": "String",
-          "default": "[]",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -3392,16 +3711,11 @@
       "exports": [
         "YryVerifyReportHead"
       ],
-      "cssTokens": [
-        "--yry-accent",
-        "--yry-cyan",
-        "--yry-text2",
-        "--yry-text3"
-      ],
+      "cssTokens": [],
       "files": {
         "html": {
           "exists": true,
-          "size": 2383
+          "size": 2391
         },
         "css": {
           "exists": true,
@@ -3418,17 +3732,10 @@
       "kind": "vue",
       "status": "complete",
       "tagName": "yry-walkthrough",
-      "readyEvent": "yry-walkthrough-ready",
+      "readyEvent": null,
       "templateId": "yry-walkthrough-tpl",
       "isCustomElement": true,
-      "props": [
-        {
-          "name": "steps",
-          "type": "Array",
-          "default": "function () { return [];",
-          "required": false
-        }
-      ],
+      "props": [],
       "runtimeDeps": [
         "Vue"
       ],
@@ -3436,93 +3743,24 @@
       "exports": [
         "YryWalkthrough"
       ],
-      "cssTokens": [],
+      "cssTokens": [
+        "--yry-accent-rgb",
+        "--yry-cyan-rgb",
+        "--yry-fail-rgb",
+        "--yry-warn-rgb"
+      ],
       "files": {
         "html": {
           "exists": true,
-          "size": 6185
+          "size": 6223
         },
         "css": {
           "exists": true,
-          "size": 1859
+          "size": 1927
         },
         "js": {
           "exists": true,
           "size": 3519
-        }
-      }
-    },
-    {
-      "name": "yry-docs-binding",
-      "kind": "vue",
-      "status": "complete",
-      "tagName": "yry-docs-binding",
-      "readyEvent": "yry-docs-binding-ready",
-      "templateId": "yry-docs-binding-tpl",
-      "isCustomElement": true,
-      "props": [],
-      "runtimeDeps": [
-        "Vue"
-      ],
-      "declaredDeps": [],
-      "exports": [
-        "YryDocsBinding"
-      ],
-      "cssTokens": [
-        "--yry-color-accent",
-        "--yry-color-text-1",
-        "--yry-color-text-2",
-        "--yry-color-text-3"
-      ],
-      "files": {
-        "html": {
-          "exists": true,
-          "size": 4773
-        },
-        "css": {
-          "exists": true,
-          "size": 1660
-        },
-        "js": {
-          "exists": true,
-          "size": 73190
-        }
-      }
-    },
-    {
-      "name": "yry-item-cards",
-      "kind": "vue",
-      "status": "complete",
-      "tagName": "yry-item-cards",
-      "readyEvent": "yry-item-cards-ready",
-      "templateId": "yry-item-cards-tpl",
-      "isCustomElement": true,
-      "props": [],
-      "runtimeDeps": [
-        "Vue"
-      ],
-      "declaredDeps": [],
-      "exports": [
-        "YryItemCards"
-      ],
-      "cssTokens": [
-        "--yry-color-accent",
-        "--yry-color-text-1",
-        "--yry-color-text-2",
-        "--yry-color-text-3"
-      ],
-      "files": {
-        "html": {
-          "exists": true,
-          "size": 5084
-        },
-        "css": {
-          "exists": true,
-          "size": 1030
-        },
-        "js": {
-          "exists": true,
-          "size": 25916
         }
       }
     }

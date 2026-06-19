@@ -1,11 +1,14 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   YrY Theme CSS — Category B 页面的设计令牌与组件样式
+   YrY Theme CSS — Category B 页面的组件样式
    适用: 审查 · 测试面板 · 演示 · 计划清单 · plan · index
 
-   依赖: shared.css (需先加载)
+   依赖: tokens/index.css · shared/index.css (需先加载)
    使用方式:
+     <link rel="stylesheet" href="../../../../cdn/tokens/index.css">
      <link rel="stylesheet" href="../../../../cdn/shared/index.css">
      <link rel="stylesheet" href="../../../../cdn/theme/index.css">
+
+   设计令牌 (--yry-*) 由 tokens/index.css 提供，本文件仅包含组件样式。
 
    对应场景文档:
      - docs/故事任务面板/yry-cdn/场景-2-双主题系统设计/
@@ -13,35 +16,7 @@
      - docs/故事任务面板/yry-cdn/场景-4-存量页面迁移/
    ═══════════════════════════════════════════════════════════════════════════ */
 
-:root {
-  /* Surfaces */
-  --yry-bg:         rgba(22,22,32,1);
-  --yry-bg-card:    linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
-  --yry-bg-flat:    rgba(34,34,46,1);
-  --yry-bg-raised:  rgba(42,42,56,1);
-
-  /* Brand */
-  --yry-accent: #FFC107;
-  --yry-cyan:   #22d3ee;
-
-  /* Semantic */
-  --yry-pass: #22c55e;
-  --yry-fail: #ef4444;
-  --yry-warn: #f59e0b;
-  --yry-info: #6b7280;
-  --yry-skip: #6b7280;
-
-  /* Text */
-  --yry-text:  rgba(250,250,252,1);
-  --yry-text2: rgba(160,160,164,1);
-  --yry-text3: rgba(110,110,114,1);
-
-  /* Elevation */
-  --yry-shadow:    0 4px 20px rgba(0,0,0,0.3);
-  --yry-shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
-  --yry-radius: 12px;
-  --yry-border: 1px solid rgba(255,255,255,0.06);
-}
+@import url('../tokens/index.css');
 
 /* ── Body ───────────────────────────────────────────────────────────────── */
 body {
@@ -115,7 +90,7 @@ body {
 .yry-tab:hover { color: var(--yry-text2); }
 .yry-tab.on { color: var(--yry-accent); border-bottom-color: var(--yry-accent); }
 .yry-tab .yry-tab-badge {
-  font-size: .6rem; background: var(--yry-fail); color: #fff;
+  font-size: .6rem; background: var(--yry-fail); color: var(--yry-text);
   border-radius: 8px; padding: 1px 6px; position: absolute; top: 4px; right: 0;
 }
 
@@ -152,8 +127,8 @@ body {
 .yry-suite-head .yry-suite-badge {
   font-size: .68rem; padding: 2px 8px; border-radius: 10px; font-weight: 600;
 }
-.yry-suite-badge.pass { background: rgba(34,197,94,.12); color: var(--yry-pass); }
-.yry-suite-badge.warn { background: rgba(245,158,11,.12); color: var(--yry-warn); }
+.yry-suite-badge.pass { background: rgba(var(--yry-pass-rgb),.12); color: var(--yry-pass); }
+.yry-suite-badge.warn { background: rgba(var(--yry-warn-rgb),.12); color: var(--yry-warn); }
 .yry-suite-body {
   display: none; border-top: var(--yry-border);
   animation: yry-slideDown .25s ease; padding: 14px 18px;
@@ -172,7 +147,7 @@ body {
 }
 .yry-progress-fill {
   height: 100%; border-radius: 3px;
-  background: linear-gradient(90deg, #3d59a1, var(--yry-accent));
+  background: linear-gradient(90deg, var(--yry-blue-mermaid), var(--yry-accent));
   transition: width .4s ease;
 }
 
@@ -188,7 +163,7 @@ body {
   transform: translateY(-1px); box-shadow: var(--yry-shadow);
 }
 .yry-btn.on {
-  background: rgba(255,193,7,.12); border-color: rgba(255,193,7,.4);
+  background: rgba(var(--yry-accent-rgb),.12); border-color: rgba(var(--yry-accent-rgb),.4);
   color: var(--yry-accent);
 }
 
@@ -210,7 +185,7 @@ body {
   text-decoration: none; color: inherit; display: block;
   transition: transform .15s, border-color .15s;
 }
-.yry-link-card:hover { transform: translateY(-2px); border-color: rgba(255,193,7,.25); }
+.yry-link-card:hover { transform: translateY(-2px); border-color: rgba(var(--yry-accent-rgb),.25); }
 .yry-link-card .yry-lc-icon { font-size: 1.2rem; margin-bottom: 6px; }
 .yry-link-card .yry-lc-name { font-weight: 700; font-size: .88rem; color: var(--yry-accent); }
 .yry-link-card .yry-lc-desc { font-size: .74rem; color: var(--yry-text2); margin-top: 4px; line-height: 1.5; }
@@ -249,6 +224,6 @@ a[target="_blank"]::after { content: " ↗"; font-size: .7em; opacity: .5; }
 }
 .yry-link-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(255,193,7,.25);
+  border-color: rgba(var(--yry-accent-rgb),.25);
   box-shadow: var(--yry-shadow-lg);
 }

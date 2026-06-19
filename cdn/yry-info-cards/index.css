@@ -44,7 +44,7 @@ yry-info-cards .yry-card-dot.violet,
 :host .yry-card-dot.violet  { background: #a78bfa; }
 
 yry-info-cards .yry-card-dot.amber,
-:host .yry-card-dot.amber   { background: #fbbf24; }
+:host .yry-card-dot.amber   { background: var(--yry-amber-bright); }
 
 yry-info-cards .yry-card-dot.rose,
 :host .yry-card-dot.rose    { background: #fb7185; }
@@ -73,7 +73,7 @@ yry-info-cards .yry-card h3,
 yry-info-cards .yry-card ul,
 :host .yry-card ul {
   list-style: none;
-  color: #94a3b8;
+  color: var(--yry-mono-text2);
   font-size: .75rem;
 }
 

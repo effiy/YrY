@@ -17,9 +17,9 @@
   position: fixed; top: 60px; left: 50%; margin-left: -400px; z-index: 300;
   width: 800px; max-height: 82vh;
   background: linear-gradient(180deg, rgba(30,31,43,.98) 0%, rgba(22,23,35,.98) 100%);
-  border: 1px solid rgba(167,139,250,.12);
+  border: 1px solid rgba(var(--yry-violet-rgb),.12);
   border-radius: 14px;
-  box-shadow: 0 0 0 1px rgba(167,139,250,.04), 0 12px 48px rgba(0,0,0,.55);
+  box-shadow: 0 0 0 1px rgba(var(--yry-violet-rgb),.04), 0 12px 48px rgba(0,0,0,.55);
   display: flex; flex-direction: column;
   opacity: 0; pointer-events: none;
   transform: translateY(-12px) scale(.98);
@@ -33,13 +33,13 @@
 .selfimprove-panel .panel-body::-webkit-scrollbar { width: 5px; }
 .selfimprove-panel .panel-body::-webkit-scrollbar-track { background: transparent; }
 .selfimprove-panel .panel-body::-webkit-scrollbar-thumb {
-  background: rgba(167,139,250,.12); border-radius: 3px;
+  background: rgba(var(--yry-violet-rgb),.12); border-radius: 3px;
 }
-.selfimprove-panel .panel-body::-webkit-scrollbar-thumb:hover { background: rgba(167,139,250,.25); }
+.selfimprove-panel .panel-body::-webkit-scrollbar-thumb:hover { background: rgba(var(--yry-violet-rgb),.25); }
 
 .selfimprove-panel .yry-panel-header {
-  border-bottom: 1px solid rgba(167,139,250,.1);
-  background: linear-gradient(180deg, rgba(167,139,250,.06) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(var(--yry-violet-rgb),.1);
+  background: linear-gradient(180deg, rgba(var(--yry-violet-rgb),.06) 0%, transparent 100%);
   padding: 18px 20px 14px; flex-shrink: 0;
   display: flex; align-items: center; gap: 10px;
   border-radius: 14px 14px 0 0;
@@ -55,7 +55,7 @@
 }
 .selfimprove-panel .panel-header .np-count {
   font-size: .66rem; color: var(--text-muted);
-  background: rgba(167,139,250,.06); border: 1px solid rgba(167,139,250,.08);
+  background: rgba(var(--yry-violet-rgb),.06); border: 1px solid rgba(var(--yry-violet-rgb),.08);
   padding: 3px 12px; border-radius: 10px; white-space: nowrap;
   font-family: 'JetBrains Mono',monospace;
 }
@@ -65,13 +65,13 @@
   border-radius: 6px; transition: all .2s;
 }
 .selfimprove-panel .panel-header .panel-refresh:hover {
-  color: #c4b5fd; background: rgba(167,139,250,.1);
+  color: #c4b5fd; background: rgba(var(--yry-violet-rgb),.1);
 }
 
 .selfimprove-panel .np-filter-chip.active {
-  color: #c4b5fd; border-color: rgba(167,139,250,.35); background: rgba(167,139,250,.1);
+  color: #c4b5fd; border-color: rgba(var(--yry-violet-rgb),.35); background: rgba(var(--yry-violet-rgb),.1);
 }
-.selfimprove-panel .np-filter-chip:hover { border-color: rgba(167,139,250,.2); }
+.selfimprove-panel .np-filter-chip:hover { border-color: rgba(var(--yry-violet-rgb),.2); }
 
 .selfimprove-panel .yry-panel-empty {
   text-align: center; padding: 48px 20px; color: var(--text-muted); font-size: .82rem;

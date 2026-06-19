@@ -17,7 +17,7 @@
   padding: 3px 10px; border-radius: 4px; transition: color .15s, background .15s;
 }
 
-.cross-link:hover { color: var(--yry-color-accent, #ffc107); background: rgba(255,193,7,.06); text-decoration: underline; }
+.cross-link:hover { color: var(--yry-color-accent, #ffc107); background: rgba(var(--yry-accent-rgb),.06); text-decoration: underline; }
 
 .cross-link.on { color: var(--yry-color-accent, #ffc107); font-weight: 600; }
 

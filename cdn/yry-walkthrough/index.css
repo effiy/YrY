@@ -11,7 +11,7 @@
   font-family: ui-monospace, monospace;
   font-size: 0.64rem;
   color: var(--accent, #FFC107);
-  background: rgba(255,193,7,.06);
+  background: rgba(var(--yry-accent-rgb),.06);
   border-radius: 8px;
   padding: 1px 6px;
   margin-left: 6px;
@@ -37,14 +37,14 @@
 
 .walkthrough .step .s-tag.t-p0 {
   color: var(--fail, #ef4444);
-  background: rgba(239,68,68,.06);
-  border-color: rgba(239,68,68,.15);
+  background: rgba(var(--yry-fail-rgb),.06);
+  border-color: rgba(var(--yry-fail-rgb),.15);
 }
 
 .walkthrough .step .s-tag.t-p1 {
   color: var(--warn, #f59e0b);
-  background: rgba(245,158,11,.06);
-  border-color: rgba(245,158,11,.15);
+  background: rgba(var(--yry-warn-rgb),.06);
+  border-color: rgba(var(--yry-warn-rgb),.15);
 }
 
 .walkthrough .step .s-tag.t-p2 {
@@ -55,6 +55,6 @@
 
 .walkthrough .step .s-tag.t-new {
   color: var(--cyan, #22d3ee);
-  background: rgba(34,211,238,.06);
-  border-color: rgba(34,211,238,.15);
+  background: rgba(var(--yry-cyan-rgb),.06);
+  border-color: rgba(var(--yry-cyan-rgb),.15);
 }

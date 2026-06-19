@@ -30,13 +30,13 @@
 }
 
 .op-btn.tone-view { background: rgba(34, 211, 238, .08); border-color: rgba(34, 211, 238, .3); color: var(--yry-cyan, #22d3ee); }
-.op-btn.tone-run  { background: rgba(16, 185, 129, .08); border-color: rgba(16, 185, 129, .3); color: #10b981; }
+.op-btn.tone-run  { background: rgba(16, 185, 129, .08); border-color: rgba(16, 185, 129, .3); color: var(--yry-emerald); }
 .op-btn.tone-edit { background: rgba(255, 193, 7, .08); border-color: rgba(255, 193, 7, .3); color: var(--yry-accent, #ffc107); }
 .op-btn.tone-del  { background: rgba(239, 68, 68, .08); border-color: rgba(239, 68, 68, .3); color: #ef4444; }
 .op-btn.tone-warn { background: rgba(245, 158, 11, .08); border-color: rgba(245, 158, 11, .3); color: #f59e0b; }
 
 .op-btn.tone-view:hover { background: rgba(34, 211, 238, .18); border-color: var(--yry-cyan, #22d3ee); }
-.op-btn.tone-run:hover  { background: rgba(16, 185, 129, .18); border-color: #10b981; }
+.op-btn.tone-run:hover  { background: rgba(16, 185, 129, .18); border-color: var(--yry-emerald); }
 .op-btn.tone-edit:hover { background: rgba(255, 193, 7, .18); border-color: var(--yry-accent, #ffc107); }
 .op-btn.tone-del:hover  { background: rgba(239, 68, 68, .18); border-color: #ef4444; }
 .op-btn.tone-warn:hover { background: rgba(245, 158, 11, .18); border-color: #f59e0b; }

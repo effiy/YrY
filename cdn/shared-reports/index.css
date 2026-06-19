@@ -5,30 +5,11 @@
    本文件集中管理所有报告索引页和详情页的公共 CSS，消除 health-report.mjs /
    loop-report.mjs / trend-report.mjs 中的重复内联样式。
 
-   依赖: cdn/theme/index.css (提供 --yry-* design tokens)
+   依赖: tokens/index.css (提供 --yry-* 设计令牌)
    加载: <link rel="stylesheet" href="../../cdn/shared-reports/index.css">
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Design tokens (fallback，theme.css 未加载时生效) ──────────────────── */
-:root {
-  --yry-bg: rgba(22,22,32,1);
-  --yry-bg-card: linear-gradient(159deg, rgba(38,38,52,1) 0%, rgba(34,34,46,1) 100%);
-  --yry-bg-flat: rgba(34,34,46,1);
-  --yry-bg-raised: rgba(42,42,56,1);
-  --yry-accent: #FFC107;
-  --yry-cyan: #22d3ee;
-  --yry-pass: #22c55e;
-  --yry-fail: #ef4444;
-  --yry-warn: #f59e0b;
-  --yry-skip: #6b7280;
-  --yry-text: rgba(250,250,252,1);
-  --yry-text2: rgba(160,160,164,1);
-  --yry-text3: rgba(110,110,114,1);
-  --yry-radius: 12px;
-  --yry-border: 1px solid rgba(255,255,255,0.06);
-  --yry-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  --yry-shadow-lg: 0 12px 32px rgba(0,0,0,0.45);
-}
+@import url('../tokens/index.css');
 
 /* ── Reset & body ──────────────────────────────────────────────────────── */
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -58,7 +39,7 @@ body {
   display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
   margin-bottom: 24px; font-size: .76rem;
 }
-.yry-breadcrumb a, .bc a { color: #22d3ee; text-decoration: none; }
+.yry-breadcrumb a, .bc a { color: var(--yry-cyan); text-decoration: none; }
 .yry-breadcrumb a:hover, .bc a:hover { color: var(--yry-accent); }
 .yry-breadcrumb .yry-bc-sep, .bc .sep { color: var(--yry-text3); opacity: .4; user-select: none; }
 .yry-breadcrumb .yry-bc-current, .bc .cur { color: var(--yry-text2); font-weight: 500; }
@@ -67,7 +48,7 @@ body {
 .yry-intro, .intro {
   padding: 18px 20px;
   border-left: 3px solid var(--yry-accent);
-  background: rgba(255,193,7,.04);
+  background: rgba(var(--yry-accent-rgb),.04);
   border-radius: 0 var(--yry-radius) var(--yry-radius) 0;
   margin-bottom: 24px;
   color: var(--yry-text2);
@@ -77,7 +58,7 @@ body {
 .yry-intro strong, .intro strong { color: var(--yry-accent); }
 .yry-intro code, .intro code {
   background: rgba(59,130,246,.1); padding: 1px 6px;
-  border-radius: 4px; font-size: .82em; color: #22d3ee;
+  border-radius: 4px; font-size: .82em; color: var(--yry-cyan);
 }
 
 /* ── Stats grid ────────────────────────────────────────────────────────── */
@@ -122,7 +103,7 @@ th {
   color: var(--yry-text3); font-size: .72rem;
   text-transform: uppercase; letter-spacing: .4px;
 }
-td a { color: #22d3ee; text-decoration: none; }
+td a { color: var(--yry-cyan); text-decoration: none; }
 td a:hover { color: var(--yry-accent); }
 
 /* ── Badges ────────────────────────────────────────────────────────────── */
@@ -130,29 +111,29 @@ td a:hover { color: var(--yry-accent); }
   display: inline-block; padding: 3px 10px; border-radius: 20px;
   font-size: .7rem; font-weight: 600;
 }
-.yry-badge.pass, .badge.pass { background: rgba(34,197,94,.15); color: var(--yry-pass); }
-.yry-badge.warn, .badge.warn { background: rgba(245,158,11,.15); color: var(--yry-warn); }
-.yry-badge.fail, .badge.fail { background: rgba(239,68,68,.15); color: var(--yry-fail); }
+.yry-badge.pass, .badge.pass { background: rgba(var(--yry-pass-rgb),.15); color: var(--yry-pass); }
+.yry-badge.warn, .badge.warn { background: rgba(var(--yry-warn-rgb),.15); color: var(--yry-warn); }
+.yry-badge.fail, .badge.fail { background: rgba(var(--yry-fail-rgb),.15); color: var(--yry-fail); }
 .yry-badge.info, .badge.info { background: rgba(59,130,246,.15); color: #60a5fa; }
-.badge.ok, .yry-badge.ok   { background: rgba(34,197,94,.15); color: var(--yry-pass); }
-.badge.err, .yry-badge.err  { background: rgba(239,68,68,.15); color: var(--yry-fail); }
-.badge.p0 { background: rgba(239,68,68,.2); color: var(--yry-fail); font-weight: 700; }
-.badge.p1 { background: rgba(245,158,11,.18); color: var(--yry-warn); }
+.badge.ok, .yry-badge.ok   { background: rgba(var(--yry-pass-rgb),.15); color: var(--yry-pass); }
+.badge.err, .yry-badge.err  { background: rgba(var(--yry-fail-rgb),.15); color: var(--yry-fail); }
+.badge.p0 { background: rgba(var(--yry-fail-rgb),.2); color: var(--yry-fail); font-weight: 700; }
+.badge.p1 { background: rgba(var(--yry-warn-rgb),.18); color: var(--yry-warn); }
 .badge.p2 { background: rgba(59,130,246,.12); color: #60a5fa; }
-.badge.rise { background: rgba(34,197,94,.12); color: var(--yry-pass); }
-.badge.fall { background: rgba(239,68,68,.12); color: var(--yry-fail); }
+.badge.rise { background: rgba(var(--yry-pass-rgb),.12); color: var(--yry-pass); }
+.badge.fall { background: rgba(var(--yry-fail-rgb),.12); color: var(--yry-fail); }
 .badge.flat { background: rgba(255,255,255,.05); color: var(--yry-text3); }
-.badge.A, .badge.B, .yry-badge.A, .yry-badge.B { background: rgba(34,197,94,.15); color: var(--yry-pass); }
-.badge.C, .yry-badge.C { background: rgba(245,158,11,.15); color: var(--yry-warn); }
-.badge.D, .yry-badge.D { background: rgba(239,68,68,.15); color: var(--yry-fail); }
-.badge.triggered, .yry-badge.triggered { background: rgba(245,158,11,.15); color: var(--yry-warn); }
-.badge.clear, .yry-badge.clear { background: rgba(34,197,94,.15); color: var(--yry-pass); }
+.badge.A, .badge.B, .yry-badge.A, .yry-badge.B { background: rgba(var(--yry-pass-rgb),.15); color: var(--yry-pass); }
+.badge.C, .yry-badge.C { background: rgba(var(--yry-warn-rgb),.15); color: var(--yry-warn); }
+.badge.D, .yry-badge.D { background: rgba(var(--yry-fail-rgb),.15); color: var(--yry-fail); }
+.badge.triggered, .yry-badge.triggered { background: rgba(var(--yry-warn-rgb),.15); color: var(--yry-warn); }
+.badge.clear, .yry-badge.clear { background: rgba(var(--yry-pass-rgb),.15); color: var(--yry-pass); }
 
 /* ── Findings (用于自循环报告 / 趋势报告) ───────────────────────────── */
 .yry-finding { padding: 14px 18px; margin-bottom: 8px; border-radius: 8px; border: var(--yry-border); }
 .yry-finding.info { background: rgba(59,130,246,.04); }
-.yry-finding.warn { background: rgba(245,158,11,.04); border-left: 3px solid var(--yry-warn); }
-.yry-finding.fail { background: rgba(239,68,68,.04); border-left: 3px solid var(--yry-fail); }
+.yry-finding.warn { background: rgba(var(--yry-warn-rgb),.04); border-left: 3px solid var(--yry-warn); }
+.yry-finding.fail { background: rgba(var(--yry-fail-rgb),.04); border-left: 3px solid var(--yry-fail); }
 .yry-finding-head { font-weight: 600; font-size: .9rem; }
 .yry-finding-body { margin-top: 6px; color: var(--yry-text2); font-size: .82rem; }
 .yry-finding-resolution {
@@ -162,8 +143,8 @@ td a:hover { color: var(--yry-accent); }
   line-height: 1.5; display: flex; gap: 8px; align-items: flex-start;
 }
 .yry-resolution-badge { flex-shrink: 0; font-size: .66rem; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
-.yry-resolution-badge.fail { background: rgba(239,68,68,.12); color: var(--yry-fail); }
-.yry-resolution-badge.warn { background: rgba(245,158,11,.12); color: var(--yry-warn); }
+.yry-resolution-badge.fail { background: rgba(var(--yry-fail-rgb),.12); color: var(--yry-fail); }
+.yry-resolution-badge.warn { background: rgba(var(--yry-warn-rgb),.12); color: var(--yry-warn); }
 .yry-resolution-badge.info { background: rgba(59,130,246,.1); color: var(--yry-cyan); }
 
 /* ── Footer ────────────────────────────────────────────────────────────── */
@@ -178,9 +159,9 @@ td a:hover { color: var(--yry-accent); }
   padding: 4px 12px; border-radius: 12px;
   font-size: .72rem; font-weight: 600; margin-top: 8px;
 }
-.yry-fresh.hot, .fresh.hot  { background: rgba(34,197,94,.12); color: var(--yry-pass); }
-.yry-fresh.warm, .fresh.warm { background: rgba(245,158,11,.12); color: var(--yry-warn); }
-.yry-fresh.cold, .fresh.cold { background: rgba(239,68,68,.12); color: var(--yry-fail); }
+.yry-fresh.hot, .fresh.hot  { background: rgba(var(--yry-pass-rgb),.12); color: var(--yry-pass); }
+.yry-fresh.warm, .fresh.warm { background: rgba(var(--yry-warn-rgb),.12); color: var(--yry-warn); }
+.yry-fresh.cold, .fresh.cold { background: rgba(var(--yry-fail-rgb),.12); color: var(--yry-fail); }
 .yry-fresh .dot, .fresh .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
 .yry-fresh.hot .dot, .fresh.hot .dot  { background: var(--yry-pass); }
 .yry-fresh.warm .dot, .fresh.warm .dot { background: var(--yry-warn); }
@@ -241,9 +222,9 @@ td a:hover { color: var(--yry-accent); }
   padding: 14px 18px; border-radius: 8px; margin-bottom: 20px;
   font-size: .8rem; display: flex; align-items: center; gap: 10px;
 }
-.rp-alert.warn { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.2); color: var(--yry-warn); }
-.rp-alert.fail { background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.2); color: var(--yry-fail); }
-.rp-alert.info { background: rgba(34,211,238,.08); border: 1px solid rgba(34,211,238,.2); color: #22d3ee; }
+.rp-alert.warn { background: rgba(var(--yry-warn-rgb),.08); border: 1px solid rgba(var(--yry-warn-rgb),.2); color: var(--yry-warn); }
+.rp-alert.fail { background: rgba(var(--yry-fail-rgb),.08); border: 1px solid rgba(var(--yry-fail-rgb),.2); color: var(--yry-fail); }
+.rp-alert.info { background: rgba(var(--yry-cyan-rgb),.08); border: 1px solid rgba(var(--yry-cyan-rgb),.2); color: #22d3ee; }
 
 /* ── Bar row (label + bar + count) ────────────────────────────────────── */
 .rp-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }

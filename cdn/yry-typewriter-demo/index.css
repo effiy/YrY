@@ -12,7 +12,7 @@
 /* ── Terminal window ────────────────────────────────────────────────── */
 .tw-demo {
   background: #0a0e1a;
-  border: 1px solid rgba(34,211,238,.1);
+  border: 1px solid rgba(var(--yry-cyan-rgb),.1);
   border-radius: var(--yry-radius, 12px);
   padding: 14px 18px;
   font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
@@ -27,7 +27,7 @@
 
 .tw-demo::-webkit-scrollbar { width: 6px; }
 .tw-demo::-webkit-scrollbar-thumb {
-  background: rgba(255,193,7,.2);
+  background: rgba(var(--yry-accent-rgb),.2);
   border-radius: 3px;
 }
 
@@ -114,13 +114,13 @@
 
 .tw-ctrl-btn:hover {
   color: var(--yry-accent, #ffc107);
-  border-color: rgba(255,193,7,.3);
+  border-color: rgba(var(--yry-accent-rgb),.3);
 }
 
 .tw-ctrl-btn.on {
-  background: rgba(255,193,7,.12);
+  background: rgba(var(--yry-accent-rgb),.12);
   color: var(--yry-accent, #ffc107);
-  border-color: rgba(255,193,7,.3);
+  border-color: rgba(var(--yry-accent-rgb),.3);
 }
 
 .tw-ctrl-btn.reset-btn {
@@ -130,5 +130,5 @@
 
 .tw-ctrl-btn.reset-btn:hover {
   color: var(--yry-fail, #ef4444);
-  border-color: rgba(239,68,68,.3);
+  border-color: rgba(var(--yry-fail-rgb),.3);
 }

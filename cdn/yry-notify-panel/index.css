@@ -359,7 +359,7 @@
 
 .np-release-card[data-type="MAJOR"] .np-bump { color: var(--np-red); }
 .np-release-card[data-type="MINOR"] .np-bump { color: #f59e0b; }
-.np-release-card[data-type="PATCH"] .np-bump { color: #22c55e; }
+.np-release-card[data-type="PATCH"] .np-bump { color: var(--yry-pass); }
 
 /* 相对时间 ("2 天前") — 放右侧 */
 .np-time {

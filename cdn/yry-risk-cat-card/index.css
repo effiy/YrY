@@ -103,5 +103,5 @@
   color: var(--yry-text3, #888);
 }
 .rcc-trend-up { color: #ef4444; font-weight: 600; }
-.rcc-trend-down { color: #10b981; font-weight: 600; }
+.rcc-trend-down { color: var(--yry-emerald); font-weight: 600; }
 .rcc-trend-flat { color: var(--yry-text3, #888); font-weight: 600; }

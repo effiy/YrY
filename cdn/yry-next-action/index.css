@@ -21,12 +21,12 @@
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
-  background: linear-gradient(135deg, rgba(255,193,7,.08) 0%, rgba(34,211,238,.04) 100%);
-  border: 1px solid rgba(255,193,7,.2);
+  background: linear-gradient(135deg, rgba(var(--yry-accent-rgb),.08) 0%, rgba(var(--yry-cyan-rgb),.04) 100%);
+  border: 1px solid rgba(var(--yry-accent-rgb),.2);
   border-radius: var(--yry-radius, 12px);
   padding: 14px 18px;
   margin-bottom: 18px;
-  box-shadow: 0 0 24px rgba(255,193,7,.05);
+  box-shadow: 0 0 24px rgba(var(--yry-accent-rgb),.05);
 }
 
 /* ── Icon ───────────────────────────────────────────────────────────── */

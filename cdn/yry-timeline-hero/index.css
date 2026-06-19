@@ -26,7 +26,7 @@
   position: absolute;
   top: -50%; right: -10%;
   width: 300px; height: 300px;
-  background: radial-gradient(circle, rgba(255,193,7,.06) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--yry-accent-rgb),.06) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -42,7 +42,7 @@
 .tl-hero .tl-head .tl-icon {
   width: 24px; height: 24px;
   border-radius: 6px;
-  background: rgba(255,193,7,.15);
+  background: rgba(var(--yry-accent-rgb),.15);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -93,7 +93,7 @@
   border-radius: 1px;
   z-index: 1;
   transition: width .5s ease;
-  box-shadow: 0 0 8px rgba(255,193,7,.4);
+  box-shadow: 0 0 8px rgba(var(--yry-accent-rgb),.4);
 }
 
 /* ── Nodes ──────────────────────────────────────────────────────────── */
@@ -134,16 +134,16 @@
 }
 
 .tl-node.done .tl-dot {
-  background: rgba(34,197,94,.12);
+  background: rgba(var(--yry-pass-rgb),.12);
   border-color: var(--yry-pass, #22c55e);
   color: var(--yry-pass, #22c55e);
 }
 
 .tl-node.active .tl-dot {
-  background: rgba(255,193,7,.12);
+  background: rgba(var(--yry-accent-rgb),.12);
   border-color: var(--yry-accent, #ffc107);
   color: var(--yry-accent, #ffc107);
-  box-shadow: 0 0 0 4px rgba(255,193,7,.08);
+  box-shadow: 0 0 0 4px rgba(var(--yry-accent-rgb),.08);
 }
 
 .tl-node .tl-label {
@@ -169,7 +169,7 @@
   left: 50%;
   transform: translateX(-50%) translateY(-4px);
   background: var(--yry-bg-raised, rgba(42,42,56,1));
-  border: 1px solid rgba(255,193,7,.2);
+  border: 1px solid rgba(var(--yry-accent-rgb),.2);
   border-radius: 6px;
   padding: 6px 10px;
   font-size: .66rem;

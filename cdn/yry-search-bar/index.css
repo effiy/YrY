@@ -36,7 +36,7 @@
 }
 
 .sb-input:focus {
-  border-color: rgba(255,193,7,.4);
+  border-color: rgba(var(--yry-accent-rgb),.4);
 }
 
 .sb-input::placeholder {

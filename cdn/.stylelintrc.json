@@ -17,13 +17,22 @@
     "declaration-empty-line-before": null,
     "rule-empty-line-before": null,
     "at-rule-empty-line-before": null,
-    "comment-whitespace-inside": null
+    "comment-whitespace-inside": null,
+    "declaration-block-single-line-max-declarations": null,
+    "property-no-vendor-prefix": [true, {
+      "ignoreProperties": ["user-select", "appearance"]
+    }],
+    "color-no-hex": [true, {
+      "severity": "warning",
+      "message": "Prefer CSS custom properties (var(--yry-*)) over hardcoded hex colors. Run `node scripts/validate.mjs` to check compliance."
+    }]
   },
   "ignoreFiles": [
     "node_modules/**",
     "fonts/**",
     "健康报告/**",
     "故事任务面板/**",
+    "tokens/index.css",
     "**/*.min.css"
   ]
 }
