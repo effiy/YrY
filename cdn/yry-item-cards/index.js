@@ -2,9 +2,9 @@
    YrY CDN — YryItemCards · 静态资产卡片数据 + 自动注入控制器 (Vue 3 自定义元素, full)
 
    页面使用方式:
-     <link rel="stylesheet" href="../../../../docs/yry-item-cards/index.css">
+     <link rel="stylesheet" href="../cdn/yry-item-cards/index.css">
      <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-     <script src="../../../../docs/yry-item-cards/index.js"></script>
+     <script src="../cdn/yry-item-cards/index.js"></script>
      <yry-item-cards></yry-item-cards>
 
    行为:

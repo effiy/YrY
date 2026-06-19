@@ -10,9 +10,9 @@
  *   - 派发事件: yry-docs-binding-ready
  *
  * 加载链:
- *   <link rel="stylesheet" href="./yry-docs-binding/index.css">
+ *   <link rel="stylesheet" href="../cdn/yry-docs-binding/index.css">
  *   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
- *   <script src="./yry-docs-binding/index.js"></script>
+ *   <script src="../cdn/yry-docs-binding/index.js"></script>
  *   ...
  *   <yry-docs-binding></yry-docs-binding>     <!-- 放在 body 末尾任意位置 -->
  *

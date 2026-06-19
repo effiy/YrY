@@ -14,7 +14,16 @@
     "withDemo": 57,
     "customElements": 56,
     "totalCssTokens": 27,
-    "totalDeclaredDeps": 4
+    "totalDeclaredDeps": 4,
+    "totalCount": 64,
+    "byKind": {
+      "vanilla": 10,
+      "vue": 54
+    },
+    "byStatus": {
+      "complete": 64
+    },
+    "generatedAt": "2026-06-19T00:00:00.000Z"
   },
   "components": [
     {
@@ -3440,6 +3449,80 @@
         "js": {
           "exists": true,
           "size": 3519
+        }
+      }
+    },
+    {
+      "name": "yry-docs-binding",
+      "kind": "vue",
+      "status": "complete",
+      "tagName": "yry-docs-binding",
+      "readyEvent": "yry-docs-binding-ready",
+      "templateId": "yry-docs-binding-tpl",
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [
+        "Vue"
+      ],
+      "declaredDeps": [],
+      "exports": [
+        "YryDocsBinding"
+      ],
+      "cssTokens": [
+        "--yry-color-accent",
+        "--yry-color-text-1",
+        "--yry-color-text-2",
+        "--yry-color-text-3"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 4773
+        },
+        "css": {
+          "exists": true,
+          "size": 1660
+        },
+        "js": {
+          "exists": true,
+          "size": 73190
+        }
+      }
+    },
+    {
+      "name": "yry-item-cards",
+      "kind": "vue",
+      "status": "complete",
+      "tagName": "yry-item-cards",
+      "readyEvent": "yry-item-cards-ready",
+      "templateId": "yry-item-cards-tpl",
+      "isCustomElement": true,
+      "props": [],
+      "runtimeDeps": [
+        "Vue"
+      ],
+      "declaredDeps": [],
+      "exports": [
+        "YryItemCards"
+      ],
+      "cssTokens": [
+        "--yry-color-accent",
+        "--yry-color-text-1",
+        "--yry-color-text-2",
+        "--yry-color-text-3"
+      ],
+      "files": {
+        "html": {
+          "exists": true,
+          "size": 5084
+        },
+        "css": {
+          "exists": true,
+          "size": 1030
+        },
+        "js": {
+          "exists": true,
+          "size": 25916
         }
       }
     }
