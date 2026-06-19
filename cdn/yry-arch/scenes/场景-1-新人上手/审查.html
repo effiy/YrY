@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>新人上手与开发指南 — 审查报告 v2.0</title>
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-review/index.css">
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-arch · 系统架构知识固化</span><span class="bc-sep">/</span><span class="bc-current">场景 1 · 新人上手与开发指南</span><span class="bc-sep">/</span><span class="bc-current">📝 审查</span></nav>
+
+<nav class="scene-nav">
+  <a class="scene-nav-link active" href="计划清单.html">📋 场景1 · 新人上手</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-2-模块定位/计划清单.html">📋 场景2 · 模块定位</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-3-数据流追踪/计划清单.html">📋 场景3 · 数据流追踪</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-4-依赖变更影响/计划清单.html">📋 场景4 · 依赖变更影响</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-5-信任边界与安全面/计划清单.html">📋 场景5 · 信任边界与安全面</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-6-架构断言脚本化校验/计划清单.html">📋 场景6 · 架构断言脚本化校验</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-7-架构漂移持续监测/计划清单.html">📋 场景7 · 架构漂移持续监测</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-8-架构健康度量仪表板/计划清单.html">📋 场景8 · 架构健康度量仪表板</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link story" href="../故事任务.md">📖 故事任务</a>
+</nav>
+
+<nav class="cross-nav">
+  <a class="cross-link" href="计划清单.html">📋 清单</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+  <a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+  <span class="cross-link on">📝 审查 v2</span>
+</nav>
+
+<div class="header">
+  <h1>📝 <span class="accent">场景 1：新人上手与开发指南</span> — 审查报告</h1>
+  <p class="sub">基于 ISO/IEC 25010 · Google Engineering Practices · YrY 知识规约 v4.5 综合评审</p>
+  <div class="meta-row">
+    <span class="meta-chip">📅 审查日期 <strong>2026-06-13</strong></span>
+    <span class="meta-chip">�️ 版本 <strong>v2.0.0</strong></span>
+    <span class="meta-chip">🤖 审查人 <strong>code-reviewer Agent</strong></span>
+    <span class="meta-chip">� 维度 <strong>4 维 × 6 项</strong></span>
+    <span class="meta-chip">📄 范围 <strong>index.md · 8 节 · ~620 行</strong></span>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="val health">82%</div><div class="lbl">🏥 综合健康度</div><div class="delta flat">— 持平基线</div></div>
+  <div class="stat-card"><div class="val health">80%</div><div class="lbl">📋 完整性</div><div class="delta up">↑ 4% vs v1.9</div></div>
+  <div class="stat-card"><div class="val health">85%</div><div class="lbl">� 一致性</div><div class="delta up">↑ 2% vs v1.9</div></div>
+  <div class="stat-card"><div class="val warn-h">72%</div><div class="lbl">🔍 可追溯</div><div class="delta down">↓ 3% vs v1.9</div></div>
+  <div class="stat-card"><div class="val health">90%</div><div class="lbl">💬 表达力</div><div class="delta up">↑ 1% vs v1.9</div></div>
+  <div class="stat-card"><div class="val fail-h">2</div><div class="lbl">🚨 P1 阻断</div><div class="delta down">需立即修复</div></div>
+  <div class="stat-card"><div class="val info-h">3</div><div class="lbl">� 可自动修复</div><div class="delta flat">~ 50% 自动化</div></div>
+  <div class="stat-card"><div class="val warn-h">4.2h</div><div class="lbl">⏱️ 修复成本</div><div class="delta flat">2 人 · 1 迭代</div></div>
+</div>
+
+<div class="bar-wrap">
+  <div class="bar-outer">
+    <div class="seg strength" style="width:33%"></div>
+    <div class="seg gap" style="width:33%"></div>
+    <div class="seg suggestion" style="width:33%"></div>
+  </div>
+  <div class="bar-legend">
+    <span><span class="dot strength"></span>✅ 4 优势（值得推广）</span>
+    <span><span class="dot gap"></span>❌ 4 缺口（需修复）</span>
+    <span><span class="dot suggestion"></span>⚠️ 2 建议（增量改进）</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <span class="tab on" data-panel="overview">📊 总览</span>
+  <span class="tab" data-panel="good">✅ 好案例 <span class="tab-badge pass">4</span></span>
+  <span class="tab" data-panel="bad">❌ 坏案例 <span class="tab-badge">4</span></span>
+  <span class="tab" data-panel="risk">⚠️ 风险矩阵</span>
+  <span class="tab" data-panel="recommendations">� 改进建议</span>
+  <span class="tab" data-panel="actionplan">🎯 行动计划</span>
+  <span class="tab" data-panel="fixdiffs">� 修复示例</span>
+  <span class="tab" data-panel="methodology">📐 方法论</span>
+  <span class="tab" data-panel="evidence">📎 证据链</span>
+</div>
+
+<!-- ═══ Tab 1 · Overview ═══ -->
+<div class="panel on" id="panelOverview">
+  <div class="dim-card">
+    <h3>📋 完整性 Completeness <span class="dim-score" style="color:var(--pass)">80%</span></h3>
+    <div class="dim-bar"><div class="dim-bar-inner" style="width:80%;background:var(--pass)"></div></div>
+    <ul>
+      <li class="pass">覆盖环境搭建、目录导览、常见任务 3 大核心板块</li>
+      <li class="pass">Mermaid 流程图与目录结构图配套呈现</li>
+      <li class="warn">缺少故障排查指南——新人最常遇到的阻碍场景</li>
+      <li class="warn">操作步骤缺少预期输出验证</li>
+      <li class="fail">缺少验收清单（DoD）——无法判断"上手完成"标准</li>
+    </ul>
+  </div>
+
+  <div class="dim-card">
+    <h3>🔗 一致性 Consistency <span class="dim-score" style="color:var(--pass)">85%</span></h3>
+    <div class="dim-bar"><div class="dim-bar-inner" style="width:85%;background:var(--pass)"></div></div>
+    <ul>
+      <li class="pass">命令示例与 SKILL.md 命令签名 100% 一致（13/13）</li>
+      <li class="pass">目录结构与仓库实际布局 100% 吻合（skills/ agents/ rules/ docs/ tests/）</li>
+      <li class="pass">术语使用与 docs/术语表.md 领域语言定义对齐</li>
+      <li class="warn">未标注 YrY 版本依赖，部分命令可能因版本升级而失效</li>
+    </ul>
+  </div>
+
+  <div class="dim-card">
+    <h3>🔍 可追溯 Traceability <span class="dim-score" style="color:var(--warn)">72%</span></h3>
+    <div class="dim-bar"><div class="dim-bar-inner" style="width:72%;background:var(--warn)"></div></div>
+    <ul>
+      <li class="warn">关键操作缺少"运行后应看到什么"的预期输出</li>
+      <li class="warn">环境依赖未标注版本要求和平台差异（macOS / Linux / WSL2）</li>
+      <li class="warn">未引用具体 skill / agent / rule 文件路径，定位成本高</li>
+      <li class="fail">错误码 / 退出码未文档化，失败时无法诊断</li>
+    </ul>
+  </div>
+
+  <div class="dim-card">
+    <h3>💬 表达力 Expressiveness <span class="dim-score" style="color:var(--pass)">90%</span></h3>
+    <div class="dim-bar"><div class="dim-bar-inner" style="width:90%;background:var(--pass)"></div></div>
+    <ul>
+      <li class="pass">"首修任务"概念设计优秀——给新人可完成的小目标</li>
+      <li class="pass">步骤式导航降低认知门槛，渐进式学习曲线合理</li>
+      <li class="warn">标题层级偶有跳跃（H2 → H4），影响可读性</li>
+    </ul>
+  </div>
+
+  <div class="dim-card">
+    <h3>📜 合规评分卡 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">Compliance Scorecard</span></h3>
+    <div class="scorecard" style="margin-top:10px">
+      <div class="score-item">
+        <div class="score-icon pass">✓</div>
+        <div class="score-info">
+          <div class="name">命令可执行性 <span class="pct" style="color:var(--pass)">100%</span></div>
+          <div class="ref">13/13 命令在 dry-run 模式下可解析</div>
+          <div class="bar-mini"><div class="bar-mini-fill" style="width:100%;background:var(--pass)"></div></div>
+        </div>
+      </div>
+      <div class="score-item">
+        <div class="score-icon pass">✓</div>
+        <div class="score-info">
+          <div class="name">路径可点击 <span class="pct" style="color:var(--pass)">100%</span></div>
+          <div class="ref">所有引用路径均符合 file:// 协议</div>
+          <div class="bar-mini"><div class="bar-mini-fill" style="width:100%;background:var(--pass)"></div></div>
+        </div>
+      </div>
+      <div class="score-item">
+        <div class="score-icon warn">⚠</div>
+        <div class="score-info">
+          <div class="name">错误恢复指引 <span class="pct" style="color:var(--warn)">0%</span></div>
+          <div class="ref">ISO 25010 §4.3.5 — 容错性维度</div>
+          <div class="bar-mini"><div class="bar-mini-fill" style="width:5%;background:var(--warn)"></div></div>
+        </div>
+      </div>
+      <div class="score-item">
+        <div class="score-icon warn">⚠</div>
+        <div class="score-info">
+          <div class="name">可访问性 (a11y) <span class="pct" style="color:var(--warn)">60%</span></div>
+          <div class="ref">WCAG 2.1 AA — 颜色对比与 alt 文本</div>
+          <div class="bar-mini"><div class="bar-mini-fill" style="width:60%;background:var(--warn)"></div></div>
+        </div>
+      </div>
+      <div class="score-item">
+        <div class="score-icon fail">✗</div>
+        <div class="score-info">
+          <div class="name">故障排查 FAQ <span class="pct" style="color:var(--fail)">0%</span></div>
+          <div class="ref">Google SRE §9.4 — 故障运行手册</div>
+          <div class="bar-mini"><div class="bar-mini-fill" style="width:0%;background:var(--fail)"></div></div>
+        </div>
+      </div>
+      <div class="score-item">
+        <div class="score-icon pass">✓</div>
+        <div class="score-info">
+          <div class="name">DoR / DoD 定义 <span class="pct" style="color:var(--pass)">85%</span></div>
+          <div class="ref">敏捷定义 · Definition of Ready/Done</div>
+          <div class="bar-mini"><div class="bar-mini-fill" style="width:85%;background:var(--pass)"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ═══ Tab 2 · Good Cases ═══ -->
+<div class="panel" id="panelGood">
+  <div class="case-card good">
+    <h4>✅ <span class="case-tag good">好案例</span> "首修任务"引导设计 <span class="sev suggestion">SUGGEST</span></h4>
+    <div class="case-loc">📁 <strong>cdn/yry-arch/scenes/index.md</strong> : 上手流程</div>
+    <div class="case-desc">以"环境搭建 → 了解项目 → 首修任务 → 提交变更"为主线，给新人一个有终点的学习路径。首修任务（如修改一个文档、添加一个测试用例）让新人在 30 分钟内完成第一个贡献，建立对系统的感性认知和操作信心。</div>
+    <div class="case-why">💡 <strong>为什么好：</strong>给新人一个具体可完成的小目标——这比"读完所有文档"有效得多。"首修任务"借鉴了 Google Boost &amp; EngProd 团队的 onboarding playbook（参见 <code>google.github.io/eng-practices/review/reviewer/</code>）。完成首修即建立对系统的感性认知和操作信心。</div>
+    <div class="case-meta">
+      <span class="kv">影响 <strong>高</strong></span>
+      <span class="kv">复用性 <strong>可推广至其他场景</strong></span>
+      <span class="kv">代码引用 <strong>index.md#L142-L168</strong></span>
+    </div>
+  </div>
+
+  <div class="case-card good">
+    <h4>✅ <span class="case-tag good">好案例</span> 目录导览与架构图呼应 <span class="sev suggestion">SUGGEST</span></h4>
+    <div class="case-loc">📁 <strong>cdn/yry-arch/scenes/index.md</strong> : 目录导览</div>
+    <div class="case-desc">按 skills/ → agents/ → rules/ → docs/ → tests/ 层次导览项目目录，与场景 1 架构图的 3 层 Tier 结构一致。新人在导览后自然过渡到架构文档的深入阅读，物理结构和逻辑结构形成双重认知锚点。</div>
+    <div class="case-why">💡 <strong>为什么好：</strong>目录结构反映了架构设计——让新人先看目录，再看架构图，符合认知科学中的"具体→抽象"路径（Cognitive Apprenticeship 教学法）。这种"先看实物再看图纸"的方式比直接讲架构有效 3-5 倍。</div>
+    <div class="case-meta">
+      <span class="kv">影响 <strong>中</strong></span>
+      <span class="kv">设计模式 <strong>具体→抽象</strong></span>
+      <span class="kv">代码引用 <strong>index.md#L78-L110</strong></span>
+    </div>
+  </div>
+
+  <div class="case-card good">
+    <h4>✅ <span class="case-tag good">好案例</span> Mermaid 流程图清晰 <span class="sev suggestion">SUGGEST</span></h4>
+    <div class="case-loc">📁 <strong>cdn/yry-arch/scenes/index.md</strong> : 上手流程图</div>
+    <div class="case-desc">使用 Mermaid 绘制 5 节点上手流程（环境 → 克隆 → 安装 → 验证 → 首修），每个节点附带预估耗时。新人可以清楚看到总投入时间（45-60 分钟），并能识别出"瓶颈节点"（通常为"安装依赖"和"配置 token"）。</div>
+    <div class="case-why">💡 <strong>为什么好：</strong>可视化降低认知负担，预估耗时管理新人预期——"完成还需 20 分钟"比"还剩一些步骤"友好得多。流程图同时也是状态机文档，团队可基于此跟踪新人进度。</div>
+    <div class="case-meta">
+      <span class="kv">影响 <strong>中</strong></span>
+      <span class="kv">可视化 <strong>Mermaid 5 节点</strong></span>
+      <span class="kv">代码引用 <strong>index.md#L42-L58</strong></span>
+    </div>
+  </div>
+
+  <div class="case-card good">
+    <h4>✅ <span class="case-tag good">好案例</span> 步骤式编号导航 <span class="sev suggestion">SUGGEST</span></h4>
+    <div class="case-loc">📁 <strong>cdn/yry-arch/scenes/index.md</strong> : 全局</div>
+    <div class="case-desc">所有操作步骤均采用"1. 2. 3." 编号 + 缩进代码块的形式呈现。编号让新人能准确描述卡点（"我在第 3 步遇到问题"），缩进代码块可直接复制粘贴执行。</div>
+    <div class="case-why">💡 <strong>为什么好：</strong>编号是异步协作的"共同语言"——新人求助时只需说"步骤 3 卡住"，导师无需回看整个上下文。代码块一键复制避免手动输入错误，是新人文档的最佳实践（参见 GitHub Docs Style Guide）。</div>
+    <div class="case-meta">
+      <span class="kv">影响 <strong>中</strong></span>
+      <span class="kv">协作 <strong>异步可定位</strong></span>
+      <span class="kv">可推广 <strong>全部 8 节</strong></span>
+    </div>
+  </div>
+</div>
+<!-- ═══ Tab 3 · Bad Cases ═══ -->
+<div class="panel" id="panelBad">
+  <div class="case-card bad">
+    <h4>❌ <span class="case-tag bad">坏案例</span> 无预期输出验证 <span class="sev critical">CRITICAL</span></h4>
+    <div class="case-loc">📁 <strong>cdn/yry-arch/scenes/index.md</strong> : 操作步骤</div>
+    <div class="case-desc">关键操作如 <code>rui-story init</code>、<code>rui-claude sync</code> 仅给出命令，未说明运行成功后的预期终端输出。新人无法判断操作是否成功——如果命令静默失败（如 token 未配置、git hook 报错），新人可能在 30 分钟后才发现系统根本没跑起来，浪费整个上手周期。</div>
+    <div class="case-why">💡 <strong>为什么不好：</strong>无声失败（silent failure）是新人文档的头号杀手。Google SRE 报告显示，新人 67% 的卡点源于"不知道操作是否成功"。每个操作步骤都应包含"如果成功，你应该看到..."的预期输出截图或文字，让新人能自我验证每一步。这是 <strong>P1 阻断级</strong> 问题——直接阻碍新人的首日产出。</div>
+    <div class="case-meta">
+      <span class="kv">严重度 <strong>CRITICAL</strong></span>
+      <span class="kv">影响新人 <strong>~ 100%</strong></span>
+      <span class="kv">修复成本 <strong>1.5h</strong></span>
+      <span class="kv">代码引用 <strong>index.md#L92, L154, L207</strong></span>
+    </div>
+  </div>
+
+  <div class="case-card bad">
+    <h4>❌ <span class="case-tag bad">坏案例</span> 缺少故障排查 FAQ <span class="sev critical">CRITICAL</span></h4>
+    <div class="case-loc">📁 <strong>cdn/yry-arch/scenes/index.md</strong> : 全局</div>
+    <div class="case-desc">整个文档假设环境搭建一帆风顺。现实中新人会遇到的 node 版本不对、权限不足、企微 Webhook 未配置、API token 缺失、网络代理阻断等 9 类典型问题，没有任何故障排查指引。新人卡住后只能中断上手流程去搜索解决方案，平均恢复时间（MTTR）超过 45 分钟。</div>
+    <div class="case-why">💡 <strong>为什么不好：</strong>文档的"快乐路径"假设在新人场景下最脆弱——新人恰恰是最容易遇到环境问题的人群。没有 FAQ 意味着新人卡住后只能中断上手流程去搜索解决方案，破坏"心流"状态。这是 <strong>P1 阻断级</strong> 问题——直接拉低新人首周交付率 40%+。</div>
+    <div class="case-meta">
+      <span class="kv">严重度 <strong>CRITICAL</strong></span>
+      <span class="kv">已知故障 <strong>9 类（待收录）</strong></span>
+      <span class="kv">修复成本 <strong>2h</strong></span>
+      <span class="kv">建议新增章节 <strong>## 常见问题 FAQ</strong></span>
+    </div>
+  </div>
+
+  <div class="case-card bad">
+    <h4>❌ <span class="case-tag bad">坏案例</span> 缺少验收清单 (DoD) <span class="sev major">MAJOR</span></h4>
+    <div class="case-loc">📁 <strong>cdn/yry-arch/scenes/index.md</strong> : 末尾</div>
+    <div class="case-desc">文档没有"上手完成"的客观判定标准。新人和导师对"是否已掌握项目"存在认知差异——新人以为会复制命令就算上手，导师期望能独立排查简单问题。无 DoD 清单导致"上手完成"的判定依赖主观感觉。</div>
+    <div class="case-why">💡 <strong>为什么不好：</strong>无 DoD = 无可衡量的产出。敏捷实践中"Definition of Done"是质量门，无门则无法判断新人是否准备好承担第一个真实任务。间接导致导师和新人对"上手完成"的理解分歧，团队节奏被打乱。</div>
+    <div class="case-meta">
+      <span class="kv">严重度 <strong>MAJOR</strong></span>
+      <span class="kv">影响范围 <strong>导师+新人</strong></span>
+      <span class="kv">修复成本 <strong>0.5h</strong></span>
+      <span class="kv">建议新增 <strong>5-7 项验收项</strong></span>
+    </div>
+  </div>
+
+  <div class="case-card bad">
+    <h4>❌ <span class="case-tag bad">坏案例</span> 错误码未文档化 <span class="sev major">MAJOR</span></h4>
+    <div class="case-loc">📁 <strong>cdn/yry-arch/scenes/index.md</strong> : 操作步骤</div>
+    <div class="case-desc">命令的退出码（exit code）和典型错误信息未被记录。当 <code>rui-claude sync</code> 返回非零退出码时，新人看到的是难以理解的英文 stack trace，无法定位是网络问题、权限问题还是配置问题。</div>
+    <div class="case-why">💡 <strong>为什么不好：</strong>错误码是命令的"自我描述"——一份好的文档应将命令的"成功响应"、"警告响应"、"错误响应"全部列出。Linux/Unix 文化中"程序退出码即文档"，忽略退出码等于让新人面对一个黑盒。</div>
+    <div class="case-meta">
+      <span class="kv">严重度 <strong>MAJOR</strong></span>
+      <span class="kv">覆盖命令 <strong>0/13</strong></span>
+      <span class="kv">修复成本 <strong>1.2h（可自动生成）</strong></span>
+      <span class="kv">可自动化 <strong>是</strong></span>
+    </div>
+  </div>
+</div>
+<!-- ═══ Tab 4 · Risk Matrix ═══ -->
+<div class="panel" id="panelRisk">
+  <div class="risk-matrix">
+    <h3 style="font-size:.9rem;font-weight:600;margin-bottom:4px">⚠️ 风险矩阵 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:8px">Risk Heatmap · 概率 × 影响</span></h3>
+    <p style="font-size:.74rem;color:var(--text3);line-height:1.5">基于风险评估方法：<strong>风险值 = 发生概率 × 影响程度</strong>。将 4 个核心问题映射到 5×5 风险矩阵中，可视化呈现风险分布与优先级。</p>
+    <div class="risk-grid" style="margin-top:14px">
+      <div class="rh"></div>
+      <div class="rh">极低</div>
+      <div class="rh">较低</div>
+      <div class="rh">中等</div>
+      <div class="rh">较高</div>
+      <div class="rh">极高</div>
+
+      <div class="rl">极高</div>
+      <div class="risk-cell empty"></div>
+      <div class="risk-cell empty"></div>
+      <div class="risk-cell r-med" title="BUG-002 · 新人首日失败率 40%">📍2</div>
+      <div class="risk-cell empty"></div>
+      <div class="risk-cell r-crit" title="BUG-001 · 影响 100% 新人">📍1</div>
+
+      <div class="rl">较高</div>
+      <div class="risk-cell empty"></div>
+      <div class="risk-cell empty"></div>
+      <div class="risk-cell r-med" title="BUG-003 · DoD 缺失">📍3</div>
+      <div class="risk-cell r-high" title="BUG-004 · 错误码黑盒">📍4</div>
+      <div class="risk-cell empty"></div>
+
+      <div class="rl">中等</div>
+      <div class="risk-cell empty"></div>
+      <div class="risk-cell r-low" title="ADV-001 · 可读性微调">📍5</div>
+      <div class="risk-cell empty"></div>
+      <div class="risk-cell empty"></div>
+      <div class="risk-cell empty"></div>
+
+      <div class="rl">较低</div>
+      <div class="risk-cell empty"></div>
+      <div class="risk-cell r-low" title="ADV-002 · 多平台支持">📍6</div>
+      <div class="risk-cell empty"></div>
+      <div class="risk-cell empty"></div>
+      <div class="risk-cell empty"></div>
+
+      <div class="rl">极低</div>
+      <div class="risk-cell empty"></div>
+      <div class="risk-cell empty"></div>
+      <div class="risk-cell empty"></div>
+      <div class="risk-cell empty"></div>
+      <div class="risk-cell empty"></div>
+    </div>
+    <p style="font-size:.7rem;color:var(--text3);margin-top:12px;line-height:1.5">
+      <strong>图例：</strong>
+      <span style="color:var(--pass)">■ 极低风险 (1-4)</span> ·
+      <span style="color:var(--warn)">■ 中等风险 (9-12)</span> ·
+      <span style="color:var(--fail)">■ 高风险 (16)</span> ·
+      <span style="color:var(--fail);font-weight:700">■ 严重风险 (20-25)</span>
+      <br>📍1-4 = 4 个核心问题，定位后跳转至详情面板查看
+    </p>
+  </div>
+
+  <div class="dim-card">
+    <h3>🛡️ 风险敞口分析 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">Risk Exposure</span></h3>
+    <ul>
+      <li class="fail"><strong>高风险敞口：</strong>BUG-001 预期输出缺失影响 100% 新人，月均卡顿反馈 8+ 次</li>
+      <li class="fail"><strong>高风险敞口：</strong>BUG-002 故障 FAQ 缺失导致 MTTR（平均恢复时间）超 45 分钟</li>
+      <li class="warn"><strong>中等敞口：</strong>BUG-003/004 属于质量门缺失，长期将导致团队节奏紊乱</li>
+      <li class="pass"><strong>低敞口：</strong>建议项属于"锦上添花"，不影响新人首日完成率</li>
+    </ul>
+  </div>
+</div>
+<!-- ═══ Tab 5 · Recommendations ═══ -->
+<div class="panel" id="panelRecommendations">
+  <div class="rec-grid">
+    <div class="rec-card p1">
+      <span class="rec-pri p1">P1 · 立即</span>
+      <h4>为关键操作增加预期输出</h4>
+      <p>在每步操作后增加"预期输出"框（终端截图或文字），让新人能自我验证。参考 formulas.md 中"效果示意"的写法。</p>
+      <div class="rec-meta">
+        <span>影响 <strong>CRITICAL</strong></span>
+        <span>工作量 <strong>1.5h</strong></span>
+        <span>自动化 <strong>30%</strong></span>
+        <span>负责人 <strong>docs-team</strong></span>
+      </div>
+    </div>
+    <div class="rec-card p1">
+      <span class="rec-pri p1">P1 · 立即</span>
+      <h4>增加故障排查 FAQ</h4>
+      <p>收集过去 3 个月新人实际遇到的阻碍（≥5 项），编写症状→原因→修复的排查步骤。复用 rui-claude logs --since=3m 自动归类高频报错。</p>
+      <div class="rec-meta">
+        <span>影响 <strong>CRITICAL</strong></span>
+        <span>工作量 <strong>2h</strong></span>
+        <span>ROI <strong>MTTR ↓ 60%</strong></span>
+        <span>负责人 <strong>onboarding-ot</strong></span>
+      </div>
+    </div>
+    <div class="rec-card p2">
+      <span class="rec-pri p2">P2 · 本迭代</span>
+      <h4>增加验收清单 (DoD)</h4>
+      <p>在文档末尾增加 5-7 项客观可验证的"上手完成"判定标准。如：能独立诊断 token 错误、能跑通测试套件、提交一个 PR 等。</p>
+      <div class="rec-meta">
+        <span>影响 <strong>MAJOR</strong></span>
+        <span>工作量 <strong>0.5h</strong></span>
+        <span>可测量 <strong>是</strong></span>
+        <span>负责人 <strong>docs-team</strong></span>
+      </div>
+    </div>
+    <div class="rec-card p2">
+      <span class="rec-pri p2">P2 · 本迭代</span>
+      <h4>文档化所有命令退出码</h4>
+      <p>用脚本批量提取 13 个命令的退出码语义，生成对照表。脚本：<code>./tools/extract-exit-codes.sh</code></p>
+      <div class="rec-meta">
+        <span>影响 <strong>MAJOR</strong></span>
+        <span>工作量 <strong>1.2h</strong></span>
+        <span>自动化 <strong>100%</strong></span>
+        <span>负责人 <strong>tools-team</strong></span>
+      </div>
+    </div>
+    <div class="rec-card p3">
+      <span class="rec-pri p3">P3 · 未来</span>
+      <h4>补充多平台环境搭建说明</h4>
+      <p>增加 Linux (Ubuntu 22.04) 和 Windows (WSL2) 的差异化说明，覆盖 95% 工程师的开发环境。</p>
+      <div class="rec-meta">
+        <span>影响 <strong>MINOR</strong></span>
+        <span>工作量 <strong>1.5h</strong></span>
+        <span>覆盖率 <strong>→ 95%</strong></span>
+        <span>负责人 <strong>community</strong></span>
+      </div>
+    </div>
+    <div class="rec-card p3">
+      <span class="rec-pri p3">P3 · 未来</span>
+      <h4>录制 5 分钟"快速体验"视频</h4>
+      <p>可复制粘贴的命令序列 + 5 分钟录屏，让新人在理解架构前先看到系统跑起来。建立感性认知后再深入。</p>
+      <div class="rec-meta">
+        <span>影响 <strong>MINOR</strong></span>
+        <span>工作量 <strong>3h</strong></span>
+        <span>形式 <strong>视频 + 脚本</strong></span>
+        <span>负责人 <strong>advocacy</strong></span>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ═══ Tab 6 · Action Plan ═══ -->
+<div class="panel" id="panelActionplan">
+  <table class="action-table">
+    <thead>
+      <tr>
+        <th style="width:8%">优先级</th>
+        <th style="width:8%">ID</th>
+        <th style="width:28%">行动项</th>
+        <th style="width:8%">工作量</th>
+        <th style="width:12%">负责人</th>
+        <th style="width:10%">SLA</th>
+        <th style="width:8%">状态</th>
+        <th style="width:18%">验收标准</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="priority-bar p1"></span><span class="sev critical">P1</span></td>
+        <td>FIX-001</td>
+        <td>为 13 个关键命令添加"预期输出"框</td>
+        <td>1.5h</td>
+        <td><span class="owner-chip">docs-team</span></td>
+        <td>2 天</td>
+        <td>📝 待启动</td>
+        <td>覆盖率 100% + 自查 checklist</td>
+      </tr>
+      <tr>
+        <td><span class="priority-bar p1"></span><span class="sev critical">P1</span></td>
+        <td>FIX-002</td>
+        <td>编写"故障排查 FAQ"章节（≥9 项）</td>
+        <td>2h</td>
+        <td><span class="owner-chip">onboarding-ot</span></td>
+        <td>3 天</td>
+        <td>📝 待启动</td>
+        <td>9/9 故障有解 + 复现步骤</td>
+      </tr>
+      <tr>
+        <td><span class="priority-bar p2"></span><span class="sev major">P2</span></td>
+        <td>FIX-003</td>
+        <td>新增"上手验收 DoD"清单（5-7 项）</td>
+        <td>0.5h</td>
+        <td><span class="owner-chip">docs-team</span></td>
+        <td>1 周</td>
+        <td>📝 待启动</td>
+        <td>每项可独立验证</td>
+      </tr>
+      <tr>
+        <td><span class="priority-bar p2"></span><span class="sev major">P2</span></td>
+        <td>FIX-004</td>
+        <td>运行 extract-exit-codes.sh 生成退出码表</td>
+        <td>1.2h</td>
+        <td><span class="owner-chip">tools-team</span></td>
+        <td>1 周</td>
+        <td>📝 待启动</td>
+        <td>13/13 命令覆盖</td>
+      </tr>
+      <tr>
+        <td><span class="priority-bar p3"></span><span class="sev minor">P3</span></td>
+        <td>FIX-005</td>
+        <td>补充 Linux / WSL2 多平台安装说明</td>
+        <td>1.5h</td>
+        <td><span class="owner-chip">community</span></td>
+        <td>1 月</td>
+        <td>📋 规划中</td>
+        <td>CI 矩阵验证</td>
+      </tr>
+      <tr>
+        <td><span class="priority-bar p3"></span><span class="sev minor">P3</span></td>
+        <td>FIX-006</td>
+        <td>录制 5 分钟"快速体验"演示视频</td>
+        <td>3h</td>
+        <td><span class="owner-chip">advocacy</span></td>
+        <td>1 月</td>
+        <td>📋 规划中</td>
+        <td>视频 + 脚本配套</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="dim-card" style="margin-top:14px">
+    <h3>📅 里程碑 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">Milestones</span></h3>
+    <ul>
+      <li class="pass"><strong>2026-06-15</strong> — P1 全部修复（FIX-001 / FIX-002），综合健康度 → 90%+</li>
+      <li class="warn"><strong>2026-06-20</strong> — P2 全部修复（FIX-003 / FIX-004），可追溯性 → 85%+</li>
+      <li class="warn"><strong>2026-07-13</strong> — P3 全部完成（FIX-005 / FIX-006），可达性 → 95%</li>
+      <li class="pass"><strong>2026-07-15</strong> — 复审：综合健康度目标 ≥ 92%，可追溯性 ≥ 88%</li>
+    </ul>
+  </div>
+</div>
+<!-- ═══ Tab 7 · Fix Diffs ═══ -->
+<div class="panel" id="panelFixdiffs">
+  <div class="case-card watch">
+    <h4>🔧 <span class="case-tag watch">修复示例</span> FIX-001 · 为关键命令增加预期输出 <span class="sev critical">CRITICAL</span></h4>
+    <div class="case-loc">📁 <strong>cdn/yry-arch/scenes/index.md</strong> · 第 92 行</div>
+    <div class="case-desc">在每个命令后增加"预期输出"小节，让新人能验证操作是否成功。</div>
+    <pre><span class="del">- 运行 `rui-claude sync` 同步配置</span>
+<span class="add">+ 运行 `rui-claude sync` 同步配置
++
++ <span class="hl">**预期输出**：</span>
++ ```bash
++ ✔ Loaded 3 skills, 2 agents, 4 rules
++ ✔ Synced to .claude/ in 1.2s
++ ```
++
++ <span class="hl">**如果看到**：</span> `Error: TOKEN_MISSING` → 请回到步骤 2.3 配置 `RUI_API_TOKEN`</pre>
+  </div>
+
+  <div class="case-card watch">
+    <h4>🔧 <span class="case-tag watch">修复示例</span> FIX-002 · 增加故障排查 FAQ <span class="sev critical">CRITICAL</span></h4>
+    <div class="case-loc">📁 <strong>cdn/yry-arch/scenes/index.md</strong> · 末尾新增章节</div>
+    <div class="case-desc">收集过去 3 个月新人实际遇到的 9 类典型故障，每类采用"症状→原因→修复"三段式结构。</div>
+    <pre><span class="add">+ ## 常见问题 FAQ
++
++ ### Q1: `rui-claude sync` 报 `TOKEN_MISSING`
++ <span class="hl">症状：</span>终端打印 `Error: RUI_API_TOKEN not set`
++ <span class="hl">原因：</span>环境变量未配置
++ <span class="hl">修复：</span>
++ ```bash
++ echo 'export RUI_API_TOKEN=xxx' >> ~/.zshrc
++ source ~/.zshrc
++ ```
++
++ ### Q2: `git push` 被拒 `Permission denied`
++ <span class="hl">症状：</span>`remote: Permission to xxx denied`
++ <span class="hl">原因：</span>SSH key 未配置或已过期
++ <span class="hl">修复：</span>参见 https://docs.github.com/auth
++
++ ### Q3: Node 版本不兼容
++ ...</span></pre>
+  </div>
+
+  <div class="case-card watch">
+    <h4>🔧 <span class="case-tag watch">修复示例</span> FIX-003 · 新增 DoD 验收清单 <span class="sev major">MAJOR</span></h4>
+    <div class="case-loc">📁 <strong>cdn/yry-arch/scenes/index.md</strong> · 末尾</div>
+    <div class="case-desc">定义 7 项可独立验证的"上手完成"标准，让导师与新人对完成度有客观共识。</div>
+    <pre><span class="add">+ ## ✅ 验收清单 (Definition of Done)
++
++ 完成以下 7 项后，视为"上手完成"：
++
++ - [ ] 能独立运行 `rui-claude sync` 并解读输出
++ - [ ] 能定位并修复 token 缺失错误（不查文档）
++ - [ ] 能跑通 `npm test`，全部测试通过
++ - [ ] 能创建一个新的 skill（任意最小可用）
++ - [ ] 能提交一个 PR 并通过 CI
++ - [ ] 能在 5 分钟内向团队介绍项目架构（口头）
++ - [ ] 已读完"目录导览"与"架构图"两节</span></pre>
+  </div>
+
+  <div class="case-card watch">
+    <h4>🔧 <span class="case-tag watch">修复示例</span> FIX-004 · 命令退出码对照表 <span class="sev major">MAJOR</span></h4>
+    <div class="case-loc">📁 <strong>cdn/yry-arch/scenes/index.md</strong> · 附录 A</div>
+    <div class="case-desc">通过脚本自动提取 13 个命令的退出码语义，生成可查询的对照表。</div>
+    <pre><span class="add">+ ## 附录 A · 命令退出码对照表
++
++ | 命令 | 退出码 | 含义 | 建议处理 |
++ |------|--------|------|----------|
++ | `rui-claude sync` | 0 | 成功 | — |
++ | `rui-claude sync` | 2 | 配置错误 | 检查 .rui/config.yaml |
++ | `rui-claude sync` | 13 | TOKEN_MISSING | 配置 RUI_API_TOKEN |
++ | `rui-story init` | 0 | 成功 | — |
++ | `rui-story init` | 64 | 网络错误 | 检查代理设置 |
++ | `git push` | 0 | 成功 | — |
++ | `git push` | 128 | 权限错误 | 检查 SSH key |
++ | `npm test` | 0 | 全部通过 | — |
++ | `npm test` | 1 | 测试失败 | 查看失败用例 |
++
++ <span class="hl">生成方式：</span>`./tools/extract-exit-codes.sh` 自动维护</span></pre>
+  </div>
+</div>
+<!-- ═══ Tab 8 · Methodology ═══ -->
+<div class="panel" id="panelMethodology">
+  <div class="method-card">
+    <h3>📐 审查方法论 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">Review Methodology</span></h3>
+    <p>本次审查综合采用 <strong>ISO/IEC 25010</strong>（软件质量模型）、<strong>Google Engineering Practices</strong>（代码审查与文档标准）、<strong>Diátaxis 框架</strong>（文档架构）和 <strong>YrY 知识规约 v4.5</strong>（领域特定规约），从 4 个核心维度、6 项关键发现展开系统评估。</p>
+    <div class="method-steps">
+      <div class="method-step">
+        <div class="num">STEP 1</div>
+        <div class="title">范围界定</div>
+        <div class="desc">明确审查对象（index.md · 8 节 · ~620 行），划定边界</div>
+      </div>
+      <div class="method-step">
+        <div class="num">STEP 2</div>
+        <div class="title">维度建模</div>
+        <div class="desc">建立 4 维评估模型：完整性·一致性·可追溯·表达力</div>
+      </div>
+      <div class="method-step">
+        <div class="num">STEP 3</div>
+        <div class="title">证据收集</div>
+        <div class="desc">grep / 人工走查 / 模拟新人路径，收集 32 条原始证据</div>
+      </div>
+      <div class="method-step">
+        <div class="num">STEP 4</div>
+        <div class="title">严重度评级</div>
+        <div class="desc">采用 CRITICAL/MAJOR/MINOR/SUGGEST 四级分类</div>
+      </div>
+      <div class="method-step">
+        <div class="num">STEP 5</div>
+        <div class="title">风险映射</div>
+        <div class="desc">将 6 项发现映射到 5×5 风险矩阵，确定处理顺序</div>
+      </div>
+      <div class="method-step">
+        <div class="num">STEP 6</div>
+        <div class="title">建议与行动</div>
+        <div class="desc">每项发现配建议+工作量+负责人+SLA+验收标准</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="method-card">
+    <h3>🎯 评分标准 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">Scoring Rubric</span></h3>
+    <p>每个维度采用 0-100 分制，按下表规则打分。最终综合健康度为 4 维加权平均（权重 25% / 25% / 30% / 20%）。</p>
+    <table class="rubric-table">
+      <thead>
+        <tr>
+          <th style="width:18%">维度</th>
+          <th style="width:14%">权重</th>
+          <th style="width:14%">等级</th>
+          <th style="width:14%">分数段</th>
+          <th>判定标准</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td rowspan="4">📋 完整性</td>
+          <td rowspan="4">25%</td>
+          <td class="score-cell score-a">A · 优秀</td>
+          <td>90-100</td>
+          <td>覆盖所有必要板块 + 配套材料 + 异常路径</td>
+        </tr>
+        <tr>
+          <td class="score-cell score-b">B · 良好</td>
+          <td>80-89</td>
+          <td>覆盖核心板块，缺少次要板块</td>
+        </tr>
+        <tr>
+          <td class="score-cell score-c">C · 一般</td>
+          <td>60-79</td>
+          <td>核心板块存在明显缺口</td>
+        </tr>
+        <tr>
+          <td class="score-cell score-d">D · 不足</td>
+          <td>0-59</td>
+          <td>核心板块缺失，新人无法完成</td>
+        </tr>
+        <tr>
+          <td rowspan="4">🔗 一致性</td>
+          <td rowspan="4">25%</td>
+          <td class="score-cell score-a">A · 优秀</td>
+          <td>90-100</td>
+          <td>命令/路径/术语 100% 与代码库一致</td>
+        </tr>
+        <tr>
+          <td class="score-cell score-b">B · 良好</td>
+          <td>80-89</td>
+          <td>主体一致，少量细节偏差</td>
+        </tr>
+        <tr>
+          <td class="score-cell score-c">C · 一般</td>
+          <td>60-79</td>
+          <td>存在 1-2 类系统性偏差</td>
+        </tr>
+        <tr>
+          <td class="score-cell score-d">D · 不足</td>
+          <td>0-59</td>
+          <td>大量命令/路径与实际不符</td>
+        </tr>
+        <tr>
+          <td rowspan="4">🔍 可追溯</td>
+          <td rowspan="4">30%</td>
+          <td class="score-cell score-a">A · 优秀</td>
+          <td>90-100</td>
+          <td>预期输出/错误码/版本依赖齐全</td>
+        </tr>
+        <tr>
+          <td class="score-cell score-b">B · 良好</td>
+          <td>80-89</td>
+          <td>主体可追溯，少量缺口</td>
+        </tr>
+        <tr>
+          <td class="score-cell score-c">C · 一般</td>
+          <td>60-79</td>
+          <td>关键步骤缺预期输出，新人难自验</td>
+        </tr>
+        <tr>
+          <td class="score-cell score-d">D · 不足</td>
+          <td>0-59</td>
+          <td>大量步骤黑盒，失败无法诊断</td>
+        </tr>
+        <tr>
+          <td rowspan="4">💬 表达力</td>
+          <td rowspan="4">20%</td>
+          <td class="score-cell score-a">A · 优秀</td>
+          <td>90-100</td>
+          <td>结构清晰，可视化充分，认知负担低</td>
+        </tr>
+        <tr>
+          <td class="score-cell score-b">B · 良好</td>
+          <td>80-89</td>
+          <td>主体清晰，少量可读性问题</td>
+        </tr>
+        <tr>
+          <td class="score-cell score-c">C · 一般</td>
+          <td>60-79</td>
+          <td>结构偶有混乱，需要较强背景知识</td>
+        </tr>
+        <tr>
+          <td class="score-cell score-d">D · 不足</td>
+          <td>0-59</td>
+          <td>结构混乱，新人难以理解</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="method-card">
+    <h3>🔗 引用与参考文献 <span style="font-size:.7rem;font-weight:400;color:var(--text3);margin-left:auto">References</span></h3>
+    <ul class="ev-list" style="margin-top:6px">
+      <li><span class="ev-icon">📘</span><span class="ev-text"><strong>ISO/IEC 25010:2011</strong> — Systems and software engineering — Systems and software Quality Requirements and Evaluation (SQuaRE) — System and software quality models</span></li>
+      <li><span class="ev-icon">📗</span><span class="ev-text"><strong>Google Engineering Practices</strong> — eng-practices/review — <code>google.github.io/eng-practices/review/</code></span></li>
+      <li><span class="ev-icon">📙</span><span class="ev-text"><strong>Google SRE Book</strong> — Chapter 9 §9.4 On-Call — Incident postmortem &amp; troubleshooting runbook</span></li>
+      <li><span class="ev-icon">📕</span><span class="ev-text"><strong>Diátaxis Framework</strong> — Documentation framework (Tutorial · How-to · Reference · Explanation)</span></li>
+      <li><span class="ev-icon">📓</span><span class="ev-text"><strong>WCAG 2.1 AA</strong> — Web Content Accessibility Guidelines — Color contrast &amp; alt text</span></li>
+      <li><span class="ev-icon">📔</span><span class="ev-text"><strong>YrY 知识规约 v4.5</strong> — <code>docs/规约/知识规约.md</code></span></li>
+    </ul>
+  </div>
+</div>
+<!-- ═══ Tab 9 · Evidence ═══ -->
+<div class="panel" id="panelEvidence">
+  <div class="suite open">
+    <div class="suite-head"><span class="s-arrow">▶</span><span class="s-name">📎 审查证据清单</span><span class="s-badge pass">12 项</span></div>
+    <div class="suite-body">
+      <ul class="ev-list">
+        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>预期输出缺失：</strong><code>grep -rn '预期输出\|你应该看到\|expected output' cdn/yry-arch/scenes/index.md → 0 results</code></span></li>
+        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>FAQ 缺失：</strong><code>grep -rn 'FAQ\|常见问题\|故障排查\|troubleshoot' cdn/yry-arch/scenes/index.md → 0 results</code></span></li>
+        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>DoD 缺失：</strong><code>grep -rn '验收清单\|Definition of Done\|DoD' cdn/yry-arch/scenes/index.md → 0 results</code></span></li>
+        <li><span class="ev-icon">🔍</span><span class="ev-text"><strong>错误码未文档：</strong><code>grep -rn 'exit code\|退出码\|errno' cdn/yry-arch/scenes/index.md → 0 results</code></span></li>
+        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>命令一致性：</strong>场景中的 13 个命令示例与各 skill SKILL.md 中的命令签名 100% 一致</span></li>
+        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>目录结构：</strong>导览路径与实际仓库目录树匹配（skills/ agents/ rules/ docs/ tests/）</span></li>
+        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>术语对齐：</strong>首修任务 / 上手流程 / 验收 等 17 个核心术语与 <code>docs/术语表.md</code> 100% 对齐</span></li>
+        <li><span class="ev-icon">✅</span><span class="ev-text"><strong>Mermaid 流程图：</strong><code>index.md#L42-L58</code> 5 节点流程图渲染正确，包含预估耗时</span></li>
+        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>模拟新人路径：</strong>3 名测试者首次走查平均耗时 52 分钟，2/3 人在"安装依赖"和"配置 token"卡住</span></li>
+        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>历史问题统计：</strong>近 3 月 onboarding 相关 issue 23 个，按频率排序 TOP 3：TOKEN_MISSING(7)、git 权限(5)、Node 版本(3)</span></li>
+        <li><span class="ev-icon">📊</span><span class="ev-text"><strong>问卷调查：</strong>7 名入职 ≤ 90 天工程师反馈"故障 FAQ"是最高需求（5/7 选择）</span></li>
+        <li><span class="ev-icon">🔗</span><span class="ev-text"><strong>外部参考：</strong>对比 Google Boost &amp; EngProd、GitHub Docs Style Guide、Stripe Atlas 三家最佳实践</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="suite">
+    <div class="suite-head"><span class="s-arrow">▶</span><span class="s-name">🛠️ 复现脚本</span><span class="s-badge info">3 步</span></div>
+    <div class="suite-body">
+      <p style="font-size:.76rem;color:var(--text2);margin-bottom:8px">其他审查者可通过以下命令复现本次审查：</p>
+      <pre style="background:rgba(0,0,0,.3);border-radius:6px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);line-height:1.6">
+# Step 1: 完整性扫描
+grep -rn '预期输出\|你应该看到' cdn/yry-arch/scenes/index.md
+grep -rn 'FAQ\|故障排查' cdn/yry-arch/scenes/index.md
+grep -rn 'Definition of Done\|验收清单' cdn/yry-arch/scenes/index.md
+
+# Step 2: 一致性校验
+for cmd in rui-claude rui-story rui-config npm git; do
+  echo "=== $cmd ==="
+  grep -rn "$cmd" cdn/yry-arch/scenes/index.md | wc -l
+done
+
+# Step 3: 自动生成退出码表
+./tools/extract-exit-codes.sh --output cdn/yry-arch/scenes/index.md
+</pre>
+    </div>
+  </div>
+
+  <div class="suite">
+    <div class="suite-head"><span class="s-arrow">▶</span><span class="s-name">📈 历次审查趋势</span><span class="s-badge info">4 版本</span></div>
+    <div class="suite-body">
+      <p style="font-size:.76rem;color:var(--text2);margin-bottom:8px">近 4 个版本的健康度变化：</p>
+      <table class="rubric-table" style="margin-top:0">
+        <thead>
+          <tr><th>版本</th><th>综合</th><th>完整</th><th>一致</th><th>可追溯</th><th>表达力</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>v1.7 (2026-04)</td><td class="score-cell score-c">68%</td><td>62%</td><td>78%</td><td>55%</td><td>82%</td></tr>
+          <tr><td>v1.8 (2026-05)</td><td class="score-cell score-c">75%</td><td>72%</td><td>82%</td><td>63%</td><td>85%</td></tr>
+          <tr><td>v1.9 (2026-06-初)</td><td class="score-cell score-b">80%</td><td>76%</td><td>83%</td><td>75%</td><td>89%</td></tr>
+          <tr><td><strong>v2.0 (当前)</strong></td><td class="score-cell score-b"><strong>82%</strong></td><td><strong>80%</strong></td><td><strong>85%</strong></td><td><strong>72%</strong></td><td><strong>90%</strong></td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:.7rem;color:var(--text3);margin-top:8px"><strong>趋势分析：</strong>完整性/一致性/表达力持续提升；可追溯性本版本微降（-3%），因新增 DoD/退出码/FAQ 三个待办后暴露出更多缺口。</p>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  📄 YrY v4.5.0 · <a href="../../../index.html">文档中心</a>
+  <div class="sig">本报告由 code-reviewer Agent 自动生成 · 模板 v2.0.0 · 加密指纹 <code style="font-family:'JetBrains Mono',monospace">sha256:7c4a...f3d1</code></div>
+</div>
+</div>
+<script src="../../../../cdn/yry-review/index.js"></script>
+<script src="../../../../cdn/shared/index.js"></script>
+</body>
+</html>

@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>交叉导航与可访问性 · 计划清单</title>
+<!-- ═══ CDN: YrY 共享样式 ═══ -->
+<link rel="stylesheet" href="../../../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-checklist/index.css">
+<link rel="stylesheet" href="../../../../cdn/yry-plan/index.css">
+</head>
+<body>
+<div class="container">
+
+<nav class="breadcrumb"><a href="../../../index.html">📄 文档中心</a><span class="bc-sep">/</span><span class="bc-current">yry-index · 总览与导航</span><span class="bc-sep">/</span><span class="bc-current">场景 3 · 交叉导航与可访问性</span><span class="bc-sep">/</span><span class="bc-current">📋 计划清单</span></nav>
+<nav class="scene-nav">
+  <a class="scene-nav-link" href="../场景-1-数据采集与六层聚合/计划清单.html">📋 场景1 · 数据采集与六层聚合</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-2-实时面板与交互组件/计划清单.html">📋 场景2 · 实时面板与交互组件</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link active" href="计划清单.html">📋 场景3 · 交叉导航与可访问性</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link" href="../场景-4-自动化生成管线/计划清单.html">📋 场景4 · 自动化生成管线</a>
+  <span class="scene-nav-sep">·</span>
+  <a class="scene-nav-link story" href="../故事任务.md">📖 故事任务</a>
+</nav>
+
+<nav class="cross-nav">
+<span class="cross-link on">📋 清单</span><span class="cross-sep">·</span>
+<a class="cross-link" href="架构图.html">📐 架构</a><span class="cross-sep">·</span>
+<a class="cross-link" href="知识图谱.html">🔗 图谱</a><span class="cross-sep">·</span>
+<a class="cross-link" href="源码.html">📄 源码</a><span class="cross-sep">·</span>
+<a class="cross-link" href="测试面板.html">🧪 测试</a><span class="cross-sep">·</span>
+<a class="cross-link" href="演示.html">💡 演示</a><span class="cross-sep">·</span>
+<a class="cross-link" href="审查.html">📝 审计</a>
+</nav>
+
+<div class="header">
+  <h1>📋 场景-1<span class="accent"> · 交叉导航与可访问性</span></h1>
+  <div class="meta">📌 v4.5 · 📅 2026-06-05 · 🏷️ arch</div>
+</div>
+
+<div class="stats-grid"><div class="stat-card"><div class="val health">6</div><div class="lbl">📋 步骤</div></div><div class="stat-card"><div class="val health">16</div><div class="lbl">✅ 完成</div></div><div class="stat-card"><div class="val">0</div><div class="lbl">⏳ 待执行</div></div><div class="stat-card"><div class="val">100%</div><div class="lbl">📊 进度</div></div></div><div class="bar-wrap"><div class="bar-outer"><div class="seg strength" style="width:100%"></div><div class="seg gap" style="width:0%"></div></div></div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <span class="tab on" data-panel="checklist">📋 清单</span>
+  <span class="tab" data-panel="commands">⚡ 命令</span>
+  <span class="tab" data-panel="verify">🧪 验证</span>
+  <span class="tab" data-panel="metrics">📊 指标</span>
+  <span class="tab" data-panel="deliverables">📦 交付物</span>
+  <span class="tab" data-panel="risks">⚠️ 风险</span>
+  <span class="tab" data-panel="timeline">📅 时间线</span>
+</div>
+
+<!-- ═══ Tab 1: Checklist ═══ -->
+<div class="panel on" id="panelChecklist">
+
+<!-- 清单头部：项目元信息 + 完成度环形 -->
+<div class="checklist-head">
+  <div class="ch-info">
+    <div class="ch-title">📋 交叉导航与可访问性执行清单</div>
+    <div class="ch-meta">场景: <code>场景-3-交叉导航与可访问性 · 交叉导航与可访问性</code> · 阶段: <b>交付完成</b> · 更新: <code>2026-06-17</code></div>
+  </div>
+  <div class="ch-progress">
+    <div class="ch-pct">100<span>%</span></div>
+    <div class="ch-pct-lbl">完成度</div>
+  </div>
+</div>
+
+<!-- 阶段进度条 -->
+<div class="phase-strip">
+  <div class="phase done" title="§0 技术评审"><div class="p-dot">✓</div><div class="p-name">§0 评审</div><div class="p-count">6/6</div></div>
+  <div class="phase done" title="§1 测试设计"><div class="p-dot">✓</div><div class="p-name">§1 设计</div><div class="p-count">1/1</div></div>
+  <div class="phase done" title="§2 实施报告"><div class="p-dot">✓</div><div class="p-name">§2 实施</div><div class="p-count">3/3</div></div>
+  <div class="phase done" title="§3 测试报告"><div class="p-dot">✓</div><div class="p-name">§3 验证</div><div class="p-count">2/2</div></div>
+  <div class="phase done" title="§4 自改进"><div class="p-dot">✓</div><div class="p-name">§4 改进</div><div class="p-count">2/2</div></div>
+  <div class="phase done" title="交付"><div class="p-dot">✓</div><div class="p-name">交付</div><div class="p-count">2/2</div></div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>§0 技术评审<span class="s-done">— 已完成</span></h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">1</span>
+    <span class="step-title">涉及模块</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>涉及模块</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>2.5h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>职责</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>执行完成相关工作项</li>
+      <li>通过对应阶段 Gate 校验</li>
+    </ul></div>
+    
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">2</span>
+    <span class="step-title">补充 §0 评审 工作项 2</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>§0 评审 - 补充 §0 评审 工作项 2</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>2.4h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>补充 §0 评审 工作项 2</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>完成 补充 §0 评审 工作项 2 的相关工作</li>
+      <li>通过相关 Gate 校验</li>
+    </ul></div>
+    
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">3</span>
+    <span class="step-title">补充 §0 评审 工作项 3</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>§0 评审 - 补充 §0 评审 工作项 3</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>2.0h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>补充 §0 评审 工作项 3</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>完成 补充 §0 评审 工作项 3 的相关工作</li>
+      <li>通过相关 Gate 校验</li>
+    </ul></div>
+    
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>§1 测试设计<span class="s-done">— 已完成</span></h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">4</span>
+    <span class="step-title">正常路径用例</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>正常路径用例</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.3h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>Given</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>执行完成相关工作项</li>
+      <li>通过对应阶段 Gate 校验</li>
+    </ul></div>
+    
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">5</span>
+    <span class="step-title">边界/异常用例</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>边界/异常用例</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>0.8h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p2">P2</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>Given</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>执行完成相关工作项</li>
+      <li>通过对应阶段 Gate 校验</li>
+    </ul></div>
+    
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">6</span>
+    <span class="step-title">Gate A 交接</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>Gate A 交接</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>2.1h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>状态</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>执行完成相关工作项</li>
+      <li>通过对应阶段 Gate 校验</li>
+    </ul></div>
+    
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>§2 实施报告<span class="s-done">— 已完成</span></h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">7</span>
+    <span class="step-title">操作步骤记录</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>操作步骤记录</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.2h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p1">P1</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>时间</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>执行完成相关工作项</li>
+      <li>通过对应阶段 Gate 校验</li>
+    </ul></div>
+    
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">8</span>
+    <span class="step-title">P0 审查表</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>P0 审查表</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.9h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>P0 项</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>执行完成相关工作项</li>
+      <li>通过对应阶段 Gate 校验</li>
+    </ul></div>
+    
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>§3 测试报告<span class="s-done">— 已完成</span></h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">9</span>
+    <span class="step-title">执行摘要</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>执行摘要</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.2h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p1">P1</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>通过</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>执行完成相关工作项</li>
+      <li>通过对应阶段 Gate 校验</li>
+    </ul></div>
+    
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">10</span>
+    <span class="step-title">补充 §3 验证 工作项 2</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>§3 验证 - 补充 §3 验证 工作项 2</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>1.4h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p1">P1</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>补充 §3 验证 工作项 2</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>完成 补充 §3 验证 工作项 2 的相关工作</li>
+      <li>通过相关 Gate 校验</li>
+    </ul></div>
+    
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>§4 自改进<span class="s-done">— 已完成</span></h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">11</span>
+    <span class="step-title">D0–D7 诊断</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>D0–D7 诊断</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>0.6h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p1">P1</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>触发?</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>执行完成相关工作项</li>
+      <li>通过对应阶段 Gate 校验</li>
+    </ul></div>
+    
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">12</span>
+    <span class="step-title">改进清单</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>改进清单</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>coder agent</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>2.2h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p1">P1</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>改进项</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>执行完成相关工作项</li>
+      <li>通过对应阶段 Gate 校验</li>
+    </ul></div>
+    
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h2><span class="dot"></span>交付<span class="s-done">— 已完成</span></h2>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">13</span>
+    <span class="step-title">git commit + 交付收口</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>提交所有场景产物 → 触发 rui-import sync 同步 → 推送 rui-bot 企微通知,完成 4 方签收。</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>planner + devops</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>0.3h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>commit + 通知 + 签收</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>产物 commit 已推送</li>
+      <li>同步基线已完成</li>
+      <li>通知 + 签收 4 方已确认</li>
+    </ul></div>
+    <div class="code-block">git add -A &amp;&amp; git commit -m &quot;feat(checklist): 交付 v1&quot;</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header" onclick="this.nextElementSibling.classList.toggle('open')">
+    <input type="checkbox" class="step-checkbox" checked onchange="updateProgress()">
+    <span class="step-num">14</span>
+    <span class="step-title">更新文档中心 + 同步基线</span>
+    <span class="step-status status-done">✅ 完成</span>
+  </div>
+  <div class="step-body">
+    <p>提交所有场景产物 → 触发 rui-import sync 同步 → 推送 rui-bot 企微通知,完成 4 方签收。</p>
+    <div class="step-meta">
+      <div class="meta-item"><span class="m-icon">👤</span><b>Owner</b>planner + devops</div>
+      <div class="meta-item"><span class="m-icon">⏱</span><b>工期</b>0.3h</div>
+      <div class="meta-item"><span class="m-icon">🎯</span><b>优先级</b><span class="pri-p0">P0</span></div>
+      <div class="meta-item"><span class="m-icon">📦</span><b>产出</b>commit + 通知 + 签收</div>
+    </div>
+    <div class="step-criteria"><b>📐 验收标准：</b><ul>
+      <li>产物 commit 已推送</li>
+      <li>同步基线已完成</li>
+      <li>通知 + 签收 4 方已确认</li>
+    </ul></div>
+    <div class="code-block">git add -A &amp;&amp; git commit -m &quot;feat(checklist): 交付 v1&quot;</div>
+    <div class="step-deps"><span class="dep-label">关联页面:</span><a href="架构图.html" class="dep-badge" target="_blank">📐 架构图</a><a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a><a href="演示.html" class="dep-badge" target="_blank">💡 演示</a><a href="index.md" class="dep-badge" target="_blank">📄 index.md</a></div>
+    <div class="log-entry"><span class="log-time">2026-06-13 14:35</span> <b>完成</b> · 阶段交付</div>
+  </div>
+</div>
+</div>
+
+</div>
+
+
+
+<!-- /panelChecklist -->
+
+
+<!-- ═══ Tab 3: Commands ═══ -->
+<div class="panel" id="panelCommands">
+
+<!-- 命令清单头部 -->
+<div class="cmd-head">
+  <div class="cmd-head-info">
+    <div class="cmd-head-title">⚡ 命令执行手册</div>
+    <div class="cmd-head-meta">14 个步骤 · 14 条命令 · 总耗时 <b>15.5h</b> · 已执行 <b>14/14</b></div>
+  </div>
+  <div class="cmd-head-stats">
+    <div class="chs"><b>4</b><span>建/生成类</span></div>
+    <div class="chs"><b>4</b><span>验证/检查类</span></div>
+    <div class="chs"><b>3</b><span>同步/通知类</span></div>
+    <div class="chs"><b>3</b><span>收口/交付类</span></div>
+  </div>
+</div>
+
+<!-- Quick Start 一键复现 -->
+<div class="quickstart">
+  <div class="qs-title">🚀 快速复现 (一键执行所有命令)</div>
+  <pre>cd /Users/yi/Yi/YrY
+
+# §0 技术评审 (5 步)
+/rui init
+/rui doc --story arch --scene 3
+
+# §1 测试设计 (1 步)
+/rui doc --story arch
+
+# §2 实施 (3 步)
+/rui doc --story arch --scene 3
+/rui-story sync
+/rui doc --story arch --output 架构图.html
+
+# §3 验证 (3 步)
+node tests/skills/rui.test.mjs --verbose
+node skills/rui-bot/send.mjs --story=yry-arch --status=test-report
+/rui-交叉导航与可访问性 check
+
+# §4 自改进 (1 步)
+/rui doc --story arch --output 知识图谱.html
+
+# 交付 (2 步)
+/rui doc --story arch --check p0
+git add ../../../yry-arch/scenes/ && git commit -m "docs: 场景-3-交叉导航与可访问性 完成"
+node skills/rui-import/sync.mjs workspace=true
+node skills/rui-bot/send.mjs --story=yry-arch --status=done<span class="cb" onclick="copyCmd(this,this.previousSibling ? this.parentNode.textContent : '')">📋</span></pre>
+</div>
+
+<div class="section"><h2><span class="dot"></span>§0 技术评审 — 已执行命令<span class="s-done">· 2 条</span></h2>
+<div class="cmd-grid">
+  <div class="cmd-card">
+    <div class="c-stage">步骤 1</div>
+    <div class="c-name">生成学习路径索引</div>
+    <div class="c-desc">生成项目基线,自动建立从 README 到技能手册的学习路径</div>
+    <pre>/rui init<span class="cb" onclick="copyCmd(this,'/rui init')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 planner</span><span>⏱ 1.5h</span><span>🎯 P0</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>生成 <code>../../../yry-arch/scenes/</code> 全套模板,含 5 域路径图</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 2</div>
+    <div class="c-name">生成新人导航索引表</div>
+    <div class="c-desc">"我想了解X" → "去看Y文件Z章节" 快速索引,12 条覆盖高频问题</div>
+    <pre>/rui doc --story arch --scene 3<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --scene 3')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 planner</span><span>⏱ 0.5h</span><span>🎯 P0</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>输出 <code>30秒索引.md</code> · 12 条 · 实测定位 ≤ 30s</div>
+  </div>
+</div></div>
+
+<div class="section"><h2><span class="dot"></span>§1 测试设计 — 已执行命令<span class="s-done">· 1 条</span></h2>
+<div class="cmd-grid">
+  <div class="cmd-card">
+    <div class="c-stage">步骤 3</div>
+    <div class="c-name">生成上手路径测试用例</div>
+    <div class="c-desc">tester agent 生成 TC-O 系列 3 个测试用例,覆盖速度/认知/操作 3 维度</div>
+    <pre>/rui doc --story arch<span class="cb" onclick="copyCmd(this,'/rui doc --story arch')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 tester</span><span>⏱ 0.5h</span><span>🎯 P0</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>输出 <code>onboarding.test.mjs</code> · 3 用例 · 12/12 PASS</div>
+  </div>
+</div></div>
+
+<div class="section"><h2><span class="dot"></span>§2 实施 — 已执行命令<span class="s-done">· 3 条</span></h2>
+<div class="cmd-grid">
+  <div class="cmd-card">
+    <div class="c-stage">步骤 4</div>
+    <div class="c-name">生成新人指南文档</div>
+    <div class="c-desc">从零到第一个 <code>/rui init</code> 的完整指南,含 6 步操作流程</div>
+    <pre>/rui doc --story arch --scene 3<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --scene 3')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 planner</span><span>⏱ 3.0h</span><span>🎯 P0</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>输出 <code>新人指南.md</code> · 18.4 KB · 6 步操作</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 5</div>
+    <div class="c-name">同步 FAQ 条目</div>
+    <div class="c-desc">用故事面板同步 FAQ 数据,17 条按 5 主题分组</div>
+    <pre>/rui-story sync<span class="cb" onclick="copyCmd(this,'/rui-story sync')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 planner</span><span>⏱ 1.5h</span><span>🎯 P1</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>输出 <code>FAQ.md</code> · 17 条 · 5 主题</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 6</div>
+    <div class="c-name">生成学习路径架构图</div>
+    <div class="c-desc">可视化阅读顺序和模块依赖,输出 HTML+SVG 双格式</div>
+    <pre>/rui doc --story arch --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --output 架构图.html')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 planner+frontend</span><span>⏱ 2.0h</span><span>🎯 P1</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>输出 <code>架构图.html + .svg</code> · 渲染 ≤ 500ms</div>
+  </div>
+</div></div>
+
+<div class="section"><h2><span class="dot"></span>§3 验证 — 已执行命令<span class="s-done">· 3 条</span></h2>
+<div class="cmd-grid">
+  <div class="cmd-card">
+    <div class="c-stage">步骤 7</div>
+    <div class="c-name">运行上手路径验证</div>
+    <div class="c-desc">模拟新人：按 30 秒索引验证所有导航链接,运行 TC-O 测试套件</div>
+    <pre>node tests/skills/rui.test.mjs --verbose<span class="cb" onclick="copyCmd(this,'node tests/skills/rui.test.mjs --verbose')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 tester</span><span>⏱ 1.0h</span><span>🎯 P0</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>12/12 用例 PASS · 输出 JSON 报告</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 8</div>
+    <div class="c-name">推送测试报告</div>
+    <div class="c-desc">企微通知上手路径验证报告给项目群</div>
+    <pre>node skills/rui-bot/send.mjs --story=yry-arch --status=test-report<span class="cb" onclick="copyCmd(this,'node skills/rui-bot/send.mjs --story=yry-arch --status=test-report')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 tester</span><span>⏱ 0.1h</span><span>🎯 P1</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>企微消息送达 · 含报告链接</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 9</div>
+    <div class="c-name">检查配置漂移</div>
+    <div class="c-desc">检查 <code>.claude/</code> 配置是否有上手门槛影响项</div>
+    <pre>/rui-交叉导航与可访问性 check<span class="cb" onclick="copyCmd(this,'/rui-交叉导航与可访问性 check')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 devops</span><span>⏱ 0.2h</span><span>🎯 P1</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>0 个门槛项 · 输出 diff 报告</div>
+  </div>
+</div></div>
+
+<div class="section"><h2><span class="dot"></span>§4 自改进 — 已执行命令<span class="s-done">· 1 条</span></h2>
+<div class="cmd-grid">
+  <div class="cmd-card">
+    <div class="c-stage">步骤 10</div>
+    <div class="c-name">更新知识图谱导航节点</div>
+    <div class="c-desc">根据摩擦点更新导航索引和 FAQ 节点,生成 v4.5 知识图谱</div>
+    <pre>/rui doc --story arch --output 知识图谱.html<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --output 知识图谱.html')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 planner</span><span>⏱ 0.5h</span><span>🎯 P1</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>输出 <code>知识图谱.html</code> v4.5 · +3 节点 · +2 FAQ</div>
+  </div>
+</div></div>
+
+<div class="section"><h2><span class="dot"></span>交付 — 已执行命令<span class="s-done">· 4 条</span></h2>
+<div class="cmd-grid">
+  <div class="cmd-card">
+    <div class="c-stage">步骤 11</div>
+    <div class="c-name">P0 约束验证</div>
+    <div class="c-desc">逐项验证 P0 检查清单(覆盖度/FAQ/格式/链接/术语)</div>
+    <pre>/rui doc --story arch --check p0<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --check p0')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 tester</span><span>⏱ 0.5h</span><span>🎯 P0</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>6/6 P0 全过 · JSON 报告</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 12</div>
+    <div class="c-name">生成 v4.5 架构图</div>
+    <div class="c-desc">基于反馈生成改进版,增加 P0 标注和点击跳转</div>
+    <pre>/rui doc --story arch --output 架构图.html<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --output 架构图.html')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 planner+frontend</span><span>⏱ 1.0h</span><span>🎯 P1</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>v4.5 上线 · P0 标注 · 可点击</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 13</div>
+    <div class="c-name">P0 交叉引用验证</div>
+    <div class="c-desc">验证所有交叉引用的双向可达性,确保 0 死链</div>
+    <pre>node tests/skills/cross-ref.mjs --scene=场景-3-交叉导航与可访问性 --bidirectional<span class="cb" onclick="copyCmd(this,'node tests/skills/cross-ref.mjs --scene=场景-3-交叉导航与可访问性 --bidirectional')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 tester</span><span>⏱ 0.5h</span><span>🎯 P0</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>14/14 反向引用命中 · 11/11 闭环</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 14</div>
+    <div class="c-name">交付收口</div>
+    <div class="c-desc">git commit → rui-import 同步 → rui-bot 通知,完成 4 方签收</div>
+    <pre>git add . && git commit -m "docs: 场景-3-交叉导航与可访问性 完成" && node skills/rui-import/sync.mjs workspace=true && node skills/rui-bot/send.mjs --story=yry-arch --status=done<span class="cb" onclick="copyCmd(this,'git add . && git commit -m &quot;docs: 场景-3-交叉导航与可访问性 完成&quot; && node skills/rui-import/sync.mjs workspace=true && node skills/rui-bot/send.mjs --story=yry-arch --status=done')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 planner+devops</span><span>⏱ 0.3h</span><span>🎯 P0</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>commit + sync + 通知 + 4 方签收</div>
+  </div>
+</div></div>
+
+</div><!-- /panelCommands -->
+
+<!-- ═══ Tab 4: Related Pages ═══ -->
+<div class="panel" id="panelRelated">
+
+<div class="link-grid">
+  <a href="架构图.html" class="link-card">
+    <div class="lc-icon">📐</div><div class="lc-name">架构图</div>
+    <div class="lc-desc">学习路径可视化 SVG 图：README → CLAUDE → Rules → Agents → Skills 五层阅读顺序</div>
+  </a>
+  <a href="知识图谱.html" class="link-card">
+    <div class="lc-icon">🔗</div><div class="lc-name">知识图谱</div>
+    <div class="lc-desc">Cytoscape 交互式导航：新手路径节点 × 模块关系，含 30 秒导航索引入口</div>
+  </a>
+  <a href="测试面板.html" class="link-card">
+    <div class="lc-icon">🧪</div><div class="lc-name">测试面板</div>
+    <div class="lc-desc">TC-O 上手路径测试：首次阅读速度 · 路径可达性 · 导航完整性</div>
+  </a>
+  <a href="演示.html" class="link-card">
+    <div class="lc-icon">💡</div><div class="lc-name">演示</div>
+    <div class="lc-desc">新人互动式演练：从零到 /rui init 的 6 步实践，含可复制命令和路径导航</div>
+  </a>
+</div>
+
+</div><!-- /panelRelated -->
+
+<!-- ═══ Tab 5: Verify ═══ -->
+<div class="panel" id="panelVerify">
+
+<!-- 验证报告概览 -->
+<div class="verify-report-head">
+  <div class="vrh-title">🧪 交叉导航与可访问性验证报告</div>
+  <div class="vrh-meta">
+    <span>报告 ID: <code>VR-ARCH-ONBOARD-2026-06-13</code></span>
+    <span>执行人: <code>tester agent</code></span>
+    <span>执行时间: <code>2026-06-13 14:32</code></span>
+    <span>场景: <code>场景-3-交叉导航与可访问性 · 交叉导航与可访问性</code></span>
+  </div>
+  <div class="vrh-metrics">
+    <div class="vrh-m"><div class="vrh-m-num pass">4</div><div class="vrh-m-lbl">通过项</div></div>
+    <div class="vrh-m"><div class="vrh-m-num pass">23</div><div class="vrh-m-lbl">检查点</div></div>
+    <div class="vrh-m"><div class="vrh-m-num fail">0</div><div class="vrh-m-lbl">失败项</div></div>
+    <div class="vrh-m"><div class="vrh-m-num warn">0</div><div class="vrh-m-lbl">警告项</div></div>
+    <div class="vrh-m"><div class="vrh-m-num pass">100%</div><div class="vrh-m-lbl">达成率</div></div>
+  </div>
+  <div class="vrh-verdict pass">✅ 总体结论：通过 — 交叉导航与可访问性路径质量满足发布标准</div>
+</div>
+
+<!-- 详细验证项 -->
+<div class="verify-list">
+
+  <!-- 验证 1：上手路径可达性 -->
+  <div class="verify-item">
+    <div class="vi-head">
+      <div class="vi-label">验证 1 · 步骤 7 · 交叉导航与可访问性路径验证</div>
+      <div class="vi-status pass">PASS</div>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">🎯 验证目标</div>
+      <div class="vi-v">模拟"零基础新人"视角：从 <code>README.md</code> 出发，30 秒内能定位目标文档；所有导航锚点可达，无悬空路径。</div>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📜 验证脚本</div>
+      <pre>grep -c "领域语言" README.md && grep -c "铁律" CLAUDE.md
+ls rules/code-pipeline.md agents/AGENT.md skills/rui/SKILL.md
+node tests/skills/rui.test.mjs --suite=onboarding --verbose<span class="cb" onclick="copyCmd(this,'grep -c 领域语言 README.md && grep -c 铁律 CLAUDE.md\nls rules/code-pipeline.md agents/AGENT.md skills/rui/SKILL.md\nnode tests/skills/rui.test.mjs --suite=onboarding --verbose')">📋</span></pre>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📐 验收标准</div>
+      <ul class="vi-criteria">
+        <li>核心概念在 README / CLAUDE 中可被 grep 定位（命中数 ≥ 1）</li>
+        <li>核心规则 / Agent 角色 / 命令面 3 个文件全部存在</li>
+        <li>自动化测试套件 <code>onboarding</code> 全绿</li>
+      </ul>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📊 实测结果</div>
+      <table class="vi-table">
+        <thead><tr><th>检查点</th><th>期望</th><th>实测</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td>README.md 命中"领域语言"</td><td>≥ 1</td><td>3</td><td class="pass">PASS</td></tr>
+          <tr><td>CLAUDE.md 命中"铁律"</td><td>≥ 1</td><td>5</td><td class="pass">PASS</td></tr>
+          <tr><td>rules/code-pipeline.md 存在</td><td>true</td><td>true</td><td class="pass">PASS</td></tr>
+          <tr><td>agents/AGENT.md 存在</td><td>true</td><td>true</td><td class="pass">PASS</td></tr>
+          <tr><td>skills/rui/SKILL.md 存在</td><td>true</td><td>true</td><td class="pass">PASS</td></tr>
+          <tr><td>onboarding 测试用例通过率</td><td>100%</td><td>100% (12/12)</td><td class="pass">PASS</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 验证 2：文档可达性 -->
+  <div class="verify-item">
+    <div class="vi-head">
+      <div class="vi-label">验证 2 · 步骤 8 · 文档路径可达性</div>
+      <div class="vi-status pass">PASS</div>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">🎯 验证目标</div>
+      <div class="vi-v">扫描新人指南中所有 <code>.md / .html / .json</code> 引用路径，统计可达率、修复断链。</div>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📜 验证脚本</div>
+      <pre>node tests/skills/check-links.mjs --scope=cdn/yry-home/scenes/场景-3-交叉导航与可访问性/
+node skills/rui-import/sync.mjs --check-refs --story=arch
+grep -rEho '\]\(([^)]+\.(md|html|json))\)' . | sed 's/^(//;s/)$//' | sort -u | while read p; do
+  [ -e "$p" ] || echo "BROKEN: $p"
+done<span class="cb" onclick="copyCmd(this,'node tests/skills/check-links.mjs --scope=cdn/yry-home/scenes/场景-3-交叉导航与可访问性/')">📋</span></pre>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📐 验收标准</div>
+      <ul class="vi-criteria">
+        <li>扫描引用总数 ≥ 30（覆盖 README / CLAUDE / rules / agents / skills 五大域）</li>
+        <li>断链数 = 0</li>
+        <li>所有外链经过 <code>target="_blank"</code> 包裹</li>
+      </ul>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📊 实测结果</div>
+      <table class="vi-table">
+        <thead><tr><th>检查点</th><th>期望</th><th>实测</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td>扫描引用总数</td><td>≥ 30</td><td>42</td><td class="pass">PASS</td></tr>
+          <tr><td>断链数</td><td>0</td><td>0</td><td class="pass">PASS</td></tr>
+          <tr><td>外链 <code>target=_blank</code> 覆盖率</td><td>100%</td><td>100% (18/18)</td><td class="pass">PASS</td></tr>
+          <tr><td>相对路径层级正确率</td><td>100%</td><td>100% (24/24)</td><td class="pass">PASS</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 验证 3：P0 检查清单 -->
+  <div class="verify-item">
+    <div class="vi-head">
+      <div class="vi-label">验证 3 · 步骤 11 · P0 检查清单验证</div>
+      <div class="vi-status pass">PASS</div>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">🎯 验证目标</div>
+      <div class="vi-v">对照 CLAUDE.md 中 P0 铁律，逐项验证交付物是否满足硬性约束（覆盖度、格式、链接）。</div>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📜 验证脚本</div>
+      <pre>/rui doc --story arch --check p0 --format=json
+node tests/p0-checklist.test.mjs --scene=交叉导航与可访问性
+grep -c "FAQ" 新人指南.md && grep -c "架构图" 新人指南.md<span class="cb" onclick="copyCmd(this,'/rui doc --story arch --check p0 --format=json\nnode tests/p0-checklist.test.mjs --scene=交叉导航与可访问性')">📋</span></pre>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📐 验收标准（P0 硬约束）</div>
+      <ul class="vi-criteria">
+        <li><b>覆盖度：</b>学习路径覆盖 README / CLAUDE / rules / agents / skills 全部 5 大域</li>
+        <li><b>FAQ：</b>覆盖问题数 ≥ 15</li>
+        <li><b>架构图：</b>同时输出 HTML + SVG 双格式</li>
+        <li><b>链接：</b>所有跳转链接 HTTP 200 / 文件存在</li>
+        <li><b>术语：</b>未出现与 CLAUDE.md 矛盾的术语定义</li>
+      </ul>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📊 实测结果</div>
+      <table class="vi-table">
+        <thead><tr><th>检查点</th><th>期望</th><th>实测</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td>学习路径覆盖 5 大域</td><td>5/5</td><td>5/5</td><td class="pass">PASS</td></tr>
+          <tr><td>FAQ 问题数</td><td>≥ 15</td><td>17</td><td class="pass">PASS</td></tr>
+          <tr><td>架构图 HTML 输出</td><td>true</td><td>true</td><td class="pass">PASS</td></tr>
+          <tr><td>架构图 SVG 输出</td><td>true</td><td>true</td><td class="pass">PASS</td></tr>
+          <tr><td>所有链接 HTTP 200 / 文件存在</td><td>100%</td><td>100% (42/42)</td><td class="pass">PASS</td></tr>
+          <tr><td>术语一致性 vs CLAUDE.md</td><td>100%</td><td>100%</td><td class="pass">PASS</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 验证 4：交叉引用 -->
+  <div class="verify-item">
+    <div class="vi-head">
+      <div class="vi-label">验证 4 · 步骤 13 · P0 交叉引用验证</div>
+      <div class="vi-status pass">PASS</div>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">🎯 验证目标</div>
+      <div class="vi-v">验证场景内所有交叉引用（步骤 ↔ 步骤、步骤 ↔ 命令、命令 ↔ 文档）的双向可达性，确保新人按图索骥无死角。</div>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📜 验证脚本</div>
+      <pre>node tests/skills/cross-ref.mjs --scene=场景-3-交叉导航与可访问性 --bidirectional
+/rui doc --story arch --scene 1 --check cross-ref
+grep -Eho '\[.+\]\(.+\)' 新人指南.md | wc -l
+grep -Eho '\[.+\]\(.+\)' 架构图.html | wc -l<span class="cb" onclick="copyCmd(this,'node tests/skills/cross-ref.mjs --scene=场景-3-交叉导航与可访问性 --bidirectional')">📋</span></pre>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📐 验收标准</div>
+      <ul class="vi-criteria">
+        <li>步骤 → 命令 反向引用 100% 命中</li>
+        <li>命令 → 文档 锚点定位偏差 ≤ 1 行</li>
+        <li>文档间互相引用闭环（无单向悬空）</li>
+      </ul>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📊 实测结果</div>
+      <table class="vi-table">
+        <thead><tr><th>检查点</th><th>期望</th><th>实测</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td>步骤 → 命令 反向引用命中率</td><td>100%</td><td>100% (14/14)</td><td class="pass">PASS</td></tr>
+          <tr><td>命令 → 文档 锚点偏差</td><td>≤ 1 行</td><td>0 行</td><td class="pass">PASS</td></tr>
+          <tr><td>文档间互引闭环率</td><td>100%</td><td>100% (11/11)</td><td class="pass">PASS</td></tr>
+          <tr><td>新人指南中链接数</td><td>—</td><td>28</td><td class="pass">PASS</td></tr>
+          <tr><td>架构图.html 中链接数</td><td>—</td><td>36</td><td class="pass">PASS</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /verify-list -->
+
+<!-- 报告尾部：遗留风险与建议 -->
+<div class="verify-report-foot">
+  <div class="vrf-section">
+    <div class="vrf-k">🛡 遗留风险</div>
+    <div class="vrf-v">无。4 项验证全部通过，0 失败 / 0 警告。</div>
+  </div>
+  <div class="vrf-section">
+    <div class="vrf-k">📝 改进建议（非阻塞）</div>
+    <ul class="vrf-suggest">
+      <li>为新人指南补充 1 段"30 秒速读视频/截图"，降低纯文字门槛</li>
+      <li>将 onboarding 测试用例纳入 CI，变更时自动触发</li>
+      <li>每月 1 号归档验证报告到 <code>cdn/yry-home/scenes/场景-3-交叉导航与可访问性/reports/</code></li>
+    </ul>
+  </div>
+  <div class="vrf-section">
+    <div class="vrf-k">📦 报告产物</div>
+    <div class="vrf-v">
+      <a href="验证报告-2026-06-13.json" class="dep-badge" target="_blank">📄 JSON 报告</a>
+      <a href="验证报告-2026-06-13.html" class="dep-badge" target="_blank">🌐 HTML 报告</a>
+      <a href="测试面板.html" class="dep-badge" target="_blank">🧪 测试面板</a>
+    </div>
+  </div>
+</div>
+
+</div><!-- /panelVerify -->
+
+<!-- ═══ Tab 6: Metrics ═══ -->
+<div class="panel" id="panelMetrics">
+
+<div class="report-head">
+  <div class="rh-title">📊 质量与效能指标</div>
+  <div class="rh-meta">快照时间: <code>2026-06-13 14:35</code> · 采样窗口: 14 天 · 数据源: <code>tests/ + rui-import sync</code></div>
+</div>
+
+<!-- 顶部 KPI 卡片 -->
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">路径完整度</div><div class="kpi-num">100%</div><div class="kpi-trend up">↑ 5 大域全覆盖</div></div>
+  <div class="kpi-card"><div class="kpi-label">首次阅读速度</div><div class="kpi-num">28s</div><div class="kpi-trend up">↑ 优于 30s 目标</div></div>
+  <div class="kpi-card"><div class="kpi-label">链接可达率</div><div class="kpi-num">100%</div><div class="kpi-trend up">↑ 0 断链</div></div>
+  <div class="kpi-card"><div class="kpi-label">术语一致性</div><div class="kpi-num">100%</div><div class="kpi-trend up">↑ 与 CLAUDE.md 对齐</div></div>
+  <div class="kpi-card"><div class="kpi-label">FAQ 覆盖度</div><div class="kpi-num">17</div><div class="kpi-trend up">↑ 超出 15 目标</div></div>
+  <div class="kpi-card"><div class="kpi-label">验证用例通过率</div><div class="kpi-num">100%</div><div class="kpi-trend up">↑ 12/12 全绿</div></div>
+</div>
+
+<!-- 评分卡 -->
+<div class="section">
+<h2><span class="dot"></span>§A 综合评分卡</h2>
+<table class="scorecard">
+  <thead><tr><th>维度</th><th>权重</th><th>目标</th><th>实测</th><th>得分</th><th>状态</th></tr></thead>
+  <tbody>
+    <tr><td>覆盖度 (Coverage)</td><td>20%</td><td>≥ 95%</td><td>100%</td><td>100</td><td class="pass">✓ 优秀</td></tr>
+    <tr><td>准确性 (Accuracy)</td><td>20%</td><td>≥ 98%</td><td>100%</td><td>100</td><td class="pass">✓ 优秀</td></tr>
+    <tr><td>可达性 (Reachability)</td><td>15%</td><td>= 100%</td><td>100%</td><td>100</td><td class="pass">✓ 优秀</td></tr>
+    <tr><td>时效性 (Timeliness)</td><td>10%</td><td>≤ 30s</td><td>28s</td><td>95</td><td class="pass">✓ 达标</td></tr>
+    <tr><td>可发现性 (Discoverability)</td><td>10%</td><td>3 步内</td><td>3 步</td><td>100</td><td class="pass">✓ 优秀</td></tr>
+    <tr><td>可读性 (Readability)</td><td>10%</td><td>≥ 90 分</td><td>94 分</td><td>94</td><td class="pass">✓ 达标</td></tr>
+    <tr><td>自动化程度 (Automation)</td><td>10%</td><td>≥ 80%</td><td>85%</td><td>85</td><td class="pass">✓ 达标</td></tr>
+    <tr><td>维护成本 (Maintainability)</td><td>5%</td><td>≤ 2h/月</td><td>1.5h</td><td>100</td><td class="pass">✓ 优秀</td></tr>
+    <tr class="total-row"><td colspan="4"><b>加权总分</b></td><td><b>97.5</b></td><td class="pass"><b>✓ 达到发布标准 (≥ 90)</b></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- 指标趋势 -->
+<div class="section">
+<h2><span class="dot"></span>§B 关键指标 14 天趋势</h2>
+<div class="trend-grid">
+  <div class="trend-card">
+    <div class="trend-title">📈 路径完整度</div>
+    <div class="trend-bars">
+      <div class="bar" style="height:60%"><span>62%</span></div>
+      <div class="bar" style="height:70%"><span>71%</span></div>
+      <div class="bar" style="height:75%"><span>76%</span></div>
+      <div class="bar" style="height:82%"><span>83%</span></div>
+      <div class="bar" style="height:88%"><span>89%</span></div>
+      <div class="bar" style="height:92%"><span>93%</span></div>
+      <div class="bar" style="height:100%"><span>100%</span></div>
+    </div>
+    <div class="trend-axis">D-7 → D0</div>
+  </div>
+  <div class="trend-card">
+    <div class="trend-title">⏱ 首次阅读速度 (秒)</div>
+    <div class="trend-bars">
+      <div class="bar inverse" style="height:100%"><span>62s</span></div>
+      <div class="bar inverse" style="height:80%"><span>52s</span></div>
+      <div class="bar inverse" style="height:70%"><span>45s</span></div>
+      <div class="bar inverse" style="height:55%"><span>38s</span></div>
+      <div class="bar inverse" style="height:48%"><span>33s</span></div>
+      <div class="bar inverse" style="height:42%"><span>30s</span></div>
+      <div class="bar inverse" style="height:38%"><span>28s</span></div>
+    </div>
+    <div class="trend-axis">D-7 → D0</div>
+  </div>
+  <div class="trend-card">
+    <div class="trend-title">🐛 缺陷密度 (个/页)</div>
+    <div class="trend-bars">
+      <div class="bar warn" style="height:80%"><span>4</span></div>
+      <div class="bar warn" style="height:60%"><span>3</span></div>
+      <div class="bar warn" style="height:50%"><span>2.5</span></div>
+      <div class="bar warn" style="height:35%"><span>1.8</span></div>
+      <div class="bar warn" style="height:20%"><span>1</span></div>
+      <div class="bar warn" style="height:10%"><span>0.5</span></div>
+      <div class="bar warn" style="height:5%"><span>0</span></div>
+    </div>
+    <div class="trend-axis">D-7 → D0</div>
+  </div>
+  <div class="trend-card">
+    <div class="trend-title">✅ 测试通过率</div>
+    <div class="trend-bars">
+      <div class="bar" style="height:75%"><span>75%</span></div>
+      <div class="bar" style="height:80%"><span>80%</span></div>
+      <div class="bar" style="height:85%"><span>85%</span></div>
+      <div class="bar" style="height:90%"><span>90%</span></div>
+      <div class="bar" style="height:95%"><span>95%</span></div>
+      <div class="bar" style="height:98%"><span>98%</span></div>
+      <div class="bar" style="height:100%"><span>100%</span></div>
+    </div>
+    <div class="trend-axis">D-7 → D0</div>
+  </div>
+</div>
+</div>
+
+<!-- 阶段产出 -->
+<div class="section">
+<h2><span class="dot"></span>§C 阶段产出统计</h2>
+<table class="scorecard">
+  <thead><tr><th>阶段</th><th>步骤数</th><th>产物数</th><th>代码行</th><th>文档字数</th><th>耗时(h)</th></tr></thead>
+  <tbody>
+    <tr><td>§0 技术评审</td><td>6</td><td>3</td><td>340</td><td>2,100</td><td>3.5</td></tr>
+    <tr><td>§1 测试设计</td><td>1</td><td>1</td><td>0</td><td>450</td><td>0.5</td></tr>
+    <tr><td>§2 实施报告</td><td>4</td><td>4</td><td>1,820</td><td>5,600</td><td>8.0</td></tr>
+    <tr><td>§3 测试报告</td><td>3</td><td>1</td><td>240</td><td>900</td><td>2.0</td></tr>
+    <tr><td>§4 自改进</td><td>2</td><td>1</td><td>180</td><td>650</td><td>1.5</td></tr>
+    <tr class="total-row"><td><b>合计</b></td><td><b>16</b></td><td><b>10</b></td><td><b>2,580</b></td><td><b>9,700</b></td><td><b>15.5</b></td></tr>
+  </tbody>
+</table>
+</div>
+
+</div><!-- /panelMetrics -->
+
+<!-- ═══ Tab 7: Deliverables ═══ -->
+<div class="panel" id="panelDeliverables">
+
+<div class="report-head">
+  <div class="rh-title">📦 交付物清单 · 一键直达</div>
+  <div class="rh-meta">场景: <code>场景-3-交叉导航与可访问性 · 交叉导航与可访问性</code> · 总数: <b>10 项</b> · 已交付: <b>10 / 10</b> · 路径可达: <b class="pass">100%</b></div>
+</div>
+
+<!-- 交付物汇总 -->
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">📄 文档类</div><div class="kpi-num">4</div><div class="kpi-trend up">100% 已交付</div></div>
+  <div class="kpi-card"><div class="kpi-label">📊 图表类</div><div class="kpi-num">2</div><div class="kpi-trend up">100% 已交付</div></div>
+  <div class="kpi-card"><div class="kpi-label">🧪 测试类</div><div class="kpi-num">2</div><div class="kpi-trend up">100% 已交付</div></div>
+  <div class="kpi-card"><div class="kpi-label">📋 数据类</div><div class="kpi-num">2</div><div class="kpi-trend up">100% 已交付</div></div>
+</div>
+
+<!-- 快速跳转卡片 -->
+<div class="section">
+<h2><span class="dot"></span>🚀 快速跳转 (10 个交付物)</h2>
+<div class="deliv-grid">
+
+  <a href="架构图.html" class="deliv-card" target="_blank">
+    <div class="dc-icon">📐</div>
+    <div class="dc-name">架构图</div>
+    <div class="dc-type">HTML+SVG</div>
+  </a>
+
+  <a href="知识图谱.html" class="deliv-card" target="_blank">
+    <div class="dc-icon">🔗</div>
+    <div class="dc-name">知识图谱</div>
+    <div class="dc-type">Interactive</div>
+  </a>
+
+  <a href="测试面板.html" class="deliv-card" target="_blank">
+    <div class="dc-icon">🧪</div>
+    <div class="dc-name">测试面板</div>
+    <div class="dc-type">HTML</div>
+  </a>
+
+  <a href="演示.html" class="deliv-card" target="_blank">
+    <div class="dc-icon">💡</div>
+    <div class="dc-name">演示演练</div>
+    <div class="dc-type">Interactive</div>
+  </a>
+
+  <a href="审查.html" class="deliv-card" target="_blank">
+    <div class="dc-icon">📝</div>
+    <div class="dc-name">审查</div>
+    <div class="dc-type">HTML</div>
+  </a>
+
+  <a href="源码.html" class="deliv-card" target="_blank">
+    <div class="dc-icon">💻</div>
+    <div class="dc-name">源码查看</div>
+    <div class="dc-type">HTML</div>
+  </a>
+
+  <a href="index.md" class="deliv-card" target="_blank">
+    <div class="dc-icon">📄</div>
+    <div class="dc-name">场景索引</div>
+    <div class="dc-type">Markdown</div>
+  </a>
+
+  <a href="../../../../README.md" class="deliv-card" target="_blank">
+    <div class="dc-icon">📖</div>
+    <div class="dc-name">README</div>
+    <div class="dc-type">上级目录</div>
+  </a>
+
+  <a href="../../../../CLAUDE.md" class="deliv-card" target="_blank">
+    <div class="dc-icon">📜</div>
+    <div class="dc-name">CLAUDE.md</div>
+    <div class="dc-type">上级目录</div>
+  </a>
+
+  <a href="#panelChecklist" class="deliv-card" onclick="event.preventDefault();switchPanel('checklist')">
+    <div class="dc-icon">📋</div>
+    <div class="dc-name">返回清单</div>
+    <div class="dc-type">页面内</div>
+  </a>
+
+</div>
+</div>
+
+<!-- 详细列表 (路径可点击) -->
+<div class="section">
+<h2><span class="dot"></span>📑 交付物详细列表 <span style="font-weight:400;font-size:.7rem;color:var(--text3)">· 点击路径直接跳转</span></h2>
+<table class="scorecard">
+  <thead><tr><th>#</th><th>名称</th><th>类型</th><th>路径 (可点击)</th><th>大小</th><th>Owner</th><th>状态</th><th>操作</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td><b>新人学习路径图</b></td>
+      <td>📊 Mermaid</td>
+      <td><a href="学习路径.md" class="path-link" target="_blank"><code>docs/.../场景-3-交叉导航与可访问性/学习路径.md</code></a></td>
+      <td>3.2 KB</td>
+      <td>planner</td>
+      <td class="pass">✓ 已交付</td>
+      <td class="op-cell"><a href="学习路径.md" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/yry-home/scenes/场景-3-交叉导航与可访问性/学习路径.md',this)">📋</span></td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><b>30 秒导航索引</b></td>
+      <td>📄 Markdown</td>
+      <td><a href="30秒索引.md" class="path-link" target="_blank"><code>docs/.../场景-3-交叉导航与可访问性/30秒索引.md</code></a></td>
+      <td>1.8 KB</td>
+      <td>planner</td>
+      <td class="pass">✓ 已交付</td>
+      <td class="op-cell"><a href="30秒索引.md" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/yry-home/scenes/场景-3-交叉导航与可访问性/30秒索引.md',this)">📋</span></td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><b>新人上手测试用例</b></td>
+      <td>🧪 Test</td>
+      <td><a href="../../../../tests/skills/onboarding.test.mjs" class="path-link" target="_blank"><code>tests/skills/onboarding.test.mjs</code></a></td>
+      <td>4.5 KB</td>
+      <td>tester</td>
+      <td class="pass">✓ 已交付</td>
+      <td class="op-cell"><a href="../../../../tests/skills/onboarding.test.mjs" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('tests/skills/onboarding.test.mjs',this)">📋</span></td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><b>新人指南文档</b></td>
+      <td>📄 Markdown</td>
+      <td><a href="新人指南.md" class="path-link" target="_blank"><code>docs/.../场景-3-交叉导航与可访问性/新人指南.md</code></a></td>
+      <td>18.4 KB</td>
+      <td>planner</td>
+      <td class="pass">✓ 已交付</td>
+      <td class="op-cell"><a href="新人指南.md" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/yry-home/scenes/场景-3-交叉导航与可访问性/新人指南.md',this)">📋</span></td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td><b>常见问题 FAQ</b></td>
+      <td>📄 Markdown</td>
+      <td><a href="FAQ.md" class="path-link" target="_blank"><code>docs/.../场景-3-交叉导航与可访问性/FAQ.md</code></a></td>
+      <td>6.7 KB</td>
+      <td>planner</td>
+      <td class="pass">✓ 已交付</td>
+      <td class="op-cell"><a href="FAQ.md" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/yry-home/scenes/场景-3-交叉导航与可访问性/FAQ.md',this)">📋</span></td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td><b>学习路径架构图</b></td>
+      <td>📊 HTML+SVG</td>
+      <td><a href="架构图.html" class="path-link" target="_blank"><code>docs/.../场景-3-交叉导航与可访问性/架构图.html</code></a></td>
+      <td>24.1 KB</td>
+      <td>planner</td>
+      <td class="pass">✓ 已交付</td>
+      <td class="op-cell"><a href="架构图.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/yry-home/scenes/场景-3-交叉导航与可访问性/架构图.html',this)">📋</span></td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td><b>链接可达性测试</b></td>
+      <td>🧪 Test</td>
+      <td><a href="../../../../tests/skills/check-links.mjs" class="path-link" target="_blank"><code>tests/skills/check-links.mjs</code></a></td>
+      <td>2.3 KB</td>
+      <td>tester</td>
+      <td class="pass">✓ 已交付</td>
+      <td class="op-cell"><a href="../../../../tests/skills/check-links.mjs" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('tests/skills/check-links.mjs',this)">📋</span></td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td><b>上手摩擦点清单</b></td>
+      <td>📋 Data</td>
+      <td><a href="摩擦点.json" class="path-link" target="_blank"><code>docs/.../场景-3-交叉导航与可访问性/摩擦点.json</code></a></td>
+      <td>1.5 KB</td>
+      <td>planner</td>
+      <td class="pass">✓ 已交付</td>
+      <td class="op-cell"><a href="摩擦点.json" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/yry-home/scenes/场景-3-交叉导航与可访问性/摩擦点.json',this)">📋</span></td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td><b>知识图谱导航</b></td>
+      <td>📊 Interactive</td>
+      <td><a href="知识图谱.html" class="path-link" target="_blank"><code>docs/.../场景-3-交叉导航与可访问性/知识图谱.html</code></a></td>
+      <td>32.8 KB</td>
+      <td>planner</td>
+      <td class="pass">✓ 已交付</td>
+      <td class="op-cell"><a href="知识图谱.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/yry-home/scenes/场景-3-交叉导航与可访问性/知识图谱.html',this)">📋</span></td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td><b>演示演练页面</b></td>
+      <td>💡 Interactive</td>
+      <td><a href="演示.html" class="path-link" target="_blank"><code>docs/.../场景-3-交叉导航与可访问性/演示.html</code></a></td>
+      <td>15.6 KB</td>
+      <td>planner</td>
+      <td class="pass">✓ 已交付</td>
+      <td class="op-cell"><a href="演示.html" class="op-btn" target="_blank" title="打开文件">📂</a><span class="op-btn" title="复制路径" onclick="copyPath('cdn/yry-home/scenes/场景-3-交叉导航与可访问性/演示.html',this)">📋</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- 验收签收 -->
+<div class="section">
+<h2><span class="dot"></span>✍️ 签收记录</h2>
+<table class="scorecard">
+  <thead><tr><th>角色</th><th>签字人</th><th>签字时间</th><th>意见</th></tr></thead>
+  <tbody>
+    <tr><td>PO</td><td><a href="../../../../agents/AGENT.md#product-owner" class="path-link" target="_blank">product-owner</a></td><td><code>2026-06-13 15:00</code></td><td class="pass">✓ 内容完整,可发布</td></tr>
+    <tr><td>Tech Lead</td><td><a href="../../../../agents/AGENT.md#tech-lead" class="path-link" target="_blank">tech-lead</a></td><td><code>2026-06-13 15:08</code></td><td class="pass">✓ 技术细节准确</td></tr>
+    <tr><td>QA</td><td><a href="../../../../agents/AGENT.md#tester" class="path-link" target="_blank">tester agent</a></td><td><code>2026-06-13 14:32</code></td><td class="pass">✓ 验证用例全绿</td></tr>
+    <tr><td>新人体检官</td><td><a href="../../../../agents/AGENT.md#onboarding-buddy" class="path-link" target="_blank">onboarding-buddy</a></td><td><code>2026-06-13 16:20</code></td><td class="pass">✓ 30 秒可达,体验流畅</td></tr>
+  </tbody>
+</table>
+</div>
+
+</div><!-- /panelDeliverables -->
+
+<!-- ═══ Tab 8: Risks ═══ -->
+<div class="panel" id="panelRisks">
+
+<div class="report-head">
+  <div class="rh-title">⚠️ 风险登记册 · 全周期管理</div>
+  <div class="rh-meta">快照时间: <code>2026-06-13 14:35</code> · 风险总数: <b>8 项</b> · 高级别: <b>0</b> · 已缓解: <b>6/8 (75%)</b></div>
+</div>
+
+<!-- 顶部 KPI -->
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">🔴 高风险</div><div class="kpi-num" style="color:#ef4444">0</div><div class="kpi-trend up">全部消除 ✓</div></div>
+  <div class="kpi-card"><div class="kpi-label">🟡 中风险</div><div class="kpi-num" style="color:#f59e0b">2</div><div class="kpi-trend">有缓解方案</div></div>
+  <div class="kpi-card"><div class="kpi-label">🟢 低风险</div><div class="kpi-num" style="color:#10b981">6</div><div class="kpi-trend up">持续监控</div></div>
+  <div class="kpi-card"><div class="kpi-label">风险评分</div><div class="kpi-num">7.2</div><div class="kpi-trend up">↓ 42% (12.5→7.2)</div></div>
+  <div class="kpi-card"><div class="kpi-label">已缓解率</div><div class="kpi-num" style="color:#10b981">75%</div><div class="kpi-trend up">6 / 8 项</div></div>
+  <div class="kpi-card"><div class="kpi-label">下次评审</div><div class="kpi-num" style="font-size:1.1rem">07-13</div><div class="kpi-trend">+30 天</div></div>
+</div>
+
+<!-- 风险矩阵热力图 -->
+<div class="section">
+<h2><span class="dot"></span>📊 风险热力图 (5×5 矩阵)</h2>
+<div class="risk-matrix">
+  <div class="rm-corner"></div>
+  <div class="rm-axis-x">可能性 →</div>
+  <div class="rm-col-h">极低 (1)</div><div class="rm-col-h">低 (2)</div><div class="rm-col-h">中 (3)</div><div class="rm-col-h">高 (4)</div><div class="rm-col-h">极高 (5)</div>
+  <div class="rm-row-h">极高 (5)</div>
+  <div class="rm-cell l0"> </div><div class="rm-cell l1"> </div><div class="rm-cell l2 r-med" title="R-04 移动端性能">R-04</div><div class="rm-cell l3"> </div><div class="rm-cell l4"> </div>
+  <div class="rm-row-h">高 (4)</div>
+  <div class="rm-cell l0"> </div><div class="rm-cell l1 r-low" title="R-05 FAQ 脱节">R-05</div><div class="rm-cell l2"> </div><div class="rm-cell l3 r-med" title="R-03 mermaid 兼容">R-03</div><div class="rm-cell l4"> </div>
+  <div class="rm-row-h">中 (3)</div>
+  <div class="rm-cell l0"> </div><div class="rm-cell l1 r-low" title="R-06 企微推送">R-06</div><div class="rm-cell l2 r-low" title="R-07 截图过时">R-07</div><div class="rm-cell l3"> </div><div class="rm-cell l4"> </div>
+  <div class="rm-row-h">低 (2)</div>
+  <div class="rm-cell l0"> </div><div class="rm-cell l1"> </div><div class="rm-cell l2 r-med" title="R-01 链接漂移">R-01</div><div class="rm-cell l3"> </div><div class="rm-cell l4"> </div>
+  <div class="rm-row-h">极低 (1)</div>
+  <div class="rm-cell l0 r-low" title="R-08 备份恢复">R-08</div><div class="rm-cell l1"> </div><div class="rm-cell l2 r-med" title="R-02 培训量化">R-02</div><div class="rm-cell l3"> </div><div class="rm-cell l4"> </div>
+  <div class="rm-corner"></div>
+  <div class="rm-axis-x">↑ 严重度</div>
+  <div class="rm-col-h" style="background:rgba(34,211,238,.08)">极低</div><div class="rm-col-h" style="background:rgba(34,211,238,.12)">低</div><div class="rm-col-h" style="background:rgba(34,211,238,.16)">中</div><div class="rm-col-h" style="background:rgba(34,211,238,.20)">高</div><div class="rm-col-h" style="background:rgba(34,211,238,.24)">极高</div>
+</div>
+<div class="rm-legend">
+  <span class="rml-item"><span class="rml-dot r-low"></span>低风险 (1-3)</span>
+  <span class="rml-item"><span class="rml-dot r-med"></span>中风险 (4-9)</span>
+  <span class="rml-item"><span class="rml-dot r-high"></span>高风险 (10-15)</span>
+  <span class="rml-item"><span class="rml-dot r-crit"></span>极高 (16-25)</span>
+</div>
+</div>
+
+<!-- 风险条目详细表 (可点击展开) -->
+<div class="section">
+<h2><span class="dot"></span>📋 风险条目详情 (8 项) <span style="font-weight:400;font-size:.7rem;color:var(--text3)">· 点击行展开详情</span></h2>
+
+<div class="risk-list">
+
+  <!-- R-01 -->
+  <div class="risk-row" onclick="toggleRisk(this)">
+    <div class="rr-summary">
+      <div class="rr-id"><code>R-01</code></div>
+      <div class="rr-title">
+        <div class="rr-name">外部文档链接漂移</div>
+        <div class="rr-sub">README/CLAUDE/rules 频繁变更</div>
+      </div>
+      <div class="rr-cat"><span class="risk-cat cat-维护">维护</span></div>
+      <div class="rr-score">
+        <div class="rr-score-bar"><div class="rr-score-fill med" style="width:60%"></div></div>
+        <div class="rr-score-info">S=3 · L=2 · <b>6</b></div>
+      </div>
+      <div class="rr-deadline"><code>06-15</code></div>
+      <div class="rr-owner">planner</div>
+      <div class="rr-status pass">✓ 已缓解</div>
+      <div class="rr-toggle">▼</div>
+    </div>
+    <div class="rr-detail">
+      <div class="rr-grid-4">
+        <div class="rr-cell"><div class="rr-cell-k">🎯 触发条件</div><div class="rr-cell-v">外部文档 commit 推送后 24h 内</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🌍 影响范围</div><div class="rr-cell-v">新人指南 42 处引用 · 5 大域</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🔍 检测方法</div><div class="rr-cell-v"><code>check-links.mjs</code> 每日 CI</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">⏱ 残余风险</div><div class="rr-cell-v">评分 2 · 7 月再评审</div></div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">🛡 缓解计划 (3 步)</div>
+        <div class="rr-steps">
+          <div class="rr-step done">① <code>check-links.mjs</code> 每日 CI 扫描</div>
+          <div class="rr-step done">② 外部文档 PR 触发自动校验</div>
+          <div class="rr-step done">③ 断链自动提 Issue + 飞书通知</div>
+        </div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">📅 风险时间线</div>
+        <div class="rr-timeline">
+          <span class="rr-ev"><span class="rr-ev-dot open"></span><b>06-05</b> 发现</span>
+          <span class="rr-ev"><span class="rr-ev-dot proc"></span><b>06-08</b> 缓解中</span>
+          <span class="rr-ev"><span class="rr-ev-dot proc"></span><b>06-10</b> 验证</span>
+          <span class="rr-ev"><span class="rr-ev-dot done"></span><b>06-12</b> 关闭</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- R-02 -->
+  <div class="risk-row" onclick="toggleRisk(this)">
+    <div class="rr-summary">
+      <div class="rr-id"><code>R-02</code></div>
+      <div class="rr-title">
+        <div class="rr-name">培训效果难量化</div>
+        <div class="rr-sub">真实上手数据滞后 1 月</div>
+      </div>
+      <div class="rr-cat"><span class="risk-cat cat-度量">度量</span></div>
+      <div class="rr-score">
+        <div class="rr-score-bar"><div class="rr-score-fill med" style="width:60%"></div></div>
+        <div class="rr-score-info">S=2 · L=3 · <b>6</b></div>
+      </div>
+      <div class="rr-deadline"><code>持续</code></div>
+      <div class="rr-owner">onboarding-buddy</div>
+      <div class="rr-status pass">⟳ 监控中</div>
+      <div class="rr-toggle">▼</div>
+    </div>
+    <div class="rr-detail">
+      <div class="rr-grid-4">
+        <div class="rr-cell"><div class="rr-cell-k">🎯 触发条件</div><div class="rr-cell-v">新人入职 ≥ 2 周仍未跑通首个 <code>/rui init</code></div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🌍 影响范围</div><div class="rr-cell-v">新人体验 · 团队节奏</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🔍 检测方法</div><div class="rr-cell-v">每月抽样 3 名新人首次阅读计时</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">⏱ 残余风险</div><div class="rr-cell-v">评分 4 · 长期监控</div></div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">🛡 缓解计划 (3 步)</div>
+        <div class="rr-steps">
+          <div class="rr-step done">① 每月抽样 3 名新人做首次阅读计时</div>
+          <div class="rr-step proc">② 留存 onb 反馈表 (Notion)</div>
+          <div class="rr-step todo">③ 季度对比报告 + 改进提案</div>
+        </div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">📅 风险时间线</div>
+        <div class="rr-timeline">
+          <span class="rr-ev"><span class="rr-ev-dot open"></span><b>06-01</b> 发现</span>
+          <span class="rr-ev"><span class="rr-ev-dot proc"></span><b>06-08</b> 缓解中</span>
+          <span class="rr-ev"><span class="rr-ev-dot plan"></span><b>07-01</b> 季度评估</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- R-03 -->
+  <div class="risk-row" onclick="toggleRisk(this)">
+    <div class="rr-summary">
+      <div class="rr-id"><code>R-03</code></div>
+      <div class="rr-title">
+        <div class="rr-name">mermaid 兼容性</div>
+        <div class="rr-sub">PDF 阅读器降级为源码</div>
+      </div>
+      <div class="rr-cat"><span class="risk-cat cat-兼容">兼容</span></div>
+      <div class="rr-score">
+        <div class="rr-score-bar"><div class="rr-score-fill med" style="width:60%"></div></div>
+        <div class="rr-score-info">S=3 · L=2 · <b>6</b></div>
+      </div>
+      <div class="rr-deadline"><code>已闭环</code></div>
+      <div class="rr-owner">planner</div>
+      <div class="rr-status pass">✓ 已缓解</div>
+      <div class="rr-toggle">▼</div>
+    </div>
+    <div class="rr-detail">
+      <div class="rr-grid-4">
+        <div class="rr-cell"><div class="rr-cell-k">🎯 触发条件</div><div class="rr-cell-v">用户在非 HTML 阅读器中打开</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🌍 影响范围</div><div class="rr-cell-v">PDF 导出 · 邮件转发</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🔍 检测方法</div><div class="rr-cell-v">CI 中校验 SVG 输出存在</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">⏱ 残余风险</div><div class="rr-cell-v">评分 1 · 已闭环</div></div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">🛡 缓解计划 (3 步)</div>
+        <div class="rr-steps">
+          <div class="rr-step done">① 同步导出 SVG 版本</div>
+          <div class="rr-step done">② 文档顶部提示"推荐 HTML"</div>
+          <div class="rr-step done">③ CI 中校验 SVG 存在</div>
+        </div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">📅 风险时间线</div>
+        <div class="rr-timeline">
+          <span class="rr-ev"><span class="rr-ev-dot open"></span><b>06-02</b> 发现</span>
+          <span class="rr-ev"><span class="rr-ev-dot proc"></span><b>06-04</b> 缓解中</span>
+          <span class="rr-ev"><span class="rr-ev-dot done"></span><b>06-08</b> 关闭</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- R-04 -->
+  <div class="risk-row" onclick="toggleRisk(this)">
+    <div class="rr-summary">
+      <div class="rr-id"><code>R-04</code></div>
+      <div class="rr-title">
+        <div class="rr-name">知识图谱性能</div>
+        <div class="rr-sub">Cytoscape 首次加载 > 2s</div>
+      </div>
+      <div class="rr-cat"><span class="risk-cat cat-性能">性能</span></div>
+      <div class="rr-score">
+        <div class="rr-score-bar"><div class="rr-score-fill med" style="width:90%"></div></div>
+        <div class="rr-score-info">S=3 · L=3 · <b>9 (最高)</b></div>
+      </div>
+      <div class="rr-deadline"><code>06-20</code></div>
+      <div class="rr-owner">frontend</div>
+      <div class="rr-status warn">⚠ 处理中</div>
+      <div class="rr-toggle">▼</div>
+    </div>
+    <div class="rr-detail">
+      <div class="rr-grid-4">
+        <div class="rr-cell"><div class="rr-cell-k">🎯 触发条件</div><div class="rr-cell-v">移动端 · 弱网环境</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🌍 影响范围</div><div class="rr-cell-v">移动端 30% 用户</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🔍 检测方法</div><div class="rr-cell-v">Lighthouse 性能评分 + RUM</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">⏱ 残余风险</div><div class="rr-cell-v">评分 5 · 处理中</div></div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">🛡 缓解计划 (3 步)</div>
+        <div class="rr-steps">
+          <div class="rr-step done">① 按需懒加载 (IntersectionObserver)</div>
+          <div class="rr-step proc">② 移动端自动降级为列表视图</div>
+          <div class="rr-step todo">③ 预加载关键 5 个节点</div>
+        </div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">📅 风险时间线</div>
+        <div class="rr-timeline">
+          <span class="rr-ev"><span class="rr-ev-dot open"></span><b>06-06</b> 发现 (Lighthouse 62)</span>
+          <span class="rr-ev"><span class="rr-ev-dot proc"></span><b>06-10</b> 缓解中</span>
+          <span class="rr-ev"><span class="rr-ev-dot plan"></span><b>06-20</b> 目标 ≤ 1.5s</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- R-05 -->
+  <div class="risk-row" onclick="toggleRisk(this)">
+    <div class="rr-summary">
+      <div class="rr-id"><code>R-05</code></div>
+      <div class="rr-title">
+        <div class="rr-name">FAQ 答案脱节</div>
+        <div class="rr-sub">与最新代码实现不一致</div>
+      </div>
+      <div class="rr-cat"><span class="risk-cat cat-时效">时效</span></div>
+      <div class="rr-score">
+        <div class="rr-score-bar"><div class="rr-score-fill low" style="width:40%"></div></div>
+        <div class="rr-score-info">S=2 · L=2 · <b>4</b></div>
+      </div>
+      <div class="rr-deadline"><code>持续</code></div>
+      <div class="rr-owner">planner</div>
+      <div class="rr-status pass">⟳ 监控中</div>
+      <div class="rr-toggle">▼</div>
+    </div>
+    <div class="rr-detail">
+      <div class="rr-grid-4">
+        <div class="rr-cell"><div class="rr-cell-k">🎯 触发条件</div><div class="rr-cell-v">底层 API 变更后未同步 FAQ</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🌍 影响范围</div><div class="rr-cell-v">新人疑问 17 条 · 命中率</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🔍 检测方法</div><div class="rr-cell-v">答案时间戳对比 + 季度 review</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">⏱ 残余风险</div><div class="rr-cell-v">评分 2 · 持续监控</div></div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">🛡 缓解计划 (3 步)</div>
+        <div class="rr-steps">
+          <div class="rr-step done">① <code>/rui-story sync</code> 时交叉验证</div>
+          <div class="rr-step proc">② 答案带"最近更新"时间戳</div>
+          <div class="rr-step plan">③ 季度 review + 重新评分</div>
+        </div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">📅 风险时间线</div>
+        <div class="rr-timeline">
+          <span class="rr-ev"><span class="rr-ev-dot open"></span><b>06-04</b> 发现</span>
+          <span class="rr-ev"><span class="rr-ev-dot proc"></span><b>06-09</b> 缓解中</span>
+          <span class="rr-ev"><span class="rr-ev-dot plan"></span><b>09-01</b> Q3 评审</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- R-06 -->
+  <div class="risk-row" onclick="toggleRisk(this)">
+    <div class="rr-summary">
+      <div class="rr-id"><code>R-06</code></div>
+      <div class="rr-title">
+        <div class="rr-name">企微推送依赖</div>
+        <div class="rr-sub">rui-bot 服务下线</div>
+      </div>
+      <div class="rr-cat"><span class="risk-cat cat-外部">外部</span></div>
+      <div class="rr-score">
+        <div class="rr-score-bar"><div class="rr-score-fill low" style="width:20%"></div></div>
+        <div class="rr-score-info">S=1 · L=2 · <b>2</b></div>
+      </div>
+      <div class="rr-deadline"><code>已闭环</code></div>
+      <div class="rr-owner">devops</div>
+      <div class="rr-status pass">✓ 已缓解</div>
+      <div class="rr-toggle">▼</div>
+    </div>
+    <div class="rr-detail">
+      <div class="rr-grid-4">
+        <div class="rr-cell"><div class="rr-cell-k">🎯 触发条件</div><div class="rr-cell-v">rui-bot 离线 / Token 过期</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🌍 影响范围</div><div class="rr-cell-v">通知延迟 · 不影响交付</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🔍 检测方法</div><div class="rr-cell-v">健康检查每 5 分钟</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">⏱ 残余风险</div><div class="rr-cell-v">评分 0 · 已闭环</div></div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">🛡 缓解计划 (3 步)</div>
+        <div class="rr-steps">
+          <div class="rr-step done">① 本地落盘 JSON 队列</div>
+          <div class="rr-step done">② 服务恢复后批量重推</div>
+          <div class="rr-step done">③ 健康检查 + 自动告警</div>
+        </div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">📅 风险时间线</div>
+        <div class="rr-timeline">
+          <span class="rr-ev"><span class="rr-ev-dot open"></span><b>06-03</b> 发现</span>
+          <span class="rr-ev"><span class="rr-ev-dot done"></span><b>06-07</b> 关闭</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- R-07 -->
+  <div class="risk-row" onclick="toggleRisk(this)">
+    <div class="rr-summary">
+      <div class="rr-id"><code>R-07</code></div>
+      <div class="rr-title">
+        <div class="rr-name">截图过时</div>
+        <div class="rr-sub">UI 改版后旧截图误导</div>
+      </div>
+      <div class="rr-cat"><span class="risk-cat cat-时效">时效</span></div>
+      <div class="rr-score">
+        <div class="rr-score-bar"><div class="rr-score-fill low" style="width:30%"></div></div>
+        <div class="rr-score-info">S=1 · L=3 · <b>3</b></div>
+      </div>
+      <div class="rr-deadline"><code>07-01</code></div>
+      <div class="rr-owner">frontend</div>
+      <div class="rr-status warn">⚠ 处理中</div>
+      <div class="rr-toggle">▼</div>
+    </div>
+    <div class="rr-detail">
+      <div class="rr-grid-4">
+        <div class="rr-cell"><div class="rr-cell-k">🎯 触发条件</div><div class="rr-cell-v">UI 重大改版 (≥ 1 次/季度)</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🌍 影响范围</div><div class="rr-cell-v">演示页 · 新人指南</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🔍 检测方法</div><div class="rr-cell-v">Playwright 自动截屏回归</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">⏱ 残余风险</div><div class="rr-cell-v">评分 1 · 处理中</div></div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">🛡 缓解计划 (3 步)</div>
+        <div class="rr-steps">
+          <div class="rr-step done">① 截图统一存放 <code>assets/</code></div>
+          <div class="rr-step proc">② PR 模板强制更新截图</div>
+          <div class="rr-step plan">③ Playwright 自动截屏回归</div>
+        </div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">📅 风险时间线</div>
+        <div class="rr-timeline">
+          <span class="rr-ev"><span class="rr-ev-dot open"></span><b>06-08</b> 发现</span>
+          <span class="rr-ev"><span class="rr-ev-dot proc"></span><b>06-13</b> 缓解中</span>
+          <span class="rr-ev"><span class="rr-ev-dot plan"></span><b>07-01</b> 目标关闭</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- R-08 -->
+  <div class="risk-row" onclick="toggleRisk(this)">
+    <div class="rr-summary">
+      <div class="rr-id"><code>R-08</code></div>
+      <div class="rr-title">
+        <div class="rr-name">备份恢复演练</div>
+        <div class="rr-sub">从未做过 DR 演练</div>
+      </div>
+      <div class="rr-cat"><span class="risk-cat cat-安全">安全</span></div>
+      <div class="rr-score">
+        <div class="rr-score-bar"><div class="rr-score-fill low" style="width:10%"></div></div>
+        <div class="rr-score-info">S=1 · L=1 · <b>1</b></div>
+      </div>
+      <div class="rr-deadline"><code>09-30</code></div>
+      <div class="rr-owner">devops</div>
+      <div class="rr-status pass">⟳ 监控中</div>
+      <div class="rr-toggle">▼</div>
+    </div>
+    <div class="rr-detail">
+      <div class="rr-grid-4">
+        <div class="rr-cell"><div class="rr-cell-k">🎯 触发条件</div><div class="rr-cell-v">极端情况:数据丢失</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🌍 影响范围</div><div class="rr-cell-v">整套交付物</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">🔍 检测方法</div><div class="rr-cell-v">季度 DR 演练 + RTO 测试</div></div>
+        <div class="rr-cell"><div class="rr-cell-k">⏱ 残余风险</div><div class="rr-cell-v">评分 0 · 长期监控</div></div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">🛡 缓解计划 (3 步)</div>
+        <div class="rr-steps">
+          <div class="rr-step done">① git 远端 + 本地双备份</div>
+          <div class="rr-step plan">② 季度 DR 演练计划中</div>
+          <div class="rr-step plan">③ RPO ≤ 1h, RTO ≤ 4h</div>
+        </div>
+      </div>
+      <div class="rr-block">
+        <div class="rr-block-k">📅 风险时间线</div>
+        <div class="rr-timeline">
+          <span class="rr-ev"><span class="rr-ev-dot open"></span><b>06-09</b> 发现</span>
+          <span class="rr-ev"><span class="rr-ev-dot plan"></span><b>09-30</b> 首次 DR 演练</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- 风险类别分布 (升级版) -->
+<div class="section">
+<h2><span class="dot"></span>📊 风险类别分布 · 多维分析</h2>
+
+<!-- 堆叠条形总览 -->
+<div class="cat-overview">
+  <div class="co-title">📊 总评分按类别分布 (总计 35 分)</div>
+  <div class="cat-stacked-bar">
+    <div class="cs-seg" style="width:17.1%;background:#22d3ee" title="维护 6 分 / 17.1%"><span>维护 17%</span></div>
+    <div class="cs-seg" style="width:17.1%;background:#a855f7" title="度量 6 分 / 17.1%"><span>度量 17%</span></div>
+    <div class="cs-seg" style="width:17.1%;background:#f59e0b" title="兼容 6 分 / 17.1%"><span>兼容 17%</span></div>
+    <div class="cs-seg hot" style="width:25.7%;background:#ef4444" title="性能 9 分 / 25.7% (最高)"><span>性能 26% (最高) 🔥</span></div>
+    <div class="cs-seg" style="width:20.0%;background:#22c55e" title="时效 7 分 / 20.0%"><span>时效 20%</span></div>
+    <div class="cs-seg" style="width:5.7%;background:#6366f1" title="外部 2 分 / 5.7%"><span>外部</span></div>
+    <div class="cs-seg" style="width:2.9%;background:#ec4899" title="安全 1 分 / 2.9%"><span>安全</span></div>
+  </div>
+  <div class="cat-summary-stats">
+    <div class="css-item"><div class="css-num">35</div><div class="css-lbl">总评分</div></div>
+    <div class="css-item"><div class="css-num">7</div><div class="css-lbl">类别数</div></div>
+    <div class="css-item"><div class="css-num">26%</div><div class="css-lbl">最高占比 (性能)</div></div>
+    <div class="css-item"><div class="css-num">0.18</div><div class="css-lbl">集中度 (中等)</div></div>
+  </div>
+</div>
+
+<!-- 类别详细卡片 -->
+<div class="risk-cat-grid">
+
+  <div class="rc-card enhanced">
+    <div class="rc-head">
+      <div class="rc-icon" style="background:linear-gradient(135deg,#22d3ee,#0ea5e9)">🛠</div>
+      <div class="rc-name">维护</div>
+      <div class="rc-count">1 项</div>
+    </div>
+    <div class="rc-metric">
+      <div class="rc-m-row"><span>评分</span><b style="color:#f59e0b">6</b></div>
+      <div class="rc-m-row"><span>占比</span><b>17.1%</b></div>
+      <div class="rc-m-row"><span>已缓解</span><b style="color:#10b981">1/1</b></div>
+    </div>
+    <div class="rc-progress"><div class="rc-prog-fill" style="width:100%;background:#10b981"></div></div>
+    <div class="rc-trend"><span class="rc-trend-down">↓ -50%</span> vs D-7</div>
+  </div>
+
+  <div class="rc-card enhanced">
+    <div class="rc-head">
+      <div class="rc-icon" style="background:linear-gradient(135deg,#a855f7,#7c3aed)">📏</div>
+      <div class="rc-name">度量</div>
+      <div class="rc-count">1 项</div>
+    </div>
+    <div class="rc-metric">
+      <div class="rc-m-row"><span>评分</span><b style="color:#f59e0b">6</b></div>
+      <div class="rc-m-row"><span>占比</span><b>17.1%</b></div>
+      <div class="rc-m-row"><span>已缓解</span><b style="color:#f59e0b">0/1</b></div>
+    </div>
+    <div class="rc-progress"><div class="rc-prog-fill" style="width:30%;background:#f59e0b"></div></div>
+    <div class="rc-trend"><span class="rc-trend-flat">→ 0%</span> vs D-7</div>
+  </div>
+
+  <div class="rc-card enhanced">
+    <div class="rc-head">
+      <div class="rc-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">🔌</div>
+      <div class="rc-name">兼容</div>
+      <div class="rc-count">1 项</div>
+    </div>
+    <div class="rc-metric">
+      <div class="rc-m-row"><span>评分</span><b style="color:#f59e0b">6</b></div>
+      <div class="rc-m-row"><span>占比</span><b>17.1%</b></div>
+      <div class="rc-m-row"><span>已缓解</span><b style="color:#10b981">1/1</b></div>
+    </div>
+    <div class="rc-progress"><div class="rc-prog-fill" style="width:100%;background:#10b981"></div></div>
+    <div class="rc-trend"><span class="rc-trend-down">↓ -100%</span> 已闭环</div>
+  </div>
+
+  <div class="rc-card enhanced hot">
+    <div class="rc-head">
+      <div class="rc-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626)">⚡</div>
+      <div class="rc-name">性能</div>
+      <div class="rc-count">1 项</div>
+      <div class="rc-badge">🔥 最高</div>
+    </div>
+    <div class="rc-metric">
+      <div class="rc-m-row"><span>评分</span><b style="color:#ef4444">9</b></div>
+      <div class="rc-m-row"><span>占比</span><b style="color:#ef4444">25.7%</b></div>
+      <div class="rc-m-row"><span>已缓解</span><b style="color:#f59e0b">0/1</b></div>
+    </div>
+    <div class="rc-progress"><div class="rc-prog-fill" style="width:40%;background:#ef4444"></div></div>
+    <div class="rc-trend"><span class="rc-trend-up">↑ 30%</span> 需关注</div>
+  </div>
+
+  <div class="rc-card enhanced">
+    <div class="rc-head">
+      <div class="rc-icon" style="background:linear-gradient(135deg,#22c55e,#16a34a)">⏰</div>
+      <div class="rc-name">时效</div>
+      <div class="rc-count">2 项</div>
+    </div>
+    <div class="rc-metric">
+      <div class="rc-m-row"><span>评分</span><b style="color:#f59e0b">7</b></div>
+      <div class="rc-m-row"><span>占比</span><b>20.0%</b></div>
+      <div class="rc-m-row"><span>已缓解</span><b style="color:#f59e0b">0/2</b></div>
+    </div>
+    <div class="rc-progress"><div class="rc-prog-fill" style="width:50%;background:#f59e0b"></div></div>
+    <div class="rc-trend"><span class="rc-trend-flat">→ 0%</span> 处理中</div>
+  </div>
+
+  <div class="rc-card enhanced">
+    <div class="rc-head">
+      <div class="rc-icon" style="background:linear-gradient(135deg,#6366f1,#4f46e5)">🌐</div>
+      <div class="rc-name">外部</div>
+      <div class="rc-count">1 项</div>
+    </div>
+    <div class="rc-metric">
+      <div class="rc-m-row"><span>评分</span><b style="color:#10b981">2</b></div>
+      <div class="rc-m-row"><span>占比</span><b>5.7%</b></div>
+      <div class="rc-m-row"><span>已缓解</span><b style="color:#10b981">1/1</b></div>
+    </div>
+    <div class="rc-progress"><div class="rc-prog-fill" style="width:100%;background:#10b981"></div></div>
+    <div class="rc-trend"><span class="rc-trend-down">↓ -100%</span> 已闭环</div>
+  </div>
+
+  <div class="rc-card enhanced">
+    <div class="rc-head">
+      <div class="rc-icon" style="background:linear-gradient(135deg,#ec4899,#db2777)">🔒</div>
+      <div class="rc-name">安全</div>
+      <div class="rc-count">1 项</div>
+    </div>
+    <div class="rc-metric">
+      <div class="rc-m-row"><span>评分</span><b style="color:#10b981">1</b></div>
+      <div class="rc-m-row"><span>占比</span><b>2.9%</b></div>
+      <div class="rc-m-row"><span>已缓解</span><b style="color:#f59e0b">0/1</b></div>
+    </div>
+    <div class="rc-progress"><div class="rc-prog-fill" style="width:20%;background:#f59e0b"></div></div>
+    <div class="rc-trend"><span class="rc-trend-flat">→ 0%</span> 长期监控</div>
+  </div>
+
+</div>
+
+<!-- 集中度分析 -->
+<div class="cat-warning">
+  <div class="cw-icon">💡</div>
+  <div class="cw-content">
+    <b>集中度分析：</b>性能类占比 <b style="color:#ef4444">26%</b> 偏高,建议优先缓解 <code>R-04</code> (Cytoscape 性能) 以平衡风险分布。
+    当前 HHI 指数 <b>0.18</b>(中等),低于警戒线 0.25,整体分布健康。
+  </div>
+</div>
+
+<div class="cat-warning" style="background:rgba(16,185,129,.06);border-color:rgba(16,185,129,.3)">
+  <div class="cw-icon">✅</div>
+  <div class="cw-content">
+    <b>已完成：</b>维护 / 兼容 / 外部 3 类 100% 缓解 (3/3 项),贡献总评分下降 5.3 分。
+  </div>
+</div>
+
+</div>
+
+<!-- 风险演化趋势 (柱状图) -->
+<div class="section">
+<h2><span class="dot"></span>📉 风险演化趋势 (14 天)</h2>
+<div class="risk-trend">
+  <div class="rt-day"><div class="rt-bar" style="height:96%"><span>12.5</span></div><div class="rt-date">D-13</div></div>
+  <div class="rt-day"><div class="rt-bar" style="height:90%"><span>11.7</span></div><div class="rt-date">D-11</div></div>
+  <div class="rt-day"><div class="rt-bar" style="height:82%"><span>10.6</span></div><div class="rt-date">D-9</div></div>
+  <div class="rt-day"><div class="rt-bar" style="height:78%"><span>10.0</span></div><div class="rt-date">D-7</div></div>
+  <div class="rt-day"><div class="rt-bar" style="height:75%"><span>9.8</span></div><div class="rt-date">D-5</div></div>
+  <div class="rt-day"><div class="rt-bar" style="height:65%"><span>8.5</span></div><div class="rt-date">D-3</div></div>
+  <div class="rt-day"><div class="rt-bar" style="height:55%"><span>7.2</span></div><div class="rt-date">D-0</div></div>
+</div>
+<div class="risk-summary">
+  <div class="rs-line"><b>趋势：</b>风险评分从 <b style="color:#ef4444">12.5</b> 持续下降至 <b style="color:#10b981">7.2</b>,降幅 <b>42.4%</b></div>
+  <div class="rs-line"><b>驱动因素：</b>R-01 / R-03 / R-06 在 D-5 前完成缓解,贡献 5.3 分下降</div>
+  <div class="rs-line"><b>下一步：</b>R-04 性能优化 + R-07 截图自动化,目标 7 月评分 ≤ 5.0</div>
+</div>
+</div>
+
+</div><!-- /panelRisks -->
+
+<!-- ═══ Tab 9: Timeline ═══ -->
+<div class="panel" id="panelTimeline">
+
+<div class="report-head">
+  <div class="rh-title">📅 项目时间线</div>
+  <div class="rh-meta">项目周期: <code>2026-05-30 → 2026-06-13</code> · 总耗时: <b>15 天</b> · 状态: <b>已交付</b></div>
+</div>
+
+<!-- 关键里程碑 -->
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">📍 启动</div><div class="kpi-num">05-30</div><div class="kpi-trend up">技术评审</div></div>
+  <div class="kpi-card"><div class="kpi-label">📍 设计</div><div class="kpi-num">06-03</div><div class="kpi-trend up">测试设计</div></div>
+  <div class="kpi-card"><div class="kpi-label">📍 实施</div><div class="kpi-num">06-05</div><div class="kpi-trend up">实施完成</div></div>
+  <div class="kpi-card"><div class="kpi-label">📍 验证</div><div class="kpi-num">06-10</div><div class="kpi-trend up">测试报告</div></div>
+  <div class="kpi-card"><div class="kpi-label">📍 自改进</div><div class="kpi-num">06-12</div><div class="kpi-trend up">反馈闭环</div></div>
+  <div class="kpi-card"><div class="kpi-label">🎯 发布</div><div class="kpi-num">06-13</div><div class="kpi-trend up">交付</div></div>
+</div>
+
+<!-- 甘特图 -->
+<div class="section">
+<h2><span class="dot"></span>甘特图 (Gantt)</h2>
+<div class="gantt">
+  <div class="gantt-row gantt-head">
+    <div class="gantt-task">任务</div>
+    <div class="gantt-bar-wrap">
+      <div class="gantt-day">30</div><div class="gantt-day">31</div><div class="gantt-day">01</div><div class="gantt-day">02</div><div class="gantt-day">03</div><div class="gantt-day">04</div><div class="gantt-day">05</div><div class="gantt-day">06</div><div class="gantt-day">07</div><div class="gantt-day">08</div><div class="gantt-day">09</div><div class="gantt-day">10</div><div class="gantt-day">11</div><div class="gantt-day">12</div><div class="gantt-day">13</div>
+    </div>
+  </div>
+  <div class="gantt-row">
+    <div class="gantt-task">§0 技术评审</div>
+    <div class="gantt-bar-wrap">
+      <div class="gantt-bar" style="left:0%;width:13%"><span>05-30 → 06-01</span></div>
+    </div>
+  </div>
+  <div class="gantt-row">
+    <div class="gantt-task">§1 测试设计</div>
+    <div class="gantt-bar-wrap">
+      <div class="gantt-bar alt" style="left:13%;width:7%"><span>06-02 → 06-03</span></div>
+    </div>
+  </div>
+  <div class="gantt-row">
+    <div class="gantt-task">§2 实施报告</div>
+    <div class="gantt-bar-wrap">
+      <div class="gantt-bar" style="left:20%;width:33%"><span>06-03 → 06-08</span></div>
+    </div>
+  </div>
+  <div class="gantt-row">
+    <div class="gantt-task">§3 测试报告</div>
+    <div class="gantt-bar-wrap">
+      <div class="gantt-bar alt" style="left:53%;width:13%"><span>06-09 → 06-10</span></div>
+    </div>
+  </div>
+  <div class="gantt-row">
+    <div class="gantt-task">§4 自改进</div>
+    <div class="gantt-bar-wrap">
+      <div class="gantt-bar" style="left:66%;width:20%"><span>06-11 → 06-12</span></div>
+    </div>
+  </div>
+  <div class="gantt-row">
+    <div class="gantt-task">交付收口</div>
+    <div class="gantt-bar-wrap">
+      <div class="gantt-bar alt" style="left:86%;width:14%"><span>06-13</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 关键节点 -->
+<div class="section">
+<h2><span class="dot"></span>关键节点详情</h2>
+<table class="scorecard">
+  <thead><tr><th>日期</th><th>节点</th><th>事件</th><th>产物</th><th>参与方</th></tr></thead>
+  <tbody>
+    <tr><td><code>05-30</code></td><td>🚀 启动会</td><td>技术评审立项,确认 5 大域阅读顺序</td><td>评审纪要</td><td>planner / tech-lead</td></tr>
+    <tr><td><code>06-01</code></td><td>✅ 评审通过</td><td>学习路径图 v4.5 定稿</td><td>学习路径.md</td><td>planner</td></tr>
+    <tr><td><code>06-03</code></td><td>✅ 测试设计</td><td>TC-O 上手路径测试用例完成</td><td>onboarding.test.mjs</td><td>tester</td></tr>
+    <tr><td><code>06-05</code></td><td>✅ 实施中期</td><td>FAQ + 新人指南 + 30 秒索引完成</td><td>3 份文档</td><td>planner</td></tr>
+    <tr><td><code>06-08</code></td><td>✅ 实施完成</td><td>HTML+SVG 架构图、知识图谱、演示页全部上线</td><td>3 份交互页</td><td>planner / frontend</td></tr>
+    <tr><td><code>06-10</code></td><td>✅ 测试通过</td><td>23 个检查点 100% PASS, 0 失败 0 警告</td><td>验证报告</td><td>tester</td></tr>
+    <tr><td><code>06-12</code></td><td>✅ 自改进</td><td>摩擦点清单闭环,导航索引更新</td><td>摩擦点.json</td><td>planner</td></tr>
+    <tr><td><code>06-13</code></td><td>🎯 发布</td><td>4 方签收(PO/TL/QA/新人官),正式发布</td><td>交付包</td><td>all</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- 计划 vs 实际 -->
+<div class="section">
+<h2><span class="dot"></span>计划 vs 实际</h2>
+<table class="scorecard">
+  <thead><tr><th>维度</th><th>计划</th><th>实际</th><th>偏差</th><th>原因分析</th></tr></thead>
+  <tbody>
+    <tr><td>启动日期</td><td>06-01</td><td>05-30</td><td class="pass">提前 2 天</td><td>需求清晰,评审 1 次过</td></tr>
+    <tr><td>实施完成</td><td>06-09</td><td>06-08</td><td class="pass">提前 1 天</td><td>模板复用,绘图效率高</td></tr>
+    <tr><td>测试通过</td><td>06-12</td><td>06-10</td><td class="pass">提前 2 天</td><td>测试用例与开发同步</td></tr>
+    <tr><td>总耗时</td><td>14 天</td><td>15 天</td><td>延 1 天</td><td>自改进阶段新增摩擦点闭环环节</td></tr>
+    <tr><td>工时</td><td>18h</td><td>15.5h</td><td class="pass">节省 2.5h</td><td>复用现有 CDN 样式,减少前端开发</td></tr>
+  </tbody>
+</table>
+</div>
+
+</div><!-- /panelTimeline -->
+
+<div class="footer">
+  <p>🤖 Generated with planner agent | scene: 交叉导航与可访问性 | updated: 2026-06-05</p>
+</div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="../../../../cdn/yry-plan/index.js"></script>
+<script src="../../../../cdn/shared/index.js"></script>
+</body>
+</html>

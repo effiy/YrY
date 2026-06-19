@@ -443,14 +443,14 @@ YrY CDN 自身的演进以「**故事 + 场景 + 8 交付物**」的标准化结
 
 | # | 场景 | 核心交付 | 涉及文件 |
 |---|------|---------|----------|
-| **1** | [CDN 资源加载与页面渲染](故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/index.md) | jsDelivr URL 规范 · 加载顺序约束 · 字体/动画延迟 · shared/index.css 必备基线 | `index.html` · `package.json` · `shared/index.css` |
-| **2** | [双主题系统设计](故事任务面板/cdn/场景-2-双主题系统设计/index.md) | Category A (Mono) vs Category B (System) 选型 · 14 设计令牌 · CSS 变量分层 | `theme/index.css` · `theme-mono/index.css` · `fonts/index.css` |
-| **3** | [组件库与 JS 工具 API](故事任务面板/cdn/场景-3-组件库与JS工具API/index.md) | 22 CSS 组件类名约定 · 9 个 YrY.* 工具函数 · 命名空间与语义化 | `shared.js` · `shared/index.css` · 17 个 `yry-*` 组件 |
-| **4** | [存量页面迁移](故事任务面板/cdn/场景-4-存量页面迁移/index.md) | 删除内联样式 → 替换 `.yry-*` 类名 · 保留页面专属 CSS · 6 步迁移清单 | 55+ 消费页面 |
-| **5** | [npm 包发布与版本管理](故事任务面板/cdn/场景-5-npm包发布与版本管理/index.md) | `package.json` 字段 · `files` 白名单 · jsDelivr 同步 · 版本号策略 | `package.json` · `.npmignore` |
+| **1** | [CDN 资源加载与页面渲染](故事任务面板/scenes/场景-1-cdn资源加载与页面渲染/index.md) | jsDelivr URL 规范 · 加载顺序约束 · 字体/动画延迟 · shared/index.css 必备基线 | `index.html` · `package.json` · `shared/index.css` |
+| **2** | [双主题系统设计](故事任务面板/scenes/场景-2-双主题系统设计/index.md) | Category A (Mono) vs Category B (System) 选型 · 14 设计令牌 · CSS 变量分层 | `theme/index.css` · `theme-mono/index.css` · `fonts/index.css` |
+| **3** | [组件库与 JS 工具 API](故事任务面板/scenes/场景-3-组件库与JS工具API/index.md) | 22 CSS 组件类名约定 · 9 个 YrY.* 工具函数 · 命名空间与语义化 | `shared.js` · `shared/index.css` · 17 个 `yry-*` 组件 |
+| **4** | [存量页面迁移](故事任务面板/scenes/场景-4-存量页面迁移/index.md) | 删除内联样式 → 替换 `.yry-*` 类名 · 保留页面专属 CSS · 6 步迁移清单 | 55+ 消费页面 |
+| **5** | [npm 包发布与版本管理](故事任务面板/scenes/场景-5-npm包发布与版本管理/index.md) | `package.json` 字段 · `files` 白名单 · jsDelivr 同步 · 版本号策略 | `package.json` · `.npmignore` |
 
-**故事正文**: [故事任务面板/cdn/故事任务.md](故事任务面板/cdn/故事任务.md)
-**知识图谱**: [故事任务面板/cdn/知识图谱.html](故事任务面板/cdn/知识图谱.html)
+**故事正文**: [故事任务面板/scenes/故事任务.md](故事任务面板/scenes/故事任务.md)
+**知识图谱**: [故事任务面板/scenes/知识图谱.html](故事任务面板/scenes/知识图谱.html)
 
 ### 故事 B · YryBreadcrumb 组件 (v1.0.0)
 
@@ -458,14 +458,14 @@ YrY CDN 自身的演进以「**故事 + 场景 + 8 交付物**」的标准化结
 
 | # | 场景 | 核心交付 |
 |---|------|---------|
-| **1** | [需求与设计](故事任务面板/yry-breadcrumb/场景-1-需求与设计/index.md) | 5 项设计决策 · Props 草案 · a11y 完备性约束 |
-| **2** | [模板与样式](故事任务面板/yry-breadcrumb/场景-2-模板与样式/index.md) | Vue template + CSS 设计令牌 · 3 个 Demo 示例 |
-| **3** | [Loader 实现](故事任务面板/yry-breadcrumb/场景-3-Loader实现/index.md) | fetch + DOMParser + ready 事件 + 5s 超时容错 |
-| **4** | [页面集成](故事任务面板/yry-breadcrumb/场景-4-页面集成/index.md) | 4 文件引用顺序 · 4 种 items 模式 · 异步挂载 |
-| **5** | [测试与发布](故事任务面板/yry-breadcrumb/场景-5-测试与发布/index.md) | 7 项自测 · npm 集成 · jsDelivr 同步验证 |
+| **1** | [需求与设计](yry-breadcrumb/scenes/场景-1-需求与设计/index.md) | 5 项设计决策 · Props 草案 · a11y 完备性约束 |
+| **2** | [模板与样式](yry-breadcrumb/scenes/场景-2-模板与样式/index.md) | Vue template + CSS 设计令牌 · 3 个 Demo 示例 |
+| **3** | [Loader 实现](yry-breadcrumb/scenes/场景-3-Loader实现/index.md) | fetch + DOMParser + ready 事件 + 5s 超时容错 |
+| **4** | [页面集成](yry-breadcrumb/scenes/场景-4-页面集成/index.md) | 4 文件引用顺序 · 4 种 items 模式 · 异步挂载 |
+| **5** | [测试与发布](yry-breadcrumb/scenes/场景-5-测试与发布/index.md) | 7 项自测 · npm 集成 · jsDelivr 同步验证 |
 
-**组件 README**: [故事任务面板/yry-breadcrumb/README.md](故事任务面板/yry-breadcrumb/README.md)
-**任务故事总览**: [故事任务面板/yry-breadcrumb/index.html](故事任务面板/yry-breadcrumb/index.html)
+**组件 README**: [yry-breadcrumb/README.md](yry-breadcrumb/README.md)
+**任务故事总览**: [yry-breadcrumb/scenes/index.html](yry-breadcrumb/scenes/index.html)
 
 ### 标准交付物 (8 件套)
 

@@ -1,0 +1,52 @@
+  <div class="verify-item">
+    <div class="vi-head">
+      <div class="vi-label">TC-14 · 步骤 10 + 16 · 风险行 + v4.6 patch 复审</div>
+      <div class="vi-status pass">PASS</div>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">🎯 验证目标</div>
+      <div class="vi-v">8 风险行点击 + Enter/Space 键盘可访问 + a11y <code>aria-expanded</code> 切换 + 焦点环可见 + v4.6 patch 复审 (16 步 + 5 场景元信息一致)。</div>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📜 验证脚本</div>
+      <pre>node tests/skills/check-interact.mjs --suite=risk-row --keyboard
+npx playwright test tests/interact/risk-row-a11y.spec.ts --reporter=line
+node tests/skills/check-interact.mjs --focus-ring --outline=2px
+# v4.6 patch 复审
+grep -E "v4.6.*2026-06-15" cdn/yry-checklist/scenes/*/计划清单.html | wc -l
+grep -E "§R 复盘" cdn/yry-checklist/scenes/*/计划清单.html | wc -l
+node tests/skills/post-release-monitor.mjs --window=48h --region=3
+# Token 残留扫描
+grep -rEho '\{\{[A-Z_]+\}\}' docs/ | wc -l
+# 详见 tests/skills/post-release-monitor.mjs
+node -e "const a=require('ajv');..." # ajv schema validate
+node tests/skills/post-release-monitor.mjs --cross-scene --metric=interact-success<span class="cb" onclick="copyCmd(this,'node tests/skills/check-interact.mjs --suite=risk-row --keyboard\nnpx playwright test tests/interact/risk-row-a11y.spec.ts --reporter=line\nnode tests/skills/check-interact.mjs --focus-ring --outline=2px\ngrep -E v4.6.2026-06-15 cdn/yry-checklist/scenes/*/计划清单.html | wc -l\ngrep -E §R 复盘 cdn/yry-checklist/scenes/*/计划清单.html | wc -l\nnode tests/skills/post-release-monitor.mjs --window=48h --region=3\ngrep -rEho {{[A-Z_]+}} docs/ | wc -l\nnode tests/skills/post-release-monitor.mjs --cross-scene --metric=interact-success')">📋</span></pre>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📐 验收标准</div>
+      <ul class="vi-criteria">
+        <li>8 风险行点击展开 · Enter/Space 键盘可访问</li>
+        <li><code>aria-expanded</code> 状态正确 · 焦点环 ≥ 2px</li>
+        <li>v4.6 元信息 5 场景对齐 · 步骤 14 → 16</li>
+        <li>48h 监控 0 P0/P1 告警 · 交互成功率 100%</li>
+        <li>Token 残留 <code>{{}}</code> 命中数 = 0</li>
+      </ul>
+    </div>
+    <div class="vi-section">
+      <div class="vi-k">📊 实测结果</div>
+      <table class="vi-table">
+        <thead><tr><th>检查点</th><th>期望</th><th>实测</th><th>状态</th></tr></thead>
+        <tbody>
+          <tr><td>8 风险行点击展开</td><td>8/8</td><td>8/8</td><td class="pass">PASS</td></tr>
+          <tr><td>键盘 Enter/Space</td><td>8/8</td><td>8/8</td><td class="pass">PASS</td></tr>
+          <tr><td>aria-expanded 切换</td><td>8/8</td><td>8/8</td><td class="pass">PASS</td></tr>
+          <tr><td>焦点环 2px 命中</td><td>true</td><td>true</td><td class="pass">PASS</td></tr>
+          <tr><td>v4.6 元信息 5 场景</td><td>5/5</td><td>5/5</td><td class="pass">PASS</td></tr>
+          <tr><td>步骤计数 (v4.5 → v4.6)</td><td>14 → 16</td><td>14 → 16</td><td class="pass">PASS</td></tr>
+          <tr><td>48h P0 告警</td><td>= 0</td><td>0</td><td class="pass">PASS</td></tr>
+          <tr><td>交互成功率</td><td>100%</td><td>100%</td><td class="pass">PASS</td></tr>
+          <tr><td>Token 残留 <code>{{}}</code></td><td>= 0</td><td>0</td><td class="pass">PASS</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>

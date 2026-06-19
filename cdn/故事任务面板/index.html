@@ -105,7 +105,7 @@
   <span class="cross-sep">·</span>
   <a class="cross-link" href="../yry-scene-nav/index.html">&#128451; SceneNav Demo</a>
   <span class="cross-sep">·</span>
-  <a class="cross-link" href="./cdn/故事任务.md">&#128203; CDN 故事文档</a>
+  <a class="cross-link" href="./scenes/故事任务.md">&#128203; CDN 故事文档</a>
   <span class="cross-sep">·</span>
   <a class="cross-link" href="./yry-breadcrumb/index.html">&#127916; YryBreadcrumb 任务故事</a>
   <span class="cross-sep">·</span>
@@ -467,9 +467,9 @@
 <!-- ── 知识图谱引用 ── -->
 <div class="tip-box yry-mb-20">
   <strong>&#128279; 知识图谱:</strong> CDN 故事知识图谱以三层 schema (story → scene → source) 可视化概念关系。
-  <a href="./cdn/知识图谱.html" class="yry-link-cyan" style="margin-left:6px">&#127760; 交互式图谱</a>
+  <a href="./scenes/知识图谱.html" class="yry-link-cyan" style="margin-left:6px">&#127760; 交互式图谱</a>
   <span class="yry-clr-text3" style="margin:0 4px">·</span>
-  <a href="./cdn/知识图谱.json" class="yry-link-cyan">&#128203; JSON 数据</a>
+  <a href="./scenes/知识图谱.json" class="yry-link-cyan">&#128203; JSON 数据</a>
   <span class="yry-clr-text3">— 17 节点 · 16 边 · domain/scene/flow/step 四类节点</span>
 </div>
 
@@ -492,7 +492,7 @@
       <a href="./yry-breadcrumb/index.html">&#127916; 子故事总览</a>
       <a href="../yry-breadcrumb/index.html">&#127828; 组件 Demo</a>
       <a href="./yry-breadcrumb/README.md">&#128214; 组件 README</a>
-      <a href="./cdn/场景-3-组件库与JS工具API/index.md">&#128203; 所属场景 3 正文</a>
+      <a href="./scenes/场景-3-组件库与JS工具API/index.md">&#128203; 所属场景 3 正文</a>
     </div>
   </div>
 
@@ -614,7 +614,7 @@
   &#127760; YrY CDN v1.2.0 · 任务故事总览 ·
   <a href="../index.html">CDN 共享库</a> ·
   <a href="../README.md">README</a> ·
-  <a href="./cdn/故事任务.md">故事文档</a> ·
+  <a href="./scenes/故事任务.md">故事文档</a> ·
   <a href="./yry-breadcrumb/index.html">YryBreadcrumb</a> ·
   <a href="./yry-back-top/README.md">BackTop</a> ·
   <a href="./yry-cross-nav/README.md">CrossNav</a> ·
@@ -644,7 +644,7 @@ var DELIVERABLES = [
   { name: '审查',      icon: '&#128221;', slug: '审查', ext: '.html' }
 ];
 
-// 5 CDN story scenes — 对应 cdn/故事任务面板/cdn/ 下 5 个场景目录
+// 5 CDN story scenes — 对应 cdn/故事任务面板/scenes/ 下 5 个场景目录
 var SCENES = [
   {
     num: 1,
@@ -721,7 +721,7 @@ SCENES.forEach(function(s) {
 // ═══ 1) Vue 3 渲染场景卡片 ═══
 function renderScenes() {
   if (!window.Vue) return;
-  // Docs 场景目录在 cdn/故事任务面板/cdn/ 下
+  // Docs 场景目录在 cdn/故事任务面板/scenes/ 下
   var docsBase = './cdn/';
   Vue.createApp({
     data: function() { return { scenes: SCENES, deliverables: DELIVERABLES, statusMap: STATUS_MAP, docsBase: docsBase }; },

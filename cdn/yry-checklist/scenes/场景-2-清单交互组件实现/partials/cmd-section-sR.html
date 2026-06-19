@@ -1,0 +1,26 @@
+<div class="section"><h2><span class="dot"></span>§R 复盘与监控 — 已执行命令<span class="s-done">· 2 条 · v4.6 patch</span></h2>
+<div class="cmd-grid">
+  <div class="cmd-card">
+    <div class="c-stage">步骤 15</div>
+    <div class="c-name">交付后 48h 监控</div>
+    <div class="c-desc">post-release-monitor 抓取 48h 监控指标,交互成功率 100%,localStorage 写入 0 异常,跨场景 key 0 冲突</div>
+    <pre>node tests/skills/post-release-monitor.mjs --window=48h --region=3 --metric=interact-success<span class="cb" onclick="copyCmd(this,'node tests/skills/post-release-monitor.mjs --window=48h --region=3 --metric=interact-success')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 devops+reviewer</span><span>⏱ 0.5h</span><span>🎯 P1</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>48h 内 0 P0/P1 告警 · 交互成功率 100% · 跨场景 key 0 冲突 · 监控报告归档</div>
+  </div>
+  <div class="cmd-card">
+    <div class="c-stage">步骤 16</div>
+    <div class="c-name">v4.6 patch · 元信息同步</div>
+    <div class="c-desc">头部/页脚/清单头元信息统一刷新至 2026-06-15,新增 §R 复盘 section,5 子场景对齐 v1.0.0 stable</div>
+    <pre>git add cdn/yry-checklist/scenes/场景-2-清单交互组件实现/计划清单.html
+git commit -m "docs(checklist): v4.6 patch · 元信息同步 + §R 复盘"
+git tag -a v1.0.1 -m "场景-2 v4.6 patch"
+node skills/rui-bot/send.mjs --story=yry-interact --status=v4.6-patch<span class="cb" onclick="copyCmd(this,'git add cdn/yry-checklist/scenes/场景-2-清单交互组件实现/计划清单.html\ngit commit -m &quot;docs(checklist): v4.6 patch · 元信息同步 + §R 复盘&quot;\ngit tag -a v1.0.1 -m &quot;场景-2 v4.6 patch&quot;\nnode skills/rui-bot/send.mjs --story=yry-interact --status=v4.6-patch')">📋</span></pre>
+    <div class="c-meta">
+      <span>👤 planner+devops</span><span>⏱ 0.4h</span><span>🎯 P2</span>
+    </div>
+    <div class="c-expect"><b>✓ 预期：</b>5 场景元信息一致 · §R section 渲染正常 · 步骤计数 14 → 16 · 进度环 100%</div>
+  </div>
+</div></div>

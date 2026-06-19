@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="YryBreadcrumb 任务故事总览 · 5 场景 × 8 交付物 · 零打包 Vue 3 组件的故事驱动 SDLC 落地记录">
+<meta name="theme-color" content="#1a1a1a">
+<meta name="generator" content="YryBreadcrumb Story v1.1.0">
+<title>YryBreadcrumb · 任务故事</title>
+
+<!-- ═══ CDN: YrY 共享样式 ═══ -->
+<link rel="stylesheet" href="../../shared\/index\.css">
+<link rel="stylesheet" href="../../theme\/index\.css">
+<link rel="stylesheet" href="../../yry\-home\/index\.css">
+<link rel="stylesheet" href="../../yry\-checklist\/index\.css">
+<link rel="stylesheet" href="../../yry\-scene\/index\.css">
+<!-- ═══ CDN: YryBreadcrumb 组件样式 ═══ -->
+<link rel="stylesheet" href="../../yry-breadcrumb/index.css">
+<link rel="stylesheet" href="../../yry-scene-nav/index.css">
+<link rel="stylesheet" href="../../yry-cross-nav/index.css">
+<link rel="stylesheet" href="../../yry-back-top/index.css">
+<link rel="stylesheet" href="../../yry-scene-header/index.css">
+<link rel="stylesheet" href="../../yry-stats-grid/index.css">
+  <!-- ═══ CDN: Vue 3 ═══ -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+<!-- ═══ 结构化数据 (SEO / 索引) ═══ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "YryBreadcrumb · 任务故事总览",
+  "description": "零打包 Vue 3 组件 · 1 组件 / 3 文件 / 5 场景 / 40 交付物 · 故事驱动 SDLC 落地",
+  "version": "1.1.0",
+  "datePublished": "2026-06-15",
+  "dateModified": "2026-06-15",
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "YrY CDN" },
+  "keywords": "Vue 3, 零打包, 面包屑, 任务故事, SDLC, YrY CDN"
+}
+</script>
+
+<link rel="stylesheet" href="../../yry\-story\-panel\/index\.css">
+<style>
+/* ── Icon variants (extends .icon from yry-home.css) ── */
+.item-card .icon.tpl { background: rgba(255,193,7,.15); color: var(--yry-accent, #ffc107); }
+.item-card .icon.js  { background: rgba(34,211,238,.15); color: var(--yry-cyan, #22d3ee); }
+.item-card .meta .detail { font-size: .7rem; color: var(--yry-text3, #888); }
+.timeline-strip .tl-step .tl-name { display: block; font-size: .7rem; }
+/* ── Page meta (阅读时间 + 更新时间) ── */
+.page-meta {
+  display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+  font-size: .72rem; color: var(--yry-text3, #888);
+  margin: 8px 0 20px; padding: 0 4px;
+}
+.page-meta .meta-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 10px; background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.06); border-radius: 10px;
+}
+.page-meta .meta-pill .meta-icon { font-size: .85rem; }
+/* ── Pulse dot (live/active indicator) ── */
+.pulse-dot {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  background: #10b981; flex-shrink: 0;
+  animation: glowPulse 2s infinite;
+}
+/* ── Tip / callout boxes ── */
+.tip-box {
+  background: rgba(255,193,7,.04); border-left: 3px solid var(--yry-accent, #ffc107);
+  border-radius: 0 6px 6px 0; padding: 10px 14px; margin: 10px 0;
+  font-size: .78rem; color: var(--yry-text2, #d4d4d4); line-height: 1.55;
+}
+.tip-box strong { color: var(--yry-accent, #ffc107); }
+.tip-box code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: .82em; background: rgba(255,255,255,.04);
+  padding: 1px 5px; border-radius: 3px; color: var(--yry-cyan, #22d3ee);
+}
+.tip-box.success { background: rgba(16,185,129,.05); border-left-color: #10b981; }
+.tip-box.success strong { color: #10b981; }
+.tip-box.info { background: rgba(34,211,238,.04); border-left-color: var(--yry-cyan, #22d3ee); }
+.tip-box.info strong { color: var(--yry-cyan, #22d3ee); }
+.tip-box.warn { background: rgba(239,68,68,.05); border-left-color: #ef4444; }
+.tip-box.warn strong { color: #ef4444; }
+/* ── Tag chips ── */
+.tag-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.tag-chip {
+  display: inline-block; font-size: .6rem; font-weight: 600;
+  padding: 2px 7px; border-radius: 4px; letter-spacing: .3px;
+  text-transform: uppercase; white-space: nowrap;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+.tag-chip.success { background: rgba(16,185,129,.12); color: #10b981; }
+/* ── Overview cards (for highlights section) ── */
+.overview-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px; margin: 14px 0;
+}
+.ov-card {
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08);
+  border-radius: 10px; padding: 16px 18px;
+  transition: all .2s; animation: fadeInUp .4s ease both;
+  position: relative; overflow: hidden;
+}
+.ov-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255,193,7,.18);
+  box-shadow: 0 6px 24px rgba(0,0,0,.3);
+}
+.ov-card .ov-ico { font-size: 1.5rem; margin-bottom: 6px; }
+.ov-card .ov-title { font-size: .86rem; font-weight: 700; color: var(--yry-text, #f5f5f5); margin-bottom: 4px; }
+.ov-card .ov-desc { font-size: .72rem; color: var(--yry-text3, #888); line-height: 1.5; }
+/* ── KBD style ── */
+.kbd {
+  font-size: .7rem; color: var(--yry-text2, #d4d4d4);
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+  border-bottom-width: 2px; border-radius: 4px;
+  padding: 1px 6px; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  display: inline-block; min-width: 18px; text-align: center;
+}
+/* ── Section header with meta ── */
+.section-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px; flex-wrap: wrap; gap: 8px;
+}
+.section-head .sh-meta {
+  font-size: .7rem; color: var(--yry-text3, #888);
+  display: flex; gap: 10px; align-items: center;
+}
+/* ── Next-action (walkthrough CTA) ── */
+.next-action {
+  display: flex; align-items: flex-start; gap: 14px;
+  margin: 22px 0 18px; padding: 16px 18px;
+  background: rgba(255,193,7,.04); border: 1px solid rgba(255,193,7,.12);
+  border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,.2);
+  animation: fadeInUp .45s .3s ease both;
+}
+.next-action .na-ico {
+  font-size: 1.6rem; flex-shrink: 0; margin-top: 2px;
+}
+.next-action .na-body { flex: 1; min-width: 0; }
+.next-action .na-title {
+  font-size: .88rem; font-weight: 700; color: var(--yry-accent, #ffc107);
+  margin-bottom: 4px;
+}
+.next-action .na-desc {
+  font-size: .75rem; color: var(--yry-text3, #888); line-height: 1.55;
+}
+.stat .num { font-size: 1.4rem; }
+/* ── Reduced motion (a11y) ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+/* ── Print ── */
+@media print {
+  .skip-link, .back-top, .cross-nav, .quick-filter, .progress-summary button { display: none !important; }
+</style>
+</head>
+<body>
+<!-- ═══ Skip Link (a11y) ═══ -->
+<a href="#main" class="skip-link">⏩ 跳到主要内容</a>
+
+<div class="container" id="main">
+
+<!-- ═══ Breadcrumb (Vue 3 组件) ═══ -->
+<div id="breadcrumb-app"></div>
+
+<!-- ── Header ── -->
+<div class="header">
+  <h1><span class="accent">&#127828;</span> YryBreadcrumb · 任务故事</h1>
+  <p><span class="pulse-dot yry-pulse-wrap" title="实时数据"></span>零打包 · Vue 3 单文件组件 — 1 组件 / 3 文件 / 5 场景 / 40 交付物 · 故事驱动 SDLC 落地</p>
+</div>
+
+<!-- ── Page meta (阅读时间 / 更新时间) ── -->
+<div class="page-meta" id="pageMeta">
+  <span class="meta-pill"><span class="meta-icon">&#9201;</span> 阅读 ~ <span id="readTime">3</span> 分钟</span>
+  <span class="meta-pill"><span class="meta-icon">&#128197;</span> 更新于 <time datetime="2026-06-15">2026-06-15</time></span>
+  <span class="meta-pill"><span class="meta-icon">&#128229;</span> v1.1.0</span>
+</div>
+
+<div class="live-bar">
+  <span class="live-dot"></span> 所有资源已加载 · 实时数据
+  <span class="live-resource"><span class="lr-name">Vue 3</span><span class="lr-status">OK</span><span class="lr-size">~40KB</span></span>
+  <span class="live-resource"><span class="lr-name">YryBreadcrumb</span><span class="lr-status">OK</span><span class="lr-size">~5KB</span></span>
+  <span class="live-resource"><span class="lr-name">shared/index.css</span><span class="lr-status">OK</span><span class="lr-size">~8KB</span></span>
+</div>
+
+<!-- ── Stats ── -->
+<div class="stats">
+  <a class="stat" href="#layer-component"><div class="num">3</div><div class="label">组件文件</div></a>
+  <a class="stat" href="#layer-scenes"><div class="num green">5</div><div class="label">实现场景</div></a>
+  <a class="stat" href="#layer-deliverables"><div class="num">40</div><div class="label">标准交付物</div></a>
+  <a class="stat" href="#layer-flow"><div class="num green">7</div><div class="label">设计决策</div></a>
+  <a class="stat" href="../../yry-breadcrumb/index.html"><div class="num">0</div><div class="label">打包步骤</div></a>
+</div>
+
+<div class="yry-center-meta">
+  <span class="kbd">Alt</span>+<span class="kbd">↑</span> 回到顶部 · 点击场景状态标记循环进度 · <span class="kbd">Esc</span> 清空搜索
+</div>
+
+<!-- ── Cross-nav ── -->
+<div class="cross-nav">
+  <a class="cross-link" href="../../../docs/index.html">&#128218; 文档中心</a>
+  <span class="cross-sep">·</span>
+  <a class="cross-link" href="../yry-checklist/scenes/场景-1-模板架构与CSS设计系统/计划清单.html">&#128203; 原始触发页</a>
+  <span class="cross-sep">·</span>
+  <a class="cross-link" href="../../yry-breadcrumb/index.html">&#127828; 组件 Demo</a>
+  <span class="cross-sep">·</span>
+  <a class="cross-link" href="../README.md">&#128214; 组件 README</a>
+  <span class="cross-sep">·</span>
+  <a class="cross-link" href="../../../CLAUDE.md" target="_blank">&#128220; CLAUDE.md</a>
+  <span class="cross-sep">·</span>
+  <a class="cross-link" href="../../../README.md" target="_blank">&#128214; README.md</a>
+</div>
+
+<!-- ── Flow strip ── -->
+<div class="flow-strip" id="layer-flow">
+  <span class="flow-step">&#128221; 静态 HTML</span>
+  <span class="flow-arrow">→</span>
+  <span class="flow-step">&#127828; YryBreadcrumb 组件</span>
+  <span class="flow-arrow">→</span>
+  <span class="flow-step">&#128230; cdn/</span>
+  <span class="flow-arrow">→</span>
+  <span class="flow-step">&#127916; 任务故事 5 场景</span>
+  <span class="flow-arrow">→</span>
+  <span class="flow-step">&#128203; 8 交付物 × 5</span>
+  <span class="flow-arrow">=</span>
+  <span class="flow-tag">40 文件</span>
+</div>
+
+<div class="tw-demo yry-mb-24">
+  <div class="tw-head">
+    <span class="tw-btn r"></span><span class="tw-btn y"></span><span class="tw-btn g"></span>
+    <span class="tw-title">quick-start — YryBreadcrumb</span>
+  </div>
+  <div class="tw-line"><span class="tw-prompt">$ </span><span class="tw-cmd">ls cdn/yry-breadcrumb/</span></div>
+  <div class="tw-line"><span class="tw-out">index.html  index.js  index.css  任务故事/</span></div>
+  <div class="tw-line"><span class="tw-prompt">$ </span><span class="tw-cmd">echo "&lt;div id='breadcrumb-app'&gt;&lt;/div&gt;" >> page.html</span></div>
+  <div class="tw-line"><span class="tw-prompt">$ </span><span class="tw-cmd">echo "&lt;script src='cdn/yry-breadcrumb/index.js'&gt;&lt;/script&gt;" >> page.html</span></div>
+  <div class="tw-line"><span class="tw-info">→ 零打包，3 文件即用。引用后 Vue 3 自动挂载。</span></div>
+  <div class="tw-line"><span class="tw-prompt">$ </span><span class="tw-cmd">open page.html</span></div>
+  <div class="tw-line"><span class="tw-ok">✓ 面包屑组件渲染成功</span><span class="tw-caret"></span></div>
+</div>
+
+<!-- ── Timeline strip (5 场景进度时间轴) ── -->
+<nav class="timeline-strip" aria-label="5 场景时间轴" id="timelineStrip">
+  <a class="tl-step is-done"   href="./场景-1-需求与设计/index.md"  data-scene="1"><span class="tl-num">01</span><span class="tl-name">需求与设计</span></a>
+  <a class="tl-step is-done"   href="./场景-2-模板与样式/index.md"   data-scene="2"><span class="tl-num">02</span><span class="tl-name">模板与样式</span></a>
+  <a class="tl-step is-done"   href="./场景-3-Loader实现/index.md"   data-scene="3"><span class="tl-num">03</span><span class="tl-name">Loader 实现</span></a>
+  <a class="tl-step is-done"   href="./场景-4-页面集成/index.md"     data-scene="4"><span class="tl-num">04</span><span class="tl-name">页面集成</span></a>
+  <a class="tl-step is-done"   href="./场景-5-测试与发布/index.md"   data-scene="5"><span class="tl-num">05</span><span class="tl-name">测试与发布</span></a>
+</nav>
+
+<div class="timeline-hero">
+  <h3>📊 5 场景递进关系<span class="th-sub">需求→设计→实现→集成→发布</span></h3>
+  <div class="tl-track-wrap">
+    <div class="tl-track">
+      <div class="tl-line"></div>
+      <div class="tl-progress" style="width:100%"></div>
+      <div class="tl-nodes">
+        <div class="tl-node done"><div class="tl-dot">1</div><div class="tl-label">需求与设计</div><div class="tl-time">决策</div></div>
+        <div class="tl-node done"><div class="tl-dot">2</div><div class="tl-label">模板与样式</div><div class="tl-time">视觉</div></div>
+        <div class="tl-node done"><div class="tl-dot">3</div><div class="tl-label">Loader实现</div><div class="tl-time">逻辑</div></div>
+        <div class="tl-node done"><div class="tl-dot">4</div><div class="tl-label">页面集成</div><div class="tl-time">集成</div></div>
+        <div class="tl-node done"><div class="tl-dot">5</div><div class="tl-label">测试与发布</div><div class="tl-time">交付</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 class="yry-h2-section">&#128197; 场景日程</h2>
+<div class="day-grid">
+  <div class="day-card d1">
+    <div class="d-head">
+      <span class="d-tag">场景 1</span>
+      <span class="d-title">需求与设计</span>
+    </div>
+    <div class="d-meta">
+      <span>🎯 决策</span><span>📐 3 文件拆分</span><span>♿ a11y</span>
+    </div>
+    <ul>
+      <li>梳理需求来源 (计划清单 · 场景 1)<span class="li-time">✅</span></li>
+      <li>确定 3 文件拆分方案<span class="li-time">✅</span></li>
+      <li>设计 Props API 草案<span class="li-time">✅</span></li>
+      <li>a11y 优先级决策<span class="li-time">✅</span></li>
+    </ul>
+  </div>
+
+  <div class="day-card d2">
+    <div class="d-head">
+      <span class="d-tag">场景 2</span>
+      <span class="d-title">模板与样式</span>
+    </div>
+    <div class="d-meta">
+      <span>🎨 视觉</span><span>📐 BEM</span><span>🎯 5 模式</span>
+    </div>
+    <ul>
+      <li>Vue 3 template 编写<span class="li-time">✅</span></li>
+      <li>设计令牌 + fallback 决策<span class="li-time">✅</span></li>
+      <li>5 种视觉模式覆盖<span class="li-time">✅</span></li>
+      <li>BEM 命名规范<span class="li-time">✅</span></li>
+    </ul>
+  </div>
+
+  <div class="day-card d3">
+    <div class="d-head">
+      <span class="d-tag">场景 3</span>
+      <span class="d-title">Loader 实现</span>
+    </div>
+    <div class="d-meta">
+      <span>⚡ 异步</span><span>📡 fetch</span><span>🛡 降级</span>
+    </div>
+    <ul>
+      <li>fetch + DOMParser 加载<span class="li-time">✅</span></li>
+      <li>CustomEvent 解耦通信<span class="li-time">✅</span></li>
+      <li>5s 超时保护<span class="li-time">✅</span></li>
+      <li>错误降级策略<span class="li-time">✅</span></li>
+    </ul>
+  </div>
+
+  <div class="day-card d4">
+    <div class="d-head">
+      <span class="d-tag">场景 4</span>
+      <span class="d-title">页面集成</span>
+    </div>
+    <div class="d-meta">
+      <span>🔗 集成</span><span>📋 4 模式</span><span>🔄 自举</span>
+    </div>
+    <ul>
+      <li>4 文件引用顺序<span class="li-time">✅</span></li>
+      <li>4 种 items 模式覆盖<span class="li-time">✅</span></li>
+      <li>Dogfooding 自举验证<span class="li-time">✅</span></li>
+      <li>跨页面隔离<span class="li-time">✅</span></li>
+    </ul>
+  </div>
+</div>
+
+<div class="links-row yry-justify-center">
+  <a href="../../yry-breadcrumb/index.html">🍞 组件 Demo</a>
+  <a href="../README.md">📖 组件 README</a>
+  <a href="./场景-1-需求与设计/演示.html">💡 场景 1 演示</a>
+  <a href="./场景-2-模板与样式/演示.html">🎨 场景 2 演示</a>
+  <a href="./场景-5-测试与发布/测试面板.html">🧪 测试面板</a>
+</div>
+
+<!-- ── Progress summary (可重置) ── -->
+<div class="progress-summary" id="progressSummary" role="status" aria-live="polite">
+  <span>&#127942; 整体进度</span>
+  <div class="ps-bar"><div class="ps-bar-fill" id="psBarFill"></div></div>
+  <span class="ps-pct" id="psPct">0%</span>
+  <button type="button" id="psReset" title="清除本地进度数据">重置</button>
+</div>
+
+<div class="tip-box info yry-mb-20">
+  <strong>📖 阅读引导:</strong> 本页是 YryBreadcrumb 组件的<strong>任务故事总览</strong>。5 个场景按顺序递进 — 从需求分析到测试发布，每个场景产出 8 类标准交付物。点击场景卡片进入详情，点击右上角状态标记循环切换进度。
+</div>
+
+<!-- ── Quick filter ── -->
+<div class="quick-filter" role="search">
+  <span class="qf-icon" aria-hidden="true">&#128269;</span>
+  <input type="search" id="qfInput" placeholder="搜索场景 (如:loader / 模板 / 集成)" aria-label="搜索场景">
+  <span class="qf-count" id="qfCount">5 / 5</span>
+  <button class="qf-clear" id="qfClear" type="button" aria-label="清空搜索">&times;</button>
+</div>
+
+<!-- ═══ Layer 1: 组件结构 ═══ -->
+<div class="layer" id="layer-component">
+  <div class="layer-header">
+    <span class="layer-num">1</span>
+    <h2>组件结构</h2>
+    <span class="layer-stats">3 文件 · 模板 / 加载器 / 样式 · 职责单一 · 各改各的不打架</span>
+  </div>
+
+  <div class="sub-title"><span class="accent">&#128208;</span> 核心文件 (3)</div>
+  <div class="card-grid">
+    <div class="item-card">
+      <span class="icon tpl">T</span>
+      <div class="body">
+        <div class="name"><a href="../../yry-breadcrumb/index.html">index.html</a><span class="badge">模板源</span></div>
+        <div class="desc"><code>&lt;script type="text/x-template" id="yry-breadcrumb-tpl"&gt;</code> 块的唯一定义点。<br><strong>设计 / 前端</strong> 改这里 → <code>index.js</code> 启动时自动 fetch 同步。</div>
+        <div class="tags-row">
+          <span class="tag-chip accent">唯一来源</span>
+          <span class="tag-chip info">Vue template</span>
+          <span class="tag-chip cyan">a11y</span>
+        </div>
+        <div class="meta"><code>~ 30 行 template</code> · <code>8 行 demo</code> · <code>× 3 mount 点</code></div>
+      </div>
+    </div>
+    <div class="item-card">
+      <span class="icon js">L</span>
+      <div class="body">
+        <div class="name"><a href="../../yry-breadcrumb/index.js">index.js</a><span class="badge">Loader</span></div>
+        <div class="desc">IIFE 加载器: <code>document.currentScript.src</code> 解析自身 URL → <code>fetch()</code> 拉取 <code>index.html</code> → <code>DOMParser</code> 提取模板 → <code>Vue.createApp().mount()</code> → 派发 <code>yry-breadcrumb-ready</code> 事件。</div>
+        <div class="tags-row">
+          <span class="tag-chip accent">运行时入口</span>
+          <span class="tag-chip info">fetch</span>
+          <span class="tag-chip purple">DOMParser</span>
+          <span class="tag-chip cyan">5s 超时</span>
+        </div>
+        <div class="meta"><code>~ 5 KB</code> · <code>no-bundler</code> · <code>CustomEvent</code></div>
+      </div>
+    </div>
+    <div class="item-card">
+      <span class="icon css">S</span>
+      <div class="body">
+        <div class="name"><a href="../../yry-breadcrumb/index.css">index.css</a><span class="badge">样式</span></div>
+        <div class="desc">使用 <code>--yry-color-*</code> 设计令牌 + fallback。link href 引入 → 全局作用域 <code>.breadcrumb / .bc-sep / .bc-current</code>。修改不影响模板与逻辑。</div>
+        <div class="tags-row">
+          <span class="tag-chip accent">设计令牌</span>
+          <span class="tag-chip info">fallback</span>
+          <span class="tag-chip purple">全局类</span>
+        </div>
+        <div class="meta"><code>~ 1 KB</code> · <code>BEM 命名</code> · <code>--yry-*</code></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<!-- ═══ Layer 2: 5 场景 (Vue 3 动态渲染 + 状态 + 进度) ═══ -->
+<div class="layer" id="layer-scenes">
+  <div class="layer-header">
+    <span class="layer-num">2</span>
+    <h2>5 场景 · 完整链路</h2>
+    <span class="layer-stats">从需求到发布 · 8 交付物 / 场景 · 全 40 文件</span>
+  </div>
+
+  <div class="sub-title"><span class="accent">&#127916;</span> 5 场景 · 任务故事</div>
+  <div class="scene-grid" id="sceneGrid">
+    <!-- 由 Vue 3 动态渲染 ↓ -->
+  </div>
+</div>
+
+<hr>
+
+<!-- ═══ Layer 3: 8 交付物 ═══ -->
+<div class="layer" id="layer-deliverables">
+  <div class="layer-header">
+    <span class="layer-num cyan">3</span>
+    <h2>8 交付物 · 标准模版</h2>
+    <span class="layer-stats">每场景 8 文件 · 5 场景 × 8 = 40 个标准产出</span>
+  </div>
+
+  <div class="sub-title"><span class="accent">&#128203;</span> 8 类标准交付物</div>
+  <div class="deliv-grid">
+    <div class="deliv-card"><div class="deliv-icon">&#128196;</div><div class="deliv-name">index.md</div><div class="deliv-desc">场景正文 · 5 章节 + Mermaid 图</div></div>
+    <div class="deliv-card"><div class="deliv-icon">&#128203;</div><div class="deliv-name">计划清单.html</div><div class="deliv-desc">任务 / 验收 / 交付 · yry-checklist 组件</div></div>
+    <div class="deliv-card"><div class="deliv-icon">&#128208;</div><div class="deliv-name">架构图.html</div><div class="deliv-desc">关键流程图 · Mermaid · sequenceDiagram</div></div>
+    <div class="deliv-card"><div class="deliv-icon">&#128279;</div><div class="deliv-name">知识图谱.html</div><div class="deliv-desc">概念节点-边图 · Cytoscape 可视化</div></div>
+    <div class="deliv-card"><div class="deliv-icon">&#129514;</div><div class="deliv-name">测试面板.html</div><div class="deliv-desc">测试用例 · 自动化入口 · 验证记录</div></div>
+    <div class="deliv-card"><div class="deliv-icon">&#128220;</div><div class="deliv-name">源码.html</div><div class="deliv-desc">关键源码片段 + 行号 · 三文件全文</div></div>
+    <div class="deliv-card"><div class="deliv-icon">&#128161;</div><div class="deliv-name">演示.html</div><div class="deliv-desc">3 种 items 模式可交互演示</div></div>
+    <div class="deliv-card"><div class="deliv-icon">&#128221;</div><div class="deliv-name">审查.html</div><div class="deliv-desc">技术评审 · 7 项清单 + 决策记录</div></div>
+  </div>
+</div>
+
+<div class="log-box yry-mb-20">
+  <div class="log-line"><span class="log-time">T+0ms</span><span class="log-icon log-info">⬇</span><span>fetch cdn/yry-breadcrumb/index.html</span></div>
+  <div class="log-line"><span class="log-time">T+85ms</span><span class="log-icon log-pass">✓</span><span>DOMParser 提取模板成功</span></div>
+  <div class="log-line"><span class="log-time">T+92ms</span><span class="log-icon log-pass">✓</span><span>window.YryBreadcrumb 已注册</span></div>
+  <div class="log-line"><span class="log-time">T+95ms</span><span class="log-icon log-info">⚡</span><span>CustomEvent 'yry-breadcrumb-ready' 已派发</span></div>
+  <div class="log-line"><span class="log-time">T+98ms</span><span class="log-icon log-pass">✓</span><span>Vue.createApp().mount() 完成 — 5 场景已渲染</span></div>
+</div>
+
+<div class="next-action">
+  <span class="na-ico">🚀</span>
+  <div class="na-body">
+    <div class="na-title">开始探索 YryBreadcrumb</div>
+    <div class="na-desc">从场景 1「需求与设计」开始，了解 3 文件拆分 / 异步加载 / a11y 的设计决策，或直接跳转到组件 Demo 体验交互效果。</div>
+  </div>
+</div>
+
+<!-- ── Footer ── -->
+<div class="footer-note">
+  &#127828; YryBreadcrumb v1.1.0 · 零打包 Vue 3 组件 ·
+  <a href="../../../docs/index.html">文档中心</a> ·
+  <a href="../README.md">组件 README</a> ·
+  <a href="../../yry-breadcrumb/index.html">Demo</a> ·
+  <a href="../../../README.md" target="_blank">根 README</a>
+  · 进度数据存于 localStorage(<code>yry-breadcrumb-scene-progress</code>)
+</div>
+</div>
+
+<!-- ── Back to top ── -->
+<button class="back-top" id="backTop" title="回到顶部 (Alt+↑)" aria-label="回到顶部">↑</button>
+
+<!-- ── Loader ── -->
+<script src="../../shared\/index\.js"></script>
+<!-- ═══ CDN: YrySceneNav 组件 loader ═══ -->
+<script src="../../yry-scene-nav/index.js"></script>
+<!-- ═══ CDN: YryCrossNav 组件 loader ═══ -->
+<script src="../../yry-cross-nav/index.js"></script>
+<!-- ═══ CDN: YryBackTop (零配置自初始化) ═══ -->
+<script src="../../yry-back-top/index.js"></script>
+<!-- ═══ CDN: YrySceneHeader 组件 loader ═══ -->
+<script src="../../yry-scene-header/index.js"></script>
+<!-- ═══ CDN: YryStatsGrid 组件 loader ═══ -->
+<script src="../../yry-stats-grid/index.js"></script>
+<script src="../../yry-breadcrumb/index.js"></script>
+<script>
+/* ════════════════════════════════════════════════════════════════
+   场景数据 (单一数据源) + 状态/进度/过滤/阅读时间 等增强
+   ════════════════════════════════════════════════════════════════ */
+
+// 8 类交付物的固定顺序 (用于 scene-meta 链接)
+var DELIVERABLES = [
+  { name: '计划清单',  icon: '&#128203;', slug: '计划清单' },
+  { name: '架构图',    icon: '&#128208;', slug: '架构图' },
+  { name: '知识图谱',  icon: '&#128279;', slug: '知识图谱' },
+  { name: '测试面板',  icon: '&#129514;', slug: '测试面板' },
+  { name: '源码',      icon: '&#128196;', slug: '源码' },
+  { name: '演示',      icon: '&#128161;', slug: '演示' },
+  { name: '审查',      icon: '&#128221;', slug: '审查' }
+];
+
+// 5 场景 (单一数据源 — 之前是 5 张手写 HTML, 现在 Vue 3 动态渲染)
+var SCENES = [
+  { num: 1, dir: '场景-1-需求与设计',  name: '需求与设计', desc: '梳理面包屑组件的需求来源,确定 3 文件拆分 / 异步加载 / a11y 等关键设计决策,产出 Props API 草案。', color: '#22d3ee', status: 'done', progress: 100 },
+  { num: 2, dir: '场景-2-模板与样式',  name: '模板与样式', desc: 'Vue 3 template 编写 · v-for / v-if / :class 设计 · CSS 设计令牌 + fallback 决策 · 5 视觉模式覆盖。',             color: '#ffc107', status: 'done', progress: 100 },
+  { num: 3, dir: '场景-3-Loader实现',  name: 'Loader 实现', desc: 'fetch + DOMParser + ready 事件 + 5s 超时 · 4 文件引用顺序 · 错误处理与降级 · 错误用例与诊断。',                       color: '#a78bfa', status: 'done', progress: 100 },
+  { num: 4, dir: '场景-4-页面集成',    name: '页面集成',   desc: '集成到 计划清单.html + 28 场景页 · 4 文件引用顺序 · 4 种 items 模式 (含 href/纯文本/长路径/图标)。',               color: '#10b981', status: 'done', progress: 100 },
+  { num: 5, dir: '场景-5-测试与发布',  name: '测试与发布', desc: '7 项自测清单 · 跨页面验证 · npm 集成 · package.json 字段 · cdn-yry-checklist 类名复用验证。',                   color: '#f472b6', status: 'done', progress: 100 }
+];
+
+// 状态映射 (badge 文本 + tooltip)
+var STATUS_MAP = {
+  done: { text: '&#9989;', tip: '已完成' },
+  wip:  { text: '&#128679;', tip: '进行中' },
+  todo: { text: '&#128203;', tip: '待开始' }
+};
+
+// localStorage 进度持久化
+var PROGRESS_KEY = 'yry-breadcrumb-scene-progress';
+var progress = {};
+try { progress = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}') || {}; }
+catch (e) { progress = {}; }
+
+// 合并已持久化的进度
+SCENES.forEach(function(s) {
+  if (typeof progress[s.num] === 'number') s.progress = progress[s.num];
+});
+
+// ═══ 1) Vue 3 渲染场景卡片 (消除 ~80 行 HTML 重复) ═══
+function renderScenes() {
+  if (!window.Vue) return;
+  Vue.createApp({
+    data: function() { return { scenes: SCENES, deliverables: DELIVERABLES, statusMap: STATUS_MAP }; },
+    methods: {
+      metaLinks: function(dir) {
+        return this.deliverables.map(function(d, i) {
+          return {
+            href: './' + dir + '/' + d.slug + '.html',
+            icon: d.icon,
+            sep: i < this.deliverables.length - 1 ? '<span class="sep">·</span>' : ''
+          };
+        }, this);
+      }
+    },
+    template: '\
+<div class="scene-card" v-for="(s, idx) in scenes" :key="s.num" :data-scene="s.num" :style="{ animationDelay: (0.01 + idx * 0.05) + &apos;s&apos; }">\
+  <span class="scene-status" :data-status="s.status" :title="statusMap[s.status].tip" v-html="statusMap[s.status].text"></span>\
+  <div class="scene-head">\
+    <span class="scene-num">场景 {{ s.num }}</span>\
+    <span class="scene-color-dot" :style="{ background: s.color }"></span>\
+    <span class="scene-name"><a :href="&apos;./&apos; + s.dir + &apos;/index.md&apos;">{{ s.name }}</a></span>\
+  </div>\
+  <div class="scene-desc">{{ s.desc }}</div>\
+  <div class="scene-meta">\
+    <template v-for="(d, i) in deliverables" :key="d.slug">\
+      <a :href="&apos;./&apos; + s.dir + &apos;/&apos; + d.slug + &apos;.html&apos;" v-html="d.icon + d.name"></a><span class="sep" v-if="i < deliverables.length - 1">·</span>\
+    </template>\
+  </div>\
+  <div class="scene-progress" :title="&apos;场景 &apos; + s.num + &apos; 进度: &apos; + s.progress + &apos;%&apos;">\
+    <div class="scene-progress-bar" :style="{ width: s.progress + &apos;%&apos; }"></div>\
+  </div>\
+</div>'
+  }).mount('#sceneGrid');
+}
+
+// ═══ 2) 快速搜索/过滤 ═══
+function setupFilter() {
+  var input = document.getElementById('qfInput');
+  var clear = document.getElementById('qfClear');
+  var count = document.getElementById('qfCount');
+  if (!input) return;
+
+  function apply() {
+    var q = (input.value || '').trim().toLowerCase();
+    var cards = document.querySelectorAll('.scene-grid .scene-card');
+    var visible = 0;
+    cards.forEach(function(card) {
+      var num = card.getAttribute('data-scene');
+      var s = SCENES.find(function(x) { return String(x.num) === num; });
+      if (!s) return;
+      var hay = (s.name + ' ' + s.desc + ' ' + s.dir).toLowerCase();
+      var show = !q || hay.indexOf(q) !== -1;
+      card.classList.toggle('is-hidden', !show);
+      if (show) visible++;
+    });
+    count.textContent = visible + ' / ' + SCENES.length;
+  }
+  input.addEventListener('input', apply);
+  clear.addEventListener('click', function() { input.value = ''; input.focus(); apply(); });
+  // Esc 清空
+  input.addEventListener('keydown', function(e) { if (e.key === 'Escape') { input.value = ''; apply(); } });
+  apply();
+}
+
+// ═══ 3) 整体进度条 ═══
+function setupProgress() {
+  var bar   = document.getElementById('psBarFill');
+  var pct   = document.getElementById('psPct');
+  var reset = document.getElementById('psReset');
+  if (!bar) return;
+
+  function refresh() {
+    var sum = SCENES.reduce(function(a, s) { return a + s.progress; }, 0);
+    var avg = Math.round(sum / SCENES.length);
+    bar.style.width = avg + '%';
+    pct.textContent = avg + '%';
+    // 同步时间轴 done 状态 (进度 >= 100 才算 done)
+    document.querySelectorAll('#timelineStrip .tl-step').forEach(function(el) {
+      var n = +el.getAttribute('data-scene');
+      var s = SCENES.find(function(x) { return x.num === n; });
+      el.classList.toggle('is-done',   s && s.progress >= 100);
+      el.classList.toggle('is-active', s && s.progress > 0 && s.progress < 100);
+    });
+  }
+  refresh();
+
+  // 点击场景卡片: 在 0/50/100% 间循环 (演示用 — 真实场景可对接 .scene-status 编辑)
+  document.getElementById('sceneGrid').addEventListener('click', function(e) {
+    var badge = e.target.closest('.scene-status');
+    if (!badge) return;
+    var card = badge.closest('.scene-card');
+    var n = +card.getAttribute('data-scene');
+    var s = SCENES.find(function(x) { return x.num === n; });
+    if (!s) return;
+    // 进度循环: 0 → 50 → 100 → 0
+    s.progress = s.progress >= 100 ? 0 : (s.progress >= 50 ? 100 : 50);
+    s.status   = s.progress >= 100 ? 'done' : (s.progress > 0 ? 'wip' : 'todo');
+    progress[n] = s.progress;
+    try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); } catch (e) {}
+    // 重新渲染卡片
+    document.getElementById('sceneGrid').innerHTML = '';
+    renderScenes();
+    refresh();
+  });
+
+  reset.addEventListener('click', function() {
+    if (!confirm('确定清除所有场景的本地进度数据吗?')) return;
+    try { localStorage.removeItem(PROGRESS_KEY); } catch (e) {}
+    SCENES.forEach(function(s) { s.progress = 100; s.status = 'done'; });
+    progress = {};
+    document.getElementById('sceneGrid').innerHTML = '';
+    renderScenes();
+    refresh();
+    showToast('进度数据已重置');
+  });
+}
+
+// ═══ 4) 估算阅读时间 (中文字数 / 300 + 1) ═══
+function setupReadTime() {
+  var el = document.getElementById('readTime');
+  if (!el) return;
+  var text = (document.querySelector('.container') || {}).innerText || '';
+  // 去空白后, 中文字符数 ~ 300 字/分钟
+  var cjk = (text.match(/[一-鿿]/g) || []).length;
+  var mins = Math.max(1, Math.ceil(cjk / 300));
+  el.textContent = mins;
+}
+
+// ═══ 5) 卡片错落动画 ═══
+function staggerAnimate() {
+  document.querySelectorAll('.card-grid .item-card, .deliv-grid .deliv-card').forEach(function(card, i) {
+    card.style.animationDelay = (0.01 + (i % 20) * 0.012).toFixed(3) + 's';
+  });
+}
+
+// ═══ 6) Back to top (含 Alt+↑ 快捷键) ═══
+function setupBackTop() {
+  var btn = document.getElementById('backTop');
+  if (!btn) return;
+  function toggle() { btn.classList.toggle('visible', window.scrollY > 400); }
+  window.addEventListener('scroll', toggle, { passive: true });
+  btn.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  document.addEventListener('keydown', function(e) {
+    if (e.altKey && e.key === 'ArrowUp') { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  });
+  toggle();
+}
+
+// ═══ 7) Mount YryBreadcrumb (dogfooding) ═══
+function mountBreadcrumb() {
+  if (!window.Vue || !window.YryBreadcrumb) return;
+  Vue.createApp(window.YryBreadcrumb, {
+    items: [
+      { label: '文档中心',     href: '../../../docs/index.html',         icon: '&#128218;' },
+      { label: 'CDN 共享库',   href: '../../README.md',                 icon: '&#127760;' },
+      { label: 'YryBreadcrumb', href: '../../yry-breadcrumb/index.html',                 icon: '&#127828;' },
+      { label: '任务故事',     href: './README.md' },
+      { label: '总览' }
+    ]
+  }).mount('#breadcrumb-app');
+}
+
+// ═══ 启动序列 ═══
+function boot() {
+  staggerAnimate();
+  setupBackTop();
+  setupReadTime();
+  renderScenes();   // 依赖 Vue
+  setupFilter();
+  setupProgress();
+}
+
+if (window.Vue && window.YryBreadcrumb) {
+  mountBreadcrumb();
+  boot();
+} else {
+  var pending = 2;
+  function ready() { if (--pending === 0) { mountBreadcrumb(); boot(); } }
+  document.addEventListener('yry-breadcrumb-ready', function() { pending--; ready(); }, { once: true });
+  // Vue 已加载但 YryBreadcrumb 未到 — 兜底轮询
+  var poll = setInterval(function() {
+    if (window.YryBreadcrumb) { clearInterval(poll); pending--; ready(); }
+  }, 50);
+  setTimeout(function() { clearInterval(poll); if (window.Vue) { pending--; ready(); } }, 3000);
+}
+</script>
+
+<div class="toast" id="toast"></div>
+<script>
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2000);
+}
+</script>
+</body>
+</html>

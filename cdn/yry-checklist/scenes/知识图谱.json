@@ -1,0 +1,190 @@
+{
+  "version": "2.0.0",
+  "meta": {
+    "story": "yry-checklist",
+    "title": "计划清单生成技能",
+    "description": "从 markdown 到 HTML 清单的自动化生成管线 — 模板架构·数据提取·组件交互·验证集成·批量自循环",
+    "generated": "2026-06-13",
+    "source": "cdn/yry-checklist/scenes/故事任务.md"
+  },
+  "domains": [
+    {
+      "id": "template",
+      "name": "模板架构层",
+      "type": "domain",
+      "description": "HTML 骨架·CSS 类体系·CDN 加载链·Token 变量系统"
+    },
+    {
+      "id": "interact",
+      "name": "组件交互层",
+      "type": "domain",
+      "description": "清单勾选·折叠面板·标签页·风险展开·状态管理"
+    },
+    {
+      "id": "visualize",
+      "name": "验证可视化层",
+      "type": "domain",
+      "description": "验证报告·风险热力图·趋势图·分数卡·门禁判定"
+    },
+    {
+      "id": "pipeline",
+      "name": "批量生成层",
+      "type": "domain",
+      "description": "批量引擎·增量检测·自循环调度·摘要报告"
+    }
+  ],
+  "flows": [
+    {
+      "id": "flow-1",
+      "name": "模板定义流程",
+      "type": "flow",
+      "domain": "template",
+      "steps": [
+        "FP1 HTML骨架",
+        "FP2 CSS类体系",
+        "FP3 CDN加载链",
+        "FP4 Token系统"
+      ]
+    },
+    {
+      "id": "flow-2",
+      "name": "交互逻辑流程",
+      "type": "flow",
+      "domain": "interact",
+      "steps": [
+        "FP9 清单勾选",
+        "FP10 折叠面板",
+        "FP11 标签页",
+        "FP12 风险展开"
+      ]
+    },
+    {
+      "id": "flow-3",
+      "name": "可视化渲染流程",
+      "type": "flow",
+      "domain": "visualize",
+      "steps": [
+        "FP13 验证摘要",
+        "FP14 风险矩阵",
+        "FP15 趋势图",
+        "FP16 分数卡"
+      ]
+    },
+    {
+      "id": "flow-4",
+      "name": "批量生成流程",
+      "type": "flow",
+      "domain": "pipeline",
+      "steps": [
+        "FP17 批量引擎",
+        "FP18 增量检测",
+        "FP19 自循环",
+        "FP20 摘要报告"
+      ]
+    }
+  ],
+  "scenes": [
+    {
+      "id": "scene-1",
+      "name": "模板架构与CSS设计系统",
+      "num": 1,
+      "slug": "模板架构与CSS设计系统",
+      "domains": [
+        "template"
+      ],
+      "flows": [
+        "flow-1"
+      ],
+      "files": 7
+    },
+    {
+      "id": "scene-2",
+      "name": "清单交互组件实现",
+      "num": 2,
+      "slug": "清单交互组件实现",
+      "domains": [
+        "interact"
+      ],
+      "flows": [
+        "flow-2"
+      ],
+      "files": 7
+    },
+    {
+      "id": "scene-3",
+      "name": "验证报告与健康面板集成",
+      "num": 3,
+      "slug": "验证报告与健康面板集成",
+      "domains": [
+        "visualize"
+      ],
+      "flows": [
+        "flow-3"
+      ],
+      "files": 7
+    },
+    {
+      "id": "scene-4",
+      "name": "批量生成与自循环机制",
+      "num": 4,
+      "slug": "批量生成与自循环机制",
+      "domains": [
+        "pipeline"
+      ],
+      "flows": [
+        "flow-4"
+      ],
+      "files": 7
+    }
+  ],
+  "edges": [
+    {
+      "from": "flow-1",
+      "to": "flow-2",
+      "type": "供给",
+      "label": "模板骨架供给交互逻辑"
+    },
+    {
+      "from": "flow-1",
+      "to": "flow-3",
+      "type": "供给",
+      "label": "模板骨架供给可视化渲染"
+    },
+    {
+      "from": "flow-2",
+      "to": "flow-4",
+      "type": "供给",
+      "label": "组件就绪后进入批量管线"
+    },
+    {
+      "from": "flow-3",
+      "to": "flow-4",
+      "type": "供给",
+      "label": "可视化组件就绪后进入批量管线"
+    },
+    {
+      "from": "scene-1",
+      "to": "scene-2",
+      "type": "依赖",
+      "label": "模板就绪→组件渲染"
+    },
+    {
+      "from": "scene-1",
+      "to": "scene-3",
+      "type": "依赖",
+      "label": "模板就绪→可视化"
+    },
+    {
+      "from": "scene-2",
+      "to": "scene-4",
+      "type": "依赖",
+      "label": "组件就绪→批量管线"
+    },
+    {
+      "from": "scene-3",
+      "to": "scene-4",
+      "type": "依赖",
+      "label": "可视化就绪→批量管线"
+    }
+  ]
+}
