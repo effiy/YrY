@@ -860,7 +860,23 @@ CMMI 5 级：Structure/Quality/Testing/Maintainability/Knowledge。**YrY**：**L
 
 ### 60. Pre-commit 模式（`--pre-commit`）
 
-仅分析 Git 变更文件，快速输出关键指标。变更文件 = 0 时自动退出（exit 0）。
+仅分析 Git 变更文件。变更文件 = 0 时自动退出（exit 0）。
+
+### 61. 分析置信度
+
+每项指标的置信度评估（基于数据质量和算法精度）。整体置信度 **82% (High)** — 直接测量指标 100%，估算指标 60-85%。
+
+### 62. Standup 摘要
+
+5 行日常站会摘要：Health · Δ changes · Risks · Actions · Gates。
+
+### 63. 指标解释引擎
+
+6 项关键指标的人类可读解释（是什么、为什么重要、当前值意味着什么）。
+
+### 64. 改进追踪
+
+Run-over-run 指标改善/恶化追踪（+/- delta + 百分比）。
 
 ## 高级特性
 

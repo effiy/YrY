@@ -278,6 +278,12 @@ ${item('--export md|csv|json', '导出分析报告为多种格式')}
 ${item('--pre-commit', 'Pre-commit 模式：仅分析变更文件')}
 ${item('--config <path>', '自定义配置 (.bundle-analyze.json)')}
 
+${subhdr('元分析')}
+${item('Confidence', '每项指标的数据置信度评估 (0-100%)')}
+${item('Standup', '5 行日常站会摘要')}
+${item('Explanations', '关键指标人类可读解释')}
+${item('Improvements', 'Run-over-run +/- 改进追踪')}
+
 ${hdr('输出路径')}
 ${item('HTML 报告', 'docs/bundle-reports/bundle-YYYY-MM-DD-HHmmss.html', dim)}
 ${item('JSON 数据', 'stdout（--json 时）', dim)}

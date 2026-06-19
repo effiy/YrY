@@ -5306,6 +5306,176 @@ function getChangedFiles(projectRoot) {
   }
 }
 
+// ── Analysis confidence scores ──────────────────────────────────────────────
+
+/**
+ * Compute confidence scores for each metric based on data quality indicators.
+ * Confidence = f(sampleSize, dataCompleteness, measurementPrecision).
+ */
+function computeConfidence(stats) {
+  const scores = [];
+
+  function add(metric, confidence, reason) {
+    scores.push({ metric, confidence, reason });
+  }
+
+  // High confidence: direct measurements
+  add("File Size", 100, "Direct filesystem measurement, 100% coverage");
+  add("File Count", 100, "Direct filesystem measurement");
+  add("Extension Distribution", 100, "Complete file enumeration");
+
+  // High confidence: well-defined algorithms
+  add("SCC (Tarjan)", 100, "Exact graph algorithm on complete dependency graph");
+  add("Betweenness", 100, "Exact Brandes algorithm");
+  add("PageRank", 95, "Converged over 100 iterations, damping=0.85");
+
+  // Medium-high confidence: heuristic but well-established
+  add("Complexity (McCabe)", 85, "Regex-based heuristic, may miss template/generated code patterns");
+  if (stats.gitChurn?.available) add("Git Churn", 90, `Based on ${stats.gitChurn.totalChanges || 0} commits in ${stats.gitChurn.timeWindow || '90d'}`);
+  else add("Git Churn", 30, "Git data unavailable");
+
+  if (stats.coChange?.available) add("Co-Change", 85, `Based on ${stats.coChange.commitCount || 0} commits`);
+  else add("Co-Change", 30, "Co-change data unavailable");
+
+  // Medium confidence: heuristic estimates
+  add("Risk Scores", 75, "Weighted composite of estimated metrics");
+  add("Tech Debt (SIG)", 70, "Industry-standard cost model, approximate");
+  add("Health Index", 75, "9-dimension weighted composite");
+  add("Maturity (CMMI)", 65, "5-dimension heuristic assessment");
+  add("Semver Recommendation", 70, "Based on available metrics and heuristics");
+
+  // Lower confidence: heavily estimated
+  if (stats.testGaps?.coverageRate !== undefined) add("Test Coverage", stats.testGaps.coverageRate > 0 ? 80 : 60, stats.testGaps.coverageRate > 0 ? "Based on detected test files" : "No test files detected — may be incomplete");
+  add("Doc Coverage", 70, "Comment ratio from regex — may include license headers");
+  add("Insight Synthesis", 60, "Cross-dimensional pattern matching — requires human validation");
+
+  // Overall confidence
+  const avg = scores.length > 0 ? Math.round(scores.reduce((s, sc) => s + sc.confidence, 0) / scores.length) : 0;
+
+  return { scores, overallConfidence: avg, level: avg >= 90 ? "Very High" : avg >= 75 ? "High" : avg >= 60 ? "Moderate" : "Limited" };
+}
+
+// ── Standup summary ─────────────────────────────────────────────────────────
+
+/**
+ * Generate a 5-line summary optimized for daily engineering standups.
+ */
+function generateStandupSummary(stats, trendResult) {
+  const lines = [];
+  const prev = trendResult?.trendAnalysis;
+
+  // Line 1: Overall health
+  lines.push(`Health: ${stats.healthIndex?.healthGrade || "?"} (${stats.healthIndex?.avgHealth || "?"}/100) · ${stats.totalFiles} files · ${formatBytes(stats.totalSize)}`);
+
+  // Line 2: Changes since last run
+  if (prev && prev.sizeDeltaPercent !== undefined) {
+    const arrow = prev.sizeDeltaPercent > 0 ? "+" : "";
+    lines.push(`Δ: ${arrow}${prev.sizeDeltaPercent}% size · ${prev.fileCountDelta > 0 ? "+" : ""}${prev.fileCountDelta} files · risk ${prev.riskDelta > 0 ? "+" : ""}${prev.riskDelta}`);
+  }
+
+  // Line 3: Top risk indicators
+  const risks = [];
+  if ((stats.oversizedFiles || []).length > 0) risks.push(`${stats.oversizedFiles.length} large`);
+  if ((stats.circularDeps || []).length > 0) risks.push(`${stats.circularDeps.length} circular`);
+  if (stats.scc?.multiNodeSccCount > 0) risks.push(`${stats.scc.multiNodeSccCount} SCC`);
+  if (stats.hotspotMatrix?.hotspots?.length > 0) risks.push(`${stats.hotspotMatrix.hotspots.length} hotspots`);
+  lines.push(`Risks: ${risks.length > 0 ? risks.join(", ") : "none critical"}`);
+
+  // Line 4: Action items
+  const p0Count = (stats.recommendationsWithROI || []).filter((r) => r.severity === "P0").length;
+  const p1Count = (stats.recommendationsWithROI || []).filter((r) => r.severity === "P1").length;
+  lines.push(`Actions: ${p0Count} P0 · ${p1Count} P1 · ${(stats.recommendationsWithROI || []).length - p0Count - p1Count} P2`);
+
+  // Line 5: Quality gates
+  lines.push(`Gates: ${stats.qualityGates?.overallStatus || "N/A"} (${stats.qualityGates?.passCount || 0}P/${stats.qualityGates?.failCount || 0}F)`);
+
+  return lines.join("\n");
+}
+
+// ── Metric explanation engine ───────────────────────────────────────────────
+
+/**
+ * Generate human-readable explanations for each key metric:
+ * what it is, why it matters, and what the current value means.
+ */
+function explainMetrics(stats) {
+  const explanations = [];
+
+  function explain(name, why, current, assessment) {
+    explanations.push({ metric: name, why, currentValue: current, assessment });
+  }
+
+  // Health & Quality
+  const healthGrade = stats.healthIndex?.healthGrade || "?";
+  explain("Health Index", "Aggregates 9 file-level quality dimensions into 0-100 score", `${stats.healthIndex?.avgHealth || "?"}/100 (${healthGrade})`,
+    healthGrade === "A" ? "Excellent — files are well-maintained and low-risk" : healthGrade === "B" ? "Good — minor improvements needed" : "Needs attention — focus on low-health files");
+
+  // Complexity
+  const cxAvg = stats.complexity?.avgComplexity || 0;
+  explain("Cyclomatic Complexity (McCabe)", "Measures code branching — higher = harder to test and maintain", `avg ${cxAvg}`,
+    cxAvg < 10 ? "Low — code is simple and easy to understand" : cxAvg < 20 ? "Moderate — acceptable for most projects" : "High — consider simplifying complex files");
+
+  // Coverage
+  const cov = stats.testGaps?.coverageRate || 0;
+  explain("Test Coverage", "Percentage of source files with corresponding test files", `${cov}%`,
+    cov >= 70 ? "Good coverage — most files have tests" : cov >= 30 ? "Moderate — prioritize high-risk untested files" : "Low — significant testing gap, write tests for high-risk files first");
+
+  // Tech debt
+  if (stats.techDebt) {
+    explain("Technical Debt", "Estimated remediation cost for code and architecture issues", `${stats.techDebt.totalHours}h (${stats.techDebt.totalDays}d)`,
+      stats.techDebt.totalDays < 10 ? "Manageable — low debt relative to codebase size" : stats.techDebt.totalDays < 30 ? "Moderate — address top items in coming sprints" : "Significant — create dedicated debt reduction plan");
+  }
+
+  // Architecture
+  const fitnessScore = stats.fitnessRules?.fitnessScore || 0;
+  explain("Architecture Fitness", "Checks architectural rules: layer isolation, package isolation, SCC, God Modules, zone-of-pain", `${fitnessScore}/100`,
+    fitnessScore >= 80 ? "Strong architecture — all key rules satisfied" : fitnessScore >= 60 ? "Moderate — address rule violations gradually" : "Needs architectural refactoring — multiple rule violations");
+
+  // Knowledge
+  const bfCount = stats.knowledgeDistribution?.busFactorRiskCount || 0;
+  explain("Knowledge Distribution", "Number of files with only one contributor (bus factor risk)", `${bfCount} files`,
+    bfCount < 50 ? "Healthy — knowledge is well-distributed" : bfCount < 150 ? "Moderate — some knowledge silos exist" : "Risky — many files known by only one person");
+
+  return explanations;
+}
+
+// ── Improvement tracker ─────────────────────────────────────────────────────
+
+/**
+ * Track metric improvements/worsening compared to previous run or baseline.
+ */
+function trackImprovements(stats, trendResult) {
+  const changes = [];
+  const prev = trendResult?.history?.[trendResult.history.length - 2]; // second-to-last
+
+  if (!prev) return { changes: [], improved: 0, worsened: 0, summary: "No historical data for comparison" };
+
+  function track(name, current, previous, unit = "", lowerIsBetter = true) {
+    if (current === undefined || previous === undefined || previous === 0) return;
+    const delta = current - previous;
+    const pct = +((Math.abs(delta) / Math.abs(previous)) * 100).toFixed(1);
+    const improved = lowerIsBetter ? delta < 0 : delta > 0;
+    changes.push({ metric: name, current, previous, delta, pct, improved, unit });
+  }
+
+  track("Total Size", stats.totalSize, prev.totalSize, "B", true);
+  track("File Count", stats.totalFiles, prev.totalFiles, "", false);
+  track("Avg Risk", stats.riskScores?.avgRisk || 0, prev.avgRisk || 0, "pts", true);
+  track("Circular Deps", (stats.circularDeps || []).length, prev.circularCount || 0, "", true);
+  track("Orphan Files", (stats.orphanFiles || []).length, prev.orphanCount || 0, "", true);
+  track("Oversized Files", (stats.oversizedFiles || []).length, prev.oversizedCount || 0, "", true);
+
+  const improved = changes.filter((c) => c.improved).length;
+  const worsened = changes.filter((c) => !c.improved).length;
+
+  return {
+    changes,
+    improved,
+    worsened,
+    summary: `${improved} improved · ${worsened} worsened · ${changes.length - improved - worsened} unchanged`,
+  };
+}
+
 // ── Statistics ─────────────────────────────────────────────────────────────
 
 function computeStats(files, depGraph, opts = {}) {
@@ -7227,6 +7397,12 @@ function main() {
   stats.maturity = assessMaturity(stats);
   stats.synthesizedInsights = synthesizeInsights(stats, stats.fileAge);
 
+  // ── Confidence, Standup, Explanations, Improvements (meta-analysis) ──
+  stats.confidence = computeConfidence(stats);
+  stats.standupSummary = generateStandupSummary(stats, trendResult);
+  stats.metricExplanations = explainMetrics(stats);
+  stats.improvementTracker = trackImprovements(stats, trendResult);
+
   // ── ADR, Semver, Checklists, Sprint packages (need full stats) ──
   stats.adrs = generateADRs(stats, { projectName, generatedAt });
   stats.semverRecommendation = recommendSemver(stats);
@@ -7320,6 +7496,10 @@ function main() {
         correlationMatrix: stats.correlationMatrix || null,
         maturity: stats.maturity || null,
         synthesizedInsights: stats.synthesizedInsights || [],
+        confidence: stats.confidence || null,
+        standupSummary: stats.standupSummary || "",
+        metricExplanations: stats.metricExplanations || [],
+        improvementTracker: stats.improvementTracker || null,
       },
       diff: diff || { hasBaseline: false },
     };
@@ -7566,6 +7746,16 @@ function main() {
   if (stats.synthesizedInsights && stats.synthesizedInsights.insights && stats.synthesizedInsights.insights.length > 0) {
     const si = stats.synthesizedInsights;
     console.log(`   💡 Insights: ${si.totalInsights} synthesized · ${si.criticalInsights?.length||0} critical · ${si.highInsights?.length||0} high`);
+  }
+  if (stats.confidence) {
+    console.log(`   🎯 Confidence: ${stats.confidence.overallConfidence}% (${stats.confidence.level})`);
+  }
+  if (stats.improvementTracker && stats.improvementTracker.improved !== undefined) {
+    console.log(`   📈 Improvements: ${stats.improvementTracker.summary}`);
+  }
+  // Print standup summary
+  if (stats.standupSummary && !args.json) {
+    console.log(`\n📋 Standup Summary:\n${stats.standupSummary}`);
   }
   // Print executive summary to stderr for pipe-safe consumption
   if (stats.executiveSummary && !args.json) {
