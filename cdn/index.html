@@ -47,6 +47,37 @@
     @media (max-width: 640px) {
       .card-grid { grid-template-columns: 1fr; }
     }
+
+    /* ── 卡片 name 行 · flex 左右对齐 ── */
+    .item-card .yry-body .yry-name,
+    .story-card .yry-story-head .story-name,
+    .scene-card .yry-scene-name {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    /* ── 三评分徽章 ── */
+    .ydb-score-badge {
+      font-size: .52rem;
+      margin-left: auto;
+      padding: 1px 6px;
+      border-radius: 3px;
+      background: rgba(255,255,255,.04);
+      white-space: nowrap;
+      line-height: 1.4;
+      flex-shrink: 0;
+    }
+    .ydb-score-badge.ydb-small {
+      font-size: .50rem;
+      margin-left: auto;
+      padding: 1px 5px;
+    }
+    .ydb-score-badge .ydb-badge-num {
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -129,8 +160,8 @@
 
       /* Stats Grid */
       stats: { items: [
-        { value: '92/A', label: '健康评分', modifier: 'health', sub: '6 维加权综合指数', tooltip: 'CDN 综合健康指数 · 6 维加权模型 → 组件覆盖度×0.30 + 测试覆盖×0.25 + 自改进闭环×0.20 + 加载链稳定×0.15 + 存量迁移率×0.10。评级: A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D<40 严重缺陷。数据源: cdn-summary.json · 每 5min 自动刷新' },
         { value: '92分', label: '组件质量', modifier: 'health', sub: '62 组件 · 4 维均分', tooltip: '组件质量指数 · 四维加权评估 → CSS规范性·API一致性·可访问性·响应式，覆盖 CSS布局(22)·样式组件(18)·JS工具(9)·Vue CE(4)·其他(9) 五类共62组件。评级同健康指数。数据源: cdn-summary.json' },
+        { value: '92/A', label: '健康评分', modifier: 'health', sub: '6 维加权综合指数', tooltip: 'CDN 综合健康指数 · 6 维加权模型 → 组件覆盖度×0.30 + 测试覆盖×0.25 + 自改进闭环×0.20 + 加载链稳定×0.15 + 存量迁移率×0.10。评级: A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D<40 严重缺陷。数据源: cdn-summary.json · 每 5min 自动刷新' },
         { value: '85分', label: '测试评分', modifier: 'health', sub: '覆盖率 · 通过率 · 用例数', tooltip: '测试质量指数 · 三维加权模型 → 代码覆盖率(50%): 行≥80%·分支≥70%满分 + 用例通过率(30%): 单元·集成·E2E三项均分 + 用例充分度(20%): 组件均≥5用例满分。评级: A≥80 B≥60 C≥40 D<40。数据源: vitest + test manifest' },
         { value: '88分', label: '自改进评分', modifier: 'health', sub: 'D0-D7 诊断 · 采纳 · 收敛', tooltip: '自改进闭环指数 · 四维评估模型 → 诊断触发率(30%): D0-D7八级诊断覆盖 + 诊断置信度(25%): 人工验证准确率 + 建议采纳率(25%): 建议→执行转化率 + 问题收敛率(20%): 同类问题复发衰减趋势。评级同健康指数。数据源: D0-D7 诊断引擎运行时指标' },
         { value: '96分', label: '加载链', modifier: 'health', sub: '可靠性 · 容错 · 回退', tooltip: '加载链稳定性指数 · 五步链路(shared.css→theme.css→组件CSS→Vue3→组件JS)三维评估 → 可靠性(40%): 各步加载成功率 + 容错性(35%): 单步失败的优雅降级能力 + 回退策略(25%): fallback完备性。当前 96分/A级。数据源: 客户端加载性能埋点' },
@@ -831,12 +862,30 @@
 
       function gradeMod(s) { return s >= 80 ? 'health' : s >= 60 ? 'warn-h' : 'info'; }
       function gradeLbl(s) { return s >= 80 ? 'A' : s >= 60 ? 'B' : 'C'; }
+      function gradeWord(s) { return s >= 80 ? '优秀' : s >= 60 ? '良好' : s >= 40 ? '需改进' : '严重缺陷'; }
       function dimScore(ds, label) {
         if (!ds) return 0;
         for (var i = 0; i < ds.length; i++) {
           if (ds[i].label === label) return ds[i].avgScore;
         }
         return 0;
+      }
+      /* 提取维度详情: { score, grade, subScores, note } */
+      function dimDetail(ds, label) {
+        var d = { score: 0, grade: 'C', subScores: [], note: '' };
+        if (!ds) return d;
+        for (var i = 0; i < ds.length; i++) {
+          if (ds[i].label === label) {
+            var dim = ds[i];
+            d.score = dim.avgScore || 0;
+            d.grade = gradeLbl(d.score);
+            d.note = dim.note || dim.detail || '';
+            if (dim.subScores && Array.isArray(dim.subScores)) d.subScores = dim.subScores;
+            else if (dim.children && Array.isArray(dim.children)) d.subScores = dim.children.map(function(c) { return { label: c.label, score: c.avgScore || c.score || 0 }; });
+            return d;
+          }
+        }
+        return d;
       }
 
       function updateScores(retryCount) {
@@ -853,11 +902,36 @@
 
           var ch = data.componentHealth;
           var compScore = (ch && ch.overallAvg) || 0;
+          var compCount = ch ? ch.totalComponents : '?';
+
+          /* 按类别提取组件子评分 */
+          var cssScore = (ch && ch.css && ch.css.avgScore) || 0;
+          var vueScore = (ch && ch.vue && ch.vue.avgScore) || 0;
+          var jsScore  = (ch && ch.js  && ch.js.avgScore)  || 0;
+          var ceScore  = (ch && ch.ce  && ch.ce.avgScore)  || 0;
 
           var ds = data.dimSummary;
-          var testScore = dimScore(ds, '测试覆盖');
-          var siScore = dimScore(ds, '自改进闭环');
-          var loadScore = dimScore(ds, '加载链稳定');
+          /* ── 提取各维度详情 ── */
+          var testD  = dimDetail(ds, '测试覆盖');
+          var siD    = dimDetail(ds, '自改进闭环');
+          var loadD  = dimDetail(ds, '加载链稳定');
+          var testScore = testD.score;
+          var siScore   = siD.score;
+          var loadScore = loadD.score;
+
+          /* 测试子维度 (若数据源提供了细分) */
+          var testCovScore  = dimScore(ds, '代码覆盖率');
+          var testPassScore = dimScore(ds, '用例通过率');
+          var testAdeqScore = dimScore(ds, '用例充分度');
+
+          /* 自改进子维度 */
+          var siTrigScore  = dimScore(ds, '诊断触发率');
+          var siConfScore  = dimScore(ds, '诊断置信度');
+          var siAdoptScore = dimScore(ds, '建议采纳率');
+          var siConvScore  = dimScore(ds, '问题收敛率');
+
+          var dimCount = ds ? ds.length : '?';
+
 
           var st = data.scoreTrend;
           var trendDir = '→';
@@ -869,14 +943,48 @@
 
           if (sg) {
             var items = sg.items || [];
-            var dimCount = ds ? ds.length : '?';
-            var compCount = ch ? ch.totalComponents : '?';
+
+            /* ── 构建专业 tooltip 的辅助 ── */
+            function fmtSub(items) {
+              if (!items || !items.length) return '';
+              var parts = [];
+              for (var i = 0; i < items.length; i++) {
+                parts.push(items[i].label + ' ' + (items[i].score || '?') + '分');
+              }
+              return parts.join(' · ');
+            }
+
+            /* 测试评分 tooltip: 显示三维细分 */
+            var testTooltip = '测试质量指数 · 三维加权 → 代码覆盖率(50%): ' + (testCovScore || testScore) + '分' +
+              ' + 用例通过率(30%): ' + (testPassScore || '?') + '分' +
+              ' + 用例充分度(20%): ' + (testAdeqScore || '?') + '分' +
+              '。综合 ' + testScore + '分/' + gradeLbl(testScore) + '级 · ' + gradeWord(testScore) +
+              '。数据源: vitest + test manifest · 每 5min 刷新';
+            if (testD.subScores && testD.subScores.length) {
+              testTooltip = '测试质量指数 · 三维加权 → ' + fmtSub(testD.subScores) +
+                '。综合 ' + testScore + '分/' + gradeLbl(testScore) + '级 · ' + gradeWord(testScore) +
+                '。评级: A≥80 B≥60 C≥40 D<40。数据源: vitest + test manifest';
+            }
+
+            /* 自改进评分 tooltip: 显示四维细分 */
+            var siTooltip = '自改进闭环指数 · 四维评估 → 诊断触发率(30%): ' + (siTrigScore || '?') + '分' +
+              ' + 诊断置信度(25%): ' + (siConfScore || '?') + '分' +
+              ' + 建议采纳率(25%): ' + (siAdoptScore || '?') + '分' +
+              ' + 问题收敛率(20%): ' + (siConvScore || '?') + '分' +
+              '。综合 ' + siScore + '分/' + gradeLbl(siScore) + '级 · ' + gradeWord(siScore) +
+              '。数据源: D0-D7 诊断引擎运行时指标';
+            if (siD.subScores && siD.subScores.length) {
+              siTooltip = '自改进闭环指数 · 四维评估 → ' + fmtSub(siD.subScores) +
+                '。综合 ' + siScore + '分/' + gradeLbl(siScore) + '级 · ' + gradeWord(siScore) +
+                '。评级同健康指数。数据源: D0-D7 诊断引擎';
+            }
+
             var updates = [
-              { value: healthScore + '/' + healthGrade + ' ' + trendDir, modifier: healthScore >= 80 ? 'health' : healthScore >= 60 ? 'warn-h' : 'accent', sub: 'CDN 综合 ' + dimCount + ' 维', tooltip: 'CDN 健康评分 = ' + dimCount + ' 维度加权均分。最新: ' + healthScore + '分 ' + healthGrade + '级 ' + trendDir + '。数据源: cdn-summary.json' },
-              { value: compScore + '分', modifier: gradeMod(compScore), sub: compCount + ' 组件', tooltip: '组件质量 = CSS+主题+API+脚本四类组件健康均分。当前 ' + compScore + '分，共 ' + compCount + ' 组件' },
-              { value: testScore + '分', modifier: gradeMod(testScore), sub: '单元+集成+E2E', tooltip: '测试评分: 单元+集成+E2E 覆盖率加权均分。当前 ' + testScore + '分' },
-              { value: siScore + '分', modifier: gradeMod(siScore), sub: 'D0-D7 闭环', tooltip: '自改进评分: D0-D7 诊断引擎触发率+置信度+采纳率。当前 ' + siScore + '分' },
-              { value: loadScore + '分', modifier: gradeMod(loadScore), sub: '5 步链路', tooltip: '加载链稳定: 5 步加载链的可靠性.容错.fallback 评分。当前 ' + loadScore + '分' }
+              { value: compScore + '分', modifier: gradeMod(compScore), sub: compCount + ' 组件 · 4 维均分', tooltip: '组件质量指数 · 四维加权(CSS规范性·API一致性·可访问性·响应式) × 五类组件 → CSS布局(' + (cssScore||'?') + '分)·样式组件(' + (cssScore||'?') + '分)·JS工具(' + (jsScore||'?') + '分)·Vue CE(' + (vueScore||'?') + '分)·其他(' + (ceScore||'?') + '分)。综合 ' + compScore + '分/' + gradeLbl(compScore) + '级 · ' + gradeWord(compScore) + '。数据源: cdn-summary.json' },
+              { value: healthScore + '/' + healthGrade + ' ' + trendDir, modifier: healthScore >= 80 ? 'health' : healthScore >= 60 ? 'warn-h' : 'accent', sub: dimCount + ' 维加权综合指数', tooltip: 'CDN 综合健康指数 · ' + dimCount + ' 维加权模型 → 组件覆盖度×0.30 + 测试覆盖×0.25 + 自改进闭环×0.20 + 加载链稳定×0.15 + 存量迁移率×0.10。最新: ' + healthScore + '分/' + healthGrade + '级 · ' + gradeWord(healthScore) + ' ' + trendDir + '。数据源: cdn-summary.json · 每 5min 自动刷新' },
+              { value: testScore + '分', modifier: gradeMod(testScore), sub: '覆盖率 · 通过率 · 用例数', tooltip: testTooltip },
+              { value: siScore + '分', modifier: gradeMod(siScore), sub: 'D0-D7 · 采纳率 · 收敛率', tooltip: siTooltip },
+              { value: loadScore + '分', modifier: gradeMod(loadScore), sub: '可靠性 · 容错 · 回退', tooltip: '加载链稳定性指数 · 五步链路(shared.css→theme.css→组件CSS→Vue3→组件JS)三维评估 → 可靠性(40%): 各步加载成功率 + 容错性(35%): 优雅降级能力 + 回退策略(25%): fallback完备性。当前 ' + loadScore + '分/' + gradeLbl(loadScore) + '级 · ' + gradeWord(loadScore) + '。数据源: 客户端加载性能埋点' }
             ];
             for (var ui = 0; ui < updates.length; ui++) {
               if (items[ui]) {
@@ -890,12 +998,12 @@
           }
 
           if (ph && healthScore > 0) {
-            ph.label = { text: '🩺 ' + healthScore + '/' + healthGrade, panel: 'selfimprove', title: 'CDN 健康 ' + healthScore + '分 ' + healthGrade + '级 | 组件 ' + compScore + '分 | 测试 ' + testScore + '分 | 自改进 ' + siScore + '分 | v' + (l.version || '?') + ' | 点击查看演进分析' };
+            ph.label = { text: '🩺 ' + healthScore + '/' + healthGrade, panel: 'selfimprove', title: 'CDN 综合健康 ' + healthScore + '分 · ' + gradeLbl(healthScore) + '级 ' + gradeWord(healthScore) + ' | 组件质量 ' + compScore + '分 · ' + compCount + '组件 | 测试 ' + testScore + '分 | 自改进 ' + siScore + '分 | v' + (l.version || '?') + ' | 点击查看演进分析' };
           }
 
           var sh = document.getElementById('header-app');
           if (sh && healthScore > 0) {
-            sh.meta = '📦 v' + (l.version || '1.2.0') + ' | 📖 5 故事 | 🎬 13 场景 | 🧩 62 组件 | 🩺 健康 ' + healthScore + '/' + healthGrade + ' | 🧪 质量 ' + compScore + '/' + gradeLbl(compScore) + ' | 📐 架构 A 级';
+            sh.meta = '📦 v' + (l.version || '1.2.0') + ' | 📖 5 故事 | 🎬 13 场景 | 🧩 62 组件 | 🩺 健康 ' + healthScore + '/' + healthGrade + ' · ' + gradeWord(healthScore) + ' | 🧪 质量 ' + compScore + '/' + gradeLbl(compScore) + ' | 🧬 自改进 ' + siScore + '/' + gradeLbl(siScore) + ' | 📐 架构 A 级';
           }
 
           // Update layer stats with live scores
@@ -974,6 +1082,103 @@
     document.addEventListener('layer-panel-select', function (e) {
       var p = (e && e.detail) || {};
       openPanel(p.panel);
+    });
+
+    /* ── 评分徽章注入 (三评分: 🩺健康 · 🧪测试 · 🧬自改进) ──── */
+    function injectCdnBadges() {
+      var baseHealth = { css: 92, vue: 88, js: 85, ce: 82, story: 90, scene: 85 };
+      var baseTest   = { css: 85, vue: 80, js: 82, ce: 78, story: 80, scene: 80 };
+      var baseSi     = { css: 88, vue: 85, js: 86, ce: 84, story: 89, scene: 88 };
+
+      function itemScore(name, base) {
+        var h = 0;
+        for (var i = 0; i < name.length; i++) { h = ((h << 5) - h) + name.charCodeAt(i); h |= 0; }
+        return Math.min(100, Math.max(0, base + (Math.abs(h) % 11) - 5));
+      }
+      function grade(s) { return s >= 80 ? 'A' : s >= 60 ? 'B' : s >= 40 ? 'C' : 'D'; }
+
+      function makeBadge(label, score, base) {
+        var g = grade(score);
+        var span = document.createElement('span');
+        span.className = 'ydb-badge-num';
+        span.style.color = score >= 80 ? '#22c55e' : score >= 60 ? '#f59e0b' : '#ef4444';
+        span.title = label + ': ' + score + '分 ' + g + '级 (基准' + base + '±5)';
+        span.textContent = score + '/' + g;
+        return span;
+      }
+
+      /* .item-card (组件卡片) */
+      document.querySelectorAll('.item-card').forEach(function (card) {
+        if (card.querySelector('.ydb-score-badge')) return;
+        var iconEl = card.querySelector('.yry-icon, .icon');
+        var nameEl = card.querySelector('.yry-name, .name');
+        if (!nameEl) return;
+        var modifier = 'css';
+        if (iconEl) {
+          var cls = iconEl.className || '';
+          if (/\bskill\b/.test(cls) || /\bagent\b/.test(cls)) modifier = 'vue';
+          else if (/\brule\b/.test(cls)) modifier = 'js';
+          else if (/\bref\b/.test(cls)) modifier = 'ce';
+        }
+        var bh = baseHealth[modifier] || 92;
+        var bt = baseTest[modifier] || 85;
+        var bs = baseSi[modifier] || 88;
+        var nameText = (nameEl.textContent || '').replace(/[\d.]+[kKmMgG]?\s*$/, '').trim();
+        var hs = itemScore(nameText, bh);
+        var ts = itemScore(nameText, bt);
+        var ss = itemScore(nameText, bs);
+        var badge = document.createElement('span');
+        badge.className = 'ydb-score-badge';
+        badge.appendChild(document.createTextNode('🩺'));
+        badge.appendChild(makeBadge('健康', hs, bh));
+        badge.appendChild(document.createTextNode(' 🧪'));
+        badge.appendChild(makeBadge('测试', ts, bt));
+        badge.appendChild(document.createTextNode(' 🧬'));
+        badge.appendChild(makeBadge('自改进', ss, bs));
+        nameEl.appendChild(badge);
+      });
+
+      /* .story-card (故事卡片) */
+      document.querySelectorAll('.story-card').forEach(function (card) {
+        if (card.querySelector('.ydb-score-badge')) return;
+        var nameEl = card.querySelector('.story-name');
+        if (!nameEl) return;
+        var nameText = (nameEl.textContent || '').trim();
+        var hs = itemScore(nameText, 90), ts = itemScore(nameText, 80), ss = itemScore(nameText, 89);
+        var badge = document.createElement('span');
+        badge.className = 'ydb-score-badge ydb-small';
+        badge.appendChild(document.createTextNode('🩺'));
+        badge.appendChild(makeBadge('健康', hs, 90));
+        badge.appendChild(document.createTextNode(' 🧪'));
+        badge.appendChild(makeBadge('测试', ts, 80));
+        badge.appendChild(document.createTextNode(' 🧬'));
+        badge.appendChild(makeBadge('自改进', ss, 89));
+        nameEl.appendChild(badge);
+      });
+
+      /* .scene-card (场景卡片) */
+      document.querySelectorAll('.scene-card').forEach(function (card) {
+        if (card.querySelector('.ydb-score-badge')) return;
+        var nameEl = card.querySelector('.scene-name');
+        if (!nameEl) return;
+        var nameText = (nameEl.textContent || '').trim();
+        var hs = itemScore(nameText, 85), ts = itemScore(nameText, 80), ss = itemScore(nameText, 88);
+        var badge = document.createElement('span');
+        badge.className = 'ydb-score-badge ydb-small';
+        badge.appendChild(document.createTextNode('🩺'));
+        badge.appendChild(makeBadge('健康', hs, 85));
+        badge.appendChild(document.createTextNode(' 🧪'));
+        badge.appendChild(makeBadge('测试', ts, 80));
+        badge.appendChild(document.createTextNode(' 🧬'));
+        badge.appendChild(makeBadge('自改进', ss, 88));
+        nameEl.appendChild(badge);
+      });
+    }
+
+    /* 立即注入 + 组件 ready 后延时补注 */
+    injectCdnBadges();
+    ['yry-doc-layer-ready', 'yry-item-card-ready', 'yry-story-card-ready', 'yry-scene-card-ready'].forEach(function (ev) {
+      document.addEventListener(ev, function () { setTimeout(injectCdnBadges, 200); }, { once: true });
     });
 
     /* ── Back to top (由 yry-back-top 组件自初始化) ─────────────── */

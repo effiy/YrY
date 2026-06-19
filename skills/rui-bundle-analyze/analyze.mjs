@@ -1952,6 +1952,861 @@ function suggestModuleBoundaries(stats) {
   return unique.slice(0, 20);
 }
 
+// ── PageRank for code importance ────────────────────────────────────────────
+
+/**
+ * Compute PageRank on the dependency graph to identify "authoritative" files.
+ *
+ * PageRank models a random walk through the dependency graph: at each step,
+ * with probability d (damping factor, default 0.85), follow a random outgoing
+ * dependency edge; with probability (1-d), jump to a random file.
+ *
+ * Files with high PageRank are "important" — pointed to by other important files.
+ * This differs from fan-in (raw count) by weighting each reference by the
+ * importance of the referring file.
+ *
+ * Complexity: O(k × E) where k = iterations (fixed at 100 for convergence).
+ */
+function computePageRank(depGraph, opts = {}) {
+  const nodes = depGraph.nodes.map((n) => n.path);
+  if (nodes.length === 0) return { topRanked: [], avgPagerank: 0, maxPagerank: 0 };
+
+  const damping = opts.damping || 0.85;
+  const maxIter = opts.maxIter || 100;
+  const tolerance = opts.tolerance || 1e-6;
+  const N = nodes.length;
+
+  // Build adjacency (outgoing edges) and identify dangling nodes (no outgoing)
+  const adj = {};
+  const outDegree = {};
+  for (const n of nodes) { adj[n] = []; outDegree[n] = 0; }
+  for (const edge of depGraph.edges) {
+    if (adj[edge.from]) { adj[edge.from].push(edge.to); outDegree[edge.from]++; }
+    if (!adj[edge.to]) adj[edge.to] = [];
+  }
+
+  // PageRank vector
+  let pr = {};
+  for (const n of nodes) pr[n] = 1 / N;
+
+  // Dangling nodes get uniform distribution
+  const danglingNodes = nodes.filter((n) => outDegree[n] === 0);
+
+  for (let iter = 0; iter < maxIter; iter++) {
+    const prevPR = { ...pr };
+    let danglingSum = 0;
+    for (const n of danglingNodes) danglingSum += prevPR[n];
+    danglingSum /= N;
+
+    for (const n of nodes) {
+      // Random jump component
+      pr[n] = (1 - damping) / N + damping * danglingSum;
+      // Incoming edges contribution
+      for (const edge of depGraph.edges) {
+        if (edge.to === n && outDegree[edge.from] > 0) {
+          pr[n] += damping * prevPR[edge.from] / outDegree[edge.from];
+        }
+      }
+    }
+
+    // Check convergence
+    let delta = 0;
+    for (const n of nodes) delta += Math.abs(pr[n] - prevPR[n]);
+    if (delta < tolerance) break;
+  }
+
+  // Sort by PageRank descending
+  const ranked = Object.entries(pr)
+    .map(([path, score]) => ({ path, pagerank: +score.toFixed(6) }))
+    .sort((a, b) => b.pagerank - a.pagerank);
+
+  const avgPagerank = 1 / N;
+  const maxPagerank = ranked[0]?.pagerank || 0;
+
+  // Files with significantly high PageRank (> 3× average)
+  const authoritativeFiles = ranked.filter((x) => x.pagerank > avgPagerank * 3);
+
+  return {
+    topRanked: ranked.slice(0, 25),
+    authoritativeFiles,
+    avgPagerank: +avgPagerank.toFixed(6),
+    maxPagerank,
+    damping,
+  };
+}
+
+// ── Test gap analysis ───────────────────────────────────────────────────────
+
+/**
+ * Identify high-risk files that lack corresponding test files.
+ *
+ * Heuristic for "has test":
+ *   - file.test.ext, file.spec.ext in same directory
+ *   - __tests__/file.ext
+ *   - tests/file.ext (mirror structure)
+ *   - file name contains .test. or .spec.
+ */
+function analyzeTestGaps(files, riskScores, projectRoot) {
+  const fileSet = new Set(files.map((f) => f.relPath));
+  const testPatterns = [".test.", ".spec.", "-test.", "-spec.", "_test.", "_spec."];
+
+  function hasTestFile(fileRelPath) {
+    const dir = dirname(fileRelPath);
+    const base = basename(fileRelPath);
+    const ext = extname(base);
+    const nameNoExt = base.slice(0, -ext.length);
+
+    // Check same-directory patterns: foo.test.js, foo.spec.js, test_foo.js
+    const candidates = [
+      join(dir, `${nameNoExt}.test${ext}`),
+      join(dir, `${nameNoExt}.spec${ext}`),
+      join(dir, `test_${base}`),
+      join(dir, `spec_${base}`),
+      join(dir, `__tests__`, base),
+      join(dir, `__tests__`, `${nameNoExt}.test${ext}`),
+    ];
+
+    // Check tests/ mirror directory
+    const parts = fileRelPath.split("/");
+    if (parts[0] !== "tests" && parts[0] !== "test" && parts[0] !== "__tests__") {
+      candidates.push(`tests/${fileRelPath}`);
+      candidates.push(`test/${fileRelPath}`);
+      candidates.push(`__tests__/${fileRelPath}`);
+    }
+
+    // Check if any candidate exists
+    for (const c of candidates) {
+      if (fileSet.has(c)) return true;
+    }
+
+    // Also check if the file itself is a test file
+    const lowerName = base.toLowerCase();
+    for (const tp of testPatterns) {
+      if (lowerName.includes(tp)) return true; // it IS a test file
+    }
+
+    return false;
+  }
+
+  // Analyze source files (not test files themselves)
+  const sourceFiles = files.filter((f) => {
+    const lower = basename(f.relPath).toLowerCase();
+    return !testPatterns.some((tp) => lower.includes(tp));
+  });
+
+  const untestedFiles = [];
+  for (const f of sourceFiles) {
+    // Skip non-source files
+    if (!DEP_PARSE_EXTS.has(f.ext) && f.ext !== ".vue" && f.ext !== ".svelte") continue;
+    if (f.size < 200) continue; // skip tiny files
+
+    if (!hasTestFile(f.relPath)) {
+      // Determine risk based on size and risk score
+      const risk = riskScores?.topRisks?.find((r) => r.path === f.relPath);
+      const compositeRisk = risk?.composite || 0;
+      untestedFiles.push({
+        path: f.relPath,
+        size: f.size,
+        riskScore: compositeRisk,
+      });
+    }
+  }
+
+  // Sort by risk score descending (highest-risk untested files first)
+  untestedFiles.sort((a, b) => b.riskScore - a.riskScore);
+
+  // Summary
+  const totalSourceFiles = sourceFiles.filter((f) => DEP_PARSE_EXTS.has(f.ext) || f.ext === ".vue" || f.ext === ".svelte").length;
+  const testedCount = totalSourceFiles - untestedFiles.length;
+  const coverageRate = totalSourceFiles > 0 ? +((testedCount / totalSourceFiles) * 100).toFixed(1) : 0;
+
+  // High priority: untested files with high risk
+  const highPriority = untestedFiles.filter((f) => f.riskScore > 0.15 || f.size > 50_000);
+
+  return {
+    untestedFiles: untestedFiles.slice(0, 30),
+    highPriority: highPriority.slice(0, 15),
+    totalSourceFiles,
+    testedCount,
+    untestedCount: untestedFiles.length,
+    coverageRate,
+  };
+}
+
+// ── Change propagation probability ───────────────────────────────────────────
+
+/**
+ * Compute change propagation probabilities from co-change data.
+ *
+ * P(Y changes | X changed) = coChangeCount(X,Y) / totalChangesOf(X)
+ *
+ * This answers: "If I modify file X, what's the probability file Y also needs changes?"
+ * High propagation probability → files are tightly coupled in practice.
+ */
+function computeChangePropagation(coChange, gitChurn) {
+  if (!coChange || !coChange.available || !coChange.pairs || coChange.pairs.length === 0) {
+    return { available: false, propagations: [], topPropagations: [] };
+  }
+
+  // Build change count per file from churn data
+  const changeCount = {};
+  if (gitChurn && gitChurn.available && gitChurn.topHotFiles) {
+    for (const f of gitChurn.topHotFiles) {
+      changeCount[f.path] = f.churnCount;
+    }
+  }
+
+  const propagations = coChange.pairs.map((pair) => {
+    const [a, b] = pair.files;
+    const ca = changeCount[a] || pair.coChangeCount;
+    const cb = changeCount[b] || pair.coChangeCount;
+    // P(b|a) and P(a|b)
+    const probBgivenA = ca > 0 ? +((pair.coChangeCount / ca) * 100).toFixed(1) : 0;
+    const probAgivenB = cb > 0 ? +((pair.coChangeCount / cb) * 100).toFixed(1) : 0;
+
+    return {
+      files: [a, b],
+      coChangeCount: pair.coChangeCount,
+      jaccard: pair.jaccard,
+      probBgivenA: Math.min(100, probBgivenA),
+      probAgivenB: Math.min(100, probAgivenB),
+      // The higher propagation probability
+      maxPropagation: Math.max(probBgivenA, probAgivenB),
+    };
+  });
+
+  // Sort by max propagation probability
+  propagations.sort((a, b) => b.maxPropagation - a.maxPropagation);
+
+  // High propagation pairs (>50% probability)
+  const highPropagation = propagations.filter((p) => p.maxPropagation >= 50);
+
+  return {
+    available: true,
+    propagations: propagations.slice(0, 25),
+    topPropagations: propagations.slice(0, 10),
+    highPropagation,
+    highPropagationCount: highPropagation.length,
+  };
+}
+
+// ── Knowledge distribution / Bus factor ──────────────────────────────────────
+
+/**
+ * Analyze git shortlog to compute knowledge distribution and bus factor risks.
+ *
+ * "Bus factor" = number of contributors who would need to be hit by a bus
+ * before the project's knowledge is critically lost.
+ *
+ * For each file: how many unique contributors? Files with only 1 contributor
+ * are bus-factor=1 risks.
+ */
+function computeKnowledgeDistribution(projectRoot, files, opts = {}) {
+  const timeWindow = opts.timeWindow || "180 days";
+  const fileSet = new Set(files.map((f) => f.relPath));
+
+  let gitOutput;
+  try {
+    const sincePeriod = timeWindow.replace(/\s+/g, ".");
+    const args = ["shortlog", `--since=${sincePeriod}`, "-sne", "--", "."];
+    gitOutput = execSync(`git -C "${projectRoot}" ${args.join(" ")}`, { encoding: "utf-8", timeout: 10000 });
+  } catch {
+    return { available: false, reason: "git shortlog failed" };
+  }
+
+  // Parse shortlog: each line is like "  137\tAuthor Name <email>"
+  const contributorLines = gitOutput.trim().split("\n").filter((l) => l.trim());
+  const totalContributors = contributorLines.length;
+
+  // For per-file contributor info, use git log with a different format
+  let fileContribOutput;
+  try {
+    const sincePeriod = timeWindow.replace(/\s+/g, ".");
+    // Get the list of files changed by each author
+    const args = ["log", `--since=${sincePeriod}`, "--pretty=format:--AUTHOR--%an", "--name-only", "--", "."];
+    fileContribOutput = execSync(`git -C "${projectRoot}" ${args.join(" ")}`, { encoding: "utf-8", timeout: 15000, maxBuffer: 10 * 1024 * 1024 });
+  } catch {
+    return { available: true, totalContributors, fileOwnership: [], busFactorRisks: [] };
+  }
+
+  // Parse: blocks separated by --AUTHOR--AuthorName, followed by file list
+  const blocks = fileContribOutput.split("--AUTHOR--").filter((b) => b.trim());
+  const fileContributors = {}; // file → Set of authors
+
+  for (const block of blocks) {
+    const lines = block.trim().split("\n");
+    if (lines.length < 2) continue;
+    const author = lines[0].trim();
+    for (let i = 1; i < lines.length; i++) {
+      const file = lines[i].trim();
+      if (file && fileSet.has(file)) {
+        if (!fileContributors[file]) fileContributors[file] = new Set();
+        fileContributors[file].add(author);
+      }
+    }
+  }
+
+  // Sort files by number of contributors (ascending = highest bus factor risk)
+  const fileOwnership = Object.entries(fileContributors)
+    .map(([path, authors]) => ({
+      path,
+      contributorCount: authors.size,
+      contributors: [...authors].slice(0, 5),
+    }))
+    .sort((a, b) => a.contributorCount - b.contributorCount);
+
+  // Bus factor 1 risks: files touched by only 1 person
+  const busFactorRisks = fileOwnership.filter((f) => f.contributorCount === 1);
+
+  // Files with no recent contributions (abandoned?)
+  const abandonedFiles = files
+    .filter((f) => DEP_PARSE_EXTS.has(f.ext) && f.size > 200 && !fileContributors[f.relPath])
+    .map((f) => ({ path: f.relPath, size: f.size }))
+    .sort((a, b) => b.size - a.size)
+    .slice(0, 20);
+
+  // Distribution statistics
+  const contribCountDist = {};
+  for (const f of fileOwnership) {
+    const bucket = f.contributorCount === 1 ? "1" : f.contributorCount === 2 ? "2" : f.contributorCount <= 3 ? "3" : f.contributorCount <= 5 ? "4-5" : "6+";
+    contribCountDist[bucket] = (contribCountDist[bucket] || 0) + 1;
+  }
+
+  return {
+    available: true,
+    totalContributors,
+    timeWindow,
+    fileOwnership: fileOwnership.slice(0, 30),
+    busFactorRisks,
+    busFactorRiskCount: busFactorRisks.length,
+    abandonedFiles,
+    abandonedCount: abandonedFiles.length,
+    contribCountDist,
+    // Files with healthy knowledge distribution (3+ contributors)
+    healthyFiles: fileOwnership.filter((f) => f.contributorCount >= 3).length,
+    singleContributorFiles: busFactorRisks.length,
+  };
+}
+
+// ── Code complexity estimation ──────────────────────────────────────────────
+
+/**
+ * Estimate code complexity metrics per file using regex heuristics.
+ *
+ * Metrics:
+ *   - loc: lines of code (non-blank, non-comment-only)
+ *   - branchPoints: if/else/switch/case/for/while/do/&&/||/?/catch count
+ *   - funcCount: function/arrow/method declarations
+ *   - cyclomaticComplexity: M = branchPoints + 1 (McCabe's formula)
+ *   - density: loc / size_bytes (code density indicator)
+ *   - commentRatio: comment lines / total lines
+ */
+function computeComplexity(files, projectRoot) {
+  const parsableExts = new Set([...DEP_PARSE_EXTS, ".html"]);
+  const results = [];
+
+  for (const f of files) {
+    if (!parsableExts.has(f.ext) || f.size < 50 || f.size > 500_000) continue;
+
+    let content;
+    try {
+      content = readFileSync(f.path, "utf-8");
+    } catch { continue; }
+
+    const lines = content.split("\n");
+    const totalLines = lines.length;
+
+    // Count comment lines (simplified: lines starting with //, #, /*, *, or empty)
+    let commentLines = 0;
+    let blankLines = 0;
+    let inBlockComment = false;
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) { blankLines++; continue; }
+      if (inBlockComment) {
+        commentLines++;
+        if (trimmed.includes("*/")) inBlockComment = false;
+        continue;
+      }
+      if (trimmed.startsWith("//") || trimmed.startsWith("#") || trimmed.startsWith("<!--")) {
+        commentLines++;
+        continue;
+      }
+      if (trimmed.startsWith("/*")) {
+        commentLines++;
+        if (!trimmed.includes("*/")) inBlockComment = true;
+        continue;
+      }
+      if (trimmed === "*" || trimmed.startsWith("* ")) {
+        commentLines++;
+        continue;
+      }
+    }
+
+    const loc = totalLines - blankLines - commentLines;
+    const commentRatio = totalLines > 0 ? +(commentLines / totalLines).toFixed(2) : 0;
+
+    // Count branch points
+    const codeOnly = lines.filter((l) => {
+      const t = l.trim();
+      return t && !t.startsWith("//") && !t.startsWith("#") && !t.startsWith("/*") && !t.startsWith("*");
+    }).join("\n");
+
+    let branchPoints = 0;
+    // Control flow branches
+    branchPoints += (codeOnly.match(/\bif\s*\(/g) || []).length;
+    branchPoints += (codeOnly.match(/\belse\s*\{/g) || []).length;
+    branchPoints += (codeOnly.match(/\belse\s+if\b/g) || []).length;
+    branchPoints += (codeOnly.match(/\bswitch\s*\(/g) || []).length;
+    branchPoints += (codeOnly.match(/\bcase\s+/g) || []).length;
+    branchPoints += (codeOnly.match(/\bfor\s*\(/g) || []).length;
+    branchPoints += (codeOnly.match(/\bwhile\s*\(/g) || []).length;
+    branchPoints += (codeOnly.match(/\bdo\s*\{/g) || []).length;
+    branchPoints += (codeOnly.match(/\bcatch\s*\(/g) || []).length;
+    branchPoints += (codeOnly.match(/\?\s*[^:]+:/g) || []).length; // ternary
+    // Logical branches (&& and || in conditions)
+    branchPoints += (codeOnly.match(/&&/g) || []).length;
+    branchPoints += (codeOnly.match(/\|\|/g) || []).length;
+
+    // Count functions
+    let funcCount = 0;
+    funcCount += (codeOnly.match(/\bfunction\s+\w+/g) || []).length;
+    funcCount += (codeOnly.match(/=>\s*\{/g) || []).length; // arrow functions with body
+    funcCount += (codeOnly.match(/=>\s*[^{]/g) || []).length; // arrow functions without body
+    funcCount += (codeOnly.match(/\b(class|interface|enum)\s+\w+/g) || []).length;
+
+    // Cyclomatic complexity: M = E - N + 2P, simplified as branchPoints + 1
+    const cyclomaticComplexity = branchPoints + 1;
+
+    // Density: bytes per LOC (lower = more efficient encoding)
+    const density = loc > 0 ? +(f.size / loc).toFixed(1) : 0;
+
+    results.push({
+      path: f.relPath,
+      size: f.size,
+      loc,
+      totalLines,
+      commentRatio,
+      branchPoints,
+      funcCount,
+      cyclomaticComplexity,
+      density,
+    });
+  }
+
+  // Sort by cyclomatic complexity descending
+  results.sort((a, b) => b.cyclomaticComplexity - a.cyclomaticComplexity);
+
+  // Summary statistics
+  const complexities = results.map((r) => r.cyclomaticComplexity);
+  const avgComplexity = complexities.length > 0 ? +(complexities.reduce((a, b) => a + b, 0) / complexities.length).toFixed(1) : 0;
+  const maxComplexity = complexities.length > 0 ? Math.max(...complexities) : 0;
+
+  // Complexity buckets
+  const complexityBuckets = { "1-5 (simple)": 0, "6-10 (moderate)": 0, "11-20 (complex)": 0, "21-50 (very complex)": 0, "50+ (extreme)": 0 };
+  for (const r of results) {
+    if (r.cyclomaticComplexity <= 5) complexityBuckets["1-5 (simple)"]++;
+    else if (r.cyclomaticComplexity <= 10) complexityBuckets["6-10 (moderate)"]++;
+    else if (r.cyclomaticComplexity <= 20) complexityBuckets["11-20 (complex)"]++;
+    else if (r.cyclomaticComplexity <= 50) complexityBuckets["21-50 (very complex)"]++;
+    else complexityBuckets["50+ (extreme)"]++;
+  }
+
+  return {
+    topComplex: results.slice(0, 25),
+    complexityBuckets,
+    avgComplexity,
+    maxComplexity,
+    totalAnalyzed: results.length,
+  };
+}
+
+// ── Content similarity clustering ───────────────────────────────────────────
+
+/**
+ * Detect near-duplicate files using token-based Jaccard similarity.
+ * Unlike hash-based duplicate detection (exact match), this finds files
+ * with similar but not identical content.
+ *
+ * Tokenization: split by whitespace + punctuation, lowercase, filter short tokens.
+ */
+function computeContentSimilarity(files, projectRoot, opts = {}) {
+  const threshold = opts.threshold || 0.7;  // Jaccard threshold for "similar"
+  const maxFiles = opts.maxFiles || 300;    // Cap for performance
+  const parsableExts = new Set([...DEP_PARSE_EXTS]);
+
+  const sourceFiles = files
+    .filter((f) => parsableExts.has(f.ext) && f.size > 200 && f.size < 100_000)
+    .sort((a, b) => b.size - a.size)
+    .slice(0, maxFiles);
+
+  if (sourceFiles.length < 2) return { pairs: [], similarGroups: [], avgSimilarity: 0 };
+
+  // Tokenize each file
+  const fileTokens = {};
+  for (const f of sourceFiles) {
+    try {
+      const content = readFileSync(f.path, "utf-8");
+      // Tokenize: split by non-alphanumeric, lowercase, filter short tokens
+      const tokens = content
+        .toLowerCase()
+        .split(/[^a-z0-9_$]+/)
+        .filter((t) => t.length >= 4) // meaningful tokens only
+        .slice(0, 2000); // cap tokens per file for performance
+      fileTokens[f.relPath] = new Set(tokens);
+    } catch { /* skip */ }
+  }
+
+  // Compute Jaccard similarity for all pairs (only compare files in different dirs)
+  const pairs = [];
+  const fileList = Object.keys(fileTokens);
+
+  for (let i = 0; i < fileList.length; i++) {
+    for (let j = i + 1; j < fileList.length; j++) {
+      const a = fileList[i];
+      const b = fileList[j];
+      // Skip files in same directory (likely variants of the same component)
+      if (dirname(a) === dirname(b)) continue;
+
+      const tokensA = fileTokens[a];
+      const tokensB = fileTokens[b];
+      const intersection = new Set([...tokensA].filter((t) => tokensB.has(t)));
+      const union = new Set([...tokensA, ...tokensB]);
+      const jaccard = union.size > 0 ? intersection.size / union.size : 0;
+
+      if (jaccard >= threshold) {
+        pairs.push({ files: [a, b], jaccard: +jaccard.toFixed(3), commonTokens: intersection.size, unionSize: union.size });
+      }
+    }
+  }
+
+  pairs.sort((a, b) => b.jaccard - a.jaccard);
+
+  // Find similarity groups (connected components in similarity graph)
+  const groups = findSimilarityGroups(pairs.slice(0, 100));
+
+  const allJaccards = pairs.map((p) => p.jaccard);
+  const avgSimilarity = allJaccards.length > 0 ? +(allJaccards.reduce((a, b) => a + b, 0) / allJaccards.length).toFixed(3) : 0;
+
+  return {
+    pairs: pairs.slice(0, 30),
+    similarGroups: groups,
+    pairCount: pairs.length,
+    avgSimilarity,
+    threshold,
+  };
+}
+
+function findSimilarityGroups(pairs) {
+  const adj = {};
+  for (const p of pairs) {
+    const [a, b] = p.files;
+    if (!adj[a]) adj[a] = new Set();
+    if (!adj[b]) adj[b] = new Set();
+    adj[a].add(b);
+    adj[b].add(a);
+  }
+
+  const visited = new Set();
+  const groups = [];
+  for (const node of Object.keys(adj)) {
+    if (visited.has(node)) continue;
+    const component = [];
+    const queue = [node];
+    while (queue.length > 0) {
+      const current = queue.shift();
+      if (visited.has(current)) continue;
+      visited.add(current);
+      component.push(current);
+      for (const neighbor of adj[current] || []) {
+        if (!visited.has(neighbor)) queue.push(neighbor);
+      }
+    }
+    if (component.length >= 2) groups.push(component);
+  }
+  return groups.sort((a, b) => b.length - a.length).slice(0, 10);
+}
+
+// ── Hotspot severity matrix ─────────────────────────────────────────────────
+
+/**
+ * Build a hotspot severity matrix combining complexity and churn.
+ *
+ * Inspired by CodeScene's hotspot analysis:
+ *   - X-axis: Churn (change frequency)
+ *   - Y-axis: Complexity (cyclomatic complexity)
+ *
+ * Quadrants:
+ *   - Low Complexity + Low Churn = Healthy (green)
+ *   - High Complexity + Low Churn = Stable Complex (yellow — works but hard to change)
+ *   - Low Complexity + High Churn = Frequent Simple (yellow — changes often but simple)
+ *   - High Complexity + High Churn = HOTSPOT (red — prioritize refactoring)
+ */
+function computeHotspotMatrix(complexity, gitChurn) {
+  if (!complexity || !complexity.topComplex || complexity.topComplex.length === 0) {
+    return { hotspots: [], quadrants: {}, available: false };
+  }
+  if (!gitChurn || !gitChurn.available || !gitChurn.topHotFiles) {
+    return { hotspots: [], quadrants: {}, available: false };
+  }
+
+  // Build complexity and churn maps
+  const complexMap = {};
+  for (const c of complexity.topComplex) {
+    complexMap[c.path] = c.cyclomaticComplexity;
+  }
+  // Also add all analyzed files
+  for (const c of complexity.topComplex) complexMap[c.path] = c.cyclomaticComplexity;
+
+  const churnMap = {};
+  for (const f of gitChurn.topHotFiles) {
+    churnMap[f.path] = f.churnCount;
+  }
+
+  // Median thresholds
+  const complexities = Object.values(complexMap);
+  const churns = Object.values(churnMap);
+  const medianComplexity = complexities.length > 0 ? complexities.sort((a, b) => a - b)[Math.floor(complexities.length / 2)] : 10;
+  const medianChurn = churns.length > 0 ? churns.sort((a, b) => a - b)[Math.floor(churns.length / 2)] : 3;
+
+  // Classify files
+  const hotspots = [];
+  const quadrants = { healthy: 0, stableComplex: 0, frequentSimple: 0, hotspot: 0 };
+
+  // Get files that have both complexity and churn data
+  const allFiles = new Set([...Object.keys(complexMap), ...Object.keys(churnMap)]);
+
+  for (const path of allFiles) {
+    const c = complexMap[path] || 0;
+    const ch = churnMap[path] || 0;
+    if (c === 0 && ch === 0) continue;
+
+    const highComplexity = c > medianComplexity;
+    const highChurn = ch > medianChurn;
+
+    let quadrant;
+    if (!highComplexity && !highChurn) { quadrant = "healthy"; quadrants.healthy++; }
+    else if (highComplexity && !highChurn) { quadrant = "stableComplex"; quadrants.stableComplex++; }
+    else if (!highComplexity && highChurn) { quadrant = "frequentSimple"; quadrants.frequentSimple++; }
+    else { quadrant = "hotspot"; quadrants.hotspot++; }
+
+    if (quadrant === "hotspot") {
+      // Hotspot severity = normalized complexity × normalized churn
+      const severity = +((c / Math.max(1, Math.max(...complexities))) * (ch / Math.max(1, Math.max(...churns))) * 100).toFixed(1);
+      hotspots.push({ path, complexity: c, churn: ch, severity, quadrant });
+    }
+  }
+
+  hotspots.sort((a, b) => b.severity - a.severity);
+
+  return {
+    available: true,
+    hotspots: hotspots.slice(0, 20),
+    quadrants,
+    thresholds: { medianComplexity, medianChurn },
+    totalClassified: allFiles.size,
+  };
+}
+
+// ── Architecture fitness rules ───────────────────────────────────────────────
+
+/**
+ * Auto-generate and check architecture fitness rules.
+ *
+ * Rules derived from analysis:
+ *   1. Layer isolation: files in layer N should not import from layer < N-1
+ *   2. Package isolation: lib/ should not import from skills/
+ *   3. Core isolation: infrastructure files should not import from feature files
+ *   4. Circular dependency: no multi-node SCCs allowed
+ *   5. God module: no file should depend on >15 other files
+ *
+ * Returns pass/fail for each rule with violation details.
+ */
+function checkFitnessRules(stats) {
+  const rules = [];
+  const violations = [];
+
+  // Rule 1: Layer isolation (already in layerAnalysis.violations)
+  if (stats.layerAnalysis && stats.layerAnalysis.violationCount > 0) {
+    rules.push({ id: "layer-isolation", description: "Lower layers should not depend on upper layers", severity: "high" });
+    for (const v of stats.layerAnalysis.violations.slice(0, 5)) {
+      violations.push({
+        rule: "layer-isolation",
+        severity: v.gap > 1 ? "high" : "medium",
+        description: `${v.from.split('/').pop()} (L${v.fromLayer}) → ${v.to.split('/').pop()} (L${v.toLayer}) [gap=${v.gap}]`,
+        files: [v.from, v.to],
+      });
+    }
+  }
+
+  // Rule 2: Package isolation (lib should not import from skills/rules/agents)
+  if (stats.transitiveDeps && stats.transitiveDeps.topTransitiveFanOut) {
+    rules.push({ id: "package-isolation", description: "Shared libraries should not depend on feature packages", severity: "high" });
+    // Check if lib files import from skills/rules/agents
+    for (const edge of (stats.layerAnalysis?.violations || []).slice(0, 10)) {
+      const fromInLib = edge.from.startsWith("lib/");
+      const toInFeature = edge.to.startsWith("skills/") || edge.to.startsWith("agents/") || edge.to.startsWith("rules/");
+      if (fromInLib && toInFeature) {
+        violations.push({
+          rule: "package-isolation",
+          severity: "high",
+          description: `lib file ${edge.from.split('/').pop()} imports from feature ${edge.to.split('/').pop()}`,
+          files: [edge.from, edge.to],
+        });
+      }
+    }
+  }
+
+  // Rule 3: No multi-node SCCs (circular dependency groups)
+  if (stats.scc && stats.scc.multiNodeSccCount > 0) {
+    rules.push({ id: "no-circular-scc", description: "No strongly connected components (circular dependency groups)", severity: "critical" });
+    for (const scc of (stats.scc.multiNodeComponents || []).slice(0, 5)) {
+      violations.push({
+        rule: "no-circular-scc",
+        severity: "critical",
+        description: `SCC of ${scc.length} files: ${scc.slice(0, 3).map(f => f.split('/').pop()).join(', ')}`,
+        files: scc,
+      });
+    }
+  }
+
+  // Rule 4: God module threshold (no file with >15 fan-out)
+  rules.push({ id: "no-god-module", description: "No file should depend on more than 15 other files", severity: "medium" });
+  if (stats.mostDependencies) {
+    for (const d of stats.mostDependencies) {
+      if (d.count > 15) {
+        violations.push({
+          rule: "no-god-module",
+          severity: d.count > 25 ? "high" : "medium",
+          description: `${d.path.split('/').pop()} depends on ${d.count} files (God Module)`,
+          files: [d.path],
+        });
+      }
+    }
+  }
+
+  // Rule 5: Zone-of-pain check
+  if (stats.packageMetrics && stats.packageMetrics.packages) {
+    rules.push({ id: "main-sequence-proximity", description: "Packages should be close to the main sequence (D < 0.7)", severity: "medium" });
+    for (const pkg of stats.packageMetrics.packages) {
+      if (pkg.zone === "zone-of-pain") {
+        violations.push({
+          rule: "main-sequence-proximity",
+          severity: "medium",
+          description: `Package "${pkg.package}" in zone-of-pain (D=${pkg.D})`,
+          files: [pkg.package],
+        });
+      }
+    }
+  }
+
+  // Compute scores
+  const totalRules = rules.length;
+  const rulesWithViolations = new Set(violations.map((v) => v.rule)).size;
+  const rulesPassed = totalRules - rulesWithViolations;
+  const fitnessScore = totalRules > 0 ? Math.round((rulesPassed / totalRules) * 100) : 100;
+
+  return {
+    rules,
+    violations: violations.slice(0, 20),
+    totalRules,
+    rulesPassed,
+    rulesFailed: rulesWithViolations,
+    fitnessScore,
+    grade: fitnessScore >= 100 ? "A" : fitnessScore >= 80 ? "B" : fitnessScore >= 60 ? "C" : fitnessScore >= 40 ? "D" : "F",
+  };
+}
+
+// ── Import cost analysis ────────────────────────────────────────────────────
+
+/**
+ * Compute the transitive import cost for each file.
+ *
+ * "Import cost" of file X = total size of X + all files X transitively imports.
+ * This answers: "If I import X, how much code am I really pulling in?"
+ *
+ * For directories: sum of import costs of all files within.
+ */
+function computeImportCost(files, depGraph) {
+  if (depGraph.edges.length === 0) return { topHeavyImports: [], avgImportCost: 0, maxImportCost: 0 };
+
+  // Build file size map
+  const sizeMap = new Map(files.map((f) => [f.relPath, f.size]));
+
+  // Build transitive closure (reuse from transitiveDeps if available)
+  const adj = {};
+  for (const n of depGraph.nodes) adj[n.path] = [];
+  for (const edge of depGraph.edges) {
+    if (adj[edge.from]) adj[edge.from].push(edge.to);
+    if (!adj[edge.to]) adj[edge.to] = [];
+  }
+
+  // Compute transitive import cost per file: BFS to sum sizes of all reachable files
+  const importCosts = [];
+  for (const node of depGraph.nodes) {
+    const visited = new Set();
+    const queue = [node.path];
+    visited.add(node.path);
+    let totalCost = sizeMap.get(node.path) || 0;
+
+    while (queue.length > 0) {
+      const current = queue.shift();
+      for (const neighbor of adj[current] || []) {
+        if (!visited.has(neighbor)) {
+          visited.add(neighbor);
+          totalCost += sizeMap.get(neighbor) || 0;
+          queue.push(neighbor);
+        }
+      }
+    }
+
+    const ownSize = sizeMap.get(node.path) || 0;
+    const transitiveCost = totalCost - ownSize;
+    const multiplier = ownSize > 0 ? +((totalCost / ownSize)).toFixed(1) : 0;
+
+    importCosts.push({
+      path: node.path,
+      ownSize,
+      transitiveCost,
+      totalCost,
+      multiplier,
+      reachableCount: visited.size - 1,
+    });
+  }
+
+  // Sort by total import cost descending
+  importCosts.sort((a, b) => b.totalCost - a.totalCost);
+
+  // Also compute directory-level import costs
+  const dirCosts = {};
+  for (const ic of importCosts) {
+    const dir = dirname(ic.path) || ".";
+    if (!dirCosts[dir]) dirCosts[dir] = { ownSize: 0, transitiveCost: 0, totalCost: 0, fileCount: 0 };
+    dirCosts[dir].ownSize += ic.ownSize;
+    dirCosts[dir].transitiveCost += ic.transitiveCost;
+    dirCosts[dir].totalCost += ic.totalCost;
+    dirCosts[dir].fileCount++;
+  }
+
+  const topDirCosts = Object.entries(dirCosts)
+    .map(([dir, d]) => ({ dir, ...d }))
+    .sort((a, b) => b.totalCost - a.totalCost)
+    .slice(0, 15);
+
+  const avgImportCost = importCosts.length > 0 ? +(importCosts.reduce((s, ic) => s + ic.totalCost, 0) / importCosts.length).toFixed(0) : 0;
+  const maxImportCost = importCosts.length > 0 ? importCosts[0].totalCost : 0;
+
+  return {
+    topHeavyImports: importCosts.slice(0, 25),
+    topDirCosts,
+    avgImportCost,
+    maxImportCost,
+    // Files with highest multiplier (small file, huge transitive cost)
+    highMultiplierImports: importCosts.filter((ic) => ic.multiplier > 10).sort((a, b) => b.multiplier - a.multiplier).slice(0, 15),
+  };
+}
+
 // ── Statistics ─────────────────────────────────────────────────────────────
 
 function computeStats(files, depGraph, opts = {}) {
@@ -2073,7 +2928,10 @@ function computeStats(files, depGraph, opts = {}) {
   // New: refactoring recommendations
   const recommendations = generateRecommendations(files, statsSnapshot);
 
-  // Build full stats for module boundary suggestions
+  // New: PageRank for code importance
+  const pagerank = depGraph.edges.length > 0 ? computePageRank(depGraph) : { topRanked: [], authoritativeFiles: [], avgPagerank: 0, maxPagerank: 0, damping: 0.85 };
+
+  // Build full stats for module boundary suggestions and downstream analysis
   const fullStatsForBoundary = {
     coChange,
     packageMetrics,
@@ -2088,6 +2946,32 @@ function computeStats(files, depGraph, opts = {}) {
     riskScores,
   };
   const moduleBoundaries = suggestModuleBoundaries(fullStatsForBoundary);
+
+  // New: Test gap analysis
+  const testGaps = projectRoot ? analyzeTestGaps(files, riskScores, projectRoot) : null;
+
+  // New: Change propagation probability (from co-change data)
+  const changePropagation = computeChangePropagation(coChange, gitChurn);
+
+  // New: Knowledge distribution / bus factor
+  const knowledgeDistribution = projectRoot ? computeKnowledgeDistribution(projectRoot, files, { timeWindow: "180 days" }) : null;
+
+  // New: Code complexity estimation
+  const complexity = projectRoot ? computeComplexity(files, projectRoot) : null;
+
+  // New: Content similarity (near-duplicate detection)
+  const contentSimilarity = projectRoot ? computeContentSimilarity(files, projectRoot, { threshold: 0.6 }) : null;
+
+  // New: Hotspot matrix (complexity × churn)
+  const hotspotMatrix = computeHotspotMatrix(complexity, gitChurn);
+
+  // New: Architecture fitness rules
+  // Build a temporary full stats for fitness check
+  const fitnessStats = { layerAnalysis, transitiveDeps, scc, mostDependencies, packageMetrics };
+  const fitnessRules = checkFitnessRules(fitnessStats);
+
+  // New: Import cost analysis
+  const importCost = depGraph.edges.length > 0 ? computeImportCost(files, depGraph) : null;
 
   return {
     largestFiles,
@@ -2115,6 +2999,15 @@ function computeStats(files, depGraph, opts = {}) {
     scc,
     betweenness,
     moduleBoundaries,
+    pagerank,
+    testGaps,
+    changePropagation,
+    knowledgeDistribution,
+    complexity,
+    contentSimilarity,
+    hotspotMatrix,
+    fitnessRules,
+    importCost,
   };
 }
 
@@ -2918,7 +3811,7 @@ window.addEventListener("resize", () => {
 }
 
 function renderSidebar(stats, diff) {
-  const { largestFiles, sizeByExt, sizeByDir, mostDependedOn, mostDependencies, circularDeps, oversizedFiles, orphanFiles, barrelFiles, sizeHistogram, maxDependencyDepth, depthDist, duplicates, packageMetrics, transitiveDeps, gitChurn, layerAnalysis, coChange, riskScores, recommendations, scc, betweenness, moduleBoundaries } = stats;
+  const { largestFiles, sizeByExt, sizeByDir, mostDependedOn, mostDependencies, circularDeps, oversizedFiles, orphanFiles, barrelFiles, sizeHistogram, maxDependencyDepth, depthDist, duplicates, packageMetrics, transitiveDeps, gitChurn, layerAnalysis, coChange, riskScores, recommendations, scc, betweenness, moduleBoundaries, pagerank, testGaps, changePropagation, knowledgeDistribution, complexity, contentSimilarity, hotspotMatrix, fitnessRules, importCost } = stats;
 
   const extEntries = Object.entries(sizeByExt).sort((a, b) => b[1] - a[1]);
   const maxExtSize = extEntries.length > 0 ? extEntries[0][1] : 1;
@@ -3212,6 +4105,135 @@ function renderSidebar(stats, diff) {
     }
   }
 
+  // ── PageRank ──
+  if (pagerank && pagerank.topRanked && pagerank.topRanked.length > 0) {
+    html += `<h3>📄 PageRank (Code Importance)</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Authoritative files (damping=${pagerank.damping}) · avg=${pagerank.avgPagerank.toFixed(4)} · ${pagerank.authoritativeFiles?.length||0} above 3×avg</span></div>`;
+    for (const pr of pagerank.topRanked.slice(0, 10)) {
+      const cls = pr.pagerank > pagerank.avgPagerank * 5 ? "info" : pr.pagerank > pagerank.avgPagerank * 2 ? "" : "";
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(pr.path)}">${escapeHtml(pr.path.split("/").pop())}</span><span class="value ${cls}">${pr.pagerank.toFixed(4)}</span></div>`;
+    }
+  }
+
+  // ── Test gaps ──
+  if (testGaps && testGaps.untestedCount > 0) {
+    html += `<h3>🧪 Test Gaps</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${testGaps.coverageRate}% coverage · ${testGaps.untestedCount}/${testGaps.totalSourceFiles} untested · ${testGaps.highPriority.length} high-priority</span></div>`;
+    for (const f of testGaps.highPriority.slice(0, 8)) {
+      const riskPct = Math.round(f.riskScore * 100);
+      const cls = riskPct >= 30 ? "danger" : riskPct >= 15 ? "warn" : "";
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(f.path)}">${escapeHtml(f.path.split("/").slice(-2).join("/"))}</span><span class="value ${cls}">risk ${riskPct}</span></div>`;
+    }
+  }
+
+  // ── Change propagation ──
+  if (changePropagation && changePropagation.available && changePropagation.topPropagations && changePropagation.topPropagations.length > 0) {
+    html += `<h3>📡 Change Propagation</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">If X changes, probability Y must also change · ${changePropagation.highPropagationCount} pairs >50%</span></div>`;
+    for (const p of changePropagation.topPropagations.slice(0, 8)) {
+      const maxProb = Math.max(p.probBgivenA, p.probAgivenB);
+      const cls = maxProb >= 70 ? "danger" : maxProb >= 50 ? "warn" : "";
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(p.files[0])} ↔ ${escapeHtml(p.files[1])}">${escapeHtml(p.files.map(f=>f.split('/').pop()).join(' → '))}</span><span class="value ${cls}">${maxProb}%</span></div>`;
+    }
+  }
+
+  // ── Knowledge distribution ──
+  if (knowledgeDistribution && knowledgeDistribution.available) {
+    html += `<h3>🧠 Knowledge Distribution</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${knowledgeDistribution.totalContributors} contributors · ${knowledgeDistribution.busFactorRiskCount} bus-factor-1 · ${knowledgeDistribution.abandonedCount} abandoned</span></div>`;
+    // Bus factor risks
+    if (knowledgeDistribution.busFactorRisks && knowledgeDistribution.busFactorRisks.length > 0) {
+      html += `<div style="color:var(--warn);font-size:10px;margin:2px 0;padding-left:8px">⚠ Single-contributor files:</div>`;
+      for (const f of knowledgeDistribution.busFactorRisks.slice(0, 5)) {
+        html += `<div class="stat-row"><span class="label" style="color:var(--warn);font-size:10px" title="${escapeHtml(f.path)}">${escapeHtml(f.path.split("/").slice(-2).join("/"))}</span><span class="value" style="color:var(--warn)">1 person</span></div>`;
+      }
+    }
+    // Contributor distribution
+    if (knowledgeDistribution.contribCountDist) {
+      html += `<div style="color:var(--text-dim);font-size:10px;margin:4px 0;padding-left:8px">Distribution: `;
+      const kdParts = [];
+      for (const [bucket, count] of Object.entries(knowledgeDistribution.contribCountDist)) {
+        if (count > 0) kdParts.push(`${bucket}: ${count}`);
+      }
+      html += escapeHtml(kdParts.join(" · "));
+      html += `</div>`;
+    }
+  }
+
+  // ── Complexity ──
+  if (complexity && complexity.topComplex && complexity.topComplex.length > 0) {
+    html += `<h3>📐 Cyclomatic Complexity</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">McCabe · avg ${complexity.avgComplexity} · max ${complexity.maxComplexity} · ${complexity.totalAnalyzed} files analyzed</span></div>`;
+    if (complexity.complexityBuckets) {
+      html += `<div style="color:var(--text-dim);font-size:10px;margin:2px 0;padding-left:8px">`;
+      const cbParts = [];
+      for (const [bucket, count] of Object.entries(complexity.complexityBuckets)) {
+        if (count > 0) cbParts.push(`${bucket}: ${count}`);
+      }
+      html += escapeHtml(cbParts.join(" · "));
+      html += `</div>`;
+    }
+    for (const c of complexity.topComplex.slice(0, 8)) {
+      const cls = c.cyclomaticComplexity > 50 ? "danger" : c.cyclomaticComplexity > 20 ? "warn" : "";
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(c.path)} loc=${c.loc} funcs=${c.funcCount}">${escapeHtml(c.path.split("/").pop())}</span><span class="value ${cls}">M=${c.cyclomaticComplexity}</span></div>`;
+    }
+  }
+
+  // ── Content similarity ──
+  if (contentSimilarity && contentSimilarity.pairCount > 0) {
+    html += `<h3>🔍 Near-Duplicates (Jaccard≥${contentSimilarity.threshold})</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${contentSimilarity.pairCount} similar pairs · ${contentSimilarity.similarGroups?.length||0} groups</span></div>`;
+    for (const p of contentSimilarity.pairs.slice(0, 8)) {
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(p.files[0])} ↔ ${escapeHtml(p.files[1])}">${escapeHtml(p.files.map(f=>f.split('/').pop()).join(' ≈ '))}</span><span class="value">${(p.jaccard*100).toFixed(0)}%</span></div>`;
+    }
+  }
+
+  // ── Hotspot matrix ──
+  if (hotspotMatrix && hotspotMatrix.available && hotspotMatrix.hotspots.length > 0) {
+    html += `<h3>🔥 Hotspot Matrix (Complexity × Churn)</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${hotspotMatrix.totalClassified} files · median C=${hotspotMatrix.thresholds?.medianComplexity} Ch=${hotspotMatrix.thresholds?.medianChurn}</span></div>`;
+    // Quadrant summary
+    const q = hotspotMatrix.quadrants;
+    html += `<div style="font-size:10px;margin:2px 0;padding-left:8px">`;
+    html += `<span style="color:var(--ok)">🟢 Healthy: ${q.healthy||0}</span> · `;
+    html += `<span style="color:var(--warn)">🟡 Stable-Complex: ${q.stableComplex||0}</span> · `;
+    html += `<span style="color:var(--warn)">🟡 Frequent-Simple: ${q.frequentSimple||0}</span> · `;
+    html += `<span style="color:var(--danger)">🔴 Hotspots: ${q.hotspot||0}</span>`;
+    html += `</div>`;
+    for (const h of hotspotMatrix.hotspots.slice(0, 8)) {
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(h.path)} C=${h.complexity} Ch=${h.churn}">${escapeHtml(h.path.split("/").pop())}</span><span class="value danger">🔥${h.severity}</span></div>`;
+    }
+  }
+
+  // ── Fitness rules ──
+  if (fitnessRules && fitnessRules.rules && fitnessRules.rules.length > 0) {
+    const gradeCls = fitnessRules.grade === "A" || fitnessRules.grade === "B" ? "ok" : fitnessRules.grade === "C" ? "warn" : "danger";
+    html += `<h3>🛡️ Architecture Fitness</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Grade <span class="${gradeCls}" style="font-weight:bold">${fitnessRules.grade}</span> · ${fitnessRules.fitnessScore}/100 · ${fitnessRules.rulesPassed}/${fitnessRules.totalRules} passed</span></div>`;
+    for (const r of fitnessRules.rules) {
+      const hasViolation = fitnessRules.violations.some((v) => v.rule === r.id);
+      const icon = hasViolation ? "❌" : "✅";
+      html += `<div class="stat-row"><span class="label" style="font-size:10px">${icon} ${escapeHtml(r.description)}</span></div>`;
+    }
+  }
+
+  // ── Import cost ──
+  if (importCost && importCost.topHeavyImports && importCost.topHeavyImports.length > 0) {
+    html += `<h3>📦 Import Cost (Transitive)</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Total transitive weight · avg ${formatBytes(importCost.avgImportCost)} · max ${formatBytes(importCost.maxImportCost)}</span></div>`;
+    for (const ic of importCost.topHeavyImports.slice(0, 8)) {
+      const cls = ic.multiplier > 10 ? "warn" : "";
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(ic.path)} own=${formatBytes(ic.ownSize)} transitive=${formatBytes(ic.transitiveCost)} reachable=${ic.reachableCount}">${escapeHtml(ic.path.split("/").pop())}</span><span class="value ${cls}">${formatBytes(ic.totalCost)} (×${ic.multiplier})</span></div>`;
+    }
+    // High-multiplier imports (small file, huge cost)
+    if (importCost.highMultiplierImports && importCost.highMultiplierImports.length > 0) {
+      html += `<div style="color:var(--warn);font-size:10px;margin:4px 0;padding-left:8px">⚠ High-multiplier (small file, big transitive cost):</div>`;
+      for (const hm of importCost.highMultiplierImports.slice(0, 5)) {
+        html += `<div class="stat-row"><span class="label" style="font-size:10px" title="${escapeHtml(hm.path)}">${escapeHtml(hm.path.split("/").pop())}</span><span class="value" style="color:var(--warn)">${formatBytes(hm.ownSize)} → ${formatBytes(hm.totalCost)}</span></div>`;
+      }
+    }
+  }
+
   return html;
 }
 
@@ -3334,6 +4356,15 @@ function main() {
         betweenness: stats.betweenness,
         moduleBoundaries: stats.moduleBoundaries,
         trendAnalysis: stats.trendAnalysis || null,
+        pagerank: stats.pagerank,
+        testGaps: stats.testGaps,
+        changePropagation: stats.changePropagation,
+        knowledgeDistribution: stats.knowledgeDistribution,
+        complexity: stats.complexity,
+        contentSimilarity: stats.contentSimilarity,
+        hotspotMatrix: stats.hotspotMatrix,
+        fitnessRules: stats.fitnessRules,
+        importCost: stats.importCost,
       },
       diff: diff || { hasBaseline: false },
     };
@@ -3444,6 +4475,39 @@ function main() {
   }
   if (stats.trendAnalysis && stats.trendAnalysis.anomalies && stats.trendAnalysis.anomalies.length > 0) {
     console.log(`   📈 Trend anomalies: ${stats.trendAnalysis.anomalies.length} detected`);
+  }
+  if (stats.pagerank && stats.pagerank.authoritativeFiles && stats.pagerank.authoritativeFiles.length > 0) {
+    console.log(`   📄 PageRank: ${stats.pagerank.authoritativeFiles.length} authoritative files (top: ${stats.pagerank.topRanked[0]?.path.split('/').pop() || 'N/A'} = ${stats.pagerank.maxPagerank.toFixed(4)})`);
+  }
+  if (stats.testGaps && stats.testGaps.untestedCount > 0) {
+    const tg = stats.testGaps;
+    console.log(`   🧪 Test gaps: ${tg.untestedCount}/${tg.totalSourceFiles} untested (${tg.coverageRate}% coverage) · ${tg.highPriority.length} high-priority`);
+  }
+  if (stats.changePropagation && stats.changePropagation.available && stats.changePropagation.highPropagationCount > 0) {
+    console.log(`   📡 Change propagation: ${stats.changePropagation.highPropagationCount} pairs with >50% propagation probability`);
+  }
+  if (stats.knowledgeDistribution && stats.knowledgeDistribution.available) {
+    const kd = stats.knowledgeDistribution;
+    console.log(`   🧠 Knowledge: ${kd.totalContributors} contributors · ${kd.busFactorRiskCount} bus-factor-1 files · ${kd.abandonedCount} abandoned`);
+  }
+  if (stats.complexity && stats.complexity.topComplex && stats.complexity.topComplex.length > 0) {
+    const cx = stats.complexity;
+    console.log(`   📐 Complexity: avg ${cx.avgComplexity} cyclomatic · max ${cx.maxComplexity} · ${cx.complexityBuckets?.['50+ (extreme)']||0} extreme`);
+  }
+  if (stats.contentSimilarity && stats.contentSimilarity.pairCount > 0) {
+    console.log(`   🔍 Similarity: ${stats.contentSimilarity.pairCount} near-duplicate pairs (threshold=${stats.contentSimilarity.threshold})`);
+  }
+  if (stats.hotspotMatrix && stats.hotspotMatrix.available && stats.hotspotMatrix.hotspots.length > 0) {
+    const hm = stats.hotspotMatrix;
+    console.log(`   🔥 Hotspots: ${hm.hotspots.length} files in hotspot quadrant · ${hm.quadrants.hotspot} total`);
+  }
+  if (stats.fitnessRules) {
+    const fr = stats.fitnessRules;
+    console.log(`   🛡️  Fitness: ${fr.fitnessScore}/100 (Grade ${fr.grade}) · ${fr.rulesPassed}/${fr.totalRules} rules passed`);
+  }
+  if (stats.importCost && stats.importCost.topHeavyImports && stats.importCost.topHeavyImports.length > 0) {
+    const ic = stats.importCost;
+    console.log(`   📦 Import cost: avg ${formatBytes(ic.avgImportCost)}/file · max ${formatBytes(ic.maxImportCost)}`);
   }
 
   // Diff summary

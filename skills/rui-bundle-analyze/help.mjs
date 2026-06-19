@@ -116,6 +116,42 @@ ${item('split-package', '低内聚大包 → 拆分为更小包')}
 ${item('extract-interface', '高瓶颈桥接 → 提取抽象接口')}
 ${item('break-scc', '多节点 SCC → 解环提取共享抽象')}
 
+${subhdr('⑱ PageRank')}
+${item('随机游走', 'damping=0.85 → 收敛至权威分数')}
+${item('加权引用', '被重要文件引用 > 被普通文件引用')}
+
+${subhdr('⑲ 测试缺口')}
+${item('风险交叉', '高风险 × 无测试 → 优先编写测试')}
+${item('5 种模式', '同目录/spec/__tests__/镜像/前缀匹配')}
+
+${subhdr('⑳ 变更传播')}
+${item('条件概率', 'P(Y改|X改) = coChange/ totalChanges')}
+${item('>50% 标记', '高传播对 → sprint 计划参考')}
+
+${subhdr('㉑ 知识分布')}
+${item('Bus Factor', '单贡献者文件 = 知识孤岛风险')}
+${item('废弃检测', '长期无修改文件 → 候选清理')}
+
+${subhdr('㉒ 复杂度')}
+${item('McCabe', '圈复杂度 = 分支点数 + 1（if/for/while/&&/||/catch/?）')}
+${item('5 级分桶', 'Simple/Moderate/Complex/Very Complex/Extreme (50+)')}
+
+${subhdr('㉓ 内容相似度')}
+${item('Jaccard', 'Token 化 → 交集/并集 → 近似重复检测')}
+${item('群组聚类', '相似文件连通分量 → 可提取公共模板')}
+
+${subhdr('㉔ 热点矩阵')}
+${item('C×Ch', '复杂度 × 变更频率 4 象限 (CodeScene 风格)')}
+${item('严重度', '归一化 C × 归一化 Ch × 100 → 热点排序')}
+
+${subhdr('㉕ 适配度规则')}
+${item('5 规则', '层级隔离/包隔离/无SCC/无God Module/主序列')}
+${item('A-F 评级', '通过率 → 100=A, 80=B, 60=C, 40=D, <40=F')}
+
+${subhdr('㉖ 导入成本')}
+${item('传递成本', '导入 X = X + 所有传递依赖的大小之和')}
+${item('膨胀倍数', 'totalCost/ownSize → >10× = 小文件大依赖树')}
+
 ${hdr('输出路径')}
 ${item('HTML 报告', 'docs/bundle-reports/bundle-YYYY-MM-DD-HHmmss.html', dim)}
 ${item('JSON 数据', 'stdout（--json 时）', dim)}

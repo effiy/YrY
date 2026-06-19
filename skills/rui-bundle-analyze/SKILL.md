@@ -142,6 +142,15 @@ flowchart TB
     ENTRY --> D15["⑮ 介数中心性<br/>━━━━━━━━━━<br/>· Brandes 算法<br/>· 架构瓶颈识别<br/>· 关键路径节点<br/>· 显著瓶颈标记"]:::dim
     ENTRY --> D16["⑯ 时序趋势<br/>━━━━━━━━━━<br/>· 趋势持久化 (JSONL)<br/>· 滑动平均 (SMA)<br/>· 异常检测<br/>· 多指标时间线"]:::dim
     ENTRY --> D17["⑰ 模块边界<br/>━━━━━━━━━━<br/>· Co-locate 建议<br/>· Split-package 建议<br/>· 接口提取建议<br/>· SCC 解环建议"]:::dim
+    ENTRY --> D18["⑱ PageRank<br/>━━━━━━━━━━<br/>· 随机游走算法<br/>· 代码权威性评分<br/>· Damping factor 0.85<br/>· 权威文件识别"]:::dim
+    ENTRY --> D19["⑲ 测试缺口<br/>━━━━━━━━━━<br/>· 风险×覆盖率交叉<br/>· 高优未测文件<br/>· 测试覆盖率估算<br/>· 多模式测试匹配"]:::dim
+    ENTRY --> D20["⑳ 变更传播<br/>━━━━━━━━━━<br/>· P(Y改|X改) 概率<br/>· >50% 高传播对<br/>· Co-change 条件概率<br/>· 变更影响预测"]:::dim
+    ENTRY --> D21["㉑ 知识分布<br/>━━━━━━━━━━<br/>· Git shortlog 分析<br/>· Bus Factor 检测<br/>· 单点知识风险<br/>· 废弃文件检测"]:::dim
+    ENTRY --> D22["㉒ 代码复杂度<br/>━━━━━━━━━━<br/>· McCabe 圈复杂度<br/>· 分支点/函数计数<br/>· 复杂度分桶<br/>· 代码密度"]:::dim
+    ENTRY --> D23["㉓ 内容相似度<br/>━━━━━━━━━━<br/>· Token Jaccard 相似<br/>· 近似重复检测<br/>· 相似群组聚类<br/>· 阈值可配置"]:::dim
+    ENTRY --> D24["㉔ 热点矩阵<br/>━━━━━━━━━━<br/>· Complexity × Churn<br/>· 4 象限分类<br/>· CodeScene 风格<br/>· 严重度评分"]:::dim
+    ENTRY --> D25["㉕ 适配度规则<br/>━━━━━━━━━━<br/>· 5 类架构规则<br/>· 自动合规检查<br/>· A-F 评级<br/>· 违规明细"]:::dim
+    ENTRY --> D26["㉖ 导入成本<br/>━━━━━━━━━━<br/>· 传递导入重量<br/>· 膨胀倍数 (×N)<br/>· 目录级成本<br/>· 高倍率标记"]:::dim
 
     classDef entry fill:#3d59a1,color:#fff,font-weight:bold
     classDef dim fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6,text-align:left
@@ -553,6 +562,115 @@ Brandes 算法 O(V×(V+E))：
 - **1 个 co-locate**：rules 和 skills 间存在高协同变更的文件对
 - **4 个 split-package**：`cdn/` (434 files, cohesion=0) 和 `docs/` (378 files, cohesion=0) 内聚度极低 → 可能需要按子功能拆分
 - **4 个 extract-interface**：关键桥接模块需要接口抽象
+
+### 18. PageRank 代码重要性
+
+将 Google PageRank 算法应用于依赖图，识别"权威"文件。
+
+```
+PR(A) = (1-d)/N + d × Σ(PR(T)/L(T))
+```
+
+其中 d=0.85（阻尼因子），PR(T) 是引用 A 的文件 T 的 PageRank，L(T) 是 T 的出度。
+
+**与 fan-in 的区别**：fan-in 是简单计数（每个引用权重相同），PageRank 是加权引用 — 被重要文件引用比被普通文件引用更有价值。
+
+**YrY 实测**：`constants.mjs` (0.089) > `fs.mjs` (0.033) > `tty.mjs` (0.031) — 共享库文件是项目中最权威的节点。
+
+### 19. 测试缺口分析
+
+交叉分析风险评分和测试覆盖率，识别最需要测试的高风险文件。
+
+**测试匹配策略**（5 种模式）：
+- 同目录：`foo.test.js`, `foo.spec.js`
+- 子目录：`__tests__/foo.js`
+- 镜像：`tests/foo.js`（保留目录结构）
+- 前缀：`test_foo.js`, `spec_foo.js`
+- 自检：文件名含 `.test.` 或 `.spec.`
+
+**YrY 实测**：364 个源文件 0% 测试覆盖，15 个高风险未测文件需优先编写测试。
+
+### 20. 变更传播概率
+
+基于 Co-Change 数据计算条件概率矩阵：
+
+```
+P(Y changes | X changed) = coChangeCount(X,Y) / totalChanges(X)
+```
+
+**高传播对**（>50%）：修改 X 时 Y 有超过 50% 的概率也需要修改。28 对高传播关系可用于 sprint 计划和变更风险评估。
+
+### 21. 知识分布 / Bus Factor
+
+分析每个文件的贡献者分布，识别知识孤岛。
+
+| 风险级别 | 贡献者数 | 含义 |
+|---------|---------|------|
+| Bus Factor 1 | 1 人 | 单点知识风险 — 唯一贡献者离开则知识丢失 |
+| 健康 | 3+ 人 | 知识充分分布 |
+| 废弃 | 0 人 (近期) | 长期未修改 — 可能已废弃 |
+
+**YrY 实测**：412 个文件仅有 1 个贡献者，176 个有 2 人，16 个有 3+ 人，15 个文件长期未修改。
+
+### 22. 代码复杂度估算（McCabe 圈复杂度）
+
+使用正则启发式估算 McCabe 圈复杂度 M = E − N + 2P，简化为 `分支点数 + 1`。
+
+**计数策略**：if/else/switch/case/for/while/do/catch/ternary/&&/|| 各计 1 个分支点。同时统计函数声明数、代码行数（LOC）、注释率和代码密度。
+
+| 复杂度等级 | 范围 | YrY 实测 |
+|-----------|------|---------|
+| Simple | 1-5 | — |
+| Moderate | 6-10 | — |
+| Complex | 11-20 | — |
+| Very Complex | 21-50 | — |
+| **Extreme** | **50+** | **85 个文件** |
+
+**YrY 实测**：平均 M=23.3，最大 M=1023（analyze.mjs），85 个极端复杂文件。复杂度估算精度受限于正则方法，但对识别重构候选足够有效。
+
+### 23. 内容相似度聚类
+
+基于 Token Jaccard 相似度的近似重复检测。不同于 MD5 哈希的精确匹配，它发现**内容相似但不完全相同**的文件。
+
+**流程**：小写 → 分词 → 过滤短 token (<4 字符) → 截断 2000 token → Jaccard 计算。
+
+**YrY 实测**：814 对文件 Jaccard≥0.6，存在大量 CDN 组件的近似重复（如多个 yry-* 组件共享相似结构），可提取公共模板。
+
+### 24. 热点矩阵（Complexity × Churn）
+
+基于 CodeScene 方法论，将文件按复杂度和变更频率分为 4 象限：
+
+```
+         Churn →
+Complexity  🟢 Healthy          🟡 Frequent-Simple
+    ↓       🟡 Stable-Complex   🔴 HOTSPOT
+```
+
+**YrY 实测**：22 Healthy · 12 Stable-Complex · 9 Frequent-Simple · **0 Hotspots** — 项目无复杂度×变更双高热点，架构健康。
+
+### 25. 架构适配度规则
+
+自动检查 5 类架构规则的合规性，给出 A-F 评级：
+
+| 规则 | 严重度 | YrY 结果 |
+|------|--------|---------|
+| 层级隔离 | high | ❌ 25 违规 |
+| 包隔离 (lib↛feature) | high | ❌ 违规 |
+| 无循环 SCC | critical | ✅ 通过 |
+| 无 God Module (>15 deps) | medium | ✅ 通过 |
+| 主序列接近 (D<0.7) | medium | ❌ 6 个 Zone-of-Pain |
+
+**YrY 评级：D (50/100)** — 层级违规和包依赖方向是需要优先解决的架构问题。
+
+### 26. 导入成本分析
+
+计算每个文件的**传递导入成本**：导入 X 实际拉入的代码总量（X + 所有传递依赖的大小）。
+
+**关键指标**：
+- **膨胀倍数** = totalCost / ownSize — 小文件导入大依赖树的警告信号
+- **目录成本** — 按目录聚合的导入总成本
+
+**YrY 实测**：平均导入成本 17.3 KB/文件，最大 380.5 KB（导入该文件实际拉入 ~381KB）。高倍率文件（×10+）需关注。
 
 ## 高级特性
 

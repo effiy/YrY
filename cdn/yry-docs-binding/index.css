@@ -21,19 +21,31 @@
 }
 
 /* ── 三评分徽章 (Score Badges) ──────────────────────────────────────── */
+/* 卡片 name 行 · flex 左右对齐 */
+.item-card .yry-body .yry-name,
+.story-card .yry-story-head .story-name,
+.scene-card .yry-scene-name {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
 .ydb-score-badge {
   font-size: .52rem;
-  margin-left: 8px;
+  margin-left: auto;
   padding: 1px 6px;
   border-radius: 3px;
   background: rgba(255,255,255,.04);
   white-space: nowrap;
   line-height: 1.4;
+  flex-shrink: 0;
 }
 /* story-card / scene-card 用的更小字号 */
 .ydb-score-badge.ydb-small {
   font-size: .50rem;
-  margin-left: 8px;
+  margin-left: auto;
   padding: 1px 5px;
 }
 .ydb-score-badge .ydb-badge-num {
