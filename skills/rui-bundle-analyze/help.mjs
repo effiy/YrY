@@ -80,6 +80,42 @@ ${item('拓扑分层', '基于依赖方向的 Entry→Foundation 自动分层')}
 ${item('层级违规', '底层→高层的反向依赖检测 (向下依赖规则)')}
 ${item('严重度', '轻微 (gap=1) / 严重 (gap>1) 两级分级')}
 
+${subhdr('⑪ Co-Change 分析')}
+${item('协同变更', 'Git log 解析 → 同 commit 文件对 → 隐式耦合发现')}
+${item('Jaccard 相似度', '两文件 commit 集合交/并比 → 协同强度')}
+${item('变更聚类', '高强对连通分量 → 跨目录逻辑模块识别')}
+
+${subhdr('⑫ 风险评分')}
+${item('6 维加权', 'size(25%)+churn(25%)+coupling(15%)+orphan(15%)+circular(20%)')}
+${item('5 级风险', 'Low→Medium→High→Critical→Extreme (0-100)')}
+${item('分布统计', '风险桶分布 + 平均风险 + Top-25 高风险文件')}
+
+${subhdr('⑬ 重构建议')}
+${item('7 类模式', '拆分/解环/抽象/修层/减半径/去死代码/消除重复')}
+${item('P0/P1/P2', '立即→近期→改进 三级优先级')}
+${item('可执行', '每条建议含受影响文件列表 + 具体操作说明')}
+
+${subhdr('⑭ SCC 强连通分量 (Tarjan)')}
+${item('Tarjan 算法', 'O(V+E) 线性时间精确 SCC 检测')}
+${item('互达子图', '最大相互可达文件群 → 完全耦合检测')}
+${item('SCC 分布', '1 / 2-3 / 4-5 / 6-10 / 11+ 大小分桶')}
+
+${subhdr('⑮ 介数中心性 (Brandes)')}
+${item('Brandes 算法', 'O(V×(V+E)) 最短路径介数计算')}
+${item('瓶颈识别', '高介数 = 位于大量依赖路径关键位置')}
+${item('显著标记', '>3×avg 介数的文件标记为架构瓶颈')}
+
+${subhdr('⑯ 时序趋势')}
+${item('JSONL 持久化', '.memory/bundle-trend.jsonl 每次运行追加')}
+${item('滑动平均', '最近 5 点 SMA → 平滑短期波动')}
+${item('异常检测', '体积突变>20% / 新增循环 / 风险突增>5pt')}
+
+${subhdr('⑰ 模块边界')}
+${item('co-locate', '高协同变更但不同目录 → 移到一起')}
+${item('split-package', '低内聚大包 → 拆分为更小包')}
+${item('extract-interface', '高瓶颈桥接 → 提取抽象接口')}
+${item('break-scc', '多节点 SCC → 解环提取共享抽象')}
+
 ${hdr('输出路径')}
 ${item('HTML 报告', 'docs/bundle-reports/bundle-YYYY-MM-DD-HHmmss.html', dim)}
 ${item('JSON 数据', 'stdout（--json 时）', dim)}

@@ -985,8 +985,9 @@ function computeGitChurn(projectRoot, files, opts = {}) {
 
   let gitOutput;
   try {
-    const args = ["log", `--since="${timeWindow} ago"`, "--diff-filter=M", "--name-only", "--pretty=format:", "--", "."];
-    gitOutput = execSync(`git -C "${projectRoot}" ${args.join(" ")}`, { encoding: "utf-8", timeout: 5000 });
+    const sincePeriod = timeWindow.replace(/\s+/g, ".");
+    const args = ["log", `--since=${sincePeriod}`, "--name-only", "--pretty=format:", "--", "."];
+    gitOutput = execSync(`git -C "${projectRoot}" ${args.join(" ")}`, { encoding: "utf-8", timeout: 10000, maxBuffer: 10 * 1024 * 1024 });
   } catch {
     return { available: false, reason: "git command failed or timed out" };
   }
@@ -1172,6 +1173,785 @@ function detectLayers(files, depGraph) {
   };
 }
 
+// ── Co-change analysis ──────────────────────────────────────────────────────
+
+/**
+ * Analyze git history to find files that frequently change together in the same commit.
+ * High co-change frequency suggests implicit coupling not captured by import analysis.
+ *
+ * Co-change score = Jaccard similarity of commit sets between two files.
+ */
+function computeCoChange(projectRoot, files, opts = {}) {
+  const timeWindow = opts.timeWindow || "90 days";
+  const maxPairs = opts.maxPairs || 30;
+  const fileSet = new Set(files.map((f) => f.relPath));
+
+  let gitOutput;
+  try {
+    // Get commits with their changed files (all files, not just modified)
+    // Convert "90 days" → "90.days" for git --since format
+    const sincePeriod = timeWindow.replace(/\s+/g, ".");
+    const args = ["log", `--since=${sincePeriod}`, "--name-only", "--pretty=format:--COMMIT--", "--", "."];
+    gitOutput = execSync(`git -C "${projectRoot}" ${args.join(" ")}`, { encoding: "utf-8", timeout: 15000, maxBuffer: 10 * 1024 * 1024 });
+  } catch {
+    return { available: false, reason: "git command failed", pairs: [], summary: {} };
+  }
+
+  // Parse: each commit is separated by --COMMIT--
+  const commits = gitOutput
+    .split("--COMMIT--")
+    .map((block) =>
+      block
+        .trim()
+        .split("\n")
+        .map((l) => l.trim())
+        .filter((l) => l.length > 0 && fileSet.has(l))
+    )
+    .filter((files) => files.length >= 2); // only commits with 2+ tracked files
+
+  if (commits.length === 0) {
+    return { available: true, timeWindow, pairs: [], summary: { totalCommits: 0, coChangedFiles: 0 }, commitCount: 0 };
+  }
+
+  // Count co-occurrences per file pair
+  const pairCounts = {}; // "fileA||fileB" → count
+  const fileCommitSets = {}; // file → Set of commit indices
+
+  for (let ci = 0; ci < commits.length; ci++) {
+    const commitFiles = commits[ci];
+    for (const f of commitFiles) {
+      if (!fileCommitSets[f]) fileCommitSets[f] = new Set();
+      fileCommitSets[f].add(ci);
+    }
+    // Count all pairs in this commit
+    for (let i = 0; i < commitFiles.length; i++) {
+      for (let j = i + 1; j < commitFiles.length; j++) {
+        const a = commitFiles[i];
+        const b = commitFiles[j];
+        const key = a < b ? `${a}||${b}` : `${b}||${a}`;
+        pairCounts[key] = (pairCounts[key] || 0) + 1;
+      }
+    }
+  }
+
+  // Compute Jaccard similarity for each pair
+  const pairs = Object.entries(pairCounts)
+    .map(([key, coCount]) => {
+      const [a, b] = key.split("||");
+      const setA = fileCommitSets[a] || new Set();
+      const setB = fileCommitSets[b] || new Set();
+      const union = new Set([...setA, ...setB]);
+      const jaccard = union.size > 0 ? +(coCount / union.size).toFixed(3) : 0;
+      // Co-change strength: weighted by Jaccard
+      const strength = +(coCount * jaccard).toFixed(2);
+      return { files: [a, b], coChangeCount: coCount, jaccard, strength };
+    })
+    .sort((a, b) => b.strength - a.strength)
+    .slice(0, maxPairs);
+
+  // Summary
+  const allCoChangedFiles = new Set();
+  for (const p of pairs) {
+    allCoChangedFiles.add(p.files[0]);
+    allCoChangedFiles.add(p.files[1]);
+  }
+
+  // Find clusters of co-changing files (simplified: connected components in co-change graph)
+  const coChangeClusters = findCoChangeClusters(pairs);
+
+  return {
+    available: true,
+    timeWindow,
+    pairs,
+    commitCount: commits.length,
+    coChangedFileCount: allCoChangedFiles.size,
+    clusters: coChangeClusters,
+    summary: {
+      totalCommits: commits.length,
+      coChangedFiles: allCoChangedFiles.size,
+      topPairStrength: pairs.length > 0 ? pairs[0].strength : 0,
+    },
+  };
+}
+
+/**
+ * Find clusters of files that change together (connected components in co-change graph).
+ */
+function findCoChangeClusters(pairs) {
+  if (pairs.length === 0) return [];
+
+  // Build adjacency for strong co-change (strength > 2)
+  const adj = {};
+  for (const p of pairs) {
+    if (p.strength < 2) continue;
+    const [a, b] = p.files;
+    if (!adj[a]) adj[a] = new Set();
+    if (!adj[b]) adj[b] = new Set();
+    adj[a].add(b);
+    adj[b].add(a);
+  }
+
+  const visited = new Set();
+  const clusters = [];
+
+  for (const node of Object.keys(adj)) {
+    if (visited.has(node)) continue;
+    const component = [];
+    const queue = [node];
+    while (queue.length > 0) {
+      const current = queue.shift();
+      if (visited.has(current)) continue;
+      visited.add(current);
+      component.push(current);
+      for (const neighbor of adj[current] || []) {
+        if (!visited.has(neighbor)) queue.push(neighbor);
+      }
+    }
+    if (component.length >= 2) clusters.push(component);
+  }
+
+  return clusters
+    .sort((a, b) => b.length - a.length)
+    .slice(0, 10)
+    .map((c) => ({ files: c.slice(0, 10), size: c.length }));
+}
+
+// ── Risk scoring ────────────────────────────────────────────────────────────
+
+/**
+ * Compute per-file composite risk score based on multiple dimensions.
+ *
+ * Risk dimensions (each 0-1, then weighted):
+ *   - sizeRisk: log-scaled file size (0=small, 1=>500KB)
+ *   - churnRisk: normalized churn count
+ *   - couplingRisk: normalized (fan-in + fan-out)
+ *   - orphanRisk: binary (1 if orphan, 0 otherwise)
+ *   - circularRisk: binary (1 if in circular dep, 0 otherwise)
+ *   - zonePainRisk: binary (1 if in zone-of-pain package, 0 otherwise)
+ *
+ * Composite: weighted average × 100 → 0-100 risk score
+ */
+function computeRiskScores(files, stats) {
+  const { circularDeps, orphanFiles, packageMetrics, gitChurn } = stats;
+
+  // Build lookup sets
+  const circularSet = new Set();
+  for (const cycle of circularDeps) {
+    for (const node of cycle) circularSet.add(node);
+  }
+
+  const orphanSet = new Set((orphanFiles || []).map((f) => f.path));
+
+  const zonePainSet = new Set();
+  if (packageMetrics && packageMetrics.packages) {
+    for (const pkg of packageMetrics.packages) {
+      if (pkg.zone === "zone-of-pain") {
+        // Mark files in this package — simplified: mark all files under the package dir
+        // For now, we don't have per-file package mapping, so skip precise marking
+      }
+    }
+  }
+
+  // Build churn map
+  const churnMap = new Map();
+  if (gitChurn && gitChurn.available && gitChurn.topHotFiles) {
+    for (const f of gitChurn.topHotFiles) {
+      churnMap.set(f.path, f.churnCount);
+    }
+  }
+  const maxChurn = churnMap.size > 0 ? Math.max(1, ...churnMap.values()) : 1;
+
+  // Build fan-in / fan-out from depGraph... actually we need the depGraph here
+  // We'll compute from transitiveDeps if available, else use direct
+
+  // Compute risk per file (only for source files > 100 bytes)
+  const sourceFiles = files.filter((f) => f.size > 100 && (DEP_PARSE_EXTS.has(f.ext) || f.ext === ".html" || f.ext === ".md" || f.ext === ".json" || f.ext === ".yaml" || f.ext === ".yml"));
+
+  const riskScores = sourceFiles.map((f) => {
+    // Size risk: log scale, max at LARGE_FILE_THRESHOLD
+    const sizeRisk = Math.min(1, Math.log2(f.size / 1024 + 1) / Math.log2(LARGE_FILE_THRESHOLD / 1024 + 1));
+
+    // Churn risk: normalized by max churn
+    const churnCount = churnMap.get(f.relPath) || 0;
+    const churnRisk = Math.min(1, churnCount / Math.max(1, maxChurn));
+
+    // Coupling risk: approximated from package presence
+    // (full coupling needs depGraph access, use simplified version)
+    const couplingRisk = 0; // placeholder — computed if depGraph available
+
+    // Binary risks
+    const orphanRisk = orphanSet.has(f.relPath) ? 1 : 0;
+    const circularRisk = circularSet.has(f.relPath) ? 1 : 0;
+
+    // Composite: weighted
+    const composite = +(
+      sizeRisk * 0.25 +
+      churnRisk * 0.25 +
+      couplingRisk * 0.15 +
+      orphanRisk * 0.15 +
+      circularRisk * 0.20
+    ).toFixed(3);
+
+    return {
+      path: f.relPath,
+      size: f.size,
+      sizeRisk: +sizeRisk.toFixed(2),
+      churnRisk: +churnRisk.toFixed(2),
+      couplingRisk: +couplingRisk.toFixed(2),
+      orphanRisk,
+      circularRisk,
+      composite,
+    };
+  });
+
+  // Sort by composite risk descending
+  riskScores.sort((a, b) => b.composite - a.composite);
+
+  // Risk distribution
+  const riskBuckets = { "low (0-20)": 0, "medium (20-40)": 0, "high (40-60)": 0, "critical (60-80)": 0, "extreme (80-100)": 0 };
+  for (const r of riskScores) {
+    const c = r.composite * 100;
+    if (c < 20) riskBuckets["low (0-20)"]++;
+    else if (c < 40) riskBuckets["medium (20-40)"]++;
+    else if (c < 60) riskBuckets["high (40-60)"]++;
+    else if (c < 80) riskBuckets["critical (60-80)"]++;
+    else riskBuckets["extreme (80-100)"]++;
+  }
+
+  const avgRisk = riskScores.length > 0 ? +(riskScores.reduce((s, r) => s + r.composite, 0) / riskScores.length * 100).toFixed(1) : 0;
+
+  return {
+    topRisks: riskScores.slice(0, 25),
+    riskBuckets,
+    avgRisk,
+    totalAssessed: riskScores.length,
+  };
+}
+
+// ── Refactoring recommendations ─────────────────────────────────────────────
+
+/**
+ * Generate actionable refactoring recommendations from analysis data.
+ * Each recommendation has: severity (P0/P1/P2), category, description, and affected files.
+ */
+function generateRecommendations(files, stats) {
+  const recs = [];
+
+  // P0: Oversized files
+  if (stats.oversizedFiles && stats.oversizedFiles.length > 0) {
+    for (const f of stats.oversizedFiles.slice(0, 3)) {
+      recs.push({
+        severity: "P0",
+        category: "file-size",
+        title: `Split oversized file: ${f.path.split("/").pop()}`,
+        description: `${formatBytes(f.size)} exceeds the 500KB threshold. Consider splitting into smaller modules by responsibility.`,
+        files: [f.path],
+      });
+    }
+  }
+
+  // P0: Circular dependencies
+  if (stats.circularDeps && stats.circularDeps.length > 0) {
+    for (const cycle of stats.circularDeps.slice(0, 3)) {
+      recs.push({
+        severity: "P0",
+        category: "circular-dep",
+        title: `Break circular dependency: ${cycle.slice(0, 3).map((c) => c.split("/").pop()).join(" → ")}`,
+        description: `Circular dependency chain of ${cycle.length - 1} files. Extract shared interface/types into a separate module that both depend on.`,
+        files: cycle.slice(0, -1),
+      });
+    }
+  }
+
+  // P1: Zone-of-pain packages
+  if (stats.packageMetrics && stats.packageMetrics.packages) {
+    const painPkgs = stats.packageMetrics.packages.filter((p) => p.zone === "zone-of-pain");
+    for (const p of painPkgs.slice(0, 3)) {
+      recs.push({
+        severity: "P1",
+        category: "architecture",
+        title: `Add abstractions to package: ${p.package}/`,
+        description: `Package "${p.package}" is in zone-of-pain (D=${p.D}, I=${p.I}, A=${p.A}). It's stable (highly depended-on) but concrete. Add abstract interfaces or types to allow dependents to decouple.`,
+        files: [p.package],
+      });
+    }
+  }
+
+  // P1: Layer violations (severe)
+  if (stats.layerAnalysis && stats.layerAnalysis.violations) {
+    const severe = stats.layerAnalysis.violations.filter((v) => v.gap > 1);
+    for (const v of severe.slice(0, 3)) {
+      recs.push({
+        severity: "P1",
+        category: "layer-violation",
+        title: `Fix layer violation: ${v.from.split("/").pop()} (L${v.fromLayer}) → ${v.to.split("/").pop()} (L${v.toLayer})`,
+        description: `Layer ${v.fromLayer} should not depend on Layer ${v.toLayer} (gap=${v.gap}). Extract shared dependency to a lower layer or invert the dependency.`,
+        files: [v.from, v.to],
+      });
+    }
+  }
+
+  // P1: High transitive fan-out (large blast radius)
+  if (stats.transitiveDeps && stats.transitiveDeps.topTransitiveFanOut) {
+    for (const f of stats.transitiveDeps.topTransitiveFanOut.slice(0, 3)) {
+      if (f.transitiveCount > 10) {
+        recs.push({
+          severity: "P1",
+          category: "blast-radius",
+          title: `Reduce blast radius: ${f.path.split("/").pop()}`,
+          description: `This file has a blast radius of ${f.transitiveCount} files (${f.directCount} direct + ${f.indirectOnly} indirect). Consider splitting to reduce the impact of changes.`,
+          files: [f.path],
+        });
+      }
+    }
+  }
+
+  // P2: Orphan files (potential dead code)
+  if (stats.orphanFiles && stats.orphanFiles.length > 5) {
+    recs.push({
+      severity: "P2",
+      category: "dead-code",
+      title: `Review ${stats.orphanFiles.length} orphan files for dead code`,
+      description: "These files are not imported by any other file. Verify they are not entry points or configuration, then remove if unused.",
+      files: stats.orphanFiles.slice(0, 5).map((f) => f.path),
+    });
+  }
+
+  // P2: Duplicate files
+  if (stats.duplicates && stats.duplicates.length > 0) {
+    const totalWasted = stats.duplicates.reduce((s, d) => s + (d.wastedBytes || 0), 0);
+    recs.push({
+      severity: "P2",
+      category: "duplication",
+      title: `Eliminate ${stats.duplicates.length} duplicate file groups`,
+      description: `${formatBytes(totalWasted)} wasted by duplicated files. Extract shared content into a single module and import it.`,
+      files: stats.duplicates.slice(0, 3).flatMap((g) => g.files),
+    });
+  }
+
+  // P2: Co-change clusters (from gitChurn — if co-change analysis was run)
+  // (This is a placeholder; full co-change integration requires running computeCoChange first)
+
+  // P2: God Modules (high fan-out)
+  if (stats.mostDependencies && stats.mostDependencies.length > 0) {
+    const godModule = stats.mostDependencies[0];
+    if (godModule.count > 10) {
+      recs.push({
+        severity: "P2",
+        category: "god-module",
+        title: `Refactor God Module: ${godModule.path.split("/").pop()}`,
+        description: `This file depends on ${godModule.count} other files (high fan-out). Consider splitting responsibilities across multiple modules.`,
+        files: [godModule.path],
+      });
+    }
+  }
+
+  return recs;
+}
+
+// ── SCC: Tarjan's strongly connected components ─────────────────────────────
+
+/**
+ * Tarjan's algorithm for finding strongly connected components (SCCs) in a directed graph.
+ *
+ * An SCC is a maximal set of nodes where every node can reach every other node.
+ * SCCs of size > 1 represent circular dependency groups — more rigorous than
+ * the simple DFS cycle detection (which finds cycles but not full SCCs).
+ *
+ * Complexity: O(V + E) — linear in nodes + edges.
+ */
+function computeSCC(depGraph) {
+  const adj = {};
+  for (const n of depGraph.nodes) adj[n.path] = [];
+  for (const edge of depGraph.edges) {
+    if (adj[edge.from]) adj[edge.from].push(edge.to);
+    // Ensure target nodes exist in adj
+    if (!adj[edge.to]) adj[edge.to] = [];
+  }
+
+  const nodes = Object.keys(adj);
+  if (nodes.length === 0) return { components: [], multiNodeComponents: [], largestSCCSize: 0, sccCount: 0 };
+
+  let index = 0;
+  const indices = {};    // node → discovery index
+  const lowlink = {};    // node → lowest index reachable
+  const onStack = new Set();
+  const stack = [];
+  const components = [];
+
+  function strongConnect(v) {
+    indices[v] = index;
+    lowlink[v] = index;
+    index++;
+    stack.push(v);
+    onStack.add(v);
+
+    for (const w of adj[v] || []) {
+      if (indices[w] === undefined) {
+        // Successor w not yet visited; recurse
+        strongConnect(w);
+        lowlink[v] = Math.min(lowlink[v], lowlink[w]);
+      } else if (onStack.has(w)) {
+        // Successor w is on stack → in current SCC
+        lowlink[v] = Math.min(lowlink[v], indices[w]);
+      }
+    }
+
+    // If v is a root node, pop the stack to form an SCC
+    if (lowlink[v] === indices[v]) {
+      const component = [];
+      let w;
+      do {
+        w = stack.pop();
+        onStack.delete(w);
+        component.push(w);
+      } while (w !== v);
+      components.push(component);
+    }
+  }
+
+  for (const v of nodes) {
+    if (indices[v] === undefined) {
+      strongConnect(v);
+    }
+  }
+
+  // Filter to multi-node SCCs (actual circular dependency groups)
+  const multiNodeComponents = components
+    .filter((c) => c.length >= 2)
+    .sort((a, b) => b.length - a.length);
+
+  const largestSCCSize = multiNodeComponents.length > 0 ? multiNodeComponents[0].length : 0;
+
+  // SCC size distribution
+  const sizeDist = {};
+  for (const c of components) {
+    const bucket = c.length === 1 ? "1" : c.length <= 3 ? "2-3" : c.length <= 5 ? "4-5" : c.length <= 10 ? "6-10" : "11+";
+    sizeDist[bucket] = (sizeDist[bucket] || 0) + 1;
+  }
+
+  return {
+    components: multiNodeComponents.slice(0, 20), // top 20 multi-node SCCs
+    multiNodeComponents,
+    largestSCCSize,
+    sccCount: components.length,
+    multiNodeSccCount: multiNodeComponents.length,
+    sizeDist,
+    // Files that are part of any multi-node SCC (circularly dependent)
+    circularFiles: new Set(multiNodeComponents.flat()),
+  };
+}
+
+// ── Betweenness centrality ──────────────────────────────────────────────────
+
+/**
+ * Compute betweenness centrality for each node in the dependency graph.
+ *
+ * Betweenness centrality of a node v = fraction of all shortest paths between
+ * any pair of nodes (s, t) that pass through v.
+ *
+ * High betweenness → architectural bottleneck: this node sits on the critical
+ * path between many other nodes. If it fails or changes, many parts break.
+ *
+ * Uses Brandes' algorithm (unweighted): O(V × (V + E)) — quadratic but
+ * acceptable for our capped graph (≤500 nodes).
+ */
+function computeBetweenness(depGraph) {
+  const nodes = depGraph.nodes.map((n) => n.path);
+  const adj = {};
+  for (const n of nodes) adj[n] = [];
+  for (const edge of depGraph.edges) {
+    if (adj[edge.from]) adj[edge.from].push(edge.to);
+    if (!adj[edge.to]) adj[edge.to] = [];
+  }
+
+  if (nodes.length === 0) return { topBottlenecks: [], avgBetweenness: 0, maxBetweenness: 0 };
+
+  // Betweenness score per node
+  const betweenness = {};
+  for (const n of nodes) betweenness[n] = 0;
+
+  // Brandes' algorithm: run BFS from each source node
+  for (const s of nodes) {
+    // BFS-based shortest path counting (unweighted)
+    const dist = {};       // node → distance from s
+    const sigma = {};      // node → number of shortest paths from s
+    const pred = {};       // node → list of predecessors on shortest paths
+    const stack = [];      // nodes in order of non-increasing distance
+
+    for (const n of nodes) {
+      dist[n] = -1;
+      sigma[n] = 0;
+      pred[n] = [];
+    }
+    dist[s] = 0;
+    sigma[s] = 1;
+
+    const queue = [s];
+    while (queue.length > 0) {
+      const v = queue.shift();
+      stack.push(v);
+      for (const w of adj[v] || []) {
+        // w found for the first time?
+        if (dist[w] < 0) {
+          dist[w] = dist[v] + 1;
+          queue.push(w);
+        }
+        // shortest path to w via v?
+        if (dist[w] === dist[v] + 1) {
+          sigma[w] += sigma[v];
+          pred[w].push(v);
+        }
+      }
+    }
+
+    // Back-propagation: accumulate dependencies
+    const delta = {};
+    for (const n of nodes) delta[n] = 0;
+
+    while (stack.length > 0) {
+      const w = stack.pop();
+      for (const v of pred[w]) {
+        delta[v] += (sigma[v] / sigma[w]) * (1 + delta[w]);
+      }
+      if (w !== s) {
+        betweenness[w] += delta[w];
+      }
+    }
+  }
+
+  // Normalize for directed graph: divide by (n-1)(n-2)
+  const n = nodes.length;
+  const norm = n > 2 ? 1 / ((n - 1) * (n - 2)) : 1;
+
+  const scored = Object.entries(betweenness)
+    .map(([path, score]) => ({ path, betweenness: +(score * norm).toFixed(5) }))
+    .sort((a, b) => b.betweenness - a.betweenness);
+
+  const avgBetweenness = scored.length > 0 ? +(scored.reduce((s, x) => s + x.betweenness, 0) / scored.length).toFixed(5) : 0;
+  const maxBetweenness = scored.length > 0 ? scored[0].betweenness : 0;
+
+  return {
+    topBottlenecks: scored.slice(0, 20),
+    avgBetweenness,
+    maxBetweenness,
+    // Files with significantly above-average betweenness (architectural bottlenecks)
+    significantBottlenecks: scored.filter((x) => x.betweenness > avgBetweenness * 3 && x.betweenness > 0),
+  };
+}
+
+// ── Temporal trend persistence ──────────────────────────────────────────────
+
+/**
+ * Save analysis run to trend file for temporal tracking.
+ * Format: JSONL (one JSON object per line), each line is a run snapshot.
+ */
+function saveTrend(projectRoot, trendData) {
+  const trendPath = join(projectRoot, ".memory/bundle-trend.jsonl");
+  try {
+    const dir = dirname(trendPath);
+    if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+    const line = JSON.stringify(trendData) + "\n";
+    const existing = existsSync(trendPath) ? readFileSync(trendPath, "utf-8") : "";
+    writeFileSync(trendPath, existing + line, "utf-8");
+    return trendPath;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Load trend history from JSONL file.
+ * Returns array of run snapshots, most recent first.
+ */
+function loadTrend(projectRoot) {
+  const trendPath = join(projectRoot, ".memory/bundle-trend.jsonl");
+  if (!existsSync(trendPath)) return [];
+
+  try {
+    const content = readFileSync(trendPath, "utf-8");
+    return content
+      .trim()
+      .split("\n")
+      .filter((l) => l.trim())
+      .map((l) => {
+        try { return JSON.parse(l); } catch { return null; }
+      })
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Save the current analysis run to the trend file and analyze trends.
+ */
+function persistAndAnalyzeTrend(projectRoot, stats, meta) {
+  const trendPath = join(projectRoot, ".memory/bundle-trend.jsonl");
+
+  // Build a lightweight run snapshot
+  const snapshot = {
+    timestamp: meta.generatedAt,
+    totalFiles: stats.totalFiles,
+    totalSize: stats.totalSize,
+    totalSizeFormatted: formatBytes(stats.totalSize),
+    depNodes: meta.depNodes || 0,
+    depEdges: meta.depEdges || 0,
+    oversizedCount: (stats.oversizedFiles || []).length,
+    circularCount: (stats.circularDeps || []).length,
+    orphanCount: (stats.orphanFiles || []).length,
+    duplicateGroups: (stats.duplicates || []).length,
+    layerCount: stats.layerAnalysis?.layerCount || 0,
+    layerViolations: stats.layerAnalysis?.violationCount || 0,
+    avgRisk: stats.riskScores?.avgRisk || 0,
+    recommendationCount: (stats.recommendations || []).length,
+    sccCount: stats.scc?.multiNodeSccCount || 0,
+    maxBetweenness: stats.betweenness?.maxBetweenness || 0,
+    analysisVersion: ANALYSIS_VERSION,
+  };
+
+  // Append to trend file
+  const dir = dirname(trendPath);
+  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+
+  try {
+    const line = JSON.stringify(snapshot) + "\n";
+    // Use append-like behavior via read+write
+    const existing = existsSync(trendPath) ? readFileSync(trendPath, "utf-8") : "";
+    writeFileSync(trendPath, existing + line, "utf-8");
+  } catch {
+    // Non-fatal: trend persistence failure shouldn't block analysis
+  }
+
+  // Load full history for analysis
+  const history = loadTrend(projectRoot);
+
+  // Compute trend metrics (if 2+ data points)
+  let trendAnalysis = null;
+  if (history.length >= 2) {
+    const prev = history[history.length - 2]; // second-to-last
+    const curr = history[history.length - 1]; // last (just added)
+
+    trendAnalysis = {
+      dataPoints: history.length,
+      sizeDelta: curr.totalSize - prev.totalSize,
+      sizeDeltaPercent: prev.totalSize > 0 ? +((curr.totalSize - prev.totalSize) / prev.totalSize * 100).toFixed(1) : 0,
+      fileCountDelta: curr.totalFiles - prev.totalFiles,
+      riskDelta: +(curr.avgRisk - prev.avgRisk).toFixed(1),
+      circularDelta: curr.circularCount - prev.circularCount,
+      // Anomaly detection: flag if any metric jumped significantly
+      anomalies: [],
+      // Simple moving average over last 5 runs (or all if fewer)
+      smaSize: 0,
+      smaRisk: 0,
+    };
+
+    // Detect anomalies
+    if (Math.abs(trendAnalysis.sizeDeltaPercent) > 20) {
+      trendAnalysis.anomalies.push(`Size changed ${trendAnalysis.sizeDeltaPercent > 0 ? "+" : ""}${trendAnalysis.sizeDeltaPercent}% — unusual`);
+    }
+    if (curr.circularCount > prev.circularCount) {
+      trendAnalysis.anomalies.push(`+${trendAnalysis.circularDelta} new circular dependencies detected`);
+    }
+    if (trendAnalysis.riskDelta > 5) {
+      trendAnalysis.anomalies.push(`Average risk score increased by ${trendAnalysis.riskDelta} points`);
+    }
+
+    // Compute SMA over last min(5, history.length) points
+    const window = history.slice(-Math.min(5, history.length));
+    trendAnalysis.smaSize = +(window.reduce((s, p) => s + p.totalSize, 0) / window.length).toFixed(0);
+    trendAnalysis.smaRisk = +(window.reduce((s, p) => s + p.avgRisk, 0) / window.length).toFixed(1);
+  }
+
+  return { trendPath, history, trendAnalysis };
+}
+
+// ── Module boundary suggestions ─────────────────────────────────────────────
+
+/**
+ * Suggest natural module boundaries based on coupling, co-change, and cohesion.
+ *
+ * Heuristics:
+ *   1. Files with high co-change (Jaccard > 0.5) should be co-located
+ *   2. Files with high import coupling (direct deps) should be in the same module
+ *   3. Files in the same directory but with ZERO coupling may be mis-placed
+ *   4. Packages with very low cohesion (< 0.2) may need splitting
+ */
+function suggestModuleBoundaries(stats) {
+  const suggestions = [];
+
+  // 1. High co-change pairs that are in different directories → suggest co-location
+  if (stats.coChange && stats.coChange.available && stats.coChange.pairs) {
+    for (const pair of stats.coChange.pairs) {
+      if (pair.jaccard < 0.5) continue;
+      const [a, b] = pair.files;
+      const dirA = dirname(a);
+      const dirB = dirname(b);
+      if (dirA !== dirB) {
+        suggestions.push({
+          type: "co-locate",
+          priority: pair.jaccard > 0.7 ? "P1" : "P2",
+          files: [a, b],
+          reason: `Co-change Jaccard=${pair.jaccard} (${pair.coChangeCount}× together) but in different directories (${dirA} vs ${dirB})`,
+        });
+      }
+    }
+  }
+
+  // 2. Low-cohesion packages → suggest splitting
+  if (stats.packageMetrics && stats.packageMetrics.packages) {
+    for (const pkg of stats.packageMetrics.packages) {
+      if (pkg.cohesion < 0.2 && pkg.fileCount > 10 && pkg.zone === "zone-of-pain") {
+        suggestions.push({
+          type: "split-package",
+          priority: "P2",
+          files: [pkg.package],
+          reason: `Package "${pkg.package}" has very low cohesion (${pkg.cohesion}) with ${pkg.fileCount} files — consider splitting into smaller, more cohesive packages`,
+        });
+      }
+    }
+  }
+
+  // 3. Bridge modules that are single points of failure → suggest interface extraction
+  if (stats.transitiveDeps && stats.transitiveDeps.bridgeModules) {
+    for (const bridge of stats.transitiveDeps.bridgeModules.slice(0, 5)) {
+      if (bridge.bridgeScore > 3) {
+        suggestions.push({
+          type: "extract-interface",
+          priority: "P1",
+          files: [bridge.path],
+          reason: `Bridge module with score ${bridge.bridgeScore} (${bridge.directIn} dependents, ${bridge.directOut} deps) — high architectural risk if modified`,
+        });
+      }
+    }
+  }
+
+  // 4. SCCs suggest tight coupling that may need refactoring
+  if (stats.scc && stats.scc.multiNodeComponents) {
+    for (const scc of stats.scc.multiNodeComponents.slice(0, 5)) {
+      suggestions.push({
+        type: "break-scc",
+        priority: scc.length > 3 ? "P0" : "P1",
+        files: scc,
+        reason: `Strongly connected component of ${scc.length} files (mutually reachable) — break cyclic dependency by extracting shared abstractions`,
+      });
+    }
+  }
+
+  // Deduplicate and limit
+  const seen = new Set();
+  const unique = [];
+  for (const s of suggestions) {
+    const key = `${s.type}:${s.files.sort().join(",")}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      unique.push(s);
+    }
+  }
+
+  return unique.slice(0, 20);
+}
+
 // ── Statistics ─────────────────────────────────────────────────────────────
 
 function computeStats(files, depGraph, opts = {}) {
@@ -1265,6 +2045,50 @@ function computeStats(files, depGraph, opts = {}) {
   // New: architecture layer detection
   const layerAnalysis = depGraph.edges.length > 0 ? detectLayers(files, depGraph) : null;
 
+  // New: co-change analysis (git-based, independent of dep graph)
+  const coChange = projectRoot ? computeCoChange(projectRoot, files, { timeWindow: "90 days" }) : null;
+
+  // New: Tarjan's SCC for strongly connected components
+  const scc = depGraph.edges.length > 0 ? computeSCC(depGraph) : { components: [], multiNodeComponents: [], largestSCCSize: 0, sccCount: 0, multiNodeSccCount: 0, sizeDist: {}, circularFiles: new Set() };
+
+  // New: Betweenness centrality for bottleneck detection
+  const betweenness = depGraph.edges.length > 0 ? computeBetweenness(depGraph) : { topBottlenecks: [], avgBetweenness: 0, maxBetweenness: 0, significantBottlenecks: [] };
+
+  // Build a preliminary stats snapshot for risk scoring + recommendations
+  const statsSnapshot = {
+    circularDeps,
+    orphanFiles,
+    packageMetrics,
+    transitiveDeps,
+    gitChurn,
+    layerAnalysis,
+    oversizedFiles,
+    duplicates,
+    mostDependencies,
+  };
+
+  // New: composite risk scoring
+  const riskScores = computeRiskScores(files, statsSnapshot);
+
+  // New: refactoring recommendations
+  const recommendations = generateRecommendations(files, statsSnapshot);
+
+  // Build full stats for module boundary suggestions
+  const fullStatsForBoundary = {
+    coChange,
+    packageMetrics,
+    transitiveDeps,
+    scc,
+    oversizedFiles,
+    circularDeps,
+    orphanFiles,
+    duplicates,
+    mostDependencies,
+    layerAnalysis,
+    riskScores,
+  };
+  const moduleBoundaries = suggestModuleBoundaries(fullStatsForBoundary);
+
   return {
     largestFiles,
     sizeByExt,
@@ -1285,6 +2109,12 @@ function computeStats(files, depGraph, opts = {}) {
     transitiveDeps,
     gitChurn,
     layerAnalysis,
+    coChange,
+    riskScores,
+    recommendations,
+    scc,
+    betweenness,
+    moduleBoundaries,
   };
 }
 
@@ -2088,7 +2918,7 @@ window.addEventListener("resize", () => {
 }
 
 function renderSidebar(stats, diff) {
-  const { largestFiles, sizeByExt, sizeByDir, mostDependedOn, mostDependencies, circularDeps, oversizedFiles, orphanFiles, barrelFiles, sizeHistogram, maxDependencyDepth, depthDist, duplicates, packageMetrics, transitiveDeps, gitChurn, layerAnalysis } = stats;
+  const { largestFiles, sizeByExt, sizeByDir, mostDependedOn, mostDependencies, circularDeps, oversizedFiles, orphanFiles, barrelFiles, sizeHistogram, maxDependencyDepth, depthDist, duplicates, packageMetrics, transitiveDeps, gitChurn, layerAnalysis, coChange, riskScores, recommendations, scc, betweenness, moduleBoundaries } = stats;
 
   const extEntries = Object.entries(sizeByExt).sort((a, b) => b[1] - a[1]);
   const maxExtSize = extEntries.length > 0 ? extEntries[0][1] : 1;
@@ -2290,6 +3120,98 @@ function renderSidebar(stats, diff) {
     }
   }
 
+  // ── Co-change analysis ──
+  if (coChange && coChange.available && coChange.pairs && coChange.pairs.length > 0) {
+    html += `<h3>🔀 Co-Change Pairs</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Files that change together in ${coChange.timeWindow} · ${coChange.commitCount} commits · ${coChange.pairs.length} strong pairs</span></div>`;
+    for (const p of coChange.pairs.slice(0, 8)) {
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(p.files.join(' + '))}">${escapeHtml(p.files.map(f=>f.split('/').pop()).join(' + '))}</span><span class="value">${p.coChangeCount}× (J=${p.jaccard})</span></div>`;
+    }
+    if (coChange.clusters && coChange.clusters.length > 0) {
+      html += `<div style="color:var(--info);font-size:10px;margin:4px 0;padding-left:8px">📎 ${coChange.clusters.length} co-change clusters</div>`;
+      for (const c of coChange.clusters.slice(0, 3)) {
+        html += `<div class="stat-row"><span class="label" style="font-size:10px" title="${escapeHtml(c.files.join(', '))}">Cluster (${c.size} files): ${escapeHtml(c.files.slice(0,3).map(f=>f.split('/').pop()).join(', '))}</span></div>`;
+      }
+    }
+  }
+
+  // ── Risk scores ──
+  if (riskScores && riskScores.topRisks && riskScores.topRisks.length > 0) {
+    html += `<h3>🎯 Risk Scores</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Composite risk (size+churn+coupling+orphan+circular) · Avg ${riskScores.avgRisk}/100</span></div>`;
+    // Risk distribution
+    if (riskScores.riskBuckets) {
+      html += `<div style="color:var(--text-dim);font-size:10px;margin:2px 0;padding-left:8px">`;
+      const rbParts = [];
+      for (const [bucket, count] of Object.entries(riskScores.riskBuckets)) {
+        if (count > 0) rbParts.push(`${bucket}: ${count}`);
+      }
+      html += escapeHtml(rbParts.join(" · "));
+      html += `</div>`;
+    }
+    // Top highest risk files
+    for (const r of riskScores.topRisks.slice(0, 10)) {
+      const riskPct = Math.round(r.composite * 100);
+      const cls = riskPct >= 60 ? "danger" : riskPct >= 40 ? "warn" : "";
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(r.path)} score=${riskPct} (size=${r.sizeRisk} churn=${r.churnRisk} orphan=${r.orphanRisk} circ=${r.circularRisk})">${escapeHtml(r.path.split("/").slice(-2).join("/"))}</span><span class="value ${cls}">${riskPct}</span></div>`;
+    }
+  }
+
+  // ── Recommendations ──
+  if (recommendations && recommendations.length > 0) {
+    const p0Count = recommendations.filter(r=>r.severity==='P0').length;
+    const p1Count = recommendations.filter(r=>r.severity==='P1').length;
+    html += `<h3>💡 Recommendations</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${recommendations.length} suggestions (${p0Count} P0 · ${p1Count} P1 · ${recommendations.length-p0Count-p1Count} P2)</span></div>`;
+    for (const rec of recommendations.slice(0, 8)) {
+      const sevCls = rec.severity === "P0" ? "danger" : rec.severity === "P1" ? "warn" : "";
+      const sevIcon = rec.severity === "P0" ? "🔴" : rec.severity === "P1" ? "🟡" : "🟢";
+      html += `<div class="stat-row"><span class="label ${sevCls}" title="${escapeHtml(rec.description)}">${sevIcon} ${escapeHtml(rec.title)}</span></div>`;
+    }
+  }
+
+  // ── SCC (Tarjan) ──
+  if (scc && scc.multiNodeComponents && scc.multiNodeComponents.length > 0) {
+    html += `<h3>🔴 Strongly Connected Components (Tarjan)</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${scc.multiNodeSccCount} multi-node SCCs · ${scc.sccCount} total SCCs · largest=${scc.largestSCCSize} files</span></div>`;
+    for (const component of scc.multiNodeComponents.slice(0, 5)) {
+      const names = component.slice(0, 4).map((c) => c.split("/").pop()).join(", ");
+      const more = component.length > 4 ? ` +${component.length - 4}` : "";
+      html += `<div class="stat-row"><span class="label" style="color:var(--warn)" title="${escapeHtml(component.join(' → '))}">${escapeHtml(names)}${more}</span><span class="value" style="color:var(--warn)">${component.length} files</span></div>`;
+    }
+    // SCC size distribution
+    if (scc.sizeDist) {
+      html += `<div style="color:var(--text-dim);font-size:10px;margin:2px 0;padding-left:8px">Distribution: `;
+      const distParts = [];
+      for (const [bucket, count] of Object.entries(scc.sizeDist)) {
+        if (count > 0) distParts.push(`${bucket}: ${count}`);
+      }
+      html += escapeHtml(distParts.join(" · "));
+      html += `</div>`;
+    }
+  }
+
+  // ── Betweenness centrality ──
+  if (betweenness && betweenness.topBottlenecks && betweenness.topBottlenecks.length > 0) {
+    html += `<h3>🍾 Bottlenecks (Betweenness)</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Architectural bottlenecks · avg=${betweenness.avgBetweenness.toFixed(4)} · max=${betweenness.maxBetweenness.toFixed(4)}</span></div>`;
+    for (const b of betweenness.topBottlenecks.slice(0, 8)) {
+      const cls = b.betweenness > betweenness.avgBetweenness * 5 ? "danger" : b.betweenness > betweenness.avgBetweenness * 2 ? "warn" : "";
+      html += `<div class="stat-row"><span class="label" title="${escapeHtml(b.path)}">${escapeHtml(b.path.split("/").pop())}</span><span class="value ${cls}">${b.betweenness.toFixed(4)}</span></div>`;
+    }
+  }
+
+  // ── Module boundary suggestions ──
+  if (moduleBoundaries && moduleBoundaries.length > 0) {
+    html += `<h3>🧩 Module Boundaries</h3>`;
+    html += `<div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">${moduleBoundaries.length} structural suggestions</span></div>`;
+    for (const s of moduleBoundaries.slice(0, 8)) {
+      const typeIcon = s.type === "co-locate" ? "📁" : s.type === "split-package" ? "✂️" : s.type === "extract-interface" ? "🔌" : "🔗";
+      const priCls = s.priority === "P0" ? "danger" : s.priority === "P1" ? "warn" : "";
+      html += `<div class="stat-row"><span class="label ${priCls}" title="${escapeHtml(s.reason)}">${typeIcon} [${s.priority}] ${escapeHtml(s.type)}</span><span class="value" style="font-size:10px">${escapeHtml((s.files||[]).slice(0,2).map(f=>f.split('/').pop()).join(', '))}</span></div>`;
+    }
+  }
+
   return html;
 }
 
@@ -2399,6 +3321,19 @@ function main() {
         transitiveDeps: stats.transitiveDeps,
         gitChurn: stats.gitChurn,
         layerAnalysis: stats.layerAnalysis,
+        coChange: stats.coChange,
+        riskScores: stats.riskScores,
+        recommendations: stats.recommendations,
+        scc: {
+          multiNodeComponents: stats.scc?.multiNodeComponents || [],
+          largestSCCSize: stats.scc?.largestSCCSize || 0,
+          sccCount: stats.scc?.sccCount || 0,
+          multiNodeSccCount: stats.scc?.multiNodeSccCount || 0,
+          sizeDist: stats.scc?.sizeDist || {},
+        },
+        betweenness: stats.betweenness,
+        moduleBoundaries: stats.moduleBoundaries,
+        trendAnalysis: stats.trendAnalysis || null,
       },
       diff: diff || { hasBaseline: false },
     };
@@ -2479,6 +3414,37 @@ function main() {
     const la = stats.layerAnalysis;
     console.log(`   🏗️  Architecture layers: ${la.layerCount} layers (depth ${la.maxLayer}) · ${la.violationCount} violations (${la.severeViolations} severe)`);
   }
+  if (stats.coChange && stats.coChange.available && stats.coChange.pairs && stats.coChange.pairs.length > 0) {
+    console.log(`   🔀 Co-change pairs: ${stats.coChange.pairs.length} pairs in ${stats.coChange.commitCount} commits · ${stats.coChange.coChangedFileCount} files co-changed`);
+    if (stats.coChange.clusters && stats.coChange.clusters.length > 0) {
+      console.log(`   📎 Co-change clusters: ${stats.coChange.clusters.length} (largest: ${stats.coChange.clusters[0].size} files)`);
+    }
+  }
+  if (stats.riskScores && stats.riskScores.topRisks && stats.riskScores.topRisks.length > 0) {
+    const rs = stats.riskScores;
+    const criticalCount = (rs.riskBuckets && (rs.riskBuckets["critical (60-80)"] || 0) + (rs.riskBuckets["extreme (80-100)"] || 0)) || 0;
+    console.log(`   🎯 Risk scores: avg ${rs.avgRisk}/100 · ${criticalCount} critical/extreme · ${rs.totalAssessed} files assessed`);
+  }
+  if (stats.recommendations && stats.recommendations.length > 0) {
+    const p0 = stats.recommendations.filter((r) => r.severity === "P0").length;
+    const p1 = stats.recommendations.filter((r) => r.severity === "P1").length;
+    const p2 = stats.recommendations.filter((r) => r.severity === "P2").length;
+    console.log(`   💡 Recommendations: ${stats.recommendations.length} total (${p0} P0 · ${p1} P1 · ${p2} P2)`);
+  }
+  if (stats.scc && stats.scc.multiNodeSccCount > 0) {
+    console.log(`   🔴 SCC (Tarjan): ${stats.scc.multiNodeSccCount} multi-node components · largest SCC=${stats.scc.largestSCCSize} files`);
+  }
+  if (stats.betweenness && stats.betweenness.significantBottlenecks && stats.betweenness.significantBottlenecks.length > 0) {
+    console.log(`   🍾 Bottlenecks: ${stats.betweenness.significantBottlenecks.length} critical (max betweenness=${stats.betweenness.maxBetweenness.toFixed(4)})`);
+  }
+  if (stats.moduleBoundaries && stats.moduleBoundaries.length > 0) {
+    const types = {};
+    for (const s of stats.moduleBoundaries) { types[s.type] = (types[s.type] || 0) + 1; }
+    console.log(`   🧩 Module suggestions: ${stats.moduleBoundaries.length} (${Object.entries(types).map(([k,v])=>`${k}×${v}`).join(', ')})`);
+  }
+  if (stats.trendAnalysis && stats.trendAnalysis.anomalies && stats.trendAnalysis.anomalies.length > 0) {
+    console.log(`   📈 Trend anomalies: ${stats.trendAnalysis.anomalies.length} detected`);
+  }
 
   // Diff summary
   if (diff && diff.hasBaseline) {
@@ -2490,6 +3456,17 @@ function main() {
   if (args.saveBaseline) {
     const bp = join(projectRoot, BASELINE_FILE);
     console.log(`   💾 Baseline saved: ${relative(process.cwd(), bp)}`);
+  }
+
+  // ── Trend persistence (always on — saves to .memory/bundle-trend.jsonl) ──
+  const trendResult = persistAndAnalyzeTrend(projectRoot, stats, {
+    generatedAt,
+    depNodes: depGraph.nodes.length,
+    depEdges: depGraph.edges.length,
+  });
+  stats.trendAnalysis = trendResult.trendAnalysis;
+  if (trendResult.trendAnalysis && trendResult.trendAnalysis.dataPoints >= 2) {
+    console.log(`   📈 Trend: ${trendResult.trendAnalysis.dataPoints} data points · SMA risk=${trendResult.trendAnalysis.smaRisk}`);
   }
 
   // Open in browser

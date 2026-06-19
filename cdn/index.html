@@ -3,19 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <link rel="preconnect" href="https://unpkg.com" crossorigin>
   <link rel="dns-prefetch" href="https://unpkg.com">
   <link rel="preload" href="https://unpkg.com/vue@3/dist/vue.global.prod.js" as="script" crossorigin fetchpriority="high">
-  <link rel="preload" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/theme\/index\.css" as="style" crossorigin>
-  <link rel="preload" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared\/index\.css" as="style" crossorigin>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/theme\/index\.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/yry-cdn@1.2.0/shared\/index\.css">
+  <link rel="preload" href="theme/index.css" as="style" crossorigin>
+  <link rel="preload" href="shared/index.css" as="style" crossorigin>
+  <link rel="stylesheet" href="theme/index.css">
+  <link rel="stylesheet" href="shared/index.css">
   <title>YrY CDN — 故事与场景</title>
   <meta name="description" content="YrY CDN 共享前端资源库 — 62 组件 · 5 故事 · 13 场景">
-  <link rel="stylesheet" href="yry\-home\/index\.css">
-  <link rel="stylesheet" href="yry\-inline\-helpers\/index\.css">
+  <link rel="stylesheet" href="yry-home/index.css">
+  <link rel="stylesheet" href="yry-inline-helpers/index.css">
   <!-- ═══ 组件样式 (在 yry-home.css 之后加载,确保组件样式优先) ═══ -->
   <link rel="stylesheet" href="yry-breadcrumb/index.css">
   <link rel="stylesheet" href="yry-stats-grid/index.css">
@@ -89,7 +87,7 @@
   <yry-selfimprove-panel></yry-selfimprove-panel>
   <yry-faq-panel></yry-faq-panel>
 
-  <script src="shared\/index\.js" defer></script>
+  <script src="shared/index.js" defer></script>
 
   <!-- ═══ 组件加载器 (按依赖顺序: tag-chip → item-card → card-grid → ...) ═══ -->
   <script src="yry-tag-chip/index.js"></script>
@@ -131,14 +129,14 @@
 
       /* Stats Grid */
       stats: { items: [
-        { value: '92/A', label: '健康评分', modifier: 'health', sub: 'CDN 综合', tooltip: 'CDN 健康评分 = 6 维度加权均分(组件覆盖x30% + 主题完备x25% + API一致性x20% + 加载链x15% + 迁移率x10%)。A>=80 B>=60 C>=40 D<40。数据源: cdn-summary.json' },
-        { value: '92分', label: '组件质量', modifier: 'health', sub: 'CSS+主题+API+脚本', tooltip: '组件质量 = CSS组件(22个).主题(2个).YrY.* API(9个).脚本(2个) 四类组件的健康评分均分。当前 92分/A级' },
-        { value: '90分', label: '主题完备', modifier: 'health', sub: 'Mono + System', tooltip: '双主题完备性 = Cat A (Mono 等宽) + Cat B (System 无衬线) 双主题的 14 设计令牌覆盖率和一致性评分' },
-        { value: '88分', label: 'API 一致', modifier: 'health', sub: '9 个 YrY.* API', tooltip: 'JS API 一致性 = 9 个 YrY.* 工具函数的命名规范.参数签名.返回值类型.错误处理的一致性评分' },
-        { value: '96分', label: '加载链', modifier: 'health', sub: '5 步加载链', tooltip: '加载链稳定 = shared/index.css->theme/index.css->组件CSS->Vue3->组件JS 五步加载链的可靠性.容错.fallback 评分' },
-        { value: 62, label: '组件', modifier: 'health', tooltip: '62 个 CDN 组件: 10 大类别(CSS+Vue+JS+CE)' },
-        { value: 5,  label: '故事', modifier: 'health', tooltip: '5 个故事: CDN 共享前端资源库 . YryBreadcrumb 组件 . YryBackTop 组件 . YryCrossNav 组件 . YrySceneNav 组件' },
-        { value: 13, label: '场景', modifier: 'health', tooltip: '13 个场景分布在 5 个故事中，每个场景 7 件标准交付物' }
+        { value: '92/A', label: '健康评分', modifier: 'health', sub: '6 维加权综合指数', tooltip: 'CDN 综合健康指数 · 6 维加权模型 → 组件覆盖度×0.30 + 测试覆盖×0.25 + 自改进闭环×0.20 + 加载链稳定×0.15 + 存量迁移率×0.10。评级: A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D<40 严重缺陷。数据源: cdn-summary.json · 每 5min 自动刷新' },
+        { value: '92分', label: '组件质量', modifier: 'health', sub: '62 组件 · 4 维均分', tooltip: '组件质量指数 · 四维加权评估 → CSS规范性·API一致性·可访问性·响应式，覆盖 CSS布局(22)·样式组件(18)·JS工具(9)·Vue CE(4)·其他(9) 五类共62组件。评级同健康指数。数据源: cdn-summary.json' },
+        { value: '85分', label: '测试评分', modifier: 'health', sub: '覆盖率 · 通过率 · 用例数', tooltip: '测试质量指数 · 三维加权模型 → 代码覆盖率(50%): 行≥80%·分支≥70%满分 + 用例通过率(30%): 单元·集成·E2E三项均分 + 用例充分度(20%): 组件均≥5用例满分。评级: A≥80 B≥60 C≥40 D<40。数据源: vitest + test manifest' },
+        { value: '88分', label: '自改进评分', modifier: 'health', sub: 'D0-D7 诊断 · 采纳 · 收敛', tooltip: '自改进闭环指数 · 四维评估模型 → 诊断触发率(30%): D0-D7八级诊断覆盖 + 诊断置信度(25%): 人工验证准确率 + 建议采纳率(25%): 建议→执行转化率 + 问题收敛率(20%): 同类问题复发衰减趋势。评级同健康指数。数据源: D0-D7 诊断引擎运行时指标' },
+        { value: '96分', label: '加载链', modifier: 'health', sub: '可靠性 · 容错 · 回退', tooltip: '加载链稳定性指数 · 五步链路(shared.css→theme.css→组件CSS→Vue3→组件JS)三维评估 → 可靠性(40%): 各步加载成功率 + 容错性(35%): 单步失败的优雅降级能力 + 回退策略(25%): fallback完备性。当前 96分/A级。数据源: 客户端加载性能埋点' },
+        { value: 62, label: '组件', modifier: 'health', tooltip: '62 个 CDN 组件 · 5 大形态: CSS布局(22) + 样式组件(18) + JS工具(9) + Vue 3 自定义元素(4) + 其他(9)，覆盖 10 个功能类别。详见 Layer 1 组件清单' },
+        { value: 5,  label: '故事', modifier: 'health', tooltip: '5 个独立故事 · 每故事含需求→设计→实现→集成→发布五场景全生命周期: CDN共享库·YryBreadcrumb·YryBackTop·YryCrossNav·YrySceneNav。详见 Layer 2 故事卡片' },
+        { value: 13, label: '场景', modifier: 'health', tooltip: '13 个场景 · 分布于 5 个故事中 · 每场景 7 件标准交付物(清单·架构图·知识图谱·测试面板·源码·演示·审查)。场景健康度独立评估。详见 Layer 3 场景卡片' }
       ] },
 
       /* Panel Hub (浮动面板枢纽 · 与 docs/index.html 4 按钮同构:点击打开浮窗面板) */
@@ -637,23 +635,23 @@
               { num: '场景 1', name: 'CDN 资源加载与页面渲染',
                 nameHref: '故事任务面板/cdn/场景-1-cdn资源加载与页面渲染/index.md', nameTarget: '_blank',
                 desc: 'jsDelivr URL 规范 · 加载顺序约束 · 字体/动画延迟 · shared/index.css 必备基线',
-                meta: YrY.sceneMeta('故事任务面板/cdn/场景-1-cdn资源加载与页面渲染') },
+                meta: { __sceneBasePath: '故事任务面板/cdn/场景-1-cdn资源加载与页面渲染' } },
               { num: '场景 2', name: '双主题系统设计',
                 nameHref: '故事任务面板/cdn/场景-2-双主题系统设计/index.md', nameTarget: '_blank',
                 desc: 'Category A (Mono) vs Category B (System) 选型 · 14 设计令牌 · CSS 变量分层',
-                meta: YrY.sceneMeta('故事任务面板/cdn/场景-2-双主题系统设计') },
+                meta: { __sceneBasePath: '故事任务面板/cdn/场景-2-双主题系统设计' } },
               { num: '场景 3', name: '组件库与 JS 工具 API',
                 nameHref: '故事任务面板/cdn/场景-3-组件库与JS工具API/index.md', nameTarget: '_blank',
                 desc: '62 CSS 组件（10 大类别）· 9 个 YrY.* 工具函数 · 4 个 Vue 3 自定义元素 · 命名空间与语义化',
-                meta: YrY.sceneMeta('故事任务面板/cdn/场景-3-组件库与JS工具API') },
+                meta: { __sceneBasePath: '故事任务面板/cdn/场景-3-组件库与JS工具API' } },
               { num: '场景 4', name: '存量页面迁移',
                 nameHref: '故事任务面板/cdn/场景-4-存量页面迁移/index.md', nameTarget: '_blank',
                 desc: '删除内联样式 → 替换 .yry-* 类名 · 保留页面专属 CSS · 6 步迁移清单',
-                meta: YrY.sceneMeta('故事任务面板/cdn/场景-4-存量页面迁移') },
+                meta: { __sceneBasePath: '故事任务面板/cdn/场景-4-存量页面迁移' } },
               { num: '场景 5', name: 'npm 包发布与版本管理',
                 nameHref: '故事任务面板/cdn/场景-5-npm包发布与版本管理/index.md', nameTarget: '_blank',
                 desc: 'package.json 字段 · files 白名单 · jsDelivr 同步 · 版本号策略',
-                meta: YrY.sceneMeta('故事任务面板/cdn/场景-5-npm包发布与版本管理') }
+                meta: { __sceneBasePath: '故事任务面板/cdn/场景-5-npm包发布与版本管理' } }
             ]
           },
           {
@@ -663,23 +661,23 @@
               { num: '场景 1', name: '需求与设计',
                 nameHref: '故事任务面板/yry-breadcrumb/场景-1-需求与设计/index.md', nameTarget: '_blank',
                 desc: '5 项设计决策 · Props 草案 · a11y 完备性约束',
-                meta: YrY.sceneMeta('故事任务面板/yry-breadcrumb/场景-1-需求与设计') },
+                meta: { __sceneBasePath: '故事任务面板/yry-breadcrumb/场景-1-需求与设计' } },
               { num: '场景 2', name: '模板与样式',
                 nameHref: '故事任务面板/yry-breadcrumb/场景-2-模板与样式/index.md', nameTarget: '_blank',
                 desc: 'Vue template + CSS 设计令牌 · 3 个 Demo 示例',
-                meta: YrY.sceneMeta('故事任务面板/yry-breadcrumb/场景-2-模板与样式') },
+                meta: { __sceneBasePath: '故事任务面板/yry-breadcrumb/场景-2-模板与样式' } },
               { num: '场景 3', name: 'Loader 实现',
                 nameHref: '故事任务面板/yry-breadcrumb/场景-3-Loader实现/index.md', nameTarget: '_blank',
                 desc: 'fetch + DOMParser + ready 事件 + 5s 超时容错',
-                meta: YrY.sceneMeta('故事任务面板/yry-breadcrumb/场景-3-Loader实现') },
+                meta: { __sceneBasePath: '故事任务面板/yry-breadcrumb/场景-3-Loader实现' } },
               { num: '场景 4', name: '页面集成',
                 nameHref: '故事任务面板/yry-breadcrumb/场景-4-页面集成/index.md', nameTarget: '_blank',
                 desc: '4 文件引用顺序 · 4 种 items 模式 · 异步挂载',
-                meta: YrY.sceneMeta('故事任务面板/yry-breadcrumb/场景-4-页面集成') },
+                meta: { __sceneBasePath: '故事任务面板/yry-breadcrumb/场景-4-页面集成' } },
               { num: '场景 5', name: '测试与发布',
                 nameHref: '故事任务面板/yry-breadcrumb/场景-5-测试与发布/index.md', nameTarget: '_blank',
                 desc: '7 项自测 · npm 集成 · jsDelivr 同步验证',
-                meta: YrY.sceneMeta('故事任务面板/yry-breadcrumb/场景-5-测试与发布') }
+                meta: { __sceneBasePath: '故事任务面板/yry-breadcrumb/场景-5-测试与发布' } }
             ]
           },
           {
@@ -733,13 +731,23 @@
     }
     CDN_DATA.docLayerComponents.sections.forEach(function (sec) { enrichItems(sec.items || []); });
     CDN_DATA.docLayerStories.sections.forEach(function (sec) { enrichItems(sec.items || []); });
-    /* 场景卡片 meta 补齐 */
+    /* 场景卡片 meta 补齐 (含 __sceneBasePath 占位符 → YrY.sceneMeta 展开) */
     CDN_DATA.docLayerScenes.sections.forEach(function (sec) {
       (sec.items || []).forEach(function (item) {
-        if (!item.meta || item.meta.length >= 7) return;
-        var existing = {};
-        item.meta.forEach(function (m) { existing[m.label] = m; });
-        item.meta = DELIVERY_ICONS.map(function (d) { return existing[d.label] || { icon: d.icon, label: d.label }; });
+        /* 1. 展开 __sceneBasePath 占位符 */
+        if (item.meta && typeof item.meta === 'object' && !Array.isArray(item.meta) && item.meta.__sceneBasePath) {
+          try {
+            item.meta = (window.YrY && window.YrY.sceneMeta) ? window.YrY.sceneMeta(item.meta.__sceneBasePath) : [];
+          } catch(e) {
+            item.meta = [];
+          }
+        }
+        /* 2. 补齐缺失的 7 件交付物图标 */
+        if (!item.meta || !Array.isArray(item.meta) || item.meta.length < 7) {
+          var existing = {};
+          (item.meta || []).forEach(function (m) { existing[m.label] = m; });
+          item.meta = DELIVERY_ICONS.map(function (d) { return existing[d.label] || { icon: d.icon, label: d.label }; });
+        }
       });
     });
 
@@ -835,7 +843,7 @@
       retryCount = retryCount || 0;
       var controller = new AbortController();
       var timeoutId = setTimeout(function() { controller.abort(); }, FETCH_TIMEOUT_MS);
-      fetch('cdn\-summary\/index\.json', { signal: controller.signal })
+      fetch('cdn-summary/index.json', { signal: controller.signal })
         .then(function(r) { clearTimeout(timeoutId); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(function(data) {
           if (!data || !data.latest) return;
@@ -847,8 +855,8 @@
           var compScore = (ch && ch.overallAvg) || 0;
 
           var ds = data.dimSummary;
-          var themeScore = dimScore(ds, '双主题完备性');
-          var apiScore = dimScore(ds, 'JS API 一致性');
+          var testScore = dimScore(ds, '测试覆盖');
+          var siScore = dimScore(ds, '自改进闭环');
           var loadScore = dimScore(ds, '加载链稳定');
 
           var st = data.scoreTrend;
@@ -866,8 +874,8 @@
             var updates = [
               { value: healthScore + '/' + healthGrade + ' ' + trendDir, modifier: healthScore >= 80 ? 'health' : healthScore >= 60 ? 'warn-h' : 'accent', sub: 'CDN 综合 ' + dimCount + ' 维', tooltip: 'CDN 健康评分 = ' + dimCount + ' 维度加权均分。最新: ' + healthScore + '分 ' + healthGrade + '级 ' + trendDir + '。数据源: cdn-summary.json' },
               { value: compScore + '分', modifier: gradeMod(compScore), sub: compCount + ' 组件', tooltip: '组件质量 = CSS+主题+API+脚本四类组件健康均分。当前 ' + compScore + '分，共 ' + compCount + ' 组件' },
-              { value: themeScore + '分', modifier: gradeMod(themeScore), sub: 'Mono + System', tooltip: '双主题完备性: Cat A (Mono) + Cat B (System) 14 设计令牌覆盖率。当前 ' + themeScore + '分' },
-              { value: apiScore + '分', modifier: gradeMod(apiScore), sub: '9 个 API', tooltip: 'JS API 一致性: 9 个 YrY.* 函数的命名.参数.返回值.错误处理一致性。当前 ' + apiScore + '分' },
+              { value: testScore + '分', modifier: gradeMod(testScore), sub: '单元+集成+E2E', tooltip: '测试评分: 单元+集成+E2E 覆盖率加权均分。当前 ' + testScore + '分' },
+              { value: siScore + '分', modifier: gradeMod(siScore), sub: 'D0-D7 闭环', tooltip: '自改进评分: D0-D7 诊断引擎触发率+置信度+采纳率。当前 ' + siScore + '分' },
               { value: loadScore + '分', modifier: gradeMod(loadScore), sub: '5 步链路', tooltip: '加载链稳定: 5 步加载链的可靠性.容错.fallback 评分。当前 ' + loadScore + '分' }
             ];
             for (var ui = 0; ui < updates.length; ui++) {
@@ -882,7 +890,7 @@
           }
 
           if (ph && healthScore > 0) {
-            ph.label = { text: '🩺 ' + healthScore + '/' + healthGrade, panel: 'selfimprove', title: 'CDN 健康 ' + healthScore + '分 ' + healthGrade + '级 | 组件 ' + compScore + '分 | 主题 ' + themeScore + '分 | v' + (l.version || '?') + ' | 点击查看演进分析' };
+            ph.label = { text: '🩺 ' + healthScore + '/' + healthGrade, panel: 'selfimprove', title: 'CDN 健康 ' + healthScore + '分 ' + healthGrade + '级 | 组件 ' + compScore + '分 | 测试 ' + testScore + '分 | 自改进 ' + siScore + '分 | v' + (l.version || '?') + ' | 点击查看演进分析' };
           }
 
           var sh = document.getElementById('header-app');
@@ -971,15 +979,22 @@
     /* ── Back to top (由 yry-back-top 组件自初始化) ─────────────── */
     } /* end _yryBoot */
 
-    /* 触发执行: 等 YrY 就绪 (DOMContentLoaded 时所有 defer 脚本已执行) */
-    if (typeof YrY !== 'undefined' && YrY.sceneMeta) {
-      _yryBoot();
-    } else if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', _yryBoot);
-    } else {
-      /* DOM 已就绪但 YrY 仍未定义 → 等所有 defer 脚本 (shared.js) 执行完毕 */
-      window.addEventListener('load', _yryBoot);
+    /* 触发执行: 等 YrY 就绪 (用 window.YrY 检查,避免 const TDZ ReferenceError) */
+    function _tryBoot() {
+      try {
+        if (window.YrY && typeof window.YrY.sceneMeta === 'function') {
+          _yryBoot();
+          return;
+        }
+      } catch(e) { /* YrY 仍在 TDZ,稍后重试 */ }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', _tryBoot);
+      } else {
+        /* DOM 已就绪但 YrY 仍未定义 → 等所有 defer 脚本 (shared.js) 执行完毕 */
+        window.addEventListener('load', _tryBoot);
+      }
     }
+    _tryBoot();
   </script>
 </body>
 </html>
