@@ -34,12 +34,31 @@
   padding: 14px 16px;
   box-shadow: var(--yry-shadow, 0 4px 20px rgba(0,0,0,0.3));
   transition: transform .15s var(--yry-ease-out, ease), box-shadow .15s var(--yry-ease-out, ease), border-color .15s;
+  animation: fadeInUp 0.4s ease both;
+  animation-delay: var(--card-delay, 0s);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── 左侧装饰条 · hover 时高亮为强调色 ── */
+.item-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: transparent;
+  border-radius: 0 3px 3px 0;
+  transition: background 0.2s;
 }
 
 .item-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--yry-shadow-lg, 0 12px 32px rgba(0,0,0,0.45));
   border-color: rgba(255,193,7,.18);
+}
+
+.item-card:hover::before {
+  background: var(--yry-accent, #ffc107);
 }
 
 .item-card .icon {

@@ -21,10 +21,10 @@
 }
 
 /* ── 三评分徽章 (Score Badges) ──────────────────────────────────────── */
-/* 卡片 name 行 · flex 左右对齐 */
-.item-card .yry-body .yry-name,
-.story-card .yry-story-head .story-name,
-.scene-card .yry-scene-name {
+/* 卡片 name 行 · flex 左右对齐 (便于评分徽章靠右) */
+.item-card .body .name,
+.story-card .story-head .story-name,
+.scene-card .scene-name {
   display: flex;
   justify-content: space-between;
   align-items: center;

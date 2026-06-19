@@ -151,6 +151,36 @@ flowchart TB
     ENTRY --> D24["㉔ 热点矩阵<br/>━━━━━━━━━━<br/>· Complexity × Churn<br/>· 4 象限分类<br/>· CodeScene 风格<br/>· 严重度评分"]:::dim
     ENTRY --> D25["㉕ 适配度规则<br/>━━━━━━━━━━<br/>· 5 类架构规则<br/>· 自动合规检查<br/>· A-F 评级<br/>· 违规明细"]:::dim
     ENTRY --> D26["㉖ 导入成本<br/>━━━━━━━━━━<br/>· 传递导入重量<br/>· 膨胀倍数 (×N)<br/>· 目录级成本<br/>· 高倍率标记"]:::dim
+    ENTRY --> D27["㉗ 技术债务<br/>━━━━━━━━━━<br/>· SIG 可维护性模型<br/>· 修复工时估算<br/>· 8 类债务分解<br/>· h/KLOC 密度"]:::dim
+    ENTRY --> D28["㉘ 重构 ROI<br/>━━━━━━━━━━<br/>· Impact × Effort<br/>· ROI 排序<br/>· Excellent/Good/Fair<br/>· 投入产出比"]:::dim
+    ENTRY --> D29["㉙ API 表面<br/>━━━━━━━━━━<br/>· export 检测<br/>· 公共 API 评分<br/>· 重导出统计<br/>· 大 API 模块标记"]:::dim
+    ENTRY --> D30["㉚ 健康指数<br/>━━━━━━━━━━<br/>· 0-100 综合评分<br/>· A-F 评级<br/>· 9 维度扣分<br/>· 全域健康总览"]:::dim
+    ENTRY --> D31["㉛ SDP 检查<br/>━━━━━━━━━━<br/>· 稳定依赖原则<br/>· I(from) < I(to)<br/>· 包级依赖验证<br/>· 违规排序"]:::dim
+    ENTRY --> D32["㉜ 趋势预测<br/>━━━━━━━━━━<br/>· 线性回归模型<br/>· 30/90 天预测<br/>· 增长率估算<br/>· 置信度评级"]:::dim
+    ENTRY --> D33["㉝ 审查风险<br/>━━━━━━━━━━<br/>· 5 维加权评分<br/>· 高优审查标记<br/>· Per-file 排序<br/>· Bug 概率×影响"]:::dim
+    ENTRY --> D34["㉞ 执行摘要<br/>━━━━━━━━━━<br/>· 管理级一页总结<br/>· 关键指标凝练<br/>· 行动项 ROI 排序<br/>· 趋势+预测"]:::dim
+    ENTRY --> D35["㉟ 破坏性变更<br/>━━━━━━━━━━<br/>· 传递下游影响<br/>· CRITICAL/HIGH 分级<br/>· 受影响文件列表<br/>· API 变更评估"]:::dim
+    ENTRY --> D36["㊱ 发布耦合<br/>━━━━━━━━━━<br/>· Co-change + 双向依赖<br/>· 原子发布单元<br/>· 版本同步建议<br/>· 耦合图聚类"]:::dim
+    ENTRY --> D37["㊲ 知识集中度<br/>━━━━━━━━━━<br/>· HHI 指数<br/>· 目录级集中度<br/>· 知识孤岛检测<br/>· 单人占比"]:::dim
+    ENTRY --> D38["㊳ 测试优先级<br/>━━━━━━━━━━<br/>· Risk×Usage 排序<br/>· Urgent/High/Med/Low<br/>· 投入产出最大化<br/>· 依赖权重"]:::dim
+    ENTRY --> D39["㊴ 入职路径<br/>━━━━━━━━━━<br/>· 4 阶段阅读顺序<br/>· Foundation→Core→Feature→Integration<br/>· PageRank 排序<br/>· 新人引导"]:::dim
+    ENTRY --> D40["㊵ ADR 生成<br/>━━━━━━━━━━<br/>· 4 类架构决策记录<br/>· 上下文+决策+后果<br/>· 自动建议<br/>· 状态跟踪"]:::dim
+    ENTRY --> D41["㊶ 版本建议<br/>━━━━━━━━━━<br/>· MAJOR/MINOR/PATCH<br/>· 破坏性变更驱动<br/>· 置信度评级<br/>· 变更理由"]:::dim
+    ENTRY --> D42["㊷ 审查清单<br/>━━━━━━━━━━<br/>· Per-file 清单<br/>· 复杂度/变更/风险检查<br/>· 可操作条目<br/>· 优先级标记"]:::dim
+    ENTRY --> D43["㊸ Sprint 包<br/>━━━━━━━━━━<br/>· 推荐→工作包分组<br/>· 工时估算<br/>· Sprint 排期<br/>· ROI 汇总"]:::dim
+    ENTRY --> D44["㊹ 转移风险<br/>━━━━━━━━━━<br/>· Bus-factor × 复杂度<br/>· 人员离职影响<br/>· 知识损失量化<br/>· 交接优先级"]:::dim
+    ENTRY --> D45["㊺ 文件年龄<br/>━━━━━━━━━━<br/>· Git 首 commit 日期<br/>· 年龄×变更矩阵<br/>· Old+High Churn<br/>· 年龄分桶"]:::dim
+    ENTRY --> D46["㊻ 异常检测<br/>━━━━━━━━━━<br/>· Z-score 统计方法<br/>· 95% 置信区间<br/>· 趋势方向变化<br/>· 多指标监控"]:::dim
+    ENTRY --> D47["㊼ 重构优先级<br/>━━━━━━━━━━<br/>· 全维度综合评分<br/>· Critical/High/Med/Low<br/>· 加权聚合<br/>· 重构决策支持"]:::dim
+    ENTRY --> D48["㊽ 架构一致性<br/>━━━━━━━━━━<br/>· 预期 vs 实际<br/>· 目录级规则检查<br/>· Conformance 评分<br/>· 违规采样"]:::dim
+    ENTRY --> D49["㊾ 质量门禁<br/>━━━━━━━━━━<br/>· 10 条 PASS/FAIL 规则<br/>· CI/CD 可集成<br/>· Critical/High/Medium<br/>· 整体状态评分"]:::dim
+    ENTRY --> D50["㊿ 依赖集中度<br/>━━━━━━━━━━<br/>· 投资组合 HHI<br/>· 多样化比率<br/>· >10% 关键依赖<br/>· 单点故障风险"]:::dim
+    ENTRY --> D51["(51) 审查工时<br/>━━━━━━━━━━<br/>· M+LOC+Deps 工时模型<br/>· >60min 拆分建议<br/>· 总审查工时<br/>· Cisco 研究参考"]:::dim
+    ENTRY --> D52["(52) 百分位排名<br/>━━━━━━━━━━<br/>· Size/Complexity/Churn<br/>· P0-P100 排名<br/>· P90+ 极端文件<br/>· 比较上下文"]:::dim
+    ENTRY --> D53["(53) 指标相关性<br/>━━━━━━━━━━<br/>· Pearson 相关系数<br/>· Churn↔Risk, Cx↔Size<br/>· Strong/Moderate/Weak<br/>· 跨维度模式"]:::dim
+    ENTRY --> D54["(54) 文档覆盖率<br/>━━━━━━━━━━<br/>· JSDoc 检测<br/>· 注释比率<br/>· 高复杂+低文档<br/>· 文档债务"]:::dim
+    ENTRY --> D55["(55) 成熟度模型<br/>━━━━━━━━━━<br/>· CMMI 5 级评估<br/>· Structure/Quality/Test<br/>· Maintainability/Knowledge<br/>· 可操作发现"]:::dim
+    ENTRY --> D56["(56) 洞察综合<br/>━━━━━━━━━━<br/>· 跨维度模式识别<br/>· Critical/High 分级<br/>· 5 类综合模式<br/>· 可执行建议"]:::dim
 
     classDef entry fill:#3d59a1,color:#fff,font-weight:bold
     classDef dim fill:#2b2d3b,stroke:#3d59a1,color:#a9b1d6,text-align:left
@@ -671,6 +701,166 @@ Complexity  🟢 Healthy          🟡 Frequent-Simple
 - **目录成本** — 按目录聚合的导入总成本
 
 **YrY 实测**：平均导入成本 17.3 KB/文件，最大 380.5 KB（导入该文件实际拉入 ~381KB）。高倍率文件（×10+）需关注。
+
+### 27. 技术债务量化（SIG 可维护性模型）
+
+基于 SIG/TÜViT 可维护性模型，将 8 类架构和代码问题量化为修复工时。
+
+**成本模型**：Volume 4h/文件 | Complexity 2h/文件 | Dedup 1h/对 | Decouple 3h/环 | Test 1.5h/文件 | Layer 2h/违规 | Interface 3h/包 | SCC 4h/组。
+
+**YrY 总计**：**260.5h (32.6d / 6.5w)** · 债务密度 11.7h/KLOC · SIG 评级 **★★☆☆☆ (D)**。主要债务来自 85 个极端复杂文件 (170h) 和 25 个层级违规 (50h)。
+
+### 28. 重构 ROI 引擎
+
+为每条建议计算 Impact (1-10) 和 Effort (1-10)，ROI = Impact/Effort。按 ROI 降序排列：Excellent ≥2.0 / Good 1.2-2.0 / Fair 0.8-1.2 / Poor <0.8。
+
+**YrY Top ROI**：孤儿文件审查 (I=5 E=1 ROI=5.0 Excellent) — 低投入高回报的最优先事项。
+
+### 29. API 表面分析
+
+检测 5 类 export 模式，量化公共 API。API 评分 = named×1 + list×0.8 + default×2 + re-export×3（重导出权重最高）。
+
+**YrY 实测**：65 个模块含导出，389 个总导出，平均 6 个/模块。
+
+### 30. 依赖健康指数
+
+0-100 综合评分：100 − size(15) − complexity(20) − churn(15) − circular(15) − orphan(10) − untested(10) − coupling(10) − busFactor(5) − layerViolation(5)。
+
+**YrY**：平均 **94.6/100 (A)** — 356A/18B/13C/1D/0F。健康指数(A) vs 架构适配度(D) 形成互补视角。
+
+### 31. 稳定依赖原则（SDP）检查
+
+Robert Martin 的稳定依赖原则：**包应该只依赖比自己更稳定的包**。即 I(depender) < I(dependee)（I = 不稳定性，越低越稳定）。
+
+**YrY 实测**：**0/100 (F)** — 4/4 条包间边全部违规。原因：多数包的 I=0 或 I=1，缺乏中间梯度，导致任何非零 I 的依赖都违规。这表明需要引入中间抽象层创建稳定性梯度。
+
+### 32. 趋势预测
+
+基于历史趋势数据（JSONL）的线性回归预测。拟合指标：总体积、风险评分、文件数、循环依赖数。输出 30/90 天预测值 + 趋势方向 + 置信度（high/medium/low）。
+
+**YrY 预测**：体积增长中（+ growth），风险下降中（decreasing），置信度 high（7 数据点）。
+
+### 33. 代码审查风险
+
+5 维加权评分识别最需要仔细审查的文件：`complexity(30%) + churn(25%) + risk(20%) + coupling(15%) + busFactor(10%)`。高风险 = Bug 概率高且影响大。
+
+**YrY 实测**：3 个高优审查文件（>2× 平均风险），平均审查风险 0.079。
+
+### 34. 执行摘要
+
+自动生成管理级一页摘要（纯文本，stderr 输出），可管道分离：`2> summary.txt`。
+
+### 35. 破坏性变更影响预测
+
+给定一个模块的 API 表面，计算修改其导出时传递影响的下游文件。CRITICAL (>20 dependents) / HIGH (10-20) / MEDIUM (3-9) / LOW (1-2)。
+
+**YrY 实测**：4 个 CRITICAL 模块 + 3 个 HIGH 模块。变更这些模块的 API 需谨慎评估下游影响。
+
+### 36. 组件发布耦合
+
+基于 Co-Change 频率（Jaccard>0.4）和双向依赖，识别应一起版本化和发布的原子发布单元。
+
+**YrY 实测**：5 个发布单元，19 个耦合文件，最大单元 11 个文件。
+
+### 37. 知识集中度（HHI）
+
+赫芬达尔-赫希曼指数（HHI）用于度量目录级代码所有权的集中度。HHI>2500=高风险知识孤岛。
+
+**YrY 实测**：0 个高集中度目录 — 知识分布健康，但 414 个 bus-factor-1 文件仍需关注。
+
+### 38. 测试优先级矩阵
+
+按 `风险评分 × log₂(依赖数+1)` 排序未测试文件，最大化每个测试的投入产出。
+
+### 39. 入职阅读路径
+
+4 阶段推荐阅读顺序：Foundation（无依赖的基础文件）→ Core（高 fan-in 共享库）→ Feature（高 fan-out 入口）→ Integration（高介数连接点）。基于 PageRank、fan-in/fan-out 和介数中心性排序。
+
+**YrY**：40 个推荐文件，分 4 阶段。
+
+### 40. ADR 自动生成
+
+从分析发现中自动生成 4 类架构决策记录：层级架构、包稳定性、测试策略、死代码管理。每条 ADR 含上下文、决策、后果和建议。**YrY**：4 条 ADR，2 条 "Needs Revision"。
+
+### 41. 语义版本建议
+
+基于破坏性变更影响和 API 表面分析推荐 semver bump：MAJOR（CRITICAL 破坏性变更）/ MINOR（HIGH 影响或新特性）/ PATCH（内部重构）。**YrY**：MAJOR (medium) — 4 个 CRITICAL 模块。
+
+### 42. 代码审查清单
+
+为高风险文件生成 per-file 审查清单：复杂度检查、变更频率验证、风险审查、单点知识文档化。**YrY**：10 个文件含审查指导。
+
+### 43. Sprint 工作包
+
+将推荐重构项按 20h/Sprint 打包，含工时估算和 ROI 汇总。**YrY**：5 个 Sprint 包，86h 总工时。
+
+### 44. 所有权转移风险
+
+量化 bus-factor-1 文件的知识损失风险。**YrY**：3 个高风险转移文件，平均 20.8/100。
+
+### 45. 文件年龄分析
+
+Git 首 commit 日期 → Age × Churn 矩阵：Old+High Churn（重构候选）、Old+Low Churn（稳定核心）。**YrY**：373 文件已标注，0 个 Old+High Churn。
+
+### 46. 统计异常检测
+
+Z-score 方法（|Z|>2 = 95% CI 外）+ 趋势方向变化。**YrY**：12 数据点中 0 异常 — 指标在统计预期内。
+
+### 47. 重构优先级矩阵
+
+44 维聚合：complexity(20%)+churn(20%)+risk(20%)+size(15%)+coupling(10%)+busFactor(5%)+testGap(5%)+orphan(5%)。**YrY**：1 High, 28 Medium。
+
+### 48. 架构一致性
+
+**YrY**：100/100 (A) — 目录级依赖方向完全符合预期。
+
+### 49. 质量门禁
+
+10 条 PASS/FAIL/WARN 规则含阈值，CI/CD 可集成。**YrY**：WARN (4P/6F) — 无严重失败，但健康指数/适配度/覆盖率/SDP 未达标。
+
+### 50. 依赖集中度
+
+投资组合 HHI 应用于依赖图：**well-diversified** (HHI=0.047, top5=48.6%)。2 个 >10% 的关键依赖需关注。
+
+### 51. 审查工时估算
+
+M/10×2 + LOC/100×1 + Deps×0.5 + 5min 基线 → 平均 9min/文件，55.3h 总工时，7 个文件需拆分审查 (>60min)。
+
+### 52. 百分位排名
+
+Size/Complexity/Churn 三维百分位。**YrY**：1075 文件排名，105 P90+。
+
+### 53. 指标相关性矩阵
+
+Pearson r 发现跨维度模式。**YrY**：2 强相关 — Churn↔Risk、Complexity↔Size。
+
+### 54. 文档覆盖率
+
+JSDoc + 注释比率。**YrY**：avg 15% 注释率，36% JSDoc，1 高复杂+低文档。
+
+### 55. 成熟度模型
+
+CMMI 5 级：Structure/Quality/Testing/Maintainability/Knowledge。**YrY**：**Level 3 - Defined (60/100)**。
+
+### 56. 洞察综合引擎
+
+5 类跨维度模式。**YrY**：2 条洞察（1 critical + 1 high）。
+
+### 57. 快速检查模式（`--quick`）
+
+跳过 Git 操作（churn、co-change、age），仅执行文件系统和依赖图分析。适合 CI 快速检查。
+
+### 58. 导出格式（`--export md|json|csv`）
+
+导出分析结果为 Markdown / JSON / CSV，可直接归档或集成到文档系统。
+
+### 59. Issue 生成
+
+自动生成 GitHub/GitLab Issue-ready Markdown（质量门禁失败、关键洞察、Top ROI 建议）。通过 `--json` 获取结构化数据。
+
+### 60. Pre-commit 模式（`--pre-commit`）
+
+仅分析 Git 变更文件，快速输出关键指标。变更文件 = 0 时自动退出（exit 0）。
 
 ## 高级特性
 

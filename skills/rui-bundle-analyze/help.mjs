@@ -152,6 +152,132 @@ ${subhdr('㉖ 导入成本')}
 ${item('传递成本', '导入 X = X + 所有传递依赖的大小之和')}
 ${item('膨胀倍数', 'totalCost/ownSize → >10× = 小文件大依赖树')}
 
+${subhdr('㉗ 技术债务 (SIG)')}
+${item('8 类分解', 'Volume/Complexity/Dup/Coupling/Test/Layer/Interface/SCC')}
+${item('h/KLOC', '债务密度 → SIG 1-5 星评级')}
+
+${subhdr('㉘ 重构 ROI')}
+${item('I×E', 'Impact(1-10) × Effort(1-10) → ROI 排序')}
+${item('四级', 'Excellent(≥2)/Good(1.2-2)/Fair(0.8-1.2)/Poor(<0.8)')}
+
+${subhdr('㉙ API 表面')}
+${item('5 类 export', 'named/list/default/re-export/wildcard 加权评分')}
+${item('大 API 标记', 'apiSurfaceScore>20 → 公共 API 过大')}
+
+${subhdr('㉚ 健康指数')}
+${item('9 维扣分', 'size+complexity+churn+circular+orphan+untested+coupling+bus+layer')}
+${item('A-F 评级', '90+=A, 75+=B, 60+=C, 40+=D, <40=F')}
+
+${subhdr('㉛ SDP 检查')}
+${item('稳定依赖', '包应只依赖比自己更稳定的包 I(from)<I(to)')}
+${item('违规排序', '按 I 差值排列，识别最严重的稳定性倒挂')}
+
+${subhdr('㉜ 趋势预测')}
+${item('线性回归', '最小二乘法拟合历史数据 → 30/90 天预测')}
+${item('置信度', 'High(7+点)/Medium(5-6)/Low(3-4)')}
+
+${subhdr('㉝ 审查风险')}
+${item('5 维加权', 'C×30%+Ch×25%+R×20%+Cp×15%+Bf×10%')}
+${item('高优标记', '>2×avg → 需最仔细审查')}
+
+${subhdr('㉞ 执行摘要')}
+${item('管理级', '一页总结，含健康/指标/债务/风险/趋势/预测')}
+${item('stderr', '输出到 stderr，可管道分离')}
+
+${subhdr('㉟ 破坏性变更')}
+${item('下游影响', 'CRITICAL(>20)/HIGH(10-20)/MEDIUM(3-9)/LOW')}
+${item('传递闭包', 'BFS 计算所有传递依赖文件')}
+
+${subhdr('㊱ 发布耦合')}
+${item('原子单元', 'Co-change(J>0.4) + 双向依赖 → 同步发布')}
+${item('聚类', '连通分量 → 版本同步组')}
+
+${subhdr('㊲ 知识集中度 (HHI)')}
+${item('HHI', '赫芬达尔指数：Σ(单人占比²) → >2500=高风险')}
+${item('目录级', '识别知识孤岛目录')}
+
+${subhdr('㊳ 测试优先级')}
+${item('Risk×Usage', '风险评分 × log₂(依赖数+1) → 最大化产出')}
+${item('四级', 'Urgent(>5)/High(2-5)/Medium(0.5-2)/Low(<0.5)')}
+
+${subhdr('㊴ 入职路径')}
+${item('4 阶段', 'Foundation→Core→Feature→Integration')}
+${item('排序', 'PageRank/fan-in/fan-out/betweenness 综合')}
+
+${subhdr('㊵ ADR 生成')}
+${item('4 类', '层级架构/包稳定性/测试策略/死代码管理')}
+${item('上下文+决策+后果', '每条 ADR 含完整架构决策记录')}
+
+${subhdr('㊶ 版本建议')}
+${item('MAJOR/MINOR/PATCH', '基于破坏性变更影响 + API 表面')}
+${item('置信度', 'high/medium/low 三级')}
+
+${subhdr('㊷ 审查清单')}
+${item('Per-file', '基于复杂度/变更/风险/耦合/bus-factor')}
+${item('可操作条目', '具体检查项，非模糊建议')}
+
+${subhdr('㊸ Sprint 包')}
+${item('20h/Sprint', '重构建议打包为 Sprint 工作包')}
+${item('工时+ROI', '每个包含工时估算和平均 ROI')}
+
+${subhdr('㊹ 转移风险')}
+${item('Bus×Complexity', '复杂度×依赖影响×单点知识 = 转移风险')}
+${item('交接优先级', '按风险排序，指导知识交接')}
+
+${subhdr('㊺ 文件年龄')}
+${item('Git 首 commit', '每个文件的创建日期 → 年龄分桶')}
+${item('Age×Churn', 'Old+High Churn = 重构候选')}
+
+${subhdr('㊻ 异常检测')}
+${item('Z-score', '|Z|>2 = 统计异常 (95% 置信区间外)')}
+${item('趋势变化', '连续反向移动检测')}
+
+${subhdr('㊼ 重构优先级')}
+${item('44 维聚合', '全维度加权 → 0-100 单一优先级')}
+${item('四级', 'Critical(≥40)/High(25-40)/Medium(10-25)/Low(<10)')}
+
+${subhdr('㊽ 架构一致性')}
+${item('预期 vs 实际', 'lib↛skills, skills→lib 等规则验证')}
+${item('A-F 评级', '规则通过率 → 一致性评分')}
+
+${subhdr('㊾ 质量门禁')}
+${item('10 规则', 'PASS/FAIL/WARN + 阈值 → CI/CD 集成')}
+${item('Critical/High/Med', '分级失败 → 可配置阻断策略')}
+
+${subhdr('㊿ 依赖集中度')}
+${item('HHI', 'Σ(import_share²) → 多样化比率')}
+${item('>10% 标记', '关键依赖 = 单点故障风险')}
+
+${subhdr('(51) 审查工时')}
+${item('模型', 'M/10×2 + LOC/100×1 + Deps×0.5 + 5min')}
+${item('>60min', '需拆分审查 → 降低认知负荷')}
+
+${subhdr('(52) 百分位')}
+${item('3 维', 'Size/Complexity/Churn 百分位 → 复合 P')}
+${item('P90+', '极端文件标记 → 优先关注')}
+
+${subhdr('(53) 相关性')}
+${item('Pearson r', 'Churn↔Risk, Cx↔Size 等跨维度关联')}
+${item('Strong/Moderate/Weak', '|r|>0.7/0.4/0.2 三级')}
+
+${subhdr('(54) 文档覆盖')}
+${item('JSDoc %', '/** */ 检测 + 注释行比率')}
+${item('高复杂+低文档', '需优先补文档的文件')}
+
+${subhdr('(55) 成熟度')}
+${item('CMMI 5 级', 'Initial→Managed→Defined→Measured→Optimizing')}
+${item('5 维度', 'Structure/Quality/Testing/Maintainability/Knowledge')}
+
+${subhdr('(56) 洞察综合')}
+${item('5 类模式', 'Legacy Debt/Critical Fragility/Implicit Coupling/Volatile Core/Complexity Gap')}
+${item('跨维度', '连接多个分析维度的复合发现')}
+
+${subhdr('工作流模式')}
+${item('--quick', '快速模式：跳过 Git 操作，仅文件系统+依赖图')}
+${item('--export md|csv|json', '导出分析报告为多种格式')}
+${item('--pre-commit', 'Pre-commit 模式：仅分析变更文件')}
+${item('--config <path>', '自定义配置 (.bundle-analyze.json)')}
+
 ${hdr('输出路径')}
 ${item('HTML 报告', 'docs/bundle-reports/bundle-YYYY-MM-DD-HHmmss.html', dim)}
 ${item('JSON 数据', 'stdout（--json 时）', dim)}

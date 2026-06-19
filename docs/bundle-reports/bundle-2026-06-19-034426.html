@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bundle Analysis — YrY</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  :root {
+    --bg: #1e1f2b;
+    --panel-bg: #2b2d3b;
+    --border: #3d59a1;
+    --text: #a9b1d6;
+    --text-dim: #6b7089;
+    --accent: #3d59a1;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --ok: #34d399;
+    --info: #22d3ee;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  /* Header */
+  #header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: var(--panel-bg);
+    border-bottom: 1px solid var(--border);
+    height: 44px;
+    flex-shrink: 0;
+  }
+  #header h1 { font-size:15px; font-weight:600; }
+  #header .meta { font-size:12px; color: var(--text-dim); }
+
+  /* Toolbar */
+  #toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    background: #21232f;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  #toolbar button {
+    padding: 4px 12px;
+    border: 1px solid var(--border);
+    background: var(--panel-bg);
+    color: var(--text);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background .15s;
+  }
+  #toolbar button:hover { background: var(--accent); }
+  #toolbar button.active { background: var(--accent); color: #fff; }
+  #toolbar .spacer { flex:1; }
+  #toolbar .stat-badge {
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 2px 8px;
+    background: var(--panel-bg);
+    border-radius: 3px;
+  }
+
+  /* Main layout */
+  #main { display:flex; flex:1; overflow:hidden; height: calc(100vh - 76px); }
+
+  /* Visualization area */
+  #vis {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+  }
+  #vis:active { cursor: grabbing; }
+  #vis svg { width:100%; height:100%; }
+
+  /* Side panel */
+  #sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    background: #21232f;
+    border-left: 1px solid var(--border);
+    padding: 12px;
+  }
+  #sidebar h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin: 12px 0 6px;
+  }
+  #sidebar h3:first-child { margin-top: 0; }
+
+  /* Stat rows */
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 3px;
+  }
+  .stat-row:hover { background: rgba(255,255,255,.03); }
+  .stat-row .label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 200px;
+  }
+  .stat-row .value { color: var(--info); font-variant-numeric: tabular-nums; flex-shrink: 0; margin-left: 8px; }
+  .stat-row .value.warn { color: var(--warn); }
+  .stat-row .value.danger { color: var(--danger); }
+
+  /* Ext bar chart */
+  .ext-bar-wrap { display:flex; align-items:center; gap:6px; margin:2px 0; font-size:11px; }
+  .ext-bar-wrap .ext-label { width:50px; text-align:right; flex-shrink:0; color: var(--text-dim); }
+  .ext-bar-wrap .ext-bar {
+    height: 14px;
+    background: var(--accent);
+    border-radius: 2px;
+    min-width: 2px;
+    transition: width .3s;
+  }
+  .ext-bar-wrap .ext-size { margin-left:4px; color: var(--text-dim); flex-shrink:0; }
+
+  /* Tooltip */
+  #tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: rgba(30,31,43,.95);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+    line-height: 1.6;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 100;
+    max-width: 280px;
+  }
+  #tooltip.visible { opacity: 1; }
+  #tooltip .tt-path { color: var(--text-dim); font-size: 11px; word-break: break-all; }
+  #tooltip .tt-size { color: var(--info); font-weight: 600; }
+
+  /* Graph labels */
+  .node-label { font-size:9px; fill: var(--text); pointer-events:none; }
+  .link { stroke: #3d59a1; stroke-opacity: .4; }
+  .link-require { stroke: #f59e0b; stroke-opacity: .5; stroke-dasharray: 4 2; }
+  .link-dynamic { stroke: #a78bfa; stroke-opacity: .5; stroke-dasharray: 2 2; }
+
+  /* Breadcrumb nav */
+  #breadcrumb {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    z-index: 10;
+  }
+  #breadcrumb button {
+    padding: 2px 8px;
+    font-size: 11px;
+    background: rgba(30,31,43,.9);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  #breadcrumb button:hover { background: var(--accent); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    #sidebar { width: 240px; }
+  }
+
+  /* Scrollbar */
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-track { background: transparent; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Color legend */
+  #legend {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(30,31,43,.92);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 10px;
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  #legend .legend-item { display:flex; align-items:center; gap:5px; }
+  #legend .legend-swatch { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+  #legend .legend-label { color: var(--text-dim); white-space:nowrap; }
+
+  /* Histogram bars in sidebar */
+  .histo-bar-wrap { display:flex; align-items:center; gap:6px; margin:2px 0; font-size:11px; }
+  .histo-bar-wrap .histo-label { width:80px; text-align:right; flex-shrink:0; color: var(--text-dim); }
+  .histo-bar-wrap .histo-bar {
+    height: 14px;
+    background: linear-gradient(90deg, var(--accent), var(--info));
+    border-radius: 2px;
+    min-width: 2px;
+    transition: width .3s;
+  }
+  .histo-bar-wrap .histo-count { margin-left:4px; color: var(--text-dim); flex-shrink:0; }
+
+  /* Diff indicators */
+  .diff-up { color: var(--danger); }
+  .diff-down { color: var(--ok); }
+  .diff-neutral { color: var(--text-dim); }
+
+  /* Search input */
+  #file-search {
+    width: 100%;
+    padding: 4px 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 3px;
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+  #file-search::placeholder { color: var(--text-dim); }
+
+  /* Trend summary card */
+  .trend-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+  .trend-card .trend-title { font-size:12px; font-weight:600; color: var(--info); margin-bottom:4px; }
+  .trend-card .trend-row { font-size:11px; color: var(--text-dim); }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <h1>📦 Bundle Analysis — YrY</h1>
+  <span class="meta">2026-06-19 03:44:26 · 7 files · 544.1 KB</span>
+</div>
+
+<div id="toolbar">
+  <button id="btn-treemap" class="active" onclick="switchView('treemap')">📏 Treemap</button>
+  <button id="btn-graph" onclick="switchView('graph')">🔗 Dependency Graph</button>
+  <button onclick="resetZoom()">🔍 Reset Zoom</button>
+  <span class="spacer"></span>
+  <span class="stat-badge">Nodes: 0</span>
+  <span class="stat-badge">Edges: 0</span>
+  
+  
+</div>
+
+<div id="main">
+  <div id="vis"></div>
+  <div id="sidebar">
+    <input id="file-search" type="text" placeholder="🔍 Filter files..." oninput="filterSidebar(this.value)">
+    <div id="sidebar-content">
+      <h3>📏 Top Largest Files</h3><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/analyze.mjs">rui-bundle-analyze/analyze.mjs</span><span class="value warn">309.7 KB</span></div><div class="stat-row"><span class="label" title="cdn/index.html">cdn/index.html</span><span class="value ">77.2 KB</span></div><div class="stat-row"><span class="label" title="cdn/yry-docs-binding/index.js">yry-docs-binding/index.js</span><span class="value ">72.8 KB</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/SKILL.md">rui-bundle-analyze/SKILL.md</span><span class="value ">62.1 KB</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/help.mjs">rui-bundle-analyze/help.mjs</span><span class="value ">14.8 KB</span></div><div class="stat-row"><span class="label" title="cdn/yry-item-card/index.css">yry-item-card/index.css</span><span class="value ">5.7 KB</span></div><div class="stat-row"><span class="label" title="cdn/yry-docs-binding/index.css">yry-docs-binding/index.css</span><span class="value ">1.9 KB</span></div><h3>📊 Size Distribution</h3><div class="histo-bar-wrap"><span class="histo-label">0-1 KB</span><div class="histo-bar" style="width:1%"></div><span class="histo-count">0 files</span></div><div class="histo-bar-wrap"><span class="histo-label">1-10 KB</span><div class="histo-bar" style="width:50%"></div><span class="histo-count">2 files</span></div><div class="histo-bar-wrap"><span class="histo-label">10-100 KB</span><div class="histo-bar" style="width:100%"></div><span class="histo-count">4 files</span></div><div class="histo-bar-wrap"><span class="histo-label">100-500 KB</span><div class="histo-bar" style="width:25%"></div><span class="histo-count">1 files</span></div><div class="histo-bar-wrap"><span class="histo-label">500 KB-1 MB</span><div class="histo-bar" style="width:1%"></div><span class="histo-count">0 files</span></div><div class="histo-bar-wrap"><span class="histo-label">&gt;1 MB</span><div class="histo-bar" style="width:1%"></div><span class="histo-count">0 files</span></div><h3>📦 By Extension</h3><div class="ext-bar-wrap"><span class="ext-label">.mjs</span><div class="ext-bar" style="width:100%"></div><span class="ext-size">324.5 KB</span></div><div class="ext-bar-wrap"><span class="ext-label">.html</span><div class="ext-bar" style="width:23.8%"></div><span class="ext-size">77.2 KB</span></div><div class="ext-bar-wrap"><span class="ext-label">.js</span><div class="ext-bar" style="width:22.4%"></div><span class="ext-size">72.8 KB</span></div><div class="ext-bar-wrap"><span class="ext-label">.md</span><div class="ext-bar" style="width:19.1%"></div><span class="ext-size">62.1 KB</span></div><div class="ext-bar-wrap"><span class="ext-label">.css</span><div class="ext-bar" style="width:2.3%"></div><span class="ext-size">7.6 KB</span></div><h3>📁 By Directory</h3><div class="stat-row"><span class="label">skills/</span><span class="value">386.6 KB</span></div><div class="stat-row"><span class="label">cdn/</span><span class="value">157.5 KB</span></div><h3>📐 Directory Depth</h3><div class="stat-row"><span class="label">Depth 2</span><span class="value">1 files</span></div><div class="stat-row"><span class="label">Depth 3</span><span class="value">6 files</span></div><h3>📏 Max Dependency Depth</h3><div class="stat-row"><span class="label">Longest chain</span><span class="value">1 hops</span></div><h3>👻 Orphan Files (not imported)</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Files that aren't imported by any other file (may be dead code)</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/analyze.mjs">rui-bundle-analyze/analyze.mjs</span><span class="value" style="color:var(--text-dim)">309.7 KB</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/help.mjs">rui-bundle-analyze/help.mjs</span><span class="value" style="color:var(--text-dim)">14.8 KB</span></div><div class="stat-row"><span class="label" title="cdn/yry-item-card/index.css">yry-item-card/index.css</span><span class="value" style="color:var(--text-dim)">5.7 KB</span></div><div class="stat-row"><span class="label" title="cdn/yry-docs-binding/index.css">yry-docs-binding/index.css</span><span class="value" style="color:var(--text-dim)">1.9 KB</span></div><h3>📜 Change Hotspots (90 days)</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">7 files changed · 39 commits · 100% churn rate</span></div><div class="stat-row"><span class="label" title="cdn/index.html">cdn/index.html</span><span class="value danger">🔥119.5 (19×)</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/analyze.mjs">rui-bundle-analyze/analyze.mjs</span><span class="value ">🔥33.1 (4×)</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/SKILL.md">rui-bundle-analyze/SKILL.md</span><span class="value ">🔥23.9 (4×)</span></div><div class="stat-row"><span class="label" title="cdn/yry-docs-binding/index.js">yry-docs-binding/index.js</span><span class="value ">🔥18.6 (3×)</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/help.mjs">rui-bundle-analyze/help.mjs</span><span class="value ">🔥15.9 (4×)</span></div><div class="stat-row"><span class="label" title="cdn/yry-item-card/index.css">yry-item-card/index.css</span><span class="value ">🔥8.2 (3×)</span></div><div class="stat-row"><span class="label" title="cdn/yry-docs-binding/index.css">yry-docs-binding/index.css</span><span class="value ">🔥3.1 (2×)</span></div><div style="color:var(--text-dim);font-size:10px;margin:4px 0;padding-left:8px">Churn distribution: 1-2: 1 · 3-5: 5 · 11-20: 1</div><h3>🔀 Co-Change Pairs</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Files that change together in 90 days · 7 commits · 20 strong pairs</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/SKILL.md + skills/rui-bundle-analyze/analyze.mjs">SKILL.md + analyze.mjs</span><span class="value">4× (J=1)</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/SKILL.md + skills/rui-bundle-analyze/help.mjs">SKILL.md + help.mjs</span><span class="value">4× (J=1)</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/analyze.mjs + skills/rui-bundle-analyze/help.mjs">analyze.mjs + help.mjs</span><span class="value">4× (J=1)</span></div><div class="stat-row"><span class="label" title="cdn/index.html + skills/rui-bundle-analyze/SKILL.md">index.html + SKILL.md</span><span class="value">4× (J=0.667)</span></div><div class="stat-row"><span class="label" title="cdn/index.html + skills/rui-bundle-analyze/analyze.mjs">index.html + analyze.mjs</span><span class="value">4× (J=0.667)</span></div><div class="stat-row"><span class="label" title="cdn/index.html + skills/rui-bundle-analyze/help.mjs">index.html + help.mjs</span><span class="value">4× (J=0.667)</span></div><div class="stat-row"><span class="label" title="cdn/index.html + cdn/yry-item-card/index.css">index.html + index.css</span><span class="value">3× (J=0.5)</span></div><div class="stat-row"><span class="label" title="cdn/yry-docs-binding/index.css + cdn/yry-docs-binding/index.js">index.css + index.js</span><span class="value">2× (J=0.667)</span></div><div style="color:var(--info);font-size:10px;margin:4px 0;padding-left:8px">📎 1 co-change clusters</div><div class="stat-row"><span class="label" style="font-size:10px" title="skills/rui-bundle-analyze/SKILL.md, skills/rui-bundle-analyze/analyze.mjs, skills/rui-bundle-analyze/help.mjs, cdn/index.html">Cluster (4 files): SKILL.md, analyze.mjs, help.mjs</span></div><h3>🎯 Risk Scores</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Composite risk (size+churn+coupling+orphan+circular) · Avg 29.9/100</span></div><div style="color:var(--text-dim);font-size:10px;margin:2px 0;padding-left:8px">medium (20-40): 5 · high (40-60): 2</div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/analyze.mjs score=43 (size=0.93 churn=0.21 orphan=1 circ=0)">rui-bundle-analyze/analyze.mjs</span><span class="value warn">43</span></div><div class="stat-row"><span class="label" title="cdn/index.html score=43 (size=0.7 churn=1 orphan=0 circ=0)">cdn/index.html</span><span class="value warn">43</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/help.mjs score=31 (size=0.45 churn=0.21 orphan=1 circ=0)">rui-bundle-analyze/help.mjs</span><span class="value ">31</span></div><div class="stat-row"><span class="label" title="cdn/yry-item-card/index.css score=27 (size=0.31 churn=0.16 orphan=1 circ=0)">yry-item-card/index.css</span><span class="value ">27</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/SKILL.md score=22 (size=0.67 churn=0.21 orphan=0 circ=0)">rui-bundle-analyze/SKILL.md</span><span class="value ">22</span></div><div class="stat-row"><span class="label" title="cdn/yry-docs-binding/index.css score=22 (size=0.17 churn=0.11 orphan=1 circ=0)">yry-docs-binding/index.css</span><span class="value ">22</span></div><div class="stat-row"><span class="label" title="cdn/yry-docs-binding/index.js score=21 (size=0.69 churn=0.16 orphan=0 circ=0)">yry-docs-binding/index.js</span><span class="value ">21</span></div><h3>🧩 Module Boundaries</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">4 structural suggestions</span></div><div class="stat-row"><span class="label " title="Co-change Jaccard=0.667 (4× together) but in different directories (cdn vs skills/rui-bundle-analyze)">📁 [P2] co-locate</span><span class="value" style="font-size:10px">index.html, SKILL.md</span></div><div class="stat-row"><span class="label " title="Co-change Jaccard=0.667 (4× together) but in different directories (cdn vs skills/rui-bundle-analyze)">📁 [P2] co-locate</span><span class="value" style="font-size:10px">index.html, analyze.mjs</span></div><div class="stat-row"><span class="label " title="Co-change Jaccard=0.667 (4× together) but in different directories (cdn vs skills/rui-bundle-analyze)">📁 [P2] co-locate</span><span class="value" style="font-size:10px">index.html, help.mjs</span></div><div class="stat-row"><span class="label " title="Co-change Jaccard=0.5 (3× together) but in different directories (cdn vs cdn/yry-item-card)">📁 [P2] co-locate</span><span class="value" style="font-size:10px">index.html, index.css</span></div><h3>🧪 Test Gaps</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">0% coverage · 5/5 untested · 5 high-priority</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/analyze.mjs">rui-bundle-analyze/analyze.mjs</span><span class="value danger">risk 43</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/help.mjs">rui-bundle-analyze/help.mjs</span><span class="value danger">risk 31</span></div><div class="stat-row"><span class="label" title="cdn/yry-item-card/index.css">yry-item-card/index.css</span><span class="value warn">risk 27</span></div><div class="stat-row"><span class="label" title="cdn/yry-docs-binding/index.css">yry-docs-binding/index.css</span><span class="value warn">risk 22</span></div><div class="stat-row"><span class="label" title="cdn/yry-docs-binding/index.js">yry-docs-binding/index.js</span><span class="value warn">risk 21</span></div><h3>📡 Change Propagation</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">If X changes, probability Y must also change · 16 pairs >50%</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/SKILL.md ↔ skills/rui-bundle-analyze/analyze.mjs">SKILL.md → analyze.mjs</span><span class="value danger">100%</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/SKILL.md ↔ skills/rui-bundle-analyze/help.mjs">SKILL.md → help.mjs</span><span class="value danger">100%</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/analyze.mjs ↔ skills/rui-bundle-analyze/help.mjs">analyze.mjs → help.mjs</span><span class="value danger">100%</span></div><div class="stat-row"><span class="label" title="cdn/index.html ↔ skills/rui-bundle-analyze/SKILL.md">index.html → SKILL.md</span><span class="value danger">100%</span></div><div class="stat-row"><span class="label" title="cdn/index.html ↔ skills/rui-bundle-analyze/analyze.mjs">index.html → analyze.mjs</span><span class="value danger">100%</span></div><div class="stat-row"><span class="label" title="cdn/index.html ↔ skills/rui-bundle-analyze/help.mjs">index.html → help.mjs</span><span class="value danger">100%</span></div><div class="stat-row"><span class="label" title="cdn/index.html ↔ cdn/yry-item-card/index.css">index.html → index.css</span><span class="value danger">100%</span></div><div class="stat-row"><span class="label" title="cdn/yry-docs-binding/index.css ↔ cdn/yry-docs-binding/index.js">index.css → index.js</span><span class="value danger">100%</span></div><h3>🧠 Knowledge Distribution</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">0 contributors · 5 bus-factor-1 · 0 abandoned</span></div><div style="color:var(--warn);font-size:10px;margin:2px 0;padding-left:8px">⚠ Single-contributor files:</div><div class="stat-row"><span class="label" style="color:var(--warn);font-size:10px" title="cdn/yry-docs-binding/index.css">yry-docs-binding/index.css</span><span class="value" style="color:var(--warn)">1 person</span></div><div class="stat-row"><span class="label" style="color:var(--warn);font-size:10px" title="cdn/yry-docs-binding/index.js">yry-docs-binding/index.js</span><span class="value" style="color:var(--warn)">1 person</span></div><div class="stat-row"><span class="label" style="color:var(--warn);font-size:10px" title="skills/rui-bundle-analyze/SKILL.md">rui-bundle-analyze/SKILL.md</span><span class="value" style="color:var(--warn)">1 person</span></div><div class="stat-row"><span class="label" style="color:var(--warn);font-size:10px" title="skills/rui-bundle-analyze/analyze.mjs">rui-bundle-analyze/analyze.mjs</span><span class="value" style="color:var(--warn)">1 person</span></div><div class="stat-row"><span class="label" style="color:var(--warn);font-size:10px" title="skills/rui-bundle-analyze/help.mjs">rui-bundle-analyze/help.mjs</span><span class="value" style="color:var(--warn)">1 person</span></div><div style="color:var(--text-dim);font-size:10px;margin:4px 0;padding-left:8px">Distribution: 1: 5 · 2: 2</div><h3>📐 Cyclomatic Complexity</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">McCabe · avg 407.7 · max 2090 · 6 files analyzed</span></div><div style="color:var(--text-dim);font-size:10px;margin:2px 0;padding-left:8px">1-5 (simple): 3 · 50+ (extreme): 3</div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/analyze.mjs loc=5454 funcs=552">analyze.mjs</span><span class="value danger">M=2090</span></div><div class="stat-row"><span class="label" title="cdn/index.html loc=1124 funcs=20">index.html</span><span class="value danger">M=178</span></div><div class="stat-row"><span class="label" title="cdn/yry-docs-binding/index.js loc=770 funcs=5">index.js</span><span class="value danger">M=173</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/help.mjs loc=242 funcs=0">help.mjs</span><span class="value ">M=3</span></div><div class="stat-row"><span class="label" title="cdn/yry-docs-binding/index.css loc=38 funcs=0">index.css</span><span class="value ">M=1</span></div><div class="stat-row"><span class="label" title="cdn/yry-item-card/index.css loc=123 funcs=0">index.css</span><span class="value ">M=1</span></div><h3>🔥 Hotspot Matrix (Complexity × Churn)</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">7 files · median C=173 Ch=4</span></div><div style="font-size:10px;margin:2px 0;padding-left:8px"><span style="color:var(--ok)">🟢 Healthy: 5</span> · <span style="color:var(--warn)">🟡 Stable-Complex: 1</span> · <span style="color:var(--warn)">🟡 Frequent-Simple: 0</span> · <span style="color:var(--danger)">🔴 Hotspots: 1</span></div><div class="stat-row"><span class="label" title="cdn/index.html C=178 Ch=19">index.html</span><span class="value danger">🔥8.5</span></div><h3>🛡️ Architecture Fitness</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Grade <span class="ok" style="font-weight:bold">A</span> · 100/100 · 2/2 passed</span></div><div class="stat-row"><span class="label" style="font-size:10px">✅ No file should depend on more than 15 other files</span></div><div class="stat-row"><span class="label" style="font-size:10px">✅ Packages should be close to the main sequence (D &lt; 0.7)</span></div><h3>💰 Technical Debt</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">SIG Rating: <span class="ok" style="font-weight:bold">★★★★★ (A)</span> · 13.5h (1.7d / 0.3w) · 1.7h/KLOC</span></div><div class="stat-row"><span class="label" style="font-size:10px">Complexity (refactor extreme) (×3)</span><span class="value">6h</span></div><div class="stat-row"><span class="label" style="font-size:10px">Test coverage (write tests) (×5)</span><span class="value">7.5h</span></div><h3>💚 Dependency Health Index</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Overall Grade: <span class="warn" style="font-weight:bold">C</span> · avg 65.8/100 · 5 files</span></div><div style="font-size:10px;margin:2px 0;padding-left:8px"><span style="color:var(--ok)">A: 0</span> · <span style="color:var(--info)">B: 1</span> · <span style="color:var(--warn)">C: 3</span> · <span style="color:var(--danger)">D: 0</span> · <span style="color:var(--danger)">F: 1</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/analyze.mjs health=32">analyze.mjs</span><span class="value danger">32 (F)</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/help.mjs health=72">help.mjs</span><span class="value warn">72 (C)</span></div><div class="stat-row"><span class="label" title="cdn/yry-docs-binding/index.css health=73">index.css</span><span class="value warn">73 (C)</span></div><div class="stat-row"><span class="label" title="cdn/yry-docs-binding/index.js health=74">index.js</span><span class="value warn">74 (C)</span></div><div class="stat-row"><span class="label" title="cdn/yry-item-card/index.css health=78">index.css</span><span class="value ">78 (B)</span></div><h3>👀 Code Review Priority</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Files ranked by review risk (complexity+churn+coupling+bus factor) · 1 high-priority</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/analyze.mjs C=1 Ch=0.21 R=0 Bf=1">analyze.mjs</span><span class="value danger">55</span></div><div class="stat-row"><span class="label" title="cdn/yry-docs-binding/index.js C=0.08 Ch=0.16 R=0 Bf=1">index.js</span><span class="value warn">19</span></div><div class="stat-row"><span class="label" title="skills/rui-bundle-analyze/help.mjs C=0 Ch=0.21 R=0 Bf=1">help.mjs</span><span class="value warn">16</span></div><div class="stat-row"><span class="label" title="cdn/yry-docs-binding/index.css C=0 Ch=0.11 R=0 Bf=1">index.css</span><span class="value ">13</span></div><div class="stat-row"><span class="label" title="cdn/yry-item-card/index.css C=0 Ch=0.16 R=0 Bf=0">index.css</span><span class="value ">4</span></div><h3>📦 Release Coupling</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">1 atomic release units · 7 coupled files</span></div><div class="stat-row"><span class="label" title="cdn/index.html, cdn/yry-item-card/index.css, cdn/yry-docs-binding/index.js, cdn/yry-docs-binding/index.css, skills/rui-bundle-analyze/SKILL.md">Unit (7 files): cdn/index.html</span></div><h3>🧪 Test Prioritization</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">5 untested · 0 urgent · 0 high</span></div><h3>🏷️ Semver Recommendation</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Confidence: medium</span><span class="value " style="font-weight:bold">PATCH</span></div><div class="stat-row"><span class="label" style="font-size:10px">High change activity (likely bug fixes)</span></div><h3>🔄 Ownership Transfer Risk</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">1 high-risk files · avg 28.7/100 · 5 bus-factor-1</span></div><div class="stat-row"><span class="label" title="contributor=YourName complexity=1 deps=0">analyze.mjs</span><span class="value warn">60</span></div><h3>🕐 File Age Analysis</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Avg 0d · 5 files</span></div><div style="color:var(--text-dim);font-size:10px;margin:2px 0;padding-left:8px">0-30d: 5</div><h3>🔧 Refactoring Priority</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">All-metrics composite · 1 critical · 1 high · 3 medium</span></div><div class="stat-row"><span class="label" title="C=1 Ch=0.21 R=0.43 Sz=0.63">analyze.mjs</span><span class="value danger">57.4</span></div><div class="stat-row"><span class="label" title="C=0 Ch=0.21 R=0.31 Sz=0.03">help.mjs</span><span class="value warn">26</span></div><div class="stat-row"><span class="label" title="C=0 Ch=0.11 R=0.22 Sz=0">index.css</span><span class="value ">21.6</span></div><div class="stat-row"><span class="label" title="C=0.08 Ch=0.16 R=0.21 Sz=0.15">index.js</span><span class="value ">21.3</span></div><div class="stat-row"><span class="label" title="C=0 Ch=0.16 R=0.27 Sz=0.01">index.css</span><span class="value ">18.7</span></div><h3>🚦 Quality Gates</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Overall: <span class="warn" style="font-weight:bold">WARN</span> · 70/100 · 7P 3F</span></div><div class="stat-row"><span class="label " style="font-size:10px">✅ No files exceeding 500KB</span><span class="value " style="font-size:10px">0 eq 0</span></div><div class="stat-row"><span class="label " style="font-size:10px">✅ No circular dependencies</span><span class="value " style="font-size:10px">0 eq 0</span></div><div class="stat-row"><span class="label " style="font-size:10px">✅ Extreme complexity files (50+) &lt; 5</span><span class="value " style="font-size:10px">3 lt 5</span></div><div class="stat-row"><span class="label warn" style="font-size:10px">❌ Average health index ≥ 70</span><span class="value warn" style="font-size:10px">65.8 gte 70</span></div><div class="stat-row"><span class="label " style="font-size:10px">✅ Architecture fitness score ≥ 60</span><span class="value " style="font-size:10px">100 gte 60</span></div><div class="stat-row"><span class="label warn" style="font-size:10px">❌ Test coverage ≥ 30%</span><span class="value warn" style="font-size:10px">0 gte 30</span></div><div class="stat-row"><span class="label " style="font-size:10px">✅ Bus-factor-1 files &lt; 100</span><span class="value " style="font-size:10px">5 lt 100</span></div><div class="stat-row"><span class="label " style="font-size:10px">✅ Layer violations &lt; 10</span><span class="value " style="font-size:10px">0 lt 10</span></div><div class="stat-row"><span class="label warn" style="font-size:10px">❌ Architecture conformance ≥ 80</span><span class="value warn" style="font-size:10px">0 gte 80</span></div><div class="stat-row"><span class="label " style="font-size:10px">✅ SDP score ≥ 60</span><span class="value " style="font-size:10px">100 gte 60</span></div><h3>⏱️ Review Time Estimation</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">avg 109min/file · 9.1h total · 1 need split (>60min)</span></div><div class="stat-row"><span class="label" title="M=2090 LOC=5454 deps=0">analyze.mjs</span><span class="value warn">478min ⚠split</span></div><div class="stat-row"><span class="label" title="M=173 LOC=770 deps=0">index.js</span><span class="value ">47min</span></div><div class="stat-row"><span class="label" title="M=3 LOC=242 deps=0">help.mjs</span><span class="value ">8min</span></div><div class="stat-row"><span class="label" title="M=1 LOC=38 deps=0">index.css</span><span class="value ">6min</span></div><div class="stat-row"><span class="label" title="M=1 LOC=123 deps=0">index.css</span><span class="value ">6min</span></div><h3>📊 Percentile Rankings (Composite Pctl)</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">7 files · 0 in P90+</span></div><div class="stat-row"><span class="label" title="size=P83 complexity=P80 churn=P100">index.html</span><span class="value warn">P88</span></div><div class="stat-row"><span class="label" title="size=P100 complexity=P100 churn=P50">analyze.mjs</span><span class="value warn">P83</span></div><div class="stat-row"><span class="label" title="size=P50 complexity=null churn=P67">SKILL.md</span><span class="value ">P59</span></div><div class="stat-row"><span class="label" title="size=P33 complexity=P40 churn=P83">help.mjs</span><span class="value ">P52</span></div><div class="stat-row"><span class="label" title="size=P67 complexity=P60 churn=P17">index.js</span><span class="value ">P48</span></div><div class="stat-row"><span class="label" title="size=P17 complexity=P20 churn=P33">index.css</span><span class="value ">P23</span></div><div class="stat-row"><span class="label" title="size=P0 complexity=P0 churn=P0">index.css</span><span class="value ">P0</span></div><h3>📝 Documentation Coverage</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">60% JSDoc · avg 13% comment ratio · 0 high-risk under-documented</span></div><h3>🏛️ Codebase Maturity</h3><div class="stat-row"><span class="label" style="color:var(--text-dim);font-size:10px">Level <span class="danger" style="font-weight:bold">2 - Managed</span> · 40/100</span></div><div class="stat-row"><span class="label" style="font-size:10px">❌ Architecture conformance low</span></div><div class="stat-row"><span class="label" style="font-size:10px">✅ No circular dependency groups (SCC)</span></div><div class="stat-row"><span class="label" style="font-size:10px">❌ Health index low</span></div><div class="stat-row"><span class="label" style="font-size:10px">❌ High average complexity</span></div><div class="stat-row"><span class="label" style="font-size:10px">❌ Test coverage low or none</span></div><div class="stat-row"><span class="label" style="font-size:10px">✅ Low debt density</span></div><h3>💡 Cross-Dimensional Insights</h3><div class="trend-card"><div class="trend-title"><span class="">MEDIUM</span>: Implicit Module Coupling</div><div class="trend-row">3 file pairs have high co-change frequency (Jaccard&gt;0.6) but live in different directories — hidden coupling not captured by imports.</div><div class="trend-row" style="color:var(--info);margin-top:2px">→ Consider co-locating these files or formalizing their dependency through explicit interfaces.</div></div><div class="trend-card"><div class="trend-title"><span class="danger">CRITICAL</span>: Critical Complexity Gap</div><div class="trend-row">1 files combine extreme complexity (&gt;50) with poor health scores — highest priority for intervention.</div><div class="trend-row" style="color:var(--info);margin-top:2px">→ Break these files down into smaller, focused modules with clear responsibilities.</div></div>
+    </div>
+  </div>
+</div>
+
+<div id="tooltip"></div>
+  <div id="legend"></div>
+  <div id="breadcrumb"></div>
+
+<script>
+// ── Data ─────────────────────────────────────────────────────────────
+const TREEMAP_DATA = {"name":"root","children":[]};
+const DEP_NODES = [];
+const DEP_EDGES = [];
+const STATS = {"largestFiles":[{"path":"skills/rui-bundle-analyze/analyze.mjs","size":317116,"ext":".mjs"},{"path":"cdn/index.html","size":79034,"ext":".html"},{"path":"cdn/yry-docs-binding/index.js","size":74518,"ext":".js"},{"path":"skills/rui-bundle-analyze/SKILL.md","size":63542,"ext":".md"},{"path":"skills/rui-bundle-analyze/help.mjs","size":15176,"ext":".mjs"},{"path":"cdn/yry-item-card/index.css","size":5827,"ext":".css"},{"path":"cdn/yry-docs-binding/index.css","size":1945,"ext":".css"}],"sizeByExt":{".html":79034,".css":7772,".js":74518,".md":63542,".mjs":332292},"sizeByDir":{"cdn":161324,"skills":395834},"mostDependedOn":[],"mostDependencies":[],"circularDeps":[],"totalSize":557158,"totalFiles":7,"oversizedFiles":[],"orphanFiles":[{"path":"skills/rui-bundle-analyze/analyze.mjs","size":317116,"ext":".mjs"},{"path":"skills/rui-bundle-analyze/help.mjs","size":15176,"ext":".mjs"},{"path":"cdn/yry-item-card/index.css","size":5827,"ext":".css"},{"path":"cdn/yry-docs-binding/index.css","size":1945,"ext":".css"}],"barrelFiles":[],"sizeHistogram":{"0-1 KB":0,"1-10 KB":2,"10-100 KB":4,"100-500 KB":1,"500 KB-1 MB":0,">1 MB":0},"maxDependencyDepth":1,"depthDist":{"2":1,"3":6},"duplicates":[],"packageMetrics":{"packages":[],"fileCoupling":[],"edgeCount":0,"packageCount":0},"transitiveDeps":null,"gitChurn":{"available":true,"timeWindow":"90 days","totalChanges":39,"filesChanged":7,"filesUnchanged":0,"churnRate":100,"topHotFiles":[{"path":"cdn/index.html","size":79034,"churnCount":19,"heatIndex":119.5},{"path":"skills/rui-bundle-analyze/analyze.mjs","size":317116,"churnCount":4,"heatIndex":33.1},{"path":"skills/rui-bundle-analyze/SKILL.md","size":63542,"churnCount":4,"heatIndex":23.9},{"path":"cdn/yry-docs-binding/index.js","size":74518,"churnCount":3,"heatIndex":18.6},{"path":"skills/rui-bundle-analyze/help.mjs","size":15176,"churnCount":4,"heatIndex":15.9},{"path":"cdn/yry-item-card/index.css","size":5827,"churnCount":3,"heatIndex":8.2},{"path":"cdn/yry-docs-binding/index.css","size":1945,"churnCount":2,"heatIndex":3.1}],"churnBuckets":{"0":0,"1-2":1,"3-5":5,"6-10":0,"11-20":1,"20+":0}},"layerAnalysis":null,"coChange":{"available":true,"timeWindow":"90 days","pairs":[{"files":["skills/rui-bundle-analyze/SKILL.md","skills/rui-bundle-analyze/analyze.mjs"],"coChangeCount":4,"jaccard":1,"strength":4},{"files":["skills/rui-bundle-analyze/SKILL.md","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":4,"jaccard":1,"strength":4},{"files":["skills/rui-bundle-analyze/analyze.mjs","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":4,"jaccard":1,"strength":4},{"files":["cdn/index.html","skills/rui-bundle-analyze/SKILL.md"],"coChangeCount":4,"jaccard":0.667,"strength":2.67},{"files":["cdn/index.html","skills/rui-bundle-analyze/analyze.mjs"],"coChangeCount":4,"jaccard":0.667,"strength":2.67},{"files":["cdn/index.html","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":4,"jaccard":0.667,"strength":2.67},{"files":["cdn/index.html","cdn/yry-item-card/index.css"],"coChangeCount":3,"jaccard":0.5,"strength":1.5},{"files":["cdn/yry-docs-binding/index.css","cdn/yry-docs-binding/index.js"],"coChangeCount":2,"jaccard":0.667,"strength":1.33},{"files":["cdn/yry-docs-binding/index.js","skills/rui-bundle-analyze/SKILL.md"],"coChangeCount":2,"jaccard":0.4,"strength":0.8},{"files":["cdn/yry-docs-binding/index.js","skills/rui-bundle-analyze/analyze.mjs"],"coChangeCount":2,"jaccard":0.4,"strength":0.8},{"files":["cdn/yry-docs-binding/index.js","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":2,"jaccard":0.4,"strength":0.8},{"files":["cdn/index.html","cdn/yry-docs-binding/index.js"],"coChangeCount":2,"jaccard":0.286,"strength":0.57},{"files":["cdn/yry-docs-binding/index.css","skills/rui-bundle-analyze/SKILL.md"],"coChangeCount":1,"jaccard":0.2,"strength":0.2},{"files":["cdn/yry-docs-binding/index.css","skills/rui-bundle-analyze/analyze.mjs"],"coChangeCount":1,"jaccard":0.2,"strength":0.2},{"files":["cdn/yry-docs-binding/index.css","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":1,"jaccard":0.2,"strength":0.2},{"files":["cdn/yry-docs-binding/index.js","cdn/yry-item-card/index.css"],"coChangeCount":1,"jaccard":0.2,"strength":0.2},{"files":["cdn/yry-item-card/index.css","skills/rui-bundle-analyze/SKILL.md"],"coChangeCount":1,"jaccard":0.167,"strength":0.17},{"files":["cdn/yry-item-card/index.css","skills/rui-bundle-analyze/analyze.mjs"],"coChangeCount":1,"jaccard":0.167,"strength":0.17},{"files":["cdn/yry-item-card/index.css","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":1,"jaccard":0.167,"strength":0.17},{"files":["cdn/index.html","cdn/yry-docs-binding/index.css"],"coChangeCount":1,"jaccard":0.143,"strength":0.14}],"commitCount":7,"coChangedFileCount":7,"clusters":[{"files":["skills/rui-bundle-analyze/SKILL.md","skills/rui-bundle-analyze/analyze.mjs","skills/rui-bundle-analyze/help.mjs","cdn/index.html"],"size":4}],"summary":{"totalCommits":7,"coChangedFiles":7,"topPairStrength":4}},"riskScores":{"topRisks":[{"path":"skills/rui-bundle-analyze/analyze.mjs","size":317116,"sizeRisk":0.93,"churnRisk":0.21,"couplingRisk":0,"orphanRisk":1,"circularRisk":0,"composite":0.434},{"path":"cdn/index.html","size":79034,"sizeRisk":0.7,"churnRisk":1,"couplingRisk":0,"orphanRisk":0,"circularRisk":0,"composite":0.426},{"path":"skills/rui-bundle-analyze/help.mjs","size":15176,"sizeRisk":0.45,"churnRisk":0.21,"couplingRisk":0,"orphanRisk":1,"circularRisk":0,"composite":0.314},{"path":"cdn/yry-item-card/index.css","size":5827,"sizeRisk":0.31,"churnRisk":0.16,"couplingRisk":0,"orphanRisk":1,"circularRisk":0,"composite":0.266},{"path":"skills/rui-bundle-analyze/SKILL.md","size":63542,"sizeRisk":0.67,"churnRisk":0.21,"couplingRisk":0,"orphanRisk":0,"circularRisk":0,"composite":0.22},{"path":"cdn/yry-docs-binding/index.css","size":1945,"sizeRisk":0.17,"churnRisk":0.11,"couplingRisk":0,"orphanRisk":1,"circularRisk":0,"composite":0.219},{"path":"cdn/yry-docs-binding/index.js","size":74518,"sizeRisk":0.69,"churnRisk":0.16,"couplingRisk":0,"orphanRisk":0,"circularRisk":0,"composite":0.213}],"riskBuckets":{"low (0-20)":0,"medium (20-40)":5,"high (40-60)":2,"critical (60-80)":0,"extreme (80-100)":0},"avgRisk":29.9,"totalAssessed":7},"recommendations":[],"scc":{"components":[],"multiNodeComponents":[],"largestSCCSize":0,"sccCount":0,"multiNodeSccCount":0,"sizeDist":{},"circularFiles":{}},"betweenness":{"topBottlenecks":[],"avgBetweenness":0,"maxBetweenness":0,"significantBottlenecks":[]},"moduleBoundaries":[{"type":"co-locate","priority":"P2","files":["cdn/index.html","skills/rui-bundle-analyze/SKILL.md"],"reason":"Co-change Jaccard=0.667 (4× together) but in different directories (cdn vs skills/rui-bundle-analyze)"},{"type":"co-locate","priority":"P2","files":["cdn/index.html","skills/rui-bundle-analyze/analyze.mjs"],"reason":"Co-change Jaccard=0.667 (4× together) but in different directories (cdn vs skills/rui-bundle-analyze)"},{"type":"co-locate","priority":"P2","files":["cdn/index.html","skills/rui-bundle-analyze/help.mjs"],"reason":"Co-change Jaccard=0.667 (4× together) but in different directories (cdn vs skills/rui-bundle-analyze)"},{"type":"co-locate","priority":"P2","files":["cdn/index.html","cdn/yry-item-card/index.css"],"reason":"Co-change Jaccard=0.5 (3× together) but in different directories (cdn vs cdn/yry-item-card)"}],"pagerank":{"topRanked":[],"authoritativeFiles":[],"avgPagerank":0,"maxPagerank":0,"damping":0.85},"testGaps":{"untestedFiles":[{"path":"skills/rui-bundle-analyze/analyze.mjs","size":317116,"riskScore":0.434},{"path":"skills/rui-bundle-analyze/help.mjs","size":15176,"riskScore":0.314},{"path":"cdn/yry-item-card/index.css","size":5827,"riskScore":0.266},{"path":"cdn/yry-docs-binding/index.css","size":1945,"riskScore":0.219},{"path":"cdn/yry-docs-binding/index.js","size":74518,"riskScore":0.213}],"highPriority":[{"path":"skills/rui-bundle-analyze/analyze.mjs","size":317116,"riskScore":0.434},{"path":"skills/rui-bundle-analyze/help.mjs","size":15176,"riskScore":0.314},{"path":"cdn/yry-item-card/index.css","size":5827,"riskScore":0.266},{"path":"cdn/yry-docs-binding/index.css","size":1945,"riskScore":0.219},{"path":"cdn/yry-docs-binding/index.js","size":74518,"riskScore":0.213}],"totalSourceFiles":5,"testedCount":0,"untestedCount":5,"coverageRate":0},"changePropagation":{"available":true,"propagations":[{"files":["skills/rui-bundle-analyze/SKILL.md","skills/rui-bundle-analyze/analyze.mjs"],"coChangeCount":4,"jaccard":1,"probBgivenA":100,"probAgivenB":100,"maxPropagation":100},{"files":["skills/rui-bundle-analyze/SKILL.md","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":4,"jaccard":1,"probBgivenA":100,"probAgivenB":100,"maxPropagation":100},{"files":["skills/rui-bundle-analyze/analyze.mjs","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":4,"jaccard":1,"probBgivenA":100,"probAgivenB":100,"maxPropagation":100},{"files":["cdn/index.html","skills/rui-bundle-analyze/SKILL.md"],"coChangeCount":4,"jaccard":0.667,"probBgivenA":21.1,"probAgivenB":100,"maxPropagation":100},{"files":["cdn/index.html","skills/rui-bundle-analyze/analyze.mjs"],"coChangeCount":4,"jaccard":0.667,"probBgivenA":21.1,"probAgivenB":100,"maxPropagation":100},{"files":["cdn/index.html","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":4,"jaccard":0.667,"probBgivenA":21.1,"probAgivenB":100,"maxPropagation":100},{"files":["cdn/index.html","cdn/yry-item-card/index.css"],"coChangeCount":3,"jaccard":0.5,"probBgivenA":15.8,"probAgivenB":100,"maxPropagation":100},{"files":["cdn/yry-docs-binding/index.css","cdn/yry-docs-binding/index.js"],"coChangeCount":2,"jaccard":0.667,"probBgivenA":100,"probAgivenB":66.7,"maxPropagation":100},{"files":["cdn/yry-docs-binding/index.js","skills/rui-bundle-analyze/SKILL.md"],"coChangeCount":2,"jaccard":0.4,"probBgivenA":66.7,"probAgivenB":50,"maxPropagation":66.7},{"files":["cdn/yry-docs-binding/index.js","skills/rui-bundle-analyze/analyze.mjs"],"coChangeCount":2,"jaccard":0.4,"probBgivenA":66.7,"probAgivenB":50,"maxPropagation":66.7},{"files":["cdn/yry-docs-binding/index.js","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":2,"jaccard":0.4,"probBgivenA":66.7,"probAgivenB":50,"maxPropagation":66.7},{"files":["cdn/index.html","cdn/yry-docs-binding/index.js"],"coChangeCount":2,"jaccard":0.286,"probBgivenA":10.5,"probAgivenB":66.7,"maxPropagation":66.7},{"files":["cdn/yry-docs-binding/index.css","skills/rui-bundle-analyze/SKILL.md"],"coChangeCount":1,"jaccard":0.2,"probBgivenA":50,"probAgivenB":25,"maxPropagation":50},{"files":["cdn/yry-docs-binding/index.css","skills/rui-bundle-analyze/analyze.mjs"],"coChangeCount":1,"jaccard":0.2,"probBgivenA":50,"probAgivenB":25,"maxPropagation":50},{"files":["cdn/yry-docs-binding/index.css","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":1,"jaccard":0.2,"probBgivenA":50,"probAgivenB":25,"maxPropagation":50},{"files":["cdn/index.html","cdn/yry-docs-binding/index.css"],"coChangeCount":1,"jaccard":0.143,"probBgivenA":5.3,"probAgivenB":50,"maxPropagation":50},{"files":["cdn/yry-docs-binding/index.js","cdn/yry-item-card/index.css"],"coChangeCount":1,"jaccard":0.2,"probBgivenA":33.3,"probAgivenB":33.3,"maxPropagation":33.3},{"files":["cdn/yry-item-card/index.css","skills/rui-bundle-analyze/SKILL.md"],"coChangeCount":1,"jaccard":0.167,"probBgivenA":33.3,"probAgivenB":25,"maxPropagation":33.3},{"files":["cdn/yry-item-card/index.css","skills/rui-bundle-analyze/analyze.mjs"],"coChangeCount":1,"jaccard":0.167,"probBgivenA":33.3,"probAgivenB":25,"maxPropagation":33.3},{"files":["cdn/yry-item-card/index.css","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":1,"jaccard":0.167,"probBgivenA":33.3,"probAgivenB":25,"maxPropagation":33.3}],"topPropagations":[{"files":["skills/rui-bundle-analyze/SKILL.md","skills/rui-bundle-analyze/analyze.mjs"],"coChangeCount":4,"jaccard":1,"probBgivenA":100,"probAgivenB":100,"maxPropagation":100},{"files":["skills/rui-bundle-analyze/SKILL.md","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":4,"jaccard":1,"probBgivenA":100,"probAgivenB":100,"maxPropagation":100},{"files":["skills/rui-bundle-analyze/analyze.mjs","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":4,"jaccard":1,"probBgivenA":100,"probAgivenB":100,"maxPropagation":100},{"files":["cdn/index.html","skills/rui-bundle-analyze/SKILL.md"],"coChangeCount":4,"jaccard":0.667,"probBgivenA":21.1,"probAgivenB":100,"maxPropagation":100},{"files":["cdn/index.html","skills/rui-bundle-analyze/analyze.mjs"],"coChangeCount":4,"jaccard":0.667,"probBgivenA":21.1,"probAgivenB":100,"maxPropagation":100},{"files":["cdn/index.html","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":4,"jaccard":0.667,"probBgivenA":21.1,"probAgivenB":100,"maxPropagation":100},{"files":["cdn/index.html","cdn/yry-item-card/index.css"],"coChangeCount":3,"jaccard":0.5,"probBgivenA":15.8,"probAgivenB":100,"maxPropagation":100},{"files":["cdn/yry-docs-binding/index.css","cdn/yry-docs-binding/index.js"],"coChangeCount":2,"jaccard":0.667,"probBgivenA":100,"probAgivenB":66.7,"maxPropagation":100},{"files":["cdn/yry-docs-binding/index.js","skills/rui-bundle-analyze/SKILL.md"],"coChangeCount":2,"jaccard":0.4,"probBgivenA":66.7,"probAgivenB":50,"maxPropagation":66.7},{"files":["cdn/yry-docs-binding/index.js","skills/rui-bundle-analyze/analyze.mjs"],"coChangeCount":2,"jaccard":0.4,"probBgivenA":66.7,"probAgivenB":50,"maxPropagation":66.7}],"highPropagation":[{"files":["skills/rui-bundle-analyze/SKILL.md","skills/rui-bundle-analyze/analyze.mjs"],"coChangeCount":4,"jaccard":1,"probBgivenA":100,"probAgivenB":100,"maxPropagation":100},{"files":["skills/rui-bundle-analyze/SKILL.md","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":4,"jaccard":1,"probBgivenA":100,"probAgivenB":100,"maxPropagation":100},{"files":["skills/rui-bundle-analyze/analyze.mjs","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":4,"jaccard":1,"probBgivenA":100,"probAgivenB":100,"maxPropagation":100},{"files":["cdn/index.html","skills/rui-bundle-analyze/SKILL.md"],"coChangeCount":4,"jaccard":0.667,"probBgivenA":21.1,"probAgivenB":100,"maxPropagation":100},{"files":["cdn/index.html","skills/rui-bundle-analyze/analyze.mjs"],"coChangeCount":4,"jaccard":0.667,"probBgivenA":21.1,"probAgivenB":100,"maxPropagation":100},{"files":["cdn/index.html","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":4,"jaccard":0.667,"probBgivenA":21.1,"probAgivenB":100,"maxPropagation":100},{"files":["cdn/index.html","cdn/yry-item-card/index.css"],"coChangeCount":3,"jaccard":0.5,"probBgivenA":15.8,"probAgivenB":100,"maxPropagation":100},{"files":["cdn/yry-docs-binding/index.css","cdn/yry-docs-binding/index.js"],"coChangeCount":2,"jaccard":0.667,"probBgivenA":100,"probAgivenB":66.7,"maxPropagation":100},{"files":["cdn/yry-docs-binding/index.js","skills/rui-bundle-analyze/SKILL.md"],"coChangeCount":2,"jaccard":0.4,"probBgivenA":66.7,"probAgivenB":50,"maxPropagation":66.7},{"files":["cdn/yry-docs-binding/index.js","skills/rui-bundle-analyze/analyze.mjs"],"coChangeCount":2,"jaccard":0.4,"probBgivenA":66.7,"probAgivenB":50,"maxPropagation":66.7},{"files":["cdn/yry-docs-binding/index.js","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":2,"jaccard":0.4,"probBgivenA":66.7,"probAgivenB":50,"maxPropagation":66.7},{"files":["cdn/index.html","cdn/yry-docs-binding/index.js"],"coChangeCount":2,"jaccard":0.286,"probBgivenA":10.5,"probAgivenB":66.7,"maxPropagation":66.7},{"files":["cdn/yry-docs-binding/index.css","skills/rui-bundle-analyze/SKILL.md"],"coChangeCount":1,"jaccard":0.2,"probBgivenA":50,"probAgivenB":25,"maxPropagation":50},{"files":["cdn/yry-docs-binding/index.css","skills/rui-bundle-analyze/analyze.mjs"],"coChangeCount":1,"jaccard":0.2,"probBgivenA":50,"probAgivenB":25,"maxPropagation":50},{"files":["cdn/yry-docs-binding/index.css","skills/rui-bundle-analyze/help.mjs"],"coChangeCount":1,"jaccard":0.2,"probBgivenA":50,"probAgivenB":25,"maxPropagation":50},{"files":["cdn/index.html","cdn/yry-docs-binding/index.css"],"coChangeCount":1,"jaccard":0.143,"probBgivenA":5.3,"probAgivenB":50,"maxPropagation":50}],"highPropagationCount":16},"knowledgeDistribution":{"available":true,"totalContributors":0,"timeWindow":"180 days","fileOwnership":[{"path":"cdn/yry-docs-binding/index.css","contributorCount":1,"contributors":["YourName"]},{"path":"cdn/yry-docs-binding/index.js","contributorCount":1,"contributors":["YourName"]},{"path":"skills/rui-bundle-analyze/SKILL.md","contributorCount":1,"contributors":["YourName"]},{"path":"skills/rui-bundle-analyze/analyze.mjs","contributorCount":1,"contributors":["YourName"]},{"path":"skills/rui-bundle-analyze/help.mjs","contributorCount":1,"contributors":["YourName"]},{"path":"cdn/index.html","contributorCount":2,"contributors":["YourName","Claude"]},{"path":"cdn/yry-item-card/index.css","contributorCount":2,"contributors":["YourName","Claude"]}],"busFactorRisks":[{"path":"cdn/yry-docs-binding/index.css","contributorCount":1,"contributors":["YourName"]},{"path":"cdn/yry-docs-binding/index.js","contributorCount":1,"contributors":["YourName"]},{"path":"skills/rui-bundle-analyze/SKILL.md","contributorCount":1,"contributors":["YourName"]},{"path":"skills/rui-bundle-analyze/analyze.mjs","contributorCount":1,"contributors":["YourName"]},{"path":"skills/rui-bundle-analyze/help.mjs","contributorCount":1,"contributors":["YourName"]}],"busFactorRiskCount":5,"abandonedFiles":[],"abandonedCount":0,"contribCountDist":{"1":5,"2":2},"healthyFiles":0,"singleContributorFiles":5},"complexity":{"topComplex":[{"path":"skills/rui-bundle-analyze/analyze.mjs","size":317116,"loc":5454,"totalLines":7631,"commentRatio":0.16,"branchPoints":2089,"funcCount":552,"cyclomaticComplexity":2090,"density":58.1},{"path":"cdn/index.html","size":79034,"loc":1124,"totalLines":1249,"commentRatio":0.05,"branchPoints":177,"funcCount":20,"cyclomaticComplexity":178,"density":70.3},{"path":"cdn/yry-docs-binding/index.js","size":74518,"loc":770,"totalLines":888,"commentRatio":0.09,"branchPoints":172,"funcCount":5,"cyclomaticComplexity":173,"density":96.8},{"path":"skills/rui-bundle-analyze/help.mjs","size":15176,"loc":242,"totalLines":311,"commentRatio":0,"branchPoints":2,"funcCount":0,"cyclomaticComplexity":3,"density":62.7},{"path":"cdn/yry-docs-binding/index.css","size":1945,"loc":38,"totalLines":55,"commentRatio":0.22,"branchPoints":0,"funcCount":0,"cyclomaticComplexity":1,"density":51.2},{"path":"cdn/yry-item-card/index.css","size":5827,"loc":123,"totalLines":164,"commentRatio":0.15,"branchPoints":0,"funcCount":0,"cyclomaticComplexity":1,"density":47.4}],"complexityBuckets":{"1-5 (simple)":3,"6-10 (moderate)":0,"11-20 (complex)":0,"21-50 (very complex)":0,"50+ (extreme)":3},"avgComplexity":407.7,"maxComplexity":2090,"totalAnalyzed":6},"contentSimilarity":{"pairs":[],"similarGroups":[],"pairCount":0,"avgSimilarity":0,"threshold":0.6},"hotspotMatrix":{"available":true,"hotspots":[{"path":"cdn/index.html","complexity":178,"churn":19,"severity":8.5,"quadrant":"hotspot"}],"quadrants":{"healthy":5,"stableComplex":1,"frequentSimple":0,"hotspot":1},"thresholds":{"medianComplexity":173,"medianChurn":4},"totalClassified":7},"fitnessRules":{"rules":[{"id":"no-god-module","description":"No file should depend on more than 15 other files","severity":"medium"},{"id":"main-sequence-proximity","description":"Packages should be close to the main sequence (D < 0.7)","severity":"medium"}],"violations":[],"totalRules":2,"rulesPassed":2,"rulesFailed":0,"fitnessScore":100,"grade":"A"},"importCost":null,"techDebt":{"totalHours":13.5,"totalDays":1.7,"totalWeeks":0.3,"debtDensity":1.7,"sigRating":"★★★★★ (A)","breakdown":[{"category":"Complexity (refactor extreme)","count":3,"unitHours":2,"totalHours":6},{"category":"Test coverage (write tests)","count":5,"unitHours":1.5,"totalHours":7.5}],"costModel":{"splitFileHours":4,"refactorComplexHours":2,"deduplicateHours":1,"decoupleHours":3,"writeTestHours":1.5,"fixLayerViolationHours":2,"extractInterfaceHours":3,"breakSccHours":4}},"recommendationsWithROI":[],"apiSurface":{"topApiModules":[],"largeApiModules":[],"totalModules":0,"totalExportsAll":0,"avgExportsPerModule":0},"healthIndex":{"topUnhealthy":[{"path":"skills/rui-bundle-analyze/analyze.mjs","health":32,"grade":"F","size":317116},{"path":"skills/rui-bundle-analyze/help.mjs","health":72,"grade":"C","size":15176},{"path":"cdn/yry-docs-binding/index.css","health":73,"grade":"C","size":1945},{"path":"cdn/yry-docs-binding/index.js","health":74,"grade":"C","size":74518},{"path":"cdn/yry-item-card/index.css","health":78,"grade":"B","size":5827}],"gradeDist":{"A":0,"B":1,"C":3,"D":0,"F":1},"avgHealth":65.8,"healthGrade":"C","totalAssessed":5},"sdp":{"violations":[],"sdpScore":100,"passed":true},"reviewRisk":{"topReviewRisks":[{"path":"skills/rui-bundle-analyze/analyze.mjs","reviewRisk":0.548,"components":{"complexity":1,"churn":0.21,"risk":0,"coupling":0.63,"busFactor":1}},{"path":"cdn/yry-docs-binding/index.js","reviewRisk":0.187,"components":{"complexity":0.08,"churn":0.16,"risk":0,"coupling":0.15,"busFactor":1}},{"path":"skills/rui-bundle-analyze/help.mjs","reviewRisk":0.158,"components":{"complexity":0,"churn":0.21,"risk":0,"coupling":0.03,"busFactor":1}},{"path":"cdn/yry-docs-binding/index.css","reviewRisk":0.127,"components":{"complexity":0,"churn":0.11,"risk":0,"coupling":0,"busFactor":1}},{"path":"cdn/yry-item-card/index.css","reviewRisk":0.041,"components":{"complexity":0,"churn":0.16,"risk":0,"coupling":0.01,"busFactor":0}}],"avgReviewRisk":0.212,"totalAssessed":5,"highPriorityReviews":[{"path":"skills/rui-bundle-analyze/analyze.mjs","reviewRisk":0.548,"components":{"complexity":1,"churn":0.21,"risk":0,"coupling":0.63,"busFactor":1}}]},"breakingChangeImpact":{"impacts":[],"criticalModules":[]},"releaseCoupling":{"releaseUnits":[{"files":["cdn/index.html","cdn/yry-item-card/index.css","cdn/yry-docs-binding/index.js","cdn/yry-docs-binding/index.css","skills/rui-bundle-analyze/SKILL.md","skills/rui-bundle-analyze/help.mjs","skills/rui-bundle-analyze/analyze.mjs"],"size":7,"representative":"cdn/index.html"}],"coupledFileCount":7,"unitCount":1,"largestUnitSize":7},"knowledgeConcentration":{"directoryHHI":[],"avgHHI":0,"highConcentrationDirs":[],"highCount":0},"testPrioritization":{"prioritizedTests":[{"path":"skills/rui-bundle-analyze/analyze.mjs","size":317116,"risk":0.434,"dependents":0,"priority":0.43},{"path":"skills/rui-bundle-analyze/help.mjs","size":15176,"risk":0.314,"dependents":0,"priority":0.31},{"path":"cdn/yry-item-card/index.css","size":5827,"risk":0.266,"dependents":0,"priority":0.27},{"path":"cdn/yry-docs-binding/index.css","size":1945,"risk":0.219,"dependents":0,"priority":0.22},{"path":"cdn/yry-docs-binding/index.js","size":74518,"risk":0.213,"dependents":0,"priority":0.21}],"urgent":[],"high":[],"medium":[],"low":[{"path":"skills/rui-bundle-analyze/analyze.mjs","size":317116,"risk":0.434,"dependents":0,"priority":0.43},{"path":"skills/rui-bundle-analyze/help.mjs","size":15176,"risk":0.314,"dependents":0,"priority":0.31},{"path":"cdn/yry-item-card/index.css","size":5827,"risk":0.266,"dependents":0,"priority":0.27},{"path":"cdn/yry-docs-binding/index.css","size":1945,"risk":0.219,"dependents":0,"priority":0.22},{"path":"cdn/yry-docs-binding/index.js","size":74518,"risk":0.213,"dependents":0,"priority":0.21}],"totalUntested":5,"urgentCount":0,"highCount":0},"onboardingPath":{"path":[],"phases":{}},"ownershipTransferRisk":{"highRiskTransfers":[{"path":"skills/rui-bundle-analyze/analyze.mjs","contributor":"YourName","complexityScore":1,"dependencyScore":0,"transferRisk":60}],"totalAtRiskFiles":5,"highRiskCount":1,"avgTransferRisk":28.7},"fileAge":{"available":true,"ageBuckets":{"0-30d":5,"1-3mo":0,"3-6mo":0,"6-12mo":0,"1-2yr":0,"2yr+":0},"oldestFiles":[{"path":"cdn/yry-item-card/index.css","createdAt":"2026-06-16 17:46:15 +0800","ageDays":2,"ageMonths":0.1},{"path":"cdn/yry-docs-binding/index.css","createdAt":"2026-06-19 08:28:10 +0800","ageDays":0,"ageMonths":0},{"path":"cdn/yry-docs-binding/index.js","createdAt":"2026-06-19 08:28:10 +0800","ageDays":0,"ageMonths":0},{"path":"skills/rui-bundle-analyze/analyze.mjs","createdAt":"2026-06-19 08:15:00 +0800","ageDays":0,"ageMonths":0},{"path":"skills/rui-bundle-analyze/help.mjs","createdAt":"2026-06-19 08:15:00 +0800","ageDays":0,"ageMonths":0}],"newestFiles":[{"path":"cdn/yry-docs-binding/index.css","createdAt":"2026-06-19 08:28:10 +0800","ageDays":0,"ageMonths":0},{"path":"cdn/yry-docs-binding/index.js","createdAt":"2026-06-19 08:28:10 +0800","ageDays":0,"ageMonths":0},{"path":"skills/rui-bundle-analyze/analyze.mjs","createdAt":"2026-06-19 08:15:00 +0800","ageDays":0,"ageMonths":0},{"path":"skills/rui-bundle-analyze/help.mjs","createdAt":"2026-06-19 08:15:00 +0800","ageDays":0,"ageMonths":0},{"path":"cdn/yry-item-card/index.css","createdAt":"2026-06-16 17:46:15 +0800","ageDays":2,"ageMonths":0.1}],"ageChurnMatrix":{"oldHighChurn":[],"oldLowChurn":[],"youngHighChurn":[],"youngLowChurn":[{"path":"skills/rui-bundle-analyze/analyze.mjs","createdAt":"2026-06-19 08:15:00 +0800","ageDays":0,"ageMonths":0,"churn":4},{"path":"skills/rui-bundle-analyze/help.mjs","createdAt":"2026-06-19 08:15:00 +0800","ageDays":0,"ageMonths":0,"churn":4},{"path":"cdn/yry-docs-binding/index.js","createdAt":"2026-06-19 08:28:10 +0800","ageDays":0,"ageMonths":0,"churn":3},{"path":"cdn/yry-item-card/index.css","createdAt":"2026-06-16 17:46:15 +0800","ageDays":2,"ageMonths":0.1,"churn":3},{"path":"cdn/yry-docs-binding/index.css","createdAt":"2026-06-19 08:28:10 +0800","ageDays":0,"ageMonths":0,"churn":2}]},"avgAgeDays":0,"totalDated":5},"conformance":null,"refactoringPriority":{"topPriorities":[{"path":"skills/rui-bundle-analyze/analyze.mjs","priority":57.4,"components":{"complexity":1,"churn":0.21,"risk":0.43,"size":0.63,"busFactor":1,"untested":1,"orphan":1}},{"path":"skills/rui-bundle-analyze/help.mjs","priority":26,"components":{"complexity":0,"churn":0.21,"risk":0.31,"size":0.03,"busFactor":1,"untested":1,"orphan":1}},{"path":"cdn/yry-docs-binding/index.css","priority":21.6,"components":{"complexity":0,"churn":0.11,"risk":0.22,"size":0,"busFactor":1,"untested":1,"orphan":1}},{"path":"cdn/yry-docs-binding/index.js","priority":21.3,"components":{"complexity":0.08,"churn":0.16,"risk":0.21,"size":0.15,"busFactor":1,"untested":1,"orphan":0}},{"path":"cdn/yry-item-card/index.css","priority":18.7,"components":{"complexity":0,"churn":0.16,"risk":0.27,"size":0.01,"busFactor":0,"untested":1,"orphan":1}}],"avgPriority":29,"totalAssessed":5,"critical":[{"path":"skills/rui-bundle-analyze/analyze.mjs","priority":57.4,"components":{"complexity":1,"churn":0.21,"risk":0.43,"size":0.63,"busFactor":1,"untested":1,"orphan":1}}],"high":[{"path":"skills/rui-bundle-analyze/help.mjs","priority":26,"components":{"complexity":0,"churn":0.21,"risk":0.31,"size":0.03,"busFactor":1,"untested":1,"orphan":1}}],"medium":[{"path":"cdn/yry-docs-binding/index.css","priority":21.6,"components":{"complexity":0,"churn":0.11,"risk":0.22,"size":0,"busFactor":1,"untested":1,"orphan":1}},{"path":"cdn/yry-docs-binding/index.js","priority":21.3,"components":{"complexity":0.08,"churn":0.16,"risk":0.21,"size":0.15,"busFactor":1,"untested":1,"orphan":0}},{"path":"cdn/yry-item-card/index.css","priority":18.7,"components":{"complexity":0,"churn":0.16,"risk":0.27,"size":0.01,"busFactor":0,"untested":1,"orphan":1}}],"low":[]},"dependencyConcentration":{"available":false},"reviewTime":{"topHeavyReviews":[{"path":"skills/rui-bundle-analyze/analyze.mjs","estimatedMinutes":478,"components":{"cyclomatic":2090,"loc":5454,"dependents":0},"needsSplitReview":true},{"path":"cdn/yry-docs-binding/index.js","estimatedMinutes":47,"components":{"cyclomatic":173,"loc":770,"dependents":0},"needsSplitReview":false},{"path":"skills/rui-bundle-analyze/help.mjs","estimatedMinutes":8,"components":{"cyclomatic":3,"loc":242,"dependents":0},"needsSplitReview":false},{"path":"cdn/yry-docs-binding/index.css","estimatedMinutes":6,"components":{"cyclomatic":1,"loc":38,"dependents":0},"needsSplitReview":false},{"path":"cdn/yry-item-card/index.css","estimatedMinutes":6,"components":{"cyclomatic":1,"loc":123,"dependents":0},"needsSplitReview":false}],"totalReviewHours":9.1,"avgMinutes":109,"filesNeedingSplit":[{"path":"skills/rui-bundle-analyze/analyze.mjs","estimatedMinutes":478,"components":{"cyclomatic":2090,"loc":5454,"dependents":0},"needsSplitReview":true}],"splitCount":1,"totalAssessed":5},"percentileRankings":{"topRanked":[{"path":"cdn/index.html","percentiles":{"size":"P83","complexity":"P80","churn":"P100","composite":"P88"},"compositePct":88},{"path":"skills/rui-bundle-analyze/analyze.mjs","percentiles":{"size":"P100","complexity":"P100","churn":"P50","composite":"P83"},"compositePct":83},{"path":"skills/rui-bundle-analyze/SKILL.md","percentiles":{"size":"P50","complexity":null,"churn":"P67","composite":"P59"},"compositePct":59},{"path":"skills/rui-bundle-analyze/help.mjs","percentiles":{"size":"P33","complexity":"P40","churn":"P83","composite":"P52"},"compositePct":52},{"path":"cdn/yry-docs-binding/index.js","percentiles":{"size":"P67","complexity":"P60","churn":"P17","composite":"P48"},"compositePct":48},{"path":"cdn/yry-item-card/index.css","percentiles":{"size":"P17","complexity":"P20","churn":"P33","composite":"P23"},"compositePct":23},{"path":"cdn/yry-docs-binding/index.css","percentiles":{"size":"P0","complexity":"P0","churn":"P0","composite":"P0"},"compositePct":0}],"topPercentile":[],"topPercentileCount":0,"totalRanked":7,"percentileDistribution":{"P90+":0,"P75-89":2,"P50-74":2,"P25-49":1,"P0-24":2}},"docCoverage":{"underDocumented":[{"path":"skills/rui-bundle-analyze/help.mjs","totalLines":311,"docLines":1,"docRatio":0,"hasJSDoc":true,"hasFuncDocs":true,"size":15176}],"wellDocumented":[{"path":"cdn/yry-docs-binding/index.css","totalLines":55,"docLines":13,"docRatio":0.24,"hasJSDoc":false,"hasFuncDocs":false,"size":1945}],"underDocHighComplex":[],"avgDocRatio":0.13,"totalAnalyzed":5,"withJSDoc":3,"jsDocRate":60},"trendAnalysis":{"dataPoints":21,"sizeDelta":-25022723,"sizeDeltaPercent":-97.8,"fileCountDelta":-1074,"riskDelta":19.8,"circularDelta":0,"anomalies":["Size changed -97.8% — unusual","Average risk score increased by 19.8 points"],"smaSize":20179143,"smaRisk":14.1},"forecast":{"available":true,"forecasts":{"totalSize":{"current":"544.1 KB","day30":"20.0 MB","day90":"19.7 MB","trend":"shrinking"},"avgRisk":{"current":29.9,"day30":13.9,"day90":14.4,"trend":"increasing"},"totalFiles":{"current":7,"day30":878,"day90":851,"trend":"shrinking"},"circularDeps":{"current":0,"day30":0,"day90":0,"trend":"improving"}},"sizeGrowthRate":"125.9 KB/run","dataPoints":21,"confidence":"high"},"executiveSummary":"=== Executive Summary: YrY ===\nGenerated: 2026-06-19 03:44:26  |  7 files  |  544.1 KB\n\n## Overall Health\n  File Health:    Grade C (65.8/100  |  5 files)\n  Architecture:   Grade A (100/100  |  2/2 rules)\n  Risk Level:     29.9/100 average  |  0 critical  |  0 extreme\n\n## Key Metrics\n  Complexity:     avg 407.7 McCabe  |  max 2090  |  3 extreme\n  Churn (90d):    7/7 files  |  39 changes  |  rate 100%\n  Test Coverage:  0%  |  5 untested  |  5 high-priority\n  Knowledge:      ? contributors  |  5 bus-factor-1  |  0 abandoned\n\n## Technical Debt\n  Total:          13.5h (1.7d / 0.3w)\n  SIG Rating:     ★★★★★ (A)\n  Debt Density:   1.7h/KLOC\n  Breakdown:\n    - Complexity (refactor extreme): 6h (3 items × 2h)\n    - Test coverage (write tests): 7.5h (5 items × 1.5h)\n\n## Top Risks & Hotspots\n  Hotspots:       1 files (high complexity + high churn)\n    - index.html: severity=8.5\n  SCCs:           0 — dependency graph is a DAG (healthy)\n\n## Trend (21 data points)\n  Size Trend:     -97.8% since last run\n  Risk Trend:     +19.8 points\n  Anomalies:\n    ⚠ Size changed -97.8% — unusual\n    ⚠ Average risk score increased by 19.8 points\n\n## Forecast (confidence: high)\n  Size:     544.1 KB → 20.0 MB (30d) → 19.7 MB (90d) [shrinking]\n  Risk:     29.9 → 13.9 (30d) → 14.4 (90d) [increasing]","anomalyDetection":{"available":true,"anomalies":[{"metric":"totalFiles","dataPointIndex":20,"timestamp":"2026-06-19 03:44:26","value":7,"mean":1024.2,"zScore":-4.47,"direction":"drop"},{"metric":"avgRisk","dataPointIndex":20,"timestamp":"2026-06-19 03:44:26","value":29.9,"mean":11,"zScore":4.47,"direction":"spike"},{"metric":"totalSize","dataPointIndex":20,"timestamp":"2026-06-19 03:44:26","value":557158,"mean":22385661.2,"zScore":-4.36,"direction":"drop"}],"trendChanges":[{"metric":"totalSize","dataPointIndex":20,"from":"up","to":"down"},{"metric":"totalFiles","dataPointIndex":20,"from":"up","to":"down"}],"totalAnomalies":3,"analyzedMetrics":3,"dataPoints":21},"qualityGates":{"gates":[{"id":"no-oversized-files","description":"No files exceeding 500KB","value":0,"threshold":0,"operator":"eq","status":"PASS","severity":"critical"},{"id":"no-circular-deps","description":"No circular dependencies","value":0,"threshold":0,"operator":"eq","status":"PASS","severity":"critical"},{"id":"no-extreme-complexity","description":"Extreme complexity files (50+) < 5","value":3,"threshold":5,"operator":"lt","status":"PASS","severity":"high"},{"id":"health-index-min","description":"Average health index ≥ 70","value":65.8,"threshold":70,"operator":"gte","status":"FAIL","severity":"high"},{"id":"fitness-min","description":"Architecture fitness score ≥ 60","value":100,"threshold":60,"operator":"gte","status":"PASS","severity":"high"},{"id":"coverage-min","description":"Test coverage ≥ 30%","value":0,"threshold":30,"operator":"gte","status":"FAIL","severity":"medium"},{"id":"bus-factor-max","description":"Bus-factor-1 files < 100","value":5,"threshold":100,"operator":"lt","status":"PASS","severity":"medium"},{"id":"layer-violation-max","description":"Layer violations < 10","value":0,"threshold":10,"operator":"lt","status":"PASS","severity":"medium"},{"id":"conformance-min","description":"Architecture conformance ≥ 80","value":0,"threshold":80,"operator":"gte","status":"FAIL","severity":"high"},{"id":"sdp-min","description":"SDP score ≥ 60","value":100,"threshold":60,"operator":"gte","status":"PASS","severity":"medium"}],"passCount":7,"failCount":3,"warnCount":0,"criticalFails":0,"overallStatus":"WARN","score":70},"correlationMatrix":{"correlations":[{"metrics":"Complexity ↔ Size","r":0.983,"strength":"strong","direction":"positive","n":6},{"metrics":"Churn ↔ Risk","r":0.633,"strength":"moderate","direction":"positive","n":7},{"metrics":"Complexity ↔ Churn","r":-0.074,"strength":"none","direction":"negative","n":6}],"strongCorrelations":[{"metrics":"Complexity ↔ Size","r":0.983,"strength":"strong","direction":"positive","n":6}],"totalPairs":3},"maturity":{"level":2,"levelName":"Managed","score":40,"maxScore":100,"findings":["❌ Architecture conformance low","✅ No circular dependency groups (SCC)","❌ Health index low","❌ High average complexity","❌ Test coverage low or none","✅ Low debt density","✅ Architecture fitness ≥ 80","❌ High knowledge concentration"],"dimensions":{"structure":{"score":"good","label":"Architecture Structure"},"quality":{"score":"C","label":"Code Quality"},"testing":{"score":"0%","label":"Test Coverage"},"maintainability":{"score":"★★★★★ (A)","label":"Maintainability (SIG)"},"knowledge":{"score":"? contributors","label":"Knowledge Distribution"}}},"synthesizedInsights":{"insights":[{"pattern":"Implicit Module Coupling","description":"3 file pairs have high co-change frequency (Jaccard>0.6) but live in different directories — hidden coupling not captured by imports.","severity":"medium","affectedFiles":["cdn/index.html","skills/rui-bundle-analyze/SKILL.md","cdn/index.html","skills/rui-bundle-analyze/analyze.mjs","cdn/index.html","skills/rui-bundle-analyze/help.mjs"],"recommendation":"Consider co-locating these files or formalizing their dependency through explicit interfaces."},{"pattern":"Critical Complexity Gap","description":"1 files combine extreme complexity (>50) with poor health scores — highest priority for intervention.","severity":"critical","affectedFiles":["skills/rui-bundle-analyze/analyze.mjs"],"recommendation":"Break these files down into smaller, focused modules with clear responsibilities."}],"totalInsights":2,"criticalInsights":[{"pattern":"Critical Complexity Gap","description":"1 files combine extreme complexity (>50) with poor health scores — highest priority for intervention.","severity":"critical","affectedFiles":["skills/rui-bundle-analyze/analyze.mjs"],"recommendation":"Break these files down into smaller, focused modules with clear responsibilities."}],"highInsights":[]},"adrs":[{"id":"ADR-0001","title":"Test Coverage Strategy","status":"Proposed","context":"Current test coverage is 0% with 5 untested source files (5 high-priority).","decision":"Prioritize testing for high-risk files first, targeting 20% coverage within 90 days.","consequences":"Improved reliability, reduced regression risk, easier refactoring. Initial investment required.","recommendations":["Write tests for 5 high-priority untested files first","Establish coverage gate in CI pipeline"]}],"semverRecommendation":{"recommendation":"PATCH","reasons":["High change activity (likely bug fixes)"],"confidence":"medium"},"reviewChecklists":[{"path":"skills/rui-bundle-analyze/analyze.mjs","riskLevel":"HIGH","items":["🔍 Review for cyclomatic complexity — consider simplifying nested conditionals","👤 Single contributor — ensure knowledge is documented/shared","🔗 High coupling — verify all dependency changes are compatible","👻 Orphan file — verify this file is still needed","🧪 No test coverage — write tests before/with this change"]},{"path":"cdn/yry-docs-binding/index.js","riskLevel":"MEDIUM","items":["👤 Single contributor — ensure knowledge is documented/shared","🧪 No test coverage — write tests before/with this change"]},{"path":"skills/rui-bundle-analyze/help.mjs","riskLevel":"MEDIUM","items":["👤 Single contributor — ensure knowledge is documented/shared","👻 Orphan file — verify this file is still needed","🧪 No test coverage — write tests before/with this change"]},{"path":"cdn/yry-docs-binding/index.css","riskLevel":"LOW","items":["👤 Single contributor — ensure knowledge is documented/shared","👻 Orphan file — verify this file is still needed","🧪 No test coverage — write tests before/with this change"]},{"path":"cdn/yry-item-card/index.css","riskLevel":"LOW","items":["👻 Orphan file — verify this file is still needed","🧪 No test coverage — write tests before/with this change"]}],"sprintPackages":[]};
+const DIFF = null;
+const PKG_METRICS = {"packages":[],"fileCoupling":[],"edgeCount":0,"packageCount":0};
+
+// ── D3 setup ─────────────────────────────────────────────────────────
+const vis = d3.select("#vis");
+const width = () => vis.node().clientWidth;
+const height = () => vis.node().clientHeight;
+let currentView = "treemap";
+
+// Color scale for extensions
+const extColors = d3.scaleOrdinal(d3.schemeTableau10);
+const extColorMap = {};
+function getExtColor(ext) {
+  if (!extColorMap[ext]) extColorMap[ext] = extColors(ext);
+  return extColorMap[ext];
+}
+
+// ── Treemap ──────────────────────────────────────────────────────────
+function renderTreemap() {
+  vis.selectAll("*").remove();
+
+  const svg = vis.append("svg")
+    .attr("width", width())
+    .attr("height", height());
+
+  const g = svg.append("g");
+
+  // Zoom
+  const zoom = d3.zoom()
+    .scaleExtent([1, 20])
+    .on("zoom", (event) => g.attr("transform", event.transform));
+
+  svg.call(zoom);
+
+  // Hierarchy
+  const root = d3.hierarchy(TREEMAP_DATA)
+    .sum(d => d.value || 0)
+    .sort((a, b) => b.value - a.value);
+
+  // Treemap layout
+  d3.treemap()
+    .size([width(), height()])
+    .padding(1)
+    .round(true)(root);
+
+  // Color scale
+  const color = d3.scaleOrdinal()
+    .domain([...new Set(root.leaves().map(d => d.data.ext || "dir"))])
+    .range(d3.schemeTableau10);
+
+  // Draw
+  const cell = g.selectAll("g")
+    .data(root.leaves())
+    .join("g")
+    .attr("transform", d => `translate(${d.x0},${d.y0})`);
+
+  // Click to show breadcrumb (zoom to parent concept)
+  cell.on("click", (event, d) => {
+    // Navigate to parent via zoom
+    const parent = d.parent;
+    if (parent && parent !== root) {
+      const leaves = parent.leaves();
+      const x0 = d3.min(leaves, l => l.x0);
+      const y0 = d3.min(leaves, l => l.y0);
+      const x1 = d3.max(leaves, l => l.x1);
+      const y1 = d3.max(leaves, l => l.y1);
+      const dx = x1 - x0;
+      const dy = y1 - y0;
+
+      svg.transition().duration(500).call(
+        zoom.transform,
+        d3.zoomIdentity
+          .translate(width() / 2, height() / 2)
+          .scale(Math.min(8, 0.9 / Math.max(dx / width(), dy / height())))
+          .translate(-(x0 + dx / 2), -(y0 + dy / 2))
+      );
+    }
+  });
+
+  cell.append("rect")
+    .attr("width", d => Math.max(0, d.x1 - d.x0))
+    .attr("height", d => Math.max(0, d.y1 - d.y0))
+    .attr("fill", d => getExtColor(d.data.ext || "dir"))
+    .attr("fill-opacity", 0.85)
+    .attr("stroke", "#1e1f2b")
+    .attr("stroke-width", 0.5)
+    .on("mouseover", showTooltip)
+    .on("mousemove", moveTooltip)
+    .on("mouseout", hideTooltip);
+
+  // Labels (only on larger cells)
+  cell.append("text")
+    .attr("x", 3)
+    .attr("y", 12)
+    .attr("font-size", 10)
+    .attr("fill", "#fff")
+    .attr("font-family", "system-ui, sans-serif")
+    .text(d => {
+      const w = d.x1 - d.x0;
+      const h = d.y1 - d.y0;
+      if (w < 30 || h < 14) return "";
+      const name = d.data.name || "";
+      return w > name.length * 6 ? name : name.slice(0, Math.floor(w / 6) - 1) + "…";
+    });
+
+  // Breadcrumb (root = all files)
+  updateBreadcrumb([TREEMAP_DATA]);
+
+  // Color legend
+  renderLegend();
+
+  // Store zoom for reset
+  vis.node()._zoom = zoom;
+  vis.node()._svg = svg;
+  vis.node()._g = g;
+}
+
+// ── Color Legend ─────────────────────────────────────────────────────
+function renderLegend() {
+  // Build extension → total size map for legend
+  const extSizes = {};
+  const leaves = d3.hierarchy(TREEMAP_DATA).leaves();
+  for (const d of leaves) {
+    const ext = d.data.ext || "dir";
+    extSizes[ext] = (extSizes[ext] || 0) + (d.data.value || 0);
+  }
+  const entries = Object.entries(extSizes)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 15);
+
+  const legend = d3.select("#legend");
+  legend.html("");
+  legend.style("display", currentView === "treemap" ? "flex" : "none");
+
+  for (const [ext, size] of entries) {
+    const item = legend.append("div").attr("class", "legend-item");
+    item.append("div")
+      .attr("class", "legend-swatch")
+      .style("background", getExtColor(ext === "(no ext)" ? "dir" : ext));
+    item.append("span")
+      .attr("class", "legend-label")
+      .text(ext + " (" + formatB(size) + ")");
+  }
+}
+
+// ── Dependency Graph ─────────────────────────────────────────────────
+function renderGraph() {
+  vis.selectAll("*").remove();
+
+  const svg = vis.append("svg")
+    .attr("width", width())
+    .attr("height", height());
+
+  const g = svg.append("g");
+
+  const zoom = d3.zoom()
+    .scaleExtent([0.1, 10])
+    .on("zoom", (event) => g.attr("transform", event.transform));
+
+  svg.call(zoom);
+
+  // Size scale for nodes
+  const sizeScale = d3.scaleSqrt()
+    .domain([0, d3.max(DEP_NODES, d => d.size) || 1])
+    .range([3, 40]);
+
+  // Color by extension
+  const nodeColor = d => getExtColor(d.ext || "dir");
+
+  // Build adjacency for links
+  const nodeMap = new Map(DEP_NODES.map(n => [n.path, n]));
+
+  const links = DEP_EDGES
+    .filter(e => nodeMap.has(e.from) && nodeMap.has(e.to))
+    .map(e => ({
+      source: e.from,
+      target: e.to,
+      type: e.type || "import",
+    }));
+
+  // Simulation
+  const simulation = d3.forceSimulation(DEP_NODES)
+    .force("link", d3.forceLink(links).id(d => d.path).distance(80))
+    .force("charge", d3.forceManyBody().strength(-200))
+    .force("center", d3.forceCenter(width() / 2, height() / 2))
+    .force("collision", d3.forceCollide().radius(d => sizeScale(d.size) + 4));
+
+  // Draw links
+  const link = g.append("g")
+    .selectAll("line")
+    .data(links)
+    .join("line")
+    .attr("class", d => d.type === "require" ? "link link-require" : d.type === "dynamic" ? "link link-dynamic" : "link")
+    .attr("stroke-width", d => d.type === "dynamic" ? 0.8 : 1);
+
+  // Draw nodes
+  const node = g.append("g")
+    .selectAll("g")
+    .data(DEP_NODES)
+    .join("g")
+    .call(d3.drag()
+      .on("start", (event, d) => {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+      })
+      .on("drag", (event, d) => {
+        d.fx = event.x;
+        d.fy = event.y;
+      })
+      .on("end", (event, d) => {
+        if (!event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+      })
+    );
+
+  node.append("circle")
+    .attr("r", d => sizeScale(d.size))
+    .attr("fill", nodeColor)
+    .attr("fill-opacity", 0.8)
+    .attr("stroke", "#1e1f2b")
+    .attr("stroke-width", 1)
+    .on("mouseover", showGraphTooltip)
+    .on("mousemove", moveTooltip)
+    .on("mouseout", hideTooltip);
+
+  // Labels on larger nodes
+  node.append("text")
+    .attr("class", "node-label")
+    .attr("text-anchor", "middle")
+    .attr("dy", d => sizeScale(d.size) + 12)
+    .text(d => {
+      const r = sizeScale(d.size);
+      if (r < 12) return "";
+      const parts = d.path.split("/");
+      return parts[parts.length - 1];
+    });
+
+  simulation.on("tick", () => {
+    link
+      .attr("x1", d => d.source.x)
+      .attr("y1", d => d.source.y)
+      .attr("x2", d => d.target.x)
+      .attr("y2", d => d.target.y);
+
+    node.attr("transform", d => `translate(${d.x},${d.y})`);
+  });
+
+  // Store for reset
+  vis.node()._zoom = zoom;
+  vis.node()._svg = svg;
+  vis.node()._g = g;
+}
+
+// ── Tooltips ─────────────────────────────────────────────────────────
+const tooltip = d3.select("#tooltip");
+
+function showTooltip(event, d) {
+  const p = d.data.path || d.data.name;
+  tooltip
+    .classed("visible", true)
+    .html(`
+      <div class="tt-path">${escapeH(p)}</div>
+      <div class="tt-size">${formatB(d.value || d.data.value)}</div>
+      ${d.data.ext ? `<div style="color:#6b7089">ext: ${escapeH(d.data.ext)}</div>` : ""}
+    `);
+}
+
+function showGraphTooltip(event, d) {
+  tooltip
+    .classed("visible", true)
+    .html(`
+      <div class="tt-path">${escapeH(d.path)}</div>
+      <div class="tt-size">${formatB(d.size)}</div>
+    `);
+}
+
+function moveTooltip(event) {
+  tooltip
+    .style("left", (event.pageX + 12) + "px")
+    .style("top", (event.pageY - 28) + "px");
+}
+
+function hideTooltip() {
+  tooltip.classed("visible", false);
+}
+
+function escapeH(s) {
+  return (s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function formatB(bytes) {
+  if (!bytes || bytes === 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return (bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1) + " " + units[i];
+}
+
+// ── Breadcrumb ───────────────────────────────────────────────────────
+function updateBreadcrumb(ancestors) {
+  // For treemap: show directory hierarchy
+  let html = '<button onclick="resetZoom()">📦 root</button>';
+  for (let i = 0; i < Math.min(ancestors.length, 6); i++) {
+    html += `<button>${escapeH(ancestors[i].name || "root")}</button>`;
+  }
+  d3.select("#breadcrumb").html(html);
+}
+
+// ── Controls ─────────────────────────────────────────────────────────
+function switchView(view) {
+  currentView = view;
+  d3.select("#btn-treemap").classed("active", view === "treemap");
+  d3.select("#btn-graph").classed("active", view === "graph");
+
+  if (view === "treemap") renderTreemap();
+  else {
+    d3.select("#legend").style("display", "none");
+    d3.select("#breadcrumb").html("");
+    renderGraph();
+  }
+}
+
+function resetZoom() {
+  const svg = vis.node()._svg;
+  const zoom = vis.node()._zoom;
+  if (svg && zoom) {
+    svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
+  }
+}
+
+// ── Sidebar search filter ────────────────────────────────────────────
+function filterSidebar(query) {
+  const content = d3.select("#sidebar-content");
+  const rows = content.selectAll(".stat-row");
+  const headings = content.selectAll("h3");
+  const bars = content.selectAll(".ext-bar-wrap, .histo-bar-wrap");
+  const cards = content.selectAll(".trend-card");
+
+  const q = (query || "").toLowerCase().trim();
+
+  if (!q) {
+    // Show all
+    rows.style("display", "flex");
+    headings.style("display", "block");
+    bars.style("display", "flex");
+    cards.style("display", "block");
+    return;
+  }
+
+  // Filter rows
+  rows.style("display", function() {
+    const text = (this.textContent || "").toLowerCase();
+    return text.includes(q) ? "flex" : "none";
+  });
+
+  // Filter bars
+  bars.style("display", function() {
+    const text = (this.textContent || "").toLowerCase();
+    return text.includes(q) ? "flex" : "none";
+  });
+
+  // Show all headings and cards (they provide context)
+  headings.style("display", "block");
+  cards.style("display", "block");
+}
+
+// ── Init ─────────────────────────────────────────────────────────────
+renderTreemap();
+
+// Handle resize
+window.addEventListener("resize", () => {
+  if (currentView === "treemap") renderTreemap();
+  else renderGraph();
+});
+</script>
+</body>
+</html>

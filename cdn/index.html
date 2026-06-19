@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="yry-back-top/index.css">
   <link rel="stylesheet" href="yry-scene-header/index.css">
   <link rel="stylesheet" href="yry-footer-note/index.css">
+  <link rel="stylesheet" href="yry-docs-binding/index.css">
   <!-- ═══ 浮动面板样式 (4 个) ═══ -->
   <link rel="stylesheet" href="yry-cron-panel/index.css">
   <link rel="stylesheet" href="yry-notify-panel/index.css">
@@ -37,46 +38,20 @@
   <!-- Vue 3 (Yry* 自定义元素的运行时依赖) -->
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <style>
-    /* 所有组件卡片三列布局 */
+    /* 组件卡片响应式网格 (对齐 docs/index.html 中技能卡片的 auto-fill 布局) */
     .card-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    @media (max-width: 900px) {
-      .card-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 640px) {
-      .card-grid { grid-template-columns: 1fr; }
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     }
 
-    /* ── 卡片 name 行 · flex 左右对齐 ── */
-    .item-card .yry-body .yry-name,
-    .story-card .yry-story-head .story-name,
-    .scene-card .yry-scene-name {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
+    /* 隐藏组件卡片的左侧 icon + type badge */
+    .item-card .icon { display: none; }
+    .item-card .name .size-info { display: none; }
 
-    /* ── 三评分徽章 ── */
-    .ydb-score-badge {
-      font-size: .52rem;
-      margin-left: auto;
-      padding: 1px 6px;
-      border-radius: 3px;
-      background: rgba(255,255,255,.04);
-      white-space: nowrap;
-      line-height: 1.4;
-      flex-shrink: 0;
-    }
-    .ydb-score-badge.ydb-small {
-      font-size: .50rem;
-      margin-left: auto;
-      padding: 1px 5px;
-    }
-    .ydb-score-badge .ydb-badge-num {
-      font-weight: 600;
+    /* item-links 一行显示 · 缩小字体和间距 */
+    .item-card .item-links {
+      flex-wrap: nowrap;
+      font-size: .64rem;
+      gap: 2px 6px;
     }
   </style>
 </head>
@@ -211,47 +186,56 @@
               { icon: '📐', iconModifier: 'skill', name: 'yry-layer', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '层级容器，统一管理内容分层的显示/隐藏与滚动定位',
-                tags: [{ text: '布局', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '布局', modifier: 'accent' }, { text: '纯CSS', modifier: 'info' }],
+                meta: '布局组件 · 层级显示/隐藏 · 平滑滚动定位',
                 demo: 'yry-layer/index.html' },
-              { icon: '📐', iconModifier: 'skill', name: 'yry-doc-layer', badge: 'Vue',
+              { icon: '📐', iconModifier: 'skill', name: 'yry-doc-layer', badge: 'Vue 3',
                 nameHref: '../docs/index.html', nameTarget: '_blank',
                 desc: '文档分层，带编号、标题、统计和面板的文档区块容器',
-                tags: [{ text: '布局', modifier: 'accent' }], meta: 'vue',
+                tags: [{ text: '布局', modifier: 'accent' }, { text: 'Vue CE', modifier: 'purple' }],
+                meta: '编号 → 标题 → 统计 → 面板 · 6 属性驱动',
                 demo: 'yry-doc-layer/index.html' },
-              { icon: '📐', iconModifier: 'skill', name: 'yry-breadcrumb', badge: 'Vue',
+              { icon: '📐', iconModifier: 'skill', name: 'yry-breadcrumb', badge: 'Vue 3',
                 nameHref: '故事任务面板/yry-breadcrumb/README.md', nameTarget: '_blank',
                 desc: '面包屑导航，Vue 3 零打包组件 — 5 子场景独立故事面板',
-                tags: [{ text: '布局', modifier: 'accent' }], meta: 'vue',
+                tags: [{ text: '布局', modifier: 'accent' }, { text: '/rui-code', modifier: 'cyan' }],
+                meta: 'fetch → DOMParser → ready 事件 · 5s 超时容错',
                 demo: 'yry-breadcrumb/index.html' },
-              { icon: '📐', iconModifier: 'skill', name: 'yry-sub-title', badge: 'Vue',
+              { icon: '📐', iconModifier: 'skill', name: 'yry-sub-title', badge: 'Vue 3',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '子标题，带图标和计数的分区标题组件',
-                tags: [{ text: '布局', modifier: 'accent' }], meta: 'vue',
+                tags: [{ text: '布局', modifier: 'accent' }, { text: 'Vue CE', modifier: 'purple' }],
+                meta: 'icon + text + count · 3 属性驱动',
                 demo: 'yry-sub-title/index.html' },
               { icon: '📐', iconModifier: 'skill', name: 'yry-card-grid', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '卡片网格，响应式卡片布局容器',
-                tags: [{ text: '布局', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '布局', modifier: 'accent' }, { text: '纯CSS', modifier: 'info' }],
+                meta: 'auto-fill · minmax(360px, 1fr) · 12px gap',
                 demo: 'yry-card-grid/index.html' },
               { icon: '📐', iconModifier: 'skill', name: 'yry-layer-agents', badge: 'CSS',
                 nameHref: '../docs/项目分析/proj-analysis-2026-06-16.html', nameTarget: '_blank',
-                desc: 'Agent 层，展示 Agent 列表的文档分层',
-                tags: [{ text: '布局', modifier: 'accent' }], meta: 'css',
+                desc: 'Agent 层，展示 Agent 角色列表的文档分层',
+                tags: [{ text: '布局', modifier: 'accent' }, { text: 'Agent', modifier: 'purple' }],
+                meta: 'yry-card-grid 嵌套 · Auto 数据注入 · ready 事件',
                 demo: 'yry-layer-agents/index.html' },
               { icon: '📐', iconModifier: 'skill', name: 'yry-layer-rules', badge: 'CSS',
                 nameHref: '../docs/项目分析/proj-analysis-2026-06-16.html', nameTarget: '_blank',
-                desc: '规则层，展示规则列表的文档分层',
-                tags: [{ text: '布局', modifier: 'accent' }], meta: 'css',
+                desc: '规则层，展示治理规则列表的文档分层',
+                tags: [{ text: '布局', modifier: 'accent' }, { text: '规则', modifier: 'green' }],
+                meta: '复合组件 · 子元素注入 · MutationObserver',
                 demo: 'yry-layer-rules/index.html' },
               { icon: '📐', iconModifier: 'skill', name: 'yry-layer-refs', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
-                desc: '引用层，展示参考资源的文档分层',
-                tags: [{ text: '布局', modifier: 'accent' }], meta: 'css',
+                desc: '引用层，展示参考资源和监控入口的文档分层',
+                tags: [{ text: '布局', modifier: 'accent' }, { text: '参考', modifier: 'info' }],
+                meta: '复合组件 · 文档入口 + 监控仪表板',
                 demo: 'yry-layer-refs/index.html' },
               { icon: '📐', iconModifier: 'skill', name: 'yry-layer-info-panel', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '信息面板层，带折叠面板的详细信息展示',
-                tags: [{ text: '布局', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '布局', modifier: 'accent' }, { text: '面板', modifier: 'cyan' }],
+                meta: '折叠展开 · 详情面板 · panel 路由',
                 demo: 'yry-layer-info-panel/index.html' }
             ]
           },
@@ -259,29 +243,34 @@
             subTitle: { icon: '🧭', text: '导航', count: '5 个' },
             grid: 'card',
             items: [
-              { icon: '🧭', iconModifier: 'skill', name: 'yry-panel-hub', badge: 'Vue',
+              { icon: '🧭', iconModifier: 'skill', name: 'yry-panel-hub', badge: 'Vue 3',
                 nameHref: '../docs/自循环报告/index.html', nameTarget: '_blank',
                 desc: '面板枢纽，统一管理浮动面板的打开/关闭',
-                tags: [{ text: '导航', modifier: 'accent' }], meta: 'vue',
+                tags: [{ text: '导航', modifier: 'accent' }, { text: 'PanelHub API', modifier: 'purple' }],
+                meta: 'label + buttons + flow · panel-hub-select 事件路由',
                 demo: 'yry-panel-hub/index.html' },
-              { icon: '🧭', iconModifier: 'skill', name: 'yry-cross-nav', badge: 'Vue',
+              { icon: '🧭', iconModifier: 'skill', name: 'yry-cross-nav', badge: 'Vue 3',
                 nameHref: '故事任务面板/yry-cross-nav/README.md', nameTarget: '_blank',
                 desc: '十字导航，Vue 3 组件 — 场景页 7 种交付物类型间快速跳转',
-                tags: [{ text: '导航', modifier: 'accent' }], meta: 'vue',
+                tags: [{ text: '导航', modifier: 'accent' }, { text: '/rui-code', modifier: 'cyan' }],
+                meta: 'fetch → DOMParser → ready 事件 · 当前页高亮',
                 demo: 'yry-cross-nav/index.html' },
               { icon: '🧭', iconModifier: 'skill', name: 'yry-page-nav', badge: 'CSS',
                 nameHref: '../docs/index.html', nameTarget: '_blank',
                 desc: '页面目录，当前页面的章节大纲导航',
-                tags: [{ text: '导航', modifier: 'accent' }], meta: 'css' },
-              { icon: '🧭', iconModifier: 'skill', name: 'yry-scene-nav', badge: 'Vue',
+                tags: [{ text: '导航', modifier: 'accent' }, { text: '纯CSS', modifier: 'info' }],
+                meta: '页面内锚点导航 · 章节大纲自动生成' },
+              { icon: '🧭', iconModifier: 'skill', name: 'yry-scene-nav', badge: 'Vue 3',
                 nameHref: '故事任务面板/yry-scene-nav/README.md', nameTarget: '_blank',
                 desc: '场景导航，Vue 3 组件 — pill 风格场景层级面包屑',
-                tags: [{ text: '导航', modifier: 'accent' }], meta: 'vue',
+                tags: [{ text: '导航', modifier: 'accent' }, { text: '/rui-code', modifier: 'cyan' }],
+                meta: 'pill 风格 · 层级缩进 · 场景内导航',
                 demo: 'yry-scene-nav/index.html' },
               { icon: '🧭', iconModifier: 'skill', name: 'yry-back-top', badge: 'JS',
                 nameHref: '故事任务面板/yry-back-top/README.md', nameTarget: '_blank',
                 desc: '返回顶部，零配置 vanilla JS — 加载即生效，支持 Alt+↑ 快捷键',
-                tags: [{ text: '导航', modifier: 'accent' }], meta: 'js',
+                tags: [{ text: '导航', modifier: 'accent' }, { text: '零配置', modifier: 'green' }],
+                meta: 'scroll > 400px 显示 · smooth scrollTo · Alt+↑',
                 demo: 'yry-back-top/index.html' }
             ]
           },
@@ -289,59 +278,70 @@
             subTitle: { icon: '🃏', text: '卡片与展示', count: '11 个' },
             grid: 'card',
             items: [
-              { icon: '🃏', iconModifier: 'skill', name: 'yry-item-card', badge: 'Vue',
+              { icon: '🃏', iconModifier: 'skill', name: 'yry-item-card', badge: 'Vue 3',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '资产卡片，带图标、标签和操作按钮的通用卡片',
-                tags: [{ text: '卡片', modifier: 'accent' }], meta: 'vue',
+                tags: [{ text: '卡片', modifier: 'accent' }, { text: 'Vue CE', modifier: 'purple' }],
+                meta: 'icon → body(name/desc/tags/meta) · 4 iconModifier',
                 demo: 'yry-item-card/index.html' },
-              { icon: '🃏', iconModifier: 'skill', name: 'yry-story-card', badge: 'Vue',
+              { icon: '🃏', iconModifier: 'skill', name: 'yry-story-card', badge: 'Vue 3',
                 nameHref: '../docs/index.html', nameTarget: '_blank',
                 desc: '故事卡片，展示故事名称、描述和场景列表',
-                tags: [{ text: '卡片', modifier: 'accent' }], meta: 'vue',
+                tags: [{ text: '卡片', modifier: 'accent' }, { text: '故事', modifier: 'purple' }],
+                meta: 'icon + name + badge + desc + scenes[] · 场景内联列表',
                 demo: 'yry-story-card/index.html' },
-              { icon: '🃏', iconModifier: 'skill', name: 'yry-scene-card', badge: 'Vue',
+              { icon: '🃏', iconModifier: 'skill', name: 'yry-scene-card', badge: 'Vue 3',
                 nameHref: '../docs/index.html', nameTarget: '_blank',
                 desc: '场景卡片，展示场景编号、名称和交付物链接',
-                tags: [{ text: '卡片', modifier: 'accent' }], meta: 'vue',
+                tags: [{ text: '卡片', modifier: 'accent' }, { text: '场景', modifier: 'info' }],
+                meta: 'num + name + desc + meta[] · 7 交付物图标',
                 demo: 'yry-scene-card/index.html' },
-              { icon: '🃏', iconModifier: 'skill', name: 'yry-tag-chip', badge: 'Vue',
+              { icon: '🃏', iconModifier: 'skill', name: 'yry-tag-chip', badge: 'Vue 3',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '标签芯片，彩色标签用于分类和筛选',
-                tags: [{ text: '卡片', modifier: 'accent' }], meta: 'vue',
+                tags: [{ text: '卡片', modifier: 'accent' }, { text: '基础组件', modifier: 'cyan' }],
+                meta: 'text + modifier(accent/info/cyan/green/purple) · 可选 href',
                 demo: 'yry-tag-chip/index.html' },
               { icon: '🃏', iconModifier: 'skill', name: 'yry-kpi-card', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: 'KPI 卡片，展示关键指标数值和趋势',
-                tags: [{ text: '卡片', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '卡片', modifier: 'accent' }, { text: '纯CSS', modifier: 'info' }],
+                meta: '数值 → 标签 → 趋势 · 4 色调等级',
                 demo: 'yry-kpi-card/index.html' },
               { icon: '🃏', iconModifier: 'skill', name: 'yry-trend-card', badge: 'CSS',
                 nameHref: '../docs/趋势报告/index.html', nameTarget: '_blank',
                 desc: '趋势卡片，展示数据变化趋势',
-                tags: [{ text: '卡片', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '卡片', modifier: 'accent' }, { text: '趋势', modifier: 'green' }],
+                meta: '方向指示器 · 历史数据 · 变化量',
                 demo: 'yry-trend-card/index.html' },
               { icon: '🃏', iconModifier: 'skill', name: 'yry-scorecard', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '计分卡，多维度评分展示组件',
-                tags: [{ text: '卡片', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '卡片', modifier: 'accent' }, { text: '评分', modifier: 'green' }],
+                meta: '多维评分 · A/B/C/D 等级 · 加权展示',
                 demo: 'yry-scorecard/index.html' },
               { icon: '🃏', iconModifier: 'skill', name: 'yry-info-cards', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '信息卡片组，多条信息的卡片布局',
-                tags: [{ text: '卡片', modifier: 'accent' }], meta: 'css' },
+                tags: [{ text: '卡片', modifier: 'accent' }, { text: '纯CSS', modifier: 'info' }],
+                meta: '多条信息 · 卡片组布局 · 响应式网格' },
               { icon: '🃏', iconModifier: 'skill', name: 'yry-cmd-card', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '命令卡片，展示命令和代码片段',
-                tags: [{ text: '卡片', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '卡片', modifier: 'accent' }, { text: '代码', modifier: 'purple' }],
+                meta: '命令展示 · 代码片段 · 复制功能',
                 demo: 'yry-cmd-card/index.html' },
               { icon: '🃏', iconModifier: 'skill', name: 'yry-cat-overview', badge: 'CSS',
                 nameHref: '../docs/项目分析/proj-analysis-2026-06-16.html', nameTarget: '_blank',
                 desc: '分类概览，按类别汇总的概览卡片',
-                tags: [{ text: '卡片', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '卡片', modifier: 'accent' }, { text: '分类', modifier: 'info' }],
+                meta: '类别汇总 · 统计概览 · 可视化卡片',
                 demo: 'yry-cat-overview/index.html' },
               { icon: '🃏', iconModifier: 'skill', name: 'yry-cat-warning', badge: 'CSS',
                 nameHref: '../docs/项目分析/proj-analysis-2026-06-16.html', nameTarget: '_blank',
                 desc: '分类警告，按类别展示警告信息',
-                tags: [{ text: '卡片', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '卡片', modifier: 'accent' }, { text: '警告', modifier: 'accent' }],
+                meta: '分类警告 · 风险汇总 · 级别标识',
                 demo: 'yry-cat-warning/index.html' }
             ]
           },
@@ -349,66 +349,78 @@
             subTitle: { icon: '🎬', text: '场景组件', count: '7 个' },
             grid: 'card',
             items: [
-              { icon: '🎬', iconModifier: 'skill', name: 'yry-scene-header', badge: 'Vue',
+              { icon: '🎬', iconModifier: 'skill', name: 'yry-scene-header', badge: 'Vue 3',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '场景头部，场景页面的标题、图标和元信息',
-                tags: [{ text: '场景', modifier: 'accent' }], meta: 'vue',
+                tags: [{ text: '场景', modifier: 'accent' }, { text: 'Vue CE', modifier: 'purple' }],
+                meta: 'icon + titlePrefix + accent + meta + desc · 5 属性',
                 demo: 'yry-scene-header/index.html' },
               { icon: '🎬', iconModifier: 'skill', name: 'yry-scene-footer', badge: 'CSS',
                 nameHref: '../docs/index.html', nameTarget: '_blank',
                 desc: '场景页脚，场景页面的底部信息和导航',
-                tags: [{ text: '场景', modifier: 'accent' }], meta: 'css' },
+                tags: [{ text: '场景', modifier: 'accent' }, { text: '纯CSS', modifier: 'info' }],
+                meta: '底部信息 · 版本号 · 导航链接' },
               { icon: '🎬', iconModifier: 'skill', name: 'yry-scene-chrome', badge: 'CSS',
                 nameHref: '../docs/index.html', nameTarget: '_blank',
                 desc: 'Chrome 外壳，场景页面的浏览器风格框架',
-                tags: [{ text: '场景', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '场景', modifier: 'accent' }, { text: '框架', modifier: 'info' }],
+                meta: '浏览器风格 · 地址栏 · 窗口控件',
                 demo: 'yry-scene-chrome/index.html' },
               { icon: '🎬', iconModifier: 'skill', name: 'yry-scene-health-bar', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '健康栏，场景健康度可视化指示器',
-                tags: [{ text: '场景', modifier: 'accent' }], meta: 'css' },
+                tags: [{ text: '场景', modifier: 'accent' }, { text: '健康', modifier: 'green' }],
+                meta: 'A/B/C/D 彩色进度条 · 场景健康评估' },
               { icon: '🎬', iconModifier: 'skill', name: 'yry-scene-stats', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '场景统计，场景维度的统计数据展示',
-                tags: [{ text: '场景', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '场景', modifier: 'accent' }, { text: '统计', modifier: 'info' }],
+                meta: '多维度统计 · 场景对比 · 数据展示',
                 demo: 'yry-scene-stats/index.html' },
               { icon: '🎬', iconModifier: 'skill', name: 'yry-scene-steps', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '步骤条，场景流程步骤可视化',
-                tags: [{ text: '场景', modifier: 'accent' }], meta: 'css' },
+                tags: [{ text: '场景', modifier: 'accent' }, { text: '流程', modifier: 'cyan' }],
+                meta: '步骤可视化 · 当前步骤高亮 · 完成状态' },
               { icon: '🎬', iconModifier: 'skill', name: 'yry-scene-tabs', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '标签页，场景内多标签页切换',
-                tags: [{ text: '场景', modifier: 'accent' }], meta: 'css' }
+                tags: [{ text: '场景', modifier: 'accent' }, { text: '交互', modifier: 'purple' }],
+                meta: '多标签切换 · active 状态 · 内容面板' }
             ]
           },
           {
             subTitle: { icon: '📊', text: '统计与健康', count: '5 个' },
             grid: 'card',
             items: [
-              { icon: '📊', iconModifier: 'agent', name: 'yry-stats-grid', badge: 'Vue',
+              { icon: '📊', iconModifier: 'agent', name: 'yry-stats-grid', badge: 'Vue 3',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '统计网格，数值统计卡片的网格布局',
-                tags: [{ text: '统计', modifier: 'accent' }], meta: 'vue',
+                tags: [{ text: '统计', modifier: 'accent' }, { text: 'Vue CE', modifier: 'purple' }],
+                meta: 'value + label + modifier + sub + tooltip · 5 属性驱动',
                 demo: 'yry-stats-grid/index.html' },
               { icon: '📊', iconModifier: 'agent', name: 'yry-health-bar', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '健康条，项目健康度彩色进度条',
-                tags: [{ text: '统计', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '统计', modifier: 'accent' }, { text: '健康', modifier: 'green' }],
+                meta: 'A/B/C/D 四色 · 百分比进度 · 纯CSS动画',
                 demo: 'yry-health-bar/index.html' },
               { icon: '📊', iconModifier: 'agent', name: 'yry-kpi-grid', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: 'KPI 网格，关键指标的网格展示',
-                tags: [{ text: '统计', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '统计', modifier: 'accent' }, { text: 'KPI', modifier: 'info' }],
+                meta: '关键指标 · 网格布局 · 趋势指示器',
                 demo: 'yry-kpi-grid/index.html' },
               { icon: '📊', iconModifier: 'agent', name: 'yry-progress-bar', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '进度条，任务完成进度可视化',
-                tags: [{ text: '统计', modifier: 'accent' }], meta: 'css' },
+                tags: [{ text: '统计', modifier: 'accent' }, { text: '纯CSS', modifier: 'info' }],
+                meta: '百分比进度 · 彩色分段 · 动画过渡' },
               { icon: '📊', iconModifier: 'agent', name: 'yry-phase-strip', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '阶段条，管线阶段状态指示器',
-                tags: [{ text: '统计', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '统计', modifier: 'accent' }, { text: '管线', modifier: 'cyan' }],
+                meta: 'Gate A/B 状态 · 阶段进度 · 关卡指示',
                 demo: 'yry-phase-strip/index.html' }
             ]
           },
@@ -419,27 +431,32 @@
               { icon: '✅', iconModifier: 'agent', name: 'yry-checklist-head', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '清单头部，检查清单的标题和进度摘要',
-                tags: [{ text: '清单', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '清单', modifier: 'accent' }, { text: '纯CSS', modifier: 'info' }],
+                meta: '标题 → 进度摘要 → 通过/失败计数',
                 demo: 'yry-checklist-head/index.html' },
               { icon: '✅', iconModifier: 'agent', name: 'yry-verify-item', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '验证项，单条验证项的勾选状态和描述',
-                tags: [{ text: '清单', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '清单', modifier: 'accent' }, { text: '验证', modifier: 'green' }],
+                meta: '勾选状态 · 描述文本 · 通过/失败/跳过',
                 demo: 'yry-verify-item/index.html' },
               { icon: '✅', iconModifier: 'agent', name: 'yry-verify-report-head', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '验证报告头部，报告标题和总体状态',
-                tags: [{ text: '清单', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '清单', modifier: 'accent' }, { text: '报告', modifier: 'purple' }],
+                meta: '报告标题 · 总体状态 · 通过率统计',
                 demo: 'yry-verify-report-head/index.html' },
               { icon: '✅', iconModifier: 'agent', name: 'yry-verify-report-foot', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '验证报告尾部，报告总结和下一步',
-                tags: [{ text: '清单', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '清单', modifier: 'accent' }, { text: '报告', modifier: 'purple' }],
+                meta: '报告总结 · 下一步行动 · 签名区域',
                 demo: 'yry-verify-report-foot/index.html' },
               { icon: '✅', iconModifier: 'agent', name: 'yry-step-card', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '步骤卡片，展示流程步骤的卡片组件',
-                tags: [{ text: '清单', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '清单', modifier: 'accent' }, { text: '流程', modifier: 'cyan' }],
+                meta: '步骤序号 · 标题 · 描述 · 状态指示',
                 demo: 'yry-step-card/index.html' }
             ]
           },
@@ -450,22 +467,26 @@
               { icon: '⚠️', iconModifier: 'agent', name: 'yry-risk-cat-card', badge: 'CSS',
                 nameHref: '../docs/项目分析/proj-analysis-2026-06-16.html', nameTarget: '_blank',
                 desc: '风险分类卡片，按类别展示风险概览',
-                tags: [{ text: '风险', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '风险', modifier: 'accent' }, { text: '分类', modifier: 'info' }],
+                meta: '按类别汇总 · 风险计数 · 严重级别分布',
                 demo: 'yry-risk-cat-card/index.html' },
               { icon: '⚠️', iconModifier: 'agent', name: 'yry-risk-matrix', badge: 'CSS',
                 nameHref: '../docs/项目分析/proj-analysis-2026-06-16.html', nameTarget: '_blank',
                 desc: '风险矩阵，影响×概率的风险评估矩阵',
-                tags: [{ text: '风险', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '风险', modifier: 'accent' }, { text: '矩阵', modifier: 'purple' }],
+                meta: '影响(1-5) × 概率(1-5) · 热力色标',
                 demo: 'yry-risk-matrix/index.html' },
               { icon: '⚠️', iconModifier: 'agent', name: 'yry-risk-row', badge: 'CSS',
                 nameHref: '../docs/项目分析/proj-analysis-2026-06-16.html', nameTarget: '_blank',
                 desc: '风险行，单条风险的详细信息行',
-                tags: [{ text: '风险', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '风险', modifier: 'accent' }, { text: '详情', modifier: 'info' }],
+                meta: '描述 → 影响 → 概率 → 缓解措施 · 可展开',
                 demo: 'yry-risk-row/index.html' },
               { icon: '⚠️', iconModifier: 'agent', name: 'yry-review-cards', badge: 'CSS',
                 nameHref: '../docs/项目分析/proj-analysis-2026-06-16.html', nameTarget: '_blank',
                 desc: '审查卡片组，代码审查结果的卡片展示',
-                tags: [{ text: '风险', modifier: 'accent' }], meta: 'css' }
+                tags: [{ text: '风险', modifier: 'accent' }, { text: '审查', modifier: 'green' }],
+                meta: '审查结果 · 正确性/安全/性能维度 · 修复建议' }
             ]
           },
           {
@@ -475,22 +496,26 @@
               { icon: '🪟', iconModifier: 'rule', name: 'yry-cron-panel', badge: 'CE',
                 nameHref: '../docs/自循环报告/index.html', nameTarget: '_blank',
                 desc: '调度面板，定时任务调度管理浮窗',
-                tags: [{ text: '面板', modifier: 'accent' }], meta: 'custom-element',
+                tags: [{ text: '面板', modifier: 'accent' }, { text: 'Custom Element', modifier: 'purple' }],
+                meta: 'cron 表达式 → 人类可读描述 → 活跃/空闲状态',
                 demo: 'yry-cron-panel/index.html' },
               { icon: '🪟', iconModifier: 'rule', name: 'yry-notify-panel', badge: 'CE',
                 nameHref: '../docs/自循环报告/index.html', nameTarget: '_blank',
                 desc: '通知面板，系统通知和消息浮窗',
-                tags: [{ text: '面板', modifier: 'accent' }], meta: 'custom-element',
+                tags: [{ text: '面板', modifier: 'accent' }, { text: 'Custom Element', modifier: 'purple' }],
+                meta: '健康/循环/趋势通知 · 按类型筛选 · 最新评分',
                 demo: 'yry-notify-panel/index.html' },
               { icon: '🪟', iconModifier: 'rule', name: 'yry-selfimprove-panel', badge: 'CE',
                 nameHref: '../docs/自我改进/index.html', nameTarget: '_blank',
                 desc: '自改进面板，项目自改进闭环分析',
-                tags: [{ text: '面板', modifier: 'accent' }], meta: 'custom-element',
+                tags: [{ text: '面板', modifier: 'accent' }, { text: 'Custom Element', modifier: 'purple' }],
+                meta: '日/周/月/全景四视角 · 健康趋势 · D0-D7 诊断',
                 demo: 'yry-selfimprove-panel/index.html' },
               { icon: '🪟', iconModifier: 'rule', name: 'yry-faq-panel', badge: 'CE',
                 nameHref: '../docs/自我改进/index.html', nameTarget: '_blank',
                 desc: 'FAQ 面板，常见问题解答浮窗',
-                tags: [{ text: '面板', modifier: 'accent' }], meta: 'custom-element',
+                tags: [{ text: '面板', modifier: 'accent' }, { text: 'Custom Element', modifier: 'purple' }],
+                meta: '概念/命令/面板/健康 · 交叉导航链接',
                 demo: 'yry-faq-panel/index.html' }
             ]
           },
@@ -501,36 +526,43 @@
               { icon: '🔧', iconModifier: 'rule', name: 'yry-export-toolbar', badge: 'JS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '导出工具栏，文档导出为 PDF/HTML 等格式',
-                tags: [{ text: '工具', modifier: 'accent' }], meta: 'js',
+                tags: [{ text: '工具', modifier: 'accent' }, { text: 'Vanilla JS', modifier: 'info' }],
+                meta: 'PDF/HTML/PNG 导出 · 快捷键 · 工具栏',
                 demo: 'yry-export-toolbar/index.html' },
               { icon: '🔧', iconModifier: 'rule', name: 'yry-tabs-panel', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '标签页面板，多标签页内容管理',
-                tags: [{ text: '工具', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '工具', modifier: 'accent' }, { text: '纯CSS', modifier: 'info' }],
+                meta: '多标签切换 · 内容面板 · active 状态',
                 demo: 'yry-tabs-panel/index.html' },
               { icon: '🔧', iconModifier: 'rule', name: 'yry-cytoscape-graph', badge: 'JS',
                 nameHref: '../docs/index.html', nameTarget: '_blank',
                 desc: 'Cytoscape 图谱，知识图谱可视化',
-                tags: [{ text: '工具', modifier: 'accent' }], meta: 'js',
+                tags: [{ text: '工具', modifier: 'accent' }, { text: 'Cytoscape.js', modifier: 'purple' }],
+                meta: 'story→scene→source 三层 · breadthfirst/cose 布局',
                 demo: 'yry-cytoscape-graph/index.html' },
               { icon: '🔧', iconModifier: 'rule', name: 'yry-gantt', badge: 'JS',
                 nameHref: '../docs/项目分析/proj-analysis-2026-06-16.html', nameTarget: '_blank',
                 desc: '甘特图，项目时间线甘特图',
-                tags: [{ text: '工具', modifier: 'accent' }], meta: 'js',
+                tags: [{ text: '工具', modifier: 'accent' }, { text: 'Vanilla JS', modifier: 'info' }],
+                meta: '时间线可视化 · 任务依赖 · 里程碑标记',
                 demo: 'yry-gantt/index.html' },
               { icon: '🔧', iconModifier: 'rule', name: 'yry-test-page', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '测试页，组件测试和演示页面',
-                tags: [{ text: '工具', modifier: 'accent' }], meta: 'css' },
+                tags: [{ text: '工具', modifier: 'accent' }, { text: '测试', modifier: 'green' }],
+                meta: '组件测试 · Demo 展示 · 视觉回归' },
               { icon: '🔧', iconModifier: 'rule', name: 'yry-walkthrough', badge: 'JS',
                 nameHref: '../docs/自我改进/index.html', nameTarget: '_blank',
                 desc: '导览，分步导览和 onboarding',
-                tags: [{ text: '工具', modifier: 'accent' }], meta: 'js',
+                tags: [{ text: '工具', modifier: 'accent' }, { text: 'Vanilla JS', modifier: 'info' }],
+                meta: '分步导览 · 高亮指示 · 键盘导航',
                 demo: 'yry-walkthrough/index.html' },
               { icon: '🔧', iconModifier: 'rule', name: 'yry-quickstart', badge: 'CSS',
                 nameHref: '../docs/自我改进/index.html', nameTarget: '_blank',
                 desc: '快速上手，快速开始指南组件',
-                tags: [{ text: '工具', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '工具', modifier: 'accent' }, { text: '指南', modifier: 'green' }],
+                meta: '快速开始 · 步骤引导 · 代码示例',
                 demo: 'yry-quickstart/index.html' }
             ]
           },
@@ -541,27 +573,32 @@
               { icon: '📦', iconModifier: 'rule', name: 'yry-dep-badge', badge: 'CSS',
                 nameHref: '../docs/项目分析/proj-analysis-2026-06-16.html', nameTarget: '_blank',
                 desc: '依赖徽标，技术依赖关系的徽标展示',
-                tags: [{ text: '其他', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '其他', modifier: 'accent' }, { text: '纯CSS', modifier: 'info' }],
+                meta: '依赖关系可视化 · 版本徽标 · 状态标识',
                 demo: 'yry-dep-badge/index.html' },
               { icon: '📦', iconModifier: 'rule', name: 'yry-cmd-head', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '命令头，命令行界面的头部样式',
-                tags: [{ text: '其他', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '其他', modifier: 'accent' }, { text: '终端', modifier: 'purple' }],
+                meta: '终端风格 · 命令提示符 · 代码块头部',
                 demo: 'yry-cmd-head/index.html' },
-              { icon: '📦', iconModifier: 'rule', name: 'yry-footer-note', badge: 'Vue',
+              { icon: '📦', iconModifier: 'rule', name: 'yry-footer-note', badge: 'Vue 3',
                 nameHref: '../docs/index.html', nameTarget: '_blank',
                 desc: '页脚注，页面底部版本和版权信息',
-                tags: [{ text: '其他', modifier: 'accent' }], meta: 'vue',
+                tags: [{ text: '其他', modifier: 'accent' }, { text: 'Vue CE', modifier: 'purple' }],
+                meta: 'version 属性驱动 · 版权信息 · 底部固定',
                 demo: 'yry-footer-note/index.html' },
               { icon: '📦', iconModifier: 'rule', name: 'yry-op-btn', badge: 'CSS',
                 nameHref: '../docs/健康报告/index.html', nameTarget: '_blank',
                 desc: '操作按钮，通用操作按钮组件',
-                tags: [{ text: '其他', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '其他', modifier: 'accent' }, { text: '纯CSS', modifier: 'info' }],
+                meta: '通用按钮 · hover/focus 状态 · 多种尺寸',
                 demo: 'yry-op-btn/index.html' },
               { icon: '📦', iconModifier: 'rule', name: 'yry-path-link', badge: 'CSS',
                 nameHref: '../docs/index.html', nameTarget: '_blank',
                 desc: '路径链接，文件路径样式的链接组件',
-                tags: [{ text: '其他', modifier: 'accent' }], meta: 'css',
+                tags: [{ text: '其他', modifier: 'accent' }, { text: '纯CSS', modifier: 'info' }],
+                meta: '文件路径样式 · 面包屑分隔 · 可点击',
                 demo: 'yry-path-link/index.html' }
             ]
           }
@@ -592,7 +629,6 @@
               {
                 icon: '🌐', name: 'CDN 共享前端资源库',
                 nameHref: '故事任务面板/cdn/故事任务.md', nameTarget: '_blank',
-                badge: 'v1.2.0',
                 desc: 'YrY 共享前端资源 — 双主题系统 (Mono + System)、62 CSS 组件（10 大类别）、9 JS 工具 API、4 Vue 3 自定义元素。55+ 页面统一引用,消除内联重复代码 40-60%。<a href="故事任务面板/index.html">任务故事总览 →</a> · <a href="../docs/index.html#layer-scene">文档中心 Layer 4 →</a>',
                 scenes: [
                   'CDN 资源加载与页面渲染',
@@ -605,7 +641,6 @@
               {
                 icon: '📐', name: 'YryBreadcrumb 组件',
                 nameHref: '故事任务面板/yry-breadcrumb/README.md', nameTarget: '_blank',
-                badge: 'v1.0.0',
                 desc: 'YryBreadcrumb 组件的独立故事 — 跟踪 5 个组件演化场景,从需求到发布的全生命周期。',
                 scenes: [
                   '需求与设计',
@@ -618,21 +653,18 @@
               {
                 icon: '⬆️', name: 'YryBackTop 组件',
                 nameHref: '故事任务面板/yry-back-top/README.md', nameTarget: '_blank',
-                badge: 'v1.0.0',
                 desc: '零配置 vanilla JS 组件 — 加载即生效。scroll > 400px 显示按钮，click 平滑滚动回顶部，支持 Alt+↑ 键盘快捷键。',
                 scenes: ['零配置自初始化', 'scroll 事件节流', 'smooth scrollTo', '键盘可达性'],
           demo: '故事任务面板/yry-back-top/README.md' },
               {
                 icon: '🔗', name: 'YryCrossNav 组件',
                 nameHref: '故事任务面板/yry-cross-nav/README.md', nameTarget: '_blank',
-                badge: 'v1.0.0',
                 desc: 'Vue 3 交叉导航组件 — 场景页 7 种交付物类型间快速跳转。fetch + DOMParser + ready 事件，与 YryBreadcrumb 共享 loader 架构。',
                 scenes: ['7 交付物导航', '当前页高亮', 'Loader 架构', '页面集成'],
           demo: '故事任务面板/yry-cross-nav/README.md' },
               {
                 icon: '📍', name: 'YrySceneNav 组件',
                 nameHref: '故事任务面板/yry-scene-nav/README.md', nameTarget: '_blank',
-                badge: 'v1.0.0',
                 desc: 'Vue 3 场景层级导航组件 — pill 风格面包屑，显示当前页面在场景层级中的位置。与 YryBreadcrumb 互补：一个管全局，一个管场景内。',
                 scenes: ['Pill 风格导航', '层级缩进', 'Loader 架构', '页面集成'],
           demo: '故事任务面板/yry-scene-nav/README.md' }
@@ -1179,6 +1211,17 @@
     injectCdnBadges();
     ['yry-doc-layer-ready', 'yry-item-card-ready', 'yry-story-card-ready', 'yry-scene-card-ready'].forEach(function (ev) {
       document.addEventListener(ev, function () { setTimeout(injectCdnBadges, 200); }, { once: true });
+    });
+
+    /* ── 卡片交错入场动画 (对齐 docs/index.html 中技能卡片效果) ── */
+    function staggerCards() {
+      document.querySelectorAll('.card-grid .item-card, .card-grid .story-card, .card-grid .scene-card').forEach(function (card, i) {
+        card.style.setProperty('--card-delay', (0.01 + (i % 20) * 0.018) + 's');
+      });
+    }
+    staggerCards();
+    ['yry-doc-layer-ready', 'yry-item-card-ready', 'yry-story-card-ready', 'yry-scene-card-ready'].forEach(function (ev) {
+      document.addEventListener(ev, function () { setTimeout(staggerCards, 100); }, { once: true });
     });
 
     /* ── Back to top (由 yry-back-top 组件自初始化) ─────────────── */
