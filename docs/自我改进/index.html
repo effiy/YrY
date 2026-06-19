@@ -4,7 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>自我改进分析 — YrY 持续自改进仪表板</title>
-<meta name="description" content="YrY 持续自改进闭环数据仪表板 — 读取 health-trend.jsonl + summary.json · D0-D7 诊断 · E1-E4 评估 · 日/周/月全景视角 · 信号检测 · 分支健康 · 组件健康 · 架构合规 · 评分趋势">
+<meta name="description" content="YrY 持续自改进闭环数据仪表板 — 读取 health-trend.jsonl + summary.json · D0-D8 诊断 · E1-E4 评估 · 日/周/月全景视角 · 信号检测 · 分支健康 · 组件健康 · 架构合规 · 评分趋势">
+<meta property="og:title" content="YrY 持续自改进仪表板">
+<meta property="og:description" content="观察 → 诊断 → 改进 → 评估 四段闭环 · D0-D8 诊断矩阵 · E1-E4 评估效能">
+<meta property="og:type" content="website">
+<meta name="robots" content="noindex, nofollow">
 <link rel="stylesheet" href="../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../cdn/shared-reports/index.css">
@@ -76,10 +80,26 @@
 .day-grade { font-size: .62rem; }
 .day-delta { font-size: .64rem; font-weight: 600; min-width: 48px; }
 
-/* signal */
+	/* signal */
+	.signal { padding: 10px 14px; margin-bottom: 6px; border-radius: 6px; font-size: .76rem; display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; border: var(--yry-border); background: rgba(15,23,42,.4); }
+	.signal.critical { background: rgba(239,68,68,.06); border-left: 3px solid var(--yry-fail); }
+	.signal.warning   { background: rgba(245,158,11,.04); border-left: 3px solid var(--yry-warn); }
+	.signal.improvement { background: rgba(34,197,94,.04); border-left: 3px solid var(--yry-pass); }
+	.signal.info      { background: rgba(59,130,246,.04); border-left: 3px solid var(--yry-cyan); }
+	.signal-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
 
-.signal.improvement { background: rgba(34,197,94,.04); border-left: 3px solid var(--yry-pass); }
-.signal-icon { font-size: 1rem; flex-shrink: 0; }
+	/* skeleton loading */
+	@keyframes skPulse { 0%, 100% { opacity: .3; } 50% { opacity: .6; } }
+	.sk { animation: skPulse 1.6s ease-in-out infinite; border-radius: 4px; background: rgba(255,255,255,.06); }
+	.sk-line { height: 12px; margin-bottom: 8px; }
+	.sk-line.w60 { width: 60%; } .sk-line.w80 { width: 80%; } .sk-line.w40 { width: 40%; }
+	.sk-block { height: 80px; }
+
+	/* intro dl */
+	.intro dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: baseline; }
+	.intro dt { font-weight: 700; color: var(--yry-accent); white-space: nowrap; }
+	.intro dd { margin: 0; }
+	@media (max-width: 640px) { .intro dl { grid-template-columns: 1fr; } .intro dt { margin-top: 8px; } }
 
 /* branch */
 .branch-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; margin-bottom: 6px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
@@ -113,11 +133,11 @@
 </style>
 </head>
 <body>
-<div class="c">
+<main class="c" id="mainContent">
 
-<nav class="bc">
+<nav class="bc" aria-label="面包屑导航">
   <a href="../index.html">文档中心</a>
-  <span class="sep">/</span>
+  <span class="sep" aria-hidden="true">/</span>
   <span class="cur">自我改进分析</span>
 </nav>
 
@@ -128,11 +148,19 @@
 </div>
 
 <div class="intro">
-  <strong>四段闭环</strong>：观察 (趋势数据采集) → 诊断 (D0-D8 异常定位) → 改进 (经验技能化执行) → 评估 (E1-E4 效果验证) — 每周期完整闭环一次，异常信号 30 分钟内可追溯至根因<br>
-  <strong>九级诊断</strong>：D0 基线偏离 · D1 缓存退化 · D2 质量退化 · D3 上下文退化 · D4 依赖过期 · D5 外部趋势 · D6 文档过时 · D7 测试缺口 · D8 架构退化 — 覆盖代码、文档、依赖、趋势、架构全维度<br>
-  <strong>四级评估</strong>：E1 即时验证 (单次检查 · ≤5min) · E2 短期观察 (小时级 · 趋势确认) · E3 长期趋势 (天/周级 · 统计显著性) · E4 经验技能化 (固化至规约 · 写回 SKILL.md)<br>
-  <strong>数据源</strong>：<code>.memory/health-trend.jsonl</code> (原始趋势线 · 每次 health 检查追加) + <code>docs/自我改进/summary.json</code> (预聚合摘要 · 日/周/月粒度) + <code>archHealth</code> (架构合规 15 维度) + <code>componentHealth</code> (96 组件健康) + <code>branchSummary</code> (Git 分支统计)<br>
-  <strong>诊断触发规则</strong>：维度评分 &lt; 55 → 对应诊断自动触发 · 连续 2 次同维度 C 级 → P1 · 连续 3 次 → 自动升级 P0 · 趋势下降 &gt;15 分/周 → 退化告警</div>
+  <dl>
+    <dt>四段闭环</dt>
+    <dd>观察 (趋势数据采集) → 诊断 (D0-D8 异常定位) → 改进 (经验技能化执行) → 评估 (E1-E4 效果验证) — 每周期完整闭环一次，异常信号 30 分钟内可追溯至根因</dd>
+    <dt>九级诊断</dt>
+    <dd>D0 基线偏离 · D1 缓存退化 · D2 质量退化 · D3 上下文退化 · D4 依赖过期 · D5 外部趋势 · D6 文档过时 · D7 测试缺口 · D8 架构退化 — 覆盖代码、文档、依赖、趋势、架构全维度</dd>
+    <dt>四级评估</dt>
+    <dd>E1 即时验证 (单次检查 · ≤5min) · E2 短期观察 (小时级 · 趋势确认) · E3 长期趋势 (天/周级 · 统计显著性) · E4 经验技能化 (固化至规约 · 写回 SKILL.md)</dd>
+    <dt>数据源</dt>
+    <dd><code>.memory/health-trend.jsonl</code> (原始趋势线 · 每次 health 检查追加) + <code>docs/自我改进/summary.json</code> (预聚合摘要 · 日/周/月粒度) + <code>archHealth</code> (架构合规 15 维度) + <code>componentHealth</code> (96 组件健康) + <code>branchSummary</code> (Git 分支统计)</dd>
+    <dt>诊断触发规则</dt>
+    <dd>维度评分 &lt; 55 → 对应诊断自动触发 · 连续 2 次同维度 C 级 → P1 · 连续 3 次 → 自动升级 P0 · 趋势下降 &gt;15 分/周 → 退化告警</dd>
+  </dl>
+</div>
 
 <!-- Stats -->
 <div class="stats" id="stats">
@@ -244,20 +272,26 @@
   </div>
 </div>
 
-<div class="links">
+<nav class="links" aria-label="相关报告">
   <a href="../健康报告/">健康报告</a>
   <a href="../自循环报告/">自循环报告</a>
   <a href="../趋势报告/">趋势报告</a>
   <a href="../故事任务面板/">故事任务面板</a>
   <a href="../index.html">文档中心</a>
-</div>
+</nav>
 
-<div class="ft">
+<footer class="ft">
   持续自改进分析仪表板 · 数据实时读取<br>
   <span style="color:var(--yry-text3)">数据: .memory/health-trend.jsonl + summary.json · D0-D8 诊断 · E1-E4 评估 · 日/周/月全景 · 组件健康 · 架构合规 · 评分趋势</span>
-</div>
+</footer>
 
-</div>
+</main>
+
+<noscript>
+  <div class="intro" style="border-left-color:var(--yry-fail);background:rgba(239,68,68,.06)">
+    <strong>⚠ JavaScript 已禁用</strong> — 本仪表板需要 JavaScript 来渲染数据可视化。请启用 JavaScript 后刷新页面。
+  </div>
+</noscript>
 
 <script src="../../cdn/shared-reports/index.js"></script>
 <script src="js/self-improve-index.js"></script>
