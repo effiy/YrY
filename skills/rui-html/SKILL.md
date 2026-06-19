@@ -26,7 +26,7 @@ EACH SCENE'S 7 HTML DOCS MUST BE GENERATED FROM ITS index.md — NO INDEPENDENT 
 |------|------|---------|------|
 | **单源生** | 7 类 HTML = `index.md` §0–§4 的结构化投影 | HTML 出现 `index.md` 不存在的事实；`index.md` 更新后 HTML 未变；模板里硬编码场景专有名词 | 删除虚构内容，回归模板通用壳，跑 `--force` 重生 |
 
-> 本约束在 [rules/doc-generation.md §⑨ 单源生](../../rules/doc-generation.md#single-source) 中以强制规则形式记录；本 SKILL.md 与之等价。
+> 本约束在 [rules/doc-generation.md §⑨ 单源生](./rules/doc-generation.md#single-source) 中以强制规则形式记录；本 SKILL.md 与之等价。
 
 [命令族全景](#命令族全景) · [7 文档全景](#7-文档全景) · [数据源](#数据源) · [操作边界](#操作边界) · [/rui-html](#rui-html) · [模板系统](#模板系统) · [核心规则](#核心规则) · [生效标志](#effectiveness)
 

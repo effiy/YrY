@@ -15,7 +15,7 @@ agents:
 >
 > **产出**：plan.html（故事级计划总览）· 计划清单.html（每场景任务清单）
 >
-> 详见 [plan-execution.md](../../rules/plan-execution.md) · [planner.md](../../agents/planner.md)。
+> 详见 [plan-execution.md](./rules/plan-execution.md) · [planner.md](./planner.md)。
 
 ## 计划管线
 

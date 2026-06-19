@@ -87,11 +87,11 @@ describe('rui-claude skill', () => {
   });
 
   describe('cross-references', () => {
-    it('SKILL.md references rules/rui-claude.md', () => {
+    it('SKILL.md references rui-claude rules (now in skills/rui-claude/rules/)', () => {
       const content = readFile(`${SKILL_DIR}/SKILL.md`);
       assert.ok(
         content.includes('rui-claude.md') || content.includes('rui-claude'),
-        'SKILL.md must reference rules/rui-claude.md'
+        'SKILL.md must reference rui-claude rules'
       );
     });
 

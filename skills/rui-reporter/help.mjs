@@ -25,7 +25,7 @@ ${item('交叉引用闭合', '场景文档各 § 无矛盾叙述')}
 
 ${hdr('相关资源')}
 ${item('SKILL.md', 'skills/rui-reporter/SKILL.md — 完整规约', dim)}
-${item('reporter.md', 'agents/reporter.md — Reporter Agent 角色规约', dim)}
+${item('reporter.md', 'skills/rui-reporter/reporter.md — Reporter Agent 角色规约', dim)}
 `;
 
 console.log(help);

@@ -268,7 +268,7 @@ flowchart LR
 
 ---
 
-> **回溯链**: 本文档由 `/rui update yry-self-test` 流程触发，作为 YrY 项目自主测试方案 · 第三方框架工程化的基线场景文档。来源决策：[故事任务 v1.4.0](../故事任务.md)（FP13/FP14 定义），[code-pipeline.md §支撑技术](../../../../rules/code-pipeline.md#支撑技术)（TDD 实践），[AGENT.md §验证门禁](../../../../agents/AGENT.md#验证门禁)（双 Gate 模型）。交叉引用：[yry-self-test 故事任务](../故事任务.md)（上游故事），[tests/infrastructure/](../../../../tests/infrastructure/)（测试载体）。
+> **回溯链**: 本文档由 `/rui update yry-self-test` 流程触发，作为 YrY 项目自主测试方案 · 第三方框架工程化的基线场景文档。来源决策：[故事任务 v1.4.0](../故事任务.md)（FP13/FP14 定义），[code-pipeline.md §支撑技术](../../../../skills/rui-code/rules/code-pipeline.md#支撑技术)（TDD 实践），[AGENT.md §验证门禁](../../../../skills/rui/AGENT.md#验证门禁)（双 Gate 模型）。交叉引用：[yry-self-test 故事任务](../故事任务.md)（上游故事），[tests/infrastructure/](../../../../tests/infrastructure/)（测试载体）。
 
 ### 变更记录
 

@@ -39,14 +39,14 @@ describe('cross-cutting integration', () => {
       assert.ok(content.includes('skills') || content.includes('技能'), 'must reference skills');
     });
 
-    it('references agents directory', () => {
+    it('references agent roles (now within skills/)', () => {
       const content = readFile('CLAUDE.md');
-      assert.ok(content.includes('agents') || content.includes('Agent'), 'must reference agents');
+      assert.ok(content.includes('skills') || content.includes('Agent'), 'must reference agent roles');
     });
 
-    it('references rules directory', () => {
+    it('references rules (now within skills/)', () => {
       const content = readFile('CLAUDE.md');
-      assert.ok(content.includes('rules') || content.includes('规则'), 'must reference rules');
+      assert.ok(content.includes('skills') || content.includes('规则'), 'must reference rules');
     });
 
     it('has rui:project-start/end markers', () => {
@@ -71,9 +71,9 @@ describe('cross-cutting integration', () => {
     });
   });
 
-  // ── Skill-agent-rule alignment ──────────────────────────────
+  // ── Skill-agent-rule alignment (now integrated into skills/) ──────
   describe('skill-agent-rule alignment', () => {
-    it('most skills cross-reference agents or rules', () => {
+    it('most skills cross-reference agents or rules within their own skill dir', () => {
       let passedCount = 0;
       const totalSkills = listSkills().length;
       for (const skill of listSkills()) {
@@ -82,21 +82,31 @@ describe('cross-cutting integration', () => {
         const rules = listRules();
         const refsAgent = agents.some(a => content.includes(a));
         const refsRule = rules.some(r => content.includes(r));
-        const refsDir = content.includes('agents/') || content.includes('rules/');
-        if (refsAgent || refsRule || refsDir) passedCount++;
+        const refsSkillPath = content.includes('skills/');
+        if (refsAgent || refsRule || refsSkillPath) passedCount++;
       }
-      // At least 4 out of 6 skills should cross-reference agents/rules
       assert.ok(passedCount >= 4,
         `${passedCount}/${totalSkills} skills reference agents/rules (need >= 4)`);
     });
 
-    it('each agent references at least one rule', () => {
-      for (const agent of listAgents()) {
-        const content = readFile(`agents/${agent}.md`);
-        const rules = listRules();
-        // Not all agents need rule refs in their own file, but most should
-        // This is a soft check — just verify content is substantial
-        assert.ok(content.length > 500, `agents/${agent}.md should be substantial`);
+    it('each agent definition has substantial content', () => {
+      // Agents are now in skills/*/<agent>.md
+      const AGENT_PATHS = {
+        'AGENT': 'skills/rui/AGENT.md',
+        'pm': 'skills/rui/pm.md',
+        'coder': 'skills/rui/coder.md',
+        'tester': 'skills/rui/tester.md',
+        'security': 'skills/rui/security.md',
+        'reporter': 'skills/rui-reporter/reporter.md',
+        'planner': 'skills/rui-plan/planner.md',
+        'architect': 'skills/rui-plan/architect.md',
+        'code-reviewer': 'skills/rui-code/code-reviewer.md',
+        'self-improve': 'skills/rui-yry/self-improve.md',
+      };
+      for (const [agent, path] of Object.entries(AGENT_PATHS)) {
+        if (agent === 'AGENT') continue; // meta doc, skip length check
+        const content = readFile(path);
+        assert.ok(content.length > 500, `${path} should be substantial (has ${content.length} chars)`);
       }
     });
 

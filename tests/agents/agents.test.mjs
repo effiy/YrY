@@ -1,28 +1,47 @@
 /**
  * Tests for all agent definitions — verifies each agent has a complete,
- * well-formed definition file that follows AGENT.md conventions.
+ * well-formed definition file. Agents are now integrated into skills/
+ * (each skill owns its agent roles).
  */
 
 import { describe, it, assert, run } from '../lib/test-harness.mjs';
-import { fileExists, readFile, readDir, hasSection, hasMermaidDiagram, listAgents } from '../lib/helpers.mjs';
+import { fileExists, readFile, hasSection, hasMermaidDiagram, listAgents } from '../lib/helpers.mjs';
 
-const AGENTS_DIR = 'agents';
+// Agent → skill mapping (agents are now within their owning skills)
+const AGENT_TO_SKILL = {
+  'AGENT': 'rui',
+  'pm': 'rui',
+  'coder': 'rui',
+  'tester': 'rui',
+  'security': 'rui',
+  'reporter': 'rui-reporter',
+  'planner': 'rui-plan',
+  'architect': 'rui-plan',
+  'code-reviewer': 'rui-code',
+  'self-improve': 'rui-yry',
+};
+
+function getAgentPath(agentName) {
+  const skill = AGENT_TO_SKILL[agentName];
+  if (!skill) return null;
+  return `skills/${skill}/${agentName}.md`;
+}
 
 describe('agent definitions', () => {
   // ── AGENT.md meta document ──────────────────────────────────
   describe('AGENT.md (meta)', () => {
-    it('exists', () => {
-      assert.ok(fileExists(`${AGENTS_DIR}/AGENT.md`), 'AGENT.md meta document must exist');
+    it('exists (now in skills/rui/)', () => {
+      assert.ok(fileExists('skills/rui/AGENT.md'), 'AGENT.md meta document must exist in skills/rui/');
     });
 
     it('defines role topology', () => {
-      const content = readFile(`${AGENTS_DIR}/AGENT.md`);
+      const content = readFile('skills/rui/AGENT.md');
       assert.ok(hasSection(content, '角色拓扑') || content.includes('拓扑'),
         'must define role topology');
     });
 
     it('defines behavior discipline', () => {
-      const content = readFile(`${AGENTS_DIR}/AGENT.md`);
+      const content = readFile('skills/rui/AGENT.md');
       assert.ok(
         content.includes('纪律') || content.includes('Red Flag') || content.includes('行为'),
         'must define behavior discipline'
@@ -30,7 +49,7 @@ describe('agent definitions', () => {
     });
 
     it('has mermaid diagrams (expression priority)', () => {
-      const content = readFile(`${AGENTS_DIR}/AGENT.md`);
+      const content = readFile('skills/rui/AGENT.md');
       assert.ok(hasMermaidDiagram(content), 'must include mermaid diagrams');
     });
   });
@@ -51,19 +70,21 @@ describe('agent definitions', () => {
   // Per-agent checks
   for (const agentName of AGENTS) {
     describe(`${agentName} agent`, () => {
-      const filePath = `${AGENTS_DIR}/${agentName}.md`;
+      const filePath = getAgentPath(agentName);
 
-      it('file exists', () => {
-        assert.ok(fileExists(filePath), `${agentName}.md must exist`);
+      it('file exists in skill directory', () => {
+        assert.ok(filePath && fileExists(filePath), `${agentName}.md must exist (expected: ${filePath})`);
       });
 
       it('has substantial content (>100 lines suggested)', () => {
+        if (!filePath || !fileExists(filePath)) return;
         const content = readFile(filePath);
         const lines = content.split('\n').length;
         assert.ok(lines > 50, `${agentName}.md should have >50 lines (has ${lines})`);
       });
 
       it('has a clear role definition', () => {
+        if (!filePath || !fileExists(filePath)) return;
         const content = readFile(filePath);
         const hasRole = content.includes('角色') || content.includes('作为') ||
           content.includes('Role') || content.includes('职责');
@@ -71,6 +92,7 @@ describe('agent definitions', () => {
       });
 
       it('has actionable instructions', () => {
+        if (!filePath || !fileExists(filePath)) return;
         const content = readFile(filePath);
         // Agent files should have concrete behaviors, not just abstracts
         const hasActionable = content.includes('必须') || content.includes('禁止') ||
@@ -79,6 +101,7 @@ describe('agent definitions', () => {
       });
 
       it('has decision guidance', () => {
+        if (!filePath || !fileExists(filePath)) return;
         const content = readFile(filePath);
         const hasDecision = content.includes('何时') || content.includes('选择') ||
           content.includes('判定') || content.includes('决策') || content.includes('When') ||

@@ -21,8 +21,8 @@
 |------|------|
 | 数据契约 | `.memory/execution-memory.jsonl`（追加）· `.improvement/proposals.jsonl`（追加）— 字段见 [coder.md](../coder.md#数据契约) |
 | 交付收口 | rui-import + rui-bot 手动触发 |
-| 规则 | [code-pipeline](../../../rules/code-pipeline.md) · [delivery-gate](../../../rules/delivery-gate.md) · [doc-generation](../../../rules/doc-generation.md) · [self-improve](../../../rules/self-improve.md) · [rui-claude](../../../rules/rui-claude.md) |
-| 角色 | [pm](../../../agents/pm.md) · [coder](../../../agents/coder.md) · [tester](../../../agents/tester.md) · [reporter](../../../agents/reporter.md) · [security](../../../agents/security.md) · [self-improve](../../../agents/self-improve.md) |
+| 规则 | [code-pipeline](../../rui-code/rules/code-pipeline.md) · [delivery-gate](../rules/delivery-gate.md) · [doc-generation](../../rui-html/rules/doc-generation.md) · [self-improve](../../rui-yry/rules/self-improve.md) · [rui-claude](../../rui-claude/rules/rui-claude.md) |
+| 角色 | [pm](../pm.md) · [coder](../coder.md) · [tester](../tester.md) · [reporter](../../rui-reporter/reporter.md) · [security](../security.md) · [self-improve](../../rui-yry/self-improve.md) |
 | 文档 | [formulas.md](../formulas.md) · [coder.md](../coder.md) · [rui-import SKILL](../rui-import/SKILL.md) · [rui-bot SKILL](../rui-bot/SKILL.md) |
 | 推荐 | [ranking.md](../ranking.md) · [recommend.mjs](../../../lib/recommend.mjs) |
 

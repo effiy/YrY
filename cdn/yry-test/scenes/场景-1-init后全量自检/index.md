@@ -306,10 +306,10 @@ sequenceDiagram
 
 ---
 
-> **回溯链**: 本文档由 `/rui init` 流程的 Step 4b（自主测试方案）触发生成，场景定义基于初始化管线第七条验证规则中的七项就绪检查条件。来源决策：[SKILL.md §init > 6. verify](../../../../skills/rui/SKILL.md#6-verify--7-项就绪检查)（七项就绪检查定义），[code-pipeline.md §生效标志](../../../../rules/code-pipeline.md#生效标志)（生效标志逐项对应关系），[AGENT.md §验证门禁](../../../../agents/AGENT.md#验证门禁)（验证五步法）。交叉引用：[故事任务](../故事任务.md)（基线需求），[yry-arch 场景文档](../../yry-arch/)（被检查对象）。
+> **回溯链**: 本文档由 `/rui init` 流程的 Step 4b（自主测试方案）触发生成，场景定义基于初始化管线第七条验证规则中的七项就绪检查条件。来源决策：[SKILL.md §init > 6. verify](../../../../skills/rui/SKILL.md#6-verify--7-项就绪检查)（七项就绪检查定义），[code-pipeline.md §生效标志](../../../../skills/rui-code/rules/code-pipeline.md#生效标志)（生效标志逐项对应关系），[AGENT.md §验证门禁](../../../../skills/rui/AGENT.md#验证门禁)（验证五步法）。交叉引用：[故事任务](../故事任务.md)（基线需求），[yry-arch 场景文档](../../yry-arch/)（被检查对象）。
 
 ### 变更记录
 
 | 日期 | 变更 | 触发 | 证据 |
 |------|------|------|------|
-| 2026-06-05 | v1.0.0 初始化：生成场景概述 + §0 技术评审（含效果示意和基线溯源）+ §1 测试设计（含 4 TC-N + 7 TC-B + Gate A 交接） | `/rui init` Step 4b — 自主测试方案场景-1 生成 | [SKILL.md §init > 6. verify](../../../../skills/rui/SKILL.md)；[AGENT.md §验证门禁](../../../../agents/AGENT.md)；[code-pipeline.md §生效标志](../../../../rules/code-pipeline.md)；[formulas.md §F.story.scene](../../../../skills/rui/formulas.md) |
+| 2026-06-05 | v1.0.0 初始化：生成场景概述 + §0 技术评审（含效果示意和基线溯源）+ §1 测试设计（含 4 TC-N + 7 TC-B + Gate A 交接） | `/rui init` Step 4b — 自主测试方案场景-1 生成 | [SKILL.md §init > 6. verify](../../../../skills/rui/SKILL.md)；[AGENT.md §验证门禁](../../../../skills/rui/AGENT.md)；[code-pipeline.md §生效标志](../../../../skills/rui-code/rules/code-pipeline.md)；[formulas.md §F.story.scene](../../../../skills/rui/formulas.md) |

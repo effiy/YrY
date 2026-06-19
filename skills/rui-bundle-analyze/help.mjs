@@ -316,7 +316,7 @@ ${item('保存基线', '/rui-bundle-analyze --save-baseline')}
 ${hdr('相关资源')}
 ${item('SKILL.md', 'skills/rui-bundle-analyze/SKILL.md — 完整规约（方法论·架构决策·自循环）', dim)}
 ${item('实现源码', 'skills/rui-bundle-analyze/analyze.mjs', dim)}
-${item('集成参考', 'rui-health/health.mjs · agents/self-improve.md · rules/self-improve.md', dim)}
+${item('集成参考', 'rui-health/health.mjs · skills/rui-yry/self-improve.md · skills/rui-yry/rules/self-improve.md', dim)}
 `;
 
 console.log(help);

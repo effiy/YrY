@@ -2654,13 +2654,13 @@ function checkFitnessRules(stats) {
     }
   }
 
-  // Rule 2: Package isolation (lib should not import from skills/rules/agents)
+  // Rule 2: Package isolation (lib should not import from skills)
   if (stats.transitiveDeps && stats.transitiveDeps.topTransitiveFanOut) {
     rules.push({ id: "package-isolation", description: "Shared libraries should not depend on feature packages", severity: "high" });
-    // Check if lib files import from skills/rules/agents
+    // Check if lib files import from skills
     for (const edge of (stats.layerAnalysis?.violations || []).slice(0, 10)) {
       const fromInLib = edge.from.startsWith("lib/");
-      const toInFeature = edge.to.startsWith("skills/") || edge.to.startsWith("agents/") || edge.to.startsWith("rules/");
+      const toInFeature = edge.to.startsWith("skills/");
       if (fromInLib && toInFeature) {
         violations.push({
           rule: "package-isolation",
@@ -4419,7 +4419,7 @@ function computeRefactoringPriority(files, stats) {
  * Check if the actual dependency structure conforms to expected architecture rules.
  *
  * Inferred expectations (from common patterns):
- *   1. lib/* should NOT import from skills/*, agents/*, rules/* (shared → feature)
+ *   1. lib/* should NOT import from skills/* (shared → feature)
  *   2. skills/* should import from lib/* (feature → shared)
  *   3. No circular dependencies at the directory level
  *   4. Test files should only import from their corresponding source dir
@@ -4429,11 +4429,9 @@ function computeRefactoringPriority(files, stats) {
 function checkArchitectureConformance(depGraph, files) {
   const getTopDir = (p) => p.split("/")[0] || ".";
 
-  // Expected rules
+  // Expected rules — agents/ and rules/ are now integrated into skills/
   const expectedRules = [
     { id: "shared-isolation", description: "lib/ should not import from skills/", check: (e) => !(getTopDir(e.from) === "lib" && getTopDir(e.to) === "skills") },
-    { id: "shared-isolation-2", description: "lib/ should not import from agents/", check: (e) => !(getTopDir(e.from) === "lib" && getTopDir(e.to) === "agents") },
-    { id: "shared-isolation-3", description: "lib/ should not import from rules/", check: (e) => !(getTopDir(e.from) === "lib" && getTopDir(e.to) === "rules") },
     { id: "dependency-direction", description: "skills/ should depend on lib/ (not inverse)", check: (e) => !(getTopDir(e.from) === "lib" && getTopDir(e.to) === "skills") },
   ];
 

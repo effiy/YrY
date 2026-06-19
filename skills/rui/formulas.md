@@ -43,7 +43,7 @@ flowchart TB
 
 ## 通用元素
 
-> 所有故事文档共用，缺一不可。目录与生命周期见 [coder.md](./coder.md)，生成约束见 [rules/doc-generation.md](../../rules/doc-generation.md)。
+> 所有故事文档共用，缺一不可。目录与生命周期见 [coder.md](./coder.md)，生成约束见 [rules/doc-generation.md](../rui-html/rules/doc-generation.md)。
 
 ### F.meta — 版本头
 
@@ -341,7 +341,7 @@ flowchart LR
 
 色板语义：前端/UI→cyan · 后端/服务→emerald · 数据库/存储→violet · 云/基础设施→amber · 安全→rose · 消息总线→orange · 外部→slate。
 
-详见 [rules/architecture-diagram.md](../../rules/architecture-diagram.md)。
+详见 [rules/architecture-diagram.md](../rui-html/rules/architecture-diagram.md)。
 
 ---
 

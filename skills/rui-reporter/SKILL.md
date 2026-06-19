@@ -11,7 +11,7 @@ agents:
 
 > 过程报告与知识策展：记发生过的事（记），每条结论附引用（引），场景文档各 § 交叉对齐（串）。共性知识 ≥2 来源。
 >
-> 继承自 [agents/reporter.md](../../agents/reporter.md) 的规约。
+> 继承自 [skills/rui-reporter/reporter.md](./reporter.md) 的规约。
 
 ## 命令
 

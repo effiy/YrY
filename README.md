@@ -67,7 +67,7 @@ flowchart LR
 
 ```
 
-每阶段产出对应编号文档（01–09），交付时三步 hook 按序执行。详见 [rules/code-pipeline.md](./rules/code-pipeline.md)、[rules/delivery-gate.md](./rules/delivery-gate.md)。
+每阶段产出对应编号文档（01–09），交付时三步 hook 按序执行。详见 [rules/code-pipeline.md](./skills/rui-code/rules/code-pipeline.md)、[rules/delivery-gate.md](./skills/rui/rules/delivery-gate.md)。
 
 ## 快速开始
 
@@ -192,7 +192,7 @@ flowchart LR
 - **security** — 威胁建模：§3 安全约束注入，P0 卡发布
 - **self-improve** — 持续改进：采集执行数据，生成改进提案
 
-共用契约见 [agents/AGENT.md](./agents/AGENT.md)，专项规约见 `agents/<role>.md`。
+共用契约见 [skills/rui/AGENT.md](./skills/rui/AGENT.md)，专项规约集成在各 skill 目录内。
 
 ## 规则
 
@@ -235,7 +235,7 @@ flowchart LR
 - **design-principles** — 九条工程原则：SRP/高内聚/低耦合/DIP/OCP/ISP/DRY/YAGNI/组合
 - **agent-handoff** — Agent 交接规范：5 对契约 · 交接信号格式 · 阻断条件
 
-详见 [`rules/`](./rules/)。
+详见各 skill 目录下的 `rules/` 子目录。
 
 ## 技能
 
@@ -283,50 +283,19 @@ flowchart LR
 
 ```
 YrY/
-├── agents/                  # 9 个 Agent 角色契约
-│   ├── AGENT.md             #   角色拓扑与共用底线
-│   ├── pm.md / planner.md / architect.md / coder.md
-│   ├── code-reviewer.md / tester.md
-│   ├── reporter.md / security.md
-│   └── self-improve.md
-├── rules/                   # 16 组约束规则
-│   ├── code-pipeline.md     #   分支隔离 · Gate A/B
-│   ├── code-pipeline-techniques.md # 10 项支撑技术
-│   ├── delivery-gate.md     #   三步 hook
-│   ├── doc-generation.md    #   文档生成规范
-│   ├── doc-generation-lifecycle.md # 补充文档与策展
-│   ├── doc-quality.md       #   文档质量标准
-│   ├── architecture-diagram.md # 架构图约束
-│   ├── knowledge-graph.md   #   知识图谱约束
-│   ├── knowledge-graph-ownership.md # KG 所有权模型
-│   ├── mermaid-theme.md     #   Mermaid 统一主题配置
-│   ├── plan-execution.md    #   计划执行与验证管线
-│   ├── security-guardrails.md  # 安全护栏
-│   ├── self-improve.md      #   自改进闭环
-│   ├── rui-claude.md        #   .claude/ 管理约束
-│   ├── design-principles.md #   九条工程原则
-│   └── agent-handoff.md     #   Agent 交接规范
-├── skills/                  # 19 项技能规约
-│   ├── rui/                 #   SDLC 编排入口 (doc · version)
-│   ├── rui-code/            #   源码实现管线 (Gate A/B · P0 清零)
-│   ├── rui-init/            #   项目初始化
-│   ├── rui-update/          #   增量更新 (T1/T2/T3)
-│   ├── rui-yry/             #   自主自改进循环
-│   ├── rui-story/           #   故事面板管理
-│   ├── rui-claude/          #   .claude/ 配置管理
-│   ├── rui-skills/          #   技能市场发现与安装
-│   ├── rui-import/          #   文档远端同步
-│   ├── rui-bot/             #   企微通知 + 失败队列 + 自循环报告
-│   ├── rui-health/          #   16 维度健康诊断 (从 rui-bot 拆分)
-│   ├── rui-html/            #   场景 HTML 文档生成 (7 类)
-│   ├── rui-doc/             #   文档新鲜度检查
-│   ├── rui-reporter/        #   知识策展与过程报告
-│   ├── rui-trends/          #   技术趋势监控
-│   ├── rui-analysis/        #   代码健康看门狗
-│   ├── rui-npm/             #   npm 包管理
-│   ├── rui-version/         #   版本漂移检测
-│   ├── rui-plan/            #   计划执行追踪
-│   └── self-improve/        #   自改进闭环
+├── skills/                  # 19 个技能（含 Agent 角色 + 规则）
+│   ├── rui/                 #   核心编排（含 pm/coder/tester/security agents + 6 规则）
+│   │   ├── SKILL.md
+│   │   ├── pm.md · coder.md · tester.md · security.md · AGENT.md
+│   │   └── rules/           #   delivery-gate · agent-handoff · security-guardrails · design-principles · architecture-principles · mermaid-theme
+│   ├── rui-code/            #   源码实现（含 code-reviewer agent + code-pipeline 规则）
+│   ├── rui-plan/            #   实施计划（含 planner/architect agents + plan-execution 规则）
+│   ├── rui-reporter/        #   报告策展（含 reporter agent）
+│   ├── rui-html/            #   文档生成（含 doc-generation · architecture-diagram 规则）
+│   ├── rui-story/           #   故事管理（含 knowledge-graph 规则）
+│   ├── rui-yry/             #   自改进（含 self-improve agent + 规则）
+│   ├── rui-claude/          #   Claude 配置（含 rui-claude 规则）
+│   ├── ...                  #   其他 10 项技能
 ├── docs/
 │   ├── index.html           #   文档中心着陆页 + 4 面板 (通知/调度/自改进/FAQ)
 │   ├── css/index.css        #   面板样式 (1,382 行)
@@ -359,7 +328,7 @@ YrY/
 │       └── upgrade.mjs      #     经验→规则升级检测
 ├── tests/                   # 自检测试套件
 │   ├── run.mjs              #   测试运行器
-│   ├── skills/ agents/ rules/ integration/
+│   ├── skills/ integration/
 │   └── lib/                 #   测试工具（harness + helpers）
 ├── .claude/                 # Claude Code 本地配置
 ├── .claude-plugin/          # 插件清单与市场元数据

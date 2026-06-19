@@ -26,7 +26,7 @@ ${item('连续 3 轮无效', '无实质性变更')}
 
 ${hdr('相关资源')}
 ${item('SKILL.md', 'skills/rui-yry/SKILL.md — 完整规约', dim)}
-${item('self-improve.md', 'rules/self-improve.md — 自改进规则', dim)}
+${item('self-improve.md', 'skills/rui-yry/rules/self-improve.md — 自改进规则', dim)}
 `;
 
 console.log(help);

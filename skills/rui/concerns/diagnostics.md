@@ -1,6 +1,6 @@
 # 诊断纪律
 
-> 结构化调试纪律。难 bug 不靠猜——靠反馈回路。方法论源自 systematic-debugging 技能（根因追溯 → 纵深防御 → 条件等待 → 假设测试 → 修复验证），已在 [code-pipeline.md](../../../rules/code-pipeline.md#支撑技术) 中完整落地。
+> 结构化调试纪律。难 bug 不靠猜——靠反馈回路。方法论源自 systematic-debugging 技能（根因追溯 → 纵深防御 → 条件等待 → 假设测试 → 修复验证），已在 [code-pipeline.md](../../rui-code/rules/code-pipeline.md#支撑技术) 中完整落地。
 
 ## Phase 1 — 构建反馈回路
 

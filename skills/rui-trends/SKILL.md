@@ -152,7 +152,7 @@ flowchart LR
 
 > 本技能是自改进管线 D5 诊断的核心数据源，同时跨 D0/D3/D6 提供外部参照基线。趋势数据为实时快照，不替代基线文件判断——仅作为外部信号辅助诊断假设的证伪或支撑。
 >
-> 集成锚点：[rules/self-improve.md](../../rules/self-improve.md)（诊断规则 D0–D7 · 提案路由 · E1–E4）· [agents/self-improve.md](../../agents/self-improve.md)（数据源表 · 操作流程）
+> 集成锚点：[skills/rui-yry/rules/self-improve.md](../rui-yry/rules/self-improve.md)（诊断规则 D0–D7 · 提案路由 · E1–E4）· [skills/rui-yry/self-improve.md](../rui-yry/self-improve.md)（数据源表 · 操作流程）
 
 ### 诊断 × 子命令映射
 
@@ -189,8 +189,8 @@ flowchart LR
 | 诊断 | 趋势信号 | 推荐子命令 | 假设示例 | 基线依据 |
 |------|---------|-----------|---------|---------|
 | **D0** 基线偏离 | 项目依赖的技术栈在社区趋势中持续下降 | `github-trending --lang <L>` + `trendshift --range 90` | "当前技术栈与社区方向背离，可能增加长期维护成本" | CLAUDE.md 技术选型约束 |
-| **D3** 复杂度增长 | 存在更简洁的替代方案在快速崛起 | `github-trending` + `oss-insight` | "某新兴工具可替代当前 3 个依赖，降低架构复杂度" | agents/AGENT.md 深度模块原则 |
-| **D5** 依赖退化 | 外部参考新鲜度验证 | `all`（四源全查） | "外部数据源有 2 个已变更域名" | rules/self-improve.md D5 规则 |
+| **D3** 复杂度增长 | 存在更简洁的替代方案在快速崛起 | `github-trending` + `oss-insight` | "某新兴工具可替代当前 3 个依赖，降低架构复杂度" | skills/rui/AGENT.md 深度模块原则 |
+| **D5** 依赖退化 | 外部参考新鲜度验证 | `all`（四源全查） | "外部数据源有 2 个已变更域名" | skills/rui-yry/rules/self-improve.md D5 规则 |
 | **D6** 文档过时 | 连续窗口外部参考陈旧未更新 | `github-trending --since weekly` | "技术趋势参考连续 3 故事未刷新，可能遗漏关键变更" | CLAUDE.md 退化对策 L2 |
 
 ### 诊断 → 提案路由
@@ -199,10 +199,10 @@ flowchart LR
 
 | 趋势发现 | 诊断归属 | 提案类型 | 提案示例 | 升级条件 | 升级目标 |
 |---------|---------|---------|---------|---------|---------|
-| 核心技术栈在社区趋势下降 | D0 | `process` | "建议启动技术选型复审，评估替代方案" | 连续 2 故事触发 | `rules/code-pipeline.md` §技术选型 |
+| 核心技术栈在社区趋势下降 | D0 | `process` | "建议启动技术选型复审，评估替代方案" | 连续 2 故事触发 | `skills/rui-code/rules/code-pipeline.md` §技术选型 |
 | 新兴工具可简化架构 | D3 | `refactor` | "评估 {tool} 替代 {current} 的可行性与风险" | 连续 2 故事触发 | 趋势参考新增对比条目 |
 | 外部参考 URL 失效 | D5 | `refactor` | "更新失效链接，补充替代数据源" | 当前故事即修 | — |
-| 趋势参考陈旧 | D6 | `process` | "建议每 N 故事自动刷新趋势参考" | 连续 2 故事触发 | `agents/self-improve.md` 数据源表 |
+| 趋势参考陈旧 | D6 | `process` | "建议每 N 故事自动刷新趋势参考" | 连续 2 故事触发 | `skills/rui-yry/self-improve.md` 数据源表 |
 
 ### §2.1 输出模板
 

@@ -58,7 +58,7 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 | 项目名 | YrY |
 | 类型 | **meta** — Claude Code 插件，纯规约驱动 |
 | 版本 | 5.4.0 |
-| 架构 | plugin — 19 技能 + 9 Agent + 19 规则 + 16 共享库（lib/） + D0-D8 诊断引擎 + 9 核心 + 7 工程 + 8 架构健康维度 + 4 实时监控面板 + A 级架构合规 |
+| 架构 | plugin — 19 技能（含 Agent 角色 + 规则） + 16 共享库（lib/） + D0-D8 诊断引擎 + 9 核心 + 7 工程 + 8 架构健康维度 + 4 实时监控面板 + A 级架构合规 |
 | 生态 | root package.json (仅 devDependencies: vitest + @vitest/ui)，markdown 规约 + node 辅助脚本 + 共享 lib/ 消除重复 |
 | 自托管 | 是 — YrY 用自身管线管理自身演进 |
 
@@ -70,10 +70,10 @@ EXPRESSION PRIORITY: DIAGRAM → TEXT → TABLE               ← 惜注意
 - **密钥不落盘** — Token/密钥/凭据禁止出现在源码或配置文件；`API_X_TOKEN` 仅通过环境变量传入
 - **输入必校验** — 用户输入必须经过验证/转义，XSS/注入为 P0
 - **规约完整性** — 每 skill 必须有完整 SKILL.md；Agent 交接信号必须可被下游验证
-- **自托管一致性** — plugin.json 版本号必须与实际 skills/agents/rules 内容一致；自身管线不得降级
+- **自托管一致性** — plugin.json 版本号必须与实际 skills 内容一致；自身管线不得降级
 - **禁止魔法数字** — 所有数字字面量必须赋予语义化常量名；仅 `0`、`1`、`-1`（循环/索引/初始化惯用值）可豁免。项目共享常量统一定义在 `lib/constants.mjs`，各脚本从该处导入
 - **分支隔离不可绕过** — 记忆/缓存/本地状态文件禁止跨分支共享管线状态，不得用于削弱或绕过 `feat/<name>` 分支隔离策略
-- **架构合规不可绕过** — 内核体积在约束内（lib ≤ 20 · 规则 ≤ 8 · 编排器 ≤ 500 行），范式合规（无 class/extends · 无 export default · 无空 catch），扩展隔离（新增 Skill 不修改编排器）
+- **架构合规不可绕过** — 内核体积在约束内（lib ≤ 20 · 编排器 ≤ 500 行），范式合规（无 class/extends · 无 export default · 无空 catch），扩展隔离（新增 Skill 不修改编排器）
 
 ### 退化对策
 
@@ -111,31 +111,31 @@ flowchart LR
 - 自身 `.claude/` 配置通过 `/rui-claude` 管理
 - 技能规约修改后必须重跑 init 验证
 - 跨文件共享代码放 `lib/`，禁止 copy-paste；各脚本从 `lib/` 导入通用函数/常量
-- 设计决策遵循 `rules/design-principles.md` 十一条原则 + `rules/architecture-principles.md` 架构宪法
+- 设计决策遵循 `skills/rui/rules/design-principles.md` 十一条原则 + `skills/rui/rules/architecture-principles.md` 架构宪法
 <!-- rui:project-end -->
 
 ## 引导
 
 | 想了解 | 去 |
 |--------|-----|
-| 管线全流程（分支隔离 · Gate A/B · 逐模块清零 · 支撑技术 · 研究优先开发） | [rules/code-pipeline.md](./rules/code-pipeline.md) |
-| 交付收口（三步 hook） | [rules/delivery-gate.md](./rules/delivery-gate.md) |
-| 文档生成约束 · 表达优先 | [rules/doc-generation.md](./rules/doc-generation.md) |
-| 架构图生成（自包含 HTML+SVG 深色主题） | [rules/architecture-diagram.md](./rules/architecture-diagram.md) |
-| 知识图谱（三层 schema：story→scene→source） | [rules/knowledge-graph.md](./rules/knowledge-graph.md) |
-| Mermaid 统一配色（项目唯一色板真相源） | [rules/mermaid-theme.md](./rules/mermaid-theme.md) |
-| 计划执行（创建→审查→执行→验证） | [rules/plan-execution.md](./rules/plan-execution.md) |
-| rui-claude 操作约束（仅限 .claude/） | [rules/rui-claude.md](./rules/rui-claude.md) |
-| 安全防护基线（防线在信任边界处） | [rules/security-guardrails.md](./rules/security-guardrails.md) |
-| 设计原则（SRP · 高内聚 · 低耦合 · DIP · OCP · ISP · DRY · YAGNI · 组合 · 扩展至上 · 可健康检测） | [rules/design-principles.md](./rules/design-principles.md) |
-| 架构宪法（内核轻量·扩展丰富 · 配置 API · 代码范式 · 健康检测架构） | [rules/architecture-principles.md](./rules/architecture-principles.md) |
-| 代码编程范式（模块范式 · 函数范式 · 错误处理 · 导入 · 常量，含正反例） | [rules/code-paradigm.md](./rules/code-paradigm.md) |
+| 管线全流程（分支隔离 · Gate A/B · 逐模块清零 · 支撑技术 · 研究优先开发） | [rules/code-pipeline.md](./skills/rui-code/rules/code-pipeline.md) |
+| 交付收口（三步 hook） | [rules/delivery-gate.md](./skills/rui/rules/delivery-gate.md) |
+| 文档生成约束 · 表达优先 | [rules/doc-generation.md](./skills/rui-html/rules/doc-generation.md) |
+| 架构图生成（自包含 HTML+SVG 深色主题） | [rules/architecture-diagram.md](./skills/rui-html/rules/architecture-diagram.md) |
+| 知识图谱（三层 schema：story→scene→source） | [rules/knowledge-graph.md](./skills/rui-story/rules/knowledge-graph.md) |
+| Mermaid 统一配色（项目唯一色板真相源） | [rules/mermaid-theme.md](./skills/rui/rules/mermaid-theme.md) |
+| 计划执行（创建→审查→执行→验证） | [rules/plan-execution.md](./skills/rui-plan/rules/plan-execution.md) |
+| rui-claude 操作约束（仅限 .claude/） | [rules/rui-claude.md](./skills/rui-claude/rules/rui-claude.md) |
+| 安全防护基线（防线在信任边界处） | [rules/security-guardrails.md](./skills/rui/rules/security-guardrails.md) |
+| 设计原则（SRP · 高内聚 · 低耦合 · DIP · OCP · ISP · DRY · YAGNI · 组合 · 扩展至上 · 可健康检测） | [rules/design-principles.md](./skills/rui/rules/design-principles.md) |
+| 架构宪法（内核轻量·扩展丰富 · 配置 API · 代码范式 · 健康检测架构） | [rules/architecture-principles.md](./skills/rui/rules/architecture-principles.md) |
+| 代码编程范式（模块范式 · 函数范式 · 错误处理 · 导入 · 常量，含正反例） | [rules/code-paradigm.md](./skills/rui-code/rules/code-paradigm.md) |
 | 架构合规自动验证（15 维度 A 级 · --fix · --append-trend） | `node lib/arch-check.mjs` |
-| Agent 交接规范（交接信号格式 · Agent 间契约 · 阻断条件） | [rules/agent-handoff.md](./rules/agent-handoff.md) |
-| 文档质量标准（A/B/C/D 证据等级 · 统一模版 · 退化检测） | [rules/doc-quality.md](./rules/doc-quality.md) |
-| 知识图谱所有权（单点写入 · pm/coder/reporter 三方解耦） | [rules/knowledge-graph-ownership.md](./rules/knowledge-graph-ownership.md) |
-| 角色拓扑 · 行为纪律 · 设计原则 · 执行准则 · ADR · 多 Agent 协作模式 | [agents/AGENT.md](./agents/AGENT.md) |
-| 自改进闭环（诊断 D0-D7 · 经验技能化 · 记忆压缩注入 · 效果评估 E1-E4） | [rules/self-improve.md](./rules/self-improve.md) · [agents/self-improve.md](./agents/self-improve.md) |
+| Agent 交接规范（交接信号格式 · Agent 间契约 · 阻断条件） | [rules/agent-handoff.md](./skills/rui/rules/agent-handoff.md) |
+| 文档质量标准（A/B/C/D 证据等级 · 统一模版 · 退化检测） | [rules/doc-quality.md](./skills/rui-html/rules/doc-quality.md) |
+| 知识图谱所有权（单点写入 · pm/coder/reporter 三方解耦） | [rules/knowledge-graph-ownership.md](./skills/rui-story/rules/knowledge-graph-ownership.md) |
+| 角色拓扑 · 行为纪律 · 设计原则 · 执行准则 · ADR · 多 Agent 协作模式 | [agents/AGENT.md](./skills/rui/AGENT.md) |
+| 自改进闭环（诊断 D0-D7 · 经验技能化 · 记忆压缩注入 · 效果评估 E1-E4） | [rules/self-improve.md](./skills/rui-yry/rules/self-improve.md) · [agents/self-improve.md](./skills/rui-yry/self-improve.md) |
 | 共享库（TTY · FS · 常量 · help 布局 · 诊断 · Mermaid 主题 · 插件工具 · 网络） | [lib/](./lib/) |
 | rui-code 源码实现管线（Gate A/B · 逐模块 P0 清零） | [skills/rui-code/SKILL.md](./skills/rui-code/SKILL.md) |
 | rui-init 项目初始化 | [skills/rui-init/SKILL.md](./skills/rui-init/SKILL.md) |

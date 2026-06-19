@@ -52,10 +52,6 @@ tests/
 │   ├── rui-npm.test.mjs             # rui-npm 包管理（68+ 用例）
 │   ├── rui-story.test.mjs           # rui-story 面板管理（6 用例）
 │   └── rui-trends.test.mjs          # rui-trends 趋势分析（19 用例）
-├── agents/
-│   └── agents.test.mjs              # 9 Agent 定义完整性（12 用例）
-├── rules/
-│   └── rules.test.mjs               # 10 规则定义完整性（16 用例）
 └── integration/
     ├── cross-references.test.mjs    # 跨模块交叉引用一致性（14 用例）
     └── knowledge-graph.test.mjs     # 知识图谱结构验证（8 用例）
@@ -93,8 +89,8 @@ tests/
 | rui-npm | skills/rui-npm.test.mjs | 68+ | SKILL.md · help.mjs · 8 子命令 · 场景文档 · 测试面板 |
 | rui-story | skills/rui-story.test.mjs | 6 | SKILL.md · help.mjs · rui-story.mjs |
 | rui-trends | skills/rui-trends.test.mjs | 19 | SKILL.md · help.mjs · 7 子命令 · 交叉引用 |
-| 9 Agent | agents/agents.test.mjs | 12 | 定义完整性 · 契约字段 · 角色职责 |
-| 10 规则 | rules/rules.test.mjs | 16 | 定义完整性 · 约束字段 · 适用范围 |
+| Agent 角色 | agents/agents.test.mjs | 12 | 定义完整性 · 契约字段 · 角色职责（现已集成入 skills/） |
+| 规则定义 | rules/rules.test.mjs | 16 | 定义完整性 · 约束字段 · 适用范围（现已集成入 skills/*/rules/） |
 | 交叉引用 | integration/cross-references.test.mjs | 14 | 模块引用一致性 · 安全基线 · 文档同步 |
 | 知识图谱 | integration/knowledge-graph.test.mjs | 8 | JSON 结构 · 节点完整性 · 边一致性 |
 
@@ -105,7 +101,7 @@ tests/
 | 轨道 | 运行器 | 命令 | 覆盖范围 |
 |------|--------|------|---------|
 | **工程化轨道** | vitest | `npm test` | `tests/infrastructure/` — 框架存在性 + 服务可达性（25 项） |
-| **遗留轨道** | 自建 harness | `npm run test:legacy` | `tests/skills/` `agents/` `rules/` `integration/` — 全量覆盖（171+ 断言） |
+| **遗留轨道** | 自建 harness | `npm run test:legacy` | `tests/skills/` `tests/agents/` `tests/rules/` `tests/integration/` — 全量覆盖（171+ 断言） |
 
 ### 双轨设计原则
 

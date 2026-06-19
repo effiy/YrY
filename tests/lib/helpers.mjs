@@ -89,15 +89,41 @@ export function listSkills() {
 }
 
 export function listAgents() {
-  return readDir('agents')
-    .filter(f => f.endsWith('.md') && f !== 'AGENT.md')
-    .map(f => basename(f, '.md'));
+  // Agents are now integrated into skills — scan for agent role files across all skills
+  const skills = readDir('skills');
+  const agentNames = new Set();
+  for (const skill of skills) {
+    try {
+      const files = readDir(`skills/${skill}`);
+      for (const f of files) {
+        // Agent role files are direct .md files in skill dirs (not SKILL.md, not formulas.md, etc.)
+        const knownAgents = ['pm', 'coder', 'tester', 'security', 'reporter',
+          'planner', 'architect', 'code-reviewer', 'self-improve', 'AGENT'];
+        const name = basename(f, '.md');
+        if (knownAgents.includes(name)) {
+          agentNames.add(name);
+        }
+      }
+    } catch {}
+  }
+  return [...agentNames];
 }
 
 export function listRules() {
-  return readDir('rules')
-    .filter(f => f.endsWith('.md'))
-    .map(f => basename(f, '.md'));
+  // Rules are now integrated into skills under skills/*/rules/
+  const skills = readDir('skills');
+  const ruleNames = [];
+  for (const skill of skills) {
+    try {
+      const files = readDir(`skills/${skill}/rules`);
+      for (const f of files) {
+        if (f.endsWith('.md')) {
+          ruleNames.push(basename(f, '.md'));
+        }
+      }
+    } catch {}
+  }
+  return ruleNames;
 }
 
 export function listStoryDirs() {

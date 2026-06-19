@@ -1288,7 +1288,7 @@ var SCORE_METHODOLOGY = {
   em_docs:     { formula: '3文档齐全 → 100分；2文档 → 80分；1文档 → 50分', source: '根目录文件扫描', checks: ['README.md', 'CLAUDE.md', 'docs/'] },
   em_deps:     { formula: 'lockfile+版本脚本 → 100分；仅有lockfile → 70分', source: 'package.json + lockfile', checks: ['lockfile', '版本管理脚本'] },
   em_git:      { formula: 'GitHub+2+项 → 100分；2+项 → 80分；仅.gitignore → 60分', source: '.git* 文件扫描', checks: ['.gitignore', '.gitattributes', 'PR模板'] },
-  comp_qual:   { formula: '全部组件均分: Skills(40+60) + Agents(40+60) + Rules(40+60) + Scripts(40+60)', source: 'skills/ agents/ rules/ lib/ 扫描', checks: ['SKILL.md存在', 'frontmatter', '文档长度', '代码注释', '测试覆盖'] },
+  comp_qual:   { formula: '全部组件均分: Skills(40+60+60) 含 Agents + Rules + Scripts(40+60)', source: 'skills/ lib/ 扫描', checks: ['SKILL.md存在', 'frontmatter', '文档长度', '代码注释', '测试覆盖'] },
 };
 
 /**

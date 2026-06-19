@@ -26,7 +26,7 @@ ${item('Gate B ≤ 2 轮', '超过则阻断 gate-b-limit')}
 
 ${hdr('相关资源')}
 ${item('SKILL.md', 'skills/rui-code/SKILL.md — 完整规约', dim)}
-${item('code-pipeline.md', 'rules/code-pipeline.md — 代码管线规则', dim)}
+${item('code-pipeline.md', 'skills/rui-code/rules/code-pipeline.md — 代码管线规则', dim)}
 `;
 
 console.log(help);

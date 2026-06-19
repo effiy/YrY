@@ -280,11 +280,11 @@ PASS: all layer nodeIds reference existing nodes
 
 ---
 
-> **回溯链**: 本文档由 `/rui init` 流程的 Step 4b（自主测试方案）触发生成，场景定义基于文档公式中的交叉引用约束、实施报告和测试报告的契约对齐规则。来源决策：[formulas.md §使用约定](../../../../skills/rui/formulas.md#使用约定)（P0 检查清单：交叉引用可点击、效果验证完整），[delivery-gate.md](../../../../rules/delivery-gate.md)（交付收口文档同步规则），[coder.md §审查维度](../../../../agents/coder.md#审查维度)（影响链闭合要求），[doc-generation.md](../../../../rules/doc-generation.md)（文档生成约束）。交叉引用：[故事任务](../故事任务.md)（基线需求）。
+> **回溯链**: 本文档由 `/rui init` 流程的 Step 4b（自主测试方案）触发生成，场景定义基于文档公式中的交叉引用约束、实施报告和测试报告的契约对齐规则。来源决策：[formulas.md §使用约定](../../../../skills/rui/formulas.md#使用约定)（P0 检查清单：交叉引用可点击、效果验证完整），[delivery-gate.md](../../../../skills/rui/rules/delivery-gate.md)（交付收口文档同步规则），[coder.md §审查维度](../../../../skills/rui/coder.md#审查维度)（影响链闭合要求），[doc-generation.md](../../../../skills/rui-html/rules/doc-generation.md)（文档生成约束）。交叉引用：[故事任务](../故事任务.md)（基线需求）。
 
 ### 变更记录
 
 | 日期 | 变更 | 触发 | 证据 |
 |------|------|------|------|
-| 2026-06-05 | v1.0.0 初始化：生成场景概述 + §0 技术评审（含效果示意和基线溯源）+ §1 测试设计（含 4 TC-N + 7 TC-B + Gate A 交接） | `/rui init` Step 4b — 自主测试方案场景-3 生成 | [formulas.md §使用约定](../../../../skills/rui/formulas.md)；[delivery-gate.md](../../../../rules/delivery-gate.md)；[coder.md §审查维度](../../../../agents/coder.md)；[formulas.md §F.story.scene](../../../../skills/rui/formulas.md) |
+| 2026-06-05 | v1.0.0 初始化：生成场景概述 + §0 技术评审（含效果示意和基线溯源）+ §1 测试设计（含 4 TC-N + 7 TC-B + Gate A 交接） | `/rui init` Step 4b — 自主测试方案场景-3 生成 | [formulas.md §使用约定](../../../../skills/rui/formulas.md)；[delivery-gate.md](../../../../skills/rui/rules/delivery-gate.md)；[coder.md §审查维度](../../../../skills/rui/coder.md)；[formulas.md §F.story.scene](../../../../skills/rui/formulas.md) |
 | 2026-06-08 | v1.1.0 补充：§2 实施报告更新 — `scripts/validate-doc-consistency.mjs` (L1 引用可达性) + `scripts/validate-module-topology.mjs` (循环检测)。新增 `源码.html` 页面。§4 改进建议标记 L1 和模块拓扑为已完成 | `/rui update yry-self-test` — 补充缺失源文件 | 源码: [validate-doc-consistency.mjs](../../../../scripts/validate-doc-consistency.mjs) · [validate-module-topology.mjs](../../../../scripts/validate-module-topology.mjs) · [源码.html](./源码.html) |

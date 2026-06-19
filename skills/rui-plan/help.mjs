@@ -18,7 +18,7 @@ ${item('5. 保存', 'plan.html + 计划清单.html')}
 
 ${hdr('相关资源')}
 ${item('SKILL.md', 'skills/rui-plan/SKILL.md — 完整规约', dim)}
-${item('plan-execution.md', 'rules/plan-execution.md — 计划执行规则', dim)}
+${item('plan-execution.md', 'skills/rui-plan/rules/plan-execution.md — 计划执行规则', dim)}
 `;
 
 console.log(help);

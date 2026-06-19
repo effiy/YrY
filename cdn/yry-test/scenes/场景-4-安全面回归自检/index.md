@@ -297,11 +297,11 @@ sequenceDiagram
 
 ---
 
-> **回溯链**: 本文档由 `/rui init` 流程的 Step 4b（自主测试方案）触发生成，场景定义基于项目的四条不可妥协安全底线和安全审查的 STRIDE 六面覆盖要求。来源决策：[CLAUDE.md §项目不可妥协底线](../../../../CLAUDE.md#项目不可妥协底线)（四条安全底线：认证不可绕过、密钥不落盘、输入必校验、规约完整性），[security.md](../../../../agents/security.md)（security Agent 的威胁建模和 STRIDE 六面覆盖规约），[coder.md §审查维度](../../../../agents/coder.md#审查维度)（Security 维度检查点：注入、认证绕过、数据暴露、密钥硬编码）。交叉引用：[故事任务](../故事任务.md)（基线需求），[yry-arch 场景文档](../../yry-arch/)（安全相关架构场景）。
+> **回溯链**: 本文档由 `/rui init` 流程的 Step 4b（自主测试方案）触发生成，场景定义基于项目的四条不可妥协安全底线和安全审查的 STRIDE 六面覆盖要求。来源决策：[CLAUDE.md §项目不可妥协底线](../../../../CLAUDE.md#项目不可妥协底线)（四条安全底线：认证不可绕过、密钥不落盘、输入必校验、规约完整性），[security.md](../../../../skills/rui/security.md)（security Agent 的威胁建模和 STRIDE 六面覆盖规约），[coder.md §审查维度](../../../../skills/rui/coder.md#审查维度)（Security 维度检查点：注入、认证绕过、数据暴露、密钥硬编码）。交叉引用：[故事任务](../故事任务.md)（基线需求），[yry-arch 场景文档](../../yry-arch/)（安全相关架构场景）。
 
 ### 变更记录
 
 | 日期 | 变更 | 触发 | 证据 |
 |------|------|------|------|
-| 2026-06-05 | v1.0.0 初始化：生成场景概述 + §0 技术评审（含效果示意和基线溯源）+ §1 测试设计（含 4 TC-N + 7 TC-B + Gate A 交接） | `/rui init` Step 4b — 自主测试方案场景-4 生成 | [CLAUDE.md §项目不可妥协底线](../../../../CLAUDE.md)；[security.md](../../../../agents/security.md)；[coder.md §审查维度](../../../../agents/coder.md)；[formulas.md §F.story.scene](../../../../skills/rui/formulas.md) |
+| 2026-06-05 | v1.0.0 初始化：生成场景概述 + §0 技术评审（含效果示意和基线溯源）+ §1 测试设计（含 4 TC-N + 7 TC-B + Gate A 交接） | `/rui init` Step 4b — 自主测试方案场景-4 生成 | [CLAUDE.md §项目不可妥协底线](../../../../CLAUDE.md)；[security.md](../../../../skills/rui/security.md)；[coder.md §审查维度](../../../../skills/rui/coder.md)；[formulas.md §F.story.scene](../../../../skills/rui/formulas.md) |
 | 2026-06-08 | v1.1.0 补充：§2 实施报告更新 — 新增 `scripts/security-scan.mjs` 覆盖 S1(密钥)/S3(XSS)/S5(npm audit) 三面 + `scripts/detect-impact.mjs` 提供 S6 变更检测基础 + `skills/rui-bot/config.json` 安全配置。S1/S3/S4/S5 标记为已实现。新增 `源码.html` 页面 | `/rui update yry-self-test` — 补充缺失源文件 | 源码: [security-scan.mjs](../../../../scripts/security-scan.mjs) · [detect-impact.mjs](../../../../scripts/detect-impact.mjs) · [config.json](../../../../skills/rui-bot/config.json) · [源码.html](./源码.html) |

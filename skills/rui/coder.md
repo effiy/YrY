@@ -2,7 +2,7 @@
 
 > 三件事：**写到哪个目录**、**文档按什么生命周期创建**、**附属数据怎么落**。
 
-故事文档公式（F.story.\* / F.supp.\*）见 [formulas.md](./formulas.md)；强制约束见 [rules/doc-generation.md](../../rules/doc-generation.md)；coder 角色契约见 [agents/coder.md](../../agents/coder.md)。故事拆分决策树见 [agents/pm.md](../../agents/pm.md)。
+故事文档公式（F.story.\* / F.supp.\*）见 [formulas.md](./formulas.md)；强制约束见 [rules/doc-generation.md](../rui-html/rules/doc-generation.md)；coder 角色契约见 [agents/coder.md](./coder.md)。故事拆分决策树见 [agents/pm.md](./pm.md)。
 
 [目录布局](#目录布局) · [故事目录骨架](#故事目录骨架) · [文件创建生命周期](#文件创建生命周期) · [完整度判定](#完整度判定) · [数据契约](#数据契约) · [生效标志](#生效标志)
 
@@ -13,7 +13,7 @@ docs/
 └── 故事任务面板/<name>/   ← 执行：主线 + 补充
 ```
 
-**命名规则**：`<name>` 纯语义 kebab-case（如 `user-login`、`claude-config`），不加项目名前缀。CLI 输入 `<name>`，对应路径 `docs/故事任务面板/<name>/`。详见 [rules/doc-generation.md](../../rules/doc-generation.md)。
+**命名规则**：`<name>` 纯语义 kebab-case（如 `user-login`、`claude-config`），不加项目名前缀。CLI 输入 `<name>`，对应路径 `docs/故事任务面板/<name>/`。详见 [rules/doc-generation.md](../rui-html/rules/doc-generation.md)。
 
 ## 故事目录骨架
 
@@ -50,7 +50,7 @@ flowchart LR
 | 知识图谱.json | ✓ | pm → coder 更新 | 文档生成 + 实现 |
 | 知识图谱.html | ✓ | coder | 文档生成（基于知识图谱.json 渲染） |
 
-补充文档按需触发，决策树见 [rules/doc-generation.md](../../rules/doc-generation.md#补充文档)，公式见 [formulas/supplement.md](./formulas/supplement.md)。
+补充文档按需触发，决策树见 [rules/doc-generation.md](../rui-html/rules/doc-generation.md#补充文档)，公式见 [formulas/supplement.md](./formulas/supplement.md)。
 
 附属（rui 管线维护，不入库审查）：
 
@@ -234,7 +234,7 @@ self-improve 引擎追加写入。
 | `feedback` | `[{rating,note,date}]` | 反馈记录 |
 | `eval_result` | improved\|degraded\|neutral\|pending | 效果评估 |
 
-效果评估需前后各足够条数的执行记忆才有中等置信度，规则见 [rules/self-improve.md](../../rules/self-improve.md)。
+效果评估需前后各足够条数的执行记忆才有中等置信度，规则见 [rules/self-improve.md](../rui-yry/rules/self-improve.md)。
 
 ## 生效标志
 

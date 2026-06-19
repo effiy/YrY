@@ -43,7 +43,7 @@ ${item("/rui-claude update", "git pull 最新 YrY → 清除旧版本缓存 → 
 ${scene("合并所有开发分支并发布新版本")}
 ${item("/rui-claude update-version", "合并所有 feat 分支到 main → 自主判定版本号 → 推送远端 + tag", cyan)}
 ${scene("分析配置健康度")}
-${item("/rui-claude retro", "分析 agents/rules/skills 结构 → 输出复盘文档", cyan)}
+${item("/rui-claude retro", "分析 skills 结构（含 agents + rules） → 输出复盘文档", cyan)}
 ${item("/rui-claude retro --name config-audit", "指定故事名，可溯源", cyan)}
 ${item("/rui-claude retro --json", "JSON 格式输出（供脚本消费）", cyan)}
 ${scene("查看操作历史")}

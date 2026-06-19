@@ -316,7 +316,7 @@ flowchart TD
 >
 > - 需求来源：本场景由 [故事任务 §7 跨文档索引](../故事任务.md#s-7-跨文档索引) 分配，覆盖 Story 1 FP1–FP5，实现项目资产自动采集和六层结构建模。
 > - 基线内容：[故事任务 Story 1 §2 Requirements](../故事任务.md#s-1-story) — FP1–FP5。
-> - 管线阶段：从需求解析到交付收口的十一个阶段，取自 [管线全流程](../../../../rules/code-pipeline.md) 规约。
+> - 管线阶段：从需求解析到交付收口的十一个阶段，取自 [管线全流程](../../../../skills/rui-code/rules/code-pipeline.md) 规约。
 > - 公式约束：遵循 [F.story.scene](../../../../skills/rui/formulas.md) 公式，含 §0–§4 全生命周期章节。
 > - 证据级别：资产计数通过 `ls` / `grep -c` 可验证（证据等级 A）。
 

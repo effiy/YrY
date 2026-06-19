@@ -151,7 +151,7 @@ flowchart LR
 | 推荐评分 | [ranking.md](./ranking.md) — 5 层链式管线评分框架 |
 | 关注点 | [concerns/](./concerns/) — 集成 · 诊断 · 架构 · 交接 |
 | 共享脚本 | [lib/audit.mjs](../../lib/audit.mjs) · [lib/branch-check.mjs](../../lib/branch-check.mjs) · [lib/recommend.mjs](../../lib/recommend.mjs) · [lib/proposals.mjs](../../lib/proposals.mjs) · [lib/record.mjs](../../lib/record.mjs) |
-| 规则 | [code-pipeline](../../rules/code-pipeline.md) · [delivery-gate](../../rules/delivery-gate.md) · [doc-generation](../../rules/doc-generation.md) · [self-improve](../../rules/self-improve.md) · [rui-claude](../../rules/rui-claude.md) |
+| 规则 | [code-pipeline](../rui-code/rules/code-pipeline.md) · [delivery-gate](./rules/delivery-gate.md) · [doc-generation](../rui-html/rules/doc-generation.md) · [self-improve](../rui-yry/rules/self-improve.md) · [rui-claude](../rui-claude/rules/rui-claude.md) |
 
 ## 降级策略
 

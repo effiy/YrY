@@ -277,11 +277,11 @@ sequenceDiagram
 
 ---
 
-> **回溯链**: 本文档由 `/rui init` 流程的 Step 4b（自主测试方案）触发生成，场景定义基于管线规则中的分支隔离门禁、逐模块 P0 清零纪律和交付收口规则。来源决策：[code-pipeline.md §① 分支隔离](../../../../rules/code-pipeline.md#①-分支隔离--强制门禁)（分支隔离强制门禁），[code-pipeline.md §生效标志](../../../../rules/code-pipeline.md#生效标志)（逐项生效标志定义），[delivery-gate.md](../../../../rules/delivery-gate.md)（交付收口文档同步规则），[coder.md](../../../../agents/coder.md#规则)（coder 行为纪律）。交叉引用：[故事任务](../故事任务.md)（基线需求）。
+> **回溯链**: 本文档由 `/rui init` 流程的 Step 4b（自主测试方案）触发生成，场景定义基于管线规则中的分支隔离门禁、逐模块 P0 清零纪律和交付收口规则。来源决策：[code-pipeline.md §① 分支隔离](../../../../skills/rui-code/rules/code-pipeline.md#①-分支隔离--强制门禁)（分支隔离强制门禁），[code-pipeline.md §生效标志](../../../../skills/rui-code/rules/code-pipeline.md#生效标志)（逐项生效标志定义），[delivery-gate.md](../../../../skills/rui/rules/delivery-gate.md)（交付收口文档同步规则），[coder.md](../../../../skills/rui/coder.md#规则)（coder 行为纪律）。交叉引用：[故事任务](../故事任务.md)（基线需求）。
 
 ### 变更记录
 
 | 日期 | 变更 | 触发 | 证据 |
 |------|------|------|------|
-| 2026-06-05 | v1.0.0 初始化：生成场景概述 + §0 技术评审（含效果示意和基线溯源）+ §1 测试设计（含 4 TC-N + 7 TC-B + Gate A 交接） | `/rui init` Step 4b — 自主测试方案场景-2 生成 | [code-pipeline.md §① 分支隔离](../../../../rules/code-pipeline.md)；[code-pipeline.md §生效标志](../../../../rules/code-pipeline.md)；[coder.md §规则](../../../../agents/coder.md)；[formulas.md §F.story.scene](../../../../skills/rui/formulas.md) |
+| 2026-06-05 | v1.0.0 初始化：生成场景概述 + §0 技术评审（含效果示意和基线溯源）+ §1 测试设计（含 4 TC-N + 7 TC-B + Gate A 交接） | `/rui init` Step 4b — 自主测试方案场景-2 生成 | [code-pipeline.md §① 分支隔离](../../../../skills/rui-code/rules/code-pipeline.md)；[code-pipeline.md §生效标志](../../../../skills/rui-code/rules/code-pipeline.md)；[coder.md §规则](../../../../skills/rui/coder.md)；[formulas.md §F.story.scene](../../../../skills/rui/formulas.md) |
 | 2026-06-08 | v1.1.0 补充：§2 实施报告更新 — `scripts/self-test.mjs` 提供增量自检入口 + `scripts/detect-impact.mjs` 覆盖变更范围识别（P1→实现）+ 分支隔离由 `branch-check.mjs` 覆盖。新增 `源码.html` 页面 | `/rui update yry-self-test` — 补充缺失源文件 | 源码: [scripts/self-test.mjs](../../../../scripts/self-test.mjs) · [scripts/detect-impact.mjs](../../../../scripts/detect-impact.mjs) · [源码.html](./源码.html) |
