@@ -4,11 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>自我改进分析 — YrY 持续自改进仪表板</title>
-<meta name="description" content="YrY 持续自改进闭环数据仪表板 — 读取 health-trend.jsonl + summary.json · D0-D8 诊断 · E1-E4 评估 · 日/周/月全景视角 · 信号检测 · 分支健康 · 组件健康 · 架构合规 · 评分趋势">
+<meta name="description" content="YrY 持续自改进闭环数据仪表板 — 读取 health-trend.jsonl + summary.json · D0-D8 诊断 · E1-E4 评估 · 日/周/月全景视角 · 信号检测 · 分支健康 · 组件健康 · 架构合规 · 评分趋势 · 趋势预测 · 改进优先级矩阵 · 技能化追踪">
+<meta name="keywords" content="YrY,自改进,持续改进,D0-D8诊断,E1-E4评估,健康趋势,架构合规,评分趋势,改进速率,趋势预测,优先级矩阵,技能化,闭环观察诊断改进评估">
+<meta name="theme-color" content="#FFC107">
 <meta property="og:title" content="YrY 持续自改进仪表板">
-<meta property="og:description" content="观察 → 诊断 → 改进 → 评估 四段闭环 · D0-D8 诊断矩阵 · E1-E4 评估效能">
+<meta property="og:description" content="观察→诊断→改进→评估 四段闭环 · D0-D8 九级诊断矩阵 · E1-E4 四级评估效能 · 改进能力 KPI · 趋势预测 · 改进优先级矩阵 · 技能化追踪">
 <meta property="og:type" content="website">
+<meta property="og:locale" content="zh_CN">
 <meta name="robots" content="noindex, nofollow">
+<meta name="format-detection" content="telephone=no">
 <link rel="stylesheet" href="../../cdn/shared/index.css">
 <link rel="stylesheet" href="../../cdn/theme/index.css">
 <link rel="stylesheet" href="../../cdn/shared-reports/index.css">
@@ -122,14 +126,129 @@
 .grade-bar.C { background: var(--yry-warn); }
 .grade-bar.D { background: var(--yry-fail); }
 
+/* ── KPI Grid (改进能力指标) ─────────────────────────────────────────── */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.kpi-item { padding: 14px 16px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); display: flex; flex-direction: column; gap: 4px; position: relative; overflow: hidden; }
+.kpi-item::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+.kpi-item.pass::before { background: var(--yry-pass); }
+.kpi-item.warn::before { background: var(--yry-warn); }
+.kpi-item.fail::before { background: var(--yry-fail); }
+.kpi-item.info::before { background: var(--yry-cyan); }
+.kpi-label { font-size: .64rem; color: var(--yry-text3); text-transform: uppercase; letter-spacing: .4px; }
+.kpi-value { font-size: 1.4rem; font-weight: 700; line-height: 1.1; font-family: 'JetBrains Mono', monospace; }
+.kpi-value.pass { color: var(--yry-pass); }
+.kpi-value.warn { color: var(--yry-warn); }
+.kpi-value.fail { color: var(--yry-fail); }
+.kpi-value.info { color: var(--yry-cyan); }
+.kpi-suffix { font-size: .68rem; color: var(--yry-text2); margin-top: 2px; line-height: 1.4; }
+
+/* ── Priority Matrix ───────────────────────────────────────────────────── */
+.priority-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.priority-item { padding: 14px 16px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); display: flex; gap: 12px; align-items: flex-start; transition: transform .15s; }
+.priority-item:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.08); }
+.priority-item.p0 { border-left: 3px solid var(--yry-fail); }
+.priority-item.p1 { border-left: 3px solid var(--yry-warn); }
+.priority-item.p2 { border-left: 3px solid var(--yry-cyan); }
+.priority-rank { font-size: 1.1rem; font-weight: 800; min-width: 28px; color: var(--yry-text3); font-family: 'JetBrains Mono', monospace; }
+.priority-body { flex: 1; }
+.priority-title { font-size: .84rem; font-weight: 600; margin-bottom: 4px; }
+.priority-meta { font-size: .68rem; color: var(--yry-text3); display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.priority-meta span { display: inline-flex; align-items: center; gap: 3px; }
+.priority-action { font-size: .68rem; color: var(--yry-text2); margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,.06); }
+
+/* ── Diagnostic trigger history mini chart ─────────────────────────────── */
+.diag-history { display: flex; flex-direction: column; gap: 8px; }
+.diag-history-row { display: flex; align-items: center; gap: 10px; }
+.diag-history-id { font-size: .72rem; font-weight: 700; min-width: 28px; color: var(--yry-text2); }
+.diag-history-name { font-size: .68rem; color: var(--yry-text3); min-width: 80px; }
+.diag-history-bars { display: flex; gap: 2px; flex: 1; align-items: center; height: 18px; }
+.diag-history-cell { flex: 1; min-width: 6px; max-width: 24px; height: 100%; border-radius: 2px; background: rgba(255,255,255,.04); transition: all .3s; position: relative; }
+.diag-history-cell.triggered { background: var(--yry-fail); }
+.diag-history-cell.warn { background: var(--yry-warn); }
+.diag-history-cell:hover { transform: scaleY(1.2); }
+.diag-history-rate { font-size: .68rem; min-width: 48px; text-align: right; font-family: 'JetBrains Mono', monospace; color: var(--yry-text2); }
+.diag-history-axis { display: flex; gap: 2px; padding-left: 118px; margin-top: 6px; }
+.diag-history-axis span { flex: 1; min-width: 6px; max-width: 24px; font-size: .56rem; color: var(--yry-text3); text-align: center; }
+
+/* ── Architecture drift indicator ──────────────────────────────────────── */
+.drift-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+.drift-item { padding: 12px 14px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
+.drift-item.up { border-left: 3px solid var(--yry-pass); }
+.drift-item.flat { border-left: 3px solid var(--yry-cyan); }
+.drift-item.down { border-left: 3px solid var(--yry-fail); }
+.drift-name { font-size: .68rem; color: var(--yry-text2); margin-bottom: 4px; }
+.drift-score-row { display: flex; align-items: baseline; gap: 8px; }
+.drift-score { font-size: 1.2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.drift-arrow { font-size: .82rem; font-weight: 700; }
+.drift-arrow.up { color: var(--yry-pass); }
+.drift-arrow.flat { color: var(--yry-text3); }
+.drift-arrow.down { color: var(--yry-fail); }
+.drift-threshold { font-size: .56rem; color: var(--yry-text3); margin-top: 4px; }
+
+/* ── Trend forecast band ───────────────────────────────────────────────── */
+.forecast-band { fill: rgba(34,211,238,.12); }
+.forecast-line { stroke: #22d3ee; stroke-width: 1.5; stroke-dasharray: 4,3; fill: none; }
+.forecast-dot { fill: #22d3ee; }
+.forecast-legend { display: inline-flex; align-items: center; gap: 4px; }
+.forecast-legend::before { content: ''; display: inline-block; width: 12px; height: 2px; background: #22d3ee; background-image: linear-gradient(to right, #22d3ee 60%, transparent 60%); background-size: 6px 2px; background-repeat: repeat-x; }
+
+/* ── Dimension recurrence ranking ──────────────────────────────────────── */
+.rec-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; margin-bottom: 6px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
+.rec-row:hover { transform: translateX(2px); }
+.rec-rank { min-width: 28px; font-size: .82rem; font-weight: 700; color: var(--yry-text3); font-family: 'JetBrains Mono', monospace; }
+.rec-name { flex: 1; font-size: .78rem; font-weight: 600; }
+.rec-bar { width: 100px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.05); overflow: hidden; }
+.rec-fill { height: 100%; border-radius: 3px; transition: width .4s; }
+.rec-score { min-width: 48px; text-align: right; font-weight: 700; font-size: .82rem; font-family: 'JetBrains Mono', monospace; }
+.rec-trend { min-width: 48px; text-align: right; font-size: .72rem; }
+
+/* ── Skillification tracker ────────────────────────────────────────────── */
+.skill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.skill-card { padding: 14px 16px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); position: relative; }
+.skill-card.promoted { border-left: 3px solid var(--yry-pass); }
+.skill-card.candidate { border-left: 3px solid var(--yry-cyan); }
+.skill-card.observed { border-left: 3px solid var(--yry-text3); }
+.skill-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.skill-name { font-size: .82rem; font-weight: 600; }
+.skill-count { font-size: .64rem; color: var(--yry-text3); margin-top: 4px; }
+.skill-prog { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+.skill-prog-bar { flex: 1; height: 4px; border-radius: 2px; background: rgba(255,255,255,.06); overflow: hidden; }
+.skill-prog-fill { height: 100%; border-radius: 2px; }
+.skill-prog-label { font-size: .58rem; color: var(--yry-text3); font-family: 'JetBrains Mono', monospace; min-width: 36px; }
+
+/* ── Diagnostic → Proposal → Rule mapping table ───────────────────────── */
+.dpr-table th { background: rgba(15,23,42,.4); }
+.dpr-table td.dpr-id { font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.dpr-table td.dpr-rule { font-size: .68rem; color: var(--yry-cyan); font-family: 'JetBrains Mono', monospace; }
+
+/* ── Quick reference grid ──────────────────────────────────────────────── */
+.ref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+.ref-card { padding: 12px 14px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); font-size: .72rem; line-height: 1.6; }
+.ref-card strong { color: var(--yry-accent); }
+.ref-card code { background: rgba(59,130,246,.1); padding: 1px 5px; border-radius: 3px; font-size: .9em; color: var(--yry-cyan); }
+
+/* ── Data flow diagram (CSS only) ──────────────────────────────────────── */
+.flow-diagram { display: flex; align-items: stretch; justify-content: center; gap: 4px; flex-wrap: wrap; padding: 14px 0; }
+.flow-node { padding: 10px 14px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.6); text-align: center; min-width: 110px; }
+.flow-node.observe { border-left: 3px solid var(--yry-cyan); }
+.flow-node.diagnose { border-left: 3px solid var(--yry-warn); }
+.flow-node.improve { border-left: 3px solid var(--yry-accent); }
+.flow-node.evaluate { border-left: 3px solid var(--yry-pass); }
+.flow-node .flow-icon { font-size: 1.1rem; display: block; margin-bottom: 2px; }
+.flow-node .flow-name { font-size: .72rem; font-weight: 700; }
+.flow-node .flow-sub { font-size: .58rem; color: var(--yry-text3); margin-top: 2px; }
+.flow-arrow { display: flex; align-items: center; color: var(--yry-text3); font-size: 1.2rem; padding: 0 4px; }
+
+/* ── Responsive additions ──────────────────────────────────────────────── */
 @media (max-width: 640px) {
-  .diag-grid { grid-template-columns: repeat(4, 1fr); }
-  .dim-grid { grid-template-columns: 1fr 1fr; }
-  .comp-grid { grid-template-columns: 1fr 1fr; }
-  .arch-dim-grid { grid-template-columns: 1fr 1fr; }
-  .day-card { flex-direction: column; align-items: flex-start; }
-  .arch-summary { flex-direction: column; align-items: flex-start; }
+	.kpi-grid, .priority-grid, .drift-grid, .skill-grid, .ref-grid { grid-template-columns: 1fr 1fr; }
+	.flow-diagram { flex-direction: column; align-items: stretch; }
+	.flow-arrow { transform: rotate(90deg); align-self: center; }
 }
+@media (max-width: 420px) {
+	.kpi-grid, .priority-grid, .drift-grid, .skill-grid, .ref-grid { grid-template-columns: 1fr; }
+}
+
 </style>
 </head>
 <body>
@@ -143,8 +262,40 @@
 
 <div class="hd">
   <h1>持续自改进仪表板</h1>
-  <div class="desc">读取 <code>.memory/health-trend.jsonl</code> 和 <code>docs/自我改进/summary.json</code>，展示健康趋势、D0-D8 诊断覆盖率、等级分布、分支健康、组件健康、架构合规、评分趋势与异常信号。驱动 <strong>观察 → 诊断 → 改进 → 评估</strong> 四段闭环。</div>
-  <div class="meta"><span id="siCount">加载中...</span> · 数据刷新 <span id="siFreshness">—</span></div>
+  <div class="desc">读取 <code>.memory/health-trend.jsonl</code> 和 <code>docs/自我改进/summary.json</code>，展示健康趋势、D0-D8 诊断覆盖率、等级分布、分支健康、组件健康、架构合规、评分趋势、异常信号、改进能力 KPI、趋势预测、改进优先级矩阵与技能化追踪。驱动 <strong>观察 → 诊断 → 改进 → 评估</strong> 四段闭环。</div>
+  <div class="meta"><span id="siCount">加载中...</span> · 数据刷新 <span id="siFreshness">—</span> · 闭环周期 <span id="siCycleCount">—</span></div>
+</div>
+
+<!-- 四段闭环数据流图 -->
+<div class="card" style="padding:18px 24px">
+  <h2 style="font-size:.92rem;margin-bottom:4px">🔄 四段闭环 · 数据流图</h2>
+  <div class="flow-diagram">
+    <div class="flow-node observe">
+      <span class="flow-icon">①</span>
+      <span class="flow-name">观察</span>
+      <span class="flow-sub">health-trend.jsonl · arch-trend · git · bot</span>
+    </div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node diagnose">
+      <span class="flow-icon">②</span>
+      <span class="flow-name">诊断</span>
+      <span class="flow-sub">D0–D8 异常定位 + 严重等级</span>
+    </div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node improve">
+      <span class="flow-icon">③</span>
+      <span class="flow-name">改进</span>
+      <span class="flow-sub">proposals + SKILL.md 技能化</span>
+    </div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-node evaluate">
+      <span class="flow-icon">④</span>
+      <span class="flow-name">评估</span>
+      <span class="flow-sub">E1–E4 效能验证 + 闭环回写</span>
+    </div>
+    <span class="flow-arrow" style="font-size:1.4rem;color:var(--yry-pass)">↻</span>
+  </div>
+  <div style="font-size:.62rem;color:var(--yry-text3);text-align:center;margin-top:6px">观察 → 诊断 → 改进 → 评估 → (下次循环) · 单闭环 ≤5 分钟，异常信号 30 分钟内可追溯至根因</div>
 </div>
 
 <div class="intro">
@@ -152,13 +303,15 @@
     <dt>四段闭环</dt>
     <dd>观察 (趋势数据采集) → 诊断 (D0-D8 异常定位) → 改进 (经验技能化执行) → 评估 (E1-E4 效果验证) — 每周期完整闭环一次，异常信号 30 分钟内可追溯至根因</dd>
     <dt>九级诊断</dt>
-    <dd>D0 基线偏离 · D1 缓存退化 · D2 质量退化 · D3 上下文退化 · D4 依赖过期 · D5 外部趋势 · D6 文档过时 · D7 测试缺口 · D8 架构退化 — 覆盖代码、文档、依赖、趋势、架构全维度</dd>
+    <dd>D0 基线偏离 · D1 效率退化 · D2 质量退化 · D3 复杂度增长 · D4 流程退化 · D5 依赖退化 · D6 文档过时 · D7 配置漂移 · D8 架构退化 — 覆盖代码、文档、依赖、趋势、架构全维度</dd>
     <dt>四级评估</dt>
     <dd>E1 即时验证 (单次检查 · ≤5min) · E2 短期观察 (小时级 · 趋势确认) · E3 长期趋势 (天/周级 · 统计显著性) · E4 经验技能化 (固化至规约 · 写回 SKILL.md)</dd>
     <dt>数据源</dt>
     <dd><code>.memory/health-trend.jsonl</code> (原始趋势线 · 每次 health 检查追加) + <code>docs/自我改进/summary.json</code> (预聚合摘要 · 日/周/月粒度) + <code>archHealth</code> (架构合规 15 维度) + <code>componentHealth</code> (96 组件健康) + <code>branchSummary</code> (Git 分支统计)</dd>
     <dt>诊断触发规则</dt>
     <dd>维度评分 &lt; 55 → 对应诊断自动触发 · 连续 2 次同维度 C 级 → P1 · 连续 3 次 → 自动升级 P0 · 趋势下降 &gt;15 分/周 → 退化告警</dd>
+    <dt>诊断引擎</dt>
+    <dd><code>lib/engine/diagnostics.mjs</code> (D0-D8 纯函数判定) + <code>lib/arch-check.mjs</code> (10 维度架构合规) + <code>lib/scoring.mjs</code> (评分聚合 + 趋势检测) + <code>lib/selfimprove-generator.mjs</code> (汇总生成器) — 权威定义见 <code>lib/constants.mjs</code></dd>
   </dl>
 </div>
 
@@ -170,6 +323,13 @@
   <div class="stat"><div class="val info">—</div><div class="lbl">诊断触发</div></div>
   <div class="stat"><div class="val info">—</div><div class="lbl">日期范围</div></div>
   <div class="stat"><div class="val info">—</div><div class="lbl">Git 分支</div></div>
+</div>
+
+<!-- Improvement Capability KPIs (改进能力指标) -->
+<div class="card">
+  <h2>📊 改进能力指标 · Capability KPIs</h2>
+  <div class="kpi-grid" id="capabilityKpis"><div class="empty" style="grid-column:1/-1">加载中...</div></div>
+  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">综合评估 <strong>自改进系统的效能</strong>：闭环数 · 平均分 · 解决率 · 改善率 · 复发率 · MTTR · 技能化条目 · 退化率 — 八项指标联动判定系统是否在 <em>持续向好</em>。</p>
 </div>
 
 <!-- Closed Loop Workflow -->
@@ -187,6 +347,26 @@
   <p style="font-size:.72rem;color:var(--yry-text3);margin-top:10px">改进有效标准：同维度 72h 内不复发同等级问题。E4 经验技能化条件：同一改进模式 3 次验证有效 → 写入对应 SKILL.md 规约 → 更新 rules/self-improve.md 经验库。</p>
 </div>
 
+<!-- Diagnostic → Proposal → Rule Mapping -->
+<div class="card">
+  <h2>🧭 诊断 → 提案 → 规则 路由映射</h2>
+  <table class="dpr-table">
+    <thead><tr><th>诊断</th><th>名称</th><th>触发信号</th><th>提案类型</th><th>升级目标</th></tr></thead>
+    <tbody>
+      <tr><td class="dpr-id">D0</td><td>基线偏离</td><td>执行与基线冲突 · 哲学偏离</td><td><span class="badge info">process</span></td><td class="dpr-rule">CLAUDE.md · AGENT.md</td></tr>
+      <tr><td class="dpr-id">D1</td><td>效率退化</td><td>阻断率 &gt; 20% · 阶段耗时异常</td><td><span class="badge warn">refactor</span></td><td class="dpr-rule">code-pipeline.md</td></tr>
+      <tr><td class="dpr-id">D2</td><td>质量退化</td><td>P0 密度 &gt; 均值 2× · Gate B 多轮</td><td><span class="badge warn">quality</span></td><td class="dpr-rule">doc-generation.md</td></tr>
+      <tr><td class="dpr-id">D3</td><td>复杂度增长</td><td>T3 占比 &gt; 30% · 大文件热点</td><td><span class="badge fail">security</span></td><td class="dpr-rule">pm.md（故事拆分）</td></tr>
+      <tr><td class="dpr-id">D4</td><td>流程退化</td><td>Gate B &gt; 2 轮 · 交付失败率高</td><td><span class="badge warn">quality</span></td><td class="dpr-rule">code-pipeline.md</td></tr>
+      <tr><td class="dpr-id">D5</td><td>依赖退化</td><td>依赖版本过期 · 阶段耗时 &gt; 3×</td><td><span class="badge warn">refactor</span></td><td class="dpr-rule">AGENT.md</td></tr>
+      <tr><td class="dpr-id">D6</td><td>文档过时</td><td>代码与文档不一致 · 证据降级</td><td><span class="badge info">process</span></td><td class="dpr-rule">CLAUDE.md</td></tr>
+      <tr><td class="dpr-id">D7</td><td>配置漂移</td><td>.claude/ 远端 vs 本地不同步 · 闭合率 &lt; 50%</td><td><span class="badge info">process</span></td><td class="dpr-rule">本规则</td></tr>
+      <tr><td class="dpr-id">D8</td><td>架构退化</td><td>范式违规 · 耦合上升 · 内核膨胀</td><td><span class="badge warn">refactor</span></td><td class="dpr-rule">architecture-principles.md</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:8px">诊断路由定义来源 <code>lib/constants.mjs</code> · <code>skills/rui-yry/rules/self-improve.md</code> · 提案闭合后写入 <code>.improvement/proposals.jsonl</code>，连续 3 故事触发自动升级为项目级规则。</p>
+</div>
+
 <!-- E1-E4 Evaluation Effectiveness Matrix -->
 <div class="card">
   <h2>E1–E4 评估效能矩阵</h2>
@@ -197,6 +377,20 @@
 <div class="card">
   <h2>改进速率追踪</h2>
   <div id="improveVelocity"><div class="empty">加载中...</div></div>
+</div>
+
+<!-- Improvement Priority Matrix (改进候选优先级矩阵) -->
+<div class="card">
+  <h2>🎯 改进候选优先级矩阵 · Top 8</h2>
+  <div class="priority-grid" id="priorityMatrix"><div class="empty" style="grid-column:1/-1">加载中...</div></div>
+  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">按 <strong>严重等级 × 趋势权重 × 复发率</strong> 综合排序 · P0 阻断管线 · P1 加速修复 · P2 计划修复 — 优先处理 Top 3 可避免 ≥70% 退化风险。</p>
+</div>
+
+<!-- Dimension Recurrence Ranking (维度复发排行) -->
+<div class="card">
+  <h2>♻️ 维度复发排行 · 最该关注的"老病号"</h2>
+  <div id="recurrenceList"><div class="empty">加载中...</div></div>
+  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">按 <strong>当前评分升序 × 趋势权重</strong> 排序 · 评分越低 + 趋势越负 = 越值得优先根治 · 长期垫底维度建议启动专项治理。</p>
 </div>
 
 <!-- Latest Snapshot -->
@@ -215,6 +409,14 @@
 <div class="card">
   <h2>D0–D8 诊断矩阵</h2>
   <div class="diag-grid" id="diagGrid"></div>
+</div>
+
+<!-- Diagnostic Trigger History -->
+<div class="card">
+  <h2>📈 诊断触发历史 · Daily Heatmap</h2>
+  <div class="diag-history" id="diagHistory"><div class="empty">加载中...</div></div>
+  <div class="diag-history-axis" id="diagHistoryAxis" style="padding-left:118px"></div>
+  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">每行表示一个诊断 (D0-D8)，每格表示该日的触发状态 · <span style="color:var(--yry-fail)">■ 触发</span> · <span style="color:var(--yry-warn)">■ 部分触发</span> · <span style="color:var(--yry-text3)">■ 未触发</span> · 右侧为总体触发率。</p>
 </div>
 
 <!-- Dimension Scores with weekly avg comparison -->
@@ -247,10 +449,18 @@
   <div id="archBody"></div>
 </div>
 
+<!-- Architecture Drift Monitor -->
+<div class="card">
+  <h2>🏛️ 架构漂移监测 · Arch Drift</h2>
+  <div class="drift-grid" id="driftMonitor"><div class="empty" style="grid-column:1/-1">加载中...</div></div>
+  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">对比当前评分与近 N 周期均值，判定架构各维度 <strong>↑ 改善</strong> · <strong>→ 持平</strong> · <strong>↓ 漂移</strong> · 阈值告警：单一维度连续 3 周期低于 70 = 立即启动架构修复（对应 D8 诊断）。</p>
+</div>
+
 <!-- Score Trend Sparkline -->
 <div class="card">
-  <h2>评分趋势</h2>
+  <h2>评分趋势 + 预测带</h2>
   <div id="trendBody"></div>
+  <div id="forecastSummary" style="margin-top:10px"></div>
 </div>
 
 <!-- Daily/Weekly/Monthly Trends with tabs -->
@@ -264,6 +474,13 @@
   <div id="timePanel"></div>
 </div>
 
+<!-- Skillification Tracking -->
+<div class="card">
+  <h2>📚 技能化追踪 · Skillification</h2>
+  <div class="skill-grid" id="skillificationGrid"><div class="empty" style="grid-column:1/-1">加载中...</div></div>
+  <p style="font-size:.64rem;color:var(--yry-text3);margin-top:6px">诊断模式累计触发次数 · <strong style="color:var(--yry-pass)">已固化</strong> = ≥3 次触发且已写入 SKILL.md 规约 · <strong style="color:var(--yry-cyan)">候选</strong> = 2 次触发待审 · <strong style="color:var(--yry-text3)">观察</strong> = 1 次触发 · 进度条表示距固化阈值还需触发次数。</p>
+</div>
+
 <!-- Cross-reference Health Summary -->
 <div class="card">
   <h2>🩺 系统健康快照</h2>
@@ -272,17 +489,37 @@
   </div>
 </div>
 
-<nav class="links" aria-label="相关报告">
+<!-- Quick Reference Cards -->
+<div class="card">
+  <h2>🔗 关键引用 · Quick Reference</h2>
+  <div class="ref-grid">
+    <div class="ref-card"><strong>诊断引擎</strong><br>核心判定逻辑 <code>lib/engine/diagnostics.mjs</code> · D0-D8 纯函数 (无 IO)</div>
+    <div class="ref-card"><strong>架构合规</strong><br>10 维度检查 <code>lib/arch-check.mjs</code> · 趋势持久化 <code>.memory/arch-trend.jsonl</code></div>
+    <div class="ref-card"><strong>评分聚合</strong><br>均值/方差/CV/斜率 <code>lib/scoring.mjs</code> · 异常检测 + 移动平均</div>
+    <div class="ref-card"><strong>汇总生成器</strong><br>从 health-trend.jsonl → summary.json <code>lib/selfimprove-generator.mjs</code></div>
+    <div class="ref-card"><strong>经验规约</strong><br>自改进规则 <code>skills/rui-yry/rules/self-improve.md</code> · D0-D8 路由定义</div>
+    <div class="ref-card"><strong>提案存储</strong><br>追加写入 <code>.improvement/proposals.jsonl</code> · append-only · 含闭合率</div>
+    <div class="ref-card"><strong>常量定义</strong><br>D0-D8 标签/阈值 <code>lib/constants.mjs</code> · BLOCK_RATE · GATE_B · CLOSURE_RATE</div>
+    <div class="ref-card"><strong>看板技能</strong><br><code>skills/rui-bot/lib/loop-report.mjs</code> · 推送企微通知 + 自动汇总</div>
+  </div>
+</div>
+
+<nav class="links" aria-label="相关报告与引擎">
   <a href="../健康报告/">健康报告</a>
   <a href="../自循环报告/">自循环报告</a>
   <a href="../趋势报告/">趋势报告</a>
   <a href="../故事任务面板/">故事任务面板</a>
   <a href="../index.html">文档中心</a>
+  <span style="margin-left:8px;color:var(--yry-text3)">·</span>
+  <a href="../../skills/rui-yry/rules/self-improve.md">自改进规则</a>
+  <a href="../../lib/engine/diagnostics.mjs">诊断引擎源码</a>
+  <a href="../../lib/selfimprove-generator.mjs">汇总生成器</a>
 </nav>
 
 <footer class="ft">
-  持续自改进分析仪表板 · 数据实时读取<br>
-  <span style="color:var(--yry-text3)">数据: .memory/health-trend.jsonl + summary.json · D0-D8 诊断 · E1-E4 评估 · 日/周/月全景 · 组件健康 · 架构合规 · 评分趋势</span>
+  持续自改进分析仪表板 · 数据实时读取 · 自举引导模式<br>
+  <span style="color:var(--yry-text3)">数据: .memory/health-trend.jsonl + summary.json + arch-trend.jsonl · D0-D8 诊断 · E1-E4 评估 · 改进能力 KPI · 趋势预测 · 优先级矩阵 · 技能化追踪</span><br>
+  <span style="color:var(--yry-text3);font-size:.66rem">引擎: <code>lib/engine/diagnostics.mjs</code> · <code>lib/arch-check.mjs</code> · <code>lib/scoring.mjs</code> · 规约: <code>skills/rui-yry/rules/self-improve.md</code></span>
 </footer>
 
 </main>

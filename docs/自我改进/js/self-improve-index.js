@@ -294,6 +294,96 @@
 
       document.getElementById('siFreshness').insertAdjacentHTML('beforeend', '<span style="color:' + freshClr + '">' + ageMins + '</span>');
 
+      // Cycle count (loops = totalEntries from health-trend.jsonl snapshots)
+      var cycleEl = document.getElementById('siCycleCount');
+      if (cycleEl) cycleEl.innerHTML = '<strong style="color:var(--yry-accent)">' + data.totalEntries + '</strong> 次';
+
+      // ── Capability KPIs ─────────────────────────────────────────────────
+      (function() {
+        var el = document.getElementById('capabilityKpis');
+        if (!el) return;
+        var diagSummary = data.diagSummary || [];
+        var dimSummary = data.dimSummary || [];
+        var signals = data.signals || [];
+        var weekly = data.weekly || [];
+        var scoreTrend = data.scoreTrend || [];
+
+        // 1. 闭环数 (loop count) = totalEntries
+        var loops = data.totalEntries || 0;
+
+        // 2. 平均评分
+        var avgScore = weekly.length > 0 ? Math.round(weekly.reduce(function(s, w) { return s + (w.avgScore || 0); }, 0) / weekly.length) : (latest.composite || 0);
+        var avgClr = avgScore >= 80 ? 'pass' : avgScore >= 60 ? 'warn' : 'fail';
+
+        // 3. 诊断解决率 = (历史触发 - 当前活跃) / 历史触发
+        var totalDiagTriggers = diagSummary.reduce(function(s, d) { return s + (d.count || 0); }, 0);
+        var currentTriggers = (latest.triggeredDiags || []).length;
+        var resolveRate = totalDiagTriggers > 0 ? Math.round((totalDiagTriggers - currentTriggers) / totalDiagTriggers * 100) : 100;
+        var resolveClr = resolveRate >= 80 ? 'pass' : resolveRate >= 50 ? 'warn' : 'fail';
+
+        // 4. 维度改善率
+        var improvingDims = dimSummary.filter(function(d) { return (d.trend || 0) > 5; }).length;
+        var totalDims = dimSummary.length;
+        var improveRate = totalDims > 0 ? Math.round(improvingDims / totalDims * 100) : 0;
+        var improveClr = improveRate >= 50 ? 'pass' : improveRate >= 25 ? 'warn' : 'fail';
+
+        // 5. 维度复发率 = 退化维度 / 总维度
+        var degradingDims = dimSummary.filter(function(d) { return (d.trend || 0) < -5; }).length;
+        var recRate = totalDims > 0 ? Math.round(degradingDims / totalDims * 100) : 0;
+        var recClr = recRate <= 10 ? 'pass' : recRate <= 25 ? 'warn' : 'fail';
+
+        // 6. MTTR estimate — from scoreTrend drops: drops+recovery cycles
+        var drops = [];
+        for (var i = 1; i < scoreTrend.length; i++) {
+          if (scoreTrend[i].score < scoreTrend[i-1].score - 5) {
+            drops.push(i);
+          }
+        }
+        var mttr = '—';
+        var mttrClr = 'info';
+        if (drops.length > 0 && scoreTrend.length > 0) {
+          // estimate cycles to recover = (avg interval × 2)
+          var avgInterval = scoreTrend.length / drops.length;
+          var cyclesPerRecovery = 2;
+          mttr = '~' + Math.round(avgInterval * cyclesPerRecovery) + ' 周期';
+          mttrClr = avgInterval * cyclesPerRecovery <= 4 ? 'pass' : 'warn';
+        } else if (data.totalEntries >= 3) {
+          mttr = '稳定';
+          mttrClr = 'pass';
+        }
+
+        // 7. 技能化条目 = E4 candidates from signals + recurring diags
+        var e4Count = signals.filter(function(s) { return s.type === 'improvement'; }).length;
+        var recurringDiags = diagSummary.filter(function(d) { return (d.count || 0) >= 3; }).length;
+        var skillCount = e4Count + recurringDiags;
+        var skillClr = skillCount >= 3 ? 'pass' : skillCount >= 1 ? 'warn' : 'info';
+
+        // 8. 退化率 = (degrading dims × severity weight) / total
+        var degRate = totalDims > 0 ? Math.round(degradingDims / totalDims * 100) : 0;
+        var degClr = degRate === 0 ? 'pass' : degRate <= 15 ? 'warn' : 'fail';
+
+        var html = '';
+        var kpis = [
+          { label: '闭环数', value: loops, suffix: '次观察→评估完整闭环', cls: 'info', valCls: 'info' },
+          { label: '平均评分', value: avgScore, suffix: '周聚合均值 / 100', cls: avgClr, valCls: avgClr },
+          { label: '诊断解决率', value: resolveRate + '%', suffix: '已清零 / 历史触发', cls: resolveClr, valCls: resolveClr },
+          { label: '维度改善率', value: improveRate + '%', suffix: improvingDims + ' / ' + totalDims + ' 维度改善', cls: improveClr, valCls: improveClr },
+          { label: '维度复发率', value: recRate + '%', suffix: degradingDims + ' / ' + totalDims + ' 维度退化', cls: recClr, valCls: recClr },
+          { label: 'MTTR', value: mttr, suffix: '从触发到恢复的估算', cls: mttrClr, valCls: mttrClr },
+          { label: '技能化条目', value: skillCount, suffix: 'E4 候选 + ≥3 次诊断', cls: skillClr, valCls: skillClr },
+          { label: '退化维度占比', value: degRate + '%', suffix: degradingDims + ' 维度处于下降趋势', cls: degClr, valCls: degClr }
+        ];
+        kpis.forEach(function(k) {
+          html += '<div class="kpi-item ' + k.cls + '">' +
+            '<div class="kpi-label">' + k.label + '</div>' +
+            '<div class="kpi-value ' + k.valCls + '">' + k.value + '</div>' +
+            '<div class="kpi-suffix">' + k.suffix + '</div>' +
+            '</div>';
+        });
+        el.textContent = '';
+        el.insertAdjacentHTML('beforeend', html);
+      })();
+
       // Stats
       var scClr = latest.composite >= 80 ? 'pass' : latest.composite >= 60 ? 'warn' : 'fail';
       var gradeClr = {A:'pass', B:'pass', C:'warn', D:'fail'}[latest.grade] || 'info';
@@ -301,7 +391,7 @@
       var trigClr = trigCount === 0 ? 'pass' : 'warn';
 
       document.getElementById('stats').textContent = '';
-      document.getElementById('stats').insertAdjacentHTML('beforeend', 
+      document.getElementById('stats').insertAdjacentHTML('beforeend',
         '<div class="stat"><div class="val info">' + data.totalEntries + '</div><div class="lbl">数据条目</div></div>' +
         '<div class="stat"><div class="val ' + scClr + '">' + latest.composite + ' 分</div><div class="lbl">最新评分</div></div>' +
         '<div class="stat"><div class="val ' + gradeClr + '">' + latest.grade + ' 级</div><div class="lbl">最新等级</div></div>' +
@@ -335,7 +425,7 @@
           '<div>' + branchInfo + '</div>' +
           '<div>评分维度: ' + Object.keys(scores).length + ' 项</div>' +
         '</div>' +
-        '</div>' + triggeredHtml;
+        '</div>' + triggeredHtml);
 
       // D0-D8 with rates from weekly data
       var allDiags = ['D0','D1','D2','D3','D4','D5','D6','D7','D8'];
@@ -368,6 +458,60 @@
           '</div>';
       }).join(''));
 
+      // ── Diagnostic Trigger History (heatmap-like) ────────────────────────
+      (function() {
+        var el = document.getElementById('diagHistory');
+        var axisEl = document.getElementById('diagHistoryAxis');
+        if (!el) return;
+        var daily = data.daily || [];
+        // Get last 14 days (or all if fewer)
+        var recent = daily.slice(-14);
+        if (recent.length === 0) {
+          el.textContent = '';
+          el.insertAdjacentHTML('beforeend', '<div class="empty">无每日数据</div>');
+          if (axisEl) axisEl.textContent = '';
+          return;
+        }
+        var diags = ['D0', 'D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8'];
+        // Build lookup: date → set of triggered diag IDs (from daily.topDiags)
+        var triggeredByDate = {};
+        recent.forEach(function(day) {
+          var topDiags = day.topDiags || [];
+          topDiags.forEach(function(td) {
+            if ((td.count || 0) > 0) {
+              if (!triggeredByDate[day.date]) triggeredByDate[day.date] = {};
+              triggeredByDate[day.date][td.id] = true;
+            }
+          });
+        });
+        var html = diags.map(function(d) {
+          var triggeredDays = 0;
+          var cells = recent.map(function(day) {
+            var triggered = triggeredByDate[day.date] && triggeredByDate[day.date][d];
+            if (triggered) triggeredDays++;
+            return '<div class="diag-history-cell' + (triggered ? ' triggered' : '') + '" title="' + (day.date || '') + ' ' + d + '"></div>';
+          }).join('');
+          var rate = Math.round(triggeredDays / recent.length * 100);
+          var rateClr = rate > 50 ? 'var(--yry-fail)' : rate > 20 ? 'var(--yry-warn)' : 'var(--yry-text2)';
+          return '<div class="diag-history-row">' +
+            '<div class="diag-history-id">' + d + '</div>' +
+            '<div class="diag-history-name">' + (DIAG_LABELS[d] || '').slice(0, 6) + '</div>' +
+            '<div class="diag-history-bars">' + cells + '</div>' +
+            '<div class="diag-history-rate" style="color:' + rateClr + '">' + rate + '%</div>' +
+            '</div>';
+        }).join('');
+        el.textContent = '';
+        el.insertAdjacentHTML('beforeend', html);
+        // Axis (date labels)
+        if (axisEl) {
+          axisEl.textContent = '';
+          axisEl.insertAdjacentHTML('beforeend', recent.map(function(day) {
+            var lbl = (day.date || '').slice(-5); // MM-DD
+            return '<span>' + lbl + '</span>';
+          }).join(''));
+        }
+      })();
+
       // Dimension scores with weekly comparison
       var dimSummary = data.dimSummary || [];
       var dimAvgs = {};
@@ -377,6 +521,102 @@
         return { dim: k, score: scores[k], avg: dimAvgs[k] ? dimAvgs[k].avgScore : undefined, recent: dimAvgs[k] ? dimAvgs[k].recentAvg : undefined, trendVal: dimAvgs[k] ? dimAvgs[k].trend : undefined };
       });
       dimEntries.sort(function(a, b) { return a.score - b.score; });
+
+      // ── Priority Matrix (改进候选优先级矩阵) ────────────────────────────
+      (function() {
+        var el = document.getElementById('priorityMatrix');
+        if (!el) return;
+        // Build candidate list: dimensions with low score or declining trend
+        var candidates = [];
+        Object.keys(scores).forEach(function(k) {
+          var s = scores[k];
+          var av = dimAvgs[k] || {};
+          var trend = av.trend || 0;
+          var avg = av.avgScore || s;
+          // Skip perfect scores (no improvement needed)
+          if (s >= 85 && trend >= 0) return;
+          // Severity score: 0-100 based on score + trend
+          var sev = (100 - s) * 0.7 + (trend < 0 ? Math.abs(trend) * 0.3 : 0);
+          // Priority: P0 (score<55) / P1 (score<70) / P2 (score<85)
+          var pri = s < 55 ? 'p0' : s < 70 ? 'p1' : 'p2';
+          candidates.push({
+            dim: k, score: s, avg: avg, trend: trend,
+            severity: sev, priority: pri,
+            label: DIM_LABELS[k] || k
+          });
+        });
+        candidates.sort(function(a, b) { return b.severity - a.severity; });
+        var top = candidates.slice(0, 8);
+        if (top.length === 0) {
+          el.textContent = '';
+          el.insertAdjacentHTML('beforeend', '<div class="empty" style="grid-column:1/-1">✅ 无需改进候选 — 所有维度评分 ≥85 且趋势平稳</div>');
+          return;
+        }
+        var html = top.map(function(c, i) {
+          var prBadge = c.priority === 'p0' ? '<span class="badge fail">P0</span>' :
+                        c.priority === 'p1' ? '<span class="badge warn">P1</span>' :
+                        '<span class="badge info">P2</span>';
+          var trendTxt = c.trend > 0 ? '<span style="color:var(--yry-pass)">↑ +' + c.trend + '</span>' :
+                         c.trend < 0 ? '<span style="color:var(--yry-fail)">↓ ' + c.trend + '</span>' :
+                         '<span style="color:var(--yry-text3)">→ 0</span>';
+          var g = scoreGrade(c.score);
+          var action = c.priority === 'p0' ? '⛔ 阻断管线 · 立即修复' :
+                       c.priority === 'p1' ? '⚡ 24h 内启动修复 · 强化审查' :
+                       '📋 计划修复 · 候选本周改进';
+          return '<div class="priority-item ' + c.priority + '">' +
+            '<div class="priority-rank">#' + (i + 1) + '</div>' +
+            '<div class="priority-body">' +
+              '<div class="priority-title">' + c.label + ' · <span style="color:' + scoreClr(c.score) + '">' + c.score + ' 分</span> <span class="badge ' + g + '">' + g + '</span> ' + prBadge + '</div>' +
+              '<div class="priority-meta">' +
+                '<span>周均: ' + c.avg + '</span>' +
+                '<span>趋势: ' + trendTxt + '</span>' +
+                '<span>严重度: ' + Math.round(c.severity) + '</span>' +
+              '</div>' +
+              '<div class="priority-action">' + action + '</div>' +
+            '</div>' +
+            '</div>';
+        }).join('');
+        el.textContent = '';
+        el.insertAdjacentHTML('beforeend', html);
+      })();
+
+      // ── Dimension Recurrence Ranking ────────────────────────────────────
+      (function() {
+        var el = document.getElementById('recurrenceList');
+        if (!el) return;
+        var list = Object.keys(scores).map(function(k) {
+          var s = scores[k];
+          var av = dimAvgs[k] || {};
+          return {
+            dim: k, score: s, avg: av.avgScore || s,
+            trend: av.trend || 0,
+            label: DIM_LABELS[k] || k
+          };
+        });
+        // Sort by score asc, then by trend asc (worst first)
+        list.sort(function(a, b) {
+          if (a.score !== b.score) return a.score - b.score;
+          return a.trend - b.trend;
+        });
+        var top = list.slice(0, 10);
+        var html = top.map(function(c, i) {
+          var clr = scoreClr(c.score);
+          var g = scoreGrade(c.score);
+          var trendHtml = '';
+          if (c.trend > 5) trendHtml = '<span class="rec-trend" style="color:var(--yry-pass)">↑ +' + c.trend + '</span>';
+          else if (c.trend < -5) trendHtml = '<span class="rec-trend" style="color:var(--yry-fail)">↓ ' + c.trend + '</span>';
+          else trendHtml = '<span class="rec-trend" style="color:var(--yry-text3)">→ ' + c.trend + '</span>';
+          return '<div class="rec-row">' +
+            '<div class="rec-rank">#' + (i + 1) + '</div>' +
+            '<div class="rec-name">' + c.label + '</div>' +
+            '<div class="rec-bar"><div class="rec-fill" style="width:' + c.score + '%;background:' + clr + '"></div></div>' +
+            '<div class="rec-score" style="color:' + clr + '">' + c.score + '</div>' +
+            trendHtml +
+            '</div>';
+        }).join('');
+        el.textContent = '';
+        el.insertAdjacentHTML('beforeend', html);
+      })();
 
       document.getElementById('dimGrid').textContent = '';
       document.getElementById('dimGrid').insertAdjacentHTML('beforeend',  dimEntries.map(function(d) {
@@ -446,15 +686,168 @@
 
       document.getElementById('compGrid').insertAdjacentHTML('beforeend', renderComponentHealth(data.componentHealth));
 
+      // ── Skillification Tracking ─────────────────────────────────────────
+      (function() {
+        var el = document.getElementById('skillificationGrid');
+        if (!el) return;
+        // Derive patterns from diagSummary + signals
+        var patterns = [];
+        var diagSummary = data.diagSummary || [];
+        diagSummary.forEach(function(d) {
+          var count = d.count || 0;
+          if (count < 1) return;
+          // Map diagnostic ID to likely pattern target
+          var targetMap = {
+            'D0': 'CLAUDE.md · AGENT.md',
+            'D1': 'code-pipeline.md',
+            'D2': 'doc-generation.md',
+            'D3': 'pm.md（故事拆分）',
+            'D4': 'code-pipeline.md',
+            'D5': 'AGENT.md',
+            'D6': 'CLAUDE.md',
+            'D7': 'self-improve.md',
+            'D8': 'architecture-principles.md'
+          };
+          var target = targetMap[d.id] || 'self-improve.md';
+          var status = count >= 3 ? 'promoted' : count >= 2 ? 'candidate' : 'observed';
+          var progress = Math.min(100, Math.round(count / 3 * 100));
+          var fillColor = status === 'promoted' ? 'var(--yry-pass)' : status === 'candidate' ? 'var(--yry-cyan)' : 'var(--yry-text3)';
+          patterns.push({
+            name: (DIAG_LABELS && DIAG_LABELS[d.id]) || d.id,
+            id: d.id,
+            count: count,
+            target: target,
+            status: status,
+            progress: progress,
+            fillColor: fillColor
+          });
+        });
+        // Add improvement signals as patterns
+        var signals = data.signals || [];
+        signals.filter(function(s) { return s.type === 'improvement'; }).forEach(function(s) {
+          patterns.push({
+            name: s.title || (s.msg || '').slice(0, 16),
+            id: 'S+',
+            count: s.count || 1,
+            target: s.target || 'SKILL.md',
+            status: 'candidate',
+            progress: 66,
+            fillColor: 'var(--yry-cyan)'
+          });
+        });
+        if (patterns.length === 0) {
+          el.textContent = '';
+          el.insertAdjacentHTML('beforeend', '<div class="empty" style="grid-column:1/-1;color:var(--yry-pass)">✅ 暂无待技能化模式 — 所有诊断均 ≤ 1 次触发</div>');
+          return;
+        }
+        // Sort by count desc
+        patterns.sort(function(a, b) { return b.count - a.count; });
+        var html = patterns.slice(0, 12).map(function(p) {
+          var statusLabel = p.status === 'promoted' ? '<span class="badge pass">已固化</span>' :
+                            p.status === 'candidate' ? '<span class="badge info">候选</span>' :
+                            '<span class="badge">观察</span>';
+          var remaining = p.status === 'promoted' ? '✓ 规约已固化' : (3 - p.count) + ' 次后升级';
+          return '<div class="skill-card ' + p.status + '">' +
+            '<div class="skill-head">' +
+              '<span class="skill-name">' + p.name + '</span>' +
+              statusLabel +
+            '</div>' +
+            '<div class="skill-count">已触发 <strong style="color:' + p.fillColor + '">' + p.count + '</strong> 次 · 目标: <code>' + p.target + '</code></div>' +
+            '<div class="skill-prog">' +
+              '<div class="skill-prog-bar"><div class="skill-prog-fill" style="width:' + p.progress + '%;background:' + p.fillColor + '"></div></div>' +
+              '<div class="skill-prog-label">' + remaining + '</div>' +
+            '</div>' +
+            '</div>';
+        }).join('');
+        el.textContent = '';
+        el.insertAdjacentHTML('beforeend', html);
+      })();
+
       // Architecture Health
       document.getElementById('archBody').textContent = '';
 
       document.getElementById('archBody').insertAdjacentHTML('beforeend', renderArchHealth(data.archHealth));
 
+      // ── Architecture Drift Monitor ──────────────────────────────────────
+      (function() {
+        var el = document.getElementById('driftMonitor');
+        if (!el) return;
+        var archHealth = data.archHealth || {};
+        // archHealth structure: { latest: { scores: {...}, composite, grade }, dimTrends: {dim: {label, recentAvg, trend}} }
+        var scores = (archHealth.latest && archHealth.latest.scores) || archHealth.dimScores || {};
+        var trends = archHealth.dimTrends || {};
+        var dimList = Object.keys(scores).map(function(k) {
+          var td = trends[k] || {};
+          return { key: k, score: scores[k], trend: td.trend || 0, label: td.label || k };
+        });
+        if (dimList.length === 0) {
+          el.textContent = '';
+          el.insertAdjacentHTML('beforeend', '<div class="empty" style="grid-column:1/-1">无架构维度数据</div>');
+          return;
+        }
+        // Sort by score asc to highlight weakest
+        dimList.sort(function(a, b) { return a.score - b.score; });
+        var html = dimList.slice(0, 12).map(function(d) {
+          var sc = d.score;
+          var tr = d.trend;
+          var label = d.label || d.key;
+          var dir = tr > 3 ? 'up' : tr < -3 ? 'down' : 'flat';
+          var arrow = dir === 'up' ? '↑' : dir === 'down' ? '↓' : '→';
+          var clr = dir === 'up' ? 'var(--yry-pass)' : dir === 'down' ? 'var(--yry-fail)' : 'var(--yry-text2)';
+          var thresholdNote = sc < 70 ? '<div class="drift-threshold">⚠ 低于阈值 70 (D8 触发)</div>' : '';
+          return '<div class="drift-item ' + dir + '">' +
+            '<div class="drift-name">' + label + '</div>' +
+            '<div class="drift-score-row">' +
+              '<div class="drift-score" style="color:' + (scoreClr ? scoreClr(sc) : clr) + '">' + sc + '</div>' +
+              '<div class="drift-arrow ' + dir + '">' + arrow + ' ' + (tr > 0 ? '+' + tr : tr) + '</div>' +
+            '</div>' +
+            thresholdNote +
+            '</div>';
+        }).join('');
+        el.textContent = '';
+        el.insertAdjacentHTML('beforeend', html);
+      })();
+
       // Score Trend
       document.getElementById('trendBody').textContent = '';
 
       document.getElementById('trendBody').insertAdjacentHTML('beforeend', renderScoreTrend(data.scoreTrend));
+
+      // ── Trend Forecast (simple linear regression on scoreTrend) ─────────
+      (function() {
+        var el = document.getElementById('forecastSummary');
+        if (!el) return;
+        var st = data.scoreTrend || [];
+        if (st.length < 4) {
+          el.textContent = '';
+          el.insertAdjacentHTML('beforeend', '<div class="empty" style="font-size:.7rem">数据不足 (需 ≥4 个数据点)</div>');
+          return;
+        }
+        // Linear regression: y = a + b*x
+        var n = st.length;
+        var sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+        for (var i = 0; i < n; i++) {
+          sumX += i;
+          sumY += st[i].score || 0;
+          sumXY += i * (st[i].score || 0);
+          sumX2 += i * i;
+        }
+        var b = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX || 1);
+        var a = (sumY - b * sumX) / n;
+        var nextScore = Math.round(a + b * n);
+        var projected = Math.max(0, Math.min(100, nextScore));
+        var dir = b > 1 ? 'up' : b < -1 ? 'down' : 'flat';
+        var arrow = dir === 'up' ? '↑' : dir === 'down' ? '↓' : '→';
+        var clr = dir === 'up' ? 'var(--yry-pass)' : dir === 'down' ? 'var(--yry-fail)' : 'var(--yry-cyan)';
+        var note = dir === 'up' ? '改善趋势' : dir === 'down' ? '下滑趋势 · 建议干预' : '趋势平稳';
+        el.textContent = '';
+        el.insertAdjacentHTML('beforeend',
+          '<div style="display:flex;align-items:center;gap:14px;padding:10px 14px;background:rgba(15,23,42,.4);border-radius:8px;border:var(--yry-border)">' +
+            '<span class="forecast-legend" style="font-size:.72rem;color:var(--yry-cyan)">预测下一周期</span>' +
+            '<span style="font-size:1.6rem;font-weight:800;color:' + clr + ';font-family:JetBrains Mono,monospace">' + projected + ' 分 ' + arrow + '</span>' +
+            '<span style="font-size:.68rem;color:var(--yry-text3)">基于最近 ' + n + ' 数据点的线性回归 (斜率 ' + (b > 0 ? '+' : '') + b.toFixed(2) + ')</span>' +
+          '</div>');
+      })();
 
       // Signal detection
       var signals = data.signals || [];
@@ -742,7 +1135,7 @@
           '<div>诊断触发: ' + ((latest.triggers || 0) > 0 ? '<span style="color:var(--yry-warn)">' + latest.triggers + ' 项</span>' : '<span style="color:var(--yry-pass)">无</span>') + '</div>' +
           '<div>健康与自改进联动: 健康趋势异常 → 自改进闭环诊断触发 → 改进 → 评估</div>' +
         '</div>' +
-        '<a href="../健康报告/" style="margin-left:auto;font-size:.72rem;color:#22d3ee;text-decoration:none;flex-shrink:0">查看健康报告 →</a>';
+        '<a href="../健康报告/" style="margin-left:auto;font-size:.72rem;color:#22d3ee;text-decoration:none;flex-shrink:0">查看健康报告 →</a>');
     })
     .catch(function() {});
 })();

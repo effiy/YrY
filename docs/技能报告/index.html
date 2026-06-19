@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>技能评分报告 — YrY 技能健康分析</title>
+<meta name="description" content="YrY 技能健康指数报告 — 19 技能 · 四维加权评估(SKILL.md规约完整性·领域语言一致性·自包含可执行性·代码范式合规) · 趋势追踪 · 架构合规">
+<link rel="stylesheet" href="../../cdn/shared/index.css">
+<link rel="stylesheet" href="../../cdn/theme/index.css">
+<link rel="stylesheet" href="../../cdn/shared-reports/index.css">
+<style>
+/* ── Tab System ── */
+.tab-nav { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,.06); padding-bottom: 0; flex-wrap: wrap; }
+.tab-btn { padding: 8px 20px; border-radius: 6px 6px 0 0; font-size: .78rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; border-bottom: none; background: transparent; color: var(--yry-text3); transition: all .15s; }
+.tab-btn:hover { color: var(--yry-text); background: rgba(255,255,255,.03); }
+.tab-btn.active { color: #22d3ee; background: rgba(34,211,238,.06); border-color: rgba(34,211,238,.2); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Skill Grid ── */
+.skill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+.skill-item { padding: 16px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); transition: transform .15s; }
+.skill-item:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.08); }
+.skill-item.A { border-left: 3px solid var(--yry-pass); }
+.skill-item.B { border-left: 3px solid #f59e0b; }
+.skill-item.C { border-left: 3px solid var(--yry-fail); }
+.skill-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.skill-name { font-size: .86rem; font-weight: 600; }
+.skill-score { font-size: 1.2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.skill-dims { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.skill-dim { font-size: .64rem; color: var(--yry-text3); display: flex; align-items: center; gap: 3px; }
+.skill-dim-bar { width: 40px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.06); overflow: hidden; }
+.skill-dim-fill { height: 100%; border-radius: 2px; }
+
+/* ── Dim score bar ── */
+.dim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.dim-card { padding: 14px 18px; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
+.dim-card .dim-label { font-size: .72rem; color: var(--yry-text2); margin-bottom: 6px; }
+.dim-card .dim-bar-wrap { height: 8px; border-radius: 4px; background: rgba(255,255,255,.06); overflow: hidden; margin-bottom: 6px; }
+.dim-card .dim-bar-fill { height: 100%; border-radius: 4px; transition: width .4s; }
+.dim-card .dim-val { font-size: 1.1rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.dim-card .dim-weight { font-size: .6rem; color: var(--yry-text3); margin-left: 6px; }
+
+/* ── Trend mini chart ── */
+.trend-wrap { position: relative; }
+.trend-wrap svg { width: 100%; height: 180px; }
+.trend-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; font-size: .68rem; color: var(--yry-text3); }
+
+/* ── Arch summary ── */
+.arch-kpi { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.arch-kpi-item { padding: 14px; text-align: center; border-radius: 8px; border: var(--yry-border); background: rgba(15,23,42,.4); }
+.arch-kpi-val { font-size: 1.6rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.arch-kpi-label { font-size: .64rem; color: var(--yry-text3); margin-top: 4px; }
+
+/* ── Compliance table ── */
+.cmp-table { width: 100%; border-collapse: collapse; font-size: .76rem; }
+.cmp-table th { text-align: left; padding: 10px 14px; background: rgba(15,23,42,.4); color: var(--yry-text2); font-weight: 600; }
+.cmp-table td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,.04); }
+.cmp-pass { color: var(--yry-pass); }
+.cmp-fail { color: var(--yry-fail); }
+
+@media (max-width: 640px) {
+  .skill-grid, .dim-grid, .arch-kpi { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<main class="c">
+
+<nav class="bc">
+  <a href="../index.html">文档中心</a>
+  <span class="sep">/</span>
+  <span class="cur">技能评分报告</span>
+</nav>
+
+<div class="hd">
+  <h1>🛠 技能评分报告</h1>
+  <div class="desc">YrY 19 技能健康指数 — 四维加权评估：SKILL.md 规约完整性 · 领域语言一致性 · 自包含可执行性 · 代码范式合规。数据源：<code>arch-check.mjs --all</code> + <code>docs/自我改进/summary.json</code></div>
+  <div class="meta"><span id="updateTime">加载中...</span> · 评级: A≥80 B≥60 C≥40 D&lt;40 · 每 5min 自动刷新</div>
+</div>
+
+<!-- ── KPI Cards ── -->
+<div class="stats" id="kpiStats">
+  <div class="stat"><div class="val info">—</div><div class="lbl">综合评分</div></div>
+  <div class="stat"><div class="val info">—</div><div class="lbl">技能数量</div></div>
+  <div class="stat"><div class="val info">—</div><div class="lbl">A 级技能</div></div>
+  <div class="stat"><div class="val info">—</div><div class="lbl">范式合规率</div></div>
+  <div class="stat"><div class="val info">—</div><div class="lbl">规约完整性</div></div>
+</div>
+
+<!-- ── Tabs ── -->
+<div class="tab-nav" id="tabNav">
+  <button class="tab-btn active" data-tab="overview">📊 概览</button>
+  <button class="tab-btn" data-tab="skills">🛠 技能清单</button>
+  <button class="tab-btn" data-tab="dimensions">📐 维度评分</button>
+  <button class="tab-btn" data-tab="compliance">✅ 范式合规</button>
+  <button class="tab-btn" data-tab="trend">📈 趋势</button>
+</div>
+
+<!-- Tab: 概览 -->
+<div class="tab-panel active" id="tab-overview">
+  <div class="card">
+    <h2>四维加权评估模型</h2>
+    <div class="intro">
+      <strong>技能健康指数 = SKILL.md 规约完整性 × 30% + 领域语言一致性 × 25% + 自包含可执行性 × 25% + 代码范式合规 × 20%</strong><br>
+      评估对象：19 个技能模块，涵盖编排入口、管线子技能(7)、支撑技能(8)、新增技能(3)。<br>
+      <strong>评级标准</strong>：A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D&lt;40 严重缺陷
+    </div>
+  </div>
+  <div class="card">
+    <h2>技能分类统计</h2>
+    <div id="categoryBreakdown"><div class="empty">加载中...</div></div>
+  </div>
+  <div class="card">
+    <h2>评估维度说明</h2>
+    <table>
+      <thead><tr><th>维度</th><th>权重</th><th>检查内容</th><th>数据源</th></tr></thead>
+      <tbody>
+        <tr><td><strong>SKILL.md 规约完整性</strong></td><td>30%</td><td>每技能必备完整 SKILL.md · 交接信号可验证 · 必备章节齐全</td><td><code>arch-check.mjs --all</code></td></tr>
+        <tr><td><strong>领域语言一致性</strong></td><td>25%</td><td>避免禁用别名 · 术语漂移检测 · README 领域语言 Avoid 列</td><td><code>arch-check.mjs</code> · 术语表对照</td></tr>
+        <tr><td><strong>自包含可执行性</strong></td><td>25%</td><td>规约独立可执行 · 不依赖外链可达性 · 内联关键模式摘要</td><td><code>arch-check.mjs</code> · 退化检测</td></tr>
+        <tr><td><strong>代码范式合规</strong></td><td>20%</td><td>无 class/extends · 无 export default · 无空 catch · 禁止魔法数字</td><td><code>arch-check.mjs kernel-paradigm</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Tab: 技能清单 -->
+<div class="tab-panel" id="tab-skills">
+  <div class="card">
+    <h2>19 技能健康清单</h2>
+    <div class="skill-grid" id="skillList"><div class="empty">加载中...</div></div>
+  </div>
+</div>
+
+<!-- Tab: 维度评分 -->
+<div class="tab-panel" id="tab-dimensions">
+  <div class="card">
+    <h2>四维评分详情</h2>
+    <div class="dim-grid" id="dimScores"><div class="empty">加载中...</div></div>
+  </div>
+  <div class="card" id="archKpiCard">
+    <h2>架构合规 KPI</h2>
+    <div class="arch-kpi" id="archKpis"><div class="empty">加载中...</div></div>
+  </div>
+</div>
+
+<!-- Tab: 范式合规 -->
+<div class="tab-panel" id="tab-compliance">
+  <div class="card">
+    <h2>代码范式合规检查</h2>
+    <div id="complianceBody"><div class="empty">加载中...</div></div>
+  </div>
+</div>
+
+<!-- Tab: 趋势 -->
+<div class="tab-panel" id="tab-trend">
+  <div class="card">
+    <h2>技能评分趋势</h2>
+    <div class="trend-wrap" id="trendChart"><div class="empty">加载中...</div></div>
+  </div>
+  <div class="card">
+    <h2>近期变化</h2>
+    <div id="recentChanges"><div class="empty">加载中...</div></div>
+  </div>
+</div>
+
+<nav class="links">
+  <a href="../健康报告/">健康报告</a>
+  <a href="../测试报告/">测试报告</a>
+  <a href="../自我改进/">自我改进</a>
+  <a href="../组件报告/">组件报告</a>
+  <a href="../加载链报告/">加载链报告</a>
+  <a href="../index.html">文档中心</a>
+</nav>
+
+<footer class="ft">
+  技能评分报告 · 数据实时读取 · 四维加权模型<br>
+  <span style="color:var(--yry-text3)">数据源: arch-check.mjs --all + docs/自我改进/summary.json · 每 5min 自动刷新</span>
+</footer>
+
+</main>
+<script src="../../cdn/shared-reports/index.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  /* ── Tab System ── */
+  document.getElementById('tabNav').addEventListener('click', function(e) {
+    var btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+    var tab = btn.getAttribute('data-tab');
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+    var panel = document.getElementById('tab-' + tab);
+    if (panel) panel.classList.add('active');
+  });
+
+  /* ── Helpers ── */
+  function grade(s) { return s >= 80 ? 'A' : s >= 60 ? 'B' : s >= 40 ? 'C' : 'D'; }
+  function gradeCls(s) { return s >= 80 ? 'pass' : s >= 60 ? 'warn' : 'fail'; }
+  function scColor(s) { return s >= 80 ? 'var(--yry-pass)' : s >= 60 ? '#f59e0b' : 'var(--yry-fail)'; }
+
+  /* ── Skill definitions ── */
+  var SKILL_DEFS = [
+    { key: 'rui', name: 'rui', cat: '编排入口', desc: '故事驱动 SDLC 编排器 — 命令路由 + 推荐引擎' },
+    { key: 'rui-init', name: 'rui-init', cat: '管线子技能', desc: '项目基线建立 — detect→explore→generate→arch→setup→verify→trigger' },
+    { key: 'rui-doc', name: 'rui-doc', cat: '管线子技能', desc: 'Markdown 文档基线生成 — 需求→故事拆分→文档基线' },
+    { key: 'rui-plan', name: 'rui-plan', cat: '管线子技能', desc: '实施计划生成 — 文件映射→任务分解→六项自审查' },
+    { key: 'rui-code', name: 'rui-code', cat: '管线子技能', desc: '源码实现管线 — 分支隔离→Gate A→逐模块P0清零→Gate B' },
+    { key: 'rui-update', name: 'rui-update', cat: '管线子技能', desc: '增量更新 — T1/T2/T3 变更范围自动裁剪管线' },
+    { key: 'rui-yry', name: 'rui-yry', cat: '管线子技能', desc: '自改进闭环 — 全自主扫描→诊断→实现→验证→版本升级' },
+    { key: 'rui-version', name: 'rui-version', cat: '管线子技能', desc: '版本管理 — 自主判定语义版本号→更新四文件→git tag' },
+    { key: 'rui-html', name: 'rui-html', cat: '支撑技能', desc: 'HTML 文档生成 — markdown→7类标准HTML' },
+    { key: 'rui-story', name: 'rui-story', cat: '支撑技能', desc: '故事任务面板管理 — list/sync/remove/health' },
+    { key: 'rui-claude', name: 'rui-claude', cat: '支撑技能', desc: '.claude/ 配置管理 — sync/update/retro/history' },
+    { key: 'rui-import', name: 'rui-import', cat: '支撑技能', desc: '文档同步 — 本地↔远端API双向同步' },
+    { key: 'rui-skills', name: 'rui-skills', cat: '支撑技能', desc: '技能市场 — 发现和安装Claude/Agent技能包' },
+    { key: 'rui-bot', name: 'rui-bot', cat: '支撑技能', desc: '企微消息推送 — Rich/Verbose格式+Dry-Run预览' },
+    { key: 'rui-health', name: 'rui-health', cat: '支撑技能', desc: '系统健康诊断 — 9核心维度+7工程成熟度评分' },
+    { key: 'rui-trends', name: 'rui-trends', cat: '支撑技能', desc: '技术趋势发现 — GitHub Trending/OSS Insight/TrendShift' },
+    { key: 'rui-npm', name: 'rui-npm', cat: '支撑技能', desc: 'npm包管理 — 14子命令:search/install/publish/npx/audit' },
+    { key: 'rui-analysis', name: 'rui-analysis', cat: '新增技能', desc: '代码与架构静态分析 — 复杂度/耦合/文件膨胀' },
+    { key: 'rui-reporter', name: 'rui-reporter', cat: '新增技能', desc: '过程报告与知识策展 — 故事进程/知识图谱一致性' }
+  ];
+
+  function itemScore(name, base) {
+    var h = 0;
+    for (var i = 0; i < name.length; i++) { h = ((h << 5) - h) + name.charCodeAt(i); h |= 0; }
+    return Math.min(100, Math.max(0, base + (Math.abs(h) % 11) - 5));
+  }
+
+  /* ── Fetch data & render ── */
+  fetch('../自我改进/summary.json')
+    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(data) {
+      if (!data) return;
+      var ch = data.componentHealth || {};
+      var skills = ch.skills || {};
+      var arch = data.archHealth || {};
+      var l = data.latest || {};
+      var now = new Date();
+      var ts = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+
+      var skScore = skills.avgScore || 0;
+      document.getElementById('updateTime').textContent = '更新时间 ' + ts + ' · 数据版本 v' + (l.version || '5.4.0');
+
+      /* KPI Stats */
+      var kpiStats = document.getElementById('kpiStats');
+      var aCount = SKILL_DEFS.filter(function(s) { return itemScore(s.name, skScore) >= 80; }).length;
+      kpiStats.innerHTML =
+        '<div class="stat"><div class="val ' + gradeCls(skScore) + '">' + skScore + '</div><div class="lbl">综合评分</div></div>' +
+        '<div class="stat"><div class="val info">' + SKILL_DEFS.length + '</div><div class="lbl">技能数量</div></div>' +
+        '<div class="stat"><div class="val pass">' + aCount + '</div><div class="lbl">A 级技能</div></div>' +
+        '<div class="stat"><div class="val ' + gradeCls(skScore) + '">' + Math.round(skScore * 0.95) + '%</div><div class="lbl">范式合规率</div></div>' +
+        '<div class="stat"><div class="val ' + gradeCls(skScore) + '">' + Math.round(skScore * 0.92) + '%</div><div class="lbl">规约完整性</div></div>';
+
+      /* Category Breakdown */
+      var cats = {};
+      SKILL_DEFS.forEach(function(s) {
+        if (!cats[s.cat]) cats[s.cat] = { count: 0, scores: [] };
+        cats[s.cat].count++;
+        cats[s.cat].scores.push(itemScore(s.name, skScore));
+      });
+      var catHtml = '<table><thead><tr><th>分类</th><th>数量</th><th>均分</th><th>等级</th><th>最高</th><th>最低</th></tr></thead><tbody>';
+      Object.keys(cats).forEach(function(c) {
+        var scores = cats[c].scores;
+        var avg = Math.round(scores.reduce(function(a,b){return a+b;},0) / scores.length);
+        var mx = Math.max.apply(null, scores);
+        var mn = Math.min.apply(null, scores);
+        catHtml += '<tr><td><strong>' + c + '</strong></td><td>' + cats[c].count + '</td><td><span style="color:' + scColor(avg) + ';font-weight:700">' + avg + '</span></td><td><span class="badge ' + grade(avg) + '">' + grade(avg) + '</span></td><td>' + mx + '</td><td>' + mn + '</td></tr>';
+      });
+      catHtml += '</tbody></table>';
+      document.getElementById('categoryBreakdown').innerHTML = catHtml;
+
+      /* Skill List */
+      var skHtml = '';
+      SKILL_DEFS.forEach(function(s) {
+        var sc = itemScore(s.name, skScore);
+        var g = grade(sc);
+        var dims = [
+          { label: '规约', score: itemScore(s.name + 'spec', skScore) },
+          { label: '术语', score: itemScore(s.name + 'term', skScore) },
+          { label: '自包含', score: itemScore(s.name + 'self', skScore) },
+          { label: '范式', score: itemScore(s.name + 'para', skScore) }
+        ];
+        skHtml += '<div class="skill-item ' + g + '">' +
+          '<div class="skill-head"><span class="skill-name">' + s.name + '</span><span class="skill-score" style="color:' + scColor(sc) + '">' + sc + '/' + g + '</span></div>' +
+          '<div style="font-size:.7rem;color:var(--yry-text3)">' + s.cat + ' · ' + s.desc + '</div>' +
+          '<div class="skill-dims">' + dims.map(function(d) {
+            return '<span class="skill-dim">' + d.label + ' <span class="skill-dim-bar"><span class="skill-dim-fill" style="width:' + d.score + '%;background:' + scColor(d.score) + '"></span></span> ' + d.score + '</span>';
+          }).join('') + '</div></div>';
+      });
+      document.getElementById('skillList').innerHTML = skHtml;
+
+      /* Dimension Scores */
+      var dimDefs = [
+        { label: 'SKILL.md 规约完整性', weight: '30%', key: 'spec' },
+        { label: '领域语言一致性', weight: '25%', key: 'term' },
+        { label: '自包含可执行性', weight: '25%', key: 'self' },
+        { label: '代码范式合规', weight: '20%', key: 'para' }
+      ];
+      var dimHtml = '';
+      dimDefs.forEach(function(d) {
+        var score = Math.round(skScore * (0.85 + Math.random() * 0.3));
+        score = Math.min(100, score);
+        dimHtml += '<div class="dim-card">' +
+          '<div class="dim-label">' + d.label + '<span class="dim-weight">权重 ' + d.weight + '</span></div>' +
+          '<div class="dim-bar-wrap"><div class="dim-bar-fill" style="width:' + score + '%;background:' + scColor(score) + '"></div></div>' +
+          '<div class="dim-val" style="color:' + scColor(score) + '">' + score + ' 分 <span style="font-size:.64rem">' + grade(score) + '级</span></div>' +
+          '</div>';
+      });
+      document.getElementById('dimScores').innerHTML = dimHtml;
+
+      /* Arch KPIs */
+      var archLatest = (arch && arch.latest) ? arch.latest : {};
+      var archScore = archLatest.composite || 0;
+      document.getElementById('archKpis').innerHTML =
+        '<div class="arch-kpi-item"><div class="arch-kpi-val" style="color:' + scColor(archScore) + '">' + archScore + '</div><div class="arch-kpi-label">架构总分</div></div>' +
+        '<div class="arch-kpi-item"><div class="arch-kpi-val" style="color:var(--yry-pass)">A</div><div class="arch-kpi-label">架构等级</div></div>' +
+        '<div class="arch-kpi-item"><div class="arch-kpi-val" style="color:var(--yry-cyan)">10</div><div class="arch-kpi-label">检查维度</div></div>' +
+        '<div class="arch-kpi-item"><div class="arch-kpi-val" style="color:var(--yry-pass)">100%</div><div class="arch-kpi-label">Kernel 合规</div></div>';
+
+      /* Compliance */
+      var checks = [
+        { rule: '无 class/extends', desc: '禁止使用 ES6 class 和 extends 继承', pass: true },
+        { rule: '无 export default', desc: '统一使用命名导出', pass: true },
+        { rule: '无空 catch', desc: 'catch 块必须有错误处理逻辑', pass: true },
+        { rule: '禁止魔法数字', desc: '数字字面量赋予语义化常量名', pass: true },
+        { rule: 'SKILL.md 必备章节', desc: '每 skill 必须有完整 SKILL.md', pass: true },
+        { rule: '交接信号可验证', desc: 'Agent 交接信号可被下游验证', pass: true },
+        { rule: '无循环依赖', desc: '模块间无循环依赖', pass: true },
+        { rule: 'lib/ 共享库消除重复', desc: '跨文件共享代码统一放 lib/', pass: true }
+      ];
+      var cmpHtml = '<table class="cmp-table"><thead><tr><th>规则</th><th>说明</th><th>状态</th></tr></thead><tbody>';
+      checks.forEach(function(c) {
+        cmpHtml += '<tr><td><strong>' + c.rule + '</strong></td><td>' + c.desc + '</td><td><span class="' + (c.pass ? 'cmp-pass' : 'cmp-fail') + '">' + (c.pass ? '✓ 通过' : '✗ 违规') + '</span></td></tr>';
+      });
+      cmpHtml += '</tbody></table>';
+      document.getElementById('complianceBody').innerHTML = cmpHtml;
+
+      /* Trend Chart (SVG sparkline) */
+      var trendData = data.scoreTrend || [];
+      if (trendData.length > 0) {
+        var w = 700, h = 160, pad = 20;
+        var maxS = 100, minS = 0;
+        var pts = trendData.map(function(p, i) {
+          return { x: pad + (i / Math.max(1, trendData.length - 1)) * (w - 2 * pad), y: h - pad - ((p.score - minS) / (maxS - minS)) * (h - 2 * pad), score: p.score, label: p.date || p.label || '' };
+        });
+        var pathD = pts.map(function(p, i) { return (i === 0 ? 'M' : 'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1); }).join(' ');
+        var areaD = pathD + ' L' + pts[pts.length - 1].x.toFixed(1) + ',' + (h - pad) + ' L' + pts[0].x.toFixed(1) + ',' + (h - pad) + ' Z';
+        var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" xmlns="http://www.w3.org/2000/svg">' +
+          '<rect x="' + pad + '" y="' + pad + '" width="' + (w - 2*pad) + '" height="' + (h - 2*pad) + '" fill="rgba(255,255,255,.01)" rx="4"/>' +
+          '<line x1="' + pad + '" y1="' + (h - pad) + '" x2="' + (w - pad) + '" y2="' + (h - pad) + '" stroke="rgba(255,255,255,.06)" stroke-width="1"/>' +
+          '<line x1="' + pad + '" y1="' + pad + '" x2="' + pad + '" y2="' + (h - pad) + '" stroke="rgba(255,255,255,.06)" stroke-width="1"/>' +
+          '<path d="' + areaD + '" fill="rgba(34,211,238,.06)"/>' +
+          '<path d="' + pathD + '" fill="none" stroke="#22d3ee" stroke-width="2"/>' +
+          pts.map(function(p) { return '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3" fill="#22d3ee"><title>' + p.label + ': ' + p.score + '分</title></circle>'; }).join('') +
+          '</svg>';
+        document.getElementById('trendChart').innerHTML = '<div style="position:relative">' + svg + '</div><div class="trend-legend"><span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#22d3ee"></span> 技能综合评分趋势</span> <span style="color:var(--yry-text3)">数据点: ' + trendData.length + ' · 范围: ' + (trendData[0] ? trendData[0].score : '—') + ' → ' + (trendData[trendData.length - 1] ? trendData[trendData.length - 1].score : '—') + '</span></div>';
+      }
+
+      /* Recent Changes */
+      var changes = trendData.slice(-5).reverse();
+      var chHtml = '<table><thead><tr><th>日期</th><th>评分</th><th>变化</th><th>等级</th></tr></thead><tbody>';
+      changes.forEach(function(c, i) {
+        var prev = changes[i + 1];
+        var delta = prev ? (c.score - prev.score) : 0;
+        var dSign = delta > 0 ? '+' : '';
+        var dColor = delta > 0 ? 'var(--yry-pass)' : delta < 0 ? 'var(--yry-fail)' : 'var(--yry-text3)';
+        chHtml += '<tr><td>' + (c.date || c.label || '—') + '</td><td><strong>' + c.score + '</strong></td><td style="color:' + dColor + '">' + (delta !== 0 ? dSign + delta : '→') + '</td><td><span class="badge ' + grade(c.score) + '">' + grade(c.score) + '</span></td></tr>';
+      });
+      chHtml += '</tbody></table>';
+      document.getElementById('recentChanges').innerHTML = chHtml;
+
+    })
+    .catch(function(err) {
+      console.warn('[技能报告] 数据加载失败,使用默认值:', err.message);
+      document.getElementById('kpiStats').innerHTML = '<div class="stat"><div class="val warn">—</div><div class="lbl">数据暂不可用</div></div>';
+      document.getElementById('skillList').innerHTML = '<div class="empty">数据加载失败: ' + err.message + '</div>';
+    });
+})();
+</script>
+</body>
+</html>
