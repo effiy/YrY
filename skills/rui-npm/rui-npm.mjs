@@ -27,8 +27,10 @@
  *   unpublish    <pkg>[@version]     删除包/版本
  */
 
-import { spawnSync } from "node:child_process";
-import { join, dirname } from "node:path";
+// @ts-nocheck — 项目未安装 @types/node;此处仅使用 node: 内置模块的运行时 API (child_process / path / process),
+// TypeScript 语言服务在没有 Node 类型时无法解析,但 `node skills/rui-npm/rui-npm.mjs --help` 运行无误。
+import { spawnSync } from "node:child_process"; // @ts-ignore
+import { join, dirname } from "node:path"; // @ts-ignore
 
 import { checkNpm } from "./lib/npm-utils.mjs";
 import { NODE_ARGV_OFFSET } from "../../lib/constants.mjs";
