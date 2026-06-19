@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <!--
-  YrY CDN — releases · 版本发布历史数据
-  数据源: releases.json (YrY CDN 包的版本发布历史)
+  YrY CDN — changelog · 版本变更日志
+  数据源: index.json (YrY CDN 包的版本发布历史)
   数据消费者: README.md 链接 · 各 report 页引用
 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>YrY releases · 版本历史</title>
+  <title>YrY changelog · 版本变更日志</title>
   <link rel="stylesheet" href="../shared/index.css">
   <link rel="stylesheet" href="../theme/index.css">
   <style>
@@ -18,13 +18,13 @@
   </style>
 </head>
 <body>
-  <h1>📜 releases · 版本历史</h1>
-  <p>YrY CDN 包的版本发布历史:版本号、发布日期、变更摘要、影响维度。</p>
+  <h1>📜 changelog · 版本变更日志</h1>
+  <p>YrY CDN 包的版本变更日志:版本号、发布日期、变更摘要、影响维度。</p>
 
   <h2>数据预览</h2>
   <pre id="data">加载中...</pre>
 
-  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · releases · 2026</p>
+  <p style="margin-top: 32px; color: var(--yry-text3, #888); font-size: .72rem;">YrY CDN · changelog · 2026</p>
 
   <script>
     fetch('index.json').then(r => r.json()).then(d => {

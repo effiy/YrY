@@ -329,7 +329,6 @@ YrY/
 ├── skills/*/tests/          # 分布式自检测试套件（每个 skill 自包含）
 │   ├── run.mjs              #   测试运行器 (skills/rui/tests/)
 │   └── ...
-├── cdn/tests/               # CDN/主题集成测试
 ├── .claude/                 # Claude Code 本地配置
 ├── .claude-plugin/          # 插件清单与市场元数据
 ├── CLAUDE.md

@@ -11,7 +11,7 @@
  *   node skills/rui/tests/run.mjs --rules        # Run only rule tests
  *   node skills/rui/tests/run.mjs --integration  # Run only integration tests
  *   node skills/rui/tests/run.mjs --unit         # Run only unit tests
- *   node skills/rui/tests/run.mjs --cdn          # Run only CDN tests
+ *   node skills/rui/tests/run.mjs --lib          # Run only lib/ tests
  *   node skills/rui/tests/run.mjs --list         # List test files without running
  */
 
@@ -33,7 +33,7 @@ const TEST_SOURCES = {
   integration:   ['skills/rui/tests', 'skills/rui-story/tests'],
   unit:          ['skills/rui/tests/unit'],
   infrastructure:['skills/rui/tests/infrastructure'],
-  cdn:           ['cdn/tests'],
+  lib:           ['lib/tests'],
 };
 
 function scanDir(dir) {
@@ -82,7 +82,7 @@ function parseArgs() {
   let listOnly = false;
   let jsonMode = false;
 
-  const categoryFlags = ['skills', 'agents', 'rules', 'integration', 'unit', 'infrastructure', 'cdn'];
+  const categoryFlags = ['skills', 'agents', 'rules', 'integration', 'unit', 'infrastructure', 'lib'];
   for (const arg of args) {
     const flag = arg.replace(/^--/, '');
     if (categoryFlags.includes(flag)) {
@@ -95,7 +95,7 @@ function parseArgs() {
   }
 
   // Default: all categories except infrastructure (vitest-only)
-  if (filters.length === 0) filters.push('skills', 'agents', 'rules', 'integration', 'unit', 'cdn');
+  if (filters.length === 0) filters.push('skills', 'agents', 'rules', 'integration', 'unit', 'lib');
   return { filters, listOnly, jsonMode };
 }
 

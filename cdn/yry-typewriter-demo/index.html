@@ -108,22 +108,22 @@
         "build": {
           "label": "构建",
           "lines": [
-            { "t": "cmd", "p": "$ ", "c": "node cdn/scripts/build-manifest.mjs", "d": 200 },
-            { "t": "out", "c": "📦 扫描 CDN 组件...", "d": 300 },
-            { "t": "ok", "c": "  ✓ 63 个组件已索引", "d": 200 },
-            { "t": "info", "c": "  → components.manifest.json 已更新", "d": 250 },
+            { "t": "cmd", "p": "$ ", "c": "node lib/arch-check.mjs --all", "d": 200 },
+            { "t": "out", "c": "🔍 扫描架构合规性...", "d": 300 },
+            { "t": "ok", "c": "  ✓ 9 维度全部通过", "d": 200 },
+            { "t": "info", "c": "  → arch-check.mjs 已更新", "d": 250 },
             { "t": "ok", "c": "✅ 构建完成", "d": 300 }
           ]
         },
         "validate": {
           "label": "校验",
           "lines": [
-            { "t": "cmd", "p": "$ ", "c": "node cdn/scripts/validate.mjs", "d": 150 },
-            { "t": "out", "c": "🔍 校验组件完整性...", "d": 250 },
-            { "t": "ok", "c": "  ✓ index.html: 63/63", "d": 150 },
-            { "t": "ok", "c": "  ✓ index.css:  63/63", "d": 150 },
-            { "t": "ok", "c": "  ✓ index.js:   63/63", "d": 150 },
-            { "t": "ok", "c": "✅ 全部组件校验通过", "d": 300 }
+            { "t": "cmd", "p": "$ ", "c": "node skills/rui-bot/send.mjs health", "d": 150 },
+            { "t": "out", "c": "🩺 检查健康度...", "d": 250 },
+            { "t": "ok", "c": "  ✓ 健康评分: A 级", "d": 150 },
+            { "t": "ok", "c": "  ✓ 诊断: D0-D7 通过", "d": 150 },
+            { "t": "ok", "c": "  ✓ 就绪: 可发布", "d": 150 },
+            { "t": "ok", "c": "✅ 全部校验通过", "d": 300 }
           ]
         }
       }

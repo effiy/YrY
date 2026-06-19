@@ -229,6 +229,80 @@
     ]
   };
 
+  var layerLib = {
+    id: 'layer-lib', num: 'L',
+    titleIcon: '📚', titleAccent: '内部共享库 (lib/)',
+    stats: ['🩺 库健康 92/A · 28 模块 · 7 类目 · 105 自检测试全通过'],
+    panels: [
+      { icon: '🔬', label: '', title: '查看 lib/ 详情', panel: 'lib', onPanel: 'layerInfo' },
+      { icon: '🧪', label: '', title: 'lib/ 自检报告',  panel: 'selfimprove', onPanel: 'panel' }
+    ],
+    sections: [
+      {
+        subTitle: { icon: '🔍', text: '架构校验 (3)', count: '3 项' },
+        grid: 'card',
+        items: [
+          { icon: 'A', iconModifier: 'rule', name: 'arch-check.mjs', desc: '10 维度架构合规检查 — kernel(3) + solid(5) + quality(2)。node lib/arch-check.mjs --all 一次扫描全项目;输出 dim/label/checks/pass 结构化报告', tags: [{ text: 'CLI', modifier: 'accent' }, { text: '架构门禁', modifier: 'cyan' }], meta: 'arch-check.mjs · 10 维度 · arch-dimensions/*.mjs 子模块', demo: 'lib/arch-check.mjs' },
+          { icon: 'K', iconModifier: 'rule', name: 'arch-dimensions/kernel-paradigm.mjs', desc: 'kernel + paradigm + coupling — 系统内核结构检查。kernel 验证 SKILL.md 必备章节;paradigm 检查 agent 拓扑;coupling 检测循环依赖', tags: [{ text: '维度检查器', modifier: 'green' }], meta: 'checkKernel · checkParadigm · checkCoupling', demo: 'lib/arch-dimensions/kernel-paradigm.mjs' },
+          { icon: 'S', iconModifier: 'rule', name: 'arch-dimensions/solid.mjs', desc: 'SOLID 五原则检查器 — SRP / DRY / YAGNI / OCP / ISP。每条原则对应一条可执行断言,违反即降级评分', tags: [{ text: 'SOLID', modifier: 'info' }, { text: '5 检查器', modifier: 'accent' }], meta: 'checkSRP · checkDRY · checkYAGNI · checkOCP · checkISP', demo: 'lib/arch-dimensions/solid.mjs' },
+          { icon: 'Q', iconModifier: 'rule', name: 'arch-dimensions/quality.mjs', desc: '质量维度 — ISP · frontmatter · 文档新鲜度。检测文档是否过期(超过 60 天无更新)、frontmatter 完整性、接口隔离合规', tags: [{ text: '质量门禁', modifier: 'purple' }], meta: 'checkISP · checkFrontmatter · checkDocFreshness', demo: 'lib/arch-dimensions/quality.mjs' }
+        ]
+      },
+      {
+        subTitle: { icon: '⚙️', text: '引擎 (4)', count: '4 项' },
+        grid: 'card',
+        items: [
+          { icon: 'D', iconModifier: 'rule', name: 'engine/diagnostics.mjs', desc: '诊断引擎 — D0-D7 八级规则化判定。每级诊断包含触发条件、证据来源、置信度计算', tags: [{ text: '诊断', modifier: 'accent' }, { text: 'D0-D7', modifier: 'cyan' }], meta: 'lib/engine/diagnostics.mjs', demo: 'lib/engine/diagnostics.mjs' },
+          { icon: 'E', iconModifier: 'rule', name: 'engine/evaluate.mjs',     desc: '评估引擎 — E1-E4 改进前后对比、指标变化量化、闭合标准、回溯报告', tags: [{ text: '评估', modifier: 'green' }, { text: 'E1-E4', modifier: 'cyan' }], meta: 'lib/engine/evaluate.mjs', demo: 'lib/engine/evaluate.mjs' },
+          { icon: 'M', iconModifier: 'rule', name: 'engine/materialize.mjs',  desc: '物化引擎 — 把抽象规则转化为可执行产物(story 文档、checklist、skill 模块)', tags: [{ text: '物化', modifier: 'info' }, { text: '规则→产物', modifier: 'accent' }], meta: 'lib/engine/materialize.mjs', demo: 'lib/engine/materialize.mjs' },
+          { icon: 'U', iconModifier: 'rule', name: 'engine/upgrade.mjs',      desc: '升级引擎 — 经验技能化升级路径。跨会话持久化、记忆压缩、相似检索注入', tags: [{ text: '升级', modifier: 'purple' }, { text: '技能化', modifier: 'cyan' }], meta: 'lib/engine/upgrade.mjs', demo: 'lib/engine/upgrade.mjs' }
+        ]
+      },
+      {
+        subTitle: { icon: '🛠', text: '基础工具 (6)', count: '6 项' },
+        grid: 'card',
+        items: [
+          { icon: 'C', iconModifier: 'ref', name: 'constants.mjs', desc: '项目共享常量 — CLI argv 偏移、网络超时、API 配置、消息长度、健康评级阈值。集中管理避免散落', tags: [{ text: '常量', modifier: 'info' }], meta: 'NODE_ARGV_OFFSET · HTTP_TIMEOUT_MS · HEALTH_GRADE_THRESHOLDS', demo: 'lib/constants.mjs' },
+          { icon: 'F', iconModifier: 'ref', name: 'fs.mjs',        desc: '文件系统工具 — findProjectRoot (向上找 .git/.claude)、readProjectName (从 CLAUDE.md 读取)', tags: [{ text: 'FS', modifier: 'green' }], meta: 'findProjectRoot · readProjectName', demo: 'lib/fs.mjs' },
+          { icon: 'N', iconModifier: 'ref', name: 'network.mjs',   desc: 'HTTP 工具 — fetchJSON 带超时控制,fetchQuiet 静默失败,urlEncode 安全编码', tags: [{ text: '网络', modifier: 'cyan' }], meta: 'fetchJSON · fetchQuiet · urlEncode', demo: 'lib/network.mjs' },
+          { icon: 'T', iconModifier: 'ref', name: 'tty.mjs',       desc: '终端着色工具 — bold/dim/red/green/yellow/cyan。非 TTY 自动降级(测试环境友好)', tags: [{ text: 'TTY', modifier: 'accent' }], meta: 'bold · dim · red · green · yellow · cyan', demo: 'lib/tty.mjs' },
+          { icon: 'P', iconModifier: 'ref', name: 'proposals.mjs', desc: '提案管理 — 创建 / 列出 / 路由 / 状态变更。配合 engine/ 引擎使用', tags: [{ text: '提案', modifier: 'purple' }], meta: 'createProposal · listProposals · routeProposal', demo: 'lib/proposals.mjs' },
+          { icon: 'A', iconModifier: 'ref', name: 'audit.mjs',     desc: '审计工具 — 检查依赖安全、配置漂移、敏感信息落盘', tags: [{ text: '审计', modifier: 'accent' }], meta: 'auditDependencies · auditConfig · auditSecrets', demo: 'lib/audit.mjs' }
+        ]
+      },
+      {
+        subTitle: { icon: '🧪', text: '测试基础设施 (3)', count: '3 项' },
+        grid: 'card',
+        items: [
+          { icon: 'T', iconModifier: 'ref', name: 'test-harness.mjs', desc: '统一测试框架 — describe/it/assert/run 四件套。零依赖,纯 ESM,Vitest 互不干扰。集成到 skills/rui/tests/run.mjs 自动发现', tags: [{ text: '测试框架', modifier: 'accent' }, { text: '零依赖', modifier: 'green' }], meta: 'describe · it · assert.throws/deepEqual/match · run()', demo: 'lib/test-harness.mjs' },
+          { icon: 'H', iconModifier: 'ref', name: 'test-helpers.mjs', desc: '测试工具集 — fileExists/readFile/isDir/hasSection/hasMermaid/parseFrontmatter/listSkills', tags: [{ text: '测试工具', modifier: 'info' }], meta: 'PROJECT_ROOT · DIRS · fileExists · parseFrontmatter · listSkills', demo: 'lib/test-helpers.mjs' },
+          { icon: 'V', iconModifier: 'ref', name: 'vitest-adapter.mjs', desc: 'Vitest 适配器 — 将 legacy 测试用例桥接到 Vitest,支持双轨运行(vitest + legacy harness)', tags: [{ text: '适配器', modifier: 'purple' }, { text: '双轨', modifier: 'cyan' }], meta: 'lib/vitest-adapter.mjs', demo: 'lib/vitest-adapter.mjs' }
+        ]
+      },
+      {
+        subTitle: { icon: '🧠', text: '智能引擎 (3)', count: '3 项' },
+        grid: 'card',
+        items: [
+          { icon: 'S', iconModifier: 'ref', name: 'scoring.mjs',     desc: '评分引擎 — 4 级分级(excellent/good/fair/poor)+ A-D 等级映射。classifyScore/getGrade 配套使用', tags: [{ text: '评分', modifier: 'green' }, { text: '4 级', modifier: 'info' }], meta: 'SCORE_TIERS · classifyScore · getGrade', demo: 'lib/scoring.mjs' },
+          { icon: 'R', iconModifier: 'ref', name: 'recommend*.mjs',  desc: '推荐引擎 — recommend.mjs 通用推荐 + recommend-self-test.mjs 自检场景推荐。基于历史 + 当前上下文', tags: [{ text: '推荐', modifier: 'accent' }], meta: 'recommend · recommend-self-test', demo: 'lib/recommend.mjs' },
+          { icon: 'S', iconModifier: 'ref', name: 'selfimprove-generator.mjs', desc: '自改进生成器 — 自动生成改进提案,基于 selfimprove rules + 当前健康数据', tags: [{ text: '自改进', modifier: 'purple' }], meta: 'lib/selfimprove-generator.mjs', demo: 'lib/selfimprove-generator.mjs' }
+        ]
+      },
+      {
+        subTitle: { icon: '⚙️', text: '辅助工具 (6)', count: '6 项' },
+        grid: 'card',
+        items: [
+          { icon: 'A', iconModifier: 'ref', name: 'arch-helpers.mjs', desc: '架构辅助 — countFiles/fileLineCount/readFrontmatter 三大工具', tags: [{ text: '辅助', modifier: 'info' }], meta: 'countFiles · fileLineCount · readFrontmatter', demo: 'lib/arch-helpers.mjs' },
+          { icon: 'B', iconModifier: 'ref', name: 'branch-check.mjs', desc: '分支验证 — 检查当前分支、worktree 状态、未推送提交', tags: [{ text: 'Git', modifier: 'green' }], meta: 'checkBranch · worktreeStatus', demo: 'lib/branch-check.mjs' },
+          { icon: 'C', iconModifier: 'ref', name: 'concurrency.mjs', desc: '并发工具 — 限流并行任务执行,带超时和错误聚合', tags: [{ text: '并发', modifier: 'cyan' }], meta: 'lib/concurrency.mjs', demo: 'lib/concurrency.mjs' },
+          { icon: 'H', iconModifier: 'ref', name: 'help-layout.mjs', desc: 'CLI 帮助布局 — 表格化输出,自动列宽计算,支持 ANSI 着色', tags: [{ text: 'CLI', modifier: 'accent' }], meta: 'lib/help-layout.mjs', demo: 'lib/help-layout.mjs' },
+          { icon: 'P', iconModifier: 'ref', name: 'plugin-utils.mjs', desc: '插件工具 — 加载/卸载插件、版本兼容性检查、安全沙箱', tags: [{ text: '插件', modifier: 'purple' }], meta: 'loadPlugin · unloadPlugin · checkCompat', demo: 'lib/plugin-utils.mjs' },
+          { icon: 'R', iconModifier: 'ref', name: 'record.mjs',      desc: '记录管理 — 读写 .memory/ 下的结构化记录,JSONL 追加,索引生成', tags: [{ text: '记录', modifier: 'info' }], meta: 'appendRecord · readRecords · indexRecords', demo: 'lib/record.mjs' }
+        ]
+      }
+    ]
+  };
+
   var layerSkills = {
     id: 'layer-skills', num: '1',
     titleIcon: '🛠', titleAccent: '技能',
@@ -402,7 +476,7 @@
   };
 
   /* ── DOCS_DATA 组装 + 7 种交付物图标补齐 ───────────────────────── */
-  var DOCS_LAYERS = [layerSkills, layerDeps, layerStory, layerScene];
+  var DOCS_LAYERS = [layerSkills, layerDeps, layerLib, layerStory, layerScene];
   var DOCS_DELIVERY_ICONS = [
     { icon: '📋', label: '清单' },
     { icon: '📐', label: '架构' },
@@ -535,6 +609,7 @@
           var map = {
             'layer-deps':   'layer-deps-app',
             'layer-skills': 'layer-skills-app',
+            'layer-lib':    'layer-lib-app',
             'layer-story':  'layer-story-app',
             'layer-scene':  'layer-scene-app'
           };
