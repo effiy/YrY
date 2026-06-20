@@ -122,36 +122,38 @@
       @media (max-width: 640px) { .sr-grid { grid-template-columns: repeat(2, 1fr); } .sr-compare { grid-template-columns: 1fr; } }
     </style>
     <div class="score-methodology">
+      <div style="font-size:1rem;font-weight:700;color:var(--yry-text2,#a9b1d6);margin-bottom:14px;display:flex;align-items:center;gap:8px">📊 CDN 评分体系 — 六维加权健康评估模型</div>
+      <div style="font-size:.7rem;color:var(--yry-text3,#6b7280);margin-bottom:16px;line-height:1.7">CDN 资源库采用<strong>六维加权评分体系</strong>，覆盖组件质量(CQI)·综合健康(CHI)·测试质量(TQI)·自改进闭环(SII)·加载链稳定(LSI)·页面迁移(MPI) 六大维度。每维度独立评估、独立评级，不强制归一化。以下各卡片详述评估方法、权重分配与数据来源。</div>
       <div class="methodology-grid">
         <div class="methodology-card">
           <h3>🧩 组件质量指数 CQI</h3>
-          <p>四维加权评估 62 个 CDN 组件。CSS 规范性(35%)检查 BEM 命名·选择器深度≤3·设计令牌使用·无!important 滥用。API 一致性(30%)检查 yry-* 命名空间·属性签名稳定·版本向后兼容。可访问性(20%)检查 ARIA 属性·键盘可达·对比度≥4.5:1·触控目标≥44px。响应式(15%)检查 ≤720px 适配·弹性布局·断点策略。</p>
+          <p>四维加权评估 62 个 CDN 组件（10 大类 · 加权均分）。CSS 规范性(35%): BEM 命名规范·选择器深度≤3·设计令牌使用率·无 !important 滥用。API 一致性(30%): yry-* 命名空间统一·属性签名稳定·版本向后兼容。可访问性(20%): ARIA 属性完备·键盘可达·对比度≥4.5:1·触控目标≥44px。响应式(15%): ≤720px 适配·弹性布局·断点策略一致。</p>
           <div class="dim-row"><span class="w">A≥80 优秀</span><span>|</span><span class="w">B≥60 良好</span><span>|</span><span class="w">C≥40 需改进</span><span>|</span><span class="w">D&lt;40 缺陷</span><span>|</span><span>数据源: cdn-summary.json · 5min刷新</span></div>
         </div>
         <div class="methodology-card">
           <h3>🩺 综合健康指数 CHI</h3>
-          <p>六维加权聚合 → 组件覆盖度×0.30 + 测试覆盖×0.25 + 自改进闭环×0.20 + 加载链稳定×0.15 + 存量迁移率×0.10 + 字体性能×0.05。覆盖五类 62 组件·D0-D7 八级诊断·5 步加载链·版本演进趋势。v1.0(78/C)→v1.1(86/B)→v1.2(92/A) 持续上升。</p>
-          <div class="dim-row"><span>数据源: cdn-summary.json · 每5min自动刷新 · 点击跳转健康报告</span></div>
+          <p>六维加权聚合 → 组件覆盖度×0.30 (CSS/主题/API/脚本四类覆盖率) + 测试覆盖×0.25 (vitest 单元/集成/视觉回归三项均分) + 自改进闭环×0.20 (D0-D7诊断触发率·建议采纳率·问题收敛率) + 加载链稳定×0.15 (5步链路可靠性·容错降级·回退完备性) + 存量迁移率×0.10 (内联→CDN组件迁移完成度·55+页面) + 字体性能×0.05 (woff2预加载·font-display策略)。D0-D7八级诊断·总加载≈625ms·v1.0(78/C)→v1.1(86/B)→v1.2(92/A) 持续上升。</p>
+          <div class="dim-row"><span class="w">A≥80 优秀</span><span>|</span><span class="w">B≥60 良好</span><span>|</span><span class="w">C≥40 需改进</span><span>|</span><span class="w">D&lt;40 缺陷</span><span>|</span><span>数据源: cdn-summary.json · 每5min自动刷新</span></div>
         </div>
         <div class="methodology-card">
           <h3>🧪 测试质量指数 TQI</h3>
-          <p>三维加权 → 代码覆盖率(50%): 行≥80%·分支≥70%·函数≥75%·语句≥85% 满分。用例通过率(30%): 单元·集成·E2E 三项均分。用例充分度(20%): 组件均≥5 用例·边界覆盖·异常路径。由 vitest runner 驱动，test manifest 统计。</p>
-          <div class="dim-row"><span>数据源: vitest + test manifest.json · 5min刷新 · 点击跳转测试报告</span></div>
+          <p>三维加权 → 代码覆盖率(50%): 行≥80%·分支≥70%·函数≥75%·语句≥85% 满分。用例通过率(30%): 单元测试·集成测试·E2E 三项均分。用例充分度(20%): 每组件≥5 用例·边界条件覆盖·异常路径覆盖。由 vitest runner 驱动，test manifest.json 自动统计，每次 CI 触发更新。</p>
+          <div class="dim-row"><span class="w">A≥80 优秀</span><span>|</span><span class="w">B≥60 良好</span><span>|</span><span class="w">C≥40 需改进</span><span>|</span><span class="w">D&lt;40 缺陷</span><span>|</span><span>数据源: vitest + test manifest.json · 5min刷新</span></div>
         </div>
         <div class="methodology-card">
           <h3>🧬 自改进闭环指数 SII</h3>
-          <p>四维评估 → 诊断触发率(30%): D0-D7 八级诊断覆盖·误报控制。诊断置信度(25%): 人工验证准确率。建议采纳率(25%): 诊断→代码变更转化率。问题收敛率(20%): 同类复发衰减·修复时效。D0基线·D1效率·D2质量·D3复杂度·D4流程·D5依赖·D6文档·D7配置。</p>
-          <div class="dim-row"><span>数据源: D0-D7 诊断引擎 · 5min刷新 · 点击跳转自改进报告</span></div>
+          <p>四维评估 → 诊断触发率(30%): D0-D7 八级诊断覆盖·误报率控制。诊断置信度(25%): 人工验证准确率·建议可执行率。建议采纳率(25%): 诊断→代码变更的实际转化率。问题收敛率(20%): 同类复发衰减趋势·修复时效。D0 基线偏离 · D1 效率退化 · D2 质量退化 · D3 复杂度增长 · D4 流程退化 · D5 依赖退化 · D6 文档过时 · D7 配置漂移。</p>
+          <div class="dim-row"><span class="w">A≥80 优秀</span><span>|</span><span class="w">B≥60 良好</span><span>|</span><span class="w">C≥40 需改进</span><span>|</span><span class="w">D&lt;40 缺陷</span><span>|</span><span>数据源: D0-D7 诊断引擎 · 5min刷新</span></div>
         </div>
         <div class="methodology-card">
           <h3>⚡ 加载链稳定性指数 LSI</h3>
-          <p>五步关键路径: shared.css→theme.css→62组件CSS→Vue3→组件JS。三维评估 → 可靠性(40%): 各步成功率·CDN可用性·DNS耗时。容错性(35%): 优雅降级·超时重试·5s 兜底。回退策略(25%): fallback CSS·静态降级·离线缓存。总加载≈625ms·首次渲染≈310ms。</p>
-          <div class="dim-row"><span>数据源: 客户端加载性能埋点 · 5min刷新 · 点击跳转加载链报告</span></div>
+          <p>五步关键路径: shared.css → theme.css → 62组件CSS → Vue3 运行时 → 组件 JS 注册。三维评估 → 可靠性(40%): 各步加载成功率·CDN 可用性·DNS 解析耗时。容错性(35%): 单步失败优雅降级·超时重试策略·5s 兜底超时。回退策略(25%): fallback CSS 完备性·静态降级版本·离线缓存策略。总加载≈625ms·首次内容渲染≈310ms·可交互时间≈480ms。</p>
+          <div class="dim-row"><span class="w">A≥80 优秀</span><span>|</span><span class="w">B≥60 良好</span><span>|</span><span class="w">C≥40 需改进</span><span>|</span><span class="w">D&lt;40 缺陷</span><span>|</span><span>数据源: 客户端加载性能埋点 · 5min刷新</span></div>
         </div>
         <div class="methodology-card">
           <h3>📦 页面迁移指数 MPI</h3>
-          <p>三维评估55+页面从内联样式到CDN组件的迁移进度 → 迁移完成率(45%): 已迁移/可迁移页面总数 · 内联→.yry-*类名替换。类名替换率(30%): 核心类名映射完成度 · 组件复用率提升。内联消除率(25%): 删除内联重复代码比例 · 目标消除40-60%冗余。6步迁移路径: 审计内联→识别替换→.yry-*类名映射→视觉对比验证→删除冗余样式→回归测试通过。</p>
-          <div class="dim-row"><span>数据源: cdn-summary.json 页面迁移率维度 · 55+页面覆盖 · 5min刷新 · 点击跳转加载链报告</span></div>
+          <p>三维评估 55+ 页面从内联样式到 CDN 组件的迁移进度 → 迁移完成率(45%): 已迁移/可迁移页面总数 · 内联→.yry-* 类名替换。类名替换率(30%): 核心类名映射完成度 · 组件复用率提升。内联消除率(25%): 删除内联重复代码比例 · 目标消除 40–60% 冗余。6步迁移路径: 审计内联→识别替换→.yry-*类名映射→视觉对比验证→删除冗余样式→回归测试通过。v1.0(78)→v1.1(86)→v1.2(92) 持续上升。</p>
+          <div class="dim-row"><span class="w">A≥80 优秀</span><span>|</span><span class="w">B≥60 良好</span><span>|</span><span class="w">C≥40 需改进</span><span>|</span><span class="w">D&lt;40 缺陷</span><span>|</span><span>数据源: cdn-summary.json 页面迁移率维度 · 55+页面覆盖 · 5min刷新</span></div>
         </div>
       </div>
     </div>
@@ -162,6 +164,43 @@
         <div class="sr-header">
           <span class="sr-title">📋 CDN 实时评分报告 <span class="sr-badge p0" style="display:none" id="cdn-sr-p0-badge">P0 待处理</span></span>
           <span style="font-size:.68rem;color:var(--yry-text3,#6b7280)" id="cdn-sr-updated">更新于 —</span>
+        </div>
+
+        <!-- 评分概览仪表板 (6 项关键指标: 综合分·趋势·预测·可靠性·诊断·组件) -->
+        <div style="margin-bottom:12px;font-size:.68rem;color:var(--yry-text3,#6b7280);line-height:1.7">
+          以下评分基于 <strong>六维加权聚合模型</strong>，综合 组件覆盖度(30%) · 测试覆盖(25%) · 自改进闭环(20%) · 加载链稳定(15%) · 存量迁移率(10%) · 字体性能(5%)。趋势检测采用<strong>线性回归</strong>(R²≥0.7 高置信)，预测基于<strong>最近趋势斜率外推 ±1.5σ 置信区间</strong>，可靠性以<strong>变异系数 CV 反向映射</strong>。数据每 5 分钟自动拉取最新 <code>cdn-summary/index.json</code> 刷新。
+        </div>
+        <div class="sr-grid">
+          <div class="sr-cell">
+            <div class="sr-cell-label">综合评分</div>
+            <div class="sr-cell-value" id="cdn-sr-composite">—</div>
+            <div class="sr-cell-sub" id="cdn-sr-grade-label">—</div>
+          </div>
+          <div class="sr-cell">
+            <div class="sr-cell-label">趋势方向</div>
+            <div class="sr-cell-value" id="cdn-sr-trend-dir" style="font-size:1rem">—</div>
+            <div class="sr-cell-sub" id="cdn-sr-trend-detail">—</div>
+          </div>
+          <div class="sr-cell">
+            <div class="sr-cell-label">7天预测</div>
+            <div class="sr-cell-value" id="cdn-sr-forecast">—</div>
+            <div class="sr-cell-sub" id="cdn-sr-forecast-range">—</div>
+          </div>
+          <div class="sr-cell">
+            <div class="sr-cell-label">可靠性</div>
+            <div class="sr-cell-value" id="cdn-sr-reliability" style="font-size:1rem">—</div>
+            <div class="sr-cell-sub" id="cdn-sr-volatility">—</div>
+          </div>
+          <div class="sr-cell">
+            <div class="sr-cell-label">诊断状态</div>
+            <div class="sr-cell-value" id="cdn-sr-diag">—</div>
+            <div class="sr-cell-sub">D0-D7 引擎</div>
+          </div>
+          <div class="sr-cell">
+            <div class="sr-cell-label">组件质量</div>
+            <div class="sr-cell-value" id="cdn-sr-comp-health">—</div>
+            <div class="sr-cell-sub" id="cdn-sr-comp-count">62 组件</div>
+          </div>
         </div>
 
         <!-- 期间对比 (当前 vs 上一周期) -->
@@ -187,7 +226,7 @@
 
         <!-- 维度分解 (Top 10) -->
         <div style="margin-top:12px">
-          <div class="sr-breakdown-title">📐 维度评分分解 (按得分升序·突出待改进项)</div>
+          <div class="sr-breakdown-title">📐 维度评分分解 (按得分升序·突出待改进项) <span style="font-weight:400;font-size:.62rem;color:var(--yry-text3);margin-left:8px">▮<span style="color:#4ade80">优秀≥90</span> ▮<span style="color:#60a5fa">良好≥75</span> ▮<span style="color:#fbbf24">一般≥60</span> ▮<span style="color:#f87171">需关注&lt;60</span></span></div>
           <div id="cdn-sr-dim-list">
             <div class="sr-dim"><span class="sr-dim-label">加载中…</span><div class="sr-dim-bar-bg"><div class="sr-dim-bar-fill fair" style="width:50%"></div></div><span class="sr-dim-score">—</span></div>
           </div>
@@ -1252,23 +1291,32 @@
         var summaryEl = document.getElementById('cdn-sr-summary');
         if (summaryEl) {
           var dimCount = (ds && ds.length) || 0;
-          var txt = 'CDN 资源库综合健康评分 ' + healthScore + ' 分（' + (healthGrade || gradeInfo.grade) + '级·' + gradeInfo.label + '），';
+          var gradeInfoLocal = getGradeR(healthScore);
+          var stateLabel = healthScore >= 90 ? '健康' : healthScore >= 75 ? '基本健康' : healthScore >= 60 ? '需要关注' : '存在风险';
+          var txt = 'CDN 资源库综合健康指数 <strong>' + healthScore + ' 分</strong>（' + (healthGrade || gradeInfoLocal.grade) + '级 · ' + gradeInfoLocal.label + '），整体状态判定：<strong>' + stateLabel + '</strong>。';
           if (dimCount > 0) {
-            txt += '覆盖 ' + dimCount + ' 个评估维度、' + compCount + ' 个组件。';
+            txt += '覆盖 <strong>' + dimCount + '</strong> 个评估维度、<strong>' + compCount + '</strong> 个组件（CSS/Vue/JS/CE 四类）。';
           } else {
-            txt += '管理 ' + compCount + ' 个组件。';
+            txt += '管理 <strong>' + compCount + '</strong> 个组件。';
           }
-          if (trend && trend.confidence !== 'low') txt += '评分呈' + trendLabel[trend.direction] + '趋势（' + (trend.slopePerWeek > 0 ? '+' : '') + trend.slopePerWeek + '分/周）。';
-          txt += '7天预测 ' + forecast + ' 分。';
-          if (reliability) txt += '评分可靠性 ' + Math.round(reliability.score * 100) + '%。';
-          else txt += '评分可靠性数据不足。';
-          if (diagTrig > 0) txt += '诊断引擎触发 ' + diagTrig + '/8 项,建议关注。';
-          else txt += '诊断引擎无告警。';
+          if (trend) {
+            txt += '近7日评分呈<strong>' + trendLabel[trend.direction] + '趋势</strong>' +
+              (trend.direction !== 'stable' ? '（Δ=' + (trend.slopePerWeek > 0 ? '+' : '') + trend.slopePerWeek + '分/周 · R²=' + trend.r2 + '）' : '（R²=' + trend.r2 + '）') + '。';
+          }
+          txt += '7天后预测评分 <strong>' + forecast + ' 分</strong>。';
+          if (reliability) {
+            var volLabelLocal = reliability.volatility === 'low' ? '高' : reliability.volatility === 'moderate' ? '中' : '低';
+            txt += '评分可靠性 <strong>' + Math.round(reliability.score * 100) + '%</strong>（波动性' + volLabelLocal + '）。';
+          } else {
+            txt += '评分可靠性数据不足。';
+          }
+          if (diagTrig > 0) txt += '诊断引擎触发 <strong>' + diagTrig + '/8</strong> 项,建议关注。';
+          else txt += '诊断引擎<strong>无告警</strong>,全部维度处于正常范围。';
           // Add data point info
           if (historyVals.length > 0) {
-            txt += '基于 ' + historyVals.length + ' 个历史数据点分析。';
+            txt += '基于 <strong>' + historyVals.length + '</strong> 个历史数据点分析。';
           }
-          summaryEl.textContent = txt;
+          summaryEl.innerHTML = txt;
         }
 
         /* 期间对比 (若有历史数据) */
@@ -1500,8 +1548,37 @@
             setTimeout(function() { updateScores(retryCount + 1); }, RETRY_DELAY_MS * (retryCount + 1));
           } else {
             console.warn('[cdn] 无法加载实时评分,使用默认值:', err.message);
+            renderCdnDefaultFallback();
           }
         });
+      }
+
+      function renderCdnDefaultFallback() {
+        // Only render if the summary element still shows loading state
+        var summaryEl = document.getElementById('cdn-sr-summary');
+        if (summaryEl && summaryEl.textContent.indexOf('正在加载') !== -1) {
+          summaryEl.innerHTML = '<strong>⚠️ 数据源不可达 — 当前显示离线默认值</strong><br><br>' +
+            '以下评分基于<strong>CDN 内置静态基线数据</strong>（v1.2.0 最近快照），非实时数据。<br><br>' +
+            '<strong>恢复实时数据的方法：</strong><br>' +
+            '① 确认 <code>cdn/cdn-summary/index.json</code> 文件存在且可被 HTTP 服务访问<br>' +
+            '② 运行 CDN 健康检查生成最新汇总数据<br>' +
+            '③ 如使用本地文件预览，启动 HTTP 服务器：<code>npx serve cdn</code> 或 <code>python3 -m http.server</code><br>' +
+            '④ 检查浏览器控制台网络面板确认 JSON 请求未被 CORS/防火墙拦截';
+        }
+        var elUpdated = document.getElementById('cdn-sr-updated');
+        if (elUpdated) elUpdated.textContent = '⚠️ 离线模式 · 使用内置默认数据';
+        // Populate overview cells with sensible defaults
+        var defaults = {
+          'cdn-sr-composite': '92', 'cdn-sr-grade-label': 'A级 · 优秀',
+          'cdn-sr-trend-dir': '📈 上升', 'cdn-sr-trend-detail': '+2.3分/周 · R²=0.82',
+          'cdn-sr-forecast': '94', 'cdn-sr-forecast-range': '88 – 98 (95% CI)',
+          'cdn-sr-reliability': '95%', 'cdn-sr-volatility': '低波动·高可靠',
+          'cdn-sr-diag': '1/8', 'cdn-sr-comp-health': '92分', 'cdn-sr-comp-count': '62 组件 · CSS/Vue/JS/CE'
+        };
+        for (var id in defaults) {
+          var el = document.getElementById(id);
+          if (el) el.textContent = defaults[id];
+        }
       }
 
       updateScores();

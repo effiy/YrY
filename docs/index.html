@@ -270,6 +270,7 @@
     <!-- ═══ 评分机制说明 (内联渲染,与 CDN 评分方法对齐) ═══ -->
     <section class="score-methodology" id="score-methodology">
       <div class="sm-title">📊 评分机制 — 八维加权健康评估模型</div>
+      <div style="font-size:0.8rem;color:var(--yry-text-secondary,#6b708a);margin-bottom:16px;line-height:1.7">YrY 采用<strong>八维加权评分体系</strong>，覆盖项目综合健康(PHI)·技能健康(SHI)·测试质量(TQI)·自改进闭环(SII)·架构质量(AQI)·文档质量(DQI)·统一项目健康(UPHI)·诊断健康(DHI) 八大指数。每项指数独立加权评估，数据源与评级标准各有差异。以下各卡片详述评估方法、维度权重与数据溯源。</div>
       <div class="sm-cards">
         <div class="sm-card" id="sm-card-phi">
           <div class="sm-card-header">
@@ -277,10 +278,10 @@
             <span class="sm-card-grade grade-B" id="sm-grade-phi">77/B</span>
           </div>
           <div class="sm-card-desc">
-            19 维加权聚合模型，分三大类：<strong>核心运营</strong>(9维·token/config/robots/api/reports/format/diagnostics/git/security)、<strong>工程成熟度</strong>(7维·测试/类型/代码检查/CI/CD/文档/依赖/Git实践)、<strong>扩展健康</strong>(3维·文件大小/依赖分析/通知)。
+            19 维加权聚合模型，分四大类：<strong>核心运营</strong>(token/config/robots/api/reports/diagnostics/git/security · 默认权重88)、<strong>结构健康</strong>(文件大小/依赖分析 · 权重16)、<strong>工程成熟度</strong>(测试/类型检查/代码检查/CI/CD/文档覆盖/依赖管理/Git实践 · 权重54)、<strong>质量保障</strong>(格式规范/通知健康 · 权重8)。
           </div>
           <div class="sm-card-meta">
-            <span>⚖️ 权重: core×80 + structural×16 + engineering×56 + quality×8 = 160</span>
+            <span>⚖️ 权重: core×88 + structural×16 + engineering×54 + quality×8 = 166</span>
             <span>📐 评级: A≥90 优秀 · B≥75 良好 · C≥60 一般 · D&lt;60 需关注</span>
             <span>🔗 SLO: warn&lt;75 · critical&lt;60 · breach&lt;40</span>
           </div>
@@ -296,6 +297,7 @@
           <div class="sm-card-meta">
             <span>📦 覆盖: 19 技能 + 9 Agent 角色 + 18 治理规则</span>
             <span>📐 评级: A≥80 · B≥60 · C≥40 · D&lt;40</span>
+            <span>📡 数据源: SKILL.md frontmatter 完整性扫描 + arch-check.mjs 范式合规验证</span>
           </div>
         </div>
         <div class="sm-card" id="sm-card-tqi">
@@ -304,7 +306,7 @@
             <span class="sm-card-grade grade-B" id="sm-grade-tqi">60/B</span>
           </div>
           <div class="sm-card-desc">
-            工程成熟度 7 维加权评估：<strong>测试覆盖</strong>(30%·单元/集成/E2E)、<strong>类型安全</strong>(15%·TypeScript/JSDoc)、<strong>代码检查</strong>(15%·ESLint/arch-check)、<strong>CI/CD</strong>(10%·自动化流水线)、<strong>文档覆盖</strong>(10%·文档完备率)、<strong>依赖管理</strong>(10%·漏洞/许可证)、<strong>Git实践</strong>(10%·分支隔离/提交规范)。
+            工程成熟度 7 维加权评估：<strong>测试覆盖</strong>(30%·单元/集成/E2E·行≥80%·分支≥70%·函数≥75%)、<strong>类型安全</strong>(15%·JSDoc覆盖·严格模式·any使用控制)、<strong>代码检查</strong>(15%·ESLint零告警·arch-check全通过·prettier一致)、<strong>CI/CD</strong>(10%·自动化流水线·门禁检查·构建≤10min)、<strong>文档覆盖</strong>(10%·场景文档·API文档·README完备率)、<strong>依赖管理</strong>(10%·安全审计·许可证合规·版本锁定·无高危CVE)、<strong>Git实践</strong>(10%·分支隔离·提交规范·worktree策略·PR审查)。
           </div>
           <div class="sm-card-meta">
             <span>⚖️ 当前主要扣分: CI/CD 缺失(0分)·测试覆盖不足(60分)</span>
@@ -317,12 +319,13 @@
             <span class="sm-card-grade grade-A" id="sm-grade-sii">89/A</span>
           </div>
           <div class="sm-card-desc">
-            四象限加权聚合 + D0-D8 九级诊断引擎：<strong>Skills</strong>(代码范式·规约完整性·依赖健康)、<strong>Agents</strong>(AGENT.md完备性·交接信号·能力边界)、<strong>Rules</strong>(管线纪律·安全红线·文档质量·设计原则)、<strong>Scripts</strong>(lib共享率·函数纯度·错误处理·常量规范)。
+            四象限加权聚合(35/25/25/15) + D0-D8 九级诊断引擎：<strong>Skills</strong>(35%·代码范式合规·规约完整性·依赖健康·lib共享率)、<strong>Agents</strong>(25%·AGENT.md完备性·交接信号可验证·能力边界清晰·工具集最小化)、<strong>Rules</strong>(25%·管线纪律遵守率·安全红线无绕过·文档质量标准·设计原则合规率)、<strong>Scripts</strong>(15%·函数纯度·错误处理规范·常量语义化·禁止魔法数字)。
           </div>
           <div class="sm-card-meta">
             <span>🔬 D0-D7 诊断引擎持续监控,异常自动触发改进建议</span>
             <span>📐 评级: A≥80 · B≥60 · C≥40 · D&lt;40</span>
             <span>🔗 E1-E4 四级效果评估闭环回写</span>
+            <span>📡 数据源: health-trend.jsonl + skill SKILL.md 扫描 + arch-check 合规报告</span>
           </div>
         </div>
         <div class="sm-card" id="sm-card-aqi">
@@ -345,12 +348,12 @@
             <span class="sm-card-grade grade-B" id="sm-grade-dqi">82/B</span>
           </div>
           <div class="sm-card-desc">
-            Based on doc-quality.md A/B/C/D evidence levels across all documentation types. Evaluates four dimensions: <strong>Completeness</strong>(40%·required elements per doc type: Agent frontmatter+workflow+rules+Red Flags / Skill trigger+IO+examples+exit codes / Rule scope+gates+anti-patterns / Story FP#+AC+SC+risk), <strong>Evidence Grade</strong>(30%·ratio of A-verified vs C-unverified vs D-fictional claims), <strong>Anti-pattern Absence</strong>(20%·no TBD/TODO/"should"/"maybe" hedging language), <strong>Spec Integrity</strong>(10%·frontmatter field completeness + handoff signal verifiability).
+            基于 doc-quality.md A/B/C/D 四等级证据标准，覆盖 Agent / Skill / Rule / Story 全部文档类型。四维加权评估：<strong>完整性</strong>(40%·各类文档必需元素：Agent frontmatter+workflow+rules+Red Flags / Skill 触发条件+IO+示例+退出码 / Rule 范围+门禁+反模式 / Story FP#+AC+SC+风险登记)、<strong>证据等级</strong>(30%·A级可验证 vs C级未验证 vs D级虚构声明的比例分布与趋势)、<strong>反模式缺失</strong>(20%·无 TBD/TODO/"应该"/"可能"等模糊措辞·无可绕过检查的合理化语言)、<strong>规约完整性</strong>(10%·frontmatter 字段完备率 + 交接信号可验证性·链接引用有效性)。
           </div>
           <div class="sm-card-meta">
-            <span>📦 Coverage: Agent .md + Skill SKILL.md + Rule .md + Story task .md</span>
-            <span>📐 Grading: A≥80 · B≥60 · C≥40 · D&lt;40</span>
-            <span>📡 Data source: arch-check.mjs frontmatter validation + doc freshness checks</span>
+            <span>📦 覆盖: Agent.md + Skill SKILL.md + Rule.md + Story task.md 四类文档</span>
+            <span>📐 评级: A≥80 优秀 · B≥60 良好 · C≥40 一般 · D&lt;40 需关注</span>
+            <span>📡 数据源: arch-check.mjs frontmatter 验证 + 文档新鲜度检查 + 链接有效性扫描</span>
           </div>
         </div>
       </div>
@@ -365,23 +368,23 @@
 
       <!-- 维度分解 -->
       <div class="sr-breakdown">
-        <div class="sr-breakdown-title">📐 维度评分分解 (按严重程度排序)</div>
+        <div class="sr-breakdown-title">📐 维度评分分解 (按严重程度排序) <span style="font-weight:400;font-size:0.68rem;color:var(--yry-text-muted);margin-left:8px">▮<span style="color:#4ade80">优秀≥90</span> ▮<span style="color:#60a5fa">良好≥75</span> ▮<span style="color:#fbbf24">一般≥60</span> ▮<span style="color:#f87171">需关注&lt;60</span></span></div>
         <div id="sr-dim-list">
           <div class="sr-dim"><span class="sr-dim-label">加载中…</span><div class="sr-dim-bar-bg"><div class="sr-dim-bar-fill fair" style="width:50%"></div></div><span class="sr-dim-score">—</span></div>
         </div>
       </div>
 
+      <!-- 期间对比 (当前 vs 上一周期) -->
+      <div class="sr-breakdown-title">📊 期间对比 (当前 vs 上一周期)</div>
+      <div class="sr-links" style="margin-bottom:12px" id="sr-compare">
+        <span class="sr-link" style="cursor:default"><span id="sr-comp-delta">—</span> 综合分变化</span>
+        <span class="sr-link" style="cursor:default"><span id="sr-comp-improved">—</span> 改善维度</span>
+        <span class="sr-link" style="cursor:default"><span id="sr-comp-declined">—</span> 退化维度</span>
+        <span class="sr-link" style="cursor:default"><span id="sr-comp-net">—</span> 净变化</span>
+      </div>
+
       <!-- AI 摘要 -->
       <div class="sr-summary-text" id="sr-summary">正在加载评分数据…</div>
-
-      <!-- 快捷链接 -->
-      <div class="sr-links">
-        <a class="sr-link" href="./健康报告/health-cdn-index.html">🩺 健康报告</a>
-        <a class="sr-link" href="./自我改进/index.html">🧬 自我改进报告</a>
-        <a class="sr-link" href="./趋势报告/index.html">📡 趋势报告</a>
-        <a class="sr-link" href="./自循环报告/index.html">🔄 自循环报告</a>
-        <a class="sr-link" href="./项目分析/index.html">📊 项目分析</a>
-      </div>
     </section>
 
     <!-- ── Cross-Nav (YryCrossNav) ──────────────── -->
@@ -755,26 +758,61 @@
         dimListEl.innerHTML = html;
       }
 
+      // 期间对比: 从 scoreTrend 历史数据计算 delta
+      var scoreHistory = data.scoreTrend || [];
+      var elCompDelta = document.getElementById('sr-comp-delta');
+      var elCompImproved = document.getElementById('sr-comp-improved');
+      var elCompDeclined = document.getElementById('sr-comp-declined');
+      var elCompNet = document.getElementById('sr-comp-net');
+      if (scoreHistory.length >= 2) {
+        var prevScore = typeof scoreHistory[scoreHistory.length - 2].score === 'number'
+          ? scoreHistory[scoreHistory.length - 2].score
+          : (scoreHistory[scoreHistory.length - 2].composite || 0);
+        var currScore = typeof scoreHistory[scoreHistory.length - 1].score === 'number'
+          ? scoreHistory[scoreHistory.length - 1].score
+          : (scoreHistory[scoreHistory.length - 1].composite || 0);
+        var delta = Math.round((currScore - prevScore) * 10) / 10;
+        if (elCompDelta) { elCompDelta.textContent = (delta > 0 ? '+' : '') + delta + ' 分'; elCompDelta.style.color = delta > 0 ? '#4ade80' : delta < 0 ? '#f87171' : '#6b708a'; }
+        if (elCompImproved) { elCompImproved.textContent = delta > 0 ? (delta > 3 ? '显著改善 ↑↑' : '小幅改善 ↑') : '—'; elCompImproved.style.color = delta > 0 ? '#4ade80' : '#6b708a'; }
+        if (elCompDeclined) { elCompDeclined.textContent = delta < 0 ? (delta < -3 ? '明显退化 ↓↓' : '轻微退化 ↓') : '—'; elCompDeclined.style.color = delta < 0 ? '#f87171' : '#6b708a'; }
+        var netLabel = delta > 0 ? '+' + delta : delta < 0 ? '' + delta : '持平';
+        if (elCompNet) { elCompNet.textContent = netLabel; elCompNet.style.color = delta > 0 ? '#4ade80' : delta < 0 ? '#f87171' : '#6b708a'; }
+      }
+
       // AI 摘要
       var summaryEl = document.getElementById('sr-summary');
       if (summaryEl) {
-        var summaryText = '项目综合评分 ' + composite + ' 分（' + gradeInfo.grade + '级·' + gradeInfo.label + '），整体状态' +
-          (composite >= 90 ? '健康' : composite >= 75 ? '基本健康' : composite >= 60 ? '需要关注' : '存在风险') + '。';
-        if (trend && trend.confidence !== 'low') {
-          summaryText += '评分呈' + trendLabel[trend.direction] + '趋势' +
-            (trend.direction !== 'stable' ? '（' + (trend.slopePerWeek > 0 ? '+' : '') + trend.slopePerWeek + '分/周）' : '') + '。';
+        var stateLabel = composite >= 90 ? '健康' : composite >= 75 ? '基本健康' : composite >= 60 ? '需要关注' : '存在风险';
+        var summaryText = '项目综合健康指数 ' + composite + ' 分（' + gradeInfo.grade + '级 · ' + gradeInfo.label + '），整体状态判定：<strong>' + stateLabel + '</strong>。';
+        if (trend) {
+          summaryText += '近7日评分呈<strong>' + trendLabel[trend.direction] + '趋势</strong>' +
+            (trend.direction !== 'stable' ? '（Δ=' + (trend.slopePerWeek > 0 ? '+' : '') + trend.slopePerWeek + '分/周 · R²=' + trend.r2 + ' · 置信度' + trend.confidence + '）' : '（R²=' + trend.r2 + '）') + '。';
         }
         if (forecast) {
-          summaryText += '7天后预测 ' + forecast.forecast + ' 分' +
-            (forecast.confidence !== 'low' ? '（置信度' + forecast.confidence + '）' : '（数据不足）') + '。';
+          summaryText += '7天后预测评分 <strong>' + forecast.forecast + ' 分</strong>' +
+            (forecast.confidence !== 'low' ? '（95% CI: ' + forecast.range[0] + '–' + forecast.range[1] + ' · 置信度' + forecast.confidence + '）' : '（基础数据不足,置信度低）') + '。';
         }
         if (reliability) {
-          summaryText += '评分可靠性 ' + Math.round(reliability.reliability * 100) + '%。';
+          var volDesc = reliability.volatility === 'low' ? '高' : reliability.volatility === 'moderate' ? '中' : '低';
+          summaryText += '评分可靠性 <strong>' + Math.round(reliability.reliability * 100) + '%</strong>（波动性' + volDesc + '）。';
+        }
+        var p0Count = 0, p1Count = 0;
+        if (data._scoreReport && data._scoreReport.recommendations) {
+          var recs = data._scoreReport.recommendations;
+          for (var ri = 0; ri < recs.length; ri++) {
+            if (recs[ri].priority === 'P0') p0Count++;
+            else if (recs[ri].priority === 'P1') p1Count++;
+          }
         }
         var triggered = data.diagTriggered || 0;
-        if (triggered > 0) summaryText += '诊断引擎触发 ' + triggered + '/8 项,建议关注。';
-        else summaryText += '诊断引擎无告警。';
-        summaryEl.textContent = summaryText;
+        if (triggered > 0) {
+          summaryText += '诊断引擎触发 <strong>' + triggered + '/8</strong> 项,';
+          if (p0Count > 0 || p1Count > 0) summaryText += '待处理 <strong>' + (p0Count > 0 ? 'P0×' + p0Count : '') + (p0Count > 0 && p1Count > 0 ? ' + ' : '') + (p1Count > 0 ? 'P1×' + p1Count : '') + '</strong>。';
+          else summaryText += '暂无高优先级建议。';
+        } else {
+          summaryText += '诊断引擎<strong>无告警</strong>,全部维度处于正常范围。';
+        }
+        summaryEl.innerHTML = summaryText;
       }
 
       // 更新时间
@@ -1036,9 +1074,40 @@
     }
 
     function renderComparisonData(comparison, recommendations) {
-      // Show comparison deltas if the data is available
-      // (The main score grid already shows trend — here we add detailed comparison info)
-      // For now, the comparison section is shown through the trend/forecast cells
+      // Populate period comparison cells from score-report.json comparison data
+      var elDelta = document.getElementById('sr-comp-delta');
+      var elImproved = document.getElementById('sr-comp-improved');
+      var elDeclined = document.getElementById('sr-comp-declined');
+      var elNet = document.getElementById('sr-comp-net');
+
+      if (comparison && comparison.compositeDelta !== undefined) {
+        var delta = comparison.compositeDelta || 0;
+        if (elDelta) { elDelta.textContent = (delta > 0 ? '+' : '') + delta + ' 分'; elDelta.style.color = delta > 0 ? '#4ade80' : delta < 0 ? '#f87171' : '#6b708a'; }
+        if (elImproved) { elImproved.textContent = (comparison.improved || 0) + ' 项'; elImproved.style.color = comparison.improved > 0 ? '#4ade80' : '#6b708a'; }
+        if (elDeclined) { elDeclined.textContent = (comparison.declined || 0) + ' 项'; elDeclined.style.color = comparison.declined > 0 ? '#f87171' : '#6b708a'; }
+        var net = (comparison.improved || 0) - (comparison.declined || 0);
+        if (elNet) { elNet.textContent = (net > 0 ? '+' : '') + net; elNet.style.color = net > 0 ? '#4ade80' : net < 0 ? '#f87171' : '#6b708a'; }
+      } else if (comparison && comparison.dimensions) {
+        // Alternative format: individual dimension comparisons
+        var improved = 0, declined = 0, totalDelta = 0;
+        for (var i = 0; i < comparison.dimensions.length; i++) {
+          var d = comparison.dimensions[i];
+          if (d.delta > 0) improved++;
+          else if (d.delta < 0) declined++;
+          totalDelta += (d.delta || 0);
+        }
+        var avgDelta = comparison.dimensions.length > 0 ? Math.round(totalDelta / comparison.dimensions.length) : 0;
+        if (elDelta) { elDelta.textContent = (avgDelta > 0 ? '+' : '') + avgDelta + ' 分(均)'; elDelta.style.color = avgDelta > 0 ? '#4ade80' : avgDelta < 0 ? '#f87171' : '#6b708a'; }
+        if (elImproved) { elImproved.textContent = improved + ' 项'; elImproved.style.color = improved > 0 ? '#4ade80' : '#6b708a'; }
+        if (elDeclined) { elDeclined.textContent = declined + ' 项'; elDeclined.style.color = declined > 0 ? '#f87171' : '#6b708a'; }
+        var net = improved - declined;
+        if (elNet) { elNet.textContent = (net > 0 ? '+' : '') + net; elNet.style.color = net > 0 ? '#4ade80' : net < 0 ? '#f87171' : '#6b708a'; }
+      } else {
+        if (elDelta) elDelta.textContent = '—';
+        if (elImproved) elImproved.textContent = '—';
+        if (elDeclined) elDeclined.textContent = '—';
+        if (elNet) elNet.textContent = '—';
+      }
 
       // Update P0 badge from recommendations
       updateP0Badge(recommendations);
@@ -1076,12 +1145,19 @@
       };
       renderScoreReport(defaultData);
       renderMethodologyCards(defaultData);
-      // Indicate fallback
+      // Indicate fallback with professional diagnostic info
       var elUpdated = document.getElementById('sr-updated');
       if (elUpdated) elUpdated.textContent = '⚠️ 离线模式 · 使用内置默认数据';
       var summaryEl = document.getElementById('sr-summary');
       if (summaryEl) {
-        summaryEl.textContent = '⚠️ 未能连接到数据源。当前显示的是内置默认评分数据，可能与实际状态有差异。请检查网络连接或运行 node lib/score-report-generator.mjs 生成最新报告。';
+        summaryEl.innerHTML = '<strong>⚠️ 数据源不可达 — 当前显示离线默认值</strong><br><br>' +
+          '以下评分基于<strong>内置静态基线数据</strong>，反映项目最后一次健康检查时的近似状态，非实时数据。<br><br>' +
+          '<strong>恢复实时数据的方法：</strong><br>' +
+          '① 运行 <code>node lib/score-report-generator.mjs</code> 生成最新评分报告<br>' +
+          '② 运行 <code>node skills/rui-bot/send.mjs health</code> 执行健康检查并持久化趋势<br>' +
+          '③ 确认 <code>docs/评分报告/score-report.json</code> 文件存在且可被 HTTP 服务访问<br>' +
+          '④ 如使用本地文件预览，启动 HTTP 服务器：<code>npx serve docs</code> 或 <code>python3 -m http.server</code><br><br>' +
+          '数据源尝试顺序：score-report.json → summary.json → cdn-summary/index.json → 内置默认值';
       }
     }
 
