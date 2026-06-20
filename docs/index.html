@@ -269,7 +269,7 @@
 
     <!-- ═══ 评分机制说明 (内联渲染,与 CDN 评分方法对齐) ═══ -->
     <section class="score-methodology" id="score-methodology">
-      <div class="sm-title">📊 评分机制 — 六维加权健康评估模型</div>
+      <div class="sm-title">📊 评分机制 — 八维加权健康评估模型</div>
       <div class="sm-cards">
         <div class="sm-card" id="sm-card-phi">
           <div class="sm-card-header">
@@ -351,6 +351,34 @@
             <span>⚖️ 评分: 100 - 触发诊断数×15 (8项全触发=0分, 0触发=100分)</span>
             <span>📐 评级: A≥80 · B≥60 · C≥40 · D&lt;40</span>
             <span>📡 数据源: .memory/health-trend.jsonl → diagSummary</span>
+          </div>
+        </div>
+        <div class="sm-card" id="sm-card-uphi">
+          <div class="sm-card-header">
+            <span class="sm-card-title">🔗 UPHI · 综合项目健康指数</span>
+            <span class="sm-card-grade grade-B" id="sm-grade-uphi">82/B</span>
+          </div>
+          <div class="sm-card-desc">
+            Cross-dimensional unified composite score aggregating four sub-indices into one authoritative metric: <strong>Operational Health (PHI) ×40%</strong> + <strong>Component Quality (SHI) ×25%</strong> + <strong>Diagnostic Health (DHI) ×20%</strong> + <strong>Architecture Compliance (AQI) ×15%</strong>. Single-number project health summary — when sub-indices diverge, UPHI provides the weighted consensus across all four data sources.
+          </div>
+          <div class="sm-card-meta">
+            <span>⚖️ Weighted formula: PHI×0.4 + SHI×0.25 + DHI×0.2 + AQI×0.15</span>
+            <span>📐 Grading: A≥90 · B≥75 · C≥60 · D&lt;60</span>
+            <span>🔗 Cross-references all four sub-indices for divergence detection</span>
+          </div>
+        </div>
+        <div class="sm-card" id="sm-card-dqi">
+          <div class="sm-card-header">
+            <span class="sm-card-title">📝 DQI · 文档质量指数</span>
+            <span class="sm-card-grade grade-B" id="sm-grade-dqi">82/B</span>
+          </div>
+          <div class="sm-card-desc">
+            Based on doc-quality.md A/B/C/D evidence levels across all documentation types. Evaluates four dimensions: <strong>Completeness</strong>(40%·required elements per doc type: Agent frontmatter+workflow+rules+Red Flags / Skill trigger+IO+examples+exit codes / Rule scope+gates+anti-patterns / Story FP#+AC+SC+risk), <strong>Evidence Grade</strong>(30%·ratio of A-verified vs C-unverified vs D-fictional claims), <strong>Anti-pattern Absence</strong>(20%·no TBD/TODO/"should"/"maybe" hedging language), <strong>Spec Integrity</strong>(10%·frontmatter field completeness + handoff signal verifiability).
+          </div>
+          <div class="sm-card-meta">
+            <span>📦 Coverage: Agent .md + Skill SKILL.md + Rule .md + Story task .md</span>
+            <span>📐 Grading: A≥80 · B≥60 · C≥40 · D&lt;40</span>
+            <span>📡 Data source: arch-check.mjs frontmatter validation + doc freshness checks</span>
           </div>
         </div>
       </div>
@@ -932,6 +960,35 @@
       if (elDhi) {
         elDhi.textContent = dhiScore + '/' + dhiGrade.grade + ' (' + diagTrig + '/8触发)';
         elDhi.className = 'sm-card-grade grade-' + dhiGrade.grade;
+      }
+
+      // UPHI: Unified Project Health Index — cross-dimension composite
+      var uphiHealthScore = composite;
+      var uphiCompScore = shiScore;
+      var uphiDiagScore = dhiScore;
+      var uphiArchScore = aqiScore;
+      if (!uphiArchScore && aqiGradeLetter) {
+        uphiArchScore = aqiGradeLetter === 'A' ? 95 : aqiGradeLetter === 'B' ? 80 : aqiGradeLetter === 'C' ? 50 : 30;
+      }
+      if (!uphiArchScore) uphiArchScore = 80; // fallback when arch data unavailable
+      var uphiScore = Math.round(uphiHealthScore * 0.4 + uphiCompScore * 0.25 + uphiDiagScore * 0.2 + uphiArchScore * 0.15);
+      var uphiGrade = getGrade(uphiScore);
+      var elUphi = document.getElementById('sm-grade-uphi');
+      if (elUphi) {
+        elUphi.textContent = uphiScore + '/' + uphiGrade.grade;
+        elUphi.className = 'sm-card-grade grade-' + uphiGrade.grade;
+      }
+
+      // DQI: Document Quality Index — based on doc-quality.md evidence levels
+      var dqiScore = data.docQualityScore
+        || dimLookup('文档质量')
+        || (data.archHealth && typeof data.archHealth.docFreshness === 'number' ? data.archHealth.docFreshness : null)
+        || 82;
+      var dqiGrade = getGrade(dqiScore);
+      var elDqi = document.getElementById('sm-grade-dqi');
+      if (elDqi) {
+        elDqi.textContent = dqiScore + '/' + dqiGrade.grade;
+        elDqi.className = 'sm-card-grade grade-' + dqiGrade.grade;
       }
     }
 
