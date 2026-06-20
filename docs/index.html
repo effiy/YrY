@@ -339,34 +339,6 @@
             <span>📡 数据源: .memory/arch-trend.jsonl</span>
           </div>
         </div>
-        <div class="sm-card" id="sm-card-dhi">
-          <div class="sm-card-header">
-            <span class="sm-card-title">🔬 DHI · 诊断健康指数</span>
-            <span class="sm-card-grade grade-B" id="sm-grade-dhi">75/B</span>
-          </div>
-          <div class="sm-card-desc">
-            D0-D8 九级诊断引擎运行状态评估：<strong>D0 基线偏离</strong>(执行与基线冲突检测)、<strong>D1 效率退化</strong>(block_rate>20%触发)、<strong>D2 质量退化</strong>(P0密度>50%)、<strong>D3 复杂度增长</strong>(T3比例>30%)、<strong>D4 流程退化</strong>(Gate B>2轮)、<strong>D5 依赖退化</strong>(依赖健康下降)、<strong>D6 文档过时</strong>(文档链接失效)、<strong>D7 配置漂移</strong>(配置一致性检查)。
-          </div>
-          <div class="sm-card-meta">
-            <span>⚖️ 评分: 100 - 触发诊断数×15 (8项全触发=0分, 0触发=100分)</span>
-            <span>📐 评级: A≥80 · B≥60 · C≥40 · D&lt;40</span>
-            <span>📡 数据源: .memory/health-trend.jsonl → diagSummary</span>
-          </div>
-        </div>
-        <div class="sm-card" id="sm-card-uphi">
-          <div class="sm-card-header">
-            <span class="sm-card-title">🔗 UPHI · 综合项目健康指数</span>
-            <span class="sm-card-grade grade-B" id="sm-grade-uphi">82/B</span>
-          </div>
-          <div class="sm-card-desc">
-            Cross-dimensional unified composite score aggregating four sub-indices into one authoritative metric: <strong>Operational Health (PHI) ×40%</strong> + <strong>Component Quality (SHI) ×25%</strong> + <strong>Diagnostic Health (DHI) ×20%</strong> + <strong>Architecture Compliance (AQI) ×15%</strong>. Single-number project health summary — when sub-indices diverge, UPHI provides the weighted consensus across all four data sources.
-          </div>
-          <div class="sm-card-meta">
-            <span>⚖️ Weighted formula: PHI×0.4 + SHI×0.25 + DHI×0.2 + AQI×0.15</span>
-            <span>📐 Grading: A≥90 · B≥75 · C≥60 · D&lt;60</span>
-            <span>🔗 Cross-references all four sub-indices for divergence detection</span>
-          </div>
-        </div>
         <div class="sm-card" id="sm-card-dqi">
           <div class="sm-card-header">
             <span class="sm-card-title">📝 DQI · 文档质量指数</span>
@@ -389,40 +361,6 @@
       <div class="sr-header">
         <span class="sr-title">📋 实时评分报告 <span class="sr-badge p0" style="display:none" id="sr-p0-badge">P0 待处理</span></span>
         <span style="font-size:0.75rem;color:var(--yry-text-muted, #4a4f6a)" id="sr-updated">更新于 —</span>
-      </div>
-
-      <!-- 复合评分概览 -->
-      <div class="sr-grid" id="sr-overview-grid">
-        <div class="sr-cell">
-          <div class="sr-cell-label">综合评分</div>
-          <div class="sr-cell-value" id="sr-composite">—</div>
-          <div class="sr-cell-sub" id="sr-grade-label">—</div>
-        </div>
-        <div class="sr-cell">
-          <div class="sr-cell-label">趋势方向</div>
-          <div class="sr-cell-value" id="sr-trend-dir">—</div>
-          <div class="sr-cell-sub" id="sr-trend-detail">—</div>
-        </div>
-        <div class="sr-cell">
-          <div class="sr-cell-label">7天预测</div>
-          <div class="sr-cell-value" id="sr-forecast">—</div>
-          <div class="sr-cell-sub" id="sr-forecast-range">—</div>
-        </div>
-        <div class="sr-cell">
-          <div class="sr-cell-label">评分可靠性</div>
-          <div class="sr-cell-value" id="sr-reliability">—</div>
-          <div class="sr-cell-sub" id="sr-volatility">—</div>
-        </div>
-        <div class="sr-cell">
-          <div class="sr-cell-label">诊断触发</div>
-          <div class="sr-cell-value" id="sr-diag">—</div>
-          <div class="sr-cell-sub">/ 8 项诊断</div>
-        </div>
-        <div class="sr-cell">
-          <div class="sr-cell-label">架构合规</div>
-          <div class="sr-cell-value" id="sr-arch">—</div>
-          <div class="sr-cell-sub" id="sr-arch-detail">—</div>
-        </div>
       </div>
 
       <!-- 维度分解 -->

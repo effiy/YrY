@@ -826,69 +826,11 @@
           }
           return frag;
         },
-        /* ── 评分体系说明卡片注入 (可见报告内容) ───────────── */
-        _injectMethodologyCards: function () {
-          if (document.getElementById('score-methodology-section')) return;
-          var sg = document.getElementById('stats-grid-app');
-          if (!sg || !sg.parentNode) return;
-
-          var section = document.createElement('div');
-          section.id = 'score-methodology-section';
-          section.style.cssText = 'margin:0 auto 20px;max-width:1040px;padding:0 24px';
-
-          var cards = [
-            { icon: '🛠', title: '技能健康指数 SHI', cls: 'skill',
-              body: '四维加权评估 19 个技能模块 → ① SKILL.md 规约完整性(30%): 每技能必备完整 SKILL.md·交接信号可验证·AGENT.md 角色定义。② 领域语言一致性(25%): 术语符合领域语言定义·避免禁用别名·术语漂移检测。③ 自包含可执行性(25%): 规约独立可执行·关键模式内联·不依赖外链可达性。④ 代码范式合规(20%): 无 class/extends·无 export default·无空 catch·lib 共享无重复。覆盖 rui 主线(9)+工程支撑(7)+架构健康(10维度)+4实时面板。',
-              footer: 'A≥80 优秀 | B≥60 良好 | C≥40 需改进 | D<40 严重缺陷 | 数据源: arch-check.mjs --append-trend | 5min刷新 | 点击跳转技能报告 →' },
-            { icon: '🩺', title: '项目综合健康指数 PHI', cls: 'health',
-              body: '19 维加权聚合, 分三大类 → 核心维度(9): token·config·robots·api·reports·format·diagnostics·git·security。工程成熟度(7): 测试覆盖·类型安全·代码检查·CI/CD·文档·依赖·Git实践。扩展维度(3): file_size·dep_analysis·notify。当前触发诊断: D0基线偏离·D2质量退化。维度评分 <55 自动触发对应 D0-D7 诊断·连续2次C级→P1·连续3次→自动升级P0。',
-              footer: 'A≥80 优秀 | B≥60 良好 | C≥40 需改进 | D<40 严重缺陷 | 数据源: .memory/health-trend.jsonl → summary.json | 5min刷新 | 点击跳转健康报告 →' },
-            { icon: '🧪', title: '测试质量指数 TQI', cls: 'test',
-              body: '工程成熟度 7 维加权评估 → ① 测试覆盖(30%): 单元·集成·E2E覆盖率·通过率。② 类型安全(15%): TypeScript/JSDoc类型标注·严格模式。③ 代码检查(15%): ESLint·Prettier·arch-check配置。④ CI/CD(10%): 自动化流水线·门禁检查。⑤ 文档覆盖(10%): API文档·README·场景文档。⑥ 依赖管理(10%): 版本锁定·安全审计·许可证合规。⑦ Git实践(10%): 分支隔离·commit规范·PR审查。',
-              footer: 'A≥80 优秀 | B≥60 良好 | C≥40 需改进 | D<40 严重缺陷 | 数据源: vitest + arch-check.mjs | 5min刷新 | 点击跳转测试报告 →' },
-            { icon: '🧬', title: '自改进闭环指数 SII', cls: 'si',
-              body: '组件健康四象限加权聚合 → Skills(技能): 代码范式合规·规约完整性·依赖健康。Agents(角色): AGENT.md完备性·交接信号规范·能力边界。Rules(规则): 管线纪律·安全红线·文档质量·设计原则。Scripts(脚本): lib共享率·函数纯度·错误处理·常量规范。D0-D8 九级诊断引擎持续监控，异常自动触发改进建议，E1-E4 四级效果评估闭环验证。',
-              footer: 'A≥80 优秀 | B≥60 良好 | C≥40 需改进 | D<40 严重缺陷 | 数据源: D0-D8 诊断引擎 + arch-check.mjs | 5min刷新 | 点击跳转自改进报告 →' },
-          ];
-
-          var grid = document.createElement('div');
-          grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px';
-
-          cards.forEach(function (c) {
-            var card = document.createElement('div');
-            card.className = 'methodology-card';
-            card.style.cssText = 'background:rgba(15,23,42,.55);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:20px 24px;';
-            card.setAttribute('data-ydb-stat-clickable', '1');
-
-            var h3 = document.createElement('h3');
-            h3.style.cssText = 'font-size:.84rem;margin:0 0 8px;color:var(--yry-accent,#22d3ee);display:flex;align-items:center;gap:6px;';
-            h3.textContent = c.icon + ' ' + c.title;
-
-            var p = document.createElement('p');
-            p.style.cssText = 'font-size:.72rem;color:var(--yry-text2,#a9b1d6);line-height:1.7;margin:0;';
-            p.textContent = c.body;
-
-            var footer = document.createElement('div');
-            footer.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.68rem;color:var(--yry-text3,#6b7280);margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.04);';
-            footer.textContent = c.footer;
-
-            card.appendChild(h3);
-            card.appendChild(p);
-            card.appendChild(footer);
-            grid.appendChild(card);
-          });
-
-          section.appendChild(grid);
-          sg.parentNode.insertBefore(section, sg.nextSibling);
-        },
         /* ── Live 评分拉取 (每 5 分钟) ──────────────────────── */
         _startLiveUpdate: function () {
           const self = this;
           const sg = document.getElementById('stats-grid-app');
           const ph = document.getElementById('panel-hub-app');
-
-          // Inject visible methodology cards after first data load
-          self._injectMethodologyCards();
 
           const updateScores = function () {
             fetch('./自我改进/summary.json')
