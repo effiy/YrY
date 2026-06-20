@@ -37,224 +37,8 @@
   <link rel="stylesheet" href="../cdn/yry-footer-note/index.css">
   <link rel="stylesheet" href="../cdn/yry-item-cards/index.css">
   <link rel="stylesheet" href="../cdn/yry-docs-binding/index.css">
-
-  <!-- ═══ 评分报告内联样式 ═══ -->
-  <style>
-    .score-methodology {
-      margin: 32px 0 24px;
-      padding: 0;
-    }
-    .score-methodology .sm-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--yry-text-primary, #a9b1d6);
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .score-methodology .sm-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 12px;
-    }
-    .score-methodology .sm-card {
-      background: var(--yry-surface, #1a1b2e);
-      border: 1px solid var(--yry-border, #2d2f45);
-      border-radius: 8px;
-      padding: 16px;
-      transition: border-color 0.2s;
-    }
-    .score-methodology .sm-card:hover {
-      border-color: var(--yry-accent, #7c8cf8);
-    }
-    .score-methodology .sm-card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-    .score-methodology .sm-card-title {
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: var(--yry-text-primary, #a9b1d6);
-    }
-    .score-methodology .sm-card-grade {
-      font-weight: 800;
-      font-size: 1.2rem;
-      padding: 2px 10px;
-      border-radius: 4px;
-      font-family: 'SF Mono', 'Cascadia Code', monospace;
-    }
-    .score-methodology .sm-card-grade.grade-A { background: #16653433; color: #4ade80; }
-    .score-methodology .sm-card-grade.grade-B { background: #854d0e33; color: #fbbf24; }
-    .score-methodology .sm-card-grade.grade-C { background: #7c2d1233; color: #fb923c; }
-    .score-methodology .sm-card-grade.grade-D { background: #7f1d1d33; color: #f87171; }
-    .score-methodology .sm-card-desc {
-      font-size: 0.82rem;
-      color: var(--yry-text-secondary, #6b708a);
-      line-height: 1.5;
-      margin-bottom: 8px;
-    }
-    .score-methodology .sm-card-meta {
-      font-size: 0.75rem;
-      color: var(--yry-text-muted, #4a4f6a);
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .score-methodology .sm-card-meta span {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    /* Score Report Section */
-    .score-report {
-      margin: 24px 0 16px;
-      padding: 20px 24px;
-      background: var(--yry-surface, #1a1b2e);
-      border: 1px solid var(--yry-border, #2d2f45);
-      border-radius: 10px;
-    }
-    .score-report .sr-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .score-report .sr-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--yry-text-primary, #a9b1d6);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .score-report .sr-badge {
-      font-size: 0.78rem;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-weight: 600;
-    }
-    .score-report .sr-badge.p0 { background: #7f1d1d33; color: #f87171; }
-    .score-report .sr-badge.p1 { background: #7c2d1233; color: #fb923c; }
-    .score-report .sr-badge.p2 { background: #854d0e33; color: #fbbf24; }
-    .score-report .sr-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-    .score-report .sr-cell {
-      background: var(--yry-surface-alt, #1e2035);
-      border-radius: 6px;
-      padding: 12px;
-      text-align: center;
-    }
-    .score-report .sr-cell-label {
-      font-size: 0.72rem;
-      color: var(--yry-text-muted, #4a4f6a);
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .score-report .sr-cell-value {
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: var(--yry-text-primary, #a9b1d6);
-      font-family: 'SF Mono', 'Cascadia Code', monospace;
-    }
-    .score-report .sr-cell-sub {
-      font-size: 0.7rem;
-      color: var(--yry-text-muted, #4a4f6a);
-      margin-top: 2px;
-    }
-    .score-report .sr-breakdown {
-      margin-top: 12px;
-    }
-    .score-report .sr-breakdown-title {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--yry-text-secondary, #6b708a);
-      margin-bottom: 8px;
-    }
-    .score-report .sr-dim {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 6px 0;
-      font-size: 0.8rem;
-      border-bottom: 1px solid var(--yry-border-subtle, #22243a);
-    }
-    .score-report .sr-dim:last-child { border-bottom: none; }
-    .score-report .sr-dim-label {
-      min-width: 100px;
-      color: var(--yry-text-primary, #a9b1d6);
-      font-weight: 500;
-    }
-    .score-report .sr-dim-bar-bg {
-      flex: 1;
-      height: 8px;
-      background: var(--yry-surface-alt, #1e2035);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .score-report .sr-dim-bar-fill {
-      height: 100%;
-      border-radius: 4px;
-      transition: width 0.5s ease;
-    }
-    .score-report .sr-dim-bar-fill.excellent { background: #4ade80; }
-    .score-report .sr-dim-bar-fill.good { background: #60a5fa; }
-    .score-report .sr-dim-bar-fill.fair { background: #fbbf24; }
-    .score-report .sr-dim-bar-fill.poor { background: #f87171; }
-    .score-report .sr-dim-score {
-      min-width: 36px;
-      text-align: right;
-      font-weight: 700;
-      font-family: 'SF Mono', 'Cascadia Code', monospace;
-    }
-    .score-report .sr-dim-trend {
-      min-width: 24px;
-      text-align: center;
-      font-size: 0.75rem;
-    }
-    .score-report .sr-summary-text {
-      font-size: 0.85rem;
-      color: var(--yry-text-secondary, #6b708a);
-      line-height: 1.7;
-      margin-top: 12px;
-      padding: 12px;
-      background: var(--yry-surface-alt, #1e2035);
-      border-radius: 6px;
-    }
-    .score-report .sr-links {
-      display: flex;
-      gap: 12px;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
-    .score-report .sr-link {
-      font-size: 0.78rem;
-      color: var(--yry-accent, #7c8cf8);
-      text-decoration: none;
-      padding: 4px 12px;
-      border: 1px solid var(--yry-border, #2d2f45);
-      border-radius: 4px;
-      transition: border-color 0.2s, background 0.2s;
-    }
-    .score-report .sr-link:hover {
-      border-color: var(--yry-accent, #7c8cf8);
-      background: var(--yry-surface-alt, #1e2035);
-    }
-    @media (max-width: 640px) {
-      .score-methodology .sm-cards { grid-template-columns: 1fr; }
-      .score-report .sr-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-  </style>
+  <!-- ═══ 页面级样式 (评分方法 / 实时评分报告,从内联 <style> 迁出) ═══ -->
+  <link rel="stylesheet" href="css/score-report.css">
 </head>
 <body>
   <div class="container">
@@ -270,7 +54,7 @@
     <!-- ═══ 评分机制说明 (内联渲染,与 CDN 评分方法对齐) ═══ -->
     <section class="score-methodology" id="score-methodology">
       <div class="sm-title">📊 评分机制 — 八维加权健康评估模型</div>
-      <div style="font-size:0.8rem;color:var(--yry-text-secondary,#6b708a);margin-bottom:16px;line-height:1.7">YrY 采用<strong>八维加权评分体系</strong>，覆盖项目综合健康(PHI)·技能健康(SHI)·测试质量(TQI)·自改进闭环(SII)·架构质量(AQI)·文档质量(DQI)·统一项目健康(UPHI)·诊断健康(DHI) 八大指数。每项指数独立加权评估，数据源与评级标准各有差异。以下各卡片详述评估方法、维度权重与数据溯源。</div>
+      <div class="sm-intro">YrY 采用<strong>八维加权评分体系</strong>，覆盖项目综合健康(PHI)·技能健康(SHI)·测试质量(TQI)·自改进闭环(SII)·架构质量(AQI)·文档质量(DQI)·统一项目健康(UPHI)·诊断健康(DHI) 八大指数。每项指数独立加权评估，数据源与评级标准各有差异。以下各卡片详述评估方法、维度权重与数据溯源。</div>
       <div class="sm-cards">
         <div class="sm-card" id="sm-card-phi">
           <div class="sm-card-header">
@@ -279,11 +63,6 @@
           </div>
           <div class="sm-card-desc">
             19 维加权聚合模型，分四大类：<strong>核心运营</strong>(token/config/robots/api/reports/diagnostics/git/security · 默认权重88)、<strong>结构健康</strong>(文件大小/依赖分析 · 权重16)、<strong>工程成熟度</strong>(测试/类型检查/代码检查/CI/CD/文档覆盖/依赖管理/Git实践 · 权重54)、<strong>质量保障</strong>(格式规范/通知健康 · 权重8)。
-          </div>
-          <div class="sm-card-meta">
-            <span>⚖️ 权重: core×88 + structural×16 + engineering×54 + quality×8 = 166</span>
-            <span>📐 评级: A≥90 优秀 · B≥75 良好 · C≥60 一般 · D&lt;60 需关注</span>
-            <span>🔗 SLO: warn&lt;75 · critical&lt;60 · breach&lt;40</span>
           </div>
         </div>
         <div class="sm-card" id="sm-card-shi">
@@ -297,7 +76,6 @@
           <div class="sm-card-meta">
             <span>📦 覆盖: 19 技能 + 9 Agent 角色 + 18 治理规则</span>
             <span>📐 评级: A≥80 · B≥60 · C≥40 · D&lt;40</span>
-            <span>📡 数据源: SKILL.md frontmatter 完整性扫描 + arch-check.mjs 范式合规验证</span>
           </div>
         </div>
         <div class="sm-card" id="sm-card-tqi">
@@ -308,10 +86,6 @@
           <div class="sm-card-desc">
             工程成熟度 7 维加权评估：<strong>测试覆盖</strong>(30%·单元/集成/E2E·行≥80%·分支≥70%·函数≥75%)、<strong>类型安全</strong>(15%·JSDoc覆盖·严格模式·any使用控制)、<strong>代码检查</strong>(15%·ESLint零告警·arch-check全通过·prettier一致)、<strong>CI/CD</strong>(10%·自动化流水线·门禁检查·构建≤10min)、<strong>文档覆盖</strong>(10%·场景文档·API文档·README完备率)、<strong>依赖管理</strong>(10%·安全审计·许可证合规·版本锁定·无高危CVE)、<strong>Git实践</strong>(10%·分支隔离·提交规范·worktree策略·PR审查)。
           </div>
-          <div class="sm-card-meta">
-            <span>⚖️ 当前主要扣分: CI/CD 缺失(0分)·测试覆盖不足(60分)</span>
-            <span>📐 评级: A≥80 · B≥60 · C≥40 · D&lt;40</span>
-          </div>
         </div>
         <div class="sm-card" id="sm-card-sii">
           <div class="sm-card-header">
@@ -320,12 +94,6 @@
           </div>
           <div class="sm-card-desc">
             四象限加权聚合(35/25/25/15) + D0-D8 九级诊断引擎：<strong>Skills</strong>(35%·代码范式合规·规约完整性·依赖健康·lib共享率)、<strong>Agents</strong>(25%·AGENT.md完备性·交接信号可验证·能力边界清晰·工具集最小化)、<strong>Rules</strong>(25%·管线纪律遵守率·安全红线无绕过·文档质量标准·设计原则合规率)、<strong>Scripts</strong>(15%·函数纯度·错误处理规范·常量语义化·禁止魔法数字)。
-          </div>
-          <div class="sm-card-meta">
-            <span>🔬 D0-D7 诊断引擎持续监控,异常自动触发改进建议</span>
-            <span>📐 评级: A≥80 · B≥60 · C≥40 · D&lt;40</span>
-            <span>🔗 E1-E4 四级效果评估闭环回写</span>
-            <span>📡 数据源: health-trend.jsonl + skill SKILL.md 扫描 + arch-check 合规报告</span>
           </div>
         </div>
         <div class="sm-card" id="sm-card-aqi">
@@ -336,11 +104,6 @@
           <div class="sm-card-desc">
             10 维度架构合规自动验证：<strong>内核体积</strong>(lib≤20·编排器≤500行)、<strong>范式合规</strong>(无class/extends·无export default·无空catch)、<strong>导入规范</strong>(无Skill间直接import·无Agent import Skill)、<strong>SRP合规</strong>(Skill description单一职责)、<strong>DRY合规</strong>(无重复导出定义)、<strong>YAGNI合规</strong>(无未使用导出)、<strong>扩展隔离</strong>(新增Skill不修改编排器)、<strong>ISP合规</strong>(Agent工具集最小化)、<strong>配置完整性</strong>(frontmatter字段完整)、<strong>文档新鲜度</strong>(链接引用有效)。
           </div>
-          <div class="sm-card-meta">
-            <span>📐 评级: A(0-1失败)·B(2-3失败)·C(4-5失败)·D(6+失败)</span>
-            <span>🔧 自动运行: node lib/arch-check.mjs --append-trend</span>
-            <span>📡 数据源: .memory/arch-trend.jsonl</span>
-          </div>
         </div>
         <div class="sm-card" id="sm-card-dqi">
           <div class="sm-card-header">
@@ -350,11 +113,6 @@
           <div class="sm-card-desc">
             基于 doc-quality.md A/B/C/D 四等级证据标准，覆盖 Agent / Skill / Rule / Story 全部文档类型。四维加权评估：<strong>完整性</strong>(40%·各类文档必需元素：Agent frontmatter+workflow+rules+Red Flags / Skill 触发条件+IO+示例+退出码 / Rule 范围+门禁+反模式 / Story FP#+AC+SC+风险登记)、<strong>证据等级</strong>(30%·A级可验证 vs C级未验证 vs D级虚构声明的比例分布与趋势)、<strong>反模式缺失</strong>(20%·无 TBD/TODO/"应该"/"可能"等模糊措辞·无可绕过检查的合理化语言)、<strong>规约完整性</strong>(10%·frontmatter 字段完备率 + 交接信号可验证性·链接引用有效性)。
           </div>
-          <div class="sm-card-meta">
-            <span>📦 覆盖: Agent.md + Skill SKILL.md + Rule.md + Story task.md 四类文档</span>
-            <span>📐 评级: A≥80 优秀 · B≥60 良好 · C≥40 一般 · D&lt;40 需关注</span>
-            <span>📡 数据源: arch-check.mjs frontmatter 验证 + 文档新鲜度检查 + 链接有效性扫描</span>
-          </div>
         </div>
       </div>
     </section>
@@ -362,33 +120,21 @@
     <!-- ═══ 实时评分报告 (数据由内联脚本生成,每5min自动刷新) ═══ -->
     <section class="score-report" id="score-report">
       <div class="sr-header">
-        <span class="sr-title">📋 实时评分报告 <span class="sr-badge p0" style="display:none" id="sr-p0-badge">P0 待处理</span></span>
-        <span style="font-size:0.75rem;color:var(--yry-text-muted, #4a4f6a)" id="sr-updated">更新于 —</span>
+        <span class="sr-title">📋 实时评分报告 <span class="sr-badge p0 is-hidden" id="sr-p0-badge">P0 待处理</span></span>
+        <span class="sr-updated" id="sr-updated">更新于 —</span>
       </div>
 
       <!-- 维度分解 -->
       <div class="sr-breakdown">
-        <div class="sr-breakdown-title">📐 维度评分分解 (按严重程度排序) <span style="font-weight:400;font-size:0.68rem;color:var(--yry-text-muted);margin-left:8px">▮<span style="color:#4ade80">优秀≥90</span> ▮<span style="color:#60a5fa">良好≥75</span> ▮<span style="color:#fbbf24">一般≥60</span> ▮<span style="color:#f87171">需关注&lt;60</span></span></div>
+        <div class="sr-breakdown-title">📐 维度评分分解 (按严重程度排序) <span class="sr-legend"><span class="sr-legend-item is-excellent">▮ 优秀≥90</span> <span class="sr-legend-item is-good">▮ 良好≥75</span> <span class="sr-legend-item is-fair">▮ 一般≥60</span> <span class="sr-legend-item is-poor">▮ 需关注&lt;60</span></span></div>
         <div id="sr-dim-list">
-          <div class="sr-dim"><span class="sr-dim-label">加载中…</span><div class="sr-dim-bar-bg"><div class="sr-dim-bar-fill fair" style="width:50%"></div></div><span class="sr-dim-score">—</span></div>
+          <div class="sr-dim"><span class="sr-dim-label">加载中…</span><div class="sr-dim-bar-bg"><div class="sr-dim-bar-fill fair is-loading"></div></div><span class="sr-dim-score">—</span></div>
         </div>
-      </div>
-
-      <!-- 期间对比 (当前 vs 上一周期) -->
-      <div class="sr-breakdown-title">📊 期间对比 (当前 vs 上一周期)</div>
-      <div class="sr-links" style="margin-bottom:12px" id="sr-compare">
-        <span class="sr-link" style="cursor:default"><span id="sr-comp-delta">—</span> 综合分变化</span>
-        <span class="sr-link" style="cursor:default"><span id="sr-comp-improved">—</span> 改善维度</span>
-        <span class="sr-link" style="cursor:default"><span id="sr-comp-declined">—</span> 退化维度</span>
-        <span class="sr-link" style="cursor:default"><span id="sr-comp-net">—</span> 净变化</span>
       </div>
 
       <!-- AI 摘要 -->
       <div class="sr-summary-text" id="sr-summary">正在加载评分数据…</div>
     </section>
-
-    <!-- ── Cross-Nav (YryCrossNav) ──────────────── -->
-    <yry-cross-nav id="cross-nav-app"></yry-cross-nav>
 
     <!-- ── Panel hub (YryPanelHub) ──────────────── -->
     <yry-panel-hub id="panel-hub-app"></yry-panel-hub>
@@ -744,16 +490,17 @@
           var dimGrade = getGrade(dim.score);
           var barClass = classifyScore(dim.score);
           var trendArrow = dim.trend === 'rising' ? '↑' : dim.trend === 'falling' ? '↓' : '→';
-          var trendColor = dim.trend === 'rising' ? '#4ade80' : dim.trend === 'falling' ? '#f87171' : '#6b708a';
+          var trendCls = dim.trend === 'rising' ? 'is-rising' : dim.trend === 'falling' ? 'is-falling' : 'is-stable';
+          // 宽度通过 CSS 自定义属性传递 (--score: 0-100),颜色由 grade/trend 类决定
           html += '<div class="sr-dim">' +
             '<span class="sr-dim-label" title="' + dim.category + '">' + dim.label + '</span>' +
-            '<div class="sr-dim-bar-bg"><div class="sr-dim-bar-fill ' + barClass + '" style="width:' + dim.score + '%"></div></div>' +
-            '<span class="sr-dim-score" style="color:' + dimGrade.color + '">' + dim.score + '</span>' +
-            '<span class="sr-dim-trend" style="color:' + trendColor + '">' + trendArrow + '</span>' +
+            '<div class="sr-dim-bar-bg"><div class="sr-dim-bar-fill ' + barClass + ' grade-' + dimGrade.grade + '" style="--score:' + dim.score + '"></div></div>' +
+            '<span class="sr-dim-score grade-' + dimGrade.grade + '">' + dim.score + '</span>' +
+            '<span class="sr-dim-trend ' + trendCls + '">' + trendArrow + '</span>' +
             '</div>';
         }
         if (dimEntries.length > 10) {
-          html += '<div style="font-size:0.72rem;color:var(--yry-text-muted);padding:4px 0">… 还有 ' + (dimEntries.length - 10) + ' 个维度 (详见健康报告)</div>';
+          html += '<div class="sr-dim-overflow">… 还有 ' + (dimEntries.length - 10) + ' 个维度 (详见健康报告)</div>';
         }
         dimListEl.innerHTML = html;
       }
