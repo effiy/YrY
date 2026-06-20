@@ -63,21 +63,95 @@
       el.titlePrefix = 'YrY ';
       el.accent      = '文档中心';
       el.meta        = '📌 v5.4.0 · 🩺 健康 77/B · 🧪 测试 60分 · 🧬 自改进 89/A · 🛠 技能 86/A';
-      el.desc        = '故事驱动的 SDLC 编排系统 — 六层结构:19 技能 → 依赖/框架 → 7 故事 → 37 场景 → Agent 角色与规则 → 参考入口';
+      el.desc        = '故事驱动的 SDLC 编排系统 — 六层结构:19技能(四维健康评估)→6运行时+6开发依赖→7故事(五场景全生命周期)→37场景(7件标准交付物)→9Agent角色+1拓扑总纲+18治理规则→4文档入口+5监控仪表板。D0-D8九级诊断引擎持续监控·每5min自动刷新';
     },
     /* 3) Stats Grid */
     statsGrid: function (el) {
       el.items = [
-        { value: '86/A', label: '技能评分', modifier: 'health', sub: '19 能力 · 4 维评估', tooltip: '技能健康指数 · 四维加权评估 → SKILL.md 规约完整性(30%): 每技能必备完整 SKILL.md + 交接信号可验证 + 领域语言一致性(25%): 避免禁用别名·术语漂移检测 + 自包含可执行性(25%): 规约独立可执行·不依赖外链可达性 + 代码范式合规(20%): 无 class/extends·无 export default·无空 catch。评级: A≥80 优秀 B≥60 良好 C≥40 需改进 D<40 严重缺陷。数据源: arch-check.mjs --append-trend' },
-        { value: '77/B', label: '健康评分', modifier: 'warn-h', sub: '综合 19 维', tooltip: '健康评分 = 19 维度加权均分。A≥80 B≥60 C≥40 D<40。数据源: .memory/health-trend.jsonl → summary.json' },
-        { value: '60分', label: '测试评分', modifier: 'warn-h', sub: '工程成熟度', tooltip: '测试评分 = 工程成熟度 7 维加权: 测试覆盖×30% + 类型安全×15% + 代码检查×15% + CI/CD×10% + 文档×10% + 依赖×10% + Git实践×10%' },
-        { value: '89分', label: '自改进', modifier: 'health', sub: '组件健康均分', tooltip: '自改进评分 = Skills/Agents/Rules/Scripts 四类组件健康评分的加权均分。反映项目整体代码质量和架构合规度' },
-        { value: 12, label: '依赖/框架', modifier: 'info', tooltip: '6 运行时依赖 + 6 开发依赖' },
-        { value: 7,  label: '故事', modifier: 'health', tooltip: '7 个故事: 架构 · 自测 · npm · CDN · 自改进 · 首页 · 计划清单' },
-        { value: 37, label: '场景', modifier: 'health', tooltip: '37 个场景分布在 7 个故事中,每个场景 7 件标准交付物' },
-        { value: 9,  label: 'Agent', modifier: 'info', tooltip: '9 个 Agent 角色 + 1 份拓扑总纲' },
-        { value: 18, label: '规则', modifier: 'health', tooltip: '18 条治理规则: 管线纪律 · 安全 · 文档 · 自改进 · 设计原则' },
-        { value: 9,  label: '参考入口', modifier: 'info', tooltip: '4 文档入口 + 5 监控仪表板' }
+        { value: '86/A', label: '技能评分', modifier: 'health', sub: '19技能 · SKILL.md规约完整性·领域语言一致性·自包含可执行性·代码范式合规',
+          tooltip: '【技能健康指数 SHI】\n四维加权评估模型 →\n' +
+            '① SKILL.md规约完整性(30%): 每技能必备完整SKILL.md·交接信号下游可验证·AGENT.md角色定义完备\n' +
+            '② 领域语言一致性(25%): 术语使用符合领域语言定义·避免禁用别名·术语漂移自动检测\n' +
+            '③ 自包含可执行性(25%): 规约独立可执行·关键模式内联·不依赖外链可达性\n' +
+            '④ 代码范式合规(20%): 无class/extends·无export default·无空catch·lib共享无重复\n\n' +
+            '覆盖 19 技能: rui主线(9) + 工程支撑(7) + 架构健康(10维度) + 4实时面板\n\n' +
+            '评级: A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D<40 严重缺陷\n' +
+            '数据源: arch-check.mjs --append-trend · 每 5min 刷新 · 点击跳转技能报告 →' },
+        { value: '77/B', label: '健康评分', modifier: 'warn-h', sub: '核心9维·工程成熟度7维·扩展3维·D0-D8诊断联动',
+          tooltip: '【项目综合健康指数 PHI】\n19维加权聚合模型,分三大类 →\n\n' +
+            '▸ 核心维度(9): token·config·robots·api·reports·format·diagnostics·git·security\n' +
+            '  当前: diagnostics(70)·git(40) 待改进,其余 7 维满分\n' +
+            '▸ 工程成熟度(7): 测试覆盖·类型安全·代码检查·CI/CD·文档·依赖·Git实践\n' +
+            '  当前: testing(60)·cicd(0) 待改进,types/docs/deps满分\n' +
+            '▸ 扩展维度(3): file_size·dep_analysis·notify\n' +
+            '  当前: dep_analysis(21) 不足,file_size(98)·notify(100)良好\n\n' +
+            '当前: 77分 / B级 · 良好\n' +
+            '触发的诊断: D0基线偏离·D2质量退化\n\n' +
+            '评级: A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D<40 严重缺陷\n' +
+            '数据源: .memory/health-trend.jsonl → summary.json · 每 5min 刷新 · 点击跳转健康报告 →' },
+        { value: '60分', label: '测试评分', modifier: 'warn-h', sub: '测试覆盖·类型安全·代码检查·CI/CD·文档·依赖·Git实践',
+          tooltip: '【测试质量指数 TQI】\n工程成熟度 7 维加权评估 →\n\n' +
+            '① 测试覆盖(30%): 60分 — 单元·集成·E2E覆盖率待提升\n' +
+            '② 类型安全(15%): 100分 — TypeScript/JSDoc类型标注完整\n' +
+            '③ 代码检查(15%): 80分 — ESLint·Prettier·arch-check配置完善\n' +
+            '④ CI/CD(10%): 0分 — 自动化流水线尚未建立\n' +
+            '⑤ 文档覆盖(10%): 100分 — 所有skill/scene文档齐备\n' +
+            '⑥ 依赖管理(10%): 100分 — 无高危漏洞·许可证合规\n' +
+            '⑦ Git实践(10%): 80分 — 分支隔离·提交规范·PR审查流程\n\n' +
+            '综合: 60分 / B级 · 良好 (CI/CD缺失为主要扣分项)\n' +
+            '评级: A≥80 · B≥60 · C≥40 · D<40\n' +
+            '数据源: vitest runner + arch-check.mjs · 每 5min 刷新 · 点击跳转测试报告 →' },
+        { value: '89分', label: '自改进', modifier: 'health', sub: 'Skills·Agents·Rules·Scripts四象限·D0-D8诊断持续监控',
+          tooltip: '【自改进闭环指数 SII】\n组件健康四象限加权聚合 →\n\n' +
+            '▸ Skills(技能): 代码范式合规·规约完整性·依赖健康\n' +
+            '▸ Agents(角色): AGENT.md完备性·交接信号规范·能力边界清晰\n' +
+            '▸ Rules(规则): 管线纪律·安全红线·文档质量标准·设计原则\n' +
+            '▸ Scripts(脚本): lib共享率·函数纯度·错误处理·常量规范\n\n' +
+            '当前: 89分 / A级 · 优秀\n' +
+            '反映项目整体代码质量、架构合规度和自修复能力\n' +
+            'D0-D8 九级诊断引擎持续监控,异常自动触发改进建议\n\n' +
+            '评级: A≥80 · B≥60 · C≥40 · D<40\n' +
+            '数据源: D0-D8 诊断引擎 + arch-check.mjs · 每 5min 刷新 · 点击跳转自改进报告 →' },
+        { value: 12, label: '依赖/框架', modifier: 'info',
+          tooltip: '【运行时依赖 6】\nVue 3 · Cytoscape.js · Mermaid · marked · DOMPurify · highlight.js\n\n' +
+            '【开发依赖 6】\nvitest · @vitest/ui · eslint · prettier · jsdom · node-fetch\n\n' +
+            '策略: 最小化外部依赖·零打包构建·CDN全球分发·语义化版本锁定' },
+        { value: 7,  label: '故事', modifier: 'health',
+          tooltip: '【7 个独立故事 · 全生命周期跟踪】\n' +
+            '架构与设计 · 自动化测试 · npm包发布 · CDN共享库\n' +
+            '自改进闭环 · 文档首页 · 计划与清单\n\n' +
+            '每故事包含: 需求→设计→实现→集成→发布五场景\n' +
+            '故事健康独立评估·D0-D7诊断逐故事追踪\n' +
+            '详见 Layer 4 故事卡片 →' },
+        { value: 37, label: '场景', modifier: 'health',
+          tooltip: '【37 个场景 · 分布在 7 个故事中】\n' +
+            '每场景 7 件标准交付物 →\n' +
+            '📋清单 · 📐架构图 · 🔗知识图谱 · 🧪测试面板\n' +
+            '📄源码 · 💡演示 · 📝审查\n\n' +
+            '场景健康度独立评估·交付物完整性自动检测\n' +
+            '详见 Layer 5 场景卡片 →' },
+        { value: 9,  label: 'Agent', modifier: 'info',
+          tooltip: '【9 个 Agent 角色 + 1 份拓扑总纲】\n' +
+            'pm(产品)·coder(开发)·reporter(报告)·reviewer(审查)\n' +
+            'architect(架构)·qa(质量保证)·devops(运维)\n' +
+            'researcher(研究)·coordinator(协调)\n\n' +
+            '角色拓扑定义 Agent 间协作模式与交接信号规范\n' +
+            '详见 Layer 5 Agent 角色卡片 →' },
+        { value: 18, label: '规则', modifier: 'health',
+          tooltip: '【18 条治理规则 · 五大类】\n' +
+            '▸ 管线与执行(5): 分支隔离·GateA/B·P0清零·模块交付·研究优先\n' +
+            '▸ 文档(4): 表达优先·doc-quality·architecture-diagram·doc-generation\n' +
+            '▸ 安全与配置(2): security-guardrails·rui-claude\n' +
+            '▸ 自改进(1): self-improve闭环\n' +
+            '▸ 设计与质量(6): SRP·DIP·OCP·DRY·组合优于继承·可健康检测\n\n' +
+            '合规性由 arch-check.mjs 自动验证 · 详见 Layer R 规则卡片 →' },
+        { value: 9,  label: '参考入口', modifier: 'info',
+          tooltip: '【4 文档入口 + 5 监控仪表板】\n\n' +
+            '文档入口 →\n' +
+            'CLAUDE.md · README.md · 健康报告 · 自我改进\n\n' +
+            '监控仪表板 →\n' +
+            '自循环报告 · 趋势报告 · 项目分析 · 测试报告 · 组件报告\n\n' +
+            '详见 Layer 6 参考入口卡片 →' }
       ];
     },
     /* 4) Cross Nav */
@@ -98,14 +172,14 @@
     },
     /* 5) Panel Hub */
     panelHub: function (el) {
-      el.label = { text: '🩺 —', panel: 'selfimprove', title: '点击打开自改进面板查看详情' };
+      el.label = { text: '🩺 健康 —', panel: 'selfimprove', title: '点击打开自改进面板查看19维健康详情·D0-D8诊断·E1-E4评估·趋势预测·优先级矩阵' };
       el.buttons = [
         { icon: '⏰', name: '调度',   desc: '定时·触发·编排', color: 'var(--yry-cyan)', panel: 'cron',        title: '调度任务 — 展示 .claude/scheduled_tasks.json 中所有定时任务。包含 cron 表达式、人类可读描述、活跃/空闲状态、下次触发预估。' },
         { icon: '🔔', name: '通知',   desc: '健康·循环·趋势', color: '#ef4444',       panel: 'notify',      title: '通知中心 — 健康检查报告、自循环巡检、趋势扫描三类通知统一汇总。健康报告按日期展示最新一份,支持按类型筛选、最新评分趋势、诊断触发追踪。' },
         { icon: '🧬', name: '自改进', desc: '趋势·诊断·评估', color: '#a78bfa',       panel: 'selfimprove', title: '自改进分析 — 读取 .memory/health-trend.jsonl 和 summary.json,按日/周/月/全景四个视角展示健康趋势、D0-D7 诊断覆盖率、等级分布、分支健康对比;健康数据按日期覆盖,每天保留一个快照。' },
         { icon: '❓', name: 'FAQ',    desc: '知识·指南·解惑', color: '#22c55e',       panel: 'faq',         title: '常见问题 — 系统知识入口:YrY 概念、命令使用、面板关系、健康检查原理、Skill/Agent/Rule 区别。含交叉面板导航链接。' }
       ];
-      el.flow = 'Cron 定时触发 → 技能执行 → 通知产出 → 🔔 通知面板展示 → 🧬 自改进分析消费';
+      el.flow = '⏰ Cron定时触发(17项活跃任务) → 🛠 19技能按需执行 → 📊 报告产出(健康/测试/趋势/组件/技能/加载链6份) → 🔔 企微通知推送(健康·循环·趋势三通道) → 🧬 自改进分析消费(D0-D8诊断·E1-E4评估·闭环回写)';
     }
   };
 
@@ -130,7 +204,7 @@
         layerId: 'layer-agents',
         num: '5',
         titleAccent: 'Agent 角色与规则',
-        stats: ['🩺 Agent 健康 99/A · 9 Agent 角色 + 1 拓扑总纲 · 18 治理规则'],
+        stats: ['🩺 Agent 健康 99/A · 9 角色(pm/coder/reporter/reviewer/architect/qa/devops/researcher/coordinator) · 1 拓扑总纲 · 18 治理规则 · 交接信号可验证'],
         panelsContainerTitle: 'Agent 行为受规则约束,规则合规性由健康检查监控',
         panels: [
           { icon: '🤖', label: '', style: 'background:#ffc107', title: 'Agent 角色详情',  panel: 'agents',      onPanel: 'layerInfo' },
@@ -147,7 +221,7 @@
         layerId: 'layer-rules',
         num: 'R',
         titleAccent: '治理规则',
-        stats: ['🩺 规则健康 91/A · 18 规则 · 管线纪律 · 安全 · 文档 · 自改进 · 设计原则'],
+        stats: ['🩺 规则健康 91/A · 18规则五大类:管线与执行(5)·文档(4)·安全与配置(2)·自改进(1)·设计与质量(6) · arch-check自动验证'],
         style: 'margin-top:36px;',
         numStyle: 'background: var(--yry-cyan);',
         panelsContainerTitle: '规则详情',
@@ -162,7 +236,7 @@
         layerId: 'layer-refs',
         num: '6',
         titleAccent: '参考入口',
-        stats: ['4 文档入口 + 5 监控仪表板 · 项目元信息与实时监控'],
+        stats: ['4文档入口(CLAUDE.md·README.md·健康报告·自我改进) + 5监控仪表板(自循环·趋势·项目分析·测试·组件) · 实时监控·每5min刷新'],
         panelsContainerTitle: '参考入口与监控面板',
         panels: [
           { icon: '📎', label: '', style: 'background:#94a3b8', title: '查看参考详情', panel: 'refs',        onPanel: 'layerInfo' },
@@ -696,7 +770,9 @@
             '技能评分': './技能报告/index.html',
             '健康评分': './健康报告/index.html',
             '测试评分': './测试报告/index.html',
-            '自改进':   './自我改进/index.html'
+            '自改进':   './自我改进/index.html',
+            '组件评分': './组件报告/index.html',
+            '加载线':   './加载链报告/index.html'
           };
 
           sg.addEventListener('click', function (e) {
@@ -796,10 +872,16 @@
                     const currPt = data.scoreTrend[data.scoreTrend.length - 1];
                     trendDir = currPt.score > prevPt.score ? '↑' : currPt.score < prevPt.score ? '↓' : '→';
                   }
-                  if (items[0]) { items[0].value = (skScore || siScore) + '/' + ((skScore || siScore) >= 80 ? 'A' : (skScore || siScore) >= 60 ? 'B' : 'C'); items[0].modifier = skCls; items[0].sub = '19 能力 · 4 维评估'; items[0].tooltip = '技能健康指数 · 四维加权(SKILL.md规约完整性×30% + 领域语言一致性×25% + 自包含可执行性×25% + 代码范式合规×20%)。当前 ' + (skScore || siScore) + '分。评级: A≥80 B≥60 C≥40 D<40。数据源: arch-check.mjs'; }
-                  if (items[1]) { items[1].value = healthScore + '/' + healthGrade + ' ' + trendDir; items[1].modifier = healthCls; items[1].sub = '综合 ' + (data.dimSummary ? data.dimSummary.length : '?') + ' 维'; items[1].tooltip = '健康评分 = ' + (data.dimSummary ? data.dimSummary.length : '?') + ' 维度加权均分。A≥80 B≥60 C≥40 D<40。最新: ' + healthScore + '分 ' + healthGrade + '级 ' + trendDir + '。数据源: .memory/health-trend.jsonl → summary.json'; }
-                  if (items[2]) { items[2].value = testScore + '分'; items[2].modifier = testCls; items[2].sub = '加权 ' + testScore + '/' + (testScore >= 80 ? 'A' : testScore >= 60 ? 'B' : 'C'); items[2].tooltip = '测试评分 = 工程成熟度加权: 测试×30% + 类型×15% + 检查×15% + CI/CD×10% + 文档×10% + 依赖×10% + Git×10% = ' + testScore + '分'; }
-                  if (items[3]) { items[3].value = siScore + '分'; items[3].modifier = siCls; items[3].sub = (data.componentHealth ? data.componentHealth.totalComponents : '?') + ' 组件'; items[3].tooltip = '自改进评分 = Skills/Agents/Rules/Scripts 四类组件健康均分。当前 ' + siScore + '分,共 ' + (data.componentHealth ? data.componentHealth.totalComponents : '?') + ' 组件'; }
+                  // 获取维度摘要用于增强 tooltip
+                  const dimSummary = data.dimSummary || [];
+                  const dimCount = dimSummary.length || '?';
+                  const diags = l.triggeredDiags || [];
+                  const diagStr = diags.length > 0 ? diags.join('·') : '无';
+
+                  if (items[0]) { items[0].value = (skScore || siScore) + '/' + ((skScore || siScore) >= 80 ? 'A' : (skScore || siScore) >= 60 ? 'B' : 'C'); items[0].modifier = skCls; items[0].sub = '19技能 · 规约完整性·语言一致性·自包含·范式合规'; items[0].tooltip = '【技能健康指数 SHI】\n四维加权评估模型 →\n① SKILL.md规约完整性(30%) ② 领域语言一致性(25%)\n③ 自包含可执行性(25%) ④ 代码范式合规(20%)\n\n覆盖 19 技能: rui主线(9)+工程支撑(7)+架构健康(10维度)+4实时面板\n\n当前: ' + (skScore || siScore) + '分 / ' + ((skScore || siScore) >= 80 ? 'A' : (skScore || siScore) >= 60 ? 'B' : 'C') + '级\n评级: A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D<40 严重缺陷\n数据源: arch-check.mjs --append-trend · 每 5min 刷新 · 点击跳转技能报告 →'; }
+                  if (items[1]) { items[1].value = healthScore + '/' + healthGrade + ' ' + trendDir; items[1].modifier = healthCls; items[1].sub = '核心9维·工程成熟度7维·扩展3维'; items[1].tooltip = '【项目综合健康指数 PHI】\n' + dimCount + '维加权聚合 · 三大类 →\n\n▸ 核心维度(9): token·config·robots·api·reports·format·diagnostics·git·security\n▸ 工程成熟度(7): 测试覆盖·类型安全·代码检查·CI/CD·文档·依赖·Git实践\n▸ 扩展维度(3): file_size·dep_analysis·notify\n\n当前: ' + healthScore + '分 / ' + healthGrade + '级 · ' + (healthScore >= 80 ? '优秀' : healthScore >= 60 ? '良好' : '需改进') + ' ' + trendDir + '\n触发诊断: ' + diagStr + '\n\n评级: A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D<40 严重缺陷\n数据源: .memory/health-trend.jsonl → summary.json · 每 5min 刷新 · 点击跳转健康报告 →'; }
+                  if (items[2]) { items[2].value = testScore + '分'; items[2].modifier = testCls; items[2].sub = '测试覆盖·类型安全·代码检查·CI/CD·文档·依赖·Git'; items[2].tooltip = '【测试质量指数 TQI】\n工程成熟度 7 维加权 →\n① 测试覆盖(30%): ' + (scores.em_testing || '?') + '分 ② 类型安全(15%): ' + (scores.em_types || '?') + '分\n③ 代码检查(15%): ' + (scores.em_linting || '?') + '分 ④ CI/CD(10%): ' + (scores.em_cicd || '?') + '分\n⑤ 文档覆盖(10%): ' + (scores.em_docs || '?') + '分 ⑥ 依赖管理(10%): ' + (scores.em_deps || '?') + '分\n⑦ Git实践(10%): ' + (scores.em_git || '?') + '分\n\n综合: ' + testScore + '分 / ' + (testScore >= 80 ? 'A' : testScore >= 60 ? 'B' : 'C') + '级\n评级: A≥80 · B≥60 · C≥40 · D<40\n数据源: vitest + arch-check.mjs · 每 5min 刷新 · 点击跳转测试报告 →'; }
+                  if (items[3]) { items[3].value = siScore + '分'; items[3].modifier = siCls; items[3].sub = 'Skills·Agents·Rules·Scripts四象限·' + (data.componentHealth ? data.componentHealth.totalComponents : '?') + '组件'; items[3].tooltip = '【自改进闭环指数 SII】\n组件健康四象限加权聚合 →\n▸ Skills(技能) ▸ Agents(角色) ▸ Rules(规则) ▸ Scripts(脚本)\n\n当前: ' + siScore + '分 / ' + (siScore >= 80 ? 'A' : siScore >= 60 ? 'B' : 'C') + '级 · ' + (siScore >= 80 ? '优秀' : siScore >= 60 ? '良好' : '需改进') + '\n共 ' + (data.componentHealth ? data.componentHealth.totalComponents : '?') + ' 组件 · D0-D8 九级诊断引擎持续监控\n\n评级: A≥80 · B≥60 · C≥40 · D<40\n数据源: D0-D8 诊断引擎 + arch-check.mjs · 每 5min 刷新 · 点击跳转自改进报告 →'; }
                   sg.items = items.slice();
                 }
 
@@ -829,7 +911,7 @@
                   const layerSkills = document.getElementById('layer-skills-app');
                   if (layerSkills && compHealth.skills) {
                     const sk = compHealth.skills.avgScore || 0;
-                    layerSkills.stats = ['🩺 技能健康 ' + sk + '/' + (sk >= 80 ? 'A' : sk >= 60 ? 'B' : 'C') + ' · 19 能力模块 · SRP 拆分'];
+                    layerSkills.stats = ['🩺 技能健康 ' + sk + '/' + (sk >= 80 ? 'A' : sk >= 60 ? 'B' : 'C') + ' · 19 能力模块 · 四维加权(规约完整性·语言一致性·自包含·范式合规)'];
                   }
                   const layerStory = document.getElementById('layer-story-app');
                   if (layerStory && compHealth.overallAvg) {
@@ -840,12 +922,12 @@
                 const layerAgents = document.getElementById('layer-agents-app');
                 if (layerAgents && compHealth && compHealth.agents) {
                   const ag = compHealth.agents.avgScore || 0;
-                  layerAgents.stats = ['🩺 Agent 健康 ' + ag + '/' + (ag >= 80 ? 'A' : ag >= 60 ? 'B' : 'C') + ' · 9 Agent 角色 + 1 拓扑总纲 · 18 治理规则'];
+                  layerAgents.stats = ['🩺 Agent 健康 ' + ag + '/' + (ag >= 80 ? 'A' : ag >= 60 ? 'B' : 'C') + ' · 9角色(pm/coder/reporter/reviewer/architect/qa/devops/researcher/coordinator) · 18治理规则'];
                 }
                 const layerRules = document.getElementById('layer-rules-app');
                 if (layerRules && compHealth && compHealth.rules) {
                   const ru = compHealth.rules.avgScore || 0;
-                  layerRules.stats = ['🩺 规则健康 ' + ru + '/' + (ru >= 80 ? 'A' : ru >= 60 ? 'B' : 'C') + ' · 18 规则 · 管线纪律 · 安全 · 文档'];
+                  layerRules.stats = ['🩺 规则健康 ' + ru + '/' + (ru >= 80 ? 'A' : ru >= 60 ? 'B' : 'C') + ' · 18规则五大类 · 管线纪律·安全·文档·自改进·设计 · arch-check自动验证'];
                 }
               })
               .catch(function (err) {

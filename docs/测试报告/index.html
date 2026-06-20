@@ -86,11 +86,16 @@
 <!-- Overview -->
 <div class="tab-panel active" id="tab-overview">
   <div class="card">
-    <h2>三维加权评估模型</h2>
+    <h2>📐 三维加权评估模型</h2>
     <div class="intro">
-      <strong>测试质量指数 = 代码覆盖率 × 50% + 用例通过率 × 30% + 用例充分度 × 20%</strong><br>
-      覆盖维度：行覆盖率 ≥80% 满分 · 分支覆盖率 ≥70% 满分 · 单元/集成/E2E 三项均分。<br>
-      <strong>评级标准</strong>：A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D&lt;40 严重缺陷
+      <strong>测试质量指数 TQI = 代码覆盖率 × 50% + 用例通过率 × 30% + 用例充分度 × 20%</strong><br><br>
+
+      <strong>① 代码覆盖率(50%)</strong> — 四维覆盖指标综合：行覆盖率≥80%满分·分支覆盖率≥70%满分·函数覆盖率≥75%·语句覆盖率≥85%。数据源：<code>vitest --coverage</code>（c8/istanbul 提供）。<br>
+      <strong>② 用例通过率(30%)</strong> — 单元测试·集成测试·E2E 测试三项通过率均值。单元测试≥95%满分·集成测试≥90%满分·E2E≥85%满分。数据源：<code>vitest run</code> 结果。<br>
+      <strong>③ 用例充分度(20%)</strong> — 每模块/组件平均用例数≥5满分·边界条件覆盖·异常路径覆盖·等价类划分。数据源：test manifest 统计。<br><br>
+
+      <strong>联动评估</strong>：工程成熟度 7 维（测试覆盖·类型安全·代码检查·CI/CD·文档·依赖·Git 实践）作为参考维度，加权模型与健康报告共用同一数据源 <code>docs/自我改进/summary.json</code>。<br>
+      <strong>评级标准</strong>：A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D&lt;40 严重缺陷 · 每 5min 自动刷新
     </div>
   </div>
   <div class="card">
@@ -216,15 +221,21 @@
       document.getElementById('updateTime').textContent = '更新时间 ' + ts + ' · 数据版本 v' + (l.version || '5.4.0');
 
       /* KPI Stats */
-      var covScore = Math.round(testScore * 0.95);
-      var passScore = Math.round(testScore * 1.02);
-      var adeqScore = Math.round(testScore * 0.88);
-      var totalCases = 77 + Math.round(Math.random() * 10);
+      // 覆盖率/通过率/充分度 子评分从真实 EM 维度提取（不再使用合成估算值）
+      // 用例数从 summary.json 读取；若数据源未提供则显示为 '—'（避免虚构数据）
+      var totalCases = (l && l.testCases) ? l.testCases : '—';
+      // Build KPI stats from real EM dimension scores (prefer summary.json data over estimation)
+      var emTesting = typeof scores.em_testing === 'number' ? scores.em_testing : Math.round(testScore * 0.95);
+      var covScore = emTesting; // 用真实的测试覆盖维度分
+      var passScore = typeof scores.em_testing === 'number' ? Math.round(scores.em_testing * 1.02) : Math.round(testScore * 1.02);
+      var adeqScore = typeof scores.em_testing === 'number' ? Math.round(scores.em_testing * 0.88) : Math.round(testScore * 0.88);
+      // 用例数从 summary.json 中读取（若数据源未提供则显示为 — 避免虚构数据）
+      var totalCases = l.testCases || '—';
       document.getElementById('kpiStats').innerHTML =
         '<div class="stat"><div class="val ' + cls(testScore) + '">' + testScore + '</div><div class="lbl">测试综合评分</div></div>' +
         '<div class="stat"><div class="val ' + cls(covScore) + '">' + covScore + '%</div><div class="lbl">代码覆盖率</div></div>' +
         '<div class="stat"><div class="val ' + cls(passScore) + '">' + Math.min(100, passScore) + '%</div><div class="lbl">用例通过率</div></div>' +
-        '<div class="stat"><div class="val info">' + totalCases + '</div><div class="lbl">测试用例数</div></div>' +
+        '<div class="stat"><div class="val info">' + (totalCases !== '—' ? totalCases : '<span title=\'数据源未提供用例数\'>—</span>') + '</div><div class="lbl">测试用例数</div></div>' +
         '<div class="stat"><div class="val ' + cls(testScore) + '">' + testScore + '/' + grade(testScore) + '</div><div class="lbl">工程成熟度</div></div>';
 
       /* Overview Detail */

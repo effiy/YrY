@@ -100,11 +100,17 @@
 <!-- Tab: 概览 -->
 <div class="tab-panel active" id="tab-overview">
   <div class="card">
-    <h2>四维加权评估模型</h2>
+    <h2>📐 四维加权评估模型</h2>
     <div class="intro">
-      <strong>技能健康指数 = SKILL.md 规约完整性 × 30% + 领域语言一致性 × 25% + 自包含可执行性 × 25% + 代码范式合规 × 20%</strong><br>
-      评估对象：19 个技能模块，涵盖编排入口、管线子技能(7)、支撑技能(8)、新增技能(3)。<br>
-      <strong>评级标准</strong>：A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D&lt;40 严重缺陷
+      <strong>技能健康指数 SHI = SKILL.md 规约完整性 × 30% + 领域语言一致性 × 25% + 自包含可执行性 × 25% + 代码范式合规 × 20%</strong><br><br>
+
+      <strong>① SKILL.md 规约完整性(30%)</strong> — 每技能必备完整 SKILL.md 文件·AGENT.md 角色定义完备·交接信号下游可验证·必备章节齐全（触发条件·执行流程·输入输出·错误处理）。检查标准：<code>arch-check.mjs --all</code>。<br>
+      <strong>② 领域语言一致性(25%)</strong> — 术语使用符合 README 领域语言定义·避免禁用别名（Avoid 列）·术语漂移自动检测·跨技能术语统一。检查标准：术语表对照 + 漂移检测。<br>
+      <strong>③ 自包含可执行性(25%)</strong> — 规约独立可执行·不依赖外链可达性·关键模式摘要内联·外部参考仅作补充（不可替代内联说明）。检查标准：退化检测 + 外链可达性。<br>
+      <strong>④ 代码范式合规(20%)</strong> — 无 class/extends·无 export default·无空 catch·统一使用 lib/ 共享常量·禁止 copy-paste 重复代码。检查标准：<code>arch-check.mjs kernel-paradigm</code>。<br><br>
+
+      评估对象：<strong>19 个技能模块</strong> — 编排入口 1 个·管线子技能 7 个·支撑技能 8 个·新增技能 3 个。覆盖 SDLC 全生命周期：编码→文档→分析→发布→监控→自改进。<br>
+      <strong>评级标准</strong>：A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D&lt;40 严重缺陷 · 每 5min 自动刷新 · 数据源 <code>arch-check.mjs</code> + <code>summary.json</code>
     </div>
   </div>
   <div class="card">

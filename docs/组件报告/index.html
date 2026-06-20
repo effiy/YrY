@@ -83,11 +83,17 @@
 <!-- Overview -->
 <div class="tab-panel active" id="tab-overview">
   <div class="card">
-    <h2>四维加权评估模型</h2>
+    <h2>📐 四维加权评估模型</h2>
     <div class="intro">
-      <strong>组件质量指数 = CSS规范性 × 30% + API一致性 × 25% + 可访问性 × 20% + 响应式 × 25%</strong><br>
-      覆盖 62 个 CDN 组件，分为五类：CSS布局(22) · 样式组件(18) · JS工具(9) · Vue 3 CE(4) · 其他(9)。<br>
-      <strong>评级标准</strong>：A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D&lt;40 严重缺陷
+      <strong>组件质量指数 CQI = CSS规范性 × 30% + API一致性 × 25% + 可访问性 × 20% + 响应式 × 25%</strong><br><br>
+
+      <strong>① CSS 规范性(30%)</strong> — 使用设计令牌变量(CSS var())·无硬编码颜色·BEM 命名规范·选择器深度≤3·无!important 滥用·文件大小≤5KB。检查标准：<code>stylelint</code> + arch-check。<br>
+      <strong>② API 一致性(25%)</strong> — 命名空间统一(yry-*)·属性/方法签名稳定·事件命名规范(panel-hub-select 等)·返回值类型统一·版本向后兼容。检查标准：cdn-summary.json 接口定义。<br>
+      <strong>③ 可访问性(20%)</strong> — ARIA 属性完备·键盘可达(Tab 导航)·屏幕阅读器友好·色彩对比度≥4.5:1·焦点管理·触控目标≥44px。检查标准：a11y 自动化检查。<br>
+      <strong>④ 响应式(25%)</strong> — 移动端适配(≤720px)·弹性布局(flex/grid)·断点策略明确·触控友好·内容不溢出。检查标准：响应式测试矩阵。<br><br>
+
+      覆盖 <strong>62 个 CDN 组件</strong>，按形态分为五类：CSS布局(22)·样式组件(18)·JS工具(9)·Vue 3 CE(4)·其他(9)，按功能分为 10 大类别。<br>
+      <strong>评级标准</strong>：A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D&lt;40 严重缺陷 · 每 5min 自动刷新 · 数据源 <code>cdn-summary/index.json</code>
     </div>
   </div>
   <div class="card">

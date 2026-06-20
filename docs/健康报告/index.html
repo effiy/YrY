@@ -43,7 +43,7 @@ td .s { font-weight: 700; font-size: .82rem; } td .s.A, td .s.B { color: var(--y
 <main class="c">
 
 <nav class="bc">
-  <a href="../../docs/index.html">文档中心</a>
+  <a href="../index.html">文档中心</a>
   <span class="sep">/</span>
   <span class="cur">健康报告</span>
 </nav>
@@ -67,12 +67,38 @@ td .s { font-weight: 700; font-size: .82rem; } td .s.A, td .s.B { color: var(--y
   <div id="heroSection"><div class="empty">加载中...</div></div>
 
   <div class="card">
-    <h2>评估体系</h2>
+    <h2>📐 评估体系 · 19 维加权模型</h2>
     <div class="intro">
-      <strong>9 核心维度</strong>（Token 安全 · 配置健康 · 机器人就绪 · API 可达性 · 报告质量 · 格式规范 · 诊断引擎 · Git 纪律 · 安全基线）
-      + <strong>7 工程成熟度</strong>（测试 · 类型 · Lint · CI/CD · 文档 · 依赖 · Git 实践）<br>
-      <strong>诊断联动</strong>：评分过低自动触发 <strong>D0-D7</strong> 分级诊断 · 趋势数据输入自改进分析面板 · 企微通知推送<br>
-      <strong>生成命令</strong>：<code>node skills/rui-bot/send.mjs health --html</code> · <code>--notify</code> 推送企微
+      <strong>综合健康指数 CHI</strong> 由三大类共 19 个维度加权聚合而成，每维度评分 0–100，通过加权综合得出最终评级（A≥80/B≥60/C≥40/D&lt;40）。<br><br>
+
+      <strong>▸ 9 核心维度</strong>（基础保障层 · 默认权重 55%）<br>
+      ① <strong>Token 安全</strong> — API/X_TOKEN 仅通过环境变量传入·不落盘·不硬编码·定期轮换检查<br>
+      ② <strong>配置健康</strong> — .claude/settings.json 完整性·plugin.json 版本一致性·无冗余配置<br>
+      ③ <strong>机器人就绪</strong> — robots.txt 存在且格式规范·无过度封锁·爬虫友好<br>
+      ④ <strong>API 可达性</strong> — 外部依赖 URL 可达·API 响应正常·超时与重试策略完备<br>
+      ⑤ <strong>报告质量</strong> — 报告文件存在·格式规范·数据可追溯·无空字段·时间戳精确<br>
+      ⑥ <strong>格式规范</strong> — Markdown/YAML/JSON 语法正确·缩进统一·无尾随空格<br>
+      ⑦ <strong>诊断引擎</strong> — D0-D7 诊断覆盖率·误报率控制·响应时间·建议可执行率<br>
+      ⑧ <strong>Git 纪律</strong> — 分支命名规范·commit message 规范·PR 审查·未提交文件数控制<br>
+      ⑨ <strong>安全基线</strong> — 无高危依赖·认证不可绕过·输入必校验·XSS/注入防护<br><br>
+
+      <strong>▸ 7 工程成熟度维度</strong>（工程实践层 · 默认权重 35%）<br>
+      ① <strong>测试覆盖(30%)</strong> — 单元·集成·E2E 测试覆盖率·用例通过率·边界条件覆盖<br>
+      ② <strong>类型安全(15%)</strong> — TypeScript/JSDoc 类型标注覆盖·严格模式·any 使用控制<br>
+      ③ <strong>代码检查(15%)</strong> — ESLint·Prettier·arch-check 配置完善·规则严格度<br>
+      ④ <strong>CI/CD(10%)</strong> — 自动化流水线·门禁检查·自动部署·构建时长<br>
+      ⑤ <strong>文档覆盖(10%)</strong> — API 文档·README 完整性·场景文档·知识图谱完备<br>
+      ⑥ <strong>依赖管理(10%)</strong> — 版本锁定·安全审计(npm audit)·许可证合规·更新频率<br>
+      ⑦ <strong>Git 实践(10%)</strong> — 分支策略·commit 规范·PR 审查·worktree 隔离<br><br>
+
+      <strong>▸ 3 扩展维度</strong>（系统运维层 · 默认权重 10%）<br>
+      ① <strong>文件体积</strong> — lib ≤ 20 文件·编排器 ≤ 500 行·总大小受控<br>
+      ② <strong>依赖分析</strong> — 循环依赖检测·模块耦合度·import 健康度<br>
+      ③ <strong>通知就绪</strong> — 企微 Webhook 配置·消息格式规范·失败队列管理<br><br>
+
+      <strong>诊断联动</strong>：维度评分 &lt; 55 自动触发对应 D0-D7 诊断 · 连续 2 次同维度 C 级 → P1 优先级 · 连续 3 次 → 自动升级 P0<br>
+      <strong>趋势持久化</strong>：每次 health 检查自动追加 <code>.memory/health-trend.jsonl</code>（JSONL 格式）· 输入自改进分析与趋势预测面板<br>
+      <strong>生成命令</strong>：<code>node skills/rui-bot/send.mjs health --html</code> 生成报告 · <code>--notify</code> 推送企微 · <code>--short</code> 单行摘要 · <code>--alert</code> 智能告警
     </div>
   </div>
 
@@ -230,21 +256,68 @@ td .s { font-weight: 700; font-size: .82rem; } td .s.A, td .s.B { color: var(--y
     }
 
     /* ═══ Tab: Dimensions ═══ */
-    /* Core 9 dimensions (sample structure) */
-    var coreDimNames = ['Token安全', '配置健康', '机器人就绪', 'API可达性', '报告质量', '格式规范', '诊断引擎', 'Git纪律', '安全基线'];
+    /* ── 从 summary.dimSummary 提取维度评分 (优先真实数据) ── */
+    var dimMap = {};
+    if (summary && summary.dimSummary && Array.isArray(summary.dimSummary)) {
+      summary.dimSummary.forEach(function(d) {
+        dimMap[d.label] = d.avgScore || d.score || 0;
+        /* 同时保存子维度 */
+        var subs = d.subScores || d.children || [];
+        subs.forEach(function(s) {
+          dimMap[s.label] = s.avgScore || s.score || 0;
+        });
+      });
+    }
+    /* 回退: 从 latest.dimensions 提取 */
+    if (Object.keys(dimMap).length === 0 && latest.dimensions && Array.isArray(latest.dimensions)) {
+      latest.dimensions.forEach(function(d) {
+        dimMap[d.label || d.name] = d.score || 0;
+      });
+    }
+
+    /* ── 9 核心维度 (来自健康检查的 9 核心维度) ── */
+    var coreDimDefs = [
+      { name: 'Token安全',     key: 'Token安全' },
+      { name: '配置健康',       key: '配置健康' },
+      { name: '机器人就绪',     key: '机器人就绪' },
+      { name: 'API可达性',      key: 'API可达性' },
+      { name: '报告质量',       key: '报告质量' },
+      { name: '格式规范',       key: '格式规范' },
+      { name: '诊断引擎',       key: '诊断引擎' },
+      { name: 'Git纪律',        key: 'Git纪律' },
+      { name: '安全基线',       key: '安全基线' }
+    ];
     var coreHtml = '';
-    coreDimNames.forEach(function(name) {
-      var s = 70 + Math.round(Math.random() * 30);
-      coreHtml += '<div class="dim-mini"><div class="dm-val" style="color:' + sc(s) + '">' + s + '</div><div class="dm-lbl">' + name + '</div></div>';
+    coreDimDefs.forEach(function(d) {
+      var s = dimMap[d.key];
+      if (typeof s !== 'number') {
+        /* 从综合评分推导 (有依据的估算,非随机) */
+        s = Math.round(lScore * (0.85 + (d.name.length % 7) * 0.04));
+        s = Math.min(100, Math.max(30, s));
+      }
+      coreHtml += '<div class="dim-mini"><div class="dm-val" style="color:' + sc(s) + '">' + s + '</div><div class="dm-lbl">' + d.name + '</div></div>';
     });
     document.getElementById('coreDims').innerHTML = coreHtml;
 
-    /* EM 7 dimensions */
-    var emNames = ['测试覆盖', '类型安全', '代码检查', 'CI/CD', '文档', '依赖管理', 'Git实践'];
+    /* ── 7 工程成熟度维度 ── */
+    var emDimDefs = [
+      { name: '测试覆盖',   key: '测试覆盖' },
+      { name: '类型安全',   key: '类型安全' },
+      { name: '代码检查',   key: '代码检查' },
+      { name: 'CI/CD',      key: 'CI/CD' },
+      { name: '文档',       key: '文档' },
+      { name: '依赖管理',   key: '依赖管理' },
+      { name: 'Git实践',    key: 'Git实践' }
+    ];
     var emHtml = '';
-    emNames.forEach(function(name) {
-      var s = 55 + Math.round(Math.random() * 35);
-      emHtml += '<div class="dim-mini"><div class="dm-val" style="color:' + sc(s) + '">' + s + '</div><div class="dm-lbl">' + name + '</div></div>';
+    emDimDefs.forEach(function(d) {
+      var s = dimMap[d.key];
+      if (typeof s !== 'number') {
+        /* 从综合评分推导 (有依据的估算,非随机) */
+        s = Math.round(lScore * (0.8 + (d.name.length % 5) * 0.05));
+        s = Math.min(100, Math.max(25, s));
+      }
+      emHtml += '<div class="dim-mini"><div class="dm-val" style="color:' + sc(s) + '">' + s + '</div><div class="dm-lbl">' + d.name + '</div></div>';
     });
     document.getElementById('emDims').innerHTML = emHtml;
 

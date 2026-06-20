@@ -98,11 +98,16 @@
 <!-- Overview -->
 <div class="tab-panel active" id="tab-overview">
   <div class="card">
-    <h2>五步加载链路</h2>
+    <h2>📐 三维加权评估模型</h2>
     <div class="intro">
-      <strong>加载链稳定性 = 可靠性 × 40% + 容错性 × 35% + 回退策略 × 25%</strong><br>
-      评估从页面请求到完整渲染的 5 步关键路径，每步独立评分后加权综合。<br>
-      <strong>评级标准</strong>：A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D&lt;40 严重缺陷
+      <strong>加载链稳定性指数 LSI = 可靠性 × 40% + 容错性 × 35% + 回退策略 × 25%</strong><br><br>
+
+      <strong>① 可靠性(40%)</strong> — 五步加载链（shared.css→theme.css→组件CSS→Vue3→组件JS）各步成功率·CDN 可用性·DNS 解析耗时·资源 HTTP 状态码·超时控制(5s)。数据源：客户端加载性能埋点。<br>
+      <strong>② 容错性(35%)</strong> — 单步失败的优雅降级能力·页面仍可交互·视觉无严重破坏·超时重试策略(指数退避)·资源加载失败不阻塞后续步骤。数据源：故障注入测试 + 实际监控。<br>
+      <strong>③ 回退策略(25%)</strong> — fallback CSS 完备性·静态降级版本·备用 CDN 配置·本地缓存兜底·Service Worker 离线支持·字体 fallback 策略(系统字体栈)。数据源：cdn-summary.json。<br><br>
+
+      评估从页面请求到完整渲染的 <strong>5 步关键路径</strong>，每步独立评分后加权综合。总加载目标 ≤800ms·首次渲染目标 ≤400ms·CDN 命中率目标 ≥95%。<br>
+      <strong>评级标准</strong>：A≥80 优秀 · B≥60 良好 · C≥40 需改进 · D&lt;40 严重缺陷 · 每 5min 自动刷新 · 数据源 <code>cdn-summary/index.json</code> + 客户端埋点
     </div>
   </div>
   <div class="card">
