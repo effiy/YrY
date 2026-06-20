@@ -6,45 +6,384 @@
     "date": "2026-06-16"
   },
   "totalVersions": 3,
-  "dateRange": { "from": "2026-04-08", "to": "2026-06-16" },
+  "dateRange": {
+    "from": "2026-04-08",
+    "to": "2026-06-16"
+  },
   "dimSummary": [
-    { "label": "CSS 组件覆盖", "avgScore": 95, "trend": 5, "recentAvg": 95, "entries": 3 },
-    { "label": "双主题完备性", "avgScore": 90, "trend": 0, "recentAvg": 90, "entries": 3 },
-    { "label": "JS API 一致性", "avgScore": 88, "trend": 3, "recentAvg": 88, "entries": 3 },
-    { "label": "加载链稳定", "avgScore": 96, "trend": 2, "recentAvg": 96, "entries": 3 },
-    { "label": "页面迁移率",  "avgScore": 85, "trend": 8, "recentAvg": 85, "entries": 3 },
-    { "label": "字体性能",     "avgScore": 92, "trend": 0, "recentAvg": 92, "entries": 3 }
+    {
+      "label": "CSS 组件覆盖",
+      "avgScore": 95,
+      "trend": 5,
+      "recentAvg": 95,
+      "entries": 3
+    },
+    {
+      "label": "双主题完备性",
+      "avgScore": 90,
+      "trend": 0,
+      "recentAvg": 90,
+      "entries": 3
+    },
+    {
+      "label": "JS API 一致性",
+      "avgScore": 88,
+      "trend": 3,
+      "recentAvg": 88,
+      "entries": 3
+    },
+    {
+      "label": "加载链稳定",
+      "avgScore": 96,
+      "trend": 2,
+      "recentAvg": 96,
+      "entries": 3
+    },
+    {
+      "label": "页面迁移率",
+      "avgScore": 85,
+      "trend": 8,
+      "recentAvg": 85,
+      "entries": 3
+    },
+    {
+      "label": "字体性能",
+      "avgScore": 92,
+      "trend": 0,
+      "recentAvg": 92,
+      "entries": 3
+    },
+    {
+      "label": "测试覆盖",
+      "avgScore": 87,
+      "trend": 6,
+      "recentAvg": 87,
+      "entries": 3,
+      "subScores": [
+        {
+          "label": "代码覆盖率",
+          "score": 85
+        },
+        {
+          "label": "用例通过率",
+          "score": 92
+        },
+        {
+          "label": "用例充分度",
+          "score": 82
+        }
+      ]
+    },
+    {
+      "label": "自改进闭环",
+      "avgScore": 89,
+      "trend": 4,
+      "recentAvg": 89,
+      "entries": 3,
+      "subScores": [
+        {
+          "label": "诊断触发率",
+          "score": 92
+        },
+        {
+          "label": "诊断置信度",
+          "score": 88
+        },
+        {
+          "label": "建议采纳率",
+          "score": 90
+        },
+        {
+          "label": "问题收敛率",
+          "score": 85
+        }
+      ]
+    }
   ],
   "diagSummary": [
-    { "id": "D0", "label": "基线偏离",   "count": 0, "rate": 0   },
-    { "id": "D1", "label": "效率退化",   "count": 0, "rate": 0   },
-    { "id": "D2", "label": "质量退化",   "count": 0, "rate": 0   },
-    { "id": "D3", "label": "复杂度增长", "count": 1, "rate": 33  },
-    { "id": "D4", "label": "流程退化",   "count": 0, "rate": 0   },
-    { "id": "D5", "label": "依赖退化",   "count": 0, "rate": 0   },
-    { "id": "D6", "label": "文档过时",   "count": 0, "rate": 0   },
-    { "id": "D7", "label": "配置漂移",   "count": 0, "rate": 0   }
+    {
+      "id": "D0",
+      "label": "基线偏离",
+      "count": 0,
+      "rate": 0
+    },
+    {
+      "id": "D1",
+      "label": "效率退化",
+      "count": 0,
+      "rate": 0
+    },
+    {
+      "id": "D2",
+      "label": "质量退化",
+      "count": 0,
+      "rate": 0
+    },
+    {
+      "id": "D3",
+      "label": "复杂度增长",
+      "count": 1,
+      "rate": 33
+    },
+    {
+      "id": "D4",
+      "label": "流程退化",
+      "count": 0,
+      "rate": 0
+    },
+    {
+      "id": "D5",
+      "label": "依赖退化",
+      "count": 0,
+      "rate": 0
+    },
+    {
+      "id": "D6",
+      "label": "文档过时",
+      "count": 0,
+      "rate": 0
+    },
+    {
+      "id": "D7",
+      "label": "配置漂移",
+      "count": 0,
+      "rate": 0
+    }
   ],
   "diagLabels": {
-    "D0": "基线偏离",   "D1": "效率退化",   "D2": "质量退化",
-    "D3": "复杂度增长", "D4": "流程退化",   "D5": "依赖退化",
-    "D6": "文档过时",   "D7": "配置漂移"
+    "D0": "基线偏离",
+    "D1": "效率退化",
+    "D2": "质量退化",
+    "D3": "复杂度增长",
+    "D4": "流程退化",
+    "D5": "依赖退化",
+    "D6": "文档过时",
+    "D7": "配置漂移"
   },
   "scoreTrend": [
-    { "date": "2026-04-08", "score": 78, "grade": "C", "version": "1.0.0" },
-    { "date": "2026-05-20", "score": 86, "grade": "B", "version": "1.1.0" },
-    { "date": "2026-06-16", "score": 92, "grade": "A", "version": "1.2.0" }
+    {
+      "date": "2026-04-08",
+      "score": 78,
+      "grade": "C",
+      "version": "1.0.0"
+    },
+    {
+      "date": "2026-05-20",
+      "score": 86,
+      "grade": "B",
+      "version": "1.1.0"
+    },
+    {
+      "date": "2026-06-16",
+      "score": 92,
+      "grade": "A",
+      "version": "1.2.0"
+    }
   ],
   "signals": [
-    { "type": "improvement", "icon": "📈", "msg": "页面迁移率连续 3 版本上升至 85%,D0-D7 诊断覆盖率改善" },
-    { "type": "info",        "icon": "ℹ️", "msg": "CSS 组件已稳定在 22+ 个,后续 1.x 阶段不再新增类" }
+    {
+      "type": "improvement",
+      "icon": "📈",
+      "msg": "页面迁移率连续 3 版本上升至 85%,D0-D7 诊断覆盖率改善"
+    },
+    {
+      "type": "info",
+      "icon": "ℹ️",
+      "msg": "CSS 组件已稳定在 22+ 个,后续 1.x 阶段不再新增类"
+    }
   ],
   "componentHealth": {
-    "css":     { "count": 22,  "avgScore": 95 },
-    "themes":  { "count": 2,   "avgScore": 90 },
-    "apis":    { "count": 9,   "avgScore": 88 },
-    "scripts": { "count": 2,   "avgScore": 92 },
+    "css": {
+      "count": 22,
+      "avgScore": 95
+    },
+    "themes": {
+      "count": 2,
+      "avgScore": 90
+    },
+    "apis": {
+      "count": 9,
+      "avgScore": 88
+    },
+    "scripts": {
+      "count": 2,
+      "avgScore": 92
+    },
     "overallAvg": 92,
     "totalComponents": 35
+  },
+  "scoreReport": {
+    "updated": "2026-06-20T01:21:58.778Z",
+    "composite": 92,
+    "grade": "A",
+    "dataPoints": 3,
+    "trend": {
+      "direction": "rising",
+      "slopePerWeek": 49,
+      "r2": 0.99,
+      "confidence": "high"
+    },
+    "forecast": null,
+    "reliability": {
+      "current": 92,
+      "mean": 85.3,
+      "stddev": 5.7,
+      "ci95": [
+        80.8,
+        103.2
+      ],
+      "volatility": "moderate",
+      "score": 0.93
+    },
+    "breakdown": [
+      {
+        "dim": "页面迁移率",
+        "label": "页面迁移率",
+        "category": "structural",
+        "score": 85,
+        "grade": "B",
+        "weight": 3,
+        "status": "ok",
+        "trend": "↑ 上升",
+        "trendDirection": "rising",
+        "gap": 15,
+        "recommendation": "保持当前水平，持续监控"
+      },
+      {
+        "dim": "测试覆盖",
+        "label": "测试覆盖",
+        "category": "engineering",
+        "score": 87,
+        "grade": "B",
+        "weight": 3,
+        "status": "ok",
+        "trend": "↑ 上升",
+        "trendDirection": "rising",
+        "gap": 13,
+        "recommendation": "保持当前水平，持续监控"
+      },
+      {
+        "dim": "JS API 一致性",
+        "label": "JS API 一致性",
+        "category": "quality",
+        "score": 88,
+        "grade": "B",
+        "weight": 3,
+        "status": "ok",
+        "trend": "↑ 上升",
+        "trendDirection": "rising",
+        "gap": 12,
+        "recommendation": "保持当前水平，持续监控"
+      },
+      {
+        "dim": "自改进闭环",
+        "label": "自改进闭环",
+        "category": "engineering",
+        "score": 89,
+        "grade": "B",
+        "weight": 3,
+        "status": "ok",
+        "trend": "↑ 上升",
+        "trendDirection": "rising",
+        "gap": 11,
+        "recommendation": "保持当前水平，持续监控"
+      },
+      {
+        "dim": "双主题完备性",
+        "label": "双主题完备性",
+        "category": "quality",
+        "score": 90,
+        "grade": "A",
+        "weight": 3,
+        "status": "ok",
+        "trend": "→ 稳定",
+        "trendDirection": "stable",
+        "gap": 10,
+        "recommendation": "保持当前水平，持续监控"
+      },
+      {
+        "dim": "字体性能",
+        "label": "字体性能",
+        "category": "structural",
+        "score": 92,
+        "grade": "A",
+        "weight": 3,
+        "status": "ok",
+        "trend": "→ 稳定",
+        "trendDirection": "stable",
+        "gap": 8,
+        "recommendation": "保持当前水平，持续监控"
+      },
+      {
+        "dim": "CSS 组件覆盖",
+        "label": "CSS 组件覆盖",
+        "category": "quality",
+        "score": 95,
+        "grade": "A",
+        "weight": 3,
+        "status": "ok",
+        "trend": "↑ 上升",
+        "trendDirection": "rising",
+        "gap": 5,
+        "recommendation": "保持当前水平，持续监控"
+      },
+      {
+        "dim": "加载链稳定",
+        "label": "加载链稳定",
+        "category": "structural",
+        "score": 96,
+        "grade": "A",
+        "weight": 3,
+        "status": "ok",
+        "trend": "↑ 上升",
+        "trendDirection": "rising",
+        "gap": 4,
+        "recommendation": "保持当前水平，持续监控"
+      }
+    ],
+    "recommendations": [],
+    "componentBreakdown": [
+      {
+        "category": "css",
+        "label": "CSS 组件",
+        "score": 95,
+        "count": 22,
+        "grade": "excellent"
+      },
+      {
+        "category": "themes",
+        "label": "双主题",
+        "score": 90,
+        "count": 2,
+        "grade": "excellent"
+      },
+      {
+        "category": "apis",
+        "label": "JS API",
+        "score": 88,
+        "count": 9,
+        "grade": "good"
+      },
+      {
+        "category": "scripts",
+        "label": "脚本工具",
+        "score": 92,
+        "count": 2,
+        "grade": "excellent"
+      }
+    ],
+    "diagnostics": {
+      "triggered": 1,
+      "total": 8,
+      "rate": 13,
+      "topDiags": [
+        {
+          "id": "D3",
+          "label": "复杂度增长",
+          "count": 1,
+          "rate": 33
+        }
+      ]
+    }
   }
 }

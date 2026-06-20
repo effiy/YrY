@@ -72,6 +72,169 @@
     <!-- ── Stats (YryStatsGrid) ── -->
     <yry-stats-grid id="stats-app"></yry-stats-grid>
 
+    <!-- ═══ 评分体系说明 (可见报告内容) ═══ -->
+    <style>
+      .score-methodology { margin: 0 auto 24px; max-width: 1040px; padding: 0 24px; }
+      .methodology-card { background: rgba(15,23,42,.55); border: var(--yry-border, 1px solid rgba(255,255,255,.06)); border-radius: 10px; padding: 20px 24px; margin-bottom: 12px; }
+      .methodology-card h3 { font-size: .84rem; margin: 0 0 8px; color: var(--yry-accent, #22d3ee); display: flex; align-items: center; gap: 6px; }
+      .methodology-card p { font-size: .72rem; color: var(--yry-text2, #a9b1d6); line-height: 1.7; margin: 0; }
+      .methodology-card .dim-row { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: .68rem; color: var(--yry-text3, #6b7280); margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,.04); }
+      .methodology-card .dim-row span { white-space: nowrap; }
+      .methodology-card .dim-row .w { color: var(--yry-accent, #22d3ee); font-weight: 600; }
+      .methodology-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+      @media (max-width: 640px) { .methodology-grid { grid-template-columns: 1fr; } }
+
+      /* ── Score Report section ── */
+      .score-report { margin: 0 auto 24px; max-width: 1040px; padding: 0 24px; }
+      .score-report-inner { background: rgba(15,23,42,.55); border: var(--yry-border, 1px solid rgba(255,255,255,.06)); border-radius: 10px; padding: 20px 24px; }
+      .sr-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+      .sr-title { font-size: .9rem; font-weight: 700; color: var(--yry-accent, #22d3ee); display: flex; align-items: center; gap: 8px; }
+      .sr-badge { font-size: .68rem; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+      .sr-badge.p0 { background: rgba(248,113,113,.15); color: #f87171; }
+      .sr-badge.p1 { background: rgba(251,146,60,.15); color: #fb923c; }
+      .sr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; margin-bottom: 14px; }
+      .sr-cell { background: rgba(30,41,59,.5); border-radius: 6px; padding: 10px; text-align: center; }
+      .sr-cell-label { font-size: .64rem; color: var(--yry-text3, #6b7280); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .5px; }
+      .sr-cell-value { font-size: 1.3rem; font-weight: 800; color: var(--yry-text1, #a9b1d6); font-family: 'SF Mono','Cascadia Code',monospace; }
+      .sr-cell-sub { font-size: .62rem; color: var(--yry-text3, #6b7280); margin-top: 2px; }
+      .sr-breakdown-title { font-size: .76rem; font-weight: 600; color: var(--yry-text2, #a9b1d6); margin-bottom: 8px; }
+      .sr-dim { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: .72rem; border-bottom: 1px solid rgba(255,255,255,.03); }
+      .sr-dim:last-child { border-bottom: none; }
+      .sr-dim-label { min-width: 90px; color: var(--yry-text2, #a9b1d6); font-weight: 500; }
+      .sr-dim-bar-bg { flex: 1; height: 6px; background: rgba(30,41,59,.5); border-radius: 3px; overflow: hidden; }
+      .sr-dim-bar-fill { height: 100%; border-radius: 3px; transition: width .5s ease; }
+      .sr-dim-bar-fill.excellent { background: #4ade80; }
+      .sr-dim-bar-fill.good { background: #60a5fa; }
+      .sr-dim-bar-fill.fair { background: #fbbf24; }
+      .sr-dim-bar-fill.poor { background: #f87171; }
+      .sr-dim-score { min-width: 32px; text-align: right; font-weight: 700; font-family: 'SF Mono','Cascadia Code',monospace; font-size: .7rem; }
+      .sr-dim-trend { min-width: 20px; text-align: center; font-size: .68rem; }
+      .sr-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; font-size: .7rem; }
+      .sr-compare-item { background: rgba(30,41,59,.5); border-radius: 6px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; }
+      .sr-compare-label { color: var(--yry-text3, #6b7280); }
+      .sr-compare-delta { font-weight: 700; font-family: 'SF Mono','Cascadia Code',monospace; }
+      .sr-compare-delta.up { color: #4ade80; }
+      .sr-compare-delta.down { color: #f87171; }
+      .sr-summary-text { font-size: .76rem; color: var(--yry-text2, #a9b1d6); line-height: 1.7; margin-top: 10px; padding: 10px 12px; background: rgba(30,41,59,.3); border-radius: 6px; }
+      .sr-links { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+      .sr-link { font-size: .68rem; color: var(--yry-accent, #22d3ee); text-decoration: none; padding: 3px 10px; border: 1px solid rgba(255,255,255,.08); border-radius: 4px; transition: border-color .2s,background .2s; }
+      .sr-link:hover { border-color: var(--yry-accent, #22d3ee); background: rgba(34,211,238,.08); }
+      @media (max-width: 640px) { .sr-grid { grid-template-columns: repeat(2, 1fr); } .sr-compare { grid-template-columns: 1fr; } }
+    </style>
+    <div class="score-methodology">
+      <div class="methodology-grid">
+        <div class="methodology-card">
+          <h3>🧩 组件质量指数 CQI</h3>
+          <p>四维加权评估 62 个 CDN 组件。CSS 规范性(35%)检查 BEM 命名·选择器深度≤3·设计令牌使用·无!important 滥用。API 一致性(30%)检查 yry-* 命名空间·属性签名稳定·版本向后兼容。可访问性(20%)检查 ARIA 属性·键盘可达·对比度≥4.5:1·触控目标≥44px。响应式(15%)检查 ≤720px 适配·弹性布局·断点策略。</p>
+          <div class="dim-row"><span class="w">A≥80 优秀</span><span>|</span><span class="w">B≥60 良好</span><span>|</span><span class="w">C≥40 需改进</span><span>|</span><span class="w">D&lt;40 缺陷</span><span>|</span><span>数据源: cdn-summary.json · 5min刷新</span></div>
+        </div>
+        <div class="methodology-card">
+          <h3>🩺 综合健康指数 CHI</h3>
+          <p>六维加权聚合 → 组件覆盖度×0.30 + 测试覆盖×0.25 + 自改进闭环×0.20 + 加载链稳定×0.15 + 存量迁移率×0.10 + 字体性能×0.05。覆盖五类 62 组件·D0-D7 八级诊断·5 步加载链·版本演进趋势。v1.0(78/C)→v1.1(86/B)→v1.2(92/A) 持续上升。</p>
+          <div class="dim-row"><span>数据源: cdn-summary.json · 每5min自动刷新 · 点击跳转健康报告</span></div>
+        </div>
+        <div class="methodology-card">
+          <h3>🧪 测试质量指数 TQI</h3>
+          <p>三维加权 → 代码覆盖率(50%): 行≥80%·分支≥70%·函数≥75%·语句≥85% 满分。用例通过率(30%): 单元·集成·E2E 三项均分。用例充分度(20%): 组件均≥5 用例·边界覆盖·异常路径。由 vitest runner 驱动，test manifest 统计。</p>
+          <div class="dim-row"><span>数据源: vitest + test manifest.json · 5min刷新 · 点击跳转测试报告</span></div>
+        </div>
+        <div class="methodology-card">
+          <h3>🧬 自改进闭环指数 SII</h3>
+          <p>四维评估 → 诊断触发率(30%): D0-D7 八级诊断覆盖·误报控制。诊断置信度(25%): 人工验证准确率。建议采纳率(25%): 诊断→代码变更转化率。问题收敛率(20%): 同类复发衰减·修复时效。D0基线·D1效率·D2质量·D3复杂度·D4流程·D5依赖·D6文档·D7配置。</p>
+          <div class="dim-row"><span>数据源: D0-D7 诊断引擎 · 5min刷新 · 点击跳转自改进报告</span></div>
+        </div>
+        <div class="methodology-card">
+          <h3>⚡ 加载链稳定性指数 LSI</h3>
+          <p>五步关键路径: shared.css→theme.css→62组件CSS→Vue3→组件JS。三维评估 → 可靠性(40%): 各步成功率·CDN可用性·DNS耗时。容错性(35%): 优雅降级·超时重试·5s 兜底。回退策略(25%): fallback CSS·静态降级·离线缓存。总加载≈625ms·首次渲染≈310ms。</p>
+          <div class="dim-row"><span>数据源: 客户端加载性能埋点 · 5min刷新 · 点击跳转加载链报告</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ 实时评分报告 (CDN 专项,数据由 Live Fetcher 统一刷新) ═══ -->
+    <div class="score-report" id="score-report-section">
+      <div class="score-report-inner">
+        <div class="sr-header">
+          <span class="sr-title">📋 CDN 实时评分报告 <span class="sr-badge p0" style="display:none" id="cdn-sr-p0-badge">P0 待处理</span></span>
+          <span style="font-size:.68rem;color:var(--yry-text3,#6b7280)" id="cdn-sr-updated">更新于 —</span>
+        </div>
+
+        <!-- 复合评分概览 -->
+        <div class="sr-grid" id="cdn-sr-overview-grid">
+          <div class="sr-cell">
+            <div class="sr-cell-label">综合评分</div>
+            <div class="sr-cell-value" id="cdn-sr-composite">—</div>
+            <div class="sr-cell-sub" id="cdn-sr-grade-label">—</div>
+          </div>
+          <div class="sr-cell">
+            <div class="sr-cell-label">趋势方向</div>
+            <div class="sr-cell-value" id="cdn-sr-trend-dir">—</div>
+            <div class="sr-cell-sub" id="cdn-sr-trend-detail">—</div>
+          </div>
+          <div class="sr-cell">
+            <div class="sr-cell-label">7天预测</div>
+            <div class="sr-cell-value" id="cdn-sr-forecast">—</div>
+            <div class="sr-cell-sub" id="cdn-sr-forecast-range">—</div>
+          </div>
+          <div class="sr-cell">
+            <div class="sr-cell-label">评分可靠性</div>
+            <div class="sr-cell-value" id="cdn-sr-reliability">—</div>
+            <div class="sr-cell-sub" id="cdn-sr-volatility">—</div>
+          </div>
+          <div class="sr-cell">
+            <div class="sr-cell-label">诊断触发</div>
+            <div class="sr-cell-value" id="cdn-sr-diag">—</div>
+            <div class="sr-cell-sub">/ 8 项诊断</div>
+          </div>
+          <div class="sr-cell">
+            <div class="sr-cell-label">组件健康</div>
+            <div class="sr-cell-value" id="cdn-sr-comp-health">—</div>
+            <div class="sr-cell-sub" id="cdn-sr-comp-count">—</div>
+          </div>
+        </div>
+
+        <!-- 期间对比 (当前 vs 上一周期) -->
+        <div class="sr-breakdown-title">📊 期间对比 (当前 vs 上一周期)</div>
+        <div class="sr-compare" id="cdn-sr-compare">
+          <div class="sr-compare-item">
+            <span class="sr-compare-label">综合分变化</span>
+            <span class="sr-compare-delta" id="cdn-sr-comp-delta">—</span>
+          </div>
+          <div class="sr-compare-item">
+            <span class="sr-compare-label">改善维度</span>
+            <span class="sr-compare-delta up" id="cdn-sr-comp-improved">—</span>
+          </div>
+          <div class="sr-compare-item">
+            <span class="sr-compare-label">退化维度</span>
+            <span class="sr-compare-delta down" id="cdn-sr-comp-declined">—</span>
+          </div>
+          <div class="sr-compare-item">
+            <span class="sr-compare-label">净变化</span>
+            <span class="sr-compare-delta" id="cdn-sr-comp-net">—</span>
+          </div>
+        </div>
+
+        <!-- 维度分解 (Top 10) -->
+        <div style="margin-top:12px">
+          <div class="sr-breakdown-title">📐 维度评分分解 (按得分升序·突出待改进项)</div>
+          <div id="cdn-sr-dim-list">
+            <div class="sr-dim"><span class="sr-dim-label">加载中…</span><div class="sr-dim-bar-bg"><div class="sr-dim-bar-fill fair" style="width:50%"></div></div><span class="sr-dim-score">—</span></div>
+          </div>
+        </div>
+
+        <!-- 智能摘要 -->
+        <div class="sr-summary-text" id="cdn-sr-summary">正在加载 CDN 评分数据…</div>
+
+        <!-- 快捷链接 -->
+        <div class="sr-links">
+          <a class="sr-link" href="../docs/健康报告/health-cdn-index.html">🩺 健康报告</a>
+          <a class="sr-link" href="../docs/自我改进/index.html">🧬 自我改进</a>
+          <a class="sr-link" href="../docs/趋势报告/index.html">📡 趋势报告</a>
+          <a class="sr-link" href="cdn-summary/index.json" target="_blank">📦 原始数据 (JSON)</a>
+        </div>
+      </div>
+    </div>
+
     <!-- ── Cross-Nav (YryPanelHub) ── -->
     <yry-panel-hub id="panel-hub-app"></yry-panel-hub>
 
@@ -916,6 +1079,255 @@
         return d;
       }
 
+      /* ── 渲染 CDN 评分报告面板 ── */
+      function renderCdnScoreReport(data, healthScore, healthGrade, compScore, compCount, testScore, siScore, loadScore, trendDir) {
+        var ds = data.dimSummary || [];
+        var st = data.scoreTrend || [];
+        /* 优先使用预计算的 scoreReport (来自 cdn-score-updater.mjs) */
+        var precomputed = data.scoreReport || null;
+
+        /* 评分辅助 */
+        var SCORE_TIERS_R = { excellent: 90, good: 75, fair: 60, poor: 0 };
+        var GRADE_THRESHOLDS_R = [
+          { grade: 'A', min: 90, label: '优秀', color: '#4ade80' },
+          { grade: 'B', min: 75, label: '良好', color: '#60a5fa' },
+          { grade: 'C', min: 60, label: '一般', color: '#fbbf24' },
+          { grade: 'D', min: 0,  label: '需关注', color: '#f87171' }
+        ];
+        function getGradeR(s) {
+          for (var i = 0; i < GRADE_THRESHOLDS_R.length; i++) {
+            if (s >= GRADE_THRESHOLDS_R[i].min) return GRADE_THRESHOLDS_R[i];
+          }
+          return GRADE_THRESHOLDS_R[GRADE_THRESHOLDS_R.length - 1];
+        }
+        function classifyScoreR(s) {
+          if (s >= SCORE_TIERS_R.excellent) return 'excellent';
+          if (s >= SCORE_TIERS_R.good) return 'good';
+          if (s >= SCORE_TIERS_R.fair) return 'fair';
+          return 'poor';
+        }
+        function detectTrendR(history) {
+          if (!history || history.length < 3) return null;
+          var n = history.length;
+          var xMean = (n - 1) / 2;
+          var yMean = 0;
+          for (var i = 0; i < n; i++) yMean += history[i];
+          yMean /= n;
+          var ssXY = 0, ssXX = 0, ssYY = 0;
+          for (var i = 0; i < n; i++) {
+            var dx = i - xMean;
+            var dy = history[i] - yMean;
+            ssXY += dx * dy; ssXX += dx * dx; ssYY += dy * dy;
+          }
+          var slope = ssXX !== 0 ? ssXY / ssXX : 0;
+          var r2 = ssYY !== 0 ? (ssXY * ssXY) / (ssXX * ssYY) : 0;
+          var slopePerWeek = slope * 7;
+          var direction = Math.abs(slopePerWeek) < 1 ? 'stable' : (slope > 0 ? 'rising' : 'falling');
+          var confidence = r2 >= 0.7 ? 'high' : (r2 >= 0.4 ? 'medium' : 'low');
+          return { direction: direction, slopePerWeek: Math.round(slopePerWeek * 100) / 100, r2: Math.round(r2 * 100) / 100, confidence: confidence };
+        }
+
+        /* 趋势数据 */
+        var historyVals = [];
+        for (var i = 0; i < st.length; i++) {
+          historyVals.push(typeof st[i].score === 'number' ? st[i].score : st[i].composite || 0);
+        }
+        /* 趋势 — 优先使用预计算值 */
+        var trend = null;
+        if (precomputed && precomputed.trend) {
+          trend = {
+            direction: precomputed.trend.direction,
+            slopePerWeek: precomputed.trend.slopePerWeek,
+            r2: precomputed.trend.r2,
+            confidence: precomputed.trend.confidence,
+          };
+        } else {
+          trend = detectTrendR(historyVals);
+        }
+
+        /* 预测 — 优先使用预计算值 */
+        var forecast = healthScore;
+        var fcRange = [healthScore - 10, healthScore + 10];
+        if (precomputed && precomputed.forecast) {
+          forecast = precomputed.forecast.value;
+          fcRange = precomputed.forecast.range;
+        } else if (trend && trend.confidence !== 'low' && historyVals.length >= 5) {
+          forecast = Math.round(healthScore + trend.slopePerWeek);
+          forecast = Math.max(0, Math.min(100, forecast));
+          fcRange = [Math.max(0, forecast - 8), Math.min(100, forecast + 8)];
+        }
+
+        /* 可靠性 — 优先使用预计算值 */
+        var reliability = null;
+        if (precomputed && precomputed.reliability) {
+          reliability = {
+            volatility: precomputed.reliability.volatility,
+            score: precomputed.reliability.score,
+          };
+        } else if (historyVals.length >= 3) {
+          var n = historyVals.length;
+          var mean = 0;
+          for (var i = 0; i < n; i++) mean += historyVals[i];
+          mean /= n;
+          var variance = 0;
+          for (var i = 0; i < n; i++) variance += Math.pow(historyVals[i] - mean, 2);
+          variance /= n;
+          var stddev = Math.sqrt(variance);
+          var cv = mean !== 0 ? stddev / mean : 0;
+          var vol = cv < 0.05 ? 'low' : (cv < 0.15 ? 'moderate' : 'high');
+          reliability = { volatility: vol, score: Math.round(Math.max(0, Math.min(1, 1 - cv)) * 100) / 100 };
+        }
+
+        /* ── 渲染 ── */
+        var gradeInfo = getGradeR(healthScore);
+
+        var elComp = document.getElementById('cdn-sr-composite');
+        if (elComp) { elComp.textContent = healthScore; elComp.style.color = gradeInfo.color; }
+        var elGrade = document.getElementById('cdn-sr-grade-label');
+        if (elGrade) elGrade.textContent = (healthGrade || gradeInfo.grade) + '级 · ' + gradeInfo.label;
+
+        var trendEmoji = { rising: '📈', falling: '📉', stable: '➡️' };
+        var trendLabel = { rising: '上升', falling: '下降', stable: '稳定' };
+        var elTrendDir = document.getElementById('cdn-sr-trend-dir');
+        if (elTrendDir && trend) elTrendDir.textContent = trendEmoji[trend.direction] + ' ' + trendLabel[trend.direction];
+        var elTrendDetail = document.getElementById('cdn-sr-trend-detail');
+        if (elTrendDetail && trend) elTrendDetail.textContent = (trend.slopePerWeek > 0 ? '+' : '') + trend.slopePerWeek + '分/周 · R²=' + trend.r2;
+
+        var elFc = document.getElementById('cdn-sr-forecast');
+        if (elFc) { elFc.textContent = forecast; elFc.style.color = getGradeR(forecast).color; }
+        var elFcRange = document.getElementById('cdn-sr-forecast-range');
+        if (elFcRange) elFcRange.textContent = fcRange[0] + ' – ' + fcRange[1];
+
+        var elRel = document.getElementById('cdn-sr-reliability');
+        if (elRel && reliability) elRel.textContent = Math.round(reliability.score * 100) + '%';
+        var elVol = document.getElementById('cdn-sr-volatility');
+        if (elVol && reliability) {
+          var volLabel = { low: '低波动·高可靠', moderate: '中等波动', high: '高波动·低可靠' };
+          elVol.textContent = volLabel[reliability.volatility] || '';
+        }
+
+        var diagTrig = (precomputed && precomputed.diagnostics)
+          ? precomputed.diagnostics.triggered
+          : (data.diagSummary ? (Array.isArray(data.diagSummary)
+            ? data.diagSummary.filter(function(d) { return d.count > 0; }).length
+            : (data.diagSummary.triggered || 0)) : 0);
+        var elDiag = document.getElementById('cdn-sr-diag');
+        if (elDiag) {
+          elDiag.textContent = diagTrig + '/8';
+          elDiag.style.color = diagTrig >= 3 ? '#f87171' : diagTrig >= 1 ? '#fbbf24' : '#4ade80';
+        }
+
+        var elCompH = document.getElementById('cdn-sr-comp-health');
+        if (elCompH) { elCompH.textContent = compScore + '分'; elCompH.style.color = getGradeR(compScore).color; }
+        var elCompC = document.getElementById('cdn-sr-comp-count');
+        if (elCompC) {
+          if (precomputed && precomputed.componentBreakdown && precomputed.componentBreakdown.length > 0) {
+            var compParts = [];
+            for (var ci = 0; ci < precomputed.componentBreakdown.length; ci++) {
+              compParts.push(precomputed.componentBreakdown[ci].label + ' ' + precomputed.componentBreakdown[ci].score + '分');
+            }
+            elCompC.textContent = compCount + ' 组件 · ' + compParts.join(' · ');
+          } else {
+            elCompC.textContent = compCount + ' 组件 · CSS/Vue/JS/CE';
+          }
+        }
+
+        /* 维度分解 — 优先使用预计算 breakdown */
+        var dimList = [];
+        if (precomputed && precomputed.breakdown && precomputed.breakdown.length > 0) {
+          for (var i = 0; i < precomputed.breakdown.length; i++) {
+            var b = precomputed.breakdown[i];
+            dimList.push({
+              label: b.label, score: b.score, trend: b.trendDirection,
+              status: b.status, recommendation: b.recommendation,
+            });
+          }
+        } else if (ds && ds.length) {
+          for (var i = 0; i < ds.length; i++) {
+            var d = ds[i];
+            var dScore = d.avgScore || d.score || 0;
+            dimList.push({ label: d.label || d.dim || '', score: dScore, trend: d.trend || 'stable', note: d.note || '' });
+          }
+        }
+        dimList.sort(function(a, b) { return a.score - b.score; });
+        var displayDims = dimList.slice(0, 10);
+
+        var dimListEl = document.getElementById('cdn-sr-dim-list');
+        if (dimListEl) {
+          if (displayDims.length > 0) {
+            var html = '';
+            for (var i = 0; i < displayDims.length; i++) {
+              var dim = displayDims[i];
+              var dg = getGradeR(dim.score);
+              var barClass = classifyScoreR(dim.score);
+              var arrow = dim.trend === 'rising' ? '↑' : dim.trend === 'falling' ? '↓' : '→';
+              var arrowColor = dim.trend === 'rising' ? '#4ade80' : dim.trend === 'falling' ? '#f87171' : '#6b7280';
+              var statusBadge = dim.score < 40 ? ' <span style=\"font-size:.58rem;color:#f87171;font-weight:600\">CRIT</span>' :
+                                dim.score < 60 ? ' <span style=\"font-size:.58rem;color:#fbbf24;font-weight:600\">WARN</span>' : '';
+              html += '<div class=\"sr-dim\"><span class=\"sr-dim-label\">' + dim.label + statusBadge + '</span>' +
+                '<div class=\"sr-dim-bar-bg\"><div class=\"sr-dim-bar-fill ' + barClass + '\" style=\"width:' + Math.max(2, dim.score) + '%\"></div></div>' +
+                '<span class=\"sr-dim-score\" style=\"color:' + dg.color + '\">' + dim.score + '</span>' +
+                '<span class=\"sr-dim-trend\" style=\"color:' + arrowColor + '\">' + arrow + '</span></div>';
+            }
+            if (dimList.length > 10) html += '<div style=\"font-size:.62rem;color:var(--yry-text3);padding:4px 0\">… 还有 ' + (dimList.length - 10) + ' 个维度 (详见健康报告)</div>';
+            dimListEl.innerHTML = html;
+          } else {
+            dimListEl.innerHTML = '<div class=\"sr-dim\"><span class=\"sr-dim-label\" style=\"color:var(--yry-text3)\">暂无维度数据</span><div class=\"sr-dim-bar-bg\"><div class=\"sr-dim-bar-fill fair\" style=\"width:0%\"></div></div><span class=\"sr-dim-score\">—</span></div>';
+          }
+        }
+
+        /* 智能摘要 */
+        var summaryEl = document.getElementById('cdn-sr-summary');
+        if (summaryEl) {
+          var dimCount = (ds && ds.length) || 0;
+          var txt = 'CDN 资源库综合健康评分 ' + healthScore + ' 分（' + (healthGrade || gradeInfo.grade) + '级·' + gradeInfo.label + '），';
+          if (dimCount > 0) {
+            txt += '覆盖 ' + dimCount + ' 个评估维度、' + compCount + ' 个组件。';
+          } else {
+            txt += '管理 ' + compCount + ' 个组件。';
+          }
+          if (trend && trend.confidence !== 'low') txt += '评分呈' + trendLabel[trend.direction] + '趋势（' + (trend.slopePerWeek > 0 ? '+' : '') + trend.slopePerWeek + '分/周）。';
+          txt += '7天预测 ' + forecast + ' 分。';
+          if (reliability) txt += '评分可靠性 ' + Math.round(reliability.score * 100) + '%。';
+          else txt += '评分可靠性数据不足。';
+          if (diagTrig > 0) txt += '诊断引擎触发 ' + diagTrig + '/8 项,建议关注。';
+          else txt += '诊断引擎无告警。';
+          // Add data point info
+          if (historyVals.length > 0) {
+            txt += '基于 ' + historyVals.length + ' 个历史数据点分析。';
+          }
+          summaryEl.textContent = txt;
+        }
+
+        /* 期间对比 (若有历史数据) */
+        var elCompDelta = document.getElementById('cdn-sr-comp-delta');
+        var elImproved = document.getElementById('cdn-sr-comp-improved');
+        var elDeclined = document.getElementById('cdn-sr-comp-declined');
+        var elNet = document.getElementById('cdn-sr-comp-net');
+        if (historyVals.length >= 2) {
+          var prev = historyVals[historyVals.length - 2];
+          var curr = historyVals[historyVals.length - 1];
+          var delta = Math.round((curr - prev) * 10) / 10;
+          if (elCompDelta) { elCompDelta.textContent = (delta > 0 ? '+' : '') + delta + ' 分'; elCompDelta.className = 'sr-compare-delta ' + (delta > 0 ? 'up' : delta < 0 ? 'down' : ''); }
+          if (elImproved) { elImproved.textContent = delta > 0 ? (delta > 3 ? '显著改善 ↑↑' : '小幅改善 ↑') : '—'; }
+          if (elDeclined) { elDeclined.textContent = delta < 0 ? (delta < -3 ? '明显退化 ↓↓' : '轻微退化 ↓') : '—'; }
+          if (elNet) { elNet.textContent = delta > 0 ? '+' + delta : delta < 0 ? '' + delta : '持平'; elNet.className = 'sr-compare-delta ' + (delta > 0 ? 'up' : delta < 0 ? 'down' : ''); }
+        } else {
+          if (elCompDelta) elCompDelta.textContent = '数据不足';
+          if (elImproved) elImproved.textContent = '—';
+          if (elDeclined) elDeclined.textContent = '—';
+          if (elNet) elNet.textContent = '—';
+        }
+
+        /* 更新时间 */
+        var elUpdated = document.getElementById('cdn-sr-updated');
+        if (elUpdated) elUpdated.textContent = '更新于 ' + new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+
+        /* P0 badge */
+        var p0Badge = document.getElementById('cdn-sr-p0-badge');
+        if (p0Badge && healthScore < 60) p0Badge.style.display = 'inline';
+      }
+
       function updateScores(retryCount) {
       retryCount = retryCount || 0;
       var controller = new AbortController();
@@ -1080,6 +1492,9 @@
             var storyScore = ds.length > 0 ? Math.round(ds.reduce(function(s,d){return s+d.avgScore;},0) / ds.length) : 0;
             storyLayer.stats = ['🩺 故事健康 ' + storyScore + '/' + gradeLbl(storyScore) + ' · 5 个故事'];
           }
+
+          /* ── 刷新评分报告面板 (CDN 专项) ── */
+          renderCdnScoreReport(data, healthScore, healthGrade, compScore, compCount, testScore, siScore, loadScore, trendDir);
 
           // Update legend timestamp with live data
           var legendEl = document.getElementById('score-legend-bar');

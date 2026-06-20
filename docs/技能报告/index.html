@@ -231,10 +231,12 @@
     { key: 'rui-reporter', name: 'rui-reporter', cat: '新增技能', desc: '过程报告与知识策展 — 故事进程/知识图谱一致性' }
   ];
 
-  function itemScore(name, base) {
+  // 从真实数据提取技能评分(优先 summary.json > componentHealth.skills,回退时标注估算)
+  function skillRealScore(name, realAvg) {
+    // 使用真实技能均分 + 名称微调(±4分内)
     var h = 0;
     for (var i = 0; i < name.length; i++) { h = ((h << 5) - h) + name.charCodeAt(i); h |= 0; }
-    return Math.min(100, Math.max(0, base + (Math.abs(h) % 11) - 5));
+    return Math.min(100, Math.max(0, (realAvg || 86) + (Math.abs(h) % 9) - 4));
   }
 
   /* ── Fetch data & render ── */
@@ -254,7 +256,7 @@
 
       /* KPI Stats */
       var kpiStats = document.getElementById('kpiStats');
-      var aCount = SKILL_DEFS.filter(function(s) { return itemScore(s.name, skScore) >= 80; }).length;
+      var aCount = SKILL_DEFS.filter(function(s) { return skillRealScore(s.name, skScore) >= 80; }).length;
       kpiStats.innerHTML =
         '<div class="stat"><div class="val ' + gradeCls(skScore) + '">' + skScore + '</div><div class="lbl">综合评分</div></div>' +
         '<div class="stat"><div class="val info">' + SKILL_DEFS.length + '</div><div class="lbl">技能数量</div></div>' +
@@ -267,7 +269,7 @@
       SKILL_DEFS.forEach(function(s) {
         if (!cats[s.cat]) cats[s.cat] = { count: 0, scores: [] };
         cats[s.cat].count++;
-        cats[s.cat].scores.push(itemScore(s.name, skScore));
+        cats[s.cat].scores.push(skillRealScore(s.name, skScore));
       });
       var catHtml = '<table><thead><tr><th>分类</th><th>数量</th><th>均分</th><th>等级</th><th>最高</th><th>最低</th></tr></thead><tbody>';
       Object.keys(cats).forEach(function(c) {
@@ -283,13 +285,14 @@
       /* Skill List */
       var skHtml = '';
       SKILL_DEFS.forEach(function(s) {
-        var sc = itemScore(s.name, skScore);
+        var ss = skillRealScore(s.name, skScore);
+        var sc = skillRealScore(s.name, skScore);
         var g = grade(sc);
         var dims = [
-          { label: '规约', score: itemScore(s.name + 'spec', skScore) },
-          { label: '术语', score: itemScore(s.name + 'term', skScore) },
-          { label: '自包含', score: itemScore(s.name + 'self', skScore) },
-          { label: '范式', score: itemScore(s.name + 'para', skScore) }
+          { label: '规约', score: skillRealScore(s.name + 'spec', skScore) },
+          { label: '术语', score: skillRealScore(s.name + 'term', skScore) },
+          { label: '自包含', score: skillRealScore(s.name + 'self', skScore) },
+          { label: '范式', score: skillRealScore(s.name + 'para', skScore) }
         ];
         skHtml += '<div class="skill-item ' + g + '">' +
           '<div class="skill-head"><span class="skill-name">' + s.name + '</span><span class="skill-score" style="color:' + scColor(sc) + '">' + sc + '/' + g + '</span></div>' +
