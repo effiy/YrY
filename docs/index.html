@@ -269,7 +269,7 @@
 
     <!-- ═══ 评分机制说明 (内联渲染,与 CDN 评分方法对齐) ═══ -->
     <section class="score-methodology" id="score-methodology">
-      <div class="sm-title">📊 评分机制 — 四维加权健康评估模型</div>
+      <div class="sm-title">📊 评分机制 — 六维加权健康评估模型</div>
       <div class="sm-cards">
         <div class="sm-card" id="sm-card-phi">
           <div class="sm-card-header">
@@ -323,6 +323,34 @@
             <span>🔬 D0-D7 诊断引擎持续监控,异常自动触发改进建议</span>
             <span>📐 评级: A≥80 · B≥60 · C≥40 · D&lt;40</span>
             <span>🔗 E1-E4 四级效果评估闭环回写</span>
+          </div>
+        </div>
+        <div class="sm-card" id="sm-card-aqi">
+          <div class="sm-card-header">
+            <span class="sm-card-title">📐 AQI · 架构质量指数</span>
+            <span class="sm-card-grade grade-A" id="sm-grade-aqi">A级</span>
+          </div>
+          <div class="sm-card-desc">
+            10 维度架构合规自动验证：<strong>内核体积</strong>(lib≤20·编排器≤500行)、<strong>范式合规</strong>(无class/extends·无export default·无空catch)、<strong>导入规范</strong>(无Skill间直接import·无Agent import Skill)、<strong>SRP合规</strong>(Skill description单一职责)、<strong>DRY合规</strong>(无重复导出定义)、<strong>YAGNI合规</strong>(无未使用导出)、<strong>扩展隔离</strong>(新增Skill不修改编排器)、<strong>ISP合规</strong>(Agent工具集最小化)、<strong>配置完整性</strong>(frontmatter字段完整)、<strong>文档新鲜度</strong>(链接引用有效)。
+          </div>
+          <div class="sm-card-meta">
+            <span>📐 评级: A(0-1失败)·B(2-3失败)·C(4-5失败)·D(6+失败)</span>
+            <span>🔧 自动运行: node lib/arch-check.mjs --append-trend</span>
+            <span>📡 数据源: .memory/arch-trend.jsonl</span>
+          </div>
+        </div>
+        <div class="sm-card" id="sm-card-dhi">
+          <div class="sm-card-header">
+            <span class="sm-card-title">🔬 DHI · 诊断健康指数</span>
+            <span class="sm-card-grade grade-B" id="sm-grade-dhi">75/B</span>
+          </div>
+          <div class="sm-card-desc">
+            D0-D8 九级诊断引擎运行状态评估：<strong>D0 基线偏离</strong>(执行与基线冲突检测)、<strong>D1 效率退化</strong>(block_rate>20%触发)、<strong>D2 质量退化</strong>(P0密度>50%)、<strong>D3 复杂度增长</strong>(T3比例>30%)、<strong>D4 流程退化</strong>(Gate B>2轮)、<strong>D5 依赖退化</strong>(依赖健康下降)、<strong>D6 文档过时</strong>(文档链接失效)、<strong>D7 配置漂移</strong>(配置一致性检查)。
+          </div>
+          <div class="sm-card-meta">
+            <span>⚖️ 评分: 100 - 触发诊断数×15 (8项全触发=0分, 0触发=100分)</span>
+            <span>📐 评级: A≥80 · B≥60 · C≥40 · D&lt;40</span>
+            <span>📡 数据源: .memory/health-trend.jsonl → diagSummary</span>
           </div>
         </div>
       </div>
@@ -796,9 +824,12 @@
       }
     }
 
-    /* ── 渲染评分方法卡片 ── */
+    /* ── 渲染评分方法卡片 (接受任意数据格式,内部归一化) ── */
     function renderMethodologyCards(data) {
-      var composite = data.composite || 0;
+      // 归一化: 兼容 score-report.json / summary.json / raw dim data
+      var composite = typeof data.composite === 'object'
+        ? (data.composite.score || 0)
+        : (data.composite || 0);
       var phiGrade = getGrade(composite);
       var elPhi = document.getElementById('sm-grade-phi');
       if (elPhi) {
@@ -806,8 +837,35 @@
         elPhi.className = 'sm-card-grade grade-' + phiGrade.grade;
       }
 
-      // SHI: 从数据中提取技能评分
-      var shiScore = data.skillScore || (data.dimSummary && data.dimSummary.skill_health ? data.dimSummary.skill_health.score : null) || 86;
+      // 辅助: 从 dimSummary (object or array) 或 breakdown 中提取维度分数
+      function dimLookup(label) {
+        // score-report.json format: breakdown array
+        if (data.breakdown && Array.isArray(data.breakdown)) {
+          for (var i = 0; i < data.breakdown.length; i++) {
+            if (data.breakdown[i].label === label) return data.breakdown[i].score;
+          }
+        }
+        // summary.json format: dimSummary is array of {label, avgScore}
+        if (data.dimSummary && Array.isArray(data.dimSummary)) {
+          for (var i = 0; i < data.dimSummary.length; i++) {
+            if (data.dimSummary[i].label === label) return data.dimSummary[i].avgScore || data.dimSummary[i].score;
+          }
+        }
+        // dimSummary as object {key: {score, label}}
+        if (data.dimSummary && typeof data.dimSummary === 'object') {
+          for (var key in data.dimSummary) {
+            if (data.dimSummary[key].label === label) return data.dimSummary[key].score;
+          }
+        }
+        return null;
+      }
+
+      // SHI: 技能健康指数 — 从组件质量或技能相关维度提取
+      var shiScore = data.skillScore
+        || dimLookup('组件质量')
+        || dimLookup('技能健康')
+        || (data.dimSummary && data.dimSummary.skill_health ? data.dimSummary.skill_health.score : null)
+        || 86;
       var shiGrade = getGrade(shiScore);
       var elShi = document.getElementById('sm-grade-shi');
       if (elShi) {
@@ -815,8 +873,11 @@
         elShi.className = 'sm-card-grade grade-' + shiGrade.grade;
       }
 
-      // TQI: 测试评分
-      var tqiScore = data.testScore || 60;
+      // TQI: 测试质量指数
+      var tqiScore = data.testScore
+        || dimLookup('测试覆盖')
+        || dimLookup('测试')
+        || 60;
       var tqiGrade = getGrade(tqiScore);
       var elTqi = document.getElementById('sm-grade-tqi');
       if (elTqi) {
@@ -824,13 +885,53 @@
         elTqi.className = 'sm-card-grade grade-' + tqiGrade.grade;
       }
 
-      // SII: 自改进评分
-      var siiScore = data.selfImproveScore || 89;
+      // SII: 自改进闭环指数
+      var siiScore = data.selfImproveScore
+        || dimLookup('自改进闭环')
+        || dimLookup('自改进')
+        || 89;
       var siiGrade = getGrade(siiScore);
       var elSii = document.getElementById('sm-grade-sii');
       if (elSii) {
         elSii.textContent = siiScore + '/' + siiGrade.grade;
         elSii.className = 'sm-card-grade grade-' + siiGrade.grade;
+      }
+
+      // AQI: 架构质量指数 — 从 archHealth 或 architecture 提取
+      var aqiScore = null;
+      var aqiGradeLetter = null;
+      if (data.archHealth && data.archHealth.grade) {
+        aqiGradeLetter = data.archHealth.grade;
+        // Map grade letter to approximate score
+        aqiScore = aqiGradeLetter === 'A' ? 95 : aqiGradeLetter === 'B' ? 80 : aqiGradeLetter === 'C' ? 50 : 30;
+      } else if (data.architecture && data.architecture.grade) {
+        aqiGradeLetter = data.architecture.grade;
+        aqiScore = aqiGradeLetter === 'A' ? 95 : aqiGradeLetter === 'B' ? 80 : aqiGradeLetter === 'C' ? 50 : 30;
+      }
+      var elAqi = document.getElementById('sm-grade-aqi');
+      if (elAqi && aqiGradeLetter) {
+        elAqi.textContent = aqiScore + '/' + aqiGradeLetter;
+        elAqi.className = 'sm-card-grade grade-' + aqiGradeLetter;
+      }
+
+      // DHI: 诊断健康指数 — 100 - triggered×15, min 0
+      var diagTrig = data.diagTriggered || 0;
+      if (!diagTrig && data.diagnostics && typeof data.diagnostics.triggered === 'number') {
+        diagTrig = data.diagnostics.triggered;
+      }
+      if (!diagTrig && data.diagSummary) {
+        if (Array.isArray(data.diagSummary)) {
+          diagTrig = data.diagSummary.filter(function(d) { return d.count > 0; }).length;
+        } else if (typeof data.diagSummary.triggered === 'number') {
+          diagTrig = data.diagSummary.triggered;
+        }
+      }
+      var dhiScore = Math.max(0, 100 - diagTrig * 15);
+      var dhiGrade = getGrade(dhiScore);
+      var elDhi = document.getElementById('sm-grade-dhi');
+      if (elDhi) {
+        elDhi.textContent = dhiScore + '/' + dhiGrade.grade + ' (' + diagTrig + '/8触发)';
+        elDhi.className = 'sm-card-grade grade-' + dhiGrade.grade;
       }
     }
 

@@ -15,7 +15,7 @@ import {
   REPORT_DIR, CDN_DEPTH, DIM_LABELS, DIM_WEIGHTS, GRADE_STYLE,
 } from "./report-constants.mjs";
 import { HEALTH_SCORING_DIMENSIONS } from "../../../lib/constants.mjs";
-import { categoryScores, rankDimensionInfluence, generateExecutiveSummary } from "../../../lib/scoring.mjs";
+import { categoryScores, rankDimensionInfluence, generateExecutiveSummary, generateScoreReport } from "../../../lib/scoring.mjs";
 
 import {
   nowChinese, nowDate, getPreviousScore, getHealthTrend,
@@ -95,6 +95,39 @@ export function generateHealthReport(hr) {
       }
     }
   }
+
+  // ── Structured score report (from lib/scoring.mjs) ──────────────
+  const trendScores = healthTrend.map(e => e.composite).filter(s => typeof s === "number");
+  const dimHistoryForReport = {};
+  for (const [dim, cfg] of Object.entries(HEALTH_SCORING_DIMENSIONS)) {
+    dimHistoryForReport[cfg.label] = healthTrend
+      .filter(e => e.scores && typeof e.scores[dim] === "number")
+      .map(e => ({ date: (e.timestamp || "").slice(0, 10), score: e.scores[dim] }));
+  }
+  const prevPeriod = healthTrend.length >= 2 ? {
+    composite: healthTrend[healthTrend.length - 2].composite,
+    scores: healthTrend[healthTrend.length - 2].scores || {},
+    date: (healthTrend[healthTrend.length - 2].timestamp || "").slice(0, 10),
+  } : null;
+  const archResult = hr.archResult ? {
+    archGrade: hr.archResult.grade,
+    archPassedDims: hr.archResult.passedDims || [],
+    archFailedDims: hr.archResult.failedDims || [],
+    archDimResults: (hr.archResult.dimResults || []),
+  } : null;
+
+  const scoreReport = generateScoreReport({
+    composite: hr.composite,
+    scores: hr.scores || {},
+    dimensions: HEALTH_SCORING_DIMENSIONS,
+    history: trendScores,
+    dimHistory: dimHistoryForReport,
+    prevPeriod,
+    archResult,
+    diagTriggered: hr.diagnostics?.triggered?.length || 0,
+    reportDate,
+    title: "YrY 项目健康评分报告",
+  });
 
   const gradeSparkline = buildGradeSparkline(healthTrend);
   const enhancedTrend = buildEnhancedTrendAnalysis(healthTrend);
@@ -284,6 +317,7 @@ export function generateHealthReport(hr) {
     diagTriggered: hr.diagnostics?.triggered?.length || 0,
   }), hr.composite, hr.grade)}
   ${buildSummaryCard(hr, prev, recommendations)}
+  ${scoreReport ? buildScoreReportSummaryHTML(scoreReport) : ""}
   ${buildScoreDiffSection(hr, healthTrend.length >= 2 ? healthTrend[healthTrend.length - 2] : null)}
   ${buildBenchmarkHTML(buildHistoricalBenchmarks(healthTrend, hr.composite))}
   ${buildStructureSection(hr)}
@@ -379,6 +413,63 @@ document.querySelectorAll('.h-tab').forEach(function(t) {
   writeFileSync(filePath, compactHtml, "utf-8");
 
   return { filePath, filename };
+}
+
+/**
+ * Build a compact HTML summary block from the structured score report.
+ * @param {object} sr - Output of generateScoreReport()
+ * @returns {string} HTML
+ */
+function buildScoreReportSummaryHTML(sr) {
+  if (!sr) return "";
+  const recsHtml = (sr.recommendations || []).slice(0, 3).map(r =>
+    `<span class="h-tag ${r.priority === 'P0' ? 'h-tag-fail' : r.priority === 'P1' ? 'h-tag-warn' : ''}">${r.priority} ${r.dim}</span>`
+  ).join(" ");
+
+  const trendIcon = sr.trend
+    ? (sr.trend.direction === "rising" ? "📈" : sr.trend.direction === "falling" ? "📉" : "➡️")
+    : "";
+  const trendText = sr.trend
+    ? `${trendIcon} ${sr.trend.direction === "rising" ? "上升" : sr.trend.direction === "falling" ? "下降" : "稳定"} (${sr.trend.slopePerWeek > 0 ? "+" : ""}${sr.trend.slopePerWeek}/周${sr.trend.confidence === "high" ? "·高置信" : ""})`
+    : "";
+
+  const forecastText = sr.forecast
+    ? `📡 7天预测: <strong>${sr.forecast.value}</strong> 分 (${sr.forecast.range[0]}–${sr.forecast.range[1]})`
+    : "";
+
+  const reliabilityText = sr.reliability
+    ? `🎯 可靠性: <strong>${Math.round(sr.reliability.score * 100)}%</strong> (${sr.reliability.volatility === "low" ? "低波动" : sr.reliability.volatility === "moderate" ? "中等" : "高"}波动)`
+    : "";
+
+  const breakdownRows = (sr.breakdown || []).slice(0, 5).map(b => {
+    const barColor = b.score >= 90 ? "var(--yry-pass)" : b.score >= 75 ? "var(--yry-accent)" : b.score >= 60 ? "var(--yry-warn)" : "var(--yry-fail)";
+    const statusLabel = b.status === "critical" ? "🔴" : b.status === "warn" ? "🟡" : "🟢";
+    return `<div style="display:flex;align-items:center;gap:8px;padding:3px 0;font-size:.72rem">
+      <span style="min-width:80px">${statusLabel} ${b.label}</span>
+      <div style="flex:1;height:5px;background:var(--yry-surface-alt);border-radius:3px">
+        <div style="width:${b.score}%;height:100%;border-radius:3px;background:${barColor}"></div>
+      </div>
+      <span style="font-weight:700;min-width:30px;text-align:right">${b.score}</span>
+      <span style="font-size:.6rem;color:var(--yry-text-muted)">${b.trend === "↑ 上升" ? "↑" : b.trend === "↓ 下降" ? "↓" : "→"}</span>
+    </div>`;
+  }).join("");
+
+  const comparisonHtml = sr.comparison && sr.comparison.compositeDelta !== undefined
+    ? `<div style="font-size:.72rem;margin-top:6px">📊 对比上周期: <strong style="color:${sr.comparison.compositeDelta > 0 ? 'var(--yry-pass)' : sr.comparison.compositeDelta < 0 ? 'var(--yry-fail)' : 'var(--yry-text2)'}">${sr.comparison.compositeDelta > 0 ? '+' : ''}${sr.comparison.compositeDelta}</strong> 分 · 🟢 ${sr.comparison.improvedCount || 0} 改善 · 🔴 ${sr.comparison.declinedCount || 0} 退化</div>`
+    : "";
+
+  return `<div class="h-section">
+    <h2>📋 结构化评分报告</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:12px">
+      <div class="h-stat-card"><div class="h-sc-label">趋势</div><div class="h-sc-val" style="font-size:.8rem">${trendText || "数据不足"}</div></div>
+      <div class="h-stat-card"><div class="h-sc-label">预测</div><div class="h-sc-val" style="font-size:.8rem">${forecastText || "数据不足"}</div></div>
+      <div class="h-stat-card"><div class="h-sc-label">可靠性</div><div class="h-sc-val" style="font-size:.8rem">${reliabilityText || "数据不足"}</div></div>
+      <div class="h-stat-card"><div class="h-sc-label">诊断</div><div class="h-sc-val" style="font-size:.8rem">🔬 ${sr.diagnostics?.triggered || 0}/${sr.diagnostics?.total || 8} 触发</div></div>
+    </div>
+    ${comparisonHtml}
+    ${breakdownRows ? `<div style="margin-top:8px"><div style="font-size:.76rem;font-weight:600;margin-bottom:6px">📐 维度拆解 (Top 5 待改进)</div>${breakdownRows}</div>` : ""}
+    ${recsHtml ? `<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px"><span style="font-size:.72rem;font-weight:600">💡 优先行动: </span>${recsHtml}</div>` : ""}
+  </div>`;
 }
 
 export function generateHealthIndex() {
